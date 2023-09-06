@@ -16,30 +16,19 @@ The latest prod version of both FairSoft and FairRoot can be found on the lx-poo
 
 To compile:
 > export SIMPATH=/path/to/fairsoft
-
 > export FAIRROOTPATH=/path/to/fairroot
-
 > export UCESB_DIR=/path/to/ucesb
-
 > git clone https://github.com/cej25/c4Root.git
-
 > mkdir build
-
 > cd build
-
 > cmake ../c4Root
-
 > . ./config.sh
-
 > make -j6
 
 
 > cd
-
 > cd $UCESB_DIR
-
 > make s452 -j 10
-
 > root -l run_frs_onlince.C
 
 This will generate a root file with unpacked frs data from the S452 experiment in a tree. It will also generate an "online" ZvsAoQ plot.
