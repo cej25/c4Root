@@ -1,0 +1,34 @@
+set(SYSTEM_INCLUDE_DIRECTORIES ${SYSTEM_INCLUDE_DIRECTORIES} ${BASE_INCLUDE_DIRECTORIES})
+
+set(INCLUDE_DIRECTORIES
+${C4ROOT_SOURCE_DIR}/c4data
+${C4ROOT_SOURCE_DIR}/c4data/frsData
+${C4ROOT_SOURCE_DIR}/c4data/lisaData
+${C4ROOT_SOURCE_DIR}/c4data/aidaData
+${C4ROOT_SOURCE_DIR}/c4data/fatimaData
+${C4ROOT_SOURCE_DIR}/c4data/bplastData
+${C4ROOT_SOURCE_DIR}/c4data/germaniumData
+)
+
+include_directories(${INCLUDE_DIRECTORIES})
+include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
+
+set(LINK_DIRECTORIES ${ROOT_LIBRARY_DIR} ${FAIRROOT_LIBRARY_DIR})
+
+link_directories(${LINK_DIRECTORIES})
+
+set(SRCS
+frsData/FrsData.cxx
+lisaData/c4LisaData.cxx
+lisaData/c4LisaTraceData.cxx
+germaniumData/GermaniumFebexData.cxx
+)
+
+# fill list of header files from list of source files by exchanging the file extension
+change_file_extension(*.cxx *.h HEADERS "${SRCS}")
+
+set(LINKDEF DataLinkDef.h)
+set(LIBRARY_NAME c4Data)
+set(DEPENDENCIES Base FairTools ${VMCLIB} FairLogger::FairLogger)
+
+generate_library()
