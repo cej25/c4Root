@@ -12,7 +12,7 @@
 #pragma link C++ class GermaniumReader+;
 #pragma link C++ class c4LisaReader+;
 
-#pragma link C++ class EXT_STR_h101_unpack_t;
+//#pragma link C++ class EXT_STR_h101_unpack_t;
 #pragma link C++ class EXT_STR_h101_FRS_onion_t;
 #pragma link C++ class EXT_STR_h101_GE_FEBEX_onion_t;
 #pragma link C++ class EXT_STR_h101_LISA_onion_t;
