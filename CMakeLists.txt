@@ -1,7 +1,5 @@
-# Check if cmake has the required version
 cmake_minimum_required(VERSION 3.11.0 FATAL_ERROR)
 
-# set cmake policies
 cmake_policy(VERSION 3.11...3.20)
 
 project(C4ROOT LANGUAGES C CXX Fortran)
@@ -57,7 +55,6 @@ else()
   message(STATUS "You seem to be using FairRoot ${FairRoot_VERSION}.")
 endif()
 
-# added a variable to point to r3broot path in the system
 set(C4ROOTPATH ${CMAKE_INSTALL_PREFIX})
 
 if(SIMPATH)

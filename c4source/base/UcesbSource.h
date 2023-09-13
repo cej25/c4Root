@@ -35,7 +35,7 @@ class UcesbSource : public FairSource
     Source_Type GetSourceType() { return kONLINE; }
 
     /* Init() will fork a ucesb instance to deliver the unpacked data for
-     * R3BRoot. It makes use of the ext_data_ interface of ucesb.
+     * . It makes use of the ext_data_ interface of ucesb.
      * */
     virtual Bool_t Init();
    
