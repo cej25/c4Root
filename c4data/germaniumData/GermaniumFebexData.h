@@ -13,6 +13,7 @@ class GermaniumFebexData : public TObject
                              uint32_t sumTimeLo,
                              uint32_t sumTimeHi,
                              uint32_t hitPattern,
+                             uint32_t chanEnergy,
                              uint32_t chanTimeLo,
                              uint32_t chanTimeHi,
                              uint32_t chanCFLo,
@@ -30,6 +31,7 @@ class GermaniumFebexData : public TObject
         inline const uint32_t GetSumTimeLo() const { return fSumTimeLo; }
         inline const uint32_t GetSumTimeHi() const { return fSumTimeHi; }
         inline const uint32_t GetHitPattern() const { return fHitPattern; }
+        inline const uint32_t GetChanEnergy() const { return fChanEnergy; }
         inline const uint32_t GetChanTimeLo() const { return fChanTimeLo; }
         inline const uint32_t GetChanTimeHi() const { return fChanTimeHi; }
         inline const uint32_t GetChanCFLo() const { return fChanCFLo; }
@@ -44,6 +46,7 @@ class GermaniumFebexData : public TObject
         void SetSumTimeLo(uint32_t v) { fSumTimeLo = v; }
         void SetSumTimeHi(uint32_t v) { fSumTimeHi = v; }
         void SetHitPattern(uint32_t v) { fHitPattern = v; }
+        void SetChanEnergy(uint32_t v) { fChanEnergy = v; }
         void SetChanTimeLo(uint32_t v) { fChanTimeLo = v; }
         void SetChanTimeHi(uint32_t v) { fChanTimeHi = v; }
         void SetChanCFLo(uint32_t v) { fChanCFLo = v; }
@@ -59,6 +62,7 @@ class GermaniumFebexData : public TObject
         uint32_t fSumTimeLo;
         uint32_t fSumTimeHi;
         uint32_t fHitPattern;
+        uint32_t fChanEnergy;
         uint32_t fChanTimeLo;
         uint32_t fChanTimeHi;
         uint32_t fChanCFLo;
