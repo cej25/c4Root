@@ -5,6 +5,7 @@ GermaniumFebexData::GermaniumFebexData()
     , fSumTimeLo(0)
     , fSumTimeHi(0)
     , fHitPattern(0)
+    , fChanEnergy(0)
     , fChanTimeLo(0)
     , fChanTimeHi(0)
     , fChanCFLo(0)
@@ -20,6 +21,7 @@ GermaniumFebexData::GermaniumFebexData(Int_t GeFired,
                                            uint32_t sumTimeLo,
                                            uint32_t sumTimeHi,
                                            uint32_t hitPattern,
+                                           uint32_t ChanEnergy,
                                            uint32_t chanTimeLo,
                                            uint32_t chanTimeHi,
                                            uint32_t chanCFLo,
@@ -32,6 +34,7 @@ GermaniumFebexData::GermaniumFebexData(Int_t GeFired,
     , fSumTimeLo(sumTimeLo)
     , fSumTimeHi(sumTimeHi)
     , fHitPattern(hitPattern)
+    , fChanEnergy(ChanEnergy)
     , fChanTimeLo(chanTimeLo)
     , fChanTimeHi(chanTimeHi)
     , fChanCFLo(chanCFLo)
