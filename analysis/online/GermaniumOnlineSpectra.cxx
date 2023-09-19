@@ -68,10 +68,11 @@ InitStatus GermaniumOnlineSpectra::Init()
 
     cSumTime = new TCanvas("SumTime1", "Sum Time 1", 10, 10, 800, 700);
 
+
     Name1 = "fh1_SumTime";
     Name2 = "Ge: Sum Time 1";
 
-    fh1_SumTime = new TH1F(Name1, Name2, 1000, 1.5141e13, 1.5153e13); // no idea
+    fh1_SumTime = new TH1F(Name1, Name2, 1000, 0, 1.55e13); // no idea
     fh1_SumTime->GetXaxis()->SetTitle("Time");
     fh1_SumTime->GetYaxis()->SetTitle("Counts"); // necessary?
     fh1_SumTime->GetYaxis()->SetTitleOffset(1.15);
@@ -85,8 +86,15 @@ InitStatus GermaniumOnlineSpectra::Init()
     fh1_SumTime->SetLineColor(1);
     fh1_SumTime->Draw("");
 
+
+    cEnergySpectraTest = new TCanvas("EnergySpectraTest","Energy uncal det 1",10,10,800,700);
+    fh1_EnergySpectraTest = new TH1F("fh1_EnergySpectraTest","Energy uncal det 1", 1000, 0, 32000);
+    fh1_EnergySpectraTest->Draw("");
+
     TFolder *geFold = new TFolder("Germanium", "Germanium");
     geFold->Add(cSumTime);
+    geFold->Add(cEnergySpectraTest);
+
     run->AddObject(geFold);
 
     run->GetHttpServer()->RegisterCommand("Reset_Ge_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
@@ -119,6 +127,7 @@ void GermaniumOnlineSpectra::Exec(Option_t* option)
             {
                 SumTime = hit->GetSumTimeLo() + ((ULong64_t)(hit->GetSumTimeHi()) << 32);
                 fh1_SumTime->Fill(SumTime);
+                fh1_EnergySpectraTest->Fill(hit->GetChanEnergy());
             }
 
         }
@@ -140,6 +149,7 @@ void GermaniumOnlineSpectra::FinishTask()
     if (fHitGe)
     {
         cSumTime->Write();
+        cEnergySpectraTest->Write();
     }
 }
 

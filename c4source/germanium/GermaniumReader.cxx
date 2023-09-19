@@ -62,6 +62,7 @@ Bool_t GermaniumReader::Read()
                                                                        fData->Sum_Time_lo[det],
                                                                        fData->Sum_Time_hi[det],
                                                                        fData->Hit_Pattern[det],
+                                                                       fData->Chan_Energy[det],
                                                                        fData->Chan_Time_lo[det],
                                                                        fData->Chan_Time_hi[det],
                                                                        fData->Chan_CF_lo[det],
