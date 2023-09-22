@@ -39,6 +39,7 @@ link_directories( ${LINK_DIRECTORIES})
 set(SRCS
 ./base/UcesbSource.cxx
 ./base/c4Reader.cxx
+./aida/c4AidaReader.cxx
 ./frs/FrsReader.cxx
 ./germanium/GermaniumReader.cxx
 ./lisa/c4LisaReader.cxx
@@ -46,6 +47,7 @@ set(SRCS
 
 Set(STRUCT_HEADERS
 ./base/ext_h101_unpack.h
+./aida/ext_h101_aida.h
 ./frs/ext_h101_frs.h
 ./lisa/ext_h101_lisa.h
 ./germanium/ext_h101_ge_febex.h

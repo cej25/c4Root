@@ -10,6 +10,7 @@
 #pragma link C++ class c4Reader+;
 #pragma link C++ class FrsReader+;
 #pragma link C++ class GermaniumReader+;
+#pragma link C++ class AidaReader+;
 #pragma link C++ class c4LisaReader+;
 
 //#pragma link C++ class EXT_STR_h101_unpack_t;
