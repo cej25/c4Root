@@ -271,7 +271,7 @@ endif(NOT MODULE)
 add_subdirectory(cmake)
 
 #this whole thing might have to be commented out until a github thing is setup? dunno
-If(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
+If(0 AND GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
   Execute_Process(COMMAND ${GIT_EXECUTABLE} describe --tags
                   OUTPUT_VARIABLE C4ROOT_GIT_VERSION
                   OUTPUT_STRIP_TRAILING_WHITESPACE

@@ -21,6 +21,7 @@ set(SRCS
 frsData/FrsData.cxx
 lisaData/c4LisaData.cxx
 lisaData/c4LisaTraceData.cxx
+aidaData/AidaData.cxx
 germaniumData/GermaniumFebexData.cxx
 )
 
