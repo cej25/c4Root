@@ -17,5 +17,6 @@
 #pragma link C++ class EXT_STR_h101_FRS_onion_t;
 #pragma link C++ class EXT_STR_h101_GE_FEBEX_onion_t;
 #pragma link C++ class EXT_STR_h101_LISA_onion_t;
+#pragma link C++ class EXT_STR_h101_aida_onion_t;
 
 #endif

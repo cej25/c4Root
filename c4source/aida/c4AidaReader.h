@@ -1,6 +1,7 @@
 #ifndef AidaReader_h
 #define AidaReader_h
 
+#include "AidaData.h"
 #include "c4Reader.h"
 
 #include <Rtypes.h>
@@ -34,8 +35,8 @@ class AidaReader : public c4Reader
 
         Bool_t fOnline;
 
-        //TClonesArray* fArray;
         // Data to register here
+        std::vector<AidaUnpackAdcItem>* adcArray;
     
     public:
         ClassDefOverride(AidaReader, 0);
