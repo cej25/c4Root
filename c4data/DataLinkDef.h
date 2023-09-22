@@ -11,4 +11,7 @@
 #pragma link C++ class c4LisaData+;
 #pragma link C++ class c4LisaTraceData+;
 
+#pragma link C++ class AidaUnpackAdcItem+;
+#pragma link C++ class std::vector<AidaUnpackAdcItem>+;
+
 #endif
