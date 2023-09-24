@@ -184,12 +184,12 @@ void FrsOnlineSpectra::Exec(Option_t* option)
             FrsData* hit = (FrsData*)fHitFrs->At(ihit);
             if (!hit)
                 continue;
-            fh2_ZvsAoQ->Fill(hit->GetAoQ(), hit->GetZ());
+            /*fh2_ZvsAoQ->Fill(hit->GetAoQ(), hit->GetZ());
             fh2_x4vsAoQ->Fill(hit->GetAoQ(), hit->GetX4());
             
             AoQCorr = hit->GetAoQ() - a2AoQCorr * hit->GetA2();
             fh2_ZvsAoQCorr->Fill(AoQCorr, hit->GetZ());
-            fh2_x4vsAoQCorr->Fill(AoQCorr, hit->GetX4());
+            fh2_x4vsAoQCorr->Fill(AoQCorr, hit->GetX4());*/
         }
     }
 
