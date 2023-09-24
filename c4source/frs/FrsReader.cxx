@@ -55,16 +55,16 @@ Bool_t FrsReader::Read()
 {
     c4LOG(debug1, "Event data");
     
-    new ((*fArray)[fArray->GetEntriesFast()]) FrsData(fData->Z,
-                                                        fData->AoQ,
-                                                        fData->Atwo,
-                                                        fData->Afour,
-                                                        fData->Xtwo,
-                                                        fData->Xfour,
-                                                        fData->beta);//,
-                                                        //fData->frs_tpc_crate_data_frs_info_id_brho0[0],
-                                                        //fData->frs_tpc_crate_data_frs_info_id_brho[0][0]); // stupid ass UCESB - FIX IT CALUM
+
+    for (int sc = 0; sc < 32; sc++)
+    {
+        new ((*fArray)[fArray->GetEntriesFast()]) FrsData(sc,
+                                                          fData->SCLONG[sc],
+                                                          sc+32,
+                                                          fData->SCLONG[sc+32]);
+                                                          
     
+    }
     fNEvent += 1;
     return kTRUE;
 
