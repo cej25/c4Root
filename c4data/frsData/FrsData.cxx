@@ -1,32 +1,18 @@
 #include "FrsData.h"
 
 FrsData::FrsData()
-    : fZ(0.)
-    , fAoQ(0.)
-    , fA2(0.)
-    , fA4(0.)
-    , fX2(0.)
-    , fX4(0.)
-    , fBeta(0.)
-    //, fBrho0(0.)
-    //, fBrho1(0.)
+    : iScFrs(0)
+    , fScFrs(0)
+    , iScMain(0)
+    , fScMain(0)
 {
 }
 
-FrsData::FrsData(Float_t Z,
-                     Float_t AoQ,
-                     Float_t a2,
-                     Float_t a4,
-                     Float_t x2,
-                     Float_t x4,
-                     Float_t beta)
-    : fZ(Z)
-    , fAoQ(AoQ)
-    , fA2(a2)
-    , fA4(a4)
-    , fX2(x2)
-    , fX4(x4)
-    , fBeta(beta)
+FrsData::FrsData(int sc1, UInt_t ScFrs, int sc2, UInt_t ScMain)
+    : iScFrs(sc1)
+    , fScFrs(ScFrs)
+    , iScMain(sc2)
+    , fScMain(ScMain)
 {
 }
 
