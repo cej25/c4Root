@@ -22,7 +22,7 @@ GermaniumReader::GermaniumReader(EXT_STR_h101_GE_FEBEX_onion* data, size_t offse
     , fData(data)
     , fOffset(offset)
     , fOnline(kFALSE)
-    , fArray(new TClonesArray("GermaniumReader"))
+    , fArray(new TClonesArray("GermaniumFebexData"))
 {
 }
 
