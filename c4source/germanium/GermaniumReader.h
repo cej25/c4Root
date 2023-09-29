@@ -42,6 +42,17 @@ class GermaniumReader : public c4Reader
         Bool_t fOnline;
 
         TClonesArray* fArray;
+
+
+        uint16_t detector_id;
+        uint16_t crystal_id;
+
+        uint64_t event_trigger_time_long;
+        uint64_t channel_trigger_time_long;
+
+        int32_t channel_energy;
+
+        uint64_t wr_t;
     
     public:
         ClassDefOverride(GermaniumReader, 0);

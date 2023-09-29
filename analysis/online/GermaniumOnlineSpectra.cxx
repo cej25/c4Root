@@ -12,6 +12,12 @@
 #include "c4Logger.h"
 
 
+//detector config
+#define GE_MAX_HITS 28
+#define GE_CRYSTAL_PER_DET 7
+
+
+
 #include "TCanvas.h"
 #include "TClonesArray.h"
 #include "TFolder.h"
@@ -62,38 +68,28 @@ InitStatus GermaniumOnlineSpectra::Init()
     fHitGe = (TClonesArray*)mgr->GetObject("GermaniumFebexData");
     c4LOG_IF(fatal, !fHitGe, "Branch GermaniumData not found!");
 
-    // Create histograms
-    TString Name1;
-    TString Name2; 
-
+    //sum time spectrum
     cSumTime = new TCanvas("SumTime1", "Sum Time 1", 10, 10, 800, 700);
-
-
-    Name1 = "fh1_SumTime";
-    Name2 = "Ge: Sum Time 1";
-
-    fh1_SumTime = new TH1F(Name1, Name2, 1000, 0, 1.55e13); // no idea
-    fh1_SumTime->GetXaxis()->SetTitle("Time");
-    fh1_SumTime->GetYaxis()->SetTitle("Counts"); // necessary?
-    fh1_SumTime->GetYaxis()->SetTitleOffset(1.15);
-    fh1_SumTime->GetXaxis()->CenterTitle(true);
-    fh1_SumTime->GetYaxis()->CenterTitle(true);
-    fh1_SumTime->GetXaxis()->SetLabelSize(0.045);
-    fh1_SumTime->GetXaxis()->SetTitleSize(0.045);
-    fh1_SumTime->GetYaxis()->SetLabelSize(0.045);
-    fh1_SumTime->GetYaxis()->SetTitleSize(0.045);
-    //fh1_SumTime->SetFillColor(2);
-    fh1_SumTime->SetLineColor(1);
+    fh1_SumTime = new TH1F("fh1_SumTime", "Sum time", 1000, 0, 1.55e13);
     fh1_SumTime->Draw("");
 
 
+    //summed energy
     cEnergySpectraTest = new TCanvas("EnergySpectraTest","Energy uncal det 1",10,10,800,700);
-    fh1_EnergySpectraTest = new TH1F("fh1_EnergySpectraTest","Energy uncal det 1", 1000, 0, 32000);
+    fh1_EnergySpectraTest = new TH1F("fh1_EnergySpectraTest","Energy uncal det 1", 10000, 0, 20e6);
     fh1_EnergySpectraTest->Draw("");
 
+    //energy per detector:
+    cEnergySpectra = new TCanvas("EnergySpectra","Uncalibrated energy spectra Germanium per detector",10,10,800,700);
+    fh2_EnergySpectra = new TH2F("fh2_EnergySpectra", "Uncalibrated energy spectra Germanium per detector",16,0,16,10000,0,20e6);
+    fh2_EnergySpectra->Draw("COLZ");
+    
     TFolder *geFold = new TFolder("Germanium", "Germanium");
     geFold->Add(cSumTime);
     geFold->Add(cEnergySpectraTest);
+    geFold->Add(cEnergySpectra);
+
+
 
     run->AddObject(geFold);
 
@@ -111,8 +107,6 @@ void GermaniumOnlineSpectra::Reset_Histo()
 void GermaniumOnlineSpectra::Exec(Option_t* option)
 {   
 
-    ULong64_t SumTime;
-    uint8_t GeFired;
     if (fHitGe && fHitGe->GetEntriesFast() > 0)
     {
         Int_t nHits = fHitGe->GetEntriesFast();
@@ -122,12 +116,13 @@ void GermaniumOnlineSpectra::Exec(Option_t* option)
             if (!hit)
                 continue;
 
-            GeFired = hit->GetGeFired();
-            if (GeFired == 0)
+            
+            if ((hit->Get_num_channels_fired() > 0) & (hit->Get_board_id() == 1))
             {
-                SumTime = hit->GetSumTimeLo() + ((ULong64_t)(hit->GetSumTimeHi()) << 32);
-                fh1_SumTime->Fill(SumTime);
-                fh1_EnergySpectraTest->Fill(hit->GetChanEnergy());
+                fh1_SumTime->Fill(hit->Get_event_trigger_time());
+                fh2_EnergySpectra->Fill(hit->Get_channel_id(),hit->Get_channel_energy());
+                fh1_EnergySpectraTest->Fill(hit->Get_channel_energy());
+                
             }
 
         }
@@ -150,6 +145,7 @@ void GermaniumOnlineSpectra::FinishTask()
     {
         cSumTime->Write();
         cEnergySpectraTest->Write();
+        cEnergySpectra->Write();
     }
 }
 
