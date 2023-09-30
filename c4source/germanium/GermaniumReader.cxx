@@ -50,27 +50,70 @@ Bool_t GermaniumReader::Init(ext_data_struct_info* a_struct_info)
     return kTRUE;
 }
 
-Bool_t GermaniumReader::Read()
+Bool_t GermaniumReader::Read() // do the detector mapping here:
 {
     c4LOG(debug1, "Event Data");
 
-    // GE_MAX_HITS
-    // not entirely sure this is going to work. really need to work it all out....
-    for (int det = 0; det < 28; det++)
-    {
-        new ((*fArray)[fArray->GetEntriesFast()]) GermaniumFebexData(det,
-                                                                       fData->Sum_Time_lo[det],
-                                                                       fData->Sum_Time_hi[det],
-                                                                       fData->Hit_Pattern[det],
-                                                                       fData->Chan_Energy[det],
-                                                                       fData->Chan_Time_lo[det],
-                                                                       fData->Chan_Time_hi[det],
-                                                                       fData->Chan_CF_lo[det],
-                                                                       fData->Chan_CF_hi[det],
-                                                                       fData->Pileup[det],
-                                                                       fData->Overflow[det],
-                                                                       fData->det_ids[det],
-                                                                       fData->crystal_ids[det]);
+
+    event_trigger_time_long = ((uint64_t)(fData->event_trigger_time_hi) << 32) + (fData->event_trigger_time_lo);
+
+
+    //whiterabbit timestamp:
+    wr_t = (((uint64_t)fData->wr_t[3]) << 48) + (((uint64_t)fData->wr_t[2]) << 32) + (((uint64_t)fData->wr_t[1]) << 16) + (uint64_t)(fData->wr_t[0]);
+
+    if (fData->num_channels_fired == 0 & false){ //write multiplicity zero events?
+        new ((*fArray)[fArray->GetEntriesFast()]) GermaniumFebexData(
+            fData->num_channels_fired,
+            event_trigger_time_long,
+            fData->hit_pattern,
+            fData->board_id,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            fData->wr_subsystem_id,
+            wr_t
+        );
+    }
+
+    for (int index = 0; index < fData->num_channels_fired; index++)
+    {   
+
+        //do the detector mapping here:
+        // board_id,channel_id -> det_id,crystal_id
+        //temp:
+        detector_id = fData->board_id;
+        crystal_id  = fData->channel_id[index];
+        
+
+        //according to febex manual on gsi website the 24th bit of the energy bits denotes the sign to indicate the polarity of the pulse?
+        if (fData->channel_energy[index] & (1 << 23)){
+            channel_energy = -(int32_t)(fData->channel_energy[index] & 0x007FFFFF);
+        }else{
+            channel_energy = +(int32_t)(fData->channel_energy[index] & 0x007FFFFF);            
+        }
+
+
+        channel_trigger_time_long = ((uint64_t)(fData->channel_trigger_time_hi[index]) << 32) + (fData->channel_trigger_time_lo[index]);
+
+        new ((*fArray)[fArray->GetEntriesFast()]) GermaniumFebexData(
+            fData->num_channels_fired,
+            event_trigger_time_long,
+            fData->hit_pattern,
+            fData->board_id,
+            fData->pileup[index],
+            fData->overflow[index],
+            fData->channel_id[index],
+            channel_trigger_time_long,
+            channel_energy,
+            crystal_id,
+            detector_id,
+            fData->wr_subsystem_id,
+            wr_t
+        );
     }
 
 
