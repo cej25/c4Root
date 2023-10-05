@@ -38,6 +38,7 @@ link_directories( ${LINK_DIRECTORIES})
 
 set(SRCS
 ./base/UcesbSource.cxx
+./base/UnpackReader.cxx
 ./base/c4Reader.cxx
 ./aida/c4AidaReader.cxx
 ./frs/FrsReader.cxx
