@@ -9,4 +9,5 @@
 #pragma link C++ class EventHeader+;
 #pragma link C++ class c4Logger+;
 
+
 #endif

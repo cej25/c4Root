@@ -25,8 +25,9 @@ GermaniumFebexData::GermaniumFebexData(
         uint8_t pileup,
         uint8_t overflow,
         uint8_t channel_id,
-        uint64_t channel_trigger_time,
+        double channel_trigger_time,
         int32_t channel_energy, // from the FEBEX manual: bit 23 denotes the sign of the energy (i.e. negative pulses?)
+        double channel_energy_cal, // from the FEBEX manual: bit 23 denotes the sign of the energy (i.e. negative pulses?)
         uint32_t crystal_id,
         uint32_t detector_id,
         uint16_t wr_subsystem_id,
@@ -41,6 +42,7 @@ GermaniumFebexData::GermaniumFebexData(
     fchannel_id(channel_id),
     fchannel_trigger_time(channel_trigger_time),
     fchannel_energy(channel_energy),
+    fchannel_energy_cal(channel_energy_cal),
     fcrystal_id(crystal_id),
     fdetector_id(detector_id),
     fwr_subsystem_id(wr_subsystem_id),
