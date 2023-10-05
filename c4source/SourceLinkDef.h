@@ -12,7 +12,7 @@
 #pragma link C++ class GermaniumReader+;
 #pragma link C++ class AidaReader+;
 #pragma link C++ class bPlastReader+;
-#pragma link C++ class c4LisaReader+;
+#pragma link C++ class LisaReader+;
 #pragma link C++ class UnpackReader+;
 
 
