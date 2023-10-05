@@ -8,6 +8,10 @@ class EventHeader : public FairEventHeader
 {
   public:
     EventHeader();
+    EventHeader(
+    uint64_t Eventno,
+    Int_t Trigger,
+    uint64_t TimeStamp);
     virtual ~EventHeader();
 
     void SetEventno(const uint64_t eventno) { fEventno = eventno; }

@@ -5,8 +5,8 @@
  * Do not edit - automatically generated.
  */
 
-#ifndef __GUARD_H101_GE_FEBEX_EXT_H101_GE_FEBEX_H__
-#define __GUARD_H101_GE_FEBEX_EXT_H101_GE_FEBEX_H__
+#ifndef __GUARD_H101_EXT_H101_GE_FEBEX_H__
+#define __GUARD_H101_EXT_H101_GE_FEBEX_H__
 
 #ifndef __CINT__
 # include <stdint.h>
@@ -87,6 +87,22 @@ typedef struct EXT_STR_h101_GE_FEBEX_t
   uint32_t channel_id14 /* [0,255] */;
   uint32_t channel_id15 /* [0,255] */;
   uint32_t channel_id16 /* [0,255] */;
+  uint32_t channel_cfd1 /* [0,255] */;
+  uint32_t channel_cfd2 /* [0,255] */;
+  uint32_t channel_cfd3 /* [0,255] */;
+  uint32_t channel_cfd4 /* [0,255] */;
+  uint32_t channel_cfd5 /* [0,255] */;
+  uint32_t channel_cfd6 /* [0,255] */;
+  uint32_t channel_cfd7 /* [0,255] */;
+  uint32_t channel_cfd8 /* [0,255] */;
+  uint32_t channel_cfd9 /* [0,255] */;
+  uint32_t channel_cfd10 /* [0,255] */;
+  uint32_t channel_cfd11 /* [0,255] */;
+  uint32_t channel_cfd12 /* [0,255] */;
+  uint32_t channel_cfd13 /* [0,255] */;
+  uint32_t channel_cfd14 /* [0,255] */;
+  uint32_t channel_cfd15 /* [0,255] */;
+  uint32_t channel_cfd16 /* [0,255] */;
   uint32_t channel_trigger_time_hi1 /* [0,65535] */;
   uint32_t channel_trigger_time_hi2 /* [0,65535] */;
   uint32_t channel_trigger_time_hi3 /* [0,65535] */;
@@ -157,6 +173,7 @@ typedef struct EXT_STR_h101_GE_FEBEX_onion_t
   uint32_t pileup[16];
   uint32_t overflow[16];
   uint32_t channel_id[16];
+  uint32_t channel_cfd[16];
   uint32_t channel_trigger_time_hi[16];
   uint32_t channel_trigger_time_lo[16];
   uint32_t channel_energy[16];
@@ -343,6 +360,54 @@ typedef struct EXT_STR_h101_GE_FEBEX_onion_t
                      channel_id16,                    UINT32,\
                     "channel_id16",255); \
   EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+                     channel_cfd1,                    UINT32,\
+                    "channel_cfd1",255); \
+  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+                     channel_cfd2,                    UINT32,\
+                    "channel_cfd2",255); \
+  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+                     channel_cfd3,                    UINT32,\
+                    "channel_cfd3",255); \
+  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+                     channel_cfd4,                    UINT32,\
+                    "channel_cfd4",255); \
+  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+                     channel_cfd5,                    UINT32,\
+                    "channel_cfd5",255); \
+  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+                     channel_cfd6,                    UINT32,\
+                    "channel_cfd6",255); \
+  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+                     channel_cfd7,                    UINT32,\
+                    "channel_cfd7",255); \
+  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+                     channel_cfd8,                    UINT32,\
+                    "channel_cfd8",255); \
+  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+                     channel_cfd9,                    UINT32,\
+                    "channel_cfd9",255); \
+  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+                     channel_cfd10,                   UINT32,\
+                    "channel_cfd10",255); \
+  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+                     channel_cfd11,                   UINT32,\
+                    "channel_cfd11",255); \
+  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+                     channel_cfd12,                   UINT32,\
+                    "channel_cfd12",255); \
+  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+                     channel_cfd13,                   UINT32,\
+                    "channel_cfd13",255); \
+  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+                     channel_cfd14,                   UINT32,\
+                    "channel_cfd14",255); \
+  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+                     channel_cfd15,                   UINT32,\
+                    "channel_cfd15",255); \
+  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+                     channel_cfd16,                   UINT32,\
+                    "channel_cfd16",255); \
+  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
                      channel_trigger_time_hi1,        UINT32,\
                     "channel_trigger_time_hi1",65535); \
   EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
@@ -510,7 +575,7 @@ typedef struct EXT_STR_h101_GE_FEBEX_layout_t
     uint32_t _xor;
     const char *_name;
   } _items[1];
-  uint32_t _pack_list[212];
+  uint32_t _pack_list[244];
 } EXT_STR_h101_GE_FEBEX_layout;
 
 #define EXT_STR_h101_GE_FEBEX_LAYOUT_INIT { \
@@ -518,10 +583,10 @@ typedef struct EXT_STR_h101_GE_FEBEX_layout_t
   sizeof(EXT_STR_h101_GE_FEBEX_layout), \
   sizeof(EXT_STR_h101_GE_FEBEX), \
   sizeof(EXT_STR_h101_GE_FEBEX_onion), \
-  212, \
+  244, \
   1, \
   { \
-    { 0, sizeof(EXT_STR_h101_GE_FEBEX), 0x8202430f, "h101_GE_FEBEX" }, \
+    { 0, sizeof(EXT_STR_h101_GE_FEBEX), 0x5102778c, "h101_GE_FEBEX" }, \
   }, \
   { \
    /*    0 */ 0x40a50000, 0x00000000, 0x40a50000, 0x00000004, \
@@ -577,9 +642,17 @@ typedef struct EXT_STR_h101_GE_FEBEX_layout_t
    /*  200 */ 0x40a50000, 0x00000190, 0x40a50000, 0x00000194, \
    /*  204 */ 0x40a50000, 0x00000198, 0x40a50000, 0x0000019c, \
    /*  208 */ 0x40a50000, 0x000001a0, 0x40a50000, 0x000001a4, \
+   /*  212 */ 0x40a50000, 0x000001a8, 0x40a50000, 0x000001ac, \
+   /*  216 */ 0x40a50000, 0x000001b0, 0x40a50000, 0x000001b4, \
+   /*  220 */ 0x40a50000, 0x000001b8, 0x40a50000, 0x000001bc, \
+   /*  224 */ 0x40a50000, 0x000001c0, 0x40a50000, 0x000001c4, \
+   /*  228 */ 0x40a50000, 0x000001c8, 0x40a50000, 0x000001cc, \
+   /*  232 */ 0x40a50000, 0x000001d0, 0x40a50000, 0x000001d4, \
+   /*  236 */ 0x40a50000, 0x000001d8, 0x40a50000, 0x000001dc, \
+   /*  240 */ 0x40a50000, 0x000001e0, 0x40a50000, 0x000001e4, \
   } \
 };
 
-#endif/*__GUARD_h101_GE_FEBEX_EXT_h101_GE_FEBEX_H__*/
+#endif/*__GUARD_h101_GE_FEBEX_EXT_h101_GE_FEBEX_GE_FEBEX_H__*/
 
 /*******************************************************/

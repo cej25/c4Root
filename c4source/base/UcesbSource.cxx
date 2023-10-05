@@ -230,12 +230,15 @@ Int_t UcesbSource::ReadEvent(UInt_t i)
             {
                 fRunId = ReadIntFromString(buffer, "RUNID");
                 fEventHeader->SetRunId(fRunId);
+                
             }
-            if (buffer.find("EVENT") == 0)
+            if (buffer.find("EVENT") == 0){
                 continue;
+            }
             Int_t fInit = atoi(buffer.c_str());
             buffer.erase(0, buffer.find(' ') + 1);
             fEntryMax = atoi(buffer.c_str());
+
 
         } while (fInputFile && buffer.compare("EVENT END"));
     }
@@ -349,6 +352,9 @@ Bool_t UcesbSource::SpecifyRunId()
 }
 
 //_____________________________________________________________________________
-void UcesbSource::FillEventHeader(EventHeader* feh) { ((EventHeader*)feh)->SetRunId(fRunId); }
+
+void UcesbSource::FillEventHeader(EventHeader* feh) { 
+    ((EventHeader*)feh)->SetRunId(fRunId);
+    }
 
 ClassImp(UcesbSource);
