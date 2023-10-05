@@ -42,10 +42,27 @@ class BeamMonitorOnlineSpectra : public FairTask
         Int_t fNEvents;
 
         // Canvas
-        TCanvas* cSpills; // channel 1 out of 28 for now?
+        TCanvas* cS4tdiff; // channel 1 out of 28 for now?
+        //temporary!!       
+        TCanvas* ct1;
+        TCanvas* cQF;
+        TCanvas* cNormDiff;
+        TCanvas* cPoisson;
+        TCanvas* cCum;
+        TCanvas* cCumPoisson;
+        TCanvas* cDev; 
 
         // Histograms
-        TH1F* fh1_Spills;
+        TH1F* fh1_S4tdiff;
+        // temporary!!!!!!
+        TH1F* hbm_s4h_t1;
+        TH1F* fh1_S4_QF;
+        TH1F* hBM_s4h_c;
+        TH1F* hBM_s4h_cp;
+        TH1F* hBM_s4h_dc;
+        TH1F* hBM_s4h_poisson;
+        TH1F* hBM_s4h_norm_tdiff;
+
 
     public:
         ClassDef(BeamMonitorOnlineSpectra, 1)
