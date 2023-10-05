@@ -32,9 +32,17 @@ class GermaniumRaw2Cal : public FairTask
     private:
         void SetParameter();
 
+        GermaniumFebexData* funcal_hit;
+        GermaniumFebexCalData* funcal_hit;
+
+        EventHeader * header;
+        Int_t fNEvents;
+
         // stuff for Germaniums
         Int_t fNumCrystals;
         Int_t fNumDets;
+
+        double *** calibration_coefficients; // [detector_id][cluster_id][a0,a1,a2...]
 
         // private Calibration Data method
 
