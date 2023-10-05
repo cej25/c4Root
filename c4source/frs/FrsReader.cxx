@@ -54,8 +54,23 @@ Bool_t FrsReader::Init(ext_data_struct_info* a_struct_info)
 Bool_t FrsReader::Read()
 {
     c4LOG(debug1, "Event data");
-    
 
+    int chan, lot;
+    UInt_t data;
+    for (int i = 0; i < fData->frs_main_crate_v1290_n; i++)
+    {
+        chan = fData->frs_main_crate_v1290_channelv[i];
+        lot = fData->frs_main_crate_v1290_leadOrTrailv[i];
+        data = fData->frs_main_crate_v1290_data[i];
+        
+        new ((*fArray)[fArray->GetEntriesFast()]) FrsData(data,
+                                                          chan,
+                                                          lot);
+
+
+    }
+
+/*
     for (int sc = 0; sc < 32; sc++)
     {
         new ((*fArray)[fArray->GetEntriesFast()]) FrsData(sc,
@@ -65,6 +80,7 @@ Bool_t FrsReader::Read()
                                                           
     
     }
+*/
     fNEvent += 1;
     return kTRUE;
 
