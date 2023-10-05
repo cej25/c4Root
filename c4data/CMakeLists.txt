@@ -23,6 +23,7 @@ lisaData/c4LisaData.cxx
 lisaData/c4LisaTraceData.cxx
 aidaData/AidaData.cxx
 germaniumData/GermaniumFebexData.cxx
+bplastData/bPlastTamexData.cxx
 )
 
 # fill list of header files from list of source files by exchanging the file extension
