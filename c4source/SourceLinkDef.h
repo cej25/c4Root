@@ -24,6 +24,7 @@
 #pragma link C++ class EXT_STR_h101_LISA_onion_t;
 #pragma link C++ class EXT_STR_h101_aida_onion_t;
 #pragma link C++ class EXT_STR_h101_BPLAST_onion_t;
+#pragma link C++ class EXT_STR_h101_BM_onion_t;
 
 
 #endif

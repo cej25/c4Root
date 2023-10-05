@@ -1,18 +1,16 @@
 #include "FrsData.h"
 
 FrsData::FrsData()
-    : iScFrs(0)
-    , fScFrs(0)
-    , iScMain(0)
-    , fScMain(0)
+    : tdcData(0)
+    , channel(0)
+    , leadOrTrail(0)
 {
 }
 
-FrsData::FrsData(int sc1, UInt_t ScFrs, int sc2, UInt_t ScMain)
-    : iScFrs(sc1)
-    , fScFrs(ScFrs)
-    , iScMain(sc2)
-    , fScMain(ScMain)
+FrsData::FrsData(UInt_t tdc, int chan, int lot)
+    : tdcData(tdc) // v1290
+    , channel(chan)
+    , leadOrTrail(lot)
 {
 }
 

@@ -28,9 +28,6 @@ typedef          int  int32_t;
 
 typedef struct EXT_STR_h101_BPLAST_t
 {
-  /* INFO */
-  uint32_t TRIGGER /* [0,15] */;
-  uint32_t EVENTNO /* [-1,-1] */;
   /* RAW */
   uint32_t bPlastPMTLead1_1_1 /* [-1,-1] */;
   uint32_t bPlastPMTLead1_1_2 /* [-1,-1] */;
@@ -6443,9 +6440,6 @@ typedef struct EXT_STR_h101_BPLAST_t
 
 typedef struct EXT_STR_h101_BPLAST_onion_t
 {
-  /* INFO */
-  uint32_t TRIGGER;
-  uint32_t EVENTNO;
   /* RAW */
   struct {
     struct {
@@ -6459,13 +6453,6 @@ typedef struct EXT_STR_h101_BPLAST_onion_t
 
 #define EXT_STR_h101_BPLAST_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
   ok = 1; \
-  /* INFO */ \
-  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
-                     TRIGGER,                         UINT32,\
-                    "TRIGGER",15); \
-  EXT_STR_ITEM_INFO    (ok,si,offset,struct_t,printerr,\
-                     EVENTNO,                         UINT32,\
-                    "EVENTNO"); \
   /* RAW */ \
   EXT_STR_ITEM_INFO    (ok,si,offset,struct_t,printerr,\
                      bPlastPMTLead1_1_1,              UINT32,\
@@ -25691,7 +25678,7 @@ typedef struct EXT_STR_h101_BPLAST_layout_t
     uint32_t _xor;
     const char *_name;
   } _items[1];
-  uint32_t _pack_list[12804];
+  uint32_t _pack_list[12800];
 } EXT_STR_h101_BPLAST_layout;
 
 #define EXT_STR_h101_BPLAST_LAYOUT_INIT { \
@@ -25699,13 +25686,13 @@ typedef struct EXT_STR_h101_BPLAST_layout_t
   sizeof(EXT_STR_h101_BPLAST_layout), \
   sizeof(EXT_STR_h101_BPLAST), \
   sizeof(EXT_STR_h101_BPLAST_onion), \
-  12804, \
+  12800, \
   1, \
   { \
-    { 0, sizeof(EXT_STR_h101_BPLAST), 0x920e71ae, "h101" }, \
+    { 0, sizeof(EXT_STR_h101_BPLAST), 0x12e46fa6, "h101" }, \
   }, \
   { \
-   /*    0 */ 0x40a52000, 0x00000000, 0x40a52000, 0x00000004, \
+   /*    0 */ 0x40a50000, 0x00000000, 0x40a50000, 0x00000004, \
    /*    4 */ 0x40a50000, 0x00000008, 0x40a50000, 0x0000000c, \
    /*    8 */ 0x40a50000, 0x00000010, 0x40a50000, 0x00000014, \
    /*   12 */ 0x40a50000, 0x00000018, 0x40a50000, 0x0000001c, \
@@ -28905,7 +28892,6 @@ typedef struct EXT_STR_h101_BPLAST_layout_t
    /* 12788 */ 0x40a50000, 0x000063e8, 0x40a50000, 0x000063ec, \
    /* 12792 */ 0x40a50000, 0x000063f0, 0x40a50000, 0x000063f4, \
    /* 12796 */ 0x40a50000, 0x000063f8, 0x40a50000, 0x000063fc, \
-   /* 12800 */ 0x40a50000, 0x00006400, 0x40a50000, 0x00006404, \
   } \
 };
 
