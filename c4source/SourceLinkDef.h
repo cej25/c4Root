@@ -14,6 +14,7 @@
 #pragma link C++ class bPlastReader+;
 #pragma link C++ class LisaReader+;
 #pragma link C++ class UnpackReader+;
+#pragma link C++ class BeamMonitorReader+;
 
 
 
