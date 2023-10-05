@@ -8,6 +8,7 @@
 
 #pragma link C++ class FrsData+;
 #pragma link C++ class GermaniumFebexData+;
+#pragma link C++ class bPlastTamexData+;
 #pragma link C++ class c4LisaData+;
 #pragma link C++ class c4LisaTraceData+;
 

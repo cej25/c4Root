@@ -44,6 +44,7 @@ set(SRCS
 ./frs/FrsReader.cxx
 ./germanium/GermaniumReader.cxx
 ./lisa/c4LisaReader.cxx
+./bplast/bPlastReader.cxx
 )
 
 Set(STRUCT_HEADERS
@@ -52,6 +53,7 @@ Set(STRUCT_HEADERS
 ./frs/ext_h101_frs.h
 ./lisa/ext_h101_lisa.h
 ./germanium/ext_h101_ge_febex.h
+./bplast/ext_h101_bplast.h
 )
 
 # fill list of header files from list of source files
