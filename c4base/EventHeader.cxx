@@ -8,6 +8,14 @@ EventHeader::EventHeader()
 {
 }
 
+EventHeader::EventHeader(uint64_t Eventno, Int_t Trigger, uint64_t TimeStamp)
+    : FairEventHeader()
+    , fEventno(Eventno)
+    , fTrigger(Trigger)
+    , fTimeStamp(TimeStamp)
+{
+}
+
 EventHeader::~EventHeader() {}
 
 void EventHeader::Register(Bool_t Persistence) {}
