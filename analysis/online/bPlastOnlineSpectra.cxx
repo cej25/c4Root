@@ -70,7 +70,7 @@ InitStatus bPlastOnlineSpectra::Init()
     Name1 = "fh1_Lead_Time";
     Name2 = "bPlast: Lead Time";
 
-    fh1_LeadTime = new TH1F(Name1, Name2, 2500, 0, 2000); // no idea
+    fh1_LeadTime = new TH1F(Name1, Name2, 2500, 0, 2000);
     fh1_LeadTime->GetXaxis()->SetTitle("Lead Time");
     fh1_LeadTime->GetYaxis()->SetTitle("Counts");
     fh1_LeadTime->GetYaxis()->SetTitleOffset(1.15);

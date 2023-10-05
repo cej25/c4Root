@@ -8,24 +8,27 @@ class FrsData : public TObject
         // Default Constructor
         FrsData();
 
-        FrsData(int sc1, UInt_t ScFrs, int sc2, UInt_t ScMain);
+        FrsData(UInt_t tdc, int chan, int lot);
 
         // Destructor
         virtual ~FrsData() {}
 
         // Getters
-        inline const UInt_t GetScFrs() const { return fScFrs; }
-        inline const UInt_t GetScMain() const { return fScMain; }
+        inline const UInt_t GetTdcData() const { return tdcData; }
+        inline const int GetChan() const { return channel; }
+        inline const int GetLot() const { return leadOrTrail; }
        
         // Setters
-        void SetScFrs(UInt_t v) { fScFrs = v; }
-        void SetScMain(UInt_t v) { fScMain = v; }
+        void SetTdcData(UInt_t v) { tdcData = v; }
+        void SetChan(int v) { channel = v; }
+        void SetLot(int v) { leadOrTrail = v; }
 
 
 
     protected:
-        int iScFrs, iScMain;
-        UInt_t fScFrs, fScMain;
+        UInt_t tdcData;
+        int channel, leadOrTrail;
+
 
 
     public:
