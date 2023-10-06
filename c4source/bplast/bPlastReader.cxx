@@ -62,16 +62,12 @@ Bool_t bPlastReader::Read()
         {       
             // BPLAST_TAMEX_HITS
             for (int hit = 0; hit < 100; hit++)
-            {
-                /*if (fData->bPlastPMTLead[det]._[chan]._[hit] != 0)
-                {   
-                    std::cout << "not zero bPlastReader: det - " << det << " - chan - " << chan << std::endl;
-                    std::cout << fData->bPlastPMTLead[det]._[chan]._[hit] << std::endl;
-                }*/
-               
+            {  
                 new ((*fArray)[fArray->GetEntriesFast()]) bPlastTamexData(det,
                                                                       chan,
-                                                                      fData->bPlastPMTLead[det]._[chan]._[hit]);
+                                                                      fData->plastic_crate[0].card[det].channel[chan].lead_T[hit],
+                                                                      fData->plastic_crate[0].card[det].channel[chan].trail_T[hit],
+                                                                      fData->plastic_crate[0].card[det].channel[chan].ToT[hit]);
             }
 
         }
