@@ -37,6 +37,8 @@ class AidaReader : public c4Reader
 
         // Data to register here
         std::vector<AidaUnpackAdcItem>* adcArray;
+        std::vector<AidaUnpackFlowItem>* flowArray;
+        std::vector<AidaUnpackScalerItem>* scalerArray;
     
     public:
         ClassDefOverride(AidaReader, 0);

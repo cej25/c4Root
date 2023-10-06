@@ -40,6 +40,7 @@ set(SRCS
 ./base/UcesbSource.cxx
 ./base/c4Reader.cxx
 ./aida/c4AidaReader.cxx
+./aida/TAidaConfiguration.cxx
 ./frs/FrsReader.cxx
 ./germanium/GermaniumReader.cxx
 ./lisa/c4LisaReader.cxx
