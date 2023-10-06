@@ -6,6 +6,7 @@
 
 // c4
 #include "AidaData.h"
+#include "TAidaConfiguration.h"
 #include "c4Logger.h"
 
 // ucesb
@@ -23,17 +24,22 @@ AidaReader::AidaReader(EXT_STR_h101_aida_onion* data, size_t offset)
       fData(data),
       fOffset(offset),
       fOnline(false),
-      adcArray(new std::vector<AidaUnpackAdcItem>)
+      adcArray(new std::vector<AidaUnpackAdcItem>),
+      flowArray(new std::vector<AidaUnpackFlowItem>),
+      scalerArray(new std::vector<AidaUnpackScalerItem>)
 {
 }
 
 AidaReader::~AidaReader()
 {
     delete adcArray;
+    delete flowArray;
+    delete scalerArray;
 }
 
 Bool_t AidaReader::Init(ext_data_struct_info* a_struct_info)
 {
+    c4LOG(info, "");
     Int_t ok;
     EXT_STR_h101_AIDA_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_aida, 0);
 
@@ -45,14 +51,24 @@ Bool_t AidaReader::Init(ext_data_struct_info* a_struct_info)
 
     // Register vector(?) of data here
     FairRootManager::Instance()->RegisterAny("AidaAdcData", adcArray, !fOnline);
-    
+    FairRootManager::Instance()->RegisterAny("AidaFlowData", flowArray, !fOnline);
+    FairRootManager::Instance()->RegisterAny("AidaScalerData", scalerArray, !fOnline);
+
+    // Create the config
+    TAidaConfiguration::GetInstance();
+
     return kTRUE;
 }
 
 Bool_t AidaReader::Read()
 {
     // fData is valid here, shove it into the vector
-    //
+    // Clean vectors
+    adcArray->clear();
+    flowArray->clear();
+    scalerArray->clear();
+
+    // ADC items
     for (size_t i = 0; i < fData->aida_data_adc; i++)
     {
         auto& entry = adcArray->emplace_back();
@@ -61,6 +77,27 @@ Bool_t AidaReader::Read()
         uint64_t ft = fData->aida_data_adc_timestamp_fast_lo[i] | ((uint64_t)fData->aida_data_adc_timestamp_fast_hi[i] << 32);
         entry.SetAll(rt, st, ft, fData->aida_data_adc_fee[i], fData->aida_data_adc_channel[i], fData->aida_data_adc_range[i], fData->aida_data_adcv[i]);
     }
+
+    // Flow items
+    for (size_t i = 0; i < fData->aida_data_flow; i++)
+    {
+        auto& entry = flowArray->emplace_back();
+        uint64_t t = fData->aida_data_flow_timestamp_lo[i] | ((uint64_t)fData->aida_data_flow_timestamp_hi[i] << 32);
+        int f = fData->aida_data_flow_fee[i];
+        bool p = fData->aida_data_flow_paused[i] != 0;
+        entry.SetAll(t, f, p);
+    }
+
+    // Scaler items
+    for (size_t i = 0; i < fData->aida_data_scaler; i++)
+    {
+        auto& entry = scalerArray->emplace_back();
+        uint64_t t = fData->aida_data_scaler_timestamp_lo[i] | ((uint64_t)fData->aida_data_scaler_timestamp_hi[i] << 32);
+        int f = fData->aida_data_scaler_fee[i];
+        uint64_t v = fData->aida_data_scaler_value_lo[i] | ((uint64_t)fData->aida_data_scaler_value_hi[i] << 32);
+        entry.SetAll(t, v, f);
+    }
+
     return kTRUE;
 }
 
