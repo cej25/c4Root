@@ -77,6 +77,17 @@ InitStatus FrsOnlineSpectra::Init()
     TString Name1;
     TString Name2;
 
+    cTdcRaw = new TCanvas("TdcRaw", "TDC Raw Data", 10, 10, 800, 700);
+    fh1_TdcRaw = new TH1F("fh1_TdcRaw", "TDC Raw Data", 20, 0, 1e5);
+    fh1_TdcRaw->GetXaxis()->SetTitle("TDC Raw");
+    fh1_TdcRaw->Draw();
+    
+    cTdcChan = new TCanvas("TdcChan", "TDC Channel", 10, 10, 800, 700);
+    fh1_TdcChan = new TH1F("fh1_TdcChan", "TDC Channel", 32, 0, 32);
+    fh1_TdcChan->GetXaxis()->SetTitle("Channel");
+    fh1_TdcChan->Draw();
+
+    /*
     cZvsAoQ = new TCanvas("ZvsAoQ", "Z vs. AoQ", 10, 10, 800, 700);
 
     Name1 = "fh2_ZvsAoQ";
@@ -92,67 +103,17 @@ InitStatus FrsOnlineSpectra::Init()
     fh2_ZvsAoQ->GetXaxis()->SetTitleSize(0.045);
     fh2_ZvsAoQ->GetYaxis()->SetLabelSize(0.045);
     fh2_ZvsAoQ->GetYaxis()->SetTitleSize(0.045);
-    fh2_ZvsAoQ->Draw("colz");
+    fh2_ZvsAoQ->Draw("colz")
+    */
 
-    cZvsAoQCorr = new TCanvas("ZvsAoQCorr", "Z vs. AoQCorr", 10, 10, 800, 700);
-
-    Name1 = "fh2_ZvsAoQCorr";
-    Name2 = "FRS: Z vs AoQCorr";
-
-    fh2_ZvsAoQCorr = new TH2F(Name1, Name2, 1000, fMin_AoQ, fMax_AoQ, 1000, fMin_Z, fMax_Z);
-    fh2_ZvsAoQCorr->GetXaxis()->SetTitle("AoQCorr");
-    fh2_ZvsAoQCorr->GetYaxis()->SetTitle("Z");
-    fh2_ZvsAoQCorr->GetYaxis()->SetTitleOffset(1.1);
-    fh2_ZvsAoQCorr->GetXaxis()->CenterTitle(true);
-    fh2_ZvsAoQCorr->GetYaxis()->CenterTitle(true);
-    fh2_ZvsAoQCorr->GetXaxis()->SetLabelSize(0.045);
-    fh2_ZvsAoQCorr->GetXaxis()->SetTitleSize(0.045);
-    fh2_ZvsAoQCorr->GetYaxis()->SetLabelSize(0.045);
-    fh2_ZvsAoQCorr->GetYaxis()->SetTitleSize(0.045);
-    fh2_ZvsAoQCorr->Draw("colz");
-
-    cX4vsAoQ = new TCanvas("x4vsAoQ", "x4 vs. AoQ", 10, 10, 800, 700);
-
-    Name1 = "fh2_x4vsAoQ";
-    Name2 = "FRS: x4 vs AoQ";
-
-    fh2_x4vsAoQ = new TH2F(Name1, Name2, 1000, fMin_AoQ, fMax_AoQ, 200, fMin_x4, fMax_x4);
-    fh2_x4vsAoQ->GetXaxis()->SetTitle("AoQ");
-    fh2_x4vsAoQ->GetYaxis()->SetTitle("x4");
-    fh2_x4vsAoQ->GetYaxis()->SetTitleOffset(1.1);
-    fh2_x4vsAoQ->GetXaxis()->CenterTitle(true);
-    fh2_x4vsAoQ->GetYaxis()->CenterTitle(true);
-    fh2_x4vsAoQ->GetXaxis()->SetLabelSize(0.045);
-    fh2_x4vsAoQ->GetXaxis()->SetTitleSize(0.045);
-    fh2_x4vsAoQ->GetYaxis()->SetLabelSize(0.045);
-    fh2_x4vsAoQ->GetYaxis()->SetTitleSize(0.045);
-    fh2_x4vsAoQ->Draw("colz");
-
-    cX4vsAoQCorr = new TCanvas("x4vsAoQCorr", "x4 vs. AoQCorr", 10, 10, 800, 700);
-
-    Name1 = "fh2_x4vsAoQCorr";
-    Name2 = "FRS: x4 vs AoQCorr";
-
-    fh2_x4vsAoQCorr = new TH2F(Name1, Name2, 1000, fMin_AoQ, fMax_AoQ, 200, fMin_x4, fMax_x4);
-    fh2_x4vsAoQCorr->GetXaxis()->SetTitle("AoQ");
-    fh2_x4vsAoQCorr->GetYaxis()->SetTitle("x4");
-    fh2_x4vsAoQCorr->GetYaxis()->SetTitleOffset(1.1);
-    fh2_x4vsAoQCorr->GetXaxis()->CenterTitle(true);
-    fh2_x4vsAoQCorr->GetYaxis()->CenterTitle(true);
-    fh2_x4vsAoQCorr->GetXaxis()->SetLabelSize(0.045);
-    fh2_x4vsAoQCorr->GetXaxis()->SetTitleSize(0.045);
-    fh2_x4vsAoQCorr->GetYaxis()->SetLabelSize(0.045);
-    fh2_x4vsAoQCorr->GetYaxis()->SetTitleSize(0.045);
-    fh2_x4vsAoQCorr->Draw("colz");
+   
 
     
     // MAIN FOLDER-INCOMINGID
-    TFolder* mainfol = new TFolder("FRS-IncomingID", "FRS incomingID info");
-    mainfol->Add(cZvsAoQ);
-    mainfol->Add(cX4vsAoQ);
-    mainfol->Add(cZvsAoQCorr);
-    mainfol->Add(cX4vsAoQCorr);
-    run->AddObject(mainfol);
+    TFolder* frsfol = new TFolder("FRS-IncomingID", "FRS incomingID info");
+    frsfol->Add(cTdcRaw);
+    frsfol->Add(cTdcChan);
+    run->AddObject(frsfol);
 
     // Register command to reset histograms
     run->GetHttpServer()->RegisterCommand("Reset_IncomingID_HIST", Form("/Objects/%s/->Reset_Histo()", GetName()));
@@ -164,16 +125,14 @@ InitStatus FrsOnlineSpectra::Init()
 void FrsOnlineSpectra::Reset_Histo()
 {
     c4LOG(info, "");
-    fh2_ZvsAoQ->Reset();
-    fh2_x4vsAoQ->Reset();
-    fh2_ZvsAoQCorr->Reset();
-    fh2_x4vsAoQCorr->Reset();
+    fh1_TdcRaw->Clear();
+    fh1_TdcChan->Clear();
 }
 
 void FrsOnlineSpectra::Exec(Option_t* option)
 {
-    Float_t a2AoQCorr = 0.0012;
-    Float_t AoQCorr; // CEJ: handle in calData or hitData !! 
+   // Float_t a2AoQCorr = 0.0012;
+   // Float_t AoQCorr; // CEJ: handle in calData or hitData !! 
  
     // Fill hit data
     if (fHitFrs && fHitFrs->GetEntriesFast() > 0)
@@ -184,12 +143,16 @@ void FrsOnlineSpectra::Exec(Option_t* option)
             FrsData* hit = (FrsData*)fHitFrs->At(ihit);
             if (!hit)
                 continue;
-            fh2_ZvsAoQ->Fill(hit->GetAoQ(), hit->GetZ());
+
+            fh1_TdcRaw->Fill(hit->GetTdcData());
+            fh1_TdcChan->Fill(hit->GetChan());
+
+            /*fh2_ZvsAoQ->Fill(hit->GetAoQ(), hit->GetZ());
             fh2_x4vsAoQ->Fill(hit->GetAoQ(), hit->GetX4());
             
             AoQCorr = hit->GetAoQ() - a2AoQCorr * hit->GetA2();
             fh2_ZvsAoQCorr->Fill(AoQCorr, hit->GetZ());
-            fh2_x4vsAoQCorr->Fill(AoQCorr, hit->GetX4());
+            fh2_x4vsAoQCorr->Fill(AoQCorr, hit->GetX4());*/
         }
     }
 
@@ -207,11 +170,13 @@ void FrsOnlineSpectra::FinishEvent()
 void FrsOnlineSpectra::FinishTask()
 {
     if (fHitFrs)
-    {
-        cZvsAoQ->Write();
+    {   
+        cTdcRaw->Write();
+        cTdcChan->Write();
+        /*cZvsAoQ->Write();
         cX4vsAoQ->Write();
         cZvsAoQCorr->Write();
-        cX4vsAoQCorr->Write();
+        cX4vsAoQCorr->Write();*/
     }
 }
 

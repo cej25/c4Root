@@ -21,8 +21,12 @@
  * This structure is produced using ucesb in the following way:
  * ./ucesb --ntuple=RAW,STRUCT_HH,ext_h101.h
  * */
+
+
 struct EXT_STR_h101_t;
 typedef struct EXT_STR_h101_t EXT_STR_h101;
+
+
 
 class EventHeader; // ?
 

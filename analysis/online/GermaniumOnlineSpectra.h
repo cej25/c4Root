@@ -44,10 +44,15 @@ class GermaniumOnlineSpectra : public FairTask
         // Canvas
         TCanvas* cSumTime; // channel 1 out of 28 for now?
         TCanvas* cEnergySpectraTest;
+        TCanvas* cEnergySpectra;
+        TCanvas* cCalEnergySpectra;
 
         // Histograms
         TH1F* fh1_SumTime;
         TH1F* fh1_EnergySpectraTest;
+
+        TH2F* fh2_EnergySpectra;
+        TH2F* fh2_CalEnergySpectra;
 
     public:
         ClassDef(GermaniumOnlineSpectra, 1)
