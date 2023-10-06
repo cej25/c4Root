@@ -68,16 +68,16 @@ class FrsOnlineSpectra : public FairTask
         Int_t fNEvents;
 
         // Canvas
-        TCanvas* cZvsAoQ;
+        /*TCanvas* cZvsAoQ;
         TCanvas* cX4vsAoQ;
         TCanvas* cZvsAoQCorr;
-        TCanvas* cX4vsAoQCorr;
+        TCanvas* cX4vsAoQCorr;*/
+        TCanvas* cTdcRaw;
+        TCanvas* cTdcChan;
 
         // Histograms for Hit data
-        TH2F* fh2_ZvsAoQ;
-        TH2F* fh2_x4vsAoQ;
-        TH2F* fh2_ZvsAoQCorr;
-        TH2F* fh2_x4vsAoQCorr;
+        TH1F* fh1_TdcRaw;
+        TH1F* fh1_TdcChan;
     
     public:
         ClassDef(FrsOnlineSpectra, 1)

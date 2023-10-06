@@ -8,6 +8,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/aidaData
 ${C4ROOT_SOURCE_DIR}/c4data/fatimaData
 ${C4ROOT_SOURCE_DIR}/c4data/bplastData
 ${C4ROOT_SOURCE_DIR}/c4data/germaniumData
+${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
 )
 
 include_directories(${INCLUDE_DIRECTORIES})
@@ -19,10 +20,12 @@ link_directories(${LINK_DIRECTORIES})
 
 set(SRCS
 frsData/FrsData.cxx
-lisaData/c4LisaData.cxx
-lisaData/c4LisaTraceData.cxx
+lisaData/LisaData.cxx
+lisaData/LisaTraceData.cxx
 aidaData/AidaData.cxx
 germaniumData/GermaniumFebexData.cxx
+bplastData/bPlastTamexData.cxx
+beammonitorData/BeamMonitorData.cxx
 )
 
 # fill list of header files from list of source files by exchanging the file extension

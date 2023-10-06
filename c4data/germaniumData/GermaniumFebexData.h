@@ -9,68 +9,80 @@ class GermaniumFebexData : public TObject
         // Default Constructor
         GermaniumFebexData();
 
-        GermaniumFebexData(Int_t GeFired,
-                             uint32_t sumTimeLo,
-                             uint32_t sumTimeHi,
-                             uint32_t hitPattern,
-                             uint32_t chanEnergy,
-                             uint32_t chanTimeLo,
-                             uint32_t chanTimeHi,
-                             uint32_t chanCFLo,
-                             uint32_t chanCFHi,
-                             uint32_t pileup,
-                             uint32_t overflow,
-                             uint32_t detIds,
-                             uint32_t crystalIds);
+        GermaniumFebexData(  uint32_t num_channels_fired,
+                             uint64_t event_trigger_time,
+                             uint16_t hit_pattern,
+                             uint8_t board_id,
+                             uint8_t pileup,
+                             uint8_t overflow,
+                             uint8_t channel_id,
+                             double channel_trigger_time,
+                             int32_t channel_energy,
+                             double channel_energy_cal,
+                             uint32_t crystal_id,
+                             uint32_t detector_id,
+
+                             //whiterabbit timestamps:
+                             uint16_t wr_subsystem_id,
+                             uint64_t wr_t
+                             );
 
         // Destructor
         virtual ~GermaniumFebexData() {};
 
         // Getters
-        inline const Int_t GetGeFired() const { return fGeFired; }
-        inline const uint32_t GetSumTimeLo() const { return fSumTimeLo; }
-        inline const uint32_t GetSumTimeHi() const { return fSumTimeHi; }
-        inline const uint32_t GetHitPattern() const { return fHitPattern; }
-        inline const uint32_t GetChanEnergy() const { return fChanEnergy; }
-        inline const uint32_t GetChanTimeLo() const { return fChanTimeLo; }
-        inline const uint32_t GetChanTimeHi() const { return fChanTimeHi; }
-        inline const uint32_t GetChanCFLo() const { return fChanCFLo; }
-        inline const uint32_t GetChanCFHi() const { return fChanCFHi; }
-        inline const uint32_t GetPileup() const { return fPileup; }
-        inline const uint32_t GetOverflow() const { return fOverflow; }
-        inline const uint32_t GetDetIds() const { return fDetIds; }
-        inline const uint32_t GetCrystalIds() const { return fCrystalIds; }
+        inline const uint32_t Get_num_channels_fired() const { return fnum_channels_fired; }
+        inline const uint64_t Get_event_trigger_time() const { return fevent_trigger_time; }
+        inline const uint16_t Get_hit_pattern() const { return fhit_pattern; }
+        inline const uint8_t Get_board_id() const { return fboard_id; }
+        inline const uint8_t Get_pileup() const { return fpileup; }
+        inline const uint8_t Get_overflow() const { return foverflow; }
+        inline const uint8_t Get_channel_id() const { return fchannel_id; }
+        inline const double Get_channel_trigger_time() const { return fchannel_trigger_time; }
+        inline const int32_t Get_channel_energy() const { return fchannel_energy; }
+        inline const double Get_channel_energy_cal() const { return fchannel_energy_cal; }
+        inline const uint32_t Get_crystal_id() const { return fcrystal_id; }
+        inline const uint32_t Get_detector_id() const { return fdetector_id; }
+        inline const uint16_t Get_wr_subsystem_id() const { return fwr_subsystem_id; }
+        inline const uint64_t Get_wr_t() const { return fwr_t; }
+
+
 
         // Setters
-        void SetGeFired(Int_t v) { fGeFired = v;}
-        void SetSumTimeLo(uint32_t v) { fSumTimeLo = v; }
-        void SetSumTimeHi(uint32_t v) { fSumTimeHi = v; }
-        void SetHitPattern(uint32_t v) { fHitPattern = v; }
-        void SetChanEnergy(uint32_t v) { fChanEnergy = v; }
-        void SetChanTimeLo(uint32_t v) { fChanTimeLo = v; }
-        void SetChanTimeHi(uint32_t v) { fChanTimeHi = v; }
-        void SetChanCFLo(uint32_t v) { fChanCFLo = v; }
-        void SetChanCFHi(uint32_t v) { fChanCFHi = v; }
-        void SetPileup(uint32_t v) { fPileup = v; }
-        void SetOverflow(uint32_t v) { fOverflow = v; }
-        void SetDetIds(uint32_t v) { fDetIds = v; }
-        void SetCrystalIds(uint32_t v) { fCrystalIds = v; }
+        void Set_num_channels_fired(uint32_t v) { fnum_channels_fired = v; }
+        void Set_event_trigger_time(uint64_t v) { fevent_trigger_time = v; }
+        void Set_hit_pattern(uint16_t v) { fhit_pattern = v; }
+        void Set_board_id(uint8_t v) { fboard_id = v; }
+        void Set_pileup(uint8_t v) { fpileup = v; }
+        void Set_overflow(uint8_t v) { foverflow = v; }
+        void Set_channel_id(uint8_t v) { fchannel_id = v; }
+        void Set_channel_trigger_time(double v) { fchannel_trigger_time = v; }
+        void Set_channel_energy(int32_t v) { fchannel_energy = v; }
+        void Set_channel_energy_cal(double v) { fchannel_energy_cal = v; }
+        void Set_crystal_id(uint32_t v) { fcrystal_id = v; }
+        void Set_detector_id(uint32_t v) { fdetector_id = v; }
+        void Set_wr_subsystem_id(uint32_t v) { fwr_subsystem_id = v; }
+        void Set_wr_t(uint64_t v) { fwr_t = v; }
 
     protected:
         // Data items
-        Int_t fGeFired;
-        uint32_t fSumTimeLo;
-        uint32_t fSumTimeHi;
-        uint32_t fHitPattern;
-        uint32_t fChanEnergy;
-        uint32_t fChanTimeLo;
-        uint32_t fChanTimeHi;
-        uint32_t fChanCFLo;
-        uint32_t fChanCFHi;
-        uint32_t fPileup;
-        uint32_t fOverflow;
-        uint32_t fDetIds;
-        uint32_t fCrystalIds;
+        
+        uint32_t fnum_channels_fired;
+        uint64_t fevent_trigger_time;
+        uint16_t fhit_pattern;
+        uint8_t fboard_id;
+        uint8_t fpileup;
+        uint8_t foverflow;
+        uint8_t fchannel_id;
+        double fchannel_trigger_time;
+        int32_t fchannel_energy;
+        double fchannel_energy_cal;
+        uint32_t fcrystal_id;
+        uint32_t fdetector_id;
+
+        //whiterabbit
+        uint32_t fwr_subsystem_id;
+        uint32_t fwr_t;
     
 
     public:
