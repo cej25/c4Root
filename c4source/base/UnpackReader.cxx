@@ -75,6 +75,7 @@ Bool_t UnpackReader::Read()
     {
         fHeader->SetTrigger(fData->TRIGGER);
         //fHeader->SetEventno(fNEvent++);
+        fNEvent++;
         fHeader->SetEventno(fData->EVENTNO);
     }
 
