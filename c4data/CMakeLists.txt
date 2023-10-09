@@ -23,6 +23,7 @@ frsData/FrsData.cxx
 lisaData/LisaData.cxx
 lisaData/LisaTraceData.cxx
 aidaData/AidaData.cxx
+aidaData/AidaCalData.cxx
 germaniumData/GermaniumFebexData.cxx
 bplastData/bPlastTamexData.cxx
 beammonitorData/BeamMonitorData.cxx
