@@ -370,32 +370,30 @@ void TAidaConfiguration::ReadConfiguration(std::string path)
     ignorembsts = false;
   }
 
-  std::cout << "/////////////////////////////////////////////////////" << std::endl;
-  std::cout << "AIDA Configuration: " << fees << " FEEs, " << dssds << " DSSDs, "
-    << scalers.size() << " Scalers" << std::endl;
+  LOG(info) << "AIDA Configuration: " << fees << " FEEs, " << dssds << " DSSDs, "
+    << scalers.size() << " Scalers";
 
-  std::cout << "AIDA Options: ";
-  if (ignorembsts) std::cout << "NoMBS ";
-  else std::cout << "MBS ";
-  if (wide) std::cout << "wide ";
-  if (useucesb) std::cout << "ucesb ";
-  if (stats) std::cout << "stats ";
-  std::cout << std::endl;
-  if (useucesb && ucesbshift) std::cout << "ucesb Timestamps are shifted by " << ucesbshift << " ns" << std::endl;
+  std::stringstream opt;
+  if (ignorembsts) opt << "NoMBS ";
+  else opt << "MBS ";
+  if (wide) opt << "wide ";
+  if (useucesb) opt << "ucesb ";
+  if (stats) opt << "stats ";
+  LOG(info) << "  Options: " << opt.str();
+  if (useucesb && ucesbshift) LOG(info) << "  ucesb Timestamps are shifted by " << ucesbshift << " ns";
 
-  std::cout << "AIDA Windows: Event: " << eventwindow << " ns, Front/Back: " << fbwindow << " ns" << std::endl;
-  std::cout << "AIDA Gates: Front/Back High: " << fbenergyh << " MeV, Low: " << fbenergyl << " keV" << std::endl;
+  LOG(info) << "  Windows: Event: " << eventwindow << " ns, Front/Back: " << fbwindow << " ns";
+  LOG(info) << "  Gates: Front/Back High: " << fbenergyh << " MeV, Low: " << fbenergyl << " keV";
 
-  std::cout << "Analysis Options: ";
-  if (reducenoise) std::cout << "ReduceNoise ";
-  if (clusterimpants && clusterdecays) std::cout << "ClusterImplantsDecays ";
-  if (clusterimpants && !clusterdecays) std::cout << "ClusterImplants";
-  if (!clusterimpants && clusterdecays) std::cout << "ClusterDecays ";
-  if (calibrate && parallelcalibrate) std::cout << "ParallelCalibrate ";
-  if (calibrate && !parallelcalibrate) std::cout << "Calibrate ";
-  std::cout << std::endl;
-  std::cout << "Analysis Thresholds: Nonsense: " << hugethreshold << ", Pulser: " << pulserthreshold << std::endl;
-  std::cout << "/////////////////////////////////////////////////////" << std::endl;
+  std::stringstream anlopt;
+  if (reducenoise) anlopt << "ReduceNoise ";
+  if (clusterimpants && clusterdecays) anlopt << "ClusterImplantsDecays ";
+  if (clusterimpants && !clusterdecays) anlopt << "ClusterImplants";
+  if (!clusterimpants && clusterdecays) anlopt << "ClusterDecays ";
+  if (calibrate && parallelcalibrate) anlopt << "ParallelCalibrate ";
+  if (calibrate && !parallelcalibrate) anlopt << "Calibrate ";
+  LOG(info) << "  Analysis Options: " << anlopt.str();
+  LOG(info) << "  Analysis Thresholds: Nonsense: " << hugethreshold << ", Pulser: " << pulserthreshold;
 }
 
 void TAidaConfiguration::DSSDtoFEE()
