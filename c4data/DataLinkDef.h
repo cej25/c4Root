@@ -20,4 +20,7 @@
 #pragma link C++ class std::vector<AidaUnpackFlowItem>+;
 #pragma link C++ class std::vector<AidaUnpackScalerItem>+;
 
+#pragma link C++ class AidaCalAdcItem+;
+#pragma link C++ class std::vector<AidaCalAdcItem>+;
+
 #endif
