@@ -1,10 +1,10 @@
 #ifndef GermaniumRaw2Cal_H
 #define GermaniumRaw2Cal_H
 
-#include "FairTask.h"
-
 #include "GermaniumCalData.h"
 #include "GermaniumFebexData.h"
+#include "FairTask.h"
+
 
 #include <TRandom.h>
 
