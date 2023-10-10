@@ -17,6 +17,11 @@
 
 #include "GermaniumRaw2Cal.h"
 
+GermaniumRaw2Cal::GermaniumRaw2Cal() 
+{
+}
+
+
 GermaniumRaw2Cal::GermaniumRaw2Cal(const TString& name, Int_t verbose) 
     : FairTask(name, verbose),
     fNEvents(0),
@@ -24,9 +29,6 @@ GermaniumRaw2Cal::GermaniumRaw2Cal(const TString& name, Int_t verbose)
     fOnline(kFALSE),
     funcal_data(new TClonesArray("GermaniumFebexData")),
     fcal_data(new TClonesArray("GermaniumCalData"))
-{
-}
-GermaniumRaw2Cal::GermaniumRaw2Cal() 
 {
 }
 

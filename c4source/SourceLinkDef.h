@@ -10,6 +10,7 @@
 #pragma link C++ class c4Reader+;
 #pragma link C++ class FrsReader+;
 #pragma link C++ class GermaniumReader+;
+#pragma link C++ class GermaniumRaw2Cal+;
 #pragma link C++ class AidaReader+;
 #pragma link C++ class bPlastReader+;
 #pragma link C++ class LisaReader+;
@@ -26,6 +27,5 @@
 #pragma link C++ class EXT_STR_h101_BPLAST_onion_t;
 #pragma link C++ class EXT_STR_h101_BM_onion_t;
 
-#pragma link C++ class GermaniumRaw2Cal+;
 
 #endif
