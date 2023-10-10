@@ -60,15 +60,54 @@ Bool_t LisaReader::Read()
 {
     c4LOG(debug1, "Event data");
 
-    uint32_t ts_lo, ts_hi;
+    event_trigger_time_long = ((uint64_t)(fData->event_trigger_time_hi) << 32) + (fData->event_trigger_time_lo);
+    
+    // wr timestamp
+    wr_t = (((uint64_t)fData->wr_t[3]) << 48) + (((uint64_t)fData->wr_t[2]) << 32) + (((uint64_t)fData->wr_t[1]) << 16) + ((uint64_t)(fData->wr_t[0]));
 
-    // Read 16 channels channels
-    for (Int_t t = 0; t < 16; t++)
+    for (int index = 0; index < fData->num_channels_fired; index++)
+    {
+        // 24th bit denotes sign, but we'll skip worrying about this for now
+        channel_energy = (int32_t)(fData->channel_energy[index] & 0x7FFFFF);
+
+        if (DetectorMap_loaded)
+        {
+            // detector mapping
+
+            if (DetectorCal_loaded)
+            {
+                // detector calibration if mapping is functional
+            }
+        }
+        else // no map or cal
+        {
+            detector_id = 0;
+            crystal_id = 0;
+            channel_energy_cal = -1;
+        }
+
+        // combined channel timestamp
+        channel_trigger_time_long = (double)(((uint64_t)fData->channel_trigger_time_hi[index] << 32) + (fData->channel_trigger_time_lo[index])); 
+        // add CF from constant fraction
+        channel_trigger_time_long = (double)
+    }
+    
+    
+
+
+
+
+
+
+
+
+    // Read 16 channels
+    for (Int_t chan = 0; chan < 16; chan++)
     {   
         // we should avoid zeros where we can, i.e. only fill from active channels.
         // or borrow some __cool__ ucesb zero_suppression. Otherwise..works..
         // janky until the structure file can be fixed. Mapping?
-        if (t == 0)
+        /*if (chan == 0)
         {
             ts_lo = fData->trace_data_fts_lo_0[0];
             ts_hi = fData->trace_data_fts_hi_0[0];
@@ -77,17 +116,17 @@ Bool_t LisaReader::Read()
         {
             ts_lo = 0;
             ts_hi = 0;
-        }
+        }*/
 
-        new ((*fArray)[fArray->GetEntriesFast()]) LisaData(fData->trace_data_fboard[0],
-                                                         fData->trace_data_fchn[0],
-                                                         fData->trace_data_fen_0[0],
-                                                         ts_lo,
-                                                         ts_hi);
+        new ((*fArray)[fArray->GetEntriesFast()]) LisaData(fData->lisa_data_fboard,
+                                                         fData->lisa_data_channel_idv[chan],
+                                                         fData->lisa_data_fenv[chan],
+                                                         fData->lisa_data_fts_lov[chan],
+                                                         fData->lisa_data_fts_hiv[chan]);
 
-        for (Int_t e = 0; e < fData->trace_trace_ftrace[t]._; e++)
+        for (Int_t sample = 0; sample < fData->lisa_data_ftrace[chan]._; sample++)
         {
-            new ((*fTraceArray)[fTraceArray->GetEntriesFast()]) LisaTraceData(fData->trace_trace_ftrace[t].v[e]);
+            new ((*fTraceArray)[fTraceArray->GetEntriesFast()]) LisaTraceData(fData->lisa_data_ftrace[chan].v[sample]);
         }
     }
     
@@ -96,7 +135,8 @@ Bool_t LisaReader::Read()
 }
 
 void LisaReader::Reset()
-{
+{   
+    // reset output array
     fArray->Clear();
     fTraceArray->Clear();
 }
