@@ -3,19 +3,27 @@
 
 #include "FairTask.h"
 
-#include "GermaniumFebexCalData.h"
-#include "GermaniumFebexData.h"
-
-#include <TRandom.h>
 
 class TClonesArray;
+class EventHeader;
+class GermaniumFebexData;
+class GermaniumCalData;
 
 class GermaniumRaw2Cal : public FairTask
 {
     public:
         GermaniumRaw2Cal();
 
+        GermaniumRaw2Cal(const TString& name, Int_t verbose);
+
         virtual ~GermaniumRaw2Cal();
+
+        void PrintDetectorMap();
+        void PrintDetectorCal();
+
+        Bool_t SetDetectorMapFile(TString);
+        Bool_t SetDetectorCalFile(TString);
+
 
         virtual void Exec(Option_t* option);
 
@@ -25,30 +33,38 @@ class GermaniumRaw2Cal : public FairTask
 
         virtual InitStatus Init();
 
-        virtual InitStatus ReInit();
+        //virtual InitStatus ReInit() {return kSUCCESS;}
 
-        void SetOnline(Bool_t option) { fOnline = option; }
 
     private:
-        void SetParameter();
+        Bool_t fOnline;
+
+        TClonesArray* fcal_data;
+        TClonesArray* funcal_data;
+
 
         GermaniumFebexData* funcal_hit;
-        GermaniumFebexCalData* funcal_hit;
+        GermaniumCalData* fcal_hit;
+
+        uint16_t detector_id;
+        uint16_t crystal_id;
+        double channel_energy_cal;
+
 
         EventHeader * header;
         Int_t fNEvents;
 
-        // stuff for Germaniums
-        Int_t fNumCrystals;
-        Int_t fNumDets;
-
-        double *** calibration_coefficients; // [detector_id][cluster_id][a0,a1,a2...]
-
-        // private Calibration Data method
+        //internal status flags for detector map and calibration map:
+        Bool_t DetectorMap_loaded = 0;
+        Bool_t DetectorCal_loaded = 0;
+        //maps:
+        std::map<std::pair<int,int>,std::pair<int,int>> detector_mapping; // [board_id][channel_id] -> [detector_id][crystal_id]
+        std::map<std::pair<int,int>,std::pair<double,double>> calibration_coeffs; // key: [detector id][crystal id] -> [a0][a1]
+    
 
     public:
-        ClassDef(GermaniumRaw2Cal, 1)
+        ClassDef(GermaniumRaw2Cal, 1);
 };
 
-#endif /* GermaniumRaw2Cal_H */
+#endif
 

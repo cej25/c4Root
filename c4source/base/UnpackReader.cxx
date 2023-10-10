@@ -17,8 +17,7 @@ UnpackReader::UnpackReader(EXT_STR_h101_unpack* data, size_t offset)
     , fData(data)
     , fOffset(offset)
     , fHeader(NULL)
-{
-}
+{}
 
 UnpackReader::~UnpackReader()
 {

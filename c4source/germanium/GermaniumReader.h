@@ -24,11 +24,6 @@ class GermaniumReader : public c4Reader
 
         virtual ~GermaniumReader();
 
-        void PrintDetectorMap();
-        void PrintDetectorCal();
-
-        Bool_t SetDetectorMapFile(TString);
-        Bool_t SetDetectorCalFile(TString);
 
         virtual Bool_t Init(ext_data_struct_info*) override;
 
@@ -37,6 +32,11 @@ class GermaniumReader : public c4Reader
         virtual void Reset() override;
 
         void SetOnline(Bool_t option) { fOnline = option; }
+
+
+        void SetVetoPileupStatus(bool v){VetoPileup = v;}
+        void SetVetoOverflowStatus(bool v){VetoOverflow = v;}
+        void SetWriteZeroMultEvents(bool v){WriteZeroMultEvents = v;}
     
     private:
         unsigned int fNEvent;
@@ -50,25 +50,20 @@ class GermaniumReader : public c4Reader
         TClonesArray* fArray;
 
 
-        uint16_t detector_id;
-        uint16_t crystal_id;
-
         uint64_t event_trigger_time_long;
         uint64_t channel_trigger_time_long;
 
         int32_t channel_energy;
-        double channel_energy_cal;
+
 
         uint64_t wr_t;
 
-        //internal status flags for detector map and calibration map:
-        Bool_t DetectorMap_loaded = 0;
-        Bool_t DetectorCal_loaded = 0;
 
-        //maps:
-        std::map<std::pair<int,int>,std::pair<int,int>> detector_mapping; // [board_id][channel_id] -> [detector_id][crystal_id]
-        std::map<std::pair<int,int>,std::pair<double,double>> calibration_coeffs; // key: [detector id][crystal id] -> [a0][a1]
-    
+        bool VetoPileup = 1; //should I veto on Pileup flag?
+        bool VetoOverflow = 1; //should I veto on overflow flag?
+        bool WriteZeroMultEvents = 0; //Write triggered DAQ events with no channels fired?
+
+
     public:
         ClassDefOverride(GermaniumReader, 0);
 };
