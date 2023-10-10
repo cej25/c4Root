@@ -9,14 +9,9 @@
 #include "GermaniumOnlineSpectra.h"
 #include "EventHeader.h"
 #include "GermaniumFebexData.h"
+#include "GermaniumCalData.h"
+
 #include "c4Logger.h"
-
-
-//detector config
-#define GE_MAX_HITS 28
-#define GE_CRYSTAL_PER_DET 7
-
-
 
 #include "TCanvas.h"
 #include "TClonesArray.h"
@@ -36,7 +31,6 @@ GermaniumOnlineSpectra::GermaniumOnlineSpectra(const TString& name, Int_t verbos
     , fHitGe(NULL)
     , fNEvents(0)
     , header(nullptr)
-    // ranges
 {
 }
 
@@ -65,8 +59,8 @@ InitStatus GermaniumOnlineSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fHitGe = (TClonesArray*)mgr->GetObject("GermaniumFebexData");
-    c4LOG_IF(fatal, !fHitGe, "Branch GermaniumData not found!");
+    fHitGe = (TClonesArray*)mgr->GetObject("GermaniumCalData");
+    c4LOG_IF(fatal, !fHitGe, "Branch GermaniumCalData not found!");
 
     //sum time spectrum
     cSumTime = new TCanvas("SumTime1", "Sum Time 1", 10, 10, 800, 700);
@@ -115,24 +109,21 @@ void GermaniumOnlineSpectra::Reset_Histo()
 
 void GermaniumOnlineSpectra::Exec(Option_t* option)
 {   
-
     if (fHitGe && fHitGe->GetEntriesFast() > 0)
     {
         Int_t nHits = fHitGe->GetEntriesFast();
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {   
-            GermaniumFebexData* hit = (GermaniumFebexData*)fHitGe->At(ihit);
+            GermaniumCalData* hit = (GermaniumCalData*)fHitGe->At(ihit);
             if (!hit)
                 continue;
 
             
-            if ((hit->Get_num_channels_fired() > 0) & (hit->Get_board_id() == 1))
-            {
-                fh1_SumTime->Fill(hit->Get_event_trigger_time());
-                fh2_EnergySpectra->Fill(hit->Get_channel_energy(),hit->Get_channel_id());
-                if (hit->Get_channel_id() == 1) fh1_EnergySpectraTest->Fill(hit->Get_channel_energy());
-                fh2_CalEnergySpectra->Fill(hit->Get_channel_energy_cal(),hit->Get_channel_id());
-            }
+            fh1_SumTime->Fill(hit->Get_event_trigger_time());
+            fh2_EnergySpectra->Fill(hit->Get_channel_energy(),hit->Get_crystal_id());
+            if (hit->Get_crystal_id() == 1) fh1_EnergySpectraTest->Fill(hit->Get_channel_energy());
+            fh2_CalEnergySpectra->Fill(hit->Get_channel_energy(),hit->Get_crystal_id());
+
         }
     }
 
