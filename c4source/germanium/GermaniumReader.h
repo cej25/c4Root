@@ -38,6 +38,11 @@ class GermaniumReader : public c4Reader
         virtual void Reset() override;
 
         void SetOnline(Bool_t option) { fOnline = option; }
+
+
+        void SetVetoPileupStatus(bool v){VetoPileup = v;}
+        void SetVetoOverflowStatus(bool v){VetoOverflow = v;}
+        void SetWriteZeroMultEvents(bool v){WriteZeroMultEvents = v;}
     
     private:
         unsigned int fNEvent;
@@ -65,6 +70,10 @@ class GermaniumReader : public c4Reader
         //internal status flags for detector map and calibration map:
         Bool_t DetectorMap_loaded = 0;
         Bool_t DetectorCal_loaded = 0;
+
+        bool VetoPileup = 1; //should I veto on Pileup flag?
+        bool VetoOverflow = 1; //should I veto on overflow flag?
+        bool WriteZeroMultEvents = 0; //Write triggered DAQ events with no channels fired?
 
         //maps:
         std::map<std::pair<int,int>,std::pair<int,int>> detector_mapping; // [board_id][channel_id] -> [detector_id][crystal_id]
