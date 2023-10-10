@@ -9,15 +9,19 @@
 // c4
 #include "GermaniumFebexData.h"
 #include "GermaniumCalData.h"
-#include "GermaniumReader.h"
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
-#include "ext_data_struct_info.hh"
 
 #include "GermaniumRaw2Cal.h"
 
 GermaniumRaw2Cal::GermaniumRaw2Cal() 
+: FairTask(), 
+fNEvents(0),
+header(nullptr),
+fOnline(kFALSE),
+funcal_data(new TClonesArray("GermaniumFebexData")),
+fcal_data(new TClonesArray("GermaniumCalData"))
 {
 }
 
@@ -62,13 +66,17 @@ InitStatus GermaniumRaw2Cal::Init(){
     funcal_data = (TClonesArray*)mgr->GetObject("GermaniumFebexData");
     c4LOG_IF(fatal, !funcal_data, "Germanium branch of GermaniumFebexData not found.");
     
-    fcal_data = (TClonesArray*)mgr->GetObject("GermaniumCalData");
+    /*fcal_data = (TClonesArray*)mgr->GetObject("GermaniumCalData");
     c4LOG_IF(fatal, !fcal_data, "Germanium branch of GermaniumCalData not found.");
+    */
 
     FairRootManager::Instance()->Register("GermaniumCalData", "Germanium Cal Data", fcal_data, !fOnline);
-
-
     
+    fcal_data->Clear();
+    
+    //memset(funcal_data, 0, sizeof *funcal_data);
+
+
     return kSUCCESS;
 }
 
@@ -107,13 +115,13 @@ Bool_t GermaniumRaw2Cal::SetDetectorMapFile(TString filename){
 };
 
 Bool_t GermaniumRaw2Cal::SetDetectorCalFile(TString filename){
-    /*
-    TODO: Make the reading fail-safe.
 
-    Assumed structure of detector map is 
-    - aribtrary lines of comments starting with #
-    - each entry is a line with four number: (febex module id) (febex channel id) (detector id) (crystal id)
-    */
+    //TODO: Make the reading fail-safe.
+    //
+    //Assumed structure of detector map is 
+    //- aribtrary lines of comments starting with #
+    //- each entry is a line with four number: (febex module id) (febex channel id) (detector id) (crystal id)
+    //
     c4LOG(info, "Reading Calibration coefficients.");
 
 
@@ -134,7 +142,7 @@ Bool_t GermaniumRaw2Cal::SetDetectorCalFile(TString filename){
             //TODO: implement a check to make sure keys are unique.
         }
     }
-    DetectorCal_loaded = 1;     
+    DetectorCal_loaded = 1;
     cal_map_file.close();  
     return 0; 
 };
@@ -221,6 +229,7 @@ void GermaniumRaw2Cal::Reset(){
     funcal_data->Clear();
     fcal_data->Clear();
 };
+
 
 
 ClassImp(GermaniumRaw2Cal)

@@ -18,11 +18,6 @@ class GermaniumFebexData : public TObject
                              uint8_t channel_id,
                              double channel_trigger_time,
                              int32_t channel_energy,
-                             //double channel_energy_cal,
-                             //uint32_t crystal_id,
-                             //uint32_t detector_id,
-
-                             //whiterabbit timestamps:
                              uint16_t wr_subsystem_id,
                              uint64_t wr_t
                              );
