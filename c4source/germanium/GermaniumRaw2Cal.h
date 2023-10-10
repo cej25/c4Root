@@ -1,12 +1,7 @@
 #ifndef GermaniumRaw2Cal_H
 #define GermaniumRaw2Cal_H
 
-#include "GermaniumCalData.h"
-#include "GermaniumFebexData.h"
 #include "FairTask.h"
-
-
-#include <TRandom.h>
 
 
 class TClonesArray;
@@ -38,7 +33,7 @@ class GermaniumRaw2Cal : public FairTask
 
         virtual InitStatus Init();
 
-        virtual InitStatus ReInit();
+        //virtual InitStatus ReInit() {return kSUCCESS;}
 
 
     private:

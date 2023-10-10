@@ -98,7 +98,7 @@ Bool_t GermaniumReader::Read() // do the detector mapping here:
         //collect the LSB and MSB into one variable for channel trigger time
         channel_trigger_time_long = (double)(((uint64_t)(fData->channel_trigger_time_hi[index]) << 32) + (fData->channel_trigger_time_lo[index]));
         //add the CF from the constant fraction. It is denoted by 6 bits in the energy word of the FEBEX data format
-        channel_trigger_time_long = (((double)fData->channel_cfd[index])/64.0 + channel_trigger_time_long)*10.0; // units of ns (?)
+        channel_trigger_time_long = (((double)fData->channel_cfd[index])/64.0 + channel_trigger_time_long)*10.0; // units of ns 
 
 
         new ((*fArray)[fArray->GetEntriesFast()]) GermaniumFebexData(
@@ -111,9 +111,6 @@ Bool_t GermaniumReader::Read() // do the detector mapping here:
             fData->channel_id[index],
             channel_trigger_time_long,
             channel_energy,
-            //channel_energy_cal,
-            //crystal_id,
-            //detector_id,
             fData->wr_subsystem_id,
             wr_t
         );
