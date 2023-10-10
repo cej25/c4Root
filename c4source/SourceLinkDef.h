@@ -26,5 +26,6 @@
 #pragma link C++ class EXT_STR_h101_BPLAST_onion_t;
 #pragma link C++ class EXT_STR_h101_BM_onion_t;
 
+#pragma link C++ class GermaniumRaw2Cal+;
 
 #endif
