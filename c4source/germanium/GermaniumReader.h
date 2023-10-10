@@ -7,7 +7,7 @@
 
 extern "C"
 {
-    #include "ext_h101_ge_febex.h" // name??
+    #include "ext_h101_ge_febex.h"
 }
 
 class TClonesArray;
@@ -29,7 +29,6 @@ class GermaniumReader : public c4Reader
 
         Bool_t SetDetectorMapFile(TString);
         Bool_t SetDetectorCalFile(TString);
-
 
         virtual Bool_t Init(ext_data_struct_info*) override;
 
