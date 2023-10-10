@@ -148,16 +148,15 @@ Bool_t GermaniumReader::Read() // do the detector mapping here:
 {
     c4LOG(debug1, "Event Data");
 
-
-    event_trigger_time_long = ((uint64_t)(fData->event_trigger_time_hi) << 32) + (fData->event_trigger_time_lo);
+    //since the febex card has a 100MHz clock which timestamps events.
+    event_trigger_time_long = (((uint64_t)(fData->event_trigger_time_hi) << 32) + (fData->event_trigger_time_lo))*10;
 
 
     //whiterabbit timestamp:
     wr_t = (((uint64_t)fData->wr_t[3]) << 48) + (((uint64_t)fData->wr_t[2]) << 32) + (((uint64_t)fData->wr_t[1]) << 16) + (uint64_t)(fData->wr_t[0]);
 
-    if (false){ //(fData->num_channels_fired == 0)){ 
-        // skipping for now.
-        //write multiplicity zero events?
+    if (WriteZeroMultEvents & (fData->num_channels_fired == 0)){ 
+        // Write if flag is true. See setter to change behaviour.
         new ((*fArray)[fArray->GetEntriesFast()]) GermaniumFebexData(
             fData->num_channels_fired,
             event_trigger_time_long,
@@ -178,6 +177,10 @@ Bool_t GermaniumReader::Read() // do the detector mapping here:
 
     for (int index = 0; index < fData->num_channels_fired; index++)
     {   
+
+        if (VetoOverflow & fData->overflow[index]) continue;
+        if (VetoPileup & fData->pileup[index]) continue;
+        
 
         //according to febex manual on gsi website the 24th bit of the energy bits denotes the sign to indicate the polarity of the pulse?
         if (fData->channel_energy[index] & (1 << 23)){
@@ -219,7 +222,7 @@ Bool_t GermaniumReader::Read() // do the detector mapping here:
         //collect the LSB and MSB into one variable for channel trigger time
         channel_trigger_time_long = (double)(((uint64_t)(fData->channel_trigger_time_hi[index]) << 32) + (fData->channel_trigger_time_lo[index]));
         //add the CF from the constant fraction. It is denoted by 6 bits in the energy word of the FEBEX data format
-        channel_trigger_time_long = ((double)fData->channel_cfd[index])/64.0*10 + channel_trigger_time_long; // units of ns (?)
+        channel_trigger_time_long = (((double)fData->channel_cfd[index])/64.0 + channel_trigger_time_long)*10.0; // units of ns (?)
 
 
         new ((*fArray)[fArray->GetEntriesFast()]) GermaniumFebexData(
