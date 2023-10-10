@@ -60,7 +60,46 @@ Bool_t LisaReader::Read()
 {
     c4LOG(debug1, "Event data");
 
-    uint32_t ts_lo, ts_hi;
+    event_trigger_time_long = ((uint64_t)(fData->event_trigger_time_hi) << 32) + (fData->event_trigger_time_lo);
+    
+    // wr timestamp
+    wr_t = (((uint64_t)fData->wr_t[3]) << 48) + (((uint64_t)fData->wr_t[2]) << 32) + (((uint64_t)fData->wr_t[1]) << 16) + ((uint64_t)(fData->wr_t[0]));
+
+    for (int index = 0; index < fData->num_channels_fired; index++)
+    {
+        // 24th bit denotes sign, but we'll skip worrying about this for now
+        channel_energy = (int32_t)(fData->channel_energy[index] & 0x7FFFFF);
+
+        if (DetectorMap_loaded)
+        {
+            // detector mapping
+
+            if (DetectorCal_loaded)
+            {
+                // detector calibration if mapping is functional
+            }
+        }
+        else // no map or cal
+        {
+            detector_id = 0;
+            crystal_id = 0;
+            channel_energy_cal = -1;
+        }
+
+        // combined channel timestamp
+        channel_trigger_time_long = (double)(((uint64_t)fData->channel_trigger_time_hi[index] << 32) + (fData->channel_trigger_time_lo[index])); 
+        // add CF from constant fraction
+        channel_trigger_time_long = (double)
+    }
+    
+    
+
+
+
+
+
+
+
 
     // Read 16 channels
     for (Int_t chan = 0; chan < 16; chan++)
@@ -96,7 +135,8 @@ Bool_t LisaReader::Read()
 }
 
 void LisaReader::Reset()
-{
+{   
+    // reset output array
     fArray->Clear();
     fTraceArray->Clear();
 }
