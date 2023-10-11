@@ -24,12 +24,6 @@ class LisaReader : public c4Reader
 
         virtual ~LisaReader();
 
-        void PrintDetectorMap();
-        void PrintDetectorCal();
-
-        Bool_t SetDetectorMapFile(TString);
-        Bool_t SetDetectorCalFile(TString);
-
         virtual Bool_t Init(ext_data_struct_info*) override;
 
         virtual Bool_t Read() override;
@@ -37,6 +31,9 @@ class LisaReader : public c4Reader
         virtual void Reset() override;
 
         void SetOnline(Bool_t option) { fOnline = option; }
+        void SetVetoPileupStatus(Bool_t v) { VetoPileup = v; }
+        void SetVetoOverflowStatus(Bool_t v) { VetoOverflow = v; }
+        void SetWriteZeroMultEvents(Bool_t v) { WriteZeroMultEvents = v; }
 
     private:
         unsigned fNEvent;
@@ -50,23 +47,17 @@ class LisaReader : public c4Reader
         TClonesArray* fArray;
         TClonesArray* fTraceArray;
 
-        uint16_t detector_id;
-        uint16_t crystal_id;
-
         uint64_t event_trigger_time_long;
         uint64_t channel_trigger_time_long;
 
         int32_t channel_energy;
-        double channel_energy_cal;
 
         uint64_t wr_t;
 
-        //internal status flags for detector map and calibration map:
-        Bool_t DetectorMap_loaded = 0;
-        Bool_t DetectorCal_loaded = 0;
+        bool VetoPileup = 0;
+        bool VetoOverflow = 0;
+        bool WriteZeroMultEvents = 0;
 
-        // maps
-    
     public:
         ClassDefOverride(LisaReader, 0);
 };

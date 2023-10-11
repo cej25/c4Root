@@ -61,7 +61,7 @@ class GermaniumReader : public c4Reader
 
         bool VetoPileup = 1; //should I veto on Pileup flag?
         bool VetoOverflow = 1; //should I veto on overflow flag?
-        bool WriteZeroMultEvents = 0; //Write triggered DAQ events with no channels fired?
+        bool WriteZeroMultEvents = 0; // Write triggered DAQ events with no channels fired?
 
 
     public:
