@@ -4,11 +4,11 @@ cmake_policy(VERSION 3.11...3.20)
 
 project(C4ROOT LANGUAGES C CXX Fortran)
 
-if(NOT EXISTS "${PROJECT_SOURCE_DIR}/macros2")
+if(NOT EXISTS "${PROJECT_SOURCE_DIR}/macros")
     message(FATAL_ERROR
             "\nmacros repository is missing in the c4Root source directory\ncd ${CMAKE_SOURCE_DIR}\ngit clone -b dev <github_link>"
             )
-endif(NOT EXISTS "${PROJECT_SOURCE_DIR}/macros2")
+endif(NOT EXISTS "${PROJECT_SOURCE_DIR}/macros")
 
 # Check for needed environment variables
 IF(NOT DEFINED ENV{SIMPATH})
@@ -265,7 +265,7 @@ if(NOT MODULE)
     add_subdirectory(c4data)
     add_subdirectory(compilehelper)
     add_subdirectory(analysis)
-    add_subdirectory(macros2)
+    add_subdirectory(macros)
 endif(NOT MODULE)
 
 add_subdirectory(cmake)
