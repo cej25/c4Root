@@ -1,0 +1,36 @@
+####################################################
+############ USED IN FRS_Unpack ####################
+item.vme_tof[vme_geo][vme_chn] - yes
+item.vftx_mult[module][channel] - yes
+item.vftx_ft[module][channel][item.vftx_mult[module][channel]] - yes
+item.vftx_cc[module][channel][item.vftx_mult[module][channel]] - yes
+item.vme_frs[vme_geo][vme_chn] - yes
+item.scaler_frs_elements[i_ch] - yes??
+item.scaler_frs[i_ch] - yes
+item.vme_tpcs2[vme_geo][vme_chn] - yes
+item.leading_v1190_tpcs2[ch_tpc_v1190][item.tmp_nhit_prev] - yes
+item.tmp_nhit_prev - yes but not needd?
+item.nhit_v1190_tpcs2[ch_tpc_v1190] - yes
+item.vme_main[vme_geo][vme_chn] - yes
+item.scaler_main[i_ch] - yes [32]
+item.nhit_v1290_main[vme_chn][LeadingOrTrailing] - yes
+item.trailing_v1290_main[vme_chn][multihit] - yes
+item.leading_v1290_main[vme_chn][multihit] - yes
+item.utpat - yes
+item.umaxtrig - yes
+item.uphystrig - yes
+item.unbtrig - yes
+item.tpat_main[4] - yes // [32] tho
+item.skip #needed? doubtful - yes but not needed?
+#####################################################
+#####################################################
+** 
+item.timestamp_main[32] is not used because whiterabbit is handled differently by me/ucesb.
+**
+
+Question is.... can we do sort? or nah?
+
+
+
+
+
