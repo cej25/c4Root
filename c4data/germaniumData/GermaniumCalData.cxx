@@ -1,13 +1,9 @@
-#include "GermaniumFebexCalData.h"
+#include "GermaniumCalData.h"
 
-GermaniumFebexCalData::GermaniumFebexCalData()
-    : fnum_channels_fired(0),
-      fevent_trigger_time(0),
-      fhit_pattern(0),
-      fboard_id(0),
+GermaniumCalData::GermaniumCalData()
+    : fevent_trigger_time(0),
       fpileup(0),
       foverflow(0),
-      fchannel_id(0),
       fchannel_trigger_time(0),
       fchannel_energy(0),
       fcrystal_id(0),
@@ -17,14 +13,10 @@ GermaniumFebexCalData::GermaniumFebexCalData()
 {
 }
 
-GermaniumFebexCalData::GermaniumFebexCalData(
-        uint32_t num_channels_fired,
+GermaniumCalData::GermaniumCalData(
         uint64_t event_trigger_time,
-        uint16_t hit_pattern,
-        uint8_t board_id,
         uint8_t pileup,
         uint8_t overflow,
-        uint8_t channel_id,
         uint64_t channel_trigger_time,
         double channel_energy, // calibrated in energy of keVs
         uint32_t crystal_id,
@@ -32,13 +24,9 @@ GermaniumFebexCalData::GermaniumFebexCalData(
         uint16_t wr_subsystem_id,
         uint64_t wr_t)
     : 
-    fnum_channels_fired(num_channels_fired),
     fevent_trigger_time(event_trigger_time),
-    fhit_pattern(hit_pattern),
-    fboard_id(board_id),
     fpileup(pileup),
     foverflow(overflow),
-    fchannel_id(channel_id),
     fchannel_trigger_time(channel_trigger_time),
     fchannel_energy(channel_energy),
     fcrystal_id(crystal_id),
@@ -48,4 +36,4 @@ GermaniumFebexCalData::GermaniumFebexCalData(
 {
 }
 
-ClassImp(GermaniumFebexCalData)
+ClassImp(GermaniumCalData)

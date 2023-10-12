@@ -6,6 +6,7 @@
 
 extern "C"
 {
+    #include "ext_data_client.h"
     #include "ext_h101_lisa.h"
 }
 
@@ -30,6 +31,9 @@ class LisaReader : public c4Reader
         virtual void Reset() override;
 
         void SetOnline(Bool_t option) { fOnline = option; }
+        void SetVetoPileupStatus(Bool_t v) { VetoPileup = v; }
+        void SetVetoOverflowStatus(Bool_t v) { VetoOverflow = v; }
+        void SetWriteZeroMultEvents(Bool_t v) { WriteZeroMultEvents = v; }
 
     private:
         unsigned fNEvent;
@@ -42,7 +46,18 @@ class LisaReader : public c4Reader
 
         TClonesArray* fArray;
         TClonesArray* fTraceArray;
-    
+
+        uint64_t event_trigger_time_long;
+        uint64_t channel_trigger_time_long;
+
+        int32_t channel_energy;
+
+        uint64_t wr_t;
+
+        bool VetoPileup = 0;
+        bool VetoOverflow = 0;
+        bool WriteZeroMultEvents = 0;
+
     public:
         ClassDefOverride(LisaReader, 0);
 };

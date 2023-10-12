@@ -1,24 +1,50 @@
 #include "LisaData.h"
 
 LisaData::LisaData()
-    : fBoard(0)
-    , fChn(0)
-    , fEn(0)
-    , fTs_Lo(0)
-    , fTs_Hi(0)
+    : fnum_channels_fired(0),
+    fevent_trigger_time(0),
+    fhit_pattern(0),
+    fboard_id(0),
+    fpileup(0),
+    foverflow(0),
+    fchannel_id(0),
+    fchannel_trigger_time(0),
+    fchannel_energy(0),
+    fcrystal_id(0),
+    fdetector_id(0),
+    fwr_subsystem_id(0),
+    fwr_t(0)
 {
 }
 
-LisaData::LisaData(uint32_t board, 
-                       uint32_t chn, 
-                       uint32_t en,
-                       uint32_t ts_lo, 
-                       uint32_t ts_hi)
-    : fBoard(board)
-    , fChn(chn)
-    , fEn(en)
-    , fTs_Lo(ts_lo)
-    , fTs_Hi(ts_hi)
+LisaData::LisaData(uint32_t num_channels_fired,
+        uint64_t event_trigger_time,
+        uint16_t hit_pattern,
+        uint8_t board_id,
+        uint8_t pileup,
+        uint8_t overflow,
+        uint8_t channel_id,
+        double channel_trigger_time,
+        int32_t channel_energy, // from the FEBEX manual: bit 23 denotes the sign of the energy (i.e. negative pulses?)
+        double channel_energy_cal, // from the FEBEX manual: bit 23 denotes the sign of the energy (i.e. negative pulses?)
+        uint32_t crystal_id,
+        uint32_t detector_id,
+        uint16_t wr_subsystem_id,
+        uint64_t wr_t)
+    : fnum_channels_fired(num_channels_fired),
+    fevent_trigger_time(event_trigger_time),
+    fhit_pattern(hit_pattern),
+    fboard_id(board_id),
+    fpileup(pileup),
+    foverflow(overflow),
+    fchannel_id(channel_id),
+    fchannel_trigger_time(channel_trigger_time),
+    fchannel_energy(channel_energy),
+    fchannel_energy_cal(channel_energy_cal),
+    fcrystal_id(crystal_id),
+    fdetector_id(detector_id),
+    fwr_subsystem_id(wr_subsystem_id),
+    fwr_t(wr_t)
 {
 }
 

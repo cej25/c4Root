@@ -10,6 +10,7 @@
 #pragma link C++ class c4Reader+;
 #pragma link C++ class FrsReader+;
 #pragma link C++ class GermaniumReader+;
+#pragma link C++ class GermaniumRaw2Cal+;
 #pragma link C++ class AidaReader+;
 #pragma link C++ class TAIdaConfiguration+;
 #pragma link C++ class AidaUnpack2Cal+;
