@@ -45,9 +45,6 @@ class LisaReader : public c4Reader
 
         TClonesArray* fArray;
         TClonesArray* fTraceArray;
-<<<<<<< HEAD
-    
-=======
 
         uint64_t event_trigger_time_long;
         uint64_t channel_trigger_time_long;
@@ -60,7 +57,6 @@ class LisaReader : public c4Reader
         bool VetoOverflow = 0;
         bool WriteZeroMultEvents = 0;
 
->>>>>>> main
     public:
         ClassDefOverride(LisaReader, 0);
 };
