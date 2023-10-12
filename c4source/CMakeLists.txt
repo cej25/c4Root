@@ -43,6 +43,7 @@ set(SRCS
 ./base/UnpackReader.cxx
 ./base/c4Reader.cxx
 ./aida/c4AidaReader.cxx
+./aida/AidaUnpack2Cal.cxx
 ./aida/TAidaConfiguration.cxx
 ./frs/FrsReader.cxx
 ./germanium/GermaniumReader.cxx
