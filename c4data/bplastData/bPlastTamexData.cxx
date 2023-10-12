@@ -6,19 +6,23 @@ bPlastTamexData::bPlastTamexData()
     , fbPlastLeadT(0)
     , fbPlastTrailT(0)
     , fbPlastToT(0)
+    , fbPlastEpoch(0)
 {
 }
 
+/* there are some pre-trigger times, but I will probably not save these as they are only used to calculate the time difference between events */
 bPlastTamexData::bPlastTamexData(UInt_t detNum, 
                                     UInt_t chanNum, 
-                                    UInt_t fbPlastLeadT, 
-                                    UInt_t fbPlastTrailT, 
-                                    UInt_t fbPlastToT)
+                                    UInt_t bPlastLeadT, 
+                                    UInt_t bPlastTrailT, 
+                                    UInt_t bPlastToT,
+                                    UInt_t bPlastEpoch)
     : fDet(detNum)
     , fChan(chanNum)
-    , fbPlastLeadT(fbPlastLeadT)
-    , fbPlastTrailT(fbPlastTrailT)
-    , fbPlastToT(fbPlastToT)
+    , fbPlastLeadT(bPlastLeadT)
+    , fbPlastTrailT(bPlastTrailT)
+    , fbPlastToT(bPlastToT)
+    , fbPlastEpoch(bPlastEpoch)
 {
 }
 
