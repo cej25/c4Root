@@ -12,8 +12,6 @@
 #pragma link C++ class GermaniumReader+;
 #pragma link C++ class GermaniumRaw2Cal+;
 #pragma link C++ class AidaReader+;
-#pragma link C++ class TAIdaConfiguration+;
-#pragma link C++ class AidaUnpack2Cal+;
 #pragma link C++ class bPlastReader+;
 #pragma link C++ class LisaReader+;
 #pragma link C++ class UnpackReader+;

@@ -6,7 +6,6 @@
 
 // c4
 #include "AidaData.h"
-#include "TAidaConfiguration.h"
 #include "c4Logger.h"
 
 // ucesb
@@ -53,9 +52,6 @@ Bool_t AidaReader::Init(ext_data_struct_info* a_struct_info)
     FairRootManager::Instance()->RegisterAny("AidaAdcData", adcArray, !fOnline);
     FairRootManager::Instance()->RegisterAny("AidaFlowData", flowArray, !fOnline);
     FairRootManager::Instance()->RegisterAny("AidaScalerData", scalerArray, !fOnline);
-
-    // Create the config
-    TAidaConfiguration::GetInstance();
 
     return kTRUE;
 }
