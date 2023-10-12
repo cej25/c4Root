@@ -6,6 +6,7 @@
 
 // c4
 #include "AidaUnpack2Cal.h"
+#include "TAidaConfiguration.h"
 #include "c4Logger.h"
 #include "AidaData.h"
 #include "AidaCalData.h"
@@ -61,14 +62,50 @@ void AidaUnpack2Cal::Exec(Option_t* option)
 
   for (auto const& unpack : *unpackArray)
   {
-    auto& cal = calArray->emplace_back();
-    int dssd = 0;
-    int side = 0;
+    // TODO?: Clock correction
+
+    auto feeConf = conf->FEE(unpack.Fee());
+    if (feeConf.DSSD <= 0)
+    {
+      c4LOG(error, "Invalid DSSD Mapping for AIDA fee " << unpack.Fee() << ", ignoring event");
+      return;
+    }
+    int dssd = feeConf.DSSD;
+    int side = feeConf.Side;
     int strip = 0;
-    double intensity = 0;
+    if (feeConf.High)
+    {
+      strip = 127 - FeeToStrip[unpack.Channel()];
+    }
+    else
+    {
+      strip = FeeToStrip[unpack.Channel()];
+    }
+    if (conf->Wide() && feeConf.Side == conf->DSSD(dssd - 1).XSide)
+    {
+      int shift = 0;
+      if (feeConf.Segment == WideAIDASegment::Centre) shift = 128;
+      if (feeConf.Segment == WideAIDASegment::Right) shift = 256;
+      strip += shift;
+    }
+    double intensity = (unpack.Value() - 32768) * side;
+    intensity = (intensity - conf->GetAdcOffset(unpack.Fee(), unpack.Channel()));
+    bool range = unpack.Range();
     double energy = 0;
+    if (range)
+    {
+      energy = intensity * 0.7; // Energy in MeV
+    }
+    else
+    {
+      energy = intensity * conf->GetDssdGain(dssd - 1,
+          side == conf->DSSD(dssd - 1).XSide ? 0 : 1, strip);
+    }
+
+    // TODO: Only add items which pass threshold
+    auto& cal = calArray->emplace_back();
     cal.SetAll(unpack.SlowTime(), unpack.FastTime(), dssd, side, strip,
-        false, intensity, energy);
+        range, intensity, energy);
   }
 }
 
