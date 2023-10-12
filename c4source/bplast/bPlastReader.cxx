@@ -13,7 +13,7 @@
 extern "C"
 {
     #include "ext_data_client.h"
-    #include "ext_h101_bplast.h"
+    #include "ext_h101.h"
 }
 
 bPlastReader::bPlastReader(EXT_STR_h101_BPLAST_onion* data, size_t offset)
@@ -67,7 +67,8 @@ Bool_t bPlastReader::Read()
                                                                       chan,
                                                                       fData->plastic_crate[0].card[det].channel[chan].lead_T[hit],
                                                                       fData->plastic_crate[0].card[det].channel[chan].trail_T[hit],
-                                                                      fData->plastic_crate[0].card[det].channel[chan].ToT[hit]);
+                                                                      fData->plastic_crate[0].card[det].channel[chan].ToT[hit];
+                                                                      fData->plastic_crate[0].card[det].channel[chan].epoch[hit]);
             }
 
         }
