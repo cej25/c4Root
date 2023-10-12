@@ -50,6 +50,7 @@ set(SRCS
 ./lisa/LisaReader.cxx
 ./bplast/bPlastReader.cxx
 ./beammonitor/BeamMonitorReader.cxx
+./germanium/GermaniumRaw2Cal.cxx
 )
 
 Set(STRUCT_HEADERS
