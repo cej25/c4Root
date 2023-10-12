@@ -11,5 +11,6 @@
 #pragma link C++ class GermaniumOnlineSpectra+;
 #pragma link C++ class bPlastOnlineSpectra+;
 #pragma link C++ class BeamMonitorOnlineSpectra+;
+#pragma link C++ class LisaOnlineSpectra+;
 
 #endif
