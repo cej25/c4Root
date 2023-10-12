@@ -12,12 +12,13 @@
 #include <string>
 
 TAidaConfiguration* TAidaConfiguration::instance = nullptr;
+std::string TAidaConfiguration::base_path = "Configuration_Files/AIDA";
 
-TAidaConfiguration::TAidaConfiguration(std::string path) :
+TAidaConfiguration::TAidaConfiguration() :
     fees(0), dssds(0), wide(false), adjustadc(false), useucesb(false),
     ignorembsts(false), stats(false), ucesbshift(0), eventwindow(2000)
 {
-  ReadConfiguration(path);
+  ReadConfiguration();
   DSSDtoFEE();
 }
 
@@ -28,13 +29,13 @@ inline DSSDSide ParseSide(std::string arg)
   return DSSDSide::Ohmic;
 }
 
-void TAidaConfiguration::ReadConfiguration(std::string path)
+void TAidaConfiguration::ReadConfiguration()
 {
   fbwindow = std::numeric_limits<double>::max();
   fbenergyh = std::numeric_limits<double>::max();
   fbenergyl = std::numeric_limits<double>::max();
 
-  std::ifstream cfg(path);
+  std::ifstream cfg(base_path + "/AIDA.txt");
   constexpr auto ignore = std::numeric_limits<std::streamsize>::max();
   int sub_DSSD = -1;
   bool sub_Scaler = false;
@@ -255,7 +256,7 @@ void TAidaConfiguration::ReadConfiguration(std::string path)
     std::fill(d[1].begin(), d[1].end(), 0);
   }
 
-  std::ifstream fs("Configuration_Files/AIDA/AIDA_offsets.txt");
+  std::ifstream fs(base_path + "/AIDA_offsets.txt");
   fs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   while (fs)
   {
@@ -274,7 +275,7 @@ void TAidaConfiguration::ReadConfiguration(std::string path)
   fs.close();
   c4LOG(info, "Loaded ADC Offsets");
 
-  fs.open("Configuration_Files/AIDA/AIDA_times.txt");
+  fs.open(base_path + "/AIDA_times.txt");
 
   while (fs)
   {
@@ -292,7 +293,7 @@ void TAidaConfiguration::ReadConfiguration(std::string path)
   c4LOG(info, "Loaded FEE Clock Correction");
   fs.close();
 
-  fs.open("Configuration_Files/AIDA/AIDA_gains.txt");
+  fs.open(base_path + "/AIDA_gains.txt");
   fs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   while (fs)
   {
@@ -313,7 +314,7 @@ void TAidaConfiguration::ReadConfiguration(std::string path)
   }
   c4LOG(info, "Loaded DSSD Gains");
 
-  std::ifstream stripConfig("Configuration_Files/AIDA/AIDA_strips.txt");
+  std::ifstream stripConfig(base_path + "/AIDA_strips.txt");
   while (stripConfig)
   {
     if (stripConfig.peek() == '#' || stripConfig.peek() == '\n')
