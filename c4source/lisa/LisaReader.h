@@ -6,7 +6,6 @@
 
 extern "C"
 {
-    #include "ext_data_client.h"
     #include "ext_h101_lisa.h"
 }
 
@@ -23,12 +22,6 @@ class LisaReader : public c4Reader
         LisaReader(EXT_STR_h101_LISA_onion*, size_t);
 
         virtual ~LisaReader();
-
-        void PrintDetectorMap();
-        void PrintDetectorCal();
-
-        Bool_t SetDetectorMapFile(TString);
-        Bool_t SetDetectorCalFile(TString);
 
         virtual Bool_t Init(ext_data_struct_info*) override;
 
@@ -49,23 +42,6 @@ class LisaReader : public c4Reader
 
         TClonesArray* fArray;
         TClonesArray* fTraceArray;
-
-        uint16_t detector_id;
-        uint16_t crystal_id;
-
-        uint64_t event_trigger_time_long;
-        uint64_t channel_trigger_time_long;
-
-        int32_t channel_energy;
-        double channel_energy_cal;
-
-        uint64_t wr_t;
-
-        //internal status flags for detector map and calibration map:
-        Bool_t DetectorMap_loaded = 0;
-        Bool_t DetectorCal_loaded = 0;
-
-        // maps
     
     public:
         ClassDefOverride(LisaReader, 0);

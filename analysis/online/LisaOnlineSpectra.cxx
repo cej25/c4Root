@@ -59,14 +59,14 @@ InitStatus LisaOnlineSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fHitGe = (TClonesArray*)mgr->GetObject("LisaData");
+    fHitLisa = (TClonesArray*)mgr->GetObject("LisaData");
     c4LOG_IF(fatal, !fHitLisa, "Branch LisaData not found!");
 
     //sum time spectrum
     // spectra definition
     
     TFolder *lisaFold = new TFolder("Lisa", "Lisa");
-    lisaFold->Add(cSumTime);
+
     
     run->AddObject(lisaFold);
 
