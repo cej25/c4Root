@@ -67,7 +67,6 @@ Bool_t bPlastReader::Read()
                                                                       chan,
                                                                       fData->plastic_crate[0].card[det].channel[chan].lead_T[hit],
                                                                       fData->plastic_crate[0].card[det].channel[chan].trail_T[hit],
-                                                                      fData->plastic_crate[0].card[det].channel[chan].ToT[hit];
                                                                       fData->plastic_crate[0].card[det].channel[chan].epoch[hit]);
             }
 

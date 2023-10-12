@@ -33,9 +33,10 @@ class bPlastOnlineSpectra : public FairTask
 
     
     private:
-        TClonesArray* fHit_bPlast;
+        TClonesArray* fHitbPlast;
 
         EventHeader* header;
+
         
         Int_t fNEvent;
 
