@@ -7,7 +7,7 @@
 
 extern "C"
 {
-    #include "ext_h101_ge_febex.h" // name??
+    #include "ext_h101_ge_febex.h"
 }
 
 class TClonesArray;
@@ -24,6 +24,7 @@ class GermaniumReader : public c4Reader
 
         virtual ~GermaniumReader();
 
+
         virtual Bool_t Init(ext_data_struct_info*) override;
 
         virtual Bool_t Read() override;
@@ -31,6 +32,11 @@ class GermaniumReader : public c4Reader
         virtual void Reset() override;
 
         void SetOnline(Bool_t option) { fOnline = option; }
+
+
+        void SetVetoPileupStatus(bool v){VetoPileup = v;}
+        void SetVetoOverflowStatus(bool v){VetoOverflow = v;}
+        void SetWriteZeroMultEvents(bool v){WriteZeroMultEvents = v;}
     
     private:
         unsigned int fNEvent;
@@ -42,7 +48,22 @@ class GermaniumReader : public c4Reader
         Bool_t fOnline;
 
         TClonesArray* fArray;
-    
+
+
+        uint64_t event_trigger_time_long;
+        uint64_t channel_trigger_time_long;
+
+        int32_t channel_energy;
+
+
+        uint64_t wr_t;
+
+
+        bool VetoPileup = 1; //should I veto on Pileup flag?
+        bool VetoOverflow = 1; //should I veto on overflow flag?
+        bool WriteZeroMultEvents = 0; // Write triggered DAQ events with no channels fired?
+
+
     public:
         ClassDefOverride(GermaniumReader, 0);
 };

@@ -58,45 +58,65 @@ Bool_t LisaReader::Init(ext_data_struct_info* a_struct_info)
 
 Bool_t LisaReader::Read()
 {
-    c4LOG(debug1, "Event data");
+    c4LOG(debug1, "Event Data");
 
-    uint32_t ts_lo, ts_hi;
-
-    // Read 16 channels channels
-    for (Int_t t = 0; t < 16; t++)
-    {   
-        // we should avoid zeros where we can, i.e. only fill from active channels.
-        // or borrow some __cool__ ucesb zero_suppression. Otherwise..works..
-        // janky until the structure file can be fixed. Mapping?
-        if (t == 0)
-        {
-            ts_lo = fData->trace_data_fts_lo_0[0];
-            ts_hi = fData->trace_data_fts_hi_0[0];
-        }
-        else
-        {
-            ts_lo = 0;
-            ts_hi = 0;
-        }
-
-        new ((*fArray)[fArray->GetEntriesFast()]) LisaData(fData->trace_data_fboard[0],
-                                                         fData->trace_data_fchn[0],
-                                                         fData->trace_data_fen_0[0],
-                                                         ts_lo,
-                                                         ts_hi);
-
-        for (Int_t e = 0; e < fData->trace_trace_ftrace[t]._; e++)
-        {
-            new ((*fTraceArray)[fTraceArray->GetEntriesFast()]) LisaTraceData(fData->trace_trace_ftrace[t].v[e]);
-        }
-    }
+    //since the febex card has a 100MHz clock which timestamps events.
+    event_trigger_time_long = (((uint64_t)(fData->event_trigger_time_hi) << 32) + (fData->event_trigger_time_lo)) * 10;
     
+    // white rabbit:
+    wr_t = (((uint64_t)fData->wr_t[3]) << 48) + (((uint64_t)fData->wr_t[2]) << 32) + (((uint64_t)fData->wr_t[1]) << 16) + (uint64_t)(fData->wr_t[0]);
+
+    if (WriteZeroMultEvents & (fData->num_channels_fired == 0))
+    {
+         new ((*fArray)[fArray->GetEntriesFast()]) LisaData(
+            fData->num_channels_fired,
+            event_trigger_time_long,
+            fData->hit_pattern,
+            fData->board_id,
+            0,
+            0,
+            0,
+            0,
+            0,
+            fData->wr_subsystem_id,
+            wr_t);
+    }
+
+    for (int index = 0; index < fData->num_channels_fired; index++)
+    {
+        // if (VetoOverflow & fData->overflow[index]) continue;
+        // if (VetoPileup & fData->pileup[index]) continue;
+
+        channel_energy = (int32_t)(fData->channel_energy[index] & 0x7FFFFFF);
+
+        // combine for 64bit timestamp
+        channel_trigger_time_long = (double)(((uint64_t)(fData->channel_trigger_time_hi[index]) << 32) + (fData->channel_trigger_time_lo[index]));
+        // add CF bits and convert to ns time
+        channel_trigger_time_long = (((double)fData->channel_cfd[index]) / 64.0 + channel_trigger_time_long) * 10.0; // units of ns
+        
+        new ((*fArray)[fArray->GetEntriesFast()]) LisaData(
+            fData->num_channels_fired,
+            event_trigger_time_long,
+            fData->hit_pattern,
+            fData->board_id,
+            fData->pileup[index],
+            fData->overflow[index],
+            fData->channel_id[index],
+            channel_trigger_time_long,
+            channel_energy,
+            fData->wr_subsystem_id,
+            wr_t
+        );
+
+    }
+
     fNEvent += 1;
     return kTRUE;
 }
 
 void LisaReader::Reset()
-{
+{   
+    // reset output array
     fArray->Clear();
     fTraceArray->Clear();
 }

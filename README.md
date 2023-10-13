@@ -31,10 +31,10 @@ To compile:
 > cd
 > cd $UCESB_DIR
 > make s452 -j 10
-> root -l run_frs_onlince.C
+> root -l run_ge_online.C
 ```
 
-This will generate a root file with unpacked FRS data from the S452 experiment in a tree. It will also generate an "online" ZvsAoQ plot.
+This will generate a root file with unpacked Germanium (FEBEX) data from the S452 experiment in a tree. It will also generate some "online" uncalibrated and calibrated Energy spectra per detector.
 
-NOTE: Before use, please check run_frs_online.C to adjust your filepath as may be necessary, as well as the port used for the HTTP server for online monitoring.
+NOTE: Before use, please check run_ge_online.C to adjust your filepath as may be necessary, as well as the port used for the HTTP server for online monitoring.
 

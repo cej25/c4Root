@@ -1,48 +1,46 @@
 #include "GermaniumFebexData.h"
 
 GermaniumFebexData::GermaniumFebexData()
-    : fGeFired(0)
-    , fSumTimeLo(0)
-    , fSumTimeHi(0)
-    , fHitPattern(0)
-    , fChanEnergy(0)
-    , fChanTimeLo(0)
-    , fChanTimeHi(0)
-    , fChanCFLo(0)
-    , fChanCFHi(0)
-    , fPileup(0)
-    , fOverflow(0)
-    , fDetIds(0)
-    , fCrystalIds(0)
+    : fnum_channels_fired(0),
+      fevent_trigger_time(0),
+      fhit_pattern(0),
+      fboard_id(0),
+      fpileup(0),
+      foverflow(0),
+      fchannel_id(0),
+      fchannel_trigger_time(0),
+      fchannel_energy(0),
+      //fcrystal_id(0),
+      //fdetector_id(0),
+      fwr_subsystem_id(0),
+      fwr_t(0)
 {
 }
 
-GermaniumFebexData::GermaniumFebexData(Int_t GeFired,
-                                           uint32_t sumTimeLo,
-                                           uint32_t sumTimeHi,
-                                           uint32_t hitPattern,
-                                           uint32_t ChanEnergy,
-                                           uint32_t chanTimeLo,
-                                           uint32_t chanTimeHi,
-                                           uint32_t chanCFLo,
-                                           uint32_t chanCFHi,
-                                           uint32_t pileup,
-                                           uint32_t overflow,
-                                           uint32_t detIds,
-                                           uint32_t crystalIds)
-    : fGeFired(GeFired)
-    , fSumTimeLo(sumTimeLo)
-    , fSumTimeHi(sumTimeHi)
-    , fHitPattern(hitPattern)
-    , fChanEnergy(ChanEnergy)
-    , fChanTimeLo(chanTimeLo)
-    , fChanTimeHi(chanTimeHi)
-    , fChanCFLo(chanCFLo)
-    , fChanCFHi(chanCFHi)
-    , fPileup(pileup)
-    , fOverflow(overflow)
-    , fDetIds(detIds)
-    , fCrystalIds(crystalIds)
+GermaniumFebexData::GermaniumFebexData(
+        uint32_t num_channels_fired,
+        uint64_t event_trigger_time,
+        uint16_t hit_pattern,
+        uint8_t board_id,
+        uint8_t pileup,
+        uint8_t overflow,
+        uint8_t channel_id,
+        double channel_trigger_time,
+        int32_t channel_energy, // from the FEBEX manual: bit 23 denotes the sign of the energy (i.e. negative pulses?)
+        uint16_t wr_subsystem_id,
+        uint64_t wr_t)
+    : 
+    fnum_channels_fired(num_channels_fired),
+    fevent_trigger_time(event_trigger_time),
+    fhit_pattern(hit_pattern),
+    fboard_id(board_id),
+    fpileup(pileup),
+    foverflow(overflow),
+    fchannel_id(channel_id),
+    fchannel_trigger_time(channel_trigger_time),
+    fchannel_energy(channel_energy),
+    fwr_subsystem_id(wr_subsystem_id),
+    fwr_t(wr_t)
 {
 }
 
