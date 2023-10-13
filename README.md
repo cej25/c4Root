@@ -7,7 +7,7 @@ Contact: c.jones@gsi.de
 Please note this software is currently in its infancy. The general architecture will be restructurd into slightly less nonsense, please forgive the mess for now. At present a couple of macros can be used for demonstration purposes; these are located in the ucesb directory. 
 
 Requirements:
-* ucesb, specifically: https://github.com/cej25/ucesb.git
+* ucesb, specifically: https://github.com/cej25/ucesb.git](https://git.chalmers.se/expsubphys/ucesb.git
 * FairSoft: https://github.com/FairRootGroup/FairSoft
 * FairRoot: https://github.com/FairRootGroup/FairRoot
 * cmake v13.3+
@@ -28,9 +28,9 @@ To compile:
 ```
 
 ```
-> cd
-> cd $UCESB_DIR
+> cd ../c4Root/unpack/exps/
 > make s452 -j 10
+> cd ../../macros/despec/
 > root -l run_ge_online.C
 ```
 
