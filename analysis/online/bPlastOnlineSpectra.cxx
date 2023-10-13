@@ -11,15 +11,6 @@
 #include "bPlastTamexData.h"
 #include "c4Logger.h"
 
-// some stuff from nic
-#include <TDirectory.h>
-#include <TH1.h>
-#include <exception>
-#include <fstream>
-#include <iostream>
-#include <stdexcept>
-#include <sstream>
-
 #include "TCanvas.h"
 #include "TClonesArray.h"
 #include "TFolder.h"
@@ -104,6 +95,25 @@ void bPlastOnlineSpectra::Reset_Histo()
     fh1_LeadTime->Reset();
 }
 
+int MAX_CARDS = 1; // for now
+int TDC_CHANNELS = 33; // for now
+struct fineTimeCalib
+{
+  int min;
+  int max;
+  double lookup[600];
+};
+
+fineTimeCalib calibrations[MAX_CARDS][TDC_CHANNELS];
+
+double getFine(int card, int channel, int fine, double scale = 5000.)
+{
+  if (fine < calibrations[card][channel].min)
+    return 0;
+  if (fine > calibrations[card][channel].max)
+    return scale;
+ i return (calibrations[card][channel].lookup[fine]) * scale;
+}
 void bPlastOnlineSpectra::Exec(Option_t* option)
 {   
 
@@ -119,9 +129,9 @@ void bPlastOnlineSpectra::Exec(Option_t* option)
             // just show me 0 for now
             if (hit->GetDet() == 1 && hit->GetChan() == 1)
             {
-                if (hit->GetPMT_Lead() != 0)
+                if (hit->GetbPlastLeadT() != 0)
                 {
-                    fh1_LeadTime->Fill(hit->GetPMT_Lead());
+                    fh1_LeadTime->Fill(hit->GetbPlastLeadT());
                 }
             }
 

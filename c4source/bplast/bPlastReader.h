@@ -42,6 +42,14 @@ class bPlastReader : public c4Reader
 
         Bool_t fOnline;
 
+        static constexpr size_t NCards = (sizeof(EXT_STR_h101_BPLAST_onion_t::plastic_crate[0].card) / sizeof(EXT_STR_h101_BPLAST_onion_t::plastic_crate[0].card[0]));
+        const int NCrates = 1;
+        const int NChannels = 33;
+        const int NHits = 10;
+
+
+        uint64_t plastic_ts_t;
+
         TClonesArray* fArray;
     
     public:
