@@ -1,11 +1,11 @@
 // -*- C++ -*-
 
-#include "whiterabbit.spec"
-#include "frs.spec" // caen modules etc.
+#include "../../common/whiterabbit.spec"
+#include "../../common/frs.spec"
 #include "tamex.spec"
 #include "config/setup.hh"
 
-external EXT_FRS(procid, type, subtype);
+// one by one we will remove all but AIDA...
 external EXT_GERMANIUM();
 external EXT_FATIMA_VME();
 external EXT_FATIMA_TAMEX(); // twinpeaks?
@@ -35,8 +35,7 @@ SUBEVENT(aida_subev)
         external data = EXT_AIDA();
     }
     else
-    {   
-        //EXTERNAL_DATA_SKIP; // external function 
+    {
         select several
         {
             dummy = DUMMY();
@@ -199,7 +198,8 @@ SUBEVENT(frs_crate_subev)
 {
     if (FRS_USED)
     {
-        external data = EXT_FRS(procid = 30, type = 12, subtype = 1);
+        //external data = EXT_FRS(procid = 30, type = 12, subtype = 1);
+        frs = FRS_DATA();
     }
     else
     {
@@ -212,7 +212,8 @@ SUBEVENT (frs_tpc_crate_subev)
 {
     if (FRS_USED)
     {
-        external data = EXT_FRS(procid = 20, type = 12, subtype = 1);
+        //external data = EXT_FRS(procid = 20, type = 12, subtype = 1);
+        tpc = TPC_DATA();
     }
     else
     {
@@ -225,7 +226,7 @@ SUBEVENT(frs_tof_crate_subev)
     if (FRS_USED)
     {
         //external data = EXT_FRS(procid = 35, type = 12, subtype = 1);
-        data = TOF_DATA();
+        data = TOF_DATA(); // 
     }
     else
     {
@@ -242,12 +243,14 @@ EVENT
     //plastic = plastic_subev(type = 10, subtype = 1, procid = 80, control = 20, subcrate = 0);
 
     // frs stuff
-    frs_whiterabbit = frs_whiterabbit_subev(type = 10, subtype = 1, procid = 10, control = 20); // whiterabbit read
-    frs_main_crate = frs_main_crate_subev(type = 12, subtype = 1, procid = 10, control = 20); // main crate read
-    frs_tpat = frs_tpat_subev(type = 36, subtype = 3600, procid = 10, control = 20); // tpat
-    frs_tof_crate = frs_tof_crate_subev(type = 12, subtype = 1, procid = 35, control = 20); // traw vftx // sci tof
-    //frs_tpc_crate = frs_tpc_crate_subev(type = 12, subtype = 1, procid = 20, control = 21); // frs_main_scaler // music?
-    //frs_crate = frs_crate_subev(type = 12, subtype = 1, procid = 30, control = 20); // sci_tx? // "frs crate"? // scaler_frs is here*/
+    // all works as spec but needs a major cleanup
+    frs_whiterabbit = frs_whiterabbit_subev(type = 10, subtype = 1, procid = 10, control = 20); // whiterabbit read // works
+    frs_main_crate = frs_main_crate_subev(type = 12, subtype = 1, procid = 10, control = 20); // main crate read // works
+    frs_tpat = frs_tpat_subev(type = 36, subtype = 3600, procid = 10, control = 20); // tpat // works
+    frs_tof_crate = frs_tof_crate_subev(type = 12, subtype = 1, procid = 35, control = 20); // VFTX, MQDC, SIS 3820 // works
+    frs_tpc_crate = frs_tpc_crate_subev(type = 12, subtype = 1, procid = 20, control = 21); // frs_main_scaler // music? // works i think
+    frs_crate = frs_crate_subev(type = 12, subtype = 1, procid = 30, control = 20); // sci_tx? // "frs crate"? // scaler_frs is here*/
+
 
     ignore_unknown_subevent;
 };
