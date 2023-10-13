@@ -230,12 +230,15 @@ Int_t UcesbSource::ReadEvent(UInt_t i)
             {
                 fRunId = ReadIntFromString(buffer, "RUNID");
                 fEventHeader->SetRunId(fRunId);
+                
             }
-            if (buffer.find("EVENT") == 0)
+            if (buffer.find("EVENT") == 0){
                 continue;
+            }
             Int_t fInit = atoi(buffer.c_str());
             buffer.erase(0, buffer.find(' ') + 1);
             fEntryMax = atoi(buffer.c_str());
+
 
         } while (fInputFile && buffer.compare("EVENT END"));
     }
@@ -300,25 +303,25 @@ Int_t UcesbSource::ReadEvent(UInt_t i)
 
 void UcesbSource::Close()
 {
-    int ret;
-
-    /* Close client connection */
-    ret = fClient.close();
-    // CEJ
-    // this returns 0 (correct for closing)
-    // then it tries again and receives -1, and thus "fails"
-    // second attempt occurs upon gApplication->Terminate();
-    // not sure whats going on.
-
-    if (0 != ret)
-    {
-        // perror("ext_data_clnt::close()");
-        c4LOG(fatal, "ext_data_clnt::close() failed");
-    }
-
+    // Shuffled to remove the double-call crash - NH
+    //
     /* Close pipe */
     if (nullptr != fFd)
     {
+        int ret;
+
+        /* Close client connection */
+        ret = fClient.close();
+        // CEJ
+        // this returns 0 (correct for closing)
+        // then it tries again and receives -1, and thus "fails"
+        // second attempt occurs upon gApplication->Terminate();
+        // not sure whats going on.
+
+        if (0 != ret)
+        {
+            c4LOG(fatal, "ext_data_clnt::close() failed ret = " << ret);
+        }
         int status;
         status = pclose(fFd);
         if (-1 == status)
@@ -327,6 +330,7 @@ void UcesbSource::Close()
             c4LOG(fatal, "pclose() failed");
             abort();
         }
+        fFd = nullptr;
     }
 
     if (fInputFile.is_open())
@@ -349,6 +353,9 @@ Bool_t UcesbSource::SpecifyRunId()
 }
 
 //_____________________________________________________________________________
-void UcesbSource::FillEventHeader(EventHeader* feh) { ((EventHeader*)feh)->SetRunId(fRunId); }
+
+void UcesbSource::FillEventHeader(EventHeader* feh) { 
+    ((EventHeader*)feh)->SetRunId(fRunId);
+    }
 
 ClassImp(UcesbSource);

@@ -40,13 +40,16 @@ link_directories( ${LINK_DIRECTORIES})
 
 set(SRCS
 ./base/UcesbSource.cxx
+./base/UnpackReader.cxx
 ./base/c4Reader.cxx
 ./aida/c4AidaReader.cxx
+./aida/TAidaConfiguration.cxx
 ./frs/FrsReader.cxx
 ./germanium/GermaniumReader.cxx
 ./lisa/LisaReader.cxx
 ./bplast/bPlastReader.cxx
 ./beammonitor/BeamMonitorReader.cxx
+./germanium/GermaniumRaw2Cal.cxx
 )
 
 Set(STRUCT_HEADERS

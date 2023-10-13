@@ -8,12 +8,17 @@
 
 #pragma link C++ class FrsData+;
 #pragma link C++ class GermaniumFebexData+;
+#pragma link C++ class GermaniumCalData+;
 #pragma link C++ class bPlastTamexData+;
 #pragma link C++ class LisaData+;
 #pragma link C++ class LisaTraceData+;
 #pragma link C++ class BeamMonitorData+;
 
 #pragma link C++ class AidaUnpackAdcItem+;
+#pragma link C++ class AidaUnpackFlowItem+;
+#pragma link C++ class AidaUnpackScalerItem+;
 #pragma link C++ class std::vector<AidaUnpackAdcItem>+;
+#pragma link C++ class std::vector<AidaUnpackFlowItem>+;
+#pragma link C++ class std::vector<AidaUnpackScalerItem>+;
 
 #endif

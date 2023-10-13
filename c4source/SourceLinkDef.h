@@ -10,12 +10,16 @@
 #pragma link C++ class c4Reader+;
 #pragma link C++ class FrsReader+;
 #pragma link C++ class GermaniumReader+;
+#pragma link C++ class GermaniumRaw2Cal+;
 #pragma link C++ class AidaReader+;
 #pragma link C++ class bPlastReader+;
 #pragma link C++ class LisaReader+;
 #pragma link C++ class UnpackReader+;
 #pragma link C++ class BeamMonitorReader+;
 
+
+
+#pragma link C++ class EXT_STR_h101_unpack_t;
 #pragma link C++ class EXT_STR_h101_FRS_onion_t;
 #pragma link C++ class EXT_STR_h101_GE_FEBEX_onion_t;
 #pragma link C++ class EXT_STR_h101_LISA_onion_t;

@@ -15,6 +15,9 @@ class GermaniumOnlineSpectra : public FairTask
         GermaniumOnlineSpectra();
         GermaniumOnlineSpectra(const TString& name, Int_t verbose = 1);
 
+
+        void CreateHistograms();
+
         virtual ~GermaniumOnlineSpectra();
 
         virtual void SetParContainers();
@@ -35,6 +38,7 @@ class GermaniumOnlineSpectra : public FairTask
     private:
         TClonesArray* fHitGe;
 
+
         // ranges
         //Double_t
 
@@ -44,10 +48,19 @@ class GermaniumOnlineSpectra : public FairTask
         // Canvas
         TCanvas* cSumTime; // channel 1 out of 28 for now?
         TCanvas* cEnergySpectraTest;
+        TCanvas* cEnergySpectra;
+        TCanvas* cCalEnergySpectra;
 
-        // Histograms
-        TH1F* fh1_SumTime;
-        TH1F* fh1_EnergySpectraTest;
+        // Histograms energy
+        TH1F * h1_energy[100];
+        TH1F * h1_energy_mult2[100];
+
+        //Histograms time
+        TH1F * h1_time[100];
+
+        int NCrystals = 7;
+        int NDetectors = 2;
+
 
     public:
         ClassDef(GermaniumOnlineSpectra, 1)
