@@ -13,7 +13,7 @@
 extern "C"
 {
     #include "ext_data_client.h"
-    #include "ext_h101_bplast.h"
+    #include "ext_h101.h"
 }
 
 bPlastReader::bPlastReader(EXT_STR_h101_BPLAST_onion* data, size_t offset)
@@ -49,38 +49,112 @@ Bool_t bPlastReader::Init(ext_data_struct_info* a_struct_info)
 
     return kTRUE;
 }
+//
 
-Bool_t bPlastReader::Read()
+struct fineTimeCalib
+{
+  int min;
+  int max;
+  double lookup[600];
+};
+
+fineTimeCalib calibrations[NCards][NChannels];
+
+double getFineTime(int card, int channel, int fine, double scale = 5000.)
+{
+  if (fine < calibrations[card][channel].min)
+    return 0;
+  if (fine > calibrations[card][channel].max)
+    return scale;
+  return (calibrations[card][channel].lookup[fine]) * scale;
+}
+
+Bool_t bPlastReader::Read(decltype(&EXT_STR_h101_BPLAST_onion_t::plastic_crate[0].card[0]) card, size_t cardid)
 {
     c4LOG(debug1, "Event Data");
 
+    // Would you look at the time!
+    plastic_ts_t = (((uint64_t)fData->plastic_ts_t[3]) << 48) + (((uint64_t)fData->plastic_ts_t[2]) << 32) + (((uint64_t)fData->plastic_ts_t[1]) << 16) + (uint64_t)(fData->plastic_ts_t[0]);
+
+
+    // TAMEX Epoch correction
+    std::array<double, NChannel> leads = {0};
+    std::array<double, NChannel> trails = {0};
+    std::array<double, NChannel> epoch = {0};
+
+    int32_t epoch = 0;
+    int32_t last_epoch = 0;
+
     // BPLAST_TAMEX_MODULES
-    for (int det = 0; det < 4; det++)
+    for (int det = 0; NCards < 4; det++)
     {   
-        // BPLAST_CHAN_PER_DET
-        for (int chan = 0; chan < 16; chan++)
-        {       
-            // BPLAST_TAMEX_HITS
-            for (int hit = 0; hit < 100; hit++)
-            {
-                /*if (fData->bPlastPMTLead[det]._[chan]._[hit] != 0)
-                {   
-                    std::cout << "not zero bPlastReader: det - " << det << " - chan - " << chan << std::endl;
-                    std::cout << fData->bPlastPMTLead[det]._[chan]._[hit] << std::endl;
-                }*/
-               
-                new ((*fArray)[fArray->GetEntriesFast()]) bPlastTamexData(det,
-                                                                      chan,
-                                                                      fData->bPlastPMTLead[det]._[chan]._[hit]);
+        // BPLAST_TAMEX_HITS
+        for (int hit = 0; hit < NHits; hit++) // this will have to change as the variable size is indicated by the variable leading it, we will usually set hits to 5
+        {  
+
+            // Time correction
+
+            if (card->time_epochv[hit] !=0){
+                last_epoch = card->time_epochv[hit];
+            }
+            else{
+                if (card->time_finev[hit] == 0x3ff) continue;
+                int channel = card->time_channelv[hit];
+                if (channel >= NChannel) continue;
+
+                if (last_epoch != 0){
+                    if (epoch_base == 0 && channel == 0){
+                        epoch_base = last_epoch;
+                    }
+                    else if (epoch_base == 0){
+                        throw std::runtime_error("Unexpected TDC epoch before trigger");
+                    }
+                    epoch[channel] = last_epoch - epoch_base;
+                    dout << "epoch[" << cardidx << "][" << channel << "] = " << (last_epoch - epoch_base) << std::endl; // for debugging
+                    last_epoch = 0;
+                }
             }
 
-        }
-    }
+            // Calculate time event time
 
-  
+            double time = (epoch[channel] * 1024e4) + card->time_coarsev[hit] * 5000 - getFineTime(cardid, channel, card->time_finev[hit]);
+
+            // Leading edge = 1
+
+            if (card->time_edgev[hit] == 1){
+                dout << "TDC Card = " << cardidx << ", Ch = " << channel << ", Lead, Time = " << time << std::endl; // for debugging purposes
+                leads[channel] = time;
+            }
+
+            // Trailing edge = 0
+
+            else {
+                if (leads[channel] /* && card->time_edgev[hit] == 0 */){
+                    trails[channel] = time;
+                    double tot = time - leads[channel];
+                }
+
+            // Fill TAMEX data arrays
+
+            new ((*fArray)[fArray->GetEntriesFast()]) bPlastTamexData(
+                fData->leads[channel],
+                fData->trails[channel],
+                fData->tot,
+                fData->channel,
+                fData->epoch,
+                fData->plastic_ts_subsystem_id,
+                plastic_ts_t
+            );
+
+            leads[channel] = 0;
+            trails[channel] = 0;
+            }
+        } 
+    }
     fNEvent += 1;
-    return kTRUE;
+    return kTRUE;    
 }
+
 
 void bPlastReader::Reset()
 {
