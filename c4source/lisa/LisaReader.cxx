@@ -60,15 +60,6 @@ Bool_t LisaReader::Read()
 {
     c4LOG(debug1, "Event Data");
 
-<<<<<<< HEAD
-    
-    
-
-
-
-
-
-=======
     //since the febex card has a 100MHz clock which timestamps events.
     event_trigger_time_long = (((uint64_t)(fData->event_trigger_time_hi) << 32) + (fData->event_trigger_time_lo)) * 10;
     
@@ -90,7 +81,6 @@ Bool_t LisaReader::Read()
             fData->wr_subsystem_id,
             wr_t);
     }
->>>>>>> main
 
     for (int index = 0; index < fData->num_channels_fired; index++)
     {
@@ -118,10 +108,7 @@ Bool_t LisaReader::Read()
             wr_t
         );
 
-<<<<<<< HEAD
-=======
     }
->>>>>>> main
 
     fNEvent += 1;
     return kTRUE;

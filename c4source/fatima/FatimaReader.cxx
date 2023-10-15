@@ -32,9 +32,19 @@ FatimaReader::~FatimaReader() {
     c4LOG(info, Form("Trails read %i",(int)fNtrails_read));
     c4LOG(info, Form("Leads read  %i",(int)fNleads_read));
     c4LOG(info, Form("Matches     %i",(int)fNmatched));
+    
+    for (int i = 0; i < NBoards; i++) {
+        if (last_hits[i] != nullptr) {
+            delete[] last_hits[i];
+            last_hits[i] = nullptr;  // Set the pointer to nullptr after deletion
+        }
+    }
+    delete[] last_hits;
 
-    for (int i = 0;i<NBoards;i++) delete[] last_hits[i];
+
     delete fArray;
+
+    c4LOG(info, "Destroyed FatimaReader properly.");
 
 }
 
@@ -51,18 +61,18 @@ Bool_t FatimaReader::Init(ext_data_struct_info* a_struct_info)
         return kFALSE;
     }
 
-
     last_hits = new last_lead_hit_struct*[NBoards];
-    for (int i = 0;i<NBoards;i++) last_hits[i] = new last_lead_hit_struct[NChannels];
+    for (int i = 0; i < NBoards; i++) last_hits[i] = new last_lead_hit_struct[NChannels];
 
-    for (int i = 0;i<NBoards;i++){
-        for (int j=0;j<NChannels;j++){
+    for (int i = 0; i < NBoards; i++) {
+        for (int j = 0; j < NChannels; j++) {
             last_hits[i][j].hit = false;
             last_hits[i][j].lead_coarse_T = 0;
             last_hits[i][j].lead_fine_T = 0;
             last_hits[i][j].lead_epoch_counter = 0;
         }
     }
+
 
     // Register output array in a tree
     FairRootManager::Instance()->Register("FatimaTwinpeaksData", "Fatima Twinpeaks Data", fArray, !fOnline);
@@ -78,6 +88,7 @@ Bool_t FatimaReader::Read()
 {
     c4LOG(debug1, "Event Data");
 
+    if (!fData) return kTRUE;
 
     //whiterabbit timestamp:
     wr_t = (((uint64_t)fData->fatima_ts_t[3]) << 48) + (((uint64_t)fData->fatima_ts_t[2]) << 32) + (((uint64_t)fData->fatima_ts_t[1]) << 16) + (uint64_t)(fData->fatima_ts_t[0]);
@@ -87,10 +98,14 @@ Bool_t FatimaReader::Read()
         
         last_epoch = 0;
         look_ahead_counter = 0;
+        //reset last hits?
 
-        //std::cout << fData->fatima_tamex[it_board_number].event_size/4-3 << std::endl;
+        if (fData->fatima_tamex[it_board_number].event_size == 0) continue; // empty event skip
 
-        for (int it_hits = 0; it_hits < 512 ; it_hits++){ // if no data is written this loop never starts (?)
+        //std::cout << fData->fatima_tamex[it_board_number].event_size << std::endl;
+
+        for (int it_hits = 0; it_hits < fData->fatima_tamex[it_board_number].event_size/4 - 3 ; it_hits++){ // if no data is written this loop never starts (?)
+            //this distinguishes epoch words from time words by checking if the epoch/coarse and fine words are zero. This would potentially be a problem if epoch truly is zero...
 
             //look ahead to grab epoch:
             if (last_epoch == 0 && fData->fatima_tamex[it_board_number].time_epochv[it_hits] == 0){
@@ -110,6 +125,7 @@ Bool_t FatimaReader::Read()
             //if ((fData->fatima_tamex[it_board_number].time_epochv[it_hits] !=0)  | (last_epoch == 0)) {c4LOG(fatal,"Epoch is non zero!");}
 
             int channelid = fData->fatima_tamex[it_board_number].time_channelv[it_hits]; // 1-32
+            if (channelid == 0) continue; // skip channel 0 for now
             int coarse_T = fData->fatima_tamex[it_board_number].time_coarsev[it_hits];
             int fine_T = fData->fatima_tamex[it_board_number].time_finev[it_hits];
 
@@ -138,7 +154,6 @@ Bool_t FatimaReader::Read()
                     last_hits[it_board_number][channelid-1].lead_epoch_counter = last_epoch;
                     last_hits[it_board_number][channelid-1].lead_coarse_T = coarse_T;
                     last_hits[it_board_number][channelid-1].lead_fine_T = fine_T;
-
                 }
 
                 last_hits[it_board_number][channelid-1].hit = true;
@@ -189,8 +204,7 @@ void FatimaReader::Reset()
 {
     // reset output array
     fArray->Clear();
-
-        
+       
 }
 
 ClassImp(FatimaReader)
