@@ -29,7 +29,7 @@ typedef          int  int32_t;
 typedef struct EXT_STR_h101_FATIMA_t
 {
   /* UNPACK */
-  uint32_t fatima_tamex1event_size /* [0,65535] */;
+  uint32_t fatima_tamex1event_size /* [-1,-1] */;
   uint32_t fatima_tamex1time_coarse /* [0,512] */;
   uint32_t fatima_tamex1time_coarsev[512 EXT_STRUCT_CTRL(fatima_tamex1time_coarse)] /* [0,65535] */;
   uint32_t fatima_tamex1time_fine /* [0,512] */;
@@ -40,7 +40,7 @@ typedef struct EXT_STR_h101_FATIMA_t
   uint32_t fatima_tamex1time_channelv[512 EXT_STRUCT_CTRL(fatima_tamex1time_channel)] /* [0,65535] */;
   uint32_t fatima_tamex1time_epoch /* [0,512] */;
   uint32_t fatima_tamex1time_epochv[512 EXT_STRUCT_CTRL(fatima_tamex1time_epoch)] /* [-1,-1] */;
-  uint32_t fatima_tamex2event_size /* [0,65535] */;
+  uint32_t fatima_tamex2event_size /* [-1,-1] */;
   uint32_t fatima_tamex2time_coarse /* [0,512] */;
   uint32_t fatima_tamex2time_coarsev[512 EXT_STRUCT_CTRL(fatima_tamex2time_coarse)] /* [0,65535] */;
   uint32_t fatima_tamex2time_fine /* [0,512] */;
@@ -51,7 +51,7 @@ typedef struct EXT_STR_h101_FATIMA_t
   uint32_t fatima_tamex2time_channelv[512 EXT_STRUCT_CTRL(fatima_tamex2time_channel)] /* [0,65535] */;
   uint32_t fatima_tamex2time_epoch /* [0,512] */;
   uint32_t fatima_tamex2time_epochv[512 EXT_STRUCT_CTRL(fatima_tamex2time_epoch)] /* [-1,-1] */;
-  uint32_t fatima_tamex3event_size /* [0,65535] */;
+  uint32_t fatima_tamex3event_size /* [-1,-1] */;
   uint32_t fatima_tamex3time_coarse /* [0,512] */;
   uint32_t fatima_tamex3time_coarsev[512 EXT_STRUCT_CTRL(fatima_tamex3time_coarse)] /* [0,65535] */;
   uint32_t fatima_tamex3time_fine /* [0,512] */;
@@ -62,7 +62,7 @@ typedef struct EXT_STR_h101_FATIMA_t
   uint32_t fatima_tamex3time_channelv[512 EXT_STRUCT_CTRL(fatima_tamex3time_channel)] /* [0,65535] */;
   uint32_t fatima_tamex3time_epoch /* [0,512] */;
   uint32_t fatima_tamex3time_epochv[512 EXT_STRUCT_CTRL(fatima_tamex3time_epoch)] /* [-1,-1] */;
-  uint32_t fatima_tamex4event_size /* [0,65535] */;
+  uint32_t fatima_tamex4event_size /* [-1,-1] */;
   uint32_t fatima_tamex4time_coarse /* [0,512] */;
   uint32_t fatima_tamex4time_coarsev[512 EXT_STRUCT_CTRL(fatima_tamex4time_coarse)] /* [0,65535] */;
   uint32_t fatima_tamex4time_fine /* [0,512] */;
@@ -73,7 +73,7 @@ typedef struct EXT_STR_h101_FATIMA_t
   uint32_t fatima_tamex4time_channelv[512 EXT_STRUCT_CTRL(fatima_tamex4time_channel)] /* [0,65535] */;
   uint32_t fatima_tamex4time_epoch /* [0,512] */;
   uint32_t fatima_tamex4time_epochv[512 EXT_STRUCT_CTRL(fatima_tamex4time_epoch)] /* [-1,-1] */;
-  uint32_t fatima_tamex5event_size /* [0,65535] */;
+  uint32_t fatima_tamex5event_size /* [-1,-1] */;
   uint32_t fatima_tamex5time_coarse /* [0,512] */;
   uint32_t fatima_tamex5time_coarsev[512 EXT_STRUCT_CTRL(fatima_tamex5time_coarse)] /* [0,65535] */;
   uint32_t fatima_tamex5time_fine /* [0,512] */;
@@ -84,7 +84,7 @@ typedef struct EXT_STR_h101_FATIMA_t
   uint32_t fatima_tamex5time_channelv[512 EXT_STRUCT_CTRL(fatima_tamex5time_channel)] /* [0,65535] */;
   uint32_t fatima_tamex5time_epoch /* [0,512] */;
   uint32_t fatima_tamex5time_epochv[512 EXT_STRUCT_CTRL(fatima_tamex5time_epoch)] /* [-1,-1] */;
-  uint32_t fatima_tamex6event_size /* [0,65535] */;
+  uint32_t fatima_tamex6event_size /* [-1,-1] */;
   uint32_t fatima_tamex6time_coarse /* [0,512] */;
   uint32_t fatima_tamex6time_coarsev[512 EXT_STRUCT_CTRL(fatima_tamex6time_coarse)] /* [0,65535] */;
   uint32_t fatima_tamex6time_fine /* [0,512] */;
@@ -95,7 +95,7 @@ typedef struct EXT_STR_h101_FATIMA_t
   uint32_t fatima_tamex6time_channelv[512 EXT_STRUCT_CTRL(fatima_tamex6time_channel)] /* [0,65535] */;
   uint32_t fatima_tamex6time_epoch /* [0,512] */;
   uint32_t fatima_tamex6time_epochv[512 EXT_STRUCT_CTRL(fatima_tamex6time_epoch)] /* [-1,-1] */;
-  uint32_t fatima_tamex7event_size /* [0,65535] */;
+  uint32_t fatima_tamex7event_size /* [-1,-1] */;
   uint32_t fatima_tamex7time_coarse /* [0,512] */;
   uint32_t fatima_tamex7time_coarsev[512 EXT_STRUCT_CTRL(fatima_tamex7time_coarse)] /* [0,65535] */;
   uint32_t fatima_tamex7time_fine /* [0,512] */;
@@ -106,7 +106,7 @@ typedef struct EXT_STR_h101_FATIMA_t
   uint32_t fatima_tamex7time_channelv[512 EXT_STRUCT_CTRL(fatima_tamex7time_channel)] /* [0,65535] */;
   uint32_t fatima_tamex7time_epoch /* [0,512] */;
   uint32_t fatima_tamex7time_epochv[512 EXT_STRUCT_CTRL(fatima_tamex7time_epoch)] /* [-1,-1] */;
-  uint32_t fatima_tamex8event_size /* [0,65535] */;
+  uint32_t fatima_tamex8event_size /* [-1,-1] */;
   uint32_t fatima_tamex8time_coarse /* [0,512] */;
   uint32_t fatima_tamex8time_coarsev[512 EXT_STRUCT_CTRL(fatima_tamex8time_coarse)] /* [0,65535] */;
   uint32_t fatima_tamex8time_fine /* [0,512] */;
@@ -117,7 +117,7 @@ typedef struct EXT_STR_h101_FATIMA_t
   uint32_t fatima_tamex8time_channelv[512 EXT_STRUCT_CTRL(fatima_tamex8time_channel)] /* [0,65535] */;
   uint32_t fatima_tamex8time_epoch /* [0,512] */;
   uint32_t fatima_tamex8time_epochv[512 EXT_STRUCT_CTRL(fatima_tamex8time_epoch)] /* [-1,-1] */;
-  uint32_t fatima_tamex9event_size /* [0,65535] */;
+  uint32_t fatima_tamex9event_size /* [-1,-1] */;
   uint32_t fatima_tamex9time_coarse /* [0,512] */;
   uint32_t fatima_tamex9time_coarsev[512 EXT_STRUCT_CTRL(fatima_tamex9time_coarse)] /* [0,65535] */;
   uint32_t fatima_tamex9time_fine /* [0,512] */;
@@ -176,9 +176,9 @@ typedef struct EXT_STR_h101_FATIMA_onion_t
 #define EXT_STR_h101_FATIMA_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
   ok = 1; \
   /* UNPACK */ \
-  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+  EXT_STR_ITEM_INFO    (ok,si,offset,struct_t,printerr,\
                      fatima_tamex1event_size,         UINT32,\
-                    "fatima_tamex1event_size",65535); \
+                    "fatima_tamex1event_size"); \
   EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
                      fatima_tamex1time_coarse,        UINT32,\
                     "fatima_tamex1time_coarse",512); \
@@ -209,9 +209,9 @@ typedef struct EXT_STR_h101_FATIMA_onion_t
   EXT_STR_ITEM_INFO_ZZP(ok,si,offset,struct_t,printerr,\
                      fatima_tamex1time_epochv,        UINT32,\
                     "fatima_tamex1time_epochv",        "fatima_tamex1time_epoch"); \
-  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+  EXT_STR_ITEM_INFO    (ok,si,offset,struct_t,printerr,\
                      fatima_tamex2event_size,         UINT32,\
-                    "fatima_tamex2event_size",65535); \
+                    "fatima_tamex2event_size"); \
   EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
                      fatima_tamex2time_coarse,        UINT32,\
                     "fatima_tamex2time_coarse",512); \
@@ -242,9 +242,9 @@ typedef struct EXT_STR_h101_FATIMA_onion_t
   EXT_STR_ITEM_INFO_ZZP(ok,si,offset,struct_t,printerr,\
                      fatima_tamex2time_epochv,        UINT32,\
                     "fatima_tamex2time_epochv",        "fatima_tamex2time_epoch"); \
-  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+  EXT_STR_ITEM_INFO    (ok,si,offset,struct_t,printerr,\
                      fatima_tamex3event_size,         UINT32,\
-                    "fatima_tamex3event_size",65535); \
+                    "fatima_tamex3event_size"); \
   EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
                      fatima_tamex3time_coarse,        UINT32,\
                     "fatima_tamex3time_coarse",512); \
@@ -275,9 +275,9 @@ typedef struct EXT_STR_h101_FATIMA_onion_t
   EXT_STR_ITEM_INFO_ZZP(ok,si,offset,struct_t,printerr,\
                      fatima_tamex3time_epochv,        UINT32,\
                     "fatima_tamex3time_epochv",        "fatima_tamex3time_epoch"); \
-  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+  EXT_STR_ITEM_INFO    (ok,si,offset,struct_t,printerr,\
                      fatima_tamex4event_size,         UINT32,\
-                    "fatima_tamex4event_size",65535); \
+                    "fatima_tamex4event_size"); \
   EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
                      fatima_tamex4time_coarse,        UINT32,\
                     "fatima_tamex4time_coarse",512); \
@@ -308,9 +308,9 @@ typedef struct EXT_STR_h101_FATIMA_onion_t
   EXT_STR_ITEM_INFO_ZZP(ok,si,offset,struct_t,printerr,\
                      fatima_tamex4time_epochv,        UINT32,\
                     "fatima_tamex4time_epochv",        "fatima_tamex4time_epoch"); \
-  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+  EXT_STR_ITEM_INFO    (ok,si,offset,struct_t,printerr,\
                      fatima_tamex5event_size,         UINT32,\
-                    "fatima_tamex5event_size",65535); \
+                    "fatima_tamex5event_size"); \
   EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
                      fatima_tamex5time_coarse,        UINT32,\
                     "fatima_tamex5time_coarse",512); \
@@ -341,9 +341,9 @@ typedef struct EXT_STR_h101_FATIMA_onion_t
   EXT_STR_ITEM_INFO_ZZP(ok,si,offset,struct_t,printerr,\
                      fatima_tamex5time_epochv,        UINT32,\
                     "fatima_tamex5time_epochv",        "fatima_tamex5time_epoch"); \
-  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+  EXT_STR_ITEM_INFO    (ok,si,offset,struct_t,printerr,\
                      fatima_tamex6event_size,         UINT32,\
-                    "fatima_tamex6event_size",65535); \
+                    "fatima_tamex6event_size"); \
   EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
                      fatima_tamex6time_coarse,        UINT32,\
                     "fatima_tamex6time_coarse",512); \
@@ -374,9 +374,9 @@ typedef struct EXT_STR_h101_FATIMA_onion_t
   EXT_STR_ITEM_INFO_ZZP(ok,si,offset,struct_t,printerr,\
                      fatima_tamex6time_epochv,        UINT32,\
                     "fatima_tamex6time_epochv",        "fatima_tamex6time_epoch"); \
-  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+  EXT_STR_ITEM_INFO    (ok,si,offset,struct_t,printerr,\
                      fatima_tamex7event_size,         UINT32,\
-                    "fatima_tamex7event_size",65535); \
+                    "fatima_tamex7event_size"); \
   EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
                      fatima_tamex7time_coarse,        UINT32,\
                     "fatima_tamex7time_coarse",512); \
@@ -407,9 +407,9 @@ typedef struct EXT_STR_h101_FATIMA_onion_t
   EXT_STR_ITEM_INFO_ZZP(ok,si,offset,struct_t,printerr,\
                      fatima_tamex7time_epochv,        UINT32,\
                     "fatima_tamex7time_epochv",        "fatima_tamex7time_epoch"); \
-  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+  EXT_STR_ITEM_INFO    (ok,si,offset,struct_t,printerr,\
                      fatima_tamex8event_size,         UINT32,\
-                    "fatima_tamex8event_size",65535); \
+                    "fatima_tamex8event_size"); \
   EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
                      fatima_tamex8time_coarse,        UINT32,\
                     "fatima_tamex8time_coarse",512); \
@@ -440,9 +440,9 @@ typedef struct EXT_STR_h101_FATIMA_onion_t
   EXT_STR_ITEM_INFO_ZZP(ok,si,offset,struct_t,printerr,\
                      fatima_tamex8time_epochv,        UINT32,\
                     "fatima_tamex8time_epochv",        "fatima_tamex8time_epoch"); \
-  EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
+  EXT_STR_ITEM_INFO    (ok,si,offset,struct_t,printerr,\
                      fatima_tamex9event_size,         UINT32,\
-                    "fatima_tamex9event_size",65535); \
+                    "fatima_tamex9event_size"); \
   EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
                      fatima_tamex9time_coarse,        UINT32,\
                     "fatima_tamex9time_coarse",512); \
@@ -535,7 +535,7 @@ typedef struct EXT_STR_h101_FATIMA_layout_t
   46552, \
   1, \
   { \
-    { 0, sizeof(EXT_STR_h101_FATIMA), 0xe078a64c, "h101_FATIMA" }, \
+    { 0, sizeof(EXT_STR_h101_FATIMA), 0xe8091d2a, "h101_FATIMA" }, \
   }, \
   { \
    /*    0 */ 0x40a50000, 0x00000000, 0x40a50000, 0x00002818, \
@@ -12179,6 +12179,6 @@ typedef struct EXT_STR_h101_FATIMA_layout_t
   } \
 };
 
-#endif/*__GUARD_H101_EXT_H101_FATIMA_H__*/
+#endif/*__GUARD_h101_FATIMA_EXT_h101_FATIMA_FATIMA_H__*/
 
 /*******************************************************/
