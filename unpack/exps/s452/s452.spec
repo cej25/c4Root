@@ -6,7 +6,8 @@
 #include "config/setup.hh"
 
 // one by one we will remove all but AIDA...
-external EXT_GERMANIUM();
+
+#include "ge_febex.spec"
 external EXT_FATIMA_VME();
 external EXT_FATIMA_TAMEX(); // twinpeaks?
 external EXT_PLASTIC_TP();
@@ -46,20 +47,14 @@ SUBEVENT(aida_subev)
 
 SUBEVENT(germanium_subev)
 {
+    ts = TIMESTAMP_WHITERABBIT(id=0x400);
 
-    if (GERMANIUM_USED)
-    {
-        ts = TIMESTAMP_WHITERABBIT(id=0x400);
-        external data = EXT_GERMANIUM();
+    select several{
+    padding = FEBEX_PADDING();
     }
-    else
-    {
-        select several
-        {
-            dummy = DUMMY();
-        }
+    select several{  // do once per card
+    data = FEBEX_EVENT();
     }
-
 }
 
 SUBEVENT(fatima_vme_subev)

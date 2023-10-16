@@ -46,7 +46,7 @@ set(SRCS
 ./aida/TAidaConfiguration.cxx
 ./frs/FrsReader.cxx
 ./germanium/GermaniumReader.cxx
-./lisa/LisaReader.cxx
+#./lisa/LisaReader.cxx
 ./bplast/bPlastReader.cxx
 ./beammonitor/BeamMonitorReader.cxx
 ./germanium/GermaniumRaw2Cal.cxx
@@ -57,7 +57,7 @@ Set(STRUCT_HEADERS
 ./base/ext_h101_unpack.h
 ./aida/ext_h101_aida.h
 ./frs/ext_h101_frs.h
-./lisa/ext_h101_lisa.h
+#./lisa/ext_h101_lisa.h
 ./germanium/ext_h101_ge_febex.h
 ./bplast/ext_h101_bplast.h
 ./beammonitor/ext_h101_bm.h
