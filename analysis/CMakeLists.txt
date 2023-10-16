@@ -10,7 +10,7 @@ ${C4ROOT_SOURCE_DIR}/c4data
 ${C4ROOT_SOURCE_DIR}/c4data/frsData
 ${C4ROOT_SOURCE_DIR}/c4data/germaniumData
 ${C4ROOT_SOURCE_DIR}/c4data/aidaData
-${C4ROOT_SOURCE_DIR}/c4data/bplastData
+#${C4ROOT_SOURCE_DIR}/c4data/bplastData
 ${C4ROOT_SOURCE_DIR}/c4data/fatimaData
 ${C4ROOT_SOURCE_DIR}/c4data/lisaData
 ${C4ROOT_SOURCE_DIR}/c4data/wrData
@@ -26,7 +26,16 @@ include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 
 link_directories(${FAIRROOT_LIBRARY_DIR} ${ROOT_LIBRARY_DIR})
 
-file(GLOB SRCS ./online/*.cxx ./offline/*.cxx ./pars/*.cxx)
+set(SRCS
+./online/GermaniumOnlineSpectra.cxx
+./online/BeamMonitorOnlineSpectra.cxx
+./online/LisaOnlineSpectra.cxx
+./online/AidaOnlineSpectra.cxx
+./online/FrsOnlineSpectra.cxx
+)
+
+
+#file(GLOB SRCS ./online/*.cxx ./offline/*.cxx ./pars/*.cxx)
 
 # fill list of header files from list of source files
 # by exchanging the file extension

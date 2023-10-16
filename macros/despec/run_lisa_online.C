@@ -19,7 +19,7 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
 
-    TString filename = "~/lustre/gamma/LISA/data/Summer23/lmd/14aug_run3.lmd";
+    TString filename = "~/lustre/gamma/LISA/data/vicar/sep08_run_5.lmd";
     TString outputpath = "~/run_online_lisa_test";
     TString outputFilename = outputpath + ".root";
 
@@ -27,8 +27,11 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     Int_t port = 5999;
 
     TString ntuple_options = "UNPACK";
-    TString ucesb_dir = getenv("UCESB_DIR");
-    TString ucesb_path = ucesb_dir + "/lisa/lisa --allow-errors --input-buffer=200Mi";
+    //TString ucesb_dir = getenv("UCESB_DIR");
+    TString ucesb_dir = getenv("HOME");
+    TString temp_path = ucesb_dir + "/c4Root/unpack/exps";
+    //TString ucesb_path = ucesb_dir + "/lisa/lisa --allow-errors --input-buffer=200Mi";
+    TString ucesb_path = temp_path + "/lisa/lisa --allow-errors --input-buffer=200Mi --print";
     ucesb_path.ReplaceAll("//","/");
 
     FairRunOnline* run = new FairRunOnline();
