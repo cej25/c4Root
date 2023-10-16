@@ -167,7 +167,6 @@ SUBEVENT(frs_main_crate_subev)
     if (FRS_USED)
     {   
         data = MAIN_CRATE_DATA();
-        //external data = EXT_FRS(procid = 10, type = 12, subtype = 1);
     }
     else
     {
@@ -182,7 +181,6 @@ SUBEVENT(frs_tpat_subev)
 {
     if (FRS_USED)
     {
-        //external data = EXT_FRS(procid = 10, type = 36, subtype = 3600);
         data = TPAT_DATA(id=0xCF);
     }
     else
@@ -198,7 +196,6 @@ SUBEVENT(frs_crate_subev)
 {
     if (FRS_USED)
     {
-        //external data = EXT_FRS(procid = 30, type = 12, subtype = 1);
         frs = FRS_DATA();
     }
     else
@@ -212,7 +209,6 @@ SUBEVENT (frs_tpc_crate_subev)
 {
     if (FRS_USED)
     {
-        //external data = EXT_FRS(procid = 20, type = 12, subtype = 1);
         tpc = TPC_DATA();
     }
     else
@@ -225,7 +221,6 @@ SUBEVENT(frs_tof_crate_subev)
 {   
     if (FRS_USED)
     {
-        //external data = EXT_FRS(procid = 35, type = 12, subtype = 1);
         data = TOF_DATA(); // 
     }
     else
@@ -244,11 +239,11 @@ EVENT
 
     // frs stuff
     // all works as spec but needs a major cleanup
-    frs_whiterabbit = frs_whiterabbit_subev(type = 10, subtype = 1, procid = 10, control = 20); // whiterabbit read // works
-    frs_main_crate = frs_main_crate_subev(type = 12, subtype = 1, procid = 10, control = 20); // main crate read // works
+    frs_whiterabbit = frs_whiterabbit_subev(type = 10, subtype = 1, procid = 10, control = 20); // whiterabbit
+    frs_main_crate = frs_main_crate_subev(type = 12, subtype = 1, procid = 10, control = 20); // main crate
     frs_tpat = frs_tpat_subev(type = 36, subtype = 3600, procid = 10, control = 20); // tpat // works
-    frs_tof_crate = frs_tof_crate_subev(type = 12, subtype = 1, procid = 35, control = 20); // VFTX, MQDC, SIS 3820 // works
-    frs_tpc_crate = frs_tpc_crate_subev(type = 12, subtype = 1, procid = 20, control = 21); // frs_main_scaler // music? // works i think
+    frs_tof_crate = frs_tof_crate_subev(type = 12, subtype = 1, procid = 35, control = 20); // VFTX, MQDC, SIS 3820
+    frs_tpc_crate = frs_tpc_crate_subev(type = 12, subtype = 1, procid = 20, control = 21); // frs_main_scaler // music?
     frs_crate = frs_crate_subev(type = 12, subtype = 1, procid = 30, control = 20); // sci_tx? // "frs crate"? // scaler_frs is here*/
 
 
