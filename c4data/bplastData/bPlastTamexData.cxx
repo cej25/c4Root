@@ -3,7 +3,7 @@
 bPlastTamexData::bPlastTamexData()
     :   fbPlastLeadTime(0),
         fbPlastTrailTime(0),
-        fbPlastToT(0);
+        fbPlastToT(0),
         fbPlastChannel(0),
         fbPlastEpoch(0),
         fbPlastSubSysID(0),

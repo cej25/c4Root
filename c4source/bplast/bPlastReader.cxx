@@ -13,7 +13,7 @@
 extern "C"
 {
     #include "ext_data_client.h"
-    #include "ext_h101.h"
+    #include "ext_h101_bplast.h"
 }
 
 bPlastReader::bPlastReader(EXT_STR_h101_BPLAST_onion* data, size_t offset)

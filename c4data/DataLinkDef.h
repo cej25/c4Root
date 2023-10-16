@@ -10,7 +10,7 @@
 #pragma link C++ class GermaniumFebexData+;
 #pragma link C++ class GermaniumCalData+;
 #pragma link C++ class FatimaTwinpeaksData+;
-#pragma link C++ class bPlastTamexData+;
+//#pragma link C++ class bPlastTamexData+;
 #pragma link C++ class LisaData+;
 #pragma link C++ class LisaTraceData+;
 #pragma link C++ class BeamMonitorData+;

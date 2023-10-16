@@ -8,21 +8,16 @@ class LisaData : public TObject
         LisaData();
 
         LisaData(uint32_t num_channels_fired,
-                uint64_t event_trigger_time,
-                uint16_t hit_pattern,
-                uint8_t board_id,
-                uint8_t pileup,
-                uint8_t overflow,
-                uint8_t channel_id,
-                double channel_trigger_time,
-                int32_t channel_energy,
-                double channel_energy_cal,
-                uint32_t crystal_id,
-                uint32_t detector_id,
-
-                //whiterabbit timestamps:
-                uint16_t wr_subsystem_id,
-                uint64_t wr_t);
+                             uint64_t event_trigger_time,
+                             uint16_t hit_pattern,
+                             uint8_t board_id,
+                             uint8_t pileup,
+                             uint8_t overflow,
+                             uint8_t channel_id,
+                             double channel_trigger_time,
+                             int32_t channel_energy,
+                             uint16_t wr_subsystem_id,
+                             uint64_t wr_t);
 
         virtual ~LisaData() {}
 
