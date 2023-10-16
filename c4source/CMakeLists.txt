@@ -50,6 +50,7 @@ set(SRCS
 ./bplast/bPlastReader.cxx
 ./beammonitor/BeamMonitorReader.cxx
 ./germanium/GermaniumRaw2Cal.cxx
+./fatima/FatimaReader.cxx
 )
 
 Set(STRUCT_HEADERS
@@ -60,6 +61,7 @@ Set(STRUCT_HEADERS
 ./germanium/ext_h101_ge_febex.h
 ./bplast/ext_h101_bplast.h
 ./beammonitor/ext_h101_bm.h
+./fatima/ext_h101_fatima.h
 )
 
 # fill list of header files from list of source files

@@ -74,8 +74,8 @@ Bool_t UnpackReader::Read()
     {
         fHeader->SetTrigger(fData->TRIGGER);
         //fHeader->SetEventno(fNEvent++);
+        fHeader->SetEventno(fData->EVENTNO); //We seemingly skip eventnos - is this due to timestichting?
         fNEvent++;
-        fHeader->SetEventno(fData->EVENTNO);
     }
 
     return kTRUE;
