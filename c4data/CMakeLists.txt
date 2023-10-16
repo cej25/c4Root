@@ -27,6 +27,7 @@ germaniumData/GermaniumFebexData.cxx
 germaniumData/GermaniumCalData.cxx
 bplastData/bPlastTamexData.cxx
 beammonitorData/BeamMonitorData.cxx
+fatimaData/FatimaTwinpeaksData.cxx
 )
 
 # fill list of header files from list of source files by exchanging the file extension

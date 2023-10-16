@@ -6,7 +6,6 @@
 
 extern "C"
 {
-    #include "ext_data_client.h"
     #include "ext_h101_lisa.h"
 }
 
