@@ -5,8 +5,8 @@
  * Do not edit - automatically generated.
  */
 
-#ifndef __GUARD_H101__U_JBORMANS_C4ROOT_C4SOURCE_BPLAST_EXT_H101_BPLAST_H__
-#define __GUARD_H101__U_JBORMANS_C4ROOT_C4SOURCE_BPLAST_EXT_H101_BPLAST_H__
+#ifndef __GUARD_H101_EXT_H101_BPLAST_H__
+#define __GUARD_H101_EXT_H101_BPLAST_H__
 
 #ifndef __CINT__
 # include <stdint.h>
@@ -40987,6 +40987,6 @@ typedef struct EXT_STR_h101_layout_t
   } \
 };
 
-#endif/*__GUARD_H101__U_JBORMANS_C4ROOT_C4SOURCE_BPLAST_EXT_H101_BPLAST_H__*/
+#endif/*__GUARD_H101_EXT_H101_BPLAST_H__*/
 
 /*******************************************************/

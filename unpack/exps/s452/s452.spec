@@ -3,7 +3,7 @@
 #include "../../common/whiterabbit.spec"
 #include "../../common/frs.spec"
 #include "../../common/ge_febex.spec" // gsi_febex4.spec
-#include "tamex.spec"
+#include "../../common/gsi_tamex4.spec"
 #include "config/setup.hh" // ../../../config/s452
 
 // one by one we will remove all but AIDA...
@@ -95,8 +95,6 @@ SUBEVENT(fatima_tamex_subev)
 
 SUBEVENT(plastic_subev)
 {   
-    //MEMBER(DATA12 am_fired[32] ZERO_SUPPRESS_MULTI(200));
-
     if (BPLAST_USED)
     {
         ts = TIMESTAMP_WHITERABBIT(id=0x500);
@@ -106,25 +104,25 @@ SUBEVENT(plastic_subev)
         }
         else
         {
-            
-            // can probably be written even MORE nicely!!
-            trigger_window = TAMEX_WINDOW();
+            // can probably be written even MORE nicely!! // yes indeed
+            trigger_window = TAMEX4_HEADER();
             select several 
             {
-                padding = TAMEX_PADDING();
+                padding = TAMEX4_PADDING();
             }
             select several
             {
-                tamex[0] = TAMEX_DATA(card = 0);
-                tamex[1] = TAMEX_DATA(card = 1);
-                tamex[2] = TAMEX_DATA(card = 2);
-            }
-
-        
-            //external data = EXT_PLASTIC();
-              
+                tamex[0] = TAMEX4_SFP(sfp=0,card = 0);
+                tamex[1] = TAMEX4_SFP(sfp=0,card = 1);
+                tamex[2] = TAMEX4_SFP(sfp=0,card = 2);
+                tamex[3] = TAMEX4_SFP(sfp=0,card = 3);
+                tamex[4] = TAMEX4_SFP(sfp=0,card = 4);
+                tamex[5] = TAMEX4_SFP(sfp=0,card = 5);
+                tamex[6] = TAMEX4_SFP(sfp=0,card = 6);
+                tamex[7] = TAMEX4_SFP(sfp=0,card = 7);
+                tamex[8] = TAMEX4_SFP(sfp=0,card = 8);
+            }  
         }
-
     }
     else
     {
@@ -220,20 +218,20 @@ SUBEVENT(frs_tof_crate_subev)
 
 EVENT
 {
-    revisit aida = aida_subev(type = 10, subtype = 1, procid = 90, control = 37);
-    germanium = germanium_subev(type = 10, subtype = 1, procid = 60, control = 20);
+    // revisit aida = aida_subev(type = 10, subtype = 1, procid = 90, control = 37);
+    // germanium = germanium_subev(type = 10, subtype = 1, procid = 60, control = 20);
     //fatima_vme = fatima_vme_subev(type = 10, subtype = 1, procid = 70, control = 20, subcrate = 0);
     //fatima_tamex = fatima_tamex_subev(type = 10, subtype = 1, procid = 75, control = 20, subcrate = 0);
-    //plastic = plastic_subev(type = 10, subtype = 1, procid = 80, control = 20, subcrate = 0);
+    plastic = plastic_subev(type = 10, subtype = 1, procid = 80, control = 20, subcrate = 0);
 
     // frs stuff
     // all works as spec but needs a major cleanup
-    frs_whiterabbit = frs_whiterabbit_subev(type = 10, subtype = 1, procid = 10, control = 20); // whiterabbit
-    frs_main_crate = frs_main_crate_subev(type = 12, subtype = 1, procid = 10, control = 20); // main crate
-    frs_tpat = frs_tpat_subev(type = 36, subtype = 3600, procid = 10, control = 20); // tpat // works
-    frs_tof_crate = frs_tof_crate_subev(type = 12, subtype = 1, procid = 35, control = 20); // VFTX, MQDC, SIS 3820
-    frs_tpc_crate = frs_tpc_crate_subev(type = 12, subtype = 1, procid = 20, control = 21); // frs_main_scaler // music?
-    frs_crate = frs_crate_subev(type = 12, subtype = 1, procid = 30, control = 20); // sci_tx? // "frs crate"? // scaler_frs is here*/
+    // frs_whiterabbit = frs_whiterabbit_subev(type = 10, subtype = 1, procid = 10, control = 20); // whiterabbit
+    // frs_main_crate = frs_main_crate_subev(type = 12, subtype = 1, procid = 10, control = 20); // main crate
+    // frs_tpat = frs_tpat_subev(type = 36, subtype = 3600, procid = 10, control = 20); // tpat // works
+    // frs_tof_crate = frs_tof_crate_subev(type = 12, subtype = 1, procid = 35, control = 20); // VFTX, MQDC, SIS 3820
+    // frs_tpc_crate = frs_tpc_crate_subev(type = 12, subtype = 1, procid = 20, control = 21); // frs_main_scaler // music?
+    // frs_crate = frs_crate_subev(type = 12, subtype = 1, procid = 30, control = 20); // sci_tx? // "frs crate"? // scaler_frs is here*/
 
 
     ignore_unknown_subevent;
