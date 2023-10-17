@@ -26,7 +26,11 @@ typedef          int  int32_t;
  * Plain structure (layout as ntuple/root file):
  */
 
+<<<<<<< HEAD
 typedef struct EXT_STR_h101_BPLAST_t
+=======
+typedef struct EXT_STR_h101_t
+>>>>>>> fixing stuff
 {
   /* INFO */
   uint32_t TRIGGER /* [0,15] */;
@@ -92,7 +96,11 @@ typedef struct EXT_STR_h101_BPLAST_t
   uint32_t plastic_ts_t3 /* [0,65535] */;
   uint32_t plastic_ts_t4 /* [0,65535] */;
 
+<<<<<<< HEAD
 } EXT_STR_h101_BPLAST;
+=======
+} EXT_STR_h101;
+>>>>>>> fixing stuff
 
 /********************************************************
  *
@@ -100,7 +108,11 @@ typedef struct EXT_STR_h101_BPLAST_t
  * recovered (recommended):
  */
 
+<<<<<<< HEAD
 typedef struct EXT_STR_h101_BPLAST_onion_t
+=======
+typedef struct EXT_STR_h101_onion_t
+>>>>>>> fixing stuff
 {
   /* INFO */
   uint32_t TRIGGER;
@@ -127,11 +139,19 @@ typedef struct EXT_STR_h101_BPLAST_onion_t
   uint32_t plastic_ts_subsystem_id;
   uint32_t plastic_ts_t[4];
 
+<<<<<<< HEAD
 } EXT_STR_h101_BPLAST_onion;
 
 /*******************************************************/
 
 #define EXT_STR_h101_BPLAST_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
+=======
+} EXT_STR_h101_onion;
+
+/*******************************************************/
+
+#define EXT_STR_h101_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
+>>>>>>> fixing stuff
   ok = 1; \
   /* INFO */ \
   EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
@@ -327,7 +347,11 @@ typedef struct EXT_STR_h101_BPLAST_onion_t
  * (version checks, etc)
  */
 
+<<<<<<< HEAD
 typedef struct EXT_STR_h101_BPLAST_layout_t
+=======
+typedef struct EXT_STR_h101_layout_t
+>>>>>>> fixing stuff
 {
   uint32_t _magic;
   uint32_t _size_info;
@@ -343,6 +367,7 @@ typedef struct EXT_STR_h101_BPLAST_layout_t
     const char *_name;
   } _items[1];
   uint32_t _pack_list[25978];
+<<<<<<< HEAD
 } EXT_STR_h101_BPLAST_layout;
 
 #define EXT_STR_h101_BPLAST_LAYOUT_INIT { \
@@ -354,6 +379,19 @@ typedef struct EXT_STR_h101_BPLAST_layout_t
   1, \
   { \
     { 0, sizeof(EXT_STR_h101_BPLAST), 0xbb70ae31, "h101" }, \
+=======
+} EXT_STR_h101_layout;
+
+#define EXT_STR_h101_LAYOUT_INIT { \
+  0x57e65c97, \
+  sizeof(EXT_STR_h101_layout), \
+  sizeof(EXT_STR_h101), \
+  sizeof(EXT_STR_h101_onion), \
+  25978, \
+  1, \
+  { \
+    { 0, sizeof(EXT_STR_h101), 0xbb70ae31, "h101" }, \
+>>>>>>> fixing stuff
   }, \
   { \
    /*    0 */ 0x40a52000, 0x00000000, 0x40a52000, 0x00000004, \
