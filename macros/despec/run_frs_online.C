@@ -28,7 +28,7 @@ void run_frs_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     Int_t refresh = 10; // Refresh rate for online histograms
     Int_t port = 5999; // Port number for online visualisation, e.g. lxgXXXX:8886
      
-    TString ntuple_options = "UNPACK:tpat";
+    TString ntuple_options = "UNPACK";
     //TString ucesb_dir = getenv("UCESB_DIR");
     TString ucesb_dir = getenv("HOME");
     TString temp_path = ucesb_dir + "/c4Root/unpack/exps";
