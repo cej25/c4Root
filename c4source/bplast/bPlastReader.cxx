@@ -80,14 +80,17 @@ Bool_t bPlastReader::Read(decltype(&EXT_STR_h101_BPLAST_onion_t::plastic_crate[0
     // TAMEX Epoch correction
     std::array<double, NChannel> leads = {0};
     std::array<double, NChannel> trails = {0};
+    std::array<double, NChannel> tot = {0};
     std::array<double, NChannel> epoch = {0};
 
-    int32_t epoch = 0;
-    int32_t last_epoch = 0;
+
 
     // BPLAST_TAMEX_MODULES
     for (int det = 0; NCards < 4; det++)
     {   
+        int32_t epoch_base = 0;
+        int32_t last_epoch = 0;
+
         // BPLAST_TAMEX_HITS
         for (int hit = 0; hit < NHits; hit++) // this will have to change as the variable size is indicated by the variable leading it, we will usually set hits to 5
         {  
@@ -110,7 +113,7 @@ Bool_t bPlastReader::Read(decltype(&EXT_STR_h101_BPLAST_onion_t::plastic_crate[0
                         throw std::runtime_error("Unexpected TDC epoch before trigger");
                     }
                     epoch[channel] = last_epoch - epoch_base;
-                    dout << "epoch[" << cardidx << "][" << channel << "] = " << (last_epoch - epoch_base) << std::endl; // for debugging
+                    dout << "epoch[" << cardid << "][" << channel << "] = " << (last_epoch - epoch_base) << std::endl; // for debugging
                     last_epoch = 0;
                 }
             }
@@ -129,9 +132,9 @@ Bool_t bPlastReader::Read(decltype(&EXT_STR_h101_BPLAST_onion_t::plastic_crate[0
             // Trailing edge = 0
 
             else {
-                if (leads[channel] /* && card->time_edgev[hit] == 0 */){
+                if (leads[channel]){
                     trails[channel] = time;
-                    double tot = time - leads[channel];
+                    tot[channel] = time - leads[channel];
                 }
 
             // Fill TAMEX data arrays
@@ -139,9 +142,9 @@ Bool_t bPlastReader::Read(decltype(&EXT_STR_h101_BPLAST_onion_t::plastic_crate[0
             new ((*fArray)[fArray->GetEntriesFast()]) bPlastTamexData(
                 fData->leads[channel],
                 fData->trails[channel],
-                fData->tot,
+                fData->tot[channel],
                 fData->channel,
-                fData->epoch,
+                fData->epoch[channel],
                 fData->plastic_ts_subsystem_id,
                 plastic_ts_t
             );
