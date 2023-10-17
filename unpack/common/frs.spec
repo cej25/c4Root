@@ -117,6 +117,7 @@ TOF_DATA()
                 11_23: coarse_time;
                 24_25: reserved;
                 26_30: channel; // getbits(2,11,5) in Go4?
+                //ENCODE(coarse_time[i])
                 //ENCODE(blah blah... );
             }
         }

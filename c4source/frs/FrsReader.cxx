@@ -21,12 +21,12 @@ FrsReader::FrsReader(EXT_STR_h101_FRS_onion* data, size_t offset)
     , fNEvent(0)
     , fData(data)
     , fOffset(offset)
-    , fOnline(kFALSE)
-    , fArray(new TClonesArray("FrsReader"))
+    , fOnline(false) // kFALSE
+    , tpatArray(new std::vector<FrsUnpackTpatItem>)
 {
 }
 
-FrsReader::~FrsReader() { delete fArray; }
+FrsReader::~FrsReader() { delete tpatArray; }
 
 Bool_t FrsReader::Init(ext_data_struct_info* a_struct_info)
 {
@@ -43,8 +43,8 @@ Bool_t FrsReader::Init(ext_data_struct_info* a_struct_info)
 
     // Register output array in a tree
     // CEJ: this is not working!! does not register fZ etc when !fOnline == true!
-    FairRootManager::Instance()->Register("FrsData", "FRS Data", fArray, !fOnline);
-    fArray->Clear();
+    FairRootManager::Instance()->RegisterAny("TpatData", tpatArray, !fOnline);
+    tpatArray->clear();
 
     memset(fData, 0, sizeof *fData);
 
@@ -55,32 +55,18 @@ Bool_t FrsReader::Read()
 {
     c4LOG(debug1, "Event data");
 
-    int chan, lot;
-    UInt_t data;
-    for (int i = 0; i < fData->frs_main_crate_v1290_n; i++)
+    tpatArray->clear();
+
+    // is n the same value as number of trigs etc? hopefully
+    for (UInt_t i = 0; i < fData->tpat_data_n; i++)
     {
-        chan = fData->frs_main_crate_v1290_channelv[i];
-        lot = fData->frs_main_crate_v1290_leadOrTrailv[i];
-        data = fData->frs_main_crate_v1290_data[i];
-        
-        new ((*fArray)[fArray->GetEntriesFast()]) FrsData(data,
-                                                          chan,
-                                                          lot);
-
-
+        auto & entry = tpatArray->emplace_back();
+        uint64_t ts_long = fData->tpat_data_ts_lov[i] | ((uint64_t)fData->tpat_data_ts_hiv[i] << 32);
+        UInt_t trigger = fData->tpat_data_trigv[i];
+        UInt_t data = fData->tpat_data_tpatv[i];
+        entry.SetAll(ts_long, trigger, data);
     }
 
-/*
-    for (int sc = 0; sc < 32; sc++)
-    {
-        new ((*fArray)[fArray->GetEntriesFast()]) FrsData(sc,
-                                                          fData->SCLONG[sc],
-                                                          sc+32,
-                                                          fData->SCLONG[sc+32]);
-                                                          
-    
-    }
-*/
     fNEvent += 1;
     return kTRUE;
 
@@ -89,7 +75,7 @@ Bool_t FrsReader::Read()
 void FrsReader::Reset()
 {
     // reset output array
-    fArray->Clear();
+    tpatArray->clear();
 }
 
 ClassImp(FrsReader);

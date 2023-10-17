@@ -26,7 +26,7 @@ typedef          int  int32_t;
  * Plain structure (layout as ntuple/root file):
  */
 
-typedef struct EXT_STR_h101_FRS_t
+typedef struct EXT_STR_h101_t
 {
   /* INFO */
   uint32_t TRIGGER /* [0,15] */;
@@ -42,7 +42,7 @@ typedef struct EXT_STR_h101_FRS_t
   uint32_t tpat_data_ts_hi /* [0,170] */;
   uint32_t tpat_data_ts_hiv[170 EXT_STRUCT_CTRL(tpat_data_ts_hi)] /* [-1,-1] */;
 
-} EXT_STR_h101_FRS;
+} EXT_STR_h101;
 
 /********************************************************
  *
@@ -50,7 +50,7 @@ typedef struct EXT_STR_h101_FRS_t
  * recovered (recommended):
  */
 
-typedef struct EXT_STR_h101_FRS_onion_t
+typedef struct EXT_STR_h101_onion_t
 {
   /* INFO */
   uint32_t TRIGGER;
@@ -66,11 +66,11 @@ typedef struct EXT_STR_h101_FRS_onion_t
   uint32_t tpat_data_ts_hi;
   uint32_t tpat_data_ts_hiv[170 /* tpat_data_ts_hi */];
 
-} EXT_STR_h101_FRS_onion;
+} EXT_STR_h101_onion;
 
 /*******************************************************/
 
-#define EXT_STR_h101_FRS_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
+#define EXT_STR_h101_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
   ok = 1; \
   /* INFO */ \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
