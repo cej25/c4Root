@@ -17,7 +17,10 @@
 
 #pragma link C++ class FrsData+;
 #pragma link C++ class FrsUnpackTpatItem+;
+#pragma link C++ class FrsUnpackFrsItem+;
 #pragma link C++ class std::vector<FrsUnpackTpatItem>+;
+#pragma link C++ class std::vector<FrsUnpackFrsItem>+;
+
 
 #pragma link C++ class AidaUnpackAdcItem+;
 #pragma link C++ class AidaUnpackFlowItem+;
