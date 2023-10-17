@@ -44,13 +44,8 @@ class FrsReader : public c4Reader
         TClonesArray* fArray;
 
         std::vector<FrsUnpackTpatItem>* tpatArray;
-        std::vector<FrsUnpackFrsItem>* frsArray;
-
-        // temporary
-        UInt_t scaler_frs[32];
-
-        UInt_t channel, geo;
-        UInt_t vme_frs[21][32];
+        std::vector<FrsUnpackV830>* v830Array;
+        std::vector<FrsUnpackV7X5>* v7X5Array;
 
     
     public:
