@@ -23,6 +23,7 @@ FrsReader::FrsReader(EXT_STR_h101_FRS_onion* data, size_t offset)
     , fOffset(offset)
     , fOnline(false) // kFALSE
     , tpatArray(new std::vector<FrsUnpackTpatItem>)
+    , frsArray(new std::vector<FrsUnpackFrsItem>)
 {
 }
 
@@ -42,9 +43,10 @@ Bool_t FrsReader::Init(ext_data_struct_info* a_struct_info)
     }
 
     // Register output array in a tree
-    // CEJ: this is not working!! does not register fZ etc when !fOnline == true!
     FairRootManager::Instance()->RegisterAny("TpatData", tpatArray, !fOnline);
+    FairRootManager::Instance()->RegisterAny("FrsData", frsArray, !fOnline);
     tpatArray->clear();
+    frsArray->clear();
 
     memset(fData, 0, sizeof *fData);
 
@@ -55,9 +57,10 @@ Bool_t FrsReader::Read()
 {
     c4LOG(debug1, "Event data");
 
+    // -- TPAT -- // 
+    // no anaysis can be done without another procid...
     tpatArray->clear();
 
-    // is n the same value as number of trigs etc? hopefully
     for (UInt_t i = 0; i < fData->tpat_data_n; i++)
     {
         auto & entry = tpatArray->emplace_back();
@@ -65,6 +68,22 @@ Bool_t FrsReader::Read()
         UInt_t trigger = fData->tpat_data_trigv[i];
         UInt_t data = fData->tpat_data_tpatv[i];
         entry.SetAll(ts_long, trigger, data);
+    }
+
+    // -- FRS crate -- //
+    frsArray->clear();
+
+    for (UInt_t i = 0; i < fData->frs_crate_frs_v830_n; i++)
+    {   
+        std::cout << "this should be 32.. for now ... " << fData->frs_crate_frs_v830_n << std::endl
+        scaler_frs[i] = fData->fData->frs_crate_frs_v830_data[i]; // goes into sc_long[i] later...
+    }
+
+    for (UInt_t i = 0; i < fData->frs_crate_frs_v7x5_n; i++)
+    {   
+        geo = fData->frs_crate_frs_v7x5_geov[i];
+        channel = fData->frs_crate_frs_v7x5_channelv[i];
+        vme_frs[geo][channel] = fData->frs_crate_frs_v7x5_data[i];
     }
 
     fNEvent += 1;
@@ -76,6 +95,7 @@ void FrsReader::Reset()
 {
     // reset output array
     tpatArray->clear();
+    frsArray->clear();
 }
 
 ClassImp(FrsReader);

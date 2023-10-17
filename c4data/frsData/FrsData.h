@@ -81,5 +81,28 @@ class FrsUnpackTpatItem : public TObject
         ClassDef(FrsUnpackTpatItem, 1)
 };
 
+class FrsUnpackFrsItem : public TObject
+{
+    public:
+        FrsUnpackFrsItem();
+        FrsUnpackFrsItem(UInt_t g, UInt_t c, UInt_t v);
+
+        virtual ~FrsUnpackFrsItem() {};
+
+        // GET
+
+        // SET
+        void SetAll(UInt_t g, UInt_t c, UInt_t v)
+    
+    protected:
+        // items
+        UInt_t geo, channel;
+        UInt_t data;
+
+    
+    public:
+        ClassDef(FrsUnpackFrsItem, 1)
+};
+
 
 #endif

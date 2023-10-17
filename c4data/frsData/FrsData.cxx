@@ -25,5 +25,18 @@ void FrsUnpackTpatItem::SetAll(uint64_t time, UInt_t trig, UInt_t value)
     data = value;
 }
 
+FrsUnpackFrsItem::FrsUnpackFrsItem()
+{
+}
+
+void FrsUnpackFrsItem::SetAll(UInt_t g, UInt_t c, UInt_t v)
+{
+    // stuff
+    geo = g;
+    channel = c;
+    data = v;
+}
+
 ClassImp(FrsData)
 ClassImp(FrsUnpackTpatItem)
+ClassImp(FrsUnpackFrsItem)
