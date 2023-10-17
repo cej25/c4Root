@@ -146,6 +146,7 @@ Bool_t bPlastReader::Read()
             );
 
             leads[channel] = 0;
+            tot[channel] = 0;
             trails[channel] = 0;
             }
         } 
