@@ -26,7 +26,7 @@ typedef          int  int32_t;
  * Plain structure (layout as ntuple/root file):
  */
 
-typedef struct EXT_STR_h101_t
+typedef struct EXT_STR_h101_BPLAST_t
 {
   /* UNPACK */
   uint32_t plastic_tamex1event_size /* [-1,-1] */;
@@ -6539,7 +6539,7 @@ typedef struct EXT_STR_h101_t
   uint32_t bPlastPMTLead4_16_99 /* [-1,-1] */;
   uint32_t bPlastPMTLead4_16_100 /* [-1,-1] */;
 
-} EXT_STR_h101;
+} EXT_STR_h101_BPLAST;
 
 /********************************************************
  *
@@ -6547,7 +6547,7 @@ typedef struct EXT_STR_h101_t
  * recovered (recommended):
  */
 
-typedef struct EXT_STR_h101_onion_t
+typedef struct EXT_STR_h101_BPLAST_onion_t
 {
   /* UNPACK */
   struct {
@@ -6576,11 +6576,11 @@ typedef struct EXT_STR_h101_onion_t
     } _[16];
   } bPlastPMTLead[4];
 
-} EXT_STR_h101_onion;
+} EXT_STR_h101_BPLAST_onion;
 
 /*******************************************************/
 
-#define EXT_STR_h101_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
+#define EXT_STR_h101_BPLAST_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
   ok = 1; \
   /* UNPACK */ \
   EXT_STR_ITEM_INFO    (ok,si,offset,struct_t,printerr,\
@@ -26117,7 +26117,7 @@ typedef struct EXT_STR_h101_onion_t
  * (version checks, etc)
  */
 
-typedef struct EXT_STR_h101_layout_t
+typedef struct EXT_STR_h101_BPLAST_layout_t
 {
   uint32_t _magic;
   uint32_t _size_info;
@@ -26133,17 +26133,17 @@ typedef struct EXT_STR_h101_layout_t
     const char *_name;
   } _items[1];
   uint32_t _pack_list[59352];
-} EXT_STR_h101_layout;
+} EXT_STR_h101_BPLAST_layout;
 
-#define EXT_STR_h101_LAYOUT_INIT { \
+#define EXT_STR_h101_BPLAST_LAYOUT_INIT { \
   0x57e65c97, \
-  sizeof(EXT_STR_h101_layout), \
-  sizeof(EXT_STR_h101), \
-  sizeof(EXT_STR_h101_onion), \
+  sizeof(EXT_STR_h101_BPLAST_layout), \
+  sizeof(EXT_STR_h101_BPLAST), \
+  sizeof(EXT_STR_h101_BPLAST_onion), \
   59352, \
   1, \
   { \
-    { 0, sizeof(EXT_STR_h101), 0xbacf0847, "h101" }, \
+    { 0, sizeof(EXT_STR_h101_BPLAST), 0xbacf0847, "h101" }, \
   }, \
   { \
    /*    0 */ 0x40a50000, 0x00000000, 0x40a50000, 0x00002818, \
