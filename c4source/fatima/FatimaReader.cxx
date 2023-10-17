@@ -124,7 +124,6 @@ void FatimaReader::DoFineTimeCalibrationEveryN(){
             for (int k = 0; k < 512; k++) {
                 running_sum += fine_time_hits[i][j]->GetBinContent(k+1); //bin 0 is the underflow bin, hence we start at [1,512].
 
-
                 //no counts?
                 if (total_counts == 0) {
                     fine_time_calibration_coeffs[i][j][k] = 0;
@@ -139,7 +138,6 @@ void FatimaReader::DoFineTimeCalibrationEveryN(){
     }
     fine_time_calibration_set = true;
     flag_collect_fine_times = false;
-
 }
 
 double FatimaReader::GetFineTime(int tdc_fine_time_channel, int board_id, int channel_id){
@@ -160,14 +158,14 @@ void FatimaReader::WriteFineTimeCalibrationsToFile(TString filename){
     outputfile << "#TAMEX WhiteRabbit Fine time calibrations\n";
     outputfile << "#Number of boards    Number of channels \n";
     outputfile << NBoards << "  " << NChannels << std::endl;
-    outputfile << "#coeffs , 0-1024" << std::endl;
+    outputfile << "#coeffs , 0-512" << std::endl;
 
     for (int i = 0; i < NBoards; i++) {
         outputfile << "Board number: " << i << std::endl;
         for (int j = 0; j < NChannels; j++) {
             int running_sum = 0;
             int total_counts = fine_time_hits[i][j]->GetEntries();
-            for (int k = 0; k < 1024; k++) {
+            for (int k = 0; k < 512; k++) {
                 outputfile << std::setprecision(5) << fine_time_calibration_coeffs[i][j][k] << " ";
             }
             outputfile << std::endl;
