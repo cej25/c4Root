@@ -73,6 +73,7 @@ TAMEX4_EPOCH_DATA(sfp, card, time_coarse, time_fine, time_edge, time_channel, ti
 TAMEX4_SFP(sfp, card)
 {
 
+	MEMBER(DATA32 event_size);
 	MEMBER(DATA12 time_coarse[MAX_TDC_HITS] NO_INDEX_LIST);
 	MEMBER(DATA12 time_fine[MAX_TDC_HITS] NO_INDEX_LIST);
 	MEMBER(DATA12 time_edge[MAX_TDC_HITS] NO_INDEX_LIST);
@@ -92,6 +93,8 @@ TAMEX4_SFP(sfp, card)
 	UINT32 data_size NOENCODE {
 		// TDC header + epocs + times + error + trailer.
 		0_31: bytes;
+
+		ENCODE(event_size, (value=bytes));
 	}
 
 	UINT32 tdc_header NOENCODE {

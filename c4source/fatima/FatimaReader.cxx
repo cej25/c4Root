@@ -2,6 +2,10 @@
 #include "FairLogger.h"
 #include "FairRootManager.h"
 
+#include "TH1.h"
+
+#include <iomanip>
+
 // c4
 #include "FatimaTwinpeaksData.h"
 #include "FatimaReader.h"
@@ -40,7 +44,7 @@ FatimaReader::~FatimaReader() {
             fine_time_calibration_coeffs[i][j] = nullptr;
         }
         delete[] fine_time_calibration_coeffs[i];
-        fine_time_calibration_coeffs[i] = nullptr
+        fine_time_calibration_coeffs[i] = nullptr;
         
         if (fine_time_hits[i] != nullptr){
             delete[] fine_time_hits[i];
@@ -77,7 +81,13 @@ Bool_t FatimaReader::Init(ext_data_struct_info* a_struct_info)
     }
 
     last_hits = new last_lead_hit_struct*[NBoards];
-    for (int i = 0; i < NBoards; i++) last_hits[i] = new last_lead_hit_struct[NChannels];
+    fine_time_hits = new TH1I**[NBoards];
+    fine_time_calibration_coeffs = new double**[NBoards];
+    for (int i = 0; i < NBoards; i++) {
+        fine_time_hits[i] = new TH1I*[NChannels];
+        last_hits[i] = new last_lead_hit_struct[NChannels];
+        fine_time_calibration_coeffs[i] = new double*[NChannels];    
+    }
 
     for (int i = 0; i < NBoards; i++) {
         for (int j = 0; j < NChannels; j++) {
@@ -88,6 +98,8 @@ Bool_t FatimaReader::Init(ext_data_struct_info* a_struct_info)
             
             
             fine_time_hits[i][j] = new TH1I(Form("fine_time_calibration_coeffs_%i_%i",i,j),"Fine time calibration hist",1024,0,1024); //channel size of fine time
+            
+            fine_time_calibration_coeffs[i][j] = new double[1024];
             for (int k = 0; k<1024; k++) fine_time_calibration_coeffs[i][j][k] = 0.0;
         }
     }
@@ -106,9 +118,9 @@ void FatimaReader::DoFineTimeCalibrationEveryN(){
     for (int i = 0; i < NBoards; i++) {
         for (int j = 0; j < NChannels; j++) {
             int running_sum = 0;
-            int total_counts = fine_time_hits->GetEntries();
+            int total_counts = fine_time_hits[i][j]->GetEntries();
             for (int k = 0; k < 1024; k++) {
-                running_sum += fine_time_hits->GetBinContent(k+1); //bin 0 is the underflow bin, hence we start at [1,1024].
+                running_sum += fine_time_hits[i][j]->GetBinContent(k+1); //bin 0 is the underflow bin, hence we start at [1,1024].
                 fine_time_calibration_coeffs[i][j][k] = TAMEX_fine_time_clock*(double)running_sum/(double)total_counts;
             }
         }
@@ -138,7 +150,7 @@ void FatimaReader::WriteFineTimeCalibrationsToFile(TString filename){
         outputfile << "Board number: " << i << std::endl;
         for (int j = 0; j < NChannels; j++) {
             int running_sum = 0;
-            int total_counts = fine_time_hits->GetEntries();
+            int total_counts = fine_time_hits[i][j]->GetEntries();
             for (int k = 0; k < 1024; k++) {
                 outputfile << std::setprecision(5) << fine_time_calibration_coeffs[i][j][k] << " ";
             }
@@ -201,7 +213,7 @@ Bool_t FatimaReader::Read() //do fine time here:
             int coarse_T = fData->fatima_tamex[it_board_number].time_coarsev[it_hits];
             
             if (flag_collect_fine_times) {
-                fine_time_hits[NBoards][NChannels].Fill(fData->fatima_tamex[it_board_number].time_finev[it_hits]);
+                fine_time_hits[it_board_number][channelid-1]->Fill(fData->fatima_tamex[it_board_number].time_finev[it_hits]);
             }
             
             if (!fine_time_calibration_set) continue; //drop uncalibrated events
