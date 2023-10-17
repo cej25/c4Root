@@ -34,11 +34,26 @@ FatimaReader::~FatimaReader() {
     c4LOG(info, Form("Matches     %i",(int)fNmatched));
     
     for (int i = 0; i < NBoards; i++) {
+
+        for (int j = 0; j < NChannels; j++) {
+            delete[] fine_time_calibration_coeffs[i][j];
+            fine_time_calibration_coeffs[i][j] = nullptr;
+        }
+        delete[] fine_time_calibration_coeffs[i];
+        fine_time_calibration_coeffs[i] = nullptr
+        
+        if (fine_time_hits[i] != nullptr){
+            delete[] fine_time_hits[i];
+            fine_time_hits[i] = nullptr;
+        }
+
         if (last_hits[i] != nullptr) {
             delete[] last_hits[i];
             last_hits[i] = nullptr;  // Set the pointer to nullptr after deletion
         }
     }
+    delete[] fine_time_calibration_coeffs;
+    delete[] fine_time_hits;
     delete[] last_hits;
 
 
@@ -70,6 +85,10 @@ Bool_t FatimaReader::Init(ext_data_struct_info* a_struct_info)
             last_hits[i][j].lead_coarse_T = 0;
             last_hits[i][j].lead_fine_T = 0;
             last_hits[i][j].lead_epoch_counter = 0;
+            
+            
+            fine_time_hits[i][j] = new TH1I(Form("fine_time_calibration_coeffs_%i_%i",i,j),"Fine time calibration hist",1024,0,1024); //channel size of fine time
+            for (int k = 0; k<1024; k++) fine_time_calibration_coeffs[i][j][k] = 0.0;
         }
     }
 
@@ -83,12 +102,65 @@ Bool_t FatimaReader::Init(ext_data_struct_info* a_struct_info)
     return kTRUE;
 }
 
+void FatimaReader::DoFineTimeCalibrationEveryN(){
+    for (int i = 0; i < NBoards; i++) {
+        for (int j = 0; j < NChannels; j++) {
+            int running_sum = 0;
+            int total_counts = fine_time_hits->GetEntries();
+            for (int k = 0; k < 1024; k++) {
+                running_sum += fine_time_hits->GetBinContent(k+1); //bin 0 is the underflow bin, hence we start at [1,1024].
+                fine_time_calibration_coeffs[i][j][k] = TAMEX_fine_time_clock*(double)running_sum/(double)total_counts;
+            }
+        }
+    }
+    fine_time_calibration_set = true;
+}
 
-Bool_t FatimaReader::Read()
+double FatimaReader::GetFineTime(int tdc_fine_time_channel, int board_id, int channel_id){
+    return fine_time_calibration_coeffs[board_id][channel_id][tdc_fine_time_channel];
+}
+
+
+void FatimaReader::WriteFineTimeCalibrationsToFile(TString filename){
+    if (!fine_time_calibration_set) {
+        c4LOG(info,"Fine time calibrations not set, cannot write to file.");
+        return;
+    }
+    
+    std::ofstream outputfile(filename);
+
+    outputfile << "#TAMEX WhiteRabbit Fine time calibrations\n";
+    outputfile << "#Number of boards    Number of channels \n";
+    outputfile << NBoards << "  " << NChannels << std::endl;
+    outputfile << "#coeffs , 0-1024" << std::endl;
+
+    for (int i = 0; i < NBoards; i++) {
+        outputfile << "Board number: " << i << std::endl;
+        for (int j = 0; j < NChannels; j++) {
+            int running_sum = 0;
+            int total_counts = fine_time_hits->GetEntries();
+            for (int k = 0; k < 1024; k++) {
+                outputfile << std::setprecision(5) << fine_time_calibration_coeffs[i][j][k] << " ";
+            }
+            outputfile << std::endl;
+        }
+    }
+
+    outputfile.close();
+}
+void FatimaReader::ReadFineTimeCalibrationFromFile(TString filename){
+    return;
+}
+
+Bool_t FatimaReader::Read() //do fine time here:
 {
     c4LOG(debug1, "Event Data");
 
     if (!fData) return kTRUE;
+
+    if (fNEvent % fine_time_calibration_freq == 0 & fNEvent!=0){
+        DoFineTimeCalibrationEveryN();
+    }
 
     //whiterabbit timestamp:
     wr_t = (((uint64_t)fData->fatima_ts_t[3]) << 48) + (((uint64_t)fData->fatima_ts_t[2]) << 32) + (((uint64_t)fData->fatima_ts_t[1]) << 16) + (uint64_t)(fData->fatima_ts_t[0]);
@@ -127,7 +199,16 @@ Bool_t FatimaReader::Read()
             int channelid = fData->fatima_tamex[it_board_number].time_channelv[it_hits]; // 1-32
             if (channelid == 0) continue; // skip channel 0 for now
             int coarse_T = fData->fatima_tamex[it_board_number].time_coarsev[it_hits];
-            int fine_T = fData->fatima_tamex[it_board_number].time_finev[it_hits];
+            
+            if (flag_collect_fine_times) {
+                fine_time_hits[NBoards][NChannels].Fill(fData->fatima_tamex[it_board_number].time_finev[it_hits]);
+            }
+            
+            if (!fine_time_calibration_set) continue; //drop uncalibrated events
+
+            double fine_T = GetFineTime(fData->fatima_tamex[it_board_number].time_finev[it_hits],it_board_number,channelid-1);
+
+
 
             if (fData->fatima_tamex[it_board_number].time_edgev[it_hits] == 1){ // rise signal:
                 fNleads_read ++;
