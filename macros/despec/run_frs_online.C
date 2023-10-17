@@ -20,16 +20,20 @@ void run_frs_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
 
-    TString filename = " ~/lustre/gamma/DESPEC_S452_FILES/newts/S452f103_0037.lmd";
+    TString filename = "~/lustre/gamma/DESPEC_S452_FILES/newts/S452f103_0037.lmd";
+    //TString filename = "~/lmd_files/S452f103_0037.lmd";
     TString outputpath = "~/run_online_frs_test";
     TString outputFileName = outputpath + ".root";
 
     Int_t refresh = 10; // Refresh rate for online histograms
     Int_t port = 5999; // Port number for online visualisation, e.g. lxgXXXX:8886
      
-    TString ntuple_options = "UNPACK"; // "RAW"? "time=stitch=1000"? can we time-stitch files here pls?
-    TString ucesb_dir = getenv("UCESB_DIR"); // .bashrc
-    TString ucesb_path = ucesb_dir + "/s452/s452 --allow-errors --input-buffer=200Mi"; // CEJ: R3B used input-buffer, can't see in ucesb doc however...
+    TString ntuple_options = "UNPACK:tpat";
+    //TString ucesb_dir = getenv("UCESB_DIR");
+    TString ucesb_dir = getenv("HOME");
+    TString temp_path = ucesb_dir + "/c4Root/unpack/exps";
+    //TString ucesb_path = ucesb_dir + "/s452/s452 --allow-errors --input-buffer=200Mi";
+    TString ucesb_path = temp_path + "/s452/s452 --allow-errors --input-buffer=200Mi";
     ucesb_path.ReplaceAll("//","/");
 
     // Create online run
@@ -60,8 +64,8 @@ void run_frs_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
 
 
     // Add analysis task
-    FrsOnlineSpectra* online = new FrsOnlineSpectra();
-    run->AddTask(online);
+    //FrsOnlineSpectra* online = new FrsOnlineSpectra();
+    //run->AddTask(online);
 
     // Initialise
     run->Init();
