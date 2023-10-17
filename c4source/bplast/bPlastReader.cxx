@@ -69,7 +69,7 @@ double getFineTime(int card, int channel, int fine, double scale = 5000.)
   return (calibrations[card][channel].lookup[fine]) * scale;
 }
 
-Bool_t bPlastReader::Read(decltype(&EXT_STR_h101_BPLAST_onion_t::plastic_crate[0].card[0]) card, size_t cardid)
+Bool_t bPlastReader::Read(decltype(&EXT_STR_h101_BPLAST_onion_t::plastic_crate[0]) crate, size_t cardid)
 {
     c4LOG(debug1, "Event Data");
 
@@ -92,17 +92,17 @@ Bool_t bPlastReader::Read(decltype(&EXT_STR_h101_BPLAST_onion_t::plastic_crate[0
         int32_t last_epoch = 0;
 
         // BPLAST_TAMEX_HITS
-        for (int hit = 0; hit < NHits; hit++) // this will have to change as the variable size is indicated by the variable leading it, we will usually set hits to 5
+        for (int hit = 0; hit < crate.card[det].event_size/4 - 3; hit++) // this will have to change as the variable size is indicated by the variable leading it, we will usually set hits to 5
         {  
 
             // Time correction
 
-            if (card->time_epochv[hit] !=0){
-                last_epoch = card->time_epochv[hit];
+            if (crate->card[det].time_epochv[hit] !=0){
+                last_epoch = crate->card[det].time_epochv[hit];
             }
             else{
-                if (card->time_finev[hit] == 0x3ff) continue;
-                int channel = card->time_channelv[hit];
+                if (crate->card[det].time_finev[hit] == 0x3ff) continue;
+                int channel = crate->card[det].time_channelv[hit];
                 if (channel >= NChannel) continue;
 
                 if (last_epoch != 0){
@@ -120,11 +120,11 @@ Bool_t bPlastReader::Read(decltype(&EXT_STR_h101_BPLAST_onion_t::plastic_crate[0
 
             // Calculate time event time
 
-            double time = (epoch[channel] * 1024e4) + card->time_coarsev[hit] * 5000 - getFineTime(cardid, channel, card->time_finev[hit]);
+            double time = (epoch[channel] * 1024e4) + crate->card[det].time_coarsev[hit] * 5000 - getFineTime(cardid, channel, crate->card[det].time_finev[hit]);
 
             // Leading edge = 1
 
-            if (card->time_edgev[hit] == 1){
+            if (crate->card[det].time_edgev[hit] == 1){
                 dout << "TDC Card = " << cardidx << ", Ch = " << channel << ", Lead, Time = " << time << std::endl; // for debugging purposes
                 leads[channel] = time;
             }
