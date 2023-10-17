@@ -3,6 +3,10 @@
 
 #include "c4Reader.h"
 
+#include "TH1.h"
+
+
+
 #include <Rtypes.h>
 
 extern "C"
@@ -45,12 +49,12 @@ class FatimaReader : public c4Reader
         void SetOnline(Bool_t option) { fOnline = option; }
 
 
-        void DoFineTimeCalibrationEveryN(int event); //options to write
+        void DoFineTimeCalibrationEveryN(); //options to write
         
         double GetFineTime(int tdc_fine_time_channel, int board_id, int channel_id);
 
         void WriteFineTimeCalibrationsToFile(TString filename);
-        void ReadFineTimeCalibrationFromFile();
+        void ReadFineTimeCalibrationFromFile(TString filename);
     
     private:
         unsigned int fNEvent;
@@ -80,11 +84,13 @@ class FatimaReader : public c4Reader
         uint64_t fNmatched = 0;
 
 
-        TH1I fine_time_hits[NBoards][NChannels];
-        double fine_time_calibration_coeffs[NBoards][NChannels][1024]; //last index is bin nr. - this is the lookup table
+        TH1I *** fine_time_hits; //array of TH1 hisots [NBoards][NChannels]
+        double *** fine_time_calibration_coeffs; //[NBoards][NChannels][1024] last index is bin nr. - this is the lookup table
         bool flag_collect_fine_times = true;
         int fine_time_calibration_freq = 10000000;
         bool fine_time_calibration_set = false;
+
+        double TAMEX_fine_time_clock = 5.0; // ns in one fine time cycle.
 
 
 
