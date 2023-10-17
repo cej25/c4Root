@@ -81,7 +81,7 @@ class FrsUnpackTpatItem : public TObject
         ClassDef(FrsUnpackTpatItem, 1)
 };
 
-class FrsUnpackFrsItem : public TObject
+/*class FrsUnpackFrsItem : public TObject
 {
     public:
         FrsUnpackFrsItem();
@@ -92,16 +92,51 @@ class FrsUnpackFrsItem : public TObject
         // GET
 
         // SET
-        void SetAll(UInt_t g, UInt_t c, UInt_t v)
+        void SetAll(UInt_t i, UInt_t v830, UInt_t g, UInt_t c, UInt_t v7x5);
     
     protected:
         // items
+        UInt_t i;
+        UInt_t v830;
         UInt_t geo, channel;
-        UInt_t data;
+        UInt_t v7x5;
 
     
     public:
         ClassDef(FrsUnpackFrsItem, 1)
+};*/
+
+class FrsUnpackV830 : public TObject
+{
+    public:
+        FrsUnpackV830();
+        virtual ~FrsUnpackV830() {};
+
+        void SetAll(UInt_t i, UInt_t d);
+    
+    protected:
+        UInt_t index;
+        UInt_t v830_data;
+    
+    public:
+        ClassDef(FrsUnpackV830, 1)
+};
+
+class FrsUnpackV7X5 : public TObject
+{
+    public:
+        FrsUnpackV7X5();
+        virtual ~FrsUnpackV7X5() {};
+
+        void SetAll(UInt_t g, UInt_t c, UInt_t d);
+
+    protected:
+        UInt_t geo;
+        UInt_t channel;
+        UInt_t v7x5_data;
+    
+    public:
+        ClassDef(FrsUnpackV7X5, 1)
 };
 
 
