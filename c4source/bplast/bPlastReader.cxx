@@ -69,7 +69,7 @@ double getFineTime(int card, int channel, int fine, double scale = 5000.)
   return (calibrations[card][channel].lookup[fine]) * scale;
 }
 
-Bool_t bPlastReader::Read(decltype(&EXT_STR_h101_BPLAST_onion_t::plastic_crate[0]) crate, size_t cardid)
+Bool_t bPlastReader::Read()
 {
     c4LOG(debug1, "Event Data");
 
@@ -83,8 +83,6 @@ Bool_t bPlastReader::Read(decltype(&EXT_STR_h101_BPLAST_onion_t::plastic_crate[0
     std::array<double, NChannel> tot = {0};
     std::array<double, NChannel> epoch = {0};
 
-
-
     // BPLAST_TAMEX_MODULES
     for (int det = 0; NCards < 4; det++)
     {   
@@ -92,17 +90,17 @@ Bool_t bPlastReader::Read(decltype(&EXT_STR_h101_BPLAST_onion_t::plastic_crate[0
         int32_t last_epoch = 0;
 
         // BPLAST_TAMEX_HITS
-        for (int hit = 0; hit < crate.card[det].event_size/4 - 3; hit++) // this will have to change as the variable size is indicated by the variable leading it, we will usually set hits to 5
+        for (int hit = 0; hit < plastic_tamex[det].event_size/4 - 3; hit++) // this will have to change as the variable size is indicated by the variable leading it, we will usually set hits to 5
         {  
 
             // Time correction
 
-            if (crate->card[det].time_epochv[hit] !=0){
-                last_epoch = crate->card[det].time_epochv[hit];
+            if (plastic_tamex[det].time_epochv[hit] !=0){
+                last_epoch = plastic_tamex[det].time_epochv[hit];
             }
             else{
-                if (crate->card[det].time_finev[hit] == 0x3ff) continue;
-                int channel = crate->card[det].time_channelv[hit];
+                if (plastic_tamex[det].time_finev[hit] == 0x3ff) continue;
+                int channel = plastic_tamex[det].time_channelv[hit];
                 if (channel >= NChannel) continue;
 
                 if (last_epoch != 0){
@@ -113,19 +111,17 @@ Bool_t bPlastReader::Read(decltype(&EXT_STR_h101_BPLAST_onion_t::plastic_crate[0
                         throw std::runtime_error("Unexpected TDC epoch before trigger");
                     }
                     epoch[channel] = last_epoch - epoch_base;
-                    dout << "epoch[" << cardid << "][" << channel << "] = " << (last_epoch - epoch_base) << std::endl; // for debugging
                     last_epoch = 0;
                 }
             }
 
             // Calculate time event time
 
-            double time = (epoch[channel] * 1024e4) + crate->card[det].time_coarsev[hit] * 5000 - getFineTime(cardid, channel, crate->card[det].time_finev[hit]);
+            double time = (epoch[channel] * 1024e4) + plastic_tamex[det].time_coarsev[hit] * 5000 - getFineTime(cardid, channel, plastic_tamex[det].time_finev[hit]);
 
             // Leading edge = 1
 
-            if (crate->card[det].time_edgev[hit] == 1){
-                dout << "TDC Card = " << cardidx << ", Ch = " << channel << ", Lead, Time = " << time << std::endl; // for debugging purposes
+            if (plastic_tamex[det].time_edgev[hit] == 1){
                 leads[channel] = time;
             }
 
