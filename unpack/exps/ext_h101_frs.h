@@ -26,11 +26,8 @@ typedef          int  int32_t;
  * Plain structure (layout as ntuple/root file):
  */
 
-typedef struct EXT_STR_h101_FRS_t
+typedef struct EXT_STR_h101_t
 {
-  /* INFO */
-  uint32_t TRIGGER /* [0,15] */;
-  uint32_t EVENTNO /* [-1,-1] */;
   /* UNPACK */
   uint32_t tpat_data_n /* [-1,-1] */;
   uint32_t tpat_data_tpat /* [0,170] */;
@@ -54,7 +51,7 @@ typedef struct EXT_STR_h101_FRS_t
   uint32_t frs_crate_frs_v7x5_geoI[32 EXT_STRUCT_CTRL(frs_crate_frs_v7x5_geo)] /* [1,32] */;
   uint32_t frs_crate_frs_v7x5_geov[32 EXT_STRUCT_CTRL(frs_crate_frs_v7x5_geo)] /* [0,255] */;
 
-} EXT_STR_h101_FRS;
+} EXT_STR_h101;
 
 /********************************************************
  *
@@ -62,11 +59,8 @@ typedef struct EXT_STR_h101_FRS_t
  * recovered (recommended):
  */
 
-typedef struct EXT_STR_h101_FRS_onion_t
+typedef struct EXT_STR_h101_onion_t
 {
-  /* INFO */
-  uint32_t TRIGGER;
-  uint32_t EVENTNO;
   /* UNPACK */
   uint32_t tpat_data_n;
   uint32_t tpat_data_tpat;
@@ -90,19 +84,12 @@ typedef struct EXT_STR_h101_FRS_onion_t
   uint32_t frs_crate_frs_v7x5_geoI[32 /* frs_crate_frs_v7x5_geo */];
   uint32_t frs_crate_frs_v7x5_geov[32 /* frs_crate_frs_v7x5_geo */];
 
-} EXT_STR_h101_FRS_onion;
+} EXT_STR_h101_onion;
 
 /*******************************************************/
 
-#define EXT_STR_h101_FRS_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
+#define EXT_STR_h101_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
   ok = 1; \
-  /* INFO */ \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     TRIGGER,                         UINT32,\
-                    "TRIGGER",15,0/*flags*/); \
-  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
-                     EVENTNO,                         UINT32,\
-                    "EVENTNO",0/*flags*/); \
   /* UNPACK */ \
   EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      tpat_data_n,                     UINT32,\

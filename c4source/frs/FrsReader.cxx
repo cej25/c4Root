@@ -21,12 +21,13 @@ FrsReader::FrsReader(EXT_STR_h101_FRS_onion* data, size_t offset)
     , fNEvent(0)
     , fData(data)
     , fOffset(offset)
-    , fOnline(kFALSE)
-    , fArray(new TClonesArray("FrsReader"))
+    , fOnline(false) // kFALSE
+    , tpatArray(new std::vector<FrsUnpackTpatItem>)
+    , frsArray(new std::vector<FrsUnpackFrsItem>)
 {
 }
 
-FrsReader::~FrsReader() { delete fArray; }
+FrsReader::~FrsReader() { delete tpatArray; }
 
 Bool_t FrsReader::Init(ext_data_struct_info* a_struct_info)
 {
@@ -42,9 +43,10 @@ Bool_t FrsReader::Init(ext_data_struct_info* a_struct_info)
     }
 
     // Register output array in a tree
-    // CEJ: this is not working!! does not register fZ etc when !fOnline == true!
-    FairRootManager::Instance()->Register("FrsData", "FRS Data", fArray, !fOnline);
-    fArray->Clear();
+    FairRootManager::Instance()->RegisterAny("TpatData", tpatArray, !fOnline);
+    FairRootManager::Instance()->RegisterAny("FrsData", frsArray, !fOnline);
+    tpatArray->clear();
+    frsArray->clear();
 
     memset(fData, 0, sizeof *fData);
 
@@ -55,32 +57,35 @@ Bool_t FrsReader::Read()
 {
     c4LOG(debug1, "Event data");
 
-    int chan, lot;
-    UInt_t data;
-    for (int i = 0; i < fData->frs_main_crate_v1290_n; i++)
+    // -- TPAT -- // 
+    // no anaysis can be done without another procid...
+    tpatArray->clear();
+
+    for (UInt_t i = 0; i < fData->tpat_data_n; i++)
     {
-        chan = fData->frs_main_crate_v1290_channelv[i];
-        lot = fData->frs_main_crate_v1290_leadOrTrailv[i];
-        data = fData->frs_main_crate_v1290_data[i];
-        
-        new ((*fArray)[fArray->GetEntriesFast()]) FrsData(data,
-                                                          chan,
-                                                          lot);
-
-
+        auto & entry = tpatArray->emplace_back();
+        uint64_t ts_long = fData->tpat_data_ts_lov[i] | ((uint64_t)fData->tpat_data_ts_hiv[i] << 32);
+        UInt_t trigger = fData->tpat_data_trigv[i];
+        UInt_t data = fData->tpat_data_tpatv[i];
+        entry.SetAll(ts_long, trigger, data);
     }
 
-/*
-    for (int sc = 0; sc < 32; sc++)
-    {
-        new ((*fArray)[fArray->GetEntriesFast()]) FrsData(sc,
-                                                          fData->SCLONG[sc],
-                                                          sc+32,
-                                                          fData->SCLONG[sc+32]);
-                                                          
-    
+    // -- FRS crate -- //
+    frsArray->clear();
+
+    for (UInt_t i = 0; i < fData->frs_crate_frs_v830_n; i++)
+    {   
+        std::cout << "this should be 32.. for now ... " << fData->frs_crate_frs_v830_n << std::endl
+        scaler_frs[i] = fData->fData->frs_crate_frs_v830_data[i]; // goes into sc_long[i] later...
     }
-*/
+
+    for (UInt_t i = 0; i < fData->frs_crate_frs_v7x5_n; i++)
+    {   
+        geo = fData->frs_crate_frs_v7x5_geov[i];
+        channel = fData->frs_crate_frs_v7x5_channelv[i];
+        vme_frs[geo][channel] = fData->frs_crate_frs_v7x5_data[i];
+    }
+
     fNEvent += 1;
     return kTRUE;
 
@@ -89,7 +94,8 @@ Bool_t FrsReader::Read()
 void FrsReader::Reset()
 {
     // reset output array
-    fArray->Clear();
+    tpatArray->clear();
+    frsArray->clear();
 }
 
 ClassImp(FrsReader);
