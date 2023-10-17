@@ -28,9 +28,6 @@ typedef          int  int32_t;
 
 typedef struct EXT_STR_h101_FRS_t
 {
-  /* INFO */
-  uint32_t TRIGGER /* [0,15] */;
-  uint32_t EVENTNO /* [-1,-1] */;
   /* UNPACK */
   uint32_t tpat_data_n /* [-1,-1] */;
   uint32_t tpat_data_tpat /* [0,170] */;
@@ -64,9 +61,6 @@ typedef struct EXT_STR_h101_FRS_t
 
 typedef struct EXT_STR_h101_FRS_onion_t
 {
-  /* INFO */
-  uint32_t TRIGGER;
-  uint32_t EVENTNO;
   /* UNPACK */
   uint32_t tpat_data_n;
   uint32_t tpat_data_tpat;
@@ -96,13 +90,6 @@ typedef struct EXT_STR_h101_FRS_onion_t
 
 #define EXT_STR_h101_FRS_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
   ok = 1; \
-  /* INFO */ \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     TRIGGER,                         UINT32,\
-                    "TRIGGER",15,0/*flags*/); \
-  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
-                     EVENTNO,                         UINT32,\
-                    "EVENTNO",0/*flags*/); \
   /* UNPACK */ \
   EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      tpat_data_n,                     UINT32,\
