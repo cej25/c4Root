@@ -97,12 +97,14 @@ Bool_t FatimaReader::Init(ext_data_struct_info* a_struct_info)
             last_hits[i][j].lead_epoch_counter = 0;
             
             
-            fine_time_hits[i][j] = new TH1I(Form("fine_time_calibration_coeffs_%i_%i",i,j),"Fine time calibration hist",1024,0,1024); //channel size of fine time
+            fine_time_hits[i][j] = new TH1I(Form("fine_time_calibration_coeffs_%i_%i",i,j),"Fine time calibration hist",512,0,512); //channel size of fine time
             
-            fine_time_calibration_coeffs[i][j] = new double[1024];
-            for (int k = 0; k<1024; k++) fine_time_calibration_coeffs[i][j][k] = 0.0;
+            fine_time_calibration_coeffs[i][j] = new double[512];
+            for (int k = 0; k<512; k++) fine_time_calibration_coeffs[i][j][k] = 0.0;
         }
     }
+    fine_time_calibration_set = false;
+    flag_collect_fine_times = true;
 
 
     // Register output array in a tree
@@ -119,21 +121,35 @@ void FatimaReader::DoFineTimeCalibrationEveryN(){
         for (int j = 0; j < NChannels; j++) {
             int running_sum = 0;
             int total_counts = fine_time_hits[i][j]->GetEntries();
-            for (int k = 0; k < 1024; k++) {
-                running_sum += fine_time_hits[i][j]->GetBinContent(k+1); //bin 0 is the underflow bin, hence we start at [1,1024].
+            for (int k = 0; k < 512; k++) {
+                running_sum += fine_time_hits[i][j]->GetBinContent(k+1); //bin 0 is the underflow bin, hence we start at [1,512].
+
+
+                //no counts?
+                if (total_counts == 0) {
+                    fine_time_calibration_coeffs[i][j][k] = 0;
+                    continue;
+                }
+
                 fine_time_calibration_coeffs[i][j][k] = TAMEX_fine_time_clock*(double)running_sum/(double)total_counts;
+                std::cout << i << " " << j << " " << k << " " << TAMEX_fine_time_clock << " " << running_sum << " " << total_counts << " " << fine_time_calibration_coeffs[i][j][k] << std::endl;
+                if (total_counts == 0) c4LOG(fatal,"NOT ENOUGHT COUNTS IN FINE TIME CALIB");
             }
         }
     }
     fine_time_calibration_set = true;
+    flag_collect_fine_times = false;
+
 }
 
 double FatimaReader::GetFineTime(int tdc_fine_time_channel, int board_id, int channel_id){
+    if (fine_time_calibration_coeffs[board_id][channel_id][tdc_fine_time_channel] == 0)  return (double)tdc_fine_time_channel/512*5.0;
     return fine_time_calibration_coeffs[board_id][channel_id][tdc_fine_time_channel];
 }
 
 
 void FatimaReader::WriteFineTimeCalibrationsToFile(TString filename){
+
     if (!fine_time_calibration_set) {
         c4LOG(info,"Fine time calibrations not set, cannot write to file.");
         return;
@@ -170,7 +186,8 @@ Bool_t FatimaReader::Read() //do fine time here:
 
     if (!fData) return kTRUE;
 
-    if (fNEvent % fine_time_calibration_freq == 0 & fNEvent!=0){
+    if (fNEvent==fine_time_calibration_freq  & !fine_time_calibration_set){
+        c4LOG(info, "Doing fine time calibration now.");
         DoFineTimeCalibrationEveryN();
     }
 
@@ -184,12 +201,14 @@ Bool_t FatimaReader::Read() //do fine time here:
         look_ahead_counter = 0;
         //reset last hits?
 
+
         if (fData->fatima_tamex[it_board_number].event_size == 0) continue; // empty event skip
 
         //std::cout << fData->fatima_tamex[it_board_number].event_size << std::endl;
 
         for (int it_hits = 0; it_hits < fData->fatima_tamex[it_board_number].event_size/4 - 3 ; it_hits++){ // if no data is written this loop never starts (?)
             //this distinguishes epoch words from time words by checking if the epoch/coarse and fine words are zero. This would potentially be a problem if epoch truly is zero...
+
 
             //look ahead to grab epoch:
             if (last_epoch == 0 && fData->fatima_tamex[it_board_number].time_epochv[it_hits] == 0){
@@ -210,16 +229,21 @@ Bool_t FatimaReader::Read() //do fine time here:
 
             int channelid = fData->fatima_tamex[it_board_number].time_channelv[it_hits]; // 1-32
             if (channelid == 0) continue; // skip channel 0 for now
+            
+            if (fData->fatima_tamex[it_board_number].time_finev[it_hits] == 0x3FF) continue;
+            
             int coarse_T = fData->fatima_tamex[it_board_number].time_coarsev[it_hits];
             
-            if (flag_collect_fine_times) {
-                fine_time_hits[it_board_number][channelid-1]->Fill(fData->fatima_tamex[it_board_number].time_finev[it_hits]);
-            }
             
-            if (!fine_time_calibration_set) continue; //drop uncalibrated events
+            if (flag_collect_fine_times & !fine_time_calibration_set) {
+                //c4LOG(info,"FILLING");
+                fine_time_hits[it_board_number][channelid-1]->Fill(fData->fatima_tamex[it_board_number].time_finev[it_hits]);
+                return kTRUE;
+            }
 
             double fine_T = GetFineTime(fData->fatima_tamex[it_board_number].time_finev[it_hits],it_board_number,channelid-1);
 
+            //std::cout << "here t= " << fine_T << std::endl;
 
 
             if (fData->fatima_tamex[it_board_number].time_edgev[it_hits] == 1){ // rise signal:

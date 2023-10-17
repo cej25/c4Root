@@ -85,10 +85,12 @@ class FatimaReader : public c4Reader
 
 
         TH1I *** fine_time_hits; //array of TH1 hisots [NBoards][NChannels]
-        double *** fine_time_calibration_coeffs; //[NBoards][NChannels][1024] last index is bin nr. - this is the lookup table
+        double *** fine_time_calibration_coeffs; //[NBoards][NChannels][512] last index is bin nr. - this is the lookup table
+        
         bool flag_collect_fine_times = true;
-        int fine_time_calibration_freq = 10000000;
         bool fine_time_calibration_set = false;
+        
+        int fine_time_calibration_freq = 1000000;
 
         double TAMEX_fine_time_clock = 5.0; // ns in one fine time cycle.
 

@@ -20,11 +20,11 @@ FatimaTwinpeaksData::FatimaTwinpeaksData(
         uint32_t ch_ID,
         uint32_t lead_epoch_counter,
         uint32_t lead_coarse_T,
-        uint32_t lead_fine_T,
+        double lead_fine_T,
 
         uint32_t trail_epoch_counter,
         uint32_t trail_coarse_T,
-        uint32_t trail_fine_T,
+        double trail_fine_T,
         uint16_t wr_subsystem_id,
         uint64_t wr_t)
     : 
