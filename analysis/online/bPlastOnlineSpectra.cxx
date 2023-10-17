@@ -95,25 +95,6 @@ void bPlastOnlineSpectra::Reset_Histo()
     fh1_LeadTime->Reset();
 }
 
-int MAX_CARDS = 1; // for now
-int TDC_CHANNELS = 33; // for now
-struct fineTimeCalib
-{
-  int min;
-  int max;
-  double lookup[600];
-};
-
-fineTimeCalib calibrations[MAX_CARDS][TDC_CHANNELS];
-
-double getFine(int card, int channel, int fine, double scale = 5000.)
-{
-  if (fine < calibrations[card][channel].min)
-    return 0;
-  if (fine > calibrations[card][channel].max)
-    return scale;
- i return (calibrations[card][channel].lookup[fine]) * scale;
-}
 void bPlastOnlineSpectra::Exec(Option_t* option)
 {   
 
