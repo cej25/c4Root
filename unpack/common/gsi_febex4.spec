@@ -47,7 +47,7 @@ FEBEX_EVENT()
         0_1: ignore;
         2_31: size;
 
-        ENCODE( num_channels_fired ,  (value = size/4 - 1 ));
+        ENCODE(num_channels_fired ,  (value = size/4 - 1 ));
     }
 
     //sum channel data header

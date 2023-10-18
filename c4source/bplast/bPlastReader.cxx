@@ -69,7 +69,7 @@ double getFineTime(int card, int channel, int fine, double scale = 5000.)
   return (calibrations[card][channel].lookup[fine]) * scale;
 }
 
-Bool_t bPlastReader::Read(decltype(&EXT_STR_h101_BPLAST_onion_t::plastic_crate[0].card[0]) card, size_t cardid)
+Bool_t bPlastReader::Read(decltype(&EXT_STR_h101_BPLAST_onion_t::plastic_crate[0]) crate, size_t cardid)
 {
     c4LOG(debug1, "Event Data");
 
@@ -80,26 +80,29 @@ Bool_t bPlastReader::Read(decltype(&EXT_STR_h101_BPLAST_onion_t::plastic_crate[0
     // TAMEX Epoch correction
     std::array<double, NChannel> leads = {0};
     std::array<double, NChannel> trails = {0};
+    std::array<double, NChannel> tot = {0};
     std::array<double, NChannel> epoch = {0};
 
-    int32_t epoch = 0;
-    int32_t last_epoch = 0;
+
 
     // BPLAST_TAMEX_MODULES
     for (int det = 0; NCards < 4; det++)
     {   
+        int32_t epoch_base = 0;
+        int32_t last_epoch = 0;
+
         // BPLAST_TAMEX_HITS
-        for (int hit = 0; hit < NHits; hit++) // this will have to change as the variable size is indicated by the variable leading it, we will usually set hits to 5
+        for (int hit = 0; hit < crate.card[det].event_size/4 - 3; hit++) // this will have to change as the variable size is indicated by the variable leading it, we will usually set hits to 5
         {  
 
             // Time correction
 
-            if (card->time_epochv[hit] !=0){
-                last_epoch = card->time_epochv[hit];
+            if (crate->card[det].time_epochv[hit] !=0){
+                last_epoch = crate->card[det].time_epochv[hit];
             }
             else{
-                if (card->time_finev[hit] == 0x3ff) continue;
-                int channel = card->time_channelv[hit];
+                if (crate->card[det].time_finev[hit] == 0x3ff) continue;
+                int channel = crate->card[det].time_channelv[hit];
                 if (channel >= NChannel) continue;
 
                 if (last_epoch != 0){
@@ -110,18 +113,18 @@ Bool_t bPlastReader::Read(decltype(&EXT_STR_h101_BPLAST_onion_t::plastic_crate[0
                         throw std::runtime_error("Unexpected TDC epoch before trigger");
                     }
                     epoch[channel] = last_epoch - epoch_base;
-                    dout << "epoch[" << cardidx << "][" << channel << "] = " << (last_epoch - epoch_base) << std::endl; // for debugging
+                    dout << "epoch[" << cardid << "][" << channel << "] = " << (last_epoch - epoch_base) << std::endl; // for debugging
                     last_epoch = 0;
                 }
             }
 
             // Calculate time event time
 
-            double time = (epoch[channel] * 1024e4) + card->time_coarsev[hit] * 5000 - getFineTime(cardid, channel, card->time_finev[hit]);
+            double time = (epoch[channel] * 1024e4) + crate->card[det].time_coarsev[hit] * 5000 - getFineTime(cardid, channel, crate->card[det].time_finev[hit]);
 
             // Leading edge = 1
 
-            if (card->time_edgev[hit] == 1){
+            if (crate->card[det].time_edgev[hit] == 1){
                 dout << "TDC Card = " << cardidx << ", Ch = " << channel << ", Lead, Time = " << time << std::endl; // for debugging purposes
                 leads[channel] = time;
             }
@@ -129,9 +132,9 @@ Bool_t bPlastReader::Read(decltype(&EXT_STR_h101_BPLAST_onion_t::plastic_crate[0
             // Trailing edge = 0
 
             else {
-                if (leads[channel] /* && card->time_edgev[hit] == 0 */){
+                if (leads[channel]){
                     trails[channel] = time;
-                    double tot = time - leads[channel];
+                    tot[channel] = time - leads[channel];
                 }
 
             // Fill TAMEX data arrays
@@ -139,9 +142,9 @@ Bool_t bPlastReader::Read(decltype(&EXT_STR_h101_BPLAST_onion_t::plastic_crate[0
             new ((*fArray)[fArray->GetEntriesFast()]) bPlastTamexData(
                 fData->leads[channel],
                 fData->trails[channel],
-                fData->tot,
+                fData->tot[channel],
                 fData->channel,
-                fData->epoch,
+                fData->epoch[channel],
                 fData->plastic_ts_subsystem_id,
                 plastic_ts_t
             );
