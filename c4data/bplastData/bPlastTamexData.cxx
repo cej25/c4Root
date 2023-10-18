@@ -13,22 +13,22 @@ bPlastTamexData::bPlastTamexData()
 
 /* there are some pre-trigger times, but I will probably not save these as they are only used to calculate the time difference between events */
 bPlastTamexData::bPlastTamexData(
-    UInt_t fbPlastLeadTime,
-    UInt_t fbPlastTrailTime,
-    UInt_t fbPlastToT,
-    UInt_t fbPlastChannel,
-    UInt_t fbPlastEpoch,
-    UInt_t fbPlastSubSysID,
-    UInt_t fbPlastWrT
+    UInt_t bPlastLeadTime,
+    UInt_t bPlastTrailTime,
+    UInt_t bPlastToT,
+    UInt_t bPlastChannel,
+    UInt_t bPlastEpoch,
+    UInt_t bPlastSubSysID,
+    UInt_t bPlastWrT
     )
 
-    :  fbPlastLeadTime(fbPlastLeadTime),
-       fbPlastTrailTime(fbPlastTrailTime),
-       fbPlastToT(fbPlastToT),
-       fbPlastChannel(fbPlastChannel),
-       fbPlastEpoch(fbPlastEpoch),
-       fbPlastSubSysID(fbPlastSubSysID),
-       fbPlastWrT(fbPlastWrT)
+    :  fbPlastLeadTime(bPlastLeadTime),
+       fbPlastTrailTime(bPlastTrailTime),
+       fbPlastToT(bPlastToT),
+       fbPlastChannel(bPlastChannel),
+       fbPlastEpoch(bPlastEpoch),
+       fbPlastSubSysID(bPlastSubSysID),
+       fbPlastWrT(bPlastWrT)
 
 {
 }

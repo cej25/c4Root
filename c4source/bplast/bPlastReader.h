@@ -18,10 +18,15 @@ typedef struct EXT_STR_h101_BPLAST_t EXT_STR_h101_BPLAST;
 typedef struct EXT_STR_h101_BPLAST_onion_t EXT_STR_h101_BPLAST_onion;
 class ext_data_struct_info;
 
+
 class bPlastReader : public c4Reader
 {
     public:
         bPlastReader(EXT_STR_h101_BPLAST_onion*, size_t);
+
+        virtual Bool_t bPlasAnalysis();
+
+        virtual Bool_t LoadCalibrationFiles();
 
         virtual ~bPlastReader();
 
@@ -42,13 +47,12 @@ class bPlastReader : public c4Reader
 
         Bool_t fOnline;
 
-        const int NCards = 9;
-        const int NChannels = 33;
-
-
         uint64_t plastic_ts_t;
 
         TClonesArray* fArray;
+
+        const int NCards = 9;
+        const int NChannels = 33;
     
     public:
         ClassDefOverride(bPlastReader, 0);
