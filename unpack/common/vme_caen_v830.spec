@@ -1,5 +1,7 @@
 VME_CAEN_V830_FRS()
-{
+{   
+    MEMBER(DATA32 data[32] ZERO_SUPPRESS);
+    
     UINT32 v830_header NOENCODE
     {   
         0_15: trigger_number;
@@ -14,7 +16,8 @@ VME_CAEN_V830_FRS()
     {
         UINT32 data_word NOENCODE
         {
-            0_31: data;
+            0_31: value;
+            ENCODE(data[i], (value = value));
         };
     }
 }

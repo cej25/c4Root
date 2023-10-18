@@ -2,7 +2,7 @@
 
 #include "config.spec"
 #include "../../common/whiterabbit.spec"
-#include "../../common/ge_febex.spec"
+#include "../../common/gsi_febex4.spec"
 
 DUMMY()
 {
