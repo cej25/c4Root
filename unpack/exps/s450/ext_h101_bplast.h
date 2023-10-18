@@ -28,9 +28,6 @@ typedef          int  int32_t;
 
 typedef struct EXT_STR_h101_t
 {
-  /* INFO */
-  uint32_t TRIGGER /* [0,15] */;
-  uint32_t EVENTNO /* [-1,-1] */;
   /* UNPACK */
   uint32_t plastic_tamex1event_size /* [-1,-1] */;
   uint32_t plastic_tamex1time_coarse /* [0,512] */;
@@ -151,9 +148,6 @@ typedef struct EXT_STR_h101_t
 
 typedef struct EXT_STR_h101_onion_t
 {
-  /* INFO */
-  uint32_t TRIGGER;
-  uint32_t EVENTNO;
   /* UNPACK */
   struct {
     uint32_t event_size;
@@ -181,13 +175,6 @@ typedef struct EXT_STR_h101_onion_t
 
 #define EXT_STR_h101_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
   ok = 1; \
-  /* INFO */ \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     TRIGGER,                         UINT32,\
-                    "TRIGGER",15,0/*flags*/); \
-  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
-                     EVENTNO,                         UINT32,\
-                    "EVENTNO",0/*flags*/); \
   /* UNPACK */ \
   EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      plastic_tamex1event_size,        UINT32,\

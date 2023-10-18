@@ -40,6 +40,10 @@ Bool_t bPlastReader::Init(ext_data_struct_info* a_struct_info)
         c4LOG(error, "Failed to set up structure information");
         return kFALSE;
     }
+
+    // initialise calibration arrays
+
+    
     
     // Register output array in a tree
     FairRootManager::Instance()->Register("bPlastTamexData", "bPlast Tamex Data", fArray, !fOnline);
@@ -51,57 +55,111 @@ Bool_t bPlastReader::Init(ext_data_struct_info* a_struct_info)
 }
 //
 
-struct fineTimeCalib
+Bool_t bPlastReader::bPlasAnalysis()
 {
-  int min;
-  int max;
-  double lookup[600];
-};
+  for (size_t card = 0; card < NCards; card++)
+  {
+    for (size_t i = 0; i < NChannels; i++)
+    {
+      calibrations[card][i].min = 0;
+      calibrations[card][i].max = 0;
+      std::fill(std::begin(calibrations[card][i].lookup),
+	  std::end(calibrations[card][i].lookup), 0);
+    }
+  }
+}
 
-fineTimeCalib calibrations[NCards][NChannels];
-
-double getFineTime(int card, int channel, int fine, double scale = 5000.)
+Bool_t bPlastReader::LoadCalibrationFiles()
 {
-  if (fine < calibrations[card][channel].min)
-    return 0;
-  if (fine > calibrations[card][channel].max)
-    return scale;
-  return (calibrations[card][channel].lookup[fine]) * scale;
+  for (size_t card = 0; card < NCards; card++)
+  {
+    std::cout << "Reading calibration parameters for bPlas card " << card << "..." << std::endl;
+    for (size_t i = 0; i < NChannels; i++)
+    {
+      std::stringstream fpath;
+      fpath << "./bPlasCalib/Calib_" << card << "_" << i << ".dat";
+      std::ifstream calib;
+      calib.open(fpath.str());
+      if (calib.fail()) continue;
+      calib.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      calib.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      int min = 1024, max = 0;
+      while (calib)
+      {
+	int bin;
+	double value;
+	calib >> bin >> value;
+	if (bin < min) min = bin;
+	if (bin > max) max = bin;
+	if (value > 1) {
+	  throw std::runtime_error("Calibration value seems invalid");
+	}
+	calibrations[card][i].lookup[bin - 1] = value;
+      }
+      calibrations[card][i].min = min;
+      calibrations[card][i].max = max;
+      if (min > max) {
+	std::stringstream errbuf;
+	errbuf << "Calibration made no sense";
+	errbuf << " min=" << min;
+	errbuf << " max=" << max;
+	throw std::runtime_error(errbuf.str());
+      }
+    }
+  }
 }
 
 Bool_t bPlastReader::Read()
 {
     c4LOG(debug1, "Event Data");
 
+    std::array<double, NChannels> leads = {0};
+    std::array<double, NChannels> trails = {0};
+    std::array<double, NChannels> tot = {0};
+    std::array<double, NChannels> epoch = {0};
+
     // Would you look at the time!
     plastic_ts_t = (((uint64_t)fData->plastic_ts_t[3]) << 48) + (((uint64_t)fData->plastic_ts_t[2]) << 32) + (((uint64_t)fData->plastic_ts_t[1]) << 16) + (uint64_t)(fData->plastic_ts_t[0]);
-
-
-    // TAMEX Epoch correction
-    std::array<double, NChannel> leads = {0};
-    std::array<double, NChannel> trails = {0};
-    std::array<double, NChannel> tot = {0};
-    std::array<double, NChannel> epoch = {0};
 
     // BPLAST_TAMEX_MODULES
     for (int det = 0; NCards < 4; det++)
     {   
+
+
+        struct fineTimeCalib
+        {
+            int min;
+            int max;
+            double lookup[600];
+        };
+
+        fineTimeCalib calibrations[NCards][NChannels];
+
+        double getFineTime(int card, int channel, int fine, double scale = 5000.)
+        {
+            if (fine < calibrations[card][channel].min)
+                return 0;
+            if (fine > calibrations[card][channel].max)
+                return scale;
+            return (calibrations[card][channel].lookup[fine]) * scale;
+        }
+
         int32_t epoch_base = 0;
         int32_t last_epoch = 0;
 
         // BPLAST_TAMEX_HITS
-        for (int hit = 0; hit < plastic_tamex[det].event_size/4 - 3; hit++) // this will have to change as the variable size is indicated by the variable leading it, we will usually set hits to 5
+        for (int hit = 0; hit < fData->plastic_tamex[det].event_size/4 - 3; hit++) // this will have to change as the variable size is indicated by the variable leading it, we will usually set hits to 5
         {  
 
             // Time correction
 
-            if (plastic_tamex[det].time_epochv[hit] !=0){
-                last_epoch = plastic_tamex[det].time_epochv[hit];
+            if (fData->plastic_tamex[det].time_epochv[hit] !=0){
+                last_epoch = fData->plastic_tamex[det].time_epochv[hit];
             }
             else{
-                if (plastic_tamex[det].time_finev[hit] == 0x3ff) continue;
-                int channel = plastic_tamex[det].time_channelv[hit];
-                if (channel >= NChannel) continue;
+                if (fData->plastic_tamex[det].time_finev[hit] == 0x3ff) continue;
+                int channel = fData->plastic_tamex[det].time_channelv[hit];
+                if (channel >= NChannels) continue;
 
                 if (last_epoch != 0){
                     if (epoch_base == 0 && channel == 0){
@@ -116,12 +174,12 @@ Bool_t bPlastReader::Read()
             }
 
             // Calculate time event time
-
-            double time = (epoch[channel] * 1024e4) + plastic_tamex[det].time_coarsev[hit] * 5000 - getFineTime(cardid, channel, plastic_tamex[det].time_finev[hit]);
+            int channel = fData->plastic_tamex[det].time_channelv[hit];
+            double time = (epoch[channel] * 1024e4) + fData->plastic_tamex[det].time_coarsev[hit] * 5000 - getFineTime(det, channel, fData->plastic_tamex[det].time_finev[hit]);
 
             // Leading edge = 1
 
-            if (plastic_tamex[det].time_edgev[hit] == 1){
+            if (fData->plastic_tamex[det].time_edgev[hit] == 1){
                 leads[channel] = time;
             }
 
@@ -136,11 +194,11 @@ Bool_t bPlastReader::Read()
             // Fill TAMEX data arrays
 
             new ((*fArray)[fArray->GetEntriesFast()]) bPlastTamexData(
-                fData->leads[channel],
-                fData->trails[channel],
-                fData->tot[channel],
-                fData->channel,
-                fData->epoch[channel],
+                leads[channel],
+                trails[channel],
+                tot[channel],
+                channel,
+                epoch[channel],
                 fData->plastic_ts_subsystem_id,
                 plastic_ts_t
             );

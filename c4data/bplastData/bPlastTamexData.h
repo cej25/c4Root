@@ -32,13 +32,14 @@ class bPlastTamexData : public TObject
 
         
         // Setters
-        void SetLeadTime(UInt_t fbPlastLeadTime) {this->fbPlastLeadTime = fbPlastLeadTime;}
-        void SetTrailTime(UInt_t fbPlastTrailTime) {this->fbPlastTrailTime = fbPlastTrailTime;}
-        void SetToT(UInt_t fbPlastToT) {this->fbPlastToT = fbPlastToT;}
-        void SetChannel(UInt_t fbPlastChannel) {this->fbPlastChannel = fbPlastChannel;}
-        void SetEpoch(UInt_t fbPlastEpoch) {this->fbPlastEpoch = fbPlastEpoch;}
-        void SetSubSysID(UInt_t fbPlastSubSysID) {this->fbPlastSubSysID = fbPlastSubSysID;}
-        void SetWrT(UInt_t fbPlastWrT) {this->fbPlastWrT = fbPlastWrT;}
+        void SetLeadTime(UInt_t v) {fbPlastLeadTime = v;}
+        void SetTrailTime(UInt_t v) {fbPlastTrailTime = v;}
+        void SetToT(UInt_t v) {fbPlastToT = v;}
+        void SetChannel(UInt_t v) {fbPlastChannel = v;}
+        void SetEpoch(UInt_t v) {fbPlastEpoch = v;}
+        void SetSubSysID(UInt_t v) {fbPlastSubSysID = v;}
+        void SetWrT(UInt_t v) {fbPlastWrT = v;}
+
 
     protected:
         // stuff
