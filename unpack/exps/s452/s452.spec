@@ -9,16 +9,6 @@
 // one by one we will remove all but AIDA...
 external EXT_AIDA();
 
-<<<<<<< HEAD
-
-external EXT_PLASTIC_TP();
-external EXT_PLASTIC();
-external EXT_AIDA();
-=======
-external EXT_FATIMA_VME();
-external EXT_FATIMA_TAMEX(); // twinpeaks?
-
->>>>>>> main
 
 DUMMY()
 {
@@ -47,7 +37,6 @@ SUBEVENT(febex_subev)
     }
 }
 
-<<<<<<< HEAD
 
 SUBEVENT(fatima_tamex_subev)
 {
@@ -68,42 +57,11 @@ SUBEVENT(fatima_tamex_subev)
         tamex[6] = TAMEX4_SFP(sfp=0,card=6);
         tamex[7] = TAMEX4_SFP(sfp=0,card=7);
         tamex[8] = TAMEX4_SFP(sfp=0,card=8);
-=======
-SUBEVENT(fatima_vme_subev)
-{
-    
-    ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1500);
-    external data = EXT_FATIMA_VME();
-    
-}
-
-SUBEVENT(fatima_tamex_subev)
-{
-  
-    ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1600);
-    external data = EXT_FATIMA_TAMEX();
-
-    /*trigger_window = TAMEX_WINDOW();
-    select several 
-    {
-        padding = TAMEX_PADDING();
->>>>>>> main
-    }
-    list (0 <= index < 4)
-    {
-        tamex = TAMEX_DATA();
-    }*/
-  
+    }  
 }
 /*
 SUBEVENT(plastic_subev)
-<<<<<<< HEAD
-{
-    //MEMBER(DATA12 am_fired[32] ZERO_SUPPRESS_MULTI(200));
-
-=======
 {   
->>>>>>> main
     if (BPLAST_USED)
     {
         ts = TIMESTAMP_WHITERABBIT(id=0x500);
