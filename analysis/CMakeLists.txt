@@ -31,6 +31,7 @@ set(SRCS
 ./online/BeamMonitorOnlineSpectra.cxx
 ./online/LisaOnlineSpectra.cxx
 ./online/AidaOnlineSpectra.cxx
+./online/FatimaOnlineSpectra.cxx
 ./online/FrsOnlineSpectra.cxx
 )
 

@@ -8,7 +8,7 @@
 
 // c4
 #include "FatimaTwinpeaksData.h"
-#include "FatimaCalData.h"
+#include "FatimaTwinpeaksCalData.h"
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
@@ -21,7 +21,7 @@ fNEvents(0),
 header(nullptr),
 fOnline(kFALSE),
 funcal_data(new TClonesArray("FatimaTwinpeaksData")),
-fcal_data(new TClonesArray("FatimaCalData"))
+fcal_data(new TClonesArray("FatimaTwinpeaksCalData"))
 {
 }
 
@@ -32,7 +32,7 @@ FatimaRaw2Cal::FatimaRaw2Cal(const TString& name, Int_t verbose)
     header(nullptr),
     fOnline(kFALSE),
     funcal_data(new TClonesArray("FatimaTwinpeaksData")),
-    fcal_data(new TClonesArray("FatimaCalData"))
+    fcal_data(new TClonesArray("FatimaTwinpeaksCalData"))
 {
 }
 
@@ -66,15 +66,13 @@ InitStatus FatimaRaw2Cal::Init(){
     funcal_data = (TClonesArray*)mgr->GetObject("FatimaTwinpeaksData");
     c4LOG_IF(fatal, !funcal_data, "Fatima branch of FatimaTwinpeaksData not found.");
     
-    /*fcal_data = (TClonesArray*)mgr->GetObject("FatimaCalData");
-    c4LOG_IF(fatal, !fcal_data, "Fatima branch of FatimaCalData not found.");
-    */
 
-    FairRootManager::Instance()->Register("FatimaCalData", "Fatima Cal Data", fcal_data, !fOnline);
-    
+    FairRootManager::Instance()->Register("FatimaTwinpeaksCalData", "Fatima Cal Data", fcal_data, !fOnline);
     fcal_data->Clear();
+    funcal_data->Clear();
+
     
-    //memset(funcal_data, 0, sizeof *funcal_data);
+    //memset(fcal_data, 0, sizeof *fcal_data);
 
 
     return kSUCCESS;
@@ -108,7 +106,7 @@ Bool_t FatimaRaw2Cal::SetDetectorMapFile(TString filename){
             //TODO: implement a check to make sure keys are unique.
         }
     }
-    DetectorMap_loaded = 1;     
+    DetectorMap_loaded = 1;
     detector_map_file.close();  
     return 0; 
 };
@@ -119,7 +117,7 @@ Bool_t FatimaRaw2Cal::SetDetectorCalFile(TString filename){
     //
     //Assumed structure of detector map is 
     //- aribtrary lines of comments starting with #
-    //- each entry is a line with four number: (tamex module id) (tamex channel id) (detector id) (crystal id)
+    //- each entry is a line with four numbers: (tamex module id) (tamex channel id) (detector id) (crystal id)
     //
     c4LOG(info, "Reading Calibration coefficients.");
 
@@ -171,11 +169,25 @@ void FatimaRaw2Cal::PrintDetectorCal(){
 
 
 void FatimaRaw2Cal::Exec(Option_t* option){
-    if (funcal_data && funcal_data->GetEntriesFast() > 0){
+    if (funcal_data && funcal_data->GetEntriesFast() > 1){ // only get events with two hits.or more
         Int_t event_multiplicity = funcal_data->GetEntriesFast();
         for (Int_t ihit = 0; ihit < event_multiplicity; ihit++){
 
             funcal_hit = (FatimaTwinpeaksData*)funcal_data->At(ihit);
+
+            // under the assumption fast-slow always follows:
+            if (funcal_hit->Get_trail_epoch_counter() == 0) {continue;} // missing trail
+            if (ihit == event_multiplicity - 1) {fNunmatched++; continue;} //if only one event is left
+            if (funcal_hit->Get_ch_ID()%2==0) {fNunmatched++; continue;} //skip slow channels only read them in partner. increment ihit by one extra.
+            
+            funcal_hit_next = (FatimaTwinpeaksData*)funcal_data->At(ihit+1);
+            
+            if (funcal_hit_next->Get_ch_ID() != funcal_hit->Get_ch_ID()+1){ // this assumption seems empirically true - no events are filled when reverse order is put.
+                fNunmatched++; continue;
+            }
+
+
+            //from here the funcalhitpartner is the slow branch and funcal_hit the fast:
 
             //do the detector mapping here:
             if (DetectorMap_loaded){
@@ -192,34 +204,54 @@ void FatimaRaw2Cal::Exec(Option_t* option){
                 }
             }
             else{ //no map and cal: ->
-                c4LOG(fatal, "Detector Mapping not set - please set this using SetDetectorMap to use the Cal Task.");
+                detector_id = funcal_hit->Get_board_id()*17 + funcal_hit_next->Get_ch_ID()/2; // do mapping.
             }
 
+            if (funcal_hit_next->Get_trail_epoch_counter() == 0) continue; // missing trail in either
 
-            //match slow and fast entries.
+            fast_lead_time = (funcal_hit->Get_lead_epoch_counter()-1)*10.24e3 + funcal_hit->Get_lead_coarse_T()*5.0 - funcal_hit->Get_lead_fine_T();
+            fast_trail_time =(funcal_hit->Get_trail_epoch_counter()-1)*10.24e3 + funcal_hit->Get_trail_coarse_T()*5.0 - funcal_hit->Get_trail_fine_T();
+            
+            slow_lead_time = (funcal_hit_next->Get_lead_epoch_counter()-1)*10.24e3 + funcal_hit_next->Get_lead_coarse_T()*5.0 - funcal_hit_next->Get_lead_fine_T();
+            slow_trail_time =(funcal_hit_next->Get_trail_epoch_counter()-1)*10.24e3 + funcal_hit_next->Get_trail_coarse_T()*5.0 - funcal_hit_next->Get_trail_fine_T();
+            
 
-            //get ToT
+            fast_ToT =  fast_trail_time - fast_lead_time;
+            slow_ToT =  slow_trail_time - slow_lead_time;
 
-            //write long time
-
-            //
-
-
-            new ((*fcal_data)[fcal_data->GetEntriesFast()]) FatimaCalData(
-                //
+            new ((*fcal_data)[fcal_data->GetEntriesFast()]) FatimaTwinpeaksCalData(
+                funcal_hit->Get_board_id(),
+                (int)((funcal_hit->Get_ch_ID()+1)/2),
+                detector_id,
+                slow_lead_time,
+                slow_trail_time,
+                fast_lead_time,
+                fast_trail_time,
+                fast_ToT,
+                slow_ToT,
                 funcal_hit->Get_wr_subsystem_id(),
                 funcal_hit->Get_wr_t());
+            
+            
+            fNEvents++;
+            ihit++; //increment it by one extra.
         }
     }    
 }
 
 
-void FatimaRaw2Cal::Reset(){
+void FatimaRaw2Cal::FinishEvent(){
     // reset output array
     funcal_data->Clear();
     fcal_data->Clear();
 };
 
+
+    
+void FatimaRaw2Cal::FinishTask(){
+    c4LOG(info, Form("Wrote %i events.",fNEvents));
+    c4LOG(info, Form("%i events are unmatched (not written).",fNunmatched));
+}
 
 
 ClassImp(FatimaRaw2Cal)

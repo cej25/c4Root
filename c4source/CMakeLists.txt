@@ -51,6 +51,7 @@ set(SRCS
 ./beammonitor/BeamMonitorReader.cxx
 ./germanium/GermaniumRaw2Cal.cxx
 ./fatima/FatimaReader.cxx
+./fatima/FatimaRaw2Cal.cxx
 )
 
 Set(STRUCT_HEADERS

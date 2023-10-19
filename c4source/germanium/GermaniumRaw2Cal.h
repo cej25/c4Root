@@ -27,7 +27,7 @@ class GermaniumRaw2Cal : public FairTask
 
         virtual void Exec(Option_t* option);
 
-        virtual void Reset();
+        virtual void FinishEvent();
 
         virtual void SetParContainers();
 
