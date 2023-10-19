@@ -42,9 +42,9 @@ TDC_DATA_V1290(PARAMS_DEF)
     }
 }
 
-TDC_DATA_V1190() // PARAMS_DEF
+TDC_DATA_V1190(PARAMS_DEF)// PARAMS_DEF
 {   
-    //MEMBERS
+    MEMBERS
 
     UINT32 tdc_data NOENCODE
     {
@@ -53,9 +53,9 @@ TDC_DATA_V1190() // PARAMS_DEF
         26: lot;
         27_31: 0b00000;
         
-       //ENCODE(data[chn],(value = value/*,trailing=trailing*/));
-       //ENCODE(channel APPEND_LIST, (value = chn));
-       //ENCODE(leadOrTrail APPEND_LIST, (value = lot));
+       ENCODE(data[chn],(value = value/*,trailing=trailing*/));
+       ENCODE(channel APPEND_LIST, (value = chn));
+       ENCODE(leadOrTrail APPEND_LIST, (value = lot));
     }
 }
 
@@ -125,7 +125,7 @@ VME_CAEN_V1290_FRS()
 
 VME_CAEN_V1190_FRS()
 {
-    //MEMBERS
+    MEMBERS
 
     UINT32 header NOENCODE
     {
@@ -137,7 +137,7 @@ VME_CAEN_V1190_FRS()
     select several
     {
         tdc_header = TDC_HEADER();
-        measurement = TDC_DATA_V1190(); // PARAMS
+        measurement = TDC_DATA_V1190(PARAMS); // PARAMS
         tdc_error = TDC_ERROR();
         tdc_trailer = TDC_TRAILER();
     }

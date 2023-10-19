@@ -2,53 +2,61 @@
 #define FrsData_H
 #include "TObject.h"
 
-class FrsData : public TObject
+struct V1290_item
 {
     public:
-        // Default Constructor
-        FrsData();
+       // void SetAll(/*stuff*/);
+    
+    public:
+        // items
+        UInt_t channel;
+        UInt_t leadOrTrail;
+        UInt_t data;
+};
 
-        FrsData(UInt_t time, UInt_t trig, UInt_t data);
+struct V830_item
+{
+    public:
+        void SetAll(UInt_t i, UInt_t d);
+    
+    public:
+        UInt_t index;
+        UInt_t data;
+};
 
-        // Destructor
-        virtual ~FrsData() {}
+struct V792_item
+{
+    public:
+        UInt_t data;
+};
 
-        // Getters
-        inline const UInt_t GetTdcData() const { return tdcData; }
-        inline const int GetChan() const { return channel; }
-        inline const int GetLot() const { return leadOrTrail; }
-
-        inline const UInt_t GetTpatTs() const { return tpat_ts; }
-        inline const UInt_t GetTpatTrig() const { return tpat_trig; }
-        inline const UInt_t GetTpatData() const { return tpat_data; }
-
-
-        // Setters
-        void SetTdcData(UInt_t v) { tdcData = v; }
-        void SetChan(int v) { channel = v; }
-        void SetLot(int v) { leadOrTrail = v; }
-
-
-        void SetTpatTs(UInt_t v) { tpat_ts = v; }
-        void SetTpatTrig(UInt_t v) { tpat_trig = v; }
-        void SetTpatData(UInt_t v) { tpat_data = v; }
-
-
-    protected:
-
-        // tpat
-        UInt_t tpat_ts; // combine lo+hi
-        UInt_t tpat_trig;
-        UInt_t tpat_data; 
-
-
-        UInt_t tdcData;
-        int channel, leadOrTrail;
-
-
+struct V7X5_item
+{
+    public:
+        void SetAll(UInt_t g, UInt_t c, UInt_t d);
 
     public:
-        ClassDef(FrsData, 1)
+        UInt_t geo;
+        UInt_t channel;
+        UInt_t data;
+};
+
+class FrsUnpackMainItem : public TObject
+{
+    public:
+        FrsUnpackMainItem();
+        virtual ~FrsUnpackMainItem() {};
+    
+        void SetAll(std::vector<V1290_item>& v1290, std::vector<V830_item>& v830, std::vector<V792_item>& v792);
+    
+    protected:
+        std::vector<V1290_item> v1290Array;
+        std::vector<V830_item> v830Array;
+        std::vector<V792_item> v792Array;
+    
+    public:
+        ClassDef(FrsUnpackMainItem, 1)
+
 };
 
 
@@ -56,11 +64,7 @@ class FrsUnpackTpatItem : public TObject
 {
     public:
         FrsUnpackTpatItem();
-
-        FrsUnpackTpatItem(uint64_t time, UInt_t trig, UInt_t value);
-
         virtual ~FrsUnpackTpatItem() {};
-
 
         inline const uint64_t GetTpatTs() const { return ts_long; }
         inline const UInt_t GetTpatTrig() const { return trigger; }
@@ -81,67 +85,28 @@ class FrsUnpackTpatItem : public TObject
         ClassDef(FrsUnpackTpatItem, 1)
 };
 
+
 class FrsUnpackFrsItem : public TObject
 {
     public:
         FrsUnpackFrsItem();
-        FrsUnpackFrsItem(UInt_t g, UInt_t c, UInt_t v);
-
         virtual ~FrsUnpackFrsItem() {};
 
         // GET
 
         // SET
-        void SetV830(UInt_t i, UInt_t d);
-        void SetV7X5(UInt_t g, UInt_t c, UInt_t d);
-        //void SetAll(UInt_t i, UInt_t v830, UInt_t g, UInt_t c, UInt_t v7x5);
+        void SetAll(std::vector<V830_item>& v830, std::vector<V7X5_item>& v7x5);
     
     protected:
         // items
-        UInt_t index; // rename to v830 specific?
-        UInt_t v830_data;
-
-        UInt_t geo;
-        UInt_t channel;
-        UInt_t v7x5_data;
+        std::vector<V830_item> v830Array;
+        std::vector<V7X5_item> v7x5Array;
 
     
     public:
         ClassDef(FrsUnpackFrsItem, 1)
 };
 
-class FrsUnpackV830 : public TObject
-{
-    public:
-        FrsUnpackV830();
-        virtual ~FrsUnpackV830() {};
-
-        void SetAll(UInt_t i, UInt_t d);
-    
-    protected:
-        UInt_t index;
-        UInt_t v830_data;
-    
-    public:
-        ClassDef(FrsUnpackV830, 1)
-};
-
-class FrsUnpackV7X5 : public TObject
-{
-    public:
-        FrsUnpackV7X5();
-        virtual ~FrsUnpackV7X5() {};
-
-        void SetAll(UInt_t g, UInt_t c, UInt_t d);
-
-    protected:
-        UInt_t geo;
-        UInt_t channel;
-        UInt_t v7x5_data;
-    
-    public:
-        ClassDef(FrsUnpackV7X5, 1)
-};
 
 
 #endif

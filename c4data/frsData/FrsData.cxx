@@ -1,17 +1,14 @@
 #include "FrsData.h"
 
-FrsData::FrsData()
-    : tpat_ts(0)
-    , tpat_trig(0)
-    , tpat_data(0)
+FrsUnpackMainItem::FrsUnpackMainItem()
 {
 }
 
-FrsData::FrsData(UInt_t time, UInt_t trig, UInt_t data)
-    : tpat_ts(time) // tpat subev
-    , tpat_trig(trig)
-    , tpat_data(data)
+void FrsUnpackMainItem::SetAll(std::vector<V1290_item>& v1290, std::vector<V830_item>& v830, std::vector<V792_item>& v792)
 {
+    v1290Array = v1290;
+    v830Array = v830;
+    v792Array = v792;
 }
 
 FrsUnpackTpatItem::FrsUnpackTpatItem()
@@ -29,42 +26,13 @@ FrsUnpackFrsItem::FrsUnpackFrsItem()
 {
 }
 
-void FrsUnpackFrsItem::SetV830(UInt_t i, UInt_t d)
-{
-    index = i;
-    v830_data = d;
+void FrsUnpackFrsItem::SetAll(std::vector<V830_item>& v830, std::vector<V7X5_item>& v7x5)
+{   
+    v830Array = v830;
+    v7x5Array = v7x5;
 }
 
-void FrsUnpackFrsItem::SetV7X5(UInt_t g, UInt_t c, UInt_t d)
-{
-    geo = g;
-    channel = c;
-    v7x5_data = d;
-}
-
-FrsUnpackV830::FrsUnpackV830()
-{
-}
-
-void FrsUnpackV830::SetAll(UInt_t i, UInt_t d)
-{
-    index = i;
-    v830_data = d;
-}
-
-FrsUnpackV7X5::FrsUnpackV7X5()
-{
-}
-
-void FrsUnpackV7X5::SetAll(UInt_t g, UInt_t c, UInt_t d)
-{
-    geo = g;
-    channel = c;
-    v7x5_data = d;
-}
-
-ClassImp(FrsData)
+ClassImp(FrsUnpackMainItem)
 ClassImp(FrsUnpackTpatItem)
 ClassImp(FrsUnpackFrsItem)
-ClassImp(FrsUnpackV830)
-ClassImp(FrsUnpackV7X5)
+

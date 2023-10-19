@@ -29,6 +29,18 @@ typedef          int  int32_t;
 typedef struct EXT_STR_h101_FRS_t
 {
   /* UNPACK */
+  uint32_t frs_main_crate_data_v1290_nM /* [1,32] */;
+  uint32_t frs_main_crate_data_v1290_nMI[32 EXT_STRUCT_CTRL(frs_main_crate_data_v1290_nM)] /* [1,32] */;
+  uint32_t frs_main_crate_data_v1290_nME[32 EXT_STRUCT_CTRL(frs_main_crate_data_v1290_nM)] /* [1,1024] */;
+  uint32_t frs_main_crate_data_v1290_n /* [0,1024] */;
+  uint32_t frs_main_crate_data_v1290_data[1024 EXT_STRUCT_CTRL(frs_main_crate_data_v1290_n)] /* [0,16777215] */;
+  uint32_t frs_main_crate_data_v1290_channel /* [0,32] */;
+  uint32_t frs_main_crate_data_v1290_channelv[32 EXT_STRUCT_CTRL(frs_main_crate_data_v1290_channel)] /* [0,255] */;
+  uint32_t frs_main_crate_data_v1290_leadOrTrail /* [0,32] */;
+  uint32_t frs_main_crate_data_v1290_leadOrTrailv[32 EXT_STRUCT_CTRL(frs_main_crate_data_v1290_leadOrTrail)] /* [0,255] */;
+  uint32_t frs_main_crate_data_v830_n /* [0,32] */;
+  uint32_t frs_main_crate_data_v830_nI[32 EXT_STRUCT_CTRL(frs_main_crate_data_v830_n)] /* [1,32] */;
+  uint32_t frs_main_crate_data_v830_data[32 EXT_STRUCT_CTRL(frs_main_crate_data_v830_n)] /* [-1,-1] */;
   uint32_t tpat_data_n /* [-1,-1] */;
   uint32_t tpat_data_tpat /* [0,170] */;
   uint32_t tpat_data_tpatv[170 EXT_STRUCT_CTRL(tpat_data_tpat)] /* [0,65535] */;
@@ -62,6 +74,18 @@ typedef struct EXT_STR_h101_FRS_t
 typedef struct EXT_STR_h101_FRS_onion_t
 {
   /* UNPACK */
+  uint32_t frs_main_crate_data_v1290_nM;
+  uint32_t frs_main_crate_data_v1290_nMI[32 /* frs_main_crate_data_v1290_nM */];
+  uint32_t frs_main_crate_data_v1290_nME[32 /* frs_main_crate_data_v1290_nM */];
+  uint32_t frs_main_crate_data_v1290_n;
+  uint32_t frs_main_crate_data_v1290_data[1024 /* frs_main_crate_data_v1290_n */];
+  uint32_t frs_main_crate_data_v1290_channel;
+  uint32_t frs_main_crate_data_v1290_channelv[32 /* frs_main_crate_data_v1290_channel */];
+  uint32_t frs_main_crate_data_v1290_leadOrTrail;
+  uint32_t frs_main_crate_data_v1290_leadOrTrailv[32 /* frs_main_crate_data_v1290_leadOrTrail */];
+  uint32_t frs_main_crate_data_v830_n;
+  uint32_t frs_main_crate_data_v830_nI[32 /* frs_main_crate_data_v830_n */];
+  uint32_t frs_main_crate_data_v830_data[32 /* frs_main_crate_data_v830_n */];
   uint32_t tpat_data_n;
   uint32_t tpat_data_tpat;
   uint32_t tpat_data_tpatv[170 /* tpat_data_tpat */];
@@ -91,6 +115,42 @@ typedef struct EXT_STR_h101_FRS_onion_t
 #define EXT_STR_h101_FRS_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
   ok = 1; \
   /* UNPACK */ \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     frs_main_crate_data_v1290_nM,    UINT32,\
+                    "frs_main_crate_data_v1290_nM",32,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     frs_main_crate_data_v1290_nMI,   UINT32,\
+                    "frs_main_crate_data_v1290_nMI",   "frs_main_crate_data_v1290_nM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     frs_main_crate_data_v1290_nME,   UINT32,\
+                    "frs_main_crate_data_v1290_nME",   "frs_main_crate_data_v1290_nM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     frs_main_crate_data_v1290_n,     UINT32,\
+                    "frs_main_crate_data_v1290_n",1024,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     frs_main_crate_data_v1290_data,  UINT32,\
+                    "frs_main_crate_data_v1290_data",  "frs_main_crate_data_v1290_n",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     frs_main_crate_data_v1290_channel,UINT32,\
+                    "frs_main_crate_data_v1290_channel",32,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     frs_main_crate_data_v1290_channelv,UINT32,\
+                    "frs_main_crate_data_v1290_channelv","frs_main_crate_data_v1290_channel",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     frs_main_crate_data_v1290_leadOrTrail,UINT32,\
+                    "frs_main_crate_data_v1290_leadOrTrail",32,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     frs_main_crate_data_v1290_leadOrTrailv,UINT32,\
+                    "frs_main_crate_data_v1290_leadOrTrailv","frs_main_crate_data_v1290_leadOrTrail",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     frs_main_crate_data_v830_n,      UINT32,\
+                    "frs_main_crate_data_v830_n",32,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     frs_main_crate_data_v830_nI,     UINT32,\
+                    "frs_main_crate_data_v830_nI",     "frs_main_crate_data_v830_n",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     frs_main_crate_data_v830_data,   UINT32,\
+                    "frs_main_crate_data_v830_data",   "frs_main_crate_data_v830_n",0/*flags*/); \
   EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      tpat_data_n,                     UINT32,\
                     "tpat_data_n",0/*flags*/); \
