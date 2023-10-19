@@ -22,7 +22,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/frsData
 ${C4ROOT_SOURCE_DIR}/c4data/lisaData
 ${C4ROOT_SOURCE_DIR}/c4data/wrData
 ${C4ROOT_SOURCE_DIR}/c4data/aidaData
-#${C4ROOT_SOURCE_DIR}/c4data/bplastData
+${C4ROOT_SOURCE_DIR}/c4data/bplastData
 ${C4ROOT_SOURCE_DIR}/c4data/fatimaData
 ${C4ROOT_SOURCE_DIR}/c4data/germaniumData
 ${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
@@ -47,7 +47,7 @@ set(SRCS
 ./frs/FrsReader.cxx
 ./germanium/GermaniumReader.cxx
 ./lisa/LisaReader.cxx
-#./bplast/bPlastReader.cxx
+./bplast/bPlastReader.cxx
 ./beammonitor/BeamMonitorReader.cxx
 ./germanium/GermaniumRaw2Cal.cxx
 ./fatima/FatimaReader.cxx
@@ -59,7 +59,7 @@ Set(STRUCT_HEADERS
 ./frs/ext_h101_frs.h
 ./lisa/ext_h101_lisa.h
 ./germanium/ext_h101_ge_febex.h
-#./bplast/ext_h101_bplast.h
+./bplast/ext_h101_bplast.h
 ./beammonitor/ext_h101_bm.h
 ./fatima/ext_h101_fatima.h
 )
