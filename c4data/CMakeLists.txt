@@ -25,7 +25,7 @@ lisaData/LisaTraceData.cxx
 aidaData/AidaData.cxx
 germaniumData/GermaniumFebexData.cxx
 germaniumData/GermaniumCalData.cxx
-bplastData/bPlastTamexData.cxx
+bplastData/bPlastTwinpeaksData.cxx
 beammonitorData/BeamMonitorData.cxx
 fatimaData/FatimaTwinpeaksData.cxx
 )
