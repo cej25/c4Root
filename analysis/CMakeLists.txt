@@ -7,7 +7,7 @@ set(INCLUDE_DIRECTORIES
 #put here all directories where header files are located
 ${C4ROOT_SOURCE_DIR}/c4base
 ${C4ROOT_SOURCE_DIR}/c4data
-${C4ROOT_SOURCE_DIR}/c4data/frsData
+#${C4ROOT_SOURCE_DIR}/c4data/frsData
 ${C4ROOT_SOURCE_DIR}/c4data/germaniumData
 ${C4ROOT_SOURCE_DIR}/c4data/aidaData
 #${C4ROOT_SOURCE_DIR}/c4data/bplastData
@@ -31,7 +31,7 @@ set(SRCS
 ./online/BeamMonitorOnlineSpectra.cxx
 ./online/LisaOnlineSpectra.cxx
 ./online/AidaOnlineSpectra.cxx
-./online/FrsOnlineSpectra.cxx
+#./online/FrsOnlineSpectra.cxx
 #./online/bPlastOnlineSpectra.cxx
 )
 
