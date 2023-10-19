@@ -169,11 +169,11 @@ typedef struct EXT_STR_h101_BPLAST_onion_t
   uint32_t plastic_trigger_window_pre_trig_ns;
   uint32_t plastic_trigger_window_pre_trig_nsv[64 /* plastic_trigger_window_pre_trig_ns */];
 
-} EXT_STR_h101_onion;
+} EXT_STR_h101_BPLAST_onion;
 
 /*******************************************************/
 
-#define EXT_STR_h101_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
+#define EXT_STR_h101_BPLAST_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
   ok = 1; \
   /* UNPACK */ \
   EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
@@ -503,6 +503,6 @@ typedef struct EXT_STR_h101_BPLAST_onion_t
   \
 } while (0);
 
-#endif/*__GUARD_H101_EXT_H101_BPLAST_H__*/
+#endif/*__GUARD_H101__U_JBORMANS_C4ROOT_C4SOURCE_BPLAST_EXT_H101_BPLAST_H__*/
 
 /*******************************************************/
