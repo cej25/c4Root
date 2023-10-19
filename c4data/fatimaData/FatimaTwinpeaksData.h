@@ -14,11 +14,11 @@ class FatimaTwinpeaksData : public TObject
         uint32_t ch_ID,
         uint32_t lead_epoch_counter,
         uint32_t lead_coarse_T,
-        uint32_t lead_fine_T,
+        double lead_fine_T,
 
         uint32_t trail_epoch_counter,
         uint32_t trail_coarse_T,
-        uint32_t trail_fine_T,
+        double trail_fine_T,
         uint16_t wr_subsystem_id,
         uint64_t wr_t);
 
@@ -32,11 +32,11 @@ class FatimaTwinpeaksData : public TObject
 
         inline const uint32_t Get_lead_epoch_counter() const {return flead_epoch_counter; }
         inline const uint32_t Get_lead_coarse_T() const {return flead_coarse_T; }
-        inline const uint32_t Get_lead_fine_T() const {return flead_fine_T; }
+        inline const double Get_lead_fine_T() const {return flead_fine_T; }
     
         inline const uint32_t Get_trail_epoch_counter() const {return ftrail_epoch_counter; }
         inline const uint32_t Get_trail_coarse_T() const {return ftrail_coarse_T; }
-        inline const uint32_t Get_trail_fine_T() const {return ftrail_fine_T; }
+        inline const double Get_trail_fine_T() const {return ftrail_fine_T; }
 
 
         inline const uint16_t Get_wr_subsystem_id() const { return fwr_subsystem_id; }
@@ -49,10 +49,10 @@ class FatimaTwinpeaksData : public TObject
         void Set_ch_ID(uint32_t v){fch_ID = v;}
         void Set_lead_epoch_counter(uint32_t v){flead_epoch_counter = v;}
         void Set_lead_coarse_T(uint32_t v){flead_coarse_T = v;}
-        void Set_lead_fine_T(uint32_t v){flead_fine_T = v;}
+        void Set_lead_fine_T(double v){flead_fine_T = v;}
         void Set_trail_epoch_counter(uint32_t v){ftrail_epoch_counter = v;}
         void Set_trail_coarse_T(uint32_t v){ftrail_coarse_T = v;}
-        void Set_trail_fine_T(uint32_t v){ftrail_fine_T = v;}
+        void Set_trail_fine_T(double v){ftrail_fine_T = v;}
         void Set_wr_subsystem_id(uint32_t v) { fwr_subsystem_id = v; }
         void Set_wr_t(uint64_t v) { fwr_t = v; }
 
@@ -64,12 +64,12 @@ class FatimaTwinpeaksData : public TObject
 
         uint32_t flead_epoch_counter;
         uint32_t flead_coarse_T;
-        uint32_t flead_fine_T;
+        double flead_fine_T;
 
         //if these guys are zero, no trail was found:
         uint32_t ftrail_epoch_counter;
         uint32_t ftrail_coarse_T;
-        uint32_t ftrail_fine_T;
+        double ftrail_fine_T;
 
         //whiterabbit
         uint32_t fwr_subsystem_id;
