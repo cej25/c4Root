@@ -45,7 +45,7 @@ set(SRCS
 ./aida/c4AidaReader.cxx
 ./frs/FrsReader.cxx
 ./germanium/GermaniumReader.cxx
-#./lisa/LisaReader.cxx
+./lisa/LisaReader.cxx
 ./bplast/bPlastReader.cxx
 ./beammonitor/BeamMonitorReader.cxx
 ./germanium/GermaniumRaw2Cal.cxx
