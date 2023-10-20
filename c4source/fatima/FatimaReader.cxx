@@ -136,11 +136,11 @@ void FatimaReader::DoFineTimeCalibration(){
         for (int j = 0; j < NChannels; j++) {
             int running_sum = 0;
             int total_counts = fine_time_hits[i][j]->GetEntries();
+            if (total_counts == 0) c4LOG(warning,Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));
             for (int k = 0; k < Nbins_fine_time; k++) {
                 running_sum += fine_time_hits[i][j]->GetBinContent(k+1); //bin 0 is the underflow bin, hence we start at [1,Nbins_fine_time].
                 //no counts?
                 if (total_counts == 0) {
-                    c4LOG(warning,Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));
                     fine_time_calibration_coeffs[i][j][k] = k*TAMEX_fine_time_clock/(double)Nbins_fine_time;
                     continue;
                 }
@@ -210,7 +210,7 @@ void FatimaReader::ReadFineTimeHistosFromFile() {
             TH1I* a = nullptr;
             inputfile->GetObject(Form("fine_time_hits_%i_%i", i, j), a);
             if (a) {
-                c4LOG(info,Form("Accessing i = %i, j = %i",i,j));
+                c4LOG(debug1,Form("Accessing i = %i, j = %i",i,j));
                 fine_time_hits[i][j] = (TH1I*)a->Clone();
                 c4LOG_IF(fatal,fine_time_hits==nullptr,"Failed reading the file for fine time calibration histograms");
                 delete a;

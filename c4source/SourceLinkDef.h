@@ -17,6 +17,7 @@
 #pragma link C++ class UnpackReader+;
 #pragma link C++ class BeamMonitorReader+;
 #pragma link C++ class FatimaReader+;
+#pragma link C++ class FatimaRaw2Cal+;
 
 #pragma link C++ class EXT_STR_h101_unpack_t;
 #pragma link C++ class EXT_STR_h101_FRS_onion_t;
