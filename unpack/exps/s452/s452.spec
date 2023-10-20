@@ -2,7 +2,7 @@
 
 #include "../../common/whiterabbit.spec"
 #include "../../common/frs.spec"
-#include "../../common/ge_febex.spec" // gsi_febex4.spec
+#include "../../common/gsi_febex4.spec"
 #include "../../common/gsi_tamex4.spec"
 #include "config/setup.hh" // ../../../config/s452
 
