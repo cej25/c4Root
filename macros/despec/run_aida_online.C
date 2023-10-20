@@ -23,7 +23,7 @@ void run_aida_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
 
     TString filename = "~/lustre/gamma/DESPEC_S452_FILES/newts/S452f103_0037.lmd";
     //TString filename = "trans://lxg1257";
-    TString outputpath = "~/run_online_ge_test";
+    TString outputpath = "run_online_aida_test";
     TString outputFileName = outputpath + ".root";
 
     Int_t refresh = 10; // Refresh rate for online histograms
@@ -68,7 +68,7 @@ void run_aida_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
 
     // Aida processing tasks
     AidaUnpack2Cal* aidaCalibrator = new AidaUnpack2Cal();
-    aidaCalibrator->SetOnline(true);
+    aidaCalibrator->SetOnline(false);
     run->AddTask(aidaCalibrator);
 
 

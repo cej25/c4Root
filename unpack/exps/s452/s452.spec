@@ -2,7 +2,7 @@
 
 #include "../../common/whiterabbit.spec"
 #include "../../common/frs.spec"
-#include "../../common/ge_febex.spec" // gsi_febex4.spec
+#include "../../common/gsi_febex4.spec" // gsi_febex4.spec
 #include "../../common/gsi_tamex4.spec"
 #include "config/setup.hh" // ../../../config/s452
 
@@ -146,7 +146,7 @@ SUBEVENT(frs_tof_crate_subev)
 
 EVENT
 {
-    // revisit aida = aida_subev(type = 10, subtype = 1, procid = 90, control = 37);
+    revisit aida = aida_subev(type = 10, subtype = 1, procid = 90, control = 37);
     // germanium = germanium_subev(type = 10, subtype = 1, procid = 60, control = 20);
     //fatima_vme = fatima_vme_subev(type = 10, subtype = 1, procid = 70, control = 20, subcrate = 0);
     //fatima_tamex = fatima_tamex_subev(type = 10, subtype = 1, procid = 75, control = 20, subcrate = 0);
