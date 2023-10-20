@@ -1683,6 +1683,9 @@ void EXT_FRS::FRS_Unpack(__data_src_t &__buffer, frs_item &item, int procid, int
 
                         if (vme_type == 1) // header
                         {
+
+                            std::cout << "we get here...QDC " << std::endl;
+                            std::cout << "data word: " << std::hex << data << std::dec << std::endl;
                             int vme_nlw = getbits(data, 1, 1, 12);
                             __buffer.advance(4);
                             len++;
@@ -1710,7 +1713,8 @@ void EXT_FRS::FRS_Unpack(__data_src_t &__buffer, frs_item &item, int procid, int
                             }
                             else if (vme_type == 3)
                             {
-                                std::cout << "This is the end of module 0." << std::endl;
+                                std::cout << "This is the end of module 0 (QDC)." << std::endl;
+                                // maybe we should break here
                             }
                         }
                     }
@@ -1728,8 +1732,10 @@ void EXT_FRS::FRS_Unpack(__data_src_t &__buffer, frs_item &item, int procid, int
                         int vme_type = getbits(data, 2, 15, 2);
                         //int hit = 0; // unused in this scope
 
-                        if (vme_type == 1) // oh shit is this going to screw things up..
-                        {
+                        if (vme_type == 1)
+                        {   
+                            std::cout << "is it even possible we get here... " << std::endl;
+                            std::cout << "data word: " << std::hex << data << std::dec << std::endl;
                             int vme_nlw = getbits(data, 1, 1, 12);
 
                             for (int ii = 0; ii < vme_nlw; ii++)
@@ -1748,7 +1754,8 @@ void EXT_FRS::FRS_Unpack(__data_src_t &__buffer, frs_item &item, int procid, int
                                 }
                                 else if (getbits(data, 2, 15, 2) == 3)
                                 {
-                                    std::cout << "This is end of module 0." << std::endl;
+                                    std::cout << "This is end of module 0 (TDC)." << std::endl;
+                                    // maybe we should break here.
                                 }
                                 else
                                 {

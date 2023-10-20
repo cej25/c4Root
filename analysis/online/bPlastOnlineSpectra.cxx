@@ -11,7 +11,6 @@
 #include "bPlastTamexData.h"
 #include "c4Logger.h"
 
-
 #include "TCanvas.h"
 #include "TClonesArray.h"
 #include "TFolder.h"
@@ -27,7 +26,7 @@ bPlastOnlineSpectra::bPlastOnlineSpectra()
 
 bPlastOnlineSpectra::bPlastOnlineSpectra(const TString& name, Int_t verbose)
     : FairTask(name, verbose)
-    , fHit_bPlast(NULL)
+    , fHitbPlast(NULL)
     , fNEvent(0)
     , header(nullptr)
 {
@@ -36,8 +35,8 @@ bPlastOnlineSpectra::bPlastOnlineSpectra(const TString& name, Int_t verbose)
 bPlastOnlineSpectra::~bPlastOnlineSpectra()
 {
     // c4LOG(info, "");
-    if (fHit_bPlast)
-        delete fHit_bPlast;
+    if (fHitbPlast)
+        delete fHitbPlast;
 }
 
 void bPlastOnlineSpectra::SetParContainers()
@@ -58,19 +57,19 @@ InitStatus bPlastOnlineSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fHit_bPlast = (TClonesArray*)mgr->GetObject("bPlastTamexData");
-    c4LOG_IF(fatal, !fHit_bPlast, "Branch bPlastTamexData not found!");
+    fHitbPlast = (TClonesArray*)mgr->GetObject("bPlastTamexData");
+    c4LOG_IF(fatal, !fHitbPlast, "Branch bPlastTamexData not found!");
+
+
+    TFolder * bplast_spectra_folder = new TFolder("bPlast", "bPlast");
+
+    run->AddObject(bplast_spectra_folder);
 
     // Create histograms
-    TString Name1;
-    TString Name2; 
 
     cLeadTime = new TCanvas("Lead_Time", "Lead Time", 10, 10, 800, 700);
 
-    Name1 = "fh1_Lead_Time";
-    Name2 = "bPlast: Lead Time";
-
-    fh1_LeadTime = new TH1F(Name1, Name2, 2500, 0, 2000);
+    fh1_LeadTime = new TH1F("bplast_leadtime", "bPlast Lead Time spectrum", 2500, 0, 2000);
     fh1_LeadTime->GetXaxis()->SetTitle("Lead Time");
     fh1_LeadTime->GetYaxis()->SetTitle("Counts");
     fh1_LeadTime->GetYaxis()->SetTitleOffset(1.15);
@@ -83,10 +82,7 @@ InitStatus bPlastOnlineSpectra::Init()
     fh1_LeadTime->SetLineColor(1);
     fh1_LeadTime->Draw("");
 
-    TFolder *bFold = new TFolder("bPlast", "bPlast");
-    bFold->Add(cLeadTime);
-    
-    run->AddObject(bFold);
+    bplast_spectra_folder->Add(cLeadTime);
 
     run->GetHttpServer()->RegisterCommand("Reset_bPlast_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
 
@@ -102,21 +98,21 @@ void bPlastOnlineSpectra::Reset_Histo()
 void bPlastOnlineSpectra::Exec(Option_t* option)
 {   
 
-    if (fHit_bPlast && fHit_bPlast->GetEntriesFast() > 0)
+    if (fHitbPlast && fHitbPlast->GetEntriesFast() > 0)
     {
-        Int_t nHits = fHit_bPlast->GetEntriesFast();
+        Int_t nHits = fHitbPlast->GetEntriesFast();
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {   
-            bPlastTamexData* hit = (bPlastTamexData*)fHit_bPlast->At(ihit);
+            bPlastTamexData* hit = (bPlastTamexData*)fHitbPlast->At(ihit);
             if (!hit)
                 continue;
             
             // just show me 0 for now
             if (hit->GetDet() == 1 && hit->GetChan() == 1)
             {
-                if (hit->GetPMT_Lead() != 0)
+                if (hit->GetbPlastLeadT() != 0)
                 {
-                    fh1_LeadTime->Fill(hit->GetPMT_Lead());
+                    fh1_LeadTime->Fill(hit->GetbPlastLeadT());
                 }
             }
 
@@ -128,15 +124,15 @@ void bPlastOnlineSpectra::Exec(Option_t* option)
 
 void bPlastOnlineSpectra::FinishEvent()
 {
-    if (fHit_bPlast)
+    if (fHitbPlast)
     {
-        fHit_bPlast->Clear();
+        fHitbPlast->Clear();
     }
 }
 
 void bPlastOnlineSpectra::FinishTask()
 {
-    if (fHit_bPlast)
+    if (fHitbPlast)
     {
         cLeadTime->Write();
     }

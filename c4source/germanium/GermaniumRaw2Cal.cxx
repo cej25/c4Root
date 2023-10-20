@@ -15,7 +15,7 @@
 
 #include "GermaniumRaw2Cal.h"
 
-GermaniumRaw2Cal::GermaniumRaw2Cal() 
+GermaniumRaw2Cal::GermaniumRaw2Cal()
 : FairTask(), 
 fNEvents(0),
 header(nullptr),
@@ -174,9 +174,7 @@ void GermaniumRaw2Cal::PrintDetectorCal(){
 
 void GermaniumRaw2Cal::Exec(Option_t* option){
     if (funcal_data && funcal_data->GetEntriesFast() > 0){
-        
         Int_t event_multiplicity = funcal_data->GetEntriesFast();
-        
         for (Int_t ihit = 0; ihit < event_multiplicity; ihit++){
             funcal_hit = (GermaniumFebexData*)funcal_data->At(ihit);
             //do the detector mapping here:
@@ -204,7 +202,7 @@ void GermaniumRaw2Cal::Exec(Option_t* option){
             }
             else{ //no map and cal: ->
                 c4LOG(fatal, "Detector Mapping not set - please set this using SetDetectorMap to use the Cal Task.");
-            }                    
+            }
 
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) GermaniumCalData(
                 funcal_hit->Get_event_trigger_time(),
@@ -217,11 +215,8 @@ void GermaniumRaw2Cal::Exec(Option_t* option){
                 funcal_hit->Get_wr_subsystem_id(),
                 funcal_hit->Get_wr_t());
         }
-    }
-
-    //Do Add-Back here:   
+    }    
 }
-
 
 
 void GermaniumRaw2Cal::Reset(){
