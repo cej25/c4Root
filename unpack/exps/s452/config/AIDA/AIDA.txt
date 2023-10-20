@@ -4,9 +4,9 @@
 #---------------------------
 # Configuration
 #---------------------------
-FEEs: 16
-DSSDs: 2
-Wide: true
+FEEs: 12
+DSSDs: 3
+Wide: false
 
 #---------------------------
 # Options
@@ -46,23 +46,22 @@ Analysis:
 DSSD: 1
 - Top: 2
 - Bottom: 4
-- LeftLeft: 11
-- LeftRight: 9
-- CentreLeft: 3
-- CentreRight: 1
-- RightLeft: 12
-- RightRight: 10
+- Left: 3
+- Right: 1
 - X: Junction
 - Y: Ohmic
 DSSD: 2
 - Top: 6
 - Bottom: 8
-- LeftLeft: 5
-- LeftRight: 13
-- CentreLeft: 7
-- CentreRight: 15
-- RightLeft: 14
-- RightRight: 16
+- Left: 7
+- Right: 5
+- X: Junction
+- Y: Ohmic
+DSSD: 3
+- Top: 10
+- Bottom: 12
+- Left: 11
+- Right: 9
 - X: Junction
 - Y: Ohmic
 
