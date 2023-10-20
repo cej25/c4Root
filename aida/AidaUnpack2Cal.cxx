@@ -64,7 +64,7 @@ void AidaUnpack2Cal::Exec(Option_t* option)
   {
     // TODO?: Clock correction
 
-    auto feeConf = conf->FEE(unpack.Fee());
+    auto feeConf = conf->FEE(unpack.Fee() - 1);
     if (feeConf.DSSD <= 0)
     {
       c4LOG(error, "Invalid DSSD Mapping for AIDA fee " << unpack.Fee() << ", ignoring event");
@@ -89,7 +89,7 @@ void AidaUnpack2Cal::Exec(Option_t* option)
       strip += shift;
     }
     double intensity = (unpack.Value() - 32768) * side;
-    intensity = (intensity - conf->GetAdcOffset(unpack.Fee(), unpack.Channel()));
+    intensity = (intensity - conf->GetAdcOffset(unpack.Fee() - 1, unpack.Channel()));
     bool range = unpack.Range();
     double energy = 0;
     if (range)
