@@ -135,22 +135,23 @@ void GermaniumOnlineSpectra::Exec(Option_t* option)
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {   
             GermaniumCalData* hit = (GermaniumCalData*)fHitGe->At(ihit);
-            if (!hit)
-                continue;
-            if ((hit->Get_detector_id() == 1) | (hit->Get_detector_id() == 0)) h1_energy[hit->Get_crystal_id()+hit->Get_detector_id()*NCrystals]->Fill(hit->Get_channel_energy());
-            if ((hit->Get_detector_id() == 1) | (hit->Get_detector_id() == 0)) h1_time[hit->Get_crystal_id()+hit->Get_detector_id()*NCrystals]->Fill(hit->Get_channel_trigger_time());
+            if (!hit) continue;
+
+            if (hit->Get_detector_id() <= 1) h1_energy[hit->Get_crystal_id()+hit->Get_detector_id()*NCrystals]->Fill(hit->Get_channel_energy());
+            if (hit->Get_detector_id() <= 1) h1_time[hit->Get_crystal_id()+hit->Get_detector_id()*NCrystals]->Fill(hit->Get_channel_trigger_time());
 
             if (nHits>1){ // mult 2 gate:
                 for (Int_t ihit2 = ihit+1; ihit2<nHits; ihit2++){
                     GermaniumCalData * hit2 = (GermaniumCalData*)fHitGe->At(ihit2);
+
                     if (!hit2) continue;
-                    if (TMath::Abs(hit->Get_channel_trigger_time() - hit2->Get_channel_trigger_time()<10)) {
+            
+                    if (TMath::Abs(hit->Get_channel_trigger_time() - hit2->Get_channel_trigger_time()<20)) {
                         if ((hit->Get_detector_id() == 1) | (hit->Get_detector_id() == 0)) h1_energy_mult2[hit->Get_crystal_id()+hit->Get_detector_id()*NCrystals]->Fill(hit->Get_channel_energy());
                         if ((hit2->Get_detector_id() == 1) | (hit2->Get_detector_id() == 0)){
                             h1_energy_mult2[hit2->Get_crystal_id()+hit2->Get_detector_id()*NCrystals]->Fill(hit2->Get_channel_energy());
                             break; // some simpifications.
                         }
-
                     }
                 }
             }

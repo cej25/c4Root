@@ -54,7 +54,7 @@ Bool_t GermaniumReader::Init(ext_data_struct_info* a_struct_info)
 }
 
 
-Bool_t GermaniumReader::Read() // do the detector mapping here:
+Bool_t GermaniumReader::Read()
 {
     c4LOG(debug1, "Event Data");
 
@@ -100,7 +100,7 @@ Bool_t GermaniumReader::Read() // do the detector mapping here:
         //add the CF from the constant fraction. It is denoted by 6 bits in the energy word of the FEBEX data format
         channel_trigger_time_long = (((double)fData->channel_cfd[index])/64.0 + channel_trigger_time_long)*10.0; // units of ns 
 
-
+        //sort based on channel_trigger_time?
         new ((*fArray)[fArray->GetEntriesFast()]) GermaniumFebexData(
             fData->num_channels_fired,
             event_trigger_time_long,
