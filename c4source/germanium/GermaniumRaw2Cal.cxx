@@ -219,7 +219,7 @@ void GermaniumRaw2Cal::Exec(Option_t* option){
 }
 
 
-void GermaniumRaw2Cal::Reset(){
+void GermaniumRaw2Cal::FinishEvent(){
     // reset output array
     funcal_data->Clear();
     fcal_data->Clear();
