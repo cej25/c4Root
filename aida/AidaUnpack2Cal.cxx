@@ -25,8 +25,10 @@ static const int FeeToStrip[64] = {
 
 AidaUnpack2Cal::AidaUnpack2Cal() :
   unpackArray(nullptr),
-  calArray(new std::vector<AidaCalAdcItem>),
-  fOnline(false),
+  implantCalArray(new std::vector<AidaCalAdcItem>),
+  decayCalArray(new std::vector<AidaCalAdcItem>),
+  fImplantOnline(false),
+  fDecayOnline(false),
   conf(nullptr)
 {
 }
@@ -48,7 +50,8 @@ InitStatus AidaUnpack2Cal::Init()
   unpackArray = mgr->InitObjectAs<decltype(unpackArray)>("AidaAdcData");
   c4LOG_IF(fatal, !unpackArray, "Branch AidaAdcData not found!");
 
-  mgr->RegisterAny("AidaCalAdcData", calArray, !fOnline);
+  mgr->RegisterAny("AidaImplantCalAdcData", implantCalArray, !fImplantOnline);
+  mgr->RegisterAny("AidaDecayCalAdcData", decayCalArray, !fDecayOnline);
 
   conf = TAidaConfiguration::GetInstance();
 
@@ -58,7 +61,9 @@ InitStatus AidaUnpack2Cal::Init()
 
 void AidaUnpack2Cal::Exec(Option_t* option)
 {
-  calArray->clear();
+  implantCalArray->clear();
+  decayCalArray->clear();
+
 
   for (auto const& unpack : *unpackArray)
   {
@@ -102,10 +107,25 @@ void AidaUnpack2Cal::Exec(Option_t* option)
           side == conf->DSSD(dssd - 1).XSide ? 0 : 1, strip);
     }
 
-    // TODO: Only add items which pass threshold
-    auto& cal = calArray->emplace_back();
-    cal.SetAll(unpack.SlowTime(), unpack.FastTime(), dssd, side, strip,
-        range, intensity, energy);
+    // Split into implant and decay arrays, check threshold for decays
+    if (range) {
+      auto& cal = implantCalArray->emplace_back();
+      cal.SetAll(unpack.SlowTime(), unpack.FastTime(), dssd, side, strip,
+          range, intensity, energy);
+    }
+    else {
+      double thrs = conf->GetDssdStripThreshold(dssd - 1, side == - 1 ? 0 : 1, strip);
+      if (thrs >= 0 && energy > thrs) {
+        auto& cal = decayCalArray->emplace_back();
+        cal.SetAll(unpack.SlowTime(), unpack.FastTime(), dssd, side, strip,
+            range, intensity, energy);
+      }
+    }
+  }
+
+  // Clear decay array if implants present
+  if (implantCalArray->size() > 0) {
+    decayCalArray->clear();
   }
 }
 

@@ -16,14 +16,18 @@ public:
     virtual void Exec(Option_t* option);
     virtual void SetParContainers();
     virtual InitStatus Init();
-    void SetOnline(Bool_t option) { fOnline = option; }
+    void SetOnline(Bool_t option) { SetImplantOnline(option); SetDecayOnline(option); }
+    void SetImplantOnline(Bool_t option) { fImplantOnline = option; }
+    void SetDecayOnline(Bool_t option) { fDecayOnline = option; }
 
 private:
     std::vector<AidaUnpackAdcItem> const* unpackArray;
-    std::vector<AidaCalAdcItem>* calArray;
+    std::vector<AidaCalAdcItem>* implantCalArray;
+    std::vector<AidaCalAdcItem>* decayCalArray;
 
     void SetParameter();
-    bool fOnline;
+    bool fImplantOnline;
+    bool fDecayOnline;
 
     TAidaConfiguration const* conf;
 
