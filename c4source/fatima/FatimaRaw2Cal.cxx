@@ -9,6 +9,7 @@
 // c4
 #include "FatimaTwinpeaksData.h"
 #include "FatimaTwinpeaksCalData.h"
+#include "TimeMachineData.h"
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
@@ -21,7 +22,8 @@ fNEvents(0),
 header(nullptr),
 fOnline(kFALSE),
 funcal_data(new TClonesArray("FatimaTwinpeaksData")),
-fcal_data(new TClonesArray("FatimaTwinpeaksCalData"))
+fcal_data(new TClonesArray("FatimaTwinpeaksCalData")),
+ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
 }
 
@@ -32,7 +34,8 @@ FatimaRaw2Cal::FatimaRaw2Cal(const TString& name, Int_t verbose)
     header(nullptr),
     fOnline(kFALSE),
     funcal_data(new TClonesArray("FatimaTwinpeaksData")),
-    fcal_data(new TClonesArray("FatimaTwinpeaksCalData"))
+    fcal_data(new TClonesArray("FatimaTwinpeaksCalData")),
+    ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
 }
 
@@ -40,7 +43,18 @@ FatimaRaw2Cal::~FatimaRaw2Cal(){
     c4LOG(info, "Deleting FatimaRaw2Cal task");
     if (funcal_data) delete funcal_data;
     if (fcal_data) delete fcal_data;
+    if(ftime_machine_array) delete ftime_machine_array;
 }
+
+
+
+void FatimaRaw2Cal::SetTimeMachineChannels(int ftime_machine_delayed_detector_id, int ftime_machine_undelayed_detector_id)
+{
+time_machine_delayed_detector_id = ftime_machine_delayed_detector_id;
+time_machine_undelayed_detector_id = ftime_machine_undelayed_detector_id;
+} //AFTER mapping.
+
+
 
 
 void FatimaRaw2Cal::SetParContainers()
@@ -68,6 +82,7 @@ InitStatus FatimaRaw2Cal::Init(){
     
 
     FairRootManager::Instance()->Register("FatimaTwinpeaksCalData", "Fatima Cal Data", fcal_data, !fOnline);
+    FairRootManager::Instance()->Register("TimeMachineData", "Time Machine Data", ftime_machine_array, !fOnline);
     fcal_data->Clear();
     funcal_data->Clear();
 
@@ -93,16 +108,16 @@ Bool_t FatimaRaw2Cal::SetDetectorMapFile(TString filename){
     std::ifstream detector_map_file (filename);
 
     int rtamex_module,rtamex_channel,rdetector_id; // temp read variables
-    
-    //assumes the first line in the file is num-modules used
+        
+
     while(!detector_map_file.eof()){
         if(detector_map_file.peek()=='#') detector_map_file.ignore(256,'\n');
         else{
             detector_map_file >> rtamex_module >> rtamex_channel >> rdetector_id;
+            c4LOG(info, Form("Reading %i, %i, %i",rtamex_module,rtamex_channel,rdetector_id));
             std::pair<int,int> tamex_mc = {rtamex_module,rtamex_channel};
             detector_mapping.insert(std::pair<std::pair<int,int>,int>{tamex_mc,rdetector_id});
             detector_map_file.ignore(256,'\n');
-
             //TODO: implement a check to make sure keys are unique.
         }
     }
@@ -191,10 +206,11 @@ void FatimaRaw2Cal::Exec(Option_t* option){
 
             //do the detector mapping here:
             if (DetectorMap_loaded){
-                std::pair<int,int> unmapped_det {funcal_hit->Get_board_id(), funcal_hit->Get_ch_ID()};
+                std::pair<int,int> unmapped_det {funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2};
                 
                 if (auto result_find = detector_mapping.find(unmapped_det); result_find != detector_mapping.end()){
                 detector_id = result_find->second; //.find returns an iterator over the pairs matching key.
+                if (detector_id == -1) {fNunmatched++; continue;} //if only one event is left
                 }else{
                     c4LOG(fatal, "Detector mapping not complete - exiting.");
                 }
@@ -202,9 +218,13 @@ void FatimaRaw2Cal::Exec(Option_t* option){
                 if (DetectorCal_loaded){
                     //TODO implement
                 }
+
+
+
+
             }
             else{ //no map and cal: ->
-                detector_id = funcal_hit->Get_board_id()*17 + funcal_hit_next->Get_ch_ID()/2; // do mapping.
+                detector_id = funcal_hit->Get_board_id()*17 + funcal_hit_next->Get_ch_ID()/2; // do mapping.                
             }
 
             if (funcal_hit_next->Get_trail_epoch_counter() == 0) continue; // missing trail in either
@@ -218,6 +238,12 @@ void FatimaRaw2Cal::Exec(Option_t* option){
 
             fast_ToT =  fast_trail_time - fast_lead_time;
             slow_ToT =  slow_trail_time - slow_lead_time;
+
+            
+            if (((detector_id == time_machine_delayed_detector_id) || (detector_id == time_machine_undelayed_detector_id)) & time_machine_delayed_detector_id!=0 & time_machine_undelayed_detector_id!=0){ // currently only gets the TM if it also matches it slow-fast...
+                new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData("FATIMA",(detector_id==time_machine_undelayed_detector_id) ? (fast_lead_time) : (0.0), (detector_id==time_machine_undelayed_detector_id) ? (0.0) : (fast_lead_time), funcal_hit->Get_wr_subsystem_id(), funcal_hit->Get_wr_t() );
+                continue;
+            }
 
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) FatimaTwinpeaksCalData(
                 funcal_hit->Get_board_id(),
@@ -241,9 +267,11 @@ void FatimaRaw2Cal::Exec(Option_t* option){
 
 
 void FatimaRaw2Cal::FinishEvent(){
+    //THIS FUNCTION IS EXTREMELY IMPORTANT!!!!
     // reset output array
     funcal_data->Clear();
     fcal_data->Clear();
+    ftime_machine_array->Clear();
 };
 
 

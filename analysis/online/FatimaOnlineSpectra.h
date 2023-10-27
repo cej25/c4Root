@@ -48,15 +48,19 @@ class FatimaOnlineSpectra : public FairTask
         // Canvas
         TCanvas* cslowToT;
         TCanvas* cfastToT;
+        TCanvas* cfast_v_slow;
         TCanvas* time_spectra_divided;
 
         static const int NDetectors =9*17;
         // Histograms energy
         TH1F * h1_slowToT[NDetectors];
         TH1F * h1_fastToT[NDetectors];
+        TH2F * h2_fast_v_slow[NDetectors];
 
         //Absolute time spectra
         TH1F * h1_abs_time[NDetectors];
+
+        
 
 
 

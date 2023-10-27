@@ -26,6 +26,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/bplastData
 ${C4ROOT_SOURCE_DIR}/c4data/fatimaData
 ${C4ROOT_SOURCE_DIR}/c4data/germaniumData
 ${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
+${C4ROOT_SOURCE_DIR}/c4data/timemachineData
 )
 
 set(LINK_DIRECTORIES
@@ -59,7 +60,7 @@ Set(STRUCT_HEADERS
 ./aida/ext_h101_aida.h
 ./frs/ext_h101_frs.h
 ./lisa/ext_h101_lisa.h
-./germanium/ext_h101_ge_febex.h
+./germanium/ext_h101_germanium.h
 ./bplast/ext_h101_bplast.h
 ./beammonitor/ext_h101_bm.h
 ./fatima/ext_h101_fatima.h
