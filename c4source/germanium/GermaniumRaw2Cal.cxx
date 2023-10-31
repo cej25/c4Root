@@ -45,7 +45,7 @@ GermaniumRaw2Cal::~GermaniumRaw2Cal(){
     if (ftime_machine_array) delete ftime_machine_array;
 }
 
-void GermaniumRaw2Cal::SetTimeMachineChannels(int ftime_machine_delayed_detector_id, int ftime_machine_delayed_crystal_id, int ftime_machine_undelayed_detector_id, int ftime_machine_undelayed_crystal_id){
+void GermaniumRaw2Cal::SetTimeMachineChannels(int ftime_machine_undelayed_detector_id, int ftime_machine_undelayed_crystal_id, int ftime_machine_delayed_detector_id, int ftime_machine_delayed_crystal_id){
     time_machine_delayed_detector_id=ftime_machine_delayed_detector_id;
     time_machine_undelayed_detector_id=ftime_machine_undelayed_detector_id;
     time_machine_delayed_crystal_id=ftime_machine_delayed_crystal_id;
@@ -80,7 +80,7 @@ InitStatus GermaniumRaw2Cal::Init(){
     */
 
     FairRootManager::Instance()->Register("GermaniumCalData", "Germanium Cal Data", fcal_data, !fOnline);
-    FairRootManager::Instance()->Register("TimeMachineData", "Time Machine Data", ftime_machine_array, !fOnline);
+    FairRootManager::Instance()->Register("GermaniumTimeMachineData", "Time Machine Data", ftime_machine_array, !fOnline);
     
     fcal_data->Clear();
     
@@ -217,11 +217,11 @@ void GermaniumRaw2Cal::Exec(Option_t* option){
             }
 
             if (detector_id == time_machine_delayed_detector_id & crystal_id == time_machine_delayed_crystal_id){
-                new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData("GERMANIUM",0,funcal_hit->Get_channel_trigger_time(),funcal_hit->Get_wr_subsystem_id(),funcal_hit->Get_wr_t());
+                new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData(0,funcal_hit->Get_channel_trigger_time(),funcal_hit->Get_wr_subsystem_id(),funcal_hit->Get_wr_t());
                 continue;
             }
             else if (detector_id == time_machine_undelayed_detector_id & crystal_id == time_machine_undelayed_crystal_id){
-                new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData("GERMANIUM",funcal_hit->Get_channel_trigger_time(),0,funcal_hit->Get_wr_subsystem_id(),funcal_hit->Get_wr_t());
+                new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData(funcal_hit->Get_channel_trigger_time(),0,funcal_hit->Get_wr_subsystem_id(),funcal_hit->Get_wr_t());
                 continue;
             }
 

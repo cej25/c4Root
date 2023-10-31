@@ -48,7 +48,7 @@ FatimaRaw2Cal::~FatimaRaw2Cal(){
 
 
 
-void FatimaRaw2Cal::SetTimeMachineChannels(int ftime_machine_delayed_detector_id, int ftime_machine_undelayed_detector_id)
+void FatimaRaw2Cal::SetTimeMachineChannels(int ftime_machine_undelayed_detector_id, int ftime_machine_delayed_detector_id)
 {
 time_machine_delayed_detector_id = ftime_machine_delayed_detector_id;
 time_machine_undelayed_detector_id = ftime_machine_undelayed_detector_id;
@@ -82,7 +82,8 @@ InitStatus FatimaRaw2Cal::Init(){
     
 
     FairRootManager::Instance()->Register("FatimaTwinpeaksCalData", "Fatima Cal Data", fcal_data, !fOnline);
-    FairRootManager::Instance()->Register("TimeMachineData", "Time Machine Data", ftime_machine_array, !fOnline);
+    //need to have the name of the detector subsystem here:
+    FairRootManager::Instance()->Register("FatimaTimeMachineData", "Time Machine Data", ftime_machine_array, !fOnline);
     fcal_data->Clear();
     funcal_data->Clear();
 
@@ -224,24 +225,24 @@ void FatimaRaw2Cal::Exec(Option_t* option){
 
             }
             else{ //no map and cal: ->
-                detector_id = funcal_hit->Get_board_id()*17 + funcal_hit_next->Get_ch_ID()/2; // do mapping.                
+                detector_id = funcal_hit->Get_board_id()*17 + (int)(funcal_hit_next->Get_ch_ID()+1)/2; // do mapping.                
             }
 
             if (funcal_hit_next->Get_trail_epoch_counter() == 0) continue; // missing trail in either
 
-            fast_lead_time = (funcal_hit->Get_lead_epoch_counter()-1)*10.24e3 + funcal_hit->Get_lead_coarse_T()*5.0 - funcal_hit->Get_lead_fine_T();
-            fast_trail_time =(funcal_hit->Get_trail_epoch_counter()-1)*10.24e3 + funcal_hit->Get_trail_coarse_T()*5.0 - funcal_hit->Get_trail_fine_T();
+            fast_lead_time =  funcal_hit->Get_lead_epoch_counter()*10.24e3 + funcal_hit->Get_lead_coarse_T()*5.0 - funcal_hit->Get_lead_fine_T();
+            fast_trail_time = funcal_hit->Get_trail_epoch_counter()*10.24e3 + funcal_hit->Get_trail_coarse_T()*5.0 - funcal_hit->Get_trail_fine_T();
             
-            slow_lead_time = (funcal_hit_next->Get_lead_epoch_counter()-1)*10.24e3 + funcal_hit_next->Get_lead_coarse_T()*5.0 - funcal_hit_next->Get_lead_fine_T();
-            slow_trail_time =(funcal_hit_next->Get_trail_epoch_counter()-1)*10.24e3 + funcal_hit_next->Get_trail_coarse_T()*5.0 - funcal_hit_next->Get_trail_fine_T();
+            slow_lead_time =  funcal_hit_next->Get_lead_epoch_counter()*10.24e3 + funcal_hit_next->Get_lead_coarse_T()*5.0 - funcal_hit_next->Get_lead_fine_T();
+            slow_trail_time = funcal_hit_next->Get_trail_epoch_counter()*10.24e3 + funcal_hit_next->Get_trail_coarse_T()*5.0 - funcal_hit_next->Get_trail_fine_T();
             
 
             fast_ToT =  fast_trail_time - fast_lead_time;
             slow_ToT =  slow_trail_time - slow_lead_time;
 
             
-            if (((detector_id == time_machine_delayed_detector_id) || (detector_id == time_machine_undelayed_detector_id)) & time_machine_delayed_detector_id!=0 & time_machine_undelayed_detector_id!=0){ // currently only gets the TM if it also matches it slow-fast...
-                new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData("FATIMA",(detector_id==time_machine_undelayed_detector_id) ? (fast_lead_time) : (0.0), (detector_id==time_machine_undelayed_detector_id) ? (0.0) : (fast_lead_time), funcal_hit->Get_wr_subsystem_id(), funcal_hit->Get_wr_t() );
+            if (((detector_id == time_machine_delayed_detector_id) || (detector_id == time_machine_undelayed_detector_id)) && time_machine_delayed_detector_id!=0 && time_machine_undelayed_detector_id!=0){ // currently only gets the TM if it also matches it slow-fast...
+                new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData((detector_id==time_machine_undelayed_detector_id) ? (fast_lead_time) : (0), (detector_id==time_machine_undelayed_detector_id) ? (0) : (fast_lead_time), funcal_hit->Get_wr_subsystem_id(), funcal_hit->Get_wr_t() );
                 continue;
             }
 

@@ -10,14 +10,13 @@ class TimeMachineData : public TObject
         // Default Constructor
         TimeMachineData();
 
-        TimeMachineData(TString detector_system,double undelayed_time,double delta_time, uint32_t wr_subsystem_id, uint32_t wr_t);
+        TimeMachineData(double undelayed_time,double delta_time, uint32_t wr_subsystem_id, uint32_t wr_t);
 
         // Destructor
         virtual ~TimeMachineData() {};
 
         // Getters
         
-        inline const TString Get_detector_system() const {return fdetector_system;}
         inline const double Get_undelayed_time() const {return fundelayed_time;}
         inline const double Get_delayed_time() const {return fdelayed_time;}
         //inline const double Get_delta_time() const {return fdelta_time;}
@@ -28,7 +27,6 @@ class TimeMachineData : public TObject
 
         // Setters
         
-        void Set_detector_system(TString v){fdetector_system = v;}
         void Set_undelayed_time(double v){fundelayed_time = v;}
         void Set_delayed_time(double v){fdelayed_time = v;}
         //void Set_delta_time(double v){fdelta_time = v;}
@@ -39,7 +37,6 @@ class TimeMachineData : public TObject
         // Data items
         
         //system:
-        TString fdetector_system;
         double fundelayed_time;
         double fdelayed_time;
         //double fdelta_time;
