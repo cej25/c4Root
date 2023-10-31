@@ -75,7 +75,7 @@ InitStatus GermaniumOnlineSpectra::Init()
 
     for (int ihist = 0; ihist < NCrystals*NDetectors; ihist++){
         energy_spectra_divided->cd(ihist+1);
-        h1_energy[ihist] = new TH1F(Form("energy_spectrum_%d_%d",ihist/NCrystals,ihist%NCrystals),Form("energy_spectrum_%d_%d",ihist/NCrystals,ihist%NCrystals),100,0,10e3);
+        h1_energy[ihist] = new TH1F(Form("energy_spectrum_%d_%d",ihist/NCrystals,ihist%NCrystals),Form("energy_spectrum_%d_%d",ihist/NCrystals,ihist%NCrystals),1000,0,10e3);
         h1_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
         h1_energy[ihist]->Draw();
         ge_spectra_folder->Add(h1_energy[ihist]);
@@ -91,7 +91,7 @@ InitStatus GermaniumOnlineSpectra::Init()
 
     for (int ihist = 0; ihist < NCrystals*NDetectors; ihist++){
         energy_spectra_mult2->cd(ihist+1);
-        h1_energy_mult2[ihist] = new TH1F(Form("energy_spectrum_%d_%d_mult2",ihist/NCrystals,ihist%NCrystals),Form("energy_spectrum_%d_%d_mult2",ihist/NCrystals,ihist%NCrystals),100,0,10e3);
+        h1_energy_mult2[ihist] = new TH1F(Form("energy_spectrum_%d_%d_mult2",ihist/NCrystals,ihist%NCrystals),Form("energy_spectrum_%d_%d_mult2",ihist/NCrystals,ihist%NCrystals),1000,0,10e3);
         h1_energy_mult2[ihist]->GetXaxis()->SetTitle("energy (keV)");
         h1_energy_mult2[ihist]->Draw();
         ge_spectra_folder->Add(h1_energy_mult2[ihist]);
