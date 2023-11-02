@@ -8,7 +8,8 @@
 // c4
 #include "bPlastOnlineSpectra.h"
 #include "EventHeader.h"
-#include "bPlastTamexData.h"
+#include "bPlastTwinpeaksCalData.h"
+
 #include "c4Logger.h"
 
 #include "TCanvas.h"
@@ -26,17 +27,17 @@ bPlastOnlineSpectra::bPlastOnlineSpectra()
 
 bPlastOnlineSpectra::bPlastOnlineSpectra(const TString& name, Int_t verbose)
     : FairTask(name, verbose)
-    , fHitbPlast(NULL)
-    , fNEvent(0)
+    , fHitbPlastTwinpeaks(NULL)
+    , fNEvents(0)
     , header(nullptr)
 {
 }
 
 bPlastOnlineSpectra::~bPlastOnlineSpectra()
 {
-    // c4LOG(info, "");
-    if (fHitbPlast)
-        delete fHitbPlast;
+    c4LOG(info, "");
+    if (fHitbPlastTwinpeaks)
+        delete fHitbPlastTwinpeaks;
 }
 
 void bPlastOnlineSpectra::SetParContainers()
@@ -47,94 +48,155 @@ void bPlastOnlineSpectra::SetParContainers()
 
 InitStatus bPlastOnlineSpectra::Init()
 {
+
+    // number of dets 
+
     c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-    FairRunOnline* run = FairRunOnline::Instance();
+    FairRunOnline * run = FairRunOnline::Instance();
     run->GetHttpServer()->Register("", this);
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fHitbPlast = (TClonesArray*)mgr->GetObject("bPlastTamexData");
-    c4LOG_IF(fatal, !fHitbPlast, "Branch bPlastTamexData not found!");
+    fHitbPlastTwinpeaks = (TClonesArray*)mgr->GetObject("bPlastTwinpeaksCalData");
+    c4LOG_IF(fatal, !fHitbPlastTwinpeaks, "Branch bPlastTwinpeaksCalData not found!");
 
+    TFolder * bPlast_spectra_folder = new TFolder("bPlast", "bPlast");
 
-    TFolder * bplast_spectra_folder = new TFolder("bPlast", "bPlast");
+    run->AddObject(bPlast_spectra_folder);
 
-    run->AddObject(bplast_spectra_folder);
+    // energy spectra:
+    cSlowToT  = new TCanvas("cSlowToT","slow ToT bPlast spectra",650,350);
+    cSlowToT->Divide(5,(NDetectors%5==0) ? (NDetectors/5) : (NDetectors/5 + 1));
 
-    // Create histograms
+    for (int ihist = 0; ihist < NDetectors; ihist++){
+        cSlowToT->cd(ihist+1);
+        h1_SlowToT[ihist] = new TH1F(Form("slow_ToT_%d",ihist),Form("slow_ToT_%d",ihist),10000,0,5e3);
+        h1_SlowToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
+        h1_SlowToT[ihist]->Draw();
+    }
+    cSlowToT->cd(0);
 
-    cLeadTime = new TCanvas("Lead_Time", "Lead Time", 10, 10, 800, 700);
+    bPlast_spectra_folder->Add(cSlowToT);
+    
+    // energy spectra:
+    cFastToT  = new TCanvas("cfastToT","fast ToT bPlast spectra",650,350);
+    cFastToT->Divide(5,(NDetectors%5==0) ? (NDetectors/5) : (NDetectors/5 + 1));
 
-    fh1_LeadTime = new TH1F("bplast_leadtime", "bPlast Lead Time spectrum", 2500, 0, 2000);
-    fh1_LeadTime->GetXaxis()->SetTitle("Lead Time");
-    fh1_LeadTime->GetYaxis()->SetTitle("Counts");
-    fh1_LeadTime->GetYaxis()->SetTitleOffset(1.15);
-    fh1_LeadTime->GetXaxis()->CenterTitle(true);
-    fh1_LeadTime->GetYaxis()->CenterTitle(true);
-    fh1_LeadTime->GetXaxis()->SetLabelSize(0.045);
-    fh1_LeadTime->GetXaxis()->SetTitleSize(0.045);
-    fh1_LeadTime->GetYaxis()->SetLabelSize(0.045);
-    fh1_LeadTime->GetYaxis()->SetTitleSize(0.045);
-    fh1_LeadTime->SetLineColor(1);
-    fh1_LeadTime->Draw("");
+    for (int ihist = 0; ihist < NDetectors; ihist++){
+        cFastToT->cd(ihist+1);
+        h1_FastToT[ihist] = new TH1F(Form("fast_ToT_%d",ihist),Form("fast_ToT_%d",ihist),10000,0,5e3);
+        h1_FastToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
+        h1_FastToT[ihist]->Draw();
+    }
+    cFastToT->cd(0);
 
-    bplast_spectra_folder->Add(cLeadTime);
+    bPlast_spectra_folder->Add(cFastToT);
 
-    run->GetHttpServer()->RegisterCommand("Reset_bPlast_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
+    // hit pattern:
+
+    cFastHitPatt  = new TCanvas("cfastHitPatt","fast HitPatt bPlast spectra",650,350);
+
+    h1_FastHitPatt = new TH1F("fast_HitPatt","fast_HitPatt",NDetectors,0,NDetectors);
+    h1_FastHitPatt->GetXaxis()->SetTitle("Detector ID");
+    h1_FastHitPatt->GetYaxis()->SetTitle("Counts");
+    h1_FastHitPatt->Draw();
+
+    cSlowHitPatt  = new TCanvas("cslowHitPatt","slow HitPatt bPlast spectra",650,350);
+
+    h1_SlowHitPatt = new TH1F("slow_HitPatt","slow_HitPatt",NDetectors,0,NDetectors);
+    h1_SlowHitPatt->GetXaxis()->SetTitle("Detector ID");
+    h1_SlowHitPatt->GetYaxis()->SetTitle("Counts");
+    h1_SlowHitPatt->Draw();
+    
+    // Time spectra:
+    time_spectra_divided  = new TCanvas("time_spectra_divided","bPlast time spectra",650,350);
+    time_spectra_divided->Divide(5,(NDetectors%5==0) ? (NDetectors/5) : (NDetectors/5 + 1));
+
+    for (int ihist = 0; ihist < NDetectors; ihist++){
+        time_spectra_divided->cd(ihist+1);
+        h1_abs_time[ihist] = new TH1F(Form("Time_spectrum_%d",ihist),Form("Time_spectrum_%d",ihist),10000,1.5218e14,1.5225e14);
+        h1_abs_time[ihist]->GetXaxis()->SetTitle("Time (ns)");
+        h1_abs_time[ihist]->Draw();
+    }
+    time_spectra_divided->cd(0);
+
+    bPlast_spectra_folder->Add(time_spectra_divided);
+
+    run->GetHttpServer()->RegisterCommand("Reset_bPlast_Hist", Form("/Objects/%s->Reset_Histo()", GetName()));
 
     return kSUCCESS;
+    
 }
 
 void bPlastOnlineSpectra::Reset_Histo()
 {
     c4LOG(info, "");
-    fh1_LeadTime->Reset();
+    for (int ihist = 0; ihist<NDetectors; ihist++) h1_SlowToT[ihist]->Reset();
+    for (int ihist = 0; ihist<NDetectors; ihist++) h1_FastToT[ihist]->Reset();
+    for (int ihist = 0; ihist<NDetectors; ihist++) h1_SlowToT_vs_FastToT[ihist]->Reset();
+    h1_FastHitPatt->Reset();
+    h1_SlowHitPatt->Reset();
+    for (int ihist = 0; ihist<NDetectors; ihist++) h1_abs_time[ihist]->Reset();
+
+    c4LOG(info, "Histograms reset.");
+   
 }
 
 void bPlastOnlineSpectra::Exec(Option_t* option)
 {   
-
-    if (fHitbPlast && fHitbPlast->GetEntriesFast() > 0)
+    if (fHitbPlastTwinpeaks && fHitbPlastTwinpeaks->GetEntriesFast() > 0)
     {
-        Int_t nHits = fHitbPlast->GetEntriesFast();
+        Int_t nHits = fHitbPlastTwinpeaks->GetEntriesFast();
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {   
-            bPlastTamexData* hit = (bPlastTamexData*)fHitbPlast->At(ihit);
-            if (!hit)
-                continue;
+            bPlastTwinpeaksCalData* hit = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(ihit);
+            if (!hit) continue;
             
-            // just show me 0 for now
-            if (hit->GetDet() == 1 && hit->GetChan() == 1)
-            {
-                if (hit->GetbPlastLeadT() != 0)
-                {
-                    fh1_LeadTime->Fill(hit->GetbPlastLeadT());
-                }
+            if (hit->Get_detector_id() > NDetectors || hit->Get_detector_id() < 0) continue;
+
+            // Lead and Trail spectra -- empty for now
+
+            // Fast and Slow Tot spectra
+            
+            h1_SlowToT[hit->Get_detector_id()]->Fill(hit->Get_slow_ToT());
+            h1_FastToT[hit->Get_detector_id()]->Fill(hit->Get_fast_ToT());
+
+            // Hit pattern spectra
+            // the hit pattern spectrum is generated by filling the histogram with the detector ID of the hit
+
+            h1_FastHitPatt->Fill(hit->Get_detector_id());
+            h1_SlowHitPatt->Fill(hit->Get_detector_id());
+            
+            // Fast Vs Slow ToT
+
+            
+
             }
-
         }
-    }
-
-    fNEvent += 1;
+    fNEvents += 1;
 }
 
 void bPlastOnlineSpectra::FinishEvent()
 {
-    if (fHitbPlast)
+    if (fHitbPlastTwinpeaks)
     {
-        fHitbPlast->Clear();
+        fHitbPlastTwinpeaks->Clear();
     }
 }
 
 void bPlastOnlineSpectra::FinishTask()
 {
-    if (fHitbPlast)
+    if (fHitbPlastTwinpeaks)
     {
-        cLeadTime->Write();
+        for (int ihist = 0; ihist<NDetectors; ihist++) h1_SlowToT[ihist]->Write();
+        for (int ihist = 0; ihist<NDetectors; ihist++) h1_FastToT[ihist]->Write();
+        h1_FastHitPatt->Write();
+        h1_SlowHitPatt->Write();
+        for (int ihist = 0; ihist<NDetectors; ihist++) h1_abs_time[ihist]->Write();
     }
 }
 
