@@ -87,8 +87,8 @@ class bPlastReader : public c4Reader
 
         plast_lead_hit_struct ** last_hits;
 
-        uint32_t last_epoch = 0;
-        uint32_t look_ahead_counter = 0;
+        uint32_t last_epoch[32];
+        uint32_t next_channel = 0;
 
         uint64_t wr_t;
 
@@ -100,6 +100,7 @@ class bPlastReader : public c4Reader
         uint64_t fNtrails_read = 0;
         uint64_t fNleads_read = 0;
         uint64_t fNmatched = 0;
+        uint64_t fNevents_lacking_epoch = 0;
 
 
         const char * fine_time_histo_outfile; 
