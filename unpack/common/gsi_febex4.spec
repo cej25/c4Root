@@ -14,9 +14,8 @@ FEBEX_PADDING()
 }
 
 
-FEBEX_EVENT()
+FEBEX_EVENT(card)
 {
-	MEMBER(DATA8 board_id);
 	MEMBER(DATA32 event_trigger_time_hi); // trigger time
 	MEMBER(DATA32 event_trigger_time_lo); // "..."
     MEMBER(DATA16 hit_pattern);
@@ -36,10 +35,9 @@ FEBEX_EVENT()
         0_7: 0x34;
         8_11: trigger_type;
         12_15: sfpnr;
-        16_23: board_id;
+        16_23: card = MATCH(card);
         24_31: 0xFF;
 
-        ENCODE(board_id, (value = board_id));
     }
 
     UINT32 channel_size NOENCODE
@@ -113,9 +111,8 @@ FEBEX_EVENT()
 }
 
 
-FEBEX_EVENT_TRACES()
+FEBEX_EVENT_TRACES(card)
 {
-    MEMBER(DATA8 board_id);
 	MEMBER(DATA32 event_trigger_time_hi); // trigger time
 	MEMBER(DATA32 event_trigger_time_lo); // "..."
     MEMBER(DATA16 hit_pattern);
@@ -137,10 +134,9 @@ FEBEX_EVENT_TRACES()
         0_7: 0x34;
         8_11: trigger_type;
         12_15: sfpnr;
-        16_23: board_id;
+        16_23: board_id = MATCH(card);
         24_31: 0xFF;
 
-        ENCODE(board_id, (value = board_id));
     }
 
     UINT32 channel_size NOENCODE

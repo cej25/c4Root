@@ -74,7 +74,7 @@ InitStatus FatimaOnlineSpectra::Init()
 
     for (int ihist = 0; ihist < NDetectors; ihist++){
         cslowToT->cd(ihist+1);
-        h1_slowToT[ihist] = new TH1F(Form("slow_ToT_%d",ihist),Form("slow_ToT_%d",ihist),10000,0,5e3);
+        h1_slowToT[ihist] = new TH1F(Form("slow_ToT_%d",ihist),Form("slow_ToT_%d",ihist),2000,0,2.5e3);
         h1_slowToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
         h1_slowToT[ihist]->Draw();
     }
@@ -88,7 +88,7 @@ InitStatus FatimaOnlineSpectra::Init()
 
     for (int ihist = 0; ihist < NDetectors; ihist++){
         cfastToT->cd(ihist+1);
-        h1_fastToT[ihist] = new TH1F(Form("fast_ToT_%d",ihist),Form("fast_ToT_%d",ihist),10000,0,5e3);
+        h1_fastToT[ihist] = new TH1F(Form("fast_ToT_%d",ihist),Form("fast_ToT_%d",ihist),2000,0,2.5e3);
         h1_fastToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
         h1_fastToT[ihist]->Draw();
     }
@@ -96,13 +96,28 @@ InitStatus FatimaOnlineSpectra::Init()
 
     fatima_spectra_folder->Add(cfastToT);
     
+    // energy spectra:
+    cfast_v_slow  = new TCanvas("cfast_v_slow","fast vs slow ToT Fatima spectra",650,350);
+    cfast_v_slow->Divide(5,(NDetectors%5==0) ? (NDetectors/5) : (NDetectors/5 + 1));
+
+    for (int ihist = 0; ihist < NDetectors; ihist++){
+        cfast_v_slow->cd(ihist+1);
+        h2_fast_v_slow[ihist] = new TH2F(Form("fast_v_slow_ToT_%d",ihist),Form("fast_v_slow_ToT_%d",ihist),1000,0,2.5e3,1000,0,2.5e3);
+        h2_fast_v_slow[ihist]->GetXaxis()->SetTitle("ToT (ns)");
+        h2_fast_v_slow[ihist]->GetYaxis()->SetTitle("ToT (ns)");
+        h2_fast_v_slow[ihist]->Draw("COLZ");
+    }
+    cfast_v_slow->cd(0);
+
+    fatima_spectra_folder->Add(cfast_v_slow);
+    
     // Time spectra:
     time_spectra_divided  = new TCanvas("time_spectra_divided","Fatima time spectra",650,350);
     time_spectra_divided->Divide(5,(NDetectors%5==0) ? (NDetectors/5) : (NDetectors/5 + 1));
 
     for (int ihist = 0; ihist < NDetectors; ihist++){
         time_spectra_divided->cd(ihist+1);
-        h1_abs_time[ihist] = new TH1F(Form("Time_spectrum_%d",ihist),Form("Time_spectrum_%d",ihist),10000,1.5218e14,1.5225e14);
+        h1_abs_time[ihist] = new TH1F(Form("Time_spectrum_%d",ihist),Form("Time_spectrum_%d",ihist),100,1.5218e14,1.5225e14);
         h1_abs_time[ihist]->GetXaxis()->SetTitle("Time (ns)");
         h1_abs_time[ihist]->Draw();
     }
@@ -122,6 +137,7 @@ void FatimaOnlineSpectra::Reset_Histo()
     for (int ihist = 0; ihist<NDetectors; ihist++) h1_slowToT[ihist]->Reset();
     for (int ihist = 0; ihist<NDetectors; ihist++) h1_fastToT[ihist]->Reset();
     for (int ihist = 0; ihist<NDetectors; ihist++) h1_abs_time[ihist]->Reset();
+    for (int ihist = 0; ihist<NDetectors; ihist++) h2_fast_v_slow[ihist]->Reset();
    
 }
 
@@ -140,6 +156,8 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
             h1_slowToT[hit->Get_detector_id()]->Fill(hit->Get_slow_ToT());
             //h1_abs_time[hit->Get_detector_id()]->Fill(hit->Get_fast_lead_time());
             h1_fastToT[hit->Get_detector_id()]->Fill(hit->Get_fast_ToT());
+            h2_fast_v_slow[hit->Get_detector_id()]->Fill(hit->Get_fast_ToT(), hit->Get_slow_ToT());
+
             }
         }
     fNEvents += 1;
@@ -162,6 +180,7 @@ void FatimaOnlineSpectra::FinishTask()
         for (int ihist = 0; ihist<NDetectors; ihist++) h1_slowToT[ihist]->Write();
         for (int ihist = 0; ihist<NDetectors; ihist++) h1_fastToT[ihist]->Write();
         for (int ihist = 0; ihist<NDetectors; ihist++) h1_abs_time[ihist]->Write();
+        for (int ihist = 0; ihist<NDetectors; ihist++) h2_fast_v_slow[ihist]->Write();
     }
 }
 
