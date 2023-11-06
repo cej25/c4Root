@@ -10,6 +10,7 @@
 #include "EventHeader.h"
 #include "c4Logger.h"
 #include "AidaData.h"
+#include "TAidaConfiguration.h"
 
 
 #include "TCanvas.h"
@@ -30,6 +31,7 @@ AidaOnlineSpectra::AidaOnlineSpectra(const TString& name, Int_t verbose)
     , adcArray(nullptr)
     , flowArray(nullptr)
     , scalerArray(nullptr)
+    , implantHitArray(nullptr)
     , header(nullptr)
     , fNEvents(0)
     // ranges
@@ -67,23 +69,11 @@ InitStatus AidaOnlineSpectra::Init()
     //scalerArray = (decltype(scalerArray))mgr->GetObject("AidaScalerData");
     //c4LOG_IF(fatal, !adcArray, "Branch AidaScalerData not found!");
 
-    TFolder *aidaFold = new TFolder("Aida", "Aida");
+    implantHitArray = mgr->InitObjectAs<decltype(implantHitArray)>("AidaImplantHits");
 
-    // TODO: use aida config?
-    fhAdcs.resize(12);
-    for (int i = 0; i < 12; i++)
-    {
-        TFolder *feeFolder = new TFolder(Form("DSSD%d", i), Form("DSSD%d", i));
-        aidaFold->Add(feeFolder);
-        
-        TFolder* decay = new TFolder("Decay", "Decay");
-        feeFolder->Add(decay);
-        for (int j = 0; j < 64; j++)
-        {
-            fhAdcs[i][j][0] = new TH1F(Form("Aida_Decay_DSSD%d_Ch%d", i, j), Form(":)"), 65536, 0, 65536);
-            decay->Add(fhAdcs[i][j][0]);
-        }
-    }
+    TFolder *aidaFold = new TFolder("Aida", "Aida");
+    TAidaConfiguration const* conf = TAidaConfiguration::GetInstance();
+    hit1 = new TH2F("dssd1", "dssd1", 386, 0, 386, 128, 0, 128);
 
     run->AddObject(aidaFold);
 
@@ -98,18 +88,25 @@ void AidaOnlineSpectra::Reset_Histo()
 }
 
 void AidaOnlineSpectra::Exec(Option_t* option)
-{   
-    for (auto const& entry : *adcArray)
+{
+    //for (auto const& entry : *adcArray)
+    //{
+        //int fee = entry.Fee();
+        //bool implant = entry.Range();
+        //int channel = entry.Channel();
+        //uint16_t value = entry.Value();
+
+        //int implantIdx = implant ? 1 : 0;
+
+        //if (!implant)
+            //fhAdcs[fee - 1][channel][implantIdx]->Fill(value);
+    //}
+    //
+    for (auto const& hit : *implantHitArray)
     {
-        int fee = entry.Fee();
-        bool implant = entry.Range();
-        int channel = entry.Channel();
-        uint16_t value = entry.Value();
-
-        int implantIdx = implant ? 1 : 0;
-
-        if (!implant)
-            fhAdcs[fee - 1][channel][implantIdx]->Fill(value);
+        if (hit.DSSD == 1) {
+            hit1->Fill(hit.StripX, hit.StripY);
+        }
     }
     fNEvents += 1;
 }
