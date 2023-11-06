@@ -2,6 +2,7 @@
 #define AidaOnlineSpectra_H
 
 #include "AidaData.h"
+#include "AidaHitData.h"
 #include "FairTask.h"
 #include <array>
 #include <vector>
@@ -39,6 +40,7 @@ class AidaOnlineSpectra : public FairTask
         std::vector<AidaUnpackAdcItem> const* adcArray;
         std::vector<AidaUnpackFlowItem> const* flowArray;
         std::vector<AidaUnpackScalerItem> const* scalerArray;
+        std::vector<AidaHit> const* implantHitArray;
 
         // ranges
         //Double_t
@@ -53,7 +55,8 @@ class AidaOnlineSpectra : public FairTask
         // Histograms
         //TH1F* fh1_SumTime;
         //TH1F* fh1_EnergySpectraTest;
-        std::vector<std::array<std::array<TH1F*, 2>, 64>> fhAdcs;
+        //std::vector<std::array<std::array<TH1F*, 2>, 64>> fhAdcs;
+        TH2F* hit1;
 
     public:
         ClassDef(AidaOnlineSpectra, 1)

@@ -21,7 +21,7 @@ void run_aida_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
 
-    TString filename = "~/lustre/gamma/DESPEC_S452_FILES/newts/S452f103_0037.lmd";
+    TString filename = "~/lustre/gamma/DESPEC_S452_FILES/newts/S452f103_*.lmd";
     //TString filename = "trans://lxg1257";
     TString outputpath = "run_online_aida_test";
     TString outputFileName = outputpath + ".root";
@@ -39,7 +39,7 @@ void run_aida_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1); // no idea, does it even matter for this
-    run->SetSink(new FairRootFileSink(outputFileName));
+    //run->SetSink(new FairRootFileSink(outputFileName));
     run->ActivateHttpServer(refresh, port);
 
     // Load ucesb structure
@@ -68,8 +68,12 @@ void run_aida_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
 
     // Aida processing tasks
     AidaUnpack2Cal* aidaCalibrator = new AidaUnpack2Cal();
-    aidaCalibrator->SetOnline(false);
+    aidaCalibrator->SetOnline(true);
     run->AddTask(aidaCalibrator);
+
+    AidaCal2Hit* aidaHitter = new AidaCal2Hit();
+    aidaHitter->SetOnline(true);
+    run->AddTask(aidaHitter);
 
 
     // Add analysis task
