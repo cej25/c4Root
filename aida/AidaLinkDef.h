@@ -8,5 +8,6 @@
 
 #pragma link C++ class AidaUnpack2Cal+;
 #pragma link C++ class TAidaConfiguration+;
+#pragma link C++ class AidaCal2Hit+;
 
 #endif
