@@ -124,7 +124,13 @@ void TAidaConfiguration::ReadConfiguration()
     else if (option == "dssd")
     {
       line >> sub_DSSD;
-      dssd[sub_DSSD - 1].DSSD = sub_DSSD;
+      if (sub_DSSD > dssds) {
+        c4LOG(warning, "DSSD value " << sub_DSSD << " exceeds number of DSSDs: " << dssds);
+        sub_DSSD = 0;
+      }
+      else {
+        dssd[sub_DSSD - 1].DSSD = sub_DSSD;
+      }
     }
     else if (option == "top" && sub && sub_DSSD > 0)
     {
@@ -256,6 +262,7 @@ void TAidaConfiguration::ReadConfiguration()
     std::fill(d[1].begin(), d[1].end(), 0);
   }
 
+  bool warning = false;
   std::ifstream fs(base_path + "/AIDA_offsets.txt");
   fs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   while (fs)
@@ -269,7 +276,13 @@ void TAidaConfiguration::ReadConfiguration()
     double offset;
     fs >> fs_fee >> fs_channel >> offset;
     if (!fs) break;
-    adcOffsets[fs_fee-1][fs_channel-1] = offset;
+    if (!warning && (fs_fee > fees || fs_channel > 64)) {
+      c4LOG(warning, "Invalid FEE/Channel number in AIDA_offsets.txt");
+      warning = true;
+    }
+    if (fs_fee <= fees && fs_channel <= 64) {
+      adcOffsets[fs_fee-1][fs_channel-1] = offset;
+    }
     fs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   }
   fs.close();
@@ -287,6 +300,9 @@ void TAidaConfiguration::ReadConfiguration()
     int fs_fee, fs_offset;
     fs >> fs_fee >> fs_offset;
     if (!fs) break;
+    if (!warning && (fs_fee > fees)) {
+      c4LOG(warning, "Invalid FEE in AIDA_times.txt");
+    }
     feeTimeOffsets[fs_fee] = fs_offset;
     fs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   }
