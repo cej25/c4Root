@@ -24,6 +24,7 @@ lisaData/LisaData.cxx
 lisaData/LisaTraceData.cxx
 aidaData/AidaData.cxx
 aidaData/AidaCalData.cxx
+aidaData/AidaHitData.cxx
 germaniumData/GermaniumFebexData.cxx
 germaniumData/GermaniumCalData.cxx
 bplastData/bPlastTwinpeaksData.cxx
