@@ -21,7 +21,7 @@
 
 #pragma link C++ class EXT_STR_h101_unpack_t;
 #pragma link C++ class EXT_STR_h101_FRS_onion_t;
-#pragma link C++ class EXT_STR_h101_GE_FEBEX_onion_t;
+#pragma link C++ class EXT_STR_h101_GERMANIUM_onion_t;
 #pragma link C++ class EXT_STR_h101_FATIMA_onion_t;
 #pragma link C++ class EXT_STR_h101_LISA_onion_t;
 #pragma link C++ class EXT_STR_h101_aida_onion_t;
