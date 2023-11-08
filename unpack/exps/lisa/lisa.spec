@@ -9,12 +9,18 @@ DUMMY()
     UINT32 no NOENCODE;
 }
 
-
 SUBEVENT(febex_subev_traces)
 { 
-    if (WR_USED)  
+    select several
     {
-        ts = TIMESTAMP_WHITERABBIT(id=WR_ID);
+        badevent = FEBEX_BAD_EVENT();
+    }
+    if (WR_USED)  
+    {   
+        select several
+        {
+            ts = TIMESTAMP_WHITERABBIT(id=WR_ID);
+        }
     }
     select several
     {
