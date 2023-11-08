@@ -13,5 +13,7 @@
 #pragma link C++ class BeamMonitorOnlineSpectra+;
 #pragma link C++ class LisaOnlineSpectra+;
 #pragma link C++ class FatimaOnlineSpectra+;
+#pragma link C++ class TimeMachineOnline+;
+
 
 #endif
