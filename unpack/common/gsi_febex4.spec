@@ -1,5 +1,5 @@
 #define TRACE_SIZE 10000 // some maximum size?
-#define TRACE_CHANNELS 2 // somehow this needs fixing
+#define TRACE_CHANNELS 16 // this needs to be read from the data stream somehow
 
 
 // Reads the Padding between FEBEX events:
@@ -260,6 +260,37 @@ FEBEX_EVENT_TRACES(card)
             }
         }
     }
-    
+    else if (sumchannel.trigger_type == 3)
+    {   
+
+        // trigger 3 events send only headers
+
+        list (0 <= i < TRACE_CHANNELS)
+        {
+            UINT32 header NOENCODE
+            {
+                0_7: 0x34;
+                8_23: other;
+                24_31: ch_id;
+            }
+
+            UINT32 tracesize NOENCODE
+            {
+                0_31: size;
+            }
+
+            UINT32 tracehead NOENCODE
+            {
+                0_23: other;
+                24_31: head;
+            }
+
+            UINT32 trace_trailer NOENCODE
+            {
+                0_23: notused;
+                24_31: id = RANGE(0xb0,0xbf);
+            }
+        }
+    }
 
 }
