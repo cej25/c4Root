@@ -1,15 +1,15 @@
-#ifndef FatimaTwinpeaksCalData_H
-#define FatimaTwinpeaksCalData_H
+#ifndef bPlastTwinpeaksCalData_H
+#define bPlastTwinpeaksCalData_H
 
 #include "TObject.h"
 
-class FatimaTwinpeaksCalData : public TObject
+class bPlastTwinpeaksCalData : public TObject
 {
     public:
         // Default Constructor
-        FatimaTwinpeaksCalData();
+        bPlastTwinpeaksCalData();
 
-        FatimaTwinpeaksCalData(
+        bPlastTwinpeaksCalData(
         uint16_t board_id,
         uint16_t ch_ID,
         uint16_t detector_id,
@@ -23,12 +23,14 @@ class FatimaTwinpeaksCalData : public TObject
         double fast_ToT,
         double slow_ToT,
         uint16_t wr_subsystem_id,
-        uint64_t wr_t);
+        uint64_t wr_t)
 
         // Destructor
-        virtual ~FatimaTwinpeaksCalData() {}
+        virtual ~bPlastTwinpeaksCalData() {}
 
         // Getters
+
+        inline const uint16_t Get_board_id() const {return fboard_id; }
 
         inline const uint16_t Get_board_id() const {return fboard_id; }
         inline const uint16_t Get_ch_ID() const {return fch_ID; }
@@ -44,17 +46,17 @@ class FatimaTwinpeaksCalData : public TObject
 
 
         // Setters
-        void Set_board_id(uint16_t v){ fboard_id = v; }
-        void Set_ch_ID(uint16_t v){ fch_ID = v; }
-        void Set_detector_id(uint16_t v){ fdetector_id = v; }
-        void Set_slow_lead_time(double v){ fslow_lead_time = v; }
-        void Set_slow_trail_time(double v){ fslow_trail_time = v; }
-        void Set_fast_lead_time(double v){ ffast_lead_time = v; }
-        void Set_fast_trail_time(double v){ ffast_trail_time = v; }
-        void Set_fast_ToT(double v){ ffast_ToT = v; }
-        void Set_slow_ToT(double v){ fslow_ToT = v; }
-        void Set_wr_subsystem_id(uint16_t v){ fwr_subsystem_id = v; }
-        void Set_wr_t(uint64_t v){ fwr_t = v; }
+        void Set_board_id(uint16_t v){return fboard_id = v; }
+        void Set_ch_ID(uint16_t v){return fch_ID = v; }
+        void Set_detector_id(uint16_t v){return fdetector_id = v; }
+        void Set_slow_lead_time(double v){return fslow_lead_time = v; }
+        void Set_slow_trail_time(double v){return fslow_trail_time = v; }
+        void Set_fast_lead_time(double v){return ffast_lead_time = v; }
+        void Set_fast_trail_time(double v){return ffast_trail_time = v; }
+        void Set_fast_ToT(double v){return ffast_ToT = v; }
+        void Set_slow_ToT(double v){return fslow_ToT = v; }
+        void Set_wr_subsystem_id(uint16_t v){return fwr_subsystem_id = v; }
+        void Set_wr_t(uint64_t v){return fwr_t = v; }
 
 
     protected:
@@ -76,7 +78,7 @@ class FatimaTwinpeaksCalData : public TObject
     
 
     public:
-        ClassDef(FatimaTwinpeaksCalData, 1);
+        ClassDef(bPlastTwinpeaksCalData, 1);
 };
 
 #endif
