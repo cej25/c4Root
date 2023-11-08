@@ -15,6 +15,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/fatimaData
 ${C4ROOT_SOURCE_DIR}/c4data/lisaData
 ${C4ROOT_SOURCE_DIR}/c4data/wrData
 ${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
+${C4ROOT_SOURCE_DIR}/c4data/timemachineData
 ${C4ROOT_SOURCE_DIR}/analysis
 ${C4ROOT_SOURCE_DIR}/analysis/pars
 ${C4ROOT_SOURCE_DIR}/analysis/offline
@@ -32,7 +33,9 @@ set(SRCS
 ./online/LisaOnlineSpectra.cxx
 ./online/AidaOnlineSpectra.cxx
 ./online/bPlastOnlineSpectra.cxx
+./online/FatimaOnlineSpectra.cxx
 ./online/FrsOnlineSpectra.cxx
+./online/TimeMachineOnline.cxx
 )
 
 
