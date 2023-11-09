@@ -81,7 +81,7 @@ class FrsUnpackTpatItem : public TObject
         ClassDef(FrsUnpackTpatItem, 1)
 };
 
-/*class FrsUnpackFrsItem : public TObject
+class FrsUnpackFrsItem : public TObject
 {
     public:
         FrsUnpackFrsItem();
@@ -92,19 +92,23 @@ class FrsUnpackTpatItem : public TObject
         // GET
 
         // SET
-        void SetAll(UInt_t i, UInt_t v830, UInt_t g, UInt_t c, UInt_t v7x5);
+        void SetV830(UInt_t i, UInt_t d);
+        void SetV7X5(UInt_t g, UInt_t c, UInt_t d);
+        //void SetAll(UInt_t i, UInt_t v830, UInt_t g, UInt_t c, UInt_t v7x5);
     
     protected:
         // items
-        UInt_t i;
-        UInt_t v830;
-        UInt_t geo, channel;
-        UInt_t v7x5;
+        UInt_t index; // rename to v830 specific?
+        UInt_t v830_data;
+
+        UInt_t geo;
+        UInt_t channel;
+        UInt_t v7x5_data;
 
     
     public:
         ClassDef(FrsUnpackFrsItem, 1)
-};*/
+};
 
 class FrsUnpackV830 : public TObject
 {

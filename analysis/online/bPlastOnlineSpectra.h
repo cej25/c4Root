@@ -15,6 +15,9 @@ class bPlastOnlineSpectra : public FairTask
         bPlastOnlineSpectra();
         bPlastOnlineSpectra(const TString& name, Int_t verbose = 1);
 
+
+        void CreateHistograms();
+
         virtual ~bPlastOnlineSpectra();
 
         virtual void SetParContainers();
@@ -33,18 +36,38 @@ class bPlastOnlineSpectra : public FairTask
 
     
     private:
-        TClonesArray* fHitbPlast;
+        TClonesArray* fHitbPlastTwinpeaks;
+
+
+        // ranges
+        //Double_t
 
         EventHeader* header;
+        Int_t fNEvents;
 
-        
-        Int_t fNEvent;
+        // Canvas -- we can think about adding lead and trail spectra for each channel/detector
+        TCanvas* cSlowToT;
+        TCanvas* cFastToT;
+        TCanvas* cFastHitPatt;
+        TCanvas* cSlowHitPatt;
+        TCanvas* cSlowToT_vs_FastToT;
 
-        // Canvas
-        TCanvas* cLeadTime;
+        TCanvas* time_spectra_divided;
 
-        // Histograms
-        TH1F* fh1_LeadTime;
+        static const int NDetectors = 128;
+
+        // Histograms energy
+        TH1F * h1_SlowToT[NDetectors];
+        TH1F * h1_FastToT[NDetectors];
+        TH1F * h1_FastHitPatt;
+        TH1F * h1_SlowHitPatt;
+
+         TH2F * h1_SlowToT_vs_FastToT[NDetectors];
+
+        //Absolute time spectra
+        TH1F * h1_abs_time[NDetectors];
+
+
 
     public:
         ClassDef(bPlastOnlineSpectra, 1)

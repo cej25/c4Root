@@ -34,6 +34,7 @@ FatimaReader::FatimaReader(EXT_STR_h101_FATIMA_onion* data, size_t offset)
 FatimaReader::~FatimaReader() { 
     
     c4LOG(info, Form("Epochs read %i",(int)fNepochwordsread));
+    c4LOG(info, Form("Event without epoch read %i",(int)fNevents_lacking_epoch));
     c4LOG(info, Form("Trails read %i",(int)fNtrails_read));
     c4LOG(info, Form("Leads read  %i",(int)fNleads_read));
     c4LOG(info, Form("Matches     %i",(int)fNmatched));
@@ -102,6 +103,10 @@ Bool_t FatimaReader::Init(ext_data_struct_info* a_struct_info)
         }
     }
 
+    for (int i = 0; i<32; i++){
+        last_epoch[i] = 0;
+    }
+
 
     if (fine_time_calibration_read_from_file){
         ReadFineTimeHistosFromFile();
@@ -136,11 +141,11 @@ void FatimaReader::DoFineTimeCalibration(){
         for (int j = 0; j < NChannels; j++) {
             int running_sum = 0;
             int total_counts = fine_time_hits[i][j]->GetEntries();
+            if (total_counts == 0) c4LOG(warning,Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));
             for (int k = 0; k < Nbins_fine_time; k++) {
                 running_sum += fine_time_hits[i][j]->GetBinContent(k+1); //bin 0 is the underflow bin, hence we start at [1,Nbins_fine_time].
                 //no counts?
                 if (total_counts == 0) {
-                    c4LOG(warning,Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));
                     fine_time_calibration_coeffs[i][j][k] = k*TAMEX_fine_time_clock/(double)Nbins_fine_time;
                     continue;
                 }
@@ -210,7 +215,7 @@ void FatimaReader::ReadFineTimeHistosFromFile() {
             TH1I* a = nullptr;
             inputfile->GetObject(Form("fine_time_hits_%i_%i", i, j), a);
             if (a) {
-                c4LOG(info,Form("Accessing i = %i, j = %i",i,j));
+                c4LOG(debug1,Form("Accessing i = %i, j = %i",i,j));
                 fine_time_hits[i][j] = (TH1I*)a->Clone();
                 c4LOG_IF(fatal,fine_time_hits==nullptr,"Failed reading the file for fine time calibration histograms");
                 delete a;
@@ -235,49 +240,76 @@ Bool_t FatimaReader::Read() //do fine time here:
         DoFineTimeCalibration();
         if (fine_time_calibration_save) WriteFineTimeHistosToFile();
     }
-
-
-
+    
     //whiterabbit timestamp:
     wr_t = (((uint64_t)fData->fatima_ts_t[3]) << 48) + (((uint64_t)fData->fatima_ts_t[2]) << 32) + (((uint64_t)fData->fatima_ts_t[1]) << 16) + (uint64_t)(fData->fatima_ts_t[0]);
     
 
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++){ //per board:
         
-        last_epoch = 0;
-        look_ahead_counter = 0;
+        for (int i = 0; i<32; i++) last_epoch[i] = 0;
+        //look_ahead_counter = 0;
         //reset last hits?
 
 
         if (fData->fatima_tamex[it_board_number].event_size == 0) continue; // empty event skip
 
-        //std::cout << fData->fatima_tamex[it_board_number].event_size << std::endl;
-
         for (int it_hits = 0; it_hits < fData->fatima_tamex[it_board_number].event_size/4 - 3 ; it_hits++){ // if no data is written this loop never starts (?)
             //this distinguishes epoch words from time words by checking if the epoch/coarse and fine words are zero. This would potentially be a problem if epoch truly is zero...
 
 
-            //look ahead to grab epoch:
+            /*
+            //look ahead to grab epoch: (i think this is wrong)
             if (last_epoch == 0 && fData->fatima_tamex[it_board_number].time_epochv[it_hits] == 0){
                 look_ahead_counter ++; //keep track of how far ahead you skip.
                 continue;
             }else if (last_epoch == 0 && fData->fatima_tamex[it_board_number].time_epochv[it_hits] != 0){
-                last_epoch = fData->fatima_tamex[it_board_number].time_epochv[it_hits]; //subtract one?
+                last_epoch = fData->fatima_tamex[it_board_number].time_epochv[it_hits] - 1; //subtract one?
                 it_hits = it_hits - look_ahead_counter; // jumps back
-                fNepochwordsread ++;
             }else if (last_epoch != 0 && fData->fatima_tamex[it_board_number].time_epochv[it_hits] != 0){ // next epoch:
                 last_epoch = 0;
                 look_ahead_counter = 0;
                 continue;
             }
+            */
 
-            //should not pass this point if this is an epoch:
-            //if ((fData->fatima_tamex[it_board_number].time_epochv[it_hits] !=0)  | (last_epoch == 0)) {c4LOG(fatal,"Epoch is non zero!");}
+            if (fData->fatima_tamex[it_board_number].time_epochv[it_hits] != 0){
+                    if (it_hits + 1 == fData->fatima_tamex[it_board_number].event_size/4 - 3) c4LOG(fatal, "Data ends on a epoch...");
 
-            int channelid = fData->fatima_tamex[it_board_number].time_channelv[it_hits]; // 1-32
-            if (channelid == 0) continue; // skip channel 0 for now. TODO...
+                    next_channel = fData->fatima_tamex[it_board_number].time_channelv[it_hits+1];
+
+                    if (next_channel == 0) continue;
+                    
+                    last_epoch[next_channel-1] = fData->fatima_tamex[it_board_number].time_epochv[it_hits];
+                    fNepochwordsread++;
+                    continue;
+            }
             
+
+
+            //from this point we should have seen an epoch for channel id.
+            int channelid = fData->fatima_tamex[it_board_number].time_channelv[it_hits]; // 1-32
+
+            if (channelid == 0) continue; // skip channel 0 for now. TODO...
             if (fData->fatima_tamex[it_board_number].time_finev[it_hits] == 0x3FF) continue; // this happens if TAMEX loses the fine time - skip it
+            
+            //c4LOG(info, Form("Channel %i - last_epoch = %i"))
+            
+            //should not pass this point if this is an epoch:
+            if (last_epoch[channelid-1] == 0 || fData->fatima_tamex[it_board_number].time_epochv[it_hits] != 0){
+                //case no epoch seen, this is not an epoch word.
+                
+                //this does indeed seem to happen sometimes - there are hits with no preceeding epoch.
+
+                //c4LOG(info, Form("channel %i , last epoch = %i, and this epoch = %i",channelid, last_epoch[channelid-1], fData->fatima_tamex[it_board_number].time_epochv[it_hits]));
+                //c4LOG(info, Form("coarse: %i, fine %i ",fData->fatima_tamex[it_board_number].time_coarsev[it_hits],fData->fatima_tamex[it_board_number].time_finev[it_hits]));
+                //c4LOG(fatal,"HIT SEEN AT START WITH NO EPOCH!");
+                fNevents_lacking_epoch++;
+                continue;
+            }
+
+
+            
             
             int coarse_T = fData->fatima_tamex[it_board_number].time_coarsev[it_hits];
             //if (channelid%2 == 0) std::cout << channelid << std::endl;
@@ -303,7 +335,6 @@ Bool_t FatimaReader::Read() //do fine time here:
                         last_hits[it_board_number][channelid-1].lead_epoch_counter,
                         last_hits[it_board_number][channelid-1].lead_coarse_T,
                         last_hits[it_board_number][channelid-1].lead_fine_T,
-
                         0,
                         0,
                         0,
@@ -313,13 +344,13 @@ Bool_t FatimaReader::Read() //do fine time here:
 
                     // but keep the recent one
                     last_hits[it_board_number][channelid-1].hit = true;
-                    last_hits[it_board_number][channelid-1].lead_epoch_counter = last_epoch;
+                    last_hits[it_board_number][channelid-1].lead_epoch_counter = last_epoch[channelid-1];
                     last_hits[it_board_number][channelid-1].lead_coarse_T = coarse_T;
                     last_hits[it_board_number][channelid-1].lead_fine_T = fine_T;
                 }
 
                 last_hits[it_board_number][channelid-1].hit = true;
-                last_hits[it_board_number][channelid-1].lead_epoch_counter = last_epoch;
+                last_hits[it_board_number][channelid-1].lead_epoch_counter = last_epoch[channelid-1];
                 last_hits[it_board_number][channelid-1].lead_coarse_T = coarse_T;
                 last_hits[it_board_number][channelid-1].lead_fine_T = fine_T;
 
@@ -337,7 +368,7 @@ Bool_t FatimaReader::Read() //do fine time here:
                     last_hits[it_board_number][channelid-1].lead_coarse_T,
                     last_hits[it_board_number][channelid-1].lead_fine_T,
 
-                    last_epoch,
+                    last_epoch[channelid-1],
                     coarse_T,
                     fine_T,
                     fData->fatima_ts_subsystem_id,

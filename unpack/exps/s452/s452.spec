@@ -2,11 +2,10 @@
 
 #include "../../common/whiterabbit.spec"
 #include "../../common/frs.spec"
-#include "../../common/gsi_febex4.spec" // gsi_febex4.spec
+#include "../../common/gsi_febex4.spec"
 #include "../../common/gsi_tamex4.spec"
 #include "config/setup.hh" // ../../../config/s452
 
-// one by one we will remove all but AIDA...
 external EXT_AIDA();
 
 
