@@ -55,7 +55,7 @@ class bPlastReader : public c4Reader
 
         void WriteFineTimeHistosToFile();
         void ReadFineTimeHistosFromFile();
-        void SetInputFileFineTimeHistos(char * inputfile){
+        void SetInputFileFineTimeHistos(const char* inputfile){
             fine_time_histo_infile = inputfile;
             fine_time_calibration_read_from_file = true;
         };
@@ -64,7 +64,8 @@ class bPlastReader : public c4Reader
             fine_time_calibration_set = false;
             fine_time_calibration_save = false;
         }; //creates and does not save it.
-        void DoFineTimeCalOnline(char * outputfile, int nevents_to_include){
+        
+        void DoFineTimeCalOnline(const char* outputfile, int nevents_to_include){
             fine_time_histo_outfile = outputfile;
             fine_time_calibration_save = true;
             fine_time_calibration_set = false;
@@ -86,8 +87,8 @@ class bPlastReader : public c4Reader
 
         plast_lead_hit_struct ** last_hits;
 
-        uint32_t last_epoch = 0;
-        uint32_t look_ahead_counter = 0;
+        uint32_t last_epoch[32];
+        uint32_t next_channel = 0;
 
         uint64_t wr_t;
 
@@ -99,10 +100,11 @@ class bPlastReader : public c4Reader
         uint64_t fNtrails_read = 0;
         uint64_t fNleads_read = 0;
         uint64_t fNmatched = 0;
+        uint64_t fNevents_lacking_epoch = 0;
 
 
-        char * fine_time_histo_outfile; 
-        char * fine_time_histo_infile; 
+        const char * fine_time_histo_outfile; 
+        const char * fine_time_histo_infile; 
 
         const int Nbins_fine_time = 1024; //number of bins in the fine time - it is a 10 bit word (2^10 = 1024) but seemingly no event is >512...? 
 

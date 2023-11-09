@@ -1,5 +1,5 @@
 #define TRACE_SIZE 10000 // some maximum size?
-#define TRACE_CHANNELS 2 // somehow this needs fixing
+#define TRACE_CHANNELS 16 // this needs to be read from the data stream somehow
 
 
 // Reads the Padding between FEBEX events:
@@ -14,9 +14,8 @@ FEBEX_PADDING()
 }
 
 
-FEBEX_EVENT()
+FEBEX_EVENT(card)
 {
-	MEMBER(DATA8 board_id);
 	MEMBER(DATA32 event_trigger_time_hi); // trigger time
 	MEMBER(DATA32 event_trigger_time_lo); // "..."
     MEMBER(DATA16 hit_pattern);
@@ -36,10 +35,9 @@ FEBEX_EVENT()
         0_7: 0x34;
         8_11: trigger_type;
         12_15: sfpnr;
-        16_23: board_id;
+        16_23: card = MATCH(card);
         24_31: 0xFF;
 
-        ENCODE(board_id, (value = board_id));
     }
 
     UINT32 channel_size NOENCODE
@@ -113,9 +111,8 @@ FEBEX_EVENT()
 }
 
 
-FEBEX_EVENT_TRACES()
+FEBEX_EVENT_TRACES(card)
 {
-    MEMBER(DATA8 board_id);
 	MEMBER(DATA32 event_trigger_time_hi); // trigger time
 	MEMBER(DATA32 event_trigger_time_lo); // "..."
     MEMBER(DATA16 hit_pattern);
@@ -137,10 +134,9 @@ FEBEX_EVENT_TRACES()
         0_7: 0x34;
         8_11: trigger_type;
         12_15: sfpnr;
-        16_23: board_id;
+        16_23: board_id = MATCH(card);
         24_31: 0xFF;
 
-        ENCODE(board_id, (value = board_id));
     }
 
     UINT32 channel_size NOENCODE
@@ -264,6 +260,37 @@ FEBEX_EVENT_TRACES()
             }
         }
     }
-    
+    else if (sumchannel.trigger_type == 3)
+    {   
+
+        // trigger 3 events send only headers
+
+        list (0 <= i < TRACE_CHANNELS)
+        {
+            UINT32 header NOENCODE
+            {
+                0_7: 0x34;
+                8_23: other;
+                24_31: ch_id;
+            }
+
+            UINT32 tracesize NOENCODE
+            {
+                0_31: size;
+            }
+
+            UINT32 tracehead NOENCODE
+            {
+                0_23: other;
+                24_31: head;
+            }
+
+            UINT32 trace_trailer NOENCODE
+            {
+                0_23: notused;
+                24_31: id = RANGE(0xb0,0xbf);
+            }
+        }
+    }
 
 }
