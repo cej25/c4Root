@@ -4,7 +4,7 @@
 #include "../../common/gsi_tamex4.spec"
 #include "../../common/gsi_febex4.spec" // gsi_febex4.spec
 // CEJ: grab setup file from S450 and stick in c4Root/config/s450/...
-#include "../../../config/s452/setup.hh"
+#include "../../../config/s452/setup.hh" 
 
 SUBEVENT(febex_subev)
 {

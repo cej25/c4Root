@@ -7,7 +7,7 @@
 class TClonesArray;
 class EventHeader;
 class bPlastTwinpeaksData;
-class bPlastCalData;
+class bPlastTwinpeaksCalData;
 
 class bPlastRaw2Cal : public FairTask
 {
@@ -16,7 +16,7 @@ class bPlastRaw2Cal : public FairTask
 
         bPlastRaw2Cal(const TString& name, Int_t verbose);
 
-        virtual ~bPlastRaw2Cal();
+        ~bPlastRaw2Cal();
 
         void PrintDetectorMap();
         void PrintDetectorCal();
@@ -25,9 +25,10 @@ class bPlastRaw2Cal : public FairTask
         Bool_t SetDetectorCalFile(TString);
 
 
-        virtual void Exec(Option_t* option);
+        void Exec(Option_t* option);
 
-        virtual void Reset();
+        void FinishEvent();
+        void FinishTask();
 
         virtual void SetParContainers();
 
@@ -44,14 +45,24 @@ class bPlastRaw2Cal : public FairTask
 
 
         bPlastTwinpeaksData* funcal_hit;
-        bPlastCalData* fcal_hit;
+        bPlastTwinpeaksData* funcal_hit_next; // this is the slow or fast hit corresponding to the fast or slow hit :)
+        bPlastTwinpeaksCalData* fcal_hit;
 
         uint16_t detector_id;
-        double channel_energy_cal;
+        
+        double slow_lead_time;
+        double slow_trail_time;
 
+        double fast_lead_time;
+        double fast_trail_time;
+
+        double fast_ToT;
+        double slow_ToT;
+
+        int fNunmatched = 0;
 
         EventHeader * header;
-        Int_t fNEvents;
+        Int_t fNEvents = 0;
 
         //internal status flags for detector map and calibration map:
         Bool_t DetectorMap_loaded = 0;
