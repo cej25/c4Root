@@ -9,9 +9,11 @@ public:
     AidaCalAdcItem();
 
     void Reset();
-    void SetAll(uint64_t st, uint64_t ft, int d, int si, int str, bool r, double i, double e);
+    void SetAll(uint64_t st, uint64_t ft, int f, int c, int d, int si, int str, bool r, double i, double e);
     uint64_t SlowTime() const;
     uint64_t FastTime() const;
+    int Fee() const;
+    int Channel() const;
     int DSSD() const;
     int Side() const;
     int Strip() const;
@@ -24,6 +26,8 @@ public:
 private:
     uint64_t slowTime;
     uint64_t fastTime;
+    int fee;
+    int channel;
     int dssd;
     int side;
     int strip;
@@ -40,6 +44,16 @@ inline uint64_t AidaCalAdcItem::SlowTime() const
 inline uint64_t AidaCalAdcItem::FastTime() const
 {
     return fastTime;
+}
+
+inline int AidaCalAdcItem::Fee() const
+{
+    return fee;
+}
+
+inline int AidaCalAdcItem::Channel() const
+{
+    return channel;
 }
 
 inline int AidaCalAdcItem::DSSD() const

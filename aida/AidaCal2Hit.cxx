@@ -132,6 +132,81 @@ void AidaCal2Hit::Exec(Option_t* option)
             implantHitArray->push_back(hit);
         }
     }
+    else if (decayCalArray->size() > 1)
+    {
+        // Track channel multiplicty 
+        std::vector<int> channels(conf->FEEs() * 64);
+        for (auto& i : *decayCalArray)
+        {
+            channels[(i.Fee() - 1) * 64 +  i.Channel()]++;
+        }
+        int channelM = 0;
+        for (size_t i = 0; i < channels.size(); ++i)
+        {
+            if (channels[i] > 0) ++channelM;
+        }
+
+        if (channelM > conf->PulserThreshold())
+        {
+            // Pulser event - do nothing for now
+            // TODO: Save somewhere for plotting energies?
+            // TODO: Support alignment routine
+            return;
+        }
+
+        if (decayCalArray->size() > conf->HugeThreshold())
+        {
+            // If too many hits (and not a pulser - above)
+            // Ignore the event, front-back matching would take ages
+            return;
+        }
+
+        // Cluster decays
+        auto clusters = ItemsToClusters(*decayCalArray);
+        // List of front-back matched clusters for a physical hit
+        std::vector<std::pair<AidaCluster, AidaCluster>> hits;
+        // Track hit mutliplicty for noise reduction
+        std::unordered_map<aida_coord_t, int, aida_coord_hash> mults;
+
+        for (auto& i : clusters)
+        {
+            // TODO: is this possible in c4Root?
+            if (i.DSSD == -1) continue;
+
+            // Only look at X clusters
+            if (i.Side != conf->DSSD(i.DSSD - 1).XSide) continue;
+
+            // Check all clusters again for a corresponding Y
+            for (auto& j: clusters)
+            {
+                // Must be same DSSD and Y side
+                if (j.DSSD != i.DSSD || j.Side != conf->DSSD(j.DSSD - 1).YSide) continue;
+                // Check gates from config
+                if (std::abs(i.Energy - j.Energy) < conf->FrontBackEnergyL()
+                        && i.IsGoodTime(j, conf->FrontBackWindow()))
+                {
+                    aida_coord_t x{i.DSSD, i.Side, i.Strip};
+                    aida_coord_t y{j.DSSD, j.Side, j.Strip};
+                    mults[x]++;
+                    mults[y]++;
+                    hits.push_back({i, j});
+                }
+            }
+        }
+
+        // Produce hits
+        for (auto& i : hits)
+        {
+            AidaHit hit = ClusterPairToHit(i);
+
+            aida_coord_t x{i.first.DSSD, i.first.Side, i.first.Strip};
+            aida_coord_t y{i.second.DSSD, i.second.Side, i.second.Strip};
+            if (conf->ReduceNoise() && (mults[x] > 1 || mults[y] > 1))
+                continue;
+
+            decayHitArray->push_back(hit);
+        }
+    }
 }
 
 // Perform clustering: adjacent strips firing simultaenously are summed into one cluster
@@ -152,7 +227,7 @@ std::vector<AidaCluster> AidaCal2Hit::ItemsToClusters(std::vector<AidaCalAdcItem
             continue;
 
         bool added = false;
-        AidaCluster* cluster;
+        AidaCluster* cluster = nullptr;
         // Try to add the adc item to an existing cluster
         // Weird loop (not for) because we can combine clusters
         auto it = std::begin(clusters);

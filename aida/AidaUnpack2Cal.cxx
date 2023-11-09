@@ -110,14 +110,16 @@ void AidaUnpack2Cal::Exec(Option_t* option)
     // Split into implant and decay arrays, check threshold for decays
     if (range) {
       auto& cal = implantCalArray->emplace_back();
-      cal.SetAll(unpack.SlowTime(), unpack.FastTime(), dssd, side, strip,
+      cal.SetAll(unpack.SlowTime(), unpack.FastTime(), unpack.Fee(),
+          unpack.Channel(), dssd, side, strip,
           range, intensity, energy);
     }
     else {
       double thrs = conf->GetDssdStripThreshold(dssd - 1, side == - 1 ? 0 : 1, strip);
       if (thrs >= 0 && energy > thrs) {
         auto& cal = decayCalArray->emplace_back();
-        cal.SetAll(unpack.SlowTime(), unpack.FastTime(), dssd, side, strip,
+        cal.SetAll(unpack.SlowTime(), unpack.FastTime(), unpack.Fee(),
+            unpack.Channel(), dssd, side, strip,
             range, intensity, energy);
       }
     }
