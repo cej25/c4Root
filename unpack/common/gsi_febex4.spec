@@ -1,6 +1,13 @@
 #define TRACE_SIZE 10000 // some maximum size?
 #define TRACE_CHANNELS 16 // this needs to be read from the data stream somehow
 
+FEBEX_BAD_EVENT()
+{
+    UINT32 bad NOENCODE
+    {
+        0_31: 0xBAD00BAD;
+    }
+}
 
 // Reads the Padding between FEBEX events:
 FEBEX_PADDING()
