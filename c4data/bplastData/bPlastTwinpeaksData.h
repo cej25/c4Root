@@ -1,15 +1,15 @@
-#ifndef FatimaTwinpeaksData_H
-#define FatimaTwinpeaksData_H
+#ifndef bPlastTwinpeaksData_H
+#define bPlastTwinpeaksData_H
 
 #include "TObject.h"
 
-class FatimaTwinpeaksData : public TObject
+class bPlastTwinpeaksData : public TObject
 {
     public:
         // Default Constructor
-        FatimaTwinpeaksData();
+        bPlastTwinpeaksData();
 
-        FatimaTwinpeaksData(
+        bPlastTwinpeaksData(
         uint16_t board_id,
         uint32_t ch_ID,
         uint32_t lead_epoch_counter,
@@ -23,7 +23,7 @@ class FatimaTwinpeaksData : public TObject
         uint64_t wr_t);
 
         // Destructor
-        virtual ~FatimaTwinpeaksData() {}
+        virtual ~bPlastTwinpeaksData() {}
 
         // Getters
 
@@ -77,7 +77,7 @@ class FatimaTwinpeaksData : public TObject
     
 
     public:
-        ClassDef(FatimaTwinpeaksData, 1);
+        ClassDef(bPlastTwinpeaksData, 1);
 };
 
 #endif

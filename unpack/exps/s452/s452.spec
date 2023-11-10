@@ -9,9 +9,6 @@
 // one by one we will remove all but AIDA...
 external EXT_AIDA();
 
-external EXT_FATIMA_VME();
-external EXT_FATIMA_TAMEX();
-
 
 DUMMY()
 {
@@ -40,32 +37,29 @@ SUBEVENT(febex_subev)
     }
 }
 
-SUBEVENT(fatima_vme_subev)
-{
-    
-    ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1500);
-    external data = EXT_FATIMA_VME();
-    
-}
 
 SUBEVENT(fatima_tamex_subev)
 {
-  
-    ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1600);
-    external data = EXT_FATIMA_TAMEX();
-
-    /*trigger_window = TAMEX_WINDOW();
+    ts = TIMESTAMP_WHITERABBIT(id=0x500);
+    trigger_window = TAMEX4_HEADER();
     select several 
     {
-        padding = TAMEX_PADDING();
+        padding = TAMEX4_PADDING();
     }
-    list (0 <= index < 4)
+    select several
     {
-        tamex = TAMEX_DATA();
-    }*/
-  
+        tamex[0] = TAMEX4_SFP(sfp=0,card=0);
+        tamex[1] = TAMEX4_SFP(sfp=0,card=1);
+        tamex[2] = TAMEX4_SFP(sfp=0,card=2);
+        tamex[3] = TAMEX4_SFP(sfp=0,card=3);
+        tamex[4] = TAMEX4_SFP(sfp=0,card=4);
+        tamex[5] = TAMEX4_SFP(sfp=0,card=5);
+        tamex[6] = TAMEX4_SFP(sfp=0,card=6);
+        tamex[7] = TAMEX4_SFP(sfp=0,card=7);
+        tamex[8] = TAMEX4_SFP(sfp=0,card=8);
+    }  
 }
-
+/*
 SUBEVENT(plastic_subev)
 {   
     if (BPLAST_USED)
@@ -104,7 +98,7 @@ SUBEVENT(plastic_subev)
         }
     }
 
-}
+}*/
 
 SUBEVENT(frs_whiterabbit_subev)
 {

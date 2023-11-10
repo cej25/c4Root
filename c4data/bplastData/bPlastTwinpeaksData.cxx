@@ -1,6 +1,6 @@
-#include "FatimaTwinpeaksData.h"
+#include "bPlastTwinpeaksData.h"
 
-FatimaTwinpeaksData::FatimaTwinpeaksData()
+bPlastTwinpeaksData::bPlastTwinpeaksData()
     : 
     fboard_id(0),
     fch_ID(0),
@@ -15,7 +15,7 @@ FatimaTwinpeaksData::FatimaTwinpeaksData()
 {
 }
 
-FatimaTwinpeaksData::FatimaTwinpeaksData(
+bPlastTwinpeaksData::bPlastTwinpeaksData(
         uint16_t board_id,
         uint32_t ch_ID,
         uint32_t lead_epoch_counter,
@@ -41,4 +41,4 @@ FatimaTwinpeaksData::FatimaTwinpeaksData(
 {
 }
 
-ClassImp(FatimaTwinpeaksData)
+ClassImp(bPlastTwinpeaksData)
