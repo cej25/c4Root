@@ -159,8 +159,8 @@ Bool_t FatimaRaw2Cal::SetDetectorCalFile(TString filename){
             cal_map_file >> rdetector_id >> a1 >> a0;
             std::pair<double,double> cals = {a0,a1};
 
-            auto it = cal_map_file.find(rdetector_id);
-            if (it != cal_map_file.end()) c4LOG(fatal,Form("Detector calibration not unique. Multiple entries of (detector id = %i)",rdetector_id));
+            auto it = calibration_coeffs.find(rdetector_id);
+            if (it != calibration_coeffs.end()) c4LOG(fatal,Form("Detector calibration not unique. Multiple entries of (detector id = %i)",rdetector_id));
 
             calibration_coeffs.insert(std::pair<int,std::pair<double,double>>{rdetector_id,cals});
             cal_map_file.ignore(256,'\n');
