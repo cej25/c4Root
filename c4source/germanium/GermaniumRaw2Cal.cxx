@@ -9,10 +9,10 @@
 // c4
 #include "GermaniumFebexData.h"
 #include "GermaniumCalData.h"
+#include "TimeMachineData.h"
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
-
 #include "GermaniumRaw2Cal.h"
 
 GermaniumRaw2Cal::GermaniumRaw2Cal()
@@ -21,7 +21,8 @@ fNEvents(0),
 header(nullptr),
 fOnline(kFALSE),
 funcal_data(new TClonesArray("GermaniumFebexData")),
-fcal_data(new TClonesArray("GermaniumCalData"))
+fcal_data(new TClonesArray("GermaniumCalData")),
+ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
 }
 
@@ -32,7 +33,8 @@ GermaniumRaw2Cal::GermaniumRaw2Cal(const TString& name, Int_t verbose)
     header(nullptr),
     fOnline(kFALSE),
     funcal_data(new TClonesArray("GermaniumFebexData")),
-    fcal_data(new TClonesArray("GermaniumCalData"))
+    fcal_data(new TClonesArray("GermaniumCalData")),
+    ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
 }
 
@@ -40,8 +42,15 @@ GermaniumRaw2Cal::~GermaniumRaw2Cal(){
     c4LOG(info, "Deleting GermaniumRaw2Cal task");
     if (funcal_data) delete funcal_data;
     if (fcal_data) delete fcal_data;
+    if (ftime_machine_array) delete ftime_machine_array;
 }
 
+void GermaniumRaw2Cal::SetTimeMachineChannels(int ftime_machine_undelayed_detector_id, int ftime_machine_undelayed_crystal_id, int ftime_machine_delayed_detector_id, int ftime_machine_delayed_crystal_id){
+    time_machine_delayed_detector_id=ftime_machine_delayed_detector_id;
+    time_machine_undelayed_detector_id=ftime_machine_undelayed_detector_id;
+    time_machine_delayed_crystal_id=ftime_machine_delayed_crystal_id;
+    time_machine_undelayed_crystal_id=ftime_machine_undelayed_crystal_id;
+} //AFTER mapping.
 
 void GermaniumRaw2Cal::SetParContainers()
 {
@@ -71,6 +80,7 @@ InitStatus GermaniumRaw2Cal::Init(){
     */
 
     FairRootManager::Instance()->Register("GermaniumCalData", "Germanium Cal Data", fcal_data, !fOnline);
+    FairRootManager::Instance()->Register("GermaniumTimeMachineData", "Time Machine Data", ftime_machine_array, !fOnline);
     
     fcal_data->Clear();
     
@@ -143,7 +153,7 @@ Bool_t GermaniumRaw2Cal::SetDetectorCalFile(TString filename){
         }
     }
     DetectorCal_loaded = 1;
-    cal_map_file.close();  
+    cal_map_file.close();
     return 0; 
 };
 
@@ -196,12 +206,23 @@ void GermaniumRaw2Cal::Exec(Option_t* option){
                     double a1 = result_find_cal->second.second;
                     channel_energy_cal = a0 + a1*(double) funcal_hit->Get_channel_energy();
                     }else{
-                        c4LOG(fatal, "Detector Calibrations not set - please set this using SetCalibrationMap to use the Cal Task.");
+                        //c4LOG(fatal, "Detector Calibrations not set - please set this using SetCalibrationMap to use the Cal Task.");
+                        channel_energy_cal = funcal_hit->Get_channel_energy();
+                        continue;
                     }
                 }
             }
             else{ //no map and cal: ->
                 c4LOG(fatal, "Detector Mapping not set - please set this using SetDetectorMap to use the Cal Task.");
+            }
+
+            if (detector_id == time_machine_delayed_detector_id & crystal_id == time_machine_delayed_crystal_id){
+                new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData(0,funcal_hit->Get_channel_trigger_time(),funcal_hit->Get_wr_subsystem_id(),funcal_hit->Get_wr_t());
+                continue;
+            }
+            else if (detector_id == time_machine_undelayed_detector_id & crystal_id == time_machine_undelayed_crystal_id){
+                new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData(funcal_hit->Get_channel_trigger_time(),0,funcal_hit->Get_wr_subsystem_id(),funcal_hit->Get_wr_t());
+                continue;
             }
 
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) GermaniumCalData(
@@ -219,10 +240,12 @@ void GermaniumRaw2Cal::Exec(Option_t* option){
 }
 
 
-void GermaniumRaw2Cal::Reset(){
+void GermaniumRaw2Cal::FinishEvent(){
+    //THIS FUNCTION IS EXTREMELY IMPORTANT!!!!
     // reset output array
     funcal_data->Clear();
     fcal_data->Clear();
+    ftime_machine_array->Clear();
 };
 
 
