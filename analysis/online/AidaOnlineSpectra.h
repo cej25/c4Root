@@ -1,6 +1,7 @@
 #ifndef AidaOnlineSpectra_H
 #define AidaOnlineSpectra_H
 
+#include "AidaCalData.h"
 #include "AidaData.h"
 #include "AidaHitData.h"
 #include "FairTask.h"
@@ -10,6 +11,7 @@
 class TClonesArray;
 class EventHeader;
 class TCanvas;
+class TFolder;
 class TH1F;
 class TH2F;
 
@@ -40,7 +42,10 @@ class AidaOnlineSpectra : public FairTask
         std::vector<AidaUnpackAdcItem> const* adcArray;
         std::vector<AidaUnpackFlowItem> const* flowArray;
         std::vector<AidaUnpackScalerItem> const* scalerArray;
+        std::vector<AidaCalAdcItem> const* implantCalArray;
+        std::vector<AidaCalAdcItem> const* decayCalArray;
         std::vector<AidaHit> const* implantHitArray;
+        std::vector<AidaHit> const* decayHitArray;
 
         // ranges
         //Double_t
@@ -51,12 +56,29 @@ class AidaOnlineSpectra : public FairTask
         // Canvas
         //TCanvas* cSumTime; // channel 1 out of 28 for now?
         //TCanvas* cEnergySpectraTest;
+        
+        // Folders
+        TFolder* aidaFolder;
+        TFolder* implantFolder;
+        TFolder* stoppedImplantFolder;
+        TFolder* decayFolder;
+        std::vector<TFolder*> implantDssdFolder;
+        std::vector<TFolder*> stoppedImplantDssdFolder;
+        std::vector<TFolder*> decayDssdFolder;
 
         // Histograms
         //TH1F* fh1_SumTime;
         //TH1F* fh1_EnergySpectraTest;
         //std::vector<std::array<std::array<TH1F*, 2>, 64>> fhAdcs;
-        TH2F* hit1;
+        std::vector<TH2F*> h_implant_strip_xy;
+        std::vector<TH2F*> h_implant_pos_xy;
+        std::vector<TH1F*> h_implant_e;
+        std::vector<TH2F*> h_implant_e_xy;
+        std::vector<TH2F*> h_implant_strip_1d_energy;
+        std::vector<TH2F*> h_implant_strip_1d;
+        std::vector<TH2F*> h_implant_x_ex;
+        std::vector<TH2F*> h_implant_y_ey;
+        std::vector<TH2F*> h_implant_strip_xy_stopped;
 
     public:
         ClassDef(AidaOnlineSpectra, 1)

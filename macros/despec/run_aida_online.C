@@ -1,7 +1,6 @@
 typedef struct EXT_STR_h101_t
 {   
     EXT_STR_h101_aida_onion_t aida;
-    EXT_STR_h101_GE_FEBEX_onion_t germanium; // why can't it find this :()
 } EXT_STR_h101;
 
 void run_aida_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId = 1)
@@ -21,7 +20,7 @@ void run_aida_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
 
-    TString filename = "~/lustre/gamma/DESPEC_S452_FILES/newts/S452f103_*.lmd";
+    TString filename = "~/lustre/gamma/DESPEC_S452_FILES/newts/S452f103_0001.lmd";
     //TString filename = "trans://lxg1257";
     TString outputpath = "run_online_aida_test";
     TString outputFileName = outputpath + ".root";
@@ -55,9 +54,6 @@ void run_aida_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     AidaReader* unpackaida = new AidaReader((EXT_STR_h101_aida_onion*)&ucesb_struct.aida, offsetof(EXT_STR_h101, aida));
 
     // Add readers
-    //unpackgermanium->SetOnline(false);
-    //source->AddReader(unpackgermanium);
-
     unpackaida->SetOnline(true);
     source->AddReader(unpackaida);
 
@@ -77,8 +73,6 @@ void run_aida_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
 
 
     // Add analysis task
-    //GermaniumOnlineSpectra* online = new GermaniumOnlineSpectra();
-    //run->AddTask(online);
     AidaOnlineSpectra* aidaOnline = new AidaOnlineSpectra();
     run->AddTask(aidaOnline);
 

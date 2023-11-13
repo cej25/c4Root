@@ -21,8 +21,9 @@
 #include "THttpServer.h"
 #include "TMath.h"
 #include "TRandom.h"
+#include <sstream>
 
-AidaOnlineSpectra::AidaOnlineSpectra()
+AidaOnlineSpectra::AidaOnlineSpectra() : AidaOnlineSpectra("AidaOnline")
 {
 }
 
@@ -58,26 +59,98 @@ InitStatus AidaOnlineSpectra::Init()
 
     FairRunOnline* run = FairRunOnline::Instance();
     run->GetHttpServer()->Register("", this);
+    run->GetHttpServer()->RegisterCommand("Reset_Aida_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
+    // Raw data
     adcArray = mgr->InitObjectAs<decltype(adcArray)>("AidaAdcData");
     c4LOG_IF(fatal, !adcArray, "Branch AidaAdcData not found!");
-    //flowArray = (flowArray))mgr->GetObject("AidaFlowData");
-    //c4LOG_IF(fatal, !adcArray, "Branch AidaFlowData not found!");
-    //scalerArray = (decltype(scalerArray))mgr->GetObject("AidaScalerData");
-    //c4LOG_IF(fatal, !adcArray, "Branch AidaScalerData not found!");
+    flowArray = mgr->InitObjectAs<decltype(flowArray)>("AidaFlowData");
+    c4LOG_IF(fatal, !adcArray, "Branch AidaFlowData not found!");
+    scalerArray = mgr->InitObjectAs<decltype(scalerArray)>("AidaScalerData");
+    c4LOG_IF(fatal, !adcArray, "Branch AidaScalerData not found!");
 
+    // Calibrated data
+    implantCalArray = mgr->InitObjectAs<decltype(implantCalArray)>("AidaImplantCalAdcData");
+    c4LOG_IF(fatal, !implantCalArray, "Branch AidaImplantCalAdcData not found!");
+    decayCalArray = mgr->InitObjectAs<decltype(decayCalArray)>("AidaDecayCalAdcData");
+    c4LOG_IF(fatal, !decayCalArray, "Branch AidaDecayCalAdcData not found!");
+
+    // Hit data
     implantHitArray = mgr->InitObjectAs<decltype(implantHitArray)>("AidaImplantHits");
+    c4LOG_IF(fatal, !implantHitArray, "Branch AidaImplantHits not found!");
+    decayHitArray = mgr->InitObjectAs<decltype(decayHitArray)>("AidaDecayHits");
+    c4LOG_IF(fatal, !decayHitArray, "Branch AidaDecayHits not found!");
 
-    TFolder *aidaFold = new TFolder("Aida", "Aida");
+    // Aida configuration
     TAidaConfiguration const* conf = TAidaConfiguration::GetInstance();
-    hit1 = new TH2F("dssd1", "dssd1", 386, 0, 386, 128, 0, 128);
 
-    run->AddObject(aidaFold);
+    // Create folders 
+    aidaFolder = new TFolder("AIDA", "AIDA");
+    run->AddObject(aidaFolder);
 
-    run->GetHttpServer()->RegisterCommand("Reset_Aida_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
+    implantFolder = new TFolder("Implants", "Implants");
+    stoppedImplantFolder = new TFolder("Stopped_Implants", "Stopped Implants");
+    decayFolder = new TFolder("Decays", "Decays");
+    aidaFolder->Add(implantFolder);
+    aidaFolder->Add(stoppedImplantFolder);
+    aidaFolder->Add(decayFolder);
+
+    int xstrips = conf->Wide() ? 386 : 128;
+    double xmax = conf->Wide() ? 113.4 : 37.8;
+
+    implantDssdFolder.resize(conf->DSSDs());
+    stoppedImplantDssdFolder.resize(conf->DSSDs());
+    decayDssdFolder.resize(conf->DSSDs());
+
+    h_implant_strip_xy.resize(conf->DSSDs());
+    h_implant_pos_xy.resize(conf->DSSDs());
+    h_implant_e.resize(conf->DSSDs());
+
+    for (int i = 0; i < conf->DSSDs(); i++)
+    {
+        std::stringstream name;
+        std::stringstream title;
+        name << "DSSD" << (i + 1);
+        implantDssdFolder[i] = new TFolder(name.str().c_str(), name.str().c_str());
+        implantDssdFolder[i]->SetOwner(true);
+        implantFolder->Add(implantDssdFolder[i]);
+        stoppedImplantDssdFolder[i] = new TFolder(name.str().c_str(), name.str().c_str());
+        stoppedImplantFolder->Add(stoppedImplantDssdFolder[i]);
+        decayDssdFolder[i] = new TFolder(name.str().c_str(), name.str().c_str());
+        decayFolder->Add(decayDssdFolder[i]);
+
+        name.str("");
+        title.str("");
+        name << "aida_implants_d" << (i + 1) << "_implants_strip_xy";
+        title << "DSSD " << (i + 1) << " implant hit pattern";
+        h_implant_strip_xy[i] = new TH2F(name.str().c_str(), title.str().c_str(),
+                xstrips, 0, xstrips, 128, 0, 128);
+        h_implant_strip_xy[i]->GetXaxis()->SetTitle("X strip");
+        h_implant_strip_xy[i]->GetYaxis()->SetTitle("Y strip");
+        implantDssdFolder[i]->Add(h_implant_strip_xy[i]);
+
+        name.str("");
+        title.str("");
+        name << "aida_implants_d" << (i + 1) << "_implants_pos_xy";
+        title << "DSSD " << (i + 1) << " implant position";
+        h_implant_pos_xy[i] = new TH2F(name.str().c_str(), title.str().c_str(),
+                xstrips, -xmax, xmax, 128, -37.8, 37.8);
+        h_implant_pos_xy[i]->GetXaxis()->SetTitle("X position/mm");
+        h_implant_pos_xy[i]->GetYaxis()->SetTitle("Y position/mm");
+        implantDssdFolder[i]->Add(h_implant_pos_xy[i]);
+
+        name.str("");
+        title.str("");
+        name << "aida_implants_d" << (i + 1) << "_implants_e";
+        title << "DSSD " << (i + 1) << "implant energy";
+        h_implant_e[i] = new TH1F(name.str().c_str(), title.str().c_str(),
+                2000, 0, 20000);
+        h_implant_e[i]->GetXaxis()->SetTitle("Implant Energy/MeV");
+        implantDssdFolder[i]->Add(h_implant_e[i]);
+    }
 
     return kSUCCESS;
 }
@@ -85,6 +158,7 @@ InitStatus AidaOnlineSpectra::Init()
 void AidaOnlineSpectra::Reset_Histo()
 {
     c4LOG(info, "");
+    for (auto& h : h_implant_strip_xy) h->Clear();
 }
 
 void AidaOnlineSpectra::Exec(Option_t* option)
@@ -104,9 +178,9 @@ void AidaOnlineSpectra::Exec(Option_t* option)
     //
     for (auto const& hit : *implantHitArray)
     {
-        if (hit.DSSD == 1) {
-            hit1->Fill(hit.StripX, hit.StripY);
-        }
+        h_implant_strip_xy[hit.DSSD - 1]->Fill(hit.StripX, hit.StripY);
+        h_implant_pos_xy[hit.DSSD - 1]->Fill(hit.PosX, hit.PosY);
+        h_implant_e[hit.DSSD - 1]->Fill(hit.Energy);
     }
     fNEvents += 1;
 }
