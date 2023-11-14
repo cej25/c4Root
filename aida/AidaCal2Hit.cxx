@@ -86,9 +86,11 @@ void AidaCal2Hit::Exec(Option_t* option)
         // Cluster events from adjacent strips
         auto clusters = ItemsToClusters(*implantCalArray);
         // List of front-back matched clusters for a physical hit
-        std::vector<std::pair<AidaCluster, AidaCluster>> hits;
+        static std::vector<std::pair<AidaCluster, AidaCluster>> hits;
         // Stopped tracking: count implants in each DSSD
-        std::vector<int> counts(conf->DSSDs(), 0);
+        static std::vector<int> counts(conf->DSSDs(), 0);
+        hits.clear();
+        std::fill(counts.begin(), counts.end(), 0);
         int max_dssd = 0;
 
         // Check all (X) clusters
@@ -134,8 +136,9 @@ void AidaCal2Hit::Exec(Option_t* option)
     }
     else if (decayCalArray->size() > 1)
     {
-        // Track channel multiplicty 
-        std::vector<int> channels(conf->FEEs() * 64);
+        // Track channel multiplicty
+        static std::vector<int> channels(conf->FEEs() * 64);
+        std::fill(channels.begin(), channels.end(), 0);
         for (auto& i : *decayCalArray)
         {
             channels[(i.Fee() - 1) * 64 +  i.Channel()]++;
@@ -164,9 +167,11 @@ void AidaCal2Hit::Exec(Option_t* option)
         // Cluster decays
         auto clusters = ItemsToClusters(*decayCalArray);
         // List of front-back matched clusters for a physical hit
-        std::vector<std::pair<AidaCluster, AidaCluster>> hits;
+        static std::vector<std::pair<AidaCluster, AidaCluster>> hits;
         // Track hit mutliplicty for noise reduction
-        std::unordered_map<aida_coord_t, int, aida_coord_hash> mults;
+        static std::unordered_map<aida_coord_t, int, aida_coord_hash> mults;
+        hits.clear();
+        mults.clear();
 
         for (auto& i : clusters)
         {
@@ -213,9 +218,12 @@ void AidaCal2Hit::Exec(Option_t* option)
 std::vector<AidaCluster> AidaCal2Hit::ItemsToClusters(std::vector<AidaCalAdcItem> const& items)
 {
     // Track strip multiplicity to reject rapid-fire strips
-    std::unordered_map<aida_coord_t, int, aida_coord_hash> stripm;
+    static std::unordered_map<aida_coord_t, int, aida_coord_hash> stripm;
 
-    std::vector<AidaCluster> clusters;
+    static std::vector<AidaCluster> clusters;
+
+    stripm.clear();
+    clusters.clear();
     for (auto& i : items)
     {
         // TODO: is this possible in c4Root?
@@ -296,8 +304,8 @@ std::vector<AidaCluster> AidaCal2Hit::ItemsToClusters(std::vector<AidaCalAdcItem
 AidaHit AidaCal2Hit::ClusterPairToHit(std::pair<AidaCluster, AidaCluster> const& i)
 {
     // Debuggy sanity checks on the pair
-    c4LOG_IF(error, i.first.DSSD != i.second.DSSD, "Cluster pair of mismatched DSSDS");
-    c4LOG_IF(error, i.first.Side == i.second.Side, "Cluster pair not of X and Y");
+    //c4LOG_IF(error, i.first.DSSD != i.second.DSSD, "Cluster pair of mismatched DSSDS");
+    //c4LOG_IF(error, i.first.Side == i.second.Side, "Cluster pair not of X and Y");
 
     AidaHit hit;
     hit.DSSD = i.first.DSSD;
