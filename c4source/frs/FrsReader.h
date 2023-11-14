@@ -44,8 +44,9 @@ class FrsReader : public c4Reader
         TClonesArray* fArray;
 
         std::vector<FrsUnpackTpatItem>* tpatArray;
-        std::vector<FrsUnpackV830>* v830Array;
-        std::vector<FrsUnpackV7X5>* v7X5Array;
+        std::vector<FrsUnpackFrsItem>* frsArray;
+       // std::vector<FrsUnpackV830>* v830Array;
+       // std::vector<FrsUnpackV7X5>* v7X5Array;
 
     
     public:

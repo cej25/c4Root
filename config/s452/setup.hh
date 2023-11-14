@@ -4,9 +4,9 @@
 // general
 #define NO_UINT64 1 // define until uint64 unpacking is supported 
 // used systems
-#define FRS_USED 1
+#define FRS_USED 0
 #define GERMANIUM_USED 0
-#define BPLAST_USED 0
+#define BPLAST_USED 1
 #define FATIMA_USED 0
 #define AIDA_USED 0
 #define WR_USED 1
@@ -39,10 +39,10 @@
 // this never goes over 3 for test file. 
 #define PLASTIC_MAX_ITER 100
 // 0 for regular tamex, 1 for twinpeaks
-#define IS_PLASTIC_TWINPEAKS 0
-#define BPLAST_TAMEX_MODULES 3 // 9 in S450? 3 in S452
+#define IS_PLASTIC_TWINPEAKS 1
+#define BPLAST_TAMEX_MODULES 9 // 9 in S450? 3 in S452
 #define PLASTIC_TWINPEAKS_MAX_ITER 200 
-#define BPLAST_CHAN_PER_DET 16 // S452
+#define BPLAST_CHAN_PER_DET 64 // S452
 // is this redundant?
 #define BPLAST_TAMEX_CHANNELS 16
 
