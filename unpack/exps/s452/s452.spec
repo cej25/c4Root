@@ -6,7 +6,6 @@
 #include "../../common/gsi_tamex4.spec"
 #include "config/setup.hh" // ../../../config/s452
 
-// one by one we will remove all but AIDA...
 external EXT_AIDA();
 
 
