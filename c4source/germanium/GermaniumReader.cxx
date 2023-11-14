@@ -60,12 +60,12 @@ Bool_t GermaniumReader::Read()
 
     if(!fData) return kTRUE;
     
+    //whiterabbit timestamp:
     wr_t = (((uint64_t)fData->germanium_ts_t[3]) << 48) + (((uint64_t)fData->germanium_ts_t[2]) << 32) + (((uint64_t)fData->germanium_ts_t[1]) << 16) + (uint64_t)(fData->germanium_ts_t[0]);
     
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number ++){
         //since the febex card has a 100MHz clock which timestamps events.
         event_trigger_time_long = (((uint64_t)(fData->germanium_data[it_board_number].event_trigger_time_hi) << 32) + (fData->germanium_data[it_board_number].event_trigger_time_lo))*10;
-        //whiterabbit timestamp:
 
         if (WriteZeroMultEvents & (fData->germanium_data[it_board_number].num_channels_fired == 0)){ 
             // Write if flag is true. See setter to change behaviour.
