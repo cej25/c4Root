@@ -140,6 +140,8 @@ void GermaniumOnlineSpectra::Exec(Option_t* option)
             GermaniumCalData* hit = (GermaniumCalData*)fHitGe->At(ihit);
             if (!hit) continue;
 
+            if (hit->Get_detector_id() > 1) continue;
+
             h1_energy[hit->Get_crystal_id()+hit->Get_detector_id()*NCrystals]->Fill(hit->Get_channel_energy());
             h1_time[hit->Get_crystal_id()+hit->Get_detector_id()*NCrystals]->Fill(hit->Get_channel_trigger_time());
 
@@ -148,6 +150,7 @@ void GermaniumOnlineSpectra::Exec(Option_t* option)
                     GermaniumCalData * hit2 = (GermaniumCalData*)fHitGe->At(ihit2);
 
                     if (!hit2) continue;
+                    if (hit2->Get_detector_id() > 1) continue;
             
                     if (TMath::Abs(hit->Get_channel_trigger_time() - hit2->Get_channel_trigger_time()<20)) {
                         if ((hit->Get_detector_id() == 1) | (hit->Get_detector_id() == 0)) h1_energy_mult2[hit->Get_crystal_id()+hit->Get_detector_id()*NCrystals]->Fill(hit->Get_channel_energy());

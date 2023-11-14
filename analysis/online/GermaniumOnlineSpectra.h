@@ -59,7 +59,7 @@ class GermaniumOnlineSpectra : public FairTask
         TH1F * h1_time[100];
 
         const int NCrystals = 7;
-        const int NDetectors = 12;
+        const int NDetectors = 2;
 
 
     public:
