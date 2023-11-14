@@ -20,7 +20,6 @@ ${C4ROOT_SOURCE_DIR}/analysis
 ${C4ROOT_SOURCE_DIR}/analysis/pars
 ${C4ROOT_SOURCE_DIR}/analysis/offline
 ${C4ROOT_SOURCE_DIR}/analysis/online
-${C4ROOT_SOURCE_DIR}/aida
 )
 
 include_directories( ${INCLUDE_DIRECTORIES})

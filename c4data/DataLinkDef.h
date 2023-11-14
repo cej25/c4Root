@@ -43,4 +43,6 @@
 #pragma link C++ class AidaHit+;
 #pragma link C++ class std::vector<AidaHit>+;
 
+#pragma link C++ class TAidaConfiguration+;
+
 #endif

@@ -257,7 +257,6 @@ if(MODULE)
 endif(MODULE)
 
 if(NOT MODULE)
-    add_subdirectory(aida)
     add_subdirectory(c4base)
     if(WITH_UCESB)
         add_subdirectory(c4source)
