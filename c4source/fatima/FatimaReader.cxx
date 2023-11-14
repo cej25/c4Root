@@ -164,7 +164,7 @@ void FatimaReader::DoFineTimeCalibration(){
         for (int j = 0; j < NChannels; j++) {
             int running_sum = 0;
             int total_counts = fine_time_hits[i][j]->GetEntries();
-            if (total_counts == 0) c4LOG(warning,Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));
+            if (total_counts == 0) {c4LOG(warning,Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));}
 
             for (int k = 0; k < Nbins_fine_time; k++) {
                 running_sum += fine_time_hits[i][j]->GetBinContent(k+1); //bin 0 is the underflow bin, hence we start at [1,Nbins_fine_time].
@@ -242,11 +242,11 @@ void FatimaReader::ReadFineTimeHistosFromFile() {
     }
 
 
-    if (!fine_time_hits) c4LOG(fatal,"fine_time_hits not declared.");
+    if (!fine_time_hits) {c4LOG(fatal,"fine_time_hits not declared.");}
     for (int i = 0; i < NBoards; i++) {
-        if (!fine_time_hits[i]) c4LOG(fatal,"fine_time_hits[i] not declared.");
+        if (!fine_time_hits[i]) {c4LOG(fatal,"fine_time_hits[i] not declared.");}
         for (int j = 0; j < NChannels; j++) {
-            if (fine_time_hits[i][j] != nullptr) c4LOG(fatal,"fine_time_hits[i][j] not declared.");
+            if (fine_time_hits[i][j] != nullptr) {c4LOG(fatal,"fine_time_hits[i][j] not declared.");}
             TH1I* a = nullptr;
             inputfile->GetObject(Form("fine_time_hits_%i_%i", i, j), a);
             if (a) {
@@ -304,7 +304,7 @@ Bool_t FatimaReader::Read() //do fine time here:
 
 
             if (fData->fatima_tamex[it_board_number].time_epochv[it_hits] != 0){
-                    if (it_hits + 1 == fData->fatima_tamex[it_board_number].event_size/4 - 3) c4LOG(fatal, "Data ends on a epoch...");
+                    if (it_hits + 1 == fData->fatima_tamex[it_board_number].event_size/4 - 3) {c4LOG(fatal, "Data ends on a epoch...");}
 
                     next_channel = fData->fatima_tamex[it_board_number].time_channelv[it_hits+1];
 

@@ -88,9 +88,6 @@ InitStatus GermaniumRaw2Cal::Init(){
     FairRootManager::Instance()->Register("GermaniumTimeMachineData", "Time Machine Data", ftime_machine_array, !fOnline);
     
     fcal_data->Clear();
-    
-    //memset(funcal_data, 0, sizeof *funcal_data);
-
 
     return kSUCCESS;
 }
