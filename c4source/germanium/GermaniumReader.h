@@ -50,7 +50,7 @@ class GermaniumReader : public c4Reader
         TClonesArray* fArray;
 
 
-        const int NBoards = 4;
+        const int NBoards = 4; //change
 
         uint64_t event_trigger_time_long;
         uint64_t channel_trigger_time_long;
