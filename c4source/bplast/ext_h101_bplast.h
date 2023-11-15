@@ -26,7 +26,7 @@ typedef          int  int32_t;
  * Plain structure (layout as ntuple/root file):
  */
 
-typedef struct EXT_STR_h101_t
+typedef struct EXT_STR_h101_BPLAST_t
 {
   /* UNPACK */
   uint32_t plastic_tamex1event_size /* [-1,-1] */;
@@ -72,7 +72,7 @@ typedef struct EXT_STR_h101_t
   uint32_t plastic_trigger_window_pre_trig_ns /* [0,64] */;
   uint32_t plastic_trigger_window_pre_trig_nsv[64 EXT_STRUCT_CTRL(plastic_trigger_window_pre_trig_ns)] /* [0,65535] */;
 
-} EXT_STR_h101;
+} EXT_STR_h101_BPLAST;
 
 /********************************************************
  *
@@ -80,7 +80,7 @@ typedef struct EXT_STR_h101_t
  * recovered (recommended):
  */
 
-typedef struct EXT_STR_h101_onion_t
+typedef struct EXT_STR_h101_BPLAST_onion_t
 {
   /* UNPACK */
   struct {
@@ -103,11 +103,11 @@ typedef struct EXT_STR_h101_onion_t
   uint32_t plastic_trigger_window_pre_trig_ns;
   uint32_t plastic_trigger_window_pre_trig_nsv[64 /* plastic_trigger_window_pre_trig_ns */];
 
-} EXT_STR_h101_onion;
+} EXT_STR_h101_BPLAST_onion;
 
 /*******************************************************/
 
-#define EXT_STR_h101_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
+#define EXT_STR_h101_BPLAST_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
   ok = 1; \
   /* UNPACK */ \
   EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
