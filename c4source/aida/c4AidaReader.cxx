@@ -6,7 +6,6 @@
 
 // c4
 #include "AidaData.h"
-#include "TAidaConfiguration.h"
 #include "c4Logger.h"
 
 // ucesb
@@ -23,7 +22,8 @@ AidaReader::AidaReader(EXT_STR_h101_aida_onion* data, size_t offset)
       fNEvent(0),
       fData(data),
       fOffset(offset),
-      fOnline(false),
+      fAdcOnline(false),
+      fFlowScalerOnline(false),
       adcArray(new std::vector<AidaUnpackAdcItem>),
       flowArray(new std::vector<AidaUnpackFlowItem>),
       scalerArray(new std::vector<AidaUnpackScalerItem>)
@@ -50,12 +50,9 @@ Bool_t AidaReader::Init(ext_data_struct_info* a_struct_info)
     }
 
     // Register vector(?) of data here
-    FairRootManager::Instance()->RegisterAny("AidaAdcData", adcArray, !fOnline);
-    FairRootManager::Instance()->RegisterAny("AidaFlowData", flowArray, !fOnline);
-    FairRootManager::Instance()->RegisterAny("AidaScalerData", scalerArray, !fOnline);
-
-    // Create the config
-    TAidaConfiguration::GetInstance();
+    FairRootManager::Instance()->RegisterAny("AidaAdcData", adcArray, !fAdcOnline);
+    FairRootManager::Instance()->RegisterAny("AidaFlowData", flowArray, !fFlowScalerOnline);
+    FairRootManager::Instance()->RegisterAny("AidaScalerData", scalerArray, !fFlowScalerOnline);
 
     return kTRUE;
 }

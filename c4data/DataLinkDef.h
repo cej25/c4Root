@@ -37,5 +37,12 @@
 #pragma link C++ class std::vector<AidaUnpackFlowItem>+;
 #pragma link C++ class std::vector<AidaUnpackScalerItem>+;
 
+#pragma link C++ class AidaCalAdcItem+;
+#pragma link C++ class std::vector<AidaCalAdcItem>+;
+
+#pragma link C++ class AidaHit+;
+#pragma link C++ class std::vector<AidaHit>+;
+
+#pragma link C++ class TAidaConfiguration+;
 
 #endif

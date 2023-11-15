@@ -49,7 +49,8 @@ class TAidaConfiguration
 {
 public:
     static TAidaConfiguration const* GetInstance();
-    static void Create(std::string path);
+    static void Create();
+    static void SetBasePath(std::string bp) { base_path = bp; }
 
     int FEEs() const;
     int DSSDs() const;
@@ -85,8 +86,9 @@ public:
     double GetDssdStripThreshold(int d, bool yside, int strip) const;
 
 private:
-    TAidaConfiguration(std::string path);
-    void ReadConfiguration(std::string path);
+    static std::string base_path;
+    TAidaConfiguration();
+    void ReadConfiguration();
     void DSSDtoFEE();
 
     static TAidaConfiguration* instance;
@@ -128,15 +130,15 @@ inline TAidaConfiguration const* TAidaConfiguration::GetInstance()
 {
   if (!instance)
   {
-    TAidaConfiguration::Create("Configuration_Files/AIDA/AIDA.txt");
+    TAidaConfiguration::Create();
   }
   return instance;
 }
 
-inline void TAidaConfiguration::Create(std::string path)
+inline void TAidaConfiguration::Create()
 {
   delete instance;
-  instance = new TAidaConfiguration(path);
+  instance = new TAidaConfiguration();
 }
 
 inline int TAidaConfiguration::FEEs() const
