@@ -12,12 +12,13 @@
 #include <string>
 
 TAidaConfiguration* TAidaConfiguration::instance = nullptr;
+std::string TAidaConfiguration::base_path = "Configuration_Files/AIDA";
 
-TAidaConfiguration::TAidaConfiguration(std::string path) :
+TAidaConfiguration::TAidaConfiguration() :
     fees(0), dssds(0), wide(false), adjustadc(false), useucesb(false),
     ignorembsts(false), stats(false), ucesbshift(0), eventwindow(2000)
 {
-  ReadConfiguration(path);
+  ReadConfiguration();
   DSSDtoFEE();
 }
 
@@ -28,13 +29,13 @@ inline DSSDSide ParseSide(std::string arg)
   return DSSDSide::Ohmic;
 }
 
-void TAidaConfiguration::ReadConfiguration(std::string path)
+void TAidaConfiguration::ReadConfiguration()
 {
   fbwindow = std::numeric_limits<double>::max();
   fbenergyh = std::numeric_limits<double>::max();
   fbenergyl = std::numeric_limits<double>::max();
 
-  std::ifstream cfg(path);
+  std::ifstream cfg(base_path + "/AIDA.txt");
   constexpr auto ignore = std::numeric_limits<std::streamsize>::max();
   int sub_DSSD = -1;
   bool sub_Scaler = false;
@@ -123,7 +124,13 @@ void TAidaConfiguration::ReadConfiguration(std::string path)
     else if (option == "dssd")
     {
       line >> sub_DSSD;
-      dssd[sub_DSSD - 1].DSSD = sub_DSSD;
+      if (sub_DSSD > dssds) {
+        c4LOG(warning, "DSSD value " << sub_DSSD << " exceeds number of DSSDs: " << dssds);
+        sub_DSSD = 0;
+      }
+      else {
+        dssd[sub_DSSD - 1].DSSD = sub_DSSD;
+      }
     }
     else if (option == "top" && sub && sub_DSSD > 0)
     {
@@ -255,7 +262,8 @@ void TAidaConfiguration::ReadConfiguration(std::string path)
     std::fill(d[1].begin(), d[1].end(), 0);
   }
 
-  std::ifstream fs("Configuration_Files/AIDA/AIDA_offsets.txt");
+  bool warning = false;
+  std::ifstream fs(base_path + "/AIDA_offsets.txt");
   fs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   while (fs)
   {
@@ -268,13 +276,19 @@ void TAidaConfiguration::ReadConfiguration(std::string path)
     double offset;
     fs >> fs_fee >> fs_channel >> offset;
     if (!fs) break;
-    adcOffsets[fs_fee-1][fs_channel-1] = offset;
+    if (!warning && (fs_fee > fees || fs_channel > 64)) {
+      c4LOG(warning, "Invalid FEE/Channel number in AIDA_offsets.txt");
+      warning = true;
+    }
+    if (fs_fee <= fees && fs_channel <= 64) {
+      adcOffsets[fs_fee-1][fs_channel-1] = offset;
+    }
     fs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   }
   fs.close();
   c4LOG(info, "Loaded ADC Offsets");
 
-  fs.open("Configuration_Files/AIDA/AIDA_times.txt");
+  fs.open(base_path + "/AIDA_times.txt");
 
   while (fs)
   {
@@ -286,13 +300,16 @@ void TAidaConfiguration::ReadConfiguration(std::string path)
     int fs_fee, fs_offset;
     fs >> fs_fee >> fs_offset;
     if (!fs) break;
+    if (!warning && (fs_fee > fees)) {
+      c4LOG(warning, "Invalid FEE in AIDA_times.txt");
+    }
     feeTimeOffsets[fs_fee] = fs_offset;
     fs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   }
   c4LOG(info, "Loaded FEE Clock Correction");
   fs.close();
 
-  fs.open("Configuration_Files/AIDA/AIDA_gains.txt");
+  fs.open(base_path + "/AIDA_gains.txt");
   fs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   while (fs)
   {
@@ -313,7 +330,7 @@ void TAidaConfiguration::ReadConfiguration(std::string path)
   }
   c4LOG(info, "Loaded DSSD Gains");
 
-  std::ifstream stripConfig("Configuration_Files/AIDA/AIDA_strips.txt");
+  std::ifstream stripConfig(base_path + "/AIDA_strips.txt");
   while (stripConfig)
   {
     if (stripConfig.peek() == '#' || stripConfig.peek() == '\n')
@@ -370,32 +387,30 @@ void TAidaConfiguration::ReadConfiguration(std::string path)
     ignorembsts = false;
   }
 
-  std::cout << "/////////////////////////////////////////////////////" << std::endl;
-  std::cout << "AIDA Configuration: " << fees << " FEEs, " << dssds << " DSSDs, "
-    << scalers.size() << " Scalers" << std::endl;
+  LOG(info) << "AIDA Configuration: " << fees << " FEEs, " << dssds << " DSSDs, "
+    << scalers.size() << " Scalers";
 
-  std::cout << "AIDA Options: ";
-  if (ignorembsts) std::cout << "NoMBS ";
-  else std::cout << "MBS ";
-  if (wide) std::cout << "wide ";
-  if (useucesb) std::cout << "ucesb ";
-  if (stats) std::cout << "stats ";
-  std::cout << std::endl;
-  if (useucesb && ucesbshift) std::cout << "ucesb Timestamps are shifted by " << ucesbshift << " ns" << std::endl;
+  std::stringstream opt;
+  if (ignorembsts) opt << "NoMBS ";
+  else opt << "MBS ";
+  if (wide) opt << "wide ";
+  if (useucesb) opt << "ucesb ";
+  if (stats) opt << "stats ";
+  LOG(info) << "  Options: " << opt.str();
+  if (useucesb && ucesbshift) LOG(info) << "  ucesb Timestamps are shifted by " << ucesbshift << " ns";
 
-  std::cout << "AIDA Windows: Event: " << eventwindow << " ns, Front/Back: " << fbwindow << " ns" << std::endl;
-  std::cout << "AIDA Gates: Front/Back High: " << fbenergyh << " MeV, Low: " << fbenergyl << " keV" << std::endl;
+  LOG(info) << "  Windows: Event: " << eventwindow << " ns, Front/Back: " << fbwindow << " ns";
+  LOG(info) << "  Gates: Front/Back High: " << fbenergyh << " MeV, Low: " << fbenergyl << " keV";
 
-  std::cout << "Analysis Options: ";
-  if (reducenoise) std::cout << "ReduceNoise ";
-  if (clusterimpants && clusterdecays) std::cout << "ClusterImplantsDecays ";
-  if (clusterimpants && !clusterdecays) std::cout << "ClusterImplants";
-  if (!clusterimpants && clusterdecays) std::cout << "ClusterDecays ";
-  if (calibrate && parallelcalibrate) std::cout << "ParallelCalibrate ";
-  if (calibrate && !parallelcalibrate) std::cout << "Calibrate ";
-  std::cout << std::endl;
-  std::cout << "Analysis Thresholds: Nonsense: " << hugethreshold << ", Pulser: " << pulserthreshold << std::endl;
-  std::cout << "/////////////////////////////////////////////////////" << std::endl;
+  std::stringstream anlopt;
+  if (reducenoise) anlopt << "ReduceNoise ";
+  if (clusterimpants && clusterdecays) anlopt << "ClusterImplantsDecays ";
+  if (clusterimpants && !clusterdecays) anlopt << "ClusterImplants";
+  if (!clusterimpants && clusterdecays) anlopt << "ClusterDecays ";
+  if (calibrate && parallelcalibrate) anlopt << "ParallelCalibrate ";
+  if (calibrate && !parallelcalibrate) anlopt << "Calibrate ";
+  LOG(info) << "  Analysis Options: " << anlopt.str();
+  LOG(info) << "  Analysis Thresholds: Nonsense: " << hugethreshold << ", Pulser: " << pulserthreshold;
 }
 
 void TAidaConfiguration::DSSDtoFEE()
