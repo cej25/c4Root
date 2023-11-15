@@ -58,8 +58,8 @@ class GermaniumOnlineSpectra : public FairTask
         //Histograms time
         TH1F * h1_time[100];
 
-        const int NCrystals = 7;
-        const int NDetectors = 12;
+        const int NCrystals = 7; //needs to be changed.
+        const int NDetectors = 2; //needs to be changed.
 
 
     public:

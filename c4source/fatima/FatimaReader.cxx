@@ -21,6 +21,13 @@ extern "C"
     #include "ext_h101_fatima.h"
 }
 
+/*
+Constructor. Needs the input data structure obtained from ucesb with the following args:
+ --ntuple=UNPACK:fatima,STRUCT_HH,ext_h101_fatima.h (add NOEVENTHEAD also). 
+
+The resulting file must be in the same folder as this file.
+
+*/
 FatimaReader::FatimaReader(EXT_STR_h101_FATIMA_onion* data, size_t offset)
     : c4Reader("FatimaReader")
     , fNEvent(0)
@@ -31,6 +38,10 @@ FatimaReader::FatimaReader(EXT_STR_h101_FATIMA_onion* data, size_t offset)
 {
 }
 
+/*
+Deletes the arrays allocated.
+And prints some statistics for the run.
+*/
 FatimaReader::~FatimaReader() { 
     
     c4LOG(info, Form("Epochs read %i",(int)fNepochwordsread));
@@ -69,6 +80,13 @@ FatimaReader::~FatimaReader() {
 
 }
 
+/*
+Required set up before reading. 
+
+If the fine time calibration histograms are read from disk, it loads these.
+If not new histograms are allocated and ready for filling and calibration.
+
+*/
 Bool_t FatimaReader::Init(ext_data_struct_info* a_struct_info)
 {
     Int_t ok;
@@ -112,7 +130,7 @@ Bool_t FatimaReader::Init(ext_data_struct_info* a_struct_info)
         ReadFineTimeHistosFromFile();
         DoFineTimeCalibration();
         fine_time_calibration_set = true;
-        c4LOG(info,"Fine Time calibration set from file. ");
+        c4LOG(info,"Fine Time calibration set from file.");
     }else{
         fine_time_hits = new TH1I**[NBoards];
         for (int i = 0; i < NBoards; i++) {
@@ -135,34 +153,45 @@ Bool_t FatimaReader::Init(ext_data_struct_info* a_struct_info)
     return kTRUE;
 }
 
+/*
+This does the fine time calibrations of the fine times and builds the required look-up table in fine_time_calibrations[board][channel][tdc channel] = time (ns)
+
+This can be called explicitly if desired - but will be done automatically by the rest of the code. Throws a warning if there are channels without hits. These are mapped tdc_channel = tdc_channel/512*5 ns
+*/
 void FatimaReader::DoFineTimeCalibration(){
     c4LOG(info, "Doing fine time calibrations.");
     for (int i = 0; i < NBoards; i++) {
         for (int j = 0; j < NChannels; j++) {
             int running_sum = 0;
             int total_counts = fine_time_hits[i][j]->GetEntries();
-            if (total_counts == 0) c4LOG(warning,Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));
+            if (total_counts == 0) {c4LOG(warning,Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));}
+
             for (int k = 0; k < Nbins_fine_time; k++) {
                 running_sum += fine_time_hits[i][j]->GetBinContent(k+1); //bin 0 is the underflow bin, hence we start at [1,Nbins_fine_time].
-                //no counts?
-                if (total_counts == 0) {
+                
+                if (total_counts == 0) { // in case of no hits.
                     fine_time_calibration_coeffs[i][j][k] = k*TAMEX_fine_time_clock/(double)Nbins_fine_time;
                     continue;
                 }
 
                 fine_time_calibration_coeffs[i][j][k] = TAMEX_fine_time_clock*(double)running_sum/(double)total_counts;
-                //if (i == 1) std::cout << i << " " << j << " " << k << " " << TAMEX_fine_time_clock << " " << running_sum << " " << total_counts << " " << fine_time_calibration_coeffs[i][j][k] << std::endl;
             }
         }
     }
     fine_time_calibration_set = true;
 }
 
+/*
+Uses the conversion table to look-up fine times in ns.
+*/
 double FatimaReader::GetFineTime(int tdc_fine_time_channel, int board_id, int channel_id){
     return fine_time_calibration_coeffs[board_id][channel_id][tdc_fine_time_channel];
 }
 
-
+/*
+Fine time histograms are stored as ROOT TH1I histograms as they are efficient and compresses when written.
+This function saves the fine time hits directly to file. On restart this file can then be read and the look-up table reconstructed.
+*/
 void FatimaReader::WriteFineTimeHistosToFile(){
 
     if (!fine_time_calibration_set) {
@@ -192,6 +221,12 @@ void FatimaReader::WriteFineTimeHistosToFile(){
     outputfile->Close();
 
 }
+
+/*
+Read the fine time histograms which are written by the function above.
+
+Assumes the names of the histograms are fine_time_hist_module_channel and that they have 1024 bins (since the TAMEX fine time is written with 2^10 bits).
+*/
 void FatimaReader::ReadFineTimeHistosFromFile() {
 
     TFile* inputfile = TFile::Open(fine_time_histo_infile, "READ");
@@ -207,11 +242,11 @@ void FatimaReader::ReadFineTimeHistosFromFile() {
     }
 
 
-    if (!fine_time_hits) c4LOG(fatal,"fine_time_hits not declared.");
+    if (!fine_time_hits) {c4LOG(fatal,"fine_time_hits not declared.");}
     for (int i = 0; i < NBoards; i++) {
-        if (!fine_time_hits[i]) c4LOG(fatal,"fine_time_hits[i] not declared.");
+        if (!fine_time_hits[i]) {c4LOG(fatal,"fine_time_hits[i] not declared.");}
         for (int j = 0; j < NChannels; j++) {
-            if (fine_time_hits[i][j] != nullptr) c4LOG(fatal,"fine_time_hits[i][j] not declared.");
+            if (fine_time_hits[i][j] != nullptr) {c4LOG(fatal,"fine_time_hits[i][j] not declared.");}
             TH1I* a = nullptr;
             inputfile->GetObject(Form("fine_time_hits_%i_%i", i, j), a);
             if (a) {
@@ -229,6 +264,18 @@ void FatimaReader::ReadFineTimeHistosFromFile() {
     c4LOG(info, Form("Read fine time calibrations (i.e. raw fine time histograms) from %s", fine_time_histo_infile));
 }
 
+/*
+Event read loop. Only called by the FairRootManager.
+
+If no fine time calibrations are set, the fine time histograms are filled until a set number of events have been read. Then the FineTimeCalibration is automatically done and the writing of hits start.
+If the fine time calibration is set from the start, hits are written immediately.
+
+Some assumptions:
+    - Each time a new channel is hit, it must be preceeded by an epoch word.
+    - Each time the epoch word changes it is written again.
+    - Time hits are time ordered as they are written by the TAMEX module.
+
+*/
 Bool_t FatimaReader::Read() //do fine time here:
 {
     c4LOG(debug1, "Event Data");
@@ -248,33 +295,16 @@ Bool_t FatimaReader::Read() //do fine time here:
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++){ //per board:
         
         for (int i = 0; i<32; i++) last_epoch[i] = 0;
-        //look_ahead_counter = 0;
-        //reset last hits?
 
 
         if (fData->fatima_tamex[it_board_number].event_size == 0) continue; // empty event skip
 
-        for (int it_hits = 0; it_hits < fData->fatima_tamex[it_board_number].event_size/4 - 3 ; it_hits++){ // if no data is written this loop never starts (?)
+        for (int it_hits = 0; it_hits < fData->fatima_tamex[it_board_number].event_size/4 - 3 ; it_hits++){
             //this distinguishes epoch words from time words by checking if the epoch/coarse and fine words are zero. This would potentially be a problem if epoch truly is zero...
 
 
-            /*
-            //look ahead to grab epoch: (i think this is wrong)
-            if (last_epoch == 0 && fData->fatima_tamex[it_board_number].time_epochv[it_hits] == 0){
-                look_ahead_counter ++; //keep track of how far ahead you skip.
-                continue;
-            }else if (last_epoch == 0 && fData->fatima_tamex[it_board_number].time_epochv[it_hits] != 0){
-                last_epoch = fData->fatima_tamex[it_board_number].time_epochv[it_hits] - 1; //subtract one?
-                it_hits = it_hits - look_ahead_counter; // jumps back
-            }else if (last_epoch != 0 && fData->fatima_tamex[it_board_number].time_epochv[it_hits] != 0){ // next epoch:
-                last_epoch = 0;
-                look_ahead_counter = 0;
-                continue;
-            }
-            */
-
             if (fData->fatima_tamex[it_board_number].time_epochv[it_hits] != 0){
-                    if (it_hits + 1 == fData->fatima_tamex[it_board_number].event_size/4 - 3) c4LOG(fatal, "Data ends on a epoch...");
+                    if (it_hits + 1 == fData->fatima_tamex[it_board_number].event_size/4 - 3) {c4LOG(fatal, "Data ends on a epoch...");}
 
                     next_channel = fData->fatima_tamex[it_board_number].time_channelv[it_hits+1];
 
@@ -299,11 +329,8 @@ Bool_t FatimaReader::Read() //do fine time here:
             if (last_epoch[channelid-1] == 0 || fData->fatima_tamex[it_board_number].time_epochv[it_hits] != 0){
                 //case no epoch seen, this is not an epoch word.
                 
-                //this does indeed seem to happen sometimes - there are hits with no preceeding epoch.
+                //this does indeed seem to happen sometimes - there are hits with no preceeding epoch - therefore the stats of how often this happens is kept. 
 
-                //c4LOG(info, Form("channel %i , last epoch = %i, and this epoch = %i",channelid, last_epoch[channelid-1], fData->fatima_tamex[it_board_number].time_epochv[it_hits]));
-                //c4LOG(info, Form("coarse: %i, fine %i ",fData->fatima_tamex[it_board_number].time_coarsev[it_hits],fData->fatima_tamex[it_board_number].time_finev[it_hits]));
-                //c4LOG(fatal,"HIT SEEN AT START WITH NO EPOCH!");
                 fNevents_lacking_epoch++;
                 continue;
             }
@@ -312,10 +339,9 @@ Bool_t FatimaReader::Read() //do fine time here:
             
             
             int coarse_T = fData->fatima_tamex[it_board_number].time_coarsev[it_hits];
-            //if (channelid%2 == 0) std::cout << channelid << std::endl;
-            
+
+            //Fill fine times and skip.            
             if (!fine_time_calibration_set) {
-                //c4LOG(debug1,"Filling the fine time histograms to collect data for fine time calibration.");
                 fine_time_hits[it_board_number][channelid-1]->Fill(fData->fatima_tamex[it_board_number].time_finev[it_hits]);
                 continue;
             }
@@ -328,7 +354,7 @@ Bool_t FatimaReader::Read() //do fine time here:
                 if (last_hits[it_board_number][channelid-1].hit==true){
                     //second rise time found.
 
-                    //write the old trail ...
+                    //write the old lead without trail...
                     new ((*fArray)[fArray->GetEntriesFast()]) FatimaTwinpeaksData(
                         it_board_number,
                         channelid,
@@ -385,14 +411,14 @@ Bool_t FatimaReader::Read() //do fine time here:
             }
         }
     }
-
-
-    
-
     fNEvent += 1;
     return kTRUE;
 }
 
+
+/*
+Memory management.
+*/
 void FatimaReader::Reset()
 {
     // reset output array

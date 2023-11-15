@@ -16,6 +16,9 @@
 
 #include "FatimaRaw2Cal.h"
 
+/*
+empty constructor required for FairRoot.
+*/
 FatimaRaw2Cal::FatimaRaw2Cal()
 : FairTask(), 
 fNEvents(0),
@@ -27,7 +30,9 @@ ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
 }
 
-
+/*
+Named constructor with verbosity level.
+*/
 FatimaRaw2Cal::FatimaRaw2Cal(const TString& name, Int_t verbose) 
     : FairTask(name, verbose),
     fNEvents(0),
@@ -47,12 +52,14 @@ FatimaRaw2Cal::~FatimaRaw2Cal(){
 }
 
 
-
+/*
+This is called AFTER the detector mapping. This picks out the two timemachine channels and writes them to the TimeMachine structure.
+*/
 void FatimaRaw2Cal::SetTimeMachineChannels(int ftime_machine_undelayed_detector_id, int ftime_machine_delayed_detector_id)
 {
 time_machine_delayed_detector_id = ftime_machine_delayed_detector_id;
 time_machine_undelayed_detector_id = ftime_machine_undelayed_detector_id;
-} //AFTER mapping.
+}
 
 
 
@@ -63,6 +70,9 @@ void FatimaRaw2Cal::SetParContainers()
     c4LOG_IF(fatal, NULL == rtdb, "FairRuntimeDb not found.");
 }
 
+/*
+Initializer called by the FairRoot manager. Gets the required FairRootManager, objects to read and registers the data to be written to the tree.
+*/
 InitStatus FatimaRaw2Cal::Init(){
     //grab instance managers and handles.
 
@@ -70,9 +80,6 @@ InitStatus FatimaRaw2Cal::Init(){
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-    //only needed for communicating with the https server i believe
-    //FairRunOnline* run = FairRunOnline::Instance();
-    //run->GetHttpServer()->Register("", this);
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
@@ -87,21 +94,18 @@ InitStatus FatimaRaw2Cal::Init(){
     fcal_data->Clear();
     funcal_data->Clear();
 
-    
-    //memset(fcal_data, 0, sizeof *fcal_data);
-
-
     return kSUCCESS;
-}
+};
 
-Bool_t FatimaRaw2Cal::SetDetectorMapFile(TString filename){
-    /*
-    TODO: Make the reading fail-safe.
 
-    Assumed structure of detector map is 
+/*
+Reads a file containing the detector mappings. To be called before Init. Assumed structure of the file is:
     - aribtrary lines of comments starting with #
     - each entry is a line with four number: (tamex module id) (tamex channel id) (detector id)
-    */
+
+Raises a fatal error if the module and channel numbers are not unique.
+*/
+Bool_t FatimaRaw2Cal::SetDetectorMapFile(TString filename){
     c4LOG(info, "Reading Detector map");
 
     //std::cout << "reading detector map \n";
@@ -117,9 +121,12 @@ Bool_t FatimaRaw2Cal::SetDetectorMapFile(TString filename){
             detector_map_file >> rtamex_module >> rtamex_channel >> rdetector_id;
             c4LOG(info, Form("Reading %i, %i, %i",rtamex_module,rtamex_channel,rdetector_id));
             std::pair<int,int> tamex_mc = {rtamex_module,rtamex_channel};
+
+            auto it = detector_mapping.find(tamex_mc);
+            if (it != detector_mapping.end()) c4LOG(fatal,Form("Detector mapping not unique. Multiple entries of (tamex module id = %i) (tamex channel id = %i)",rtamex_module,rtamex_channel));
+
             detector_mapping.insert(std::pair<std::pair<int,int>,int>{tamex_mc,rdetector_id});
             detector_map_file.ignore(256,'\n');
-            //TODO: implement a check to make sure keys are unique.
         }
     }
     DetectorMap_loaded = 1;
@@ -127,14 +134,16 @@ Bool_t FatimaRaw2Cal::SetDetectorMapFile(TString filename){
     return 0; 
 };
 
+
+/*
+Reads a file containing the detector calibrations. To be called before Init. Assumed structure of the file is:
+    - aribtrary lines of comments starting with #
+    - each entry is a line with four number: (fatima detector id) (a1/slope) (a0/offset)
+
+Raises a fatal error if the detector numbers are not unique.
+*/
 Bool_t FatimaRaw2Cal::SetDetectorCalFile(TString filename){
 
-    //TODO: Make the reading fail-safe.
-    //
-    //Assumed structure of detector map is 
-    //- aribtrary lines of comments starting with #
-    //- each entry is a line with four numbers: (tamex module id) (tamex channel id) (detector id) (crystal id)
-    //
     c4LOG(info, "Reading Calibration coefficients.");
 
 
@@ -149,9 +158,12 @@ Bool_t FatimaRaw2Cal::SetDetectorCalFile(TString filename){
         else{
             cal_map_file >> rdetector_id >> a1 >> a0;
             std::pair<double,double> cals = {a0,a1};
+
+            auto it = calibration_coeffs.find(rdetector_id);
+            if (it != calibration_coeffs.end()) c4LOG(fatal,Form("Detector calibration not unique. Multiple entries of (detector id = %i)",rdetector_id));
+
             calibration_coeffs.insert(std::pair<int,std::pair<double,double>>{rdetector_id,cals});
             cal_map_file.ignore(256,'\n');
-            //TODO: implement a check to make sure keys are unique.
         }
     }
     DetectorCal_loaded = 1;
@@ -159,6 +171,9 @@ Bool_t FatimaRaw2Cal::SetDetectorCalFile(TString filename){
     return 0; 
 };
 
+/*
+Dump detector map to terminal.
+*/
 void FatimaRaw2Cal::PrintDetectorMap(){
     if (DetectorMap_loaded){
         for (const auto& entry : detector_mapping){
@@ -171,6 +186,9 @@ void FatimaRaw2Cal::PrintDetectorMap(){
     }
 }
 
+/*
+Dump detector calibrations to terminal.
+*/
 void FatimaRaw2Cal::PrintDetectorCal(){
     if (DetectorCal_loaded){
         for (const auto& entry : calibration_coeffs){
@@ -183,7 +201,16 @@ void FatimaRaw2Cal::PrintDetectorCal(){
     }
 }        
 
+/*
+The event loop executable. This is where the events are analyzed. Only used implicitly by FairRoot during Run().
 
+Further the hits are matched slow + fast and assigned from the internal Twinpeaks channnel number to the detector number if DetectorMap is loaded.
+Assumes that fast hits always preceedes slow hits. 
+
+If no detector map is set then be careful with how the mapping happens: tamex module id * number of tamex modules + channel id.
+
+Writes the times in ns!
+*/
 void FatimaRaw2Cal::Exec(Option_t* option){
     if (funcal_data && funcal_data->GetEntriesFast() > 1){ // only get events with two hits.or more
         Int_t event_multiplicity = funcal_data->GetEntriesFast();
@@ -217,7 +244,7 @@ void FatimaRaw2Cal::Exec(Option_t* option){
                 }
                 //only do calibrations if mapping is functional:
                 if (DetectorCal_loaded){
-                    //TODO implement
+                    //TODO
                 }
 
 
@@ -225,7 +252,7 @@ void FatimaRaw2Cal::Exec(Option_t* option){
 
             }
             else{ //no map and cal: ->
-                detector_id = funcal_hit->Get_board_id()*17 + (int)(funcal_hit_next->Get_ch_ID()+1)/2; // do mapping.                
+                detector_id = funcal_hit->Get_board_id()*17 + (int)(funcal_hit_next->Get_ch_ID()+1)/2; // do mapping.
             }
 
             if (funcal_hit_next->Get_trail_epoch_counter() == 0) continue; // missing trail in either
@@ -266,9 +293,13 @@ void FatimaRaw2Cal::Exec(Option_t* option){
     }    
 }
 
+/*
+THIS FUNCTION IS EXTREMELY IMPORTANT!!!!
 
+Clears the TClonesArray used in the function. If they are not cleared after each event they will eat all your RAM.
+
+*/
 void FatimaRaw2Cal::FinishEvent(){
-    //THIS FUNCTION IS EXTREMELY IMPORTANT!!!!
     // reset output array
     funcal_data->Clear();
     fcal_data->Clear();
@@ -276,7 +307,9 @@ void FatimaRaw2Cal::FinishEvent(){
 };
 
 
-    
+/*
+Some stats are written when finishing.
+*/
 void FatimaRaw2Cal::FinishTask(){
     c4LOG(info, Form("Wrote %i events.",fNEvents));
     c4LOG(info, Form("%i events are unmatched (not written).",fNunmatched));

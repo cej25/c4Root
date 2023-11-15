@@ -67,7 +67,7 @@ void TimeMachineOnline::SetDetectorSystems(std::vector<TString> detectorsystems)
 InitStatus TimeMachineOnline::Init()
 {
 
-    c4LOG_IF(fatal, (num_detector_systems==0) | (num_detector_systems>20 & num_detector_systems<0), "Detector systems not specified for TimeMachineOnline. Please add SetDetectorSystems before Init().");
+    c4LOG_IF(fatal, (num_detector_systems==0) || ((num_detector_systems>20) && (num_detector_systems<0)), "Detector systems not specified for TimeMachineOnline. Please add SetDetectorSystems before Init().");
 
     // number of crystals, number of dets 
 
@@ -189,10 +189,10 @@ void TimeMachineOnline::Exec(Option_t* option) // if two machines (undelayed + d
             }
 
 
-            if (delayed_time!=0 && undelayed_time!=0) break; //once you have one undealyed and one delayed break - this assumes only one timemachine delayed-undelayed pair per event.
+            if (delayed_time!=0 && undelayed_time!=0) break; //once you have one undelayed and one delayed break - this assumes only one timemachine delayed-undelayed pair per event.
         }
 
-        if (delayed_time != 0 && undelayed_time !=0){
+        if ((delayed_time != 0) && (undelayed_time !=0)){
         diffs[system] = delayed_time - undelayed_time;
         h1_time_undelayed[system]->Fill(undelayed_time);
         h1_time_delayed[system]->Fill(delayed_time);
@@ -207,7 +207,7 @@ void TimeMachineOnline::Exec(Option_t* option) // if two machines (undelayed + d
     
     for (int ihist = 0; ihist < num_detector_systems; ihist++){
         for (int ihist2 = ihist + 1; ihist2 < num_detector_systems; ihist2++){
-        if(diffs[ihist]!=0 & diffs[ihist2]!=0)h2_time_diff_corrs[ihist*num_detector_systems + ihist2]->Fill(diffs[ihist],diffs[ihist2]);
+        if((diffs[ihist]!=0) && (diffs[ihist2]!=0))h2_time_diff_corrs[ihist*num_detector_systems + ihist2]->Fill(diffs[ihist],diffs[ihist2]);
         }
     }
 
