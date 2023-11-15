@@ -32,11 +32,11 @@ class FatimaRaw2Cal : public FairTask
         void FinishEvent();
         void FinishTask();
 
+        void SetOnline(Bool_t set_online){fOnline = set_online;}
+
         virtual void SetParContainers();
 
         virtual InitStatus Init();
-
-        //virtual InitStatus ReInit() {return kSUCCESS;}
 
 
     private:
@@ -48,9 +48,8 @@ class FatimaRaw2Cal : public FairTask
 
 
         FatimaTwinpeaksData* funcal_hit;
-        FatimaTwinpeaksData* funcal_hit_next; // this is the slow or fast hit corresponding to the fast or slow hit :)
+        FatimaTwinpeaksData* funcal_hit_next;
         FatimaTwinpeaksCalData* fcal_hit;
-        //TimeMachineData* ftime_machine_hit;
 
         uint16_t detector_id;
         

@@ -51,7 +51,7 @@ class FatimaOnlineSpectra : public FairTask
         TCanvas* cfast_v_slow;
         TCanvas* time_spectra_divided;
 
-        static const int NDetectors =9*17;
+        static const int NDetectors =9*17; //change this
         // Histograms energy
         TH1F * h1_slowToT[NDetectors];
         TH1F * h1_fastToT[NDetectors];
