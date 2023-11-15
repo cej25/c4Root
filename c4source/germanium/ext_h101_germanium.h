@@ -5,8 +5,8 @@
  * Do not edit - automatically generated.
  */
 
-#ifndef __GUARD_h101_GERMANIUM_EXT_h101_GERMANIUM_H__
-#define __GUARD_h101_GERMANIUM_EXT_h101_GERMANIUM_H__
+#ifndef __GUARD_H101_EXT_H101_GERMANIUM_H__
+#define __GUARD_H101_EXT_H101_GERMANIUM_H__
 
 #ifndef __CINT__
 # include <stdint.h>
@@ -26,7 +26,7 @@ typedef          int  int32_t;
  * Plain structure (layout as ntuple/root file):
  */
 
-typedef struct EXT_STR_h101_GERMANIUM_t
+typedef struct EXT_STR_h101_t
 {
   /* UNPACK */
   uint32_t germanium_data1event_trigger_time_hi /* [-1,-1] */;
@@ -239,7 +239,7 @@ typedef struct EXT_STR_h101_GERMANIUM_t
   uint32_t germanium_ts_t3 /* [0,65535] */;
   uint32_t germanium_ts_t4 /* [0,65535] */;
 
-} EXT_STR_h101_GERMANIUM;
+} EXT_STR_h101;
 
 /********************************************************
  *
@@ -247,7 +247,7 @@ typedef struct EXT_STR_h101_GERMANIUM_t
  * recovered (recommended):
  */
 
-typedef struct EXT_STR_h101_GERMANIUM_onion_t
+typedef struct EXT_STR_h101_onion_t
 {
   /* UNPACK */
   struct {
@@ -276,11 +276,11 @@ typedef struct EXT_STR_h101_GERMANIUM_onion_t
   uint32_t germanium_ts_subsystem_id;
   uint32_t germanium_ts_t[4];
 
-} EXT_STR_h101_GERMANIUM_onion;
+} EXT_STR_h101_onion;
 
 /*******************************************************/
 
-#define EXT_STR_h101_GERMANIUM_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
+#define EXT_STR_h101_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
   ok = 1; \
   /* UNPACK */ \
   EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
@@ -913,6 +913,6 @@ typedef struct EXT_STR_h101_GERMANIUM_onion_t
   \
 } while (0);
 
-#endif/*__GUARD_h101_GERMANIUM_EXT_h101_GERMANIUM_GERMANIUM_H__*/
+#endif/*__GUARD_H101_EXT_H101_GERMANIUM_H__*/
 
 /*******************************************************/

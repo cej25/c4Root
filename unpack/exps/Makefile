@@ -20,7 +20,8 @@ include $(UCESB_BASE_DIR)/makefile_direxist.inc
 EXPS= s452 \
 	beammonitor \
 	lisa \
-	s450
+	s450 \
+	NovTest
 
 ALL_EXPS = $(EXPS)
 
