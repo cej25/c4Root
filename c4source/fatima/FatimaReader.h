@@ -89,7 +89,7 @@ class FatimaReader : public c4Reader
         uint64_t wr_t;
 
 
-        const int NBoards = 9; // in the .spec file!
+        const int NBoards = 4; // in the .spec file!
         const int NChannels = 32; //per board
 
 

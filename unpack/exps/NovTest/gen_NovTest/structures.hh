@@ -942,7 +942,7 @@ class PACKER_fatima_tamex_subev
  : public unpack_subevent_base
 {
 public:
-  // ts = TIMESTAMP_WHITERABBIT(id=0x500);
+  // ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1600);
   // trigger_window = TAMEX4_HEADER();
   // select several
 
@@ -952,7 +952,7 @@ public:
 
     // tamex[0] = TAMEX4_SFP(sfp=0,card=0);
   SINGLE(TAMEX4_SFP,tamex[1]);
-  SINGLE(TIMESTAMP_WHITERABBIT,ts);
+  SINGLE(TIMESTAMP_WHITERABBIT_EXTENDED,ts);
   SINGLE(TAMEX4_HEADER,trigger_window);
 
 public:

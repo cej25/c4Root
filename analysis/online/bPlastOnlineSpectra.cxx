@@ -69,12 +69,12 @@ InitStatus bPlastOnlineSpectra::Init()
     run->AddObject(bPlast_spectra_folder);
 
     // energy spectra:
-    cSlowToT  = new TCanvas("cSlowToT","slow ToT bPlast spectra",650,350);
+    cSlowToT  = new TCanvas("cbPlastSlowToT","slow ToT bPlast spectra",650,350);
     cSlowToT->Divide(5,(NDetectors%5==0) ? (NDetectors/5) : (NDetectors/5 + 1));
 
     for (int ihist = 0; ihist < NDetectors; ihist++){
         cSlowToT->cd(ihist+1);
-        h1_SlowToT[ihist] = new TH1F(Form("slow_ToT_%d",ihist),Form("slow_ToT_%d",ihist),10000,0,5e3);
+        h1_SlowToT[ihist] = new TH1F(Form("bPlast_slow_ToT_%d",ihist),Form("slow_ToT_%d",ihist),10000,0,5e3);
         h1_SlowToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
         h1_SlowToT[ihist]->Draw();
     }
@@ -83,12 +83,12 @@ InitStatus bPlastOnlineSpectra::Init()
     bPlast_spectra_folder->Add(cSlowToT);
     
     // energy spectra:
-    cFastToT  = new TCanvas("cfastToT","fast ToT bPlast spectra",650,350);
+    cFastToT  = new TCanvas("cbPlastfastToT","fast ToT bPlast spectra",650,350);
     cFastToT->Divide(5,(NDetectors%5==0) ? (NDetectors/5) : (NDetectors/5 + 1));
 
     for (int ihist = 0; ihist < NDetectors; ihist++){
         cFastToT->cd(ihist+1);
-        h1_FastToT[ihist] = new TH1F(Form("fast_ToT_%d",ihist),Form("fast_ToT_%d",ihist),10000,0,5e3);
+        h1_FastToT[ihist] = new TH1F(Form("bPlast_fast_ToT_%d",ihist),Form("fast_ToT_%d",ihist),10000,0,5e3);
         h1_FastToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
         h1_FastToT[ihist]->Draw();
     }
@@ -113,12 +113,12 @@ InitStatus bPlastOnlineSpectra::Init()
     h1_SlowHitPatt->Draw();
     
     // Time spectra:
-    time_spectra_divided  = new TCanvas("time_spectra_divided","bPlast time spectra",650,350);
+    time_spectra_divided  = new TCanvas("bPlast_time_spectra_divided","bPlast time spectra",650,350);
     time_spectra_divided->Divide(5,(NDetectors%5==0) ? (NDetectors/5) : (NDetectors/5 + 1));
 
     for (int ihist = 0; ihist < NDetectors; ihist++){
         time_spectra_divided->cd(ihist+1);
-        h1_abs_time[ihist] = new TH1F(Form("Time_spectrum_%d",ihist),Form("Time_spectrum_%d",ihist),10000,1.5218e14,1.5225e14);
+        h1_abs_time[ihist] = new TH1F(Form("bPlast_Time_spectrum_%d",ihist),Form("Time_spectrum_%d",ihist),10000,1.5218e14,1.5225e14);
         h1_abs_time[ihist]->GetXaxis()->SetTitle("Time (ns)");
         h1_abs_time[ihist]->Draw();
     }

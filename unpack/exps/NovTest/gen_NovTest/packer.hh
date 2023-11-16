@@ -648,8 +648,8 @@ FORCE_IMPL_DATA_SRC_FCN(void,aida_subev::__packer);
 template<typename __data_dest_t>
 void PACKER_fatima_tamex_subev::__packer(__data_dest_t &__buffer)
 {
-  // ts = TIMESTAMP_WHITERABBIT(id=0x500);
-  PACK_DECL(560,TIMESTAMP_WHITERABBIT,ts,/*id*/0x500);
+  // ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1600);
+  PACK_DECL(560,TIMESTAMP_WHITERABBIT_EXTENDED,ts,/*id*/0x1600);
   // trigger_window = TAMEX4_HEADER();
   PACK_DECL(561,TAMEX4_HEADER,trigger_window);
   // select several

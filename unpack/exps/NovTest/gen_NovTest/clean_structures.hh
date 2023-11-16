@@ -155,7 +155,7 @@ class fatima_tamex_subev
 {
   SINGLE(TAMEX4_PADDING,padding);
   SINGLE(TAMEX4_SFP,tamex[1]);
-  SINGLE(TIMESTAMP_WHITERABBIT,ts);
+  SINGLE(TIMESTAMP_WHITERABBIT_EXTENDED,ts);
   SINGLE(TAMEX4_HEADER,trigger_window);
 template<typename __data_src_t>
   void __unpack(__data_src_t &__buffer);
