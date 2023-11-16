@@ -49,7 +49,7 @@ SUBEVENT(fatima_tamex_subev)
     }  
 }
 
-SUBEVENT(plastic_subev)
+SUBEVENT(bplast_subev)
 {
     ts = TIMESTAMP_WHITERABBIT(id=0x500);
     trigger_window = TAMEX4_HEADER();
@@ -74,7 +74,7 @@ EVENT
     germanium = febex_subev(type = 10, subtype = 1, procid = 60, control = 20);
     
     fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = 75, control = 20, subcrate = 0);
-    plastic = plastic_subev(type = 10, subtype = 1, procid = 80, control = 20, subcrate = 0);
+    bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20, subcrate = 0);
 
     // CEJ: NONE OF THIS WILL WORK WITH S450
     // white rabbit should be easy, do with Elisa wed

@@ -926,6 +926,57 @@ template<typename __data_dest_t>
 /** END_STRUCTURES ****************************************************/
 /** BEGIN_STRUCTURES ***************************************************
  *
+ * Event unpacker associated structures for bplast_subev.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// SUBEVENT(bplast_subev)
+#if !PACKER_CODE
+# define DECLARED_UNPACK_bplast_subev
+class bplast_subev
+#else//PACKER_CODE
+# define DECLARED_PACKER_bplast_subev
+class PACKER_bplast_subev
+#endif//PACKER_CODE
+ : public unpack_subevent_base
+{
+public:
+  // ts = TIMESTAMP_WHITERABBIT(id=0x500);
+  // trigger_window = TAMEX4_HEADER();
+  // select several
+
+    // padding = TAMEX4_PADDING();
+  SINGLE(TAMEX4_PADDING,padding);
+  // select several
+
+    // tamex[0] = TAMEX4_SFP(sfp=0,card=0);
+    // tamex[1] = TAMEX4_SFP(sfp=0,card=1);
+    // tamex[2] = TAMEX4_SFP(sfp=0,card=2);
+  SINGLE(TAMEX4_SFP,tamex[3]);
+  SINGLE(TIMESTAMP_WHITERABBIT,ts);
+  SINGLE(TAMEX4_HEADER,trigger_window);
+
+public:
+#ifndef __PSDC__
+# if !PACKER_CODE
+template<typename __data_src_t>
+  void __unpack(__data_src_t &__buffer);
+template<typename __data_src_t>
+  static bool __match(__data_src_t &__buffer);
+  // void __clean();
+# else//PACKER_CODE
+template<typename __data_dest_t>
+  void __packer(__data_dest_t &__buffer);
+# endif//PACKER_CODE
+
+  STRUCT_FCNS_DECL(bplast_subev);
+#endif//!__PSDC__
+};
+
+/** END_STRUCTURES ****************************************************/
+/** BEGIN_STRUCTURES ***************************************************
+ *
  * Event unpacker associated structures for fatima_tamex_subev.
  *
  * Do not edit - automatically generated.
@@ -1025,57 +1076,6 @@ template<typename __data_dest_t>
 /** END_STRUCTURES ****************************************************/
 /** BEGIN_STRUCTURES ***************************************************
  *
- * Event unpacker associated structures for plastic_subev.
- *
- * Do not edit - automatically generated.
- */
-
-// SUBEVENT(plastic_subev)
-#if !PACKER_CODE
-# define DECLARED_UNPACK_plastic_subev
-class plastic_subev
-#else//PACKER_CODE
-# define DECLARED_PACKER_plastic_subev
-class PACKER_plastic_subev
-#endif//PACKER_CODE
- : public unpack_subevent_base
-{
-public:
-  // ts = TIMESTAMP_WHITERABBIT(id=0x500);
-  // trigger_window = TAMEX4_HEADER();
-  // select several
-
-    // padding = TAMEX4_PADDING();
-  SINGLE(TAMEX4_PADDING,padding);
-  // select several
-
-    // tamex[0] = TAMEX4_SFP(sfp=0,card=0);
-    // tamex[1] = TAMEX4_SFP(sfp=0,card=1);
-    // tamex[2] = TAMEX4_SFP(sfp=0,card=2);
-  SINGLE(TAMEX4_SFP,tamex[3]);
-  SINGLE(TIMESTAMP_WHITERABBIT,ts);
-  SINGLE(TAMEX4_HEADER,trigger_window);
-
-public:
-#ifndef __PSDC__
-# if !PACKER_CODE
-template<typename __data_src_t>
-  void __unpack(__data_src_t &__buffer);
-template<typename __data_src_t>
-  static bool __match(__data_src_t &__buffer);
-  // void __clean();
-# else//PACKER_CODE
-template<typename __data_dest_t>
-  void __packer(__data_dest_t &__buffer);
-# endif//PACKER_CODE
-
-  STRUCT_FCNS_DECL(plastic_subev);
-#endif//!__PSDC__
-};
-
-/** END_STRUCTURES ****************************************************/
-/** BEGIN_STRUCTURES ***************************************************
- *
  * Event unpacker associated structures for EVENT.
  *
  * Do not edit - automatically generated.
@@ -1089,13 +1089,12 @@ public:
   // germanium = febex_subev(type=10,subtype=1,procid=60,control=20);
   // fatima = fatima_tamex_subev(type=10,subtype=1,procid=75,control=20,
                               // subcrate=0);
-  // plastic = plastic_subev(type=10,subtype=1,procid=80,control=20,
-                          // subcrate=0);
+  // bplast = bplast_subev(type=10,subtype=1,procid=80,control=20,subcrate=0);
   // ignore_unknown_subevent;
 SINGLE(aida_subev,aida);
 SINGLE(febex_subev,germanium);
 SINGLE(fatima_tamex_subev,fatima);
-SINGLE(plastic_subev,plastic);
+SINGLE(bplast_subev,bplast);
 public:
 #ifndef __PSDC__
   bitsone<5> __visited;

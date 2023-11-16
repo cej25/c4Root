@@ -403,6 +403,45 @@ FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(aida_subev)::FCNCALL_NAME(aida_subev)
 }
 #endif//USER_DEF_aida_subev
 
+#ifndef USER_DEF_bplast_subev
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(bplast_subev)::FCNCALL_NAME(bplast_subev)
+{
+  FCNCALL_INIT;
+  FCNCALL_CALL_CTRL_WRAP(unpack_subevent_base,FCNCALL_CLASS_NAME(unpack_subevent_base)::FCNCALL_CALL_BASE());
+  // TAMEX4_PADDING padding;
+  {
+  FCNCALL_SUBNAME("padding");
+  { FCNCALL_CALL_CTRL_WRAP(padding,padding.FCNCALL_CALL(padding)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // TAMEX4_SFP tamex[3];
+  {
+  FCNCALL_SUBNAME("tamex");
+  FCNCALL_FOR(__i0,3)
+  {
+    FCNCALL_SUBINDEX(__i0);
+    { FCNCALL_CALL_CTRL_WRAP_ARRAY(tamex__i0,,__i0,tamex[__i0].FCNCALL_CALL(tamex[__i0])); }
+    FCNCALL_SUBINDEX_END(__i0);
+  }
+  FCNCALL_SUBNAME_END;
+  }
+  // TIMESTAMP_WHITERABBIT ts;
+  {
+  FCNCALL_SUBNAME("ts");
+  { FCNCALL_CALL_CTRL_WRAP(ts,ts.FCNCALL_CALL(ts)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // TAMEX4_HEADER trigger_window;
+  {
+  FCNCALL_SUBNAME("trigger_window");
+  { FCNCALL_CALL_CTRL_WRAP(trigger_window,trigger_window.FCNCALL_CALL(trigger_window)); }
+  FCNCALL_SUBNAME_END;
+  }
+  FCNCALL_RET;
+}
+#endif//USER_DEF_bplast_subev
+
 #ifndef USER_DEF_fatima_tamex_subev
 FCNCALL_TEMPLATE
 FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(fatima_tamex_subev)::FCNCALL_NAME(fatima_tamex_subev)
@@ -475,45 +514,6 @@ FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(febex_subev)::FCNCALL_NAME(febex_subev)
 }
 #endif//USER_DEF_febex_subev
 
-#ifndef USER_DEF_plastic_subev
-FCNCALL_TEMPLATE
-FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(plastic_subev)::FCNCALL_NAME(plastic_subev)
-{
-  FCNCALL_INIT;
-  FCNCALL_CALL_CTRL_WRAP(unpack_subevent_base,FCNCALL_CLASS_NAME(unpack_subevent_base)::FCNCALL_CALL_BASE());
-  // TAMEX4_PADDING padding;
-  {
-  FCNCALL_SUBNAME("padding");
-  { FCNCALL_CALL_CTRL_WRAP(padding,padding.FCNCALL_CALL(padding)); }
-  FCNCALL_SUBNAME_END;
-  }
-  // TAMEX4_SFP tamex[3];
-  {
-  FCNCALL_SUBNAME("tamex");
-  FCNCALL_FOR(__i0,3)
-  {
-    FCNCALL_SUBINDEX(__i0);
-    { FCNCALL_CALL_CTRL_WRAP_ARRAY(tamex__i0,,__i0,tamex[__i0].FCNCALL_CALL(tamex[__i0])); }
-    FCNCALL_SUBINDEX_END(__i0);
-  }
-  FCNCALL_SUBNAME_END;
-  }
-  // TIMESTAMP_WHITERABBIT ts;
-  {
-  FCNCALL_SUBNAME("ts");
-  { FCNCALL_CALL_CTRL_WRAP(ts,ts.FCNCALL_CALL(ts)); }
-  FCNCALL_SUBNAME_END;
-  }
-  // TAMEX4_HEADER trigger_window;
-  {
-  FCNCALL_SUBNAME("trigger_window");
-  { FCNCALL_CALL_CTRL_WRAP(trigger_window,trigger_window.FCNCALL_CALL(trigger_window)); }
-  FCNCALL_SUBNAME_END;
-  }
-  FCNCALL_RET;
-}
-#endif//USER_DEF_plastic_subev
-
 #ifndef USER_DEF_unpack_event
 FCNCALL_TEMPLATE
 FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(unpack_event)::FCNCALL_NAME(unpack_event)
@@ -538,10 +538,10 @@ FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(unpack_event)::FCNCALL_NAME(unpack_event)
   { FCNCALL_CALL_CTRL_WRAP(fatima,fatima.FCNCALL_CALL(fatima)); }
   FCNCALL_SUBNAME_END;
   }
-  // plastic_subev plastic;
+  // bplast_subev bplast;
   {
-  FCNCALL_SUBNAME("plastic");
-  { FCNCALL_CALL_CTRL_WRAP(plastic,plastic.FCNCALL_CALL(plastic)); }
+  FCNCALL_SUBNAME("bplast");
+  { FCNCALL_CALL_CTRL_WRAP(bplast,bplast.FCNCALL_CALL(bplast)); }
   FCNCALL_SUBNAME_END;
   }
   FCNCALL_RET;
