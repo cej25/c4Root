@@ -18,6 +18,8 @@ class bPlastRaw2Cal : public FairTask
 
         ~bPlastRaw2Cal();
 
+        void SetOnline(Bool_t set_online){fOnline = set_online;}
+
         void PrintDetectorMap();
         void PrintDetectorCal();
 
