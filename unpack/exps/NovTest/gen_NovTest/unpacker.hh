@@ -2234,8 +2234,8 @@ void fatima_tamex_subev::__unpack(__data_src_t &__buffer)
   {
     printf("          %s%s%s: \n", CT_OUT(BOLD_MAGENTA),  "fatima_tamex_subev",CT_OUT(NORM));
   }
-  // ts = TIMESTAMP_WHITERABBIT(id=0x500);
-  UNPACK_DECL(560,TIMESTAMP_WHITERABBIT,ts,/*id*/0x500);
+  // ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1600);
+  UNPACK_DECL(560,TIMESTAMP_WHITERABBIT_EXTENDED,ts,/*id*/0x1600);
   // trigger_window = TAMEX4_HEADER();
   UNPACK_DECL(561,TAMEX4_HEADER,trigger_window);
   // select several

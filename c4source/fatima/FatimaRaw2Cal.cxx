@@ -122,8 +122,8 @@ Bool_t FatimaRaw2Cal::SetDetectorMapFile(TString filename){
             c4LOG(info, Form("Reading %i, %i, %i",rtamex_module,rtamex_channel,rdetector_id));
             std::pair<int,int> tamex_mc = {rtamex_module,rtamex_channel};
 
-            auto it = detector_mapping.find(tamex_mc);
-            if (it != detector_mapping.end()) c4LOG(fatal,Form("Detector mapping not unique. Multiple entries of (tamex module id = %i) (tamex channel id = %i)",rtamex_module,rtamex_channel));
+            //auto it = detector_mapping.find(tamex_mc);
+            //if (it != detector_mapping.end()) c4LOG(fatal,Form("Detector mapping not unique. Multiple entries of (tamex module id = %i) (tamex channel id = %i)",rtamex_module,rtamex_channel));
 
             detector_mapping.insert(std::pair<std::pair<int,int>,int>{tamex_mc,rdetector_id});
             detector_map_file.ignore(256,'\n');
