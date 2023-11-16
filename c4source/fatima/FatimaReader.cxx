@@ -49,32 +49,47 @@ FatimaReader::~FatimaReader() {
     c4LOG(info, Form("Trails read %i",(int)fNtrails_read));
     c4LOG(info, Form("Leads read  %i",(int)fNleads_read));
     c4LOG(info, Form("Matches     %i",(int)fNmatched));
-    
     for (int i = 0; i < NBoards; i++) {
-
         for (int j = 0; j < NChannels; j++) {
-            delete[] fine_time_calibration_coeffs[i][j];
-            fine_time_calibration_coeffs[i][j] = nullptr;
+            if (fine_time_calibration_coeffs[i][j] != nullptr) {
+                delete[] fine_time_calibration_coeffs[i][j];
+                fine_time_calibration_coeffs[i][j] = nullptr;
+            }
         }
-        delete[] fine_time_calibration_coeffs[i];
-        fine_time_calibration_coeffs[i] = nullptr;
-        
-        if (fine_time_hits[i] != nullptr){
+
+        if (fine_time_calibration_coeffs[i] != nullptr) {
+            delete[] fine_time_calibration_coeffs[i];
+            fine_time_calibration_coeffs[i] = nullptr;
+        }
+
+        if (fine_time_hits[i] != nullptr) {
             delete[] fine_time_hits[i];
             fine_time_hits[i] = nullptr;
         }
 
         if (last_hits[i] != nullptr) {
             delete[] last_hits[i];
-            last_hits[i] = nullptr;  // Set the pointer to nullptr after deletion
+            last_hits[i] = nullptr;
         }
     }
-    delete[] fine_time_hits;
-    delete[] fine_time_calibration_coeffs;
-    delete[] last_hits;
+
+    if (fine_time_hits != nullptr) {
+        delete[] fine_time_hits;
+        fine_time_hits = nullptr;
+    }
+
+    if (fine_time_calibration_coeffs != nullptr) {
+        delete[] fine_time_calibration_coeffs;
+        fine_time_calibration_coeffs = nullptr;
+    }
+
+    if (last_hits != nullptr) {
+        delete[] last_hits;
+        last_hits = nullptr;
+    }
 
 
-    delete fArray;
+    if (fArray != nullptr) delete fArray;
 
     c4LOG(info, "Destroyed FatimaReader properly.");
 
