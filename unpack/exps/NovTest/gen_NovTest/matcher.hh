@@ -589,6 +589,17 @@ FORCE_IMPL_DATA_SRC_FCN(bool,WR_MULTI::__match);
 /** END_MATCHER *******************************************************/
 /** BEGIN_MATCHER ******************************************************
  *
+ * Event matcher for bplast_subev.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// SUBEVENT(bplast_subev)
+// No __match function for subevents.
+
+/** END_MATCHER *******************************************************/
+/** BEGIN_MATCHER ******************************************************
+ *
  * Event matcher for fatima_tamex_subev.
  *
  * Do not edit - automatically generated.
@@ -606,17 +617,6 @@ FORCE_IMPL_DATA_SRC_FCN(bool,WR_MULTI::__match);
  */
 
 // SUBEVENT(febex_subev)
-// No __match function for subevents.
-
-/** END_MATCHER *******************************************************/
-/** BEGIN_MATCHER ******************************************************
- *
- * Event matcher for plastic_subev.
- *
- * Do not edit - automatically generated.
- */
-
-// SUBEVENT(plastic_subev)
 // No __match function for subevents.
 
 /** END_MATCHER *******************************************************/

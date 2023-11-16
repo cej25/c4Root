@@ -481,6 +481,22 @@ SUBEVENT(aida_subev)
   external data = EXT_AIDA();
 }
 
+SUBEVENT(bplast_subev)
+{
+  ts = TIMESTAMP_WHITERABBIT(id=0x500);
+  trigger_window = TAMEX4_HEADER();
+  select several
+  {
+    padding = TAMEX4_PADDING();
+  }
+  select several
+  {
+    tamex[0] = TAMEX4_SFP(sfp=0,card=0);
+    tamex[1] = TAMEX4_SFP(sfp=0,card=1);
+    tamex[2] = TAMEX4_SFP(sfp=0,card=2);
+  }
+}
+
 SUBEVENT(fatima_tamex_subev)
 {
   ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1600);
@@ -511,22 +527,6 @@ SUBEVENT(febex_subev)
   }
 }
 
-SUBEVENT(plastic_subev)
-{
-  ts = TIMESTAMP_WHITERABBIT(id=0x500);
-  trigger_window = TAMEX4_HEADER();
-  select several
-  {
-    padding = TAMEX4_PADDING();
-  }
-  select several
-  {
-    tamex[0] = TAMEX4_SFP(sfp=0,card=0);
-    tamex[1] = TAMEX4_SFP(sfp=0,card=1);
-    tamex[2] = TAMEX4_SFP(sfp=0,card=2);
-  }
-}
-
 /**********************************************************
  * The event definition:
  */
@@ -537,8 +537,7 @@ EVENT
   germanium = febex_subev(type=10,subtype=1,procid=60,control=20);
   fatima = fatima_tamex_subev(type=10,subtype=1,procid=75,control=20,
                               subcrate=0);
-  plastic = plastic_subev(type=10,subtype=1,procid=80,control=20,
-                          subcrate=0);
+  bplast = bplast_subev(type=10,subtype=1,procid=80,control=20,subcrate=0);
   ignore_unknown_subevent;
 }
 
@@ -5080,6 +5079,199 @@ FORCE_IMPL_DATA_SRC_FCN(void,aida_subev::__packer);
 /** END_PACKER ********************************************************/
 
 //
+// Generating code for: bplast_subev
+//
+
+/** BEGIN_STRUCTURES ***************************************************
+ *
+ * Event unpacker associated structures for bplast_subev.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// SUBEVENT(bplast_subev)
+#if !PACKER_CODE
+# define DECLARED_UNPACK_bplast_subev
+class bplast_subev
+#else//PACKER_CODE
+# define DECLARED_PACKER_bplast_subev
+class PACKER_bplast_subev
+#endif//PACKER_CODE
+ : public unpack_subevent_base
+{
+public:
+  // ts = TIMESTAMP_WHITERABBIT(id=0x500);
+  // trigger_window = TAMEX4_HEADER();
+  // select several
+
+    // padding = TAMEX4_PADDING();
+  SINGLE(TAMEX4_PADDING,padding);
+  // select several
+
+    // tamex[0] = TAMEX4_SFP(sfp=0,card=0);
+    // tamex[1] = TAMEX4_SFP(sfp=0,card=1);
+    // tamex[2] = TAMEX4_SFP(sfp=0,card=2);
+  SINGLE(TAMEX4_SFP,tamex[3]);
+  SINGLE(TIMESTAMP_WHITERABBIT,ts);
+  SINGLE(TAMEX4_HEADER,trigger_window);
+
+public:
+#ifndef __PSDC__
+# if !PACKER_CODE
+template<typename __data_src_t>
+  void __unpack(__data_src_t &__buffer);
+template<typename __data_src_t>
+  static bool __match(__data_src_t &__buffer);
+  // void __clean();
+# else//PACKER_CODE
+template<typename __data_dest_t>
+  void __packer(__data_dest_t &__buffer);
+# endif//PACKER_CODE
+
+  STRUCT_FCNS_DECL(bplast_subev);
+#endif//!__PSDC__
+};
+
+/** END_STRUCTURES ****************************************************/
+
+
+/** BEGIN_UNPACKER *****************************************************
+ *
+ * Event unpacker for bplast_subev.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// SUBEVENT(bplast_subev)
+template<typename __data_src_t>
+void bplast_subev::__unpack(__data_src_t &__buffer)
+{
+  if (__buffer.is_memberdump())
+  {
+    printf("          %s%s%s: \n", CT_OUT(BOLD_MAGENTA),  "bplast_subev",CT_OUT(NORM));
+  }
+  // ts = TIMESTAMP_WHITERABBIT(id=0x500);
+  UNPACK_DECL(481,TIMESTAMP_WHITERABBIT,ts,/*id*/0x500);
+  // trigger_window = TAMEX4_HEADER();
+  UNPACK_DECL(482,TAMEX4_HEADER,trigger_window);
+  // select several
+
+    // padding = TAMEX4_PADDING();
+  for ( ; ; )
+  {
+    if (__buffer.empty()) break;
+    int __match_no = 0;
+    // optimized match 1: TAMEX4_PADDING padding: (s32) => (0xfff00000,0xadd00000)
+    {
+    uint32 __match_peek;
+    PEEK_FROM_BUFFER(486,uint32,__match_peek);
+    // differ = 00000000 :
+    uint32 __match_index = 0;
+    static const sint8 __match_index_array[1] = { 1, };
+    __match_no = __match_index_array[__match_index];
+    // last_subevent_item = 0
+    }
+    if (!__match_no) break;
+    switch (__match_no)
+    {
+      case 1:
+        CHECK_SPURIOUS_MATCH_DECL(485,spurious_match_abort_loop_1,TAMEX4_PADDING);
+        UNPACK_DECL(485,TAMEX4_PADDING,padding);
+        break;
+    }
+  }
+  spurious_match_abort_loop_1:;
+  // select several
+
+    // tamex[0] = TAMEX4_SFP(sfp=0,card=0);
+    // tamex[1] = TAMEX4_SFP(sfp=0,card=1);
+    // tamex[2] = TAMEX4_SFP(sfp=0,card=2);
+  for ( ; ; )
+  {
+    if (__buffer.empty()) break;
+    int __match_no = 0;
+    // optimized match 1: TAMEX4_SFP tamex[0]: (s32) => (0xfffff0ff,0x00000034)
+    // optimized match 2: TAMEX4_SFP tamex[1]: (s32) => (0xfffff0ff,0x00010034)
+    // optimized match 3: TAMEX4_SFP tamex[2]: (s32) => (0xfffff0ff,0x00020034)
+    {
+    uint32 __match_peek;
+    PEEK_FROM_BUFFER(492,uint32,__match_peek);
+    // differ = 00030000 : 16 17
+    uint32 __match_index = 0 | /* 16,17 */ ((__match_peek >> 16) & 0x00000003);
+    static const sint8 __match_index_array[4] = { 1, 2, 3, 0, };
+    __match_no = __match_index_array[__match_index];
+    // last_subevent_item = 1
+    }
+    if (!__match_no) break;
+    switch (__match_no)
+    {
+      case 1:
+        UNPACK_DECL(489,TAMEX4_SFP,tamex[0],/*sfp*/0,/*card*/0);
+        break;
+      case 2:
+        UNPACK_DECL(490,TAMEX4_SFP,tamex[1],/*sfp*/0,/*card*/1);
+        break;
+      case 3:
+        UNPACK_DECL(491,TAMEX4_SFP,tamex[2],/*sfp*/0,/*card*/2);
+        break;
+    }
+  }
+}
+FORCE_IMPL_DATA_SRC_FCN(void,bplast_subev::__unpack);
+
+/** END_UNPACKER ******************************************************/
+
+
+/** BEGIN_MATCHER ******************************************************
+ *
+ * Event matcher for bplast_subev.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// SUBEVENT(bplast_subev)
+// No __match function for subevents.
+
+/** END_MATCHER *******************************************************/
+
+
+/** BEGIN_PACKER *******************************************************
+ *
+ * Event packer for bplast_subev.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// SUBEVENT(bplast_subev)
+template<typename __data_dest_t>
+void PACKER_bplast_subev::__packer(__data_dest_t &__buffer)
+{
+  // ts = TIMESTAMP_WHITERABBIT(id=0x500);
+  PACK_DECL(481,TIMESTAMP_WHITERABBIT,ts,/*id*/0x500);
+  // trigger_window = TAMEX4_HEADER();
+  PACK_DECL(482,TAMEX4_HEADER,trigger_window);
+  // select several
+
+    // padding = TAMEX4_PADDING();
+  {
+    PACK_DECL(485,TAMEX4_PADDING,padding);
+  }
+  // select several
+
+    // tamex[0] = TAMEX4_SFP(sfp=0,card=0);
+    // tamex[1] = TAMEX4_SFP(sfp=0,card=1);
+    // tamex[2] = TAMEX4_SFP(sfp=0,card=2);
+  {
+    PACK_DECL(489,TAMEX4_SFP,tamex[0],/*sfp*/0,/*card*/0);
+    PACK_DECL(490,TAMEX4_SFP,tamex[1],/*sfp*/0,/*card*/1);
+    PACK_DECL(491,TAMEX4_SFP,tamex[2],/*sfp*/0,/*card*/2);
+  }
+}
+FORCE_IMPL_DATA_SRC_FCN(void,bplast_subev::__packer);
+
+/** END_PACKER ********************************************************/
+
+//
 // Generating code for: fatima_tamex_subev
 //
 
@@ -5150,9 +5342,9 @@ void fatima_tamex_subev::__unpack(__data_src_t &__buffer)
     printf("          %s%s%s: \n", CT_OUT(BOLD_MAGENTA),  "fatima_tamex_subev",CT_OUT(NORM));
   }
   // ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1600);
-  UNPACK_DECL(481,TIMESTAMP_WHITERABBIT_EXTENDED,ts,/*id*/0x1600);
+  UNPACK_DECL(497,TIMESTAMP_WHITERABBIT_EXTENDED,ts,/*id*/0x1600);
   // trigger_window = TAMEX4_HEADER();
-  UNPACK_DECL(482,TAMEX4_HEADER,trigger_window);
+  UNPACK_DECL(498,TAMEX4_HEADER,trigger_window);
   // select several
 
     // padding = TAMEX4_PADDING();
@@ -5163,7 +5355,7 @@ void fatima_tamex_subev::__unpack(__data_src_t &__buffer)
     // optimized match 1: TAMEX4_PADDING padding: (s32) => (0xfff00000,0xadd00000)
     {
     uint32 __match_peek;
-    PEEK_FROM_BUFFER(486,uint32,__match_peek);
+    PEEK_FROM_BUFFER(502,uint32,__match_peek);
     // differ = 00000000 :
     uint32 __match_index = 0;
     static const sint8 __match_index_array[1] = { 1, };
@@ -5174,12 +5366,12 @@ void fatima_tamex_subev::__unpack(__data_src_t &__buffer)
     switch (__match_no)
     {
       case 1:
-        CHECK_SPURIOUS_MATCH_DECL(485,spurious_match_abort_loop_1,TAMEX4_PADDING);
-        UNPACK_DECL(485,TAMEX4_PADDING,padding);
+        CHECK_SPURIOUS_MATCH_DECL(501,spurious_match_abort_loop_2,TAMEX4_PADDING);
+        UNPACK_DECL(501,TAMEX4_PADDING,padding);
         break;
     }
   }
-  spurious_match_abort_loop_1:;
+  spurious_match_abort_loop_2:;
   // select several
 
     // tamex[0] = TAMEX4_SFP(sfp=0,card=0);
@@ -5190,7 +5382,7 @@ void fatima_tamex_subev::__unpack(__data_src_t &__buffer)
     // optimized match 1: TAMEX4_SFP tamex[0]: (s32) => (0xfffff0ff,0x00000034)
     {
     uint32 __match_peek;
-    PEEK_FROM_BUFFER(490,uint32,__match_peek);
+    PEEK_FROM_BUFFER(506,uint32,__match_peek);
     // differ = 00000000 :
     uint32 __match_index = 0;
     static const sint8 __match_index_array[1] = { 1, };
@@ -5201,7 +5393,7 @@ void fatima_tamex_subev::__unpack(__data_src_t &__buffer)
     switch (__match_no)
     {
       case 1:
-        UNPACK_DECL(489,TAMEX4_SFP,tamex[0],/*sfp*/0,/*card*/0);
+        UNPACK_DECL(505,TAMEX4_SFP,tamex[0],/*sfp*/0,/*card*/0);
         break;
     }
   }
@@ -5236,20 +5428,20 @@ template<typename __data_dest_t>
 void PACKER_fatima_tamex_subev::__packer(__data_dest_t &__buffer)
 {
   // ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1600);
-  PACK_DECL(481,TIMESTAMP_WHITERABBIT_EXTENDED,ts,/*id*/0x1600);
+  PACK_DECL(497,TIMESTAMP_WHITERABBIT_EXTENDED,ts,/*id*/0x1600);
   // trigger_window = TAMEX4_HEADER();
-  PACK_DECL(482,TAMEX4_HEADER,trigger_window);
+  PACK_DECL(498,TAMEX4_HEADER,trigger_window);
   // select several
 
     // padding = TAMEX4_PADDING();
   {
-    PACK_DECL(485,TAMEX4_PADDING,padding);
+    PACK_DECL(501,TAMEX4_PADDING,padding);
   }
   // select several
 
     // tamex[0] = TAMEX4_SFP(sfp=0,card=0);
   {
-    PACK_DECL(489,TAMEX4_SFP,tamex[0],/*sfp*/0,/*card*/0);
+    PACK_DECL(505,TAMEX4_SFP,tamex[0],/*sfp*/0,/*card*/0);
   }
 }
 FORCE_IMPL_DATA_SRC_FCN(void,fatima_tamex_subev::__packer);
@@ -5328,7 +5520,7 @@ void febex_subev::__unpack(__data_src_t &__buffer)
     printf("          %s%s%s: \n", CT_OUT(BOLD_MAGENTA),  "febex_subev",CT_OUT(NORM));
   }
   // ts = TIMESTAMP_WHITERABBIT(id=0x400);
-  UNPACK_DECL(495,TIMESTAMP_WHITERABBIT,ts,/*id*/0x400);
+  UNPACK_DECL(511,TIMESTAMP_WHITERABBIT,ts,/*id*/0x400);
   // select several
 
     // padding = FEBEX_PADDING();
@@ -5339,7 +5531,7 @@ void febex_subev::__unpack(__data_src_t &__buffer)
     // optimized match 1: FEBEX_PADDING padding: (s32) => (0xfff00000,0xadd00000)
     {
     uint32 __match_peek;
-    PEEK_FROM_BUFFER(499,uint32,__match_peek);
+    PEEK_FROM_BUFFER(515,uint32,__match_peek);
     // differ = 00000000 :
     uint32 __match_index = 0;
     static const sint8 __match_index_array[1] = { 1, };
@@ -5350,12 +5542,12 @@ void febex_subev::__unpack(__data_src_t &__buffer)
     switch (__match_no)
     {
       case 1:
-        CHECK_SPURIOUS_MATCH_DECL(498,spurious_match_abort_loop_2,FEBEX_PADDING);
-        UNPACK_DECL(498,FEBEX_PADDING,padding);
+        CHECK_SPURIOUS_MATCH_DECL(514,spurious_match_abort_loop_3,FEBEX_PADDING);
+        UNPACK_DECL(514,FEBEX_PADDING,padding);
         break;
     }
   }
-  spurious_match_abort_loop_2:;
+  spurious_match_abort_loop_3:;
   // select several
 
     // data[0] = FEBEX_EVENT(card=0);
@@ -5372,7 +5564,7 @@ void febex_subev::__unpack(__data_src_t &__buffer)
     // optimized match 4: FEBEX_EVENT data[3]: (s32) => (0xffff00ff,0xff030034)
     {
     uint32 __match_peek;
-    PEEK_FROM_BUFFER(506,uint32,__match_peek);
+    PEEK_FROM_BUFFER(522,uint32,__match_peek);
     // differ = 00030000 : 16 17
     uint32 __match_index = 0 | /* 16,17 */ ((__match_peek >> 16) & 0x00000003);
     static const sint8 __match_index_array[4] = { 1, 2, 3, 4, };
@@ -5383,16 +5575,16 @@ void febex_subev::__unpack(__data_src_t &__buffer)
     switch (__match_no)
     {
       case 1:
-        UNPACK_DECL(502,FEBEX_EVENT,data[0],/*card*/0);
+        UNPACK_DECL(518,FEBEX_EVENT,data[0],/*card*/0);
         break;
       case 2:
-        UNPACK_DECL(503,FEBEX_EVENT,data[1],/*card*/1);
+        UNPACK_DECL(519,FEBEX_EVENT,data[1],/*card*/1);
         break;
       case 3:
-        UNPACK_DECL(504,FEBEX_EVENT,data[2],/*card*/2);
+        UNPACK_DECL(520,FEBEX_EVENT,data[2],/*card*/2);
         break;
       case 4:
-        UNPACK_DECL(505,FEBEX_EVENT,data[3],/*card*/3);
+        UNPACK_DECL(521,FEBEX_EVENT,data[3],/*card*/3);
         break;
     }
   }
@@ -5427,12 +5619,12 @@ template<typename __data_dest_t>
 void PACKER_febex_subev::__packer(__data_dest_t &__buffer)
 {
   // ts = TIMESTAMP_WHITERABBIT(id=0x400);
-  PACK_DECL(495,TIMESTAMP_WHITERABBIT,ts,/*id*/0x400);
+  PACK_DECL(511,TIMESTAMP_WHITERABBIT,ts,/*id*/0x400);
   // select several
 
     // padding = FEBEX_PADDING();
   {
-    PACK_DECL(498,FEBEX_PADDING,padding);
+    PACK_DECL(514,FEBEX_PADDING,padding);
   }
   // select several
 
@@ -5441,206 +5633,13 @@ void PACKER_febex_subev::__packer(__data_dest_t &__buffer)
     // data[2] = FEBEX_EVENT(card=2);
     // data[3] = FEBEX_EVENT(card=3);
   {
-    PACK_DECL(502,FEBEX_EVENT,data[0],/*card*/0);
-    PACK_DECL(503,FEBEX_EVENT,data[1],/*card*/1);
-    PACK_DECL(504,FEBEX_EVENT,data[2],/*card*/2);
-    PACK_DECL(505,FEBEX_EVENT,data[3],/*card*/3);
+    PACK_DECL(518,FEBEX_EVENT,data[0],/*card*/0);
+    PACK_DECL(519,FEBEX_EVENT,data[1],/*card*/1);
+    PACK_DECL(520,FEBEX_EVENT,data[2],/*card*/2);
+    PACK_DECL(521,FEBEX_EVENT,data[3],/*card*/3);
   }
 }
 FORCE_IMPL_DATA_SRC_FCN(void,febex_subev::__packer);
-
-/** END_PACKER ********************************************************/
-
-//
-// Generating code for: plastic_subev
-//
-
-/** BEGIN_STRUCTURES ***************************************************
- *
- * Event unpacker associated structures for plastic_subev.
- *
- * Do not edit - automatically generated.
- */
-
-// SUBEVENT(plastic_subev)
-#if !PACKER_CODE
-# define DECLARED_UNPACK_plastic_subev
-class plastic_subev
-#else//PACKER_CODE
-# define DECLARED_PACKER_plastic_subev
-class PACKER_plastic_subev
-#endif//PACKER_CODE
- : public unpack_subevent_base
-{
-public:
-  // ts = TIMESTAMP_WHITERABBIT(id=0x500);
-  // trigger_window = TAMEX4_HEADER();
-  // select several
-
-    // padding = TAMEX4_PADDING();
-  SINGLE(TAMEX4_PADDING,padding);
-  // select several
-
-    // tamex[0] = TAMEX4_SFP(sfp=0,card=0);
-    // tamex[1] = TAMEX4_SFP(sfp=0,card=1);
-    // tamex[2] = TAMEX4_SFP(sfp=0,card=2);
-  SINGLE(TAMEX4_SFP,tamex[3]);
-  SINGLE(TIMESTAMP_WHITERABBIT,ts);
-  SINGLE(TAMEX4_HEADER,trigger_window);
-
-public:
-#ifndef __PSDC__
-# if !PACKER_CODE
-template<typename __data_src_t>
-  void __unpack(__data_src_t &__buffer);
-template<typename __data_src_t>
-  static bool __match(__data_src_t &__buffer);
-  // void __clean();
-# else//PACKER_CODE
-template<typename __data_dest_t>
-  void __packer(__data_dest_t &__buffer);
-# endif//PACKER_CODE
-
-  STRUCT_FCNS_DECL(plastic_subev);
-#endif//!__PSDC__
-};
-
-/** END_STRUCTURES ****************************************************/
-
-
-/** BEGIN_UNPACKER *****************************************************
- *
- * Event unpacker for plastic_subev.
- *
- * Do not edit - automatically generated.
- */
-
-// SUBEVENT(plastic_subev)
-template<typename __data_src_t>
-void plastic_subev::__unpack(__data_src_t &__buffer)
-{
-  if (__buffer.is_memberdump())
-  {
-    printf("          %s%s%s: \n", CT_OUT(BOLD_MAGENTA),  "plastic_subev",CT_OUT(NORM));
-  }
-  // ts = TIMESTAMP_WHITERABBIT(id=0x500);
-  UNPACK_DECL(511,TIMESTAMP_WHITERABBIT,ts,/*id*/0x500);
-  // trigger_window = TAMEX4_HEADER();
-  UNPACK_DECL(512,TAMEX4_HEADER,trigger_window);
-  // select several
-
-    // padding = TAMEX4_PADDING();
-  for ( ; ; )
-  {
-    if (__buffer.empty()) break;
-    int __match_no = 0;
-    // optimized match 1: TAMEX4_PADDING padding: (s32) => (0xfff00000,0xadd00000)
-    {
-    uint32 __match_peek;
-    PEEK_FROM_BUFFER(516,uint32,__match_peek);
-    // differ = 00000000 :
-    uint32 __match_index = 0;
-    static const sint8 __match_index_array[1] = { 1, };
-    __match_no = __match_index_array[__match_index];
-    // last_subevent_item = 0
-    }
-    if (!__match_no) break;
-    switch (__match_no)
-    {
-      case 1:
-        CHECK_SPURIOUS_MATCH_DECL(515,spurious_match_abort_loop_3,TAMEX4_PADDING);
-        UNPACK_DECL(515,TAMEX4_PADDING,padding);
-        break;
-    }
-  }
-  spurious_match_abort_loop_3:;
-  // select several
-
-    // tamex[0] = TAMEX4_SFP(sfp=0,card=0);
-    // tamex[1] = TAMEX4_SFP(sfp=0,card=1);
-    // tamex[2] = TAMEX4_SFP(sfp=0,card=2);
-  for ( ; ; )
-  {
-    if (__buffer.empty()) break;
-    int __match_no = 0;
-    // optimized match 1: TAMEX4_SFP tamex[0]: (s32) => (0xfffff0ff,0x00000034)
-    // optimized match 2: TAMEX4_SFP tamex[1]: (s32) => (0xfffff0ff,0x00010034)
-    // optimized match 3: TAMEX4_SFP tamex[2]: (s32) => (0xfffff0ff,0x00020034)
-    {
-    uint32 __match_peek;
-    PEEK_FROM_BUFFER(522,uint32,__match_peek);
-    // differ = 00030000 : 16 17
-    uint32 __match_index = 0 | /* 16,17 */ ((__match_peek >> 16) & 0x00000003);
-    static const sint8 __match_index_array[4] = { 1, 2, 3, 0, };
-    __match_no = __match_index_array[__match_index];
-    // last_subevent_item = 1
-    }
-    if (!__match_no) break;
-    switch (__match_no)
-    {
-      case 1:
-        UNPACK_DECL(519,TAMEX4_SFP,tamex[0],/*sfp*/0,/*card*/0);
-        break;
-      case 2:
-        UNPACK_DECL(520,TAMEX4_SFP,tamex[1],/*sfp*/0,/*card*/1);
-        break;
-      case 3:
-        UNPACK_DECL(521,TAMEX4_SFP,tamex[2],/*sfp*/0,/*card*/2);
-        break;
-    }
-  }
-}
-FORCE_IMPL_DATA_SRC_FCN(void,plastic_subev::__unpack);
-
-/** END_UNPACKER ******************************************************/
-
-
-/** BEGIN_MATCHER ******************************************************
- *
- * Event matcher for plastic_subev.
- *
- * Do not edit - automatically generated.
- */
-
-// SUBEVENT(plastic_subev)
-// No __match function for subevents.
-
-/** END_MATCHER *******************************************************/
-
-
-/** BEGIN_PACKER *******************************************************
- *
- * Event packer for plastic_subev.
- *
- * Do not edit - automatically generated.
- */
-
-// SUBEVENT(plastic_subev)
-template<typename __data_dest_t>
-void PACKER_plastic_subev::__packer(__data_dest_t &__buffer)
-{
-  // ts = TIMESTAMP_WHITERABBIT(id=0x500);
-  PACK_DECL(511,TIMESTAMP_WHITERABBIT,ts,/*id*/0x500);
-  // trigger_window = TAMEX4_HEADER();
-  PACK_DECL(512,TAMEX4_HEADER,trigger_window);
-  // select several
-
-    // padding = TAMEX4_PADDING();
-  {
-    PACK_DECL(515,TAMEX4_PADDING,padding);
-  }
-  // select several
-
-    // tamex[0] = TAMEX4_SFP(sfp=0,card=0);
-    // tamex[1] = TAMEX4_SFP(sfp=0,card=1);
-    // tamex[2] = TAMEX4_SFP(sfp=0,card=2);
-  {
-    PACK_DECL(519,TAMEX4_SFP,tamex[0],/*sfp*/0,/*card*/0);
-    PACK_DECL(520,TAMEX4_SFP,tamex[1],/*sfp*/0,/*card*/1);
-    PACK_DECL(521,TAMEX4_SFP,tamex[2],/*sfp*/0,/*card*/2);
-  }
-}
-FORCE_IMPL_DATA_SRC_FCN(void,plastic_subev::__packer);
 
 /** END_PACKER ********************************************************/
 
@@ -5663,13 +5662,12 @@ public:
   // germanium = febex_subev(type=10,subtype=1,procid=60,control=20);
   // fatima = fatima_tamex_subev(type=10,subtype=1,procid=75,control=20,
                               // subcrate=0);
-  // plastic = plastic_subev(type=10,subtype=1,procid=80,control=20,
-                          // subcrate=0);
+  // bplast = bplast_subev(type=10,subtype=1,procid=80,control=20,subcrate=0);
   // ignore_unknown_subevent;
 SINGLE(aida_subev,aida);
 SINGLE(febex_subev,germanium);
 SINGLE(fatima_tamex_subev,fatima);
-SINGLE(plastic_subev,plastic);
+SINGLE(bplast_subev,bplast);
 public:
 #ifndef __PSDC__
   bitsone<5> __visited;
@@ -5705,15 +5703,14 @@ int unpack_event::__unpack_subevent(subevent_header *__header,__data_src_t &__bu
   // germanium = febex_subev(type=10,subtype=1,procid=60,control=20);
   // fatima = fatima_tamex_subev(type=10,subtype=1,procid=75,control=20,
                               // subcrate=0);
-  // plastic = plastic_subev(type=10,subtype=1,procid=80,control=20,
-                          // subcrate=0);
+  // bplast = bplast_subev(type=10,subtype=1,procid=80,control=20,subcrate=0);
   // ignore_unknown_subevent;
 {
   int __match_no = 0;
   MATCH_SUBEVENT_DECL(531,__match_no,1,((VES10_1_type==10)&&(VES10_1_subtype==1)&&(VES10_1_control==37)&&(VES10_1_procid==90)),aida);
   MATCH_SUBEVENT_DECL(532,__match_no,2,((VES10_1_type==10)&&(VES10_1_subtype==1)&&(VES10_1_control==20)&&(VES10_1_procid==60)),germanium);
   MATCH_SUBEVENT_DECL(534,__match_no,3,((VES10_1_type==10)&&(VES10_1_subtype==1)&&(VES10_1_control==20)&&(VES10_1_subcrate==0)&&(VES10_1_procid==75)),fatima);
-  MATCH_SUBEVENT_DECL(536,__match_no,4,((VES10_1_type==10)&&(VES10_1_subtype==1)&&(VES10_1_control==20)&&(VES10_1_subcrate==0)&&(VES10_1_procid==80)),plastic);
+  MATCH_SUBEVENT_DECL(535,__match_no,4,((VES10_1_type==10)&&(VES10_1_subtype==1)&&(VES10_1_control==20)&&(VES10_1_subcrate==0)&&(VES10_1_procid==80)),bplast);
   if (!__match_no) return 0;
   switch (__match_no)
   {
@@ -5729,8 +5726,8 @@ int unpack_event::__unpack_subevent(subevent_header *__header,__data_src_t &__bu
       UNPACK_SUBEVENT_DECL(534,0,fatima_tamex_subev,fatima);
       break;
     case 4:
-      UNPACK_SUBEVENT_CHECK_NO_REVISIT(536,plastic_subev,plastic,2);
-      UNPACK_SUBEVENT_DECL(536,0,plastic_subev,plastic);
+      UNPACK_SUBEVENT_CHECK_NO_REVISIT(535,bplast_subev,bplast,2);
+      UNPACK_SUBEVENT_DECL(535,0,bplast_subev,bplast);
       break;
   }
   return 0;
@@ -5752,8 +5749,7 @@ FORCE_IMPL_DATA_SRC_FCN_HDR(int,unpack_event::__unpack_subevent);
   // germanium = febex_subev(type=10,subtype=1,procid=60,control=20);
   // fatima = fatima_tamex_subev(type=10,subtype=1,procid=75,control=20,
                               // subcrate=0);
-  // plastic = plastic_subev(type=10,subtype=1,procid=80,control=20,
-                          // subcrate=0);
+  // bplast = bplast_subev(type=10,subtype=1,procid=80,control=20,subcrate=0);
   // ignore_unknown_subevent;
 {
 }
@@ -5774,15 +5770,14 @@ int unpack_event::__revoke_subevent(subevent_header *__header)
   // germanium = febex_subev(type=10,subtype=1,procid=60,control=20);
   // fatima = fatima_tamex_subev(type=10,subtype=1,procid=75,control=20,
                               // subcrate=0);
-  // plastic = plastic_subev(type=10,subtype=1,procid=80,control=20,
-                          // subcrate=0);
+  // bplast = bplast_subev(type=10,subtype=1,procid=80,control=20,subcrate=0);
   // ignore_unknown_subevent;
 {
   int __match_no = 0;
   MATCH_SUBEVENT_DECL(531,__match_no,1,((VES10_1_type==10)&&(VES10_1_subtype==1)&&(VES10_1_control==37)&&(VES10_1_procid==90)),aida);
   MATCH_SUBEVENT_DECL(532,__match_no,2,((VES10_1_type==10)&&(VES10_1_subtype==1)&&(VES10_1_control==20)&&(VES10_1_procid==60)),germanium);
   MATCH_SUBEVENT_DECL(534,__match_no,3,((VES10_1_type==10)&&(VES10_1_subtype==1)&&(VES10_1_control==20)&&(VES10_1_subcrate==0)&&(VES10_1_procid==75)),fatima);
-  MATCH_SUBEVENT_DECL(536,__match_no,4,((VES10_1_type==10)&&(VES10_1_subtype==1)&&(VES10_1_control==20)&&(VES10_1_subcrate==0)&&(VES10_1_procid==80)),plastic);
+  MATCH_SUBEVENT_DECL(535,__match_no,4,((VES10_1_type==10)&&(VES10_1_subtype==1)&&(VES10_1_control==20)&&(VES10_1_subcrate==0)&&(VES10_1_procid==80)),bplast);
   if (!__match_no) return 0;
   switch (__match_no)
   {
@@ -5798,8 +5793,8 @@ int unpack_event::__revoke_subevent(subevent_header *__header)
       REVOKE_SUBEVENT_DECL(534,0,fatima_tamex_subev,fatima);
       break;
     case 4:
-      UNPACK_SUBEVENT_CHECK_NO_REVISIT(536,plastic_subev,plastic,2);
-      REVOKE_SUBEVENT_DECL(536,0,plastic_subev,plastic);
+      UNPACK_SUBEVENT_CHECK_NO_REVISIT(535,bplast_subev,bplast,2);
+      REVOKE_SUBEVENT_DECL(535,0,bplast_subev,bplast);
       break;
   }
   return 0;
@@ -5818,7 +5813,7 @@ int unpack_event::__revoke_subevent(subevent_header *__header)
 { "aida", "type=10:subtype=1:procid=90:control=37" },
 { "germanium", "type=10:subtype=1:procid=60:control=20" },
 { "fatima", "type=10:subtype=1:procid=75:control=20:subcrate=0" },
-{ "plastic", "type=10:subtype=1:procid=80:control=20:subcrate=0" },
+{ "bplast", "type=10:subtype=1:procid=80:control=20:subcrate=0" },
 
 /** END_SUBEVENT_NAMES ************************************************/
 

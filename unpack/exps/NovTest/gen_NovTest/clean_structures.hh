@@ -150,6 +150,19 @@ template<typename __data_src_t>
   static bool __match(__data_src_t &__buffer);
   STRUCT_FCNS_DECL(aida_subev);
 };
+class bplast_subev
+ : public unpack_subevent_base
+{
+  SINGLE(TAMEX4_PADDING,padding);
+  SINGLE(TAMEX4_SFP,tamex[3]);
+  SINGLE(TIMESTAMP_WHITERABBIT,ts);
+  SINGLE(TAMEX4_HEADER,trigger_window);
+template<typename __data_src_t>
+  void __unpack(__data_src_t &__buffer);
+template<typename __data_src_t>
+  static bool __match(__data_src_t &__buffer);
+  STRUCT_FCNS_DECL(bplast_subev);
+};
 class fatima_tamex_subev
  : public unpack_subevent_base
 {
@@ -175,25 +188,12 @@ template<typename __data_src_t>
   static bool __match(__data_src_t &__buffer);
   STRUCT_FCNS_DECL(febex_subev);
 };
-class plastic_subev
- : public unpack_subevent_base
-{
-  SINGLE(TAMEX4_PADDING,padding);
-  SINGLE(TAMEX4_SFP,tamex[3]);
-  SINGLE(TIMESTAMP_WHITERABBIT,ts);
-  SINGLE(TAMEX4_HEADER,trigger_window);
-template<typename __data_src_t>
-  void __unpack(__data_src_t &__buffer);
-template<typename __data_src_t>
-  static bool __match(__data_src_t &__buffer);
-  STRUCT_FCNS_DECL(plastic_subev);
-};
 class unpack_event : public unpack_event_base
 {
 SINGLE(aida_subev,aida);
 SINGLE(febex_subev,germanium);
 SINGLE(fatima_tamex_subev,fatima);
-SINGLE(plastic_subev,plastic);
+SINGLE(bplast_subev,bplast);
   bitsone<5> __visited;
   void __clear_visited() { __visited.clear(); }
   bool ignore_unknown_subevent() { return true; }

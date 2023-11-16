@@ -639,6 +639,41 @@ FORCE_IMPL_DATA_SRC_FCN(void,aida_subev::__packer);
 /** END_PACKER ********************************************************/
 /** BEGIN_PACKER *******************************************************
  *
+ * Event packer for bplast_subev.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// SUBEVENT(bplast_subev)
+template<typename __data_dest_t>
+void PACKER_bplast_subev::__packer(__data_dest_t &__buffer)
+{
+  // ts = TIMESTAMP_WHITERABBIT(id=0x500);
+  PACK_DECL(574,TIMESTAMP_WHITERABBIT,ts,/*id*/0x500);
+  // trigger_window = TAMEX4_HEADER();
+  PACK_DECL(575,TAMEX4_HEADER,trigger_window);
+  // select several
+
+    // padding = TAMEX4_PADDING();
+  {
+    PACK_DECL(578,TAMEX4_PADDING,padding);
+  }
+  // select several
+
+    // tamex[0] = TAMEX4_SFP(sfp=0,card=0);
+    // tamex[1] = TAMEX4_SFP(sfp=0,card=1);
+    // tamex[2] = TAMEX4_SFP(sfp=0,card=2);
+  {
+    PACK_DECL(582,TAMEX4_SFP,tamex[0],/*sfp*/0,/*card*/0);
+    PACK_DECL(583,TAMEX4_SFP,tamex[1],/*sfp*/0,/*card*/1);
+    PACK_DECL(584,TAMEX4_SFP,tamex[2],/*sfp*/0,/*card*/2);
+  }
+}
+FORCE_IMPL_DATA_SRC_FCN(void,bplast_subev::__packer);
+
+/** END_PACKER ********************************************************/
+/** BEGIN_PACKER *******************************************************
+ *
  * Event packer for fatima_tamex_subev.
  *
  * Do not edit - automatically generated.
@@ -705,41 +740,6 @@ FORCE_IMPL_DATA_SRC_FCN(void,febex_subev::__packer);
 /** END_PACKER ********************************************************/
 /** BEGIN_PACKER *******************************************************
  *
- * Event packer for plastic_subev.
- *
- * Do not edit - automatically generated.
- */
-
-// SUBEVENT(plastic_subev)
-template<typename __data_dest_t>
-void PACKER_plastic_subev::__packer(__data_dest_t &__buffer)
-{
-  // ts = TIMESTAMP_WHITERABBIT(id=0x500);
-  PACK_DECL(574,TIMESTAMP_WHITERABBIT,ts,/*id*/0x500);
-  // trigger_window = TAMEX4_HEADER();
-  PACK_DECL(575,TAMEX4_HEADER,trigger_window);
-  // select several
-
-    // padding = TAMEX4_PADDING();
-  {
-    PACK_DECL(578,TAMEX4_PADDING,padding);
-  }
-  // select several
-
-    // tamex[0] = TAMEX4_SFP(sfp=0,card=0);
-    // tamex[1] = TAMEX4_SFP(sfp=0,card=1);
-    // tamex[2] = TAMEX4_SFP(sfp=0,card=2);
-  {
-    PACK_DECL(582,TAMEX4_SFP,tamex[0],/*sfp*/0,/*card*/0);
-    PACK_DECL(583,TAMEX4_SFP,tamex[1],/*sfp*/0,/*card*/1);
-    PACK_DECL(584,TAMEX4_SFP,tamex[2],/*sfp*/0,/*card*/2);
-  }
-}
-FORCE_IMPL_DATA_SRC_FCN(void,plastic_subev::__packer);
-
-/** END_PACKER ********************************************************/
-/** BEGIN_PACKER *******************************************************
- *
  * Event packer for EVENT.
  *
  * Do not edit - automatically generated.
@@ -750,8 +750,7 @@ FORCE_IMPL_DATA_SRC_FCN(void,plastic_subev::__packer);
   // germanium = febex_subev(type=10,subtype=1,procid=60,control=20);
   // fatima = fatima_tamex_subev(type=10,subtype=1,procid=75,control=20,
                               // subcrate=0);
-  // plastic = plastic_subev(type=10,subtype=1,procid=80,control=20,
-                          // subcrate=0);
+  // bplast = bplast_subev(type=10,subtype=1,procid=80,control=20,subcrate=0);
   // ignore_unknown_subevent;
 {
 }
