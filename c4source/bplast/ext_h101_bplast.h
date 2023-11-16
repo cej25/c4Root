@@ -239,6 +239,6 @@ typedef struct EXT_STR_h101_BPLAST_onion_t
   \
 } while (0);
 
-#endif/*__GUARD_h101_BPLAST_EXT_H101_BPLAST_H__*/
+#endif/*__GUARD_H101_EXT_H101_BPLAST_H__*/
 
 /*******************************************************/
