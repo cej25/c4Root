@@ -8,7 +8,7 @@
 #########################################################
 
 ifeq (,$(UCESB_BASE_DIR))
-TREE_OR_HOME_SRC_DIR = $(firstword $(wildcard $(addsuffix /$(1),$(shell pwd)/.. $(HOME))))
+TREE_OR_HOME_SRC_DIR = $(firstword $(wildcard $(addsuffix /$(1),$(shell pwd)/../../../ $(HOME))))
 UCESB_BASE_DIR=$(call TREE_OR_HOME_SRC_DIR,ucesb)
 endif
 export UCESB_BASE_DIR
