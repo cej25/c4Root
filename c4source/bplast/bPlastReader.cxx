@@ -275,7 +275,7 @@ Bool_t bPlastReader::Read() //do fine time here:
 
                     next_channel = fData->bplast_tamex[it_board_number].time_channelv[it_hits+1];
 
-                    if (next_channel == 0 || next_channel < 0) continue;
+                    if (next_channel == 0 || next_channel < 0 || it_hits+1 >= fData->bplast_tamex[it_board_number].time_channel) continue; // skip channel 0 for now. TODO: we got some channelid = - 1000000 online from bplast? could be pursued?
                     last_epoch[next_channel-1] = fData->bplast_tamex[it_board_number].time_epochv[it_hits];
                     fNepochwordsread++;
                     continue;
