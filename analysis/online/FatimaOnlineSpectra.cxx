@@ -129,17 +129,18 @@ InitStatus FatimaOnlineSpectra::Init()
     c_fatima_hitpatterns  = new TCanvas("c_fatima_hitpatterns","Fatima hit patterns",650,350);
     c_fatima_hitpatterns->Divide(2,1);
 
-    c_fatima_hitpatterns->cd(0);
+    c_fatima_hitpatterns->cd(1);
     h1_fatima_hitpattern_slow = new TH1F("h1_fatima_hitpattern_slow","FATIMA slow hit patterns",NDetectors,0,NDetectors);
     h1_fatima_hitpattern_slow->GetXaxis()->SetTitle("Detector nr.");
     h1_fatima_hitpattern_slow->GetYaxis()->SetTitle("Hits");
     h1_fatima_hitpattern_slow->Draw();
     
-    c_fatima_hitpatterns->cd(1);
+    c_fatima_hitpatterns->cd(2);
     h1_fatima_hitpattern_fast = new TH1F("h1_fatima_hitpattern_fast","FATIMA fast hit patterns",NDetectors,0,NDetectors);
     h1_fatima_hitpattern_fast->GetXaxis()->SetTitle("Detector nr.");
     h1_fatima_hitpattern_fast->GetYaxis()->SetTitle("Hits");
     h1_fatima_hitpattern_fast->Draw();
+    c_fatima_hitpatterns->cd(0);
     
     fatima_spectra_folder->Add(c_fatima_hitpatterns);
     
@@ -178,8 +179,8 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
             h1_fatima_fastToT[hit->Get_detector_id()]->Fill(hit->Get_fast_ToT());
             h2_fatima_fast_v_slow[hit->Get_detector_id()]->Fill(hit->Get_fast_ToT(), hit->Get_slow_ToT());
             h1_fatima_abs_time[hit->Get_detector_id()]->Fill(hit->Get_fast_lead_time());
-            h1_fatima_hitpattern_fast->Fill(hit->Get_detector_id());
-            h1_fatima_hitpattern_slow->Fill(hit->Get_detector_id());
+            if (hit->Get_fast_ToT() != 0 ) h1_fatima_hitpattern_fast->Fill(hit->Get_detector_id());
+            if (hit->Get_slow_ToT() != 0 ) h1_fatima_hitpattern_slow->Fill(hit->Get_detector_id());
 
             }
         }
