@@ -177,13 +177,129 @@ void bPlastRaw2Cal::Exec(Option_t* option){
 
             // under the assumption fast-slow always follows:
             if (funcal_hit->Get_trail_epoch_counter() == 0) {continue;} // missing trail
-            if (ihit == event_multiplicity - 1) {fNunmatched++; continue;} //if only one event is left
-            if (funcal_hit->Get_ch_ID()%2==0) {fNunmatched++; continue;} //skip slow channels only read them in partner. increment ihit by one extra.
+            if (ihit == event_multiplicity - 1) {//if only one event is left
+                fNunmatched++;
+                if (DetectorMap_loaded){
+                std::pair<int,int> unmapped_det {funcal_hit->Get_board_id(), ((funcal_hit->Get_ch_ID()%2==0) ? ((funcal_hit->Get_ch_ID())/2) : (funcal_hit->Get_ch_ID()+1)/2)};
+                
+                if (auto result_find = detector_mapping.find(unmapped_det); result_find != detector_mapping.end()){
+                detector_id = result_find->second; //.find returns an iterator over the pairs matching key.
+                if (detector_id == -1) {fNunmatched++; continue;} //if only one event is left
+                }else{
+                    c4LOG(fatal, "Detector mapping not complete - exiting.");
+                }
+                }
+
+                fast_lead_time =  funcal_hit->Get_lead_epoch_counter()*10.24e3 + funcal_hit->Get_lead_coarse_T()*5.0 - funcal_hit->Get_lead_fine_T();
+                fast_trail_time = funcal_hit->Get_trail_epoch_counter()*10.24e3 + funcal_hit->Get_trail_coarse_T()*5.0 - funcal_hit->Get_trail_fine_T();
+                fast_ToT =  fast_trail_time - fast_lead_time;
+                if (funcal_hit->Get_ch_ID() %2 == 0){ // slow channel:
+                new ((*fcal_data)[fcal_data->GetEntriesFast()]) bPlastTwinpeaksCalData(
+                    funcal_hit->Get_board_id(),
+                    (int)((funcal_hit->Get_ch_ID())/2),
+                    detector_id,
+                    fast_lead_time,
+                    fast_trail_time,
+                    0,
+                    0,
+                    0,
+                    fast_ToT,
+                    funcal_hit->Get_wr_subsystem_id(),
+                    funcal_hit->Get_wr_t());
+                }else{ //fast
+                new ((*fcal_data)[fcal_data->GetEntriesFast()]) bPlastTwinpeaksCalData(
+                    funcal_hit->Get_board_id(),
+                    (int)((funcal_hit->Get_ch_ID()+1)/2),
+                    detector_id,
+                    0,
+                    0,
+                    fast_lead_time,
+                    fast_trail_time,
+                    fast_ToT,
+                    0,
+                    funcal_hit->Get_wr_subsystem_id(),
+                    funcal_hit->Get_wr_t());
+                    }               
+                continue;
+            } 
+            if (funcal_hit->Get_ch_ID()%2==0) { //skip slow channels only read them in partner. increment ihit by one extra.
+            fNunmatched++; 
+            if (DetectorMap_loaded){
+                std::pair<int,int> unmapped_det {funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID())/2};
+                
+                if (auto result_find = detector_mapping.find(unmapped_det); result_find != detector_mapping.end()){
+                detector_id = result_find->second; //.find returns an iterator over the pairs matching key.
+                if (detector_id == -1) {fNunmatched++; continue;} //if only one event is left
+                }else{
+                    c4LOG(fatal, "Detector mapping not complete - exiting.");
+                }
+                }
+
+                fast_lead_time =  funcal_hit->Get_lead_epoch_counter()*10.24e3 + funcal_hit->Get_lead_coarse_T()*5.0 - funcal_hit->Get_lead_fine_T();
+                fast_trail_time = funcal_hit->Get_trail_epoch_counter()*10.24e3 + funcal_hit->Get_trail_coarse_T()*5.0 - funcal_hit->Get_trail_fine_T();
+                fast_ToT =  fast_trail_time - fast_lead_time;
+                
+                new ((*fcal_data)[fcal_data->GetEntriesFast()]) bPlastTwinpeaksCalData(
+                    funcal_hit->Get_board_id(),
+                    (int)((funcal_hit->Get_ch_ID())/2),
+                    detector_id,
+                    fast_lead_time,
+                    fast_trail_time,
+                    0,
+                    0,
+                    0,
+                    fast_ToT,
+                    funcal_hit->Get_wr_subsystem_id(),
+                    funcal_hit->Get_wr_t());     
+                continue;
+            } 
             
             funcal_hit_next = (bPlastTwinpeaksData*)funcal_data->At(ihit+1);
             
             if (funcal_hit_next->Get_ch_ID() != funcal_hit->Get_ch_ID()+1){ // this assumption seems empirically true - no events are filled when reverse order is put.
-                fNunmatched++; continue;
+                fNunmatched++;
+                if (DetectorMap_loaded){
+                std::pair<int,int> unmapped_det {funcal_hit->Get_board_id(), ((funcal_hit->Get_ch_ID()%2==0) ? ((funcal_hit->Get_ch_ID())/2) : (funcal_hit->Get_ch_ID()+1)/2)};
+                
+                if (auto result_find = detector_mapping.find(unmapped_det); result_find != detector_mapping.end()){
+                detector_id = result_find->second; //.find returns an iterator over the pairs matching key.
+                if (detector_id == -1) {fNunmatched++; continue;} //if only one event is left
+                }else{
+                    c4LOG(fatal, "Detector mapping not complete - exiting.");
+                }
+                }
+
+                fast_lead_time =  funcal_hit->Get_lead_epoch_counter()*10.24e3 + funcal_hit->Get_lead_coarse_T()*5.0 - funcal_hit->Get_lead_fine_T();
+                fast_trail_time = funcal_hit->Get_trail_epoch_counter()*10.24e3 + funcal_hit->Get_trail_coarse_T()*5.0 - funcal_hit->Get_trail_fine_T();
+                fast_ToT =  fast_trail_time - fast_lead_time;
+                if (funcal_hit->Get_ch_ID() %2 == 0){ // slow channel:
+                new ((*fcal_data)[fcal_data->GetEntriesFast()]) bPlastTwinpeaksCalData(
+                    funcal_hit->Get_board_id(),
+                    (int)((funcal_hit->Get_ch_ID())/2),
+                    detector_id,
+                    fast_lead_time,
+                    fast_trail_time,
+                    0,
+                    0,
+                    0,
+                    fast_ToT,
+                    funcal_hit->Get_wr_subsystem_id(),
+                    funcal_hit->Get_wr_t());
+                }else{ //fast
+                new ((*fcal_data)[fcal_data->GetEntriesFast()]) bPlastTwinpeaksCalData(
+                    funcal_hit->Get_board_id(),
+                    (int)((funcal_hit->Get_ch_ID()+1)/2),
+                    detector_id,
+                    0,
+                    0,
+                    fast_lead_time,
+                    fast_trail_time,
+                    fast_ToT,
+                    0,
+                    funcal_hit->Get_wr_subsystem_id(),
+                    funcal_hit->Get_wr_t());
+                    }               
+                continue;
             }
 
 
@@ -203,10 +319,6 @@ void bPlastRaw2Cal::Exec(Option_t* option){
                 if (DetectorCal_loaded){
                     //TODO implement
                 }
-
-
-
-
             }
             else{ //no map and cal: ->
                 detector_id = funcal_hit->Get_board_id()*17 + (int)(funcal_hit_next->Get_ch_ID()+1)/2; // do mapping.                
