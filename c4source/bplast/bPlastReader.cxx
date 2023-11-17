@@ -273,10 +273,9 @@ Bool_t bPlastReader::Read() //do fine time here:
             if (fData->bplast_tamex[it_board_number].time_epochv[it_hits] != 0){
                     if (it_hits + 1 == fData->bplast_tamex[it_board_number].event_size/4 - 3) c4LOG(fatal, "Data ends on a epoch...");
 
-                    if (fData->bplast_tamex[it_board_number].time_channel > it_hits + 1) continue;
                     next_channel = fData->bplast_tamex[it_board_number].time_channelv[it_hits+1];
 
-                    if (next_channel == 0) continue;
+                    if (next_channel == 0 || next_channel < 0) continue;
                     last_epoch[next_channel-1] = fData->bplast_tamex[it_board_number].time_epochv[it_hits];
                     fNepochwordsread++;
                     continue;
