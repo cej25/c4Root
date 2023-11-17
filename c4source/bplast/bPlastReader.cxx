@@ -136,11 +136,11 @@ void bPlastReader::DoFineTimeCalibration(){
         for (int j = 0; j < NChannels; j++) {
             int running_sum = 0;
             int total_counts = fine_time_hits[i][j]->GetEntries();
+            if (total_counts == 0) {c4LOG(warning,Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));}
             for (int k = 0; k < Nbins_fine_time; k++) {
                 running_sum += fine_time_hits[i][j]->GetBinContent(k+1); //bin 0 is the underflow bin, hence we start at [1,Nbins_fine_time].
                 //no counts?
                 if (total_counts == 0) {
-                    c4LOG(warning,Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));
                     fine_time_calibration_coeffs[i][j][k] = k*TAMEX_fine_time_clock/(double)Nbins_fine_time;
                     continue;
                 }
