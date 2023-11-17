@@ -183,7 +183,8 @@ void bPlastRaw2Cal::Exec(Option_t* option){
             funcal_hit_next = (bPlastTwinpeaksData*)funcal_data->At(ihit+1);
             
             if (funcal_hit_next->Get_ch_ID() != funcal_hit->Get_ch_ID()+1){ // this assumption seems empirically true - no events are filled when reverse order is put.
-                fNunmatched++; continue;
+                fNunmatched++; 
+                continue;
             }
 
 
