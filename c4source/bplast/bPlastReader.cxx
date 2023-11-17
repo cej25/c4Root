@@ -287,7 +287,7 @@ Bool_t bPlastReader::Read() //do fine time here:
             //from this point we should have seen an epoch for channel id.
             int channelid = fData->bplast_tamex[it_board_number].time_channelv[it_hits]; // 1-32
 
-            if (channelid == 0) continue; // skip channel 0 for now. TODO...
+            if (channelid == 0 || channelid < 0 || it_hits >= fData->bplast_tamex[it_board_number].time_channel) continue; // skip channel 0 for now. TODO: we got some channelid = - 1000000 online from bplast? could be pursued?
             if (fData->bplast_tamex[it_board_number].time_finev[it_hits] == 0x3FF) continue; // this happens if TAMEX loses the fine time - skip it
             
             //c4LOG(info, Form("Channel %i - last_epoch = %i"))
