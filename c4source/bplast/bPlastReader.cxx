@@ -269,7 +269,7 @@ Bool_t bPlastReader::Read() //do fine time here:
                 continue;
             }
             */
-
+            if (fData->bplast_tamex[it_board_number].time_epoch >= it_hits) {continue;}
             if (fData->bplast_tamex[it_board_number].time_epochv[it_hits] != 0){
                     if (it_hits + 1 == fData->bplast_tamex[it_board_number].event_size/4 - 3) c4LOG(fatal, "Data ends on a epoch...");
 
