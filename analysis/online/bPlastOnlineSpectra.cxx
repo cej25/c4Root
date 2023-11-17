@@ -181,7 +181,7 @@ void bPlastOnlineSpectra::Exec(Option_t* option)
             // Lead and Trail spectra -- empty for now
 
             // Fast and Slow Tot spectra
-            
+            cout << hit->Get_detector_id() << endl;
             h1_bplast_slowToT[hit->Get_detector_id()]->Fill(hit->Get_slow_ToT());
             h1_bplast_fastToT[hit->Get_detector_id()]->Fill(hit->Get_fast_ToT());
 
