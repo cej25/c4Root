@@ -174,11 +174,18 @@ void bPlastRaw2Cal::Exec(Option_t* option){
         for (Int_t ihit = 0; ihit < event_multiplicity; ihit++){
 
             funcal_hit = (bPlastTwinpeaksData*)funcal_data->At(ihit);
-
+            
             // under the assumption fast-slow always follows:
             if (funcal_hit->Get_trail_epoch_counter() == 0) {continue;} // missing trail
-            if (ihit == event_multiplicity - 1) {fNunmatched++; continue;} //if only one event is left
-            if (funcal_hit->Get_ch_ID()%2==0) {fNunmatched++; continue;} //skip slow channels only read them in partner. increment ihit by one extra.
+            if (ihit == event_multiplicity - 1) { //if only one event is left
+                fNunmatched++;
+                continue;
+            }
+            if (funcal_hit->Get_ch_ID()%2==0) {//skip slow channels only read them in partner. increment ihit by one extra.
+                fNunmatched++; 
+                continue;
+            } 
+            
             
             funcal_hit_next = (bPlastTwinpeaksData*)funcal_data->At(ihit+1);
             
@@ -212,6 +219,8 @@ void bPlastRaw2Cal::Exec(Option_t* option){
             else{ //no map and cal: ->
                 detector_id = funcal_hit->Get_board_id()*17 + (int)(funcal_hit_next->Get_ch_ID()+1)/2; // do mapping.                
             }
+            
+            
 
             if (funcal_hit_next->Get_trail_epoch_counter() == 0) continue; // missing trail in either
 
@@ -257,6 +266,7 @@ void bPlastRaw2Cal::FinishEvent(){
 void bPlastRaw2Cal::FinishTask(){
     c4LOG(info, Form("Wrote %i events.",fNEvents));
     c4LOG(info, Form("%i events are unmatched (not written).",fNunmatched));
+    
 }
 
 
