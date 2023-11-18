@@ -4,6 +4,12 @@ c4Root will be a FairRoot-based R3BRoot-inspired software for the experimental a
 
 Contact: c.jones@gsi.de
 
+Development: 
+* Calum Eoin Jones
+* Johan Emil Linnestad Larsson
+* Jeroen Peter Bormans
+* Nicolas James Hubbard
+
 Please note this software is currently in its infancy. The general architecture will be restructurd into slightly less nonsense, please forgive the mess for now. At present a couple of macros can be used for demonstration purposes; these are located in the ucesb directory. 
 
 Requirements:
