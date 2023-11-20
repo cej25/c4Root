@@ -40,6 +40,17 @@ typedef struct EXT_STR_h101_FATIMA_t
   uint32_t fatima_tamex1time_channelv[512 EXT_STRUCT_CTRL(fatima_tamex1time_channel)] /* [0,65535] */;
   uint32_t fatima_tamex1time_epoch /* [0,512] */;
   uint32_t fatima_tamex1time_epochv[512 EXT_STRUCT_CTRL(fatima_tamex1time_epoch)] /* [-1,-1] */;
+  uint32_t fatima_tamex2event_size /* [-1,-1] */;
+  uint32_t fatima_tamex2time_coarse /* [0,512] */;
+  uint32_t fatima_tamex2time_coarsev[512 EXT_STRUCT_CTRL(fatima_tamex2time_coarse)] /* [0,65535] */;
+  uint32_t fatima_tamex2time_fine /* [0,512] */;
+  uint32_t fatima_tamex2time_finev[512 EXT_STRUCT_CTRL(fatima_tamex2time_fine)] /* [0,65535] */;
+  uint32_t fatima_tamex2time_edge /* [0,512] */;
+  uint32_t fatima_tamex2time_edgev[512 EXT_STRUCT_CTRL(fatima_tamex2time_edge)] /* [0,65535] */;
+  uint32_t fatima_tamex2time_channel /* [0,512] */;
+  uint32_t fatima_tamex2time_channelv[512 EXT_STRUCT_CTRL(fatima_tamex2time_channel)] /* [0,65535] */;
+  uint32_t fatima_tamex2time_epoch /* [0,512] */;
+  uint32_t fatima_tamex2time_epochv[512 EXT_STRUCT_CTRL(fatima_tamex2time_epoch)] /* [-1,-1] */;
   uint32_t fatima_ts_subsystem_id /* [0,65535] */;
   uint32_t fatima_ts_t1 /* [0,65535] */;
   uint32_t fatima_ts_t2 /* [0,65535] */;
@@ -73,7 +84,7 @@ typedef struct EXT_STR_h101_FATIMA_onion_t
     uint32_t time_channelv[512 /* time_channel */];
     uint32_t time_epoch;
     uint32_t time_epochv[512 /* time_epoch */];
-  } fatima_tamex[1];
+  } fatima_tamex[2];
   uint32_t fatima_ts_subsystem_id;
   uint32_t fatima_ts_t[4];
   uint32_t fatima_trigger_window_post_trig_ns;
@@ -121,6 +132,39 @@ typedef struct EXT_STR_h101_FATIMA_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      fatima_tamex1time_epochv,        UINT32,\
                     "fatima_tamex1time_epochv",        "fatima_tamex1time_epoch",0/*flags*/); \
+  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
+                     fatima_tamex2event_size,         UINT32,\
+                    "fatima_tamex2event_size",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     fatima_tamex2time_coarse,        UINT32,\
+                    "fatima_tamex2time_coarse",512,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     fatima_tamex2time_coarsev,       UINT32,\
+                    "fatima_tamex2time_coarsev",       "fatima_tamex2time_coarse",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     fatima_tamex2time_fine,          UINT32,\
+                    "fatima_tamex2time_fine",512,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     fatima_tamex2time_finev,         UINT32,\
+                    "fatima_tamex2time_finev",         "fatima_tamex2time_fine",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     fatima_tamex2time_edge,          UINT32,\
+                    "fatima_tamex2time_edge",512,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     fatima_tamex2time_edgev,         UINT32,\
+                    "fatima_tamex2time_edgev",         "fatima_tamex2time_edge",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     fatima_tamex2time_channel,       UINT32,\
+                    "fatima_tamex2time_channel",512,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     fatima_tamex2time_channelv,      UINT32,\
+                    "fatima_tamex2time_channelv",      "fatima_tamex2time_channel",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     fatima_tamex2time_epoch,         UINT32,\
+                    "fatima_tamex2time_epoch",512,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     fatima_tamex2time_epochv,        UINT32,\
+                    "fatima_tamex2time_epochv",        "fatima_tamex2time_epoch",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      fatima_ts_subsystem_id,          UINT32,\
                     "fatima_ts_subsystem_id",65535,0/*flags*/); \
