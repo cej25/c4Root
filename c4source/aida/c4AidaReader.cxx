@@ -64,6 +64,8 @@ Bool_t AidaReader::Read()
     adcArray->clear();
     flowArray->clear();
     scalerArray->clear();
+    
+    if (!fData) return kTRUE;
 
     // ADC items
     for (size_t i = 0; i < fData->aida_data_adc; i++)
@@ -102,6 +104,8 @@ void AidaReader::Reset()
 {
     // Clear the vector
     adcArray->clear();
+    flowArray->clear();
+    scalerArray->clear();
 }
 
 ClassImp(AidaReader);

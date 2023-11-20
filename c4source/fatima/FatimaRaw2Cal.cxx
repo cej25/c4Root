@@ -270,7 +270,7 @@ void FatimaRaw2Cal::Exec(Option_t* option){
             
             if (((detector_id == time_machine_delayed_detector_id) || (detector_id == time_machine_undelayed_detector_id)) && time_machine_delayed_detector_id!=0 && time_machine_undelayed_detector_id!=0){ // currently only gets the TM if it also matches it slow-fast...
                 new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData((detector_id==time_machine_undelayed_detector_id) ? (fast_lead_time) : (0), (detector_id==time_machine_undelayed_detector_id) ? (0) : (fast_lead_time), funcal_hit->Get_wr_subsystem_id(), funcal_hit->Get_wr_t() );
-                continue;
+                //continue; //cej: i think this line skips everything if it finds TM?
             }
 
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) FatimaTwinpeaksCalData(
