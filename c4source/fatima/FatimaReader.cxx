@@ -317,8 +317,8 @@ Bool_t FatimaReader::Read() //do fine time here:
         for (int it_hits = 0; it_hits < fData->fatima_tamex[it_board_number].event_size/4 - 3 ; it_hits++){
             //this distinguishes epoch words from time words by checking if the epoch/coarse and fine words are zero. This would potentially be a problem if epoch truly is zero...
 
-            if (fData->bplast_tamex[it_board_number].time_epoch <= it_hits) {continue;}
-            
+            if (fData->fatima_tamex[it_board_number].time_epoch <= it_hits) {continue;}
+
             if (fData->fatima_tamex[it_board_number].time_epochv[it_hits] != 0){
                     if (it_hits + 1 == fData->fatima_tamex[it_board_number].event_size/4 - 3) {c4LOG(fatal, "Data ends on a epoch...");}
 
