@@ -9,6 +9,8 @@
 // c4
 #include "bPlastTwinpeaksData.h"
 #include "bPlastTwinpeaksCalData.h"
+#include "TimeMachineData.h"
+
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
@@ -21,7 +23,8 @@ fNEvents(0),
 header(nullptr),
 fOnline(kFALSE),
 funcal_data(new TClonesArray("bPlastTwinpeaksData")),
-fcal_data(new TClonesArray("bPlastTwinpeaksCalData"))
+fcal_data(new TClonesArray("bPlastTwinpeaksCalData")),
+ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
 }
 
@@ -32,7 +35,8 @@ bPlastRaw2Cal::bPlastRaw2Cal(const TString& name, Int_t verbose)
     header(nullptr),
     fOnline(kFALSE),
     funcal_data(new TClonesArray("bPlastTwinpeaksData")),
-    fcal_data(new TClonesArray("bPlastTwinpeaksCalData"))
+    fcal_data(new TClonesArray("bPlastTwinpeaksCalData")),
+    ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
 }
 
@@ -41,6 +45,17 @@ bPlastRaw2Cal::~bPlastRaw2Cal(){
     if (funcal_data) delete funcal_data;
     if (fcal_data) delete fcal_data;
 }
+
+
+/*
+This is called AFTER the detector mapping. This picks out the two timemachine channels and writes them to the TimeMachine structure.
+*/
+void bPlastRaw2Cal::SetTimeMachineChannels(int ftime_machine_undelayed_detector_id, int ftime_machine_delayed_detector_id)
+{
+time_machine_delayed_detector_id = ftime_machine_delayed_detector_id;
+time_machine_undelayed_detector_id = ftime_machine_undelayed_detector_id;
+}
+
 
 
 void bPlastRaw2Cal::SetParContainers()
@@ -68,6 +83,7 @@ InitStatus bPlastRaw2Cal::Init(){
     
 
     FairRootManager::Instance()->Register("bPlastTwinpeaksCalData", "bPlast Cal Data", fcal_data, !fOnline);
+    FairRootManager::Instance()->Register("bPlastTimeMachineData", "Time Machine Data", ftime_machine_array, !fOnline);
     fcal_data->Clear();
     funcal_data->Clear();
 
@@ -338,6 +354,12 @@ void bPlastRaw2Cal::Exec(Option_t* option){
             fast_ToT =  fast_trail_time - fast_lead_time;
             slow_ToT =  slow_trail_time - slow_lead_time;
 
+
+            if (((detector_id == time_machine_delayed_detector_id) || (detector_id == time_machine_undelayed_detector_id)) && time_machine_delayed_detector_id!=0 && time_machine_undelayed_detector_id!=0){ // currently only gets the TM if it also matches it slow-fast...
+                new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData((detector_id==time_machine_undelayed_detector_id) ? (fast_lead_time) : (0), (detector_id==time_machine_undelayed_detector_id) ? (0) : (fast_lead_time), funcal_hit->Get_wr_subsystem_id(), funcal_hit->Get_wr_t() );
+                //continue; //cej: i think this line skips everything if it finds TM?
+            }
+
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) bPlastTwinpeaksCalData(
                 funcal_hit->Get_board_id(),
                 (int)((funcal_hit->Get_ch_ID()+1)/2),
@@ -363,6 +385,7 @@ void bPlastRaw2Cal::FinishEvent(){
     // reset output array
     funcal_data->Clear();
     fcal_data->Clear();
+    ftime_machine_array->Clear();
 };
 
 
