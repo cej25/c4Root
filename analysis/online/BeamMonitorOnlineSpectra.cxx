@@ -21,9 +21,9 @@
 #include "TMath.h"
 #include "TRandom.h"
 
-#define DEBUG_MODE 1
+#define DEBUG_MODE 0
 #define S4_MAX_TDIFFS 100000
-#define S4_nAna 1000
+#define S4_nAna 3000
 #define S4_tMax 10000
 #define S4_tLimit pow(10,6)
 #define S4_MaxTimeDiff 100000
@@ -169,7 +169,7 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
             if (S4count % S4_nAna == 0) // analysis every n counts
             {
 
-                if (DEBUG_MODE) std::cout << "we reached this point so we should fill more histograms!" << std::endl;
+                if (DEBUG_MODE) std::cout << "we reached this point so we should fill more histograms!\r" << std::flush;
                 UInt_t S4_tsum = 0; // timesum
                 UInt_t S4_rhits = 0; // relevant hits
                 UInt_t S4_sumDiffs = 0;
