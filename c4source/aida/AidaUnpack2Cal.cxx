@@ -10,7 +10,9 @@
 #include "c4Logger.h"
 #include "AidaData.h"
 #include "AidaCalData.h"
+#include "TimeMachineData.h"
 #include <FairTask.h>
+#include <TClonesArray.h>
 
 // Static mapping of a FEE channel to DSSD Strip 
 // Defined by AIDA hardware, not configurable
@@ -25,16 +27,24 @@ static const int FeeToStrip[64] = {
 
 AidaUnpack2Cal::AidaUnpack2Cal() :
   unpackArray(nullptr),
+  scalerArray(nullptr),
   implantCalArray(new std::vector<AidaCalAdcItem>),
   decayCalArray(new std::vector<AidaCalAdcItem>),
+  aidaTimeMachineArray(new TClonesArray("TimeMachineData")),
   fImplantOnline(false),
   fDecayOnline(false),
-  conf(nullptr)
+  fScalersOnline(false),
+  conf(nullptr),
+  aida_tm_delayed_ch(0),
+  aida_tm_undelayed_ch(0)
 {
 }
 
 AidaUnpack2Cal::~AidaUnpack2Cal()
 {
+  delete implantCalArray;
+  delete decayCalArray;
+  delete aidaTimeMachineArray;
 }
 
 void AidaUnpack2Cal::SetParContainers()
@@ -50,8 +60,12 @@ InitStatus AidaUnpack2Cal::Init()
   unpackArray = mgr->InitObjectAs<decltype(unpackArray)>("AidaAdcData");
   c4LOG_IF(fatal, !unpackArray, "Branch AidaAdcData not found!");
 
+  scalerArray = mgr->InitObjectAs<decltype(scalerArray)>("AidaScalerData");
+  c4LOG_IF(fatal, !scalerArray, "Branch AidaScalerData not found!");
+
   mgr->RegisterAny("AidaImplantCalAdcData", implantCalArray, !fImplantOnline);
   mgr->RegisterAny("AidaDecayCalAdcData", decayCalArray, !fDecayOnline);
+  mgr->Register("AidaTimeMachineData", "Time Machine Data", aidaTimeMachineArray, !fScalersOnline);
 
   conf = TAidaConfiguration::GetInstance();
 
@@ -128,6 +142,24 @@ void AidaUnpack2Cal::Exec(Option_t* option)
   // Clear decay array if implants present
   if (implantCalArray->size() > 0) {
     decayCalArray->clear();
+  }
+
+
+  uint64_t wr_undelayed = 0;
+  uint64_t wr_delayed = 0;
+  // Check scalers - for now just for Time Machine (raw is otherwise fine)
+  for (auto const& scaler : *scalerArray)
+  {
+    if (scaler.Fee() == aida_tm_undelayed_ch)
+      wr_undelayed = scaler.Time();
+    if (scaler.Fee() == aida_tm_delayed_ch)
+      wr_delayed = scaler.Time();
+  }
+  if (wr_undelayed != 0 && wr_delayed != 0)
+  {
+    int64_t time_diff = wr_delayed - wr_undelayed;
+    new ((*aidaTimeMachineArray)[aidaTimeMachineArray->GetEntriesFast()]) TimeMachineData(1, 0, 0x700, wr_undelayed);
+    new ((*aidaTimeMachineArray)[aidaTimeMachineArray->GetEntriesFast()]) TimeMachineData(0, 1 + time_diff, 0x700, wr_undelayed);
   }
 }
 
