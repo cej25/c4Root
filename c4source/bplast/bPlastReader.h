@@ -93,7 +93,7 @@ class bPlastReader : public c4Reader
         uint64_t wr_t;
 
 
-        const int NBoards = 9;
+        const int NBoards = sizeof(fData->bplast_tamex) / sizeof(fData->bplast_tamex[0]);
         const int NChannels = 32;
 
         uint64_t fNepochwordsread = 0;
