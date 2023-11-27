@@ -5,6 +5,7 @@
 #include "AidaData.h"
 #include "AidaHitData.h"
 #include "FairTask.h"
+#include "TAidaConfiguration.h"
 #include <array>
 #include <vector>
 
@@ -28,7 +29,7 @@ class AidaOnlineSpectra : public FairTask
         virtual InitStatus Init();
 
         virtual void Exec(Option_t* option);
-        
+
         virtual void FinishEvent();
 
         virtual void FinishTask();
@@ -37,7 +38,7 @@ class AidaOnlineSpectra : public FairTask
 
         // range setters
 
-    
+
     private:
         std::vector<AidaUnpackAdcItem> const* adcArray;
         std::vector<AidaUnpackFlowItem> const* flowArray;
@@ -48,7 +49,7 @@ class AidaOnlineSpectra : public FairTask
         std::vector<AidaHit> const* decayHitArray;
 
         // ranges
-        //Double_t
+        TAidaConfiguration const* conf;
 
         EventHeader* header;
         Int_t fNEvents;
@@ -56,7 +57,7 @@ class AidaOnlineSpectra : public FairTask
         // Canvas
         //TCanvas* cSumTime; // channel 1 out of 28 for now?
         //TCanvas* cEnergySpectraTest;
-        
+
         // Folders
         TFolder* aidaFolder;
         TFolder* implantFolder;
@@ -79,6 +80,12 @@ class AidaOnlineSpectra : public FairTask
         std::vector<TH2F*> h_implant_x_ex;
         std::vector<TH2F*> h_implant_y_ey;
         std::vector<TH2F*> h_implant_strip_xy_stopped;
+
+        std::vector<TH2F*> h_decay_strip_xy;
+        std::vector<TH2F*> h_decay_pos_xy;
+        std::vector<TH1F*> h_decay_e;
+        std::vector<TH2F*> h_decay_e_xy;
+        std::vector<TH2F*> h_decay_strip_1d_energy;
 
     public:
         ClassDef(AidaOnlineSpectra, 1)
