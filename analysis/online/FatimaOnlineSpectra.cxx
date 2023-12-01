@@ -124,7 +124,20 @@ InitStatus FatimaOnlineSpectra::Init()
     c_fatima_time_spectra_divided->cd(0);
 
     fatima_spectra_folder->Add(c_fatima_time_spectra_divided);
+
+    c_fatima_energy = new TCanvas("c_fatima_energy","Fatima energy spectrum",650,350);
+    h2_fatima_energy = new TH2F("h2_fatima_energy","FATIMA energy (keV)",5000,0,10e3,NDetectors,0,NDetectors);
+    h2_fatima_energy->GetXaxis()->SetTitle("Energy (keV)");
+    h2_fatima_energy->GetYaxis()->SetTitle("Detector nr.");
+    h2_fatima_energy->Draw();
+
+    c_fatima_energy_uncal = new TCanvas("c_fatima_energy_uncal","Fatima energy spectrum",650,350);
+    h2_fatima_energy_uncal = new TH2F("h2_fatima_energy_uncal","FATIMA energy (keV)",5000,0,10e3,NDetectors,0,NDetectors);
+    h2_fatima_energy_uncal->GetXaxis()->SetTitle("Energy (binnr)");
+    h2_fatima_energy_uncal->GetYaxis()->SetTitle("Detector nr.");
+    h2_fatima_energy_uncal->Draw();
     
+
     // Hit patterns:
     c_fatima_hitpatterns  = new TCanvas("c_fatima_hitpatterns","Fatima hit patterns",650,350);
     c_fatima_hitpatterns->Divide(2,1);
@@ -161,6 +174,8 @@ void FatimaOnlineSpectra::Reset_Histo()
 
     h1_fatima_hitpattern_fast->Reset();
     h1_fatima_hitpattern_slow->Reset();
+    h2_fatima_energy->Reset();
+    h2_fatima_energy_uncal->Reset();
 }
 
 void FatimaOnlineSpectra::Exec(Option_t* option)
@@ -179,6 +194,8 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
             h1_fatima_fastToT[hit->Get_detector_id()]->Fill(hit->Get_fast_ToT());
             h2_fatima_fast_v_slow[hit->Get_detector_id()]->Fill(hit->Get_fast_ToT(), hit->Get_slow_ToT());
             h1_fatima_abs_time[hit->Get_detector_id()]->Fill(hit->Get_fast_lead_time());
+            h2_fatima_energy->Fill(hit->Get_energy(), hit->Get_detector_id());
+            h2_fatima_energy_uncal->Fill(hit->Get_slow_ToT(), hit->Get_detector_id());
             if (hit->Get_fast_ToT() != 0 ) h1_fatima_hitpattern_fast->Fill(hit->Get_detector_id());
             if (hit->Get_slow_ToT() != 0 ) h1_fatima_hitpattern_slow->Fill(hit->Get_detector_id());
 
@@ -208,6 +225,8 @@ void FatimaOnlineSpectra::FinishTask()
         
         h1_fatima_hitpattern_fast->Write();
         h1_fatima_hitpattern_slow->Write();
+        h2_fatima_energy->Write();
+        h2_fatima_energy_uncal->Write();
 
     
     }

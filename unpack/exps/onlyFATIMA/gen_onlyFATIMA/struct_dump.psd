@@ -1,0 +1,953 @@
+
+/** BEGIN_INPUT_DEFINITION *********************************************
+ *
+ * All specifications as seen by the parser.
+ *
+ * Do not edit - automatically generated.
+ */
+
+/**********************************************************
+ * Dump of all structures:
+ */
+
+class TAMEX4_EPOCH_DATA
+{
+  ;
+} ;
+class TAMEX4_HEADER
+{
+  raw_list_ii_zero_suppress<DATA16,DATA16,64> post_trig_ns;
+  raw_list_ii_zero_suppress<DATA16,DATA16,64> pre_trig_ns;
+} ;
+class TAMEX4_PADDING
+{
+  ;
+} ;
+class TAMEX4_TIME_DATA
+{
+  ;
+} ;
+class TAMEX4_SFP
+{
+  DATA32 event_size;
+  raw_list_ii_zero_suppress<DATA12,DATA12,512> time_coarse;
+  raw_list_ii_zero_suppress<DATA12,DATA12,512> time_fine;
+  raw_list_ii_zero_suppress<DATA12,DATA12,512> time_edge;
+  raw_list_ii_zero_suppress<DATA12,DATA12,512> time_channel;
+  raw_list_ii_zero_suppress<DATA32,DATA32,512> time_epoch;
+  TAMEX4_TIME_DATA time;
+  TAMEX4_EPOCH_DATA epoch;
+} ;
+class TIMESTAMP_WHITERABBIT
+{
+  DATA12 subsystem_id;
+  DATA16 t1;
+  DATA16 t2;
+  DATA16 t3;
+  DATA16 t4;
+} ;
+class TIMESTAMP_WHITERABBIT_EXTENDED
+{
+  DATA16 subsystem_id;
+  DATA16 t1;
+  DATA16 t2;
+  DATA16 t3;
+  DATA16 t4;
+} ;
+class WR_MULTI
+{
+  DATA32 time_hi;
+  DATA32 time_lo;
+} ;
+class fatima_tamex_subev : public unpack_subevent_base
+{
+  TAMEX4_PADDING padding;
+  TAMEX4_SFP tamex[2];
+  TIMESTAMP_WHITERABBIT_EXTENDED ts;
+  TAMEX4_HEADER trigger_window;
+} ;
+class unpack_event : public unpack_event_base
+{
+  fatima_tamex_subev fatima;
+} ;
+class unpack_sticky_event : public unpack_sticky_event_base
+{
+  ;
+} ;
+/**********************************************************/
+
+/** END_INPUT_DEFINITION **********************************************/
+
+
+/** BEGIN_MIRROR_STRUCT ************************************************
+ *
+ * Mirror (1 to 1) structure.
+ *
+ * Do not edit - automatically generated.
+ */
+
+#include "gen/default_mirror_define.hh"
+
+#ifndef USER_DEF_TAMEX4_EPOCH_DATA
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(TAMEX4_EPOCH_DATA)
+{
+public:
+  STRUCT_MIRROR_FCNS_DECL(TAMEX4_EPOCH_DATA);
+};
+#endif//USER_DEF_TAMEX4_EPOCH_DATA
+
+#ifndef USER_DEF_TAMEX4_HEADER
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(TAMEX4_HEADER)
+{
+public:
+  STRUCT_MIRROR_ITEM_CTRL(post_trig_ns);
+  STRUCT_MIRROR_TYPE(raw_list_ii_zero_suppress) < STRUCT_MIRROR_TYPE_TEMPLATE STRUCT_MIRROR_TEMPLATE_ARG(DATA16),STRUCT_MIRROR_TEMPLATE_ARG(DATA16),64> STRUCT_MIRROR_NAME(post_trig_ns);
+  STRUCT_MIRROR_ITEM_CTRL(pre_trig_ns);
+  STRUCT_MIRROR_TYPE(raw_list_ii_zero_suppress) < STRUCT_MIRROR_TYPE_TEMPLATE STRUCT_MIRROR_TEMPLATE_ARG(DATA16),STRUCT_MIRROR_TEMPLATE_ARG(DATA16),64> STRUCT_MIRROR_NAME(pre_trig_ns);
+  STRUCT_MIRROR_FCNS_DECL(TAMEX4_HEADER);
+};
+#endif//USER_DEF_TAMEX4_HEADER
+
+#ifndef USER_DEF_TAMEX4_PADDING
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(TAMEX4_PADDING)
+{
+public:
+  STRUCT_MIRROR_FCNS_DECL(TAMEX4_PADDING);
+};
+#endif//USER_DEF_TAMEX4_PADDING
+
+#ifndef USER_DEF_TAMEX4_TIME_DATA
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(TAMEX4_TIME_DATA)
+{
+public:
+  STRUCT_MIRROR_FCNS_DECL(TAMEX4_TIME_DATA);
+};
+#endif//USER_DEF_TAMEX4_TIME_DATA
+
+#ifndef USER_DEF_TAMEX4_SFP
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(TAMEX4_SFP)
+{
+public:
+  STRUCT_MIRROR_ITEM_CTRL(event_size);
+  STRUCT_MIRROR_TYPE(DATA32) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(event_size);
+  STRUCT_MIRROR_ITEM_CTRL(time_coarse);
+  STRUCT_MIRROR_TYPE(raw_list_ii_zero_suppress) < STRUCT_MIRROR_TYPE_TEMPLATE STRUCT_MIRROR_TEMPLATE_ARG(DATA12),STRUCT_MIRROR_TEMPLATE_ARG(DATA12),512> STRUCT_MIRROR_NAME(time_coarse);
+  STRUCT_MIRROR_ITEM_CTRL(time_fine);
+  STRUCT_MIRROR_TYPE(raw_list_ii_zero_suppress) < STRUCT_MIRROR_TYPE_TEMPLATE STRUCT_MIRROR_TEMPLATE_ARG(DATA12),STRUCT_MIRROR_TEMPLATE_ARG(DATA12),512> STRUCT_MIRROR_NAME(time_fine);
+  STRUCT_MIRROR_ITEM_CTRL(time_edge);
+  STRUCT_MIRROR_TYPE(raw_list_ii_zero_suppress) < STRUCT_MIRROR_TYPE_TEMPLATE STRUCT_MIRROR_TEMPLATE_ARG(DATA12),STRUCT_MIRROR_TEMPLATE_ARG(DATA12),512> STRUCT_MIRROR_NAME(time_edge);
+  STRUCT_MIRROR_ITEM_CTRL(time_channel);
+  STRUCT_MIRROR_TYPE(raw_list_ii_zero_suppress) < STRUCT_MIRROR_TYPE_TEMPLATE STRUCT_MIRROR_TEMPLATE_ARG(DATA12),STRUCT_MIRROR_TEMPLATE_ARG(DATA12),512> STRUCT_MIRROR_NAME(time_channel);
+  STRUCT_MIRROR_ITEM_CTRL(time_epoch);
+  STRUCT_MIRROR_TYPE(raw_list_ii_zero_suppress) < STRUCT_MIRROR_TYPE_TEMPLATE STRUCT_MIRROR_TEMPLATE_ARG(DATA32),STRUCT_MIRROR_TEMPLATE_ARG(DATA32),512> STRUCT_MIRROR_NAME(time_epoch);
+  STRUCT_MIRROR_ITEM_CTRL(time);
+  STRUCT_MIRROR_TYPE(TAMEX4_TIME_DATA) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(time);
+  STRUCT_MIRROR_ITEM_CTRL(epoch);
+  STRUCT_MIRROR_TYPE(TAMEX4_EPOCH_DATA) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(epoch);
+  STRUCT_MIRROR_FCNS_DECL(TAMEX4_SFP);
+};
+#endif//USER_DEF_TAMEX4_SFP
+
+#ifndef USER_DEF_TIMESTAMP_WHITERABBIT
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(TIMESTAMP_WHITERABBIT)
+{
+public:
+  STRUCT_MIRROR_ITEM_CTRL(subsystem_id);
+  STRUCT_MIRROR_TYPE(DATA12) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(subsystem_id);
+  STRUCT_MIRROR_ITEM_CTRL(t1);
+  STRUCT_MIRROR_TYPE(DATA16) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(t1);
+  STRUCT_MIRROR_ITEM_CTRL(t2);
+  STRUCT_MIRROR_TYPE(DATA16) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(t2);
+  STRUCT_MIRROR_ITEM_CTRL(t3);
+  STRUCT_MIRROR_TYPE(DATA16) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(t3);
+  STRUCT_MIRROR_ITEM_CTRL(t4);
+  STRUCT_MIRROR_TYPE(DATA16) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(t4);
+  STRUCT_MIRROR_FCNS_DECL(TIMESTAMP_WHITERABBIT);
+};
+#endif//USER_DEF_TIMESTAMP_WHITERABBIT
+
+#ifndef USER_DEF_TIMESTAMP_WHITERABBIT_EXTENDED
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(TIMESTAMP_WHITERABBIT_EXTENDED)
+{
+public:
+  STRUCT_MIRROR_ITEM_CTRL(subsystem_id);
+  STRUCT_MIRROR_TYPE(DATA16) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(subsystem_id);
+  STRUCT_MIRROR_ITEM_CTRL(t1);
+  STRUCT_MIRROR_TYPE(DATA16) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(t1);
+  STRUCT_MIRROR_ITEM_CTRL(t2);
+  STRUCT_MIRROR_TYPE(DATA16) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(t2);
+  STRUCT_MIRROR_ITEM_CTRL(t3);
+  STRUCT_MIRROR_TYPE(DATA16) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(t3);
+  STRUCT_MIRROR_ITEM_CTRL(t4);
+  STRUCT_MIRROR_TYPE(DATA16) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(t4);
+  STRUCT_MIRROR_FCNS_DECL(TIMESTAMP_WHITERABBIT_EXTENDED);
+};
+#endif//USER_DEF_TIMESTAMP_WHITERABBIT_EXTENDED
+
+#ifndef USER_DEF_WR_MULTI
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(WR_MULTI)
+{
+public:
+  STRUCT_MIRROR_ITEM_CTRL(time_hi);
+  STRUCT_MIRROR_TYPE(DATA32) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(time_hi);
+  STRUCT_MIRROR_ITEM_CTRL(time_lo);
+  STRUCT_MIRROR_TYPE(DATA32) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(time_lo);
+  STRUCT_MIRROR_FCNS_DECL(WR_MULTI);
+};
+#endif//USER_DEF_WR_MULTI
+
+#ifndef USER_DEF_fatima_tamex_subev
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(fatima_tamex_subev) : public STRUCT_MIRROR_BASE(unpack_subevent_base)
+{
+public:
+  STRUCT_MIRROR_ITEM_CTRL_BASE(unpack_subevent_base);
+  STRUCT_MIRROR_ITEM_CTRL(padding);
+  STRUCT_MIRROR_TYPE(TAMEX4_PADDING) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(padding);
+  STRUCT_MIRROR_ITEM_CTRL(tamex);
+  STRUCT_MIRROR_ITEM_CTRL_ARRAY(tamex__i0,,2);
+  STRUCT_MIRROR_TYPE(TAMEX4_SFP) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(tamex[2]);
+  STRUCT_MIRROR_ITEM_CTRL(ts);
+  STRUCT_MIRROR_TYPE(TIMESTAMP_WHITERABBIT_EXTENDED) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(ts);
+  STRUCT_MIRROR_ITEM_CTRL(trigger_window);
+  STRUCT_MIRROR_TYPE(TAMEX4_HEADER) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(trigger_window);
+  STRUCT_MIRROR_FCNS_DECL(fatima_tamex_subev);
+};
+#endif//USER_DEF_fatima_tamex_subev
+
+#ifndef USER_DEF_unpack_event
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(unpack_event) : public STRUCT_MIRROR_BASE(unpack_event_base)
+{
+public:
+  STRUCT_MIRROR_ITEM_CTRL_BASE(unpack_event_base);
+  STRUCT_MIRROR_ITEM_CTRL(fatima);
+  STRUCT_MIRROR_TYPE(fatima_tamex_subev) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(fatima);
+  STRUCT_MIRROR_FCNS_DECL(unpack_event);
+};
+#endif//USER_DEF_unpack_event
+
+#ifndef USER_DEF_unpack_sticky_event
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(unpack_sticky_event) : public STRUCT_MIRROR_BASE(unpack_sticky_event_base)
+{
+public:
+  STRUCT_MIRROR_ITEM_CTRL_BASE(unpack_sticky_event_base);
+  STRUCT_MIRROR_FCNS_DECL(unpack_sticky_event);
+};
+#endif//USER_DEF_unpack_sticky_event
+
+#include "gen/default_mirror_undef.hh"
+
+
+/** END_MIRROR_STRUCT *************************************************/
+
+
+/** BEGIN_MIRROR_DECL_STRUCT *******************************************
+ *
+ * Mirror structure names.
+ *
+ * Do not edit - automatically generated.
+ */
+
+#include "gen/default_mirror_define.hh"
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(TAMEX4_EPOCH_DATA);
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(TAMEX4_HEADER);
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(TAMEX4_PADDING);
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(TAMEX4_TIME_DATA);
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(TAMEX4_SFP);
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(TIMESTAMP_WHITERABBIT);
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(TIMESTAMP_WHITERABBIT_EXTENDED);
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(WR_MULTI);
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(fatima_tamex_subev);
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(unpack_event);
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(unpack_sticky_event);
+
+#include "gen/default_mirror_undef.hh"
+
+
+/** END_MIRROR_DECL_STRUCT ********************************************/
+
+
+/** BEGIN_FUNCTION_CALL_PER_MEMBER *************************************
+ *
+ * Recursive function calls per member.
+ *
+ * Do not edit - automatically generated.
+ */
+
+#include "gen/default_fcncall_define.hh"
+
+#ifndef USER_DEF_TAMEX4_EPOCH_DATA
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(TAMEX4_EPOCH_DATA)::FCNCALL_NAME(TAMEX4_EPOCH_DATA)
+{
+  FCNCALL_INIT;
+  FCNCALL_RET;
+}
+#endif//USER_DEF_TAMEX4_EPOCH_DATA
+
+#ifndef USER_DEF_TAMEX4_HEADER
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(TAMEX4_HEADER)::FCNCALL_NAME(TAMEX4_HEADER)
+{
+  FCNCALL_INIT;
+  // raw_list_ii_zero_suppress<DATA16,DATA16,64> post_trig_ns;
+  {
+  FCNCALL_SUBNAME("post_trig_ns");
+  { FCNCALL_CALL_CTRL_WRAP(post_trig_ns,post_trig_ns.FCNCALL_CALL(post_trig_ns)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // raw_list_ii_zero_suppress<DATA16,DATA16,64> pre_trig_ns;
+  {
+  FCNCALL_SUBNAME("pre_trig_ns");
+  { FCNCALL_CALL_CTRL_WRAP(pre_trig_ns,pre_trig_ns.FCNCALL_CALL(pre_trig_ns)); }
+  FCNCALL_SUBNAME_END;
+  }
+  FCNCALL_RET;
+}
+#endif//USER_DEF_TAMEX4_HEADER
+
+#ifndef USER_DEF_TAMEX4_PADDING
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(TAMEX4_PADDING)::FCNCALL_NAME(TAMEX4_PADDING)
+{
+  FCNCALL_INIT;
+  FCNCALL_RET;
+}
+#endif//USER_DEF_TAMEX4_PADDING
+
+#ifndef USER_DEF_TAMEX4_TIME_DATA
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(TAMEX4_TIME_DATA)::FCNCALL_NAME(TAMEX4_TIME_DATA)
+{
+  FCNCALL_INIT;
+  FCNCALL_RET;
+}
+#endif//USER_DEF_TAMEX4_TIME_DATA
+
+#ifndef USER_DEF_TAMEX4_SFP
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(TAMEX4_SFP)::FCNCALL_NAME(TAMEX4_SFP)
+{
+  FCNCALL_INIT;
+  // DATA32 event_size;
+  {
+  FCNCALL_SUBNAME("event_size");
+  { FCNCALL_CALL_CTRL_WRAP(event_size,event_size.FCNCALL_CALL(event_size)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // raw_list_ii_zero_suppress<DATA12,DATA12,512> time_coarse;
+  {
+  FCNCALL_SUBNAME("time_coarse");
+  { FCNCALL_CALL_CTRL_WRAP(time_coarse,time_coarse.FCNCALL_CALL(time_coarse)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // raw_list_ii_zero_suppress<DATA12,DATA12,512> time_fine;
+  {
+  FCNCALL_SUBNAME("time_fine");
+  { FCNCALL_CALL_CTRL_WRAP(time_fine,time_fine.FCNCALL_CALL(time_fine)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // raw_list_ii_zero_suppress<DATA12,DATA12,512> time_edge;
+  {
+  FCNCALL_SUBNAME("time_edge");
+  { FCNCALL_CALL_CTRL_WRAP(time_edge,time_edge.FCNCALL_CALL(time_edge)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // raw_list_ii_zero_suppress<DATA12,DATA12,512> time_channel;
+  {
+  FCNCALL_SUBNAME("time_channel");
+  { FCNCALL_CALL_CTRL_WRAP(time_channel,time_channel.FCNCALL_CALL(time_channel)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // raw_list_ii_zero_suppress<DATA32,DATA32,512> time_epoch;
+  {
+  FCNCALL_SUBNAME("time_epoch");
+  { FCNCALL_CALL_CTRL_WRAP(time_epoch,time_epoch.FCNCALL_CALL(time_epoch)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // TAMEX4_TIME_DATA time;
+  {
+  FCNCALL_SUBNAME("time");
+  { FCNCALL_CALL_CTRL_WRAP(time,time.FCNCALL_CALL(time)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // TAMEX4_EPOCH_DATA epoch;
+  {
+  FCNCALL_SUBNAME("epoch");
+  { FCNCALL_CALL_CTRL_WRAP(epoch,epoch.FCNCALL_CALL(epoch)); }
+  FCNCALL_SUBNAME_END;
+  }
+  FCNCALL_RET;
+}
+#endif//USER_DEF_TAMEX4_SFP
+
+#ifndef USER_DEF_TIMESTAMP_WHITERABBIT
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(TIMESTAMP_WHITERABBIT)::FCNCALL_NAME(TIMESTAMP_WHITERABBIT)
+{
+  FCNCALL_INIT;
+  // DATA12 subsystem_id;
+  {
+  FCNCALL_SUBNAME("subsystem_id");
+  { FCNCALL_CALL_CTRL_WRAP(subsystem_id,subsystem_id.FCNCALL_CALL(subsystem_id)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // DATA16 t1;
+  {
+  FCNCALL_SUBNAME("t1");
+  { FCNCALL_CALL_CTRL_WRAP(t1,t1.FCNCALL_CALL(t1)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // DATA16 t2;
+  {
+  FCNCALL_SUBNAME("t2");
+  { FCNCALL_CALL_CTRL_WRAP(t2,t2.FCNCALL_CALL(t2)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // DATA16 t3;
+  {
+  FCNCALL_SUBNAME("t3");
+  { FCNCALL_CALL_CTRL_WRAP(t3,t3.FCNCALL_CALL(t3)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // DATA16 t4;
+  {
+  FCNCALL_SUBNAME("t4");
+  { FCNCALL_CALL_CTRL_WRAP(t4,t4.FCNCALL_CALL(t4)); }
+  FCNCALL_SUBNAME_END;
+  }
+  FCNCALL_RET;
+}
+#endif//USER_DEF_TIMESTAMP_WHITERABBIT
+
+#ifndef USER_DEF_TIMESTAMP_WHITERABBIT_EXTENDED
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(TIMESTAMP_WHITERABBIT_EXTENDED)::FCNCALL_NAME(TIMESTAMP_WHITERABBIT_EXTENDED)
+{
+  FCNCALL_INIT;
+  // DATA16 subsystem_id;
+  {
+  FCNCALL_SUBNAME("subsystem_id");
+  { FCNCALL_CALL_CTRL_WRAP(subsystem_id,subsystem_id.FCNCALL_CALL(subsystem_id)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // DATA16 t1;
+  {
+  FCNCALL_SUBNAME("t1");
+  { FCNCALL_CALL_CTRL_WRAP(t1,t1.FCNCALL_CALL(t1)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // DATA16 t2;
+  {
+  FCNCALL_SUBNAME("t2");
+  { FCNCALL_CALL_CTRL_WRAP(t2,t2.FCNCALL_CALL(t2)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // DATA16 t3;
+  {
+  FCNCALL_SUBNAME("t3");
+  { FCNCALL_CALL_CTRL_WRAP(t3,t3.FCNCALL_CALL(t3)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // DATA16 t4;
+  {
+  FCNCALL_SUBNAME("t4");
+  { FCNCALL_CALL_CTRL_WRAP(t4,t4.FCNCALL_CALL(t4)); }
+  FCNCALL_SUBNAME_END;
+  }
+  FCNCALL_RET;
+}
+#endif//USER_DEF_TIMESTAMP_WHITERABBIT_EXTENDED
+
+#ifndef USER_DEF_WR_MULTI
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(WR_MULTI)::FCNCALL_NAME(WR_MULTI)
+{
+  FCNCALL_INIT;
+  // DATA32 time_hi;
+  {
+  FCNCALL_SUBNAME("time_hi");
+  { FCNCALL_CALL_CTRL_WRAP(time_hi,time_hi.FCNCALL_CALL(time_hi)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // DATA32 time_lo;
+  {
+  FCNCALL_SUBNAME("time_lo");
+  { FCNCALL_CALL_CTRL_WRAP(time_lo,time_lo.FCNCALL_CALL(time_lo)); }
+  FCNCALL_SUBNAME_END;
+  }
+  FCNCALL_RET;
+}
+#endif//USER_DEF_WR_MULTI
+
+#ifndef USER_DEF_fatima_tamex_subev
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(fatima_tamex_subev)::FCNCALL_NAME(fatima_tamex_subev)
+{
+  FCNCALL_INIT;
+  FCNCALL_CALL_CTRL_WRAP(unpack_subevent_base,FCNCALL_CLASS_NAME(unpack_subevent_base)::FCNCALL_CALL_BASE());
+  // TAMEX4_PADDING padding;
+  {
+  FCNCALL_SUBNAME("padding");
+  { FCNCALL_CALL_CTRL_WRAP(padding,padding.FCNCALL_CALL(padding)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // TAMEX4_SFP tamex[2];
+  {
+  FCNCALL_SUBNAME("tamex");
+  FCNCALL_FOR(__i0,2)
+  {
+    FCNCALL_SUBINDEX(__i0);
+    { FCNCALL_CALL_CTRL_WRAP_ARRAY(tamex__i0,,__i0,tamex[__i0].FCNCALL_CALL(tamex[__i0])); }
+    FCNCALL_SUBINDEX_END(__i0);
+  }
+  FCNCALL_SUBNAME_END;
+  }
+  // TIMESTAMP_WHITERABBIT_EXTENDED ts;
+  {
+  FCNCALL_SUBNAME("ts");
+  { FCNCALL_CALL_CTRL_WRAP(ts,ts.FCNCALL_CALL(ts)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // TAMEX4_HEADER trigger_window;
+  {
+  FCNCALL_SUBNAME("trigger_window");
+  { FCNCALL_CALL_CTRL_WRAP(trigger_window,trigger_window.FCNCALL_CALL(trigger_window)); }
+  FCNCALL_SUBNAME_END;
+  }
+  FCNCALL_RET;
+}
+#endif//USER_DEF_fatima_tamex_subev
+
+#ifndef USER_DEF_unpack_event
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(unpack_event)::FCNCALL_NAME(unpack_event)
+{
+  FCNCALL_INIT;
+  FCNCALL_CALL_CTRL_WRAP(unpack_event_base,FCNCALL_CLASS_NAME(unpack_event_base)::FCNCALL_CALL_BASE());
+  // fatima_tamex_subev fatima;
+  {
+  FCNCALL_SUBNAME("fatima");
+  { FCNCALL_CALL_CTRL_WRAP(fatima,fatima.FCNCALL_CALL(fatima)); }
+  FCNCALL_SUBNAME_END;
+  }
+  FCNCALL_RET;
+}
+#endif//USER_DEF_unpack_event
+
+#ifndef USER_DEF_unpack_sticky_event
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(unpack_sticky_event)::FCNCALL_NAME(unpack_sticky_event)
+{
+  FCNCALL_INIT;
+  FCNCALL_CALL_CTRL_WRAP(unpack_sticky_event_base,FCNCALL_CLASS_NAME(unpack_sticky_event_base)::FCNCALL_CALL_BASE());
+  FCNCALL_RET;
+}
+#endif//USER_DEF_unpack_sticky_event
+
+#include "gen/default_fcncall_undef.hh"
+
+
+/** END_FUNCTION_CALL_PER_MEMBER **************************************/
+
+
+/** BEGIN_CORR_STRUCT **************************************************
+ *
+ * Correlation structure.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// Corr struct for: TAMEX4_EPOCH_DATA
+// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_EPOCH_DATA
+// .TAMEX4_EPOCH_DATA// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_EPOCH_DATA
+// .TAMEX4_EPOCH_DATA// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_EPOCH_DATA
+// .TAMEX4_EPOCH_DATA
+// Corr struct for: TAMEX4_HEADER
+// raw_list_ii_zero_suppress  .post_trig_ns(DATA16)[64]
+// raw_list_ii_zero_suppress  .pre_trig_ns(DATA16)[64]
+// DATA16 .post_trig_ns[64]
+// DATA16 .pre_trig_ns[64]
+// 
+// size= 1  chunks=128  mem= 128  line=256  total=32768
+// size=64  chunks=  2  mem= 128  line=130  total=16640
+// size=128  chunks=  1  mem= 128  line=129  total=16512
+// 
+// corr structure: TAMEX4_HEADER
+  // DATA16 .post_trig_ns[64]
+  // DATA16 .pre_trig_ns[64]
+// .TAMEX4_HEADER/128/.post_trig_ns/64/[64]
+                   // .pre_trig_ns/64/[64]// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_HEADER
+// .TAMEX4_HEADER// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_HEADER
+// .TAMEX4_HEADER
+// Corr struct for: TAMEX4_PADDING
+// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_PADDING
+// .TAMEX4_PADDING// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_PADDING
+// .TAMEX4_PADDING// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_PADDING
+// .TAMEX4_PADDING
+// Corr struct for: TAMEX4_TIME_DATA
+// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_TIME_DATA
+// .TAMEX4_TIME_DATA// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_TIME_DATA
+// .TAMEX4_TIME_DATA// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_TIME_DATA
+// .TAMEX4_TIME_DATA
+// Corr struct for: TAMEX4_SFP
+// DATA32  .event_size
+  // ---
+// raw_list_ii_zero_suppress  .time_coarse(DATA12)[512]
+// raw_list_ii_zero_suppress  .time_fine(DATA12)[512]
+// raw_list_ii_zero_suppress  .time_edge(DATA12)[512]
+// raw_list_ii_zero_suppress  .time_channel(DATA12)[512]
+// raw_list_ii_zero_suppress  .time_epoch(DATA32)[512]
+  // ---
+// TAMEX4_TIME_DATA  .time
+// TAMEX4_EPOCH_DATA  .epoch
+// DATA12 .time_coarse[512]
+// DATA12 .time_fine[512]
+// DATA12 .time_edge[512]
+// DATA12 .time_channel[512]
+// 
+// size= 1  chunks=2048  mem=2048  line=4096  total=8388608
+// size=512  chunks=  4  mem=2048  line=2052  total=4202496
+// size=2048  chunks=  1  mem=2048  line=2049  total=4196352
+// 
+// corr structure: TAMEX4_SFP
+  // DATA12 .time_coarse[512]
+  // DATA12 .time_fine[512]
+  // DATA12 .time_edge[512]
+  // DATA12 .time_channel[512]
+// .TAMEX4_SFP/2048/.time_coarse/512/[512]
+                 // .time_fine/512/[512]
+                 // .time_edge/512/[512]
+                 // .time_channel/512/[512]// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_SFP
+// .TAMEX4_SFP// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_SFP
+// .TAMEX4_SFP
+// Corr struct for: TIMESTAMP_WHITERABBIT
+// DATA12  .subsystem_id
+// DATA16  .t1
+// DATA16  .t2
+// DATA16  .t3
+// DATA16  .t4
+// DATA12 .subsystem_id
+// DATA16 .t1
+// DATA16 .t2
+// DATA16 .t3
+// DATA16 .t4
+// 
+// size= 1  chunks=  5  mem=   5  line=10  total=50
+// size= 5  chunks=  1  mem=   5  line=6  total=30
+// 
+// corr structure: TIMESTAMP_WHITERABBIT
+  // DATA12 .subsystem_id
+  // DATA16 .t1
+  // DATA16 .t2
+  // DATA16 .t3
+  // DATA16 .t4
+// .TIMESTAMP_WHITERABBIT/5/.subsystem_id
+                         // .t1
+                         // .t2
+                         // .t3
+                         // .t4// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TIMESTAMP_WHITERABBIT
+// .TIMESTAMP_WHITERABBIT// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TIMESTAMP_WHITERABBIT
+// .TIMESTAMP_WHITERABBIT
+// Corr struct for: TIMESTAMP_WHITERABBIT_EXTENDED
+// DATA16  .subsystem_id
+// DATA16  .t1
+// DATA16  .t2
+// DATA16  .t3
+// DATA16  .t4
+// DATA16 .subsystem_id
+// DATA16 .t1
+// DATA16 .t2
+// DATA16 .t3
+// DATA16 .t4
+// 
+// size= 1  chunks=  5  mem=   5  line=10  total=50
+// size= 5  chunks=  1  mem=   5  line=6  total=30
+// 
+// corr structure: TIMESTAMP_WHITERABBIT_EXTENDED
+  // DATA16 .subsystem_id
+  // DATA16 .t1
+  // DATA16 .t2
+  // DATA16 .t3
+  // DATA16 .t4
+// .TIMESTAMP_WHITERABBIT_EXTENDED/5/.subsystem_id
+                                  // .t1
+                                  // .t2
+                                  // .t3
+                                  // .t4// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TIMESTAMP_WHITERABBIT_EXTENDED
+// .TIMESTAMP_WHITERABBIT_EXTENDED// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TIMESTAMP_WHITERABBIT_EXTENDED
+// .TIMESTAMP_WHITERABBIT_EXTENDED
+// Corr struct for: WR_MULTI
+// DATA32  .time_hi
+  // ---
+// DATA32  .time_lo
+  // ---
+// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: WR_MULTI
+// .WR_MULTI// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: WR_MULTI
+// .WR_MULTI// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: WR_MULTI
+// .WR_MULTI
+// Corr struct for: fatima_tamex_subev
+//  : public unpack_subevent_base
+// ---
+// TAMEX4_PADDING  .padding
+// TAMEX4_SFP  .tamex[2]
+  // DATA32  .event_size
+    // ---
+  // raw_list_ii_zero_suppress  .time_coarse(DATA12)[512]
+  // raw_list_ii_zero_suppress  .time_fine(DATA12)[512]
+  // raw_list_ii_zero_suppress  .time_edge(DATA12)[512]
+  // raw_list_ii_zero_suppress  .time_channel(DATA12)[512]
+  // raw_list_ii_zero_suppress  .time_epoch(DATA32)[512]
+    // ---
+  // TAMEX4_TIME_DATA  .time
+  // TAMEX4_EPOCH_DATA  .epoch
+// TIMESTAMP_WHITERABBIT_EXTENDED  .ts
+  // DATA16  .subsystem_id
+  // DATA16  .t1
+  // DATA16  .t2
+  // DATA16  .t3
+  // DATA16  .t4
+// TAMEX4_HEADER  .trigger_window
+  // raw_list_ii_zero_suppress  .post_trig_ns(DATA16)[64]
+  // raw_list_ii_zero_suppress  .pre_trig_ns(DATA16)[64]
+// DATA12 .tamex[2].time_coarse[512]
+// DATA12 .tamex[2].time_fine[512]
+// DATA12 .tamex[2].time_edge[512]
+// DATA12 .tamex[2].time_channel[512]
+// DATA16 .ts.subsystem_id
+// DATA16 .ts.t1
+// DATA16 .ts.t2
+// DATA16 .ts.t3
+// DATA16 .ts.t4
+// DATA16 .trigger_window.post_trig_ns[64]
+// DATA16 .trigger_window.pre_trig_ns[64]
+// 
+// size= 1  chunks=4229  mem=4229  line=8458  total=35768882
+// size= 5  chunks=4225  mem=21125  line=25350  total=107205150
+// size=64  chunks=4099  mem=262336  line=266435  total=1126753615
+// size=128  chunks=4098  mem=524544  line=528642  total=-2059340278
+// size=512  chunks= 10  mem=5120  line=5130  total=21694770
+// size=2048  chunks=  4  mem=8192  line=8196  total=34660884
+// size=4096  chunks=  3  mem=12288  line=12291  total=51978639
+// size=4229  chunks=  1  mem=4229  line=4230  total=17888670
+// 
+// corr structure: fatima_tamex_subev
+  // DATA12 .tamex[2].time_coarse[512]
+  // DATA12 .tamex[2].time_fine[512]
+  // DATA12 .tamex[2].time_edge[512]
+  // DATA12 .tamex[2].time_channel[512]
+  // DATA16 .ts.subsystem_id
+  // DATA16 .ts.t1
+  // DATA16 .ts.t2
+  // DATA16 .ts.t3
+  // DATA16 .ts.t4
+  // DATA16 .trigger_window.post_trig_ns[64]
+  // DATA16 .trigger_window.pre_trig_ns[64]
+// .fatima_tamex_subev/4229/.tamex/4096/[2]/2048/.time_coarse/512/[512]
+                                              // .time_fine/512/[512]
+                                              // .time_edge/512/[512]
+                                              // .time_channel/512/[512]
+                         // .ts/5/.subsystem_id
+                               // .t1
+                               // .t2
+                               // .t3
+                               // .t4
+                         // .trigger_window/128/.post_trig_ns/64/[64]
+                                             // .pre_trig_ns/64/[64]// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: fatima_tamex_subev
+// .fatima_tamex_subev// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: fatima_tamex_subev
+// .fatima_tamex_subev
+// Corr struct for: unpack_event
+//  : public unpack_event_base
+// ---
+// fatima_tamex_subev  .fatima
+  //  : public unpack_subevent_base
+  // ---
+  // TAMEX4_PADDING  .padding
+  // TAMEX4_SFP  .tamex[2]
+    // DATA32  .event_size
+      // ---
+    // raw_list_ii_zero_suppress  .time_coarse(DATA12)[512]
+    // raw_list_ii_zero_suppress  .time_fine(DATA12)[512]
+    // raw_list_ii_zero_suppress  .time_edge(DATA12)[512]
+    // raw_list_ii_zero_suppress  .time_channel(DATA12)[512]
+    // raw_list_ii_zero_suppress  .time_epoch(DATA32)[512]
+      // ---
+    // TAMEX4_TIME_DATA  .time
+    // TAMEX4_EPOCH_DATA  .epoch
+  // TIMESTAMP_WHITERABBIT_EXTENDED  .ts
+    // DATA16  .subsystem_id
+    // DATA16  .t1
+    // DATA16  .t2
+    // DATA16  .t3
+    // DATA16  .t4
+  // TAMEX4_HEADER  .trigger_window
+    // raw_list_ii_zero_suppress  .post_trig_ns(DATA16)[64]
+    // raw_list_ii_zero_suppress  .pre_trig_ns(DATA16)[64]
+// DATA12 .fatima.tamex[2].time_coarse[512]
+// DATA12 .fatima.tamex[2].time_fine[512]
+// DATA12 .fatima.tamex[2].time_edge[512]
+// DATA12 .fatima.tamex[2].time_channel[512]
+// DATA16 .fatima.ts.subsystem_id
+// DATA16 .fatima.ts.t1
+// DATA16 .fatima.ts.t2
+// DATA16 .fatima.ts.t3
+// DATA16 .fatima.ts.t4
+// DATA16 .fatima.trigger_window.post_trig_ns[64]
+// DATA16 .fatima.trigger_window.pre_trig_ns[64]
+// 
+// size= 1  chunks=4229  mem=4229  line=8458  total=35768882
+// size= 5  chunks=4225  mem=21125  line=25350  total=107205150
+// size=64  chunks=4099  mem=262336  line=266435  total=1126753615
+// size=128  chunks=4098  mem=524544  line=528642  total=-2059340278
+// size=512  chunks= 10  mem=5120  line=5130  total=21694770
+// size=2048  chunks=  4  mem=8192  line=8196  total=34660884
+// size=4096  chunks=  3  mem=12288  line=12291  total=51978639
+// size=4229  chunks=  1  mem=4229  line=4230  total=17888670
+// 
+// corr structure: unpack_event
+  // DATA12 .fatima.tamex[2].time_coarse[512]
+  // DATA12 .fatima.tamex[2].time_fine[512]
+  // DATA12 .fatima.tamex[2].time_edge[512]
+  // DATA12 .fatima.tamex[2].time_channel[512]
+  // DATA16 .fatima.ts.subsystem_id
+  // DATA16 .fatima.ts.t1
+  // DATA16 .fatima.ts.t2
+  // DATA16 .fatima.ts.t3
+  // DATA16 .fatima.ts.t4
+  // DATA16 .fatima.trigger_window.post_trig_ns[64]
+  // DATA16 .fatima.trigger_window.pre_trig_ns[64]
+// .unpack_event/4229/.fatima/4229/.tamex/4096/[2]/2048/.time_coarse/512/[512]
+                                                     // .time_fine/512/[512]
+                                                     // .time_edge/512/[512]
+                                                     // .time_channel/512/[512]
+                                // .ts/5/.subsystem_id
+                                      // .t1
+                                      // .t2
+                                      // .t3
+                                      // .t4
+                                // .trigger_window/128/.post_trig_ns/64/[64]
+                                                    // .pre_trig_ns/64/[64]// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: unpack_event
+// .unpack_event// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: unpack_event
+// .unpack_event
+// Corr struct for: unpack_sticky_event
+//  : public unpack_sticky_event_base
+// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: unpack_sticky_event
+// .unpack_sticky_event// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: unpack_sticky_event
+// .unpack_sticky_event// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: unpack_sticky_event
+// .unpack_sticky_event
+
+/** END_CORR_STRUCT ***************************************************/
+
