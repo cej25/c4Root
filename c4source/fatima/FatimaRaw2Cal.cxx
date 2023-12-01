@@ -243,13 +243,7 @@ void FatimaRaw2Cal::Exec(Option_t* option){
                     c4LOG(fatal, "Detector mapping not complete - exiting.");
                 }
                 //only do calibrations if mapping is functional:
-                if (DetectorCal_loaded){
-                    //TODO
-                }
-
-
-
-
+                
             }
             else{ //no map and cal: ->
                 detector_id = funcal_hit->Get_board_id()*17 + (int)(funcal_hit_next->Get_ch_ID()+1)/2; // do mapping.
@@ -267,10 +261,24 @@ void FatimaRaw2Cal::Exec(Option_t* option){
             fast_ToT =  fast_trail_time - fast_lead_time;
             slow_ToT =  slow_trail_time - slow_lead_time;
 
+            if (DetectorMap_loaded){
+                if (DetectorCal_loaded){ // check
+                    if (auto result_find_cal = calibration_coeffs.find(detector_id); result_find_cal != calibration_coeffs.end()){
+                    double a0 = result_find_cal->second.first; //.find returns an iterator over the pairs matching key.
+                    double a1 = result_find_cal->second.second;
+                    energy = a0 + a1*slow_ToT; 
+                }else{
+                    energy = slow_ToT;
+                }
+                }else{
+                    energy = slow_ToT;
+                }
+            }
+
             
             if (((detector_id == time_machine_delayed_detector_id) || (detector_id == time_machine_undelayed_detector_id)) && time_machine_delayed_detector_id!=0 && time_machine_undelayed_detector_id!=0){ // currently only gets the TM if it also matches it slow-fast...
                 new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData((detector_id==time_machine_undelayed_detector_id) ? (fast_lead_time) : (0), (detector_id==time_machine_undelayed_detector_id) ? (0) : (fast_lead_time), funcal_hit->Get_wr_subsystem_id(), funcal_hit->Get_wr_t() );
-                //continue; //cej: i think this line skips everything if it finds TM?
+                continue; //cej: i think this line skips everything if it finds TM?
             }
 
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) FatimaTwinpeaksCalData(
@@ -283,6 +291,7 @@ void FatimaRaw2Cal::Exec(Option_t* option){
                 fast_trail_time,
                 fast_ToT,
                 slow_ToT,
+                energy,
                 funcal_hit->Get_wr_subsystem_id(),
                 funcal_hit->Get_wr_t());
             
