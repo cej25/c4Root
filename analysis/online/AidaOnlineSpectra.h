@@ -7,12 +7,15 @@
 #include "FairTask.h"
 #include "TAidaConfiguration.h"
 #include <array>
+#include <deque>
+#include <map>
 #include <vector>
 
 class TClonesArray;
 class EventHeader;
 class TCanvas;
 class TFolder;
+class TGraph;
 class TH1F;
 class TH2F;
 
@@ -35,6 +38,8 @@ class AidaOnlineSpectra : public FairTask
         virtual void FinishTask();
 
         virtual void Reset_Histo();
+
+        void Reset_Scalers();
 
         // range setters
 
@@ -63,6 +68,7 @@ class AidaOnlineSpectra : public FairTask
         TFolder* implantFolder;
         TFolder* stoppedImplantFolder;
         TFolder* decayFolder;
+        TFolder* scalersFolder;
         std::vector<TFolder*> implantDssdFolder;
         std::vector<TFolder*> stoppedImplantDssdFolder;
         std::vector<TFolder*> decayDssdFolder;
@@ -79,6 +85,7 @@ class AidaOnlineSpectra : public FairTask
         std::vector<TH2F*> h_implant_strip_1d;
         std::vector<TH2F*> h_implant_x_ex;
         std::vector<TH2F*> h_implant_y_ey;
+        std::vector<TH1F*> h_implant_time_delta;
         std::vector<TH2F*> h_implant_strip_xy_stopped;
 
         std::vector<TH2F*> h_decay_strip_xy;
@@ -86,6 +93,12 @@ class AidaOnlineSpectra : public FairTask
         std::vector<TH1F*> h_decay_e;
         std::vector<TH2F*> h_decay_e_xy;
         std::vector<TH2F*> h_decay_strip_1d_energy;
+        std::vector<TH1F*> h_decay_time_delta;
+
+        // Graph
+        std::map<int, std::deque<int>> aida_scaler_queue;
+        std::map<int, int> aida_scaler_cur_sec;
+        std::map<int, TGraph*> aida_scaler_graph;
 
     public:
         ClassDef(AidaOnlineSpectra, 1)
