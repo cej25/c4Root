@@ -16,6 +16,7 @@
 #include "TCanvas.h"
 #include "TClonesArray.h"
 #include "TFolder.h"
+#include "TGraph.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include "THttpServer.h"
@@ -60,6 +61,7 @@ InitStatus AidaOnlineSpectra::Init()
     FairRunOnline* run = FairRunOnline::Instance();
     run->GetHttpServer()->Register("", this);
     run->GetHttpServer()->RegisterCommand("Reset_Aida_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Reset_Aida_Scalers", Form("/Objects/%s/->Reset_Scalers()", GetName()));
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
@@ -94,9 +96,11 @@ InitStatus AidaOnlineSpectra::Init()
     implantFolder = new TFolder("Implants", "Implants");
     stoppedImplantFolder = new TFolder("Stopped_Implants", "Stopped Implants");
     decayFolder = new TFolder("Decays", "Decays");
+    scalersFolder = new TFolder("Scalers", "Scalers");
     aidaFolder->Add(implantFolder);
     aidaFolder->Add(stoppedImplantFolder);
     aidaFolder->Add(decayFolder);
+    aidaFolder->Add(scalersFolder);
 
     int xstrips = conf->Wide() ? 386 : 128;
     double xmax = conf->Wide() ? 113.4 : 37.8;
@@ -230,6 +234,23 @@ InitStatus AidaOnlineSpectra::Init()
         decayDssdFolder[i]->Add(h_decay_strip_1d_energy[i]);
     }
 
+    for (auto& scaler : conf->ScalerMap())
+    {
+        aida_scaler_queue[scaler.first].clear();
+        aida_scaler_cur_sec[scaler.first] = -1;
+        aida_scaler_graph[scaler.first] = new TGraph(3600);
+        std::stringstream name;
+        std::stringstream title;
+        name << "aida_scaler_" << scaler.first;
+        title << "AIDA Scaler #" << scaler.first << " - " << scaler.second;
+        title << ";Time before now (s);Frequency (Hz)";
+        aida_scaler_graph[scaler.first]->SetName(name.str().c_str());
+        aida_scaler_graph[scaler.first]->SetTitle(title.str().c_str());
+        aida_scaler_graph[scaler.first]->SetMinimum(0);
+
+        scalersFolder->Add(aida_scaler_graph[scaler.first]);
+    }
+
     return kSUCCESS;
 }
 
@@ -247,6 +268,16 @@ void AidaOnlineSpectra::Reset_Histo()
     for (auto& h : h_decay_e) h->Clear();
     for (auto& h : h_decay_e_xy) h->Clear();
     for (auto& h : h_decay_strip_1d_energy) h->Clear();
+}
+
+void AidaOnlineSpectra::Reset_Scalers()
+{
+    c4LOG(info, "");
+    for (auto& scaler : conf->ScalerMap())
+    {
+        aida_scaler_queue[scaler.first].clear();
+        aida_scaler_cur_sec[scaler.first] = -1;
+    }
 }
 
 void AidaOnlineSpectra::Exec(Option_t* option)
@@ -292,6 +323,47 @@ void AidaOnlineSpectra::Exec(Option_t* option)
         if (event.Side() == conf->DSSD(event.DSSD() - 1).YSide)
             offset = conf->Wide() ? 386 : 128;
         h_decay_strip_1d_energy[event.DSSD() - 1]->Fill(event.Strip() + offset, event.Energy());
+    }
+
+    // Scaler tracking
+    bool hredraw = false;
+    for (auto& sv : *scalerArray)
+    {
+        int i = sv.Fee();
+        int second = (sv.Time() / 1000000000ULL);
+        if (second == aida_scaler_cur_sec[i])
+        {
+            aida_scaler_queue[i].front() += 1;
+        }
+        else
+        {
+            hredraw = true;
+            if (aida_scaler_cur_sec[i] != -1)
+            {
+                int diff = second - aida_scaler_cur_sec[i];
+                if (diff > 3600)
+                    aida_scaler_queue[i].clear();
+                else
+                    while (diff-- > 1) aida_scaler_queue[i].push_front(0);
+            }
+            aida_scaler_queue[i].push_front(1);
+            while (aida_scaler_queue[i].size() > 3600) aida_scaler_queue[i].pop_back();
+        }
+        aida_scaler_cur_sec[i] = second;
+    }
+
+    if (hredraw)
+    {
+        for (auto scaler : conf->ScalerMap())
+        {
+            aida_scaler_graph[scaler.first]->Set(aida_scaler_queue[scaler.first].size());
+            int i = 0;
+            for (auto p : aida_scaler_queue[scaler.first])
+            {
+                aida_scaler_graph[scaler.first]->SetPoint(i, i, p);
+                i++;
+            }
+        }
     }
     fNEvents += 1;
 }
