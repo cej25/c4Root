@@ -235,6 +235,8 @@ void FatimaReader::WriteFineTimeHistosToFile(){
 
     outputfile->Close();
 
+    c4LOG(fatal,"You have successfully done fine time calibration. These are written to file. Please restart the program and add ReadFineTimehistosFromFile instead for FatimaReader.\n (yeah this is not a fatal error per se just restart it with your fresh calibrations :) )");
+
 }
 
 /*
@@ -310,6 +312,10 @@ Bool_t FatimaReader::Read() //do fine time here:
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++){ //per board:
         
         for (int i = 0; i<32; i++) last_epoch[i] = 0;
+        for (int i = 0; i<32; i++) last_hits[it_board_number][i].hit=false;
+        for (int i = 0; i<32; i++) last_hits[it_board_number][i].lead_epoch_counter = 0;
+        for (int i = 0; i<32; i++) last_hits[it_board_number][i].lead_coarse_T = 0;
+        for (int i = 0; i<32; i++) last_hits[it_board_number][i].lead_fine_T = 0;
 
 
         if (fData->fatima_tamex[it_board_number].event_size == 0) continue; // empty event skip
@@ -318,6 +324,8 @@ Bool_t FatimaReader::Read() //do fine time here:
             //this distinguishes epoch words from time words by checking if the epoch/coarse and fine words are zero. This would potentially be a problem if epoch truly is zero...
 
             if (fData->fatima_tamex[it_board_number].time_epoch <= it_hits) {continue;}
+            if (fData->fatima_tamex[it_board_number].time_fine <= it_hits) {continue;}
+            if (fData->fatima_tamex[it_board_number].time_coarse <= it_hits) {continue;}
 
             if (fData->fatima_tamex[it_board_number].time_epochv[it_hits] != 0){
                     if (it_hits + 1 == fData->fatima_tamex[it_board_number].event_size/4 - 3) {c4LOG(fatal, "Data ends on a epoch...");}
@@ -326,7 +334,7 @@ Bool_t FatimaReader::Read() //do fine time here:
 
                     if (next_channel == 0) continue;
                     
-                    last_epoch[next_channel-1] = fData->fatima_tamex[it_board_number].time_epochv[it_hits];
+                    last_epoch[next_channel-1] = fData->fatima_tamex[it_board_number].time_epochv[it_hits] & 0xFFFFFFF; // first 28 bits.
                     fNepochwordsread++;
                     continue;
             }
@@ -334,7 +342,10 @@ Bool_t FatimaReader::Read() //do fine time here:
 
 
             //from this point we should have seen an epoch for channel id.
-            int channelid = fData->fatima_tamex[it_board_number].time_channelv[it_hits]; // 1-32
+            uint32_t channelid = fData->fatima_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // 1-32
+
+            c4LOG(info,Form("%i, %i", channelid, fData->fatima_tamex[it_board_number].time_coarsev[it_hits]));
+
 
             if (channelid == 0) continue; // skip channel 0 for now. TODO...
             if (fData->fatima_tamex[it_board_number].time_finev[it_hits] == 0x3FF) continue; // this happens if TAMEX loses the fine time - skip it
@@ -355,7 +366,7 @@ Bool_t FatimaReader::Read() //do fine time here:
 
             
             
-            int coarse_T = fData->fatima_tamex[it_board_number].time_coarsev[it_hits];
+            uint32_t coarse_T = fData->fatima_tamex[it_board_number].time_coarsev[it_hits] & 0x7FF;
 
             //Fill fine times and skip.            
             if (!fine_time_calibration_set) {
@@ -398,12 +409,12 @@ Bool_t FatimaReader::Read() //do fine time here:
                 last_hits[it_board_number][channelid-1].lead_fine_T = fine_T;
 
                 continue;
-            }
-
-            if (fData->fatima_tamex[it_board_number].time_edgev[it_hits] == 0 && last_hits[it_board_number][channelid-1].hit){ 
+            }else if (fData->fatima_tamex[it_board_number].time_edgev[it_hits] == 0 && last_hits[it_board_number][channelid-1].hit){ 
                 fNmatched ++;
                 fNtrails_read++;
                 //trail and rise are matched
+                if (it_board_number == 1 && channelid == 1) c4LOG(info,Form("le = %i lc = %i, lf = %f, te = %i tc = %i, tf = %f ",last_hits[it_board_number][channelid-1].lead_epoch_counter, last_hits[it_board_number][channelid-1].lead_coarse_T, last_hits[it_board_number][channelid-1].lead_fine_T,last_epoch[channelid-1],coarse_T,fine_T));
+                
                 new ((*fArray)[fArray->GetEntriesFast()]) FatimaTwinpeaksData(
                     it_board_number,
                     channelid,
