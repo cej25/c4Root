@@ -74,7 +74,7 @@ InitStatus FatimaOnlineSpectra::Init()
 
     for (int ihist = 0; ihist < NDetectors; ihist++){
         c_fatima_slowToT->cd(ihist+1);
-        h1_fatima_slowToT[ihist] = new TH1F(Form("h1_fatima_slowToT_%d",ihist),Form("Fatima slow ToT detector %d",ihist),2000,0,2.5e3);
+        h1_fatima_slowToT[ihist] = new TH1F(Form("h1_fatima_slowToT_%d",ihist),Form("Fatima slow ToT detector %d",ihist),4000,-2.5e3,2.5e3);
         h1_fatima_slowToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
         h1_fatima_slowToT[ihist]->Draw();
     }
@@ -88,7 +88,7 @@ InitStatus FatimaOnlineSpectra::Init()
 
     for (int ihist = 0; ihist < NDetectors; ihist++){
         c_fatima_fastToT->cd(ihist+1);
-        h1_fatima_fastToT[ihist] = new TH1F(Form("h1_fatima_fastToT_%d",ihist),Form("Fatima fast ToT detector %d",ihist),2000,0,2.5e3);
+        h1_fatima_fastToT[ihist] = new TH1F(Form("h1_fatima_fastToT_%d",ihist),Form("Fatima fast ToT detector %d",ihist),4000,-2.5e3,2.5e3);
         h1_fatima_fastToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
         h1_fatima_fastToT[ihist]->Draw();
     }

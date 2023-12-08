@@ -36,8 +36,8 @@ TAMEX4_TIME_DATA(sfp, card, time_coarse, time_fine, time_edge, time_channel, tim
 		   11: is_leading;
 		// fine=0x3ff -> no TDC time.
 		12_21: fine;
-		22_28: channel;
-		29_31: type = 0x4;
+		22_27: channel;
+		28_31: type = 0x8;
 
 		ENCODE(time_coarse APPEND_LIST, (value=coarse));
 		ENCODE(time_fine APPEND_LIST, (value=fine));
@@ -58,8 +58,8 @@ TAMEX4_EPOCH_DATA(sfp, card, time_coarse, time_fine, time_edge, time_channel, ti
 
 	UINT32 data NOENCODE {
 		0_27: epoch;
-		28: reserved;
-		29_31: 0x3;
+		//28: reserved;
+		28_31: 0x6;
 
 		ENCODE(time_coarse APPEND_LIST, (value=0));
 		ENCODE(time_fine APPEND_LIST, (value=0));
@@ -106,8 +106,8 @@ TAMEX4_SFP(sfp, card)
 
 	list (0 <= i < data_size.bytes / 4 - 3) {
 		select several {
-			time = TAMEX4_TIME_DATA(sfp=sfp, card=card, time_coarse=time_coarse, time_fine=time_fine, time_edge=time_edge, time_channel=time_channel, time_epoch=time_epoch);
 			epoch = TAMEX4_EPOCH_DATA(sfp=sfp, card=card, time_coarse=time_coarse, time_fine=time_fine, time_edge=time_edge, time_channel=time_channel, time_epoch=time_epoch);
+			time = TAMEX4_TIME_DATA(sfp=sfp, card=card, time_coarse=time_coarse, time_fine=time_fine, time_edge=time_edge, time_channel=time_channel, time_epoch=time_epoch);
 		}
 	}
 
