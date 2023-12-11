@@ -92,8 +92,8 @@ Bool_t AidaReader::Read()
     {
         auto& entry = scalerArray->emplace_back();
         uint64_t t = fData->aida_data_scaler_timestamp_lo[i] | ((uint64_t)fData->aida_data_scaler_timestamp_hi[i] << 32);
-        int f = fData->aida_data_scaler_fee[i];
         uint64_t v = fData->aida_data_scaler_value_lo[i] | ((uint64_t)fData->aida_data_scaler_value_hi[i] << 32);
+        int f = fData->aida_data_scaler_fee[i];
         entry.SetAll(t, v, f);
     }
 
