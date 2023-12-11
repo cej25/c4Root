@@ -209,6 +209,7 @@ void bPlastRaw2Cal::Exec(Option_t* option){
                 fast_lead_time =  funcal_hit->Get_lead_epoch_counter()*10.24e3 + funcal_hit->Get_lead_coarse_T()*5.0 - funcal_hit->Get_lead_fine_T();
                 fast_trail_time = funcal_hit->Get_trail_epoch_counter()*10.24e3 + funcal_hit->Get_trail_coarse_T()*5.0 - funcal_hit->Get_trail_fine_T();
                 fast_ToT =  fast_trail_time - fast_lead_time;
+                
                 if (funcal_hit->Get_ch_ID() %2 == 0){ // slow channel:
                 new ((*fcal_data)[fcal_data->GetEntriesFast()]) bPlastTwinpeaksCalData(
                     funcal_hit->Get_board_id(),

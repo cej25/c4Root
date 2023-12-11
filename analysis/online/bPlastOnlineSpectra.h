@@ -53,7 +53,7 @@ class bPlastOnlineSpectra : public FairTask
 
         TCanvas* c_bplast_time_spectra;
 
-        static const int NDetectors = 48;
+        static const int NDetectors = 128;
 
         // Histograms energy
         TH1F * h1_bplast_slowToT[NDetectors];
