@@ -257,17 +257,17 @@ InitStatus AidaOnlineSpectra::Init()
 void AidaOnlineSpectra::Reset_Histo()
 {
     c4LOG(info, "");
-    for (auto& h : h_implant_strip_xy) h->Clear();
-    for (auto& h : h_implant_pos_xy) h->Clear();
-    for (auto& h : h_implant_e) h->Clear();
-    for (auto& h : h_implant_e_xy) h->Clear();
-    for (auto& h : h_implant_strip_xy) h->Clear();
+    for (auto& h : h_implant_strip_xy) h->Reset();
+    for (auto& h : h_implant_pos_xy) h->Reset();
+    for (auto& h : h_implant_e) h->Reset();
+    for (auto& h : h_implant_e_xy) h->Reset();
+    for (auto& h : h_implant_strip_xy) h->Reset();
 
-    for (auto& h : h_decay_strip_xy) h->Clear();
-    for (auto& h : h_decay_pos_xy) h->Clear();
-    for (auto& h : h_decay_e) h->Clear();
-    for (auto& h : h_decay_e_xy) h->Clear();
-    for (auto& h : h_decay_strip_1d_energy) h->Clear();
+    for (auto& h : h_decay_strip_xy) h->Reset();
+    for (auto& h : h_decay_pos_xy) h->Reset();
+    for (auto& h : h_decay_e) h->Reset();
+    for (auto& h : h_decay_e_xy) h->Reset();
+    for (auto& h : h_decay_strip_1d_energy) h->Reset();
 }
 
 void AidaOnlineSpectra::Reset_Scalers()
