@@ -105,7 +105,7 @@ TAMEX4_SFP(sfp, card)
 	}
 
 	list (0 <= i < data_size.bytes / 4 - 3) {
-		select several {
+		select {
 			epoch = TAMEX4_EPOCH_DATA(sfp=sfp, card=card, time_coarse=time_coarse, time_fine=time_fine, time_edge=time_edge, time_channel=time_channel, time_epoch=time_epoch);
 			time = TAMEX4_TIME_DATA(sfp=sfp, card=card, time_coarse=time_coarse, time_fine=time_fine, time_edge=time_edge, time_channel=time_channel, time_epoch=time_epoch);
 		}

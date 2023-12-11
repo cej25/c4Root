@@ -52,15 +52,21 @@ class FatimaOnlineSpectra : public FairTask
         TCanvas* c_fatima_time_spectra_divided;
         TCanvas* c_fatima_hitpatterns;
         TCanvas* c_fatima_energy;
+        TCanvas* c_fatima_energies;
         TCanvas* c_fatima_energy_uncal;
+        TCanvas* c_fatima_time_differences;
+        TCanvas* c_fatima_energy_energy;
 
-        static const int NDetectors = 20; //change this
+        static const int NDetectors = 24; //change this
         // Histograms energy
         TH1F * h1_fatima_slowToT[NDetectors];
         TH1F * h1_fatima_fastToT[NDetectors];
+        TH1F * h1_fatima_energies[NDetectors];
+        TH1F * h1_fatima_time_differences[NDetectors];
         TH2F * h2_fatima_fast_v_slow[NDetectors];
 
         TH2F * h2_fatima_energy;
+        TH2F * h2_fatima_energy_energy;
         TH2F * h2_fatima_energy_uncal;
 
         TH1F * h1_fatima_hitpattern_slow;
