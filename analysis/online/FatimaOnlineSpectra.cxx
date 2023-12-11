@@ -269,6 +269,7 @@ void FatimaOnlineSpectra::Reset_Histo()
 
 void FatimaOnlineSpectra::Exec(Option_t* option)
 {   
+    //suspects that the lead and trail flags are	
     if (fHitFatimaTwinpeaks && fHitFatimaTwinpeaks->GetEntriesFast() > 0)
     {
         Int_t nHits = fHitFatimaTwinpeaks->GetEntriesFast();
@@ -305,11 +306,11 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
                     if (hit->Get_detector_id() == 18){
                         h1_fatima_time_differences_SCI41[hit2->Get_detector_id()]->Fill(hit2->Get_fast_lead_time() - hit->Get_fast_lead_time());
                         h1_fatima_time_differences_energy_SCI41[hit2->Get_detector_id()]->Fill(hit2->Get_fast_lead_time() - hit->Get_fast_lead_time(),hit2->Get_energy());
-                        h1_fatima_time_differences_energy_SCI41_sum->Fill(hit2->Get_fast_lead_time() - hit->Get_fast_lead_time(),hit2->Get_energy());
+                        if (hit2->Get_detector_id() < 10 ) h1_fatima_time_differences_energy_SCI41_sum->Fill(hit2->Get_fast_lead_time() - hit->Get_fast_lead_time(),hit2->Get_energy());
                     }else if (hit2->Get_detector_id() == 18){
                         h1_fatima_time_differences_SCI41[hit->Get_detector_id()]->Fill(hit->Get_fast_lead_time() - hit2->Get_fast_lead_time());
                         h1_fatima_time_differences_energy_SCI41[hit->Get_detector_id()]->Fill(hit->Get_fast_lead_time() - hit2->Get_fast_lead_time(),hit->Get_energy());
-                        h1_fatima_time_differences_energy_SCI41_sum->Fill(hit->Get_fast_lead_time() - hit2->Get_fast_lead_time(),hit->Get_energy());
+                        if (hit->Get_detector_id() < 10 ) h1_fatima_time_differences_energy_SCI41_sum->Fill(hit->Get_fast_lead_time() - hit2->Get_fast_lead_time(),hit->Get_energy());
                     }
                     
                     
