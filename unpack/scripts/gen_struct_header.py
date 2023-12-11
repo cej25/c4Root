@@ -3,9 +3,9 @@ import subprocess as sb
 
 #should create the correct struct files, add systems to systems list and run. 
 
-systems = ["fatima"]
+systems = ["bplast"]
 
-ucesb_exec = "onlyFATIMA"
+ucesb_exec = "NovTest"
 
 
 

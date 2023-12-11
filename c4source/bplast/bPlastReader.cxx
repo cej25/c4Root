@@ -81,10 +81,10 @@ Bool_t bPlastReader::Init(ext_data_struct_info* a_struct_info)
         return kFALSE;
     }
 
-    last_hits = new plast_lead_hit_struct*[NBoards];
+    last_hits = new bplast_last_hit_struct*[NBoards];
     fine_time_calibration_coeffs = new double**[NBoards];
     for (int i = 0; i < NBoards; i++) {
-        last_hits[i] = new plast_lead_hit_struct[NChannels];
+        last_hits[i] = new bplast_last_hit_struct[NChannels];
         fine_time_calibration_coeffs[i] = new double*[NChannels];    
     }
 
@@ -237,151 +237,139 @@ Bool_t bPlastReader::Read() //do fine time here:
     }
 
 
-
+    
     //whiterabbit timestamp:
     wr_t = (((uint64_t)fData->bplast_ts_t[3]) << 48) + (((uint64_t)fData->bplast_ts_t[2]) << 32) + (((uint64_t)fData->bplast_ts_t[1]) << 16) + (uint64_t)(fData->bplast_ts_t[0]);
     
 
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++){ //per board:
         
-        for (int i = 0; i<32; i++) last_epoch[i] = 0;
-        //look_ahead_counter = 0;
-        //reset last hits?
+        //for (int i = 0; i<32; i++) last_epoch[i] = 0;
+        //for (int i = 0; i<32; i++) last_hits[it_board_number][i].hit=false;
+        //for (int i = 0; i<32; i++) last_hits[it_board_number][i].lead_epoch_counter = 0;
+        //for (int i = 0; i<32; i++) last_hits[it_board_number][i].lead_coarse_T = 0;
+        //for (int i = 0; i<32; i++) last_hits[it_board_number][i].lead_fine_T = 0;
 
 
         if (fData->bplast_tamex[it_board_number].event_size == 0) continue; // empty event skip
+        
+        uint32_t previous_epoch_word = 0;
+        bplast_last_hit_struct last_tdc_hit;
 
-        for (int it_hits = 0; it_hits < fData->bplast_tamex[it_board_number].event_size/4 - 3 ; it_hits++){ // if no data is written this loop never starts (?)
+        //if (it_board_number == 0) continue;
+
+        //c4LOG(info,"\n\n\n\n New event:");
+        //c4LOG(info,Form("Board_id = %i",it_board_number));
+        //c4LOG(info,Form("event size: %i",fData->bplast_tamex[it_board_number].event_size));
+        //c4LOG(info,Form("time_epoch =  %i, time_coarse = %i, time_fine = %i, time_edge = %i, time_channel = %i",fData->bplast_tamex[it_board_number].time_epoch,fData->bplast_tamex[it_board_number].time_coarse,fData->bplast_tamex[it_board_number].time_fine,fData->bplast_tamex[it_board_number].time_edge,fData->bplast_tamex[it_board_number].time_channel));
+        //c4LOG(info,"Here comes data:");
+
+        for (int it_hits = 0; it_hits < fData->bplast_tamex[it_board_number].event_size/4 - 3 ; it_hits++){
+            //if (fData->bplast_tamex[it_board_number].time_channelv[it_hits] != 1) continue;
+
+            //c4LOG(info, Form("epoch = %i",fData->bplast_tamex[it_board_number].time_epochv[it_hits]));
+            //c4LOG(info, Form("coarse = %i",fData->bplast_tamex[it_board_number].time_coarsev[it_hits]));
+            //c4LOG(info, Form("fine = %i",fData->bplast_tamex[it_board_number].time_finev[it_hits]));
+            //c4LOG(info, Form("channel = %i",fData->bplast_tamex[it_board_number].time_channelv[it_hits]));
+            //c4LOG(info, Form("edge = %i \n",fData->bplast_tamex[it_board_number].time_edgev[it_hits]));
+
+            //continue;
             //this distinguishes epoch words from time words by checking if the epoch/coarse and fine words are zero. This would potentially be a problem if epoch truly is zero...
 
-
+            // now operating under the assumption:
             /*
-            //look ahead to grab epoch: (i think this is wrong)
-            if (last_epoch == 0 && fData->bplast_tamex[it_board_number].time_epochv[it_hits] == 0){
-                look_ahead_counter ++; //keep track of how far ahead you skip.
-                continue;
-            }else if (last_epoch == 0 && fData->bplast_tamex[it_board_number].time_epochv[it_hits] != 0){
-                last_epoch = fData->bplast_tamex[it_board_number].time_epochv[it_hits] - 1; //subtract one?
-                it_hits = it_hits - look_ahead_counter; // jumps back
-            }else if (last_epoch != 0 && fData->bplast_tamex[it_board_number].time_epochv[it_hits] != 0){ // next epoch:
-                last_epoch = 0;
-                look_ahead_counter = 0;
-                continue;
-            }
+            the TAMEX readout happens channel after channel with increasing channel number. Multiple hits within one channel are time ordered.
+            e.g.: ch1-hit1, ch1-hit2, ch1-hit3, ch2-hit1, ch2-hit2, ch3-hit1, ....., chN-hitN.
+            from M Reese 08.12.23
             */
+
+
             if (fData->bplast_tamex[it_board_number].time_epoch <= it_hits) {continue;}
+            if (fData->bplast_tamex[it_board_number].time_fine <= it_hits) {continue;}
+            if (fData->bplast_tamex[it_board_number].time_coarse <= it_hits) {continue;}
+
             if (fData->bplast_tamex[it_board_number].time_epochv[it_hits] != 0){
-                    if (it_hits + 1 == fData->bplast_tamex[it_board_number].event_size/4 - 3) c4LOG(fatal, "Data ends on a epoch...");
-
-                    next_channel = fData->bplast_tamex[it_board_number].time_channelv[it_hits+1];
-
-                    if (next_channel == 0 || next_channel < 0 || it_hits+1 >= fData->bplast_tamex[it_board_number].time_channel) continue; // skip channel 0 for now. TODO: we got some channelid = - 1000000 online from bplast? could be pursued?
-                    last_epoch[next_channel-1] = fData->bplast_tamex[it_board_number].time_epochv[it_hits];
+                    previous_epoch_word = fData->bplast_tamex[it_board_number].time_epochv[it_hits] & 0xFFFFFFF;
+                    //if (it_board_number == 1) c4LOG(info,Form("Found epoch for ch = %i, e = %i",next_channel,fData->bplast_tamex[it_board_number].time_epochv[it_hits] & 0xFFFFFFF));
                     fNepochwordsread++;
                     continue;
             }
-            
-
 
             //from this point we should have seen an epoch for channel id.
-            int channelid = fData->bplast_tamex[it_board_number].time_channelv[it_hits]; // 1-32
+            
+            uint32_t channelid = fData->bplast_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // 1-32
 
-            if (channelid == 0 || channelid < 0 || it_hits >= fData->bplast_tamex[it_board_number].time_channel) continue; // skip channel 0 for now. TODO: we got some channelid = - 1000000 online from bplast? could be pursued?
+            //if (it_board_number == 1) c4LOG(info,Form("ch = %i, coarse = %i, edge = %i", channelid, fData->bplast_tamex[it_board_number].time_coarsev[it_hits], fData->bplast_tamex[it_board_number].time_edgev[it_hits]));
+
+
+            if (channelid == 0) continue; // skip channel 0 for now. TODO...
+
             if (fData->bplast_tamex[it_board_number].time_finev[it_hits] == 0x3FF) continue; // this happens if TAMEX loses the fine time - skip it
+                   
             
-            //c4LOG(info, Form("Channel %i - last_epoch = %i"))
-            
-            //should not pass this point if this is an epoch:
-            if (last_epoch[channelid-1] == 0 || fData->bplast_tamex[it_board_number].time_epochv[it_hits] != 0){
-                //case no epoch seen, this is not an epoch word.
-                
-                //this does indeed seem to happen sometimes - there are hits with no preceeding epoch.
 
-                //c4LOG(info, Form("channel %i , last epoch = %i, and this epoch = %i",channelid, last_epoch[channelid-1], fData->bplast_tamex[it_board_number].time_epochv[it_hits]));
-                //c4LOG(info, Form("coarse: %i, fine %i ",fData->bplast_tamex[it_board_number].time_coarsev[it_hits],fData->bplast_tamex[it_board_number].time_finev[it_hits]));
-                //c4LOG(fatal,"HIT SEEN AT START WITH NO EPOCH!");
-                fNevents_lacking_epoch++;
-                continue;
-            }
-
-
-            
-            
-            int coarse_T = fData->bplast_tamex[it_board_number].time_coarsev[it_hits];
-            //if (channelid%2 == 0) std::cout << channelid << std::endl;
-            
+            //Fill fine times and skip.            
             if (!fine_time_calibration_set) {
-                //c4LOG(debug1,"Filling the fine time histograms to collect data for fine time calibration.");
                 fine_time_hits[it_board_number][channelid-1]->Fill(fData->bplast_tamex[it_board_number].time_finev[it_hits]);
                 continue;
             }
 
+            bool is_leading = fData->bplast_tamex[it_board_number].time_edgev[it_hits] & 0x1;
+            uint32_t coarse_T = fData->bplast_tamex[it_board_number].time_coarsev[it_hits] & 0x7FF;
             double fine_T = GetFineTime(fData->bplast_tamex[it_board_number].time_finev[it_hits],it_board_number,channelid-1);
 
+            //if(it_board_number == 1) c4LOG(info,fData->bplast_tamex[it_board_number].time_edgev[it_hits]);
 
-            if (fData->bplast_tamex[it_board_number].time_edgev[it_hits] == 1){ // rise signal:
+            if (is_leading){ // rise signal:
+                //if (it_board_number == 1) c4LOG(info,Form("Found rise: ch = %i, le = %i, lc = %i, lf = %f", channelid, previous_epoch_word,coarse_T,fine_T));
+                
+                last_tdc_hit.hit = true;
+                last_tdc_hit.lead_epoch_counter = previous_epoch_word;
+                last_tdc_hit.lead_coarse_T = coarse_T;
+                last_tdc_hit.lead_fine_T = fine_T;
+                
                 fNleads_read ++;
-                if (last_hits[it_board_number][channelid-1].hit==true){
-                    //second rise time found.
-
-                    //write the old trail ...
-                    new ((*fArray)[fArray->GetEntriesFast()]) bPlastTwinpeaksData(
-                        it_board_number,
-                        channelid,
-                        last_hits[it_board_number][channelid-1].lead_epoch_counter,
-                        last_hits[it_board_number][channelid-1].lead_coarse_T,
-                        last_hits[it_board_number][channelid-1].lead_fine_T,
-                        0,
-                        0,
-                        0,
-                        fData->bplast_ts_subsystem_id,
-                        wr_t);
-
-
-                    // but keep the recent one
-                    last_hits[it_board_number][channelid-1].hit = true;
-                    last_hits[it_board_number][channelid-1].lead_epoch_counter = last_epoch[channelid-1];
-                    last_hits[it_board_number][channelid-1].lead_coarse_T = coarse_T;
-                    last_hits[it_board_number][channelid-1].lead_fine_T = fine_T;
-                }
-
-                last_hits[it_board_number][channelid-1].hit = true;
-                last_hits[it_board_number][channelid-1].lead_epoch_counter = last_epoch[channelid-1];
-                last_hits[it_board_number][channelid-1].lead_coarse_T = coarse_T;
-                last_hits[it_board_number][channelid-1].lead_fine_T = fine_T;
-
                 continue;
-            }
-
-            if (fData->bplast_tamex[it_board_number].time_edgev[it_hits] == 0 && last_hits[it_board_number][channelid-1].hit){ 
-                fNmatched ++;
-                fNtrails_read++;
+            }else if (!is_leading && last_tdc_hit.hit){ 
                 //trail and rise are matched
+                //if (it_board_number == 1) c4LOG(info,Form("Writing: ch = %i, le = %i lc = %i, lf = %f, te = %i tc = %i, tf = %f ",channelid,last_hits[it_board_number][channelid-1].lead_epoch_counter, last_hits[it_board_number][channelid-1].lead_coarse_T, last_hits[it_board_number][channelid-1].lead_fine_T,last_epoch[channelid-1],coarse_T,fine_T));
+                
                 new ((*fArray)[fArray->GetEntriesFast()]) bPlastTwinpeaksData(
                     it_board_number,
                     channelid,
-                    last_hits[it_board_number][channelid-1].lead_epoch_counter,
-                    last_hits[it_board_number][channelid-1].lead_coarse_T,
-                    last_hits[it_board_number][channelid-1].lead_fine_T,
+                    //last_hits[it_board_number][channelid-1].lead_epoch_counter,
+                    last_tdc_hit.lead_epoch_counter,
+                    //last_hits[it_board_number][channelid-1].lead_coarse_T,
+                    last_tdc_hit.lead_coarse_T,
+                    //last_hits[it_board_number][channelid-1].lead_fine_T,
+                    last_tdc_hit.lead_fine_T,
 
-                    last_epoch[channelid-1],
+                    previous_epoch_word,
                     coarse_T,
                     fine_T,
                     fData->bplast_ts_subsystem_id,
                     wr_t);
                 
                 //reset:
-                last_hits[it_board_number][channelid-1].hit=false;
-                last_hits[it_board_number][channelid-1].lead_epoch_counter = 0;
-                last_hits[it_board_number][channelid-1].lead_coarse_T = 0;
-                last_hits[it_board_number][channelid-1].lead_fine_T = 0;
+                //last_hits[it_board_number][channelid-1].hit=false;
+                //last_hits[it_board_number][channelid-1].lead_epoch_counter = 0;
+                //last_hits[it_board_number][channelid-1].lead_coarse_T = 0;
+                //last_hits[it_board_number][channelid-1].lead_fine_T = 0;
+                last_tdc_hit.hit=false;
+                last_tdc_hit.lead_epoch_counter = 0;
+                last_tdc_hit.lead_coarse_T = 0;
+                last_tdc_hit.lead_fine_T = 0;
+                
+                fNmatched ++;
+                fNtrails_read++;
+
+                continue;
             }else{
                 // do nothing, trail found with no rise.
                 fNtrails_read++;
             }
         }
-    }    
-
+    }
     fNEvent += 1;
     return kTRUE;
 }
