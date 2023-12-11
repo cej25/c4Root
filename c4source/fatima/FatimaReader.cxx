@@ -311,66 +311,69 @@ Bool_t FatimaReader::Read() //do fine time here:
 
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++){ //per board:
         
-        for (int i = 0; i<32; i++) last_epoch[i] = 0;
-        for (int i = 0; i<32; i++) last_hits[it_board_number][i].hit=false;
-        for (int i = 0; i<32; i++) last_hits[it_board_number][i].lead_epoch_counter = 0;
-        for (int i = 0; i<32; i++) last_hits[it_board_number][i].lead_coarse_T = 0;
-        for (int i = 0; i<32; i++) last_hits[it_board_number][i].lead_fine_T = 0;
+        //for (int i = 0; i<32; i++) last_epoch[i] = 0;
+        //for (int i = 0; i<32; i++) last_hits[it_board_number][i].hit=false;
+        //for (int i = 0; i<32; i++) last_hits[it_board_number][i].lead_epoch_counter = 0;
+        //for (int i = 0; i<32; i++) last_hits[it_board_number][i].lead_coarse_T = 0;
+        //for (int i = 0; i<32; i++) last_hits[it_board_number][i].lead_fine_T = 0;
 
 
         if (fData->fatima_tamex[it_board_number].event_size == 0) continue; // empty event skip
+        
+        uint32_t previous_epoch_word = 0;
+        last_lead_hit_struct last_tdc_hit;
+
+        //if (it_board_number == 0) continue;
+
+        //c4LOG(info,"\n\n\n\n New event:");
+        //c4LOG(info,Form("Board_id = %i",it_board_number));
+        //c4LOG(info,Form("event size: %i",fData->fatima_tamex[it_board_number].event_size));
+        //c4LOG(info,Form("time_epoch =  %i, time_coarse = %i, time_fine = %i, time_edge = %i, time_channel = %i",fData->fatima_tamex[it_board_number].time_epoch,fData->fatima_tamex[it_board_number].time_coarse,fData->fatima_tamex[it_board_number].time_fine,fData->fatima_tamex[it_board_number].time_edge,fData->fatima_tamex[it_board_number].time_channel));
+        //c4LOG(info,"Here comes data:");
 
         for (int it_hits = 0; it_hits < fData->fatima_tamex[it_board_number].event_size/4 - 3 ; it_hits++){
+            //if (fData->fatima_tamex[it_board_number].time_channelv[it_hits] != 1) continue;
+
+            //c4LOG(info, Form("epoch = %i",fData->fatima_tamex[it_board_number].time_epochv[it_hits]));
+            //c4LOG(info, Form("coarse = %i",fData->fatima_tamex[it_board_number].time_coarsev[it_hits]));
+            //c4LOG(info, Form("fine = %i",fData->fatima_tamex[it_board_number].time_finev[it_hits]));
+            //c4LOG(info, Form("channel = %i",fData->fatima_tamex[it_board_number].time_channelv[it_hits]));
+            //c4LOG(info, Form("edge = %i \n",fData->fatima_tamex[it_board_number].time_edgev[it_hits]));
+
+            //continue;
             //this distinguishes epoch words from time words by checking if the epoch/coarse and fine words are zero. This would potentially be a problem if epoch truly is zero...
+
+            // now operating under the assumption:
+            /*
+            the TAMEX readout happens channel after channel with increasing channel number. Multiple hits within one channel are time ordered.
+            e.g.: ch1-hit1, ch1-hit2, ch1-hit3, ch2-hit1, ch2-hit2, ch3-hit1, ....., chN-hitN.
+            from M Reese 08.12.23
+            */
+
 
             if (fData->fatima_tamex[it_board_number].time_epoch <= it_hits) {continue;}
             if (fData->fatima_tamex[it_board_number].time_fine <= it_hits) {continue;}
             if (fData->fatima_tamex[it_board_number].time_coarse <= it_hits) {continue;}
 
             if (fData->fatima_tamex[it_board_number].time_epochv[it_hits] != 0){
-                    if (it_hits + 1 == fData->fatima_tamex[it_board_number].event_size/4 - 3) {c4LOG(fatal, "Data ends on a epoch...");}
-
-                    next_channel = fData->fatima_tamex[it_board_number].time_channelv[it_hits+1];
-
-                    
-                    if (it_board_number == 1) c4LOG(info,Form("Found epoch for ch = %i, e = %i",next_channel,fData->fatima_tamex[it_board_number].time_epochv[it_hits] & 0xFFFFFFF));
-                    
-                    if (next_channel == 0) continue;
-
-                    last_epoch[next_channel-1] = fData->fatima_tamex[it_board_number].time_epochv[it_hits] & 0xFFFFFFF; // first 28 bits.
+                    previous_epoch_word = fData->fatima_tamex[it_board_number].time_epochv[it_hits] & 0xFFFFFFF;
+                    //if (it_board_number == 1) c4LOG(info,Form("Found epoch for ch = %i, e = %i",next_channel,fData->fatima_tamex[it_board_number].time_epochv[it_hits] & 0xFFFFFFF));
                     fNepochwordsread++;
                     continue;
             }
-            
-
 
             //from this point we should have seen an epoch for channel id.
+            
             uint32_t channelid = fData->fatima_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // 1-32
 
-            if (it_board_number == 1) c4LOG(info,Form("ch = %i, coarse = %i, edge = %i", channelid, fData->fatima_tamex[it_board_number].time_coarsev[it_hits], fData->fatima_tamex[it_board_number].time_edgev[it_hits]));
+            //if (it_board_number == 1) c4LOG(info,Form("ch = %i, coarse = %i, edge = %i", channelid, fData->fatima_tamex[it_board_number].time_coarsev[it_hits], fData->fatima_tamex[it_board_number].time_edgev[it_hits]));
 
 
             if (channelid == 0) continue; // skip channel 0 for now. TODO...
 
             if (fData->fatima_tamex[it_board_number].time_finev[it_hits] == 0x3FF) continue; // this happens if TAMEX loses the fine time - skip it
+                   
             
-            //c4LOG(info, Form("Channel %i - last_epoch = %i"))
-            
-            //should not pass this point if this is an epoch:
-            
-            if (last_epoch[channelid-1] == 0 || fData->fatima_tamex[it_board_number].time_epochv[it_hits] != 0){
-                //case no epoch seen, this is not an epoch word.
-                
-                //this does indeed seem to happen sometimes - there are hits with no preceeding epoch - therefore the stats of how often this happens is kept. 
-
-                fNevents_lacking_epoch++;
-                continue;
-            }
-
-
-            
-            
-            uint32_t coarse_T = fData->fatima_tamex[it_board_number].time_coarsev[it_hits] & 0x7FF;
 
             //Fill fine times and skip.            
             if (!fine_time_calibration_set) {
@@ -378,72 +381,56 @@ Bool_t FatimaReader::Read() //do fine time here:
                 continue;
             }
 
+            bool is_leading = fData->fatima_tamex[it_board_number].time_edgev[it_hits] & 0x1;
+            uint32_t coarse_T = fData->fatima_tamex[it_board_number].time_coarsev[it_hits] & 0x7FF;
             double fine_T = GetFineTime(fData->fatima_tamex[it_board_number].time_finev[it_hits],it_board_number,channelid-1);
 
             //if(it_board_number == 1) c4LOG(info,fData->fatima_tamex[it_board_number].time_edgev[it_hits]);
 
-            if (fData->fatima_tamex[it_board_number].time_edgev[it_hits] & 0x1 == 1){ // rise signal:
+            if (is_leading){ // rise signal:
+                //if (it_board_number == 1) c4LOG(info,Form("Found rise: ch = %i, le = %i, lc = %i, lf = %f", channelid, previous_epoch_word,coarse_T,fine_T));
+                
+                last_tdc_hit.hit = true;
+                last_tdc_hit.lead_epoch_counter = previous_epoch_word;
+                last_tdc_hit.lead_coarse_T = coarse_T;
+                last_tdc_hit.lead_fine_T = fine_T;
+                
                 fNleads_read ++;
-                /*
-                if (last_hits[it_board_number][channelid-1].hit==true){
-                    //second rise time found.
-
-                    //write the old lead without trail...
-                    
-                    new ((*fArray)[fArray->GetEntriesFast()]) FatimaTwinpeaksData(
-                        it_board_number,
-                        channelid,
-                        last_hits[it_board_number][channelid-1].lead_epoch_counter,
-                        last_hits[it_board_number][channelid-1].lead_coarse_T,
-                        last_hits[it_board_number][channelid-1].lead_fine_T,
-                        0,
-                        0,
-                        0,
-                        fData->fatima_ts_subsystem_id,
-                        wr_t);
-                    
-
-
-                    // but keep the recent one
-                    last_hits[it_board_number][channelid-1].hit = true;
-                    last_hits[it_board_number][channelid-1].lead_epoch_counter = last_epoch[channelid-1];
-                    last_hits[it_board_number][channelid-1].lead_coarse_T = coarse_T;
-                    last_hits[it_board_number][channelid-1].lead_fine_T = fine_T;
-                }
-                */
-                //
-                if (it_board_number == 1) c4LOG(info,Form("Found rise: ch = %i, le = %i, lc = %i, lf = %f", channelid, last_epoch[channelid-1],coarse_T,fine_T));
-
-                last_hits[it_board_number][channelid-1].hit = true;
-                last_hits[it_board_number][channelid-1].lead_epoch_counter = last_epoch[channelid-1];
-                last_hits[it_board_number][channelid-1].lead_coarse_T = coarse_T;
-                last_hits[it_board_number][channelid-1].lead_fine_T = fine_T;
-
                 continue;
-            }else if (fData->fatima_tamex[it_board_number].time_edgev[it_hits] == 0 && last_hits[it_board_number][channelid-1].hit){ 
-                fNmatched ++;
-                fNtrails_read++;
+            }else if (!is_leading && last_tdc_hit.hit){ 
                 //trail and rise are matched
-                if (it_board_number == 1) c4LOG(info,Form("Writing: ch = %i, le = %i lc = %i, lf = %f, te = %i tc = %i, tf = %f ",channelid,last_hits[it_board_number][channelid-1].lead_epoch_counter, last_hits[it_board_number][channelid-1].lead_coarse_T, last_hits[it_board_number][channelid-1].lead_fine_T,last_epoch[channelid-1],coarse_T,fine_T));
+                //if (it_board_number == 1) c4LOG(info,Form("Writing: ch = %i, le = %i lc = %i, lf = %f, te = %i tc = %i, tf = %f ",channelid,last_hits[it_board_number][channelid-1].lead_epoch_counter, last_hits[it_board_number][channelid-1].lead_coarse_T, last_hits[it_board_number][channelid-1].lead_fine_T,last_epoch[channelid-1],coarse_T,fine_T));
                 
                 new ((*fArray)[fArray->GetEntriesFast()]) FatimaTwinpeaksData(
                     it_board_number,
                     channelid,
-                    last_hits[it_board_number][channelid-1].lead_epoch_counter,
-                    last_hits[it_board_number][channelid-1].lead_coarse_T,
-                    last_hits[it_board_number][channelid-1].lead_fine_T,
+                    //last_hits[it_board_number][channelid-1].lead_epoch_counter,
+                    last_tdc_hit.lead_epoch_counter,
+                    //last_hits[it_board_number][channelid-1].lead_coarse_T,
+                    last_tdc_hit.lead_coarse_T,
+                    //last_hits[it_board_number][channelid-1].lead_fine_T,
+                    last_tdc_hit.lead_fine_T,
 
-                    last_epoch[channelid-1],
+                    previous_epoch_word,
                     coarse_T,
                     fine_T,
                     fData->fatima_ts_subsystem_id,
                     wr_t);
                 
                 //reset:
-                last_hits[it_board_number][channelid-1].hit=false;
-                last_hits[it_board_number][channelid-1].lead_epoch_counter = 0;
-                last_hits[it_board_number][channelid-1].lead_coarse_T = 0;
-                last_hits[it_board_number][channelid-1].lead_fine_T = 0;
+                //last_hits[it_board_number][channelid-1].hit=false;
+                //last_hits[it_board_number][channelid-1].lead_epoch_counter = 0;
+                //last_hits[it_board_number][channelid-1].lead_coarse_T = 0;
+                //last_hits[it_board_number][channelid-1].lead_fine_T = 0;
+                last_tdc_hit.hit=false;
+                last_tdc_hit.lead_epoch_counter = 0;
+                last_tdc_hit.lead_coarse_T = 0;
+                last_tdc_hit.lead_fine_T = 0;
+                
+                fNmatched ++;
+                fNtrails_read++;
+
+                continue;
             }else{
                 // do nothing, trail found with no rise.
                 fNtrails_read++;

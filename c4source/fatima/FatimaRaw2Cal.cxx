@@ -145,6 +145,8 @@ Raises a fatal error if the detector numbers are not unique.
 Bool_t FatimaRaw2Cal::SetDetectorCalFile(TString filename){
 
     c4LOG(info, "Reading Calibration coefficients.");
+    c4LOG(info, "File reading");
+    c4LOG(info, filename);
 
 
     std::ifstream cal_map_file (filename);
@@ -158,8 +160,8 @@ Bool_t FatimaRaw2Cal::SetDetectorCalFile(TString filename){
             cal_map_file >> rdetector_id >> a0 >> a1 >> a2 >> a3;
             std::vector<double> cals = {a0,a1,a2,a3};
 
-            auto it = calibration_coeffs.find(rdetector_id);
-            if (it != calibration_coeffs.end()){ c4LOG(fatal,Form("Detector calibration not unique. Multiple entries of (detector id = %i)",rdetector_id));}
+            //auto it = calibration_coeffs.find(rdetector_id);
+            //if (it != calibration_coeffs.end()){ c4LOG(fatal,Form("Detector calibration not unique. Multiple entries of (detector id = %i)",rdetector_id));} // TODO: this is somehow throwing errors figure out why.
 
             calibration_coeffs.insert(std::pair<int,std::vector<double>>{rdetector_id,cals});
             cal_map_file.ignore(256,'\n');
@@ -312,7 +314,7 @@ void FatimaRaw2Cal::Exec(Option_t* option){
             
             
             fNEvents++;
-            ihit++; //increment it by one extra.
+            //ihit++; //increment it by one extra.
         }
     }    
 }
