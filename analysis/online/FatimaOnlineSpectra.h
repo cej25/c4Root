@@ -59,6 +59,7 @@ class FatimaOnlineSpectra : public FairTask
         TCanvas* c_fatima_time_differences_SCI41;
         TCanvas* c_fatima_time_differences_energy_SCI41;
         TCanvas* c_fatima_time_differences_energy_SCI41_sum;
+        TCanvas* c_fatima_time_differences_energy_SCI41_gated;
 
         static const int NDetectors = 24; //change this
         
@@ -70,6 +71,7 @@ class FatimaOnlineSpectra : public FairTask
         TH2F * h2_fatima_fast_v_slow[NDetectors];
         TH2F * h1_fatima_time_differences_energy_SCI41[NDetectors];
         TH2F * h1_fatima_time_differences_energy_SCI41_sum;
+        TH1F * h1_fatima_time_differences_energy_SCI41_gated;
         TH1F * h1_fatima_time_differences_SCI41[NDetectors];
 
         TH2F * h2_fatima_energy;
