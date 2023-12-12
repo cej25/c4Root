@@ -22,6 +22,7 @@
 #include "THttpServer.h"
 #include "TMath.h"
 #include "TRandom.h"
+#include <TDirectory.h>
 #include <sstream>
 
 AidaOnlineSpectra::AidaOnlineSpectra() : AidaOnlineSpectra("AidaOnline")
@@ -88,6 +89,9 @@ InitStatus AidaOnlineSpectra::Init()
 
     // Aida configuration
     conf = TAidaConfiguration::GetInstance();
+
+    // Temporarily get rid of gDirectory
+    TDirectory::TContext ctx(nullptr);
 
     // Create folders 
     aidaFolder = new TFolder("AIDA", "AIDA");
@@ -241,7 +245,7 @@ InitStatus AidaOnlineSpectra::Init()
         aida_scaler_graph[scaler.first] = new TGraph(3600);
         std::stringstream name;
         std::stringstream title;
-        name << "aida_scaler_" << scaler.first;
+        name << "aida_scaler_" << scaler.first << "_" << scaler.second;
         title << "AIDA Scaler #" << scaler.first << " - " << scaler.second;
         title << ";Time before now (s);Frequency (Hz)";
         aida_scaler_graph[scaler.first]->SetName(name.str().c_str());
