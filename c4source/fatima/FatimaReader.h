@@ -89,8 +89,8 @@ class FatimaReader : public c4Reader
         uint64_t wr_t;
 
 
-        const int NBoards = 4; // in the .spec file!
-        const int NChannels = 32; //per board
+        const int NBoards = sizeof(fData->fatima_tamex) / sizeof(fData->fatima_tamex[0]);
+        const int NChannels = 32; //slow + fast per board
 
 
 

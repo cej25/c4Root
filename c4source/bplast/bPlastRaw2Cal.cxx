@@ -209,6 +209,7 @@ void bPlastRaw2Cal::Exec(Option_t* option){
                 fast_lead_time =  funcal_hit->Get_lead_epoch_counter()*10.24e3 + funcal_hit->Get_lead_coarse_T()*5.0 - funcal_hit->Get_lead_fine_T();
                 fast_trail_time = funcal_hit->Get_trail_epoch_counter()*10.24e3 + funcal_hit->Get_trail_coarse_T()*5.0 - funcal_hit->Get_trail_fine_T();
                 fast_ToT =  fast_trail_time - fast_lead_time;
+                
                 if (funcal_hit->Get_ch_ID() %2 == 0){ // slow channel:
                 new ((*fcal_data)[fcal_data->GetEntriesFast()]) bPlastTwinpeaksCalData(
                     funcal_hit->Get_board_id(),
@@ -358,6 +359,8 @@ void bPlastRaw2Cal::Exec(Option_t* option){
             if (((detector_id == time_machine_delayed_detector_id) || (detector_id == time_machine_undelayed_detector_id)) && time_machine_delayed_detector_id!=0 && time_machine_undelayed_detector_id!=0){ // currently only gets the TM if it also matches it slow-fast...
                 new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData((detector_id==time_machine_undelayed_detector_id) ? (fast_lead_time) : (0), (detector_id==time_machine_undelayed_detector_id) ? (0) : (fast_lead_time), funcal_hit->Get_wr_subsystem_id(), funcal_hit->Get_wr_t() );
                 //continue; //cej: i think this line skips everything if it finds TM?
+                
+                //c4LOG(info,Form("flead = %f , channel = %i",fast_lead_time, detect))
             }
 
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) bPlastTwinpeaksCalData(

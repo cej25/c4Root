@@ -15,6 +15,7 @@ FatimaTwinpeaksCalData::FatimaTwinpeaksCalData()
     ffast_ToT(0),
     fslow_ToT(0),
 
+    fenergy(0),
 
     fwr_subsystem_id(0),
     fwr_t(0)
@@ -34,6 +35,8 @@ FatimaTwinpeaksCalData::FatimaTwinpeaksCalData(
 
         double fast_ToT,
         double slow_ToT,
+
+        double energy,
         
         uint16_t wr_subsystem_id,
         uint64_t wr_t)
@@ -47,6 +50,7 @@ FatimaTwinpeaksCalData::FatimaTwinpeaksCalData(
         ffast_trail_time(fast_trail_time),
         ffast_ToT(fast_ToT),
         fslow_ToT(slow_ToT),
+        fenergy(energy),
         fwr_subsystem_id(wr_subsystem_id),
         fwr_t(wr_t)
 {

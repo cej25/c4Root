@@ -21,7 +21,8 @@ EXPS= s452 \
 	beammonitor \
 	lisa \
 	s450 \
-	NovTest
+	NovTest \
+	onlyFATIMA
 
 ALL_EXPS = $(EXPS)
 

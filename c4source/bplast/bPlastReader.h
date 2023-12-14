@@ -21,8 +21,7 @@ typedef struct EXT_STR_h101_BPLAST_t EXT_STR_h101_BPLAST;
 typedef struct EXT_STR_h101_BPLAST_onion_t EXT_STR_h101_BPLAST_onion;
 class ext_data_struct_info;
 
-
-struct plast_lead_hit_struct{
+struct bplast_last_hit_struct{
     bool hit = false;
     //uint16_t board_id; index using these:
     //uint32_t ch_ID;
@@ -85,7 +84,7 @@ class bPlastReader : public c4Reader
 
         TClonesArray* fArray;
 
-        plast_lead_hit_struct ** last_hits;
+        bplast_last_hit_struct ** last_hits;
 
         uint32_t last_epoch[32];
         uint32_t next_channel = 0;
