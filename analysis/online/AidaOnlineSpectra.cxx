@@ -118,6 +118,7 @@ InitStatus AidaOnlineSpectra::Init()
     h_implant_e.resize(conf->DSSDs());
     h_implant_e_xy.resize(conf->DSSDs());
     h_implant_strip_1d_energy.resize(conf->DSSDs());
+    h_implant_x_ex.resize(conf->DSSDs());
     h_decay_strip_xy.resize(conf->DSSDs());
     h_decay_pos_xy.resize(conf->DSSDs());
     h_decay_e.resize(conf->DSSDs());
@@ -187,6 +188,15 @@ InitStatus AidaOnlineSpectra::Init()
         h_implant_strip_1d_energy[i]->GetYaxis()->SetTitle("Implant Energy/MeV");
         implantDssdFolder[i]->Add(h_implant_strip_1d_energy[i]);
 
+        name.str();
+        title.str();
+        name << "aida_implants_d" << (i + 1) << "_implants_x_ex";
+        title << "DSSD " << (i + 1) << " X position vs Energy";
+        h_implant_x_ex[i] = new TH2F(name.str().c_str(), title.str().c_str(),
+                xstrips, -xmax, xmax, 2000, 0, 20000);
+        h_implant_x_ex[i]->GetXaxis()->SetTitle("X Position/mm");
+        h_implant_x_ex[i]->GetYaxis()->SetTitle("Energy/MeV");
+
         name.str("");
         title.str("");
         name << "aida_decays_d" << (i + 1) << "_decays_strip_xy";
@@ -213,7 +223,7 @@ InitStatus AidaOnlineSpectra::Init()
         title << "DSSD " << (i + 1) << " decay energy";
         h_decay_e[i] = new TH1F(name.str().c_str(), title.str().c_str(),
                 2000, 0, 20000);
-        h_decay_e[i]->GetXaxis()->SetTitle("Decay Energy/MeV");
+        h_decay_e[i]->GetXaxis()->SetTitle("Decay Energy/keV");
         decayDssdFolder[i]->Add(h_decay_e[i]);
 
         name.str("");
@@ -222,8 +232,8 @@ InitStatus AidaOnlineSpectra::Init()
         title << "DSSD " << (i + 1) << " decay energy X vs energy Y";
         h_decay_e_xy[i] = new TH2F(name.str().c_str(), title.str().c_str(),
                 2000, 0, 20000, 2000, 0, 20000);
-        h_decay_e_xy[i]->GetXaxis()->SetTitle("Decay X Energy/MeV");
-        h_decay_e_xy[i]->GetYaxis()->SetTitle("Decay Y Energy/MeV");
+        h_decay_e_xy[i]->GetXaxis()->SetTitle("Decay X Energy/keV");
+        h_decay_e_xy[i]->GetYaxis()->SetTitle("Decay Y Energy/keV");
         decayDssdFolder[i]->Add(h_decay_e_xy[i]);
 
         // TODO move outof decays as it's not FB matched?
@@ -234,7 +244,7 @@ InitStatus AidaOnlineSpectra::Init()
         h_decay_strip_1d_energy[i] = new TH2F(name.str().c_str(), title.str().c_str(),
                 128 + xstrips, 0, 128 + xstrips, 2000, 0, 20000);
         h_decay_strip_1d_energy[i]->GetXaxis()->SetTitle("Strip (X then Y");
-        h_decay_strip_1d_energy[i]->GetYaxis()->SetTitle("Decay Energy/MeV");
+        h_decay_strip_1d_energy[i]->GetYaxis()->SetTitle("Decay Energy/keV");
         decayDssdFolder[i]->Add(h_decay_strip_1d_energy[i]);
     }
 
@@ -305,6 +315,7 @@ void AidaOnlineSpectra::Exec(Option_t* option)
         h_implant_pos_xy[hit.DSSD - 1]->Fill(hit.PosX, hit.PosY);
         h_implant_e[hit.DSSD - 1]->Fill(hit.Energy);
         h_implant_e_xy[hit.DSSD - 1]->Fill(hit.EnergyX, hit.EnergyY);
+        h_implant_x_ex[hit.DSSD - 1]->Fill(hit.PosX, hit.EnergyX);
     }
     for (auto const& hit : *decayHitArray)
     {
