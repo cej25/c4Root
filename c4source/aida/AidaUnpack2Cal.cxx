@@ -108,7 +108,6 @@ void AidaUnpack2Cal::Exec(Option_t* option)
       strip += shift;
     }
     double intensity = (unpack.Value() - 32768) * side;
-    intensity = (intensity - conf->GetAdcOffset(unpack.Fee() - 1, unpack.Channel()));
     bool range = unpack.Range();
     double energy = 0;
     if (range)
@@ -117,6 +116,7 @@ void AidaUnpack2Cal::Exec(Option_t* option)
     }
     else
     {
+      intensity = (intensity - conf->GetAdcOffset(unpack.Fee() - 1, unpack.Channel()));
       energy = intensity * conf->GetDssdGain(dssd - 1,
           side == conf->DSSD(dssd - 1).XSide ? 0 : 1, strip);
     }
