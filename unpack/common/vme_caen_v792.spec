@@ -22,10 +22,21 @@ VME_CAEN_V792_FRS()
         27_31: geo;
     };
 
+    // hastily changed this for v792, might be incorrect
     UINT32 eob NOENCODE
-    {   
-        0_23: eventcounter;
+    {
+        0_23: nothing; //eventcounter;
         24_26: 0b100;
-        27_31: geo;
-    };
+        27_31: geom;
+    }
+
+    list (0 <= i < 2)
+    {
+        optional UINT32 eob2 NOENCODE 
+        {  
+            0_23: nothing; //eventcounter;
+            24_26: id = MATCH(0b110);
+            27_31: geom;
+        };
+    }
 }
