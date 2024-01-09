@@ -1,4 +1,4 @@
-#define MAX_TDC_HITS 512
+#define MAX_TDC_HITS 1024
 
 TAMEX4_HEADER()
 {
