@@ -4,6 +4,7 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_FATIMA_onion_t fatima;
     EXT_STR_h101_BPLAST_onion_t bplast;
     EXT_STR_h101_aida_onion_t aida;
+    EXT_STR_h101_FRS_onion_t frs;
 } EXT_STR_h101;
 
 void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId = 1)
@@ -33,7 +34,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     Int_t refresh = 1; // Refresh rate for online histograms
     Int_t port = 5000; // Port number for online visualisation, e.g. lxgXXXX:8886
      
-    TString ntuple_options = "UNPACK"; // "RAW"? "time=stitch=1000"? can we time-stitch files here pls?
+    TString ntuple_options = "UNPACK:frsmain"; // "RAW"? "time=stitch=1000"? can we time-stitch files here pls?
     TString ucesb_path = "/u/cjones/c4Root/unpack/exps/NovTest/NovTest --allow-errors --input-buffer=200Mi --event-sizes"; // CEJ: R3B used input-buffer, can't see in ucesb doc however...
     std::string ucesb_dir = "/u/cjones/ucesb";
     ucesb_path.ReplaceAll("//","/");
@@ -76,40 +77,34 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     //unpackbplast->DoFineTimeCalOnline("/u/despec/BB7-c4-test/macros/fine_time_histos_111223_bplast.root",10000000);
     unpackbplast->SetInputFileFineTimeHistos("/u/cjones/c4Root/config/NovTest/fine_time_histos_111223_bplast.root");
 
+    FrsReader* unpackfrs = new FrsReader((EXT_STR_h101_FRS_onion*)&ucesb_struct.frs, offsetof(EXT_STR_h101, frs));
+
     //GermaniumReader* unpackgermanium = new GermaniumReader((EXT_STR_h101_GERMANIUM_onion*)&ucesb_struct.germanium, offsetof(EXT_STR_h101, germanium));
 
     // Add readers
 
 
     // Add readers
-
-
-    
     unpackbplast->SetOnline(false);
     unpackaida->SetOnline(false);
     unpackfatima->SetOnline(false);
+    unpackfrs->SetOnline(false);
     //unpackgermanium->SetOnline(true);SetTimeMachineChannels
-
-
 
     // Add readers
     source->AddReader(unpackheader);
     source->AddReader(unpackfatima);
-
     source->AddReader(unpackaida);
     source->AddReader(unpackbplast);
+    source->AddReader(unpackfrs);
     //source->AddReader(unpackgermanium);
     
 
     // Add readers
 
-
     // Runtime data base
 
-
-
     // Add analysis task
-
     FatimaRaw2Cal * calfatima = new FatimaRaw2Cal();
     calfatima->SetDetectorMapFile("/u/cjones/c4Root/config/NovTest/fatima_alloc.txt");
     calfatima->PrintDetectorMap();
