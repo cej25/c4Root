@@ -1,16 +1,15 @@
 #define MEMBERS \
-    MEMBER(DATA24 data[256] ZERO_SUPPRESS_MULTI(256)); \
-    MEMBER(DATA8 channel[256] NO_INDEX_LIST); \
-    MEMBER(DATA8 leadOrTrail[256] NO_INDEX_LIST);// not sure how to define this properly
+    MEMBER(DATA24 data[128] ZERO_SUPPRESS_MULTI(128)); \
+    MEMBER(DATA8 leadOrTrail[128] ZERO_SUPPRESS_MULTI(128));// not sure how to define this properly
+//  I don't think we need channel, not sure about LoT
+// 128 | 128 seems to work
 
 #define PARAMS_DEF \
     data, \
-	channel, \
     leadOrTrail
 
 #define PARAMS \
     data = data, \
-	channel = channel, \
     leadOrTrail = leadOrTrail
 
 TDC_HEADER()
@@ -31,31 +30,30 @@ TDC_DATA_V1290(PARAMS_DEF)
 
     UINT32 tdc_data NOENCODE
     {
-        0_20: value;
+        0_20: tdc;
         21_25: chn;
         26: lot;
         27_31: 0b00000;
         
-        ENCODE(data[chn],(value = value/*,trailing=trailing*/));
-        ENCODE(channel APPEND_LIST, (value = chn));
-        ENCODE(leadOrTrail APPEND_LIST, (value = lot));
+        ENCODE(data[chn],(value = tdc/*,trailing=trailing*/));
+        ENCODE(leadOrTrail[chn], (value = lot+1)); // 1 for trails 2 for leads
     }
 }
 
-TDC_DATA_V1190() // PARAMS_DEF
+TDC_DATA_V1190(PARAMS_DEF)
 {   
-    //MEMBERS
+    MEMBERS
 
     UINT32 tdc_data NOENCODE
     {
-        0_18: value;
+        0_18: tdc;
         19_25: chn;
         26: lot;
         27_31: 0b00000;
         
-       //ENCODE(data[chn],(value = value/*,trailing=trailing*/));
-       //ENCODE(channel APPEND_LIST, (value = chn));
-       //ENCODE(leadOrTrail APPEND_LIST, (value = lot));
+        ENCODE(data[chn],(value = tdc/*,trailing=trailing*/));
+        ENCODE(leadOrTrail[chn], (value = lot+1)); // 1 for trails 2 for leads
+        // this isn't needed once we dump data = 0
     }
 }
 
@@ -85,7 +83,6 @@ TDC_TRAILER()
 
 VME_CAEN_V1290_FRS()
 {   
-
     MEMBERS
 
     UINT32 header NOENCODE
@@ -127,7 +124,7 @@ VME_CAEN_V1290_FRS()
 
 VME_CAEN_V1190_FRS()
 {
-    //MEMBERS
+    MEMBERS
 
     // for now (12/2023) we need to catch weird events
     // first two words COULD be 0xFFFFFFFF
@@ -159,10 +156,10 @@ VME_CAEN_V1190_FRS()
     select several
     {
         tdc_header = TDC_HEADER();
-        measurement = TDC_DATA_V1190(); // PARAMS
+        measurement = TDC_DATA_V1190(PARAMS);
         tdc_error = TDC_ERROR();
         tdc_trailer = TDC_TRAILER();
-    }
+    };
 
     // if enabled
     optional UINT32 ext_time_tag NOENCODE // type = 17
