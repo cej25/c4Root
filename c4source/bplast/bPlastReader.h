@@ -21,7 +21,6 @@ typedef struct EXT_STR_h101_BPLAST_t EXT_STR_h101_BPLAST;
 typedef struct EXT_STR_h101_BPLAST_onion_t EXT_STR_h101_BPLAST_onion;
 class ext_data_struct_info;
 
-
 struct plast_lead_hit_struct{
     bool hit = false;
     //uint16_t board_id; index using these:
@@ -92,9 +91,8 @@ class bPlastReader : public c4Reader
 
         uint64_t wr_t;
 
-
-        const int NBoards = 9;
-        const int NChannels = 32;
+        const int NBoards = 9; // number of TAMEX cards
+        const int NChannels = 32; // number of channels per TAMEX card (16 physical x 2 fast and slow = 32)
 
         uint64_t fNepochwordsread = 0;
         uint64_t fNtrails_read = 0;
