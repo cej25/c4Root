@@ -89,8 +89,8 @@ class FatimaReader : public c4Reader
         uint64_t wr_t;
 
 
-        const int NBoards = 9; // in the .spec file!
-        const int NChannels = 32; //per board
+        const int NBoards = 9; // number of TAMEX cards specified in the TAMEX .spec file.
+        const int NChannels = 32; // number of channels per TAMEX card. (16 physical x 2 fast and slow = 32)
 
 
 

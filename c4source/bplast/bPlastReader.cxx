@@ -21,6 +21,13 @@ extern "C"
     #include "ext_h101_bplast.h"
 }
 
+/*
+Constructor. Needs the input data structure obtained from ucesb with the following args:
+ --ntuple=UNPACK:fatima,STRUCT_HH,ext_h101_fatima.h (add NOEVENTHEAD also). 
+
+The resulting file must be in the same folder as this file.
+
+*/
 bPlastReader::bPlastReader(EXT_STR_h101_BPLAST_onion* data, size_t offset)
     : c4Reader("bPlastReader")
     , fNEvent(0)
@@ -31,6 +38,10 @@ bPlastReader::bPlastReader(EXT_STR_h101_BPLAST_onion* data, size_t offset)
 {
 }
 
+/*
+Deletes the arrays allocated.
+And prints some statistics for the run.
+*/
 bPlastReader::~bPlastReader() { 
     
     c4LOG(info, Form("Epochs read %i",(int)fNepochwordsread));
@@ -68,6 +79,13 @@ bPlastReader::~bPlastReader() {
 
 }
 
+/*
+Required set up before reading. 
+
+If the fine time calibration histograms are read from disk, it loads these.
+If not new histograms are allocated and ready for filling and calibration.
+
+*/
 Bool_t bPlastReader::Init(ext_data_struct_info* a_struct_info)
 {
     Int_t ok;
@@ -88,6 +106,7 @@ Bool_t bPlastReader::Init(ext_data_struct_info* a_struct_info)
         fine_time_calibration_coeffs[i] = new double*[NChannels];    
     }
 
+    // initialising the last hits to zero
     for (int i = 0; i < NBoards; i++) {
         for (int j = 0; j < NChannels; j++) {
             last_hits[i][j].hit = false;
@@ -102,7 +121,7 @@ Bool_t bPlastReader::Init(ext_data_struct_info* a_struct_info)
         }
     }
 
-
+    // fine time calibration if specified by the user. otherwise make the fine time histograms.
     if (fine_time_calibration_read_from_file){
         ReadFineTimeHistosFromFile();
         DoFineTimeCalibration();
@@ -130,6 +149,11 @@ Bool_t bPlastReader::Init(ext_data_struct_info* a_struct_info)
     return kTRUE;
 }
 
+/*
+This does the fine time calibrations of the fine times and builds the required look-up table in fine_time_calibrations[board][channel][tdc channel] = time (ns)
+
+This can be called explicitly if desired - but will be done automatically by the rest of the code. Throws a warning if there are channels without hits. These are mapped tdc_channel = tdc_channel/512*5 ns
+*/
 void bPlastReader::DoFineTimeCalibration(){
     c4LOG(info, "Doing fine time calibrations.");
     for (int i = 0; i < NBoards; i++) {
@@ -146,18 +170,23 @@ void bPlastReader::DoFineTimeCalibration(){
                 }
 
                 fine_time_calibration_coeffs[i][j][k] = TAMEX_fine_time_clock*(double)running_sum/(double)total_counts;
-                //if (i == 1) std::cout << i << " " << j << " " << k << " " << TAMEX_fine_time_clock << " " << running_sum << " " << total_counts << " " << fine_time_calibration_coeffs[i][j][k] << std::endl;
             }
         }
     }
     fine_time_calibration_set = true;
 }
 
+/*
+Uses the conversion table to look-up fine times in ns.
+*/
 double bPlastReader::GetFineTime(int tdc_fine_time_channel, int board_id, int channel_id){
     return fine_time_calibration_coeffs[board_id][channel_id][tdc_fine_time_channel];
 }
 
-
+/*
+Fine time histograms are stored as ROOT TH1I histograms as they are efficient and compresses when written.
+This function saves the fine time hits directly to file. On restart this file can then be read and the look-up table reconstructed.
+*/
 void bPlastReader::WriteFineTimeHistosToFile(){
 
     if (!fine_time_calibration_set) {
@@ -176,9 +205,7 @@ void bPlastReader::WriteFineTimeHistosToFile(){
         for (int j = 0; j < NChannels; j++) {
             if (fine_time_hits[i][j] != nullptr) 
             {
-                //c4LOG(info, "Found pointer to histogram.");
                 outputfile->WriteObject(fine_time_hits[i][j], Form("fine_time_hits_%i_%i", i, j),"RECREATE");
-                //  c4LOG(info, "Wrote object.");
             }
         }
     }
@@ -187,6 +214,12 @@ void bPlastReader::WriteFineTimeHistosToFile(){
     outputfile->Close();
 
 }
+
+/*
+Read the fine time histograms which are written by the function above.
+
+Assumes the names of the histograms are fine_time_hist_module_channel and that they have 1024 bins (since the TAMEX fine time is written with 2^10 bits).
+*/
 void bPlastReader::ReadFineTimeHistosFromFile() {
 
     TFile* inputfile = TFile::Open(fine_time_histo_infile, "READ");
@@ -224,6 +257,18 @@ void bPlastReader::ReadFineTimeHistosFromFile() {
     c4LOG(info, Form("Read fine time calibrations (i.e. raw fine time histograms) from %s", fine_time_histo_infile));
 }
 
+/*
+Event read loop. Only called by the FairRootManager.
+
+If no fine time calibrations are set, the fine time histograms are filled until a set number of events have been read. Then the FineTimeCalibration is automatically done and the writing of hits start.
+If the fine time calibration is set from the start, hits are written immediately.
+
+Some assumptions:
+    - Each time a new channel is hit, it must be preceeded by an epoch word.
+    - Each time the epoch word changes it is written again.
+    - Time hits are time ordered as they are written by the TAMEX module.
+
+*/
 Bool_t bPlastReader::Read() //do fine time here:
 {
     c4LOG(debug1, "Event Data");
@@ -245,30 +290,11 @@ Bool_t bPlastReader::Read() //do fine time here:
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++){ //per board:
         
         for (int i = 0; i<32; i++) last_epoch[i] = 0;
-        //look_ahead_counter = 0;
-        //reset last hits?
-
 
         if (fData->plastic_tamex[it_board_number].event_size == 0) continue; // empty event skip
 
         for (int it_hits = 0; it_hits < fData->plastic_tamex[it_board_number].event_size/4 - 3 ; it_hits++){ // if no data is written this loop never starts (?)
             //this distinguishes epoch words from time words by checking if the epoch/coarse and fine words are zero. This would potentially be a problem if epoch truly is zero...
-
-
-            /*
-            //look ahead to grab epoch: (i think this is wrong)
-            if (last_epoch == 0 && fData->plastic_tamex[it_board_number].time_epochv[it_hits] == 0){
-                look_ahead_counter ++; //keep track of how far ahead you skip.
-                continue;
-            }else if (last_epoch == 0 && fData->plastic_tamex[it_board_number].time_epochv[it_hits] != 0){
-                last_epoch = fData->plastic_tamex[it_board_number].time_epochv[it_hits] - 1; //subtract one?
-                it_hits = it_hits - look_ahead_counter; // jumps back
-            }else if (last_epoch != 0 && fData->plastic_tamex[it_board_number].time_epochv[it_hits] != 0){ // next epoch:
-                last_epoch = 0;
-                look_ahead_counter = 0;
-                continue;
-            }
-            */
 
             if (fData->plastic_tamex[it_board_number].time_epochv[it_hits] != 0){
                     if (it_hits + 1 == fData->plastic_tamex[it_board_number].event_size/4 - 3) c4LOG(fatal, "Data ends on a epoch...");
@@ -282,7 +308,6 @@ Bool_t bPlastReader::Read() //do fine time here:
                     continue;
             }
             
-
 
             //from this point we should have seen an epoch for channel id.
             int channelid = fData->plastic_tamex[it_board_number].time_channelv[it_hits]; // 1-32
@@ -298,9 +323,6 @@ Bool_t bPlastReader::Read() //do fine time here:
                 
                 //this does indeed seem to happen sometimes - there are hits with no preceeding epoch.
 
-                //c4LOG(info, Form("channel %i , last epoch = %i, and this epoch = %i",channelid, last_epoch[channelid-1], fData->plastic_tamex[it_board_number].time_epochv[it_hits]));
-                //c4LOG(info, Form("coarse: %i, fine %i ",fData->plastic_tamex[it_board_number].time_coarsev[it_hits],fData->plastic_tamex[it_board_number].time_finev[it_hits]));
-                //c4LOG(fatal,"HIT SEEN AT START WITH NO EPOCH!");
                 fNevents_lacking_epoch++;
                 continue;
             }
@@ -387,6 +409,9 @@ Bool_t bPlastReader::Read() //do fine time here:
     return kTRUE;
 }
 
+/*
+Memory management. Do not touch.
+*/
 void bPlastReader::Reset()
 {
     // reset output array

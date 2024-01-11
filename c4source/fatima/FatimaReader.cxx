@@ -302,7 +302,6 @@ Bool_t FatimaReader::Read() //do fine time here:
         for (int it_hits = 0; it_hits < fData->fatima_tamex[it_board_number].event_size/4 - 3 ; it_hits++){
             //this distinguishes epoch words from time words by checking if the epoch/coarse and fine words are zero. This would potentially be a problem if epoch truly is zero...
 
-
             if (fData->fatima_tamex[it_board_number].time_epochv[it_hits] != 0){
                     if (it_hits + 1 == fData->fatima_tamex[it_board_number].event_size/4 - 3) {c4LOG(fatal, "Data ends on a epoch...");}
 
@@ -315,7 +314,6 @@ Bool_t FatimaReader::Read() //do fine time here:
                     continue;
             }
             
-
 
             //from this point we should have seen an epoch for channel id.
             int channelid = fData->fatima_tamex[it_board_number].time_channelv[it_hits]; // 1-32
@@ -417,7 +415,7 @@ Bool_t FatimaReader::Read() //do fine time here:
 
 
 /*
-Memory management.
+Memory management. Do not touch.
 */
 void FatimaReader::Reset()
 {
