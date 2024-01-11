@@ -25,8 +25,6 @@ FrsReader::FrsReader(EXT_STR_h101_FRS_onion* data, size_t offset)
     , fOffset(offset)
     , fOnline(kFALSE)
     , fArray(new TClonesArray("FrsData"))
-   // , v830Array(new std::vector<FrsUnpackV830>)
-   // , v7X5Array(new std::vector<FrsUnpackV7X5>)
 {
 }
 
@@ -74,6 +72,7 @@ Bool_t FrsReader::Read()
     scalers_n = fData->frsmain_data_v830_n;
     for (uint32_t i = 0; i < scalers_n; i++)
     {   
+        // if > 0 condition required?
         scalers_index.emplace_back(fData->frsmain_data_v830_nI[i]);
         scalers_main.emplace_back(fData->frsmain_data_v830_data[fData->frsmain_data_v830_nI[i]]);
     }
@@ -92,8 +91,12 @@ Bool_t FrsReader::Read()
         for (uint32_t j = 0; j < hits; j++)
         {   
             // 32 depends on array size in .spec
-            v792_channel.emplace_back(fData->frsmain_data_v792_nMI[i]);
-            v792_data.emplace_back(fData->frsmain_data_v792_data[i * 32 + j]);
+            if (fData->frsmain_data_v792_data[i * 32 + j] > 0)
+            {
+                v792_channel.emplace_back(fData->frsmain_data_v792_nMI[i]);
+                v792_data.emplace_back(fData->frsmain_data_v792_data[i * 32 + j]);
+            }
+     
         }
 
         chn_first_hit = next_chn_first_hit;
@@ -110,10 +113,14 @@ Bool_t FrsReader::Read()
 
         for (uint32_t j = 0; j < hits; j++)
         {
-            // 128 depends on size of array in .spec file
-            v1290_channel.emplace_back(fData->frsmain_data_v1290_nMI[i]);
-            v1290_data.emplace_back(fData->frsmain_data_v1290_data[i * 128 + j]);
-            v1290_lot.emplace_back(fData->frsmain_data_v1290_leadOrTrailv[i * 128 + j]);
+            // 128 depends on size of array in .spec file]
+            if (fData->frsmain_data_v1290_data[i * 128 + j] > 0)
+            {
+                v1290_channel.emplace_back(fData->frsmain_data_v1290_nMI[i]);
+                v1290_data.emplace_back(fData->frsmain_data_v1290_data[i * 128 + j]);
+                v1290_lot.emplace_back(fData->frsmain_data_v1290_leadOrTrailv[i * 128 + j]);
+            }
+            
         }
 
         chn_first_hit = next_chn_first_hit;
@@ -122,14 +129,14 @@ Bool_t FrsReader::Read()
     new ((*fArray)[fArray->GetEntriesFast()]) FrsData(
         wr_t,
         scalers_n,
-        &scalers_index,
-        &scalers_main,
+        scalers_index,
+        scalers_main,
         v792_geo,
-        &v792_channel,
-        &v792_data,
-        &v1290_channel,
-        &v1290_data,
-        &v1290_lot);
+        v792_channel,
+        v792_data,
+        v1290_channel,
+        v1290_data,
+        v1290_lot);
     
 
     fNEvent += 1;

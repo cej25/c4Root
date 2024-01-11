@@ -1,65 +1,88 @@
-
 #ifndef FrsRaw2Cal_H
-#define FrsRaw2Cal_H 1
+#define FrsRaw2Cal_H
 
-// FairRoot
-#include "FairTask.h"
-
-// c4
-#include "FrsCalData.h"
-
-#include <Rtypes.h>
+#include <vector>
 
 class TClonesArray;
-class FrsMappingPar; // ??
+class EventHeader;
+class FrsData;
+class FrsCalData;
 
 class FrsRaw2Cal : public FairTask
 {
-  public:
-    /** Default constructor **/
-    FrsRaw2Cal();
+    public:
+        FrsRaw2Cal();
+        FrsRaw2Cal(const TString& name, Int_t verbose);
+        
+        ~FrsRaw2Cal();
 
-    /** Standard constructor **/
-    FrsRaw2Cal(const TString& name, Int_t iVerbose = 1);
+        virtual InitStatus Init();
 
-    /** Destructor **/
-    virtual ~FrsRaw2Cal();
+        void Exec(Option_t* option);
 
-    /** Virtual method Exec **/
-    virtual void Exec(Option_t* option) override;
+        void FinishEvent();
+        void FinishTask();
 
-    /** Virtual method Reset **/
-    virtual void Reset();
+        void SetOnline(Bool_t set_online) { fOnline = set_online; }
 
-    virtual void SetParContainers() override;
 
-    // Fair specific
-    /** Virtual method Init **/
-    virtual InitStatus Init() override;
+    private:
+        Bool_t fOnline;
 
-    /** Virtual method ReInit **/
-    virtual InitStatus ReInit() override;
+        TClonesArray* fCalArray;
+        TClonesArray* fRawArray; // from FrsReader
 
-    // Method to setup online mode
-    void SetOnline(Bool_t option) { fOnline = option; }
+        FrsData* fRawHit;
 
-  private:
-    void SetParameter();
-    int GetCol(int reg, int dcol, int ads);
-    int GetRow(int ads);
+        uint32_t v830_scalers_n;
+        std::vector<uint32_t> v830_scalers_index;
+        std::vector<uint32_t> v830_scalers_main;
+        
+        uint32_t scaler_check_first_event = 1; // can we define it here? idk
+        uint32_t scaler_ch_1kHz = 7; // main
+        uint32_t sc_main_initial[32];
+        uint32_t sc_main_previous[32];
 
-    Bool_t fOnline; // Don't store data for online
+        uint32_t time_in_ms;
+        uint32_t ibin_for_s;
+        uint32_t ibin_for_100ms;
+        uint32_t extraction_time_ms;
+        uint32_t ibin_clean_for_s;
+        uint32_t ibin_clean_for_100ms;
 
-    FrsMappingPar* fMap_Par; // Par container (setup.C?)
-    TClonesArray* fFrsData;
-    TClonesArray* fFrsCalData;
+        uint32_t v792_geo;
+        std::vector<uint32_t> v792_data;
+        std::vector<uint32_t> v792_channel;
 
-    // Private method AddCalData
-    FrsCalData* AddCalData(UShort_t senId, Int_t col, Int_t row);
+        uint32_t de_41r;
+        uint32_t de_21l;
+        uint32_t de_21r;
+        uint32_t de_42l; 
+        uint32_t de_42r;
+        uint32_t de_81l;
+        uint32_t de_22r;
+        uint32_t de_31l;
+        uint32_t de_31r;
+        uint32_t de_43l;
+        uint32_t de_43r;
+        uint32_t de_41l;
+        uint32_t de_81r;
+        uint32_t de_22l;
 
-  public:
-    // Class definition
-    ClassDefOverride(FrsRaw2Cal, 1)
+        uint32_t music_t1[8];
+        uint32_t music_t2[8];
+        
+        std::vector<uint32_t> v1290_data;
+        std::vector<uint32_t> v1290_channel;
+        std::vector<uint32_t> v1290_lot;
+
+        EventHeader* header;
+        Int_t fNEvents = 0;
+
+    public:
+        ClassDef(FrsRaw2Cal, 1);
+
 };
 
-#endif /*  FrsRaw2Cal_H */
+
+#endif
