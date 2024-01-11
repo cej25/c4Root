@@ -36,7 +36,7 @@ TDC_DATA_V1290(PARAMS_DEF)
         27_31: 0b00000;
         
         ENCODE(data[chn],(value = tdc/*,trailing=trailing*/));
-        ENCODE(leadOrTrail[chn], (value = lot+1)); // 1 for trails 2 for leads
+        ENCODE(leadOrTrail[chn], (value = lot));
     }
 }
 
@@ -52,8 +52,8 @@ TDC_DATA_V1190(PARAMS_DEF)
         27_31: 0b00000;
         
         ENCODE(data[chn],(value = tdc/*,trailing=trailing*/));
-        ENCODE(leadOrTrail[chn], (value = lot+1)); // 1 for trails 2 for leads
-        // this isn't needed once we dump data = 0
+        ENCODE(leadOrTrail[chn], (value = lot));
+
     }
 }
 
