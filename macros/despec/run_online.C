@@ -150,7 +150,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     run->AddTask(aidaCalibrator);
     run->AddTask(aidaHitter);
     run->AddTask(calbplast);
-    //run->AddTask(calfrs);
+    run->AddTask(calfrs);
     //run->AddTask(ge_calib);
     
 

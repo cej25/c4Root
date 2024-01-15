@@ -27,7 +27,7 @@ class FrsCalData : public TObject
         // Getters -- what did we need these for again?
         // Setters
 
-    private:
+    protected:
 
         uint64_t fWR_TS;
 
@@ -44,7 +44,7 @@ class FrsCalData : public TObject
         //uint32_t* fDe_array; // 14 length
      
         // put this in TObjectArray?
-        std::vector<uint32_t>* fTdc_array; // 15 length
+        //std::vector<uint32_t>* fTdc_array; // 15 length
         //uint32_t* test[3];
 
         // we have to figure out how to make these work.
