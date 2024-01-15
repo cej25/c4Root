@@ -34,7 +34,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     Int_t refresh = 1; // Refresh rate for online histograms
     Int_t port = 5000; // Port number for online visualisation, e.g. lxgXXXX:8886
      
-    TString ntuple_options = "UNPACK:frsmain"; // "RAW"? "time=stitch=1000"? can we time-stitch files here pls?
+    TString ntuple_options = "UNPACK"; // "RAW"? "time=stitch=1000"? can we time-stitch files here pls?
     TString ucesb_path = "/u/cjones/c4Root/unpack/exps/NovTest/NovTest --allow-errors --input-buffer=200Mi --event-sizes"; // CEJ: R3B used input-buffer, can't see in ucesb doc however...
     std::string ucesb_dir = "/u/cjones/ucesb";
     ucesb_path.ReplaceAll("//","/");
@@ -118,13 +118,16 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     aidaCalibrator->SetAidaTimeMachineChannels(4,3);
     AidaCal2Hit* aidaHitter = new AidaCal2Hit();
 
-    bPlastRaw2Cal * calbplast = new bPlastRaw2Cal();
+    bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
     calbplast->SetDetectorMapFile("/u/cjones/c4Root/config/NovTest/bplast_allocation_111223.txt");
     calbplast->SetTimeMachineChannels(68,67);
 
     //GermaniumRaw2Cal * ge_calib = new GermaniumRaw2Cal();
     //ge_calib->SetDetectorMapFile("/u/despec/BB7-c4-test/c4Root/Germanium_Detector_Map.txt");
     //ge_calib->PrintDetectorMap();
+
+    FrsRaw2Cal* calfrs = new FrsRaw2Cal();
+    
 
     //ge_calib->SetDetectorCalFile("/u/despec/BB7-c4-test/c4Root/Germanium_Energy_Calibration.txt");
     //ge_calib->PrintDetectorCal();
@@ -139,6 +142,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     //ge_calib->SetOnline(true);
     calfatima->SetOnline(false);
     calbplast->SetOnline(false);
+    calfrs->SetOnline(false);
     
 
     
@@ -146,6 +150,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     run->AddTask(aidaCalibrator);
     run->AddTask(aidaHitter);
     run->AddTask(calbplast);
+    //run->AddTask(calfrs);
     //run->AddTask(ge_calib);
     
 

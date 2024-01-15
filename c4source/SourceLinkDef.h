@@ -9,6 +9,7 @@
 #pragma link C++ class UcesbSource+;
 #pragma link C++ class c4Reader+;
 #pragma link C++ class FrsReader+;
+#pragma link C++ class FrsRaw2Cal+;
 #pragma link C++ class GermaniumReader+;
 #pragma link C++ class GermaniumRaw2Cal+;
 #pragma link C++ class AidaReader+;
