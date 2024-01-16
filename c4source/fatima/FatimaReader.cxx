@@ -158,7 +158,7 @@ Bool_t FatimaReader::Init(ext_data_struct_info* a_struct_info)
     }
 
     // Register output array in a tree
-    FairRootManager::Instance()->Register("FatimaTwinpeaksData", "Fatima Twinpeaks Data", fArray, !fOnline);
+    FairRootManager::Instance()->Register("FatimaTwinpeaksData", "FatimaTwinpeaksDataFolder", fArray, !fOnline);
     fArray->Clear();
 
     memset(fData, 0, sizeof *fData);

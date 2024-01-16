@@ -120,7 +120,7 @@ Bool_t bPlastReader::Init(ext_data_struct_info* a_struct_info)
     }
 
     // Register output array in a tree
-    FairRootManager::Instance()->Register("bPlastTwinpeaksData", "bPlast Twinpeaks Data", fArray, !fOnline);
+    FairRootManager::Instance()->Register("bPlastTwinpeaksData", "bPlastTwinpeaksDataFolder", fArray, !fOnline);
     fArray->Clear();
 
     memset(fData, 0, sizeof *fData);

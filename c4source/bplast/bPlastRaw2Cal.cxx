@@ -82,8 +82,8 @@ InitStatus bPlastRaw2Cal::Init(){
     c4LOG_IF(fatal, !funcal_data, "bPlast branch of bPlastTwinpeaksData not found.");
     
 
-    FairRootManager::Instance()->Register("bPlastTwinpeaksCalData", "bPlast Cal Data", fcal_data, !fOnline);
-    FairRootManager::Instance()->Register("bPlastTimeMachineData", "Time Machine Data", ftime_machine_array, !fOnline);
+    FairRootManager::Instance()->Register("bPlastTwinpeaksCalData", "bPlastTwinpeaksCalDataFolder", fcal_data, !fOnline);
+    FairRootManager::Instance()->Register("bPlastTimeMachineData", "bPlastTimeMachineDataFolder", ftime_machine_array, !fOnline);
     fcal_data->Clear();
     funcal_data->Clear();
 

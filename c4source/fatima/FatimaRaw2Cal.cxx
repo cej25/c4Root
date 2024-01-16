@@ -88,9 +88,9 @@ InitStatus FatimaRaw2Cal::Init(){
     c4LOG_IF(fatal, !funcal_data, "Fatima branch of FatimaTwinpeaksData not found.");
     
 
-    FairRootManager::Instance()->Register("FatimaTwinpeaksCalData", "Fatima Cal Data", fcal_data, !fOnline);
+    FairRootManager::Instance()->Register("FatimaTwinpeaksCalData", "FatimaTwinpeaksCalDataFolder", fcal_data, !fOnline);
     //need to have the name of the detector subsystem here:
-    FairRootManager::Instance()->Register("FatimaTimeMachineData", "Time Machine Data", ftime_machine_array, !fOnline);
+    FairRootManager::Instance()->Register("FatimaTimeMachineData", "FatimaTimeMachineDataFolder", ftime_machine_array, !fOnline);
     fcal_data->Clear();
     funcal_data->Clear();
 
@@ -228,6 +228,10 @@ void FatimaRaw2Cal::Exec(Option_t* option){
             
             if (funcal_hit_next->Get_ch_ID() != funcal_hit->Get_ch_ID()+1){ // this assumption seems empirically true - no events are filled when reverse order is put.
                 fNunmatched++; continue;
+            }
+
+            if (funcal_hit_next->Get_board_id() != funcal_hit->Get_board_id()){
+                continue;
             }
 
 
