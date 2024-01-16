@@ -60,6 +60,8 @@ class FatimaReader : public c4Reader
             fine_time_calibration_read_from_file = true;
         };
 
+        void PrintStatistics();
+
         void DoFineTimeCalOnline(){
             fine_time_calibration_set = false;
             fine_time_calibration_save = false;
@@ -84,26 +86,29 @@ class FatimaReader : public c4Reader
 
         TClonesArray* fArray;
 
-        last_lead_hit_struct ** last_hits;
-
         uint64_t wr_t;
 
 
-        const int NBoards = sizeof(fData->fatima_tamex) / sizeof(fData->fatima_tamex[0]);
-        const int NChannels = 32; //slow + fast per board
+        static const int NBoards = sizeof(fData->fatima_tamex) / sizeof(fData->fatima_tamex[0]);
+        static const int NChannels = 32; //slow + fast per board
 
-
-
-        uint32_t last_epoch[32];
-        uint32_t next_channel = 0;
-
-
-
+        //global
         uint64_t fNepochwordsread = 0;
-        uint64_t fNtrails_read = 0;
-        uint64_t fNleads_read = 0;
-        uint64_t fNevents_lacking_epoch = 0;
-        uint64_t fNmatched = 0;
+        uint64_t fNevents_skipped = 0; //because the size of the array does not match internally (UCESB/c4 error likely)
+        
+        // per channel/board    
+        uint64_t fNtrails_read[NBoards][NChannels];
+        uint64_t fNleads_read[NBoards][NChannels];
+        uint64_t fNmatched[NBoards][NChannels]; //successfully matched lead/trail combinations.
+
+        uint64_t fNevents_lacking_epoch[NBoards][NChannels]; //events where there is a time data word in a new channel without having seen an epoch word for this channel before.
+        uint64_t fNevents_TAMEX_fail[NBoards][NChannels]; //number of 0x3FF data words indicating TAMEX failure of the fast filter.
+        uint64_t fNevents_second_lead_seen[NBoards][NChannels]; // number of times a second lead is seen (i.e. a lead-lead in the channel) keeping only the last lead.
+        uint64_t fNevents_trail_seen_no_lead[NBoards][NChannels]; // number of times a trail is seen without a preceeding lead - skipping this event.
+
+
+        int last_channel_read = 0;
+        bool last_word_read_was_epoch = false;
 
 
         char * fine_time_histo_outfile; 

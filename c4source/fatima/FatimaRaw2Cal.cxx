@@ -343,6 +343,8 @@ Some stats are written when finishing.
 void FatimaRaw2Cal::FinishTask(){
     c4LOG(info, Form("Wrote %i events.",fNEvents));
     c4LOG(info, Form("%i events are unmatched (not written).",fNunmatched));
+
+    
 }
 
 
