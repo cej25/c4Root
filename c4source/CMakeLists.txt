@@ -47,6 +47,7 @@ set(SRCS
 ./aida/AidaCal2Hit.cxx
 ./aida/AidaUnpack2Cal.cxx
 ./frs/FrsReader.cxx
+./frs/FrsRaw2Cal.cxx
 ./germanium/GermaniumReader.cxx
 ./lisa/LisaReader.cxx
 ./bplast/bPlastReader.cxx
