@@ -46,20 +46,19 @@ class GermaniumOnlineSpectra : public FairTask
         Int_t fNEvents;
 
         // Canvas
-        TCanvas* cSumTime; // channel 1 out of 28 for now?
-        TCanvas* cEnergySpectraTest;
-        TCanvas* cEnergySpectra;
-        TCanvas* cCalEnergySpectra;
+        TCanvas* c_germanium_time; // channel 1 out of 28 for now?
+        TCanvas* c_germanium_cal_energy_spectra;
+        TCanvas* c_germanium_energy_mult2;
 
         // Histograms energy
-        TH1F * h1_energy[100];
-        TH1F * h1_energy_mult2[100];
+        TH1F * h1_germanium_energy[100];
+        TH1F * h1_germanium_energy_mult2[100];
 
         //Histograms time
-        TH1F * h1_time[100];
+        TH1F * h1_germanium_time[100];
 
-        const int NCrystals = 7; //needs to be changed.
-        const int NDetectors = 2; //needs to be changed.
+        const int NCrystals = 3; //needs to be changed.
+        const int NDetectors = 12; //needs to be changed.
 
 
     public:

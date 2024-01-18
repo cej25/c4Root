@@ -46,26 +46,29 @@ class bPlastOnlineSpectra : public FairTask
         Int_t fNEvents;
 
         // Canvas -- we can think about adding lead and trail spectra for each channel/detector
-        TCanvas* cSlowToT;
-        TCanvas* cFastToT;
-        TCanvas* cFastHitPatt;
-        TCanvas* cSlowHitPatt;
-        TCanvas* cSlowToT_vs_FastToT;
+        TCanvas* c_bplast_slowToT;
+        TCanvas* c_bplast_fastToT;
+        TCanvas* c_bplast_hitpatterns;
+        TCanvas* c_bplast_hitpatterns_gated;
+        TCanvas* c_bplast_fast_v_slow;
 
-        TCanvas* time_spectra_divided;
+        TCanvas* c_bplast_time_spectra;
 
-        static const int NDetectors = 128;
+        static const int NDetectors = 150;
 
         // Histograms energy
-        TH1F * h1_SlowToT[NDetectors];
-        TH1F * h1_FastToT[NDetectors];
-        TH1F * h1_FastHitPatt;
-        TH1F * h1_SlowHitPatt;
+        TH1F * h1_bplast_slowToT[NDetectors];
+        TH1F * h1_bplast_fastToT[NDetectors];
+        TH1F * h1_bplast_fast_hitpatterns;
+        TH1F * h1_bplast_slow_hitpatterns;
+        
+        TH1F * h1_bplast_fast_hitpatterns_gated;
+        TH1F * h1_bplast_slow_hitpatterns_gated;
 
-         TH2F * h1_SlowToT_vs_FastToT[NDetectors];
+        TH2F * h2_bplast_slowToT_vs_fastToT[NDetectors];
 
         //Absolute time spectra
-        TH1F * h1_abs_time[NDetectors];
+        TH1F * h1_bplast_abs_time[NDetectors];
 
 
 

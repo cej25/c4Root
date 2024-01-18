@@ -22,6 +22,8 @@ link_directories(${LINK_DIRECTORIES})
 
 set(SRCS
 frsData/FrsData.cxx
+frsData/FrsCalData.cxx
+frsData/FrsHitData.cxx
 lisaData/LisaData.cxx
 lisaData/LisaTraceData.cxx
 aidaData/AidaData.cxx

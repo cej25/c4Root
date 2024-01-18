@@ -4,6 +4,7 @@
 #include "FrsData.h"
 #include "c4Reader.h"
 #include <Rtypes.h>
+#include <vector>
 
 extern "C"
 {
@@ -43,11 +44,19 @@ class FrsReader : public c4Reader
 
         TClonesArray* fArray;
 
-        std::vector<FrsUnpackTpatItem>* tpatArray;
-        std::vector<FrsUnpackFrsItem>* frsArray;
-       // std::vector<FrsUnpackV830>* v830Array;
-       // std::vector<FrsUnpackV7X5>* v7X5Array;
+        uint64_t wr_t;
 
+        uint32_t scalers_n;
+        std::vector<uint32_t> scalers_index;
+        std::vector<uint32_t> scalers_main;
+
+        uint32_t v792_geo;
+        std::vector<uint32_t> v792_channel;
+        std::vector<uint32_t> v792_data;
+        
+        std::vector<uint32_t> v1290_channel;
+        std::vector<uint32_t> v1290_data;
+        std::vector<uint32_t> v1290_lot;
     
     public:
         ClassDefOverride(FrsReader, 0);
