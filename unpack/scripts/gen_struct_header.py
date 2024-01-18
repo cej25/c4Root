@@ -3,16 +3,17 @@ import subprocess as sb
 
 #should create the correct struct files, add systems to systems list and run. 
 
-systems = ["bplast"]
+#add the systems you want here: bplast,fatima,etc
+systems = ["fatima"]
 
-ucesb_exec = "NovTest"
+ucesb_exec = "onlyFATIMA"
 
 
 
 for system in systems:
-    sb.run(["../exps/" + ucesb_exec + "/" + ucesb_exec, f"--ntuple=UNPACK:{system},STRUCT_HH,NOTRIGEVENTNO,ext_h101_{system}.h"])
+    sb.run(["../exps/" + ucesb_exec + "/" + ucesb_exec, f"--ntuple=UNPACK:{system},STRUCT_HH,id=h101_{system},NOTRIGEVENTNO,ext_h101_{system}.h"])
     
-    filename = f"ext_h101_{system}.h"
+    """filename = f"ext_h101_{system}.h"
 
     with open(filename, 'r') as file:
         content = file.read()
@@ -22,7 +23,8 @@ for system in systems:
 
     with open(filename, 'w') as file:
         file.write(modified_content)
-
+    """
+    
     sb.run(["mv",f"ext_h101_{system}.h",f"../../c4source/{system}/"])
     
     
