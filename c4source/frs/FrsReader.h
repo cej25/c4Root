@@ -8,7 +8,7 @@
 
 extern "C"
 {
-    #include "ext_h101_frs.h" // hm why is this needed
+    #include "ext_h101_frs.h"
 }
 
 class TClonesArray;
