@@ -1,10 +1,11 @@
 typedef struct EXT_STR_h101_t
 {   
     EXT_STR_h101_unpack_t eventheaders;
-    EXT_STR_h101_FATIMA_onion_t fatima;
-    EXT_STR_h101_BPLAST_onion_t bplast;
+    EXT_STR_h101_fatima_onion_t fatima;
+    EXT_STR_h101_bplast_onion_t bplast;
     EXT_STR_h101_aida_onion_t aida;
     EXT_STR_h101_FRS_onion_t frs;
+    //EXT_STR_h101_germanium_onion_t germanium;
 } EXT_STR_h101;
 
 void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId = 1)
@@ -65,7 +66,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
 
     // Add readers
 
-    FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_FATIMA_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
+    FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
     unpackfatima->SetInputFileFineTimeHistos("/u/despec/BB7-c4-test/macros/fine_time_histos_111223_fatima.root");
     //unpackfatima->DoFineTimeCalOnline("/u/despec/BB7-c4-test/macros/fine_time_histos_111223_fatima.root",50000000);
 
@@ -73,7 +74,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     TAidaConfiguration::SetBasePath("/u/despec/BB7-c4-test/macros/AIDA");
     AidaReader* unpackaida = new AidaReader((EXT_STR_h101_aida_onion*)&ucesb_struct.aida, offsetof(EXT_STR_h101, aida));
 
-    bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_BPLAST_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
+    bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_bplast_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
     //unpackbplast->DoFineTimeCalOnline("/u/despec/BB7-c4-test/macros/fine_time_histos_111223_bplast.root",10000000);
     unpackbplast->SetInputFileFineTimeHistos("/u/cjones/c4Root/config/NovTest/fine_time_histos_111223_bplast.root");
 

@@ -39,10 +39,10 @@
 #pragma link C++ class EXT_STR_h101_unpack_t;
 #pragma link C++ class EXT_STR_h101_FRS_onion_t;
 #pragma link C++ class EXT_STR_h101_GERMANIUM_onion_t;
-#pragma link C++ class EXT_STR_h101_FATIMA_onion_t;
+#pragma link C++ class EXT_STR_h101_fatima_onion_t;
 #pragma link C++ class EXT_STR_h101_LISA_onion_t;
 #pragma link C++ class EXT_STR_h101_aida_onion_t;
-#pragma link C++ class EXT_STR_h101_BPLAST_onion_t;
+#pragma link C++ class EXT_STR_h101_bplast_onion_t;
 #pragma link C++ class EXT_STR_h101_BM_onion_t;
 
 
