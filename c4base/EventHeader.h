@@ -1,5 +1,5 @@
 #ifndef EventHeader_H
-#define EventHeader_H 1
+#define EventHeader_H
 
 #include "FairEventHeader.h"
 #include <stdexcept>
@@ -29,7 +29,8 @@ class EventHeader : public FairEventHeader
     Int_t fTrigger;
     uint64_t fTimeStamp;
 
-    ClassDef(EventHeader, 8)
+    ClassDef(EventHeader, 1)
 };
+
 
 #endif /* EventHeader_H */

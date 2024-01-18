@@ -19,6 +19,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
 ${C4ROOT_SOURCE_DIR}/analysis
 ${C4ROOT_SOURCE_DIR}/analysis/pars
 ${C4ROOT_SOURCE_DIR}/analysis/offline
+${C4ROOT_SOURCE_DIR}/analysis/fatima_aida_correlations
 ${C4ROOT_SOURCE_DIR}/analysis/online
 )
 
@@ -35,6 +36,7 @@ set(SRCS
 ./online/bPlastOnlineSpectra.cxx
 ./online/FatimaOnlineSpectra.cxx
 ./online/FrsOnlineSpectra.cxx
+./fatima_aida_correlations/FatimaAidaSpectra.cxx
 ./online/TimeMachineOnline.cxx
 )
 

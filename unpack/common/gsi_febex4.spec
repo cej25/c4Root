@@ -25,8 +25,8 @@ FEBEX_EVENT(card)
 	MEMBER(DATA16 channel_trigger_time_hi[16] ZERO_SUPPRESS);
 	MEMBER(DATA32 channel_trigger_time_lo[16] ZERO_SUPPRESS);
 	
-    MEMBER(DATA8 pileup[16]);
-	MEMBER(DATA8 overflow[16]);
+    MEMBER(DATA8 pileup[16] ZERO_SUPPRESS);
+	MEMBER(DATA8 overflow[16] ZERO_SUPPRESS);
     MEMBER(DATA8 channel_cfd[16] ZERO_SUPPRESS);
 	MEMBER(DATA32 channel_energy[16] ZERO_SUPPRESS);
  

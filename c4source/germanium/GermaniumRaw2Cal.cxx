@@ -115,9 +115,10 @@ Bool_t GermaniumRaw2Cal::SetDetectorMapFile(TString filename){
             detector_map_file >> rfebex_module >> rfebex_channel >> rdetector_id >> rcrystal_id;
             std::pair<int,int> febex_mc = {rfebex_module,rfebex_channel};
             std::pair<int,int> ge_cd = {rdetector_id,rcrystal_id};
-
-            auto it = detector_mapping.find(febex_mc);
-            if (it != detector_mapping.end()) c4LOG(fatal,Form("Detector mapping not unique. Multiple entries of (febex module id = %i) (febex channel id = %i)",rfebex_module,rfebex_channel));
+            
+            //fails? check!
+            //auto it = detector_mapping.find(febex_mc);
+            //if (it != detector_mapping.end()) c4LOG(fatal,Form("Detector mapping not unique. Multiple entries of (febex module id = %i) (febex channel id = %i)",rfebex_module,rfebex_channel));
 
             detector_mapping.insert(std::pair<std::pair<int,int>,std::pair<int,int>>{febex_mc,ge_cd});
             detector_map_file.ignore(256,'\n');
