@@ -25,10 +25,12 @@ extern "C"
 Constructor. Needs the input data structure obtained from ucesb with the following args:
  --ntuple=UNPACK:fatima,STRUCT_HH,ext_h101_fatima.h (add NOEVENTHEAD also). 
 
+ SEE SCRIPTS in unpack/scripts to generate automatically.
+
 The resulting file must be in the same folder as this file.
 
 */
-FatimaReader::FatimaReader(EXT_STR_h101_FATIMA_onion* data, size_t offset)
+FatimaReader::FatimaReader(EXT_STR_h101_fatima_onion* data, size_t offset)
     : c4Reader("FatimaReader")
     , fNEvent(0)
     , fData(data)
@@ -94,7 +96,7 @@ Bool_t FatimaReader::Init(ext_data_struct_info* a_struct_info)
     Int_t ok;
     c4LOG(info, "");
 
-    EXT_STR_h101_FATIMA_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_FATIMA, 0);
+    EXT_STR_h101_fatima_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_fatima, 0);
 
     if (!ok)
     {
@@ -298,7 +300,7 @@ Bool_t FatimaReader::Read() //do fine time here:
 
         uint32_t previous_epoch_word = 0; // last seen epoch word
 
-        last_lead_hit_struct last_tdc_hit; // initialized and reset - this keeps the information of the last lead that was seen
+        fatima_last_lead_hit_struct last_tdc_hit; // initialized and reset - this keeps the information of the last lead that was seen
         last_tdc_hit.hit=false;
         last_tdc_hit.lead_epoch_counter = 0;
         last_tdc_hit.lead_coarse_T = 0;

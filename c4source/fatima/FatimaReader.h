@@ -16,13 +16,13 @@ extern "C"
 
 class TClonesArray;
 
-struct EXT_STR_h101_FATIMA_t;
-typedef struct EXT_STR_h101_FATIMA_t EXT_STR_h101_FATIMA;
-typedef struct EXT_STR_h101_FATIMA_onion_t EXT_STR_h101_FATIMA_onion;
+struct EXT_STR_h101_fatima_t;
+typedef struct EXT_STR_h101_fatima_t EXT_STR_h101_fatima;
+typedef struct EXT_STR_h101_fatima_onion_t EXT_STR_h101_fatima_onion;
 class ext_data_struct_info;
 
 
-struct last_lead_hit_struct{
+struct fatima_last_lead_hit_struct{
     bool hit = false;
     //uint16_t board_id; index using these:
     //uint32_t ch_ID;
@@ -35,7 +35,7 @@ struct last_lead_hit_struct{
 class FatimaReader : public c4Reader
 {
     public:
-        FatimaReader(EXT_STR_h101_FATIMA_onion*, size_t);
+        FatimaReader(EXT_STR_h101_fatima_onion*, size_t);
 
         virtual ~FatimaReader();
 
@@ -78,7 +78,7 @@ class FatimaReader : public c4Reader
     private:
         unsigned int fNEvent;
 
-        EXT_STR_h101_FATIMA_onion* fData;
+        EXT_STR_h101_fatima_onion* fData;
 
         size_t fOffset;
 
