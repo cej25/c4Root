@@ -18,10 +18,9 @@
 #pragma link C++ class BeamMonitorData+;
 #pragma link C++ class TimeMachineData+;
 
-
 #pragma link C++ class FrsData+;
 #pragma link C++ class FrsCalData+;
-
+#pragma link C++ class FrsHitData+;
 
 #pragma link C++ class AidaUnpackAdcItem+;
 #pragma link C++ class AidaUnpackFlowItem+;

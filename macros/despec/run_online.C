@@ -127,22 +127,23 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     //ge_calib->PrintDetectorMap();
 
     FrsRaw2Cal* calfrs = new FrsRaw2Cal();
+
+
+    // can we load the frs setup here maybe?
+    //FrsCal2Hit* hitfrs = new FrsCal2Hit();
     
 
     //ge_calib->SetDetectorCalFile("/u/despec/BB7-c4-test/c4Root/Germanium_Energy_Calibration.txt");
     //ge_calib->PrintDetectorCal();
 
 
-
-
-    
-    
     aidaCalibrator->SetOnline(false);
     aidaHitter->SetOnline(false);
     //ge_calib->SetOnline(true);
     calfatima->SetOnline(false);
     calbplast->SetOnline(false);
     calfrs->SetOnline(false);
+    //hitfrs->SetOnline(false); // it can do this 
     
 
     
@@ -151,6 +152,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     run->AddTask(aidaHitter);
     run->AddTask(calbplast);
     run->AddTask(calfrs);
+    //run->AddTask(hitfrs); // but not this
     //run->AddTask(ge_calib);
     
 

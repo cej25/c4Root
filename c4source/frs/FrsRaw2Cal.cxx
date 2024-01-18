@@ -53,13 +53,12 @@ InitStatus FrsRaw2Cal::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    // not sure this can be a TClonesArray? what about TObjArray?
     fRawArray = (TClonesArray*)mgr->GetObject("FrsData");
     c4LOG_IF(fatal, !fRawArray, "FRS branch of FrsData not found");
 
     FairRootManager::Instance()->Register("FrsCalData", "FRS Cal Data", fCalArray, !fOnline);
 
-    fRawArray->Clear();
+    fRawArray->Clear(); // wait what why
     fCalArray->Clear();
 
     return kSUCCESS;
@@ -74,12 +73,10 @@ Or make this Raw2Hit directly
 
 void FrsRaw2Cal::Exec(Option_t* option)
 {
-    std::cout << "start of exec" << std::endl;
 
     int mult = fRawArray->GetEntriesFast();
     //for (int m = 0; m < fRawArray->GetEntriesFast(); m++)
     //{   
-        std::cout << "mult: " << mult << std::endl;
         fRawHit = (FrsData*)fRawArray->At(0); // event multiplicity
         
         
@@ -88,8 +85,6 @@ void FrsRaw2Cal::Exec(Option_t* option)
         // V830
         // this has a FrsCalib step.
         v830_scalers_main = fRawHit->Get_V830_Scalers();
-
-        std::cout << "v830 size: " << v830_scalers_main.size() << std::endl;
 
         // i think this must be done in FrsReader surely..
         if (v830_scalers_main.size() != 0)
@@ -165,8 +160,6 @@ void FrsRaw2Cal::Exec(Option_t* option)
         v792_channel = fRawHit->Get_V792_Channel();
         v792_data = fRawHit->Get_V792_Data();
 
-        std::cout << "v792 size: " << v792_data.size() << std::endl;
-
         for (uint32_t i = 0; i < v792_channel.size(); i++)
         {   
             
@@ -234,9 +227,6 @@ void FrsRaw2Cal::Exec(Option_t* option)
                         //de_22l = v792_data[i];
                         de_array[13] = v792_data[i];
                         break;
-                    /*default:
-                        // do nothing
-                        break;*/
                 }
             }
         }
@@ -248,8 +238,6 @@ void FrsRaw2Cal::Exec(Option_t* option)
         v1290_data = fRawHit->Get_V1290_Data();
         v1290_lot = fRawHit->Get_V1290_LoT();
         
-        std::cout << "v1290 size: " << v1290_data.size() << std::endl;
-
         /*
         these also not used until FrsAnl step. (Good, I think).
         there is probably a nicer way of writing the following,
@@ -347,9 +335,6 @@ void FrsRaw2Cal::Exec(Option_t* option)
                     case 31:
                         if (i == 0) music_t2[v1290_channel[i] - 24] = v1290_data[i]; // music_tX ends here before spectra
                         break;
-                    /*default:
-                        // nothing? all cases covered?
-                        break;  */   
                 }
             }
         }
@@ -357,53 +342,37 @@ void FrsRaw2Cal::Exec(Option_t* option)
 
         // enter into CalData
         
+        // do we need this? maybe maybe not..
         if (v830_scalers_main.size() != 0)
         {   
-            std::cout << v792_data.size() << std::endl;
-            std::cout << v1290_data.size() << std::endl;
-            std::cout << "wr_ts: " << WR_TS << std::endl;
-            std::cout << "time_in_ms: " << time_in_ms << std::endl;
-            std::cout << "ibin_for_s: " << ibin_for_s << std::endl;
-            std::cout << "ibin_for_100ms: " << ibin_for_100ms << std::endl; 
-            std::cout << "extraction_time_ms: " <<  extraction_time_ms << std::endl;
-            std::cout << "ibin_clean_for_s: " << ibin_clean_for_s << std::endl;
-            std::cout << "ibin_clean_for_100ms: " << ibin_clean_for_100ms << std::endl;
-
-            std::cout << "fCalArray->GetEntriesFast(): " << fCalArray->GetEntriesFast() << std::endl;
-
             
-            // this isn't working but neither are all zeroes
-            // well ok this bit "works" but doesn't write? 
             new ((*fCalArray)[fCalArray->GetEntriesFast()]) FrsCalData(
                 // V830 scalers
                 WR_TS,
                 time_in_ms, ibin_for_s, ibin_for_100ms, 
-                //increase_scaler_temp, 
+                increase_scaler_temp, 
                 extraction_time_ms, 
-                ibin_clean_for_s, ibin_clean_for_100ms//,
+                ibin_clean_for_s, ibin_clean_for_100ms,
                 // V792
-                //de_array,
+                de_array,
                 // V1290
-                //tdc_array
-                //, music_t1, music_t2
+                tdc_array, music_t1, music_t2
                 );
             
 
-            std::cout << "fCalArray->GetEntriesFast(): " << fCalArray->GetEntriesFast() << std::endl;
 
         }
         
     //}
     fNEvents++;
-    std::cout << "are we here?" << std::endl;
 
 }
 
 // clear all TClonesArray used in this Task here
 void FrsRaw2Cal::FinishEvent()
 {   
-    std::cout << "do we finish event?" << std::endl;
     for (int i = 0; i < 15; i++) tdc_array[i].clear(); 
+    for (int i = 0; i < 14; i++) de_array[i] = 0;
     v830_scalers_main.clear();
     v792_channel.clear();
     v792_data.clear();
