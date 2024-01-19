@@ -75,7 +75,7 @@ InitStatus GermaniumOnlineSpectra::Init()
 
     for (int ihist = 0; ihist < NCrystals*NDetectors; ihist++){
         c_germanium_cal_energy_spectra->cd(ihist+1);
-        h1_germanium_energy[ihist] = new TH1F(Form("h1_germanium_energy_%d_%d",ihist/NCrystals,ihist%NCrystals),Form("Germanium Energy spectrum det %d crystal %d",ihist/NCrystals,ihist%NCrystals),1000,0,10e3);
+        h1_germanium_energy[ihist] = new TH1F(Form("h1_germanium_energy_%d_%d",ihist/NCrystals,ihist%NCrystals),Form("Germanium Energy spectrum det %d crystal %d",ihist/NCrystals,ihist%NCrystals),10e3,0,10e3);
         h1_germanium_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
         h1_germanium_energy[ihist]->Draw();
         ge_spectra_folder->Add(h1_germanium_energy[ihist]);
