@@ -32,10 +32,6 @@ typedef struct EXT_STR_h101_germanium_t
   uint32_t germanium_data1event_trigger_time_hi /* [-1,-1] */;
   uint32_t germanium_data1event_trigger_time_lo /* [-1,-1] */;
   uint32_t germanium_data1hit_pattern /* [0,65535] */;
-  uint32_t germanium_data1num_channels_fired /* [-1,-1] */;
-  uint32_t germanium_data1channel_id /* [0,16] */;
-  uint32_t germanium_data1channel_idI[16 EXT_STRUCT_CTRL(germanium_data1channel_id)] /* [1,16] */;
-  uint32_t germanium_data1channel_idv[16 EXT_STRUCT_CTRL(germanium_data1channel_id)] /* [0,255] */;
   uint32_t germanium_data1channel_trigger_time_hi /* [0,16] */;
   uint32_t germanium_data1channel_trigger_time_hiI[16 EXT_STRUCT_CTRL(germanium_data1channel_trigger_time_hi)] /* [1,16] */;
   uint32_t germanium_data1channel_trigger_time_hiv[16 EXT_STRUCT_CTRL(germanium_data1channel_trigger_time_hi)] /* [0,65535] */;
@@ -57,10 +53,6 @@ typedef struct EXT_STR_h101_germanium_t
   uint32_t germanium_data2event_trigger_time_hi /* [-1,-1] */;
   uint32_t germanium_data2event_trigger_time_lo /* [-1,-1] */;
   uint32_t germanium_data2hit_pattern /* [0,65535] */;
-  uint32_t germanium_data2num_channels_fired /* [-1,-1] */;
-  uint32_t germanium_data2channel_id /* [0,16] */;
-  uint32_t germanium_data2channel_idI[16 EXT_STRUCT_CTRL(germanium_data2channel_id)] /* [1,16] */;
-  uint32_t germanium_data2channel_idv[16 EXT_STRUCT_CTRL(germanium_data2channel_id)] /* [0,255] */;
   uint32_t germanium_data2channel_trigger_time_hi /* [0,16] */;
   uint32_t germanium_data2channel_trigger_time_hiI[16 EXT_STRUCT_CTRL(germanium_data2channel_trigger_time_hi)] /* [1,16] */;
   uint32_t germanium_data2channel_trigger_time_hiv[16 EXT_STRUCT_CTRL(germanium_data2channel_trigger_time_hi)] /* [0,65535] */;
@@ -82,10 +74,6 @@ typedef struct EXT_STR_h101_germanium_t
   uint32_t germanium_data3event_trigger_time_hi /* [-1,-1] */;
   uint32_t germanium_data3event_trigger_time_lo /* [-1,-1] */;
   uint32_t germanium_data3hit_pattern /* [0,65535] */;
-  uint32_t germanium_data3num_channels_fired /* [-1,-1] */;
-  uint32_t germanium_data3channel_id /* [0,16] */;
-  uint32_t germanium_data3channel_idI[16 EXT_STRUCT_CTRL(germanium_data3channel_id)] /* [1,16] */;
-  uint32_t germanium_data3channel_idv[16 EXT_STRUCT_CTRL(germanium_data3channel_id)] /* [0,255] */;
   uint32_t germanium_data3channel_trigger_time_hi /* [0,16] */;
   uint32_t germanium_data3channel_trigger_time_hiI[16 EXT_STRUCT_CTRL(germanium_data3channel_trigger_time_hi)] /* [1,16] */;
   uint32_t germanium_data3channel_trigger_time_hiv[16 EXT_STRUCT_CTRL(germanium_data3channel_trigger_time_hi)] /* [0,65535] */;
@@ -107,10 +95,6 @@ typedef struct EXT_STR_h101_germanium_t
   uint32_t germanium_data4event_trigger_time_hi /* [-1,-1] */;
   uint32_t germanium_data4event_trigger_time_lo /* [-1,-1] */;
   uint32_t germanium_data4hit_pattern /* [0,65535] */;
-  uint32_t germanium_data4num_channels_fired /* [-1,-1] */;
-  uint32_t germanium_data4channel_id /* [0,16] */;
-  uint32_t germanium_data4channel_idI[16 EXT_STRUCT_CTRL(germanium_data4channel_id)] /* [1,16] */;
-  uint32_t germanium_data4channel_idv[16 EXT_STRUCT_CTRL(germanium_data4channel_id)] /* [0,255] */;
   uint32_t germanium_data4channel_trigger_time_hi /* [0,16] */;
   uint32_t germanium_data4channel_trigger_time_hiI[16 EXT_STRUCT_CTRL(germanium_data4channel_trigger_time_hi)] /* [1,16] */;
   uint32_t germanium_data4channel_trigger_time_hiv[16 EXT_STRUCT_CTRL(germanium_data4channel_trigger_time_hi)] /* [0,65535] */;
@@ -150,10 +134,6 @@ typedef struct EXT_STR_h101_germanium_onion_t
     uint32_t event_trigger_time_hi;
     uint32_t event_trigger_time_lo;
     uint32_t hit_pattern;
-    uint32_t num_channels_fired;
-    uint32_t channel_id;
-    uint32_t channel_idI[16 /* channel_id */];
-    uint32_t channel_idv[16 /* channel_id */];
     uint32_t channel_trigger_time_hi;
     uint32_t channel_trigger_time_hiI[16 /* channel_trigger_time_hi */];
     uint32_t channel_trigger_time_hiv[16 /* channel_trigger_time_hi */];
@@ -192,18 +172,6 @@ typedef struct EXT_STR_h101_germanium_onion_t
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      germanium_data1hit_pattern,      UINT32,\
                     "germanium_data1hit_pattern",65535,0/*flags*/); \
-  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
-                     germanium_data1num_channels_fired,UINT32,\
-                    "germanium_data1num_channels_fired",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     germanium_data1channel_id,       UINT32,\
-                    "germanium_data1channel_id",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     germanium_data1channel_idI,      UINT32,\
-                    "germanium_data1channel_idI",      "germanium_data1channel_id",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     germanium_data1channel_idv,      UINT32,\
-                    "germanium_data1channel_idv",      "germanium_data1channel_id",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      germanium_data1channel_trigger_time_hi,UINT32,\
                     "germanium_data1channel_trigger_time_hi",16,0/*flags*/); \
@@ -267,18 +235,6 @@ typedef struct EXT_STR_h101_germanium_onion_t
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      germanium_data2hit_pattern,      UINT32,\
                     "germanium_data2hit_pattern",65535,0/*flags*/); \
-  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
-                     germanium_data2num_channels_fired,UINT32,\
-                    "germanium_data2num_channels_fired",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     germanium_data2channel_id,       UINT32,\
-                    "germanium_data2channel_id",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     germanium_data2channel_idI,      UINT32,\
-                    "germanium_data2channel_idI",      "germanium_data2channel_id",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     germanium_data2channel_idv,      UINT32,\
-                    "germanium_data2channel_idv",      "germanium_data2channel_id",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      germanium_data2channel_trigger_time_hi,UINT32,\
                     "germanium_data2channel_trigger_time_hi",16,0/*flags*/); \
@@ -342,18 +298,6 @@ typedef struct EXT_STR_h101_germanium_onion_t
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      germanium_data3hit_pattern,      UINT32,\
                     "germanium_data3hit_pattern",65535,0/*flags*/); \
-  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
-                     germanium_data3num_channels_fired,UINT32,\
-                    "germanium_data3num_channels_fired",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     germanium_data3channel_id,       UINT32,\
-                    "germanium_data3channel_id",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     germanium_data3channel_idI,      UINT32,\
-                    "germanium_data3channel_idI",      "germanium_data3channel_id",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     germanium_data3channel_idv,      UINT32,\
-                    "germanium_data3channel_idv",      "germanium_data3channel_id",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      germanium_data3channel_trigger_time_hi,UINT32,\
                     "germanium_data3channel_trigger_time_hi",16,0/*flags*/); \
@@ -417,18 +361,6 @@ typedef struct EXT_STR_h101_germanium_onion_t
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      germanium_data4hit_pattern,      UINT32,\
                     "germanium_data4hit_pattern",65535,0/*flags*/); \
-  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
-                     germanium_data4num_channels_fired,UINT32,\
-                    "germanium_data4num_channels_fired",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     germanium_data4channel_id,       UINT32,\
-                    "germanium_data4channel_id",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     germanium_data4channel_idI,      UINT32,\
-                    "germanium_data4channel_idI",      "germanium_data4channel_id",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     germanium_data4channel_idv,      UINT32,\
-                    "germanium_data4channel_idv",      "germanium_data4channel_id",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      germanium_data4channel_trigger_time_hi,UINT32,\
                     "germanium_data4channel_trigger_time_hi",16,0/*flags*/); \
