@@ -15,6 +15,9 @@
 #pragma link C++ class FatimaOnlineSpectra+;
 #pragma link C++ class TimeMachineOnline+;
 
+
+#pragma link C++ class FatimaTimingAnalysis+;
+
 #pragma link C++ class FatimaAidaSpectra+;
 
 
