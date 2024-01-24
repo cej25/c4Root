@@ -1,0 +1,16 @@
+#0  0x00007f2ff34012d7 in __GI___waitpid (pid=2216, stat_loc=stat_loc
+entry=0x7ffef4d9e398, options=options
+entry=0) at ../sysdeps/unix/sysv/linux/waitpid.c:30
+#1  0x00007f2ff337f70f in do_system (line=<optimized out>) at ../sysdeps/posix/system.c:149
+#2  0x00007f2ff3b7d913 in TUnixSystem::Exec (shellcmd=<optimized out>, this=0x55d3723337c0) at /home/uhlig/containers/home/debian10/software/fairsoft/nov22p1/build/Source/root/core/unix/src/TUnixSystem.cxx:2104
+#3  TUnixSystem::StackTrace (this=0x55d3723337c0) at /home/uhlig/containers/home/debian10/software/fairsoft/nov22p1/build/Source/root/core/unix/src/TUnixSystem.cxx:2395
+#4  0x00007f2fe5a3577f in FairLogger::LogFatalMessage () at /home/uhlig/containers/home/debian10/software/fairroot/fairtools/FairLogger.cxx:196
+#5  0x00007f2fd98406b8 in std::function<void ()>::operator()() const (this=0x7f2fd9865980 <fair::Logger::fFatalCallback>) at /usr/include/c++/8/bits/std_function.h:682
+#6  fair::Logger::~Logger (this=0x7ffef4da0860, __in_chrg=<optimized out>) at /home/uhlig/containers/home/debian10/software/fairsoft/nov22p1/build/Source/fairlogger/logger/Logger.cxx:274
+#7  0x00007f2fd9f82d07 in FrsTPCRaw2Cal::Init (this=0x55d3797574d0) at /usr/include/c++/8/ext/new_allocator.h:86
+#8  0x00007f2fd9dcf4bd in FairTask::InitTask (this=0x55d3797574d0) at /home/uhlig/containers/home/debian10/software/fairroot/base/steer/FairTask.cxx:65
+#9  0x00007f2fd9dcf695 in FairTask::InitTasks (this=<optimized out>) at /home/uhlig/containers/home/debian10/software/fairroot/base/steer/FairTask.cxx:124
+#10 0x00007f2fd9dcf4a1 in FairTask::InitTask (this=0x55d3790e6bf0) at /home/uhlig/containers/home/debian10/software/fairroot/base/steer/FairTask.cxx:65
+#11 0x00007f2fd8bf1bd7 in FairRunOnline::Init (this=0x55d37926d550) at /home/uhlig/containers/home/debian10/software/fairroot/online/steer/FairRunOnline.cxx:195
+#12 0x00007f2ff3840316 in ?? ()
+#13 0x0000000000000000 in ?? ()

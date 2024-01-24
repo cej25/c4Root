@@ -3,8 +3,8 @@
 #include "FairRootManager.h"
 
 // c4
-#include "FrsData.h"
-#include "FrsReader.h"
+#include "FrsMainData.h"
+#include "FrsMainReader.h"
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
@@ -14,32 +14,31 @@
 extern "C"
 {
     #include "ext_data_client.h" 
-    #include "ext_h101_frs.h"
+    #include "ext_h101_frsmain.h"
 }
 
-// we'll go with FRS for FRSMAIN for now
-FrsReader::FrsReader(EXT_STR_h101_FRS_onion* data, size_t offset)
-    : c4Reader("FrsReader") // "MainReader" ?
+FrsMainReader::FrsMainReader(EXT_STR_h101_frsmain_onion* data, size_t offset)
+    : c4Reader("FrsMainReader")
     , fNEvent(0)
     , fData(data)
     , fOffset(offset)
     , fOnline(kFALSE)
-    , fArray(new TClonesArray("FrsData"))
+    , fArray(new TClonesArray("FrsMainData"))
 {
 }
 
-FrsReader::~FrsReader() 
+FrsMainReader::~FrsMainReader() 
 { 
     if (fArray != nullptr) delete fArray;
-    c4LOG(info, "Destroyed FrsReader properly.");
+    c4LOG(info, "Destroyed FrsMainReader properly.");
 }
 
-Bool_t FrsReader::Init(ext_data_struct_info* a_struct_info)
+Bool_t FrsMainReader::Init(ext_data_struct_info* a_struct_info)
 {
     Int_t ok;
     c4LOG(info, "");
     
-    EXT_STR_h101_FRS_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_FRS, 0);
+    EXT_STR_h101_frsmain_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_frsmain, 0);
 
     if (!ok)
     {
@@ -47,18 +46,17 @@ Bool_t FrsReader::Init(ext_data_struct_info* a_struct_info)
         return kFALSE;
     }
 
-    // Register output array in a tree
-    FairRootManager::Instance()->Register("FrsData", "FRS Main Data", fArray, !fOnline);
+    FairRootManager::Instance()->Register("FrsMainData", "FRS Main Data", fArray, !fOnline);
     fArray->Clear();
 
     memset(fData, 0, sizeof *fData);
 
-    c4LOG(info, "FrsReader init complete.");
+    c4LOG(info, "FrsMainReader init complete.");
 
     return kTRUE;
 }
 
-Bool_t FrsReader::Read()
+Bool_t FrsMainReader::Read()
 {
     c4LOG(debug1, "Event data");
 
@@ -126,7 +124,8 @@ Bool_t FrsReader::Read()
         chn_first_hit = next_chn_first_hit;
     }
 
-    new ((*fArray)[fArray->GetEntriesFast()]) FrsData(
+
+    new ((*fArray)[fArray->GetEntriesFast()]) FrsMainData(
         wr_t,
         scalers_n,
         scalers_index,
@@ -144,9 +143,8 @@ Bool_t FrsReader::Read()
 
 }
 
-void FrsReader::Reset()
+void FrsMainReader::Reset()
 {
-    // reset output array
     scalers_index.clear();
     scalers_main.clear();
     v792_channel.clear();
@@ -157,4 +155,4 @@ void FrsReader::Reset()
     fArray->Clear();
 }
 
-ClassImp(FrsReader);
+ClassImp(FrsMainReader);

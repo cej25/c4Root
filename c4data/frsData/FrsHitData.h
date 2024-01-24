@@ -9,7 +9,9 @@ class FrsHitData : public TObject
     public:
         FrsHitData();
 
-        FrsHitData(uint64_t WR_TS);
+        FrsHitData(uint64_t WR_TS,
+                Float_t id_x2,
+                Float_t id_x4);
 
         ~FrsHitData();
 
@@ -18,6 +20,8 @@ class FrsHitData : public TObject
     protected:
 
         uint64_t fWR_TS;
+        Float_t fID_x2;
+        Float_t fID_x4;
     
     public:
         ClassDef(FrsHitData, 1)

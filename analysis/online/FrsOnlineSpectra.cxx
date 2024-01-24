@@ -7,7 +7,7 @@
 
 // c4
 #include "FrsOnlineSpectra.h"
-#include "FrsData.h"
+#include "FrsMainData.h"
 #include "EventHeader.h"
 #include "c4Logger.h"
 
@@ -70,8 +70,8 @@ InitStatus FrsOnlineSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fHitFrs = (TClonesArray*)mgr->GetObject("FrsData");
-    c4LOG_IF(fatal, !fHitFrs, "Branch FrsData not found");
+    fHitFrs = (TClonesArray*)mgr->GetObject("FrsMainData");
+    c4LOG_IF(fatal, !fHitFrs, "Branch FrsMainData not found");
 
     // Create histograms for detectors
     TString Name1;
@@ -143,7 +143,7 @@ void FrsOnlineSpectra::Exec(Option_t* option)
         Int_t nHits = fHitFrs->GetEntriesFast();
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {
-            FrsData* hit = (FrsData*)fHitFrs->At(ihit);
+            FrsMainData* hit = (FrsMainData*)fHitFrs->At(ihit);
             if (!hit)
                 continue;
 

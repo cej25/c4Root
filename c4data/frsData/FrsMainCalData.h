@@ -1,15 +1,15 @@
-#ifndef FrsCalData_H
-#define FrsCalData_H
+#ifndef FrsMainCalData_H
+#define FrsMainCalData_H
 
 #include <vector>
 #include "TObject.h"
 
-class FrsCalData : public TObject
+class FrsMainCalData : public TObject
 {
     public:
-        FrsCalData();
+        FrsMainCalData();
 
-        FrsCalData(uint64_t WR_TS, uint32_t time_in_ms, 
+        FrsMainCalData(uint64_t WR_TS, uint32_t time_in_ms, 
                 uint32_t ibin_for_s, uint32_t ibin_for_100ms, 
                 const uint32_t* increase_scaler_temp, 
                 uint32_t extraction_time_ms, 
@@ -22,7 +22,7 @@ class FrsCalData : public TObject
                 const uint32_t* music_t1,
                 const uint32_t* music_t2);
 
-        ~FrsCalData();
+        ~FrsMainCalData();
 
         // Getters -- what did we need these for again?
         inline const uint64_t Get_WR() const { return fWR_TS; }
@@ -32,7 +32,7 @@ class FrsCalData : public TObject
 
         // Setters
 
-    protected:
+    private:
 
         uint64_t fWR_TS;
 
@@ -46,18 +46,16 @@ class FrsCalData : public TObject
         uint32_t fIBin100MsClean;
 
         // put these in arrays
-       // uint32_t* fDe_array; // 14 length
         uint32_t fDe_array[14];
      
         // put this in TObjectArray?
         std::vector<uint32_t> fTdc_array[15]; // 15 length
 
-        // we have to figure out how to make these work.
         uint32_t fMusicT1[8]; // 8 length
         uint32_t fMusicT2[8]; // 8 length
 
     public:
-        ClassDef(FrsCalData, 1);
+        ClassDef(FrsMainCalData, 1);
     
 };
 
