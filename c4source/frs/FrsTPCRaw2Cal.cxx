@@ -1,53 +1,146 @@
-#include "FrsCal2Hit.h"
-#include "c4Logger.h"
-#include "FrsMainData.h"
-#include "FrsMainCalData.h"
-#include "FrsHitData.h"
-
+// FairRoot
+#include "FairTask.h"
 #include "FairLogger.h"
 #include "FairRootManager.h"
 #include "FairRunAna.h"
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
-#include "FairTask.h"
+
+// c4
+#include "FrsTPCRaw2Cal.h"
+#include "FrsTPCData.h"
+#include "FrsTPCCalData.h"
+#include "TFRSParameter.h"
+#include "c4Logger.h"
 
 #include "TClonesArray.h"
-#include "TMath.h"
+
 #include <vector>
 #include <iostream>
 
-FrsCal2Hit::FrsCal2Hit()
+FrsTPCRaw2Cal::FrsTPCRaw2Cal()
     :   FairTask()
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
-    ,   fCalArrayMain(new TClonesArray("FrsMainCalData"))
-    ,   fCalArrayTPC(new TClonesArray("FrsTPCCalData"))
-    ,   fHitArray(new TClonesArray("FrsHitData"))
+    ,   fRawArray(new TClonesArray("FrsTPCData"))
+    ,   fCalArray(new TClonesArray("FrsTPCCalData"))
 {
 }
 
-FrsCal2Hit::FrsCal2Hit(const TString& name, Int_t verbose)
+FrsTPCRaw2Cal::FrsTPCRaw2Cal(const TString& name, Int_t verbose)
     :   FairTask(name, verbose)
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
-    ,   fCalArrayMain(new TClonesArray("FrsMainCalData"))
-    ,   fCalArrayTPC(new TClonesArray("FrsTPCCalData"))
-    ,   fHitArray(new TClonesArray("FrsHitData"))
+    ,   fRawArray(new TClonesArray("FrsTPCData"))
+    ,   fCalArray(new TClonesArray("FrsTPCCalData"))
 {
 }
 
-
-FrsCal2Hit::~FrsCal2Hit()
-{   
-    c4LOG(info, "Deleting FrsCal2Hit task");
-    if (fCalArrayMain) delete fCalArrayMain;
-    if (fCalArrayTPC) delete fCalArrayTPC;
-    if (fHitArray) delete fHitArray;
+FrsTPCRaw2Cal::~FrsTPCRaw2Cal()
+{
+    c4LOG(info, "Deleting FrsTPCRaw2Cal task");
+    if (fRawArray) delete fRawArray;
+    if (fCalArray) delete fCalArray;
 }
 
-void FrsCal2Hit::SetParameters()
+void FrsTPCRaw2Cal::SetParameters()
+{
+    v1190_channel_dt[0][0] = 0; //TPC21-A11
+    v1190_channel_dt[0][1] = 1; //TPC21-A12
+    v1190_channel_dt[0][2] = 2; //TPC21-A21
+    v1190_channel_dt[0][3] = 3; //TPC21-A22
+    v1190_channel_lt[0][0] = 4; //TPC21-DL1
+    v1190_channel_rt[0][0] = 5; //TPC21-DR1
+    // 6, 7 empty
+    v1190_channel_lt[0][1] = 8; //TPC21-DL2
+    v1190_channel_rt[0][1] = 9; //TPC21-DR2
+    v1190_channel_dt[1][0] = 10; //TPC22-A11
+    v1190_channel_dt[1][1] = 11; //TPC22-A12
+    v1190_channel_dt[1][2] = 12; //TPC22-A21
+    v1190_channel_dt[1][3] = 13; //TPC22-A22
+    // 14, 15 empty
+    //17(top channel of 3rd module is dead)
+    //18(skip)
+    v1190_channel_lt[1][0] = 18; //TPC22-DL1
+    v1190_channel_rt[1][0] = 19; //TPC22-DR1
+    v1190_channel_lt[1][1] = 20; //TPC22-DL2
+    v1190_channel_rt[1][1] = 21; //TPC22-DR2
+    // 22,23 empty
+
+    // ======= middle NIM crate (TPC23+24)=========
+    v1190_channel_dt[2][0] = 24; //TPC23-A11
+    v1190_channel_dt[2][1] = 25; //TPC23-A12
+    v1190_channel_dt[2][2] = 26; //TPC23-A21
+    v1190_channel_dt[2][3] = 27; //TPC23-A22
+    v1190_channel_lt[2][0] = 28; //TPC23-DL1
+    v1190_channel_rt[2][0] = 29; //TPC23-DR1
+    //30,31 empty
+    v1190_channel_lt[2][1] = 32; //TPC23-DL2
+    v1190_channel_rt[2][1] = 33; //TPC23-DR2
+    v1190_channel_dt[3][0] = 34; //TPC24-A11
+    v1190_channel_dt[3][1] = 35; //TPC24-A12
+    v1190_channel_dt[3][2] = 36; //TPC24-A21
+    v1190_channel_dt[3][3] = 37; //TPC24-A22
+    //38,39 empty
+    v1190_channel_lt[3][0] = 40; //TPC24-DL1
+    v1190_channel_rt[3][0] = 41; //TPC24-DR1
+    v1190_channel_lt[3][1] = 42; //TPC24-DL2
+    v1190_channel_rt[3][1] = 43; //TPC24-DR2
+    //46,47 empty
+
+    // ======= bottom NIM crate (TPC41+42+31)=========
+    v1190_channel_dt[4][0] = 64; //TPC41-A11
+    v1190_channel_dt[4][1] = 65; //TPC41-A12
+    v1190_channel_dt[4][2] = 66; //TPC41-A21
+    v1190_channel_dt[4][3] = 67; //TPC41-A22
+    v1190_channel_lt[4][0] = 68; //TPC41-DL1
+    v1190_channel_rt[4][0] = 69; //TPC41-DR1
+    //70,71 empty
+    v1190_channel_lt[4][1] = 72; //TPC41-DL2
+    v1190_channel_rt[4][1] = 73; //TPC41-DR2
+    v1190_channel_dt[5][0] = 74; //TPC42-A11
+    v1190_channel_dt[5][1] = 75; //TPC42-A12
+    v1190_channel_dt[5][2] = 76; //TPC42-A21
+    v1190_channel_dt[5][3] = 77; //TPC42-A22
+    //78,79 empty
+    v1190_channel_lt[5][0] = 80; //TPC42-DL1
+    v1190_channel_rt[5][0] = 81; //TPC42-DR1
+    v1190_channel_lt[5][1] = 82; //TPC42-DL2
+    v1190_channel_rt[5][1] = 83; //TPC42-DR2
+    v1190_channel_dt[6][0] = 84; //TPC31-A11
+    v1190_channel_dt[6][1] = 85; //TPC31-A12
+    //86,87 empty
+    v1190_channel_dt[6][2] = 88; //TPC31-A21
+    v1190_channel_dt[6][3] = 89; //TPC31-A22
+    v1190_channel_lt[6][0] = 90; //TPC31-DL1
+    v1190_channel_rt[6][0] = 91; //TPC31-DR1
+    v1190_channel_lt[6][1] = 92; //TPC31-DL2
+    v1190_channel_rt[6][1] = 93; //TPC31-DR2
+    //94,95 empty
+
+    //time reference signal
+    v1190_channel_timeref[0] = 96; //accept trig
+    v1190_channel_timeref[1] = 97; //sc21
+    v1190_channel_timeref[2] = 98; //sc22
+    v1190_channel_timeref[3] = 99; //sc31
+    v1190_channel_timeref[4] =100; //sc41
+    v1190_channel_timeref[5] =101; //
+    v1190_channel_timeref[6] =102; //
+    v1190_channel_timeref[7] =103; //
+
+    v1190_channel_calibgrid[0] = 104;//tpc21grid
+    v1190_channel_calibgrid[1] = 105;//tpc22grid
+    v1190_channel_calibgrid[2] = 106;//tpc23grid
+    v1190_channel_calibgrid[3] = 107;//tpc24grid
+    v1190_channel_calibgrid[4] = 108;//tpc41grid
+    v1190_channel_calibgrid[5] = 109;//tpc42grid
+    v1190_channel_calibgrid[6] = 110;//tpc31grid //to be checked maybe 111
+
+}
+
+void FrsTPCRaw2Cal::SetFRSParameters()
 {   
     frs = new TFRSParameter;
     mw = new TMWParameter;
@@ -59,7 +152,7 @@ void FrsCal2Hit::SetParameters()
     si = new TSIParameter;
     mrtof = new TMRTOFMSParameter;
     range = new TRangeParameter;
-
+    
     // CEJ: assuming we can read this somehow so we don't need to copy it across? 
     frs->rho0[0]   = 1.; //TA-S2
     frs->rho0[1]   = 1.; //S2-S4
@@ -1193,445 +1286,846 @@ void FrsCal2Hit::SetParameters()
     range->ladder_2_in = false;
     range->ladder_2_slope = -0.01691;
 
+    c4LOG(info, "FRS Parameters loaded");
 }
 
-void FrsCal2Hit::SetParContainers()
+InitStatus FrsTPCRaw2Cal::Init()
 {
-    FairRuntimeDb *rtdb = FairRuntimeDb::instance();
-    c4LOG_IF(fatal, NULL == rtdb, "FairRuntimeDb not found.");
-}
-
-
-InitStatus FrsCal2Hit::Init()
-{
-    c4LOG(info, "");
+    c4LOG(info, "Grabbing FairRootManager, RunOnline and EventHeader.");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
-    c4LOG_IF(error, !header, "EventHeader. not found!");
+    c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fCalArrayMain = (TClonesArray*)mgr->GetObject("FrsMainCalData");
-    c4LOG_IF(fatal, !fCalArrayMain, "FrsMainCalData branch not found!");
+    fRawArray = (TClonesArray*)mgr->GetObject("FrsTPCData");
+    c4LOG_IF(fatal, !fRawArray, "FRS branch of TPCData not found");
 
-    fCalArrayTPC = (TClonesArray*)mgr->GetObject("FrsTPCCalData");
-    c4LOG_IF(fatal, !fCalArrayTPC, "FrsTPCCalData branch not found!");
+    FairRootManager::Instance()->Register("FrsTPCCalData", "FRS TPC Cal Data", fCalArray, !fOnline);
 
-    mgr->Register("FrsHitData", "FRS Hit Data", fHitArray, !fOnline);
+    fRawArray->Clear();
+    fCalArray->Clear();
 
     SetParameters();
-
-    fCalArrayMain->Clear();
-    fCalArrayTPC->Clear();
-    fHitArray->Clear();
+    SetFRSParameters();
 
     return kSUCCESS;
 }
 
-// -----   Public method ReInit   ----------------------------------------------
-InitStatus FrsCal2Hit::ReInit()
+void FrsTPCRaw2Cal::Exec(Option_t* option)
 {
-    SetParContainers();
-    SetParameters();
-    return kSUCCESS;
-}
 
-void FrsCal2Hit::Exec(Option_t* option)
-{   
-    int multMain = fCalArrayMain->GetEntriesFast();
-    int multTPC = fCalArrayTPC->GetEntriesFast();
-    if (!multMain || !multTPC) return;
+    // check there is actual data from module(s)
+    int mult = fRawArray->GetEntriesFast();
+    if (!mult) return;
 
-    fNEvents++;
-    fCalHitMain = (FrsMainCalData*)fCalArrayMain->At(multMain-1);
-    fCalHitTPC = (FrsTPCCalData*)fCalArrayTPC->At(multTPC-1);
+    fRawHit = (FrsTPCData*)fRawArray->At(mult-1);
 
-    WR_TS = fCalHitMain->Get_WR();
+    v775_geo = fRawHit->Get_V775_Geo();
+    v775_channel = fRawHit->Get_V775_Channel();
+    v775_data = fRawHit->Get_V775_Data();
 
-    // -----------------------------------
-    // V792 // eventually gets to id_x2 etc
-    // -----------------------------------
-    de_array = fCalHitMain->Get_De_array();
-    dt_array = new uint32_t[1]; // placeholder, not coded in raw->cal yet
-
-    // 2 in go4, 0 now?
-    sci_l[0] = de_array[1]; // de_21l;
-    sci_r[0] = de_array[2]; // de_21r;
-    // change element in dt_array once coded
-    sci_tx[0] = dt_array[0]; // dt_21l_21r
-
-    // 3 in go4, 1 now?
-    sci_l[1] = de_array[13]; // de_22l
-    sci_r[1] = de_array[6]; // de_22r
-    // change element in dt_array once coded
-    sci_tx[1] = dt_array[0]; // dt_22l_22r
-
-    // 5 in go4, 2 now?
-    sci_l[2] = de_array[0]; // de_41l
-    sci_r[2] = de_array[11]; // de_41r;
-    // change element in dt_array once coded
-    sci_tx[2] = dt_array[0]; // dt_41l_41r
-
-    // 6 in go4, 3 now?
-    sci_l[3] = de_array[3]; // de_42l
-    sci_r[3] = de_array[4]; // de_42r
-    // change element in dt_array once coded
-    sci_tx[3] = dt_array[0]; // dt_42l_42r
-
-    // 7 in go4, 4 now?
-    sci_l[4] = de_array[9]; // de_43l
-    sci_r[4] = de_array[10]; // de_43r
-    // change element in dt_array once coded
-    sci_tx[4] = dt_array[0]; // dt_43l_43r
-
-    // 10 in go4, 5 now?
-    sci_l[5] = de_array[5]; // de_81l
-    sci_r[5] = de_array[12]; // de_81r
-    // change element in dt_array once coded
-    sci_tx[5] = dt_array[0]; // dt_81l_81r
-
-    for (int i = 0; i < 6; i++)
-    {   
-        // find a way to read in cConditons
-        int j;
-        switch(i)
+    v785_geo = fRawHit->Get_V785_Geo();
+    v785_channel = fRawHit->Get_V785_Channel();
+    v785_data = fRawHit->Get_V785_Data();
+    
+    // v7x5 goes into vme_tpcs2[geo][chn];
+    for (int i = 0; i < v775_data.size(); i++)
+    {
+        switch (v775_channel[i])
         {
             case 0:
-                j = 2;
+                if (v775_geo[i] == 12)
+                {
+                    tpc_a[0][0] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_a[4][0] = v775_data[i];
+                }
                 break;
             case 1:
-                j = 3;
+                if (v775_geo[i] == 12)
+                {
+                    tpc_a[0][1] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_a[4][1] = v775_data[i];
+                }
                 break;
             case 2:
-                j = 5;
+                if (v775_geo[i] == 12)
+                {
+                    tpc_a[0][2] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_a[4][2] = v775_data[i];
+                }
                 break;
             case 3:
-                j = 6;
+                if (v775_geo[i] == 12)
+                {
+                    tpc_a[0][3] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_a[4][3] = v775_data[i];
+                }
                 break;
             case 4:
-                j = 7;
+                if (v775_geo[i] == 12)
+                {
+                    tpc_l[0][0] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_l[4][0] = v775_data[i];
+                }
                 break;
             case 5:
-                j = 10;
-                break;
-            default:
-                j = 2;
-        }
-
-        sci_b_l[i] = Check_WinCond(sci_l[i], cSCI_L);
-        sci_b_r[i] = Check_WinCond(sci_r[i], cSCI_R);
-
-        if (sci_b_l[i] && sci_b_r[i])
-        {
-            sci_e[i] = (sci_r[i] - sci->re_a[0][j]);
-            sci_b_e[i] = Check_WinCond(sci_e[i], cSCI_E);
-        }
-
-        /* Position in X direction: */
-        sci_b_tx[i] = Check_WinCond(sci_tx[i], cSCI_Tx);
-        if (sci_b_tx[i])
-        {
-            Float_t R = sci_tx[i];
-            Float_t power = 1., sum = 0.;
-            for (int k = 0; k < 7; k++)
-            {
-                sum += sci->x_a[k][i] * power;
-                power *= R;
-            }
-            sci_x[i] = sum;
-            sci_b_x[i] = Check_WinCond(sci_x[i], cSCI_X);
-        }
-    } // loop for sci values
-
-    if (id->x_s2_select == 1)
-    {   
-        b_tpc_xy = fCalHitTPC->Get_b_tpc_xy(); // maybe this should be outside?
-
-
-        if (b_tpc_xy[2] && b_tpc_xy[3])
-        {
-            id_x2 = fCalHitTPC->Get_tpc_x_s2_foc_23_24();
-            id_y2 = fCalHitTPC->Get_tpc_y_s2_foc_23_24();
-            id_a2 = fCalHitTPC->Get_tpc_angle_x_s2_foc_23_24();
-            id_b2 = fCalHitTPC->Get_tpc_angle_y_s2_foc_23_24();
-        }
-        else if (b_tpc_xy[2] && b_tpc_xy[3])
-        {
-            id_x2 = fCalHitTPC->Get_tpc_x_s2_foc_22_24();
-            id_y2 = fCalHitTPC->Get_tpc_y_s2_foc_23_24();
-            id_a2 = fCalHitTPC->Get_tpc_angle_x_s2_foc_22_24();
-            id_b2 = fCalHitTPC->Get_tpc_angle_y_s2_foc_22_24();
-        }
-        else if (b_tpc_xy[0] && b_tpc_xy[3])
-        {
-            id_x2 = fCalHitTPC->Get_tpc_x_s2_foc_21_22();
-            id_y2 = fCalHitTPC->Get_tpc_y_s2_foc_21_22();
-            id_a2 = fCalHitTPC->Get_tpc_angle_x_s2_foc_21_22();
-            id_b2 = fCalHitTPC->Get_tpc_angle_y_s2_foc_21_22();
-        }
-    }
-    else if (id->x_s2_select == 2)
-    {   
-        // SC21
-        if (sci_b_x[0]) // we only use 2 and 3??
-        {
-            id_x2 = sci_x[0];
-            id_y2 = 0.0;
-            id_a2 = 0.0;
-            id_b2 = 0.0;
-        }
-    }
-    else if (id->x_s2_select == 3)
-    {
-        if (sci_b_x[1])
-        {
-            id_x2 = sci_x[1];
-            id_y2 = 0.0;
-            id_a2 = 0.0;
-            id_b2 = 0.0;
-        }
-    }
-
-    if (b_tpc_xy[4] && b_tpc_xy[5])
-    {
-        id_x4 = fCalHitTPC->Get_tpc_x_s4();
-        id_y4 = fCalHitTPC->Get_tpc_y_s4();
-        id_a4 = fCalHitTPC->Get_tpc_angle_x_s4();
-        id_b4 = fCalHitTPC->Get_tpc_angle_y_s4();
-    }
-
-    if (sci_b_x[5])
-    {
-        id_x8 = sci_x[5];
-        id_y8 = 0.0;
-        id_a8 = 0.0;
-        id_b8 = 0.0;
-    }
-    
-    id_b_x2 = Check_WinCond(id_x2, cID_x2);
-    id_b_x4 = Check_WinCond(id_x4, cID_x4);
-
-    if (id_b_x2)
-    {
-        id_rho[0] = frs->rho0[0] * (1. - id_x2 / 1000. / frs->dispersion[0]);
-        id_brho[0] = (fabs(frs->bfield[0]) + fabs(frs->bfield[1])) / 2. * id_rho[0];
-
-        if (id_b_x4)
-        {
-            id_rho[1] = frs->rho0[1] * (1. - (id_x4 - frs->magnification[1] * id_x2) / 1000. / frs->dispersion[1]);
-            id_brho[1] = (fabs(frs->bfield[2]) + fabs(frs->bfield[3])) / 2. * id_rho[1];
-        }
-    }
-    
-    Float_t aoq_factor = 931.4940 / 299.792458; // this is 'f' in go4
-
-    // for S2-S4
-    if (sci_b_tofll2 && sci_b_tofrr2 && id_b_x2 && id_b_x4)
-    {
-        if ((id_beta > 0.0) && (id_beta < 1.0))
-        {
-            id_gamma = 1. / sqrt(1. - id_beta * id_beta);
-            id_AoQ = id_brho[1] / id_beta / id_gamma / aoq_factor;
-            id_AoQ_corr = id_AoQ - id->a2AoQCorr * id_a2;
-
-            if (id_AoQ_corr > 0)
-            {
-                for (int i = 0; i < AoQ_Shift_array; i++)
+                if (v775_geo[i] == 12)
                 {
-                    if (ts_mins >= FRS_WR_i[i] && ts_mins < FRS_WR_j[i])
-                    {
-                        if (id->x_s2_select == 2)
-                        {
-                            id_AoQ = id_AoQ - AoQ_shift_Sci21_value[i];
-                            id_AoQ_corr = id_AoQ_corr - AoQ_shift_Sci21_value[i];
-                        }
-                        else if (id->x_s2_select == 3)
-                        {
-                            id_AoQ = id_AoQ - AoQ_shift_Sci22_value[i];
-                            id_AoQ_corr = id_AoQ_corr - AoQ_shift_Sci22_value[i];
-                        }
-                        else
-                        {
-                            id_AoQ = id_AoQ - AoQ_shift_TPC_value[i];
-                            id_AoQ_corr = id_AoQ_corr - AoQ_shift_TPC_value[i];
-                        }
-                    }
+                    tpc_r[0][0] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_r[4][0] = v775_data[i];
+                }
+                break;
+            case 6:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_l[0][1] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_l[4][1] = v775_data[i];
+                }
+                break;
+            case 7:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_r[0][1] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_r[4][1] = v775_data[i];
+                }
+                break;
+            case 8:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_a[1][0] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_a[5][0] = v775_data[i];
+                }
+                break;
+            case 9:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_a[1][1] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_a[5][1] = v775_data[i];
+                }
+                break;
+            case 10:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_a[1][2] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_a[5][2] = v775_data[i];
+                }
+                break;
+            case 11:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_a[1][3] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_a[5][3] = v775_data[i];
+                }
+                break;
+            case 12:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_l[1][0] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_l[5][0] = v775_data[i];
+                }
+                break;
+            case 13:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_r[1][0] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_r[5][0] = v775_data[i];
+                }
+                break;
+            case 14:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_l[1][1] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_l[5][1] = v775_data[i];
+                }
+                break;
+            case 15:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_r[1][1] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_r[5][1] = v775_data[i];
+                }
+                break;
+            case 16:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_a[2][0] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_a[6][0] = v775_data[i];
+                }
+                break;
+            case 17:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_a[2][1] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_a[6][1] = v775_data[i];
+                }
+                break;
+            case 18:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_a[2][2] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_a[6][2] = v775_data[i];
+                }
+                break;
+            case 19:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_a[2][3] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_a[6][3] = v775_data[i];
+                }
+                break;
+            case 20:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_l[2][0] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_l[6][0] = v775_data[i];
+                }
+                break;
+            case 21:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_r[2][0] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_r[6][0] = v775_data[i];
+                }
+                break;
+            case 22:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_l[2][1] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_l[6][1] = v775_data[i];
+                }
+                break;
+            case 23:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_r[2][1] = v775_data[i];
+                }
+                else if (v775_geo[i] == 13)
+                {
+                    tpc_r[6][1] = v775_data[i];
+                }
+                break;
+            case 24:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_a[3][0] = v775_data[i];
+                }
+                break;
+            case 25:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_a[3][1] = v775_data[i];
+                }
+                break;
+            case 26:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_a[3][2] = v775_data[i];
+                }
+                break;
+            case 27:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_a[3][3] = v775_data[i];
+                }
+                break;
+            case 28:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_l[3][0] = v775_data[i];
+                }
+                break;
+            case 29:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_r[3][0] = v775_data[i];
+                }
+                break;
+            case 30:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_l[3][1] = v775_data[i];
+                }
+                break;
+            case 31:
+                if (v775_geo[i] == 12)
+                {
+                    tpc_r[3][1] = v775_data[i];
+                }
+                break;
+        }
+    }
+
+
+    v1190_channel = fRawHit->Get_V1190_Channel();
+    v1190_data = fRawHit->Get_V1190_Data();
+    v1190_lot = fRawHit->Get_V1190_LoT();
+
+    for (int i = 0; i < v1190_data.size(); i++)
+    {   
+        // select leads
+        if (v1190_lot[i] == 0) // leads 0, trails 1
+        {
+            if (v1190_lead_hits[v1190_channel[i]].size() < 64) v1190_lead_hits[v1190_channel[i]].emplace_back(v1190_data[i]);
+        }
+    }
+
+
+    for (int i = 0; i < 7; i++)
+    {
+        double temp_de = 1.0;
+        int temp_count = 0;
+
+        // anode
+        for (int j = 0; j < 4; j++)
+        {
+            // each element a vector
+            tpc_dt[i][j] = v1190_lead_hits[v1190_channel_dt[i][j]];
+
+
+            if (tpc_a[i][j] - tpc->a_offset[i][j] > 5.0)
+            {
+                temp_de *= (tpc_a[i][j] - tpc->a_offset[i][j]);
+                temp_count++;
+            }
+            if (temp_count == 4)
+            {
+                tpc_de[i] = sqrt(sqrt(temp_de));
+                b_tpc_de[i] = kTRUE; // here we go to Anl with both
+            }
+        }
+
+        // delay line
+        for (int j = 0; j < 2; j++)
+        {
+            tpc_lt[i][j] = v1190_lead_hits[v1190_channel_lt[i][j]];
+            tpc_rt[i][j] = v1190_lead_hits[v1190_channel_rt[i][j]];
+        }
+
+        // calibgrid
+        tpc_calibgrid[i] = v1190_lead_hits[v1190_channel_calibgrid[i]];
+
+    }
+
+    // timeref
+    for (int i = 0; i < 8; i++)
+    {
+        tpc_timeref[i] = v1190_lead_hits[v1190_channel_timeref[i]];
+    }
+
+
+    // CALIB 
+    for (int i = 0; i < 8; i++)
+    {   
+        // weird condition in go4, ignore for now loop through vector size
+        for (int j = 0; j < tpc_timeref[i].size(); j++)
+        {
+            if (tpc_timeref[i][j] > tpc->lim_timeref[i][0] && tpc_timeref[i][j] < tpc->lim_timeref[i][1])
+            {
+                b_tpc_timeref[i] = true;
+            }
+
+            if (b_tpc_timeref[i])
+            {
+                if (tpc_timeref_s[i] <= 0 || (tpc_timeref_s[i] > 0 && tpc_timeref[i][j] < tpc_timeref_s[i]))
+                {
+                    tpc_timeref_s[i] = tpc_timeref[i][j];
                 }
             }
-
-            id_b_AoQ = true;
         }
     }
 
-    // S4 (MUSIC 1)
+    bool checkrange1 = 0;
+    bool checkrange2 = 0;
+    bool checkrange3 = 0;
+    bool checkrange4 = 0;
+    bool checkrange5 = 0;
 
-    if ((de[0] > 0.0) && (id_beta > 0.0) && (id_beta < 1.0))
+    for (int i = 0; i < 7; i++)
     {
-        Double_t power = 1., sum = 0.;
-        for (int i = 0; i < 4; i++)
+        for (int j = 0; j < tpc_lt[i][0].size(); j++)
         {
-            sum += power * id->vel_a[i];
-            power *= id_beta;
+            Int_t thisdata = tpc_lt[i][0][j];
+
+            Int_t currently_selected = tpc_lt_s[i][0];
+
+            if (thisdata > tpc->lim_lt[i][0][0] && thisdata < tpc->lim_lt[i][0][1])
+            {
+                checkrange1 = true;
+            }
+
+            if (checkrange1 && (currently_selected <= 0 || (currently_selected > 0 && thisdata  < currently_selected)))
+            {
+                tpc_lt_s[i][0] = thisdata;
+            }
         }
-        id_v_cor = sum;
-        if (id_v_cor > 0.0)
+
+        for (int j = 0; j < tpc_rt[i][0].size(); j++)
         {
-            id_z = frs->primary_z * sqrt(de[0] / id_v_cor) + id->offset_z;
+            Int_t thisdata = tpc_rt[i][0][j];
+
+            Int_t currently_selected = tpc_rt_s[i][0];
+
+            if (thisdata > tpc->lim_rt[i][0][0] && thisdata < tpc->lim_rt[i][0][1])
+            {
+                checkrange2 = true;
+            }
+
+            if (checkrange2 && (currently_selected <= 0 || (currently_selected > 0 && thisdata  < currently_selected)))
+            {
+                tpc_rt_s[i][0] = thisdata;
+            }
         }
-        if ((id_z > 0.0) && (id_z < 100.0))
+
+        for (int j = 0; j < tpc_lt[i][1].size(); j++)
         {
-            id_b_z = kTRUE;
+            Int_t thisdata = tpc_lt[i][1][j];
+
+            Int_t currently_selected = tpc_lt_s[i][1];
+
+            if (thisdata > tpc->lim_lt[i][1][0] && thisdata < tpc->lim_lt[i][1][1])
+            {
+                checkrange3 = true;
+            }
+
+            if (checkrange3 && (currently_selected <= 0 || (currently_selected > 0 && thisdata  < currently_selected)))
+            {
+                tpc_lt_s[i][1] = thisdata;
+            }
         }
+
+        for (int j = 0; j < tpc_rt[i][1].size(); j++)
+        {
+            Int_t thisdata = tpc_rt[i][1][j];
+
+            Int_t currently_selected = tpc_rt_s[i][1];
+
+            if (thisdata > tpc->lim_rt[i][1][0] && thisdata < tpc->lim_rt[i][1][1])
+            {
+                checkrange4 = true;
+            }
+
+            if (checkrange4 && (currently_selected <= 0 || (currently_selected > 0 && thisdata  < currently_selected)))
+            {
+                tpc_rt_s[i][1] = thisdata;
+            }
+        }
+
+        for (int j = 0; j < 4; j++)
+        {
+            for (int k = 0; k < tpc_dt[i][j].size(); k++)
+            {
+                Int_t thisdata = tpc_dt[i][j][k];
+
+                Int_t currently_selected = tpc_dt_s[i][j];
+
+                if (thisdata > tpc->lim_dt[i][j][0] && thisdata < tpc->lim_dt[i][j][1])
+                {
+                    checkrange5 = true;
+                } 
+
+                if (checkrange5 && (currently_selected <= 0 || (currently_selected > 0 && thisdata < currently_selected)))
+                {
+                    tpc_dt_s[i][j] = thisdata;
+                }
+            }
+        }
+        
+        for (int j = 0; j < 4; j++)
+        {
+            // calculate control sums
+            if (j < 2 && tpc_lt_s[i][0] > 0 && tpc_rt_s[i][0] > 0 && tpc_dt_s[i][j] > 0)
+            {
+                tpc_csum[i][j] = (tpc_lt_s[i][0] + tpc_rt_s[i][0] - 2 * tpc_dt_s[i][j]);
+            }
+            else if (tpc_lt_s[i][1] > 0 && tpc_rt_s[i][1] > 0 && tpc_dt_s[i][j] > 0)
+            {
+                tpc_csum[i][j] = (tpc_lt_s[i][1] + tpc_rt_s[i][1] - 2 * tpc_dt_s[i][j]);
+            }
+            else
+            {
+                tpc_csum[i][j] = -9999999;
+            }
+
+            if (tpc_csum[i][0] > tpc->lim_csum1[i][0] && tpc_csum[i][0] < tpc->lim_csum1[i][1])
+            {
+                b_tpc_csum[i][0] = true;
+            }
+            if (tpc_csum[i][1] > tpc->lim_csum2[i][0] && tpc_csum[i][1] < tpc->lim_csum2[i][1])
+            {
+                b_tpc_csum[i][1] = true;
+            }
+            if (tpc_csum[i][2] > tpc->lim_csum3[i][0] && tpc_csum[i][2] < tpc->lim_csum3[i][1])
+            {
+                b_tpc_csum[i][2] = true;
+            }
+            if (tpc_csum[i][3] > tpc->lim_csum4[i][0] && tpc_csum[i][3] < tpc->lim_csum4[i][1])
+            {
+                b_tpc_csum[i][3] = true;
+            }
+        }
+
+
+        int countx = 0;
+        float sumx = 0.0;
+        float tmp_tpc_x0 = -99999.;
+        float tmp_tpc_x1 = -99999.;
+
+        if (b_tpc_csum[i][0] || b_tpc_csum[i][1])
+        {
+            tpc_xraw[i][0] = tpc_lt_s[i][0] - tpc_rt_s[i][0];
+            tmp_tpc_x0 = (tpc_xraw[i][0]) * (tpc->x_factor[i][0]) + (tpc->x_offset[i][0]);
+            sumx += tmp_tpc_x0;
+            countx++;
+        }
+        if (b_tpc_csum[i][2] || b_tpc_csum[i][3])
+        {
+            tpc_xraw[i][1] = tpc_lt_s[i][1] - tpc_rt_s[i][1];
+            tmp_tpc_x1 = (tpc_xraw[i][1]) * (tpc->x_factor[i][1]) + (tpc->x_offset[i][1]);
+            sumx += tmp_tpc_x1;
+            countx++;
+        }
+
+        if (countx > 0)
+        {
+            tpc_x[i] = sumx / ((float)countx);
+        }
+        if (countx == 2)
+        {
+            tpc_dx12[i] = tmp_tpc_x1 - tmp_tpc_x0;
+        }
+
+        int county = 0;
+        float sumy = 0.0;
+        float tmp_tpc_y[4] = {-99999., -99999., -99999., -99999.};
+        int index_timeref = tpc->id_tpc_timeref[i];
+        for (int j = 0; j < 4; j++)
+        {
+            if (b_tpc_csum[i][j] && b_tpc_timeref[index_timeref])
+            {
+                tpc_yraw[i][j] = tpc_dt_s[i][j] - tpc_timeref_s[index_timeref];
+                tmp_tpc_y[j] = (tpc_yraw[i][j]) * (tpc->y_factor[i][j]) + (tpc->y_offset[i][j]);
+                sumy += tmp_tpc_y[j];
+                county++;
+            }
+        }
+        if (county > 0)
+        {
+            tpc_y[i] = sumy / ((double)county);
+        }
+        if (countx > 0 && county > 0)
+        {
+            b_tpc_xy[i] = kTRUE;
+        }
+        else
+        {
+            b_tpc_xy[i] = kFALSE;
+        }
+
     }
 
-    // S4 (MUSIC 2)
-
-    if ((de[1] > 0.0) && (id_beta > 0.0) && (id_beta < 1.0))
-    {
-        Double_t power = 1., sum = 0.;
-        for (int i = 0; i < 4; i++)
-        {
-            sum += power * id->vel_a2[i];
-            power *= id_beta;
-        }
-        id_v_cor2 = sum;
-
-        if (id_v_cor2 > 0.0)
-        {
-            id_z2 = frs->primary_z * sqrt(de[1] / id_v_cor2) + id->offset_z2;
-        }
-        if ((id_z2 > 0.0) && (id_z2 < 100.0))
-        {
-            id_b_z2 = kTRUE;
-        }
-    }
+    Float_t dist_TPC21_TPC22 = frs->dist_TPC22 - frs->dist_TPC21;
+    Float_t dist_TPC23_TPC24 = frs->dist_TPC24 - frs->dist_TPC23;
+    Float_t dist_TPC22_TPC24 = frs->dist_TPC24 - frs->dist_TPC22;
+    Float_t dist_TPC21_focS2 = frs->dist_TPC21 - frs->dist_focS2;
+    Float_t dist_TPC22_focS2 = frs->dist_TPC22 - frs->dist_focS2;
+    Float_t dist_TPC23_focS2 = frs->dist_TPC23 - frs->dist_focS2;
+    Float_t dist_TPC41_TPC42 = frs->dist_TPC42 - frs->dist_TPC41;
+    Float_t dist_TPC42_focS4 = frs->dist_focS4 - frs->dist_TPC42;
     
-    // Gain match Z
-    for (int i = 0; i < Z_Shift_array; i++)
+    //=================================
+    // Tracking with TPC 21 and TPC 22
+    //=================================
+    if (b_tpc_xy[0] && b_tpc_xy[1])
     {
-        if (ts_mins >= FRS_WR_a[i] && ts_mins < FRS_WR_b[i])
-        {
-            id_z = id_z - Z1_shift_value[i];
-            id_z2 = id_z2 - Z2_shift_value[i];
-        }
+        tpc_angle_x_s2_foc_21_22 = (tpc_x[1] - tpc_x[0])/dist_TPC21_TPC22*1000.;
+        tpc_angle_y_s2_foc_21_22 = (tpc_y[1] - tpc_y[0])/dist_TPC21_TPC22*1000.;
+        tpc_x_s2_foc_21_22 = -tpc_angle_x_s2_foc_21_22 * dist_TPC21_focS2/1000. + tpc_x[0]; //check
+        tpc_y_s2_foc_21_22 = -tpc_angle_y_s2_foc_21_22 * dist_TPC21_focS2/1000. + tpc_y[0]; //check
+        Float_t dist_SC21_focS2 = frs->dist_SC21 - frs->dist_focS2;
+        tpc21_22_sc21_x = (tpc_angle_x_s2_foc_21_22/1000.*dist_SC21_focS2)+tpc_x_s2_foc_21_22;
+        tpc21_22_sc21_y = (tpc_angle_y_s2_foc_21_22/1000.*dist_SC21_focS2)+tpc_y_s2_foc_21_22;
+        Float_t dist_SC22_focS2 = frs->dist_SC22 - frs->dist_focS2;
+        tpc21_22_sc22_x = (tpc_angle_x_s2_foc_21_22/1000.*dist_SC22_focS2)+tpc_x_s2_foc_21_22;
+        tpc21_22_sc22_y = (tpc_angle_y_s2_foc_21_22/1000.*dist_SC22_focS2)+tpc_y_s2_foc_21_22;
+        Float_t dist_S2target_focS2 = frs->dist_S2target - frs->dist_focS2;
+        tpc21_22_s2target_x = (tpc_angle_x_s2_foc_21_22/1000.*dist_S2target_focS2)+tpc_x_s2_foc_21_22;
+        tpc21_22_s2target_y = (tpc_angle_y_s2_foc_21_22/1000.*dist_S2target_focS2)+tpc_y_s2_foc_21_22;
     }
 
-    // S4 (MUSIC)
-    if ((de[2] > 0.0) && (id_beta > 0.0) && (id_beta < 1.0))
+    //=================================
+    // Tracking with TPC 23 and TPC 24
+    //=================================
+    if (b_tpc_xy[2] && b_tpc_xy[3])
     {
-        Double_t power = 1.0, sum = 0.;
-        for (int i = 0; i < 4; i++)
-        {
-            sum += power * id->vel_a3[i];
-            power *= id_beta;
-        }
-        id_v_cor3 = sum;
-        if (id_v_cor3 > 0.0)
-        {
-            id_z3 = frs->primary_z * sqrt(de[2] / id_v_cor3) + id->offset_z3;
-        }
-        if ((id_z3 > 0.0) && (id_z3 < 100.0))
-        {
-            id_b_z3 = kTRUE;
-        }
+        // Angle X at S2 focus
+        tpc_angle_x_s2_foc_23_24 = (tpc_x[3] - tpc_x[2])/dist_TPC23_TPC24*1000.;
+        // Angle Y at S2 focus
+        tpc_angle_y_s2_foc_23_24 = (tpc_y[3] - tpc_y[2])/dist_TPC23_TPC24*1000.;
+        // X position at S2 focus
+        tpc_x_s2_foc_23_24 = -tpc_angle_x_s2_foc_23_24 * dist_TPC23_focS2/1000. + tpc_x[2]; //check
+        // Y position at S2 focus
+        tpc_y_s2_foc_23_24 = -tpc_angle_y_s2_foc_23_24 * dist_TPC23_focS2/1000. + tpc_y[2]; //check
+        /// TPC 23 24 X at SC21 focus 
+        Float_t dist_SC21_focS2 = frs->dist_SC21 - frs->dist_focS2;
+        tpc23_24_sc21_x = (tpc_angle_x_s2_foc_23_24/1000.*dist_SC21_focS2)+tpc_x_s2_foc_23_24;
+        tpc23_24_sc21_y = (tpc_angle_y_s2_foc_23_24/1000.*dist_SC21_focS2)+tpc_y_s2_foc_23_24;
+        /// TPC 23 24 X at SC22 focus ??
+        Float_t dist_SC22_focS2 = frs->dist_SC22 - frs->dist_focS2;
+        tpc23_24_sc22_x = (tpc_angle_x_s2_foc_23_24/1000.*dist_SC22_focS2)+tpc_x_s2_foc_23_24;
+        tpc23_24_sc22_y = (tpc_angle_y_s2_foc_23_24/1000.*dist_SC22_focS2)+tpc_y_s2_foc_23_24;
+        // TPC 23 24 X at target focus ??
+        Float_t dist_S2target_focS2 = frs->dist_S2target - frs->dist_focS2;
+        tpc23_24_s2target_x = (tpc_angle_x_s2_foc_23_24/1000.*dist_S2target_focS2)+tpc_x_s2_foc_23_24;
+        tpc23_24_s2target_y = (tpc_angle_y_s2_foc_23_24/1000.*dist_S2target_focS2)+tpc_y_s2_foc_23_24;
+    }
+    else  
+    {
+        tpc_x_s2_foc_23_24= -999;
+        tpc_x_s2_foc_23_24= -999;
+        tpc_y_s2_foc_23_24 =-999;
+        tpc_angle_x_s2_foc_23_24 =-999;
+        tpc_angle_y_s2_foc_23_24 =-999;
+        tpc23_24_sc21_x =-999;
+        tpc23_24_sc21_y =-999;
+        tpc23_24_sc22_x =-999;
+        tpc23_24_sc22_y =-999;   
     }
 
-    // Z from TPC here
+    //=================================
+    // Tracking with TPC 22 and TPC 24
+    //=================================
+    if (b_tpc_xy[1] && b_tpc_xy[3])
+    {
+        tpc_angle_x_s2_foc_22_24 = (tpc_x[3] - tpc_x[1])/dist_TPC22_TPC24*1000.;
+        tpc_angle_y_s2_foc_22_24 = (tpc_y[3] - tpc_y[1])/dist_TPC22_TPC24*1000.;
+        tpc_x_s2_foc_22_24 = -tpc_angle_x_s2_foc_22_24 * dist_TPC22_focS2/1000. + tpc_x[1]; //check
+        tpc_y_s2_foc_22_24 = -tpc_angle_y_s2_foc_22_24 * dist_TPC22_focS2/1000. + tpc_y[1]; //check
 
+        Float_t dist_SC21_focS2 = frs->dist_SC21 - frs->dist_focS2;
+        tpc22_24_sc21_x = (tpc_angle_x_s2_foc_22_24/1000.*dist_SC21_focS2)+tpc_x_s2_foc_22_24;
+        tpc22_24_sc21_y = (tpc_angle_y_s2_foc_22_24/1000.*dist_SC21_focS2)+tpc_y_s2_foc_22_24;
+        Float_t dist_SC22_focS2 = frs->dist_SC22 - frs->dist_focS2;
+        tpc22_24_sc22_x = (tpc_angle_x_s2_foc_22_24/1000.*dist_SC22_focS2)+tpc_x_s2_foc_22_24;
+        tpc22_24_sc22_y = (tpc_angle_y_s2_foc_22_24/1000.*dist_SC22_focS2)+tpc_y_s2_foc_22_24;
+        Float_t dist_S2target_focS2 = frs->dist_S2target - frs->dist_focS2;
+        tpc22_24_s2target_x = (tpc_angle_x_s2_foc_22_24/1000.*dist_S2target_focS2)+tpc_x_s2_foc_22_24;
+        tpc22_24_s2target_y = (tpc_angle_y_s2_foc_22_24/1000.*dist_S2target_focS2)+tpc_y_s2_foc_22_24;
 
-
-    if (id_b_AoQ && id_b_x2 && id_b_z)
-    {
-        float gamma1square = 1.0 + TMath::Power(((1 / aoq_factor) * (id_brho[0] / id_AoQ)), 2);
-        id_gamma_ta_s2 = TMath::Sqrt(gamma1square);
-        id_dEdegoQ = (id_gamma_ta_s2 - id_gamma) * id_AoQ;
-        id_dEdeg = id_dEdegoQ * id_z;
     }
-    // above is end of FRSAnl
-
-
-    // V1290
-    tdc_array = fCalHitMain->Get_TDC_array();
-
-    // from FRS_Detector_System
-    // i guess in raw2cal we should make sure no zeroes are input in the vector
-    if (tdc_array[0].size() > 0 && tdc_array[1].size() > 0)
+    else 
     {
-        // sc41lr
-        std::cout << "sc41lr" << std::endl;
-    }
-    if (tdc_array[4].size() > 0 && tdc_array[14].size() > 0)
-    {
-        // sc42lr
-        std::cout << "sc42lr" << std::endl;
-    }
-    if (tdc_array[5].size() > 0 && tdc_array[6].size() > 0)
-    {
-        // sc43lr
-        std::cout << "sc43lr" << std::endl;
-    }
-    if (tdc_array[9].size() > 0 && tdc_array[10].size() > 0)
-    {
-        // sc31lr
-        std::cout << "sc31lr" << std::endl;
-    }
-    if (tdc_array[7].size() > 0 && tdc_array[8].size() > 0)
-    {
-        // sc81lr
-        std::cout << "sc81lr" << std::endl;
-    }
-    if (tdc_array[2].size() > 0 && tdc_array[3].size() > 0)
-    {
-        // sc21lr
-        std::cout << "sc21lr" << std::endl;
-    }
-    if (tdc_array[12].size() > 0 && tdc_array[13].size() > 0)
-    {
-        // sc22lr
-        std::cout << "sc22lr" << std::endl;
+        tpc_x_s2_foc_22_24= -999 ;
+        tpc_y_s2_foc_22_24 =-999;
+        tpc_angle_x_s2_foc_22_24 =-999;
+        tpc_angle_y_s2_foc_22_24 =-999;
+        tpc22_24_sc21_x =-999;
+        tpc22_24_sc21_y =-999;
+        tpc22_24_sc22_x =-999;
+        tpc22_24_sc22_y =-999;
     }
 
-    // 21->41 etc etc
-    
-
-    // from FRS_Detector_System
-    /*
-    if(0!=tdc_sc41l[0] && 0!=tdc_sc41r[0])
+    //=====================================================
+    // Tracking with TPC 41 and TPC 42 (TPC 5 and 6) at S4
+    //=====================================================
+    if (b_tpc_xy[4] && b_tpc_xy[5])
     {
-        mhtdc_sc41lr_dt = sci->mhtdc_factor_ch_to_ns*( rand3() + tdc_sc41l[0]  -  tdc_sc41r[0] );
-        mhtdc_sc41lr_x  = mhtdc_sc41lr_dt * sci->mhtdc_factor_41l_41r + sci->mhtdc_offset_41l_41r;
-    }
-    */
+        tpc_angle_x_s4 = (tpc_x[5] - tpc_x[4])/dist_TPC41_TPC42*1000.;
+        
+        tpc_angle_y_s4 = (tpc_y[5] - tpc_y[4])/dist_TPC41_TPC42*1000.;
+        tpc_x_s4 = tpc_angle_x_s4 * dist_TPC42_focS4/1000. + tpc_x[5];
+        tpc_y_s4 = tpc_angle_y_s4 * dist_TPC42_focS4/1000. + tpc_y[5];
 
-    
-    new ((*fHitArray)[fHitArray->GetEntriesFast()]) FrsHitData(
-        WR_TS,
-        id_x2,
-        id_x4
+        Float_t dist_SC41_focS4 = frs->dist_SC41 - frs->dist_focS4;
+        tpc_sc41_x = (tpc_angle_x_s4/1000.*dist_SC41_focS4)+tpc_x_s4;
+        tpc_sc41_y = (tpc_angle_y_s4/1000.*dist_SC41_focS4)+tpc_y_s4;
+
+        Float_t dist_SC42_focS4 = frs->dist_SC42 - frs->dist_focS4;
+        tpc_sc42_x = (tpc_angle_x_s4/1000.*dist_SC42_focS4)+tpc_x_s4;
+        tpc_sc42_y = (tpc_angle_y_s4/1000.*dist_SC42_focS4)+tpc_y_s4;
+
+        Float_t dist_SC43_focS4 = frs->dist_SC43 - frs->dist_focS4;
+        tpc_sc43_x = (tpc_angle_x_s4/1000.*dist_SC43_focS4)+tpc_x_s4;
+        tpc_sc43_y = (tpc_angle_y_s4/1000.*dist_SC43_focS4)+tpc_y_s4;
+
+        Float_t dist_MUSIC41_focS4 = frs->dist_MUSIC41 - frs->dist_focS4;
+        tpc_music41_x = (tpc_angle_x_s4/1000.*dist_MUSIC41_focS4)+tpc_x_s4;
+        tpc_music41_y = (tpc_angle_y_s4/1000.*dist_MUSIC41_focS4)+tpc_y_s4;
+
+        Float_t dist_MUSIC42_focS4 = frs->dist_MUSIC42 - frs->dist_focS4;
+        tpc_music42_x = (tpc_angle_x_s4/1000.*dist_MUSIC42_focS4)+tpc_x_s4;
+        tpc_music42_y = (tpc_angle_y_s4/1000.*dist_MUSIC42_focS4)+tpc_y_s4;
+
+        Float_t dist_MUSIC43_focS4 = frs->dist_MUSIC43 - frs->dist_focS4;
+        tpc_music43_x = (tpc_angle_x_s4/1000.*dist_MUSIC43_focS4)+tpc_x_s4;
+        tpc_music43_y = (tpc_angle_y_s4/1000.*dist_MUSIC43_focS4)+tpc_y_s4;
+
+        Float_t dist_S4target_focS4 = frs->dist_S4target - frs->dist_focS4;
+        tpc_s4target_x = (tpc_angle_x_s4/1000.* dist_S4target_focS4)+tpc_x_s4;
+        tpc_s4target_y = (tpc_angle_y_s4/1000.* dist_S4target_focS4)+tpc_y_s4;
+    }
+    else  
+    {
+        tpc_angle_x_s4= -999;
+        tpc_angle_y_s4= -999;
+        tpc_x_s4 =-999;
+        tpc_y_s4 =-999;
+        tpc_sc42_x =-999;
+        tpc_sc42_y =-999;  
+    }
+
+    new ((*fCalArray)[fCalArray->GetEntriesFast()]) FrsTPCCalData(
+        b_tpc_de,
+        tpc_x,
+        tpc_y,
+        b_tpc_xy,
+        tpc_angle_x_s2_foc_21_22,
+        tpc_angle_y_s2_foc_21_22,
+        tpc_x_s2_foc_21_22,
+        tpc_y_s2_foc_21_22,
+        tpc21_22_sc21_x,
+        tpc21_22_sc22_x,
+        tpc_angle_x_s2_foc_23_24,
+        tpc_angle_y_s2_foc_23_24,
+        tpc_x_s2_foc_23_24,
+        tpc_y_s2_foc_23_24,
+        tpc23_24_sc21_x,
+        tpc23_24_sc21_y,
+        tpc23_24_sc22_x,
+        tpc23_24_sc22_y,
+        tpc_angle_x_s2_foc_22_24,
+        tpc_angle_y_s2_foc_22_24,
+        tpc_x_s2_foc_22_24,
+        tpc_y_s2_foc_22_24,
+        tpc_angle_x_s4,
+        tpc_angle_y_s4,
+        tpc_x_s4,
+        tpc_y_s4,
+        tpc_sc41_x,
+        tpc_sc41_y,
+        tpc_sc42_x,
+        tpc_sc42_y,
+        tpc_sc43_x,
+        tpc_music41_x,
+        tpc_music42_x,
+        tpc_music43_x
     );
-   
+
+    fNEvents += 1;
+
 }
 
-Bool_t FrsCal2Hit::Check_WinCond(Float_t P, Float_t* V)
+void FrsTPCRaw2Cal::FinishEvent()
 {
-    if (P >= V[0] && P <= V[1]) return true;
-    else return false;
+    // clear stuff
+    for (int i = 0; i < 7; i++)
+    {
+        tpc_calibgrid[i].clear();
+        for (int j = 0; j < 4; j++)
+        {
+            tpc_dt[i][j].clear();
+        }
+        for (int j = 0; j < 2; j++)
+        {
+            tpc_lt[i][j].clear();
+            tpc_rt[i][j].clear();
+        }
+    }
+    for (int i = 0; i < 8; i++)
+    {
+        tpc_timeref[i].clear();
+    }
+    for (int i = 0; i < 128; i++)
+    {
+        v1190_lead_hits[i].clear();
+    }
+    
+    v775_geo.clear();
+    v775_channel.clear();
+    v775_data.clear();
+    v785_geo.clear();
+    v785_channel.clear();
+    v785_data.clear();
+    v1190_channel.clear();
+    v1190_data.clear();
+    v1190_lot.clear();
+    fRawHit->Clear();
+    fRawArray->Clear();
+    fCalArray->Clear();
 }
 
-
-void FrsCal2Hit::FinishEvent()
+void FrsTPCRaw2Cal::FinishTask()
 {
-    // clears
-    fCalHitMain->Clear();
-    fCalHitTPC->Clear();
-    fCalArrayMain->Clear();
-    fCalArrayTPC->Clear();
-    fHitArray->Clear();
+    c4LOG(info, Form("Wrote %i events.", fNEvents));
 }
 
-void FrsCal2Hit::FinishTask()
-{
-    c4LOG(info, Form("Wrote %i events. ", fNEvents));
-}
-
-ClassImp(FrsCal2Hit)
+ClassImp(FrsTPCRaw2Cal)

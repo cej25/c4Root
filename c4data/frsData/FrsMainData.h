@@ -1,5 +1,5 @@
-#ifndef FrsData_H
-#define FrsData_H
+#ifndef FrsMainData_H
+#define FrsMainData_H
 
 #include "TObject.h"
 #include "TClonesArray.h"
@@ -7,13 +7,13 @@
 
 class TClonesArray;
 
-class FrsData : public TObject
+class FrsMainData : public TObject
 {
     public:
         // Default Constructor
-        FrsData();
+        FrsMainData();
 
-        FrsData(uint64_t WR_TS, 
+        FrsMainData(uint64_t WR_TS, 
                 uint32_t Scalers_N, 
                 std::vector<uint32_t> Scalers_Index, 
                 std::vector<uint32_t> V830_Scalers,
@@ -25,7 +25,7 @@ class FrsData : public TObject
                 std::vector<uint32_t> V1290_LoT);
 
         // Destructor
-        virtual ~FrsData() {}
+        virtual ~FrsMainData() {}
 
         inline const uint64_t Get_WR() const { return fWR_TS; }
         inline const Int_t Get_Scalers_N() const { return fScalers_N; }
@@ -41,27 +41,10 @@ class FrsData : public TObject
 
 
         // Getters
-       /* inline const UInt_t GetTdcData() const { return tdcData; }
-        inline const int GetChan() const { return channel; }
-        inline const int GetLot() const { return leadOrTrail; }
-
-        inline const UInt_t GetTpatTs() const { return tpat_ts; }
-        inline const UInt_t GetTpatTrig() const { return tpat_trig; }
-        inline const UInt_t GetTpatData() const { return tpat_data; }
+ 
 
 
-        // Setters
-        void SetTdcData(UInt_t v) { tdcData = v; }
-        void SetChan(int v) { channel = v; }
-        void SetLot(int v) { leadOrTrail = v; }
-
-
-        void SetTpatTs(UInt_t v) { tpat_ts = v; }
-        void SetTpatTrig(UInt_t v) { tpat_trig = v; }
-        void SetTpatData(UInt_t v) { tpat_data = v; }*/
-
-
-    protected:
+    private:
 
         uint64_t fWR_TS;
 
@@ -78,7 +61,8 @@ class FrsData : public TObject
         std::vector<uint32_t> fV1290_LoT;
 
     public:
-        ClassDef(FrsData, 1)
+        ClassDef(FrsMainData, 1)
+        
 };
 
 

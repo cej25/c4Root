@@ -4,11 +4,13 @@
 #include "FairTask.h"
 #include "TFRSParameter.h"
 #include "TClonesArray.h"
-#include "FrsCalData.h"
+#include "FrsMainCalData.h"
+#include "FrsTPCCalData.h"
 #include "FrsHitData.h"
 
 class TClonesArray;
-class FrsCalData;
+class FrsMainCalData;
+class FrsTPCCalData;
 class FrsHitData;
 class EventHeader;
 
@@ -40,10 +42,12 @@ class FrsCal2Hit : public FairTask
 
         Bool_t fOnline;
 
-        TClonesArray* fCalArray;
+        TClonesArray* fCalArrayMain;
+        TClonesArray* fCalArrayTPC;
         TClonesArray* fHitArray;
 
-        FrsCalData* fCalHit;
+        FrsMainCalData* fCalHitMain;
+        FrsTPCCalData* fCalHitTPC;
         FrsHitData* fFrsHit;
 
         /* ----------------------------------------------- */
@@ -74,7 +78,7 @@ class FrsCal2Hit : public FairTask
         Float_t cID_x2[2];
         Float_t cID_x4[2];
         Float_t cID_Z_Z[2];
-        Bool_t b_tpc_xy[7];
+        const Bool_t* b_tpc_xy; //Bool_t b_tpc_xy[7];
         Bool_t b_tpc_de[7];
         Bool_t b_tpc_timeref[8];
         Bool_t b_tpc_csum[7][4];

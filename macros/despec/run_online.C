@@ -4,7 +4,8 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_fatima_onion_t fatima;
     EXT_STR_h101_bplast_onion_t bplast;
     EXT_STR_h101_aida_onion_t aida;
-    EXT_STR_h101_FRS_onion_t frs;
+    EXT_STR_h101_frsmain_onion_t frsmain;
+    EXT_STR_h101_frstpc_onion_t frstpc;
     //EXT_STR_h101_germanium_onion_t germanium;
 } EXT_STR_h101;
 
@@ -78,7 +79,8 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     //unpackbplast->DoFineTimeCalOnline("/u/despec/BB7-c4-test/macros/fine_time_histos_111223_bplast.root",10000000);
     unpackbplast->SetInputFileFineTimeHistos("/u/cjones/c4Root/config/NovTest/fine_time_histos_111223_bplast.root");
 
-    FrsReader* unpackfrs = new FrsReader((EXT_STR_h101_FRS_onion*)&ucesb_struct.frs, offsetof(EXT_STR_h101, frs));
+    FrsMainReader* unpackfrsmain = new FrsMainReader((EXT_STR_h101_frsmain_onion*)&ucesb_struct.frsmain, offsetof(EXT_STR_h101, frsmain));
+    FrsTPCReader* unpackfrstpc = new FrsTPCReader((EXT_STR_h101_frstpc_onion*)&ucesb_struct.frstpc, offsetof(EXT_STR_h101, frstpc));
 
     //GermaniumReader* unpackgermanium = new GermaniumReader((EXT_STR_h101_GERMANIUM_onion*)&ucesb_struct.germanium, offsetof(EXT_STR_h101, germanium));
 
@@ -89,7 +91,8 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     unpackbplast->SetOnline(false);
     unpackaida->SetOnline(false);
     unpackfatima->SetOnline(false);
-    unpackfrs->SetOnline(false);
+    unpackfrsmain->SetOnline(false);
+    unpackfrstpc->SetOnline(false);
     //unpackgermanium->SetOnline(true);SetTimeMachineChannels
 
     // Add readers
@@ -97,7 +100,8 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     source->AddReader(unpackfatima);
     source->AddReader(unpackaida);
     source->AddReader(unpackbplast);
-    source->AddReader(unpackfrs);
+    source->AddReader(unpackfrsmain);
+    source->AddReader(unpackfrstpc);
     //source->AddReader(unpackgermanium);
     
 
@@ -127,11 +131,12 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     //ge_calib->SetDetectorMapFile("/u/despec/BB7-c4-test/c4Root/Germanium_Detector_Map.txt");
     //ge_calib->PrintDetectorMap();
 
-    FrsRaw2Cal* calfrs = new FrsRaw2Cal();
+    FrsMainRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
+    FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal();
 
 
     // can we load the frs setup here maybe?
-    //FrsCal2Hit* hitfrs = new FrsCal2Hit();
+    FrsCal2Hit* hitfrs = new FrsCal2Hit();
     
 
     //ge_calib->SetDetectorCalFile("/u/despec/BB7-c4-test/c4Root/Germanium_Energy_Calibration.txt");
@@ -143,8 +148,9 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     //ge_calib->SetOnline(true);
     calfatima->SetOnline(false);
     calbplast->SetOnline(false);
-    calfrs->SetOnline(false);
-    //hitfrs->SetOnline(false); // it can do this 
+    calfrsmain->SetOnline(false);
+    calfrstpc->SetOnline(false);
+    hitfrs->SetOnline(false); // it can do this 
     
 
     
@@ -152,8 +158,9 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     run->AddTask(aidaCalibrator);
     run->AddTask(aidaHitter);
     run->AddTask(calbplast);
-    run->AddTask(calfrs);
-    //run->AddTask(hitfrs); // but not this
+    run->AddTask(calfrsmain);
+    run->AddTask(calfrstpc);
+    run->AddTask(hitfrs);
     //run->AddTask(ge_calib);
     
 

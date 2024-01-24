@@ -1,6 +1,6 @@
 VME_CAEN_V7X5_FRS() // V775 and V785 unpack the same
 {
-    MEMBER(DATA12_OVERFLOW data[32] ZERO_SUPPRESS);
+    MEMBER(DATA24 data[32] ZERO_SUPPRESS);
     MEMBER(DATA8 channel[32] ZERO_SUPPRESS);
     MEMBER(DATA8 geo[32] ZERO_SUPPRESS);
 
@@ -29,7 +29,7 @@ VME_CAEN_V7X5_FRS() // V775 and V785 unpack the same
 
             ENCODE(geo[index], (value = geom));
             ENCODE(channel[index], (value = channel));
-            ENCODE(data[index],(value = value, overflow = overflow));
+            ENCODE(data[index],(value = value));
         }
     };
 
