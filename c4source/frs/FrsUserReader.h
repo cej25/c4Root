@@ -46,6 +46,12 @@ class FrsUserReader : public c4Reader
 
         TClonesArray* fArray;
 
+
+        uint32_t scalers_n;
+        std::vector<uint32_t> scalers_index;
+        std::vector<uint32_t> scalers_user;
+
+
     public:
         ClassDefOverride(FrsUserReader, 0);
 

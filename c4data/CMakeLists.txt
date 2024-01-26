@@ -39,6 +39,7 @@ aidaData/TAidaConfiguration.cxx
 germaniumData/GermaniumFebexData.cxx
 germaniumData/GermaniumCalData.cxx
 bplastData/bPlastTwinpeaksData.cxx
+bplastData/bPlastTwinpeaksCalData.cxx
 beammonitorData/BeamMonitorData.cxx
 fatimaData/FatimaTwinpeaksData.cxx
 fatimaData/FatimaTwinpeaksCalData.cxx
