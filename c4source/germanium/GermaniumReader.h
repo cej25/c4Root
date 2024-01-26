@@ -12,15 +12,15 @@ extern "C"
 
 class TClonesArray;
 
-struct EXT_STR_h101_GERMANIUM_t;
-typedef struct EXT_STR_h101_GERMANIUM_t EXT_STR_h101_GERMANIUM;
-typedef struct EXT_STR_h101_GERMANIUM_onion_t EXT_STR_h101_GERMANIUM_onion;
+struct EXT_STR_h101_germanium_t;
+typedef struct EXT_STR_h101_germanium_t EXT_STR_h101_germanium;
+typedef struct EXT_STR_h101_germanium_onion_t EXT_STR_h101_germanium_onion;
 class ext_data_struct_info;
 
 class GermaniumReader : public c4Reader
 {
     public:
-        GermaniumReader(EXT_STR_h101_GERMANIUM_onion*, size_t);
+        GermaniumReader(EXT_STR_h101_germanium_onion*, size_t);
 
         virtual ~GermaniumReader();
 
@@ -41,7 +41,7 @@ class GermaniumReader : public c4Reader
     private:
         unsigned int fNEvent;
 
-        EXT_STR_h101_GERMANIUM_onion* fData;
+        EXT_STR_h101_germanium_onion* fData;
 
         size_t fOffset;
 
@@ -50,7 +50,7 @@ class GermaniumReader : public c4Reader
         TClonesArray* fArray;
 
 
-        const int NBoards = 4;
+        const int NBoards = 4; //change
 
         uint64_t event_trigger_time_long;
         uint64_t channel_trigger_time_long;

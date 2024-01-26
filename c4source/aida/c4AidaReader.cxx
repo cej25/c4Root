@@ -6,7 +6,6 @@
 
 // c4
 #include "AidaData.h"
-#include "TAidaConfiguration.h"
 #include "c4Logger.h"
 
 // ucesb
@@ -23,7 +22,8 @@ AidaReader::AidaReader(EXT_STR_h101_aida_onion* data, size_t offset)
       fNEvent(0),
       fData(data),
       fOffset(offset),
-      fOnline(false),
+      fAdcOnline(false),
+      fFlowScalerOnline(false),
       adcArray(new std::vector<AidaUnpackAdcItem>),
       flowArray(new std::vector<AidaUnpackFlowItem>),
       scalerArray(new std::vector<AidaUnpackScalerItem>)
@@ -50,12 +50,9 @@ Bool_t AidaReader::Init(ext_data_struct_info* a_struct_info)
     }
 
     // Register vector(?) of data here
-    FairRootManager::Instance()->RegisterAny("AidaAdcData", adcArray, !fOnline);
-    FairRootManager::Instance()->RegisterAny("AidaFlowData", flowArray, !fOnline);
-    FairRootManager::Instance()->RegisterAny("AidaScalerData", scalerArray, !fOnline);
-
-    // Create the config
-    TAidaConfiguration::GetInstance();
+    FairRootManager::Instance()->RegisterAny("AidaAdcData", adcArray, !fAdcOnline);
+    FairRootManager::Instance()->RegisterAny("AidaFlowData", flowArray, !fFlowScalerOnline);
+    FairRootManager::Instance()->RegisterAny("AidaScalerData", scalerArray, !fFlowScalerOnline);
 
     return kTRUE;
 }
@@ -67,6 +64,8 @@ Bool_t AidaReader::Read()
     adcArray->clear();
     flowArray->clear();
     scalerArray->clear();
+    
+    if (!fData) return kTRUE;
 
     // ADC items
     for (size_t i = 0; i < fData->aida_data_adc; i++)
@@ -93,8 +92,8 @@ Bool_t AidaReader::Read()
     {
         auto& entry = scalerArray->emplace_back();
         uint64_t t = fData->aida_data_scaler_timestamp_lo[i] | ((uint64_t)fData->aida_data_scaler_timestamp_hi[i] << 32);
-        int f = fData->aida_data_scaler_fee[i];
         uint64_t v = fData->aida_data_scaler_value_lo[i] | ((uint64_t)fData->aida_data_scaler_value_hi[i] << 32);
+        int f = fData->aida_data_scaler_fee[i];
         entry.SetAll(t, v, f);
     }
 
@@ -105,6 +104,8 @@ void AidaReader::Reset()
 {
     // Clear the vector
     adcArray->clear();
+    flowArray->clear();
+    scalerArray->clear();
 }
 
 ClassImp(AidaReader);

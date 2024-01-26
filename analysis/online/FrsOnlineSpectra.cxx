@@ -7,7 +7,7 @@
 
 // c4
 #include "FrsOnlineSpectra.h"
-#include "FrsData.h"
+#include "FrsMainData.h"
 #include "EventHeader.h"
 #include "c4Logger.h"
 
@@ -70,13 +70,14 @@ InitStatus FrsOnlineSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fHitFrs = (TClonesArray*)mgr->GetObject("FrsData");
-    c4LOG_IF(fatal, !fHitFrs, "Branch FrsData not found");
+    fHitFrs = (TClonesArray*)mgr->GetObject("FrsMainData");
+    c4LOG_IF(fatal, !fHitFrs, "Branch FrsMainData not found");
 
     // Create histograms for detectors
     TString Name1;
     TString Name2;
 
+    /*
     cTdcRaw = new TCanvas("TdcRaw", "TDC Raw Data", 10, 10, 800, 700);
     fh1_TdcRaw = new TH1F("fh1_TdcRaw", "TDC Raw Data", 20, 0, 1e5);
     fh1_TdcRaw->GetXaxis()->SetTitle("TDC Raw");
@@ -86,6 +87,8 @@ InitStatus FrsOnlineSpectra::Init()
     fh1_TdcChan = new TH1F("fh1_TdcChan", "TDC Channel", 32, 0, 32);
     fh1_TdcChan->GetXaxis()->SetTitle("Channel");
     fh1_TdcChan->Draw();
+
+    */
 
     /*
     cZvsAoQ = new TCanvas("ZvsAoQ", "Z vs. AoQ", 10, 10, 800, 700);
@@ -110,10 +113,10 @@ InitStatus FrsOnlineSpectra::Init()
 
     
     // MAIN FOLDER-INCOMINGID
-    TFolder* frsfol = new TFolder("FRS-IncomingID", "FRS incomingID info");
+   /* TFolder* frsfol = new TFolder("FRS-IncomingID", "FRS incomingID info");
     frsfol->Add(cTdcRaw);
     frsfol->Add(cTdcChan);
-    run->AddObject(frsfol);
+    run->AddObject(frsfol);*/
 
     // Register command to reset histograms
     run->GetHttpServer()->RegisterCommand("Reset_IncomingID_HIST", Form("/Objects/%s/->Reset_Histo()", GetName()));
@@ -125,8 +128,8 @@ InitStatus FrsOnlineSpectra::Init()
 void FrsOnlineSpectra::Reset_Histo()
 {
     c4LOG(info, "");
-    fh1_TdcRaw->Clear();
-    fh1_TdcChan->Clear();
+   // fh1_TdcRaw->Clear();
+   // fh1_TdcChan->Clear();
 }
 
 void FrsOnlineSpectra::Exec(Option_t* option)
@@ -140,12 +143,12 @@ void FrsOnlineSpectra::Exec(Option_t* option)
         Int_t nHits = fHitFrs->GetEntriesFast();
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {
-            FrsData* hit = (FrsData*)fHitFrs->At(ihit);
+            FrsMainData* hit = (FrsMainData*)fHitFrs->At(ihit);
             if (!hit)
                 continue;
 
-            fh1_TdcRaw->Fill(hit->GetTdcData());
-            fh1_TdcChan->Fill(hit->GetChan());
+         //   fh1_TdcRaw->Fill(hit->GetTdcData());
+         //   fh1_TdcChan->Fill(hit->GetChan());
 
             /*fh2_ZvsAoQ->Fill(hit->GetAoQ(), hit->GetZ());
             fh2_x4vsAoQ->Fill(hit->GetAoQ(), hit->GetX4());
@@ -171,8 +174,8 @@ void FrsOnlineSpectra::FinishTask()
 {
     if (fHitFrs)
     {   
-        cTdcRaw->Write();
-        cTdcChan->Write();
+      //  cTdcRaw->Write();
+      //  cTdcChan->Write();
         /*cZvsAoQ->Write();
         cX4vsAoQ->Write();
         cZvsAoQCorr->Write();
