@@ -1,5 +1,5 @@
 typedef struct EXT_STR_h101_t
-{   
+{   EXT_STR_h101_unpack_t eventheaders;
     EXT_STR_h101_BPLAST_onion_t bplast;
 } EXT_STR_h101;
 
@@ -20,7 +20,7 @@ void run_bplast_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
 
-    TString filename = "~/lustre/gamma/DESPEC_S452_FILES/newts/S452f103_0037.lmd "; // change to ts filep
+    TString filename = "~/lustre/gamma/DESPEC_S450_FILES/ts/s450f0075_0094.lmd "; // change to ts filep
     TString outputpath = "~/run_online_bp_test";
     TString outputFileName = outputpath + ".root";
 
@@ -29,7 +29,7 @@ void run_bplast_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t
      
     TString ntuple_options = "RAW"; // "RAW"? "time=stitch=1000"? can we time-stitch files here pls?
     TString ucesb_dir = getenv("UCESB_DIR"); // .bashrc
-    TString ucesb_path = ucesb_dir + "/s452/s452 --allow-errors --input-buffer=200Mi";
+    TString ucesb_path = ucesb_dir + "/s450/s450 --allow-errors --input-buffer=200Mi";
     ucesb_path.ReplaceAll("//","/");
 
     // Create online run
@@ -47,11 +47,14 @@ void run_bplast_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t
     UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
     source->SetMaxEvents(nev);
    
+    
     bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_BPLAST_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
 
     // Add readers
-    unpackbplast->SetOnline(false);
+    unpackbplast->SetOnline(true);
+
     source->AddReader(unpackbplast);
+
     std::cout << "we got here as expected" << std::endl;
 
     run->SetSource(source);
@@ -61,7 +64,13 @@ void run_bplast_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t
 
 
     // Add analysis task
+
+    bPlastRaw2Cal * calbplast = new bPlastRaw2Cal();
+
+    calplast->SetDetectorMapFile();
+
     bPlastOnlineSpectra* online = new bPlastOnlineSpectra();
+    run->AddTask(calplast);
     run->AddTask(online);
 
     // Initialise

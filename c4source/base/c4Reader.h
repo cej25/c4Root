@@ -3,6 +3,7 @@
 
 #include "TObject.h"
 #include "TString.h"
+#include "EventHeader.h"
 
 extern "C"
 {
@@ -10,7 +11,6 @@ extern "C"
 }
 
 class TClonesArray;
-class EventHeader;
 
 class c4Reader : public TObject
 {

@@ -15,6 +15,9 @@
 #include "TClonesArray.h"
 #include "GermaniumRaw2Cal.h"
 
+/*
+Empty constructor for FairRoot.
+*/
 GermaniumRaw2Cal::GermaniumRaw2Cal()
 : FairTask(), 
 fNEvents(0),
@@ -26,7 +29,9 @@ ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
 }
 
-
+/*
+Named constructor with verbosity level.
+*/
 GermaniumRaw2Cal::GermaniumRaw2Cal(const TString& name, Int_t verbose) 
     : FairTask(name, verbose),
     fNEvents(0),
@@ -45,12 +50,16 @@ GermaniumRaw2Cal::~GermaniumRaw2Cal(){
     if (ftime_machine_array) delete ftime_machine_array;
 }
 
+
+/*
+A way to pass the TimeMachineChannels to the class, should be done after the mapping and before Init.
+*/
 void GermaniumRaw2Cal::SetTimeMachineChannels(int ftime_machine_undelayed_detector_id, int ftime_machine_undelayed_crystal_id, int ftime_machine_delayed_detector_id, int ftime_machine_delayed_crystal_id){
     time_machine_delayed_detector_id=ftime_machine_delayed_detector_id;
     time_machine_undelayed_detector_id=ftime_machine_undelayed_detector_id;
     time_machine_delayed_crystal_id=ftime_machine_delayed_crystal_id;
     time_machine_undelayed_crystal_id=ftime_machine_undelayed_crystal_id;
-} //AFTER mapping.
+} 
 
 void GermaniumRaw2Cal::SetParContainers()
 {
@@ -58,6 +67,9 @@ void GermaniumRaw2Cal::SetParContainers()
     c4LOG_IF(fatal, NULL == rtdb, "FairRuntimeDb not found.");
 }
 
+/*
+Init - register data to output tree and gets input data.
+*/
 InitStatus GermaniumRaw2Cal::Init(){
     //grab instance managers and handles.
 
@@ -65,46 +77,36 @@ InitStatus GermaniumRaw2Cal::Init(){
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-    //only needed for communicating with the https server i believe
-    //FairRunOnline* run = FairRunOnline::Instance();
-    //run->GetHttpServer()->Register("", this);
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
     funcal_data = (TClonesArray*)mgr->GetObject("GermaniumFebexData");
     c4LOG_IF(fatal, !funcal_data, "Germanium branch of GermaniumFebexData not found.");
-    
-    /*fcal_data = (TClonesArray*)mgr->GetObject("GermaniumCalData");
-    c4LOG_IF(fatal, !fcal_data, "Germanium branch of GermaniumCalData not found.");
-    */
-
+ 
     FairRootManager::Instance()->Register("GermaniumCalData", "Germanium Cal Data", fcal_data, !fOnline);
     FairRootManager::Instance()->Register("GermaniumTimeMachineData", "Time Machine Data", ftime_machine_array, !fOnline);
     
     fcal_data->Clear();
-    
-    //memset(funcal_data, 0, sizeof *funcal_data);
-
 
     return kSUCCESS;
 }
 
-Bool_t GermaniumRaw2Cal::SetDetectorMapFile(TString filename){
-    /*
-    TODO: Make the reading fail-safe.
 
-    Assumed structure of detector map is 
+
+/*
+Reads a file containing the detector mappings. To be called before Init. Assumed structure of the file is:
     - aribtrary lines of comments starting with #
     - each entry is a line with four number: (febex module id) (febex channel id) (detector id) (crystal id)
-    */
-    c4LOG(info, "Reading Detector map");
 
-    //std::cout << "reading detector map \n";
+Raises a fatal error if the module and channel numbers are not unique.
+*/
+Bool_t GermaniumRaw2Cal::SetDetectorMapFile(TString filename){
+    c4LOG(info, "Reading Detector map");
 
     std::ifstream detector_map_file (filename);
 
-    int rfebex_module,rfebex_channel,rdetector_id,rcrystal_id; // temp read variables
+    int rfebex_module,rfebex_channel,rdetector_id,rcrystal_id; 
     
     //assumes the first line in the file is num-modules used
     while(!detector_map_file.eof()){
@@ -113,6 +115,11 @@ Bool_t GermaniumRaw2Cal::SetDetectorMapFile(TString filename){
             detector_map_file >> rfebex_module >> rfebex_channel >> rdetector_id >> rcrystal_id;
             std::pair<int,int> febex_mc = {rfebex_module,rfebex_channel};
             std::pair<int,int> ge_cd = {rdetector_id,rcrystal_id};
+            
+            //fails? check!
+            //auto it = detector_mapping.find(febex_mc);
+            //if (it != detector_mapping.end()) c4LOG(fatal,Form("Detector mapping not unique. Multiple entries of (febex module id = %i) (febex channel id = %i)",rfebex_module,rfebex_channel));
+
             detector_mapping.insert(std::pair<std::pair<int,int>,std::pair<int,int>>{febex_mc,ge_cd});
             detector_map_file.ignore(256,'\n');
 
@@ -124,14 +131,16 @@ Bool_t GermaniumRaw2Cal::SetDetectorMapFile(TString filename){
     return 0; 
 };
 
+
+/*
+Reads a file containing the detector calibrations. To be called before Init. Assumed structure of the file is:
+    - aribtrary lines of comments starting with #
+    - each entry is a line with four number: (Ge detector id) (Ge crystal id) (a1/slope) (a0/offset)
+
+Raises a fatal error if the detector numbers are not unique.
+*/
 Bool_t GermaniumRaw2Cal::SetDetectorCalFile(TString filename){
 
-    //TODO: Make the reading fail-safe.
-    //
-    //Assumed structure of detector map is 
-    //- aribtrary lines of comments starting with #
-    //- each entry is a line with four number: (febex module id) (febex channel id) (detector id) (crystal id)
-    //
     c4LOG(info, "Reading Calibration coefficients.");
 
 
@@ -157,6 +166,9 @@ Bool_t GermaniumRaw2Cal::SetDetectorCalFile(TString filename){
     return 0; 
 };
 
+/*
+Prints detector map to file.
+*/
 void GermaniumRaw2Cal::PrintDetectorMap(){
     if (DetectorMap_loaded){
         for (const auto& entry : detector_mapping){
@@ -169,6 +181,9 @@ void GermaniumRaw2Cal::PrintDetectorMap(){
     }
 }
 
+/*
+Prints calibration coeffs to file.
+*/
 void GermaniumRaw2Cal::PrintDetectorCal(){
     if (DetectorCal_loaded){
         for (const auto& entry : calibration_coeffs){
@@ -181,7 +196,12 @@ void GermaniumRaw2Cal::PrintDetectorCal(){
     }
 }        
 
+/*
+Analysis event loop. 
+Fatal error if detector map is not set. If calibration coeffs are not written, simply the uncalibrated energies are written.
 
+Picks out the TimeMachine.
+*/
 void GermaniumRaw2Cal::Exec(Option_t* option){
     if (funcal_data && funcal_data->GetEntriesFast() > 0){
         Int_t event_multiplicity = funcal_data->GetEntriesFast();
@@ -239,10 +259,10 @@ void GermaniumRaw2Cal::Exec(Option_t* option){
     }    
 }
 
-
+/*
+Very important function - all TClonesArray must be cleared after each event.
+*/
 void GermaniumRaw2Cal::FinishEvent(){
-    //THIS FUNCTION IS EXTREMELY IMPORTANT!!!!
-    // reset output array
     funcal_data->Clear();
     fcal_data->Clear();
     ftime_machine_array->Clear();
