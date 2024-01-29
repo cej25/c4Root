@@ -1321,313 +1321,308 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
 
     fRawHit = (FrsTPCData*)fRawArray->At(mult-1);
 
-    v775_geo = fRawHit->Get_V775_Geo();
-    v775_channel = fRawHit->Get_V775_Channel();
-    v775_data = fRawHit->Get_V775_Data();
-
-    v785_geo = fRawHit->Get_V785_Geo();
-    v785_channel = fRawHit->Get_V785_Channel();
-    v785_data = fRawHit->Get_V785_Data();
+    v7x5_geo = fRawHit->Get_v7x5_geo();
+    v7x5_channel = fRawHit->Get_v7x5_channel();
+    v7x5_data = fRawHit->Get_v7x5_data();
     
-    // v7x5 goes into vme_tpcs2[geo][chn];
-    for (int i = 0; i < v775_data.size(); i++)
+    for (int m = 0; m < 2; m++)
     {
-        switch (v775_channel[i])
+       for (int i = 0; i < v7x5_data[m].size(); i++)
         {
-            case 0:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_a[0][0] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_a[4][0] = v775_data[i];
-                }
-                break;
-            case 1:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_a[0][1] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_a[4][1] = v775_data[i];
-                }
-                break;
-            case 2:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_a[0][2] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_a[4][2] = v775_data[i];
-                }
-                break;
-            case 3:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_a[0][3] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_a[4][3] = v775_data[i];
-                }
-                break;
-            case 4:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_l[0][0] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_l[4][0] = v775_data[i];
-                }
-                break;
-            case 5:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_r[0][0] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_r[4][0] = v775_data[i];
-                }
-                break;
-            case 6:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_l[0][1] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_l[4][1] = v775_data[i];
-                }
-                break;
-            case 7:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_r[0][1] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_r[4][1] = v775_data[i];
-                }
-                break;
-            case 8:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_a[1][0] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_a[5][0] = v775_data[i];
-                }
-                break;
-            case 9:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_a[1][1] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_a[5][1] = v775_data[i];
-                }
-                break;
-            case 10:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_a[1][2] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_a[5][2] = v775_data[i];
-                }
-                break;
-            case 11:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_a[1][3] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_a[5][3] = v775_data[i];
-                }
-                break;
-            case 12:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_l[1][0] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_l[5][0] = v775_data[i];
-                }
-                break;
-            case 13:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_r[1][0] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_r[5][0] = v775_data[i];
-                }
-                break;
-            case 14:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_l[1][1] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_l[5][1] = v775_data[i];
-                }
-                break;
-            case 15:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_r[1][1] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_r[5][1] = v775_data[i];
-                }
-                break;
-            case 16:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_a[2][0] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_a[6][0] = v775_data[i];
-                }
-                break;
-            case 17:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_a[2][1] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_a[6][1] = v775_data[i];
-                }
-                break;
-            case 18:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_a[2][2] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_a[6][2] = v775_data[i];
-                }
-                break;
-            case 19:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_a[2][3] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_a[6][3] = v775_data[i];
-                }
-                break;
-            case 20:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_l[2][0] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_l[6][0] = v775_data[i];
-                }
-                break;
-            case 21:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_r[2][0] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_r[6][0] = v775_data[i];
-                }
-                break;
-            case 22:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_l[2][1] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_l[6][1] = v775_data[i];
-                }
-                break;
-            case 23:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_r[2][1] = v775_data[i];
-                }
-                else if (v775_geo[i] == 13)
-                {
-                    tpc_r[6][1] = v775_data[i];
-                }
-                break;
-            case 24:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_a[3][0] = v775_data[i];
-                }
-                break;
-            case 25:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_a[3][1] = v775_data[i];
-                }
-                break;
-            case 26:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_a[3][2] = v775_data[i];
-                }
-                break;
-            case 27:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_a[3][3] = v775_data[i];
-                }
-                break;
-            case 28:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_l[3][0] = v775_data[i];
-                }
-                break;
-            case 29:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_r[3][0] = v775_data[i];
-                }
-                break;
-            case 30:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_l[3][1] = v775_data[i];
-                }
-                break;
-            case 31:
-                if (v775_geo[i] == 12)
-                {
-                    tpc_r[3][1] = v775_data[i];
-                }
-                break;
+            switch (v7x5_channel[m][i])
+            {
+                case 0:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_a[0][0] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_a[4][0] = v7x5_data[m][i];
+                    }
+                    break;
+                case 1:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_a[0][1] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_a[4][1] = v7x5_data[m][i];
+                    }
+                    break;
+                case 2:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_a[0][2] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_a[4][2] = v7x5_data[m][i];
+                    }
+                    break;
+                case 3:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_a[0][3] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_a[4][3] = v7x5_data[m][i];
+                    }
+                    break;
+                case 4:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_l[0][0] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_l[4][0] = v7x5_data[m][i];
+                    }
+                    break;
+                case 5:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_r[0][0] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_r[4][0] = v7x5_data[m][i];
+                    }
+                    break;
+                case 6:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_l[0][1] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_l[4][1] = v7x5_data[m][i];
+                    }
+                    break;
+                case 7:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_r[0][1] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_r[4][1] = v7x5_data[m][i];
+                    }
+                    break;
+                case 8:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_a[1][0] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_a[5][0] = v7x5_data[m][i];
+                    }
+                    break;
+                case 9:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_a[1][1] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_a[5][1] = v7x5_data[m][i];
+                    }
+                    break;
+                case 10:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_a[1][2] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_a[5][2] = v7x5_data[m][i];
+                    }
+                    break;
+                case 11:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_a[1][3] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_a[5][3] = v7x5_data[m][i];
+                    }
+                    break;
+                case 12:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_l[1][0] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_l[5][0] = v7x5_data[m][i];
+                    }
+                    break;
+                case 13:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_r[1][0] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_r[5][0] = v7x5_data[m][i];
+                    }
+                    break;
+                case 14:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_l[1][1] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_l[5][1] = v7x5_data[m][i];
+                    }
+                    break;
+                case 15:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_r[1][1] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_r[5][1] = v7x5_data[m][i];
+                    }
+                    break;
+                case 16:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_a[2][0] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_a[6][0] = v7x5_data[m][i];
+                    }
+                    break;
+                case 17:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_a[2][1] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_a[6][1] = v7x5_data[m][i];
+                    }
+                    break;
+                case 18:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_a[2][2] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_a[6][2] = v7x5_data[m][i];
+                    }
+                    break;
+                case 19:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_a[2][3] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_a[6][3] = v7x5_data[m][i];
+                    }
+                    break;
+                case 20:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_l[2][0] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_l[6][0] = v7x5_data[m][i];
+                    }
+                    break;
+                case 21:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_r[2][0] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_r[6][0] = v7x5_data[m][i];
+                    }
+                    break;
+                case 22:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_l[2][1] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_l[6][1] = v7x5_data[m][i];
+                    }
+                    break;
+                case 23:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_r[2][1] = v7x5_data[m][i];
+                    }
+                    else if (v7x5_geo[m][i] == 13)
+                    {
+                        tpc_r[6][1] = v7x5_data[m][i];
+                    }
+                    break;
+                case 24:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_a[3][0] = v7x5_data[m][i];
+                    }
+                    break;
+                case 25:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_a[3][1] = v7x5_data[m][i];
+                    }
+                    break;
+                case 26:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_a[3][2] = v7x5_data[m][i];
+                    }
+                    break;
+                case 27:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_a[3][3] = v7x5_data[m][i];
+                    }
+                    break;
+                case 28:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_l[3][0] = v7x5_data[m][i];
+                    }
+                    break;
+                case 29:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_r[3][0] = v7x5_data[m][i];
+                    }
+                    break;
+                case 30:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_l[3][1] = v7x5_data[m][i];
+                    }
+                    break;
+                case 31:
+                    if (v7x5_geo[m][i] == 12)
+                    {
+                        tpc_r[3][1] = v7x5_data[m][i];
+                    }
+                    break;
+            }
         }
     }
-
-    // ah right, we don't need to do v785 because its all v7x5, separated by geo
-    // CEJ: we should change the tpc reader, my bad
-
+ 
     v1190_channel = fRawHit->Get_V1190_Channel();
     v1190_data = fRawHit->Get_V1190_Data();
     v1190_lot = fRawHit->Get_V1190_LoT();
@@ -2110,13 +2105,12 @@ void FrsTPCRaw2Cal::FinishEvent()
     {
         v1190_lead_hits[i].clear();
     }
-    
-    v775_geo.clear();
-    v775_channel.clear();
-    v775_data.clear();
-    v785_geo.clear();
-    v785_channel.clear();
-    v785_data.clear();
+    for (int i = 0; i < 2; i++)
+    {
+        v7x5_geo[i].clear();
+        v7x5_channel[i].clear();
+        v7x5_data[i].clear();
+    }
     v1190_channel.clear();
     v1190_data.clear();
     v1190_lot.clear();

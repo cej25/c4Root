@@ -49,7 +49,6 @@ class FrsMainCalData : public TObject
         // put these in arrays
         uint32_t fDe_array[14];
      
-        // put this in TObjectArray?
         std::vector<uint32_t> fTdc_array[15]; // 15 length
 
         uint32_t fmusic_t1[8]; // 8 length
