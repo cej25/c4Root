@@ -1240,17 +1240,306 @@ void FrsCal2Hit::Exec(Option_t* option)
 {   
     int multMain = fCalArrayMain->GetEntriesFast();
     int multTPC = fCalArrayTPC->GetEntriesFast();
-    if (!multMain || !multTPC) return;
+    int multUser = fCalArrayUser->GetEntriesFast();
+    int multVFTX = fCalArrayVFTX->GetEntriesFast();
+    if (!multMain || !multTPC || !multUser || !multVFTX) return;
 
     fNEvents++;
+    // this mult thing is nonsense but not sure what to do yet
     fCalHitMain = (FrsMainCalData*)fCalArrayMain->At(multMain-1);
     fCalHitTPC = (FrsTPCCalData*)fCalArrayTPC->At(multTPC-1);
+    fCalHitUser = (FrsUserCalData*)fCalArrayUser->At(multUser-1);
+    fCalHitVFTX = (FrsVFTXCalData*)fCalArrayVFTX->At(multVFTX-1);
+
 
     WR_TS = fCalHitMain->Get_WR();
 
-    // -----------------------------------
-    // V792 // eventually gets to id_x2 etc
-    // -----------------------------------
+    /* ---------------------------------------------------- */
+    // Start of MUSIC analysis                              //
+    /* ---------------------------------------------------- */
+
+    music1_anodes_cnt = 0;
+    music2_anodes_cnt = 0;
+    music3_anodes_cnt = 0;
+
+    /* reset de[i] and de_cor[i] etc */
+
+    for (int i = 0; i < 8; i++)
+    {
+        /*  8 anodes of TUM MUSIC */
+        // first MUSIC
+        if (music_e1[i] > 5)
+        {
+            music_b_e1[i] = Check_WinCond_Multi(music_e1[i], cMusic1_E, i);
+            if (music_b_e1[i])
+            {
+                music1_anodes_cnt++;
+            }
+        }
+        if (music_t1[i] > 0)
+        {
+            music_b_t1[i] = Check_WinCond_Multi(music_t1[i], cMusic1_T, i);
+        }
+
+        // second MUSIC
+        if (music_e2[i] > 5)
+        {
+            music_b_e2[i] = Check_WinCond_Multi(music_e2[i], cMusic2_E, i);
+            if (music_b_e2[i])
+            {
+                music2_anodes_cnt++;
+            }
+        }
+        if (music_t2[i] > 0)
+        {
+            music_b_t2[i] = Check_WinCond_Multi(music_t2[i], cMusic2_T, i);
+        }
+    }
+
+    for (int i = 0; i < 4; i++)
+    {
+        /* 4 anodes of MUSIC OLD */
+        // third MUSIC travelling
+        if (music_e3[i] > 0)
+        {
+            music_b_e3[i] = Check_WinCond_Multi(music_e3[i], cMusic3_E, i);
+            if (music_b_e3[i])
+            {
+                music3_anodes_cnt++;
+            }
+        }
+        if (music_t3[i] > 0)
+        {
+            music_b_t3[i] = Check_WinCond_Multi(music_t3[i], cMusicT_3, i);
+        }
+    }
+
+    if (music1_anodes_cnt == 8)
+    {
+        Float_t r1 = ((music_e1[0]) * music->e1_gain[0] + music->e1_off[0]) * ((music_e1[1]) * music->e1_gain[1] + music->e1_off[1]);
+        Float_t r2 = ((music_e1[2]) * music->e1_gain[2] + music->e1_off[2]) * ((music_e1[3]) * music->e1_gain[3] + music->e1_off[3]);
+        Float_t r3 = ((music_e1[4]) * music->e1_gain[4] + music->e1_off[4]) * ((music_e1[5]) * music->e1_gain[5] + music->e1_off[5]);
+        Float_t r4 = ((music_e1[6]) * music->e1_gain[6] + music->e1_off[6]) * ((music_e1[7]) * music->e1_gain[7] + music->e1_off[7]);
+
+        if ((r1 > 0) && (r2 > 0) && (r3 > 0) && (r4 > 0))
+        {
+            b_de1 = kTRUE;
+            de[0] = sqrt(sqrt(sqrt(r1) * sqrt(r2)) * sqrt(sqrt(r3) * sqrt(r4)));
+            de_cor[0] = de[0];
+        }
+    }
+
+    if (music2_anodes_cnt == 8)
+    {
+        Float_t r1 = ((music_e2[0]) * music->e2_gain[0] + music->e2_off[0]) * ((music_e2[1]) * music->e2_gain[1] + music->e2_off[1]);
+        Float_t r2 = ((music_e2[2]) * music->e2_gain[2] + music->e2_off[2]) * ((music_e2[3]) * music->e2_gain[3] + music->e2_off[3]);
+        Float_t r3 = ((music_e2[4]) * music->e2_gain[4] + music->e2_off[4]) * ((music_e2[5]) * music->e2_gain[5] + music->e2_off[5]);
+        Float_t r4 = ((music_e2[6]) * music->e2_gain[6] + music->e2_off[6]) * ((music_e2[7]) * music->e2_gain[7] + music->e2_off[7]);
+
+        if ((r1 > 0) && (r2 > 0) && (r3 > 0) && (r4 > 0))
+        {
+            b_de2 = kTRUE;
+            de[1] = sqrt(sqrt(sqrt(r1) * sqrt(r2)) * sqrt(sqrt(r3) * sqrt(r4)));
+            de_cor[1] = de[1];
+        }
+    }
+
+    // CEJ: 8 in go4, but how can it be 8?
+    if (music3_anodes_cnt == 8)
+    {
+        Float_t r1 = ((music_e3[0]) * music->e3_gain[0] + music->e3_off[0]) * ((music_e3[1]) * music->e3_gain[1] + music->e3_off[1]);
+        Float_t r2 = ((music_e3[2]) * music->e3_gain[2] + music->e3_off[2]) * ((music_e3[3]) * music->e3_gain[3] + music->e3_off[3]);
+
+        if ((r1 > 0) && (r2 > 0))
+        {
+            // b_de3 = kTRUE;
+            de[2] = sqrt(sqrt(r1) * sqrt(r2));
+            de_cor[2] = de[2];
+        }
+    }
+
+    // Position (X) correction by TPC //
+    // this should not be in the music3_anodes_cnt if{}
+    // but it is in our Go4
+    if (b_tpc_xy[4] && b_tpc_xy[5])
+    {
+        music1_x_mean = tpc_music41_x;
+        music2_x_mean = tpc_music42_x;
+        music3_x_mean = tpc_music43_x;
+
+        Float_t power, Corr;
+
+        if (b_de1)
+        {
+            power = 1., Corr = 0.;
+            for (int i = 0; i < 4; i++)
+            {
+                Corr += music->pos_a1[i] * power;
+                power *= music1_x_mean;
+            }
+            if (Corr != 0)
+            {
+                Corr = music->pos_a1[0] / Corr;
+                de_cor[0] = de[0] * Corr;
+            }
+        }
+
+        if (b_de2)
+        {
+            power = 1., Corr = 0.;
+            for (int i = 0; i < 4; i++)
+            {
+                Corr += music->pos_a2[i] * power;
+                power *= music2_x_mean;
+            }
+            if (Corr != 0)
+            {
+                Corr = music->pos_a2[0] / Corr;
+                de_cor[1] = de[1] * Corr;
+            }
+        }
+        
+        // this isn't set anywhere???
+        if (b_de3)
+        {
+            power = 1., Corr = 0.;
+            for (int i = 0; i < 4; i++)
+            {
+                Corr += music->pos_a3[i] * power;
+                power *= music3_x_mean;
+            }
+            if (Corr != 0)
+            {
+                Corr = music->pos_a3[0] / Corr;
+                de_cor[2] = de[2] * Corr;
+            }
+        }
+    }
+    
+    /* ----------------------------------------------- */
+    // Start of Scintillator Analysis
+    /* ----------------------------------------------- */
+
+    
+    // V1290
+    tdc_array = fCalHitMain->Get_TDC_array();
+
+    // IinRaw2Cal we should make sure no zeros are added to vector     
+    // CEJ: 24/01/24 possibly vectors don't work here since [i] hit should match to [i] hit in l/r?
+    // SCI 21 L and R
+    for (int i = 0; i < tdc_array[2].size(); i++)
+    {   
+        // CEJ: maybe all of this can be rewritten to use vectors..figure out later
+        mhtdc_sc21lr_dt.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[2][i] - tdc_array[3][i]));
+        mhtdc_sc21lr_x.emplace_back(mhtdc_sc21lr_dt[i] * sci->mhtdc_factor_21l_21r + sci->mhtdc_offset_21l_21r);
+    }
+    // always check these conditions (go4 does it 10x without if-statement)
+    float sc21pos_from_tpc = -999.9;
+    if (b_tpc_xy[0] && b_tpc_xy[1])
+    {
+        sc21pos_from_tpc = fCalHitTPC->Get_tpc21_22_sc21_x();
+    }
+    else if (b_tpc_xy[2] && b_tpc_xy[3])
+    {
+        sc21pos_from_tpc = fCalHitTPC->Get_tpc23_24_sc21_x();
+    }
+
+    // SCI 22 L and R
+    for (int i = 0; i < tdc_array[12].size(); i++)
+    {
+        mhtdc_sc22lr_dt.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[12][i] - tdc_array[13][i]));
+        mhtdc_sc22lr_x.emplace_back(mhtdc_sc22lr_dt[i] * sci->mhtdc_factor_22l_22r + sci->mhtdc_offset_22l_22r);
+        if (i == 0)
+        {
+            // only do this if there is a case for 22l and 22r != 0. we don't need to do it 10x though
+            float sc22pos_from_tpc = -999.9;
+            if (b_tpc_xy[0] && b_tpc_xy[1])
+            {
+                sc22pos_from_tpc = fCalHitTPC->Get_tpc21_22_sc22_x();
+            }
+            else if (b_tpc_xy[2] && b_tpc_xy[3])
+            {
+                sc22pos_from_tpc = fCalHitTPC->Get_tpc23_24_sc22_x();
+            }
+        }
+    }
+    
+    
+    // only take first hit (?) for 41, 42, 43, 31, 81
+    if (tdc_array[0].size() > 0 && tdc_array[1].size() > 0)
+    {
+        mhtdc_sc41lr_dt = sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[0][0] - tdc_array[1][0]);
+        mhtdc_sc41lr_x = mhtdc_sc41lr_dt * sci->mhtdc_factor_41l_41r + sci->mhtdc_offset_41l_41r;
+    }
+    if (tdc_array[4].size() > 0 && tdc_array[14].size() > 0)
+    {
+        mhtdc_sc42lr_dt = sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[4][0] - tdc_array[14][0]);
+        mhtdc_sc42lr_x = mhtdc_sc42lr_dt * sci->mhtdc_factor_42l_42r + sci->mhtdc_offset_42l_42r;
+    }
+    if (tdc_array[5].size() > 0 && tdc_array[6].size() > 0)
+    {
+        mhtdc_sc43lr_dt = sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[5][0] - tdc_array[6][0]);
+        mhtdc_sc43lr_x = mhtdc_sc43lr_dt * sci->mhtdc_factor_43l_43r + sci->mhtdc_offset_43l_43r;
+    }
+    if (tdc_array[9].size() > 0 && tdc_array[10].size() > 0)
+    {
+        mhtdc_sc31lr_dt = sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[9][0] - tdc_array[10][0]);
+        mhtdc_sc31lr_x = mhtdc_sc31lr_dt * sci->mhtdc_factor_31l_31r + sci->mhtdc_offset_31l_31r;
+    }
+    if (tdc_array[7].size() > 0 && tdc_array[8].size() > 0)
+    {
+        mhtdc_sc81lr_dt = sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[7][0] - tdc_array[8][0]);
+        mhtdc_sc81lr_x = mhtdc_sc81lr_dt * sci->mhtdc_factor_81l_81r + sci->mhtdc_offset_81l_81r;
+    }
+
+
+    if (tdc_array[0].size() > 0 && tdc_array[1].size() > 0)
+    {   
+        // 21 -> 41
+        for (int i = 0; i < tdc_array[2].size(); i++)
+        {
+            mhtdc_tof4121.emplace_back(sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0][0] + tdc_array[1][0]) - 0.5 * (tdc_array[2][i] + tdc_array[3][i])) + sci->mhtdc_offset_41_21);
+        }
+
+        // 22 -> 41
+        for (int i = 0; i < tdc_array[12].size(); i++)
+        {
+            mhtdc_tof4122.emplace_back(sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0][0] + tdc_array[1][0]) - 0.5 * (tdc_array[12][i] + tdc_array[13][i])) + sci->mhtdc_offset_41_22);
+        }
+    }
+
+
+    if (tdc_array[2].size() > 0)
+    {
+        if (tdc_array[3].size() > 0) // CEJ should be implicitly true or this all falls apart..
+        {
+            // 21 -> 42
+            if (tdc_array[4].size() > 0 && tdc_array[14].size() > 0)
+            {
+                mhtdc_tof4221 = sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0][0] + tdc_array[1][0]) - 0.5 * (tdc_array[4][0] + tdc_array[14][0])) + sci->mhtdc_offset_42_21;
+            }
+            
+            // 21 -> 43
+            if (tdc_array[5].size() > 0 && tdc_array[6].size() > 0)
+            {
+                mhtdc_tof4321 = sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0][0] + tdc_array[1][0]) - 0.5 * (tdc_array[5][0] + tdc_array[6][0])) + sci->mhtdc_offset_43_21;
+            }
+
+            // 21 -> 31
+            if (tdc_array[9].size() > 0 && tdc_array[10].size() > 0)
+            {
+                mhtdc_tof3121 = sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0][0] + tdc_array[1][0]) - 0.5 * (tdc_array[9][0] + tdc_array[10][0])) + sci->mhtdc_offset_31_21;
+            }
+
+            // 21 -> 81
+            if (tdc_array[7].size() > 0 && tdc_array[8].size() > 0)
+            {
+                mhtdc_tof8121 = sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0][0] + tdc_array[1][0]) - 0.5 * (tdc_array[7][0] + tdc_array[8][0])) + sci->mhtdc_offset_81_21;
+            }
+        }
+    }
+    
+
     de_array = fCalHitMain->Get_De_array();
     dt_array = new uint32_t[1]; // placeholder, not coded in raw->cal yet
 
@@ -1258,41 +1547,43 @@ void FrsCal2Hit::Exec(Option_t* option)
     sci_l[0] = de_array[1]; // de_21l;
     sci_r[0] = de_array[2]; // de_21r;
     // change element in dt_array once coded
-    sci_tx[0] = dt_array[0]; // dt_21l_21r
+    sci_tx[0] = dt_array[0] + rand3(); // dt_21l_21r
 
     // 3 in go4, 1 now?
     sci_l[1] = de_array[13]; // de_22l
     sci_r[1] = de_array[6]; // de_22r
     // change element in dt_array once coded
-    sci_tx[1] = dt_array[0]; // dt_22l_22r
+    sci_tx[1] = dt_array[0] + rand3(); // dt_22l_22r
 
     // 5 in go4, 2 now?
     sci_l[2] = de_array[0]; // de_41l
     sci_r[2] = de_array[11]; // de_41r;
     // change element in dt_array once coded
-    sci_tx[2] = dt_array[0]; // dt_41l_41r
+    sci_tx[2] = dt_array[0] + rand3(); // dt_41l_41r
 
     // 6 in go4, 3 now?
     sci_l[3] = de_array[3]; // de_42l
     sci_r[3] = de_array[4]; // de_42r
     // change element in dt_array once coded
-    sci_tx[3] = dt_array[0]; // dt_42l_42r
+    sci_tx[3] = dt_array[0] + rand3(); // dt_42l_42r
 
     // 7 in go4, 4 now?
     sci_l[4] = de_array[9]; // de_43l
     sci_r[4] = de_array[10]; // de_43r
     // change element in dt_array once coded
-    sci_tx[4] = dt_array[0]; // dt_43l_43r
+    sci_tx[4] = dt_array[0] + rand3(); // dt_43l_43r
 
     // 10 in go4, 5 now?
     sci_l[5] = de_array[5]; // de_81l
     sci_r[5] = de_array[12]; // de_81r
     // change element in dt_array once coded
-    sci_tx[5] = dt_array[0]; // dt_81l_81r
+    sci_tx[5] = dt_array[0] + rand3(); // dt_81l_81r
+
 
     for (int i = 0; i < 6; i++)
     {   
         // find a way to read in cConditons
+        // 'posref' in go4 does nothing
         int j;
         switch(i)
         {
@@ -1342,6 +1633,325 @@ void FrsCal2Hit::Exec(Option_t* option)
             sci_b_x[i] = Check_WinCond(sci_x[i], cSCI_X);
         }
     } // loop for sci values
+
+
+    /*----------------------------------------------------------*/
+    // Calibrated ToF - dt will be in dt_array, from UserCrate
+    /*----------------------------------------------------------*/
+    sci_tofll2 = dt_21l_41l * sci->tac_factor[2] - sci->tac_off[2];
+    sci_tofrr2 = dt_21r_41r * sci->tac_factor[3] - sci->tac_off[3];
+    sci_b_tofll2 = Check_WinCond(sci_tofll2, cSCI_LL2);
+    sci_b_tofrr2 = Check_WinCond(sci_tofrr2, cSCI_RR2);
+    if (sci_b_tofll2 && sci_b_tofrr2)
+    {
+        sci_tof2 = (sci->tof_bll2 * sci_tofll2 + sci->tof_a2 + sci->tof_brr2 * sci_tofrr2) / 2.0;
+        sci_tof2_calib = -1.0 * sci_tof2 + id->id_tofoff2;
+    }
+    else
+    {
+        sci_tof2 = 0;
+        sci_tof2_calib = 0;
+    }
+
+    sci_tofll3 = dt_42l_21l * sci->tac_factor[5] - sci->tac_off[5];
+    sci_tofrr3 = dt_42r_21r * sci->tac_factor[6] - sci->tac_off[6];
+    sci_b_tofll3 = Check_WinCond(sci_tofll3, cSCI_LL3);
+    sci_b_tofrr3 = Check_WinCond(sci_tofrr3, cSCI_RR3);
+    if (sci_b_tofll3 && sci_b_tofrr3)
+    {
+        sci_tof3 = (sci->tof_bll3 * sci_tofll3 + sci->tof_a3 + sci->tof_brr3 * sci_tofrr3) / 2.0;
+        sci_tof3_calib = -1.0 * sci_tof3 + id->id_tofoff3;
+    }
+    else
+    {
+        sci_tof3 = 0;
+        sci_tof3_calib = 0;
+    }
+
+    sci_tofll4 = dt_21l_81l * sci->tac_factor[9] - sci->tac_off[9];
+    sci_tofrr4 = dt_21r_81r * sci->tac_factor[10] - sci->tac_off[10];
+    sci_b_tofll4 = Check_WinCond(sci_tofll4, cSCI_LL4);
+    sci_b_tofrr4 = Check_WinCond(sci_tofrr4, cSCI_RR4);
+    if (sci_b_tofll4 && sci_b_tofrr4)
+    {
+        sci_tof4 = (sci->tof_bll4 * sci_tofll4 + sci->tof_a4 + sci->tof_brr4 * sci_tofrr4) / 2.0;
+        sci_tof4_calib = -1.0 * sci_tof4 + id->id_tofoff4;
+    }
+    else
+    {
+        sci_tof4 = 0;
+        sci_tof4_calib = 0;
+    }
+
+    sci_tofll5 = dt_22l_41l * sci->tac_factor[12] - sci->tac_off[12];
+    sci_tofrr5 = dt_22r_41r * sci->tac_factor[13] - sci->tac_off[13];
+    sci_b_tofll5 = Check_WinCond(sci_tofll5, cSCI_LL5);
+    sci_b_tofrr5 = Check_WinCond(sci_tofrr5, cSCI_RR5);
+    if (sci_b_tofll5 && sci_b_tofrr5)
+    {
+        sci_tof5 = (sci->tof_bll5 * sci_tofll5 + sci->tof_a5 + sci->tof_brr5 * sci_tofrr5) / 2.0;
+        sci_tof5_calib = -1.0 * sci_tof5 + id->id_tofoff5;
+    }
+    else
+    {
+        sci_tof5 = 0;
+        sci_tof5_calib = 0;
+    }
+
+    /*----------------------------------------------------------*/
+    // Start of MHTDC ID analysis
+    /*----------------------------------------------------------*/
+
+    float temp_s8x = mhtdc_sc81lr_x;
+    temp_s4x = -999.;
+    if (b_tpc_xy[4] && b_tpc_xy[5])
+    {
+        temp_s4x = tpc_x_s4;
+    }
+
+    float temp_s2x = -999.;
+    std::vector<float> temp_s2x_mhtdc;
+    float temp_a2 = 0;
+
+    if (id->mhtdc_s2pos_option == 1)
+    {
+        for (int i = 0; i < mhtdc_sc21lr_x.size(); i++)
+        {
+            temp_s2x_mhtdc.emplace_back(mhtdc_sc21lr_x[i]);
+        }
+    }
+    else if (id->mhtdc_s2pos_option == 3)
+    {
+        for (int i = 0; i < mhtdc_sc22lr_x.size(); i++)
+        {
+            temp_s2x_mhtdc.emplace_back(mhtdc_sc22lr_x[i]);
+        }
+    }
+    else if (id->mhtdc_s2pos_option == 2)
+    {
+        if (b_tpc_xy[2] && b_tpc_xy[3])
+        {
+            temp_s2x = fCalHitTPC->Get_tpc_x_s2_foc_23_24();
+            temp_a2 = fCalHitTPC->Get_tpc_angle_x_s2_foc_23_24();
+        }
+        else if (b_tpc_xy[1] && b_tpc_xy[3])
+        {
+            temp_s2x = fCalHitTPC->Get_tpc_x_s2_foc_22_24();
+            temp_a2 = fCalHitTPC->Get_tpc_angle_x_s2_foc_22_24();
+        }
+        else if (b_tpc_xy[0] && b_tpc_xy[1])
+        {
+            temp_s2x = fCalHitTPC->Get_tpc_x_s2_foc_21_22();
+            temp_a2 = fCalHitTPC->Get_tpc_angle_x_s2_foc_21_22();
+        }
+    }
+
+
+    //   S2S4 MultihitTDC ID analysis
+    // zero arrays?
+
+    // do we need to do this calculation every time...
+    float mean_brho_s2s4 = 0.5 * (frs->bfield[2] + frs->bfield[3]);
+    if (id->mhtdc_s2pos_option == 1)
+    {
+
+        if (id->tof_s4_select == 1)
+        {
+            for (int i = 0; i < id->mhtdc_tof4121.size(); i++)
+            {
+                if (mhtdc_tof4121[i] > -100)
+                {
+                    id_mhtdc_beta_s2s4.emplace_back((id->mhtdc_length_s2s4 / mhtdc_tof4121[i]) / speed_light);
+                }
+            }
+        }
+        else if (id->tof_s4_select == 3)
+        {
+            for (int i = 0; i < id->mhtdc_tof4122.size(); i++)
+            {
+                if (mhtdc_tof4122[i] > -100)
+                {
+                    id_mhtdc_beta_s2s4.emplace_back((id->mhtdc_length_s2s4 / mhtdc_tof4122[i]) / speed_light);
+                }
+            }
+        }
+
+        // calculate delta (momentum deviation) and AoQ
+        for (int i = 0; i < id_mhtdc_beta_s2s4.size(); i++)
+        {
+            id_mhtdc_gamma_s2s4.emplace_back(1. / sqrt(1. - id_mhtdc_beta_s2s4[i] * id_mhtdc_beta_s2s4[i]));
+            
+            // does this bit just clear arrays? can we just clear vectors at the end of event and skip this?
+            /*if (temp_s4x == -999 || temp_s2x_mhtdc[i] == -999)
+            {
+                id_mhtdc_aoq_s2s4[i] = 0;
+                id_mhtdc_aoq_corr_s2s4[i] = 0;
+            }*/
+            /*else*/ if (temp_s4x > -200. && temp_s4x < 200. && temp_s2x_mhtdc[i] > -200. && temp_s2x_mhtdc[i] < 200.)
+            {
+                id_mhtdc_delta_s2s4.emplace_back((temp_s4x - (temp_s2x_mhtdc[i] * frs->magnification[1])) / (-1.0 * frs->dispersion[1] * 1000.0)); // metre to mm
+                if (id_mhtdc_beta_s2s4[i] > 0.0 && id_mhtdc_beta_s2s4[i] < 1.0)
+                {
+                    id_mhtdc_aoq_s2s4.emplac_back(mean_brho_s2s4 * (1. + id_mhtdc_delta_s2s4[i]) * temp_tm_to_MeV / (temp_mu * id_mhtdc_beta_s2s4[i] * id_mhtdc_gamma_s2s4[i]));
+
+                    // Gain match AoQ
+                    for (int j = 0; j < AoQ_Shift_array; j++)
+                    {
+                        if (ts_mins >= FRS_WR_i[j] && ts_mins < FRS_WR_j[j])
+                        {
+                            id_mhtdc_aoq_s2s4[i] = (id_mhtdc_aoq_s2s4[i] - AoQ_shift_Sci21_value[j]) - 0.029100; // Why isn't this float coded in a config file?
+                        }
+                    }
+
+                    // No angle correction for SCI
+                    id_mhtdc_aoq_corr_s2s4.emplace_back(id_mhtdc_aoq_s2s4[i]);
+
+                    /*mhtdc_gamma1square.emplace_back(1.0 + TMath::Power(((1.0 / aoq_factor) * (id_brho[0] / id_mhtdc_aoq_s2s4[i])), 2));
+                    id_mhtdc_gamma_ta_s2.emplace_back(TMath::Sqrt(mhtdc_gamma1square[i]));
+                    id_mhtdc_dEdegoQ.emplace_back((id_mhtdc_gamma_ta_s2[i] - id_mhtdc_gamma_s2s4[i]) * id_mhtdc_aoq_s2s4[i]);
+
+                    // doesn't make sense to do this when we have no id_mhtdc_z_music41 yet..
+                    id_mhtdc_dEdeg.emplace_back(id_mhtdc_dEdegoQ[i] * id_mhtdc_z_music41[i]);*/
+
+                }
+            }
+        }
+    }
+    else if (id->mhtdc_s2pos_option == 2)
+    {
+        if (id->tof_s4_select == 1)
+        {
+            for (int i = 0; i < mhtdc_tof4121.size(); i++)
+            {
+                if (mhtdc_tof4121[i] > -100)
+                {
+                    id_mhtdc_beta_s2s4.emplace_back((id->mhtdc_length_s2s4 / mhtdc_tof4121[i]) / speed_light);
+                }
+            }
+        }
+        else if (id->tof_s4_select == 3)
+        {
+            for (int i = 0; i < mhtdc_tof4122.size(); i++)
+            {
+                if (mhtdc_tof4122[i] > -100)
+                {
+                    id_mhtdc_beta_s2s4.emplace_back((id->mhtdc_length_s2s4 / mhtdc_tof4122[i]) / speed_light);
+                }
+            }
+        }
+        
+        // Calculation of velocity beta and gamma
+        for (int i = 0; i < id_mhtdc_beta_s2s4.size(); i++)
+        {
+            id_mhtdc_gamma_s2s4.emplace_back(1. / sqrt(1. - id_mhtdc_beta_s2s4[i] * id_mhtdc_beta_s2s4[i]));
+
+            // Calculate delta (momentum deviation) and AoQ
+            /*if(temp_s4x == -999 || temp_s2x == -999)
+            {
+                id_mhtdc_aoq_s2s4[i]=0;
+                id_mhtdc_aoq_corr_s2s4[i]=0;
+            }
+            else*/ if (temp_s4x > -200. && temp_s4x < 200. && temp_s2x > -200. && temp_s2x < 200.)
+            {   
+                // CEJ: this is a pointlessly repeated calculation, takes single value
+                id_mhtdc_delta_s2s4.emplace_back((temp_s4x - (temp_s2x * frs->magnification[1])) / (-1.0 * frs->dispersion[1] * 1000.0)); //1000 is dispertsion from meter to mm. -1.0 is sign definition.
+
+                if (id_mhtdc_beta_s2s4[i] > 0.0 && id_mhtdc_beta_s2s4[i] < 1.0)
+                {
+                    id_mhtdc_aoq_s2s4.emplace_back(mean_brho_s2s4 *(1. + id_mhtdc_delta_s2s4[i]) * temp_tm_to_MeV / (temp_mu * id_mhtdc_beta_s2s4[i] * id_mhtdc_gamma_s2s4[i]));
+                
+                    // Gain match AoQ
+                    // ** OLD STARTS BELOW ** //
+                    for(int j = 0; j < AoQ_Shift_array; j++)
+                    {
+                        if(ts_mins >= FRS_WR_i[j] && ts_mins < FRS_WR_j[j])
+                        {
+                            id_mhtdc_aoq_s2s4[i] = id_mhtdc_aoq_s2s4[i] - AoQ_shift_TPC_value[j] - 0.01097;
+                        }
+                    }
+                    
+                    id_mhtdc_aoq_corr_s2s4.emplace_back(id_mhtdc_aoq_s2s4[i] - id->a2AoQCorr * temp_a2);
+                    
+                    /*mhtdc_gamma1square.emplace_back(1.0 + TMath::Power(((1.0 / aoq_factor) * (id_brho[0] / id_mhtdc_aoq_s2s4[i])), 2));
+                    id_mhtdc_gamma_ta_s2.emplace_back(TMath::Sqrt(mhtdc_gamma1square[i]));
+                    id_mhtdc_dEdegoQ.emplace_back((id_mhtdc_gamma_ta_s2[i]  - id_mhtdc_gamma_s2s4[i]) * id_mhtdc_aoq_s2s4[i]);
+                    // CEJ: again pointless...but done below?
+                    id_mhtdc_dEdeg.emplace_back(id_mhtdc_dEdegoQ[i] * id_mhtdc_z_music41[i]);*/
+                    
+                }
+            }
+        }
+    }
+
+    // Calculation of dE and Z from MUSIC41
+    for (int i = 0; i < id_mhtdc_beta_s2s4.size(); i++)
+    {
+        float temp_music41_de = de[0] > 0.0;
+        if ((temp_music41_de > 0.0) && (id_mhtdc_beta_s2s4[i] > 0.0) && (id_mhtdc_beta_s2s4[i] < 1.0))
+        {
+            Double_t power = 1.;
+            Double_t sum = 0.;
+            for (int j = 0; j < 4; j++)
+            {
+                sum += power * id->mhtdc_vel_a_music41[j];
+                power *= id_mhtdc_beta_s2s4[i];
+                
+            }
+            id_mhtdc_v_cor_music41.emplace_back(sum);
+
+            if (id_mhtdc_v_cor_music41[i] > 0.0)
+            {
+                id_mhtdc_z_music41.emplace_back(frs->primary_z * sqrt(de[0] / id_mhtdc_v_cor_music41[i]) + id->mhtdc_offset_z_music_41);
+            }
+        }
+        
+    }
+
+    for (int i = 0; i < id_mhtdc_beta_s2s4.size(); i++)
+    {
+        float temp_music42_de = de[1] > 0.0;
+        if((temp_music42_de > 0.0)  && (id_mhtdc_beta_s2s4[i] > 0.0) && (id_mhtdc_beta_s2s4[i] < 1.0))
+        {
+            Double_t power = 1.;
+            Double_t sum = 0.;
+            for (int j = 0; j < 4; j++)
+            {
+                sum += power * id->mhtdc_vel_a_music42[j];
+                power *= id_mhtdc_beta_s2s4[i];
+            }
+            id_mhtdc_v_cor_music42.emplace_back(sum);
+            
+            if (id_mhtdc_v_cor_music42[i]> 0.0)
+            {
+                id_mhtdc_z_music42.emplace_back(frs->primary_z * sqrt(de[1] / id_mhtdc_v_cor_music42[i]) + id->mhtdc_offset_z_music42);
+            }
+        }
+    }
+
+    // Gain match Z
+    for (int i = 0; i < Z_Shift_array; i++)
+    {   
+        // music41 and 42 same size
+        for (int j = 0; j < id_mhtdc_z_music41.size(); j++)
+        {
+            if (ts_mins >= FRS_WR_a[i] && ts_mins < FRS_WR_b[i])
+            {
+                id_mhtdc_z_music41[j] = id_mhtdc_z_music41[j] - Z1_shift_value[i];
+                id_mhtdc_z_music42[j] = id_mhtdc_z_music42[j] - Z2_shift_value[i];
+            }
+        }
+    }
+    for (int i = 0; i < id_mhtdc_beta_s2s4.size(); i++)
+    {
+        if (id_mhtdc_aoq_s2s4[i] != 0)
+        {
+            mhtdc_gamma1square.emplace_back(1.0 + TMath::Power(((1.0 / aoq_factor) * (id_brho[0] / id_mhtdc_aoq_s2s4[i])), 2));
+            id_mhtdc_gamma_ta_s2.emplace_back(TMath::Sqrt(mhtdc_gamma1square[i]));
+            id_mhtdc_dEdegoQ.emplace_back((id_mhtdc_gamma_ta_s2[i] - id_mhtdc_gamma_s2s4[i]) * id_mhtdc_aoq_s2s4[i]);
+            id_mhtdc_dEdeg.emplace_back(id_mhtdc_dEdegoQ[i] * id_mhtdc_z_music41[i]);
+        }
+    }
+
 
     if (id->x_s2_select == 1)
     {   
@@ -1407,9 +2017,245 @@ void FrsCal2Hit::Exec(Option_t* option)
         id_a8 = 0.0;
         id_b8 = 0.0;
     }
-    
+
     id_b_x2 = Check_WinCond(id_x2, cID_x2);
     id_b_x4 = Check_WinCond(id_x4, cID_x4);
+
+
+    /* --------------------------------------------------------------------------*/
+    // VFTX start here
+    // (moved from Go4 as we need id_a2 and it gets calculated twice otherwise?)
+    /* --------------------------------------------------------------------------*/
+    
+    TRaw_vftx = fCalArrayVFTX->Get_TRaw_vftx();
+
+    // loop over 21 or 22 size, check 41l/r are not empty
+    for (int i = 0; i < TRaw_vftx[0].size(); i++)
+    {   
+        // 2141
+        if (TRaw_vftx[4].size() != 0)
+        {
+            vftx_tof2141.emplace_back((0.5 * ((Double_t)TRaw_vftx[4][0] + (Double_t)TRaw_vftx[5][0]) - 0.5 * ((Double_t)TRaw_vftx[0][i] + (Double_t)TRaw_vftx[1][i])));
+            vftx_tof2141_calib.emplace_back(vftx_tof2141[i] / 1000. + sci->vftx_offset_2141);
+        }
+
+        // 2142
+        if (TRaw_vftx[6].size() != 0)
+        {
+            vftx_tof2142.emplace_back((0.5 * ((Double_t)TRaw_vftx[6][0] + (Double_t)TRaw_vftx[7][0]) - 0.5 * ((Double_t)TRaw_vftx[0][i] + (Double_t)TRaw_vftx[1][i])));
+            vftx_tof2142_calib.emplace_back(vftx_tof2142[i] / 1000. + sci->vftx_offset_2142);
+        }
+    }
+
+    for (int i = 0; i < TRaw_vftx[2].size(); i++)
+    {
+        // 2241
+        if (TRaw_vftx[4].size() != 0)
+        {
+            vftx_tof2241.emplace_back((0.5 * ((Double_t)TRaw_vftx[4][0] + (Double_t)TRaw_vftx[5][0]) - 0.5 * ((Double_t)TRaw_vftx[2][i] + (Double_t)TRaw_vftx[3][i])));
+            vftx_tof2241_calib.emplace_back(vftx_tof2241[i] / 1000. + sci->vftx_offset_2241);
+        }
+
+        // 2242
+        if (TRaw_vftx[6].size() != 0)
+        {
+            vftx_tof2242.emplace_back((0.5 * ((Double_t)TRaw_vftx[6][0] + (Double_t)TRaw_vftx[7][0]) - 0.5 * ((Double_t)TRaw_vftx[2][i] + (Double_t)TRaw_vftx[3][i])));
+            vftx_tof2242_calib.emplace_back(vftx_tof2242[i] / 1000. + sci->vftx_offset_2242);
+        }
+    }
+
+    float speed_light = 0.299792458; //m/ns
+    float temp_tm_to_MeV = 299.792458;
+    float temp_mu = 931.4940954; //MeV
+
+    float temp_s4x = -999.;
+    if (b_tpc_xy[4] && b_tpc_xy[5])
+    {
+        temp_s4x = tpc_x_s4; // ->Get_
+    }
+
+    float temp_sci21x = -999.;
+    if (id->vftx_s2pos_option == 1)
+    {
+        // do nothing?
+    }
+    else if (id->vftx_s2pos_option == 2)
+    {
+        if (b_tpc_xy[0] && b_tpc_xy[1])
+        {
+            temp_sci21x = tpc_x_s2_foc_21_22;//->Get
+        }
+        else if (b_tpc_xy[2] && b_tpc_xy[3])
+        {
+            temp_sci21x = tpc_x_s2_foc_23_24;//->Get
+        }
+        else if (b_tpc_xy[1] && b_tpc_xy[3])
+        {
+            temp_sci21x = tpc_x_s2_foc_22_24;//->Get
+        }
+    }
+    
+    Double_t power;
+    // number of 21l hits
+    for (int i = 0; i < TRaw_vftx[0].size(); i++)
+    {
+        id_vftx_beta_2141.emplace_back((id->vftx_length_2141 / vftx_tof2141_calib[i]) / speed_light);
+        id_vftx_beta_2142.emplace_back((id->vftx_length_2142 / vftx_tof2142_calib[i]) / speed_light);
+        id_vftx_gamma_2141.emplace_back(1. / sqrt(1. - id_vftx_beta_2141[i] * id_vftx_beta_2141[i]));
+        id_vftx_gamma_2142.emplace_back(1. / sqrt(1. - id_vftx_beta_2142[i] * id_vftx_beta_2142[i]));
+
+        if (temp_s4x > -200. && temp_s4x < 200. && temp_sci21x > -200. && temp_sci21x < 200)
+        {
+            id_vftx_delta_24 = (temp_s4x - (temp_sci21x * frs->magnification[1])) / (-1.0 * frs->dispersion[1] * 1000.0);
+            if (id_vftx_beta_2141[i] > 0.0 && id_vftx_beta_2141[i] < 1.0)
+            {
+                id_vftx_aoq_2141.emplace_back(mean_brho_s2s4 * (1. + id_vftx_delta_24) * temp_tm_to_MeV / (temp_mu * id_vftx_beta_2141[i] * id_vftx_gamma_2141[i]));
+                id_vftx_aoq_corr_2141.emplace_back(id_vftx_aoq_2141[i] - id->a2AoQCorr * id_a2);
+            }
+            if (id_vftx_beta_2142[i] > 0.0 && id_vftx_beta_2142[i] < 1.0)
+            {
+                id_vftx_aoq_2142.emplace_back(mean_brho_s2s4 * (1. + id_vftx_delta_24) * temp_tm_to_MeV / (temp_mu * id_vftx_beta_2142[i] * id_vftx_gamma_2142[i]));
+                id_vftx_aoq_corr_2142.emplace_back(id_vftx_aoq_2142[i] - id->a2AoQCorr * id_a2);
+            }
+        }
+
+        if ((de[0] > 0.0) && (id_vftx_beta_2141[i] > 0.0) && (id_vftx_beta_2141[i] < 1.0))
+        {
+            power = 1.;
+            Double_t sum = 0.;
+            for (int j = 0; j < 4; j++)
+            {
+                sum += power * id->vftx_vel_a_music41[j];
+                power *= id_vftx_beta_2141[i];
+            }
+
+            id_vftx_vcor_2141.emplace_back(sum);
+            
+            if (id_vftx_vcor_2141[i] > 0.0)
+            {
+                id_vftx_z_2141.emplace_back(frs->primary_z * sqrt(de[0] / id_vftx_vcor_2141[i]));
+                id_vftx_z2_2141.emplace_back(frs->primary_z * sqrt(de[1] / id_vftx_vcor_2141[i]));
+            }
+        }
+
+        if ((de[0] > 0.0) && (id_vftx_beta_2142[i] > 0.0) && (id_vftx_beta_2142[i] < 1.0))
+        {
+            power = 1.;
+            Double_t sum = 0.;
+            for (int j = 0; j < 4; j++)
+            {
+                sum += power * id->vftx_vel_a_music41[j];
+                power *= id_vftx_beta_2142[i];
+            }
+
+            id_vftx_vcor_2142.emplace_back(sum);
+
+            if (id_vftx_vcor_2142[i] > 0.0)
+            {
+                id_vftx_z_2142.emplace_back(frs->primary_z * sqrt(de[0] / id_vftx_vcor_2142[i]));
+                id_vftx_z2_2142.emplace_back(frs->primary_z * sqrt(de[1] / id_vftx_vcor_2142[i]));
+            }
+        }
+
+    }
+
+    // number of 22l hits
+    for (int i = 0; i < TRaw_vftx[2].size(); i++)
+    {
+        id_vftx_beta_2241.emplace_back((id->vftx_length_2241 / vftx_tof2241_calib[i]) / speed_light);
+        id_vftx_beta_2242.emplace_back((id->vftx_length_2242 / vftx_tof2242_calib[i]) / speed_light);
+        id_vftx_gamma_2241.emplace_back(1. / sqrt(1. - id_vftx_beta_2241[i] * id_vftx_beta_2241[i]));
+        id_vftx_gamma_2242.emplace_back(1. / sqrt(1. - id_vftx_beta_2242[i] * id_vftx_beta_2242[i]));
+
+        if (temp_s4x > -200. && temp_s4x < 200. && temp_sci21x > -200. && temp_sci21x < 200)
+        {
+            id_vftx_delta_24 = (temp_s4x - (temp_sci21x * frs->magnification[1])) / (-1.0 * frs->dispersion[1] * 1000.0);
+            if (id_vftx_beta_2241[i] > 0.0 && id_vftx_beta_2241[i] < 1.0)
+            {
+                id_vftx_aoq_2241.emplace_back(mean_brho_s2s4 * (1. + id_vftx_delta_24) * temp_tm_to_MeV / (temp_mu * id_vftx_beta_2241[i] * id_vftx_gamma_2241[i]));
+                id_vftx_aoq_corr_2241.emplace_back(id_vftx_aoq_2241[i] - id->a2AoQCorr * id_a2);
+            }
+            if (id_vftx_beta_2242[i] > 0.0 && id_vftx_beta_2242[i] < 1.0)
+            {
+                id_vftx_aoq_2242.emplace_back(mean_brho_s2s4 * (1. + id_vftx_delta_24) * temp_tm_to_MeV / (temp_mu * id_vftx_beta_2242[i] * id_vftx_gamma_2242[i]));
+                id_vftx_aoq_corr_2242.emplace_back(id_vftx_aoq_2242[i] - id->a2AoQCorr * id_a2);
+            }
+        }
+
+        if ((de[0] > 0.0) && (id_vftx_beta_2241[i] > 0.0) && (id_vftx_beta_2241[i] < 1.0))
+        {
+            power = 1.;
+            Double_t sum = 0.;
+            for (int j = 0; j < 4; j++)
+            {
+                sum += power * id->vftx_vel_a_music41[j];
+                power *= id_vftx_beta_2241[i];
+            }
+
+            id_vftx_vcor_2241.emplace_back(sum);
+
+            if (id_vftx_vcor_2241[i] > 0.0)
+            {
+                id_vftx_z_2241.emplace_back(frs->primary_z * sqrt(de[0] / id_vftx_vcor_2241[i]));
+                id_vftx_z2_2241.emplace_back(frs->primary_z * sqrt(de[1] / id_vftx_vcor_2241[i]));
+            }
+        }
+
+        if ((de[0] > 0.0) && (id_vftx_beta_2242[i] > 0.0) && (id_vftx_beta_2242 < 1.0))
+        {
+            power = 1.;
+            Double_t sum = 0.;
+            for (int j = 0; j < 4; j++)
+            {
+                sum += power * id->vftx_vel_a_music41[j];
+                power *= id_vftx_beta_2242[i];
+            }
+
+            id_vftx_vcor_2242.emplace_back(sum);
+
+            if (id_vftx_vcor_2242[i] > 0.0)
+            {
+                id_vftx_z_2242.emplace_back(frs->primary_z * sqrt(de[0] / id_vftx_vcor_2242[i]));
+                id_vftx_z2_2242.emplace_back(frs->primary_z * sqrt(de[1] / id_vftx_vcor_2242[i]));
+            }
+        }
+
+    }
+    
+    /*----------------------------------------------------------*
+    /* End of VFTX  */
+    /*----------------------------------------------------------*
+
+
+    /*----------------------------------------------------------*/
+    /* Determination of beta                                    */
+    /*----------------------------------------------------------*/
+    id_beta = 0;
+    if (id->tof_s4_select == 1)
+    {
+        if (sci_b_tofll2 && sci_b_tofrr2)
+        {
+            id_beta = id->id_path2 / sci_tof2_calib;
+        }
+    }
+    else if (id->tof_s4_select == 2)
+    {
+        if (sci_b_tofll3 && sci_b_tofrr3)
+        {
+            id_beta = id->id_path3 / sci_tof3_calib;
+        }
+    }
+    else if (id->tof_s4_select == 3)
+    {
+        if (sci_b_tofll5 && sci_b_tofrr5)
+        {
+            id_beta = id->id_path5 / sci_tof5_calib;
+        }
+    }
+
+    /*------------------------------------------------------*/
+    /* Determination of Brho                                */
+    /*------------------------------------------------------*/
 
     if (id_b_x2)
     {
@@ -1422,9 +2268,10 @@ void FrsCal2Hit::Exec(Option_t* option)
             id_brho[1] = (fabs(frs->bfield[2]) + fabs(frs->bfield[3])) / 2. * id_rho[1];
         }
     }
-    
-    Float_t aoq_factor = 931.4940 / 299.792458; // this is 'f' in go4
 
+    /*--------------------------------------------------------------*/
+    /* Determination of A/Q                                         */
+    /*--------------------------------------------------------------*/
     // for S2-S4
     if (sci_b_tofll2 && sci_b_tofrr2 && id_b_x2 && id_b_x4)
     {
@@ -1463,8 +2310,10 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
 
+    /*------------------------------------------------*/
+    /* Determination of Z                             */
+    /*------------------------------------------------*/
     // S4 (MUSIC 1)
-
     if ((de[0] > 0.0) && (id_beta > 0.0) && (id_beta < 1.0))
     {
         Double_t power = 1., sum = 0.;
@@ -1485,7 +2334,6 @@ void FrsCal2Hit::Exec(Option_t* option)
     }
 
     // S4 (MUSIC 2)
-
     if ((de[1] > 0.0) && (id_beta > 0.0) && (id_beta < 1.0))
     {
         Double_t power = 1., sum = 0.;
@@ -1535,11 +2383,8 @@ void FrsCal2Hit::Exec(Option_t* option)
             id_b_z3 = kTRUE;
         }
     }
-
-    // Z from TPC here
-
-
-
+    
+    // non mhtdc version?
     if (id_b_AoQ && id_b_x2 && id_b_z)
     {
         float gamma1square = 1.0 + TMath::Power(((1 / aoq_factor) * (id_brho[0] / id_AoQ)), 2);
@@ -1547,62 +2392,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         id_dEdegoQ = (id_gamma_ta_s2 - id_gamma) * id_AoQ;
         id_dEdeg = id_dEdegoQ * id_z;
     }
-    // above is end of FRSAnl
-
-
-    // V1290
-    tdc_array = fCalHitMain->Get_TDC_array();
-
-    // from FRS_Detector_System
-    // i guess in raw2cal we should make sure no zeroes are input in the vector
-    if (tdc_array[0].size() > 0 && tdc_array[1].size() > 0)
-    {
-        // sc41lr
-        std::cout << "sc41lr" << std::endl;
-    }
-    if (tdc_array[4].size() > 0 && tdc_array[14].size() > 0)
-    {
-        // sc42lr
-        std::cout << "sc42lr" << std::endl;
-    }
-    if (tdc_array[5].size() > 0 && tdc_array[6].size() > 0)
-    {
-        // sc43lr
-        std::cout << "sc43lr" << std::endl;
-    }
-    if (tdc_array[9].size() > 0 && tdc_array[10].size() > 0)
-    {
-        // sc31lr
-        std::cout << "sc31lr" << std::endl;
-    }
-    if (tdc_array[7].size() > 0 && tdc_array[8].size() > 0)
-    {
-        // sc81lr
-        std::cout << "sc81lr" << std::endl;
-    }
-    if (tdc_array[2].size() > 0 && tdc_array[3].size() > 0)
-    {
-        // sc21lr
-        std::cout << "sc21lr" << std::endl;
-    }
-    if (tdc_array[12].size() > 0 && tdc_array[13].size() > 0)
-    {
-        // sc22lr
-        std::cout << "sc22lr" << std::endl;
-    }
-
-    // 21->41 etc etc
-    
-
-    // from FRS_Detector_System
-    /*
-    if(0!=tdc_sc41l[0] && 0!=tdc_sc41r[0])
-    {
-        mhtdc_sc41lr_dt = sci->mhtdc_factor_ch_to_ns*( rand3() + tdc_sc41l[0]  -  tdc_sc41r[0] );
-        mhtdc_sc41lr_x  = mhtdc_sc41lr_dt * sci->mhtdc_factor_41l_41r + sci->mhtdc_offset_41l_41r;
-    }
-    */
-
+    // above is end of FRS_Anl
     
     new ((*fHitArray)[fHitArray->GetEntriesFast()]) FrsHitData(
         WR_TS,
@@ -1612,9 +2402,19 @@ void FrsCal2Hit::Exec(Option_t* option)
    
 }
 
+
+
+
+
 Bool_t FrsCal2Hit::Check_WinCond(Float_t P, Float_t* V)
 {
     if (P >= V[0] && P <= V[1]) return true;
+    else return false;
+}
+
+Bool_t FrsCal2Hit::Check_WinCond_Multi(Float_t P, Float_t** V, int cond_num)
+{
+    if (P >= V[cond_num][0] && P <= V[cond_num][1]) return true;
     else return false;
 }
 
