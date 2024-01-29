@@ -67,8 +67,12 @@ class FrsTPCCalData : public TObject
         inline const Float_t Get_tpc_x_s4() const { return ftpc_x_s4; }
         inline const Float_t Get_tpc_y_s4() const { return ftpc_y_s4; }
 
+        inline const Float_t Get_tpc21_22_sc21_x() const { return ftpc21_22_sc21_x; }
+        inline const Float_t Get_tpc23_24_sc21_x() const { return ftpc23_24_sc21_x; }
+        inline const Float_t Get_tpc21_22_sc22_x() const { return ftpc21_22_sc22_x; }
+        inline const Float_t Get_tpc23_24_sc22_x() const { return ftpc23_24_sc22_x; }
+
     private:
-        // stuff
         Bool_t fb_tpc_de[7];
         Float_t ftpc_x[7];
         Float_t ftpc_y[7];

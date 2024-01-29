@@ -6,11 +6,15 @@
 #include "TClonesArray.h"
 #include "FrsMainCalData.h"
 #include "FrsTPCCalData.h"
+#include "FrsUserCalData.h"
+#include "FrsVFTXCalData.h"
 #include "FrsHitData.h"
 
 class TClonesArray;
 class FrsMainCalData;
 class FrsTPCCalData;
+class FrsUserCalData;
+class FrsVFTXCalData;
 class FrsHitData;
 class EventHeader;
 
@@ -44,10 +48,14 @@ class FrsCal2Hit : public FairTask
 
         TClonesArray* fCalArrayMain;
         TClonesArray* fCalArrayTPC;
+        TClonesArray* fCalArrayUser;
+        TClonesArray* fCalArrayVFTX;
         TClonesArray* fHitArray;
 
         FrsMainCalData* fCalHitMain;
         FrsTPCCalData* fCalHitTPC;
+        FrsUserCalData* fCalHitUser;
+        FrsVFTXCalData* fCalHitVFTX;
         FrsHitData* fFrsHit;
 
         /* ----------------------------------------------- */
@@ -138,6 +146,8 @@ class FrsCal2Hit : public FairTask
         Float_t id_gamma_ta_s2;
         Float_t id_dEdegoQ;
         Float_t id_dEdeg;
+
+        Float_t aoq_factor = 931.4940 / 299.792458; // 'f' in go4 code
 
         // parameters from FRS setup // need to figure out how to load with steering macro?
         TFRSParameter* frs;
