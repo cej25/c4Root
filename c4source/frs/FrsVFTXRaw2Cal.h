@@ -38,7 +38,10 @@ class FrsVFTXRaw2Cal : public FairTask
         EventHeader* header;
         Int_t fNEvents = 0;
 
+        const std::vector<uint32_t>* vftx_lead_times;
+
         // Output
+        std::vector<uint32_t> TRaw_vftx[8];
 
     public:
         ClassDef(FrsVFTXRaw2Cal, 1);

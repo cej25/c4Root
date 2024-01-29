@@ -6,7 +6,7 @@ FrsUserCalData::FrsUserCalData()
 }
 
 
-FrsUserCalData::FrsUserCalData(onst uint32_t* dt_array,
+FrsUserCalData::FrsUserCalData(const uint32_t* dt_array,
                             const uint32_t* music_e1,
                             const uint32_t* music_e2)
 {   

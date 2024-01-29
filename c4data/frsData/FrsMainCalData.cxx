@@ -34,8 +34,8 @@ FrsMainCalData::FrsMainCalData(uint64_t WR_TS, uint32_t time_in_ms, uint32_t ibi
     for (int i = 0; i < 15; i++) fTdc_array[i] = tdc_array[i];
     for (int i = 0; i < 8; i++)
     {
-        fMusicT1[i] = music_t1[i];
-        fMusicT2[i] = music_t2[i];
+        fmusic_t1[i] = music_t1[i];
+        fmusic_t2[i] = music_t2[i];
     }
     for (int i = 0; i < 32; i++) fIncreaseScalerTemp[i] = increase_scaler_temp[i];
 }

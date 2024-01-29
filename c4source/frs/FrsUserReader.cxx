@@ -75,13 +75,13 @@ Bool_t FrsUserReader::Read()
     // CEJ: this will change because we don't need to "unpack" the channel
     // also it reads a bit horribly
     // v775 x2
-    for (int i = 0; i < fData->frsuser_data_v7751_n; i++)
+    for (int i = 0; i < fData->frsuser_data_v7751n; i++)
     {
         v7x5_geo[0].emplace_back(fData->frsuser_data_v7751geov[i]);
         v7x5_channel[0].emplace_back(fData->frsuser_data_v7751channelv[i]);
         v7x5_data[0].emplace_back(fData->frsuser_data_v7751data[i]);
     }
-    for (int i = 0; i < fData->frsuser_data_v7752_n; i++)
+    for (int i = 0; i < fData->frsuser_data_v7752n; i++)
     {
         v7x5_geo[1].emplace_back(fData->frsuser_data_v7752geov[i]);
         v7x5_channel[1].emplace_back(fData->frsuser_data_v7752channelv[i]);
@@ -89,13 +89,13 @@ Bool_t FrsUserReader::Read()
     }
 
     // v785
-    for (int i = 0; i < fData->frsuser_data_v7852_n; i++)
+    for (int i = 0; i < fData->frsuser_data_v7852n; i++)
     {
         v7x5_geo[2].emplace_back(fData->frsuser_data_v7852geov[i]);
         v7x5_channel[2].emplace_back(fData->frsuser_data_v7852channelv[i]);
         v7x5_data[2].emplace_back(fData->frsuser_data_v7852data[i]);
     }
-    for (int i = 0; i < fData->frsuser_data_v7852_n; i++)
+    for (int i = 0; i < fData->frsuser_data_v7852n; i++)
     {
         v7x5_geo[3].emplace_back(fData->frsuser_data_v7852geov[i]);
         v7x5_channel[3].emplace_back(fData->frsuser_data_v7852channelv[i]);
