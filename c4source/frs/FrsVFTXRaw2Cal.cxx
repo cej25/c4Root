@@ -13,6 +13,8 @@
 #include "TFRSParameter.h"
 #include "c4Logger.h"
 
+#include "../../config/frs_config.h"
+
 #include "TClonesArray.h"
 
 #include <vector>
@@ -76,7 +78,7 @@ void FrsVFTXRaw2Cal::Exec(Option_t* option)
 
     fRawHit = (FrsVFTXData*)fRawArray->At(mult-1);
 
-    vftx_lead_times = fRawHit->Get_vftx_leading_time();
+    vftx_lead_times = fRawHit->Get_vftx_lead_times();
 
     // set vectors to vectors...maybe we need a loop, fix if so
     TRaw_vftx[0] = vftx_lead_times[CH_S21_L]; // 21l

@@ -16,6 +16,8 @@
 #include <vector>
 #include <iostream>
 
+#include "../../config/frs_config.h"
+
 FrsCal2Hit::FrsCal2Hit()
     :   FairTask()
     ,   fNEvents(0)
@@ -1220,6 +1222,7 @@ InitStatus FrsCal2Hit::Init()
     mgr->Register("FrsHitData", "FRS Hit Data", fHitArray, !fOnline);
 
     SetParameters();
+    Setup_Conditions();
 
     fCalArrayMain->Clear();
     fCalArrayTPC->Clear();
@@ -1266,7 +1269,6 @@ void FrsCal2Hit::Exec(Option_t* option)
 
     music1_anodes_cnt = 0;
     music2_anodes_cnt = 0;
-    music3_anodes_cnt = 0;
 
     /* reset de[i] and de_cor[i] etc */
 
@@ -1369,15 +1371,14 @@ void FrsCal2Hit::Exec(Option_t* option)
     // but it is in our Go4
     if (b_tpc_xy[4] && b_tpc_xy[5])
     {
-        music1_x_mean = tpc_music41_x;
-        music2_x_mean = tpc_music42_x;
-        //music3_x_mean = tpc_music43_x;
-
-        Float_t power, Corr;
+        music1_x_mean = fCalHitTPC->Get_tpc_music41_x();
+        music2_x_mean = fCalHitTPC->Get_tpc_music42_x();
+        //music3_x_mean = fCalHitTPC->Get_tpc_music43_x();
 
         if (b_de1)
         {
-            power = 1., Corr = 0.;
+            power = 1.;
+            Corr = 0.;
             for (int i = 0; i < 4; i++)
             {
                 Corr += music->pos_a1[i] * power;
@@ -1392,7 +1393,8 @@ void FrsCal2Hit::Exec(Option_t* option)
 
         if (b_de2)
         {
-            power = 1., Corr = 0.;
+            power = 1.;
+            Corr = 0.;
             for (int i = 0; i < 4; i++)
             {
                 Corr += music->pos_a2[i] * power;
@@ -1407,7 +1409,8 @@ void FrsCal2Hit::Exec(Option_t* option)
         
         /*if (b_de3)
         {
-            power = 1., Corr = 0.;
+            power = 1.;
+            Corr = 0.;
             for (int i = 0; i < 4; i++)
             {
                 Corr += music->pos_a3[i] * power;
@@ -1639,7 +1642,8 @@ void FrsCal2Hit::Exec(Option_t* option)
         if (sci_b_tx[i])
         {
             Float_t R = sci_tx[i];
-            Float_t power = 1., sum = 0.;
+            power = 1.;
+            sum = 0.;
             for (int k = 0; k < 7; k++)
             {
                 sum += sci->x_a[k][i] * power;
@@ -1764,29 +1768,29 @@ void FrsCal2Hit::Exec(Option_t* option)
 
 
     //   S2S4 MultihitTDC ID analysis
-
-    // do we need to do this calculation every time...
     float mean_brho_s2s4 = 0.5 * (frs->bfield[2] + frs->bfield[3]);
+
+    // frs go4 doesn't have this selection
     if (id->mhtdc_s2pos_option == 1)
     {
 
         if (id->tof_s4_select == 1)
         {
-            for (int i = 0; i < id->mhtdc_tof4121.size(); i++)
+            for (int i = 0; i < mhtdc_tof4121.size(); i++)
             {
                 if (mhtdc_tof4121[i] > -100)
                 {
-                    id_mhtdc_beta_s2s4.emplace_back((id->mhtdc_length_s2s4 / mhtdc_tof4121[i]) / speed_light);
+                    id_mhtdc_beta_s2s4.emplace_back((id->mhtdc_length_sc2141 / mhtdc_tof4121[i]) / speed_light);
                 }
             }
         }
         else if (id->tof_s4_select == 3)
         {
-            for (int i = 0; i < id->mhtdc_tof4122.size(); i++)
+            for (int i = 0; i < mhtdc_tof4122.size(); i++)
             {
                 if (mhtdc_tof4122[i] > -100)
                 {
-                    id_mhtdc_beta_s2s4.emplace_back((id->mhtdc_length_s2s4 / mhtdc_tof4122[i]) / speed_light);
+                    id_mhtdc_beta_s2s4.emplace_back((id->mhtdc_length_sc2241 / mhtdc_tof4122[i]) / speed_light);
                 }
             }
         }
@@ -1807,7 +1811,7 @@ void FrsCal2Hit::Exec(Option_t* option)
                 id_mhtdc_delta_s2s4.emplace_back((temp_s4x - (temp_s2x_mhtdc[i] * frs->magnification[1])) / (-1.0 * frs->dispersion[1] * 1000.0)); // metre to mm
                 if (id_mhtdc_beta_s2s4[i] > 0.0 && id_mhtdc_beta_s2s4[i] < 1.0)
                 {
-                    id_mhtdc_aoq_s2s4.emplac_back(mean_brho_s2s4 * (1. + id_mhtdc_delta_s2s4[i]) * temp_tm_to_MeV / (temp_mu * id_mhtdc_beta_s2s4[i] * id_mhtdc_gamma_s2s4[i]));
+                    id_mhtdc_aoq_s2s4.emplace_back(mean_brho_s2s4 * (1. + id_mhtdc_delta_s2s4[i]) * temp_tm_to_MeV / (temp_mu * id_mhtdc_beta_s2s4[i] * id_mhtdc_gamma_s2s4[i]));
 
                     // Gain match AoQ
                     for (int j = 0; j < AoQ_Shift_array; j++)
@@ -1840,7 +1844,7 @@ void FrsCal2Hit::Exec(Option_t* option)
             {
                 if (mhtdc_tof4121[i] > -100)
                 {
-                    id_mhtdc_beta_s2s4.emplace_back((id->mhtdc_length_s2s4 / mhtdc_tof4121[i]) / speed_light);
+                    id_mhtdc_beta_s2s4.emplace_back((id->mhtdc_length_sc2141 / mhtdc_tof4121[i]) / speed_light);
                 }
             }
         }
@@ -1850,7 +1854,7 @@ void FrsCal2Hit::Exec(Option_t* option)
             {
                 if (mhtdc_tof4122[i] > -100)
                 {
-                    id_mhtdc_beta_s2s4.emplace_back((id->mhtdc_length_s2s4 / mhtdc_tof4122[i]) / speed_light);
+                    id_mhtdc_beta_s2s4.emplace_back((id->mhtdc_length_sc2241 / mhtdc_tof4122[i]) / speed_light);
                 }
             }
         }
@@ -1904,8 +1908,8 @@ void FrsCal2Hit::Exec(Option_t* option)
         float temp_music41_de = de[0] > 0.0;
         if ((temp_music41_de > 0.0) && (id_mhtdc_beta_s2s4[i] > 0.0) && (id_mhtdc_beta_s2s4[i] < 1.0))
         {
-            Double_t power = 1.;
-            Double_t sum = 0.;
+            power = 1.;
+            sum = 0.;
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->mhtdc_vel_a_music41[j];
@@ -1916,7 +1920,7 @@ void FrsCal2Hit::Exec(Option_t* option)
 
             if (id_mhtdc_v_cor_music41[i] > 0.0)
             {
-                id_mhtdc_z_music41.emplace_back(frs->primary_z * sqrt(de[0] / id_mhtdc_v_cor_music41[i]) + id->mhtdc_offset_z_music_41);
+                id_mhtdc_z_music41.emplace_back(frs->primary_z * sqrt(de[0] / id_mhtdc_v_cor_music41[i]) + id->mhtdc_offset_z_music41);
             }
         }
         
@@ -1927,8 +1931,8 @@ void FrsCal2Hit::Exec(Option_t* option)
         float temp_music42_de = de[1] > 0.0;
         if((temp_music42_de > 0.0)  && (id_mhtdc_beta_s2s4[i] > 0.0) && (id_mhtdc_beta_s2s4[i] < 1.0))
         {
-            Double_t power = 1.;
-            Double_t sum = 0.;
+            power = 1.;
+            sum = 0.;
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->mhtdc_vel_a_music42[j];
@@ -2042,7 +2046,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     // (moved from Go4 as we need id_a2 and it gets calculated twice otherwise?)
     /* --------------------------------------------------------------------------*/
     
-    TRaw_vftx = fCalArrayVFTX->Get_TRaw_vftx();
+    TRaw_vftx = fCalHitVFTX->Get_TRaw_vftx();
 
     // loop over 21 or 22 size, check 41l/r are not empty
     for (int i = 0; i < TRaw_vftx[0].size(); i++)
@@ -2079,11 +2083,8 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
 
-    float speed_light = 0.299792458; //m/ns
-    float temp_tm_to_MeV = 299.792458;
-    float temp_mu = 931.4940954; //MeV
 
-    float temp_s4x = -999.;
+    temp_s4x = -999.;
     if (b_tpc_xy[4] && b_tpc_xy[5])
     {
         temp_s4x = tpc_x_s4; // ->Get_
@@ -2098,19 +2099,18 @@ void FrsCal2Hit::Exec(Option_t* option)
     {
         if (b_tpc_xy[0] && b_tpc_xy[1])
         {
-            temp_sci21x = tpc_x_s2_foc_21_22;//->Get
+            temp_sci21x = fCalHitTPC->Get_tpc_x_s2_foc_21_22();
         }
         else if (b_tpc_xy[2] && b_tpc_xy[3])
         {
-            temp_sci21x = tpc_x_s2_foc_23_24;//->Get
+            temp_sci21x = fCalHitTPC->Get_tpc_x_s2_foc_23_24();
         }
         else if (b_tpc_xy[1] && b_tpc_xy[3])
         {
-            temp_sci21x = tpc_x_s2_foc_22_24;//->Get
+            temp_sci21x = fCalHitTPC->Get_tpc_x_s2_foc_22_24();
         }
     }
     
-    Double_t power;
     // number of 21l hits
     for (int i = 0; i < TRaw_vftx[0].size(); i++)
     {
@@ -2137,7 +2137,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         if ((de[0] > 0.0) && (id_vftx_beta_2141[i] > 0.0) && (id_vftx_beta_2141[i] < 1.0))
         {
             power = 1.;
-            Double_t sum = 0.;
+            sum = 0.;
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->vftx_vel_a_music41[j];
@@ -2156,7 +2156,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         if ((de[0] > 0.0) && (id_vftx_beta_2142[i] > 0.0) && (id_vftx_beta_2142[i] < 1.0))
         {
             power = 1.;
-            Double_t sum = 0.;
+            sum = 0.;
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->vftx_vel_a_music41[j];
@@ -2200,7 +2200,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         if ((de[0] > 0.0) && (id_vftx_beta_2241[i] > 0.0) && (id_vftx_beta_2241[i] < 1.0))
         {
             power = 1.;
-            Double_t sum = 0.;
+            sum = 0.;
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->vftx_vel_a_music41[j];
@@ -2216,10 +2216,10 @@ void FrsCal2Hit::Exec(Option_t* option)
             }
         }
 
-        if ((de[0] > 0.0) && (id_vftx_beta_2242[i] > 0.0) && (id_vftx_beta_2242 < 1.0))
+        if ((de[0] > 0.0) && (id_vftx_beta_2242[i] > 0.0) && (id_vftx_beta_2242[i] < 1.0))
         {
             power = 1.;
-            Double_t sum = 0.;
+            sum = 0.;
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->vftx_vel_a_music41[j];
@@ -2237,9 +2237,9 @@ void FrsCal2Hit::Exec(Option_t* option)
 
     }
     
-    /*----------------------------------------------------------*
+    /*----------------------------------------------------------*/
     /* End of VFTX  */
-    /*----------------------------------------------------------*
+    /*----------------------------------------------------------*/
 
 
     /*----------------------------------------------------------*/
@@ -2331,7 +2331,8 @@ void FrsCal2Hit::Exec(Option_t* option)
     // S4 (MUSIC 1)
     if ((de[0] > 0.0) && (id_beta > 0.0) && (id_beta < 1.0))
     {
-        Double_t power = 1., sum = 0.;
+        power = 1.;
+        sum = 0.;
         for (int i = 0; i < 4; i++)
         {
             sum += power * id->vel_a[i];
@@ -2351,7 +2352,8 @@ void FrsCal2Hit::Exec(Option_t* option)
     // S4 (MUSIC 2)
     if ((de[1] > 0.0) && (id_beta > 0.0) && (id_beta < 1.0))
     {
-        Double_t power = 1., sum = 0.;
+        power = 1.;
+        sum = 0.;
         for (int i = 0; i < 4; i++)
         {
             sum += power * id->vel_a2[i];
@@ -2382,7 +2384,8 @@ void FrsCal2Hit::Exec(Option_t* option)
     // S4 (MUSIC)
     if ((de[2] > 0.0) && (id_beta > 0.0) && (id_beta < 1.0))
     {
-        Double_t power = 1.0, sum = 0.;
+        power = 1.0;
+        sum = 0.;
         for (int i = 0; i < 4; i++)
         {
             sum += power * id->vel_a3[i];
@@ -2418,6 +2421,211 @@ void FrsCal2Hit::Exec(Option_t* option)
 }
 
 
+void FrsCal2Hit::Setup_Conditions()
+{
+    std::string line;
+    int line_number = 0;
+
+    const char* format = "%f %f %f %f %f %f %f %f %f %f %f %f %f %f";
+
+    std::ifstream cond_a("Configuration_Files/FRS/FRS_Window_Conditions/lim_csum.txt");
+
+    while(/*cond_a.good()*/getline(cond_a,line,'\n'))
+    {
+        if(line[0] == '#') continue;
+
+
+            sscanf(line.c_str(),format,&lim_csum[line_number][0][0],&lim_csum[line_number][0][1]
+                        ,&lim_csum[line_number][1][0],&lim_csum[line_number][1][1]
+                        ,&lim_csum[line_number][2][0],&lim_csum[line_number][2][1]
+                        ,&lim_csum[line_number][3][0],&lim_csum[line_number][3][1]
+                        ,&lim_csum[line_number][4][0],&lim_csum[line_number][4][1]
+                        ,&lim_csum[line_number][5][0],&lim_csum[line_number][5][1]
+                        ,&lim_csum[line_number][6][0],&lim_csum[line_number][6][1]);
+
+        line_number++;
+
+    }
+
+    line_number = 0;
+
+    format = "%f %f";
+
+    std::ifstream cond_b("Configuration_Files/FRS/FRS_Window_Conditions/lim_xsum.txt");
+
+    while(/*cond_b.good()*/getline(cond_b,line,'\n'))
+    {
+
+        if(line[0] == '#') continue;
+            sscanf(line.c_str(),format,&lim_xsum[line_number][0],&lim_xsum[line_number][1]);
+
+        line_number++;
+    }
+
+    line_number = 0;
+
+    format = "%f %f";
+
+    std::ifstream cond_c("Configuration_Files/FRS/FRS_Window_Conditions/lim_ysum.txt");
+
+    while(/*cond_c.good()*/getline(cond_c,line,'\n'))
+    {
+
+        if(line[0] == '#') continue;
+            sscanf(line.c_str(),format,&lim_ysum[line_number][0],&lim_ysum[line_number][1]);
+
+        line_number++;
+    }
+
+    /*** MUSIC Conditions *** */
+
+    line_number = 0;
+
+    format = "%f %f %f %f";
+
+    std::ifstream cond_d("Configuration_Files/FRS/FRS_Window_Conditions/MUSIC1.txt");
+
+    while(/*cond_d.good()*/getline(cond_d,line,'\n'))
+    {
+
+        if(line[0] == '#') continue;
+            sscanf(line.c_str(),format,&cMusic1_E[line_number][0],&cMusic1_E[line_number][1],&cMusic1_T[line_number][0],&cMusic1_T[line_number][1]);
+
+        line_number++;
+    }
+
+    line_number = 0;
+
+    format = "%f %f %f %f";
+
+    std::ifstream cond_e("Configuration_Files/FRS/FRS_Window_Conditions/MUSIC2.txt");
+
+    while(/*cond_e.good()*/getline(cond_e,line,'\n'))
+    {
+        if(line[0] == '#') continue;
+            sscanf(line.c_str(),format,&cMusic2_E[line_number][0],&cMusic2_E[line_number][1],&cMusic2_T[line_number][0],&cMusic2_T[line_number][1]);
+
+        line_number++;
+    }
+
+    line_number = 0;
+
+    format = "%f %f %f %f";
+
+    std::ifstream cond_f("Configuration_Files/FRS/FRS_Window_Conditions/MUSIC3.txt");
+
+    while(/*cond_f.good()*/getline(cond_f,line,'\n'))
+    {
+        if(line[0] == '#') continue;
+            sscanf(line.c_str(),format,&cMusic3_E[line_number][0],&cMusic3_E[line_number][1],&cMusic3_T[line_number][0],&cMusic3_T[line_number][1]);
+
+        line_number++;
+    }
+
+
+    line_number = 0;
+
+    format = "%f %f";
+
+    std::ifstream cond_g("Configuration_Files/FRS/FRS_Window_Conditions/MUSIC_dEc3.txt");
+
+    while(/*cond_g.good()*/getline(cond_g,line,'\n'))
+    {
+
+        if(line[0] == '#') continue;
+            sscanf(line.c_str(),format,&cMusic3_dec[0],&cMusic3_dec[1]);
+    }
+
+    /***SCINTILATOR Condtions***/
+
+    line_number = 0;
+
+    format = "%f %f";
+
+    std::ifstream cond_h("Configuration_Files/FRS/FRS_Window_Conditions/SCI_Cons.txt");
+
+    while(/*cond_h.good()*/getline(cond_h,line,'\n'))
+    {
+
+        if(line[0] == '#') continue;
+            sscanf(line.c_str(),format,&cSCI_L[0],&cSCI_L[1]);
+
+        getline(cond_h,line,'\n');
+            sscanf(line.c_str(),format,&cSCI_R[0],&cSCI_R[1]);
+
+        getline(cond_h,line,'\n');
+            sscanf(line.c_str(),format,&cSCI_E[0],&cSCI_E[1]);
+
+        getline(cond_h,line,'\n');
+            sscanf(line.c_str(),format,&cSCI_Tx[0],&cSCI_Tx[1]);
+
+        getline(cond_h,line,'\n');
+            sscanf(line.c_str(),format,&cSCI_X[0],&cSCI_X[1]);
+
+    }
+
+    format = "%f %f";
+
+    std::ifstream cond_i("Configuration_Files/FRS/FRS_Window_Conditions/SCI_LLRR.txt");
+
+    while(/*cond_i.good()*/getline(cond_i,line,'\n'))
+    {
+        if(line[0] == '#') continue;
+            sscanf(line.c_str(),format,&cSCI_LL2[0],&cSCI_LL2[1]);
+        getline(cond_i,line,'\n');
+            sscanf(line.c_str(),format,&cSCI_RR2[0],&cSCI_RR2[1]);
+
+        getline(cond_i,line,'\n');
+            sscanf(line.c_str(),format,&cSCI_LL3[0],&cSCI_LL3[1]);
+
+        getline(cond_i,line,'\n');
+            sscanf(line.c_str(),format,&cSCI_RR3[0],&cSCI_RR3[1]);
+
+
+        getline(cond_i,line,'\n');
+            sscanf(line.c_str(),format,&cSCI_LL4[0],&cSCI_LL4[1]);
+
+        getline(cond_i,line,'\n');
+            sscanf(line.c_str(),format,&cSCI_RR4[0],&cSCI_RR4[1]);
+
+        getline(cond_i,line,'\n');
+            sscanf(line.c_str(),format,&cSCI_LL5[0],&cSCI_LL5[1]);
+
+        getline(cond_i,line,'\n');
+            sscanf(line.c_str(),format,&cSCI_RR5[0],&cSCI_RR5[1]);
+
+    }
+
+    /***ID Condtions***/
+
+    format = "%f %f";
+
+    std::ifstream cond_k("Configuration_Files/FRS/FRS_Window_Conditions/ID_x2.txt");
+
+
+    while(/*cond_k.good()*/getline(cond_k,line,'\n'))
+    {
+        if(line[0] == '#') continue;
+            sscanf(line.c_str(),format,&cID_x2[0],&cID_x2[1]);
+    }
+
+    std::ifstream cond_l("Configuration_Files/FRS/FRS_Window_Conditions/ID_x4.txt");
+
+    while(/*cond_l.good()*/getline(cond_l,line,'\n'))
+    {
+        if(line[0] == '#') continue;
+            sscanf(line.c_str(),format,&cID_x4[0],&cID_x4[1]);
+    }
+
+    std::ifstream cond_m("Configuration_Files/FRS/FRS_Window_Conditions/ID_Z_Z.txt");
+
+    while(/*cond_m.good()*/getline(cond_m,line,'\n'))
+    {
+        if(line[0] == '#') continue;
+            sscanf(line.c_str(),format,&cID_Z_Z[0],&cID_Z_Z[1]);
+    }
+
+}
 
 
 
@@ -2427,10 +2635,16 @@ Bool_t FrsCal2Hit::Check_WinCond(Float_t P, Float_t* V)
     else return false;
 }
 
-Bool_t FrsCal2Hit::Check_WinCond_Multi(Float_t P, Float_t** V, int cond_num)
+Bool_t FrsCal2Hit::Check_WinCond_Multi(Float_t P, Float_t V[8][2], int cond_num)
 {
     if (P >= V[cond_num][0] && P <= V[cond_num][1]) return true;
     else return false;
+}
+
+
+Float_t FrsCal2Hit::rand3()
+{
+    return random3.Uniform(-0.5,0.5);
 }
 
 

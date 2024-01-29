@@ -29,7 +29,8 @@ class FrsMainCalData : public TObject
         inline const uint32_t* Get_De_array() const { return fDe_array; }
         inline const std::vector<uint32_t>* Get_TDC_array() const { return fTdc_array; }
 
-
+        inline const uint32_t* Get_music_t1() const { return fmusic_t1; }
+        inline const uint32_t* Get_music_t2() const { return fmusic_t2; }
         // Setters
 
     private:
@@ -51,8 +52,8 @@ class FrsMainCalData : public TObject
         // put this in TObjectArray?
         std::vector<uint32_t> fTdc_array[15]; // 15 length
 
-        uint32_t fMusicT1[8]; // 8 length
-        uint32_t fMusicT2[8]; // 8 length
+        uint32_t fmusic_t1[8]; // 8 length
+        uint32_t fmusic_t2[8]; // 8 length
 
     public:
         ClassDef(FrsMainCalData, 1);

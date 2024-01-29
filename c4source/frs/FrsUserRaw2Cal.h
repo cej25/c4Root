@@ -38,7 +38,13 @@ class FrsUserRaw2Cal : public FairTask
         EventHeader* header;
         Int_t fNEvents = 0;
 
-        // Output
+        const std::vector<uint32_t>* v7x5_geo;
+        const std::vector<uint32_t>* v7x5_channel;
+        const std::vector<uint32_t>* v7x5_data;
+
+        uint32_t dt_array[16];
+        uint32_t music_e1[8];
+        uint32_t music_e2[8];
 
     public:
         ClassDef(FrsUserRaw2Cal, 1);

@@ -9,15 +9,15 @@ class FrsVFTXCalData : public TObject
     public:
         FrsVFTXCalData();
 
-        //FrsVFTXCalData(/*overload*/);
+        FrsVFTXCalData(std::vector<uint32_t>* TRaw_vftx);
 
         virtual ~FrsVFTXCalData() {};
 
-        // Setters
+        inline const std::vector<uint32_t>* Get_TRaw_vftx() const { return fTRaw_vftx; }
 
     private:
 
-        
+        std::vector<uint32_t> fTRaw_vftx[8];
 
     public:
         ClassDef(FrsVFTXCalData, 1);

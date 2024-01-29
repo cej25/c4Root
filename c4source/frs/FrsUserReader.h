@@ -51,6 +51,12 @@ class FrsUserReader : public c4Reader
         std::vector<uint32_t> scalers_index;
         std::vector<uint32_t> scalers_user;
 
+        std::vector<uint32_t> v7x5_geo[4];
+        std::vector<uint32_t> v7x5_channel[4];
+        std::vector<uint32_t> v7x5_data[4];
+
+        
+
 
     public:
         ClassDefOverride(FrsUserReader, 0);

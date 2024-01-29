@@ -9,6 +9,7 @@
 #include "FrsUserCalData.h"
 #include "FrsVFTXCalData.h"
 #include "FrsHitData.h"
+#include <TRandom3.h>
 
 class TClonesArray;
 class FrsMainCalData;
@@ -33,8 +34,14 @@ class FrsCal2Hit : public FairTask
         
         void SetParameters();
         virtual void SetParContainers();
+        void Setup_Conditions();
 
         Bool_t Check_WinCond(Float_t P, Float_t* V);
+        Bool_t Check_WinCond_Multi(Float_t P, Float_t V[8][2], int cond_num);
+
+        Float_t rand3();
+
+
 
         void FinishEvent();
         void FinishTask();
@@ -61,6 +68,52 @@ class FrsCal2Hit : public FairTask
         /* ----------------------------------------------- */
         // Intermediate variables
         /* ----------------------------------------------- */
+
+        /* Setup variables */
+        Float_t lim_csum[4][7][2];
+        Float_t lim_xsum[13][2];
+        Float_t lim_ysum[13][2];
+        Float_t cMusic1_E[8][2];
+        Float_t cMusic2_E[8][2];
+        Float_t cMusic3_E[4][2];
+        Float_t cMusic1_T[8][2];
+        Float_t cMusic2_T[8][2];
+        Float_t cMusic3_T[4][2];
+        Float_t cMusic3_dec[2];
+        Float_t cSCI_L[2];
+        Float_t cSCI_R[2];
+        Float_t cSCI_E[2];
+        Float_t cSCI_Tx[2];
+        Float_t cSCI_X[2];
+        Float_t cSCI_LL2[2];
+        Float_t cSCI_RR2[2];
+        Float_t cSCI_LL3[2];
+        Float_t cSCI_RR3[2];
+        Float_t cSCI_LL4[2];
+        Float_t cSCI_RR4[2];
+        Float_t cSCI_LL5[2];
+        Float_t cSCI_RR5[2];
+        Float_t cID_x2[2];
+        Float_t cID_x4[2];
+        Float_t cID_Z_Z[2];
+
+        const uint32_t* music_e1;
+        const uint32_t* music_e2;
+        const uint32_t* music_t1;
+        const uint32_t* music_t2;
+
+        Int_t music1_anodes_cnt;
+	    Int_t music2_anodes_cnt;
+
+        Bool_t music_b_e1[8];
+        Bool_t music_b_e2[8];
+        Bool_t music_b_t1[8];
+        Bool_t music_b_t2[8];
+        Bool_t b_de1;
+	    Bool_t b_de2;
+        Float_t music1_x_mean;
+        Float_t music2_x_mean;
+
         const std::vector<uint32_t>* tdc_array;
         const uint32_t* de_array;
         const uint32_t* dt_array; // not coded in raw->cal yet
@@ -76,16 +129,6 @@ class FrsCal2Hit : public FairTask
         Bool_t sci_b_e[12]; // size may be reduced
         Bool_t sci_b_tx[12]; // size may be reduced
         Bool_t sci_b_x[12]; // size may be reduced
-        Bool_t sci_b_tofll2;
-        Bool_t sci_b_tofrr2;
-        Float_t cSCI_L[2]; // these get read from file? should it be a pointer?
-        Float_t cSCI_R[2]; // read in for file etc.
-        Float_t cSCI_E[2];
-        Float_t cSCI_Tx[2];
-        Float_t cSCI_X[2];
-        Float_t cID_x2[2];
-        Float_t cID_x4[2];
-        Float_t cID_Z_Z[2];
         const Bool_t* b_tpc_xy; //Bool_t b_tpc_xy[7];
         Bool_t b_tpc_de[7];
         Bool_t b_tpc_timeref[8];
@@ -113,6 +156,141 @@ class FrsCal2Hit : public FairTask
         Float_t AoQ_shift_Sci21_value[200];
         Float_t AoQ_shift_Sci22_value[200];
         Int_t ts_mins;
+
+        std::vector<Float_t> mhtdc_sc21lr_dt;
+        std::vector<Float_t> mhtdc_sc22lr_dt;
+        Float_t mhtdc_sc31lr_dt;
+        Float_t mhtdc_sc41lr_dt;
+        Float_t mhtdc_sc42lr_dt;
+        Float_t mhtdc_sc43lr_dt;
+        Float_t mhtdc_sc81lr_dt;
+        
+        std::vector<Float_t> mhtdc_sc21lr_x;
+        std::vector<Float_t> mhtdc_sc22lr_x;
+        Float_t mhtdc_sc31lr_x;
+        Float_t mhtdc_sc41lr_x;
+        Float_t mhtdc_sc42lr_x;
+        Float_t mhtdc_sc43lr_x;
+        Float_t mhtdc_sc81lr_x;
+
+        std::vector<Float_t> mhtdc_tof4121;
+        std::vector<Float_t> mhtdc_tof4122;
+        Float_t mhtdc_tof4221;
+        Float_t mhtdc_tof4321;
+        Float_t mhtdc_tof3121;
+        Float_t mhtdc_tof8121;
+
+        Int_t dt_21l_21r;
+        Int_t dt_41l_41r;
+        Int_t dt_42l_42r;
+        Int_t dt_43l_43r;
+        Int_t dt_81l_81r;
+        Int_t dt_21l_41l;
+        Int_t dt_21r_41r;
+        Int_t dt_42r_21r;
+        Int_t dt_42l_21l;
+        Int_t dt_21l_81l;
+        Int_t dt_21r_81r;
+        Int_t dt_22l_22r;
+        Int_t dt_22l_41l;
+        Int_t dt_22r_41r;
+        Int_t dt_22l_81l;
+        Int_t dt_22r_81r;
+
+        Float_t sci_tofll2;
+        Float_t sci_tofrr2;
+        Float_t sci_tof2;
+        Float_t sci_tof2_calib;
+        Float_t sci_tofll3;
+        Float_t sci_tofrr3;
+        Float_t sci_tof3;
+        Float_t sci_tof3_calib;
+        Float_t sci_tofll4;
+        Float_t sci_tofrr4;
+        Float_t sci_tof4;
+        Float_t sci_tof4_calib;
+        Float_t sci_tofll5;
+        Float_t sci_tofrr5;
+        Float_t sci_tof5;
+        Float_t sci_tof5_calib;
+        Bool_t sci_b_tofll2;
+        Bool_t sci_b_tofrr2;
+        Bool_t sci_b_tofll3;
+        Bool_t sci_b_tofrr3;
+        Bool_t sci_b_tofll4;
+        Bool_t sci_b_tofrr4;
+        Bool_t sci_b_tofll5;
+        Bool_t sci_b_tofrr5;
+
+        float temp_s4x; // i think this gets redeclared a bunch.
+
+        std::vector<Float_t> id_mhtdc_beta_s2s4;
+        std::vector<Float_t> id_mhtdc_gamma_s2s4;
+        std::vector<Float_t> id_mhtdc_delta_s2s4; // not sure this needs to be a vector
+        std::vector<Float_t> id_mhtdc_aoq_s2s4;
+        std::vector<Float_t> id_mhtdc_aoq_corr_s2s4;
+        std::vector<Float_t> id_mhtdc_z_music41;
+        std::vector<Float_t> id_mhtdc_zcor_music41;
+        std::vector<Float_t> id_mhtdc_v_cor_music41;
+        std::vector<Float_t> id_mhtdc_z_music42;
+        std::vector<Float_t> id_mhtdc_zcor_music42;
+        std::vector<Float_t> id_mhtdc_v_cor_music42;
+
+        std::vector<Float_t> id_mhtdc_dEdegoQ;
+        std::vector<Float_t> id_mhtdc_gamma_ta_s2;
+        std::vector<Float_t> mhtdc_gamma1square;
+        std::vector<Float_t> id_mhtdc_dEdeg;
+        
+        float speed_light = 0.299792458; //m/ns
+        float temp_tm_to_MeV = 299.792458;
+        float temp_mu = 931.4940954; //MeV
+
+        const std::vector<uint32_t>* TRaw_vftx;
+
+        std::vector<Float_t> vftx_tof2141;
+        std::vector<Float_t> vftx_tof2141_calib;
+        std::vector<Float_t> vftx_tof2241;
+        std::vector<Float_t> vftx_tof2241_calib;
+        std::vector<Float_t> vftx_tof2142;
+        std::vector<Float_t> vftx_tof2142_calib;
+        std::vector<Float_t> vftx_tof2242;
+        std::vector<Float_t> vftx_tof2242_calib;
+
+        std::vector<Float_t> id_vftx_beta_2141;
+        std::vector<Float_t> id_vftx_gamma_2141;
+        std::vector<Float_t> id_vftx_aoq_2141;
+        std::vector<Float_t> id_vftx_aoq_corr_2141;
+        std::vector<Float_t> id_vftx_z_2141;
+        std::vector<Float_t> id_vftx_z2_2141;
+        std::vector<Float_t> id_vftx_vcor_2141;
+        std::vector<Float_t> id_vftx_beta_2241;
+        std::vector<Float_t> id_vftx_gamma_2241;
+        std::vector<Float_t> id_vftx_aoq_2241;
+        std::vector<Float_t> id_vftx_aoq_corr_2241;
+        std::vector<Float_t> id_vftx_z_2241;
+        std::vector<Float_t> id_vftx_z2_2241;
+        std::vector<Float_t> id_vftx_vcor_2241;
+        std::vector<Float_t> id_vftx_beta_2142;
+        std::vector<Float_t> id_vftx_gamma_2142;
+        std::vector<Float_t> id_vftx_aoq_2142;
+        std::vector<Float_t> id_vftx_aoq_corr_2142;
+        std::vector<Float_t> id_vftx_z_2142;
+        std::vector<Float_t> id_vftx_z2_2142;
+        std::vector<Float_t> id_vftx_vcor_2142;
+        std::vector<Float_t> id_vftx_beta_2242;
+        std::vector<Float_t> id_vftx_gamma_2242;
+        std::vector<Float_t> id_vftx_aoq_2242;
+        std::vector<Float_t> id_vftx_aoq_corr_2242;
+        std::vector<Float_t> id_vftx_z_2242;
+        std::vector<Float_t> id_vftx_z2_2242;
+        std::vector<Float_t> id_vftx_vcor_2242;
+        Float_t id_vftx_delta_24;
+
+        Double_t power;
+        Double_t sum;
+        Double_t Corr;
+
+        TRandom3 random3;
 
         /* ----------------------------------------------- */
         //Hit variables
