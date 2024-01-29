@@ -1245,7 +1245,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     if (!multMain || !multTPC || !multUser || !multVFTX) return;
 
     fNEvents++;
-    // this mult thing is nonsense but not sure what to do yet
+    // this mult thing is nonsense i'm sure
     fCalHitMain = (FrsMainCalData*)fCalArrayMain->At(multMain-1);
     fCalHitTPC = (FrsTPCCalData*)fCalArrayTPC->At(multTPC-1);
     fCalHitUser = (FrsUserCalData*)fCalArrayUser->At(multUser-1);
@@ -1253,6 +1253,12 @@ void FrsCal2Hit::Exec(Option_t* option)
 
 
     WR_TS = fCalHitMain->Get_WR();
+
+    music_e1 = fCalHitUser->Get_music_e1();
+    music_e2 = fCalHitUser->Get_music_e2();
+    music_t1 = fCalHitMain->Get_music_t1();
+    music_t2 = fCalHitMain->Get_music_t2();
+    // we don't use music 3
 
     /* ---------------------------------------------------- */
     // Start of MUSIC analysis                              //
@@ -1296,9 +1302,9 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
 
-    for (int i = 0; i < 4; i++)
+    /*for (int i = 0; i < 4; i++)
     {
-        /* 4 anodes of MUSIC OLD */
+        // 4 anodes of MUSIC OLD
         // third MUSIC travelling
         if (music_e3[i] > 0)
         {
@@ -1312,7 +1318,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         {
             music_b_t3[i] = Check_WinCond_Multi(music_t3[i], cMusicT_3, i);
         }
-    }
+    }*/
 
     if (music1_anodes_cnt == 8)
     {
@@ -1345,7 +1351,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     }
 
     // CEJ: 8 in go4, but how can it be 8?
-    if (music3_anodes_cnt == 8)
+    /*if (music3_anodes_cnt == 8)
     {
         Float_t r1 = ((music_e3[0]) * music->e3_gain[0] + music->e3_off[0]) * ((music_e3[1]) * music->e3_gain[1] + music->e3_off[1]);
         Float_t r2 = ((music_e3[2]) * music->e3_gain[2] + music->e3_off[2]) * ((music_e3[3]) * music->e3_gain[3] + music->e3_off[3]);
@@ -1356,7 +1362,7 @@ void FrsCal2Hit::Exec(Option_t* option)
             de[2] = sqrt(sqrt(r1) * sqrt(r2));
             de_cor[2] = de[2];
         }
-    }
+    }*/
 
     // Position (X) correction by TPC //
     // this should not be in the music3_anodes_cnt if{}
@@ -1365,7 +1371,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     {
         music1_x_mean = tpc_music41_x;
         music2_x_mean = tpc_music42_x;
-        music3_x_mean = tpc_music43_x;
+        //music3_x_mean = tpc_music43_x;
 
         Float_t power, Corr;
 
@@ -1399,8 +1405,7 @@ void FrsCal2Hit::Exec(Option_t* option)
             }
         }
         
-        // this isn't set anywhere???
-        if (b_de3)
+        /*if (b_de3)
         {
             power = 1., Corr = 0.;
             for (int i = 0; i < 4; i++)
@@ -1413,7 +1418,7 @@ void FrsCal2Hit::Exec(Option_t* option)
                 Corr = music->pos_a3[0] / Corr;
                 de_cor[2] = de[2] * Corr;
             }
-        }
+        }*/
     }
     
     /* ----------------------------------------------- */
@@ -1541,43 +1546,54 @@ void FrsCal2Hit::Exec(Option_t* option)
     
 
     de_array = fCalHitMain->Get_De_array();
-    dt_array = new uint32_t[1]; // placeholder, not coded in raw->cal yet
+    dt_array = fCalHitUser->Get_dt_array();
+
+    dt_21l_21r = dt_array[0];
+    dt_41l_41r = dt_array[1];
+    dt_42l_42r = dt_array[2];
+    dt_43l_43r = dt_array[3];
+    dt_81l_81r = dt_array[4];
+    dt_21l_41l = dt_array[5];
+    dt_21r_41r = dt_array[6];
+    dt_42r_21r = dt_array[7];
+    dt_42l_21l = dt_array[8];
+    dt_21l_81l = dt_array[9];
+    dt_21r_81r = dt_array[10];
+    dt_22l_22r = dt_array[11];
+    dt_22l_41l = dt_array[12];
+    dt_22r_41r = dt_array[13];
+    dt_22l_81l = dt_array[14];
+    dt_22r_81r = dt_array[15];
 
     // 2 in go4, 0 now?
     sci_l[0] = de_array[1]; // de_21l;
     sci_r[0] = de_array[2]; // de_21r;
-    // change element in dt_array once coded
-    sci_tx[0] = dt_array[0] + rand3(); // dt_21l_21r
+    sci_tx[0] = dt_21l_21r + rand3();
 
     // 3 in go4, 1 now?
     sci_l[1] = de_array[13]; // de_22l
     sci_r[1] = de_array[6]; // de_22r
-    // change element in dt_array once coded
-    sci_tx[1] = dt_array[0] + rand3(); // dt_22l_22r
+    sci_tx[1] = dt_22l_22r + rand3();
 
     // 5 in go4, 2 now?
     sci_l[2] = de_array[0]; // de_41l
     sci_r[2] = de_array[11]; // de_41r;
-    // change element in dt_array once coded
-    sci_tx[2] = dt_array[0] + rand3(); // dt_41l_41r
+    sci_tx[2] = dt_41l_41r + rand3();
 
     // 6 in go4, 3 now?
     sci_l[3] = de_array[3]; // de_42l
     sci_r[3] = de_array[4]; // de_42r
-    // change element in dt_array once coded
-    sci_tx[3] = dt_array[0] + rand3(); // dt_42l_42r
+    sci_tx[3] = dt_42l_42r + rand3();
 
     // 7 in go4, 4 now?
     sci_l[4] = de_array[9]; // de_43l
     sci_r[4] = de_array[10]; // de_43r
-    // change element in dt_array once coded
-    sci_tx[4] = dt_array[0] + rand3(); // dt_43l_43r
+    sci_tx[4] = dt_43l_43r + rand3();
 
     // 10 in go4, 5 now?
     sci_l[5] = de_array[5]; // de_81l
     sci_r[5] = de_array[12]; // de_81r
-    // change element in dt_array once coded
-    sci_tx[5] = dt_array[0] + rand3(); // dt_81l_81r
+    sci_tx[5] = dt_81l_81r + rand3();
 
 
     for (int i = 0; i < 6; i++)
@@ -1748,7 +1764,6 @@ void FrsCal2Hit::Exec(Option_t* option)
 
 
     //   S2S4 MultihitTDC ID analysis
-    // zero arrays?
 
     // do we need to do this calculation every time...
     float mean_brho_s2s4 = 0.5 * (frs->bfield[2] + frs->bfield[3]);

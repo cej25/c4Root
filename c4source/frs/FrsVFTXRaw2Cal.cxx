@@ -89,7 +89,7 @@ void FrsVFTXRaw2Cal::Exec(Option_t* option)
     TRaw_vftx[7] = vftx_lead_times[CH_S42_R]; // 42r
 
     // output
-    new ((*fRawArray)[mult]) FrsVFTXCalData(
+    new ((*fCalArray)[fCalArray->GetEntriesFast()]) FrsVFTXCalData(
         TRaw_vftx
     );
 
