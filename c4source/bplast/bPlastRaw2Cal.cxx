@@ -210,7 +210,6 @@ void bPlastRaw2Cal::Exec(Option_t* option){
             while (!all_hits_in_fast_slow_found){
                 if (ihit+look_ahead_counter >= event_multiplicity) break;
                 bPlastTwinpeaksData * this_hit = (bPlastTwinpeaksData*)funcal_data->At(ihit+look_ahead_counter);
-                c4LOG(info,this_hit->Get_ch_ID());
                 if (this_hit->Get_ch_ID() == first_hit_in_fast_channel->Get_ch_ID() && this_hit->Get_board_id() == first_hit_in_fast_channel->Get_board_id()) hits_in_fast_channel++;
                 else if (this_hit->Get_ch_ID() == first_hit_in_fast_channel->Get_ch_ID()+1 && this_hit->Get_board_id() == first_hit_in_fast_channel->Get_board_id()) hits_in_slow_channel++;
                 else all_hits_in_fast_slow_found = true;
