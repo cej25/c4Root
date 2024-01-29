@@ -1625,6 +1625,8 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
         }
     }
 
+    // ah right, we don't need to do v785 because its all v7x5, separated by geo
+    // CEJ: we should change the tpc reader, my bad
 
     v1190_channel = fRawHit->Get_V1190_Channel();
     v1190_data = fRawHit->Get_V1190_Data();
