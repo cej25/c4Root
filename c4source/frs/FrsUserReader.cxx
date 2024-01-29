@@ -64,6 +64,24 @@ Bool_t FrsUserReader::Read()
     if (!fData) return kTRUE;
     if (fData == nullptr) return kFALSE;
 
+    // v830 scalers
+    scalers_n = fData->frsuser_data_v830_n;
+    for (uint32_t i = 0; i < scalers_n; i++)
+    {   
+        scalers_index.emplace_back(fData->frsuser_data_v830_nI[i]);
+        scalers_user.emplace_back(fData->frsuser_data_v830_data[fData->frsuser_data_v830_nI[i]]);
+    }
+
+    // v775
+
+    // v785
+
+
+    new ((*fArray)[fArray->GetEntriesFast()]) FrsUserData(
+        scalers_n,
+        scalers_index,
+        scalers_user);
+
 
     // do the reading
 
@@ -73,6 +91,8 @@ Bool_t FrsUserReader::Read()
 
 void FrsUserReader::Reset()
 {
+    scalers_index.clear();
+    scalers_user.clear();
     fArray->Clear();
 }
 
