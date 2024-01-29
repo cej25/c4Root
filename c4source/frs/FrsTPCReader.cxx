@@ -64,27 +64,24 @@ Bool_t FrsTPCReader::Read()
     if (!fData) return kTRUE;
     if (fData == nullptr) return kFALSE;
 
-    /* -----------------------------------------------------*/
-    // TPC CRATE
-    /* -----------------------------------------------------*/
 
-    // V775
+    // v775
     for (int i = 0; i < fData->frstpc_data_v775_n; i++)
     {   
-        v775_geo.emplace_back(fData->frstpc_data_v775_geov[i]);
-        v775_channel.emplace_back(fData->frstpc_data_v775_channelv[i]);
-        v775_data.emplace_back(fData->frstpc_data_v775_data[i]);
+        v7x5_geo[0].emplace_back(fData->frstpc_data_v775_geov[i]);
+        v7x5_channel[0].emplace_back(fData->frstpc_data_v775_channelv[i]);
+        v7x5_data[0].emplace_back(fData->frstpc_data_v775_data[i]);
     }
 
-    // V785
+    // v785
     for (int i = 0; i < fData->frstpc_data_v775_n; i++)
     {   
-        v785_geo.emplace_back(fData->frstpc_data_v785_geov[i]);
-        v785_channel.emplace_back(fData->frstpc_data_v785_channelv[i]);
-        v785_data.emplace_back(fData->frstpc_data_v785_data[i]);
+        v7x5_geo[1].emplace_back(fData->frstpc_data_v785_geov[i]);
+        v7x5_channel[1].emplace_back(fData->frstpc_data_v785_channelv[i]);
+        v7x5_data[1].emplace_back(fData->frstpc_data_v785_data[i]);
     }
 
-    // V1190
+    // v1190
     uint32_t chn_first_hit = 0;
     uint32_t next_chn_first_hit, hits;
 
@@ -109,12 +106,9 @@ Bool_t FrsTPCReader::Read()
 
 
     new ((*fArray)[fArray->GetEntriesFast()]) FrsTPCData(
-        v775_geo,
-        v775_channel,
-        v775_data,
-        v785_geo,
-        v785_channel,
-        v785_data,
+        v7x5_geo,
+        v7x5_channel,
+        v7x5_data,
         v1190_channel,
         v1190_data,
         v1190_lot);
@@ -127,12 +121,13 @@ Bool_t FrsTPCReader::Read()
 
 void FrsTPCReader::Reset()
 {
-    v775_geo.clear();
-    v775_channel.clear();
-    v775_data.clear();
-    v785_geo.clear();
-    v785_channel.clear();
-    v785_data.clear();
+    for (int i = 0; i < 2; i++)
+    {
+        v7x5_geo[i].clear();
+        v7x5_channel[i].clear();
+        v7x5_data[i].clear();
+    }
+
     v1190_channel.clear();
     v1190_data.clear();
     v1190_lot.clear();

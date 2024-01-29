@@ -25,6 +25,8 @@ FrsCal2Hit::FrsCal2Hit()
     ,   fOnline(kFALSE)
     ,   fCalArrayMain(new TClonesArray("FrsMainCalData"))
     ,   fCalArrayTPC(new TClonesArray("FrsTPCCalData"))
+    ,   fCalArrayUser(new TClonesArray("FrsUserCalData"))
+    ,   fCalArrayVFTX(new TClonesArray("FrsVFTXCalData"))
     ,   fHitArray(new TClonesArray("FrsHitData"))
 {
 }
@@ -36,6 +38,8 @@ FrsCal2Hit::FrsCal2Hit(const TString& name, Int_t verbose)
     ,   fOnline(kFALSE)
     ,   fCalArrayMain(new TClonesArray("FrsMainCalData"))
     ,   fCalArrayTPC(new TClonesArray("FrsTPCCalData"))
+    ,   fCalArrayUser(new TClonesArray("FrsUserCalData"))
+    ,   fCalArrayVFTX(new TClonesArray("FrsVFTXCalData"))
     ,   fHitArray(new TClonesArray("FrsHitData"))
 {
 }
@@ -46,6 +50,8 @@ FrsCal2Hit::~FrsCal2Hit()
     c4LOG(info, "Deleting FrsCal2Hit task");
     if (fCalArrayMain) delete fCalArrayMain;
     if (fCalArrayTPC) delete fCalArrayTPC;
+    if (fCalArrayUser) delete fCalArrayUser;
+    if (fCalArrayVFTX) delete fCalArrayVFTX;
     if (fHitArray) delete fHitArray;
 }
 
@@ -1219,6 +1225,12 @@ InitStatus FrsCal2Hit::Init()
     fCalArrayTPC = (TClonesArray*)mgr->GetObject("FrsTPCCalData");
     c4LOG_IF(fatal, !fCalArrayTPC, "FrsTPCCalData branch not found!");
 
+    fCalArrayUser = (TClonesArray*)mgr->GetObject("FrsUserCalData");
+    c4LOG_IF(fatal, !fCalArrayUser, "FrsUserCalData branch not found!");
+
+    fCalArrayVFTX = (TClonesArray*)mgr->GetObject("FrsVFTXCalData");
+    c4LOG_IF(fatal, !fCalArrayVFTX, "FrsVFTXCalData branch not found!");
+
     mgr->Register("FrsHitData", "FRS Hit Data", fHitArray, !fOnline);
 
     SetParameters();
@@ -1254,18 +1266,17 @@ void FrsCal2Hit::Exec(Option_t* option)
     fCalHitUser = (FrsUserCalData*)fCalArrayUser->At(multUser-1);
     fCalHitVFTX = (FrsVFTXCalData*)fCalArrayVFTX->At(multVFTX-1);
 
-
     WR_TS = fCalHitMain->Get_WR();
+
+    /* ---------------------------------------------------- */
+    // Start of MUSIC analysis                              //
+    /* ---------------------------------------------------- */
 
     music_e1 = fCalHitUser->Get_music_e1();
     music_e2 = fCalHitUser->Get_music_e2();
     music_t1 = fCalHitMain->Get_music_t1();
     music_t2 = fCalHitMain->Get_music_t2();
     // we don't use music 3
-
-    /* ---------------------------------------------------- */
-    // Start of MUSIC analysis                              //
-    /* ---------------------------------------------------- */
 
     music1_anodes_cnt = 0;
     music2_anodes_cnt = 0;
@@ -2628,7 +2639,6 @@ void FrsCal2Hit::Setup_Conditions()
 }
 
 
-
 Bool_t FrsCal2Hit::Check_WinCond(Float_t P, Float_t* V)
 {
     if (P >= V[0] && P <= V[1]) return true;
@@ -2650,7 +2660,9 @@ Float_t FrsCal2Hit::rand3()
 
 void FrsCal2Hit::FinishEvent()
 {
-    // clears
+    // clear all vectors...
+    // ... many to consider
+
     fCalHitMain->Clear();
     fCalHitTPC->Clear();
     fCalArrayMain->Clear();

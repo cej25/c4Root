@@ -49,21 +49,13 @@ class FrsTPCRaw2Cal : public FairTask
         TMRTOFMSParameter* mrtof;
         TRangeParameter* range;
 
-        // stuff it goes into
-        std::vector<uint32_t> v775_geo;
-        std::vector<uint32_t> v775_channel;
-        std::vector<uint32_t> v775_data;
+        std::vector<uint32_t>* v7x5_geo;
+        std::vector<uint32_t>* v7x5_channel;
+        std::vector<uint32_t>* v7x5_data;
 
-        // stuff it goes into
-        std::vector<uint32_t> v785_geo;
-        std::vector<uint32_t> v785_channel;
-        std::vector<uint32_t> v785_data;
-
-        // stuff it goes into
         std::vector<uint32_t> v1190_channel;
         std::vector<uint32_t> v1190_data;
         std::vector<uint32_t> v1190_lot;
-
 
         // Intermediate variables
         Int_t v1190_channel_dt[7][4];
