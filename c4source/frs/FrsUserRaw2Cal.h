@@ -22,6 +22,9 @@ class FrsUserRaw2Cal : public FairTask
 
         void Exec(Option_t* option);
 
+        void ZeroArrays();
+        void ClearVectors();
+
         void FinishEvent();
         void FinishTask();
 
@@ -38,9 +41,9 @@ class FrsUserRaw2Cal : public FairTask
         EventHeader* header;
         Int_t fNEvents = 0;
 
-        const std::vector<uint32_t>* v7x5_geo;
-        const std::vector<uint32_t>* v7x5_channel;
-        const std::vector<uint32_t>* v7x5_data;
+        std::vector<uint32_t>* v7x5_geo_user;
+        std::vector<uint32_t>* v7x5_channel_user;
+        std::vector<uint32_t>* v7x5_data_user;
 
         uint32_t dt_array[16];
         uint32_t music_e1[8];

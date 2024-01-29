@@ -22,6 +22,9 @@ class FrsVFTXRaw2Cal : public FairTask
 
         void Exec(Option_t* option);
 
+        void ZeroArrays();
+        void ClearVectors();
+
         void FinishEvent();
         void FinishTask();
 
@@ -38,7 +41,7 @@ class FrsVFTXRaw2Cal : public FairTask
         EventHeader* header;
         Int_t fNEvents = 0;
 
-        const std::vector<uint32_t>* vftx_lead_times;
+        std::vector<uint32_t>* vftx_lead_times;
 
         // Output
         std::vector<uint32_t> TRaw_vftx[8];

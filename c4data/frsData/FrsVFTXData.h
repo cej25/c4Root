@@ -17,7 +17,7 @@ class FrsVFTXData : public TObject
         virtual ~FrsVFTXData() {}
 
         // Getters
-        inline const std::vector<uint32_t>* Get_vftx_lead_times() const { return fvftx_lead_times; }
+        inline std::vector<uint32_t>* Get_vftx_lead_times() { return fvftx_lead_times; }
 
         // Setters
     

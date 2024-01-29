@@ -20,6 +20,9 @@ class FrsMainRaw2Cal : public FairTask
 
         void Exec(Option_t* option);
 
+        void ZeroArrays();
+        void ClearVectors();
+
         void FinishEvent();
         void FinishTask();
 

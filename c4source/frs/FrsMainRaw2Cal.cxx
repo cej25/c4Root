@@ -368,19 +368,27 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
 
 }
 
-// clear all TClonesArray used in this Task here
-void FrsMainRaw2Cal::FinishEvent()
-{   
-    for (int i = 0; i < 15; i++) tdc_array[i].clear(); 
-    for (int i = 0; i < 14; i++) de_array[i] = 0;
+void FrsMainRaw2Cal::ZeroArrays()
+{
+    memset(de_array, 0, sizeof(de_array));
+    fCalArray->Clear();
+}
+
+void FrsMainRaw2Cal::ClearVectors()
+{
+    for (int i = 0; i < 15; i++) tdc_array[i].clear();
     v830_scalers_main.clear();
     v792_channel.clear();
     v792_data.clear();
     v1290_channel.clear();
     v1290_data.clear();
     v1290_lot.clear();
-    fRawArray->Clear();
-    fCalArray->Clear();
+}
+
+void FrsMainRaw2Cal::FinishEvent()
+{   
+    ZeroArrays();
+    ClearVectors();
 };
 
 void FrsMainRaw2Cal::FinishTask()
