@@ -47,7 +47,7 @@ Bool_t FrsVFTXReader::Init(ext_data_struct_info* a_struct_info)
         return kFALSE;
     }
 
-    FairRootManager::Instance()->Register("FrsVFTXReader", "FRS VFTX Data", fArray, !fOnline);
+    FairRootManager::Instance()->Register("FrsVFTXData", "FRS VFTX Data", fArray, !fOnline);
     fArray->Clear();
 
     memset(fData, 0, sizeof *fData);

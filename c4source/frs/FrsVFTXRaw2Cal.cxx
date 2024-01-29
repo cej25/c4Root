@@ -71,7 +71,6 @@ InitStatus FrsVFTXRaw2Cal::Init()
 
 void FrsVFTXRaw2Cal::Exec(Option_t* option)
 {
-
     // check there is actual data from module(s)
     int mult = fRawArray->GetEntriesFast();
     if (!mult) return;
@@ -80,7 +79,6 @@ void FrsVFTXRaw2Cal::Exec(Option_t* option)
 
     vftx_lead_times = fRawHit->Get_vftx_lead_times();
 
-    // set vectors to vectors...maybe we need a loop, fix if so
     TRaw_vftx[0] = vftx_lead_times[CH_S21_L]; // 21l
     TRaw_vftx[1] = vftx_lead_times[CH_S21_R]; // 21r
     TRaw_vftx[2] = vftx_lead_times[CH_S22_L]; // 22l
@@ -99,9 +97,21 @@ void FrsVFTXRaw2Cal::Exec(Option_t* option)
 
 }
 
+void FrsVFTXRaw2Cal::ZeroArrays()
+{
+    fCalArray->Clear();
+}
+
+void FrsVFTXRaw2Cal::ClearVectors()
+{
+    for (int i = 0; i < 8; i++) TRaw_vftx[i].clear();
+    for (int i = 0; i < 16; i++) vftx_lead_times[i].clear(); // maybe this doesn't need clearing?
+}
+
 void FrsVFTXRaw2Cal::FinishEvent()
 {
-    // clears
+    ZeroArrays();
+    ClearVectors();
 }
 
 void FrsVFTXRaw2Cal::FinishTask()

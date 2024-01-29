@@ -26,6 +26,9 @@ FrsTPCRaw2Cal::FrsTPCRaw2Cal()
     ,   fRawArray(new TClonesArray("FrsTPCData"))
     ,   fCalArray(new TClonesArray("FrsTPCCalData"))
 {
+    /*v7x5_geo = new std::vector<uint32_t>[2];
+    v7x5_channel = new std::vector<uint32_t>[2];
+    v7x5_data = new std::vector<uint32_t>[2];*/
 }
 
 FrsTPCRaw2Cal::FrsTPCRaw2Cal(const TString& name, Int_t verbose)
@@ -36,6 +39,7 @@ FrsTPCRaw2Cal::FrsTPCRaw2Cal(const TString& name, Int_t verbose)
     ,   fRawArray(new TClonesArray("FrsTPCData"))
     ,   fCalArray(new TClonesArray("FrsTPCCalData"))
 {
+
 }
 
 FrsTPCRaw2Cal::~FrsTPCRaw2Cal()
