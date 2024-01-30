@@ -371,12 +371,15 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
 void FrsMainRaw2Cal::ZeroArrays()
 {
     memset(de_array, 0, sizeof(de_array));
+    memset(music_t1, 0, sizeof(music_t1));
+    memset(music_t2, 0, sizeof(music_t2));
     fCalArray->Clear();
 }
 
 void FrsMainRaw2Cal::ClearVectors()
 {
     for (int i = 0; i < 15; i++) tdc_array[i].clear();
+    v830_scalers_index.clear();
     v830_scalers_main.clear();
     v792_channel.clear();
     v792_data.clear();

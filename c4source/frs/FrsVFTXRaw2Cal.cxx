@@ -105,7 +105,6 @@ void FrsVFTXRaw2Cal::ZeroArrays()
 void FrsVFTXRaw2Cal::ClearVectors()
 {
     for (int i = 0; i < 8; i++) TRaw_vftx[i].clear();
-    for (int i = 0; i < 16; i++) vftx_lead_times[i].clear(); // maybe this doesn't need clearing?
 }
 
 void FrsVFTXRaw2Cal::FinishEvent()

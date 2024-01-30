@@ -119,7 +119,12 @@ Bool_t FrsTPCReader::Read()
 
 }
 
-void FrsTPCReader::Reset()
+void FrsTPCReader::ZeroArrays()
+{
+    fArray->Clear();
+}
+
+void FrsTPCReader::ClearVectors()
 {
     for (int i = 0; i < 2; i++)
     {
@@ -127,11 +132,15 @@ void FrsTPCReader::Reset()
         v7x5_channel[i].clear();
         v7x5_data[i].clear();
     }
-
     v1190_channel.clear();
     v1190_data.clear();
     v1190_lot.clear();
-    fArray->Clear();
+}
+
+void FrsTPCReader::Reset()
+{
+    ZeroArrays();
+    ClearVectors();
 }
 
 ClassImp(FrsTPCReader);

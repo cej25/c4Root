@@ -25,6 +25,10 @@ class FrsTPCRaw2Cal : public FairTask
 
         void Exec(Option_t* option);
 
+        void ZeroArrays();
+        void ZeroVariables();
+        void ClearVectors();
+
         void FinishEvent();
         void FinishTask();
 
@@ -57,14 +61,14 @@ class FrsTPCRaw2Cal : public FairTask
         std::vector<uint32_t> v1190_data;
         std::vector<uint32_t> v1190_lot;
 
-        // Intermediate variables
+        /*  Channel mappings ----------*/
         Int_t v1190_channel_dt[7][4];
         Int_t v1190_channel_lt[7][2];
         Int_t v1190_channel_rt[7][2];
         Int_t v1190_channel_timeref[8];
         Int_t v1190_channel_calibgrid[7];
+        /* ------------------------------ */
 
-        // uint32_t?
         Int_t tpc_a[7][4];
         Int_t tpc_l[7][2];
         Int_t tpc_r[7][2];

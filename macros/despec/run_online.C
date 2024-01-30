@@ -138,6 +138,8 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     //ge_calib->SetDetectorMapFile("/u/despec/BB7-c4-test/c4Root/Germanium_Detector_Map.txt");
     //ge_calib->PrintDetectorMap();
 
+    // CEJ: FRS issue possibly in Reader step
+    // Main and TPC checked, should be fine...
     FrsMainRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
     FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal();
     FrsUserRaw2Cal* calfrsuser = new FrsUserRaw2Cal();

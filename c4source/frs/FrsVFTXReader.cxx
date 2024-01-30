@@ -177,10 +177,22 @@ Double_t FrsVFTXReader::VFTX_GetTRaw_ps(int channel, int cc, int ft, float r)
 }
 
 
+void FrsVFTXReader::ZeroArrays()
+{   
+    // memset(VFTX_Bin2Ps, 0, sizeof(VFTX_Bin2Ps));
+    fArray->Clear();
+}
+
+void FrsVFTXReader::ClearVectors()
+{
+    for (int i = 0; i < 16; i++) vftx_leading_time[i].clear();
+}
+
 
 void FrsVFTXReader::Reset()
 {
-    fArray->Clear();
+    ZeroArrays();
+    ClearVectors();
 }
 
 ClassImp(FrsVFTXReader)

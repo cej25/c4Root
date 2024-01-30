@@ -114,13 +114,31 @@ Bool_t FrsUserReader::Read()
 
     fNEvent++;
     return kTRUE;
+
 }
+
+void FrsUserReader::ZeroArrays()
+{
+    fArray->Clear();
+}
+
+void FrsUserReader::ClearVectors()
+{
+    for (int i = 0; i < 4; i++)
+    {
+        v7x5_geo[i].clear();
+        v7x5_channel[i].clear();
+        v7x5_data[i].clear();
+    }
+    scalers_index.clear();
+    scalers_user.clear();
+}
+
 
 void FrsUserReader::Reset()
 {
-    scalers_index.clear();
-    scalers_user.clear();
-    fArray->Clear();
+    ZeroArrays();
+    ClearVectors();
 }
 
 ClassImp(FrsUserReader)
