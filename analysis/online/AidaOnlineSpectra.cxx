@@ -188,14 +188,15 @@ InitStatus AidaOnlineSpectra::Init()
         h_implant_strip_1d_energy[i]->GetYaxis()->SetTitle("Implant Energy/MeV");
         implantDssdFolder[i]->Add(h_implant_strip_1d_energy[i]);
 
-        name.str();
-        title.str();
+        name.str("");
+        title.str("");
         name << "aida_implants_d" << (i + 1) << "_implants_x_ex";
         title << "DSSD " << (i + 1) << " X position vs Energy";
         h_implant_x_ex[i] = new TH2F(name.str().c_str(), title.str().c_str(),
                 xstrips, -xmax, xmax, 2000, 0, 20000);
         h_implant_x_ex[i]->GetXaxis()->SetTitle("X Position/mm");
         h_implant_x_ex[i]->GetYaxis()->SetTitle("Energy/MeV");
+        implantDssdFolder[i]->Add(h_implant_x_ex[i]);
 
         name.str("");
         title.str("");
@@ -276,6 +277,7 @@ void AidaOnlineSpectra::Reset_Histo()
     for (auto& h : h_implant_e) h->Reset();
     for (auto& h : h_implant_e_xy) h->Reset();
     for (auto& h : h_implant_strip_xy) h->Reset();
+    for (auto& h : h_implant_x_ex) h->Reset();
 
     for (auto& h : h_decay_strip_xy) h->Reset();
     for (auto& h : h_decay_pos_xy) h->Reset();
@@ -380,6 +382,15 @@ void AidaOnlineSpectra::Exec(Option_t* option)
             }
         }
     }
+
+    // AIDA DeadTime Calculation
+    // When a RESUME happens after a PAUSE get an interval
+    // Track current second (from something?)
+    // Push 0s until buffer[0] is at current_second ?
+    // Calcualte amount of 1s from START to interval 
+    // Calculate number of 1s blocks
+    // Calculate amount of 1s from interval to END
+    // Fill all from current_time?
     fNEvents += 1;
 }
 
