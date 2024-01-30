@@ -16,12 +16,12 @@ extern "C"
 
 class TClonesArray;
 
-struct EXT_STR_h101_BPLAST_t;
-typedef struct EXT_STR_h101_BPLAST_t EXT_STR_h101_BPLAST;
-typedef struct EXT_STR_h101_BPLAST_onion_t EXT_STR_h101_BPLAST_onion;
+struct EXT_STR_h101_bplast_t;
+typedef struct EXT_STR_h101_bplast_t EXT_STR_h101_bplast;
+typedef struct EXT_STR_h101_bplast_onion_t EXT_STR_h101_bplast_onion;
 class ext_data_struct_info;
 
-struct bplast_last_hit_struct{
+struct bplast_last_lead_hit_struct{
     bool hit = false;
     //uint16_t board_id; index using these:
     //uint32_t ch_ID;
@@ -34,7 +34,7 @@ struct bplast_last_hit_struct{
 class bPlastReader : public c4Reader
 {
     public:
-        bPlastReader(EXT_STR_h101_BPLAST_onion*, size_t);
+        bPlastReader(EXT_STR_h101_bplast_onion*, size_t);
 
         virtual ~bPlastReader();
 
@@ -54,17 +54,18 @@ class bPlastReader : public c4Reader
 
         void WriteFineTimeHistosToFile();
         void ReadFineTimeHistosFromFile();
-        void SetInputFileFineTimeHistos(const char* inputfile){
+        void SetInputFileFineTimeHistos(char * inputfile){
             fine_time_histo_infile = inputfile;
             fine_time_calibration_read_from_file = true;
         };
+
+        void PrintStatistics();
 
         void DoFineTimeCalOnline(){
             fine_time_calibration_set = false;
             fine_time_calibration_save = false;
         }; //creates and does not save it.
-        
-        void DoFineTimeCalOnline(const char* outputfile, int nevents_to_include){
+        void DoFineTimeCalOnline(char * outputfile, int nevents_to_include){
             fine_time_histo_outfile = outputfile;
             fine_time_calibration_save = true;
             fine_time_calibration_set = false;
@@ -72,11 +73,10 @@ class bPlastReader : public c4Reader
         }; //creates and saves it.
 
 
-
     private:
         unsigned int fNEvent;
 
-        EXT_STR_h101_BPLAST_onion* fData;
+        EXT_STR_h101_bplast_onion* fData;
 
         size_t fOffset;
 
@@ -84,31 +84,38 @@ class bPlastReader : public c4Reader
 
         TClonesArray* fArray;
 
-        bplast_last_hit_struct ** last_hits;
-
-        uint32_t last_epoch[32];
-        uint32_t next_channel = 0;
-
         uint64_t wr_t;
 
 
-        const int NBoards = sizeof(fData->bplast_tamex) / sizeof(fData->bplast_tamex[0]);
-        const int NChannels = 32;
+        static const int NBoards = sizeof(fData->bplast_tamex) / sizeof(fData->bplast_tamex[0]);
+        static const int NChannels = 32; //slow + fast per board
 
+        //global
         uint64_t fNepochwordsread = 0;
-        uint64_t fNtrails_read = 0;
-        uint64_t fNleads_read = 0;
-        uint64_t fNmatched = 0;
-        uint64_t fNevents_lacking_epoch = 0;
+        uint64_t fNevents_skipped = 0; //because the size of the array does not match internally (UCESB/c4 error likely)
+        
+        // per channel/board    
+        uint64_t fNtrails_read[NBoards][NChannels];
+        uint64_t fNleads_read[NBoards][NChannels];
+        uint64_t fNmatched[NBoards][NChannels]; //successfully matched lead/trail combinations.
+
+        uint64_t fNevents_lacking_epoch[NBoards][NChannels]; //events where there is a time data word in a new channel without having seen an epoch word for this channel before.
+        uint64_t fNevents_TAMEX_fail[NBoards][NChannels]; //number of 0x3FF data words indicating TAMEX failure of the fast filter.
+        uint64_t fNevents_second_lead_seen[NBoards][NChannels]; // number of times a second lead is seen (i.e. a lead-lead in the channel) keeping only the last lead.
+        uint64_t fNevents_trail_seen_no_lead[NBoards][NChannels]; // number of times a trail is seen without a preceeding lead - skipping this event.
 
 
-        const char * fine_time_histo_outfile; 
-        const char * fine_time_histo_infile; 
+        int last_channel_read = 0;
+        bool last_word_read_was_epoch = false;
 
-        const int Nbins_fine_time = 1024; //number of bins in the fine time - it is a 10 bit word (2^10 = 1024) but seemingly no event is >512...? 
+
+        char * fine_time_histo_outfile; 
+        char * fine_time_histo_infile; 
+
+        const int Nbins_fine_time = 1024; //number of bins in the fine time - it is a 10 bit word (2^10 = 1024) but seemingly no event is >512 - true, fine time calibration does this.
 
         TH1I *** fine_time_hits; //array of TH1 hisots [NBoards][NChannels]
-        double *** fine_time_calibration_coeffs; //[NBoards][NChannels][512] last index is bin nr. - this is the lookup table
+        double *** fine_time_calibration_coeffs; //[NBoards][NChannels][1024] last index is bin nr. - this is the lookup table
         
         int fine_time_calibration_after = 10000000;
         double TAMEX_fine_time_clock = 5.0; // ns in one fine time cycle.
@@ -116,7 +123,6 @@ class bPlastReader : public c4Reader
         bool fine_time_calibration_set = false;
         bool fine_time_calibration_save = false;
         bool fine_time_calibration_read_from_file = false;
-
 
 
     public:
