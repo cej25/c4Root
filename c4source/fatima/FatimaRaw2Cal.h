@@ -9,6 +9,7 @@ class EventHeader;
 class FatimaTwinpeaksData;
 class FatimaTwinpeaksCalData;
 class TimeMachineData;
+class TClonesArray;
 
 class FatimaRaw2Cal : public FairTask
 {
@@ -48,6 +49,9 @@ class FatimaRaw2Cal : public FairTask
 
 
         FatimaTwinpeaksData* funcal_hit;
+        
+        TClonesArray * hits_in_Twinpeaks_channel;
+        
         FatimaTwinpeaksData* funcal_hit_next;
         FatimaTwinpeaksCalData* fcal_hit;
 

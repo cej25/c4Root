@@ -88,11 +88,14 @@ InitStatus FatimaRaw2Cal::Init(){
     c4LOG_IF(fatal, !funcal_data, "Fatima branch of FatimaTwinpeaksData not found.");
     
 
-    FairRootManager::Instance()->Register("FatimaTwinpeaksCalData", "Fatima Cal Data", fcal_data, !fOnline);
+    FairRootManager::Instance()->Register("FatimaTwinpeaksCalData", "FatimaTwinpeaksCalDataFolder", fcal_data, !fOnline);
     //need to have the name of the detector subsystem here:
-    FairRootManager::Instance()->Register("FatimaTimeMachineData", "Time Machine Data", ftime_machine_array, !fOnline);
+    FairRootManager::Instance()->Register("FatimaTimeMachineData", "FatimaTimeMachineDataFolder", ftime_machine_array, !fOnline);
     fcal_data->Clear();
     funcal_data->Clear();
+
+    hits_in_Twinpeaks_channel = new TClonesArray("FatimaTwinpeaksCalData");
+    hits_in_Twinpeaks_channel->Clear();
 
     return kSUCCESS;
 };
@@ -111,6 +114,8 @@ Bool_t FatimaRaw2Cal::SetDetectorMapFile(TString filename){
     //std::cout << "reading detector map \n";
 
     std::ifstream detector_map_file (filename);
+
+    if (!detector_map_file.is_open()) {c4LOG(fatal,Form("File '%s' does not exist",filename.Data()));}
 
     int rtamex_module,rtamex_channel,rdetector_id; // temp read variables
         
@@ -217,17 +222,46 @@ void FatimaRaw2Cal::Exec(Option_t* option){
         Int_t event_multiplicity = funcal_data->GetEntriesFast();
         for (Int_t ihit = 0; ihit < event_multiplicity; ihit++){
 
-            funcal_hit = (FatimaTwinpeaksData*)funcal_data->At(ihit);
+            FatimaTwinpeaksData * first_hit_in_fast_channel = (FatimaTwinpeaksData*)funcal_data->At(ihit);
 
             // under the assumption fast-slow always follows:
-            if (funcal_hit->Get_trail_epoch_counter() == 0) {continue;} // missing trail
-            if (ihit == event_multiplicity - 1) {fNunmatched++; continue;} //if only one event is left
-            if (funcal_hit->Get_ch_ID()%2==0) {fNunmatched++; continue;} //skip slow channels only read them in partner. increment ihit by one extra.
-            
-            funcal_hit_next = (FatimaTwinpeaksData*)funcal_data->At(ihit+1);
+            //assume that only matched lead-trail hits are written.
+            if (first_hit_in_fast_channel->Get_ch_ID()%2==0) {continue;} //get the first odd numbered channel
+
+            int hits_in_fast_channel = 1;
+            int hits_in_slow_channel = 0;
+
+            int look_ahead_counter = 1;
+            bool all_hits_in_fast_slow_found = false;
+            while (!all_hits_in_fast_slow_found){
+                if (ihit+look_ahead_counter >= event_multiplicity) break;
+                FatimaTwinpeaksData * this_hit = (FatimaTwinpeaksData*)funcal_data->At(ihit+look_ahead_counter);
+                if (this_hit->Get_ch_ID() == first_hit_in_fast_channel->Get_ch_ID() && this_hit->Get_board_id() == first_hit_in_fast_channel->Get_board_id()) hits_in_fast_channel++;
+                else if (this_hit->Get_ch_ID() == first_hit_in_fast_channel->Get_ch_ID()+1 && this_hit->Get_board_id() == first_hit_in_fast_channel->Get_board_id()) hits_in_slow_channel++;
+                else all_hits_in_fast_slow_found = true;
+                look_ahead_counter++;
+            }
+
+
+            //c4LOG(info,Form("fast hits = %i, slow hits = %i, look ahead counter = %i",hits_in_fast_channel,hits_in_slow_channel,look_ahead_counter));
+            if (hits_in_fast_channel != hits_in_slow_channel) {
+                //break condition - cant recover.
+                ihit = hits_in_fast_channel + hits_in_slow_channel - 1 + ihit;
+                continue;
+            }
+
+
+            for (int hitnr = 0; hitnr<hits_in_fast_channel; hitnr++){
+
+            funcal_hit = (FatimaTwinpeaksData*)funcal_data->At(ihit+hitnr);
+            funcal_hit_next = (FatimaTwinpeaksData*)funcal_data->At(ihit+hitnr+hits_in_fast_channel);
             
             if (funcal_hit_next->Get_ch_ID() != funcal_hit->Get_ch_ID()+1){ // this assumption seems empirically true - no events are filled when reverse order is put.
                 fNunmatched++; continue;
+            }
+
+            if (funcal_hit_next->Get_board_id() != funcal_hit->Get_board_id()){
+                continue;
             }
 
 
@@ -315,6 +349,7 @@ void FatimaRaw2Cal::Exec(Option_t* option){
             
             fNEvents++;
             //ihit++; //increment it by one extra.
+            }
         }
     }    
 }
@@ -339,6 +374,8 @@ Some stats are written when finishing.
 void FatimaRaw2Cal::FinishTask(){
     c4LOG(info, Form("Wrote %i events.",fNEvents));
     c4LOG(info, Form("%i events are unmatched (not written).",fNunmatched));
+
+    
 }
 
 

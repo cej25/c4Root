@@ -65,7 +65,7 @@ InitStatus AidaUnpack2Cal::Init()
 
   mgr->RegisterAny("AidaImplantCalAdcData", implantCalArray, !fImplantOnline);
   mgr->RegisterAny("AidaDecayCalAdcData", decayCalArray, !fDecayOnline);
-  mgr->Register("AidaTimeMachineData", "Time Machine Data", aidaTimeMachineArray, !fScalersOnline);
+  mgr->Register("AidaTimeMachineData", "AidaTimeMachineDataFolder", aidaTimeMachineArray, !fScalersOnline);
 
   conf = TAidaConfiguration::GetInstance();
 
