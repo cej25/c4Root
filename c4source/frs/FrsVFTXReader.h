@@ -34,6 +34,9 @@ class FrsVFTXReader : public c4Reader
 
         virtual Bool_t Read() override;
 
+        void ZeroArrays();
+        void ClearVectors();
+
         virtual void Reset() override;
 
         void SetOnline(Bool_t option) { fOnline = option; }

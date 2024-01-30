@@ -143,7 +143,12 @@ Bool_t FrsMainReader::Read()
 
 }
 
-void FrsMainReader::Reset()
+void FrsMainReader::ZeroArrays()
+{
+    fArray->Clear();
+}
+
+void FrsMainReader::ClearVectors()
 {
     scalers_index.clear();
     scalers_main.clear();
@@ -152,7 +157,12 @@ void FrsMainReader::Reset()
     v1290_channel.clear();
     v1290_data.clear();
     v1290_lot.clear();
-    fArray->Clear();
+}
+
+void FrsMainReader::Reset()
+{
+    ZeroArrays();
+    ClearVectors();
 }
 
 ClassImp(FrsMainReader);

@@ -2085,21 +2085,120 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
 
 }
 
-void FrsTPCRaw2Cal::FinishEvent()
+
+void FrsTPCRaw2Cal::ZeroArrays()
+{   
+    memset(tpc_a, 0, sizeof(tpc_a));
+    memset(tpc_l, 0, sizeof(tpc_l));
+    memset(tpc_r, 0, sizeof(tpc_r));
+    memset(b_tpc_timeref, 0, sizeof(b_tpc_timeref));
+    memset(tpc_timeref_s, 0, sizeof(tpc_timeref_s));
+    memset(tpc_dt_s, 0, sizeof(tpc_dt_s));
+    memset(tpc_lt_s, 0, sizeof(tpc_lt_s));
+    memset(tpc_rt_s, 0, sizeof(tpc_rt_s));
+    memset(tpc_de, 0, sizeof(tpc_de));
+    memset(b_tpc_de, 0, sizeof(b_tpc_de));
+    memset(tpc_csum, 0, sizeof(tpc_csum));
+    memset(b_tpc_csum, 0, sizeof(b_tpc_csum));
+    memset(tpc_x, 0, sizeof(tpc_x));
+    memset(tpc_y, 0, sizeof(tpc_y));
+    memset(tpc_xraw, 0, sizeof(tpc_xraw));
+    memset(tpc_yraw, 0, sizeof(tpc_yraw));
+    memset(tpc_dx12, 0, sizeof(tpc_dx12));
+    memset(b_tpc_xy, 0, sizeof(b_tpc_xy));
+    fCalArray->Clear();
+}
+
+void FrsTPCRaw2Cal::ZeroVariables()
 {
-    // clear stuff
+    tpc_x_s2_foc_21_22 = 0;
+    tpc_y_s2_foc_21_22 = 0;
+    tpc_angle_x_s2_foc_21_22 = 0;
+    tpc_angle_y_s2_foc_21_22 = 0;
+    tpc_x_s2_foc_23_24 = 0;
+    tpc_y_s2_foc_23_24 = 0;
+    tpc_angle_x_s2_foc_23_24 = 0;
+    tpc_angle_y_s2_foc_23_24 = 0;
+    tpc_x_s2_foc_22_24 = 0;
+    tpc_y_s2_foc_22_24 = 0;
+    tpc_angle_x_s2_foc_22_24 = 0;
+    tpc_angle_y_s2_foc_22_24 = 0;
+    tpc_x_s2_foc = 0;
+    tpc_y_s2_foc = 0;
+    tpc_angle_x_s2_foc = 0;
+    tpc_angle_y_s2_foc = 0;
+    tpc_x_s4 = 0;
+    tpc_y_s4 = 0;
+    tpc_angle_x_s4 = 0;
+    tpc_angle_y_s4 = 0;
+    tpc_x_s4_target2 = 0;
+    tpc_y_s4_target2 = 0;
+    tpc21_22_sc21_x = 0;
+    tpc21_22_sc21_y = 0;
+    tpc23_24_sc21_x = 0;
+    tpc23_24_sc21_y = 0;
+    tpc22_24_sc21_x = 0;
+    tpc22_24_sc21_y = 0;
+    tpc21_22_sc22_x = 0;
+    tpc21_22_sc22_y = 0;
+    tpc23_24_sc22_x = 0;
+    tpc23_24_sc22_y = 0;
+    tpc22_24_sc22_x = 0;
+    tpc22_24_sc22_y = 0;
+    tpc21_22_s2target_x = 0;
+    tpc21_22_s2target_y = 0;
+    tpc23_24_s2target_x = 0;
+    tpc23_24_s2target_y = 0;
+    tpc22_24_s2target_x = 0;
+    tpc22_24_s2target_y = 0;
+    tpc_x_s2_target1 = 0;
+    tpc_y_s2_target1 = 0;
+    tpc_sc41_x = 0;
+    tpc_sc41_y = 0;
+    tpc_sc42_x = 0;
+    tpc_sc42_y = 0;
+    tpc_sc43_x = 0;
+    tpc_sc43_y = 0;
+    tpc_music41_x = 0; 
+    tpc_music41_y = 0; 
+    tpc_music42_x = 0; 
+    tpc_music42_y = 0; 
+    tpc_music43_x = 0; 
+    tpc_music43_y = 0; 
+    tpc_s4target_x = 0;
+    tpc_s4target_y = 0;  
+    music1_x1 = 0; 
+    music1_x2 = 0; 
+    music1_x3 = 0; 
+    music1_x4 = 0; 
+    music1_y1 = 0; 
+    music1_y2 = 0; 
+    music1_y3 = 0;
+    music1_y4 = 0;
+    music2_x = 0;
+}
+
+void FrsTPCRaw2Cal::ClearVectors()
+{
+    for (int i = 0; i < 2; i++)
+    {
+        v7x5_geo[i].clear();
+        v7x5_channel[i].clear();
+        v7x5_data[i].clear();
+    }
     for (int i = 0; i < 7; i++)
     {
         tpc_calibgrid[i].clear();
-        for (int j = 0; j < 4; j++)
-        {
-            tpc_dt[i][j].clear();
-        }
         for (int j = 0; j < 2; j++)
         {
             tpc_lt[i][j].clear();
             tpc_rt[i][j].clear();
         }
+        for (int j = 0; j < 4; j++)
+        {
+            tpc_dt[i][j].clear();
+        }
+
     }
     for (int i = 0; i < 8; i++)
     {
@@ -2109,18 +2208,17 @@ void FrsTPCRaw2Cal::FinishEvent()
     {
         v1190_lead_hits[i].clear();
     }
-    for (int i = 0; i < 2; i++)
-    {
-        v7x5_geo[i].clear();
-        v7x5_channel[i].clear();
-        v7x5_data[i].clear();
-    }
     v1190_channel.clear();
     v1190_data.clear();
     v1190_lot.clear();
-    fRawHit->Clear();
-    fRawArray->Clear();
-    fCalArray->Clear();
+
+}
+
+void FrsTPCRaw2Cal::FinishEvent()
+{
+    ZeroArrays();
+    ZeroVariables();
+    ClearVectors();
 }
 
 void FrsTPCRaw2Cal::FinishTask()
