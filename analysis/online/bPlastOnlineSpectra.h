@@ -32,6 +32,8 @@ class bPlastOnlineSpectra : public FairTask
 
         virtual void Reset_Histo();
 
+        virtual void Snapshot_Histo();
+
         // range setters
 
     

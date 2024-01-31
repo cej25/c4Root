@@ -65,8 +65,10 @@ InitStatus bPlastOnlineSpectra::Init()
     c4LOG_IF(fatal, !fHitbPlastTwinpeaks, "Branch bPlastTwinpeaksCalData not found!");
 
     TFolder * bPlast_spectra_folder = new TFolder("bPlast", "bPlast");
+    TFolder * bPlast_snapshot_folder = new TFolder("bPlast_Snapshots", "bPlast_Snapshots");
 
     run->AddObject(bPlast_spectra_folder);
+    run->AddObject(bPlast_snapshot_folder);
 
     // energy spectra:
     c_bplast_slowToT  = new TCanvas("c_bplast_slowToT","slow ToT bPlast spectra",650,350);
@@ -148,6 +150,7 @@ InitStatus bPlastOnlineSpectra::Init()
     bPlast_spectra_folder->Add(c_bplast_time_spectra);
 
     run->GetHttpServer()->RegisterCommand("Reset_bPlast_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Snapshot_bPlast_Hist", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
 
     return kSUCCESS;
     
@@ -165,6 +168,36 @@ void bPlastOnlineSpectra::Reset_Histo()
 
     c4LOG(info, "Histograms reset.");
    
+}
+
+// make a date and time stamped folder with pngs of the histograms and .root file and save them
+void bPlastOnlineSpectra::Snapshot_Histo()
+{
+    c4LOG(info, "");
+    // get the date and time
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
+    TString snapshot_dir = Form("bPlast_Snapshots_%d_%d_%d_%d_%d_%d", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
+    gSystem->mkdir(snapshot_dir);
+    gSystem->cd(snapshot_dir);
+
+    c_bplast_slowToT->SaveAs("c_bplast_slowToT.png");
+    c_bplast_fastToT->SaveAs("c_bplast_fastToT.png");
+    c_bplast_hitpatterns->SaveAs("c_bplast_hitpatterns.png");
+    c_bplast_time_spectra->SaveAs("c_bplast_time_spectra.png");
+    c_bplast_fast_v_slow->SaveAs("c_bplast_fast_v_slow.png");
+
+    // TFile * snapshot_file = new TFile("bPlast_Snapshots.root","RECREATE");
+    // bPlast_snapshot_folder->cd(0)
+    // for (int ihist = 0; ihist<NDetectors; ihist++) h1_bplast_slowToT[ihist]->Write();
+    // for (int ihist = 0; ihist<NDetectors; ihist++) h1_bplast_fastToT[ihist]->Write();
+    // h1_bplast_fast_hitpatterns->Write();
+    // h1_bplast_slow_hitpatterns->Write();
+    // for (int ihist = 0; ihist<NDetectors; ihist++) h1_bplast_abs_time[ihist]->Write();
+    // for (int ihist = 0; ihist<NDetectors; ihist++) h2_bplast_slowToT_vs_fastToT[ihist]->Write();
+    // snapshot_file->Close();
+
+    gSystem->cd("..");
 }
 
 void bPlastOnlineSpectra::Exec(Option_t* option)

@@ -29,17 +29,17 @@ link_directories(${FAIRROOT_LIBRARY_DIR} ${ROOT_LIBRARY_DIR})
 
 set(SRCS
 #online
-# ./online/GermaniumOnlineSpectra.cxx
-# ./online/BeamMonitorOnlineSpectra.cxx
-# ./online/LisaOnlineSpectra.cxx
-# ./online/AidaOnlineSpectra.cxx
-# ./online/bPlastOnlineSpectra.cxx
-# ./online/FatimaOnlineSpectra.cxx
-# ./online/FrsOnlineSpectra.cxx
-# ./online/TimeMachineOnline.cxx
+./online/GermaniumOnlineSpectra.cxx
+./online/BeamMonitorOnlineSpectra.cxx
+./online/LisaOnlineSpectra.cxx
+./online/AidaOnlineSpectra.cxx
+./online/bPlastOnlineSpectra.cxx
+./online/FatimaOnlineSpectra.cxx
+./online/FrsOnlineSpectra.cxx
+./online/TimeMachineOnline.cxx
 #nearline
-./nearline/bPlastNearlineSpectra.cxx
-./nearline/AidaNearlineSpectra.cxx
+# ./nearline/bPlastNearlineSpectra.cxx
+# ./nearline/AidaNearlineSpectra.cxx
 
 #offline
 )

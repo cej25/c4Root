@@ -8,18 +8,18 @@
 
 
 // online
-// #pragma link C++ class AidaOnlineSpectra+;
-// #pragma link C++ class FrsOnlineSpectra+;
-// #pragma link C++ class GermaniumOnlineSpectra+;
-// #pragma link C++ class bPlastOnlineSpectra+;
-// #pragma link C++ class BeamMonitorOnlineSpectra+;
-// #pragma link C++ class LisaOnlineSpectra+;
-// #pragma link C++ class FatimaOnlineSpectra+;
-// #pragma link C++ class TimeMachineOnline+;
+#pragma link C++ class AidaOnlineSpectra+;
+#pragma link C++ class FrsOnlineSpectra+;
+#pragma link C++ class GermaniumOnlineSpectra+;
+#pragma link C++ class bPlastOnlineSpectra+;
+#pragma link C++ class BeamMonitorOnlineSpectra+;
+#pragma link C++ class LisaOnlineSpectra+;
+#pragma link C++ class FatimaOnlineSpectra+;
+#pragma link C++ class TimeMachineOnline+;
 
 // nearline
-#pragma link C++ class bPlastNearlineSpectra+;
-#pragma link C++ class AidaNearlineSpectra+;
+// #pragma link C++ class bPlastNearlineSpectra+;
+// #pragma link C++ class AidaNearlineSpectra+;
 
 // offline
 
