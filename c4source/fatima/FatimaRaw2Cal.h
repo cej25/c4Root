@@ -9,6 +9,7 @@ class EventHeader;
 class FatimaTwinpeaksData;
 class FatimaTwinpeaksCalData;
 class TimeMachineData;
+class TClonesArray;
 
 class FatimaRaw2Cal : public FairTask
 {
@@ -48,6 +49,9 @@ class FatimaRaw2Cal : public FairTask
 
 
         FatimaTwinpeaksData* funcal_hit;
+        
+        TClonesArray * hits_in_Twinpeaks_channel;
+        
         FatimaTwinpeaksData* funcal_hit_next;
         FatimaTwinpeaksCalData* fcal_hit;
 
@@ -62,6 +66,8 @@ class FatimaRaw2Cal : public FairTask
         double fast_ToT;
         double slow_ToT;
 
+        double energy;
+
         int fNunmatched = 0;
 
         EventHeader * header;
@@ -70,13 +76,14 @@ class FatimaRaw2Cal : public FairTask
         //internal status flags for detector map and calibration map:
         Bool_t DetectorMap_loaded = 0;
         Bool_t DetectorCal_loaded = 0;
+        double a0,a1,a2,a3;
 
         int time_machine_delayed_detector_id;
         int time_machine_undelayed_detector_id;
 
         //maps:
         std::map<std::pair<int,int>,int> detector_mapping; // [board_id][channel_id] -> [detector_id]
-        std::map<int,std::pair<double,double>> calibration_coeffs; // key: [detector id] -> [a0][a1]
+        std::map<int,std::vector<double>> calibration_coeffs; // key: [detector id] -> vector[a0 - a3] index is coefficient number 0 = offset +++ expects quadratic.
 
     public:
         ClassDef(FatimaRaw2Cal, 1);

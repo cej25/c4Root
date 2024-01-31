@@ -1,7 +1,7 @@
 // -*- C++ -*-
 
 #include "../../common/whiterabbit.spec"
-#include "../../common/frs.spec"
+//#include "../../common/frs.spec"
 #include "../../common/gsi_febex4.spec"
 #include "../../common/gsi_tamex4.spec"
 #include "config/setup.hh" // ../../../config/s452
@@ -14,6 +14,7 @@ DUMMY()
     UINT32 no NOENCODE;
 }
 
+/*
 SUBEVENT(aida_subev)
 {   
 
@@ -21,6 +22,7 @@ SUBEVENT(aida_subev)
     external data = EXT_AIDA();
 
 }
+*/
 
 SUBEVENT(febex_subev)
 {
@@ -32,11 +34,13 @@ SUBEVENT(febex_subev)
     }
     select several
     {   // do once per card
-        data = FEBEX_EVENT();
+        data[0] = FEBEX_EVENT(card = 0);
+        data[1] = FEBEX_EVENT(card = 1);
+        data[2] = FEBEX_EVENT(card = 2);
+        data[3] = FEBEX_EVENT(card = 3);
     }
 }
-
-
+/*
 SUBEVENT(fatima_tamex_subev)
 {
     ts = TIMESTAMP_WHITERABBIT(id=0x500);
@@ -58,47 +62,24 @@ SUBEVENT(fatima_tamex_subev)
         tamex[8] = TAMEX4_SFP(sfp=0,card=8);
     }  
 }
-/*
-SUBEVENT(plastic_subev)
-{   
-    if (BPLAST_USED)
+*/
+SUBEVENT(bplast_subev)
+{
+    ts = TIMESTAMP_WHITERABBIT(id=0x500);
+    trigger_window = TAMEX4_HEADER();
+    select several 
     {
-        ts = TIMESTAMP_WHITERABBIT(id=0x500);
-        if (IS_PLASTIC_TWINPEAKS)
-        {
-            external data_tp = EXT_PLASTIC_TP();
-        }
-        else
-        {
-            // can probably be written even MORE nicely!! // yes indeed
-            trigger_window = TAMEX4_HEADER();
-            select several 
-            {
-                padding = TAMEX4_PADDING();
-            }
-            select several
-            {
-                tamex[0] = TAMEX4_SFP(sfp=0,card = 0);
-                tamex[1] = TAMEX4_SFP(sfp=0,card = 1);
-                tamex[2] = TAMEX4_SFP(sfp=0,card = 2);
-                tamex[3] = TAMEX4_SFP(sfp=0,card = 3);
-                tamex[4] = TAMEX4_SFP(sfp=0,card = 4);
-                tamex[5] = TAMEX4_SFP(sfp=0,card = 5);
-                tamex[6] = TAMEX4_SFP(sfp=0,card = 6);
-                tamex[7] = TAMEX4_SFP(sfp=0,card = 7);
-                tamex[8] = TAMEX4_SFP(sfp=0,card = 8);
-            }  
-        }
+        padding = TAMEX4_PADDING();
     }
-    else
+    select several
     {
-        select several
-        {
-            dummy = DUMMY();
-        }
-    }
+        tamex[0] = TAMEX4_SFP(sfp=0,card=0);
+        tamex[1] = TAMEX4_SFP(sfp=0,card=1);
+        tamex[2] = TAMEX4_SFP(sfp=0,card=2);
+    }  
+}
 
-}*/
+/*
 
 SUBEVENT(frs_whiterabbit_subev)
 {
@@ -142,14 +123,15 @@ SUBEVENT(frs_tof_crate_subev)
     data = TOF_DATA();
 
 }
+*/
 
 EVENT
 {
-    revisit aida = aida_subev(type = 10, subtype = 1, procid = 90, control = 37);
-    // germanium = germanium_subev(type = 10, subtype = 1, procid = 60, control = 20);
+    //revisit aida = aida_subev(type = 10, subtype = 1, procid = 90, control = 37);
+    germanium = febex_subev(type = 10, subtype = 1, procid = 60, control = 20);
     //fatima_vme = fatima_vme_subev(type = 10, subtype = 1, procid = 70, control = 20, subcrate = 0);
     //fatima_tamex = fatima_tamex_subev(type = 10, subtype = 1, procid = 75, control = 20, subcrate = 0);
-    //plastic = plastic_subev(type = 10, subtype = 1, procid = 80, control = 20, subcrate = 0);
+    bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20, subcrate = 0);
 
     // frs stuff
     // all works as spec but needs a major cleanup

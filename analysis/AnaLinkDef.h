@@ -17,10 +17,7 @@
 #pragma link C++ class FatimaOnlineSpectra+;
 #pragma link C++ class TimeMachineOnline+;
 
-// nearline
-// #pragma link C++ class bPlastNearlineSpectra+;
-// #pragma link C++ class AidaNearlineSpectra+;
+#pragma link C++ class FatimaAidaSpectra+;
 
-// offline
 
 #endif

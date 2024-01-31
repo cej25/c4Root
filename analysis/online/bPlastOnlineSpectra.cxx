@@ -117,6 +117,25 @@ InitStatus bPlastOnlineSpectra::Init()
 
 
     bPlast_spectra_folder->Add(c_bplast_hitpatterns);
+    // hit pattern:
+
+    c_bplast_hitpatterns_gated  = new TCanvas("c_bplast_hitpatterns_gated","fast HitPatt bPlast spectra",650,350);
+    c_bplast_hitpatterns_gated->Divide(2,1);
+
+    c_bplast_hitpatterns_gated->cd(1);
+    h1_bplast_fast_hitpatterns_gated = new TH1F("h1_bplast_fast_hitpatterns_gated","Fast ToT detector hit patterns",NDetectors,0,NDetectors);
+    h1_bplast_fast_hitpatterns_gated->GetXaxis()->SetTitle("Detector ID");
+    h1_bplast_fast_hitpatterns_gated->GetYaxis()->SetTitle("Counts");
+    h1_bplast_fast_hitpatterns_gated->Draw();
+    c_bplast_hitpatterns_gated->cd(2);
+    h1_bplast_slow_hitpatterns_gated = new TH1F("h1_bplast_slow_hitpatterns_gated","Slow ToT detector hit patterns",NDetectors,0,NDetectors);
+    h1_bplast_slow_hitpatterns_gated->GetXaxis()->SetTitle("Detector ID");
+    h1_bplast_slow_hitpatterns_gated->GetYaxis()->SetTitle("Counts");
+    h1_bplast_slow_hitpatterns_gated->Draw();
+    c_bplast_hitpatterns_gated->cd(0);
+
+
+    bPlast_spectra_folder->Add(c_bplast_hitpatterns_gated);
     
     
     // Time spectra:
@@ -164,6 +183,8 @@ void bPlastOnlineSpectra::Reset_Histo()
     for (int ihist = 0; ihist<NDetectors; ihist++) h2_bplast_slowToT_vs_fastToT[ihist]->Reset();
     h1_bplast_fast_hitpatterns->Reset();
     h1_bplast_slow_hitpatterns->Reset();
+    h1_bplast_fast_hitpatterns_gated->Reset();
+    h1_bplast_slow_hitpatterns_gated->Reset();
     for (int ihist = 0; ihist<NDetectors; ihist++) h1_bplast_abs_time[ihist]->Reset();
 
     c4LOG(info, "Histograms reset.");
@@ -229,6 +250,9 @@ void bPlastOnlineSpectra::Exec(Option_t* option)
             if (hit->Get_fast_ToT() != 0) h1_bplast_fast_hitpatterns->Fill(hit->Get_detector_id());
             if (hit->Get_slow_ToT() != 0) h1_bplast_slow_hitpatterns->Fill(hit->Get_detector_id());
             
+            if (hit->Get_fast_ToT() != 0 && hit->Get_slow_ToT() > 1000) h1_bplast_fast_hitpatterns_gated->Fill(hit->Get_detector_id());
+            if (hit->Get_slow_ToT() != 0 && hit->Get_slow_ToT() > 1000) h1_bplast_slow_hitpatterns_gated->Fill(hit->Get_detector_id());
+            
             // Fast Vs Slow ToT
 
             
@@ -254,6 +278,8 @@ void bPlastOnlineSpectra::FinishTask()
         for (int ihist = 0; ihist<NDetectors; ihist++) h1_bplast_fastToT[ihist]->Write();
         h1_bplast_fast_hitpatterns->Write();
         h1_bplast_slow_hitpatterns->Write();
+        h1_bplast_fast_hitpatterns_gated->Write();
+        h1_bplast_slow_hitpatterns_gated->Write();
         for (int ihist = 0; ihist<NDetectors; ihist++) h1_bplast_abs_time[ihist]->Write();
         for (int ihist = 0; ihist<NDetectors; ihist++) h2_bplast_slowToT_vs_fastToT[ihist]->Write();
     }
