@@ -5,6 +5,12 @@ FrsTPCData::FrsTPCData()
     ,   fV1190_Data(0)
     ,   fV1190_LoT(0)
 {
+    for (int i = 0; i < 2; i++)
+    {
+        fv7x5_geo[i] = std::vector<uint32_t> ();
+        fv7x5_channel[i] = std::vector<uint32_t> ();
+        fv7x5_data[i] = std::vector<uint32_t> ();
+    }
 }
 
 FrsTPCData::FrsTPCData(std::vector<uint32_t>* v7x5_geo,

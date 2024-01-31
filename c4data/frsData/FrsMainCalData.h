@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "TObject.h"
+#include "c4Logger.h"
 
 class FrsMainCalData : public TObject
 {
@@ -28,6 +29,10 @@ class FrsMainCalData : public TObject
         inline const uint64_t Get_WR() const { return fWR_TS; }
         inline const uint32_t* Get_De_array() const { return fDe_array; }
         inline const std::vector<uint32_t>* Get_TDC_array() const { return fTdc_array; }
+        inline const std::vector<uint32_t> Get_TDC_channel(int channel) const { 
+            c4LOG_IF(fatal,channel>14,"Index too large");
+            return fTdc_array[channel]; 
+        }
 
         inline const uint32_t* Get_music_t1() const { return fmusic_t1; }
         inline const uint32_t* Get_music_t2() const { return fmusic_t2; }

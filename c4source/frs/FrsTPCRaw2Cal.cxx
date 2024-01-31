@@ -2180,12 +2180,6 @@ void FrsTPCRaw2Cal::ZeroVariables()
 
 void FrsTPCRaw2Cal::ClearVectors()
 {
-    for (int i = 0; i < 2; i++)
-    {
-        v7x5_geo[i].clear();
-        v7x5_channel[i].clear();
-        v7x5_data[i].clear();
-    }
     for (int i = 0; i < 7; i++)
     {
         tpc_calibgrid[i].clear();
@@ -2208,9 +2202,19 @@ void FrsTPCRaw2Cal::ClearVectors()
     {
         v1190_lead_hits[i].clear();
     }
+    
+    
+    /*
     v1190_channel.clear();
     v1190_data.clear();
     v1190_lot.clear();
+    for (int i = 0; i < 2; i++)
+    {
+        v7x5_geo[i].clear();
+        v7x5_channel[i].clear();
+        v7x5_data[i].clear();
+    }
+    */
 
 }
 

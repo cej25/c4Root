@@ -73,6 +73,8 @@ Bool_t FrsVFTXReader::Read()
     Float_t cc, ft;
     Double_t r, ti;
 
+    FrsVFTXData fVFTX_hit;
+
     for (Int_t i = 0; i < fData->frsvftx_data_vftx_time_coarseM; i++)
     {
         next_chn_first_hit = fData->frsvftx_data_vftx_time_coarseME[i];
@@ -89,11 +91,16 @@ Bool_t FrsVFTXReader::Read()
                 ft = fData->frsvftx_data_vftx_time_finev[i * 100 + j];
                 r = (double)rand.Rndm() - 0.5;
                 ti = VFTX_GetTRaw_ps(channel, cc, ft, r);
-                vftx_leading_time[channel].emplace_back(ti);
+                //vftx_leading_time[channel].emplace_back(ti);
+                fVFTX_hit.Add_vftx_lead_time(channel,ti);
             }
+
+            //fVFTX_hit.Set_vftx_lead_times(channel,vftx_leading_time[channel]);
+            
         }
     }
 
+    new ((*fArray)[fArray->GetEntriesFast()]) FrsVFTXData(fVFTX_hit);
 
     // CEJ: MTDC and MQDC read but not used by DESPEC
     // ...do nothing for now...
@@ -185,7 +192,7 @@ void FrsVFTXReader::ZeroArrays()
 
 void FrsVFTXReader::ClearVectors()
 {
-    for (int i = 0; i < 16; i++) vftx_leading_time[i].clear();
+    for (int i = 0; i < 32; i++) vftx_leading_time[i].clear();
 }
 
 
