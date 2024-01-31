@@ -58,7 +58,8 @@ class FrsVFTXReader : public c4Reader
         TRandom3 rand;
         float VFTX_Bin2Ps[VFTX_N][VFTX_MAX_CHN][1000];
 
-        std::vector<uint32_t> vftx_leading_time[16];
+        //this seems to have 32 channels!?
+        std::vector<uint32_t> vftx_leading_time[32]; 
 
     public:
         ClassDefOverride(FrsVFTXReader, 0);

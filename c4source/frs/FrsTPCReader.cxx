@@ -64,8 +64,10 @@ Bool_t FrsTPCReader::Read()
     if (!fData) return kTRUE;
     if (fData == nullptr) return kFALSE;
 
+    if (fData->frstpc_data_v775_n == 0 && fData->frstpc_data_v785_n == 0 && fData->frstpc_data_v1190_nM == 0) return kTRUE;
+    ClearVectors();
 
-    // v775
+    // v775, actually i think it is v785 * 2?
     for (int i = 0; i < fData->frstpc_data_v775_n; i++)
     {   
         v7x5_geo[0].emplace_back(fData->frstpc_data_v775_geov[i]);
@@ -74,7 +76,7 @@ Bool_t FrsTPCReader::Read()
     }
 
     // v785
-    for (int i = 0; i < fData->frstpc_data_v775_n; i++)
+    for (int i = 0; i < fData->frstpc_data_v785_n; i++)
     {   
         v7x5_geo[1].emplace_back(fData->frstpc_data_v785_geov[i]);
         v7x5_channel[1].emplace_back(fData->frstpc_data_v785_channelv[i]);
@@ -103,7 +105,7 @@ Bool_t FrsTPCReader::Read()
 
         chn_first_hit = next_chn_first_hit;
     }
-
+    
 
     new ((*fArray)[fArray->GetEntriesFast()]) FrsTPCData(
         v7x5_geo,

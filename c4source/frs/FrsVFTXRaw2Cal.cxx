@@ -74,20 +74,20 @@ void FrsVFTXRaw2Cal::Exec(Option_t* option)
     // check there is actual data from module(s)
     int mult = fRawArray->GetEntriesFast();
     if (!mult) return;
-
+    
+    //JEL : you take the second to last event?
     fRawHit = (FrsVFTXData*)fRawArray->At(mult-1);
 
-    vftx_lead_times = fRawHit->Get_vftx_lead_times();
-
-    TRaw_vftx[0] = vftx_lead_times[CH_S21_L]; // 21l
-    TRaw_vftx[1] = vftx_lead_times[CH_S21_R]; // 21r
-    TRaw_vftx[2] = vftx_lead_times[CH_S22_L]; // 22l
-    TRaw_vftx[3] = vftx_lead_times[CH_S22_R]; // 22r
-    TRaw_vftx[4] = vftx_lead_times[CH_S41_L]; // 41l
-    TRaw_vftx[5] = vftx_lead_times[CH_S41_R]; // 41r
-    TRaw_vftx[6] = vftx_lead_times[CH_S42_L]; // 42l
-    TRaw_vftx[7] = vftx_lead_times[CH_S42_R]; // 42r
-
+    TRaw_vftx[0] = fRawHit->Get_vftx_lead_times(CH_S21_L); // 21l
+    TRaw_vftx[1] = fRawHit->Get_vftx_lead_times(CH_S21_R); // 21r
+    TRaw_vftx[2] = fRawHit->Get_vftx_lead_times(CH_S22_L); // 22l
+    TRaw_vftx[3] = fRawHit->Get_vftx_lead_times(CH_S22_R); // 22r
+    TRaw_vftx[4] = fRawHit->Get_vftx_lead_times(CH_S41_L); // 41l
+    TRaw_vftx[5] = fRawHit->Get_vftx_lead_times(CH_S41_R); // 41r
+    TRaw_vftx[6] = fRawHit->Get_vftx_lead_times(CH_S42_L); // 42l
+    TRaw_vftx[7] = fRawHit->Get_vftx_lead_times(CH_S42_R); // 42r
+    
+    
     // output
     new ((*fCalArray)[fCalArray->GetEntriesFast()]) FrsVFTXCalData(
         TRaw_vftx

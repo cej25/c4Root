@@ -65,6 +65,8 @@ Bool_t FrsMainReader::Read()
 
     // whiterabbit timestamp - includes 20202020 events...
     wr_t = (((uint64_t)fData->frsmain_wr_t[3]) << 48) + (((uint64_t)fData->frsmain_wr_t[2]) << 32) + (((uint64_t)fData->frsmain_wr_t[1]) << 16) + (uint64_t)(fData->frsmain_wr_t[0]);
+    
+    //if (fData->frsmain_data_v830_n == 0 && fData->frsmain_data_v792_nM == 0 && fData->frsmain_data_v1290_nM == 0) return kTRUE;
 
     // V830
     scalers_n = fData->frsmain_data_v830_n;

@@ -81,7 +81,7 @@ void FrsUserRaw2Cal::Exec(Option_t* option)
     v7x5_channel_user = fRawHit->Get_v7x5_channel_user();
     v7x5_data_user = fRawHit->Get_v7x5_data_user();
 
-    // dt_array time - geo12
+    // dt_array time - geo
     for (int m = 0; m < 4; m++) // loop over 4x v7x5
     {
         for (int i = 0; i < v7x5_data_user[m].size(); i++)
@@ -251,7 +251,8 @@ void FrsUserRaw2Cal::Exec(Option_t* option)
             }
         }
     }
-    
+
+
     new ((*fCalArray)[fCalArray->GetEntriesFast()]) FrsUserCalData(
         // v830 scaler stuff?
         dt_array,
@@ -274,12 +275,15 @@ void FrsUserRaw2Cal::ZeroArrays()
 
 void FrsUserRaw2Cal::ClearVectors()
 {
+    // vectors are not declared in the declaration of the class and not stored in memory (it is in the fCalArray...)
+    /*
     for (int i = 0; i < 4; i++)
     {
-        v7x5_geo_user[i].clear();
-        v7x5_channel_user[i].clear();
-        v7x5_data_user[i].clear();
+        if (v7x5_geo_user) v7x5_geo_user[i].clear();
+        if (v7x5_channel_user) v7x5_channel_user[i].clear();
+        if (v7x5_data_user) v7x5_data_user[i].clear();
     }
+    */
 }
 
 

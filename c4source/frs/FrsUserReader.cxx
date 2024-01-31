@@ -64,6 +64,13 @@ Bool_t FrsUserReader::Read()
     if (!fData) return kTRUE;
     if (fData == nullptr) return kFALSE;
 
+
+    // nothing to do if all arrays are empty:   
+    if (fData->frsuser_data_v7751n == 0 &&  fData->frsuser_data_v7752n == 0 && fData->frsuser_data_v7851n == 0 && fData->frsuser_data_v7852n == 0) return kTRUE;
+
+
+
+
     // v830 scalers
     scalers_n = fData->frsuser_data_v830_n;
     for (uint32_t i = 0; i < scalers_n; i++)
@@ -71,6 +78,8 @@ Bool_t FrsUserReader::Read()
         scalers_index.emplace_back(fData->frsuser_data_v830_nI[i]);
         scalers_user.emplace_back(fData->frsuser_data_v830_data[fData->frsuser_data_v830_nI[i]]);
     }
+
+
 
     // CEJ: this will change because we don't need to "unpack" the channel
     // also it reads a bit horribly
@@ -89,11 +98,11 @@ Bool_t FrsUserReader::Read()
     }
 
     // v785
-    for (int i = 0; i < fData->frsuser_data_v7852n; i++)
+    for (int i = 0; i < fData->frsuser_data_v7851n; i++)
     {
-        v7x5_geo[2].emplace_back(fData->frsuser_data_v7852geov[i]);
-        v7x5_channel[2].emplace_back(fData->frsuser_data_v7852channelv[i]);
-        v7x5_data[2].emplace_back(fData->frsuser_data_v7852data[i]);
+        v7x5_geo[2].emplace_back(fData->frsuser_data_v7851geov[i]);
+        v7x5_channel[2].emplace_back(fData->frsuser_data_v7851channelv[i]);
+        v7x5_data[2].emplace_back(fData->frsuser_data_v7851data[i]);
     }
     for (int i = 0; i < fData->frsuser_data_v7852n; i++)
     {
@@ -102,6 +111,10 @@ Bool_t FrsUserReader::Read()
         v7x5_data[3].emplace_back(fData->frsuser_data_v7852data[i]);
     }
 
+    //c4LOG(info,Form("size of vectors: %d %d %d",v7x5_geo[1].at(0),v7x5_geo[2].at(0),v7x5_geo[3].at(0)));
+    //c4LOG(info,Form("size of vectors: %d %d %d %d",fData->frsuser_data_v7751n,fData->frsuser_data_v7752n,fData->frsuser_data_v7851n,fData->frsuser_data_v7852n));
+    //c4LOG(info,Form("size of vectors: %d %d %d %d",v7x5_data[0].size(),v7x5_data[1].size(),v7x5_data[2].size(),v7x5_data[3].size()));
+    //c4LOG(info,Form("size of vectors: %d %d %d",v7x5_data[1].at(0),v7x5_data[2].at(0),v7x5_data[3].at(0)));
 
     new ((*fArray)[fArray->GetEntriesFast()]) FrsUserData(
         scalers_n,
@@ -110,7 +123,6 @@ Bool_t FrsUserReader::Read()
         v7x5_geo,
         v7x5_channel,
         v7x5_data);
-
 
     fNEvent++;
     return kTRUE;

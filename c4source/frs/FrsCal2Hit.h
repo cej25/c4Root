@@ -114,7 +114,7 @@ class FrsCal2Hit : public FairTask
         Float_t music1_x_mean;
         Float_t music2_x_mean;
 
-        const std::vector<uint32_t>* tdc_array;
+        std::vector<uint32_t> tdc_array[15];
         const uint32_t* de_array;
         const uint32_t* dt_array; // not coded in raw->cal yet
         Float_t de[3];
