@@ -1257,14 +1257,16 @@ void FrsCal2Hit::Exec(Option_t* option)
     int multTPC = fCalArrayTPC->GetEntriesFast();
     int multUser = fCalArrayUser->GetEntriesFast();
     int multVFTX = fCalArrayVFTX->GetEntriesFast();
+    
     if (!multMain || !multTPC || !multUser || !multVFTX) return;
 
     fNEvents++;
     // this mult thing is nonsense i'm sure
-    fCalHitMain = (FrsMainCalData*)fCalArrayMain->At(multMain-1);
-    fCalHitTPC = (FrsTPCCalData*)fCalArrayTPC->At(multTPC-1);
-    fCalHitUser = (FrsUserCalData*)fCalArrayUser->At(multUser-1);
-    fCalHitVFTX = (FrsVFTXCalData*)fCalArrayVFTX->At(multVFTX-1);
+    //-At(0)? is smarter then we don't risk accessing element -1 and seg fault.
+    fCalHitMain = (FrsMainCalData*)fCalArrayMain->At(0);
+    fCalHitTPC = (FrsTPCCalData*)fCalArrayTPC->At(0);
+    fCalHitUser = (FrsUserCalData*)fCalArrayUser->At(0);
+    fCalHitVFTX = (FrsVFTXCalData*)fCalArrayVFTX->At(0);
 
     WR_TS = fCalHitMain->Get_WR();
 
@@ -2662,9 +2664,8 @@ void FrsCal2Hit::FinishEvent()
 {
     // clear all vectors...
     // ... many to consider
+    
 
-    fCalHitMain->Clear();
-    fCalHitTPC->Clear();
     fCalArrayMain->Clear();
     fCalArrayTPC->Clear();
     fHitArray->Clear();
