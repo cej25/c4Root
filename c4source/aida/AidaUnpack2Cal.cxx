@@ -65,7 +65,7 @@ InitStatus AidaUnpack2Cal::Init()
 
   mgr->RegisterAny("AidaImplantCalAdcData", implantCalArray, !fImplantOnline);
   mgr->RegisterAny("AidaDecayCalAdcData", decayCalArray, !fDecayOnline);
-  mgr->Register("AidaTimeMachineData", "Time Machine Data", aidaTimeMachineArray, !fScalersOnline);
+  mgr->Register("AidaTimeMachineData", "AidaTimeMachineDataFolder", aidaTimeMachineArray, !fScalersOnline);
 
   conf = TAidaConfiguration::GetInstance();
 
@@ -151,15 +151,15 @@ void AidaUnpack2Cal::Exec(Option_t* option)
   for (auto const& scaler : *scalerArray)
   {
     if (scaler.Fee() == aida_tm_undelayed_ch)
-      wr_undelayed = scaler.Time();
-    if (scaler.Fee() == aida_tm_delayed_ch)
-      wr_delayed = scaler.Time();
-  }
+{      wr_undelayed = scaler.Time();
+}    if (scaler.Fee() == aida_tm_delayed_ch)
+{      wr_delayed = scaler.Time();
+}  }
   if (wr_undelayed != 0 && wr_delayed != 0)
   {
     int64_t time_diff = wr_delayed - wr_undelayed;
-    new ((*aidaTimeMachineArray)[aidaTimeMachineArray->GetEntriesFast()]) TimeMachineData(1, 0, 0x700, wr_undelayed);
-    new ((*aidaTimeMachineArray)[aidaTimeMachineArray->GetEntriesFast()]) TimeMachineData(0, 1 + time_diff, 0x700, wr_undelayed);
+    new ((*aidaTimeMachineArray)[aidaTimeMachineArray->GetEntriesFast()]) TimeMachineData((double)(wr_undelayed & 0xFFFFFFFF), 0, 0x700, wr_undelayed);
+    new ((*aidaTimeMachineArray)[aidaTimeMachineArray->GetEntriesFast()]) TimeMachineData(0, (double)(wr_delayed & 0xFFFFFFFF), 0x700, wr_delayed);
   }
 }
 

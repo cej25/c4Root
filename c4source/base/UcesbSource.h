@@ -10,6 +10,8 @@
 #include "TString.h"
 #include <Rtypes.h>
 
+#include "EventHeader.h"
+
 #include <fstream>
 #include <list>
 
@@ -28,7 +30,6 @@ typedef struct EXT_STR_h101_t EXT_STR_h101;
 
 
 
-class EventHeader; // ?
 
 class UcesbSource : public FairSource
 {

@@ -5,8 +5,8 @@
  * Do not edit - automatically generated.
  */
 
-#ifndef __GUARD_H101_EXT_H101_FRS_H__
-#define __GUARD_H101_EXT_H101_FRS_H__
+#ifndef __GUARD_H101_FRS_EXT_H101_FRS_H__
+#define __GUARD_H101_FRS_EXT_H101_FRS_H__
 
 #ifndef __CINT__
 # include <stdint.h>
@@ -26,32 +26,35 @@ typedef          int  int32_t;
  * Plain structure (layout as ntuple/root file):
  */
 
-typedef struct EXT_STR_h101_t
+typedef struct EXT_STR_h101_FRS_t
 {
   /* UNPACK */
-  uint32_t tpat_data_n /* [-1,-1] */;
-  uint32_t tpat_data_tpat /* [0,170] */;
-  uint32_t tpat_data_tpatv[170 EXT_STRUCT_CTRL(tpat_data_tpat)] /* [0,65535] */;
-  uint32_t tpat_data_trig /* [0,170] */;
-  uint32_t tpat_data_trigv[170 EXT_STRUCT_CTRL(tpat_data_trig)] /* [0,255] */;
-  uint32_t tpat_data_ts_lo /* [0,170] */;
-  uint32_t tpat_data_ts_lov[170 EXT_STRUCT_CTRL(tpat_data_ts_lo)] /* [-1,-1] */;
-  uint32_t tpat_data_ts_hi /* [0,170] */;
-  uint32_t tpat_data_ts_hiv[170 EXT_STRUCT_CTRL(tpat_data_ts_hi)] /* [-1,-1] */;
-  uint32_t frs_crate_frs_v830_n /* [0,32] */;
-  uint32_t frs_crate_frs_v830_nI[32 EXT_STRUCT_CTRL(frs_crate_frs_v830_n)] /* [1,32] */;
-  uint32_t frs_crate_frs_v830_data[32 EXT_STRUCT_CTRL(frs_crate_frs_v830_n)] /* [-1,-1] */;
-  uint32_t frs_crate_frs_v7x5_n /* [0,32] */;
-  uint32_t frs_crate_frs_v7x5_nI[32 EXT_STRUCT_CTRL(frs_crate_frs_v7x5_n)] /* [1,32] */;
-  uint32_t frs_crate_frs_v7x5_data[32 EXT_STRUCT_CTRL(frs_crate_frs_v7x5_n)] /* [0,65535] */;
-  uint32_t frs_crate_frs_v7x5_channel /* [0,32] */;
-  uint32_t frs_crate_frs_v7x5_channelI[32 EXT_STRUCT_CTRL(frs_crate_frs_v7x5_channel)] /* [1,32] */;
-  uint32_t frs_crate_frs_v7x5_channelv[32 EXT_STRUCT_CTRL(frs_crate_frs_v7x5_channel)] /* [0,255] */;
-  uint32_t frs_crate_frs_v7x5_geo /* [0,32] */;
-  uint32_t frs_crate_frs_v7x5_geoI[32 EXT_STRUCT_CTRL(frs_crate_frs_v7x5_geo)] /* [1,32] */;
-  uint32_t frs_crate_frs_v7x5_geov[32 EXT_STRUCT_CTRL(frs_crate_frs_v7x5_geo)] /* [0,255] */;
+  uint32_t frsmain_wr_subsystem_id /* [0,65535] */;
+  uint32_t frsmain_wr_t1 /* [0,65535] */;
+  uint32_t frsmain_wr_t2 /* [0,65535] */;
+  uint32_t frsmain_wr_t3 /* [0,65535] */;
+  uint32_t frsmain_wr_t4 /* [0,65535] */;
+  uint32_t frsmain_data_v830_n /* [0,32] */;
+  uint32_t frsmain_data_v830_nI[32 EXT_STRUCT_CTRL(frsmain_data_v830_n)] /* [1,32] */;
+  uint32_t frsmain_data_v830_data[32 EXT_STRUCT_CTRL(frsmain_data_v830_n)] /* [-1,-1] */;
+  uint32_t frsmain_data_v792_nM /* [1,32] */;
+  uint32_t frsmain_data_v792_nMI[32 EXT_STRUCT_CTRL(frsmain_data_v792_nM)] /* [1,32] */;
+  uint32_t frsmain_data_v792_nME[32 EXT_STRUCT_CTRL(frsmain_data_v792_nM)] /* [1,1024] */;
+  uint32_t frsmain_data_v792_n /* [0,1024] */;
+  uint32_t frsmain_data_v792_data[1024 EXT_STRUCT_CTRL(frsmain_data_v792_n)] /* [-1,-1] */;
+  uint32_t frsmain_data_v792_geo /* [0,255] */;
+  uint32_t frsmain_data_v1290_nM /* [1,128] */;
+  uint32_t frsmain_data_v1290_nMI[128 EXT_STRUCT_CTRL(frsmain_data_v1290_nM)] /* [1,128] */;
+  uint32_t frsmain_data_v1290_nME[128 EXT_STRUCT_CTRL(frsmain_data_v1290_nM)] /* [1,16384] */;
+  uint32_t frsmain_data_v1290_n /* [0,16384] */;
+  uint32_t frsmain_data_v1290_data[16384 EXT_STRUCT_CTRL(frsmain_data_v1290_n)] /* [0,16777215] */;
+  uint32_t frsmain_data_v1290_leadOrTrailM /* [1,128] */;
+  uint32_t frsmain_data_v1290_leadOrTrailMI[128 EXT_STRUCT_CTRL(frsmain_data_v1290_leadOrTrailM)] /* [1,128] */;
+  uint32_t frsmain_data_v1290_leadOrTrailME[128 EXT_STRUCT_CTRL(frsmain_data_v1290_leadOrTrailM)] /* [1,16384] */;
+  uint32_t frsmain_data_v1290_leadOrTrail /* [0,16384] */;
+  uint32_t frsmain_data_v1290_leadOrTrailv[16384 EXT_STRUCT_CTRL(frsmain_data_v1290_leadOrTrail)] /* [0,255] */;
 
-} EXT_STR_h101;
+} EXT_STR_h101_FRS;
 
 /********************************************************
  *
@@ -59,104 +62,113 @@ typedef struct EXT_STR_h101_t
  * recovered (recommended):
  */
 
-typedef struct EXT_STR_h101_onion_t
+typedef struct EXT_STR_h101_FRS_onion_t
 {
   /* UNPACK */
-  uint32_t tpat_data_n;
-  uint32_t tpat_data_tpat;
-  uint32_t tpat_data_tpatv[170 /* tpat_data_tpat */];
-  uint32_t tpat_data_trig;
-  uint32_t tpat_data_trigv[170 /* tpat_data_trig */];
-  uint32_t tpat_data_ts_lo;
-  uint32_t tpat_data_ts_lov[170 /* tpat_data_ts_lo */];
-  uint32_t tpat_data_ts_hi;
-  uint32_t tpat_data_ts_hiv[170 /* tpat_data_ts_hi */];
-  uint32_t frs_crate_frs_v830_n;
-  uint32_t frs_crate_frs_v830_nI[32 /* frs_crate_frs_v830_n */];
-  uint32_t frs_crate_frs_v830_data[32 /* frs_crate_frs_v830_n */];
-  uint32_t frs_crate_frs_v7x5_n;
-  uint32_t frs_crate_frs_v7x5_nI[32 /* frs_crate_frs_v7x5_n */];
-  uint32_t frs_crate_frs_v7x5_data[32 /* frs_crate_frs_v7x5_n */];
-  uint32_t frs_crate_frs_v7x5_channel;
-  uint32_t frs_crate_frs_v7x5_channelI[32 /* frs_crate_frs_v7x5_channel */];
-  uint32_t frs_crate_frs_v7x5_channelv[32 /* frs_crate_frs_v7x5_channel */];
-  uint32_t frs_crate_frs_v7x5_geo;
-  uint32_t frs_crate_frs_v7x5_geoI[32 /* frs_crate_frs_v7x5_geo */];
-  uint32_t frs_crate_frs_v7x5_geov[32 /* frs_crate_frs_v7x5_geo */];
+  uint32_t frsmain_wr_subsystem_id;
+  uint32_t frsmain_wr_t[4];
+  uint32_t frsmain_data_v830_n;
+  uint32_t frsmain_data_v830_nI[32 /* frsmain_data_v830_n */];
+  uint32_t frsmain_data_v830_data[32 /* frsmain_data_v830_n */];
+  uint32_t frsmain_data_v792_nM;
+  uint32_t frsmain_data_v792_nMI[32 /* frsmain_data_v792_nM */];
+  uint32_t frsmain_data_v792_nME[32 /* frsmain_data_v792_nM */];
+  uint32_t frsmain_data_v792_n;
+  uint32_t frsmain_data_v792_data[1024 /* frsmain_data_v792_n */];
+  uint32_t frsmain_data_v792_geo;
+  uint32_t frsmain_data_v1290_nM;
+  uint32_t frsmain_data_v1290_nMI[128 /* frsmain_data_v1290_nM */];
+  uint32_t frsmain_data_v1290_nME[128 /* frsmain_data_v1290_nM */];
+  uint32_t frsmain_data_v1290_n;
+  uint32_t frsmain_data_v1290_data[16384 /* frsmain_data_v1290_n */];
+  uint32_t frsmain_data_v1290_leadOrTrailM;
+  uint32_t frsmain_data_v1290_leadOrTrailMI[128 /* frsmain_data_v1290_leadOrTrailM */];
+  uint32_t frsmain_data_v1290_leadOrTrailME[128 /* frsmain_data_v1290_leadOrTrailM */];
+  uint32_t frsmain_data_v1290_leadOrTrail;
+  uint32_t frsmain_data_v1290_leadOrTrailv[16384 /* frsmain_data_v1290_leadOrTrail */];
 
-} EXT_STR_h101_onion;
+} EXT_STR_h101_FRS_onion;
 
 /*******************************************************/
 
-#define EXT_STR_h101_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
+#define EXT_STR_h101_FRS_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
   ok = 1; \
   /* UNPACK */ \
-  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
-                     tpat_data_n,                     UINT32,\
-                    "tpat_data_n",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     tpat_data_tpat,                  UINT32,\
-                    "tpat_data_tpat",170,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     tpat_data_tpatv,                 UINT32,\
-                    "tpat_data_tpatv",                 "tpat_data_tpat",0/*flags*/); \
+                     frsmain_wr_subsystem_id,         UINT32,\
+                    "frsmain_wr_subsystem_id",65535,0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     tpat_data_trig,                  UINT32,\
-                    "tpat_data_trig",170,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     tpat_data_trigv,                 UINT32,\
-                    "tpat_data_trigv",                 "tpat_data_trig",0/*flags*/); \
+                     frsmain_wr_t1,                   UINT32,\
+                    "frsmain_wr_t1",65535,0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     tpat_data_ts_lo,                 UINT32,\
-                    "tpat_data_ts_lo",170,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     tpat_data_ts_lov,                UINT32,\
-                    "tpat_data_ts_lov",                "tpat_data_ts_lo",0/*flags*/); \
+                     frsmain_wr_t2,                   UINT32,\
+                    "frsmain_wr_t2",65535,0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     tpat_data_ts_hi,                 UINT32,\
-                    "tpat_data_ts_hi",170,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     tpat_data_ts_hiv,                UINT32,\
-                    "tpat_data_ts_hiv",                "tpat_data_ts_hi",0/*flags*/); \
+                     frsmain_wr_t3,                   UINT32,\
+                    "frsmain_wr_t3",65535,0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     frs_crate_frs_v830_n,            UINT32,\
-                    "frs_crate_frs_v830_n",32,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     frs_crate_frs_v830_nI,           UINT32,\
-                    "frs_crate_frs_v830_nI",           "frs_crate_frs_v830_n",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     frs_crate_frs_v830_data,         UINT32,\
-                    "frs_crate_frs_v830_data",         "frs_crate_frs_v830_n",0/*flags*/); \
+                     frsmain_wr_t4,                   UINT32,\
+                    "frsmain_wr_t4",65535,0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     frs_crate_frs_v7x5_n,            UINT32,\
-                    "frs_crate_frs_v7x5_n",32,0/*flags*/); \
+                     frsmain_data_v830_n,             UINT32,\
+                    "frsmain_data_v830_n",32,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     frs_crate_frs_v7x5_nI,           UINT32,\
-                    "frs_crate_frs_v7x5_nI",           "frs_crate_frs_v7x5_n",0/*flags*/); \
+                     frsmain_data_v830_nI,            UINT32,\
+                    "frsmain_data_v830_nI",            "frsmain_data_v830_n",0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     frs_crate_frs_v7x5_data,         UINT32,\
-                    "frs_crate_frs_v7x5_data",         "frs_crate_frs_v7x5_n",0/*flags*/); \
+                     frsmain_data_v830_data,          UINT32,\
+                    "frsmain_data_v830_data",          "frsmain_data_v830_n",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     frs_crate_frs_v7x5_channel,      UINT32,\
-                    "frs_crate_frs_v7x5_channel",32,0/*flags*/); \
+                     frsmain_data_v792_nM,            UINT32,\
+                    "frsmain_data_v792_nM",32,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     frs_crate_frs_v7x5_channelI,     UINT32,\
-                    "frs_crate_frs_v7x5_channelI",     "frs_crate_frs_v7x5_channel",0/*flags*/); \
+                     frsmain_data_v792_nMI,           UINT32,\
+                    "frsmain_data_v792_nMI",           "frsmain_data_v792_nM",0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     frs_crate_frs_v7x5_channelv,     UINT32,\
-                    "frs_crate_frs_v7x5_channelv",     "frs_crate_frs_v7x5_channel",0/*flags*/); \
+                     frsmain_data_v792_nME,           UINT32,\
+                    "frsmain_data_v792_nME",           "frsmain_data_v792_nM",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     frs_crate_frs_v7x5_geo,          UINT32,\
-                    "frs_crate_frs_v7x5_geo",32,0/*flags*/); \
+                     frsmain_data_v792_n,             UINT32,\
+                    "frsmain_data_v792_n",1024,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     frs_crate_frs_v7x5_geoI,         UINT32,\
-                    "frs_crate_frs_v7x5_geoI",         "frs_crate_frs_v7x5_geo",0/*flags*/); \
+                     frsmain_data_v792_data,          UINT32,\
+                    "frsmain_data_v792_data",          "frsmain_data_v792_n",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     frsmain_data_v792_geo,           UINT32,\
+                    "frsmain_data_v792_geo",255,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     frsmain_data_v1290_nM,           UINT32,\
+                    "frsmain_data_v1290_nM",128,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     frs_crate_frs_v7x5_geov,         UINT32,\
-                    "frs_crate_frs_v7x5_geov",         "frs_crate_frs_v7x5_geo",0/*flags*/); \
+                     frsmain_data_v1290_nMI,          UINT32,\
+                    "frsmain_data_v1290_nMI",          "frsmain_data_v1290_nM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     frsmain_data_v1290_nME,          UINT32,\
+                    "frsmain_data_v1290_nME",          "frsmain_data_v1290_nM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     frsmain_data_v1290_n,            UINT32,\
+                    "frsmain_data_v1290_n",16384,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     frsmain_data_v1290_data,         UINT32,\
+                    "frsmain_data_v1290_data",         "frsmain_data_v1290_n",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     frsmain_data_v1290_leadOrTrailM, UINT32,\
+                    "frsmain_data_v1290_leadOrTrailM",128,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     frsmain_data_v1290_leadOrTrailMI,UINT32,\
+                    "frsmain_data_v1290_leadOrTrailMI","frsmain_data_v1290_leadOrTrailM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     frsmain_data_v1290_leadOrTrailME,UINT32,\
+                    "frsmain_data_v1290_leadOrTrailME","frsmain_data_v1290_leadOrTrailM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     frsmain_data_v1290_leadOrTrail,  UINT32,\
+                    "frsmain_data_v1290_leadOrTrail",16384,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     frsmain_data_v1290_leadOrTrailv, UINT32,\
+                    "frsmain_data_v1290_leadOrTrailv", "frsmain_data_v1290_leadOrTrail",0/*flags*/); \
   \
 } while (0);
 
-#endif/*__GUARD_H101_EXT_H101_FRS_H__*/
+#endif/*__GUARD_H101_FRS_EXT_H101_FRS_H__*/
 
 /*******************************************************/

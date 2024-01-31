@@ -51,12 +51,32 @@ class FatimaOnlineSpectra : public FairTask
         TCanvas* c_fatima_fast_v_slow;
         TCanvas* c_fatima_time_spectra_divided;
         TCanvas* c_fatima_hitpatterns;
+        TCanvas* c_fatima_energy;
+        TCanvas* c_fatima_energies;
+        TCanvas* c_fatima_energy_uncal;
+        TCanvas* c_fatima_time_differences;
+        TCanvas* c_fatima_energy_energy;
+        TCanvas* c_fatima_time_differences_SCI41;
+        TCanvas* c_fatima_time_differences_energy_SCI41;
+        TCanvas* c_fatima_time_differences_energy_SCI41_sum;
+        TCanvas* c_fatima_time_differences_energy_SCI41_gated;
 
-        static const int NDetectors = 14; //change this
+        static const int NDetectors = 24; //change this
+        
         // Histograms energy
         TH1F * h1_fatima_slowToT[NDetectors];
         TH1F * h1_fatima_fastToT[NDetectors];
+        TH1F * h1_fatima_energies[NDetectors];
+        TH1F * h1_fatima_time_differences[NDetectors];
         TH2F * h2_fatima_fast_v_slow[NDetectors];
+        TH2F * h1_fatima_time_differences_energy_SCI41[NDetectors];
+        TH2F * h1_fatima_time_differences_energy_SCI41_sum;
+        TH1F * h1_fatima_time_differences_energy_SCI41_gated;
+        TH1F * h1_fatima_time_differences_SCI41[NDetectors];
+
+        TH2F * h2_fatima_energy;
+        TH2F * h2_fatima_energy_energy;
+        TH2F * h2_fatima_energy_uncal;
 
         TH1F * h1_fatima_hitpattern_slow;
         TH1F * h1_fatima_hitpattern_fast;
