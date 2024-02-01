@@ -1258,7 +1258,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     int multUser = fCalArrayUser->GetEntriesFast();
     int multVFTX = fCalArrayVFTX->GetEntriesFast();
     
-    if (!multMain || !multTPC || !multUser || !multVFTX) return;
+    if (multMain==0 || multTPC==0 || multUser==0 || multVFTX==0) return;
 
     fNEvents++;
     // this mult thing is nonsense i'm sure
@@ -1571,7 +1571,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     }
     
 
-    de_array = fCalHitMain->Get_De_array();
+    for (int index = 0; index<14; index++) de_array[index] = fCalHitMain->Get_De_channel(index);
     dt_array = fCalHitUser->Get_dt_array();
 
 

@@ -27,7 +27,17 @@ class FrsMainCalData : public TObject
 
         // Getters -- what did we need these for again?
         inline const uint64_t Get_WR() const { return fWR_TS; }
+        
+        
+        
+        
         inline const uint32_t* Get_De_array() const { return fDe_array; }
+        inline const uint32_t Get_De_channel(int channel) const {
+            c4LOG_IF(fatal,channel>=14,"Index too large.");
+            return fDe_array[channel];
+        }
+
+        
         inline const std::vector<uint32_t>* Get_TDC_array() const { return fTdc_array; }
         inline const std::vector<uint32_t> Get_TDC_channel(int channel) const { 
             c4LOG_IF(fatal,channel>14,"Index too large");
