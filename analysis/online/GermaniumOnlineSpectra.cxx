@@ -101,7 +101,7 @@ InitStatus GermaniumOnlineSpectra::Init()
     ge_spectra_folder->Add(c_germanium_energy_mult2);
     
     // Time spectra:
-    TCanvas * c_germanium_time  = new TCanvas("c_germanium_time","Germanium time spectra",650,350);
+    c_germanium_time  = new TCanvas("c_germanium_time","Germanium time spectra",650,350);
     c_germanium_time->Divide(NCrystals,NDetectors);
 
     for (int ihist = 0; ihist < NCrystals*NDetectors; ihist++){
@@ -117,6 +117,7 @@ InitStatus GermaniumOnlineSpectra::Init()
     ge_spectra_folder->Add(c_germanium_time);
 
     run->RegisterHttpCommand("Reset_Ge_Hist", "/GermaniumOnlineSpectra->Reset_Histo()");
+    run->RegisterHttpCommand("Snapshot_Ge_Hist", "/GermaniumOnlineSpectra->Snapshot_Histo()");
 
     return kSUCCESS;
 }
@@ -127,6 +128,46 @@ void GermaniumOnlineSpectra::Reset_Histo()
     for (int ihist = 0; ihist<NCrystals*NDetectors; ihist++) h1_germanium_energy[ihist]->Reset();
     for (int ihist = 0; ihist<NCrystals*NDetectors; ihist++) h1_germanium_energy_mult2[ihist]->Reset();
     for (int ihist = 0; ihist<NCrystals*NDetectors; ihist++) h1_germanium_time[ihist]->Reset();
+}
+
+void GermaniumOnlineSpectra::Snapshot_Histo()
+{
+    //date and time
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
+    //make folder with date and time
+    const char* snapshot_dir = Form("Germanium_snapshot_%d_%d_%d_%d_%d_%d",ltm->tm_year+1900,ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec);
+    gSystem->mkdir(snapshot_dir);
+    gSystem->cd(snapshot_dir);
+
+    // save histograms to canvases
+    c_germanium_snapshot = new TCanvas("c","c",650,350);
+
+    for (int ihist = 0; ihist<NCrystals*NDetectors; ihist++)
+    {
+        if(h1_germanium_energy[ihist]->GetEntries()>0)
+        {
+            h1_germanium_energy[ihist]->Draw();
+            c_germanium_snapshot->SaveAs(Form("h1_germanium_energy_%d_%d.png",ihist/NCrystals,ihist%NCrystals));
+            c_germanium_snapshot->Clear();
+        }
+        if(h1_germanium_energy_mult2[ihist]->GetEntries()>0)
+        {
+            h1_germanium_energy_mult2[ihist]->Draw();
+            c_germanium_snapshot->SaveAs(Form("h1_germanium_energy_mult2_%d_%d.png",ihist/NCrystals,ihist%NCrystals));
+            c_germanium_snapshot->Clear();
+        }
+        if(h1_germanium_time[ihist]->GetEntries()>0)
+        {
+            h1_germanium_time[ihist]->Draw();
+            c_germanium_snapshot->SaveAs(Form("h1_germanium_time_%d_%d.png",ihist/NCrystals,ihist%NCrystals));
+            c_germanium_snapshot->Clear();
+        }
+    }
+    delete c_germanium_snapshot;
+
+    gSystem->cd("..");
+    c4LOG(info, "Snapshot saved to:" << snapshot_dir);
 }
 
 void GermaniumOnlineSpectra::Exec(Option_t* option)
