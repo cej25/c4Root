@@ -84,26 +84,30 @@ Bool_t FrsTPCReader::Read()
     }
 
     // v1190
-    uint32_t chn_first_hit = 0;
+    uint32_t chn_first_hit = 0, total_hits = 0;
     uint32_t next_chn_first_hit, hits;
 
+    // this loops over a number of channels..is it a mistake?
+    // should we loop over a number of hits? 
     for (uint32_t i = 0; i < fData->frstpc_data_v1190_nM; i++)
     {   
         next_chn_first_hit = fData->frstpc_data_v1190_nME[i];
         hits = next_chn_first_hit - chn_first_hit;
 
         for (uint32_t j = 0; j < hits; j++)
-        {
-            if (fData->frstpc_data_v1190_data[i * 128 + j] > 0)
+        {   
+            // ahh this condition maybe is fucking things up somehow?
+            if (fData->frstpc_data_v1190_data[total_hits + j] > 0)
             {
                 v1190_channel.emplace_back(fData->frstpc_data_v1190_nMI[i]);
-                v1190_data.emplace_back(fData->frstpc_data_v1190_data[i * 128 + j]);
-                v1190_lot.emplace_back(fData->frstpc_data_v1190_leadOrTrailv[i * 128 + j]);
+                v1190_data.emplace_back(fData->frstpc_data_v1190_data[total_hits + j]);
+                v1190_lot.emplace_back(fData->frstpc_data_v1190_leadOrTrailv[total_hits + j]);
             }
             
         }
 
         chn_first_hit = next_chn_first_hit;
+        total_hits += hits;
     }
     
 

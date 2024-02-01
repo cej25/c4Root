@@ -1,0 +1,28 @@
+# Window Conditon for XSum of MW 
+# XSum Low      XSum High
+    1 		8000
+    1		8000
+    1		8000
+    1		8000
+    1		8000
+    1		8000
+    1		8000
+    1		8000
+    1		8000
+    1		8000
+    1		8000
+    1		8000
+    1		8000
+#MW11
+#MW21
+#MW22
+#MW31
+#MW41
+#MW42
+#MW51
+#MW61
+#MW71
+#MW81
+#MW82
+#MWB1
+#MWB2
