@@ -41,6 +41,7 @@ private:
     TAidaConfiguration const* conf;
     int aida_tm_delayed_ch;
     int aida_tm_undelayed_ch;
+    unsigned int ignoredEvents;
 
 public:
     ClassDef(AidaUnpack2Cal, 2)
