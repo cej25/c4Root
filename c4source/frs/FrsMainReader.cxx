@@ -84,6 +84,7 @@ Bool_t FrsMainReader::Read()
     uint32_t next_chn_first_hit, hits;
 
     // loop through number of channels with hits
+    //this is wrongly implemented;
     for (uint32_t i = 0; i < fData->frsmain_data_v792_nM; i++)
     {   
         next_chn_first_hit = fData->frsmain_data_v792_nME[i];
@@ -103,30 +104,29 @@ Bool_t FrsMainReader::Read()
 
     }
 
-    chn_first_hit = 0;
 
     // V1290
-    for (uint32_t i = 0; i < fData->frsmain_data_v1290_nM; i++)
+    
+
+    int hit_index = 0;
+    for (uint32_t channel_index = 0; channel_index < fData->frsmain_data_v1290_nM; channel_index++)
     {   
-        next_chn_first_hit = fData->frsmain_data_v1290_nME[i];
-        hits = next_chn_first_hit - chn_first_hit;
-
-        for (uint32_t j = 0; j < hits; j++)
+        int current_channel = fData->frsmain_data_v1290_nMI[channel_index]; // channel to read now!
+        int next_channel_start = fData->frsmain_data_v1290_nME[channel_index];
+        
+        for (uint32_t j = hit_index; j < next_channel_start; j++)
         {
-            // 128 depends on size of array in .spec file]
-            if (fData->frsmain_data_v1290_data[i * 128 + j] > 0)
-            {
-                v1290_channel.emplace_back(fData->frsmain_data_v1290_nMI[i]);
-                v1290_data.emplace_back(fData->frsmain_data_v1290_data[i * 128 + j]);
-                v1290_lot.emplace_back(fData->frsmain_data_v1290_leadOrTrailv[i * 128 + j]);
-            }
-            
+        //c4LOG(info,Form("current channel = %i, next channel start = %i, channels fired = %i, data = %i",current_channel, next_channel_start, fData->frsmain_data_v1290_nM, fData->frsmain_data_v1290_data[j]));
+        //c4LOG(info,Form("current channel = %i, next channel start = %i, channels fired = %i, data = %i",fData->frsmain_data_v1290_leadOrTrailMI[channel_index], fData->frsmain_data_v1290_leadOrTrailME[channel_index], fData->frsmain_data_v1290_nM, fData->frsmain_data_v1290_leadOrTrailv[j]));
+        v1290_channel.emplace_back(current_channel);
+        v1290_data.emplace_back(fData->frsmain_data_v1290_data[j]);
+        v1290_lot.emplace_back(fData->frsmain_data_v1290_leadOrTrailv[j]);
         }
-
-        chn_first_hit = next_chn_first_hit;
+        hit_index = next_channel_start;
     }
 
-
+    if (v1290_channel.size() > 0 || v792_channel.size() > 0){
+    c4LOG(info,v1290_channel.size());
     new ((*fArray)[fArray->GetEntriesFast()]) FrsMainData(
         wr_t,
         scalers_n,
@@ -139,8 +139,8 @@ Bool_t FrsMainReader::Read()
         v1290_data,
         v1290_lot);
     
-
     fNEvent += 1;
+    }
     return kTRUE;
 
 }

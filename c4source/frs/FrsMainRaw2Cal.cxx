@@ -75,6 +75,9 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
 {
 
     int mult = fRawArray->GetEntriesFast();
+
+    if (mult == 0) return;
+
     //for (int m = 0; m < fRawArray->GetEntriesFast(); m++)
     //{   
         fRawHit = (FrsMainData*)fRawArray->At(0); // event multiplicity
@@ -316,22 +319,50 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
                         if (tdc_array[14].size() < 10) tdc_array[14].emplace_back(v1290_data[i]);
                         break;
                     case 16:
+                        if (i == 0) music_t1[v1290_channel[i] - 16] = v1290_data[i]; // huh? 23 - 16 = 7 always ...?
+                        break;
                     case 17:
+                        if (i == 0) music_t1[v1290_channel[i] - 16] = v1290_data[i]; // huh? 23 - 16 = 7 always ...?
+                        break;
                     case 18:
+                        if (i == 0) music_t1[v1290_channel[i] - 16] = v1290_data[i]; // huh? 23 - 16 = 7 always ...?
+                        break;
                     case 19:
+                        if (i == 0) music_t1[v1290_channel[i] - 16] = v1290_data[i]; // huh? 23 - 16 = 7 always ...?
+                        break;
                     case 20:
+                        if (i == 0) music_t1[v1290_channel[i] - 16] = v1290_data[i]; // huh? 23 - 16 = 7 always ...?
+                        break;
                     case 21:
+                        if (i == 0) music_t1[v1290_channel[i] - 16] = v1290_data[i]; // huh? 23 - 16 = 7 always ...?
+                        break;
                     case 22:
+                        if (i == 0) music_t1[v1290_channel[i] - 16] = v1290_data[i]; // huh? 23 - 16 = 7 always ...?
+                        break;
                     case 23:
-                        if (i == 0) music_t1[v1290_channel[i] - 16] = v1290_data[i]; // music_tX ends here before spectra
+                        if (i == 0) music_t1[v1290_channel[i] - 16] = v1290_data[i]; // huh? 23 - 16 = 7 always ...?
                         break;
                     case 24:
+                        if (i == 0) music_t2[v1290_channel[i] - 24] = v1290_data[i]; // music_tX ends here before spectra
+                        break;
                     case 25:
+                        if (i == 0) music_t2[v1290_channel[i] - 24] = v1290_data[i]; // music_tX ends here before spectra
+                        break;
                     case 26:
+                        if (i == 0) music_t2[v1290_channel[i] - 24] = v1290_data[i]; // music_tX ends here before spectra
+                        break;
                     case 27:
+                        if (i == 0) music_t2[v1290_channel[i] - 24] = v1290_data[i]; // music_tX ends here before spectra
+                        break;
                     case 28:
+                        if (i == 0) music_t2[v1290_channel[i] - 24] = v1290_data[i]; // music_tX ends here before spectra
+                        break;
                     case 29:
+                        if (i == 0) music_t2[v1290_channel[i] - 24] = v1290_data[i]; // music_tX ends here before spectra
+                        break;
                     case 30:
+                        if (i == 0) music_t2[v1290_channel[i] - 24] = v1290_data[i]; // music_tX ends here before spectra
+                        break;
                     case 31:
                         if (i == 0) music_t2[v1290_channel[i] - 24] = v1290_data[i]; // music_tX ends here before spectra
                         break;

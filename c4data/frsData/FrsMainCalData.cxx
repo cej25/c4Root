@@ -9,7 +9,13 @@ FrsMainCalData::FrsMainCalData()
     ,   fIBinSClean(0)
     ,   fIBin100MsClean(0)
 {
-    
+    for (int i = 0; i < 14; i++) fDe_array[i] = 0;
+    for (int i = 0; i < 15; i++) fTdc_array[i] = std::vector<uint32_t>();
+    for (int i = 0; i < 8; i++)
+    {
+        fmusic_t1[i] = 0;
+        fmusic_t2[i] = 0;
+    }
 }
 
 FrsMainCalData::FrsMainCalData(uint64_t WR_TS, uint32_t time_in_ms, uint32_t ibin_for_s, 
