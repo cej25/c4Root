@@ -93,15 +93,15 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
 
 
     // Add readers
-    unpackbplast->SetOnline(false);
-    unpackaida->SetOnline(false);
-    unpackfatima->SetOnline(false);
+    unpackbplast->SetOnline(true);
+    unpackaida->SetOnline(true);
+    unpackfatima->SetOnline(true);
     //unpackgermanium->SetOnline(true);SetTimeMachineChannels
 
-    unpackfrsmain->SetOnline(false);
-    unpackfrstpc->SetOnline(false);
-    unpackfrsuser->SetOnline(false);
-    unpackfrsvftx->SetOnline(false);
+    unpackfrsmain->SetOnline(true);
+    unpackfrstpc->SetOnline(true);
+    unpackfrsuser->SetOnline(true);
+    unpackfrsvftx->SetOnline(true);
 
     // Add readers
     source->AddReader(unpackheader);
@@ -146,16 +146,16 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     FrsVFTXRaw2Cal* calfrsvftx = new FrsVFTXRaw2Cal();
 
     
-    aidaCalibrator->SetOnline(false);
-    aidaHitter->SetOnline(false);
-    calfatima->SetOnline(false);
-    calbplast->SetOnline(false);
+    aidaCalibrator->SetOnline(true);
+    aidaHitter->SetOnline(true);
+    calfatima->SetOnline(true);
+    calbplast->SetOnline(true);
     //ge_calib->SetOnline(false);
 
-    calfrsmain->SetOnline(false);
-    calfrstpc->SetOnline(false);
-    calfrsuser->SetOnline(false);
-    calfrsvftx->SetOnline(false);
+    calfrsmain->SetOnline(true);
+    calfrstpc->SetOnline(true);
+    calfrsuser->SetOnline(true);
+    calfrsvftx->SetOnline(true);
     
     run->AddTask(calfatima);
     run->AddTask(aidaCalibrator);
@@ -169,11 +169,11 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     run->AddTask(calfrsvftx);
 
     // CEJ: currently some segault after 1 event in Cal2Hit
-    //FrsCal2Hit* hitfrs = new FrsCal2Hit();
+    FrsCal2Hit* hitfrs = new FrsCal2Hit();
 
-    //hitfrs->SetOnline(false); 
+    hitfrs->SetOnline(false); 
 
-    //run->AddTask(hitfrs);
+    run->AddTask(hitfrs);
 
 
 

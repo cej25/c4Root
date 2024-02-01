@@ -35,13 +35,16 @@ class FrsCal2Hit : public FairTask
         void SetParameters();
         virtual void SetParContainers();
         void Setup_Conditions();
+        void FRS_GainMatching();
 
         Bool_t Check_WinCond(Float_t P, Float_t* V);
         Bool_t Check_WinCond_Multi(Float_t P, Float_t V[8][2], int cond_num);
 
         Float_t rand3();
 
-
+        void ZeroArrays();
+        void ZeroVariables();
+        void ClearVectors();
 
         void FinishEvent();
         void FinishTask();

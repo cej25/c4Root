@@ -609,7 +609,7 @@ void FrsTPCRaw2Cal::SetFRSParameters()
     // After changing cut limits => Launch analysis again in Go4GUI
     // [Updated on 2021/Mar/21, YT, EH, IM] to catch all timeref signals.
     tpc->lim_timeref[0][0] = 1000.0; tpc->lim_timeref[0][1] = 48000.0;//time ref (accept trig)
-    tpc->lim_timeref[1][0] = 5000.0; tpc->lim_timeref[1][1] = 20000.0;//time ref (sc21) changed to narrow gate, 2023-Nov-28
+    tpc->lim_timeref[1][0] = 5000.0; tpc->lim_timeref[1][1] = 20000.0;//time ref (sc21) changed to narrow gate, 2023-Nov-28 // CEJ: changing this to wide actually lets us see X2 positions...
     tpc->lim_timeref[2][0] = 1000.0; tpc->lim_timeref[2][1] = 48500.0;//time ref (sc22)
     tpc->lim_timeref[3][0] = 5000.0; tpc->lim_timeref[3][1] = 20000.0;//time ref (sc31) changed to narrow gate, 2023-Nov-28
     tpc->lim_timeref[4][0] = 5000.0; tpc->lim_timeref[4][1] = 20000.0;//time ref (sc41) changed to narrow gate, 2023-Nov-28
@@ -1635,7 +1635,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
     {   
         // select leads
         if (v1190_lot[i] == 0) // leads 0, trails 1
-        {
+        {   
             if (v1190_lead_hits[v1190_channel[i]].size() < 64) v1190_lead_hits[v1190_channel[i]].emplace_back(v1190_data[i]);
         }
     }
@@ -1651,7 +1651,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
         {
             // each element a vector
             tpc_dt[i][j] = v1190_lead_hits[v1190_channel_dt[i][j]];
-
+            
 
             if (tpc_a[i][j] - tpc->a_offset[i][j] > 5.0)
             {
@@ -1681,6 +1681,17 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
     for (int i = 0; i < 8; i++)
     {
         tpc_timeref[i] = v1190_lead_hits[v1190_channel_timeref[i]];
+        /*
+        timeref[0] = channel 96 // never fires - accept trig
+        timeref[1] = channel 97 // always fires - sc21
+        timeref[2] = channel 98 // sometimes - sc22
+        timeref[3] = channel 99 // sometimes - sc31
+        timeref[4] = channel 100 // never? - sc41!?
+        timeref[5] = channel 101 // sometimes - not labelled
+        timeref[6] = channel 102 // never
+        timeref[7] = channel 103 // never
+        */
+
     }
 
 
@@ -1689,7 +1700,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
     {   
         // weird condition in go4, ignore for now loop through vector size
         for (int j = 0; j < tpc_timeref[i].size(); j++)
-        {
+        {   
             if (tpc_timeref[i][j] > tpc->lim_timeref[i][0] && tpc_timeref[i][j] < tpc->lim_timeref[i][1])
             {
                 b_tpc_timeref[i] = true;
@@ -1711,6 +1722,9 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
     bool checkrange4 = 0;
     bool checkrange5 = 0;
 
+
+    // CEJ: the loops I built here are different to Go4 so I'm sure I caused some issue
+    // I'm just not sure what yet...
     for (int i = 0; i < 7; i++)
     {
         for (int j = 0; j < tpc_lt[i][0].size(); j++)
@@ -1801,6 +1815,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
             }
         }
         
+
         for (int j = 0; j < 4; j++)
         {
             // calculate control sums
@@ -1817,24 +1832,26 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                 tpc_csum[i][j] = -9999999;
             }
 
+
+            // CEJ: these are never satisfied so b_tpc_csum is never true, except at the start
+
             if (tpc_csum[i][0] > tpc->lim_csum1[i][0] && tpc_csum[i][0] < tpc->lim_csum1[i][1])
-            {
+            {   
                 b_tpc_csum[i][0] = true;
             }
             if (tpc_csum[i][1] > tpc->lim_csum2[i][0] && tpc_csum[i][1] < tpc->lim_csum2[i][1])
-            {
+            {   
                 b_tpc_csum[i][1] = true;
             }
             if (tpc_csum[i][2] > tpc->lim_csum3[i][0] && tpc_csum[i][2] < tpc->lim_csum3[i][1])
-            {
+            {   
                 b_tpc_csum[i][2] = true;
             }
             if (tpc_csum[i][3] > tpc->lim_csum4[i][0] && tpc_csum[i][3] < tpc->lim_csum4[i][1])
-            {
+            {   
                 b_tpc_csum[i][3] = true;
             }
         }
-
 
         int countx = 0;
         float sumx = 0.0;
@@ -1870,7 +1887,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
         float tmp_tpc_y[4] = {-99999., -99999., -99999., -99999.};
         int index_timeref = tpc->id_tpc_timeref[i];
         for (int j = 0; j < 4; j++)
-        {
+        {   
             if (b_tpc_csum[i][j] && b_tpc_timeref[index_timeref])
             {
                 tpc_yraw[i][j] = tpc_dt_s[i][j] - tpc_timeref_s[index_timeref];
