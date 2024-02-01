@@ -68,6 +68,7 @@ InitStatus AidaUnpack2Cal::Init()
   mgr->Register("AidaTimeMachineData", "AidaTimeMachineDataFolder", aidaTimeMachineArray, !fScalersOnline);
 
   conf = TAidaConfiguration::GetInstance();
+  ignoredEvents = 0;
 
   return kSUCCESS;
 }
@@ -78,17 +79,30 @@ void AidaUnpack2Cal::Exec(Option_t* option)
   implantCalArray->clear();
   decayCalArray->clear();
 
-
   for (auto const& unpack : *unpackArray)
   {
+    if (ignoredEvents >= 10)
+    {
+      c4LOG(fatal, "Lots of invalid AIDA events, check the AIDA configuration");
+      return;
+    }
+
     // TODO?: Clock correction
+    if (unpack.Fee() > conf->FEEs())
+    {
+      c4LOG(error, "AIDA FEE#" << unpack.Fee() << " greater than configured amount: " << conf->FEEs() << ", ignoring event");
+      ignoredEvents++;
+      return;
+    }
 
     auto feeConf = conf->FEE(unpack.Fee() - 1);
     if (feeConf.DSSD <= 0)
     {
       c4LOG(error, "Invalid DSSD Mapping for AIDA fee " << unpack.Fee() << ", ignoring event");
+      ignoredEvents++;
       return;
     }
+
     int dssd = feeConf.DSSD;
     int side = feeConf.Side;
     int strip = 0;
