@@ -291,7 +291,8 @@ Bool_t FatimaReader::Read() //do fine time here:
     wr_t = (((uint64_t)fData->fatima_ts_t[3]) << 48) + (((uint64_t)fData->fatima_ts_t[2]) << 32) + (((uint64_t)fData->fatima_ts_t[1]) << 16) + (uint64_t)(fData->fatima_ts_t[0]);
     
 
-    for (int it_board_number = 0; it_board_number < NBoards; it_board_number++){ //per board:
+    for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
+    { //per board:
         
         if (fData->fatima_tamex[it_board_number].event_size == 0) continue; // empty event skip
         
@@ -313,12 +314,13 @@ Bool_t FatimaReader::Read() //do fine time here:
         //c4LOG(info,Form("time_epoch =  %i, time_coarse = %i, time_fine = %i, time_edge = %i, time_channel = %i",fData->fatima_tamex[it_board_number].time_epoch,fData->fatima_tamex[it_board_number].time_coarse,fData->fatima_tamex[it_board_number].time_fine,fData->fatima_tamex[it_board_number].time_edge,fData->fatima_tamex[it_board_number].time_channel));
         //c4LOG(info,"Here comes data:");
 
-        for (int it_hits = 0; it_hits < fData->fatima_tamex[it_board_number].event_size/4 - 3 ; it_hits++){
+        for (int it_hits = 0; it_hits < fData->fatima_tamex[it_board_number].event_size/4 - 3 ; it_hits++)
+        {
             //if (fData->fatima_tamex[it_board_number].time_channelv[it_hits] != 1) continue;
 
 
-            if (fData->fatima_tamex[it_board_number].time_epochv[it_hits] != 0){
-                    if (it_hits + 1 == fData->fatima_tamex[it_board_number].event_size/4 - 3) {c4LOG(fatal, "Data ends on a epoch...");}
+          
+            //if (it_hits + 1 == fData->fatima_tamex[it_board_number].event_size/4 - 3) {c4LOG(fatal, "Data ends on a epoch...");}
 
             //c4LOG(info, Form("epoch = %i",fData->fatima_tamex[it_board_number].time_epochv[it_hits]));
             //c4LOG(info, Form("coarse = %i",fData->fatima_tamex[it_board_number].time_coarsev[it_hits]));
@@ -344,7 +346,8 @@ Bool_t FatimaReader::Read() //do fine time here:
             if (!(fData->fatima_tamex[it_board_number].time_coarse == fData->fatima_tamex[it_board_number].time_fine && fData->fatima_tamex[it_board_number].time_coarse == fData->fatima_tamex[it_board_number].time_epoch)) {fNevents_skipped++; continue;}
 
             //any time you see an epoch - this epoch will apply to the next time data words until a new epoch word is written. If the following data in the buffer is another channel then it must be preceeded with another epoch. 
-            if (fData->fatima_tamex[it_board_number].time_epochv[it_hits] != 0){
+            if (fData->fatima_tamex[it_board_number].time_epochv[it_hits] != 0)
+            {
                     previous_epoch_word = fData->fatima_tamex[it_board_number].time_epochv[it_hits] & 0xFFFFFFF;
                     //if (it_board_number == 1) c4LOG(info,Form("Found epoch for ch = %i, e = %i",next_channel,fData->fatima_tamex[it_board_number].time_epochv[it_hits] & 0xFFFFFFF));
                     fNepochwordsread++;
@@ -353,7 +356,6 @@ Bool_t FatimaReader::Read() //do fine time here:
             }
               
             //from this point we should have seen an epoch for channel id.
-
 
             uint32_t channelid = fData->fatima_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // 1-32
             if (channelid == 0) {continue;} // skip channel 0 for now. This is the trigger information.
@@ -367,12 +369,13 @@ Bool_t FatimaReader::Read() //do fine time here:
 
             if (!(channelid >= last_channel_read)) {c4LOG(fatal, Form("Data format is inconcistent with assumption: Channels are not read out in increasing order. This channel = %i, last channel = %i",channelid,last_channel_read));}
 
-            
+        
             last_word_read_was_epoch = false;
             last_channel_read = channelid;
 
             //Fill fine times and skip.
-            if (!fine_time_calibration_set) {
+            if (!fine_time_calibration_set) 
+            {
                 fine_time_hits[it_board_number][channelid-1]->Fill(fData->fatima_tamex[it_board_number].time_finev[it_hits]);
                 continue;
             }
@@ -383,7 +386,8 @@ Bool_t FatimaReader::Read() //do fine time here:
 
             //if(it_board_number == 1) c4LOG(info,fData->fatima_tamex[it_board_number].time_edgev[it_hits]);
 
-            if (is_leading){ // rise signal:
+            if (is_leading)
+            { // rise signal:
                 //if (it_board_number == 1) c4LOG(info,Form("Found rise: ch = %i, le = %i, lc = %i, lf = %f", channelid, previous_epoch_word,coarse_T,fine_T));
                 
                 //count number of double leads
@@ -397,7 +401,9 @@ Bool_t FatimaReader::Read() //do fine time here:
                 
                 fNleads_read[it_board_number][channelid-1]++;
                 continue;
-            }else if (!is_leading && last_tdc_hit.hit){ 
+            }
+            else if (!is_leading && last_tdc_hit.hit)
+            { 
                 //trail and rise are matched
                 //if (it_board_number == 1) c4LOG(info,Form("Writing: ch = %i, le = %i lc = %i, lf = %f, te = %i tc = %i, tf = %f ",channelid,last_hits[it_board_number][channelid-1].lead_epoch_counter, last_hits[it_board_number][channelid-1].lead_coarse_T, last_hits[it_board_number][channelid-1].lead_fine_T,last_epoch[channelid-1],coarse_T,fine_T));
 
@@ -416,7 +422,7 @@ Bool_t FatimaReader::Read() //do fine time here:
                     fine_T,
                     fData->fatima_ts_subsystem_id,
                     wr_t);
-                
+            
                 //reset:
 
                 last_tdc_hit.hit=false;
@@ -428,16 +434,21 @@ Bool_t FatimaReader::Read() //do fine time here:
                 fNtrails_read[it_board_number][channelid-1]++;
 
                 continue;
-            }else{
+            }
+            else
+            {
                 // do nothing, trail found with no rise.
                 fNevents_trail_seen_no_lead[it_board_number][channelid-1]++;
                 fNtrails_read[it_board_number][channelid-1]++;
             }
         }
-    }
+
+    } // boards
+        
     fNEvent += 1;
     return kTRUE;
 }
+
 
 #define ANSI_COLOR_RESET "\033[0m"
 #define ANSI_COLOR_BLUE "\033[44m"
@@ -448,7 +459,8 @@ Bool_t FatimaReader::Read() //do fine time here:
 /*
 Playing with colors :D
 */
-void FatimaReader::PrintStatistics(){
+void FatimaReader::PrintStatistics()
+{
     std::ostringstream oss;
     // Print column labels
     oss << "\n";

@@ -55,20 +55,12 @@ bPlastRaw2Cal::~bPlastRaw2Cal(){
 }
 
 /*
-This is called AFTER the detector mapping. It picks out the time machine channels and write them to the TimeMachine structure.
-*/
-void FatimaRaw2Cal::SetTimeMachineChannels(int ftime_machine_delayed_detector_id, int ftime_machine_undelayed_detector_id){
-    time_machine_delayed_detector_id = ftime_machine_delayed_detector_id;
-    time_machine_undelayed_detector_id = ftime_machine_undelayed_detector_id;
-}
-
-/*
 This is called AFTER the detector mapping. This picks out the two timemachine channels and writes them to the TimeMachine structure.
 */
 void bPlastRaw2Cal::SetTimeMachineChannels(int ftime_machine_undelayed_detector_id, int ftime_machine_delayed_detector_id)
 {
-time_machine_delayed_detector_id = ftime_machine_delayed_detector_id;
-time_machine_undelayed_detector_id = ftime_machine_undelayed_detector_id;
+    time_machine_delayed_detector_id = ftime_machine_delayed_detector_id;
+    time_machine_undelayed_detector_id = ftime_machine_undelayed_detector_id;
 }
 
 
@@ -82,7 +74,8 @@ void bPlastRaw2Cal::SetParContainers()
 /*
 Initialiser called by the FairRoot manager. Gets the required FairRootManager objects to read and register the data to be written to the tree.
 */
-InitStatus bPlastRaw2Cal::Init(){
+InitStatus bPlastRaw2Cal::Init()
+{
     //grabs instance managers and handles.
 
     c4LOG(info, "Grabbing FairRootManager, RunOnline and EventHeader.");

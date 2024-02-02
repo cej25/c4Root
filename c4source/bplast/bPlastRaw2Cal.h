@@ -23,8 +23,6 @@ class bPlastRaw2Cal : public FairTask
         void PrintDetectorMap();
         void PrintDetectorCal();
         
-        void SetTimeMachineChannels(int ftime_machine_delayed_detector_id, int ftime_machine_undelayed_detector_id);
-
         Bool_t SetDetectorMapFile(TString);
         Bool_t SetDetectorCalFile(TString);
 
@@ -65,10 +63,6 @@ class bPlastRaw2Cal : public FairTask
 
         EventHeader * header;
         Int_t fNEvents = 0;
-
-        
-        int time_machine_delayed_detector_id;
-        int time_machine_undelayed_detector_id;
 
         //internal status flags for detector map and calibration map:
         Bool_t DetectorMap_loaded = 0;
