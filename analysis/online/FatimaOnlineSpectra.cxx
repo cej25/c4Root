@@ -246,6 +246,7 @@ InitStatus FatimaOnlineSpectra::Init()
     
     
     run->GetHttpServer()->RegisterCommand("Reset_Fatima_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Snapshot_Fatima_Hist", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
 
     return kSUCCESS;
     
@@ -272,7 +273,63 @@ void FatimaOnlineSpectra::Reset_Histo()
     h2_fatima_energy_energy->Reset();
 }
 
+void FatimaOnlineSpectra::Snapshot_Histo()
+{
+    // date and time stamp
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
+    // make folder with date and time
+    TString snapshot_dir = Form("FATIMA_snapshot_%d_%d_%d_%d_%d_%d",ltm->tm_year+1900,ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec);
 
+    gSystem->mkdir(snapshot_dir);
+    gSystem->cd(snapshot_dir);
+
+    c_fatima_snapshot = new TCanvas("c_fatima_snapshot","Fatima snapshot",650,350);
+
+    for (int ihist = 0; ihist<NDetectors; ihist++)
+    {
+        if(h1_fatima_slowToT[ihist]->GetEntries() != 0)
+        {
+            h1_fatima_slowToT[ihist]->Draw();
+            c_fatima_snapshot->SaveAs(Form("h1_fatima_slowTot_%d.png",ihist));
+            c_fatima_snapshot->Clear();
+        }
+        if(h1_fatima_fastToT[ihist]->GetEntries() != 0)
+        {
+            h1_fatima_fastToT[ihist]->Draw();
+            c_fatima_snapshot->SaveAs(Form("h1_fatima_fastTot_%d.png",ihist));
+            c_fatima_snapshot->Clear();
+        }
+        if(h1_fatima_abs_time[ihist]->GetEntries() != 0)
+        {
+            h1_fatima_abs_time[ihist]->Draw();
+            c_fatima_snapshot->SaveAs(Form("h1_fatima_abs_time_%d.png",ihist));
+            c_fatima_snapshot->Clear();
+        }
+        if(h1_fatima_energies[ihist]->GetEntries() != 0)
+        {
+            h1_fatima_energies[ihist]->Draw();
+            c_fatima_snapshot->SaveAs(Form("h1_fatima_energies_%d.png",ihist));
+            c_fatima_snapshot->Clear();
+        }
+        if(h1_fatima_time_differences[ihist]->GetEntries() != 0)
+        {
+            h1_fatima_time_differences[ihist]->Draw();
+            c_fatima_snapshot->SaveAs(Form("h1_fatima_time_differences_%d.png",ihist));
+            c_fatima_snapshot->Clear();
+        }
+        if(h2_fatima_fast_v_slow[ihist]->GetEntries() != 0)
+        {
+            h2_fatima_fast_v_slow[ihist]->Draw("COLZ");
+            c_fatima_snapshot->SaveAs(Form("h2_fatima_fast_v_slow_%d.png",ihist));
+            c_fatima_snapshot->Clear();
+        }
+    }
+    delete c_fatima_snapshot;
+
+    gSystem->cd("..");
+    c4LOG(info, "Snapshots saved in: " << snapshot_dir);
+}
 
 
 void FatimaOnlineSpectra::Exec(Option_t* option)

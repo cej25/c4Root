@@ -6,6 +6,8 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
+
+// online
 #pragma link C++ class AidaOnlineSpectra+;
 #pragma link C++ class FrsOnlineSpectra+;
 #pragma link C++ class FrsDetectorsOnline+;

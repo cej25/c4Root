@@ -32,8 +32,9 @@ class TimeMachineOnline : public FairTask
 
         virtual void FinishTask();
         
-        void Reset_Histo();
+        virtual void Reset_Histo();
 
+        virtual void Snapshot_Histo();
 
 
     
@@ -44,8 +45,8 @@ class TimeMachineOnline : public FairTask
         EventHeader* header;
 
 
-        // ranges
-        //Double_t
+        // canvas
+        TCanvas* c_time_machine_time_snapshot;
 
 
         // Histograms 

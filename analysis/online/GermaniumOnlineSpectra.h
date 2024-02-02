@@ -32,6 +32,8 @@ class GermaniumOnlineSpectra : public FairTask
 
         virtual void Reset_Histo();
 
+        virtual void Snapshot_Histo();
+
         // range setters
 
     
@@ -49,6 +51,7 @@ class GermaniumOnlineSpectra : public FairTask
         TCanvas* c_germanium_time; // channel 1 out of 28 for now?
         TCanvas* c_germanium_cal_energy_spectra;
         TCanvas* c_germanium_energy_mult2;
+        TCanvas* c_germanium_snapshot;
 
         // Histograms energy
         TH1F * h1_germanium_energy[100];

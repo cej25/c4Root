@@ -29,6 +29,7 @@ include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 link_directories(${FAIRROOT_LIBRARY_DIR} ${ROOT_LIBRARY_DIR})
 
 set(SRCS
+#online
 ./online/GermaniumOnlineSpectra.cxx
 ./online/BeamMonitorOnlineSpectra.cxx
 ./online/LisaOnlineSpectra.cxx
@@ -39,6 +40,11 @@ set(SRCS
 ./online/FrsDetectorsOnline.cxx
 ./fatima_aida_correlations/FatimaAidaSpectra.cxx
 ./online/TimeMachineOnline.cxx
+#nearline
+# ./nearline/bPlastNearlineSpectra.cxx
+# ./nearline/AidaNearlineSpectra.cxx
+
+#offline
 )
 
 
