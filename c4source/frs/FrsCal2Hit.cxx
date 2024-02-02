@@ -2016,10 +2016,6 @@ void FrsCal2Hit::Exec(Option_t* option)
             id_y2 = fCalHitTPC->Get_tpc_y_s2_foc_22_24();
             id_a2 = fCalHitTPC->Get_tpc_angle_x_s2_foc_22_24();
             id_b2 = fCalHitTPC->Get_tpc_angle_y_s2_foc_22_24();
-            std::cout << "x2: " << id_x2 << std::endl;
-            std::cout << "y2: " << id_y2 << std::endl;
-            std::cout << "a2: " << id_a2 << std::endl;
-            std::cout << "b2: " << id_b2 << std::endl;
         }
         else if (b_tpc_xy[0] && b_tpc_xy[1])
         {   
@@ -2051,8 +2047,9 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
 
+    // we never get an x4 position because we never fired the s4 tpc?
     if (b_tpc_xy[4] && b_tpc_xy[5])
-    {
+    {   
         id_x4 = fCalHitTPC->Get_tpc_x_s4();
         id_y4 = fCalHitTPC->Get_tpc_y_s4();
         id_a4 = fCalHitTPC->Get_tpc_angle_x_s4();
@@ -2440,7 +2437,8 @@ void FrsCal2Hit::Exec(Option_t* option)
     
     // non mhtdc version?
     //std::cout << " id_b_AoQ: " << id_b_AoQ << " id_b_x2: " << id_b_x2 << " id_b_z: " << id_b_z << std::endl;
-    if (id_b_AoQ && id_b_x2 && id_b_z)
+    //std::cout << " id_AoQ: " << id_AoQ << " id_x2: " << id_x2 << " id_z: " << id_z << std::endl;
+    if (id_b_AoQ != false && id_b_x2 != false && id_b_z != false)
     {
         float gamma1square = 1.0 + TMath::Power(((1 / aoq_factor) * (id_brho[0] / id_AoQ)), 2);
         id_gamma_ta_s2 = TMath::Sqrt(gamma1square);
@@ -2460,15 +2458,6 @@ void FrsCal2Hit::Exec(Option_t* option)
     }
     // above is end of FRS_Anl
 
-    /*new ((*fHitArray)[fHitArray->GetEntriesFast()]) FrsHitData(
-            WR_TS,
-            id_x2,
-            id_x4,
-            id_AoQ,
-            id_AoQ_corr,
-            id_z,
-            id_z2
-    );*/
    
 }
 
@@ -2760,10 +2749,10 @@ void FrsCal2Hit::ZeroVariables()
     id_b_x2 = false;
     id_b_x4 = false;
     id_b_z = false;
-    id_x2 = 0;
-    id_y2 = 0;
-    id_a2 = 0;
-    id_b2 = 0;
+    id_x2 = -999;
+    id_y2 = -999;
+    id_a2 = -999;
+    id_b2 = -999;
     id_x4 = 0;
     id_y4 = 0;
     id_a4 = 0;

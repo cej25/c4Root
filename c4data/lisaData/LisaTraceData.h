@@ -7,19 +7,17 @@ class LisaTraceData : public TObject
     public:
         LisaTraceData();
 
-        LisaTraceData(uint32_t trSample);
+        // LisaTraceData(/*overload version*/);
 
+        // Destructor
         virtual ~LisaTraceData() {}
 
         // Getters
-        inline const uint32_t GetTrSample() const { return fTrSample; }
 
         // Setters
-        void SetTrSample(uint32_t v) { fTrSample = v; }
 
-    protected:
+    private:
         // somethin
-        uint32_t fTrSample;
 
     public:
         ClassDef(LisaTraceData, 1)

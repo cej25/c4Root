@@ -30,9 +30,9 @@ FrsOnlineSpectra::FrsOnlineSpectra(const TString& name, Int_t iVerbose)
     , fHitFrsArray(NULL)
     , fNEvents(0)
     , fMin_Z(30.)
-    , fMax_Z(80.)
+    , fMax_Z(100.)
     , fMin_AoQ(1.6)
-    , fMax_AoQ(3.0)
+    , fMax_AoQ(4.0)
     , fMin_x4(-100.) // no idea
     , fMax_x4(100.0) // no idea
     , fMin_Z_gate(30.)
@@ -115,7 +115,7 @@ void FrsOnlineSpectra::Exec(Option_t* option)
             if (!fHitFrs)
                 continue;
 
-            h_frs_z1_vs_AoQ->Fill(fHitFrs->Get_ID_AoQ_corr(), fHitFrs->Get_ID_z2());
+            h_frs_z1_vs_AoQ->Fill(fHitFrs->Get_ID_AoQ_corr(), fHitFrs->Get_ID_z());
         }
     }
 
