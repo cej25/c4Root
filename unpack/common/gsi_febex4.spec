@@ -1,6 +1,19 @@
 #define TRACE_SIZE 10000 // some maximum size?
-#define TRACE_CHANNELS 16 // this needs to be read from the data stream somehow
+#define TRACE_CHANNELS 1 // this needs to be read from the data stream somehow
 
+
+DUMMY()
+{
+    UINT32 no NOENCODE;
+}
+
+FEBEX_BAD_EVENT()
+{
+    UINT32 bad NOENCODE
+    {
+        0_31: 0xBAD00BAD;
+    }
+}
 
 // Reads the Padding between FEBEX events:
 FEBEX_PADDING()
@@ -14,19 +27,21 @@ FEBEX_PADDING()
 }
 
 
+
+
 FEBEX_EVENT(card)
 {
 	MEMBER(DATA32 event_trigger_time_hi); // trigger time
 	MEMBER(DATA32 event_trigger_time_lo); // "..."
     MEMBER(DATA16 hit_pattern);
-    MEMBER(DATA32 num_channels_fired);
+    //MEMBER(DATA32 num_channels_fired);
 
-	MEMBER(DATA8 channel_id[16] ZERO_SUPPRESS);
+	//MEMBER(DATA8 channel_id[16] ZERO_SUPPRESS);
 	MEMBER(DATA16 channel_trigger_time_hi[16] ZERO_SUPPRESS);
 	MEMBER(DATA32 channel_trigger_time_lo[16] ZERO_SUPPRESS);
 	
-    MEMBER(DATA8 pileup[16]);
-	MEMBER(DATA8 overflow[16]);
+    MEMBER(DATA8 pileup[16] ZERO_SUPPRESS);
+	MEMBER(DATA8 overflow[16] ZERO_SUPPRESS);
     MEMBER(DATA8 channel_cfd[16] ZERO_SUPPRESS);
 	MEMBER(DATA32 channel_energy[16] ZERO_SUPPRESS);
  
@@ -45,7 +60,7 @@ FEBEX_EVENT(card)
         0_1: ignore;
         2_31: size;
 
-        ENCODE(num_channels_fired ,  (value = size/4 - 1 ));
+        //ENCODE(num_channels_fired ,  (value = size/4 - 1 ));
     }
 
     //sum channel data header
@@ -83,13 +98,13 @@ FEBEX_EVENT(card)
             16_23: channel_id_bits;
             24_31: 0xF0;
 
-            ENCODE(channel_id[index], (value = channel_id_bits));
-            ENCODE(channel_trigger_time_hi[index], (value = chan_ts_hi));
+            //ENCODE(channel_id[index], (value = channel_id_bits));
+            ENCODE(channel_trigger_time_hi[channelids.channel_id_bits], (value = chan_ts_hi));
         }
         UINT32 channel_ts NOENCODE
         {
             0_31: chan_ts_lo;
-            ENCODE(channel_trigger_time_lo[index], (value = chan_ts_lo));
+            ENCODE(channel_trigger_time_lo[channelids.channel_id_bits], (value = chan_ts_lo));
         }
         UINT32 chan_enrgy NOENCODE
         {
@@ -98,10 +113,10 @@ FEBEX_EVENT(card)
             30: pileup_flag;
             31: overflow_flag;
             
-            ENCODE(channel_cfd[index], (value = TSF));
-            ENCODE(channel_energy[index], (value = chan_energy));
-            ENCODE(pileup[index], (value = pileup_flag));
-            ENCODE(overflow[index], (value = overflow_flag));
+            ENCODE(channel_cfd[channelids.channel_id_bits], (value = TSF));
+            ENCODE(channel_energy[channelids.channel_id_bits], (value = chan_energy));
+            ENCODE(pileup[channelids.channel_id_bits], (value = pileup_flag));
+            ENCODE(overflow[channelids.channel_id_bits], (value = overflow_flag));
         }
         UINT32 future_use NOENCODE
         {
@@ -210,61 +225,70 @@ FEBEX_EVENT_TRACES(card)
             }
         }
 
-        list (0 <= i < TRACE_CHANNELS)
+        if (hp.hp != 0)
         {
-            UINT32 header NOENCODE
+            list (0 <= i < TRACE_CHANNELS)
             {
-                0_7: 0x34;
-                8_23: other;
-                24_31: ch_id;
-            }
-
-            UINT32 tracesize NOENCODE
-            {
-                0_31: size;
-            }
-
-            UINT32 tracehead NOENCODE
-            {
-                0_23: other;
-                24_31: head;
-            }
-            
-            //for example, when trace_length = 4000:
-            //tracesize = 8008
-            //tracesize / 2 - 4 gives total tracelength
-            //tracesize / 4 - 2 gives loop length requirement (2000)
-            
-        
-            list (0 <= j < (tracesize.size / 4 - 2))
-            {
-                
-                UINT32 channel_trace NOENCODE
+                UINT32 header NOENCODE
                 {
-                    0_13: data1;
-                    14_15: stuff1; 
-                    16_29: data2;
-                    30_31: stuff2;
-
-                    ENCODE(traces[header.ch_id][2*j+0], (value = data1));
-                    ENCODE(traces[header.ch_id][2*j+1], (value = data2));
+                    0_7: 0x34;
+                    8_23: other;
+                    24_31: ch_id;
                 }
 
-            } 
-        
+                UINT32 tracesize NOENCODE
+                {
+                    0_31: size;
+                }
 
-            UINT32 trace_trailer NOENCODE
-            {
-                0_23: notused;
-                24_31: id = RANGE(0xb0,0xbf);
+                UINT32 tracehead NOENCODE
+                {
+                    0_23: other;
+                    24_31: head;
+                }
+            
+                //for example, when trace_length = 4000:
+                //tracesize = 8008
+                //tracesize / 2 - 4 gives total tracelength
+                //tracesize / 4 - 2 gives loop length requirement (2000)
+            
+        
+                list (0 <= j < (tracesize.size / 4 - 2))
+                {
+                    
+                    UINT32 channel_trace NOENCODE
+                    {
+                        0_13: data1;
+                        14_15: stuff1; 
+                        16_29: data2;
+                        30_31: stuff2;
+
+                        ENCODE(traces[header.ch_id][2*j+0], (value = data1));
+                        ENCODE(traces[header.ch_id][2*j+1], (value = data2));
+                    }
+
+                } 
+            
+
+                UINT32 trace_trailer NOENCODE
+                {
+                    0_23: notused;
+                    24_31: id = RANGE(0xb0,0xbf);
+                }
             }
         }
-    }
+   }
     else if (sumchannel.trigger_type == 3)
     {   
 
+        select several
+        {
+            dummy = DUMMY();
+        }
+        /*
         // trigger 3 events send only headers
-
+        if (hp.hp != 0)
+        {
         list (0 <= i < TRACE_CHANNELS)
         {
             UINT32 header NOENCODE
@@ -291,6 +315,8 @@ FEBEX_EVENT_TRACES(card)
                 24_31: id = RANGE(0xb0,0xbf);
             }
         }
+        }
+        */
     }
 
 }

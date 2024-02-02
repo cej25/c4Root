@@ -10,7 +10,9 @@
 #include "c4Logger.h"
 #include "AidaData.h"
 #include "AidaCalData.h"
+#include "TimeMachineData.h"
 #include <FairTask.h>
+#include <TClonesArray.h>
 
 // Static mapping of a FEE channel to DSSD Strip 
 // Defined by AIDA hardware, not configurable
@@ -25,16 +27,24 @@ static const int FeeToStrip[64] = {
 
 AidaUnpack2Cal::AidaUnpack2Cal() :
   unpackArray(nullptr),
+  scalerArray(nullptr),
   implantCalArray(new std::vector<AidaCalAdcItem>),
   decayCalArray(new std::vector<AidaCalAdcItem>),
+  aidaTimeMachineArray(new TClonesArray("TimeMachineData")),
   fImplantOnline(false),
   fDecayOnline(false),
-  conf(nullptr)
+  fScalersOnline(false),
+  conf(nullptr),
+  aida_tm_delayed_ch(0),
+  aida_tm_undelayed_ch(0)
 {
 }
 
 AidaUnpack2Cal::~AidaUnpack2Cal()
 {
+  delete implantCalArray;
+  delete decayCalArray;
+  delete aidaTimeMachineArray;
 }
 
 void AidaUnpack2Cal::SetParContainers()
@@ -50,10 +60,15 @@ InitStatus AidaUnpack2Cal::Init()
   unpackArray = mgr->InitObjectAs<decltype(unpackArray)>("AidaAdcData");
   c4LOG_IF(fatal, !unpackArray, "Branch AidaAdcData not found!");
 
+  scalerArray = mgr->InitObjectAs<decltype(scalerArray)>("AidaScalerData");
+  c4LOG_IF(fatal, !scalerArray, "Branch AidaScalerData not found!");
+
   mgr->RegisterAny("AidaImplantCalAdcData", implantCalArray, !fImplantOnline);
   mgr->RegisterAny("AidaDecayCalAdcData", decayCalArray, !fDecayOnline);
+  mgr->Register("AidaTimeMachineData", "AidaTimeMachineDataFolder", aidaTimeMachineArray, !fScalersOnline);
 
   conf = TAidaConfiguration::GetInstance();
+  ignoredEvents = 0;
 
   return kSUCCESS;
 }
@@ -64,17 +79,30 @@ void AidaUnpack2Cal::Exec(Option_t* option)
   implantCalArray->clear();
   decayCalArray->clear();
 
-
   for (auto const& unpack : *unpackArray)
   {
+    if (ignoredEvents >= 10)
+    {
+      c4LOG(fatal, "Lots of invalid AIDA events, check the AIDA configuration");
+      return;
+    }
+
     // TODO?: Clock correction
+    if (unpack.Fee() > conf->FEEs())
+    {
+      c4LOG(error, "AIDA FEE#" << unpack.Fee() << " greater than configured amount: " << conf->FEEs() << ", ignoring event");
+      ignoredEvents++;
+      return;
+    }
 
     auto feeConf = conf->FEE(unpack.Fee() - 1);
     if (feeConf.DSSD <= 0)
     {
       c4LOG(error, "Invalid DSSD Mapping for AIDA fee " << unpack.Fee() << ", ignoring event");
+      ignoredEvents++;
       return;
     }
+
     int dssd = feeConf.DSSD;
     int side = feeConf.Side;
     int strip = 0;
@@ -94,7 +122,6 @@ void AidaUnpack2Cal::Exec(Option_t* option)
       strip += shift;
     }
     double intensity = (unpack.Value() - 32768) * side;
-    intensity = (intensity - conf->GetAdcOffset(unpack.Fee() - 1, unpack.Channel()));
     bool range = unpack.Range();
     double energy = 0;
     if (range)
@@ -103,6 +130,7 @@ void AidaUnpack2Cal::Exec(Option_t* option)
     }
     else
     {
+      intensity = (intensity - conf->GetAdcOffset(unpack.Fee() - 1, unpack.Channel()));
       energy = intensity * conf->GetDssdGain(dssd - 1,
           side == conf->DSSD(dssd - 1).XSide ? 0 : 1, strip);
     }
@@ -128,6 +156,24 @@ void AidaUnpack2Cal::Exec(Option_t* option)
   // Clear decay array if implants present
   if (implantCalArray->size() > 0) {
     decayCalArray->clear();
+  }
+
+
+  uint64_t wr_undelayed = 0;
+  uint64_t wr_delayed = 0;
+  // Check scalers - for now just for Time Machine (raw is otherwise fine)
+  for (auto const& scaler : *scalerArray)
+  {
+    if (scaler.Fee() == aida_tm_undelayed_ch)
+{      wr_undelayed = scaler.Time();
+}    if (scaler.Fee() == aida_tm_delayed_ch)
+{      wr_delayed = scaler.Time();
+}  }
+  if (wr_undelayed != 0 && wr_delayed != 0)
+  {
+    int64_t time_diff = wr_delayed - wr_undelayed;
+    new ((*aidaTimeMachineArray)[aidaTimeMachineArray->GetEntriesFast()]) TimeMachineData((double)(wr_undelayed & 0xFFFFFFFF), 0, 0x700, wr_undelayed);
+    new ((*aidaTimeMachineArray)[aidaTimeMachineArray->GetEntriesFast()]) TimeMachineData(0, (double)(wr_delayed & 0xFFFFFFFF), 0x700, wr_delayed);
   }
 }
 

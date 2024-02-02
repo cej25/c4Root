@@ -17,6 +17,8 @@ class GermaniumRaw2Cal : public FairTask
         GermaniumRaw2Cal(const TString& name, Int_t verbose);
 
         virtual ~GermaniumRaw2Cal();
+        
+        void SetOnline(Bool_t set_online){fOnline = set_online;}
 
         void PrintDetectorMap();
         void PrintDetectorCal();

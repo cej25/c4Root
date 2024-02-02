@@ -7,7 +7,7 @@
 
 // c4
 #include "FrsOnlineSpectra.h"
-#include "FrsData.h"
+#include "FrsHitData.h"
 #include "EventHeader.h"
 #include "c4Logger.h"
 
@@ -27,12 +27,12 @@ FrsOnlineSpectra::FrsOnlineSpectra()
 
 FrsOnlineSpectra::FrsOnlineSpectra(const TString& name, Int_t iVerbose)
     : FairTask(name, iVerbose)
-    , fHitFrs(NULL)
+    , fHitFrsArray(NULL)
     , fNEvents(0)
     , fMin_Z(30.)
-    , fMax_Z(80.)
+    , fMax_Z(100.)
     , fMin_AoQ(1.6)
-    , fMax_AoQ(3.0)
+    , fMax_AoQ(4.0)
     , fMin_x4(-100.) // no idea
     , fMax_x4(100.0) // no idea
     , fMin_Z_gate(30.)
@@ -46,8 +46,8 @@ FrsOnlineSpectra::FrsOnlineSpectra(const TString& name, Int_t iVerbose)
 FrsOnlineSpectra::~FrsOnlineSpectra()
 {
     c4LOG(info, "");
-    if (fHitFrs)
-        delete fHitFrs;
+    if (fHitFrsArray)
+        delete fHitFrsArray;
 }
 
 // Public Method SetParContainers
@@ -70,50 +70,24 @@ InitStatus FrsOnlineSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fHitFrs = (TClonesArray*)mgr->GetObject("FrsData");
-    c4LOG_IF(fatal, !fHitFrs, "Branch FrsData not found");
+    fHitFrsArray = (TClonesArray*)mgr->GetObject("FrsHitData");
+    c4LOG_IF(fatal, !fHitFrsArray, "Branch FrsHitData not found");
 
-    // Create histograms for detectors
-    TString Name1;
-    TString Name2;
 
-    cTdcRaw = new TCanvas("TdcRaw", "TDC Raw Data", 10, 10, 800, 700);
-    fh1_TdcRaw = new TH1F("fh1_TdcRaw", "TDC Raw Data", 20, 0, 1e5);
-    fh1_TdcRaw->GetXaxis()->SetTitle("TDC Raw");
-    fh1_TdcRaw->Draw();
+    TFolder * frs_spectra_folder = new TFolder("frs", "frs");
+    TFolder * frs_spectra_folder_histograms = new TFolder("frs_histograms", "frs_histograms");
+
+    run->AddObject(frs_spectra_folder);
+    run->AddObject(frs_spectra_folder_histograms);
     
-    cTdcChan = new TCanvas("TdcChan", "TDC Channel", 10, 10, 800, 700);
-    fh1_TdcChan = new TH1F("fh1_TdcChan", "TDC Channel", 32, 0, 32);
-    fh1_TdcChan->GetXaxis()->SetTitle("Channel");
-    fh1_TdcChan->Draw();
 
-    /*
-    cZvsAoQ = new TCanvas("ZvsAoQ", "Z vs. AoQ", 10, 10, 800, 700);
+    c_frs_z1_vs_AoQ = new TCanvas("h_frs_z1_vs_AoQ","Z1 vs A/Q",600,600);
+    h_frs_z1_vs_AoQ = new TH2F("h_frs_z1_vs_AoQ","Z1 vs A/Q",1000,fMin_AoQ,fMax_AoQ,1000,fMin_Z,fMax_Z);
+    frs_spectra_folder->Add(c_frs_z1_vs_AoQ);
+    frs_spectra_folder_histograms->Add(h_frs_z1_vs_AoQ);
 
-    Name1 = "fh2_ZvsAoQ";
-    Name2 = "FRS: Z vs AoQ";
 
-    fh2_ZvsAoQ = new TH2F(Name1, Name2, 1000, fMin_AoQ, fMax_AoQ, 1000, fMin_Z, fMax_Z);
-    fh2_ZvsAoQ->GetXaxis()->SetTitle("AoQ");
-    fh2_ZvsAoQ->GetYaxis()->SetTitle("Z");
-    fh2_ZvsAoQ->GetYaxis()->SetTitleOffset(1.1);
-    fh2_ZvsAoQ->GetXaxis()->CenterTitle(true);
-    fh2_ZvsAoQ->GetYaxis()->CenterTitle(true);
-    fh2_ZvsAoQ->GetXaxis()->SetLabelSize(0.045);
-    fh2_ZvsAoQ->GetXaxis()->SetTitleSize(0.045);
-    fh2_ZvsAoQ->GetYaxis()->SetLabelSize(0.045);
-    fh2_ZvsAoQ->GetYaxis()->SetTitleSize(0.045);
-    fh2_ZvsAoQ->Draw("colz")
-    */
 
-   
-
-    
-    // MAIN FOLDER-INCOMINGID
-    TFolder* frsfol = new TFolder("FRS-IncomingID", "FRS incomingID info");
-    frsfol->Add(cTdcRaw);
-    frsfol->Add(cTdcChan);
-    run->AddObject(frsfol);
 
     // Register command to reset histograms
     run->GetHttpServer()->RegisterCommand("Reset_IncomingID_HIST", Form("/Objects/%s/->Reset_Histo()", GetName()));
@@ -125,34 +99,23 @@ InitStatus FrsOnlineSpectra::Init()
 void FrsOnlineSpectra::Reset_Histo()
 {
     c4LOG(info, "");
-    fh1_TdcRaw->Clear();
-    fh1_TdcChan->Clear();
+   // fh1_TdcRaw->Clear();
+   // fh1_TdcChan->Clear();
 }
 
 void FrsOnlineSpectra::Exec(Option_t* option)
 {
-   // Float_t a2AoQCorr = 0.0012;
-   // Float_t AoQCorr; // CEJ: handle in calData or hitData !! 
- 
     // Fill hit data
-    if (fHitFrs && fHitFrs->GetEntriesFast() > 0)
+    if (fHitFrsArray && fHitFrsArray->GetEntriesFast() > 0)
     {
-        Int_t nHits = fHitFrs->GetEntriesFast();
+        Int_t nHits = fHitFrsArray->GetEntriesFast();
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {
-            FrsData* hit = (FrsData*)fHitFrs->At(ihit);
-            if (!hit)
+            fHitFrs = (FrsHitData*)fHitFrsArray->At(ihit);
+            if (!fHitFrs)
                 continue;
 
-            fh1_TdcRaw->Fill(hit->GetTdcData());
-            fh1_TdcChan->Fill(hit->GetChan());
-
-            /*fh2_ZvsAoQ->Fill(hit->GetAoQ(), hit->GetZ());
-            fh2_x4vsAoQ->Fill(hit->GetAoQ(), hit->GetX4());
-            
-            AoQCorr = hit->GetAoQ() - a2AoQCorr * hit->GetA2();
-            fh2_ZvsAoQCorr->Fill(AoQCorr, hit->GetZ());
-            fh2_x4vsAoQCorr->Fill(AoQCorr, hit->GetX4());*/
+            h_frs_z1_vs_AoQ->Fill(fHitFrs->Get_ID_AoQ_corr(), fHitFrs->Get_ID_z());
         }
     }
 
@@ -161,22 +124,16 @@ void FrsOnlineSpectra::Exec(Option_t* option)
 
 void FrsOnlineSpectra::FinishEvent()
 {
-    if (fHitFrs)
+    if (fHitFrsArray)
     {
-        fHitFrs->Clear();
+        fHitFrsArray->Clear();
     }
 }
 
 void FrsOnlineSpectra::FinishTask()
 {
-    if (fHitFrs)
-    {   
-        cTdcRaw->Write();
-        cTdcChan->Write();
-        /*cZvsAoQ->Write();
-        cX4vsAoQ->Write();
-        cZvsAoQCorr->Write();
-        cX4vsAoQCorr->Write();*/
+    if (fHitFrsArray){
+        h_frs_z1_vs_AoQ->Write();
     }
 }
 
