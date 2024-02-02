@@ -32,6 +32,8 @@ class FatimaOnlineSpectra : public FairTask
 
         virtual void Reset_Histo();
 
+        virtual void Snapshot_Histo();
+
         // range setters
 
     
@@ -60,6 +62,7 @@ class FatimaOnlineSpectra : public FairTask
         TCanvas* c_fatima_time_differences_energy_SCI41;
         TCanvas* c_fatima_time_differences_energy_SCI41_sum;
         TCanvas* c_fatima_time_differences_energy_SCI41_gated;
+        TCanvas* c_fatima_snapshot;
 
         static const int NDetectors = 24; //change this
         
