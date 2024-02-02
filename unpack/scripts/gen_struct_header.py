@@ -9,7 +9,6 @@ systems = ["fatima","bplast"]
 ucesb_exec = "NovTest"
 
 
-
 for system in systems:
     sb.run(["../exps/" + ucesb_exec + "/" + ucesb_exec, f"--ntuple=UNPACK:{system},STRUCT_HH,id=h101_{system},NOTRIGEVENTNO,ext_h101_{system}.h"])
     
