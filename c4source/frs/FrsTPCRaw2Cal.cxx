@@ -1873,7 +1873,6 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
             countx++;
         }
 
-        std::cout << "countx: " << countx << std::endl;
         if (countx > 0)
         {   
             tpc_x[i] = sumx / ((float)countx);
@@ -1986,17 +1985,10 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
     //=================================
     if (b_tpc_xy[1] && b_tpc_xy[3])
     {
-        std::cout << "tpc_x 3: " << tpc_x[3] << " and tpc_x: " << tpc_x[1] << std::endl;
         tpc_angle_x_s2_foc_22_24 = (tpc_x[3] - tpc_x[1])/dist_TPC22_TPC24*1000.;
         tpc_angle_y_s2_foc_22_24 = (tpc_y[3] - tpc_y[1])/dist_TPC22_TPC24*1000.;
         tpc_x_s2_foc_22_24 = -tpc_angle_x_s2_foc_22_24 * dist_TPC22_focS2/1000. + tpc_x[1]; //check
         tpc_y_s2_foc_22_24 = -tpc_angle_y_s2_foc_22_24 * dist_TPC22_focS2/1000. + tpc_y[1]; //check
-
-        std::cout << "tpc_angle_x_s2_foc_22_24: " << tpc_angle_x_s2_foc_22_24 << std::endl;
-        std::cout << "tpc_angle_y_s2_foc_22_24: " << tpc_angle_y_s2_foc_22_24 << std::endl;
-        std::cout << "tpc_x_s2_foc_22_24: " << tpc_x_s2_foc_22_24 << std::endl;
-        std::cout << "tpc_y_s2_foc_22_24: " << tpc_y_s2_foc_22_24 << std::endl;
-
         Float_t dist_SC21_focS2 = frs->dist_SC21 - frs->dist_focS2;
         tpc22_24_sc21_x = (tpc_angle_x_s2_foc_22_24/1000.*dist_SC21_focS2)+tpc_x_s2_foc_22_24;
         tpc22_24_sc21_y = (tpc_angle_y_s2_foc_22_24/1000.*dist_SC21_focS2)+tpc_y_s2_foc_22_24;
@@ -2136,71 +2128,71 @@ void FrsTPCRaw2Cal::ZeroArrays()
 
 void FrsTPCRaw2Cal::ZeroVariables()
 {
-    tpc_x_s2_foc_21_22 = 0;
-    tpc_y_s2_foc_21_22 = 0;
-    tpc_angle_x_s2_foc_21_22 = 0;
-    tpc_angle_y_s2_foc_21_22 = 0;
-    tpc_x_s2_foc_23_24 = 0;
-    tpc_y_s2_foc_23_24 = 0;
-    tpc_angle_x_s2_foc_23_24 = 0;
-    tpc_angle_y_s2_foc_23_24 = 0;
-    tpc_x_s2_foc_22_24 = 0;
-    tpc_y_s2_foc_22_24 = 0;
-    tpc_angle_x_s2_foc_22_24 = 0;
-    tpc_angle_y_s2_foc_22_24 = 0;
-    tpc_x_s2_foc = 0;
-    tpc_y_s2_foc = 0;
-    tpc_angle_x_s2_foc = 0;
-    tpc_angle_y_s2_foc = 0;
-    tpc_x_s4 = 0;
-    tpc_y_s4 = 0;
-    tpc_angle_x_s4 = 0;
-    tpc_angle_y_s4 = 0;
-    tpc_x_s4_target2 = 0;
-    tpc_y_s4_target2 = 0;
-    tpc21_22_sc21_x = 0;
-    tpc21_22_sc21_y = 0;
-    tpc23_24_sc21_x = 0;
-    tpc23_24_sc21_y = 0;
-    tpc22_24_sc21_x = 0;
-    tpc22_24_sc21_y = 0;
-    tpc21_22_sc22_x = 0;
-    tpc21_22_sc22_y = 0;
-    tpc23_24_sc22_x = 0;
-    tpc23_24_sc22_y = 0;
-    tpc22_24_sc22_x = 0;
-    tpc22_24_sc22_y = 0;
-    tpc21_22_s2target_x = 0;
-    tpc21_22_s2target_y = 0;
-    tpc23_24_s2target_x = 0;
-    tpc23_24_s2target_y = 0;
-    tpc22_24_s2target_x = 0;
-    tpc22_24_s2target_y = 0;
-    tpc_x_s2_target1 = 0;
-    tpc_y_s2_target1 = 0;
-    tpc_sc41_x = 0;
-    tpc_sc41_y = 0;
-    tpc_sc42_x = 0;
-    tpc_sc42_y = 0;
-    tpc_sc43_x = 0;
-    tpc_sc43_y = 0;
-    tpc_music41_x = 0; 
-    tpc_music41_y = 0; 
-    tpc_music42_x = 0; 
-    tpc_music42_y = 0; 
-    tpc_music43_x = 0; 
-    tpc_music43_y = 0; 
-    tpc_s4target_x = 0;
-    tpc_s4target_y = 0;  
-    music1_x1 = 0; 
-    music1_x2 = 0; 
-    music1_x3 = 0; 
-    music1_x4 = 0; 
-    music1_y1 = 0; 
-    music1_y2 = 0; 
-    music1_y3 = 0;
-    music1_y4 = 0;
-    music2_x = 0;
+    tpc_x_s2_foc_21_22 = -999;
+    tpc_y_s2_foc_21_22 = -999;
+    tpc_angle_x_s2_foc_21_22 = -999;
+    tpc_angle_y_s2_foc_21_22 = -999;
+    tpc_x_s2_foc_23_24 = -999;
+    tpc_y_s2_foc_23_24 = -999;
+    tpc_angle_x_s2_foc_23_24 = -999;
+    tpc_angle_y_s2_foc_23_24 = -999;
+    tpc_x_s2_foc_22_24 = -999;
+    tpc_y_s2_foc_22_24 = -999;
+    tpc_angle_x_s2_foc_22_24 = -999;
+    tpc_angle_y_s2_foc_22_24 = -999;
+    tpc_x_s2_foc = -999;
+    tpc_y_s2_foc = -999;
+    tpc_angle_x_s2_foc = -999;
+    tpc_angle_y_s2_foc = -999;
+    tpc_x_s4 = -999;
+    tpc_y_s4 = -999;
+    tpc_angle_x_s4 = -999;
+    tpc_angle_y_s4 = -999;
+    tpc_x_s4_target2 = -999;
+    tpc_y_s4_target2 = -999;
+    tpc21_22_sc21_x = -999;
+    tpc21_22_sc21_y = -999;
+    tpc23_24_sc21_x = -999;
+    tpc23_24_sc21_y = -999;
+    tpc22_24_sc21_x = -999;
+    tpc22_24_sc21_y = -999;
+    tpc21_22_sc22_x = -999;
+    tpc21_22_sc22_y = -999;
+    tpc23_24_sc22_x = -999;
+    tpc23_24_sc22_y = -999;
+    tpc22_24_sc22_x = -999;
+    tpc22_24_sc22_y = -999;
+    tpc21_22_s2target_x = -999;
+    tpc21_22_s2target_y = -999;
+    tpc23_24_s2target_x = -999;
+    tpc23_24_s2target_y = -999;
+    tpc22_24_s2target_x = -999;
+    tpc22_24_s2target_y = -999;
+    tpc_x_s2_target1 = -999;
+    tpc_y_s2_target1 = -999;
+    tpc_sc41_x = -999;
+    tpc_sc41_y = -999;
+    tpc_sc42_x = -999;
+    tpc_sc42_y = -999;
+    tpc_sc43_x = -999;
+    tpc_sc43_y = -999;
+    tpc_music41_x = -999;
+    tpc_music41_y = -999;
+    tpc_music42_x = -999;
+    tpc_music42_y = -999;
+    tpc_music43_x = -999;
+    tpc_music43_y = -999;
+    tpc_s4target_x = -999;
+    tpc_s4target_y = -999;
+    music1_x1 = -999;
+    music1_x2 = -999;
+    music1_x3 = -999;
+    music1_x4 = -999;
+    music1_y1 = -999;
+    music1_y2 = -999;
+    music1_y3 = -999;
+    music1_y4 = -999;
+    music2_x = -999;
 }
 
 void FrsTPCRaw2Cal::ClearVectors()

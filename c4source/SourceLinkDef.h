@@ -49,7 +49,7 @@
 #pragma link C++ class EXT_STR_h101_frsvftx_onion_t;
 #pragma link C++ class EXT_STR_h101_germanium_onion_t;
 #pragma link C++ class EXT_STR_h101_fatima_onion_t;
-#pragma link C++ class EXT_STR_h101_LISA_onion_t; // lisa
+#pragma link C++ class EXT_STR_h101_lisa_onion_t; // lisa
 #pragma link C++ class EXT_STR_h101_aida_onion_t;
 #pragma link C++ class EXT_STR_h101_bplast_onion_t;
 #pragma link C++ class EXT_STR_h101_BM_onion_t;

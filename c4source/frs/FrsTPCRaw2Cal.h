@@ -99,88 +99,88 @@ class FrsTPCRaw2Cal : public FairTask
         Bool_t b_tpc_xy[7] = {0};
 
         //TPCs 21 & 22 @ S2 focus
-        Float_t tpc_x_s2_foc_21_22 = 0;
-        Float_t tpc_y_s2_foc_21_22 = 0;
-        Float_t tpc_angle_x_s2_foc_21_22 = 0;
-        Float_t tpc_angle_y_s2_foc_21_22 = 0;
+        Float_t tpc_x_s2_foc_21_22 = -999;
+        Float_t tpc_y_s2_foc_21_22 = -999;
+        Float_t tpc_angle_x_s2_foc_21_22 = -999;
+        Float_t tpc_angle_y_s2_foc_21_22 = -999;
 
         //TPCs 23 & 24 @ S2 focus
-        Float_t tpc_x_s2_foc_23_24 = 0;
-        Float_t tpc_y_s2_foc_23_24 = 0;
-        Float_t tpc_angle_x_s2_foc_23_24 = 0;
-        Float_t tpc_angle_y_s2_foc_23_24 = 0;
+        Float_t tpc_x_s2_foc_23_24 = -999;
+        Float_t tpc_y_s2_foc_23_24 = -999;
+        Float_t tpc_angle_x_s2_foc_23_24 = -999;
+        Float_t tpc_angle_y_s2_foc_23_24 = -999;
 
         //TPCs 22 & 24 @ S2 focus
-        Float_t tpc_x_s2_foc_22_24 = 0;
-        Float_t tpc_y_s2_foc_22_24 = 0;
-        Float_t tpc_angle_x_s2_foc_22_24 = 0;
-        Float_t tpc_angle_y_s2_foc_22_24 = 0;
+        Float_t tpc_x_s2_foc_22_24 = -999;
+        Float_t tpc_y_s2_foc_22_24 = -999;
+        Float_t tpc_angle_x_s2_foc_22_24 = -999;
+        Float_t tpc_angle_y_s2_foc_22_24 = -999;
 
         //TPCs 3 & 4 @ S2 focus (old tracking)
-        Float_t tpc_x_s2_foc = 0;
-        Float_t tpc_y_s2_foc = 0;
-        Float_t tpc_angle_x_s2_foc = 0;
-        Float_t tpc_angle_y_s2_foc = 0;
+        Float_t tpc_x_s2_foc = -999;
+        Float_t tpc_y_s2_foc = -999;
+        Float_t tpc_angle_x_s2_foc = -999;
+        Float_t tpc_angle_y_s2_foc = -999;
 
         //TPCs 41 & 42 @ s4 focus
-        Float_t tpc_x_s4 = 0;
-        Float_t tpc_y_s4 = 0;
-        Float_t tpc_angle_x_s4 = 0;
-        Float_t tpc_angle_y_s4 = 0;
+        Float_t tpc_x_s4 = -999;
+        Float_t tpc_y_s4 = -999;
+        Float_t tpc_angle_x_s4 = -999;
+        Float_t tpc_angle_y_s4 = -999;
 
         //TPCs 5 & 6 @ S4 OTPC (exp s388)
-        Float_t tpc_x_s4_target2 = 0;
-        Float_t tpc_y_s4_target2 = 0;
+        Float_t tpc_x_s4_target2 = -999;
+        Float_t tpc_y_s4_target2 = -999;
 
-        Float_t tpc21_22_sc21_x = 0; /* SC21 x                    */
-        Float_t tpc21_22_sc21_y = 0; /* SC21 y                    */
-        Float_t tpc23_24_sc21_x = 0; /* SC21 x                    */
-        Float_t tpc23_24_sc21_y = 0; /* SC21 y                    */
-        Float_t tpc22_24_sc21_x = 0; /* SC21 x                    */
-        Float_t tpc22_24_sc21_y = 0; /* SC21 y                    */
+        Float_t tpc21_22_sc21_x = -999; /* SC21 x                    */
+        Float_t tpc21_22_sc21_y = -999; /* SC21 y                    */
+        Float_t tpc23_24_sc21_x = -999; /* SC21 x                    */
+        Float_t tpc23_24_sc21_y = -999; /* SC21 y                    */
+        Float_t tpc22_24_sc21_x = -999; /* SC21 x                    */
+        Float_t tpc22_24_sc21_y = -999; /* SC21 y                    */
 
-        Float_t tpc21_22_sc22_x; /* SC22 x                    */
-        Float_t tpc21_22_sc22_y; /* SC22 y                    */
-        Float_t tpc23_24_sc22_x; /* SC22 x                    */
-        Float_t tpc23_24_sc22_y; /* SC22 x                    */
-        Float_t tpc22_24_sc22_x; /* SC22 x                    */
-        Float_t tpc22_24_sc22_y; /* SC22 x                    */
+        Float_t tpc21_22_sc22_x = -999; /* SC22 x                    */
+        Float_t tpc21_22_sc22_y = -999; /* SC22 y                    */
+        Float_t tpc23_24_sc22_x = -999; /* SC22 x                    */
+        Float_t tpc23_24_sc22_y = -999; /* SC22 x                    */
+        Float_t tpc22_24_sc22_x = -999; /* SC22 x                    */
+        Float_t tpc22_24_sc22_y = -999; /* SC22 x                    */
 
-        Float_t tpc21_22_s2target_x; /* S2TARGET x                    */
-        Float_t tpc21_22_s2target_y; /* S2TARGET y                    */
-        Float_t tpc23_24_s2target_x; /* S2TARGET x                    */
-        Float_t tpc23_24_s2target_y; /* S2TARGET y                    */
-        Float_t tpc22_24_s2target_x; /* S2TARGET x                    */
-        Float_t tpc22_24_s2target_y; /* S2TARGET y                    */
+        Float_t tpc21_22_s2target_x = -999; /* S2TARGET x                    */
+        Float_t tpc21_22_s2target_y = -999; /* S2TARGET y                    */
+        Float_t tpc23_24_s2target_x = -999; /* S2TARGET x                    */
+        Float_t tpc23_24_s2target_y = -999; /* S2TARGET y                    */
+        Float_t tpc22_24_s2target_x = -999; /* S2TARGET x                    */
+        Float_t tpc22_24_s2target_y = -999; /* S2TARGET y                    */
     
         //TPCs 3 & 4 @ S2 first Si tracking detector (exp s388)
-        Float_t tpc_x_s2_target1;
-        Float_t tpc_y_s2_target1;
+        Float_t tpc_x_s2_target1 = -999;
+        Float_t tpc_y_s2_target1 = -999;
 
-        Float_t tpc_sc41_x; /* SC41 x */
-        Float_t tpc_sc41_y; /* SC41 y */
-        Float_t tpc_sc42_x; /* SC42 x */
-        Float_t tpc_sc42_y; /* SC42 y */
-        Float_t tpc_sc43_x; /* SC43 x */
-        Float_t tpc_sc43_y; /* SC43 y */
-        Float_t tpc_music41_x; /* MUSIC41 x                    */
-        Float_t tpc_music41_y; /* MUSIC41 y                    */
-        Float_t tpc_music42_x; /* MUSIC42 x                    */
-        Float_t tpc_music42_y; /* MUSIC42 y                    */
-        Float_t tpc_music43_x; /* MUSIC43 x                    */
-        Float_t tpc_music43_y; /* MUSIC43 y                    */
-        Float_t tpc_s4target_x; /* S4 target x                    */
-        Float_t tpc_s4target_y; /* S4 target y                    */
+        Float_t tpc_sc41_x = -999; /* SC41 x */
+        Float_t tpc_sc41_y = -999; /* SC41 y */
+        Float_t tpc_sc42_x = -999; /* SC42 x */
+        Float_t tpc_sc42_y = -999; /* SC42 y */
+        Float_t tpc_sc43_x = -999; /* SC43 x */
+        Float_t tpc_sc43_y = -999; /* SC43 y */
+        Float_t tpc_music41_x = -999; /* MUSIC41 x                    */
+        Float_t tpc_music41_y = -999; /* MUSIC41 y                    */
+        Float_t tpc_music42_x = -999; /* MUSIC42 x                    */
+        Float_t tpc_music42_y = -999; /* MUSIC42 y                    */
+        Float_t tpc_music43_x = -999; /* MUSIC43 x                    */
+        Float_t tpc_music43_y = -999; /* MUSIC43 y                    */
+        Float_t tpc_s4target_x = -999; /* S4 target x                    */
+        Float_t tpc_s4target_y = -999; /* S4 target y                    */
 
-        Float_t music1_x1; /* parameters to calibrate  */
-        Float_t music1_x2; /* parameters to calibrate  */
-        Float_t music1_x3; /* parameters to calibrate  */
-        Float_t music1_x4; /* parameters to calibrate  */
-        Float_t music1_y1; /* parameters to calibrate  */
-        Float_t music1_y2; /* parameters to calibrate  */
-        Float_t music1_y3; /* parameters to calibrate  */
-        Float_t music1_y4; /* parameters to calibrate  */
-        Float_t music2_x;  /* MUSIC1,2 positions */
+        Float_t music1_x1 = -999; /* parameters to calibrate  */
+        Float_t music1_x2 = -999; /* parameters to calibrate  */
+        Float_t music1_x3 = -999; /* parameters to calibrate  */
+        Float_t music1_x4 = -999; /* parameters to calibrate  */
+        Float_t music1_y1 = -999; /* parameters to calibrate  */
+        Float_t music1_y2 = -999; /* parameters to calibrate  */
+        Float_t music1_y3 = -999; /* parameters to calibrate  */
+        Float_t music1_y4 = -999; /* parameters to calibrate  */
+        Float_t music2_x = -999;  /* MUSIC1,2 positions */
         
 
         std::vector<Int_t> v1190_lead_hits[128];
