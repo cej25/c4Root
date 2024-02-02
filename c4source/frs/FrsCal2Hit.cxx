@@ -520,7 +520,7 @@ void FrsCal2Hit::SetParameters()
     // After changing cut limits => Launch analysis again in Go4GUI
     // [Updated on 2021/Mar/21, YT, EH, IM] to catch all timeref signals.
     tpc->lim_timeref[0][0] = 1000.0; tpc->lim_timeref[0][1] = 48000.0;//time ref (accept trig)
-    tpc->lim_timeref[1][0] = 5000.0; tpc->lim_timeref[1][1] = 20000.0;//time ref (sc21) changed to narrow gate, 2023-Nov-28
+    tpc->lim_timeref[1][0] = 5000.0; tpc->lim_timeref[1][1] = 48000.0;//time ref (sc21) changed to narrow gate, 2023-Nov-28
     tpc->lim_timeref[2][0] = 1000.0; tpc->lim_timeref[2][1] = 48500.0;//time ref (sc22)
     tpc->lim_timeref[3][0] = 5000.0; tpc->lim_timeref[3][1] = 20000.0;//time ref (sc31) changed to narrow gate, 2023-Nov-28
     tpc->lim_timeref[4][0] = 5000.0; tpc->lim_timeref[4][1] = 20000.0;//time ref (sc41) changed to narrow gate, 2023-Nov-28
@@ -2002,25 +2002,27 @@ void FrsCal2Hit::Exec(Option_t* option)
 
 
     if (id->x_s2_select == 1)
-    {     
-
-
+    {   
+        std::cout << "this is true, but none of the following statements appear..?" << std::endl;
         if (b_tpc_xy[2] && b_tpc_xy[3])
-        {
+        {   
+            std::cout << "b_tpc_2 and b_tpc_3 are true" << std::endl;
             id_x2 = fCalHitTPC->Get_tpc_x_s2_foc_23_24();
             id_y2 = fCalHitTPC->Get_tpc_y_s2_foc_23_24();
             id_a2 = fCalHitTPC->Get_tpc_angle_x_s2_foc_23_24();
             id_b2 = fCalHitTPC->Get_tpc_angle_y_s2_foc_23_24();
         }
-        else if (b_tpc_xy[2] && b_tpc_xy[3])
+        else if (b_tpc_xy[1] && b_tpc_xy[3])
         {
+            std::cout << "b_tpc_1 and b_tpc_3 are true" << std::endl;
             id_x2 = fCalHitTPC->Get_tpc_x_s2_foc_22_24();
-            id_y2 = fCalHitTPC->Get_tpc_y_s2_foc_23_24();
+            id_y2 = fCalHitTPC->Get_tpc_y_s2_foc_22_24();
             id_a2 = fCalHitTPC->Get_tpc_angle_x_s2_foc_22_24();
             id_b2 = fCalHitTPC->Get_tpc_angle_y_s2_foc_22_24();
         }
-        else if (b_tpc_xy[0] && b_tpc_xy[3])
-        {
+        else if (b_tpc_xy[0] && b_tpc_xy[1])
+        {   
+            std::cout << "b_tpc_0 and b_tpc_1 are true" << std::endl;
             id_x2 = fCalHitTPC->Get_tpc_x_s2_foc_21_22();
             id_y2 = fCalHitTPC->Get_tpc_y_s2_foc_21_22();
             id_a2 = fCalHitTPC->Get_tpc_angle_x_s2_foc_21_22();
@@ -2325,6 +2327,9 @@ void FrsCal2Hit::Exec(Option_t* option)
             id_AoQ = id_brho[1] / id_beta / id_gamma / aoq_factor;
             id_AoQ_corr = id_AoQ - id->a2AoQCorr * id_a2;
 
+            // this is not done in FRS Go4, and in DESPEC Go4 I can't understand where "ts_mins" comes from?
+            // is it just WR in minutes somehow? 
+            // why don't FRS GainMatch?
             if (id_AoQ_corr > 0)
             {
                 for (int i = 0; i < AoQ_Shift_array; i++)
@@ -2411,6 +2416,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     }
 
     // S4 (MUSIC)
+    /*
     if ((de[2] > 0.0) && (id_beta > 0.0) && (id_beta < 1.0))
     {
         power = 1.0;
@@ -2430,26 +2436,28 @@ void FrsCal2Hit::Exec(Option_t* option)
             id_b_z3 = kTRUE;
         }
     }
+    */
     
     // non mhtdc version?
+    //std::cout << " id_b_AoQ: " << id_b_AoQ << " id_b_x2: " << id_b_x2 << " id_b_z: " << id_b_z << std::endl;
     if (id_b_AoQ && id_b_x2 && id_b_z)
     {
         float gamma1square = 1.0 + TMath::Power(((1 / aoq_factor) * (id_brho[0] / id_AoQ)), 2);
         id_gamma_ta_s2 = TMath::Sqrt(gamma1square);
         id_dEdegoQ = (id_gamma_ta_s2 - id_gamma) * id_AoQ;
         id_dEdeg = id_dEdegoQ * id_z;
-        new ((*fHitArray)[fHitArray->GetEntriesFast()]) FrsHitData(
+    }
+    // above is end of FRS_Anl
+
+    new ((*fHitArray)[fHitArray->GetEntriesFast()]) FrsHitData(
             WR_TS,
             id_x2,
             id_x4,
             id_AoQ,
             id_AoQ_corr,
-            id_z2,
-            id_z3
-        );
-    }
-    // above is end of FRS_Anl
-
+            id_z,
+            id_z2
+    );
    
 }
 
@@ -2461,7 +2469,7 @@ void FrsCal2Hit::Setup_Conditions()
 
     const char* format = "%f %f %f %f %f %f %f %f %f %f %f %f %f %f";
 
-    std::ifstream cond_a("Configuration_Files/FRS/FRS_Window_Conditions/lim_csum.txt");
+    std::ifstream cond_a("../../config/frs/lim_csum.txt");
 
     while(/*cond_a.good()*/getline(cond_a,line,'\n'))
     {
@@ -2484,7 +2492,7 @@ void FrsCal2Hit::Setup_Conditions()
 
     format = "%f %f";
 
-    std::ifstream cond_b("Configuration_Files/FRS/FRS_Window_Conditions/lim_xsum.txt");
+    std::ifstream cond_b("../../config/frs/lim_xsum.txt");
 
     while(/*cond_b.good()*/getline(cond_b,line,'\n'))
     {
@@ -2499,7 +2507,7 @@ void FrsCal2Hit::Setup_Conditions()
 
     format = "%f %f";
 
-    std::ifstream cond_c("Configuration_Files/FRS/FRS_Window_Conditions/lim_ysum.txt");
+    std::ifstream cond_c("../../config/frs/lim_ysum.txt");
 
     while(/*cond_c.good()*/getline(cond_c,line,'\n'))
     {
@@ -2516,7 +2524,7 @@ void FrsCal2Hit::Setup_Conditions()
 
     format = "%f %f %f %f";
 
-    std::ifstream cond_d("Configuration_Files/FRS/FRS_Window_Conditions/MUSIC1.txt");
+    std::ifstream cond_d("../../config/frs/MUSIC1.txt");
 
     while(/*cond_d.good()*/getline(cond_d,line,'\n'))
     {
@@ -2531,7 +2539,7 @@ void FrsCal2Hit::Setup_Conditions()
 
     format = "%f %f %f %f";
 
-    std::ifstream cond_e("Configuration_Files/FRS/FRS_Window_Conditions/MUSIC2.txt");
+    std::ifstream cond_e("../../config/frs/MUSIC2.txt");
 
     while(/*cond_e.good()*/getline(cond_e,line,'\n'))
     {
@@ -2545,7 +2553,7 @@ void FrsCal2Hit::Setup_Conditions()
 
     format = "%f %f %f %f";
 
-    std::ifstream cond_f("Configuration_Files/FRS/FRS_Window_Conditions/MUSIC3.txt");
+    std::ifstream cond_f("../../config/frs/MUSIC3.txt");
 
     while(/*cond_f.good()*/getline(cond_f,line,'\n'))
     {
@@ -2560,7 +2568,7 @@ void FrsCal2Hit::Setup_Conditions()
 
     format = "%f %f";
 
-    std::ifstream cond_g("Configuration_Files/FRS/FRS_Window_Conditions/MUSIC_dEc3.txt");
+    std::ifstream cond_g("../../config/frs/MUSIC_dEc3.txt");
 
     while(/*cond_g.good()*/getline(cond_g,line,'\n'))
     {
@@ -2575,7 +2583,7 @@ void FrsCal2Hit::Setup_Conditions()
 
     format = "%f %f";
 
-    std::ifstream cond_h("Configuration_Files/FRS/FRS_Window_Conditions/SCI_Cons.txt");
+    std::ifstream cond_h("../../config/frs/SCI_Cons.txt");
 
     while(/*cond_h.good()*/getline(cond_h,line,'\n'))
     {
@@ -2599,7 +2607,7 @@ void FrsCal2Hit::Setup_Conditions()
 
     format = "%f %f";
 
-    std::ifstream cond_i("Configuration_Files/FRS/FRS_Window_Conditions/SCI_LLRR.txt");
+    std::ifstream cond_i("../../config/frs/SCI_LLRR.txt");
 
     while(/*cond_i.good()*/getline(cond_i,line,'\n'))
     {
@@ -2633,7 +2641,7 @@ void FrsCal2Hit::Setup_Conditions()
 
     format = "%f %f";
 
-    std::ifstream cond_k("Configuration_Files/FRS/FRS_Window_Conditions/ID_x2.txt");
+    std::ifstream cond_k("../../config/frs/ID_x2.txt");
 
 
     while(/*cond_k.good()*/getline(cond_k,line,'\n'))
@@ -2642,7 +2650,7 @@ void FrsCal2Hit::Setup_Conditions()
             sscanf(line.c_str(),format,&cID_x2[0],&cID_x2[1]);
     }
 
-    std::ifstream cond_l("Configuration_Files/FRS/FRS_Window_Conditions/ID_x4.txt");
+    std::ifstream cond_l("../../config/frs/ID_x4.txt");
 
     while(/*cond_l.good()*/getline(cond_l,line,'\n'))
     {
@@ -2650,7 +2658,7 @@ void FrsCal2Hit::Setup_Conditions()
             sscanf(line.c_str(),format,&cID_x4[0],&cID_x4[1]);
     }
 
-    std::ifstream cond_m("Configuration_Files/FRS/FRS_Window_Conditions/ID_Z_Z.txt");
+    std::ifstream cond_m("../../config/frs/ID_Z_Z.txt");
 
     while(/*cond_m.good()*/getline(cond_m,line,'\n'))
     {
@@ -2660,6 +2668,56 @@ void FrsCal2Hit::Setup_Conditions()
 
 }
 
+void FrsCal2Hit::FRS_GainMatching()
+{
+    std::ifstream file;
+    std::string line;
+    Float_t frs_wr_a;
+    Float_t frs_wr_b;
+    Float_t frs_wr_i;
+    Float_t frs_wr_j;
+    Float_t z1_shift_value;
+    Float_t z2_shift_value;
+    Float_t aoq_shift_value;
+    Float_t aoq_shift_tpc_value;
+    Float_t aoq_shift_sci21_value;
+    Float_t aoq_shift_sci22_value;
+
+    int f = 0;
+    int d = 0;
+    
+    file.open("../../config/frs/Z1_Z2_Shift.txt");
+    while (file.good())
+    {
+        getline(file, line, '\n');
+        if (line[0] == '#') continue;
+        sscanf(line.c_str(), "%f %f %f %f", &frs_wr_a, &frs_wr_b, &z1_shift_value, &z2_shift_value);
+        FRS_WR_a[f] = frs_wr_a;
+        FRS_WR_b[f] = frs_wr_b;
+        Z1_shift_value[f] = z1_shift_value;
+        Z2_shift_value[f] = z2_shift_value;
+        Z_Shift_array = f;
+        f++;
+    }
+    file.close();
+
+    file.open("../../config/frs/AoQ_Shift.txt");
+    while (file.good())
+    {
+        getline(file, line, '\n');
+        if (line[0] == '#') continue;
+        sscanf(line.c_str(), "%f %f %f %f %f", &frs_wr_i, &frs_wr_j, &aoq_shift_tpc_value, &aoq_shift_sci21_value, &aoq_shift_sci22_value);
+        FRS_WR_i[d] = frs_wr_i;
+        FRS_WR_j[d] = frs_wr_j;
+        AoQ_shift_TPC_value[d] = aoq_shift_tpc_value;
+        AoQ_shift_Sci21_value[d] = aoq_shift_sci21_value;
+        AoQ_shift_Sci22_value[d] = aoq_shift_sci22_value;
+        AoQ_Shift_array = d;
+        d++;
+    }
+    file.close();
+
+}
 
 Bool_t FrsCal2Hit::Check_WinCond(Float_t P, Float_t* V)
 {
@@ -2673,22 +2731,49 @@ Bool_t FrsCal2Hit::Check_WinCond_Multi(Float_t P, Float_t V[8][2], int cond_num)
     else return false;
 }
 
-
 Float_t FrsCal2Hit::rand3()
 {
     return random3.Uniform(-0.5,0.5);
 }
 
 
+void FrsCal2Hit::ZeroArrays()
+{
+    fHitArray->Clear();
+}
+
+void FrsCal2Hit::ZeroVariables()
+{
+    id_b_AoQ = false;
+    id_b_x2 = false;
+    id_b_x4 = false;
+    id_b_z = false;
+    id_x2 = 0;
+    id_y2 = 0;
+    id_a2 = 0;
+    id_b2 = 0;
+    id_x4 = 0;
+    id_y4 = 0;
+    id_a4 = 0;
+    id_b4 = 0;
+    id_AoQ = 0;
+    id_AoQ_corr = 0;
+    id_z = 0;
+    id_z2 = 0;
+}
+
+void FrsCal2Hit::ClearVectors()
+{
+
+}
+
+
+
 void FrsCal2Hit::FinishEvent()
 {
-    // clear all vectors...
-    // ... many to consider
-    
-
-    fCalArrayMain->Clear();
-    fCalArrayTPC->Clear();
-    fHitArray->Clear();
+    ZeroArrays();
+    ZeroVariables();
+    ClearVectors();
 }
 
 void FrsCal2Hit::FinishTask()

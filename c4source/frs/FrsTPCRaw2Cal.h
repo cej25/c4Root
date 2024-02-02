@@ -87,7 +87,7 @@ class FrsTPCRaw2Cal : public FairTask
         Bool_t b_tpc_de[7];
         
         Int_t tpc_csum[7][4];
-        Bool_t b_tpc_csum[7][4];
+        Bool_t b_tpc_csum[7][4] = {0};
 
         Float_t tpc_x[7];
         Float_t tpc_y[7];
