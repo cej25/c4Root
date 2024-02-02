@@ -302,7 +302,7 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
             if (nHits > 1){
                 for (Int_t ihit2 = ihit+1; ihit2 < nHits; ihit2++){
                     FatimaTwinpeaksCalData * hit2 = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(ihit2);
-                    if (!(TMath::Abs(hit->Get_fast_lead_time() - hit2->Get_fast_lead_time())<20e3)) continue;
+                    if (!(TMath::Abs(hit->Get_fast_lead_time() - hit2->Get_fast_lead_time())<100e3)) continue;
                     if (hit->Get_detector_id() == 0 && hit2->Get_detector_id() == 1){
                         h2_fatima_energy_energy->Fill(hit->Get_energy(),hit2->Get_energy());
                     }else if (hit->Get_detector_id() == 1 && hit2->Get_detector_id() == 0){
