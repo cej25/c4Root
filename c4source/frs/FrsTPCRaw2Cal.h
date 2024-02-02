@@ -61,83 +61,83 @@ class FrsTPCRaw2Cal : public FairTask
         std::vector<uint32_t> v1190_data;
         std::vector<uint32_t> v1190_lot;
 
-        /*  Channel mappings ----------*/
+        /*  -------- v1190 channel mappings ----------*/
         Int_t v1190_channel_dt[7][4];
         Int_t v1190_channel_lt[7][2];
         Int_t v1190_channel_rt[7][2];
         Int_t v1190_channel_timeref[8];
         Int_t v1190_channel_calibgrid[7];
-        /* ------------------------------ */
+        /* ------------------------------------------ */
 
-        Int_t tpc_a[7][4];
-        Int_t tpc_l[7][2];
-        Int_t tpc_r[7][2];
+        Int_t tpc_a[7][4] = {0};
+        Int_t tpc_l[7][2] = {0};
+        Int_t tpc_r[7][2] = {0};
         std::vector<Int_t> tpc_calibgrid[7];
         std::vector<Int_t> tpc_timeref[8];
-        Bool_t b_tpc_timeref[8];
-        Int_t tpc_timeref_s[8];
+        Bool_t b_tpc_timeref[8] = {0};
+        Int_t tpc_timeref_s[8] = {0};
 
         std::vector<Int_t> tpc_dt[7][4];
         std::vector<Int_t> tpc_lt[7][2];
         std::vector<Int_t> tpc_rt[7][2];
-        Int_t tpc_dt_s[7][4];
-        Int_t tpc_lt_s[7][2];
-        Int_t tpc_rt_s[7][2];
-        Float_t tpc_de[7];
-        Bool_t b_tpc_de[7];
+        Int_t tpc_dt_s[7][4] = {0};
+        Int_t tpc_lt_s[7][2] = {0};
+        Int_t tpc_rt_s[7][2] = {0};
+        Float_t tpc_de[7] = {0};
+        Bool_t b_tpc_de[7] = {0};
         
-        Int_t tpc_csum[7][4];
+        Int_t tpc_csum[7][4] = {0};
         Bool_t b_tpc_csum[7][4] = {0};
 
-        Float_t tpc_x[7];
-        Float_t tpc_y[7];
+        Float_t tpc_x[7] = {0};
+        Float_t tpc_y[7] = {0};
 
-        Int_t tpc_xraw[7][2];
-        Int_t tpc_yraw[7][4];
-        Float_t tpc_dx12[7];
+        Int_t tpc_xraw[7][2] = {0};
+        Int_t tpc_yraw[7][4] = {0};
+        Float_t tpc_dx12[7] = {0};
 
-        Bool_t b_tpc_xy[7];
+        Bool_t b_tpc_xy[7] = {0};
 
         //TPCs 21 & 22 @ S2 focus
-        Float_t tpc_x_s2_foc_21_22;
-        Float_t tpc_y_s2_foc_21_22;
-        Float_t tpc_angle_x_s2_foc_21_22;
-        Float_t tpc_angle_y_s2_foc_21_22;
+        Float_t tpc_x_s2_foc_21_22 = 0;
+        Float_t tpc_y_s2_foc_21_22 = 0;
+        Float_t tpc_angle_x_s2_foc_21_22 = 0;
+        Float_t tpc_angle_y_s2_foc_21_22 = 0;
 
         //TPCs 23 & 24 @ S2 focus
-        Float_t tpc_x_s2_foc_23_24;
-        Float_t tpc_y_s2_foc_23_24;
-        Float_t tpc_angle_x_s2_foc_23_24;
-        Float_t tpc_angle_y_s2_foc_23_24;
+        Float_t tpc_x_s2_foc_23_24 = 0;
+        Float_t tpc_y_s2_foc_23_24 = 0;
+        Float_t tpc_angle_x_s2_foc_23_24 = 0;
+        Float_t tpc_angle_y_s2_foc_23_24 = 0;
 
         //TPCs 22 & 24 @ S2 focus
-        Float_t tpc_x_s2_foc_22_24;
-        Float_t tpc_y_s2_foc_22_24;
-        Float_t tpc_angle_x_s2_foc_22_24;
-        Float_t tpc_angle_y_s2_foc_22_24;
+        Float_t tpc_x_s2_foc_22_24 = 0;
+        Float_t tpc_y_s2_foc_22_24 = 0;
+        Float_t tpc_angle_x_s2_foc_22_24 = 0;
+        Float_t tpc_angle_y_s2_foc_22_24 = 0;
 
         //TPCs 3 & 4 @ S2 focus (old tracking)
-        Float_t tpc_x_s2_foc;
-        Float_t tpc_y_s2_foc;
-        Float_t tpc_angle_x_s2_foc;
-        Float_t tpc_angle_y_s2_foc;
+        Float_t tpc_x_s2_foc = 0;
+        Float_t tpc_y_s2_foc = 0;
+        Float_t tpc_angle_x_s2_foc = 0;
+        Float_t tpc_angle_y_s2_foc = 0;
 
         //TPCs 41 & 42 @ s4 focus
-        Float_t tpc_x_s4;
-        Float_t tpc_y_s4;
-        Float_t tpc_angle_x_s4;
-        Float_t tpc_angle_y_s4;
+        Float_t tpc_x_s4 = 0;
+        Float_t tpc_y_s4 = 0;
+        Float_t tpc_angle_x_s4 = 0;
+        Float_t tpc_angle_y_s4 = 0;
 
         //TPCs 5 & 6 @ S4 OTPC (exp s388)
-        Float_t tpc_x_s4_target2;
-        Float_t tpc_y_s4_target2;
+        Float_t tpc_x_s4_target2 = 0;
+        Float_t tpc_y_s4_target2 = 0;
 
-        Float_t tpc21_22_sc21_x; /* SC21 x                    */
-        Float_t tpc21_22_sc21_y; /* SC21 y                    */
-        Float_t tpc23_24_sc21_x; /* SC21 x                    */
-        Float_t tpc23_24_sc21_y; /* SC21 y                    */
-        Float_t tpc22_24_sc21_x; /* SC21 x                    */
-        Float_t tpc22_24_sc21_y; /* SC21 y                    */
+        Float_t tpc21_22_sc21_x = 0; /* SC21 x                    */
+        Float_t tpc21_22_sc21_y = 0; /* SC21 y                    */
+        Float_t tpc23_24_sc21_x = 0; /* SC21 x                    */
+        Float_t tpc23_24_sc21_y = 0; /* SC21 y                    */
+        Float_t tpc22_24_sc21_x = 0; /* SC21 x                    */
+        Float_t tpc22_24_sc21_y = 0; /* SC21 y                    */
 
         Float_t tpc21_22_sc22_x; /* SC22 x                    */
         Float_t tpc21_22_sc22_y; /* SC22 y                    */
