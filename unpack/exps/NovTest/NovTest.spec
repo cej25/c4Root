@@ -140,7 +140,7 @@ EVENT
     revisit aida = aida_subev(type = 10, subtype = 1, procid = 90, control = 37);
     // germanium = febex_subev(type = 10, subtype = 1, procid = 60, control = 20);
     
-    // fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = 75, control = 20, subcrate = 0);
+    fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = 75, control = 20, subcrate = 0);
     bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20, subcrate = 0);
 
     frsmain = frs_main_subev(procid = 10);
