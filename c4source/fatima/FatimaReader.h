@@ -92,6 +92,7 @@ class FatimaReader : public c4Reader
         static const int NBoards = sizeof(fData->fatima_tamex) / sizeof(fData->fatima_tamex[0]);
         static const int NChannels = 32; //slow + fast per board
 
+
         //global
         uint64_t fNepochwordsread = 0;
         uint64_t fNevents_skipped = 0; //because the size of the array does not match internally (UCESB/c4 error likely)

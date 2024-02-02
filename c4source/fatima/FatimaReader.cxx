@@ -316,6 +316,10 @@ Bool_t FatimaReader::Read() //do fine time here:
         for (int it_hits = 0; it_hits < fData->fatima_tamex[it_board_number].event_size/4 - 3 ; it_hits++){
             //if (fData->fatima_tamex[it_board_number].time_channelv[it_hits] != 1) continue;
 
+
+            if (fData->fatima_tamex[it_board_number].time_epochv[it_hits] != 0){
+                    if (it_hits + 1 == fData->fatima_tamex[it_board_number].event_size/4 - 3) {c4LOG(fatal, "Data ends on a epoch...");}
+
             //c4LOG(info, Form("epoch = %i",fData->fatima_tamex[it_board_number].time_epochv[it_hits]));
             //c4LOG(info, Form("coarse = %i",fData->fatima_tamex[it_board_number].time_coarsev[it_hits]));
             //c4LOG(info, Form("fine = %i",fData->fatima_tamex[it_board_number].time_finev[it_hits]));
@@ -347,7 +351,7 @@ Bool_t FatimaReader::Read() //do fine time here:
                     last_word_read_was_epoch = true;
                     continue;
             }
-           
+              
             //from this point we should have seen an epoch for channel id.
 
 
@@ -583,7 +587,7 @@ void FatimaReader::PrintStatistics(){
 
 
 /*
-Memory management.
+Memory management. Do not touch.
 */
 void FatimaReader::Reset()
 {

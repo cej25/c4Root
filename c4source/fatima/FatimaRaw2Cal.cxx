@@ -43,7 +43,9 @@ FatimaRaw2Cal::FatimaRaw2Cal(const TString& name, Int_t verbose)
     ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
 }
-
+/*
+Clearing old constructed objects.
+*/
 FatimaRaw2Cal::~FatimaRaw2Cal(){
     c4LOG(info, "Deleting FatimaRaw2Cal task");
     if (funcal_data) delete funcal_data;
@@ -71,10 +73,10 @@ void FatimaRaw2Cal::SetParContainers()
 }
 
 /*
-Initializer called by the FairRoot manager. Gets the required FairRootManager, objects to read and registers the data to be written to the tree.
+Initializer called by the FairRoot manager. Gets the required FairRootManager objects to read and register the data to be written to the tree.
 */
 InitStatus FatimaRaw2Cal::Init(){
-    //grab instance managers and handles.
+    //grabs instance managers and handles.
 
     c4LOG(info, "Grabbing FairRootManager, RunOnline and EventHeader.");
     FairRootManager* mgr = FairRootManager::Instance();
@@ -90,7 +92,9 @@ InitStatus FatimaRaw2Cal::Init(){
 
     FairRootManager::Instance()->Register("FatimaTwinpeaksCalData", "FatimaTwinpeaksCalDataFolder", fcal_data, !fOnline);
     //need to have the name of the detector subsystem here:
+
     FairRootManager::Instance()->Register("FatimaTimeMachineData", "FatimaTimeMachineDataFolder", ftime_machine_array, !fOnline);
+
     fcal_data->Clear();
     funcal_data->Clear();
 
@@ -119,7 +123,6 @@ Bool_t FatimaRaw2Cal::SetDetectorMapFile(TString filename){
 
     int rtamex_module,rtamex_channel,rdetector_id; // temp read variables
         
-
     while(!detector_map_file.eof()){
         if(detector_map_file.peek()=='#') detector_map_file.ignore(256,'\n');
         else{
@@ -148,11 +151,9 @@ Reads a file containing the detector calibrations. NEEDS to be a quadratic poly 
 Raises a fatal error if the detector numbers are not unique.
 */
 Bool_t FatimaRaw2Cal::SetDetectorCalFile(TString filename){
-
     c4LOG(info, "Reading Calibration coefficients.");
     c4LOG(info, "File reading");
     c4LOG(info, filename);
-
 
     std::ifstream cal_map_file (filename);
 
@@ -178,7 +179,7 @@ Bool_t FatimaRaw2Cal::SetDetectorCalFile(TString filename){
 };
 
 /*
-Dump detector map to terminal.
+Dump detector map to console.
 */
 void FatimaRaw2Cal::PrintDetectorMap(){
     if (DetectorMap_loaded){
@@ -193,7 +194,7 @@ void FatimaRaw2Cal::PrintDetectorMap(){
 }
 
 /*
-Dump detector calibrations to terminal.
+Dump detector calibrations to console.
 */
 void FatimaRaw2Cal::PrintDetectorCal(){
     if (DetectorCal_loaded){
@@ -281,7 +282,44 @@ void FatimaRaw2Cal::Exec(Option_t* option){
                     c4LOG(fatal, "Detector mapping not complete - exiting.");
                 }
                 //only do calibrations if mapping is functional:
-                
+                if (DetectorCal_loaded){
+                    // JB: JEL Can you check this?
+                    /* if (auto result_find = calibration_coeffs.find(detector_id); result_find != calibration_coeffs.end()){
+                        fast_lead_time =  funcal_hit->Get_lead_epoch_counter()*10.24e3 + funcal_hit->Get_lead_coarse_T()*5.0 - funcal_hit->Get_lead_fine_T();
+                        fast_trail_time = funcal_hit->Get_trail_epoch_counter()*10.24e3 + funcal_hit->Get_trail_coarse_T()*5.0 - funcal_hit->Get_trail_fine_T();
+                        
+                        slow_lead_time =  funcal_hit_next->Get_lead_epoch_counter()*10.24e3 + funcal_hit_next->Get_lead_coarse_T()*5.0 - funcal_hit_next->Get_lead_fine_T();
+                        slow_trail_time = funcal_hit_next->Get_trail_epoch_counter()*10.24e3 + funcal_hit_next->Get_trail_coarse_T()*5.0 - funcal_hit_next->Get_trail_fine_T();
+                        
+                        fast_lead_time = result_find->second.second*fast_lead_time + result_find->second.first;
+                        fast_trail_time = result_find->second.second*fast_trail_time + result_find->second.first;
+                        slow_lead_time = result_find->second.second*slow_lead_time + result_find->second.first;
+                        slow_trail_time = result_find->second.second*slow_trail_time + result_find->second.first;
+                        
+                        fast_ToT =  fast_trail_time - fast_lead_time;
+                        slow_ToT =  slow_trail_time - slow_lead_time;
+                        
+                        new ((*fcal_data)[fcal_data->GetEntriesFast()]) bPlastTwinpeaksCalData(
+                            funcal_hit->Get_board_id(),
+                            (int)((funcal_hit->Get_ch_ID()+1)/2),
+                            detector_id,
+                            slow_lead_time,
+                            slow_trail_time,
+                            fast_lead_time,
+                            fast_trail_time,
+                            fast_ToT,
+                            slow_ToT,
+                            funcal_hit->Get_wr_subsystem_id(),
+                            funcal_hit->Get_wr_t());
+                        
+                        
+                        fNEvents++;
+                        ihit++; //increment it by one extra.
+                    }else{
+                        c4LOG(fatal, "Calibration coefficients not complete - exiting.");
+                    }
+                    */
+                }
             }
             else{ //no map and cal: ->
                 detector_id = funcal_hit->Get_board_id()*17 + (int)(funcal_hit_next->Get_ch_ID()+1)/2; // do mapping.
@@ -369,7 +407,6 @@ void FatimaRaw2Cal::FinishEvent(){
     fcal_data->Clear();
     ftime_machine_array->Clear();
 };
-
 
 /*
 Some stats are written when finishing.
