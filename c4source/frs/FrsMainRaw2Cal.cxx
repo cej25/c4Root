@@ -7,9 +7,9 @@
 #include "FairRuntimeDb.h"
 
 // c4
-#include "FrsRaw2Cal.h"
-#include "FrsData.h"
-#include "FrsCalData.h"
+#include "FrsMainRaw2Cal.h"
+#include "FrsMainData.h"
+#include "FrsMainCalData.h"
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
@@ -17,34 +17,34 @@
 #include <vector>
 #include <iostream>
 
-FrsRaw2Cal::FrsRaw2Cal()
+FrsMainRaw2Cal::FrsMainRaw2Cal()
     :   FairTask()
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
-    ,   fRawArray(new TClonesArray("FrsData"))
-    ,   fCalArray(new TClonesArray("FrsCalData"))
+    ,   fRawArray(new TClonesArray("FrsMainData"))
+    ,   fCalArray(new TClonesArray("FrsMainCalData"))
 {
 }
 
-FrsRaw2Cal::FrsRaw2Cal(const TString& name, Int_t verbose)
+FrsMainRaw2Cal::FrsMainRaw2Cal(const TString& name, Int_t verbose)
     :   FairTask(name, verbose)
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
-    ,   fRawArray(new TClonesArray("FrsData"))
-    ,   fCalArray(new TClonesArray("FrsCalData"))
+    ,   fRawArray(new TClonesArray("FrsMainData"))
+    ,   fCalArray(new TClonesArray("FrsMainCalData"))
 {
 }
 
-FrsRaw2Cal::~FrsRaw2Cal()
+FrsMainRaw2Cal::~FrsMainRaw2Cal()
 {
-    c4LOG(info, "Deleting FrsRaw2Cal task");
+    c4LOG(info, "Deleting FrsMainRaw2Cal task");
     if (fRawArray) delete fRawArray;
     if (fCalArray) delete fCalArray;
 }
 
-InitStatus FrsRaw2Cal::Init()
+InitStatus FrsMainRaw2Cal::Init()
 {
     c4LOG(info, "Grabbing FairRootManager, RunOnline and EventHeader.");
     FairRootManager* mgr = FairRootManager::Instance();
@@ -53,12 +53,12 @@ InitStatus FrsRaw2Cal::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fRawArray = (TClonesArray*)mgr->GetObject("FrsData");
-    c4LOG_IF(fatal, !fRawArray, "FRS branch of FrsData not found");
+    fRawArray = (TClonesArray*)mgr->GetObject("FrsMainData");
+    c4LOG_IF(fatal, !fRawArray, "FRS branch of MainData not found");
 
-    FairRootManager::Instance()->Register("FrsCalData", "FRS Cal Data", fCalArray, !fOnline);
+    FairRootManager::Instance()->Register("FrsMainCalData", "FRS Main Cal Data", fCalArray, !fOnline);
 
-    fRawArray->Clear(); // wait what why
+    fRawArray->Clear();
     fCalArray->Clear();
 
     return kSUCCESS;
@@ -71,13 +71,16 @@ Or make this Raw2Hit directly
 */
 
 
-void FrsRaw2Cal::Exec(Option_t* option)
+void FrsMainRaw2Cal::Exec(Option_t* option)
 {
 
     int mult = fRawArray->GetEntriesFast();
+
+    if (mult == 0) return;
+
     //for (int m = 0; m < fRawArray->GetEntriesFast(); m++)
     //{   
-        fRawHit = (FrsData*)fRawArray->At(0); // event multiplicity
+        fRawHit = (FrsMainData*)fRawArray->At(0); // event multiplicity
         
         
         WR_TS = fRawHit->Get_WR();
@@ -247,7 +250,7 @@ void FrsRaw2Cal::Exec(Option_t* option)
         for (uint32_t i = 0; i < v1290_channel.size(); i++)
         {   
 
-            if (v1290_lot[i] == 1)
+            if (v1290_lot[i] == 0) // lead 0, trail 1
             {
                 switch (v1290_channel[i])
                 {   
@@ -316,22 +319,50 @@ void FrsRaw2Cal::Exec(Option_t* option)
                         if (tdc_array[14].size() < 10) tdc_array[14].emplace_back(v1290_data[i]);
                         break;
                     case 16:
+                        if (i == 0) music_t1[v1290_channel[i] - 16] = v1290_data[i]; // huh? 23 - 16 = 7 always ...?
+                        break;
                     case 17:
+                        if (i == 0) music_t1[v1290_channel[i] - 16] = v1290_data[i]; // huh? 23 - 16 = 7 always ...?
+                        break;
                     case 18:
+                        if (i == 0) music_t1[v1290_channel[i] - 16] = v1290_data[i]; // huh? 23 - 16 = 7 always ...?
+                        break;
                     case 19:
+                        if (i == 0) music_t1[v1290_channel[i] - 16] = v1290_data[i]; // huh? 23 - 16 = 7 always ...?
+                        break;
                     case 20:
+                        if (i == 0) music_t1[v1290_channel[i] - 16] = v1290_data[i]; // huh? 23 - 16 = 7 always ...?
+                        break;
                     case 21:
+                        if (i == 0) music_t1[v1290_channel[i] - 16] = v1290_data[i]; // huh? 23 - 16 = 7 always ...?
+                        break;
                     case 22:
+                        if (i == 0) music_t1[v1290_channel[i] - 16] = v1290_data[i]; // huh? 23 - 16 = 7 always ...?
+                        break;
                     case 23:
-                        if (i == 0) music_t1[v1290_channel[i] - 16] = v1290_data[i]; // music_tX ends here before spectra
+                        if (i == 0) music_t1[v1290_channel[i] - 16] = v1290_data[i]; // huh? 23 - 16 = 7 always ...?
                         break;
                     case 24:
+                        if (i == 0) music_t2[v1290_channel[i] - 24] = v1290_data[i]; // music_tX ends here before spectra
+                        break;
                     case 25:
+                        if (i == 0) music_t2[v1290_channel[i] - 24] = v1290_data[i]; // music_tX ends here before spectra
+                        break;
                     case 26:
+                        if (i == 0) music_t2[v1290_channel[i] - 24] = v1290_data[i]; // music_tX ends here before spectra
+                        break;
                     case 27:
+                        if (i == 0) music_t2[v1290_channel[i] - 24] = v1290_data[i]; // music_tX ends here before spectra
+                        break;
                     case 28:
+                        if (i == 0) music_t2[v1290_channel[i] - 24] = v1290_data[i]; // music_tX ends here before spectra
+                        break;
                     case 29:
+                        if (i == 0) music_t2[v1290_channel[i] - 24] = v1290_data[i]; // music_tX ends here before spectra
+                        break;
                     case 30:
+                        if (i == 0) music_t2[v1290_channel[i] - 24] = v1290_data[i]; // music_tX ends here before spectra
+                        break;
                     case 31:
                         if (i == 0) music_t2[v1290_channel[i] - 24] = v1290_data[i]; // music_tX ends here before spectra
                         break;
@@ -340,13 +371,13 @@ void FrsRaw2Cal::Exec(Option_t* option)
         }
 
 
-        // enter into CalData
+        // enter into MainCalData
         
         // do we need this? maybe maybe not..
         if (v830_scalers_main.size() != 0)
         {   
             
-            new ((*fCalArray)[fCalArray->GetEntriesFast()]) FrsCalData(
+            new ((*fCalArray)[fCalArray->GetEntriesFast()]) FrsMainCalData(
                 // V830 scalers
                 WR_TS,
                 time_in_ms, ibin_for_s, ibin_for_100ms, 
@@ -368,24 +399,35 @@ void FrsRaw2Cal::Exec(Option_t* option)
 
 }
 
-// clear all TClonesArray used in this Task here
-void FrsRaw2Cal::FinishEvent()
-{   
-    for (int i = 0; i < 15; i++) tdc_array[i].clear(); 
-    for (int i = 0; i < 14; i++) de_array[i] = 0;
+void FrsMainRaw2Cal::ZeroArrays()
+{
+    memset(de_array, 0, sizeof(de_array));
+    memset(music_t1, 0, sizeof(music_t1));
+    memset(music_t2, 0, sizeof(music_t2));
+    fCalArray->Clear();
+}
+
+void FrsMainRaw2Cal::ClearVectors()
+{
+    for (int i = 0; i < 15; i++) tdc_array[i].clear();
+    v830_scalers_index.clear();
     v830_scalers_main.clear();
     v792_channel.clear();
     v792_data.clear();
     v1290_channel.clear();
     v1290_data.clear();
     v1290_lot.clear();
-    fRawArray->Clear();
-    fCalArray->Clear();
+}
+
+void FrsMainRaw2Cal::FinishEvent()
+{   
+    ZeroArrays();
+    ClearVectors();
 };
 
-void FrsRaw2Cal::FinishTask()
+void FrsMainRaw2Cal::FinishTask()
 {
     c4LOG(info, Form("Wrote %i events.",fNEvents));
 }
 
-ClassImp(FrsRaw2Cal)
+ClassImp(FrsMainRaw2Cal)

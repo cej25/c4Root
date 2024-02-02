@@ -9,15 +9,31 @@ class FrsHitData : public TObject
     public:
         FrsHitData();
 
-        FrsHitData(uint64_t WR_TS);
+        FrsHitData(uint64_t WR_TS,
+                Float_t id_x2,
+                Float_t id_x4,
+                Float_t fID_AoQ,
+                Float_t fID_AoQ_corr,
+                Float_t fID_z,
+                Float_t fID_z2);
 
         ~FrsHitData();
 
         inline const uint64_t Get_WR() const { return fWR_TS; }
+        inline const Float_t Get_ID_AoQ() const {return fID_AoQ; }
+        inline const Float_t Get_ID_AoQ_corr() const {return fID_AoQ_corr; }
+        inline const Float_t Get_ID_z() const {return fID_z; }
+        inline const Float_t Get_ID_z2() const {return fID_z2; }
 
     protected:
 
         uint64_t fWR_TS;
+        Float_t fID_x2;
+        Float_t fID_x4;
+        Float_t fID_AoQ;
+        Float_t fID_AoQ_corr;
+        Float_t fID_z;
+        Float_t fID_z2;
     
     public:
         ClassDef(FrsHitData, 1)
