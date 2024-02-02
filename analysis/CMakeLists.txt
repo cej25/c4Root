@@ -36,6 +36,7 @@ set(SRCS
 ./online/bPlastOnlineSpectra.cxx
 ./online/FatimaOnlineSpectra.cxx
 ./online/FrsOnlineSpectra.cxx
+./online/FrsDetectorsOnline.cxx
 ./fatima_aida_correlations/FatimaAidaSpectra.cxx
 ./online/TimeMachineOnline.cxx
 )
