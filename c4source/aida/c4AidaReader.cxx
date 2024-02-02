@@ -64,6 +64,8 @@ Bool_t AidaReader::Read()
     adcArray->clear();
     flowArray->clear();
     scalerArray->clear();
+    
+    if (!fData) return kTRUE;
 
     // ADC items
     for (size_t i = 0; i < fData->aida_data_adc; i++)
@@ -90,8 +92,8 @@ Bool_t AidaReader::Read()
     {
         auto& entry = scalerArray->emplace_back();
         uint64_t t = fData->aida_data_scaler_timestamp_lo[i] | ((uint64_t)fData->aida_data_scaler_timestamp_hi[i] << 32);
-        int f = fData->aida_data_scaler_fee[i];
         uint64_t v = fData->aida_data_scaler_value_lo[i] | ((uint64_t)fData->aida_data_scaler_value_hi[i] << 32);
+        int f = fData->aida_data_scaler_fee[i];
         entry.SetAll(t, v, f);
     }
 
@@ -102,6 +104,8 @@ void AidaReader::Reset()
 {
     // Clear the vector
     adcArray->clear();
+    flowArray->clear();
+    scalerArray->clear();
 }
 
 ClassImp(AidaReader);

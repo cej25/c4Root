@@ -3,13 +3,13 @@
 
 #include "c4Reader.h"
 #include <Rtypes.h>
-
+#include "EventHeader.h"
 
 struct EXT_STR_h101_unpack_t;
 typedef struct EXT_STR_h101_unpack_t EXT_STR_h101_unpack;
 
 class ext_data_struct_info;
-class EventHeader;
+
 
 class UnpackReader : public c4Reader
 {

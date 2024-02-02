@@ -22,7 +22,7 @@
 #include "TMath.h"
 #include "TRandom.h"
 
-GermaniumOnlineSpectra::GermaniumOnlineSpectra()
+GermaniumOnlineSpectra::GermaniumOnlineSpectra() : GermaniumOnlineSpectra("GermaniumOnlineSpectra")
 {
 }
 
@@ -70,64 +70,104 @@ InitStatus GermaniumOnlineSpectra::Init()
     run->AddObject(ge_spectra_folder);
 
     // energy spectra:
-    TCanvas * energy_spectra_divided  = new TCanvas("energy_spectra_divided","Calibrated Germanium spectra",650,350);
-    energy_spectra_divided->Divide(NCrystals,NDetectors);
+    c_germanium_cal_energy_spectra  = new TCanvas("c_germanium_cal_energy_spectra","Calibrated Germanium spectra",650,350);
+    c_germanium_cal_energy_spectra->Divide(NCrystals,NDetectors);
 
     for (int ihist = 0; ihist < NCrystals*NDetectors; ihist++){
-        energy_spectra_divided->cd(ihist+1);
-        h1_energy[ihist] = new TH1F(Form("energy_spectrum_%d_%d",ihist/NCrystals,ihist%NCrystals),Form("Energy spectrm det %d crytsal %d",ihist/NCrystals,ihist%NCrystals),1000,0,10e3);
-        h1_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
-        h1_energy[ihist]->Draw();
-        ge_spectra_folder->Add(h1_energy[ihist]);
+        c_germanium_cal_energy_spectra->cd(ihist+1);
+        h1_germanium_energy[ihist] = new TH1F(Form("h1_germanium_energy_%d_%d",ihist/NCrystals,ihist%NCrystals),Form("Germanium Energy spectrum det %d crystal %d",ihist/NCrystals,ihist%NCrystals),10e3,0,10e3);
+        h1_germanium_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
+        h1_germanium_energy[ihist]->Draw();
+        ge_spectra_folder->Add(h1_germanium_energy[ihist]);
 
     }
-    energy_spectra_divided->cd(0);
+    c_germanium_cal_energy_spectra->cd(0);
 
-    ge_spectra_folder->Add(energy_spectra_divided);
+    ge_spectra_folder->Add(c_germanium_cal_energy_spectra);
     
     // energy spectra:
-    TCanvas * energy_spectra_mult2  = new TCanvas("energy_spectra_mult2","Calibrated m = 2 Germanium spectra",650,350);
-    energy_spectra_mult2->Divide(NCrystals,NDetectors);
+    c_germanium_energy_mult2  = new TCanvas("c_germanium_energy_mult2","Calibrated m = 2 Germanium spectra",650,350);
+    c_germanium_energy_mult2->Divide(NCrystals,NDetectors);
 
     for (int ihist = 0; ihist < NCrystals*NDetectors; ihist++){
-        energy_spectra_mult2->cd(ihist+1);
-        h1_energy_mult2[ihist] = new TH1F(Form("energy_spectrum_%d_%d_mult2",ihist/NCrystals,ihist%NCrystals),Form("Energy spectrm det %d crytsal %d",ihist/NCrystals,ihist%NCrystals),1000,0,10e3);
-        h1_energy_mult2[ihist]->GetXaxis()->SetTitle("energy (keV)");
-        h1_energy_mult2[ihist]->Draw();
-        ge_spectra_folder->Add(h1_energy_mult2[ihist]);
+        c_germanium_energy_mult2->cd(ihist+1);
+        h1_germanium_energy_mult2[ihist] = new TH1F(Form("h1_germanium_energy_mult2_%d_%d",ihist/NCrystals,ihist%NCrystals),Form("Germanium Energy spectrum m=2 det %d crystal %d",ihist/NCrystals,ihist%NCrystals),1000,0,10e3);
+        h1_germanium_energy_mult2[ihist]->GetXaxis()->SetTitle("energy (keV)");
+        h1_germanium_energy_mult2[ihist]->Draw();
+        ge_spectra_folder->Add(h1_germanium_energy_mult2[ihist]);
     }
-    energy_spectra_mult2->cd(0);
+    c_germanium_energy_mult2->cd(0);
 
-    ge_spectra_folder->Add(energy_spectra_mult2);
+    ge_spectra_folder->Add(c_germanium_energy_mult2);
     
     // Time spectra:
-    TCanvas * time_spectra_divided  = new TCanvas("time_spectra_divided","Germanium time spectra",650,350);
-    time_spectra_divided->Divide(NCrystals,NDetectors);
+    c_germanium_time  = new TCanvas("c_germanium_time","Germanium time spectra",650,350);
+    c_germanium_time->Divide(NCrystals,NDetectors);
 
     for (int ihist = 0; ihist < NCrystals*NDetectors; ihist++){
-        time_spectra_divided->cd(ihist+1);
-        h1_time[ihist] = new TH1F(Form("Time_spectrum_%d_%d",ihist/NCrystals,ihist%NCrystals),Form("Absolute Time %d %d",ihist/NCrystals,ihist%NCrystals),100,1.5218e14,1.5225e14);
-        h1_time[ihist]->GetXaxis()->SetTitle("Time (ns)");
-        h1_time[ihist]->Draw();
-        ge_spectra_folder->Add(h1_time[ihist]);
+        c_germanium_time->cd(ihist+1);
+        h1_germanium_time[ihist] = new TH1F(Form("h1_germanium_time_%d_%d",ihist/NCrystals,ihist%NCrystals),Form("Absolute Time %d %d",ihist/NCrystals,ihist%NCrystals),100,1.5218e14,1.5225e14);
+        h1_germanium_time[ihist]->GetXaxis()->SetTitle("Time (ns)");
+        h1_germanium_time[ihist]->Draw();
+        ge_spectra_folder->Add(h1_germanium_time[ihist]);
 
     }
-    time_spectra_divided->cd(0);
+    c_germanium_time->cd(0);
 
-    ge_spectra_folder->Add(time_spectra_divided);
+    ge_spectra_folder->Add(c_germanium_time);
 
     run->RegisterHttpCommand("Reset_Ge_Hist", "/GermaniumOnlineSpectra->Reset_Histo()");
+    run->RegisterHttpCommand("Snapshot_Ge_Hist", "/GermaniumOnlineSpectra->Snapshot_Histo()");
 
     return kSUCCESS;
-    
 }
 
 void GermaniumOnlineSpectra::Reset_Histo()
 {
     c4LOG(info, "Reset command received. Clearing histograms.");
-    for (int ihist = 0; ihist<NCrystals*NDetectors; ihist++) h1_energy[ihist]->Reset();
-    for (int ihist = 0; ihist<NCrystals*NDetectors; ihist++) h1_energy_mult2[ihist]->Reset();
-    for (int ihist = 0; ihist<NCrystals*NDetectors; ihist++) h1_time[ihist]->Reset();
+    for (int ihist = 0; ihist<NCrystals*NDetectors; ihist++) h1_germanium_energy[ihist]->Reset();
+    for (int ihist = 0; ihist<NCrystals*NDetectors; ihist++) h1_germanium_energy_mult2[ihist]->Reset();
+    for (int ihist = 0; ihist<NCrystals*NDetectors; ihist++) h1_germanium_time[ihist]->Reset();
+}
+
+void GermaniumOnlineSpectra::Snapshot_Histo()
+{
+    //date and time
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
+    //make folder with date and time
+    const char* snapshot_dir = Form("Germanium_snapshot_%d_%d_%d_%d_%d_%d",ltm->tm_year+1900,ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec);
+    gSystem->mkdir(snapshot_dir);
+    gSystem->cd(snapshot_dir);
+
+    // save histograms to canvases
+    c_germanium_snapshot = new TCanvas("c","c",650,350);
+
+    for (int ihist = 0; ihist<NCrystals*NDetectors; ihist++)
+    {
+        if(h1_germanium_energy[ihist]->GetEntries()>0)
+        {
+            h1_germanium_energy[ihist]->Draw();
+            c_germanium_snapshot->SaveAs(Form("h1_germanium_energy_%d_%d.png",ihist/NCrystals,ihist%NCrystals));
+            c_germanium_snapshot->Clear();
+        }
+        if(h1_germanium_energy_mult2[ihist]->GetEntries()>0)
+        {
+            h1_germanium_energy_mult2[ihist]->Draw();
+            c_germanium_snapshot->SaveAs(Form("h1_germanium_energy_mult2_%d_%d.png",ihist/NCrystals,ihist%NCrystals));
+            c_germanium_snapshot->Clear();
+        }
+        if(h1_germanium_time[ihist]->GetEntries()>0)
+        {
+            h1_germanium_time[ihist]->Draw();
+            c_germanium_snapshot->SaveAs(Form("h1_germanium_time_%d_%d.png",ihist/NCrystals,ihist%NCrystals));
+            c_germanium_snapshot->Clear();
+        }
+    }
+    delete c_germanium_snapshot;
+
+    gSystem->cd("..");
+    c4LOG(info, "Snapshot saved to:" << snapshot_dir);
 }
 
 void GermaniumOnlineSpectra::Exec(Option_t* option)
@@ -140,8 +180,8 @@ void GermaniumOnlineSpectra::Exec(Option_t* option)
             GermaniumCalData* hit = (GermaniumCalData*)fHitGe->At(ihit);
             if (!hit) continue;
 
-            h1_energy[hit->Get_crystal_id()+hit->Get_detector_id()*NCrystals]->Fill(hit->Get_channel_energy());
-            h1_time[hit->Get_crystal_id()+hit->Get_detector_id()*NCrystals]->Fill(hit->Get_channel_trigger_time());
+            h1_germanium_energy[hit->Get_crystal_id()+hit->Get_detector_id()*NCrystals]->Fill(hit->Get_channel_energy());
+            h1_germanium_time[hit->Get_crystal_id()+hit->Get_detector_id()*NCrystals]->Fill(hit->Get_channel_trigger_time());
 
             if (nHits>1){ // mult 2 gate:
                 for (Int_t ihit2 = ihit+1; ihit2<nHits; ihit2++){
@@ -151,9 +191,9 @@ void GermaniumOnlineSpectra::Exec(Option_t* option)
                     if (hit2->Get_detector_id() > 1) continue;
             
                     if (TMath::Abs(hit->Get_channel_trigger_time() - hit2->Get_channel_trigger_time()<20)) {
-                        if ((hit->Get_detector_id() == 1) | (hit->Get_detector_id() == 0)) h1_energy_mult2[hit->Get_crystal_id()+hit->Get_detector_id()*NCrystals]->Fill(hit->Get_channel_energy());
-                        if ((hit2->Get_detector_id() == 1) | (hit2->Get_detector_id() == 0)){
-                            h1_energy_mult2[hit2->Get_crystal_id()+hit2->Get_detector_id()*NCrystals]->Fill(hit2->Get_channel_energy());
+                        if ((hit->Get_detector_id() == 1) || (hit->Get_detector_id() == 0)) h1_germanium_energy_mult2[hit->Get_crystal_id()+hit->Get_detector_id()*NCrystals]->Fill(hit->Get_channel_energy());
+                        if ((hit2->Get_detector_id() == 1) || (hit2->Get_detector_id() == 0)){
+                            h1_germanium_energy_mult2[hit2->Get_crystal_id()+hit2->Get_detector_id()*NCrystals]->Fill(hit2->Get_channel_energy());
                             break; // some simpifications.
                         }
                     }
@@ -177,9 +217,9 @@ void GermaniumOnlineSpectra::FinishTask()
 {
     if (fHitGe)//writes to file, test?
     {
-        for (int ihist = 0; ihist<NCrystals*NDetectors; ihist++) h1_energy[ihist]->Write();
-        for (int ihist = 0; ihist<NCrystals*NDetectors; ihist++) h1_energy_mult2[ihist]->Write();
-        for (int ihist = 0; ihist<NCrystals*NDetectors; ihist++) h1_time[ihist]->Write();
+        for (int ihist = 0; ihist<NCrystals*NDetectors; ihist++) h1_germanium_energy[ihist]->Write();
+        for (int ihist = 0; ihist<NCrystals*NDetectors; ihist++) h1_germanium_energy_mult2[ihist]->Write();
+        for (int ihist = 0; ihist<NCrystals*NDetectors; ihist++) h1_germanium_time[ihist]->Write();
     }
 }
 
