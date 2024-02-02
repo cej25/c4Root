@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.spec": "cpp",
+        "run_bplast_online.C": "cpp"
+    }
+}

@@ -62,6 +62,7 @@ InitStatus AidaOnlineSpectra::Init()
     FairRunOnline* run = FairRunOnline::Instance();
     run->GetHttpServer()->Register("", this);
     run->GetHttpServer()->RegisterCommand("Reset_Aida_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Snapshot_Aida_Hist", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
     run->GetHttpServer()->RegisterCommand("Reset_Aida_Scalers", Form("/Objects/%s/->Reset_Scalers()", GetName()));
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
@@ -276,6 +277,7 @@ void AidaOnlineSpectra::Reset_Histo()
     for (auto& h : h_implant_pos_xy) h->Reset();
     for (auto& h : h_implant_e) h->Reset();
     for (auto& h : h_implant_e_xy) h->Reset();
+    for (auto& h : h_implant_strip_1d_energy) h->Reset();
     for (auto& h : h_implant_strip_xy) h->Reset();
     for (auto& h : h_implant_x_ex) h->Reset();
 
@@ -284,6 +286,99 @@ void AidaOnlineSpectra::Reset_Histo()
     for (auto& h : h_decay_e) h->Reset();
     for (auto& h : h_decay_e_xy) h->Reset();
     for (auto& h : h_decay_strip_1d_energy) h->Reset();
+}
+
+void AidaOnlineSpectra::Snapshot_Histo()
+{
+    c4LOG(info, "");
+
+    //date and timestamp
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
+    const char* snapshot_dir = Form("AIDA_Snapshots_%d%02d%02d_%02d%02d%02d",
+            1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday,
+            ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
+    gSystem->mkdir(snapshot_dir, true);
+    gSystem->cd(snapshot_dir);
+
+    //save histograms for implants
+    c_aida_snapshots = new TCanvas("c", "c", 1000, 1000);
+
+    for (auto& h : h_implant_strip_xy)
+    {
+        h->Draw("colz");
+        c_aida_snapshots->SaveAs("aida_implants_strip_xy.png");
+        c_aida_snapshots->Clear();
+    }
+    for (auto& h : h_implant_pos_xy)
+    {
+        h->Draw("colz");
+        c_aida_snapshots->SaveAs("aida_implants_pos_xy.png");
+        c_aida_snapshots->Clear();
+    }
+    for (auto& h : h_implant_e)
+    {
+        h->Draw();
+        c_aida_snapshots->SaveAs("aida_implants_e.png");
+        c_aida_snapshots->Clear();
+    }
+    for (auto& h : h_implant_e_xy)
+    {
+        h->Draw("colz");
+        c_aida_snapshots->SaveAs("aida_implants_e_xy.png");
+        c_aida_snapshots->Clear();
+    }
+    for (auto& h : h_implant_strip_1d_energy)
+    {
+        h->Draw("colz");
+        c_aida_snapshots->SaveAs("aida_implants_strip_1d_energy.png");
+        c_aida_snapshots->Clear();
+    }
+    //decays
+    for (auto& h : h_decay_strip_xy)
+    {
+        h->Draw("colz");
+        c_aida_snapshots->SaveAs("aida_decays_strip_xy.png");
+        c_aida_snapshots->Clear();
+    }
+    for (auto& h : h_decay_pos_xy)
+    {
+        h->Draw("colz");
+        c_aida_snapshots->SaveAs("aida_decays_pos_xy.png");
+        c_aida_snapshots->Clear();
+    }
+    for (auto& h : h_decay_e)
+    {
+        h->Draw();
+        c_aida_snapshots->SaveAs("aida_decays_e.png");
+       c_aida_snapshots->Clear();
+    }
+    for (auto& h : h_decay_e_xy)
+    {
+        h->Draw("colz");
+        c_aida_snapshots->SaveAs("aida_decays_e_xy.png");
+        c_aida_snapshots->Clear();
+    }
+    for (auto& h : h_decay_strip_1d_energy)
+    {
+        h->Draw("colz");
+        c_aida_snapshots->SaveAs("aida_decays_strip_1d_energy.png");
+        c_aida_snapshots->Clear();
+    }
+
+    //save scalers
+    for (auto& scaler : conf->ScalerMap())
+    {
+        aida_scaler_graph[scaler.first]->Draw("ALP");
+        c_aida_snapshots->SaveAs("aida_scalers.png");
+        c_aida_snapshots->Clear();
+    }
+
+    delete c_aida_snapshots;
+
+    gSystem->cd("..");
+    c4LOG(info, "Snapshot saved in:" << snapshot_dir);
+
 }
 
 void AidaOnlineSpectra::Reset_Scalers()

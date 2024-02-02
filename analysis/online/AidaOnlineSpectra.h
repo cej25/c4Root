@@ -39,6 +39,9 @@ class AidaOnlineSpectra : public FairTask
 
         // HTTP Commands
         virtual void Reset_Histo();
+        
+        virtual void Snapshot_Histo();
+
         void Reset_Scalers();
 
         // range setters
@@ -63,6 +66,7 @@ class AidaOnlineSpectra : public FairTask
         // Canvas
         //TCanvas* cSumTime; // channel 1 out of 28 for now?
         //TCanvas* cEnergySpectraTest;
+        TCanvas* c_aida_snapshots;
 
         // Folders
         TFolder* aidaFolder;
