@@ -4,10 +4,12 @@
 #include "../../common/whiterabbit.spec"
 #include "../../common/gsi_febex4.spec"
 
+/*
 DUMMY()
 {
     UINT32 no NOENCODE;
 }
+*/
 
 SUBEVENT(febex_subev_traces)
 { 

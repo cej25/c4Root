@@ -32,6 +32,8 @@ ZERO_FILLER()
     }
 }
 
+
+// procID = 10
 MAIN_CRATE_DATA()
 {
 
@@ -47,6 +49,7 @@ MAIN_CRATE_DATA()
 
 }
 
+// procID = 20
 TPC_CRATE_DATA()
 {
     // caen v775 and v785 (same readout, read 2)
@@ -61,6 +64,7 @@ TPC_CRATE_DATA()
     v1190 = VME_CAEN_V1190_FRS();
 }
 
+// procID = 30
 USER_CRATE_DATA()
 {
     // caen v820 or v830
@@ -83,6 +87,7 @@ USER_CRATE_DATA()
 
 }
 
+// procID = 40
 VFTX_CRATE_DATA()
 {
     // vftx (at s2)

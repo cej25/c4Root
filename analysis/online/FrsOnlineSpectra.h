@@ -5,6 +5,7 @@
 
 class TClonesArray;
 class EventHeader;
+class FrsHitData;
 class TCanvas;
 class TH1F;
 class TH2F;
@@ -57,7 +58,8 @@ class FrsOnlineSpectra : public FairTask
         }
 
     private:
-        TClonesArray* fHitFrs; // array with hit items
+        TClonesArray* fHitFrsArray; // array with hit items
+        FrsHitData* fHitFrs; // array with hit items
 
         // Ranges for histograms
         Double_t fMin_Z, fMax_Z, fMin_AoQ, fMax_AoQ, fMin_x4, fMax_x4;
@@ -68,17 +70,13 @@ class FrsOnlineSpectra : public FairTask
         Int_t fNEvents;
 
         // Canvas
-        /*TCanvas* cZvsAoQ;
-        TCanvas* cX4vsAoQ;
-        TCanvas* cZvsAoQCorr;
-        TCanvas* cX4vsAoQCorr;*/
-        TCanvas* cTdcRaw;
-        TCanvas* cTdcChan;
+        TCanvas * c_frs_z1_vs_AoQ;
 
-        // Histograms for Hit data
-        TH1F* fh1_TdcRaw;
-        TH1F* fh1_TdcChan;
-    
+        // Histograms for PID:
+        TH2F * h_frs_z1_vs_AoQ;
+
+
+
     public:
         ClassDef(FrsOnlineSpectra, 1)
 

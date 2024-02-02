@@ -36,6 +36,12 @@ void TAidaConfiguration::ReadConfiguration()
   fbenergyl = std::numeric_limits<double>::max();
 
   std::ifstream cfg(base_path + "/AIDA.txt");
+
+  if (!cfg.good())
+  {
+    c4LOG(fatal, "Unable to read AIDA configuration file");
+    return;
+  }
   constexpr auto ignore = std::numeric_limits<std::streamsize>::max();
   int sub_DSSD = -1;
   bool sub_Scaler = false;
@@ -125,7 +131,7 @@ void TAidaConfiguration::ReadConfiguration()
     {
       line >> sub_DSSD;
       if (sub_DSSD > dssds) {
-        c4LOG(warning, "DSSD value " << sub_DSSD << " exceeds number of DSSDs: " << dssds);
+        c4LOG(fatal, "DSSD value " << sub_DSSD << " exceeds number of DSSDs: " << dssds);
         sub_DSSD = 0;
       }
       else {
@@ -263,7 +269,9 @@ void TAidaConfiguration::ReadConfiguration()
   }
 
   bool warning = false;
+  bool loaded = false;
   std::ifstream fs(base_path + "/AIDA_offsets.txt");
+  loaded = fs.good();
   fs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   while (fs)
   {
@@ -286,9 +294,18 @@ void TAidaConfiguration::ReadConfiguration()
     fs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   }
   fs.close();
-  c4LOG(info, "Loaded ADC Offsets");
+  if (loaded && !cfg.eof() && (cfg.bad() || cfg.fail()))
+  {
+    c4LOG(error, "Error reading AIDA_offsets.txt");
+  }
+  else if (loaded && cfg.eof())
+  {
+    c4LOG(info, "Loaded AIDA ADC offsets");
+  }
 
   fs.open(base_path + "/AIDA_times.txt");
+  loaded = fs.good();
+  warning = false;
 
   while (fs)
   {
@@ -306,10 +323,20 @@ void TAidaConfiguration::ReadConfiguration()
     feeTimeOffsets[fs_fee] = fs_offset;
     fs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   }
-  c4LOG(info, "Loaded FEE Clock Correction");
+  if (loaded && !cfg.eof() && (cfg.bad() || cfg.fail()))
+  {
+    c4LOG(error, "Error reading AIDA_times.txt");
+  }
+  else if (loaded && cfg.eof())
+  {
+    c4LOG(info, "Loaded AIDA FEE clock correction");
+  }
   fs.close();
 
   fs.open(base_path + "/AIDA_gains.txt");
+  loaded = fs.good();
+  warning = false;
+
   fs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   while (fs)
   {
@@ -328,9 +355,19 @@ void TAidaConfiguration::ReadConfiguration()
     dssdGains[fs_dssd][sideidx][strip] = offset;
     fs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   }
-  c4LOG(info, "Loaded DSSD Gains");
+  if (loaded && !cfg.eof() && (cfg.bad() || cfg.fail()))
+  {
+    c4LOG(error, "Error reading AIDA_gains.txt");
+  }
+  else if (loaded && cfg.eof())
+  {
+    c4LOG(info, "Loaded AIDA DSSD gains");
+  }
 
   std::ifstream stripConfig(base_path + "/AIDA_strips.txt");
+  loaded = fs.good();
+  warning = false;
+
   while (stripConfig)
   {
     if (stripConfig.peek() == '#' || stripConfig.peek() == '\n')
@@ -379,7 +416,14 @@ void TAidaConfiguration::ReadConfiguration()
     }
     stripConfig.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   }
-  c4LOG(info, "Loaded DSSD Strip Thresholds");
+  if (loaded && !cfg.eof() && (cfg.bad() || cfg.fail()))
+  {
+    c4LOG(error, "Error reading AIDA_strips.txt");
+  }
+  else if (loaded && cfg.eof())
+  {
+    c4LOG(info, "Loaded AIDA DSSD strip thresholds");
+  }
 
   if (useucesb && ignorembsts)
   {
@@ -417,6 +461,22 @@ void TAidaConfiguration::DSSDtoFEE()
 {
   for (DSSDConfiguration& d : dssd)
   {
+    if (d.DSSD == -1) {
+      c4LOG(fatal, "At least one DSSD was not mapped to any FEEs in AIDA configuration");
+      continue;
+    }
+    if (d.Top > FEEs()) {
+      c4LOG(fatal, "DSSD top maps to invalid FEE: " << d.Top << " (Max fees: " << FEEs() << ")");
+    }
+    if (d.Right > FEEs()) {
+      c4LOG(fatal, "DSSD right maps to invalid FEE: " << d.Right << " (Max fees: " << FEEs() << ")");
+    }
+    if (d.Bottom > FEEs()) {
+      c4LOG(fatal, "DSSD bottom maps to invalid FEE: " << d.Bottom << " (Max fees: " << FEEs() << ")");
+    }
+    if (d.Left > FEEs()) {
+      c4LOG(fatal, "DSSD left maps to invalid FEE: " << d.Left << " (Max fees: " << FEEs() << ")");
+    }
     fee[d.Top-1].DSSD = d.DSSD;
     fee[d.Top-1].High = true;
     fee[d.Top-1].Side = d.YSide;
@@ -434,6 +494,19 @@ void TAidaConfiguration::DSSDtoFEE()
     fee[d.Left-1].Side = d.XSide;
 
     if (!wide) continue;
+
+    if (d.LeftRight > FEEs()) {
+      c4LOG(fatal, "DSSD left-right maps to invalid FEE: " << d.LeftRight << " (Max fees: " << FEEs() << ")");
+    }
+    if (d.CentreLeft > FEEs()) {
+      c4LOG(fatal, "DSSD centre-left maps to invalid FEE: " << d.CentreLeft << " (Max fees: " << FEEs() << ")");
+    }
+    if (d.CentreRight > FEEs()) {
+      c4LOG(fatal, "DSSD centre-right maps to invalid FEE: " << d.CentreRight << " (Max fees: " << FEEs() << ")");
+    }
+    if (d.RightLeft > FEEs()) {
+      c4LOG(fatal, "DSSD right-left maps to invalid FEE: " << d.RightLeft << " (Max fees: " << FEEs() << ")");
+    }
     fee[d.Left-1].Segment = WideAIDASegment::Left;
 
     fee[d.LeftRight-1].DSSD = d.DSSD;
