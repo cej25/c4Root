@@ -22,6 +22,7 @@
 #include "THttpServer.h"
 #include "TMath.h"
 #include "TRandom.h"
+#include <TDirectory.h>
 #include <sstream>
 
 AidaOnlineSpectra::AidaOnlineSpectra() : AidaOnlineSpectra("AidaOnline")
@@ -61,6 +62,7 @@ InitStatus AidaOnlineSpectra::Init()
     FairRunOnline* run = FairRunOnline::Instance();
     run->GetHttpServer()->Register("", this);
     run->GetHttpServer()->RegisterCommand("Reset_Aida_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Snapshot_Aida_Hist", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
     run->GetHttpServer()->RegisterCommand("Reset_Aida_Scalers", Form("/Objects/%s/->Reset_Scalers()", GetName()));
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
@@ -89,6 +91,9 @@ InitStatus AidaOnlineSpectra::Init()
     // Aida configuration
     conf = TAidaConfiguration::GetInstance();
 
+    // Temporarily get rid of gDirectory
+    TDirectory::TContext ctx(nullptr);
+
     // Create folders 
     aidaFolder = new TFolder("AIDA", "AIDA");
     run->AddObject(aidaFolder);
@@ -114,6 +119,7 @@ InitStatus AidaOnlineSpectra::Init()
     h_implant_e.resize(conf->DSSDs());
     h_implant_e_xy.resize(conf->DSSDs());
     h_implant_strip_1d_energy.resize(conf->DSSDs());
+    h_implant_x_ex.resize(conf->DSSDs());
     h_decay_strip_xy.resize(conf->DSSDs());
     h_decay_pos_xy.resize(conf->DSSDs());
     h_decay_e.resize(conf->DSSDs());
@@ -185,6 +191,16 @@ InitStatus AidaOnlineSpectra::Init()
 
         name.str("");
         title.str("");
+        name << "aida_implants_d" << (i + 1) << "_implants_x_ex";
+        title << "DSSD " << (i + 1) << " X position vs Energy";
+        h_implant_x_ex[i] = new TH2F(name.str().c_str(), title.str().c_str(),
+                xstrips, -xmax, xmax, 2000, 0, 20000);
+        h_implant_x_ex[i]->GetXaxis()->SetTitle("X Position/mm");
+        h_implant_x_ex[i]->GetYaxis()->SetTitle("Energy/MeV");
+        implantDssdFolder[i]->Add(h_implant_x_ex[i]);
+
+        name.str("");
+        title.str("");
         name << "aida_decays_d" << (i + 1) << "_decays_strip_xy";
         title << "DSSD " << (i + 1) << " decay hit pattern";
         h_decay_strip_xy[i] = new TH2F(name.str().c_str(), title.str().c_str(),
@@ -209,7 +225,7 @@ InitStatus AidaOnlineSpectra::Init()
         title << "DSSD " << (i + 1) << " decay energy";
         h_decay_e[i] = new TH1F(name.str().c_str(), title.str().c_str(),
                 2000, 0, 20000);
-        h_decay_e[i]->GetXaxis()->SetTitle("Decay Energy/MeV");
+        h_decay_e[i]->GetXaxis()->SetTitle("Decay Energy/keV");
         decayDssdFolder[i]->Add(h_decay_e[i]);
 
         name.str("");
@@ -218,8 +234,8 @@ InitStatus AidaOnlineSpectra::Init()
         title << "DSSD " << (i + 1) << " decay energy X vs energy Y";
         h_decay_e_xy[i] = new TH2F(name.str().c_str(), title.str().c_str(),
                 2000, 0, 20000, 2000, 0, 20000);
-        h_decay_e_xy[i]->GetXaxis()->SetTitle("Decay X Energy/MeV");
-        h_decay_e_xy[i]->GetYaxis()->SetTitle("Decay Y Energy/MeV");
+        h_decay_e_xy[i]->GetXaxis()->SetTitle("Decay X Energy/keV");
+        h_decay_e_xy[i]->GetYaxis()->SetTitle("Decay Y Energy/keV");
         decayDssdFolder[i]->Add(h_decay_e_xy[i]);
 
         // TODO move outof decays as it's not FB matched?
@@ -230,7 +246,7 @@ InitStatus AidaOnlineSpectra::Init()
         h_decay_strip_1d_energy[i] = new TH2F(name.str().c_str(), title.str().c_str(),
                 128 + xstrips, 0, 128 + xstrips, 2000, 0, 20000);
         h_decay_strip_1d_energy[i]->GetXaxis()->SetTitle("Strip (X then Y");
-        h_decay_strip_1d_energy[i]->GetYaxis()->SetTitle("Decay Energy/MeV");
+        h_decay_strip_1d_energy[i]->GetYaxis()->SetTitle("Decay Energy/keV");
         decayDssdFolder[i]->Add(h_decay_strip_1d_energy[i]);
     }
 
@@ -241,7 +257,7 @@ InitStatus AidaOnlineSpectra::Init()
         aida_scaler_graph[scaler.first] = new TGraph(3600);
         std::stringstream name;
         std::stringstream title;
-        name << "aida_scaler_" << scaler.first;
+        name << "aida_scaler_" << scaler.first << "_" << scaler.second;
         title << "AIDA Scaler #" << scaler.first << " - " << scaler.second;
         title << ";Time before now (s);Frequency (Hz)";
         aida_scaler_graph[scaler.first]->SetName(name.str().c_str());
@@ -261,13 +277,108 @@ void AidaOnlineSpectra::Reset_Histo()
     for (auto& h : h_implant_pos_xy) h->Reset();
     for (auto& h : h_implant_e) h->Reset();
     for (auto& h : h_implant_e_xy) h->Reset();
+    for (auto& h : h_implant_strip_1d_energy) h->Reset();
     for (auto& h : h_implant_strip_xy) h->Reset();
+    for (auto& h : h_implant_x_ex) h->Reset();
 
     for (auto& h : h_decay_strip_xy) h->Reset();
     for (auto& h : h_decay_pos_xy) h->Reset();
     for (auto& h : h_decay_e) h->Reset();
     for (auto& h : h_decay_e_xy) h->Reset();
     for (auto& h : h_decay_strip_1d_energy) h->Reset();
+}
+
+void AidaOnlineSpectra::Snapshot_Histo()
+{
+    c4LOG(info, "");
+
+    //date and timestamp
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
+    const char* snapshot_dir = Form("AIDA_Snapshots_%d%02d%02d_%02d%02d%02d",
+            1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday,
+            ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
+    gSystem->mkdir(snapshot_dir, true);
+    gSystem->cd(snapshot_dir);
+
+    //save histograms for implants
+    c_aida_snapshots = new TCanvas("c", "c", 1000, 1000);
+
+    for (auto& h : h_implant_strip_xy)
+    {
+        h->Draw("colz");
+        c_aida_snapshots->SaveAs("aida_implants_strip_xy.png");
+        c_aida_snapshots->Clear();
+    }
+    for (auto& h : h_implant_pos_xy)
+    {
+        h->Draw("colz");
+        c_aida_snapshots->SaveAs("aida_implants_pos_xy.png");
+        c_aida_snapshots->Clear();
+    }
+    for (auto& h : h_implant_e)
+    {
+        h->Draw();
+        c_aida_snapshots->SaveAs("aida_implants_e.png");
+        c_aida_snapshots->Clear();
+    }
+    for (auto& h : h_implant_e_xy)
+    {
+        h->Draw("colz");
+        c_aida_snapshots->SaveAs("aida_implants_e_xy.png");
+        c_aida_snapshots->Clear();
+    }
+    for (auto& h : h_implant_strip_1d_energy)
+    {
+        h->Draw("colz");
+        c_aida_snapshots->SaveAs("aida_implants_strip_1d_energy.png");
+        c_aida_snapshots->Clear();
+    }
+    //decays
+    for (auto& h : h_decay_strip_xy)
+    {
+        h->Draw("colz");
+        c_aida_snapshots->SaveAs("aida_decays_strip_xy.png");
+        c_aida_snapshots->Clear();
+    }
+    for (auto& h : h_decay_pos_xy)
+    {
+        h->Draw("colz");
+        c_aida_snapshots->SaveAs("aida_decays_pos_xy.png");
+        c_aida_snapshots->Clear();
+    }
+    for (auto& h : h_decay_e)
+    {
+        h->Draw();
+        c_aida_snapshots->SaveAs("aida_decays_e.png");
+       c_aida_snapshots->Clear();
+    }
+    for (auto& h : h_decay_e_xy)
+    {
+        h->Draw("colz");
+        c_aida_snapshots->SaveAs("aida_decays_e_xy.png");
+        c_aida_snapshots->Clear();
+    }
+    for (auto& h : h_decay_strip_1d_energy)
+    {
+        h->Draw("colz");
+        c_aida_snapshots->SaveAs("aida_decays_strip_1d_energy.png");
+        c_aida_snapshots->Clear();
+    }
+
+    //save scalers
+    for (auto& scaler : conf->ScalerMap())
+    {
+        aida_scaler_graph[scaler.first]->Draw("ALP");
+        c_aida_snapshots->SaveAs("aida_scalers.png");
+        c_aida_snapshots->Clear();
+    }
+
+    delete c_aida_snapshots;
+
+    gSystem->cd("..");
+    c4LOG(info, "Snapshot saved in:" << snapshot_dir);
+
 }
 
 void AidaOnlineSpectra::Reset_Scalers()
@@ -301,6 +412,7 @@ void AidaOnlineSpectra::Exec(Option_t* option)
         h_implant_pos_xy[hit.DSSD - 1]->Fill(hit.PosX, hit.PosY);
         h_implant_e[hit.DSSD - 1]->Fill(hit.Energy);
         h_implant_e_xy[hit.DSSD - 1]->Fill(hit.EnergyX, hit.EnergyY);
+        h_implant_x_ex[hit.DSSD - 1]->Fill(hit.PosX, hit.EnergyX);
     }
     for (auto const& hit : *decayHitArray)
     {
@@ -365,6 +477,15 @@ void AidaOnlineSpectra::Exec(Option_t* option)
             }
         }
     }
+
+    // AIDA DeadTime Calculation
+    // When a RESUME happens after a PAUSE get an interval
+    // Track current second (from something?)
+    // Push 0s until buffer[0] is at current_second ?
+    // Calcualte amount of 1s from START to interval 
+    // Calculate number of 1s blocks
+    // Calculate amount of 1s from interval to END
+    // Fill all from current_time?
     fNEvents += 1;
 }
 

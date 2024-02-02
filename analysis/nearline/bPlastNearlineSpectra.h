@@ -1,7 +1,12 @@
-#ifndef bPlastOnlineSpectra_H
-#define bPlastOnlineSpectra_H
+#ifndef bPlastNearlineSpectra_H
+#define bPlastNearlineSpectra_H
 
+#include "AidaCalData.h"
+#include "AidaData.h"
+#include "AidaHitData.h"
 #include "FairTask.h"
+#include <array>
+#include <vector>
 
 class TClonesArray;
 class EventHeader;
@@ -9,16 +14,16 @@ class TCanvas;
 class TH1F;
 class TH2F;
 
-class bPlastOnlineSpectra : public FairTask
+class bPlastNearlineSpectra : public FairTask
 {
     public:
-        bPlastOnlineSpectra();
-        bPlastOnlineSpectra(const TString& name, Int_t verbose = 1);
+        bPlastNearlineSpectra();
+        bPlastNearlineSpectra(const TString& name, Int_t verbose = 1);
 
 
         void CreateHistograms();
 
-        virtual ~bPlastOnlineSpectra();
+        virtual ~bPlastNearlineSpectra();
 
         virtual void SetParContainers();
 
@@ -32,14 +37,16 @@ class bPlastOnlineSpectra : public FairTask
 
         virtual void Reset_Histo();
 
-        virtual void Snapshot_Histo();
-
         // range setters
 
     
     private:
         TClonesArray* fHitbPlastTwinpeaks;
 
+        std::vector<AidaHit> const* implantHitArray;
+        std::vector<AidaHit> const* decayHitArray;
+        // ranges
+        //Double_t
 
         EventHeader* header;
         Int_t fNEvents;
@@ -49,29 +56,29 @@ class bPlastOnlineSpectra : public FairTask
         TCanvas* c_bplast_fastToT;
         TCanvas* c_bplast_hitpatterns;
         TCanvas* c_bplast_fast_v_slow;
+
         TCanvas* c_bplast_time_spectra;
-        TCanvas* c_bplast_snapshot;
+        TCanvas* c_bplast_rel_time_spectra;
 
+        static const int NDetectors = 48;
 
-        // number of detectors
+        // Histograms ToT
 
-        static const int NDetectors = 150;
-
-        // Histograms energy
         TH1F * h1_bplast_slowToT[NDetectors];
         TH1F * h1_bplast_fastToT[NDetectors];
-
         TH1F * h1_bplast_fast_hitpatterns;
         TH1F * h1_bplast_slow_hitpatterns;
 
         TH2F * h2_bplast_slowToT_vs_fastToT[NDetectors];
 
-        //Absolute time spectra
+        //Time spectra
         TH1F * h1_bplast_abs_time[NDetectors];
+        TH1F * h1_bplast_rel_time[NDetectors];
+
 
 
     public:
-        ClassDef(bPlastOnlineSpectra, 1)
+        ClassDef(bPlastNearlineSpectra, 1)
 };
 
 #endif
