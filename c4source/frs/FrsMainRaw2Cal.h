@@ -1,24 +1,27 @@
-#ifndef FrsRaw2Cal_H
-#define FrsRaw2Cal_H
+#ifndef FrsMainRaw2Cal_H
+#define FrsMainRaw2Cal_H
 
 #include <vector>
 
 class TClonesArray;
 class EventHeader;
-class FrsData;
-class FrsCalData;
+class FrsMainData;
+class FrsMainCalData;
 
-class FrsRaw2Cal : public FairTask
+class FrsMainRaw2Cal : public FairTask
 {
     public:
-        FrsRaw2Cal();
-        FrsRaw2Cal(const TString& name, Int_t verbose);
+        FrsMainRaw2Cal();
+        FrsMainRaw2Cal(const TString& name, Int_t verbose);
         
-        ~FrsRaw2Cal();
+        ~FrsMainRaw2Cal();
 
         virtual InitStatus Init();
 
         void Exec(Option_t* option);
+
+        void ZeroArrays();
+        void ClearVectors();
 
         void FinishEvent();
         void FinishTask();
@@ -32,7 +35,7 @@ class FrsRaw2Cal : public FairTask
         TClonesArray* fCalArray;
         TClonesArray* fRawArray; // from FrsReader
 
-        FrsData* fRawHit;
+        FrsMainData* fRawHit;
 
         uint64_t WR_TS;
 
@@ -58,41 +61,11 @@ class FrsRaw2Cal : public FairTask
         std::vector<uint32_t> v792_channel;
 
         uint32_t de_array[14];
-       /* uint32_t de_41r;
-        uint32_t de_21l;
-        uint32_t de_21r;
-        uint32_t de_42l; 
-        uint32_t de_42r;
-        uint32_t de_81l;
-        uint32_t de_22r;
-        uint32_t de_31l;
-        uint32_t de_31r;
-        uint32_t de_43l;
-        uint32_t de_43r;
-        uint32_t de_41l;
-        uint32_t de_81r;
-        uint32_t de_22l;*/
-
         std::vector<uint32_t> v1290_data;
         std::vector<uint32_t> v1290_channel;
         std::vector<uint32_t> v1290_lot;
 
         std::vector<uint32_t> tdc_array[15];
-        /*std::vector<uint32_t> tdc_sc41l;
-        std::vector<uint32_t> tdc_sc41r;
-        std::vector<uint32_t> tdc_sc21l;
-        std::vector<uint32_t> tdc_sc21r;
-        std::vector<uint32_t> tdc_sc42l;
-        std::vector<uint32_t> tdc_sc43l;
-        std::vector<uint32_t> tdc_sc43r;
-        std::vector<uint32_t> tdc_sc81l;
-        std::vector<uint32_t> tdc_sc81r;
-        std::vector<uint32_t> tdc_sc31l;
-        std::vector<uint32_t> tdc_sc31r;
-        std::vector<uint32_t> tdc_sc11;
-        std::vector<uint32_t> tdc_sc22l;
-        std::vector<uint32_t> tdc_sc22r;
-        std::vector<uint32_t> tdc_sc42r;*/
         uint32_t music_t1[8];
         uint32_t music_t2[8];
         
@@ -100,7 +73,7 @@ class FrsRaw2Cal : public FairTask
         Int_t fNEvents = 0;
 
     public:
-        ClassDef(FrsRaw2Cal, 1);
+        ClassDef(FrsMainRaw2Cal, 1);
 
 };
 
