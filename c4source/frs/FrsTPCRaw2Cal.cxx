@@ -609,7 +609,7 @@ void FrsTPCRaw2Cal::SetFRSParameters()
     // After changing cut limits => Launch analysis again in Go4GUI
     // [Updated on 2021/Mar/21, YT, EH, IM] to catch all timeref signals.
     tpc->lim_timeref[0][0] = 1000.0; tpc->lim_timeref[0][1] = 48000.0;//time ref (accept trig)
-    tpc->lim_timeref[1][0] = 5000.0; tpc->lim_timeref[1][1] = 20000.0;//time ref (sc21) changed to narrow gate, 2023-Nov-28 // CEJ: changing this to wide actually lets us see X2 positions...
+    tpc->lim_timeref[1][0] = 5000.0; tpc->lim_timeref[1][1] = 48000.0;//time ref (sc21) changed to narrow gate, 2023-Nov-28 // CEJ: changing this to wide actually lets us see X2 positions...
     tpc->lim_timeref[2][0] = 1000.0; tpc->lim_timeref[2][1] = 48500.0;//time ref (sc22)
     tpc->lim_timeref[3][0] = 5000.0; tpc->lim_timeref[3][1] = 20000.0;//time ref (sc31) changed to narrow gate, 2023-Nov-28
     tpc->lim_timeref[4][0] = 5000.0; tpc->lim_timeref[4][1] = 20000.0;//time ref (sc41) changed to narrow gate, 2023-Nov-28
@@ -1873,8 +1873,9 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
             countx++;
         }
 
+        std::cout << "countx: " << countx << std::endl;
         if (countx > 0)
-        {
+        {   
             tpc_x[i] = sumx / ((float)countx);
         }
         if (countx == 2)
@@ -1900,6 +1901,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
         {
             tpc_y[i] = sumy / ((double)county);
         }
+
         if (countx > 0 && county > 0)
         {
             b_tpc_xy[i] = kTRUE;
@@ -1984,10 +1986,16 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
     //=================================
     if (b_tpc_xy[1] && b_tpc_xy[3])
     {
+        std::cout << "tpc_x 3: " << tpc_x[3] << " and tpc_x: " << tpc_x[1] << std::endl;
         tpc_angle_x_s2_foc_22_24 = (tpc_x[3] - tpc_x[1])/dist_TPC22_TPC24*1000.;
         tpc_angle_y_s2_foc_22_24 = (tpc_y[3] - tpc_y[1])/dist_TPC22_TPC24*1000.;
         tpc_x_s2_foc_22_24 = -tpc_angle_x_s2_foc_22_24 * dist_TPC22_focS2/1000. + tpc_x[1]; //check
         tpc_y_s2_foc_22_24 = -tpc_angle_y_s2_foc_22_24 * dist_TPC22_focS2/1000. + tpc_y[1]; //check
+
+        std::cout << "tpc_angle_x_s2_foc_22_24: " << tpc_angle_x_s2_foc_22_24 << std::endl;
+        std::cout << "tpc_angle_y_s2_foc_22_24: " << tpc_angle_y_s2_foc_22_24 << std::endl;
+        std::cout << "tpc_x_s2_foc_22_24: " << tpc_x_s2_foc_22_24 << std::endl;
+        std::cout << "tpc_y_s2_foc_22_24: " << tpc_y_s2_foc_22_24 << std::endl;
 
         Float_t dist_SC21_focS2 = frs->dist_SC21 - frs->dist_focS2;
         tpc22_24_sc21_x = (tpc_angle_x_s2_foc_22_24/1000.*dist_SC21_focS2)+tpc_x_s2_foc_22_24;

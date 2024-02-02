@@ -125,21 +125,22 @@ Bool_t FrsMainReader::Read()
         hit_index = next_channel_start;
     }
 
-    if (v1290_channel.size() > 0 || v792_channel.size() > 0){
-    c4LOG(info,v1290_channel.size());
-    new ((*fArray)[fArray->GetEntriesFast()]) FrsMainData(
-        wr_t,
-        scalers_n,
-        scalers_index,
-        scalers_main,
-        v792_geo,
-        v792_channel,
-        v792_data,
-        v1290_channel,
-        v1290_data,
-        v1290_lot);
-    
-    fNEvent += 1;
+    // CEJ: should scalers not write regardless of this?
+    if (v1290_channel.size() > 0 || v792_channel.size() > 0)
+    {
+        new ((*fArray)[fArray->GetEntriesFast()]) FrsMainData(
+            wr_t,
+            scalers_n,
+            scalers_index,
+            scalers_main,
+            v792_geo,
+            v792_channel,
+            v792_data,
+            v1290_channel,
+            v1290_data,
+            v1290_lot);
+        
+        fNEvent += 1;
     }
     return kTRUE;
 

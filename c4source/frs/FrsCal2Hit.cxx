@@ -2003,10 +2003,8 @@ void FrsCal2Hit::Exec(Option_t* option)
 
     if (id->x_s2_select == 1)
     {   
-        std::cout << "this is true, but none of the following statements appear..?" << std::endl;
         if (b_tpc_xy[2] && b_tpc_xy[3])
         {   
-            std::cout << "b_tpc_2 and b_tpc_3 are true" << std::endl;
             id_x2 = fCalHitTPC->Get_tpc_x_s2_foc_23_24();
             id_y2 = fCalHitTPC->Get_tpc_y_s2_foc_23_24();
             id_a2 = fCalHitTPC->Get_tpc_angle_x_s2_foc_23_24();
@@ -2014,15 +2012,17 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
         else if (b_tpc_xy[1] && b_tpc_xy[3])
         {
-            std::cout << "b_tpc_1 and b_tpc_3 are true" << std::endl;
             id_x2 = fCalHitTPC->Get_tpc_x_s2_foc_22_24();
             id_y2 = fCalHitTPC->Get_tpc_y_s2_foc_22_24();
             id_a2 = fCalHitTPC->Get_tpc_angle_x_s2_foc_22_24();
             id_b2 = fCalHitTPC->Get_tpc_angle_y_s2_foc_22_24();
+            std::cout << "x2: " << id_x2 << std::endl;
+            std::cout << "y2: " << id_y2 << std::endl;
+            std::cout << "a2: " << id_a2 << std::endl;
+            std::cout << "b2: " << id_b2 << std::endl;
         }
         else if (b_tpc_xy[0] && b_tpc_xy[1])
         {   
-            std::cout << "b_tpc_0 and b_tpc_1 are true" << std::endl;
             id_x2 = fCalHitTPC->Get_tpc_x_s2_foc_21_22();
             id_y2 = fCalHitTPC->Get_tpc_y_s2_foc_21_22();
             id_a2 = fCalHitTPC->Get_tpc_angle_x_s2_foc_21_22();
@@ -2446,10 +2446,8 @@ void FrsCal2Hit::Exec(Option_t* option)
         id_gamma_ta_s2 = TMath::Sqrt(gamma1square);
         id_dEdegoQ = (id_gamma_ta_s2 - id_gamma) * id_AoQ;
         id_dEdeg = id_dEdegoQ * id_z;
-    }
-    // above is end of FRS_Anl
 
-    new ((*fHitArray)[fHitArray->GetEntriesFast()]) FrsHitData(
+        new ((*fHitArray)[fHitArray->GetEntriesFast()]) FrsHitData(
             WR_TS,
             id_x2,
             id_x4,
@@ -2457,7 +2455,20 @@ void FrsCal2Hit::Exec(Option_t* option)
             id_AoQ_corr,
             id_z,
             id_z2
-    );
+        );
+   
+    }
+    // above is end of FRS_Anl
+
+    /*new ((*fHitArray)[fHitArray->GetEntriesFast()]) FrsHitData(
+            WR_TS,
+            id_x2,
+            id_x4,
+            id_AoQ,
+            id_AoQ_corr,
+            id_z,
+            id_z2
+    );*/
    
 }
 
@@ -2668,6 +2679,7 @@ void FrsCal2Hit::Setup_Conditions()
 
 }
 
+// not used in FRS Go4
 void FrsCal2Hit::FRS_GainMatching()
 {
     std::ifstream file;
