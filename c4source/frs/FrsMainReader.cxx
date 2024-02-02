@@ -66,58 +66,38 @@ Bool_t FrsMainReader::Read()
     // whiterabbit timestamp - includes 20202020 events...
     wr_t = (((uint64_t)fData->frsmain_wr_t[3]) << 48) + (((uint64_t)fData->frsmain_wr_t[2]) << 32) + (((uint64_t)fData->frsmain_wr_t[1]) << 16) + (uint64_t)(fData->frsmain_wr_t[0]);
     
-    //if (fData->frsmain_data_v830_n == 0 && fData->frsmain_data_v792_nM == 0 && fData->frsmain_data_v1290_nM == 0) return kTRUE;
-
     // V830
     scalers_n = fData->frsmain_data_v830_n;
     for (uint32_t i = 0; i < scalers_n; i++)
     {   
-        // if > 0 condition required?
         scalers_index.emplace_back(fData->frsmain_data_v830_nI[i]);
-        scalers_main.emplace_back(fData->frsmain_data_v830_data[fData->frsmain_data_v830_nI[i]]);
+        scalers_main.emplace_back(fData->frsmain_data_v830_data[i]);
     }
 
     // V792
     v792_geo = fData->frsmain_data_v792_geo;
-
-    uint32_t chn_first_hit = 0;
-    uint32_t next_chn_first_hit, hits;
-
-    // loop through number of channels with hits
-    //this is wrongly implemented;
-    for (uint32_t i = 0; i < fData->frsmain_data_v792_nM; i++)
-    {   
-        next_chn_first_hit = fData->frsmain_data_v792_nME[i];
-        hits = next_chn_first_hit - chn_first_hit;
-        for (uint32_t j = 0; j < hits; j++)
-        {   
-            // 32 depends on array size in .spec
-            if (fData->frsmain_data_v792_data[i * 32 + j] > 0)
-            {
-                v792_channel.emplace_back(fData->frsmain_data_v792_nMI[i]);
-                v792_data.emplace_back(fData->frsmain_data_v792_data[i * 32 + j]);
-            }
-     
+    int hit_index_v792 = 0;
+    for (uint32_t channel_index = 0; channel_index < fData->frsmain_data_v792_nM; channel_index++){
+        int current_channel_v792 = fData->frsmain_data_v792_nMI[channel_index];
+        int next_channel_start_v792 = fData->frsmain_data_v792_nME[channel_index];
+        for (uint32_t j = hit_index_v792; j<next_channel_start_v792; j++){
+            v792_channel.emplace_back(current_channel_v792);
+            v792_data.emplace_back(fData->frsmain_data_v792_data[j]);
         }
-
-        chn_first_hit = next_chn_first_hit;
-
+        hit_index_v792 = next_channel_start_v792;
     }
 
-
     // V1290
-    
-
     int hit_index = 0;
     for (uint32_t channel_index = 0; channel_index < fData->frsmain_data_v1290_nM; channel_index++)
     {   
         int current_channel = fData->frsmain_data_v1290_nMI[channel_index]; // channel to read now!
-        int next_channel_start = fData->frsmain_data_v1290_nME[channel_index];
+        int next_channel_start = fData->frsmain_data_v1290_nME[channel_index]; // we read this channel until we hit this index
         
         for (uint32_t j = hit_index; j < next_channel_start; j++)
         {
-        //c4LOG(info,Form("current channel = %i, next channel start = %i, channels fired = %i, data = %i",current_channel, next_channel_start, fData->frsmain_data_v1290_nM, fData->frsmain_data_v1290_data[j]));
         //c4LOG(info,Form("current channel = %i, next channel start = %i, channels fired = %i, data = %i",fData->frsmain_data_v1290_leadOrTrailMI[channel_index], fData->frsmain_data_v1290_leadOrTrailME[channel_index], fData->frsmain_data_v1290_nM, fData->frsmain_data_v1290_leadOrTrailv[j]));
+        //c4LOG(info,Form("current channel = %i, next channel start = %i, channels fired = %i, data = %i",current_channel, next_channel_start, fData->frsmain_data_v1290_nM, fData->frsmain_data_v1290_data[j]));
         v1290_channel.emplace_back(current_channel);
         v1290_data.emplace_back(fData->frsmain_data_v1290_data[j]);
         v1290_lot.emplace_back(fData->frsmain_data_v1290_leadOrTrailv[j]);
@@ -126,7 +106,7 @@ Bool_t FrsMainReader::Read()
     }
 
     if (v1290_channel.size() > 0 || v792_channel.size() > 0){
-    c4LOG(info,v1290_channel.size());
+    //c4LOG(info,v1290_channel.size());
     new ((*fArray)[fArray->GetEntriesFast()]) FrsMainData(
         wr_t,
         scalers_n,
