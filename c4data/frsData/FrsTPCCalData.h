@@ -3,6 +3,7 @@
 
 #include "TObject.h"
 #include "TClonesArray.h"
+#include "c4Logger.h"
 #include <vector>
 
 class TClonesArray;
@@ -15,6 +16,7 @@ class FrsTPCCalData : public TObject
         FrsTPCCalData(Bool_t* b_tpc_de,
                     Float_t* tpc_x,
                     Float_t* tpc_y,
+                    Int_t tpc_csum[7][4],
                     Bool_t* b_tpc_xy,
                     Float_t tpc_angle_x_s2_foc_21_22,
                     Float_t tpc_angle_y_s2_foc_21_22,
@@ -75,11 +77,17 @@ class FrsTPCCalData : public TObject
         inline const Float_t Get_tpc_music41_x() const { return ftpc_music41_x; }
         inline const Float_t Get_tpc_music42_x() const { return ftpc_music42_x; }
 
+        inline const Int_t Get_tpc_csum(int tpc_nr, int anodenr) const {
+            c4LOG_IF(fatal,(tpc_nr<0)||(tpc_nr>7)||(anodenr<0)||(anodenr>4),"Wrong indexing of TPC get tpc csum.");
+            return ftpc_csum[tpc_nr][anodenr];
+            }
+
     private:
         Bool_t fb_tpc_de[7];
         Float_t ftpc_x[7];
         Float_t ftpc_y[7];
         Bool_t fb_tpc_xy[7];
+        Int_t ftpc_csum[7][4];
         Float_t ftpc_angle_x_s2_foc_21_22;
         Float_t ftpc_angle_y_s2_foc_21_22;
         Float_t ftpc_x_s2_foc_21_22;

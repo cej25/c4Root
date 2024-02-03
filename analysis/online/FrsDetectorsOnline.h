@@ -10,6 +10,7 @@ class EventHeader;
 class FrsHitData;
 class FrsMainCalData;
 class FrsUserCalData;
+class FrsTPCData;
 class FrsTPCCalData;
 class FrsVFTXCalData;
 class TCanvas;
@@ -41,11 +42,13 @@ class FrsDetectorsOnline : public FairTask
     private:
         TClonesArray* fFrsUserCalArray; // array with hit items
         TClonesArray* fFrsMainCalArray; // array with hit items
+        TClonesArray* fFrsTPCArray; // array with hit items
         TClonesArray* fFrsTPCCalArray; // array with hit items
         TClonesArray* fFrsVFTXCalArray; // array with hit items
 
         FrsUserCalData* fHitFrsUserCal; // array with hit items
         FrsMainCalData* fHitFrsMainCal; // array with hit items
+        FrsTPCData* fHitFrsTPC; // array with hit items
         FrsTPCCalData* fHitFrsTPCCal; // array with hit items
         FrsVFTXCalData* fHitFrsVFTXCal; // array with hit items
 
@@ -88,6 +91,16 @@ class FrsDetectorsOnline : public FairTask
         //MUSIC timing:
         TH2D * h_music41_t;
         TH2D * h_music42_t;
+
+
+        //TPC timings from v1190 in the tpc crate:
+        TH2D * h_tpc_timings_lead;
+        TH2D * h_tpc_timings_trail;
+
+        // TPC derived values, tracking:
+        int number_of_tpcs = 7;
+        int number_of_anodes_per_tpc = 4;
+        TH2D * h_tpc_check_sums;
 
 
 
