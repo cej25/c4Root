@@ -166,6 +166,75 @@ InitStatus FrsDetectorsOnline::Init()
     h_tpc_check_sums = new TH2D("h_tpc_check_sums","Check sums calculated for each anode (7 tpcs * 4 anodes)", number_of_anodes_per_tpc*number_of_tpcs,0,number_of_anodes_per_tpc*number_of_tpcs, check_sums_bins,0,check_sums_max);
     frs_detectors_spectra_folder_histograms->Add(h_tpc_check_sums);
 
+    int tpc_min_x = -100;
+    int tpc_min_y = -100;
+    int tpc_max_x = 100;
+    int tpc_max_y = 100;
+    int tpc_min_angle = -3.14;
+    int tpc_max_angle = 3.14;
+    int tpc_bins = 100;
+
+    h_tpc_angle_x_s2_foc_21_22 = new TH1D("h_tpc_angle_x_s2_foc_21_22", "TPC h_tpc_angle_x_s2_foc_21_22",tpc_bins,tpc_min_angle,tpc_max_angle);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_x_s2_foc_21_22);
+    h_tpc_angle_y_s2_foc_21_22 = new TH1D("h_tpc_angle_y_s2_foc_21_22", "TPC h_tpc_angle_y_s2_foc_21_22",tpc_bins,tpc_min_angle,tpc_max_angle);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_y_s2_foc_21_22);
+    h_tpc_x_s2_foc_21_22 = new TH1D("h_tpc_x_s2_foc_21_22", "TPC h_tpc_x_s2_foc_21_22",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_x_s2_foc_21_22);
+    h_tpc_y_s2_foc_21_22 = new TH1D("h_tpc_y_s2_foc_21_22", "TPC h_tpc_y_s2_foc_21_22",tpc_bins,tpc_min_y,tpc_max_y);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_y_s2_foc_21_22);
+    h_tpc21_22_sc21_x = new TH1D("h_tpc21_22_sc21_x", "TPC h_tpc21_22_sc21_x",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc21_22_sc21_x);
+    h_tpc21_22_sc22_x = new TH1D("h_tpc21_22_sc22_x", "TPC h_tpc21_22_sc22_x",tpc_bins,tpc_min_y,tpc_max_y);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc21_22_sc22_x);
+    h_tpc_angle_x_s2_foc_23_24 = new TH1D("h_tpc_angle_x_s2_foc_23_24", "TPC h_tpc_angle_x_s2_foc_23_24",tpc_bins,tpc_min_angle,tpc_max_angle);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_x_s2_foc_23_24);
+    h_tpc_angle_y_s2_foc_23_24 = new TH1D("h_tpc_angle_y_s2_foc_23_24", "TPC h_tpc_angle_y_s2_foc_23_24",tpc_bins,tpc_min_angle,tpc_max_angle);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_y_s2_foc_23_24);
+    h_tpc_x_s2_foc_23_24 = new TH1D("h_tpc_x_s2_foc_23_24", "TPC h_tpc_x_s2_foc_23_24",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_x_s2_foc_23_24);
+    h_tpc_y_s2_foc_23_24 = new TH1D("h_tpc_y_s2_foc_23_24", "TPC h_tpc_y_s2_foc_23_24",tpc_bins,tpc_min_y,tpc_max_y);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_y_s2_foc_23_24);
+    h_tpc23_24_sc21_x = new TH1D("h_tpc23_24_sc21_x", "TPC h_tpc23_24_sc21_x",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc23_24_sc21_x);
+    h_tpc23_24_sc21_y = new TH1D("h_tpc23_24_sc21_y", "TPC h_tpc23_24_sc21_y",tpc_bins,tpc_min_y,tpc_max_y);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc23_24_sc21_y);
+    h_tpc23_24_sc22_x = new TH1D("h_tpc23_24_sc22_x", "TPC h_tpc23_24_sc22_x",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc23_24_sc22_x);
+    h_tpc23_24_sc22_y = new TH1D("h_tpc23_24_sc22_y", "TPC h_tpc23_24_sc22_y",tpc_bins,tpc_min_y,tpc_max_y);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc23_24_sc22_y);
+    h_tpc_angle_x_s2_foc_22_24 = new TH1D("h_tpc_angle_x_s2_foc_22_24", "TPC h_tpc_angle_x_s2_foc_22_24",tpc_bins,tpc_min_angle,tpc_max_angle);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_x_s2_foc_22_24);
+    h_tpc_angle_y_s2_foc_22_24 = new TH1D("h_tpc_angle_y_s2_foc_22_24", "TPC h_tpc_angle_y_s2_foc_22_24",tpc_bins,tpc_min_angle,tpc_max_angle);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_y_s2_foc_22_24);
+    h_tpc_x_s2_foc_22_24 = new TH1D("h_tpc_x_s2_foc_22_24", "TPC h_tpc_x_s2_foc_22_24",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_x_s2_foc_22_24);
+    h_tpc_y_s2_foc_22_24 = new TH1D("h_tpc_y_s2_foc_22_24", "TPC h_tpc_y_s2_foc_22_24",tpc_bins,tpc_min_y,tpc_max_y);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_y_s2_foc_22_24);
+    h_tpc_angle_x_s4 = new TH1D("h_tpc_angle_x_s4", "TPC h_tpc_angle_x_s4",tpc_bins,tpc_min_angle,tpc_max_angle);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_x_s4);
+    h_tpc_angle_y_s4 = new TH1D("h_tpc_angle_y_s4", "TPC h_tpc_angle_y_s4",tpc_bins,tpc_min_angle,tpc_max_angle);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_y_s4);
+    h_tpc_x_s4 = new TH1D("h_tpc_x_s4", "TPC h_tpc_x_s4",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_x_s4);
+    h_tpc_y_s4 = new TH1D("h_tpc_y_s4", "TPC h_tpc_y_s4",tpc_bins,tpc_min_y,tpc_max_y);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_y_s4);
+    h_tpc_sc41_x = new TH1D("h_tpc_sc41_x", "TPC h_tpc_sc41_x",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_sc41_x);
+    h_tpc_sc41_y = new TH1D("h_tpc_sc41_y", "TPC h_tpc_sc41_y",tpc_bins,tpc_min_y,tpc_max_y);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_sc41_y);
+    h_tpc_sc42_x = new TH1D("h_tpc_sc42_x", "TPC h_tpc_sc42_x",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_sc42_x);
+    h_tpc_sc42_y = new TH1D("h_tpc_sc42_y", "TPC h_tpc_sc42_y",tpc_bins,tpc_min_y,tpc_max_y);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_sc42_y);
+    h_tpc_sc43_x = new TH1D("h_tpc_sc43_x", "TPC h_tpc_sc43_x",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_sc43_x);
+    h_tpc_music41_x = new TH1D("h_tpc_music41_x", "TPC h_tpc_music41_x",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_music41_x);
+    h_tpc_music42_x = new TH1D("h_tpc_music42_x", "TPC h_tpc_music42_x",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_music42_x);
+    h_tpc_music43_x = new TH1D("h_tpc_music43_x", "TPC h_tpc_music43_x",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_music43_x);
+
     // Register command to reset histograms
     run->GetHttpServer()->RegisterCommand("Reset_IncomingID_HIST", Form("/Objects/%s/->Reset_Histo()", GetName()));
 
@@ -293,6 +362,37 @@ void FrsDetectorsOnline::Exec(Option_t* option)
                 for (int ntpc = 0; ntpc < number_of_tpcs; ntpc ++){
                     h_tpc_check_sums->Fill(ntpc*number_of_anodes_per_tpc + an, fHitFrsTPCCal->Get_tpc_csum(ntpc,an));
                 }
+
+                h_tpc_angle_x_s2_foc_21_22->Fill(fHitFrsTPCCal->Get_tpc_angle_x_s2_foc_21_22());
+                h_tpc_angle_y_s2_foc_21_22->Fill(fHitFrsTPCCal->Get_tpc_angle_y_s2_foc_21_22());
+                h_tpc_x_s2_foc_21_22->Fill(fHitFrsTPCCal->Get_tpc_x_s2_foc_21_22());
+                h_tpc_y_s2_foc_21_22->Fill(fHitFrsTPCCal->Get_tpc_y_s2_foc_21_22());
+                h_tpc21_22_sc21_x->Fill(fHitFrsTPCCal->Get_tpc21_22_sc21_x());
+                h_tpc21_22_sc22_x->Fill(fHitFrsTPCCal->Get_tpc21_22_sc22_x());
+                h_tpc_angle_x_s2_foc_23_24->Fill(fHitFrsTPCCal->Get_tpc_angle_x_s2_foc_23_24());
+                h_tpc_angle_y_s2_foc_23_24->Fill(fHitFrsTPCCal->Get_tpc_angle_y_s2_foc_23_24());
+                h_tpc_x_s2_foc_23_24->Fill(fHitFrsTPCCal->Get_tpc_x_s2_foc_23_24());
+                h_tpc_y_s2_foc_23_24->Fill(fHitFrsTPCCal->Get_tpc_y_s2_foc_23_24());
+                h_tpc23_24_sc21_x->Fill(fHitFrsTPCCal->Get_tpc23_24_sc21_x());
+                h_tpc23_24_sc21_y->Fill(fHitFrsTPCCal->Get_tpc23_24_sc21_y());
+                h_tpc23_24_sc22_x->Fill(fHitFrsTPCCal->Get_tpc23_24_sc22_x());
+                h_tpc23_24_sc22_y->Fill(fHitFrsTPCCal->Get_tpc23_24_sc22_y());
+                h_tpc_angle_x_s2_foc_22_24->Fill(fHitFrsTPCCal->Get_tpc_angle_x_s2_foc_22_24());
+                h_tpc_angle_y_s2_foc_22_24->Fill(fHitFrsTPCCal->Get_tpc_angle_y_s2_foc_22_24());
+                h_tpc_x_s2_foc_22_24->Fill(fHitFrsTPCCal->Get_tpc_x_s2_foc_22_24());
+                h_tpc_y_s2_foc_22_24->Fill(fHitFrsTPCCal->Get_tpc_y_s2_foc_22_24());
+                h_tpc_angle_x_s4->Fill(fHitFrsTPCCal->Get_tpc_angle_x_s4());
+                h_tpc_angle_y_s4->Fill(fHitFrsTPCCal->Get_tpc_angle_y_s4());
+                h_tpc_x_s4->Fill(fHitFrsTPCCal->Get_tpc_x_s4());
+                h_tpc_y_s4->Fill(fHitFrsTPCCal->Get_tpc_y_s4());
+                h_tpc_sc41_x->Fill(fHitFrsTPCCal->Get_tpc_sc41_x());
+                h_tpc_sc41_y->Fill(fHitFrsTPCCal->Get_tpc_sc41_y());
+                h_tpc_sc42_x->Fill(fHitFrsTPCCal->Get_tpc_sc42_x());
+                h_tpc_sc42_y->Fill(fHitFrsTPCCal->Get_tpc_sc42_y());
+                h_tpc_sc43_x->Fill(fHitFrsTPCCal->Get_tpc_sc43_x());
+                h_tpc_music41_x->Fill(fHitFrsTPCCal->Get_tpc_music41_x());
+                h_tpc_music42_x->Fill(fHitFrsTPCCal->Get_tpc_music42_x());
+                h_tpc_music43_x->Fill(fHitFrsTPCCal->Get_tpc_music43_x());
             }
         }
     }
