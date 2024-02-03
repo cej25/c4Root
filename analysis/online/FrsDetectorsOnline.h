@@ -102,6 +102,36 @@ class FrsDetectorsOnline : public FairTask
         int number_of_anodes_per_tpc = 4;
         TH2D * h_tpc_check_sums;
 
+        TH1D * h_tpc_angle_x_s2_foc_21_22;
+        TH1D * h_tpc_angle_y_s2_foc_21_22;
+        TH1D * h_tpc_x_s2_foc_21_22;
+        TH1D * h_tpc_y_s2_foc_21_22;
+        TH1D * h_tpc21_22_sc21_x;
+        TH1D * h_tpc21_22_sc22_x;
+        TH1D * h_tpc_angle_x_s2_foc_23_24;
+        TH1D * h_tpc_angle_y_s2_foc_23_24;
+        TH1D * h_tpc_x_s2_foc_23_24;
+        TH1D * h_tpc_y_s2_foc_23_24;
+        TH1D * h_tpc23_24_sc21_x;
+        TH1D * h_tpc23_24_sc21_y;
+        TH1D * h_tpc23_24_sc22_x;
+        TH1D * h_tpc23_24_sc22_y;
+        TH1D * h_tpc_angle_x_s2_foc_22_24;
+        TH1D * h_tpc_angle_y_s2_foc_22_24;
+        TH1D * h_tpc_x_s2_foc_22_24;
+        TH1D * h_tpc_y_s2_foc_22_24;
+        TH1D * h_tpc_angle_x_s4;
+        TH1D * h_tpc_angle_y_s4;
+        TH1D * h_tpc_x_s4;
+        TH1D * h_tpc_y_s4;
+        TH1D * h_tpc_sc41_x;
+        TH1D * h_tpc_sc41_y;
+        TH1D * h_tpc_sc42_x;
+        TH1D * h_tpc_sc42_y;
+        TH1D * h_tpc_sc43_x;
+        TH1D * h_tpc_music41_x;
+        TH1D * h_tpc_music42_x;
+        TH1D * h_tpc_music43_x;
 
 
     public:
