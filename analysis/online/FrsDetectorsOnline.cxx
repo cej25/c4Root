@@ -9,6 +9,8 @@
 #include "FrsDetectorsOnline.h"
 #include "FrsHitData.h"
 #include "FrsMainCalData.h"
+#include "FrsTPCData.h"
+#include "FrsTPCCalData.h"
 #include "EventHeader.h"
 #include "c4Logger.h"
 
@@ -30,6 +32,7 @@ FrsDetectorsOnline::FrsDetectorsOnline(const TString& name, Int_t iVerbose)
     : FairTask(name, iVerbose)
     , fFrsMainCalArray(NULL)
     , fFrsUserCalArray(NULL)
+    , fFrsTPCArray(NULL)
     , fFrsTPCCalArray(NULL)
     , fFrsVFTXCalArray(NULL)
     , fNEvents(0)
@@ -68,10 +71,12 @@ InitStatus FrsDetectorsOnline::Init()
     c4LOG_IF(fatal, !fFrsMainCalArray, "Branch FrsMainCalData not found");
     fFrsUserCalArray = (TClonesArray*)mgr->GetObject("FrsUserCalData");
     c4LOG_IF(fatal, !fFrsUserCalArray, "Branch FrsUserCalData not found");
+    fFrsTPCArray = (TClonesArray*)mgr->GetObject("FrsTPCData");
+    c4LOG_IF(fatal, !fFrsTPCArray, "Branch FrsTPCData not found");
     fFrsTPCCalArray = (TClonesArray*)mgr->GetObject("FrsTPCCalData");
-    c4LOG_IF(fatal, !fFrsMainCalArray, "Branch FrsTPCCalData not found");
+    c4LOG_IF(fatal, !fFrsTPCCalArray, "Branch FrsTPCCalData not found");
     fFrsVFTXCalArray = (TClonesArray*)mgr->GetObject("FrsVFTXCalData");
-    c4LOG_IF(fatal, !fFrsMainCalArray, "Branch FrsVFTXCalData not found");
+    c4LOG_IF(fatal, !fFrsVFTXCalArray, "Branch FrsVFTXCalData not found");
 
 
 
@@ -145,10 +150,21 @@ InitStatus FrsDetectorsOnline::Init()
     frs_detectors_spectra_folder_histograms->Add(h_music42_t);
 
     
+    //TPC timings:
+    int tpc_v1190_channels = 128;
+    int tpc_v1190_max = 262144; // 2^18 bits in read out word from CAEN manual
+    int tpc_v1190_bins = 1000;
+    
+    h_tpc_timings_lead = new TH2D("h_tpc_timings_lead","TPC lead timings V1190 TPC crate vs channels",tpc_v1190_channels,0,tpc_v1190_channels,tpc_v1190_bins,0,tpc_v1190_max);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_timings_lead);
+    h_tpc_timings_trail = new TH2D("h_tpc_timings_trail","TPC trail timings V1190 TPC crate vs channels",tpc_v1190_channels,0,tpc_v1190_channels,tpc_v1190_bins,0,tpc_v1190_max);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_timings_trail);
 
 
-
-
+    int check_sums_bins = 1000;
+    int check_sums_max = 20000;
+    h_tpc_check_sums = new TH2D("h_tpc_check_sums","Check sums calculated for each anode (7 tpcs * 4 anodes)", number_of_anodes_per_tpc*number_of_tpcs,0,number_of_anodes_per_tpc*number_of_tpcs, check_sums_bins,0,check_sums_max);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_check_sums);
 
     // Register command to reset histograms
     run->GetHttpServer()->RegisterCommand("Reset_IncomingID_HIST", Form("/Objects/%s/->Reset_Histo()", GetName()));
@@ -206,7 +222,7 @@ void FrsDetectorsOnline::Exec(Option_t* option)
         //music timings:
         const uint32_t* music_t1 = fHitFrsMainCal->Get_music_t1(); // size 8 arrays
         const uint32_t* music_t2 = fHitFrsMainCal->Get_music_t2(); // size 8 arrays
-        if (music_t1!=nullptr && music_t2 != nullptr) for (int anode = 0; anode<8; anode++) {h_music41_t->Fill(anode,music_t1[anode]); h_music42_t->Fill(anode,music_t1[anode]);}
+        if (music_t1!=nullptr && music_t2 != nullptr) for (int anode = 0; anode<8; anode++) {h_music41_t->Fill(anode,music_t1[anode]); h_music42_t->Fill(anode,music_t2[anode]);}
         
         
         std::vector<uint32_t> sci_21l_t = fHitFrsMainCal->Get_TDC_channel(2);
@@ -241,6 +257,46 @@ void FrsDetectorsOnline::Exec(Option_t* option)
         }
     }
 
+    if (fFrsTPCArray && fFrsTPCArray->GetEntriesFast() > 0){
+        Int_t nHits = fFrsTPCArray->GetEntriesFast();
+        for (Int_t ihit = 0; ihit < nHits; ihit++)
+        {
+            fHitFrsTPC = (FrsTPCData*)fFrsTPCArray->At(ihit);
+            if (!fHitFrsTPC)
+                continue;
+            std::vector<uint32_t> tpc_v1190_channels;
+            std::vector<uint32_t> tpc_v1190_lot;
+            std::vector<uint32_t> tpc_v1190_data;
+            tpc_v1190_channels = fHitFrsTPC->Get_V1190_Channel();
+            tpc_v1190_lot = fHitFrsTPC->Get_V1190_LoT();
+            tpc_v1190_data = fHitFrsTPC->Get_V1190_Data();
+
+            for (int v1190_hit = 0; v1190_hit<tpc_v1190_channels.size(); v1190_hit++){
+                if (!tpc_v1190_lot.at(v1190_hit)){
+                    h_tpc_timings_lead->Fill(tpc_v1190_channels.at(v1190_hit),tpc_v1190_data.at(v1190_hit));
+                }else{
+                    h_tpc_timings_trail->Fill(tpc_v1190_channels.at(v1190_hit),tpc_v1190_data.at(v1190_hit));
+                }
+            }
+        }
+    }
+
+
+    if (fFrsTPCCalArray && fFrsTPCCalArray->GetEntriesFast() > 0){
+        Int_t nHits = fFrsTPCCalArray->GetEntriesFast();
+        for (Int_t ihit = 0; ihit < nHits; ihit++)
+        {
+            fHitFrsTPCCal = (FrsTPCCalData*)fFrsTPCCalArray->At(ihit);
+            if (!fHitFrsTPCCal)
+                continue;
+            for (int an = 0; an < number_of_anodes_per_tpc; an++){
+                for (int ntpc = 0; ntpc < number_of_tpcs; ntpc ++){
+                    h_tpc_check_sums->Fill(ntpc*number_of_anodes_per_tpc + an, fHitFrsTPCCal->Get_tpc_csum(ntpc,an));
+                }
+            }
+        }
+    }
+
     fNEvents += 1;
 }
 
@@ -248,6 +304,7 @@ void FrsDetectorsOnline::FinishEvent()
 {
     if(fFrsUserCalArray) fFrsUserCalArray->Clear();
     if(fFrsMainCalArray) fFrsMainCalArray->Clear();
+    if(fFrsTPCArray) fFrsTPCArray->Clear();
     if(fFrsTPCCalArray) fFrsTPCCalArray->Clear();
     if(fFrsVFTXCalArray) fFrsVFTXCalArray->Clear();
 }

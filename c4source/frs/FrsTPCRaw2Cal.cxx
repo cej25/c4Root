@@ -51,96 +51,96 @@ FrsTPCRaw2Cal::~FrsTPCRaw2Cal()
 
 void FrsTPCRaw2Cal::SetParameters()
 {
-    v1190_channel_dt[0][0] = 0; //TPC21-A11
-    v1190_channel_dt[0][1] = 1; //TPC21-A12
-    v1190_channel_dt[0][2] = 2; //TPC21-A21
-    v1190_channel_dt[0][3] = 3; //TPC21-A22
-    v1190_channel_lt[0][0] = 4; //TPC21-DL1
-    v1190_channel_rt[0][0] = 5; //TPC21-DR1
+    v1190_channel_dt[0][0] = 0+1; //TPC21-A11
+    v1190_channel_dt[0][1] = 1+1; //TPC21-A12
+    v1190_channel_dt[0][2] = 2+1; //TPC21-A21
+    v1190_channel_dt[0][3] = 3+1; //TPC21-A22
+    v1190_channel_lt[0][0] = 4+1; //TPC21-DL1
+    v1190_channel_rt[0][0] = 5+1; //TPC21-DR1
     // 6, 7 empty
-    v1190_channel_lt[0][1] = 8; //TPC21-DL2
-    v1190_channel_rt[0][1] = 9; //TPC21-DR2
-    v1190_channel_dt[1][0] = 10; //TPC22-A11
-    v1190_channel_dt[1][1] = 11; //TPC22-A12
-    v1190_channel_dt[1][2] = 12; //TPC22-A21
-    v1190_channel_dt[1][3] = 13; //TPC22-A22
+    v1190_channel_lt[0][1] = 8+1; //TPC21-DL2
+    v1190_channel_rt[0][1] = 9+1; //TPC21-DR2
+    v1190_channel_dt[1][0] = 10+1; //TPC22-A11
+    v1190_channel_dt[1][1] = 11+1; //TPC22-A12
+    v1190_channel_dt[1][2] = 12+1; //TPC22-A21
+    v1190_channel_dt[1][3] = 13+1; //TPC22-A22
     // 14, 15 empty
     //17(top channel of 3rd module is dead)
     //18(skip)
-    v1190_channel_lt[1][0] = 18; //TPC22-DL1
-    v1190_channel_rt[1][0] = 19; //TPC22-DR1
-    v1190_channel_lt[1][1] = 20; //TPC22-DL2
-    v1190_channel_rt[1][1] = 21; //TPC22-DR2
+    v1190_channel_lt[1][0] = 18+1; //TPC22-DL1
+    v1190_channel_rt[1][0] = 19+1; //TPC22-DR1
+    v1190_channel_lt[1][1] = 20+1; //TPC22-DL2
+    v1190_channel_rt[1][1] = 21+1; //TPC22-DR2
     // 22,23 empty
 
     // ======= middle NIM crate (TPC23+24)=========
-    v1190_channel_dt[2][0] = 24; //TPC23-A11
-    v1190_channel_dt[2][1] = 25; //TPC23-A12
-    v1190_channel_dt[2][2] = 26; //TPC23-A21
-    v1190_channel_dt[2][3] = 27; //TPC23-A22
-    v1190_channel_lt[2][0] = 28; //TPC23-DL1
-    v1190_channel_rt[2][0] = 29; //TPC23-DR1
+    v1190_channel_dt[2][0] = 24+1; //TPC23-A11
+    v1190_channel_dt[2][1] = 25+1; //TPC23-A12
+    v1190_channel_dt[2][2] = 26+1; //TPC23-A21
+    v1190_channel_dt[2][3] = 27+1; //TPC23-A22
+    v1190_channel_lt[2][0] = 28+1; //TPC23-DL1
+    v1190_channel_rt[2][0] = 29+1; //TPC23-DR1
     //30,31 empty
-    v1190_channel_lt[2][1] = 32; //TPC23-DL2
-    v1190_channel_rt[2][1] = 33; //TPC23-DR2
-    v1190_channel_dt[3][0] = 34; //TPC24-A11
-    v1190_channel_dt[3][1] = 35; //TPC24-A12
-    v1190_channel_dt[3][2] = 36; //TPC24-A21
-    v1190_channel_dt[3][3] = 37; //TPC24-A22
+    v1190_channel_lt[2][1] = 32+1; //TPC23-DL2
+    v1190_channel_rt[2][1] = 33+1; //TPC23-DR2
+    v1190_channel_dt[3][0] = 34+1; //TPC24-A11
+    v1190_channel_dt[3][1] = 35+1; //TPC24-A12
+    v1190_channel_dt[3][2] = 36+1; //TPC24-A21
+    v1190_channel_dt[3][3] = 37+1; //TPC24-A22
     //38,39 empty
-    v1190_channel_lt[3][0] = 40; //TPC24-DL1
-    v1190_channel_rt[3][0] = 41; //TPC24-DR1
-    v1190_channel_lt[3][1] = 42; //TPC24-DL2
-    v1190_channel_rt[3][1] = 43; //TPC24-DR2
+    v1190_channel_lt[3][0] = 40+1; //TPC24-DL1
+    v1190_channel_rt[3][0] = 41+1; //TPC24-DR1
+    v1190_channel_lt[3][1] = 42+1; //TPC24-DL2
+    v1190_channel_rt[3][1] = 43+1; //TPC24-DR2
     //46,47 empty
 
     // ======= bottom NIM crate (TPC41+42+31)=========
-    v1190_channel_dt[4][0] = 64; //TPC41-A11
-    v1190_channel_dt[4][1] = 65; //TPC41-A12
-    v1190_channel_dt[4][2] = 66; //TPC41-A21
-    v1190_channel_dt[4][3] = 67; //TPC41-A22
-    v1190_channel_lt[4][0] = 68; //TPC41-DL1
-    v1190_channel_rt[4][0] = 69; //TPC41-DR1
+    v1190_channel_dt[4][0] = 64+1; //TPC41-A11
+    v1190_channel_dt[4][1] = 65+1; //TPC41-A12
+    v1190_channel_dt[4][2] = 66+1; //TPC41-A21
+    v1190_channel_dt[4][3] = 67+1; //TPC41-A22
+    v1190_channel_lt[4][0] = 68+1; //TPC41-DL1
+    v1190_channel_rt[4][0] = 69+1; //TPC41-DR1
     //70,71 empty
-    v1190_channel_lt[4][1] = 72; //TPC41-DL2
-    v1190_channel_rt[4][1] = 73; //TPC41-DR2
-    v1190_channel_dt[5][0] = 74; //TPC42-A11
-    v1190_channel_dt[5][1] = 75; //TPC42-A12
-    v1190_channel_dt[5][2] = 76; //TPC42-A21
-    v1190_channel_dt[5][3] = 77; //TPC42-A22
+    v1190_channel_lt[4][1] = 72+1; //TPC41-DL2
+    v1190_channel_rt[4][1] = 73+1; //TPC41-DR2
+    v1190_channel_dt[5][0] = 74+1; //TPC42-A11
+    v1190_channel_dt[5][1] = 75+1; //TPC42-A12
+    v1190_channel_dt[5][2] = 76+1; //TPC42-A21
+    v1190_channel_dt[5][3] = 77+1; //TPC42-A22
     //78,79 empty
-    v1190_channel_lt[5][0] = 80; //TPC42-DL1
-    v1190_channel_rt[5][0] = 81; //TPC42-DR1
-    v1190_channel_lt[5][1] = 82; //TPC42-DL2
-    v1190_channel_rt[5][1] = 83; //TPC42-DR2
-    v1190_channel_dt[6][0] = 84; //TPC31-A11
-    v1190_channel_dt[6][1] = 85; //TPC31-A12
+    v1190_channel_lt[5][0] = 80+1; //TPC42-DL1
+    v1190_channel_rt[5][0] = 81+1; //TPC42-DR1
+    v1190_channel_lt[5][1] = 82+1; //TPC42-DL2
+    v1190_channel_rt[5][1] = 83+1; //TPC42-DR2
+    v1190_channel_dt[6][0] = 84+1; //TPC31-A11
+    v1190_channel_dt[6][1] = 85+1; //TPC31-A12
     //86,87 empty
-    v1190_channel_dt[6][2] = 88; //TPC31-A21
-    v1190_channel_dt[6][3] = 89; //TPC31-A22
-    v1190_channel_lt[6][0] = 90; //TPC31-DL1
-    v1190_channel_rt[6][0] = 91; //TPC31-DR1
-    v1190_channel_lt[6][1] = 92; //TPC31-DL2
-    v1190_channel_rt[6][1] = 93; //TPC31-DR2
+    v1190_channel_dt[6][2] = 88+1; //TPC31-A21
+    v1190_channel_dt[6][3] = 89+1; //TPC31-A22
+    v1190_channel_lt[6][0] = 90+1; //TPC31-DL1
+    v1190_channel_rt[6][0] = 91+1; //TPC31-DR1
+    v1190_channel_lt[6][1] = 92+1; //TPC31-DL2
+    v1190_channel_rt[6][1] = 93+1; //TPC31-DR2
     //94,95 empty
 
     //time reference signal
-    v1190_channel_timeref[0] = 96; //accept trig
-    v1190_channel_timeref[1] = 97; //sc21
-    v1190_channel_timeref[2] = 98; //sc22
-    v1190_channel_timeref[3] = 99; //sc31
-    v1190_channel_timeref[4] =100; //sc41
-    v1190_channel_timeref[5] =101; //
-    v1190_channel_timeref[6] =102; //
-    v1190_channel_timeref[7] =103; //
+    v1190_channel_timeref[0] = 96+1; //accept trig
+    v1190_channel_timeref[1] = 97+1; //sc21
+    v1190_channel_timeref[2] = 98+1; //sc22
+    v1190_channel_timeref[3] = 99+1; //sc31
+    v1190_channel_timeref[4] =100+1; //sc41
+    v1190_channel_timeref[5] =101+1; //
+    v1190_channel_timeref[6] =102+1; //
+    v1190_channel_timeref[7] =103+1; //
 
-    v1190_channel_calibgrid[0] = 104;//tpc21grid
-    v1190_channel_calibgrid[1] = 105;//tpc22grid
-    v1190_channel_calibgrid[2] = 106;//tpc23grid
-    v1190_channel_calibgrid[3] = 107;//tpc24grid
-    v1190_channel_calibgrid[4] = 108;//tpc41grid
-    v1190_channel_calibgrid[5] = 109;//tpc42grid
-    v1190_channel_calibgrid[6] = 110;//tpc31grid //to be checked maybe 111
+    v1190_channel_calibgrid[0] = 104+1;//tpc21grid
+    v1190_channel_calibgrid[1] = 105+1;//tpc22grid
+    v1190_channel_calibgrid[2] = 106+1;//tpc23grid
+    v1190_channel_calibgrid[3] = 107+1;//tpc24grid
+    v1190_channel_calibgrid[4] = 108+1;//tpc41grid
+    v1190_channel_calibgrid[5] = 109+1;//tpc42grid
+    v1190_channel_calibgrid[6] = 110+1;//tpc31grid //to be checked maybe 111
 
 }
 
@@ -609,10 +609,10 @@ void FrsTPCRaw2Cal::SetFRSParameters()
     // After changing cut limits => Launch analysis again in Go4GUI
     // [Updated on 2021/Mar/21, YT, EH, IM] to catch all timeref signals.
     tpc->lim_timeref[0][0] = 1000.0; tpc->lim_timeref[0][1] = 48000.0;//time ref (accept trig)
-    tpc->lim_timeref[1][0] = 5000.0; tpc->lim_timeref[1][1] = 48000.0;//time ref (sc21) changed to narrow gate, 2023-Nov-28 // CEJ: changing this to wide actually lets us see X2 positions...
+    tpc->lim_timeref[1][0] = 1000.0; tpc->lim_timeref[1][1] = 48000.0;//time ref (sc21) changed to narrow gate, 2023-Nov-28 // CEJ: changing this to wide actually lets us see X2 positions...
     tpc->lim_timeref[2][0] = 1000.0; tpc->lim_timeref[2][1] = 48500.0;//time ref (sc22)
-    tpc->lim_timeref[3][0] = 5000.0; tpc->lim_timeref[3][1] = 20000.0;//time ref (sc31) changed to narrow gate, 2023-Nov-28
-    tpc->lim_timeref[4][0] = 5000.0; tpc->lim_timeref[4][1] = 20000.0;//time ref (sc41) changed to narrow gate, 2023-Nov-28
+    tpc->lim_timeref[3][0] = 1000.0; tpc->lim_timeref[3][1] = 40000.0;//time ref (sc31) changed to narrow gate, 2023-Nov-28
+    tpc->lim_timeref[4][0] = 1000.0; tpc->lim_timeref[4][1] = 40000.0;//time ref (sc41) changed to narrow gate, 2023-Nov-28
     tpc->lim_timeref[5][0] = 1000.0; tpc->lim_timeref[5][1] = 48000.0;//time ref (---)
     tpc->lim_timeref[6][0] = 1000.0; tpc->lim_timeref[6][1] = 48000.0;//time ref (---)
     tpc->lim_timeref[7][0] = 1000.0; tpc->lim_timeref[7][1] = 48000.0;//time ref (---)
@@ -1832,7 +1832,6 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                 tpc_csum[i][j] = -9999999;
             }
 
-
             // CEJ: these are never satisfied so b_tpc_csum is never true, except at the start
 
             if (tpc_csum[i][0] > tpc->lim_csum1[i][0] && tpc_csum[i][0] < tpc->lim_csum1[i][1])
@@ -2065,6 +2064,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
         b_tpc_de,
         tpc_x,
         tpc_y,
+        tpc_csum,
         b_tpc_xy,
         tpc_angle_x_s2_foc_21_22,
         tpc_angle_y_s2_foc_21_22,
