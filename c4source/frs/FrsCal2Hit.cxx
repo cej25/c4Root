@@ -520,7 +520,7 @@ void FrsCal2Hit::SetParameters()
     // After changing cut limits => Launch analysis again in Go4GUI
     // [Updated on 2021/Mar/21, YT, EH, IM] to catch all timeref signals.
     tpc->lim_timeref[0][0] = 1000.0; tpc->lim_timeref[0][1] = 48000.0;//time ref (accept trig)
-    tpc->lim_timeref[1][0] = 5000.0; tpc->lim_timeref[1][1] = 48000.0;//time ref (sc21) changed to narrow gate, 2023-Nov-28
+    tpc->lim_timeref[1][0] = 5000.0; tpc->lim_timeref[1][1] = 20000.0;//time ref (sc21) changed to narrow gate, 2023-Nov-28
     tpc->lim_timeref[2][0] = 1000.0; tpc->lim_timeref[2][1] = 48500.0;//time ref (sc22)
     tpc->lim_timeref[3][0] = 5000.0; tpc->lim_timeref[3][1] = 20000.0;//time ref (sc31) changed to narrow gate, 2023-Nov-28
     tpc->lim_timeref[4][0] = 5000.0; tpc->lim_timeref[4][1] = 20000.0;//time ref (sc41) changed to narrow gate, 2023-Nov-28
@@ -1234,6 +1234,7 @@ InitStatus FrsCal2Hit::Init()
     mgr->Register("FrsHitData", "FRS Hit Data", fHitArray, !fOnline);
 
     SetParameters();
+    Setup_Conditions("../../config/frs/");
     c4LOG_IF(fatal,!conditions_files_read, "You must set FrsCal2Hit->Setup_Conditions('your file path') to the folder containing the frs condition gates.");
     
     fCalArrayMain->Clear();
@@ -1253,20 +1254,20 @@ InitStatus FrsCal2Hit::ReInit()
 
 void FrsCal2Hit::Exec(Option_t* option)
 {   
-    c4LOG(info,"EXEC");
+    //c4LOG(info,"EXEC");
     int multMain = fCalArrayMain->GetEntriesFast();
     int multTPC = fCalArrayTPC->GetEntriesFast();
     int multUser = fCalArrayUser->GetEntriesFast();
     int multVFTX = fCalArrayVFTX->GetEntriesFast();
     
-    if (multMain==0 || multTPC==0 || multUser==0 || multVFTX==0) return;
+    if (multMain == 0 || multTPC == 0 || multUser == 0 || multVFTX == 0) return;
+    
 
     fNEvents++;
-    // this mult thing is nonsense i'm sure
-    fCalHitMain = (FrsMainCalData*)fCalArrayMain->At(multMain-1);
-    fCalHitTPC = (FrsTPCCalData*)fCalArrayTPC->At(multTPC-1);
-    fCalHitUser = (FrsUserCalData*)fCalArrayUser->At(multUser-1);
-    fCalHitVFTX = (FrsVFTXCalData*)fCalArrayVFTX->At(multVFTX-1);
+    fCalHitMain = (FrsMainCalData*)fCalArrayMain->At(0);
+    fCalHitTPC = (FrsTPCCalData*)fCalArrayTPC->At(0);
+    fCalHitUser = (FrsUserCalData*)fCalArrayUser->At(0);
+    fCalHitVFTX = (FrsVFTXCalData*)fCalArrayVFTX->At(0);
 
     WR_TS = fCalHitMain->Get_WR();
 
@@ -1281,7 +1282,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     // we don't use music 3
 
 
-    c4LOG(info,"MUSIC Energy analysis.");
+    //c4LOG(info,"MUSIC Energy analysis.");
     music1_anodes_cnt = 0;
     music2_anodes_cnt = 0;
 
@@ -1385,7 +1386,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     // this should not be in the music3_anodes_cnt if{}
     // but it is in our Go4
     
-    c4LOG(info,"EXEC TPC analysis");
+    //c4LOG(info,"EXEC TPC analysis");
     b_tpc_xy = fCalHitTPC->Get_b_tpc_xy(); // maybe this should be outside? JEL: Yep this must go here!
     
     
@@ -1450,7 +1451,7 @@ void FrsCal2Hit::Exec(Option_t* option)
 
     
     // V1290
-    c4LOG(info,"EXEC SCI V1290s");
+    //c4LOG(info,"EXEC SCI V1290s");
 
     for (int i = 0; i<15; i++) tdc_array[i] = fCalHitMain->Get_TDC_channel(i);
 
@@ -1531,29 +1532,31 @@ void FrsCal2Hit::Exec(Option_t* option)
     if (tdc_array[0].size() > 0 && tdc_array[1].size() > 0)
     {   
         // 21 -> 41
-        if (tdc_array[3].size() > 0 && tdc_array[2].size() > 0){
-        for (int i = 0; i < tdc_array[2].size(); i++)
+        if (tdc_array[3].size() > 0 && tdc_array[2].size() > 0)
         {
-            if (tdc_array[0].size() <= i || tdc_array[1].size() <= i || tdc_array[3].size() <= i) break;
-            
-            mhtdc_tof4121.emplace_back(sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0].at(0) + tdc_array[1].at(0)) - 0.5 * (tdc_array[2].at(i) + tdc_array[3].at(i))) + sci->mhtdc_offset_41_21);
-        }
+            for (int i = 0; i < tdc_array[2].size(); i++)
+            {
+                if (tdc_array[0].size() <= i || tdc_array[1].size() <= i || tdc_array[3].size() <= i) break;
+                
+                mhtdc_tof4121.emplace_back(sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0].at(0) + tdc_array[1].at(0)) - 0.5 * (tdc_array[2].at(i) + tdc_array[3].at(i))) + sci->mhtdc_offset_41_21);
+            }
         }
 
         // 22 -> 41
-        if (tdc_array[12].size() > 0 && tdc_array[13].size() > 0){
-        for (int i = 0; i < tdc_array[12].size(); i++)
+        if (tdc_array[12].size() > 0 && tdc_array[13].size() > 0)
         {
-            if (tdc_array[0].size() <= i || tdc_array[1].size() <= i || tdc_array[13].size() <= i) break;
-            mhtdc_tof4122.emplace_back(sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0].at(0) + tdc_array[1].at(0)) - 0.5 * (tdc_array[12].at(i) + tdc_array[13].at(i))) + sci->mhtdc_offset_41_22);
-        }
+            for (int i = 0; i < tdc_array[12].size(); i++)
+            {
+                if (tdc_array[0].size() <= i || tdc_array[1].size() <= i || tdc_array[13].size() <= i) break;
+                mhtdc_tof4122.emplace_back(sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0].at(0) + tdc_array[1].at(0)) - 0.5 * (tdc_array[12].at(i) + tdc_array[13].at(i))) + sci->mhtdc_offset_41_22);
+            }
         }
     }
 
 
     if ((tdc_array[2].size() > 0 ) && (tdc_array[0].size() > 0) && (tdc_array[1].size() > 0))
     {
-        if (tdc_array[3].size() > 0) // CEJ should be implicitly true or this all falls apart..
+        if (tdc_array[3].size() > 0) // CEJ: should be implicitly true or this all falls apart..
         {
             // 21 -> 42
             if (tdc_array[4].size() > 0 && tdc_array[14].size() > 0)
@@ -1582,8 +1585,8 @@ void FrsCal2Hit::Exec(Option_t* option)
     }
     
 
-    c4LOG(info,"EXEC TAC and ADC's in main crate.");
-    for (int index = 0; index<14; index++) de_array[index] = fCalHitMain->Get_De_channel(index);
+    //c4LOG(info,"EXEC TAC and ADC's in main crate.");
+    for (int index = 0; index < 14; index++) de_array[index] = fCalHitMain->Get_De_channel(index);
     dt_array = fCalHitUser->Get_dt_array();
 
 
@@ -1695,7 +1698,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     } // loop for sci values
 
 
-    c4LOG(info,"EXEC calibrate TOF");
+    //c4LOG(info,"EXEC calibrate TOF");
     /*----------------------------------------------------------*/
     // Calibrated ToF - dt will be in dt_array, from UserCrate
     /*----------------------------------------------------------*/
@@ -1703,7 +1706,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     sci_tofrr2 = dt_21r_41r * sci->tac_factor[3] - sci->tac_off[3];
     sci_b_tofll2 = Check_WinCond(sci_tofll2, cSCI_LL2);
     sci_b_tofrr2 = Check_WinCond(sci_tofrr2, cSCI_RR2);
-    c4LOG(info,Form("tof 21l 41l = %f, tof 21r 41r = %f, sci windows = %d %d, cSCILL2 = %f, cSCIRR2 = %f",sci_tofll2, sci_tofrr2,sci_b_tofll2,sci_b_tofrr2,cSCI_LL2[1],cSCI_RR2[1]));
+    //c4LOG(info,Form("tof 21l 41l = %f, tof 21r 41r = %f, sci windows = %d %d, cSCILL2 = %f, cSCIRR2 = %f",sci_tofll2, sci_tofrr2,sci_b_tofll2,sci_b_tofrr2,cSCI_LL2[1],cSCI_RR2[1]));
     if (sci_b_tofll2 && sci_b_tofrr2)
     {
         sci_tof2 = (sci->tof_bll2 * sci_tofll2 + sci->tof_a2 + sci->tof_brr2 * sci_tofrr2) / 2.0;
@@ -1763,7 +1766,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     /*----------------------------------------------------------*/
     // Start of MHTDC ID analysis
     /*----------------------------------------------------------*/
-    c4LOG(info,"EXEC MHTDC ANALYSIS");
+    //c4LOG(info,"EXEC MHTDC ANALYSIS");
     float temp_s8x = mhtdc_sc81lr_x;
     temp_s4x = -999.;
     if (b_tpc_xy[4] && b_tpc_xy[5])
@@ -2014,7 +2017,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
 
-    c4LOG(info,"EXEC EXtraction of TPC values");
+    //c4LOG(info,"EXEC EXtraction of TPC values");
     if (id->x_s2_select == 1)
     {   
         if (b_tpc_xy[2] && b_tpc_xy[3])
@@ -2061,7 +2064,6 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
 
-    // we never get an x4 position because we never fired the s4 tpc?
     if (b_tpc_xy[4] && b_tpc_xy[5])
     {   
         id_x4 = fCalHitTPC->Get_tpc_x_s4();
@@ -2078,6 +2080,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         id_b8 = 0.0;
     }
 
+
     id_b_x2 = Check_WinCond(id_x2, cID_x2);
     id_b_x4 = Check_WinCond(id_x4, cID_x4);
 
@@ -2086,7 +2089,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     // VFTX start here
     // (moved from Go4 as we need id_a2 and it gets calculated twice otherwise?)
     /* --------------------------------------------------------------------------*/
-    c4LOG(info,"EXEC VFTX");
+    //c4LOG(info,"EXEC VFTX");
     TRaw_vftx = fCalHitVFTX->Get_TRaw_vftx();
 
     // loop over 21 or 22 size, check 41l/r are not empty
@@ -2284,7 +2287,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     /*----------------------------------------------------------*/
 
 
-    c4LOG(info,"EXEC BETA CALC");
+    //c4LOG(info,"EXEC BETA CALC");
     /*----------------------------------------------------------*/
     /* Determination of beta                                    */
     /*----------------------------------------------------------*/
@@ -2311,7 +2314,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
 
-    c4LOG(info,"EXEC BROO");
+    //c4LOG(info,"EXEC BROO");
     /*------------------------------------------------------*/
     /* Determination of Brho                                */
     /*------------------------------------------------------*/
@@ -2328,7 +2331,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
 
-    c4LOG(info,"EXEC A/Q");
+    //c4LOG(info,"EXEC A/Q");
     /*--------------------------------------------------------------*/
     /* Determination of A/Q                                         */
     /*--------------------------------------------------------------*/
@@ -2373,7 +2376,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
 
-    c4LOG(info,"EXEC ZZ");
+    //c4LOG(info,"EXEC ZZ");
     /*------------------------------------------------*/
     /* Determination of Z                             */
     /*------------------------------------------------*/
@@ -2420,7 +2423,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
     
-    // Gain match Z
+    // Gain match Z -- unclear where ts_mins comes from
     for (int i = 0; i < Z_Shift_array; i++)
     {
         if (ts_mins >= FRS_WR_a[i] && ts_mins < FRS_WR_b[i])
@@ -2452,7 +2455,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
     */
-    c4LOG(info,"Finalize:");
+    //c4LOG(info,"Finalize:");
     // non mhtdc version?
     //std::cout << " id_b_AoQ: " << id_b_AoQ << " id_b_x2: " << id_b_x2 << " id_b_z: " << id_b_z << std::endl;
     //std::cout << " id_AoQ: " << id_AoQ << " id_x2: " << id_x2 << " id_z: " << id_z << std::endl;
@@ -2770,10 +2773,10 @@ void FrsCal2Hit::ZeroVariables()
     id_y2 = -999;
     id_a2 = -999;
     id_b2 = -999;
-    id_x4 = 0;
-    id_y4 = 0;
-    id_a4 = 0;
-    id_b4 = 0;
+    id_x4 = -999;
+    id_y4 = -999;
+    id_a4 = -999;
+    id_b4 = -999;
     id_AoQ = 0;
     id_AoQ_corr = 0;
     id_z = 0;
