@@ -15,7 +15,8 @@ class FrsHitData : public TObject
                 Float_t fID_AoQ,
                 Float_t fID_AoQ_corr,
                 Float_t fID_z,
-                Float_t fID_z2);
+                Float_t fID_z2,
+                Float_t fID_beta);
 
         ~FrsHitData();
 
@@ -25,6 +26,7 @@ class FrsHitData : public TObject
         inline const Float_t Get_ID_z() const {return fID_z; }
         inline const Float_t Get_ID_z2() const {return fID_z2; }
         inline const Float_t Get_ID_x4() const {return fID_x4; }
+        inline const Float_t Get_ID_beta() const {return fID_beta;}
 
     protected:
 
@@ -35,6 +37,7 @@ class FrsHitData : public TObject
         Float_t fID_AoQ_corr;
         Float_t fID_z;
         Float_t fID_z2;
+        Float_t fID_beta;
     
     public:
         ClassDef(FrsHitData, 1)

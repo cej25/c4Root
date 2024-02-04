@@ -15,6 +15,7 @@
 #include "TClonesArray.h"
 #include "TFolder.h"
 #include "TH1F.h"
+#include "TH1D.h"
 #include "TH2F.h"
 #include "THttpServer.h"
 #include "TMath.h"
@@ -77,12 +78,10 @@ InitStatus FrsOnlineSpectra::Init()
     TFolder * frs_spectra_folder = new TFolder("frs", "frs");
     TFolder * frs_spectra_folder_histograms = new TFolder("frs_histograms", "frs_histograms");
 
-    run->AddObject(frs_spectra_folder);
     run->AddObject(frs_spectra_folder_histograms);
     
-
     c_frs_z1_vs_AoQ = new TCanvas("h_frs_z1_vs_AoQ","Z1 vs A/Q",600,600);
-    h_frs_z1_vs_AoQ = new TH2F("h_frs_z1_vs_AoQ","Z1 vs A/Q",1000,fMin_AoQ,fMax_AoQ,1000,fMin_Z,fMax_Z);
+    h_frs_z1_vs_AoQ = new TH2F("h_frs_z1_vs_AoQ","Z1 vs A/Q",5000,fMin_AoQ,fMax_AoQ,5000,fMin_Z,fMax_Z);
     c_frs_x4_vs_AoQ = new TCanvas("h_frs_x4_vs_AoQ","x4 pos vs A/Q",600,600);
     h_frs_x4_vs_AoQ = new TH2F("h_frs_x4_vs_AoQ","x4 pos vs A/Q",1000,fMin_AoQ,fMax_AoQ,1000,fMin_x4,fMax_x4);
     frs_spectra_folder->Add(c_frs_z1_vs_AoQ);
@@ -90,6 +89,9 @@ InitStatus FrsOnlineSpectra::Init()
     frs_spectra_folder->Add(c_frs_x4_vs_AoQ);
     frs_spectra_folder_histograms->Add(h_frs_x4_vs_AoQ);
 
+
+    h_frs_beta_sci = new TH1D("h_frs_beta_sci", "beta from SCI TOF", 1000,0,1);
+    frs_spectra_folder_histograms->Add(h_frs_beta_sci);
 
 
 
@@ -120,7 +122,11 @@ void FrsOnlineSpectra::Exec(Option_t* option)
                 continue;
 
             h_frs_z1_vs_AoQ->Fill(fHitFrs->Get_ID_AoQ_corr(), fHitFrs->Get_ID_z());
+<<<<<<< HEAD
             h_frs_x4_vs_AoQ->Fill(fHitFrs->Get_ID_AoQ_corr(),fHitFrs->Get_ID_x4());
+=======
+            h_frs_beta_sci->Fill(fHitFrs->Get_ID_beta());
+>>>>>>> d6cfb4e3647fdba707938c4a6c0844d8419e4b8b
         }
     }
 
