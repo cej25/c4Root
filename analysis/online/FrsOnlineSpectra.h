@@ -71,9 +71,11 @@ class FrsOnlineSpectra : public FairTask
 
         // Canvas
         TCanvas * c_frs_z1_vs_AoQ;
+        TCanvas * c_frs_x4_vs_AoQ;
 
         // Histograms for PID:
         TH2F * h_frs_z1_vs_AoQ;
+        TH2F * h_frs_x4_vs_AoQ;
 
 
 

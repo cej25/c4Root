@@ -36,9 +36,9 @@ FrsOnlineSpectra::FrsOnlineSpectra(const TString& name, Int_t iVerbose)
     , fMin_x4(-100.) // no idea
     , fMax_x4(100.0) // no idea
     , fMin_Z_gate(30.)
-    , fMax_Z_gate(80.)
+    , fMax_Z_gate(100.)
     , fMin_AoQ_gate(1.6)
-    , fMax_AoQ_gate(3.0)
+    , fMax_AoQ_gate(4.0)
     , header(nullptr)
 {
 }
@@ -83,8 +83,12 @@ InitStatus FrsOnlineSpectra::Init()
 
     c_frs_z1_vs_AoQ = new TCanvas("h_frs_z1_vs_AoQ","Z1 vs A/Q",600,600);
     h_frs_z1_vs_AoQ = new TH2F("h_frs_z1_vs_AoQ","Z1 vs A/Q",1000,fMin_AoQ,fMax_AoQ,1000,fMin_Z,fMax_Z);
+    c_frs_x4_vs_AoQ = new TCanvas("h_frs_x4_vs_AoQ","x4 pos vs A/Q",600,600);
+    h_frs_x4_vs_AoQ = new TH2F("h_frs_x4_vs_AoQ","x4 pos vs A/Q",1000,fMin_AoQ,fMax_AoQ,1000,fMin_x4,fMax_x4);
     frs_spectra_folder->Add(c_frs_z1_vs_AoQ);
     frs_spectra_folder_histograms->Add(h_frs_z1_vs_AoQ);
+    frs_spectra_folder->Add(c_frs_x4_vs_AoQ);
+    frs_spectra_folder_histograms->Add(h_frs_x4_vs_AoQ);
 
 
 
@@ -116,6 +120,7 @@ void FrsOnlineSpectra::Exec(Option_t* option)
                 continue;
 
             h_frs_z1_vs_AoQ->Fill(fHitFrs->Get_ID_AoQ_corr(), fHitFrs->Get_ID_z());
+            h_frs_x4_vs_AoQ->Fill(fHitFrs->Get_ID_AoQ_corr(),fHitFrs->Get_ID_x4());
         }
     }
 
@@ -134,6 +139,7 @@ void FrsOnlineSpectra::FinishTask()
 {
     if (fHitFrsArray){
         h_frs_z1_vs_AoQ->Write();
+        h_frs_x4_vs_AoQ->Write();
     }
 }
 
