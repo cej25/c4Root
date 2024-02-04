@@ -11,6 +11,7 @@
 #include "FrsMainCalData.h"
 #include "FrsTPCData.h"
 #include "FrsTPCCalData.h"
+#include "FrsUserCalData.h"
 #include "EventHeader.h"
 #include "c4Logger.h"
 
@@ -170,8 +171,8 @@ InitStatus FrsDetectorsOnline::Init()
     int tpc_min_y = -100;
     int tpc_max_x = 100;
     int tpc_max_y = 100;
-    int tpc_min_angle = -3.14;
-    int tpc_max_angle = 3.14;
+    int tpc_min_angle = -3.14*100;
+    int tpc_max_angle = 3.14*100;
     int tpc_bins = 100;
 
     h_tpc_angle_x_s2_foc_21_22 = new TH1D("h_tpc_angle_x_s2_foc_21_22", "TPC h_tpc_angle_x_s2_foc_21_22",tpc_bins,tpc_min_angle,tpc_max_angle);
@@ -234,6 +235,42 @@ InitStatus FrsDetectorsOnline::Init()
     frs_detectors_spectra_folder_histograms->Add(h_tpc_music42_x);
     h_tpc_music43_x = new TH1D("h_tpc_music43_x", "TPC h_tpc_music43_x",tpc_bins,tpc_min_x,tpc_max_x);
     frs_detectors_spectra_folder_histograms->Add(h_tpc_music43_x);
+
+
+    int tac_bins = 1000;
+    int max_tac_value = 5000;
+    h_tac_user_dt_21l_21r = new TH1D("h_tac_user_dt_21l_21r","dt sci 21l - 21r TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_21l_21r);
+    h_tac_user_dt_41l_41r = new TH1D("h_tac_user_dt_41l_41r","dt sci 41l - 41r TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_41l_41r);
+    h_tac_user_dt_42l_42r = new TH1D("h_tac_user_dt_42l_42r","dt sci 42l - 42r TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_42l_42r);
+    h_tac_user_dt_43l_43r = new TH1D("h_tac_user_dt_43l_43r","dt sci 43l - 43r TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_43l_43r);
+    h_tac_user_dt_81l_81r = new TH1D("h_tac_user_dt_81l_81r","dt sci 81l - 81r TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_81l_81r);
+    h_tac_user_dt_21l_41l = new TH1D("h_tac_user_dt_21l_41l","dt sci 21l - 41l TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_21l_41l);
+    h_tac_user_dt_21r_41r = new TH1D("h_tac_user_dt_21r_41r","dt sci 21r - 41r TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_21r_41r);
+    h_tac_user_dt_42r_21r = new TH1D("h_tac_user_dt_42r_21r","dt sci 42r - 21r TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_42r_21r);
+    h_tac_user_dt_42l_21l = new TH1D("h_tac_user_dt_42l_21l","dt sci 42l - 21l TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_42l_21l);
+    h_tac_user_dt_21l_81l = new TH1D("h_tac_user_dt_21l_81l","dt sci 21l - 81l TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_21l_81l);
+    h_tac_user_dt_21r_81r = new TH1D("h_tac_user_dt_21r_81r","dt sci 21r - 81r TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_21r_81r);
+    h_tac_user_dt_22l_22r = new TH1D("h_tac_user_dt_22l_22r","dt sci 22l - 22r TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_22l_22r);
+    h_tac_user_dt_22l_41l = new TH1D("h_tac_user_dt_22l_41l","dt sci 22l - 41l TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_22l_41l);
+    h_tac_user_dt_22r_41r = new TH1D("h_tac_user_dt_22r_41r","dt sci 22r - 41r TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_22r_41r);
+    h_tac_user_dt_22l_81l = new TH1D("h_tac_user_dt_22l_81l","dt sci 22l - 81l TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_22l_81l);
+    h_tac_user_dt_22r_81r = new TH1D("h_tac_user_dt_22r_81r","dt sci 22r - 81r TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_22r_81r);
 
     // Register command to reset histograms
     run->GetHttpServer()->RegisterCommand("Reset_IncomingID_HIST", Form("/Objects/%s/->Reset_Histo()", GetName()));
@@ -394,6 +431,49 @@ void FrsDetectorsOnline::Exec(Option_t* option)
                 h_tpc_music42_x->Fill(fHitFrsTPCCal->Get_tpc_music42_x());
                 h_tpc_music43_x->Fill(fHitFrsTPCCal->Get_tpc_music43_x());
             }
+        }
+    }
+
+    if (fFrsUserCalArray && fFrsUserCalArray->GetEntriesFast() > 0){
+        Int_t nhits = fFrsUserCalArray->GetEntriesFast();
+        for (Int_t ihit = 0; ihit<nhits; ihit++){
+            fHitFrsUserCal = (FrsUserCalData*)fFrsUserCalArray->At(ihit);
+            if (!fHitFrsUserCal) continue;
+            dt_array = fHitFrsUserCal->Get_dt_array();
+            uint32_t dt_21l_21r = dt_array[0];
+            h_tac_user_dt_21l_21r->Fill(dt_21l_21r);
+            uint32_t dt_41l_41r = dt_array[1];
+            h_tac_user_dt_41l_41r->Fill(dt_41l_41r);
+            uint32_t dt_42l_42r = dt_array[2];
+            h_tac_user_dt_42l_42r->Fill(dt_42l_42r);
+            uint32_t dt_43l_43r = dt_array[3];
+            h_tac_user_dt_43l_43r->Fill(dt_43l_43r);
+            uint32_t dt_81l_81r = dt_array[4];
+            h_tac_user_dt_81l_81r->Fill(dt_81l_81r);
+            uint32_t dt_21l_41l = dt_array[5];
+            h_tac_user_dt_21l_41l->Fill(dt_21l_41l);
+            uint32_t dt_21r_41r = dt_array[6];
+            h_tac_user_dt_21r_41r->Fill(dt_21r_41r);
+            uint32_t dt_42r_21r = dt_array[7];
+            h_tac_user_dt_42r_21r->Fill(dt_42r_21r);
+            uint32_t dt_42l_21l = dt_array[8];
+            h_tac_user_dt_42l_21l->Fill(dt_42l_21l);
+            uint32_t dt_21l_81l = dt_array[9];
+            h_tac_user_dt_21l_81l->Fill(dt_21l_81l);
+            uint32_t dt_21r_81r = dt_array[10];
+            h_tac_user_dt_21r_81r->Fill(dt_21r_81r);
+            uint32_t dt_22l_22r = dt_array[11];
+            h_tac_user_dt_22l_22r->Fill(dt_22l_22r);
+            uint32_t dt_22l_41l = dt_array[12];
+            h_tac_user_dt_22l_41l->Fill(dt_22l_41l);
+            uint32_t dt_22r_41r = dt_array[13];
+            h_tac_user_dt_22r_41r->Fill(dt_22r_41r);
+            uint32_t dt_22l_81l = dt_array[14];
+            h_tac_user_dt_22l_81l->Fill(dt_22l_81l);
+            uint32_t dt_22r_81r = dt_array[15];
+            h_tac_user_dt_22r_81r->Fill(dt_22r_81r);
+
+
         }
     }
 
