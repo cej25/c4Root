@@ -134,6 +134,26 @@ class FrsDetectorsOnline : public FairTask
         TH1D * h_tpc_music43_x;
 
 
+        //User crate:
+        uint32_t * dt_array;
+        TH2D * h_music41_e;
+        TH2D * h_music42_e;
+        TH1D * h_tac_user_dt_21l_21r;
+        TH1D * h_tac_user_dt_41l_41r;
+        TH1D * h_tac_user_dt_42l_42r;
+        TH1D * h_tac_user_dt_43l_43r;
+        TH1D * h_tac_user_dt_81l_81r;
+        TH1D * h_tac_user_dt_21l_41l;
+        TH1D * h_tac_user_dt_21r_41r;
+        TH1D * h_tac_user_dt_42r_21r;
+        TH1D * h_tac_user_dt_42l_21l;
+        TH1D * h_tac_user_dt_21l_81l;
+        TH1D * h_tac_user_dt_21r_81r;
+        TH1D * h_tac_user_dt_22l_22r;
+        TH1D * h_tac_user_dt_22l_41l;
+        TH1D * h_tac_user_dt_22r_41r;
+        TH1D * h_tac_user_dt_22l_81l;
+        TH1D * h_tac_user_dt_22r_81r;
     public:
         ClassDef(FrsDetectorsOnline, 1)
 

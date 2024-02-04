@@ -81,13 +81,12 @@ InitStatus FrsOnlineSpectra::Init()
     run->AddObject(frs_spectra_folder_histograms);
     
 
-    h_frs_z1_vs_AoQ = new TH2F("h_frs_z1_vs_AoQ","Z1 vs A/Q",1000,fMin_AoQ,fMax_AoQ,1000,fMin_Z,fMax_Z);
+    h_frs_z1_vs_AoQ = new TH2F("h_frs_z1_vs_AoQ","Z1 vs A/Q",5000,fMin_AoQ,fMax_AoQ,5000,fMin_Z,fMax_Z);
     frs_spectra_folder_histograms->Add(h_frs_z1_vs_AoQ);
 
 
     h_frs_beta_sci = new TH1D("h_frs_beta_sci", "beta from SCI TOF", 1000,0,1);
     frs_spectra_folder_histograms->Add(h_frs_beta_sci);
-
 
 
 
