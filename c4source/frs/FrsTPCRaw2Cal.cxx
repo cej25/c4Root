@@ -1832,11 +1832,6 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                 tpc_csum[i][j] = -9999999;
             }
 
-<<<<<<< HEAD
-=======
-            // CEJ: these are never satisfied so b_tpc_csum is never true, except at the start
-
->>>>>>> d6cfb4e3647fdba707938c4a6c0844d8419e4b8b
             if (tpc_csum[i][0] > tpc->lim_csum1[i][0] && tpc_csum[i][0] < tpc->lim_csum1[i][1])
             {   
                 b_tpc_csum[i][0] = true;

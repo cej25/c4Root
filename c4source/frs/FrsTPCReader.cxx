@@ -95,13 +95,9 @@ Bool_t FrsTPCReader::Read()
 
         for (uint32_t j = hit_index; j < next_channel_start; j++)
         {   
-            if (fData->frstpc_data_v1190_data[total_hits + j] > 0)
-            {
-                v1190_channel.emplace_back(current_channel-1);
-                v1190_data.emplace_back(fData->frstpc_data_v1190_data[j]);
-                v1190_lot.emplace_back(fData->frstpc_data_v1190_leadOrTrailv[j]);
-            }
-            
+            v1190_channel.emplace_back(current_channel-1);
+            v1190_data.emplace_back(fData->frstpc_data_v1190_data[j]);
+            v1190_lot.emplace_back(fData->frstpc_data_v1190_leadOrTrailv[j]);
         }
   
     }

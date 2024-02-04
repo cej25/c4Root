@@ -122,11 +122,8 @@ void FrsOnlineSpectra::Exec(Option_t* option)
                 continue;
 
             h_frs_z1_vs_AoQ->Fill(fHitFrs->Get_ID_AoQ_corr(), fHitFrs->Get_ID_z());
-<<<<<<< HEAD
             h_frs_x4_vs_AoQ->Fill(fHitFrs->Get_ID_AoQ_corr(),fHitFrs->Get_ID_x4());
-=======
             h_frs_beta_sci->Fill(fHitFrs->Get_ID_beta());
->>>>>>> d6cfb4e3647fdba707938c4a6c0844d8419e4b8b
         }
     }
 
