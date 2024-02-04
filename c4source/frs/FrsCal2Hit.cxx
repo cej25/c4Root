@@ -1234,8 +1234,8 @@ InitStatus FrsCal2Hit::Init()
     mgr->Register("FrsHitData", "FRS Hit Data", fHitArray, !fOnline);
 
     SetParameters();
-    Setup_Conditions();
-
+    c4LOG_IF(fatal,!conditions_files_read, "You must set FrsCal2Hit->Setup_Conditions('your file path') to the folder containing the frs condition gates.");
+    
     fCalArrayMain->Clear();
     fCalArrayTPC->Clear();
     fHitArray->Clear();
@@ -1253,6 +1253,7 @@ InitStatus FrsCal2Hit::ReInit()
 
 void FrsCal2Hit::Exec(Option_t* option)
 {   
+    c4LOG(info,"EXEC");
     int multMain = fCalArrayMain->GetEntriesFast();
     int multTPC = fCalArrayTPC->GetEntriesFast();
     int multUser = fCalArrayUser->GetEntriesFast();
@@ -1279,6 +1280,8 @@ void FrsCal2Hit::Exec(Option_t* option)
     music_t2 = fCalHitMain->Get_music_t2();
     // we don't use music 3
 
+
+    c4LOG(info,"MUSIC Energy analysis.");
     music1_anodes_cnt = 0;
     music2_anodes_cnt = 0;
 
@@ -1382,7 +1385,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     // this should not be in the music3_anodes_cnt if{}
     // but it is in our Go4
     
-    
+    c4LOG(info,"EXEC TPC analysis");
     b_tpc_xy = fCalHitTPC->Get_b_tpc_xy(); // maybe this should be outside? JEL: Yep this must go here!
     
     
@@ -1447,6 +1450,8 @@ void FrsCal2Hit::Exec(Option_t* option)
 
     
     // V1290
+    c4LOG(info,"EXEC SCI V1290s");
+
     for (int i = 0; i<15; i++) tdc_array[i] = fCalHitMain->Get_TDC_channel(i);
 
     // In Raw2Cal we should make sure no zeros are added to vector     
@@ -1456,6 +1461,8 @@ void FrsCal2Hit::Exec(Option_t* option)
     {      
         if (!(tdc_array[2].size()>0 && tdc_array[3].size() > 0)) continue;
         // CEJ: maybe all of this can be rewritten to use vectors..figure out later
+        if (i>=tdc_array[3].size()) break; // needed range check
+
         mhtdc_sc21lr_dt.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[2].at(i) - tdc_array[3].at(i)));
         mhtdc_sc21lr_x.emplace_back(mhtdc_sc21lr_dt.at(i) * sci->mhtdc_factor_21l_21r + sci->mhtdc_offset_21l_21r);
     }
@@ -1474,6 +1481,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     for (int i = 0; i < tdc_array[12].size(); i++)
     {
         if (!(tdc_array[12].size()>0 && tdc_array[13].size() > 0)) continue;
+        if (i>=tdc_array[13].size()) break; // needed range check
         mhtdc_sc22lr_dt.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[12].at(i) - tdc_array[13].at(i)));
         mhtdc_sc22lr_x.emplace_back(mhtdc_sc22lr_dt.at(i) * sci->mhtdc_factor_22l_22r + sci->mhtdc_offset_22l_22r);
         if (i == 0)
@@ -1526,6 +1534,8 @@ void FrsCal2Hit::Exec(Option_t* option)
         if (tdc_array[3].size() > 0 && tdc_array[2].size() > 0){
         for (int i = 0; i < tdc_array[2].size(); i++)
         {
+            if (tdc_array[0].size() <= i || tdc_array[1].size() <= i || tdc_array[3].size() <= i) break;
+            
             mhtdc_tof4121.emplace_back(sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0].at(0) + tdc_array[1].at(0)) - 0.5 * (tdc_array[2].at(i) + tdc_array[3].at(i))) + sci->mhtdc_offset_41_21);
         }
         }
@@ -1534,6 +1544,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         if (tdc_array[12].size() > 0 && tdc_array[13].size() > 0){
         for (int i = 0; i < tdc_array[12].size(); i++)
         {
+            if (tdc_array[0].size() <= i || tdc_array[1].size() <= i || tdc_array[13].size() <= i) break;
             mhtdc_tof4122.emplace_back(sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0].at(0) + tdc_array[1].at(0)) - 0.5 * (tdc_array[12].at(i) + tdc_array[13].at(i))) + sci->mhtdc_offset_41_22);
         }
         }
@@ -1571,6 +1582,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     }
     
 
+    c4LOG(info,"EXEC TAC and ADC's in main crate.");
     for (int index = 0; index<14; index++) de_array[index] = fCalHitMain->Get_De_channel(index);
     dt_array = fCalHitUser->Get_dt_array();
 
@@ -1683,6 +1695,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     } // loop for sci values
 
 
+    c4LOG(info,"EXEC calibrate TOF");
     /*----------------------------------------------------------*/
     // Calibrated ToF - dt will be in dt_array, from UserCrate
     /*----------------------------------------------------------*/
@@ -1690,6 +1703,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     sci_tofrr2 = dt_21r_41r * sci->tac_factor[3] - sci->tac_off[3];
     sci_b_tofll2 = Check_WinCond(sci_tofll2, cSCI_LL2);
     sci_b_tofrr2 = Check_WinCond(sci_tofrr2, cSCI_RR2);
+    c4LOG(info,Form("tof 21l 41l = %f, tof 21r 41r = %f, sci windows = %d %d, cSCILL2 = %f, cSCIRR2 = %f",sci_tofll2, sci_tofrr2,sci_b_tofll2,sci_b_tofrr2,cSCI_LL2[1],cSCI_RR2[1]));
     if (sci_b_tofll2 && sci_b_tofrr2)
     {
         sci_tof2 = (sci->tof_bll2 * sci_tofll2 + sci->tof_a2 + sci->tof_brr2 * sci_tofrr2) / 2.0;
@@ -1749,7 +1763,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     /*----------------------------------------------------------*/
     // Start of MHTDC ID analysis
     /*----------------------------------------------------------*/
-
+    c4LOG(info,"EXEC MHTDC ANALYSIS");
     float temp_s8x = mhtdc_sc81lr_x;
     temp_s4x = -999.;
     if (b_tpc_xy[4] && b_tpc_xy[5])
@@ -2000,7 +2014,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
 
-
+    c4LOG(info,"EXEC EXtraction of TPC values");
     if (id->x_s2_select == 1)
     {   
         if (b_tpc_xy[2] && b_tpc_xy[3])
@@ -2072,7 +2086,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     // VFTX start here
     // (moved from Go4 as we need id_a2 and it gets calculated twice otherwise?)
     /* --------------------------------------------------------------------------*/
-    
+    c4LOG(info,"EXEC VFTX");
     TRaw_vftx = fCalHitVFTX->Get_TRaw_vftx();
 
     // loop over 21 or 22 size, check 41l/r are not empty
@@ -2270,6 +2284,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     /*----------------------------------------------------------*/
 
 
+    c4LOG(info,"EXEC BETA CALC");
     /*----------------------------------------------------------*/
     /* Determination of beta                                    */
     /*----------------------------------------------------------*/
@@ -2296,6 +2311,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
 
+    c4LOG(info,"EXEC BROO");
     /*------------------------------------------------------*/
     /* Determination of Brho                                */
     /*------------------------------------------------------*/
@@ -2312,6 +2328,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
 
+    c4LOG(info,"EXEC A/Q");
     /*--------------------------------------------------------------*/
     /* Determination of A/Q                                         */
     /*--------------------------------------------------------------*/
@@ -2356,6 +2373,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
 
+    c4LOG(info,"EXEC ZZ");
     /*------------------------------------------------*/
     /* Determination of Z                             */
     /*------------------------------------------------*/
@@ -2434,7 +2452,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
     */
-    
+    c4LOG(info,"Finalize:");
     // non mhtdc version?
     //std::cout << " id_b_AoQ: " << id_b_AoQ << " id_b_x2: " << id_b_x2 << " id_b_z: " << id_b_z << std::endl;
     //std::cout << " id_AoQ: " << id_AoQ << " id_x2: " << id_x2 << " id_z: " << id_z << std::endl;
@@ -2452,7 +2470,8 @@ void FrsCal2Hit::Exec(Option_t* option)
             id_AoQ,
             id_AoQ_corr,
             id_z,
-            id_z2
+            id_z2,
+            id_beta
         );
    
     }
@@ -2462,14 +2481,14 @@ void FrsCal2Hit::Exec(Option_t* option)
 }
 
 
-void FrsCal2Hit::Setup_Conditions()
+void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
 {
     std::string line;
     int line_number = 0;
 
     const char* format = "%f %f %f %f %f %f %f %f %f %f %f %f %f %f";
 
-    std::ifstream cond_a("../../config/frs/lim_csum.txt");
+    std::ifstream cond_a(path_to_folder_with_frs_config_files +  TString("lim_csum.txt"));
 
     while(/*cond_a.good()*/getline(cond_a,line,'\n'))
     {
@@ -2492,7 +2511,7 @@ void FrsCal2Hit::Setup_Conditions()
 
     format = "%f %f";
 
-    std::ifstream cond_b("../../config/frs/lim_xsum.txt");
+    std::ifstream cond_b(path_to_folder_with_frs_config_files +  TString("lim_xsum.txt"));
 
     while(/*cond_b.good()*/getline(cond_b,line,'\n'))
     {
@@ -2507,7 +2526,7 @@ void FrsCal2Hit::Setup_Conditions()
 
     format = "%f %f";
 
-    std::ifstream cond_c("../../config/frs/lim_ysum.txt");
+    std::ifstream cond_c(path_to_folder_with_frs_config_files +  TString("lim_ysum.txt"));
 
     while(/*cond_c.good()*/getline(cond_c,line,'\n'))
     {
@@ -2524,7 +2543,7 @@ void FrsCal2Hit::Setup_Conditions()
 
     format = "%f %f %f %f";
 
-    std::ifstream cond_d("../../config/frs/MUSIC1.txt");
+    std::ifstream cond_d(path_to_folder_with_frs_config_files +  TString("MUSIC1.txt"));
 
     while(/*cond_d.good()*/getline(cond_d,line,'\n'))
     {
@@ -2539,7 +2558,7 @@ void FrsCal2Hit::Setup_Conditions()
 
     format = "%f %f %f %f";
 
-    std::ifstream cond_e("../../config/frs/MUSIC2.txt");
+    std::ifstream cond_e(path_to_folder_with_frs_config_files +  TString("MUSIC2.txt"));
 
     while(/*cond_e.good()*/getline(cond_e,line,'\n'))
     {
@@ -2553,7 +2572,7 @@ void FrsCal2Hit::Setup_Conditions()
 
     format = "%f %f %f %f";
 
-    std::ifstream cond_f("../../config/frs/MUSIC3.txt");
+    std::ifstream cond_f(path_to_folder_with_frs_config_files +  TString("MUSIC3.txt"));
 
     while(/*cond_f.good()*/getline(cond_f,line,'\n'))
     {
@@ -2568,7 +2587,7 @@ void FrsCal2Hit::Setup_Conditions()
 
     format = "%f %f";
 
-    std::ifstream cond_g("../../config/frs/MUSIC_dEc3.txt");
+    std::ifstream cond_g(path_to_folder_with_frs_config_files +  TString("MUSIC_dEc3.txt"));
 
     while(/*cond_g.good()*/getline(cond_g,line,'\n'))
     {
@@ -2583,7 +2602,7 @@ void FrsCal2Hit::Setup_Conditions()
 
     format = "%f %f";
 
-    std::ifstream cond_h("../../config/frs/SCI_Cons.txt");
+    std::ifstream cond_h(path_to_folder_with_frs_config_files +  TString("SCI_Cons.txt"));
 
     while(/*cond_h.good()*/getline(cond_h,line,'\n'))
     {
@@ -2607,33 +2626,29 @@ void FrsCal2Hit::Setup_Conditions()
 
     format = "%f %f";
 
-    std::ifstream cond_i("../../config/frs/SCI_LLRR.txt");
-
-    while(/*cond_i.good()*/getline(cond_i,line,'\n'))
+    std::ifstream cond_i(path_to_folder_with_frs_config_files +  TString("SCI_LLRR.txt"));
+    c4LOG_IF(fatal, !cond_i.is_open(), "Failed to open SCI_LLRR config file");
+    while(cond_i.good())
     {
+        getline(cond_i,line,'\n');
         if(line[0] == '#') continue;
-            sscanf(line.c_str(),format,&cSCI_LL2[0],&cSCI_LL2[1]);
+        sscanf(line.c_str(),format,&cSCI_LL2[0],&cSCI_LL2[1]);
         getline(cond_i,line,'\n');
-            sscanf(line.c_str(),format,&cSCI_RR2[0],&cSCI_RR2[1]);
-
+        sscanf(line.c_str(),format,&cSCI_RR2[0],&cSCI_RR2[1]);
         getline(cond_i,line,'\n');
-            sscanf(line.c_str(),format,&cSCI_LL3[0],&cSCI_LL3[1]);
-
+        sscanf(line.c_str(),format,&cSCI_LL3[0],&cSCI_LL3[1]);
         getline(cond_i,line,'\n');
-            sscanf(line.c_str(),format,&cSCI_RR3[0],&cSCI_RR3[1]);
-
-
+        sscanf(line.c_str(),format,&cSCI_RR3[0],&cSCI_RR3[1]);
         getline(cond_i,line,'\n');
-            sscanf(line.c_str(),format,&cSCI_LL4[0],&cSCI_LL4[1]);
-
+        sscanf(line.c_str(),format,&cSCI_LL4[0],&cSCI_LL4[1]);
         getline(cond_i,line,'\n');
-            sscanf(line.c_str(),format,&cSCI_RR4[0],&cSCI_RR4[1]);
-
+        sscanf(line.c_str(),format,&cSCI_RR4[0],&cSCI_RR4[1]);
         getline(cond_i,line,'\n');
-            sscanf(line.c_str(),format,&cSCI_LL5[0],&cSCI_LL5[1]);
-
+        sscanf(line.c_str(),format,&cSCI_LL5[0],&cSCI_LL5[1]);
         getline(cond_i,line,'\n');
-            sscanf(line.c_str(),format,&cSCI_RR5[0],&cSCI_RR5[1]);
+        sscanf(line.c_str(),format,&cSCI_RR5[0],&cSCI_RR5[1]);
+
+        break;
 
     }
 
@@ -2641,7 +2656,7 @@ void FrsCal2Hit::Setup_Conditions()
 
     format = "%f %f";
 
-    std::ifstream cond_k("../../config/frs/ID_x2.txt");
+    std::ifstream cond_k(path_to_folder_with_frs_config_files +  TString("ID_x2.txt"));
 
 
     while(/*cond_k.good()*/getline(cond_k,line,'\n'))
@@ -2650,7 +2665,7 @@ void FrsCal2Hit::Setup_Conditions()
             sscanf(line.c_str(),format,&cID_x2[0],&cID_x2[1]);
     }
 
-    std::ifstream cond_l("../../config/frs/ID_x4.txt");
+    std::ifstream cond_l(path_to_folder_with_frs_config_files +  TString("ID_x4.txt"));
 
     while(/*cond_l.good()*/getline(cond_l,line,'\n'))
     {
@@ -2658,13 +2673,15 @@ void FrsCal2Hit::Setup_Conditions()
             sscanf(line.c_str(),format,&cID_x4[0],&cID_x4[1]);
     }
 
-    std::ifstream cond_m("../../config/frs/ID_Z_Z.txt");
+    std::ifstream cond_m(path_to_folder_with_frs_config_files +  TString("ID_Z_Z.txt"));
 
     while(/*cond_m.good()*/getline(cond_m,line,'\n'))
     {
         if(line[0] == '#') continue;
             sscanf(line.c_str(),format,&cID_Z_Z[0],&cID_Z_Z[1]);
     }
+
+    conditions_files_read = true;
 
 }
 

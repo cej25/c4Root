@@ -39,12 +39,15 @@ FrsTPCCalData::FrsTPCCalData()
         ftpc_x[i] = 0;
         ftpc_y[i] = 0;
         fb_tpc_xy[i] = 0;
+
+        for (int j = 0; j<4; j++) ftpc_csum[i][j] = 0;
     }
 }
 
 FrsTPCCalData::FrsTPCCalData(Bool_t* b_tpc_de,
                     Float_t* tpc_x,
                     Float_t* tpc_y,
+                    Int_t tpc_csum[7][4],
                     Bool_t* b_tpc_xy,
                     Float_t tpc_angle_x_s2_foc_21_22,
                     Float_t tpc_angle_y_s2_foc_21_22,
@@ -114,6 +117,8 @@ FrsTPCCalData::FrsTPCCalData(Bool_t* b_tpc_de,
         ftpc_x[i] = tpc_x[i];
         ftpc_y[i] = tpc_y[i];
         fb_tpc_xy[i] = b_tpc_xy[i];
+        
+        for (int j = 0; j<4; j++) ftpc_csum[i][j] = tpc_csum[i][j];
     }
 }
 

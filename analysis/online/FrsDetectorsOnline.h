@@ -10,6 +10,7 @@ class EventHeader;
 class FrsHitData;
 class FrsMainCalData;
 class FrsUserCalData;
+class FrsTPCData;
 class FrsTPCCalData;
 class FrsVFTXCalData;
 class TCanvas;
@@ -41,11 +42,13 @@ class FrsDetectorsOnline : public FairTask
     private:
         TClonesArray* fFrsUserCalArray; // array with hit items
         TClonesArray* fFrsMainCalArray; // array with hit items
+        TClonesArray* fFrsTPCArray; // array with hit items
         TClonesArray* fFrsTPCCalArray; // array with hit items
         TClonesArray* fFrsVFTXCalArray; // array with hit items
 
         FrsUserCalData* fHitFrsUserCal; // array with hit items
         FrsMainCalData* fHitFrsMainCal; // array with hit items
+        FrsTPCData* fHitFrsTPC; // array with hit items
         FrsTPCCalData* fHitFrsTPCCal; // array with hit items
         FrsVFTXCalData* fHitFrsVFTXCal; // array with hit items
 
@@ -90,7 +93,67 @@ class FrsDetectorsOnline : public FairTask
         TH2D * h_music42_t;
 
 
+        //TPC timings from v1190 in the tpc crate:
+        TH2D * h_tpc_timings_lead;
+        TH2D * h_tpc_timings_trail;
 
+        // TPC derived values, tracking:
+        int number_of_tpcs = 7;
+        int number_of_anodes_per_tpc = 4;
+        TH2D * h_tpc_check_sums;
+
+        TH1D * h_tpc_angle_x_s2_foc_21_22;
+        TH1D * h_tpc_angle_y_s2_foc_21_22;
+        TH1D * h_tpc_x_s2_foc_21_22;
+        TH1D * h_tpc_y_s2_foc_21_22;
+        TH1D * h_tpc21_22_sc21_x;
+        TH1D * h_tpc21_22_sc22_x;
+        TH1D * h_tpc_angle_x_s2_foc_23_24;
+        TH1D * h_tpc_angle_y_s2_foc_23_24;
+        TH1D * h_tpc_x_s2_foc_23_24;
+        TH1D * h_tpc_y_s2_foc_23_24;
+        TH1D * h_tpc23_24_sc21_x;
+        TH1D * h_tpc23_24_sc21_y;
+        TH1D * h_tpc23_24_sc22_x;
+        TH1D * h_tpc23_24_sc22_y;
+        TH1D * h_tpc_angle_x_s2_foc_22_24;
+        TH1D * h_tpc_angle_y_s2_foc_22_24;
+        TH1D * h_tpc_x_s2_foc_22_24;
+        TH1D * h_tpc_y_s2_foc_22_24;
+        TH1D * h_tpc_angle_x_s4;
+        TH1D * h_tpc_angle_y_s4;
+        TH1D * h_tpc_x_s4;
+        TH1D * h_tpc_y_s4;
+        TH1D * h_tpc_sc41_x;
+        TH1D * h_tpc_sc41_y;
+        TH1D * h_tpc_sc42_x;
+        TH1D * h_tpc_sc42_y;
+        TH1D * h_tpc_sc43_x;
+        TH1D * h_tpc_music41_x;
+        TH1D * h_tpc_music42_x;
+        TH1D * h_tpc_music43_x;
+
+
+        //User crate:
+        uint32_t * dt_array;
+        TH2D * h_music41_e;
+        TH2D * h_music42_e;
+        TH1D * h_tac_user_dt_21l_21r;
+        TH1D * h_tac_user_dt_41l_41r;
+        TH1D * h_tac_user_dt_42l_42r;
+        TH1D * h_tac_user_dt_43l_43r;
+        TH1D * h_tac_user_dt_81l_81r;
+        TH1D * h_tac_user_dt_21l_41l;
+        TH1D * h_tac_user_dt_21r_41r;
+        TH1D * h_tac_user_dt_42r_21r;
+        TH1D * h_tac_user_dt_42l_21l;
+        TH1D * h_tac_user_dt_21l_81l;
+        TH1D * h_tac_user_dt_21r_81r;
+        TH1D * h_tac_user_dt_22l_22r;
+        TH1D * h_tac_user_dt_22l_41l;
+        TH1D * h_tac_user_dt_22r_41r;
+        TH1D * h_tac_user_dt_22l_81l;
+        TH1D * h_tac_user_dt_22r_81r;
     public:
         ClassDef(FrsDetectorsOnline, 1)
 

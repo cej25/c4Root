@@ -9,6 +9,9 @@
 #include "FrsDetectorsOnline.h"
 #include "FrsHitData.h"
 #include "FrsMainCalData.h"
+#include "FrsTPCData.h"
+#include "FrsTPCCalData.h"
+#include "FrsUserCalData.h"
 #include "EventHeader.h"
 #include "c4Logger.h"
 
@@ -30,6 +33,7 @@ FrsDetectorsOnline::FrsDetectorsOnline(const TString& name, Int_t iVerbose)
     : FairTask(name, iVerbose)
     , fFrsMainCalArray(NULL)
     , fFrsUserCalArray(NULL)
+    , fFrsTPCArray(NULL)
     , fFrsTPCCalArray(NULL)
     , fFrsVFTXCalArray(NULL)
     , fNEvents(0)
@@ -68,10 +72,12 @@ InitStatus FrsDetectorsOnline::Init()
     c4LOG_IF(fatal, !fFrsMainCalArray, "Branch FrsMainCalData not found");
     fFrsUserCalArray = (TClonesArray*)mgr->GetObject("FrsUserCalData");
     c4LOG_IF(fatal, !fFrsUserCalArray, "Branch FrsUserCalData not found");
+    fFrsTPCArray = (TClonesArray*)mgr->GetObject("FrsTPCData");
+    c4LOG_IF(fatal, !fFrsTPCArray, "Branch FrsTPCData not found");
     fFrsTPCCalArray = (TClonesArray*)mgr->GetObject("FrsTPCCalData");
-    c4LOG_IF(fatal, !fFrsMainCalArray, "Branch FrsTPCCalData not found");
+    c4LOG_IF(fatal, !fFrsTPCCalArray, "Branch FrsTPCCalData not found");
     fFrsVFTXCalArray = (TClonesArray*)mgr->GetObject("FrsVFTXCalData");
-    c4LOG_IF(fatal, !fFrsMainCalArray, "Branch FrsVFTXCalData not found");
+    c4LOG_IF(fatal, !fFrsVFTXCalArray, "Branch FrsVFTXCalData not found");
 
 
 
@@ -145,10 +151,126 @@ InitStatus FrsDetectorsOnline::Init()
     frs_detectors_spectra_folder_histograms->Add(h_music42_t);
 
     
+    //TPC timings:
+    int tpc_v1190_channels = 128;
+    int tpc_v1190_max = 262144; // 2^18 bits in read out word from CAEN manual
+    int tpc_v1190_bins = 1000;
+    
+    h_tpc_timings_lead = new TH2D("h_tpc_timings_lead","TPC lead timings V1190 TPC crate vs channels",tpc_v1190_channels,0,tpc_v1190_channels,tpc_v1190_bins,0,tpc_v1190_max);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_timings_lead);
+    h_tpc_timings_trail = new TH2D("h_tpc_timings_trail","TPC trail timings V1190 TPC crate vs channels",tpc_v1190_channels,0,tpc_v1190_channels,tpc_v1190_bins,0,tpc_v1190_max);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_timings_trail);
 
 
+    int check_sums_bins = 1000;
+    int check_sums_max = 20000;
+    h_tpc_check_sums = new TH2D("h_tpc_check_sums","Check sums calculated for each anode (7 tpcs * 4 anodes)", number_of_anodes_per_tpc*number_of_tpcs,0,number_of_anodes_per_tpc*number_of_tpcs, check_sums_bins,0,check_sums_max);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_check_sums);
+
+    int tpc_min_x = -100;
+    int tpc_min_y = -100;
+    int tpc_max_x = 100;
+    int tpc_max_y = 100;
+    int tpc_min_angle = -3.14*100;
+    int tpc_max_angle = 3.14*100;
+    int tpc_bins = 100;
+
+    h_tpc_angle_x_s2_foc_21_22 = new TH1D("h_tpc_angle_x_s2_foc_21_22", "TPC h_tpc_angle_x_s2_foc_21_22",tpc_bins,tpc_min_angle,tpc_max_angle);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_x_s2_foc_21_22);
+    h_tpc_angle_y_s2_foc_21_22 = new TH1D("h_tpc_angle_y_s2_foc_21_22", "TPC h_tpc_angle_y_s2_foc_21_22",tpc_bins,tpc_min_angle,tpc_max_angle);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_y_s2_foc_21_22);
+    h_tpc_x_s2_foc_21_22 = new TH1D("h_tpc_x_s2_foc_21_22", "TPC h_tpc_x_s2_foc_21_22",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_x_s2_foc_21_22);
+    h_tpc_y_s2_foc_21_22 = new TH1D("h_tpc_y_s2_foc_21_22", "TPC h_tpc_y_s2_foc_21_22",tpc_bins,tpc_min_y,tpc_max_y);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_y_s2_foc_21_22);
+    h_tpc21_22_sc21_x = new TH1D("h_tpc21_22_sc21_x", "TPC h_tpc21_22_sc21_x",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc21_22_sc21_x);
+    h_tpc21_22_sc22_x = new TH1D("h_tpc21_22_sc22_x", "TPC h_tpc21_22_sc22_x",tpc_bins,tpc_min_y,tpc_max_y);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc21_22_sc22_x);
+    h_tpc_angle_x_s2_foc_23_24 = new TH1D("h_tpc_angle_x_s2_foc_23_24", "TPC h_tpc_angle_x_s2_foc_23_24",tpc_bins,tpc_min_angle,tpc_max_angle);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_x_s2_foc_23_24);
+    h_tpc_angle_y_s2_foc_23_24 = new TH1D("h_tpc_angle_y_s2_foc_23_24", "TPC h_tpc_angle_y_s2_foc_23_24",tpc_bins,tpc_min_angle,tpc_max_angle);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_y_s2_foc_23_24);
+    h_tpc_x_s2_foc_23_24 = new TH1D("h_tpc_x_s2_foc_23_24", "TPC h_tpc_x_s2_foc_23_24",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_x_s2_foc_23_24);
+    h_tpc_y_s2_foc_23_24 = new TH1D("h_tpc_y_s2_foc_23_24", "TPC h_tpc_y_s2_foc_23_24",tpc_bins,tpc_min_y,tpc_max_y);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_y_s2_foc_23_24);
+    h_tpc23_24_sc21_x = new TH1D("h_tpc23_24_sc21_x", "TPC h_tpc23_24_sc21_x",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc23_24_sc21_x);
+    h_tpc23_24_sc21_y = new TH1D("h_tpc23_24_sc21_y", "TPC h_tpc23_24_sc21_y",tpc_bins,tpc_min_y,tpc_max_y);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc23_24_sc21_y);
+    h_tpc23_24_sc22_x = new TH1D("h_tpc23_24_sc22_x", "TPC h_tpc23_24_sc22_x",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc23_24_sc22_x);
+    h_tpc23_24_sc22_y = new TH1D("h_tpc23_24_sc22_y", "TPC h_tpc23_24_sc22_y",tpc_bins,tpc_min_y,tpc_max_y);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc23_24_sc22_y);
+    h_tpc_angle_x_s2_foc_22_24 = new TH1D("h_tpc_angle_x_s2_foc_22_24", "TPC h_tpc_angle_x_s2_foc_22_24",tpc_bins,tpc_min_angle,tpc_max_angle);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_x_s2_foc_22_24);
+    h_tpc_angle_y_s2_foc_22_24 = new TH1D("h_tpc_angle_y_s2_foc_22_24", "TPC h_tpc_angle_y_s2_foc_22_24",tpc_bins,tpc_min_angle,tpc_max_angle);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_y_s2_foc_22_24);
+    h_tpc_x_s2_foc_22_24 = new TH1D("h_tpc_x_s2_foc_22_24", "TPC h_tpc_x_s2_foc_22_24",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_x_s2_foc_22_24);
+    h_tpc_y_s2_foc_22_24 = new TH1D("h_tpc_y_s2_foc_22_24", "TPC h_tpc_y_s2_foc_22_24",tpc_bins,tpc_min_y,tpc_max_y);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_y_s2_foc_22_24);
+    h_tpc_angle_x_s4 = new TH1D("h_tpc_angle_x_s4", "TPC h_tpc_angle_x_s4",tpc_bins,tpc_min_angle,tpc_max_angle);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_x_s4);
+    h_tpc_angle_y_s4 = new TH1D("h_tpc_angle_y_s4", "TPC h_tpc_angle_y_s4",tpc_bins,tpc_min_angle,tpc_max_angle);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_y_s4);
+    h_tpc_x_s4 = new TH1D("h_tpc_x_s4", "TPC h_tpc_x_s4",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_x_s4);
+    h_tpc_y_s4 = new TH1D("h_tpc_y_s4", "TPC h_tpc_y_s4",tpc_bins,tpc_min_y,tpc_max_y);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_y_s4);
+    h_tpc_sc41_x = new TH1D("h_tpc_sc41_x", "TPC h_tpc_sc41_x",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_sc41_x);
+    h_tpc_sc41_y = new TH1D("h_tpc_sc41_y", "TPC h_tpc_sc41_y",tpc_bins,tpc_min_y,tpc_max_y);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_sc41_y);
+    h_tpc_sc42_x = new TH1D("h_tpc_sc42_x", "TPC h_tpc_sc42_x",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_sc42_x);
+    h_tpc_sc42_y = new TH1D("h_tpc_sc42_y", "TPC h_tpc_sc42_y",tpc_bins,tpc_min_y,tpc_max_y);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_sc42_y);
+    h_tpc_sc43_x = new TH1D("h_tpc_sc43_x", "TPC h_tpc_sc43_x",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_sc43_x);
+    h_tpc_music41_x = new TH1D("h_tpc_music41_x", "TPC h_tpc_music41_x",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_music41_x);
+    h_tpc_music42_x = new TH1D("h_tpc_music42_x", "TPC h_tpc_music42_x",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_music42_x);
+    h_tpc_music43_x = new TH1D("h_tpc_music43_x", "TPC h_tpc_music43_x",tpc_bins,tpc_min_x,tpc_max_x);
+    frs_detectors_spectra_folder_histograms->Add(h_tpc_music43_x);
 
 
+    int tac_bins = 1000;
+    int max_tac_value = 5000;
+    h_tac_user_dt_21l_21r = new TH1D("h_tac_user_dt_21l_21r","dt sci 21l - 21r TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_21l_21r);
+    h_tac_user_dt_41l_41r = new TH1D("h_tac_user_dt_41l_41r","dt sci 41l - 41r TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_41l_41r);
+    h_tac_user_dt_42l_42r = new TH1D("h_tac_user_dt_42l_42r","dt sci 42l - 42r TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_42l_42r);
+    h_tac_user_dt_43l_43r = new TH1D("h_tac_user_dt_43l_43r","dt sci 43l - 43r TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_43l_43r);
+    h_tac_user_dt_81l_81r = new TH1D("h_tac_user_dt_81l_81r","dt sci 81l - 81r TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_81l_81r);
+    h_tac_user_dt_21l_41l = new TH1D("h_tac_user_dt_21l_41l","dt sci 21l - 41l TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_21l_41l);
+    h_tac_user_dt_21r_41r = new TH1D("h_tac_user_dt_21r_41r","dt sci 21r - 41r TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_21r_41r);
+    h_tac_user_dt_42r_21r = new TH1D("h_tac_user_dt_42r_21r","dt sci 42r - 21r TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_42r_21r);
+    h_tac_user_dt_42l_21l = new TH1D("h_tac_user_dt_42l_21l","dt sci 42l - 21l TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_42l_21l);
+    h_tac_user_dt_21l_81l = new TH1D("h_tac_user_dt_21l_81l","dt sci 21l - 81l TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_21l_81l);
+    h_tac_user_dt_21r_81r = new TH1D("h_tac_user_dt_21r_81r","dt sci 21r - 81r TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_21r_81r);
+    h_tac_user_dt_22l_22r = new TH1D("h_tac_user_dt_22l_22r","dt sci 22l - 22r TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_22l_22r);
+    h_tac_user_dt_22l_41l = new TH1D("h_tac_user_dt_22l_41l","dt sci 22l - 41l TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_22l_41l);
+    h_tac_user_dt_22r_41r = new TH1D("h_tac_user_dt_22r_41r","dt sci 22r - 41r TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_22r_41r);
+    h_tac_user_dt_22l_81l = new TH1D("h_tac_user_dt_22l_81l","dt sci 22l - 81l TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_22l_81l);
+    h_tac_user_dt_22r_81r = new TH1D("h_tac_user_dt_22r_81r","dt sci 22r - 81r TAC in User Crate",tac_bins,0,max_tac_value);
+    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_22r_81r);
 
     // Register command to reset histograms
     run->GetHttpServer()->RegisterCommand("Reset_IncomingID_HIST", Form("/Objects/%s/->Reset_Histo()", GetName()));
@@ -206,7 +328,7 @@ void FrsDetectorsOnline::Exec(Option_t* option)
         //music timings:
         const uint32_t* music_t1 = fHitFrsMainCal->Get_music_t1(); // size 8 arrays
         const uint32_t* music_t2 = fHitFrsMainCal->Get_music_t2(); // size 8 arrays
-        if (music_t1!=nullptr && music_t2 != nullptr) for (int anode = 0; anode<8; anode++) {h_music41_t->Fill(anode,music_t1[anode]); h_music42_t->Fill(anode,music_t1[anode]);}
+        if (music_t1!=nullptr && music_t2 != nullptr) for (int anode = 0; anode<8; anode++) {h_music41_t->Fill(anode,music_t1[anode]); h_music42_t->Fill(anode,music_t2[anode]);}
         
         
         std::vector<uint32_t> sci_21l_t = fHitFrsMainCal->Get_TDC_channel(2);
@@ -241,6 +363,120 @@ void FrsDetectorsOnline::Exec(Option_t* option)
         }
     }
 
+    if (fFrsTPCArray && fFrsTPCArray->GetEntriesFast() > 0){
+        Int_t nHits = fFrsTPCArray->GetEntriesFast();
+        for (Int_t ihit = 0; ihit < nHits; ihit++)
+        {
+            fHitFrsTPC = (FrsTPCData*)fFrsTPCArray->At(ihit);
+            if (!fHitFrsTPC)
+                continue;
+            std::vector<uint32_t> tpc_v1190_channels;
+            std::vector<uint32_t> tpc_v1190_lot;
+            std::vector<uint32_t> tpc_v1190_data;
+            tpc_v1190_channels = fHitFrsTPC->Get_V1190_Channel();
+            tpc_v1190_lot = fHitFrsTPC->Get_V1190_LoT();
+            tpc_v1190_data = fHitFrsTPC->Get_V1190_Data();
+
+            for (int v1190_hit = 0; v1190_hit<tpc_v1190_channels.size(); v1190_hit++){
+                if (!tpc_v1190_lot.at(v1190_hit)){
+                    h_tpc_timings_lead->Fill(tpc_v1190_channels.at(v1190_hit),tpc_v1190_data.at(v1190_hit));
+                }else{
+                    h_tpc_timings_trail->Fill(tpc_v1190_channels.at(v1190_hit),tpc_v1190_data.at(v1190_hit));
+                }
+            }
+        }
+    }
+
+
+    if (fFrsTPCCalArray && fFrsTPCCalArray->GetEntriesFast() > 0){
+        Int_t nHits = fFrsTPCCalArray->GetEntriesFast();
+        for (Int_t ihit = 0; ihit < nHits; ihit++)
+        {
+            fHitFrsTPCCal = (FrsTPCCalData*)fFrsTPCCalArray->At(ihit);
+            if (!fHitFrsTPCCal)
+                continue;
+            for (int an = 0; an < number_of_anodes_per_tpc; an++){
+                for (int ntpc = 0; ntpc < number_of_tpcs; ntpc ++){
+                    h_tpc_check_sums->Fill(ntpc*number_of_anodes_per_tpc + an, fHitFrsTPCCal->Get_tpc_csum(ntpc,an));
+                }
+
+                h_tpc_angle_x_s2_foc_21_22->Fill(fHitFrsTPCCal->Get_tpc_angle_x_s2_foc_21_22());
+                h_tpc_angle_y_s2_foc_21_22->Fill(fHitFrsTPCCal->Get_tpc_angle_y_s2_foc_21_22());
+                h_tpc_x_s2_foc_21_22->Fill(fHitFrsTPCCal->Get_tpc_x_s2_foc_21_22());
+                h_tpc_y_s2_foc_21_22->Fill(fHitFrsTPCCal->Get_tpc_y_s2_foc_21_22());
+                h_tpc21_22_sc21_x->Fill(fHitFrsTPCCal->Get_tpc21_22_sc21_x());
+                h_tpc21_22_sc22_x->Fill(fHitFrsTPCCal->Get_tpc21_22_sc22_x());
+                h_tpc_angle_x_s2_foc_23_24->Fill(fHitFrsTPCCal->Get_tpc_angle_x_s2_foc_23_24());
+                h_tpc_angle_y_s2_foc_23_24->Fill(fHitFrsTPCCal->Get_tpc_angle_y_s2_foc_23_24());
+                h_tpc_x_s2_foc_23_24->Fill(fHitFrsTPCCal->Get_tpc_x_s2_foc_23_24());
+                h_tpc_y_s2_foc_23_24->Fill(fHitFrsTPCCal->Get_tpc_y_s2_foc_23_24());
+                h_tpc23_24_sc21_x->Fill(fHitFrsTPCCal->Get_tpc23_24_sc21_x());
+                h_tpc23_24_sc21_y->Fill(fHitFrsTPCCal->Get_tpc23_24_sc21_y());
+                h_tpc23_24_sc22_x->Fill(fHitFrsTPCCal->Get_tpc23_24_sc22_x());
+                h_tpc23_24_sc22_y->Fill(fHitFrsTPCCal->Get_tpc23_24_sc22_y());
+                h_tpc_angle_x_s2_foc_22_24->Fill(fHitFrsTPCCal->Get_tpc_angle_x_s2_foc_22_24());
+                h_tpc_angle_y_s2_foc_22_24->Fill(fHitFrsTPCCal->Get_tpc_angle_y_s2_foc_22_24());
+                h_tpc_x_s2_foc_22_24->Fill(fHitFrsTPCCal->Get_tpc_x_s2_foc_22_24());
+                h_tpc_y_s2_foc_22_24->Fill(fHitFrsTPCCal->Get_tpc_y_s2_foc_22_24());
+                h_tpc_angle_x_s4->Fill(fHitFrsTPCCal->Get_tpc_angle_x_s4());
+                h_tpc_angle_y_s4->Fill(fHitFrsTPCCal->Get_tpc_angle_y_s4());
+                h_tpc_x_s4->Fill(fHitFrsTPCCal->Get_tpc_x_s4());
+                h_tpc_y_s4->Fill(fHitFrsTPCCal->Get_tpc_y_s4());
+                h_tpc_sc41_x->Fill(fHitFrsTPCCal->Get_tpc_sc41_x());
+                h_tpc_sc41_y->Fill(fHitFrsTPCCal->Get_tpc_sc41_y());
+                h_tpc_sc42_x->Fill(fHitFrsTPCCal->Get_tpc_sc42_x());
+                h_tpc_sc42_y->Fill(fHitFrsTPCCal->Get_tpc_sc42_y());
+                h_tpc_sc43_x->Fill(fHitFrsTPCCal->Get_tpc_sc43_x());
+                h_tpc_music41_x->Fill(fHitFrsTPCCal->Get_tpc_music41_x());
+                h_tpc_music42_x->Fill(fHitFrsTPCCal->Get_tpc_music42_x());
+                h_tpc_music43_x->Fill(fHitFrsTPCCal->Get_tpc_music43_x());
+            }
+        }
+    }
+
+    if (fFrsUserCalArray && fFrsUserCalArray->GetEntriesFast() > 0){
+        Int_t nhits = fFrsUserCalArray->GetEntriesFast();
+        for (Int_t ihit = 0; ihit<nhits; ihit++){
+            fHitFrsUserCal = (FrsUserCalData*)fFrsUserCalArray->At(ihit);
+            if (!fHitFrsUserCal) continue;
+            dt_array = fHitFrsUserCal->Get_dt_array();
+            uint32_t dt_21l_21r = dt_array[0];
+            h_tac_user_dt_21l_21r->Fill(dt_21l_21r);
+            uint32_t dt_41l_41r = dt_array[1];
+            h_tac_user_dt_41l_41r->Fill(dt_41l_41r);
+            uint32_t dt_42l_42r = dt_array[2];
+            h_tac_user_dt_42l_42r->Fill(dt_42l_42r);
+            uint32_t dt_43l_43r = dt_array[3];
+            h_tac_user_dt_43l_43r->Fill(dt_43l_43r);
+            uint32_t dt_81l_81r = dt_array[4];
+            h_tac_user_dt_81l_81r->Fill(dt_81l_81r);
+            uint32_t dt_21l_41l = dt_array[5];
+            h_tac_user_dt_21l_41l->Fill(dt_21l_41l);
+            uint32_t dt_21r_41r = dt_array[6];
+            h_tac_user_dt_21r_41r->Fill(dt_21r_41r);
+            uint32_t dt_42r_21r = dt_array[7];
+            h_tac_user_dt_42r_21r->Fill(dt_42r_21r);
+            uint32_t dt_42l_21l = dt_array[8];
+            h_tac_user_dt_42l_21l->Fill(dt_42l_21l);
+            uint32_t dt_21l_81l = dt_array[9];
+            h_tac_user_dt_21l_81l->Fill(dt_21l_81l);
+            uint32_t dt_21r_81r = dt_array[10];
+            h_tac_user_dt_21r_81r->Fill(dt_21r_81r);
+            uint32_t dt_22l_22r = dt_array[11];
+            h_tac_user_dt_22l_22r->Fill(dt_22l_22r);
+            uint32_t dt_22l_41l = dt_array[12];
+            h_tac_user_dt_22l_41l->Fill(dt_22l_41l);
+            uint32_t dt_22r_41r = dt_array[13];
+            h_tac_user_dt_22r_41r->Fill(dt_22r_41r);
+            uint32_t dt_22l_81l = dt_array[14];
+            h_tac_user_dt_22l_81l->Fill(dt_22l_81l);
+            uint32_t dt_22r_81r = dt_array[15];
+            h_tac_user_dt_22r_81r->Fill(dt_22r_81r);
+
+
+        }
+    }
+
     fNEvents += 1;
 }
 
@@ -248,6 +484,7 @@ void FrsDetectorsOnline::FinishEvent()
 {
     if(fFrsUserCalArray) fFrsUserCalArray->Clear();
     if(fFrsMainCalArray) fFrsMainCalArray->Clear();
+    if(fFrsTPCArray) fFrsTPCArray->Clear();
     if(fFrsTPCCalArray) fFrsTPCCalArray->Clear();
     if(fFrsVFTXCalArray) fFrsVFTXCalArray->Clear();
 }

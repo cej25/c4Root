@@ -75,7 +75,7 @@ void FrsVFTXRaw2Cal::Exec(Option_t* option)
     int mult = fRawArray->GetEntriesFast();
     if (!mult) return;
     
-    //JEL : you take the second to last event?
+    
     fRawHit = (FrsVFTXData*)fRawArray->At(mult-1);
 
     TRaw_vftx[0] = fRawHit->Get_vftx_lead_times(CH_S21_L); // 21l

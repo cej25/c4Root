@@ -34,7 +34,7 @@ class FrsCal2Hit : public FairTask
         
         void SetParameters();
         virtual void SetParContainers();
-        void Setup_Conditions();
+        void Setup_Conditions(TString path_to_folder_with_frs_config_files);
         void FRS_GainMatching();
 
         Bool_t Check_WinCond(Float_t P, Float_t* V);
@@ -344,6 +344,8 @@ class FrsCal2Hit : public FairTask
 
         EventHeader* header;
         Int_t fNEvents = 0;
+
+        bool conditions_files_read = false;
 
         // analysis stuff..
 

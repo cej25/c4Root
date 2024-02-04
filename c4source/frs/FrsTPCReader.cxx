@@ -84,9 +84,7 @@ Bool_t FrsTPCReader::Read()
     }
 
     // v1190
-    uint32_t chn_first_hit = 0, total_hits = 0;
-    uint32_t next_chn_first_hit, hits;
-
+  
     // this loops over a number of channels..is it a mistake?
     // should we loop over a number of hits? 
     int hit_index = 0;
@@ -105,8 +103,7 @@ Bool_t FrsTPCReader::Read()
             }
             
         }
-
-        hit_index = next_channel_start;
+  
     }
     
 
