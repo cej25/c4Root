@@ -9,6 +9,7 @@ class FrsHitData;
 class TCanvas;
 class TH1F;
 class TH2F;
+class TH1D;
 
 class FrsOnlineSpectra : public FairTask
 {
@@ -74,6 +75,7 @@ class FrsOnlineSpectra : public FairTask
 
         // Histograms for PID:
         TH2F * h_frs_z1_vs_AoQ;
+        TH1D * h_frs_beta_sci;
 
 
 
