@@ -609,7 +609,7 @@ void FrsTPCRaw2Cal::SetFRSParameters()
     // After changing cut limits => Launch analysis again in Go4GUI
     // [Updated on 2021/Mar/21, YT, EH, IM] to catch all timeref signals.
     tpc->lim_timeref[0][0] = 1000.0; tpc->lim_timeref[0][1] = 48000.0;//time ref (accept trig)
-    tpc->lim_timeref[1][0] = 5000.0; tpc->lim_timeref[1][1] = 20000.0;//time ref (sc21) changed to narrow gate, 2023-Nov-28 // CEJ: changing this to wide actually lets us see X2 positions...
+    tpc->lim_timeref[1][0] = 5000.0; tpc->lim_timeref[1][1] = 30000.0;//time ref (sc21) changed to narrow gate, 2023-Nov-28 // CEJ: changing this to wide actually lets us see X2 positions...
     tpc->lim_timeref[2][0] = 1000.0; tpc->lim_timeref[2][1] = 48500.0;//time ref (sc22)
     tpc->lim_timeref[3][0] = 5000.0; tpc->lim_timeref[3][1] = 20000.0;//time ref (sc31) changed to narrow gate, 2023-Nov-28
     tpc->lim_timeref[4][0] = 5000.0; tpc->lim_timeref[4][1] = 40000.0;//time ref (sc41) changed to narrow gate, 2023-Nov-28 // CEJ: changing
@@ -1700,7 +1700,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
     {   
         // weird condition in go4, ignore for now loop through vector size
         for (int j = 0; j < tpc_timeref[i].size(); j++)
-        {       
+        {   
             if (tpc_timeref[i][j] > tpc->lim_timeref[i][0] && tpc_timeref[i][j] < tpc->lim_timeref[i][1])
             {
                 b_tpc_timeref[i] = true;
@@ -1832,6 +1832,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                 tpc_csum[i][j] = -9999999;
             }
 
+            //all csums are currently -9999999 
             if (tpc_csum[i][0] > tpc->lim_csum1[i][0] && tpc_csum[i][0] < tpc->lim_csum1[i][1])
             {   
                 b_tpc_csum[i][0] = true;
@@ -1884,7 +1885,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
         float tmp_tpc_y[4] = {-99999., -99999., -99999., -99999.};
         int index_timeref = tpc->id_tpc_timeref[i];
         for (int j = 0; j < 4; j++)
-        {   
+        {       
             if (b_tpc_csum[i][j] && b_tpc_timeref[index_timeref])
             {
                 tpc_yraw[i][j] = tpc_dt_s[i][j] - tpc_timeref_s[index_timeref];
@@ -1893,6 +1894,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                 county++;
             }
         }
+
         if (county > 0)
         {
             tpc_y[i] = sumy / ((double)county);
@@ -2113,7 +2115,7 @@ void FrsTPCRaw2Cal::ZeroArrays()
     memset(tpc_rt_s, 0, sizeof(tpc_rt_s));
     memset(tpc_de, 0, sizeof(tpc_de));
     memset(b_tpc_de, 0, sizeof(b_tpc_de));
-    memset(tpc_csum, -999999, sizeof(tpc_csum));
+    memset(tpc_csum, 0, sizeof(tpc_csum));
     memset(b_tpc_csum, 0, sizeof(b_tpc_csum));
     memset(tpc_x, 0, sizeof(tpc_x));
     memset(tpc_y, 0, sizeof(tpc_y));
