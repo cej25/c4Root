@@ -8,6 +8,7 @@ class EventHeader;
 class TCanvas;
 class TH1F;
 class TH2F;
+class TFile;
 
 class bPlastOnlineSpectra : public FairTask
 {
@@ -51,6 +52,16 @@ class bPlastOnlineSpectra : public FairTask
         TCanvas* c_bplast_fast_v_slow;
         TCanvas* c_bplast_time_spectra;
         TCanvas* c_bplast_snapshot;
+
+        //Folders and directories
+        TDirectory* dir_bplast;
+        TFolder* folder_bplast;
+        TFolder* folder_bplast_slowToT;
+        TFolder* folder_bplast_fastToT;
+        TFolder* folder_bplast_hitpattern;
+        TFolder* folder_bplast_fast_v_slow;
+        TFolder* folder_bplast_time_spectra;
+        TFile * file_bplast_snapshot;
 
 
         // number of detectors

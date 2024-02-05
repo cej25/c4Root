@@ -64,6 +64,19 @@ class FatimaOnlineSpectra : public FairTask
         TCanvas* c_fatima_time_differences_energy_SCI41_gated;
         TCanvas* c_fatima_snapshot;
 
+        //Folders and directories
+        TDirectory* fatimaFolderObj;
+        TFolder* folder_fatima;
+        TFolder* folder_fatima_slowToT;
+        TFolder* folder_fatima_fastToT;
+        TFolder* folder_fatima_fast_v_slow;
+        TFolder* folder_fatima_time_spectra_divided;
+        TFolder* folder_fatima_hitpatterns;
+        TFolder* folder_fatima_energy_spectra;
+        TFolder* folder_fatima_time_differences;
+        TFile* file_fatima_snapshot;
+
+
         static const int NDetectors = 24; //change this
         
         // Histograms energy

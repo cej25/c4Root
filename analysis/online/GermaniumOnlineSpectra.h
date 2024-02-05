@@ -53,6 +53,14 @@ class GermaniumOnlineSpectra : public FairTask
         TCanvas* c_germanium_energy_mult2;
         TCanvas* c_germanium_snapshot;
 
+        // Folder and directories
+        TDirectory* dir_germanium;
+        TFolder* folder_germanium;
+        TFolder* folder_germanium_cal_energy_spectra;
+        TFolder* folder_germanium_energy_mult2;
+        TFolder* folder_germanium_time;
+        TFile* file_germanium_snapshot;
+
         // Histograms energy
         TH1F * h1_germanium_energy[100];
         TH1F * h1_germanium_energy_mult2[100];
