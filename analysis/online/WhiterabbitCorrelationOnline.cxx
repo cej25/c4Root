@@ -77,6 +77,7 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     
 }
 
+// work in progress
 void WhiterabbitCorrelationOnline::Reset_Histo()
 {
     c4LOG(info, "Resetting histograms!");
@@ -84,6 +85,10 @@ void WhiterabbitCorrelationOnline::Reset_Histo()
 
 }
 
+void WhiterabbitCorrelationOnline::Snapshot_Histo()
+{
+    c4LOG(info, "Snapshotting histograms!");
+}
 
 
 
@@ -98,6 +103,7 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             if (!hit) continue;
             
         }
+    }
     fNEvents += 1;
 }
 

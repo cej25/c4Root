@@ -1,5 +1,5 @@
-#ifndef FatimaOnlineSpectra_H
-#define FatimaOnlineSpectra_H
+#ifndef WhiterabbitCorrelationOnline_H
+#define WhiterabbitCorrelationOnline_H
 
 #include "FairTask.h"
 
@@ -9,16 +9,16 @@ class TCanvas;
 class TH1F;
 class TH2F;
 
-class FatimaOnlineSpectra : public FairTask
+class WhiterabbitCorrelationOnline : public FairTask
 {
     public:
-        FatimaOnlineSpectra();
-        FatimaOnlineSpectra(const TString& name, Int_t verbose = 1);
+        WhiterabbitCorrelationOnline();
+        WhiterabbitCorrelationOnline(const TString& name, Int_t verbose = 1);
 
 
         void CreateHistograms();
 
-        virtual ~FatimaOnlineSpectra();
+        virtual ~WhiterabbitCorrelationOnline();
 
         virtual void SetParContainers();
 
@@ -30,7 +30,10 @@ class FatimaOnlineSpectra : public FairTask
 
         virtual void FinishTask();
 
+        // work in progress
         virtual void Reset_Histo();
+
+        virtual void Snapshot_Histo();
 
         // range setters
 
@@ -49,6 +52,12 @@ class FatimaOnlineSpectra : public FairTask
 
         // Canvas
 
+        //Folders and directories
+        TDirectory* dir_whiterabbit;
+        TFolder* folder_whiterabbit;
+        TFolder* folder_whiterabbit_correlation;
+        TFile* file_whiterabbit_snapshot;
+
         
         // Histograms 
         
@@ -56,7 +65,7 @@ class FatimaOnlineSpectra : public FairTask
 
 
     public:
-        ClassDef(FatimaOnlineSpectra, 1)
+        ClassDef(WhiterabbitCorrelationOnline, 1)
 };
 
 #endif
