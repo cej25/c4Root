@@ -21,8 +21,14 @@ set(LINK_DIRECTORIES ${ROOT_LIBRARY_DIR} ${FAIRROOT_LIBRARY_DIR})
 link_directories(${LINK_DIRECTORIES})
 
 set(SRCS
-frsData/FrsData.cxx
-frsData/FrsCalData.cxx
+frsData/FrsMainData.cxx
+frsData/FrsTPCData.cxx
+frsData/FrsUserData.cxx
+frsData/FrsVFTXData.cxx
+frsData/FrsMainCalData.cxx
+frsData/FrsTPCCalData.cxx
+frsData/FrsUserCalData.cxx
+frsData/FrsVFTXCalData.cxx
 frsData/FrsHitData.cxx
 lisaData/LisaData.cxx
 lisaData/LisaTraceData.cxx
