@@ -79,7 +79,7 @@ void AidaCal2Hit::Exec(Option_t* option)
     implantHitArray->clear();
     decayHitArray->clear();
 
-    // Process implants if there are anyway
+    // Process implants if there are any
     // Decays should be 0, but we skip them anyway
     if (implantCalArray->size() > 0)
     {
@@ -339,6 +339,7 @@ AidaHit AidaCal2Hit::ClusterPairToHit(std::pair<AidaCluster, AidaCluster> const&
     hit.Time = std::min(i.first.Time, i.second.Time);
     hit.TimeX = i.first.Time;
     hit.TimeY = i.second.Time;
+    // TODO: if one FastTime is 0, take the non-zero one
     hit.FastTime = std::min(i.first.FastTime, i.second.FastTime);
     hit.FastTimeX = i.first.FastTime;
     hit.FastTimeY = i.second.FastTime;
