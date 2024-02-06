@@ -71,7 +71,7 @@ class FrsCal2Hit : public FairTask
         /* ----------------------------------------------- */
         // Intermediate variables
         /* ----------------------------------------------- */
-
+        
         /* Setup variables */
         Float_t lim_csum[4][7][2];
         Float_t lim_xsum[13][2];
@@ -99,6 +99,35 @@ class FrsCal2Hit : public FairTask
         Float_t cID_x2[2];
         Float_t cID_x4[2];
         Float_t cID_Z_Z[2];
+
+        uint32_t v830_n_main; // needed?
+        uint32_t v830_n_user; // needed?
+        std::vector<uint32_t> v830_index_main; // needed?
+        std::vector<uint32_t> v830_index_user; // needed?
+        std::vector<uint32_t> v830_scalers_main;
+        std::vector<uint32_t> v830_scalers_user;
+        
+        uint32_t scaler_check_first_event = 1;
+        uint32_t scaler_ch_1kHz = 7; // main
+        uint32_t scaler_ch_spillstart = 8; // user (goes into sc_long first in go4)
+        uint32_t sc_main_initial[32] = {0};
+        uint32_t sc_main_previous[32] = {0};
+        uint32_t sc_user_initial[32] = {0};
+        uint32_t sc_user_previous[32] = {0};
+        uint32_t increase_sc_temp_main[32] = {0}; // main?
+        uint32_t increase_sc_temp_user[32] = {0};
+
+        uint32_t time_in_ms;
+        uint32_t ibin_for_s;
+        uint32_t ibin_for_100ms;
+        uint32_t increase_sc_temp2 = 0;
+        uint32_t increase_sc_temp3 = 0;
+        uint32_t extraction_time_ms;
+        uint32_t ibin_clean_for_s;
+        uint32_t ibin_clean_for_100ms;
+        uint32_t ibin_for_spill;
+        uint32_t ibin_clean_for_spill;
+        uint32_t spill_count;
 
         const uint32_t* music_e1;
         const uint32_t* music_e2;

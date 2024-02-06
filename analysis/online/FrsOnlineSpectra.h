@@ -6,6 +6,7 @@
 class TClonesArray;
 class EventHeader;
 class FrsHitData;
+class TFolder;
 class TCanvas;
 class TH1F;
 class TH2F;
@@ -70,14 +71,24 @@ class FrsOnlineSpectra : public FairTask
         EventHeader* header;
         Int_t fNEvents;
 
+        TFolder* frs_spectra_folder;
+
         // Canvas
-        TCanvas * c_frs_z1_vs_AoQ;
-        TCanvas * c_frs_x4_vs_AoQ;
+        TCanvas* c_frs_z1_vs_AoQ;
+        TCanvas* c_frs_x4_vs_AoQ;
 
         // Histograms for PID:
-        TH2F * h_frs_z1_vs_AoQ;
-        TH2F * h_frs_x4_vs_AoQ;
-        TH1D * h_frs_beta_sci;
+        TH2F* h_frs_z1_vs_AoQ;
+        TH2F* h_frs_x4_vs_AoQ;
+        TH1D* h_frs_beta_sci;
+
+        // Histograms for Scalers
+        char scaler_name[66][256];
+        TH1D* hScaler_per_s[66];
+        TH1D* hScaler_per_100ms[66];
+        TH1D* hScaler_per_spill[66];
+        int ratio_previous = 100;
+        int ratio_previous2 = 100;
 
 
 
