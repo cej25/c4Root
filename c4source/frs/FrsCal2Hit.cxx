@@ -1253,7 +1253,7 @@ InitStatus FrsCal2Hit::ReInit()
 }
 
 void FrsCal2Hit::Exec(Option_t* option)
-{   
+{      
     //c4LOG(info,"EXEC");
     int multMain = fCalArrayMain->GetEntriesFast();
     int multTPC = fCalArrayTPC->GetEntriesFast();
@@ -1262,7 +1262,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     
     if (multMain == 0 || multTPC == 0 || multUser == 0 || multVFTX == 0) return;
     
-
+    // not even getting here right now
     fNEvents++;
     fCalHitMain = (FrsMainCalData*)fCalArrayMain->At(0);
     fCalHitTPC = (FrsTPCCalData*)fCalArrayTPC->At(0);
@@ -1270,6 +1270,78 @@ void FrsCal2Hit::Exec(Option_t* option)
     fCalHitVFTX = (FrsVFTXCalData*)fCalArrayVFTX->At(0);
 
     WR_TS = fCalHitMain->Get_WR();
+
+
+    /* -------------------------------- */
+    // Scalers "analysis" 
+    // (Moved from Calib in Go4)
+    /* -------------------------------- */
+
+    v830_n_main = fCalHitMain->Get_Scalers_N();
+    v830_n_user = fCalHitUser->Get_Scalers_N();
+    v830_index_main = fCalHitMain->Get_Scalers_Index();
+    v830_index_user = fCalHitUser->Get_Scalers_Index();
+    v830_scalers_main = fCalHitMain->Get_V830_Scalers();
+    v830_scalers_user = fCalHitUser->Get_V830_Scalers();
+
+    // maybe sc_long was better
+    if (scaler_check_first_event == 1)
+    {
+        for (int i = 0; i < 32; i++)
+        {
+            sc_main_initial[i] = v830_scalers_main[i];
+            sc_main_previous[i] = v830_scalers_main[i];
+            sc_user_initial[i] = v830_scalers_user[i];
+            sc_user_previous[i] = v830_scalers_user[i];
+        }
+
+        scaler_check_first_event = 0; 
+    }
+
+    time_in_ms = v830_scalers_main[scaler_ch_1kHz] - sc_main_initial[scaler_ch_1kHz];
+    
+    if (time_in_ms < 0)
+    {
+        sc_main_initial[scaler_ch_1kHz] = v830_scalers_main[scaler_ch_1kHz];
+        time_in_ms = 0;
+    }
+        
+    spill_count = v830_scalers_user[scaler_ch_spillstart] - sc_user_initial[scaler_ch_spillstart];
+
+    ibin_for_s = ((time_in_ms / 1000) % 1000) + 1;
+    ibin_for_100ms = ((time_in_ms / 100) % 4000) + 1;
+    ibin_for_spill  = (spill_count % 1000) + 1;
+            
+    for (int k = 0; k < 32; k++)
+    {
+        increase_sc_temp_main[k] = v830_scalers_main[k] - sc_main_previous[k];
+        increase_sc_temp_user[k] = v830_scalers_user[k] - sc_user_previous[k];
+    }
+
+    if (increase_sc_temp_user[0] != 0) // not sure how the go4 is dealing with this zero dividing
+    {
+        increase_sc_temp2 = 100 * increase_sc_temp_user[1] / increase_sc_temp_user[0];
+        increase_sc_temp3 = 100 * increase_sc_temp_user[5] / increase_sc_temp_user[6];
+    }
+    
+
+    extraction_time_ms += v830_scalers_main[scaler_ch_1kHz] - sc_main_previous[scaler_ch_1kHz];
+
+    if((v830_scalers_user[scaler_ch_spillstart] - sc_user_previous[scaler_ch_spillstart]) != 0)
+    {
+        extraction_time_ms = 0;
+    }
+            
+    ibin_clean_for_s = (((time_in_ms / 1000) + 20) % 1000) + 1;
+    ibin_clean_for_100ms = (((time_in_ms / 100) + 200) % 4000) + 1;
+    ibin_clean_for_spill = ((spill_count + 990) % 20) + 1;
+
+    for (int i = 0; i < 32; i++)
+    {   
+        sc_main_previous[i] = v830_scalers_main[i];
+        sc_user_previous[i] = v830_scalers_user[i];
+    }
+            
 
     /* ---------------------------------------------------- */
     // Start of MUSIC analysis                              //
@@ -2460,7 +2532,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     //std::cout << " id_b_AoQ: " << id_b_AoQ << " id_b_x2: " << id_b_x2 << " id_b_z: " << id_b_z << std::endl;
     //std::cout << " id_AoQ: " << id_AoQ << " id_x2: " << id_x2 << " id_z: " << id_z << std::endl;
     if (id_b_AoQ != false && id_b_x2 != false && id_b_z != false)
-    {
+    {   
         float gamma1square = 1.0 + TMath::Power(((1 / aoq_factor) * (id_brho[0] / id_AoQ)), 2);
         id_gamma_ta_s2 = TMath::Sqrt(gamma1square);
         id_dEdegoQ = (id_gamma_ta_s2 - id_gamma) * id_AoQ;
@@ -2468,6 +2540,18 @@ void FrsCal2Hit::Exec(Option_t* option)
 
         new ((*fHitArray)[fHitArray->GetEntriesFast()]) FrsHitData(
             WR_TS,
+            time_in_ms, 
+            ibin_for_s, 
+            ibin_for_100ms,
+            ibin_for_spill,
+            increase_sc_temp_main,
+            increase_sc_temp_user,
+            increase_sc_temp2,
+            increase_sc_temp3,
+            extraction_time_ms, 
+            ibin_clean_for_s, 
+            ibin_clean_for_100ms,
+            ibin_clean_for_spill,
             id_x2,
             id_x4,
             id_AoQ,
@@ -2688,7 +2772,7 @@ void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
 
 }
 
-// not used in FRS Go4
+// not used in FRS Go4?
 void FrsCal2Hit::FRS_GainMatching()
 {
     std::ifstream file;

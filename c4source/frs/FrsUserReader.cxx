@@ -69,8 +69,6 @@ Bool_t FrsUserReader::Read()
     if (fData->frsuser_data_v7751n == 0 &&  fData->frsuser_data_v7752n == 0 && fData->frsuser_data_v7851n == 0 && fData->frsuser_data_v7852n == 0) return kTRUE;
 
 
-
-
     // v830 scalers
     scalers_n = fData->frsuser_data_v830_n;
     for (uint32_t i = 0; i < scalers_n; i++)
@@ -78,8 +76,6 @@ Bool_t FrsUserReader::Read()
         scalers_index.emplace_back(fData->frsuser_data_v830_nI[i]);
         scalers_user.emplace_back(fData->frsuser_data_v830_data[fData->frsuser_data_v830_nI[i]]);
     }
-
-
 
     // CEJ: this will change because we don't need to "unpack" the channel
     // also it reads a bit horribly
