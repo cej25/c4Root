@@ -255,6 +255,9 @@ void FrsUserRaw2Cal::Exec(Option_t* option)
 
     new ((*fCalArray)[fCalArray->GetEntriesFast()]) FrsUserCalData(
         // v830 scaler stuff?
+        fRawHit->Get_Scalers_N(),
+        fRawHit->Get_Scalers_Index(),
+        fRawHit->Get_V830_Scalers(),
         dt_array,
         music_e1,
         music_e2
