@@ -85,77 +85,8 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
         
         WR_TS = fRawHit->Get_WR();
         
-        // V830
-        // this has a FrsCalib step.
-        v830_scalers_main = fRawHit->Get_V830_Scalers();
 
-        // i think this must be done in FrsReader surely..
-        if (v830_scalers_main.size() != 0)
-        {
-
-            // I'm not convinced sc_long is necessary. Maybe it was one for efficiency/memory reasons but I don't see how it's better?
-            if (scaler_check_first_event == 1) // we need to keep this value somehow? unsure.
-            {
-                for (int i = 0; i < 32; i++)
-                {
-                    sc_main_initial[i] = v830_scalers_main[i];
-                    sc_main_previous[i] = v830_scalers_main[i];
-                    // sc_frs_initial[i] = some_array[i];
-                    // sc_frs_previous[i] = some_array[i];
-                }
-                // CEJ: I don't see how this would even work for Go4
-                // scaler_check is surely flipped after a single procid runs through
-                // will leave for now..
-                scaler_check_first_event = 0; 
-            }
-
-            time_in_ms = v830_scalers_main[scaler_ch_1kHz] - sc_main_initial[scaler_ch_1kHz];
-            
-            if (time_in_ms < 0)
-            {
-                sc_main_initial[scaler_ch_1kHz] = v830_scalers_main[scaler_ch_1kHz];
-                time_in_ms = 0;
-            }
-            
-            
-            // spill_count = sc_long[scaler_ch_spillstart] - scaler_initial[scaler_ch_spillstart];
-
-            ibin_for_s = ((time_in_ms / 1000) % 1000) + 1;
-            ibin_for_100ms = ((time_in_ms / 100) % 4000) + 1;
-            // ibin_for_spill  = (spill_count % 1000) +1;
-
-            // from FrsCalib
-            // scaler_ch_spillstart=8; // 8 of scaler_frs
-            
-            for (int k = 0; k < 32; k++)
-            {
-                increase_scaler_temp[k] = v830_scalers_main[k] - sc_main_previous[k];
-                // same for scaler_frs should be added
-            }
-
-            extraction_time_ms += v830_scalers_main[scaler_ch_1kHz] - sc_main_previous[scaler_ch_1kHz];
-
-            // following is some scaler_frs condition, idk how it goes with scalers_main honestly.
-            
-            /*if(0 != sc_long[scaler_ch_spillstart] - scaler_previous[scaler_ch_spillstart])
-            {
-                extraction_time_ms = 0;
-            }*/
-            
-            ibin_clean_for_s = (((time_in_ms / 1000) + 20) % 1000) + 1;
-            ibin_clean_for_100ms = (((time_in_ms / 100) + 200) % 4000) + 1;
-            // ibin_clean_for_spill = ((spill_count + 990) % 20) + 1;
-
-            for (int i = 0; i < 32; i++)
-            {   
-                // these need to be maintained, not cleared
-                sc_main_previous[i] = v830_scalers_main[i];
-                // same for scalers_frs;
-            }
-            
-            // everything from the V830 appears to end at Calib
-        
-        }
+        // V830 passed through to Hit step
 
         // V792 
     
@@ -374,16 +305,15 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
         // enter into MainCalData
         
         // do we need this? maybe maybe not..
-        if (v830_scalers_main.size() != 0)
-        {   
-            
+       /* if (v830_scalers_main.size() != 0)
+        {   */
+    
             new ((*fCalArray)[fCalArray->GetEntriesFast()]) FrsMainCalData(
                 // V830 scalers
                 WR_TS,
-                time_in_ms, ibin_for_s, ibin_for_100ms, 
-                increase_scaler_temp, 
-                extraction_time_ms, 
-                ibin_clean_for_s, ibin_clean_for_100ms,
+                fRawHit->Get_Scalers_N(),
+                fRawHit->Get_Scalers_Index(),
+                fRawHit->Get_V830_Scalers(),
                 // V792
                 de_array,
                 // V1290
@@ -392,7 +322,7 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
             
 
 
-        }
+      //  }
         
     //}
     fNEvents++;

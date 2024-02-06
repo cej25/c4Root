@@ -96,11 +96,11 @@ Bool_t FrsMainReader::Read()
         
         for (uint32_t j = hit_index; j < next_channel_start; j++)
         {
-        //c4LOG(info,Form("current channel = %i, next channel start = %i, channels fired = %i, data = %i",fData->frsmain_data_v1290_leadOrTrailMI[channel_index], fData->frsmain_data_v1290_leadOrTrailME[channel_index], fData->frsmain_data_v1290_nM, fData->frsmain_data_v1290_leadOrTrailv[j]));
-        //c4LOG(info,Form("current channel = %i, next channel start = %i, channels fired = %i, data = %i",current_channel, next_channel_start, fData->frsmain_data_v1290_nM, fData->frsmain_data_v1290_data[j]));
-        v1290_channel.emplace_back(current_channel);
-        v1290_data.emplace_back(fData->frsmain_data_v1290_data[j]);
-        v1290_lot.emplace_back(fData->frsmain_data_v1290_leadOrTrailv[j]);
+            //c4LOG(info,Form("current channel = %i, next channel start = %i, channels fired = %i, data = %i",fData->frsmain_data_v1290_leadOrTrailMI[channel_index], fData->frsmain_data_v1290_leadOrTrailME[channel_index], fData->frsmain_data_v1290_nM, fData->frsmain_data_v1290_leadOrTrailv[j]));
+            //c4LOG(info,Form("current channel = %i, next channel start = %i, channels fired = %i, data = %i",current_channel, next_channel_start, fData->frsmain_data_v1290_nM, fData->frsmain_data_v1290_data[j]));
+            v1290_channel.emplace_back(current_channel);
+            v1290_data.emplace_back(fData->frsmain_data_v1290_data[j]);
+            v1290_lot.emplace_back(fData->frsmain_data_v1290_leadOrTrailv[j]);
         }
         hit_index = next_channel_start;
     }
