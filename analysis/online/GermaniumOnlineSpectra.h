@@ -8,6 +8,8 @@ class EventHeader;
 class TCanvas;
 class TH1F;
 class TH2F;
+class TFile;
+class TFolder;
 
 class GermaniumOnlineSpectra : public FairTask
 {
@@ -40,9 +42,7 @@ class GermaniumOnlineSpectra : public FairTask
     private:
         TClonesArray* fHitGe;
 
-
         // ranges
-        //Double_t
 
         EventHeader* header;
         Int_t fNEvents;
@@ -53,7 +53,7 @@ class GermaniumOnlineSpectra : public FairTask
         TCanvas* c_germanium_energy_mult2;
         TCanvas* c_germanium_snapshot;
 
-        // Folder and directories
+        // Folder and files
         TDirectory* dir_germanium;
         TFolder* folder_germanium;
         TFolder* folder_germanium_cal_energy_spectra;
@@ -65,9 +65,10 @@ class GermaniumOnlineSpectra : public FairTask
         TH1F * h1_germanium_energy[100];
         TH1F * h1_germanium_energy_mult2[100];
 
-        //Histograms time
+        // Histograms time
         TH1F * h1_germanium_time[100];
 
+        // Number of DEGAS detectors and crystals clusters 
         const int NCrystals = 3; //needs to be changed.
         const int NDetectors = 12; //needs to be changed.
 

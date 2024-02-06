@@ -45,7 +45,7 @@ class bPlastOnlineSpectra : public FairTask
         EventHeader* header;
         Int_t fNEvents;
 
-        // Canvas -- we can think about adding lead and trail spectra for each channel/detector
+        // Canvases
         TCanvas* c_bplast_slowToT;
         TCanvas* c_bplast_fastToT;
         TCanvas* c_bplast_hitpatterns;
@@ -53,7 +53,7 @@ class bPlastOnlineSpectra : public FairTask
         TCanvas* c_bplast_time_spectra;
         TCanvas* c_bplast_snapshot;
 
-        //Folders and directories
+        //Folders and files
         TDirectory* dir_bplast;
         TFolder* folder_bplast;
         TFolder* folder_bplast_slowToT;
@@ -65,10 +65,9 @@ class bPlastOnlineSpectra : public FairTask
 
 
         // number of detectors
-
         static const int NDetectors = 150;
 
-        // Histograms energy
+        // Histograms
         TH1F * h1_bplast_slowToT[NDetectors];
         TH1F * h1_bplast_fastToT[NDetectors];
 
@@ -77,7 +76,7 @@ class bPlastOnlineSpectra : public FairTask
 
         TH2F * h2_bplast_slowToT_vs_fastToT[NDetectors];
 
-        //Absolute time spectra
+        // Absolute time spectra
         TH1F * h1_bplast_abs_time[NDetectors];
 
 

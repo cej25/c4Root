@@ -92,8 +92,10 @@ InitStatus bPlastOnlineSpectra::Init()
         c_bplast_slowToT->cd(ihist+1);
         h1_bplast_slowToT[ihist] = new TH1F(Form("c_bplast_slowToT_%d",ihist),Form("bPlastic slow ToT %d",ihist),10000,0,5e3);
         h1_bplast_slowToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
-        h1_bplast_slowToT[ihist]->Draw();
-        folder_bplast_slowToT->Add(h1_bplast_slowToT[ihist]);
+        if (h1_bplast_slowToT[ihist]->GetEntries() != 0){
+            h1_bplast_slowToT[ihist]->Draw();   
+            folder_bplast_slowToT->Add(h1_bplast_slowToT[ihist]);
+        }    
     }
     c_bplast_slowToT->cd(0);
 
@@ -107,8 +109,10 @@ InitStatus bPlastOnlineSpectra::Init()
         c_bplast_fastToT->cd(ihist+1);
         h1_bplast_fastToT[ihist] = new TH1F(Form("c_bplast_fastToT_%d",ihist),Form("bPlastic fast ToT %d",ihist),10000,0,5e3);
         h1_bplast_fastToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
-        h1_bplast_fastToT[ihist]->Draw();
-        folder_bplast_fastToT->Add(h1_bplast_fastToT[ihist]);
+        if (h1_bplast_fastToT[ihist]->GetEntries() != 0){
+            h1_bplast_fastToT[ihist]->Draw();   
+            folder_bplast_fastToT->Add(h1_bplast_fastToT[ihist]);
+        }
     }
     c_bplast_fastToT->cd(0);
 
@@ -123,12 +127,12 @@ InitStatus bPlastOnlineSpectra::Init()
     h1_bplast_fast_hitpatterns = new TH1F("h1_bplast_fast_hitpatterns","Fast ToT detector hit patterns",NDetectors,0,NDetectors);
     h1_bplast_fast_hitpatterns->GetXaxis()->SetTitle("Detector ID");
     h1_bplast_fast_hitpatterns->GetYaxis()->SetTitle("Counts");
-    folder_bplast_hitpattern->Add(h1_bplast_fast_hitpatterns);
+    if(h1_bplast_fast_hitpatterns->GetEntries() !=0) folder_bplast_hitpattern->Add(h1_bplast_fast_hitpatterns);
     c_bplast_hitpatterns->cd(2);
     h1_bplast_slow_hitpatterns = new TH1F("h1_bplast_slow_hitpatterns","Slow ToT detector hit patterns",NDetectors,0,NDetectors);
     h1_bplast_slow_hitpatterns->GetXaxis()->SetTitle("Detector ID");
     h1_bplast_slow_hitpatterns->GetYaxis()->SetTitle("Counts");
-    folder_bplast_hitpattern->Add(h1_bplast_slow_hitpatterns);
+    if(h1_bplast_slow_hitpatterns->GetEntries() != 0)folder_bplast_hitpattern->Add(h1_bplast_slow_hitpatterns);
     c_bplast_hitpatterns->cd(0);
 
 
@@ -142,7 +146,10 @@ InitStatus bPlastOnlineSpectra::Init()
         c_bplast_time_spectra->cd(ihist+1);
         h1_bplast_abs_time[ihist] = new TH1F(Form("bPlast_Time_spectrum_%d",ihist),Form("bPlast Time spectrum detector %d",ihist),10000,0,2.7e12);
         h1_bplast_abs_time[ihist]->GetXaxis()->SetTitle("Time (ns)");
-        folder_bplast_time_spectra->Add(h1_bplast_abs_time[ihist]);
+        if (h1_bplast_abs_time[ihist]->GetEntries() != 0){
+            h1_bplast_abs_time[ihist]->Draw();
+            folder_bplast_time_spectra->Add(h1_bplast_abs_time[ihist]);
+        }
     }
     c_bplast_time_spectra->cd(0);
 
@@ -156,8 +163,10 @@ InitStatus bPlastOnlineSpectra::Init()
         h2_bplast_slowToT_vs_fastToT[ihist] = new TH2F(Form("h2_bplast_slowToT_vs_fastToT_ToT_%d",ihist),Form("bplast fast vs. slow detector %d",ihist),1000,0,2.5e3,1000,0,2.5e3);
         h2_bplast_slowToT_vs_fastToT[ihist]->GetXaxis()->SetTitle("Fast ToT (ns)");
         h2_bplast_slowToT_vs_fastToT[ihist]->GetYaxis()->SetTitle("Slow ToT (ns)");
-        h2_bplast_slowToT_vs_fastToT[ihist]->Draw("COLZ");
-        folder_bplast_fast_v_slow->Add(h2_bplast_slowToT_vs_fastToT[ihist]);
+        if (h2_bplast_slowToT_vs_fastToT[ihist]->GetEntries() != 0){
+            h2_bplast_slowToT_vs_fastToT[ihist]->Draw("COLZ");
+            folder_bplast_fast_v_slow->Add(h2_bplast_slowToT_vs_fastToT[ihist]);
+        }
     }
     c_bplast_fast_v_slow->cd(0);
 
@@ -235,7 +244,7 @@ void bPlastOnlineSpectra::Snapshot_Histo()
     delete file_bplast_snapshot;
 
     gSystem->cd("..");
-    c4LOG(info, "Snapshots saved in:" << snapshot_dir);
+    c4LOG(info, "bPlastTwinkPeaks saved in:" << snapshot_dir);
 }
 
 void bPlastOnlineSpectra::Exec(Option_t* option)
@@ -286,9 +295,13 @@ void bPlastOnlineSpectra::FinishEvent()
 
 void bPlastOnlineSpectra::FinishTask()
 {
-    if (fHitbPlastTwinpeaks)
-    {
+    if(fNEvents == 0){ 
+        c4LOG(warn, "No events found, not saving histograms!");
+        return;
+    }
+    if (fHitbPlastTwinpeaks){
         folder_bplast->Write();
+        c4LOG(info, "bPlast histograms written to file.");
     }
 }
 

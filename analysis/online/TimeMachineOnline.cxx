@@ -276,17 +276,15 @@ void TimeMachineOnline::FinishEvent()
 
 void TimeMachineOnline::FinishTask()
 {
-    if (f_time_machines)//writes to file, test?
+    if (fNEvents == 0)
     {
-        for (int ihist = 0; ihist<num_detector_systems; ihist++) h1_time_delayed[ihist]->Write();
-        for (int ihist = 0; ihist<num_detector_systems; ihist++) h1_time_undelayed[ihist]->Write();
-        for (int ihist = 0; ihist<num_detector_systems; ihist++) h1_time_diff[ihist]->Write();
-
-        for (int ihist = 0; ihist < num_detector_systems; ihist++){
-            for (int ihist2 = ihist + 1; ihist2 < num_detector_systems; ihist2++){
-            h2_time_diff_corrs[ihist*num_detector_systems + ihist2]->Write();
-            }
-        }
+        c4LOG(warning, "No events processed, no histograms written.");
+        return;
+    }
+    if (f_time_machines)
+    {
+        folder_time_machine->Write();
+        c4LOG(info, "TimeMachine Histograms written to file.");
     }
 }
 
