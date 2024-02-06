@@ -31,7 +31,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     //stream://x86l-116
     //"trans://lxg1257"
     //TString filename = "trans://lxg1257";
-    TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0006_000*.lmd";
+    TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
@@ -78,8 +78,8 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     AidaReader* unpackaida = new AidaReader((EXT_STR_h101_aida_onion*)&ucesb_struct.aida, offsetof(EXT_STR_h101, aida));
 
     bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_bplast_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
-    unpackbplast->DoFineTimeCalOnline("/u/cjones/c4Root/config/NovTest/fine_time_histos_111223_bplast.root",10000000);
-    //unpackbplast->SetInputFileFineTimeHistos("/u/cjones/c4Root/config/NovTest/fine_time_histos_111223_bplast.root");
+    //unpackbplast->DoFineTimeCalOnline("/u/cjones/c4Root/config/NovTest/fine_time_histos_111223_bplast.root",10000000);
+    unpackbplast->SetInputFileFineTimeHistos("/u/cjones/c4Root/config/NovTest/fine_time_histos_111223_bplast.root");
 
     FrsMainReader* unpackfrsmain = new FrsMainReader((EXT_STR_h101_frsmain_onion*)&ucesb_struct.frsmain, offsetof(EXT_STR_h101, frsmain));
     FrsTPCReader* unpackfrstpc = new FrsTPCReader((EXT_STR_h101_frstpc_onion*)&ucesb_struct.frstpc, offsetof(EXT_STR_h101, frstpc));
