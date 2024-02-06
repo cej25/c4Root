@@ -8,6 +8,7 @@ class EventHeader;
 class TCanvas;
 class TH1F;
 class TH2F;
+class TFile;
 
 class WhiterabbitCorrelationOnline : public FairTask
 {
@@ -41,26 +42,29 @@ class WhiterabbitCorrelationOnline : public FairTask
     private:
         TClonesArray* fHitFatimaTwinpeaks;
         TClonesArray* fHitbPlastTwinpeaks;
+        TClonesArray* fHitGe;
         TClonesArray* fHitAida;
 
-
         // ranges
-        //Double_t
 
         EventHeader* header;
         Int_t fNEvents;
 
         // Canvas
+        TCanvas* c_whiterabbit_correlation_bplast_fatima;
+        TCanvas* c_whiterabbit_correlation_bplast_ge;
+        TCanvas* c_whiterabbit_correlation_fatima_ge;
 
         //Folders and directories
         TDirectory* dir_whiterabbit;
         TFolder* folder_whiterabbit;
-        TFolder* folder_whiterabbit_correlation;
         TFile* file_whiterabbit_snapshot;
 
         
-        // Histograms 
-        
+        // Histograms  
+        TH1F* h_whiterabbit_correlation_bplast_fatima;
+        TH1F* h_whiterabbit_correlation_bplast_ge;
+        TH1F* h_whiterabbit_correlation_fatima_ge;
 
 
 

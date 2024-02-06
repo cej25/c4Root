@@ -61,25 +61,22 @@ class AidaOnlineSpectra : public FairTask
         TAidaConfiguration const* conf;
 
         EventHeader* header;
-        Int_t fNEvents; // TODO: Is this used
+        Int_t fNEvents;
 
         // Canvas
-        //TCanvas* cSumTime; // channel 1 out of 28 for now?
-        //TCanvas* cEnergySpectraTest;
         TCanvas* c_aida_snapshots;
 
         // Folders
-        TFolder* aidaFolder;
-        TFolder* implantFolder;
-        TFolder* stoppedImplantFolder;
-        TFolder* decayFolder;
-        TFolder* scalersFolder;
-        std::vector<TFolder*> implantDssdFolder;
-        std::vector<TFolder*> stoppedImplantDssdFolder;
-        std::vector<TFolder*> decayDssdFolder;
+        TFolder* folder_aida;
+        TFolder* folder_implant;
+        TFolder* folder_stopped_implant;
+        TFolder* folder_decay;
+        TFolder* folder_scalers;
+        std::vector<TFolder*> folder_implant_dssd;
+        std::vector<TFolder*> folder_stopped_implant_dssd;
+        std::vector<TFolder*> folder_decay_dssd;
 
         // Histograms
-        //std::vector<std::array<std::array<TH1F*, 2>, 64>> fhAdcs;
         // Implant Histograms
         std::vector<TH2F*> h_implant_strip_xy;
         std::vector<TH2F*> h_implant_pos_xy;
