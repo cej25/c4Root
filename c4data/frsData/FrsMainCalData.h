@@ -10,12 +10,10 @@ class FrsMainCalData : public TObject
     public:
         FrsMainCalData();
 
-        FrsMainCalData(uint64_t WR_TS, uint32_t time_in_ms, 
-                uint32_t ibin_for_s, uint32_t ibin_for_100ms, 
-                const uint32_t* increase_scaler_temp, 
-                uint32_t extraction_time_ms, 
-                uint32_t ibin_clean_for_s, 
-                uint32_t ibin_clean_for_100ms,
+        FrsMainCalData(uint64_t WR_TS, 
+                uint32_t Scalers_N, 
+                std::vector<uint32_t> Scalers_Index, 
+                std::vector<uint32_t> V830_Scalers,
                 // V792
                 const uint32_t* de_array,
                 // V1290
@@ -25,11 +23,12 @@ class FrsMainCalData : public TObject
 
         ~FrsMainCalData();
 
-        // Getters -- what did we need these for again?
         inline const uint64_t Get_WR() const { return fWR_TS; }
         
         
-        
+        inline const Int_t Get_Scalers_N() const { return fScalers_N; }
+        inline const std::vector<uint32_t>& Get_Scalers_Index() const { return fScalers_Index; }
+        inline const std::vector<uint32_t>& Get_V830_Scalers() const { return fV830_Scalers; }
         
         inline const uint32_t* Get_De_array() const { return fDe_array; }
         inline const uint32_t Get_De_channel(int channel) const {
@@ -52,14 +51,9 @@ class FrsMainCalData : public TObject
 
         uint64_t fWR_TS;
 
-        // could also put these in an array
-        uint32_t fTimeMs;
-        uint32_t fIBinS;
-        uint32_t fIBin100Ms;
-        uint32_t fIncreaseScalerTemp[32]; // 32 length array // // gives strange error in TStreamerBuild
-        uint32_t fExtractionTime;
-        uint32_t fIBinSClean;
-        uint32_t fIBin100MsClean;
+        Int_t fScalers_N;
+        std::vector<uint32_t> fScalers_Index;
+        std::vector<uint32_t> fV830_Scalers;
 
         // put these in arrays
         uint32_t fDe_array[14];
