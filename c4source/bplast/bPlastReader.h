@@ -21,6 +21,7 @@ typedef struct EXT_STR_h101_bplast_t EXT_STR_h101_bplast;
 typedef struct EXT_STR_h101_bplast_onion_t EXT_STR_h101_bplast_onion;
 class ext_data_struct_info;
 
+
 struct bplast_last_lead_hit_struct{
     bool hit = false;
     //uint16_t board_id; index using these:
@@ -85,6 +86,7 @@ class bPlastReader : public c4Reader
         TClonesArray* fArray;
 
         uint64_t wr_t;
+
 
 
         static const int NBoards = sizeof(fData->bplast_tamex) / sizeof(fData->bplast_tamex[0]);
