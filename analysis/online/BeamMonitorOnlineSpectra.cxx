@@ -123,6 +123,7 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     run->AddObject(bmFold);
 
     run->GetHttpServer()->RegisterCommand("Reset_BM_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Snapshot_BM_Histos", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
 
     return kSUCCESS;
 }
@@ -138,6 +139,30 @@ void BeamMonitorOnlineSpectra::Reset_Histo()
     hBM_s4h_dc->Reset();
     hBM_s4h_poisson->Reset();
     hBM_s4h_norm_tdiff->Reset();
+
+}
+
+// change as needed depending on changes
+void BeamMonitorOnlineSpectra::Snapshot_Histo()
+{
+    //date and time stamp folder
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
+    const char* snapshot_dir = Form("BeamMonitor_Snapshot_%d-%d-%d_%d-%d-%d", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
+    gSystem->mkdir(snapshot_dir);
+    gSystem->cd(snapshot_dir);
+
+    cS4tdiff->SaveAs("cS4tdiff.png");
+    ct1->SaveAs("ct1.png");
+    cQF->SaveAs("cQF.png");
+    cNormDiff->SaveAs("cNormDiff.png");
+    cPoisson->SaveAs("cPoisson.png");
+    cCum->SaveAs("cCum.png");
+    cCumPoisson->SaveAs("cCumPoisson.png");
+    cDev->SaveAs("cDev.png");
+
+    gSystem->cd("..");
+    c4LOG(info, "Snapshot saved to:" << snapshot_dir);
 
 }
 
