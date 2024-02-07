@@ -2,15 +2,22 @@
 #define FrsCalSpectra_H
 
 #include "FairTask.h"
+#include "TH1.h"
+#include "TH2.h"
 
 class TClonesArray;
 class EventHeader;
-class TFolder;
+class FrsHitData;
+class FrsMainCalData;
+class FrsUserCalData;
+class FrsTPCData;
+class FrsTPCCalData;
+class FrsVFTXCalData;
 class TCanvas;
 class TH1F;
 class TH2F;
-class TH1D;
-class FrsCalData;
+class TFolder;
+
 
 class FrsCalSpectra : public FairTask
 {
@@ -35,12 +42,22 @@ class FrsCalSpectra : public FairTask
 
     private:
 
-        TClonesArray* fCalMainArray;
-        FrsCalData* fCalMainHit;
+        TClonesArray* fFrsUserCalArray; // array with hit items
+        TClonesArray* fFrsMainCalArray; // array with hit items
+        TClonesArray* fFrsTPCArray; // array with hit items
+        TClonesArray* fFrsTPCCalArray; // array with hit items
+        TClonesArray* fFrsVFTXCalArray; // array with hit items
+
+        FrsUserCalData* fHitFrsUserCal; // array with hit items
+        FrsMainCalData* fHitFrsMainCal; // array with hit items
+        FrsTPCData* fHitFrsTPC; // array with hit items
+        FrsTPCCalData* fHitFrsTPCCal; // array with hit items
+        FrsVFTXCalData* fHitFrsVFTXCal; // array with hit items
 
         EventHeader* header;
         Int_t fNEvents;
 
+        TFolder* frs_hists;
         TFolder* frs_cal_hists;
 }
 
