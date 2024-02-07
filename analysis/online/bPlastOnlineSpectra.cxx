@@ -276,9 +276,6 @@ void bPlastOnlineSpectra::Exec(Option_t* option)
             if (hit->Get_fast_ToT() != 0) h1_bplast_fast_hitpatterns->Fill(hit->Get_detector_id());
             if (hit->Get_slow_ToT() != 0) h1_bplast_slow_hitpatterns->Fill(hit->Get_detector_id());
             
-            // Fast Vs Slow ToT
-
-            
 
             }
         }
