@@ -2,6 +2,7 @@
 #define TimeMachineOnline_H
 
 #include "FairTask.h"
+#include "TFolder.h"
 #include <vector>
 
 class TClonesArray;
@@ -11,6 +12,7 @@ class TCanvas;
 class TH1F;
 class TH2F;
 class TFile;
+class TFolder;
 
 class TimeMachineOnline : public FairTask
 {
