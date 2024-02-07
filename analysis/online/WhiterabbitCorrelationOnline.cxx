@@ -157,12 +157,11 @@ void WhiterabbitCorrelationOnline::Snapshot_Histo()
 void WhiterabbitCorrelationOnline::Exec(Option_t* option)
 {   
     //JB: there is probably a better way to code this. JEL or Nic hilfe bitte!
-    if (fHitFatimaTwinpeaks && fHitFatimaTwinpeaks->GetEntriesFast() > 0 && fHitbPlastTwinpeaks && fHitbPlastTwinpeaks->GetEntriesFast() > 0 && fHitGe && fHitGe->GetEntriesFast() > 0)
-    {
-        Int_t nHitsFatima = fHitFatimaTwinpeaks->GetEntriesFast();
-        Int_t nHitsbPlast = fHitbPlastTwinpeaks->GetEntriesFast();
-        Int_t nHitsGe = fHitGe->GetEntriesFast();
+    Int_t nHitsFatima = fHitFatimaTwinpeaks ? fHitFatimaTwinpeaks->GetEntriesFast() : 0;
+    Int_t nHitsbPlast = fHitbPlastTwinpeaks ? fHitbPlastTwinpeaks->GetEntriesFast() : 0;
+    Int_t nHitsGe = fHitGe ? fHitGe->GetEntriesFast() : 0;
 
+    if (fHitFatimaTwinpeaks && fHitFatimaTwinpeaks->GetEntriesFast > 0 && fHitbPlastTwinpeaks && fHitbPlastTwinpeaks->GetEntriesFast > 0){
         for (Int_t i = 0; i < nHitsFatima; i++)
         {
             FatimaTwinpeaksCalData* hitFatima = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(i);
@@ -178,6 +177,8 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
                 }
             }
         }
+    }
+    if(fHitFatimaTwinpeaks && fHitFatimaTwinpeaks->GetEntriesFast > 0 && fHitGe && fHitGe->GetEntriesFast > 0){
         for (Int_t i = 0; i < nHitsFatima; i++){
             FatimaTwinpeaksCalData* hitFatima = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(i);
             if (hitFatima)
@@ -192,6 +193,8 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
                 }
             }
         }
+    }
+    if (fHitbPlastTwinpeaks && fHitbPlastTwinpeaks->GetEntriesFast > 0 && fHitGe && fHitGe->GetEntriesFast > 0){
         for (Int_t i = 0; i < nHitsbPlast; i++){
             bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(i);
             if (hitbPlast)
@@ -209,6 +212,7 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
     }
     fNEvents += 1;
 }
+
 
 
 
