@@ -123,7 +123,7 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     run->AddObject(bmFold);
 
     run->GetHttpServer()->RegisterCommand("Reset_BM_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
-    run->GetHttpServer()->RegisterCommand("Reset_BM_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Snapshot_BM_Histos", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
 
     return kSUCCESS;
 }
