@@ -47,8 +47,7 @@ FrsOnlineSpectra::FrsOnlineSpectra(const TString& name, Int_t iVerbose)
 FrsOnlineSpectra::~FrsOnlineSpectra()
 {
     c4LOG(info, "");
-    if (fHitFrsArray)
-        delete fHitFrsArray;
+    if (fHitFrsArray) delete fHitFrsArray;
 }
 
 // Public Method SetParContainers
