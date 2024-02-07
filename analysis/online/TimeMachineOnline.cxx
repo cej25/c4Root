@@ -88,8 +88,8 @@ InitStatus TimeMachineOnline::Init()
     }
 
     c4LOG(info,"allocating histograms.");
-    TFolder * time_machine_folder = new TFolder("TimeMachines", "TimeMachines");
-    run->AddObject(time_machine_folder);
+    folder_time_machine = new TFolder("TimeMachines", "TimeMachines");
+    run->AddObject(folder_time_machine);
     // Time:
     
     TCanvas * time_undelayed  = new TCanvas("time_undelayed","Time machine stuff",650,350);
@@ -100,12 +100,12 @@ InitStatus TimeMachineOnline::Init()
         h1_time_undelayed[ihist] = new TH1F("time_undelayed_"+fdetector_systems.at(ihist),"time_undelayed_"+fdetector_systems.at(ihist),500,165e12,166e12);
         h1_time_undelayed[ihist]->GetXaxis()->SetTitle("time (ns)");
         h1_time_undelayed[ihist]->Draw();
-        time_machine_folder->Add(h1_time_undelayed[ihist]);
+        folder_time_machine->Add(h1_time_undelayed[ihist]);
 
     }
     //time_undelayed->cd(0);
 
-    time_machine_folder->Add(time_undelayed);
+    folder_time_machine->Add(time_undelayed);
 
     TCanvas * time_delayed  = new TCanvas("time_delayed","Time machine stuff",650,350);
     time_delayed->Divide(1,num_detector_systems);
@@ -115,12 +115,12 @@ InitStatus TimeMachineOnline::Init()
         h1_time_delayed[ihist] = new TH1F("time_delayed_"+fdetector_systems.at(ihist),"time_delayed_"+fdetector_systems.at(ihist),500,165e12,166e12);
         h1_time_delayed[ihist]->GetXaxis()->SetTitle("time (ns)");
         h1_time_delayed[ihist]->Draw();
-        time_machine_folder->Add(h1_time_delayed[ihist]);
+        folder_time_machine->Add(h1_time_delayed[ihist]);
 
     }
     //time_delayed->cd(0);
 
-    time_machine_folder->Add(time_delayed);
+    folder_time_machine->Add(time_delayed);
 
 
     TCanvas * time_diff  = new TCanvas("time_diff","Time machine stuff",650,350);
@@ -131,12 +131,12 @@ InitStatus TimeMachineOnline::Init()
         h1_time_diff[ihist] = new TH1F("time_diff_"+fdetector_systems.at(ihist),"time_diff_"+fdetector_systems.at(ihist),1000,-100,2000);
         h1_time_diff[ihist]->GetXaxis()->SetTitle("time (ns)");
         h1_time_diff[ihist]->Draw();
-        time_machine_folder->Add(h1_time_diff[ihist]);
+        folder_time_machine->Add(h1_time_diff[ihist]);
 
     }
     //time_diff->cd(0);
 
-    time_machine_folder->Add(time_diff);
+    folder_time_machine->Add(time_diff);
 
 
     TCanvas * time_corrs = new TCanvas("time_corrs","Time machine correlations", 650,350);
@@ -149,11 +149,11 @@ InitStatus TimeMachineOnline::Init()
             h2_time_diff_corrs[ihist*num_detector_systems + ihist2]->GetYaxis()->SetTitle("time (ns)");
             h2_time_diff_corrs[ihist*num_detector_systems + ihist2]->GetXaxis()->SetTitle("time (ns)");
             h2_time_diff_corrs[ihist*num_detector_systems + ihist2]->Draw("COLZ");
-            time_machine_folder->Add(h2_time_diff_corrs[ihist*num_detector_systems + ihist2]);
+            folder_time_machine->Add(h2_time_diff_corrs[ihist*num_detector_systems + ihist2]);
         }
     }
 
-    time_machine_folder->Add(time_corrs);
+    folder_time_machine->Add(time_corrs);
 
     run->RegisterHttpCommand("Reset TimeMachine", "/TimeMachineOnline->Reset_Histo()");
     c4LOG(info, "Setup of TimeMachineOnline complete.");
@@ -276,17 +276,15 @@ void TimeMachineOnline::FinishEvent()
 
 void TimeMachineOnline::FinishTask()
 {
-    if (f_time_machines)//writes to file, test?
+    if (fNEvents == 0)
     {
-        for (int ihist = 0; ihist<num_detector_systems; ihist++) h1_time_delayed[ihist]->Write();
-        for (int ihist = 0; ihist<num_detector_systems; ihist++) h1_time_undelayed[ihist]->Write();
-        for (int ihist = 0; ihist<num_detector_systems; ihist++) h1_time_diff[ihist]->Write();
-
-        for (int ihist = 0; ihist < num_detector_systems; ihist++){
-            for (int ihist2 = ihist + 1; ihist2 < num_detector_systems; ihist2++){
-            h2_time_diff_corrs[ihist*num_detector_systems + ihist2]->Write();
-            }
-        }
+        c4LOG(warning, "No events processed, no histograms written.");
+        return;
+    }
+    if (f_time_machines)
+    {
+        folder_time_machine->Write();
+        c4LOG(info, "TimeMachine Histograms written to file.");
     }
 }
 

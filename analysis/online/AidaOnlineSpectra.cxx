@@ -95,24 +95,24 @@ InitStatus AidaOnlineSpectra::Init()
     TDirectory::TContext ctx(nullptr);
 
     // Create folders 
-    aidaFolder = new TFolder("AIDA", "AIDA");
-    run->AddObject(aidaFolder);
+    folder_aida = new TFolder("AIDA", "AIDA");
+    run->AddObject(folder_aida);
 
-    implantFolder = new TFolder("Implants", "Implants");
-    stoppedImplantFolder = new TFolder("Stopped_Implants", "Stopped Implants");
-    decayFolder = new TFolder("Decays", "Decays");
-    scalersFolder = new TFolder("Scalers", "Scalers");
-    aidaFolder->Add(implantFolder);
-    aidaFolder->Add(stoppedImplantFolder);
-    aidaFolder->Add(decayFolder);
-    aidaFolder->Add(scalersFolder);
+    folder_implant = new TFolder("Implants", "Implants");
+    folder_stopped_implant = new TFolder("Stopped_Implants", "Stopped Implants");
+    folder_decay = new TFolder("Decays", "Decays");
+    folder_scalers = new TFolder("Scalers", "Scalers");
+    folder_aida->Add(folder_implant);
+    folder_aida->Add(folder_stopped_implant);
+    folder_aida->Add(folder_decay);
+    folder_aida->Add(folder_scalers);
 
     int xstrips = conf->Wide() ? 386 : 128;
     double xmax = conf->Wide() ? 113.4 : 37.8;
 
-    implantDssdFolder.resize(conf->DSSDs());
-    stoppedImplantDssdFolder.resize(conf->DSSDs());
-    decayDssdFolder.resize(conf->DSSDs());
+    folder_implant_dssd.resize(conf->DSSDs());
+    folder_stopped_implant_dssd.resize(conf->DSSDs());
+    folder_decay_dssd.resize(conf->DSSDs());
 
     h_implant_strip_xy.resize(conf->DSSDs());
     h_implant_pos_xy.resize(conf->DSSDs());
@@ -131,13 +131,13 @@ InitStatus AidaOnlineSpectra::Init()
         std::stringstream name;
         std::stringstream title;
         name << "DSSD" << (i + 1);
-        implantDssdFolder[i] = new TFolder(name.str().c_str(), name.str().c_str());
-        implantDssdFolder[i]->SetOwner(true);
-        implantFolder->Add(implantDssdFolder[i]);
-        stoppedImplantDssdFolder[i] = new TFolder(name.str().c_str(), name.str().c_str());
-        stoppedImplantFolder->Add(stoppedImplantDssdFolder[i]);
-        decayDssdFolder[i] = new TFolder(name.str().c_str(), name.str().c_str());
-        decayFolder->Add(decayDssdFolder[i]);
+        folder_implant_dssd[i] = new TFolder(name.str().c_str(), name.str().c_str());
+        folder_implant_dssd[i]->SetOwner(true);
+        folder_implant->Add(folder_implant_dssd[i]);
+        folder_stopped_implant_dssd[i] = new TFolder(name.str().c_str(), name.str().c_str());
+        folder_stopped_implant->Add(folder_stopped_implant_dssd[i]);
+        folder_decay_dssd[i] = new TFolder(name.str().c_str(), name.str().c_str());
+        folder_decay->Add(folder_decay_dssd[i]);
 
         name.str("");
         title.str("");
@@ -147,7 +147,7 @@ InitStatus AidaOnlineSpectra::Init()
                 xstrips, 0, xstrips, 128, 0, 128);
         h_implant_strip_xy[i]->GetXaxis()->SetTitle("X strip");
         h_implant_strip_xy[i]->GetYaxis()->SetTitle("Y strip");
-        implantDssdFolder[i]->Add(h_implant_strip_xy[i]);
+        folder_implant_dssd[i]->Add(h_implant_strip_xy[i]);
 
         name.str("");
         title.str("");
@@ -157,7 +157,7 @@ InitStatus AidaOnlineSpectra::Init()
                 xstrips, -xmax, xmax, 128, -37.8, 37.8);
         h_implant_pos_xy[i]->GetXaxis()->SetTitle("X position/mm");
         h_implant_pos_xy[i]->GetYaxis()->SetTitle("Y position/mm");
-        implantDssdFolder[i]->Add(h_implant_pos_xy[i]);
+        folder_implant_dssd[i]->Add(h_implant_pos_xy[i]);
 
         name.str("");
         title.str("");
@@ -166,7 +166,7 @@ InitStatus AidaOnlineSpectra::Init()
         h_implant_e[i] = new TH1F(name.str().c_str(), title.str().c_str(),
                 2000, 0, 20000);
         h_implant_e[i]->GetXaxis()->SetTitle("Implant Energy/MeV");
-        implantDssdFolder[i]->Add(h_implant_e[i]);
+        folder_implant_dssd[i]->Add(h_implant_e[i]);
 
         name.str("");
         title.str("");
@@ -176,7 +176,7 @@ InitStatus AidaOnlineSpectra::Init()
                 2000, 0, 20000, 2000, 0, 20000);
         h_implant_e_xy[i]->GetXaxis()->SetTitle("Implant X Energy/MeV");
         h_implant_e_xy[i]->GetYaxis()->SetTitle("Implant Y Energy/MeV");
-        implantDssdFolder[i]->Add(h_implant_e_xy[i]);
+        folder_implant_dssd[i]->Add(h_implant_e_xy[i]);
 
         // TODO move outof implants as it's not FB matched?
         name.str("");
@@ -187,7 +187,7 @@ InitStatus AidaOnlineSpectra::Init()
                 128 + xstrips, 0, 128 + xstrips, 2000, 0, 20000);
         h_implant_strip_1d_energy[i]->GetXaxis()->SetTitle("Strip (X then Y");
         h_implant_strip_1d_energy[i]->GetYaxis()->SetTitle("Implant Energy/MeV");
-        implantDssdFolder[i]->Add(h_implant_strip_1d_energy[i]);
+        folder_implant_dssd[i]->Add(h_implant_strip_1d_energy[i]);
 
         name.str("");
         title.str("");
@@ -197,7 +197,7 @@ InitStatus AidaOnlineSpectra::Init()
                 xstrips, -xmax, xmax, 2000, 0, 20000);
         h_implant_x_ex[i]->GetXaxis()->SetTitle("X Position/mm");
         h_implant_x_ex[i]->GetYaxis()->SetTitle("Energy/MeV");
-        implantDssdFolder[i]->Add(h_implant_x_ex[i]);
+        folder_implant_dssd[i]->Add(h_implant_x_ex[i]);
 
         name.str("");
         title.str("");
@@ -207,7 +207,7 @@ InitStatus AidaOnlineSpectra::Init()
                 xstrips, 0, xstrips, 128, 0, 128);
         h_decay_strip_xy[i]->GetXaxis()->SetTitle("X strip");
         h_decay_strip_xy[i]->GetYaxis()->SetTitle("Y strip");
-        decayDssdFolder[i]->Add(h_decay_strip_xy[i]);
+        folder_decay_dssd[i]->Add(h_decay_strip_xy[i]);
 
         name.str("");
         title.str("");
@@ -217,7 +217,7 @@ InitStatus AidaOnlineSpectra::Init()
                 xstrips, -xmax, xmax, 128, -37.8, 37.8);
         h_decay_pos_xy[i]->GetXaxis()->SetTitle("X position/mm");
         h_decay_pos_xy[i]->GetYaxis()->SetTitle("Y position/mm");
-        decayDssdFolder[i]->Add(h_decay_pos_xy[i]);
+        folder_decay_dssd[i]->Add(h_decay_pos_xy[i]);
 
         name.str("");
         title.str("");
@@ -226,7 +226,7 @@ InitStatus AidaOnlineSpectra::Init()
         h_decay_e[i] = new TH1F(name.str().c_str(), title.str().c_str(),
                 2000, 0, 20000);
         h_decay_e[i]->GetXaxis()->SetTitle("Decay Energy/keV");
-        decayDssdFolder[i]->Add(h_decay_e[i]);
+        folder_decay_dssd[i]->Add(h_decay_e[i]);
 
         name.str("");
         title.str("");
@@ -236,7 +236,7 @@ InitStatus AidaOnlineSpectra::Init()
                 2000, 0, 20000, 2000, 0, 20000);
         h_decay_e_xy[i]->GetXaxis()->SetTitle("Decay X Energy/keV");
         h_decay_e_xy[i]->GetYaxis()->SetTitle("Decay Y Energy/keV");
-        decayDssdFolder[i]->Add(h_decay_e_xy[i]);
+        folder_decay_dssd[i]->Add(h_decay_e_xy[i]);
 
         // TODO move outof decays as it's not FB matched?
         name.str("");
@@ -247,7 +247,7 @@ InitStatus AidaOnlineSpectra::Init()
                 128 + xstrips, 0, 128 + xstrips, 2000, 0, 20000);
         h_decay_strip_1d_energy[i]->GetXaxis()->SetTitle("Strip (X then Y");
         h_decay_strip_1d_energy[i]->GetYaxis()->SetTitle("Decay Energy/keV");
-        decayDssdFolder[i]->Add(h_decay_strip_1d_energy[i]);
+        folder_decay_dssd[i]->Add(h_decay_strip_1d_energy[i]);
     }
 
     for (auto& scaler : conf->ScalerMap())
@@ -264,7 +264,7 @@ InitStatus AidaOnlineSpectra::Init()
         aida_scaler_graph[scaler.first]->SetTitle(title.str().c_str());
         aida_scaler_graph[scaler.first]->SetMinimum(0);
 
-        scalersFolder->Add(aida_scaler_graph[scaler.first]);
+        folder_scalers->Add(aida_scaler_graph[scaler.first]);
     }
 
     return kSUCCESS;
@@ -495,6 +495,16 @@ void AidaOnlineSpectra::FinishEvent()
 
 void AidaOnlineSpectra::FinishTask()
 {
+    if (fNEvents == 0)
+    {
+        c4LOG(warn, "No events found, not saving histograms!");
+        return;
+    }
+    if (fNEvents > 0){
+        folder_aida->Write();
+        c4LOG(info, "AIDA histograms written to file.");
+    }
+    
 }
 
 ClassImp(AidaOnlineSpectra)

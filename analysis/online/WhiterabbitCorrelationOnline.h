@@ -1,5 +1,5 @@
-#ifndef FatimaOnlineSpectra_H
-#define FatimaOnlineSpectra_H
+#ifndef WhiterabbitCorrelationOnline_H
+#define WhiterabbitCorrelationOnline_H
 
 #include "FairTask.h"
 
@@ -8,17 +8,18 @@ class EventHeader;
 class TCanvas;
 class TH1F;
 class TH2F;
+class TFile;
 
-class FatimaOnlineSpectra : public FairTask
+class WhiterabbitCorrelationOnline : public FairTask
 {
     public:
-        FatimaOnlineSpectra();
-        FatimaOnlineSpectra(const TString& name, Int_t verbose = 1);
+        WhiterabbitCorrelationOnline();
+        WhiterabbitCorrelationOnline(const TString& name, Int_t verbose = 1);
 
 
         void CreateHistograms();
 
-        virtual ~FatimaOnlineSpectra();
+        virtual ~WhiterabbitCorrelationOnline();
 
         virtual void SetParContainers();
 
@@ -30,7 +31,10 @@ class FatimaOnlineSpectra : public FairTask
 
         virtual void FinishTask();
 
+        // work in progress
         virtual void Reset_Histo();
+
+        virtual void Snapshot_Histo();
 
         // range setters
 
@@ -38,25 +42,34 @@ class FatimaOnlineSpectra : public FairTask
     private:
         TClonesArray* fHitFatimaTwinpeaks;
         TClonesArray* fHitbPlastTwinpeaks;
+        TClonesArray* fHitGe;
         TClonesArray* fHitAida;
 
-
         // ranges
-        //Double_t
 
         EventHeader* header;
         Int_t fNEvents;
 
         // Canvas
+        TCanvas* c_whiterabbit_correlation_bplast_fatima;
+        TCanvas* c_whiterabbit_correlation_bplast_ge;
+        TCanvas* c_whiterabbit_correlation_fatima_ge;
+
+        //Folders and directories
+        TDirectory* dir_whiterabbit;
+        TFolder* folder_whiterabbit;
+        TFile* file_whiterabbit_snapshot;
 
         
-        // Histograms 
-        
+        // Histograms  
+        TH1F* h_whiterabbit_correlation_bplast_fatima;
+        TH1F* h_whiterabbit_correlation_bplast_ge;
+        TH1F* h_whiterabbit_correlation_fatima_ge;
 
 
 
     public:
-        ClassDef(FatimaOnlineSpectra, 1)
+        ClassDef(WhiterabbitCorrelationOnline, 1)
 };
 
 #endif
