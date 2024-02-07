@@ -1,6 +1,7 @@
 *.root
 *core_dump*
-*/gen_*/
-*/obj_*/
-*/mc_gen*/
+unpack/exps/*/gen_*/
+unpack/exps/*/obj_*/
+unpack/exps/*/mc_gen*/
+*.dep
 *.o
