@@ -2,6 +2,7 @@
 #define TimeMachineOnline_H
 
 #include "FairTask.h"
+#include "TFolder.h"
 #include <vector>
 
 class TClonesArray;
@@ -10,6 +11,8 @@ class TimeMachineData;
 class TCanvas;
 class TH1F;
 class TH2F;
+class TFile;
+class TFolder;
 
 class TimeMachineOnline : public FairTask
 {
@@ -40,14 +43,20 @@ class TimeMachineOnline : public FairTask
     
     private:
         TClonesArray ** f_time_machines;
+
+        // Number of detector systems
         std::vector<TString> fdetector_systems;
         int num_detector_systems;
+
         EventHeader* header;
 
 
-        // canvas
+        // Canvas
         TCanvas* c_time_machine_time_snapshot;
 
+        // Folders and Files
+        TFolder* folder_time_machine;
+        TFile* file_time_machine_snapshot;
 
         // Histograms 
         TH1F * h1_time_undelayed[20];
