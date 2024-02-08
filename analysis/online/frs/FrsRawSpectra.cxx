@@ -13,6 +13,7 @@
 #include "FrsVFTXData.h"
 #include "EventHeader.h"
 #include "c4Logger.h"
+#include "../../../config/frs_config.h"
 
 // ROOT
 #include "TCanvas.h"
@@ -77,15 +78,111 @@ InitStatus FrsRawSpectra::Init()
     folder_frs_raw_hists = new TFolder("Raw_Histograms", "Raw_Histograms");
     folder_frs_hists->Add(folder_frs_raw_hists);
 
-    // Main Crate
+    folder_frs_raw_main_hists = new TFolder("Main_Raw_Histograms", "Main_Raw_Histograms");
+    folder_frs_raw_tpc_hists = new TFolder("TPC_Raw_Histograms", "TPC_Raw_Histograms");
+    folder_frs_raw_user_hists = new TFolder("User_Raw_Histograms", "User_Raw_Histograms");
+    folder_frs_raw_vftx_hists = new TFolder("VFTX_Raw_Histograms", "VFTX_Raw_Histograms");
+    folder_frs_raw_hists->Add(folder_frs_raw_main_hists);
+    folder_frs_raw_hists->Add(folder_frs_raw_tpc_hists);
+    folder_frs_raw_hists->Add(folder_frs_raw_user_hists);
+    folder_frs_raw_hists->Add(folder_frs_raw_vftx_hists);
 
-    h1_main_v1290_leading_hits[chans] = new TH1F(); // v1290 data only leads
-    h1_main_v1290_hits[chans] = new TH1F(); // multiplicity
 
+    // ---- * Main Crate * ---- //
+    folder_raw_v792_main_hists = new TFolder("V792_Histograms", "V792_Histograms");
+    folder_raw_v1290_main_hists = new TFolder("V1290_Histograms", "V1290_Histograms");
+    folder_frs_raw_main_hists->Add(folder_raw_v792_hists);
+    folder_frs_raw_main_hists->Add(folder_raw_v1290_hists);
 
-    // TPC crate
-    h2_tpc_v1190_data_per_chan_1st_hit = new TH2F(); // tpc only first hit
-    h2_tpc_v1190_data_per_chan = new TH2F(); // kinda covered by histograms demanded below?
+    // Scalers? Do we do the "hit" scalers here??
+
+    // Geo = 14
+    for (int i = 0; i < 32; i++) h1_v792_main_data[i] = new TH1F(Form("h1_v792_main_data_%i", i), Form("V792 Data - Channel %i", i), 4000, 0, 200000);
+    h2_v792_main_data_vs_chan = new TH2F("h2_v792_main_data_vs_chan", "V792 Data vs Channel", 32, 0, 32, 4000, 0, 200000);
+    for (int i = 0; i < 32; i++) folder_raw_v792_main_hists->Add(h2_v792_main_data_vs_chan);
+    folder_raw_v792_main_hists->Add(h2_v792_main_data_vs_chan);
+
+    // Geo = ?? V1290
+    for (int i = 0; i < 32; i++) h1_v1290_main_mult[i] = new TH1F(Form("h1_v1290_main_mult_%i", i), Form("V1290 Multiplicity - Channel %i", i), 10, 0, 10);
+    for (int i = 0; i < 32; i++) h1_v1290_main_leads[i] = new TH1F(Form("h1_v1290_main_leads_%i", i), Form("V1290 Data (Leads) - Channel %i", i), 4000, 0, 200000);
+    h2_v1290_data_vs_chan = new TH2F("h2_v1290_data_vs_chan", "V1290 Data vs Channel", 32, 0, 32, 4000, 0, 200000);
+    for (int i = 0; i < 32; i++) folder_raw_v1290_main_hists->Add(h1_v1290_main_mult[i]);
+    for (int i = 0; i < 32; i++) folder_raw_v1290_main_hists->Add(h1_v1290_main_leads[i]);
+    folder_raw_v1290_main_hists->Add(h2_v1290_data_vs_chan);
+    // ----------------------- //
+
+    // ---- * TPC Crate * ---- //
+    folder_raw_v7x5_tpc_hists = new TFolder("V7X5_Histograms", "V7X5_Histograms");
+    folder_raw_v1190_tpc_hists = new TFolder("V1190_Histograms", "V1190_Histograms");
+    folder_frs_raw_tpc_hists->Add(folder_raw_v7x5_tpc_hists);
+    folder_frs_raw_tpc_hists->Add(folder_raw_v1190_tpc_hists);
+
+    // Geo = 12
+    for (int i = 0; i < 32; i++) h1_v7x5_tpc_data12[i] = new TH1F(Form("h1_v7x5_tpc_data12_%i", i), Form("V7X5 Data (Geo 12, Channel %i", i), 4000, 0, 200000);
+    h2_v7x5_tpc_data12_vs_chan = new TH2F("h2_v7x5_tpc_data12_vs_chan", "V7X5 Data (Geo 12) vs Channel", 32, 0, 32, 4000, 0, 200000);
+    for (int i = 0; i < 32; i++) folder_raw_v7x5_tpc_hists->Add(h1_v7x5_tpc_data12[i]);
+    folder_raw_v7x5_tpc_hists->Add(h2_v7x5_tpc_data12_vs_chan);
+
+    // Geo = 13
+    for (int i = 0; i < 32; i++) h1_v7x5_tpc_data13[i] = new TH1F(Form("h1_v7x5_tpc_data13_%i", i), Form("V7X5 Data (Geo 13, Channel %i", i), 4000, 0, 200000);
+    h2_v7x5_tpc_data13_vs_chan = new TH2F("h2_v7x5_tpc_data13_vs_chan", "V7X5 Data (Geo 13) vs Channel", 32, 0, 32, 4000, 0, 200000);
+    for (int i = 0; i < 32; i++) folder_raw_v7x5_tpc_hists->Add(h1_v7x5_tpc_data13[i]);
+    folder_raw_v7x5_tpc_hists->Add(h2_v7x5_tpc_data13_vs_chan);
+
+    // Geo = ?? V1190 
+    for (int i = 0; i < 32; i++) h1_v1190_tpc_data = new TH1F(Form("h1_v1190_tpc_data_%i", i), Form("V1190 Data - Channel %i", i), 4000, 0, 200000);
+    h2_v1190_tpc_data_vs_chan = new TH2F("h2_v1190_tpc_data_vs_chan", "V1190 Data vs Chan", 32, 0, 32, 4000, 0, 200000);
+    h2_v1190_tpc_data_vs_chan_1st_hit = new TH2F("h2_v1190_tpc_data_vs_chan_1st_hit", "V1190 Data vs Chan (1st Hit)", 32, 0, 32, 4000, 0, 200000);
+    for (int i = 0; i < 32; i++) folder_raw_v1190_tpc_hists->Add(h1_v1190_tpc_data[i]);
+    folder_raw_v1190_tpc_hists->Add(h2_v1190_tpc_data_vs_chan);
+    folder_raw_v1190_tpc_hists->Add(h2_v1190_tpc_data_vs_chan_1st_hit);
+    // ----------------------- //
+
+    // ---- * User Crate * ---- //
+    folder_raw_v7x5_user_hists = new TFolder("V7X5_Histograms", "V7X5_Histograms");
+    
+    // Do we need to do Scalers here?
+
+    // Geo = 10
+    for (int i = 0; i < 32; i++) h1_v7x5_user_data10[i] = new TH1F(Form("h1_v7x5_user_data10_%i", i), Form("V7X5 Data (Geo 10, Channel %i", i), 4000, 0, 200000);
+    h2_v7x5_user_data10_vs_chan = new TH2F("h2_v7x5_user_data10_vs_chan", "V7X5 Data (Geo 10) vs Channel", 32, 0, 32, 4000, 0, 200000);
+    for (int i = 0; i < 32; i++) folder_raw_v7x5_user_hists->Add(h1_v7x5_user_data10[i]);
+    folder_raw_v7x5_user_hists->Add(h2_v7x5_user_data10_vs_chan);
+
+    // Geo = 12
+    for (int i = 0; i < 32; i++) h1_v7x5_user_data12[i] = new TH1F(Form("h1_v7x5_user_data12_%i", i), Form("V7X5 Data (Geo 12, Channel %i", i), 4000, 0, 200000);
+    h2_v7x5_user_data12_vs_chan = new TH2F("h2_v7x5_user_data12_vs_chan", "V7X5 Data (Geo 12) vs Channel", 32, 0, 32, 4000, 0, 200000);
+    for (int i = 0; i < 32; i++) folder_raw_v7x5_user_hists->Add(h1_v7x5_user_data12[i]);
+    folder_raw_v7x5_user_hists->Add(h2_v7x5_user_data12_vs_chan);
+    // ----------------------- //
+
+    // ---- * VFTX Crate * ---- //
+    folder_raw_vftx_vftx_hists = new TFolder("VFTX_Histograms", "VFTX_Histograms");
+
+    // Geo = ?? VFTX TDC. Should we used VFTX_N? Only one module..
+    for (int i = 0; i < VFTX_MAX_CHN; i++) h1_vftx_vftx_lead_mult[i] = new TH1I(Form("h1_vftx_vftx_lead_%i_mult", i), Form("VFTX Lead Multiplicity - Channel %i", i), VFTX_MAX_HITS, 0, VFTX_MAX_HITS);
+    for (int i = 0; i < VFTX_MAX_CHN; i++) h1_vftx_vftx_trail_mult[i] = new TH1I(Form("h1_vftx_vftx_trail_%i_mult", i), Form("VFTX Trail Multiplicity - Channel %i", i), VFTX_MAX_HITS, 0, VFTX_MAX_HITS);
+    for (int i = 0; i < VFTX_MAX_CHN; i++) h1_vftx_vftx_lead_cc[i] = new TH1I(Form("h1_vftx_vftx_lead_%i_cc", i), Form("VFTX Clock (Leading) - Channel %i", i), 9000, 0., 9000.);
+    for (int i = 0; i < VFTX_MAX_CHN; i++) h1_vftx_vftx_lead_ft[i] = new TH1I(Form("h1_vftx_vftx_lead_%i_ft", i), Form("VFTX FineTime (Leading) - Channel %i", i), 1000, 0., 1000.);
+    for (int i = 0; i < VFTX_MAX_CHN; i++) h1_vftx_vftx_lead_time[i] = new TH1I(Form("h1_vftx_vftx_lead_%i_time", i), Form("VFTX Leading Time (ps)", i), 1000, 0., 1000.);
+    for (int i = 0; i < VFTX_MAX_CHN; i++) h1_vftx_vftx_trail_cc[i] = new TH1I(Form("h1_vftx_vftx_trail_%i_cc", i), Form("VFTX Clock (Trailing) - Channel %i", i), 9000, 0., 9000.);
+    for (int i = 0; i < VFTX_MAX_CHN; i++) h1_vftx_vftx_trail_ft[i] = new TH1I(Form("h1_vftx_vftx_trail_%i_ft", i), Form("VFTX FineTime (Trailing) - Channel %i", i), 1000, 0., 1000.);
+    for (int i = 0; i < VFTX_MAX_CHN; i++) h1_vftx_vftx_lead_time_ref_ch0[i] = new TH1I(Form("h1_vftx_vftx_lead_time_%i_ref_ch0", i), Form("VFTX Time Difference (Ref Channel 0) - Channel %i", i), 20000, -10000., 10000.);
+    for (int i = 0; i < VFTX_MAX_CHN; i++) h2_vftx_vftx_lead_time_ref_ch0_vs_event[i] = new TH2I(Form("h2_vftx_vftx_lead_time_%i_ref_ch0_vs_event", i), Form("VFTX Time Difference (Ref Channel 0) vs Event - Channel %i", i), 400, 0, 4000000, 2000, -10000., 10000.);
+    for (int i = 0; i < VFTX_MAX_CHN; i++) h2_vftx_vftx_lead_time_ref_ch8_vs_event[i] = new TH2I(Form("h2_vftx_vftx_lead_time_%i_ref_ch8_vs_event", i), Form("VFTX Time Difference (Ref Channel 8) vs Event - Channel %i", i), 400, 0, 4000000, 2000, -10000., 10000.);
+    h2_vftx_vftx_lead_time_ch0vs4 = new TH2I("h2_vftx_vftx_lead_time_ch0vs4", "VFTX Lead Time Channel 0 vs Channel 4", 1000, 0., 100000., 1000, 0., 100000.);
+    for (int i = 0; i < VFTX_MAX_CHN; i++) folder_raw_vftx_vftx_hists->Add(h1_vftx_vftx_lead_mult[i]);
+    for (int i = 0; i < VFTX_MAX_CHN; i++) folder_raw_vftx_vftx_hists->Add(h1_vftx_vftx_trail_mult[i]);
+    for (int i = 0; i < VFTX_MAX_CHN; i++) folder_raw_vftx_vftx_hists->Add(h1_vftx_vftx_lead_cc[i]);
+    for (int i = 0; i < VFTX_MAX_CHN; i++) folder_raw_vftx_vftx_hists->Add(h1_vftx_vftx_lead_ft[i]);
+    for (int i = 0; i < VFTX_MAX_CHN; i++) folder_raw_vftx_vftx_hists->Add(h1_vftx_vftx_lead_time[i]);
+    for (int i = 0; i < VFTX_MAX_CHN; i++) folder_raw_vftx_vftx_hists->Add(h1_vftx_vftx_trail_cc[i]);
+    for (int i = 0; i < VFTX_MAX_CHN; i++) folder_raw_vftx_vftx_hists->Add(h1_vftx_vftx_trail_ft[i]);
+    for (int i = 0; i < VFTX_MAX_CHN; i++) folder_raw_vftx_vftx_hists->Add(h1_vftx_vftx_lead_time_ref_ch0[i]);
+    for (int i = 0; i < VFTX_MAX_CHN; i++) folder_raw_vftx_vftx_hists->Add(h2_vftx_vftx_lead_time_ref_ch0_vs_event[i]);
+    for (int i = 0; i < VFTX_MAX_CHN; i++) folder_raw_vftx_vftx_hists->Add(h2_vftx_vftx_lead_time_ref_ch8_vs_event[i]);
+    folder_raw_vftx_vftx_hists->Add(h2_vftx_vftx_lead_time_ch0vs4);
+    // ----------------------- //
 
     // unsure where this goes
     h1_Trigger = new TH1I();
@@ -94,44 +191,13 @@ InitStatus FrsRawSpectra::Init()
     h2_CombiTrig2 = new TH2I();
     h1_Tpat = new TH1F(); // tpat crate? functional?
 
-    // User Crate
-
-
-    // VFTX Crate
-    h1_vftx_lead_mult = new TH1F(); // by module/channel
-    h1_vftx_trail_mult = new TH1F(); // by module/channel
-    h1_vftx_leading_cc = new TH1F(); // by module/channel
-    h1_vftx_leading_ft = new TH1F(); // by module/channel
-    h1_vftx_trailing_cc = new TH1F(); // by module/channel
-    h1_vftx_trailing_ft = new TH1F(); // by module/channel
-    h1_vftx_leading_time = new TH1F(); // by module/channel
-    h1_vftx_leading_time_ref_ch0 = new TH1F(); // by module/channel
-    h2_vftx_leading_time_ref_ch0_event = new TH2F(); // event vs above
-    h2_vftx_leading_time_ref_ch8_event = new TH2F(); // event vs above
-    h2_vftx_leading_time_ch0vs4 = new TH2F();
-
-    // basically here dump all data from main and user into 1d and 2d histograms
-    // (per channel and vs channel)
-    h1_v792[chan] = new TH1I();
-    h2_v792_all = new TH2I(); // above but all in one 2d histogram
-    // h1_vme_main_11 // is this scalers? print out geo next run
-    // etc etc ...
-
-    // do same as above for TPC crate
-
-    // maybe same for eventual tpat crate
-
-    // same for travelling music crate
-
-    // the end..
-
     // do we need more from DESPEC Go4?
 
 }
 
 
-// reset histos
 
+// reset histos
 
 
 void FrsRawSpectra::Exec(Option_t* option)
@@ -139,4 +205,18 @@ void FrsRawSpectra::Exec(Option_t* option)
 
 
 
+}
+
+void FrsRawSpectra::FinishEvent()
+{
+
+}
+
+
+void FrsRawSpectra::FinishTask()
+{
+    if ()
+    {
+
+    }
 }
