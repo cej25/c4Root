@@ -1340,7 +1340,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_a[0][0] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_a[4][0] = v7x5_data[m][i];
                     }
@@ -1350,7 +1350,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_a[0][1] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_a[4][1] = v7x5_data[m][i];
                     }
@@ -1360,7 +1360,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_a[0][2] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_a[4][2] = v7x5_data[m][i];
                     }
@@ -1370,7 +1370,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_a[0][3] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_a[4][3] = v7x5_data[m][i];
                     }
@@ -1380,7 +1380,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_l[0][0] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_l[4][0] = v7x5_data[m][i];
                     }
@@ -1390,7 +1390,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_r[0][0] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_r[4][0] = v7x5_data[m][i];
                     }
@@ -1400,7 +1400,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_l[0][1] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_l[4][1] = v7x5_data[m][i];
                     }
@@ -1410,7 +1410,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_r[0][1] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_r[4][1] = v7x5_data[m][i];
                     }
@@ -1420,7 +1420,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_a[1][0] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_a[5][0] = v7x5_data[m][i];
                     }
@@ -1430,7 +1430,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_a[1][1] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_a[5][1] = v7x5_data[m][i];
                     }
@@ -1440,7 +1440,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_a[1][2] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_a[5][2] = v7x5_data[m][i];
                     }
@@ -1450,7 +1450,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_a[1][3] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_a[5][3] = v7x5_data[m][i];
                     }
@@ -1460,7 +1460,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_l[1][0] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_l[5][0] = v7x5_data[m][i];
                     }
@@ -1470,7 +1470,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_r[1][0] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_r[5][0] = v7x5_data[m][i];
                     }
@@ -1480,7 +1480,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_l[1][1] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_l[5][1] = v7x5_data[m][i];
                     }
@@ -1490,7 +1490,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_r[1][1] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_r[5][1] = v7x5_data[m][i];
                     }
@@ -1500,7 +1500,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_a[2][0] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_a[6][0] = v7x5_data[m][i];
                     }
@@ -1510,7 +1510,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_a[2][1] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_a[6][1] = v7x5_data[m][i];
                     }
@@ -1520,7 +1520,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_a[2][2] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_a[6][2] = v7x5_data[m][i];
                     }
@@ -1530,7 +1530,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_a[2][3] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_a[6][3] = v7x5_data[m][i];
                     }
@@ -1540,7 +1540,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_l[2][0] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_l[6][0] = v7x5_data[m][i];
                     }
@@ -1550,7 +1550,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_r[2][0] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_r[6][0] = v7x5_data[m][i];
                     }
@@ -1560,7 +1560,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_l[2][1] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_l[6][1] = v7x5_data[m][i];
                     }
@@ -1570,7 +1570,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                     {
                         tpc_r[2][1] = v7x5_data[m][i];
                     }
-                    else if (v7x5_geo[m][i] == 13)
+                    else if (v7x5_geo[m][i] == 8)
                     {
                         tpc_r[6][1] = v7x5_data[m][i];
                     }

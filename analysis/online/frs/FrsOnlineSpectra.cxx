@@ -55,7 +55,7 @@ FrsOnlineSpectra::~FrsOnlineSpectra()
 void FrsOnlineSpectra::SetParContainers()
 {
     // Parameter Containers
-    FairRuntimeDb* rtdb = FairRuntimeDb::instance(); // infuriating lack of consistency with capitalisation...
+    FairRuntimeDb* rtdb = FairRuntimeDb::instance();
     c4LOG_IF(fatal, NULL == rtdb, "FairRuntimeDb not found.");
 }
 
