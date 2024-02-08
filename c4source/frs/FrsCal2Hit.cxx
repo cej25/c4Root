@@ -44,7 +44,6 @@ FrsCal2Hit::FrsCal2Hit(const TString& name, Int_t verbose)
 {
 }
 
-
 FrsCal2Hit::~FrsCal2Hit()
 {   
     c4LOG(info, "Deleting FrsCal2Hit task");
@@ -1208,7 +1207,6 @@ void FrsCal2Hit::SetParContainers()
     FairRuntimeDb *rtdb = FairRuntimeDb::instance();
     c4LOG_IF(fatal, NULL == rtdb, "FairRuntimeDb not found.");
 }
-
 
 InitStatus FrsCal2Hit::Init()
 {

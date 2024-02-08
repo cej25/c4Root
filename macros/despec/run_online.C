@@ -192,9 +192,8 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     std::vector a {b,c,d};
     tms->SetDetectorSystems(a);
 
-    FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
-
-   //run->AddTask(onlinefrs);
+    //FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
+    FrsRawSpectra* frsrawspec = new FrsRawSpectra();
 
 
     run->AddTask(tms);
@@ -203,7 +202,8 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     run->AddTask(onlinebplast);
     //run->AddTask(onlinege);
 
-    run->AddTask(onlinefrs);
+    //run->AddTask(onlinefrs);
+    run->AddTask(frsrawspec);
 
     // Initialise
     run->Init();    
