@@ -91,8 +91,8 @@ InitStatus FrsRawSpectra::Init()
     // ---- * Main Crate * ---- //
     folder_raw_v792_main_hists = new TFolder("V792_Histograms", "V792_Histograms");
     folder_raw_v1290_main_hists = new TFolder("V1290_Histograms", "V1290_Histograms");
-    folder_frs_raw_main_hists->Add(folder_raw_v792_hists);
-    folder_frs_raw_main_hists->Add(folder_raw_v1290_hists);
+    folder_frs_raw_main_hists->Add(folder_raw_v792_main_hists);
+    folder_frs_raw_main_hists->Add(folder_raw_v1290_main_hists);
 
     // Scalers? Do we do the "hit" scalers here??
 
@@ -130,7 +130,7 @@ InitStatus FrsRawSpectra::Init()
     folder_raw_v7x5_tpc_hists->Add(h2_v7x5_tpc_data13_vs_chan);
 
     // Geo = ?? V1190 
-    for (int i = 0; i < 32; i++) h1_v1190_tpc_data = new TH1F(Form("h1_v1190_tpc_data_%i", i), Form("V1190 Data - Channel %i", i), 4000, 0, 200000);
+    for (int i = 0; i < 32; i++) h1_v1190_tpc_data[i] = new TH1F(Form("h1_v1190_tpc_data_%i", i), Form("V1190 Data - Channel %i", i), 4000, 0, 200000);
     h2_v1190_tpc_data_vs_chan = new TH2F("h2_v1190_tpc_data_vs_chan", "V1190 Data vs Chan", 32, 0, 32, 4000, 0, 200000);
     h2_v1190_tpc_data_vs_chan_1st_hit = new TH2F("h2_v1190_tpc_data_vs_chan_1st_hit", "V1190 Data vs Chan (1st Hit)", 32, 0, 32, 4000, 0, 200000);
     for (int i = 0; i < 32; i++) folder_raw_v1190_tpc_hists->Add(h1_v1190_tpc_data[i]);
@@ -185,11 +185,11 @@ InitStatus FrsRawSpectra::Init()
     // ----------------------- //
 
     // unsure where this goes
-    h1_Trigger = new TH1I();
+    /*h1_Trigger = new TH1I();
     h1_pTrigger = new TH1I();
     h1_NbTrig = new TH1I();
     h2_CombiTrig2 = new TH2I();
-    h1_Tpat = new TH1F(); // tpat crate? functional?
+    h1_Tpat = new TH1F(); // tpat crate? functional?*/
 
     // do we need more from DESPEC Go4?
 
