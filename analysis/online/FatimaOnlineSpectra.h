@@ -32,16 +32,15 @@ class FatimaOnlineSpectra : public FairTask
 
         virtual void Reset_Histo();
 
+        virtual void Snapshot_Histo();
+
         // range setters
 
     
     private:
         TClonesArray* fHitFatimaTwinpeaks;
 
-
         // ranges
-        //Double_t
-
         EventHeader* header;
         Int_t fNEvents;
 
@@ -60,10 +59,23 @@ class FatimaOnlineSpectra : public FairTask
         TCanvas* c_fatima_time_differences_energy_SCI41;
         TCanvas* c_fatima_time_differences_energy_SCI41_sum;
         TCanvas* c_fatima_time_differences_energy_SCI41_gated;
+        TCanvas* c_fatima_snapshot;
+
+        //Folders and files
+        TDirectory* fatimaFolderObj;
+        TFolder* folder_fatima;
+        TFolder* folder_fatima_slowToT;
+        TFolder* folder_fatima_fastToT;
+        TFolder* folder_fatima_fast_v_slow;
+        TFolder* folder_fatima_time_spectra;
+        TFolder* folder_fatima_hitpattern;
+        TFolder* folder_fatima_energy_spectra;
+        TFolder* folder_fatima_time_differences;
+        TFile* file_fatima_snapshot;
 
         static const int NDetectors = 24; //change this
         
-        // Histograms energy
+        // Histograms 
         TH1F * h1_fatima_slowToT[NDetectors];
         TH1F * h1_fatima_fastToT[NDetectors];
         TH1F * h1_fatima_energies[NDetectors];

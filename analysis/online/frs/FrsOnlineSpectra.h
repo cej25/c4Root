@@ -5,9 +5,12 @@
 
 class TClonesArray;
 class EventHeader;
+class FrsHitData;
+class TFolder;
 class TCanvas;
 class TH1F;
 class TH2F;
+class TH1D;
 
 class FrsOnlineSpectra : public FairTask
 {
@@ -57,28 +60,37 @@ class FrsOnlineSpectra : public FairTask
         }
 
     private:
-        TClonesArray* fHitFrs; // array with hit items
+        TClonesArray* fHitFrsArray; // array with hit items
+        FrsHitData* fHitFrs; // array with hit items
 
         // Ranges for histograms
         Double_t fMin_Z, fMax_Z, fMin_AoQ, fMax_AoQ, fMin_x4, fMax_x4;
         Double_t fMin_Z_gate, fMax_Z_gate, fMin_AoQ_gate, fMax_AoQ_gate;
 
-        // check for trigger should be done globally, somewhere else
         EventHeader* header;
         Int_t fNEvents;
 
-        // Canvas
-        /*TCanvas* cZvsAoQ;
-        TCanvas* cX4vsAoQ;
-        TCanvas* cZvsAoQCorr;
-        TCanvas* cX4vsAoQCorr;*/
-        TCanvas* cTdcRaw;
-        TCanvas* cTdcChan;
+        TFolder* frs_spectra_folder;
 
-        // Histograms for Hit data
-        TH1F* fh1_TdcRaw;
-        TH1F* fh1_TdcChan;
-    
+        // Canvas
+        TCanvas* c_frs_z1_vs_AoQ;
+        TCanvas* c_frs_x4_vs_AoQ;
+
+        // Histograms for PID:
+        TH2F* h_frs_z1_vs_AoQ;
+        TH2F* h_frs_x4_vs_AoQ;
+        TH1D* h_frs_beta_sci;
+
+        // Histograms for Scalers
+        char scaler_name[66][256];
+        TH1D* hScaler_per_s[66];
+        TH1D* hScaler_per_100ms[66];
+        TH1D* hScaler_per_spill[66];
+        int ratio_previous = 100;
+        int ratio_previous2 = 100;
+
+
+
     public:
         ClassDef(FrsOnlineSpectra, 1)
 
