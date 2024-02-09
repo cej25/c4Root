@@ -108,37 +108,31 @@ Raises a fatal error if the module and channel numbers are not unique.
 Bool_t bPlastRaw2Cal::SetDetectorMapFile(TString filename){
     c4LOG(info, "Reading Detector map");
 
-    //std::cout << "reading detector map \n";
-
     std::ifstream detector_map_file (filename);
 
-    if (!detector_map_file.is_open()) {c4LOG(fatal,Form("File '%s' does not exist",filename.Data()));}
+    if (!detector_map_file.is_open()) {
+        c4LOG(fatal, Form("File '%s' does not exist", filename.Data()));
+    }
 
-    int rtamex_module = 0;
-    int rtamex_channel = 0;
-    int rdetector_id = 0; // temp read variables
-    
-    // loading and reading detector mapping
-    while(!detector_map_file.eof()){
-        c4LOG(info,detector_map_file.peek());
-        if(detector_map_file.peek()=='#') detector_map_file.ignore(1024,'\n');
-        else{
-            detector_map_file >> rtamex_module >> rtamex_channel >> rdetector_id;
-            c4LOG(info,Form("module = %i, chan = %i, det = %i",rtamex_module,rtamex_channel,rdetector_id));
-            if(rtamex_channel == 40) break;
-            std::pair<int,int> tamex_mc = {rtamex_module,rtamex_channel};
+    int rtamex_module, rtamex_channel, rdetector_id = 0; // temp read variables
+    char rup_down, rleft_right_bottom_top; // additional variables for position
 
-            auto it = detector_mapping.find(tamex_mc);
-            if (it != detector_mapping.end()) c4LOG(fatal,Form("Detector mapping not unique. Multiple entries of (tamex module id = %i) (tamex channel id = %i)",rtamex_module,rtamex_channel));
+    while (!detector_map_file.eof()) {
+        if (detector_map_file.peek() == '#') {
+            detector_map_file.ignore(1024, '\n');
+        } else {
+            detector_map_file >> rtamex_module >> rtamex_channel >> rdetector_id >> rup_down >> rleft_right_bottom_top;
+            c4LOG(info, Form("Reading %i, %i, %i, %c, %c", rtamex_module, rtamex_channel, rdetector_id, rup_down, rleft_right_bottom_top));
+            std::pair<int, int> tamex_mc = {rtamex_module, rtamex_channel};
+            std::pair<char, char> position = {rup_down, rleft_right_bottom_top};
 
-            detector_mapping.insert(std::pair<std::pair<int,int>,int>{tamex_mc,rdetector_id});
-            detector_map_file.ignore(1024,'\n');
-
+            detector_mapping.insert(std::make_pair(tamex_mc, std::make_pair(rdetector_id, position)));
+            detector_map_file.ignore(1024, '\n');
         }
     }
     DetectorMap_loaded = 1;
-    detector_map_file.close();  
-    return 0; 
+    detector_map_file.close();
+    return 0;
 };
 
 /*
@@ -180,8 +174,8 @@ Writes the detector map to console.
 void bPlastRaw2Cal::PrintDetectorMap(){
     if (DetectorMap_loaded){
         for (const auto& entry : detector_mapping){
-            std::cout << "tamexMODULE: " << entry.first.first << " tamexCHANNEL " << entry.first.second;
-            std::cout << " DETECTORID: " << entry.second << "\n";
+            std::cout << "tamexMODULE: " << entry.first.first << " tamexCHANNEL: " << entry.first.second;
+            std::cout << " DETECTORID: " << entry.second.first << " Stream: " << entry.second.second.first << " POSITION: " << entry.second.second.second << "\n";
         }
     }
     else{
@@ -272,7 +266,7 @@ void bPlastRaw2Cal::Exec(Option_t* option){
                 std::pair<int,int> unmapped_det {funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2};
                 
                 if (auto result_find = detector_mapping.find(unmapped_det); result_find != detector_mapping.end()){
-                detector_id = result_find->second; //.find returns an iterator over the pairs matching key.
+                detector_id = result_find->second.first; //.find returns an iterator over the pairs matching key.
                 if (detector_id == -1) {fNunmatched++; continue;} //if only one event is left
                 }else{
                     c4LOG(fatal, "Detector mapping not complete - exiting.");
