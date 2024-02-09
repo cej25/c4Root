@@ -72,7 +72,7 @@ class bPlastRaw2Cal : public FairTask
         int time_machine_delayed_detector_id;
         int time_machine_undelayed_detector_id;
         //maps:
-        std::map<std::pair<int,int>,int> detector_mapping; // [board_id][channel_id] -> [detector_id]
+        std::map<std::pair<int, int>, std::pair<int, std::pair<char, char>>> detector_mapping; // [board_id][channel_id] -> [detector_id][detector_stream][detector_position]
         std::map<int,std::pair<double,double>> calibration_coeffs; // key: [detector id] -> [a0][a1]
 
     public:

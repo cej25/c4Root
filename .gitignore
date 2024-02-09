@@ -3,4 +3,5 @@
 */gen_*/
 */obj_*/
 */mc_gen*/
+.vscode/
 *.o
