@@ -13,7 +13,6 @@
 #include "FrsVFTXData.h"
 #include "EventHeader.h"
 #include "c4Logger.h"
-#include "../../../config/frs_config.h"
 
 // ROOT
 #include "TCanvas.h"
@@ -180,6 +179,7 @@ InitStatus FrsRawSpectra::Init()
     for (int i = 0; i < VFTX_MAX_CHN; i++) h1_vftx_vftx_lead_time[i] = new TH1I(Form("h1_vftx_vftx_lead_%i_time", i), Form("VFTX Leading Time (ps) - Channel %i", i), 1000, 0., 1000.);
     for (int i = 0; i < VFTX_MAX_CHN; i++) h1_vftx_vftx_trail_cc[i] = new TH1I(Form("h1_vftx_vftx_trail_%i_cc", i), Form("VFTX Clock (Trailing) - Channel %i", i), 9000, 0., 9000.);
     for (int i = 0; i < VFTX_MAX_CHN; i++) h1_vftx_vftx_trail_ft[i] = new TH1I(Form("h1_vftx_vftx_trail_%i_ft", i), Form("VFTX FineTime (Trailing) - Channel %i", i), 1000, 0., 1000.);
+    for (int i = 0; i < VFTX_MAX_CHN; i++) h1_vftx_vftx_trail_time[i] = new TH1I(Form("h1_vftx_vftx_trail_%i_time", i), Form("VFTX Trailing Time (ps) - Channel %i", i), 1000, 0., 1000.);
     for (int i = 0; i < VFTX_MAX_CHN; i++) h1_vftx_vftx_lead_time_ref_ch0[i] = new TH1I(Form("h1_vftx_vftx_lead_time_%i_ref_ch0", i), Form("VFTX Time Difference (Ref Channel 0) - Channel %i", i), 20000, -10000., 10000.);
     for (int i = 0; i < VFTX_MAX_CHN; i++) h2_vftx_vftx_lead_time_ref_ch0_vs_event[i] = new TH2I(Form("h2_vftx_vftx_lead_time_%i_ref_ch0_vs_event", i), Form("VFTX Time Difference (Ref Channel 0) vs Event - Channel %i", i), 400, 0, 4000000, 2000, -10000., 10000.);
     for (int i = 0; i < VFTX_MAX_CHN; i++) h2_vftx_vftx_lead_time_ref_ch8_vs_event[i] = new TH2I(Form("h2_vftx_vftx_lead_time_%i_ref_ch8_vs_event", i), Form("VFTX Time Difference (Ref Channel 8) vs Event - Channel %i", i), 400, 0, 4000000, 2000, -10000., 10000.);
@@ -197,14 +197,14 @@ InitStatus FrsRawSpectra::Init()
     folder_raw_vftx_vftx_hists->Add(h2_vftx_vftx_lead_time_ch0vs4);
     // ----------------------- //
 
-    // unsure where this goes
+    // CEJ: unsure where this goes or where it comes from atm
     /*h1_Trigger = new TH1I();
     h1_pTrigger = new TH1I();
     h1_NbTrig = new TH1I();
     h2_CombiTrig2 = new TH2I();
     h1_Tpat = new TH1F(); // tpat crate? functional?*/
 
-    // do we need more from DESPEC Go4?
+    // do we need any more "raw" from DESPEC Go4?
 
     return kSUCCESS;
 
@@ -266,11 +266,8 @@ void FrsRawSpectra::Exec(Option_t* option)
 
             // v7x5
             std::vector<uint32_t>* v7x5_geo = fHitFrsTPCRaw->Get_v7x5_geo();
-            //for (int m = 0; m < 2; m++) v7x5_geo[m] = fHitFrsTPCRaw->Get_v7x5_geo()[m];
             std::vector<uint32_t>* v7x5_channels = fHitFrsTPCRaw->Get_v7x5_channel();
-            //for (int m = 0; m < 2; m++) v7x5_channels[2] = fHitFrsTPCRaw->Get_v7x5_channel()[m];
             std::vector<uint32_t>* v7x5_data = fHitFrsTPCRaw->Get_v7x5_data();
-            //for (int m = 0; m < 2; m++) v7x5_data[2] = fHitFrsTPCRaw->Get_v7x5_data()[m]; 
 
             for (int m = 0; m < 2; m++)
             {
@@ -305,6 +302,84 @@ void FrsRawSpectra::Exec(Option_t* option)
 
         } // nhits
     } // tpc crate
+
+
+    /* ---- User Crate ---- */
+    if (fFrsUserArray && fFrsUserArray->GetEntriesFast() > 0)
+    {
+        Int_t nHits = fFrsUserArray->GetEntriesFast();
+        for (Int_t ihit = 0; ihit < nHits; ihit++)
+        {
+            fHitFrsUserRaw = (FrsUserData*)fFrsUserArray->At(ihit);
+            if (!fHitFrsUserRaw) continue;
+
+            // v7x5
+            std::vector<uint32_t>* v7x5_geo = fHitFrsUserRaw->Get_v7x5_geo_user();
+            std::vector<uint32_t>* v7x5_channels = fHitFrsUserRaw->Get_v7x5_channel_user();
+            std::vector<uint32_t>* v7x5_data = fHitFrsUserRaw->Get_v7x5_data_user();
+
+            for (int m = 0; m < 4; m++)
+            {
+                for (int i = 0; i < v7x5_data[m].size(); i++)
+                {
+                    if (v7x5_geo[m].at(i) == 12)
+                    {
+                        h1_v7x5_user_data12[v7x5_channels[m].at(i)]->Fill(v7x5_data[m].at(i));
+                        h2_v7x5_user_data12_vs_chan->Fill(v7x5_channels[m].at(i), v7x5_data[m].at(i));
+                    }
+                    else if (v7x5_geo[m].at(i) == 10)
+                    {
+                        h1_v7x5_user_data10[v7x5_channels[m].at(i)]->Fill(v7x5_data[m].at(i));
+                        h2_v7x5_user_data10_vs_chan->Fill(v7x5_channels[m].at(i), v7x5_data[m].at(i));
+                    }
+
+                }
+            } // v7x5 modules
+        } // nhits
+    } // user crate
+
+
+    /* ---- VFTX Crate ---- */
+    if (fFrsVFTXArray && fFrsVFTXArray->GetEntriesFast() > 0)
+    {
+        Int_t nHits = fFrsVFTXArray->GetEntriesFast();
+        for (Int_t ihit = 0; ihit < nHits; ihit++)
+        {   
+            fHitFrsVFTXRaw = (FrsVFTXData*)fFrsVFTXArray->At(ihit);
+            if (!fHitFrsVFTXRaw) continue;
+
+            std::vector<uint32_t>* vftx_leading_cc = fHitFrsVFTXRaw->Get_vftx_leading_cc();
+            std::vector<uint32_t>* vftx_leading_ft = fHitFrsVFTXRaw->Get_vftx_leading_ft();
+            std::vector<uint32_t>* vftx_leading_time = fHitFrsVFTXRaw->Get_vftx_leading_time();
+            std::vector<uint32_t>* vftx_trailing_cc = fHitFrsVFTXRaw->Get_vftx_trailing_cc();
+            std::vector<uint32_t>* vftx_trailing_ft = fHitFrsVFTXRaw->Get_vftx_trailing_ft();
+            std::vector<uint32_t>* vftx_trailing_time = fHitFrsVFTXRaw->Get_vftx_trailing_time();
+
+            for (int i = 0; i < VFTX_MAX_CHN; i++)
+            {   
+                h1_vftx_vftx_lead_mult[i]->Fill(vftx_leading_time[i].size());
+                for (int j = 0; j < vftx_leading_time[i].size(); j++)
+                {   
+                    h1_vftx_vftx_lead_cc[i]->Fill(vftx_leading_cc[i].at(j));
+                    h1_vftx_vftx_lead_ft[i]->Fill(vftx_leading_ft[i].at(j));
+                    h1_vftx_vftx_lead_time[i]->Fill(vftx_leading_time[i].at(j));
+                    // h1_vftx_vftx_lead_time_ref_ch0[i]->Fill(vftx_leading_time[i].at(j) - vftx_leading_time[0].at(j));
+                    // h1_vftx_vftx_lead_time_ref_ch0[i]->Fill(vftx_leading_time[i].at(j) - vftx_leading_time[0].at(j));
+                    // h2_vftx_vftx_lead_time_ref_ch0_vs_event[i]->Fill(fNEvents, vftx_leading_time[i].at(j) - vftx_leading_time[0].at(j));
+                    // h2_vftx_vftx_lead_time_ref_ch8_vs_event[i]->Fill(fNEvents, vftx_leading_time[i].at(j) - vftx_leading_time[8].at(j));
+                }
+                h1_vftx_vftx_trail_mult[i]->Fill(vftx_trailing_time[i].size());
+                for (int j = 0; j < vftx_trailing_time[i].size(); j++)
+                {   
+                    h1_vftx_vftx_trail_cc[i]->Fill(vftx_trailing_cc[i].at(j));
+                    h1_vftx_vftx_trail_ft[i]->Fill(vftx_trailing_ft[i].at(j));
+                    h1_vftx_vftx_trail_time[i]->Fill(vftx_trailing_time[i].at(j));
+                }
+            }
+            // h2_vftx_vftx_lead_time_ch0vs4->Fill();
+
+        } // nHits
+    } // VFTX crate
 
 
 }

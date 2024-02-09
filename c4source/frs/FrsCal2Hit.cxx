@@ -1258,7 +1258,8 @@ void FrsCal2Hit::Exec(Option_t* option)
     int multUser = fCalArrayUser->GetEntriesFast();
     int multVFTX = fCalArrayVFTX->GetEntriesFast();
     
-    if (multMain == 0 || multTPC == 0 || multUser == 0 || multVFTX == 0) return;
+    // something strange with VFTX
+    if (multMain == 0 || multTPC == 0 || multUser == 0) return;
     
     // not even getting here right now
     fNEvents++;
@@ -1841,7 +1842,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     temp_s4x = -999.;
     if (b_tpc_xy[4] && b_tpc_xy[5])
     {
-        temp_s4x = tpc_x_s4;
+        temp_s4x = fCalHitTPC->Get_tpc_x_s4();
     }
 
     float temp_s2x = -999.;
@@ -2154,203 +2155,213 @@ void FrsCal2Hit::Exec(Option_t* option)
     id_b_x2 = Check_WinCond(id_x2, cID_x2);
     id_b_x4 = Check_WinCond(id_x4, cID_x4);
 
+    // CEJ: commented because double def?
+    /*temp_s4x = -999.;
+    if (b_tpc_xy[4] && b_tpc_xy[5])
+    {
+        temp_s4x = fCalHitTPC->Get_tpc_x_s4();
+    }*/
 
     /* --------------------------------------------------------------------------*/
     // VFTX start here
     // (moved from Go4 as we need id_a2 and it gets calculated twice otherwise?)
     /* --------------------------------------------------------------------------*/
     //c4LOG(info,"EXEC VFTX");
-    TRaw_vftx = fCalHitVFTX->Get_TRaw_vftx();
 
-    // loop over 21 or 22 size, check 41l/r are not empty
-    for (int i = 0; i < TRaw_vftx[0].size(); i++)
-    {   
-        // 2141
-        if (TRaw_vftx[4].size() != 0)
-        {
-            vftx_tof2141.emplace_back((0.5 * ((Double_t)TRaw_vftx[4].at(0) + (Double_t)TRaw_vftx[5].at(0)) - 0.5 * ((Double_t)TRaw_vftx[0].at(i) + (Double_t)TRaw_vftx[1].at(i))));
-            vftx_tof2141_calib.emplace_back(vftx_tof2141.at(i) / 1000. + sci->vftx_offset_2141);
-        }
-
-        // 2142
-        if (TRaw_vftx[6].size() != 0)
-        {
-            vftx_tof2142.emplace_back((0.5 * ((Double_t)TRaw_vftx[6].at(0) + (Double_t)TRaw_vftx[7].at(0)) - 0.5 * ((Double_t)TRaw_vftx[0].at(i) + (Double_t)TRaw_vftx[1].at(i))));
-            vftx_tof2142_calib.emplace_back(vftx_tof2142.at(i) / 1000. + sci->vftx_offset_2142);
-    
-        }
-    }
-
-    for (int i = 0; i < TRaw_vftx[2].size(); i++)
+    if (multVFTX > 0)
     {
-        // 2241
-        if (TRaw_vftx[4].size() != 0)
-        {
-            vftx_tof2241.emplace_back((0.5 * ((Double_t)TRaw_vftx[4].at(0) + (Double_t)TRaw_vftx[5].at(0)) - 0.5 * ((Double_t)TRaw_vftx[2].at(i) + (Double_t)TRaw_vftx[3].at(i))));
-            vftx_tof2241_calib.emplace_back(vftx_tof2241.at(i) / 1000. + sci->vftx_offset_2241);
-        }
+        TRaw_vftx = fCalHitVFTX->Get_TRaw_vftx();
 
-        // 2242
-        if (TRaw_vftx[6].size() != 0)
-        {
-            vftx_tof2242.emplace_back((0.5 * ((Double_t)TRaw_vftx[6].at(0) + (Double_t)TRaw_vftx[7].at(0)) - 0.5 * ((Double_t)TRaw_vftx[2].at(i) + (Double_t)TRaw_vftx[3].at(i))));
-            vftx_tof2242_calib.emplace_back(vftx_tof2242.at(i) / 1000. + sci->vftx_offset_2242);
-        }
-    }
-
-
-    temp_s4x = -999.;
-    if (b_tpc_xy[4] && b_tpc_xy[5])
-    {
-        temp_s4x = tpc_x_s4; // ->Get_
-    }
-
-    float temp_sci21x = -999.;
-    if (id->vftx_s2pos_option == 1)
-    {
-        // do nothing?
-    }
-    else if (id->vftx_s2pos_option == 2)
-    {
-        if (b_tpc_xy[0] && b_tpc_xy[1])
-        {
-            temp_sci21x = fCalHitTPC->Get_tpc_x_s2_foc_21_22();
-        }
-        else if (b_tpc_xy[2] && b_tpc_xy[3])
-        {
-            temp_sci21x = fCalHitTPC->Get_tpc_x_s2_foc_23_24();
-        }
-        else if (b_tpc_xy[1] && b_tpc_xy[3])
-        {
-            temp_sci21x = fCalHitTPC->Get_tpc_x_s2_foc_22_24();
-        }
-    }
-    
-    // number of 21l hits
-    for (int i = 0; i < TRaw_vftx[0].size(); i++)
-    {
-        id_vftx_beta_2141.emplace_back((id->vftx_length_2141 / vftx_tof2141_calib.at(i)) / speed_light);
-        id_vftx_beta_2142.emplace_back((id->vftx_length_2142 / vftx_tof2142_calib.at(i)) / speed_light);
-        id_vftx_gamma_2141.emplace_back(1. / sqrt(1. - id_vftx_beta_2141.at(i) * id_vftx_beta_2141.at(i)));
-        id_vftx_gamma_2142.emplace_back(1. / sqrt(1. - id_vftx_beta_2142.at(i) * id_vftx_beta_2142.at(i)));
-
-        if (temp_s4x > -200. && temp_s4x < 200. && temp_sci21x > -200. && temp_sci21x < 200)
-        {
-            id_vftx_delta_24 = (temp_s4x - (temp_sci21x * frs->magnification[1])) / (-1.0 * frs->dispersion[1] * 1000.0);
-            if (id_vftx_beta_2141.at(i) > 0.0 && id_vftx_beta_2141.at(i) < 1.0)
+        // loop over 21 or 22 size, check 41l/r are not empty
+        for (int i = 0; i < TRaw_vftx[0].size(); i++)
+        {   
+            // 2141
+            if (TRaw_vftx[4].size() != 0)
             {
-                id_vftx_aoq_2141.emplace_back(mean_brho_s2s4 * (1. + id_vftx_delta_24) * temp_tm_to_MeV / (temp_mu * id_vftx_beta_2141.at(i) * id_vftx_gamma_2141.at(i)));
-                id_vftx_aoq_corr_2141.emplace_back(id_vftx_aoq_2141.at(i) - id->a2AoQCorr * id_a2);
+                vftx_tof2141.emplace_back((0.5 * ((Double_t)TRaw_vftx[4].at(0) + (Double_t)TRaw_vftx[5].at(0)) - 0.5 * ((Double_t)TRaw_vftx[0].at(i) + (Double_t)TRaw_vftx[1].at(i))));
+                vftx_tof2141_calib.emplace_back(vftx_tof2141.at(i) / 1000. + sci->vftx_offset_2141);
             }
-            if (id_vftx_beta_2142.at(i) > 0.0 && id_vftx_beta_2142.at(i) < 1.0)
+
+            // 2142
+            if (TRaw_vftx[6].size() != 0)
             {
-                id_vftx_aoq_2142.emplace_back(mean_brho_s2s4 * (1. + id_vftx_delta_24) * temp_tm_to_MeV / (temp_mu * id_vftx_beta_2142.at(i) * id_vftx_gamma_2142.at(i)));
-                id_vftx_aoq_corr_2142.emplace_back(id_vftx_aoq_2142.at(i) - id->a2AoQCorr * id_a2);
+                vftx_tof2142.emplace_back((0.5 * ((Double_t)TRaw_vftx[6].at(0) + (Double_t)TRaw_vftx[7].at(0)) - 0.5 * ((Double_t)TRaw_vftx[0].at(i) + (Double_t)TRaw_vftx[1].at(i))));
+                vftx_tof2142_calib.emplace_back(vftx_tof2142.at(i) / 1000. + sci->vftx_offset_2142);
+        
             }
         }
 
-        if ((de[0] > 0.0) && (id_vftx_beta_2141.at(i) > 0.0) && (id_vftx_beta_2141.at(i) < 1.0))
+        for (int i = 0; i < TRaw_vftx[2].size(); i++)
         {
-            power = 1.;
-            sum = 0.;
-            for (int j = 0; j < 4; j++)
+            // 2241
+            if (TRaw_vftx[4].size() != 0)
             {
-                sum += power * id->vftx_vel_a_music41[j];
-                power *= id_vftx_beta_2141.at(i);
+                vftx_tof2241.emplace_back((0.5 * ((Double_t)TRaw_vftx[4].at(0) + (Double_t)TRaw_vftx[5].at(0)) - 0.5 * ((Double_t)TRaw_vftx[2].at(i) + (Double_t)TRaw_vftx[3].at(i))));
+                vftx_tof2241_calib.emplace_back(vftx_tof2241.at(i) / 1000. + sci->vftx_offset_2241);
             }
 
-            id_vftx_vcor_2141.emplace_back(sum);
-            
-            if (id_vftx_vcor_2141.at(i) > 0.0)
+            // 2242
+            if (TRaw_vftx[6].size() != 0)
             {
-                id_vftx_z_2141.emplace_back(frs->primary_z * sqrt(de[0] / id_vftx_vcor_2141.at(i)));
-                id_vftx_z2_2141.emplace_back(frs->primary_z * sqrt(de[1] / id_vftx_vcor_2141.at(i)));
+                vftx_tof2242.emplace_back((0.5 * ((Double_t)TRaw_vftx[6].at(0) + (Double_t)TRaw_vftx[7].at(0)) - 0.5 * ((Double_t)TRaw_vftx[2].at(i) + (Double_t)TRaw_vftx[3].at(i))));
+                vftx_tof2242_calib.emplace_back(vftx_tof2242.at(i) / 1000. + sci->vftx_offset_2242);
             }
         }
 
-        if ((de[0] > 0.0) && (id_vftx_beta_2142.at(i) > 0.0) && (id_vftx_beta_2142.at(i) < 1.0))
+        /*
+        temp_s4x = -999.;
+        if (b_tpc_xy[4] && b_tpc_xy[5])
         {
-            power = 1.;
-            sum = 0.;
-            for (int j = 0; j < 4; j++)
+            temp_s4x = fCalHitTPC->Get_tpc_x_s4();
+        }*/
+
+        float temp_sci21x = -999.;
+        if (id->vftx_s2pos_option == 1)
+        {
+            // do nothing?
+        }
+        else if (id->vftx_s2pos_option == 2)
+        {
+            if (b_tpc_xy[0] && b_tpc_xy[1])
             {
-                sum += power * id->vftx_vel_a_music41[j];
-                power *= id_vftx_beta_2142.at(i);
+                temp_sci21x = fCalHitTPC->Get_tpc_x_s2_foc_21_22();
             }
-
-            id_vftx_vcor_2142.emplace_back(sum);
-
-            if (id_vftx_vcor_2142.at(i) > 0.0)
+            else if (b_tpc_xy[2] && b_tpc_xy[3])
             {
-                id_vftx_z_2142.emplace_back(frs->primary_z * sqrt(de[0] / id_vftx_vcor_2142.at(i)));
-                id_vftx_z2_2142.emplace_back(frs->primary_z * sqrt(de[1] / id_vftx_vcor_2142.at(i)));
+                temp_sci21x = fCalHitTPC->Get_tpc_x_s2_foc_23_24();
+            }
+            else if (b_tpc_xy[1] && b_tpc_xy[3])
+            {
+                temp_sci21x = fCalHitTPC->Get_tpc_x_s2_foc_22_24();
             }
         }
-
-    }
-
-    // number of 22l hits
-    for (int i = 0; i < TRaw_vftx[2].size(); i++)
-    {
-        id_vftx_beta_2241.emplace_back((id->vftx_length_2241 / vftx_tof2241_calib.at(i)) / speed_light);
-        id_vftx_beta_2242.emplace_back((id->vftx_length_2242 / vftx_tof2242_calib.at(i)) / speed_light);
-        id_vftx_gamma_2241.emplace_back(1. / sqrt(1. - id_vftx_beta_2241.at(i) * id_vftx_beta_2241.at(i)));
-        id_vftx_gamma_2242.emplace_back(1. / sqrt(1. - id_vftx_beta_2242.at(i) * id_vftx_beta_2242.at(i)));
-
-        if (temp_s4x > -200. && temp_s4x < 200. && temp_sci21x > -200. && temp_sci21x < 200)
+        
+        // number of 21l hits
+        for (int i = 0; i < TRaw_vftx[0].size(); i++)
         {
-            id_vftx_delta_24 = (temp_s4x - (temp_sci21x * frs->magnification[1])) / (-1.0 * frs->dispersion[1] * 1000.0);
-            if (id_vftx_beta_2241.at(i) > 0.0 && id_vftx_beta_2241.at(i) < 1.0)
+            id_vftx_beta_2141.emplace_back((id->vftx_length_2141 / vftx_tof2141_calib.at(i)) / speed_light);
+            id_vftx_beta_2142.emplace_back((id->vftx_length_2142 / vftx_tof2142_calib.at(i)) / speed_light);
+            id_vftx_gamma_2141.emplace_back(1. / sqrt(1. - id_vftx_beta_2141.at(i) * id_vftx_beta_2141.at(i)));
+            id_vftx_gamma_2142.emplace_back(1. / sqrt(1. - id_vftx_beta_2142.at(i) * id_vftx_beta_2142.at(i)));
+
+            if (temp_s4x > -200. && temp_s4x < 200. && temp_sci21x > -200. && temp_sci21x < 200)
             {
-                id_vftx_aoq_2241.emplace_back(mean_brho_s2s4 * (1. + id_vftx_delta_24) * temp_tm_to_MeV / (temp_mu * id_vftx_beta_2241.at(i) * id_vftx_gamma_2241.at(i)));
-                id_vftx_aoq_corr_2241.emplace_back(id_vftx_aoq_2241.at(i) - id->a2AoQCorr * id_a2);
+                id_vftx_delta_24 = (temp_s4x - (temp_sci21x * frs->magnification[1])) / (-1.0 * frs->dispersion[1] * 1000.0);
+                if (id_vftx_beta_2141.at(i) > 0.0 && id_vftx_beta_2141.at(i) < 1.0)
+                {
+                    id_vftx_aoq_2141.emplace_back(mean_brho_s2s4 * (1. + id_vftx_delta_24) * temp_tm_to_MeV / (temp_mu * id_vftx_beta_2141.at(i) * id_vftx_gamma_2141.at(i)));
+                    id_vftx_aoq_corr_2141.emplace_back(id_vftx_aoq_2141.at(i) - id->a2AoQCorr * id_a2);
+                }
+                if (id_vftx_beta_2142.at(i) > 0.0 && id_vftx_beta_2142.at(i) < 1.0)
+                {
+                    id_vftx_aoq_2142.emplace_back(mean_brho_s2s4 * (1. + id_vftx_delta_24) * temp_tm_to_MeV / (temp_mu * id_vftx_beta_2142.at(i) * id_vftx_gamma_2142.at(i)));
+                    id_vftx_aoq_corr_2142.emplace_back(id_vftx_aoq_2142.at(i) - id->a2AoQCorr * id_a2);
+                }
             }
-            if (id_vftx_beta_2242.at(i) > 0.0 && id_vftx_beta_2242.at(i) < 1.0)
+
+            if ((de[0] > 0.0) && (id_vftx_beta_2141.at(i) > 0.0) && (id_vftx_beta_2141.at(i) < 1.0))
             {
-                id_vftx_aoq_2242.emplace_back(mean_brho_s2s4 * (1. + id_vftx_delta_24) * temp_tm_to_MeV / (temp_mu * id_vftx_beta_2242.at(i) * id_vftx_gamma_2242.at(i)));
-                id_vftx_aoq_corr_2242.emplace_back(id_vftx_aoq_2242.at(i) - id->a2AoQCorr * id_a2);
+                power = 1.;
+                sum = 0.;
+                for (int j = 0; j < 4; j++)
+                {
+                    sum += power * id->vftx_vel_a_music41[j];
+                    power *= id_vftx_beta_2141.at(i);
+                }
+
+                id_vftx_vcor_2141.emplace_back(sum);
+                
+                if (id_vftx_vcor_2141.at(i) > 0.0)
+                {
+                    id_vftx_z_2141.emplace_back(frs->primary_z * sqrt(de[0] / id_vftx_vcor_2141.at(i)));
+                    id_vftx_z2_2141.emplace_back(frs->primary_z * sqrt(de[1] / id_vftx_vcor_2141.at(i)));
+                }
             }
+
+            if ((de[0] > 0.0) && (id_vftx_beta_2142.at(i) > 0.0) && (id_vftx_beta_2142.at(i) < 1.0))
+            {
+                power = 1.;
+                sum = 0.;
+                for (int j = 0; j < 4; j++)
+                {
+                    sum += power * id->vftx_vel_a_music41[j];
+                    power *= id_vftx_beta_2142.at(i);
+                }
+
+                id_vftx_vcor_2142.emplace_back(sum);
+
+                if (id_vftx_vcor_2142.at(i) > 0.0)
+                {
+                    id_vftx_z_2142.emplace_back(frs->primary_z * sqrt(de[0] / id_vftx_vcor_2142.at(i)));
+                    id_vftx_z2_2142.emplace_back(frs->primary_z * sqrt(de[1] / id_vftx_vcor_2142.at(i)));
+                }
+            }
+
         }
 
-        if ((de[0] > 0.0) && (id_vftx_beta_2241.at(i) > 0.0) && (id_vftx_beta_2241.at(i) < 1.0))
+        // number of 22l hits
+        for (int i = 0; i < TRaw_vftx[2].size(); i++)
         {
-            power = 1.;
-            sum = 0.;
-            for (int j = 0; j < 4; j++)
+            id_vftx_beta_2241.emplace_back((id->vftx_length_2241 / vftx_tof2241_calib.at(i)) / speed_light);
+            id_vftx_beta_2242.emplace_back((id->vftx_length_2242 / vftx_tof2242_calib.at(i)) / speed_light);
+            id_vftx_gamma_2241.emplace_back(1. / sqrt(1. - id_vftx_beta_2241.at(i) * id_vftx_beta_2241.at(i)));
+            id_vftx_gamma_2242.emplace_back(1. / sqrt(1. - id_vftx_beta_2242.at(i) * id_vftx_beta_2242.at(i)));
+
+            if (temp_s4x > -200. && temp_s4x < 200. && temp_sci21x > -200. && temp_sci21x < 200)
             {
-                sum += power * id->vftx_vel_a_music41[j];
-                power *= id_vftx_beta_2241.at(i);
+                id_vftx_delta_24 = (temp_s4x - (temp_sci21x * frs->magnification[1])) / (-1.0 * frs->dispersion[1] * 1000.0);
+                if (id_vftx_beta_2241.at(i) > 0.0 && id_vftx_beta_2241.at(i) < 1.0)
+                {
+                    id_vftx_aoq_2241.emplace_back(mean_brho_s2s4 * (1. + id_vftx_delta_24) * temp_tm_to_MeV / (temp_mu * id_vftx_beta_2241.at(i) * id_vftx_gamma_2241.at(i)));
+                    id_vftx_aoq_corr_2241.emplace_back(id_vftx_aoq_2241.at(i) - id->a2AoQCorr * id_a2);
+                }
+                if (id_vftx_beta_2242.at(i) > 0.0 && id_vftx_beta_2242.at(i) < 1.0)
+                {
+                    id_vftx_aoq_2242.emplace_back(mean_brho_s2s4 * (1. + id_vftx_delta_24) * temp_tm_to_MeV / (temp_mu * id_vftx_beta_2242.at(i) * id_vftx_gamma_2242.at(i)));
+                    id_vftx_aoq_corr_2242.emplace_back(id_vftx_aoq_2242.at(i) - id->a2AoQCorr * id_a2);
+                }
             }
 
-            id_vftx_vcor_2241.emplace_back(sum);
-
-            if (id_vftx_vcor_2241.at(i) > 0.0)
+            if ((de[0] > 0.0) && (id_vftx_beta_2241.at(i) > 0.0) && (id_vftx_beta_2241.at(i) < 1.0))
             {
-                id_vftx_z_2241.emplace_back(frs->primary_z * sqrt(de[0] / id_vftx_vcor_2241.at(i)));
-                id_vftx_z2_2241.emplace_back(frs->primary_z * sqrt(de[1] / id_vftx_vcor_2241.at(i)));
+                power = 1.;
+                sum = 0.;
+                for (int j = 0; j < 4; j++)
+                {
+                    sum += power * id->vftx_vel_a_music41[j];
+                    power *= id_vftx_beta_2241.at(i);
+                }
+
+                id_vftx_vcor_2241.emplace_back(sum);
+
+                if (id_vftx_vcor_2241.at(i) > 0.0)
+                {
+                    id_vftx_z_2241.emplace_back(frs->primary_z * sqrt(de[0] / id_vftx_vcor_2241.at(i)));
+                    id_vftx_z2_2241.emplace_back(frs->primary_z * sqrt(de[1] / id_vftx_vcor_2241.at(i)));
+                }
             }
+
+            if ((de[0] > 0.0) && (id_vftx_beta_2242.at(i) > 0.0) && (id_vftx_beta_2242.at(i) < 1.0))
+            {
+                power = 1.;
+                sum = 0.;
+                for (int j = 0; j < 4; j++)
+                {
+                    sum += power * id->vftx_vel_a_music41[j];
+                    power *= id_vftx_beta_2242.at(i);
+                }
+
+                id_vftx_vcor_2242.emplace_back(sum);
+
+                if (id_vftx_vcor_2242.at(i) > 0.0)
+                {
+                    id_vftx_z_2242.emplace_back(frs->primary_z * sqrt(de[0] / id_vftx_vcor_2242.at(i)));
+                    id_vftx_z2_2242.emplace_back(frs->primary_z * sqrt(de[1] / id_vftx_vcor_2242.at(i)));
+                }
+            }
+
         }
-
-        if ((de[0] > 0.0) && (id_vftx_beta_2242.at(i) > 0.0) && (id_vftx_beta_2242.at(i) < 1.0))
-        {
-            power = 1.;
-            sum = 0.;
-            for (int j = 0; j < 4; j++)
-            {
-                sum += power * id->vftx_vel_a_music41[j];
-                power *= id_vftx_beta_2242.at(i);
-            }
-
-            id_vftx_vcor_2242.emplace_back(sum);
-
-            if (id_vftx_vcor_2242.at(i) > 0.0)
-            {
-                id_vftx_z_2242.emplace_back(frs->primary_z * sqrt(de[0] / id_vftx_vcor_2242.at(i)));
-                id_vftx_z2_2242.emplace_back(frs->primary_z * sqrt(de[1] / id_vftx_vcor_2242.at(i)));
-            }
-        }
-
-    }
+    } // if vftx has data??
     
     /*----------------------------------------------------------*/
     /* End of VFTX  */
