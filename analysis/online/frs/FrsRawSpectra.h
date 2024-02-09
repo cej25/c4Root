@@ -4,6 +4,7 @@
 #include "FairTask.h"
 #include "TH1.h"
 #include "TH2.h"
+#include "../../../config/frs_config.h"
 
 class TClonesArray;
 class EventHeader;
@@ -87,16 +88,17 @@ class FrsRawSpectra : public FairTask
         TH2F* h2_v7x5_user_data10_vs_chan;
         TH1F* h1_v7x5_user_data12[32];
         TH2F* h2_v7x5_user_data12_vs_chan;
-        TH1I* h1_vftx_vftx_lead_mult[32];
-        TH1I* h1_vftx_vftx_trail_mult[32];
-        TH1I* h1_vftx_vftx_lead_cc[32];
-        TH1I* h1_vftx_vftx_lead_ft[32];
-        TH1I* h1_vftx_vftx_lead_time[32];
-        TH1I* h1_vftx_vftx_trail_cc[32];
-        TH1I* h1_vftx_vftx_trail_ft[32];
-        TH1I* h1_vftx_vftx_lead_time_ref_ch0[32];
-        TH2I* h2_vftx_vftx_lead_time_ref_ch0_vs_event[32];
-        TH2I* h2_vftx_vftx_lead_time_ref_ch8_vs_event[32];
+        TH1I* h1_vftx_vftx_lead_mult[VFTX_MAX_CHN];
+        TH1I* h1_vftx_vftx_trail_mult[VFTX_MAX_CHN];
+        TH1I* h1_vftx_vftx_lead_cc[VFTX_MAX_CHN];
+        TH1I* h1_vftx_vftx_lead_ft[VFTX_MAX_CHN];
+        TH1I* h1_vftx_vftx_lead_time[VFTX_MAX_CHN];
+        TH1I* h1_vftx_vftx_trail_cc[VFTX_MAX_CHN];
+        TH1I* h1_vftx_vftx_trail_ft[VFTX_MAX_CHN];
+        TH1I* h1_vftx_vftx_trail_time[VFTX_MAX_CHN];
+        TH1I* h1_vftx_vftx_lead_time_ref_ch0[VFTX_MAX_CHN];
+        TH2I* h2_vftx_vftx_lead_time_ref_ch0_vs_event[VFTX_MAX_CHN];
+        TH2I* h2_vftx_vftx_lead_time_ref_ch8_vs_event[VFTX_MAX_CHN];
         TH2I* h2_vftx_vftx_lead_time_ch0vs4;
 
 

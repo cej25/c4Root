@@ -1681,17 +1681,6 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
     for (int i = 0; i < 8; i++)
     {
         tpc_timeref[i] = v1190_lead_hits[v1190_channel_timeref[i]];
-        /*
-        timeref[0] = channel 96 // never fires - accept trig
-        timeref[1] = channel 97 // always fires - sc21
-        timeref[2] = channel 98 // sometimes - sc22
-        timeref[3] = channel 99 // sometimes - sc31
-        timeref[4] = channel 100 // never? - sc41!?
-        timeref[5] = channel 101 // sometimes - not labelled
-        timeref[6] = channel 102 // never
-        timeref[7] = channel 103 // never
-        */
-
     }
 
 
@@ -1721,7 +1710,6 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
     bool checkrange3 = 0;
     bool checkrange4 = 0;
     bool checkrange5 = 0;
-
 
     // CEJ: the loops I built here are different to Go4 so I'm sure I caused some issue
     // I'm just not sure what yet...
