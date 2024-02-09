@@ -5,8 +5,8 @@
  * Do not edit - automatically generated.
  */
 
-#ifndef __GUARD_H101_FRS_EXT_H101_FRS_H__
-#define __GUARD_H101_FRS_EXT_H101_FRS_H__
+#ifndef __GUARD_H101_FRSMAIN_EXT_H101_FRSMAIN_H__
+#define __GUARD_H101_FRSMAIN_EXT_H101_FRSMAIN_H__
 
 #ifndef __CINT__
 # include <stdint.h>
@@ -26,7 +26,7 @@ typedef          int  int32_t;
  * Plain structure (layout as ntuple/root file):
  */
 
-typedef struct EXT_STR_h101_FRS_t
+typedef struct EXT_STR_h101_frsmain_t
 {
   /* UNPACK */
   uint32_t frsmain_wr_subsystem_id /* [0,65535] */;
@@ -54,7 +54,7 @@ typedef struct EXT_STR_h101_FRS_t
   uint32_t frsmain_data_v1290_leadOrTrail /* [0,16384] */;
   uint32_t frsmain_data_v1290_leadOrTrailv[16384 EXT_STRUCT_CTRL(frsmain_data_v1290_leadOrTrail)] /* [0,255] */;
 
-} EXT_STR_h101_FRS;
+} EXT_STR_h101_frsmain;
 
 /********************************************************
  *
@@ -62,7 +62,7 @@ typedef struct EXT_STR_h101_FRS_t
  * recovered (recommended):
  */
 
-typedef struct EXT_STR_h101_FRS_onion_t
+typedef struct EXT_STR_h101_frsmain_onion_t
 {
   /* UNPACK */
   uint32_t frsmain_wr_subsystem_id;
@@ -87,11 +87,11 @@ typedef struct EXT_STR_h101_FRS_onion_t
   uint32_t frsmain_data_v1290_leadOrTrail;
   uint32_t frsmain_data_v1290_leadOrTrailv[16384 /* frsmain_data_v1290_leadOrTrail */];
 
-} EXT_STR_h101_FRS_onion;
+} EXT_STR_h101_frsmain_onion;
 
 /*******************************************************/
 
-#define EXT_STR_h101_FRS_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
+#define EXT_STR_h101_frsmain_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
   ok = 1; \
   /* UNPACK */ \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
@@ -169,6 +169,6 @@ typedef struct EXT_STR_h101_FRS_onion_t
   \
 } while (0);
 
-#endif/*__GUARD_H101_FRS_EXT_H101_FRS_H__*/
+#endif/*__GUARD_H101_FRSMAIN_EXT_H101_FRSMAIN_H__*/
 
 /*******************************************************/
