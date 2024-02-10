@@ -193,7 +193,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     tms->SetDetectorSystems(a);
 
     //FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
-    FrsRawSpectra* frsrawspec = new FrsRawSpectra();
+    //FrsRawSpectra* frsrawspec = new FrsRawSpectra();
 
 
     run->AddTask(tms);
@@ -203,7 +203,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     //run->AddTask(onlinege);
 
     //run->AddTask(onlinefrs);
-    run->AddTask(frsrawspec);
+    //run->AddTask(frsrawspec);
 
     // Initialise
     run->Init();    
