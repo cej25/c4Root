@@ -28,7 +28,6 @@ class FrsTPCRaw2Cal : public FairTask
         ~FrsTPCRaw2Cal();
 
         void SetParameters();
-        void SetFRSParameters();
 
         virtual InitStatus Init();
 
