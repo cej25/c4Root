@@ -13,7 +13,16 @@ class FrsTPCCalData;
 class FrsTPCRaw2Cal : public FairTask
 {
     public:
-        FrsTPCRaw2Cal();
+        FrsTPCRaw2Cal(TFRSParameter* ffrs,
+                    TMWParameter* fmw,
+                    TTPCParameter* ftpc,
+                    TMUSICParameter* fmusic,
+                    TLABRParameter* flabr,
+                    TSCIParameter* fsci,
+                    TIDParameter* fid,
+                    TSIParameter* fsi,
+                    TMRTOFMSParameter* fmrtof,
+                    TRangeParameter* frange);
         FrsTPCRaw2Cal(const TString& name, Int_t verbose);
 
         ~FrsTPCRaw2Cal();
