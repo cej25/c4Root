@@ -105,8 +105,6 @@ InitStatus FrsCal2Hit::Init()
 
     mgr->Register("FrsHitData", "FRS Hit Data", fHitArray, !fOnline);
 
-    //SetParameters();
-    //TestSetup();
     Setup_Conditions("../../config/frs/");
     c4LOG_IF(fatal,!conditions_files_read, "You must set FrsCal2Hit->Setup_Conditions('your file path') to the folder containing the frs condition gates.");
     
