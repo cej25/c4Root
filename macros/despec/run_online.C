@@ -1,3 +1,14 @@
+#include <TROOT.h>
+
+// CEJ: for now, here we have to define our setup file
+// the file must be taken from FRS, and FRS parameters
+// should be added as arguments to the setup function
+extern "C"
+{
+    #include "../../config/frs/setup.C"
+}
+
+
 typedef struct EXT_STR_h101_t
 {   
     EXT_STR_h101_unpack_t eventheaders;
@@ -10,6 +21,7 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_frsvftx_onion_t frsvftx;
     //EXT_STR_h101_germanium_onion_t germanium;
 } EXT_STR_h101;
+
 
 void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId = 1)
 {   
@@ -59,7 +71,17 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     source->SetMaxEvents(nev);
     run->SetSource(source);
 
-
+    TFRSParameter* frs = new TFRSParameter();
+    TMWParameter* mw = new TMWParameter();
+    TTPCParameter* tpc = new TTPCParameter();
+    TMUSICParameter* music = new TMUSICParameter();
+    TLABRParameter* labr = new TLABRParameter();
+    TSCIParameter* sci = new TSCIParameter();
+    TIDParameter* id = new TIDParameter();
+    TSIParameter* si = new TSIParameter();
+    TMRTOFMSParameter* mrtof = new TMRTOFMSParameter();
+    TRangeParameter* range = new TRangeParameter();
+    setup(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
     
     
     // Runtime data baserate  
@@ -141,7 +163,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     // CEJ: FRS issue possibly in Reader step
     // Main and TPC checked, should be fine...
     FrsMainRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
-    FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal();
+    FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
     FrsUserRaw2Cal* calfrsuser = new FrsUserRaw2Cal();
     FrsVFTXRaw2Cal* calfrsvftx = new FrsVFTXRaw2Cal();
 
@@ -168,8 +190,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     run->AddTask(calfrsuser);
     run->AddTask(calfrsvftx);
 
-    // CEJ: currently some segault after 1 event in Cal2Hit
-    FrsCal2Hit* hitfrs = new FrsCal2Hit();
+    FrsCal2Hit* hitfrs = new FrsCal2Hit(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
 
     hitfrs->SetOnline(false); 
 
