@@ -32,6 +32,26 @@ class FatimaOnlineSpectra : public FairTask
 
         virtual void Reset_Histo();
 
+        void SetBinningFastToT(int nbins, float binlow, float binhigh){
+            ffast_tot_nbins = nbins;
+            ffast_tot_bin_low = binlow;
+            ffast_tot_bin_high = binhigh;
+            
+            
+        };
+        void SetBinningSlowToT(int nbins, float binlow, float binhigh){
+            fslow_tot_nbins = nbins;
+            fslow_tot_bin_low = binlow;
+            fslow_tot_bin_high = binhigh;
+            
+            
+        };
+        void SetBinningEnergy(int nbins, float binlow, float binhigh){
+            fenergy_nbins = nbins;
+            fenergy_bin_low = binlow;
+            fenergy_bin_high = binhigh; 
+        };
+
         virtual void Snapshot_Histo();
 
         // range setters
@@ -95,6 +115,18 @@ class FatimaOnlineSpectra : public FairTask
 
         //Absolute time spectra
         TH1F * h1_fatima_abs_time[NDetectors];
+
+        int ffast_tot_nbins = 500;
+        float ffast_tot_bin_low = 0;
+        float ffast_tot_bin_high = 2500; 
+        int fslow_tot_nbins = 500;
+        float fslow_tot_bin_low = 0;
+        float fslow_tot_bin_high = 2500;
+        int fenergy_nbins = 500;
+        float fenergy_bin_low = 0;
+        float fenergy_bin_high = 1500;
+            
+
 
         
 
