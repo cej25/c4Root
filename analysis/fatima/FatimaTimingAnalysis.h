@@ -2,6 +2,7 @@
 #define FatimaTimingAnalysis_H
 
 #include "FairTask.h"
+#include "FairRootManager.h"
 
 class TClonesArray;
 class EventHeader;
@@ -17,11 +18,33 @@ class FatimaTimingAnalysis : public FairTask
 
         void SetDetectorToAnalyze(std::vector<int> * detectors_analyze){detector_id_analyze = detectors_analyze;};
         void SetEnergies(double fE1, double fE2, double fgatewidth){E1 = fE1; E2 = fE2; Egatewidth = fgatewidth;}
-        void SetdTHistoBinSize(int fNbins, double flowBin, double fhighBin){Nbins = fNbins; lowBin = flowBin; highBin = fhighBin;};
 
         virtual ~FatimaTimingAnalysis();
 
         virtual void SetParContainers();
+
+        void SetBinning_dT(int fNbins, double flowBin, double fhighBin){Nbins = fNbins; lowBin = flowBin; highBin = fhighBin;};
+
+        void SetBinningFastToT(int nbins, float binlow, float binhigh){
+            ffast_tot_nbins = nbins;
+            ffast_tot_bin_low = binlow;
+            ffast_tot_bin_high = binhigh;
+            
+            
+        };
+        void SetBinningSlowToT(int nbins, float binlow, float binhigh){
+            fslow_tot_nbins = nbins;
+            fslow_tot_bin_low = binlow;
+            fslow_tot_bin_high = binhigh;
+            
+            
+        };
+        void SetBinningEnergy(int nbins, float binlow, float binhigh){
+            fenergy_nbins = nbins;
+            fenergy_bin_low = binlow;
+            fenergy_bin_high = binhigh; 
+        };
+
 
         virtual InitStatus Init();
 
@@ -36,6 +59,8 @@ class FatimaTimingAnalysis : public FairTask
     
     private:
         TClonesArray* fHitFatimaTwinpeaks;
+
+        FairRootManager* mgr;
 
         std::vector<int> * detector_id_analyze;
 
@@ -63,6 +88,15 @@ class FatimaTimingAnalysis : public FairTask
 
         
 
+        int ffast_tot_nbins = 500;
+        float ffast_tot_bin_low = 0;
+        float ffast_tot_bin_high = 2500; 
+        int fslow_tot_nbins = 500;
+        float fslow_tot_bin_low = 0;
+        float fslow_tot_bin_high = 2500;
+        int fenergy_nbins = 500;
+        float fenergy_bin_low = 0;
+        float fenergy_bin_high = 1500;
 
         
 
