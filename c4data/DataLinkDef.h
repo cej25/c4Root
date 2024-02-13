@@ -27,6 +27,7 @@
 #pragma link C++ class FrsUserCalData+;
 #pragma link C++ class FrsVFTXCalData+;
 #pragma link C++ class FrsHitData+;
+#pragma link C++ class FrsAnalysisData+;
 
 #pragma link C++ class AidaUnpackAdcItem+;
 #pragma link C++ class AidaUnpackFlowItem+;
