@@ -86,8 +86,10 @@ InitStatus GermaniumOnlineSpectra::Init()
         c_germanium_cal_energy_spectra->cd(ihist+1);
         h1_germanium_energy[ihist] = new TH1F(Form("h1_germanium_energy_%d_%d",ihist/NCrystals,ihist%NCrystals),Form("Germanium Energy spectrum det %d crystal %d",ihist/NCrystals,ihist%NCrystals),10e3,0,10e3);
         h1_germanium_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
-        h1_germanium_energy[ihist]->Draw();
-        folder_germanium_cal_energy_spectra->Add(h1_germanium_energy[ihist]);
+        if(h1_germanium_energy[ihist]->GetEntries()!=0){
+            h1_germanium_energy[ihist]->Draw();
+            folder_germanium_cal_energy_spectra->Add(h1_germanium_energy[ihist]);
+        }
 
     }
     c_germanium_cal_energy_spectra->cd(0);
@@ -102,8 +104,10 @@ InitStatus GermaniumOnlineSpectra::Init()
         c_germanium_energy_mult2->cd(ihist+1);
         h1_germanium_energy_mult2[ihist] = new TH1F(Form("h1_germanium_energy_mult2_%d_%d",ihist/NCrystals,ihist%NCrystals),Form("Germanium Energy spectrum m=2 det %d crystal %d",ihist/NCrystals,ihist%NCrystals),1000,0,10e3);
         h1_germanium_energy_mult2[ihist]->GetXaxis()->SetTitle("energy (keV)");
-        h1_germanium_energy_mult2[ihist]->Draw();
-        folder_germanium_energy_mult2->Add(h1_germanium_energy_mult2[ihist]);
+        if (h1_germanium_energy_mult2[ihist]->GetEntries()!=0){
+            h1_germanium_energy_mult2[ihist]->Draw();
+            folder_germanium_energy_mult2->Add(h1_germanium_energy_mult2[ihist]);
+        }
     }
     c_germanium_energy_mult2->cd(0);
 
@@ -118,8 +122,11 @@ InitStatus GermaniumOnlineSpectra::Init()
         h1_germanium_time[ihist] = new TH1F(Form("h1_germanium_time_%d_%d",ihist/NCrystals,ihist%NCrystals),Form("Absolute Time %d %d",ihist/NCrystals,ihist%NCrystals),100,1.5218e14,1.5225e14);
         h1_germanium_time[ihist]->GetXaxis()->SetTitle("Time (ns)");
         h1_germanium_time[ihist]->GetYaxis()->SetTitle("Counts");
-        h1_germanium_time[ihist]->Draw();
-        folder_germanium_time->Add(h1_germanium_time[ihist]);
+        if (h1_germanium_time[ihist]->GetEntries()!=0){
+            h1_germanium_time[ihist]->Draw();
+            folder_germanium_time->Add(h1_germanium_time[ihist]);
+        }
+
     }
     c_germanium_time->cd(0);
 

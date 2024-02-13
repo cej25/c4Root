@@ -60,7 +60,7 @@ class bPlastReader : public c4Reader
             fine_time_calibration_read_from_file = true;
         };
 
-        void PrintStatistics(Bool_t option);
+        void PrintStatistics();
 
         void DoFineTimeCalOnline(){
             fine_time_calibration_set = false;
@@ -82,8 +82,6 @@ class bPlastReader : public c4Reader
         size_t fOffset;
 
         Bool_t fOnline;
-
-        Bool_t fPrintStatistics = false;
 
         TClonesArray* fArray;
 

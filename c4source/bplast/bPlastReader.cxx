@@ -46,7 +46,7 @@ And prints some statistics for the run.
 */
 bPlastReader::~bPlastReader() { 
 
-    PrintStatistics(fPrintStatistics);
+    PrintStatistics();
 
     
     for (int i = 0; i < NBoards; i++) {
@@ -470,10 +470,7 @@ Bool_t bPlastReader::Read() //do fine time here:
 /*
 Playing with colors :D
 */
-void bPlastReader::PrintStatistics(Bool_t fprintStatistics){
-    fPrintStatistics = fprintStatistics;
-    if (!fPrintStatistics) return;
-
+void bPlastReader::PrintStatistics(){
     std::ostringstream oss;
     // Print column labels
     oss << "\n";
