@@ -1,3 +1,7 @@
+#define FRS_GATES 1
+#define MAX_MHTDC_MULT 10
+#define FRS_HISTO_BIN 750
+
 #define VFTX_N 1 // number of modules
 #define VFTX_MAX_CHN 16 // number of channels
 #define VFTX_MAX_HITS 20 // max hits
