@@ -282,45 +282,6 @@ void FatimaRaw2Cal::Exec(Option_t* option){
                     c4LOG(fatal, "Detector mapping not complete - exiting.");
                 }
                 //only do calibrations if mapping is functional:
-                if (DetectorCal_loaded){
-                    // JB: JEL Can you check this?
-                    /* if (auto result_find = calibration_coeffs.find(detector_id); result_find != calibration_coeffs.end()){
-                        fast_lead_time =  funcal_hit->Get_lead_epoch_counter()*10.24e3 + funcal_hit->Get_lead_coarse_T()*5.0 - funcal_hit->Get_lead_fine_T();
-                        fast_trail_time = funcal_hit->Get_trail_epoch_counter()*10.24e3 + funcal_hit->Get_trail_coarse_T()*5.0 - funcal_hit->Get_trail_fine_T();
-                        
-                        slow_lead_time =  funcal_hit_next->Get_lead_epoch_counter()*10.24e3 + funcal_hit_next->Get_lead_coarse_T()*5.0 - funcal_hit_next->Get_lead_fine_T();
-                        slow_trail_time = funcal_hit_next->Get_trail_epoch_counter()*10.24e3 + funcal_hit_next->Get_trail_coarse_T()*5.0 - funcal_hit_next->Get_trail_fine_T();
-                        
-                        fast_lead_time = result_find->second.second*fast_lead_time + result_find->second.first;
-                        fast_trail_time = result_find->second.second*fast_trail_time + result_find->second.first;
-                        slow_lead_time = result_find->second.second*slow_lead_time + result_find->second.first;
-                        slow_trail_time = result_find->second.second*slow_trail_time + result_find->second.first;
-                        
-                        fast_ToT =  fast_trail_time - fast_lead_time;
-                        slow_ToT =  slow_trail_time - slow_lead_time;
-                        
-                        new ((*fcal_data)[fcal_data->GetEntriesFast()]) bPlastTwinpeaksCalData(
-                            funcal_hit->Get_board_id(),
-                            (int)((funcal_hit->Get_ch_ID()+1)/2),
-                            detector_id,
-                            slow_lead_time,
-                            slow_trail_time,
-                            fast_lead_time,
-                            fast_trail_time,
-                            fast_ToT,
-                            slow_ToT,
-                            funcal_hit->Get_wr_subsystem_id(),
-                            funcal_hit->Get_wr_t());
-                        
-                        
-                        fNEvents++;
-                        ihit++; //increment it by one extra.
-                    }else{
-                        c4LOG(fatal, "Calibration coefficients not complete - exiting.");
-                    }
-                    */
-                }
-            }
             else{ //no map and cal: ->
                 detector_id = funcal_hit->Get_board_id()*17 + (int)(funcal_hit_next->Get_ch_ID()+1)/2; // do mapping.
             }
