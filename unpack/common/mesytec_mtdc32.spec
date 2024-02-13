@@ -11,23 +11,28 @@ MESYTEC_MTDC32_FRS()
         30_31: 0b01; // was 30_31: 0b01 as word was 0x4, but data doesn't seem to agree w this.
     };
 
-    list (0 <= index < header.word_number)
+    // loop through words - 1
+    list (1 <= index < header.word_number)
     {
-        UINT32 ch_data NOENCODE
+        optional UINT32 zero NOENCODE
         {
-            0_15:  value;
-            16_20: channel;
-            21:    trig;
-            22_29: 0b00010000;
-            30_31: 0b00;
-
-            ENCODE(data[trig * 32 + channel], (value = value));
+            0_31: ze = MATCH(0x0000000);
         }
-    }
+        
+        if (zero.ze != 0x0000000)
+        {
+             UINT32 ch_data NOENCODE
+            {
+                0_15:  value;
+                16_20: channel;
+                21:    trig;
+                22_29: 0b00010000;
+                30_31: 0b00;
 
-    optional UINT32 zero NOENCODE
-    {
-        0_31: 0x00000000;
+                ENCODE(data[trig * 32 + channel], (value = value));
+            }
+        }
+
     };
   
     UINT32 end_of_event NOENCODE

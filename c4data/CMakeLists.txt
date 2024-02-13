@@ -7,7 +7,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/frsData
 ${C4ROOT_SOURCE_DIR}/c4data/lisaData
 ${C4ROOT_SOURCE_DIR}/c4data/aidaData
 ${C4ROOT_SOURCE_DIR}/c4data/fatimaData
-#${C4ROOT_SOURCE_DIR}/c4data/bplastData
+${C4ROOT_SOURCE_DIR}/c4data/bplastData
 ${C4ROOT_SOURCE_DIR}/c4data/germaniumData
 ${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
 ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
@@ -21,7 +21,15 @@ set(LINK_DIRECTORIES ${ROOT_LIBRARY_DIR} ${FAIRROOT_LIBRARY_DIR})
 link_directories(${LINK_DIRECTORIES})
 
 set(SRCS
-frsData/FrsData.cxx
+frsData/FrsMainData.cxx
+frsData/FrsTPCData.cxx
+frsData/FrsUserData.cxx
+frsData/FrsVFTXData.cxx
+frsData/FrsMainCalData.cxx
+frsData/FrsTPCCalData.cxx
+frsData/FrsUserCalData.cxx
+frsData/FrsVFTXCalData.cxx
+frsData/FrsHitData.cxx
 lisaData/LisaData.cxx
 lisaData/LisaTraceData.cxx
 aidaData/AidaData.cxx

@@ -71,7 +71,7 @@ void GermaniumRaw2Cal::SetParContainers()
 Init - register data to output tree and gets input data.
 */
 InitStatus GermaniumRaw2Cal::Init(){
-    //grab instance managers and handles.
+    //grabs instance managers and handles.
 
     c4LOG(info, "Grabbing FairRootManager, RunOnline and EventHeader.");
     FairRootManager* mgr = FairRootManager::Instance();
@@ -84,6 +84,7 @@ InitStatus GermaniumRaw2Cal::Init(){
     funcal_data = (TClonesArray*)mgr->GetObject("GermaniumFebexData");
     c4LOG_IF(fatal, !funcal_data, "Germanium branch of GermaniumFebexData not found.");
  
+    // needs to have the name of the detector subsystem here:
     FairRootManager::Instance()->Register("GermaniumCalData", "Germanium Cal Data", fcal_data, !fOnline);
     FairRootManager::Instance()->Register("GermaniumTimeMachineData", "Time Machine Data", ftime_machine_array, !fOnline);
     
@@ -115,14 +116,16 @@ Bool_t GermaniumRaw2Cal::SetDetectorMapFile(TString filename){
             detector_map_file >> rfebex_module >> rfebex_channel >> rdetector_id >> rcrystal_id;
             std::pair<int,int> febex_mc = {rfebex_module,rfebex_channel};
             std::pair<int,int> ge_cd = {rdetector_id,rcrystal_id};
-
-            auto it = detector_mapping.find(febex_mc);
-            if (it != detector_mapping.end()) c4LOG(fatal,Form("Detector mapping not unique. Multiple entries of (febex module id = %i) (febex channel id = %i)",rfebex_module,rfebex_channel));
+            
+            //fails? check!
+            //auto it = detector_mapping.find(febex_mc);
+            //if (it != detector_mapping.end()) c4LOG(fatal,Form("Detector mapping not unique. Multiple entries of (febex module id = %i) (febex channel id = %i)",rfebex_module,rfebex_channel));
 
             detector_mapping.insert(std::pair<std::pair<int,int>,std::pair<int,int>>{febex_mc,ge_cd});
             detector_map_file.ignore(256,'\n');
 
-            //TODO: implement a check to make sure keys are unique.
+            auto it = detector_mapping.find(febex_mc);
+            if (it != detector_mapping.end()) c4LOG(fatal,Form("Detector mapping not unique. Multiple entries of (febex module id = %i) (febex channel id = %i)",rfebex_module,rfebex_channel));
         }
     }
     DetectorMap_loaded = 1;     
@@ -157,7 +160,10 @@ Bool_t GermaniumRaw2Cal::SetDetectorCalFile(TString filename){
             std::pair<double,double> cals = {a0,a1};
             calibration_coeffs.insert(std::pair<std::pair<int,int>,std::pair<double,double>>{detector_crystal,cals});
             cal_map_file.ignore(256,'\n');
-            //TODO: implement a check to make sure keys are unique.
+
+            auto it = calibration_coeffs.find(detector_crystal);
+            if (it != calibration_coeffs.end()) c4LOG(fatal,Form("Detector calibration not unique. Multiple entries of (Ge detector id = %i) (Ge crystal id = %i)",rdetector_id,rcrystal_id));
+
         }
     }
     DetectorCal_loaded = 1;
@@ -166,7 +172,7 @@ Bool_t GermaniumRaw2Cal::SetDetectorCalFile(TString filename){
 };
 
 /*
-Prints detector map to file.
+Prints detector map to console.
 */
 void GermaniumRaw2Cal::PrintDetectorMap(){
     if (DetectorMap_loaded){
@@ -181,7 +187,7 @@ void GermaniumRaw2Cal::PrintDetectorMap(){
 }
 
 /*
-Prints calibration coeffs to file.
+Prints calibration coeffs to console.
 */
 void GermaniumRaw2Cal::PrintDetectorCal(){
     if (DetectorCal_loaded){

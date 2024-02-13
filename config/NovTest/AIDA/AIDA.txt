@@ -1,0 +1,67 @@
+# AIDA Analysis File
+#
+
+#---------------------------
+# Configuration
+#---------------------------
+FEEs: 8
+DSSDs: 1
+Wide: true
+
+#---------------------------
+# Options
+#---------------------------
+# Ignore the MBS timestamp
+IgnoreMBSTS: false
+# ucesb has been used to preprocess AIDA data
+ucesb: true
+# Print AIDA statistics at the end of the run
+#stats: true
+# If ucesb is shifting AIDA timestamps for time-stitching, show the amount here
+ucesbshift: 14000
+# Gap between data items to start a new event, in nanoseconds
+EventWindow: 2200
+# Maximum time difference between good front-back coincidences (in nanoseconds)
+FrontBackWindow: 4400
+# Maximum energy difference for implants (in MeV)
+FrontBackEnergyH: 1000
+# Maximum energy difference for decays (in keV)
+FrontBackEnergyL: 350
+
+#--------------------------
+# Analysis Options
+#-------------------------
+Analysis:
+- ReduceNoise: false
+- ClusterImplants: false
+- ClusterDecays: false
+- Calibrate: false
+- ParallelCalibrate: false
+- HugeThreshold: 400
+- PulserThreshold: 700
+
+#---------------------------
+# DSSD Mapping
+#---------------------------
+DSSD: 1
+- Top: 2
+- Bottom: 4
+- LeftLeft: 7
+- LeftRight: 5
+- CentreLeft: 3
+- CentreRight: 1
+- RightLeft: 8
+- RightRight: 6
+- X: Junction
+- Y: Ohmic
+- MEC: true
+
+#---------------------------
+# Scaler Mapping
+#---------------------------
+Scalers:
+- 1: Pulser
+- 3: Time Machine Original
+- 4: Time Machine Delayed
+- 2: SC41 L
+- 5: SC41 R

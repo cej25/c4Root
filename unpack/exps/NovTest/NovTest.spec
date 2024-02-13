@@ -2,7 +2,8 @@
 
 #include "../../common/whiterabbit.spec"
 #include "../../common/gsi_tamex4.spec"
-#include "../../common/gsi_febex4.spec" // gsi_febex4.spec
+#include "../../common/gsi_febex4.spec"
+#include "../../common/frs.spec"
 #include "../../../config/NovTest/setup.hh" 
 
 
@@ -46,10 +47,11 @@ SUBEVENT(fatima_tamex_subev)
     select several
     {
         tamex[0] = TAMEX4_SFP(sfp=0,card=0);
+        tamex[1] = TAMEX4_SFP(sfp=0,card=1);
     }  
 }
 
-SUBEVENT(plastic_subev)
+SUBEVENT(bplast_subev)
 {
     ts = TIMESTAMP_WHITERABBIT(id=0x500);
     trigger_window = TAMEX4_HEADER();
@@ -62,30 +64,89 @@ SUBEVENT(plastic_subev)
         tamex[0] = TAMEX4_SFP(sfp=0,card=0);
         tamex[1] = TAMEX4_SFP(sfp=0,card=1);
         tamex[2] = TAMEX4_SFP(sfp=0,card=2);
+        tamex[3] = TAMEX4_SFP(sfp=0,card=3);
+        tamex[4] = TAMEX4_SFP(sfp=0,card=4);
     }  
+}
+
+SUBEVENT(frs_main_subev)
+{
+    // whiterabbit ts merged into ProcID 10
+    select several
+    {
+        wr = TIMESTAMP_WHITERABBIT(id=0x100);
+    };
+
+    // catch trigger 3 events
+    select several
+    {
+        trig3 = TRIG3EVENT();
+    };
+
+    // trigger 1 events
+    select several
+    {
+        data = MAIN_CRATE_DATA();
+    }  
+}
+
+SUBEVENT(frs_tpc_subev)
+{
+    select several
+    {
+        trig3 = TRIG3EVENT();
+    };
+
+    // trigger 1 events
+    select several
+    {
+        data = TPC_CRATE_DATA();
+    }
+}
+
+SUBEVENT(frs_user_subev)
+{
+    select several
+    {
+        trig3 = TRIG3EVENT();
+    }
+
+    // trigger 1 events
+    select several
+    {
+        data = USER_CRATE_DATA();
+    }
+}
+
+SUBEVENT(frs_vftx_subev)
+{
+    select several
+    {
+        trig3 = TRIG3EVENT();
+    }
+
+    // trigger 1 events
+    select several
+    {
+        data = VFTX_CRATE_DATA();
+    }
 }
 
 
 EVENT
 {   
     // CEJ: UNCOMMENT SUBEVENTS YOU'RE INTERESTED IN HERE
-
+    
     revisit aida = aida_subev(type = 10, subtype = 1, procid = 90, control = 37);
-    germanium = febex_subev(type = 10, subtype = 1, procid = 60, control = 20);
+    // germanium = febex_subev(type = 10, subtype = 1, procid = 60, control = 20);
     
     fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = 75, control = 20, subcrate = 0);
-    plastic = plastic_subev(type = 10, subtype = 1, procid = 80, control = 20, subcrate = 0);
+    bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20, subcrate = 0);
 
-    // CEJ: NONE OF THIS WILL WORK WITH S450
-    // white rabbit should be easy, do with Elisa wed
-    // frs_whiterabbit = frs_whiterabbit_subev(type = 10, subtype = 1, procid = 10, control = 20); // whiterabbit
-    // come back to
-    // frs_main_crate = frs_main_crate_subev(type = 12, subtype = 1, procid = 10, control = 20); // main crate
-    // // start extraction here
-    // tpat = frs_tpat_subev(type = 36, subtype = 3600, procid = 10, control = 20); // tpat // works // 
-    // frs_tof_crate = frs_tof_crate_subev(type = 12, subtype = 1, procid = 35, control = 20); // VFTX, MQDC, SIS 3820
-    // frs_tpc_crate = frs_tpc_crate_subev(type = 12, subtype = 1, procid = 20, control = 21); // frs_main_scaler // music?
-    // frs_crate = frs_crate_subev(type = 12, subtype = 1, procid = 30, control = 20); // sci_tx? // "frs crate"? // scaler_frs is here*/
+    frsmain = frs_main_subev(procid = 10);
+    frstpc = frs_tpc_subev(procid = 20);
+    frsuser = frs_user_subev(procid = 30);
+    frsvftx = frs_vftx_subev(procid = 40);
 
     ignore_unknown_subevent;
 };
