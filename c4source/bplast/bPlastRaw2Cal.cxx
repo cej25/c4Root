@@ -273,6 +273,7 @@ void bPlastRaw2Cal::Exec(Option_t* option){
                 }else{
                     c4LOG(fatal, "Detector mapping not complete - exiting.");
                 }
+            }
             else{ //no map and cal: ->
                 detector_id = funcal_hit->Get_board_id()*17 + (int)(funcal_hit_next->Get_ch_ID()+1)/2; // do mapping.
             }
@@ -327,6 +328,7 @@ void bPlastRaw2Cal::Exec(Option_t* option){
         }
     }
 }
+
 
 /*
 THIS FUNCTION IS EXTREMELY IMPORTANT!!!!
