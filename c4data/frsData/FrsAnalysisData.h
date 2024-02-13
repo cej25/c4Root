@@ -14,6 +14,16 @@ class FrsAnalysisData : public TObject
         ~FrsAnalysisData();
 
         // Getters
+        inline Bool_t Get_ZvsAoQ_gate(int gate) { return fZvsAoQ_gates[gate]; }
+        inline Bool_t Get_ZvsZ2_gate(int gate) { return fZvsZ2_gates[gate]; }
+        inline Bool_t Get_x2vsAoQ_gate(int gate) { return fx2vsAoQ_gates[gate]; }
+        inline Bool_t Get_x4vsAoQ_gate(int gate) { return fx4vsAoQ_gates[gate]; }
+        inline Bool_t Get_ZvsdEdeg_gate(int gate) { return fZvsdEdeg_gates[gate]; }
+        inline Bool_t Get_ZvsAoQ_mhtdc_gate(int gate) { return fZvsAoQ_mhtdc_gates[gate]; }
+        inline Bool_t Get_ZvsZ2_mhtdc_gate(int gate) { return fZvsZ2_mhtdc_gates[gate]; }
+        inline Bool_t Get_x2vsAoQ_mhtdc_gate(int gate) { return fx2vsAoQ_mhtdc_gates[gate]; }
+        inline Bool_t Get_x4vsAoQ_mhtdc_gate(int gate) { return fx4vsAoQ_mhtdc_gates[gate]; }
+        inline Bool_t Get_ZvsdEdeg_mhtdc_gate(int gate) { return fZvsdEdeg_mhtdc_gates[gate]; }
 
         // Setters
         inline void Set_ZvsAoQ_gates(int gate, Bool_t pass) { fZvsAoQ_gates[gate] = pass; }
