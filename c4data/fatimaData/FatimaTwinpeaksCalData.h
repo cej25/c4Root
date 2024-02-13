@@ -22,6 +22,9 @@ class FatimaTwinpeaksCalData : public TObject
 
         double fast_ToT,
         double slow_ToT,
+        
+        double energy,
+
         uint16_t wr_subsystem_id,
         uint64_t wr_t);
 
@@ -39,6 +42,7 @@ class FatimaTwinpeaksCalData : public TObject
         inline const double Get_fast_trail_time() const {return ffast_trail_time; }
         inline const double Get_fast_ToT() const {return ffast_ToT; }
         inline const double Get_slow_ToT() const {return fslow_ToT; }
+        inline const double Get_energy() const {return fenergy; }
         inline const uint16_t Get_wr_subsystem_id() const {return fwr_subsystem_id; }
         inline const uint64_t Get_wr_t() const {return fwr_t; }
 
@@ -53,6 +57,7 @@ class FatimaTwinpeaksCalData : public TObject
         void Set_fast_trail_time(double v){ ffast_trail_time = v; }
         void Set_fast_ToT(double v){ ffast_ToT = v; }
         void Set_slow_ToT(double v){ fslow_ToT = v; }
+        void Set_energy(double v){ fenergy = v; }
         void Set_wr_subsystem_id(uint16_t v){ fwr_subsystem_id = v; }
         void Set_wr_t(uint64_t v){ fwr_t = v; }
 
@@ -71,6 +76,9 @@ class FatimaTwinpeaksCalData : public TObject
 
         double ffast_ToT;
         double fslow_ToT;
+        
+        double fenergy;
+
         uint16_t fwr_subsystem_id;
         uint64_t fwr_t;
     

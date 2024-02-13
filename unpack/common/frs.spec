@@ -5,12 +5,13 @@
 #include "mesytec_mqdc32.spec"
 #include "mesytec_mtdc32.spec"
 #include "sis3820_scalers.spec"
+#include "gsi_vftx2.spec"
 
-SKIP(n)
+TRIG3EVENT()
 {
-    list (0 <= i < n)
+    UINT32 trig3 NOENCODE
     {
-        optional UINT32 skip NOENCODE;
+        0_31: 0x20202020;
     }
 }
 
@@ -18,166 +19,94 @@ BARRIER()
 {
     UINT32 barrier NOENCODE
     {
-        0_31: ba = MATCH(0xbabababa);
+        0_19: no;
+        20_31: ba = RANGE(0xF52,0xF58);
     }
 }
 
+ZERO_FILLER()
+{
+    UINT32 filler NOENCODE
+    {
+        0_31: zero = MATCH(0x00000000);
+    }
+}
+
+
+// procID = 10
 MAIN_CRATE_DATA()
 {
-    skip[0] = SKIP(n=2);
+
     barrier[0] = BARRIER();
-    select optional
-    {   
-        v1290 = VME_CAEN_V1290_FRS();
-    }
+    v830 = VME_CAEN_V830_FRS();
+    
+    filler[0] = ZERO_FILLER();
     barrier[1] = BARRIER();
-    select optional
-    {
-        v830 = VME_CAEN_V830_FRS();
-    }
-    select optional
-    {
-        v792 = VME_CAEN_V792_FRS();
-    }
+    v792 = VME_CAEN_V792_FRS();
+
     barrier[2] = BARRIER();
-    list (0 <= i < 4)
-    {   
-        // unused optionals for good events
-        optional UINT32 eoe NOENCODE;
-    }
+    v1290 = VME_CAEN_V1290_FRS();
+
 }
 
-TPAT_DATA(id)
-{   
-    MEMBER(DATA32 n);
-	MEMBER(DATA16 tpat[170] NO_INDEX_LIST);
-	MEMBER(DATA8 trig[170] NO_INDEX_LIST);
-	MEMBER(DATA32 ts_lo[170] NO_INDEX_LIST);
-	MEMBER(DATA32 ts_hi[170] NO_INDEX_LIST);
-
-    // first word is 0x0000000 it seems
-    skip = SKIP(n=1);
-
-	UINT32 header NOENCODE {
-		0_11:  count;
-		12_23: eventno;
-		24_31: id = MATCH(id);
-		ENCODE(n, (value = count / 3));
-	}
-
-	list(0 <= index < header.count / 3) {
-		UINT32 time_lo NOENCODE {
-			0_31: ts;
-			ENCODE(ts_lo APPEND_LIST, (value = ts));
-		}
-		UINT32 time_hi NOENCODE {
-			0_30: ts;
-			31:   overflow;
-			ENCODE(ts_hi APPEND_LIST, (value = ts));
-		}
-		UINT32 trigger NOENCODE {
-			 0_15: tpat;
-			16_23: reserved;
-			24_27: trig;
-			28_31: reserved2;
-			ENCODE(tpat APPEND_LIST, (value = tpat));
-			ENCODE(trig APPEND_LIST, (value = trig));
-		}
-	}
-}
-
-TOF_DATA()
-{   
-
-    MEMBER(DATA32 coarse_time[32] ZERO_SUPPRESS_MULTI(32));
-    MEMBER(DATA32 fine_time[32] ZERO_SUPPRESS_MULTI(32));
-
-    // first 3 words
-    skip0 = SKIP(n=2);
+// procID = 20
+TPC_CRATE_DATA()
+{
+    // caen v775 and v785 (same readout, read 2)
     barrier[0] = BARRIER();
+    v775 = VME_CAEN_V7X5_FRS();
 
-    // --- vftx at S2 sofia ---
-    UINT32 p32_tmp NOENCODE
-    {   
-        0_8: reserved;
-        9_17: count;
-        18_23: reserved2;
-        24_31: marker;
+    barrier[1] = BARRIER();
+    v785 = VME_CAEN_V7X5_FRS();
+
+    // caen v1190
+    barrier[2] = BARRIER();
+    v1190 = VME_CAEN_V1190_FRS();
+}
+
+// procID = 30
+USER_CRATE_DATA()
+{
+    // caen v820 or v830
+    barrier[0] = BARRIER();
+    v830 = VME_CAEN_V830_FRS();
+
+    // caen v775 x2 and caen v785 x2
+    filler[0] = ZERO_FILLER();
+    barrier[1] = BARRIER();
+    v775[0] = VME_CAEN_V7X5_FRS();
+
+    barrier[2] = BARRIER();
+    v775[1] = VME_CAEN_V7X5_FRS();
+
+    barrier[3] = BARRIER();
+    v785[0] = VME_CAEN_V7X5_FRS();
+
+    barrier[4] = BARRIER();
+    v785[1] = VME_CAEN_V7X5_FRS();
+
+}
+
+// procID = 40
+VFTX_CRATE_DATA()
+{
+    // vftx (at s2)
+    vftx = VFTX2(id=0);
+
+    // mtdc
+    barrier[1] = BARRIER();
+    mtdc = MESYTEC_MTDC32_FRS();
+
+    // mqdc - sometimes 0, 1 or 2 comes through?
+    // and UCESB is bloody stupid
+    barrier[2] = BARRIER();
+    select optional
+    {
+        mqdc0 = MESYTEC_MQDC32_FRS();
+    }
+    select optional
+    {
+        mqdc1 = MESYTEC_MQDC32_FRS();
     }
     
-    if (p32_tmp.marker == 0xAB)
-    {
-        skip1 = SKIP(n=1);
-
-        list (0 <= i < p32_tmp.count - 1)
-        {
-            UINT32 data NOENCODE
-            {   
-                0_10: fine_time;
-                11_23: coarse_time;
-                24_25: reserved;
-                26_30: channel; // getbits(2,11,5) in Go4?
-                //ENCODE(coarse_time[i])
-                //ENCODE(blah blah... );
-            }
-        }
-    };
-    // --- vftx at S2 sofia ---
-
-    barrier[1] = BARRIER();
-
-    select optional
-    {
-        qdc = MESYTEC_MQDC32_FRS(); // select optional?
-    };
-
-    barrier[2] = BARRIER();
-
-    select optional
-    {
-        tdc = MESYTEC_MTDC32_FRS(); // not used in s452
-    };
-
-    select optional
-    {
-        sis3820 = SIS_3820_FRS(); // used in s452, not in s450
-    };
-
-    select optional // this is optional, for good events
-    {
-        barrier3 = BARRIER();
-    }
-}
-
-TPC_DATA()
-{   
-    skip0 = SKIP(n=2);
-    barrier[0] = BARRIER();
-    select optional
-    {
-        v830 = VME_CAEN_V830_FRS();
-    } // removed in s450
-    barrier[1] = BARRIER();
-    select optional
-    {   
-        v1190 = VME_CAEN_V1190_FRS();
-    }
-
-    barrier[2] = BARRIER();
-
-}
-
-FRS_DATA()
-{
-    skip0 = SKIP(n=2);
-    barrier[0] = BARRIER();
-    select optional // not used in S450...future?
-    {
-        v830 = VME_CAEN_V830_FRS();
-    }
-    select several
-    {
-        v7x5 = VME_CAEN_V7X5_FRS(); // must figure that out... v775 x2 and v785 x2
-    }
-  
 }

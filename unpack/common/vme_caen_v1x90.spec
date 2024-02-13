@@ -1,16 +1,15 @@
 #define MEMBERS \
-    MEMBER(DATA24 data[32] ZERO_SUPPRESS_MULTI(32)); \
-    MEMBER(DATA8 channel[32] NO_INDEX_LIST); \
-    MEMBER(DATA8 leadOrTrail[32] NO_INDEX_LIST);// not sure how to define this properly
+    MEMBER(DATA24 data[128] ZERO_SUPPRESS_MULTI(128)); \
+    MEMBER(DATA8 leadOrTrail[128] ZERO_SUPPRESS_MULTI(128));// not sure how to define this properly
+//  I don't think we need channel, not sure about LoT
+// 128 | 128 seems to work
 
 #define PARAMS_DEF \
     data, \
-	channel, \
     leadOrTrail
 
 #define PARAMS \
     data = data, \
-	channel = channel, \
     leadOrTrail = leadOrTrail
 
 TDC_HEADER()
@@ -31,31 +30,30 @@ TDC_DATA_V1290(PARAMS_DEF)
 
     UINT32 tdc_data NOENCODE
     {
-        0_20: value;
+        0_20: tdc;
         21_25: chn;
         26: lot;
         27_31: 0b00000;
         
-        ENCODE(data[chn],(value = value/*,trailing=trailing*/));
-        ENCODE(channel APPEND_LIST, (value = chn));
-        ENCODE(leadOrTrail APPEND_LIST, (value = lot));
+        ENCODE(data[chn],(value = tdc/*,trailing=trailing*/));
+        ENCODE(leadOrTrail[chn], (value = lot));
     }
 }
 
-TDC_DATA_V1190(PARAMS_DEF)// PARAMS_DEF
+TDC_DATA_V1190(PARAMS_DEF)
 {   
     MEMBERS
 
     UINT32 tdc_data NOENCODE
     {
-        0_18: value;
+        0_18: tdc;
         19_25: chn;
         26: lot;
         27_31: 0b00000;
         
-       ENCODE(data[chn],(value = value/*,trailing=trailing*/));
-       ENCODE(channel APPEND_LIST, (value = chn));
-       ENCODE(leadOrTrail APPEND_LIST, (value = lot));
+        ENCODE(data[chn],(value = tdc/*,trailing=trailing*/));
+        ENCODE(leadOrTrail[chn], (value = lot));
+
     }
 }
 
@@ -85,7 +83,6 @@ TDC_TRAILER()
 
 VME_CAEN_V1290_FRS()
 {   
-
     MEMBERS
 
     UINT32 header NOENCODE
@@ -104,13 +101,13 @@ VME_CAEN_V1290_FRS()
     };
 
     // if enabled
-    optional UINT32 ext_time_tag NOENCODE
+    optional UINT32 ext_time_tag NOENCODE // type = 17
     {
         0_26: time_tag;
         27_31: 0b10001;
     };
 
-    UINT32 trailer NOENCODE
+    UINT32 trailer NOENCODE // type = 16
     {
         0_4: geo;
         5_20: word_count;
@@ -120,6 +117,8 @@ VME_CAEN_V1290_FRS()
         26: trigger_lost;
         27_31: 0b10000;
     };
+
+    optional UINT32 eob NOENCODE; // type = 24
 
 }
 
@@ -127,29 +126,49 @@ VME_CAEN_V1190_FRS()
 {
     MEMBERS
 
+    // for now (12/2023) we need to catch weird events
+    // first two words COULD be 0xFFFFFFFF
+    // i don't know how to do this more simply
+
     UINT32 header NOENCODE
     {
         0_4: geo;
         5_26: event_count;
-        27_31: 0b01000;
+        27_31: seven_f; // 0b01000; // if global header
     };
+
+    if (header.seven_f != 0b01000)
+    {
+        // first two words are weird
+        UINT32 second1 NOENCODE
+        {
+            0_31: 0xFFFFFFFF;
+        };
+
+        UINT32 real_header NOENCODE
+        {
+            0_4: geo;
+            5_26: event_count;
+            27_31: 0b01000;
+        }
+    }
 
     select several
     {
         tdc_header = TDC_HEADER();
-        measurement = TDC_DATA_V1190(PARAMS); // PARAMS
+        measurement = TDC_DATA_V1190(PARAMS);
         tdc_error = TDC_ERROR();
         tdc_trailer = TDC_TRAILER();
-    }
+    };
 
     // if enabled
-    optional UINT32 ext_time_tag NOENCODE
+    optional UINT32 ext_time_tag NOENCODE // type = 17
     {
         0_26: time_tag;
         27_31: 0b10001;
     };
 
-    UINT32 trailer NOENCODE
+    UINT32 trailer NOENCODE // type = 16
     {
         0_4: geo;
         5_20: word_count;
@@ -159,4 +178,7 @@ VME_CAEN_V1190_FRS()
         26: trigger_lost;
         27_31: 0b10000;
     };
+
+    optional UINT32 eob NOENCODE; // type = 24
+
 }
