@@ -114,43 +114,20 @@ Bool_t bPlastRaw2Cal::SetDetectorMapFile(TString filename){
         c4LOG(fatal, Form("File '%s' does not exist", filename.Data()));
     }
 
-    int rtamex_module, rtamex_channel, rdetector_id; // temp read variables
+    int rtamex_module, rtamex_channel, rdetector_id = 0; // temp read variables
     char rup_down, rleft_right_bottom_top; // additional variables for position
-
-    // while (detector_map_file >> rtamex_module >> rtamex_channel >> rdetector_id >> rup_down >> rleft_right_bottom_top) {
-    //     if (detector_map_file.peek() == '#') {
-    //         detector_map_file.ignore(256, '\n');
-    //         continue;
-    //     } else {
-    //         c4LOG(info, Form("Reading %i, %i, %i, %c, %c", rtamex_module, rtamex_channel, rdetector_id, rup_down, rleft_right_bottom_top));
-    //         std::pair<int, int> tamex_mc = {rtamex_module, rtamex_channel};
-    //         std::pair<char, char> position = {rup_down, rleft_right_bottom_top};
-
-    //         // check for duplicates
-    //         if (auto result_find = detector_mapping.find(tamex_mc); result_find != detector_mapping.end()){
-    //             c4LOG(fatal, Form("Detector mapping not unique. Multiple entries of (module = %i, channel = %i)",rtamex_module,rtamex_channel));
-    //         }
-
-    //         detector_mapping.insert(std::make_pair(tamex_mc, std::make_pair(rdetector_id, position)));
-    //     }
-    // }
 
     while (!detector_map_file.eof()) {
         if (detector_map_file.peek() == '#') {
-            detector_map_file.ignore(256, '\n');
+            detector_map_file.ignore(1024, '\n');
         } else {
             detector_map_file >> rtamex_module >> rtamex_channel >> rdetector_id >> rup_down >> rleft_right_bottom_top;
             c4LOG(info, Form("Reading %i, %i, %i, %c, %c", rtamex_module, rtamex_channel, rdetector_id, rup_down, rleft_right_bottom_top));
             std::pair<int, int> tamex_mc = {rtamex_module, rtamex_channel};
             std::pair<char, char> position = {rup_down, rleft_right_bottom_top};
 
-            // check for duplicates
-            // if (auto result_find = detector_mapping.find(tamex_mc); result_find != detector_mapping.end()){
-            //     c4LOG(fatal, Form("Detector mapping not unique. Multiple entries of (module = %i, channel = %i)",rtamex_module,rtamex_channel));
-            // }
-
             detector_mapping.insert(std::make_pair(tamex_mc, std::make_pair(rdetector_id, position)));
-            detector_map_file.ignore(256, '\n');
+            detector_map_file.ignore(1024, '\n');
         }
     }
     DetectorMap_loaded = 1;
@@ -289,14 +266,52 @@ void bPlastRaw2Cal::Exec(Option_t* option){
                 std::pair<int,int> unmapped_det {funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2};
                 
                 if (auto result_find = detector_mapping.find(unmapped_det); result_find != detector_mapping.end()){
-                detector_id = result_find->second.first;
-                detector_stream = result_find->second.second.first;
-                detector_position = result_find->second.second.second;
-                std::cout << "detector id: " << detector_id << std::endl;
+                detector_id = result_find->second.first; //.find returns an iterator over the pairs matching key.
                 if (detector_id == -1) {fNunmatched++; continue;} //if only one event is left
                 }else{
                     c4LOG(fatal, "Detector mapping not complete - exiting.");
                 }
+                //only do calibrations if mapping is functional:
+
+                if (DetectorCal_loaded){
+                    // JB: JEL Can you check this?
+                    /* if (auto result_find = calibration_coeffs.find(detector_id); result_find != calibration_coeffs.end()){
+                        fast_lead_time =  funcal_hit->Get_lead_epoch_counter()*10.24e3 + funcal_hit->Get_lead_coarse_T()*5.0 - funcal_hit->Get_lead_fine_T();
+                        fast_trail_time = funcal_hit->Get_trail_epoch_counter()*10.24e3 + funcal_hit->Get_trail_coarse_T()*5.0 - funcal_hit->Get_trail_fine_T();
+                        
+                        slow_lead_time =  funcal_hit_next->Get_lead_epoch_counter()*10.24e3 + funcal_hit_next->Get_lead_coarse_T()*5.0 - funcal_hit_next->Get_lead_fine_T();
+                        slow_trail_time = funcal_hit_next->Get_trail_epoch_counter()*10.24e3 + funcal_hit_next->Get_trail_coarse_T()*5.0 - funcal_hit_next->Get_trail_fine_T();
+                        
+                        fast_lead_time = result_find->second.second*fast_lead_time + result_find->second.first;
+                        fast_trail_time = result_find->second.second*fast_trail_time + result_find->second.first;
+                        slow_lead_time = result_find->second.second*slow_lead_time + result_find->second.first;
+                        slow_trail_time = result_find->second.second*slow_trail_time + result_find->second.first;
+                        
+                        fast_ToT =  fast_trail_time - fast_lead_time;
+                        slow_ToT =  slow_trail_time - slow_lead_time;
+                        
+                        new ((*fcal_data)[fcal_data->GetEntriesFast()]) bPlastTwinpeaksCalData(
+                            funcal_hit->Get_board_id(),
+                            (int)((funcal_hit->Get_ch_ID()+1)/2),
+                            detector_id,
+                            slow_lead_time,
+                            slow_trail_time,
+                            fast_lead_time,
+                            fast_trail_time,
+                            fast_ToT,
+                            slow_ToT,
+                            funcal_hit->Get_wr_subsystem_id(),
+                            funcal_hit->Get_wr_t());
+                        
+                        
+                        fNEvents++;
+                        ihit++; //increment it by one extra.
+                    }else{
+                        c4LOG(fatal, "Calibration coefficients not complete - exiting.");
+                    }
+                    */
+                }
+
             }
             else{ //no map and cal: ->
                 detector_id = funcal_hit->Get_board_id()*17 + (int)(funcal_hit_next->Get_ch_ID()+1)/2; // do mapping.
@@ -336,8 +351,6 @@ void bPlastRaw2Cal::Exec(Option_t* option){
                 funcal_hit->Get_board_id(),
                 (int)((funcal_hit->Get_ch_ID()+1)/2),
                 detector_id,
-                detector_stream,
-                detector_position,
                 slow_lead_time,
                 slow_trail_time,
                 fast_lead_time,
