@@ -1,7 +1,9 @@
 *.root
 *core_dump*
-*/gen_*/
-*/obj_*/
-*/mc_gen*/
-.vscode/
+unpack/exps/*/
+!unpack/exps/*/*.spec
+!unpack/exps/*/*.cc
+!unpack/exps/*/*.hh
+!unpack/exps/*/Makefile
+!unpack/exps/*/makefile_additional.inc
 *.o
