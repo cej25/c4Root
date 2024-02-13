@@ -22,4 +22,7 @@
 #pragma link C++ class FatimaAidaSpectra+;
 
 
+#pragma link C++ class FrsAnalysisSpectra+;
+
+
 #endif

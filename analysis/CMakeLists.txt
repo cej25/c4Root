@@ -47,6 +47,7 @@ set(SRCS
 # ./nearline/AidaNearlineSpectra.cxx
 
 #offline
+./online/frs/FrsAnalysisSpectra.cxx
 )
 
 
