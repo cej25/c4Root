@@ -42,13 +42,11 @@ class FrsReader : public c4Reader
         Bool_t fOnline;
 
         TClonesArray* fArray;
-
+        
+        std::vector<FrsUnpackMainItem>* mainArray;
         std::vector<FrsUnpackTpatItem>* tpatArray;
         std::vector<FrsUnpackFrsItem>* frsArray;
-       // std::vector<FrsUnpackV830>* v830Array;
-       // std::vector<FrsUnpackV7X5>* v7X5Array;
 
-    
     public:
         ClassDefOverride(FrsReader, 0);
 };

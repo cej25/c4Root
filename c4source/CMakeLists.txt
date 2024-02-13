@@ -22,7 +22,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/frsData
 ${C4ROOT_SOURCE_DIR}/c4data/lisaData
 ${C4ROOT_SOURCE_DIR}/c4data/wrData
 ${C4ROOT_SOURCE_DIR}/c4data/aidaData
-${C4ROOT_SOURCE_DIR}/c4data/bplastData
+#${C4ROOT_SOURCE_DIR}/c4data/bplastData
 ${C4ROOT_SOURCE_DIR}/c4data/fatimaData
 ${C4ROOT_SOURCE_DIR}/c4data/germaniumData
 ${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
