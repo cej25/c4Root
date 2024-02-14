@@ -8,6 +8,7 @@ class TClonesArray;
 class EventHeader;
 class bPlastTwinpeaksData;
 class bPlastTwinpeaksCalData;
+class TimeMachineData;
 
 class bPlastRaw2Cal : public FairTask
 {
@@ -17,8 +18,6 @@ class bPlastRaw2Cal : public FairTask
         bPlastRaw2Cal(const TString& name, Int_t verbose);
 
         ~bPlastRaw2Cal();
-
-        void SetOnline(Bool_t set_online){fOnline = set_online;}
 
         void PrintDetectorMap();
         void PrintDetectorCal();
@@ -32,6 +31,8 @@ class bPlastRaw2Cal : public FairTask
 
         void FinishEvent();
         void FinishTask();
+
+        void SetOnline(Bool_t set_online){fOnline = set_online;}
 
         virtual void SetParContainers();
 

@@ -5,8 +5,6 @@
 
 #include "TH1.h"
 
-
-
 #include <Rtypes.h>
 
 extern "C"
