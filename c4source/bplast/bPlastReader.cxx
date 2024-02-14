@@ -372,8 +372,7 @@ Bool_t bPlastReader::Read() //do fine time here:
             
             //if (it_board_number == 1) c4LOG(info,Form("ch = %i, coarse = %i, edge = %i", channelid, fData->bplast_tamex[it_board_number].time_coarsev[it_hits], fData->bplast_tamex[it_board_number].time_edgev[it_hits]));
 
-            if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch) { fNevents_lacking_epoch[it_board_number][channelid-1]++; c4LOG(warning, "Event lacking epoch."); }
-            continue;
+            if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch) { fNevents_lacking_epoch[it_board_number][channelid-1]++; /* c4LOG(warning, "Event lacking epoch."); */}
         
 
             if (fData->bplast_tamex[it_board_number].time_finev[it_hits] == 0x3FF) {fNevents_TAMEX_fail[it_board_number][channelid-1]++; continue;} // this happens if TAMEX loses the fine time - skip it

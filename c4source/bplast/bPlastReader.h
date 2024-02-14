@@ -48,7 +48,6 @@ class bPlastReader : public c4Reader
 
         void SetOnline(Bool_t option) { fOnline = option; }
 
-
         void DoFineTimeCalibration();
         
         double GetFineTime(int tdc_fine_time_channel, int board_id, int channel_id);
