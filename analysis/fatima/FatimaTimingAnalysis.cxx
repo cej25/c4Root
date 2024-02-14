@@ -159,13 +159,13 @@ void FatimaTimingAnalysis::Exec(Option_t* option)
                     if (detector_id2>detector_id1 && TMath::Abs(energy1 - E1)<Egatewidth && TMath::Abs(energy2 - E2)<Egatewidth){
                         int index1 = std::distance(detector_id_analyze->begin(), std::find(detector_id_analyze->begin(), detector_id_analyze->end(), detector_id1));
                         int index2 = std::distance(detector_id_analyze->begin(), std::find(detector_id_analyze->begin(), detector_id_analyze->end(), detector_id2));
-                        if (timeshifts_loaded) timeshift_to_apply = timeshifts.find(std::pair<int,int>(detector_id1,detector_id2)).second; //check ordering
+                        if (timeshifts_loaded) timeshift_to_apply =  timeshifts.find(std::pair<int,int>(detector_id1,detector_id2))->second; //check ordering
                         h_energy_E1_E2_dt[index1][index2]->Fill(fast_lead2-fast_lead1);
 
                     }else if (detector_id1>detector_id2 && TMath::Abs(energy2 - E2)<Egatewidth && TMath::Abs(energy1 - E1)<Egatewidth){
                         int index1 = std::distance(detector_id_analyze->begin(), std::find(detector_id_analyze->begin(), detector_id_analyze->end(), detector_id2));
                         int index2 = std::distance(detector_id_analyze->begin(), std::find(detector_id_analyze->begin(), detector_id_analyze->end(), detector_id1));
-                        if (timeshifts_loaded) timeshift_to_apply = timeshifts.find(std::pair<int,int>(detector_id2,detector_id1)).second;
+                        if (timeshifts_loaded) timeshift_to_apply =  timeshifts.find(std::pair<int,int>(detector_id2,detector_id1))->second;
                         h_energy_E1_E2_dt[index1][index2]->Fill(fast_lead1-fast_lead2);
                     }
                 }
