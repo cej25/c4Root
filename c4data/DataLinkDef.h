@@ -28,6 +28,16 @@
 #pragma link C++ class FrsVFTXCalData+;
 #pragma link C++ class FrsHitData+;
 #pragma link C++ class FrsAnalysisData+;
+#pragma link C++ class TFRSParameter+;
+#pragma link C++ class TMWParameter+;
+#pragma link C++ class TTPCParameter+;
+#pragma link C++ class TMUSICParameter+;
+#pragma link C++ class TSCIParameter+;
+#pragma link C++ class TIDParameter+;
+#pragma link C++ class TSIParameter+;
+#pragma link C++ class TRangeParameter+;
+#pragma link C++ class TLABRParameter+;
+#pragma link C++ class TMRTOFMSParameter+;
 
 #pragma link C++ class AidaUnpackAdcItem+;
 #pragma link C++ class AidaUnpackFlowItem+;

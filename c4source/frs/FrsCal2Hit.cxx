@@ -1458,9 +1458,9 @@ void FrsCal2Hit::Exec(Option_t* option)
     }
     */
     //c4LOG(info,"Finalize:");
+    
+    
     // non mhtdc version?
-
-
     if (id_b_AoQ != false && id_b_x2 != false && id_b_z != false)
     {   
         float gamma1square = 1.0 + TMath::Power(((1 / aoq_factor) * (id_brho[0] / id_AoQ)), 2);

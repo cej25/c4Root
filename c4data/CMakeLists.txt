@@ -11,6 +11,8 @@ ${C4ROOT_SOURCE_DIR}/c4data/bplastData
 ${C4ROOT_SOURCE_DIR}/c4data/germaniumData
 ${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
 ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
+${C4ROOT_SOURCE_DIR}/c4source
+${C4ROOT_SOURCE_DIR}/c4source/frs
 )
 
 include_directories(${INCLUDE_DIRECTORIES})
@@ -45,6 +47,7 @@ beammonitorData/BeamMonitorData.cxx
 fatimaData/FatimaTwinpeaksData.cxx
 fatimaData/FatimaTwinpeaksCalData.cxx
 timemachineData/TimeMachineData.cxx
+frsData/TFRSParameter.cxx
 )
 
 # fill list of header files from list of source files by exchanging the file extension
