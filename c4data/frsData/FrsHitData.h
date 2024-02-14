@@ -24,13 +24,25 @@ class FrsHitData : public TObject
                 uint32_t ibin_clean_for_s, 
                 uint32_t ibin_clean_for_100ms,
                 uint32_t ibin_clean_for_spill,
+                Float_t* music_dE,
+                uint32_t* sci_e,
+                uint32_t* sci_l,
+                uint32_t* sci_r,
                 Float_t id_x2,
+                Float_t id_y2,
+                Float_t id_a2,
+                Float_t id_b2,
                 Float_t id_x4,
+                Float_t id_y4,
+                Float_t id_a4,
+                Float_t id_b4,
                 Float_t id_AoQ,
                 Float_t id_AoQ_corr,
                 Float_t id_z,
                 Float_t id_z2,
-                Float_t id_beta);
+                Float_t id_beta,
+                Float_t id_dEdegoQ,
+                Float_t id_dEdeg);
 
         ~FrsHitData();
 
@@ -99,10 +111,10 @@ class FrsHitData : public TObject
         Float_t fID_dEdeg;
        
         Float_t fmusic_dE[2]; // CEJ: 2? 3 for more musics?
-        Float_t fsci_e[6]; // CEJ: 6???? check!!
+        Float_t fsci_e[6]; // CEJ: by chance we need [6]. 5->2 but 10->5 (so 6 elements)
+        Float_t fsci_l[6];
+        Float_t fsci_r[6];
         Float_t fsci_tof2;
-        Float_t fsci_l[3];
-        Float_t fsci_r[3];
 
         // MHTDC
         // these are going to be vectors....damn it
