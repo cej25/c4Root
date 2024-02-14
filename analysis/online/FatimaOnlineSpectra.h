@@ -52,6 +52,7 @@ class FatimaOnlineSpectra : public FairTask
             fenergy_bin_high = binhigh; 
         };
 
+
         virtual void Snapshot_Histo();
 
         // range setters

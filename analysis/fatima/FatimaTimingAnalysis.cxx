@@ -46,6 +46,40 @@ void FatimaTimingAnalysis::SetParContainers()
     c4LOG_IF(fatal, NULL == rtdb, "FairRuntimeDb not found.");
 }
 
+
+
+/*
+Reads a file containing the detector calibrations. NEEDS to be a quadratic poly (just set a2=a3=0 if not desired..) To be called before Init. Assumed structure of the file is:
+    - aribtrary lines of comments starting with #
+    - each entry is a line with four number: (fatima detector id) (a0/offset) (a1/slope) (a2) (a3)
+
+Raises a fatal error if the detector numbers are not unique.
+*/
+Bool_t FatimaTimingAnalysis::SetDetectorTimeshifts(TString filename){
+    c4LOG(info, "Reading Timeshift coefficients.");
+    c4LOG(info, "File reading");
+    c4LOG(info, filename);
+
+    std::ifstream timeshift_file (filename);
+
+    int rdetector_id1, rdetector_id2; // temp read variables
+    double timeshift;
+    
+    //assumes the first line in the file is num-modules used
+    while(!timeshift_file.eof()){
+        if(timeshift_file.peek()=='#') timeshift_file.ignore(256,'\n');
+        else{
+            timeshift_file >> rdetector_id1 >> rdetector_id2 >> timeshift;
+
+            timeshifts.insert(std::pair<std::pair<int,int>,double>{std::pair<int,int>(rdetector_id1,rdetector_id2),timeshift});
+            timeshift_file.ignore(256,'\n');
+        }
+    }
+    timeshifts_loaded = 1;
+    timeshift_file.close();
+    return 0; 
+};
+
 InitStatus FatimaTimingAnalysis::Init()
 {
     c4LOG(info, "");
@@ -67,14 +101,6 @@ InitStatus FatimaTimingAnalysis::Init()
 
 
     if (detector_id_analyze == nullptr) {c4LOG(fatal, "Please set which detector ids to analyze");}
-
-    h_slow_ToT_vs_detector_id = new TH2F("h_slow_ToT_vs_detector_id","Energy of detector Y;Slow ToT (ns);det nr.",fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high,detector_id_analyze->size()+1,0,detector_id_analyze->size()+1);
-    h_energy_vs_detector_id = new TH2F("h_energy_vs_detector_id","Energy of detector Y;Energy (kev);det nr.",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,detector_id_analyze->size()+1,0,detector_id_analyze->size()+1);
-    h_energy_energy = new TH2F("h_energy_energy","Energy det 0 vs det 1",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
-
-    fatima_spectra_folder->Add(h_slow_ToT_vs_detector_id);
-    fatima_spectra_folder->Add(h_energy_vs_detector_id);
-    fatima_spectra_folder->Add(h_energy_energy);
     
 
     //h_energy_E1_E2_dt
@@ -104,42 +130,42 @@ void FatimaTimingAnalysis::Exec(Option_t* option)
             if (!hit1) continue;
 
             double slow_ToT1 = hit1->Get_slow_ToT();
-            double fast_lead1 = hit1->Get_fast_lead_time();
             uint16_t detector_id1 = hit1->Get_detector_id();
             double energy1 = hit1->Get_energy();
+            double fast_lead1 = hit1->Get_fast_lead_time() + SoftwareTimewalk(energy1);
 
             if (std::find(detector_id_analyze->begin(), detector_id_analyze->end(), detector_id1) == detector_id_analyze->end()) continue; //not in vector of dets to analyze
             
             if (energy1 == 0) energy1 = slow_ToT1;
-                
-            h_slow_ToT_vs_detector_id->Fill(slow_ToT1,detector_id1);
-            h_energy_vs_detector_id->Fill(energy1,detector_id1);
-                
+            
+                            
             if (nHits>=2){ 
                 for (size_t ihit2 = ihit+1; ihit2 < nHits; ihit2++) {
                     FatimaTwinpeaksCalData* hit2 = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(ihit2);
                     double slow_ToT2 = hit2->Get_slow_ToT();
-                    double fast_lead2 = hit2->Get_fast_lead_time();
                     uint16_t detector_id2 = hit2->Get_detector_id();
+                    double energy2 = hit2->Get_energy();
+                    double fast_lead2 = hit2->Get_fast_lead_time() + SoftwareTimewalk(energy2);
 
                     if (std::find(detector_id_analyze->begin(), detector_id_analyze->end(), detector_id2) == detector_id_analyze->end()) continue; //not in vector of dets to analyze
                     
-                    double energy2 = hit2->Get_energy();
 
                     if (energy2 == 0) energy2 = slow_ToT2;
 
                     
                     if (!(TMath::Abs(fast_lead1 - fast_lead2) < 1000)) continue; //require coincidence!
                     //if (!(detector_id1>=0 && detector_id1<=3 && detector_id2>=0 && detector_id2<=3)) continue; // only these are calibrated.
-
+                    double timeshift_to_apply = 0;
                     if (detector_id2>detector_id1 && TMath::Abs(energy1 - E1)<Egatewidth && TMath::Abs(energy2 - E2)<Egatewidth){
                         int index1 = std::distance(detector_id_analyze->begin(), std::find(detector_id_analyze->begin(), detector_id_analyze->end(), detector_id1));
                         int index2 = std::distance(detector_id_analyze->begin(), std::find(detector_id_analyze->begin(), detector_id_analyze->end(), detector_id2));
+                        if (timeshifts_loaded) timeshift_to_apply = timeshifts.find(std::pair<int,int>(detector_id1,detector_id2)).second; //check ordering
                         h_energy_E1_E2_dt[index1][index2]->Fill(fast_lead2-fast_lead1);
 
                     }else if (detector_id1>detector_id2 && TMath::Abs(energy2 - E2)<Egatewidth && TMath::Abs(energy1 - E1)<Egatewidth){
                         int index1 = std::distance(detector_id_analyze->begin(), std::find(detector_id_analyze->begin(), detector_id_analyze->end(), detector_id2));
                         int index2 = std::distance(detector_id_analyze->begin(), std::find(detector_id_analyze->begin(), detector_id_analyze->end(), detector_id1));
+                        if (timeshifts_loaded) timeshift_to_apply = timeshifts.find(std::pair<int,int>(detector_id2,detector_id1)).second;
                         h_energy_E1_E2_dt[index1][index2]->Fill(fast_lead1-fast_lead2);
                     }
                 }
@@ -161,12 +187,6 @@ void FatimaTimingAnalysis::FinishEvent()
 
 void FatimaTimingAnalysis::FinishTask()
 {
-
-    TFile * outfile = mgr->GetOutFile();
-    if (!outfile->Get("h_slow_ToT_vs_detector_id")) h_slow_ToT_vs_detector_id->Write("h_slow_ToT_vs_detector_id",TObject::kOverwrite);
-    if (!outfile->Get("h_energy_vs_detector_id")) h_energy_vs_detector_id->Write("h_energy_vs_detector_id",TObject::kOverwrite);
-    if (!outfile->Get("h_energy_energy")) h_energy_energy->Write("h_energy_energy",TObject::kOverwrite);
-
 
     //h_energy_E1_E2_dt
     for (int i = 0; i<detector_id_analyze->size(); i++){

@@ -15,6 +15,9 @@ class FatimaTimingAnalysis : public FairTask
     public:
         FatimaTimingAnalysis();
         FatimaTimingAnalysis(const TString& name, Int_t verbose = 1);
+        
+        
+        Bool_t SetDetectorTimeshifts(TString filename);
 
         void SetDetectorToAnalyze(std::vector<int> * detectors_analyze){detector_id_analyze = detectors_analyze;};
         void SetEnergies(double fE1, double fE2, double fgatewidth){E1 = fE1; E2 = fE2; Egatewidth = fgatewidth;}
@@ -44,6 +47,14 @@ class FatimaTimingAnalysis : public FairTask
             fenergy_bin_low = binlow;
             fenergy_bin_high = binhigh; 
         };
+
+
+        double SoftwareTimewalk(double energy){
+            //in energy in keV, out software walk:
+            double a = 2223.77, b = 1423.68, c = -1.23853;
+            return a/(energy*b) + c;
+        };
+
 
 
         virtual InitStatus Init();
@@ -97,6 +108,11 @@ class FatimaTimingAnalysis : public FairTask
         int fenergy_nbins = 500;
         float fenergy_bin_low = 0;
         float fenergy_bin_high = 1500;
+
+
+
+        bool timeshifts_loaded = false;
+        std::map<std::pair<int,int>,double> timeshifts;
 
         
 
