@@ -220,140 +220,7 @@ InitStatus FrsAnalysisSpectra::Init()
     }
 
     // TFolder frs_analysis_mhtdc_hists
-    //hID_Z_mhtdc_T
-
-    //hID_AoQ_mhtdc_T
-
-    //hID_Z_AoQ_mhtdc
-
-    //hID_Z_AoQ_corr_mhtdc
-
-    //hID_Z_Z2_mhtdc
-
-    //hID_Z_AoQ_zsame_mhtdc
-
-    //hID_x4AoQ_zsame_mhtdc
-
-    //hID_x2AoQ_zsame_mhtdc
-
-    //hID_x2AoQ_mhtdc
-
-    //hID_x4AoQ_mhtdc
-
-    //hdEdegoQ_Z_mhtdc
-
-    //hdEdeg_Z_mhtdc
-
-    //hID_a2AoQ_mhtdc
-
-    //hID_a4AoQ_mhtdc
-
-    //hID_Z_dE2_mhtdc
-
-    //hID_Z_Sc21E_mhtdc
-
-    //hID_x2z_mhtdc
-
-    //hID_x4z_mhtdc
-
-    for (int gate = 0; gate < FRS_GATES; gate++)
-    {
-        //hID_x2AoQ_Z1AoQgate_mhtdc
-
-        //hID_x4AoQ_Z1AoQgate_mhtdc
-
-        //hID_ZAoQ_ZAoQgate_mhtdc
-
-        //hID_Z1Z2_ZAoQgate_mhtdc
-
-        //hID_dEdegZ1_Z1AoQgate_mhtdc
-
-        //hID_dEdegoQ_Z1_Z1AoQgate_mhtdc
-
-        //hID_a2_Z1AoQgate_mhtdc
-
-        //hID_a4_Z1AoQgate_mhtdc
-
-        //hID_dEdegZ1_Z1Z2gate_mhtdc
-
-        //hID_dEdegoQ_Z1_Z1Z2gate_mhtdc
-
-        //hID_Z1_Z2gate_mhtdc
-
-        //hID_a2_Z1Z2gate_mhtdc
-
-        //hID_a4_Z1Z2gate_mhtdc
-
-        //hID_x2AoQ_Z1Z2gate_mhtdc
-
-        //hID_x4AoQ_Z1Z2gate_mhtdc
-
-        //hID_ZAoQ_Z1Z2gate_mhtdc
-
-        //hID_x2AoQ_x2AoQgate_mhtdc
-
-        //hID_Z1Z2_x2AoQgate
-
-        //hID_x2AoQ_Z1Z2x2AoQgate_mhtdc
-
-        //hID_x4AoQ_Z1Z2x2AoQgate_mhtdc
-
-        //hID_Z1Z2_Z1Z2x2AoQgate_mhtdc
-
-        //hID_dEdegZ1_Z1Z2x2AoQgate_mhtdc
-
-        // hID_dEdegoQ_Z1_Z1Z2x2AoQgate_mhtdc
-
-        //hID_a2_Z1Z2x2AoQgate_mhtdc
-
-        //hID_a4_Z1Z2x2AoQgate_mhtdc
-
-        //hID_x4AoQ_x4AoQgate_mhtdc
-
-        //hID_Z1Z2_x4AoQgate
-
-        //hID_x2AoQ_Z1Z2x4AoQgate_mhtdc
-
-        //hID_x4AoQ_Z1Z2x4AoQgate_mhtdc
-
-        //hID_Z1Z2_Z1Z2x4AoQgate_mhtdc
-
-        //hID_dEdegZ1_Z1Z2x4AoQgate_mhtdc
-
-        //hID_dEdegoQ_Z1_Z1Z2x4AoQgate_mhtdc
-
-        //hID_a2_Z1Z2x4AoQgate_mhtdc
-
-        //hID_a4_Z1Z2x4AoQgate_mhtdc
-
-        //hID_dEdegZ1_dEdegZ1Gated_mhtdc
-
-        //hID_Z1AoQ_dEdegZgate_mhtdc
-
-        //hID_Z1Z2_dEdegZgate_mhtdc
-
-        //hID_x2AoQ_dEdegZgate_mhtdc
-
-        //hID_x4AoQ_dEdegZgate_mhtdc
-
-        //hID_a2_dEdegZgate_mhtdc
-
-        //hID_a4_dEdegZgate_mhtdc
-
-        //hID_Z1AoQ_zsame_dEdegZgate_mhtdc
-
-    }
-
-
-
-
-
-
-
-
-
-
-
+   
     /* --- MHTDC HISTOGRAMS ------ */
 
     //hID_Z1_vs_T
@@ -492,10 +359,6 @@ InitStatus FrsAnalysisSpectra::Init()
         //hID_Z1AoQ_zsame_dEdegZgate
         h2_Z_vs_AoQ_Zsame_dEdegZgate_mhtdc[gate] = new TH2I(Form("h2_Z_vs_AoQ_Zsame_dEdegZgate%d_mhtdc", gate), Form("Z vs. A/Q [ABS(Z1 - Z2) < 0.4] - dEdegZ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot);
     }
-
-
-
-
 
     return kSUCCESS;
 
@@ -814,6 +677,13 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
                     }
                 } // mhtdc loop
             } // gate loop
+
+            
+
+            // CEJ: FrsAnalysisHit needs to be registered in the tree here
+            // new fFrsAnalysisArray() etc..
+
+
         } // ihits
     } // non-zero FRS entries
     
@@ -822,12 +692,13 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
 
 void FrsAnalysisSpectra::FinishEvent()
 {
-
+    // clear any arrays/vectors if needed
+    
 }
 
 void FrsAnalysisSpectra::FinishTask()
 {
-
+    // write folders !
 }
 
 ClassImp(FrsAnalysisSpectra)

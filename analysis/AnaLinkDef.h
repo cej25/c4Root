@@ -23,6 +23,7 @@
 
 
 #pragma link C++ class FrsAnalysisSpectra+;
+#pragma link C++ class FrsAidaCorrelations+;
 
 
 #endif
