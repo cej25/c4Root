@@ -247,6 +247,11 @@ void FrsAidaCorrelations::Exec(Option_t* option)
                 } // FRS-AIDA WR Gate
             } // Aida Implants
         } // nHits
+
+
+        // CEJ: does anything need to be registered in the tree here?
+
+        
     } // GetEntries() > 0
 }
 

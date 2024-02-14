@@ -633,6 +633,8 @@ void FrsCal2Hit::Exec(Option_t* option)
         // 'posref' in go4 does nothing
         
         // what even is this code:?
+        // CEJ: this code maps FRS array indices to 0-based array here
+        // could just create larger arrays, it felt weird but maybe this is weirder
         int j;
         switch(i)
         {
@@ -1458,11 +1460,6 @@ void FrsCal2Hit::Exec(Option_t* option)
     //c4LOG(info,"Finalize:");
     // non mhtdc version?
 
-    std::cout << "==== EVENT DATA ===================" << std::endl;
-    std::cout << "id_AoQ: " << id_AoQ << std::endl;
-    std::cout << "id_z: " << id_z << std::endl;
-    std::cout << "==== ******* ===================" << std::endl;
-
 
     if (id_b_AoQ != false && id_b_x2 != false && id_b_z != false)
     {   
@@ -1485,13 +1482,25 @@ void FrsCal2Hit::Exec(Option_t* option)
             ibin_clean_for_s, 
             ibin_clean_for_100ms,
             ibin_clean_for_spill,
+            de,
+            sci_e,
+            sci_l,
+            sci_r,
             id_x2,
+            id_y2,
+            id_a2,
+            id_b2,
             id_x4,
+            id_y4,
+            id_a4,
+            id_b4,
             id_AoQ,
             id_AoQ_corr,
             id_z,
             id_z2,
-            id_beta
+            id_beta,
+            id_dEdegoQ,
+            id_dEdeg
         );
    
     }

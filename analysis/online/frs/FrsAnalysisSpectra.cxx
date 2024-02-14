@@ -416,8 +416,8 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
             // x2 vs x4
             if (FrsHit->Get_ID_x2() != 0 && FrsHit->Get_ID_x4() != 0) h2_x2_vs_x4->Fill(FrsHit->Get_ID_x2(), FrsHit->Get_ID_x4());
 
-            // CEJ: check sci_e index, maybe "5" is only relevant for Go4
-            if (FrsHit->Get_ID_AoQ() != 0 && FrsHit->Get_sci_e(5) != 0) h2_SC41dE_vs_AoQ->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_sci_e(5));
+            // CEJ: changed from Go4, [5] -> [2]
+            if (FrsHit->Get_ID_AoQ() != 0 && FrsHit->Get_sci_e(2) != 0) h2_SC41dE_vs_AoQ->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_sci_e(2));
 
             if (FrsHit->Get_sci_tof2() != 0 && FrsHit->Get_music_dE(0) != 0) h2_dE_vs_ToF->Fill(FrsHit->Get_sci_tof2(), FrsHit->Get_music_dE(0));
 
@@ -432,8 +432,8 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
             if (FrsHit->Get_ID_x4() != 0 && FrsHit->Get_ID_a4() != 0) h2_x4_vs_a4->Fill(FrsHit->Get_ID_x4(), FrsHit->Get_ID_a4());
             if (FrsHit->Get_ID_y4() != 0 && FrsHit->Get_ID_b4() != 0) h2_y4_vs_b4->Fill(FrsHit->Get_ID_y4(), FrsHit->Get_ID_b4());
 
-            // CEJ: check sci_l/r indices, same as above
-            if (FrsHit->Get_ID_z() != 0 && FrsHit->Get_sci_l(2) != 0 && FrsHit->Get_sci_r(2) != 0) h2_Z_vs_Sc21E->Fill(FrsHit->Get_ID_z(), sqrt(FrsHit->Get_sci_l(2) * FrsHit->Get_sci_r(2)));
+            // CEJ: changed [2] -> [0]
+            if (FrsHit->Get_ID_z() != 0 && FrsHit->Get_sci_l(0) != 0 && FrsHit->Get_sci_r(0) != 0) h2_Z_vs_Sc21E->Fill(FrsHit->Get_ID_z(), sqrt(FrsHit->Get_sci_l(0) * FrsHit->Get_sci_r(0)));
 
             // Define PID gates
             for (int gate = 0; gate < FRS_GATES; gate++)
@@ -566,7 +566,7 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
             
                 if(FrsHit->Get_ID_z_mhtdc(i) != 0 && FrsHit->Get_music_dE(1) != 0) h2_Z_vs_dE2_mhtdc->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_music_dE(1));
                 
-                if(FrsHit->Get_ID_z_mhtdc(i) != 0 && FrsHit->Get_sci_l(2) != 0 && FrsHit->Get_sci_r(2) != 0) h2_Z_vs_Sc21E_mhtdc->Fill(FrsHit->Get_ID_z_mhtdc(i), sqrt(FrsHit->Get_sci_l(2) * FrsHit->Get_sci_r(2)));
+                if(FrsHit->Get_ID_z_mhtdc(i) != 0 && FrsHit->Get_sci_l(0) != 0 && FrsHit->Get_sci_r(0) != 0) h2_Z_vs_Sc21E_mhtdc->Fill(FrsHit->Get_ID_z_mhtdc(i), sqrt(FrsHit->Get_sci_l(0) * FrsHit->Get_sci_r(0)));
             
                 h2_x2_vs_Z_mhtdc->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_x2());
                 
@@ -682,6 +682,7 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
 
             // CEJ: FrsAnalysisHit needs to be registered in the tree here
             // new fFrsAnalysisArray() etc..
+            ((*fFrsAnalysisArray)[fFrsAnalysisArray->GetEntriesFast()]) = FrsAnalysisHit;
 
 
         } // ihits
