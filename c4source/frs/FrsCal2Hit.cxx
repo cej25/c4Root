@@ -1486,6 +1486,7 @@ void FrsCal2Hit::Exec(Option_t* option)
             sci_e,
             sci_l,
             sci_r,
+            sci_tof2,
             id_x2,
             id_y2,
             id_a2,
@@ -1500,7 +1501,13 @@ void FrsCal2Hit::Exec(Option_t* option)
             id_z2,
             id_beta,
             id_dEdegoQ,
-            id_dEdeg
+            id_dEdeg,
+            id_mhtdc_aoq_s2s4,
+            id_mhtdc_aoq_corr_s2s4,
+            id_mhtdc_z_music41,
+            id_mhtdc_z_music42,
+            id_mhtdc_dEdegoQ,
+            id_mhtdc_dEdeg
         );
    
     }

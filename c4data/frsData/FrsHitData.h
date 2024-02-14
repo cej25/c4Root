@@ -28,6 +28,7 @@ class FrsHitData : public TObject
                 uint32_t* sci_e,
                 uint32_t* sci_l,
                 uint32_t* sci_r,
+                uint32_t sci_tof2,
                 Float_t id_x2,
                 Float_t id_y2,
                 Float_t id_a2,
@@ -42,7 +43,13 @@ class FrsHitData : public TObject
                 Float_t id_z2,
                 Float_t id_beta,
                 Float_t id_dEdegoQ,
-                Float_t id_dEdeg);
+                Float_t id_dEdeg,
+                std::vector<Float_t> id_AoQ_mhtdc,
+                std::vector<Float_t> id_AoQ_corr_mhtdc,
+                std::vector<Float_t> id_z_mhtdc,
+                std::vector<Float_t> id_z2_mhtdc,
+                std::vector<Float_t> id_dEdegoQ_mhtdc,
+                std::vector<Float_t> id_dEdeg_mhtdc);
 
         ~FrsHitData();
 
@@ -118,10 +125,10 @@ class FrsHitData : public TObject
 
         // MHTDC
         // these are going to be vectors....damn it
-        std::vector<Float_t> fID_z_mhtdc;//[MAX_MHTDC_MULT];
+        std::vector<Float_t> fID_AoQ_mhtdc;
+        std::vector<Float_t> fID_AoQ_corr_mhtdc;
+        std::vector<Float_t> fID_z_mhtdc;
         std::vector<Float_t> fID_z2_mhtdc;
-        std::vector<Float_t> fID_AoQ_mhtdc;//[MAX_MHTDC_MULT];
-        std::vector<Float_t> fID_AoQ_corr_mhtdc;//[MAX_MHTDC_MULT];
         std::vector<Float_t> fID_dEdeg_mhtdc;
         std::vector<Float_t> fID_dEdegoQ_mhtdc;
 
