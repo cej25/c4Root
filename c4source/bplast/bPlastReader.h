@@ -82,6 +82,8 @@ class bPlastReader : public c4Reader
 
         Bool_t fOnline;
 
+        Bool_t fPrintStatistics = false;
+        
         TClonesArray* fArray;
 
         uint64_t wr_t;
