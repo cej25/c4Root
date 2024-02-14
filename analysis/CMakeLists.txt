@@ -50,6 +50,7 @@ set(SRCS
 
 #offline
 ./online/frs/FrsAnalysisSpectra.cxx
+./correlations/FrsAidaCorrelations.cxx
 )
 
 
