@@ -8,4 +8,8 @@ FrsAnalysisData::FrsAnalysisData()
 // {
 // }
 
+FrsAnalysisData::~FrsAnalysisData()
+{
+}
+
 ClassImp(FrsAnalysisData)

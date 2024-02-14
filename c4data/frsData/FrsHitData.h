@@ -98,6 +98,11 @@ class FrsHitData : public TObject
         inline uint32_t Get_ibin_clean_for_100ms() { return fibin_clean_for_100ms; }
         inline uint32_t Get_ibin_clean_for_spill() { return fibin_clean_for_spill; }
 
+
+        // Setters
+        //inline void Set
+
+
     protected:
 
         uint64_t fWR_TS;

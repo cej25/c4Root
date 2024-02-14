@@ -690,6 +690,11 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
     
 }
 
+void FrsAnalysisSpectra::ReadGates()
+{
+    
+}
+
 
 void FrsAnalysisSpectra::FinishEvent()
 {
