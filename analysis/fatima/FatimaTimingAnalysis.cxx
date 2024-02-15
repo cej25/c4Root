@@ -83,6 +83,7 @@ Bool_t FatimaTimingAnalysis::SetDetectorTimeshifts(TString filename){
 InitStatus FatimaTimingAnalysis::Init()
 {
     c4LOG(info, "");
+    
     mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
@@ -108,8 +109,17 @@ InitStatus FatimaTimingAnalysis::Init()
     for (int i = 0; i<detector_id_analyze->size(); i++){
         h_energy_E1_E2_dt[i] = new TH1F*[detector_id_analyze->size()]; //(-j)
         for (int j=i+1; j<detector_id_analyze->size(); j++){
-            h_energy_E1_E2_dt[i][j] = new TH1F(Form("h_energy_E1_%i_E2_%i_det_%i_det_%i_dt",(int)E1, (int)E2,detector_id_analyze->at(i),detector_id_analyze->at(j)),Form("E1 = %f, E2 = %f, t%i - t%i",E1,E2,detector_id_analyze->at(j),detector_id_analyze->at(i)),Nbins,lowBin,highBin);
+            h_energy_E1_E2_dt[i][j] = new TH1F(Form("h_E1_%i_E2_%i_det_%i_det_%i_dt_times",(int)E1, (int)E2,detector_id_analyze->at(i),detector_id_analyze->at(j)),Form("E1 = %f, E2 = %f, t%i - t%i;dt (ns)",E1,E2,detector_id_analyze->at(j),detector_id_analyze->at(i)),Nbins,lowBin,highBin);
             fatima_spectra_folder->Add(h_energy_E1_E2_dt[i][j]);
+        }
+    }
+
+    h_energy_E1_dt_vs_E = new TH2F**[detector_id_analyze->size()];
+    for (int i = 0; i<detector_id_analyze->size(); i++){
+        h_energy_E1_dt_vs_E[i] = new TH2F*[detector_id_analyze->size()]; //(-j)
+        for (int j=i+1; j<detector_id_analyze->size(); j++){
+            h_energy_E1_dt_vs_E[i][j] = new TH2F(Form("h_E1_%i_E2_%i_dt_det_%i_det_%i_E_vs_dt",(int)E1,(int)E2,detector_id_analyze->at(i),detector_id_analyze->at(j)),Form("E1 = %f, E2 = x vs t%i - t%i = y;energy in det %i (keV);dt = t%i-t%i (ns)",E1,detector_id_analyze->at(j),detector_id_analyze->at(i),detector_id_analyze->at(j),detector_id_analyze->at(j),detector_id_analyze->at(i)),fenergy_nbins,fenergy_bin_low, fenergy_bin_high,Nbins,lowBin,highBin);
+            fatima_spectra_folder->Add(h_energy_E1_dt_vs_E[i][j]);
         }
     }
 
@@ -160,13 +170,18 @@ void FatimaTimingAnalysis::Exec(Option_t* option)
                         int index1 = std::distance(detector_id_analyze->begin(), std::find(detector_id_analyze->begin(), detector_id_analyze->end(), detector_id1));
                         int index2 = std::distance(detector_id_analyze->begin(), std::find(detector_id_analyze->begin(), detector_id_analyze->end(), detector_id2));
                         if (timeshifts_loaded) timeshift_to_apply =  timeshifts.find(std::pair<int,int>(detector_id1,detector_id2))->second; //check ordering
-                        h_energy_E1_E2_dt[index1][index2]->Fill(fast_lead2-fast_lead1);
+                        else timeshift_to_apply = 0;
+                        h_energy_E1_E2_dt[index1][index2]->Fill(fast_lead2-fast_lead1 - timeshift_to_apply);
+                        h_energy_E1_dt_vs_E[index1][index2]->Fill(energy2, fast_lead2-fast_lead1 - timeshift_to_apply);
 
                     }else if (detector_id1>detector_id2 && TMath::Abs(energy2 - E2)<Egatewidth && TMath::Abs(energy1 - E1)<Egatewidth){
                         int index1 = std::distance(detector_id_analyze->begin(), std::find(detector_id_analyze->begin(), detector_id_analyze->end(), detector_id2));
                         int index2 = std::distance(detector_id_analyze->begin(), std::find(detector_id_analyze->begin(), detector_id_analyze->end(), detector_id1));
                         if (timeshifts_loaded) timeshift_to_apply =  timeshifts.find(std::pair<int,int>(detector_id2,detector_id1))->second;
-                        h_energy_E1_E2_dt[index1][index2]->Fill(fast_lead1-fast_lead2);
+                        else timeshift_to_apply = 0;
+                        h_energy_E1_E2_dt[index1][index2]->Fill(fast_lead1-fast_lead2 - timeshift_to_apply);
+                        h_energy_E1_dt_vs_E[index1][index2]->Fill(energy1, fast_lead1-fast_lead2 - timeshift_to_apply);
+
                     }
                 }
             }
@@ -191,7 +206,8 @@ void FatimaTimingAnalysis::FinishTask()
     //h_energy_E1_E2_dt
     for (int i = 0; i<detector_id_analyze->size(); i++){
         for (int j=i+1; j<detector_id_analyze->size(); j++){
-            h_energy_E1_E2_dt[i][j]->Write(Form("h_energy_E1_%i_E2_%i_det_%i_det_%i_dt",(int)E1, (int)E2,detector_id_analyze->at(i),detector_id_analyze->at(j)),TObject::kOverwrite);
+            h_energy_E1_E2_dt[i][j]->Write(Form("h_E1_%i_E2_%i_det_%i_det_%i_dt_times",(int)E1, (int)E2,detector_id_analyze->at(i),detector_id_analyze->at(j)),TObject::kOverwrite);
+            h_energy_E1_dt_vs_E[i][j]->Write(Form("h_E1_%i_E2_%i_dt_det_%i_det_%i_E_vs_dt",(int)E1,(int)E2,detector_id_analyze->at(i),detector_id_analyze->at(j)),TObject::kOverwrite);
         }
     } 
 }
