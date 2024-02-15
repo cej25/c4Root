@@ -354,7 +354,8 @@ Bool_t FatimaReader::Read() //do fine time here:
                     last_word_read_was_epoch = true;
                     continue;
             }
-              
+
+
             //from this point we should have seen an epoch for channel id.
 
             uint32_t channelid = fData->fatima_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // 1-32

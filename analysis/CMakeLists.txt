@@ -42,6 +42,7 @@ set(SRCS
 ./online/frs/FrsDetectorsOnline.cxx
 ./fatima_aida_correlations/FatimaAidaSpectra.cxx
 ./fatima/FatimaTimingAnalysis.cxx
+./fatima/FatimaSinglesAnalysis.cxx
 ./online/TimeMachineOnline.cxx
 #nearline
 # ./nearline/bPlastNearlineSpectra.cxx
