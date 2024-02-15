@@ -51,8 +51,10 @@ class FatimaTimingAnalysis : public FairTask
 
         double SoftwareTimewalk(double energy){
             //in energy in keV, out software walk:
-            double a = 2223.77, b = 1423.68, c = -1.23853;
-            return a/(energy*b) + c;
+            double a = 2223.77;
+            double b = 1423.68;
+            double c = -1.23853;
+            return a/(energy+b) + c;
         };
 
 
