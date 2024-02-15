@@ -143,6 +143,8 @@ void FatimaTimingAnalysis::Exec(Option_t* option)
             uint16_t detector_id1 = hit1->Get_detector_id();
             double energy1 = hit1->Get_energy();
             double fast_lead1 = hit1->Get_fast_lead_time() + SoftwareTimewalk(energy1);
+            //c4LOG(info,energy1);
+            //c4LOG(info,SoftwareTimewalk(energy1));
 
             if (std::find(detector_id_analyze->begin(), detector_id_analyze->end(), detector_id1) == detector_id_analyze->end()) continue; //not in vector of dets to analyze
             
