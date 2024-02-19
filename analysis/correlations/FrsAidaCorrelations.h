@@ -9,6 +9,7 @@
 
 #include "TH1.h"
 #include "TH2.h"
+#include "TCutG.h"
 
 class TClonesArray;
 class EventHeader;
@@ -17,6 +18,7 @@ class TH1I;
 class TH2I;
 class TH2F;
 class TH2D;
+class TCutG;
 class FrsHitData;
 class FrsAnalysisData;
 class TAidaConfiguration;
@@ -24,7 +26,7 @@ class TAidaConfiguration;
 class FrsAidaCorrelations : public FairTask
 {
     public:
-        FrsAidaCorrelations();
+        FrsAidaCorrelations(std::vector<std::vector<TCutG*>> fFrsGates);
 
         FrsAidaCorrelations(const TString& name, Int_t verbose);
 
@@ -55,29 +57,35 @@ class FrsAidaCorrelations : public FairTask
         TH1I* h1_AidaImplant_Deadtime;
         TH1I* h1_AidaImplant_FRS_dT;
         TH2F* h2_AidaImplant_FRS_x_vs_x4;
-        TH2I* h2_AidaImplant_FRS_ZAoQgate_strip_xy[FRS_GATES][AIDA_DSSDS];
-        TH1I* h1_AidaImplant_FRS_ZAoQgate_e[FRS_GATES][AIDA_DSSDS];
-        TH2D* h2_AidaImplant_FRS_ZAoQgate_position[FRS_GATES][AIDA_DSSDS];
-        TH2I* h2_AidaImplant_FRS_Z1Z2gate_strip_xy[FRS_GATES][AIDA_DSSDS];
-        TH2D* h2_AidaImplant_FRS_Z1Z2gate_position[FRS_GATES][AIDA_DSSDS];
-        TH2I* h2_AidaImplant_FRS_Z1Z2x2AoQgates_strip_xy[FRS_GATES][AIDA_DSSDS];
-        TH2D* h2_AidaImplant_FRS_Z1Z2x2AoQgates_position[FRS_GATES][AIDA_DSSDS];
-        TH1I* h1_AidaImplant_FRS_Z1Z2x2AoQgates_e[FRS_GATES][AIDA_DSSDS];
-        TH2I* h2_AidaImplant_FRS_Z1Z2x4AoQgates_strip_xy[FRS_GATES][AIDA_DSSDS];
-        TH2D* h2_AidaImplant_FRS_Z1Z2x4AoQgates_position[FRS_GATES][AIDA_DSSDS];
-        TH1I* h1_AidaImplant_FRS_Z1Z2x4AoQgates_e[FRS_GATES][AIDA_DSSDS];
-        TH2I* h2_AidaImplant_FRS_ZAoQgate_strip_xy_stopped[FRS_GATES][AIDA_DSSDS];
-        TH1I* h1_AidaImplant_FRS_ZAoQgate_e_stopped[FRS_GATES][AIDA_DSSDS];
-        TH2D* h2_AidaImplant_FRS_ZAoQgate_position_stopped[FRS_GATES][AIDA_DSSDS];
-        TH2I* h2_AidaImplant_FRS_Z1Z2gate_strip_xy_stopped[FRS_GATES][AIDA_DSSDS];
-        TH2D* h2_AidaImplant_FRS_Z1Z2gate_position_stopped[FRS_GATES][AIDA_DSSDS];
-        TH2I* h2_AidaImplant_FRS_Z1Z2x2AoQgates_strip_xy_stopped[FRS_GATES][AIDA_DSSDS];
-        TH2D* h2_AidaImplant_FRS_Z1Z2x2AoQgates_position_stopped[FRS_GATES][AIDA_DSSDS];
-        TH1I* h1_AidaImplant_FRS_Z1Z2x2AoQgates_e_stopped[FRS_GATES][AIDA_DSSDS];
-        TH2I* h2_AidaImplant_FRS_Z1Z2x4AoQgates_strip_xy_stopped[FRS_GATES][AIDA_DSSDS];
-        TH2D* h2_AidaImplant_FRS_Z1Z2x4AoQgates_position_stopped[FRS_GATES][AIDA_DSSDS];
-        TH1I* h1_AidaImplant_FRS_Z1Z2x4AoQgates_e_stopped[FRS_GATES][AIDA_DSSDS];
+        std::vector<TH2I*> h2_AidaImplant_FRS_ZAoQgate_strip_xy[AIDA_DSSDS];
+        std::vector<TH1I*> h1_AidaImplant_FRS_ZAoQgate_e[AIDA_DSSDS];
+        std::vector<TH2D*> h2_AidaImplant_FRS_ZAoQgate_position[AIDA_DSSDS];
+        std::vector<TH2I*> h2_AidaImplant_FRS_Z1Z2gate_strip_xy[AIDA_DSSDS];
+        std::vector<TH2D*> h2_AidaImplant_FRS_Z1Z2gate_position[AIDA_DSSDS];
+        std::vector<TH2I*> h2_AidaImplant_FRS_Z1Z2x2AoQgates_strip_xy[AIDA_DSSDS];
+        std::vector<TH2D*> h2_AidaImplant_FRS_Z1Z2x2AoQgates_position[AIDA_DSSDS];
+        std::vector<TH1I*> h1_AidaImplant_FRS_Z1Z2x2AoQgates_e[AIDA_DSSDS];
+        std::vector<TH2I*> h2_AidaImplant_FRS_Z1Z2x4AoQgates_strip_xy[AIDA_DSSDS];
+        std::vector<TH2D*> h2_AidaImplant_FRS_Z1Z2x4AoQgates_position[AIDA_DSSDS];
+        std::vector<TH1I*> h1_AidaImplant_FRS_Z1Z2x4AoQgates_e[AIDA_DSSDS];
+        std::vector<TH2I*> h2_AidaImplant_FRS_ZAoQgate_strip_xy_stopped[AIDA_DSSDS];
+        std::vector<TH1I*> h1_AidaImplant_FRS_ZAoQgate_e_stopped[AIDA_DSSDS];
+        std::vector<TH2D*> h2_AidaImplant_FRS_ZAoQgate_position_stopped[AIDA_DSSDS];
+        std::vector<TH2I*> h2_AidaImplant_FRS_Z1Z2gate_strip_xy_stopped[AIDA_DSSDS];
+        std::vector<TH2D*> h2_AidaImplant_FRS_Z1Z2gate_position_stopped[AIDA_DSSDS];
+        std::vector<TH2I*> h2_AidaImplant_FRS_Z1Z2x2AoQgates_strip_xy_stopped[AIDA_DSSDS];
+        std::vector<TH2D*> h2_AidaImplant_FRS_Z1Z2x2AoQgates_position_stopped[AIDA_DSSDS];
+        std::vector<TH1I*> h1_AidaImplant_FRS_Z1Z2x2AoQgates_e_stopped[AIDA_DSSDS];
+        std::vector<TH2I*> h2_AidaImplant_FRS_Z1Z2x4AoQgates_strip_xy_stopped[AIDA_DSSDS];
+        std::vector<TH2D*> h2_AidaImplant_FRS_Z1Z2x4AoQgates_position_stopped[AIDA_DSSDS];
+        std::vector<TH1I*> h1_AidaImplant_FRS_Z1Z2x4AoQgates_e_stopped[AIDA_DSSDS];
 
+        // Conditions/Cuts
+        std::vector<TCutG*> cutID_Z_AoQ;
+        std::vector<TCutG*> cutID_Z_Z2;
+        std::vector<TCutG*> cutID_x2AoQ;
+        std::vector<TCutG*> cutID_x4AoQ;
+        std::vector<TCutG*> cutID_dEdegZ;
 
     public:
         ClassDef(FrsAidaCorrelations, 1)

@@ -7,6 +7,7 @@
 #include "TH2.h"
 #include "TH1.h"
 #include "TCutG.h"
+#include "TFolder.h"
 
 class EventHeader;
 class TClonesArray;
@@ -30,7 +31,8 @@ class FrsAnalysisSpectra : public FairTask
                         TIDParameter* fid,
                         TSIParameter* fsi,
                         TMRTOFMSParameter* fmrtof,
-                        TRangeParameter* frange);
+                        TRangeParameter* frange,
+                        std::vector<std::vector<TCutG*>> fFrsGates);
 
         FrsAnalysisSpectra(const TString& name, Int_t verbose = 1);
 
@@ -68,6 +70,22 @@ class FrsAnalysisSpectra : public FairTask
 
         // folders
         TFolder* frs_analysis_hists;
+        TFolder* frs_tac_hists;
+        TFolder* frs_mhtdc_hists;
+        TFolder* frs_ZvsAoQ_hists;
+        TFolder* frs_Z1vsZ2_hists;
+        TFolder* frs_x2vsAoQ_hists;
+        TFolder* frs_x4vsAoQ_hists;
+        TFolder* frs_dEdegvsZ_hists;
+        TFolder* frs_x2vsAoQ_Z1vsZ2_hists;
+        TFolder* frs_x4vsAoQ_Z1vsZ2_hists;
+        TFolder* frs_ZvsAoQ_hists_mhtdc;
+        TFolder* frs_Z1vsZ2_hists_mhtdc;
+        TFolder* frs_x2vsAoQ_hists_mhtdc;
+        TFolder* frs_x4vsAoQ_hists_mhtdc;
+        TFolder* frs_dEdegvsZ_hists_mhtdc;
+        TFolder* frs_x2vsAoQ_Z1vsZ2_hists_mhtdc;
+        TFolder* frs_x4vsAoQ_Z1vsZ2_hists_mhtdc;
 
         // histograms
         TH2D* h2_Z1_vs_T;
@@ -97,47 +115,47 @@ class FrsAnalysisSpectra : public FairTask
         TH2D* h2_x4_vs_a4;
         TH2D* h2_y4_vs_b4;
         TH2D* h2_Z_vs_Sc21E;
-        TH2I* h2_Z_vs_AoQ_ZAoQgate[FRS_GATES];
-        TH2I* h2_Z1_vs_Z2_ZAoQgate[FRS_GATES];
-        TH2I* h2_x2_vs_AoQ_ZAoQgate[FRS_GATES];
-        TH2I* h2_x4_vs_AoQ_ZAoQgate[FRS_GATES];
-        TH2I* h2_dEdeg_vs_Z_ZAoQgate[FRS_GATES];
-        TH2I* h2_dedegoQ_vs_Z_ZAoQgate[FRS_GATES];
-        TH1I* h1_a2_ZAoQ_gate[FRS_GATES];
-        TH1I* h1_a4_ZAoQ_gate[FRS_GATES];
-        TH2I* h2_dEdeg_vs_Z_Z1Z2gate[FRS_GATES];
-        TH2I* h2_dEdegoQ_vs_Z_Z1Z2gate[FRS_GATES];
-        TH2I* h2_Z1_vs_Z2_Z1Z2gate[FRS_GATES];
-        TH1I* h1_a2_Z1Z2gate[FRS_GATES];
-        TH1I* h1_a4_Z1Z2gate[FRS_GATES];
-        TH2I* h2_x2_vs_AoQ_Z1Z2gate[FRS_GATES];
-        TH2I* h2_x4_vs_AoQ_Z1Z2gate[FRS_GATES];
-        TH2I* h2_Z_vs_AoQ_Z1Z2gate[FRS_GATES];
-        TH2I* h2_x2_vs_AoQ_x2AoQgate[FRS_GATES];
-        TH2I* h2_Z1_vs_Z2_x2AoQgate[FRS_GATES];
-        TH2I* h2_x2_vs_AoQ_Z1Z2x2AoQgate[FRS_GATES];
-        TH2I* h2_x4_vs_AoQ_Z1Z2x2AoQgate[FRS_GATES];
-        TH2I* h2_Z_vs_AoQ_Z1Z2x2AoQgate[FRS_GATES];
-        TH2I* h2_dEdeg_vs_Z_Z1Z2x2AoQgate[FRS_GATES];
-        TH2I* h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate[FRS_GATES];
-        TH1I* h1_a2_Z1Z2x2AoQgate[FRS_GATES];
-        TH1I* h1_a4_Z1Z2x2AoQgate[FRS_GATES];
-        TH2I* h2_x4_vs_AoQ_x4AoQgate[FRS_GATES];
-        TH2I* h2_Z1_vs_Z2_x4AoQgate[FRS_GATES];
-        TH2I* h2_x2_vs_AoQ_Z1Z2x4AoQgate[FRS_GATES];
-        TH2I* h2_x4_vs_AoQ_Z1Z2x4AoQgate[FRS_GATES];
-        TH2I* h2_Z_vs_AoQ_Z1Z2x4AoQgate[FRS_GATES];
-        TH2I* h2_dEdeg_vs_Z_Z1Z2x4AoQgate[FRS_GATES];
-        TH2I* h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate[FRS_GATES];
-        TH1I* h1_a2_Z1Z2x4AoQgate[FRS_GATES];
-        TH1I* h1_a4_Z1Z2x4AoQgate[FRS_GATES];
-        TH2I* h2_Z_vs_AoQ_dEdegZgate[FRS_GATES];
-        TH2I* h2_Z1_vs_Z2_dEdegZgate[FRS_GATES];
-        TH2I* h2_x2_vs_AoQ_dEdegZgate[FRS_GATES];
-        TH2I* h2_x4_vs_AoQ_dEdegZgate[FRS_GATES];
-        TH1I* h1_a2_dEdegZgate[FRS_GATES];
-        TH1I* h1_a4_dEdegZgate[FRS_GATES];
-        TH2I* h2_Z_vs_AoQ_Zsame_dEdegZgate[FRS_GATES];
+        std::vector<TH2I*> h2_Z_vs_AoQ_ZAoQgate;
+        std::vector<TH2I*> h2_Z1_vs_Z2_ZAoQgate;
+        std::vector<TH2I*> h2_x2_vs_AoQ_ZAoQgate;
+        std::vector<TH2I*> h2_x4_vs_AoQ_ZAoQgate;
+        std::vector<TH2I*> h2_dEdeg_vs_Z_ZAoQgate;
+        std::vector<TH2I*> h2_dedegoQ_vs_Z_ZAoQgate;
+        std::vector<TH1I*> h1_a2_ZAoQ_gate;
+        std::vector<TH1I*> h1_a4_ZAoQ_gate;
+        std::vector<TH2I*> h2_dEdeg_vs_Z_Z1Z2gate;
+        std::vector<TH2I*> h2_dEdegoQ_vs_Z_Z1Z2gate;
+        std::vector<TH2I*> h2_Z1_vs_Z2_Z1Z2gate;
+        std::vector<TH1I*> h1_a2_Z1Z2gate;
+        std::vector<TH1I*> h1_a4_Z1Z2gate;
+        std::vector<TH2I*> h2_x2_vs_AoQ_Z1Z2gate;
+        std::vector<TH2I*> h2_x4_vs_AoQ_Z1Z2gate;
+        std::vector<TH2I*> h2_Z_vs_AoQ_Z1Z2gate;
+        std::vector<TH2I*> h2_x2_vs_AoQ_x2AoQgate;
+        std::vector<TH2I*> h2_Z1_vs_Z2_x2AoQgate;
+        std::vector<TH2I*> h2_x2_vs_AoQ_Z1Z2x2AoQgate;
+        std::vector<TH2I*> h2_x4_vs_AoQ_Z1Z2x2AoQgate;
+        std::vector<TH2I*> h2_Z_vs_AoQ_Z1Z2x2AoQgate;
+        std::vector<TH2I*> h2_dEdeg_vs_Z_Z1Z2x2AoQgate;
+        std::vector<TH2I*> h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate;
+        std::vector<TH1I*> h1_a2_Z1Z2x2AoQgate;
+        std::vector<TH1I*> h1_a4_Z1Z2x2AoQgate;
+        std::vector<TH2I*> h2_x4_vs_AoQ_x4AoQgate;
+        std::vector<TH2I*> h2_Z1_vs_Z2_x4AoQgate;
+        std::vector<TH2I*> h2_x2_vs_AoQ_Z1Z2x4AoQgate;
+        std::vector<TH2I*> h2_x4_vs_AoQ_Z1Z2x4AoQgate;
+        std::vector<TH2I*> h2_Z_vs_AoQ_Z1Z2x4AoQgate;
+        std::vector<TH2I*> h2_dEdeg_vs_Z_Z1Z2x4AoQgate;
+        std::vector<TH2I*> h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate;
+        std::vector<TH1I*> h1_a2_Z1Z2x4AoQgate;
+        std::vector<TH1I*> h1_a4_Z1Z2x4AoQgate;
+        std::vector<TH2I*> h2_Z_vs_AoQ_dEdegZgate;
+        std::vector<TH2I*> h2_Z1_vs_Z2_dEdegZgate;
+        std::vector<TH2I*> h2_x2_vs_AoQ_dEdegZgate;
+        std::vector<TH2I*> h2_x4_vs_AoQ_dEdegZgate;
+        std::vector<TH1I*> h1_a2_dEdegZgate;
+        std::vector<TH1I*> h1_a4_dEdegZgate;
+        std::vector<TH2I*> h2_Z_vs_AoQ_Zsame_dEdegZgate;
 
         TH2D* h2_Z1_vs_T_mhtdc;
         TH2D* h2_AoQ_vs_T_mhtdc;
@@ -162,62 +180,57 @@ class FrsAnalysisSpectra : public FairTask
         TH2D* h2_dE1_vs_x2_mhtdc;
         TH2D* h2_dE1_vs_x4_mhtdc;
         TH2D* h2_Z_vs_Sc21E_mhtdc;
-        TH2I* h2_Z_vs_AoQ_ZAoQgate_mhtdc[FRS_GATES];
-        TH2I* h2_Z1_vs_Z2_ZAoQgate_mhtdc[FRS_GATES];
-        TH2I* h2_x2_vs_AoQ_ZAoQgate_mhtdc[FRS_GATES];
-        TH2I* h2_x4_vs_AoQ_ZAoQgate_mhtdc[FRS_GATES];
-        TH2I* h2_dEdeg_vs_Z_ZAoQgate_mhtdc[FRS_GATES];
-        TH2I* h2_dedegoQ_vs_Z_ZAoQgate_mhtdc[FRS_GATES];
-        TH1I* h1_a2_ZAoQ_gate_mhtdc[FRS_GATES];
-        TH1I* h1_a4_ZAoQ_gate_mhtdc[FRS_GATES];
-        TH2I* h2_dEdeg_vs_Z_Z1Z2gate_mhtdc[FRS_GATES];
-        TH2I* h2_dEdegoQ_vs_Z_Z1Z2gate_mhtdc[FRS_GATES];
-        TH2I* h2_Z1_vs_Z2_Z1Z2gate_mhtdc[FRS_GATES];
-        TH1I* h1_a2_Z1Z2gate_mhtdc[FRS_GATES];
-        TH1I* h1_a4_Z1Z2gate_mhtdc[FRS_GATES];
-        TH2I* h2_x2_vs_AoQ_Z1Z2gate_mhtdc[FRS_GATES];
-        TH2I* h2_x4_vs_AoQ_Z1Z2gate_mhtdc[FRS_GATES];
-        TH2I* h2_Z_vs_AoQ_Z1Z2gate_mhtdc[FRS_GATES];
-        TH2I* h2_x2_vs_AoQ_x2AoQgate_mhtdc[FRS_GATES];
-        TH2I* h2_Z1_vs_Z2_x2AoQgate_mhtdc[FRS_GATES];
-        TH2I* h2_x2_vs_AoQ_Z1Z2x2AoQgate_mhtdc[FRS_GATES];
-        TH2I* h2_x4_vs_AoQ_Z1Z2x2AoQgate_mhtdc[FRS_GATES];
-        TH2I* h2_Z1_vs_Z2_Z1Z2x2AoQgate_mhtdc[FRS_GATES];
-        TH2I* h2_Z_vs_AoQ_Z1Z2x2AoQgate_mhtdc[FRS_GATES];
-        TH2I* h2_dEdeg_vs_Z_Z1Z2x2AoQgate_mhtdc[FRS_GATES];
-        TH2I* h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate_mhtdc[FRS_GATES];
-        TH1I* h1_a2_Z1Z2x2AoQgate_mhtdc[FRS_GATES];
-        TH1I* h1_a4_Z1Z2x2AoQgate_mhtdc[FRS_GATES];
-        TH2I* h2_x4_vs_AoQ_x4AoQgate_mhtdc[FRS_GATES];
-        TH2I* h2_Z1_vs_Z2_Z1Z2x4AoQgate_mhtdc[FRS_GATES];
-        TH2I* h2_Z1_vs_Z2_x4AoQgate_mhtdc[FRS_GATES];
-        TH2I* h2_x2_vs_AoQ_Z1Z2x4AoQgate_mhtdc[FRS_GATES];
-        TH2I* h2_x4_vs_AoQ_Z1Z2x4AoQgate_mhtdc[FRS_GATES];
-        TH2I* h2_Z_vs_AoQ_Z1Z2x4AoQgate_mhtdc[FRS_GATES];
-        TH2I* h2_dEdeg_vs_Z_Z1Z2x4AoQgate_mhtdc[FRS_GATES];
-        TH2I* h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate_mhtdc[FRS_GATES];
-        TH1I* h1_a2_Z1Z2x4AoQgate_mhtdc[FRS_GATES];
-        TH1I* h1_a4_Z1Z2x4AoQgate_mhtdc[FRS_GATES];
-        TH2I* h2_Z_vs_dEdeg_dEdegZgate_mhtdc[FRS_GATES];
-        TH2I* h2_Z_vs_AoQ_dEdegZgate_mhtdc[FRS_GATES];
-        TH2I* h2_Z1_vs_Z2_dEdegZgate_mhtdc[FRS_GATES];
-        TH2I* h2_x2_vs_AoQ_dEdegZgate_mhtdc[FRS_GATES];
-        TH2I* h2_x4_vs_AoQ_dEdegZgate_mhtdc[FRS_GATES];
-        TH1I* h1_a2_dEdegZgate_mhtdc[FRS_GATES];
-        TH1I* h1_a4_dEdegZgate_mhtdc[FRS_GATES];
-        TH2I* h2_Z_vs_AoQ_Zsame_dEdegZgate_mhtdc[FRS_GATES];
+        std::vector<TH2I*> h2_Z_vs_AoQ_ZAoQgate_mhtdc;
+        std::vector<TH2I*> h2_Z1_vs_Z2_ZAoQgate_mhtdc;
+        std::vector<TH2I*> h2_x2_vs_AoQ_ZAoQgate_mhtdc;
+        std::vector<TH2I*> h2_x4_vs_AoQ_ZAoQgate_mhtdc;
+        std::vector<TH2I*> h2_dEdeg_vs_Z_ZAoQgate_mhtdc;
+        std::vector<TH2I*> h2_dedegoQ_vs_Z_ZAoQgate_mhtdc;
+        std::vector<TH1I*> h1_a2_ZAoQ_gate_mhtdc;
+        std::vector<TH1I*> h1_a4_ZAoQ_gate_mhtdc;
+        std::vector<TH2I*> h2_dEdeg_vs_Z_Z1Z2gate_mhtdc;
+        std::vector<TH2I*> h2_dEdegoQ_vs_Z_Z1Z2gate_mhtdc;
+        std::vector<TH2I*> h2_Z1_vs_Z2_Z1Z2gate_mhtdc;
+        std::vector<TH1I*> h1_a2_Z1Z2gate_mhtdc;
+        std::vector<TH1I*> h1_a4_Z1Z2gate_mhtdc;
+        std::vector<TH2I*> h2_x2_vs_AoQ_Z1Z2gate_mhtdc;
+        std::vector<TH2I*> h2_x4_vs_AoQ_Z1Z2gate_mhtdc;
+        std::vector<TH2I*> h2_Z_vs_AoQ_Z1Z2gate_mhtdc;
+        std::vector<TH2I*> h2_x2_vs_AoQ_x2AoQgate_mhtdc;
+        std::vector<TH2I*> h2_Z1_vs_Z2_x2AoQgate_mhtdc;
+        std::vector<TH2I*> h2_x2_vs_AoQ_Z1Z2x2AoQgate_mhtdc;
+        std::vector<TH2I*> h2_x4_vs_AoQ_Z1Z2x2AoQgate_mhtdc;
+        std::vector<TH2I*> h2_Z1_vs_Z2_Z1Z2x2AoQgate_mhtdc;
+        std::vector<TH2I*> h2_Z_vs_AoQ_Z1Z2x2AoQgate_mhtdc;
+        std::vector<TH2I*> h2_dEdeg_vs_Z_Z1Z2x2AoQgate_mhtdc;
+        std::vector<TH2I*> h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate_mhtdc;
+        std::vector<TH1I*> h1_a2_Z1Z2x2AoQgate_mhtdc;
+        std::vector<TH1I*> h1_a4_Z1Z2x2AoQgate_mhtdc;
+        std::vector<TH2I*> h2_x4_vs_AoQ_x4AoQgate_mhtdc;
+        std::vector<TH2I*> h2_Z1_vs_Z2_Z1Z2x4AoQgate_mhtdc;
+        std::vector<TH2I*> h2_Z1_vs_Z2_x4AoQgate_mhtdc;
+        std::vector<TH2I*> h2_x2_vs_AoQ_Z1Z2x4AoQgate_mhtdc;
+        std::vector<TH2I*> h2_x4_vs_AoQ_Z1Z2x4AoQgate_mhtdc;
+        std::vector<TH2I*> h2_Z_vs_AoQ_Z1Z2x4AoQgate_mhtdc;
+        std::vector<TH2I*> h2_dEdeg_vs_Z_Z1Z2x4AoQgate_mhtdc;
+        std::vector<TH2I*> h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate_mhtdc;
+        std::vector<TH1I*> h1_a2_Z1Z2x4AoQgate_mhtdc;
+        std::vector<TH1I*> h1_a4_Z1Z2x4AoQgate_mhtdc;
+        std::vector<TH2I*> h2_Z_vs_dEdeg_dEdegZgate_mhtdc;
+        std::vector<TH2I*> h2_Z_vs_AoQ_dEdegZgate_mhtdc;
+        std::vector<TH2I*> h2_Z1_vs_Z2_dEdegZgate_mhtdc;
+        std::vector<TH2I*> h2_x2_vs_AoQ_dEdegZgate_mhtdc;
+        std::vector<TH2I*> h2_x4_vs_AoQ_dEdegZgate_mhtdc;
+        std::vector<TH1I*> h1_a2_dEdegZgate_mhtdc;
+        std::vector<TH1I*> h1_a4_dEdegZgate_mhtdc;
+        std::vector<TH2I*> h2_Z_vs_AoQ_Zsame_dEdegZgate_mhtdc;
 
-        // Conditions/Cuts - CEJ: figure out how to read from file!!
-        TCutG* cID_Z_AoQ[FRS_GATES];
-        TCutG* cID_Z_Z2[FRS_GATES];
-        TCutG* cID_x2AoQ[FRS_GATES];
-        TCutG* cID_x4AoQ[FRS_GATES];
-        TCutG* cID_dEdegZ[FRS_GATES];
-        TCutG* cID_Z_AoQ_mhtdc[FRS_GATES];
-        TCutG* cID_Z_Z2_mhtdc[FRS_GATES];
-        TCutG* cID_x2AoQ_mhtdc[FRS_GATES];
-        TCutG* cID_x4AoQ_mhtdc[FRS_GATES];
-        TCutG* cID_dEdegZ_mhtdc[FRS_GATES];
+        // Conditions/Cuts
+        std::vector<TCutG*> cutID_Z_AoQ;
+        std::vector<TCutG*> cutID_Z_Z2;
+        std::vector<TCutG*> cutID_x2AoQ;
+        std::vector<TCutG*> cutID_x4AoQ;
+        std::vector<TCutG*> cutID_dEdegZ;
 
     public:
         ClassDef(FrsAnalysisSpectra, 1);
