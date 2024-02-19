@@ -953,10 +953,13 @@ void FrsCal2Hit::Exec(Option_t* option)
             }
             id_mhtdc_v_cor_music41.emplace_back(sum);
 
+            
             if (id_mhtdc_v_cor_music41.at(i) > 0.0)
             {
                 id_mhtdc_z_music41.emplace_back(frs->primary_z * sqrt(de[0] / id_mhtdc_v_cor_music41.at(i)) + id->mhtdc_offset_z_music41);
             }
+            std::cout << "do we get a z value" << std::endl;
+            std::cout << id_mhtdc_z_music41[i] << std::endl;
         }
         
     }

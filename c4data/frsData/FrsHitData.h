@@ -78,12 +78,72 @@ class FrsHitData : public TObject
         inline const Float_t Get_sci_r(int channel) const { return fsci_r[channel]; }
 
         // MHTDC
-        inline const Float_t Get_ID_z_mhtdc(int mhit) const { return fID_z_mhtdc[mhit]; }
-        inline const Float_t Get_ID_z2_mhtdc(int mhit) const { return fID_z2_mhtdc[mhit]; }
-        inline const Float_t Get_ID_AoQ_mhtdc(int mhit) const { return fID_AoQ_mhtdc[mhit]; }
-        inline const Float_t Get_ID_AoQ_corr_mhtdc(int mhit) const { return fID_AoQ_corr_mhtdc[mhit]; }
-        inline const Float_t Get_ID_dEdeg_mhtdc(int mhit) const { return fID_dEdeg_mhtdc[mhit]; }
-        inline const Float_t Get_ID_dEdegoQ_mhtdc(int mhit) const { return fID_dEdegoQ_mhtdc[mhit]; }
+        inline const Float_t Get_ID_z_mhtdc(int mhit) const 
+        {
+            if (mhit < fID_z_mhtdc.size())
+            {
+                return fID_z_mhtdc[mhit];
+            }
+            else
+            {
+                return 0.0;
+            }
+        }
+        inline const Float_t Get_ID_z2_mhtdc(int mhit) const 
+        {
+            if (mhit < fID_z2_mhtdc.size())
+            {
+                return fID_z2_mhtdc[mhit];
+            }
+            else
+            {
+                return 0.0;
+            }
+        }
+        inline const Float_t Get_ID_AoQ_mhtdc(int mhit) const 
+        { 
+            if (mhit < fID_AoQ_mhtdc.size())
+            {
+                return fID_AoQ_mhtdc[mhit];
+            }
+            else
+            {
+                return 0.0;
+            } 
+        }
+        inline const Float_t Get_ID_AoQ_corr_mhtdc(int mhit) const 
+        {
+            if (mhit < fID_AoQ_corr_mhtdc.size())
+            {
+                return fID_AoQ_corr_mhtdc[mhit];
+            }
+            else
+            {
+                return 0.0;
+            } 
+        }
+        inline const Float_t Get_ID_dEdeg_mhtdc(int mhit) const 
+        {
+            if (mhit < fID_dEdeg_mhtdc.size())
+            {
+                return fID_dEdeg_mhtdc[mhit];
+            }
+            else
+            {
+                return 0.0;
+            } 
+        }
+        inline const Float_t Get_ID_dEdegoQ_mhtdc(int mhit) const 
+        { 
+            if (mhit < fID_dEdegoQ_mhtdc.size())
+            {
+                return fID_dEdegoQ_mhtdc[mhit];
+            }
+            else
+            {
+                return 0.0;
+            } 
+        }
 
         inline uint32_t Get_time_in_ms() { return ftime_in_ms; }
         inline uint32_t Get_ibin_for_s() { return fibin_for_s; }

@@ -158,31 +158,31 @@ InitStatus FrsAnalysisSpectra::Init()
     h2_Z1_vs_T = new TH2D("h2_Z1_vs_T", "Z1 vs. Time [mins]", 1240, 16600, 29000, 1500, id->min_z_plot, id->max_z_plot);
     frs_tac_hists->Add(h2_Z1_vs_T);
     //hID_AoQ_vs_T
-    h2_AoQ_vs_T = new TH2D("h2_AoQ_vs_T", "A/Q vs. Time [mins]", 1200, 17000, 29000, 1500, id->min_aoq_plot, id->max_aoq_plot);
+    h2_AoQ_vs_T = new TH2D("h2_AoQ_vs_T", "A/Q vs. Time [mins]", 1200, 17000, 29000, 1500, id->min_aoq_plot, 3.0);
     frs_tac_hists->Add(h2_AoQ_vs_T);
     //hID_Z_AoQ
-    h2_Z_vs_AoQ = new TH2D("h2_Z_vs_AoQ", "Z1 vs. A/Q", 1500, id->min_aoq_plot, id->max_aoq_plot, 1000, id->min_z_plot, id->max_z_plot);
+    h2_Z_vs_AoQ = new TH2D("h2_Z_vs_AoQ", "Z1 vs. A/Q", 1500, id->min_aoq_plot, 3.0, 1000, id->min_z_plot, id->max_z_plot);
     frs_tac_hists->Add(h2_Z_vs_AoQ);
     //hID_Z_AoQ_corr
-    h2_Z_vs_AoQ_corr = new TH2D("h2_Z_vs_AoQ_corr", "Z1 vs. A/Q (corr)", 1500, id->min_aoq_plot, id->max_aoq_plot, 1000, id->min_z_plot, id->max_z_plot);
+    h2_Z_vs_AoQ_corr = new TH2D("h2_Z_vs_AoQ_corr", "Z1 vs. A/Q (corr)", 1500, id->min_aoq_plot, 3.0, 1000, id->min_z_plot, id->max_z_plot);
     frs_tac_hists->Add(h2_Z_vs_AoQ_corr);
     //hID_Z_Z2
     h2_Z_vs_Z2 = new TH2D("h2_Z_vs_Z2", "Z1 vs. Z2", 1000, id->min_z_plot, id->max_z_plot, 400, id->min_z_plot, id->max_z_plot);
     frs_tac_hists->Add(h2_Z_vs_Z2);
     //hID_Z_AoQ_zsame
-    h2_Z_vs_AoQ_Zsame = new TH2D("h2_Z_vs_AoQ_Zsame", "Z1 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, id->min_aoq_plot, id->max_aoq_plot, 1000, id->min_z_plot, id->max_z_plot);
+    h2_Z_vs_AoQ_Zsame = new TH2D("h2_Z_vs_AoQ_Zsame", "Z1 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, id->min_aoq_plot, 3.0, 1000, id->min_z_plot, id->max_z_plot);
     frs_tac_hists->Add(h2_Z_vs_AoQ_Zsame);
     //hID_x4AoQ_zsame
-    h2_x4_vs_AoQ_Zsame = new TH2D("h2_x4_vs_AoQ_Zsame", "x4 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, id->min_aoq_plot, id->max_aoq_plot, 300, -150., 100.); // CEJ: should these lims not be defined somewhere..
+    h2_x4_vs_AoQ_Zsame = new TH2D("h2_x4_vs_AoQ_Zsame", "x4 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, id->min_aoq_plot, 3.0, 300, -150., 100.); // CEJ: should these lims not be defined somewhere..
     frs_tac_hists->Add(h2_x4_vs_AoQ_Zsame);
     //hID_x2AoQ_zsame
-    h2_x2_vs_AoQ_Zsame = new TH2D("h2_x2_vs_AoQ_Zsame", "x4 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, id->min_aoq_plot, id->max_aoq_plot, 300, -150., 100.);
+    h2_x2_vs_AoQ_Zsame = new TH2D("h2_x2_vs_AoQ_Zsame", "x4 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, id->min_aoq_plot, 3.0, 300, -150., 100.);
     frs_tac_hists->Add(h2_x2_vs_AoQ_Zsame);
     //hID_x2AoQ
-    h2_x2_vs_AoQ = new TH2D("h2_x2_vs_AoQ", "x2 vs. A/Q", 1500, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.);
+    h2_x2_vs_AoQ = new TH2D("h2_x2_vs_AoQ", "x2 vs. A/Q", 1500, id->min_aoq_plot, 3.0, 200, -100., 100.);
     frs_tac_hists->Add(h2_x2_vs_AoQ);
     //hID_x4AoQ
-    h2_x4_vs_AoQ = new TH2D("h2_x4_vs_AoQ", "x4 vs. A/Q", 1500, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.);
+    h2_x4_vs_AoQ = new TH2D("h2_x4_vs_AoQ", "x4 vs. A/Q", 1500, id->min_aoq_plot, 3.0, 200, -100., 100.);
     frs_tac_hists->Add(h2_x4_vs_AoQ);
     //hdEdegoQ_Z
     h2_dEdegoQ_vs_Z = new TH2D("h2_dEdegoQ_vs_Z", "dE in S2 degrader / Q vs. Z1", 1000, id->min_z_plot, id->max_z_plot, 1000, 0.1, 0.8);
@@ -191,10 +191,10 @@ InitStatus FrsAnalysisSpectra::Init()
     h2_dEdeg_vs_Z = new TH2D("h2_dEdeg_vs_Z", "dE in S2 degrader vs. Z1", 1000, id->min_z_plot, id->max_z_plot, 1000, 10, 100);
     frs_tac_hists->Add(h2_dEdeg_vs_Z);
     //hID_a2AoQ
-    h2_a2_vs_AoQ = new TH2D("h2_a2_vs_AoQ", "A/Q vs. Angle (S2)", 500, id->min_aoq_plot, id->max_aoq_plot, 500, -25, 25);
+    h2_a2_vs_AoQ = new TH2D("h2_a2_vs_AoQ", "A/Q vs. Angle (S2)", 500, id->min_aoq_plot, 3.0, 500, -25, 25);
     frs_tac_hists->Add(h2_a2_vs_AoQ);
     //hID_a4AoQ
-    h2_a4_vs_AoQ = new TH2D("h2_a4_vs_AoQ", "A/Q vs. Angle (S4)", 500, id->min_aoq_plot, id->max_aoq_plot, 500, -25, 25);
+    h2_a4_vs_AoQ = new TH2D("h2_a4_vs_AoQ", "A/Q vs. Angle (S4)", 500, id->min_aoq_plot, 3.0, 500, -25, 25);
     frs_tac_hists->Add(h2_a4_vs_AoQ);
     //hID_Z_dE2
     h2_Z_vs_dE2 = new TH2D("h2_Z_vs_dE2", "Z1 vs. dE in MUSIC2", 400, id->min_z_plot, id->max_z_plot, 250, 0., 4000.);
@@ -241,31 +241,31 @@ InitStatus FrsAnalysisSpectra::Init()
     h2_Z1_vs_T_mhtdc = new TH2D("h2_Z1_vs_T_mhtdc", "Z1 (MHTDC) vs. Time [mins]", 1240, 16600, 29000, 1500, id->min_z_plot, id->max_z_plot);
     frs_mhtdc_hists->Add(h2_Z1_vs_T_mhtdc);
     //hID_AoQ_vs_T
-    h2_AoQ_vs_T_mhtdc = new TH2D("h2_AoQ_vs_T_mhtdc", "A/Q (MHTDC) vs. Time [mins]", 1200, 17000, 29000, 1500, id->min_aoq_plot, id->max_aoq_plot);
+    h2_AoQ_vs_T_mhtdc = new TH2D("h2_AoQ_vs_T_mhtdc", "A/Q (MHTDC) vs. Time [mins]", 1200, 17000, 29000, 1500, id->min_aoq_plot, 3.0);
     frs_mhtdc_hists->Add(h2_AoQ_vs_T_mhtdc);
     //hID_Z_AoQ
-    h2_Z_vs_AoQ_mhtdc = new TH2D("h2_Z_vs_AoQ_mhtdc", "Z1 vs. A/Q (MHTDC)", 1500, id->min_aoq_plot, id->max_aoq_plot, 1000, id->min_z_plot, id->max_z_plot);
+    h2_Z_vs_AoQ_mhtdc = new TH2D("h2_Z_vs_AoQ_mhtdc", "Z1 vs. A/Q (MHTDC)", 1500, id->min_aoq_plot, 3.0, 1000, id->min_z_plot, id->max_z_plot);
     frs_mhtdc_hists->Add(h2_Z_vs_AoQ_mhtdc);
     //hID_Z_AoQ_corr
-    h2_Z_vs_AoQ_corr_mhtdc = new TH2D("h2_Z_vs_AoQ_corr_mhtdc", "Z1 vs. A/Q (corr)", 1500, id->min_aoq_plot, id->max_aoq_plot, 1000, id->min_z_plot, id->max_z_plot);
+    h2_Z_vs_AoQ_corr_mhtdc = new TH2D("h2_Z_vs_AoQ_corr_mhtdc", "Z1 vs. A/Q (corr)", 1500, id->min_aoq_plot, 3.0, 1000, id->min_z_plot, id->max_z_plot);
     frs_mhtdc_hists->Add(h2_Z_vs_AoQ_corr_mhtdc);
     //hID_Z_Z2
     h2_Z_vs_Z2_mhtdc = new TH2D("h2_Z_vs_Z2_mhtdc", "Z1 vs. Z2 (MHTDC)", 1000, id->min_z_plot, id->max_z_plot, 400, id->min_z_plot, id->max_z_plot);
     frs_mhtdc_hists->Add(h2_Z_vs_Z2_mhtdc);
     //hID_Z_AoQ_zsame
-    h2_Z_vs_AoQ_Zsame_mhtdc = new TH2D("h2_Z_vs_AoQ_Zsame_mhtdc", "Z1 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, id->min_aoq_plot, id->max_aoq_plot, 1000, id->min_z_plot, id->max_z_plot);
+    h2_Z_vs_AoQ_Zsame_mhtdc = new TH2D("h2_Z_vs_AoQ_Zsame_mhtdc", "Z1 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, id->min_aoq_plot, 3.0, 1000, id->min_z_plot, id->max_z_plot);
     frs_mhtdc_hists->Add(h2_Z_vs_AoQ_Zsame_mhtdc);
     //hID_x4AoQ_zsame
-    h2_x4_vs_AoQ_Zsame_mhtdc = new TH2D("h2_x4_vs_AoQ_Zsame_mhtdc", "x4 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, id->min_aoq_plot, id->max_aoq_plot, 300, -150., 100.); // CEJ: should these lims not be defined somewhere..
+    h2_x4_vs_AoQ_Zsame_mhtdc = new TH2D("h2_x4_vs_AoQ_Zsame_mhtdc", "x4 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, id->min_aoq_plot, 3.0, 300, -150., 100.); // CEJ: should these lims not be defined somewhere..
     frs_mhtdc_hists->Add(h2_x4_vs_AoQ_Zsame_mhtdc);
     //hID_x2AoQ_zsame
-    h2_x2_vs_AoQ_Zsame_mhtdc = new TH2D("h2_x2_vs_AoQ_Zsame_mhtdc", "x4 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, id->min_aoq_plot, id->max_aoq_plot, 300, -150., 100.);
+    h2_x2_vs_AoQ_Zsame_mhtdc = new TH2D("h2_x2_vs_AoQ_Zsame_mhtdc", "x4 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, id->min_aoq_plot, 3.0, 300, -150., 100.);
     frs_mhtdc_hists->Add(h2_x2_vs_AoQ_Zsame_mhtdc);
     //hID_x2AoQ
-    h2_x2_vs_AoQ_mhtdc = new TH2D("h2_x2_vs_AoQ_mhtdc", "x2 vs. A/Q", 1500, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.);
+    h2_x2_vs_AoQ_mhtdc = new TH2D("h2_x2_vs_AoQ_mhtdc", "x2 vs. A/Q", 1500, id->min_aoq_plot, 3.0, 200, -100., 100.);
     frs_mhtdc_hists->Add(h2_x2_vs_AoQ_mhtdc);
     //hID_x4AoQ
-    h2_x4_vs_AoQ_mhtdc = new TH2D("h2_x4_vs_AoQ_mhtdc", "x4 vs. A/Q", 1500, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.);
+    h2_x4_vs_AoQ_mhtdc = new TH2D("h2_x4_vs_AoQ_mhtdc", "x4 vs. A/Q", 1500, id->min_aoq_plot, 3.0, 200, -100., 100.);
     frs_mhtdc_hists->Add(h2_x4_vs_AoQ_mhtdc);
     //hdEdegoQ_Z
     h2_dEdegoQ_vs_Z_mhtdc = new TH2D("h2_dEdegoQ_vs_Z_mhtdc", "dE in S2 degrader / Q vs. Z1", 1000, id->min_z_plot, id->max_z_plot, 1000, 0.1, 0.8);
@@ -274,10 +274,10 @@ InitStatus FrsAnalysisSpectra::Init()
     h2_dEdeg_vs_Z_mhtdc = new TH2D("h2_dEdeg_vs_Z_mhtdc", "dE in S2 degrader vs. Z1", 1000, id->min_z_plot, id->max_z_plot, 1000, 10, 100);
     frs_mhtdc_hists->Add(h2_dEdeg_vs_Z_mhtdc);
     //hID_a2AoQ
-    h2_a2_vs_AoQ_mhtdc = new TH2D("h2_a2_vs_AoQ_mhtdc", "A/Q vs. Angle (S2)", 500, id->min_aoq_plot, id->max_aoq_plot, 500, -25, 25);
+    h2_a2_vs_AoQ_mhtdc = new TH2D("h2_a2_vs_AoQ_mhtdc", "A/Q vs. Angle (S2)", 500, id->min_aoq_plot, 3.0, 500, -25, 25);
     frs_mhtdc_hists->Add(h2_a2_vs_AoQ_mhtdc);
     //hID_a4AoQ
-    h2_a4_vs_AoQ_mhtdc = new TH2D("h2_a4_vs_AoQ_mhtdc", "A/Q vs. Angle (S4)", 500, id->min_aoq_plot, id->max_aoq_plot, 500, -25, 25);
+    h2_a4_vs_AoQ_mhtdc = new TH2D("h2_a4_vs_AoQ_mhtdc", "A/Q vs. Angle (S4)", 500, id->min_aoq_plot, 3.0, 500, -25, 25);
     frs_mhtdc_hists->Add(h2_a4_vs_AoQ_mhtdc);
     //hID_Z_dE2
     h2_Z_vs_dE2_mhtdc = new TH2D("h2_Z_vs_dE2_mhtdc", "Z1 vs. dE in MUSIC2", 400, id->min_z_plot, id->max_z_plot, 250, 0., 4000.);
@@ -314,16 +314,16 @@ InitStatus FrsAnalysisSpectra::Init()
         for (int gate = 0; gate < cutID_Z_AoQ.size(); gate++)
         {
             //hID_ZAoQ_ZAoQgate
-            h2_Z_vs_AoQ_ZAoQgate.emplace_back(new TH2I(Form("h2_Z_vs_AoQ_ZAoQgate%d",gate), Form("Z vs. A/Q - ZAoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot)); // CEJ: why are we using FRS_HISTO_BIN like this here?
+            h2_Z_vs_AoQ_ZAoQgate.emplace_back(new TH2I(Form("h2_Z_vs_AoQ_ZAoQgate%d",gate), Form("Z vs. A/Q - ZAoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot)); // CEJ: why are we using FRS_HISTO_BIN like this here?
             frs_ZvsAoQ_hists->Add(h2_Z_vs_AoQ_ZAoQgate[gate]);
             //hID_Z1Z2_ZAoQgate
             h2_Z1_vs_Z2_ZAoQgate.emplace_back(new TH2I(Form("h2_Z1_vs_Z2_ZAoQgate%d", gate), Form("Z1 vs. Z2 - ZAoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
             frs_ZvsAoQ_hists->Add(h2_Z1_vs_Z2_ZAoQgate[gate]);
             //hID_x2AoQ_Z1AoQgate
-            h2_x2_vs_AoQ_ZAoQgate.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_ZAoQgate%d", gate), Form("x2 vs. A/Q - ZAoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+            h2_x2_vs_AoQ_ZAoQgate.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_ZAoQgate%d", gate), Form("x2 vs. A/Q - ZAoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
             frs_ZvsAoQ_hists->Add(h2_x2_vs_AoQ_ZAoQgate[gate]);
             //hID_x4AoQ_Z1AoQgate
-            h2_x4_vs_AoQ_ZAoQgate.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_ZAoQgate%d", gate), Form("x4 vs. A/Q - ZAoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+            h2_x4_vs_AoQ_ZAoQgate.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_ZAoQgate%d", gate), Form("x4 vs. A/Q - ZAoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
             frs_ZvsAoQ_hists->Add(h2_x4_vs_AoQ_ZAoQgate[gate]);
             //hID_dEdegZ1_Z1AoQgate
             h2_dEdeg_vs_Z_ZAoQgate.emplace_back(new TH2I(Form("h2_dEdeg_vs_Z_ZAoQgate%d", gate), Form("Z1 vs. dE in S2 degrader - ZAoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot, FRS_HISTO_BIN, 10., 50.));
@@ -340,13 +340,13 @@ InitStatus FrsAnalysisSpectra::Init()
 
             // ----- MHTDC --------
             //hID_x2AoQ_Z1AoQgate
-            h2_x2_vs_AoQ_ZAoQgate_mhtdc.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_ZAoQgate%d_mhtdc", gate), Form("x2 vs. A/Q - ZAoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+            h2_x2_vs_AoQ_ZAoQgate_mhtdc.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_ZAoQgate%d_mhtdc", gate), Form("x2 vs. A/Q - ZAoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
             frs_ZvsAoQ_hists_mhtdc->Add(h2_x2_vs_AoQ_ZAoQgate_mhtdc[gate]);
             //hID_x4AoQ_Z1AoQgate
-            h2_x4_vs_AoQ_ZAoQgate_mhtdc.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_ZAoQgate%d_mhtdc", gate), Form("x4 vs. A/Q - ZAoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+            h2_x4_vs_AoQ_ZAoQgate_mhtdc.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_ZAoQgate%d_mhtdc", gate), Form("x4 vs. A/Q - ZAoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
             frs_ZvsAoQ_hists_mhtdc->Add(h2_x4_vs_AoQ_ZAoQgate_mhtdc[gate]);
             //hID_ZAoQ_ZAoQgate
-            h2_Z_vs_AoQ_ZAoQgate_mhtdc.emplace_back(new TH2I(Form("h2_Z_vs_AoQ_ZAoQgate%d_mhtdc",gate), Form("Z vs. A/Q - ZAoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot)); // CEJ: why are we using FRS_HISTO_BIN like this here?
+            h2_Z_vs_AoQ_ZAoQgate_mhtdc.emplace_back(new TH2I(Form("h2_Z_vs_AoQ_ZAoQgate%d_mhtdc",gate), Form("Z vs. A/Q - ZAoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot)); // CEJ: why are we using FRS_HISTO_BIN like this here?
             frs_ZvsAoQ_hists_mhtdc->Add(h2_Z_vs_AoQ_ZAoQgate_mhtdc[gate]);
             //hID_Z1Z2_ZAoQgate
             h2_Z1_vs_Z2_ZAoQgate_mhtdc.emplace_back(new TH2I(Form("h2_Z1_vs_Z2_ZAoQgate%d_mhtdc", gate), Form("Z1 vs. Z2 - ZAoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
@@ -389,13 +389,13 @@ InitStatus FrsAnalysisSpectra::Init()
             h1_a4_Z1Z2gate.emplace_back(new TH1I(Form("h1_a4_Z1Z2gate%d", gate), Form("Angle S4 [mrad] - Z1Z2 Gate: %d", gate), 100, -1000, 1000));
             frs_Z1vsZ2_hists->Add(h1_a4_Z1Z2gate[gate]);
             //hID_x2AoQ_Z1Z2gate
-            h2_x2_vs_AoQ_Z1Z2gate.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_Z1Z2gate%d", gate), Form("x2 vs. A/Q - Z1Z2 Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+            h2_x2_vs_AoQ_Z1Z2gate.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_Z1Z2gate%d", gate), Form("x2 vs. A/Q - Z1Z2 Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
             frs_Z1vsZ2_hists->Add(h2_x2_vs_AoQ_Z1Z2gate[gate]);
             //hID_x4AoQ_Z1Z2gate
-            h2_x4_vs_AoQ_Z1Z2gate.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_Z1Z2gate%d", gate), Form("x4 vs. A/Q - Z1Z2 Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+            h2_x4_vs_AoQ_Z1Z2gate.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_Z1Z2gate%d", gate), Form("x4 vs. A/Q - Z1Z2 Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
             frs_Z1vsZ2_hists->Add(h2_x4_vs_AoQ_Z1Z2gate[gate]);
             //hID_ZAoQ_Z1Z2gate
-            h2_Z_vs_AoQ_Z1Z2gate.emplace_back(new TH2I(Form("h2_Z_vs_AoQ_Z1Z2gate%d", gate), Form("Z1 vs. A/Q - Z1Z2 Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
+            h2_Z_vs_AoQ_Z1Z2gate.emplace_back(new TH2I(Form("h2_Z_vs_AoQ_Z1Z2gate%d", gate), Form("Z1 vs. A/Q - Z1Z2 Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
             frs_Z1vsZ2_hists->Add(h2_Z_vs_AoQ_Z1Z2gate[gate]);
 
             // ------- MHTDC ----------
@@ -415,13 +415,13 @@ InitStatus FrsAnalysisSpectra::Init()
             h1_a4_Z1Z2gate_mhtdc.emplace_back(new TH1I(Form("h1_a4_Z1Z2gate%d_mhtdc", gate), Form("Angle S4 [mrad] - Z1Z2 Gate: %d", gate), 100, -1000, 1000));
             frs_Z1vsZ2_hists_mhtdc->Add(h1_a4_Z1Z2gate_mhtdc[gate]);
             //hID_x2AoQ_Z1Z2gate
-            h2_x2_vs_AoQ_Z1Z2gate_mhtdc.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_Z1Z2gate%d_mhtdc", gate), Form("x2 vs. A/Q - Z1Z2 Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+            h2_x2_vs_AoQ_Z1Z2gate_mhtdc.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_Z1Z2gate%d_mhtdc", gate), Form("x2 vs. A/Q - Z1Z2 Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
             frs_Z1vsZ2_hists_mhtdc->Add(h2_x2_vs_AoQ_Z1Z2gate_mhtdc[gate]);
             //hID_x4AoQ_Z1Z2gate
-            h2_x4_vs_AoQ_Z1Z2gate_mhtdc.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_Z1Z2gate%d_mhtdc", gate), Form("x4 vs. A/Q - Z1Z2 Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+            h2_x4_vs_AoQ_Z1Z2gate_mhtdc.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_Z1Z2gate%d_mhtdc", gate), Form("x4 vs. A/Q - Z1Z2 Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
             frs_Z1vsZ2_hists_mhtdc->Add(h2_x4_vs_AoQ_Z1Z2gate_mhtdc[gate]);
             //hID_ZAoQ_Z1Z2gate
-            h2_Z_vs_AoQ_Z1Z2gate_mhtdc.emplace_back(new TH2I(Form("h2_Z_vs_AoQ_Z1Z2gate%d_mhtdc", gate), Form("Z1 vs. A/Q - Z1Z2 Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
+            h2_Z_vs_AoQ_Z1Z2gate_mhtdc.emplace_back(new TH2I(Form("h2_Z_vs_AoQ_Z1Z2gate%d_mhtdc", gate), Form("Z1 vs. A/Q - Z1Z2 Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
             frs_Z1vsZ2_hists_mhtdc->Add(h2_Z_vs_AoQ_Z1Z2gate_mhtdc[gate]);
         }
     }
@@ -432,7 +432,7 @@ InitStatus FrsAnalysisSpectra::Init()
         for (int gate = 0; gate < cutID_x2AoQ.size(); gate++)
         {
             //hID_x2AoQ_x2AoQgate
-            h2_x2_vs_AoQ_x2AoQgate.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_x2AoQgate%d", gate), Form("x2 vs. A/Q - x2AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+            h2_x2_vs_AoQ_x2AoQgate.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_x2AoQgate%d", gate), Form("x2 vs. A/Q - x2AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
             frs_x2vsAoQ_hists->Add(h2_x2_vs_AoQ_x2AoQgate[gate]);
             //hID_Z1Z2_x2AoQgate
             h2_Z1_vs_Z2_x2AoQgate.emplace_back(new TH2I(Form("h2_Z1_vs_Z2_x2AoQgate%d", gate), Form("Z1 vs. Z2 - x2AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
@@ -440,7 +440,7 @@ InitStatus FrsAnalysisSpectra::Init()
 
             // ------ MHTDC --------
             //hID_x2AoQ_x2AoQgate
-            h2_x2_vs_AoQ_x2AoQgate_mhtdc.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_x2AoQgate%d_mhtdc", gate), Form("x2 vs. A/Q - x2AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+            h2_x2_vs_AoQ_x2AoQgate_mhtdc.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_x2AoQgate%d_mhtdc", gate), Form("x2 vs. A/Q - x2AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
             frs_x2vsAoQ_hists_mhtdc->Add(h2_x2_vs_AoQ_x2AoQgate_mhtdc[gate]);
             //hID_Z1Z2_x2AoQgate
             h2_Z1_vs_Z2_x2AoQgate_mhtdc.emplace_back(new TH2I(Form("h2_Z1_vs_Z2_x2AoQgate%d_mhtdc", gate), Form("Z1 vs. Z2 - x2AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
@@ -449,13 +449,13 @@ InitStatus FrsAnalysisSpectra::Init()
             if (cutID_Z_Z2[0] != nullptr)
             {
                 //hID_x2AoQ_Z1Z2x2AoQgate
-                h2_x2_vs_AoQ_Z1Z2x2AoQgate.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_Z1Z2x2AoQgate%d", gate), Form("x2 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+                h2_x2_vs_AoQ_Z1Z2x2AoQgate.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_Z1Z2x2AoQgate%d", gate), Form("x2 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
                 frs_x2vsAoQ_Z1vsZ2_hists->Add(h2_x2_vs_AoQ_Z1Z2x2AoQgate[gate]);
                 //hID_x4AoQ_Z1Z2x2AoQgate
-                h2_x4_vs_AoQ_Z1Z2x2AoQgate.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_Z1Z2x2AoQgate%d", gate), Form("x4 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+                h2_x4_vs_AoQ_Z1Z2x2AoQgate.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_Z1Z2x2AoQgate%d", gate), Form("x4 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
                 frs_x2vsAoQ_Z1vsZ2_hists->Add(h2_x4_vs_AoQ_Z1Z2x2AoQgate[gate]);
                 //hID_ZAoQ_Z1Z2x2AoQgate
-                h2_Z_vs_AoQ_Z1Z2x2AoQgate.emplace_back(new TH2I(Form("h2_Z_vs_AoQ_Z1Z2x2AoQgate%d", gate), Form("Z1 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
+                h2_Z_vs_AoQ_Z1Z2x2AoQgate.emplace_back(new TH2I(Form("h2_Z_vs_AoQ_Z1Z2x2AoQgate%d", gate), Form("Z1 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
                 frs_x2vsAoQ_Z1vsZ2_hists->Add(h2_Z_vs_AoQ_Z1Z2x2AoQgate[gate]);
                 //hID_dEdegZ1_Z1Z2x2AoQgate
                 h2_dEdeg_vs_Z_Z1Z2x2AoQgate.emplace_back(new TH2I(Form("h2_dEdeg_vs_Z_Z1Z2x2AoQgate%d", gate), Form("dE in S2 degrader vs. Z1 - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot, FRS_HISTO_BIN, 10., 100.));
@@ -472,13 +472,13 @@ InitStatus FrsAnalysisSpectra::Init()
 
                 // ----- MHTDC ---------
                 //hID_x2AoQ_Z1Z2x2AoQgate
-                h2_x2_vs_AoQ_Z1Z2x2AoQgate_mhtdc.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_Z1Z2x2AoQgate%d_mhtdc", gate), Form("x2 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+                h2_x2_vs_AoQ_Z1Z2x2AoQgate_mhtdc.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_Z1Z2x2AoQgate%d_mhtdc", gate), Form("x2 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
                 frs_x2vsAoQ_Z1vsZ2_hists_mhtdc->Add(h2_x2_vs_AoQ_Z1Z2x2AoQgate_mhtdc[gate]);
                 //hID_x4AoQ_Z1Z2x2AoQgate
-                h2_x4_vs_AoQ_Z1Z2x2AoQgate_mhtdc.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_Z1Z2x2AoQgate%d_mhtdc", gate), Form("x4 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+                h2_x4_vs_AoQ_Z1Z2x2AoQgate_mhtdc.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_Z1Z2x2AoQgate%d_mhtdc", gate), Form("x4 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
                 frs_x2vsAoQ_Z1vsZ2_hists_mhtdc->Add(h2_x4_vs_AoQ_Z1Z2x2AoQgate_mhtdc[gate]);
                 //hID_ZAoQ_Z1Z2x2AoQgate
-                h2_Z_vs_AoQ_Z1Z2x2AoQgate_mhtdc.emplace_back(new TH2I(Form("h2_Z_vs_AoQ_Z1Z2x2AoQgate%d_mhtdc", gate), Form("Z1 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
+                h2_Z_vs_AoQ_Z1Z2x2AoQgate_mhtdc.emplace_back(new TH2I(Form("h2_Z_vs_AoQ_Z1Z2x2AoQgate%d_mhtdc", gate), Form("Z1 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
                 frs_x2vsAoQ_Z1vsZ2_hists_mhtdc->Add(h2_Z_vs_AoQ_Z1Z2x2AoQgate_mhtdc[gate]);
                 //hID_Z1Z2_Z1Z2x2AoQgate_mhtdc
                 h2_Z1_vs_Z2_Z1Z2x2AoQgate_mhtdc.emplace_back(new TH2I(Form("h2_Z1_vs_Z2_Z1Z2x2AoQgate%d_mhtdc", gate), Form("Z1 vs. Z2 - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
@@ -505,7 +505,7 @@ InitStatus FrsAnalysisSpectra::Init()
         for (int gate = 0; gate < cutID_x4AoQ.size(); gate++)
         {
             //hID_x4AoQ_x4AoQgate
-            h2_x4_vs_AoQ_x4AoQgate.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_x4AoQgate%d", gate), Form("x4 vs. A/Q - x4AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+            h2_x4_vs_AoQ_x4AoQgate.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_x4AoQgate%d", gate), Form("x4 vs. A/Q - x4AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
             frs_x4vsAoQ_hists->Add(h2_x4_vs_AoQ_x4AoQgate[gate]);
             //hID_Z1Z2_x4AoQgate
             h2_Z1_vs_Z2_x4AoQgate.emplace_back(new TH2I(Form("h2_Z1_vs_Z2_x4AoQgate%d", gate), Form("Z1 vs. Z2 - x4AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
@@ -513,7 +513,7 @@ InitStatus FrsAnalysisSpectra::Init()
 
             // ------ MHTDC --------
             //hID_x4AoQ_x4AoQgate
-            h2_x4_vs_AoQ_x4AoQgate_mhtdc.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_x4AoQgate%d_mhtdc", gate), Form("x4 vs. A/Q - x4AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+            h2_x4_vs_AoQ_x4AoQgate_mhtdc.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_x4AoQgate%d_mhtdc", gate), Form("x4 vs. A/Q - x4AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
             frs_x4vsAoQ_hists_mhtdc->Add(h2_x4_vs_AoQ_x4AoQgate_mhtdc[gate]);
             //hID_Z1Z2_x4AoQgate
             h2_Z1_vs_Z2_x4AoQgate_mhtdc.emplace_back(new TH2I(Form("h2_Z1_vs_Z2_x4AoQgate%d_mhtdc", gate), Form("Z1 vs. Z2 - x4AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
@@ -522,13 +522,13 @@ InitStatus FrsAnalysisSpectra::Init()
             if (cutID_Z_Z2[0] != nullptr)
             {
                 //hID_x2AoQ_Z1Z2x4AoQgate
-                h2_x2_vs_AoQ_Z1Z2x4AoQgate.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_Z1Z2x4AoQgate%d", gate), Form("x2 vs. A/Q - Z1Z2 Gate 0, x4AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+                h2_x2_vs_AoQ_Z1Z2x4AoQgate.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_Z1Z2x4AoQgate%d", gate), Form("x2 vs. A/Q - Z1Z2 Gate 0, x4AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
                 frs_x4vsAoQ_Z1vsZ2_hists->Add(h2_x2_vs_AoQ_Z1Z2x4AoQgate[gate]);
                 //hID_x4AoQ_Z1Z2x4AoQgate
-                h2_x4_vs_AoQ_Z1Z2x4AoQgate.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_Z1Z2x4AoQgate%d", gate), Form("x4 vs. A/Q - Z1Z2 Gate 0, x4AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+                h2_x4_vs_AoQ_Z1Z2x4AoQgate.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_Z1Z2x4AoQgate%d", gate), Form("x4 vs. A/Q - Z1Z2 Gate 0, x4AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
                 frs_x4vsAoQ_Z1vsZ2_hists->Add(h2_x4_vs_AoQ_Z1Z2x4AoQgate[gate]);
                 //hID_ZAoQ_Z1Z2x4AoQgate
-                h2_Z_vs_AoQ_Z1Z2x4AoQgate.emplace_back(new TH2I(Form("h2_Z_vs_AoQ_Z1Z2x4AoQgate%d", gate), Form("Z1 vs. A/Q - Z1Z2 Gate 0, x4AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
+                h2_Z_vs_AoQ_Z1Z2x4AoQgate.emplace_back(new TH2I(Form("h2_Z_vs_AoQ_Z1Z2x4AoQgate%d", gate), Form("Z1 vs. A/Q - Z1Z2 Gate 0, x4AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
                 frs_x4vsAoQ_Z1vsZ2_hists->Add(h2_Z_vs_AoQ_Z1Z2x4AoQgate[gate]);
                 //hID_dEdegZ1_Z1Z2x4AoQgate -- CEJ: limits for sure defined incorrectly in Go4
                 h2_dEdeg_vs_Z_Z1Z2x4AoQgate.emplace_back(new TH2I(Form("h2_dEdeg_vs_Z_Z1Z2x4AoQgate%d", gate), Form("dE in S2 degrader vs. Z1 - Z1Z2 Gate 0, x4AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot, FRS_HISTO_BIN, 10., 100.));
@@ -545,10 +545,10 @@ InitStatus FrsAnalysisSpectra::Init()
 
                 // -------- MHTDC -----------
                 //hID_x2AoQ_Z1Z2x4AoQgate
-                h2_x2_vs_AoQ_Z1Z2x4AoQgate_mhtdc.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_Z1Z2x4AoQgate%d_mhtdc", gate), Form("x2 vs. A/Q - Z1Z2 Gate 0, x4AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+                h2_x2_vs_AoQ_Z1Z2x4AoQgate_mhtdc.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_Z1Z2x4AoQgate%d_mhtdc", gate), Form("x2 vs. A/Q - Z1Z2 Gate 0, x4AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
                 frs_x4vsAoQ_Z1vsZ2_hists_mhtdc->Add(h2_x2_vs_AoQ_Z1Z2x4AoQgate_mhtdc[gate]);
                 //hID_x4AoQ_Z1Z2x4AoQgate
-                h2_x4_vs_AoQ_Z1Z2x4AoQgate_mhtdc.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_Z1Z2x4AoQgate%d_mhtdc", gate), Form("x4 vs. A/Q - Z1Z2 Gate 0, x4AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+                h2_x4_vs_AoQ_Z1Z2x4AoQgate_mhtdc.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_Z1Z2x4AoQgate%d_mhtdc", gate), Form("x4 vs. A/Q - Z1Z2 Gate 0, x4AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
                 frs_x4vsAoQ_Z1vsZ2_hists_mhtdc->Add(h2_x4_vs_AoQ_Z1Z2x4AoQgate_mhtdc[gate]);
                 //hID_Z1Z2_Z1Z2x4AoQgate
                 h2_Z1_vs_Z2_Z1Z2x4AoQgate_mhtdc.emplace_back(new TH2I(Form("h2_Z1_vs_Z2_Z1Z2x4AoQgate%d_mhtdc", gate), Form("Z1 vs. Z2 - Z1Z2 Gate 0, x4AoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
@@ -576,16 +576,16 @@ InitStatus FrsAnalysisSpectra::Init()
         for (int gate = 0; gate < cutID_dEdegZ.size(); gate++) 
         {
             //hID_Z1AoQ_dEdegZgate
-            h2_Z_vs_AoQ_dEdegZgate.emplace_back(new TH2I(Form("h2_Z_vs_AoQ_dEdegZgate%d", gate), Form("Z1 vs. A/Q - dEdegZ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
+            h2_Z_vs_AoQ_dEdegZgate.emplace_back(new TH2I(Form("h2_Z_vs_AoQ_dEdegZgate%d", gate), Form("Z1 vs. A/Q - dEdegZ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
             frs_dEdegvsZ_hists->Add(h2_Z_vs_AoQ_dEdegZgate[gate]);
             //hID_Z1Z2_dEdegZgate
             h2_Z1_vs_Z2_dEdegZgate.emplace_back(new TH2I(Form("h2_Z1_vs_Z2_dEdegZgate%d", gate), Form("Z1 vs. Z2 - dEdegZ Gate: %d", gate), FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
             frs_dEdegvsZ_hists->Add(h2_Z1_vs_Z2_dEdegZgate[gate]);
             //hID_x2AoQ_dEdegZgate
-            h2_x2_vs_AoQ_dEdegZgate.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_dEdegZgate%d", gate), Form("x2 vs. A/Q - dEdegZ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+            h2_x2_vs_AoQ_dEdegZgate.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_dEdegZgate%d", gate), Form("x2 vs. A/Q - dEdegZ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
             frs_dEdegvsZ_hists->Add(h2_x2_vs_AoQ_dEdegZgate[gate]);
             //hID_x4AoQ_dEdegZgate
-            h2_x4_vs_AoQ_dEdegZgate.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_dEdegZgate%d", gate), Form("x4 vs. A/Q - dEdegZ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+            h2_x4_vs_AoQ_dEdegZgate.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_dEdegZgate%d", gate), Form("x4 vs. A/Q - dEdegZ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
             frs_dEdegvsZ_hists->Add(h2_x4_vs_AoQ_dEdegZgate[gate]);
             //hID_a2_dEdegZgate
             h1_a2_dEdegZgate.emplace_back(new TH1I(Form("h1_a2_dEdegZgate%d", gate), Form("Angle S2 [mrad] - dEdegZ Gate: %d", gate), 100, -1000, 1000));
@@ -594,7 +594,7 @@ InitStatus FrsAnalysisSpectra::Init()
             h1_a4_dEdegZgate.emplace_back(new TH1I(Form("h1_a4_dEdegZgate%d", gate), Form("Angle S4 [mrad] - dEdegZ Gate: %d", gate), 100, -1000, 1000));
             frs_dEdegvsZ_hists->Add(h1_a4_dEdegZgate[gate]);
             //hID_Z1AoQ_zsame_dEdegZgate
-            h2_Z_vs_AoQ_Zsame_dEdegZgate.emplace_back(new TH2I(Form("h2_Z_vs_AoQ_Zsame_dEdegZgate%d", gate), Form("Z vs. A/Q [ABS(Z1 - Z2) < 0.4] - dEdegZ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
+            h2_Z_vs_AoQ_Zsame_dEdegZgate.emplace_back(new TH2I(Form("h2_Z_vs_AoQ_Zsame_dEdegZgate%d", gate), Form("Z vs. A/Q [ABS(Z1 - Z2) < 0.4] - dEdegZ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
             frs_dEdegvsZ_hists->Add(h2_Z_vs_AoQ_Zsame_dEdegZgate[gate]);
 
             // ------- MHTDC -----------------
@@ -602,16 +602,16 @@ InitStatus FrsAnalysisSpectra::Init()
             h2_Z_vs_dEdeg_dEdegZgate_mhtdc.emplace_back(new TH2I(Form("h2_Z_vs_dEdeg_dEdegZgate%d_mhtdc", gate), Form("Z1 vs. dE in S2 degrader - dEdegZ Gate: %d", gate), FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot, FRS_HISTO_BIN, 10., 100.));
             frs_dEdegvsZ_hists_mhtdc->Add(h2_Z_vs_dEdeg_dEdegZgate_mhtdc[gate]);
             //hID_Z1AoQ_dEdegZgate
-            h2_Z_vs_AoQ_dEdegZgate_mhtdc.emplace_back(new TH2I(Form("h2_Z_vs_AoQ_dEdegZgate%d_mhtdc", gate), Form("Z1 vs. A/Q - dEdegZ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
+            h2_Z_vs_AoQ_dEdegZgate_mhtdc.emplace_back(new TH2I(Form("h2_Z_vs_AoQ_dEdegZgate%d_mhtdc", gate), Form("Z1 vs. A/Q - dEdegZ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
             frs_dEdegvsZ_hists_mhtdc->Add(h2_Z_vs_AoQ_dEdegZgate_mhtdc[gate]);
             //hID_Z1Z2_dEdegZgate
             h2_Z1_vs_Z2_dEdegZgate_mhtdc.emplace_back(new TH2I(Form("h2_Z1_vs_Z2_dEdegZgate%d_mhtdc", gate), Form("Z1 vs. Z2 - dEdegZ Gate: %d", gate), FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
             frs_dEdegvsZ_hists_mhtdc->Add(h2_Z1_vs_Z2_dEdegZgate_mhtdc[gate]);
             //hID_x2AoQ_dEdegZgate
-            h2_x2_vs_AoQ_dEdegZgate_mhtdc.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_dEdegZgate%d_mhtdc", gate), Form("x2 vs. A/Q - dEdegZ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+            h2_x2_vs_AoQ_dEdegZgate_mhtdc.emplace_back(new TH2I(Form("h2_x2_vs_AoQ_dEdegZgate%d_mhtdc", gate), Form("x2 vs. A/Q - dEdegZ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
             frs_dEdegvsZ_hists_mhtdc->Add(h2_x2_vs_AoQ_dEdegZgate_mhtdc[gate]);
             //hID_x4AoQ_dEdegZgate
-            h2_x4_vs_AoQ_dEdegZgate_mhtdc.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_dEdegZgate%d_mhtdc", gate), Form("x4 vs. A/Q - dEdegZ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, 200, -100., 100.));
+            h2_x4_vs_AoQ_dEdegZgate_mhtdc.emplace_back(new TH2I(Form("h2_x4_vs_AoQ_dEdegZgate%d_mhtdc", gate), Form("x4 vs. A/Q - dEdegZ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, 200, -100., 100.));
             frs_dEdegvsZ_hists_mhtdc->Add(h2_x4_vs_AoQ_dEdegZgate_mhtdc[gate]);
             //hID_a2_dEdegZgate
             h1_a2_dEdegZgate_mhtdc.emplace_back(new TH1I(Form("h1_a2_dEdegZgate%d_mhtdc", gate), Form("Angle S2 [mrad] - dEdegZ Gate: %d", gate), 100, -1000, 1000));
@@ -620,7 +620,7 @@ InitStatus FrsAnalysisSpectra::Init()
             h1_a4_dEdegZgate_mhtdc.emplace_back(new TH1I(Form("h1_a4_dEdegZgate%d_mhtdc", gate), Form("Angle S4 [mrad] - dEdegZ Gate: %d", gate), 100, -1000, 1000));
             frs_dEdegvsZ_hists_mhtdc->Add(h1_a4_dEdegZgate_mhtdc[gate]);
             //hID_Z1AoQ_zsame_dEdegZgate
-            h2_Z_vs_AoQ_Zsame_dEdegZgate_mhtdc.emplace_back(new TH2I(Form("h2_Z_vs_AoQ_Zsame_dEdegZgate%d_mhtdc", gate), Form("Z vs. A/Q [ABS(Z1 - Z2) < 0.4] - dEdegZ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, id->max_aoq_plot, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
+            h2_Z_vs_AoQ_Zsame_dEdegZgate_mhtdc.emplace_back(new TH2I(Form("h2_Z_vs_AoQ_Zsame_dEdegZgate%d_mhtdc", gate), Form("Z vs. A/Q [ABS(Z1 - Z2) < 0.4] - dEdegZ Gate: %d", gate), FRS_HISTO_BIN, id->min_aoq_plot, 3.0, FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot));
             frs_dEdegvsZ_hists_mhtdc->Add(h2_Z_vs_AoQ_Zsame_dEdegZgate_mhtdc[gate]);
         }
     }
@@ -744,7 +744,6 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
             // x2 vs AoQ
             if (cutID_x2AoQ[0] != nullptr)
             {   
-                std::cout << "are we here?" << std::endl;
                 for (int gate = 0; gate < cutID_x2AoQ.size(); gate++)
                 {
                     if(cutID_x2AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2()))
@@ -755,10 +754,8 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
                         
                         // Z1 Z2 + x2AoQ
                         // The selected Z1 Z2 gate for this part can be found in the Correlations_config.dat file 
-                        std::cout << "OUT" << std::endl;
                         if (cutID_Z_Z2[0] != nullptr)
                         {   
-                            std::cout << "IN" << std::endl;
                             if(cutID_Z_Z2[gate]->IsInside(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2()))
                             {
 
@@ -778,7 +775,6 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
             // x4 vs AoQ
             if (cutID_x4AoQ[0] != nullptr)
             {   
-                std::cout << "how about here? x4" << std::endl;
                 for (int gate = 0; gate < cutID_x4AoQ.size(); gate++)
                 {
                     if(cutID_x4AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4()))
@@ -809,7 +805,6 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
             // GATE: Energy loss S2 vs Z (Charge states)
             if (cutID_dEdegZ[0] != nullptr)
             {   
-                std::cout << "and here? dEZ" << std::endl;
                 for (int gate = 0; gate < cutID_dEdegZ.size(); gate++)
                 {
                     if(cutID_dEdegZ[gate]->IsInside(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdeg()))
@@ -827,17 +822,14 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
                 }
             }
 
-            return; // test, MHTDC is the problem but only problem?
+            //return; // test, MHTDC is the problem but only problem?
             /* ----- MHTDC Histograms and PID Gates -------------------------------------------- */
             for (int i = 0; i < MAX_MHTDC_MULT; i++)
             {   
-                std::cout << "we make it here the first time" << std::endl;
                 // Z1 vs Time
                 if (FrsHit->Get_ID_z_mhtdc(i) > 0 && FRS_time_mins > 0) h2_Z1_vs_T_mhtdc->Fill(FRS_time_mins, FrsHit->Get_ID_z_mhtdc(i));
-                std::cout << "but not here" << std::endl;
                 // AoQ vs Time
                 if (FrsHit->Get_ID_AoQ_mhtdc(i) > 0 && FRS_time_mins > 0) h2_AoQ_vs_T_mhtdc->Fill(FRS_time_mins, FrsHit->Get_ID_AoQ_mhtdc(i));
-
                 // AoQ vs Z
                 if(FrsHit->Get_ID_AoQ_mhtdc(i) > 0 && FrsHit->Get_ID_z_mhtdc(i) > 0) h2_Z_vs_AoQ_mhtdc->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_z_mhtdc(i));
                 if(FrsHit->Get_ID_AoQ_corr_mhtdc(i) > 0 && FrsHit->Get_ID_z_mhtdc(i) > 0) h2_Z_vs_AoQ_corr_mhtdc->Fill(FrsHit->Get_ID_AoQ_corr_mhtdc(i), FrsHit->Get_ID_z_mhtdc(i));
@@ -870,6 +862,7 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
                 
                 if(FrsHit->Get_ID_z_mhtdc(i) != 0 && FrsHit->Get_sci_l(0) != 0 && FrsHit->Get_sci_r(0) != 0) h2_Z_vs_Sc21E_mhtdc->Fill(FrsHit->Get_ID_z_mhtdc(i), sqrt(FrsHit->Get_sci_l(0) * FrsHit->Get_sci_r(0)));
             
+                // if > 0 conditions necessary
                 h2_x2_vs_Z_mhtdc->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_x2());
                 
                 h2_x4_vs_Z_mhtdc->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_x4());
