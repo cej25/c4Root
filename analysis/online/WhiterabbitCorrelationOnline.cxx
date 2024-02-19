@@ -8,6 +8,7 @@
 // c4
 #include "WhiterabbitCorrelationOnline.h"
 #include "EventHeader.h"
+#include "TimeMachineData.h"
 #include "FatimaTwinpeaksCalData.h"
 #include "bPlastTwinpeaksCalData.h"
 #include "GermaniumCalData.h"
@@ -33,21 +34,27 @@ WhiterabbitCorrelationOnline::WhiterabbitCorrelationOnline(const TString& name, 
     , fHitFatimaTwinpeaks(NULL)
     , fHitbPlastTwinpeaks(NULL)
     , fHitGe(NULL)
-    , fHitAida(NULL)
     , fNEvents(0)
     , header(nullptr)
 {
 }
 
+
 WhiterabbitCorrelationOnline::~WhiterabbitCorrelationOnline()
 {
     c4LOG(info, "");
     if (fHitFatimaTwinpeaks)
+    {
         delete fHitFatimaTwinpeaks;
+    }
     if (fHitbPlastTwinpeaks)
+    {
         delete fHitbPlastTwinpeaks;
+    }
     if (fHitGe)
+    {
         delete fHitGe;
+    }
 }
 
 void WhiterabbitCorrelationOnline::SetParContainers()
@@ -56,10 +63,17 @@ void WhiterabbitCorrelationOnline::SetParContainers()
     c4LOG_IF(fatal, NULL == rtdb, "FairRuntimeDb not found.");
 }
 
+void WhiterabbitCorrelationOnline::SetDetectorSystems(std::vector<TString> detectorsystems)
+{
+    fNumDetectorSystems = detectorsystems.size();
+
+    fDetectorSystems = std::vector<TString>(0);
+
+    for (int i = 0; i < fNumDetectorSystems; i++) fDetectorSystems.push_back(detectorsystems.at(i));
+}
+
 InitStatus WhiterabbitCorrelationOnline::Init()
 {
-
-    // number of dets 
 
     c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
@@ -71,12 +85,29 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fHitFatimaTwinpeaks = (TClonesArray*)mgr->GetObject("FatimaTwinpeaksCalData");
-    c4LOG_IF(fatal, !fHitFatimaTwinpeaks, "Branch FatimaTwinpeaksCalData not found!");
-    fHitbPlastTwinpeaks = (TClonesArray*)mgr->GetObject("bPlastTwinpeaksCalData");
-    c4LOG_IF(fatal, !fHitbPlastTwinpeaks, "Branch bPlastTwinpeaksCalData not found!");
-    // fHitGe = (TClonesArray*)mgr->GetObject("GermaniumCalData");
-    // c4LOG_IF(fatal, !fHitGe, "Branch GermaniumCalData not found!");
+    for (int i = 0; i < fNumDetectorSystems; i++)
+    {
+        // check each subsystem and get the corresponding TClonesArray
+        if (fDetectorSystems.at(i) == "bPlast")
+        {
+            fHitbPlastTwinpeaks = (TClonesArray*)mgr->GetObject("bPlastTwinpeaksCalData");
+            c4LOG_IF(error, !fHitbPlastTwinpeaks, "Branch bPlastTwinpeaksCalData not found");
+        }
+        else if (fDetectorSystems.at(i) == "Fatima")
+        {
+            fHitFatimaTwinpeaks = (TClonesArray*)mgr->GetObject("FatimaTwinpeaksCalData");
+            c4LOG_IF(error, !fHitFatimaTwinpeaks, "Branch FatimaTwinpeaksCalData. not found");
+        }
+        else if (fDetectorSystems.at(i) == "Ge")
+        {
+            fHitGe = (TClonesArray*)mgr->GetObject("GermaniumCalData");
+            c4LOG_IF(error, !fHitGe, "Branch GermaniumCalData. not found");
+        }
+        else
+        {
+            c4LOG(fatal, "Unknown detector system: " << fDetectorSystems.at(i));
+        }
+    }
 
     folder_whiterabbit = new TFolder("Whiterabbit Subsystem Correlation", "Whiterabbit Subsystem Correlation");
 
@@ -162,9 +193,17 @@ void WhiterabbitCorrelationOnline::Snapshot_Histo()
 void WhiterabbitCorrelationOnline::Exec(Option_t* option)
 {   
     //JB: there is probably a better way to code this. JEL or Nic hilfe bitte!
-    Int_t nHitsFatima = fHitFatimaTwinpeaks->GetEntriesFast();
-    Int_t nHitsbPlast = fHitbPlastTwinpeaks->GetEntriesFast();
-    // Int_t nHitsGe = fHitGe->GetEntriesFast();
+
+    // loop over each detector system
+    Int_t nHitsFatima = 0;
+    Int_t nHitsbPlast = 0;
+    Int_t nHitsGe = 0;
+
+    if (fHitFatimaTwinpeaks) nHitsFatima = fHitFatimaTwinpeaks->GetEntriesFast();
+
+    if (fHitbPlastTwinpeaks) nHitsbPlast = fHitbPlastTwinpeaks->GetEntriesFast();
+
+    if (fHitGe) nHitsGe = fHitGe->GetEntriesFast();
 
     if (fHitFatimaTwinpeaks && fHitbPlastTwinpeaks)
     {
@@ -184,40 +223,42 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             }
         }
     }
-    // if (FatimaTwinpeaksCalData && GermaniumCalData)
-    // {
-    //     for (Int_t i = 0; i < nHitsFatima; i++){
-    //         FatimaTwinpeaksCalData* hitFatima = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(i);
-    //         if (hitFatima)
-    //         {
-    //             for (Int_t j = 0; j < nHitsGe; j++)
-    //             {
-    //                 GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(j);
-    //                 if (hitGe)
-    //                 {
-    //                     h1_whiterabbit_correlation_fatima_ge->Fill(hitFatima->Get_wr_t() - hitGe->Get_wr_t());
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }    
-    // if (bPlastTwinpeaksCalData && GermaniumCalData)
-    // {
-    //     for (Int_t i = 0; i < nHitsbPlast; i++){
-    //         bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(i);
-    //         if (hitbPlast)
-    //         {
-    //             for (Int_t j = 0; j < nHitsGe; j++)
-    //             {
-    //                 GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(j);
-    //                 if (hitGe)
-    //                 {
-    //                     h1_whiterabbit_correlation_bplast_ge->Fill(hitbPlast->Get_wr_t() - hitGe->Get_wr_t());
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }   
+    if (fHitFatimaTwinpeaks && fHitGe)
+    {
+        for (Int_t i = 0; i < nHitsFatima; i++)
+        {
+            FatimaTwinpeaksCalData* hitFatima = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(i);
+            if (hitFatima)
+            {
+                for (Int_t j = 0; j < nHitsGe; j++)
+                {
+                    GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(j);
+                    if (hitGe)
+                    {
+                        h1_whiterabbit_correlation_fatima_ge->Fill(hitFatima->Get_wr_t() - hitGe->Get_wr_t());
+                    }
+                }
+            }
+        }
+    }    
+    if (fHitbPlastTwinpeaks && fHitGe)
+    {
+        for (Int_t i = 0; i < nHitsbPlast; i++)
+        {
+            bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(i);
+            if (hitbPlast)
+            {
+                for (Int_t j = 0; j < nHitsGe; j++)
+                {
+                    GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(j);
+                    if (hitGe)
+                    {
+                        h1_whiterabbit_correlation_bplast_ge->Fill(hitbPlast->Get_wr_t() - hitGe->Get_wr_t());
+                    }
+                }
+            }
+        }
+    }   
     fNEvents += 1;
 }
 

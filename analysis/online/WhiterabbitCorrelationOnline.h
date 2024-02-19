@@ -5,10 +5,12 @@
 
 class TClonesArray;
 class EventHeader;
+class TimeMachineData;
 class TCanvas;
 class TH1F;
 class TH2F;
 class TFile;
+
 
 class WhiterabbitCorrelationOnline : public FairTask
 {
@@ -16,6 +18,7 @@ class WhiterabbitCorrelationOnline : public FairTask
         WhiterabbitCorrelationOnline();
         WhiterabbitCorrelationOnline(const TString& name, Int_t verbose = 1);
 
+        void SetDetectorSystems(std::vector<TString> detectorsystems);
 
         void CreateHistograms();
 
@@ -31,7 +34,6 @@ class WhiterabbitCorrelationOnline : public FairTask
 
         virtual void FinishTask();
 
-        // work in progress
         virtual void Reset_Histo();
 
         virtual void Snapshot_Histo();
@@ -43,7 +45,10 @@ class WhiterabbitCorrelationOnline : public FairTask
         TClonesArray* fHitFatimaTwinpeaks;
         TClonesArray* fHitbPlastTwinpeaks;
         TClonesArray* fHitGe;
-        TClonesArray* fHitAida;
+        TimeMachineData* fWhiterabbitHit;
+
+        std::vector<TString> fDetectorSystems;
+        int fNumDetectorSystems;
 
         // ranges
 
@@ -51,6 +56,7 @@ class WhiterabbitCorrelationOnline : public FairTask
         Int_t fNEvents;
 
         // Canvas
+        TCanvas* c_whiterabbit_correlation;
         TCanvas* c_whiterabbit_correlation_bplast_fatima;
         TCanvas* c_whiterabbit_correlation_bplast_ge;
         TCanvas* c_whiterabbit_correlation_fatima_ge;
