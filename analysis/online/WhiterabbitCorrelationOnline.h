@@ -62,9 +62,9 @@ class WhiterabbitCorrelationOnline : public FairTask
 
         
         // Histograms  
-        TH1F* h_whiterabbit_correlation_bplast_fatima;
-        TH1F* h_whiterabbit_correlation_bplast_ge;
-        TH1F* h_whiterabbit_correlation_fatima_ge;
+        TH1F* h1_whiterabbit_correlation_bplast_fatima;
+        TH1F* h1_whiterabbit_correlation_bplast_ge;
+        TH1F* h1_whiterabbit_correlation_fatima_ge;
 
 
 
