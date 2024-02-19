@@ -227,15 +227,15 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     std::string gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/Gates/";
     std::vector<TCutG*> cID_Z_AoQ, cID_Z_Z2, cID_x2AoQ, cID_x4AoQ, cID_dEdegZ;
     std::vector<TCutG*> cID_Z_AoQ_mhtdc, cID_Z_Z2_mhtdc, cID_x2AoQ_mhtdc, cID_x4AoQ_mhtdc, cID_dEdegZ_mhtdc;
-    std::vector<std::string> Z_AoQ_Gate_files = {"ZvsAoQ_default"};
+    std::vector<std::string> Z_AoQ_Gate_files = {"ZvsAoQ1"};
     ReadGates("ZvsAoQ", Z_AoQ_Gate_files, cID_Z_AoQ, gate_path);
-    std::vector<std::string> Z_Z2_Gate_files = {"ZvsZ2_default"};
+    std::vector<std::string> Z_Z2_Gate_files = {"Z1vsZ21"};
     ReadGates("Z1vsZ2", Z_Z2_Gate_files, cID_Z_Z2, gate_path);
-    std::vector<std::string> x2_AoQ_Gate_files = {"x2vsAoQ_default"};
+    std::vector<std::string> x2_AoQ_Gate_files = {"x2vsAoQ1"};
     ReadGates("x2vsAoQ", x2_AoQ_Gate_files, cID_x2AoQ, gate_path);
-    std::vector<std::string> x4_AoQ_Gate_files = {"x4vsAoQ_default"};
+    std::vector<std::string> x4_AoQ_Gate_files = {"x4vsAoQ1"};
     ReadGates("x4vsAoQ", x4_AoQ_Gate_files, cID_x4AoQ, gate_path);
-    std::vector<std::string> dEdeg_Z_Gate_files = {"dEdegvsZ_default"};
+    std::vector<std::string> dEdeg_Z_Gate_files = {"dEdegvsZ1"};
     ReadGates("dEdegvsZ", dEdeg_Z_Gate_files, cID_dEdegZ, gate_path);
 
     std::vector<std::vector<TCutG*>> FrsGates = {cID_Z_AoQ, cID_Z_Z2, cID_x2AoQ, cID_x4AoQ, cID_dEdegZ};
