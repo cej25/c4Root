@@ -42,16 +42,22 @@ class TimeMachineOnline : public FairTask
 
     
     private:
-        TClonesArray ** f_time_machines;
+        TClonesArray ** fTimeMachine;
+        TimeMachineData* fTimeMachineHit;
 
         // Number of detector systems
-        std::vector<TString> fdetector_systems;
-        int num_detector_systems;
+        std::vector<TString> fDetectorSystems;
+        int fNumDetectorSystems;
 
         EventHeader* header;
 
 
         // Canvas
+        TCanvas* c_time_undelayed;
+        TCanvas* c_time_delayed;
+        TCanvas* c_time_diff;
+        TCanvas* c_time_corrs;
+        TCanvas* c_whiterabbit_time_diff;
         TCanvas* c_time_machine_time_snapshot;
 
         // Folders and Files
@@ -65,14 +71,11 @@ class TimeMachineOnline : public FairTask
 
         TH2F * h2_time_diff_corrs[20*19];
 
-        TimeMachineData* hit;
-
+        // Initial variables
         int fNEvents = 0;
-
 
         double delayed_time = 0;
         double undelayed_time = 0;
-
 
         double diffs[20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
