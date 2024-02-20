@@ -15,6 +15,7 @@
 #include "EventHeader.h"
 #include "c4Logger.h"
 
+// ROOT
 #include "TCanvas.h"
 #include "TClonesArray.h"
 #include "TFolder.h"
@@ -295,81 +296,77 @@ void FrsDetectorsOnline::Exec(Option_t* option)
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {
             fHitFrsMainCal = (FrsMainCalData*)fFrsMainCalArray->At(ihit);
-            if (!fHitFrsMainCal)
-                continue;
+            if (!fHitFrsMainCal) continue;
                     
-        const uint32_t* sci_de = fHitFrsMainCal->Get_De_array(); // size 14
-        uint32_t sci_21l_de = sci_de[1];
-        uint32_t sci_21r_de = sci_de[2];  
-        uint32_t sci_22l_de = sci_de[13];  
-        uint32_t sci_22r_de = sci_de[6];  
-        uint32_t sci_41l_de = sci_de[0];  
-        uint32_t sci_41r_de = sci_de[11];  
-        uint32_t sci_42l_de = sci_de[3];  
-        uint32_t sci_42r_de = sci_de[4];  
-        uint32_t sci_43l_de = sci_de[9];  
-        uint32_t sci_43r_de = sci_de[10];  
-        uint32_t sci_81l_de = sci_de[5];  
-        uint32_t sci_81r_de = sci_de[12];
+            const uint32_t* sci_de = fHitFrsMainCal->Get_De_array(); // size 14
+            uint32_t sci_21l_de = sci_de[1];
+            uint32_t sci_21r_de = sci_de[2];  
+            uint32_t sci_22l_de = sci_de[13];  
+            uint32_t sci_22r_de = sci_de[6];  
+            uint32_t sci_41l_de = sci_de[0];  
+            uint32_t sci_41r_de = sci_de[11];  
+            uint32_t sci_42l_de = sci_de[3];  
+            uint32_t sci_42r_de = sci_de[4];  
+            uint32_t sci_43l_de = sci_de[9];  
+            uint32_t sci_43r_de = sci_de[10];  
+            uint32_t sci_81l_de = sci_de[5];  
+            uint32_t sci_81r_de = sci_de[12];
 
-        h_sci_21l_de->Fill(sci_21l_de);
-        h_sci_21r_de->Fill(sci_21r_de);
-        h_sci_22l_de->Fill(sci_22l_de);
-        h_sci_22r_de->Fill(sci_22r_de);
-        h_sci_41l_de->Fill(sci_41l_de);
-        h_sci_41r_de->Fill(sci_41r_de);
-        h_sci_42l_de->Fill(sci_42l_de);
-        h_sci_42r_de->Fill(sci_42r_de);
-        h_sci_43l_de->Fill(sci_43l_de);
-        h_sci_43r_de->Fill(sci_43r_de);
-        h_sci_81l_de->Fill(sci_81l_de);
-        h_sci_81r_de->Fill(sci_81r_de);
+            h_sci_21l_de->Fill(sci_21l_de);
+            h_sci_21r_de->Fill(sci_21r_de);
+            h_sci_22l_de->Fill(sci_22l_de);
+            h_sci_22r_de->Fill(sci_22r_de);
+            h_sci_41l_de->Fill(sci_41l_de);
+            h_sci_41r_de->Fill(sci_41r_de);
+            h_sci_42l_de->Fill(sci_42l_de);
+            h_sci_42r_de->Fill(sci_42r_de);
+            h_sci_43l_de->Fill(sci_43l_de);
+            h_sci_43r_de->Fill(sci_43r_de);
+            h_sci_81l_de->Fill(sci_81l_de);
+            h_sci_81r_de->Fill(sci_81r_de);
 
-        //music timings:
-        const uint32_t* music_t1 = fHitFrsMainCal->Get_music_t1(); // size 8 arrays
-        const uint32_t* music_t2 = fHitFrsMainCal->Get_music_t2(); // size 8 arrays
-        if (music_t1!=nullptr && music_t2 != nullptr) for (int anode = 0; anode<8; anode++) {h_music41_t->Fill(anode,music_t1[anode]); h_music42_t->Fill(anode,music_t2[anode]);}
+            //music timings:
+            const uint32_t* music_t1 = fHitFrsMainCal->Get_music_t1(); // size 8 arrays
+            const uint32_t* music_t2 = fHitFrsMainCal->Get_music_t2(); // size 8 arrays
+            if (music_t1!=nullptr && music_t2 != nullptr) for (int anode = 0; anode<8; anode++) {h_music41_t->Fill(anode,music_t1[anode]); h_music42_t->Fill(anode,music_t2[anode]);}
         
         
-        std::vector<uint32_t> sci_21l_t = fHitFrsMainCal->Get_TDC_channel(2);
-        if (sci_21l_t.size()>0) h_sci_21l_t->Fill(sci_21l_t.at(0));
-        std::vector<uint32_t> sci_21r_t = fHitFrsMainCal->Get_TDC_channel(3);
-        if (sci_21r_t.size()>0) h_sci_21r_t->Fill(sci_21r_t.at(0));
-        std::vector<uint32_t> sci_22l_t = fHitFrsMainCal->Get_TDC_channel(12);
-        if (sci_22l_t.size()>0) h_sci_22l_t->Fill(sci_22l_t.at(0));
-        std::vector<uint32_t> sci_22r_t = fHitFrsMainCal->Get_TDC_channel(13);
-        if (sci_22r_t.size()>0) h_sci_22r_t->Fill(sci_22r_t.at(0));
-        std::vector<uint32_t> sci_41l_t = fHitFrsMainCal->Get_TDC_channel(0);
-        if (sci_41l_t.size()>0) h_sci_41l_t->Fill(sci_41l_t.at(0));
-        std::vector<uint32_t> sci_41r_t = fHitFrsMainCal->Get_TDC_channel(1);
-        if (sci_41r_t.size()>0) h_sci_41r_t->Fill(sci_41r_t.at(0));
-        std::vector<uint32_t> sci_42l_t = fHitFrsMainCal->Get_TDC_channel(4);
-        if (sci_42l_t.size()>0) h_sci_42l_t->Fill(sci_42l_t.at(0));
-        std::vector<uint32_t> sci_42r_t = fHitFrsMainCal->Get_TDC_channel(14);
-        if (sci_42r_t.size()>0) h_sci_42r_t->Fill(sci_42r_t.at(0));
-        std::vector<uint32_t> sci_43l_t = fHitFrsMainCal->Get_TDC_channel(5);
-        if (sci_43l_t.size()>0) h_sci_43l_t->Fill(sci_43l_t.at(0));
-        std::vector<uint32_t> sci_43r_t = fHitFrsMainCal->Get_TDC_channel(6);
-        if (sci_43r_t.size()>0) h_sci_43r_t->Fill(sci_43r_t.at(0));
-        std::vector<uint32_t> sci_81l_t = fHitFrsMainCal->Get_TDC_channel(7);
-        if (sci_81l_t.size()>0) h_sci_81l_t->Fill(sci_81l_t.at(0));
-        std::vector<uint32_t> sci_81r_t = fHitFrsMainCal->Get_TDC_channel(8);
-        if (sci_81r_t.size()>0) h_sci_81r_t->Fill(sci_81r_t.at(0));
+            std::vector<uint32_t> sci_21l_t = fHitFrsMainCal->Get_TDC_channel(2);
+            if (sci_21l_t.size()>0) h_sci_21l_t->Fill(sci_21l_t.at(0));
+            std::vector<uint32_t> sci_21r_t = fHitFrsMainCal->Get_TDC_channel(3);
+            if (sci_21r_t.size()>0) h_sci_21r_t->Fill(sci_21r_t.at(0));
+            std::vector<uint32_t> sci_22l_t = fHitFrsMainCal->Get_TDC_channel(12);
+            if (sci_22l_t.size()>0) h_sci_22l_t->Fill(sci_22l_t.at(0));
+            std::vector<uint32_t> sci_22r_t = fHitFrsMainCal->Get_TDC_channel(13);
+            if (sci_22r_t.size()>0) h_sci_22r_t->Fill(sci_22r_t.at(0));
+            std::vector<uint32_t> sci_41l_t = fHitFrsMainCal->Get_TDC_channel(0);
+            if (sci_41l_t.size()>0) h_sci_41l_t->Fill(sci_41l_t.at(0));
+            std::vector<uint32_t> sci_41r_t = fHitFrsMainCal->Get_TDC_channel(1);
+            if (sci_41r_t.size()>0) h_sci_41r_t->Fill(sci_41r_t.at(0));
+            std::vector<uint32_t> sci_42l_t = fHitFrsMainCal->Get_TDC_channel(4);
+            if (sci_42l_t.size()>0) h_sci_42l_t->Fill(sci_42l_t.at(0));
+            std::vector<uint32_t> sci_42r_t = fHitFrsMainCal->Get_TDC_channel(14);
+            if (sci_42r_t.size()>0) h_sci_42r_t->Fill(sci_42r_t.at(0));
+            std::vector<uint32_t> sci_43l_t = fHitFrsMainCal->Get_TDC_channel(5);
+            if (sci_43l_t.size()>0) h_sci_43l_t->Fill(sci_43l_t.at(0));
+            std::vector<uint32_t> sci_43r_t = fHitFrsMainCal->Get_TDC_channel(6);
+            if (sci_43r_t.size()>0) h_sci_43r_t->Fill(sci_43r_t.at(0));
+            std::vector<uint32_t> sci_81l_t = fHitFrsMainCal->Get_TDC_channel(7);
+            if (sci_81l_t.size()>0) h_sci_81l_t->Fill(sci_81l_t.at(0));
+            std::vector<uint32_t> sci_81r_t = fHitFrsMainCal->Get_TDC_channel(8);
+            if (sci_81r_t.size()>0) h_sci_81r_t->Fill(sci_81r_t.at(0));
 
-
-
-
-            
         }
     }
 
-    if (fFrsTPCArray && fFrsTPCArray->GetEntriesFast() > 0){
+    if (fFrsTPCArray && fFrsTPCArray->GetEntriesFast() > 0)
+    {
         Int_t nHits = fFrsTPCArray->GetEntriesFast();
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {
             fHitFrsTPC = (FrsTPCData*)fFrsTPCArray->At(ihit);
-            if (!fHitFrsTPC)
-                continue;
+            if (!fHitFrsTPC) continue;
+
             std::vector<uint32_t> tpc_v1190_channels;
             std::vector<uint32_t> tpc_v1190_lot;
             std::vector<uint32_t> tpc_v1190_data;
@@ -377,10 +374,14 @@ void FrsDetectorsOnline::Exec(Option_t* option)
             tpc_v1190_lot = fHitFrsTPC->Get_V1190_LoT();
             tpc_v1190_data = fHitFrsTPC->Get_V1190_Data();
 
-            for (int v1190_hit = 0; v1190_hit<tpc_v1190_channels.size(); v1190_hit++){
-                if (!tpc_v1190_lot.at(v1190_hit)){
+            for (int v1190_hit = 0; v1190_hit<tpc_v1190_channels.size(); v1190_hit++)
+            {
+                if (!tpc_v1190_lot.at(v1190_hit))
+                {
                     h_tpc_timings_lead->Fill(tpc_v1190_channels.at(v1190_hit),tpc_v1190_data.at(v1190_hit));
-                }else{
+                }
+                else
+                {
                     h_tpc_timings_trail->Fill(tpc_v1190_channels.at(v1190_hit),tpc_v1190_data.at(v1190_hit));
                 }
             }
@@ -388,13 +389,14 @@ void FrsDetectorsOnline::Exec(Option_t* option)
     }
 
 
-    if (fFrsTPCCalArray && fFrsTPCCalArray->GetEntriesFast() > 0){
+    if (fFrsTPCCalArray && fFrsTPCCalArray->GetEntriesFast() > 0)
+    {
         Int_t nHits = fFrsTPCCalArray->GetEntriesFast();
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {
             fHitFrsTPCCal = (FrsTPCCalData*)fFrsTPCCalArray->At(ihit);
-            if (!fHitFrsTPCCal)
-                continue;
+            if (!fHitFrsTPCCal) continue;
+
             for (int an = 0; an < number_of_anodes_per_tpc; an++){
                 for (int ntpc = 0; ntpc < number_of_tpcs; ntpc ++){
                     h_tpc_check_sums->Fill(ntpc*number_of_anodes_per_tpc + an, fHitFrsTPCCal->Get_tpc_csum(ntpc,an));
