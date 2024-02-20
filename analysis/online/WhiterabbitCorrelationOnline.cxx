@@ -8,6 +8,7 @@
 // c4
 #include "WhiterabbitCorrelationOnline.h"
 #include "EventHeader.h"
+#include "TimeMachineData.h"
 #include "FatimaTwinpeaksCalData.h"
 #include "bPlastTwinpeaksCalData.h"
 #include "GermaniumCalData.h"
@@ -21,6 +22,7 @@
 #include "TH2F.h"
 #include "THttpServer.h"
 #include "TMath.h"
+#include "TFile.h"
 #include "TRandom.h"
 
 WhiterabbitCorrelationOnline::WhiterabbitCorrelationOnline() : WhiterabbitCorrelationOnline("WhiterabbitCorrelationOnline")
@@ -32,21 +34,27 @@ WhiterabbitCorrelationOnline::WhiterabbitCorrelationOnline(const TString& name, 
     , fHitFatimaTwinpeaks(NULL)
     , fHitbPlastTwinpeaks(NULL)
     , fHitGe(NULL)
-    , fHitAida(NULL)
     , fNEvents(0)
     , header(nullptr)
 {
 }
 
+
 WhiterabbitCorrelationOnline::~WhiterabbitCorrelationOnline()
 {
     c4LOG(info, "");
     if (fHitFatimaTwinpeaks)
+    {
         delete fHitFatimaTwinpeaks;
+    }
     if (fHitbPlastTwinpeaks)
+    {
         delete fHitbPlastTwinpeaks;
+    }
     if (fHitGe)
+    {
         delete fHitGe;
+    }
 }
 
 void WhiterabbitCorrelationOnline::SetParContainers()
@@ -55,10 +63,17 @@ void WhiterabbitCorrelationOnline::SetParContainers()
     c4LOG_IF(fatal, NULL == rtdb, "FairRuntimeDb not found.");
 }
 
+void WhiterabbitCorrelationOnline::SetDetectorSystems(std::vector<TString> detectorsystems)
+{
+    fNumDetectorSystems = detectorsystems.size();
+
+    fDetectorSystems = std::vector<TString>(0);
+
+    for (int i = 0; i < fNumDetectorSystems; i++) fDetectorSystems.push_back(detectorsystems.at(i));
+}
+
 InitStatus WhiterabbitCorrelationOnline::Init()
 {
-
-    // number of dets 
 
     c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
@@ -70,8 +85,29 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fHitFatimaTwinpeaks = (TClonesArray*)mgr->GetObject("FatimaTwinpeaksCalData");
-    c4LOG_IF(fatal, !fHitFatimaTwinpeaks, "Branch FatimaTwinpeaksCalData not found!");
+    for (int i = 0; i < fNumDetectorSystems; i++)
+    {
+        // check each subsystem and get the corresponding TClonesArray
+        if (fDetectorSystems.at(i) == "bPlast")
+        {
+            fHitbPlastTwinpeaks = (TClonesArray*)mgr->GetObject("bPlastTwinpeaksCalData");
+            c4LOG_IF(error, !fHitbPlastTwinpeaks, "Branch bPlastTwinpeaksCalData not found");
+        }
+        else if (fDetectorSystems.at(i) == "Fatima")
+        {
+            fHitFatimaTwinpeaks = (TClonesArray*)mgr->GetObject("FatimaTwinpeaksCalData");
+            c4LOG_IF(error, !fHitFatimaTwinpeaks, "Branch FatimaTwinpeaksCalData. not found");
+        }
+        else if (fDetectorSystems.at(i) == "Ge")
+        {
+            fHitGe = (TClonesArray*)mgr->GetObject("GermaniumCalData");
+            c4LOG_IF(error, !fHitGe, "Branch GermaniumCalData. not found");
+        }
+        else
+        {
+            c4LOG(fatal, "Unknown detector system: " << fDetectorSystems.at(i));
+        }
+    }
 
     folder_whiterabbit = new TFolder("Whiterabbit Subsystem Correlation", "Whiterabbit Subsystem Correlation");
 
@@ -79,7 +115,7 @@ InitStatus WhiterabbitCorrelationOnline::Init()
 
     c_whiterabbit_correlation_bplast_fatima = new TCanvas("c_whiterabbit_correlation_bplast_fatima", "c_whiterabbit_correlation_bplast_fatima", 10, 10, 800, 700);
     c_whiterabbit_correlation_bplast_fatima->cd();
-    h1_whiterabbit_correlation_bplast_fatima = new TH2F("h1_whiterabbit_correlation_bplast_fatima", "h1_whiterabbit_correlation_bplast_fatima", 1000, -1000, 1000, 1000, 0, 1e5);
+    h1_whiterabbit_correlation_bplast_fatima = new TH1F("h1_whiterabbit_correlation_bplast_fatima", "h1_whiterabbit_correlation_bplast_fatima", 1000, -1e3, 1e3);
     h1_whiterabbit_correlation_bplast_fatima->GetXaxis()->SetTitle("Time difference(bPlast - Fatima) [ns]");
     h1_whiterabbit_correlation_bplast_fatima->GetYaxis()->SetTitle("Counts");
     h1_whiterabbit_correlation_bplast_fatima->Draw();
@@ -88,7 +124,7 @@ InitStatus WhiterabbitCorrelationOnline::Init()
 
     c_whiterabbit_correlation_fatima_ge = new TCanvas("c_whiterabbit_correlation_fatima_ge", "c_whiterabbit_correlation_fatima_ge", 10, 10, 800, 700);
     c_whiterabbit_correlation_fatima_ge->cd();
-    h1_whiterabbit_correlation_fatima_ge = new TH2F("h1_whiterabbit_correlation_fatima_ge", "h1_whiterabbit_correlation_fatima_ge", 1000, -1000, 1000, 1000, 0, 1e5);
+    h1_whiterabbit_correlation_fatima_ge = new TH1F("h1_whiterabbit_correlation_fatima_ge", "h1_whiterabbit_correlation_fatima_ge", 1000, -1e3, 1e3);
     h1_whiterabbit_correlation_fatima_ge->GetXaxis()->SetTitle("Time difference(Fatima - Germanium) [ns]");
     h1_whiterabbit_correlation_fatima_ge->GetYaxis()->SetTitle("Counts");
     h1_whiterabbit_correlation_fatima_ge->Draw();
@@ -97,7 +133,7 @@ InitStatus WhiterabbitCorrelationOnline::Init()
 
     c_whiterabbit_correlation_bplast_ge = new TCanvas("c_whiterabbit_correlation_bplast_ge", "c_whiterabbit_correlation_bplast_ge", 10, 10, 800, 700);
     c_whiterabbit_correlation_bplast_ge->cd();
-    h1_whiterabbit_correlation_bplast_ge = new TH2F("h1_whiterabbit_correlation_bplast_ge", "h1_whiterabbit_correlation_bplast_ge", 1000, -1000, 1000, 1000, 0, 1e5);
+    h1_whiterabbit_correlation_bplast_ge = new TH1F("h1_whiterabbit_correlation_bplast_ge", "h1_whiterabbit_correlation_bplast_ge",1000, -1e3, 1e3);
     h1_whiterabbit_correlation_bplast_ge->GetXaxis()->SetTitle("Time difference(bPlast - Germanium) [ns]");
     h1_whiterabbit_correlation_bplast_ge->GetYaxis()->SetTitle("Counts");
     h1_whiterabbit_correlation_bplast_ge->Draw();
@@ -157,11 +193,20 @@ void WhiterabbitCorrelationOnline::Snapshot_Histo()
 void WhiterabbitCorrelationOnline::Exec(Option_t* option)
 {   
     //JB: there is probably a better way to code this. JEL or Nic hilfe bitte!
-    Int_t nHitsFatima = fHitFatimaTwinpeaks ? fHitFatimaTwinpeaks->GetEntriesFast() : 0;
-    Int_t nHitsbPlast = fHitbPlastTwinpeaks ? fHitbPlastTwinpeaks->GetEntriesFast() : 0;
-    Int_t nHitsGe = fHitGe ? fHitGe->GetEntriesFast() : 0;
 
-    if (fHitFatimaTwinpeaks && fHitFatimaTwinpeaks->GetEntriesFast > 0 && fHitbPlastTwinpeaks && fHitbPlastTwinpeaks->GetEntriesFast > 0){
+    // loop over each detector system
+    Int_t nHitsFatima = 0;
+    Int_t nHitsbPlast = 0;
+    Int_t nHitsGe = 0;
+
+    if (fHitFatimaTwinpeaks) nHitsFatima = fHitFatimaTwinpeaks->GetEntriesFast();
+
+    if (fHitbPlastTwinpeaks) nHitsbPlast = fHitbPlastTwinpeaks->GetEntriesFast();
+
+    if (fHitGe) nHitsGe = fHitGe->GetEntriesFast();
+
+    if (fHitFatimaTwinpeaks && fHitbPlastTwinpeaks)
+    {
         for (Int_t i = 0; i < nHitsFatima; i++)
         {
             FatimaTwinpeaksCalData* hitFatima = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(i);
@@ -178,8 +223,10 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             }
         }
     }
-    if(fHitFatimaTwinpeaks && fHitFatimaTwinpeaks->GetEntriesFast > 0 && fHitGe && fHitGe->GetEntriesFast > 0){
-        for (Int_t i = 0; i < nHitsFatima; i++){
+    if (fHitFatimaTwinpeaks && fHitGe)
+    {
+        for (Int_t i = 0; i < nHitsFatima; i++)
+        {
             FatimaTwinpeaksCalData* hitFatima = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(i);
             if (hitFatima)
             {
@@ -193,9 +240,11 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
                 }
             }
         }
-    }
-    if (fHitbPlastTwinpeaks && fHitbPlastTwinpeaks->GetEntriesFast > 0 && fHitGe && fHitGe->GetEntriesFast > 0){
-        for (Int_t i = 0; i < nHitsbPlast; i++){
+    }    
+    if (fHitbPlastTwinpeaks && fHitGe)
+    {
+        for (Int_t i = 0; i < nHitsbPlast; i++)
+        {
             bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(i);
             if (hitbPlast)
             {
@@ -209,7 +258,7 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
                 }
             }
         }
-    }
+    }   
     fNEvents += 1;
 }
 
@@ -242,6 +291,7 @@ void WhiterabbitCorrelationOnline::FinishTask()
     if (fHitFatimaTwinpeaks || fHitbPlastTwinpeaks || fHitGe)
     {   
         folder_whiterabbit->Write();
+        c4LOG(info, "Processed " << fNEvents << " events.");
         c4LOG(info, "WhiteRabbit histograms written to file.");
     }
 }

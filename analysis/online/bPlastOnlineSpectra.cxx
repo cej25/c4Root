@@ -93,7 +93,9 @@ InitStatus bPlastOnlineSpectra::Init()
         h1_bplast_slowToT[ihist] = new TH1F(Form("c_bplast_slowToT_%d",ihist),Form("bPlastic slow ToT %d",ihist),10000,0,5e3);
         h1_bplast_slowToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
         h1_bplast_slowToT[ihist]->Draw();   
+
         folder_bplast_slowToT->Add(h1_bplast_slowToT[ihist]);
+      
     }
     c_bplast_slowToT->cd(0);
 
@@ -144,6 +146,9 @@ InitStatus bPlastOnlineSpectra::Init()
         h1_bplast_abs_time[ihist]->GetXaxis()->SetTitle("Time (ns)");
         h1_bplast_abs_time[ihist]->Draw();
         folder_bplast_time_spectra->Add(h1_bplast_abs_time[ihist]);
+
+        
+
     }
     c_bplast_time_spectra->cd(0);
 
