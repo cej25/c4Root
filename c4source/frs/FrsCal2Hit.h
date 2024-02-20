@@ -22,7 +22,16 @@ class EventHeader;
 class FrsCal2Hit : public FairTask
 {
     public:
-        FrsCal2Hit();
+        FrsCal2Hit(TFRSParameter* ffrs,
+                TMWParameter* fmw,
+                TTPCParameter* ftpc,
+                TMUSICParameter* fmusic,
+                TLABRParameter* flabr,
+                TSCIParameter* fsci,
+                TIDParameter* fid,
+                TSIParameter* fsi,
+                TMRTOFMSParameter* fmrtof,
+                TRangeParameter* frange);
         FrsCal2Hit(const TString& name, Int_t verbose);
 
         virtual ~FrsCal2Hit();
@@ -32,7 +41,6 @@ class FrsCal2Hit : public FairTask
 
         virtual void Exec(Option_t* option); // virtual?
         
-        void SetParameters();
         virtual void SetParContainers();
         void Setup_Conditions(TString path_to_folder_with_frs_config_files);
         void FRS_GainMatching();
