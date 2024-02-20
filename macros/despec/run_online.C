@@ -245,9 +245,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     //FrsRawSpectra* frsrawspec = new FrsRawSpectra();
 
     FrsAnalysisSpectra* frsanalspec = new FrsAnalysisSpectra(frs,mw,tpc,music,labr,sci,id,si,mrtof,range,FrsGates);
-    //FrsAidaCorrelations* frsaidacorr = new FrsAidaCorrelations(FrsGates);
-
-    //frsanalspec->SetOnline(false);
+    FrsAidaCorrelations* frsaidacorr = new FrsAidaCorrelations(FrsGates);
 
     run->AddTask(tms);
     run->AddTask(onlinefatima);
@@ -258,7 +256,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     //run->AddTask(onlinefrs);
     //run->AddTask(frsrawspec);
     run->AddTask(frsanalspec);
-    //run->AddTask(frsaidacorr);
+    run->AddTask(frsaidacorr);
 
     // Initialise
     run->Init();
