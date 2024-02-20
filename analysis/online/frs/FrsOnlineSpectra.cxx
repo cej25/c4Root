@@ -11,6 +11,7 @@
 #include "EventHeader.h"
 #include "c4Logger.h"
 
+// ROOT
 #include "TCanvas.h"
 #include "TClonesArray.h"
 #include "TFolder.h"
@@ -47,15 +48,14 @@ FrsOnlineSpectra::FrsOnlineSpectra(const TString& name, Int_t iVerbose)
 FrsOnlineSpectra::~FrsOnlineSpectra()
 {
     c4LOG(info, "");
-    if (fHitFrsArray)
-        delete fHitFrsArray;
+    if (fHitFrsArray) delete fHitFrsArray;
 }
 
 // Public Method SetParContainers
 void FrsOnlineSpectra::SetParContainers()
 {
     // Parameter Containers
-    FairRuntimeDb* rtdb = FairRuntimeDb::instance(); // infuriating lack of consistency with capitalisation...
+    FairRuntimeDb* rtdb = FairRuntimeDb::instance();
     c4LOG_IF(fatal, NULL == rtdb, "FairRuntimeDb not found.");
 }
 

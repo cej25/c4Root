@@ -23,7 +23,7 @@ EXPS= s452 \
 	s450 \
 	NovTest \
 	onlyFATIMA \
-	onlybPlast \
+	onlybPlast
 
 ALL_EXPS = $(EXPS)
 

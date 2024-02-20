@@ -154,6 +154,7 @@ class FrsDetectorsOnline : public FairTask
         TH1D * h_tac_user_dt_22r_41r;
         TH1D * h_tac_user_dt_22l_81l;
         TH1D * h_tac_user_dt_22r_81r;
+        
     public:
         ClassDef(FrsDetectorsOnline, 1)
 
