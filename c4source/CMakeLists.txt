@@ -55,7 +55,7 @@ set(SRCS
 ./frs/FrsUserRaw2Cal.cxx
 ./frs/FrsVFTXRaw2Cal.cxx
 ./frs/FrsCal2Hit.cxx
-./frs/TFRSParameter.cxx
+#./frs/TFRSParameter.cxx
 ./germanium/GermaniumReader.cxx
 ./lisa/LisaReader.cxx
 ./bplast/bPlastReader.cxx
