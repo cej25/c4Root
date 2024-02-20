@@ -66,41 +66,74 @@ Bool_t FrsVFTXReader::Read()
 
     // do the reading
 
-    uint32_t chn_first_hit = 0;
-    uint32_t next_chn_first_hit, hits;
     Bool_t trailing;
-    Int_t channel;
     Float_t cc, ft;
     Double_t r, ti;
 
-    FrsVFTXData fVFTX_hit;
+   // FrsVFTXData fVFTX_hit;
 
-    for (Int_t i = 0; i < fData->frsvftx_data_vftx_time_coarseM; i++)
+    int hit_index = 0;
+    for (uint32_t channel_index = 0; channel_index < fData->frsvftx_data_vftx_time_coarseM; channel_index++)
     {
-        next_chn_first_hit = fData->frsvftx_data_vftx_time_coarseME[i];
-        hits = next_chn_first_hit - chn_first_hit;
+        int current_channel = fData->frsvftx_data_vftx_time_coarseMI[channel_index];
+        int next_channel_start = fData->frsvftx_data_vftx_time_coarseME[channel_index];
+        trailing = current_channel % 2;
 
-        for (Int_t j = 0; j < hits; j++)
+        for (uint32_t j = hit_index; j < next_channel_start; j++)
         {   
-            // check if leading somehow
-            channel = fData->frsvftx_data_vftx_time_coarseMI[i];
-            trailing = channel % 2;
-            if ((!trailing) && (vftx_leading_time[channel].size() < VFTX_MAX_HITS))
+
+            if (current_channel < VFTX_MAX_CHN)
             {
-                cc = fData->frsvftx_data_vftx_time_coarsev[i * 100 + j];
-                ft = fData->frsvftx_data_vftx_time_finev[i * 100 + j];
+                cc = fData->frsvftx_data_vftx_time_coarsev[j];
+                ft = fData->frsvftx_data_vftx_time_finev[j];
                 r = (double)rand.Rndm() - 0.5;
-                ti = VFTX_GetTRaw_ps(channel, cc, ft, r);
-                //vftx_leading_time[channel].emplace_back(ti);
-                fVFTX_hit.Add_vftx_lead_time(channel,ti);
+                ti = VFTX_GetTRaw_ps(current_channel, cc, ft, r);
+                if ((!trailing) && (vftx_leading_time[current_channel].size() < VFTX_MAX_HITS))
+                {   
+                    vftx_leading_cc[current_channel].emplace_back(cc);
+                    vftx_leading_ft[current_channel].emplace_back(ft);
+                    vftx_leading_time[current_channel].emplace_back(ti);
+                }
+                else if ((trailing) && (vftx_trailing_time[current_channel].size() < VFTX_MAX_HITS))
+                {   
+                    vftx_trailing_cc[current_channel].emplace_back(cc);
+                    vftx_trailing_ft[current_channel].emplace_back(ft);
+                    vftx_trailing_time[current_channel].emplace_back(ti);
+
+                    //std::cout << "size cc reader: " << vftx_trailing_cc[current_channel].size() << std::endl;
+                    //std::cout << "size time reader: " << vftx_trailing_time[current_channel].size() << std::endl;
+                }
+
+                // CEJ:  JEL changed this? but we need more info
+                // we can do it like this if its more optimal?
+                // but we should be consistent
+                // fVFTX_hit.Add_vftx_lead_time(channel,ti);
+
+                b_vftx_data = true;
             }
 
-            //fVFTX_hit.Set_vftx_lead_times(channel,vftx_leading_time[channel]);
             
         }
+
+        hit_index = next_channel_start;
+    }
+    
+    //new ((*fArray)[fArray->GetEntriesFast()]) FrsVFTXData(fVFTX_hit);
+    
+    if (b_vftx_data)
+    {
+       new ((*fArray)[fArray->GetEntriesFast()]) FrsVFTXData(
+            vftx_leading_cc,
+            vftx_leading_ft,
+            vftx_leading_time,
+            vftx_trailing_cc,
+            vftx_trailing_ft,
+            vftx_trailing_time
+        ); 
     }
 
-    new ((*fArray)[fArray->GetEntriesFast()]) FrsVFTXData(fVFTX_hit);
+    b_vftx_data = false;
+    
 
     // CEJ: MTDC and MQDC read but not used by DESPEC
     // ...do nothing for now...
@@ -111,6 +144,9 @@ Bool_t FrsVFTXReader::Read()
 }
 
 
+
+
+// doing nothing currently
 void FrsVFTXReader::m_VFTX_Bin2Ps()
 {
     int l_VFTX_SN[VFTX_N]  = VFTX_SN;
@@ -191,8 +227,13 @@ void FrsVFTXReader::ZeroArrays()
 }
 
 void FrsVFTXReader::ClearVectors()
-{
-    for (int i = 0; i < 32; i++) vftx_leading_time[i].clear();
+{   
+    for (int i = 0; i < VFTX_MAX_CHN; i++) vftx_leading_cc[i].clear();
+    for (int i = 0; i < VFTX_MAX_CHN; i++) vftx_leading_ft[i].clear();
+    for (int i = 0; i < VFTX_MAX_CHN; i++) vftx_leading_time[i].clear();
+    for (int i = 0; i < VFTX_MAX_CHN; i++) vftx_trailing_cc[i].clear();
+    for (int i = 0; i < VFTX_MAX_CHN; i++) vftx_trailing_ft[i].clear();
+    for (int i = 0; i < VFTX_MAX_CHN; i++) vftx_trailing_time[i].clear();
 }
 
 

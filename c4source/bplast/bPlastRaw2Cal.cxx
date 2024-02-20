@@ -52,6 +52,7 @@ bPlastRaw2Cal::~bPlastRaw2Cal(){
     c4LOG(info, "Deleting bPlastRaw2Cal task");
     if (funcal_data) delete funcal_data;
     if (fcal_data) delete fcal_data;
+    if (ftime_machine_array) delete ftime_machine_array;
 }
 
 /*
@@ -110,6 +111,7 @@ Bool_t bPlastRaw2Cal::SetDetectorMapFile(TString filename){
 
     std::ifstream detector_map_file (filename);
 
+
     if (!detector_map_file.is_open()) {
         c4LOG(fatal, Form("File '%s' does not exist", filename.Data()));
     }
@@ -125,6 +127,7 @@ Bool_t bPlastRaw2Cal::SetDetectorMapFile(TString filename){
             c4LOG(info, Form("Reading %i, %i, %i, %c, %c", rtamex_module, rtamex_channel, rdetector_id, rup_down, rleft_right_bottom_top));
             std::pair<int, int> tamex_mc = {rtamex_module, rtamex_channel};
             std::pair<char, char> position = {rup_down, rleft_right_bottom_top};
+
 
             detector_mapping.insert(std::make_pair(tamex_mc, std::make_pair(rdetector_id, position)));
             detector_map_file.ignore(1024, '\n');
@@ -302,6 +305,7 @@ void bPlastRaw2Cal::Exec(Option_t* option){
 
             //if (detector_id == 0 || detector_id == 1) c4LOG(info,Form("id = %i, fast lead = %f, fast trail = %f, fast ToT = %f",detector_id,fast_lead_time,fast_trail_time,fast_ToT));
 
+            // TODO: add channel calibration if needed.
             
             if (((detector_id == time_machine_delayed_detector_id) || (detector_id == time_machine_undelayed_detector_id)) && time_machine_delayed_detector_id!=0 && time_machine_undelayed_detector_id!=0){ // currently only gets the TM if it also matches it slow-fast...
                 new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData((detector_id==time_machine_undelayed_detector_id) ? (fast_lead_time) : (0), (detector_id==time_machine_undelayed_detector_id) ? (0) : (fast_lead_time), funcal_hit->Get_wr_subsystem_id(), funcal_hit->Get_wr_t() );

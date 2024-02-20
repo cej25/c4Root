@@ -89,10 +89,8 @@ InitStatus FatimaRaw2Cal::Init(){
     funcal_data = (TClonesArray*)mgr->GetObject("FatimaTwinpeaksData");
     c4LOG_IF(fatal, !funcal_data, "Fatima branch of FatimaTwinpeaksData not found.");
     
-
-    FairRootManager::Instance()->Register("FatimaTwinpeaksCalData", "FatimaTwinpeaksCalDataFolder", fcal_data, !fOnline);
     //need to have the name of the detector subsystem here:
-
+    FairRootManager::Instance()->Register("FatimaTwinpeaksCalData", "FatimaTwinpeaksCalDataFolder", fcal_data, !fOnline);
     FairRootManager::Instance()->Register("FatimaTimeMachineData", "FatimaTimeMachineDataFolder", ftime_machine_array, !fOnline);
 
     fcal_data->Clear();

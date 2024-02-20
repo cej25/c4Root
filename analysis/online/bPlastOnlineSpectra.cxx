@@ -93,7 +93,9 @@ InitStatus bPlastOnlineSpectra::Init()
         h1_bplast_slowToT[ihist] = new TH1F(Form("c_bplast_slowToT_%d",ihist),Form("bPlastic slow ToT %d",ihist),10000,0,5e3);
         h1_bplast_slowToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
         h1_bplast_slowToT[ihist]->Draw();   
-        folder_bplast_slowToT->Add(h1_bplast_slowToT[ihist]);  
+
+        folder_bplast_slowToT->Add(h1_bplast_slowToT[ihist]);
+      
     }
     c_bplast_slowToT->cd(0);
 
@@ -133,7 +135,7 @@ InitStatus bPlastOnlineSpectra::Init()
 
 
     folder_bplast->Add(c_bplast_hitpatterns);
-    
+
     // Time spectra:
     c_bplast_time_spectra  = new TCanvas("c_bplast_time_spectra","bPlast time spectra",1200,800);
     c_bplast_time_spectra->Divide(5,(NDetectors%5==0) ? (NDetectors/5) : (NDetectors/5 + 1));
@@ -144,7 +146,9 @@ InitStatus bPlastOnlineSpectra::Init()
         h1_bplast_abs_time[ihist]->GetXaxis()->SetTitle("Time (ns)");
         h1_bplast_abs_time[ihist]->Draw();
         folder_bplast_time_spectra->Add(h1_bplast_abs_time[ihist]);
+
         
+
     }
     c_bplast_time_spectra->cd(0);
 
@@ -164,17 +168,17 @@ InitStatus bPlastOnlineSpectra::Init()
     c_bplast_fast_v_slow->cd(0);
 
     folder_bplast->Add(c_bplast_fast_v_slow);
-    
+
     run->GetHttpServer()->RegisterCommand("Reset_bPlast_Histograms", Form("/Objects/%s/->Reset_Histo()", GetName()));
 
     run->GetHttpServer()->RegisterCommand("Snapshot_bPlast_Histograms", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
 
     return kSUCCESS;
-    
-}
 
-void bPlastOnlineSpectra::Reset_Histo()
-{
+    }
+
+    void bPlastOnlineSpectra::Reset_Histo()
+    {
     c4LOG(info, "");
     for (int ihist = 0; ihist<NDetectors; ihist++) h1_bplast_slowToT[ihist]->Reset();
     for (int ihist = 0; ihist<NDetectors; ihist++) h1_bplast_fastToT[ihist]->Reset();
@@ -184,12 +188,12 @@ void bPlastOnlineSpectra::Reset_Histo()
     for (int ihist = 0; ihist<NDetectors; ihist++) h1_bplast_abs_time[ihist]->Reset();
 
     c4LOG(info, "Histograms reset.");
-   
-}
 
-// make a date and time stamped folder with pngs of the histograms and .root file and save them
-void bPlastOnlineSpectra::Snapshot_Histo()
-{
+    }
+
+    // make a date and time stamped folder with pngs of the histograms and .root file and save them
+    void bPlastOnlineSpectra::Snapshot_Histo()
+    {
     c4LOG(info, "");
     // date and time stamp
 
@@ -204,26 +208,18 @@ void bPlastOnlineSpectra::Snapshot_Histo()
     // save histograms
     c_bplast_snapshot = new TCanvas("c","c",1200,800);
     for (int ihist = 0; ihist<NDetectors; ihist++) {
-        if (h1_bplast_slowToT[ihist]->GetEntries() != 0) {
-            h1_bplast_slowToT[ihist]->Draw();
-            c_bplast_snapshot->SaveAs(Form("h1_bplast_slowToT_%d.png", ihist));
-            c_bplast_snapshot->Clear();
-        }
-        if (h1_bplast_fastToT[ihist]->GetEntries() != 0) {
-            h1_bplast_fastToT[ihist]->Draw();
-            c_bplast_snapshot->SaveAs(Form("h1_bplast_fastToT_%d.png", ihist));
-            c_bplast_snapshot->Clear();
-        }
-        if (h2_bplast_slowToT_vs_fastToT[ihist]->GetEntries() != 0) {
-            h2_bplast_slowToT_vs_fastToT[ihist]->Draw("COLZ");
-            c_bplast_snapshot->SaveAs(Form("h2_bplast_slowToT_vs_fastToT_%d.png", ihist));
-            c_bplast_snapshot->Clear();
-        }
-        if (h1_bplast_abs_time[ihist]->GetEntries() != 0) {
-            h1_bplast_abs_time[ihist]->Draw();
-            c_bplast_snapshot->SaveAs(Form("h1_bplast_abs_time_%d.png", ihist));
-            c_bplast_snapshot->Clear();
-        }
+        h1_bplast_slowToT[ihist]->Draw();
+        c_bplast_snapshot->SaveAs(Form("h1_bplast_slowToT_%d.png", ihist));
+        c_bplast_snapshot->Clear();
+        h1_bplast_fastToT[ihist]->Draw();
+        c_bplast_snapshot->SaveAs(Form("h1_bplast_fastToT_%d.png", ihist));
+        c_bplast_snapshot->Clear();
+        h2_bplast_slowToT_vs_fastToT[ihist]->Draw("COLZ");
+        c_bplast_snapshot->SaveAs(Form("h2_bplast_slowToT_vs_fastToT_%d.png", ihist));
+        c_bplast_snapshot->Clear();
+        h1_bplast_abs_time[ihist]->Draw();
+        c_bplast_snapshot->SaveAs(Form("h1_bplast_abs_time_%d.png", ihist));
+        c_bplast_snapshot->Clear();
     }
     delete c_bplast_snapshot;
 
@@ -238,10 +234,10 @@ void bPlastOnlineSpectra::Snapshot_Histo()
 
     gSystem->cd("..");
     c4LOG(info, "bPlastTwinkPeaks saved in:" << snapshot_dir);
-}
+    }
 
-void bPlastOnlineSpectra::Exec(Option_t* option)
-{   
+    void bPlastOnlineSpectra::Exec(Option_t* option)
+    {   
     if (fHitbPlastTwinpeaks && fHitbPlastTwinpeaks->GetEntriesFast() > 0)
     {
         Int_t nHits = fHitbPlastTwinpeaks->GetEntriesFast();
@@ -255,44 +251,43 @@ void bPlastOnlineSpectra::Exec(Option_t* option)
             // Lead and Trail spectra -- empty for now
 
             // Fast and Slow Tot spectra
-            if (hit->Get_slow_ToT() != 0) h1_bplast_slowToT[hit->Get_detector_id()]->Fill(hit->Get_slow_ToT());
-            if (hit->Get_fast_ToT() != 0) h1_bplast_fastToT[hit->Get_detector_id()]->Fill(hit->Get_fast_ToT());
+            h1_bplast_slowToT[hit->Get_detector_id()]->Fill(hit->Get_slow_ToT());
+            h1_bplast_fastToT[hit->Get_detector_id()]->Fill(hit->Get_fast_ToT());
 
 
-            if ( (hit->Get_fast_ToT() != 0) && (hit->Get_slow_ToT() != 0) ) h2_bplast_slowToT_vs_fastToT[hit->Get_detector_id()]->Fill(hit->Get_fast_ToT(),hit->Get_slow_ToT());
+            h2_bplast_slowToT_vs_fastToT[hit->Get_detector_id()]->Fill(hit->Get_fast_ToT(),hit->Get_slow_ToT());
 
-            if (hit->Get_fast_ToT() !=0 ) h1_bplast_abs_time[hit->Get_detector_id()]->Fill(hit->Get_fast_lead_time());
+            h1_bplast_abs_time[hit->Get_detector_id()]->Fill(hit->Get_fast_lead_time());
 
             // Hit pattern spectra
             // the hit pattern spectrum is generated by filling the histogram with the detector ID of the hit
-
-            if (hit->Get_fast_ToT() != 0) h1_bplast_fast_hitpatterns->Fill(hit->Get_detector_id());
-            if (hit->Get_slow_ToT() != 0) h1_bplast_slow_hitpatterns->Fill(hit->Get_detector_id());
+            h1_bplast_fast_hitpatterns->Fill(hit->Get_detector_id());
+            h1_bplast_slow_hitpatterns->Fill(hit->Get_detector_id());
             
 
             }
         }
     fNEvents += 1;
-}
+    }
 
-void bPlastOnlineSpectra::FinishEvent()
-{
+    void bPlastOnlineSpectra::FinishEvent()
+    {
     if (fHitbPlastTwinpeaks)
     {
         fHitbPlastTwinpeaks->Clear();
     }
-}
-
-void bPlastOnlineSpectra::FinishTask()
-{
-    if(fNEvents == 0){ 
-        c4LOG(warn, "No events found, not saving histograms!");
-        return;
     }
+
+    void bPlastOnlineSpectra::FinishTask()
+    {
+    // if(fNEvents == 0){ 
+    //     c4LOG(warn, "No events found, not saving histograms!");
+    //     return;
+    // }
     if (fHitbPlastTwinpeaks){
         folder_bplast->Write();
         c4LOG(info, "bPlast histograms written to file.");
     }
-}
+    }
 
-ClassImp(bPlastOnlineSpectra)
+    ClassImp(bPlastOnlineSpectra)

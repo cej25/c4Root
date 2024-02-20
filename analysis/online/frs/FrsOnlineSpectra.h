@@ -67,7 +67,6 @@ class FrsOnlineSpectra : public FairTask
         Double_t fMin_Z, fMax_Z, fMin_AoQ, fMax_AoQ, fMin_x4, fMax_x4;
         Double_t fMin_Z_gate, fMax_Z_gate, fMin_AoQ_gate, fMax_AoQ_gate;
 
-        // check for trigger should be done globally, somewhere else
         EventHeader* header;
         Int_t fNEvents;
 

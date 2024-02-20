@@ -21,6 +21,7 @@ ${C4ROOT_SOURCE_DIR}/analysis/pars
 ${C4ROOT_SOURCE_DIR}/analysis/offline
 ${C4ROOT_SOURCE_DIR}/analysis/fatima_aida_correlations
 ${C4ROOT_SOURCE_DIR}/analysis/online
+${C4ROOT_SOURCE_DIR}/analysis/online/frs
 )
 
 include_directories( ${INCLUDE_DIRECTORIES})
@@ -36,8 +37,10 @@ set(SRCS
 ./online/AidaOnlineSpectra.cxx
 ./online/bPlastOnlineSpectra.cxx
 ./online/FatimaOnlineSpectra.cxx
-./online/FrsOnlineSpectra.cxx
-./online/FrsDetectorsOnline.cxx
+./online/frs/FrsOnlineSpectra.cxx
+./online/frs/FrsRawSpectra.cxx
+./online/frs/FrsDetectorsOnline.cxx
+./fatima_aida_correlations/FatimaAidaSpectra.cxx
 ./online/TimeMachineOnline.cxx
 
 # nearline
