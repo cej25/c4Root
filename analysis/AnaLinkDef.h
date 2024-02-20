@@ -25,4 +25,8 @@
 #pragma link C++ class WhiterabbitCorrelationOnline+;
 
 
+#pragma link C++ class FrsAnalysisSpectra+;
+#pragma link C++ class FrsAidaCorrelations+;
+
+
 #endif

@@ -6,6 +6,7 @@
 extern "C"
 {
     #include "../../config/frs/setup.C"
+    #include "../../config/ReadGates.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -24,6 +25,8 @@ typedef struct EXT_STR_h101_t
 
 void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId = 1)
 {   
+    // CEJ: feels like we should define this variable and use it all over the place..
+    TString fExpName = "NovTest";
 
     TString cRunId = Form("%04d", fRunId);
     TString cExpId = Form("%03d", fExpId);
@@ -39,18 +42,20 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
 
-    //stream://x86l-116
-    //"trans://lxg1257"
-    //TString filename = "trans://lxg1257";
+    //TString filename = "stream://x86l-116"
+    //TString filename = "trans://lxg1257"
     TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
     Int_t refresh = 1; // Refresh rate for online histograms
+    // 5000 has firewall access
     Int_t port = 5000; // Port number for online visualisation, e.g. lxgXXXX:8886
      
-    TString ntuple_options = "UNPACK"; // "RAW"? "time=stitch=1000"? can we time-stitch files here pls?
-    TString ucesb_path = "/u/cjones/c4Root/unpack/exps/NovTest/NovTest --allow-errors --input-buffer=200Mi --event-sizes"; // CEJ: R3B used input-buffer, can't see in ucesb doc however...
+    TString ntuple_options = "UNPACK";
+    TString c4Root_path = "/u/cjones/c4Root";
+    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --allow-errors --input-buffer=200Mi --event-sizes";
+    //TString ucesb_path = "/u/cjones/c4Root/unpack/exps/NovTest/NovTest --allow-errors --input-buffer=200Mi --event-sizes";
     std::string ucesb_dir = "/u/cjones/ucesb";
     ucesb_path.ReplaceAll("//","/");
 
@@ -212,9 +217,35 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     std::vector a {b,c,d};
     tms->SetDetectorSystems(a);
 
+    /* ------------------------------------------------------------------ */
+    /* ---- FRS SETUP --------------------------------------------------- */
+    // Gates - Note: please name the TCutG and TCutG file the same thing
+    // Add as many to the filename vector as you like,
+    // but use the "default" gate files if you have none to add 
+    // If you wish to add another type of gate, as well as adding 
+    // analysis tasks, please add the type to ReadGates.C also!
+    std::string gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/Gates/";
+    std::vector<TCutG*> cID_Z_AoQ, cID_Z_Z2, cID_x2AoQ, cID_x4AoQ, cID_dEdegZ;
+    std::vector<TCutG*> cID_Z_AoQ_mhtdc, cID_Z_Z2_mhtdc, cID_x2AoQ_mhtdc, cID_x4AoQ_mhtdc, cID_dEdegZ_mhtdc;
+    std::vector<std::string> Z_AoQ_Gate_files = {"ZvsAoQ1"};
+    ReadGates("ZvsAoQ", Z_AoQ_Gate_files, cID_Z_AoQ, gate_path);
+    std::vector<std::string> Z_Z2_Gate_files = {"Z1vsZ21"};
+    ReadGates("Z1vsZ2", Z_Z2_Gate_files, cID_Z_Z2, gate_path);
+    std::vector<std::string> x2_AoQ_Gate_files = {"x2vsAoQ1"};
+    ReadGates("x2vsAoQ", x2_AoQ_Gate_files, cID_x2AoQ, gate_path);
+    std::vector<std::string> x4_AoQ_Gate_files = {"x4vsAoQ1"};
+    ReadGates("x4vsAoQ", x4_AoQ_Gate_files, cID_x4AoQ, gate_path);
+    std::vector<std::string> dEdeg_Z_Gate_files = {"dEdegvsZ1"};
+    ReadGates("dEdegvsZ", dEdeg_Z_Gate_files, cID_dEdegZ, gate_path);
+
+    std::vector<std::vector<TCutG*>> FrsGates = {cID_Z_AoQ, cID_Z_Z2, cID_x2AoQ, cID_x4AoQ, cID_dEdegZ};
+
+
     //FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
     //FrsRawSpectra* frsrawspec = new FrsRawSpectra();
 
+    FrsAnalysisSpectra* frsanalspec = new FrsAnalysisSpectra(frs,mw,tpc,music,labr,sci,id,si,mrtof,range,FrsGates);
+    FrsAidaCorrelations* frsaidacorr = new FrsAidaCorrelations(FrsGates);
 
     run->AddTask(tms);
     run->AddTask(onlinefatima);
@@ -224,9 +255,11 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
 
     //run->AddTask(onlinefrs);
     //run->AddTask(frsrawspec);
+    run->AddTask(frsanalspec);
+    run->AddTask(frsaidacorr);
 
     // Initialise
-    run->Init();    
+    run->Init();
     
     FairLogger::GetLogger()->SetLogScreenLevel("info");
 
@@ -239,8 +272,8 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     // Run
     run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev); 
 
-
-    // Finish
+    /* ------------------------------------------------------------- */
+    /* -------- Finish Macro --------------------------------------- */
     timer.Stop();
     Double_t rtime = timer.RealTime();
     Double_t ctime = timer.CpuTime();
@@ -251,4 +284,5 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     std::cout << "Output file is " << outputFileName << std::endl;
     std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl << std::endl;
    // gApplication->Terminate(0);
+   /* ------------------------------------------------------------- */
 }
