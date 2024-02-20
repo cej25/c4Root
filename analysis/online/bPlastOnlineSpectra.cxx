@@ -164,7 +164,7 @@ InitStatus bPlastOnlineSpectra::Init()
     c_bplast_fast_v_slow->cd(0);
 
     folder_bplast->Add(c_bplast_fast_v_slow);
-    
+
     run->GetHttpServer()->RegisterCommand("Reset_bPlast_Histograms", Form("/Objects/%s/->Reset_Histo()", GetName()));
 
     run->GetHttpServer()->RegisterCommand("Snapshot_bPlast_Histograms", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
