@@ -46,7 +46,7 @@ And prints some statistics for the run.
 */
 FatimaReader::~FatimaReader() { 
 
-    PrintStatistics();
+    // PrintStatistics();
 
     
     for (int i = 0; i < NBoards; i++) {

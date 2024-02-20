@@ -52,6 +52,7 @@ bPlastRaw2Cal::~bPlastRaw2Cal(){
     c4LOG(info, "Deleting bPlastRaw2Cal task");
     if (funcal_data) delete funcal_data;
     if (fcal_data) delete fcal_data;
+    if (ftime_machine_array) delete ftime_machine_array;
 }
 
 /*
@@ -116,23 +117,23 @@ Bool_t bPlastRaw2Cal::SetDetectorMapFile(TString filename){
 
     int rtamex_module = 0;
     int rtamex_channel = 0;
-    int rdetector_id = 0; // temp read variables
+    int rdetector_id =0; // temp read variables
     
     // loading and reading detector mapping
     while(!detector_map_file.eof()){
         c4LOG(info,detector_map_file.peek());
-        if(detector_map_file.peek()=='#') detector_map_file.ignore(1024,'\n');
+        if(detector_map_file.peek()=='#') detector_map_file.ignore(256,'\n');
         else{
             detector_map_file >> rtamex_module >> rtamex_channel >> rdetector_id;
             c4LOG(info,Form("module = %i, chan = %i, det = %i",rtamex_module,rtamex_channel,rdetector_id));
-            if(rtamex_channel == 40) break;
+            // if(rtamex_channel == 40) break;
             std::pair<int,int> tamex_mc = {rtamex_module,rtamex_channel};
 
-            auto it = detector_mapping.find(tamex_mc);
-            if (it != detector_mapping.end()) c4LOG(fatal,Form("Detector mapping not unique. Multiple entries of (tamex module id = %i) (tamex channel id = %i)",rtamex_module,rtamex_channel));
+            // auto it = detector_mapping.find(tamex_mc);
+            // if (it != detector_mapping.end()) c4LOG(fatal,Form("Detector mapping not unique. Multiple entries of (tamex module id = %i) (tamex channel id = %i)",rtamex_module,rtamex_channel));
 
             detector_mapping.insert(std::pair<std::pair<int,int>,int>{tamex_mc,rdetector_id});
-            detector_map_file.ignore(1024,'\n');
+            detector_map_file.ignore(256,'\n');
 
         }
     }
@@ -347,6 +348,7 @@ void bPlastRaw2Cal::Exec(Option_t* option){
 
             //if (detector_id == 0 || detector_id == 1) c4LOG(info,Form("id = %i, fast lead = %f, fast trail = %f, fast ToT = %f",detector_id,fast_lead_time,fast_trail_time,fast_ToT));
 
+            // TODO: add channel calibration if needed.
             
             if (((detector_id == time_machine_delayed_detector_id) || (detector_id == time_machine_undelayed_detector_id)) && time_machine_delayed_detector_id!=0 && time_machine_undelayed_detector_id!=0){ // currently only gets the TM if it also matches it slow-fast...
                 new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData((detector_id==time_machine_undelayed_detector_id) ? (fast_lead_time) : (0), (detector_id==time_machine_undelayed_detector_id) ? (0) : (fast_lead_time), funcal_hit->Get_wr_subsystem_id(), funcal_hit->Get_wr_t() );
