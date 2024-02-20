@@ -35,7 +35,7 @@ WhiterabbitCorrelationOnline::WhiterabbitCorrelationOnline(const TString& name, 
     , fHitbPlastTwinpeaks(NULL)
     , fHitGe(NULL)
     , fNEvents(0)
-    , header(nullptr)
+    , fEventHeader(nullptr)
 {
 }
 
@@ -82,8 +82,8 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     FairRunOnline * run = FairRunOnline::Instance();
     run->GetHttpServer()->Register("", this);
 
-    header = (EventHeader*)mgr->GetObject("EventHeader.");
-    c4LOG_IF(error, !header, "Branch EventHeader. not found");
+    fEventHeader = (EventHeader*)mgr->GetObject("EventHeader.");
+    c4LOG_IF(error, !fEventHeader, "Branch EventHeader. not found");
 
     for (int i = 0; i < fNumDetectorSystems; i++)
     {
@@ -139,6 +139,13 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     h1_whiterabbit_correlation_bplast_ge->Draw();
     folder_whiterabbit->Add(h1_whiterabbit_correlation_bplast_ge);
     c_whiterabbit_correlation_bplast_ge->cd(0);
+
+    h1_whiterabbit_trigger = new TH1F("h1_whiterabbit_trigger3", "h1_whiterabbit_trigger3", 6, 0,5);
+    h1_whiterabbit_trigger->GetXaxis()->SetTitle("Trigger ID");
+    h1_whiterabbit_trigger->GetYaxis()->SetTitle("Counts");
+    h1_whiterabbit_trigger->Draw();
+    folder_whiterabbit->Add(h1_whiterabbit_trigger);
+
 
     run->GetHttpServer()->RegisterCommand("Reset_Whiterabbit_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
     run->GetHttpServer()->RegisterCommand("Snapshot_Whiterabbit_Hist", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
@@ -258,7 +265,17 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
                 }
             }
         }
-    }   
+    }
+
+    Int_t nHitsTrigger = fEventHeader->Sizeof();
+
+    for (Int_t i = 0; i < nHitsTrigger; i++)
+    {
+        if (fEventHeader)
+        {
+            h1_whiterabbit_trigger->Fill(fEventHeader->GetTrigger());
+        }
+    }
     fNEvents += 1;
 }
 

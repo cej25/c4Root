@@ -50,9 +50,8 @@ class WhiterabbitCorrelationOnline : public FairTask
         std::vector<TString> fDetectorSystems;
         int fNumDetectorSystems;
 
-        // ranges
-
-        EventHeader* header;
+        // Header
+        EventHeader* fEventHeader;
         Int_t fNEvents;
 
         // Canvas
@@ -71,6 +70,7 @@ class WhiterabbitCorrelationOnline : public FairTask
         TH1F* h1_whiterabbit_correlation_bplast_fatima;
         TH1F* h1_whiterabbit_correlation_bplast_ge;
         TH1F* h1_whiterabbit_correlation_fatima_ge;
+        TH1F* h1_whiterabbit_trigger;
 
 
 
