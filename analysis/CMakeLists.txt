@@ -42,9 +42,11 @@ set(SRCS
 ./online/frs/FrsDetectorsOnline.cxx
 ./fatima_aida_correlations/FatimaAidaSpectra.cxx
 ./online/TimeMachineOnline.cxx
-#nearline
-# ./nearline/bPlastNearlineSpectra.cxx
-# ./nearline/AidaNearlineSpectra.cxx
+
+# nearline
+./fatima_aida_correlations/FatimaAidaSpectra.cxx
+./online/WhiterabbitCorrelationOnline.cxx
+
 
 #offline
 )
