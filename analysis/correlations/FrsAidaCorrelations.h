@@ -5,11 +5,12 @@
 #include "TClonesArray.h"
 #include "AidaHitData.h"
 #include "../../config/frs_config.h"
-#include "../../config/NovTest/setup.hh"
+#include "../../config/NovTest/setup.hh" // we can't be doing this
 
 #include "TH1.h"
 #include "TH2.h"
 #include "TCutG.h"
+#include "TFolder.h"
 
 class TClonesArray;
 class EventHeader;
@@ -22,6 +23,7 @@ class TCutG;
 class FrsHitData;
 class FrsAnalysisData;
 class TAidaConfiguration;
+class TFolder;
 
 class FrsAidaCorrelations : public FairTask
 {
@@ -42,13 +44,29 @@ class FrsAidaCorrelations : public FairTask
     private:
 
         TClonesArray* fFrsHitArray;
-        TClonesArray* fFrsAnalysisArray;
-        TClonesArray* fFrsAidaCorrelation;
-        std::vector<AidaHit>* fAidaImplants;
+        std::vector<AidaHit> const* fAidaImplants;
 
         Int_t fNEvents;
         EventHeader* header;
-        Bool_t fOnline;
+
+        TFolder* frs_correlations;
+        TFolder* frs_aida_correlations;
+        TFolder* frs_implant_correlations;
+        TFolder* frs_stopped_implant_correlations;
+        TFolder* frs_implant_correlations_ZvsAoQ;
+        TFolder* frs_implant_correlations_Z1vsZ2;
+        TFolder* frs_implant_correlations_x2vsAoQ;
+        TFolder* frs_implant_correlations_x4vsAoQ;
+        TFolder* frs_implant_correlations_ZvsAoQ_stopped;
+        TFolder* frs_implant_correlations_Z1vsZ2_stopped;
+        TFolder* frs_implant_correlations_x2vsAoQ_stopped;
+        TFolder* frs_implant_correlations_x4vsAoQ_stopped;
+        TFolder* frs_imp_corr_Z1Z2_x2vsAoQ;
+        TFolder* frs_imp_corr_Z1Z2_x4vsAoQ;
+        TFolder* frs_imp_corr_Z1Z2_x2vsAoQ_stopped;
+        TFolder* frs_imp_corr_Z1Z2_x4vsAoQ_stopped;
+        // decay correlations?
+
 
         // Variables
         Long64_t AidaLastWR;

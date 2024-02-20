@@ -52,7 +52,6 @@ class FrsAnalysisSpectra : public FairTask
 
         Int_t fNEvents;
         EventHeader* header;
-        Bool_t fOnline;
 
         TClonesArray* fFrsHitArray;
         TClonesArray* fFrsAnalysisArray;

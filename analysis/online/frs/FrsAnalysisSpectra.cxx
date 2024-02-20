@@ -12,7 +12,6 @@
 
 // ROOT
 #include "TClonesArray.h"
-#include "THttpServer.h"
 #include <vector>
 
 FrsAnalysisSpectra::FrsAnalysisSpectra(TFRSParameter* ffrs,
@@ -47,9 +46,9 @@ FrsAnalysisSpectra::FrsAnalysisSpectra(TFRSParameter* ffrs,
     // also need to work out nullptr check
     for (auto & GateType : fFrsGates)
     {
-        if (strcmp(GateType[0]->GetVarX(),"AoQ") == 0)
+        if (strcmp(GateType[0]->GetVarX(), "AoQ") == 0)
         {
-            if (strcmp(GateType[0]->GetVarY(),"Z") == 0)
+            if (strcmp(GateType[0]->GetVarY(), "Z") == 0)
             {
                 cutID_Z_AoQ = GateType;
             }
@@ -64,7 +63,7 @@ FrsAnalysisSpectra::FrsAnalysisSpectra(TFRSParameter* ffrs,
         }
         else if (strcmp(GateType[0]->GetVarX(), "Z") == 0)
         {
-            if (strcmp(GateType[0]->GetVarY(),"dEdeg") == 0)
+            if (strcmp(GateType[0]->GetVarY(), "dEdeg") == 0)
             {
                 cutID_dEdegZ = GateType;
             }
@@ -84,7 +83,6 @@ FrsAnalysisSpectra::FrsAnalysisSpectra(const TString& name, Int_t verbose)
     :   FairTask(name, verbose)
     ,   fNEvents()
     ,   header(nullptr)
-    ,   fOnline(kFALSE)
     ,   fFrsHitArray(new TClonesArray("FrsHitData"))
     ,   fFrsAnalysisArray(new TClonesArray("FrsAnalysisData"))
 {
@@ -103,8 +101,8 @@ InitStatus FrsAnalysisSpectra::Init()
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-    FairRunOnline* run = FairRunOnline::Instance();
-    run->GetHttpServer()->Register("", this);
+    //FairRunOnline* run = FairRunOnline::Instance();
+    //run->GetHttpServer()->Register("", this);
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "EventHeader. not found!");
