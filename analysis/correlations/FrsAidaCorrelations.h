@@ -2,11 +2,12 @@
 #define FrsAidaCorrelations_H
 
 #include "TAidaConfiguration.h"
-#include "TClonesArray.h"
 #include "AidaHitData.h"
 #include "../../config/frs_config.h"
 #include "../../config/NovTest/setup.hh" // we can't be doing this
+#include "TCutGGates.h"
 
+#include "TClonesArray.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "TCutG.h"
@@ -24,11 +25,12 @@ class FrsHitData;
 class FrsAnalysisData;
 class TAidaConfiguration;
 class TFolder;
+class TCutGGates;
 
 class FrsAidaCorrelations : public FairTask
 {
     public:
-        FrsAidaCorrelations(std::vector<std::vector<TCutG*>> fFrsGates);
+        FrsAidaCorrelations(std::vector<TCutGGates*> fFrsGates);
 
         FrsAidaCorrelations(const TString& name, Int_t verbose);
 

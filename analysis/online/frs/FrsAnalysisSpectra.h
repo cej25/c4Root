@@ -18,6 +18,7 @@ class TH2I;
 class TH1I;
 class TFolder;
 class TCutG;
+class TCutGGates;
 
 class FrsAnalysisSpectra : public FairTask
 {
@@ -32,7 +33,7 @@ class FrsAnalysisSpectra : public FairTask
                         TSIParameter* fsi,
                         TMRTOFMSParameter* fmrtof,
                         TRangeParameter* frange,
-                        std::vector<std::vector<TCutG*>> fFrsGates);
+                        std::vector<TCutGGates*> fFrsGates);
 
         FrsAnalysisSpectra(const TString& name, Int_t verbose = 1);
 
