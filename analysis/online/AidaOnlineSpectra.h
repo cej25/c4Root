@@ -39,7 +39,7 @@ class AidaOnlineSpectra : public FairTask
 
         // HTTP Commands
         virtual void Reset_Histo();
-        
+
         virtual void Snapshot_Histo();
 
         void Reset_Scalers();
@@ -100,6 +100,12 @@ class AidaOnlineSpectra : public FairTask
         std::map<int, std::deque<int>> aida_scaler_queue;
         std::map<int, int> aida_scaler_cur_sec;
         std::map<int, TGraph*> aida_scaler_graph;
+        std::deque<int> aida_implant_scaler_queue;
+        int aida_implant_scaler_cur_sec;
+        TGraph* aida_implant_scaler_graph;
+        std::deque<int> aida_decay_scaler_queue;
+        int aida_decay_scaler_cur_sec;
+        TGraph* aida_decay_scaler_graph;
 
         // Deadtime
 
