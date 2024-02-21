@@ -267,6 +267,30 @@ InitStatus AidaOnlineSpectra::Init()
         folder_scalers->Add(aida_scaler_graph[scaler.first]);
     }
 
+    aida_implant_scaler_queue.clear();
+    aida_implant_scaler_cur_sec = -1;
+    aida_implant_scaler_graph = new TGraph(3600);
+    std::stringstream name, title;
+    name << "aida_scaler_implants";
+    title << "AIDA Implant Rate";
+    title << ";Time before now (s);Frequency (Hz)";
+    aida_implant_scaler_graph->SetName(name.str().c_str());
+    aida_implant_scaler_graph->SetTitle(title.str().c_str());
+    aida_implant_scaler_graph->SetMinimum(0);
+    folder_scalers->Add(aida_implant_scaler_graph);
+
+    aida_decay_scaler_queue.clear();
+    aida_decay_scaler_cur_sec = -1;
+    aida_decay_scaler_graph = new TGraph(3600);
+    name.str(""); title.str("");
+    name << "aida_scaler_decays";
+    title << "AIDA Decay Rate";
+    title << ";Time before now (s);Frequency (Hz)";
+    aida_decay_scaler_graph->SetName(name.str().c_str());
+    aida_decay_scaler_graph->SetTitle(title.str().c_str());
+    aida_decay_scaler_graph->SetMinimum(0);
+    folder_scalers->Add(aida_decay_scaler_graph);
+
     return kSUCCESS;
 }
 
@@ -389,6 +413,10 @@ void AidaOnlineSpectra::Reset_Scalers()
         aida_scaler_queue[scaler.first].clear();
         aida_scaler_cur_sec[scaler.first] = -1;
     }
+    aida_implant_scaler_queue.clear();
+    aida_implant_scaler_cur_sec = -1;
+    aida_decay_scaler_queue.clear();
+    aida_decay_scaler_cur_sec = -1;
 }
 
 void AidaOnlineSpectra::Exec(Option_t* option)
@@ -406,6 +434,8 @@ void AidaOnlineSpectra::Exec(Option_t* option)
             //fhAdcs[fee - 1][channel][implantIdx]->Fill(value);
     //}
     //
+    //
+    bool implant_hredraw = false;
     for (auto const& hit : *implantHitArray)
     {
         h_implant_strip_xy[hit.DSSD - 1]->Fill(hit.StripX, hit.StripY);
@@ -413,13 +443,57 @@ void AidaOnlineSpectra::Exec(Option_t* option)
         h_implant_e[hit.DSSD - 1]->Fill(hit.Energy);
         h_implant_e_xy[hit.DSSD - 1]->Fill(hit.EnergyX, hit.EnergyY);
         h_implant_x_ex[hit.DSSD - 1]->Fill(hit.PosX, hit.EnergyX);
+
+        int second = (hit.Time / 1000000000ULL);
+        if (second == aida_implant_scaler_cur_sec)
+        {
+            aida_implant_scaler_queue.front() += 1;
+        }
+        else
+        {
+            implant_hredraw = true;
+            if (aida_implant_scaler_cur_sec != -1)
+            {
+                int diff = second - aida_implant_scaler_cur_sec;
+                if (diff > 3600)
+                    aida_implant_scaler_queue.clear();
+                else
+                    while (diff-- > 1) aida_implant_scaler_queue.push_front(0);
+            }
+            aida_implant_scaler_queue.push_front(1);
+            while (aida_implant_scaler_queue.size() > 3600) aida_implant_scaler_queue.pop_back();
+        }
+        aida_implant_scaler_cur_sec = second;
     }
+
+    bool decay_hredraw = false;
     for (auto const& hit : *decayHitArray)
     {
         h_decay_strip_xy[hit.DSSD - 1]->Fill(hit.StripX, hit.StripY);
         h_decay_pos_xy[hit.DSSD - 1]->Fill(hit.PosX, hit.PosY);
         h_decay_e[hit.DSSD - 1]->Fill(hit.Energy);
         h_decay_e_xy[hit.DSSD - 1]->Fill(hit.EnergyX, hit.EnergyY);
+
+        int second = (hit.Time / 1000000000ULL);
+        if (second == aida_decay_scaler_cur_sec)
+        {
+            aida_decay_scaler_queue.front() += 1;
+        }
+        else
+        {
+            decay_hredraw = true;
+            if (aida_decay_scaler_cur_sec != -1)
+            {
+                int diff = second - aida_decay_scaler_cur_sec;
+                if (diff > 3600)
+                    aida_decay_scaler_queue.clear();
+                else
+                    while (diff-- > 1) aida_decay_scaler_queue.push_front(0);
+            }
+            aida_decay_scaler_queue.push_front(1);
+            while (aida_decay_scaler_queue.size() > 3600) aida_decay_scaler_queue.pop_back();
+        }
+        aida_decay_scaler_cur_sec = second;
     }
 
     for (auto const& event : *implantCalArray)
@@ -428,6 +502,7 @@ void AidaOnlineSpectra::Exec(Option_t* option)
         if (event.Side() == conf->DSSD(event.DSSD() - 1).YSide)
             offset = conf->Wide() ? 386 : 128;
         h_implant_strip_1d_energy[event.DSSD() - 1]->Fill(event.Strip() + offset, event.Energy());
+
     }
     for (auto const& event : *decayCalArray)
     {
@@ -475,6 +550,27 @@ void AidaOnlineSpectra::Exec(Option_t* option)
                 aida_scaler_graph[scaler.first]->SetPoint(i, i, p);
                 i++;
             }
+        }
+    }
+
+    if (implant_hredraw)
+    {
+        aida_implant_scaler_graph->Set(aida_implant_scaler_queue.size());
+        int i = 0;
+        for (auto p : aida_implant_scaler_queue)
+        {
+            aida_implant_scaler_graph->SetPoint(i, i, p);
+            i++;
+        }
+    }
+    if (decay_hredraw)
+    {
+        aida_decay_scaler_graph->Set(aida_decay_scaler_queue.size());
+        int i = 0;
+        for (auto p : aida_decay_scaler_queue)
+        {
+            aida_decay_scaler_graph->SetPoint(i, i, p);
+            i++;
         }
     }
 
