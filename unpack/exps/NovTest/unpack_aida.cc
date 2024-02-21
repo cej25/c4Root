@@ -1,5 +1,6 @@
 // header link
 #include "ext_unpacking.hh"
+#include "unpack_aida.hh"
 #include "unpack_structures.hh"
 
 // ucesb internals
@@ -59,7 +60,7 @@ EXT_DECL_DATA_SRC_FCN(void, EXT_AIDA::__unpack)
     // Timestamp extract
     uint64 cur_timestamp = 0;
     if (((wr1 & 0xffff0000) != 0x03e10000) || (wr2 & 0xffff0000) != 0x04e10000
-      || (wr3 & 0xffff0000) != 0x05e10000 || (wr4 & 0xffff0000) != 0x06e10000)
+        || (wr3 & 0xffff0000) != 0x05e10000 || (wr4 & 0xffff0000) != 0x06e10000)
     {
         ERROR("MBS White Rabbit Header not valid.");
     }
@@ -67,7 +68,10 @@ EXT_DECL_DATA_SRC_FCN(void, EXT_AIDA::__unpack)
     cur_timestamp |= (wr2 & 0xffff) << 16;
     cur_timestamp |= (uint64)(wr3 & 0xffff) << 32;
     cur_timestamp |= (uint64)(wr4 & 0xffff) << 48;
-  
+
+    // Adjust ucesb shift!!
+    cur_timestamp += 14000;
+
     // Loop through all AIDA data items
     while (!__buffer.empty())
     {
