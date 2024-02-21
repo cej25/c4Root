@@ -48,7 +48,7 @@ class FatimaTimingAnalysis : public FairTask
             fenergy_bin_high = binhigh; 
         };
 
-
+        /*
         double SoftwareTimewalk(double energy){
             //in energy in keV, out software walk:
             double a = 2223.77;
@@ -56,6 +56,7 @@ class FatimaTimingAnalysis : public FairTask
             double c = -1.23853;
             return a/(energy+b) + c;
         };
+        */
 
 
 
