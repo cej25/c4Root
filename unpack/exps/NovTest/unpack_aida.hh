@@ -8,6 +8,41 @@
 #include "external_data.hh"
 #include "zero_suppress.hh"
 
+#define AIDA_UNPACK_STATS 1
+
+#if AIDA_UNPACK_STATS
+struct AidaUnpackerStats
+{
+  uint64 Start;
+  uint64 Stop;
+  uint64 Events;
+  uint64 DataItems;
+  uint64 TimeWarps;
+  sint64 DeadTime;
+  struct
+  {
+    uint64 ADC;
+    uint64 Info;
+    uint64 WAVE;
+  } Type;
+  struct
+  {
+    uint64 Pause;
+    uint64 Resume;
+    uint64 Sync48;
+    uint64 Sync63;
+    uint64 Discriminator;
+    uint64 Scaler;
+  } InfoType;
+  struct
+  {
+    uint64 Decay;
+    uint64 Implant;
+    uint64 Vernier;
+  } AdcType;
+};
+#endif
+
 DUMMY_EXTERNAL_MAP_STRUCT_FORW(EXT_AIDA);
 
 struct aida_adc_item
@@ -120,6 +155,15 @@ class EXT_AIDA
     uint64 scalers[AIDA_MAX_FEES];
     uint64 asic_last[AIDA_MAX_FEES][4];
     unsigned int multiplexer[AIDA_MAX_FEES][4];
+
+#if AIDA_UNPACK_STATS
+    AidaUnpackerStats stats;
+    AidaUnpackerStats stats_fee[AIDA_MAX_FEES];
+    uint64_t last_adc_timestamp;
+    uint64_t last_adc_timestamp_fee[AIDA_MAX_FEES];
+    uint64_t pause_time;
+    uint64_t pause_time_fee[AIDA_MAX_FEES];
+#endif
 };
 
 DUMMY_EXTERNAL_MAP_STRUCT(EXT_AIDA);
