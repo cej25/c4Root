@@ -11,45 +11,35 @@
 
 #include <vector>
 
-FrsAidaCorrelations::FrsAidaCorrelations(std::vector<std::vector<TCutG*>> fFrsGates)
+FrsAidaCorrelations::FrsAidaCorrelations(std::vector<TCutGGates*> fFrsGates)
     :   FairTask()
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fFrsHitArray(new TClonesArray("FrsHitData"))
     ,   fAidaImplants(new std::vector<AidaHit>)
 {
-    // CEJ: this can be done more cleanly with a lookup map ikik
-    // also need to work out nullptr check
-    for (auto & GateType : fFrsGates)
+    // Set gates
+    for (auto & Gate : fFrsGates)
     {
-        if (strcmp(GateType[0]->GetVarX(), "AoQ") == 0)
+        if (Gate->Type == "ZAoQ")
         {
-            if (strcmp(GateType[0]->GetVarY(), "Z") == 0)
-            {
-                cutID_Z_AoQ = GateType;
-            }
-            else if (strcmp(GateType[0]->GetVarY(), "x2") == 0)
-            {
-                cutID_x2AoQ = GateType;
-            }
-            else if (strcmp(GateType[0]->GetVarY(), "x4") == 0)
-            {
-                cutID_x4AoQ = GateType;
-            }
+            cutID_Z_AoQ = Gate->Gates;
         }
-        else if (strcmp(GateType[0]->GetVarX(), "Z") == 0)
+        else if (Gate->Type == "Z1Z2")
         {
-            if (strcmp(GateType[0]->GetVarY(), "dEdeg") == 0)
-            {
-                cutID_dEdegZ = GateType;
-            }
+            cutID_Z_Z2 = Gate->Gates;
         }
-        else if (strcmp(GateType[0]->GetVarX(), "Z1") == 0)
+        else if (Gate->Type == "x2AoQ")
         {
-            if (strcmp(GateType[0]->GetVarY(), "Z2") == 0)
-            {
-                cutID_Z_Z2 = GateType;
-            }
+            cutID_x2AoQ = Gate->Gates;
+        }
+        else if (Gate->Type == "x4AoQ")
+        {
+            cutID_x4AoQ = Gate->Gates;
+        }
+        else if (Gate->Type == "dEdegZ")
+        {
+            cutID_dEdegZ = Gate->Gates;
         }
     }
 }

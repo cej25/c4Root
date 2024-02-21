@@ -3,10 +3,10 @@
 // CEJ: for now, here we have to define our setup file
 // the file must be taken from FRS, and FRS parameters
 // should be added as arguments to the setup function
+// highkey hate this
 extern "C"
 {
     #include "../../config/frs/setup.C"
-    #include "../../config/ReadGates.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -156,9 +156,9 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     aidaCalibrator->SetAidaTimeMachineChannels(4,3);
     AidaCal2Hit* aidaHitter = new AidaCal2Hit();
 
-    bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
-    calbplast->SetDetectorMapFile("/u/cjones/c4Root/config/NovTest/bplast_allocation_111223.txt");
-    calbplast->SetTimeMachineChannels(68,67);
+    //bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
+    //calbplast->SetDetectorMapFile("/u/cjones/c4Root/config/NovTest/bplast_allocation_111223.txt");
+    //calbplast->SetTimeMachineChannels(68,67);
 
     //GermaniumRaw2Cal * ge_calib = new GermaniumRaw2Cal();
     //ge_calib->SetDetectorMapFile("/u/despec/BB7-c4-test/c4Root/Germanium_Detector_Map.txt");
@@ -175,7 +175,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     aidaCalibrator->SetOnline(true);
     aidaHitter->SetOnline(true);
     calfatima->SetOnline(true);
-    calbplast->SetOnline(true);
+    //calbplast->SetOnline(true);
     //ge_calib->SetOnline(false);
 
     calfrsmain->SetOnline(true);
@@ -186,7 +186,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     run->AddTask(calfatima);
     run->AddTask(aidaCalibrator);
     run->AddTask(aidaHitter);
-    run->AddTask(calbplast);
+    //run->AddTask(calbplast);
     //run->AddTask(ge_calib);
 
     run->AddTask(calfrsmain);
@@ -207,14 +207,15 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     FatimaOnlineSpectra * onlinefatima = new FatimaOnlineSpectra();
 
     AidaOnlineSpectra* aidaOnline = new AidaOnlineSpectra();
-    bPlastOnlineSpectra* onlinebplast = new bPlastOnlineSpectra();
+    //bPlastOnlineSpectra* onlinebplast = new bPlastOnlineSpectra();
     //GermaniumOnlineSpectra* onlinege = new GermaniumOnlineSpectra();
     
     TimeMachineOnline* tms = new TimeMachineOnline();
     TString b = "Fatima";
     TString c = "bPlast";
     TString d = "Aida";
-    std::vector a {b,c,d};
+    //std::vector a {b,c,d};
+    std::vector a {b,d};
     tms->SetDetectorSystems(a);
 
     /* ------------------------------------------------------------------ */
@@ -225,21 +226,19 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     // If you wish to add another type of gate, as well as adding 
     // analysis tasks, please add the type to ReadGates.C also!
     std::string gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/Gates/";
-    std::vector<TCutG*> cID_Z_AoQ, cID_Z_Z2, cID_x2AoQ, cID_x4AoQ, cID_dEdegZ;
-    std::vector<TCutG*> cID_Z_AoQ_mhtdc, cID_Z_Z2_mhtdc, cID_x2AoQ_mhtdc, cID_x4AoQ_mhtdc, cID_dEdegZ_mhtdc;
-    std::vector<std::string> Z_AoQ_Gate_files = {"ZvsAoQ1"};
-    ReadGates("ZvsAoQ", Z_AoQ_Gate_files, cID_Z_AoQ, gate_path);
-    std::vector<std::string> Z_Z2_Gate_files = {"Z1vsZ21"};
-    ReadGates("Z1vsZ2", Z_Z2_Gate_files, cID_Z_Z2, gate_path);
-    std::vector<std::string> x2_AoQ_Gate_files = {"x2vsAoQ1"};
-    ReadGates("x2vsAoQ", x2_AoQ_Gate_files, cID_x2AoQ, gate_path);
-    std::vector<std::string> x4_AoQ_Gate_files = {"x4vsAoQ1"};
-    ReadGates("x4vsAoQ", x4_AoQ_Gate_files, cID_x4AoQ, gate_path);
-    std::vector<std::string> dEdeg_Z_Gate_files = {"dEdegvsZ1"};
-    ReadGates("dEdegvsZ", dEdeg_Z_Gate_files, cID_dEdegZ, gate_path);
-
-    std::vector<std::vector<TCutG*>> FrsGates = {cID_Z_AoQ, cID_Z_Z2, cID_x2AoQ, cID_x4AoQ, cID_dEdegZ};
-
+    
+    std::vector<std::string> ZAoQ_cuts = {"ZvsAoQ1"};
+    TCutGGates* ZAoQ = new TCutGGates("ZAoQ", ZAoQ_cuts, gate_path);
+    std::vector<std::string> Z1Z2_cuts = {"Z1vsZ21"};
+    TCutGGates* Z1Z2 = new TCutGGates("Z1Z2", Z1Z2_cuts, gate_path);
+    std::vector<std::string> x2AoQ_cuts = {"x2vsAoQ1"};
+    TCutGGates* x2AoQ = new TCutGGates("x2AoQ", x2AoQ_cuts, gate_path);
+    std::vector<std::string> x4AoQ_cuts = {"x4vsAoQ1"};
+    TCutGGates* x4AoQ = new TCutGGates("x4AoQ", x4AoQ_cuts, gate_path);
+    std::vector<std::string> dEdegZ_cuts = {"dEdegvsZ1"};
+    TCutGGates* dEdegZ = new TCutGGates("dEdegZ", dEdegZ_cuts, gate_path);
+    
+    std::vector<TCutGGates*> FrsGates = {ZAoQ, Z1Z2, x2AoQ, x4AoQ, dEdegZ};
 
     //FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
     //FrsRawSpectra* frsrawspec = new FrsRawSpectra();
@@ -250,7 +249,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     run->AddTask(tms);
     run->AddTask(onlinefatima);
     run->AddTask(aidaOnline);
-    run->AddTask(onlinebplast);
+    //run->AddTask(onlinebplast);
     //run->AddTask(onlinege);
 
     //run->AddTask(onlinefrs);

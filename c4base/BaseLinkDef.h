@@ -8,6 +8,7 @@
 
 #pragma link C++ class EventHeader+;
 #pragma link C++ class c4Logger+;
+#pragma link C++ class TCutGGates+;
 
 
 #endif
