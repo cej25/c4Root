@@ -65,7 +65,7 @@ class bPlastOnlineSpectra : public FairTask
 
 
         // number of detectors
-        static const int NDetectors = 150;
+        static const int NDetectors = 64;
 
         // Histograms
         TH1F * h1_bplast_slowToT[NDetectors];

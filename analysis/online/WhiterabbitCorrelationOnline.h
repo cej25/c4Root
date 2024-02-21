@@ -57,8 +57,18 @@ class WhiterabbitCorrelationOnline : public FairTask
         // Canvas
         TCanvas* c_whiterabbit_correlation;
         TCanvas* c_whiterabbit_correlation_bplast_fatima;
+        TCanvas* c_whiterabbit_trigger1_bplast_fatima;
+        TCanvas* c_whiterabbit_trigger3_bplast_fatima;
+
         TCanvas* c_whiterabbit_correlation_bplast_ge;
+        TCanvas* c_whiterabbit_trigger1_bplast_ge;
+        TCanvas* c_whiterabbit_trigger3_bplast_ge;
+
         TCanvas* c_whiterabbit_correlation_fatima_ge;
+        TCanvas* c_whiterabbit_trigger1_fatima_ge;
+        TCanvas* c_whiterabbit_trigger3_fatima_ge;
+        
+        TCanvas* c_whiterabbit_trigger;
 
         //Folders and directories
         TDirectory* dir_whiterabbit;
@@ -68,8 +78,17 @@ class WhiterabbitCorrelationOnline : public FairTask
         
         // Histograms  
         TH1F* h1_whiterabbit_correlation_bplast_fatima;
+        TH2F* h2_whiterabbit_trigger1_bplast_fatima;
+        TH2F* h2_whiterabbit_trigger3_bplast_fatima;
+
         TH1F* h1_whiterabbit_correlation_bplast_ge;
+        TH2F* h2_whiterabbit_trigger1_bplast_ge;
+        TH2F* h2_whiterabbit_trigger3_bplast_ge;
+
         TH1F* h1_whiterabbit_correlation_fatima_ge;
+        TH2F* h2_whiterabbit_trigger1_fatima_ge;
+        TH2F* h2_whiterabbit_trigger3_fatima_ge;
+
         TH1F* h1_whiterabbit_trigger;
 
 
