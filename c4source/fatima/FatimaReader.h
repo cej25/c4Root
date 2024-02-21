@@ -115,7 +115,7 @@ class FatimaReader : public c4Reader
         char * fine_time_histo_outfile; 
         char * fine_time_histo_infile; 
 
-        const int Nbins_fine_time = 1024; //number of bins in the fine time - it is a 10 bit word (2^10 = 1024) but seemingly no event is >512 - true, fine time calibration does this.
+        const int Nbins_fine_time = 1024; //number of bins in the fine time - it is a 10 bit word (2^10 = 1024)
 
         TH1I *** fine_time_hits; //array of TH1 hisots [NBoards][NChannels]
         double *** fine_time_calibration_coeffs; //[NBoards][NChannels][1024] last index is bin nr. - this is the lookup table

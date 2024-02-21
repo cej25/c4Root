@@ -250,18 +250,18 @@ void FatimaRaw2Cal::Exec(Option_t* option){
             //c4LOG(info,Form("fast hits = %i, slow hits = %i, look ahead counter = %i",hits_in_fast_channel,hits_in_slow_channel,look_ahead_counter));
             if (hits_in_fast_channel != hits_in_slow_channel) {
                 //break condition - cant recover.
-                ihit = hits_in_fast_channel + hits_in_slow_channel - 1 + ihit;
+                ihit = hits_in_fast_channel + hits_in_slow_channel + ihit - 1; // -1 cus it adds one when restarting the for-loop 
                 continue;
             }
-
 
             for (int hitnr = 0; hitnr<hits_in_fast_channel; hitnr++){
 
             funcal_hit = (FatimaTwinpeaksData*)funcal_data->At(ihit+hitnr);
             funcal_hit_next = (FatimaTwinpeaksData*)funcal_data->At(ihit+hitnr+hits_in_fast_channel);
             
-            if (funcal_hit_next->Get_ch_ID() != funcal_hit->Get_ch_ID()+1){ // this assumption seems empirically true - no events are filled when reverse order is put.
-                fNunmatched++; continue;
+            if (funcal_hit_next->Get_ch_ID() != funcal_hit->Get_ch_ID()+1){
+                fNunmatched++;
+                continue;
             }
 
             if (funcal_hit_next->Get_board_id() != funcal_hit->Get_board_id()){
@@ -279,14 +279,17 @@ void FatimaRaw2Cal::Exec(Option_t* option){
                 detector_id = result_find->second; //.find returns an iterator over the pairs matching key.
                 if (detector_id == -1) {fNunmatched++; continue;} //if only one event is left
                 }else{
-                    c4LOG(fatal, "Detector mapping not complete - exiting.");
+                    c4LOG(fatal, Form("Detector mapping not complete - exiting. ch = %i, board = %i",funcal_hit->Get_ch_ID(),funcal_hit->Get_board_id()));
                 }
             }
             else{ //no map and cal: ->
                 detector_id = funcal_hit->Get_board_id()*17 + (int)(funcal_hit_next->Get_ch_ID()+1)/2; // do mapping.
             }
 
-            if (funcal_hit_next->Get_trail_epoch_counter() == 0) continue; // missing trail in either
+            if (funcal_hit_next->Get_trail_epoch_counter() == 0 || funcal_hit_next->Get_lead_epoch_counter() == 0) continue; // missing trail in either
+            if (funcal_hit->Get_trail_epoch_counter() == 0 || funcal_hit->Get_lead_epoch_counter() == 0) continue; // missing trail in either
+            //if (funcal_hit_next->Get_trail_coarse_T() == 0 || funcal_hit_next->Get_lead_coarse_T() == 0) continue; // missing trail in either
+            //if (funcal_hit->Get_trail_fine_T() == 0 || funcal_hit->Get_lead_fine_T() == 0) continue; // missing trail in either
 
             // I am slightly worried about round-off errors by this method (but as far as i can see the maximum epoch counter values is not so large that the digits are suppressed but it is something to keep in mind). However constructing the times like this makes it very easy to use.
             fast_lead_time = static_cast<double>(funcal_hit->Get_lead_epoch_counter()) * 10.24e3
@@ -306,8 +309,10 @@ void FatimaRaw2Cal::Exec(Option_t* option){
                             - static_cast<double>(funcal_hit_next->Get_trail_fine_T());
 
             fast_ToT =  fast_trail_time - fast_lead_time;
-            slow_ToT =  slow_trail_time - slow_lead_time;
+            // find the slow ToT without encountering round-off errors?:
+            slow_ToT =  (funcal_hit_next->Get_trail_epoch_counter() - funcal_hit_next->Get_lead_epoch_counter())*10.24e3 +  (funcal_hit_next->Get_trail_coarse_T() - funcal_hit_next->Get_lead_coarse_T())*5.0 - (funcal_hit_next->Get_trail_fine_T() - funcal_hit_next->Get_lead_fine_T());
 
+            
             //if (detector_id == 0 || detector_id == 1) c4LOG(info,Form("id = %i, fast lead = %f, fast trail = %f, fast ToT = %f",detector_id,fast_lead_time,fast_trail_time,fast_ToT));
 
             if (DetectorMap_loaded){
@@ -346,8 +351,7 @@ void FatimaRaw2Cal::Exec(Option_t* option){
                 energy,
                 funcal_hit->Get_wr_subsystem_id(),
                 funcal_hit->Get_wr_t());
-            
-            
+                        
             fNEvents++;
             //ihit++; //increment it by one extra.
             }

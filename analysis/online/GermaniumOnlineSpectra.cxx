@@ -217,7 +217,7 @@ void GermaniumOnlineSpectra::Exec(Option_t* option)
                         if ((hit->Get_detector_id() == 1) || (hit->Get_detector_id() == 0)) h1_germanium_energy_mult2[hit->Get_crystal_id()+hit->Get_detector_id()*NCrystals]->Fill(hit->Get_channel_energy());
                         if ((hit2->Get_detector_id() == 1) || (hit2->Get_detector_id() == 0)){
                             h1_germanium_energy_mult2[hit2->Get_crystal_id()+hit2->Get_detector_id()*NCrystals]->Fill(hit2->Get_channel_energy());
-                            break; // some simpifications.
+                            break; // some simpifications
                         }
                     }
                 }

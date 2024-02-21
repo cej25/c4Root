@@ -181,8 +181,8 @@ void FatimaTimingAnalysis::Exec(Option_t* option)
                         int index2 = std::distance(detector_id_analyze->begin(), std::find(detector_id_analyze->begin(), detector_id_analyze->end(), detector_id1));
                         if (timeshifts_loaded) timeshift_to_apply =  timeshifts.find(std::pair<int,int>(detector_id2,detector_id1))->second;
                         else timeshift_to_apply = 0;
-                        h_energy_E1_E2_dt[index1][index2]->Fill(fast_lead1-fast_lead2 - timeshift_to_apply);
-                        h_energy_E1_dt_vs_E[index1][index2]->Fill(energy1, fast_lead1-fast_lead2 - timeshift_to_apply);
+                        h_energy_E1_E2_dt[index1][index2]->Fill(fast_lead1 - fast_lead2 - timeshift_to_apply);
+                        h_energy_E1_dt_vs_E[index1][index2]->Fill(energy1, fast_lead1 - fast_lead2 - timeshift_to_apply);
 
                     }
                 }
