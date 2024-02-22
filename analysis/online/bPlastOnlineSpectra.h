@@ -61,7 +61,7 @@ class bPlastOnlineSpectra : public FairTask
         TFolder* folder_bplast_hitpattern;
         TFolder* folder_bplast_fast_v_slow;
         TFolder* folder_bplast_time_spectra;
-        TFile * file_bplast_snapshot;
+        TFile* file_bplast_snapshot;
 
 
         // number of detectors

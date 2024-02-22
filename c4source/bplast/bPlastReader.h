@@ -5,8 +5,6 @@
 
 #include "TH1.h"
 
-
-
 #include <Rtypes.h>
 
 extern "C"
@@ -48,7 +46,6 @@ class bPlastReader : public c4Reader
 
         void SetOnline(Bool_t option) { fOnline = option; }
 
-
         void DoFineTimeCalibration();
         
         double GetFineTime(int tdc_fine_time_channel, int board_id, int channel_id);
@@ -83,6 +80,8 @@ class bPlastReader : public c4Reader
 
         Bool_t fOnline;
 
+        Bool_t fPrintStatistics = false;
+        
         TClonesArray* fArray;
 
         uint64_t wr_t;
