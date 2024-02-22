@@ -146,9 +146,7 @@ void FrsCal2Hit::Exec(Option_t* option)
 
     // CEJ: new - updating how we set data values
     FrsHitData* FrsHit = new FrsHitData();
-    ((*fHitArray)[fHitArray->GetEntriesFast()]) = FrsHit;
 
-    
     fNEvents++;
     fCalHitMain = (FrsMainCalData*)fCalArrayMain->At(0);
     fCalHitTPC = (FrsTPCCalData*)fCalArrayTPC->At(0);
@@ -156,9 +154,9 @@ void FrsCal2Hit::Exec(Option_t* option)
     fCalHitVFTX = (FrsVFTXCalData*)fCalArrayVFTX->At(0);
 
     // old
-    WR_TS = fCalHitMain->Get_WR();
+    //WR_TS = fCalHitMain->Get_WR();
     // new
-    FrsHit->Set_wr_ts(fCalHitMain->Get_wr_ts());
+    FrsHit->Set_wr_t(fCalHitMain->Get_wr_t());
 
     
 
@@ -249,8 +247,8 @@ void FrsCal2Hit::Exec(Option_t* option)
     FrsHit->Set_ibin_for_spill(ibin_for_spill);
     for (int index = 0; index < 32; index ++) FrsHit->Set_increase_sc_temp_user(index, increase_sc_temp_user[index]);
     for (int index = 0; index < 32; index ++) FrsHit->Set_increase_sc_temp_main(index, increase_sc_temp_main[index]);
-    FrsHit->Set_increase_temp2(increase_sc_temp2);
-    FrsHit->Set_increase_temp3(increase_sc_temp3);
+    FrsHit->Set_increase_sc_temp2(increase_sc_temp2);
+    FrsHit->Set_increase_sc_temp3(increase_sc_temp3);
     FrsHit->Set_extraction_time_ms(extraction_time_ms);
     FrsHit->Set_ibin_clean_for_s(ibin_clean_for_s);
     FrsHit->Set_ibin_clean_for_100ms(ibin_clean_for_100ms);
@@ -1416,16 +1414,16 @@ void FrsCal2Hit::Exec(Option_t* option)
         id_rho[0] = frs->rho0[0] * (1. - id_x2 / 1000. / frs->dispersion[0]);
         id_brho[0] = (fabs(frs->bfield[0]) + fabs(frs->bfield[1])) / 2. * id_rho[0];
 
-        FrsHit->Set_ID_rho(0, rho[0]);
-        FrsHit->Set_ID_brho(0, brho[0]);
+        FrsHit->Set_ID_rho(0, id_rho[0]);
+        FrsHit->Set_ID_brho(0, id_brho[0]);
 
         if (id_b_x4)
         {
             id_rho[1] = frs->rho0[1] * (1. - (id_x4 - frs->magnification[1] * id_x2) / 1000. / frs->dispersion[1]);
             id_brho[1] = (fabs(frs->bfield[2]) + fabs(frs->bfield[3])) / 2. * id_rho[1];
 
-            FrsHit->Set_ID_rho(1, rho[1]);
-            FrsHit->Set_ID_brho(1, brho[1]);
+            FrsHit->Set_ID_rho(1, id_rho[1]);
+            FrsHit->Set_ID_brho(1, id_brho[1]);
         }
     }
 
@@ -1560,6 +1558,9 @@ void FrsCal2Hit::Exec(Option_t* option)
     */
     //c4LOG(info,"Finalize:");
     
+    FrsHit->Set_ID_z(id_z);
+    FrsHit->Set_ID_z2(id_z2);
+
     
     // non mhtdc version?
     //if (id_b_AoQ != false && id_b_x2 != false && id_b_z != false)
@@ -1571,6 +1572,7 @@ void FrsCal2Hit::Exec(Option_t* option)
 
         FrsHit->Set_ID_dEdegoQ(id_dEdegoQ);
         FrsHit->Set_ID_dEdeg(id_dEdeg);
+
 
         // new ((*fHitArray)[fHitArray->GetEntriesFast()]) FrsHitData(
         //     WR_TS,
@@ -1617,6 +1619,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     //}
     // above is end of FRS_Anl
 
+    new ((*fHitArray)[fHitArray->GetEntriesFast()]) FrsHitData(*FrsHit);
    
 }
 
