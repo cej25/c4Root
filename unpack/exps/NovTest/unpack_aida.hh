@@ -8,7 +8,7 @@
 #include "external_data.hh"
 #include "zero_suppress.hh"
 
-#define AIDA_UNPACK_STATS 1
+#define AIDA_UNPACK_STATS 0
 
 #if AIDA_UNPACK_STATS
 struct AidaUnpackerStats
