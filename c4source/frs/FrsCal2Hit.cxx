@@ -3,6 +3,7 @@
 #include "FrsMainData.h"
 #include "FrsMainCalData.h"
 #include "FrsHitData.h"
+#include "EventData.h"
 
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -40,6 +41,7 @@ FrsCal2Hit::FrsCal2Hit(TFRSParameter* ffrs,
     ,   fCalArrayUser(new TClonesArray("FrsUserCalData"))
     ,   fCalArrayVFTX(new TClonesArray("FrsVFTXCalData"))
     ,   fHitArray(new TClonesArray("FrsHitData"))
+    ,   fEventItems(new TClonesArray("EventData"))
 {
     frs = ffrs;
     mw = fmw;
@@ -63,6 +65,7 @@ FrsCal2Hit::FrsCal2Hit(const TString& name, Int_t verbose)
     ,   fCalArrayUser(new TClonesArray("FrsUserCalData"))
     ,   fCalArrayVFTX(new TClonesArray("FrsVFTXCalData"))
     ,   fHitArray(new TClonesArray("FrsHitData"))
+    ,   fEventItems(new TClonesArray("EventData"))
 {
 }
 
@@ -104,6 +107,7 @@ InitStatus FrsCal2Hit::Init()
     c4LOG_IF(fatal, !fCalArrayVFTX, "FrsVFTXCalData branch not found!");
 
     mgr->Register("FrsHitData", "FRS Hit Data", fHitArray, !fOnline);
+    mgr->Register("EventData", "Event Data", fEventItems, !fOnline);
 
     Setup_Conditions("../../config/frs/");
     c4LOG_IF(fatal,!conditions_files_read, "You must set FrsCal2Hit->Setup_Conditions('your file path') to the folder containing the frs condition gates.");
@@ -123,17 +127,23 @@ InitStatus FrsCal2Hit::ReInit()
 }
 
 void FrsCal2Hit::Exec(Option_t* option)
-{      
-    //c4LOG(info,"EXEC");
+{
+
     int multMain = fCalArrayMain->GetEntriesFast();
     int multTPC = fCalArrayTPC->GetEntriesFast();
     int multUser = fCalArrayUser->GetEntriesFast();
     int multVFTX = fCalArrayVFTX->GetEntriesFast();
-    
+
+    EventData* EventItem = new EventData();
+    ((*fEventItems)[fEventItems->GetEntriesFast()]) = EventItem;
+
     // something strange with VFTX
-    if (multMain == 0 || multTPC == 0 || multUser == 0) return;
+    if (multMain == 0 || multTPC == 0 || multUser == 0) 
+    {
+        EventItem->Set_Spill_Flag(prevSpillOn);
+        return;
+    }
     
-    // not even getting here right now
     fNEvents++;
     fCalHitMain = (FrsMainCalData*)fCalArrayMain->At(0);
     fCalHitTPC = (FrsTPCCalData*)fCalArrayTPC->At(0);
@@ -211,6 +221,18 @@ void FrsCal2Hit::Exec(Option_t* option)
     {   
         sc_main_previous[i] = v830_scalers_main[i];
         sc_user_previous[i] = v830_scalers_user[i];
+    }
+
+    // I think this is spill on flag?
+    if (increase_sc_temp_user[8] > 0)
+    {
+        EventItem->Set_Spill_Flag(true);
+        prevSpillOn = true;
+    }
+    if (increase_sc_temp_user[9] > 0)
+    {
+        EventItem->Set_Spill_Flag(false);
+        prevSpillOn = false;
     }
             
 
@@ -1797,6 +1819,7 @@ Float_t FrsCal2Hit::rand3()
 void FrsCal2Hit::ZeroArrays()
 {
     fHitArray->Clear();
+    fEventItems->Clear();
 }
 
 void FrsCal2Hit::ZeroVariables()
