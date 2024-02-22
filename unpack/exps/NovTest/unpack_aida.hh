@@ -145,10 +145,10 @@ class EXT_AIDA
     void zero_suppress_info_ptrs(used_zero_suppress_info &used_info);
 
   public:
-    raw_list_ii_zero_suppress<aida_adc_item, aida_adc_item, 10000> adc;
-    raw_list_ii_zero_suppress<aida_wave_item, aida_wave_item, 10000> wave;
-    raw_list_ii_zero_suppress<aida_scaler_item, aida_scaler_item, 10000> scaler;
-    raw_list_ii_zero_suppress<aida_flow_item, aida_flow_item, 10000> flow;
+    raw_list_ii_zero_suppress<aida_adc_item, aida_adc_item, AIDA_MAX_HITS> adc;
+    raw_list_ii_zero_suppress<aida_wave_item, aida_wave_item, AIDA_MAX_HITS> wave;
+    raw_list_ii_zero_suppress<aida_scaler_item, aida_scaler_item, AIDA_MAX_HITS> scaler;
+    raw_list_ii_zero_suppress<aida_flow_item, aida_flow_item, AIDA_MAX_HITS> flow;
 
   private:
     uint64 fast_times[AIDA_MAX_FEES][64];
