@@ -189,7 +189,7 @@ EXT_DECL_DATA_SRC_FCN(void, EXT_AIDA::__unpack)
     cur_timestamp |= (uint64)(wr4 & 0xffff) << 48;
 
     // Adjust ucesb shift!!
-    cur_timestamp += 14000;
+    cur_timestamp += AIDA_UCESB_SHIFT;
 
 #if AIDA_UNPACK_STATS
     stats.Events++;
