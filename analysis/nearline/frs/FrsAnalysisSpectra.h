@@ -43,8 +43,6 @@ class FrsAnalysisSpectra : public FairTask
 
         virtual void Exec(Option_t* option);
 
-        void ReadGates();
-
         virtual void FinishEvent();
 
         virtual void FinishTask();

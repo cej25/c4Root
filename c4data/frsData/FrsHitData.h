@@ -10,47 +10,6 @@ class FrsHitData : public TObject
     public:
         FrsHitData();
 
-        // I think some of this spill stuff should be floats
-        /*FrsHitData(uint64_t WR_TS,
-                uint32_t time_in_ms, 
-                uint32_t ibin_for_s, 
-                uint32_t ibin_for_100ms,
-                uint32_t ibin_for_spill,
-                uint32_t* increase_sc_temp_main,
-                uint32_t* increase_sc_temp_user, 
-                uint32_t increase_sc_temp2,
-                uint32_t increase_sc_temp3,
-                uint32_t extraction_time_ms, 
-                uint32_t ibin_clean_for_s, 
-                uint32_t ibin_clean_for_100ms,
-                uint32_t ibin_clean_for_spill,
-                Float_t* music_dE,
-                uint32_t* sci_e,
-                uint32_t* sci_l,
-                uint32_t* sci_r,
-                uint32_t sci_tof2,
-                Float_t id_x2,
-                Float_t id_y2,
-                Float_t id_a2,
-                Float_t id_b2,
-                Float_t id_x4,
-                Float_t id_y4,
-                Float_t id_a4,
-                Float_t id_b4,
-                Float_t id_AoQ,
-                Float_t id_AoQ_corr,
-                Float_t id_z,
-                Float_t id_z2,
-                Float_t id_beta,
-                Float_t id_dEdegoQ,
-                Float_t id_dEdeg,
-                std::vector<Float_t> id_AoQ_mhtdc,
-                std::vector<Float_t> id_AoQ_corr_mhtdc,
-                std::vector<Float_t> id_z_mhtdc,
-                std::vector<Float_t> id_z2_mhtdc,
-                std::vector<Float_t> id_dEdegoQ_mhtdc,
-                std::vector<Float_t> id_dEdeg_mhtdc);*/
-
         ~FrsHitData();
 
         inline const uint64_t Get_wr_t() const { return fWR_TS; }
@@ -71,14 +30,12 @@ class FrsHitData : public TObject
         inline const Float_t Get_ID_dEdegoQ() const { return fID_dEdegoQ; }
         inline const Float_t Get_ID_dEdeg() const { return fID_dEdeg; }
 
-        // CEJ: does this stuff come from hit or cal? check
         inline const Float_t Get_music_dE(int channel) const { return fmusic_dE[channel]; }
         inline const Float_t Get_sci_e(int channel) const { return fsci_e[channel]; }
         inline const Float_t Get_sci_tof2() const { return fsci_tof2; }
         inline const Float_t Get_sci_l(int channel) const { return fsci_l[channel]; }
         inline const Float_t Get_sci_r(int channel) const { return fsci_r[channel]; }
 
-        // MHTDC
         inline const Float_t Get_ID_z_mhtdc(int mhit) const 
         {
             if (mhit < fID_z_mhtdc.size())
@@ -243,7 +200,6 @@ class FrsHitData : public TObject
         Float_t fsci_tof_calib[6];
 
         // MHTDC
-        // these are going to be vectors....damn it
         std::vector<Float_t> fID_beta_mhtdc;
         std::vector<Float_t> fID_AoQ_mhtdc;
         std::vector<Float_t> fID_AoQ_corr_mhtdc;
