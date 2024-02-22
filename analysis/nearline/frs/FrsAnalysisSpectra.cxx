@@ -30,7 +30,7 @@ FrsAnalysisSpectra::FrsAnalysisSpectra(TFRSParameter* ffrs,
     ,   fNEvents()
     ,   header(nullptr)
     ,   fFrsHitArray(new TClonesArray("FrsHitData"))
-    ,   fFrsAnalysisArray(new TClonesArray("FrsAnalysedData"))
+    ,   fFrsAnalysisArray(new TClonesArray("FrsAnalysisData"))
 {
     frs = ffrs;
     mw = fmw;
@@ -353,7 +353,6 @@ InitStatus FrsAnalysisSpectra::Init()
             frs_ZvsAoQ_hists_mhtdc->Add(h1_a4_ZAoQ_gate_mhtdc[gate]);
         }
 
-        // mhtdc
     }
 
     if (cutID_Z_Z2[0] != nullptr)
@@ -694,7 +693,6 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
                 {   
                     if (cutID_Z_AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z()))
                     {
-                        //FrsAnalysisHit->Set_ZvsAoQ_gates(gate, true);
                         h2_Z_vs_AoQ_ZAoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z());
                         h2_Z1_vs_Z2_ZAoQgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2());
                         h2_x2_vs_AoQ_ZAoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2());
@@ -735,12 +733,10 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
                 {
                     if(cutID_x2AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2()))
                     {
-                        //FrsAnalysisHit->Set_x2vsAoQ_gates(gate, true);
                         h2_x2_vs_AoQ_x2AoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2());
                         h2_Z1_vs_Z2_x2AoQgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2());
                         
                         // Z1 Z2 + x2AoQ
-                        // The selected Z1 Z2 gate for this part can be found in the Correlations_config.dat file 
                         if (cutID_Z_Z2[0] != nullptr)
                         {   
                             if(cutID_Z_Z2[gate]->IsInside(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2()))
@@ -770,7 +766,6 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
                         h2_Z1_vs_Z2_x4AoQgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2());
                         
                         ///Z1 Z2 + x4AoQ
-                        ///The selected Z1 Z2 gate for this part can be found in the Correlations_config.dat file
                         if (cutID_Z_Z2[0] != nullptr)
                         {
                             if(cutID_Z_Z2[gate]->IsInside(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2()))
@@ -807,7 +802,6 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
                 }
             }
 
-            //return; // test, MHTDC is the problem but only problem?
             /* ----- MHTDC Histograms and PID Gates -------------------------------------------- */
             for (int i = 0; i < MAX_MHTDC_MULT; i++)
             {   
@@ -996,89 +990,10 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
                     }
                 }
             }
-
         } // ihits
     } // non-zero FRS entries
     
 }
-
-void FrsAnalysisSpectra::ReadGates()
-{
-    // read from some file structured like:
-    /*
-    # X2 vs ZAoQ gate
-    2.24028 -65.1738
-    2.25593 58.8235
-    2.25593 58.1551
-    2.28866 80.5481
-    2.32495 87.2326
-    2.38188 82.5535
-    2.37619 -69.1845
-    2.24028 -65.1738
-    */
-
-    /*
-    also, we don't want to have to recompile if new gates are set/added
-    we need to be able to provide the gate filename(s) as an argument somewhere
-    no idea how this can/will work..
-    anyway..
-
-    can we read the gates from the steering macro? and thus pass the object along?
-    then it wouldn't need to be recompiled right? not sure lets test ..
-    ok but we still need some way to actually read this so contiue building function..
-
-    */
-
-    // Z vs AoQ
-    /*
-    std::ifstream file(filenames[0]);
-    if (!file.is_open())
-    {
-        std::cerr << "Error: Could not open file Z vs AoQ gate file!" << std::endl;
-        return;
-    }
-    
-    std::vector<double> x_points, y_points
-    double x, y;
-    std::string line;
-    while (std::getline(file, line))
-    {
-        if (line.empty() || line[0] == '#') continue;
-        
-        std::istringstream iss(line);
-        if (!(iss >> x >> y))
-        {
-            std::cerr "Error: Invalid data format in Z vs AoQ gate file!" << std::endl;
-            return;
-        }
-        x_points.push_back(x);
-        y_points.push_back(y);
-    }
-
-    // CEJ: don't forget to create loop..
-    TCutG* cID_Z_AoQ[0] = new TCutG(Form("cID_Z_AoQ_%d", 0), x_points.size(), &x_points[0], &y_points[0]);
-
-
-
-    std::vector<double> x_points, y_points;
-    double x, y;
-    std::string line;
-    while (std::getline(file, line)) {
-        if (line.empty() || line[0] == '#')
-            continue;
-        std::istringstream iss(line);
-        if (!(iss >> x >> y)) {
-            std::cerr << "Error: Invalid data format in file " << filename << std::endl;
-            return;
-        }
-        x_points.push_back(x);
-        y_points.push_back(y);
-    }
-
-    TCutG *cutg = new TCutG("cutg", x_points.size(), &x_points[0], &y_points[0]);
-    */
-}
-
 
 void FrsAnalysisSpectra::FinishEvent()
 {
