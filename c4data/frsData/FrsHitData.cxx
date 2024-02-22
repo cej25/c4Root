@@ -2,38 +2,38 @@
 
 
 FrsHitData::FrsHitData()
-    :   fWR_TS(0)
-    ,   ftime_in_ms(0)
-    ,   fibin_for_s(0)
-    ,   fibin_for_100ms(0)
-    ,   fibin_for_spill(0)
-    ,   fincrease_sc_temp2(0)
-    ,   fincrease_sc_temp3(0)
-    ,   fextraction_time_ms(0)
-    ,   fibin_clean_for_s(0)
-    ,   fibin_clean_for_100ms(0)
-    ,   fibin_clean_for_spill(0)
-    ,   fsci_tof2(0)
-    ,   fID_x2(0)
-    ,   fID_y2(0)
-    ,   fID_a2(0)
-    ,   fID_b2(0)
-    ,   fID_x4(0)
-    ,   fID_y4(0)
-    ,   fID_a4(0)
-    ,   fID_b4(0)
-    ,   fID_AoQ(0)
-    ,   fID_AoQ_corr(0)
-    ,   fID_z(0)
-    ,   fID_z2(0)
-    ,   fID_beta(0)
-    ,   fID_dEdegoQ(0)
-    ,   fID_dEdeg(0)
+    // :   fWR_TS(0)
+    // ,   ftime_in_ms(0)
+    // ,   fibin_for_s(0)
+    // ,   fibin_for_100ms(0)
+    // ,   fibin_for_spill(0)
+    // ,   fincrease_sc_temp2(0)
+    // ,   fincrease_sc_temp3(0)
+    // ,   fextraction_time_ms(0)
+    // ,   fibin_clean_for_s(0)
+    // ,   fibin_clean_for_100ms(0)
+    // ,   fibin_clean_for_spill(0)
+    // ,   fsci_tof2(0)
+    // ,   fID_x2(0)
+    // ,   fID_y2(0)
+    // ,   fID_a2(0)
+    // ,   fID_b2(0)
+    // ,   fID_x4(0)
+    // ,   fID_y4(0)
+    // ,   fID_a4(0)
+    // ,   fID_b4(0)
+    // ,   fID_AoQ(0)
+    // ,   fID_AoQ_corr(0)
+    // ,   fID_z(0)
+    // ,   fID_z2(0)
+    // ,   fID_beta(0)
+    // ,   fID_dEdegoQ(0)
+    // ,   fID_dEdeg(0)
 {
 
 }
 
-
+/*
 FrsHitData::FrsHitData(uint64_t WR_TS,
                     uint32_t time_in_ms, 
                     uint32_t ibin_for_s, 
@@ -130,6 +130,7 @@ FrsHitData::FrsHitData(uint64_t WR_TS,
         if (i < id_dEdegoQ_mhtdc.size()) fID_dEdegoQ_mhtdc.emplace_back(id_dEdegoQ_mhtdc[i]);
     }
 }
+*/
 
 FrsHitData::~FrsHitData()
 {

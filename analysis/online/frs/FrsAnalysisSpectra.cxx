@@ -620,7 +620,7 @@ InitStatus FrsAnalysisSpectra::Init()
 void FrsAnalysisSpectra::Exec(Option_t* option)
 {
     if (fFrsHitArray && fFrsHitArray->GetEntriesFast() > 0)
-    {
+    {   
         Int_t nHits = fFrsHitArray->GetEntriesFast();
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {
@@ -628,7 +628,7 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
             if (!FrsHit) continue;
 
             Long64_t FRS_time_mins = 0;
-            if(FrsHit->Get_WR() > 0) FRS_time_mins = (FrsHit->Get_WR() / 60E9) - 26900000; // CEJ: taken from Go4..
+            if(FrsHit->Get_wr_t() > 0) FRS_time_mins = (FrsHit->Get_wr_t() / 60E9) - 26900000; // CEJ: taken from Go4..
 
             /* --------  TAC and PID gates ----------- */
             if (FrsHit->Get_ID_z() > 0 && FRS_time_mins > 0) h2_Z1_vs_T->Fill(FRS_time_mins, FrsHit->Get_ID_z());
