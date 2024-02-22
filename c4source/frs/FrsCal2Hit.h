@@ -367,7 +367,7 @@ class FrsCal2Hit : public FairTask
 
         Float_t aoq_factor = 931.4940 / 299.792458; // 'f' in go4 code
 
-        // parameters from FRS setup // need to figure out how to load with steering macro?
+        // parameters from FRS setup
         TFRSParameter* frs;
         TMWParameter* mw;
         TTPCParameter* tpc;
