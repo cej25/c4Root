@@ -797,6 +797,14 @@ void FrsCal2Hit::Exec(Option_t* option)
     }
 
     FrsHit->Set_sci_tof2(sci_tof2);
+    FrsHit->Set_sci_tof(2, sci_tof2);
+    FrsHit->Set_sci_tof(3, sci_tof3);
+    FrsHit->Set_sci_tof(4, sci_tof4);
+    FrsHit->Set_sci_tof(5, sci_tof5);
+    FrsHit->Set_sci_tof_calib(2, sci_tof2_calib);
+    FrsHit->Set_sci_tof_calib(3, sci_tof3_calib);
+    FrsHit->Set_sci_tof_calib(4, sci_tof4_calib);
+    FrsHit->Set_sci_tof_calib(5, sci_tof5_calib);
 
     /*----------------------------------------------------------*/
     // Start of MHTDC ID analysis
@@ -982,7 +990,12 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
 
+    FrsHit->Set_ID_beta_mhtdc(id_mhtdc_beta_s2s4);
+    FrsHit->Set_ID_AoQ_mhtdc(id_mhtdc_aoq_s2s4);
+    FrsHit->Set_ID_AoQ_corr_mhtdc(id_mhtdc_aoq_corr_s2s4);
+
     // Calculation of dE and Z from MUSIC41
+    // CEJ: we should investigate why the couts here never print
     for (int i = 0; i < id_mhtdc_beta_s2s4.size(); i++)
     {
         float temp_music41_de = de[0] > 0.0;
@@ -1003,6 +1016,7 @@ void FrsCal2Hit::Exec(Option_t* option)
             {
                 id_mhtdc_z_music41.emplace_back(frs->primary_z * sqrt(de[0] / id_mhtdc_v_cor_music41.at(i)) + id->mhtdc_offset_z_music41);
             }
+            
             std::cout << "do we get a z value" << std::endl;
             std::cout << id_mhtdc_z_music41[i] << std::endl;
         }
@@ -1043,6 +1057,10 @@ void FrsCal2Hit::Exec(Option_t* option)
             }
         }
     }
+
+    FrsHit->Set_ID_z_mhtdc(id_mhtdc_z_music41);
+    FrsHit->Set_ID_z2_mhtdc(id_mhtdc_z_music42);
+
     for (int i = 0; i < id_mhtdc_beta_s2s4.size(); i++)
     {
         if (id_mhtdc_aoq_s2s4.at(i) != 0)
@@ -1051,8 +1069,15 @@ void FrsCal2Hit::Exec(Option_t* option)
             id_mhtdc_gamma_ta_s2.emplace_back(TMath::Sqrt(mhtdc_gamma1square.at(i)));
             id_mhtdc_dEdegoQ.emplace_back((id_mhtdc_gamma_ta_s2[i] - id_mhtdc_gamma_s2s4[i]) * id_mhtdc_aoq_s2s4.at(i));
             id_mhtdc_dEdeg.emplace_back(id_mhtdc_dEdegoQ[i] * id_mhtdc_z_music41[i]);
+
         }
     }
+    
+    FrsHit->Set_ID_dEdegoQ_mhtdc(id_mhtdc_dEdegoQ);
+    FrsHit->Set_ID_dEdeg_mhtdc(id_mhtdc_dEdeg);
+
+
+
 
     //c4LOG(info,"EXEC EXtraction of TPC values");
     if (id->x_s2_select == 1)
@@ -1117,9 +1142,24 @@ void FrsCal2Hit::Exec(Option_t* option)
         id_b8 = 0.0;
     }
 
-
     id_b_x2 = Check_WinCond(id_x2, cID_x2);
     id_b_x4 = Check_WinCond(id_x4, cID_x4);
+    
+    // should these be conditions?
+    if (id_b_x2)
+    {
+        FrsHit->Set_ID_x2(id_x2);
+        FrsHit->Set_ID_y2(id_y2);
+        FrsHit->Set_ID_a2(id_a2);
+        FrsHit->Set_ID_b2(id_b2);
+    }
+    if (id_b_x4)
+    {
+        FrsHit->Set_ID_x4(id_x4);
+        FrsHit->Set_ID_y4(id_y4);
+        FrsHit->Set_ID_a4(id_a4);
+        FrsHit->Set_ID_b4(id_b4);
+    }
 
     // CEJ: commented because double def?
     /*temp_s4x = -999.;
@@ -1327,6 +1367,9 @@ void FrsCal2Hit::Exec(Option_t* option)
             }
 
         }
+
+        // CEJ: Set outputs here later
+
     } // if vftx has data??
     
     /*----------------------------------------------------------*/
@@ -1361,6 +1404,8 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
 
+    FrsHit->Set_ID_beta(id_beta);
+
     //c4LOG(info,"EXEC BROO");
     /*------------------------------------------------------*/
     /* Determination of Brho                                */
@@ -1371,20 +1416,25 @@ void FrsCal2Hit::Exec(Option_t* option)
         id_rho[0] = frs->rho0[0] * (1. - id_x2 / 1000. / frs->dispersion[0]);
         id_brho[0] = (fabs(frs->bfield[0]) + fabs(frs->bfield[1])) / 2. * id_rho[0];
 
+        FrsHit->Set_ID_rho(0, rho[0]);
+        FrsHit->Set_ID_brho(0, brho[0]);
+
         if (id_b_x4)
         {
             id_rho[1] = frs->rho0[1] * (1. - (id_x4 - frs->magnification[1] * id_x2) / 1000. / frs->dispersion[1]);
             id_brho[1] = (fabs(frs->bfield[2]) + fabs(frs->bfield[3])) / 2. * id_rho[1];
+
+            FrsHit->Set_ID_rho(1, rho[1]);
+            FrsHit->Set_ID_brho(1, brho[1]);
         }
     }
+
 
     //c4LOG(info,"EXEC A/Q");
     /*--------------------------------------------------------------*/
     /* Determination of A/Q                                         */
     /*--------------------------------------------------------------*/
     // for S2-S4
-
-
 
     if (sci_b_tofll2 && sci_b_tofrr2 && id_b_x2 && id_b_x4)
     {
@@ -1423,6 +1473,8 @@ void FrsCal2Hit::Exec(Option_t* option)
             }
 
             id_b_AoQ = true;
+            FrsHit->Set_ID_AoQ(id_AoQ);
+            FrsHit->Set_ID_AoQ_corr(id_AoQ_corr);
         }
     }
 
@@ -1468,7 +1520,8 @@ void FrsCal2Hit::Exec(Option_t* option)
             id_z2 = frs->primary_z * sqrt(de[1] / id_v_cor2) + id->offset_z2;
         }
         if ((id_z2 > 0.0) && (id_z2 < 100.0))
-        {
+        {   
+            // CEJ: this seems out of order to me, gain matching first?
             id_b_z2 = kTRUE;
         }
     }
@@ -1509,56 +1562,59 @@ void FrsCal2Hit::Exec(Option_t* option)
     
     
     // non mhtdc version?
-    if (id_b_AoQ != false && id_b_x2 != false && id_b_z != false)
-    {   
+    //if (id_b_AoQ != false && id_b_x2 != false && id_b_z != false)
+    //{   
         float gamma1square = 1.0 + TMath::Power(((1 / aoq_factor) * (id_brho[0] / id_AoQ)), 2);
         id_gamma_ta_s2 = TMath::Sqrt(gamma1square);
         id_dEdegoQ = (id_gamma_ta_s2 - id_gamma) * id_AoQ;
         id_dEdeg = id_dEdegoQ * id_z;
 
-        new ((*fHitArray)[fHitArray->GetEntriesFast()]) FrsHitData(
-            WR_TS,
-            time_in_ms, 
-            ibin_for_s, 
-            ibin_for_100ms,
-            ibin_for_spill,
-            increase_sc_temp_main,
-            increase_sc_temp_user,
-            increase_sc_temp2,
-            increase_sc_temp3,
-            extraction_time_ms, 
-            ibin_clean_for_s, 
-            ibin_clean_for_100ms,
-            ibin_clean_for_spill,
-            de,
-            sci_e,
-            sci_l,
-            sci_r,
-            sci_tof2,
-            id_x2,
-            id_y2,
-            id_a2,
-            id_b2,
-            id_x4,
-            id_y4,
-            id_a4,
-            id_b4,
-            id_AoQ,
-            id_AoQ_corr,
-            id_z,
-            id_z2,
-            id_beta,
-            id_dEdegoQ,
-            id_dEdeg,
-            id_mhtdc_aoq_s2s4,
-            id_mhtdc_aoq_corr_s2s4,
-            id_mhtdc_z_music41,
-            id_mhtdc_z_music42,
-            id_mhtdc_dEdegoQ,
-            id_mhtdc_dEdeg
-        );
+        FrsHit->Set_ID_dEdegoQ(id_dEdegoQ);
+        FrsHit->Set_ID_dEdeg(id_dEdeg);
+
+        // new ((*fHitArray)[fHitArray->GetEntriesFast()]) FrsHitData(
+        //     WR_TS,
+        //     time_in_ms, 
+        //     ibin_for_s, 
+        //     ibin_for_100ms,
+        //     ibin_for_spill,
+        //     increase_sc_temp_main,
+        //     increase_sc_temp_user,
+        //     increase_sc_temp2,
+        //     increase_sc_temp3,
+        //     extraction_time_ms, 
+        //     ibin_clean_for_s, 
+        //     ibin_clean_for_100ms,
+        //     ibin_clean_for_spill,
+        //     de,
+        //     sci_e,
+        //     sci_l,
+        //     sci_r,
+        //     sci_tof2,
+        //     id_x2,
+        //     id_y2,
+        //     id_a2,
+        //     id_b2,
+        //     id_x4,
+        //     id_y4,
+        //     id_a4,
+        //     id_b4,
+        //     id_AoQ,
+        //     id_AoQ_corr,
+        //     id_z,
+        //     id_z2,
+        //     id_beta,
+        //     id_dEdegoQ,
+        //     id_dEdeg,
+        //     id_mhtdc_aoq_s2s4,
+        //     id_mhtdc_aoq_corr_s2s4,
+        //     id_mhtdc_z_music41,
+        //     id_mhtdc_z_music42,
+        //     id_mhtdc_dEdegoQ,
+        //     id_mhtdc_dEdeg
+        // );
    
-    }
+    //}
     // above is end of FRS_Anl
 
    

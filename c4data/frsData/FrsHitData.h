@@ -175,15 +175,41 @@ class FrsHitData : public TObject
         inline void Set_ibin_clean_for_100ms(uint32_t ibin) { fibin_clean_for_100ms = ibin; }
         inline void Set_ibin_clean_for_spill(uint32_t ibin) { fibin_clean_for_spill = ibin; }
 
-        // I think index [0] is S2 i.e. what we use as dEdeg
-        // Confirm with Go4 and document it somewhere
         inline void Set_music_dE(int index, Float_t dE) { fID_music_dE[index] = dE; }
         inline void Set_music_dE_cor(int index, Float_t dE_cor) { fID_music_dE_cor[index] = dE_cor; }
         inline void Set_sci_l(int index, Float_t sci_l) { fsci_l[index] = sci_l; }
         inline void Set_sci_r(int index, Float_t sci_r) { fsci_r[index] = sci_r; }
         inline void Set_sci_e(int index, Float_t sci_e) { fsci_e[index] = sci_e; }
-        // should we do Set_sci_tof() for all different tofs?
         inline void Set_sci_tof2(Float_t sci_tof2) { fsci_tof2 = sci_tof2; }
+        inline void Set_sci_tof(int index, Float_t sci_tof) { fsci_tof[index] = sci_tof; }
+        inline void Set_sci_tof_calib(int index, Float_t sci_tof_calib) { fsci_tof_calib[index] = sci_tof_calib; }
+
+        inline void Set_ID_beta(Float_t beta) { fID_beta = beta; }
+        inline void Set_ID_AoQ(Float_t aoq) { fID_AoQ = aoq; }
+        inline void Set_ID_AoQ_corr(Float_t aoq_corr) { fID_AoQ_corr = aoq_corr; }
+        inline void Set_ID_z(Float_t z) { fID_z = z; }
+        inline void Set_ID_z2(Float_t z2) { fID_z2 = z2; }
+        inline void Set_ID_x2(Float_t x2) { fID_x2 = x2; }
+        inline void Set_ID_y2(Float_t y2) { fID_y2 = y2; }
+        inline void Set_ID_a2(Float_t a2) { fID_a2 = a2; }
+        inline void Set_ID_b2(Float_t b2) { fID_b2 = b2; }
+        inline void Set_ID_x4(Float_t x4) { fID_x4 = x4; }
+        inline void Set_ID_y4(Float_t y4) { fID_y4 = y4; }
+        inline void Set_ID_a4(Float_t a4) { fID_a4 = a4; }
+        inline void Set_ID_b4(Float_t b4) { fID_b4 = b4; }
+        inline void Set_ID_dEdegoQ(Float_t dEdegoQ) { fID_dEdegoQ = dEdegoQ; }
+        inline void Set_ID_dEdeg(Float_T dEdeg) { fID_dEdeg = dEdeg; }
+        inline void Set_ID_rho(int index, Float_t rho) { fID_rho[index] = rho; }
+        inline void Set_ID_brho(int index, Float_t brho) { fID_brho[index] = brho; }
+
+        inline void Set_ID_beta_mhtdc(std::vector<Float_t> beta) { fID_beta_mhtdc = beta; }
+        inline void Set_ID_AoQ_mhtdc(std::vector<Float_t> aoq) { fID_AoQ_mhtdc = aoq; }
+        inline void Set_ID_AoQ_corr_mhtdc(std::vector<Float_t> aoq_corr) { fID_AoQ_corr_mhtdc = aoq_corr; }
+        inline void Set_ID_z_mhtdc(std::vector<Float_t> z) { fID_z_mhtdc = z; }
+        inline void Set_ID_z2_mhtdc(std::vector<Float_t> z2) { fID_z2_mhtdc = z2; }
+        inline void Set_ID_dEdegoQ_mhtdc(std::vector<Float_t> dEdegoQ) { fID_dEdegoQ_mhtdc = dEdegoQ; }
+        inline void Set_ID_dEdeg_mhtdc(std::vector<Float_t> dEdeg) { fID_dEdeg_mhtdc = dEdeg; }
+
 
     protected:
 
@@ -209,9 +235,11 @@ class FrsHitData : public TObject
         Float_t fsci_l[6];
         Float_t fsci_r[6];
         Float_t fsci_tof2;
+        Float_t fsci_tof[6];
 
         // MHTDC
         // these are going to be vectors....damn it
+        std::vector<Float_t> fID_beta_mhtdc;
         std::vector<Float_t> fID_AoQ_mhtdc;
         std::vector<Float_t> fID_AoQ_corr_mhtdc;
         std::vector<Float_t> fID_z_mhtdc;
