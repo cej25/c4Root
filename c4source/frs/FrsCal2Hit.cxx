@@ -143,6 +143,11 @@ void FrsCal2Hit::Exec(Option_t* option)
         EventItem->Set_Spill_Flag(prevSpillOn);
         return;
     }
+
+    // CEJ: new - updating how we set data values
+    FrsHitData* FrsHit = new FrsHitData();
+    ((*fHitArray)[fHitArray->GetEntriesFast()]) = FrsHit;
+
     
     fNEvents++;
     fCalHitMain = (FrsMainCalData*)fCalArrayMain->At(0);
@@ -150,7 +155,12 @@ void FrsCal2Hit::Exec(Option_t* option)
     fCalHitUser = (FrsUserCalData*)fCalArrayUser->At(0);
     fCalHitVFTX = (FrsVFTXCalData*)fCalArrayVFTX->At(0);
 
+    // old
     WR_TS = fCalHitMain->Get_WR();
+    // new
+    FrsHit->Set_wr_ts(fCalHitMain->Get_wr_ts());
+
+    
 
 
     /* -------------------------------- */
@@ -205,7 +215,6 @@ void FrsCal2Hit::Exec(Option_t* option)
         increase_sc_temp3 = 100 * increase_sc_temp_user[5] / increase_sc_temp_user[6];
     }
     
-
     extraction_time_ms += v830_scalers_main[scaler_ch_1kHz] - sc_main_previous[scaler_ch_1kHz];
 
     if((v830_scalers_user[scaler_ch_spillstart] - sc_user_previous[scaler_ch_spillstart]) != 0)
@@ -223,7 +232,6 @@ void FrsCal2Hit::Exec(Option_t* option)
         sc_user_previous[i] = v830_scalers_user[i];
     }
 
-    // I think this is spill on flag?
     if (increase_sc_temp_user[8] > 0)
     {
         EventItem->Set_Spill_Flag(true);
@@ -235,6 +243,20 @@ void FrsCal2Hit::Exec(Option_t* option)
         prevSpillOn = false;
     }
             
+    FrsHit->Set_time_in_ms(time_in_ms);
+    FrsHit->Set_ibin_for_s(ibin_for_s);
+    FrsHit->Set_ibin_for_100ms(ibin_for_100ms);
+    FrsHit->Set_ibin_for_spill(ibin_for_spill);
+    for (int index = 0; index < 32; index ++) FrsHit->Set_increase_sc_temp_user(index, increase_sc_temp_user[index]);
+    for (int index = 0; index < 32; index ++) FrsHit->Set_increase_sc_temp_main(index, increase_sc_temp_main[index]);
+    FrsHit->Set_increase_temp2(increase_sc_temp2);
+    FrsHit->Set_increase_temp3(increase_sc_temp3);
+    FrsHit->Set_extraction_time_ms(extraction_time_ms);
+    FrsHit->Set_ibin_clean_for_s(ibin_clean_for_s);
+    FrsHit->Set_ibin_clean_for_100ms(ibin_clean_for_100ms);
+    FrsHit->Set_ibin_clean_for_spill(ibin_clean_for_spill);
+
+
 
     /* ---------------------------------------------------- */
     // Start of MUSIC analysis                              //
@@ -453,6 +475,11 @@ void FrsCal2Hit::Exec(Option_t* option)
             }
         }*/
     }
+
+
+    for (int index = 0; index < 2; index++) FrsHit->Set_music_dE(index, de[index]);
+    for (int index = 0; index < 2; index++) FrsHit->Set_music_dE_cor(index, de_cor[index]);
+
     
     /* ----------------------------------------------- */
     // Start of Scintillator Analysis
@@ -464,8 +491,6 @@ void FrsCal2Hit::Exec(Option_t* option)
 
     for (int i = 0; i < 15; i++) tdc_array[i] = fCalHitMain->Get_TDC_channel(i);
 
-    // In Raw2Cal we should make sure no zeros are added to vector     
-    // CEJ: 24/01/24 possibly vectors don't work here since [i] hit should match to [i] hit in l/r?
     // SCI 21 L and R
     for (int i = 0; i < tdc_array[2].size(); i++)
     {      
@@ -650,13 +675,7 @@ void FrsCal2Hit::Exec(Option_t* option)
 
 
     for (int i = 0; i < 6; i++)
-    {   
-        // find a way to read in cConditons
-        // 'posref' in go4 does nothing
-        
-        // what even is this code:?
-        // CEJ: this code maps FRS array indices to 0-based array here
-        // could just create larger arrays, it felt weird but maybe this is weirder
+    {
         int j;
         switch(i)
         {
@@ -708,6 +727,9 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     } // loop for sci values
 
+    for (int index = 0; index < 6; index++) FrsHit->Set_sci_l(index, sci_l[index]);
+    for (int index = 0; index < 6; index++) FrsHit->Set_sci_r(index, sci_r[index]);
+    for (int index = 0; index < 6; index++) FrsHit->Set_sci_e(index, sci_e[index]);
 
     //c4LOG(info,"EXEC calibrate TOF");
     /*----------------------------------------------------------*/
@@ -774,6 +796,8 @@ void FrsCal2Hit::Exec(Option_t* option)
         sci_tof5_calib = 0;
     }
 
+    FrsHit->Set_sci_tof2(sci_tof2);
+
     /*----------------------------------------------------------*/
     // Start of MHTDC ID analysis
     /*----------------------------------------------------------*/
@@ -829,7 +853,6 @@ void FrsCal2Hit::Exec(Option_t* option)
     // frs go4 doesn't have this selection
     if (id->mhtdc_s2pos_option == 1)
     {
-
         if (id->tof_s4_select == 1)
         {
             for (int i = 0; i < mhtdc_tof4121.size(); i++)
