@@ -19,12 +19,12 @@
 #pragma link C++ class FatimaOnlineSpectra+;
 #pragma link C++ class TimeMachineOnline+;
 
-// online/nearline
+// nearline/correlations
 #pragma link C++ class FrsAnalysisSpectra+;
 #pragma link C++ class FrsAidaCorrelations+;
-#pragma link C++ class FatimaAidaSpectra+;
+#pragma link C++ class AidaFatimaCorrelations+;
 #pragma link C++ class WhiterabbitCorrelationOnline+;
 
-// nearline/offline
+
 
 #endif
