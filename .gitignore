@@ -7,3 +7,4 @@ unpack/exps/*/
 !unpack/exps/*/Makefile
 !unpack/exps/*/makefile_additional.inc
 *.o
+*.vscode*
