@@ -165,10 +165,14 @@ void AidaUnpack2Cal::Exec(Option_t* option)
   for (auto const& scaler : *scalerArray)
   {
     if (scaler.Fee() == aida_tm_undelayed_ch)
-{      wr_undelayed = scaler.Time();
-}    if (scaler.Fee() == aida_tm_delayed_ch)
-{      wr_delayed = scaler.Time();
-}  }
+    {
+      wr_undelayed = scaler.Time();
+    }
+    if (scaler.Fee() == aida_tm_delayed_ch)
+    {
+      wr_delayed = scaler.Time();
+    }
+  }
   if (wr_undelayed != 0 && wr_delayed != 0)
   {
     int64_t time_diff = wr_delayed - wr_undelayed;

@@ -14,6 +14,7 @@
 // aida
 #define AIDA_MAX_FEES 12
 #define AIDA_MAX_HITS 13000 // 13k?
+#define AIDA_UCESB_SHIFT 14000 // ns ucesb1 shifts MBS timestamps of AIDA
 #define AIDA_DSSDS 3
 
 // germaniums
