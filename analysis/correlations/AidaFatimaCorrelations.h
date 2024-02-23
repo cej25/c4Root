@@ -1,7 +1,8 @@
-#ifndef FatimaAidaSpectra_H
-#define FatimaAidaSpectra_H
+#ifndef AidaFatimaCorrelations_H
+#define AidaFatimaCorrelations_H
 
 #include "FairTask.h"
+#include <vector>
 
 #include "AidaCalData.h"
 #include "AidaData.h"
@@ -12,17 +13,18 @@ class EventHeader;
 class TCanvas;
 class TH1F;
 class TH2F;
+class AidaHit;
 
-class FatimaAidaSpectra : public FairTask
+class AidaFatimaCorrelations : public FairTask
 {
     public:
-        FatimaAidaSpectra();
-        FatimaAidaSpectra(const TString& name, Int_t verbose = 1);
+        AidaFatimaCorrelations();
+        AidaFatimaCorrelations(const TString& name, Int_t verbose = 1);
 
 
         void CreateHistograms();
 
-        virtual ~FatimaAidaSpectra();
+        virtual ~AidaFatimaCorrelations();
 
         virtual void SetParContainers();
 
@@ -74,7 +76,7 @@ class FatimaAidaSpectra : public FairTask
 
 
     public:
-        ClassDef(FatimaAidaSpectra, 1)
+        ClassDef(AidaFatimaCorrelations, 1)
 };
 
 #endif

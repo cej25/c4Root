@@ -6,7 +6,7 @@
 #include "FairRuntimeDb.h"
 
 // c4
-#include "FatimaAidaSpectra.h"
+#include "AidaFatimaCorrelations.h"
 #include "EventHeader.h"
 #include "FatimaTwinpeaksCalData.h"
 #include "AidaData.h"
@@ -38,11 +38,11 @@ double time_differences_to_SCI42[10] =
     -301.6
 };
 
-FatimaAidaSpectra::FatimaAidaSpectra() : FatimaAidaSpectra("FatimaAidaSpectra")
+AidaFatimaCorrelations::AidaFatimaCorrelations() : AidaFatimaCorrelations("AidaFatimaCorrelations")
 {
 }
 
-FatimaAidaSpectra::FatimaAidaSpectra(const TString& name, Int_t verbose)
+AidaFatimaCorrelations::AidaFatimaCorrelations(const TString& name, Int_t verbose)
     : FairTask(name, verbose)
     , fHitFatimaTwinpeaks(nullptr)
     , implantHitArray(nullptr)
@@ -52,20 +52,20 @@ FatimaAidaSpectra::FatimaAidaSpectra(const TString& name, Int_t verbose)
 {
 }
 
-FatimaAidaSpectra::~FatimaAidaSpectra()
+AidaFatimaCorrelations::~AidaFatimaCorrelations()
 {
     c4LOG(info, "");
     if (fHitFatimaTwinpeaks)
         delete fHitFatimaTwinpeaks;
 }
 
-void FatimaAidaSpectra::SetParContainers()
+void AidaFatimaCorrelations::SetParContainers()
 {
     FairRuntimeDb *rtdb = FairRuntimeDb::instance();
     c4LOG_IF(fatal, NULL == rtdb, "FairRuntimeDb not found.");
 }
 
-InitStatus FatimaAidaSpectra::Init()
+InitStatus AidaFatimaCorrelations::Init()
 {
 
     // number of dets 
@@ -130,7 +130,7 @@ InitStatus FatimaAidaSpectra::Init()
 }
 
 
-void FatimaAidaSpectra::Exec(Option_t* option)
+void AidaFatimaCorrelations::Exec(Option_t* option)
 {   
     if (fHitFatimaTwinpeaks && fHitFatimaTwinpeaks->GetEntriesFast() > 0)
     {
@@ -225,7 +225,7 @@ void FatimaAidaSpectra::Exec(Option_t* option)
 
 
 
-void FatimaAidaSpectra::FinishEvent()
+void AidaFatimaCorrelations::FinishEvent()
 {
     if (fHitFatimaTwinpeaks)
     {
@@ -233,7 +233,7 @@ void FatimaAidaSpectra::FinishEvent()
     }
 }
 
-void FatimaAidaSpectra::FinishTask()
+void AidaFatimaCorrelations::FinishTask()
 {
     if (fHitFatimaTwinpeaks)
     {
@@ -249,4 +249,4 @@ void FatimaAidaSpectra::FinishTask()
     }
 }
 
-ClassImp(FatimaAidaSpectra)
+ClassImp(AidaFatimaCorrelations)
