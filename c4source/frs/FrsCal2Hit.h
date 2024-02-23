@@ -18,6 +18,7 @@ class FrsUserCalData;
 class FrsVFTXCalData;
 class FrsHitData;
 class EventHeader;
+class EventData;
 
 class FrsCal2Hit : public FairTask
 {
@@ -69,12 +70,16 @@ class FrsCal2Hit : public FairTask
         TClonesArray* fCalArrayUser;
         TClonesArray* fCalArrayVFTX;
         TClonesArray* fHitArray;
+        TClonesArray* fEventItems;
 
         FrsMainCalData* fCalHitMain;
         FrsTPCCalData* fCalHitTPC;
         FrsUserCalData* fCalHitUser;
         FrsVFTXCalData* fCalHitVFTX;
         FrsHitData* fFrsHit;
+        //EventData* EventItem;
+
+        Bool_t prevSpillOn = false;
 
         /* ----------------------------------------------- */
         // Intermediate variables

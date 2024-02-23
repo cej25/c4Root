@@ -3,6 +3,7 @@
 #include "FrsMainData.h"
 #include "FrsMainCalData.h"
 #include "FrsHitData.h"
+#include "EventData.h"
 
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -40,6 +41,7 @@ FrsCal2Hit::FrsCal2Hit(TFRSParameter* ffrs,
     ,   fCalArrayUser(new TClonesArray("FrsUserCalData"))
     ,   fCalArrayVFTX(new TClonesArray("FrsVFTXCalData"))
     ,   fHitArray(new TClonesArray("FrsHitData"))
+    ,   fEventItems(new TClonesArray("EventData"))
 {
     frs = ffrs;
     mw = fmw;
@@ -63,6 +65,7 @@ FrsCal2Hit::FrsCal2Hit(const TString& name, Int_t verbose)
     ,   fCalArrayUser(new TClonesArray("FrsUserCalData"))
     ,   fCalArrayVFTX(new TClonesArray("FrsVFTXCalData"))
     ,   fHitArray(new TClonesArray("FrsHitData"))
+    ,   fEventItems(new TClonesArray("EventData"))
 {
 }
 
@@ -104,8 +107,9 @@ InitStatus FrsCal2Hit::Init()
     c4LOG_IF(fatal, !fCalArrayVFTX, "FrsVFTXCalData branch not found!");
 
     mgr->Register("FrsHitData", "FRS Hit Data", fHitArray, !fOnline);
+    mgr->Register("EventData", "Event Data", fEventItems, !fOnline);
 
-    Setup_Conditions("../../config/frs/");
+    Setup_Conditions("../../config/frs/NovTest/"); // this can be passed through
     c4LOG_IF(fatal,!conditions_files_read, "You must set FrsCal2Hit->Setup_Conditions('your file path') to the folder containing the frs condition gates.");
     
     fCalArrayMain->Clear();
@@ -123,24 +127,38 @@ InitStatus FrsCal2Hit::ReInit()
 }
 
 void FrsCal2Hit::Exec(Option_t* option)
-{      
-    //c4LOG(info,"EXEC");
+{
+
     int multMain = fCalArrayMain->GetEntriesFast();
     int multTPC = fCalArrayTPC->GetEntriesFast();
     int multUser = fCalArrayUser->GetEntriesFast();
     int multVFTX = fCalArrayVFTX->GetEntriesFast();
-    
+
+    EventData* EventItem = new EventData();
+    ((*fEventItems)[fEventItems->GetEntriesFast()]) = EventItem;
+
     // something strange with VFTX
-    if (multMain == 0 || multTPC == 0 || multUser == 0) return;
-    
-    // not even getting here right now
+    if (multMain == 0 || multTPC == 0 || multUser == 0) 
+    {
+        EventItem->Set_Spill_Flag(prevSpillOn);
+        return;
+    }
+
+    // CEJ: new - updating how we set data values
+    FrsHitData* FrsHit = new FrsHitData();
+
     fNEvents++;
     fCalHitMain = (FrsMainCalData*)fCalArrayMain->At(0);
     fCalHitTPC = (FrsTPCCalData*)fCalArrayTPC->At(0);
     fCalHitUser = (FrsUserCalData*)fCalArrayUser->At(0);
     fCalHitVFTX = (FrsVFTXCalData*)fCalArrayVFTX->At(0);
 
-    WR_TS = fCalHitMain->Get_WR();
+    // old
+    //WR_TS = fCalHitMain->Get_WR();
+    // new
+    FrsHit->Set_wr_t(fCalHitMain->Get_wr_t());
+
+    
 
 
     /* -------------------------------- */
@@ -195,7 +213,6 @@ void FrsCal2Hit::Exec(Option_t* option)
         increase_sc_temp3 = 100 * increase_sc_temp_user[5] / increase_sc_temp_user[6];
     }
     
-
     extraction_time_ms += v830_scalers_main[scaler_ch_1kHz] - sc_main_previous[scaler_ch_1kHz];
 
     if((v830_scalers_user[scaler_ch_spillstart] - sc_user_previous[scaler_ch_spillstart]) != 0)
@@ -212,7 +229,32 @@ void FrsCal2Hit::Exec(Option_t* option)
         sc_main_previous[i] = v830_scalers_main[i];
         sc_user_previous[i] = v830_scalers_user[i];
     }
+
+    if (increase_sc_temp_user[8] > 0)
+    {
+        EventItem->Set_Spill_Flag(true);
+        prevSpillOn = true;
+    }
+    if (increase_sc_temp_user[9] > 0)
+    {
+        EventItem->Set_Spill_Flag(false);
+        prevSpillOn = false;
+    }
             
+    FrsHit->Set_time_in_ms(time_in_ms);
+    FrsHit->Set_ibin_for_s(ibin_for_s);
+    FrsHit->Set_ibin_for_100ms(ibin_for_100ms);
+    FrsHit->Set_ibin_for_spill(ibin_for_spill);
+    for (int index = 0; index < 32; index ++) FrsHit->Set_increase_sc_temp_user(index, increase_sc_temp_user[index]);
+    for (int index = 0; index < 32; index ++) FrsHit->Set_increase_sc_temp_main(index, increase_sc_temp_main[index]);
+    FrsHit->Set_increase_sc_temp2(increase_sc_temp2);
+    FrsHit->Set_increase_sc_temp3(increase_sc_temp3);
+    FrsHit->Set_extraction_time_ms(extraction_time_ms);
+    FrsHit->Set_ibin_clean_for_s(ibin_clean_for_s);
+    FrsHit->Set_ibin_clean_for_100ms(ibin_clean_for_100ms);
+    FrsHit->Set_ibin_clean_for_spill(ibin_clean_for_spill);
+
+
 
     /* ---------------------------------------------------- */
     // Start of MUSIC analysis                              //
@@ -431,6 +473,11 @@ void FrsCal2Hit::Exec(Option_t* option)
             }
         }*/
     }
+
+
+    for (int index = 0; index < 2; index++) FrsHit->Set_music_dE(index, de[index]);
+    for (int index = 0; index < 2; index++) FrsHit->Set_music_dE_cor(index, de_cor[index]);
+
     
     /* ----------------------------------------------- */
     // Start of Scintillator Analysis
@@ -442,8 +489,6 @@ void FrsCal2Hit::Exec(Option_t* option)
 
     for (int i = 0; i < 15; i++) tdc_array[i] = fCalHitMain->Get_TDC_channel(i);
 
-    // In Raw2Cal we should make sure no zeros are added to vector     
-    // CEJ: 24/01/24 possibly vectors don't work here since [i] hit should match to [i] hit in l/r?
     // SCI 21 L and R
     for (int i = 0; i < tdc_array[2].size(); i++)
     {      
@@ -628,13 +673,7 @@ void FrsCal2Hit::Exec(Option_t* option)
 
 
     for (int i = 0; i < 6; i++)
-    {   
-        // find a way to read in cConditons
-        // 'posref' in go4 does nothing
-        
-        // what even is this code:?
-        // CEJ: this code maps FRS array indices to 0-based array here
-        // could just create larger arrays, it felt weird but maybe this is weirder
+    {
         int j;
         switch(i)
         {
@@ -686,6 +725,9 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     } // loop for sci values
 
+    for (int index = 0; index < 6; index++) FrsHit->Set_sci_l(index, sci_l[index]);
+    for (int index = 0; index < 6; index++) FrsHit->Set_sci_r(index, sci_r[index]);
+    for (int index = 0; index < 6; index++) FrsHit->Set_sci_e(index, sci_e[index]);
 
     //c4LOG(info,"EXEC calibrate TOF");
     /*----------------------------------------------------------*/
@@ -752,6 +794,16 @@ void FrsCal2Hit::Exec(Option_t* option)
         sci_tof5_calib = 0;
     }
 
+    FrsHit->Set_sci_tof2(sci_tof2);
+    FrsHit->Set_sci_tof(2, sci_tof2);
+    FrsHit->Set_sci_tof(3, sci_tof3);
+    FrsHit->Set_sci_tof(4, sci_tof4);
+    FrsHit->Set_sci_tof(5, sci_tof5);
+    FrsHit->Set_sci_tof_calib(2, sci_tof2_calib);
+    FrsHit->Set_sci_tof_calib(3, sci_tof3_calib);
+    FrsHit->Set_sci_tof_calib(4, sci_tof4_calib);
+    FrsHit->Set_sci_tof_calib(5, sci_tof5_calib);
+
     /*----------------------------------------------------------*/
     // Start of MHTDC ID analysis
     /*----------------------------------------------------------*/
@@ -807,7 +859,6 @@ void FrsCal2Hit::Exec(Option_t* option)
     // frs go4 doesn't have this selection
     if (id->mhtdc_s2pos_option == 1)
     {
-
         if (id->tof_s4_select == 1)
         {
             for (int i = 0; i < mhtdc_tof4121.size(); i++)
@@ -937,7 +988,12 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
 
+    FrsHit->Set_ID_beta_mhtdc(id_mhtdc_beta_s2s4);
+    FrsHit->Set_ID_AoQ_mhtdc(id_mhtdc_aoq_s2s4);
+    FrsHit->Set_ID_AoQ_corr_mhtdc(id_mhtdc_aoq_corr_s2s4);
+
     // Calculation of dE and Z from MUSIC41
+    // CEJ: we should investigate why the couts here never print
     for (int i = 0; i < id_mhtdc_beta_s2s4.size(); i++)
     {
         float temp_music41_de = de[0] > 0.0;
@@ -958,6 +1014,7 @@ void FrsCal2Hit::Exec(Option_t* option)
             {
                 id_mhtdc_z_music41.emplace_back(frs->primary_z * sqrt(de[0] / id_mhtdc_v_cor_music41.at(i)) + id->mhtdc_offset_z_music41);
             }
+            
             std::cout << "do we get a z value" << std::endl;
             std::cout << id_mhtdc_z_music41[i] << std::endl;
         }
@@ -998,6 +1055,10 @@ void FrsCal2Hit::Exec(Option_t* option)
             }
         }
     }
+
+    FrsHit->Set_ID_z_mhtdc(id_mhtdc_z_music41);
+    FrsHit->Set_ID_z2_mhtdc(id_mhtdc_z_music42);
+
     for (int i = 0; i < id_mhtdc_beta_s2s4.size(); i++)
     {
         if (id_mhtdc_aoq_s2s4.at(i) != 0)
@@ -1006,8 +1067,15 @@ void FrsCal2Hit::Exec(Option_t* option)
             id_mhtdc_gamma_ta_s2.emplace_back(TMath::Sqrt(mhtdc_gamma1square.at(i)));
             id_mhtdc_dEdegoQ.emplace_back((id_mhtdc_gamma_ta_s2[i] - id_mhtdc_gamma_s2s4[i]) * id_mhtdc_aoq_s2s4.at(i));
             id_mhtdc_dEdeg.emplace_back(id_mhtdc_dEdegoQ[i] * id_mhtdc_z_music41[i]);
+
         }
     }
+    
+    FrsHit->Set_ID_dEdegoQ_mhtdc(id_mhtdc_dEdegoQ);
+    FrsHit->Set_ID_dEdeg_mhtdc(id_mhtdc_dEdeg);
+
+
+
 
     //c4LOG(info,"EXEC EXtraction of TPC values");
     if (id->x_s2_select == 1)
@@ -1072,9 +1140,24 @@ void FrsCal2Hit::Exec(Option_t* option)
         id_b8 = 0.0;
     }
 
-
     id_b_x2 = Check_WinCond(id_x2, cID_x2);
     id_b_x4 = Check_WinCond(id_x4, cID_x4);
+    
+    // should these be conditions?
+    if (id_b_x2)
+    {
+        FrsHit->Set_ID_x2(id_x2);
+        FrsHit->Set_ID_y2(id_y2);
+        FrsHit->Set_ID_a2(id_a2);
+        FrsHit->Set_ID_b2(id_b2);
+    }
+    if (id_b_x4)
+    {
+        FrsHit->Set_ID_x4(id_x4);
+        FrsHit->Set_ID_y4(id_y4);
+        FrsHit->Set_ID_a4(id_a4);
+        FrsHit->Set_ID_b4(id_b4);
+    }
 
     // CEJ: commented because double def?
     /*temp_s4x = -999.;
@@ -1282,6 +1365,9 @@ void FrsCal2Hit::Exec(Option_t* option)
             }
 
         }
+
+        // CEJ: Set outputs here later
+
     } // if vftx has data??
     
     /*----------------------------------------------------------*/
@@ -1316,6 +1402,8 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
 
+    FrsHit->Set_ID_beta(id_beta);
+
     //c4LOG(info,"EXEC BROO");
     /*------------------------------------------------------*/
     /* Determination of Brho                                */
@@ -1326,20 +1414,25 @@ void FrsCal2Hit::Exec(Option_t* option)
         id_rho[0] = frs->rho0[0] * (1. - id_x2 / 1000. / frs->dispersion[0]);
         id_brho[0] = (fabs(frs->bfield[0]) + fabs(frs->bfield[1])) / 2. * id_rho[0];
 
+        FrsHit->Set_ID_rho(0, id_rho[0]);
+        FrsHit->Set_ID_brho(0, id_brho[0]);
+
         if (id_b_x4)
         {
             id_rho[1] = frs->rho0[1] * (1. - (id_x4 - frs->magnification[1] * id_x2) / 1000. / frs->dispersion[1]);
             id_brho[1] = (fabs(frs->bfield[2]) + fabs(frs->bfield[3])) / 2. * id_rho[1];
+
+            FrsHit->Set_ID_rho(1, id_rho[1]);
+            FrsHit->Set_ID_brho(1, id_brho[1]);
         }
     }
+
 
     //c4LOG(info,"EXEC A/Q");
     /*--------------------------------------------------------------*/
     /* Determination of A/Q                                         */
     /*--------------------------------------------------------------*/
     // for S2-S4
-
-
 
     if (sci_b_tofll2 && sci_b_tofrr2 && id_b_x2 && id_b_x4)
     {
@@ -1378,6 +1471,8 @@ void FrsCal2Hit::Exec(Option_t* option)
             }
 
             id_b_AoQ = true;
+            FrsHit->Set_ID_AoQ(id_AoQ);
+            FrsHit->Set_ID_AoQ_corr(id_AoQ_corr);
         }
     }
 
@@ -1423,7 +1518,8 @@ void FrsCal2Hit::Exec(Option_t* option)
             id_z2 = frs->primary_z * sqrt(de[1] / id_v_cor2) + id->offset_z2;
         }
         if ((id_z2 > 0.0) && (id_z2 < 100.0))
-        {
+        {   
+            // CEJ: this seems out of order to me, gain matching first?
             id_b_z2 = kTRUE;
         }
     }
@@ -1462,60 +1558,68 @@ void FrsCal2Hit::Exec(Option_t* option)
     */
     //c4LOG(info,"Finalize:");
     
+    FrsHit->Set_ID_z(id_z);
+    FrsHit->Set_ID_z2(id_z2);
+
     
     // non mhtdc version?
-    if (id_b_AoQ != false && id_b_x2 != false && id_b_z != false)
-    {   
+    //if (id_b_AoQ != false && id_b_x2 != false && id_b_z != false)
+    //{   
         float gamma1square = 1.0 + TMath::Power(((1 / aoq_factor) * (id_brho[0] / id_AoQ)), 2);
         id_gamma_ta_s2 = TMath::Sqrt(gamma1square);
         id_dEdegoQ = (id_gamma_ta_s2 - id_gamma) * id_AoQ;
         id_dEdeg = id_dEdegoQ * id_z;
 
-        new ((*fHitArray)[fHitArray->GetEntriesFast()]) FrsHitData(
-            WR_TS,
-            time_in_ms, 
-            ibin_for_s, 
-            ibin_for_100ms,
-            ibin_for_spill,
-            increase_sc_temp_main,
-            increase_sc_temp_user,
-            increase_sc_temp2,
-            increase_sc_temp3,
-            extraction_time_ms, 
-            ibin_clean_for_s, 
-            ibin_clean_for_100ms,
-            ibin_clean_for_spill,
-            de,
-            sci_e,
-            sci_l,
-            sci_r,
-            sci_tof2,
-            id_x2,
-            id_y2,
-            id_a2,
-            id_b2,
-            id_x4,
-            id_y4,
-            id_a4,
-            id_b4,
-            id_AoQ,
-            id_AoQ_corr,
-            id_z,
-            id_z2,
-            id_beta,
-            id_dEdegoQ,
-            id_dEdeg,
-            id_mhtdc_aoq_s2s4,
-            id_mhtdc_aoq_corr_s2s4,
-            id_mhtdc_z_music41,
-            id_mhtdc_z_music42,
-            id_mhtdc_dEdegoQ,
-            id_mhtdc_dEdeg
-        );
+        FrsHit->Set_ID_dEdegoQ(id_dEdegoQ);
+        FrsHit->Set_ID_dEdeg(id_dEdeg);
+
+
+        // new ((*fHitArray)[fHitArray->GetEntriesFast()]) FrsHitData(
+        //     WR_TS,
+        //     time_in_ms, 
+        //     ibin_for_s, 
+        //     ibin_for_100ms,
+        //     ibin_for_spill,
+        //     increase_sc_temp_main,
+        //     increase_sc_temp_user,
+        //     increase_sc_temp2,
+        //     increase_sc_temp3,
+        //     extraction_time_ms, 
+        //     ibin_clean_for_s, 
+        //     ibin_clean_for_100ms,
+        //     ibin_clean_for_spill,
+        //     de,
+        //     sci_e,
+        //     sci_l,
+        //     sci_r,
+        //     sci_tof2,
+        //     id_x2,
+        //     id_y2,
+        //     id_a2,
+        //     id_b2,
+        //     id_x4,
+        //     id_y4,
+        //     id_a4,
+        //     id_b4,
+        //     id_AoQ,
+        //     id_AoQ_corr,
+        //     id_z,
+        //     id_z2,
+        //     id_beta,
+        //     id_dEdegoQ,
+        //     id_dEdeg,
+        //     id_mhtdc_aoq_s2s4,
+        //     id_mhtdc_aoq_corr_s2s4,
+        //     id_mhtdc_z_music41,
+        //     id_mhtdc_z_music42,
+        //     id_mhtdc_dEdegoQ,
+        //     id_mhtdc_dEdeg
+        // );
    
-    }
+    //}
     // above is end of FRS_Anl
 
+    new ((*fHitArray)[fHitArray->GetEntriesFast()]) FrsHitData(*FrsHit);
    
 }
 
@@ -1743,7 +1847,7 @@ void FrsCal2Hit::FRS_GainMatching()
     int f = 0;
     int d = 0;
     
-    file.open("../../config/frs/Z1_Z2_Shift.txt");
+    file.open("../../config/frs/NovTest/Z1_Z2_Shift.txt");
     while (file.good())
     {
         getline(file, line, '\n');
@@ -1758,7 +1862,7 @@ void FrsCal2Hit::FRS_GainMatching()
     }
     file.close();
 
-    file.open("../../config/frs/AoQ_Shift.txt");
+    file.open("../../config/frs/NovTest/AoQ_Shift.txt");
     while (file.good())
     {
         getline(file, line, '\n');
@@ -1797,6 +1901,7 @@ Float_t FrsCal2Hit::rand3()
 void FrsCal2Hit::ZeroArrays()
 {
     fHitArray->Clear();
+    fEventItems->Clear();
 }
 
 void FrsCal2Hit::ZeroVariables()

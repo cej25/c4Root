@@ -10,50 +10,10 @@ class FrsHitData : public TObject
     public:
         FrsHitData();
 
-        // I think some of this spill stuff should be floats
-        FrsHitData(uint64_t WR_TS,
-                uint32_t time_in_ms, 
-                uint32_t ibin_for_s, 
-                uint32_t ibin_for_100ms,
-                uint32_t ibin_for_spill,
-                uint32_t* increase_sc_temp_main,
-                uint32_t* increase_sc_temp_user, 
-                uint32_t increase_sc_temp2,
-                uint32_t increase_sc_temp3,
-                uint32_t extraction_time_ms, 
-                uint32_t ibin_clean_for_s, 
-                uint32_t ibin_clean_for_100ms,
-                uint32_t ibin_clean_for_spill,
-                Float_t* music_dE,
-                uint32_t* sci_e,
-                uint32_t* sci_l,
-                uint32_t* sci_r,
-                uint32_t sci_tof2,
-                Float_t id_x2,
-                Float_t id_y2,
-                Float_t id_a2,
-                Float_t id_b2,
-                Float_t id_x4,
-                Float_t id_y4,
-                Float_t id_a4,
-                Float_t id_b4,
-                Float_t id_AoQ,
-                Float_t id_AoQ_corr,
-                Float_t id_z,
-                Float_t id_z2,
-                Float_t id_beta,
-                Float_t id_dEdegoQ,
-                Float_t id_dEdeg,
-                std::vector<Float_t> id_AoQ_mhtdc,
-                std::vector<Float_t> id_AoQ_corr_mhtdc,
-                std::vector<Float_t> id_z_mhtdc,
-                std::vector<Float_t> id_z2_mhtdc,
-                std::vector<Float_t> id_dEdegoQ_mhtdc,
-                std::vector<Float_t> id_dEdeg_mhtdc);
-
         ~FrsHitData();
 
-        inline const uint64_t Get_WR() const { return fWR_TS; }
+        inline const uint64_t Get_wr_t() const { return fWR_TS; }
+        
         inline const Float_t Get_ID_x2() const { return fID_x2; }
         inline const Float_t Get_ID_y2() const { return fID_x2; }
         inline const Float_t Get_ID_a2() const { return fID_a2; }
@@ -70,14 +30,12 @@ class FrsHitData : public TObject
         inline const Float_t Get_ID_dEdegoQ() const { return fID_dEdegoQ; }
         inline const Float_t Get_ID_dEdeg() const { return fID_dEdeg; }
 
-        // CEJ: does this stuff come from hit or cal? check
         inline const Float_t Get_music_dE(int channel) const { return fmusic_dE[channel]; }
         inline const Float_t Get_sci_e(int channel) const { return fsci_e[channel]; }
         inline const Float_t Get_sci_tof2() const { return fsci_tof2; }
         inline const Float_t Get_sci_l(int channel) const { return fsci_l[channel]; }
         inline const Float_t Get_sci_r(int channel) const { return fsci_r[channel]; }
 
-        // MHTDC
         inline const Float_t Get_ID_z_mhtdc(int mhit) const 
         {
             if (mhit < fID_z_mhtdc.size())
@@ -159,8 +117,56 @@ class FrsHitData : public TObject
         inline uint32_t Get_ibin_clean_for_spill() { return fibin_clean_for_spill; }
 
 
-        // Setters
-        //inline void Set
+        // ----- Setter -------------------------------
+        inline void Set_wr_t(ULong64_t ts) { fWR_TS = ts; }
+        
+        inline void Set_time_in_ms(uint32_t time) { ftime_in_ms = time; }
+        inline void Set_ibin_for_s(uint32_t ibin) { fibin_for_s = ibin; }
+        inline void Set_ibin_for_100ms(uint32_t ibin) { fibin_for_100ms = ibin; }
+        inline void Set_ibin_for_spill(uint32_t ibin) { fibin_for_spill = ibin; }
+        inline void Set_increase_sc_temp_user(int index, uint32_t increase) { fincrease_sc_temp_user[index] = increase; }
+        inline void Set_increase_sc_temp_main(int index, uint32_t increase) { fincrease_sc_temp_main[index] = increase; }
+        inline void Set_increase_sc_temp2(uint32_t increase) { fincrease_sc_temp2 = increase; }
+        inline void Set_increase_sc_temp3(uint32_t increase) { fincrease_sc_temp3 = increase; }
+        inline void Set_extraction_time_ms(uint32_t time) { fextraction_time_ms = time; }
+        inline void Set_ibin_clean_for_s(uint32_t ibin) { fibin_clean_for_s = ibin; }
+        inline void Set_ibin_clean_for_100ms(uint32_t ibin) { fibin_clean_for_100ms = ibin; }
+        inline void Set_ibin_clean_for_spill(uint32_t ibin) { fibin_clean_for_spill = ibin; }
+
+        inline void Set_music_dE(int index, Float_t dE) { fmusic_dE[index] = dE; }
+        inline void Set_music_dE_cor(int index, Float_t dE_cor) { fmusic_dE_cor[index] = dE_cor; }
+        inline void Set_sci_l(int index, Float_t sci_l) { fsci_l[index] = sci_l; }
+        inline void Set_sci_r(int index, Float_t sci_r) { fsci_r[index] = sci_r; }
+        inline void Set_sci_e(int index, Float_t sci_e) { fsci_e[index] = sci_e; }
+        inline void Set_sci_tof2(Float_t sci_tof2) { fsci_tof2 = sci_tof2; }
+        inline void Set_sci_tof(int index, Float_t sci_tof) { fsci_tof[index] = sci_tof; }
+        inline void Set_sci_tof_calib(int index, Float_t sci_tof_calib) { fsci_tof_calib[index] = sci_tof_calib; }
+
+        inline void Set_ID_beta(Float_t beta) { fID_beta = beta; }
+        inline void Set_ID_AoQ(Float_t aoq) { fID_AoQ = aoq; }
+        inline void Set_ID_AoQ_corr(Float_t aoq_corr) { fID_AoQ_corr = aoq_corr; }
+        inline void Set_ID_z(Float_t z) { fID_z = z; }
+        inline void Set_ID_z2(Float_t z2) { fID_z2 = z2; }
+        inline void Set_ID_x2(Float_t x2) { fID_x2 = x2; }
+        inline void Set_ID_y2(Float_t y2) { fID_y2 = y2; }
+        inline void Set_ID_a2(Float_t a2) { fID_a2 = a2; }
+        inline void Set_ID_b2(Float_t b2) { fID_b2 = b2; }
+        inline void Set_ID_x4(Float_t x4) { fID_x4 = x4; }
+        inline void Set_ID_y4(Float_t y4) { fID_y4 = y4; }
+        inline void Set_ID_a4(Float_t a4) { fID_a4 = a4; }
+        inline void Set_ID_b4(Float_t b4) { fID_b4 = b4; }
+        inline void Set_ID_dEdegoQ(Float_t dEdegoQ) { fID_dEdegoQ = dEdegoQ; }
+        inline void Set_ID_dEdeg(Float_t dEdeg) { fID_dEdeg = dEdeg; }
+        inline void Set_ID_rho(int index, Float_t rho) { fID_rho[index] = rho; }
+        inline void Set_ID_brho(int index, Float_t brho) { fID_brho[index] = brho; }
+
+        inline void Set_ID_beta_mhtdc(std::vector<Float_t> beta) { fID_beta_mhtdc = beta; }
+        inline void Set_ID_AoQ_mhtdc(std::vector<Float_t> aoq) { fID_AoQ_mhtdc = aoq; }
+        inline void Set_ID_AoQ_corr_mhtdc(std::vector<Float_t> aoq_corr) { fID_AoQ_corr_mhtdc = aoq_corr; }
+        inline void Set_ID_z_mhtdc(std::vector<Float_t> z) { fID_z_mhtdc = z; }
+        inline void Set_ID_z2_mhtdc(std::vector<Float_t> z2) { fID_z2_mhtdc = z2; }
+        inline void Set_ID_dEdegoQ_mhtdc(std::vector<Float_t> dEdegoQ) { fID_dEdegoQ_mhtdc = dEdegoQ; }
+        inline void Set_ID_dEdeg_mhtdc(std::vector<Float_t> dEdeg) { fID_dEdeg_mhtdc = dEdeg; }
 
 
     protected:
@@ -181,15 +187,20 @@ class FrsHitData : public TObject
         Float_t fID_beta;
         Float_t fID_dEdegoQ;
         Float_t fID_dEdeg;
+        Float_t fID_rho[2];
+        Float_t fID_brho[2];
        
         Float_t fmusic_dE[2]; // CEJ: 2? 3 for more musics?
+        Float_t fmusic_dE_cor[2];
         Float_t fsci_e[6]; // CEJ: by chance we need [6]. 5->2 but 10->5 (so 6 elements)
         Float_t fsci_l[6];
         Float_t fsci_r[6];
         Float_t fsci_tof2;
+        Float_t fsci_tof[6];
+        Float_t fsci_tof_calib[6];
 
         // MHTDC
-        // these are going to be vectors....damn it
+        std::vector<Float_t> fID_beta_mhtdc;
         std::vector<Float_t> fID_AoQ_mhtdc;
         std::vector<Float_t> fID_AoQ_corr_mhtdc;
         std::vector<Float_t> fID_z_mhtdc;

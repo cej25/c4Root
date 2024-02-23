@@ -7,6 +7,7 @@
 #include "FrsAnalysisSpectra.h"
 #include "FrsHitData.h"
 #include "FrsAnalysisData.h"
+#include "TCutGGates.h"
 #include "c4Logger.h"
 #include "../../../config/frs_config.h"
 
@@ -24,12 +25,12 @@ FrsAnalysisSpectra::FrsAnalysisSpectra(TFRSParameter* ffrs,
         TSIParameter* fsi,
         TMRTOFMSParameter* fmrtof,
         TRangeParameter* frange,
-        std::vector<std::vector<TCutG*>> fFrsGates)
+        std::vector<TCutGGates*> fFrsGates)
     :   FairTask()
     ,   fNEvents()
     ,   header(nullptr)
     ,   fFrsHitArray(new TClonesArray("FrsHitData"))
-    ,   fFrsAnalysisArray(new TClonesArray("FrsAnalysedData"))
+    ,   fFrsAnalysisArray(new TClonesArray("FrsAnalysisData"))
 {
     frs = ffrs;
     mw = fmw;
@@ -41,39 +42,29 @@ FrsAnalysisSpectra::FrsAnalysisSpectra(TFRSParameter* ffrs,
     si = fsi;
     mrtof = fmrtof;
     range = frange;
-    
-    // CEJ: this can be done more cleanly with a lookup map ikik
-    // also need to work out nullptr check
-    for (auto & GateType : fFrsGates)
+
+    // Set gates
+    for (auto & Gate : fFrsGates)
     {
-        if (strcmp(GateType[0]->GetVarX(), "AoQ") == 0)
+        if (Gate->Type == "ZAoQ")
         {
-            if (strcmp(GateType[0]->GetVarY(), "Z") == 0)
-            {
-                cutID_Z_AoQ = GateType;
-            }
-            else if (strcmp(GateType[0]->GetVarY(), "x2") == 0)
-            {
-                cutID_x2AoQ = GateType;
-            }
-            else if (strcmp(GateType[0]->GetVarY(), "x4") == 0)
-            {
-                cutID_x4AoQ = GateType;
-            }
+            cutID_Z_AoQ = Gate->Gates;
         }
-        else if (strcmp(GateType[0]->GetVarX(), "Z") == 0)
+        else if (Gate->Type == "Z1Z2")
         {
-            if (strcmp(GateType[0]->GetVarY(), "dEdeg") == 0)
-            {
-                cutID_dEdegZ = GateType;
-            }
+            cutID_Z_Z2 = Gate->Gates;
         }
-        else if (strcmp(GateType[0]->GetVarX(), "Z1") == 0)
+        else if (Gate->Type == "x2AoQ")
         {
-            if (strcmp(GateType[0]->GetVarY(), "Z2") == 0)
-            {
-                cutID_Z_Z2 = GateType;
-            }
+            cutID_x2AoQ = Gate->Gates;
+        }
+        else if (Gate->Type == "x4AoQ")
+        {
+            cutID_x4AoQ = Gate->Gates;
+        }
+        else if (Gate->Type == "dEdegZ")
+        {
+            cutID_dEdegZ = Gate->Gates;
         }
     }
 
@@ -308,7 +299,6 @@ InitStatus FrsAnalysisSpectra::Init()
     // ZvsAoQ gates
     if (cutID_Z_AoQ[0] != nullptr)
     {   
-        std::cout << "doing this? ZvsAoQ" << std::endl;
         for (int gate = 0; gate < cutID_Z_AoQ.size(); gate++)
         {
             //hID_ZAoQ_ZAoQgate
@@ -363,7 +353,6 @@ InitStatus FrsAnalysisSpectra::Init()
             frs_ZvsAoQ_hists_mhtdc->Add(h1_a4_ZAoQ_gate_mhtdc[gate]);
         }
 
-        // mhtdc
     }
 
     if (cutID_Z_Z2[0] != nullptr)
@@ -630,17 +619,15 @@ InitStatus FrsAnalysisSpectra::Init()
 void FrsAnalysisSpectra::Exec(Option_t* option)
 {
     if (fFrsHitArray && fFrsHitArray->GetEntriesFast() > 0)
-    {
+    {   
         Int_t nHits = fFrsHitArray->GetEntriesFast();
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {
             FrsHitData* FrsHit = (FrsHitData*)fFrsHitArray->At(ihit);
             if (!FrsHit) continue;
 
-            //FrsAnalysisData* FrsAnalysisHit = new FrsAnalysisData();
-
             Long64_t FRS_time_mins = 0;
-            if(FrsHit->Get_WR() > 0) FRS_time_mins = (FrsHit->Get_WR() / 60E9) - 26900000; // CEJ: taken from Go4..
+            if(FrsHit->Get_wr_t() > 0) FRS_time_mins = (FrsHit->Get_wr_t() / 60E9) - 26900000; // CEJ: taken from Go4..
 
             /* --------  TAC and PID gates ----------- */
             if (FrsHit->Get_ID_z() > 0 && FRS_time_mins > 0) h2_Z1_vs_T->Fill(FRS_time_mins, FrsHit->Get_ID_z());
@@ -699,13 +686,13 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
 
             // Define PID gates
             // Z1 vs AoQ
+
             if (cutID_Z_AoQ[0] != nullptr)
             {   
                 for (int gate = 0; gate < cutID_Z_AoQ.size(); gate++)
                 {   
                     if (cutID_Z_AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z()))
                     {
-                        //FrsAnalysisHit->Set_ZvsAoQ_gates(gate, true);
                         h2_Z_vs_AoQ_ZAoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z());
                         h2_Z1_vs_Z2_ZAoQgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2());
                         h2_x2_vs_AoQ_ZAoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2());
@@ -725,7 +712,7 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
                 {
                     if(cutID_Z_Z2[gate]->IsInside(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2()))
                     {
-                        //FrsAnalysisHit->Set_ZvsZ2_gates(gate, true);
+
                         h2_dEdeg_vs_Z_Z1Z2gate[gate]->Fill(FrsHit->Get_ID_z(),FrsHit->Get_ID_dEdeg());
                         h2_dEdegoQ_vs_Z_Z1Z2gate[gate]->Fill(FrsHit->Get_ID_z(),FrsHit->Get_ID_dEdegoQ());
                         h2_Z1_vs_Z2_Z1Z2gate[gate]->Fill(FrsHit->Get_ID_z(),FrsHit->Get_ID_z2());
@@ -746,12 +733,10 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
                 {
                     if(cutID_x2AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2()))
                     {
-                        //FrsAnalysisHit->Set_x2vsAoQ_gates(gate, true);
                         h2_x2_vs_AoQ_x2AoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2());
                         h2_Z1_vs_Z2_x2AoQgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2());
                         
                         // Z1 Z2 + x2AoQ
-                        // The selected Z1 Z2 gate for this part can be found in the Correlations_config.dat file 
                         if (cutID_Z_Z2[0] != nullptr)
                         {   
                             if(cutID_Z_Z2[gate]->IsInside(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2()))
@@ -777,12 +762,10 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
                 {
                     if(cutID_x4AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4()))
                     { 
-                        //FrsAnalysisHit->Set_x4vsAoQ_gates(gate, true);
                         h2_x4_vs_AoQ_x4AoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4());
                         h2_Z1_vs_Z2_x4AoQgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2());
                         
                         ///Z1 Z2 + x4AoQ
-                        ///The selected Z1 Z2 gate for this part can be found in the Correlations_config.dat file
                         if (cutID_Z_Z2[0] != nullptr)
                         {
                             if(cutID_Z_Z2[gate]->IsInside(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2()))
@@ -807,7 +790,6 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
                 {
                     if(cutID_dEdegZ[gate]->IsInside(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdeg()))
                     {
-                        //FrsAnalysisHit->Set_ZvsdEdeg_gates(gate, true);
                         h2_Z_vs_AoQ_dEdegZgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z());
                         h2_Z1_vs_Z2_dEdegZgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2());
                         h2_x2_vs_AoQ_dEdegZgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2());
@@ -820,7 +802,6 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
                 }
             }
 
-            //return; // test, MHTDC is the problem but only problem?
             /* ----- MHTDC Histograms and PID Gates -------------------------------------------- */
             for (int i = 0; i < MAX_MHTDC_MULT; i++)
             {   
@@ -878,7 +859,6 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
                         if(cutID_Z_AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_z_mhtdc(i)))
                         {   
                             // CEJ: this will change based on final hit?
-                            //FrsAnalysisHit->Set_ZvsAoQ_mhtdc_gates(gate, true);
                             h2_x2_vs_AoQ_ZAoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x2());
                             h2_x4_vs_AoQ_ZAoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x4());
                             h2_Z_vs_AoQ_ZAoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_z_mhtdc(i));
@@ -901,7 +881,6 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
                     {
                         if(cutID_Z_Z2[gate]->IsInside(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_z2_mhtdc(i)))
                         {
-                            //FrsAnalysisHit->Set_ZvsZ2_mhtdc_gates(gate, true);
                             h2_dEdeg_vs_Z_Z1Z2gate_mhtdc[gate]->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_dEdeg_mhtdc(i));
                             h2_dEdegoQ_vs_Z_Z1Z2gate_mhtdc[gate]->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_dEdegoQ_mhtdc(i));
                             h2_Z1_vs_Z2_Z1Z2gate_mhtdc[gate]->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_z2_mhtdc(i));
@@ -936,7 +915,6 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
                     {
                         if(cutID_x2AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x2()))
                         {
-                            //FrsAnalysisHit->Set_x2vsAoQ_mhtdc_gates(gate, true);
                             h2_x2_vs_AoQ_x2AoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x2());
                             h2_Z1_vs_Z2_x2AoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_z2_mhtdc(i));
                             // The selected Z1 Z2 gate for this part can be found in the Correlations_config.dat file
@@ -968,7 +946,6 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
                     {
                         if(cutID_x4AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x4()))
                         {   
-                            //FrsAnalysisHit->Set_x4vsAoQ_mhtdc_gates(gate, true);
                             h2_x4_vs_AoQ_x4AoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x4());
                             h2_Z1_vs_Z2_x4AoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_z2_mhtdc(i));
                             // Z1 Z2 +X4 AoQ
@@ -1000,7 +977,6 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
                     {
                         if (cutID_dEdegZ[gate]->IsInside(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_dEdeg()))
                         {
-                            //FrsAnalysisHit->Set_ZvsdEdeg_mhtdc_gates(gate, true);
                             h2_Z_vs_dEdeg_dEdegZgate_mhtdc[gate]->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_dEdeg()); // CEJ: again why not MHTDC here
                             h2_Z_vs_AoQ_dEdegZgate_mhtdc[gate]->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_z_mhtdc(i));
                             h2_Z1_vs_Z2_dEdegZgate_mhtdc[gate]->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_z_mhtdc(i));
@@ -1014,93 +990,10 @@ void FrsAnalysisSpectra::Exec(Option_t* option)
                     }
                 }
             }
-
-            // CEJ: FrsAnalysisHit needs to be registered in the tree here
-            // new fFrsAnalysisArray() etc..
-            //((*fFrsAnalysisArray)[fFrsAnalysisArray->GetEntriesFast()]) = FrsAnalysisHit;
-
         } // ihits
     } // non-zero FRS entries
     
 }
-
-void FrsAnalysisSpectra::ReadGates()
-{
-    // read from some file structured like:
-    /*
-    # X2 vs ZAoQ gate
-    2.24028 -65.1738
-    2.25593 58.8235
-    2.25593 58.1551
-    2.28866 80.5481
-    2.32495 87.2326
-    2.38188 82.5535
-    2.37619 -69.1845
-    2.24028 -65.1738
-    */
-
-    /*
-    also, we don't want to have to recompile if new gates are set/added
-    we need to be able to provide the gate filename(s) as an argument somewhere
-    no idea how this can/will work..
-    anyway..
-
-    can we read the gates from the steering macro? and thus pass the object along?
-    then it wouldn't need to be recompiled right? not sure lets test ..
-    ok but we still need some way to actually read this so contiue building function..
-
-    */
-
-    // Z vs AoQ
-    /*
-    std::ifstream file(filenames[0]);
-    if (!file.is_open())
-    {
-        std::cerr << "Error: Could not open file Z vs AoQ gate file!" << std::endl;
-        return;
-    }
-    
-    std::vector<double> x_points, y_points
-    double x, y;
-    std::string line;
-    while (std::getline(file, line))
-    {
-        if (line.empty() || line[0] == '#') continue;
-        
-        std::istringstream iss(line);
-        if (!(iss >> x >> y))
-        {
-            std::cerr "Error: Invalid data format in Z vs AoQ gate file!" << std::endl;
-            return;
-        }
-        x_points.push_back(x);
-        y_points.push_back(y);
-    }
-
-    // CEJ: don't forget to create loop..
-    TCutG* cID_Z_AoQ[0] = new TCutG(Form("cID_Z_AoQ_%d", 0), x_points.size(), &x_points[0], &y_points[0]);
-
-
-
-    std::vector<double> x_points, y_points;
-    double x, y;
-    std::string line;
-    while (std::getline(file, line)) {
-        if (line.empty() || line[0] == '#')
-            continue;
-        std::istringstream iss(line);
-        if (!(iss >> x >> y)) {
-            std::cerr << "Error: Invalid data format in file " << filename << std::endl;
-            return;
-        }
-        x_points.push_back(x);
-        y_points.push_back(y);
-    }
-
-    TCutG *cutg = new TCutG("cutg", x_points.size(), &x_points[0], &y_points[0]);
-    */
-}
-
 
 void FrsAnalysisSpectra::FinishEvent()
 {

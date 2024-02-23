@@ -34,26 +34,25 @@ link_directories(${FAIRROOT_LIBRARY_DIR} ${ROOT_LIBRARY_DIR})
 
 set(SRCS
 #online
-./online/GermaniumOnlineSpectra.cxx
-./online/BeamMonitorOnlineSpectra.cxx
-./online/LisaOnlineSpectra.cxx
-./online/AidaOnlineSpectra.cxx
-./online/bPlastOnlineSpectra.cxx
-./online/FatimaOnlineSpectra.cxx
+./online/germanium/GermaniumOnlineSpectra.cxx
+./online/beammonitor/BeamMonitorOnlineSpectra.cxx
+./online/lisa/LisaOnlineSpectra.cxx
+./online/aida/AidaOnlineSpectra.cxx
+./online/bplast/bPlastOnlineSpectra.cxx
+./online/fatima/FatimaOnlineSpectra.cxx
 ./online/frs/FrsOnlineSpectra.cxx
 ./online/frs/FrsRawSpectra.cxx
-./online/frs/FrsDetectorsOnline.cxx
-./fatima_aida_correlations/FatimaAidaSpectra.cxx
-./online/TimeMachineOnline.cxx
+./online/frs/FrsCalSpectra.cxx
+./online/timemachine/TimeMachineOnline.cxx
+./online/wr/WhiterabbitCorrelationOnline.cxx
 
-# nearline
-./fatima_aida_correlations/FatimaAidaSpectra.cxx
-./online/WhiterabbitCorrelationOnline.cxx
+# nearline/offline
+./nearline/frs/FrsAnalysisSpectra.cxx
 
-
-#offline
-./online/frs/FrsAnalysisSpectra.cxx
+## correlations ##
 ./correlations/FrsAidaCorrelations.cxx
+./correlations/FatimaAidaSpectra.cxx
+
 )
 
 
