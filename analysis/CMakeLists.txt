@@ -51,7 +51,7 @@ set(SRCS
 
 ## correlations ##
 ./correlations/FrsAidaCorrelations.cxx
-./correlations/FatimaAidaSpectra.cxx
+./correlations/AidaFatimaCorrelations.cxx
 
 )
 
