@@ -125,12 +125,15 @@ Bool_t FatimaReader::Init(ext_data_struct_info* a_struct_info)
         }
     }
 
-    if (fine_time_calibration_read_from_file){
+    if (fine_time_calibration_read_from_file)
+    {
         ReadFineTimeHistosFromFile();
         DoFineTimeCalibration();
         fine_time_calibration_set = true;
         c4LOG(info,"Fine Time calibration set from file.");
-    }else{
+    }
+    else
+    {
         fine_time_hits = new TH1I**[NBoards];
         for (int i = 0; i < NBoards; i++) {
             fine_time_hits[i] = new TH1I*[NChannels];
@@ -157,7 +160,8 @@ This does the fine time calibrations of the fine times and builds the required l
 
 This can be called explicitly if desired - but will be done automatically by the rest of the code. Throws a warning if there are channels without hits. These are mapped tdc_channel = tdc_channel/512*5 ns
 */
-void FatimaReader::DoFineTimeCalibration(){
+void FatimaReader::DoFineTimeCalibration()
+{
     c4LOG(info, "Doing fine time calibrations.");
     for (int i = 0; i < NBoards; i++) {
         for (int j = 0; j < NChannels; j++) {
@@ -183,7 +187,8 @@ void FatimaReader::DoFineTimeCalibration(){
 /*
 Uses the conversion table to look-up fine times in ns.
 */
-double FatimaReader::GetFineTime(int tdc_fine_time_channel, int board_id, int channel_id){
+double FatimaReader::GetFineTime(int tdc_fine_time_channel, int board_id, int channel_id)
+{
     return fine_time_calibration_coeffs[board_id][channel_id][tdc_fine_time_channel];
 }
 
@@ -191,22 +196,26 @@ double FatimaReader::GetFineTime(int tdc_fine_time_channel, int board_id, int ch
 Fine time histograms are stored as ROOT TH1I histograms as they are efficient and compresses when written.
 This function saves the fine time hits directly to file. On restart this file can then be read and the look-up table reconstructed.
 */
-void FatimaReader::WriteFineTimeHistosToFile(){
+void FatimaReader::WriteFineTimeHistosToFile()
+{
 
-    if (!fine_time_calibration_set) {
+    if (!fine_time_calibration_set) 
+    {
         c4LOG(info,"Fine time calibrations not set, cannot write to file.");
         return;
     }
     c4LOG(info,"Fine time calibrations starting to write to file.");
 
-    TFile * outputfile = TFile::Open(Form("%s",fine_time_histo_outfile),"recreate");
+    TFile * outputfile = TFile::Open(Form("%s",fine_time_histo_outfile.Data()),"recreate");
     
     std::cout << outputfile << std::endl;
     
     if (!outputfile->IsOpen()) {c4LOG(warning, "File to write histos not opened, skipping writing. "); return;}
     // i think the easiest is to write the histograms of the fine times themselves - please let me know if you disagree (JEL)
-    for (int i = 0; i < NBoards; i++) {
-        for (int j = 0; j < NChannels; j++) {
+    for (int i = 0; i < NBoards; i++) 
+    {
+        for (int j = 0; j < NChannels; j++) 
+        {
             if (fine_time_hits[i][j] != nullptr) 
             {
                 //c4LOG(info, "Found pointer to histogram.");
@@ -215,7 +224,7 @@ void FatimaReader::WriteFineTimeHistosToFile(){
             }
         }
     }
-    c4LOG(info,Form("Written fine time calibrations (i.e. raw fine time histograms) to  %s",fine_time_histo_outfile));
+    c4LOG(info,Form("Written fine time calibrations (i.e. raw fine time histograms) to  %s",fine_time_histo_outfile.Data()));
 
     outputfile->Close();
 
@@ -228,10 +237,12 @@ Read the fine time histograms which are written by the function above.
 
 Assumes the names of the histograms are fine_time_hist_module_channel and that they have 1024 bins (since the TAMEX fine time is written with 2^10 bits).
 */
-void FatimaReader::ReadFineTimeHistosFromFile() {
+void FatimaReader::ReadFineTimeHistosFromFile() 
+{
 
     TFile* inputfile = TFile::Open(fine_time_histo_infile, "READ");
-    if (!inputfile || inputfile->IsZombie()) {
+    if (!inputfile || inputfile->IsZombie()) 
+    {
         c4LOG(fatal, "File to read histos not opened.");
     }
 
@@ -262,7 +273,7 @@ void FatimaReader::ReadFineTimeHistosFromFile() {
     }
 
     inputfile->Close();
-    c4LOG(info, Form("Read fine time calibrations (i.e. raw fine time histograms) from %s", fine_time_histo_infile));
+    c4LOG(info, Form("Read fine time calibrations (i.e. raw fine time histograms) from %s", fine_time_histo_infile.Data()));
 }
 
 /*

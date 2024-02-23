@@ -4,9 +4,10 @@
 // the file must be taken from FRS, and FRS parameters
 // should be added as arguments to the setup function
 // highkey hate this
+
 extern "C"
 {
-    #include "../../config/frs/setup.C"
+    #include "../../config/frs/NovTest/setup.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -55,7 +56,6 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     TString ntuple_options = "UNPACK";
     TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --allow-errors --input-buffer=200Mi --event-sizes";
-    //TString ucesb_path = "/u/cjones/c4Root/unpack/exps/NovTest/NovTest --allow-errors --input-buffer=200Mi --event-sizes";
     std::string ucesb_dir = "/u/cjones/ucesb";
     ucesb_path.ReplaceAll("//","/");
 
@@ -64,7 +64,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
-    run->SetSink(new FairRootFileSink(outputFileName)); // CEJ: we should try GetRootFile() method to create folders in Task
+    run->SetSink(new FairRootFileSink(outputFileName));
     run->ActivateHttpServer(refresh, port);
 
     // Load ucesb structure
@@ -91,21 +91,23 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     // Runtime data baserate  
     
     UnpackReader* unpackheader = new UnpackReader((EXT_STR_h101_unpack*)&ucesb_struct.eventheaders, offsetof(EXT_STR_h101, eventheaders));
-    
-
-    // Add readers
 
     FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-    unpackfatima->SetInputFileFineTimeHistos("/u/despec/BB7-c4-test/macros/fine_time_histos_111223_fatima.root");
-    //unpackfatima->DoFineTimeCalOnline("/u/despec/BB7-c4-test/macros/fine_time_histos_111223_fatima.root",50000000);
+    unpackfatima->SetInputFileFineTimeHistos(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fine_time_histos_111223_fatima.root");
+    // unpackfatima->SetInputFileFineTimeHistos("/u/despec/BB7-c4-test/macros/fine_time_histos_111223_fatima.root");
+    //unpackfatima->DoFineTimeCalOnline(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fine_time_histos_111223_fatima.root", 5000000);
+    // unpackfatima->DoFineTimeCalOnline("/u/despec/BB7-c4-test/macros/fine_time_histos_111223_fatima.root",50000000);
 
 
-    TAidaConfiguration::SetBasePath("/u/despec/BB7-c4-test/macros/AIDA");
+    //TAidaConfiguration::SetBasePath("/u/despec/BB7-c4-test/macros/AIDA");
+    TAidaConfiguration::SetBasePath(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/AIDA");
     AidaReader* unpackaida = new AidaReader((EXT_STR_h101_aida_onion*)&ucesb_struct.aida, offsetof(EXT_STR_h101, aida));
 
     bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_bplast_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
-    //unpackbplast->DoFineTimeCalOnline("/u/cjones/c4Root/config/NovTest/fine_time_histos_111223_bplast.root",10000000);
-    unpackbplast->SetInputFileFineTimeHistos("/u/cjones/c4Root/config/NovTest/fine_time_histos_111223_bplast.root");
+    //unpackbplast->DoFineTimeCalOnline(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/bplast/fine_time_histos_111223_bplast.root", 1000000);
+    // unpackbplast->DoFineTimeCalOnline("/u/cjones/c4Root/config/NovTest/fine_time_histos_111223_bplast.root",10000000);
+    unpackbplast->SetInputFileFineTimeHistos(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/bplast/fine_time_histos_111223_bplast.root");    
+    // unpackbplast->SetInputFileFineTimeHistos("/u/cjones/c4Root/config/NovTest/fine_time_histos_111223_bplast.root");
 
     FrsMainReader* unpackfrsmain = new FrsMainReader((EXT_STR_h101_frsmain_onion*)&ucesb_struct.frsmain, offsetof(EXT_STR_h101, frsmain));
     FrsTPCReader* unpackfrstpc = new FrsTPCReader((EXT_STR_h101_frstpc_onion*)&ucesb_struct.frstpc, offsetof(EXT_STR_h101, frstpc));
@@ -115,10 +117,6 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
 
     //GermaniumReader* unpackgermanium = new GermaniumReader((EXT_STR_h101_GERMANIUM_onion*)&ucesb_struct.germanium, offsetof(EXT_STR_h101, germanium));
 
-    // Add readers
-
-
-    // Add readers
     unpackbplast->SetOnline(true);
     unpackaida->SetOnline(true);
     unpackfatima->SetOnline(true);
@@ -128,6 +126,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     unpackfrstpc->SetOnline(true);
     unpackfrsuser->SetOnline(true);
     unpackfrsvftx->SetOnline(true);
+
 
     // Add readers
     source->AddReader(unpackheader);
@@ -145,9 +144,11 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
 
     // Add analysis task
     FatimaRaw2Cal * calfatima = new FatimaRaw2Cal();
-    calfatima->SetDetectorMapFile("/u/cjones/c4Root/config/NovTest/fatima_alloc.txt");
+    calfatima->SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fatima_alloc.txt");
+    //calfatima->SetDetectorMapFile("/u/cjones/c4Root/config/NovTest/fatima_alloc.txt");
     calfatima->PrintDetectorMap();
-    calfatima->SetDetectorCalFile("/u/cjones/c4Root/config/NovTest/fatima_cal.txt");
+    calfatima->SetDetectorCalFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fatima_cal.txt");
+    //calfatima->SetDetectorCalFile("/u/cjones/c4Root/config/NovTest/fatima_cal.txt");
     calfatima->PrintDetectorCal();
     calfatima->SetTimeMachineChannels(16,17);
 
@@ -157,6 +158,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     AidaCal2Hit* aidaHitter = new AidaCal2Hit();
 
     //bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
+    //calbplast->SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/bplast/bplast_allocation_111223.txt");
     //calbplast->SetDetectorMapFile("/u/cjones/c4Root/config/NovTest/bplast_allocation_111223.txt");
     //calbplast->SetTimeMachineChannels(68,67);
 
@@ -164,7 +166,6 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     //ge_calib->SetDetectorMapFile("/u/despec/BB7-c4-test/c4Root/Germanium_Detector_Map.txt");
     //ge_calib->PrintDetectorMap();
 
-    // CEJ: FRS issue possibly in Reader step
     // Main and TPC checked, should be fine...
     FrsMainRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
     FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
@@ -223,9 +224,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     // Gates - Note: please name the TCutG and TCutG file the same thing
     // Add as many to the filename vector as you like,
     // but use the "default" gate files if you have none to add 
-    // If you wish to add another type of gate, as well as adding 
-    // analysis tasks, please add the type to ReadGates.C also!
-    std::string gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/Gates/";
+    std::string gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/frs/Gates/";
     
     std::vector<std::string> ZAoQ_cuts = {"ZvsAoQ1"};
     TCutGGates* ZAoQ = new TCutGGates("ZAoQ", ZAoQ_cuts, gate_path);

@@ -109,7 +109,7 @@ InitStatus FrsCal2Hit::Init()
     mgr->Register("FrsHitData", "FRS Hit Data", fHitArray, !fOnline);
     mgr->Register("EventData", "Event Data", fEventItems, !fOnline);
 
-    Setup_Conditions("../../config/frs/");
+    Setup_Conditions("../../config/frs/NovTest/"); // this can be passed through
     c4LOG_IF(fatal,!conditions_files_read, "You must set FrsCal2Hit->Setup_Conditions('your file path') to the folder containing the frs condition gates.");
     
     fCalArrayMain->Clear();
@@ -1847,7 +1847,7 @@ void FrsCal2Hit::FRS_GainMatching()
     int f = 0;
     int d = 0;
     
-    file.open("../../config/frs/Z1_Z2_Shift.txt");
+    file.open("../../config/frs/NovTest/Z1_Z2_Shift.txt");
     while (file.good())
     {
         getline(file, line, '\n');
@@ -1862,7 +1862,7 @@ void FrsCal2Hit::FRS_GainMatching()
     }
     file.close();
 
-    file.open("../../config/frs/AoQ_Shift.txt");
+    file.open("../../config/frs/NovTest/AoQ_Shift.txt");
     while (file.good())
     {
         getline(file, line, '\n');
