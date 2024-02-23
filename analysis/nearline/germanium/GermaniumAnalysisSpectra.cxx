@@ -1,0 +1,2 @@
+#include "GermaniumAnalysisSpectra.h"
+
