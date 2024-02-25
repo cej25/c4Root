@@ -6,6 +6,7 @@
 #include "../../config/frs_config.h"
 #include "../../config/NovTest/setup.hh" // we can't be doing this
 #include "TCutGGates.h"
+#include "CorrelationsMap.h"
 
 #include "TClonesArray.h"
 #include "TH1.h"
@@ -30,7 +31,8 @@ class TCutGGates;
 class FrsAidaCorrelations : public FairTask
 {
     public:
-        FrsAidaCorrelations(std::vector<TCutGGates*> fFrsGates);
+        FrsAidaCorrelations(std::vector<TCutGGates*> fFrsGates, 
+                            CorrelationsMap* fCorrel);
 
         FrsAidaCorrelations(const TString& name, Int_t verbose);
 
@@ -50,6 +52,8 @@ class FrsAidaCorrelations : public FairTask
 
         Int_t fNEvents;
         EventHeader* header;
+
+        CorrelationsMap* Correl;
 
         TFolder* frs_correlations;
         TFolder* frs_aida_correlations;

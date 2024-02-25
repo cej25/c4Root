@@ -11,7 +11,8 @@
 
 #include <vector>
 
-FrsAidaCorrelations::FrsAidaCorrelations(std::vector<TCutGGates*> fFrsGates)
+FrsAidaCorrelations::FrsAidaCorrelations(std::vector<TCutGGates*> fFrsGates, 
+                                        CorrelationsMap* fCorrel)
     :   FairTask()
     ,   fNEvents(0)
     ,   header(nullptr)
@@ -42,6 +43,8 @@ FrsAidaCorrelations::FrsAidaCorrelations(std::vector<TCutGGates*> fFrsGates)
             cutID_dEdegZ = Gate->Gates;
         }
     }
+
+    Correl = fCorrel;
 }
 
 FrsAidaCorrelations::FrsAidaCorrelations(const TString& name, Int_t verbose)

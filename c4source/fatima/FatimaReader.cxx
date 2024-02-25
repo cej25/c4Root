@@ -303,7 +303,6 @@ Bool_t FatimaReader::Read() //do fine time here:
     //whiterabbit timestamp:
     wr_t = (((uint64_t)fData->fatima_ts_t[3]) << 48) + (((uint64_t)fData->fatima_ts_t[2]) << 32) + (((uint64_t)fData->fatima_ts_t[1]) << 16) + (uint64_t)(fData->fatima_ts_t[0]);
     
-
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
     { //per board:
         

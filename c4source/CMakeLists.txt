@@ -43,6 +43,7 @@ set(SRCS
 ./base/UcesbSource.cxx
 ./base/UnpackReader.cxx
 ./base/c4Reader.cxx
+./base/CorrelationsMap.cxx
 ./aida/c4AidaReader.cxx
 ./aida/AidaCal2Hit.cxx
 ./aida/AidaUnpack2Cal.cxx
@@ -55,7 +56,6 @@ set(SRCS
 ./frs/FrsUserRaw2Cal.cxx
 ./frs/FrsVFTXRaw2Cal.cxx
 ./frs/FrsCal2Hit.cxx
-#./frs/TFRSParameter.cxx
 ./germanium/GermaniumReader.cxx
 ./lisa/LisaReader.cxx
 ./bplast/bPlastReader.cxx

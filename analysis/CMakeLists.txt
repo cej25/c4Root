@@ -25,6 +25,7 @@ ${C4ROOT_SOURCE_DIR}/analysis/online/frs
 ${C4ROOT_SOURCE_DIR}/correlations
 ${C4ROOT_SOURCE_DIR}/c4source
 ${C4ROOT_SOURCE_DIR}/c4source/frs
+${C4ROOT_SOURCE_DIR}/c4source/base
 )
 
 include_directories( ${INCLUDE_DIRECTORIES})
@@ -51,6 +52,7 @@ set(SRCS
 
 ## correlations ##
 ./correlations/FrsAidaCorrelations.cxx
+./correlations/FrsFatimaCorrelations.cxx
 ./correlations/AidaFatimaCorrelations.cxx
 
 )

@@ -235,7 +235,7 @@ void FatimaRaw2Cal::Exec(Option_t* option)
         for (Int_t ihit = 0; ihit < event_multiplicity; ihit++)
         {
 
-            FatimaTwinpeaksData * first_hit_in_fast_channel = (FatimaTwinpeaksData*)funcal_data->At(ihit);
+            FatimaTwinpeaksData* first_hit_in_fast_channel = (FatimaTwinpeaksData*)funcal_data->At(ihit);
 
             // under the assumption fast-slow always follows:
             //assume that only matched lead-trail hits are written.
@@ -274,6 +274,7 @@ void FatimaRaw2Cal::Exec(Option_t* option)
                 funcal_hit = (FatimaTwinpeaksData*)funcal_data->At(ihit+hitnr);
                 funcal_hit_next = (FatimaTwinpeaksData*)funcal_data->At(ihit+hitnr+hits_in_fast_channel);
             
+
                 if (funcal_hit_next->Get_ch_ID() != funcal_hit->Get_ch_ID()+1)
                 { // this assumption seems empirically true - no events are filled when reverse order is put.
                     fNunmatched++; continue;
