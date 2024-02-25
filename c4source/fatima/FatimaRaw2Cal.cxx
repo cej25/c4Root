@@ -235,7 +235,7 @@ void FatimaRaw2Cal::Exec(Option_t* option)
         for (Int_t ihit = 0; ihit < event_multiplicity; ihit++)
         {
 
-            FatimaTwinpeaksData * first_hit_in_fast_channel = (FatimaTwinpeaksData*)funcal_data->At(ihit);
+            FatimaTwinpeaksData* first_hit_in_fast_channel = (FatimaTwinpeaksData*)funcal_data->At(ihit);
 
             // under the assumption fast-slow always follows:
             //assume that only matched lead-trail hits are written.
