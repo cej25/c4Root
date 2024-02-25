@@ -243,7 +243,6 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     //FrsRawSpectra* frsrawspec = new FrsRawSpectra();
 
     FrsAnalysisSpectra* frsanalspec = new FrsAnalysisSpectra(frs,mw,tpc,music,labr,sci,id,si,mrtof,range,FrsGates);
-    FrsAidaCorrelations* frsaidacorr = new FrsAidaCorrelations(FrsGates);
 
     run->AddTask(tms);
     run->AddTask(onlinefatima);
@@ -254,7 +253,23 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     //run->AddTask(onlinefrs);
     //run->AddTask(frsrawspec);
     run->AddTask(frsanalspec);
+
+
+    /* ------------------------------------------------------------------ */
+    /* ---- CORRELATIONS --------------------------------------------------- */
+    std::string CorrConfigFile = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/correlations.dat";
+    CorrelationsMap* CorrMap = new CorrelationsMap(CorrConfigFile);
+
+    // Define prompt cut EdT gates for Fatima Prompt analysis
+    gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Gates/";
+    std::vector<std::string> FatimaPromptCuts = {"FatPromptCut1"};
+    TCutGGates* FatimaPrompt = new TCutGGates("FatimaEdT", FatimaPromptCuts, gate_path);
+
+    FrsAidaCorrelations* frsaidacorr = new FrsAidaCorrelations(FrsGates, CorrMap);
     run->AddTask(frsaidacorr);
+
+    FrsFatimaCorrelations* frsfatimacorr = new FrsFatimaCorrelations(FrsGates, FatimaPrompt, CorrMap);
+    run->AddTask(frsfatimacorr);
 
     // Initialise
     run->Init();
