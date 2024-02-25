@@ -60,7 +60,7 @@ CorrelationsMap::CorrelationsMap(std::string& filename)
                 else if (firstWord == "FRS_FATIMA_LONG_DT") (*this)["FRS-Fatima Long dT Gate"] = values;
                 else if (firstWord == "LT_START_STOP_1") (*this)["Lifetime 1 Start-Stop Energies"] = values;
                 else if (firstWord == "LT_START_STOP_2") (*this)["Lifetime 2 Start-Stop Energies"] = values;
-                else if (firstWord == "LT_START_STOP 3") (*this)["Lifetime 3 Start-Stop Energies"] = values;
+                else if (firstWord == "LT_START_STOP_3") (*this)["Lifetime 3 Start-Stop Energies"] = values;
                 else if (firstWord == "LT_START_STOP_PID") (*this)["Start-Stop Analysis PID"] = values;
                 else if (firstWord == "IMPLANT_DECAY_DT") (*this)["Implant-Decay dT Gate"] = values;
                 else if (firstWord == "AIDA_FB_DT_DE") (*this)["AIDA Front-Back Conditions"] = values;
