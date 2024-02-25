@@ -1,5 +1,5 @@
 #include "FairLogger.h"
-#include "FairRootManger.h"
+#include "FairRootManager.h"
 #include "FairRunAna.h"
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
@@ -46,7 +46,7 @@ FrsFatimaCorrelations::FrsFatimaCorrelations(std::vector<TCutGGates*> fFrsGates,
 
     if (fFatimaPromptGates->Type == "FatimaEdT")
     {
-        cutFatima_EdT = fFatimaPromptGate->Gates;
+        cutFatima_EdT = fFatimaPromptGates->Gates;
     }
 
     Correl = fCorrel;
@@ -182,7 +182,7 @@ InitStatus FrsFatimaCorrelations::Init()
 }
 
 
-FrsFatimaCorrelations::Exec(Option_t* option)
+void FrsFatimaCorrelations::Exec(Option_t* option)
 {
     // -------------------------------------------------- //
     // ------- PROMPT ----------------------------------- //
@@ -190,10 +190,10 @@ FrsFatimaCorrelations::Exec(Option_t* option)
     // stop-start does in fact require an FRS hit
     // so we can rewrite this a bit
     int multFRS = fHitFrsArray->GetEntriesFast(); 
-    if (multFRS == 0) continue;
+    if (multFRS == 0) return;
     
     FrsHitData* FrsHit = (FrsHitData*)fHitFrsArray->At(0);
-    if (!FrsHit) continue;
+    if (!FrsHit) return;
 
     if (fHitFatimaTwinpeaksArray && fHitFatimaTwinpeaksArray->GetEntriesFast() > 0)
     {
@@ -237,7 +237,7 @@ FrsFatimaCorrelations::Exec(Option_t* option)
             
             if (FatimaHit->Get_wr_t() > 0 && FrsHit->Get_wr_t() > 0) dT_FRS_Fatima = FatimaHit->Get_wr_t() - FrsHit->Get_wr_t();
             
-            if (dT_FRS_Fatima > Correl["FRS-Fatima WR Gate"][0] && dT_FRS_Fatima < Correl["FRS-Fatima WR Gate"][1])
+            if (dT_FRS_Fatima > (*Correl)["FRS-Fatima WR Gate"][0] && dT_FRS_Fatima < (*Correl)["FRS-Fatima WR Gate"][1])
             {   
                 // In Go4 sc40[0] is SC41L, sc41[0] is SC41R
                 if (FatimaHit->Get_energy() > 0 && FatimaHit->Get_fast_lead_time() > 0 && SC41L_T > 0)
@@ -263,7 +263,7 @@ FrsFatimaCorrelations::Exec(Option_t* option)
                                             FatimaTwinpeaksCalData* FatimaHit2 = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaksArray->At(ihit2);
                                             if (!FatimaHit2) continue;
 
-                                            if (ihit != ihit2 && (FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025 > Correl["Fatima Gamma-Gamma dT Gate"][0] && (FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025 < Correl["Fatima Gamma-Gamma dT Gate"][1])
+                                            if (ihit != ihit2 && (FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025 > (*Correl)["Fatima Gamma-Gamma dT Gate"][0] && (FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025 < (*Correl)["Fatima Gamma-Gamma dT Gate"][1])
                                             {
                                                 h2_FRS_FatimaE1vsE2_ZAoQgate[gate]->Fill(FatimaHit->Get_energy(), FatimaHit2->Get_energy());
                                             }
@@ -284,7 +284,10 @@ FrsFatimaCorrelations::Exec(Option_t* option)
 
                                             for (int ihit2 = 0; ihit2 < nHits; ihit2++)
                                             {   
-                                                if (ihit != ihit2 && (FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025 > Correl["Fatima Gamma-Gamma dT Gate"][0] && (FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025 < Correl["Fatima Gamma-Gamma dT Gate"][1])
+                                                FatimaTwinpeaksCalData* FatimaHit2 = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaksArray->At(ihit2);
+                                                if (!FatimaHit2) continue;
+
+                                                if (ihit != ihit2 && (FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025 > (*Correl)["Fatima Gamma-Gamma dT Gate"][0] && (FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025 < (*Correl)["Fatima Gamma-Gamma dT Gate"][1])
                                                 {
                                                     h2_FRS_FatimaE1vsE2_Z1Z2x2AoQgate[gate]->Fill(FatimaHit->Get_energy(), FatimaHit2->Get_energy());
                                                 }
@@ -303,7 +306,10 @@ FrsFatimaCorrelations::Exec(Option_t* option)
 
                                             for (int ihit2 = 0; ihit2 < nHits; ihit2++)
                                             {   
-                                                if (ihit != ihit2 && (FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025 > Correl["Fatima Gamma-Gamma dT Gate"][0] && (FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025 < Correl["Fatima Gamma-Gamma dT Gate"][1])
+                                                FatimaTwinpeaksCalData* FatimaHit2 = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaksArray->At(ihit2);
+                                                if (!FatimaHit2) continue;
+
+                                                if (ihit != ihit2 && (FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025 > (*Correl)["Fatima Gamma-Gamma dT Gate"][0] && (FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025 < (*Correl)["Fatima Gamma-Gamma dT Gate"][1])
                                                 {
                                                     h2_FRS_FatimaE1vsE2_Z1Z2x4AoQgate[gate]->Fill(FatimaHit->Get_energy(), FatimaHit2->Get_energy());
                                                 }
@@ -338,59 +344,59 @@ FrsFatimaCorrelations::Exec(Option_t* option)
             Long64_t dT_FRS_Fatima = 0;            
             if (FatimaHit->Get_wr_t() > 0 && FrsHit->Get_wr_t() > 0) dT_FRS_Fatima = FatimaHit->Get_wr_t() - FrsHit->Get_wr_t();
 
-            if (dT_FRS_Fatima > Correl["FRS-Fatima WR Gate"][0] && dT_FRS_Fatima < Correl["FRS-Fatima WR Gate"][1])
+            if (dT_FRS_Fatima > (*Correl)["FRS-Fatima WR Gate"][0] && dT_FRS_Fatima < (*Correl)["FRS-Fatima WR Gate"][1])
             {
-                if (/*we don't want to do this*/) continue;
+                //if (/*we don't want to do this*/) continue;
 
-                if (cutFatima_EdT[Correl["Start-Stop Analysis PID"][0]] != nullptr)
+                if (cutFatima_EdT[(*Correl)["Start-Stop Analysis PID"][0]-1] != nullptr)
                 {
-                    if (cutFatima_EdT[Correl["Start-Stop Analysis PID"][0]->IsInside((FatimaHit->Get_fast_lead_time() - SC41L_T) * 0.025, FatimaHit->Get_energy())])
+                    if (cutFatima_EdT[(*Correl)["Start-Stop Analysis PID"][0]-1]->IsInside((FatimaHit->Get_fast_lead_time() - SC41L_T) * 0.025, FatimaHit->Get_energy()))
                     {
-                        if (cutID_Z_AoQ[Correl["Start-Stop Analysis PID"][0]] != nullptr)
+                        if (cutID_Z_AoQ[(*Correl)["Start-Stop Analysis PID"][0]-1] != nullptr)
                         {
-                            if (cutID_Z_AoQ[Correl["Start-Stop Analysis PID"][0]]->IsInside(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z()))
+                            if (cutID_Z_AoQ[(*Correl)["Start-Stop Analysis PID"][0]-1]->IsInside(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z()))
                             {
                                 for (Int_t ihit2 = 0; ihit2 < nHits; ihit2++)
                                 {
                                     FatimaTwinpeaksCalData* FatimaHit2 = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaksArray->At(ihit2);
                                     if (!FatimaHit2) continue;
 
-                                    if (ihit != ihit2 && cutFatima_EdT[Correl["Start-Stop Analysis PID"][0]->IsInside((FatimaHit2->Get_fast_lead_time() - SC41L_T) * 0.025, FatimaHit2->Get_energy())])
+                                    if (ihit != ihit2 && cutFatima_EdT[(*Correl)["Start-Stop Analysis PID"][0]-1]->IsInside((FatimaHit2->Get_fast_lead_time() - SC41L_T) * 0.025, FatimaHit2->Get_energy()))
                                     {
                                         // Start-Stop
                                         // 1
-                                        if (FatimaHit->Get_energy() > Correl["Lifetime 1 Start-Stop Energies"][0] && FatimaHit->Get_energy() < Correl["Lifetime 1 Start-Stop Energies"][1] && FatimaHit2->Get_energy() > Correl["Lifetime 1 Start-Stop Energies"][2] && FatimaHit2->Get_energy() < Correl["Lifetime 1 Start-Stop Energies"][3])
+                                        if (FatimaHit->Get_energy() > (*Correl)["Lifetime 1 Start-Stop Energies"][0] && FatimaHit->Get_energy() < (*Correl)["Lifetime 1 Start-Stop Energies"][1] && FatimaHit2->Get_energy() > (*Correl)["Lifetime 1 Start-Stop Energies"][2] && FatimaHit2->Get_energy() < (*Correl)["Lifetime 1 Start-Stop Energies"][3])
                                         {
                                             h1_FRS_Fatima_LT1_start_stop->Fill((FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 25);
                                             h1_FRS_Fatima_LT1_start_stop_ns->Fill((FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025);
                                         }
                                         // 2
-                                        if (FatimaHit->Get_energy() > Correl["Lifetime 2 Start-Stop Energies"][0] && FatimaHit->Get_energy() < Correl["Lifetime 2 Start-Stop Energies"][1] && FatimaHit2->Get_energy() > Correl["Lifetime 2 Start-Stop Energies"][2] && FatimaHit2->Get_energy() < Correl["Lifetime 2 Start-Stop Energies"][3])
+                                        if (FatimaHit->Get_energy() > (*Correl)["Lifetime 2 Start-Stop Energies"][0] && FatimaHit->Get_energy() < (*Correl)["Lifetime 2 Start-Stop Energies"][1] && FatimaHit2->Get_energy() > (*Correl)["Lifetime 2 Start-Stop Energies"][2] && FatimaHit2->Get_energy() < (*Correl)["Lifetime 2 Start-Stop Energies"][3])
                                         {
                                             h1_FRS_Fatima_LT2_start_stop->Fill((FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 25);
                                             h1_FRS_Fatima_LT2_start_stop_ns->Fill((FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025);
                                         }
                                         // 3
-                                        if (FatimaHit->Get_energy() > Correl["Lifetime 3 Start-Stop Energies"][0] && FatimaHit->Get_energy() < Correl["Lifetime 3 Start-Stop Energies"][1] && FatimaHit2->Get_energy() > Correl["Lifetime 3 Start-Stop Energies"][2] && FatimaHit2->Get_energy() < Correl["Lifetime 3 Start-Stop Energies"][3])
+                                        if (FatimaHit->Get_energy() > (*Correl)["Lifetime 3 Start-Stop Energies"][0] && FatimaHit->Get_energy() < (*Correl)["Lifetime 3 Start-Stop Energies"][1] && FatimaHit2->Get_energy() > (*Correl)["Lifetime 3 Start-Stop Energies"][2] && FatimaHit2->Get_energy() < (*Correl)["Lifetime 3 Start-Stop Energies"][3])
                                         {
                                             h1_FRS_Fatima_LT3_start_stop->Fill((FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 25);
                                             h1_FRS_Fatima_LT3_start_stop_ns->Fill((FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025);
                                         }
                                         // Stop-Start
                                         // 1
-                                        if (FatimaHit->Get_energy() > Correl["Lifetime 1 Start-Stop Energies"][2] && FatimaHit->Get_energy() < Correl["Lifetime 1 Start-Stop Energies"][3] && FatimaHit2->Get_energy() > Correl["Lifetime 1 Start-Stop Energies"][0] && FatimaHit2->Get_energy() < Correl["Lifetime 1 Start-Stop Energies"][1])
+                                        if (FatimaHit->Get_energy() > (*Correl)["Lifetime 1 Start-Stop Energies"][2] && FatimaHit->Get_energy() < (*Correl)["Lifetime 1 Start-Stop Energies"][3] && FatimaHit2->Get_energy() > (*Correl)["Lifetime 1 Start-Stop Energies"][0] && FatimaHit2->Get_energy() < (*Correl)["Lifetime 1 Start-Stop Energies"][1])
                                         {
                                             h1_FRS_Fatima_LT1_stop_start->Fill((FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 25);
                                             h1_FRS_Fatima_LT1_stop_start_ns->Fill((FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025);
                                         }
                                         // 2
-                                        if (FatimaHit->Get_energy() > Correl["Lifetime 2 Start-Stop Energies"][2] && FatimaHit->Get_energy() < Correl["Lifetime 2 Start-Stop Energies"][3] && FatimaHit2->Get_energy() > Correl["Lifetime 2 Start-Stop Energies"][0] && FatimaHit2->Get_energy() < Correl["Lifetime 2 Start-Stop Energies"][1])
+                                        if (FatimaHit->Get_energy() > (*Correl)["Lifetime 2 Start-Stop Energies"][2] && FatimaHit->Get_energy() < (*Correl)["Lifetime 2 Start-Stop Energies"][3] && FatimaHit2->Get_energy() > (*Correl)["Lifetime 2 Start-Stop Energies"][0] && FatimaHit2->Get_energy() < (*Correl)["Lifetime 2 Start-Stop Energies"][1])
                                         {
                                             h1_FRS_Fatima_LT2_stop_start->Fill((FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 25);
                                             h1_FRS_Fatima_LT2_stop_start_ns->Fill((FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025);
                                         }
                                         // 3
-                                        if (FatimaHit->Get_energy() > Correl["Lifetime 3 Start-Stop Energies"][2] && FatimaHit->Get_energy() < Correl["Lifetime 3 Start-Stop Energies"][3] && FatimaHit2->Get_energy() > Correl["Lifetime 3 Start-Stop Energies"][0] && FatimaHit2->Get_energy() < Correl["Lifetime 3 Start-Stop Energies"][1])
+                                        if (FatimaHit->Get_energy() > (*Correl)["Lifetime 3 Start-Stop Energies"][2] && FatimaHit->Get_energy() < (*Correl)["Lifetime 3 Start-Stop Energies"][3] && FatimaHit2->Get_energy() > (*Correl)["Lifetime 3 Start-Stop Energies"][0] && FatimaHit2->Get_energy() < (*Correl)["Lifetime 3 Start-Stop Energies"][1])
                                         {
                                             h1_FRS_Fatima_LT3_stop_start->Fill((FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 25);
                                             h1_FRS_Fatima_LT3_stop_start_ns->Fill((FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025);
