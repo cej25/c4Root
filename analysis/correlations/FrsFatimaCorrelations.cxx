@@ -427,7 +427,7 @@ void FrsFatimaCorrelations::Exec(Option_t* option)
     // CEJ: we're going to copy Go4 for now and see where it goes..
 
     // we can use a vector for mult anyhoo
-    for (int i = 0; i < VME_MAX_MULT; i++)
+    /*for (int i = 0; i < VME_MAX_MULT; i++)
     {
         FatE_Long[i] = 0;
         FatT_Long[i] = 0;
@@ -618,7 +618,7 @@ void FrsFatimaCorrelations::Exec(Option_t* option)
                 }
             }
         }
-    }
+    }*/
 
 }
 
