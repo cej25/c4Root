@@ -75,7 +75,8 @@ void FatimaRaw2Cal::SetParContainers()
 /*
 Initializer called by the FairRoot manager. Gets the required FairRootManager objects to read and register the data to be written to the tree.
 */
-InitStatus FatimaRaw2Cal::Init(){
+InitStatus FatimaRaw2Cal::Init()
+{
     //grabs instance managers and handles.
 
     c4LOG(info, "Grabbing FairRootManager, RunOnline and EventHeader.");
@@ -110,7 +111,8 @@ Reads a file containing the detector mappings. To be called before Init. Assumed
 
 Raises a fatal error if the module and channel numbers are not unique.
 */
-Bool_t FatimaRaw2Cal::SetDetectorMapFile(TString filename){
+Bool_t FatimaRaw2Cal::SetDetectorMapFile(TString filename)
+{
     c4LOG(info, "Reading Detector map");
 
     //std::cout << "reading detector map \n";
@@ -148,7 +150,8 @@ Reads a file containing the detector calibrations. NEEDS to be a quadratic poly 
 
 Raises a fatal error if the detector numbers are not unique.
 */
-Bool_t FatimaRaw2Cal::SetDetectorCalFile(TString filename){
+Bool_t FatimaRaw2Cal::SetDetectorCalFile(TString filename)
+{
     c4LOG(info, "Reading Calibration coefficients.");
     c4LOG(info, "File reading");
     c4LOG(info, filename);
@@ -179,14 +182,18 @@ Bool_t FatimaRaw2Cal::SetDetectorCalFile(TString filename){
 /*
 Dump detector map to console.
 */
-void FatimaRaw2Cal::PrintDetectorMap(){
-    if (DetectorMap_loaded){
-        for (const auto& entry : detector_mapping){
+void FatimaRaw2Cal::PrintDetectorMap()
+{
+    if (DetectorMap_loaded)
+    {
+        for (const auto& entry : detector_mapping)
+        {
             std::cout << "tamexMODULE: " << entry.first.first << " tamexCHANNEL " << entry.first.second;
             std::cout << " DETECTORID: " << entry.second << "\n";
         }
     }
-    else{
+    else
+    {
         c4LOG(info, "Detector map is not load. Cannot print.");
     }
 }
@@ -194,14 +201,18 @@ void FatimaRaw2Cal::PrintDetectorMap(){
 /*
 Dump detector calibrations to console.
 */
-void FatimaRaw2Cal::PrintDetectorCal(){
-    if (DetectorCal_loaded){
-        for (const auto& entry : calibration_coeffs){
+void FatimaRaw2Cal::PrintDetectorCal()
+{
+    if (DetectorCal_loaded)
+    {
+        for (const auto& entry : calibration_coeffs)
+        {
             std::cout << "DETECTORID: " << entry.first;
             std::cout << " a0: " << entry.second.at(0) << " a1: " << entry.second.at(1) << " a2: " << entry.second.at(2) << " a3: " << entry.second.at(3) << "\n";
         }
     }
-    else{
+    else
+    {
         c4LOG(info, "Cal map is not load. Cannot print.");
     }
 }        
@@ -216,12 +227,15 @@ If no detector map is set then be careful with how the mapping happens: tamex mo
 
 Writes the times in ns!
 */
-void FatimaRaw2Cal::Exec(Option_t* option){
-    if (funcal_data && funcal_data->GetEntriesFast() > 1){ // only get events with two hits or more
+void FatimaRaw2Cal::Exec(Option_t* option)
+{
+    if (funcal_data && funcal_data->GetEntriesFast() > 1)
+    { // only get events with two hits or more
         Int_t event_multiplicity = funcal_data->GetEntriesFast();
-        for (Int_t ihit = 0; ihit < event_multiplicity; ihit++){
+        for (Int_t ihit = 0; ihit < event_multiplicity; ihit++)
+        {
 
-            FatimaTwinpeaksData * first_hit_in_fast_channel = (FatimaTwinpeaksData*)funcal_data->At(ihit);
+            FatimaTwinpeaksData* first_hit_in_fast_channel = (FatimaTwinpeaksData*)funcal_data->At(ihit);
 
             // under the assumption fast-slow always follows:
             //assume that only matched lead-trail hits are written.
@@ -232,7 +246,8 @@ void FatimaRaw2Cal::Exec(Option_t* option){
 
             int look_ahead_counter = 1;
             bool all_hits_in_fast_slow_found = false;
-            while (!all_hits_in_fast_slow_found){
+            while (!all_hits_in_fast_slow_found)
+            {
                 if (ihit+look_ahead_counter >= event_multiplicity) break;
                 FatimaTwinpeaksData * this_hit = (FatimaTwinpeaksData*)funcal_data->At(ihit+look_ahead_counter);
 
@@ -253,141 +268,158 @@ void FatimaRaw2Cal::Exec(Option_t* option){
             }
 
 
-            for (int hitnr = 0; hitnr<hits_in_fast_channel; hitnr++){
+            for (int hitnr = 0; hitnr<hits_in_fast_channel; hitnr++)
+            {
 
-            funcal_hit = (FatimaTwinpeaksData*)funcal_data->At(ihit+hitnr);
-            funcal_hit_next = (FatimaTwinpeaksData*)funcal_data->At(ihit+hitnr+hits_in_fast_channel);
+                funcal_hit = (FatimaTwinpeaksData*)funcal_data->At(ihit+hitnr);
+                funcal_hit_next = (FatimaTwinpeaksData*)funcal_data->At(ihit+hitnr+hits_in_fast_channel);
             
-            if (funcal_hit_next->Get_ch_ID() != funcal_hit->Get_ch_ID()+1){ // this assumption seems empirically true - no events are filled when reverse order is put.
-                fNunmatched++; continue;
-            }
 
-            if (funcal_hit_next->Get_board_id() != funcal_hit->Get_board_id()){
-                continue;
-            }
-
-
-            //from here the funcalhitpartner is the slow branch and funcal_hit the fast:
-
-            //do the detector mapping here:
-            if (DetectorMap_loaded){
-                std::pair<int,int> unmapped_det {funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2};
-                
-                if (auto result_find = detector_mapping.find(unmapped_det); result_find != detector_mapping.end()){
-                detector_id = result_find->second; //.find returns an iterator over the pairs matching key.
-                if (detector_id == -1) {fNunmatched++; continue;} //if only one event is left
-                }else{
-                    c4LOG(fatal, "Detector mapping not complete - exiting.");
+                if (funcal_hit_next->Get_ch_ID() != funcal_hit->Get_ch_ID()+1)
+                { // this assumption seems empirically true - no events are filled when reverse order is put.
+                    fNunmatched++; continue;
                 }
-                //only do calibrations if mapping is functional:
-                if (DetectorCal_loaded){
-                    // JB: JEL Can you check this?
-                    /* if (auto result_find = calibration_coeffs.find(detector_id); result_find != calibration_coeffs.end()){
-                        fast_lead_time =  funcal_hit->Get_lead_epoch_counter()*10.24e3 + funcal_hit->Get_lead_coarse_T()*5.0 - funcal_hit->Get_lead_fine_T();
-                        fast_trail_time = funcal_hit->Get_trail_epoch_counter()*10.24e3 + funcal_hit->Get_trail_coarse_T()*5.0 - funcal_hit->Get_trail_fine_T();
-                        
-                        slow_lead_time =  funcal_hit_next->Get_lead_epoch_counter()*10.24e3 + funcal_hit_next->Get_lead_coarse_T()*5.0 - funcal_hit_next->Get_lead_fine_T();
-                        slow_trail_time = funcal_hit_next->Get_trail_epoch_counter()*10.24e3 + funcal_hit_next->Get_trail_coarse_T()*5.0 - funcal_hit_next->Get_trail_fine_T();
-                        
-                        fast_lead_time = result_find->second.second*fast_lead_time + result_find->second.first;
-                        fast_trail_time = result_find->second.second*fast_trail_time + result_find->second.first;
-                        slow_lead_time = result_find->second.second*slow_lead_time + result_find->second.first;
-                        slow_trail_time = result_find->second.second*slow_trail_time + result_find->second.first;
-                        
-                        fast_ToT =  fast_trail_time - fast_lead_time;
-                        slow_ToT =  slow_trail_time - slow_lead_time;
-                        
-                        new ((*fcal_data)[fcal_data->GetEntriesFast()]) bPlastTwinpeaksCalData(
-                            funcal_hit->Get_board_id(),
-                            (int)((funcal_hit->Get_ch_ID()+1)/2),
-                            detector_id,
-                            slow_lead_time,
-                            slow_trail_time,
-                            fast_lead_time,
-                            fast_trail_time,
-                            fast_ToT,
-                            slow_ToT,
-                            funcal_hit->Get_wr_subsystem_id(),
-                            funcal_hit->Get_wr_t());
-                        
-                        
-                        fNEvents++;
-                        ihit++; //increment it by one extra.
-                    }else{
-                        c4LOG(fatal, "Calibration coefficients not complete - exiting.");
+
+                if (funcal_hit_next->Get_board_id() != funcal_hit->Get_board_id())
+                {
+                    continue;
+                }
+
+
+                //from here the funcalhitpartner is the slow branch and funcal_hit the fast:
+
+                //do the detector mapping here:
+                if (DetectorMap_loaded)
+                {
+                    std::pair<int,int> unmapped_det {funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2};
+                    
+                    if (auto result_find = detector_mapping.find(unmapped_det); result_find != detector_mapping.end())
+                    {
+                        detector_id = result_find->second; //.find returns an iterator over the pairs matching key.
+                        if (detector_id == -1) {fNunmatched++; continue;} //if only one event is left
                     }
-                    */
+                    else
+                    {
+                        c4LOG(fatal, "Detector mapping not complete - exiting.");
+                    }
+                    //only do calibrations if mapping is functional:
+                    if (DetectorCal_loaded){
+                        // JB: JEL Can you check this?
+                        /* if (auto result_find = calibration_coeffs.find(detector_id); result_find != calibration_coeffs.end()){
+                            fast_lead_time =  funcal_hit->Get_lead_epoch_counter()*10.24e3 + funcal_hit->Get_lead_coarse_T()*5.0 - funcal_hit->Get_lead_fine_T();
+                            fast_trail_time = funcal_hit->Get_trail_epoch_counter()*10.24e3 + funcal_hit->Get_trail_coarse_T()*5.0 - funcal_hit->Get_trail_fine_T();
+                            
+                            slow_lead_time =  funcal_hit_next->Get_lead_epoch_counter()*10.24e3 + funcal_hit_next->Get_lead_coarse_T()*5.0 - funcal_hit_next->Get_lead_fine_T();
+                            slow_trail_time = funcal_hit_next->Get_trail_epoch_counter()*10.24e3 + funcal_hit_next->Get_trail_coarse_T()*5.0 - funcal_hit_next->Get_trail_fine_T();
+                            
+                            fast_lead_time = result_find->second.second*fast_lead_time + result_find->second.first;
+                            fast_trail_time = result_find->second.second*fast_trail_time + result_find->second.first;
+                            slow_lead_time = result_find->second.second*slow_lead_time + result_find->second.first;
+                            slow_trail_time = result_find->second.second*slow_trail_time + result_find->second.first;
+                            
+                            fast_ToT =  fast_trail_time - fast_lead_time;
+                            slow_ToT =  slow_trail_time - slow_lead_time;
+                            
+                            new ((*fcal_data)[fcal_data->GetEntriesFast()]) bPlastTwinpeaksCalData(
+                                funcal_hit->Get_board_id(),
+                                (int)((funcal_hit->Get_ch_ID()+1)/2),
+                                detector_id,
+                                slow_lead_time,
+                                slow_trail_time,
+                                fast_lead_time,
+                                fast_trail_time,
+                                fast_ToT,
+                                slow_ToT,
+                                funcal_hit->Get_wr_subsystem_id(),
+                                funcal_hit->Get_wr_t());
+                            
+                            
+                            fNEvents++;
+                            ihit++; //increment it by one extra.
+                        }else{
+                            c4LOG(fatal, "Calibration coefficients not complete - exiting.");
+                        }
+                        */
+                    }
                 }
-            }
-            else{ //no map and cal: ->
-                detector_id = funcal_hit->Get_board_id()*17 + (int)(funcal_hit_next->Get_ch_ID()+1)/2; // do mapping.
-            }
-
-            if (funcal_hit_next->Get_trail_epoch_counter() == 0) continue; // missing trail in either
-
-            // I am slightly worried about round-off errors by this method (but as far as i can see the maximum epoch counter values is not so large that the digits are suppressed but it is something to keep in mind). However constructing the times like this makes it very easy to use.
-            fast_lead_time = static_cast<double>(funcal_hit->Get_lead_epoch_counter()) * 10.24e3
-                           + static_cast<double>(funcal_hit->Get_lead_coarse_T()) * 5.0
-                           - static_cast<double>(funcal_hit->Get_lead_fine_T());
-
-            fast_trail_time = static_cast<double>(funcal_hit->Get_trail_epoch_counter()) * 10.24e3
-                            + static_cast<double>(funcal_hit->Get_trail_coarse_T()) * 5.0
-                            - static_cast<double>(funcal_hit->Get_trail_fine_T());
-
-            slow_lead_time = static_cast<double>(funcal_hit_next->Get_lead_epoch_counter()) * 10.24e3
-                            + static_cast<double>(funcal_hit_next->Get_lead_coarse_T()) * 5.0
-                            - static_cast<double>(funcal_hit_next->Get_lead_fine_T());
-
-            slow_trail_time = static_cast<double>(funcal_hit_next->Get_trail_epoch_counter()) * 10.24e3
-                            + static_cast<double>(funcal_hit_next->Get_trail_coarse_T()) * 5.0
-                            - static_cast<double>(funcal_hit_next->Get_trail_fine_T());
-
-            fast_ToT =  fast_trail_time - fast_lead_time;
-            slow_ToT =  slow_trail_time - slow_lead_time;
-
-            //if (detector_id == 0 || detector_id == 1) c4LOG(info,Form("id = %i, fast lead = %f, fast trail = %f, fast ToT = %f",detector_id,fast_lead_time,fast_trail_time,fast_ToT));
-
-            if (DetectorMap_loaded){
-                if (DetectorCal_loaded){ // check
-                    if (auto result_find_cal = calibration_coeffs.find(detector_id); result_find_cal != calibration_coeffs.end()){
-                    std::vector<double> coeffs = result_find_cal->second; //.find returns an iterator over the pairs matching key.
-                    a0 = coeffs.at(0);
-                    a1 = coeffs.at(1);
-                    a2 = coeffs.at(2);
-                    a3 = coeffs.at(3);
-
-                    energy = a0 + a1*slow_ToT + a2*slow_ToT*slow_ToT + a3*slow_ToT*slow_ToT*slow_ToT; 
-                }else{
-                    energy = slow_ToT;
+                else
+                { //no map and cal: ->
+                    detector_id = funcal_hit->Get_board_id()*17 + (int)(funcal_hit_next->Get_ch_ID()+1)/2; // do mapping.
                 }
-                }else{
-                    energy = slow_ToT;
+
+                if (funcal_hit_next->Get_trail_epoch_counter() == 0) continue; // missing trail in either
+
+                // I am slightly worried about round-off errors by this method (but as far as i can see the maximum epoch counter values is not so large that the digits are suppressed but it is something to keep in mind). However constructing the times like this makes it very easy to use.
+                fast_lead_time = static_cast<double>(funcal_hit->Get_lead_epoch_counter()) * 10.24e3
+                            + static_cast<double>(funcal_hit->Get_lead_coarse_T()) * 5.0
+                            - static_cast<double>(funcal_hit->Get_lead_fine_T());
+
+                fast_trail_time = static_cast<double>(funcal_hit->Get_trail_epoch_counter()) * 10.24e3
+                                + static_cast<double>(funcal_hit->Get_trail_coarse_T()) * 5.0
+                                - static_cast<double>(funcal_hit->Get_trail_fine_T());
+
+                slow_lead_time = static_cast<double>(funcal_hit_next->Get_lead_epoch_counter()) * 10.24e3
+                                + static_cast<double>(funcal_hit_next->Get_lead_coarse_T()) * 5.0
+                                - static_cast<double>(funcal_hit_next->Get_lead_fine_T());
+
+                slow_trail_time = static_cast<double>(funcal_hit_next->Get_trail_epoch_counter()) * 10.24e3
+                                + static_cast<double>(funcal_hit_next->Get_trail_coarse_T()) * 5.0
+                                - static_cast<double>(funcal_hit_next->Get_trail_fine_T());
+
+                fast_ToT =  fast_trail_time - fast_lead_time;
+                slow_ToT =  slow_trail_time - slow_lead_time;
+
+                //if (detector_id == 0 || detector_id == 1) c4LOG(info,Form("id = %i, fast lead = %f, fast trail = %f, fast ToT = %f",detector_id,fast_lead_time,fast_trail_time,fast_ToT));
+
+                if (DetectorMap_loaded)
+                {
+                    if (DetectorCal_loaded)
+                    { // check
+                        if (auto result_find_cal = calibration_coeffs.find(detector_id); result_find_cal != calibration_coeffs.end())
+                        {
+                            std::vector<double> coeffs = result_find_cal->second; //.find returns an iterator over the pairs matching key.
+                            a0 = coeffs.at(0);
+                            a1 = coeffs.at(1);
+                            a2 = coeffs.at(2);
+                            a3 = coeffs.at(3);
+
+                            energy = a0 + a1*slow_ToT + a2*slow_ToT*slow_ToT + a3*slow_ToT*slow_ToT*slow_ToT; 
+                        }
+                        else
+                        {
+                            energy = slow_ToT;
+                        }
+                    }
+                    else
+                    {
+                        energy = slow_ToT;
+                    }
                 }
-            }
 
             
-            if (((detector_id == time_machine_delayed_detector_id) || (detector_id == time_machine_undelayed_detector_id)) && time_machine_delayed_detector_id!=0 && time_machine_undelayed_detector_id!=0){ // currently only gets the TM if it also matches it slow-fast...
-                new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData((detector_id==time_machine_undelayed_detector_id) ? (fast_lead_time) : (0), (detector_id==time_machine_undelayed_detector_id) ? (0) : (fast_lead_time), funcal_hit->Get_wr_subsystem_id(), funcal_hit->Get_wr_t() );
-                //continue; //cej: i think this line skips everything if it finds TM - jel: yes :)
-            }
+                if (((detector_id == time_machine_delayed_detector_id) || (detector_id == time_machine_undelayed_detector_id)) && time_machine_delayed_detector_id!=0 && time_machine_undelayed_detector_id!=0)
+                { // currently only gets the TM if it also matches it slow-fast...
+                    new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData((detector_id==time_machine_undelayed_detector_id) ? (fast_lead_time) : (0), (detector_id==time_machine_undelayed_detector_id) ? (0) : (fast_lead_time), funcal_hit->Get_wr_subsystem_id(), funcal_hit->Get_wr_t() );
+                    //continue; //cej: i think this line skips everything if it finds TM - jel: yes :)
+                }
 
-            new ((*fcal_data)[fcal_data->GetEntriesFast()]) FatimaTwinpeaksCalData(
-                funcal_hit->Get_board_id(),
-                (int)((funcal_hit->Get_ch_ID()+1)/2),
-                detector_id,
-                slow_lead_time,
-                slow_trail_time,
-                fast_lead_time,
-                fast_trail_time,
-                fast_ToT,
-                slow_ToT,
-                energy,
-                funcal_hit->Get_wr_subsystem_id(),
-                funcal_hit->Get_wr_t());
-            
-            
-            fNEvents++;
-            //ihit++; //increment it by one extra.
+                new ((*fcal_data)[fcal_data->GetEntriesFast()]) FatimaTwinpeaksCalData(
+                    funcal_hit->Get_board_id(),
+                    (int)((funcal_hit->Get_ch_ID()+1)/2),
+                    detector_id,
+                    slow_lead_time,
+                    slow_trail_time,
+                    fast_lead_time,
+                    fast_trail_time,
+                    fast_ToT,
+                    slow_ToT,
+                    energy,
+                    funcal_hit->Get_wr_subsystem_id(),
+                    funcal_hit->Get_wr_t());
+                
+                
+                fNEvents++;
+                //ihit++; //increment it by one extra.
             }
         }
     }    
@@ -399,7 +431,8 @@ THIS FUNCTION IS EXTREMELY IMPORTANT!!!!
 Clears the TClonesArray used in the function. If they are not cleared after each event they will eat all your RAM.
 
 */
-void FatimaRaw2Cal::FinishEvent(){
+void FatimaRaw2Cal::FinishEvent()
+{
     // reset output array
     funcal_data->Clear();
     fcal_data->Clear();
@@ -409,11 +442,10 @@ void FatimaRaw2Cal::FinishEvent(){
 /*
 Some stats are written when finishing.
 */
-void FatimaRaw2Cal::FinishTask(){
+void FatimaRaw2Cal::FinishTask()
+{
     c4LOG(info, Form("Wrote %i events.",fNEvents));
     c4LOG(info, Form("%i events are unmatched (not written).",fNunmatched));
-
-    
 }
 
 

@@ -211,7 +211,7 @@ void bPlastReader::WriteFineTimeHistosToFile(){
     }
     c4LOG(info,"Fine time calibrations starting to write to file.");
 
-    TFile * outputfile = TFile::Open(Form("%s",fine_time_histo_outfile),"recreate");
+    TFile * outputfile = TFile::Open(Form("%s",fine_time_histo_outfile.Data()),"recreate");
     
     std::cout << outputfile << std::endl;
     
@@ -225,7 +225,7 @@ void bPlastReader::WriteFineTimeHistosToFile(){
             }
         }
     }
-    c4LOG(info,Form("Written fine time calibrations (i.e. raw fine time histograms) to  %s",fine_time_histo_outfile));
+    c4LOG(info,Form("Written fine time calibrations (i.e. raw fine time histograms) to  %s",fine_time_histo_outfile.Data()));
 
     outputfile->Close();
 
@@ -270,7 +270,7 @@ void bPlastReader::ReadFineTimeHistosFromFile() {
     }
 
     inputfile->Close();
-    c4LOG(info, Form("Read fine time calibrations (i.e. raw fine time histograms) from %s", fine_time_histo_infile));
+    c4LOG(info, Form("Read fine time calibrations (i.e. raw fine time histograms) from %s", fine_time_histo_infile.Data()));
 }
 
 /*

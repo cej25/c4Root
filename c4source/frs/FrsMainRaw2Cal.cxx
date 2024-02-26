@@ -83,7 +83,8 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
         fRawHit = (FrsMainData*)fRawArray->At(0); // event multiplicity
         
         
-        WR_TS = fRawHit->Get_WR();
+        WR_TS = fRawHit->Get_wr_t();
+        // CEJ: fCalHit->Set_wr_t(fRawHit->Get_wr_t);
         
 
         // V830 passed through to Hit step
