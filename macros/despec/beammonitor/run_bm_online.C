@@ -1,6 +1,6 @@
 typedef struct EXT_STR_h101_t
 {   
-    EXT_STR_h101_BM_onion_t beammonitor; // why can't it find this :()
+    EXT_STR_h101_BM_onion_t beammonitor;
 } EXT_STR_h101;
 
 void run_bm_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId = 1)

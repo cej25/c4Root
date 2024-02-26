@@ -1,8 +1,7 @@
 #define MEMBERS \
     MEMBER(DATA24 data[128] ZERO_SUPPRESS_MULTI(128)); \
-    MEMBER(DATA8 leadOrTrail[128] ZERO_SUPPRESS_MULTI(128));// not sure how to define this properly
-//  I don't think we need channel, not sure about LoT
-// 128 | 128 seems to work
+    MEMBER(DATA8 leadOrTrail[128] ZERO_SUPPRESS_MULTI(128));
+
 
 #define PARAMS_DEF \
     data, \
@@ -122,6 +121,7 @@ VME_CAEN_V1290_FRS()
 
 }
 
+// CEJ: probably need to not call this _FRS
 VME_CAEN_V1190_FRS()
 {
     MEMBERS
