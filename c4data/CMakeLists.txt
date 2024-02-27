@@ -46,6 +46,7 @@ bplastData/bPlastTwinpeaksCalData.cxx
 beammonitorData/BeamMonitorData.cxx
 fatimaData/FatimaTwinpeaksData.cxx
 fatimaData/FatimaTwinpeaksCalData.cxx
+fatimaData/FatimaVmeData.cxx
 timemachineData/TimeMachineData.cxx
 frsData/TFRSParameter.cxx
 )

@@ -21,7 +21,7 @@ extern "C"
     #include "ext_h101_fatimavme.h"
 }
 
-FatimaVmeReader(EXT_STR_h101_fatimavme_onion* data, size_t offset)
+FatimaVmeReader::FatimaVmeReader(EXT_STR_h101_fatimavme_onion* data, size_t offset)
     :   c4Reader("FatimaVmeReader")
     ,   fNEvent(0)
     ,   fData(data)
@@ -32,8 +32,9 @@ FatimaVmeReader(EXT_STR_h101_fatimavme_onion* data, size_t offset)
 }
 
 FatimaVmeReader::~FatimaVmeReader()
-{
-
+{   
+    c4LOG(info, "");
+    if (fArray) delete fArray;
 }
 
 Bool_t FatimaVmeReader::Init(ext_data_struct_info* a_struct_info)
@@ -41,7 +42,7 @@ Bool_t FatimaVmeReader::Init(ext_data_struct_info* a_struct_info)
     Int_t ok;
     c4LOG(info, "");
 
-    EXT_STR_h101_fatimavme_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_fatima, 0);
+    EXT_STR_h101_fatimavme_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_fatimavme, 0);
 
     if (!ok)
     {
@@ -50,8 +51,6 @@ Bool_t FatimaVmeReader::Init(ext_data_struct_info* a_struct_info)
     }
 
     // bunch of stuff
-
-
 
 
     FairRootManager::Instance()->Register("FatimaVmeData", "FatimaVmeDataFolder", fArray, !fOnline);
@@ -71,10 +70,16 @@ Bool_t FatimaVmeReader::Read()
 
     if (!fData) return kTRUE;
 
-
      //whiterabbit timestamp:
-    wr_t = (((uint64_t)fData->fatimavme_ts_t[3]) << 48) + (((uint64_t)fData->fatimvme_ts_t[2]) << 32) + (((uint64_t)fData->fatimavme_ts_t[1]) << 16) + (uint64_t)(fData->fatimavme_ts_t[0]);
+    wr_t = (((uint64_t)fData->fatimavme_ts_t[3]) << 48) + (((uint64_t)fData->fatimavme_ts_t[2]) << 32) + (((uint64_t)fData->fatimavme_ts_t[1]) << 16) + (uint64_t)(fData->fatimavme_ts_t[0]);
 
+    // CEJ fix later obviously
+    if (wr_t != 0)
+    {
+       new ((*fArray)[fArray->GetEntriesFast()]) FatimaVmeData(
+                    wr_t); 
+    }
+   
 
     fNEvent++;
     return kTRUE;
