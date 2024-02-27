@@ -80,10 +80,12 @@ TDC_TRAILER()
     }
 }
 
+// CEJ: don't call this _FRS
 VME_CAEN_V1290_FRS()
 {   
     MEMBERS
-
+    
+    // definitely not optional
     UINT32 header NOENCODE
     {   
         0_4: geo;
@@ -116,8 +118,9 @@ VME_CAEN_V1290_FRS()
         26: trigger_lost;
         27_31: 0b10000;
     };
-
-    optional UINT32 eob NOENCODE; // type = 24
+    
+    // this needs defining properly.......
+    //optional UINT32 eob NOENCODE; // type = 24
 
 }
 

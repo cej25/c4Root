@@ -5,6 +5,7 @@
 
 #include "../../common/vme_caen_v1x90.spec"
 #include "../../common/vme_caen_v1751.spec"
+#include "../../common/vme_caen_v830.spec"
 
 FATIMA_VME_SCALERS()
 {   
@@ -30,7 +31,14 @@ FATIMA_VME_SCALERS()
 
     UINT32 scaler_trailer NOENCODE;
 
-    UINT32 scaler_trailer2 NOENCODE;
+}
+
+ERR_WORD_SIX()
+{
+    UINT32 err NOENCODE
+    {
+        0_31: err = MATCH(0x06000000);
+    }
 }
 
 //external EXT_AIDA();
@@ -89,29 +97,57 @@ SUBEVENT(fatima_tamex_subev)
 
 SUBEVENT(fatima_vme_subev)
 {   
+
+    // we have...
+    // WR TS
+    // possible random 0x060 word
+    // scalers
+    // possible random 0x060 word?
+    // qdc
+    // possible random 0x060 word?
+    // tdc x1 or x2? x0?
+    // possible eob/0x060 word?
+
     ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1500);
 
-    // SCALERS
-    scalers = FATIMA_VME_SCALERS();
-
-    // QDC
-    /*list (0 <= qdcboard < 5)
+    select several
     {
-        qdc[qdcboard] = VME_CAEN_V1751();
-    }*/
+        e = ERR_WORD_SIX();
+    }
 
-    qdc[0] = VME_CAEN_V1751();;
-    qdc[1] = VME_CAEN_V1751();;
-    qdc[2] = VME_CAEN_V1751();;
-    qdc[3] = VME_CAEN_V1751();;
-    qdc[4] = VME_CAEN_V1751();;
+    // SCALERS
+    select optional
+    {
+        scalers = FATIMA_VME_SCALERS();
+    }
+
+    // do these always come?
+    qdc[0] = VME_CAEN_V1751();
+    qdc[1] = VME_CAEN_V1751();
+    qdc[2] = VME_CAEN_V1751();
+    qdc[3] = VME_CAEN_V1751();
+    qdc[4] = VME_CAEN_V1751();
+
+    select several
+    {
+        e2 = ERR_WORD_SIX();
+    }
 
     // TDC
-    // seems like we have 2? paper says 2..
-    tdc[0] = VME_CAEN_V1290_FRS();
-    tdc[1] = VME_CAEN_V1290_FRS();
+    select optional
+    {
+        tdc0 = VME_CAEN_V1290_FRS();
+    }
 
+    select several
+    {
+        e3 = ERR_WORD_SIX();
+    }
     
+    select optional
+    {
+        tdc1 = VME_CAEN_V1290_FRS();
+    }
 
 }
 
