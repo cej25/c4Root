@@ -9,11 +9,10 @@ VME_CAEN_V1751()
 {
     MEMBER(DATA8 board_id);
     MEMBER(DATA8 channels);
-    MEMBER(DATA32 data[32] NO_INDEX_LIST);
+    MEMBER(DATA32 data[64] NO_INDEX_LIST);
 
     // there are four header words
     // then data
-    // trailer? 
 
     UINT32 header1 NOENCODE
     {
@@ -24,7 +23,7 @@ VME_CAEN_V1751()
 
     if (header1.check_a == 10 && header1.event_size == 4)
     {
-        // check 3 more words or something?
+
         UINT32 word2 NOENCODE;
 
         UINT32 word3 NOENCODE;
@@ -57,7 +56,7 @@ VME_CAEN_V1751()
             0_31: trigger_tag;
         }
 
-        list (0 <= i < header1.event_size)
+        list (0 <= i < header1.event_size - 4)
         {
             UINT32 qdcval NOENCODE
             {
@@ -66,7 +65,6 @@ VME_CAEN_V1751()
             ENCODE(data APPEND_LIST, (value = qdcval.q));
         }
 
-       // UINT32 qdctrailer NOENCODE;
     }
 
 
