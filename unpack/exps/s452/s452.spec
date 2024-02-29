@@ -136,7 +136,7 @@ SUBEVENT(fatima_vme_subev)
     // TDC
     select optional
     {
-        tdc0 = VME_CAEN_V1290_FRS();
+        tdc1 = VME_CAEN_V1290_FRS();
     }
 
     select several
@@ -146,7 +146,7 @@ SUBEVENT(fatima_vme_subev)
     
     select optional
     {
-        tdc1 = VME_CAEN_V1290_FRS();
+        tdc2 = VME_CAEN_V1290_FRS();
     }
 
 }
