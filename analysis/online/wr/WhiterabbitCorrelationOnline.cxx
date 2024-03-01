@@ -207,6 +207,13 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     folder_whiterabbit->Add(h1_whiterabbit_trigger);\
     c_whiterabbit_trigger->cd(0);
 
+    c_whiterabbit_correlation = new TCanvas("c_whiterabbit_correlation", "c_whiterabbit_correlation", 10, 10, 800, 700);
+
+    c_whiterabbit_correlation->Divide(3, fNumDetectorSystems);
+
+    folder_whiterabbit->Add(c_whiterabbit_correlation);
+
+
 
     run->GetHttpServer()->RegisterCommand("Reset_Whiterabbit_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
     run->GetHttpServer()->RegisterCommand("Snapshot_Whiterabbit_Hist", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
