@@ -70,90 +70,79 @@ Bool_t FatimaVmeReader::Read()
 
     if (!fData) return kTRUE;
 
+    FatimaVmeData* FatimaHit = new FatimaVmeData();
 
-    // do some stuff
-
-    for (int qdc = 0; qdc < FATIMA_QDC_BOARDS; qdc++)
-    {
-        board_id = fData->fatimavme_qdc[qdc].board_id;
-        channel_mask = fData->fatimavme_qdc[qdc].channels; 
-        if (board_id != 13) // hardcode??
-        {
-            for (int j = 7; j >= 0; j--)
-            {
-                if (channel_mask >= pow(2, j))
-                {
-                    if (wired_QDC(board_id, j)) // load qdc_alloc from somewhere
-                    {
-                        Fired_QDC_Channels[num_channels_fired][0] = board_id;
-                        Fired_QDC_Channels[num_channels_fired][1] = j;
-                        num_channels_fired++;
-                    }
-                    else
-                    {
-                        Fired_QDC_Channels[num_channels_fired][0] = board_id;
-                        Fired_QDC_Channels[num_channels_fired][1] = -1;
-                        num_channels_fired++;
-                    }
-                    channel_mask -= pow(2, j);
-                }
-            }
-
-            int active_channel = 0;
-            int active_board = 0;
-            int active_det = 0;
-            double fine_time = 0;
-
-            for (int i = (num_channels_fired - 1); i >= 0; i--)
-            {
-                if (Fired_QDC_Channels[i][1] == -1)
-                {
-                    // bad channel?
-                }
-                else
-                {
-                    active_board = Fired_QDC_Channels[i][0];
-                    active_channel = Fired_QDC_Channels[i][1];
-                    active_det = det_ID_QDC[active_board][active_channel];
-
-                    det_ids_QDC[fired_QDC_amount] = active_det;
-
-                    // now we go through the data slightly differently
-                    // (perhaps we can change the unpacker?)
-                    QDC_Time_Coarse[fired_QDC_amount] = fData->fatimavme_qdc[qdc]
-
-                }
-            }
-
-
-
-        }
-    }
-    
-
-
-
-     //whiterabbit timestamp:
+    //whiterabbit timestamp:
     wr_t = (((uint64_t)fData->fatimavme_ts_t[3]) << 48) + (((uint64_t)fData->fatimavme_ts_t[2]) << 32) + (((uint64_t)fData->fatimavme_ts_t[1]) << 16) + (uint64_t)(fData->fatimavme_ts_t[0]);
+    if (wr_t == 0) return kTRUE;
+    
+    FatimaHit->Set_wr_t(wr_t);
 
-    for (/*loop over tdcs fired*/)
+    // currently nothing is being done with Scalers, so ignore for now
+
+
+    #define QDC_BOARDS 5 // quick lazy testing only, put in some config
+    for (int qdc = 0; qdc < QDC_BOARDS; qdc++)
     {
-        for (/*loop over tdcs fired again*/)
+        Int_t board_id = fData->fatimavme_qdc[qdc].board_id;
+        FatimaHit->Set_board_id(qdc, board_id);
+        uint32_t board_time = fData->fatimavme_qdc[qdc].board_time;
+        FatimaHit->Set_board_time(qdc, board_time);
+        Int_t channel_mask = fData->fatimavme_qdc[qdc].channels;
+        std::vector<int> channels_fired = Get_Channels(channel_mask);
+        FatimaHit->Set_num_channels_fired(qdc, channels_fired.size());
+
+        for (uint32_t channel = 0; channel < channels_fired.size(); channel++)
         {
-            // stuff trues into a bool array 
+            uint32_t QDC_time_coarse = fData->fatimavme_qdc[qdc].channel_timev[channel];
+            FatimaHit->Set_channel_time_coarse(qdc, channels_fired[channel], QDC_time_coarse);
+
+            double QDC_time_fine = (uint64_t)fData->fatimavme_qdc[qdc].channel_timev[channel] + ((uint64_t)(fData->fatimavme_qdc[qdc].chan_ext_timev[channel]) << 32) + fData->fatimavme_qdc[qdc].chan_fine_timev[channel] / 1024.;
+            FatimaHit->Set_channel_time_fine(qdc, channels_fired[channel], QDC_time_fine);
+
+            uint32_t QLong_raw = fData->fatimavme_qdc[qdc].qlongv[channel];
+            FatimaHit->Set_channel_QLong(qdc, channels_fired[channel], QLong_raw);
+
+            uint32_t QShort_raw = fData->fatimavme_qdc[qdc].qshortv[channel];
+            FatimaHit->Set_channel_QShort(qdc, channels_fired[channel], QShort_raw);
+
         }
+
     }
 
+    #define TDC_BOARDS 2 // quick lazy testing only, put in some config
+    for (int tdc = 0; tdc < TDC_BOARDS; tdc++)
+    {
+        int hit_index = 0;
+        for (uint32_t channel_index = 0; channel_index < fData->fatimavme_tdc[tdc]._nM; channel_index++)
+        {
+            int current_channel = fData->fatimavme_tdc[tdc]._nMI[channel_index]; // channel to read now!
+            int next_channel_start = fData->fatimavme_tdc[tdc]._nME[channel_index];
+
+            for (uint32_t j = hit_index; j < next_channel_start; j++)
+            {
+                v1290_channel.emplace_back(current_channel);
+                v1290_data.emplace_back(fData->fatimavme_tdc[tdc]._data[j]);
+                v1290_lot.emplace_back(fData->fatimavme_tdc[tdc]._leadOrTrailv[j]);
+            }
+
+            hit_index = next_channel_start;
+
+        }
+
+        FatimaHit->Set_v1290_channel(tdc, v1290_channel);
+        FatimaHit->Set_v1290_data(tdc, v1290_data);
+        FatimaHit->Set_v1290_lot(tdc, v1290_lot);
+    }
     
 
 
-    // CEJ change later obviously
-    if (wr_t != 0)
-    {
-       new ((*fArray)[fArray->GetEntriesFast()]) FatimaVmeData(
-                    wr_t); 
-    }
-   
+
+
+
+
+
+    new ((*fArray)[fArray->GetEntriesFast()]) FatimaVmeData(*FatimaHit);
 
     fNEvent++;
     return kTRUE;
@@ -161,9 +150,30 @@ Bool_t FatimaVmeReader::Read()
 
 }
 
+
+// CEJ: for 8 channel mode at the moment
+std::vector<int> FatimaVmeReader::Get_Channels(Int_t channel_mask)
+{
+    std::vector<int> channels;
+
+    for (int i = 7; i >= 0; i--)
+    {
+        if (channel_mask >= pow(2, i))
+        {
+            channels.push_back(i);
+            channel_mask -= pow(2, i);
+        }
+    }
+
+    std::sort(channels.begin(), channels.end());
+
+    return channels;
+}
+
 void FatimaVmeReader::Reset()
 {
     fArray->Clear();
+    //c4LOG(info, Form("%d events read.", fNEvent));
 }
 
 

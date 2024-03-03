@@ -121,7 +121,7 @@ SUBEVENT(fatima_vme_subev)
         scalers = FATIMA_VME_SCALERS();
     }
 
-    // do these always come?
+    // number of boards 
     qdc[0] = VME_CAEN_V1751();
     qdc[1] = VME_CAEN_V1751();
     qdc[2] = VME_CAEN_V1751();
