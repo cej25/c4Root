@@ -2,6 +2,7 @@
 #define FatimaVmeReader_H
 
 #include "c4Reader.h"
+#include "FatimaVmeData.h"
 
 #include <Rtypes.h>
 
@@ -11,6 +12,7 @@ extern "C"
 }
 
 class TClonesArray;
+class FatimaVmeData;
 
 struct EXT_STR_h101_fatimavme_t;
 typedef struct EXT_STR_h101_fatimavme_t EXT_STR_h101_fatimavme;
@@ -35,6 +37,8 @@ class FatimaVmeReader : public c4Reader
 
         void SetOnline(Bool_t option) { fOnline = option; }
 
+        std::vector<int> Get_Channels(Int_t channel_mask);
+
         // FT Calib?
 
         // GetFT?
@@ -54,7 +58,12 @@ class FatimaVmeReader : public c4Reader
 
         // bunch of stuff we might need
         
+        std::vector<uint32_t> v1290_channel;
+        std::vector<uint32_t> v1290_data;
+        std::vector<uint32_t> v1290_lot;
+
         // change to vectors when we figure this nonsense out.
+        /*
         double Qlong[60] = {0};
         double Qlong_raw[60] = {0};
         double Qshort_raw[60] = {0};
@@ -109,7 +118,7 @@ class FatimaVmeReader : public c4Reader
 
         bool tdc_multi_hit_exclude[100];
         bool qdc_multi_hit_exclude[100];
-
+        */
 
         // number of QDC boards. etc
 
