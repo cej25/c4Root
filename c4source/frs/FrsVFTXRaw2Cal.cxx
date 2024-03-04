@@ -13,8 +13,6 @@
 #include "TFRSParameter.h"
 #include "c4Logger.h"
 
-#include "../../config/frs_config.h"
-
 #include "TClonesArray.h"
 
 #include <vector>

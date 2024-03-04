@@ -1,6 +1,7 @@
 #ifndef FrsVFTXRaw2Cal_H
 #define FrsVFTXRaw2Cal_H
 
+#include "../../config/setup.h"
 #include "TFRSParameter.h"
 #include "FrsVFTXCalData.h"
 #include <vector>
