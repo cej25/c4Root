@@ -32,6 +32,7 @@
 #pragma link C++ class BeamMonitorReader+;
 #pragma link C++ class FatimaReader+;
 #pragma link C++ class FatimaRaw2Cal+;
+#pragma link C++ class FatimaVmeReader+;
 
 #pragma link C++ class EXT_STR_h101_unpack_t;
 #pragma link C++ class EXT_STR_h101_frstpc_onion_t;
@@ -40,6 +41,7 @@
 #pragma link C++ class EXT_STR_h101_frsvftx_onion_t;
 #pragma link C++ class EXT_STR_h101_germanium_onion_t;
 #pragma link C++ class EXT_STR_h101_fatima_onion_t;
+#pragma link C++ class EXT_STR_h101_fatimavme_onion_t;
 #pragma link C++ class EXT_STR_h101_lisa_onion_t; // lisa
 #pragma link C++ class EXT_STR_h101_aida_onion_t;
 #pragma link C++ class EXT_STR_h101_bplast_onion_t;

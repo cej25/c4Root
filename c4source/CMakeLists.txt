@@ -64,6 +64,7 @@ set(SRCS
 ./germanium/GermaniumRaw2Cal.cxx
 ./fatima/FatimaReader.cxx
 ./fatima/FatimaRaw2Cal.cxx
+./fatima/FatimaVmeReader.cxx
 )
 
 Set(STRUCT_HEADERS
@@ -78,6 +79,7 @@ Set(STRUCT_HEADERS
 ./bplast/ext_h101_bplast.h
 ./beammonitor/ext_h101_bm.h
 ./fatima/ext_h101_fatima.h
+./fatima/ext_h101_fatimavme.h
 )
 
 # fill list of header files from list of source files

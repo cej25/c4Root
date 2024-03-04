@@ -1574,49 +1574,6 @@ void FrsCal2Hit::Exec(Option_t* option)
         FrsHit->Set_ID_dEdeg(id_dEdeg);
 
 
-        // new ((*fHitArray)[fHitArray->GetEntriesFast()]) FrsHitData(
-        //     WR_TS,
-        //     time_in_ms, 
-        //     ibin_for_s, 
-        //     ibin_for_100ms,
-        //     ibin_for_spill,
-        //     increase_sc_temp_main,
-        //     increase_sc_temp_user,
-        //     increase_sc_temp2,
-        //     increase_sc_temp3,
-        //     extraction_time_ms, 
-        //     ibin_clean_for_s, 
-        //     ibin_clean_for_100ms,
-        //     ibin_clean_for_spill,
-        //     de,
-        //     sci_e,
-        //     sci_l,
-        //     sci_r,
-        //     sci_tof2,
-        //     id_x2,
-        //     id_y2,
-        //     id_a2,
-        //     id_b2,
-        //     id_x4,
-        //     id_y4,
-        //     id_a4,
-        //     id_b4,
-        //     id_AoQ,
-        //     id_AoQ_corr,
-        //     id_z,
-        //     id_z2,
-        //     id_beta,
-        //     id_dEdegoQ,
-        //     id_dEdeg,
-        //     id_mhtdc_aoq_s2s4,
-        //     id_mhtdc_aoq_corr_s2s4,
-        //     id_mhtdc_z_music41,
-        //     id_mhtdc_z_music42,
-        //     id_mhtdc_dEdegoQ,
-        //     id_mhtdc_dEdeg
-        // );
-   
-    //}
     // above is end of FRS_Anl
 
     new ((*fHitArray)[fHitArray->GetEntriesFast()]) FrsHitData(*FrsHit);
