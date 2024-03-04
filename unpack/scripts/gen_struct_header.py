@@ -6,7 +6,7 @@ import subprocess as sb
 #add the systems you want here: bplast,fatima,etc
 systems = ["bplast"]
 
-ucesb_exec = "NovTest"
+ucesb_exec = "onlyGerm"
 
 
 for system in systems:
