@@ -238,7 +238,7 @@ if(ucesb_FOUND)
     set(LD_LIBRARY_PATH ${ucesb_LIBRARY_DIR} ${LD_LIBRARY_PATH})
 else()
   message(WARNING "${BMagenta}No UCESB configured. You will not be able to unpack lmd files. Set UCESB_DIR"
-    " to a ucesb installation to fix this.${CR}")
+    " to a ucesb installation to fix this. You may also need to > make an experiment in /unpack/exps.${CR}")
 endif(ucesb_FOUND)
 
 configure_file(${CMAKE_SOURCE_DIR}/cmake/scripts/c4RootConfigVersion.cmake.in "${CMAKE_BINARY_DIR}/c4RootConfigVersion.cmake" @ONLY)
