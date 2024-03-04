@@ -425,7 +425,200 @@ void FrsFatimaCorrelations::Exec(Option_t* option)
 
     // ... long Iso analysis... ?
     // CEJ: we're going to copy Go4 for now and see where it goes..
-    
+
+    // we can use a vector for mult anyhoo
+    /*for (int i = 0; i < VME_MAX_MULT; i++)
+    {
+        FatE_Long[i] = 0;
+        FatT_Long[i] = 0;
+        FatE_Prm_Long[i] = 0;
+        FatT_Prm_Long[i] = 0;
+    }
+
+    dT_frsfat_long = 0;
+    dT_frsfat_prompt = 0;
+    dT_FRS_Fatima_WR = 0;
+    Fat_mult_long = 0;
+    Fat_mult_prompt = 0;
+    dT_frsfat_mult_long = 0;
+    dT_frsfat_mult_prompt = 0;
+    dT_FatT_long = 0;
+    dT_FatT_prompt = 0;
+    Fat_FirstT_long = 0;
+    Fat_FirstT_prompt = 0;
+
+    if (Fatima_WR > 0)
+    {
+        if (ZAoQ->Pass && FRS_WR != 0)
+        {
+            ts_fat = FRS_WR;//?
+        }
+        else // in go4 "if Fatima_WR > 0", but we already do this..
+        {
+            ts_fat = Fatima_WR;
+        }
+    }
+
+    // reset the local variabls in case the time is too long
+    if (tag_fat_all.size() > 0)
+    {
+        for (int i = 0; i < tag_fat_all.size(); i++)
+        {
+            // the reset time windows are set in config/correlations
+            if ((ts_fat - ts_fat_all.at(i) > (*Correl)["FRS-Fatima Long dT Gate"][1]))
+            {
+                tag_fat_all.erase(tag_fat_all.begin() + i);
+                ts_fat_all.erase(ts_fat_all.begin() + i);
+            }
+        }
+    }
+
+    if (FRS_WR > 0 && ZAoQ->Pass)
+    {
+        if (tag_fat_all.size() == 0)
+        {
+            tag_fat_all.push_back(1);
+            ts_fat_all.push_back(ts_fat);
+        }
+    }
+    else if (Fatima_WR > 0)
+    {
+        for (int i = (tag_fat_all.size() - 1); i >= 0; i--)
+        {
+            // frs-gamma long correlations
+            if (tag_fat_all.at(i) == 1 && (ts_fat - ts_fat_all.at(i)) > (*Correl)["FRS-Fatima Long dT Gate"][0])
+            {
+                dT_frsfat_long = ts_fat - ts_fat_all.at(i);
+                
+                for (int j = 0; j < Fatmult; j++)
+                {
+                    if (FatimaHit->Get_energy() > 0)
+                    {
+                        FatE_Long[Fat_mult_long] = FatimaHit->Get_energy();
+                        FatT_Long[Fat_mult_long] = FatimaHit->Get_fast_lead_time();
+
+                        Fat_mult_long++;
+                    }
+
+                    if (FatimaHit->Get_energy() > 0 && dT_frsfat_long > 0)
+                    {
+                        if (j == 0)
+                        {
+                            Fat_FirstT_Long = FatimaHit->Get_fast_lead_time();
+
+                            hA_FRS_PID_FatE_LongIso->Fill(FatimaHit->Get_energy());
+                            hA_FRS_FatEvsT_LongIsoGated->Fill(dT_frsfat_long / (*Correl)["FRS-Fatima Long dT Scale"][0], FatimaHit->Get_energy());
+                        }
+
+                        // this is for when there is more than 1 gamma in an event to get the correct time
+                        if (j > 0 && FatimaHit->Get_fast_lead_time())
+                        {
+                            dT_FatT_long = (FatimaHit->Get_fast_lead_time() - Fat_FirstT_long);
+                            dT_frsfat_mult_long = dT_frsfat_long + ABS(dT_FatT_long);
+
+                            if (FatimaHit->Get_energy() > 10 && dT_frsfat_mult_long > 0)
+                            {
+                                hA_FRS_FatEvsT_LongIsoGated->Fill(dT_frsfat_mult_long / (*Correl)["FRS-Fatima Long dT Scale"][0], FatimaHit->Get_energy());
+                                hA_FRS_PID_FatE_LongIso->Fill(FatimaHit->Get_energy());
+                            }
+                        }
+
+                    }
+                }
+
+                // Gamma-Gamma
+                for (int m = 0; m < Fat_mult_long; m++)
+                {
+                    for (int n = 0; n < Fat_mult_long; n++)
+                    {
+                        if (m == n) continue;
+                        if ((FatT_Long[m] - FatT_Long[n]) * 0.025 > (*Correl)["Gamma-Gamma Fatima..."][0] && (FatT_Long[m] - FatT_Long[n]) * 0.025 < (*Correl)["Gamma-Gamma Fatima...."][1])
+                        {
+                            hA_FRS_FatE1vsFatE2_LongIsoGated->Fill(FatE_Long[m], FatE_Long[n]);
+                        }
+                    }
+                }
+
+
+            }
+        }
+    }
+
+    // include prompt gammas in long isomer analysis
+    if ((*Correl)["FRS-Fatima Long Include Prompt"][0])
+    {
+        dT_frsfat_prompt = 0;
+        
+        if (FRS_WR > 0 && Fatim_WR > 0) dT_FRS_Fatima_WR = Fatima_WR - FRS_WR;
+
+        if (dT_FRS_Fatima_WR > (*Correl)["FRS-Fatima WR Gate"][0] && dT_FRS_Fatima_WR < (*Correl)["FRS-Fatima WR Gate"][1])
+        {
+            if (ZAoQ->Pass)
+            {
+                for (int i = 0; i < Fatmult; i++)
+                {
+                    dT_frsfat_prompt = ((FatimaHit->Get_fast_lead_time() - SC41L_T) * 0.025);
+
+                    if (FatimaHit->Get_energy() > 0)
+                    {
+                        FatE_Prm_Long[Fat_mult_prompt] = FatimaHit->Get_energy();
+                        FatT_Prm_Long[Fat_mult_prompt] = FatimaHit->Get_fast_lead_time();
+
+                        Fat_mult_prompt++;
+                    }
+
+                    // Cut the prompt flash
+                    if (cutFatima_EdT[(*Correl)["Something PID"][0]]->IsInside((FatimaHit->Get_fast_lead_time() - SC41L_T) * 0.025, FatimaHit->Get_energy()))
+                    {
+                        if (i == 0)
+                        {
+                            Fat_FirstT_prompt = FatimaHit->Get_fast_lead_time();
+
+                            if (FatimaHit->Get_energy() > 1)
+                            {
+                                hA_FRS_PID_FatE_LongIso->Fill(FatimaHit->Get_energy());
+                                hA_FRS_FatEvsT_LongIsoGated->Fill(dT_frsfat_prompt / (*Correl)["FRS-Fatima Long dT Scale"][0], FatimaHit->Get_energy());
+                            }
+                        }
+
+                        if (i > 0 && FatimaHit->Get_fast_lead_time())
+                        {
+                            dT_FatT_prompt = (FatimaHit->Get_fast_lead_time() - Fat_FirstT_prompt);
+
+                            dT_frsfat_mult_prompt = (FatimaHit->FatimaWR - FRS_WR) + ABS(dT_FatT_prompt);
+
+                            hA_FRS_PID_FatE_LongIso->Fill(FatimaHit->Get_energy());
+
+                            if (dT_frsfat_mult_prompt != 0)
+                            {
+                                hA_FRS_FatEvsT_LongIsoGated->Fill(dT_frsfat_mult_prompt / (*Correl)["Scale"][0], FatimaHit->Get_energy());
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Gamma-Gamma
+            for (int m = 0; m < Fat_mult_prompt; m++)
+            {
+                for (int n = 0; n < Fat_mult_prompt; n++)
+                {
+                    if (FatE_Prm_Long[m] > 0 && FatE_Prm_Long[n] > 0)
+                    {
+                        if (m == n) continue;
+
+                        if ((FatT_Prm_Long[m] - FatT_Prm_Long[n]) > (*Correl)["Gamma-Gamma timing"][0] && (FatT_Prm_Long[m] - FatT_Prm_Long[n]) < (*Correl)["Gamma-Gamma etc"][1])
+                        {
+                            if (cutFatima_EdT[(*Correl)["PID of some kind"][0]]->IsInside(dT_frsfat_prompt, FatE_Prm_Long[m]) && cutFatima_EdT[(*Correl)["PID of some kind"][0]]->IsInside(dT_frsfat_prompt, FatE_Prm_Long[n]))
+                            {
+                                if (ZAoQ->Pass) hA_FRS_FatE1vsFatE2_LongIsoGated->Fill(FatE_Prm_Long[m], FatE_Prm_Long[n]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }*/
 
 }
 

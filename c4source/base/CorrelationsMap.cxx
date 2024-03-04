@@ -28,6 +28,7 @@ CorrelationsMap::CorrelationsMap(std::string& filename)
                 if (firstWord == "FRS_AIDA") (*this)["FRS-AIDA"] = values;
                 else if (firstWord == "FRS_FATIMA_PROMPT") (*this)["FRS-Fatima Prompt"] = values;
                 else if (firstWord == "FRS_FATIMA_LONG") (*this)["FRS-Fatima Long"] = values;
+                else if (firstWord == "FRS_FATIMA_LONG_PROMPT") (*this)["FRS-Fatima Long Include Prompt"] = values;
                 else if (firstWord == "FRS_FATIMA_LT_ANALYSIS") (*this)["FRS-Fatima Lifetime Analysis"] = values;
                 else if (firstWord == "FRS_BPLAST") (*this)["FRS-bPlast"] = values;
                 else if (firstWord == "FRS_GERMANIUM_PROMPT") (*this)["FRS-Germanium Prompt"] = values;
@@ -58,6 +59,7 @@ CorrelationsMap::CorrelationsMap(std::string& filename)
                 else if (firstWord == "FRS_GERMANIUM_LONG_DT") (*this)["FRS-Germanium Long dT Gate"] = values;
                 else if (firstWord == "GAMMA_GAMMA_FATIMA_TIME") (*this)["Fatima Gamma-Gamma dT Gate"] = values;
                 else if (firstWord == "FRS_FATIMA_LONG_DT") (*this)["FRS-Fatima Long dT Gate"] = values;
+                else if (firstWord == "FRS_FATIMA_LONG_DT_SCALE") (*this)["FRS-Fatima Long dT Scale"] = values;
                 else if (firstWord == "LT_START_STOP_1") (*this)["Lifetime 1 Start-Stop Energies"] = values;
                 else if (firstWord == "LT_START_STOP_2") (*this)["Lifetime 2 Start-Stop Energies"] = values;
                 else if (firstWord == "LT_START_STOP_3") (*this)["Lifetime 3 Start-Stop Energies"] = values;
