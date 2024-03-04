@@ -7,7 +7,7 @@
 
 extern "C"
 {
-    #include "../../config/frs/NovTest/setup.C"
+    #include "../../config/NovTest/frs/setup.C"
 }
 
 typedef struct EXT_STR_h101_t
