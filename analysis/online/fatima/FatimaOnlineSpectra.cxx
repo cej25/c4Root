@@ -47,6 +47,8 @@ void FatimaOnlineSpectra::SetParContainers()
     c4LOG_IF(fatal, NULL == rtdb, "FairRuntimeDb not found.");
 }
 
+
+
 InitStatus FatimaOnlineSpectra::Init()
 {
 
@@ -58,6 +60,7 @@ InitStatus FatimaOnlineSpectra::Init()
 
     FairRunOnline * run = FairRunOnline::Instance();
     run->GetHttpServer()->Register("", this);
+    c4LOG(info, "HERE");
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
@@ -68,113 +71,129 @@ InitStatus FatimaOnlineSpectra::Init()
     //create folders
     folder_fatima = new TFolder("FATIMA", "FATIMA");
 
+
     run->AddObject(folder_fatima);
 
-    folder_fatima_slowToT = new TFolder("slowToT", "slowToT");
-    folder_fatima_fastToT = new TFolder("fastToT", "fastToT");
-    folder_fatima_hitpattern = new TFolder("hitpattern", "hitpattern");
-    folder_fatima_fast_v_slow = new TFolder("fast_v_slow", "fast_v_slow");
-    folder_fatima_time_spectra = new TFolder("time_spectra", "time_spectra");
+    folder_fatima_slowToT = new TFolder("SlowToT", "slowToT");
+    folder_fatima_fastToT = new TFolder("FastToT", "fastToT");
+    folder_fatima_hitpattern = new TFolder("Hitpattern", "hitpattern");
+    folder_fatima_fast_v_slow = new TFolder("Fast_v_Slow", "fast_v_slow");
+    folder_fatima_time_spectra = new TFolder("Time_Spectra", "time_spectra");
     folder_fatima_energy_spectra = new TFolder("Energy", "energy");
-    folder_fatima_time_differences = new TFolder("time_differences", "time_differences");
     folder_fatima->Add(folder_fatima_slowToT);
     folder_fatima->Add(folder_fatima_fastToT);
     folder_fatima->Add(folder_fatima_hitpattern);
     folder_fatima->Add(folder_fatima_fast_v_slow);
     folder_fatima->Add(folder_fatima_time_spectra);
     folder_fatima->Add(folder_fatima_energy_spectra);
-    folder_fatima->Add(folder_fatima_time_differences);
 
 
-    // energy spectra:
+    int min_detector_id = *min_element(detectors.begin(),detectors.end());
+    int max_detector_id = *max_element(detectors.begin(), detectors.end());
+    number_detectors = detectors.size();
+
+
+    // Slow ToT:
     c_fatima_slowToT  = new TCanvas("c_fatima_slowToT","slow ToT Fatima spectra",650,350);
-    c_fatima_slowToT->Divide(5,(NDetectors%5==0) ? (NDetectors/5) : (NDetectors/5 + 1));
-
-    for (int ihist = 0; ihist < NDetectors; ihist++){
+    c_fatima_slowToT->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
+    h1_fatima_slowToT = new TH1F*[number_detectors];
+    for (int ihist = 0; ihist < number_detectors; ihist++){
         c_fatima_slowToT->cd(ihist+1);
-        h1_fatima_slowToT[ihist] = new TH1F(Form("h1_fatima_slowToT_%d",ihist),Form("Fatima slow ToT detector %d",ihist),4000,0,2.5e3);
+        h1_fatima_slowToT[ihist] = new TH1F(Form("h1_fatima_slowToT_%d",detectors.at(ihist)),Form("Fatima slow ToT detector %d",detectors.at(ihist)),fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high);
         h1_fatima_slowToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
         h1_fatima_slowToT[ihist]->Draw();
         folder_fatima_slowToT->Add(h1_fatima_slowToT[ihist]);
+        
     }
     c_fatima_slowToT->cd(0);
+    folder_fatima_slowToT->Add(c_fatima_slowToT);
 
-    folder_fatima->Add(c_fatima_slowToT);
-    
-    // energy spectra:
-    c_fatima_fastToT  = new TCanvas("c_fatima_fastToT","fast ToT Fatima spectra",650,350);
-    c_fatima_fastToT->Divide(5,(NDetectors%5==0) ? (NDetectors/5) : (NDetectors/5 + 1));
 
-    for (int ihist = 0; ihist < NDetectors; ihist++){
+    //fast ToT
+
+    c_fatima_fastToT  = new TCanvas("c_fatima_fastToT","Fast ToT Fatima spectra",650,350);
+    c_fatima_fastToT->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
+    h1_fatima_fastToT = new TH1F*[number_detectors];
+
+    for (int ihist = 0; ihist < number_detectors; ihist++){
         c_fatima_fastToT->cd(ihist+1);
-        h1_fatima_fastToT[ihist] = new TH1F(Form("h1_fatima_fastToT_%d",ihist),Form("Fatima fast ToT detector %d",ihist),4000,0,2.5e3);
+        h1_fatima_fastToT[ihist] = new TH1F(Form("h1_fatima_fastToT_%d",detectors.at(ihist)),Form("Fatima fast ToT detector %d",detectors.at(ihist)),ffast_tot_nbins,ffast_tot_bin_low,ffast_tot_bin_high);
         h1_fatima_fastToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
         h1_fatima_fastToT[ihist]->Draw();
         folder_fatima_fastToT->Add(h1_fatima_fastToT[ihist]);
+        
     }
     c_fatima_fastToT->cd(0);
-
-    folder_fatima->Add(c_fatima_fastToT);
+    folder_fatima_fastToT->Add(c_fatima_fastToT);
     
+    //energy spectrum:
     
-    // energy spectra:
-    c_fatima_energies  = new TCanvas("c_fatima_energies","Fatima Energy spectra",650,350);
-    c_fatima_energies->Divide(5,(NDetectors%5==0) ? (NDetectors/5) : (NDetectors/5 + 1));
+    c_fatima_energy  = new TCanvas("c_fatima_energy","Fatima energy spectra",650,350);
+    c_fatima_energy->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
+    h1_fatima_energy = new TH1F*[number_detectors];
 
-    for (int ihist = 0; ihist < NDetectors; ihist++){
-        c_fatima_energies->cd(ihist+1);
-        h1_fatima_energies[ihist] = new TH1F(Form("h1_fatima_energies_%d",ihist),Form("Fatima detector %d energy",ihist),4000,0,10e3);
-        h1_fatima_energies[ihist]->GetXaxis()->SetTitle("Energy (keV)");
-        h1_fatima_energies[ihist]->Draw();
-        folder_fatima_energy_spectra->Add(h1_fatima_energies[ihist]);
+    for (int ihist = 0; ihist < number_detectors; ihist++){
+        c_fatima_energy->cd(ihist+1);
+        h1_fatima_energy[ihist] = new TH1F(Form("h1_fatima_energy_%d",detectors.at(ihist)),Form("Fatima energy detector %d",detectors.at(ihist)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+        h1_fatima_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
+        h1_fatima_energy[ihist]->Draw();
+        folder_fatima_energy_spectra->Add(h1_fatima_energy[ihist]);
+        
     }
-    c_fatima_energies->cd(0);
-
-    folder_fatima->Add(c_fatima_energies);
+    c_fatima_energy->cd(0);
+    folder_fatima_energy_spectra->Add(c_fatima_energy);
     
-    // energy spectra:
+    
+    // fast vs slow:
     c_fatima_fast_v_slow  = new TCanvas("c_fatima_fast_v_slow","fast vs slow ToT Fatima spectra",650,350);
-    c_fatima_fast_v_slow->Divide(5,(NDetectors%5==0) ? (NDetectors/5) : (NDetectors/5 + 1));
+    c_fatima_fast_v_slow->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
 
-    for (int ihist = 0; ihist < NDetectors; ihist++){
+    h2_fatima_fast_v_slow = new TH2F * [number_detectors];
+
+    for (int ihist = 0; ihist < number_detectors; ihist++){
         c_fatima_fast_v_slow->cd(ihist+1);
-        h2_fatima_fast_v_slow[ihist] = new TH2F(Form("h2_fatima_fast_v_slow_ToT_%d",ihist),Form("FATIMA fast vs. slow detector %d",ihist),1000,0,2.5e3,1000,0,2.5e3);
+        h2_fatima_fast_v_slow[ihist] = new TH2F(Form("h2_fatima_fast_v_slow_ToT_%d",detectors.at(ihist)),Form("FATIMA fast vs. slow detector %d",detectors.at(ihist)),ffast_tot_nbins,ffast_tot_bin_low,ffast_tot_bin_high,fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high);
         h2_fatima_fast_v_slow[ihist]->GetXaxis()->SetTitle("fast ToT (ns)");
         h2_fatima_fast_v_slow[ihist]->GetYaxis()->SetTitle("slow ToT (ns)");
         h2_fatima_fast_v_slow[ihist]->Draw("COLZ");
         folder_fatima_fast_v_slow->Add(h2_fatima_fast_v_slow[ihist]);
+        
     }
     c_fatima_fast_v_slow->cd(0);
-
-    folder_fatima->Add(c_fatima_fast_v_slow);
+    folder_fatima_fast_v_slow->Add(c_fatima_fast_v_slow);
     
     // Time spectra:
-    c_fatima_time_spectra_divided  = new TCanvas("c_fatima_time_spectra_divided","Fatima time spectra",650,350);
-    c_fatima_time_spectra_divided->Divide(5,(NDetectors%5==0) ? (NDetectors/5) : (NDetectors/5 + 1));
+    
+    c_fatima_time_spectra_divided  = new TCanvas("c_fatima_time_spectra_divided","Fatima absolute time spectra",650,350);
+    c_fatima_time_spectra_divided->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
+    h1_fatima_abs_time = new TH1F*[number_detectors];
 
-    for (int ihist = 0; ihist < NDetectors; ihist++){
+    for (int ihist = 0; ihist < number_detectors; ihist++){
         c_fatima_time_spectra_divided->cd(ihist+1);
-        h1_fatima_abs_time[ihist] = new TH1F(Form("h1_fatima_abs_time_%d",ihist),Form("FATIMA time spectrum detectors %d",ihist),100,0,2.7e12);
-        h1_fatima_abs_time[ihist]->GetXaxis()->SetTitle("Time (ns)");
+        h1_fatima_abs_time[ihist] = new TH1F(Form("h1_fatima_abs_time_%d",detectors.at(ihist)),Form("Fatima absolute DAQ time detector %d",detectors.at(ihist)),1000,0,2.7e12); // up to 45 mins in ns :)
+        h1_fatima_abs_time[ihist]->GetXaxis()->SetTitle("Timestamp (ns)");
         h1_fatima_abs_time[ihist]->Draw();
-        folder_fatima_time_spectra->Add(h1_fatima_abs_time[ihist]);
+        folder_fatima_fastToT->Add(h1_fatima_abs_time[ihist]);
+        
     }
     c_fatima_time_spectra_divided->cd(0);
+    folder_fatima_time_spectra->Add(c_fatima_time_spectra_divided);
 
-    folder_fatima->Add(c_fatima_time_spectra_divided);
 
+    //2D energy spectrum
     c_fatima_energy = new TCanvas("c_fatima_energy","Fatima energy spectrum",650,350);
-    h2_fatima_energy = new TH2F("h2_fatima_energy","FATIMA energy (keV)",5000,0,10e3,NDetectors,0,NDetectors);
-    h2_fatima_energy->GetXaxis()->SetTitle("Energy (keV)");
-    h2_fatima_energy->GetYaxis()->SetTitle("Detector nr.");
-    h2_fatima_energy->Draw("COLZ");
+    h2_fatima_energy_vs_detid = new TH2F("h2_fatima_energy_vs_detid","FATIMA energies",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,max_detector_id+1,0-0.5,max_detector_id+0.5); //such that the y-axis is the detector id and not the index
+    h2_fatima_energy_vs_detid->GetXaxis()->SetTitle("Energy (keV)");
+    h2_fatima_energy_vs_detid->GetYaxis()->SetTitle("Detector nr.");
+    h2_fatima_energy_vs_detid->Draw("COLZ");
     folder_fatima_energy_spectra->Add(c_fatima_energy);
 
+    //2D uncalibrated energy spectrum
     c_fatima_energy_uncal = new TCanvas("c_fatima_energy_uncal","Fatima energy spectrum",650,350);
-    h2_fatima_energy_uncal = new TH2F("h2_fatima_energy_uncal","FATIMA energy (keV)",5000,0,10e3,NDetectors,0,NDetectors);
-    h2_fatima_energy_uncal->GetXaxis()->SetTitle("Energy (binnr)");
-    h2_fatima_energy_uncal->GetYaxis()->SetTitle("Detector nr.");
-    h2_fatima_energy_uncal->Draw("COLZ");
+    h2_fatima_energy_uncal_vs_detid = new TH2F("h2_fatima_energy_uncal_vs_detid","FATIMA uncal energy (arb.)",fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high,max_detector_id+1,0-0.5,max_detector_id+0.5);
+    h2_fatima_energy_uncal_vs_detid->GetXaxis()->SetTitle("Energy (arb.)");
+    h2_fatima_energy_uncal_vs_detid->GetYaxis()->SetTitle("Detector nr.");
+    h2_fatima_energy_uncal_vs_detid->Draw("COLZ");
     folder_fatima_energy_spectra->Add(c_fatima_energy_uncal);
 
     // Hit patterns:
@@ -182,92 +201,78 @@ InitStatus FatimaOnlineSpectra::Init()
     c_fatima_hitpatterns->Divide(2,1);
 
     c_fatima_hitpatterns->cd(1);
-    h1_fatima_hitpattern_slow = new TH1F("h1_fatima_hitpattern_slow","FATIMA slow hit patterns",NDetectors,0,NDetectors);
+    h1_fatima_hitpattern_slow = new TH1F("h1_fatima_hitpattern_slow","FATIMA slow hit patterns",max_detector_id+1,0-0.5,max_detector_id+0.5);
     h1_fatima_hitpattern_slow->GetXaxis()->SetTitle("Detector nr.");
     h1_fatima_hitpattern_slow->GetYaxis()->SetTitle("Hits");
     h1_fatima_hitpattern_slow->Draw();
     folder_fatima_hitpattern->Add(h1_fatima_hitpattern_slow);
     
     c_fatima_hitpatterns->cd(2);
-    h1_fatima_hitpattern_fast = new TH1F("h1_fatima_hitpattern_fast","FATIMA fast hit patterns",NDetectors,0,NDetectors);
+    h1_fatima_hitpattern_fast = new TH1F("h1_fatima_hitpattern_fast","FATIMA fast hit patterns",max_detector_id+1,0-0.5,max_detector_id+0.5);
     h1_fatima_hitpattern_fast->GetXaxis()->SetTitle("Detector nr.");
     h1_fatima_hitpattern_fast->GetYaxis()->SetTitle("Hits");
     h1_fatima_hitpattern_fast->Draw();
-    folder_fatima_hitpattern->Add(h1_fatima_hitpattern_slow);
+    folder_fatima_hitpattern->Add(h1_fatima_hitpattern_fast);
     c_fatima_hitpatterns->cd(0);
     
-    folder_fatima->Add(c_fatima_hitpatterns);
-    
-    
-    c_fatima_time_differences = new TCanvas("c_fatima_time_differences","Time coincidences to detector 0",650,350);
-    c_fatima_time_differences->Divide(5,(NDetectors%5==0) ? (NDetectors/5) : (NDetectors/5 + 1));
+    folder_fatima_hitpattern->Add(c_fatima_hitpatterns);
 
-    for (int ihist = 0; ihist < NDetectors; ihist++){
-        c_fatima_time_differences->cd(ihist+1);
-        h1_fatima_time_differences[ihist] = new TH1F(Form("h1_fatima_time_differences_%d",ihist),Form("FATIMA time spectrum t_%d - t_0",ihist),1000,-500,500);
-        h1_fatima_time_differences[ihist]->GetXaxis()->SetTitle("Time (ns)");
-        h1_fatima_time_differences[ihist]->Draw();
-        folder_fatima_time_differences->Add(h1_fatima_time_differences[ihist]);
+
+    // Hit patterns:
+    c_fatima_event_multiplicity  = new TCanvas("c_fatima_event_multiplicity","Fatima event multiplicities",650,350);
+    
+    h1_fatima_multiplicity = new TH1F("h1_fatima_multiplicity","FATIMA event multiplicity",50,0,50);
+    h1_fatima_multiplicity->GetXaxis()->SetTitle("Event multiplicity");
+    h1_fatima_multiplicity->Draw();
+    folder_fatima_hitpattern->Add(h1_fatima_multiplicity);
+    c_fatima_event_multiplicity->cd(0);
+    
+    folder_fatima_hitpattern->Add(c_fatima_event_multiplicity);
+    
+    //
+    h1_fatima_time_differences = new TH1F ** [number_reference_detectors];
+    h2_fatima_time_differences_vs_energy = new TH2F ** [number_reference_detectors];
+    for (int ihist = 0; ihist < number_reference_detectors; ihist++){
+        folder_fatima_time_differences = new TFolder(Form("time_differences_rel_det_%i",dt_reference_detectors.at(ihist)), Form("time_differences_rel_det_%i",dt_reference_detectors.at(ihist)));
+        folder_fatima->Add(folder_fatima_time_differences);
+
+        c_fatima_time_differences  = new TCanvas(Form("c_fatima_time_differences_rel_det_%i",dt_reference_detectors.at(ihist)),"Fatima relative time differences",650,350);
+        c_fatima_time_differences->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
+        h1_fatima_time_differences[ihist] = new TH1F*[number_detectors];
+
+        for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++){
+            c_fatima_time_differences->cd(detid_idx+1);
+            h1_fatima_time_differences[ihist][detid_idx] = new TH1F(Form("h1_fatima_rel_time_det_%i_det_%i",detectors.at(detid_idx),dt_reference_detectors.at(ihist)),Form("Fatima delta time t(%i) - t(%i)",detectors.at(detid_idx),dt_reference_detectors.at(ihist)),1000,-100,100); 
+            h1_fatima_time_differences[ihist][detid_idx]->GetXaxis()->SetTitle(Form("dt t(%i) - t(%i) (ns)",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
+            h1_fatima_time_differences[ihist][detid_idx]->Draw();
+            folder_fatima_fastToT->Add(h1_fatima_time_differences[ihist][detid_idx]);
+            
+        }
+        c_fatima_time_differences->cd(0);
+        folder_fatima_time_differences->Add(c_fatima_time_differences);
+
+
+
+        c_fatima_time_differences_vs_energy  = new TCanvas(Form("c_fatima_time_differences_rel_det_%i_vs_energy",dt_reference_detectors.at(ihist)),"Fatima relative time differences vs energy",650,350);
+        c_fatima_time_differences_vs_energy->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
+        h2_fatima_time_differences_vs_energy[ihist] = new TH2F*[number_detectors];
+
+        for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++){
+            c_fatima_time_differences_vs_energy->cd(detid_idx+1);
+            h2_fatima_time_differences_vs_energy[ihist][detid_idx] = new TH2F(Form("h1_fatima_rel_time_det_%i_det_%i_vs_energy",detectors.at(detid_idx),dt_reference_detectors.at(ihist)),Form("Fatima delta time t(%i) - t(%i) vs energy",detectors.at(detid_idx),dt_reference_detectors.at(ihist)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,1000,-100,100); 
+            h2_fatima_time_differences_vs_energy[ihist][detid_idx]->GetYaxis()->SetTitle(Form("dt t(%i) - t(%i) (ns)",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
+            h2_fatima_time_differences_vs_energy[ihist][detid_idx]->GetXaxis()->SetTitle(Form("energy det %i (keV)",detectors.at(detid_idx)));
+            h2_fatima_time_differences_vs_energy[ihist][detid_idx]->Draw("COLZ");
+            folder_fatima_fastToT->Add(h2_fatima_time_differences_vs_energy[ihist][detid_idx]);
+            
+        }
+        c_fatima_time_differences_vs_energy->cd(0);
+        folder_fatima_time_differences->Add(c_fatima_time_differences_vs_energy);
     }
-    c_fatima_time_differences->cd(0);
-
-    folder_fatima->Add(c_fatima_time_differences);
-    
-    c_fatima_energy_energy = new TCanvas("c_fatima_energy_energy","Fatima energy-energy, det 0 vs det 1 dt < 1000 ns",650,350);
-    h2_fatima_energy_energy= new TH2F("h2_fatima_energy_energy","FATIMA energy-energy det0 vs det1 dt < 1000 ns",500,0,1.5e3,500,0,1.5e3);
-    h2_fatima_energy_energy->GetXaxis()->SetTitle("Energy (keV)");
-    h2_fatima_energy_energy->GetYaxis()->SetTitle("Energy (keV)");
-    c_fatima_energy_energy->SetLogz();
-    h2_fatima_energy_energy->Draw("COLZ");
-    folder_fatima_energy_spectra->Add(c_fatima_energy_energy);
-    
-    
-    c_fatima_time_differences_SCI41 = new TCanvas("c_fatima_time_differences_SCI41","Time coincidences to detector SCI41",650,350);
-    c_fatima_time_differences_SCI41->Divide(5,(NDetectors%5==0) ? (NDetectors/5) : (NDetectors/5 + 1));
-
-    for (int ihist = 0; ihist < NDetectors; ihist++){
-        c_fatima_time_differences_SCI41->cd(ihist+1);
-        h1_fatima_time_differences_SCI41[ihist] = new TH1F(Form("h1_fatima_time_differences_%d_SCI41",ihist),Form("FATIMA time spectrum t_%d - t(SCI41)",ihist),1000,-500,500);
-        h1_fatima_time_differences_SCI41[ihist]->GetXaxis()->SetTitle("Time (ns)");
-        h1_fatima_time_differences_SCI41[ihist]->Draw();
-    }
-    c_fatima_time_differences_SCI41->cd(0);
-    folder_fatima->Add(c_fatima_time_differences_SCI41);
 
     
-    
-    
-    c_fatima_time_differences_energy_SCI41 = new TCanvas("c_fatima_time_differences_energy_SCI41","energy vs dt to detector 0 vs SCI41",650,350);
-    c_fatima_time_differences_energy_SCI41->Divide(5,(NDetectors%5==0) ? (NDetectors/5) : (NDetectors/5 + 1));
-
-    for (int ihist = 0; ihist < NDetectors; ihist++){
-        c_fatima_time_differences_energy_SCI41->cd(ihist+1);
-        h1_fatima_time_differences_energy_SCI41[ihist] = new TH2F(Form("h1_fatima_time_differences_energy_%d_SCI41",ihist),Form("FATIMA t_%d - t(SCI41) vs energy",ihist),1000,-500,500,500,0,1.5e3);
-        h1_fatima_time_differences_energy_SCI41[ihist]->GetXaxis()->SetTitle("Time (ns)");
-        h1_fatima_time_differences_energy_SCI41[ihist]->GetYaxis()->SetTitle("Energy (keV)");
-        h1_fatima_time_differences_energy_SCI41[ihist]->Draw();
-    }
-    c_fatima_time_differences_energy_SCI41->cd(0);
-    folder_fatima->Add(c_fatima_time_differences_energy_SCI41);
-
-    
-    c_fatima_time_differences_energy_SCI41_sum = new TCanvas("c_fatima_time_differences_energy_SCI41_sum","energy vs dt(t_any - SCI41)",650,350);
-    h1_fatima_time_differences_energy_SCI41_sum = new TH2F("h1_fatima_time_differences_energy_SCI41_sum","FATIMA t_any - t(SCI41) vs energy",1000,-500,1000,500,0,1.5e3);
-    h1_fatima_time_differences_energy_SCI41_sum->GetXaxis()->SetTitle("Time (ns)");
-    h1_fatima_time_differences_energy_SCI41_sum->GetYaxis()->SetTitle("Energy (keV)");
-    h1_fatima_time_differences_energy_SCI41_sum->Draw();
-    folder_fatima->Add(c_fatima_time_differences_energy_SCI41_sum);
-
-    c_fatima_time_differences_energy_SCI41_gated = new TCanvas("c_fatima_time_differences_energy_SCI41_gated","energy vs dt(t_any - SCI41)",650,350);
-    h1_fatima_time_differences_energy_SCI41_gated = new TH1F("h1_fatima_time_differences_energy_SCI41_gated","FATIMA t_any - t(SCI41) vs energy",500,0,1.5e3);
-    h1_fatima_time_differences_energy_SCI41_gated->GetXaxis()->SetTitle("Time (ns)");
-    h1_fatima_time_differences_energy_SCI41_gated->GetYaxis()->SetTitle("Energy (keV)");
-    h1_fatima_time_differences_energy_SCI41_gated->Draw();
-    folder_fatima->Add(c_fatima_time_differences_energy_SCI41_gated);
-
-    
-    run->GetHttpServer()->RegisterCommand("Reset_Fatima_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
-    run->GetHttpServer()->RegisterCommand("Snapshot_Fatima_Hist", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Reset_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Snapshot_Histo", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
 
     return kSUCCESS;
     
@@ -276,22 +281,18 @@ InitStatus FatimaOnlineSpectra::Init()
 void FatimaOnlineSpectra::Reset_Histo()
 {
     c4LOG(info, "Resetting histograms!");
-    for (int ihist = 0; ihist<NDetectors; ihist++) h1_fatima_slowToT[ihist]->Reset();
-    for (int ihist = 0; ihist<NDetectors; ihist++) h1_fatima_fastToT[ihist]->Reset();
-    for (int ihist = 0; ihist<NDetectors; ihist++) h1_fatima_abs_time[ihist]->Reset();
-    for (int ihist = 0; ihist<NDetectors; ihist++) h1_fatima_energies[ihist]->Reset();
-    for (int ihist = 0; ihist<NDetectors; ihist++) h1_fatima_time_differences[ihist]->Reset();
-    for (int ihist = 0; ihist<NDetectors; ihist++) h2_fatima_fast_v_slow[ihist]->Reset();
-    for (int ihist = 0; ihist<NDetectors; ihist++) h1_fatima_time_differences_SCI41[ihist]->Reset();
-    for (int ihist = 0; ihist<NDetectors; ihist++) h1_fatima_time_differences_energy_SCI41[ihist]->Reset();
+    for (int ihist = 0; ihist<number_detectors; ihist++) h1_fatima_slowToT[ihist]->Reset();
+    for (int ihist = 0; ihist<number_detectors; ihist++) h1_fatima_fastToT[ihist]->Reset();
+    for (int ihist = 0; ihist<number_detectors; ihist++) h1_fatima_abs_time[ihist]->Reset();
+    for (int ihist = 0; ihist<number_detectors; ihist++) h1_fatima_energy[ihist]->Reset();
+    for (int ihist = 0; ihist<number_detectors; ihist++) h2_fatima_fast_v_slow[ihist]->Reset();
     
-    h1_fatima_time_differences_energy_SCI41_gated->Reset();
     h1_fatima_hitpattern_fast->Reset();
     h1_fatima_hitpattern_slow->Reset();
-    h1_fatima_time_differences_energy_SCI41_sum->Reset();
-    h2_fatima_energy->Reset();
-    h2_fatima_energy_uncal->Reset();
-    h2_fatima_energy_energy->Reset();
+    h2_fatima_energy_vs_detid->Reset();
+
+    h2_fatima_energy_uncal_vs_detid->Reset();
+    //for (int ihist = 0; ihist<number_detectors; ihist++) h1_fatima_time_differences[ihist]->Reset();
 }
 
 // not complete maybe different spectra need to be added here, but anyway correlations between Sc41 and are something for later analysis (?)
@@ -308,45 +309,41 @@ void FatimaOnlineSpectra::Snapshot_Histo()
 
     c_fatima_snapshot = new TCanvas("c_fatima_snapshot","Fatima snapshot",650,350);
 
-    for (int ihist = 0; ihist<NDetectors; ihist++)
+    for (int ihist = 0; ihist<number_detectors; ihist++)
     {
         if(h1_fatima_slowToT[ihist]->GetEntries() != 0)
         {
             h1_fatima_slowToT[ihist]->Draw();
-            c_fatima_snapshot->SaveAs(Form("h1_fatima_slowTot_%d.png",ihist));
+            c_fatima_snapshot->SaveAs(Form("h1_fatima_slowTot_%d.png",detectors.at(ihist)));
             c_fatima_snapshot->Clear();
         }
         if(h1_fatima_fastToT[ihist]->GetEntries() != 0)
         {
             h1_fatima_fastToT[ihist]->Draw();
-            c_fatima_snapshot->SaveAs(Form("h1_fatima_fastTot_%d.png",ihist));
+            c_fatima_snapshot->SaveAs(Form("h1_fatima_fastTot_%d.png",detectors.at(ihist)));
             c_fatima_snapshot->Clear();
         }
         if(h1_fatima_abs_time[ihist]->GetEntries() != 0)
         {
             h1_fatima_abs_time[ihist]->Draw();
-            c_fatima_snapshot->SaveAs(Form("h1_fatima_abs_time_%d.png",ihist));
+            c_fatima_snapshot->SaveAs(Form("h1_fatima_abs_time_%d.png",detectors.at(ihist)));
             c_fatima_snapshot->Clear();
         }
-        if(h1_fatima_energies[ihist]->GetEntries() != 0)
+        if(h1_fatima_energy[ihist]->GetEntries() != 0)
         {
-            h1_fatima_energies[ihist]->Draw();
-            c_fatima_snapshot->SaveAs(Form("h1_fatima_energies_%d.png",ihist));
+            h1_fatima_energy[ihist]->Draw();
+            c_fatima_snapshot->SaveAs(Form("h1_fatima_energy_%d.png",detectors.at(ihist)));
             c_fatima_snapshot->Clear();
         }
-        if(h1_fatima_time_differences[ihist]->GetEntries() != 0)
-        {
-            h1_fatima_time_differences[ihist]->Draw();
-            c_fatima_snapshot->SaveAs(Form("h1_fatima_time_differences_%d.png",ihist));
-            c_fatima_snapshot->Clear();
-        }
+
         if(h2_fatima_fast_v_slow[ihist]->GetEntries() != 0)
         {
             h2_fatima_fast_v_slow[ihist]->Draw("COLZ");
-            c_fatima_snapshot->SaveAs(Form("h2_fatima_fast_v_slow_%d.png",ihist));
+            c_fatima_snapshot->SaveAs(Form("h2_fatima_fast_v_slow_%d.png",detectors.at(ihist)));
             c_fatima_snapshot->Clear();
         }
     }
+
     delete c_fatima_snapshot;
     // save the snapshot of .root file with data and time stamp
     file_fatima_snapshot = new TFile(Form("FATIMA_snapshot_%d_%d_%d_%d_%d_%d.root",ltm->tm_year+1900,ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec),"RECREATE"); 
@@ -365,60 +362,63 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
     //suspects that the lead and trail flags are	
     if (fHitFatimaTwinpeaks && fHitFatimaTwinpeaks->GetEntriesFast() > 0)
     {
+        event_multiplicity = 0;
         Int_t nHits = fHitFatimaTwinpeaks->GetEntriesFast();
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {   
             FatimaTwinpeaksCalData* hit = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(ihit);
             if (!hit) continue;
-            
-            if (hit->Get_detector_id() > NDetectors || hit->Get_detector_id() < 0) continue;
 
-            h1_fatima_slowToT[hit->Get_detector_id()]->Fill(hit->Get_slow_ToT());
-            h1_fatima_energies[hit->Get_detector_id()]->Fill(hit->Get_energy());
-            h1_fatima_fastToT[hit->Get_detector_id()]->Fill(hit->Get_fast_ToT());
-            h2_fatima_fast_v_slow[hit->Get_detector_id()]->Fill(hit->Get_fast_ToT(), hit->Get_slow_ToT());
-            h1_fatima_abs_time[hit->Get_detector_id()]->Fill(hit->Get_fast_lead_time());
-            h2_fatima_energy->Fill(hit->Get_energy(), hit->Get_detector_id());
-            h2_fatima_energy_uncal->Fill(hit->Get_slow_ToT(), hit->Get_detector_id());
-            if (hit->Get_fast_ToT() != 0 ) h1_fatima_hitpattern_fast->Fill(hit->Get_detector_id());
-            if (hit->Get_slow_ToT() != 0 ) h1_fatima_hitpattern_slow->Fill(hit->Get_detector_id());
+
+            double slow_ToT1 = hit->Get_slow_ToT();
+            double fast_ToT1 = hit->Get_fast_ToT();
+            double energy1 = hit->Get_energy();
+            double fast_lead1 = hit->Get_fast_lead_time();
             
-            //COINCIDENCES:
-            if (nHits > 1){
-                for (Int_t ihit2 = ihit+1; ihit2 < nHits; ihit2++){
-                    FatimaTwinpeaksCalData * hit2 = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(ihit2);
-                    if (!(TMath::Abs(hit->Get_fast_lead_time() - hit2->Get_fast_lead_time())<100e3)) continue;
-                    if (hit->Get_detector_id() == 0 && hit2->Get_detector_id() == 1){
-                        h2_fatima_energy_energy->Fill(hit->Get_energy(),hit2->Get_energy());
-                    }else if (hit->Get_detector_id() == 1 && hit2->Get_detector_id() == 0){
-                        h2_fatima_energy_energy->Fill(hit2->Get_energy(),hit->Get_energy());
-                    }
+            int detector_id1 = hit->Get_detector_id();
+            int detector_index1 = GetDetectorIndex(detector_id1);
+            if (detector_index1 >= number_detectors) {continue;} // this implies that the hit corresponds to a detector that is not specified for plotting.
+
+            event_multiplicity ++; // count only "valid events"
+            h1_fatima_slowToT[detector_index1]->Fill(slow_ToT1);
+            h1_fatima_energy[detector_index1]->Fill(energy1);
+            h1_fatima_fastToT[detector_index1]->Fill(fast_ToT1);
+            h2_fatima_fast_v_slow[detector_index1]->Fill(fast_ToT1, slow_ToT1);
+            h1_fatima_abs_time[detector_index1]->Fill(fast_lead1);
+            
+            h2_fatima_energy_vs_detid->Fill(energy1, detector_id1);
+            h2_fatima_energy_uncal_vs_detid->Fill(slow_ToT1, detector_id1);
+            
+            if (fast_ToT1 != 0 ) h1_fatima_hitpattern_fast->Fill(detector_id1);
+            if (slow_ToT1 != 0 ) h1_fatima_hitpattern_slow->Fill(detector_id1);
+            
+            //TWO FOLD COINCIDENCES:
+            if (nHits > 1 && number_reference_detectors > 0){
+                for (Int_t ihit2 = 0; ihit2 < nHits; ihit2++){
+                    if (ihit2 == ihit) {continue;}
+
+                    FatimaTwinpeaksCalData * hit2 = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(ihit2); // I want this to be the reference detector for easier code:
+                    if (!(TMath::Abs(hit->Get_fast_lead_time() - hit2->Get_fast_lead_time())<100)) continue;
                     
-                    h1_fatima_time_differences[hit->Get_detector_id()]->Fill(hit2->Get_fast_lead_time() - hit->Get_fast_lead_time());
-                    
-                    if (hit->Get_detector_id() == 18){
-                        h1_fatima_time_differences_SCI41[hit2->Get_detector_id()]->Fill(hit2->Get_fast_lead_time() - hit->Get_fast_lead_time());
-                        h1_fatima_time_differences_energy_SCI41[hit2->Get_detector_id()]->Fill(hit2->Get_fast_lead_time() - hit->Get_fast_lead_time(),hit2->Get_energy());
-                        if (hit2->Get_detector_id() < 10 ) {
-                            h1_fatima_time_differences_energy_SCI41_sum->Fill(hit2->Get_fast_lead_time() - hit->Get_fast_lead_time(),hit2->Get_energy());
-                            if (hit2->Get_fast_lead_time() - hit->Get_fast_lead_time() > - 305) h1_fatima_time_differences_energy_SCI41_gated->Fill(hit2->Get_energy());
-                        }
-                    }else if (hit2->Get_detector_id() == 18){
-                        h1_fatima_time_differences_SCI41[hit->Get_detector_id()]->Fill(hit->Get_fast_lead_time() - hit2->Get_fast_lead_time());
-                        h1_fatima_time_differences_energy_SCI41[hit->Get_detector_id()]->Fill(hit->Get_fast_lead_time() - hit2->Get_fast_lead_time(),hit->Get_energy());
-                        if (hit->Get_detector_id() < 10 ) {
-                            h1_fatima_time_differences_energy_SCI41_sum->Fill(hit->Get_fast_lead_time() - hit2->Get_fast_lead_time(),hit->Get_energy());
-                            if (hit->Get_fast_lead_time() - hit2->Get_fast_lead_time() > - 305) h1_fatima_time_differences_energy_SCI41_gated->Fill(hit->Get_energy());
-                        }
-                    }
-                    
-                    
-                    
+                    int detector_id2 = hit2->Get_detector_id();
+                    int detector_index2 = GetReferenceDetectorIndex(detector_id2);
+                    if (detector_index2 >= number_reference_detectors) {continue;} // this implies that the hit corresponds to a detector that is not specified as a reference detector.
+
+                    double slow_ToT2 = hit2->Get_slow_ToT();
+                    double fast_ToT2 = hit2->Get_fast_ToT();
+                    double energy2 = hit2->Get_energy();
+                    double fast_lead2 = hit2->Get_fast_lead_time();
+
+                    h1_fatima_time_differences[detector_index2][detector_index1]->Fill(fast_lead1 - fast_lead2);
+                    h2_fatima_time_differences_vs_energy[detector_index2][detector_index1]->Fill(energy1,fast_lead1-fast_lead2);
+
+
+
                 }
             }
-
-            }
         }
+        h1_fatima_multiplicity->Fill(event_multiplicity);
+    }
     fNEvents += 1;
 }
 
@@ -440,7 +440,7 @@ void FatimaOnlineSpectra::FinishTask()
     }
     if (fHitFatimaTwinpeaks)
     {
-        folder_fatima->Write();
+        if(folder_fatima) folder_fatima->Write();
         c4LOG(info, "FATIMA histograms written to file");
     }
 }
