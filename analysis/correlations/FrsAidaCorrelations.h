@@ -3,8 +3,7 @@
 
 #include "TAidaConfiguration.h"
 #include "AidaHitData.h"
-#include "../../config/frs_config.h"
-#include "../../config/NovTest/setup.hh" // we can't be doing this
+#include "../../config/setup.h"
 #include "TCutGGates.h"
 #include "CorrelationsMap.h"
 

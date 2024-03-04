@@ -1,7 +1,7 @@
 #ifndef FrsAnalysisSpectra_H
 #define FrsAnalysisSpectra_H
 
-#include "../../../config/frs_config.h"
+#include "../../../config/setup.h"
 #include "FairTask.h"
 #include "TFRSParameter.h"
 #include "TH2.h"
