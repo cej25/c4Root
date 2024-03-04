@@ -27,5 +27,10 @@
 #pragma link C++ class WhiterabbitCorrelationOnline+;
 
 
+#pragma link C++ class FatimaTimingAnalysis+;
+#pragma link C++ class FatimaSinglesAnalysis+;
+
+//#pragma link C++ class FatimaAidaSpectra+;
+
 
 #endif
