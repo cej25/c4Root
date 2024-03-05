@@ -33,7 +33,7 @@ typedef struct EXT_STR_h101_t
 void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId = 1)
 {   
     // Name your experiment. Make sure all relevant directories are named identically.
-    TString fExpName = "tests"; // "s100";
+    TString fExpName = "NovTest"; // "s100";
 
     // Define important paths.
     TString c4Root_path = "/u/despec/s100_online/c4Root";
@@ -53,9 +53,9 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    TString filename = "stream://x86l-117"
-    //TString filename = "trans://lxg1257"
-    //TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
+    // TString filename = "stream://x86l-117";
+    // TString filename = "trans://lxg1257";
+    TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
