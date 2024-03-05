@@ -37,7 +37,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
 
     // Define important paths.
     TString c4Root_path = "/u/despec/s100_online/c4Root";
-    TString ucesb_path = c4Root_path + "/unpack/exps" + fExpName + "/" + fExpName + "--allow-errors --input-buffer=200Mi --event-sizes";
+    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --allow-errors --input-buffer=200Mi --event-sizes";
     ucesb_path.ReplaceAll("//","/");
 
     TString cRunId = Form("%04d", fRunId);
@@ -70,7 +70,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     run->ActivateHttpServer(refresh, port);
 
     // Create source using ucesb for input
-    EXT_STR_h101_ucesb_struct;
+    EXT_STR_h101 ucesb_struct;
     TString ntuple_options = "UNPACK"; // Define which level of data to unpack
     UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
     source->SetMaxEvents(nev);
@@ -111,7 +111,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     std::vector<TCutGGates*> FrsGates = {ZAoQ, Z1Z2, x2AoQ, x4AoQ, dEdegZ};
     
     // Define prompt cut EdT gates for Fatima Prompt analysis
-    fatima_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Gates/";
+    std::string fatima_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Gates/";
     std::vector<std::string> FatimaPromptCuts = {"FatPromptCut1"};
     TCutGGates* FatimaPrompt = new TCutGGates("FatimaEdT", FatimaPromptCuts, fatima_gate_path);
 
@@ -132,7 +132,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     // FATIMA
     FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
     unpackfatima->SetInputFileFineTimeHistos(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fine_time_histos_111223_fatima.root");
-    // unpackfatima->DoFineTimeCalOnline(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fine_time_histos_111223_fatima.root", 5000000);
+    // unpackfatima->DoFineTimeCalOnline(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fine_time_histos_111223_fatima.root", 50000);
     
     // AIDA
     // TAidaConfiguration::SetBasePath(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/AIDA");
