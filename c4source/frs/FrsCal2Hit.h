@@ -1,6 +1,7 @@
 #ifndef FrsCal2Hit_H
 #define FrsCal2Hit_H
 
+#include "../../config/setup.h"
 #include "FairTask.h"
 #include "TFRSParameter.h"
 #include "TClonesArray.h"
