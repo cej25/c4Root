@@ -4,7 +4,7 @@
 #include "FairTask.h"
 #include "TH1.h"
 #include "TH2.h"
-#include "../../../config/frs_config.h"
+#include "../../../config/setup.h"
 
 class TClonesArray;
 class EventHeader;

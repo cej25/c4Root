@@ -19,7 +19,6 @@
 #include <iostream>
 #include <TROOT.h>
 
-#include "../../config/frs_config.h"
 #define MUSIC_ANA_NEW
 
 FrsCal2Hit::FrsCal2Hit(TFRSParameter* ffrs,

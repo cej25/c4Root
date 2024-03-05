@@ -7,7 +7,6 @@
 #include "AidaHitData.h"
 #include "TAidaConfiguration.h"
 #include "c4Logger.h"
-#include "../../config/frs_config.h"
 
 #include <vector>
 
@@ -266,7 +265,7 @@ void FrsAidaCorrelations::Exec(Option_t* option)
                 
                 if (hit.Time > 0 && FrsHit->Get_wr_t() > 0) h1_AidaImplant_FRS_dT->Fill(hit.Time - FrsHit->Get_wr_t());
 
-                if (hit.Time - FrsHit->Get_wr_t() > FRS_AIDA_WR_GATE_LOW && hit.Time - FrsHit->Get_wr_t() < FRS_AIDA_WR_GATE_HIGH)
+                if (hit.Time - FrsHit->Get_wr_t() > (*Correl)["FRS_AIDA_WR"][0] && hit.Time - FrsHit->Get_wr_t() < (*Correl)["FRS_AIDA_WR"][0])
                 {
                     h2_AidaImplant_FRS_x_vs_x4->Fill(hit.PosX, FrsHit->Get_ID_x4());
 
