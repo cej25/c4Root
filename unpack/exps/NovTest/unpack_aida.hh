@@ -1,7 +1,7 @@
 #ifndef __AIDA_UNPACK__
 #define __AIDA_UNPACK__
 
-#include "../../../config/NovTest/setup.hh"
+#include "../../../config/setup.h"
 
 #include "data_src.hh"
 #include "dummy_external.hh"
