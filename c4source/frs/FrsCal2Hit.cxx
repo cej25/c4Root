@@ -53,6 +53,7 @@ FrsCal2Hit::FrsCal2Hit(TFRSParameter* ffrs,
     si = fsi;
     mrtof = fmrtof;
     range = frange;
+    expName = fExpName;
 }
 
 FrsCal2Hit::FrsCal2Hit(const TString& name, Int_t verbose)
@@ -109,7 +110,7 @@ InitStatus FrsCal2Hit::Init()
     mgr->Register("FrsHitData", "FRS Hit Data", fHitArray, !fOnline);
     mgr->Register("EventData", "Event Data", fEventItems, !fOnline);
 
-    Setup_Conditions("../../config/" + fExpName + "/frs/");
+    Setup_Conditions("../../config/" + expName + "/frs/");
     c4LOG_IF(fatal,!conditions_files_read, "You must set FrsCal2Hit->Setup_Conditions('your file path') to the folder containing the frs condition gates.");
     
     fCalArrayMain->Clear();
