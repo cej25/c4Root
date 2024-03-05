@@ -9,7 +9,7 @@
 #define FRS_ON 0
 #define TIME_MACHINE_ON 0
 
-// Define FRS setup.C file - FRS should provide; place in /config/{expName}/
+// Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
 {
     #include "../../config/NovTest/frs/setup.C"
@@ -55,7 +55,8 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     // TString filename = "stream://x86l-117";
     // TString filename = "trans://lxg1257";
-    TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
+    // TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
+    TString filename = "~/lustre/nustar/profi/r3b_s118feb24/S118-33_0116.lmd"
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
