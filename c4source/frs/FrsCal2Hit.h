@@ -33,7 +33,9 @@ class FrsCal2Hit : public FairTask
                 TIDParameter* fid,
                 TSIParameter* fsi,
                 TMRTOFMSParameter* fmrtof,
-                TRangeParameter* frange);
+                TRangeParameter* frange,
+                TString& fExpName);
+
         FrsCal2Hit(const TString& name, Int_t verbose);
 
         virtual ~FrsCal2Hit();
@@ -65,6 +67,7 @@ class FrsCal2Hit : public FairTask
     private:
 
         Bool_t fOnline;
+        TString expName;
 
         TClonesArray* fCalArrayMain;
         TClonesArray* fCalArrayTPC;

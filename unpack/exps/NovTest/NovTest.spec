@@ -4,7 +4,7 @@
 #include "../../common/gsi_tamex4.spec"
 #include "../../common/gsi_febex4.spec"
 #include "../../common/frs.spec"
-#include "../../../config/NovTest/setup.hh" 
+#include "../../../config/setup.h" 
 
 
 external EXT_AIDA();
@@ -141,7 +141,7 @@ EVENT
     // germanium = febex_subev(type = 10, subtype = 1, procid = 60, control = 20);
     
     fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = 75, control = 20, subcrate = 0);
-    bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20, subcrate = 0);
+    // bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20, subcrate = 0);
 
     // frsmain = frs_main_subev(procid = 10);
     // frstpc = frs_tpc_subev(procid = 20);
