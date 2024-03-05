@@ -64,8 +64,8 @@ SUBEVENT(bplast_subev)
         tamex[0] = TAMEX4_SFP(sfp=0,card=0);
         tamex[1] = TAMEX4_SFP(sfp=0,card=1);
         tamex[2] = TAMEX4_SFP(sfp=0,card=2);
-        // tamex[3] = TAMEX4_SFP(sfp=0,card=3);
-        // tamex[4] = TAMEX4_SFP(sfp=0,card=4);
+        tamex[3] = TAMEX4_SFP(sfp=0,card=3);
+        tamex[4] = TAMEX4_SFP(sfp=0,card=4);
     }  
 }
 
@@ -137,16 +137,16 @@ EVENT
 {   
     // CEJ: UNCOMMENT SUBEVENTS YOU'RE INTERESTED IN HERE
     
-    // revisit aida = aida_subev(type = 10, subtype = 1, procid = 90, control = 37);
+    revisit aida = aida_subev(type = 10, subtype = 1, procid = 90, control = 37);
     // germanium = febex_subev(type = 10, subtype = 1, procid = 60, control = 20);
     
     fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = 75, control = 20, subcrate = 0);
-    // bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20, subcrate = 0);
+    bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20, subcrate = 0);
 
-    // frsmain = frs_main_subev(procid = 10);
-    // frstpc = frs_tpc_subev(procid = 20);
-    // frsuser = frs_user_subev(procid = 30);
-    // frsvftx = frs_vftx_subev(procid = 40);
+    frsmain = frs_main_subev(procid = 10);
+    frstpc = frs_tpc_subev(procid = 20);
+    frsuser = frs_user_subev(procid = 30);
+    frsvftx = frs_vftx_subev(procid = 40);
 
     ignore_unknown_subevent;
 };
