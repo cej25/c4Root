@@ -7,6 +7,12 @@ if [ $# -eq 0 ]; then
 fi
 
 
+if [ -d "config/$1" ]; then
+    echo "Experiment "$1" already exists. Aborting."
+    exit 1
+fi
+
+
 # Create directories and files
 mkdir -p config/"$1"
 mkdir -p config/"$1"/{AIDA,bplast,fatima,frs,germanium}
