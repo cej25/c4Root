@@ -36,8 +36,10 @@ ZERO_FILLER()
 // procID = 10
 MAIN_CRATE_DATA()
 {
-
-    barrier[0] = BARRIER();
+    select optional
+    {
+       barrier0 = BARRIER();
+    }
     v830 = VME_CAEN_V830_FRS();
     
     filler[0] = ZERO_FILLER();
@@ -46,6 +48,7 @@ MAIN_CRATE_DATA()
 
     barrier[2] = BARRIER();
     v1290 = VME_CAEN_V1290_FRS();
+    optional UINT32 eodb NOENCODE;
 
 }
 
