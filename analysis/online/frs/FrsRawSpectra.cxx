@@ -386,10 +386,10 @@ void FrsRawSpectra::Exec(Option_t* option)
 
 void FrsRawSpectra::FinishEvent()
 {
-    if (fHitFrsMainRaw)
+    /*if (fHitFrsMainRaw)
     {
         fHitFrsMainRaw->Clear();
-    }
+    }*/
 }
 
 
