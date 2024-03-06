@@ -274,7 +274,8 @@ void bPlastRaw2Cal::Exec(Option_t* option){
                 detector_position = result_find->second.second.second;
                 if (detector_id == -1) {fNunmatched++; continue;} //if only one event is left
                 }else{
-                    c4LOG(fatal, "Detector mapping not complete - exiting.");
+                    //c4LOG(warn, "Detector mapping not complete! CEJ: Warning only for now.");
+                    return;
                 }
             }
             else{ //no map and cal: ->

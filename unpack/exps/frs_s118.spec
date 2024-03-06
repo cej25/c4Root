@@ -1,11 +1,11 @@
-#include "vme_caen_v1x90.spec"
-#include "vme_caen_v830.spec"
-#include "vme_caen_v792.spec"
-#include "vme_caen_v7x5.spec"
-#include "mesytec_mqdc32.spec"
-#include "mesytec_mtdc32.spec"
-#include "sis3820_scalers.spec"
-#include "gsi_vftx2.spec"
+#include "../../common/vme_caen_v1x90.spec"
+#include "../../common/vme_caen_v830.spec"
+#include "../../common/vme_caen_v792.spec"
+#include "../../common/vme_caen_v7x5.spec"
+#include "../../common/mesytec_mqdc32.spec"
+#include "../../common/mesytec_mtdc32.spec"
+#include "../../common/sis3820_scalers.spec"
+#include "../../common/gsi_vftx2.spec"
 
 TRIG3EVENT()
 {
@@ -36,16 +36,26 @@ ZERO_FILLER()
 // procID = 10
 MAIN_CRATE_DATA()
 {
-
+    
     barrier[0] = BARRIER();
     v830 = VME_CAEN_V830_FRS();
     
     filler[0] = ZERO_FILLER();
+
     barrier[1] = BARRIER();
     v792 = VME_CAEN_V792_FRS();
 
+    // r3b
+    UINT32 aaahhh NOENCODE
+    {
+        0_31: 0xaaaa1290;
+    };
+    UINT32 exxxxx NOENCODE;
+    // r3b
+
     barrier[2] = BARRIER();
     v1290 = VME_CAEN_V1290_FRS();
+    optional UINT32 eodb NOENCODE;
 
 }
 
@@ -60,6 +70,15 @@ TPC_CRATE_DATA()
     v785 = VME_CAEN_V7X5_FRS();
 
     // caen v1190
+
+    // r3b
+    UINT32 aaahhh NOENCODE
+    {
+        0_31: 0xaaaa1190;
+    };
+    UINT32 exxxxx NOENCODE;
+    // r3b
+
     barrier[2] = BARRIER();
     v1190 = VME_CAEN_V1190_FRS();
 }
