@@ -1,11 +1,11 @@
-#include "vme_caen_v1x90.spec"
-#include "vme_caen_v830.spec"
-#include "vme_caen_v792.spec"
-#include "vme_caen_v7x5.spec"
-#include "mesytec_mqdc32.spec"
-#include "mesytec_mtdc32.spec"
-#include "sis3820_scalers.spec"
-#include "gsi_vftx2.spec"
+#include "../../common/vme_caen_v1x90.spec"
+#include "../../common/vme_caen_v830.spec"
+#include "../../common/vme_caen_v792.spec"
+#include "../../common/vme_caen_v7x5.spec"
+#include "../../common/mesytec_mqdc32.spec"
+#include "../../common/mesytec_mtdc32.spec"
+#include "../../common/sis3820_scalers.spec"
+#include "../../common/gsi_vftx2.spec"
 
 TRIG3EVENT()
 {

@@ -3,7 +3,7 @@
 #include "../../common/whiterabbit.spec"
 #include "../../common/gsi_tamex4.spec"
 #include "../../common/gsi_febex4.spec"
-#include "../../common/frs.spec"
+#include "frs_NovTest.spec"
 #include "../../../config/setup.h" 
 
 
