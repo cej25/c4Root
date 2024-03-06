@@ -231,6 +231,14 @@ void run_frs_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     run->AddTask(calfrsuser);
     run->AddTask(calfrsvftx);
 
+    // ---------------------------------------------------------------------------------------- //
+    // *** Analyse Subsystem Hits ************************************************************* //
+    
+    // AIDA
+    // AidaCal2Hit* aidaHitter = new AidaCal2Hit();
+ 
+    // FRS
+    // FrsCal2Hit* hitfrs = new FrsCal2Hit(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
 
     // ---------------------------------------------------------------------------------------- //
     // *** Analyse Subsystem Hits ************************************************************* //

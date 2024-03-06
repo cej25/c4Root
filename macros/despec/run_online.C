@@ -9,7 +9,7 @@
 #define FRS_ON 0
 #define TIME_MACHINE_ON 0
 
-// Define FRS setup.C file - FRS should provide; place in /config/{expName}/
+// Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
 {
     #include "../../config/NovTest/frs/setup.C"
