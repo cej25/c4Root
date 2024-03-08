@@ -32,7 +32,7 @@
 #pragma link C++ class BeamMonitorReader+;
 #pragma link C++ class FatimaReader+;
 #pragma link C++ class FatimaRaw2Cal+;
-#pragma link C++ class FatimaVmeReader+;
+//#pragma link C++ class FatimaVmeReader+;
 //#pragma link C++ class FatimaVmeRaw2Cal+;
 
 #pragma link C++ class EXT_STR_h101_unpack_t;

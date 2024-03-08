@@ -14,6 +14,7 @@
 
 #include "TClonesArray.h"
 #include "ext_data_struct_info.hh"
+#include <vector>
 
 extern "C"
 {
@@ -80,8 +81,12 @@ Bool_t FatimaVmeReader::Read()
 
     // currently nothing is being done with Scalers, so ignore for now
 
-
-    #define QDC_BOARDS 5 // quick lazy testing only, put in some config
+    std::vector<uint32_t> qdc_detectors;
+    std::vector<uint32_t> QDC_time_coarse;
+    std::vector<uint64_t> QDC_time_fine;
+    std::vector<uint32_t> QLong_raw;
+    std::vector<uint32_t> QShort_raw;
+    int qdcs_fired = 0;
     for (int qdc = 0; qdc < QDC_BOARDS; qdc++)
     {
         Int_t board_id = fData->fatimavme_qdc[qdc].board_id;
@@ -90,50 +95,71 @@ Bool_t FatimaVmeReader::Read()
         FatimaHit->Set_board_time(qdc, board_time);
         Int_t channel_mask = fData->fatimavme_qdc[qdc].channels;
         std::vector<int> channels_fired = Get_Channels(channel_mask);
-        FatimaHit->Set_num_channels_fired(qdc, channels_fired.size());
+        //FatimaHit->Set_num_channels_fired(qdc, channels_fired.size());
 
         for (uint32_t channel = 0; channel < channels_fired.size(); channel++)
-        {
-            uint32_t QDC_time_coarse = fData->fatimavme_qdc[qdc].channel_timev[channel];
-            FatimaHit->Set_channel_time_coarse(qdc, channels_fired[channel], QDC_time_coarse);
+        {   
+            qdc_detectors.emplace_back(qdc_dets[std::make_pair(board_id, channels_fired[channel])]);
 
-            double QDC_time_fine = (uint64_t)fData->fatimavme_qdc[qdc].channel_timev[channel] + ((uint64_t)(fData->fatimavme_qdc[qdc].chan_ext_timev[channel]) << 32) + fData->fatimavme_qdc[qdc].chan_fine_timev[channel] / 1024.;
-            FatimaHit->Set_channel_time_fine(qdc, channels_fired[channel], QDC_time_fine);
+            QDC_time_coarse.emplace_back(fData->fatimavme_qdc[qdc].channel_timev[channel]);
+            //FatimaHit->Set_channel_time_coarse(qdc, channels_fired[channel], QDC_time_coarse);
 
-            uint32_t QLong_raw = fData->fatimavme_qdc[qdc].qlongv[channel];
-            FatimaHit->Set_channel_QLong(qdc, channels_fired[channel], QLong_raw);
+            QDC_time_fine.emplace_back((uint64_t)fData->fatimavme_qdc[qdc].channel_timev[channel] + ((uint64_t)(fData->fatimavme_qdc[qdc].chan_ext_timev[channel]) << 32) + fData->fatimavme_qdc[qdc].chan_fine_timev[channel] / 1024.);
+            //FatimaHit->Set_channel_time_fine(qdc, channels_fired[channel], QDC_time_fine);
 
-            uint32_t QShort_raw = fData->fatimavme_qdc[qdc].qshortv[channel];
-            FatimaHit->Set_channel_QShort(qdc, channels_fired[channel], QShort_raw);
+            QLong_raw.emplace_back(fData->fatimavme_qdc[qdc].qlongv[channel]);
+            //FatimaHit->Set_channel_QLong(qdc, channels_fired[channel], QLong_raw);
 
+            QShort_raw.emplace_back(fData->fatimavme_qdc[qdc].qshortv[channel]);
+            //FatimaHit->Set_channel_QShort(qdc, channels_fired[channel], QShort_raw);
+
+            qdcs_fired++;
         }
 
     }
 
-    #define TDC_BOARDS 2 // quick lazy testing only, put in some config
+    FatimaHit->Set_QDC_detector(qdc_detectors);
+    FatimaHit->Set_QDC_coarse_time(QDC_time_coarse);
+    FatimaHit->Set_QDC_fine_time(QDC_time_fine);
+    FatimaHit->Set_QLong_raw(QLong_raw);
+    FatimaHit->Set_QShort_raw(QShort_raw);
+    FatimaHit->Set_QDCs_fired(qdcs_fired);
+
+    int tdcs_fired = 0;
+    std::vector<uint32_t> tdc_detectors;
+    std::vector<uint32_t> v1290_data;
+    std::vector<uint32_t> v1290_lot;
     for (int tdc = 0; tdc < TDC_BOARDS; tdc++)
     {
+        int geo = fData->fatimavme_tdc[tdc]._geo;
+
         int hit_index = 0;
         for (uint32_t channel_index = 0; channel_index < fData->fatimavme_tdc[tdc]._nM; channel_index++)
         {
             int current_channel = fData->fatimavme_tdc[tdc]._nMI[channel_index]; // channel to read now!
             int next_channel_start = fData->fatimavme_tdc[tdc]._nME[channel_index];
 
+            int current_detector = tdc_dets[std::make_pair(geo, current_channel)];
+
             for (uint32_t j = hit_index; j < next_channel_start; j++)
             {
-                v1290_channel.emplace_back(current_channel);
+                tdc_detectors.emplace_back(current_detector);
                 v1290_data.emplace_back(fData->fatimavme_tdc[tdc]._data[j]);
                 v1290_lot.emplace_back(fData->fatimavme_tdc[tdc]._leadOrTrailv[j]);
+
+                tdcs_fired++;
             }
 
             hit_index = next_channel_start;
 
         }
 
-        FatimaHit->Set_v1290_channel(tdc, v1290_channel);
-        FatimaHit->Set_v1290_data(tdc, v1290_data);
-        FatimaHit->Set_v1290_lot(tdc, v1290_lot);
     }
+
+    FatimaHit->Set_TDC_detector(tdc_detectors); // presumably tdc detector == qdc detector? 
+    FatimaHit->Set_v1290_data(v1290_data);
+    FatimaHit->Set_v1290_lot(v1290_lot);
+    FatimaHit->Set_TDCs_fired(tdcs_fired); // possibly unnecessary
     
 
 
@@ -148,6 +174,34 @@ Bool_t FatimaVmeReader::Read()
     return kTRUE;
 
 
+}
+
+void FatimaVmeReader::Set_Allocation(TString& filepath)
+{
+    std::ifstream file(filepath);
+    
+    std::string line;
+    while (std::getline(file, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+        
+        std::istringstream iss;
+        int det, qdc_board, qdc_chan, tdc_board, tdc_chan;
+
+        if (line[0] == "TimeMachineU") iss >> TM_Undelayed >> qdc_board >> qdc_chan >> tdc_board >> tdc_chan;
+        else if (line[0] == "TimeMachineD") iss >> TM_Delayed >> qdc_board >> qdc_chan >> tdc_board >> tdc_chan;
+        else if (line[0] == "SC41L_A") iss >> SC41L_A >> qdc_board >> qdc_chan >> tdc_board >> tdc_chan;
+        else if (line[0] == "SC41R_A") iss >> SC41R_A >> qdc_board >> qdc_chan >> tdc_board >> tdc_chan;
+        else if (line[0] == "SC41L_D") iss >> SC41L_D >> qdc_board >> qdc_chan >> tdc_board >> tdc_chan;
+        else if (line[0] == "SC41R_D") iss >> SC41R_D >> qdc_board >> qdc_chan >> tdc_board >> tdc_chan;
+        else
+        {
+            if (!(iss >> det >> qdc_board >> qdc_chan >> tdc_board >> tdc_chan)) break;
+            qdc_dets[std::make_pair(qdc_board, qdc_chan)] = det;
+            tdc_dets[std::make_pair(tdc_board, tdc_chan)] = det;
+        }
+    }
+    
 }
 
 

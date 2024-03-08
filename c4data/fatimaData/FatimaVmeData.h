@@ -2,9 +2,7 @@
 #define FatimaVmeData_H
 
 #include "TObject.h"
-
-#define QDC_BOARDS 5
-#define CHANNELS_PER_QDC 8
+#include "../../config/setup.h"
 
 class FatimaVmeData : public TObject
 {

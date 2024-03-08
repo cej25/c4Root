@@ -2,12 +2,20 @@
 #define FatimaVmeRaw2Cal_H
 
 #include "FairTask.h"
+#include "FatimaVmeData.h"
+#include "FatimaVmeCalData.h"
+#include "../../config/setup.h"
+
+#include <vector>
+
+
 
 class TClonesArray;
 class EventHeader;
 class FatimaVmeData;
 class FatimaVmeCalData;
 //class TimeMachineData;
+class vector;
 
 class FatimaVmeRaw2Cal : public FairTask
 {

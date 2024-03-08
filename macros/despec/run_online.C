@@ -55,7 +55,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     // TString filename = "stream://x86l-117";
     // TString filename = "trans://lxg1257";
-    TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_002*_0001.lmd";
+    TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd ~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0025_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
