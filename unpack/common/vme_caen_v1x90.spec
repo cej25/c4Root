@@ -1,15 +1,18 @@
 #define MEMBERS \
     MEMBER(DATA24 data[128] ZERO_SUPPRESS_MULTI(128)); \
-    MEMBER(DATA8 leadOrTrail[128] ZERO_SUPPRESS_MULTI(128));
+    MEMBER(DATA8 leadOrTrail[128] ZERO_SUPPRESS_MULTI(128)); \
+    MEMBER(DATA8 geo);
 
 
 #define PARAMS_DEF \
     data, \
-    leadOrTrail
+    leadOrTrail, \
+    geo
 
 #define PARAMS \
     data = data, \
-    leadOrTrail = leadOrTrail
+    leadOrTrail = leadOrTrail, \
+    geo = geo
 
 TDC_HEADER()
 {   
@@ -91,6 +94,7 @@ VME_CAEN_V1290_FRS()
         0_4: geo;
         5_26: event_count;
         27_31: 0b01000;
+        ENCODE(geo, (value = geo));
     };
 
     select several
@@ -138,6 +142,7 @@ VME_CAEN_V1190_FRS()
         0_4: geo;
         5_26: event_count;
         27_31: seven_f; // 0b01000; // if global header
+        ENCODE(geo, (value = geo));
     };
 
     if (header.seven_f != 0b01000)
