@@ -78,7 +78,7 @@ Set(STRUCT_HEADERS
 ./lisa/ext_h101_lisa.h
 ./germanium/ext_h101_germanium.h
 ./bplast/ext_h101_bplast.h
-./beammonitor/ext_h101_bm.h
+./beammonitor/ext_h101_beammonitor.h
 ./fatima/ext_h101_fatima.h
 ./fatima/ext_h101_fatimavme.h
 )
