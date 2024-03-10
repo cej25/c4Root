@@ -4,6 +4,14 @@
 // general
 #define NO_UINT64 1 // define until uint64 unpacking is supported
 
+// "detector" numbers, pick some large int that won't overlap with mappings
+#define TM_U 1000
+#define TM_D 1001
+#define SC41L_A 1002
+#define SC41R_A 1003
+#define SC41L_D 1004
+#define SC41R_D 1005
+
 // fatima tamex
 #define MAX_CHA_INPUT 33
 

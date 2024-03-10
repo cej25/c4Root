@@ -11,6 +11,7 @@
 #pragma link C++ class FatimaTwinpeaksData+;
 #pragma link C++ class FatimaTwinpeaksCalData+;
 #pragma link C++ class FatimaVmeData+;
+#pragma link C++ class FatimaVmeCalData+;
 
 #pragma link C++ class bPlastTwinpeaksData+;
 #pragma link C++ class bPlastTwinpeaksCalData+;

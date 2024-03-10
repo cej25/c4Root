@@ -265,7 +265,7 @@ void FrsAidaCorrelations::Exec(Option_t* option)
                 
                 if (hit.Time > 0 && FrsHit->Get_wr_t() > 0) h1_AidaImplant_FRS_dT->Fill(hit.Time - FrsHit->Get_wr_t());
 
-                if (hit.Time - FrsHit->Get_wr_t() > (*Correl)["FRS_AIDA_WR"][0] && hit.Time - FrsHit->Get_wr_t() < (*Correl)["FRS_AIDA_WR"][0])
+                if (hit.Time - FrsHit->Get_wr_t() > (*Correl)["FRS-AIDA WR Gate"][0] && hit.Time - FrsHit->Get_wr_t() < (*Correl)["FRS-AIDA WR Gate"][1])
                 {
                     h2_AidaImplant_FRS_x_vs_x4->Fill(hit.PosX, FrsHit->Get_ID_x4());
 
