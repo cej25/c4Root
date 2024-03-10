@@ -64,8 +64,8 @@ set(SRCS
 ./germanium/GermaniumRaw2Cal.cxx
 ./fatima/FatimaReader.cxx
 ./fatima/FatimaRaw2Cal.cxx
-#./fatima/FatimaVmeReader.cxx
-#./fatima/FatimaVmeRaw2Cal.cxx
+./fatima/FatimaVmeReader.cxx
+./fatima/FatimaVmeRaw2Cal.cxx
 )
 
 Set(STRUCT_HEADERS

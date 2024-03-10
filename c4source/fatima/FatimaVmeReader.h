@@ -4,9 +4,13 @@
 #include "c4Reader.h"
 #include "FatimaVmeData.h"
 #include "../../config/setup.h"
+#include <unordered_map>
+#include <map>
+#include <set>
 
 #include <Rtypes.h>
 #include <vector>
+#include <iostream>
 
 extern "C"
 {
@@ -15,7 +19,7 @@ extern "C"
 
 class TClonesArray;
 class FatimaVmeData;
-class vector;
+// class vector;
 
 struct EXT_STR_h101_fatimavme_t;
 typedef struct EXT_STR_h101_fatimavme_t EXT_STR_h101_fatimavme;
@@ -60,8 +64,11 @@ class FatimaVmeReader : public c4Reader
 
         TClonesArray* fArray;
 
-        std::unordered_map<std::pair<int, int>, int> dets_qdc;
-        std::unordered_map<std::pair<int, int>, int> dets_tdc;
+        std::map<std::pair<int, int>, int> dets_qdc;
+        std::map<std::pair<int, int>, int> dets_tdc;
+        std::set<int> extra_signals = {TM_U, TM_D, SC41L_A, SC41R_A, SC41L_D, SC41R_D};
+        int num_qdc_boards;
+        int num_tdc_boards;
 
         // bunch of stuff we might need
         
