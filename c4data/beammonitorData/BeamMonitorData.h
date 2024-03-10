@@ -2,6 +2,7 @@
 #define BeamMonitorData_H
 
 #include "TObject.h"
+#include <vector>
 
 class BeamMonitorData : public TObject
 {
@@ -9,23 +10,21 @@ class BeamMonitorData : public TObject
         // Default Constructor
         BeamMonitorData();
 
-        BeamMonitorData(UInt_t S2, UInt_t S4);
-
         // Destructor
         virtual ~BeamMonitorData() {};
 
         // Getters
-        inline const UInt_t GetS2Data() const { return dtS2; }
-        inline const UInt_t GetS4Data() const { return dtS4; }
+        inline const std::vector<uint32_t> Get_S2_data() const { return dtS2; }
+        inline const std::vector<uint32_t> Get_S4_data() const { return dtS4; }
 
         // Setters
-        void SetS2Data(UInt_t v) { dtS2 = v; }
-        void SetS4Data(UInt_t v) { dtS4 = v; }
+        void Set_S2_data(std::vector<uint32_t> data) { dtS2 = data; }
+        void Set_S4_data(std::vector<uint32_t> data) { dtS4 = data; }
 
     protected:
         // Data items
-        UInt_t dtS2;
-        UInt_t dtS4;
+        std::vector<uint32_t> dtS2;
+        std::vector<uint32_t> dtS4;
     
 
     public:
