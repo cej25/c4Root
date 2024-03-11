@@ -274,7 +274,7 @@ void bPlastRaw2Cal::Exec(Option_t* option){
                 detector_position = result_find->second.second.second;
                 if (detector_id == -1) {fNunmatched++; continue;} //if only one event is left
                 }else{
-                    //c4LOG(warn, "Detector mapping not complete! CEJ: Warning only for now.");
+                    c4LOG(warn, "Detector mapping not complete!");
                     return;
                 }
             }
@@ -310,13 +310,15 @@ void bPlastRaw2Cal::Exec(Option_t* option){
             
             if (((detector_id == time_machine_delayed_detector_id) || (detector_id == time_machine_undelayed_detector_id)) && time_machine_delayed_detector_id!=0 && time_machine_undelayed_detector_id!=0){ // currently only gets the TM if it also matches it slow-fast...
                 new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData((detector_id==time_machine_undelayed_detector_id) ? (fast_lead_time) : (0), (detector_id==time_machine_undelayed_detector_id) ? (0) : (fast_lead_time), funcal_hit->Get_wr_subsystem_id(), funcal_hit->Get_wr_t() );
-                //continue; //cej: i think this line skips everything if it finds TM - jel: yes :)
+                //continue; //cej: i think this line skips everything if it finds TM - jel: yes :) 
             }
 
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) bPlastTwinpeaksCalData(
                 funcal_hit->Get_board_id(),
                 (int)((funcal_hit->Get_ch_ID()+1)/2),
                 detector_id,
+                detector_stream,
+                detector_position,
                 slow_lead_time,
                 slow_trail_time,
                 fast_lead_time,
