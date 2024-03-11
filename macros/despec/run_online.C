@@ -1,6 +1,7 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
+// CEJ !! NOT IMPLEMENTED YET !!
 #define FATIMA_ON 1
 #define FATIMA_VME_ON 0
 #define AIDA_ON 0
