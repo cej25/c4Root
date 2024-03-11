@@ -1,6 +1,6 @@
 typedef struct EXT_STR_h101_t
 {   
-    EXT_STR_h101_BM_onion_t beammonitor;
+    EXT_STR_h101_beammonitor_onion_t beammonitor;
 } EXT_STR_h101;
 
 void run_bm_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId = 1)
@@ -28,7 +28,8 @@ void run_bm_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fEx
     Int_t port = 5999;
      
     TString ntuple_options = "UNPACK";
-    TString ucesb_dir = getenv("UCESB_DIR"); // .bashrc
+   //TString ucesb_dir = getenv("UCESB_DIR"); // .bashrc
+    TString ucesb_dir = "~/c4Root/unpack/exps";
     TString ucesb_path = ucesb_dir + "/beammonitor/beammonitor --allow-errors --input-buffer=200Mi";
     ucesb_path.ReplaceAll("//","/");
 
@@ -47,7 +48,7 @@ void run_bm_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fEx
     UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
     source->SetMaxEvents(nev);
    
-    BeamMonitorReader* unpackbeammonitor = new BeamMonitorReader((EXT_STR_h101_BM_onion*)&ucesb_struct.beammonitor, offsetof(EXT_STR_h101, beammonitor));
+    BeamMonitorReader* unpackbeammonitor = new BeamMonitorReader((EXT_STR_h101_beammonitor_onion*)&ucesb_struct.beammonitor, offsetof(EXT_STR_h101, beammonitor));
 
     // Add readers
     unpackbeammonitor->SetOnline(false);
