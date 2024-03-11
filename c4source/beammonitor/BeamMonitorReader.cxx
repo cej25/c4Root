@@ -13,12 +13,12 @@
 extern "C"
 {
     #include "ext_data_client.h"
-    #include "ext_h101_bm.h"
+    #include "ext_h101_beammonitor.h"
 }
 
 #define UINT_MAX 4294967295
 
-BeamMonitorReader::BeamMonitorReader(EXT_STR_h101_BM_onion* data, size_t offset)
+BeamMonitorReader::BeamMonitorReader(EXT_STR_h101_beammonitor_onion* data, size_t offset)
     : c4Reader("BeamMonitorReader")
     , fNEvent(0)
     , fData(data)
@@ -35,7 +35,7 @@ Bool_t BeamMonitorReader::Init(ext_data_struct_info* a_struct_info)
     Int_t ok;
     c4LOG(info, "");
 
-    EXT_STR_h101_BM_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_BM, 0);
+    EXT_STR_h101_beammonitor_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_beammonitor, 0);
 
     if (!ok)
     {
@@ -56,12 +56,17 @@ Bool_t BeamMonitorReader::Read()
 {
     c4LOG(debug1, "Event Data");
 
+    BeamMonitorData* BeamMonitorHit = new BeamMonitorData();
+
     // read / manipulate data.
     // S4 for now -- deal with S2 later.
-    UInt_t ts_prev_S4 = 0;
-    UInt_t ts_curr_S4 = 0;
-    UInt_t ts_diff_S4 = 0;
-    UInt_t ts_first_S4 = 1;
+    uint32_t ts_prev_S4 = 0;
+    uint32_t ts_curr_S4 = 0;
+    uint32_t ts_diff_S4 = 0;
+    uint32_t ts_first_S4 = 1;
+
+    std::vector<uint32_t> dtS4;
+
     for (int hit = 0; hit < fData->beammonitor_dataS4; hit++)
     {   
         ts_curr_S4 = fData->beammonitor_dataS4v[hit];
@@ -81,12 +86,20 @@ Bool_t BeamMonitorReader::Read()
         }
         else
         {
-            new ((*fArray)[fArray->GetEntriesFast()]) BeamMonitorData(0, ts_diff_S4);
+
+            dtS4.emplace_back(ts_diff_S4);
+
+            //new ((*fArray)[fArray->GetEntriesFast()]) BeamMonitorData(0, ts_diff_S4);
         }
+        
 
         ts_prev_S4 = ts_curr_S4;
 
     }
+
+    BeamMonitorHit->Set_S4_data(dtS4);
+
+    new ((*fArray)[fArray->GetEntriesFast()]) BeamMonitorData(*BeamMonitorHit);
 
     fNEvent += 1;
     return kTRUE;

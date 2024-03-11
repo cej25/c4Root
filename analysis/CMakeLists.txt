@@ -20,6 +20,7 @@ ${C4ROOT_SOURCE_DIR}/analysis
 ${C4ROOT_SOURCE_DIR}/analysis/pars
 ${C4ROOT_SOURCE_DIR}/analysis/offline
 ${C4ROOT_SOURCE_DIR}/analysis/fatima_aida_correlations
+${C4ROOT_SOURCE_DIR}/analysis/fatima
 ${C4ROOT_SOURCE_DIR}/analysis/online
 ${C4ROOT_SOURCE_DIR}/analysis/online/frs
 ${C4ROOT_SOURCE_DIR}/correlations
@@ -54,6 +55,14 @@ set(SRCS
 ./correlations/FrsAidaCorrelations.cxx
 ./correlations/FrsFatimaCorrelations.cxx
 ./correlations/AidaFatimaCorrelations.cxx
+#./online/frs/FrsDetectorsOnline.cxx
+#./fatima_aida_correlations/FatimaAidaSpectra.cxx
+./online/fatima/FatimaTimingAnalysis.cxx
+./online/fatima/FatimaSinglesAnalysis.cxx
+#./online/TimeMachineOnline.cxx
+#nearline
+# ./nearline/bPlastNearlineSpectra.cxx
+# ./nearline/AidaNearlineSpectra.cxx
 
 )
 

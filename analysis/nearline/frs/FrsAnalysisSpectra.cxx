@@ -9,7 +9,6 @@
 #include "FrsAnalysisData.h"
 #include "TCutGGates.h"
 #include "c4Logger.h"
-#include "../../../config/frs_config.h"
 
 // ROOT
 #include "TClonesArray.h"
