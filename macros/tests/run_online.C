@@ -1,6 +1,7 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
+// CEJ !! NOT IMPLEMENTED YET !!
 #define FATIMA_ON 1
 #define FATIMA_VME_ON 0
 #define AIDA_ON 0
@@ -9,10 +10,10 @@
 #define FRS_ON 0
 #define TIME_MACHINE_ON 0
 
-// Define FRS setup.C file - FRS should provide; place in /config/{expName}/
+// Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
 {
-    #include "../../config/frs/NovTest/setup.C"
+    #include "../../config/NovTest/frs/setup.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -33,11 +34,11 @@ typedef struct EXT_STR_h101_t
 void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId = 1)
 {   
     // Name your experiment. Make sure all relevant directories are named identically.
-    TString fExpName = "tests"; // "s100";
+    TString fExpName = "NovTest"; // "s100";
 
     // Define important paths.
     TString c4Root_path = "/u/despec/s100_online/c4Root";
-    TString ucesb_path = c4Root_path + "/unpack/exps" + fExpName + "/" + fExpName + "--allow-errors --input-buffer=200Mi --event-sizes";
+    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes";
     ucesb_path.ReplaceAll("//","/");
 
     TString cRunId = Form("%04d", fRunId);
@@ -53,9 +54,9 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    TString filename = "stream://x86l-117"
-    //TString filename = "trans://lxg1257"
-    //TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
+    // TString filename = "stream://x86l-117";
+    // TString filename = "trans://lxg1257";
+    TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd ~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0025_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
@@ -70,7 +71,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     run->ActivateHttpServer(refresh, port);
 
     // Create source using ucesb for input
-    EXT_STR_h101_ucesb_struct;
+    EXT_STR_h101 ucesb_struct;
     TString ntuple_options = "UNPACK"; // Define which level of data to unpack
     UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
     source->SetMaxEvents(nev);
@@ -111,7 +112,7 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     std::vector<TCutGGates*> FrsGates = {ZAoQ, Z1Z2, x2AoQ, x4AoQ, dEdegZ};
     
     // Define prompt cut EdT gates for Fatima Prompt analysis
-    fatima_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Gates/";
+    std::string fatima_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Gates/";
     std::vector<std::string> FatimaPromptCuts = {"FatPromptCut1"};
     TCutGGates* FatimaPrompt = new TCutGGates("FatimaEdT", FatimaPromptCuts, fatima_gate_path);
 
@@ -132,48 +133,48 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     // FATIMA
     FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
     unpackfatima->SetInputFileFineTimeHistos(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fine_time_histos_111223_fatima.root");
-    // unpackfatima->DoFineTimeCalOnline(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fine_time_histos_111223_fatima.root", 5000000);
+    // unpackfatima->DoFineTimeCalOnline(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fine_time_histos_111223_fatima.root", 50000);
     
     // AIDA
-    // TAidaConfiguration::SetBasePath(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/AIDA");
-    // AidaReader* unpackaida = new AidaReader((EXT_STR_h101_aida_onion*)&ucesb_struct.aida, offsetof(EXT_STR_h101, aida));
+    TAidaConfiguration::SetBasePath(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/AIDA");
+    AidaReader* unpackaida = new AidaReader((EXT_STR_h101_aida_onion*)&ucesb_struct.aida, offsetof(EXT_STR_h101, aida));
     
     // bPlast
-    // bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_bplast_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
-    // unpackbplast->DoFineTimeCalOnline(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/bplast/fine_time_histos_111223_bplast.root", 1000000);
-    // unpackbplast->SetInputFileFineTimeHistos(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/bplast/fine_time_histos_111223_bplast.root");    
+    bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_bplast_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
+    // unpackbplast->DoFineTimeCalOnline(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/bplast/fine_time_histos_111223_bplast.root", 50000);
+    unpackbplast->SetInputFileFineTimeHistos(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/bplast/fine_time_histos_111223_bplast.root");    
     
     // Germanium
     // GermaniumReader* unpackgermanium = new GermaniumReader((EXT_STR_h101_GERMANIUM_onion*)&ucesb_struct.germanium, offsetof(EXT_STR_h101, germanium));
 
     // FRS
-    // FrsMainReader* unpackfrsmain = new FrsMainReader((EXT_STR_h101_frsmain_onion*)&ucesb_struct.frsmain, offsetof(EXT_STR_h101, frsmain));
-    // FrsTPCReader* unpackfrstpc = new FrsTPCReader((EXT_STR_h101_frstpc_onion*)&ucesb_struct.frstpc, offsetof(EXT_STR_h101, frstpc));
-    // FrsUserReader* unpackfrsuser = new FrsUserReader((EXT_STR_h101_frsuser_onion*)&ucesb_struct.frsuser, offsetof(EXT_STR_h101, frsuser));
-    // FrsVFTXReader* unpackfrsvftx = new FrsVFTXReader((EXT_STR_h101_frsvftx_onion*)&ucesb_struct.frsvftx, offsetof(EXT_STR_h101, frsvftx));
+    FrsMainReader* unpackfrsmain = new FrsMainReader((EXT_STR_h101_frsmain_onion*)&ucesb_struct.frsmain, offsetof(EXT_STR_h101, frsmain));
+    FrsTPCReader* unpackfrstpc = new FrsTPCReader((EXT_STR_h101_frstpc_onion*)&ucesb_struct.frstpc, offsetof(EXT_STR_h101, frstpc));
+    FrsUserReader* unpackfrsuser = new FrsUserReader((EXT_STR_h101_frsuser_onion*)&ucesb_struct.frsuser, offsetof(EXT_STR_h101, frsuser));
+    FrsVFTXReader* unpackfrsvftx = new FrsVFTXReader((EXT_STR_h101_frsvftx_onion*)&ucesb_struct.frsvftx, offsetof(EXT_STR_h101, frsvftx));
 
 
     // Set 'Reader' tasks Online/Offline - false will write data to a tree.
     unpackfatima->SetOnline(true);
-    // unpackaida->SetOnline(true);
-    // unpackbplast->SetOnline(true);
+    unpackaida->SetOnline(true);
+    unpackbplast->SetOnline(true);
     // unpackgermanium->SetOnline(true);SetTimeMachineChannels
-    // unpackfrsmain->SetOnline(true);
-    // unpackfrstpc->SetOnline(true);
-    // unpackfrsuser->SetOnline(true);
-    // unpackfrsvftx->SetOnline(true);
+    unpackfrsmain->SetOnline(true);
+    unpackfrstpc->SetOnline(true);
+    unpackfrsuser->SetOnline(true);
+    unpackfrsvftx->SetOnline(true);
 
 
     // Add 'Reader' tasks to incoming UcesbSource
     source->AddReader(unpackheader);
     source->AddReader(unpackfatima);
-    // source->AddReader(unpackaida);
-    // source->AddReader(unpackbplast);
+    source->AddReader(unpackaida);
+    source->AddReader(unpackbplast);
     // source->AddReader(unpackgermanium);
-    // source->AddReader(unpackfrsmain);
-    // source->AddReader(unpackfrstpc);
-    // source->AddReader(unpackfrsuser);
-    // source->AddReader(unpackfrsvftx);
+    source->AddReader(unpackfrsmain);
+    source->AddReader(unpackfrstpc);
+    source->AddReader(unpackfrsuser);
+    source->AddReader(unpackfrsvftx);
 
    
     // ---------------------------------------------------------------------------------------- //
@@ -189,13 +190,13 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     calfatima->SetTimeMachineChannels(16,17);
 
     // AIDA
-    // AidaUnpack2Cal* aidaCalibrator = new AidaUnpack2Cal();
-    // aidaCalibrator->SetAidaTimeMachineChannels(4,3);
+    AidaUnpack2Cal* aidaCalibrator = new AidaUnpack2Cal();
+    aidaCalibrator->SetAidaTimeMachineChannels(4,3);
 
     // bPlast
-    // bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
-    // calbplast->SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/bplast/bplast_allocation_111223.txt");
-    // calbplast->SetTimeMachineChannels(68,67);
+    bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
+    calbplast->SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/bplast/bplast_alloc.txt");
+    calbplast->SetTimeMachineChannels(68,67);
 
     // Germanium
     // GermaniumRaw2Cal * ge_calib = new GermaniumRaw2Cal();
@@ -203,51 +204,51 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     // ge_calib->PrintDetectorMap();
 
     // FRS
-    // FrsMainRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
-    // FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
-    // FrsUserRaw2Cal* calfrsuser = new FrsUserRaw2Cal();
-    // FrsVFTXRaw2Cal* calfrsvftx = new FrsVFTXRaw2Cal();
+    FrsMainRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
+    FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
+    FrsUserRaw2Cal* calfrsuser = new FrsUserRaw2Cal();
+    FrsVFTXRaw2Cal* calfrsvftx = new FrsVFTXRaw2Cal();
 
     
     // Set 'Calibration' tasks Online/Offline - false writes data to a tree.
     calfatima->SetOnline(true);
-    // aidaCalibrator->SetOnline(true);
-    // calbplast->SetOnline(true);
+    aidaCalibrator->SetOnline(true);
+    calbplast->SetOnline(true);
     // ge_calib->SetOnline(false);
-    // calfrsmain->SetOnline(true);
-    // calfrstpc->SetOnline(true);
-    // calfrsuser->SetOnline(true);
-    // calfrsvftx->SetOnline(true);
+    calfrsmain->SetOnline(true);
+    calfrstpc->SetOnline(true);
+    calfrsuser->SetOnline(true);
+    calfrsvftx->SetOnline(true);
     
 
     // Add 'Calibration' tasks to FairRun.
     run->AddTask(calfatima);
-    // run->AddTask(aidaCalibrator);
-    // run->AddTask(calbplast);
+    run->AddTask(aidaCalibrator);
+    run->AddTask(calbplast);
     // run->AddTask(ge_calib);
-    // run->AddTask(calfrsmain);
-    // run->AddTask(calfrstpc);
-    // run->AddTask(calfrsuser);
-    // run->AddTask(calfrsvftx);
+    run->AddTask(calfrsmain);
+    run->AddTask(calfrstpc);
+    run->AddTask(calfrsuser);
+    run->AddTask(calfrsvftx);
 
 
     // ---------------------------------------------------------------------------------------- //
     // *** Analyse Subsystem Hits ************************************************************* //
     
     // AIDA
-    // AidaCal2Hit* aidaHitter = new AidaCal2Hit();
+    AidaCal2Hit* aidaHitter = new AidaCal2Hit();
  
     // FRS
-    // FrsCal2Hit* hitfrs = new FrsCal2Hit(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
+    FrsCal2Hit* hitfrs = new FrsCal2Hit(frs,mw,tpc,music,labr,sci,id,si,mrtof,range,fExpName);
 
 
     // Set 'Hit' tasks Online/Offline - comment out unwanted tasks.
-    // aidaHitter->SetOnline(true);
-    // hitfrs->SetOnline(false); 
+    aidaHitter->SetOnline(true);
+    hitfrs->SetOnline(false); 
     
     // Add 'Hit' tasks to FairRun.
-    // run->AddTask(aidaHitter);
-    // run->AddTask(hitfrs);
+    run->AddTask(aidaHitter);
+    run->AddTask(hitfrs);
 
 
     // ======================================================================================== //
@@ -261,39 +262,39 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     FatimaOnlineSpectra * onlinefatima = new FatimaOnlineSpectra();
     
     // AIDA
-    // AidaOnlineSpectra* aidaOnline = new AidaOnlineSpectra();
+    AidaOnlineSpectra* aidaOnline = new AidaOnlineSpectra();
     
     // bPlast
-    // bPlastOnlineSpectra* onlinebplast = new bPlastOnlineSpectra();
+    bPlastOnlineSpectra* onlinebplast = new bPlastOnlineSpectra();
     
     // Germanium
     // GermaniumOnlineSpectra* onlinege = new GermaniumOnlineSpectra();
     
     // FRS
-    // FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
-    // FrsRawSpectra* frsrawspec = new FrsRawSpectra();
+    FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
+    FrsRawSpectra* frsrawspec = new FrsRawSpectra();
     // FrsCalSpectra* frscalspec = new FrsCalSpectra();
     // FrsAnalysisSpectra* frsanlspec = new FrsAnalysisSpectra(frs,mw,tpc,music,labr,sci,id,si,mrtof,range,FrsGates);
     
     // TimeMachine
-    // TimeMachineOnline* tms = new TimeMachineOnline();
-    // TString b = "Fatima";
-    // TString c = "Aida";
-    // TString d = "bPlast";
-    // std::vector a {b, c, d};
-    // tms->SetDetectorSystems(a);
+    TimeMachineOnline* tms = new TimeMachineOnline();
+    TString b = "Fatima";
+    TString c = "Aida";
+    TString d = "bPlast";
+    std::vector a {b, c, d};
+    tms->SetDetectorSystems(a);
 
     
     // Add 'Online Spectra' tasks to FairRun.
     run->AddTask(onlinefatima);
-    // run->AddTask(aidaOnline);
-    // run->AddTask(onlinebplast);
+    run->AddTask(aidaOnline);
+    run->AddTask(onlinebplast);
     // run->AddTask(onlinege);
-    // run->AddTask(onlinefrs);
-    // run->AddTask(frsrawspec);
+    run->AddTask(onlinefrs);
+    run->AddTask(frsrawspec);
     // run->AddTask(frscalspec);
     // run->AddTask(frsanlspec);
-    // run->AddTask(tms);
+    run->AddTask(tms);
 
     // ---------------------------------------------------------------------------------------- //
     // *** Correlations *********************************************************************** //
@@ -336,5 +337,5 @@ void run_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl << std::endl;
    // gApplication->Terminate(0);
    
-   // ----------------------------------------------------------------------------------------- */
+   // ----------------------------------------------------------------------------------------- //
 }

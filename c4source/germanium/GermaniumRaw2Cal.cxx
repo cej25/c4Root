@@ -124,8 +124,8 @@ Bool_t GermaniumRaw2Cal::SetDetectorMapFile(TString filename){
             detector_mapping.insert(std::pair<std::pair<int,int>,std::pair<int,int>>{febex_mc,ge_cd});
             detector_map_file.ignore(256,'\n');
 
-            auto it = detector_mapping.find(febex_mc);
-            if (it != detector_mapping.end()) c4LOG(fatal,Form("Detector mapping not unique. Multiple entries of (febex module id = %i) (febex channel id = %i)",rfebex_module,rfebex_channel));
+            //auto it = detector_mapping.find(febex_mc);
+            //if (it != detector_mapping.end()) c4LOG(fatal,Form("Detector mapping not unique. Multiple entries of (febex module id = %i) (febex channel id = %i)",rfebex_module,rfebex_channel));
         }
     }
     DetectorMap_loaded = 1;     
@@ -161,8 +161,8 @@ Bool_t GermaniumRaw2Cal::SetDetectorCalFile(TString filename){
             calibration_coeffs.insert(std::pair<std::pair<int,int>,std::pair<double,double>>{detector_crystal,cals});
             cal_map_file.ignore(256,'\n');
 
-            auto it = calibration_coeffs.find(detector_crystal);
-            if (it != calibration_coeffs.end()) c4LOG(fatal,Form("Detector calibration not unique. Multiple entries of (Ge detector id = %i) (Ge crystal id = %i)",rdetector_id,rcrystal_id));
+            //auto it = calibration_coeffs.find(detector_crystal);
+            //if (it != calibration_coeffs.end()) c4LOG(fatal,Form("Detector calibration not unique. Multiple entries of (Ge detector id = %i) (Ge crystal id = %i)",rdetector_id,rcrystal_id));
 
         }
     }
