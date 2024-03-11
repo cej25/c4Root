@@ -1,6 +1,7 @@
 #ifndef FrsCal2Hit_H
 #define FrsCal2Hit_H
 
+#include "../../config/setup.h"
 #include "FairTask.h"
 #include "TFRSParameter.h"
 #include "TClonesArray.h"
@@ -18,11 +19,23 @@ class FrsUserCalData;
 class FrsVFTXCalData;
 class FrsHitData;
 class EventHeader;
+class EventData;
 
 class FrsCal2Hit : public FairTask
 {
     public:
-        FrsCal2Hit();
+        FrsCal2Hit(TFRSParameter* ffrs,
+                TMWParameter* fmw,
+                TTPCParameter* ftpc,
+                TMUSICParameter* fmusic,
+                TLABRParameter* flabr,
+                TSCIParameter* fsci,
+                TIDParameter* fid,
+                TSIParameter* fsi,
+                TMRTOFMSParameter* fmrtof,
+                TRangeParameter* frange,
+                TString& fExpName);
+
         FrsCal2Hit(const TString& name, Int_t verbose);
 
         virtual ~FrsCal2Hit();
@@ -32,7 +45,6 @@ class FrsCal2Hit : public FairTask
 
         virtual void Exec(Option_t* option); // virtual?
         
-        void SetParameters();
         virtual void SetParContainers();
         void Setup_Conditions(TString path_to_folder_with_frs_config_files);
         void FRS_GainMatching();
@@ -55,18 +67,23 @@ class FrsCal2Hit : public FairTask
     private:
 
         Bool_t fOnline;
+        TString expName;
 
         TClonesArray* fCalArrayMain;
         TClonesArray* fCalArrayTPC;
         TClonesArray* fCalArrayUser;
         TClonesArray* fCalArrayVFTX;
         TClonesArray* fHitArray;
+        TClonesArray* fEventItems;
 
         FrsMainCalData* fCalHitMain;
         FrsTPCCalData* fCalHitTPC;
         FrsUserCalData* fCalHitUser;
         FrsVFTXCalData* fCalHitVFTX;
         FrsHitData* fFrsHit;
+        //EventData* EventItem;
+
+        Bool_t prevSpillOn = false;
 
         /* ----------------------------------------------- */
         // Intermediate variables
@@ -359,7 +376,7 @@ class FrsCal2Hit : public FairTask
 
         Float_t aoq_factor = 931.4940 / 299.792458; // 'f' in go4 code
 
-        // parameters from FRS setup // need to figure out how to load with steering macro?
+        // parameters from FRS setup
         TFRSParameter* frs;
         TMWParameter* mw;
         TTPCParameter* tpc;

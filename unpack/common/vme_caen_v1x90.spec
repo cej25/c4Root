@@ -1,16 +1,18 @@
 #define MEMBERS \
     MEMBER(DATA24 data[128] ZERO_SUPPRESS_MULTI(128)); \
-    MEMBER(DATA8 leadOrTrail[128] ZERO_SUPPRESS_MULTI(128));// not sure how to define this properly
-//  I don't think we need channel, not sure about LoT
-// 128 | 128 seems to work
+    MEMBER(DATA8 leadOrTrail[128] ZERO_SUPPRESS_MULTI(128)); \
+    MEMBER(DATA8 geo);
+
 
 #define PARAMS_DEF \
     data, \
-    leadOrTrail
+    leadOrTrail, \
+    geo
 
 #define PARAMS \
     data = data, \
-    leadOrTrail = leadOrTrail
+    leadOrTrail = leadOrTrail, \
+    geo = geo
 
 TDC_HEADER()
 {   
@@ -81,15 +83,18 @@ TDC_TRAILER()
     }
 }
 
+// CEJ: don't call this _FRS
 VME_CAEN_V1290_FRS()
 {   
     MEMBERS
-
+    
+    // definitely not optional
     UINT32 header NOENCODE
     {   
         0_4: geo;
         5_26: event_count;
         27_31: 0b01000;
+        ENCODE(geo, (value = geo));
     };
 
     select several
@@ -117,11 +122,13 @@ VME_CAEN_V1290_FRS()
         26: trigger_lost;
         27_31: 0b10000;
     };
-
-    optional UINT32 eob NOENCODE; // type = 24
+    
+    // this needs defining properly.......
+    //optional UINT32 eob NOENCODE; // type = 24
 
 }
 
+// CEJ: probably need to not call this _FRS
 VME_CAEN_V1190_FRS()
 {
     MEMBERS
@@ -135,6 +142,7 @@ VME_CAEN_V1190_FRS()
         0_4: geo;
         5_26: event_count;
         27_31: seven_f; // 0b01000; // if global header
+        ENCODE(geo, (value = geo));
     };
 
     if (header.seven_f != 0b01000)

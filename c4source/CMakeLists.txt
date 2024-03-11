@@ -43,6 +43,7 @@ set(SRCS
 ./base/UcesbSource.cxx
 ./base/UnpackReader.cxx
 ./base/c4Reader.cxx
+./base/CorrelationsMap.cxx
 ./aida/c4AidaReader.cxx
 ./aida/AidaCal2Hit.cxx
 ./aida/AidaUnpack2Cal.cxx
@@ -55,7 +56,6 @@ set(SRCS
 ./frs/FrsUserRaw2Cal.cxx
 ./frs/FrsVFTXRaw2Cal.cxx
 ./frs/FrsCal2Hit.cxx
-./frs/TFRSParameter.cxx
 ./germanium/GermaniumReader.cxx
 ./lisa/LisaReader.cxx
 ./bplast/bPlastReader.cxx
@@ -64,6 +64,8 @@ set(SRCS
 ./germanium/GermaniumRaw2Cal.cxx
 ./fatima/FatimaReader.cxx
 ./fatima/FatimaRaw2Cal.cxx
+./fatima/FatimaVmeReader.cxx
+./fatima/FatimaVmeRaw2Cal.cxx
 )
 
 Set(STRUCT_HEADERS
@@ -76,8 +78,9 @@ Set(STRUCT_HEADERS
 ./lisa/ext_h101_lisa.h
 ./germanium/ext_h101_germanium.h
 ./bplast/ext_h101_bplast.h
-./beammonitor/ext_h101_bm.h
+./beammonitor/ext_h101_beammonitor.h
 ./fatima/ext_h101_fatima.h
+./fatima/ext_h101_fatimavme.h
 )
 
 # fill list of header files from list of source files

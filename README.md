@@ -1,6 +1,6 @@
 # c4Root
 
-c4Root will be a FairRoot-based R3BRoot-inspired software for the experimental analysis of DESPEC nuclear physics experiments.
+c4Root is a FairRoot-based software inspired by R3BRoot [https://github.com/R3BRootGroup/R3BRoot] for the experimental analysis of HISPEC/DESPEC nuclear physics experiments.
 
 Contact: c.jones@gsi.de
 
@@ -10,7 +10,7 @@ Development:
 * Jeroen Peter Bormans
 * Nicolas James Hubbard
 
-Please note this software is currently in its infancy. The general architecture will be restructurd into slightly less nonsense, please forgive the mess for now. At present a couple of macros can be used for demonstration purposes; these are located in the ucesb directory. 
+Documentation on the usage of this software is currently in progress. Basic instructions are otherwise provided below. 
 
 Requirements:
 * ucesb, specifically: https://git.chalmers.se/expsubphys/ucesb.git
@@ -30,17 +30,20 @@ To compile:
 > cd build
 > cmake ../c4Root
 > . ./config.sh
-> make -j6
+> make -j
 ```
 
 ```
 > cd ../c4Root/unpack/exps/
-> make s452 -j 10
+> make s100 -j 10
 > cd ../../macros/despec/
-> root -l run_ge_online.C
+> root -l -b s100_online.C
 ```
 
-This will generate a root file with unpacked Germanium (FEBEX) data from the S452 experiment in a tree. It will also generate some "online" uncalibrated and calibrated Energy spectra per detector.
+The {experiment}_online.C macro can read data from an LMD file or a stream/transport server. It will then perform a series of tasks on this data such as unpacking, calibrations, analysis, correlations and plotting spectra in histograms. 
 
-NOTE: Before use, please check run_ge_online.C to adjust your filepath as may be necessary, as well as the port used for the HTTP server for online monitoring.
+Each "task" can be set online or offline. Heavy duty tasks such as analysis and correlations may be more suitable to a Nearline/Offline analysis, where data is read from an LMD. If SetOnline is "false", any data at this task level will be written to a tree in a .root file defined in the macro. Individual subsystems and/or tasks can be turned off easily, by commmenting out anything undesirable. 
+
+Histograms may be monitored online at a THttpServer, viewed at the defined port. 
+
 

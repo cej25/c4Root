@@ -3,6 +3,7 @@
 
 #include "c4Reader.h"
 
+// why is there a TH1 here
 #include "TH1.h"
 
 
@@ -55,18 +56,21 @@ class FatimaReader : public c4Reader
 
         void WriteFineTimeHistosToFile();
         void ReadFineTimeHistosFromFile();
-        void SetInputFileFineTimeHistos(char * inputfile){
+        void SetInputFileFineTimeHistos(TString inputfile)
+        {
             fine_time_histo_infile = inputfile;
             fine_time_calibration_read_from_file = true;
         };
 
         void PrintStatistics();
 
-        void DoFineTimeCalOnline(){
+        void DoFineTimeCalOnline()
+        {
             fine_time_calibration_set = false;
             fine_time_calibration_save = false;
         }; //creates and does not save it.
-        void DoFineTimeCalOnline(char * outputfile, int nevents_to_include){
+        void DoFineTimeCalOnline(TString outputfile, int nevents_to_include)
+        {
             fine_time_histo_outfile = outputfile;
             fine_time_calibration_save = true;
             fine_time_calibration_set = false;
@@ -83,6 +87,8 @@ class FatimaReader : public c4Reader
         size_t fOffset;
 
         Bool_t fOnline;
+
+        Bool_t fPrintStatistics = false;
 
         TClonesArray* fArray;
 
@@ -112,8 +118,8 @@ class FatimaReader : public c4Reader
         bool last_word_read_was_epoch = false;
 
 
-        char * fine_time_histo_outfile; 
-        char * fine_time_histo_infile; 
+        TString fine_time_histo_outfile; 
+        TString fine_time_histo_infile; 
 
         const int Nbins_fine_time = 1024; //number of bins in the fine time - it is a 10 bit word (2^10 = 1024)
 
