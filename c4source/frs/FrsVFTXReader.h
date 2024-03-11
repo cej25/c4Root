@@ -8,7 +8,7 @@
 #include <Rtypes.h>
 #include <vector>
 
-#include "../../config/frs_config.h"
+#include "../../config/setup.h"
 
 extern "C"
 {

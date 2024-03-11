@@ -1,7 +1,7 @@
 #ifndef FrsHitData_H
 #define FrsHitData_H
 
-#include "../../config/frs_config.h"
+#include "../../config/setup.h"
 #include <vector>
 #include "TObject.h"
 

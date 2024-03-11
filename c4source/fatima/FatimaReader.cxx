@@ -170,14 +170,14 @@ void FatimaReader::DoFineTimeCalibration()
             if (total_counts == 0) {c4LOG(warning,Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));}
 
             for (int k = 0; k < Nbins_fine_time; k++) {
-                running_sum += fine_time_hits[i][j]->GetBinContent(k+1); //bin 0 is the underflow bin, hence we start at [1,Nbins_fine_time].
                 
                 if (total_counts == 0) { // in case of no hits.
                     fine_time_calibration_coeffs[i][j][k] = k*TAMEX_fine_time_clock/(double)Nbins_fine_time;
                     continue;
                 }
 
-                fine_time_calibration_coeffs[i][j][k] = TAMEX_fine_time_clock*(double)running_sum/(double)total_counts;
+                fine_time_calibration_coeffs[i][j][k] = TAMEX_fine_time_clock*((double)running_sum + ((double)fine_time_hits[i][j]->GetBinContent(k+1))/2)/(double)total_counts;
+                running_sum += fine_time_hits[i][j]->GetBinContent(k+1); //bin 0 is the underflow bin, hence we start at [1,Nbins_fine_time].
             }
         }
     }
@@ -366,7 +366,8 @@ Bool_t FatimaReader::Read() //do fine time here:
                     last_word_read_was_epoch = true;
                     continue;
             }
-              
+
+
             //from this point we should have seen an epoch for channel id.
 
             uint32_t channelid = fData->fatima_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // 1-32
@@ -385,14 +386,15 @@ Bool_t FatimaReader::Read() //do fine time here:
             last_word_read_was_epoch = false;
             last_channel_read = channelid;
 
+            bool is_leading = fData->fatima_tamex[it_board_number].time_edgev[it_hits] & 0x1;
+            
             //Fill fine times and skip.
-            if (!fine_time_calibration_set) 
+            if (!fine_time_calibration_set && is_leading)
             {
                 fine_time_hits[it_board_number][channelid-1]->Fill(fData->fatima_tamex[it_board_number].time_finev[it_hits]);
                 continue;
             }
 
-            bool is_leading = fData->fatima_tamex[it_board_number].time_edgev[it_hits] & 0x1;
             uint32_t coarse_T = fData->fatima_tamex[it_board_number].time_coarsev[it_hits] & 0x7FF;
             double fine_T = GetFineTime(fData->fatima_tamex[it_board_number].time_finev[it_hits],it_board_number,channelid-1);
 
@@ -432,6 +434,7 @@ Bool_t FatimaReader::Read() //do fine time here:
                     previous_epoch_word,
                     coarse_T,
                     fine_T,
+                    
                     fData->fatima_ts_subsystem_id,
                     wr_t);
             

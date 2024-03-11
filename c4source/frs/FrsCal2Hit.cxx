@@ -19,7 +19,6 @@
 #include <iostream>
 #include <TROOT.h>
 
-#include "../../config/frs_config.h"
 #define MUSIC_ANA_NEW
 
 FrsCal2Hit::FrsCal2Hit(TFRSParameter* ffrs,
@@ -31,7 +30,8 @@ FrsCal2Hit::FrsCal2Hit(TFRSParameter* ffrs,
         TIDParameter* fid,
         TSIParameter* fsi,
         TMRTOFMSParameter* fmrtof,
-        TRangeParameter* frange)
+        TRangeParameter* frange,
+        TString& fExpName)
     :   FairTask()
     ,   fNEvents(0)
     ,   header(nullptr)
@@ -53,6 +53,7 @@ FrsCal2Hit::FrsCal2Hit(TFRSParameter* ffrs,
     si = fsi;
     mrtof = fmrtof;
     range = frange;
+    expName = fExpName;
 }
 
 FrsCal2Hit::FrsCal2Hit(const TString& name, Int_t verbose)
@@ -109,7 +110,7 @@ InitStatus FrsCal2Hit::Init()
     mgr->Register("FrsHitData", "FRS Hit Data", fHitArray, !fOnline);
     mgr->Register("EventData", "Event Data", fEventItems, !fOnline);
 
-    Setup_Conditions("../../config/frs/NovTest/"); // this can be passed through
+    Setup_Conditions("../../config/" + expName + "/frs/");
     c4LOG_IF(fatal,!conditions_files_read, "You must set FrsCal2Hit->Setup_Conditions('your file path') to the folder containing the frs condition gates.");
     
     fCalArrayMain->Clear();
@@ -1574,49 +1575,6 @@ void FrsCal2Hit::Exec(Option_t* option)
         FrsHit->Set_ID_dEdeg(id_dEdeg);
 
 
-        // new ((*fHitArray)[fHitArray->GetEntriesFast()]) FrsHitData(
-        //     WR_TS,
-        //     time_in_ms, 
-        //     ibin_for_s, 
-        //     ibin_for_100ms,
-        //     ibin_for_spill,
-        //     increase_sc_temp_main,
-        //     increase_sc_temp_user,
-        //     increase_sc_temp2,
-        //     increase_sc_temp3,
-        //     extraction_time_ms, 
-        //     ibin_clean_for_s, 
-        //     ibin_clean_for_100ms,
-        //     ibin_clean_for_spill,
-        //     de,
-        //     sci_e,
-        //     sci_l,
-        //     sci_r,
-        //     sci_tof2,
-        //     id_x2,
-        //     id_y2,
-        //     id_a2,
-        //     id_b2,
-        //     id_x4,
-        //     id_y4,
-        //     id_a4,
-        //     id_b4,
-        //     id_AoQ,
-        //     id_AoQ_corr,
-        //     id_z,
-        //     id_z2,
-        //     id_beta,
-        //     id_dEdegoQ,
-        //     id_dEdeg,
-        //     id_mhtdc_aoq_s2s4,
-        //     id_mhtdc_aoq_corr_s2s4,
-        //     id_mhtdc_z_music41,
-        //     id_mhtdc_z_music42,
-        //     id_mhtdc_dEdegoQ,
-        //     id_mhtdc_dEdeg
-        // );
-   
-    //}
     // above is end of FRS_Anl
 
     new ((*fHitArray)[fHitArray->GetEntriesFast()]) FrsHitData(*FrsHit);

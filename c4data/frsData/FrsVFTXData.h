@@ -5,7 +5,7 @@
 #include "TClonesArray.h"
 #include "c4Logger.h"
 
-#include "../../config/frs_config.h"
+#include "../../config/setup.h"
 
 #include <vector>
 
