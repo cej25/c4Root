@@ -36,10 +36,13 @@ typedef struct EXT_STR_h101_t
 void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId = 1)
 {   
     // Name your experiment. Make sure all relevant directories are named identically.
-    TString fExpName = "s100"; // "s100";
+    // TString fExpName = "NovTest";
+    TString fExpName = "s100";
+
 
     // Define important paths.
-    TString c4Root_path = "/u/despec/s100_online/c4Root";
+    // TString c4Root_path = "/u/despec/s100_online/c4Root";
+    TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes";
     ucesb_path.ReplaceAll("//","/");
 
@@ -134,7 +137,7 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     // FATIMA
     FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
     unpackfatima->SetInputFileFineTimeHistos(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fine_time_histos_111223_fatima.root");
-    // unpackfatima->DoFineTimeCalOnline(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fine_time_histos_111223_fatima.root", 50000);
+    //unpackfatima->DoFineTimeCalOnline(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fine_time_histos_111223_fatima.root", 50000);
 
     //FatimaVmeReader* unpackfatimavme = new FatimaVmeReader((EXT_STR_h101_fatimavme_onion*)&ucesb_struct.fatimavme, offsetof(EXT_STR_h101, fatimavme));
     //unpackfatimavme->Set_Allocation(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Fatima_VME_allocation.txt");
@@ -171,7 +174,7 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     unpackfrstpc->SetOnline(true);
     unpackfrsuser->SetOnline(true);
     unpackfrsvftx->SetOnline(true);
-    unpackbeammonitor->SetOnline(true);
+    // unpackbeammonitor->SetOnline(true);
 
 
     // Add 'Reader' tasks to incoming UcesbSource
@@ -185,7 +188,7 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     source->AddReader(unpackfrstpc);
     source->AddReader(unpackfrsuser);
     source->AddReader(unpackfrsvftx);
-    source->AddReader(unpackbeammonitor);
+    // source->AddReader(unpackbeammonitor);
 
    
     // ---------------------------------------------------------------------------------------- //

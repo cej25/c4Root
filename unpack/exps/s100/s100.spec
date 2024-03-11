@@ -104,7 +104,12 @@ SUBEVENT(bplast_subev)
     ts = TIMESTAMP_WHITERABBIT(id = 0x500);
 
     trigger_window = TAMEX4_HEADER();
-    
+
+    select several
+    {
+        padding = TAMEX4_PADDING();
+    };
+
     select several
     {
         tamex[0] = TAMEX4_SFP(sfp = 0, card = 0);
@@ -184,7 +189,7 @@ EVENT
     revisit aida = aida_subev(type = 10, subtype = 1, procid = 90, control = 37);
     germanium = febex_subev(type = 10, subtype = 1, procid = 60, control = 20);
     fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = 75, control = 20);
-    fatimavme = fatima_vme_subev(type = 10, subtype = 1, procid = 70, control = 20);
+    // fatimavme = fatima_vme_subev(type = 10, subtype = 1, procid = 70, control = 20); // apparenlty there are fatimavme things in NovTest data..comment out
     bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20);
 
     frsmain = frs_main_subev(procid = 10);
