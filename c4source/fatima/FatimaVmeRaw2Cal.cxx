@@ -486,3 +486,14 @@ double FatimaVmeRaw2Cal::Calibrate_QDC_T(unsigned long T, int det_id)
 {
     return T + calib_coeffs_QDC_T[det_id];
 }
+
+
+void FatimaVmeRaw2Cal::FinishEvent()
+{
+
+}
+
+void FatimaVmeRaw2Cal::FinishTask()
+{
+    
+}
