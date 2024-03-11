@@ -83,7 +83,8 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
         fRawHit = (FrsMainData*)fRawArray->At(0); // event multiplicity
         
         
-        WR_TS = fRawHit->Get_WR();
+        WR_TS = fRawHit->Get_wr_t();
+        // CEJ: fCalHit->Set_wr_t(fRawHit->Get_wr_t);
         
 
         // V830 passed through to Hit step
@@ -97,7 +98,7 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
         for (uint32_t i = 0; i < v792_channel.size(); i++)
         {   
             
-            if (v792_geo == 14) 
+            if (v792_geo == 14)
             {   
                 switch (v792_channel[i])
                 {   

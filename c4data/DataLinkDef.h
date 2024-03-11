@@ -10,6 +10,8 @@
 #pragma link C++ class GermaniumCalData+;
 #pragma link C++ class FatimaTwinpeaksData+;
 #pragma link C++ class FatimaTwinpeaksCalData+;
+#pragma link C++ class FatimaVmeData+;
+#pragma link C++ class FatimaVmeCalData+;
 
 #pragma link C++ class bPlastTwinpeaksData+;
 #pragma link C++ class bPlastTwinpeaksCalData+;
@@ -27,6 +29,17 @@
 #pragma link C++ class FrsUserCalData+;
 #pragma link C++ class FrsVFTXCalData+;
 #pragma link C++ class FrsHitData+;
+#pragma link C++ class FrsAnalysisData+;
+#pragma link C++ class TFRSParameter+;
+#pragma link C++ class TMWParameter+;
+#pragma link C++ class TTPCParameter+;
+#pragma link C++ class TMUSICParameter+;
+#pragma link C++ class TSCIParameter+;
+#pragma link C++ class TIDParameter+;
+#pragma link C++ class TSIParameter+;
+#pragma link C++ class TRangeParameter+;
+#pragma link C++ class TLABRParameter+;
+#pragma link C++ class TMRTOFMSParameter+;
 
 #pragma link C++ class AidaUnpackAdcItem+;
 #pragma link C++ class AidaUnpackFlowItem+;

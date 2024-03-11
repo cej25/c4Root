@@ -46,9 +46,11 @@ And prints some statistics for the run.
 */
 bPlastReader::~bPlastReader() { 
 
-    PrintStatistics();
+    if (fPrintStatistics == true) 
+    {
+        PrintStatistics();
+    }
 
-    
     for (int i = 0; i < NBoards; i++) {
         for (int j = 0; j < NChannels; j++) {
             if (fine_time_calibration_coeffs[i][j] != nullptr) {
@@ -209,7 +211,7 @@ void bPlastReader::WriteFineTimeHistosToFile(){
     }
     c4LOG(info,"Fine time calibrations starting to write to file.");
 
-    TFile * outputfile = TFile::Open(Form("%s",fine_time_histo_outfile),"recreate");
+    TFile * outputfile = TFile::Open(Form("%s",fine_time_histo_outfile.Data()),"recreate");
     
     std::cout << outputfile << std::endl;
     
@@ -223,7 +225,7 @@ void bPlastReader::WriteFineTimeHistosToFile(){
             }
         }
     }
-    c4LOG(info,Form("Written fine time calibrations (i.e. raw fine time histograms) to  %s",fine_time_histo_outfile));
+    c4LOG(info,Form("Written fine time calibrations (i.e. raw fine time histograms) to  %s",fine_time_histo_outfile.Data()));
 
     outputfile->Close();
 
@@ -268,7 +270,7 @@ void bPlastReader::ReadFineTimeHistosFromFile() {
     }
 
     inputfile->Close();
-    c4LOG(info, Form("Read fine time calibrations (i.e. raw fine time histograms) from %s", fine_time_histo_infile));
+    c4LOG(info, Form("Read fine time calibrations (i.e. raw fine time histograms) from %s", fine_time_histo_infile.Data()));
 }
 
 /*
@@ -377,6 +379,7 @@ Bool_t bPlastReader::Read() //do fine time here:
 
             if (fData->bplast_tamex[it_board_number].time_finev[it_hits] == 0x3FF) {fNevents_TAMEX_fail[it_board_number][channelid-1]++; continue;} // this happens if TAMEX loses the fine time - skip it
 
+            if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch){fNevents_lacking_epoch[it_board_number][channelid-1]++; c4LOG(warning, "Event lacking epoch.");} // if the channel has changed but no epoch word was seen in between, channel 0 is always the first one so dont check if that s the case.
 
             if (!(channelid >= last_channel_read)) {c4LOG(fatal, Form("Data format is inconcistent with assumption: Channels are not read out in increasing order. This channel = %i, last channel = %i",channelid,last_channel_read));}
 

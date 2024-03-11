@@ -241,11 +241,11 @@ void GermaniumRaw2Cal::Exec(Option_t* option){
                 c4LOG(fatal, "Detector Mapping not set - please set this using SetDetectorMap to use the Cal Task.");
             }
 
-            if (detector_id == time_machine_delayed_detector_id & crystal_id == time_machine_delayed_crystal_id){
+            if (detector_id == time_machine_delayed_detector_id && crystal_id == time_machine_delayed_crystal_id){
                 new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData(0,funcal_hit->Get_channel_trigger_time(),funcal_hit->Get_wr_subsystem_id(),funcal_hit->Get_wr_t());
                 continue;
             }
-            else if (detector_id == time_machine_undelayed_detector_id & crystal_id == time_machine_undelayed_crystal_id){
+            else if (detector_id == time_machine_undelayed_detector_id && crystal_id == time_machine_undelayed_crystal_id){
                 new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData(funcal_hit->Get_channel_trigger_time(),0,funcal_hit->Get_wr_subsystem_id(),funcal_hit->Get_wr_t());
                 continue;
             }

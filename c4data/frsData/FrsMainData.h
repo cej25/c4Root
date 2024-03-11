@@ -27,7 +27,7 @@ class FrsMainData : public TObject
         // Destructor
         virtual ~FrsMainData() {}
 
-        inline const uint64_t Get_WR() const { return fWR_TS; }
+        inline const uint64_t Get_wr_t() const { return fWR_TS; }
         inline const Int_t Get_Scalers_N() const { return fScalers_N; }
 
         inline const std::vector<uint32_t>& Get_Scalers_Index() const { return fScalers_Index; }

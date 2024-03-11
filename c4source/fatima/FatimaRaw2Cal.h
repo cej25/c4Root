@@ -9,7 +9,6 @@ class EventHeader;
 class FatimaTwinpeaksData;
 class FatimaTwinpeaksCalData;
 class TimeMachineData;
-class TClonesArray;
 
 class FatimaRaw2Cal : public FairTask
 {

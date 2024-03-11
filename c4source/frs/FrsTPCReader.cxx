@@ -67,20 +67,22 @@ Bool_t FrsTPCReader::Read()
     if (fData->frstpc_data_v775_n == 0 && fData->frstpc_data_v785_n == 0 && fData->frstpc_data_v1190_nM == 0) return kTRUE;
     ClearVectors();
 
-    // v775, actually i think it is v785 * 2?
+    // v775 -- geo is 12??
     for (int i = 0; i < fData->frstpc_data_v775_n; i++)
     {   
         v7x5_geo[0].emplace_back(fData->frstpc_data_v775_geov[i]);
         v7x5_channel[0].emplace_back(fData->frstpc_data_v775_channelv[i]);
         v7x5_data[0].emplace_back(fData->frstpc_data_v775_data[i]);
+        //std::cout << v7x5_geo[0][i] << std::endl;
     }
 
-    // v785
+    // v785 -- geo is 8???
     for (int i = 0; i < fData->frstpc_data_v785_n; i++)
     {   
         v7x5_geo[1].emplace_back(fData->frstpc_data_v785_geov[i]);
         v7x5_channel[1].emplace_back(fData->frstpc_data_v785_channelv[i]);
         v7x5_data[1].emplace_back(fData->frstpc_data_v785_data[i]);
+        //std::cout << v7x5_geo[1][i] << std::endl;
     }
 
     // v1190
