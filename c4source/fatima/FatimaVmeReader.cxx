@@ -87,7 +87,7 @@ Bool_t FatimaVmeReader::Read()
     std::vector<uint32_t> QLong_raw;
     std::vector<uint32_t> QShort_raw;
     int qdcs_fired = 0;
-    for (int qdc = 0; qdc < QDC_BOARDS; qdc++)
+    for (int qdc = 0; qdc < num_qdc_boards; qdc++)
     {
         Int_t board_id = fData->fatimavme_qdc[qdc].board_id;
         FatimaHit->Set_board_id(qdc, board_id);
@@ -130,7 +130,7 @@ Bool_t FatimaVmeReader::Read()
     std::vector<uint32_t> tdc_detectors;
     std::vector<uint32_t> v1290_data;
     std::vector<uint32_t> v1290_lot;
-    for (int tdc = 0; tdc < TDC_BOARDS; tdc++)
+    for (int tdc = 0; tdc < num_tdc_boards; tdc++)
     {
         int geo = fData->fatimavme_tdc[tdc]._geo;
 
@@ -157,17 +157,11 @@ Bool_t FatimaVmeReader::Read()
 
     }
 
-    FatimaHit->Set_TDC_detectors(tdc_detectors); // presumably tdc detector == qdc detector? 
+    FatimaHit->Set_TDC_detectors(tdc_detectors);
     FatimaHit->Set_v1290_data(v1290_data);
     FatimaHit->Set_v1290_lot(v1290_lot);
-    FatimaHit->Set_TDCs_fired(tdcs_fired); // possibly unnecessary
+    FatimaHit->Set_TDCs_fired(tdcs_fired);
     
-
-
-
-
-
-
 
     new ((*fArray)[fArray->GetEntriesFast()]) FatimaVmeData(*FatimaHit);
 
