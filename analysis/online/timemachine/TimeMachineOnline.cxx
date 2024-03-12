@@ -5,13 +5,10 @@
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
 
-#include <vector>
-
 // c4
 #include "TimeMachineOnline.h"
 #include "EventHeader.h"
 #include "TimeMachineData.h"
-
 
 #include "c4Logger.h"
 
@@ -23,9 +20,12 @@
 #include "THttpServer.h"
 #include "TMath.h"
 #include "TRandom.h"
+#include <vector>
+#include <string>
 
-TimeMachineOnline::TimeMachineOnline()
+TimeMachineOnline::TimeMachineOnline(CorrelationsMap* fCorrel)
 {
+    Correl = fCorrel;
 }
 
 TimeMachineOnline::TimeMachineOnline(const TString& name, Int_t verbose)
@@ -221,7 +221,6 @@ void TimeMachineOnline::Exec(Option_t* option) // if two machines (undelayed + d
     {
         if (fTimeMachine[system] && fTimeMachine[system]->GetEntriesFast() > 0)
         {
-            
             delayed_time = 0;
             undelayed_time = 0;
 
@@ -231,12 +230,17 @@ void TimeMachineOnline::Exec(Option_t* option) // if two machines (undelayed + d
                 fTimeMachineHit = (TimeMachineData*)fTimeMachine[system]->At(ihit);
                 if (!fTimeMachineHit) continue;
 
+                if (fTimeMachineHit->Get_wr_t() != 0)
+                {
+                    wr[system] = fTimeMachineHit->Get_wr_t();
+                }
+
                 if (fTimeMachineHit->Get_undelayed_time() !=0 && undelayed_time == 0){
                     undelayed_time = fTimeMachineHit->Get_undelayed_time();
                 }else if (fTimeMachineHit->Get_delayed_time() != 0 && delayed_time == 0){
                     delayed_time = fTimeMachineHit->Get_delayed_time();
                 }
-
+                
                 if (delayed_time!=0 && undelayed_time!=0) break; //once you have one undelayed and one delayed break - this assumes only one timemachine delayed-undelayed pair per event.
             }
 
@@ -251,23 +255,157 @@ void TimeMachineOnline::Exec(Option_t* option) // if two machines (undelayed + d
             }
         }
     }
-    
 
     // Time differences
     for (int ihist = 0; ihist < fNumDetectorSystems; ihist++)
     {
+        std::string systemName1 = fDetectorSystems[ihist].Data();
+        uint64_t wr_t1 = wr[ihist];
+
         for (int ihist2 = ihist + 1; ihist2 < fNumDetectorSystems; ihist2++)
         {
-            if((diffs[ihist]!=0) && (diffs[ihist2]!=0))
+            std::string systemName2 = fDetectorSystems[ihist2].Data();
+            uint64_t wr_t2 = wr[ihist2];
+            uint64_t wr_diff = wr_t1 - wr_t2;
+
+            tm_gate = GetGateValues(systemName1, systemName2);
+
+            if((diffs[ihist]!=0) && (diffs[ihist2]!=0) && wr_diff > tm_gate[0] && wr_diff < tm_gate[1])
             {
                 h2_time_diff_corrs[ihist*fNumDetectorSystems + ihist2]->Fill(diffs[ihist],diffs[ihist2]);
             }
         }
     }
 
-
-
     fNEvents += 1;
+}
+
+// I strongly dislike this but can't think of a simple better way yet
+int* TimeMachineOnline::GetGateValues(std::string name1, std::string name2)
+{   
+    int low = 0;
+    int high = 0;
+
+    if (name1 == "Fatima") // TAMEX
+    {
+        if (name2 == "AIDA")
+        {
+            low = -(*Correl)["AIDA-Fatima(TAMEX) TM Gate"][1];
+            high = -(*Correl)["AIDA-Fatima(TAMEX) TM Gate"][0];
+        }
+        else if (name2 == "bPlast")
+        {
+            low = (*Correl)["Fatima(TAMEX)-bPlast TM Gate"][0];
+            high = (*Correl)["Fatima(TAMEX)-bPlast TM Gate"][1];
+        }
+        else if (name2 == "Germanium")
+        {
+            low = (*Correl)["Fatima(TAMEX)-Germanium TM Gate"][0];
+            high = (*Correl)["Fatima(TAMEX)-Germanium TM Gate"][1];
+        }
+        else if (name2 == "FatimaVme")
+        {
+            low = 0;
+            high = 0;
+        }
+    }
+    else if (name1 == "FatimaVme") // TAMEX
+    {
+        if (name2 == "AIDA")
+        {
+            low = -(*Correl)["AIDA-Fatima(VME) TM Gate"][1];
+            high = -(*Correl)["AIDA-Fatima(VME) TM Gate"][0];
+        }
+        else if (name2 == "bPlast")
+        {
+            low = (*Correl)["Fatima(VME)-bPlast TM Gate"][0];
+            high = (*Correl)["Fatima(VME)-bPlast TM Gate"][1];
+        }
+        else if (name2 == "Germanium")
+        {
+            low = (*Correl)["Fatima(VME)-Germanium TM Gate"][0];
+            high = (*Correl)["Fatima(VME)-Germanium TM Gate"][1];
+        }
+        else if (name2 == "Fatima")
+        {
+            low = 0;
+            high = 0;
+        }
+    }
+    else if (name1 == "AIDA")
+    {
+        if (name2 == "Fatima")
+        {
+            low = (*Correl)["AIDA-Fatima(TAMEX) TM Gate"][0];
+            high = (*Correl)["AIDA-Fatima(TAMEX) TM Gate"][1];
+        }
+        else if (name2 == "FatimaVme")
+        {
+            low = (*Correl)["AIDA-Fatima(VME) TM Gate"][0];
+            high = (*Correl)["AIDA-Fatima(VME) TM Gate"][1];
+        }
+        else if (name2 == "bPlast")
+        {
+            low = (*Correl)["AIDA-bPlast TM Gate"][0];
+            high = (*Correl)["AIDA-bPlast TM Gate"][1];
+        }
+        else if (name2 == "Germanium")
+        {
+            low = (*Correl)["AIDA-Germanium TM Gate"][0];
+            high = (*Correl)["AIDA-Germanium TM Gate"][1];
+        }
+    }
+    else if (name1 == "bPlast")
+    {
+        if (name2 == "Fatima")
+        {
+            low = -(*Correl)["Fatima(TAMEX)-bPlast TM Gate"][1];
+            high = -(*Correl)["Fatima(TAMEX)-bPlast TM Gate"][0];
+        }
+        else if (name2 == "FatimaVme")
+        {
+            low = -(*Correl)["Fatima(TAMEX)-bPlast TM Gate"][1];
+            high = -(*Correl)["Fatima(TAMEX)-bPlast TM Gate"][0];
+        }
+        else if (name2 == "AIDA")
+        {
+            low = -(*Correl)["AIDA-bPlast TM Gate"][1];
+            high = -(*Correl)["AIDA-bPlast TM Gate"][0];
+        }
+        else if (name2 == "Germanium")
+        {
+            low = (*Correl)["bPlast-Germanium TM Gate"][0];
+            high = (*Correl)["bPlast-Germanium TM Gate"][1];
+        }
+    }
+    else if (name1 == "Germanium")
+    {
+        if (name2 == "Fatima")
+        {
+            low = -(*Correl)["Fatima(TAMEX)-Germanium TM Gate"][1];
+            high = -(*Correl)["Fatima(TAMEX)-Germanium TM Gate"][0];
+        }
+        else if (name2 == "FatimaVme")
+        {
+            low = -(*Correl)["Fatima(VME)-Germanium TM Gate"][1];
+            high = -(*Correl)["Fatima(VME)-Germanium TM Gate"][0];
+        }
+        else if (name2 == "AIDA")
+        {
+            low = -(*Correl)["AIDA-Germanium TM Gate"][1];
+            high = -(*Correl)["AIDA-Germanium TM Gate"][0];
+        }
+        else if (name2 == "bPlast")
+        {
+            low = -(*Correl)["bPlast-Germanium TM Gate"][1];
+            high = -(*Correl)["bPlast-Germanium TM Gate"][0];
+        }
+    }
+
+    int* gate = new int[2];
+    gate[0] = low;
+    gate[1] = high;
+    return gate;
 }
 
 void TimeMachineOnline::FinishEvent()
