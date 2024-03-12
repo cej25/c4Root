@@ -13,6 +13,7 @@
 #include "TClonesArray.h"
 
 #include "FatimaVmeRaw2Cal.h"
+#include "TFatimaVmeConfiguration.h"
 
 FatimaVmeRaw2Cal::FatimaVmeRaw2Cal()
     :   FairTask()
@@ -21,8 +22,6 @@ FatimaVmeRaw2Cal::FatimaVmeRaw2Cal()
     ,   fOnline(kFALSE)
     ,   funcal_data(new TClonesArray("FatimaVmeData"))
     ,   fcal_data(new TClonesArray("FatimaVmeCalData"))
-    //,
-
 {
 }
 
@@ -34,7 +33,6 @@ FatimaVmeRaw2Cal::FatimaVmeRaw2Cal(const TString& name, Int_t verbose)
     ,   fOnline(kFALSE)
     ,   funcal_data(new TClonesArray("FatimaVmeData"))
     ,   fcal_data(new TClonesArray("FatimaVmeCalData"))
-    //,
 {
 }
 
@@ -42,7 +40,8 @@ FatimaVmeRaw2Cal::~FatimaVmeRaw2Cal()
 {
     c4LOG(info, "Deleting FatimaVmeRaw2Cal task");
 
-    // delete
+    if (funcal_data) delete funcal_data;
+    if (fcal_data) delete fcal_data;
     
 }
 
@@ -59,6 +58,14 @@ InitStatus FatimaVmeRaw2Cal::Init()
 
     mgr->Register("FatimaVmeCalData", "FatimaVmeCalDataFolder", fcal_data, !fOnline);
     // time machine?
+
+    TFatimaVmeConfiguration const* fatvme_conf = TFatimaVmeConfiguration::GetInstance();
+    extra_signals = fatvme_conf->ExtraSignals();
+    tm_undelayed = fatvme_conf->TM_Undelayed();
+    tm_delayed = fatvme_conf->TM_Delayed();
+    sc41l = fatvme_conf->SC41L();
+    sc41r = fatvme_conf->SC41R();
+    
 
     fcal_data->Clear();
 
@@ -162,7 +169,7 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
                 uint32_t timestamp = v1290_data[i];
                 uint32_t timestamp_raw = v1290_data[i];
 
-                if (tdc_detectors[i] > -1 && tdc_detectors[i] < FAT_VME_MAX_DETS) // this auto-excludes how we're dealing with detectors actually
+                if (tdc_detectors[i] > -1) // this auto-excludes how we're dealing with detectors actually
                 {
                     if (extra_signals.find(tdc_detectors[i]) == extra_signals.end())
                     {   
@@ -183,24 +190,24 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
                     }
                 }
 
-                if (tdc_detectors[i] == SC41L_A && timestamp != 0.)
+                if (tdc_detectors[i] == sc41l && timestamp != 0.)
                 {
                     SC41L.emplace_back(timestamp);
                 }
-                if (tdc_detectors[i] == SC41R_A && timestamp != 0.)
+                if (tdc_detectors[i] == sc41r && timestamp != 0.)
                 {
                     SC41R.emplace_back(timestamp);
                 }
-                if (tdc_detectors[i] == TM_U && timestamp != 0.)
+                if (tdc_detectors[i] == tm_undelayed && timestamp != 0.)
                 {
                     FatVME_TMU.emplace_back(timestamp * 0.025);
                 }
-                if (tdc_detectors[i] == TM_D && timestamp != 0.)
+                if (tdc_detectors[i] == tm_delayed && timestamp != 0.)
                 {
                     FatVME_TMD.emplace_back(timestamp * 0.025);
                 }
 
-                // same for all weird channels (SC41R, TM, etc)
+                
             }
 
             int qdcs_fired = FatimaHit->Get_QDCs_fired();
@@ -235,7 +242,7 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
                 QDC_time_coarse[i] = Calibrate_QDC_T(QDC_time_coarse[i], qdc_detectors[i]);
                 QDC_time_fine[i] = Calibrate_QDC_T(QDC_time_fine[i], qdc_detectors[i]);
 
-                if (qdc_detectors[i] > - 1 && qdc_detectors[i] < FAT_VME_MAX_DETS) // FAT_VME_MAX_DETS unnecessary
+                if (qdc_detectors[i] > - 1)
                 {
                     if (extra_signals.find(qdc_detectors[i]) == extra_signals.end())
                     {

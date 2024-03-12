@@ -50,6 +50,7 @@ void bPlastOnlineSpectra::SetParContainers()
 
 InitStatus bPlastOnlineSpectra::Init()
 {
+
     // set batch mode
     gROOT->SetBatch(kTRUE);
     // number of dets 

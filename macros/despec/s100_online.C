@@ -127,6 +127,16 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     std::string CorrConfigFile = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/correlations.dat";
     CorrelationsMap* CorrMap = new CorrelationsMap(CorrConfigFile);
 
+
+    // ------------------------------------------------------------------------------------ //
+    // *** Load Detector Configurations *************************************************** //
+    TFatimaTwinpeaksConfiguration::SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fatima_alloc_new.txt");
+    TFatimaVmeConfiguration::SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Fatima_VME_allocation.txt");
+    TAidaConfiguration::SetBasePath(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/AIDA");
+    TbPlastConfiguration::SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/bplast/bplast_alloc_new.txt");
+    // FRS? Eventually will get around to mapping crates properly
+    TGermaniumConfiguration::SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/germanium/Germanium_Detector_Map.txt");
+
     
     // ------------------------------------------------------------------------------------- //
     // *** Read Subsystems - comment out unwanted systems ********************************** //
@@ -136,14 +146,12 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
 
     // FATIMA
     FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
+    // unpackfatima->DoFineTimeCalOnline(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fine_time_histos_111223_fatima.root", 50000);
     unpackfatima->SetInputFileFineTimeHistos(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fine_time_histos_111223_fatima.root");
-    //unpackfatima->DoFineTimeCalOnline(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fine_time_histos_111223_fatima.root", 50000);
 
-    //FatimaVmeReader* unpackfatimavme = new FatimaVmeReader((EXT_STR_h101_fatimavme_onion*)&ucesb_struct.fatimavme, offsetof(EXT_STR_h101, fatimavme));
-    //unpackfatimavme->Set_Allocation(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Fatima_VME_allocation.txt");
+    // FatimaVmeReader* unpackfatimavme = new FatimaVmeReader((EXT_STR_h101_fatimavme_onion*)&ucesb_struct.fatimavme, offsetof(EXT_STR_h101, fatimavme));
     
     // AIDA
-    TAidaConfiguration::SetBasePath(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/AIDA");
     AidaReader* unpackaida = new AidaReader((EXT_STR_h101_aida_onion*)&ucesb_struct.aida, offsetof(EXT_STR_h101, aida));
     
     // bPlast
@@ -196,7 +204,7 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
 
     // FATIMA
     FatimaRaw2Cal* calfatima = new FatimaRaw2Cal();
-    calfatima->SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fatima_alloc.txt");
+    //calfatima->SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fatima_alloc.txt");
     // calfatima->PrintDetectorMap();
     calfatima->SetDetectorCalFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fatima_cal.txt");
     // calfatima->PrintDetectorCal();

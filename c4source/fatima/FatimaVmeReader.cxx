@@ -10,6 +10,7 @@
 // c4
 #include "FatimaVmeData.h"
 #include "FatimaVmeReader.h"
+#include "TFatimaVmeConfiguration.h"
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
@@ -59,6 +60,10 @@ Bool_t FatimaVmeReader::Init(ext_data_struct_info* a_struct_info)
 
     memset(fData, 0, sizeof *fData);
 
+    TFatimaVmeConfiguration const* fatvme_conf = TFatimaVmeConfiguration::GetInstance();
+    num_qdc_boards = fatvme_conf->NQDCBoards();
+    num_tdc_boards = fatvme_conf->NTDCBoards();
+
     c4LOG(info, "FatimaVmeReader init setup completed.");
 
     return kTRUE;
@@ -90,12 +95,9 @@ Bool_t FatimaVmeReader::Read()
     for (int qdc = 0; qdc < num_qdc_boards; qdc++)
     {
         Int_t board_id = fData->fatimavme_qdc[qdc].board_id;
-        FatimaHit->Set_board_id(qdc, board_id);
-        uint32_t board_time = fData->fatimavme_qdc[qdc].board_time;
-        FatimaHit->Set_board_time(qdc, board_time);
+        
         Int_t channel_mask = fData->fatimavme_qdc[qdc].channels;
         std::vector<int> channels_fired = Get_Channels(channel_mask);
-        //FatimaHit->Set_num_channels_fired(qdc, channels_fired.size());
 
         for (uint32_t channel = 0; channel < channels_fired.size(); channel++)
         {   
@@ -103,16 +105,12 @@ Bool_t FatimaVmeReader::Read()
             qdc_detectors.emplace_back(current_detector);
 
             QDC_time_coarse.emplace_back(fData->fatimavme_qdc[qdc].channel_timev[channel]);
-            //FatimaHit->Set_channel_time_coarse(qdc, channels_fired[channel], QDC_time_coarse);
 
             QDC_time_fine.emplace_back((uint64_t)fData->fatimavme_qdc[qdc].channel_timev[channel] + ((uint64_t)(fData->fatimavme_qdc[qdc].chan_ext_timev[channel]) << 32) + fData->fatimavme_qdc[qdc].chan_fine_timev[channel] / 1024.);
-            //FatimaHit->Set_channel_time_fine(qdc, channels_fired[channel], QDC_time_fine);
 
             QLong_raw.emplace_back(fData->fatimavme_qdc[qdc].qlongv[channel]);
-            //FatimaHit->Set_channel_QLong(qdc, channels_fired[channel], QLong_raw);
 
             QShort_raw.emplace_back(fData->fatimavme_qdc[qdc].qshortv[channel]);
-            //FatimaHit->Set_channel_QShort(qdc, channels_fired[channel], QShort_raw);
 
             qdcs_fired++;
         }
@@ -194,8 +192,8 @@ void FatimaVmeReader::Set_Allocation(TString& filepath)
             det = std::stoi(signal);
             iss >> qdc_board >> qdc_chan >> tdc_board >> tdc_chan;
 
-            if (qdc_board > 0) qdc_boards.insert(qdc_board);
-            if (tdc_board > 0) tdc_boards.insert(tdc_board); 
+            if (qdc_board > -1) qdc_boards.insert(qdc_board);
+            if (tdc_board > -1) tdc_boards.insert(tdc_board); 
 
             dets_qdc[std::make_pair(qdc_board, qdc_chan)] = det;
             dets_tdc[std::make_pair(tdc_board, tdc_chan)] = det;
