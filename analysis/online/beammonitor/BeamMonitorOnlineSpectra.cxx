@@ -20,6 +20,7 @@
 #include "THttpServer.h"
 #include "TMath.h"
 #include "TRandom.h"
+#include <cmath>
 
 #define DEBUG_MODE 0
 
@@ -389,10 +390,7 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
                     time_t rawtime;
                     time(&rawtime);
 
-                    if (BM_S4_QFcount == 1132 || BM_S4_QFcount == 1513)
-                    {
-                        std::cout << "weird, QF = " << BM_QF << " and time? = " << rawtime << std::endl;
-                    }
+                    if (std::isnan(BM_QF)) continue;
 
                     hG_BM_s4gr_qf->TGraph::SetPoint(BM_S4_QFcount, rawtime, BM_QF);
                     hG_BM_s4gr_dcmin->TGraph::SetPoint(BM_S4_QFcount, rawtime, BM_dc_MinValue);
