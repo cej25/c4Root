@@ -242,8 +242,7 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
             std::vector<uint32_t> BM_S2_Hits = BeamMonitorHit->Get_S2_data();
             std::vector<uint32_t> BM_S4_Hits = BeamMonitorHit->Get_S4_data();
 
-            // S2
-            std::cout << "S2 hits: " << BM_S2_Hits.size() << std::endl;
+            // S2 -- apparently no S2 data
             for (Int_t i = 0; i < BM_S2_Hits.size(); i++)
             {
                 BM_S2_Tdiffs[BM_S2_count] = BM_S2_Hits.at(i) / 10; // [10ns] -> [100ns]
@@ -308,6 +307,10 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
 
                     // QF
                     BM_QF = 100.0 * (1.0 - (hG_BM_s2h_norm_tdiff->Integral(0, (Int_t) BM_Tmean) / hG_BM_s2h_poisson->Integral(0, (Int_t) BM_Tmean)));
+                    if (BM_QF == 0)
+                    {
+                        std::cout << "weird, QF = 0. norm_tdiff integral = " << hG_BM_s2h_norm_tdiff->Integral(0, (Int_t) BM_Tmean) << std::endl;
+                    }
 
                     time_t rawtime;
                     time(&rawtime);
