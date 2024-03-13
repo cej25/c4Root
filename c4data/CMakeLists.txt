@@ -41,11 +41,15 @@ aidaData/AidaHitData.cxx
 aidaData/TAidaConfiguration.cxx
 germaniumData/GermaniumFebexData.cxx
 germaniumData/GermaniumCalData.cxx
+germaniumData/TGermaniumConfiguration.cxx
 bplastData/bPlastTwinpeaksData.cxx
 bplastData/bPlastTwinpeaksCalData.cxx
+bplastData/TbPlastConfiguration.cxx
 beammonitorData/BeamMonitorData.cxx
 fatimaData/FatimaTwinpeaksData.cxx
 fatimaData/FatimaTwinpeaksCalData.cxx
+fatimaData/TFatimaTwinpeaksConfiguration.cxx
+fatimaData/TFatimaVmeConfiguration.cxx
 fatimaData/FatimaVmeData.cxx
 fatimaData/FatimaVmeCalData.cxx
 timemachineData/TimeMachineData.cxx
