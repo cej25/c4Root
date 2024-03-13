@@ -18,16 +18,16 @@
 #pragma link C++ class FrsUserRaw2Cal+;
 #pragma link C++ class FrsVFTXRaw2Cal+;
 #pragma link C++ class FrsCal2Hit+;
-#pragma link C++ class TFRSParameter+;
-#pragma link C++ class TMWParameter+;
-#pragma link C++ class TTPCParameter+;
-#pragma link C++ class TMUSICParameter+;
-#pragma link C++ class TSCIParameter+;
-#pragma link C++ class TIDParameter+;
-#pragma link C++ class TSIParameter+;
-#pragma link C++ class TRangeParameter+;
-#pragma link C++ class TLABRParameter+;
-#pragma link C++ class TMRTOFMSParameter+;
+// #pragma link C++ class TFRSParameter+;
+// #pragma link C++ class TMWParameter+;
+// #pragma link C++ class TTPCParameter+;
+// #pragma link C++ class TMUSICParameter+;
+// #pragma link C++ class TSCIParameter+;
+// #pragma link C++ class TIDParameter+;
+// #pragma link C++ class TSIParameter+;
+// #pragma link C++ class TRangeParameter+;
+// #pragma link C++ class TLABRParameter+;
+// #pragma link C++ class TMRTOFMSParameter+;
 
 #pragma link C++ class GermaniumReader+;
 #pragma link C++ class GermaniumRaw2Cal+;

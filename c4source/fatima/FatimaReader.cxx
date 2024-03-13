@@ -46,9 +46,11 @@ And prints some statistics for the run.
 */
 FatimaReader::~FatimaReader() { 
 
-    PrintStatistics();
+    if (fPrintStatistics == true)
+    {
+        PrintStatistics();    
+    }
 
-    
     for (int i = 0; i < NBoards; i++) {
         for (int j = 0; j < NChannels; j++) {
             if (fine_time_calibration_coeffs[i][j] != nullptr) {

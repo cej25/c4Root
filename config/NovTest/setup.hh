@@ -15,6 +15,7 @@
 #define AIDA_MAX_FEES 12
 #define AIDA_MAX_HITS 13000 // 13k?
 #define AIDA_UCESB_SHIFT 14000 // ns ucesb1 shifts MBS timestamps of AIDA
+#define AIDA_DSSDS 3
 
 // germaniums
 #define GE_MAX_DETS 4
@@ -48,6 +49,7 @@
 #define BPLAST_TAMEX_CHANNELS 16
 
 // frs
+/*
 #define FRS_TPAT_MAX_HITS 30 // idek if this is needed seriously. append item? cmon.
 #define FRS_CRATE_MAX_HITS 30
 #define FRS_MAIN_CRATE_MAX_HITS 30
@@ -65,5 +67,6 @@
 #define SCI41R_CH 8
 #define SCI42L_CH 3 
 #define SCI42R_CH 4
+*/
 
 #endif /* DespecSetup_H */
