@@ -230,9 +230,10 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
             Double_t BM_Tmean;
             UInt_t BM_S2_Tdiffs[BM_S2_MaxTdiffs] = {0};
             UInt_t BM_S4_Tdiffs[BM_S4_MaxTdiffs] = {0};
+            std::vector<uint32_t> BM_S2_Hits = BeamMonitorHit->Get_S2_data();
+            std::vector<uint32_t> BM_S4_Hits = BeamMonitorHit->Get_S4_data();
 
             // S2
-            std::vector<uint32_t> BM_S2_Hits = BeamMonitorHit->Get_S2_data();
             for (Int_t i = 0; i < BM_S2_Hits.size(); i++)
             {
                 BM_S2_Tdiffs[BM_S2_count] = BM_S2_Hits.at(i) / 10; // [10ns] -> [100ns]
@@ -253,7 +254,7 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
                     {
                         if ((Double_t) BM_S2_SumTdiff < (Double_t) BM_NTimeMax * pow(10,5))
                         {
-                            BM_S2_SumTdiff += BM_S2_MaxTdiffs[(BM_S2_count + k) % BM_S2_MaxTdiffs];
+                            BM_S2_SumTdiff += BM_S2_Tdiffs[(BM_S2_count + k) % BM_S2_MaxTdiffs];
                             hG_BM_s2h_t1->Fill((Double_t) BM_S2_SumTdiff * pow(10,-5));
                         }
                         else
@@ -310,35 +311,27 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
             }
 
             // S4
-
-
-            Int_t BM_S4_Count = 0;
-            Long64_t BM_S4_QFcount = 0;
-            Long64_t BM_S4_SumTdiff = 0;
-
-            std::vector<uint32_t> S4hits = BeamMonitorHit->Get_S4_data();
-
-            Float_t BM_S4_Tdiffs[BM_S4_MaxTdiffs] = {0};
-            
-            for (int i = 0; i < S4hits.size(); i++)
+            for (int i = 0; i < BM_S4_Hits.size(); i++)
             {
-                BM_S4_Tdiffs[BM_S4_Count] = S4hits[i] / 10;
-                hG_BM_s4h_tdiff->Fill(BM_S4_Tdiffs[BM_S4_Count]);
-                BM_S4_Count++;
+                BM_S4_Tdiffs[BM_S4_count] = BM_S4_Hits[i] / 10;
+                hG_BM_s4h_tdiff->Fill(BM_S4_Tdiffs[BM_S4_count]);
+                BM_S4_count++;
 
-                if (BM_S4_Count > BM_S4_MaxTdiffs)
+                if (BM_S4_count > BM_S4_MaxTdiffs)
                 {
-                    BM_S4_Count = BM_S4_Count % BM_S4_MaxTdiffs;
+                    BM_S4_count = BM_S4_count % BM_S4_MaxTdiffs;
                 }
 
-                if (BM_S4_Count % BM_S4_DoAnalysisEvery == 0)
+                if (BM_S4_count % BM_S4_DoAnalysisEvery == 0)
                 {
+                    BM_CR_timesum = 0;
+                    BM_CR_relevanthits = 0;
 
                     for (Int_t k = 0; k < BM_S4_MaxTdiffs; k++)
                     {
                         if ((Double_t) BM_S4_SumTdiff < (Double_t) BM_NTimeMax * pow(10, 5))
                         {
-                            BM_S4_SumTdiff += BM_S4_Tdiffs[(BM_S4_Count + k) % BM_S4_MaxTdiffs];
+                            BM_S4_SumTdiff += BM_S4_Tdiffs[(BM_S4_count + k) % BM_S4_MaxTdiffs];
                             hG_BM_s4h_t1->Fill((Double_t) BM_S4_SumTdiff * pow(10, -5));
                         }
                         else
