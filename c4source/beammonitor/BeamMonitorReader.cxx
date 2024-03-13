@@ -58,6 +58,39 @@ Bool_t BeamMonitorReader::Read()
 
     BeamMonitorData* BeamMonitorHit = new BeamMonitorData();
 
+    // CEJ doing S2 now, not sure if identical or small differences
+    uint32_t ts_prev_S2 = 0;
+    uint32_t ts_curr_S2 = 0;
+    uint32_t ts_diff_S2 = 0;
+    uint32_t ts_first_S2 = 1;
+
+    std::vector<uint32_t> dtS2;
+
+    for (int hit = 0; hit < fData->beammonitor_dataS2; hit++)
+    {   
+        ts_curr_S2 = fData->beammonitor_dataS2v[hit];
+        ts_diff_S2 = ts_curr_S2 - ts_prev_S2;
+        if (ts_diff_S2 < 0)
+        {
+            ts_diff_S2 = ts_diff_S2 + UINT_MAX;
+
+            if (ts_diff_S2 > pow(10,8))
+            {
+                ts_diff_S2 = 0;
+            }
+        }
+        if (ts_first_S2 == 1)
+        {
+            ts_first_S2 = 0;
+        }
+        else
+        {
+            dtS2.emplace_back(ts_diff_S2);
+        }
+        
+        ts_prev_S2 = ts_curr_S2;
+    }
+
     // read / manipulate data.
     // S4 for now -- deal with S2 later.
     uint32_t ts_prev_S4 = 0;
@@ -86,17 +119,13 @@ Bool_t BeamMonitorReader::Read()
         }
         else
         {
-
             dtS4.emplace_back(ts_diff_S4);
-
-            //new ((*fArray)[fArray->GetEntriesFast()]) BeamMonitorData(0, ts_diff_S4);
         }
         
-
         ts_prev_S4 = ts_curr_S4;
-
     }
-
+    
+    BeamMonitorHit->Set_S2_data(dtS2);
     BeamMonitorHit->Set_S4_data(dtS4);
 
     new ((*fArray)[fArray->GetEntriesFast()]) BeamMonitorData(*BeamMonitorHit);

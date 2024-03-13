@@ -92,12 +92,31 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     folder_beammonitor->Add(hG_BM_s4h_cp);
 
     hG_BM_s4gr_dt_avg = new TGraph(3600);
+    hG_BM_s4gr_dt_avg->SetName("hG_BM_s4gr_dt_avg");
+    hG_BM_s4gr_dt_avg->SetTitle("S4 Average Time Difference");
+    hG_BM_s4gr_dt_avg->GetXaxis()->SetTimeDisplay(1);
+    hG_BM_s4gr_dt_avg->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
     folder_beammonitor->Add(hG_BM_s4gr_dt_avg);
+
     hG_BM_s4gr_qf = new TGraph(3600);
+    hG_BM_s4gr_qf->SetName("hG_BM_s4gr_qf");
+    hG_BM_s4gr_qf->SetTitle("S4 Quality Factor");
+    hG_BM_s4gr_qf->GetXaxis()->SetTimeDisplay(1);
+    hG_BM_s4gr_qf->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
     folder_beammonitor->Add(hG_BM_s4gr_qf);
+
     hG_BM_s4gr_dcmin = new TGraph(3600);
+    hG_BM_s4gr_dcmin->SetName("hG_BM_s4gr_dcmin");
+    hG_BM_s4gr_dcmin->SetTitle("S4 Largest Deviation From Ideal");
+    hG_BM_s4gr_dcmin->GetXaxis()->SetTimeDisplay(1);
+    hG_BM_s4gr_dcmin->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
     folder_beammonitor->Add(hG_BM_s4gr_dcmin);
+
     hG_BM_s4gr_dctime = new TGraph(3600);
+    hG_BM_s4gr_dctime->SetName("hG_BM_s4gr_dctime");
+    hG_BM_s4gr_dctime->SetTitle("S4 Time difference with the largest deviation [us]");
+    hG_BM_s4gr_dctime->GetXaxis()->SetTimeDisplay(1);
+    hG_BM_s4gr_dctime->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
     folder_beammonitor->Add(hG_BM_s4gr_dctime);
 
     hG_BM_s2h_norm_tdiff = new TH1D("hG_BM_s2h_norm_tdiff", "S2 Normalised Hit Time Difference [100ns]", 100000, 0, 100000);
@@ -109,10 +128,33 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     hG_BM_s2h_dc = new TH1D("hG_BM_s2h_dc", "S2 Deviation of Cumulative Hit Times [100ns]", 100000, 0, 100000);
     hG_BM_s2h_cp = new TH1D("hG_BM_s2h_cp", "S2 Cumulative Poisson [100ns]", 100000, 0, 100000);
 
-    /*hG_BM_s2gr_dt_avg = new TGraph();
-    hG_BM_s2gr_qf = new TGraph();
-    hG_BM_s2gr_dcmin = new TGraph();
-    hG_BM_s2gr_dctime = new TGraph();*/
+    hG_BM_s2gr_dt_avg = new TGraph(3600);
+    hG_BM_s2gr_dt_avg->SetName("hG_BM_s2gr_dt_avg");
+    hG_BM_s2gr_dt_avg->SetTitle("S2 Average Time Difference");
+    hG_BM_s2gr_dt_avg->GetXaxis()->SetTimeDisplay(1);
+    hG_BM_s2gr_dt_avg->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
+    folder_beammonitor->Add(hG_BM_s2gr_dt_avg);
+
+    hG_BM_s2gr_qf = new TGraph(3600);
+    hG_BM_s2gr_qf->SetName("hG_BM_s2gr_qf");
+    hG_BM_s2gr_qf->SetTitle("S2 Quality Factor");
+    hG_BM_s2gr_qf->GetXaxis()->SetTimeDisplay(1);
+    hG_BM_s2gr_qf->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
+    folder_beammonitor->Add(hG_BM_s2gr_qf);
+
+    hG_BM_s2gr_dcmin = new TGraph(3600);
+    hG_BM_s2gr_dcmin->SetName("hG_BM_s2gr_dcmin");
+    hG_BM_s2gr_dcmin->SetTitle("S2 Largest Deviation From Ideal");
+    hG_BM_s2gr_dcmin->GetXaxis()->SetTimeDisplay(1);
+    hG_BM_s2gr_dcmin->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
+    folder_beammonitor->Add(hG_BM_s2gr_dcmin);
+
+    hG_BM_s2gr_dctime = new TGraph(3600);
+    hG_BM_s2gr_dctime->SetName("hG_BM_s2gr_dctime");
+    hG_BM_s2gr_dctime->SetTitle("S2 Time difference with the largest deviation [us]");
+    hG_BM_s2gr_dctime->GetXaxis()->SetTimeDisplay(1);
+    hG_BM_s2gr_dctime->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
+    folder_beammonitor->Add(hG_BM_s2gr_dctime);
 
 
 
@@ -173,13 +215,110 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
             BeamMonitorData* BeamMonitorHit = (BeamMonitorData*)fHitBM->At(ihit);
             if (!BeamMonitorHit) continue;
 
+            // S2
+            //Int_t BM_Hits; // actually we do this slightly differently
+            Double_t BM_CountRate;
+            Double_t BM_CR_timesum;
+            Int_t BM_CR_relevanthits;
+            Double_t BM_CR_Tlimit = pow(10,6); // should be much lower than time between spills, units [100ns]
+
+            Double_t BM_Tdiff_integral;
+            Double_t BM_dc_MinValue;
+            Int_t BM_dc_MinBin;
+
+            Double_t BM_QF;
+            Double_t BM_Tmean;
+            UInt_t BM_S2_Tdiffs[BM_S2_MaxTdiffs] = {0};
+            UInt_t BM_S4_Tdiffs[BM_S4_MaxTdiffs] = {0};
+
+            // S2
+            std::vector<uint32_t> BM_S2_Hits = BeamMonitorHit->Get_S2_data();
+            for (Int_t i = 0; i < BM_S2_Hits.size(); i++)
+            {
+                BM_S2_Tdiffs[BM_S2_count] = BM_S2_Hits.at(i) / 10; // [10ns] -> [100ns]
+                hG_BM_s2h_tdiff->Fill(BM_S2_Tdiffs[BM_S2_count]);
+                BM_S2_count++;
+
+                if (BM_S2_count > BM_S2_MaxTdiffs)
+                {
+                    BM_S2_count = BM_S2_count % BM_S2_MaxTdiffs;
+                }
+
+                if (BM_S2_count % BM_S2_DoAnalysisEvery == 0)
+                {
+                    BM_CR_timesum = 0;
+                    BM_CR_relevanthits = 0;
+
+                    for (Int_t k = 0; k < BM_S2_MaxTdiffs; k++)
+                    {
+                        if ((Double_t) BM_S2_SumTdiff < (Double_t) BM_NTimeMax * pow(10,5))
+                        {
+                            BM_S2_SumTdiff += BM_S2_MaxTdiffs[(BM_S2_count + k) % BM_S2_MaxTdiffs];
+                            hG_BM_s2h_t1->Fill((Double_t) BM_S2_SumTdiff * pow(10,-5));
+                        }
+                        else
+                        {
+                            hG_BM_s2h_t1->Reset("ICESM");
+                            BM_S2_SumTdiff = 0;
+                        }
+
+                        if (BM_S2_Tdiffs[k] < BM_CR_Tlimit)
+                        {
+                            BM_CR_timesum += BM_S2_Tdiffs[k];
+                            BM_CR_relevanthits++;
+                        }
+                    }
+
+                    BM_CountRate = (Double_t) BM_CR_relevanthits / BM_CR_timesum;
+
+                    BM_Tdiff_integral = hG_BM_s2h_tdiff->Integral(0, BM_MaxTimeDiff);
+
+                    for (Int_t j = 0; j < BM_S2_MaxTdiffs; j++)
+                    {
+                        hG_BM_s2h_norm_tdiff->SetBinContent(j, hG_BM_s4h_tdiff->GetBinContent(j) / BM_Tdiff_integral);
+                        hG_BM_s2h_poisson->SetBinContent(j, -exp(-BM_CountRate * ((Double_t) j)) - exp(-BM_CountRate * ((Double_t) j+1)));
+
+                        if (j == 0)
+                        {
+                            hG_BM_s2h_c->SetBinContent(j, 0);
+                            hG_BM_s2h_cp->SetBinContent(j, 0);
+                        }
+                        else
+                        {
+                            hG_BM_s2h_c->SetBinContent(j, hG_BM_s2h_c->GetBinContent(j-1) + hG_BM_s2h_norm_tdiff->GetBinContent(j));
+                            hG_BM_s2h_cp->SetBinContent(j, hG_BM_s2h_cp->GetBinContent(j-1) + hG_BM_s2h_poisson->GetBinContent(j));
+                        }
+                        hG_BM_s2h_dc->SetBinContent(j, hG_BM_s2h_cp->GetBinContent(j) - hG_BM_s2h_c->GetBinContent(j));
+                    }
+
+                    BM_dc_MinBin = hG_BM_s2h_dc->GetMinimumBin();
+                    BM_dc_MinValue = hG_BM_s2h_dc->GetBinContent(BM_dc_MinBin);
+                    BM_Tmean = hG_BM_s2h_norm_tdiff->GetMean();
+
+                    // QF
+                    BM_QF = 100.0 * (1.0 - (hG_BM_s2h_norm_tdiff->Integral(0, (Int_t) BM_Tmean) / hG_BM_s2h_poisson->Integral(0, (Int_t) BM_Tmean)));
+
+                    time_t rawtime;
+                    time(&rawtime);
+
+                    hG_BM_s2gr_qf->SetPoint(BM_S2_QFcount, rawtime, BM_QF);
+                    hG_BM_s2gr_dcmin->SetPoint(BM_S2_QFcount, rawtime, BM_dc_MinValue);
+                    hG_BM_s2gr_dctime->SetPoint(BM_S2_QFcount, rawtime, BM_dc_MinBin / 10);
+                    hG_BM_s2gr_dt_avg->SetPoint(BM_S2_QFcount, rawtime, (Double_t) BM_Tmean / 10.);
+                    BM_S2_QFcount++;                    
+                }
+            }
+
+            // S4
+
+
             Int_t BM_S4_Count = 0;
             Long64_t BM_S4_QFcount = 0;
             Long64_t BM_S4_SumTdiff = 0;
 
             std::vector<uint32_t> S4hits = BeamMonitorHit->Get_S4_data();
 
-            Float_t BM_S4_Tdiffs[100000] = {0};
+            Float_t BM_S4_Tdiffs[BM_S4_MaxTdiffs] = {0};
             
             for (int i = 0; i < S4hits.size(); i++)
             {
@@ -192,11 +331,8 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
                     BM_S4_Count = BM_S4_Count % BM_S4_MaxTdiffs;
                 }
 
-                // dp analyis every N counts
-                if (BM_S4_Count % DoS4Analysis_N == 0)
+                if (BM_S4_Count % BM_S4_DoAnalysisEvery == 0)
                 {
-                    BM_CR_timesum = 0;
-                    BM_CR_relevanthits = 0;
 
                     for (Int_t k = 0; k < BM_S4_MaxTdiffs; k++)
                     {
@@ -226,8 +362,6 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
                     {
                         hG_BM_s4h_norm_tdiff->SetBinContent(j, hG_BM_s4h_tdiff->GetBinContent(j) / BM_Tdiff_integral);
                         hG_BM_s4h_poisson->SetBinContent(j, exp(-BM_CountRate * ((Double_t) j)) - exp(-BM_CountRate * ((Double_t) j+1)));
-                        //std::cout << BM_CountRate << std::endl;
-                        //std::cout << exp(-BM_CountRate * ((Double_t) j)) - exp(-BM_CountRate * ((Double_t) j+1)) << std::endl;
 
                         // Cumulative histograms
                         if (j == 0)
@@ -261,6 +395,7 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
 
                 } // analysis every N
             } // S4 Hits
+        
         } // BM events
     } // BM event exists
 
