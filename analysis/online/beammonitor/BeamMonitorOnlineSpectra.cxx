@@ -103,6 +103,8 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     hG_BM_s4gr_qf->SetTitle("S4 Quality Factor");
     hG_BM_s4gr_qf->GetXaxis()->SetTimeDisplay(1);
     hG_BM_s4gr_qf->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
+    hG_BM_s4gr_qf->GetXaxis()->SetTimeOffset(0, "local");
+    hG_BM_s4gr_qf->GetYaxis()->SetLimits(0,50);
     folder_beammonitor->Add(hG_BM_s4gr_qf);
 
     hG_BM_s4gr_dcmin = new TGraph(3600);
@@ -310,7 +312,7 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
                     hG_BM_s2gr_dcmin->SetPoint(BM_S2_QFcount, rawtime, BM_dc_MinValue);
                     hG_BM_s2gr_dctime->SetPoint(BM_S2_QFcount, rawtime, BM_dc_MinBin / 10);
                     hG_BM_s2gr_dt_avg->SetPoint(BM_S2_QFcount, rawtime, (Double_t) BM_Tmean / 10.);
-                    std::cout << "S2 Quality Factor: " << BM_QF << std::endl;
+                    //std::cout << "S2 Quality Factor: " << BM_QF << std::endl;
                     BM_S2_QFcount++;                    
                 }
             }
@@ -389,7 +391,7 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
                     hG_BM_s4gr_dcmin->SetPoint(BM_S4_QFcount, rawtime, BM_dc_MinValue);
                     hG_BM_s4gr_dctime->SetPoint(BM_S4_QFcount, rawtime, BM_dc_MinBin / 10);
                     hG_BM_s4gr_dt_avg->SetPoint(BM_S4_QFcount, rawtime, (Double_t) BM_Tmean / 10.);
-                    std::cout << "S4 Quality Factor: " << BM_QF << std::endl;
+                    //std::cout << "S4 Quality Factor: " << BM_QF << std::endl;
                     BM_S4_QFcount++;
 
                 } // analysis every N
