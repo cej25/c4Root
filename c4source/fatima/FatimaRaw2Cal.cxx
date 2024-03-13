@@ -97,8 +97,6 @@ InitStatus FatimaRaw2Cal::Init()
     fcal_data->Clear();
     funcal_data->Clear();
 
-    hits_in_Twinpeaks_channel = new TClonesArray("FatimaTwinpeaksCalData");
-    hits_in_Twinpeaks_channel->Clear();
 
     return kSUCCESS;
 };
@@ -375,7 +373,7 @@ void FatimaRaw2Cal::Exec(Option_t* option)
                 energy,
                 funcal_hit->Get_wr_subsystem_id(),
                 funcal_hit->Get_wr_t());
-                        
+
             fNEvents++;
             //ihit++; //increment it by one extra.
             }
