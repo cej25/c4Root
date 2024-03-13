@@ -80,6 +80,11 @@ public:
     std::string Scaler(int i) const;
     std::map<int, std::string> const& ScalerMap() const;
 
+    int TM_Undelayed() const;
+    int TM_Delayed() const;
+    int SC41L() const;
+    int SC41R() const;
+
     int GetAdcOffset(int f, int channel) const;
     double GetDssdGain(int d, bool yside, int strip) const;
     int GetFeeTimeOffset(int f) const;
@@ -118,6 +123,12 @@ private:
     std::vector<DSSDConfiguration> dssd;
     std::vector<FEEConfiguration> fee;
     std::map<int, std::string> scalers;
+
+    // special channels
+    int tm_undelayed;
+    int tm_delayed;
+    int sc41l_d;
+    int sc41r_d;
 
     // calibration parameters
     std::vector<std::array<int, 64>> adcOffsets;
@@ -256,6 +267,26 @@ inline std::string TAidaConfiguration::Scaler(int i) const
   {
     return "";
   }
+}
+
+inline int TAidaConfiguration::TM_Undelayed() const
+{
+  return tm_undelayed;
+}
+
+inline int TAidaConfiguration::TM_Delayed() const
+{
+  return tm_delayed;
+}
+
+inline int TAidaConfiguration::SC41L() const
+{
+  return sc41l_d;
+}
+
+inline int TAidaConfiguration::SC41R() const
+{
+  return sc41r_d;
 }
 
 inline std::map<int, std::string> const& TAidaConfiguration::ScalerMap() const
