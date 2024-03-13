@@ -22,11 +22,6 @@
 #include "TRandom.h"
 
 #define DEBUG_MODE 0
-#define S4_MAX_TDIFFS 100000
-#define DoS4Analysis_N 3000
-#define S4_tMax 10000
-#define S4_tLimit pow(10,6)
-#define S4_MaxTimeDiff 100000
 
 BeamMonitorOnlineSpectra::BeamMonitorOnlineSpectra()
 {
@@ -96,6 +91,7 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     hG_BM_s4gr_dt_avg->SetTitle("S4 Average Time Difference");
     hG_BM_s4gr_dt_avg->GetXaxis()->SetTimeDisplay(1);
     hG_BM_s4gr_dt_avg->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
+    hG_BM_s4gr_dt_avg->GetXaxis()->SetTimeOffset(0, "local");
     folder_beammonitor->Add(hG_BM_s4gr_dt_avg);
 
     hG_BM_s4gr_qf = new TGraph(3600);
@@ -104,7 +100,12 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     hG_BM_s4gr_qf->GetXaxis()->SetTimeDisplay(1);
     hG_BM_s4gr_qf->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
     hG_BM_s4gr_qf->GetXaxis()->SetTimeOffset(0, "local");
-    hG_BM_s4gr_qf->GetYaxis()->SetLimits(0,50);
+    hG_BM_s4gr_qf->GetYaxis()->SetTitle("QF");
+    hG_BM_s4gr_qf->GetXaxis()->SetTitle("Time [Y-M-D H:M]");
+    hG_BM_s4gr_qf->SetMarkerColor(kBlack);
+    hG_BM_s4gr_qf->SetMarkerStyle(20);
+    hG_BM_s4gr_qf->SetLineColor(kBlue);
+    hG_BM_s4gr_qf->SetLineWidth(2);
     folder_beammonitor->Add(hG_BM_s4gr_qf);
 
     hG_BM_s4gr_dcmin = new TGraph(3600);
@@ -112,6 +113,7 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     hG_BM_s4gr_dcmin->SetTitle("S4 Largest Deviation From Ideal");
     hG_BM_s4gr_dcmin->GetXaxis()->SetTimeDisplay(1);
     hG_BM_s4gr_dcmin->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
+    hG_BM_s4gr_dcmin->GetXaxis()->SetTimeOffset(0, "local");
     folder_beammonitor->Add(hG_BM_s4gr_dcmin);
 
     hG_BM_s4gr_dctime = new TGraph(3600);
@@ -119,6 +121,7 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     hG_BM_s4gr_dctime->SetTitle("S4 Time difference with the largest deviation [us]");
     hG_BM_s4gr_dctime->GetXaxis()->SetTimeDisplay(1);
     hG_BM_s4gr_dctime->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
+    hG_BM_s4gr_dctime->GetXaxis()->SetTimeOffset(0, "local");
     folder_beammonitor->Add(hG_BM_s4gr_dctime);
 
     hG_BM_s2h_norm_tdiff = new TH1D("hG_BM_s2h_norm_tdiff", "S2 Normalised Hit Time Difference [100ns]", 100000, 0, 100000);
@@ -240,6 +243,7 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
             std::vector<uint32_t> BM_S4_Hits = BeamMonitorHit->Get_S4_data();
 
             // S2
+            std::cout << "S2 hits: " << BM_S2_Hits.size() << std::endl;
             for (Int_t i = 0; i < BM_S2_Hits.size(); i++)
             {
                 BM_S2_Tdiffs[BM_S2_count] = BM_S2_Hits.at(i) / 10; // [10ns] -> [100ns]
