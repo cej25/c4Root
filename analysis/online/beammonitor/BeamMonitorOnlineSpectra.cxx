@@ -21,6 +21,7 @@
 #include "TMath.h"
 #include "TRandom.h"
 #include <cmath>
+#include <chrono>
 
 #define DEBUG_MODE 0
 
@@ -309,6 +310,7 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
                     // QF
                     BM_QF = 100.0 * (1.0 - (hG_BM_s2h_norm_tdiff->Integral(0, (Int_t) BM_Tmean) / hG_BM_s2h_poisson->Integral(0, (Int_t) BM_Tmean)));
                     
+                    // chrono to get ns resolution?
                     time_t rawtime;
                     time(&rawtime);
 
@@ -390,7 +392,8 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
                     time_t rawtime;
                     time(&rawtime);
 
-                    if (std::isnan(BM_QF)) continue;
+                    if (std::isnan(BM_QF)) continue; // skip divisions by zero
+                    if (rawtime < 1000000000) continue; // skip weird time events? not sure whats happening
 
                     hG_BM_s4gr_qf->TGraph::SetPoint(BM_S4_QFcount, rawtime, BM_QF);
                     hG_BM_s4gr_dcmin->TGraph::SetPoint(BM_S4_QFcount, rawtime, BM_dc_MinValue);
