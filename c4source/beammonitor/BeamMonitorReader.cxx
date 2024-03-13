@@ -91,8 +91,6 @@ Bool_t BeamMonitorReader::Read()
         ts_prev_S2 = ts_curr_S2;
     }
 
-    // read / manipulate data.
-    // S4 for now -- deal with S2 later.
     uint32_t ts_prev_S4 = 0;
     uint32_t ts_curr_S4 = 0;
     uint32_t ts_diff_S4 = 0;
