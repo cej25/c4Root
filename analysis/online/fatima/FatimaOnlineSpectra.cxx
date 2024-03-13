@@ -21,6 +21,7 @@
 #include "TMath.h"
 #include "TFile.h"
 #include "TRandom.h"
+#include "TDirectory.h"
 
 FatimaOnlineSpectra::FatimaOnlineSpectra() : FatimaOnlineSpectra("FatimaOnlineSpectra")
 {
@@ -67,10 +68,13 @@ InitStatus FatimaOnlineSpectra::Init()
 
     fHitFatimaTwinpeaks = (TClonesArray*)mgr->GetObject("FatimaTwinpeaksCalData");
     c4LOG_IF(fatal, !fHitFatimaTwinpeaks, "Branch FatimaTwinpeaksCalData not found!");
+    
+    TDirectory::TContext ctx(nullptr);
 
     //create folders
     folder_fatima = new TFolder("FATIMA", "FATIMA");
 
+    
 
     run->AddObject(folder_fatima);
 

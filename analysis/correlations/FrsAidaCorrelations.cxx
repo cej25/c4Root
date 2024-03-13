@@ -1,4 +1,5 @@
 #include "FairRootManager.h"
+#include "FairRunOnline.h"
 #include "FairTask.h"
 
 #include "FrsAidaCorrelations.h"
@@ -9,6 +10,8 @@
 #include "c4Logger.h"
 
 #include <vector>
+#include "TDirectory.h"
+#include "THttpServer.h"
 
 FrsAidaCorrelations::FrsAidaCorrelations(std::vector<TCutGGates*> fFrsGates, 
                                         CorrelationsMap* fCorrel)
@@ -68,6 +71,9 @@ InitStatus FrsAidaCorrelations::Init()
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
+    FairRunOnline* run = FairRunOnline::Instance();
+    run->GetHttpServer()->Register("", this);
+
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "EventHeader. not found!");
 
@@ -78,9 +84,15 @@ InitStatus FrsAidaCorrelations::Init()
     c4LOG_IF(fatal, !fAidaImplants, "Branch AidaImplantHits not found!");
 
     // clear stuff
+    
+    TDirectory::TContext ctx(nullptr);
 
     folder_correlations = (TFolder*)mgr->GetObject("Correlations");
-    if (!folder_correlations) folder_correlations = new TFolder("Correlations", "Correlations");
+    if (!folder_correlations)
+    {
+       folder_correlations = new TFolder("Correlations", "Correlations");
+       if (run) run->AddObject(folder_correlations);
+    }
 
     frs_aida_correlations = new TFolder("FRS-AIDA Correlations", "FRS-AIDA Correlations");
     folder_correlations->Add(frs_aida_correlations);
