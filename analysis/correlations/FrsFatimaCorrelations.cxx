@@ -82,6 +82,7 @@ InitStatus FrsFatimaCorrelations::Init()
     // define folders
     // get FRS correlations folder..
     folder_correlations = (TFolder*)mgr->GetObject("Correlations");
+    if (!folder_correlations) folder_correlations = new TFolder("Correlations", "Correlations");
 
     folder_frs_fatima_corr = new TFolder("FRS-Fatima Correlations", "FRS-Fatima Correlations");
     folder_correlations->Add(folder_frs_fatima_corr);
@@ -635,6 +636,7 @@ void FrsFatimaCorrelations::FinishTask()
 {
     c4LOG(info, "");
     //if (fHitFatimaTwinpeaksArray && fHitFrsArray) folder_frs_fatima_corr->Write();
+    folder_correlations->Write();
 }
 
 
