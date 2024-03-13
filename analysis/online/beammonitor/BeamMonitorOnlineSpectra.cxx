@@ -96,7 +96,7 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     hG_BM_s4gr_dt_avg->GetXaxis()->SetTimeOffset(0, "local");
     folder_beammonitor->Add(hG_BM_s4gr_dt_avg);
 
-    hG_BM_s4gr_qf = new TGraph(3600);
+    hG_BM_s4gr_qf = new TGraph(1);
     hG_BM_s4gr_qf->SetName("hG_BM_s4gr_qf");
     hG_BM_s4gr_qf->SetTitle("S4 Quality Factor");
     hG_BM_s4gr_qf->GetXaxis()->SetTimeDisplay(1);
