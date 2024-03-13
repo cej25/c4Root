@@ -25,6 +25,7 @@
 #include "TMath.h"
 #include "TRandom.h"
 #include <vector>
+#include "TDirectory.h"
 
 FrsRawSpectra::FrsRawSpectra()
     :   FrsRawSpectra("FrsRawSpectra", 1)
@@ -78,6 +79,8 @@ InitStatus FrsRawSpectra::Init()
     c4LOG_IF(fatal, !fFrsTPCArray, "Branch FrsTPCData not found");
     fFrsVFTXArray = (TClonesArray*)mgr->GetObject("FrsVFTXData");
     c4LOG_IF(fatal, !fFrsVFTXArray, "Branch FrsVFTXData not found");
+    
+    TDirectory::TContext ctx(nullptr);
 
     folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
     if (!folder_frs_hists) folder_frs_hists = new TFolder("FRS", "FRS");

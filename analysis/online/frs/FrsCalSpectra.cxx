@@ -24,6 +24,7 @@
 #include "THttpServer.h"
 #include "TMath.h"
 #include "TRandom.h"
+#include "TDirectory.h"
 
 FrsCalSpectra::FrsCalSpectra()
     : FrsCalSpectra("FrsCalSpectra", 1)
@@ -79,6 +80,8 @@ InitStatus FrsCalSpectra::Init()
     c4LOG_IF(fatal, !fFrsTPCCalArray, "Branch FrsTPCCalData not found");
     fFrsVFTXCalArray = (TClonesArray*)mgr->GetObject("FrsVFTXCalData");
     c4LOG_IF(fatal, !fFrsVFTXCalArray, "Branch FrsVFTXCalData not found");
+    
+    TDirectory::TContext ctx(nullptr);
 
     folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
     if (!folder_frs_hists) folder_frs_hists = new TFolder("FRS", "FRS");

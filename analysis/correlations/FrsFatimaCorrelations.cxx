@@ -8,6 +8,8 @@
 #include "EventHeader.h"
 #include "c4Logger.h"
 
+#include "TDirectory.h"
+#include "THttpServer.h"
 
 
 FrsFatimaCorrelations::FrsFatimaCorrelations(std::vector<TCutGGates*> fFrsGates, 
@@ -69,6 +71,8 @@ InitStatus FrsFatimaCorrelations::Init()
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
     // FairRunOnline
+    FairRunOnline* run = FairRunOnline::Instance();
+    run->GetHttpServer()->Register("", this);
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
@@ -79,6 +83,7 @@ InitStatus FrsFatimaCorrelations::Init()
     fHitFrsArray = (TClonesArray*)mgr->GetObject("FrsHitData");
     c4LOG_IF(fatal, !fHitFrsArray, "FrsHitData branch not found!");
 
+    TDirectory::TContext ctx(nullptr);
     // define folders
     // get FRS correlations folder..
     folder_correlations = (TFolder*)mgr->GetObject("Correlations");

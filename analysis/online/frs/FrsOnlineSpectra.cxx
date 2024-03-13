@@ -21,6 +21,7 @@
 #include "THttpServer.h"
 #include "TMath.h"
 #include "TRandom.h"
+#include "TDirectory.h"
 
 FrsOnlineSpectra::FrsOnlineSpectra()
     : FrsOnlineSpectra("FrsOnlineSpectra", 1)
@@ -73,9 +74,17 @@ InitStatus FrsOnlineSpectra::Init()
 
     fHitFrsArray = (TClonesArray*)mgr->GetObject("FrsHitData");
     c4LOG_IF(fatal, !fHitFrsArray, "Branch FrsHitData not found");
+    
+    TDirectory::TContext ctx(nullptr);
 
     folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
-    if (!folder_frs_hists) folder_frs_hists = new TFolder("FRS", "FRS");
+    if (!folder_frs_hists)
+    {
+       folder_frs_hists = new TFolder("FRS", "FRS");
+       run->AddObject(folder_frs_hists);
+    }
+
+
 
     // CEJ: name should be more specfic? we want to break down histograms by type
     // will come back to and re-adjust names later.
