@@ -307,13 +307,14 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
 
                     // QF
                     BM_QF = 100.0 * (1.0 - (hG_BM_s2h_norm_tdiff->Integral(0, (Int_t) BM_Tmean) / hG_BM_s2h_poisson->Integral(0, (Int_t) BM_Tmean)));
-                    if (BM_QF == 0)
-                    {
-                        std::cout << "weird, QF = 0. norm_tdiff integral = " << hG_BM_s2h_norm_tdiff->Integral(0, (Int_t) BM_Tmean) << std::endl;
-                    }
-
+                    
                     time_t rawtime;
                     time(&rawtime);
+
+                    if (BM_S2_QFcount == 1132 || BM_S2_QFcount == 1513)
+                    {
+                        std::cout << "weird, QF = " << BM_QF << " and time? = " << rawtime << std::endl;
+                    }
 
                     hG_BM_s2gr_qf->SetPoint(BM_S2_QFcount, rawtime, BM_QF);
                     hG_BM_s2gr_dcmin->SetPoint(BM_S2_QFcount, rawtime, BM_dc_MinValue);
