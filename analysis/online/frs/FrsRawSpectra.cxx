@@ -80,18 +80,14 @@ InitStatus FrsRawSpectra::Init()
     c4LOG_IF(fatal, !fFrsVFTXArray, "Branch FrsVFTXData not found");
 
     folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
-    if (!folder_frs_hists)
-    {
-        folder_frs_hists = new TFolder("FRS", "FRS Histograms");
-    }
  
-    folder_frs_raw_hists = new TFolder("Raw_Histograms", "Raw_Histograms");
+    folder_frs_raw_hists = new TFolder("Raw Histograms", "Raw Histograms");
     folder_frs_hists->Add(folder_frs_raw_hists);
 
-    folder_frs_raw_main_hists = new TFolder("Main_Raw_Histograms", "Main_Raw_Histograms");
-    folder_frs_raw_tpc_hists = new TFolder("TPC_Raw_Histograms", "TPC_Raw_Histograms");
-    folder_frs_raw_user_hists = new TFolder("User_Raw_Histograms", "User_Raw_Histograms");
-    folder_frs_raw_vftx_hists = new TFolder("VFTX_Raw_Histograms", "VFTX_Raw_Histograms");
+    folder_frs_raw_main_hists = new TFolder("Main Raw_Histograms", "Main Raw Histograms");
+    folder_frs_raw_tpc_hists = new TFolder("TPC Raw Histograms", "TPC Raw Histograms");
+    folder_frs_raw_user_hists = new TFolder("User Raw Histograms", "User Raw Histograms");
+    folder_frs_raw_vftx_hists = new TFolder("VFTX Raw Histograms", "VFTX_Raw Histograms");
     folder_frs_raw_hists->Add(folder_frs_raw_main_hists);
     folder_frs_raw_hists->Add(folder_frs_raw_tpc_hists);
     folder_frs_raw_hists->Add(folder_frs_raw_user_hists);
@@ -102,8 +98,8 @@ InitStatus FrsRawSpectra::Init()
 
     // Scalers in "OnlineSpectra" at the moment
 
-    folder_raw_v792_main_hists = new TFolder("V792_Histograms", "V792_Histograms");
-    folder_raw_v1290_main_hists = new TFolder("V1290_Histograms", "V1290_Histograms");
+    folder_raw_v792_main_hists = new TFolder("V792 Histograms", "V792 Histograms");
+    folder_raw_v1290_main_hists = new TFolder("V1290 Histograms", "V1290 Histograms");
     folder_frs_raw_main_hists->Add(folder_raw_v792_main_hists);
     folder_frs_raw_main_hists->Add(folder_raw_v1290_main_hists);
 
@@ -154,8 +150,8 @@ InitStatus FrsRawSpectra::Init()
     // ----------------------- //
 
     // ---- * TPC Crate * ---- //
-    folder_raw_v7x5_tpc_hists = new TFolder("V7X5_Histograms", "V7X5_Histograms");
-    folder_raw_v1190_tpc_hists = new TFolder("V1190_Histograms", "V1190_Histograms");
+    folder_raw_v7x5_tpc_hists = new TFolder("V7X5 Histograms", "V7X5 Histograms");
+    folder_raw_v1190_tpc_hists = new TFolder("V1190 Histograms", "V1190 Histograms");
     folder_frs_raw_tpc_hists->Add(folder_raw_v7x5_tpc_hists);
     folder_frs_raw_tpc_hists->Add(folder_raw_v1190_tpc_hists);
 
@@ -211,7 +207,7 @@ InitStatus FrsRawSpectra::Init()
     // ------------------------ //
 
     // ---- * User Crate * ---- //
-    folder_raw_v7x5_user_hists = new TFolder("V7X5_Histograms", "V7X5_Histograms");
+    folder_raw_v7x5_user_hists = new TFolder("V7X5 Histograms", "V7X5 Histograms");
     folder_frs_raw_user_hists->Add(folder_raw_v7x5_user_hists);
     
     // Scalers in "OnlineSpectra" at the moment
@@ -250,7 +246,7 @@ InitStatus FrsRawSpectra::Init()
     // ----------------------- //
 
     // ---- * VFTX Crate * ---- //
-    folder_raw_vftx_vftx_hists = new TFolder("VFTX_Histograms", "VFTX_Histograms");
+    folder_raw_vftx_vftx_hists = new TFolder("VFTX Histograms", "VFTX Histograms");
     folder_frs_raw_vftx_hists->Add(folder_raw_vftx_vftx_hists);
 
     // Geo = ?? VFTX TDC. Should we used VFTX_N? Only one module..

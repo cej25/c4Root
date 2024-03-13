@@ -61,7 +61,8 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     // TString filename = "stream://x86l-117";
     // TString filename = "trans://lxg1257";
-    TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd ~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0025_0001.lmd";
+    TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
+    //TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd ~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0025_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
@@ -227,9 +228,9 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     calbplast->SetTimeMachineChannels(68,67);
 
     // Germanium
-    // GermaniumRaw2Cal * ge_calib = new GermaniumRaw2Cal();
-    // ge_calib->SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "germanium/Germanium_Detector_Map.txt");
-    // ge_calib->PrintDetectorMap();
+    // GermaniumRaw2Cal* calge = new GermaniumRaw2Cal();
+    // calge->SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "germanium/Germanium_Detector_Map.txt");
+    // calge->PrintDetectorMap();
 
     // FRS
     FrsMainRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
@@ -243,7 +244,7 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     //calfatimavme->SetOnline(true);
     aidaCalibrator->SetOnline(true);
     calbplast->SetOnline(true);
-    // ge_calib->SetOnline(false);
+    // calge->SetOnline(false);
     calfrsmain->SetOnline(true);
     calfrstpc->SetOnline(true);
     calfrsuser->SetOnline(true);
@@ -255,7 +256,7 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     //run->AddTask(calfatimavme);
     run->AddTask(aidaCalibrator);
     run->AddTask(calbplast);
-    // run->AddTask(ge_calib);
+    // run->AddTask(calge);
     run->AddTask(calfrsmain);
     run->AddTask(calfrstpc);
     run->AddTask(calfrsuser);
@@ -303,8 +304,8 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     // FRS
     FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
     FrsRawSpectra* frsrawspec = new FrsRawSpectra();
-    // FrsCalSpectra* frscalspec = new FrsCalSpectra();
-    // FrsAnalysisSpectra* frsanlspec = new FrsAnalysisSpectra(frs,mw,tpc,music,labr,sci,id,si,mrtof,range,FrsGates);
+    FrsCalSpectra* frscalspec = new FrsCalSpectra();
+    FrsAnalysisSpectra* frsanlspec = new FrsAnalysisSpectra(frs,mw,tpc,music,labr,sci,id,si,mrtof,range,FrsGates);
     
     // BeamMonitorOnlineSpectra* onlinebm = new BeamMonitorOnlineSpectra();
 
@@ -324,8 +325,8 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     // run->AddTask(onlinege);
     run->AddTask(onlinefrs);
     run->AddTask(frsrawspec);
-    // run->AddTask(frscalspec);
-    // run->AddTask(frsanlspec);
+    run->AddTask(frscalspec);
+    run->AddTask(frsanlspec);
     // run->AddTask(onlinebm);
     run->AddTask(tms);
 
