@@ -50,7 +50,7 @@ class BeamMonitorOnlineSpectra : public FairTask
         // S2
         Int_t BM_S2_count = 0;
         const Int_t BM_S2_DoAnalysisEvery = 100000;
-        Long64_t BM_S2_QFcount;
+        Long64_t BM_S2_QFcount = 0;
         Long64_t BM_S2_SumTdiff;
         const Int_t BM_S2_MaxTdiffs = 300000;
         
@@ -58,7 +58,7 @@ class BeamMonitorOnlineSpectra : public FairTask
         // S4
         Int_t BM_S4_count = 0;
         const Int_t BM_S4_DoAnalysisEvery = 30000;
-        Long64_t BM_S4_QFcount;
+        Long64_t BM_S4_QFcount = 0;
         Long64_t BM_S4_SumTdiff;
         const Int_t BM_S4_MaxTdiffs = 100000;
 

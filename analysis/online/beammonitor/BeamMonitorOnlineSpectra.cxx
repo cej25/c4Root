@@ -387,10 +387,10 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
                     time_t rawtime;
                     time(&rawtime);
 
-                    hG_BM_s4gr_qf->SetPoint(BM_S4_QFcount, rawtime, BM_QF);
-                    hG_BM_s4gr_dcmin->SetPoint(BM_S4_QFcount, rawtime, BM_dc_MinValue);
-                    hG_BM_s4gr_dctime->SetPoint(BM_S4_QFcount, rawtime, BM_dc_MinBin / 10);
-                    hG_BM_s4gr_dt_avg->SetPoint(BM_S4_QFcount, rawtime, (Double_t) BM_Tmean / 10.);
+                    hG_BM_s4gr_qf->TGraph::SetPoint(BM_S4_QFcount, rawtime, BM_QF);
+                    hG_BM_s4gr_dcmin->TGraph::SetPoint(BM_S4_QFcount, rawtime, BM_dc_MinValue);
+                    hG_BM_s4gr_dctime->TGraph::SetPoint(BM_S4_QFcount, rawtime, BM_dc_MinBin / 10);
+                    hG_BM_s4gr_dt_avg->TGraph::SetPoint(BM_S4_QFcount, rawtime, (Double_t) BM_Tmean / 10.);
                     //std::cout << "S4 Quality Factor: " << BM_QF << std::endl;
                     BM_S4_QFcount++;
 
