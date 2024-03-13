@@ -27,6 +27,7 @@ ${C4ROOT_SOURCE_DIR}/correlations
 ${C4ROOT_SOURCE_DIR}/c4source
 ${C4ROOT_SOURCE_DIR}/c4source/frs
 ${C4ROOT_SOURCE_DIR}/c4source/base
+${C4ROOT_SOURCE_DIR}/c4source/bplast
 )
 
 include_directories( ${INCLUDE_DIRECTORIES})

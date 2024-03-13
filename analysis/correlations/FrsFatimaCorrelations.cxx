@@ -81,7 +81,10 @@ InitStatus FrsFatimaCorrelations::Init()
 
     // define folders
     // get FRS correlations folder..
+    folder_correlations = (TFolder*)mgr->GetObject("Correlations");
+
     folder_frs_fatima_corr = new TFolder("FRS-Fatima Correlations", "FRS-Fatima Correlations");
+    folder_correlations->Add(folder_frs_fatima_corr);
     folder_frs_fatima_corr_ZAoQgated = new TFolder("ZAoQ Gated", "ZAoQ Gated");
     folder_frs_fatima_corr_Z1Z2x2AoQgated = new TFolder("Z1Z2x2AoQ Gated", "Z1Z2x2AoQ Gated");
     folder_frs_fatima_corr_Z1Z2x4AoQgated = new TFolder("Z1Z2x4AoQ Gated", "Z1Z2x4AoQ Gated");
@@ -631,7 +634,7 @@ void FrsFatimaCorrelations::FinishEvent()
 void FrsFatimaCorrelations::FinishTask()
 {
     c4LOG(info, "");
-    if (fHitFatimaTwinpeaksArray && fHitFrsArray) folder_frs_fatima_corr->Write();
+    //if (fHitFatimaTwinpeaksArray && fHitFrsArray) folder_frs_fatima_corr->Write();
 }
 
 
