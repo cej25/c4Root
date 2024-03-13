@@ -71,6 +71,7 @@ class FrsOnlineSpectra : public FairTask
         Int_t fNEvents;
 
         TFolder* frs_spectra_folder;
+        TFolder* folder_frs_hists;
 
         // Canvas
         TCanvas* c_frs_z1_vs_AoQ;
