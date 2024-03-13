@@ -4,6 +4,7 @@
 #include "FairTask.h"
 #include "BeamMonitorData.h"
 #include "TGraph.h"
+#include "TFolder.h"
 
 class TClonesArray;
 class EventHeader;
@@ -43,6 +44,8 @@ class BeamMonitorOnlineSpectra : public FairTask
 
         EventHeader* header;
         Int_t fNEvents;
+
+        TFolder* folder_beammonitor;
 
         Int_t BM_NTimeMax = 10000;
         Double_t BM_CR_Tlimit = pow(10,6);
