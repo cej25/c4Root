@@ -79,9 +79,10 @@ InitStatus FrsAidaCorrelations::Init()
 
     // clear stuff
 
-    frs_correlations = new TFolder("FRS_Correlations", "FRS_Correlations");
-    frs_aida_correlations = new TFolder("FRS-AIDA_Correlations", "FRS_AIDA_Correlations");
-    frs_correlations->Add(frs_aida_correlations);
+    folder_correlations = (TFolder*)mgr->GetObject("Correlations");
+
+    frs_aida_correlations = new TFolder("FRS-AIDA Correlations", "FRS-AIDA Correlations");
+    folder_correlations->Add(frs_aida_correlations);
     frs_implant_correlations = new TFolder("FRS-Implant_Corr", "FRS-Implant_Corr");
     frs_stopped_implant_correlations = new TFolder("Stopped_FRS-Implant_Corr", "Stopped_FRS-Implant_Corr");
     frs_aida_correlations->Add(frs_implant_correlations);
@@ -376,10 +377,6 @@ void FrsAidaCorrelations::FinishEvent()
 void FrsAidaCorrelations::FinishTask()
 {
     c4LOG(info, Form("Wrote %i events. ", fNEvents));
-    if (fFrsHitArray)
-    {
-        frs_correlations->Write();
-    }
 }
 
 
