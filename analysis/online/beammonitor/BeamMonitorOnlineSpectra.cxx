@@ -228,8 +228,8 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
 
             Double_t BM_QF;
             Double_t BM_Tmean;
-            UInt_t BM_S2_Tdiffs[BM_S2_MaxTdiffs] = {0};
-            UInt_t BM_S4_Tdiffs[BM_S4_MaxTdiffs] = {0};
+            Float_t BM_S2_Tdiffs[BM_S2_MaxTdiffs] = {0};
+            Float_t BM_S4_Tdiffs[BM_S4_MaxTdiffs] = {0};
             std::vector<uint32_t> BM_S2_Hits = BeamMonitorHit->Get_S2_data();
             std::vector<uint32_t> BM_S4_Hits = BeamMonitorHit->Get_S4_data();
 
