@@ -47,18 +47,26 @@ class BeamMonitorOnlineSpectra : public FairTask
 
         TFolder* folder_beammonitor;
 
-        Int_t BM_NTimeMax = 10000;
-        Double_t BM_CR_Tlimit = pow(10,6);
-        Double_t BM_CountRate;
-        Double_t BM_Tdiff_integral;
-        Int_t BM_MaxTimeDiff = 100000;
-        Int_t BM_S4_MaxTdiffs = 100000;
-        Int_t BM_dc_MinBin;
-        Double_t BM_dc_MinValue;
-        Double_t BM_Tmean;
-        Double_t BM_QF;
-        Double_t BM_CR_timesum;
-        Int_t BM_CR_relevanthits;
+        // S2
+        Int_t BM_S2_count;
+        const Int_t BM_S2_DoAnalysisEvery = 100000;
+        Long64_t BM_S2_QFcount;
+        Long64_t BM_S2_SumTdiff;
+        const Int_t BM_S2_MaxTdiffs = 300000;
+        
+
+        // S4
+        Int_t BM_S4_count;
+        const Int_t BM_S4_DoAnalysisEvery = 30000;
+        Long64_t BM_S4_QFcount;
+        Long64_t BM_S4_SumTdiff;
+        const Int_t BM_S4_MaxTdiffs = 100000;
+
+        // Both
+        const Int_t BM_NBinsMax = 100000;
+        const Int_t BM_NTimeMax = 10000; // time axis displays for HitTimes [ms]
+        const Int_t BM_MaxTimeDiff = 100000; // [100ns units]
+
 
         TH1D* hG_BM_s4h_norm_tdiff;
         TH1D* hG_BM_s4h_tdiff;
@@ -87,18 +95,6 @@ class BeamMonitorOnlineSpectra : public FairTask
         TGraph* hG_BM_s2gr_qf;
         TGraph* hG_BM_s2gr_dcmin;
         TGraph* hG_BM_s2gr_dctime;
-
-        // // Canvas
-        // TCanvas* cS4tdiff; // channel 1 out of 28 for now?
-        // //temporary!!       
-        // TCanvas* ct1;
-        // TCanvas* cQF;
-        // TCanvas* cNormDiff;
-        // TCanvas* cPoisson;
-        // TCanvas* cCum;
-        // TCanvas* cCumPoisson;
-        // TCanvas* cDev; 
-
 
     public:
         ClassDef(BeamMonitorOnlineSpectra, 1)
