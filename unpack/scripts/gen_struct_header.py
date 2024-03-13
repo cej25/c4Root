@@ -4,9 +4,9 @@ import subprocess as sb
 #should create the correct struct files, add systems to systems list and run. 
 
 #add the systems you want here: bplast,fatima,etc
-systems = ["bplast"]
+systems = ["fatima"]
 
-ucesb_exec = "onlyGerm"
+ucesb_exec = "onlyFATIMA"
 
 
 for system in systems:

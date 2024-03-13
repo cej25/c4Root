@@ -67,6 +67,7 @@ class FrsAnalysisSpectra : public FairTask
         TRangeParameter* range;
 
         // folders
+        TFolder* folder_frs_hists;
         TFolder* frs_analysis_hists;
         TFolder* frs_tac_hists;
         TFolder* frs_mhtdc_hists;
