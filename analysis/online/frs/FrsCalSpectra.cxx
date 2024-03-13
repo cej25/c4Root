@@ -81,6 +81,7 @@ InitStatus FrsCalSpectra::Init()
     c4LOG_IF(fatal, !fFrsVFTXCalArray, "Branch FrsVFTXCalData not found");
 
     folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
+    if (!folder_frs_hists) folder_frs_hists = new TFolder("FRS", "FRS");
 
     TFolder* folder_frs_cal_hists = new TFolder("Cal Histograms", "Cal Histograms");
     folder_frs_hists->Add(folder_frs_cal_hists);
@@ -496,7 +497,7 @@ void FrsCalSpectra::FinishEvent()
 
 void FrsCalSpectra::FinishTask()
 {
-    
+    folder_frs_hists->Write();
 }
 
 ClassImp(FrsCalSpectra)

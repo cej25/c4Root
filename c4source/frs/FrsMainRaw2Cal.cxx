@@ -58,12 +58,6 @@ InitStatus FrsMainRaw2Cal::Init()
 
     FairRootManager::Instance()->Register("FrsMainCalData", "FRS Main Cal Data", fCalArray, !fOnline);
 
-    // initialise folders filled by multiple tasks here
-    folder_frs_hists = new TFolder("FRS", "FRS Histograms");
-    FairRootManager::Instance()->Register("FRS", "FRS Histograms", folder_frs_hists, !fOnline);
-    folder_correlations = new TFolder("Correlations", "Correlations");
-    FairRootManager::Instance()->Register("Correlations", "Correlations Folder", folder_correlations, !fOnline);
-
     fRawArray->Clear();
     fCalArray->Clear();
 
@@ -366,8 +360,6 @@ void FrsMainRaw2Cal::FinishTask()
 {
     c4LOG(info, Form("Wrote %i events.",fNEvents));
 
-    folder_frs_hists->Write();
-    folder_correlations->Write();
 }
 
 ClassImp(FrsMainRaw2Cal)

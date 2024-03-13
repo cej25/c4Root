@@ -80,6 +80,7 @@ InitStatus FrsAidaCorrelations::Init()
     // clear stuff
 
     folder_correlations = (TFolder*)mgr->GetObject("Correlations");
+    if (!folder_correlations) folder_correlations = new TFolder("Correlations", "Correlations");
 
     frs_aida_correlations = new TFolder("FRS-AIDA Correlations", "FRS-AIDA Correlations");
     folder_correlations->Add(frs_aida_correlations);
@@ -377,6 +378,7 @@ void FrsAidaCorrelations::FinishEvent()
 void FrsAidaCorrelations::FinishTask()
 {
     c4LOG(info, Form("Wrote %i events. ", fNEvents));
+    folder_correlations->Write();
 }
 
 

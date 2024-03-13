@@ -75,6 +75,7 @@ InitStatus FrsOnlineSpectra::Init()
     c4LOG_IF(fatal, !fHitFrsArray, "Branch FrsHitData not found");
 
     folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
+    if (!folder_frs_hists) folder_frs_hists = new TFolder("FRS", "FRS");
 
     // CEJ: name should be more specfic? we want to break down histograms by type
     // will come back to and re-adjust names later.
@@ -237,10 +238,7 @@ void FrsOnlineSpectra::FinishEvent()
 
 void FrsOnlineSpectra::FinishTask()
 {   
-    /*if (fHitFrsArray)
-    {
-        folder_frs_hists->Write();
-    }*/
+    folder_frs_hists->Write();
 }
 
 ClassImp(FrsOnlineSpectra)

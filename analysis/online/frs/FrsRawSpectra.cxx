@@ -80,6 +80,7 @@ InitStatus FrsRawSpectra::Init()
     c4LOG_IF(fatal, !fFrsVFTXArray, "Branch FrsVFTXData not found");
 
     folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
+    if (!folder_frs_hists) folder_frs_hists = new TFolder("FRS", "FRS");
  
     folder_frs_raw_hists = new TFolder("Raw Histograms", "Raw Histograms");
     folder_frs_hists->Add(folder_frs_raw_hists);
@@ -576,6 +577,7 @@ void FrsRawSpectra::FinishEvent()
 void FrsRawSpectra::FinishTask()
 {
     // Can add a "WRITE" task if necessary
+    folder_frs_hists->Write();
 }
 
 ClassImp(FrsRawSpectra)

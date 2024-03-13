@@ -303,7 +303,7 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     
     // FRS
     FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
-    // FrsRawSpectra* frsrawspec = new FrsRawSpectra();
+    FrsRawSpectra* frsrawspec = new FrsRawSpectra();
     // FrsCalSpectra* frscalspec = new FrsCalSpectra();
     // FrsAnalysisSpectra* frsanlspec = new FrsAnalysisSpectra(frs,mw,tpc,music,labr,sci,id,si,mrtof,range,FrsGates);
     
@@ -324,7 +324,7 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     run->AddTask(onlinebplast);
     // run->AddTask(onlinege);
     run->AddTask(onlinefrs);
-    // run->AddTask(frsrawspec);
+    run->AddTask(frsrawspec);
     // run->AddTask(frscalspec);
     // run->AddTask(frsanlspec);
     // run->AddTask(onlinebm);
@@ -333,13 +333,13 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     // ---------------------------------------------------------------------------------------- //
     // *** Correlations *********************************************************************** //
 
-    FrsFatimaCorrelations* frsfatimacorr = new FrsFatimaCorrelations(FrsGates, FatimaPrompt, CorrMap);
+    // FrsFatimaCorrelations* frsfatimacorr = new FrsFatimaCorrelations(FrsGates, FatimaPrompt, CorrMap);
 
-    FrsAidaCorrelations* frsaidacorr = new FrsAidaCorrelations(FrsGates, CorrMap);
+    // FrsAidaCorrelations* frsaidacorr = new FrsAidaCorrelations(FrsGates, CorrMap);
 
     // Add 'Correlations' task to FairRun.
-    run->AddTask(frsfatimacorr);
-    run->AddTask(frsaidacorr);
+    // run->AddTask(frsfatimacorr);
+    // run->AddTask(frsaidacorr);
 
     
     
