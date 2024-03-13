@@ -311,16 +311,10 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
                     time_t rawtime;
                     time(&rawtime);
 
-                    if (BM_S2_QFcount == 1132 || BM_S2_QFcount == 1513)
-                    {
-                        std::cout << "weird, QF = " << BM_QF << " and time? = " << rawtime << std::endl;
-                    }
-
                     hG_BM_s2gr_qf->SetPoint(BM_S2_QFcount, rawtime, BM_QF);
                     hG_BM_s2gr_dcmin->SetPoint(BM_S2_QFcount, rawtime, BM_dc_MinValue);
                     hG_BM_s2gr_dctime->SetPoint(BM_S2_QFcount, rawtime, BM_dc_MinBin / 10);
                     hG_BM_s2gr_dt_avg->SetPoint(BM_S2_QFcount, rawtime, (Double_t) BM_Tmean / 10.);
-                    //std::cout << "S2 Quality Factor: " << BM_QF << std::endl;
                     BM_S2_QFcount++;                    
                 }
             }
@@ -394,6 +388,11 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
                     // get local time
                     time_t rawtime;
                     time(&rawtime);
+
+                    if (BM_S4_QFcount == 1132 || BM_S4_QFcount == 1513)
+                    {
+                        std::cout << "weird, QF = " << BM_QF << " and time? = " << rawtime << std::endl;
+                    }
 
                     hG_BM_s4gr_qf->TGraph::SetPoint(BM_S4_QFcount, rawtime, BM_QF);
                     hG_BM_s4gr_dcmin->TGraph::SetPoint(BM_S4_QFcount, rawtime, BM_dc_MinValue);
