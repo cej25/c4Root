@@ -54,7 +54,7 @@ class FrsAidaCorrelations : public FairTask
 
         CorrelationsMap* Correl;
 
-        TFolder* frs_correlations;
+        TFolder* folder_correlations;;
         TFolder* frs_aida_correlations;
         TFolder* frs_implant_correlations;
         TFolder* frs_stopped_implant_correlations;

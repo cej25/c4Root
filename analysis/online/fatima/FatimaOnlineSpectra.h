@@ -92,6 +92,7 @@ class FatimaOnlineSpectra : public FairTask
         TCanvas* c_fatima_time_spectra_divided;
         TCanvas* c_fatima_hitpatterns;
         TCanvas* c_fatima_energy;
+        TCanvas* c_fatima_energy_vs_detid;
         TCanvas* c_fatima_energies;
         TCanvas* c_fatima_energy_uncal;
         TCanvas* c_fatima_time_differences;
