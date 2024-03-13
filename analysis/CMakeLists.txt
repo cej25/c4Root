@@ -22,6 +22,9 @@ ${C4ROOT_SOURCE_DIR}/analysis/offline
 ${C4ROOT_SOURCE_DIR}/analysis/fatima_aida_correlations
 ${C4ROOT_SOURCE_DIR}/analysis/online
 ${C4ROOT_SOURCE_DIR}/analysis/online/frs
+${C4ROOT_SOURCE_DIR}/correlations
+${C4ROOT_SOURCE_DIR}/c4source
+${C4ROOT_SOURCE_DIR}/c4source/frs
 )
 
 include_directories( ${INCLUDE_DIRECTORIES})
@@ -42,11 +45,15 @@ set(SRCS
 ./online/frs/FrsDetectorsOnline.cxx
 ./fatima_aida_correlations/FatimaAidaSpectra.cxx
 ./online/TimeMachineOnline.cxx
-#nearline
-# ./nearline/bPlastNearlineSpectra.cxx
-# ./nearline/AidaNearlineSpectra.cxx
+
+# nearline
+./fatima_aida_correlations/FatimaAidaSpectra.cxx
+./online/WhiterabbitCorrelationOnline.cxx
+
 
 #offline
+./online/frs/FrsAnalysisSpectra.cxx
+./correlations/FrsAidaCorrelations.cxx
 )
 
 

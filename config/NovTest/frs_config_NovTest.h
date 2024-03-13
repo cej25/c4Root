@@ -1,3 +1,13 @@
+// FRS
+#define FRS_GATES 1
+#define MAX_MHTDC_MULT 10
+#define FRS_HISTO_BIN 750
+
+// CORRELATIONS
+#define FRS_AIDA_WR_GATE_LOW 10000
+#define FRS_AIDA_WR_GATE_HIGH 20000
+
+// VFTX
 #define VFTX_N 1 // number of modules
 #define VFTX_MAX_CHN 16 // number of channels
 #define VFTX_MAX_HITS 20 // max hits
