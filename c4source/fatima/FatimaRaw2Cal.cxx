@@ -9,6 +9,7 @@
 // c4
 #include "FatimaTwinpeaksData.h"
 #include "FatimaTwinpeaksCalData.h"
+#include "TFatimaTwinpeaksConfiguration.h"
 #include "TimeMachineData.h"
 #include "c4Logger.h"
 
@@ -97,8 +98,6 @@ InitStatus FatimaRaw2Cal::Init()
     fcal_data->Clear();
     funcal_data->Clear();
 
-    hits_in_Twinpeaks_channel = new TClonesArray("FatimaTwinpeaksCalData");
-    hits_in_Twinpeaks_channel->Clear();
 
     return kSUCCESS;
 };
@@ -287,7 +286,22 @@ void FatimaRaw2Cal::Exec(Option_t* option)
 
 
             //from here the funcalhitpartner is the slow branch and funcal_hit the fast:
+            
+            // CEJ - this works
+            /*TFatimaTwinpeaksConfiguration const* fat_conf = TFatimaTwinpeaksConfiguration::GetInstance();
+            detector_mapping = fat_conf->Mapping();
+            if (fat_conf->MappingLoaded())
+            {
+                std::pair<int, int> unmapped_det { funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2};
+                if (auto result_find = detector_mapping.find(unmapped_det); result_find != detector_mapping.end())
+                {
+                    detector_id = result_find->second; // .find returns an iterator over the pairs matching key
+                    
+                    if (detector_id == -1) { fNunmatched++; continue; }
+                }
+            }*/
 
+            
             //do the detector mapping here:
             if (DetectorMap_loaded)
             {
@@ -337,6 +351,7 @@ void FatimaRaw2Cal::Exec(Option_t* option)
                 //from here the funcalhitpartner is the slow branch and funcal_hit the fast:
 
                 //do the detector mapping here:
+                /*
                 if (DetectorMap_loaded)
                 {
                     std::pair<int,int> unmapped_det {funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2};
@@ -355,7 +370,13 @@ void FatimaRaw2Cal::Exec(Option_t* option)
                 else
                 { //no map and cal: ->
                     detector_id = funcal_hit->Get_board_id()*17 + (int)(funcal_hit_next->Get_ch_ID()+1)/2; // do mapping.
-                }
+                }*/
+
+            // CEJ
+            /*if (((detector_id == fat_conf->TM_Delayed()) || (detector_id == fat_conf->TM_Undelayed())) && fat_conf->TM_Delayed() != 0 && fat_conf->TM_Undelayed() != 0)
+            {
+                new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData((detector_id == fat_conf->TM_Undelayed()) ? (fast_lead_time) : (0), (detector_id == fat_conf->TM_Undelayed()) ? (0) : (fast_lead_time), funcal_hit->Get_wr_subsystem_id(), funcal_hit->Get_wr_t());
+            }*/
 
             
             if (((detector_id == time_machine_delayed_detector_id) || (detector_id == time_machine_undelayed_detector_id)) && time_machine_delayed_detector_id!=0 && time_machine_undelayed_detector_id!=0){ // currently only gets the TM if it also matches it slow-fast...
@@ -375,7 +396,7 @@ void FatimaRaw2Cal::Exec(Option_t* option)
                 energy,
                 funcal_hit->Get_wr_subsystem_id(),
                 funcal_hit->Get_wr_t());
-                        
+
             fNEvents++;
             //ihit++; //increment it by one extra.
             }

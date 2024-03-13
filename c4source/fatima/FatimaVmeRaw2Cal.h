@@ -55,10 +55,12 @@ class FatimaVmeRaw2Cal : public FairTask
         EventHeader* header;
 
         // Stuff we need
-        std::set<int> extra_signals = {TM_U, TM_D, SC41L_A, SC41R_A, SC41L_D, SC41R_D,
-                                    36,37,38,39,40,41,42,43,44,45,46,47,
-                                    48,49,50,51};
+        std::set<int> extra_signals;
 
+        int tm_undelayed;
+        int tm_delayed;
+        int sc41l;
+        int sc41r;
 
         // Calibration
         double calib_coeffs_QDC_E[100][5];
