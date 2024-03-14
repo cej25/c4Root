@@ -34,9 +34,7 @@ AidaUnpack2Cal::AidaUnpack2Cal() :
   fImplantOnline(false),
   fDecayOnline(false),
   fScalersOnline(false),
-  conf(nullptr),
-  aida_tm_delayed_ch(0),
-  aida_tm_undelayed_ch(0)
+  conf(nullptr)
 {
 }
 
@@ -164,11 +162,11 @@ void AidaUnpack2Cal::Exec(Option_t* option)
   // Check scalers - for now just for Time Machine (raw is otherwise fine)
   for (auto const& scaler : *scalerArray)
   {
-    if (scaler.Fee() == aida_tm_undelayed_ch)
+    if (scaler.Fee() == conf->TM_Undelayed())
     {
       wr_undelayed = scaler.Time();
     }
-    if (scaler.Fee() == aida_tm_delayed_ch)
+    if (scaler.Fee() == conf->TM_Delayed())
     {
       wr_delayed = scaler.Time();
     }
