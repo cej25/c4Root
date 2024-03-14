@@ -46,6 +46,8 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes";
     ucesb_path.ReplaceAll("//","/");
 
+    std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
+
     TString cRunId = Form("%04d", fRunId);
     TString cExpId = Form("%03d", fExpId);
     TStopwatch timer;
@@ -131,12 +133,13 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
 
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
-    TFatimaTwinpeaksConfiguration::SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fatima_alloc_new.txt");
-    TFatimaVmeConfiguration::SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Fatima_VME_allocation.txt");
-    TAidaConfiguration::SetBasePath(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/AIDA");
-    TbPlastConfiguration::SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/bplast/bplast_alloc_new.txt");
+    TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_new.txt");
+    TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(config_path + "/fatima/fatima_cal.txt");
+    TFatimaVmeConfiguration::SetDetectorMapFile(config_path + "/fatima/Fatima_VME_allocation.txt");
+    TAidaConfiguration::SetBasePath(config_path + "/AIDA");
+    TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_new.txt");
     // FRS? Eventually will get around to mapping crates properly
-    TGermaniumConfiguration::SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/germanium/Germanium_Detector_Map.txt");
+    TGermaniumConfiguration::SetDetectorMapFile(config_path + "/germanium/Germanium_Detector_Map.txt");
 
     
     // ------------------------------------------------------------------------------------- //
@@ -147,8 +150,8 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
 
     // FATIMA
     FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-    // unpackfatima->DoFineTimeCalOnline(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fine_time_histos_111223_fatima.root", 50000);
-    unpackfatima->SetInputFileFineTimeHistos(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fine_time_histos_111223_fatima.root");
+    // unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_histos_111223_fatima.root", 50000);
+    // unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_histos_111223_fatima.root");
 
     // FatimaVmeReader* unpackfatimavme = new FatimaVmeReader((EXT_STR_h101_fatimavme_onion*)&ucesb_struct.fatimavme, offsetof(EXT_STR_h101, fatimavme));
     
@@ -157,8 +160,8 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     
     // bPlast
     bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_bplast_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
-    // unpackbplast->DoFineTimeCalOnline(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/bplast/fine_time_histos_111223_bplast.root", 50000);
-    unpackbplast->SetInputFileFineTimeHistos(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/bplast/fine_time_histos_111223_bplast.root");    
+    // unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_histos_111223_bplast.root", 50000);
+    unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_histos_111223_bplast.root");    
     
     // Germanium
     // GermaniumReader* unpackgermanium = new GermaniumReader((EXT_STR_h101_GERMANIUM_onion*)&ucesb_struct.germanium, offsetof(EXT_STR_h101, germanium));
@@ -178,7 +181,7 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     //unpackfatimavme->SetOnline(true);
     unpackaida->SetOnline(true);
     unpackbplast->SetOnline(true);
-    // unpackgermanium->SetOnline(true);SetTimeMachineChannels
+    // unpackgermanium->SetOnline(true);
     unpackfrsmain->SetOnline(true);
     unpackfrstpc->SetOnline(true);
     unpackfrsuser->SetOnline(true);
@@ -205,31 +208,26 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
 
     // FATIMA
     FatimaRaw2Cal* calfatima = new FatimaRaw2Cal();
-    //calfatima->SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fatima_alloc.txt");
     // calfatima->PrintDetectorMap();
-    calfatima->SetDetectorCalFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fatima_cal.txt");
     // calfatima->PrintDetectorCal();
-    // CEJ FOR JELL/JPB -- this should be read from alloc file!!!!!
-    calfatima->SetTimeMachineChannels(16,17);
 
     // FatimaVmeRaw2Cal* calfatimavme = new FatimaVmeRaw2Cal();
-    // calfatimavme->Load_QDC_Energy_Calibration_File(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Fatima_QDC_Energy_Calibration.txt");
-    // calfatimavme->Load_QDC_Time_Calibration_File(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Fatima_QDC_Time_Calibration.txt");
-    // calfatimavme->Load_TDC_Time_Calibration_File(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Fatima_TDC_Time_Calibration.txt");
+    // calfatimavme->Load_QDC_Energy_Calibration_File(config_path + "/fatima/Fatima_QDC_Energy_Calibration.txt");
+    // calfatimavme->Load_QDC_Time_Calibration_File(config_path  + "/fatima/Fatima_QDC_Time_Calibration.txt");
+    // calfatimavme->Load_TDC_Time_Calibration_File(config_path + "/fatima/Fatima_TDC_Time_Calibration.txt");
 
 
     // AIDA
     AidaUnpack2Cal* aidaCalibrator = new AidaUnpack2Cal();
-    aidaCalibrator->SetAidaTimeMachineChannels(4,3);
 
     // bPlast
     bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
-    calbplast->SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/bplast/bplast_alloc.txt");
+    calbplast->SetDetectorMapFile(config_path + "/bplast/bplast_alloc.txt");
     calbplast->SetTimeMachineChannels(68,67);
 
     // Germanium
     // GermaniumRaw2Cal* calge = new GermaniumRaw2Cal();
-    // calge->SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "germanium/Germanium_Detector_Map.txt");
+    // calge->SetDetectorMapFile(config_path + "germanium/Germanium_Detector_Map.txt");
     // calge->PrintDetectorMap();
 
     // FRS

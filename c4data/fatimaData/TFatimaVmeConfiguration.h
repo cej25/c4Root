@@ -20,6 +20,7 @@ class TFatimaVmeConfiguration
         int NQDCBoards() const;
         std::map<std::pair<int, int>, int> TDCMapping() const;
         int NTDCBoards() const;
+        int NDetectors() const;
         bool MappingLoaded() const;
         int TM_Undelayed() const;
         int TM_Delayed() const;
@@ -38,7 +39,7 @@ class TFatimaVmeConfiguration
         std::map<std::pair<int, int>, int> dets_tdc;
         std::set<int> extra_signals;
 
-        int detectors;
+        int num_detectors;
         int num_qdc_boards;
         int num_tdc_boards;
 
@@ -86,6 +87,11 @@ inline std::map<std::pair<int, int>, int> TFatimaVmeConfiguration::TDCMapping() 
 inline int TFatimaVmeConfiguration::NTDCBoards() const
 {
     return num_tdc_boards;
+}
+
+inline int TFatimaVmeConfiguration::NDetectors() const
+{
+    return num_detectors;
 }
 
 inline bool TFatimaVmeConfiguration::MappingLoaded() const

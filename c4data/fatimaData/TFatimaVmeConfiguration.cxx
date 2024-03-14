@@ -11,7 +11,7 @@ TFatimaVmeConfiguration* TFatimaVmeConfiguration::instance = nullptr;
 std::string TFatimaVmeConfiguration::filepath = "Fatima_VME_allocation.txt";
 
 TFatimaVmeConfiguration::TFatimaVmeConfiguration()
-    :   detectors(0)
+    :   num_detectors(0)
     ,   num_qdc_boards(0)
     ,   num_tdc_boards(0)
 {
@@ -22,6 +22,7 @@ void TFatimaVmeConfiguration::ReadConfiguration()
 {
     std::ifstream detector_map_file(filepath);
     std::string line;
+    std::set<int> detector_ids;
     std::set<int> qdc_boards;
     std::set<int> tdc_boards;
 
@@ -57,6 +58,7 @@ void TFatimaVmeConfiguration::ReadConfiguration()
             extra_signals.insert(det);
         }
 
+        if (det > -1) detector_ids.insert(det);
         if (qdc_board > -1) qdc_boards.insert(qdc_board);
         if (tdc_board > -1) tdc_boards.insert(tdc_board);
 
@@ -66,6 +68,7 @@ void TFatimaVmeConfiguration::ReadConfiguration()
     }
 
     DetectorMap_loaded = 1;
+    num_detectors = 
     num_qdc_boards = qdc_boards.size();
     num_tdc_boards = tdc_boards.size();
     detector_map_file.close();

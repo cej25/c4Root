@@ -17,6 +17,7 @@
 #pragma link C++ class BeamMonitorOnlineSpectra+;
 #pragma link C++ class LisaOnlineSpectra+;
 #pragma link C++ class FatimaOnlineSpectra+;
+#pragma link C++ class FatimaVmeOnlineSpectra+;
 #pragma link C++ class TimeMachineOnline+;
 
 // nearline/correlations
