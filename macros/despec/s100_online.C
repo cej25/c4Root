@@ -41,8 +41,8 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
 
 
     // Define important paths.
-    // TString c4Root_path = "/u/despec/s100_online/c4Root";
-    TString c4Root_path = "/u/cjones/c4Root";
+    TString c4Root_path = "/u/despec/s100_online/c4Root";
+    //TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes";
     ucesb_path.ReplaceAll("//","/");
 
@@ -303,9 +303,9 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     
     // FRS
     FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
-    // FrsRawSpectra* frsrawspec = new FrsRawSpectra();
-    // FrsCalSpectra* frscalspec = new FrsCalSpectra();
-    // FrsAnalysisSpectra* frsanlspec = new FrsAnalysisSpectra(frs,mw,tpc,music,labr,sci,id,si,mrtof,range,FrsGates);
+    FrsRawSpectra* frsrawspec = new FrsRawSpectra();
+    FrsCalSpectra* frscalspec = new FrsCalSpectra();
+    FrsAnalysisSpectra* frsanlspec = new FrsAnalysisSpectra(frs,mw,tpc,music,labr,sci,id,si,mrtof,range,FrsGates);
     
     // BeamMonitorOnlineSpectra* onlinebm = new BeamMonitorOnlineSpectra();
 
@@ -324,9 +324,9 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     run->AddTask(onlinebplast);
     // run->AddTask(onlinege);
     run->AddTask(onlinefrs);
-    // run->AddTask(frsrawspec);
-    // run->AddTask(frscalspec);
-    // run->AddTask(frsanlspec);
+    run->AddTask(frsrawspec);
+    run->AddTask(frscalspec);
+    run->AddTask(frsanlspec);
     // run->AddTask(onlinebm);
     run->AddTask(tms);
 

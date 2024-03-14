@@ -24,8 +24,6 @@ public:
     void SetDecayOnline(Bool_t option) { fDecayOnline = option; }
     void SetScalersOnline(Bool_t option) { fScalersOnline = option; }
 
-    void SetAidaTimeMachineChannels(int delayed, int undelayed);
-
 private:
     std::vector<AidaUnpackAdcItem> const* unpackArray;
     std::vector<AidaUnpackScalerItem> const* scalerArray;
@@ -39,8 +37,6 @@ private:
     bool fScalersOnline;
 
     TAidaConfiguration const* conf;
-    int aida_tm_delayed_ch;
-    int aida_tm_undelayed_ch;
     unsigned int ignoredEvents;
 
 public:
@@ -52,12 +48,6 @@ inline void AidaUnpack2Cal::SetOnline(Bool_t option)
     SetImplantOnline(option);
     SetDecayOnline(option);
     SetScalersOnline(option);
-}
-
-inline void AidaUnpack2Cal::SetAidaTimeMachineChannels(int delayed, int undelayed)
-{
-    aida_tm_delayed_ch = delayed;
-    aida_tm_undelayed_ch = undelayed;
 }
 
 #endif /* AidaUnpack2Cal_H */
