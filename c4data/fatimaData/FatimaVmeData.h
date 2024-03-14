@@ -16,6 +16,7 @@ class FatimaVmeData : public TObject
 
         // Getters
         inline uint64_t Get_wr_t() const { return fwr_t; }
+        inline uint16_t Get_wr_subsystem_id() const { return fwr_subsystem_id; }
 
         inline int Get_TDCs_fired() const { return ftdcs_fired; }
         inline std::vector<uint32_t> Get_TDC_detectors() const { return ftdc_detectors; }
@@ -31,8 +32,9 @@ class FatimaVmeData : public TObject
 
         // Setters
         inline void Set_wr_t(uint64_t wr_t) { fwr_t = wr_t; }
-        inline void Set_board_id(int qdc, Int_t board_id) { fboard_id[qdc] = board_id; }
-        inline void Set_board_time(int qdc, uint32_t time) { fboard_time[qdc] = time; }
+        inline void Set_wr_subsystem_id(uint16_t id) { fwr_subsystem_id = id; }
+        //inline void Set_board_id(int qdc, Int_t board_id) { fboard_id[qdc] = board_id; }
+        //inline void Set_board_time(int qdc, uint32_t time) { fboard_time[qdc] = time; }
         //inline void Set_num_channels_fired(int qdc, Int_t n) { fnum_channels_fired[qdc] = n; }
         inline void Set_QDCs_fired(int n) { fqdcs_fired = n; }
         inline void Set_TDCs_fired(int n) { ftdcs_fired = n; }
@@ -57,19 +59,15 @@ class FatimaVmeData : public TObject
         // stuff
 
         // board number != geo/board_id
-        // do we need to define number of qdc boards etc? :confused:
         uint64_t fwr_t;
-        Int_t fboard_id[QDC_BOARDS];
-        uint32_t fboard_time[QDC_BOARDS];
-        Int_t fnum_channels_fired[QDC_BOARDS];
-        //uint64_t fqdc_channel_coarse_time[QDC_BOARDS][CHANNELS_PER_QDC];
+        uint16_t fwr_subsystem_id;
+        //Int_t fboard_id[QDC_BOARDS];
+        //uint32_t fboard_time[QDC_BOARDS];
+        //Int_t fnum_channels_fired[QDC_BOARDS];
         std::vector<uint32_t> fqdc_coarse_times;
-        //uint32_t fqdc_channel_fine_time[QDC_BOARDS][CHANNELS_PER_QDC];
         std::vector<uint64_t> fqdc_fine_times;
         uint64_t fqdc_channel_time[QDC_BOARDS][CHANNELS_PER_QDC];
-        //uint32_t fqdc_channel_qlong[QDC_BOARDS][CHANNELS_PER_QDC];
         std::vector<uint32_t> fqdc_qlong_raw;
-        //uint32_t fqdc_channel_qshort[QDC_BOARDS][CHANNELS_PER_QDC];
         std::vector<uint32_t> fqdc_qshort_raw;
 
         std::vector<uint32_t> fv1290_channels;
