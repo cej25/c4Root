@@ -70,7 +70,6 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     folder_beammonitor = new TFolder("Beam Monitor", "Beam Monitor");
     run->AddObject(folder_beammonitor);
 
-
     hG_BM_s4h_norm_tdiff = new TH1D("hG_BM_s4h_norm_tdiff", "S4 Normalised Hit Time Difference [100ns]", 100000, 0, 100000);
     folder_beammonitor->Add(hG_BM_s4h_norm_tdiff);
     hG_BM_s4h_tdiff = new TH1D("hG_BM_s4h_tdiff", "S4 Hit Time Difference [100ns]", 100000, 0, 100000);
@@ -88,12 +87,19 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     hG_BM_s4h_cp = new TH1D("hG_BM_s4h_cp", "S4 Cumulative Poissson [100ns]", 100000, 0, 100000);
     folder_beammonitor->Add(hG_BM_s4h_cp);
 
-    hG_BM_s4gr_dt_avg = new TGraph(3600);
+    hG_BM_s4gr_dt_avg = new TGraph(1);
     hG_BM_s4gr_dt_avg->SetName("hG_BM_s4gr_dt_avg");
     hG_BM_s4gr_dt_avg->SetTitle("S4 Average Time Difference");
     hG_BM_s4gr_dt_avg->GetXaxis()->SetTimeDisplay(1);
     hG_BM_s4gr_dt_avg->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
     hG_BM_s4gr_dt_avg->GetXaxis()->SetTimeOffset(0, "local");
+    hG_BM_s4gr_dt_avg->GetYaxis()->SetTitle("t [us]");
+    hG_BM_s4gr_dt_avg->GetXaxis()->SetTitle("Time [Y-M-D H:M]");
+    hG_BM_s4gr_dt_avg->SetMarkerColor(kBlack);
+    hG_BM_s4gr_dt_avg->SetMarkerStyle(20);
+    hG_BM_s4gr_dt_avg->SetLineColor(kBlue);
+    hG_BM_s4gr_dt_avg->SetLineWidth(2);
+    hG_BM_s4gr_dt_avg->GetXaxis()->SetNdivisions(-4);
     folder_beammonitor->Add(hG_BM_s4gr_dt_avg);
 
     hG_BM_s4gr_qf = new TGraph(1);
@@ -108,66 +114,117 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     hG_BM_s4gr_qf->SetMarkerStyle(20);
     hG_BM_s4gr_qf->SetLineColor(kBlue);
     hG_BM_s4gr_qf->SetLineWidth(2);
+    hG_BM_s4gr_qf->GetXaxis()->SetNdivisions(-4);
     folder_beammonitor->Add(hG_BM_s4gr_qf);
 
-    hG_BM_s4gr_dcmin = new TGraph(3600);
+    hG_BM_s4gr_dcmin = new TGraph(1);
     hG_BM_s4gr_dcmin->SetName("hG_BM_s4gr_dcmin");
     hG_BM_s4gr_dcmin->SetTitle("S4 Largest Deviation From Ideal");
     hG_BM_s4gr_dcmin->GetXaxis()->SetTimeDisplay(1);
     hG_BM_s4gr_dcmin->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
     hG_BM_s4gr_dcmin->GetXaxis()->SetTimeOffset(0, "local");
+    hG_BM_s4gr_dcmin->GetYaxis()->SetTitle("QF2");
+    hG_BM_s4gr_dcmin->GetXaxis()->SetTitle("Time [Y-M-D H:M]");
+    hG_BM_s4gr_dcmin->SetMarkerColor(kBlack);
+    hG_BM_s4gr_dcmin->SetMarkerStyle(20);
+    hG_BM_s4gr_dcmin->SetLineColor(kBlue);
+    hG_BM_s4gr_dcmin->SetLineWidth(2);
+    hG_BM_s4gr_dcmin->GetXaxis()->SetNdivisions(-4);
     folder_beammonitor->Add(hG_BM_s4gr_dcmin);
 
-    hG_BM_s4gr_dctime = new TGraph(3600);
+    hG_BM_s4gr_dctime = new TGraph(1);
     hG_BM_s4gr_dctime->SetName("hG_BM_s4gr_dctime");
     hG_BM_s4gr_dctime->SetTitle("S4 Time difference with the largest deviation [us]");
     hG_BM_s4gr_dctime->GetXaxis()->SetTimeDisplay(1);
     hG_BM_s4gr_dctime->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
     hG_BM_s4gr_dctime->GetXaxis()->SetTimeOffset(0, "local");
+    hG_BM_s4gr_dctime->GetYaxis()->SetTitle("QF3 time [us]");
+    hG_BM_s4gr_dctime->GetXaxis()->SetTitle("Time [Y-M-D H:M]");
+    hG_BM_s4gr_dctime->SetMarkerColor(kBlack);
+    hG_BM_s4gr_dctime->SetMarkerStyle(20);
+    hG_BM_s4gr_dctime->SetLineColor(kBlue);
+    hG_BM_s4gr_dctime->SetLineWidth(2);
+    hG_BM_s4gr_dctime->GetXaxis()->SetNdivisions(-4);
     folder_beammonitor->Add(hG_BM_s4gr_dctime);
 
     hG_BM_s2h_norm_tdiff = new TH1D("hG_BM_s2h_norm_tdiff", "S2 Normalised Hit Time Difference [100ns]", 100000, 0, 100000);
+    folder_beammonitor->Add(hG_BM_s2h_norm_tdiff);
     hG_BM_s2h_tdiff = new TH1D("hG_BM_s2h_tdiff", "S2 Hit Time Difference [100ns]", 100000, 0, 100000);
+    folder_beammonitor->Add(hG_BM_s2h_tdiff);
     hG_BM_s2h_t1 = new TH1D("hG_BM_s2h_t1", "S2 Hit Time [ms]: bins are 100us wide", 100000l, 0, 100000);
+    folder_beammonitor->Add(hG_BM_s2h_t1);
     hG_BM_s2h_n = new TH1D("hG_BM_s2h_n", "S2 Hits per Spill", 600, 0, 6000);
+    folder_beammonitor->Add(hG_BM_s2h_n);
     hG_BM_s2h_poisson = new TH1D("hG_BM_s2h_poisson", "S2 Poisson", 100000, 0, 100000);
+    folder_beammonitor->Add(hG_BM_s2h_poisson);
     hG_BM_s2h_c = new TH1D("hG_BM_s2h_c", "S2 Cumulative Hit Times [100ns]", 100000, 0, 100000);
+    folder_beammonitor->Add(hG_BM_s2h_c);
     hG_BM_s2h_dc = new TH1D("hG_BM_s2h_dc", "S2 Deviation of Cumulative Hit Times [100ns]", 100000, 0, 100000);
+    folder_beammonitor->Add(hG_BM_s2h_dc);
     hG_BM_s2h_cp = new TH1D("hG_BM_s2h_cp", "S2 Cumulative Poisson [100ns]", 100000, 0, 100000);
+    folder_beammonitor->Add(hG_BM_s2h_cp);
 
-    hG_BM_s2gr_dt_avg = new TGraph(3600);
+    hG_BM_s2gr_dt_avg = new TGraph(1);
     hG_BM_s2gr_dt_avg->SetName("hG_BM_s2gr_dt_avg");
     hG_BM_s2gr_dt_avg->SetTitle("S2 Average Time Difference");
     hG_BM_s2gr_dt_avg->GetXaxis()->SetTimeDisplay(1);
     hG_BM_s2gr_dt_avg->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
-    hG_BM_s2gr_dt_avg->GetXaxis()->SetTimeOffset(0,"local");
+    hG_BM_s2gr_dt_avg->GetXaxis()->SetTimeOffset(0, "local");
+    hG_BM_s2gr_dt_avg->GetYaxis()->SetTitle("t [us]");
+    hG_BM_s2gr_dt_avg->GetXaxis()->SetTitle("Time [Y-M-D H:M]");
+    hG_BM_s2gr_dt_avg->SetMarkerColor(kBlack);
+    hG_BM_s2gr_dt_avg->SetMarkerStyle(20);
+    hG_BM_s2gr_dt_avg->SetLineColor(kRed);
+    hG_BM_s2gr_dt_avg->SetLineWidth(2);
+    hG_BM_s2gr_dt_avg->GetXaxis()->SetNdivisions(-4);
     folder_beammonitor->Add(hG_BM_s2gr_dt_avg);
 
-    hG_BM_s2gr_qf = new TGraph(3600);
+    hG_BM_s2gr_qf = new TGraph(1);
     hG_BM_s2gr_qf->SetName("hG_BM_s2gr_qf");
     hG_BM_s2gr_qf->SetTitle("S2 Quality Factor");
     hG_BM_s2gr_qf->GetXaxis()->SetTimeDisplay(1);
     hG_BM_s2gr_qf->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
-    hG_BM_s2gr_dt_avg->GetXaxis()->SetTimeOffset(0,"local");
+    hG_BM_s2gr_qf->GetXaxis()->SetTimeOffset(0, "local");
+    hG_BM_s2gr_qf->GetYaxis()->SetTitle("QF");
+    hG_BM_s2gr_qf->GetXaxis()->SetTitle("Time [Y-M-D H:M]");
+    hG_BM_s2gr_qf->SetMarkerColor(kBlack);
+    hG_BM_s2gr_qf->SetMarkerStyle(20);
+    hG_BM_s2gr_qf->SetLineColor(kRed);
+    hG_BM_s2gr_qf->SetLineWidth(2);
+    hG_BM_s2gr_qf->GetXaxis()->SetNdivisions(-4);
     folder_beammonitor->Add(hG_BM_s2gr_qf);
 
-    hG_BM_s2gr_dcmin = new TGraph(3600);
+    hG_BM_s2gr_dcmin = new TGraph(1);
     hG_BM_s2gr_dcmin->SetName("hG_BM_s2gr_dcmin");
     hG_BM_s2gr_dcmin->SetTitle("S2 Largest Deviation From Ideal");
     hG_BM_s2gr_dcmin->GetXaxis()->SetTimeDisplay(1);
     hG_BM_s2gr_dcmin->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
-    hG_BM_s2gr_dt_avg->GetXaxis()->SetTimeOffset(0,"local");
+    hG_BM_s2gr_dcmin->GetXaxis()->SetTimeOffset(0, "local");
+    hG_BM_s2gr_dcmin->GetYaxis()->SetTitle("QF2");
+    hG_BM_s2gr_dcmin->GetXaxis()->SetTitle("Time [Y-M-D H:M]");
+    hG_BM_s2gr_dcmin->SetMarkerColor(kBlack);
+    hG_BM_s2gr_dcmin->SetMarkerStyle(20);
+    hG_BM_s2gr_dcmin->SetLineColor(kRed);
+    hG_BM_s2gr_dcmin->SetLineWidth(2);
+    hG_BM_s2gr_dcmin->GetXaxis()->SetNdivisions(-4);
     folder_beammonitor->Add(hG_BM_s2gr_dcmin);
 
-    hG_BM_s2gr_dctime = new TGraph(3600);
+    hG_BM_s2gr_dctime = new TGraph(1);
     hG_BM_s2gr_dctime->SetName("hG_BM_s2gr_dctime");
     hG_BM_s2gr_dctime->SetTitle("S2 Time difference with the largest deviation [us]");
     hG_BM_s2gr_dctime->GetXaxis()->SetTimeDisplay(1);
     hG_BM_s2gr_dctime->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
-    hG_BM_s2gr_dt_avg->GetXaxis()->SetTimeOffset(0,"local");
+    hG_BM_s2gr_dctime->GetXaxis()->SetTimeOffset(0, "local");
+    hG_BM_s2gr_dctime->GetYaxis()->SetTitle("QF3 time [us]");
+    hG_BM_s2gr_dctime->GetXaxis()->SetTitle("Time [Y-M-D H:M]");
+    hG_BM_s2gr_dctime->SetMarkerColor(kBlack);
+    hG_BM_s2gr_dctime->SetMarkerStyle(20);
+    hG_BM_s2gr_dctime->SetLineColor(kRed);
+    hG_BM_s2gr_dctime->SetLineWidth(2);
+    hG_BM_s2gr_dctime->GetXaxis()->SetNdivisions(-4);
     folder_beammonitor->Add(hG_BM_s2gr_dctime);
 
-
+    // add S2 and S4 equivalent TGraphs to same canvas
 
     run->GetHttpServer()->RegisterCommand("Reset_BM_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
     run->GetHttpServer()->RegisterCommand("Snapshot_BM_Histos", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
@@ -310,9 +367,11 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
                     // QF
                     BM_QF = 100.0 * (1.0 - (hG_BM_s2h_norm_tdiff->Integral(0, (Int_t) BM_Tmean) / hG_BM_s2h_poisson->Integral(0, (Int_t) BM_Tmean)));
                     
-                    // chrono to get ns resolution?
+                    // we could use chrono to get ns resolution? otherwise s
                     time_t rawtime;
                     time(&rawtime);
+
+                    if (std::isnan(BM_QF)) continue; // skip divisions by zero
 
                     hG_BM_s2gr_qf->SetPoint(BM_S2_QFcount, rawtime, BM_QF);
                     hG_BM_s2gr_dcmin->SetPoint(BM_S2_QFcount, rawtime, BM_dc_MinValue);
@@ -393,13 +452,11 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
                     time(&rawtime);
 
                     if (std::isnan(BM_QF)) continue; // skip divisions by zero
-                    if (rawtime < 1000000000) continue; // skip weird time events? not sure whats happening
 
                     hG_BM_s4gr_qf->TGraph::SetPoint(BM_S4_QFcount, rawtime, BM_QF);
                     hG_BM_s4gr_dcmin->TGraph::SetPoint(BM_S4_QFcount, rawtime, BM_dc_MinValue);
                     hG_BM_s4gr_dctime->TGraph::SetPoint(BM_S4_QFcount, rawtime, BM_dc_MinBin / 10);
                     hG_BM_s4gr_dt_avg->TGraph::SetPoint(BM_S4_QFcount, rawtime, (Double_t) BM_Tmean / 10.);
-                    //std::cout << "S4 Quality Factor: " << BM_QF << std::endl;
                     BM_S4_QFcount++;
 
                 } // analysis every N
