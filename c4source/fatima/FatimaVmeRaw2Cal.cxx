@@ -22,6 +22,7 @@ FatimaVmeRaw2Cal::FatimaVmeRaw2Cal()
     ,   fOnline(kFALSE)
     ,   funcal_data(new TClonesArray("FatimaVmeData"))
     ,   fcal_data(new TClonesArray("FatimaVmeCalData"))
+    ,   fTimeMachineArray(new TClonesArray("TimeMachineData"))
 {
 }
 
@@ -33,6 +34,7 @@ FatimaVmeRaw2Cal::FatimaVmeRaw2Cal(const TString& name, Int_t verbose)
     ,   fOnline(kFALSE)
     ,   funcal_data(new TClonesArray("FatimaVmeData"))
     ,   fcal_data(new TClonesArray("FatimaVmeCalData"))
+    ,   fTimeMachineArray(new TClonesArray("TimeMachineData"))
 {
 }
 
@@ -57,7 +59,6 @@ InitStatus FatimaVmeRaw2Cal::Init()
     c4LOG_IF(fatal, !funcal_data, "Fatima branch of FatimaVmeData not found!");
 
     mgr->Register("FatimaVmeCalData", "FatimaVmeCalDataFolder", fcal_data, !fOnline);
-    // time machine?
 
     TFatimaVmeConfiguration const* fatvme_config = TFatimaVmeConfiguration::GetInstance();
     extra_signals = fatvme_config->ExtraSignals();
@@ -200,6 +201,12 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
                 {
                     SC41R.emplace_back(timestamp);
                 }
+
+                if (((tdc_detectors[i] == tm_delayed) || (tdc_detectors[i] == tm_undelayed)) && tm_delayed != 0 && tm_undelayed != 0)
+                {
+                    new ((*fTimeMachineArray)[fTimeMachineArray->GetEntriesFast()]) TimeMachineData((tdc_detectors[i] == tm_undelayed) ? (timestamp) : (0), (tdc_detectors[i] == tm_undelayed) ? (0) : (timestamp), FatimaHit->Get_wr_subsystem_id(), FatimaHit->Get_wr_t());
+                }
+
                 if (tdc_detectors[i] == tm_undelayed && timestamp != 0.)
                 {
                     FatVME_TMU.emplace_back(timestamp * 0.025);
