@@ -24,7 +24,8 @@ EXPS= s452 \
 	NovTest \
 	onlyFATIMA \
 	s100 \
-	onlyGerm 
+	onlyGerm \
+	onlyBGO
 
 ALL_EXPS = $(EXPS)
 

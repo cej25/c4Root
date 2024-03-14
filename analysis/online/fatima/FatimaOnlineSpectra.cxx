@@ -21,6 +21,7 @@
 #include "TMath.h"
 #include "TFile.h"
 #include "TRandom.h"
+#include "TDirectory.h"
 
 FatimaOnlineSpectra::FatimaOnlineSpectra() : FatimaOnlineSpectra("FatimaOnlineSpectra")
 {
@@ -67,10 +68,13 @@ InitStatus FatimaOnlineSpectra::Init()
 
     fHitFatimaTwinpeaks = (TClonesArray*)mgr->GetObject("FatimaTwinpeaksCalData");
     c4LOG_IF(fatal, !fHitFatimaTwinpeaks, "Branch FatimaTwinpeaksCalData not found!");
+    
+    TDirectory::TContext ctx(nullptr);
 
     //create folders
     folder_fatima = new TFolder("FATIMA", "FATIMA");
 
+    
 
     run->AddObject(folder_fatima);
 
@@ -181,12 +185,12 @@ InitStatus FatimaOnlineSpectra::Init()
 
 
     //2D energy spectrum
-    c_fatima_energy = new TCanvas("c_fatima_energy","Fatima energy spectrum",650,350);
+    c_fatima_energy_vs_detid = new TCanvas("c_fatima_energy_vs_detid","Fatima energy spectrum",650,350);
     h2_fatima_energy_vs_detid = new TH2F("h2_fatima_energy_vs_detid","FATIMA energies",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,max_detector_id+1,0-0.5,max_detector_id+0.5); //such that the y-axis is the detector id and not the index
     h2_fatima_energy_vs_detid->GetXaxis()->SetTitle("Energy (keV)");
     h2_fatima_energy_vs_detid->GetYaxis()->SetTitle("Detector nr.");
     h2_fatima_energy_vs_detid->Draw("COLZ");
-    folder_fatima_energy_spectra->Add(c_fatima_energy);
+    folder_fatima_energy_spectra->Add(c_fatima_energy_vs_detid);
 
     //2D uncalibrated energy spectrum
     c_fatima_energy_uncal = new TCanvas("c_fatima_energy_uncal","Fatima energy spectrum",650,350);

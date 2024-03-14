@@ -22,6 +22,7 @@
 #include "TRandom.h"
 #include "TFile.h"
 #include "TROOT.h"
+#include "TDirectory.h"
 
 bPlastOnlineSpectra::bPlastOnlineSpectra() : bPlastOnlineSpectra("bPlastOnlineSpectra")
 {
@@ -50,6 +51,7 @@ void bPlastOnlineSpectra::SetParContainers()
 
 InitStatus bPlastOnlineSpectra::Init()
 {
+
     // set batch mode
     gROOT->SetBatch(kTRUE);
     // number of dets 
@@ -66,6 +68,8 @@ InitStatus bPlastOnlineSpectra::Init()
 
     fHitbPlastTwinpeaks = (TClonesArray*)mgr->GetObject("bPlastTwinpeaksCalData");
     c4LOG_IF(fatal, !fHitbPlastTwinpeaks, "Branch bPlastTwinpeaksCalData not found!");
+
+    TDirectory::TContext ctx(nullptr);
 
     // create folders
     folder_bplast = new TFolder("bPlast", "bPlast");

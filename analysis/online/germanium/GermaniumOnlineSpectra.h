@@ -70,7 +70,7 @@ class GermaniumOnlineSpectra : public FairTask
 
         // Number of DEGAS detectors and crystals clusters 
         const int NCrystals = 3; //needs to be changed.
-        const int NDetectors = 12; //needs to be changed.
+        const int NDetectors = 3; //needs to be changed.
 
 
     public:

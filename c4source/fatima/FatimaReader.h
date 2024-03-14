@@ -96,7 +96,7 @@ class FatimaReader : public c4Reader
 
 
         static const int NBoards = sizeof(fData->fatima_tamex) / sizeof(fData->fatima_tamex[0]);
-        static const int NChannels = 32; //slow + fast per board
+        static const int NChannels = 33; //slow + fast per board + trigger channel 0.
 
 
         //global
@@ -118,13 +118,13 @@ class FatimaReader : public c4Reader
         bool last_word_read_was_epoch = false;
 
 
-        TString fine_time_histo_outfile; 
-        TString fine_time_histo_infile; 
+        TString fine_time_histo_outfile;
+        TString fine_time_histo_infile;
 
         const int Nbins_fine_time = 1024; //number of bins in the fine time - it is a 10 bit word (2^10 = 1024)
 
-        TH1I *** fine_time_hits; //array of TH1 hisots [NBoards][NChannels]
-        double *** fine_time_calibration_coeffs; //[NBoards][NChannels][1024] last index is bin nr. - this is the lookup table
+        TH1I *** fine_time_hits; //array of TH1 hisots [NBoards][NChannels+1] accounting also for the trigger channel
+        double *** fine_time_calibration_coeffs; //[NBoards][NChannels+1][1024] last index is bin nr. - this is the lookup table
         
         int fine_time_calibration_after = 10000000;
         double TAMEX_fine_time_clock = 5.0; // ns in one fine time cycle.
@@ -133,6 +133,7 @@ class FatimaReader : public c4Reader
         bool fine_time_calibration_save = false;
         bool fine_time_calibration_read_from_file = false;
 
+        uint64_t accepted_trigger_time = 0;
 
 
     public:

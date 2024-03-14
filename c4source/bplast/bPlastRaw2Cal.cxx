@@ -16,6 +16,7 @@
 #include "TClonesArray.h"
 
 #include "bPlastRaw2Cal.h"
+#include <string>
 
 /*
 empty constructor required for FairRoot.
@@ -117,20 +118,21 @@ Bool_t bPlastRaw2Cal::SetDetectorMapFile(TString filename){
     }
 
     int rtamex_module, rtamex_channel, rdetector_id = 0; // temp read variables
-    char rup_down, rleft_right_bottom_top; // additional variables for position
+    std::string rup_down, rleft_right_bottom_top; // additional variables for position
 
     while (!detector_map_file.eof()) {
         if (detector_map_file.peek() == '#') {
             detector_map_file.ignore(1024, '\n');
         } else {
             detector_map_file >> rtamex_module >> rtamex_channel >> rdetector_id >> rup_down >> rleft_right_bottom_top;
-            c4LOG(info, Form("Reading %i, %i, %i, %c, %c", rtamex_module, rtamex_channel, rdetector_id, rup_down, rleft_right_bottom_top));
+            //c4LOG(info, Form("Reading %i, %i, %i, %s, %s", rtamex_module, rtamex_channel, rdetector_id, rup_down, rleft_right_bottom_top));
             std::pair<int, int> tamex_mc = {rtamex_module, rtamex_channel};
-            std::pair<char, char> position = {rup_down, rleft_right_bottom_top};
+            std::pair<std::string, std::string> position = {rup_down, rleft_right_bottom_top};
 
 
             detector_mapping.insert(std::make_pair(tamex_mc, std::make_pair(rdetector_id, position)));
             detector_map_file.ignore(1024, '\n');
+
         }
     }
     DetectorMap_loaded = 1;
@@ -212,6 +214,8 @@ If no detector map is set then be careful with how the mapping happens: tamex mo
 Writes the times in ns!
 */
 void bPlastRaw2Cal::Exec(Option_t* option){
+
+
     if (funcal_data && funcal_data->GetEntriesFast() > 1){ // only get events with two hits.or more
         Int_t event_multiplicity = funcal_data->GetEntriesFast();
         // event mulitiplicity loop
@@ -274,8 +278,8 @@ void bPlastRaw2Cal::Exec(Option_t* option){
                 detector_position = result_find->second.second.second;
                 if (detector_id == -1) {fNunmatched++; continue;} //if only one event is left
                 }else{
-                    //c4LOG(warn, "Detector mapping not complete! CEJ: Warning only for now.");
-                    return;
+                    c4LOG(warn, "Detector mapping not complete! CEJ: Warning only for now.");
+                    //return;
                 }
             }
             else{ //no map and cal: ->
