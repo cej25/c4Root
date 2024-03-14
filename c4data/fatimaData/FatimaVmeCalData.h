@@ -10,11 +10,24 @@ class FatimaVmeCalData : public TObject
     public:
         FatimaVmeCalData();
 
-        FatimaVmeCalData(uint64_t wr_t);
-
         virtual ~FatimaVmeCalData() {}
 
         // Getters
+        inline std::vector<uint32_t> Get_Singles_E() { return fsingles_e; }
+        inline std::vector<uint32_t> Get_Singles_E_raw() { return fsingles_e_raw; }
+        inline std::vector<uint32_t> Get_Singles_QDC_ID() { return fsingles_qdc_id; }
+        inline std::vector<uint32_t> Get_Singles_coarse_time() { return fsingles_coarse_time; }
+        inline std::vector<uint64_t> Get_Singles_fine_time() { return fsingles_fine_time; }
+
+        inline std::vector<uint32_t> Get_Singles_TDC_timestamp() { return fsingles_tdc_timestamp; }
+        inline std::vector<uint32_t> Get_Singles_TDC_timestamp_raw() { return fsingles_tdc_timestamp_raw; }
+        inline std::vector<uint32_t> Get_Singles_TDC_ID() { return fsingles_tdc_id; }
+
+        inline std::vector<uint32_t> Get_SC41L_hits() { return fsc41l_hits; }
+        inline std::vector<uint32_t> Get_SC41R_hits() { return fsc41r_hits; }
+        inline std::vector<uint32_t> Get_TM_undelayed_hits() { return ftm_undelayed_hits; }
+        inline std::vector<uint32_t> Get_TM_delayed_hits() { return ftm_delayed_hits; }
+        
 
         // Setters
         inline void Set_Singles_E(std::vector<uint32_t> e) { fsingles_e = e; }
