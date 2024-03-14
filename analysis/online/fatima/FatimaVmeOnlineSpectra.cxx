@@ -24,11 +24,11 @@
 #include "TRandom.h"
 #include "TDirectory.h"
 
-FatimaVmeOnlineSpectra::FatimaVmeOnlineSpectra() : FatimaVmeOnlineSpectra("FatimaVmeOnlineSpectra")
+FatimaVmeOnlineSpectra::FatimaVmeOnlineSpectra()
 {
 }
 
-FatimaVmeOnlineSpectra::(const TString& name, Int_t verbose)
+FatimaVmeOnlineSpectra::FatimaVmeOnlineSpectra(TString& name, Int_t verbose)
     :   FairTask(name, verbose)
     ,   fHitFatimaVme(NULL)
     ,   fNEvents(0)
@@ -47,7 +47,7 @@ FatimaVmeOnlineSpectra::~FatimaVmeOnlineSpectra()
 
 InitStatus FatimaVmeOnlineSpectra::Init()
 {
-    FairRootManager* mgr = FairRootManager::Instance()
+    FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
     FairRunOnline* run = FairRunOnline::Instance();
@@ -59,7 +59,7 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     fHitFatimaVme = (TClonesArray*)mgr->GetObject("FatimaVmeCalData");
     c4LOG_IF(fatal, !fHitFatimaVme, "Branch FatimaVmeCalData not found!");
 
-    TFatimaVmeConfiguration const* fatima_vme_config = new TFatimaVmeConfiguration();
+    TFatimaVmeConfiguration const* fatima_vme_config = TFatimaVmeConfiguration::GetInstance();
 
     TDirectory::TContext ctx(nullptr);
 
@@ -76,17 +76,23 @@ InitStatus FatimaVmeOnlineSpectra::Init()
 
     // Scalers?
 
+    // bounds here should be based on NDetectors
+    h1_FatVME_QDCMult = new TH1I("h1_FatVME_QDCMult", "Fatima VME QDC Multiplicity", 36, 0, 36);
+    h1_FatVME_TDCMult = new TH1I("h1_FatVME_TDCMult", "Fatime VME TDC Multiplicity", 36, 0, 36);
+    folder_fatima_vme->Add(h1_FatVME_QDCMult);
+    folder_fatima_vme->Add(h1_FatVME_TDCMult);
+
     // for now just plot detectors?
     for (int i = 0; i < fatima_vme_config->NDetectors(); i++)
     {
-        h1_FatVme_RawE[i] = new TH1D(Form("h1_FatVme_RawE%i", i), Form("Fatima VME Raw Energy - Detector %i", i), 2000, 0, 40000);
-        folder_raw_energy->Add(h1_FatVme_RawE[i]);
+        h1_FatVME_RawE[i] = new TH1D(Form("h1_FatVme_RawE%i", i), Form("Fatima VME Raw Energy - Detector %i", i), 2000, 0, 40000);
+        folder_raw_energy->Add(h1_FatVME_RawE[i]);
     }
 
     for (int i = 0; i < fatima_vme_config->NDetectors(); i++)
     {
-        h1_FatVme_RawT[i] = new TH1D(Form("h1_FatVme_RawT%i", i), Form("Fatima VME Raw Time - Detector %i", i), 5000, -1e6, 7e7);
-        folder_raw_time->Add(h1_FatVme_RawT[i]);
+        h1_FatVME_RawT[i] = new TH1D(Form("h1_FatVme_RawT%i", i), Form("Fatima VME Raw Time - Detector %i", i), 5000, -1e6, 7e7);
+        folder_raw_time->Add(h1_FatVME_RawT[i]);
     }
 
     // canvases etc
@@ -117,10 +123,36 @@ void FatimaVmeOnlineSpectra::Exec(Option_t* option)
         Int_t nHits = fHitFatimaVme->GetEntriesFast();
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {
-            FatimaVmeCalData* hit = (FatimaVmeCalData*)fHitFatimaVme->At(hit);
-            if (!hit) continue;
+            FatimaVmeCalData* FatimaVmeHit = (FatimaVmeCalData*)fHitFatimaVme->At(ihit);
+            if (!FatimaVmeHit) continue;
 
-            
+            std::vector<uint32_t> QDC_IDs = FatimaVmeHit->Get_QDC_ID();
+            std::vector<uint32_t> QDC_E_raw = FatimaVmeHit->Get_QDC_E_raw();
+
+            h1_FatVME_QDCMult->Fill(QDC_IDs.size());
+            for (int i = 0; i < QDC_IDs.size(); i++)
+            {
+                h1_FatVME_RawE[QDC_IDs[i]]->Fill(QDC_E_raw[i]);
+            }
+
+            std::vector<uint32_t> TDC_IDs = FatimaVmeHit->Get_TDC_ID();
+            std::vector<uint32_t> TDC_timestamp = FatimaVmeHit->Get_TDC_time();
+
+            h1_FatVME_TDCMult->Fill(TDC_IDs.size());
+            for (int i = 0; i < TDC_IDs.size(); i++)
+            {
+                h1_FatVME_RawT[TDC_IDs[i]]->Fill(TDC_timestamp[i] * 25); // time in [ps]
+            }
         }
     }
+}
+
+void FatimaVmeOnlineSpectra::FinishEvent()
+{
+
+}
+
+void FatimaVmeOnlineSpectra::FinishTask()
+{
+
 }

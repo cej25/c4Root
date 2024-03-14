@@ -28,6 +28,16 @@ class FatimaVmeCalData : public TObject
         inline std::vector<uint32_t> Get_TM_undelayed_hits() { return ftm_undelayed_hits; }
         inline std::vector<uint32_t> Get_TM_delayed_hits() { return ftm_delayed_hits; }
         
+        inline int Get_FatVME_Mult() { return ffatvme_mult; }
+
+        inline std::vector<uint32_t> Get_QDC_ID() { return fqdc_id; }
+        inline std::vector<uint32_t> Get_QDC_E() { return fqdc_e; }
+        inline std::vector<uint32_t> Get_QDC_E_raw() { return fqdc_e_raw; }
+        inline std::vector<uint32_t> Get_QDC_T_coarse() { return fqdc_t_coarse; }
+        inline std::vector<uint64_t> Get_QDC_T_fine() { return fqdc_t_fine; }
+        inline std::vector<uint32_t> Get_TDC_ID() { return ftdc_id; }
+        inline std::vector<uint32_t> Get_TDC_time() { return ftdc_time; }
+        inline std::vector<uint32_t> Get_TDC_time_raw() { return ftdc_time_raw; }
 
         // Setters
         inline void Set_Singles_E(std::vector<uint32_t> e) { fsingles_e = e; }
@@ -35,9 +45,8 @@ class FatimaVmeCalData : public TObject
         inline void Set_Singles_QDC_ID(std::vector<uint32_t> qdc) { fsingles_qdc_id = qdc; }
         inline void Set_Singles_coarse_time(std::vector<uint32_t> coarse_time) { fsingles_coarse_time = coarse_time; }
         inline void Set_Singles_fine_time(std::vector<uint64_t> fine_time) { fsingles_fine_time = fine_time; }
-
-        inline void Set_Singles_TDC_timestamp(std::vector<uint32_t> ts) { ftdc_timestamp = ts; }
-        inline void Set_Singles_TDC_timestamp_raw(std::vector<uint32_t> ts_raw) { ftdc_timestamp_raw = ts_raw; }
+        inline void Set_Singles_TDC_timestamp(std::vector<uint32_t> ts) { fsingles_tdc_timestamp = ts; }
+        inline void Set_Singles_TDC_timestamp_raw(std::vector<uint32_t> ts_raw) { fsingles_tdc_timestamp_raw = ts_raw; }
         inline void Set_Singles_TDC_ID(std::vector<uint32_t> tdc) { fsingles_tdc_id = tdc; }
         
         inline void Set_SC41L_hits(std::vector<uint32_t> sc41l) { fsc41l_hits = sc41l; }
@@ -66,8 +75,8 @@ class FatimaVmeCalData : public TObject
         std::vector<uint32_t> fsingles_coarse_time;
         std::vector<uint64_t> fsingles_fine_time;
 
-        std::vector<uint32_t> ftdc_timestamp;
-        std::vector<uint32_t> ftdc_timestamp_raw;
+        std::vector<uint32_t> fsingles_tdc_timestamp;
+        std::vector<uint32_t> fsingles_tdc_timestamp_raw;
         std::vector<uint32_t> fsingles_tdc_id;
 
         std::vector<uint32_t> fsc41l_hits;
