@@ -39,10 +39,6 @@ class FatimaVmeRaw2Cal : public FairTask
         double Calibrate_QDC_T(unsigned long T, int det_id);
         double Calibrate_TDC_T(unsigned long T, int det_id);
 
-        void Load_QDC_Energy_Calibration_File(TString& filepath);
-        void Load_QDC_Time_Calibration_File(TString& filepath);
-        void Load_TDC_Time_Calibration_File(TString& filepath);
-
         void SetOnline(Bool_t option) { fOnline = option; }
 
     private:
