@@ -13,6 +13,8 @@
 // ROOT
 #include "TClonesArray.h"
 #include <vector>
+#include "TDirectory.h"
+#include "THttpServer.h"
 
 FrsAnalysisSpectra::FrsAnalysisSpectra(TFRSParameter* ffrs,
         TMWParameter* fmw,
@@ -91,8 +93,8 @@ InitStatus FrsAnalysisSpectra::Init()
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-    //FairRunOnline* run = FairRunOnline::Instance();
-    //run->GetHttpServer()->Register("", this);
+    FairRunOnline* run = FairRunOnline::Instance();
+    run->GetHttpServer()->Register("", this);
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "EventHeader. not found!");
@@ -101,11 +103,14 @@ InitStatus FrsAnalysisSpectra::Init()
     c4LOG_IF(fatal, !fFrsHitArray, "FrsHitData branch not found!");
 
     //mgr->Register("FrsAnalysisData", "FRS Analysis Data", fFrsAnalysisArray, !fOnline);
+    TDirectory::TContext ctx(nullptr);
 
-    // clear stuff
+    folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
+    if (!folder_frs_hists) folder_frs_hists = new TFolder("FRS", "FRS");
 
-    // init folders
-    frs_analysis_hists = new TFolder("FRS_Analysis_Histograms", "FRS_Analysis_Histograms");
+    frs_analysis_hists = new TFolder("Analysis Histograms", "Analysis Histograms");
+    folder_frs_hists->Add(frs_analysis_hists);
+
     frs_tac_hists = new TFolder("TAC", "TAC");
     frs_analysis_hists->Add(frs_tac_hists);
     frs_mhtdc_hists = new TFolder("MHTDC", "MHTDC");
@@ -1002,12 +1007,8 @@ void FrsAnalysisSpectra::FinishEvent()
 
 void FrsAnalysisSpectra::FinishTask()
 {
-    // write folders !
     c4LOG(info, "Writing FRS analysis histograms to file.");
-    if (fFrsHitArray)
-    {
-        frs_analysis_hists->Write();
-    }
+    folder_frs_hists->Write();
 }
 
 ClassImp(FrsAnalysisSpectra)

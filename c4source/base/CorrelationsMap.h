@@ -3,6 +3,7 @@
 
 #include <map>
 #include <vector>
+#include <string>
 
 class CorrelationsMap : public std::map<std::string, std::vector<int>>
 {

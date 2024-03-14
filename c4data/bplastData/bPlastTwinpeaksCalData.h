@@ -56,6 +56,8 @@ class bPlastTwinpeaksCalData : public TObject
         void Set_wr_subsystem_id(uint16_t v){ fwr_subsystem_id = v; }
         void Set_wr_t(uint64_t v){ fwr_t = v; }
 
+        // void Set_nUdets(int v) { fnUdets = v; }
+
 
     protected:
         // Data items
@@ -73,6 +75,8 @@ class bPlastTwinpeaksCalData : public TObject
         double fslow_ToT;
         uint16_t fwr_subsystem_id;
         uint64_t fwr_t;
+
+        // int nUdetectors;
     
 
     public:

@@ -62,6 +62,7 @@ class FrsFatimaCorrelations : public FairTask
         CorrelationsMap* Correl;
 
         // Folders
+        TFolder* folder_correlations;
         TFolder* folder_frs_fatima_corr;
         TFolder* folder_frs_fatima_corr_ZAoQgated;
         TFolder* folder_frs_fatima_corr_Z1Z2x2AoQgated;
