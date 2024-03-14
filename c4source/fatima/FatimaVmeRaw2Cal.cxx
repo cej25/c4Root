@@ -59,12 +59,15 @@ InitStatus FatimaVmeRaw2Cal::Init()
     mgr->Register("FatimaVmeCalData", "FatimaVmeCalDataFolder", fcal_data, !fOnline);
     // time machine?
 
-    TFatimaVmeConfiguration const* fatvme_conf = TFatimaVmeConfiguration::GetInstance();
-    extra_signals = fatvme_conf->ExtraSignals();
-    tm_undelayed = fatvme_conf->TM_Undelayed();
-    tm_delayed = fatvme_conf->TM_Delayed();
-    sc41l = fatvme_conf->SC41L();
-    sc41r = fatvme_conf->SC41R();
+    TFatimaVmeConfiguration const* fatvme_config = TFatimaVmeConfiguration::GetInstance();
+    extra_signals = fatvme_config->ExtraSignals();
+    tm_undelayed = fatvme_config->TM_Undelayed();
+    tm_delayed = fatvme_config->TM_Delayed();
+    sc41l = fatvme_config->SC41L();
+    sc41r = fatvme_config->SC41R();
+    calib_coeffs_QDC_E = fatvme_config->QDC_E_Calib();
+    calib_coeffs_QDC_T = fatvme_config->QDC_T_Calib();
+    calib_coeffs_TDC_T = fatvme_config->TDC_T_Calib();
     
 
     fcal_data->Clear();
@@ -72,7 +75,6 @@ InitStatus FatimaVmeRaw2Cal::Init()
     return kSUCCESS;
  
 }
-
 
 
 void FatimaVmeRaw2Cal::Exec(Option_t* option)
@@ -385,94 +387,6 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
 
 }
 
-
-void FatimaVmeRaw2Cal::Load_QDC_Energy_Calibration_File(TString& filepath)
-{
-    std::ifstream file(filepath);
-    std::string line;
-
-    const char* format = "%d %lf %lf %lf %lf %lf";
-
-    if (file.fail())
-    {
-        c4LOG(warn, "Could not find Fatima (VME) Energy Calibration File");
-    }
-
-    double tmp_coeffs[5] = {0,0,0,0,0};
-    int det_id = 0;
-
-    while (file.good())
-    {
-        std::getline(file, line, '\n');
-        if (line[0] == '#' || line.empty()) continue;
-
-        sscanf(line.c_str(), format, &det_id, &tmp_coeffs[0], &tmp_coeffs[1], &tmp_coeffs[2], &tmp_coeffs[3], &tmp_coeffs[4]);
-
-        for (int i = 0; i < 5; i++)
-        {
-            calib_coeffs_QDC_E[det_id][i] = tmp_coeffs[i];
-            original_calib_coeffs_QDC_E[det_id][i] = tmp_coeffs[i];
-        }
-    }
-}
-
-void FatimaVmeRaw2Cal::Load_TDC_Time_Calibration_File(TString& filepath)
-{
-    const char* format = "%d %lf";
-
-    std::ifstream file(filepath);
-    std::string line;
-
-    if (file.fail())
-    {
-        c4LOG(warn, "Could not find Fatima (VME) TDC Time Calibration file");
-        // we need a default cal file to use I think, to prevent fatal crashes
-    }
-
-    double tmp_coeffs;
-    int det_id = 0;
-
-    while (file.good())
-    {
-        std::getline(file, line, '\n');
-        if (line[0] == '#' || line.empty()) continue;
-        
-        sscanf(line.c_str(), format, &det_id, &tmp_coeffs);
-
-        calib_coeffs_TDC_T[det_id] = tmp_coeffs;
-    }
-
-    file.close();
-}
-
-void FatimaVmeRaw2Cal::Load_QDC_Time_Calibration_File(TString& filepath)
-{
-    const char* format = "%d %lf";
-
-    std::ifstream file(filepath);
-    std::string line;
-
-    if (file.fail())
-    {
-        c4LOG(warn, "Could not find Fatima (VME) QDC Time Calibration file");
-        // we need a default cal file to use I think, to prevent fatal crashes
-    }
-
-    double tmp_coeffs;
-    int det_id = 0;
-
-    while (file.good())
-    {
-        std::getline(file, line, '\n');
-        if (line[0] == '#' || line.empty()) continue;
-        
-        sscanf(line.c_str(), format, &det_id, &tmp_coeffs);
-
-        calib_coeffs_QDC_T[det_id] = tmp_coeffs;
-    }
-
-    file.close();
-}
 
 double FatimaVmeRaw2Cal::Calibrate_QDC_E(double E, int det_id)
 {
