@@ -164,15 +164,11 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
 
             for (int i = 0; i < tdcs_fired; i++)
             {
-                // Calibrate - actually should we calibrate?
-                // in go4 the raw ts is taken, why
-                // timestamp = Calibrate_TDC_T(v1290_data[i], tdc_detectors[i]);
-                // timestamp_raw = Calibrate_TDC_T(v1290_data[i], tdc_detectors[i]);
-
-                uint32_t timestamp = v1290_data[i];
+                // CEJ: Gonna do a weird mix of Go4/what I think is correct
                 uint32_t timestamp_raw = v1290_data[i];
+                uint32_t timestamp = Calibrate_TDC_T(v1290_data[i], tdc_detectors[i]);
 
-                if (tdc_detectors[i] > -1) // this auto-excludes how we're dealing with detectors actually
+                if (tdc_detectors[i] > -1)
                 {
                     if (extra_signals.find(tdc_detectors[i]) == extra_signals.end())
                     {   
