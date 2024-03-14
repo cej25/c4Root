@@ -16,7 +16,8 @@ std::string TAidaConfiguration::base_path = "Configuration_Files/AIDA";
 
 TAidaConfiguration::TAidaConfiguration() :
     fees(0), dssds(0), wide(false), adjustadc(false), useucesb(false),
-    ignorembsts(false), stats(false), ucesbshift(0), eventwindow(2000)
+    ignorembsts(false), stats(false), ucesbshift(0), eventwindow(2000),
+    tm_undelayed(-1), tm_delayed(-1), sc41l_d(-1), sc41r_d(-1)
 {
   ReadConfiguration();
   DSSDtoFEE();
@@ -201,6 +202,14 @@ void TAidaConfiguration::ReadConfiguration()
       std::getline(line, arg);
       int idx = std::strtol(option.c_str(), NULL, 0);
       scalers[idx] = arg;
+      if (arg == "TimeMachineU")
+        tm_undelayed = idx;
+      else if (arg == "TimeMachineD")
+        tm_delayed = idx;
+      else if (arg == "SCI41L_D")
+        sc41l_d = idx;
+      else if (arg == "SCI41R_D")
+        sc41r_d = idx;
     }
     else if (option == "analysis")
     {
