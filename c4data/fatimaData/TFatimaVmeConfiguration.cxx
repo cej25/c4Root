@@ -8,7 +8,10 @@
 #include <set>
 
 TFatimaVmeConfiguration* TFatimaVmeConfiguration::instance = nullptr;
-std::string TFatimaVmeConfiguration::filepath = "Fatima_VME_allocation.txt";
+std::string TFatimaVmeConfiguration::mapfilepath = "Fatima_VME_allocation.txt";
+std::string TFatimaVmeConfiguration::qdc_e_calfilepath = "";
+std::string TFatimaVmeConfiguration::qdc_t_calfilepath = "";
+std::string TFatimaVmeConfiguration::tdc_t_calfilepath = "";
 
 TFatimaVmeConfiguration::TFatimaVmeConfiguration()
     :   num_detectors(0)
@@ -16,11 +19,14 @@ TFatimaVmeConfiguration::TFatimaVmeConfiguration()
     ,   num_tdc_boards(0)
 {
     ReadConfiguration();
+    Read_QDC_E_Calibration();
+    Read_QDC_T_Calibration();
+    Read_TDC_T_Calibration();
 }
 
 void TFatimaVmeConfiguration::ReadConfiguration()
 {
-    std::ifstream detector_map_file(filepath);
+    std::ifstream detector_map_file(mapfilepath);
     std::string line;
     std::set<int> detector_ids;
     std::set<int> qdc_boards;
@@ -74,3 +80,81 @@ void TFatimaVmeConfiguration::ReadConfiguration()
     detector_map_file.close();
     return;
 }
+
+void TFatimaVmeConfiguration::Read_QDC_E_Calibration()
+{
+    std::ifstream calfile(qdc_e_calfilepath);
+    std::string line;
+
+    const char* format = "%d %lf %lf %lf %lf %lf";
+    calib_coeffs_QDC_E = new double*[100];
+    for (int i = 0; i < 100; i++) calib_coeffs_QDC_E[i] = new double[5];
+
+    if (calfile.fail()) c4LOG(warn, "Could not open Fatima VME QDC E calibration file.");
+
+    double tmp_coeffs[5] = {0, 0, 0, 0, 0};
+    int det_id = 0;
+
+    while (calfile.good())
+    {
+        std::getline(calfile, line, '\n');
+        if (line[0] == '#' || line.empty()) continue;
+
+        sscanf(line.c_str(), format, &det_id, &tmp_coeffs[0], &tmp_coeffs[1], &tmp_coeffs[2], &tmp_coeffs[3], &tmp_coeffs[4]);
+
+        for (int i = 0; i < 5; i++)
+        {
+            calib_coeffs_QDC_E[det_id][i] = tmp_coeffs[i];
+            original_calib_coeffs_QDC_E[det_id][i] = tmp_coeffs[i];
+        }
+    }
+}
+
+void TFatimaVmeConfiguration::Read_QDC_T_Calibration()
+{
+    const char* format = "%d %lf";
+    calib_coeffs_QDC_T = new double[100];
+
+    std::ifstream calfile(qdc_t_calfilepath);
+    std::string line;
+
+    if (calfile.fail()) c4LOG(warn, "Could not find Fatima VME QDC T Calibration file");
+    
+    double tmp_coeffs;
+    int det_id = 0;
+
+    while (calfile.good())
+    {
+        std::getline(calfile, line, '\n');
+        if (line[0] == '#' || line.empty()) continue;
+        
+        sscanf(line.c_str(), format, &det_id, &tmp_coeffs);
+
+        calib_coeffs_QDC_T[det_id] = tmp_coeffs;
+    }
+}
+
+void TFatimaVmeConfiguration::Read_TDC_T_Calibration()
+{
+    const char* format = "%d %lf";
+    calib_coeffs_TDC_T = new double[100];
+
+    std::ifstream calfile(tdc_t_calfilepath);
+    std::string line;
+
+    if (calfile.fail()) c4LOG(warn, "Could not find Fatima (VME) TDC Time Calibration file");
+
+    double tmp_coeffs;
+    int det_id = 0;
+
+    while (calfile.good())
+    {
+        std::getline(calfile, line, '\n');
+        if (line[0] == '#' || line.empty()) continue;
+        
+        sscanf(line.c_str(), format, &det_id, &tmp_coeffs);
+
+        calib_coeffs_TDC_T[det_id] = tmp_coeffs;
+    }
+}
+
