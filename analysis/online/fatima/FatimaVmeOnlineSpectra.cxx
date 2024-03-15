@@ -79,7 +79,7 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     h1_FatVME_QDCMult = new TH1I("h1_FatVME_QDCMult", "Fatima VME QDC Multiplicity", num_detectors, 0, num_detectors);
     h1_FatVME_TDCMult = new TH1I("h1_FatVME_TDCMult", "Fatime VME TDC Multiplicity", num_detectors, 0, num_detectors);
     h1_FatVME_QDC_HitPattern = new TH1I("h1_FatVME_QDC_HitPattern", "Fatima VME QDC Hit Pattern", num_detectors, 0, num_detectors);
-    h1_FatVME_TDC_HitPattern = new TH1I("h1_FatVME_QDC_HitPattern", "Fatima VME TDC Hit Pattern", num_detectors, 0, num_detectors);
+    h1_FatVME_TDC_HitPattern = new TH1I("h1_FatVME_TDC_HitPattern", "Fatima VME TDC Hit Pattern", num_detectors, 0, num_detectors);
     folder_stats_vme->Add(h1_FatVME_QDCMult);
     folder_stats_vme->Add(h1_FatVME_TDCMult);
     folder_stats_vme->Add(h1_FatVME_QDC_HitPattern);
@@ -103,6 +103,7 @@ InitStatus FatimaVmeOnlineSpectra::Init()
         h1_FatVME_RawE[i]->Draw();
         folder_raw_energy->Add(h1_FatVME_RawE[i]);
     }
+
     c_FatVME_RawE->cd(0);
     folder_raw_energy->Add(c_FatVME_RawE);
 
@@ -110,6 +111,7 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     c_FatVME_E->Divide(4, num_detectors / 4);
     for (int i = 0; i < num_detectors; i++)
     {
+
         c_FatVME_E->cd(i+1);
         h1_FatVME_E[i] = new TH1D(Form("h1_FatVME_E%i", i), Form("Fatima VME Energy - Detector %i", i), 4000, 0, 4000);
         h1_FatVME_E[i]->Draw();
@@ -117,6 +119,9 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     }
     c_FatVME_E->cd(0);
     folder_cal_energy->Add(c_FatVME_E);
+
+    h1_FatVME_E_Sum = new TH1D("h1_FatVME_E_Sum", "Fatima VME Energy - All Detectors summed", 4000, 0, 4000);
+    folder_cal_energy->Add(h1_FatVME_E_Sum);
     
     c_FatVME_RawT = new TCanvas("c_FatVME_RawT", "Fatima VME Raw Time", 650, 350);
     c_FatVME_RawT->Divide(4, num_detectors / 4);
@@ -154,7 +159,6 @@ void FatimaVmeOnlineSpectra::Exec(Option_t* option)
     if (fHitFatimaVme && fHitFatimaVme->GetEntriesFast())
     {
         Int_t nHits = fHitFatimaVme->GetEntriesFast();
-        std::cout << "nHits: " << nHits << std::endl;
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {
             FatimaVmeCalData* FatimaVmeHit = (FatimaVmeCalData*)fHitFatimaVme->At(ihit);
@@ -164,11 +168,13 @@ void FatimaVmeOnlineSpectra::Exec(Option_t* option)
             std::vector<uint32_t> QDC_E_raw = FatimaVmeHit->Get_Singles_E_raw();
             std::vector<uint32_t> QDC_E = FatimaVmeHit->Get_Singles_E();
 
-            h1_FatVME_QDCMult->Fill(QDC_IDs.size());
+            h1_FatVME_QDCMult->Fill((int)QDC_IDs.size());
             for (int i = 0; i < QDC_IDs.size(); i++)
             {
                 h1_FatVME_RawE[QDC_IDs[i]]->Fill(QDC_E_raw[i]);
                 h1_FatVME_E[QDC_IDs[i]]->Fill(QDC_E[i]);
+                h1_FatVME_QDC_HitPattern->Fill(QDC_IDs[i]);
+                h1_FatVME_E_Sum->Fill(QDC_E[i]);
             }
             
             std::vector<uint32_t> TDC_IDs = FatimaVmeHit->Get_Singles_TDC_ID();
@@ -178,7 +184,10 @@ void FatimaVmeOnlineSpectra::Exec(Option_t* option)
             for (int i = 0; i < TDC_IDs.size(); i++)
             {
                 h1_FatVME_RawT[TDC_IDs[i]]->Fill(TDC_timestamp[i] * 25); // time in [ps]
+                h1_FatVME_TDC_HitPattern->Fill(TDC_IDs[i]);
             }
+
+            // add loop for reference channel(s)
         }
     }
 }
