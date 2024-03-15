@@ -3,6 +3,8 @@
 
 #include "FairTask.h"
 
+#include "TGermaniumConfiguration.h"
+
 class TClonesArray;
 class EventHeader;
 class TCanvas;
@@ -42,35 +44,33 @@ class GermaniumOnlineSpectra : public FairTask
     private:
         TClonesArray* fHitGe;
 
+        const TGermaniumConfiguration * germanium_configuration;
+
         // ranges
+        int number_of_detectors_to_plot;
+        std::vector<std::pair<int,int>> crystals_to_plot;
+
 
         EventHeader* header;
         Int_t fNEvents;
 
         // Canvas
-        TCanvas* c_germanium_time; // channel 1 out of 28 for now?
-        TCanvas* c_germanium_cal_energy_spectra;
-        TCanvas* c_germanium_energy_mult2;
+        TCanvas* c_germanium_time;
+        TCanvas* c_germanium_energy;
         TCanvas* c_germanium_snapshot;
 
         // Folder and files
         TDirectory* dir_germanium;
         TFolder* folder_germanium;
-        TFolder* folder_germanium_cal_energy_spectra;
-        TFolder* folder_germanium_energy_mult2;
+        TFolder* folder_germanium_energy;
         TFolder* folder_germanium_time;
         TFile* file_germanium_snapshot;
 
         // Histograms energy
-        TH1F * h1_germanium_energy[100];
-        TH1F * h1_germanium_energy_mult2[100];
+        TH1F ** h1_germanium_energy;
 
         // Histograms time
-        TH1F * h1_germanium_time[100];
-
-        // Number of DEGAS detectors and crystals clusters 
-        const int NCrystals = 3; //needs to be changed.
-        const int NDetectors = 3; //needs to be changed.
+        TH1F ** h1_germanium_time;
 
 
     public:

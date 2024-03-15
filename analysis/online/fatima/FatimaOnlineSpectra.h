@@ -36,8 +36,6 @@ class FatimaOnlineSpectra : public FairTask
             ffast_tot_nbins = nbins;
             ffast_tot_bin_low = binlow;
             ffast_tot_bin_high = binhigh;
-            
-            
         };
         void SetBinningSlowToT(int nbins, float binlow, float binhigh){
             fslow_tot_nbins = nbins;
