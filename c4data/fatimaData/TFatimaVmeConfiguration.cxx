@@ -62,6 +62,9 @@ void TFatimaVmeConfiguration::ReadConfiguration()
             else if (signal == "SC41R_D") sc41r_d = det;
             else if (signal == "SC41L_A") sc41l_a = det;
             else if (signal == "SC41R_A") sc41r_a = det;
+            else if (signal == "BPLAST_UP") bplast_up = det;
+            else if (signal == "BPLAST_DOWN") bplast_down = det;
+            else if (signal == "BPLAST_COINC") bplast_coinc = det;
 
             extra_signals.insert(det);
         }
@@ -91,6 +94,8 @@ void TFatimaVmeConfiguration::Read_QDC_E_Calibration()
     const char* format = "%d %lf %lf %lf %lf %lf";
     calib_coeffs_QDC_E = new double*[100];
     for (int i = 0; i < 100; i++) calib_coeffs_QDC_E[i] = new double[5];
+    original_calib_coeffs_QDC_E = new double*[100];
+    for (int i = 0; i < 100; i++) original_calib_coeffs_QDC_E[i] = new double[5];
 
     if (calfile.fail()) c4LOG(warn, "Could not open Fatima VME QDC E calibration file.");
 
@@ -103,7 +108,7 @@ void TFatimaVmeConfiguration::Read_QDC_E_Calibration()
         if (line[0] == '#' || line.empty()) continue;
 
         sscanf(line.c_str(), format, &det_id, &tmp_coeffs[0], &tmp_coeffs[1], &tmp_coeffs[2], &tmp_coeffs[3], &tmp_coeffs[4]);
-
+        
         for (int i = 0; i < 5; i++)
         {
             calib_coeffs_QDC_E[det_id][i] = tmp_coeffs[i];
