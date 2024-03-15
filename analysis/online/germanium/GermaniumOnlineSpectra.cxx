@@ -72,6 +72,7 @@ InitStatus GermaniumOnlineSpectra::Init()
 
     crystals_to_plot.clear();
     std::map<std::pair<int,int>,std::pair<int,int>> gmap = germanium_configuration->Mapping();
+
     for (auto it_mapping = gmap.begin(); it_mapping != gmap.end(); ++it_mapping){
         if (it_mapping->second.first >= 0) crystals_to_plot.emplace_back(std::pair<int,int>(it_mapping->second.first,it_mapping->second.second));
     }
@@ -85,8 +86,10 @@ InitStatus GermaniumOnlineSpectra::Init()
 
     folder_germanium_energy = new TFolder("Calibrated Energy Spectra", "Calibrated Energy Spectra");
     folder_germanium_time = new TFolder("Time Spectra", "Time Spectra");
+    folder_germanium_hitpattern = new TFolder("Hit pattern", "Hit pattern");
     folder_germanium->Add(folder_germanium_energy);
     folder_germanium->Add(folder_germanium_time);
+    folder_germanium->Add(folder_germanium_hitpattern);
 
 
     // energy spectra:
@@ -95,15 +98,49 @@ InitStatus GermaniumOnlineSpectra::Init()
     h1_germanium_energy = new TH1F*[number_of_detectors_to_plot];
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
         c_germanium_energy->cd(ihist+1);
-        h1_germanium_energy[ihist] = new TH1F(Form("h1_germanium_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("Germanium Energy spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,10e3);
+        h1_germanium_energy[ihist] = new TH1F(Form("h1_germanium_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,10e3);
         h1_germanium_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
         h1_germanium_energy[ihist]->Draw();
         folder_germanium_energy->Add(h1_germanium_energy[ihist]);
     }
     c_germanium_energy->cd(0);
-
-    folder_germanium->Add(c_germanium_energy);
+    folder_germanium_energy->Add(c_germanium_energy);
     
+
+    // time spectra:
+    c_germanium_time  = new TCanvas("c_germanium_time","Calibrated Germanium spectra",650,350);
+    c_germanium_time->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
+    h1_germanium_time = new TH1F*[number_of_detectors_to_plot];
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
+        c_germanium_time->cd(ihist+1);
+        h1_germanium_time[ihist] = new TH1F(Form("h1_germanium_time_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS time spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,1e16);
+        h1_germanium_time[ihist]->GetXaxis()->SetTitle("time (ns)");
+        h1_germanium_time[ihist]->Draw();
+        folder_germanium_time->Add(h1_germanium_time[ihist]);
+    }
+    c_germanium_time->cd(0);
+    folder_germanium_time->Add(c_germanium_time);
+
+
+    c_germanium_hitpattern = new TCanvas("c_germanium_hitpattern","Hit pattern DEGAS",650,350);
+    detector_labels = new char*[number_of_detectors_to_plot];
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
+        detector_labels[ihist] = Form("%d%c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65));
+    }
+    
+    h1_germanium_hitpattern = new TH1F("h1_germanium_hitpattern","Hit pattern of DEGAS",number_of_detectors_to_plot,0,number_of_detectors_to_plot);
+    h1_germanium_hitpattern->GetXaxis()->SetAlphanumeric();
+    h1_germanium_hitpattern->GetXaxis()->LabelsOption("a");
+    h1_germanium_hitpattern->GetXaxis()->SetTitle("crystal");
+    h1_germanium_hitpattern->GetYaxis()->SetTitle("counts");
+    //h1_germanium_hitpattern->SetCanExtend(TH1::kAllAxes);
+    h1_germanium_hitpattern->SetStats(0);
+    h1_germanium_hitpattern->Draw();
+    //folder_germanium_hitpattern->Add(h1_germanium_hitpattern);
+    folder_germanium_hitpattern->Add(c_germanium_hitpattern);
+    c_germanium_hitpattern->cd(0);
+    
+
 
     run->RegisterHttpCommand("Reset_Ge_Hist", "/GermaniumOnlineSpectra->Reset_Histo()");
     run->RegisterHttpCommand("Snapshot_Ge_Hist", "/GermaniumOnlineSpectra->Snapshot_Histo()");
@@ -162,8 +199,18 @@ void GermaniumOnlineSpectra::Exec(Option_t* option)
         {   
             GermaniumCalData* hit = (GermaniumCalData*)fHitGe->At(ihit);
             if (!hit) continue;
-            int crystal_index = std::distance(crystals_to_plot.begin(), std::find(crystals_to_plot.begin(),crystals_to_plot.end(),std::pair<int,int>(hit->Get_detector_id(),hit->Get_crystal_id())));
-            h1_germanium_energy[crystal_index]->Fill(hit->Get_channel_energy());
+            int detector_id = hit->Get_detector_id();
+            int crystal_id = hit->Get_crystal_id();
+            double energy = hit->Get_channel_energy();
+            double time = hit->Get_channel_trigger_time();
+            
+            
+            int crystal_index = std::distance(crystals_to_plot.begin(), std::find(crystals_to_plot.begin(),crystals_to_plot.end(),std::pair<int,int>(detector_id,crystal_id)));
+            
+            h1_germanium_energy[crystal_index]->Fill(energy);
+            h1_germanium_time[crystal_index]->Fill(time);
+            h1_germanium_hitpattern->Fill(detector_labels[crystal_index],1);
+
 
         }
     }

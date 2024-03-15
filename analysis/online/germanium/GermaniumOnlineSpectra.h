@@ -57,17 +57,25 @@ class GermaniumOnlineSpectra : public FairTask
         // Canvas
         TCanvas* c_germanium_time;
         TCanvas* c_germanium_energy;
+        TCanvas* c_germanium_hitpattern;
+        
+
         TCanvas* c_germanium_snapshot;
+
+        char ** detector_labels;
 
         // Folder and files
         TDirectory* dir_germanium;
         TFolder* folder_germanium;
         TFolder* folder_germanium_energy;
         TFolder* folder_germanium_time;
+        TFolder* folder_germanium_hitpattern;
         TFile* file_germanium_snapshot;
 
         // Histograms energy
         TH1F ** h1_germanium_energy;
+
+        TH1F * h1_germanium_hitpattern;
 
         // Histograms time
         TH1F ** h1_germanium_time;
