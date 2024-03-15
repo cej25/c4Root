@@ -3,6 +3,7 @@
 
 #include "FairTask.h"
 #include "TFolder.h"
+#include "TCanvas.h"
 #include <vector>
 #include "TH1.h"
 
@@ -61,8 +62,8 @@ class FatimaVmeOnlineSpectra : public FairTask
         TH1D* h1_TDC_dT_refSC41L[36];
         TH1D* h1_FatVME_E_Sum;
         TH1D* h1_FatVME_E_Sum_Large; // large range
-        TH1D* h1_FatVME_QDC_HitPattern;
-        TH1D* h1_FatVME_TDC_HitPattern;
+        TH1I* h1_FatVME_QDC_HitPattern;
+        TH1I* h1_FatVME_TDC_HitPattern;
         TH1I* h1_FatVME_QDCMult;
         TH1I* h1_FatVME_TDCMult;
         TH2D* h1_FatVME_EvsT;

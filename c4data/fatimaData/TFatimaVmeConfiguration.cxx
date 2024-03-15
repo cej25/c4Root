@@ -50,6 +50,8 @@ void TFatimaVmeConfiguration::ReadConfiguration()
             det = std::stoi(signal);
             
             iss >> qdc_board >> qdc_chan >> tdc_board >> tdc_chan;
+
+            if (det > -1) detector_ids.insert(det);
             
         }
         else // some additional signal
@@ -69,7 +71,7 @@ void TFatimaVmeConfiguration::ReadConfiguration()
             extra_signals.insert(det);
         }
 
-        if (det > -1) detector_ids.insert(det);
+        //if (det > -1) detector_ids.insert(det);
         if (qdc_board > -1) qdc_boards.insert(qdc_board);
         if (tdc_board > -1) tdc_boards.insert(tdc_board);
 
@@ -79,7 +81,7 @@ void TFatimaVmeConfiguration::ReadConfiguration()
     }
 
     DetectorMap_loaded = 1;
-    num_detectors = 
+    num_detectors = detector_ids.size();
     num_qdc_boards = qdc_boards.size();
     num_tdc_boards = tdc_boards.size();
     detector_map_file.close();
