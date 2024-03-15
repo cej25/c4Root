@@ -68,8 +68,6 @@ Initializer called by the FairRoot manager. Gets the required FairRootManager ob
 */
 InitStatus FatimaRaw2Cal::Init()
 {  
-
-
     //grabs instance managers and handles.
 
     c4LOG(info, "Grabbing FairRootManager, RunOnline and EventHeader.");
@@ -89,7 +87,6 @@ InitStatus FatimaRaw2Cal::Init()
 
     fcal_data->Clear();
     funcal_data->Clear();
-
 
     return kSUCCESS;
 };
@@ -209,7 +206,6 @@ void FatimaRaw2Cal::Exec(Option_t* option)
                 if (auto result_find = fatima_configuration->Mapping().find(unmapped_det); result_find != fatima_configuration->Mapping().end())
                 {
                     detector_id = result_find->second; // .find returns an iterator over the pairs matching key
-                    
                     if (detector_id == -1) { fNunmatched++; continue; }
                 }
             }
@@ -246,17 +242,19 @@ void FatimaRaw2Cal::Exec(Option_t* option)
 
             if (fatima_configuration->MappingLoaded()){
                 if (fatima_configuration->CalibrationCoefficientsLoaded()){ // check
-                    if (auto result_find_cal = fatima_configuration->CalibrationCoefficients().find(detector_id); result_find_cal != fatima_configuration->CalibrationCoefficients().end()){
-                    std::vector<double> coeffs = result_find_cal->second; //.find returns an iterator over the pairs matching key.
-                    a0 = coeffs.at(0);
-                    a1 = coeffs.at(1);
-                    a2 = coeffs.at(2);
-                    a3 = coeffs.at(3);
-
-                    energy = a0 + a1*slow_ToT + a2*slow_ToT*slow_ToT + a3*slow_ToT*slow_ToT*slow_ToT; 
-                }else{
-                    energy = slow_ToT;
-                }
+                    std::map<int,std::vector<double>> calibration_coeffs = fatima_configuration->CalibrationCoefficients();
+                    if (auto result_find_cal = calibration_coeffs.find(detector_id); result_find_cal != calibration_coeffs.end()){
+                        std::vector<double> coeffs = result_find_cal->second; //.find returns an iterator over the pairs matching key.
+                        a0 = coeffs.at(0);
+                        a1 = coeffs.at(1);
+                        a2 = coeffs.at(2);
+                        a3 = coeffs.at(3);
+                        
+                        energy = a0 + a1*slow_ToT + a2*slow_ToT*slow_ToT + a3*slow_ToT*slow_ToT*slow_ToT; 
+                    }else{
+                        energy = slow_ToT;
+                    }
+                
                 }else{
                     energy = slow_ToT;
                 }

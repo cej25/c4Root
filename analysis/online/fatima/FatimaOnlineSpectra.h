@@ -102,7 +102,6 @@ class FatimaOnlineSpectra : public FairTask
     
 
         //Folders and files
-        TDirectory* fatimaFolderObj;
         TFolder* folder_fatima;
         TFolder* folder_fatima_slowToT;
         TFolder* folder_fatima_fastToT;
