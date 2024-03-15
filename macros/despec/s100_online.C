@@ -45,6 +45,8 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     //TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes";
     ucesb_path.ReplaceAll("//","/");
+    
+    std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
 
     TString cRunId = Form("%04d", fRunId);
     TString cExpId = Form("%03d", fExpId);
@@ -131,7 +133,8 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
 
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
-    TFatimaTwinpeaksConfiguration::SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fatima_alloc_new.txt");
+    TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fatima_alloc_new.txt");
+    TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fatima_cal.txt");
     TFatimaVmeConfiguration::SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Fatima_VME_allocation.txt");
     TAidaConfiguration::SetBasePath(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/AIDA");
     TbPlastConfiguration::SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/bplast/bplast_alloc_new.txt");
@@ -207,10 +210,9 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     FatimaRaw2Cal* calfatima = new FatimaRaw2Cal();
     //calfatima->SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fatima_alloc.txt");
     // calfatima->PrintDetectorMap();
-    calfatima->SetDetectorCalFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fatima_cal.txt");
+    // calfatima->SetDetectorCalFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fatima_cal.txt");
     // calfatima->PrintDetectorCal();
-    // CEJ FOR JELL/JPB -- this should be read from alloc file!!!!!
-    calfatima->SetTimeMachineChannels(16,17);
+    // calfatima->SetTimeMachineChannels(16,17);
 
     // FatimaVmeRaw2Cal* calfatimavme = new FatimaVmeRaw2Cal();
     // calfatimavme->Load_QDC_Energy_Calibration_File(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Fatima_QDC_Energy_Calibration.txt");
@@ -220,7 +222,7 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
 
     // AIDA
     AidaUnpack2Cal* aidaCalibrator = new AidaUnpack2Cal();
-    aidaCalibrator->SetAidaTimeMachineChannels(4,3);
+    //aidaCalibrator->SetAidaTimeMachineChannels(4,3);
 
     // bPlast
     bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
@@ -314,7 +316,7 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     TString b = "Fatima";
     TString c = "Aida";
     TString d = "bPlast";
-    std::vector a {b, c, d};
+    std::vector a {c, d};
     tms->SetDetectorSystems(a);
 
     
@@ -333,12 +335,12 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     // ---------------------------------------------------------------------------------------- //
     // *** Correlations *********************************************************************** //
 
-    FrsFatimaCorrelations* frsfatimacorr = new FrsFatimaCorrelations(FrsGates, FatimaPrompt, CorrMap);
+    //FrsFatimaCorrelations* frsfatimacorr = new FrsFatimaCorrelations(FrsGates, FatimaPrompt, CorrMap);
 
     FrsAidaCorrelations* frsaidacorr = new FrsAidaCorrelations(FrsGates, CorrMap);
 
     // Add 'Correlations' task to FairRun.
-    run->AddTask(frsfatimacorr);
+    //run->AddTask(frsfatimacorr);
     run->AddTask(frsaidacorr);
 
     
