@@ -63,10 +63,10 @@ void fatvme_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fEx
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     // TString filename = "stream://x86l-117";
     //TString filename = "trans://lxg1257";
-    //TString filename = "stream://R4L-36";
+    TString filename = "stream://R4L-36";
     //TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
     //TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd ~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0025_0001.lmd";
-    TString filename = "~/lustre/gamma/DESPEC_S452_FILES/newts/S452f076_0034.lmd";
+    //TString filename = "~/lustre/gamma/DESPEC_S452_FILES/newts/S452f076_0034.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
@@ -138,6 +138,9 @@ void fatvme_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fEx
     //TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_new.txt");
     //TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(config_path + "/fatima/fatima_cal.txt");
     TFatimaVmeConfiguration::SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/s100/fatima/Fatima_VME_allocation.txt");
+    TFatimaVmeConfiguration::Set_QDC_E_CalFile(std::string(c4Root_path.Data()) + "/config/s100/fatima/Fatima_QDC_Energy_Calibration.txt");
+    TFatimaVmeConfiguration::Set_QDC_T_CalFile(std::string(c4Root_path.Data()) + "/config/s100/fatima/Fatima_QDC_Time_Calibration.txt");
+    TFatimaVmeConfiguration::Set_TDC_T_CalFile(std::string(c4Root_path.Data()) + "/config/s100/fatima/Fatima_TDC_Time_Calibration.txt");
     //TAidaConfiguration::SetBasePath(config_path + "/AIDA");
     //TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_new.txt");
     // FRS? Eventually will get around to mapping crates properly

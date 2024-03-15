@@ -66,6 +66,9 @@ class TFatimaVmeConfiguration
         int sc41r_d;
         int sc41l_a;
         int sc41r_a;
+        int bplast_up;
+        int bplast_down;
+        int bplast_coinc;
 
         bool DetectorMap_loaded = 0;
 

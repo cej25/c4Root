@@ -125,6 +125,7 @@ void FatimaVmeOnlineSpectra::Exec(Option_t* option)
     if (fHitFatimaVme && fHitFatimaVme->GetEntriesFast())
     {
         Int_t nHits = fHitFatimaVme->GetEntriesFast();
+        std::cout << "nHits: " << nHits << std::endl;
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {
             FatimaVmeCalData* FatimaVmeHit = (FatimaVmeCalData*)fHitFatimaVme->At(ihit);

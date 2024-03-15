@@ -62,7 +62,7 @@ InitStatus FatimaVmeRaw2Cal::Init()
 
     TFatimaVmeConfiguration const* fatvme_config = TFatimaVmeConfiguration::GetInstance();
     extra_signals = fatvme_config->ExtraSignals();
-    //for (auto i = extra_signals.begin(); i != extra_signals.end(); i++) std::cout << "extra: " << *i << std::endl;
+    for (auto i = extra_signals.begin(); i != extra_signals.end(); i++) std::cout << "extra: " << *i << std::endl;
     tm_undelayed = fatvme_config->TM_Undelayed();
     tm_delayed = fatvme_config->TM_Delayed();
     sc41l = fatvme_config->SC41L();
@@ -174,7 +174,8 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
                if (tdc_detectors[i] >= 0)
                {
                     if (extra_signals.find(tdc_detectors[i]) == extra_signals.end())
-                    {   
+                    {  
+                        std::cout << "tdc detector inside extra signal condition: " << tdc_detectors[i] << std::endl;
                         Singles_TDC_timestamp.emplace_back(timestamp);
                         Singles_TDC_timestamp_raw.emplace_back(timestamp_raw);
                         Singles_TDC_ID.emplace_back(tdc_detectors[i]);
@@ -256,6 +257,7 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
                 {
                     if (extra_signals.find(qdc_detectors[i]) == extra_signals.end())
                     {   
+                        std::cout << "qdc detector inside extra signal condition: " << qdc_detectors[i] << std::endl;
                         Singles_E.emplace_back(QLong[i]);
                         Singles_QDC_ID.emplace_back(qdc_detectors[i]);
                         Singles_coarse_time.emplace_back(QDC_time_coarse[i]);
@@ -422,7 +424,8 @@ double FatimaVmeRaw2Cal::Calibrate_QDC_T(unsigned long T, int det_id)
 
 void FatimaVmeRaw2Cal::FinishEvent()
 {
-
+    fcal_data->Clear();
+    funcal_data->Clear();
 }
 
 void FatimaVmeRaw2Cal::FinishTask()
