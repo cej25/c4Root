@@ -32,6 +32,8 @@ void TFatimaVmeConfiguration::ReadConfiguration()
     std::set<int> qdc_boards;
     std::set<int> tdc_boards;
 
+    if (detector_map_file.fail()) c4LOG(warn, "Could not open Fatima VME configuration map");
+
     while (std::getline(detector_map_file, line))
     {
         if (line.empty() || line[0] == '#') continue;

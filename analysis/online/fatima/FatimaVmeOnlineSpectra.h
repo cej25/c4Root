@@ -8,6 +8,9 @@
 
 class EventHeader;
 
+class TH1I;
+class TH1D;
+
 class FatimaVmeOnlineSpectra : public FairTask
 {
     public:
@@ -46,6 +49,7 @@ class FatimaVmeOnlineSpectra : public FairTask
         TH1I* h1_FatVME_TDCMult;
         // these should be vectors based on detector config.
         TH1D* h1_FatVME_RawE[36];
+        TH1D* h1_FatVME_E[36];
         TH1D* h1_FatVME_RawT[36];
     
     public:
