@@ -172,11 +172,11 @@ void GermaniumRaw2Cal::Exec(Option_t* option){
 
             if (detector_id == germanium_configuration->TM_Delayed()){
                 new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData(0,funcal_hit->Get_channel_trigger_time(),funcal_hit->Get_wr_subsystem_id(),funcal_hit->Get_wr_t());
-                continue;
+                //continue;
             }
             else if (detector_id == germanium_configuration->TM_Undelayed()){
                 new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData(funcal_hit->Get_channel_trigger_time(),0,funcal_hit->Get_wr_subsystem_id(),funcal_hit->Get_wr_t());
-                continue;
+                //continue;
             }
 
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) GermaniumCalData(
