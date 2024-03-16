@@ -58,6 +58,7 @@
 #pragma link C++ class TGermaniumConfiguration+;
 #pragma link C++ class TFatimaTwinpeaksConfiguration+;
 #pragma link C++ class TFatimaVmeConfiguration+;
+#pragma link C++ class TBGOConfiguration+;
 #pragma link C++ class TbPlastConfiguration+;
 
 #endif
