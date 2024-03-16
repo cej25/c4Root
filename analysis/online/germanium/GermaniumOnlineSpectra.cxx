@@ -87,10 +87,11 @@ InitStatus GermaniumOnlineSpectra::Init()
     folder_germanium_energy = new TFolder("Calibrated Energy Spectra", "Calibrated Energy Spectra");
     folder_germanium_time = new TFolder("Time Spectra", "Time Spectra");
     folder_germanium_hitpattern = new TFolder("Hit pattern", "Hit pattern");
+    folder_germanium_multiplicity = new TFolder("Multiplicity", "Multiplicity");
     folder_germanium->Add(folder_germanium_energy);
     folder_germanium->Add(folder_germanium_time);
     folder_germanium->Add(folder_germanium_hitpattern);
-
+    folder_germanium->Add(folder_germanium_multiplicity);
 
     // energy spectra:
     c_germanium_energy  = new TCanvas("c_germanium_energy","Calibrated Germanium spectra",650,350);
@@ -105,6 +106,17 @@ InitStatus GermaniumOnlineSpectra::Init()
     }
     c_germanium_energy->cd(0);
     folder_germanium_energy->Add(c_germanium_energy);
+
+
+    c_germanium_energy_vs_detidx = new TCanvas("c_germanium_energy_vs_detidx","Calibrated Germanium spectra vs. detector index",650,350);
+    h2_germanium_energy_vs_detidx = new TH2F("h2_germanium_energy_vs_detidx","Calibrated Germanium spectra vs. detector index",10e3,0,10e3,number_of_detectors_to_plot,0,number_of_detectors_to_plot);
+    h2_germanium_energy_vs_detidx->GetXaxis()->SetTitle("energy (keV)");
+    h2_germanium_energy_vs_detidx->GetYaxis()->SetTitle("detector index");
+    h2_germanium_energy_vs_detidx->Draw("COLZ");
+    c_germanium_energy_vs_detidx->cd(0);
+    folder_germanium_energy->Add(c_germanium_energy_vs_detidx);
+    folder_germanium_energy->Add(h2_germanium_energy_vs_detidx);
+
     
 
     // time spectra:
@@ -122,40 +134,104 @@ InitStatus GermaniumOnlineSpectra::Init()
     folder_germanium_time->Add(c_germanium_time);
 
 
+    c_germanium_multiplicity = new TCanvas("c_germanium_multiplicity","Multiplicity of Germanium events",650,350);
+    h1_germanium_multiplicity = new TH1F("h1_germanium_multiplicity","Multiplicity of Germanium events",number_of_detectors_to_plot,0,number_of_detectors_to_plot);
+    h1_germanium_multiplicity->GetXaxis()->SetTitle("event multiplicity");
+    h1_germanium_multiplicity->GetYaxis()->SetTitle("counts");
+    h1_germanium_multiplicity->Draw();
+    folder_germanium_multiplicity->Add(c_germanium_multiplicity);
+    folder_germanium_multiplicity->Add(h1_germanium_multiplicity);
+
+
+    //time differences!
+    int number_reference_detectors = dt_reference_detectors.size();
+    h1_germanium_time_differences = new TH1F ** [number_reference_detectors];
+    h2_germanium_time_differences_vs_energy = new TH2F ** [number_reference_detectors];
+    for (int ihist = 0; ihist < number_reference_detectors; ihist++){
+        folder_germanium_time_differences = new TFolder(Form("time_differences_rel_%d_%d",dt_reference_detectors.at(ihist).first,dt_reference_detectors.at(ihist).second), Form("time_differences_rel_%d_%d",dt_reference_detectors.at(ihist).first,dt_reference_detectors.at(ihist).second));
+        folder_germanium->Add(folder_germanium_time_differences);
+
+        c_germanium_time_differences  = new TCanvas(Form("c_germanium_time_differences_rel_det_%d_%d",dt_reference_detectors.at(ihist).first,dt_reference_detectors.at(ihist).second),"germanium relative time differences",650,350);
+        c_germanium_time_differences->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
+        h1_germanium_time_differences[ihist] = new TH1F*[number_of_detectors_to_plot];
+
+        for (int detid_idx = 0; detid_idx < number_of_detectors_to_plot; detid_idx++){
+            c_germanium_time_differences->cd(detid_idx+1);
+            h1_germanium_time_differences[ihist][detid_idx] = new TH1F(Form("h1_germanium_rel_time_det_%d_%d_to_det_%d_%d",crystals_to_plot.at(detid_idx).first,crystals_to_plot.at(detid_idx).second,dt_reference_detectors.at(ihist).first,dt_reference_detectors.at(ihist).second),Form("Germanium delta time t(%d%c) - t(%d%c)",crystals_to_plot.at(detid_idx).first,(char)(crystals_to_plot.at(detid_idx).second+65),dt_reference_detectors.at(ihist).first,(char)(dt_reference_detectors.at(ihist).second+65)),1000,-2000,2000); 
+            h1_germanium_time_differences[ihist][detid_idx]->GetXaxis()->SetTitle(Form("dt t(%d%c) - t(%d%c) (ns)",crystals_to_plot.at(detid_idx).first,(char)(crystals_to_plot.at(detid_idx).second+65),dt_reference_detectors.at(ihist).first,(char)(dt_reference_detectors.at(ihist).second+65)));
+            h1_germanium_time_differences[ihist][detid_idx]->Draw();
+            folder_germanium_time_differences->Add(h1_germanium_time_differences[ihist][detid_idx]);
+            
+        }
+        c_germanium_time_differences->cd(0);
+        folder_germanium_time_differences->Add(c_germanium_time_differences);
+
+
+
+        c_germanium_time_differences_vs_energy  = new TCanvas(Form("c_germanium_time_differences_rel_det_%d_%d_vs_energy",dt_reference_detectors.at(ihist).first,dt_reference_detectors.at(ihist).second),"germanium relative time differences vs energy",650,350);
+        c_germanium_time_differences_vs_energy->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
+        h2_germanium_time_differences_vs_energy[ihist] = new TH2F*[number_of_detectors_to_plot];
+
+        for (int detid_idx = 0; detid_idx < number_of_detectors_to_plot; detid_idx++){
+            c_germanium_time_differences_vs_energy->cd(detid_idx+1);
+            h2_germanium_time_differences_vs_energy[ihist][detid_idx] = new TH2F(Form("h1_germanium_rel_time_det_%d_%d_to_det_%d_%d_vs_energy",crystals_to_plot.at(detid_idx).first,crystals_to_plot.at(detid_idx).second,dt_reference_detectors.at(ihist).first,dt_reference_detectors.at(ihist).second),Form("germanium delta time t(%d%c) - t(%d%c) vs energy",crystals_to_plot.at(detid_idx).first,(char)(crystals_to_plot.at(detid_idx).second+65),dt_reference_detectors.at(ihist).first,(char)(dt_reference_detectors.at(ihist).second+65)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,1000,-2000,2000); 
+            h2_germanium_time_differences_vs_energy[ihist][detid_idx]->GetYaxis()->SetTitle(Form("dt t(%d%c) - t(%d%c) (ns)",crystals_to_plot.at(detid_idx).first,(char)(crystals_to_plot.at(detid_idx).second+65),dt_reference_detectors.at(ihist).first,(char)(dt_reference_detectors.at(ihist).second+65)));
+            h2_germanium_time_differences_vs_energy[ihist][detid_idx]->GetXaxis()->SetTitle(Form("energy det %d%c (keV)",crystals_to_plot.at(detid_idx).first,(char)(crystals_to_plot.at(detid_idx).second+65)));
+            h2_germanium_time_differences_vs_energy[ihist][detid_idx]->Draw("COLZ");
+            folder_germanium_time_differences->Add(h2_germanium_time_differences_vs_energy[ihist][detid_idx]);
+            
+        }
+        c_germanium_time_differences_vs_energy->cd(0);
+        folder_germanium_time_differences->Add(c_germanium_time_differences_vs_energy);
+    }
+        
+
+
     c_germanium_hitpattern = new TCanvas("c_germanium_hitpattern","Hit pattern DEGAS",650,350);
     detector_labels = new char*[number_of_detectors_to_plot];
-    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
-        detector_labels[ihist] = Form("%d%c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65));
-    }
-    
     h1_germanium_hitpattern = new TH1F("h1_germanium_hitpattern","Hit pattern of DEGAS",number_of_detectors_to_plot,0,number_of_detectors_to_plot);
     h1_germanium_hitpattern->GetXaxis()->SetAlphanumeric();
+    
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
+        detector_labels[ihist] = Form("%d%c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65));
+        h1_germanium_hitpattern->GetXaxis()->SetBinLabel(ihist+1,detector_labels[ihist]);
+    }    
     h1_germanium_hitpattern->GetXaxis()->LabelsOption("a");
     h1_germanium_hitpattern->GetXaxis()->SetTitle("crystal");
     h1_germanium_hitpattern->GetYaxis()->SetTitle("counts");
-    //h1_germanium_hitpattern->SetCanExtend(TH1::kAllAxes);
     h1_germanium_hitpattern->SetStats(0);
     h1_germanium_hitpattern->Draw();
-    //folder_germanium_hitpattern->Add(h1_germanium_hitpattern);
-    folder_germanium_hitpattern->Add(c_germanium_hitpattern);
     c_germanium_hitpattern->cd(0);
-    
+    folder_germanium_hitpattern->Add(h1_germanium_hitpattern);
+    folder_germanium_hitpattern->Add(c_germanium_hitpattern);
 
-
-    run->RegisterHttpCommand("Reset_Ge_Hist", "/GermaniumOnlineSpectra->Reset_Histo()");
-    run->RegisterHttpCommand("Snapshot_Ge_Hist", "/GermaniumOnlineSpectra->Snapshot_Histo()");
+    run->GetHttpServer()->RegisterCommand("Reset_Ge_Histo", Form("/Objects/%s/->Reset_Ge_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Snapshot_Ge_Histo", Form("/Objects/%s/->Snapshot_Ge_Histo()", GetName()));
 
     return kSUCCESS;
 }
 
-void GermaniumOnlineSpectra::Reset_Histo()
+void GermaniumOnlineSpectra::Reset_Ge_Histo()
 {
     c4LOG(info, "Reset command received. Clearing histograms.");
-    for (int ihist = 0; ihist<number_of_detectors_to_plot; ihist++) h1_germanium_energy[ihist]->Reset();
+    h1_germanium_multiplicity->Reset();
+    h1_germanium_hitpattern->Reset();
+    h2_germanium_energy_vs_detidx->Reset();
+    for (int ihist = 0; ihist<number_of_detectors_to_plot; ihist++) 
+    {
+        h1_germanium_energy[ihist]->Reset();
+        h1_germanium_time[ihist]->Reset();
+        for (int ihist2 = 0; ihist2 < dt_reference_detectors.size(); ihist2++){
+            h1_germanium_time_differences[ihist2][ihist]->Reset();
+            h2_germanium_time_differences_vs_energy[ihist2][ihist]->Reset();
+        }
+
+    }
 }
 
-void GermaniumOnlineSpectra::Snapshot_Histo()
+void GermaniumOnlineSpectra::Snapshot_Ge_Histo()
 {
+    c4LOG(fatal, "NOT FULLY IMPLEMENTED: TODO!!!");
     //date and time
     time_t now = time(0);
     tm *ltm = localtime(&now);
@@ -195,24 +271,45 @@ void GermaniumOnlineSpectra::Exec(Option_t* option)
     if (fHitGe && fHitGe->GetEntriesFast() > 0)
     {
         Int_t nHits = fHitGe->GetEntriesFast();
+        int event_multiplicity = 0;
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {   
             GermaniumCalData* hit = (GermaniumCalData*)fHitGe->At(ihit);
             if (!hit) continue;
-            int detector_id = hit->Get_detector_id();
-            int crystal_id = hit->Get_crystal_id();
-            double energy = hit->Get_channel_energy();
-            double time = hit->Get_channel_trigger_time();
+            int detector_id1 = hit->Get_detector_id();
+            int crystal_id1 = hit->Get_crystal_id();
+            double energy1 = hit->Get_channel_energy();
+            double time1 = hit->Get_channel_trigger_time();
             
+            if (!(detector_id1 == germanium_configuration->TM_Delayed() || detector_id1 == germanium_configuration->TM_Undelayed() || detector_id1 == germanium_configuration->SC41L() || detector_id1 == germanium_configuration->SC41R())) event_multiplicity ++;
             
-            int crystal_index = std::distance(crystals_to_plot.begin(), std::find(crystals_to_plot.begin(),crystals_to_plot.end(),std::pair<int,int>(detector_id,crystal_id)));
+            int crystal_index1 = std::distance(crystals_to_plot.begin(), std::find(crystals_to_plot.begin(),crystals_to_plot.end(),std::pair<int,int>(detector_id1,crystal_id1)));
             
-            h1_germanium_energy[crystal_index]->Fill(energy);
-            h1_germanium_time[crystal_index]->Fill(time);
-            h1_germanium_hitpattern->Fill(detector_labels[crystal_index],1);
+            h1_germanium_energy[crystal_index1]->Fill(energy1);
+            h2_germanium_energy_vs_detidx->Fill(hit->Get_channel_energy(),crystal_index1);
+            h1_germanium_time[crystal_index1]->Fill(time1);
+            h1_germanium_hitpattern->Fill(detector_labels[crystal_index1],1);
 
+            if (nHits >= 2 && dt_reference_detectors.size()>0){
+                for (int ihit2 = 0; ihit2 < nHits; ihit2++){
+                    if (ihit == ihit2) continue;
+                    GermaniumCalData * hit2 = (GermaniumCalData*)fHitGe->At(ihit2);
+                    int detector_id2 = hit2->Get_detector_id();
+                    int crystal_id2 = hit2->Get_crystal_id();
+                    
+                    int crystal_index2 = std::distance(dt_reference_detectors.begin(), std::find(dt_reference_detectors.begin(),dt_reference_detectors.end(),std::pair<int,int>(detector_id2,crystal_id2)));
+                    if (crystal_index2 >= dt_reference_detectors.size()) continue;
 
+                    double energy2 = hit2->Get_channel_energy();
+                    double time2 = hit2->Get_channel_trigger_time();
+
+                    h1_germanium_time_differences[crystal_index2][crystal_index1]->Fill(time1 - time2);
+                    h2_germanium_time_differences_vs_energy[crystal_index2][crystal_index1]->Fill(energy1,time1-time2);
+                }
+            }
         }
+
+        h1_germanium_multiplicity->Fill(event_multiplicity);
     }
 
     fNEvents += 1;
