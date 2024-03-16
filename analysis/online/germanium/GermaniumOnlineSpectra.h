@@ -78,6 +78,7 @@ class GermaniumOnlineSpectra : public FairTask
         TCanvas* c_germanium_multiplicity;
         TCanvas* c_germanium_time_differences;
         TCanvas* c_germanium_time_differences_vs_energy;
+        TCanvas* c_germanium_rates;
         
         
 
@@ -108,7 +109,6 @@ class GermaniumOnlineSpectra : public FairTask
 
         // Histograms time
         TH1F ** h1_germanium_time;
-
 
     public:
         ClassDef(GermaniumOnlineSpectra, 1)

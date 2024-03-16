@@ -19,6 +19,7 @@
 #include "TFolder.h"
 #include "TH1F.h"
 #include "TH2F.h"
+#include "TGraph.h"
 #include "THttpServer.h"
 #include "TMath.h"
 #include "TRandom.h"
@@ -88,10 +89,12 @@ InitStatus GermaniumOnlineSpectra::Init()
     folder_germanium_time = new TFolder("Time Spectra", "Time Spectra");
     folder_germanium_hitpattern = new TFolder("Hit pattern", "Hit pattern");
     folder_germanium_multiplicity = new TFolder("Multiplicity", "Multiplicity");
+
     folder_germanium->Add(folder_germanium_energy);
     folder_germanium->Add(folder_germanium_time);
     folder_germanium->Add(folder_germanium_hitpattern);
     folder_germanium->Add(folder_germanium_multiplicity);
+
 
     // energy spectra:
     c_germanium_energy  = new TCanvas("c_germanium_energy","Calibrated Germanium spectra",650,350);
@@ -185,8 +188,7 @@ InitStatus GermaniumOnlineSpectra::Init()
         folder_germanium_time_differences->Add(c_germanium_time_differences_vs_energy);
     }
         
-
-
+    
     c_germanium_hitpattern = new TCanvas("c_germanium_hitpattern","Hit pattern DEGAS",650,350);
     detector_labels = new char*[number_of_detectors_to_plot];
     h1_germanium_hitpattern = new TH1F("h1_germanium_hitpattern","Hit pattern of DEGAS",number_of_detectors_to_plot,0,number_of_detectors_to_plot);
@@ -280,6 +282,8 @@ void GermaniumOnlineSpectra::Exec(Option_t* option)
             int crystal_id1 = hit->Get_crystal_id();
             double energy1 = hit->Get_channel_energy();
             double time1 = hit->Get_channel_trigger_time();
+
+
             
             if (!(detector_id1 == germanium_configuration->TM_Delayed() || detector_id1 == germanium_configuration->TM_Undelayed() || detector_id1 == germanium_configuration->SC41L() || detector_id1 == germanium_configuration->SC41R())) event_multiplicity ++;
             
