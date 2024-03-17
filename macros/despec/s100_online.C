@@ -317,10 +317,12 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     // BeamMonitorOnlineSpectra* onlinebm = new BeamMonitorOnlineSpectra();
 
     // TimeMachine
-    TimeMachineOnline* tms = new TimeMachineOnline();
+    TimeMachineOnline* tms = new TimeMachineOnline(CorrMap);
     TString b = "Fatima";
-    TString c = "Aida";
+    TString c = "AIDA";
     TString d = "bPlast";
+    TString e = "FatimaVme";
+    TString f = "Germanium";
     std::vector a {b, c, d};
     tms->SetDetectorSystems(a);
 
