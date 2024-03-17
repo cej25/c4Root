@@ -47,19 +47,25 @@ class FatimaVmeOnlineSpectra : public FairTask
         TFolder* folder_raw_time;
         TFolder* folder_cal_energy;
         TFolder* folder_cal_time;
+        TFolder* folder_tdc_dt;
+        TFolder* folder_dt_ch1;
+        TFolder* folder_dt_sc41;
 
         // Canvases
         TCanvas* c_FatVME_E;
         TCanvas* c_FatVME_RawE;
         TCanvas* c_FatVME_RawT;
+        TCanvas* c_FatVME_T;
+        TCanvas* c_FatVME_dTrefCh1;
+        TCanvas* c_FatVME_dTrefSC41;
 
         // Histograms
         // these should be vectors based on detector config.
         TH1D* h1_FatVME_RawE[36];
         TH1D* h1_FatVME_RawT[36];
         TH1D* h1_FatVME_E[36];
-        TH1D* h1_TDC_dt_refCh1[36];
-        TH1D* h1_TDC_dT_refSC41L[36];
+        TH1D* h1_FatVME_TDC_dt_refCh1[36];
+        TH1D* h1_FatVME_TDC_dT_refSC41L[36];
         TH1D* h1_FatVME_E_Sum;
         TH1D* h1_FatVME_E_Sum_Large; // large range
         TH1I* h1_FatVME_QDC_HitPattern;

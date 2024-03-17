@@ -135,6 +135,38 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     c_FatVME_RawT->cd(0);
     folder_raw_time->Add(c_FatVME_RawT);
 
+    folder_tdc_dt = new TFolder("Time Differences", "Time Differences");
+    folder_cal_vme->Add(folder_tdc_dt);
+    folder_dt_sc41 = new TFolder("SC41L dT", "SC41L dT");
+    folder_dt_ch1 = new TFolder("Ch1 dT", "Ch1 dT");
+    folder_tdc_dt->Add(folder_dt_sc41);
+    folder_tdc_dt->Add(folder_dt_ch1);
+
+    c_FatVME_dTrefSC41 = new TCanvas("c_FatVME_dTrefSC41", "Fatima VME T - SC41L dT", 650, 350);
+    c_FatVME_dTrefSC41->Divide(4, num_detectors / 4);
+    for (int i = 0; i < num_detectors; i++)
+    {
+        c_FatVME_dTrefSC41->cd(i+1);
+        h1_FatVME_TDC_dT_refSC41L[i] = new TH1D(Form("h1_FatVME_TDC%i_dT_refSC41L", i), Form("Detector %i TDC dT ref. SC41L", i), 250, -2e4, 2e4);
+        h1_FatVME_TDC_dT_refSC41L[i]->Draw();
+        folder_dt_sc41->Add(h1_FatVME_TDC_dT_refSC41L[i]);
+        
+    }
+    c_FatVME_dTrefSC41->cd(0);
+    folder_dt_sc41->Add(c_FatVME_dTrefSC41);
+
+    c_FatVME_dTrefCh1 = new TCanvas("c_FatVME_dTrefCh1", "Fatima VME T - Ch1 T dT", 650, 350);
+    c_FatVME_dTrefCh1->Divide(4, num_detectors / 4);
+    for (int i = 0; i < num_detectors; i++)
+    {
+        c_FatVME_dTrefCh1->cd(i+1);
+        h1_FatVME_TDC_dt_refCh1[i] = new TH1D(Form("h1_FatVME_TDC%i_dt_refCh1", i), Form("Detector %i TDC dT ref. Detector 1", i), 4e4, -2e4, 2e4);
+        h1_FatVME_TDC_dt_refCh1[i]->Draw();
+        folder_dt_ch1->Add(h1_FatVME_TDC_dt_refCh1[i]);
+    }
+    c_FatVME_dTrefCh1->cd(0);
+    folder_dt_ch1->Add(c_FatVME_dTrefCh1);
+
     run->GetHttpServer()->RegisterCommand("Reset_Histo", "/Objects/%s/->Reset_Histo()", GetName());
     run->GetHttpServer()->RegisterCommand("Snapshot_Histo", "/Objects/%s/->Snapshot_Histo()", GetName());
     
@@ -179,15 +211,39 @@ void FatimaVmeOnlineSpectra::Exec(Option_t* option)
             
             std::vector<uint32_t> TDC_IDs = FatimaVmeHit->Get_Singles_TDC_ID();
             std::vector<uint32_t> TDC_timestamp = FatimaVmeHit->Get_Singles_TDC_timestamp();
+            std::vector<uint32_t> TDC_timestamp_raw = FatimaVmeHit->Get_Singles_TDC_timestamp_raw();
+            std::vector<uint32_t> SC41L_Hits = FatimaVmeHit->Get_SC41L_hits();
+            std::vector<uint32_t> SC41R_Hits = FatimaVmeHit->Get_SC41L_hits(); // for plotting if wanted?
 
             h1_FatVME_TDCMult->Fill(TDC_IDs.size());
             for (int i = 0; i < TDC_IDs.size(); i++)
             {
                 h1_FatVME_RawT[TDC_IDs[i]]->Fill(TDC_timestamp[i] * 25); // time in [ps]
                 h1_FatVME_TDC_HitPattern->Fill(TDC_IDs[i]);
+
+                for (int j = 0; j < SC41L_Hits.size(); j++)
+                {
+                    double dt = SC41L_Hits[j] - TDC_timestamp[i];
+                    if (dt != 0) h1_FatVME_TDC_dT_refSC41L[TDC_IDs[i]]->Fill(dt);
+                }
+
+                if (TDC_IDs[i] == 1 && TDC_timestamp[i] != 0)
+                {
+                    double t1 = TDC_timestamp[i];
+                    for (int j = 0; j < TDC_IDs.size(); j++)
+                    {
+                        if (i != j)
+                        {
+                            double t2 = TDC_timestamp[j];
+                            double dt = t2 - t1;
+                            if (dt != 0) h1_FatVME_TDC_dt_refCh1[TDC_IDs[j]]->Fill(dt);
+                        }
+                    }
+                }
             }
 
             // add loop for reference channel(s)
+
         }
     }
 }
