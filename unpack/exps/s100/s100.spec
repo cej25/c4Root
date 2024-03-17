@@ -17,6 +17,7 @@ SUBEVENT(aida_subev)
     external data = EXT_AIDA();
 }
 
+// this must change to be more general, or name should change from febex_subev
 SUBEVENT(febex_subev)
 {
     ts = TIMESTAMP_WHITERABBIT(id = 0x400);
