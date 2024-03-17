@@ -15,6 +15,7 @@
 #include "TCutG.h"
 #include "TCutGGates.h"
 #include <vector>
+#include <map>
 
 class TClonesArray;
 class TFolder;
