@@ -59,5 +59,6 @@
 #pragma link C++ class TFatimaTwinpeaksConfiguration+;
 #pragma link C++ class TFatimaVmeConfiguration+;
 #pragma link C++ class TbPlastConfiguration+;
+#pragma link C++ class TCorrelationsConfiguration+;
 
 #endif
