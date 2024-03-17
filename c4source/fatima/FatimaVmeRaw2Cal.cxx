@@ -22,6 +22,7 @@ FatimaVmeRaw2Cal::FatimaVmeRaw2Cal()
     ,   fOnline(kFALSE)
     ,   funcal_data(new TClonesArray("FatimaVmeData"))
     ,   fcal_data(new TClonesArray("FatimaVmeCalData"))
+    ,   fTimeMachineArray(new TClonesArray("TimeMachineData"))
 {
 }
 
@@ -33,6 +34,7 @@ FatimaVmeRaw2Cal::FatimaVmeRaw2Cal(const TString& name, Int_t verbose)
     ,   fOnline(kFALSE)
     ,   funcal_data(new TClonesArray("FatimaVmeData"))
     ,   fcal_data(new TClonesArray("FatimaVmeCalData"))
+    ,   fTimeMachineArray(new TClonesArray("TimeMachineData"))
 {
 }
 
@@ -57,14 +59,17 @@ InitStatus FatimaVmeRaw2Cal::Init()
     c4LOG_IF(fatal, !funcal_data, "Fatima branch of FatimaVmeData not found!");
 
     mgr->Register("FatimaVmeCalData", "FatimaVmeCalDataFolder", fcal_data, !fOnline);
-    // time machine?
 
-    TFatimaVmeConfiguration const* fatvme_conf = TFatimaVmeConfiguration::GetInstance();
-    extra_signals = fatvme_conf->ExtraSignals();
-    tm_undelayed = fatvme_conf->TM_Undelayed();
-    tm_delayed = fatvme_conf->TM_Delayed();
-    sc41l = fatvme_conf->SC41L();
-    sc41r = fatvme_conf->SC41R();
+    TFatimaVmeConfiguration const* fatvme_config = TFatimaVmeConfiguration::GetInstance();
+    extra_signals = fatvme_config->ExtraSignals();
+    for (auto i = extra_signals.begin(); i != extra_signals.end(); i++) std::cout << "extra: " << *i << std::endl;
+    tm_undelayed = fatvme_config->TM_Undelayed();
+    tm_delayed = fatvme_config->TM_Delayed();
+    sc41l = fatvme_config->SC41L();
+    sc41r = fatvme_config->SC41R();
+    calib_coeffs_QDC_E = fatvme_config->QDC_E_Calib();
+    calib_coeffs_QDC_T = fatvme_config->QDC_T_Calib();
+    calib_coeffs_TDC_T = fatvme_config->TDC_T_Calib();
     
 
     fcal_data->Clear();
@@ -72,7 +77,6 @@ InitStatus FatimaVmeRaw2Cal::Init()
     return kSUCCESS;
  
 }
-
 
 
 void FatimaVmeRaw2Cal::Exec(Option_t* option)
@@ -140,6 +144,7 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
             }
 
             int tdcs_fired = FatimaHit->Get_TDCs_fired();
+            std::cout << "tdcs_fired: " << tdcs_fired << std::endl;
             std::vector<uint32_t> tdc_detectors = FatimaHit->Get_TDC_detectors();
             std::vector<uint32_t> v1290_data = FatimaHit->Get_v1290_data();
             std::vector<uint32_t> v1290_lot = FatimaHit->Get_v1290_lot();
@@ -161,18 +166,16 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
 
             for (int i = 0; i < tdcs_fired; i++)
             {
-                // Calibrate - actually should we calibrate?
-                // in go4 the raw ts is taken, why
-                // timestamp = Calibrate_TDC_T(v1290_data[i], tdc_detectors[i]);
-                // timestamp_raw = Calibrate_TDC_T(v1290_data[i], tdc_detectors[i]);
-
-                uint32_t timestamp = v1290_data[i];
+                // CEJ: Gonna do a weird mix of Go4/what I think is correct
                 uint32_t timestamp_raw = v1290_data[i];
-
-                if (tdc_detectors[i] > -1) // this auto-excludes how we're dealing with detectors actually
-                {
+                uint32_t timestamp = Calibrate_TDC_T(v1290_data[i], tdc_detectors[i]);
+                
+                // CEJ: FIX THIS! YOU ARE COMPARING UINT TO NEGATIVE VALUE, NEVER PASSES!!
+               if (tdc_detectors[i] >= 0)
+               {
                     if (extra_signals.find(tdc_detectors[i]) == extra_signals.end())
-                    {   
+                    {  
+                        std::cout << "tdc detector inside extra signal condition: " << tdc_detectors[i] << std::endl;
                         Singles_TDC_timestamp.emplace_back(timestamp);
                         Singles_TDC_timestamp_raw.emplace_back(timestamp_raw);
                         Singles_TDC_ID.emplace_back(tdc_detectors[i]);
@@ -198,6 +201,12 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
                 {
                     SC41R.emplace_back(timestamp);
                 }
+
+                if (((tdc_detectors[i] == tm_delayed) || (tdc_detectors[i] == tm_undelayed)) && tm_delayed != 0 && tm_undelayed != 0)
+                {
+                    new ((*fTimeMachineArray)[fTimeMachineArray->GetEntriesFast()]) TimeMachineData((tdc_detectors[i] == tm_undelayed) ? (timestamp) : (0), (tdc_detectors[i] == tm_undelayed) ? (0) : (timestamp), FatimaHit->Get_wr_subsystem_id(), FatimaHit->Get_wr_t());
+                }
+
                 if (tdc_detectors[i] == tm_undelayed && timestamp != 0.)
                 {
                     FatVME_TMU.emplace_back(timestamp * 0.025);
@@ -211,6 +220,7 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
             }
 
             int qdcs_fired = FatimaHit->Get_QDCs_fired();
+            std::cout << "qdcs fired: " << qdcs_fired << std::endl;
             std::vector<uint32_t> qdc_detectors = FatimaHit->Get_QDC_detectors();
             std::vector<uint32_t> QDC_time_coarse = FatimaHit->Get_QDC_coarse_time();
             std::vector<uint64_t> QDC_time_fine = FatimaHit->Get_QDC_fine_time();
@@ -242,10 +252,12 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
                 QDC_time_coarse[i] = Calibrate_QDC_T(QDC_time_coarse[i], qdc_detectors[i]);
                 QDC_time_fine[i] = Calibrate_QDC_T(QDC_time_fine[i], qdc_detectors[i]);
 
-                if (qdc_detectors[i] > - 1)
+
+                if (qdc_detectors[i] >= 0)
                 {
                     if (extra_signals.find(qdc_detectors[i]) == extra_signals.end())
-                    {
+                    {   
+                        std::cout << "qdc detector inside extra signal condition: " << qdc_detectors[i] << std::endl;
                         Singles_E.emplace_back(QLong[i]);
                         Singles_QDC_ID.emplace_back(qdc_detectors[i]);
                         Singles_coarse_time.emplace_back(QDC_time_coarse[i]);
@@ -278,6 +290,7 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
 
             FatimaCalHit->Set_Singles_E(Singles_E);
             FatimaCalHit->Set_Singles_QDC_ID(Singles_QDC_ID);
+            std::cout << "Singles QDC ID size: " << Singles_QDC_ID.size() << std::endl;
             FatimaCalHit->Set_Singles_coarse_time(Singles_coarse_time);
             FatimaCalHit->Set_Singles_fine_time(Singles_fine_time);
             FatimaCalHit->Set_Singles_E_raw(Singles_E_raw);
@@ -370,11 +383,13 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
             }
 
             FatimaCalHit->Set_QDC_ID(QDC_ID);
+            std::cout << "QDC ID size: " << QDC_ID.size() << std::endl;
             FatimaCalHit->Set_QDC_E(QDC_E);
             FatimaCalHit->Set_QDC_E_raw(QDC_E_raw);
             FatimaCalHit->Set_QDC_T_coarse(QDC_T_coarse);
             FatimaCalHit->Set_QDC_T_fine(QDC_T_fine);
             FatimaCalHit->Set_TDC_ID(TDC_ID);
+            std::cout << "TDC_ID size: " << TDC_ID.size() << std::endl;
             FatimaCalHit->Set_TDC_time(TDC_time);
             FatimaCalHit->Set_TDC_time_raw(TDC_time_raw);
 
@@ -385,94 +400,6 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
 
 }
 
-
-void FatimaVmeRaw2Cal::Load_QDC_Energy_Calibration_File(TString& filepath)
-{
-    std::ifstream file(filepath);
-    std::string line;
-
-    const char* format = "%d %lf %lf %lf %lf %lf";
-
-    if (file.fail())
-    {
-        c4LOG(warn, "Could not find Fatima (VME) Energy Calibration File");
-    }
-
-    double tmp_coeffs[5] = {0,0,0,0,0};
-    int det_id = 0;
-
-    while (file.good())
-    {
-        std::getline(file, line, '\n');
-        if (line[0] == '#' || line.empty()) continue;
-
-        sscanf(line.c_str(), format, &det_id, &tmp_coeffs[0], &tmp_coeffs[1], &tmp_coeffs[2], &tmp_coeffs[3], &tmp_coeffs[4]);
-
-        for (int i = 0; i < 5; i++)
-        {
-            calib_coeffs_QDC_E[det_id][i] = tmp_coeffs[i];
-            original_calib_coeffs_QDC_E[det_id][i] = tmp_coeffs[i];
-        }
-    }
-}
-
-void FatimaVmeRaw2Cal::Load_TDC_Time_Calibration_File(TString& filepath)
-{
-    const char* format = "%d %lf";
-
-    std::ifstream file(filepath);
-    std::string line;
-
-    if (file.fail())
-    {
-        c4LOG(warn, "Could not find Fatima (VME) TDC Time Calibration file");
-        // we need a default cal file to use I think, to prevent fatal crashes
-    }
-
-    double tmp_coeffs;
-    int det_id = 0;
-
-    while (file.good())
-    {
-        std::getline(file, line, '\n');
-        if (line[0] == '#' || line.empty()) continue;
-        
-        sscanf(line.c_str(), format, &det_id, &tmp_coeffs);
-
-        calib_coeffs_TDC_T[det_id] = tmp_coeffs;
-    }
-
-    file.close();
-}
-
-void FatimaVmeRaw2Cal::Load_QDC_Time_Calibration_File(TString& filepath)
-{
-    const char* format = "%d %lf";
-
-    std::ifstream file(filepath);
-    std::string line;
-
-    if (file.fail())
-    {
-        c4LOG(warn, "Could not find Fatima (VME) QDC Time Calibration file");
-        // we need a default cal file to use I think, to prevent fatal crashes
-    }
-
-    double tmp_coeffs;
-    int det_id = 0;
-
-    while (file.good())
-    {
-        std::getline(file, line, '\n');
-        if (line[0] == '#' || line.empty()) continue;
-        
-        sscanf(line.c_str(), format, &det_id, &tmp_coeffs);
-
-        calib_coeffs_QDC_T[det_id] = tmp_coeffs;
-    }
-
-    file.close();
-}
 
 double FatimaVmeRaw2Cal::Calibrate_QDC_E(double E, int det_id)
 {
@@ -497,7 +424,8 @@ double FatimaVmeRaw2Cal::Calibrate_QDC_T(unsigned long T, int det_id)
 
 void FatimaVmeRaw2Cal::FinishEvent()
 {
-
+    fcal_data->Clear();
+    funcal_data->Clear();
 }
 
 void FatimaVmeRaw2Cal::FinishTask()
