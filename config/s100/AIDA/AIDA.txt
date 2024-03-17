@@ -63,5 +63,5 @@ Scalers:
 - 1: Pulser
 - 3: Time Machine Original
 - 4: Time Machine Delayed
-- 2: SC41 L
-- 5: SC41 R
+- 2: SC41L_D
+- 5: SC41R_D

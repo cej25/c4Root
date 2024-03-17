@@ -57,6 +57,7 @@ class FrsCalSpectra : public FairTask
         EventHeader* header;
         Int_t fNEvents;
 
+        TFolder* folder_frs_hists;
         // Canvas
 
         // Histograms for detecors:
