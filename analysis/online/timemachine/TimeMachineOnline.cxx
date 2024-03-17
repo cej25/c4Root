@@ -9,6 +9,7 @@
 #include "TimeMachineOnline.h"
 #include "EventHeader.h"
 #include "TimeMachineData.h"
+#include "TCorrelationsConfiguration.h"
 
 #include "c4Logger.h"
 
@@ -24,9 +25,10 @@
 #include <vector>
 #include <string>
 
-TimeMachineOnline::TimeMachineOnline(CorrelationsMap* fCorrel)
+TimeMachineOnline::TimeMachineOnline()
 {
-    Correl = fCorrel;
+    Correl = correl_config->CorrelationsMap();
+    TMGates = correl_config->TimeMachineMap();
 }
 
 TimeMachineOnline::TimeMachineOnline(const TString& name, Int_t verbose)
@@ -35,6 +37,8 @@ TimeMachineOnline::TimeMachineOnline(const TString& name, Int_t verbose)
     , fNEvents(0)
     , header(nullptr)
 {
+    Correl = correl_config->CorrelationsMap();
+    TMGates = correl_config->TimeMachineMap();
 }
 
 TimeMachineOnline::~TimeMachineOnline()
@@ -270,11 +274,9 @@ void TimeMachineOnline::Exec(Option_t* option) // if two machines (undelayed + d
         {
             std::string systemName2 = fDetectorSystems[ihist2].Data();
             uint64_t wr_t2 = wr[ihist2];
-            uint64_t wr_diff = wr_t1 - wr_t2;
+            uint64_t wr_diff = wr_t1 - wr_t2;            
 
-            tm_gate = GetGateValues(systemName1, systemName2);
-
-            if((diffs[ihist]!=0) && (diffs[ihist2]!=0) && wr_diff > tm_gate[0] && wr_diff < tm_gate[1])
+            if((diffs[ihist]!=0) && (diffs[ihist2]!=0) && wr_diff > TMGates[Form("%s-%s TM Gate", systemName1.c_str(), systemName2.c_str())][0] && wr_diff < TMGates[Form("%s-%s TM Gate", systemName1.c_str(), systemName2.c_str())][1])
             {
                 h2_time_diff_corrs[ihist*fNumDetectorSystems + ihist2]->Fill(diffs[ihist],diffs[ihist2]);
             }
@@ -282,134 +284,6 @@ void TimeMachineOnline::Exec(Option_t* option) // if two machines (undelayed + d
     }
 
     fNEvents += 1;
-}
-
-// I strongly dislike this but can't think of a simple better way yet
-int* TimeMachineOnline::GetGateValues(std::string name1, std::string name2)
-{   
-    int low = 0;
-    int high = 0;
-
-    if (name1 == "Fatima") // TAMEX
-    {
-        if (name2 == "AIDA")
-        {
-            low = -(*Correl)["AIDA-Fatima(TAMEX) TM Gate"][1];
-            high = -(*Correl)["AIDA-Fatima(TAMEX) TM Gate"][0];
-        }
-        else if (name2 == "bPlast")
-        {
-            low = (*Correl)["Fatima(TAMEX)-bPlast TM Gate"][0];
-            high = (*Correl)["Fatima(TAMEX)-bPlast TM Gate"][1];
-        }
-        else if (name2 == "Germanium")
-        {
-            low = (*Correl)["Fatima(TAMEX)-Germanium TM Gate"][0];
-            high = (*Correl)["Fatima(TAMEX)-Germanium TM Gate"][1];
-        }
-        else if (name2 == "FatimaVme")
-        {
-            low = 0;
-            high = 0;
-        }
-    }
-    else if (name1 == "FatimaVme") // TAMEX
-    {
-        if (name2 == "AIDA")
-        {
-            low = -(*Correl)["AIDA-Fatima(VME) TM Gate"][1];
-            high = -(*Correl)["AIDA-Fatima(VME) TM Gate"][0];
-        }
-        else if (name2 == "bPlast")
-        {
-            low = (*Correl)["Fatima(VME)-bPlast TM Gate"][0];
-            high = (*Correl)["Fatima(VME)-bPlast TM Gate"][1];
-        }
-        else if (name2 == "Germanium")
-        {
-            low = (*Correl)["Fatima(VME)-Germanium TM Gate"][0];
-            high = (*Correl)["Fatima(VME)-Germanium TM Gate"][1];
-        }
-        else if (name2 == "Fatima")
-        {
-            low = 0;
-            high = 0;
-        }
-    }
-    else if (name1 == "AIDA")
-    {
-        if (name2 == "Fatima")
-        {
-            low = (*Correl)["AIDA-Fatima(TAMEX) TM Gate"][0];
-            high = (*Correl)["AIDA-Fatima(TAMEX) TM Gate"][1];
-        }
-        else if (name2 == "FatimaVme")
-        {
-            low = (*Correl)["AIDA-Fatima(VME) TM Gate"][0];
-            high = (*Correl)["AIDA-Fatima(VME) TM Gate"][1];
-        }
-        else if (name2 == "bPlast")
-        {
-            low = (*Correl)["AIDA-bPlast TM Gate"][0];
-            high = (*Correl)["AIDA-bPlast TM Gate"][1];
-        }
-        else if (name2 == "Germanium")
-        {
-            low = (*Correl)["AIDA-Germanium TM Gate"][0];
-            high = (*Correl)["AIDA-Germanium TM Gate"][1];
-        }
-    }
-    else if (name1 == "bPlast")
-    {
-        if (name2 == "Fatima")
-        {
-            low = -(*Correl)["Fatima(TAMEX)-bPlast TM Gate"][1];
-            high = -(*Correl)["Fatima(TAMEX)-bPlast TM Gate"][0];
-        }
-        else if (name2 == "FatimaVme")
-        {
-            low = -(*Correl)["Fatima(TAMEX)-bPlast TM Gate"][1];
-            high = -(*Correl)["Fatima(TAMEX)-bPlast TM Gate"][0];
-        }
-        else if (name2 == "AIDA")
-        {
-            low = -(*Correl)["AIDA-bPlast TM Gate"][1];
-            high = -(*Correl)["AIDA-bPlast TM Gate"][0];
-        }
-        else if (name2 == "Germanium")
-        {
-            low = (*Correl)["bPlast-Germanium TM Gate"][0];
-            high = (*Correl)["bPlast-Germanium TM Gate"][1];
-        }
-    }
-    else if (name1 == "Germanium")
-    {
-        if (name2 == "Fatima")
-        {
-            low = -(*Correl)["Fatima(TAMEX)-Germanium TM Gate"][1];
-            high = -(*Correl)["Fatima(TAMEX)-Germanium TM Gate"][0];
-        }
-        else if (name2 == "FatimaVme")
-        {
-            low = -(*Correl)["Fatima(VME)-Germanium TM Gate"][1];
-            high = -(*Correl)["Fatima(VME)-Germanium TM Gate"][0];
-        }
-        else if (name2 == "AIDA")
-        {
-            low = -(*Correl)["AIDA-Germanium TM Gate"][1];
-            high = -(*Correl)["AIDA-Germanium TM Gate"][0];
-        }
-        else if (name2 == "bPlast")
-        {
-            low = -(*Correl)["bPlast-Germanium TM Gate"][1];
-            high = -(*Correl)["bPlast-Germanium TM Gate"][0];
-        }
-    }
-
-    int* gate = new int[2];
-    gate[0] = low;
-    gate[1] = high;
-    return gate;
 }
 
 void TimeMachineOnline::FinishEvent()
