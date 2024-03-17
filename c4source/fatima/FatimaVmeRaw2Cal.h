@@ -4,6 +4,7 @@
 #include "FairTask.h"
 #include "FatimaVmeData.h"
 #include "FatimaVmeCalData.h"
+#include "TimeMachineData.h"
 #include "../../config/setup.h"
 
 #include <vector>
@@ -16,8 +17,7 @@ class TClonesArray;
 class EventHeader;
 class FatimaVmeData;
 class FatimaVmeCalData;
-//class TimeMachineData;
-//class vector;
+class TimeMachineData;
 
 class FatimaVmeRaw2Cal : public FairTask
 {
@@ -39,10 +39,6 @@ class FatimaVmeRaw2Cal : public FairTask
         double Calibrate_QDC_T(unsigned long T, int det_id);
         double Calibrate_TDC_T(unsigned long T, int det_id);
 
-        void Load_QDC_Energy_Calibration_File(TString& filepath);
-        void Load_QDC_Time_Calibration_File(TString& filepath);
-        void Load_TDC_Time_Calibration_File(TString& filepath);
-
         void SetOnline(Bool_t option) { fOnline = option; }
 
     private:
@@ -50,6 +46,7 @@ class FatimaVmeRaw2Cal : public FairTask
         Bool_t fOnline;
         TClonesArray* fcal_data;
         TClonesArray* funcal_data;
+        TClonesArray* fTimeMachineArray;
 
         Int_t fNEvents = 0;
         EventHeader* header;
@@ -63,10 +60,15 @@ class FatimaVmeRaw2Cal : public FairTask
         int sc41r;
 
         // Calibration
-        double calib_coeffs_QDC_E[100][5];
-        double original_calib_coeffs_QDC_E[100][5];
-        double calib_coeffs_TDC_T[100];
-        double calib_coeffs_QDC_T[100];
+        // double calib_coeffs_QDC_E[100][5];
+        // double original_calib_coeffs_QDC_E[100][5];
+        // double calib_coeffs_TDC_T[100];
+        // double calib_coeffs_QDC_T[100];
+
+        double** calib_coeffs_QDC_E;
+        double** original_calib_coeffs_QDC_E;;
+        double* calib_coeffs_TDC_T;
+        double* calib_coeffs_QDC_T;
 
     public:
         ClassDef(FatimaVmeRaw2Cal, 1);
