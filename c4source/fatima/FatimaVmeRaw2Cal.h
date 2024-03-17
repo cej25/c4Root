@@ -4,6 +4,7 @@
 #include "FairTask.h"
 #include "FatimaVmeData.h"
 #include "FatimaVmeCalData.h"
+#include "TFatimaVmeConfiguration.h"
 #include "TimeMachineData.h"
 #include "../../config/setup.h"
 
