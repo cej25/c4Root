@@ -128,8 +128,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Correlations ******************************************************** //
     
-    std::string CorrConfigFile = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/correlations.dat";
-    CorrelationsMap* CorrMap = new CorrelationsMap(CorrConfigFile);
+    TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations.dat");
 
 
     // ------------------------------------------------------------------------------------ //
@@ -141,9 +140,8 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_new.txt");
     // FRS? Eventually will get around to mapping crates properly
     TGermaniumConfiguration::SetDetectorMapFile(config_path + "/germanium/Germanium_Detector_Map.txt");
-
-    TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations.dat");
     
+
     // ------------------------------------------------------------------------------------- //
     // *** Read Subsystems - comment out unwanted systems ********************************** //
 
@@ -259,7 +257,6 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
         // CEJ: these are not needed anymore, code was updated
         calbplast->SetDetectorMapFile(config_path + "/bplast/bplast_alloc.txt");
-        calbplast->SetTimeMachineChannels(68,67);
         
         calbplast->SetOnline(true);
         run->AddTask(calbplast);
@@ -409,14 +406,14 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
 
     if (FATIMA_ON && FRS_ON)
     {
-        FrsFatimaCorrelations* frsfatimacorr = new FrsFatimaCorrelations(FrsGates, FatimaPrompt, CorrMap);
+        FrsFatimaCorrelations* frsfatimacorr = new FrsFatimaCorrelations(FrsGates, FatimaPrompt);
         
         run->AddTask(frsfatimacorr);
     }
     
     if (AIDA_ON && FRS_ON)
     {
-        FrsAidaCorrelations* frsaidacorr = new FrsAidaCorrelations(FrsGates, CorrMap);
+        FrsAidaCorrelations* frsaidacorr = new FrsAidaCorrelations(FrsGates);
         
         run->AddTask(frsaidacorr);
     }

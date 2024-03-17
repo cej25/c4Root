@@ -26,7 +26,12 @@
 #include <string>
 
 TimeMachineOnline::TimeMachineOnline()
+    : FairTask()
+    , fTimeMachine(NULL)
+    , fNEvents(0)
+    , header(nullptr)
 {
+    correl_config = TCorrelationsConfiguration::GetInstance();
     Correl = correl_config->CorrelationsMap();
     TMGates = correl_config->TimeMachineMap();
 }
@@ -37,6 +42,7 @@ TimeMachineOnline::TimeMachineOnline(const TString& name, Int_t verbose)
     , fNEvents(0)
     , header(nullptr)
 {
+    correl_config = TCorrelationsConfiguration::GetInstance();
     Correl = correl_config->CorrelationsMap();
     TMGates = correl_config->TimeMachineMap();
 }
