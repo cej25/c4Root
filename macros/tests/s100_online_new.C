@@ -142,6 +142,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     // FRS? Eventually will get around to mapping crates properly
     TGermaniumConfiguration::SetDetectorMapFile(config_path + "/germanium/Germanium_Detector_Map.txt");
 
+    TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations.dat");
     
     // ------------------------------------------------------------------------------------- //
     // *** Read Subsystems - comment out unwanted systems ********************************** //
@@ -394,11 +395,12 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     // TimeMachine
     TimeMachineOnline* tms = new TimeMachineOnline();
     TString b = "Fatima";
-    TString c = "Aida";
-    TString d = "bPlast";
-    std::vector a {b, c, d};
+    TString c = "FatimaVme";
+    TString d = "Aida"; // capitals? we should really be careful here
+    TString e = "bPlast";
+    TString f = "Germanium";
+    std::vector a {b, d, e};
     tms->SetDetectorSystems(a);
-
 
     run->AddTask(tms);
 
