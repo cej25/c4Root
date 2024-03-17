@@ -43,6 +43,8 @@ class FatimaVmeRaw2Cal : public FairTask
 
     private:
 
+        TFatimaVmeConfiguration const* fatima_vme_config;
+
         Bool_t fOnline;
         TClonesArray* fcal_data;
         TClonesArray* funcal_data;
