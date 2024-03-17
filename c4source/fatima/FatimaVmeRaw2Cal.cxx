@@ -24,6 +24,7 @@ FatimaVmeRaw2Cal::FatimaVmeRaw2Cal()
     ,   fcal_data(new TClonesArray("FatimaVmeCalData"))
     ,   fTimeMachineArray(new TClonesArray("TimeMachineData"))
 {
+    fatima_vme_config = TFatimaVmeConfiguration::GetInstance();
 }
 
 // named constructor
@@ -36,6 +37,7 @@ FatimaVmeRaw2Cal::FatimaVmeRaw2Cal(const TString& name, Int_t verbose)
     ,   fcal_data(new TClonesArray("FatimaVmeCalData"))
     ,   fTimeMachineArray(new TClonesArray("TimeMachineData"))
 {
+    fatima_vme_config = TFatimaVmeConfiguration::GetInstance();
 }
 
 FatimaVmeRaw2Cal::~FatimaVmeRaw2Cal()
@@ -60,18 +62,15 @@ InitStatus FatimaVmeRaw2Cal::Init()
 
     mgr->Register("FatimaVmeCalData", "FatimaVmeCalDataFolder", fcal_data, !fOnline);
 
-    TFatimaVmeConfiguration const* fatvme_config = TFatimaVmeConfiguration::GetInstance();
-    extra_signals = fatvme_config->ExtraSignals();
-    for (auto i = extra_signals.begin(); i != extra_signals.end(); i++) std::cout << "extra: " << *i << std::endl;
-    tm_undelayed = fatvme_config->TM_Undelayed();
-    tm_delayed = fatvme_config->TM_Delayed();
-    sc41l = fatvme_config->SC41L();
-    sc41r = fatvme_config->SC41R();
-    calib_coeffs_QDC_E = fatvme_config->QDC_E_Calib();
-    calib_coeffs_QDC_T = fatvme_config->QDC_T_Calib();
-    calib_coeffs_TDC_T = fatvme_config->TDC_T_Calib();
+    extra_signals = fatima_vme_config->ExtraSignals();
+    tm_undelayed = fatima_vme_config->TM_Undelayed();
+    tm_delayed = fatima_vme_config->TM_Delayed();
+    sc41l = fatima_vme_config->SC41L();
+    sc41r = fatima_vme_config->SC41R();
+    calib_coeffs_QDC_E = fatima_vme_config->QDC_E_Calib();
+    calib_coeffs_QDC_T = fatima_vme_config->QDC_T_Calib();
+    calib_coeffs_TDC_T = fatima_vme_config->TDC_T_Calib();
     
-
     fcal_data->Clear();
 
     return kSUCCESS;
@@ -144,7 +143,6 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
             }
 
             int tdcs_fired = FatimaHit->Get_TDCs_fired();
-            std::cout << "tdcs_fired: " << tdcs_fired << std::endl;
             std::vector<uint32_t> tdc_detectors = FatimaHit->Get_TDC_detectors();
             std::vector<uint32_t> v1290_data = FatimaHit->Get_v1290_data();
             std::vector<uint32_t> v1290_lot = FatimaHit->Get_v1290_lot();
@@ -175,7 +173,6 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
                {
                     if (extra_signals.find(tdc_detectors[i]) == extra_signals.end())
                     {  
-                        std::cout << "tdc detector inside extra signal condition: " << tdc_detectors[i] << std::endl;
                         Singles_TDC_timestamp.emplace_back(timestamp);
                         Singles_TDC_timestamp_raw.emplace_back(timestamp_raw);
                         Singles_TDC_ID.emplace_back(tdc_detectors[i]);
@@ -220,7 +217,6 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
             }
 
             int qdcs_fired = FatimaHit->Get_QDCs_fired();
-            std::cout << "qdcs fired: " << qdcs_fired << std::endl;
             std::vector<uint32_t> qdc_detectors = FatimaHit->Get_QDC_detectors();
             std::vector<uint32_t> QDC_time_coarse = FatimaHit->Get_QDC_coarse_time();
             std::vector<uint64_t> QDC_time_fine = FatimaHit->Get_QDC_fine_time();
@@ -257,7 +253,6 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
                 {
                     if (extra_signals.find(qdc_detectors[i]) == extra_signals.end())
                     {   
-                        std::cout << "qdc detector inside extra signal condition: " << qdc_detectors[i] << std::endl;
                         Singles_E.emplace_back(QLong[i]);
                         Singles_QDC_ID.emplace_back(qdc_detectors[i]);
                         Singles_coarse_time.emplace_back(QDC_time_coarse[i]);
@@ -290,7 +285,6 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
 
             FatimaCalHit->Set_Singles_E(Singles_E);
             FatimaCalHit->Set_Singles_QDC_ID(Singles_QDC_ID);
-            std::cout << "Singles QDC ID size: " << Singles_QDC_ID.size() << std::endl;
             FatimaCalHit->Set_Singles_coarse_time(Singles_coarse_time);
             FatimaCalHit->Set_Singles_fine_time(Singles_fine_time);
             FatimaCalHit->Set_Singles_E_raw(Singles_E_raw);
@@ -383,13 +377,11 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
             }
 
             FatimaCalHit->Set_QDC_ID(QDC_ID);
-            std::cout << "QDC ID size: " << QDC_ID.size() << std::endl;
             FatimaCalHit->Set_QDC_E(QDC_E);
             FatimaCalHit->Set_QDC_E_raw(QDC_E_raw);
             FatimaCalHit->Set_QDC_T_coarse(QDC_T_coarse);
             FatimaCalHit->Set_QDC_T_fine(QDC_T_fine);
             FatimaCalHit->Set_TDC_ID(TDC_ID);
-            std::cout << "TDC_ID size: " << TDC_ID.size() << std::endl;
             FatimaCalHit->Set_TDC_time(TDC_time);
             FatimaCalHit->Set_TDC_time_raw(TDC_time_raw);
 
