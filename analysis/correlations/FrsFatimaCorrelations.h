@@ -6,6 +6,7 @@
 #include "FrsHitData.h"
 #include "FatimaTwinpeaksCalData.h"
 #include "TCorrelationsConfiguration.h"
+#include "TFatimaTwinpeaksConfiguration.h"
 
 #include "TFolder.h"
 #include "TH1.h"
@@ -44,6 +45,7 @@ class FrsFatimaCorrelations : public FairTask
     private:
 
         TCorrelationsConfiguration const* correl_config;
+        TFatimaTwinpeaksConfiguration const* fatima_config;
         std::map<std::string, std::vector<int>> Correl;
 
         Int_t fNEvents;

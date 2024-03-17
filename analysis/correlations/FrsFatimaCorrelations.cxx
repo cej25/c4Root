@@ -52,6 +52,7 @@ FrsFatimaCorrelations::FrsFatimaCorrelations(std::vector<TCutGGates*> fFrsGates,
 
     correl_config = TCorrelationsConfiguration::GetInstance();
     Correl = correl_config->CorrelationsMap();
+    fatima_config = TFatimaTwinpeaksConfiguration::GetInstance();
    
 }
 
@@ -216,7 +217,7 @@ void FrsFatimaCorrelations::Exec(Option_t* option)
         {
             FatimaTwinpeaksCalData* FatimaHit = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaksArray->At(ihit);
             if (!FatimaHit) continue; 
-            if (FatimaHit->Get_detector_id() == 18)
+            if (FatimaHit->Get_detector_id() == fatima_config->SC41L())
             {
                 if (FatimaHit->Get_fast_lead_time() > 0)
                 {
@@ -233,7 +234,7 @@ void FrsFatimaCorrelations::Exec(Option_t* option)
 
             // CEJ: these are hard-coded in AidaFatimaCorrelations, I don't like this
             // if (FatimaHit->Get_detector_id() > NDetectors || FatimaHit->Get_detector_id() < 0) continue;
-            if (FatimaHit->Get_detector_id() == 18 || FatimaHit->Get_detector_id() == 19) continue; // veto_sc41
+            if (FatimaHit->Get_detector_id() == fatima_config->SC41L() || FatimaHit->Get_detector_id() == fatima_config->SC41R()) continue; // veto_sc41
 
             // Start-Stop
             // CEJ: not done yet
@@ -272,7 +273,7 @@ void FrsFatimaCorrelations::Exec(Option_t* option)
                                             FatimaTwinpeaksCalData* FatimaHit2 = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaksArray->At(ihit2);
                                             if (!FatimaHit2) continue;
 
-                                            if (FatimaHit2->Get_detector_id() == 18 || FatimaHit2->Get_detector_id() == 19) continue; // veto_sc41
+                                            if (FatimaHit2->Get_detector_id() == fatima_config->SC41L() || FatimaHit2->Get_detector_id() == fatima_config->SC41R()) continue; // veto_sc41
 
                                             if (ihit != ihit2 && (FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025 > Correl["Fatima Gamma-Gamma dT Gate"][0] && (FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025 < Correl["Fatima Gamma-Gamma dT Gate"][1])
                                             {
@@ -298,7 +299,7 @@ void FrsFatimaCorrelations::Exec(Option_t* option)
                                                 FatimaTwinpeaksCalData* FatimaHit2 = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaksArray->At(ihit2);
                                                 if (!FatimaHit2) continue;
 
-                                                if (FatimaHit2->Get_detector_id() == 18 || FatimaHit2->Get_detector_id() == 19) continue; // veto_sc41
+                                                if (FatimaHit2->Get_detector_id() == fatima_config->SC41L() || FatimaHit2->Get_detector_id() == fatima_config->SC41R()) continue; // veto_sc41
 
                                                 if (ihit != ihit2 && (FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025 > Correl["Fatima Gamma-Gamma dT Gate"][0] && (FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025 < Correl["Fatima Gamma-Gamma dT Gate"][1])
                                                 {
@@ -322,7 +323,7 @@ void FrsFatimaCorrelations::Exec(Option_t* option)
                                                 FatimaTwinpeaksCalData* FatimaHit2 = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaksArray->At(ihit2);
                                                 if (!FatimaHit2) continue;
 
-                                                if (FatimaHit2->Get_detector_id() == 18 || FatimaHit2->Get_detector_id() == 19) continue; // veto_sc41
+                                                if (FatimaHit2->Get_detector_id() == fatima_config->SC41L() || FatimaHit2->Get_detector_id() == fatima_config->SC41R()) continue; // veto_sc41
 
                                                 if (ihit != ihit2 && (FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025 > Correl["Fatima Gamma-Gamma dT Gate"][0] && (FatimaHit->Get_fast_lead_time() - FatimaHit2->Get_fast_lead_time()) * 0.025 < Correl["Fatima Gamma-Gamma dT Gate"][1])
                                                 {
@@ -352,7 +353,7 @@ void FrsFatimaCorrelations::Exec(Option_t* option)
             if (!FatimaHit) continue;
             // CEJ: these are hard-coded in AidaFatimaCorrelations, I don't like this
             // if (FatimaHit->Get_detector_id() > NDetectors || FatimaHit->Get_detector_id() < 0) continue;
-            if (FatimaHit->Get_detector_id() == 18 || FatimaHit->Get_detector_id() == 19) continue; // veto_sc41
+            if (FatimaHit->Get_detector_id() == fatima_config->SC41L() || FatimaHit->Get_detector_id() == fatima_config->SC41R()) continue; // veto_sc41
 
             Long64_t dT_FRS_Fatima = 0;            
             if (FatimaHit->Get_wr_t() > 0 && FrsHit->Get_wr_t() > 0) dT_FRS_Fatima = FatimaHit->Get_wr_t() - FrsHit->Get_wr_t();
