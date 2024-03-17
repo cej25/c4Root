@@ -15,10 +15,13 @@ class TFatimaTwinpeaksConfiguration
     public:
         static TFatimaTwinpeaksConfiguration const* GetInstance();
         static void Create();
-        static void SetDetectorMapFile(std::string fp) { filepath = fp; }
+        static void SetDetectorConfigurationFile(std::string fp) { configuration_file = fp; }
+        static void SetDetectorCoefficientFile(std::string fp) { calibration_file = fp; }
 
         std::map<std::pair<int,int>,int> Mapping() const;
         bool MappingLoaded() const;
+        bool CalibrationCoefficientsLoaded() const;
+        std::map<int,std::vector<double>> CalibrationCoefficients() const;
         int NDetectors() const;
         int NTamexBoards() const;
         int TM_Undelayed() const;
@@ -32,13 +35,19 @@ class TFatimaTwinpeaksConfiguration
 
     private:
 
-        static std::string filepath;
+        static std::string configuration_file;
+        static std::string calibration_file;
+
         TFatimaTwinpeaksConfiguration();
         void ReadConfiguration();
+        void ReadCalibrationCoefficients();
 
         static TFatimaTwinpeaksConfiguration* instance;
         
         std::map<std::pair<int,int>,int> detector_mapping; // [board_id][channel_id] -> [detector_id]
+        std::map<int,std::vector<double>> calibration_coeffs; // key: [detector id] -> vector[a0 - a3] index is coefficient number 0 = offset +++ expects quadratic.
+
+
         std::set<int> extra_signals;
 
         int num_detectors;
@@ -53,8 +62,18 @@ class TFatimaTwinpeaksConfiguration
         int bplast_accept;
         int bplast_free;
 
-        bool DetectorMap_loaded = 0;
+        bool detector_map_loaded = 0;
+        bool detector_calibrations_loaded = 0;
 };
+
+inline std::map<int,std::vector<double>> TFatimaTwinpeaksConfiguration::CalibrationCoefficients() const 
+{
+    return calibration_coeffs;
+}
+
+inline bool TFatimaTwinpeaksConfiguration::CalibrationCoefficientsLoaded() const {
+    return detector_calibrations_loaded;
+}
 
 inline TFatimaTwinpeaksConfiguration const* TFatimaTwinpeaksConfiguration::GetInstance()
 {
@@ -78,7 +97,7 @@ inline std::map<std::pair<int,int>,int> TFatimaTwinpeaksConfiguration::Mapping()
 
 inline bool TFatimaTwinpeaksConfiguration::MappingLoaded() const
 {
-    return DetectorMap_loaded;
+    return detector_map_loaded;
 }
 
 inline int TFatimaTwinpeaksConfiguration::NDetectors() const

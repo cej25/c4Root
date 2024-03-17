@@ -20,6 +20,7 @@
 #include "THttpServer.h"
 #include "TMath.h"
 #include "TRandom.h"
+#include "TDirectory.h"
 #include <vector>
 #include <string>
 
@@ -87,6 +88,9 @@ InitStatus TimeMachineOnline::Init()
     }
 
     c4LOG(info,"allocating histograms.");
+    
+    TDirectory::TContext ctx(nullptr);
+
     folder_time_machine = new TFolder("TimeMachines", "TimeMachines");
     run->AddObject(folder_time_machine);
     

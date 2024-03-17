@@ -43,6 +43,7 @@ set(SRCS
 ./online/aida/AidaOnlineSpectra.cxx
 ./online/bplast/bPlastOnlineSpectra.cxx
 ./online/fatima/FatimaOnlineSpectra.cxx
+./online/fatima/FatimaVmeOnlineSpectra.cxx
 ./online/frs/FrsOnlineSpectra.cxx
 ./online/frs/FrsRawSpectra.cxx
 ./online/frs/FrsCalSpectra.cxx
@@ -56,11 +57,8 @@ set(SRCS
 ./correlations/FrsAidaCorrelations.cxx
 ./correlations/FrsFatimaCorrelations.cxx
 ./correlations/AidaFatimaCorrelations.cxx
-#./online/frs/FrsDetectorsOnline.cxx
-#./fatima_aida_correlations/FatimaAidaSpectra.cxx
-./online/fatima/FatimaTimingAnalysis.cxx
-./online/fatima/FatimaSinglesAnalysis.cxx
-#./online/TimeMachineOnline.cxx
+./nearline/fatima/FatimaTimingAnalysis.cxx
+./nearline/fatima/FatimaSinglesAnalysis.cxx
 #nearline
 # ./nearline/bPlastNearlineSpectra.cxx
 # ./nearline/AidaNearlineSpectra.cxx

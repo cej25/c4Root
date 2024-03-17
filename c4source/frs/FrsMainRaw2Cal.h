@@ -2,6 +2,7 @@
 #define FrsMainRaw2Cal_H
 
 #include <vector>
+#include "TFolder.h"
 
 class TClonesArray;
 class EventHeader;
@@ -71,6 +72,7 @@ class FrsMainRaw2Cal : public FairTask
         
         EventHeader* header;
         Int_t fNEvents = 0;
+
 
     public:
         ClassDef(FrsMainRaw2Cal, 1);

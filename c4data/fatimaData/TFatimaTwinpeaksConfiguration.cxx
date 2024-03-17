@@ -8,20 +8,22 @@
 #include <set>
 
 TFatimaTwinpeaksConfiguration* TFatimaTwinpeaksConfiguration::instance = nullptr;
-std::string TFatimaTwinpeaksConfiguration::filepath = "fatima_alloc.txt";
+std::string TFatimaTwinpeaksConfiguration::configuration_file = "blank";
+std::string TFatimaTwinpeaksConfiguration::calibration_file = "blank";
 
 TFatimaTwinpeaksConfiguration::TFatimaTwinpeaksConfiguration()
     :   num_detectors(0)
     ,   num_tamex_boards(0)
     ,   num_tamex_channels(0)
 {
-    ReadConfiguration();
+    if (configuration_file != "blank") ReadConfiguration();
+    if (calibration_file != "blank") ReadCalibrationCoefficients();
 }
 
 void TFatimaTwinpeaksConfiguration::ReadConfiguration()
 {
 
-    std::ifstream detector_map_file(filepath);
+    std::ifstream detector_map_file(configuration_file);
     std::string line;
     std::set<int> tamex_boards;
     std::set<int> detectors;
@@ -75,9 +77,33 @@ void TFatimaTwinpeaksConfiguration::ReadConfiguration()
     num_detectors = detectors.size();
     num_tamex_channels = tamex_channels;
 
-    DetectorMap_loaded = 1;
+    detector_map_loaded = 1;
     detector_map_file.close();
     return;
-
 }
 
+void TFatimaTwinpeaksConfiguration::ReadCalibrationCoefficients(){
+
+    std::ifstream calibration_coeff_file (calibration_file);
+
+    if (calibration_coeff_file.fail()) c4LOG(fatal, "Could not open Fatima calibration coefficients file.");
+
+
+    int rdetector_id; // temp read variables
+    
+    //assumes the first line in the file is num-modules used
+    while(!calibration_coeff_file.eof()){
+        if(calibration_coeff_file.peek()=='#') calibration_coeff_file.ignore(256,'\n');
+        else{
+            double a0,a1,a2,a3;
+            calibration_coeff_file >> rdetector_id >> a0 >> a1 >> a2 >> a3;
+            std::vector<double> cals = {a0,a1,a2,a3};
+
+            calibration_coeffs.insert(std::pair<int,std::vector<double>>{rdetector_id,cals});
+            calibration_coeff_file.ignore(256,'\n');
+        }
+    }
+    detector_calibrations_loaded = 1;
+    calibration_coeff_file.close();
+    return; 
+}

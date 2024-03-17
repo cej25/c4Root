@@ -359,6 +359,7 @@ void FrsMainRaw2Cal::FinishEvent()
 void FrsMainRaw2Cal::FinishTask()
 {
     c4LOG(info, Form("Wrote %i events.",fNEvents));
+
 }
 
 ClassImp(FrsMainRaw2Cal)
