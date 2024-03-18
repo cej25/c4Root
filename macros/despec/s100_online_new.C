@@ -1,15 +1,15 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-// CEJ !! NOT IMPLEMENTED YET !!
-#define FATIMA_ON 0
-#define FATIMA_VME_ON 0
-#define AIDA_ON 1
-#define BPLAST_ON 1
+#define FATIMA_ON 1
+#define FATIMA_VME_ON 1
+#define AIDA_ON 0
+#define BPLAST_ON 0
 #define GERMANIUM_ON 0
-#define FRS_ON 1
+#define FRS_ON 0
 #define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
+#define WHITE_RABBIT_CORS 0
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
@@ -66,7 +66,9 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     // TString filename = "stream://x86l-117";
     // TString filename = "trans://lxg1257";
-    TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
+    // TString filename = "trans://R4L-21";
+    TString filename = "stream://R4L-36";
+    //TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
     //TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd ~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0025_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
@@ -158,7 +160,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     {
         FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
         //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_histos_111223_fatima.root", 50000);
-        //unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_histos_111223_fatima.root");
+        unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_histos_111223_fatima.root");
 
         unpackfatima->SetOnline(true);
         source->AddReader(unpackfatima);
