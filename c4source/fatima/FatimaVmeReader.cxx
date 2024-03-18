@@ -109,7 +109,6 @@ Bool_t FatimaVmeReader::Read()
         {  
             int current_detector = dets_qdc[std::make_pair(board_id, channels_fired[channel])];
             qdc_detectors.emplace_back(current_detector);
-            std::cout << "current_detector qdc: " << current_detector << std::endl;
 
             QDC_time_coarse.emplace_back(fData->fatimavme_qdc[qdc].channel_timev[channel]);
 
@@ -148,7 +147,6 @@ Bool_t FatimaVmeReader::Read()
             int next_channel_start = fData->fatimavme_tdc[tdc]._nME[channel_index];
 
             int current_detector = dets_tdc[std::make_pair(geo, current_channel)];
-            std::cout << "current_detector tdc: " << current_detector << std::endl;
 
             for (uint32_t j = hit_index; j < next_channel_start; j++)
             {
