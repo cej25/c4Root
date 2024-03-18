@@ -55,6 +55,11 @@ CorrelationsMap::CorrelationsMap(std::string& filename)
                 else if (firstWord == "AIDA_FATIMA_VME_TM") (*this)["AIDA-Fatima(VME) TM Gate"] = values;
                 else if (firstWord == "AIDA_FATIMA_TAMEX_TM") (*this)["AIDA-Fatima(TAMEX) TM Gate"] = values;
                 else if (firstWord == "AIDA_BPLAST_TM") (*this)["AIDA-bPlast TM Gate"] = values;
+                else if (firstWord == "FATIMA_VME_BPLAST_TM") (*this) ["Fatima(VME)-bPlast TM Gate"] = values;
+                else if (firstWord == "FATIMA_VME_GERMANIUM_TM") (*this) ["Fatima(VME)-Germanium TM Gate"] = values;
+                else if (firstWord == "FATIMA_TAMEX_BPLAST_TM") (*this) ["Fatima(TAMEX)-bPlast TM Gate"] = values;
+                else if (firstWord == "FATIMA_TAMEX_GERMANIUM_TM") (*this) ["Fatima(TAMEX)-Germanium TM Gate"] = values;
+                else if (firstWord == "BPLAST_GERMANIUM_TM") (*this) ["bPlast-Germanium TM Gate"] = values;
                 else if (firstWord == "GAMMA_GAMMA_GERMANIUM_TIME") (*this)["Germanium Gamma-Gamma dT Gate"] = values;
                 else if (firstWord == "FRS_GERMANIUM_LONG_DT") (*this)["FRS-Germanium Long dT Gate"] = values;
                 else if (firstWord == "GAMMA_GAMMA_FATIMA_TIME") (*this)["Fatima Gamma-Gamma dT Gate"] = values;

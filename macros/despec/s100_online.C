@@ -135,19 +135,11 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
 
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
-<<<<<<< HEAD
-    TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fatima_alloc_new.txt");
-    TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fatima_cal.txt");
-    TFatimaVmeConfiguration::SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Fatima_VME_allocation.txt");
-    TAidaConfiguration::SetBasePath(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/AIDA");
-    TbPlastConfiguration::SetDetectorMapFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/bplast/bplast_alloc_new.txt");
-=======
     TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_new.txt");
     TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(config_path + "/fatima/fatima_cal.txt");
     TFatimaVmeConfiguration::SetDetectorMapFile(config_path + "/fatima/Fatima_VME_allocation.txt");
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
     TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_new.txt");
->>>>>>> b9ece12bcb09f6ab13a372e37a7269ffc08a90cd
     // FRS? Eventually will get around to mapping crates properly
     TGermaniumConfiguration::SetDetectorMapFile(config_path + "/germanium/Germanium_Detector_Map.txt");
 
@@ -337,11 +329,17 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     // BeamMonitorOnlineSpectra* onlinebm = new BeamMonitorOnlineSpectra();
 
     // TimeMachine
-    TimeMachineOnline* tms = new TimeMachineOnline();
+    TimeMachineOnline* tms = new TimeMachineOnline(CorrMap);
     TString b = "Fatima";
-    TString c = "Aida";
+    TString c = "AIDA";
     TString d = "bPlast";
+<<<<<<< HEAD
     std::vector a {c, d};
+=======
+    TString e = "FatimaVme";
+    TString f = "Germanium";
+    std::vector a {b, c, d};
+>>>>>>> e2675c86ea9e1bf701f35ad205d6e5fece834eb5
     tms->SetDetectorSystems(a);
 
     
