@@ -61,7 +61,12 @@ DSSD: 1
 #---------------------------
 Scalers:
 - 1: Pulser
+<<<<<<< HEAD
 - 3: TimeMachineU
 - 4: TimeMachineD
+=======
+- 3: Time Machine Original
+- 4: Time Machine Delayed
+>>>>>>> b9ece12bcb09f6ab13a372e37a7269ffc08a90cd
 - 2: SC41L_D
 - 5: SC41R_D

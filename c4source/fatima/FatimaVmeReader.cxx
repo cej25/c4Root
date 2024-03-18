@@ -63,6 +63,10 @@ Bool_t FatimaVmeReader::Init(ext_data_struct_info* a_struct_info)
     TFatimaVmeConfiguration const* fatvme_conf = TFatimaVmeConfiguration::GetInstance();
     num_qdc_boards = fatvme_conf->NQDCBoards();
     num_tdc_boards = fatvme_conf->NTDCBoards();
+    std::cout << "num qdc_boards: " << num_qdc_boards << std::endl;
+    std::cout << "num_tdc_boards: " << num_tdc_boards << std::endl;
+    dets_qdc = fatvme_conf->QDCMapping();
+    dets_tdc = fatvme_conf->TDCMapping();
 
     c4LOG(info, "FatimaVmeReader init setup completed.");
 
@@ -92,7 +96,9 @@ Bool_t FatimaVmeReader::Read()
     std::vector<uint32_t> QLong_raw;
     std::vector<uint32_t> QShort_raw;
     int qdcs_fired = 0;
-    for (int qdc = 0; qdc < num_qdc_boards; qdc++)
+
+    //std::cout << "num qdc boards from config: " << num_qdc_boards << std::endl;
+    for (int qdc = 0; qdc < 4; qdc++)
     {
         Int_t board_id = fData->fatimavme_qdc[qdc].board_id;
         
@@ -100,9 +106,10 @@ Bool_t FatimaVmeReader::Read()
         std::vector<int> channels_fired = Get_Channels(channel_mask);
 
         for (uint32_t channel = 0; channel < channels_fired.size(); channel++)
-        {   
+        {  
             int current_detector = dets_qdc[std::make_pair(board_id, channels_fired[channel])];
             qdc_detectors.emplace_back(current_detector);
+            std::cout << "current_detector qdc: " << current_detector << std::endl;
 
             QDC_time_coarse.emplace_back(fData->fatimavme_qdc[qdc].channel_timev[channel]);
 
@@ -128,7 +135,9 @@ Bool_t FatimaVmeReader::Read()
     std::vector<uint32_t> tdc_detectors;
     std::vector<uint32_t> v1290_data;
     std::vector<uint32_t> v1290_lot;
-    for (int tdc = 0; tdc < num_tdc_boards; tdc++)
+
+
+    for (int tdc = 0; tdc < 2; tdc++)
     {
         int geo = fData->fatimavme_tdc[tdc]._geo;
 
@@ -139,6 +148,7 @@ Bool_t FatimaVmeReader::Read()
             int next_channel_start = fData->fatimavme_tdc[tdc]._nME[channel_index];
 
             int current_detector = dets_tdc[std::make_pair(geo, current_channel)];
+            std::cout << "current_detector tdc: " << current_detector << std::endl;
 
             for (uint32_t j = hit_index; j < next_channel_start; j++)
             {
