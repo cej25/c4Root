@@ -67,8 +67,8 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     // TString filename = "stream://x86l-117";
     // TString filename = "trans://lxg1257";
     // TString filename = "trans://R4L-21";
-    TString filename = "stream://R4L-36";
-    //TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
+    //TString filename = "stream://R4L-36";
+    TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
     //TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd ~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0025_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
@@ -159,8 +159,8 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (FATIMA_ON)
     {
         FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-        //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_histos_111223_fatima.root", 50000);
-        unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_histos_111223_fatima.root");
+        //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_histos_18mar.root", 100000);
+        unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_histos_18mar.root");
 
         unpackfatima->SetOnline(true);
         source->AddReader(unpackfatima);

@@ -127,8 +127,11 @@ Bool_t FatimaReader::Init(ext_data_struct_info* a_struct_info)
 
     if (fine_time_calibration_read_from_file)
     {
+        std::cout << "we're here!" << std::endl;
         ReadFineTimeHistosFromFile();
+        std::cout << "reading was success" << std::endl;
         DoFineTimeCalibration();
+        std::cout << "doing was success " << std::endl;
         fine_time_calibration_set = true;
         c4LOG(info,"Fine Time calibration set from file.");
     }
@@ -460,6 +463,7 @@ Bool_t FatimaReader::Read() //do fine time here:
                 // do nothing, trail found with no rise.
                 fNevents_trail_seen_no_lead[it_board_number][channelid]++;
                 fNtrails_read[it_board_number][channelid]++;
+                
             }
         }
 
