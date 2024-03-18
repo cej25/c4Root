@@ -15,13 +15,21 @@ class TGermaniumConfiguration
     public:
         static TGermaniumConfiguration const* GetInstance();
         static void Create();
-        static void SetDetectorMapFile(std::string fp) { filepath = fp; }
+
+
+        static void SetDetectorConfigurationFile(std::string fp) { configuration_file = fp; }
+        static void SetDetectorCoefficientFile(std::string fp) { calibration_file = fp; }
+
+
 
         std::map<std::pair<int,int>,std::pair<int,int>> Mapping() const;
         bool MappingLoaded() const;
+        bool CalibrationCoefficientsLoaded() const;
+        std::map<std::pair<int,int>,std::pair<double,double>> CalibrationCoefficients() const;
+
         int NDetectors() const;
         int NCrystals() const;
-        int NCrystalsPerDet() const;
+        int CrystalsPerDetector(int detector_id) const;
         int NFebexBoards() const;
         int TM_Undelayed() const;
         int TM_Delayed() const;
@@ -31,18 +39,23 @@ class TGermaniumConfiguration
 
     private:
 
-        static std::string filepath;
+        static std::string configuration_file;
+        static std::string calibration_file;
+
+
         TGermaniumConfiguration();
         void ReadConfiguration();
+        void ReadCalibrationCoefficients();
 
         static TGermaniumConfiguration* instance;
         
         std::map<std::pair<int,int>,std::pair<int,int>> detector_mapping;
+        std::map<std::pair<int,int>,std::pair<double,double>> calibration_coeffs;
         std::set<int> extra_signals;
 
         int num_detectors;
         int num_crystals;
-        int crystals_per_det;
+        std::map<int,int> crystals_per_detector;
         int num_febex_boards;
 
         int tm_undelayed;
@@ -50,7 +63,8 @@ class TGermaniumConfiguration
         int sc41l_d;
         int sc41r_d;
 
-        bool DetectorMap_loaded = 0;
+        bool detector_mapping_loaded = 0;
+        bool detector_calibrations_loaded = 0;
 };
 
 inline TGermaniumConfiguration const* TGermaniumConfiguration::GetInstance()
@@ -73,6 +87,11 @@ inline std::map<std::pair<int,int>,std::pair<int,int>> TGermaniumConfiguration::
     return detector_mapping;
 }
 
+inline std::map<std::pair<int,int>,std::pair<double,double>> TGermaniumConfiguration::CalibrationCoefficients() const
+{
+    return calibration_coeffs;
+}
+
 inline int TGermaniumConfiguration::NDetectors() const
 {
     return num_detectors;
@@ -83,9 +102,15 @@ inline int TGermaniumConfiguration::NCrystals() const
     return num_crystals;
 }
 
-inline int TGermaniumConfiguration::NCrystalsPerDet() const
+
+//return the number of crystals per detector.
+inline int TGermaniumConfiguration::CrystalsPerDetector(int detector_id) const
 {
-    return crystals_per_det;
+    if (auto result_crystals_per_detector = crystals_per_detector.find(detector_id); result_crystals_per_detector != crystals_per_detector.end()){
+        return crystals_per_detector.at(detector_id);
+    }else{
+        return 0;
+    }
 }
 
 inline int TGermaniumConfiguration::NFebexBoards() const
@@ -95,7 +120,12 @@ inline int TGermaniumConfiguration::NFebexBoards() const
 
 inline bool TGermaniumConfiguration::MappingLoaded() const
 {
-    return DetectorMap_loaded;
+    return detector_mapping_loaded;
+}
+
+inline bool TGermaniumConfiguration::CalibrationCoefficientsLoaded() const
+{
+    return detector_calibrations_loaded;
 }
 
 inline int TGermaniumConfiguration::TM_Undelayed() const
