@@ -70,7 +70,7 @@ InitStatus FatimaVmeRaw2Cal::Init()
     calib_coeffs_QDC_E = fatima_vme_config->QDC_E_Calib();
     calib_coeffs_QDC_T = fatima_vme_config->QDC_T_Calib();
     calib_coeffs_TDC_T = fatima_vme_config->TDC_T_Calib();
-    
+
     fcal_data->Clear();
 
     return kSUCCESS;

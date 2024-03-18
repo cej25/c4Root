@@ -31,6 +31,8 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_frsuser_onion_t frsuser;
     EXT_STR_h101_frsvftx_onion_t frsvftx;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
+    // EXT_STR_h101_bgo_onion_t bgo;
+    // EXT_STR_h101_bb7febex_onion_t bb7febex;
 } EXT_STR_h101;
 
 
@@ -104,8 +106,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Gates *************************************************************** //
     
-    // Gates - Note: please name the TCutG and TCutG file the same thing
-    // Add as many to the filename vector as you like,
+    // Note: please add the same number of each type of gate
     std::string frs_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/frs/Gates/";
     std::vector<std::string> ZAoQ_cuts = {"ZvsAoQ1"};
     TCutGGates* ZAoQ = new TCutGGates("ZAoQ", ZAoQ_cuts, frs_gate_path);
@@ -128,8 +129,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Correlations ******************************************************** //
     
-    std::string CorrConfigFile = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/correlations.dat";
-    CorrelationsMap* CorrMap = new CorrelationsMap(CorrConfigFile);
+    TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations.dat");
 
 
     // ------------------------------------------------------------------------------------ //
@@ -137,12 +137,15 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_new.txt");
     TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(config_path + "/fatima/fatima_cal.txt");
     TFatimaVmeConfiguration::SetDetectorMapFile(config_path + "/fatima/Fatima_VME_allocation.txt");
+    TFatimaVmeConfiguration::Set_QDC_E_CalFile(config_path + "/fatima/Fatima_QDC_Energy_Calibration.txt");
+    TFatimaVmeConfiguration::Set_QDC_T_CalFile(config_path + "/fatima/Fatima_QDC_Time_Calibration.txt");
+    TFatimaVmeConfiguration::Set_TDC_T_CalFile(config_path + "/fatima/Fatima_TDC_Time_Calibration.txt");
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
     TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_new.txt");
     // FRS? Eventually will get around to mapping crates properly
     TGermaniumConfiguration::SetDetectorMapFile(config_path + "/germanium/Germanium_Detector_Map.txt");
-
     
+
     // ------------------------------------------------------------------------------------- //
     // *** Read Subsystems - comment out unwanted systems ********************************** //
 
@@ -258,7 +261,6 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
         // CEJ: these are not needed anymore, code was updated
         calbplast->SetDetectorMapFile(config_path + "/bplast/bplast_alloc.txt");
-        calbplast->SetTimeMachineChannels(68,67);
         
         calbplast->SetOnline(true);
         run->AddTask(calbplast);
@@ -344,8 +346,6 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     {    
         FatimaVmeOnlineSpectra* onlinefatimavme = new FatimaVmeOnlineSpectra();
         
-        // binning? 
-        
         run->AddTask(onlinefatimavme);
     }
     
@@ -391,37 +391,41 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         run->AddTask(onlinebm);
     }
 
-    // TimeMachine
-    TimeMachineOnline* tms = new TimeMachineOnline();
     TString b = "Fatima";
-    TString c = "Aida";
-    TString d = "bPlast";
-    std::vector a {b, c, d};
-    tms->SetDetectorSystems(a);
+    TString c = "FatimaVme";
+    TString d = "Aida";
+    TString e = "bPlast";
+    TString f = "Germanium";
 
+    if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
+    {
+        TimeMachineOnline* tms = new TimeMachineOnline();
+        std::vector a {b, d, e};
+        tms->SetDetectorSystems(a);
+        
+        run->AddTask(tms);
+    }    
 
-    run->AddTask(tms);
 
     // ---------------------------------------------------------------------------------------- //
     // *** Correlations *********************************************************************** //
 
     if (FATIMA_ON && FRS_ON)
     {
-        FrsFatimaCorrelations* frsfatimacorr = new FrsFatimaCorrelations(FrsGates, FatimaPrompt, CorrMap);
+        FrsFatimaCorrelations* frsfatimacorr = new FrsFatimaCorrelations(FrsGates, FatimaPrompt);
         
         run->AddTask(frsfatimacorr);
     }
     
     if (AIDA_ON && FRS_ON)
     {
-        FrsAidaCorrelations* frsaidacorr = new FrsAidaCorrelations(FrsGates, CorrMap);
+        FrsAidaCorrelations* frsaidacorr = new FrsAidaCorrelations(FrsGates);
         
         run->AddTask(frsaidacorr);
     }
     
     
-    
-    
+
     // Initialise
     run->Init();
     
