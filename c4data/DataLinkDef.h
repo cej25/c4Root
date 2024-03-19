@@ -20,6 +20,9 @@
 #pragma link C++ class BeamMonitorData+;
 #pragma link C++ class TimeMachineData+;
 
+#pragma link C++ class BGOTwinpeaksData+;
+#pragma link C++ class BGOTwinpeaksCalData+;
+
 #pragma link C++ class FrsMainData+;
 #pragma link C++ class FrsTPCData+;
 #pragma link C++ class FrsUserData+;
