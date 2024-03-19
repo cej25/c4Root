@@ -83,6 +83,8 @@ class BeamMonitorOnlineSpectra : public FairTask
         TGraph* hG_BM_s4gr_dcmin;
         TGraph* hG_BM_s4gr_dctime;
 
+        TH1D* hG_BM_S4_Tmean;
+
         TH1D* hG_BM_s2h_norm_tdiff;
         TH1D* hG_BM_s2h_tdiff;
         TH1D* hG_BM_s2h_t1;
@@ -96,6 +98,8 @@ class BeamMonitorOnlineSpectra : public FairTask
         TGraph* hG_BM_s2gr_qf;
         TGraph* hG_BM_s2gr_dcmin;
         TGraph* hG_BM_s2gr_dctime;
+
+        TH1D* hG_BM_S2_Tmean;
 
     public:
         ClassDef(BeamMonitorOnlineSpectra, 1)
