@@ -104,7 +104,11 @@ InitStatus GermaniumOnlineSpectra::Init()
     h1_germanium_energy = new TH1F*[number_of_detectors_to_plot];
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
         c_germanium_energy->cd(ihist+1);
+<<<<<<< HEAD
         h1_germanium_energy[ihist] = new TH1F(Form("h1_germanium_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,8e6);
+=======
+        h1_germanium_energy[ihist] = new TH1F(Form("h1_germanium_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+>>>>>>> 0d1c12237e7bf521daa1931b8ad52a1437047c4f
         h1_germanium_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
         h1_germanium_energy[ihist]->Draw();
         folder_germanium_energy->Add(h1_germanium_energy[ihist]);
@@ -114,7 +118,7 @@ InitStatus GermaniumOnlineSpectra::Init()
 
 
     c_germanium_energy_vs_detidx = new TCanvas("c_germanium_energy_vs_detidx","Calibrated Germanium spectra vs. detector index",650,350);
-    h2_germanium_energy_vs_detidx = new TH2F("h2_germanium_energy_vs_detidx","Calibrated Germanium spectra vs. detector index",10e3,0,10e3,number_of_detectors_to_plot,0,number_of_detectors_to_plot);
+    h2_germanium_energy_vs_detidx = new TH2F("h2_germanium_energy_vs_detidx","Calibrated Germanium spectra vs. detector index",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,number_of_detectors_to_plot,0,number_of_detectors_to_plot);
     h2_germanium_energy_vs_detidx->GetXaxis()->SetTitle("energy (keV)");
     h2_germanium_energy_vs_detidx->GetYaxis()->SetTitle("detector index");
     h2_germanium_energy_vs_detidx->Draw("COLZ");
