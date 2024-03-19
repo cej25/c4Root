@@ -1,0 +1,3295 @@
+
+/** BEGIN_INPUT_DEFINITION *********************************************
+ *
+ * All specifications as seen by the parser.
+ *
+ * Do not edit - automatically generated.
+ */
+
+/**********************************************************
+ * Dump of all structures:
+ */
+
+TAMEX4_EPOCH_DATA(sfp,card,time_coarse,time_fine,time_edge,time_channel,
+                  time_epoch)
+{
+  MEMBER(DATA12 time_coarse[1024] NO_INDEX_LIST);
+  MEMBER(DATA12 time_fine[1024] NO_INDEX_LIST);
+  MEMBER(DATA12 time_edge[1024] NO_INDEX_LIST);
+  MEMBER(DATA12 time_channel[1024] NO_INDEX_LIST);
+  MEMBER(DATA32 time_epoch[1024] NO_INDEX_LIST);
+  UINT32 data NOENCODE
+  {
+     0_27: epoch;
+    28_31: 6;
+    ENCODE(time_coarse APPEND_LIST,(value=0));
+    ENCODE(time_fine APPEND_LIST,(value=0));
+    ENCODE(time_edge APPEND_LIST,(value=0));
+    ENCODE(time_channel APPEND_LIST,(value=0));
+    ENCODE(time_epoch APPEND_LIST,(value=epoch));
+  }
+}
+
+TAMEX4_HEADER()
+{
+  MEMBER(DATA16 post_trig_ns[64] NO_INDEX_LIST);
+  MEMBER(DATA16 pre_trig_ns[64] NO_INDEX_LIST);
+  UINT32 trigger_window NOENCODE
+  {
+     0_15: post_trig_ns;
+    16_31: pre_trig_ns;
+    ENCODE(post_trig_ns APPEND_LIST,(value=post_trig_ns));
+    ENCODE(pre_trig_ns APPEND_LIST,(value=pre_trig_ns));
+  }
+}
+
+TAMEX4_PADDING()
+{
+  UINT32 padding NOENCODE
+  {
+     0_11: counter;
+    12_19: index;
+    20_31: 0xadd;
+  }
+}
+
+TAMEX4_SFP(sfp,card)
+{
+  MEMBER(DATA32 event_size);
+  MEMBER(DATA12 time_coarse[1024] NO_INDEX_LIST);
+  MEMBER(DATA12 time_fine[1024] NO_INDEX_LIST);
+  MEMBER(DATA12 time_edge[1024] NO_INDEX_LIST);
+  MEMBER(DATA12 time_channel[1024] NO_INDEX_LIST);
+  MEMBER(DATA32 time_epoch[1024] NO_INDEX_LIST);
+  UINT32 indicator NOENCODE
+  {
+     0_07: 52;
+     8_11: trigger_type;
+    12_15: sfp = MATCH(sfp);
+    16_23: card = MATCH(card);
+    24_31: 0;
+  }
+  MATCH_END;
+  UINT32 data_size NOENCODE
+  {
+     0_31: bytes;
+    ENCODE(event_size,(value=bytes));
+  }
+  UINT32 tdc_header NOENCODE
+  {
+     0_15: lec;
+       16: buf_no;
+    17_19: reserved;
+    20_23: trigger_type;
+    24_31: 170;
+  }
+  list(0<=i<((data_size.bytes / 4) - 3))
+  {
+    select
+    {
+      epoch = TAMEX4_EPOCH_DATA(sfp=sfp,card=card,time_coarse=time_coarse,
+                                time_fine=time_fine,time_edge=time_edge,
+                                time_channel=time_channel,time_epoch=time_epoch);
+      time = TAMEX4_TIME_DATA(sfp=sfp,card=card,time_coarse=time_coarse,
+                              time_fine=time_fine,time_edge=time_edge,
+                              time_channel=time_channel,time_epoch=time_epoch);
+    }
+  }
+  UINT32 error_bits NOENCODE
+  {
+     0_23: bits;
+    24_31: 238;
+  }
+  UINT32 trailer NOENCODE
+  {
+     0_15: lec;
+       16: buf_no;
+    17_19: reserved;
+    20_23: trigger_type;
+    24_31: 187;
+  }
+}
+
+TAMEX4_TIME_DATA(sfp,card,time_coarse,time_fine,time_edge,time_channel,
+                 time_epoch)
+{
+  MEMBER(DATA12 time_coarse[1024] NO_INDEX_LIST);
+  MEMBER(DATA12 time_fine[1024] NO_INDEX_LIST);
+  MEMBER(DATA12 time_edge[1024] NO_INDEX_LIST);
+  MEMBER(DATA12 time_channel[1024] NO_INDEX_LIST);
+  MEMBER(DATA32 time_epoch[1024] NO_INDEX_LIST);
+  UINT32 data NOENCODE
+  {
+     0_10: coarse;
+       11: is_leading;
+    12_21: fine;
+    22_27: channel;
+    28_31: type = CHECK(8);
+    ENCODE(time_coarse APPEND_LIST,(value=coarse));
+    ENCODE(time_fine APPEND_LIST,(value=fine));
+    ENCODE(time_edge APPEND_LIST,(value=is_leading));
+    ENCODE(time_channel APPEND_LIST,(value=channel));
+    ENCODE(time_epoch APPEND_LIST,(value=0));
+  }
+}
+
+TIMESTAMP_WHITERABBIT(id)
+{
+  MEMBER(DATA12 subsystem_id);
+  MEMBER(DATA16 t1);
+  MEMBER(DATA16 t2);
+  MEMBER(DATA16 t3);
+  MEMBER(DATA16 t4);
+  UINT32 header NOENCODE
+  {
+     0_11: id = MATCH(id);
+    12_15: 0;
+       16: error_bit;
+    17_31: 0;
+    ENCODE(subsystem_id,(value=id));
+  }
+  UINT32 d1 NOENCODE
+  {
+     0_15: t1;
+    16_31: 0x3e1;
+    ENCODE(t1,(value=t1));
+  }
+  UINT32 d2 NOENCODE
+  {
+     0_15: t2;
+    16_31: 0x4e1;
+    ENCODE(t2,(value=t2));
+  }
+  UINT32 d3 NOENCODE
+  {
+     0_15: t3;
+    16_31: 0x5e1;
+    ENCODE(t3,(value=t3));
+  }
+  UINT32 d4 NOENCODE
+  {
+     0_15: t4;
+    16_31: 0x6e1;
+    ENCODE(t4,(value=t4));
+  }
+}
+
+TIMESTAMP_WHITERABBIT_EXTENDED(id)
+{
+  MEMBER(DATA16 subsystem_id);
+  MEMBER(DATA16 t1);
+  MEMBER(DATA16 t2);
+  MEMBER(DATA16 t3);
+  MEMBER(DATA16 t4);
+  UINT32 header NOENCODE
+  {
+     0_12: id = MATCH(id);
+    13_15: 0;
+       16: error_bit;
+    17_31: 0;
+    ENCODE(subsystem_id,(value=id));
+  }
+  UINT32 d1 NOENCODE
+  {
+     0_15: t1;
+    16_31: 0x3e1;
+    ENCODE(t1,(value=t1));
+  }
+  UINT32 d2 NOENCODE
+  {
+     0_15: t2;
+    16_31: 0x4e1;
+    ENCODE(t2,(value=t2));
+  }
+  UINT32 d3 NOENCODE
+  {
+     0_15: t3;
+    16_31: 0x5e1;
+    ENCODE(t3,(value=t3));
+  }
+  UINT32 d4 NOENCODE
+  {
+     0_15: t4;
+    16_31: 0x6e1;
+    ENCODE(t4,(value=t4));
+  }
+}
+
+WR_MULTI()
+{
+  MEMBER(DATA32 time_hi);
+  MEMBER(DATA32 time_lo);
+  UINT32 hi NOENCODE
+  {
+     0_31: time;
+    ENCODE(time_hi,(value=time));
+  }
+  UINT32 lo NOENCODE
+  {
+     0_31: time;
+    ENCODE(time_lo,(value=time));
+  }
+}
+
+SUBEVENT(bplast_subev)
+{
+  ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x500);
+  trigger_window = TAMEX4_HEADER();
+  select several
+  {
+    padding = TAMEX4_PADDING();
+  }
+  select several
+  {
+    tamex[0] = TAMEX4_SFP(sfp=0,card=0);
+    tamex[1] = TAMEX4_SFP(sfp=0,card=1);
+    tamex[2] = TAMEX4_SFP(sfp=0,card=2);
+    tamex[3] = TAMEX4_SFP(sfp=0,card=3);
+    tamex[4] = TAMEX4_SFP(sfp=0,card=4);
+    tamex[5] = TAMEX4_SFP(sfp=0,card=5);
+    tamex[6] = TAMEX4_SFP(sfp=0,card=6);
+    tamex[7] = TAMEX4_SFP(sfp=0,card=7);
+    tamex[8] = TAMEX4_SFP(sfp=0,card=8);
+  }
+}
+
+/**********************************************************
+ * The event definition:
+ */
+
+EVENT
+{
+  bplast = bplast_subev(type=10,subtype=1,procid=80,control=20,subcrate=0);
+}
+
+/**********************************************************
+ * The sticky_event definition:
+ */
+
+/**********************************************************
+ * Signal name mappings:
+ */
+
+/**********************************************************/
+
+/** END_INPUT_DEFINITION **********************************************/
+
+/**********************************************************
+ * Generating unpacking code...
+ */
+
+//
+// Generating code for: TAMEX4_EPOCH_DATA
+//
+
+/** BEGIN_STRUCTURES ***************************************************
+ *
+ * Event unpacker associated structures for TAMEX4_EPOCH_DATA.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TAMEX4_EPOCH_DATA(sfp,card,time_coarse,time_fine,time_edge,time_channel,
+                  // time_epoch)
+#if !PACKER_CODE
+# define DECLARED_UNPACK_TAMEX4_EPOCH_DATA
+class TAMEX4_EPOCH_DATA
+#else//PACKER_CODE
+# define DECLARED_PACKER_TAMEX4_EPOCH_DATA
+class PACKER_TAMEX4_EPOCH_DATA
+#endif//PACKER_CODE
+
+{
+public:
+  // MEMBER(DATA12 time_coarse[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_fine[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_edge[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_channel[1024] NO_INDEX_LIST);
+  // MEMBER(DATA32 time_epoch[1024] NO_INDEX_LIST);
+  // UINT32 data NOENCODE
+  // {
+    //  0_27: epoch;
+    // 28_31: 6;
+    // ENCODE(time_coarse APPEND_LIST,(value=0));
+    // ENCODE(time_fine APPEND_LIST,(value=0));
+    // ENCODE(time_edge APPEND_LIST,(value=0));
+    // ENCODE(time_channel APPEND_LIST,(value=0));
+    // ENCODE(time_epoch APPEND_LIST,(value=epoch));
+  // }
+
+public:
+#ifndef __PSDC__
+# if !PACKER_CODE
+template<typename __data_src_t>
+  void __unpack(__data_src_t &__buffer,uint32 sfp,uint32 card,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_coarse
+                                      ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_fine
+                                      ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_edge
+                                      ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_channel
+                                      ,raw_list_ii_zero_suppress<DATA32,DATA32,1024> &time_epoch);
+template<typename __data_src_t>
+  static bool __match(__data_src_t &__buffer,uint32 sfp,uint32 card);
+  // void __clean();
+# else//PACKER_CODE
+template<typename __data_dest_t>
+  void __packer(__data_dest_t &__buffer,uint32 sfp,uint32 card,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_coarse
+                                       ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_fine
+                                       ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_edge
+                                       ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_channel
+                                       ,raw_list_ii_zero_suppress<DATA32,DATA32,1024> &time_epoch);
+# endif//PACKER_CODE
+
+  STRUCT_FCNS_DECL(TAMEX4_EPOCH_DATA);
+#endif//!__PSDC__
+};
+
+/** END_STRUCTURES ****************************************************/
+
+
+/** BEGIN_UNPACKER *****************************************************
+ *
+ * Event unpacker for TAMEX4_EPOCH_DATA.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TAMEX4_EPOCH_DATA(sfp,card,time_coarse,time_fine,time_edge,time_channel,
+                  // time_epoch)
+template<typename __data_src_t>
+void TAMEX4_EPOCH_DATA::__unpack(__data_src_t &__buffer,uint32 sfp,uint32 card
+                                                       ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_coarse
+                                                       ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_fine
+                                                       ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_edge
+                                                       ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_channel
+                                                       ,raw_list_ii_zero_suppress<DATA32,DATA32,1024> &time_epoch)
+{
+  if (__buffer.is_memberdump())
+  {
+    printf("          %s%s%s: \n", CT_OUT(BOLD_BLUE),  "TAMEX4_EPOCH_DATA",CT_OUT(NORM));
+  }
+  // MEMBER(DATA12 time_coarse[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_fine[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_edge[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_channel[1024] NO_INDEX_LIST);
+  // MEMBER(DATA32 time_epoch[1024] NO_INDEX_LIST);
+  // UINT32 data NOENCODE
+  // {
+    //  0_27: epoch;
+    // 28_31: 6;
+    // ENCODE(time_coarse APPEND_LIST,(value=0));
+    // ENCODE(time_fine APPEND_LIST,(value=0));
+    // ENCODE(time_edge APPEND_LIST,(value=0));
+    // ENCODE(time_channel APPEND_LIST,(value=0));
+    // ENCODE(time_epoch APPEND_LIST,(value=epoch));
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 epoch : 28; // 0..27
+      uint32 unnamed_28_31 : 4; // 28..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 unnamed_28_31 : 4; // 28..31
+      uint32 epoch : 28; // 0..27
+#endif
+    };
+    uint32  u32;
+  } data;
+  READ_FROM_BUFFER_FULL(25,uint32 ,data,data.u32,0);
+  CHECK_BITS_EQUAL(19,data.unnamed_28_31,6);
+  {
+    {
+      typedef __typeof__(*(&(time_coarse))) __array_t;
+      typedef typename __array_t::item_t __item_t;
+      __item_t &__item = time_coarse.append_item(20);
+      __item.value = 0;
+    }
+    {
+      typedef __typeof__(*(&(time_fine))) __array_t;
+      typedef typename __array_t::item_t __item_t;
+      __item_t &__item = time_fine.append_item(21);
+      __item.value = 0;
+    }
+    {
+      typedef __typeof__(*(&(time_edge))) __array_t;
+      typedef typename __array_t::item_t __item_t;
+      __item_t &__item = time_edge.append_item(22);
+      __item.value = 0;
+    }
+    {
+      typedef __typeof__(*(&(time_channel))) __array_t;
+      typedef typename __array_t::item_t __item_t;
+      __item_t &__item = time_channel.append_item(23);
+      __item.value = 0;
+    }
+    {
+      typedef __typeof__(*(&(time_epoch))) __array_t;
+      typedef typename __array_t::item_t __item_t;
+      __item_t &__item = time_epoch.append_item(24);
+      __item.value = data.epoch;
+    }
+  }
+  if (__buffer.is_memberdump())
+  {
+    printf("%s%08" PRIx32 "%s: data ", CT_OUT(BOLD), data.u32, CT_OUT(NORM));
+    printf(".epoch=%s%7" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  data.epoch, CT_OUT(NORM));
+    printf("\n");
+  }
+}
+FORCE_IMPL_DATA_SRC_FCN_ARG(void,TAMEX4_EPOCH_DATA::__unpack,uint32 sfp,uint32 card
+                                                            ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_coarse
+                                                            ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_fine
+                                                            ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_edge
+                                                            ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_channel
+                                                            ,raw_list_ii_zero_suppress<DATA32,DATA32,1024> &time_epoch);
+
+/** END_UNPACKER ******************************************************/
+
+
+/** BEGIN_MATCHER ******************************************************
+ *
+ * Event matcher for TAMEX4_EPOCH_DATA.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TAMEX4_EPOCH_DATA(sfp,card,time_coarse,time_fine,time_edge,time_channel,
+                  // time_epoch)
+template<typename __data_src_t>
+bool TAMEX4_EPOCH_DATA::__match(__data_src_t &__buffer,uint32 sfp,uint32 card)
+{
+  // MEMBER(DATA12 time_coarse[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_fine[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_edge[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_channel[1024] NO_INDEX_LIST);
+  // MEMBER(DATA32 time_epoch[1024] NO_INDEX_LIST);
+  // UINT32 data NOENCODE
+  // {
+    //  0_27: epoch;
+    // 28_31: 6;
+    // ENCODE(time_coarse APPEND_LIST,(value=0));
+    // ENCODE(time_fine APPEND_LIST,(value=0));
+    // ENCODE(time_edge APPEND_LIST,(value=0));
+    // ENCODE(time_channel APPEND_LIST,(value=0));
+    // ENCODE(time_epoch APPEND_LIST,(value=epoch));
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 epoch : 28; // 0..27
+      uint32 unnamed_28_31 : 4; // 28..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 unnamed_28_31 : 4; // 28..31
+      uint32 epoch : 28; // 0..27
+#endif
+    };
+    uint32  u32;
+  } data;
+  MATCH_READ_FROM_BUFFER_FULL(25,uint32 ,data,data.u32,1);
+  MATCH_BITS_EQUAL(19,data.unnamed_28_31,6);
+  {
+  }
+  return true;
+  return false;
+}
+FORCE_IMPL_DATA_SRC_FCN_ARG(bool,TAMEX4_EPOCH_DATA::__match,uint32 sfp,uint32 card);
+
+/** END_MATCHER *******************************************************/
+
+
+/** BEGIN_PACKER *******************************************************
+ *
+ * Event packer for TAMEX4_EPOCH_DATA.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TAMEX4_EPOCH_DATA(sfp,card,time_coarse,time_fine,time_edge,time_channel,
+                  // time_epoch)
+template<typename __data_dest_t>
+void PACKER_TAMEX4_EPOCH_DATA::__packer(__data_dest_t &__buffer,uint32 sfp
+                                                               ,uint32 card
+                                                               ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_coarse
+                                                               ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_fine
+                                                               ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_edge
+                                                               ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_channel
+                                                               ,raw_list_ii_zero_suppress<DATA32,DATA32,1024> &time_epoch)
+{
+  // MEMBER(DATA12 time_coarse[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_fine[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_edge[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_channel[1024] NO_INDEX_LIST);
+  // MEMBER(DATA32 time_epoch[1024] NO_INDEX_LIST);
+  // UINT32 data NOENCODE
+  // {
+    //  0_27: epoch;
+    // 28_31: 6;
+    // ENCODE(time_coarse APPEND_LIST,(value=0));
+    // ENCODE(time_fine APPEND_LIST,(value=0));
+    // ENCODE(time_edge APPEND_LIST,(value=0));
+    // ENCODE(time_channel APPEND_LIST,(value=0));
+    // ENCODE(time_epoch APPEND_LIST,(value=epoch));
+  // }
+}
+FORCE_IMPL_DATA_SRC_FCN_ARG(void,TAMEX4_EPOCH_DATA::__packer,uint32 sfp,uint32 card);
+
+/** END_PACKER ********************************************************/
+
+//
+// Generating code for: TAMEX4_HEADER
+//
+
+/** BEGIN_STRUCTURES ***************************************************
+ *
+ * Event unpacker associated structures for TAMEX4_HEADER.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TAMEX4_HEADER()
+#if !PACKER_CODE
+# define DECLARED_UNPACK_TAMEX4_HEADER
+class TAMEX4_HEADER
+#else//PACKER_CODE
+# define DECLARED_PACKER_TAMEX4_HEADER
+class PACKER_TAMEX4_HEADER
+#endif//PACKER_CODE
+
+{
+public:
+  // MEMBER(DATA16 post_trig_ns[64] NO_INDEX_LIST);
+  raw_list_ii_zero_suppress<DATA16,DATA16,64> post_trig_ns;
+  // MEMBER(DATA16 pre_trig_ns[64] NO_INDEX_LIST);
+  raw_list_ii_zero_suppress<DATA16,DATA16,64> pre_trig_ns;
+  // UINT32 trigger_window NOENCODE
+  // {
+    //  0_15: post_trig_ns;
+    // 16_31: pre_trig_ns;
+    // ENCODE(post_trig_ns APPEND_LIST,(value=post_trig_ns));
+    // ENCODE(pre_trig_ns APPEND_LIST,(value=pre_trig_ns));
+  // }
+
+public:
+#ifndef __PSDC__
+# if !PACKER_CODE
+template<typename __data_src_t>
+  void __unpack(__data_src_t &__buffer);
+template<typename __data_src_t>
+  static bool __match(__data_src_t &__buffer);
+  // void __clean();
+# else//PACKER_CODE
+template<typename __data_dest_t>
+  void __packer(__data_dest_t &__buffer);
+# endif//PACKER_CODE
+
+  STRUCT_FCNS_DECL(TAMEX4_HEADER);
+#endif//!__PSDC__
+};
+
+/** END_STRUCTURES ****************************************************/
+
+
+/** BEGIN_UNPACKER *****************************************************
+ *
+ * Event unpacker for TAMEX4_HEADER.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TAMEX4_HEADER()
+template<typename __data_src_t>
+void TAMEX4_HEADER::__unpack(__data_src_t &__buffer)
+{
+  if (__buffer.is_memberdump())
+  {
+    printf("          %s%s%s: \n", CT_OUT(BOLD_BLUE),  "TAMEX4_HEADER",CT_OUT(NORM));
+  }
+  // MEMBER(DATA16 post_trig_ns[64] NO_INDEX_LIST);
+  // MEMBER(DATA16 pre_trig_ns[64] NO_INDEX_LIST);
+  // UINT32 trigger_window NOENCODE
+  // {
+    //  0_15: post_trig_ns;
+    // 16_31: pre_trig_ns;
+    // ENCODE(post_trig_ns APPEND_LIST,(value=post_trig_ns));
+    // ENCODE(pre_trig_ns APPEND_LIST,(value=pre_trig_ns));
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 post_trig_ns : 16; // 0..15
+      uint32 pre_trig_ns : 16; // 16..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 pre_trig_ns : 16; // 16..31
+      uint32 post_trig_ns : 16; // 0..15
+#endif
+    };
+    uint32  u32;
+  } trigger_window;
+  READ_FROM_BUFFER_FULL(38,uint32 ,trigger_window,trigger_window.u32,2);
+  {
+    {
+      typedef __typeof__(*(&(post_trig_ns))) __array_t;
+      typedef typename __array_t::item_t __item_t;
+      __item_t &__item = post_trig_ns.append_item(36);
+      __item.value = trigger_window.post_trig_ns;
+    }
+    {
+      typedef __typeof__(*(&(pre_trig_ns))) __array_t;
+      typedef typename __array_t::item_t __item_t;
+      __item_t &__item = pre_trig_ns.append_item(37);
+      __item.value = trigger_window.pre_trig_ns;
+    }
+  }
+  if (__buffer.is_memberdump())
+  {
+    printf("%s%08" PRIx32 "%s: trigger_window ", CT_OUT(BOLD), trigger_window.u32, CT_OUT(NORM));
+    printf(".post_trig_ns=%s%4" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  trigger_window.post_trig_ns, CT_OUT(NORM));
+    printf(".pre_trig_ns=%s%4" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  trigger_window.pre_trig_ns, CT_OUT(NORM));
+    printf("\n");
+  }
+}
+FORCE_IMPL_DATA_SRC_FCN(void,TAMEX4_HEADER::__unpack);
+
+/** END_UNPACKER ******************************************************/
+
+
+/** BEGIN_MATCHER ******************************************************
+ *
+ * Event matcher for TAMEX4_HEADER.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TAMEX4_HEADER()
+template<typename __data_src_t>
+bool TAMEX4_HEADER::__match(__data_src_t &__buffer)
+{
+  // MEMBER(DATA16 post_trig_ns[64] NO_INDEX_LIST);
+  // MEMBER(DATA16 pre_trig_ns[64] NO_INDEX_LIST);
+  // UINT32 trigger_window NOENCODE
+  // {
+    //  0_15: post_trig_ns;
+    // 16_31: pre_trig_ns;
+    // ENCODE(post_trig_ns APPEND_LIST,(value=post_trig_ns));
+    // ENCODE(pre_trig_ns APPEND_LIST,(value=pre_trig_ns));
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 post_trig_ns : 16; // 0..15
+      uint32 pre_trig_ns : 16; // 16..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 pre_trig_ns : 16; // 16..31
+      uint32 post_trig_ns : 16; // 0..15
+#endif
+    };
+    uint32  u32;
+  } trigger_window;
+  MATCH_READ_FROM_BUFFER_FULL(38,uint32 ,trigger_window,trigger_window.u32,3);
+  {
+  }
+  return true;
+  return false;
+}
+FORCE_IMPL_DATA_SRC_FCN(bool,TAMEX4_HEADER::__match);
+
+/** END_MATCHER *******************************************************/
+
+
+/** BEGIN_PACKER *******************************************************
+ *
+ * Event packer for TAMEX4_HEADER.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TAMEX4_HEADER()
+template<typename __data_dest_t>
+void PACKER_TAMEX4_HEADER::__packer(__data_dest_t &__buffer)
+{
+  // MEMBER(DATA16 post_trig_ns[64] NO_INDEX_LIST);
+  // MEMBER(DATA16 pre_trig_ns[64] NO_INDEX_LIST);
+  // UINT32 trigger_window NOENCODE
+  // {
+    //  0_15: post_trig_ns;
+    // 16_31: pre_trig_ns;
+    // ENCODE(post_trig_ns APPEND_LIST,(value=post_trig_ns));
+    // ENCODE(pre_trig_ns APPEND_LIST,(value=pre_trig_ns));
+  // }
+}
+FORCE_IMPL_DATA_SRC_FCN(void,TAMEX4_HEADER::__packer);
+
+/** END_PACKER ********************************************************/
+
+//
+// Generating code for: TAMEX4_PADDING
+//
+
+/** BEGIN_STRUCTURES ***************************************************
+ *
+ * Event unpacker associated structures for TAMEX4_PADDING.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TAMEX4_PADDING()
+#if !PACKER_CODE
+# define DECLARED_UNPACK_TAMEX4_PADDING
+class TAMEX4_PADDING
+#else//PACKER_CODE
+# define DECLARED_PACKER_TAMEX4_PADDING
+class PACKER_TAMEX4_PADDING
+#endif//PACKER_CODE
+
+{
+public:
+  // UINT32 padding NOENCODE
+  // {
+    //  0_11: counter;
+    // 12_19: index;
+    // 20_31: 0xadd;
+  // }
+
+public:
+#ifndef __PSDC__
+# if !PACKER_CODE
+template<typename __data_src_t>
+  void __unpack(__data_src_t &__buffer);
+template<typename __data_src_t>
+  static bool __match(__data_src_t &__buffer);
+  // void __clean();
+# else//PACKER_CODE
+template<typename __data_dest_t>
+  void __packer(__data_dest_t &__buffer);
+# endif//PACKER_CODE
+
+  STRUCT_FCNS_DECL(TAMEX4_PADDING);
+#endif//!__PSDC__
+};
+
+/** END_STRUCTURES ****************************************************/
+
+
+/** BEGIN_UNPACKER *****************************************************
+ *
+ * Event unpacker for TAMEX4_PADDING.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TAMEX4_PADDING()
+template<typename __data_src_t>
+void TAMEX4_PADDING::__unpack(__data_src_t &__buffer)
+{
+  if (__buffer.is_memberdump())
+  {
+    printf("          %s%s%s: \n", CT_OUT(BOLD_BLUE),  "TAMEX4_PADDING",CT_OUT(NORM));
+  }
+  // UINT32 padding NOENCODE
+  // {
+    //  0_11: counter;
+    // 12_19: index;
+    // 20_31: 0xadd;
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 counter : 12; // 0..11
+      uint32 index : 8; // 12..19
+      uint32 unnamed_20_31 : 12; // 20..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 unnamed_20_31 : 12; // 20..31
+      uint32 index : 8; // 12..19
+      uint32 counter : 12; // 0..11
+#endif
+    };
+    uint32  u32;
+  } padding;
+  READ_FROM_BUFFER_FULL(48,uint32 ,padding,padding.u32,4);
+  CHECK_BITS_EQUAL(47,padding.unnamed_20_31,0xadd);
+  if (__buffer.is_memberdump())
+  {
+    printf("%s%08" PRIx32 "%s: padding ", CT_OUT(BOLD), padding.u32, CT_OUT(NORM));
+    printf(".counter=%s%3" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  padding.counter, CT_OUT(NORM));
+    printf(".index=%s%2" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  padding.index, CT_OUT(NORM));
+    printf("\n");
+  }
+}
+FORCE_IMPL_DATA_SRC_FCN(void,TAMEX4_PADDING::__unpack);
+
+/** END_UNPACKER ******************************************************/
+
+
+/** BEGIN_MATCHER ******************************************************
+ *
+ * Event matcher for TAMEX4_PADDING.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TAMEX4_PADDING()
+template<typename __data_src_t>
+bool TAMEX4_PADDING::__match(__data_src_t &__buffer)
+{
+  // UINT32 padding NOENCODE
+  // {
+    //  0_11: counter;
+    // 12_19: index;
+    // 20_31: 0xadd;
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 counter : 12; // 0..11
+      uint32 index : 8; // 12..19
+      uint32 unnamed_20_31 : 12; // 20..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 unnamed_20_31 : 12; // 20..31
+      uint32 index : 8; // 12..19
+      uint32 counter : 12; // 0..11
+#endif
+    };
+    uint32  u32;
+  } padding;
+  MATCH_READ_FROM_BUFFER_FULL(48,uint32 ,padding,padding.u32,5);
+  MATCH_BITS_EQUAL(47,padding.unnamed_20_31,0xadd);
+  return true;
+  return false;
+}
+FORCE_IMPL_DATA_SRC_FCN(bool,TAMEX4_PADDING::__match);
+
+/** END_MATCHER *******************************************************/
+
+
+/** BEGIN_PACKER *******************************************************
+ *
+ * Event packer for TAMEX4_PADDING.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TAMEX4_PADDING()
+template<typename __data_dest_t>
+void PACKER_TAMEX4_PADDING::__packer(__data_dest_t &__buffer)
+{
+  // UINT32 padding NOENCODE
+  // {
+    //  0_11: counter;
+    // 12_19: index;
+    // 20_31: 0xadd;
+  // }
+}
+FORCE_IMPL_DATA_SRC_FCN(void,TAMEX4_PADDING::__packer);
+
+/** END_PACKER ********************************************************/
+
+//
+// Generating code for: TAMEX4_SFP
+//
+//
+// Generating code for: TAMEX4_TIME_DATA
+//
+
+/** BEGIN_STRUCTURES ***************************************************
+ *
+ * Event unpacker associated structures for TAMEX4_TIME_DATA.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TAMEX4_TIME_DATA(sfp,card,time_coarse,time_fine,time_edge,time_channel,
+                 // time_epoch)
+#if !PACKER_CODE
+# define DECLARED_UNPACK_TAMEX4_TIME_DATA
+class TAMEX4_TIME_DATA
+#else//PACKER_CODE
+# define DECLARED_PACKER_TAMEX4_TIME_DATA
+class PACKER_TAMEX4_TIME_DATA
+#endif//PACKER_CODE
+
+{
+public:
+  // MEMBER(DATA12 time_coarse[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_fine[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_edge[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_channel[1024] NO_INDEX_LIST);
+  // MEMBER(DATA32 time_epoch[1024] NO_INDEX_LIST);
+  // UINT32 data NOENCODE
+  // {
+    //  0_10: coarse;
+    //    11: is_leading;
+    // 12_21: fine;
+    // 22_27: channel;
+    // 28_31: type = CHECK(8);
+    // ENCODE(time_coarse APPEND_LIST,(value=coarse));
+    // ENCODE(time_fine APPEND_LIST,(value=fine));
+    // ENCODE(time_edge APPEND_LIST,(value=is_leading));
+    // ENCODE(time_channel APPEND_LIST,(value=channel));
+    // ENCODE(time_epoch APPEND_LIST,(value=0));
+  // }
+
+public:
+#ifndef __PSDC__
+# if !PACKER_CODE
+template<typename __data_src_t>
+  void __unpack(__data_src_t &__buffer,uint32 sfp,uint32 card,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_coarse
+                                      ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_fine
+                                      ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_edge
+                                      ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_channel
+                                      ,raw_list_ii_zero_suppress<DATA32,DATA32,1024> &time_epoch);
+template<typename __data_src_t>
+  static bool __match(__data_src_t &__buffer,uint32 sfp,uint32 card);
+  // void __clean();
+# else//PACKER_CODE
+template<typename __data_dest_t>
+  void __packer(__data_dest_t &__buffer,uint32 sfp,uint32 card,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_coarse
+                                       ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_fine
+                                       ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_edge
+                                       ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_channel
+                                       ,raw_list_ii_zero_suppress<DATA32,DATA32,1024> &time_epoch);
+# endif//PACKER_CODE
+
+  STRUCT_FCNS_DECL(TAMEX4_TIME_DATA);
+#endif//!__PSDC__
+};
+
+/** END_STRUCTURES ****************************************************/
+
+
+/** BEGIN_UNPACKER *****************************************************
+ *
+ * Event unpacker for TAMEX4_TIME_DATA.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TAMEX4_TIME_DATA(sfp,card,time_coarse,time_fine,time_edge,time_channel,
+                 // time_epoch)
+template<typename __data_src_t>
+void TAMEX4_TIME_DATA::__unpack(__data_src_t &__buffer,uint32 sfp,uint32 card
+                                                      ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_coarse
+                                                      ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_fine
+                                                      ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_edge
+                                                      ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_channel
+                                                      ,raw_list_ii_zero_suppress<DATA32,DATA32,1024> &time_epoch)
+{
+  if (__buffer.is_memberdump())
+  {
+    printf("          %s%s%s: \n", CT_OUT(BOLD_BLUE),  "TAMEX4_TIME_DATA",CT_OUT(NORM));
+  }
+  // MEMBER(DATA12 time_coarse[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_fine[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_edge[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_channel[1024] NO_INDEX_LIST);
+  // MEMBER(DATA32 time_epoch[1024] NO_INDEX_LIST);
+  // UINT32 data NOENCODE
+  // {
+    //  0_10: coarse;
+    //    11: is_leading;
+    // 12_21: fine;
+    // 22_27: channel;
+    // 28_31: type = CHECK(8);
+    // ENCODE(time_coarse APPEND_LIST,(value=coarse));
+    // ENCODE(time_fine APPEND_LIST,(value=fine));
+    // ENCODE(time_edge APPEND_LIST,(value=is_leading));
+    // ENCODE(time_channel APPEND_LIST,(value=channel));
+    // ENCODE(time_epoch APPEND_LIST,(value=0));
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 coarse : 11; // 0..10
+      uint32 is_leading : 1; // 11
+      uint32 fine : 10; // 12..21
+      uint32 channel : 6; // 22..27
+      uint32 type : 4; // 28..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 type : 4; // 28..31
+      uint32 channel : 6; // 22..27
+      uint32 fine : 10; // 12..21
+      uint32 is_leading : 1; // 11
+      uint32 coarse : 11; // 0..10
+#endif
+    };
+    uint32  u32;
+  } data;
+  READ_FROM_BUFFER_FULL(128,uint32 ,data,data.u32,6);
+  CHECK_BITS_EQUAL(122,data.type,8);
+  {
+    {
+      typedef __typeof__(*(&(time_coarse))) __array_t;
+      typedef typename __array_t::item_t __item_t;
+      __item_t &__item = time_coarse.append_item(123);
+      __item.value = data.coarse;
+    }
+    {
+      typedef __typeof__(*(&(time_fine))) __array_t;
+      typedef typename __array_t::item_t __item_t;
+      __item_t &__item = time_fine.append_item(124);
+      __item.value = data.fine;
+    }
+    {
+      typedef __typeof__(*(&(time_edge))) __array_t;
+      typedef typename __array_t::item_t __item_t;
+      __item_t &__item = time_edge.append_item(125);
+      __item.value = data.is_leading;
+    }
+    {
+      typedef __typeof__(*(&(time_channel))) __array_t;
+      typedef typename __array_t::item_t __item_t;
+      __item_t &__item = time_channel.append_item(126);
+      __item.value = data.channel;
+    }
+    {
+      typedef __typeof__(*(&(time_epoch))) __array_t;
+      typedef typename __array_t::item_t __item_t;
+      __item_t &__item = time_epoch.append_item(127);
+      __item.value = 0;
+    }
+  }
+  if (__buffer.is_memberdump())
+  {
+    printf("%s%08" PRIx32 "%s: data ", CT_OUT(BOLD), data.u32, CT_OUT(NORM));
+    printf(".coarse=%s%3" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  data.coarse, CT_OUT(NORM));
+    printf(".is_leading=%s%1" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  data.is_leading, CT_OUT(NORM));
+    printf(".fine=%s%3" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  data.fine, CT_OUT(NORM));
+    printf(".channel=%s%2" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  data.channel, CT_OUT(NORM));
+    printf(".type=%s%1" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  data.type, CT_OUT(NORM));
+    printf("\n");
+  }
+}
+FORCE_IMPL_DATA_SRC_FCN_ARG(void,TAMEX4_TIME_DATA::__unpack,uint32 sfp,uint32 card
+                                                           ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_coarse
+                                                           ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_fine
+                                                           ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_edge
+                                                           ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_channel
+                                                           ,raw_list_ii_zero_suppress<DATA32,DATA32,1024> &time_epoch);
+
+/** END_UNPACKER ******************************************************/
+
+
+/** BEGIN_MATCHER ******************************************************
+ *
+ * Event matcher for TAMEX4_TIME_DATA.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TAMEX4_TIME_DATA(sfp,card,time_coarse,time_fine,time_edge,time_channel,
+                 // time_epoch)
+template<typename __data_src_t>
+bool TAMEX4_TIME_DATA::__match(__data_src_t &__buffer,uint32 sfp,uint32 card)
+{
+  // MEMBER(DATA12 time_coarse[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_fine[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_edge[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_channel[1024] NO_INDEX_LIST);
+  // MEMBER(DATA32 time_epoch[1024] NO_INDEX_LIST);
+  // UINT32 data NOENCODE
+  // {
+    //  0_10: coarse;
+    //    11: is_leading;
+    // 12_21: fine;
+    // 22_27: channel;
+    // 28_31: type = CHECK(8);
+    // ENCODE(time_coarse APPEND_LIST,(value=coarse));
+    // ENCODE(time_fine APPEND_LIST,(value=fine));
+    // ENCODE(time_edge APPEND_LIST,(value=is_leading));
+    // ENCODE(time_channel APPEND_LIST,(value=channel));
+    // ENCODE(time_epoch APPEND_LIST,(value=0));
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 coarse : 11; // 0..10
+      uint32 is_leading : 1; // 11
+      uint32 fine : 10; // 12..21
+      uint32 channel : 6; // 22..27
+      uint32 type : 4; // 28..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 type : 4; // 28..31
+      uint32 channel : 6; // 22..27
+      uint32 fine : 10; // 12..21
+      uint32 is_leading : 1; // 11
+      uint32 coarse : 11; // 0..10
+#endif
+    };
+    uint32  u32;
+  } data;
+  MATCH_READ_FROM_BUFFER_FULL(128,uint32 ,data,data.u32,7);
+  MATCH_BITS_EQUAL(122,data.type,8);
+  {
+  }
+  return true;
+  return false;
+}
+FORCE_IMPL_DATA_SRC_FCN_ARG(bool,TAMEX4_TIME_DATA::__match,uint32 sfp,uint32 card);
+
+/** END_MATCHER *******************************************************/
+
+
+/** BEGIN_PACKER *******************************************************
+ *
+ * Event packer for TAMEX4_TIME_DATA.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TAMEX4_TIME_DATA(sfp,card,time_coarse,time_fine,time_edge,time_channel,
+                 // time_epoch)
+template<typename __data_dest_t>
+void PACKER_TAMEX4_TIME_DATA::__packer(__data_dest_t &__buffer,uint32 sfp
+                                                              ,uint32 card
+                                                              ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_coarse
+                                                              ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_fine
+                                                              ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_edge
+                                                              ,raw_list_ii_zero_suppress<DATA12,DATA12,1024> &time_channel
+                                                              ,raw_list_ii_zero_suppress<DATA32,DATA32,1024> &time_epoch)
+{
+  // MEMBER(DATA12 time_coarse[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_fine[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_edge[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_channel[1024] NO_INDEX_LIST);
+  // MEMBER(DATA32 time_epoch[1024] NO_INDEX_LIST);
+  // UINT32 data NOENCODE
+  // {
+    //  0_10: coarse;
+    //    11: is_leading;
+    // 12_21: fine;
+    // 22_27: channel;
+    // 28_31: type = CHECK(8);
+    // ENCODE(time_coarse APPEND_LIST,(value=coarse));
+    // ENCODE(time_fine APPEND_LIST,(value=fine));
+    // ENCODE(time_edge APPEND_LIST,(value=is_leading));
+    // ENCODE(time_channel APPEND_LIST,(value=channel));
+    // ENCODE(time_epoch APPEND_LIST,(value=0));
+  // }
+}
+FORCE_IMPL_DATA_SRC_FCN_ARG(void,TAMEX4_TIME_DATA::__packer,uint32 sfp,uint32 card);
+
+/** END_PACKER ********************************************************/
+
+
+/** BEGIN_STRUCTURES ***************************************************
+ *
+ * Event unpacker associated structures for TAMEX4_SFP.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TAMEX4_SFP(sfp,card)
+#if !PACKER_CODE
+# define DECLARED_UNPACK_TAMEX4_SFP
+class TAMEX4_SFP
+#else//PACKER_CODE
+# define DECLARED_PACKER_TAMEX4_SFP
+class PACKER_TAMEX4_SFP
+#endif//PACKER_CODE
+
+{
+public:
+  // MEMBER(DATA32 event_size);
+  DATA32 event_size;
+  // MEMBER(DATA12 time_coarse[1024] NO_INDEX_LIST);
+  raw_list_ii_zero_suppress<DATA12,DATA12,1024> time_coarse;
+  // MEMBER(DATA12 time_fine[1024] NO_INDEX_LIST);
+  raw_list_ii_zero_suppress<DATA12,DATA12,1024> time_fine;
+  // MEMBER(DATA12 time_edge[1024] NO_INDEX_LIST);
+  raw_list_ii_zero_suppress<DATA12,DATA12,1024> time_edge;
+  // MEMBER(DATA12 time_channel[1024] NO_INDEX_LIST);
+  raw_list_ii_zero_suppress<DATA12,DATA12,1024> time_channel;
+  // MEMBER(DATA32 time_epoch[1024] NO_INDEX_LIST);
+  raw_list_ii_zero_suppress<DATA32,DATA32,1024> time_epoch;
+  // UINT32 indicator NOENCODE
+  // {
+    //  0_07: 52;
+    //  8_11: trigger_type;
+    // 12_15: sfp = MATCH(sfp);
+    // 16_23: card = MATCH(card);
+    // 24_31: 0;
+  // }
+  // MATCH_END;
+  // UINT32 data_size NOENCODE
+  // {
+    //  0_31: bytes;
+    // ENCODE(event_size,(value=bytes));
+  // }
+  // UINT32 tdc_header NOENCODE
+  // {
+    //  0_15: lec;
+    //    16: buf_no;
+    // 17_19: reserved;
+    // 20_23: trigger_type;
+    // 24_31: 170;
+  // }
+  // list(0<=i<((data_size.bytes / 4) - 3))
+
+    // select
+
+      // epoch = TAMEX4_EPOCH_DATA(sfp=sfp,card=card,time_coarse=time_coarse,
+                                // time_fine=time_fine,time_edge=time_edge,
+                                // time_channel=time_channel,time_epoch=time_epoch);
+      // time = TAMEX4_TIME_DATA(sfp=sfp,card=card,time_coarse=time_coarse,
+                              // time_fine=time_fine,time_edge=time_edge,
+                              // time_channel=time_channel,time_epoch=time_epoch);
+    SINGLE(TAMEX4_EPOCH_DATA,epoch);
+    SINGLE(TAMEX4_TIME_DATA,time);
+  // UINT32 error_bits NOENCODE
+  // {
+    //  0_23: bits;
+    // 24_31: 238;
+  // }
+  // UINT32 trailer NOENCODE
+  // {
+    //  0_15: lec;
+    //    16: buf_no;
+    // 17_19: reserved;
+    // 20_23: trigger_type;
+    // 24_31: 187;
+  // }
+
+public:
+#ifndef __PSDC__
+# if !PACKER_CODE
+template<typename __data_src_t>
+  void __unpack(__data_src_t &__buffer,uint32 sfp,uint32 card);
+template<typename __data_src_t>
+  static bool __match(__data_src_t &__buffer,uint32 sfp,uint32 card);
+  // void __clean();
+# else//PACKER_CODE
+template<typename __data_dest_t>
+  void __packer(__data_dest_t &__buffer,uint32 sfp,uint32 card);
+# endif//PACKER_CODE
+
+  STRUCT_FCNS_DECL(TAMEX4_SFP);
+#endif//!__PSDC__
+};
+
+/** END_STRUCTURES ****************************************************/
+
+
+/** BEGIN_UNPACKER *****************************************************
+ *
+ * Event unpacker for TAMEX4_SFP.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TAMEX4_SFP(sfp,card)
+template<typename __data_src_t>
+void TAMEX4_SFP::__unpack(__data_src_t &__buffer,uint32 sfp,uint32 card)
+{
+  if (__buffer.is_memberdump())
+  {
+    printf("          %s%s%s: \n", CT_OUT(BOLD_BLUE),  "TAMEX4_SFP",CT_OUT(NORM));
+  }
+  // MEMBER(DATA32 event_size);
+  // MEMBER(DATA12 time_coarse[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_fine[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_edge[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_channel[1024] NO_INDEX_LIST);
+  // MEMBER(DATA32 time_epoch[1024] NO_INDEX_LIST);
+  // UINT32 indicator NOENCODE
+  // {
+    //  0_07: 52;
+    //  8_11: trigger_type;
+    // 12_15: sfp = MATCH(sfp);
+    // 16_23: card = MATCH(card);
+    // 24_31: 0;
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 unnamed_0_7 : 8; // 0..7
+      uint32 trigger_type : 4; // 8..11
+      uint32 sfp : 4; // 12..15
+      uint32 card : 8; // 16..23
+      uint32 unnamed_24_31 : 8; // 24..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 unnamed_24_31 : 8; // 24..31
+      uint32 card : 8; // 16..23
+      uint32 sfp : 4; // 12..15
+      uint32 trigger_type : 4; // 8..11
+      uint32 unnamed_0_7 : 8; // 0..7
+#endif
+    };
+    uint32  u32;
+  } indicator;
+  READ_FROM_BUFFER_FULL(66,uint32 ,indicator,indicator.u32,8);
+  CHECK_BITS_EQUAL(61,indicator.unnamed_0_7,52);
+  CHECK_BITS_EQUAL(63,indicator.sfp,sfp);
+  CHECK_BITS_EQUAL(64,indicator.card,card);
+  CHECK_BITS_EQUAL(65,indicator.unnamed_24_31,0);
+  if (__buffer.is_memberdump())
+  {
+    printf("%s%08" PRIx32 "%s: indicator ", CT_OUT(BOLD), indicator.u32, CT_OUT(NORM));
+    printf(".trigger_type=%s%1" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  indicator.trigger_type, CT_OUT(NORM));
+    printf(".sfp=%s%1" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  indicator.sfp, CT_OUT(NORM));
+    printf(".card=%s%2" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  indicator.card, CT_OUT(NORM));
+    printf("\n");
+  }
+  // MATCH_END;
+  // UINT32 data_size NOENCODE
+  // {
+    //  0_31: bytes;
+    // ENCODE(event_size,(value=bytes));
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 bytes : 32; // 0..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 bytes : 32; // 0..31
+#endif
+    };
+    uint32  u32;
+  } data_size;
+  READ_FROM_BUFFER_FULL(72,uint32 ,data_size,data_size.u32,9);
+  {
+    event_size.value = data_size.bytes;
+  }
+  if (__buffer.is_memberdump())
+  {
+    printf("%s%08" PRIx32 "%s: data_size ", CT_OUT(BOLD), data_size.u32, CT_OUT(NORM));
+    printf(".bytes=%s%8" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  data_size.bytes, CT_OUT(NORM));
+    printf("\n");
+  }
+  // UINT32 tdc_header NOENCODE
+  // {
+    //  0_15: lec;
+    //    16: buf_no;
+    // 17_19: reserved;
+    // 20_23: trigger_type;
+    // 24_31: 170;
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 lec : 16; // 0..15
+      uint32 buf_no : 1; // 16
+      uint32 reserved : 3; // 17..19
+      uint32 trigger_type : 4; // 20..23
+      uint32 unnamed_24_31 : 8; // 24..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 unnamed_24_31 : 8; // 24..31
+      uint32 trigger_type : 4; // 20..23
+      uint32 reserved : 3; // 17..19
+      uint32 buf_no : 1; // 16
+      uint32 lec : 16; // 0..15
+#endif
+    };
+    uint32  u32;
+  } tdc_header;
+  READ_FROM_BUFFER_FULL(80,uint32 ,tdc_header,tdc_header.u32,10);
+  CHECK_BITS_EQUAL(79,tdc_header.unnamed_24_31,170);
+  if (__buffer.is_memberdump())
+  {
+    printf("%s%08" PRIx32 "%s: tdc_header ", CT_OUT(BOLD), tdc_header.u32, CT_OUT(NORM));
+    printf(".lec=%s%4" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  tdc_header.lec, CT_OUT(NORM));
+    printf(".buf_no=%s%1" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  tdc_header.buf_no, CT_OUT(NORM));
+    printf(".reserved=%s%1" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  tdc_header.reserved, CT_OUT(NORM));
+    printf(".trigger_type=%s%1" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  tdc_header.trigger_type, CT_OUT(NORM));
+    printf("\n");
+  }
+  // list(0<=i<((data_size.bytes / 4) - 3))
+
+  for (uint32 i = 0; i < (uint32) (((data_size.bytes / 4) - 3)); ++i)
+  {
+    // select
+
+      // epoch = TAMEX4_EPOCH_DATA(sfp=sfp,card=card,time_coarse=time_coarse,
+                                // time_fine=time_fine,time_edge=time_edge,
+                                // time_channel=time_channel,time_epoch=time_epoch);
+      // time = TAMEX4_TIME_DATA(sfp=sfp,card=card,time_coarse=time_coarse,
+                              // time_fine=time_fine,time_edge=time_edge,
+                              // time_channel=time_channel,time_epoch=time_epoch);
+    do
+    {
+      int __match_no = 0;
+      // optimized match 1: TAMEX4_EPOCH_DATA epoch: (s32) => (0xf0000000,0x60000000)
+      // optimized match 2: TAMEX4_TIME_DATA time: (s32) => (0xf0000000,0x80000000)
+      {
+      uint32 __match_peek;
+      PEEK_FROM_BUFFER(91,uint32,__match_peek);
+      // differ = e0000000 : 29 30 31
+      uint32 __match_index = 0 | /* 29,31 */ ((__match_peek >> 29) & 0x00000007);
+      static const sint8 __match_index_array[8] = { 0, 0, 0, 1, 2, 0, 0, 0, };
+      __match_no = __match_index_array[__match_index];
+      // last_subevent_item = 0
+      }
+      if (!__match_no) ERROR_U_LOC(91,"No match for select statement.");
+      switch (__match_no)
+      {
+        case 1:
+          CHECK_SPURIOUS_MATCH_DECL(87,spurious_match_abort_loop_0,TAMEX4_EPOCH_DATA,/*sfp*/sfp,/*card*/card/*,time_coarse:member*//*,time_fine:member*//*,time_edge:member*//*,time_channel:member*//*,time_epoch:member*/);
+          UNPACK_DECL(87,TAMEX4_EPOCH_DATA,epoch,/*sfp*/sfp,/*card*/card,/*time_coarse*/time_coarse,/*time_fine*/time_fine,/*time_edge*/time_edge,/*time_channel*/time_channel,/*time_epoch*/time_epoch);
+          break;
+        case 2:
+          CHECK_SPURIOUS_MATCH_DECL(90,spurious_match_abort_loop_0,TAMEX4_TIME_DATA,/*sfp*/sfp,/*card*/card/*,time_coarse:member*//*,time_fine:member*//*,time_edge:member*//*,time_channel:member*//*,time_epoch:member*/);
+          UNPACK_DECL(90,TAMEX4_TIME_DATA,time,/*sfp*/sfp,/*card*/card,/*time_coarse*/time_coarse,/*time_fine*/time_fine,/*time_edge*/time_edge,/*time_channel*/time_channel,/*time_epoch*/time_epoch);
+          break;
+      }
+    }
+    while (0);
+    spurious_match_abort_loop_0:;
+  }
+  // UINT32 error_bits NOENCODE
+  // {
+    //  0_23: bits;
+    // 24_31: 238;
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 bits : 24; // 0..23
+      uint32 unnamed_24_31 : 8; // 24..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 unnamed_24_31 : 8; // 24..31
+      uint32 bits : 24; // 0..23
+#endif
+    };
+    uint32  u32;
+  } error_bits;
+  READ_FROM_BUFFER_FULL(97,uint32 ,error_bits,error_bits.u32,11);
+  CHECK_BITS_EQUAL(96,error_bits.unnamed_24_31,238);
+  if (__buffer.is_memberdump())
+  {
+    printf("%s%08" PRIx32 "%s: error_bits ", CT_OUT(BOLD), error_bits.u32, CT_OUT(NORM));
+    printf(".bits=%s%6" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  error_bits.bits, CT_OUT(NORM));
+    printf("\n");
+  }
+  // UINT32 trailer NOENCODE
+  // {
+    //  0_15: lec;
+    //    16: buf_no;
+    // 17_19: reserved;
+    // 20_23: trigger_type;
+    // 24_31: 187;
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 lec : 16; // 0..15
+      uint32 buf_no : 1; // 16
+      uint32 reserved : 3; // 17..19
+      uint32 trigger_type : 4; // 20..23
+      uint32 unnamed_24_31 : 8; // 24..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 unnamed_24_31 : 8; // 24..31
+      uint32 trigger_type : 4; // 20..23
+      uint32 reserved : 3; // 17..19
+      uint32 buf_no : 1; // 16
+      uint32 lec : 16; // 0..15
+#endif
+    };
+    uint32  u32;
+  } trailer;
+  READ_FROM_BUFFER_FULL(105,uint32 ,trailer,trailer.u32,12);
+  CHECK_BITS_EQUAL(104,trailer.unnamed_24_31,187);
+  if (__buffer.is_memberdump())
+  {
+    printf("%s%08" PRIx32 "%s: trailer ", CT_OUT(BOLD), trailer.u32, CT_OUT(NORM));
+    printf(".lec=%s%4" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  trailer.lec, CT_OUT(NORM));
+    printf(".buf_no=%s%1" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  trailer.buf_no, CT_OUT(NORM));
+    printf(".reserved=%s%1" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  trailer.reserved, CT_OUT(NORM));
+    printf(".trigger_type=%s%1" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  trailer.trigger_type, CT_OUT(NORM));
+    printf("\n");
+  }
+}
+FORCE_IMPL_DATA_SRC_FCN_ARG(void,TAMEX4_SFP::__unpack,uint32 sfp,uint32 card);
+
+/** END_UNPACKER ******************************************************/
+
+
+/** BEGIN_MATCHER ******************************************************
+ *
+ * Event matcher for TAMEX4_SFP.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TAMEX4_SFP(sfp,card)
+template<typename __data_src_t>
+bool TAMEX4_SFP::__match(__data_src_t &__buffer,uint32 sfp,uint32 card)
+{
+  // MEMBER(DATA32 event_size);
+  // MEMBER(DATA12 time_coarse[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_fine[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_edge[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_channel[1024] NO_INDEX_LIST);
+  // MEMBER(DATA32 time_epoch[1024] NO_INDEX_LIST);
+  // UINT32 indicator NOENCODE
+  // {
+    //  0_07: 52;
+    //  8_11: trigger_type;
+    // 12_15: sfp = MATCH(sfp);
+    // 16_23: card = MATCH(card);
+    // 24_31: 0;
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 unnamed_0_7 : 8; // 0..7
+      uint32 trigger_type : 4; // 8..11
+      uint32 sfp : 4; // 12..15
+      uint32 card : 8; // 16..23
+      uint32 unnamed_24_31 : 8; // 24..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 unnamed_24_31 : 8; // 24..31
+      uint32 card : 8; // 16..23
+      uint32 sfp : 4; // 12..15
+      uint32 trigger_type : 4; // 8..11
+      uint32 unnamed_0_7 : 8; // 0..7
+#endif
+    };
+    uint32  u32;
+  } indicator;
+  MATCH_READ_FROM_BUFFER_FULL(66,uint32 ,indicator,indicator.u32,13);
+  MATCH_BITS_EQUAL(61,indicator.unnamed_0_7,52);
+  MATCH_BITS_EQUAL(63,indicator.sfp,sfp);
+  MATCH_BITS_EQUAL(64,indicator.card,card);
+  MATCH_BITS_EQUAL(65,indicator.unnamed_24_31,0);
+  // MATCH_END;
+  return true;
+  return false;
+}
+FORCE_IMPL_DATA_SRC_FCN_ARG(bool,TAMEX4_SFP::__match,uint32 sfp,uint32 card);
+
+/** END_MATCHER *******************************************************/
+
+
+/** BEGIN_PACKER *******************************************************
+ *
+ * Event packer for TAMEX4_SFP.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TAMEX4_SFP(sfp,card)
+template<typename __data_dest_t>
+void PACKER_TAMEX4_SFP::__packer(__data_dest_t &__buffer,uint32 sfp,uint32 card)
+{
+  // MEMBER(DATA32 event_size);
+  // MEMBER(DATA12 time_coarse[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_fine[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_edge[1024] NO_INDEX_LIST);
+  // MEMBER(DATA12 time_channel[1024] NO_INDEX_LIST);
+  // MEMBER(DATA32 time_epoch[1024] NO_INDEX_LIST);
+  // UINT32 indicator NOENCODE
+  // {
+    //  0_07: 52;
+    //  8_11: trigger_type;
+    // 12_15: sfp = MATCH(sfp);
+    // 16_23: card = MATCH(card);
+    // 24_31: 0;
+  // }
+  // MATCH_END;
+  // UINT32 data_size NOENCODE
+  // {
+    //  0_31: bytes;
+    // ENCODE(event_size,(value=bytes));
+  // }
+  // UINT32 tdc_header NOENCODE
+  // {
+    //  0_15: lec;
+    //    16: buf_no;
+    // 17_19: reserved;
+    // 20_23: trigger_type;
+    // 24_31: 170;
+  // }
+  // list(0<=i<((data_size.bytes / 4) - 3))
+
+  {
+    // select
+
+      // epoch = TAMEX4_EPOCH_DATA(sfp=sfp,card=card,time_coarse=time_coarse,
+                                // time_fine=time_fine,time_edge=time_edge,
+                                // time_channel=time_channel,time_epoch=time_epoch);
+      // time = TAMEX4_TIME_DATA(sfp=sfp,card=card,time_coarse=time_coarse,
+                              // time_fine=time_fine,time_edge=time_edge,
+                              // time_channel=time_channel,time_epoch=time_epoch);
+    {
+      PACK_DECL(87,TAMEX4_EPOCH_DATA,epoch,/*sfp*/sfp,/*card*/card,/*time_coarse*/time_coarse,/*time_fine*/time_fine,/*time_edge*/time_edge,/*time_channel*/time_channel,/*time_epoch*/time_epoch);
+      PACK_DECL(90,TAMEX4_TIME_DATA,time,/*sfp*/sfp,/*card*/card,/*time_coarse*/time_coarse,/*time_fine*/time_fine,/*time_edge*/time_edge,/*time_channel*/time_channel,/*time_epoch*/time_epoch);
+    }
+  }
+  // UINT32 error_bits NOENCODE
+  // {
+    //  0_23: bits;
+    // 24_31: 238;
+  // }
+  // UINT32 trailer NOENCODE
+  // {
+    //  0_15: lec;
+    //    16: buf_no;
+    // 17_19: reserved;
+    // 20_23: trigger_type;
+    // 24_31: 187;
+  // }
+}
+FORCE_IMPL_DATA_SRC_FCN_ARG(void,TAMEX4_SFP::__packer,uint32 sfp,uint32 card);
+
+/** END_PACKER ********************************************************/
+
+//
+// Generating code for: TIMESTAMP_WHITERABBIT
+//
+
+/** BEGIN_STRUCTURES ***************************************************
+ *
+ * Event unpacker associated structures for TIMESTAMP_WHITERABBIT.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TIMESTAMP_WHITERABBIT(id)
+#if !PACKER_CODE
+# define DECLARED_UNPACK_TIMESTAMP_WHITERABBIT
+class TIMESTAMP_WHITERABBIT
+#else//PACKER_CODE
+# define DECLARED_PACKER_TIMESTAMP_WHITERABBIT
+class PACKER_TIMESTAMP_WHITERABBIT
+#endif//PACKER_CODE
+
+{
+public:
+  // MEMBER(DATA12 subsystem_id);
+  DATA12 subsystem_id;
+  // MEMBER(DATA16 t1);
+  DATA16 t1;
+  // MEMBER(DATA16 t2);
+  DATA16 t2;
+  // MEMBER(DATA16 t3);
+  DATA16 t3;
+  // MEMBER(DATA16 t4);
+  DATA16 t4;
+  // UINT32 header NOENCODE
+  // {
+    //  0_11: id = MATCH(id);
+    // 12_15: 0;
+    //    16: error_bit;
+    // 17_31: 0;
+    // ENCODE(subsystem_id,(value=id));
+  // }
+  // UINT32 d1 NOENCODE
+  // {
+    //  0_15: t1;
+    // 16_31: 0x3e1;
+    // ENCODE(t1,(value=t1));
+  // }
+  // UINT32 d2 NOENCODE
+  // {
+    //  0_15: t2;
+    // 16_31: 0x4e1;
+    // ENCODE(t2,(value=t2));
+  // }
+  // UINT32 d3 NOENCODE
+  // {
+    //  0_15: t3;
+    // 16_31: 0x5e1;
+    // ENCODE(t3,(value=t3));
+  // }
+  // UINT32 d4 NOENCODE
+  // {
+    //  0_15: t4;
+    // 16_31: 0x6e1;
+    // ENCODE(t4,(value=t4));
+  // }
+
+public:
+#ifndef __PSDC__
+# if !PACKER_CODE
+template<typename __data_src_t>
+  void __unpack(__data_src_t &__buffer,uint32 id);
+template<typename __data_src_t>
+  static bool __match(__data_src_t &__buffer,uint32 id);
+  // void __clean();
+# else//PACKER_CODE
+template<typename __data_dest_t>
+  void __packer(__data_dest_t &__buffer,uint32 id);
+# endif//PACKER_CODE
+
+  STRUCT_FCNS_DECL(TIMESTAMP_WHITERABBIT);
+#endif//!__PSDC__
+};
+
+/** END_STRUCTURES ****************************************************/
+
+
+/** BEGIN_UNPACKER *****************************************************
+ *
+ * Event unpacker for TIMESTAMP_WHITERABBIT.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TIMESTAMP_WHITERABBIT(id)
+template<typename __data_src_t>
+void TIMESTAMP_WHITERABBIT::__unpack(__data_src_t &__buffer,uint32 id)
+{
+  if (__buffer.is_memberdump())
+  {
+    printf("          %s%s%s: \n", CT_OUT(BOLD_BLUE),  "TIMESTAMP_WHITERABBIT",CT_OUT(NORM));
+  }
+  // MEMBER(DATA12 subsystem_id);
+  // MEMBER(DATA16 t1);
+  // MEMBER(DATA16 t2);
+  // MEMBER(DATA16 t3);
+  // MEMBER(DATA16 t4);
+  // UINT32 header NOENCODE
+  // {
+    //  0_11: id = MATCH(id);
+    // 12_15: 0;
+    //    16: error_bit;
+    // 17_31: 0;
+    // ENCODE(subsystem_id,(value=id));
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 id : 12; // 0..11
+      uint32 unnamed_12_15 : 4; // 12..15
+      uint32 error_bit : 1; // 16
+      uint32 unnamed_17_31 : 15; // 17..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 unnamed_17_31 : 15; // 17..31
+      uint32 error_bit : 1; // 16
+      uint32 unnamed_12_15 : 4; // 12..15
+      uint32 id : 12; // 0..11
+#endif
+    };
+    uint32  u32;
+  } header;
+  READ_FROM_BUFFER_FULL(145,uint32 ,header,header.u32,14);
+  CHECK_BITS_EQUAL(140,header.id,id);
+  CHECK_BITS_EQUAL(141,header.unnamed_12_15,0);
+  CHECK_BITS_EQUAL(143,header.unnamed_17_31,0);
+  {
+    subsystem_id.value = header.id;
+  }
+  if (__buffer.is_memberdump())
+  {
+    printf("%s%08" PRIx32 "%s: header ", CT_OUT(BOLD), header.u32, CT_OUT(NORM));
+    printf(".id=%s%3" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  header.id, CT_OUT(NORM));
+    printf(".error_bit=%s%1" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  header.error_bit, CT_OUT(NORM));
+    printf("\n");
+  }
+  // UINT32 d1 NOENCODE
+  // {
+    //  0_15: t1;
+    // 16_31: 0x3e1;
+    // ENCODE(t1,(value=t1));
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 t1 : 16; // 0..15
+      uint32 unnamed_16_31 : 16; // 16..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 unnamed_16_31 : 16; // 16..31
+      uint32 t1 : 16; // 0..15
+#endif
+    };
+    uint32  u32;
+  } d1;
+  READ_FROM_BUFFER_FULL(151,uint32 ,d1,d1.u32,15);
+  CHECK_BITS_EQUAL(149,d1.unnamed_16_31,0x3e1);
+  {
+    t1.value = d1.t1;
+  }
+  if (__buffer.is_memberdump())
+  {
+    printf("%s%08" PRIx32 "%s: d1 ", CT_OUT(BOLD), d1.u32, CT_OUT(NORM));
+    printf(".t1=%s%4" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  d1.t1, CT_OUT(NORM));
+    printf("\n");
+  }
+  // UINT32 d2 NOENCODE
+  // {
+    //  0_15: t2;
+    // 16_31: 0x4e1;
+    // ENCODE(t2,(value=t2));
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 t2 : 16; // 0..15
+      uint32 unnamed_16_31 : 16; // 16..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 unnamed_16_31 : 16; // 16..31
+      uint32 t2 : 16; // 0..15
+#endif
+    };
+    uint32  u32;
+  } d2;
+  READ_FROM_BUFFER_FULL(157,uint32 ,d2,d2.u32,16);
+  CHECK_BITS_EQUAL(155,d2.unnamed_16_31,0x4e1);
+  {
+    t2.value = d2.t2;
+  }
+  if (__buffer.is_memberdump())
+  {
+    printf("%s%08" PRIx32 "%s: d2 ", CT_OUT(BOLD), d2.u32, CT_OUT(NORM));
+    printf(".t2=%s%4" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  d2.t2, CT_OUT(NORM));
+    printf("\n");
+  }
+  // UINT32 d3 NOENCODE
+  // {
+    //  0_15: t3;
+    // 16_31: 0x5e1;
+    // ENCODE(t3,(value=t3));
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 t3 : 16; // 0..15
+      uint32 unnamed_16_31 : 16; // 16..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 unnamed_16_31 : 16; // 16..31
+      uint32 t3 : 16; // 0..15
+#endif
+    };
+    uint32  u32;
+  } d3;
+  READ_FROM_BUFFER_FULL(163,uint32 ,d3,d3.u32,17);
+  CHECK_BITS_EQUAL(161,d3.unnamed_16_31,0x5e1);
+  {
+    t3.value = d3.t3;
+  }
+  if (__buffer.is_memberdump())
+  {
+    printf("%s%08" PRIx32 "%s: d3 ", CT_OUT(BOLD), d3.u32, CT_OUT(NORM));
+    printf(".t3=%s%4" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  d3.t3, CT_OUT(NORM));
+    printf("\n");
+  }
+  // UINT32 d4 NOENCODE
+  // {
+    //  0_15: t4;
+    // 16_31: 0x6e1;
+    // ENCODE(t4,(value=t4));
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 t4 : 16; // 0..15
+      uint32 unnamed_16_31 : 16; // 16..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 unnamed_16_31 : 16; // 16..31
+      uint32 t4 : 16; // 0..15
+#endif
+    };
+    uint32  u32;
+  } d4;
+  READ_FROM_BUFFER_FULL(169,uint32 ,d4,d4.u32,18);
+  CHECK_BITS_EQUAL(167,d4.unnamed_16_31,0x6e1);
+  {
+    t4.value = d4.t4;
+  }
+  if (__buffer.is_memberdump())
+  {
+    printf("%s%08" PRIx32 "%s: d4 ", CT_OUT(BOLD), d4.u32, CT_OUT(NORM));
+    printf(".t4=%s%4" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  d4.t4, CT_OUT(NORM));
+    printf("\n");
+  }
+}
+FORCE_IMPL_DATA_SRC_FCN_ARG(void,TIMESTAMP_WHITERABBIT::__unpack,uint32 id);
+
+/** END_UNPACKER ******************************************************/
+
+
+/** BEGIN_MATCHER ******************************************************
+ *
+ * Event matcher for TIMESTAMP_WHITERABBIT.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TIMESTAMP_WHITERABBIT(id)
+template<typename __data_src_t>
+bool TIMESTAMP_WHITERABBIT::__match(__data_src_t &__buffer,uint32 id)
+{
+  // MEMBER(DATA12 subsystem_id);
+  // MEMBER(DATA16 t1);
+  // MEMBER(DATA16 t2);
+  // MEMBER(DATA16 t3);
+  // MEMBER(DATA16 t4);
+  // UINT32 header NOENCODE
+  // {
+    //  0_11: id = MATCH(id);
+    // 12_15: 0;
+    //    16: error_bit;
+    // 17_31: 0;
+    // ENCODE(subsystem_id,(value=id));
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 id : 12; // 0..11
+      uint32 unnamed_12_15 : 4; // 12..15
+      uint32 error_bit : 1; // 16
+      uint32 unnamed_17_31 : 15; // 17..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 unnamed_17_31 : 15; // 17..31
+      uint32 error_bit : 1; // 16
+      uint32 unnamed_12_15 : 4; // 12..15
+      uint32 id : 12; // 0..11
+#endif
+    };
+    uint32  u32;
+  } header;
+  MATCH_READ_FROM_BUFFER_FULL(145,uint32 ,header,header.u32,19);
+  MATCH_BITS_EQUAL(140,header.id,id);
+  MATCH_BITS_EQUAL(141,header.unnamed_12_15,0);
+  MATCH_BITS_EQUAL(143,header.unnamed_17_31,0);
+  return true;
+  return false;
+}
+FORCE_IMPL_DATA_SRC_FCN_ARG(bool,TIMESTAMP_WHITERABBIT::__match,uint32 id);
+
+/** END_MATCHER *******************************************************/
+
+
+/** BEGIN_PACKER *******************************************************
+ *
+ * Event packer for TIMESTAMP_WHITERABBIT.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TIMESTAMP_WHITERABBIT(id)
+template<typename __data_dest_t>
+void PACKER_TIMESTAMP_WHITERABBIT::__packer(__data_dest_t &__buffer,uint32 id)
+{
+  // MEMBER(DATA12 subsystem_id);
+  // MEMBER(DATA16 t1);
+  // MEMBER(DATA16 t2);
+  // MEMBER(DATA16 t3);
+  // MEMBER(DATA16 t4);
+  // UINT32 header NOENCODE
+  // {
+    //  0_11: id = MATCH(id);
+    // 12_15: 0;
+    //    16: error_bit;
+    // 17_31: 0;
+    // ENCODE(subsystem_id,(value=id));
+  // }
+  // UINT32 d1 NOENCODE
+  // {
+    //  0_15: t1;
+    // 16_31: 0x3e1;
+    // ENCODE(t1,(value=t1));
+  // }
+  // UINT32 d2 NOENCODE
+  // {
+    //  0_15: t2;
+    // 16_31: 0x4e1;
+    // ENCODE(t2,(value=t2));
+  // }
+  // UINT32 d3 NOENCODE
+  // {
+    //  0_15: t3;
+    // 16_31: 0x5e1;
+    // ENCODE(t3,(value=t3));
+  // }
+  // UINT32 d4 NOENCODE
+  // {
+    //  0_15: t4;
+    // 16_31: 0x6e1;
+    // ENCODE(t4,(value=t4));
+  // }
+}
+FORCE_IMPL_DATA_SRC_FCN_ARG(void,TIMESTAMP_WHITERABBIT::__packer,uint32 id);
+
+/** END_PACKER ********************************************************/
+
+//
+// Generating code for: TIMESTAMP_WHITERABBIT_EXTENDED
+//
+
+/** BEGIN_STRUCTURES ***************************************************
+ *
+ * Event unpacker associated structures for TIMESTAMP_WHITERABBIT_EXTENDED.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TIMESTAMP_WHITERABBIT_EXTENDED(id)
+#if !PACKER_CODE
+# define DECLARED_UNPACK_TIMESTAMP_WHITERABBIT_EXTENDED
+class TIMESTAMP_WHITERABBIT_EXTENDED
+#else//PACKER_CODE
+# define DECLARED_PACKER_TIMESTAMP_WHITERABBIT_EXTENDED
+class PACKER_TIMESTAMP_WHITERABBIT_EXTENDED
+#endif//PACKER_CODE
+
+{
+public:
+  // MEMBER(DATA16 subsystem_id);
+  DATA16 subsystem_id;
+  // MEMBER(DATA16 t1);
+  DATA16 t1;
+  // MEMBER(DATA16 t2);
+  DATA16 t2;
+  // MEMBER(DATA16 t3);
+  DATA16 t3;
+  // MEMBER(DATA16 t4);
+  DATA16 t4;
+  // UINT32 header NOENCODE
+  // {
+    //  0_12: id = MATCH(id);
+    // 13_15: 0;
+    //    16: error_bit;
+    // 17_31: 0;
+    // ENCODE(subsystem_id,(value=id));
+  // }
+  // UINT32 d1 NOENCODE
+  // {
+    //  0_15: t1;
+    // 16_31: 0x3e1;
+    // ENCODE(t1,(value=t1));
+  // }
+  // UINT32 d2 NOENCODE
+  // {
+    //  0_15: t2;
+    // 16_31: 0x4e1;
+    // ENCODE(t2,(value=t2));
+  // }
+  // UINT32 d3 NOENCODE
+  // {
+    //  0_15: t3;
+    // 16_31: 0x5e1;
+    // ENCODE(t3,(value=t3));
+  // }
+  // UINT32 d4 NOENCODE
+  // {
+    //  0_15: t4;
+    // 16_31: 0x6e1;
+    // ENCODE(t4,(value=t4));
+  // }
+
+public:
+#ifndef __PSDC__
+# if !PACKER_CODE
+template<typename __data_src_t>
+  void __unpack(__data_src_t &__buffer,uint32 id);
+template<typename __data_src_t>
+  static bool __match(__data_src_t &__buffer,uint32 id);
+  // void __clean();
+# else//PACKER_CODE
+template<typename __data_dest_t>
+  void __packer(__data_dest_t &__buffer,uint32 id);
+# endif//PACKER_CODE
+
+  STRUCT_FCNS_DECL(TIMESTAMP_WHITERABBIT_EXTENDED);
+#endif//!__PSDC__
+};
+
+/** END_STRUCTURES ****************************************************/
+
+
+/** BEGIN_UNPACKER *****************************************************
+ *
+ * Event unpacker for TIMESTAMP_WHITERABBIT_EXTENDED.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TIMESTAMP_WHITERABBIT_EXTENDED(id)
+template<typename __data_src_t>
+void TIMESTAMP_WHITERABBIT_EXTENDED::__unpack(__data_src_t &__buffer,uint32 id)
+{
+  if (__buffer.is_memberdump())
+  {
+    printf("          %s%s%s: \n", CT_OUT(BOLD_BLUE),  "TIMESTAMP_WHITERABBIT_EXTENDED",CT_OUT(NORM));
+  }
+  // MEMBER(DATA16 subsystem_id);
+  // MEMBER(DATA16 t1);
+  // MEMBER(DATA16 t2);
+  // MEMBER(DATA16 t3);
+  // MEMBER(DATA16 t4);
+  // UINT32 header NOENCODE
+  // {
+    //  0_12: id = MATCH(id);
+    // 13_15: 0;
+    //    16: error_bit;
+    // 17_31: 0;
+    // ENCODE(subsystem_id,(value=id));
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 id : 13; // 0..12
+      uint32 unnamed_13_15 : 3; // 13..15
+      uint32 error_bit : 1; // 16
+      uint32 unnamed_17_31 : 15; // 17..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 unnamed_17_31 : 15; // 17..31
+      uint32 error_bit : 1; // 16
+      uint32 unnamed_13_15 : 3; // 13..15
+      uint32 id : 13; // 0..12
+#endif
+    };
+    uint32  u32;
+  } header;
+  READ_FROM_BUFFER_FULL(186,uint32 ,header,header.u32,20);
+  CHECK_BITS_EQUAL(181,header.id,id);
+  CHECK_BITS_EQUAL(182,header.unnamed_13_15,0);
+  CHECK_BITS_EQUAL(184,header.unnamed_17_31,0);
+  {
+    subsystem_id.value = header.id;
+  }
+  if (__buffer.is_memberdump())
+  {
+    printf("%s%08" PRIx32 "%s: header ", CT_OUT(BOLD), header.u32, CT_OUT(NORM));
+    printf(".id=%s%4" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  header.id, CT_OUT(NORM));
+    printf(".error_bit=%s%1" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  header.error_bit, CT_OUT(NORM));
+    printf("\n");
+  }
+  // UINT32 d1 NOENCODE
+  // {
+    //  0_15: t1;
+    // 16_31: 0x3e1;
+    // ENCODE(t1,(value=t1));
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 t1 : 16; // 0..15
+      uint32 unnamed_16_31 : 16; // 16..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 unnamed_16_31 : 16; // 16..31
+      uint32 t1 : 16; // 0..15
+#endif
+    };
+    uint32  u32;
+  } d1;
+  READ_FROM_BUFFER_FULL(192,uint32 ,d1,d1.u32,21);
+  CHECK_BITS_EQUAL(190,d1.unnamed_16_31,0x3e1);
+  {
+    t1.value = d1.t1;
+  }
+  if (__buffer.is_memberdump())
+  {
+    printf("%s%08" PRIx32 "%s: d1 ", CT_OUT(BOLD), d1.u32, CT_OUT(NORM));
+    printf(".t1=%s%4" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  d1.t1, CT_OUT(NORM));
+    printf("\n");
+  }
+  // UINT32 d2 NOENCODE
+  // {
+    //  0_15: t2;
+    // 16_31: 0x4e1;
+    // ENCODE(t2,(value=t2));
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 t2 : 16; // 0..15
+      uint32 unnamed_16_31 : 16; // 16..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 unnamed_16_31 : 16; // 16..31
+      uint32 t2 : 16; // 0..15
+#endif
+    };
+    uint32  u32;
+  } d2;
+  READ_FROM_BUFFER_FULL(198,uint32 ,d2,d2.u32,22);
+  CHECK_BITS_EQUAL(196,d2.unnamed_16_31,0x4e1);
+  {
+    t2.value = d2.t2;
+  }
+  if (__buffer.is_memberdump())
+  {
+    printf("%s%08" PRIx32 "%s: d2 ", CT_OUT(BOLD), d2.u32, CT_OUT(NORM));
+    printf(".t2=%s%4" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  d2.t2, CT_OUT(NORM));
+    printf("\n");
+  }
+  // UINT32 d3 NOENCODE
+  // {
+    //  0_15: t3;
+    // 16_31: 0x5e1;
+    // ENCODE(t3,(value=t3));
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 t3 : 16; // 0..15
+      uint32 unnamed_16_31 : 16; // 16..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 unnamed_16_31 : 16; // 16..31
+      uint32 t3 : 16; // 0..15
+#endif
+    };
+    uint32  u32;
+  } d3;
+  READ_FROM_BUFFER_FULL(204,uint32 ,d3,d3.u32,23);
+  CHECK_BITS_EQUAL(202,d3.unnamed_16_31,0x5e1);
+  {
+    t3.value = d3.t3;
+  }
+  if (__buffer.is_memberdump())
+  {
+    printf("%s%08" PRIx32 "%s: d3 ", CT_OUT(BOLD), d3.u32, CT_OUT(NORM));
+    printf(".t3=%s%4" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  d3.t3, CT_OUT(NORM));
+    printf("\n");
+  }
+  // UINT32 d4 NOENCODE
+  // {
+    //  0_15: t4;
+    // 16_31: 0x6e1;
+    // ENCODE(t4,(value=t4));
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 t4 : 16; // 0..15
+      uint32 unnamed_16_31 : 16; // 16..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 unnamed_16_31 : 16; // 16..31
+      uint32 t4 : 16; // 0..15
+#endif
+    };
+    uint32  u32;
+  } d4;
+  READ_FROM_BUFFER_FULL(210,uint32 ,d4,d4.u32,24);
+  CHECK_BITS_EQUAL(208,d4.unnamed_16_31,0x6e1);
+  {
+    t4.value = d4.t4;
+  }
+  if (__buffer.is_memberdump())
+  {
+    printf("%s%08" PRIx32 "%s: d4 ", CT_OUT(BOLD), d4.u32, CT_OUT(NORM));
+    printf(".t4=%s%4" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  d4.t4, CT_OUT(NORM));
+    printf("\n");
+  }
+}
+FORCE_IMPL_DATA_SRC_FCN_ARG(void,TIMESTAMP_WHITERABBIT_EXTENDED::__unpack,uint32 id);
+
+/** END_UNPACKER ******************************************************/
+
+
+/** BEGIN_MATCHER ******************************************************
+ *
+ * Event matcher for TIMESTAMP_WHITERABBIT_EXTENDED.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TIMESTAMP_WHITERABBIT_EXTENDED(id)
+template<typename __data_src_t>
+bool TIMESTAMP_WHITERABBIT_EXTENDED::__match(__data_src_t &__buffer,uint32 id)
+{
+  // MEMBER(DATA16 subsystem_id);
+  // MEMBER(DATA16 t1);
+  // MEMBER(DATA16 t2);
+  // MEMBER(DATA16 t3);
+  // MEMBER(DATA16 t4);
+  // UINT32 header NOENCODE
+  // {
+    //  0_12: id = MATCH(id);
+    // 13_15: 0;
+    //    16: error_bit;
+    // 17_31: 0;
+    // ENCODE(subsystem_id,(value=id));
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 id : 13; // 0..12
+      uint32 unnamed_13_15 : 3; // 13..15
+      uint32 error_bit : 1; // 16
+      uint32 unnamed_17_31 : 15; // 17..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 unnamed_17_31 : 15; // 17..31
+      uint32 error_bit : 1; // 16
+      uint32 unnamed_13_15 : 3; // 13..15
+      uint32 id : 13; // 0..12
+#endif
+    };
+    uint32  u32;
+  } header;
+  MATCH_READ_FROM_BUFFER_FULL(186,uint32 ,header,header.u32,25);
+  MATCH_BITS_EQUAL(181,header.id,id);
+  MATCH_BITS_EQUAL(182,header.unnamed_13_15,0);
+  MATCH_BITS_EQUAL(184,header.unnamed_17_31,0);
+  return true;
+  return false;
+}
+FORCE_IMPL_DATA_SRC_FCN_ARG(bool,TIMESTAMP_WHITERABBIT_EXTENDED::__match,uint32 id);
+
+/** END_MATCHER *******************************************************/
+
+
+/** BEGIN_PACKER *******************************************************
+ *
+ * Event packer for TIMESTAMP_WHITERABBIT_EXTENDED.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// TIMESTAMP_WHITERABBIT_EXTENDED(id)
+template<typename __data_dest_t>
+void PACKER_TIMESTAMP_WHITERABBIT_EXTENDED::__packer(__data_dest_t &__buffer,uint32 id)
+{
+  // MEMBER(DATA16 subsystem_id);
+  // MEMBER(DATA16 t1);
+  // MEMBER(DATA16 t2);
+  // MEMBER(DATA16 t3);
+  // MEMBER(DATA16 t4);
+  // UINT32 header NOENCODE
+  // {
+    //  0_12: id = MATCH(id);
+    // 13_15: 0;
+    //    16: error_bit;
+    // 17_31: 0;
+    // ENCODE(subsystem_id,(value=id));
+  // }
+  // UINT32 d1 NOENCODE
+  // {
+    //  0_15: t1;
+    // 16_31: 0x3e1;
+    // ENCODE(t1,(value=t1));
+  // }
+  // UINT32 d2 NOENCODE
+  // {
+    //  0_15: t2;
+    // 16_31: 0x4e1;
+    // ENCODE(t2,(value=t2));
+  // }
+  // UINT32 d3 NOENCODE
+  // {
+    //  0_15: t3;
+    // 16_31: 0x5e1;
+    // ENCODE(t3,(value=t3));
+  // }
+  // UINT32 d4 NOENCODE
+  // {
+    //  0_15: t4;
+    // 16_31: 0x6e1;
+    // ENCODE(t4,(value=t4));
+  // }
+}
+FORCE_IMPL_DATA_SRC_FCN_ARG(void,TIMESTAMP_WHITERABBIT_EXTENDED::__packer,uint32 id);
+
+/** END_PACKER ********************************************************/
+
+//
+// Generating code for: WR_MULTI
+//
+
+/** BEGIN_STRUCTURES ***************************************************
+ *
+ * Event unpacker associated structures for WR_MULTI.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// WR_MULTI()
+#if !PACKER_CODE
+# define DECLARED_UNPACK_WR_MULTI
+class WR_MULTI
+#else//PACKER_CODE
+# define DECLARED_PACKER_WR_MULTI
+class PACKER_WR_MULTI
+#endif//PACKER_CODE
+
+{
+public:
+  // MEMBER(DATA32 time_hi);
+  DATA32 time_hi;
+  // MEMBER(DATA32 time_lo);
+  DATA32 time_lo;
+  // UINT32 hi NOENCODE
+  // {
+    //  0_31: time;
+    // ENCODE(time_hi,(value=time));
+  // }
+  // UINT32 lo NOENCODE
+  // {
+    //  0_31: time;
+    // ENCODE(time_lo,(value=time));
+  // }
+
+public:
+#ifndef __PSDC__
+# if !PACKER_CODE
+template<typename __data_src_t>
+  void __unpack(__data_src_t &__buffer);
+template<typename __data_src_t>
+  static bool __match(__data_src_t &__buffer);
+  // void __clean();
+# else//PACKER_CODE
+template<typename __data_dest_t>
+  void __packer(__data_dest_t &__buffer);
+# endif//PACKER_CODE
+
+  STRUCT_FCNS_DECL(WR_MULTI);
+#endif//!__PSDC__
+};
+
+/** END_STRUCTURES ****************************************************/
+
+
+/** BEGIN_UNPACKER *****************************************************
+ *
+ * Event unpacker for WR_MULTI.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// WR_MULTI()
+template<typename __data_src_t>
+void WR_MULTI::__unpack(__data_src_t &__buffer)
+{
+  if (__buffer.is_memberdump())
+  {
+    printf("          %s%s%s: \n", CT_OUT(BOLD_BLUE),  "WR_MULTI",CT_OUT(NORM));
+  }
+  // MEMBER(DATA32 time_hi);
+  // MEMBER(DATA32 time_lo);
+  // UINT32 hi NOENCODE
+  // {
+    //  0_31: time;
+    // ENCODE(time_hi,(value=time));
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 time : 32; // 0..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 time : 32; // 0..31
+#endif
+    };
+    uint32  u32;
+  } hi;
+  READ_FROM_BUFFER_FULL(221,uint32 ,hi,hi.u32,26);
+  {
+    time_hi.value = hi.time;
+  }
+  if (__buffer.is_memberdump())
+  {
+    printf("%s%08" PRIx32 "%s: hi ", CT_OUT(BOLD), hi.u32, CT_OUT(NORM));
+    printf(".time=%s%8" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  hi.time, CT_OUT(NORM));
+    printf("\n");
+  }
+  // UINT32 lo NOENCODE
+  // {
+    //  0_31: time;
+    // ENCODE(time_lo,(value=time));
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 time : 32; // 0..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 time : 32; // 0..31
+#endif
+    };
+    uint32  u32;
+  } lo;
+  READ_FROM_BUFFER_FULL(226,uint32 ,lo,lo.u32,27);
+  {
+    time_lo.value = lo.time;
+  }
+  if (__buffer.is_memberdump())
+  {
+    printf("%s%08" PRIx32 "%s: lo ", CT_OUT(BOLD), lo.u32, CT_OUT(NORM));
+    printf(".time=%s%8" PRIx64 "%s ", CT_OUT(BOLD), (uint64_t)  lo.time, CT_OUT(NORM));
+    printf("\n");
+  }
+}
+FORCE_IMPL_DATA_SRC_FCN(void,WR_MULTI::__unpack);
+
+/** END_UNPACKER ******************************************************/
+
+
+/** BEGIN_MATCHER ******************************************************
+ *
+ * Event matcher for WR_MULTI.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// WR_MULTI()
+template<typename __data_src_t>
+bool WR_MULTI::__match(__data_src_t &__buffer)
+{
+  // MEMBER(DATA32 time_hi);
+  // MEMBER(DATA32 time_lo);
+  // UINT32 hi NOENCODE
+  // {
+    //  0_31: time;
+    // ENCODE(time_hi,(value=time));
+  // }
+  union
+  {
+    struct
+    {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+      uint32 time : 32; // 0..31
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+      uint32 time : 32; // 0..31
+#endif
+    };
+    uint32  u32;
+  } hi;
+  MATCH_READ_FROM_BUFFER_FULL(221,uint32 ,hi,hi.u32,28);
+  return true;
+  return false;
+}
+FORCE_IMPL_DATA_SRC_FCN(bool,WR_MULTI::__match);
+
+/** END_MATCHER *******************************************************/
+
+
+/** BEGIN_PACKER *******************************************************
+ *
+ * Event packer for WR_MULTI.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// WR_MULTI()
+template<typename __data_dest_t>
+void PACKER_WR_MULTI::__packer(__data_dest_t &__buffer)
+{
+  // MEMBER(DATA32 time_hi);
+  // MEMBER(DATA32 time_lo);
+  // UINT32 hi NOENCODE
+  // {
+    //  0_31: time;
+    // ENCODE(time_hi,(value=time));
+  // }
+  // UINT32 lo NOENCODE
+  // {
+    //  0_31: time;
+    // ENCODE(time_lo,(value=time));
+  // }
+}
+FORCE_IMPL_DATA_SRC_FCN(void,WR_MULTI::__packer);
+
+/** END_PACKER ********************************************************/
+
+//
+// Generating code for: bplast_subev
+//
+
+/** BEGIN_STRUCTURES ***************************************************
+ *
+ * Event unpacker associated structures for bplast_subev.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// SUBEVENT(bplast_subev)
+#if !PACKER_CODE
+# define DECLARED_UNPACK_bplast_subev
+class bplast_subev
+#else//PACKER_CODE
+# define DECLARED_PACKER_bplast_subev
+class PACKER_bplast_subev
+#endif//PACKER_CODE
+ : public unpack_subevent_base
+{
+public:
+  // ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x500);
+  // trigger_window = TAMEX4_HEADER();
+  // select several
+
+    // padding = TAMEX4_PADDING();
+  SINGLE(TAMEX4_PADDING,padding);
+  // select several
+
+    // tamex[0] = TAMEX4_SFP(sfp=0,card=0);
+    // tamex[1] = TAMEX4_SFP(sfp=0,card=1);
+    // tamex[2] = TAMEX4_SFP(sfp=0,card=2);
+    // tamex[3] = TAMEX4_SFP(sfp=0,card=3);
+    // tamex[4] = TAMEX4_SFP(sfp=0,card=4);
+    // tamex[5] = TAMEX4_SFP(sfp=0,card=5);
+    // tamex[6] = TAMEX4_SFP(sfp=0,card=6);
+    // tamex[7] = TAMEX4_SFP(sfp=0,card=7);
+    // tamex[8] = TAMEX4_SFP(sfp=0,card=8);
+  SINGLE(TAMEX4_SFP,tamex[9]);
+  SINGLE(TIMESTAMP_WHITERABBIT_EXTENDED,ts);
+  SINGLE(TAMEX4_HEADER,trigger_window);
+
+public:
+#ifndef __PSDC__
+# if !PACKER_CODE
+template<typename __data_src_t>
+  void __unpack(__data_src_t &__buffer);
+template<typename __data_src_t>
+  static bool __match(__data_src_t &__buffer);
+  // void __clean();
+# else//PACKER_CODE
+template<typename __data_dest_t>
+  void __packer(__data_dest_t &__buffer);
+# endif//PACKER_CODE
+
+  STRUCT_FCNS_DECL(bplast_subev);
+#endif//!__PSDC__
+};
+
+/** END_STRUCTURES ****************************************************/
+
+
+/** BEGIN_UNPACKER *****************************************************
+ *
+ * Event unpacker for bplast_subev.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// SUBEVENT(bplast_subev)
+template<typename __data_src_t>
+void bplast_subev::__unpack(__data_src_t &__buffer)
+{
+  if (__buffer.is_memberdump())
+  {
+    printf("          %s%s%s: \n", CT_OUT(BOLD_MAGENTA),  "bplast_subev",CT_OUT(NORM));
+  }
+  // ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x500);
+  UNPACK_DECL(231,TIMESTAMP_WHITERABBIT_EXTENDED,ts,/*id*/0x500);
+  // trigger_window = TAMEX4_HEADER();
+  UNPACK_DECL(232,TAMEX4_HEADER,trigger_window);
+  // select several
+
+    // padding = TAMEX4_PADDING();
+  for ( ; ; )
+  {
+    if (__buffer.empty()) break;
+    int __match_no = 0;
+    // optimized match 1: TAMEX4_PADDING padding: (s32) => (0xfff00000,0xadd00000)
+    {
+    uint32 __match_peek;
+    PEEK_FROM_BUFFER(236,uint32,__match_peek);
+    // differ = 00000000 :
+    uint32 __match_index = 0;
+    static const sint8 __match_index_array[1] = { 1, };
+    __match_no = __match_index_array[__match_index];
+    // last_subevent_item = 0
+    }
+    if (!__match_no) break;
+    switch (__match_no)
+    {
+      case 1:
+        CHECK_SPURIOUS_MATCH_DECL(235,spurious_match_abort_loop_1,TAMEX4_PADDING);
+        UNPACK_DECL(235,TAMEX4_PADDING,padding);
+        break;
+    }
+  }
+  spurious_match_abort_loop_1:;
+  // select several
+
+    // tamex[0] = TAMEX4_SFP(sfp=0,card=0);
+    // tamex[1] = TAMEX4_SFP(sfp=0,card=1);
+    // tamex[2] = TAMEX4_SFP(sfp=0,card=2);
+    // tamex[3] = TAMEX4_SFP(sfp=0,card=3);
+    // tamex[4] = TAMEX4_SFP(sfp=0,card=4);
+    // tamex[5] = TAMEX4_SFP(sfp=0,card=5);
+    // tamex[6] = TAMEX4_SFP(sfp=0,card=6);
+    // tamex[7] = TAMEX4_SFP(sfp=0,card=7);
+    // tamex[8] = TAMEX4_SFP(sfp=0,card=8);
+  for ( ; ; )
+  {
+    if (__buffer.empty()) break;
+    int __match_no = 0;
+    // optimized match 1: TAMEX4_SFP tamex[0]: (s32) => (0xfffff0ff,0x00000034)
+    // optimized match 2: TAMEX4_SFP tamex[1]: (s32) => (0xfffff0ff,0x00010034)
+    // optimized match 3: TAMEX4_SFP tamex[2]: (s32) => (0xfffff0ff,0x00020034)
+    // optimized match 4: TAMEX4_SFP tamex[3]: (s32) => (0xfffff0ff,0x00030034)
+    // optimized match 5: TAMEX4_SFP tamex[4]: (s32) => (0xfffff0ff,0x00040034)
+    // optimized match 6: TAMEX4_SFP tamex[5]: (s32) => (0xfffff0ff,0x00050034)
+    // optimized match 7: TAMEX4_SFP tamex[6]: (s32) => (0xfffff0ff,0x00060034)
+    // optimized match 8: TAMEX4_SFP tamex[7]: (s32) => (0xfffff0ff,0x00070034)
+    // optimized match 9: TAMEX4_SFP tamex[8]: (s32) => (0xfffff0ff,0x00080034)
+    {
+    uint32 __match_peek;
+    PEEK_FROM_BUFFER(248,uint32,__match_peek);
+    // differ = 000f0000 : 16 17 18 19
+    uint32 __match_index = 0 | /* 16,19 */ ((__match_peek >> 16) & 0x0000000f);
+    static const sint8 __match_index_array[16] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0, 0, };
+    __match_no = __match_index_array[__match_index];
+    // last_subevent_item = 1
+    }
+    if (!__match_no) break;
+    switch (__match_no)
+    {
+      case 1:
+        UNPACK_DECL(239,TAMEX4_SFP,tamex[0],/*sfp*/0,/*card*/0);
+        break;
+      case 2:
+        UNPACK_DECL(240,TAMEX4_SFP,tamex[1],/*sfp*/0,/*card*/1);
+        break;
+      case 3:
+        UNPACK_DECL(241,TAMEX4_SFP,tamex[2],/*sfp*/0,/*card*/2);
+        break;
+      case 4:
+        UNPACK_DECL(242,TAMEX4_SFP,tamex[3],/*sfp*/0,/*card*/3);
+        break;
+      case 5:
+        UNPACK_DECL(243,TAMEX4_SFP,tamex[4],/*sfp*/0,/*card*/4);
+        break;
+      case 6:
+        UNPACK_DECL(244,TAMEX4_SFP,tamex[5],/*sfp*/0,/*card*/5);
+        break;
+      case 7:
+        UNPACK_DECL(245,TAMEX4_SFP,tamex[6],/*sfp*/0,/*card*/6);
+        break;
+      case 8:
+        UNPACK_DECL(246,TAMEX4_SFP,tamex[7],/*sfp*/0,/*card*/7);
+        break;
+      case 9:
+        UNPACK_DECL(247,TAMEX4_SFP,tamex[8],/*sfp*/0,/*card*/8);
+        break;
+    }
+  }
+}
+FORCE_IMPL_DATA_SRC_FCN(void,bplast_subev::__unpack);
+
+/** END_UNPACKER ******************************************************/
+
+
+/** BEGIN_MATCHER ******************************************************
+ *
+ * Event matcher for bplast_subev.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// SUBEVENT(bplast_subev)
+// No __match function for subevents.
+
+/** END_MATCHER *******************************************************/
+
+
+/** BEGIN_PACKER *******************************************************
+ *
+ * Event packer for bplast_subev.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// SUBEVENT(bplast_subev)
+template<typename __data_dest_t>
+void PACKER_bplast_subev::__packer(__data_dest_t &__buffer)
+{
+  // ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x500);
+  PACK_DECL(231,TIMESTAMP_WHITERABBIT_EXTENDED,ts,/*id*/0x500);
+  // trigger_window = TAMEX4_HEADER();
+  PACK_DECL(232,TAMEX4_HEADER,trigger_window);
+  // select several
+
+    // padding = TAMEX4_PADDING();
+  {
+    PACK_DECL(235,TAMEX4_PADDING,padding);
+  }
+  // select several
+
+    // tamex[0] = TAMEX4_SFP(sfp=0,card=0);
+    // tamex[1] = TAMEX4_SFP(sfp=0,card=1);
+    // tamex[2] = TAMEX4_SFP(sfp=0,card=2);
+    // tamex[3] = TAMEX4_SFP(sfp=0,card=3);
+    // tamex[4] = TAMEX4_SFP(sfp=0,card=4);
+    // tamex[5] = TAMEX4_SFP(sfp=0,card=5);
+    // tamex[6] = TAMEX4_SFP(sfp=0,card=6);
+    // tamex[7] = TAMEX4_SFP(sfp=0,card=7);
+    // tamex[8] = TAMEX4_SFP(sfp=0,card=8);
+  {
+    PACK_DECL(239,TAMEX4_SFP,tamex[0],/*sfp*/0,/*card*/0);
+    PACK_DECL(240,TAMEX4_SFP,tamex[1],/*sfp*/0,/*card*/1);
+    PACK_DECL(241,TAMEX4_SFP,tamex[2],/*sfp*/0,/*card*/2);
+    PACK_DECL(242,TAMEX4_SFP,tamex[3],/*sfp*/0,/*card*/3);
+    PACK_DECL(243,TAMEX4_SFP,tamex[4],/*sfp*/0,/*card*/4);
+    PACK_DECL(244,TAMEX4_SFP,tamex[5],/*sfp*/0,/*card*/5);
+    PACK_DECL(245,TAMEX4_SFP,tamex[6],/*sfp*/0,/*card*/6);
+    PACK_DECL(246,TAMEX4_SFP,tamex[7],/*sfp*/0,/*card*/7);
+    PACK_DECL(247,TAMEX4_SFP,tamex[8],/*sfp*/0,/*card*/8);
+  }
+}
+FORCE_IMPL_DATA_SRC_FCN(void,bplast_subev::__packer);
+
+/** END_PACKER ********************************************************/
+
+//
+// Generating code for EVENT
+//
+
+/** BEGIN_STRUCTURES ***************************************************
+ *
+ * Event unpacker associated structures for EVENT.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// EVENT
+class unpack_event : public unpack_event_base
+{
+public:
+  // bplast = bplast_subev(type=10,subtype=1,procid=80,control=20,subcrate=0);
+SINGLE(bplast_subev,bplast);
+public:
+#ifndef __PSDC__
+  bitsone<1> __visited;
+  void __clear_visited() { __visited.clear(); }
+  bool ignore_unknown_subevent() { return false; }
+#endif//!__PSDC__
+
+public:
+#ifndef __PSDC__
+template<typename __data_src_t>
+  int __unpack_subevent(subevent_header *__header,__data_src_t &__buffer);
+  int __revoke_subevent(subevent_header *__header);
+  // void __clean_event();
+
+  STRUCT_FCNS_DECL(unpack_event);
+#endif//!__PSDC__
+};
+
+/** END_STRUCTURES ****************************************************/
+
+
+/** BEGIN_UNPACKER *****************************************************
+ *
+ * Event unpacker for EVENT.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// EVENT
+template<typename __data_src_t>
+int unpack_event::__unpack_subevent(subevent_header *__header,__data_src_t &__buffer)
+  // bplast = bplast_subev(type=10,subtype=1,procid=80,control=20,subcrate=0);
+{
+  int __match_no = 0;
+  MATCH_SUBEVENT_DECL(257,__match_no,1,((VES10_1_type==10)&&(VES10_1_subtype==1)&&(VES10_1_control==20)&&(VES10_1_subcrate==0)&&(VES10_1_procid==80)),bplast);
+  if (!__match_no) return 0;
+  switch (__match_no)
+  {
+    case 1:
+      UNPACK_SUBEVENT_CHECK_NO_REVISIT(257,bplast_subev,bplast,0);
+      UNPACK_SUBEVENT_DECL(257,0,bplast_subev,bplast);
+      break;
+  }
+  return 0;
+}
+FORCE_IMPL_DATA_SRC_FCN_HDR(int,unpack_event::__unpack_subevent);
+
+/** END_UNPACKER ******************************************************/
+
+
+/** BEGIN_PACKER *******************************************************
+ *
+ * Event packer for EVENT.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// EVENT
+  // bplast = bplast_subev(type=10,subtype=1,procid=80,control=20,subcrate=0);
+{
+}
+
+/** END_PACKER ********************************************************/
+
+
+/** BEGIN_REVOKE *******************************************************
+ *
+ * Event revoker for EVENT.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// EVENT
+int unpack_event::__revoke_subevent(subevent_header *__header)
+  // bplast = bplast_subev(type=10,subtype=1,procid=80,control=20,subcrate=0);
+{
+  int __match_no = 0;
+  MATCH_SUBEVENT_DECL(257,__match_no,1,((VES10_1_type==10)&&(VES10_1_subtype==1)&&(VES10_1_control==20)&&(VES10_1_subcrate==0)&&(VES10_1_procid==80)),bplast);
+  if (!__match_no) return 0;
+  switch (__match_no)
+  {
+    case 1:
+      UNPACK_SUBEVENT_CHECK_NO_REVISIT(257,bplast_subev,bplast,0);
+      REVOKE_SUBEVENT_DECL(257,0,bplast_subev,bplast);
+      break;
+  }
+  return 0;
+}
+
+/** END_REVOKE ********************************************************/
+
+
+/** BEGIN_SUBEVENT_NAMES ***********************************************
+ *
+ * Mappings of names for [incl|excl] name lookup.
+ *
+ * Do not edit - automatically generated.
+ */
+
+{ "bplast", "type=10:subtype=1:procid=80:control=20:subcrate=0" },
+
+/** END_SUBEVENT_NAMES ************************************************/
+
+//
+// Generating code for EVENT
+//
+
+/** BEGIN_STRUCTURES ***************************************************
+ *
+ * Event unpacker associated structures for EVENT.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// STICKY_EVENT
+class unpack_sticky_event : public unpack_sticky_event_base
+{
+public:
+public:
+#ifndef __PSDC__
+  void __clear_visited() { }
+  bool ignore_unknown_subevent() { return false; }
+#endif//!__PSDC__
+
+public:
+#ifndef __PSDC__
+template<typename __data_src_t>
+  int __unpack_subevent(subevent_header *__header,__data_src_t &__buffer);
+  int __revoke_subevent(subevent_header *__header);
+  // void __clean_event();
+
+  STRUCT_FCNS_DECL(unpack_sticky_event);
+#endif//!__PSDC__
+};
+
+/** END_STRUCTURES ****************************************************/
+
+
+/** BEGIN_UNPACKER *****************************************************
+ *
+ * Event unpacker for EVENT.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// STICKY_EVENT
+template<typename __data_src_t>
+int unpack_sticky_event::__unpack_subevent(subevent_header *__header,__data_src_t &__buffer)
+{
+  int __match_no = 0;
+  if (!__match_no) return 0;
+  switch (__match_no)
+  {
+  }
+  return 0;
+}
+FORCE_IMPL_DATA_SRC_FCN_HDR(int,unpack_sticky_event::__unpack_subevent);
+
+/** END_UNPACKER ******************************************************/
+
+
+/** BEGIN_PACKER *******************************************************
+ *
+ * Event packer for EVENT.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// STICKY_EVENT
+{
+}
+
+/** END_PACKER ********************************************************/
+
+
+/** BEGIN_REVOKE *******************************************************
+ *
+ * Event revoker for EVENT.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// STICKY_EVENT
+int unpack_sticky_event::__revoke_subevent(subevent_header *__header)
+{
+  int __match_no = 0;
+  if (!__match_no) return 0;
+  switch (__match_no)
+  {
+  }
+  return 0;
+}
+
+/** END_REVOKE ********************************************************/
+
+
+/** BEGIN_SUBEVENT_NAMES ***********************************************
+ *
+ * Mappings of names for [incl|excl] name lookup.
+ *
+ * Do not edit - automatically generated.
+ */
+
+
+/** END_SUBEVENT_NAMES ************************************************/
+
+
+/** BEGIN_UNPACKER_DEFINES *********************************************
+ *
+ * Control
+ *
+ * Do not edit - automatically generated.
+ */
+
+#define STICKY_EVENT_IS_NONTRIVIAL  0
+
+
+/** END_UNPACKER_DEFINES **********************************************/
+
+/**********************************************************/
+/**********************************************************
+ * Generating event structure...
+ */
+
+
+/** BEGIN_EVENT_RAW_STRUCTURE ******************************************
+ *
+ * Event data structure.
+ *
+ * Do not edit - automatically generated.
+ */
+
+class raw_event : public raw_event_base
+{
+public:
+
+public:
+#ifndef __PSDC__
+  STRUCT_FCNS_DECL(raw_event);
+#endif//!__PSDC__
+} ;
+
+/** END_EVENT_RAW_STRUCTURE *******************************************/
+
+
+/** BEGIN_EVENT_CAL_STRUCTURE ******************************************
+ *
+ * Event data structure.
+ *
+ * Do not edit - automatically generated.
+ */
+
+class cal_event : public cal_event_base
+{
+public:
+
+public:
+#ifndef __PSDC__
+  STRUCT_FCNS_DECL(cal_event);
+#endif//!__PSDC__
+} ;
+
+/** END_EVENT_CAL_STRUCTURE *******************************************/
+
+
+/** BEGIN_EVENT_RAW_STRUCTURE ******************************************
+ *
+ * Event data structure.
+ *
+ * Do not edit - automatically generated.
+ */
+
+class raw_sticky : public raw_sticky_base
+{
+public:
+
+public:
+#ifndef __PSDC__
+  STRUCT_FCNS_DECL(raw_sticky);
+#endif//!__PSDC__
+} ;
+
+/** END_EVENT_RAW_STRUCTURE *******************************************/
+
+
+/** BEGIN_EVENT_DATA_MAPPING *******************************************
+ *
+ * Event data mapping.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// The order in this file does not matter.
+// This information parsed once and not treated eventwise,
+// it is used to initialize a structure.
+
+
+/** END_EVENT_DATA_MAPPING ********************************************/
+
+
+/** BEGIN_EVENT_DATA_MAPPING *******************************************
+ *
+ * Event data mapping.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// The order in this file does not matter.
+// This information parsed once and not treated eventwise,
+// it is used to initialize a structure.
+
+
+/** END_EVENT_DATA_MAPPING ********************************************/
+
+/**********************************************************/
+
+/** BEGIN_LOCATIONS ****************************************************
+ *
+ * File and line locations from the parsed specification files.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// It's left to the compiler to only store one copy of each
+// unique string.
+
+location spec_locations[] =
+{ 
+  { 2, 1, "gen_onlybPlast/reparse.uce" },
+  { 3, 1, "<built-in>" },
+  { 4, 1, "<command-line>" },
+  { 5, 1, "/usr/include/stdc-predef.h" },
+  { 6, 1, "<command-line>" },
+  { 7, 1, "gen_onlybPlast/reparse.uce" },
+  { 8, 12, "gen_onlybPlast/reparse.uce" },
+};
+
+/** END_LOCATIONS *****************************************************/
+
+
+/** BEGIN_ACCOUNT_IDS **************************************************
+ *
+ * Structure and identifier for raw data items.
+ *
+ * Do not edit - automatically generated.
+ */
+
+account_id _account_ids[] =
+{ 
+  { 0, "TAMEX4_EPOCH_DATA", "data" },
+  { 1, "TAMEX4_EPOCH_DATA", "data" },
+  { 2, "TAMEX4_HEADER", "trigger_window" },
+  { 3, "TAMEX4_HEADER", "trigger_window" },
+  { 4, "TAMEX4_PADDING", "padding" },
+  { 5, "TAMEX4_PADDING", "padding" },
+  { 6, "TAMEX4_TIME_DATA", "data" },
+  { 7, "TAMEX4_TIME_DATA", "data" },
+  { 8, "TAMEX4_SFP", "indicator" },
+  { 9, "TAMEX4_SFP", "data_size" },
+  { 10, "TAMEX4_SFP", "tdc_header" },
+  { 11, "TAMEX4_SFP", "error_bits" },
+  { 12, "TAMEX4_SFP", "trailer" },
+  { 13, "TAMEX4_SFP", "indicator" },
+  { 14, "TIMESTAMP_WHITERABBIT", "header" },
+  { 15, "TIMESTAMP_WHITERABBIT", "d1" },
+  { 16, "TIMESTAMP_WHITERABBIT", "d2" },
+  { 17, "TIMESTAMP_WHITERABBIT", "d3" },
+  { 18, "TIMESTAMP_WHITERABBIT", "d4" },
+  { 19, "TIMESTAMP_WHITERABBIT", "header" },
+  { 20, "TIMESTAMP_WHITERABBIT_EXTENDED", "header" },
+  { 21, "TIMESTAMP_WHITERABBIT_EXTENDED", "d1" },
+  { 22, "TIMESTAMP_WHITERABBIT_EXTENDED", "d2" },
+  { 23, "TIMESTAMP_WHITERABBIT_EXTENDED", "d3" },
+  { 24, "TIMESTAMP_WHITERABBIT_EXTENDED", "d4" },
+  { 25, "TIMESTAMP_WHITERABBIT_EXTENDED", "header" },
+  { 26, "WR_MULTI", "hi" },
+  { 27, "WR_MULTI", "lo" },
+  { 28, "WR_MULTI", "hi" },
+};
+
+#define NUM_ACCOUNT_IDS  29
+
+/** END_ACCOUNT_IDS ***************************************************/
+
