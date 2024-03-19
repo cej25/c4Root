@@ -12,10 +12,12 @@ ${C4ROOT_SOURCE_DIR}/c4data/germaniumData
 ${C4ROOT_SOURCE_DIR}/c4data/aidaData
 ${C4ROOT_SOURCE_DIR}/c4data/bplastData
 ${C4ROOT_SOURCE_DIR}/c4data/fatimaData
+${C4ROOT_SOURCE_DIR}/c4data/bgoData
 ${C4ROOT_SOURCE_DIR}/c4data/lisaData
 ${C4ROOT_SOURCE_DIR}/c4data/wrData
 ${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
 ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
+${C4ROOT_SOURCE_DIR}/c4data/baseData
 ${C4ROOT_SOURCE_DIR}/analysis
 ${C4ROOT_SOURCE_DIR}/analysis/pars
 ${C4ROOT_SOURCE_DIR}/analysis/offline
@@ -27,6 +29,7 @@ ${C4ROOT_SOURCE_DIR}/correlations
 ${C4ROOT_SOURCE_DIR}/c4source
 ${C4ROOT_SOURCE_DIR}/c4source/frs
 ${C4ROOT_SOURCE_DIR}/c4source/base
+${C4ROOT_SOURCE_DIR}/c4source/bplast
 )
 
 include_directories( ${INCLUDE_DIRECTORIES})
@@ -42,9 +45,11 @@ set(SRCS
 ./online/aida/AidaOnlineSpectra.cxx
 ./online/bplast/bPlastOnlineSpectra.cxx
 ./online/fatima/FatimaOnlineSpectra.cxx
+./online/fatima/FatimaVmeOnlineSpectra.cxx
 ./online/frs/FrsOnlineSpectra.cxx
 ./online/frs/FrsRawSpectra.cxx
 ./online/frs/FrsCalSpectra.cxx
+./online/bgo/BGOOnlineSpectra.cxx
 ./online/timemachine/TimeMachineOnline.cxx
 ./online/wr/WhiterabbitCorrelationOnline.cxx
 
@@ -55,11 +60,8 @@ set(SRCS
 ./correlations/FrsAidaCorrelations.cxx
 ./correlations/FrsFatimaCorrelations.cxx
 ./correlations/AidaFatimaCorrelations.cxx
-#./online/frs/FrsDetectorsOnline.cxx
-#./fatima_aida_correlations/FatimaAidaSpectra.cxx
-./online/fatima/FatimaTimingAnalysis.cxx
-./online/fatima/FatimaSinglesAnalysis.cxx
-#./online/TimeMachineOnline.cxx
+./nearline/fatima/FatimaTimingAnalysis.cxx
+./nearline/fatima/FatimaSinglesAnalysis.cxx
 #nearline
 # ./nearline/bPlastNearlineSpectra.cxx
 # ./nearline/AidaNearlineSpectra.cxx

@@ -4,6 +4,8 @@
 #include "FairTask.h"
 #include "TFolder.h"
 #include <vector>
+#include <map>
+#include "TCorrelationsConfiguration.h"
 
 class TClonesArray;
 class EventHeader;
@@ -22,6 +24,8 @@ class TimeMachineOnline : public FairTask
 
 
         void SetDetectorSystems(std::vector<TString> detectorsystems);
+
+        int* GetGateValues(std::string name1, std::string name2);
 
         virtual ~TimeMachineOnline();
 
@@ -42,6 +46,12 @@ class TimeMachineOnline : public FairTask
 
     
     private:
+
+        TCorrelationsConfiguration const* correl_config;
+
+        std::map<std::string, std::vector<int>> Correl;
+        std::map<std::string, std::vector<int>> TMGates;
+
         TClonesArray ** fTimeMachine;
         TimeMachineData* fTimeMachineHit;
 
@@ -50,7 +60,6 @@ class TimeMachineOnline : public FairTask
         int fNumDetectorSystems;
 
         EventHeader* header;
-
 
         // Canvas
         TCanvas* c_time_undelayed;
@@ -79,6 +88,8 @@ class TimeMachineOnline : public FairTask
 
         double diffs[20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
+        // 20?
+        uint64_t wr[20] = {0};
 
 
     public:

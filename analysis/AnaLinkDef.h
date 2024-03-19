@@ -13,10 +13,12 @@
 #pragma link C++ class FrsRawSpectra+;
 #pragma link C++ class FrsCalSpectra+;
 #pragma link C++ class GermaniumOnlineSpectra+;
+#pragma link C++ class BGOOnlineSpectra+;
 #pragma link C++ class bPlastOnlineSpectra+;
 #pragma link C++ class BeamMonitorOnlineSpectra+;
 #pragma link C++ class LisaOnlineSpectra+;
 #pragma link C++ class FatimaOnlineSpectra+;
+#pragma link C++ class FatimaVmeOnlineSpectra+;
 #pragma link C++ class TimeMachineOnline+;
 
 // nearline/correlations

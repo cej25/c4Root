@@ -1,4 +1,5 @@
 #include "FairRootManager.h"
+#include "FairRunOnline.h"
 #include "FairTask.h"
 
 #include "FrsAidaCorrelations.h"
@@ -9,9 +10,10 @@
 #include "c4Logger.h"
 
 #include <vector>
+#include "TDirectory.h"
+#include "THttpServer.h"
 
-FrsAidaCorrelations::FrsAidaCorrelations(std::vector<TCutGGates*> fFrsGates, 
-                                        CorrelationsMap* fCorrel)
+FrsAidaCorrelations::FrsAidaCorrelations(std::vector<TCutGGates*> fFrsGates)
     :   FairTask()
     ,   fNEvents(0)
     ,   header(nullptr)
@@ -43,7 +45,8 @@ FrsAidaCorrelations::FrsAidaCorrelations(std::vector<TCutGGates*> fFrsGates,
         }
     }
 
-    Correl = fCorrel;
+    correl_config = TCorrelationsConfiguration::GetInstance();
+    Correl = correl_config->CorrelationsMap();
 }
 
 FrsAidaCorrelations::FrsAidaCorrelations(const TString& name, Int_t verbose)
@@ -53,7 +56,8 @@ FrsAidaCorrelations::FrsAidaCorrelations(const TString& name, Int_t verbose)
     ,   fFrsHitArray(new TClonesArray("FrsHitData"))
     ,   fAidaImplants(new std::vector<AidaHit>)
 {
-
+    correl_config = TCorrelationsConfiguration::GetInstance();
+    Correl = correl_config->CorrelationsMap();
 }
 
 FrsAidaCorrelations::~FrsAidaCorrelations()
@@ -64,9 +68,11 @@ FrsAidaCorrelations::~FrsAidaCorrelations()
 
 InitStatus FrsAidaCorrelations::Init()
 {
-    c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
+
+    FairRunOnline* run = FairRunOnline::Instance();
+    run->GetHttpServer()->Register("", this);
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "EventHeader. not found!");
@@ -78,10 +84,18 @@ InitStatus FrsAidaCorrelations::Init()
     c4LOG_IF(fatal, !fAidaImplants, "Branch AidaImplantHits not found!");
 
     // clear stuff
+    
+    TDirectory::TContext ctx(nullptr);
 
-    frs_correlations = new TFolder("FRS_Correlations", "FRS_Correlations");
-    frs_aida_correlations = new TFolder("FRS-AIDA_Correlations", "FRS_AIDA_Correlations");
-    frs_correlations->Add(frs_aida_correlations);
+    folder_correlations = (TFolder*)mgr->GetObject("Correlations");
+    if (!folder_correlations)
+    {
+       folder_correlations = new TFolder("Correlations", "Correlations");
+       if (run) run->AddObject(folder_correlations);
+    }
+
+    frs_aida_correlations = new TFolder("FRS-AIDA Correlations", "FRS-AIDA Correlations");
+    folder_correlations->Add(frs_aida_correlations);
     frs_implant_correlations = new TFolder("FRS-Implant_Corr", "FRS-Implant_Corr");
     frs_stopped_implant_correlations = new TFolder("Stopped_FRS-Implant_Corr", "Stopped_FRS-Implant_Corr");
     frs_aida_correlations->Add(frs_implant_correlations);
@@ -265,7 +279,8 @@ void FrsAidaCorrelations::Exec(Option_t* option)
                 
                 if (hit.Time > 0 && FrsHit->Get_wr_t() > 0) h1_AidaImplant_FRS_dT->Fill(hit.Time - FrsHit->Get_wr_t());
 
-                if (hit.Time - FrsHit->Get_wr_t() > (*Correl)["FRS-AIDA WR Gate"][0] && hit.Time - FrsHit->Get_wr_t() < (*Correl)["FRS-AIDA WR Gate"][1])
+
+                if (hit.Time - FrsHit->Get_wr_t() > Correl["FRS-AIDA WR Gate"][0] && hit.Time - FrsHit->Get_wr_t() < Correl["FRS-AIDA WR Gate"][1])
                 {
                     h2_AidaImplant_FRS_x_vs_x4->Fill(hit.PosX, FrsHit->Get_ID_x4());
 
@@ -376,10 +391,7 @@ void FrsAidaCorrelations::FinishEvent()
 void FrsAidaCorrelations::FinishTask()
 {
     c4LOG(info, Form("Wrote %i events. ", fNEvents));
-    if (fFrsHitArray)
-    {
-        frs_correlations->Write();
-    }
+    folder_correlations->Write();
 }
 
 
