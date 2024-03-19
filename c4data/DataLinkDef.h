@@ -8,6 +8,8 @@
 
 #pragma link C++ class GermaniumFebexData+;
 #pragma link C++ class GermaniumCalData+;
+#pragma link C++ class BGOTwinpeaksData+;
+#pragma link C++ class BGOTwinpeaksCalData+;
 #pragma link C++ class FatimaTwinpeaksData+;
 #pragma link C++ class FatimaTwinpeaksCalData+;
 #pragma link C++ class FatimaVmeData+;

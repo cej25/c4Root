@@ -2,14 +2,14 @@
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define FATIMA_ON 1
-#define FATIMA_VME_ON 1
-#define AIDA_ON 0
-#define BPLAST_ON 0
+#define FATIMA_VME_ON 0
+#define AIDA_ON 1
+#define BPLAST_ON 1
 #define GERMANIUM_ON 0
-#define FRS_ON 0
-#define TIME_MACHINE_ON 0
+#define FRS_ON 1
+#define TIME_MACHINE_ON 1
 #define BEAMMONITOR_ON 0
-#define WHITE_RABBIT_CORS 0
+#define WHITE_RABBIT_CORS 1
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
@@ -64,10 +64,10 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    // TString filename = "stream://x86l-117";
-    // TString filename = "trans://lxg1257";
-    // TString filename = "trans://R4L-21";
-    //TString filename = "stream://R4L-36";
+    // TString filename = "stream://x86l-117"; // fatima tamex
+    // TString filename = "trans://lxg1257"; // timesorter
+    // TString filename = "trans://R4L-21"; // beammonitor
+    // TString filename = "stream://R4L-36"; // fatima vme
     TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
     //TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd ~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0025_0001.lmd";
     TString outputpath = "output";
@@ -145,7 +145,9 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
     TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_new.txt");
     // FRS? Eventually will get around to mapping crates properly
-    TGermaniumConfiguration::SetDetectorMapFile(config_path + "/germanium/Germanium_Detector_Map.txt");
+    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/Germanium_Detector_Map.txt");
+    //TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/somefile.txt");
+    
     
 
     // ------------------------------------------------------------------------------------- //
@@ -274,7 +276,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     {
         GermaniumRaw2Cal* calge = new GermaniumRaw2Cal();
         // these will not be need anymore with config class
-        calge->SetDetectorMapFile(config_path + "/germanium/Germanium_Detector_Map.txt");
+        //calge->SetDetectorConfigurationFile(config_path + "/germanium/Germanium_Detector_Map.txt");
         calge->PrintDetectorMap();
         
         calge->SetOnline(true);
@@ -408,23 +410,23 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         run->AddTask(tms);
     }
     
-//     WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-//     wronline->SetDetectorSystems({b, e});
-//     
-//     run->AddTask(wronline);
-
+    if (WHITE_RABBIT_CORS)
+    {
+        WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
+        wronline->SetDetectorSystems({b, d, e});
+    
+        run->AddTask(wronline);
+    }
 
     // ---------------------------------------------------------------------------------------- //
     // *** Correlations *********************************************************************** //
-// hey its me im the problem its me
+
     if (FATIMA_ON && FRS_ON)
     {
         FrsFatimaCorrelations* frsfatimacorr = new FrsFatimaCorrelations(FrsGates, FatimaPrompt);
         
         run->AddTask(frsfatimacorr);
     }
-    
-    // mayvbe its me tho
     
     if (AIDA_ON && FRS_ON)
     {

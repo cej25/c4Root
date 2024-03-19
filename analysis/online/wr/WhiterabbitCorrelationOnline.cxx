@@ -34,6 +34,7 @@ WhiterabbitCorrelationOnline::WhiterabbitCorrelationOnline(const TString& name, 
     , fHitFatimaTwinpeaks(NULL)
     , fHitbPlastTwinpeaks(NULL)
     , fHitGe(NULL)
+    , fAidaDecays(new std::vector<AidaHit>)
     , fNEvents(0)
     , header(nullptr)
 {
@@ -54,6 +55,10 @@ WhiterabbitCorrelationOnline::~WhiterabbitCorrelationOnline()
     if (fHitGe)
     {
         delete fHitGe;
+    }
+    if (fAidaDecays)
+    {
+        delete fAidaDecays;
     }
 }
 
@@ -103,6 +108,11 @@ InitStatus WhiterabbitCorrelationOnline::Init()
             fHitGe = (TClonesArray*)mgr->GetObject("GermaniumCalData");
             c4LOG_IF(error, !fHitGe, "Branch GermaniumCalData. not found");
         }
+        else if (fDetectorSystems.at(i) == "Aida")
+        {
+            fAidaDecays = mgr->InitObjectAs<decltype(fAidaDecays)>("AidaDecayHits");
+            c4LOG_IF(fatal, !fAidaDecays, "Branch fAidaDecayHits not found!");
+        }
         else
         {
             c4LOG(fatal, "Unknown detector system: " << fDetectorSystems.at(i));
@@ -130,6 +140,15 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     h1_whiterabbit_correlation_fatima_ge->Draw();
     folder_whiterabbit->Add(h1_whiterabbit_correlation_fatima_ge);
     c_whiterabbit_correlation_fatima_ge->cd(0);
+    
+    c_whiterabbit_correlation_fatima_aida = new TCanvas("c_whiterabbit_correlation_fatima_aida", "c_whiterabbit_correlation_fatima_aida", 10, 10, 800, 700);
+    c_whiterabbit_correlation_fatima_aida->cd();
+    h1_whiterabbit_correlation_fatima_aida = new TH1F("h1_whiterabbit_correlation_fatima_aida", "h1_whiterabbit_correlation_fatima_aida", 1000, -1e3, 5e5);
+    h1_whiterabbit_correlation_fatima_aida->GetXaxis()->SetTitle("Time difference(Fatima - AIDA) [ns]");
+    h1_whiterabbit_correlation_fatima_aida->GetYaxis()->SetTitle("Counts");
+    h1_whiterabbit_correlation_fatima_aida->Draw();
+    folder_whiterabbit->Add(h1_whiterabbit_correlation_fatima_aida);
+    c_whiterabbit_correlation_fatima_aida->cd(0);
 
     c_whiterabbit_correlation_bplast_ge = new TCanvas("c_whiterabbit_correlation_bplast_ge", "c_whiterabbit_correlation_bplast_ge", 10, 10, 800, 700);
     c_whiterabbit_correlation_bplast_ge->cd();
@@ -154,6 +173,7 @@ void WhiterabbitCorrelationOnline::Reset_Histo()
     h1_whiterabbit_correlation_bplast_fatima->Reset();
     h1_whiterabbit_correlation_fatima_ge->Reset();
     h1_whiterabbit_correlation_bplast_ge->Reset();
+    h1_whiterabbit_correlation_fatima_aida->Reset();
 }
 
 void WhiterabbitCorrelationOnline::Snapshot_Histo()
@@ -171,6 +191,7 @@ void WhiterabbitCorrelationOnline::Snapshot_Histo()
     c_whiterabbit_correlation_bplast_fatima->SaveAs("c_whiterabbit_correlation_bplast_fatima.png");
     c_whiterabbit_correlation_fatima_ge->SaveAs("c_whiterabbit_correlation_fatima_ge.png");
     c_whiterabbit_correlation_bplast_ge->SaveAs("c_whiterabbit_correlation_bplast_ge.png");
+    c_whiterabbit_correlation_fatima_aida->SaveAs("c_whiterabbit_correlation_fatima_aida.png");
 
     gSystem->cd("..");
 
@@ -181,6 +202,7 @@ void WhiterabbitCorrelationOnline::Snapshot_Histo()
     h1_whiterabbit_correlation_bplast_fatima->Write();
     h1_whiterabbit_correlation_fatima_ge->Write();
     h1_whiterabbit_correlation_bplast_ge->Write();
+    h1_whiterabbit_correlation_fatima_aida->Write();
     file_whiterabbit_snapshot->Close();
     delete file_whiterabbit_snapshot;
 
@@ -198,12 +220,15 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
     Int_t nHitsFatima = 0;
     Int_t nHitsbPlast = 0;
     Int_t nHitsGe = 0;
+    Int_t nHitsAida = 0;
 
     if (fHitFatimaTwinpeaks) nHitsFatima = fHitFatimaTwinpeaks->GetEntriesFast();
 
     if (fHitbPlastTwinpeaks) nHitsbPlast = fHitbPlastTwinpeaks->GetEntriesFast();
 
     if (fHitGe) nHitsGe = fHitGe->GetEntriesFast();
+    
+    //if (fAidaDecays) nHitsAida = fAidaDecays->GetEntries();
 
     if (fHitFatimaTwinpeaks && fHitbPlastTwinpeaks)
     {
@@ -219,6 +244,22 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
                     {
                         h1_whiterabbit_correlation_bplast_fatima->Fill(hitbPlast->Get_wr_t() - hitFatima->Get_wr_t());
                     }
+                }
+            }
+        }
+    }
+    // aida fatima
+    if (fHitFatimaTwinpeaks && fAidaDecays)
+    {
+        for (Int_t i = 0; i < nHitsFatima; i++)
+        {
+            FatimaTwinpeaksCalData* hitFatima = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(i);
+            if (hitFatima)
+            {
+                for (auto & j : *fAidaDecays)
+                {
+                    AidaHit hitAida = j;
+                    h1_whiterabbit_correlation_fatima_aida->Fill(hitAida.Time - hitFatima->Get_wr_t());
                 }
             }
         }

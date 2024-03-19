@@ -2,6 +2,7 @@
 #define WhiterabbitCorrelationOnline_H
 
 #include "FairTask.h"
+#include "AidaHitData.h"
 
 class TClonesArray;
 class EventHeader;
@@ -45,6 +46,7 @@ class WhiterabbitCorrelationOnline : public FairTask
         TClonesArray* fHitFatimaTwinpeaks;
         TClonesArray* fHitbPlastTwinpeaks;
         TClonesArray* fHitGe;
+        std::vector<AidaHit> const* fAidaDecays;
         TimeMachineData* fWhiterabbitHit;
 
         std::vector<TString> fDetectorSystems;
@@ -58,6 +60,7 @@ class WhiterabbitCorrelationOnline : public FairTask
         // Canvas
         TCanvas* c_whiterabbit_correlation;
         TCanvas* c_whiterabbit_correlation_bplast_fatima;
+        TCanvas* c_whiterabbit_correlation_fatima_aida;
         TCanvas* c_whiterabbit_correlation_bplast_ge;
         TCanvas* c_whiterabbit_correlation_fatima_ge;
 
@@ -71,6 +74,7 @@ class WhiterabbitCorrelationOnline : public FairTask
         TH1F* h1_whiterabbit_correlation_bplast_fatima;
         TH1F* h1_whiterabbit_correlation_bplast_ge;
         TH1F* h1_whiterabbit_correlation_fatima_ge;
+        TH1F* h1_whiterabbit_correlation_fatima_aida;
 
 
 
