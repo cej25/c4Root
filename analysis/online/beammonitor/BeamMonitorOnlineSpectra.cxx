@@ -225,6 +225,13 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     folder_beammonitor->Add(hG_BM_s2gr_dctime);
 
     // add S2 and S4 equivalent TGraphs to same canvas
+    c_quality_factor = new TCanvas("Quality Factors", "Quality Factors");
+    c_quality_factor->Divide(2, 1);
+    c_quality_factor->cd(1);
+    hG_BM_s2gr_qf->Draw();
+    c_quality_factor->cd(2);
+    hG_BM_s4gr_qf->Draw();
+    
 
     run->GetHttpServer()->RegisterCommand("Reset_BM_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
     run->GetHttpServer()->RegisterCommand("Snapshot_BM_Histos", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
@@ -344,7 +351,7 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
 
                     for (Int_t j = 0; j < BM_S2_MaxTdiffs; j++)
                     {
-                        hG_BM_s2h_norm_tdiff->SetBinContent(j, hG_BM_s4h_tdiff->GetBinContent(j) / BM_Tdiff_integral);
+                        hG_BM_s2h_norm_tdiff->SetBinContent(j, hG_BM_s2h_tdiff->GetBinContent(j) / BM_Tdiff_integral);
                         hG_BM_s2h_poisson->SetBinContent(j, -exp(-BM_CountRate * ((Double_t) j)) - exp(-BM_CountRate * ((Double_t) j+1)));
 
                         if (j == 0)

@@ -67,6 +67,7 @@ class BeamMonitorOnlineSpectra : public FairTask
         const Int_t BM_NTimeMax = 10000; // time axis displays for HitTimes [ms]
         const Int_t BM_MaxTimeDiff = 100000; // [100ns units]
 
+        TCanvas* c_quality_factor;
 
         TH1D* hG_BM_s4h_norm_tdiff;
         TH1D* hG_BM_s4h_tdiff;
