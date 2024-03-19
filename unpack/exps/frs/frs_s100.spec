@@ -36,6 +36,27 @@ ZERO_FILLER()
     }
 }
 
+// procID = 15
+
+VULOM_CRATE_DATE() 
+{
+    MEMBER(DATA16 tpat);
+    
+    wr = TIMESTAMP_WHITERABBIT(id=0x100);
+    
+    // first three words are meaningless
+    UINT32 w1;
+    UINT32 w1;
+    UINT32 w1;
+    
+    UINT32 trigger_pattern 
+    {
+        0_15: pattern;
+        16_31: nothing;
+        ENCODE(tpat, (value = pattern));
+    }
+    
+}
 
 // procID = 10
 MAIN_CRATE_DATA()

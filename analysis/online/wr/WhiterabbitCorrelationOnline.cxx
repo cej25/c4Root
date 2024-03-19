@@ -158,6 +158,8 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     h1_whiterabbit_correlation_bplast_ge->Draw();
     folder_whiterabbit->Add(h1_whiterabbit_correlation_bplast_ge);
     c_whiterabbit_correlation_bplast_ge->cd(0);
+    
+    // we should add many more!!!!!!
 
     run->GetHttpServer()->RegisterCommand("Reset_Whiterabbit_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
     run->GetHttpServer()->RegisterCommand("Snapshot_Whiterabbit_Hist", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
