@@ -288,7 +288,6 @@ void BeamMonitorOnlineSpectra::Snapshot_Histo()
 
 void BeamMonitorOnlineSpectra::Exec(Option_t* option)
 {   
-    
     if (fHitBM && fHitBM->GetEntriesFast() > 0)
     {
         Int_t nHits = fHitBM->GetEntriesFast();

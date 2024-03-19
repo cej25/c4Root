@@ -59,7 +59,7 @@ SUBEVENT(bm_subev)
 
 EVENT
 {
-    beammonitor = bm_subev(procid = 70);
+    beammonitor = bm_subev(procid = 1);
 
     ignore_unknown_subevent;
 }
