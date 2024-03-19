@@ -19,9 +19,9 @@ void run_bm_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fEx
 
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
-
-    TString filename = "~/lustre/gamma/beam_monitor_2021/s496_00**.lmd";
-    TString outputpath = "~/run_online_bm_test";
+        TString filename = "trans://R4L-21";
+    //TString filename = "~/lustre/gamma/beam_monitor_2021/s496_00**.lmd";
+    TString outputpath = "run_online_bm_test";
     TString outputFileName = outputpath + ".root";
 
     Int_t refresh = 10; // Refresh rate for online histograms
@@ -29,8 +29,8 @@ void run_bm_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fEx
      
     TString ntuple_options = "UNPACK";
    //TString ucesb_dir = getenv("UCESB_DIR"); // .bashrc
-    TString ucesb_dir = "~/c4Root/unpack/exps";
-    TString ucesb_path = ucesb_dir + "/beammonitor/beammonitor --allow-errors --input-buffer=200Mi --print --data";
+    TString ucesb_dir = "/u/despec/s100_online/c4Root/unpack/exps";
+    TString ucesb_path = ucesb_dir + "/beammonitor/beammonitor --allow-errors --input-buffer=200Mi";
     ucesb_path.ReplaceAll("//","/");
 
     // Create online run

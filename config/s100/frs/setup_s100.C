@@ -1212,6 +1212,4 @@ void setup(TFRSParameter* frs,
   range->ladder_2_in = false;
   range->ladder_2_slope = -0.01691;
 
-  cout << "Focus distance S4: " << frs->dist_focS4 << endl;
-  cout << "Setup done " << endl;
 }

@@ -5,7 +5,7 @@
 #include "AidaHitData.h"
 #include "../../config/setup.h"
 #include "TCutGGates.h"
-#include "CorrelationsMap.h"
+#include "TCorrelationsConfiguration.h"
 
 #include "TClonesArray.h"
 #include "TH1.h"
@@ -30,8 +30,7 @@ class TCutGGates;
 class FrsAidaCorrelations : public FairTask
 {
     public:
-        FrsAidaCorrelations(std::vector<TCutGGates*> fFrsGates, 
-                            CorrelationsMap* fCorrel);
+        FrsAidaCorrelations(std::vector<TCutGGates*> fFrsGates);
 
         FrsAidaCorrelations(const TString& name, Int_t verbose);
 
@@ -46,13 +45,15 @@ class FrsAidaCorrelations : public FairTask
 
     private:
 
+        TCorrelationsConfiguration const* correl_config;
+        std::map<std::string, std::vector<int>> Correl;
+
         TClonesArray* fFrsHitArray;
         std::vector<AidaHit> const* fAidaImplants;
 
         Int_t fNEvents;
         EventHeader* header;
 
-        CorrelationsMap* Correl;
 
         TFolder* folder_correlations;;
         TFolder* frs_aida_correlations;
