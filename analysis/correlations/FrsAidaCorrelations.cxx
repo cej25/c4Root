@@ -13,8 +13,7 @@
 #include "TDirectory.h"
 #include "THttpServer.h"
 
-FrsAidaCorrelations::FrsAidaCorrelations(std::vector<TCutGGates*> fFrsGates, 
-                                        CorrelationsMap* fCorrel)
+FrsAidaCorrelations::FrsAidaCorrelations(std::vector<TCutGGates*> fFrsGates)
     :   FairTask()
     ,   fNEvents(0)
     ,   header(nullptr)
@@ -46,7 +45,8 @@ FrsAidaCorrelations::FrsAidaCorrelations(std::vector<TCutGGates*> fFrsGates,
         }
     }
 
-    Correl = fCorrel;
+    correl_config = TCorrelationsConfiguration::GetInstance();
+    Correl = correl_config->CorrelationsMap();
 }
 
 FrsAidaCorrelations::FrsAidaCorrelations(const TString& name, Int_t verbose)
@@ -56,7 +56,8 @@ FrsAidaCorrelations::FrsAidaCorrelations(const TString& name, Int_t verbose)
     ,   fFrsHitArray(new TClonesArray("FrsHitData"))
     ,   fAidaImplants(new std::vector<AidaHit>)
 {
-
+    correl_config = TCorrelationsConfiguration::GetInstance();
+    Correl = correl_config->CorrelationsMap();
 }
 
 FrsAidaCorrelations::~FrsAidaCorrelations()
@@ -67,7 +68,6 @@ FrsAidaCorrelations::~FrsAidaCorrelations()
 
 InitStatus FrsAidaCorrelations::Init()
 {
-    c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
@@ -279,7 +279,8 @@ void FrsAidaCorrelations::Exec(Option_t* option)
                 
                 if (hit.Time > 0 && FrsHit->Get_wr_t() > 0) h1_AidaImplant_FRS_dT->Fill(hit.Time - FrsHit->Get_wr_t());
 
-                if (hit.Time - FrsHit->Get_wr_t() > (*Correl)["FRS-AIDA WR Gate"][0] && hit.Time - FrsHit->Get_wr_t() < (*Correl)["FRS-AIDA WR Gate"][1])
+
+                if (hit.Time - FrsHit->Get_wr_t() > Correl["FRS-AIDA WR Gate"][0] && hit.Time - FrsHit->Get_wr_t() < Correl["FRS-AIDA WR Gate"][1])
                 {
                     h2_AidaImplant_FRS_x_vs_x4->Fill(hit.PosX, FrsHit->Get_ID_x4());
 

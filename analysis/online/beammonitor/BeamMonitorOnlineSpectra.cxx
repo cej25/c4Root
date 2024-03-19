@@ -147,6 +147,10 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     hG_BM_s4gr_dctime->GetXaxis()->SetNdivisions(-4);
     folder_beammonitor->Add(hG_BM_s4gr_dctime);
 
+    hG_BM_S4_Tmean = new TH1D("hG_BM_S4_Tmean", "S4 Average time difference", 100000, 0, 100000);
+    folder_beammonitor->Add(hG_BM_S4_Tmean);
+
+
     hG_BM_s2h_norm_tdiff = new TH1D("hG_BM_s2h_norm_tdiff", "S2 Normalised Hit Time Difference [100ns]", 100000, 0, 100000);
     folder_beammonitor->Add(hG_BM_s2h_norm_tdiff);
     hG_BM_s2h_tdiff = new TH1D("hG_BM_s2h_tdiff", "S2 Hit Time Difference [100ns]", 100000, 0, 100000);
@@ -224,7 +228,17 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     hG_BM_s2gr_dctime->GetXaxis()->SetNdivisions(-4);
     folder_beammonitor->Add(hG_BM_s2gr_dctime);
 
+    hG_BM_S2_Tmean = new TH1D("hG_BM_S2_Tmean", "S2 Average time difference", 100000, 0, 100000);
+    folder_beammonitor->Add(hG_BM_S2_Tmean);
+
     // add S2 and S4 equivalent TGraphs to same canvas
+    c_quality_factor = new TCanvas("Quality Factors", "Quality Factors");
+    c_quality_factor->Divide(2, 1);
+    c_quality_factor->cd(1);
+    hG_BM_s2gr_qf->Draw();
+    c_quality_factor->cd(2);
+    hG_BM_s4gr_qf->Draw();
+
 
     run->GetHttpServer()->RegisterCommand("Reset_BM_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
     run->GetHttpServer()->RegisterCommand("Snapshot_BM_Histos", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
@@ -344,8 +358,8 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
 
                     for (Int_t j = 0; j < BM_S2_MaxTdiffs; j++)
                     {
-                        hG_BM_s2h_norm_tdiff->SetBinContent(j, hG_BM_s4h_tdiff->GetBinContent(j) / BM_Tdiff_integral);
-                        hG_BM_s2h_poisson->SetBinContent(j, -exp(-BM_CountRate * ((Double_t) j)) - exp(-BM_CountRate * ((Double_t) j+1)));
+                        hG_BM_s2h_norm_tdiff->SetBinContent(j, hG_BM_s2h_tdiff->GetBinContent(j) / BM_Tdiff_integral);
+                        hG_BM_s2h_poisson->SetBinContent(j, exp(-BM_CountRate * ((Double_t) j)) - exp(-BM_CountRate * ((Double_t) j+1)));
 
                         if (j == 0)
                         {
@@ -363,6 +377,8 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
                     BM_dc_MinBin = hG_BM_s2h_dc->GetMinimumBin();
                     BM_dc_MinValue = hG_BM_s2h_dc->GetBinContent(BM_dc_MinBin);
                     BM_Tmean = hG_BM_s2h_norm_tdiff->GetMean();
+
+                    hG_BM_S2_Tmean->Fill(BM_Tmean);
 
                     // QF
                     BM_QF = 100.0 * (1.0 - (hG_BM_s2h_norm_tdiff->Integral(0, (Int_t) BM_Tmean) / hG_BM_s2h_poisson->Integral(0, (Int_t) BM_Tmean)));
@@ -444,6 +460,8 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
                     BM_dc_MinBin = hG_BM_s4h_dc->GetMinimumBin();
                     BM_dc_MinValue = hG_BM_s4h_dc->GetBinContent(BM_dc_MinBin);
                     BM_Tmean = hG_BM_s4h_norm_tdiff->GetMean();
+
+                    hG_BM_S4_Tmean->Fill(BM_Tmean);
 
                     BM_QF = 100.0 * (1.0 - (hG_BM_s4h_norm_tdiff->Integral(0, (Int_t) BM_Tmean) / hG_BM_s4h_poisson->Integral(0, (Int_t) BM_Tmean)));
 

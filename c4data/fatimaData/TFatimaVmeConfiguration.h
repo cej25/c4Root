@@ -14,23 +14,36 @@ class TFatimaVmeConfiguration
     public:
         static TFatimaVmeConfiguration const* GetInstance();
         static void Create();
-        static void SetDetectorMapFile(std::string fp) { filepath = fp; }
+        static void SetDetectorMapFile(std::string fp) { mapfilepath = fp; }
+        static void Set_QDC_E_CalFile(std::string fp) { qdc_e_calfilepath = fp; }
+        static void Set_QDC_T_CalFile(std::string fp) { qdc_t_calfilepath = fp; }
+        static void Set_TDC_T_CalFile(std::string fp) { tdc_t_calfilepath = fp; }
 
         std::map<std::pair<int, int>, int> QDCMapping() const;
         int NQDCBoards() const;
         std::map<std::pair<int, int>, int> TDCMapping() const;
         int NTDCBoards() const;
+        int NDetectors() const;
         bool MappingLoaded() const;
         int TM_Undelayed() const;
         int TM_Delayed() const;
         int SC41L() const;
         int SC41R() const;
         std::set<int> ExtraSignals() const;
+        double** QDC_E_Calib() const;
+        double* QDC_T_Calib() const;
+        double* TDC_T_Calib() const;
 
     private:
-        static std::string filepath;
+        static std::string mapfilepath;
+        static std::string qdc_e_calfilepath;
+        static std::string qdc_t_calfilepath;
+        static std::string tdc_t_calfilepath;
         TFatimaVmeConfiguration();
         void ReadConfiguration();
+        void Read_QDC_E_Calibration();
+        void Read_QDC_T_Calibration();
+        void Read_TDC_T_Calibration();
 
         static TFatimaVmeConfiguration* instance;
 
@@ -38,7 +51,12 @@ class TFatimaVmeConfiguration
         std::map<std::pair<int, int>, int> dets_tdc;
         std::set<int> extra_signals;
 
-        int detectors;
+        double** calib_coeffs_QDC_E;
+        double** original_calib_coeffs_QDC_E;
+        double* calib_coeffs_TDC_T;
+        double* calib_coeffs_QDC_T;
+
+        int num_detectors;
         int num_qdc_boards;
         int num_tdc_boards;
 
@@ -48,6 +66,9 @@ class TFatimaVmeConfiguration
         int sc41r_d;
         int sc41l_a;
         int sc41r_a;
+        int bplast_up;
+        int bplast_down;
+        int bplast_coinc;
 
         bool DetectorMap_loaded = 0;
 
@@ -88,6 +109,11 @@ inline int TFatimaVmeConfiguration::NTDCBoards() const
     return num_tdc_boards;
 }
 
+inline int TFatimaVmeConfiguration::NDetectors() const
+{
+    return num_detectors;
+}
+
 inline bool TFatimaVmeConfiguration::MappingLoaded() const
 {
     return DetectorMap_loaded;
@@ -116,6 +142,21 @@ inline int TFatimaVmeConfiguration::SC41R() const
 inline std::set<int> TFatimaVmeConfiguration::ExtraSignals() const
 {
     return extra_signals;
+}
+
+inline double** TFatimaVmeConfiguration::QDC_E_Calib() const
+{
+    return calib_coeffs_QDC_E;
+}
+
+inline double* TFatimaVmeConfiguration::QDC_T_Calib() const
+{
+    return calib_coeffs_QDC_T;
+}
+
+inline double* TFatimaVmeConfiguration::TDC_T_Calib() const
+{
+    return calib_coeffs_TDC_T;
 }
 
 

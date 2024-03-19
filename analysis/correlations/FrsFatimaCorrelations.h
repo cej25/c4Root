@@ -5,7 +5,8 @@
 
 #include "FrsHitData.h"
 #include "FatimaTwinpeaksCalData.h"
-#include "CorrelationsMap.h"
+#include "TCorrelationsConfiguration.h"
+#include "TFatimaTwinpeaksConfiguration.h"
 
 #include "TFolder.h"
 #include "TH1.h"
@@ -14,6 +15,7 @@
 #include "TCutG.h"
 #include "TCutGGates.h"
 #include <vector>
+#include <map>
 
 class TClonesArray;
 class TFolder;
@@ -30,8 +32,7 @@ class FrsFatimaCorrelations : public FairTask
 {
     public:
         FrsFatimaCorrelations(std::vector<TCutGGates*> fFrsGates,
-                            TCutGGates* fFatimaPromptGates,
-                            CorrelationsMap* fCorrel);
+                            TCutGGates* fFatimaPromptGates);
         virtual ~FrsFatimaCorrelations();
 
         virtual InitStatus Init();
@@ -43,6 +44,10 @@ class FrsFatimaCorrelations : public FairTask
         virtual void FinishTask();
 
     private:
+
+        TCorrelationsConfiguration const* correl_config;
+        TFatimaTwinpeaksConfiguration const* fatima_config;
+        std::map<std::string, std::vector<int>> Correl;
 
         Int_t fNEvents;
         EventHeader* header;
@@ -58,8 +63,6 @@ class FrsFatimaCorrelations : public FairTask
         std::vector<TCutG*> cutID_dEdegZ;
         
         std::vector<TCutG*> cutFatima_EdT;
-
-        CorrelationsMap* Correl;
 
         // Folders
         TFolder* folder_correlations;

@@ -38,20 +38,20 @@
 #FATIMA channels end here#
 #####################
 #Non-Fatima channels: S41LA, S41RA, S41LD, S41RD, TGRaw, TGDel, bPlUp, bPlDn, bPlCoin
-36    10       4        13        16    1
-37    10       5        13        17    1
-38    10       6        13        18    1 
-39    10       7        13        19    1
-40    11       0        13        20    1
-41    11       1        13        21    1
-42    11       2        13        22    1
-43    11       3        13        23    1
-44    11       4        13        24    1
+SC41L_A 36    10       4        13        16    1
+SC41R_A 37    10       5        13        17    1
+SC41L_D 38    10       6        13        18    1 
+SC41R_D 39    10       7        13        19    1
+TimeMachineU 40    11       0        13        20    1
+TimeMachineD 41    11       1        13        21    1
+BPLAST_UP 42    11       2        13        22    1
+BPLAST_DOWN 43    11       3        13        23    1
+BPLAST_COINC 44    11       4        13        24    1
 #bPlast channels 
-45    11       5        13        25    1
-46    11       6        13        26    1
-47    11       7        13        27    1
-48    12       0        13        28    1
-49    12       1        13        29    1
-50    12       2        13        30    1 
-51        12       3        13        31    1
+BPLAST 45    11       5        13        25    1
+BPLAST 46    11       6        13        26    1
+BPLAST 47    11       7        13        27    1
+BPLAST 48    12       0        13        28    1
+BPLAST 49    12       1        13        29    1
+BPLAST 50    12       2        13        30    1 
+BLPAST 51    12       3        13        31    1

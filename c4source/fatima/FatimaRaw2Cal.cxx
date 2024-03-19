@@ -209,6 +209,7 @@ void FatimaRaw2Cal::Exec(Option_t* option)
                     if (detector_id == -1) { fNunmatched++; continue; }
                 }
             }
+            
 
 
             if (funcal_hit_next->Get_trail_epoch_counter() == 0 || funcal_hit_next->Get_lead_epoch_counter() == 0) continue; // missing trail in either
@@ -233,10 +234,10 @@ void FatimaRaw2Cal::Exec(Option_t* option)
                             + static_cast<double>(funcal_hit_next->Get_trail_coarse_T()) * 5.0
                             - static_cast<double>(funcal_hit_next->Get_trail_fine_T());
 
+            
             fast_ToT =  fast_trail_time - fast_lead_time;
             // find the slow ToT without encountering round-off errors?:
             slow_ToT =  (double)(funcal_hit_next->Get_trail_epoch_counter() - funcal_hit_next->Get_lead_epoch_counter())*10.24e3 +  (double)(funcal_hit_next->Get_trail_coarse_T() - funcal_hit_next->Get_lead_coarse_T())*5.0 - (funcal_hit_next->Get_trail_fine_T() - funcal_hit_next->Get_lead_fine_T());
-
             
             //if (detector_id == 0 || detector_id == 1) c4LOG(info,Form("id = %i, fast lead = %f, fast trail = %f, fast ToT = %f",detector_id,fast_lead_time,fast_trail_time,fast_ToT));
 
@@ -259,6 +260,7 @@ void FatimaRaw2Cal::Exec(Option_t* option)
                     energy = slow_ToT;
                 }
             }
+            
 
             if (((detector_id == fatima_configuration->TM_Delayed()) || (detector_id == fatima_configuration->TM_Undelayed())) && fatima_configuration->TM_Delayed() != 0 && fatima_configuration->TM_Undelayed() != 0)
             {
