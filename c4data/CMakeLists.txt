@@ -8,9 +8,11 @@ ${C4ROOT_SOURCE_DIR}/c4data/lisaData
 ${C4ROOT_SOURCE_DIR}/c4data/aidaData
 ${C4ROOT_SOURCE_DIR}/c4data/fatimaData
 ${C4ROOT_SOURCE_DIR}/c4data/bplastData
+${C4ROOT_SOURCE_DIR}/c4data/bgoData
 ${C4ROOT_SOURCE_DIR}/c4data/germaniumData
 ${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
 ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
+${C4ROOT_SOURCE_DIR}/c4data/baseData
 ${C4ROOT_SOURCE_DIR}/c4source
 ${C4ROOT_SOURCE_DIR}/c4source/frs
 )
@@ -41,15 +43,23 @@ aidaData/AidaHitData.cxx
 aidaData/TAidaConfiguration.cxx
 germaniumData/GermaniumFebexData.cxx
 germaniumData/GermaniumCalData.cxx
+germaniumData/TGermaniumConfiguration.cxx
 bplastData/bPlastTwinpeaksData.cxx
 bplastData/bPlastTwinpeaksCalData.cxx
+bplastData/TbPlastConfiguration.cxx
 beammonitorData/BeamMonitorData.cxx
 fatimaData/FatimaTwinpeaksData.cxx
 fatimaData/FatimaTwinpeaksCalData.cxx
+fatimaData/TFatimaTwinpeaksConfiguration.cxx
+bgoData/BGOTwinpeaksData.cxx
+bgoData/BGOTwinpeaksCalData.cxx
+bgoData/TBGOTwinpeaksConfiguration.cxx
+fatimaData/TFatimaVmeConfiguration.cxx
 fatimaData/FatimaVmeData.cxx
 fatimaData/FatimaVmeCalData.cxx
 timemachineData/TimeMachineData.cxx
 frsData/TFRSParameter.cxx
+baseData/TCorrelationsConfiguration.cxx
 )
 
 # fill list of header files from list of source files by exchanging the file extension
