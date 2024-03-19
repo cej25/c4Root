@@ -10,6 +10,7 @@
 #include "EventHeader.h"
 #include "TimeMachineData.h"
 #include "FatimaTwinpeaksCalData.h"
+#include "FatimaVmeCalData.h"
 #include "bPlastTwinpeaksCalData.h"
 #include "GermaniumCalData.h"
 
@@ -47,6 +48,10 @@ WhiterabbitCorrelationOnline::~WhiterabbitCorrelationOnline()
     if (fHitFatimaTwinpeaks)
     {
         delete fHitFatimaTwinpeaks;
+    }
+    if (fHitFatimaVme)
+    {
+        delete fHitFatimaVme;
     }
     if (fHitbPlastTwinpeaks)
     {
@@ -103,6 +108,11 @@ InitStatus WhiterabbitCorrelationOnline::Init()
             fHitFatimaTwinpeaks = (TClonesArray*)mgr->GetObject("FatimaTwinpeaksCalData");
             c4LOG_IF(error, !fHitFatimaTwinpeaks, "Branch FatimaTwinpeaksCalData. not found");
         }
+        else if (fDetectorSystems.at(i) == "FatimaVme")
+        {
+            fHitFatimaVme = (TClonesArray*)mgr->GetObject("FatimaVmeCalData");
+            c4LOG_IF(error, !fHitFatimaVme, "Branch FatimaVmeCalData. not found");
+        }
         else if (fDetectorSystems.at(i) == "Germanium")
         {
             fHitGe = (TClonesArray*)mgr->GetObject("GermaniumCalData");
@@ -122,11 +132,26 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     folder_whiterabbit = new TFolder("Whiterabbit Subsystem Correlation", "Whiterabbit Subsystem Correlation");
 
     run->AddObject(folder_whiterabbit);
+    
+    // AIDA 
+    // AIDA - Fatima
+    // AIDA - FatimaVme
+    // AIDA - bPlast
+    // AIDA - Germanium
+    
+    // FATIMA
+    // Fatima - FatimaVme
+    // Fatima - bPlast
+    // Fatima - Germanium
+    
+    // FatimaVme
+    // FatimaVme - bPlast
+    // FatimaVme = 
 
-    c_whiterabbit_correlation_bplast_fatima = new TCanvas("c_whiterabbit_correlation_bplast_fatima", "c_whiterabbit_correlation_bplast_fatima", 10, 10, 800, 700);
+    c_whiterabbit_correlation_bplast_fatima = new TCanvas("c_whiterabbit_correlation_bplast_fatima", "bPlast - FATIMA WR dT", 10, 10, 800, 700);
     c_whiterabbit_correlation_bplast_fatima->cd();
-    h1_whiterabbit_correlation_bplast_fatima = new TH1F("h1_whiterabbit_correlation_bplast_fatima", "h1_whiterabbit_correlation_bplast_fatima", 1000, -1e3, 1e3);
-    h1_whiterabbit_correlation_bplast_fatima->GetXaxis()->SetTitle("Time difference(bPlast - Fatima) [ns]");
+    h1_whiterabbit_correlation_bplast_fatima = new TH1F("h1_whiterabbit_correlation_bplast_fatima", "bPlast - FATIMA WR dT", 1000, -1e3, 1e3);
+    h1_whiterabbit_correlation_bplast_fatima->GetXaxis()->SetTitle("Time difference(bPlast - FATIMA) [ns]");
     h1_whiterabbit_correlation_bplast_fatima->GetYaxis()->SetTitle("Counts");
     h1_whiterabbit_correlation_bplast_fatima->Draw();
     folder_whiterabbit->Add(h1_whiterabbit_correlation_bplast_fatima);
@@ -134,26 +159,26 @@ InitStatus WhiterabbitCorrelationOnline::Init()
 
     c_whiterabbit_correlation_fatima_ge = new TCanvas("c_whiterabbit_correlation_fatima_ge", "c_whiterabbit_correlation_fatima_ge", 10, 10, 800, 700);
     c_whiterabbit_correlation_fatima_ge->cd();
-    h1_whiterabbit_correlation_fatima_ge = new TH1F("h1_whiterabbit_correlation_fatima_ge", "h1_whiterabbit_correlation_fatima_ge", 1000, -1e3, 1e3);
-    h1_whiterabbit_correlation_fatima_ge->GetXaxis()->SetTitle("Time difference(Fatima - Germanium) [ns]");
+    h1_whiterabbit_correlation_fatima_ge = new TH1F("h1_whiterabbit_correlation_fatima_ge", "FATIMA - DEGAS WR dT", 1000, -1e3, 1e5);
+    h1_whiterabbit_correlation_fatima_ge->GetXaxis()->SetTitle("Time difference(FATIMA - DEGAS) [ns]");
     h1_whiterabbit_correlation_fatima_ge->GetYaxis()->SetTitle("Counts");
     h1_whiterabbit_correlation_fatima_ge->Draw();
     folder_whiterabbit->Add(h1_whiterabbit_correlation_fatima_ge);
     c_whiterabbit_correlation_fatima_ge->cd(0);
     
-    c_whiterabbit_correlation_fatima_aida = new TCanvas("c_whiterabbit_correlation_fatima_aida", "c_whiterabbit_correlation_fatima_aida", 10, 10, 800, 700);
+    c_whiterabbit_correlation_fatima_aida = new TCanvas("c_whiterabbit_correlation_fatima_aida", "AIDA - FATIMA WR dT", 10, 10, 800, 700);
     c_whiterabbit_correlation_fatima_aida->cd();
-    h1_whiterabbit_correlation_fatima_aida = new TH1F("h1_whiterabbit_correlation_fatima_aida", "AIDA-FATIMA WR dT", 1000, -1e3, 5e5);
+    h1_whiterabbit_correlation_fatima_aida = new TH1F("h1_whiterabbit_correlation_fatima_aida", "AIDA - FATIMA WR dT", 1000, -1e3, 5e4);
     h1_whiterabbit_correlation_fatima_aida->GetXaxis()->SetTitle("Time difference(AIDA - FATIMA) [ns]");
     h1_whiterabbit_correlation_fatima_aida->GetYaxis()->SetTitle("Counts");
     h1_whiterabbit_correlation_fatima_aida->Draw();
     folder_whiterabbit->Add(h1_whiterabbit_correlation_fatima_aida);
     c_whiterabbit_correlation_fatima_aida->cd(0);
 
-    c_whiterabbit_correlation_bplast_ge = new TCanvas("c_whiterabbit_correlation_bplast_ge", "c_whiterabbit_correlation_bplast_ge", 10, 10, 800, 700);
+    c_whiterabbit_correlation_bplast_ge = new TCanvas("c_whiterabbit_correlation_bplast_ge", "bPlast - DEGAS WR dT", 10, 10, 800, 700);
     c_whiterabbit_correlation_bplast_ge->cd();
-    h1_whiterabbit_correlation_bplast_ge = new TH1F("h1_whiterabbit_correlation_bplast_ge", "h1_whiterabbit_correlation_bplast_ge",1000, -1e3, 1e3);
-    h1_whiterabbit_correlation_bplast_ge->GetXaxis()->SetTitle("Time difference(bPlast - Germanium) [ns]");
+    h1_whiterabbit_correlation_bplast_ge = new TH1F("h1_whiterabbit_correlation_bplast_ge", "bPlast - DEGAS WR dT",1000, -1e3, 1e3);
+    h1_whiterabbit_correlation_bplast_ge->GetXaxis()->SetTitle("Time difference(bPlast - DEGAS) [ns]");
     h1_whiterabbit_correlation_bplast_ge->GetYaxis()->SetTitle("Counts");
     h1_whiterabbit_correlation_bplast_ge->Draw();
     folder_whiterabbit->Add(h1_whiterabbit_correlation_bplast_ge);

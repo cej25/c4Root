@@ -44,6 +44,7 @@ class WhiterabbitCorrelationOnline : public FairTask
     
     private:
         TClonesArray* fHitFatimaTwinpeaks;
+        TClonesArray* fHitFatimaVme;
         TClonesArray* fHitbPlastTwinpeaks;
         TClonesArray* fHitGe;
         std::vector<AidaHit> const* fAidaDecays;
