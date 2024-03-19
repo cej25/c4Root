@@ -359,7 +359,7 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
                     for (Int_t j = 0; j < BM_S2_MaxTdiffs; j++)
                     {
                         hG_BM_s2h_norm_tdiff->SetBinContent(j, hG_BM_s2h_tdiff->GetBinContent(j) / BM_Tdiff_integral);
-                        hG_BM_s2h_poisson->SetBinContent(j, -exp(-BM_CountRate * ((Double_t) j)) - exp(-BM_CountRate * ((Double_t) j+1)));
+                        hG_BM_s2h_poisson->SetBinContent(j, exp(-BM_CountRate * ((Double_t) j)) - exp(-BM_CountRate * ((Double_t) j+1)));
 
                         if (j == 0)
                         {
