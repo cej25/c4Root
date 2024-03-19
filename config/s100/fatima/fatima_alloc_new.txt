@@ -2,19 +2,19 @@
 #detector mapping:
 #Time machines:
 TimeMachineU 0   1   16
-TimeMachineD 0   2   17
+TimeMachineD 0   5   17
 #SCI41L
-SC41L_D 0   3   18
+SC41L_D 0   8   18
 #SCI41R
-SC41R_D 0   4   19
+SC41R_D 0   100   19
 #FRS accepted trigger
-FRS_ACCEPT 0   5   20
+FRS_ACCEPT 0   6   20
 #empyt
 0   6   21
 #bPlast accepted triggers
 BPLAST_ACCEPT 0   7   22
 #bPlast free trigger
-BPLAST_FREE 0   8   23
+BPLAST_FREE 0   101   23
 #empty:
 0   9   24
 0   10  25

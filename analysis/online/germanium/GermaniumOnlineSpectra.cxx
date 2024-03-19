@@ -24,6 +24,7 @@
 #include "TMath.h"
 #include "TRandom.h"
 #include "TFile.h"
+#include "TDirectory.h"
 
 GermaniumOnlineSpectra::GermaniumOnlineSpectra() : GermaniumOnlineSpectra("GermaniumOnlineSpectra")
 {
@@ -79,7 +80,8 @@ InitStatus GermaniumOnlineSpectra::Init()
     }
 
     number_of_detectors_to_plot = crystals_to_plot.size();
-
+    
+    TDirectory::TContext ctx(nullptr);
 
     folder_germanium = new TFolder("DEGAS", "DEGAS");
 
@@ -102,7 +104,7 @@ InitStatus GermaniumOnlineSpectra::Init()
     h1_germanium_energy = new TH1F*[number_of_detectors_to_plot];
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
         c_germanium_energy->cd(ihist+1);
-        h1_germanium_energy[ihist] = new TH1F(Form("h1_germanium_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,10e3);
+        h1_germanium_energy[ihist] = new TH1F(Form("h1_germanium_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,8e6);
         h1_germanium_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
         h1_germanium_energy[ihist]->Draw();
         folder_germanium_energy->Add(h1_germanium_energy[ihist]);

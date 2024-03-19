@@ -280,7 +280,10 @@ void TimeMachineOnline::Exec(Option_t* option) // if two machines (undelayed + d
         {
             std::string systemName2 = fDetectorSystems[ihist2].Data();
             uint64_t wr_t2 = wr[ihist2];
-            uint64_t wr_diff = wr_t1 - wr_t2;            
+            uint64_t wr_diff = wr_t1 - wr_t2;
+
+            if (systemName1 == "Aida") {wr_diff -= 14000;}
+            else if (systemName2 == "Aida") {wr_diff += 14000;}
 
             if((diffs[ihist]!=0) && (diffs[ihist2]!=0) && wr_diff > TMGates[Form("%s-%s TM Gate", systemName1.c_str(), systemName2.c_str())][0] && wr_diff < TMGates[Form("%s-%s TM Gate", systemName1.c_str(), systemName2.c_str())][1])
             {

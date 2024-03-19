@@ -103,7 +103,7 @@ InitStatus WhiterabbitCorrelationOnline::Init()
             fHitFatimaTwinpeaks = (TClonesArray*)mgr->GetObject("FatimaTwinpeaksCalData");
             c4LOG_IF(error, !fHitFatimaTwinpeaks, "Branch FatimaTwinpeaksCalData. not found");
         }
-        else if (fDetectorSystems.at(i) == "Ge")
+        else if (fDetectorSystems.at(i) == "Germanium")
         {
             fHitGe = (TClonesArray*)mgr->GetObject("GermaniumCalData");
             c4LOG_IF(error, !fHitGe, "Branch GermaniumCalData. not found");
@@ -143,8 +143,8 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     
     c_whiterabbit_correlation_fatima_aida = new TCanvas("c_whiterabbit_correlation_fatima_aida", "c_whiterabbit_correlation_fatima_aida", 10, 10, 800, 700);
     c_whiterabbit_correlation_fatima_aida->cd();
-    h1_whiterabbit_correlation_fatima_aida = new TH1F("h1_whiterabbit_correlation_fatima_aida", "h1_whiterabbit_correlation_fatima_aida", 1000, -1e3, 5e5);
-    h1_whiterabbit_correlation_fatima_aida->GetXaxis()->SetTitle("Time difference(Fatima - AIDA) [ns]");
+    h1_whiterabbit_correlation_fatima_aida = new TH1F("h1_whiterabbit_correlation_fatima_aida", "AIDA-FATIMA WR dT", 1000, -1e3, 5e5);
+    h1_whiterabbit_correlation_fatima_aida->GetXaxis()->SetTitle("Time difference(AIDA - FATIMA) [ns]");
     h1_whiterabbit_correlation_fatima_aida->GetYaxis()->SetTitle("Counts");
     h1_whiterabbit_correlation_fatima_aida->Draw();
     folder_whiterabbit->Add(h1_whiterabbit_correlation_fatima_aida);

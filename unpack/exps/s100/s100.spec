@@ -56,6 +56,8 @@ SUBEVENT(fatima_tamex_subev)
     {
         tamex[0] = TAMEX4_SFP(sfp = 0, card = 0);
         tamex[1] = TAMEX4_SFP(sfp = 0, card = 1);
+        tamex[2] = TAMEX4_SFP(sfp = 0, card = 2);
+        tamex[3] = TAMEX4_SFP(sfp = 0, card = 3);
     };
 }
 
@@ -120,6 +122,10 @@ SUBEVENT(bplast_subev)
         tamex[2] = TAMEX4_SFP(sfp = 0, card = 2);
         tamex[3] = TAMEX4_SFP(sfp = 0, card = 3);
         tamex[4] = TAMEX4_SFP(sfp = 0, card = 4);
+        tamex[5] = TAMEX4_SFP(sfp = 0, card = 5);
+        tamex[6] = TAMEX4_SFP(sfp = 0, card = 6);
+        tamex[7] = TAMEX4_SFP(sfp = 0, card = 7);
+        tamex[8] = TAMEX4_SFP(sfp = 0, card = 8);
     };
 }
 

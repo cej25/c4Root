@@ -4,9 +4,9 @@
 #define FATIMA_ON 1
 #define FATIMA_VME_ON 0
 #define AIDA_ON 1
-#define BPLAST_ON 1
-#define GERMANIUM_ON 0
-#define FRS_ON 1
+#define BPLAST_ON 0
+#define GERMANIUM_ON 1
+#define FRS_ON 0
 #define TIME_MACHINE_ON 1
 #define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 1
@@ -59,16 +59,17 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     std::ostringstream oss;
     oss << std::put_time(&tm, "%Y%m%d_%H%M%S");
     timer.Start();
-
+    
+    // Set level of debug information
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     // TString filename = "stream://x86l-117"; // fatima tamex
-    // TString filename = "trans://lxg1257"; // timesorter
+    TString filename = "trans://lxg1257"; // timesorter
     // TString filename = "trans://R4L-21"; // beammonitor
     // TString filename = "stream://R4L-36"; // fatima vme
-    TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
+    //TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
     //TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd ~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0025_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
@@ -137,7 +138,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
     TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_new.txt");
-    TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(config_path + "/fatima/fatima_cal.txt");
+    //TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(config_path + "/fatima/fatima_cal.txt");
     TFatimaVmeConfiguration::SetDetectorMapFile(config_path + "/fatima/Fatima_VME_allocation.txt");
     TFatimaVmeConfiguration::Set_QDC_E_CalFile(config_path + "/fatima/Fatima_QDC_Energy_Calibration.txt");
     TFatimaVmeConfiguration::Set_QDC_T_CalFile(config_path + "/fatima/Fatima_QDC_Time_Calibration.txt");
@@ -145,7 +146,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
     TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_new.txt");
     // FRS? Eventually will get around to mapping crates properly
-    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/Germanium_Detector_Map.txt");
+    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/Germanium_Detector_Map_mar19.txt");
     //TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/somefile.txt");
     
     
@@ -161,8 +162,8 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (FATIMA_ON)
     {
         FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-        //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_histos_18mar.root", 100000);
-        unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_histos_18mar.root");
+        //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_histos_19mar.root", 1000000);
+        unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_histos_19mar.root");
 
         unpackfatima->SetOnline(true);
         source->AddReader(unpackfatima);
@@ -235,7 +236,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (FATIMA_ON)
     {
         FatimaRaw2Cal* calfatima = new FatimaRaw2Cal();
-        // calfatima->PrintDetectorMap();
+        calfatima->PrintDetectorMap();
         // calfatima->PrintDetectorCal();
         
         calfatima->SetOnline(true);
@@ -278,7 +279,6 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         // these will not be need anymore with config class
         //calge->SetDetectorConfigurationFile(config_path + "/germanium/Germanium_Detector_Map.txt");
         calge->PrintDetectorMap();
-        
         calge->SetOnline(true);
         run->AddTask(calge);
     }
@@ -319,7 +319,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         
         hitfrs->SetOnline(true); 
         run->AddTask(hitfrs);
-    }
+    } 
 
 
 
@@ -340,7 +340,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         std::vector<int> fat_dets = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63};
         onlinefatima->SetDetectorsToPlot(fat_dets);
         
-        std::vector<int> fat_ref_dets = {0,1,2};
+        std::vector<int> fat_ref_dets = {0,1,2,16,17};
         onlinefatima->SetReferenceDetectorsForTimeDifferences(fat_ref_dets);
         
         run->AddTask(onlinefatima);
@@ -371,7 +371,9 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (GERMANIUM_ON)
     {
         GermaniumOnlineSpectra* onlinege = new GermaniumOnlineSpectra();
-        
+        onlinege->SetBinningEnergy(1500,0,8e6);
+        onlinege->AddReferenceDetector(13,0);
+
         run->AddTask(onlinege);
     }
     
@@ -404,7 +406,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {b, d, e};
+        std::vector a {b, d, f};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
@@ -413,7 +415,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({b, d, e});
+        wronline->SetDetectorSystems({b, d, f});
     
         run->AddTask(wronline);
     }
