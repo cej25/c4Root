@@ -4,14 +4,35 @@
 #include "../../common/whiterabbit.spec"
 #include "../../common/gsi_febex4.spec"
 #include "../../common/gsi_tamex4.spec"
-//#include "../../common/vme_caen_v1751.spec"
+#include "../../common/vme_caen_v1751.spec"
 //#include "../../common/vme_caen_v1x90.spec"
-//#include "../frs/frs_s100.spec"
-//#include "fatima_vme.spec"
+#include "../frs/frs_s100.spec" //r3b frs
+#include "fatima_vme.spec"
 
-//#define BM_MAX_HITS 100000
+#define BM_MAX_HITS 100000
+
+// making a change
 
 external EXT_AIDA();
+
+SUBEVENT(bgo_tamex_subevent)
+{
+    select optional
+    {
+        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x2000);
+    }
+    trigger_window = TAMEX4_HEADER();
+    select several 
+    {
+        padding = TAMEX4_PADDING();
+    }
+    select several
+    {
+        tamex[0] = TAMEX4_SFP(sfp=0,card=0);
+        tamex[1] = TAMEX4_SFP(sfp=0,card=1);
+    }  
+}
+
 
 SUBEVENT(aida_subev)
 {
@@ -61,7 +82,6 @@ SUBEVENT(fatima_tamex_subev)
     };
 }
 
-/*
 SUBEVENT(fatima_vme_subev)
 {
     ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1500);
@@ -81,7 +101,7 @@ SUBEVENT(fatima_vme_subev)
     qdc[1] = VME_CAEN_V1751();
     qdc[2] = VME_CAEN_V1751();
     qdc[3] = VME_CAEN_V1751();
-    qdc[4] = VME_CAEN_V1751();
+    //qdc[4] = VME_CAEN_V1751();
 
     select several
     {
@@ -244,21 +264,22 @@ SUBEVENT(bm_subev)
         16_31: l_id = MATCH(0xCCCC); // MATCH(0xCCCC);
     }
 }
-*/
+
 EVENT
 {
     revisit aida = aida_subev(type = 10, subtype = 1, procid = 90, control = 37);
     germanium = febex_subev(type = 10, subtype = 1, procid = 60, control = 20);
     fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = 75, control = 20);
-    //fatimavme = fatima_vme_subev(type = 10, subtype = 1, procid = 70, control = 20); // apparenlty there are fatimavme things in NovTest data..comment out
-    //bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20);
+    fatimavme = fatima_vme_subev(type = 10, subtype = 1, procid = 70, control = 20); // apparenlty there are fatimavme things in NovTest data..comment out
+    bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20);
+    //bgo = bgo_tamex_subevent(procid = 100);
 
-    //frsmain = frs_main_subev(procid = 10);
-    //frstpc = frs_tpc_subev(procid = 20);
-    //frsuser = frs_user_subev(procid = 30);
-    //frsvftx = frs_vftx_subev(procid = 40);
+    frsmain = frs_main_subev(procid = 10);
+    frstpc = frs_tpc_subev(procid = 20);
+    frsuser = frs_user_subev(procid = 30);
+    frsvftx = frs_vftx_subev(procid = 40);
     
-    //beammonitor = bm_subev(procid = 1);
+    beammonitor = bm_subev(procid = 1);
 
     ignore_unknown_subevent;
 };
