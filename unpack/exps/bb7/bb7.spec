@@ -2,27 +2,20 @@
 
 #include "../../common/whiterabbit.spec"
 #include "../../common/gsi_febex4.spec"
+#include "../../common/vme_caen_v7x5.spec"
 
-SUBEVENT(febex_subev)
+SUBEVENT(bb7_subev)
 {
-    ts = TIMESTAMP_WHITERABBIT(id = 0x400); // no idea about wr signal
-
-    select several
+    select optional 
     {
-        padding = FEBEX_PADDING();
-    };
+        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1800);
+    }
 
-    select several
-    {
-        data[0] = FEBEX_EVENT(card = 0);
-        data[1] = FEBEX_EVENT(card = 1);
-        data[2] = FEBEX_EVENT(card = 2);
-        data[3] = FEBEX_EVENT(card = 3);
-        // no idea about how many cards
-    };
+    // geo = 11
+    v7x5[0] = VME_CAEN_V7X5_FRS();
 }
 
 EVENT
 {
-    bb7 = febex_subev(); // no idea about identifiers
+    bb7 = bb7_subev(procid=31); // no idea about identifier
 }
