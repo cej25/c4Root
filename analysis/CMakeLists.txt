@@ -17,6 +17,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/wrData
 ${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
 ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
 ${C4ROOT_SOURCE_DIR}/c4data/baseData
+${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 ${C4ROOT_SOURCE_DIR}/analysis
 ${C4ROOT_SOURCE_DIR}/analysis/pars
 ${C4ROOT_SOURCE_DIR}/analysis/offline
@@ -29,6 +30,7 @@ ${C4ROOT_SOURCE_DIR}/c4source
 ${C4ROOT_SOURCE_DIR}/c4source/frs
 ${C4ROOT_SOURCE_DIR}/c4source/base
 ${C4ROOT_SOURCE_DIR}/c4source/bplast
+${C4ROOT_SOURCE_DIR}/c4source/bb7
 )
 
 include_directories( ${INCLUDE_DIRECTORIES})
@@ -50,6 +52,7 @@ set(SRCS
 ./online/frs/FrsCalSpectra.cxx
 ./online/timemachine/TimeMachineOnline.cxx
 ./online/wr/WhiterabbitCorrelationOnline.cxx
+./online/bb7/BB7OnlineSpectra.cxx
 
 # nearline/offline
 ./nearline/frs/FrsAnalysisSpectra.cxx

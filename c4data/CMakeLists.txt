@@ -12,6 +12,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/germaniumData
 ${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
 ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
 ${C4ROOT_SOURCE_DIR}/c4data/baseData
+${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 ${C4ROOT_SOURCE_DIR}/c4source
 ${C4ROOT_SOURCE_DIR}/c4source/frs
 )
@@ -54,6 +55,7 @@ fatimaData/TFatimaVmeConfiguration.cxx
 fatimaData/FatimaVmeData.cxx
 fatimaData/FatimaVmeCalData.cxx
 timemachineData/TimeMachineData.cxx
+bb7Data/BB7VmeData.cxx
 frsData/TFRSParameter.cxx
 baseData/TCorrelationsConfiguration.cxx
 )
