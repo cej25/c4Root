@@ -45,6 +45,8 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     //TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes";
     ucesb_path.ReplaceAll("//","/");
+    
+    std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
 
@@ -209,7 +211,13 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     // FATIMA
     FatimaRaw2Cal* calfatima = new FatimaRaw2Cal();
     // calfatima->PrintDetectorMap();
+<<<<<<< HEAD
+    // calfatima->SetDetectorCalFile(std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/fatima_cal.txt");
     // calfatima->PrintDetectorCal();
+    // calfatima->SetTimeMachineChannels(16,17);
+=======
+    // calfatima->PrintDetectorCal();
+>>>>>>> b9ece12bcb09f6ab13a372e37a7269ffc08a90cd
 
     // FatimaVmeRaw2Cal* calfatimavme = new FatimaVmeRaw2Cal();
     // calfatimavme->Load_QDC_Energy_Calibration_File(config_path + "/fatima/Fatima_QDC_Energy_Calibration.txt");
@@ -219,6 +227,10 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
 
     // AIDA
     AidaUnpack2Cal* aidaCalibrator = new AidaUnpack2Cal();
+<<<<<<< HEAD
+    //aidaCalibrator->SetAidaTimeMachineChannels(4,3);
+=======
+>>>>>>> b9ece12bcb09f6ab13a372e37a7269ffc08a90cd
 
     // bPlast
     bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
@@ -321,9 +333,13 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     TString b = "Fatima";
     TString c = "AIDA";
     TString d = "bPlast";
+<<<<<<< HEAD
+    std::vector a {c, d};
+=======
     TString e = "FatimaVme";
     TString f = "Germanium";
     std::vector a {b, c, d};
+>>>>>>> e2675c86ea9e1bf701f35ad205d6e5fece834eb5
     tms->SetDetectorSystems(a);
 
     
@@ -342,12 +358,12 @@ void s100_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     // ---------------------------------------------------------------------------------------- //
     // *** Correlations *********************************************************************** //
 
-    FrsFatimaCorrelations* frsfatimacorr = new FrsFatimaCorrelations(FrsGates, FatimaPrompt, CorrMap);
+    //FrsFatimaCorrelations* frsfatimacorr = new FrsFatimaCorrelations(FrsGates, FatimaPrompt, CorrMap);
 
     FrsAidaCorrelations* frsaidacorr = new FrsAidaCorrelations(FrsGates, CorrMap);
 
     // Add 'Correlations' task to FairRun.
-    run->AddTask(frsfatimacorr);
+    //run->AddTask(frsfatimacorr);
     run->AddTask(frsaidacorr);
 
     

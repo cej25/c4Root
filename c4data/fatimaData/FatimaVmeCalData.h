@@ -13,6 +13,8 @@ class FatimaVmeCalData : public TObject
         virtual ~FatimaVmeCalData() {}
 
         // Getters
+        inline uint64_t Get_wr_t() { return fwr_t; }
+
         inline std::vector<uint32_t> Get_Singles_E() { return fsingles_e; }
         inline std::vector<uint32_t> Get_Singles_E_raw() { return fsingles_e_raw; }
         inline std::vector<uint32_t> Get_Singles_QDC_ID() { return fsingles_qdc_id; }
@@ -27,6 +29,10 @@ class FatimaVmeCalData : public TObject
         inline std::vector<uint32_t> Get_SC41R_hits() { return fsc41r_hits; }
         inline std::vector<uint32_t> Get_TM_undelayed_hits() { return ftm_undelayed_hits; }
         inline std::vector<uint32_t> Get_TM_delayed_hits() { return ftm_delayed_hits; }
+        inline std::vector<uint32_t> Get_SC41L_E_hits() { return fsc41l_e_hits; }
+        inline std::vector<uint32_t> Get_SC41R_E_hits() { return fsc41r_e_hits; }
+        inline std::vector<uint32_t> Get_TM_undelayed_E_hits() { return ftm_undelayed_e_hits; }
+        inline std::vector<uint32_t> Get_TM_delayed_E_hits() { return ftm_delayed_e_hits; }
         
         inline int Get_FatVME_Mult() { return ffatvme_mult; }
 
@@ -53,6 +59,10 @@ class FatimaVmeCalData : public TObject
         inline void Set_SC41R_hits(std::vector<uint32_t> sc41r) { fsc41r_hits = sc41r; }
         inline void Set_TM_undelayed_hits(std::vector<uint32_t> tm_u) { ftm_undelayed_hits = tm_u; }
         inline void Set_TM_delayed_hits(std::vector<uint32_t> tm_d) { ftm_delayed_hits = tm_d; }
+        inline void Set_SC41L_E_hits(std::vector<uint32_t> sc41l) { fsc41l_e_hits = sc41l; }
+        inline void Set_SC41R_E_hits(std::vector<uint32_t> sc41r) { fsc41r_e_hits = sc41r; }
+        inline void Set_TM_undelayed_E_hits(std::vector<uint32_t> tm_u) { ftm_undelayed_e_hits = tm_u; }
+        inline void Set_TM_delayed_E_hits(std::vector<uint32_t> tm_d) { ftm_delayed_e_hits = tm_d; }
 
         inline void Set_FatVME_Mult(int mult) { ffatvme_mult = mult; }
 
@@ -83,6 +93,10 @@ class FatimaVmeCalData : public TObject
         std::vector<uint32_t> fsc41r_hits;
         std::vector<uint32_t> ftm_undelayed_hits;
         std::vector<uint32_t> ftm_delayed_hits;
+        std::vector<uint32_t> fsc41l_e_hits;
+        std::vector<uint32_t> fsc41r_e_hits;
+        std::vector<uint32_t> ftm_undelayed_e_hits;
+        std::vector<uint32_t> ftm_delayed_e_hits;
 
         int ffatvme_mult;
 

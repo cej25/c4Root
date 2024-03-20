@@ -21,7 +21,8 @@ void TCorrelationsConfiguration::ReadCorrelationsFile()
     std::string line;
 
     if (file.fail()) c4LOG(warn, "Cannot open correlations file!");
-
+    c4LOG(info, "Reading correlations.dat file");
+    
     while (std::getline(file, line))
     {
         if (line.empty() || line[0] == '#') continue;
@@ -35,12 +36,17 @@ void TCorrelationsConfiguration::ReadCorrelationsFile()
             int value;
             std::vector<int> values;
             while (iss >> value) values.push_back(value);
+            
+            std::cout << "maybe we only get here once" << std::endl;
 
             if (!values.empty())
             {
                 std::vector<int> reverse_values;
-                reverse_values.push_back(-values[1]);
-                reverse_values.push_back(values[0]);
+                if (values.size() > 1)
+                {
+                    reverse_values.push_back(-values[1]);
+                    reverse_values.push_back(values[0]);
+                }
 
                 if (firstWord == "FRS_AIDA") correlations_map["FRS-AIDA"] = values;
                 else if (firstWord == "FRS_FATIMA_PROMPT") correlations_map["FRS-Fatima Prompt"] = values;

@@ -68,7 +68,6 @@ FrsAidaCorrelations::~FrsAidaCorrelations()
 
 InitStatus FrsAidaCorrelations::Init()
 {
-    c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
@@ -279,6 +278,7 @@ void FrsAidaCorrelations::Exec(Option_t* option)
                 } // aida implant deadtime
                 
                 if (hit.Time > 0 && FrsHit->Get_wr_t() > 0) h1_AidaImplant_FRS_dT->Fill(hit.Time - FrsHit->Get_wr_t());
+
 
                 if (hit.Time - FrsHit->Get_wr_t() > Correl["FRS-AIDA WR Gate"][0] && hit.Time - FrsHit->Get_wr_t() < Correl["FRS-AIDA WR Gate"][1])
                 {
