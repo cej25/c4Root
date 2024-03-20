@@ -27,10 +27,10 @@ class FatimaVmeCalData : public TObject
         inline std::vector<uint32_t> Get_SC41R_hits() { return fsc41r_hits; }
         inline std::vector<uint32_t> Get_TM_undelayed_hits() { return ftm_undelayed_hits; }
         inline std::vector<uint32_t> Get_TM_delayed_hits() { return ftm_delayed_hits; }
-        inline std::vector<uint32_t> Get_SC41L_hits() { return fsc41l_e_hits; }
-        inline std::vector<uint32_t> Get_SC41R_hits() { return fsc41r_e_hits; }
-        inline std::vector<uint32_t> Get_TM_undelayed_hits() { return ftm_undelayed_e_hits; }
-        inline std::vector<uint32_t> Get_TM_delayed_hits() { return ftm_delayed_e_hits; }
+        inline std::vector<uint32_t> Get_SC41L_E_hits() { return fsc41l_e_hits; }
+        inline std::vector<uint32_t> Get_SC41R_E_hits() { return fsc41r_e_hits; }
+        inline std::vector<uint32_t> Get_TM_undelayed_E_hits() { return ftm_undelayed_e_hits; }
+        inline std::vector<uint32_t> Get_TM_delayed_E_hits() { return ftm_delayed_e_hits; }
         
         inline int Get_FatVME_Mult() { return ffatvme_mult; }
 

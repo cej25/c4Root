@@ -168,6 +168,8 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     
     h1_FatVME_time_machine_undelayed = new TH1D("h1_FatVME_time_machine_undelayed", "Time Machine Undelayed - FATIMA VME", 2000, 0, 40000);
     h1_FatVME_time_machine_delayed = new TH1D("h1_FatVME_time_machine_delayed", "Time Machine Delayed - FATIMA VME", 2000, 0, 40000);
+    folder_fatima_vme->Add(h1_FatVME_time_machine_undelayed);
+    folder_fatima_vme->Add(h1_FatVME_time_machine_delayed);
 
     run->GetHttpServer()->RegisterCommand("Reset_Histo", "/Objects/%s/->Reset_Histo()", GetName());
     run->GetHttpServer()->RegisterCommand("Snapshot_Histo", "/Objects/%s/->Snapshot_Histo()", GetName());
@@ -283,7 +285,12 @@ void FatimaVmeOnlineSpectra::Exec(Option_t* option)
             std::vector<uint32_t> TDC_timestamp = FatimaVmeHit->Get_Singles_TDC_timestamp();
             std::vector<uint32_t> TDC_timestamp_raw = FatimaVmeHit->Get_Singles_TDC_timestamp_raw();
             std::vector<uint32_t> SC41L_Hits = FatimaVmeHit->Get_SC41L_hits();
-            std::vector<uint32_t> SC41R_Hits = FatimaVmeHit->Get_SC41L_hits(); // for plotting if wanted?
+            std::vector<uint32_t> SC41R_Hits = FatimaVmeHit->Get_SC41R_hits(); // for plotting if wanted?
+            
+            std::vector<uint32_t> SC41L_E_Hits = FatimaVmeHit->Get_SC41L_E_hits();
+            std::vector<uint32_t> SC41R_E_Hits = FatimaVmeHit->Get_SC41R_E_hits();
+            std::vector<uint32_t> TM_Undelayed_E_Hits = FatimaVmeHit->Get_TM_undelayed_E_hits();
+            std::vector<uint32_t> TM_Delayed_E_Hits = FatimaVmeHit->Get_TM_delayed_E_hits();
 
             h1_FatVME_TDCMult->Fill(TDC_IDs.size());
             for (int i = 0; i < TDC_IDs.size(); i++)
@@ -313,6 +320,17 @@ void FatimaVmeOnlineSpectra::Exec(Option_t* option)
             }
 
             // add loop for reference channel(s)
+            
+            
+            // special channels
+            for (int i = 0; i < TM_Undelayed_E_Hits.size(); i++)
+            {
+                h1_FatVME_time_machine_undelayed->Fill(TM_Undelayed_E_Hits[i]);
+            }
+            for (int i = 0; i < TM_Delayed_E_Hits.size(); i++)
+            {
+                h1_FatVME_time_machine_delayed->Fill(TM_Delayed_E_Hits[i]);
+            }
 
         }
     }
