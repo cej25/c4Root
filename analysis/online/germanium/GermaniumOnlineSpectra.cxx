@@ -122,6 +122,43 @@ InitStatus GermaniumOnlineSpectra::Init()
     folder_germanium_energy->Add(c_germanium_energy_vs_detidx);
     folder_germanium_energy->Add(h2_germanium_energy_vs_detidx);
 
+
+    c_germanium_energy_summed = new TCanvas("c_germanium_energy_summed","Calibrated Germanium spectra summed all dets",650,350);
+    h1_germanium_energy_summed = new TH1F("h1_germanium_energy_summed","Calibrated Germanium spectra summed all dets",fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h1_germanium_energy_summed->GetXaxis()->SetTitle("energy (keV)");
+    h1_germanium_energy_summed->GetYaxis()->SetTitle("counts");
+    h1_germanium_energy_summed->Draw();
+    c_germanium_energy_summed->cd(0);
+    folder_germanium_energy->Add(c_germanium_energy_summed);
+    folder_germanium_energy->Add(h1_germanium_energy_summed);
+
+
+    c_germanium_energy_summed_vetosci41 = new TCanvas("c_germanium_energy_summed_vetosci41","Calibrated Germanium spectra summed all dets veto sci41",650,350);
+    h1_germanium_energy_summed_vetosci41 = new TH1F("h1_germanium_energy_summed_vetosci41","Calibrated Germanium spectra summed all dets veto sci 41",fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h1_germanium_energy_summed_vetosci41->GetXaxis()->SetTitle("energy (keV)");
+    h1_germanium_energy_summed_vetosci41->GetYaxis()->SetTitle("counts");
+    h1_germanium_energy_summed_vetosci41->Draw();
+    c_germanium_energy_summed_vetosci41->cd(0);
+    folder_germanium_energy->Add(c_germanium_energy_summed_vetosci41);
+    folder_germanium_energy->Add(h1_germanium_energy_summed_vetosci41);
+    
+    
+    
+    c_germanium_energy_summed_vs_tsci41 = new TCanvas("c_germanium_energy_summed_vs_tsci41","Calibrated Germanium spectra summed all energyies vs t(det) - t(sci41)",650,350);
+    h2_germanium_energy_summed_vs_tsci41 = new TH2F("h2_germanium_energy_summed_vs_tsci41","Calibrated Germanium spectra summed all energyies vs t(det) - t(sci41)",1000,-500,500,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h2_germanium_energy_summed_vs_tsci41->GetXaxis()->SetTitle("time difference (ns)");
+    h2_germanium_energy_summed_vs_tsci41->GetYaxis()->SetTitle("energy (keV)");
+    h2_germanium_energy_summed_vs_tsci41->Draw("COLZ");
+    c_germanium_energy_summed_vs_tsci41->cd(0);
+    folder_germanium_energy->Add(c_germanium_energy_summed_vs_tsci41);
+    folder_germanium_energy->Add(h2_germanium_energy_summed_vs_tsci41);
+
+    
+    
+    
+
+
+
     
 
     // time spectra:
@@ -276,6 +313,8 @@ void GermaniumOnlineSpectra::Exec(Option_t* option)
     {
         Int_t nHits = fHitGe->GetEntriesFast();
         int event_multiplicity = 0;
+        bool sci41_seen = false;
+
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {   
             GermaniumCalData* hit = (GermaniumCalData*)fHitGe->At(ihit);
@@ -285,9 +324,10 @@ void GermaniumOnlineSpectra::Exec(Option_t* option)
             double energy1 = hit->Get_channel_energy();
             double time1 = hit->Get_channel_trigger_time();
 
-
             
             if (!(detector_id1 == germanium_configuration->TM_Delayed() || detector_id1 == germanium_configuration->TM_Undelayed() || detector_id1 == germanium_configuration->SC41L() || detector_id1 == germanium_configuration->SC41R())) event_multiplicity ++;
+
+            if (detector_id1 == germanium_configuration->SC41L() || detector_id1 == germanium_configuration->SC41R()) sci41_seen = true;            
             
             int crystal_index1 = std::distance(crystals_to_plot.begin(), std::find(crystals_to_plot.begin(),crystals_to_plot.end(),std::pair<int,int>(detector_id1,crystal_id1)));
             
@@ -296,22 +336,41 @@ void GermaniumOnlineSpectra::Exec(Option_t* option)
             h1_germanium_time[crystal_index1]->Fill(time1);
             h1_germanium_hitpattern->Fill(detector_labels[crystal_index1],1);
 
-            if (nHits >= 2 && dt_reference_detectors.size()>0){
+            h1_germanium_energy_summed->Fill(energy1);
+
+            if (nHits >= 2 && dt_reference_detectors.size()>=0){
                 for (int ihit2 = 0; ihit2 < nHits; ihit2++){
                     if (ihit == ihit2) continue;
                     GermaniumCalData * hit2 = (GermaniumCalData*)fHitGe->At(ihit2);
                     int detector_id2 = hit2->Get_detector_id();
                     int crystal_id2 = hit2->Get_crystal_id();
-                    
-                    int crystal_index2 = std::distance(dt_reference_detectors.begin(), std::find(dt_reference_detectors.begin(),dt_reference_detectors.end(),std::pair<int,int>(detector_id2,crystal_id2)));
-                    if (crystal_index2 >= dt_reference_detectors.size()) continue;
-
                     double energy2 = hit2->Get_channel_energy();
                     double time2 = hit2->Get_channel_trigger_time();
+                    
+                    int crystal_index2 = std::distance(dt_reference_detectors.begin(), std::find(dt_reference_detectors.begin(),dt_reference_detectors.end(),std::pair<int,int>(detector_id2,crystal_id2)));
+                                        
+                    if (crystal_index2 >= dt_reference_detectors.size()) continue;
+
 
                     h1_germanium_time_differences[crystal_index2][crystal_index1]->Fill(time1 - time2);
                     h2_germanium_time_differences_vs_energy[crystal_index2][crystal_index1]->Fill(energy1,time1-time2);
+
+                    if (detector_id2 == germanium_configuration->SC41L() || detector_id2 == germanium_configuration->SC41R()){
+                        h2_germanium_energy_summed_vs_tsci41->Fill(energy1, time1 - time2);
+                    }
                 }
+            }
+
+        }
+
+
+        if (!sci41_seen){
+            for (Int_t ihit = 0; ihit < nHits; ihit++)
+            {   
+                GermaniumCalData* hit = (GermaniumCalData*)fHitGe->At(ihit);
+                if (!hit) continue;
+                double energy1 = hit->Get_channel_energy();
+                h1_germanium_energy_summed_vetosci41->Fill(energy1);
             }
         }
 
