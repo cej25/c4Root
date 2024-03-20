@@ -82,6 +82,9 @@ class FatimaVmeOnlineSpectra : public FairTask
         TH1I* h1_FatVME_TDCMult;
         TH2D* h1_FatVME_EvsT;
         TH1D* h1_FatVME_Time;
+        
+        TH1D* h1_FatVME_time_machine_undelayed;
+        TH1D* h1_FatVME_time_machine_delayed;
 
         int num_detectors;
 

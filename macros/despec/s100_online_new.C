@@ -2,14 +2,15 @@
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define FATIMA_ON 1
-#define FATIMA_VME_ON 0
-#define AIDA_ON 0
+#define FATIMA_VME_ON 1
+#define AIDA_ON 1
 #define BPLAST_ON 0
 #define GERMANIUM_ON 1
+#define BGO_ON 0
 #define FRS_ON 0
 #define TIME_MACHINE_ON 1
 #define BEAMMONITOR_ON 0
-#define WHITE_RABBIT_CORS 1
+#define WHITE_RABBIT_CORS 0
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
@@ -31,7 +32,7 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_frsuser_onion_t frsuser;
     EXT_STR_h101_frsvftx_onion_t frsvftx;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
-    // EXT_STR_h101_bgo_onion_t bgo;
+    //EXT_STR_h101_bgo_onion_t bgo;
     // EXT_STR_h101_bb7febex_onion_t bb7febex;
 } EXT_STR_h101;
 
@@ -52,6 +53,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
 
+    // Macro timing
     TString cRunId = Form("%04d", fRunId);
     TString cExpId = Form("%03d", fExpId);
     TStopwatch timer;
@@ -87,7 +89,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
 
     // Create source using ucesb for input
     EXT_STR_h101 ucesb_struct;
-    TString ntuple_options = "UNPACK"; // Define which level of data to unpack
+    TString ntuple_options = "UNPACK"; // Define which level of data to unpack - we don't use "RAW" or "CAL"
     UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
     source->SetMaxEvents(nev);
     run->SetSource(source);
@@ -149,6 +151,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     // FRS? Eventually will get around to mapping crates properly
     TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/Germanium_Detector_Map_mar19.txt");
     TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/Germanium_Energy_Calibration.txt");
+    //TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
     
     
 
@@ -163,7 +166,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (FATIMA_ON)
     {
         FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-        //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_histos_19mar.root", 10000000);
+        //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_histos_19mar.root", 1000000);
         unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_histos_19mar.root");
 
         unpackfatima->SetOnline(true);
@@ -203,6 +206,17 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         unpackgermanium->SetOnline(true);
         source->AddReader(unpackgermanium);
     }
+    /*
+    if (BGO_ON)
+    {
+        BGOReader* unpackbgo = new BGOReader((EXT_STR_h101_bgo_onion*)&ucesb_struct.bgo, offsetof(EXT_STR_h101, bgo));
+        unpackbgo->DoFineTimeCalOnline(config_path + "/bgo/fine_time_histos_19mar.root", 1000000);
+        //unpackbgo->SetInputFileFineTimeHistos(config_path + "/bgo/fine_time_histos_19mar.root");
+        
+        unpackbgo->SetOnline(true);
+        source->AddReader(unpackbgo);
+        
+    }*/
     
     if (FRS_ON)
     {
@@ -283,6 +297,16 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         calge->SetOnline(true);
         run->AddTask(calge);
     }
+    /*
+    if (BGO_ON)
+    {
+        BGOTwinpeaksRaw2Cal* calbgo = new BGOTwinpeaksRaw2Cal();
+        // calbgo->PrintDetectorCal();
+        
+        calbgo->SetOnline(true);
+        run->AddTask(calbgo);
+    }*/
+        
     
     if (FRS_ON)
     {
@@ -377,6 +401,23 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         run->AddTask(onlinege);
     }
     
+    if (BGO_ON)
+    {
+        //BGOOnlineSpectra* onlinebgo = new BGOOnlineSpectra();
+        /*onlinebgo->SetBinningSlowToT(5000,0.1,1700.1);
+        onlinebgo->SetBinningFastToT(1000,0.1,100.1);
+        onlinebgo->SetBinningEnergy(1500,0.1,1500.1);
+
+        std::vector<int> bgo_dets = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64};
+        onlinebgo->SetDetectorsToPlot(bgo_dets);
+        
+        std::vector<int> bgo_ref_dets = {0,1,2,54};
+        onlinebgo->SetReferenceDetectorsForTimeDifferences(bgo_ref_dets);
+        
+        run->AddTask(onlinebgo);
+        */
+    }
+    
     if (FRS_ON)
     {
         FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
@@ -406,7 +447,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {b, f};
+        std::vector a {b, d, f};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
@@ -415,7 +456,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({b, f});
+        wronline->SetDetectorSystems({b, d, f});
     
         run->AddTask(wronline);
     }

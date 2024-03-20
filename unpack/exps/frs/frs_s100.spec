@@ -46,8 +46,8 @@ VULOM_CRATE_DATE()
     
     // first three words are meaningless
     UINT32 w1;
-    UINT32 w1;
-    UINT32 w1;
+    UINT32 w2;
+    UINT32 w3;
     
     UINT32 trigger_pattern 
     {
@@ -69,6 +69,12 @@ MAIN_CRATE_DATA()
 
     barrier[1] = BARRIER();
     v792 = VME_CAEN_V792_FRS();
+    
+    UINT32 aaahhh NOENCODE
+    {
+        0_31: 0xaaaa1290;
+    };
+    UINT32 exxxxx NOENCODE; // find out what word this is
 
     barrier[2] = BARRIER();
     v1290 = VME_CAEN_V1290_FRS();
@@ -87,6 +93,12 @@ TPC_CRATE_DATA()
     v785 = VME_CAEN_V7X5_FRS();
 
     // caen v119
+    
+    UINT32 aaahhh NOENCODE
+    {
+        0_31: 0xaaaa1190;
+    };
+    UINT32 exxxxx NOENCODE;
 
     barrier[2] = BARRIER();
     v1190 = VME_CAEN_V1190_FRS();

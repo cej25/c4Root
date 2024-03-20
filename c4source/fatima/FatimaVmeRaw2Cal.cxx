@@ -122,11 +122,15 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
             int SC41Rcount = 0;
             std::vector<uint32_t> SC41L;
             std::vector<uint32_t> SC41R;
+            std::vector<uint32_t> SC41L_E;
+            std::vector<uint32_t> SC41R_E;
 
             int FatVME_TMUcount = 0;
             int FatVME_TMDcount = 0;
             std::vector<uint32_t> FatVME_TMU;
             std::vector<uint32_t> FatVME_TMD;
+            std::vector<uint32_t> FatVME_TMU_E;
+            std::vector<uint32_t> FatVME_TMD_E;
 
             int singlesqdcmult = 0;
             int singlestdcmult = 0;
@@ -271,6 +275,24 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
                         }
                     }
                 }
+                
+                if (qdc_detectors[i] == sc41l)
+                {
+                    SC41L_E.emplace_back(QLong_raw[i]);
+                }
+                if (qdc_detectors[i] == sc41r)
+                {
+                    SC41R_E.emplace_back(QLong_raw[i]);
+                }
+
+                if (qdc_detectors[i] == tm_undelayed)
+                {
+                    FatVME_TMU_E.emplace_back(QLong_raw[i]);
+                }
+                if (qdc_detectors[i] == tm_delayed)
+                {
+                    FatVME_TMD_E.emplace_back(QLong_raw[i]);
+                }
 
             } // qdcs fired
 
@@ -282,6 +304,10 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
             FatimaCalHit->Set_SC41R_hits(SC41R);
             FatimaCalHit->Set_TM_undelayed_hits(FatVME_TMU);
             FatimaCalHit->Set_TM_delayed_hits(FatVME_TMD);
+            FatimaCalHit->Set_SC41L_E_hits(SC41L_E);
+            FatimaCalHit->Set_SC41R_E_hits(SC41R_E);
+            FatimaCalHit->Set_TM_undelayed_E_hits(FatVME_TMU_E);
+            FatimaCalHit->Set_TM_delayed_E_hits(FatVME_TMD_E);
 
             FatimaCalHit->Set_Singles_E(Singles_E);
             FatimaCalHit->Set_Singles_QDC_ID(Singles_QDC_ID);
