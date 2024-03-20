@@ -68,8 +68,6 @@ Initializer called by the FairRoot manager. Gets the required FairRootManager ob
 */
 InitStatus FatimaRaw2Cal::Init()
 {  
-
-
     //grabs instance managers and handles.
 
     c4LOG(info, "Grabbing FairRootManager, RunOnline and EventHeader.");
@@ -89,7 +87,6 @@ InitStatus FatimaRaw2Cal::Init()
 
     fcal_data->Clear();
     funcal_data->Clear();
-
 
     return kSUCCESS;
 };
@@ -205,14 +202,17 @@ void FatimaRaw2Cal::Exec(Option_t* option)
             
             if (fatima_configuration->MappingLoaded())
             {
+                std::map<std::pair<int,int>,int> fmap;
+                fmap = fatima_configuration->Mapping();
                 std::pair<int, int> unmapped_det { funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2};
-                if (auto result_find = fatima_configuration->Mapping().find(unmapped_det); result_find != fatima_configuration->Mapping().end())
+                if (auto result_find = fmap.find(unmapped_det); result_find != fmap.end())
                 {
                     detector_id = result_find->second; // .find returns an iterator over the pairs matching key
-                    
+                    //c4LOG(info,Form("board = %i, ch = %i, det = %i",funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2,result_find->second));
                     if (detector_id == -1) { fNunmatched++; continue; }
                 }
             }
+            
 
 
             if (funcal_hit_next->Get_trail_epoch_counter() == 0 || funcal_hit_next->Get_lead_epoch_counter() == 0) continue; // missing trail in either
@@ -237,36 +237,40 @@ void FatimaRaw2Cal::Exec(Option_t* option)
                             + static_cast<double>(funcal_hit_next->Get_trail_coarse_T()) * 5.0
                             - static_cast<double>(funcal_hit_next->Get_trail_fine_T());
 
+            
             fast_ToT =  fast_trail_time - fast_lead_time;
             // find the slow ToT without encountering round-off errors?:
             slow_ToT =  (double)(funcal_hit_next->Get_trail_epoch_counter() - funcal_hit_next->Get_lead_epoch_counter())*10.24e3 +  (double)(funcal_hit_next->Get_trail_coarse_T() - funcal_hit_next->Get_lead_coarse_T())*5.0 - (funcal_hit_next->Get_trail_fine_T() - funcal_hit_next->Get_lead_fine_T());
-
             
             //if (detector_id == 0 || detector_id == 1) c4LOG(info,Form("id = %i, fast lead = %f, fast trail = %f, fast ToT = %f",detector_id,fast_lead_time,fast_trail_time,fast_ToT));
 
             if (fatima_configuration->MappingLoaded()){
                 if (fatima_configuration->CalibrationCoefficientsLoaded()){ // check
-                    if (auto result_find_cal = fatima_configuration->CalibrationCoefficients().find(detector_id); result_find_cal != fatima_configuration->CalibrationCoefficients().end()){
-                    std::vector<double> coeffs = result_find_cal->second; //.find returns an iterator over the pairs matching key.
-                    a0 = coeffs.at(0);
-                    a1 = coeffs.at(1);
-                    a2 = coeffs.at(2);
-                    a3 = coeffs.at(3);
-
-                    energy = a0 + a1*slow_ToT + a2*slow_ToT*slow_ToT + a3*slow_ToT*slow_ToT*slow_ToT; 
-                }else{
-                    energy = slow_ToT;
-                }
+                    std::map<int,std::vector<double>> calibration_coeffs = fatima_configuration->CalibrationCoefficients();
+                    if (auto result_find_cal = calibration_coeffs.find(detector_id); result_find_cal != calibration_coeffs.end()){
+                        std::vector<double> coeffs = result_find_cal->second; //.find returns an iterator over the pairs matching key.
+                        a0 = coeffs.at(0);
+                        a1 = coeffs.at(1);
+                        a2 = coeffs.at(2);
+                        a3 = coeffs.at(3);
+                        
+                        energy = a0 + a1*slow_ToT + a2*slow_ToT*slow_ToT + a3*slow_ToT*slow_ToT*slow_ToT; 
+                    }else{
+                        energy = slow_ToT;
+                    }
+                
                 }else{
                     energy = slow_ToT;
                 }
             }
+            
 
             if (((detector_id == fatima_configuration->TM_Delayed()) || (detector_id == fatima_configuration->TM_Undelayed())) && fatima_configuration->TM_Delayed() != 0 && fatima_configuration->TM_Undelayed() != 0)
             {
                 new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData((detector_id == fatima_configuration->TM_Undelayed()) ? (fast_lead_time) : (0), (detector_id == fatima_configuration->TM_Undelayed()) ? (0) : (fast_lead_time), funcal_hit->Get_wr_subsystem_id(), funcal_hit->Get_wr_t());
             }
             
+            //c4LOG(info,Form("board = %i, ch = %i, det = %i",funcal_hit->Get_board_id(),(int)((funcal_hit->Get_ch_ID()+1)/2), detector_id));
             
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) FatimaTwinpeaksCalData(
                 funcal_hit->Get_board_id(),

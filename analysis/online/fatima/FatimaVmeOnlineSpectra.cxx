@@ -9,7 +9,6 @@
 #include "FatimaVmeOnlineSpectra.h"
 #include "EventHeader.h"
 #include "FatimaVmeCalData.h"
-#include "TFatimaVmeConfiguration.h"
 
 #include "c4Logger.h"
 
@@ -26,6 +25,7 @@
 
 FatimaVmeOnlineSpectra::FatimaVmeOnlineSpectra()
 {
+    fatima_vme_config = TFatimaVmeConfiguration::GetInstance();
 }
 
 FatimaVmeOnlineSpectra::FatimaVmeOnlineSpectra(TString& name, Int_t verbose)
@@ -34,7 +34,7 @@ FatimaVmeOnlineSpectra::FatimaVmeOnlineSpectra(TString& name, Int_t verbose)
     ,   fNEvents(0)
     ,   header(nullptr)
 {
-
+    fatima_vme_config = TFatimaVmeConfiguration::GetInstance();
 }
 
 FatimaVmeOnlineSpectra::~FatimaVmeOnlineSpectra()
@@ -59,8 +59,7 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     fHitFatimaVme = (TClonesArray*)mgr->GetObject("FatimaVmeCalData");
     c4LOG_IF(fatal, !fHitFatimaVme, "Branch FatimaVmeCalData not found!");
 
-    TFatimaVmeConfiguration const* fatima_vme_config = TFatimaVmeConfiguration::GetInstance();
-    int num_detectors = fatima_vme_config->NDetectors();
+    num_detectors = fatima_vme_config->NDetectors();
 
     TDirectory::TContext ctx(nullptr);
 
@@ -166,6 +165,11 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     }
     c_FatVME_dTrefCh1->cd(0);
     folder_dt_ch1->Add(c_FatVME_dTrefCh1);
+    
+    h1_FatVME_time_machine_undelayed = new TH1D("h1_FatVME_time_machine_undelayed", "Time Machine Undelayed - FATIMA VME", 2000, 0, 40000);
+    h1_FatVME_time_machine_delayed = new TH1D("h1_FatVME_time_machine_delayed", "Time Machine Delayed - FATIMA VME", 2000, 0, 40000);
+    folder_fatima_vme->Add(h1_FatVME_time_machine_undelayed);
+    folder_fatima_vme->Add(h1_FatVME_time_machine_delayed);
 
     run->GetHttpServer()->RegisterCommand("Reset_Histo", "/Objects/%s/->Reset_Histo()", GetName());
     run->GetHttpServer()->RegisterCommand("Snapshot_Histo", "/Objects/%s/->Snapshot_Histo()", GetName());
@@ -177,13 +181,80 @@ InitStatus FatimaVmeOnlineSpectra::Init()
 void FatimaVmeOnlineSpectra::Reset_Histo()
 {
     c4LOG(info, "Resetting Fatima VME Histograms");
+
+    for (int i = 0; i < num_detectors; i++) h1_FatVME_RawE[i]->Reset();
+    for (int i = 0; i < num_detectors; i++) h1_FatVME_E[i]->Reset();
+    for (int i = 0; i < num_detectors; i++) h1_FatVME_RawT[i]->Reset();
+    for (int i = 0; i < num_detectors; i++) h1_FatVME_TDC_dt_refCh1[i]->Reset();
+    for (int i = 0; i < num_detectors; i++) h1_FatVME_TDC_dT_refSC41L[i]->Reset();
+
+    h1_FatVME_E_Sum->Reset();
+    h1_FatVME_E_Sum_Large->Reset();
+    h1_FatVME_QDC_HitPattern->Reset();
+    h1_FatVME_TDC_HitPattern->Reset();
+    h1_FatVME_QDCMult->Reset();
+    h1_FatVME_TDCMult->Reset();
+    h1_FatVME_EvsT->Reset();
+    h1_FatVME_Time->Reset();
 }
 
 void FatimaVmeOnlineSpectra::Snapshot_Histo()
 {
     c4LOG(info, "Snapshotting Fatima VME Histograms");
 
-    c4LOG(info, "Snapshots saved in: ");
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
+
+    TString snapshot_dir = Form("FatimaVme_snapshot_%d_%d_%d_%d_%d_%d",ltm->tm_year+1900,ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec);
+
+    gSystem->mkdir(snapshot_dir);
+    gSystem->cd(snapshot_dir);
+
+    c_fatima_vme_snapshot = new TCanvas("c_fatima_vme_snapshot", "Fatima VME snapshot", 650, 350);
+
+    for (int i = 0; i < num_detectors; i++)
+    {
+        if (h1_FatVME_RawE[i]->GetEntries() != 0)
+        {
+            h1_FatVME_RawE[i]->Draw();
+            c_fatima_vme_snapshot->SaveAs(Form("h1_FatVME_RawE%i.png", i));
+            c_fatima_vme_snapshot->Clear();
+        }
+        if (h1_FatVME_E[i]->GetEntries() != 0)
+        {
+            h1_FatVME_E[i]->Draw();
+            c_fatima_vme_snapshot->SaveAs(Form("h1_FatVME_E%i.png", i));
+            c_fatima_vme_snapshot->Clear();
+        }
+        if (h1_FatVME_RawT[i]->GetEntries() != 0)
+        {
+            h1_FatVME_RawT[i]->Draw();
+            c_fatima_vme_snapshot->SaveAs(Form("h1_FatVME_RawT%i.png", i));
+            c_fatima_vme_snapshot->Clear();
+        }
+        if (h1_FatVME_TDC_dt_refCh1[i]->GetEntries() != 0)
+        {
+            h1_FatVME_TDC_dt_refCh1[i]->Draw();
+            c_fatima_vme_snapshot->SaveAs(Form("h1_FatVME_TDC%i_dt_refCh1.png", i));
+            c_fatima_vme_snapshot->Clear();
+        }
+        if (h1_FatVME_TDC_dT_refSC41L[i]->GetEntries() != 0)
+        {
+            h1_FatVME_TDC_dT_refSC41L[i]->Draw();
+            c_fatima_vme_snapshot->SaveAs(Form("h1_FatVME_TDC%i_dT_refSC41L.png", i));
+            c_fatima_vme_snapshot->Clear();
+        }
+    }
+
+    delete c_fatima_vme_snapshot;
+
+    file_fatima_vme_snapshot = new TFile(Form("FatimaVme_snapshot_%d_%d_%d_%d_%d_%d",ltm->tm_year+1900,ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec));
+    file_fatima_vme_snapshot->cd();
+    folder_fatima_vme->Write();
+    file_fatima_vme_snapshot->Close();
+
+    gSystem->cd("..");
+    c4LOG(info, "Snapshots saved in: " << snapshot_dir);
 }
 
 void FatimaVmeOnlineSpectra::Exec(Option_t* option)
@@ -191,6 +262,7 @@ void FatimaVmeOnlineSpectra::Exec(Option_t* option)
     if (fHitFatimaVme && fHitFatimaVme->GetEntriesFast())
     {
         Int_t nHits = fHitFatimaVme->GetEntriesFast();
+        
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {
             FatimaVmeCalData* FatimaVmeHit = (FatimaVmeCalData*)fHitFatimaVme->At(ihit);
@@ -213,7 +285,12 @@ void FatimaVmeOnlineSpectra::Exec(Option_t* option)
             std::vector<uint32_t> TDC_timestamp = FatimaVmeHit->Get_Singles_TDC_timestamp();
             std::vector<uint32_t> TDC_timestamp_raw = FatimaVmeHit->Get_Singles_TDC_timestamp_raw();
             std::vector<uint32_t> SC41L_Hits = FatimaVmeHit->Get_SC41L_hits();
-            std::vector<uint32_t> SC41R_Hits = FatimaVmeHit->Get_SC41L_hits(); // for plotting if wanted?
+            std::vector<uint32_t> SC41R_Hits = FatimaVmeHit->Get_SC41R_hits(); // for plotting if wanted?
+            
+            std::vector<uint32_t> SC41L_E_Hits = FatimaVmeHit->Get_SC41L_E_hits();
+            std::vector<uint32_t> SC41R_E_Hits = FatimaVmeHit->Get_SC41R_E_hits();
+            std::vector<uint32_t> TM_Undelayed_E_Hits = FatimaVmeHit->Get_TM_undelayed_E_hits();
+            std::vector<uint32_t> TM_Delayed_E_Hits = FatimaVmeHit->Get_TM_delayed_E_hits();
 
             h1_FatVME_TDCMult->Fill(TDC_IDs.size());
             for (int i = 0; i < TDC_IDs.size(); i++)
@@ -243,6 +320,17 @@ void FatimaVmeOnlineSpectra::Exec(Option_t* option)
             }
 
             // add loop for reference channel(s)
+            
+            
+            // special channels
+            for (int i = 0; i < TM_Undelayed_E_Hits.size(); i++)
+            {
+                h1_FatVME_time_machine_undelayed->Fill(TM_Undelayed_E_Hits[i]);
+            }
+            for (int i = 0; i < TM_Delayed_E_Hits.size(); i++)
+            {
+                h1_FatVME_time_machine_delayed->Fill(TM_Delayed_E_Hits[i]);
+            }
 
         }
     }

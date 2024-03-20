@@ -16,10 +16,12 @@ ${C4ROOT_SOURCE_DIR}/c4source/aida
 ${C4ROOT_SOURCE_DIR}/c4source/bplast
 ${C4ROOT_SOURCE_DIR}/c4source/fatima
 ${C4ROOT_SOURCE_DIR}/c4source/germanium
+${C4ROOT_SOURCE_DIR}/c4source/bgo
 ${C4ROOT_SOURCE_DIR}/c4source/beammonitor
 ${C4ROOT_SOURCE_DIR}/c4data
 ${C4ROOT_SOURCE_DIR}/c4data/frsData
 ${C4ROOT_SOURCE_DIR}/c4data/lisaData
+${C4ROOT_SOURCE_DIR}/c4data/bgoData
 ${C4ROOT_SOURCE_DIR}/c4data/wrData
 ${C4ROOT_SOURCE_DIR}/c4data/aidaData
 ${C4ROOT_SOURCE_DIR}/c4data/bplastData
@@ -65,6 +67,8 @@ set(SRCS
 ./germanium/GermaniumRaw2Cal.cxx
 ./fatima/FatimaReader.cxx
 ./fatima/FatimaRaw2Cal.cxx
+./bgo/BGOReader.cxx
+./bgo/BGORaw2Cal.cxx
 ./fatima/FatimaVmeReader.cxx
 ./fatima/FatimaVmeRaw2Cal.cxx
 ./bb7/BB7Reader.cxx
@@ -83,6 +87,7 @@ Set(STRUCT_HEADERS
 ./beammonitor/ext_h101_beammonitor.h
 ./fatima/ext_h101_fatima.h
 ./fatima/ext_h101_fatimavme.h
+./bgo/ext_h101_bgo.h
 ./bb7/ext_h101_bb7vme.h
 )
 

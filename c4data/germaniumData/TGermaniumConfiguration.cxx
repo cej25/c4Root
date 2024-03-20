@@ -7,24 +7,29 @@
 #include <string>
 
 TGermaniumConfiguration* TGermaniumConfiguration::instance = nullptr;
-std::string TGermaniumConfiguration::filepath = "Germanium_Detector_Map.txt";
+std::string TGermaniumConfiguration::configuration_file = "blank";
+std::string TGermaniumConfiguration::calibration_file = "blank";
+std::string TGermaniumConfiguration::timeshift_calibration_file = "blank";
 
 TGermaniumConfiguration::TGermaniumConfiguration()
 :   num_detectors(0)
 ,   num_crystals(0)
 ,   num_febex_boards(0)
 {
-    ReadConfiguration();
-}
+    if (configuration_file != "blank") ReadConfiguration();
+    else c4LOG(fatal,"You must set TGermaniumConfiguration::SetConfigurationFile()!!");
+
+    if (calibration_file != "blank") ReadCalibrationCoefficients();
+ }
+
 
 void TGermaniumConfiguration::ReadConfiguration()
 {   
     std::set<int> febex_boards;
     std::set<int> detector_ids;
-    std::set<int> crystals_per;
     int crystals = 0;
 
-    std::ifstream detector_map_file(filepath);
+    std::ifstream detector_map_file(configuration_file);
     std::string line;
 
     if (detector_map_file.fail()) c4LOG(fatal, "Could not open Germanium Detector Map");
@@ -57,9 +62,14 @@ void TGermaniumConfiguration::ReadConfiguration()
             extra_signals.insert(detector_id);
         }
 
-        if (febex_board > -1) febex_boards.insert(febex_board);
-        if (detector_id > -1) detector_ids.insert(detector_id);
-        if (detector_id > -1) crystals_per.insert(crystal_id);
+        febex_boards.insert(febex_board);
+        if (detector_id >= 0) detector_ids.insert(detector_id);
+        if (auto result_crystals_per_detector = crystals_per_detector.find(detector_id); result_crystals_per_detector != crystals_per_detector.end()){
+            crystals_per_detector[detector_id]++;
+        }else{
+            crystals_per_detector.insert(std::pair<int,int> {detector_id,1});
+        }
+        
         crystals++;
 
         std::pair<int, int> febex_mc = {febex_board, febex_channel};
@@ -70,13 +80,64 @@ void TGermaniumConfiguration::ReadConfiguration()
     }
 
     num_detectors = detector_ids.size();
-    crystals_per_det = crystals_per.size();
     num_crystals = crystals;
     num_febex_boards = febex_boards.size();
 
-    DetectorMap_loaded = 1;
+    detector_mapping_loaded = 1;
     detector_map_file.close();
     return;
 
 }
 
+
+
+void TGermaniumConfiguration::ReadCalibrationCoefficients(){
+
+    c4LOG(info, "Reading Calibration coefficients.");
+
+
+    std::ifstream cal_map_file (calibration_file);
+
+    int rdetector_id,rcrystal_id; // temp read variables
+    double a0,a1;
+    
+    //assumes the first line in the file is num-modules used
+    while(!cal_map_file.eof()){
+        if(cal_map_file.peek()=='#') cal_map_file.ignore(256,'\n');
+        else{
+            cal_map_file >> rdetector_id >> rcrystal_id >> a1 >> a0;
+            std::pair<int,int> detector_crystal = {rdetector_id,rcrystal_id};
+            std::pair<double,double> cals = {a0,a1};
+            calibration_coeffs.insert(std::pair<std::pair<int,int>,std::pair<double,double>>{detector_crystal,cals});
+            cal_map_file.ignore(256,'\n');
+        }
+    }
+    detector_calibrations_loaded = 1;
+    cal_map_file.close();
+};
+
+
+
+void TGermaniumConfiguration::ReadTimeshiftSCI41Coefficients(){
+
+    c4LOG(info, "Reading TimeshiftSCI41 coefficients.");
+
+
+    std::ifstream cal_map_file (timeshift_calibration_file);
+
+    int rdetector_id,rcrystal_id; // temp read variables
+    double t0;
+    
+    //assumes the first line in the file is num-modules used
+    while(!cal_map_file.eof()){
+        if(cal_map_file.peek()=='#') cal_map_file.ignore(256,'\n');
+        else{
+            cal_map_file >> rdetector_id >> rcrystal_id >> t0;
+            std::pair<int,int> detector_crystal = {rdetector_id,rcrystal_id};
+            timeshift_calibration_coeffs.insert(std::pair<std::pair<int,int>,double>{detector_crystal,t0});
+            cal_map_file.ignore(256,'\n');
+        }
+    }
+    timeshift_calibration_coeffs_loaded = 1;
+    cal_map_file.close();
+};

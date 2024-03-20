@@ -2,7 +2,7 @@
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
 // CEJ !! NOT IMPLEMENTED YET !!
-#define FATIMA_ON 1
+#define FATIMA_ON 0
 #define FATIMA_VME_ON 0
 #define AIDA_ON 1
 #define BPLAST_ON 1
@@ -157,8 +157,8 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (FATIMA_ON)
     {
         FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-        unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_histos_111223_fatima.root", 50000);
-        // unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_histos_111223_fatima.root");
+        //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_histos_111223_fatima.root", 50000);
+        //unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_histos_111223_fatima.root");
 
         unpackfatima->SetOnline(true);
         source->AddReader(unpackfatima);
@@ -183,7 +183,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (BPLAST_ON)
     {
         bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_bplast_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
-        // unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_histos_111223_bplast.root", 50000);
+        //unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_histos_111223_bplast.root", 50000);
         unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_histos_111223_bplast.root");
         
         unpackbplast->SetOnline(true);
@@ -404,18 +404,25 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
-    }    
+    }
+    
+//     WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
+//     wronline->SetDetectorSystems({b, e});
+//     
+//     run->AddTask(wronline);
 
 
     // ---------------------------------------------------------------------------------------- //
     // *** Correlations *********************************************************************** //
-
+// hey its me im the problem its me
     if (FATIMA_ON && FRS_ON)
     {
         FrsFatimaCorrelations* frsfatimacorr = new FrsFatimaCorrelations(FrsGates, FatimaPrompt);
         
         run->AddTask(frsfatimacorr);
     }
+    
+    // mayvbe its me tho
     
     if (AIDA_ON && FRS_ON)
     {

@@ -36,8 +36,6 @@ class FatimaOnlineSpectra : public FairTask
             ffast_tot_nbins = nbins;
             ffast_tot_bin_low = binlow;
             ffast_tot_bin_high = binhigh;
-            
-            
         };
         void SetBinningSlowToT(int nbins, float binlow, float binhigh){
             fslow_tot_nbins = nbins;
@@ -102,7 +100,6 @@ class FatimaOnlineSpectra : public FairTask
     
 
         //Folders and files
-        TDirectory* fatimaFolderObj;
         TFolder* folder_fatima;
         TFolder* folder_fatima_slowToT;
         TFolder* folder_fatima_fastToT;

@@ -6,6 +6,8 @@
 #include "TCanvas.h"
 #include <vector>
 #include "TH1.h"
+#include "TFile.h"
+#include "TFatimaVmeConfiguration.h"
 
 class EventHeader;
 
@@ -33,10 +35,15 @@ class FatimaVmeOnlineSpectra : public FairTask
         virtual void Reset_Histo();
 
     private:
+        TFatimaVmeConfiguration const* fatima_vme_config;
+
         TClonesArray* fHitFatimaVme;
 
         EventHeader* header;
         Int_t fNEvents;
+
+        TFile* file_fatima_vme_snapshot;
+
 
         // Folders
         TFolder* folder_fatima_vme;
@@ -58,6 +65,7 @@ class FatimaVmeOnlineSpectra : public FairTask
         TCanvas* c_FatVME_T;
         TCanvas* c_FatVME_dTrefCh1;
         TCanvas* c_FatVME_dTrefSC41;
+        TCanvas* c_fatima_vme_snapshot;
 
         // Histograms
         // these should be vectors based on detector config.
@@ -74,6 +82,11 @@ class FatimaVmeOnlineSpectra : public FairTask
         TH1I* h1_FatVME_TDCMult;
         TH2D* h1_FatVME_EvsT;
         TH1D* h1_FatVME_Time;
+        
+        TH1D* h1_FatVME_time_machine_undelayed;
+        TH1D* h1_FatVME_time_machine_delayed;
+
+        int num_detectors;
 
 
     public:

@@ -54,7 +54,7 @@ EVENT
     germanium = febex_subev(type = 10, subtype = 1, procid = 60, control = 20);
     //fatima_vme = fatima_vme_subev(type = 10, subtype = 1, procid = 70, control = 20, subcrate = 0);
     //fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = 80, control = 20, subcrate = 0);
-    bplast = bplast_tamex_subev(type = 10, subtype = 1, procid = 80, control = 20, subcrate = 0);
+    //bplast = bplast_tamex_subev(type = 10, subtype = 1, procid = 80, control = 20, subcrate = 0);
 
     // CEJ: NONE OF THIS WILL WORK WITH S450
     // white rabbit should be easy, do with Elisa wed

@@ -65,7 +65,9 @@ FrsFatimaCorrelations::~FrsFatimaCorrelations()
 
 
 InitStatus FrsFatimaCorrelations::Init()
-{
+{   
+
+    std::cout << "are we even here" << std::endl;
     // get branches etc
     c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
