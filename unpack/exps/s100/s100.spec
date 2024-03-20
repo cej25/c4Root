@@ -4,12 +4,12 @@
 #include "../../common/whiterabbit.spec"
 #include "../../common/gsi_febex4.spec"
 #include "../../common/gsi_tamex4.spec"
-#include "../../common/vme_caen_v1751.spec"
+//#include "../../common/vme_caen_v1751.spec"
 //#include "../../common/vme_caen_v1x90.spec"
-#include "../frs/frs_s100.spec"
-#include "fatima_vme.spec"
+//#include "../frs/frs_s100.spec"
+//#include "fatima_vme.spec"
 
-#define BM_MAX_HITS 100000
+//#define BM_MAX_HITS 100000
 
 external EXT_AIDA();
 
@@ -61,6 +61,7 @@ SUBEVENT(fatima_tamex_subev)
     };
 }
 
+/*
 SUBEVENT(fatima_vme_subev)
 {
     ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1500);
@@ -243,21 +244,21 @@ SUBEVENT(bm_subev)
         16_31: l_id = MATCH(0xCCCC); // MATCH(0xCCCC);
     }
 }
-
+*/
 EVENT
 {
     revisit aida = aida_subev(type = 10, subtype = 1, procid = 90, control = 37);
     germanium = febex_subev(type = 10, subtype = 1, procid = 60, control = 20);
     fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = 75, control = 20);
     //fatimavme = fatima_vme_subev(type = 10, subtype = 1, procid = 70, control = 20); // apparenlty there are fatimavme things in NovTest data..comment out
-    bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20);
+    //bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20);
 
-    frsmain = frs_main_subev(procid = 10);
-    frstpc = frs_tpc_subev(procid = 20);
-    frsuser = frs_user_subev(procid = 30);
-    frsvftx = frs_vftx_subev(procid = 40);
+    //frsmain = frs_main_subev(procid = 10);
+    //frstpc = frs_tpc_subev(procid = 20);
+    //frsuser = frs_user_subev(procid = 30);
+    //frsvftx = frs_vftx_subev(procid = 40);
     
-    beammonitor = bm_subev(procid = 1);
+    //beammonitor = bm_subev(procid = 1);
 
     ignore_unknown_subevent;
 };
