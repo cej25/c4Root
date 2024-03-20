@@ -19,6 +19,7 @@
 #pragma link C++ class FatimaOnlineSpectra+;
 #pragma link C++ class FatimaVmeOnlineSpectra+;
 #pragma link C++ class TimeMachineOnline+;
+#pragma link C++ class BB7OnlineSpectra+;
 
 // nearline/correlations
 #pragma link C++ class FrsAnalysisSpectra+;

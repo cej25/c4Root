@@ -24,6 +24,7 @@ EXPS= s452 \
 	NovTest \
 	onlyFATIMA \
 	s100 \
+	bb7 \
 	onlyGerm \
 	onlyBGO
 
