@@ -13,6 +13,8 @@ class FatimaVmeCalData : public TObject
         virtual ~FatimaVmeCalData() {}
 
         // Getters
+        inline uint64_t Get_wr_t() { return fwr_t; }
+
         inline std::vector<uint32_t> Get_Singles_E() { return fsingles_e; }
         inline std::vector<uint32_t> Get_Singles_E_raw() { return fsingles_e_raw; }
         inline std::vector<uint32_t> Get_Singles_QDC_ID() { return fsingles_qdc_id; }
