@@ -5,7 +5,8 @@
 // analyse it for fired channels later? 
 // not sure its possible in ucesb .spec
 
-VME_CAEN_V1751()
+
+VME_CAEN_V1751(board)
 {
     MEMBER(DATA8 board_id);
     MEMBER(DATA8 channels);
@@ -19,7 +20,7 @@ VME_CAEN_V1751()
     UINT32 board_agg_size NOENCODE
     {
         0_27: event_size;
-        28_31: check_a = MATCH(0xA);
+        28_31: 0xA;
     };
 
     UINT32 board_details NOENCODE
@@ -28,9 +29,9 @@ VME_CAEN_V1751()
         8_23: pattern;
         24_25: empty;
         26: board_fail;
-        27_31: board_id; // "geo"
+        27_31: id = MATCH(board); // "geo"
         ENCODE(channels, (value = channels));
-        ENCODE(board_id, (value = board_id));
+        ENCODE(board_id, (value = id));
     };
 
     UINT32 board_agg_counter NOENCODE

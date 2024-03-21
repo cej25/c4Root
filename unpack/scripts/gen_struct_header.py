@@ -6,7 +6,7 @@ import subprocess as sb
 #add the systems you want here: bplast,fatima,etc
 systems = ["bgo"]
 
-ucesb_exec = "onlyBGO"
+ucesb_exec = "s100"
 
 
 for system in systems:

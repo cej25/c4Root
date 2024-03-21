@@ -61,6 +61,7 @@ InitStatus FatimaVmeRaw2Cal::Init()
     c4LOG_IF(fatal, !funcal_data, "Fatima branch of FatimaVmeData not found!");
 
     mgr->Register("FatimaVmeCalData", "FatimaVmeCalDataFolder", fcal_data, !fOnline);
+    mgr->Register("FatimaVmeTimeMachineData", "FatimaVmeTimeMachineDataFolder", fTimeMachineArray, !fOnline);
 
     extra_signals = fatima_vme_config->ExtraSignals();
     tm_undelayed = fatima_vme_config->TM_Undelayed();
