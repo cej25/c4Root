@@ -60,6 +60,8 @@ fatimaData/FatimaVmeData.cxx
 fatimaData/FatimaVmeCalData.cxx
 timemachineData/TimeMachineData.cxx
 bb7Data/BB7VmeData.cxx
+bb7Data/BB7VmeCalData.cxx
+bb7Data/TBB7VmeConfiguration.cxx
 frsData/TFRSParameter.cxx
 baseData/TCorrelationsConfiguration.cxx
 )

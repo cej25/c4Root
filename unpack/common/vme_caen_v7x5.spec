@@ -1,4 +1,4 @@
-VME_CAEN_V7X5_FRS() // V775 and V785 unpack the same
+VME_CAEN_V7X5_FRS(card) // V775 and V785 unpack the same
 {
     MEMBER(DATA24 data[32] ZERO_SUPPRESS);
     MEMBER(DATA8 channel[32] ZERO_SUPPRESS);
@@ -10,7 +10,7 @@ VME_CAEN_V7X5_FRS() // V775 and V785 unpack the same
         8_13:  count;
         16_23: crate;// = MATCH(crate);
         24_26: 0b010;
-        27_31: geom;// = MATCH(geom);
+        27_31: geom = MATCH(card);// = MATCH(geom);
     }
 
     list(0 <= index < header.count)
