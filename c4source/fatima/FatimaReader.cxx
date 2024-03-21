@@ -382,7 +382,7 @@ Bool_t FatimaReader::Read() //do fine time here:
             if (fData->fatima_tamex[it_board_number].time_finev[it_hits] == 0x3FF) {fNevents_TAMEX_fail[it_board_number][channelid]++; continue;} // this happens if TAMEX loses the fine time - skip it
 
 
-            if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch){fNevents_lacking_epoch[it_board_number][channelid]++; c4LOG(warning, "Event lacking epoch.");} // if the channel has changed but no epoch word was seen in between, channel 0 is always the first one so dont check if that s the case.
+            if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch){fNevents_lacking_epoch[it_board_number][channelid]++; c4LOG(debug1, "Event lacking epoch.");} // if the channel has changed but no epoch word was seen in between, channel 0 is always the first one so dont check if that s the case.
 
             if (!(channelid >= last_channel_read)) {c4LOG(fatal, Form("Data format is inconcistent with assumption: Channels are not read out in increasing order. This channel = %i, last channel = %i",channelid,last_channel_read));}
 
@@ -443,7 +443,7 @@ Bool_t FatimaReader::Read() //do fine time here:
                     fine_T,
                     
                     fData->fatima_ts_subsystem_id,
-                    wr_t + ( (((uint64_t)previous_epoch_word)*10.24e3 + ((uint64_t)coarse_T)*5.0 - (uint64_t)fine_T) - accepted_trigger_time) // corrected by the time difference to the acc trigger time
+                    wr_t + 0* ( (((uint64_t)previous_epoch_word)*10.24e3 + ((uint64_t)coarse_T)*5.0 - (uint64_t)fine_T) - accepted_trigger_time) // corrected by the time difference to the acc trigger time
                 );
             
                 //reset:

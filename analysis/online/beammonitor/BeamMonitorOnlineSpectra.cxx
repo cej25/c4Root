@@ -290,7 +290,6 @@ void BeamMonitorOnlineSpectra::Snapshot_Histo()
 
 void BeamMonitorOnlineSpectra::Exec(Option_t* option)
 {   
-    
     if (fHitBM && fHitBM->GetEntriesFast() > 0)
     {
         Int_t nHits = fHitBM->GetEntriesFast();
@@ -390,6 +389,8 @@ void BeamMonitorOnlineSpectra::Exec(Option_t* option)
                     time(&rawtime);
 
                     if (std::isnan(BM_QF)) continue; // skip divisions by zero
+
+                    // add integral between two time difference ranges...
 
                     hG_BM_s2gr_qf->SetPoint(BM_S2_QFcount, rawtime, BM_QF);
                     hG_BM_s2gr_dcmin->SetPoint(BM_S2_QFcount, rawtime, BM_dc_MinValue);

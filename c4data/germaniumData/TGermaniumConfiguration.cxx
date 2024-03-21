@@ -9,6 +9,7 @@
 TGermaniumConfiguration* TGermaniumConfiguration::instance = nullptr;
 std::string TGermaniumConfiguration::configuration_file = "blank";
 std::string TGermaniumConfiguration::calibration_file = "blank";
+std::string TGermaniumConfiguration::timeshift_calibration_file = "blank";
 
 TGermaniumConfiguration::TGermaniumConfiguration()
 :   num_detectors(0)
@@ -112,5 +113,31 @@ void TGermaniumConfiguration::ReadCalibrationCoefficients(){
         }
     }
     detector_calibrations_loaded = 1;
+    cal_map_file.close();
+};
+
+
+
+void TGermaniumConfiguration::ReadTimeshiftSCI41Coefficients(){
+
+    c4LOG(info, "Reading TimeshiftSCI41 coefficients.");
+
+
+    std::ifstream cal_map_file (timeshift_calibration_file);
+
+    int rdetector_id,rcrystal_id; // temp read variables
+    double t0;
+    
+    //assumes the first line in the file is num-modules used
+    while(!cal_map_file.eof()){
+        if(cal_map_file.peek()=='#') cal_map_file.ignore(256,'\n');
+        else{
+            cal_map_file >> rdetector_id >> rcrystal_id >> t0;
+            std::pair<int,int> detector_crystal = {rdetector_id,rcrystal_id};
+            timeshift_calibration_coeffs.insert(std::pair<std::pair<int,int>,double>{detector_crystal,t0});
+            cal_map_file.ignore(256,'\n');
+        }
+    }
+    timeshift_calibration_coeffs_loaded = 1;
     cal_map_file.close();
 };

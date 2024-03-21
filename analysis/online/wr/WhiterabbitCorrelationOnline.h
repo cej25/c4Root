@@ -2,6 +2,8 @@
 #define WhiterabbitCorrelationOnline_H
 
 #include "FairTask.h"
+#include "AidaHitData.h"
+#include <vector>
 
 class TClonesArray;
 class EventHeader;
@@ -43,8 +45,10 @@ class WhiterabbitCorrelationOnline : public FairTask
     
     private:
         TClonesArray* fHitFatimaTwinpeaks;
+        TClonesArray* fHitFatimaVme;
         TClonesArray* fHitbPlastTwinpeaks;
         TClonesArray* fHitGe;
+        std::vector<AidaHit> const* fAidaDecays;
         TimeMachineData* fWhiterabbitHit;
 
         std::vector<TString> fDetectorSystems;
@@ -57,18 +61,32 @@ class WhiterabbitCorrelationOnline : public FairTask
         // Canvas
         TCanvas* c_whiterabbit_correlation;
         TCanvas* c_whiterabbit_correlation_bplast_fatima;
+<<<<<<< HEAD
         TCanvas* c_whiterabbit_trigger1_bplast_fatima;
         TCanvas* c_whiterabbit_trigger3_bplast_fatima;
 
+=======
+        TCanvas* c_whiterabbit_correlation_fatima_aida;
+>>>>>>> main
         TCanvas* c_whiterabbit_correlation_bplast_ge;
         TCanvas* c_whiterabbit_trigger1_bplast_ge;
         TCanvas* c_whiterabbit_trigger3_bplast_ge;
 
         TCanvas* c_whiterabbit_correlation_fatima_ge;
+<<<<<<< HEAD
         TCanvas* c_whiterabbit_trigger1_fatima_ge;
         TCanvas* c_whiterabbit_trigger3_fatima_ge;
         
         TCanvas* c_whiterabbit_trigger;
+=======
+        TCanvas* c_whiterabbit_correlation_fatimavme_aida;
+        TCanvas* c_whiterabbit_correlation_aida_bplast;
+        TCanvas* c_whiterabbit_correlation_aida_germanium;
+        TCanvas* c_whiterabbit_correlation_fatima_fatimavme;
+        TCanvas* c_whiterabbit_correlation_bplast_fatimavme;
+        TCanvas* c_whiterabbit_correlation_fatimavme_ge;
+        
+>>>>>>> main
 
         //Folders and directories
         TDirectory* dir_whiterabbit;
@@ -76,8 +94,16 @@ class WhiterabbitCorrelationOnline : public FairTask
         TFile* file_whiterabbit_snapshot;
 
         
-        // Histograms  
+        // Histograms
+
+
+        TH1F* h1_whiterabbit_correlation_fatima_aida;
+        TH1F* h1_whiterabbit_correlation_fatimavme_aida;
+        TH1F* h1_whiterabbit_correlation_aida_bplast;
+        TH1F* h1_whiterabbit_correlation_aida_germanium;
+        TH1F* h1_whiterabbit_correlation_fatima_fatimavme;
         TH1F* h1_whiterabbit_correlation_bplast_fatima;
+<<<<<<< HEAD
         TH2F* h2_whiterabbit_trigger1_bplast_fatima;
         TH2F* h2_whiterabbit_trigger3_bplast_fatima;
 
@@ -90,6 +116,12 @@ class WhiterabbitCorrelationOnline : public FairTask
         TH2F* h2_whiterabbit_trigger3_fatima_ge;
 
         TH1F* h1_whiterabbit_trigger;
+=======
+        TH1F* h1_whiterabbit_correlation_fatima_ge;
+        TH1F* h1_whiterabbit_correlation_bplast_fatimavme;
+        TH1F* h1_whiterabbit_correlation_fatimavme_ge;
+        TH1F* h1_whiterabbit_correlation_bplast_ge;
+>>>>>>> main
 
 
 

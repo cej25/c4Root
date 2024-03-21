@@ -77,7 +77,7 @@ class GermaniumFebexData : public TObject
 
         //whiterabbit
         uint32_t fwr_subsystem_id;
-        uint32_t fwr_t;
+        uint64_t fwr_t;
     
 
     public:
