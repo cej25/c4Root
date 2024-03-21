@@ -11,8 +11,11 @@ SUBEVENT(bb7_subev)
         ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1800);
     }
 
-    // geo = 11
-    v7x5[0] = VME_CAEN_V7X5_FRS();
+    select several
+    {
+        v7x5_module[0] = VME_CAEN_V7X5_FRS(card=11);
+        v7x5_module[1] = VME_CAEN_V7X5_FRS(card=12);
+    }
 }
 
 EVENT

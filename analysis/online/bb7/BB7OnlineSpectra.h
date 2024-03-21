@@ -13,6 +13,7 @@
 
 class TH1D;
 class TH1F;
+class TH1I;
 
 class BB7OnlineSpectra : public FairTask
 {
@@ -37,12 +38,16 @@ class BB7OnlineSpectra : public FairTask
         // folders
         TFolder* folder_bb7_hists;
         TFolder* folder_raw_e;
+        TFolder* folder_stats;
 
         // canvases
+        TCanvas* c_raw_e; // per side?
+        TCanvas* c_hitpatterns;
 
 
         // histograms
-        TH1D* h1_bb7_RawE[64]; // 64 strips? use config later
+        TH1D* h1_bb7_RawE[2][32]; // 64 strips? use config later
+        TH1I* h1_bb7_hitpattern[2];
 
     public:
         ClassDef(BB7OnlineSpectra, 1)

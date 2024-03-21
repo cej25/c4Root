@@ -8,7 +8,7 @@
 // c4
 #include "BB7OnlineSpectra.h"
 #include "EventHeader.h"
-#include "BB7VmeData.h"
+#include "BB7VmeCalData.h"
 #include "c4Logger.h"
 
 // root
@@ -48,8 +48,8 @@ InitStatus BB7OnlineSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fHitBB7 = (TClonesArray*)mgr->GetObject("BB7VmeData");
-    c4LOG_IF(fatal, !fHitBB7, "Branch BB7VmeData not found!");
+    fHitBB7 = (TClonesArray*)mgr->GetObject("BB7VmeCalData");
+    c4LOG_IF(fatal, !fHitBB7, "Branch BB7VmeCalData not found!");
 
     // set up config later
 
@@ -60,12 +60,24 @@ InitStatus BB7OnlineSpectra::Init()
 
     folder_raw_e = new TFolder("Raw Energy", "Raw Energy");
     folder_bb7_hists->Add(folder_raw_e);
+    folder_stats = new TFolder("Stats", "Stats");
+    folder_bb7_hists->Add(folder_stats);
 
-    for (int i = 0; i < 64; i++)
+    // base on config later - add detector loop later also
+    for (int side = 0; side < 2; side++)
     {
-        h1_bb7_RawE[i] = new TH1D(Form("h1_bb7_RawE%i", i), Form("Raw Energy BB7 Channel %i", i), 4096, 0, 4096); // 12 bit adc
-        folder_raw_e->Add(h1_bb7_RawE[i]);
+        for (int strip = 0; strip < 32; strip++)
+        {
+            h1_bb7_RawE[side][strip] = new TH1D(Form("h1_bb7_RawE_Side%i_Strip%i", side, strip+1), Form("Raw Energy BB7 Side %i Strip %i", side, strip+1), 10000, 0, 10000); // 12 bit adc should only be 4096 max but saw higher?
+            folder_raw_e->Add(h1_bb7_RawE[side][strip]);
+        }
+
+        h1_bb7_hitpattern[side] = new TH1I(Form("h1_bb7_hitpattern_Side%i", side), Form("BB7 Hit Pattern Side %i", side), 32, 0, 32);
+        folder_stats->Add(h1_bb7_hitpattern[side]);
     }
+
+    
+
 
     return kSUCCESS;
 
@@ -78,16 +90,18 @@ void BB7OnlineSpectra::Exec(Option_t* option)
         Int_t nHits = fHitBB7->GetEntriesFast();
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {
-            BB7VmeData* bb7VmeHit = (BB7VmeData*)fHitBB7->At(ihit);
+            BB7VmeCalData* bb7VmeHit = (BB7VmeCalData*)fHitBB7->At(ihit);
             if (!bb7VmeHit) continue;
 
-            std::vector<uint32_t> geos = bb7VmeHit->Get_v7x5_geo();
-            std::vector<uint32_t> channels = bb7VmeHit->Get_v7x5_channel();
-            std::vector<uint32_t> data = bb7VmeHit->Get_v7x5_data();
+            std::vector<int> sides = bb7VmeHit->Get_Sides();
+            std::vector<int> strips = bb7VmeHit->Get_Strips();
+            std::vector<uint32_t> raw_adc = bb7VmeHit->Get_Raw_ADC();
 
-            for (int j = 0; j < data.size(); j++)
+            for (int j = 0; j < raw_adc.size(); j++)
             {
-                h1_bb7_RawE[channels[j]]->Fill(data[j]);
+                h1_bb7_RawE[sides[j]][strips[j]-1]->Fill(raw_adc[j]);
+
+                h1_bb7_hitpattern[sides[j]]->Fill(strips[j]-1);
             }
         }
     }

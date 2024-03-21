@@ -22,6 +22,7 @@
 #pragma link C++ class BeamMonitorData+;
 #pragma link C++ class TimeMachineData+;
 #pragma link C++ class BB7VmeData+;
+#pragma link C++ class BB7VmeCalData+;
 
 #pragma link C++ class BGOTwinpeaksData+;
 #pragma link C++ class BGOTwinpeaksCalData+;
@@ -67,5 +68,6 @@
 #pragma link C++ class TBGOConfiguration+;
 #pragma link C++ class TbPlastConfiguration+;
 #pragma link C++ class TCorrelationsConfiguration+;
+#pragma link C++ class TBB7VmeConfiguration+;
 
 #endif
