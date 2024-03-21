@@ -28,8 +28,8 @@ SUBEVENT(bgo_tamex_subevent)
     }
     select several
     {
-        tamex[0] = TAMEX4_SFP(sfp=0,card=0);
-        tamex[1] = TAMEX4_SFP(sfp=0,card=1);
+        tamex[0] = TAMEX4_SFP(sfp=1,card=0);
+        tamex[1] = TAMEX4_SFP(sfp=1,card=1);
     }  
 }
 
@@ -97,11 +97,13 @@ SUBEVENT(fatima_vme_subev)
     }
 
     // we always get some readout from 5 QCD boards
-    qdc[0] = VME_CAEN_V1751();
-    qdc[1] = VME_CAEN_V1751();
-    qdc[2] = VME_CAEN_V1751();
-    qdc[3] = VME_CAEN_V1751();
-    //qdc[4] = VME_CAEN_V1751();
+    
+    qdc[0] = VME_CAEN_V1751(board=6);
+    qdc[1] = VME_CAEN_V1751(board=7);
+    qdc[2] = VME_CAEN_V1751(board=8);
+    qdc[3] = VME_CAEN_V1751(board=9);
+    //qdc[4] = VME_CAEN_V1751(board=10);
+   
 
     select several
     {
@@ -272,7 +274,7 @@ EVENT
     fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = 75, control = 20);
     fatimavme = fatima_vme_subev(type = 10, subtype = 1, procid = 70, control = 20); // apparenlty there are fatimavme things in NovTest data..comment out
     bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20);
-    //bgo = bgo_tamex_subevent(procid = 100);
+    bgo = bgo_tamex_subevent(procid = 100);
 
     frsmain = frs_main_subev(procid = 10);
     frstpc = frs_tpc_subev(procid = 20);

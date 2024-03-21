@@ -1,6 +1,8 @@
 #DetNo.|QDC board|QDC ch.|TDC board|TDC ch.|State|
-0     6    0        12        0   1
-1     6    1        12        1   1
+TimeMachineU 40    6       0        12        0    1
+TimeMachineD 41    6       1        12        1    1
+#0     6    0        12        0   1
+#1     6    1        12        1   1
 2     6    2        12        2   1
 3     6    3        13        8   1
 4     6    4        12        4   1    
@@ -42,8 +44,8 @@ SC41L_A 36    10       4        13        16    1
 SC41R_A 37    10       5        13        17    1
 SC41L_D 38    10       6        13        18    1 
 SC41R_D 39    10       7        13        19    1
-TimeMachineU 40    11       0        13        20    1
-TimeMachineD 41    11       1        13        21    1
+#TimeMachineU 40    11       0        13        20    1
+#TimeMachineD 41    11       1        13        21    1
 BPLAST_UP 42    11       2        13        22    1
 BPLAST_DOWN 43    11       3        13        23    1
 BPLAST_COINC 44    11       4        13        24    1

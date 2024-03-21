@@ -201,14 +201,14 @@ void BGORaw2Cal::Exec(Option_t* option)
 
 
             //from here the funcalhitpartner is the slow branch and funcal_hit the fast:
-            
+            std::map<std::pair<int,int>,std::pair<int,int>> bmap = BGO_configuration->Mapping();
             if (BGO_configuration->MappingLoaded())
             {
                 std::pair<int, int> unmapped_det { funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2};
-                if (auto result_find = BGO_configuration->Mapping().find(unmapped_det); result_find != BGO_configuration->Mapping().end())
+                if (auto result_find = bmap.find(unmapped_det); result_find != bmap.end())
                 {
                     detector_id = result_find->second.first; // .find returns an iterator over the pairs matching key
-                    crystal_id = result_find->second.second; 
+                    crystal_id = result_find->second.second;
                     if (detector_id == -1) { fNunmatched++; continue; }
                 }
             }

@@ -9,12 +9,12 @@
 0   6   38   D   R	
 0   7   39   D   R
 0   8   40   D   R
-0   9   1    D   L
-0   10  2    D   L
-0   11  3    D   L
-0   12  4    D   L
-0   13  5    D   L
-0   14  6    D   L
+0   9   -1    D   L
+0   10  -1    D   L
+0   11  -1    D   L
+0   12  -1    D   L
+0   13  -1   D   L
+0   14  -1   D   L
 0   15  7    D   L
 0   16  8    D   L
 1   1   12   D   T
@@ -145,29 +145,9 @@
 8   14  78   D   B
 8   15  79   D   B
 8   16  80   D   B
-#Other signals
-#Time Machine Delayed
-TimeMachineD 9   1   65   D   B
-#Time Machine Undelayed
-TimeMachineU 9   2   66   D   B
-#Empty
-9   3   67   D   B
-9   4   68   D   B
-#SC41 R
-SC41R_D 9   5   69   D   B
-#SC41 L
-SC41L_D 4   6   70   D   B
-#Empty
-9   7   71   D   B
-9   8   72   D   B
-#FATIMA Accepted trigger
-FATIMA_ACCEPT 9   9   73   D   B
-#FATIMA Free trigger
-FATIMA_FREE 9   10   74  D   B
-#Empty
-9   11  75   D   B
-9   12  76   D   B
-9   13  77   D   B
-9   14  78   D   B
-9   15  79   D   B
-9   16  80   D   B
+TimeMachineU    8   1   1  D   B
+TimeMachineD    8   2   2  D   B
+SC41L_D         8   5   3  D   B
+SC41R_D         8   6   4  D   B
+FATIMA_ACCEPT   8   9   5  D   B
+FATIMA_FREE     8   10  6  D   B

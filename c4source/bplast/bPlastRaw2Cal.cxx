@@ -275,9 +275,12 @@ void bPlastRaw2Cal::Exec(Option_t* option){
 
                 if (bplast_config->MappingLoaded())
                 {
+                    
+                    std::map<std::pair<int, int>, std::pair<int, std::pair<std::string, std::string>>> fmap;
+                    fmap = bplast_config->Mapping();
                     std::pair<int, int> unmapped_det { funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2 };
 
-                    if (auto result_find = bplast_config->Mapping().find(unmapped_det); result_find != bplast_config->Mapping().end())
+                    if (auto result_find = fmap.find(unmapped_det); result_find != fmap.end())
                     {
                         detector_id = result_find->second.first;
                         detector_stream = result_find->second.second.first;
@@ -286,6 +289,7 @@ void bPlastRaw2Cal::Exec(Option_t* option){
                     }
                     else c4LOG(warn, "Detector mapping is not complete! CEJ: Warning only for now...");
                 }
+                
 
                 /*
                 //do the detector mapping here:
