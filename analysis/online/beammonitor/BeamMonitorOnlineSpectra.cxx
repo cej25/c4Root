@@ -250,6 +250,7 @@ void BeamMonitorOnlineSpectra::Reset_Histo()
 {
     c4LOG(info, "");
     /*
+    hG_BM_s4h_norm_tdiff->Set(0); // try this for reseting histos
     fh1_S4tdiff->Reset();
     hbm_s4h_t1->Reset();
     fh1_S4_QF->Reset();
@@ -257,7 +258,8 @@ void BeamMonitorOnlineSpectra::Reset_Histo()
     hBM_s4h_cp->Reset();
     hBM_s4h_dc->Reset();
     hBM_s4h_poisson->Reset();
-    hBM_s4h_norm_tdiff->Reset();*/
+    hBM_s4h_norm_tdiff->Reset();
+    */
 
 }
 

@@ -303,23 +303,26 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
 
     if (fHitFatimaTwinpeaks && fHitbPlastTwinpeaks)
     {
-        for (Int_t j = 0; j < nHitsFatima; j++)
+        for (Int_t i = 0; i < nHitsTrigger; i++)
         {
-            FatimaTwinpeaksCalData* hitFatima = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(j);
-
-            for (Int_t k =0; k < nHitsbPlast; k++)
+            for (Int_t j = 0; j < nHitsFatima; j++)
             {
-                bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(k);
-                if (hitFatima && hitbPlast)
+                FatimaTwinpeaksCalData* hitFatima = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(j);
+
+                for (Int_t k =0; k < nHitsbPlast; k++)
                 {
-                    h1_whiterabbit_correlation_bplast_fatima->Fill(hitbPlast->Get_wr_t() - hitFatima->Get_wr_t());
-                    if (fEventHeader->GetTrigger() == 1)
+                    bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(k);
+                    if (hitFatima && hitbPlast)
                     {
-                        h2_whiterabbit_trigger1_bplast_fatima->Fill(hitFatima->Get_wr_t(), hitbPlast->Get_wr_t());
-                    }
-                    if (fEventHeader->GetTrigger() == 3)
-                    {
-                        h2_whiterabbit_trigger3_bplast_fatima->Fill(hitFatima->Get_wr_t(), hitbPlast->Get_wr_t());
+                        h1_whiterabbit_correlation_bplast_fatima->Fill(hitbPlast->Get_wr_t() - hitFatima->Get_wr_t());
+                        if (fEventHeader->GetTrigger() == 1)
+                        {
+                            h2_whiterabbit_trigger1_bplast_fatima->Fill(hitFatima->Get_wr_t(), hitbPlast->Get_wr_t());
+                        }
+                        if (fEventHeader->GetTrigger() == 3)
+                        {
+                            h2_whiterabbit_trigger3_bplast_fatima->Fill(hitFatima->Get_wr_t(), hitbPlast->Get_wr_t());
+                        }
                     }
                 }
             }
@@ -329,47 +332,61 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
     
     
 
-    // if (fHitFatimaTwinpeaks && fHitGe)
-    // {
-    //     for (Int_t i = 0; i < nHitsTrigger; i++)
-    //     {
-    //         FatimaTwinpeaksCalData* hitFatima = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(i);
-    //         GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(i);
-    //         if (hitFatima && hitGe)
-    //         {
-    //             h1_whiterabbit_correlation_fatima_ge->Fill(hitFatima->Get_wr_t() - hitGe->Get_wr_t());
-    //             if (fEventHeader->GetTrigger() == 1)
-    //             {
-    //                 h2_whiterabbit_trigger1_fatima_ge->Fill(hitGe->Get_wr_t(), hitFatima->Get_wr_t());
-    //             }
-    //             if (fEventHeader->GetTrigger() == 3)
-    //             {
-    //                 h2_whiterabbit_trigger3_fatima_ge->Fill(hitGe->Get_wr_t(), hitFatima->Get_wr_t());
-    //             }
-    //         }
-    //     }
-    // }
+    if (fHitFatimaTwinpeaks && fHitGe)
+    {
+        for (Int_t i = 0; i < nHitsTrigger; i++)
+        {
+            for (Int_t j = 0; j < nHitsFatima; j++)
+            {
+                FatimaTwinpeaksCalData* hitFatima = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(j);
 
-    // if (fHitbPlastTwinpeaks && fHitGe)
-    // {
-    //     for (Int_t i = 0; i < nHitsTrigger; i++)
-    //     {
-    //         bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(i);
-    //         GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(i);
-    //         if (hitbPlast && hitGe)
-    //         {
-    //             h1_whiterabbit_correlation_bplast_ge->Fill(hitbPlast->Get_wr_t() - hitGe->Get_wr_t());
-    //             if (fEventHeader->GetTrigger() == 1)
-    //             {
-    //                 h2_whiterabbit_trigger1_bplast_ge->Fill(hitGe->Get_wr_t(), hitbPlast->Get_wr_t());
-    //             }
-    //             if (fEventHeader->GetTrigger() == 3)
-    //             {
-    //                 h2_whiterabbit_trigger3_bplast_ge->Fill(hitGe->Get_wr_t(), hitbPlast->Get_wr_t());
-    //             }
-    //         }
-    //     }
-    // }
+                for (Int_t k =0; k < nHitsGe; k++)
+                {
+                    GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(k);
+                    if (hitFatima && hitGe)
+                    {
+                        h1_whiterabbit_correlation_fatima_ge->Fill(hitFatima->Get_wr_t() - hitGe->Get_wr_t());
+                        if (fEventHeader->GetTrigger() == 1)
+                        {
+                            h2_whiterabbit_trigger1_fatima_ge->Fill(hitGe->Get_wr_t(), hitFatima->Get_wr_t());
+                        }
+                        if (fEventHeader->GetTrigger() == 3)
+                        {
+                            h2_whiterabbit_trigger3_fatima_ge->Fill(hitGe->Get_wr_t(), hitFatima->Get_wr_t());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (fHitbPlastTwinpeaks && fHitGe)
+    {
+        for (Int_t i = 0; i < nHitsTrigger; i++)
+        {
+            for (Int_t j = 0; j < nHitsbPlast; j++)
+            {
+                bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(j);
+
+                for (Int_t k =0; k < nHitsGe; k++)
+                {
+                    GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(k);
+                    if (hitbPlast && hitGe)
+                    {
+                        h1_whiterabbit_correlation_bplast_ge->Fill(hitbPlast->Get_wr_t() - hitGe->Get_wr_t());
+                        if (fEventHeader->GetTrigger() == 1)
+                        {
+                            h2_whiterabbit_trigger1_bplast_ge->Fill(hitGe->Get_wr_t(), hitbPlast->Get_wr_t());
+                        }
+                        if (fEventHeader->GetTrigger() == 3)
+                        {
+                            h2_whiterabbit_trigger3_bplast_ge->Fill(hitGe->Get_wr_t(), hitbPlast->Get_wr_t());
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     for (Int_t i = 0; i < nHitsTrigger; i++) // use the full trigger loop and then do each subsystem in this loop
     {
