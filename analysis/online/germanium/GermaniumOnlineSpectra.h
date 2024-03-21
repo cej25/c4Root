@@ -74,11 +74,15 @@ class GermaniumOnlineSpectra : public FairTask
         TCanvas* c_germanium_time;
         TCanvas* c_germanium_energy;
         TCanvas* c_germanium_energy_vs_detidx;
+
         TCanvas* c_germanium_hitpattern;
         TCanvas* c_germanium_multiplicity;
         TCanvas* c_germanium_time_differences;
         TCanvas* c_germanium_time_differences_vs_energy;
         TCanvas* c_germanium_rates;
+        TCanvas* c_germanium_energy_summed;
+        TCanvas* c_germanium_energy_summed_vetosci41;
+        TCanvas* c_germanium_energy_summed_vs_tsci41;
         
         
 
@@ -103,6 +107,10 @@ class GermaniumOnlineSpectra : public FairTask
         
         TH1F *** h1_germanium_time_differences; // [reference_dector][detector index]
         TH2F *** h2_germanium_time_differences_vs_energy; // [reference detector][detector index]
+
+        TH1F * h1_germanium_energy_summed;
+        TH1F * h1_germanium_energy_summed_vetosci41;
+        TH2F * h2_germanium_energy_summed_vs_tsci41;
 
         TH1F * h1_germanium_multiplicity;
         TH1F * h1_germanium_hitpattern;

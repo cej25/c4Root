@@ -443,11 +443,11 @@ void FatimaOnlineSpectra::FinishTask()
         c4LOG(warning, "No events processed, histograms will not be saved!");
         return;
     }
-    //if (fHitFatimaTwinpeaks)
-    //{
+    if (fHitFatimaTwinpeaks)
+    {
         folder_fatima->Write();
         c4LOG(info, "FATIMA histograms written to file");
-    //}
+    }
 }
 
 ClassImp(FatimaOnlineSpectra)

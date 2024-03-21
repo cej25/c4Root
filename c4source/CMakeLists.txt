@@ -29,6 +29,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/fatimaData
 ${C4ROOT_SOURCE_DIR}/c4data/germaniumData
 ${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
 ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
+${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 )
 
 set(LINK_DIRECTORIES
@@ -70,6 +71,8 @@ set(SRCS
 ./bgo/BGORaw2Cal.cxx
 ./fatima/FatimaVmeReader.cxx
 ./fatima/FatimaVmeRaw2Cal.cxx
+./bb7/BB7Reader.cxx
+./bb7/BB7Raw2Cal.cxx
 )
 
 Set(STRUCT_HEADERS
@@ -86,6 +89,7 @@ Set(STRUCT_HEADERS
 ./fatima/ext_h101_fatima.h
 ./fatima/ext_h101_fatimavme.h
 ./bgo/ext_h101_bgo.h
+./bb7/ext_h101_bb7vme.h
 )
 
 # fill list of header files from list of source files
