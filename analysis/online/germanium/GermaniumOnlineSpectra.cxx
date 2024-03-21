@@ -154,13 +154,6 @@ InitStatus GermaniumOnlineSpectra::Init()
     folder_germanium_energy->Add(h2_germanium_energy_summed_vs_tsci41);
 
     
-    
-    
-
-
-
-    
-
     // time spectra:
     c_germanium_time  = new TCanvas("c_germanium_time","Calibrated Germanium spectra",650,350);
     c_germanium_time->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));

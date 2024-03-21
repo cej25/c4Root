@@ -5,8 +5,6 @@ bPlastTwinpeaksCalData::bPlastTwinpeaksCalData()
     fboard_id(0),
     fch_ID(0),
     fdetector_id(0),
-    fdetector_stream('\0'),
-    fdetector_position('\0'),
 
     fslow_lead_time(0),
     fslow_trail_time(0),

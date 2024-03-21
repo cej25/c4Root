@@ -24,12 +24,7 @@ EXPS=s452 \
 	NovTest \
 	onlyFATIMA \
 	s100 \
-<<<<<<< HEAD
-	onlybPlast\
-=======
 	bb7 \
-	onlyGerm \
->>>>>>> main
 	onlyBGO
 
 ALL_EXPS = $(EXPS)
