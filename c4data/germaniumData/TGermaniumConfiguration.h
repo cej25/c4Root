@@ -19,6 +19,7 @@ class TGermaniumConfiguration
 
         static void SetDetectorConfigurationFile(std::string fp) { configuration_file = fp; }
         static void SetDetectorCoefficientFile(std::string fp) { calibration_file = fp; }
+        static void SetDetectorTimeshiftsToSCI41File(std::string fp) { timeshift_calibration_file = fp; }
 
 
 
@@ -26,6 +27,8 @@ class TGermaniumConfiguration
         bool MappingLoaded() const;
         bool CalibrationCoefficientsLoaded() const;
         std::map<std::pair<int,int>,std::pair<double,double>> CalibrationCoefficients() const;
+        bool TimeshiftCalibrationCoefficientsLoaded() const;
+        std::map<std::pair<int,int>,double> TimeshiftCalibrationCoefficients() const;
 
         int NDetectors() const;
         int NCrystals() const;
@@ -41,16 +44,19 @@ class TGermaniumConfiguration
 
         static std::string configuration_file;
         static std::string calibration_file;
+        static std::string timeshift_calibration_file;
 
 
         TGermaniumConfiguration();
         void ReadConfiguration();
         void ReadCalibrationCoefficients();
+        void ReadTimeshiftSCI41Coefficients();
 
         static TGermaniumConfiguration* instance;
         
         std::map<std::pair<int,int>,std::pair<int,int>> detector_mapping;
         std::map<std::pair<int,int>,std::pair<double,double>> calibration_coeffs;
+        std::map<std::pair<int,int>,double> timeshift_calibration_coeffs;
         std::set<int> extra_signals;
 
         int num_detectors;
@@ -65,6 +71,7 @@ class TGermaniumConfiguration
 
         bool detector_mapping_loaded = 0;
         bool detector_calibrations_loaded = 0;
+        bool timeshift_calibration_coeffs_loaded = 0;
 };
 
 inline TGermaniumConfiguration const* TGermaniumConfiguration::GetInstance()
@@ -90,6 +97,11 @@ inline std::map<std::pair<int,int>,std::pair<int,int>> TGermaniumConfiguration::
 inline std::map<std::pair<int,int>,std::pair<double,double>> TGermaniumConfiguration::CalibrationCoefficients() const
 {
     return calibration_coeffs;
+}
+
+inline std::map<std::pair<int,int>,double> TGermaniumConfiguration::TimeshiftCalibrationCoefficients() const
+{
+    return timeshift_calibration_coeffs;
 }
 
 inline int TGermaniumConfiguration::NDetectors() const
@@ -126,6 +138,11 @@ inline bool TGermaniumConfiguration::MappingLoaded() const
 inline bool TGermaniumConfiguration::CalibrationCoefficientsLoaded() const
 {
     return detector_calibrations_loaded;
+}
+
+inline bool TGermaniumConfiguration::TimeshiftCalibrationCoefficientsLoaded() const
+{
+    return timeshift_calibration_coeffs_loaded;
 }
 
 inline int TGermaniumConfiguration::TM_Undelayed() const

@@ -86,11 +86,20 @@ MAIN_CRATE_DATA()
 TPC_CRATE_DATA()
 {
     // caen v775 and v785 (same readout, read 2)
+    select several
+    {
+        barrier0 = BARRIER();
+        v775 = VME_CAEN_V7X5_FRS(card=12);
+        v785 = VME_CAEN_V7X5_FRS(card=8);
+    }
+    
+    /*
     barrier[0] = BARRIER();
-    v775 = VME_CAEN_V7X5_FRS();
+    v775 = VME_CAEN_V7X5_FRS(card=12);
 
     barrier[1] = BARRIER();
-    v785 = VME_CAEN_V7X5_FRS();
+    v785 = VME_CAEN_V7X5_FRS(card=8);
+    */
 
     // caen v119
     
@@ -108,22 +117,35 @@ TPC_CRATE_DATA()
 USER_CRATE_DATA()
 {
     // caen v820 or v830
-    barrier[0] = BARRIER();
+    barrier0 = BARRIER();
     v830 = VME_CAEN_V830_FRS();
 
     // caen v775 x2 and caen v785 x2
+
     filler[0] = ZERO_FILLER();
+
+    select several
+    {
+        barrier1 = BARRIER();
+        // really not sure if this is correct, we'll see
+        v775[0] = VME_CAEN_V7X5_FRS(card=8);
+        v775[1] = VME_CAEN_V7X5_FRS(card=9);
+        v785[0] = VME_CAEN_V7X5_FRS(card=10);
+        v785[1] = VME_CAEN_V7X5_FRS(card=12);
+    }
+
+    /*
     barrier[1] = BARRIER();
-    v775[0] = VME_CAEN_V7X5_FRS();
+    v775[0] = VME_CAEN_V7X5_FRS(card=8);
 
     barrier[2] = BARRIER();
-    v775[1] = VME_CAEN_V7X5_FRS();
+    v775[1] = VME_CAEN_V7X5_FRS(card=);
 
     barrier[3] = BARRIER();
-    v785[0] = VME_CAEN_V7X5_FRS();
+    v785[0] = VME_CAEN_V7X5_FRS(card=);
 
     barrier[4] = BARRIER();
-    v785[1] = VME_CAEN_V7X5_FRS();
+    v785[1] = VME_CAEN_V7X5_FRS(card=);*/
 
 }
 

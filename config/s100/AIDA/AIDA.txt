@@ -47,26 +47,21 @@ DSSD: 1
 - Top: 2
 - Bottom: 4
 - LeftLeft: 7
-- LeftRight: 5
+- LeftRight: 6
 - CentreLeft: 3
 - CentreRight: 1
 - RightLeft: 8
-- RightRight: 6
+- RightRight: 5
 - X: Junction
 - Y: Ohmic
-- MEC: true
+- MEC: false
 
 #---------------------------
 # Scaler Mapping
 #---------------------------
 Scalers:
 - 1: Pulser
-<<<<<<< HEAD
 - 3: TimeMachineU
 - 4: TimeMachineD
-=======
-- 3: Time Machine Original
-- 4: Time Machine Delayed
->>>>>>> b9ece12bcb09f6ab13a372e37a7269ffc08a90cd
-- 2: SC41L_D
-- 5: SC41R_D
+- 5: SC41L_D
+- 6: SC41R_D
