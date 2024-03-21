@@ -74,6 +74,8 @@ class BGOOnlineSpectra : public FairTask
         
         TCanvas* c_germanium_bgo_veto_energy;
         TCanvas* c_germanium_bgo_veto_timedifferences;
+
+        TCanvas* c_bgo_snapshot;
         
         // Folder and files
         TFolder* folder_bgo;

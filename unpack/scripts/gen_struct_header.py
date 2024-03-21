@@ -4,9 +4,13 @@ import subprocess as sb
 #should create the correct struct files, add systems to systems list and run. 
 
 #add the systems you want here: bplast,fatima,etc
-systems = ["bgo"]
+systems = ["bplast"]
 
+<<<<<<< Updated upstream
 ucesb_exec = "onlybPlast"
+=======
+ucesb_exec = "s100"
+>>>>>>> Stashed changes
 
 
 for system in systems:

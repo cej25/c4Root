@@ -1,11 +1,12 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define FATIMA_ON 1
-#define FATIMA_VME_ON 1
+#define FATIMA_ON 0
+#define FATIMA_VME_ON 0
 #define AIDA_ON 0
-#define BPLAST_ON 0
+#define BPLAST_ON 1
 #define GERMANIUM_ON 0
+#define BGO_ON 0
 #define FRS_ON 0
 #define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
@@ -75,7 +76,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 5000; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 5500; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
@@ -143,7 +144,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     TFatimaVmeConfiguration::Set_QDC_T_CalFile(config_path + "/fatima/Fatima_QDC_Time_Calibration.txt");
     TFatimaVmeConfiguration::Set_TDC_T_CalFile(config_path + "/fatima/Fatima_TDC_Time_Calibration.txt");
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
-    TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_new.txt");
+    TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_mar19.txt");
     // FRS? Eventually will get around to mapping crates properly
     TGermaniumConfiguration::SetDetectorMapFile(config_path + "/germanium/Germanium_Detector_Map.txt");
     
@@ -185,7 +186,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (BPLAST_ON)
     {
         bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_bplast_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
-        //unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_histos_111223_bplast.root", 50000);
+        //unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_histos_111223_bplast.root", 100000);
         unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_histos_111223_bplast.root");
         
         unpackbplast->SetOnline(true);
@@ -402,7 +403,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {b, d, e};
+        std::vector a {e};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
