@@ -1,9 +1,9 @@
 #include "FairLogger.h"
 #include "FairRootManager.h"
 
-#include "BB7FebexData.h"
+#include "BB7VmeData.h"
 #include "BB7Reader.h"
-
+#include "c4Logger.h"
 
 #include "TClonesArray.h"
 #include "ext_data_struct_info.hh"
@@ -11,16 +11,16 @@
 extern "C"
 {
     #include "ext_data_client.h"
-    #include "ext_h101_bb7febex.h"
+    #include "ext_h101_bb7vme.h"
 }
 
-BB7Reader::BB7Reader(EXT_STR_h101_bb7febex_onion* data, size_t offset)
+BB7Reader::BB7Reader(EXT_STR_h101_bb7vme_onion* data, size_t offset)
     :   c4Reader("BB7Reader")
     ,   fNEvent(0)
     ,   fData(data)
     ,   fOffset(offset)
     ,   fOnline(kFALSE)
-    ,   fArray(new TClonesArray("BB7FebexData"))
+    ,   fArray(new TClonesArray("BB7VmeData"))
 {
 
 }
@@ -35,7 +35,7 @@ Bool_t BB7Reader::Init(ext_data_struct_info* a_struct_info)
     Int_t ok;
     c4LOG(info, "");
 
-    EXT_STR_h101_bb7febex_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_bb7febex, 0);
+    EXT_STR_h101_bb7vme_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_bb7vme, 0);
 
     if (!ok)
     {
@@ -43,7 +43,7 @@ Bool_t BB7Reader::Init(ext_data_struct_info* a_struct_info)
         return kFALSE;
     }
 
-    FairRootManager::Instance()->Register("BB7FebexData", "BB7 Febex Data", fArray, !fOnline);
+    FairRootManager::Instance()->Register("BB7VmeData", "BB7 Vme Data", fArray, !fOnline);
     fArray->Clear();
 
     memset(fData, 0, sizeof *fData);
@@ -57,60 +57,25 @@ Bool_t BB7Reader::Read()
 
     if (!fData) return kTRUE;
 
-    // CEJ: none of these are confirmed assests of structure header yet, without data its not possible
-    // we're just setting up something basic
-    wr_t = (((uint64_t)fData->bb7_ts_t[3]) << 48) + (((uint64_t)fData->bb7_ts_t[2]) << 32) + (((uint64_t)fData->bb7_ts_t[1]) << 16) + (uint64_t)(fData->bb7_ts_t[0]);
+    BB7VmeData* bb7VmeHit = new BB7VmeData();
 
-    // NBoards can come from configuration
-    for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
-    {
-        event_trigger_time_long = (((uint64_t)(fData->bb7_data[it_board_number].event_trigger_time_hi) << 32) + (fData->bb7_data[it_board_number].event_trigger_time_lo)) * 10;
+    wr_t = (((uint64_t)fData->bb7_ts_t4) << 48) + (((uint64_t)fData->bb7_ts_t3) << 32) + (((uint64_t)fData->bb7_ts_t2) << 16) + (uint64_t)(fData->bb7_ts_t1);
 
-        // WriteZeroMultEvents
+    bb7VmeHit->Set_wr_t(wr_t);
 
-        if (fData->bb7_data[it_board_number].channel_energy != fData->bb7_data[it_board_number].channel_cfd) c4LOG(warn, "Inconsistent size of arrays");
-
-        for (int index = 0; index < fData->bb7_data[it_board_number].channel_energy; index++)
-        {
-            // crash on mismatches, fix unpacker
-            if (fData->bb7_data[it_board_number].channel_trigger_time_hiI[index] != fData->bb7_data[it_board_number].channel_trigger_time_loI[index]) c4LOG(fatal, "Wrong in array fillings. channel_trigger_time_loI != channel_trigger_time_hiI "); 
-            if (fData->bb7_data[it_board_number].channel_trigger_time_hiI[index] != fData->bb7_data[it_board_number].pileupI[index]) c4LOG(fatal, "Wrong in array fillings. pileupI != channel_trigger_time_hiI ");
-            if (fData->bb7_data[it_board_number].channel_trigger_time_hiI[index] != fData->bb7_data[it_board_number].overflowI[index]) c4LOG(fatal, "Wrong in array fillings. overflowI != channel_trigger_time_hiI ");
-            if (fData->bb7_data[it_board_number].channel_trigger_time_hiI[index] != fData->bb7_data[it_board_number].channel_cfdI[index]) c4LOG(fatal, "Wrong in array fillings. channel_cfdI != channel_trigger_time_hiI ");
-            if (fData->bb7_data[it_board_number].channel_trigger_time_hiI[index] != fData->bb7_data[it_board_number].channel_energyI[index]) c4LOG(fatal, "Wrong in array fillings. channel_energyI != channel_trigger_time_hiI ");
-
-            // see germanium reader
-            if (fData->bb7_data[it_board_number].channel_energyv[index] & (1 << 23))
-            {
-                channel_energy = -(int32_t)(fData->bb7_data[it_board_number].channel_energyv[index] & 0x007FFFFF);
-            }
-            else
-            {
-                channel_energy = +(int32_t)(fData->bb7_data[it_board_number].channel_energyv[index] & 0x007FFFFF);            
-            }
-
-            // collect the LSB and MSB into one variable for channel trigger time
-            channel_trigger_time_long = (double)(((uint64_t)(fData->bb7_data[it_board_number].channel_trigger_time_hiv[index]) << 32) + (fData->bb7_data[it_board_number].channel_trigger_time_lov[index]));
-            // add the CF from the constant fraction. It is denoted by 6 bits in the energy word of the FEBEX data format
-            channel_trigger_time_long = (((double)fData->bb7_data[it_board_number].channel_cfdv[index])/64.0 + channel_trigger_time_long) * 10.0; // units of ns 
-
-            new ((*fArray)[fArray->GetEntriesFast()]) BB7FebexData(
-                fData->bb7_data[it_board_number].channel_energy,
-                event_trigger_time_long,
-                fData->bb7_data[it_board_number].hit_pattern,
-                it_board_number,
-                fData->bb7_data[it_board_number].pileupv[index],
-                fData->bb7_data[it_board_number].overflowv[index],
-                fData->bb7_data[it_board_number].channel_energyI[index], //this is the channel id
-                channel_trigger_time_long,
-                channel_energy,
-                fData->bb7_ts_subsystem_id,
-                wr_t
-            );
-
-        }
-
+    for (int i = 0; i < fData->bb7_v7x51n; i++)
+    {   
+        v7x5_geo.emplace_back(fData->bb7_v7x51geov[i]);
+        v7x5_channel.emplace_back(fData->bb7_v7x51channelv[i]);
+        v7x5_data.emplace_back(fData->bb7_v7x51data[i]);
     }
+
+    bb7VmeHit->Set_v7x5_geo(v7x5_geo);
+    bb7VmeHit->Set_v7x5_channel(v7x5_channel);
+    bb7VmeHit->Set_v7x5_data(v7x5_data);
+
+    new ((*fArray)[fArray->GetEntriesFast()]) BB7VmeData(*bb7VmeHit);
+
 
     fNEvent += 1;
     return kTRUE;
@@ -119,6 +84,9 @@ Bool_t BB7Reader::Read()
 
 void BB7Reader::Reset()
 {
+    v7x5_geo.clear();
+    v7x5_channel.clear();
+    v7x5_data.clear();
     fArray->Clear();
 }
 

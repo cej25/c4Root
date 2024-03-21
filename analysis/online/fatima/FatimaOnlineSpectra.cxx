@@ -445,7 +445,7 @@ void FatimaOnlineSpectra::FinishTask()
     }
     if (fHitFatimaTwinpeaks)
     {
-        if(folder_fatima) folder_fatima->Write();
+        folder_fatima->Write();
         c4LOG(info, "FATIMA histograms written to file");
     }
 }

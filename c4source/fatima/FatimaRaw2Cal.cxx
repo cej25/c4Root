@@ -202,10 +202,13 @@ void FatimaRaw2Cal::Exec(Option_t* option)
             
             if (fatima_configuration->MappingLoaded())
             {
+                std::map<std::pair<int,int>,int> fmap;
+                fmap = fatima_configuration->Mapping();
                 std::pair<int, int> unmapped_det { funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2};
-                if (auto result_find = fatima_configuration->Mapping().find(unmapped_det); result_find != fatima_configuration->Mapping().end())
+                if (auto result_find = fmap.find(unmapped_det); result_find != fmap.end())
                 {
                     detector_id = result_find->second; // .find returns an iterator over the pairs matching key
+                    //c4LOG(info,Form("board = %i, ch = %i, det = %i",funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2,result_find->second));
                     if (detector_id == -1) { fNunmatched++; continue; }
                 }
             }
@@ -267,6 +270,7 @@ void FatimaRaw2Cal::Exec(Option_t* option)
                 new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData((detector_id == fatima_configuration->TM_Undelayed()) ? (fast_lead_time) : (0), (detector_id == fatima_configuration->TM_Undelayed()) ? (0) : (fast_lead_time), funcal_hit->Get_wr_subsystem_id(), funcal_hit->Get_wr_t());
             }
             
+            //c4LOG(info,Form("board = %i, ch = %i, det = %i",funcal_hit->Get_board_id(),(int)((funcal_hit->Get_ch_ID()+1)/2), detector_id));
             
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) FatimaTwinpeaksCalData(
                 funcal_hit->Get_board_id(),
