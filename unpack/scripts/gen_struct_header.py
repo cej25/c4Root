@@ -6,11 +6,7 @@ import subprocess as sb
 #add the systems you want here: bplast,fatima,etc
 systems = ["bplast"]
 
-<<<<<<< Updated upstream
-ucesb_exec = "onlybPlast"
-=======
 ucesb_exec = "s100"
->>>>>>> Stashed changes
 
 
 for system in systems:
