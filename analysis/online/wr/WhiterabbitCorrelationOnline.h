@@ -49,7 +49,6 @@ class WhiterabbitCorrelationOnline : public FairTask
         TClonesArray* fHitbPlastTwinpeaks;
         TClonesArray* fHitGe;
         std::vector<AidaHit> const* fAidaDecays;
-        TimeMachineData* fWhiterabbitHit;
 
         std::vector<TString> fDetectorSystems;
         int fNumDetectorSystems;

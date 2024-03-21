@@ -2,15 +2,15 @@
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define FATIMA_ON 1
-#define FATIMA_VME_ON 1
-#define AIDA_ON 0
-#define BPLAST_ON 1
+#define FATIMA_VME_ON 0
+#define AIDA_ON 1
+#define BPLAST_ON 0
 #define GERMANIUM_ON 1
 #define BGO_ON 0
 #define FRS_ON 0
-#define TIME_MACHINE_ON 1
+#define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
-#define WHITE_RABBIT_CORS 0
+#define WHITE_RABBIT_CORS 1
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
@@ -46,7 +46,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
 
 
     // Define important paths.
-    TString c4Root_path = "/u/despec/s100_online/c4Root";
+    TString c4Root_path = "/u/jbormans/c4Root";
     //TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
@@ -69,10 +69,10 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     // TString filename = "stream://x86l-117"; // fatima tamex
-    TString filename = "trans://lxg1257"; // timesorter
+    //TString filename = "trans://lxg1257"; // timesorter
     //TString filename = "trans://R4L-21"; // beammonitor
     // TString filename = "stream://R4L-36"; // fatima vme
-    //TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
+    TString filename = "/lustre/despec/dryrunmarch24/Eu152_19March_00**.lmd ";
     //TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd ~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0025_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
@@ -447,11 +447,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-<<<<<<< HEAD
         std::vector a {e};
-=======
-        std::vector a {b, d, f};
->>>>>>> main
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
@@ -460,7 +456,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({b, d, f});
+        wronline->SetDetectorSystems({b,d,f});
     
         run->AddTask(wronline);
     }
