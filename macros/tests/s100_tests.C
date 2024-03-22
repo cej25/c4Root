@@ -1,16 +1,16 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define FATIMA_ON 1
-#define FATIMA_VME_ON 1
-#define AIDA_ON 1
-#define BPLAST_ON 1
-#define GERMANIUM_ON 1
+#define FATIMA_ON 0
+#define FATIMA_VME_ON 0
+#define AIDA_ON 0
+#define BPLAST_ON 0
+#define GERMANIUM_ON 0
 #define BGO_ON 0
 #define FRS_ON 1
-#define TIME_MACHINE_ON 1
+#define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
-#define WHITE_RABBIT_CORS 1
+#define WHITE_RABBIT_CORS 0
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
@@ -38,7 +38,7 @@ typedef struct EXT_STR_h101_t
 } EXT_STR_h101;
 
 
-void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId = 1)
+void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId = 1)
 {   
     // Name your experiment. Make sure all relevant directories are named identically.
     // TString fExpName = "NovTest";
@@ -49,7 +49,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     // Define important paths.
     TString c4Root_path = "/u/despec/s100_online/c4Root";
     //TString c4Root_path = "/u/cjones/c4Root";
-    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
+    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --print --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
@@ -70,7 +70,6 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     //TString filename = "stream://x86l-182"; // BGO
-    // DO NOT CHANGE THIS DURING A RUN!!!!!!!
     TString filename = "trans://lxg1257"; // timesorter.
     //TString filename = "trans://R4L-21"; // beammonitor
     // TString filename = "stream://R4L-36"; // fatima vme
@@ -81,7 +80,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 5000; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 5550; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
@@ -401,7 +400,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (GERMANIUM_ON)
     {
         GermaniumOnlineSpectra* onlinege = new GermaniumOnlineSpectra();
-        onlinege->SetBinningEnergy(3000,0,3e3);
+        onlinege->SetBinningEnergy(8000,0,3e3);
         onlinege->AddReferenceDetector(15,0);
         onlinege->AddReferenceDetector(1,0);
         run->AddTask(onlinege);
@@ -446,7 +445,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {b, c, d, e, f};
+        std::vector a {d, e, f};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
@@ -455,7 +454,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({b, c, d, e, f});
+        wronline->SetDetectorSystems({d, e, f});
     
         run->AddTask(wronline);
     }

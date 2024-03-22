@@ -464,7 +464,7 @@ void WhiterabbitCorrelationOnline::FinishTask()
     }
     if (fHitFatimaTwinpeaks || fHitbPlastTwinpeaks || fHitGe)
     {   
-        folder_whiterabbit->Write();
+        //folder_whiterabbit->Write();
         c4LOG(info, "Processed " << fNEvents << " events.");
         c4LOG(info, "WhiteRabbit histograms written to file.");
     }
