@@ -19,7 +19,7 @@ SUBEVENT(bgo_tamex_subevent)
 {
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x2000);
+        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1900);
     }
     trigger_window = TAMEX4_HEADER();
     select several 
