@@ -317,7 +317,9 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         for (Int_t ihit = 0; ihit < nHitsFatima; ihit++)
         {
             FatimaTwinpeaksCalData* hitFatima = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(ihit);
-            h1_whiterabbit_correlation_fatima_aida->Fill(hitAida.Time - hitFatima->Get_wr_t());
+
+            int dt = hitAida.Time - hitFatima->Get_wr_t();
+            h1_whiterabbit_correlation_fatima_aida->Fill(dt);
 
         }
         
@@ -325,7 +327,9 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         for (Int_t ihit = 0; ihit < nHitsFatimaVme; ihit++)
         {
             FatimaVmeCalData* hitFatimaVme = (FatimaVmeCalData*)fHitFatimaVme->At(ihit);
-            h1_whiterabbit_correlation_fatimavme_aida->Fill(hitAida.Time - hitFatimaVme->Get_wr_t());
+            
+            int dt = hitAida.Time - hitFatimaVme->Get_wr_t();
+            h1_whiterabbit_correlation_fatimavme_aida->Fill(dt);
         }
 
         // aida-bplast
@@ -334,7 +338,8 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(jhit);
             if (!hitbPlast) continue;
 
-            h1_whiterabbit_correlation_aida_bplast->Fill(hitAida.Time - hitbPlast->Get_wr_t());
+            int dt = hitAida.Time - hitbPlast->Get_wr_t();
+            h1_whiterabbit_correlation_aida_bplast->Fill(dt);
         }
         
         // aida-ge
@@ -343,7 +348,8 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(jhit);
             if (!hitGe) continue;
 
-            h1_whiterabbit_correlation_aida_germanium->Fill(hitAida.Time - hitGe->Get_wr_t());
+            int dt = hitAida.Time - hitGe->Get_wr_t();
+            h1_whiterabbit_correlation_aida_germanium->Fill(dt);
         }
         
     }
@@ -359,7 +365,8 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             FatimaVmeCalData* hitFatimaVme = (FatimaVmeCalData*)fHitFatimaVme->At(jhit);
             if (!hitFatimaVme) continue;
 
-            h1_whiterabbit_correlation_fatima_fatimavme->Fill(hitFatima->Get_wr_t() - hitFatimaVme->Get_wr_t());
+            int dt = hitFatima->Get_wr_t() - hitFatimaVme->Get_wr_t();
+            h1_whiterabbit_correlation_fatima_fatimavme->Fill(dt);
         }
         
         // fatima-bplast
@@ -368,7 +375,8 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(jhit);
             if (!hitbPlast) continue;
 
-            h1_whiterabbit_correlation_bplast_fatima->Fill(hitFatima->Get_wr_t() - hitbPlast->Get_wr_t());
+            int dt = hitFatima->Get_wr_t() - hitbPlast->Get_wr_t();
+            h1_whiterabbit_correlation_bplast_fatima->Fill(dt);
         }
         
         // fatima-ge
@@ -377,7 +385,8 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(jhit);
             if (!hitGe) continue;
 
-            h1_whiterabbit_correlation_fatima_ge->Fill(hitFatima->Get_wr_t() - hitGe->Get_wr_t());
+            int dt = hitFatima->Get_wr_t() - hitGe->Get_wr_t();
+            h1_whiterabbit_correlation_fatima_ge->Fill(dt);
         }
     }
     
@@ -393,7 +402,8 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(jhit);
             if (!hitbPlast) continue;
 
-            h1_whiterabbit_correlation_bplast_fatimavme->Fill(hitFatimaVme->Get_wr_t() - hitbPlast->Get_wr_t());
+            int dt = hitFatimaVme->Get_wr_t() - hitbPlast->Get_wr_t();
+            h1_whiterabbit_correlation_bplast_fatimavme->Fill(dt);
         }
         
         for (Int_t jhit = 0; jhit < nHitsGe; jhit++)
@@ -401,7 +411,8 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(jhit);
             if (!hitGe) continue;
 
-            h1_whiterabbit_correlation_fatimavme_ge->Fill(hitFatimaVme->Get_wr_t() - hitGe->Get_wr_t());
+            int dt = hitFatimaVme->Get_wr_t() - hitGe->Get_wr_t();
+            h1_whiterabbit_correlation_fatimavme_ge->Fill(dt);
         }
         
     }
@@ -416,7 +427,8 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(jhit);
             if (!hitGe) continue;
             
-            h1_whiterabbit_correlation_bplast_ge->Fill(hitbPlast->Get_wr_t() - hitGe->Get_wr_t());
+            int dt = hitbPlast->Get_wr_t() - hitGe->Get_wr_t();
+            h1_whiterabbit_correlation_bplast_ge->Fill(dt);
         }
     }
     

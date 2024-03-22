@@ -46,6 +46,8 @@ class FatimaVmeCalData : public TObject
         inline std::vector<uint32_t> Get_TDC_time_raw() { return ftdc_time_raw; }
 
         // Setters
+        inline void Set_wr_t(uint64_t wr) { fwr_t = wr;}
+
         inline void Set_Singles_E(std::vector<uint32_t> e) { fsingles_e = e; }
         inline void Set_Singles_E_raw(std::vector<uint32_t> e) { fsingles_e_raw = e; }
         inline void Set_Singles_QDC_ID(std::vector<uint32_t> qdc) { fsingles_qdc_id = qdc; }
