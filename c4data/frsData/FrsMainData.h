@@ -13,8 +13,7 @@ class FrsMainData : public TObject
         // Default Constructor
         FrsMainData();
 
-        FrsMainData(uint64_t WR_TS, 
-                uint32_t Scalers_N, 
+        FrsMainData(uint32_t Scalers_N, 
                 std::vector<uint32_t> Scalers_Index, 
                 std::vector<uint32_t> V830_Scalers,
                 uint32_t V792_Geo,
@@ -27,7 +26,7 @@ class FrsMainData : public TObject
         // Destructor
         virtual ~FrsMainData() {}
 
-        inline const uint64_t Get_wr_t() const { return fWR_TS; }
+        //inline const uint64_t Get_wr_t() const { return fWR_TS; }
         inline const Int_t Get_Scalers_N() const { return fScalers_N; }
 
         inline const std::vector<uint32_t>& Get_Scalers_Index() const { return fScalers_Index; }
@@ -45,8 +44,6 @@ class FrsMainData : public TObject
 
 
     private:
-
-        uint64_t fWR_TS;
 
         Int_t fScalers_N;
         std::vector<uint32_t> fScalers_Index;

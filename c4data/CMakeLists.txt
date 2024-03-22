@@ -30,6 +30,7 @@ frsData/FrsMainData.cxx
 frsData/FrsTPCData.cxx
 frsData/FrsUserData.cxx
 frsData/FrsVFTXData.cxx
+frsData/FrsTpatData.cxx
 frsData/FrsMainCalData.cxx
 frsData/FrsTPCCalData.cxx
 frsData/FrsUserCalData.cxx
