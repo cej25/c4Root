@@ -213,7 +213,7 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     // FatimaVme - Germanium
     c_whiterabbit_correlation_fatimavme_ge = new TCanvas("c_whiterabbit_correlation_fatimavme_ge", "FATIMA VME - DEGAS WR dT", 10, 10, 800, 700);
     c_whiterabbit_correlation_fatimavme_ge->cd();
-    h1_whiterabbit_correlation_fatimavme_ge = new TH1F("h1_whiterabbit_correlation_fatima_ge", "FATIMA VME - DEGAS WR dT", 1000, -1e3, 1e5);
+    h1_whiterabbit_correlation_fatimavme_ge = new TH1F("h1_whiterabbit_correlation_fatimavme_ge", "FATIMA VME - DEGAS WR dT", 1000, -1e3, 1e5);
     h1_whiterabbit_correlation_fatimavme_ge->GetXaxis()->SetTitle("Time difference (FATIMA VME - DEGAS) [ns]");
     h1_whiterabbit_correlation_fatimavme_ge->GetYaxis()->SetTitle("Counts");
     h1_whiterabbit_correlation_fatimavme_ge->Draw();
