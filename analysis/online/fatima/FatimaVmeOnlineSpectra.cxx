@@ -166,10 +166,20 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     c_FatVME_dTrefCh1->cd(0);
     folder_dt_ch1->Add(c_FatVME_dTrefCh1);
     
+    // energy spectrum
     h1_FatVME_time_machine_undelayed = new TH1D("h1_FatVME_time_machine_undelayed", "Time Machine Undelayed - FATIMA VME", 2000, 0, 40000);
     h1_FatVME_time_machine_delayed = new TH1D("h1_FatVME_time_machine_delayed", "Time Machine Delayed - FATIMA VME", 2000, 0, 40000);
     folder_fatima_vme->Add(h1_FatVME_time_machine_undelayed);
     folder_fatima_vme->Add(h1_FatVME_time_machine_delayed);
+    
+    h1_FatVME_sc41l = new TH1D("h1_FatVME_sc41l", "SC41L E - FATIMA VME", 2000, 0, 40000);
+    h1_FatVME_sc41r = new TH1D("h1_FatVME_sc41r", "SC41R E - FATIMA VME", 2000, 0, 40000);
+    folder_fatima_vme->Add(h1_FatVME_sc41l);
+    folder_fatima_vme->Add(h1_FatVME_sc41r);
+    h1_FatVME_sc41l_time = new TH1D("h1_FatVME_sc41l_time", "SC41L T - FATIMA VME", 5000, -1e6, 7e7);
+    h1_FatVME_sc41r_time = new TH1D("h1_FatVME_sc41r_time", "SC41R T - FATIMA VME", 5000, -1e6, 7e7);
+    folder_fatima_vme->Add(h1_FatVME_sc41l_time);
+    folder_fatima_vme->Add(h1_FatVME_sc41r_time);
 
     run->GetHttpServer()->RegisterCommand("Reset_Histo", "/Objects/%s/->Reset_Histo()", GetName());
     run->GetHttpServer()->RegisterCommand("Snapshot_Histo", "/Objects/%s/->Snapshot_Histo()", GetName());
@@ -331,6 +341,23 @@ void FatimaVmeOnlineSpectra::Exec(Option_t* option)
             {
                 h1_FatVME_time_machine_delayed->Fill(TM_Delayed_E_Hits[i]);
             }
+            for (int i = 0; i < SC41L_E_Hits.size(); i++)
+            {
+                h1_FatVME_sc41l->Fill(SC41L_E_Hits[i]);
+            }
+            for (int i = 0; i < SC41R_E_Hits.size(); i++)
+            {
+                h1_FatVME_sc41r->Fill(SC41R_E_Hits[i]);
+            }
+            for (int i = 0; i < SC41L_Hits.size(); i++)
+            {
+                h1_FatVME_sc41l_time->Fill(SC41L_Hits[i]);
+            }
+            for (int i = 0; i < SC41R_Hits.size(); i++)
+            {
+                h1_FatVME_sc41r_time->Fill(SC41R_Hits[i]);
+            }
+
 
         }
     }

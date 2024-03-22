@@ -440,7 +440,7 @@ Bool_t BGOReader::Read() //do fine time here:
                     fine_T,
                     
                     fData->bgo_ts_subsystem_id,
-                    wr_t + ( (((uint64_t)previous_epoch_word)*10.24e3 + ((uint64_t)coarse_T)*5.0 - (uint64_t)fine_T) - accepted_trigger_time) // corrected by the time difference to the acc trigger time
+                    wr_t // corrected by the time difference to the acc trigger time
                 );
             
                 //reset:

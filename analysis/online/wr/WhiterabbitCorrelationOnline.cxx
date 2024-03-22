@@ -302,6 +302,8 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
     if (fHitbPlastTwinpeaks) nHitsbPlast = fHitbPlastTwinpeaks->GetEntriesFast();
 
     if (fHitGe) nHitsGe = fHitGe->GetEntriesFast();
+
+    if (fHitFatimaVme) nHitsFatimaVme = fHitFatimaVme->GetEntriesFast();
     
     //if (fAidaDecays) nHitsAida = fAidaDecays->GetEntries();
 
