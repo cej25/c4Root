@@ -36,6 +36,7 @@ FrsCal2Hit::FrsCal2Hit(TFRSParameter* ffrs,
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
+    ,   fRawArrayTpat(new TClonesArray("FrsTpatData"))
     ,   fCalArrayMain(new TClonesArray("FrsMainCalData"))
     ,   fCalArrayTPC(new TClonesArray("FrsTPCCalData"))
     ,   fCalArrayUser(new TClonesArray("FrsUserCalData"))

@@ -145,7 +145,7 @@ InitStatus GermaniumOnlineSpectra::Init()
     
     
     c_germanium_energy_summed_vs_tsci41 = new TCanvas("c_germanium_energy_summed_vs_tsci41","Calibrated Germanium spectra summed all energyies vs t(det) - t(sci41)",650,350);
-    h2_germanium_energy_summed_vs_tsci41 = new TH2F("h2_germanium_energy_summed_vs_tsci41","Calibrated Germanium spectra summed all energyies vs t(det) - t(sci41)",1000,-500,2500,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h2_germanium_energy_summed_vs_tsci41 = new TH2F("h2_germanium_energy_summed_vs_tsci41","Calibrated Germanium spectra summed all energyies vs t(det) - t(sci41)",1000,-500,100000,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     h2_germanium_energy_summed_vs_tsci41->GetXaxis()->SetTitle("time difference (ns)");
     h2_germanium_energy_summed_vs_tsci41->GetYaxis()->SetTitle("energy (keV)");
     h2_germanium_energy_summed_vs_tsci41->Draw("COLZ");
@@ -348,7 +348,7 @@ void GermaniumOnlineSpectra::Exec(Option_t* option)
                     double time2 = hit2->Get_channel_trigger_time();
                     
                     if (detector_id2 == germanium_configuration->SC41L() || detector_id2 == germanium_configuration->SC41R()){
-                        h2_germanium_energy_summed_vs_tsci41->Fill(energy1, time1 - time2);
+                        h2_germanium_energy_summed_vs_tsci41->Fill( time1 - time2, energy1);
                     }
                     
                     int crystal_index2 = std::distance(dt_reference_detectors.begin(), std::find(dt_reference_detectors.begin(),dt_reference_detectors.end(),std::pair<int,int>(detector_id2,crystal_id2)));
