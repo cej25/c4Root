@@ -155,10 +155,10 @@ SUBEVENT(bplast_subev)
 SUBEVENT(frs_main_subev)
 {   
     // CEJ: I don't remember why this has to be select several
-    select several
+    /*select several
     {
         wr = TIMESTAMP_WHITERABBIT(id = 0x100);
-    };
+    };*/
 
     // catch weird trig3 events
     select several
@@ -214,6 +214,24 @@ SUBEVENT(frs_vftx_subev)
     {
         data = VFTX_CRATE_DATA();
     };
+}
+
+SUBEVENT(frs_tpat_subev)
+{
+    select several
+    {
+        wr = TIMESTAMP_WHITERABBIT(id = 0x100);
+    };
+
+    select several
+    {
+        trig3 = TRIG3EVENT();
+    };
+
+    select several
+    {
+        data = TPAT_CRATE_DATA();
+    }
 }
 
 SUBEVENT(bm_subev)
@@ -280,6 +298,7 @@ EVENT
     frstpc = frs_tpc_subev(procid = 20);
     frsuser = frs_user_subev(procid = 30);
     frsvftx = frs_vftx_subev(procid = 40);
+    frstpat = frs_tpat_subev(procid = 15); // wr here now
     
     beammonitor = bm_subev(procid = 1);
 
