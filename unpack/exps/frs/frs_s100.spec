@@ -17,6 +17,30 @@ TRIG3EVENT()
     }
 }
 
+SPILL_ON()
+{
+    UINT32 on NOENCODE
+    {
+        0_31: 0x30303030;
+    }
+}
+
+SPILL_OFF()
+{
+    UINT32 off1 NOENCODE
+    {
+        0_31: 0x4040400a;
+    }
+    UINT32 off2 NOENCODE
+    {
+        0_31: 0x4040400b;
+    }
+    UINT32 off3 NOENCODE
+    {
+        0_31: 0x4040400c;
+    }
+}
+
 
 // for now this catches all of the barrier
 BARRIER()

@@ -166,6 +166,16 @@ SUBEVENT(frs_main_subev)
         trig3 = TRIG3EVENT();
     };
 
+    select several
+    {
+        spill_on = SPILL_ON();
+    }
+
+    select several
+    {
+        spill_off = SPILL_OFF();
+    }
+
     // CEJ: this should be optional vs several? if several then we get overwritten - check.
     select several
     {
@@ -180,6 +190,16 @@ SUBEVENT(frs_tpc_subev)
         trig3 = TRIG3EVENT();
     };
 
+    select several
+    {
+        spill_on = SPILL_ON();
+    }
+
+    select several
+    {
+        spill_off = SPILL_OFF();
+    }
+
     // as above should be select optional i think
     select several
     {
@@ -193,6 +213,16 @@ SUBEVENT(frs_user_subev)
     {
         trig3 = TRIG3EVENT();
     };
+
+    select several
+    {
+        spill_on = SPILL_ON();
+    }
+
+    select several
+    {
+        spill_off = SPILL_OFF();
+    }
 
     // same as above
     select several
