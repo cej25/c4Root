@@ -9,7 +9,7 @@ class TClonesArray;
 class EventHeader;
 class TimeMachineData;
 class TCanvas;
-class TH1F;
+class TH1I;
 class TH2F;
 class TFile;
 
@@ -82,16 +82,16 @@ class WhiterabbitCorrelationOnline : public FairTask
         // Histograms
 
 
-        TH1F* h1_whiterabbit_correlation_fatima_aida;
-        TH1F* h1_whiterabbit_correlation_fatimavme_aida;
-        TH1F* h1_whiterabbit_correlation_aida_bplast;
-        TH1F* h1_whiterabbit_correlation_aida_germanium;
-        TH1F* h1_whiterabbit_correlation_fatima_fatimavme;
-        TH1F* h1_whiterabbit_correlation_bplast_fatima;
-        TH1F* h1_whiterabbit_correlation_fatima_ge;
-        TH1F* h1_whiterabbit_correlation_bplast_fatimavme;
-        TH1F* h1_whiterabbit_correlation_fatimavme_ge;
-        TH1F* h1_whiterabbit_correlation_bplast_ge;
+        TH1I* h1_whiterabbit_correlation_fatima_aida;
+        TH1I* h1_whiterabbit_correlation_fatimavme_aida;
+        TH1I* h1_whiterabbit_correlation_aida_bplast;
+        TH1I* h1_whiterabbit_correlation_aida_germanium;
+        TH1I* h1_whiterabbit_correlation_fatima_fatimavme;
+        TH1I* h1_whiterabbit_correlation_bplast_fatima;
+        TH1I* h1_whiterabbit_correlation_fatima_ge;
+        TH1I* h1_whiterabbit_correlation_bplast_fatimavme;
+        TH1I* h1_whiterabbit_correlation_fatimavme_ge;
+        TH1I* h1_whiterabbit_correlation_bplast_ge;
 
 
 
