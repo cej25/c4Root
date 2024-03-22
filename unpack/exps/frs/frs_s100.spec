@@ -38,12 +38,10 @@ ZERO_FILLER()
 
 // procID = 15
 
-VULOM_CRATE_DATE() 
+TPAT_CRATE_DATA() 
 {
     MEMBER(DATA16 tpat);
-    
-    wr = TIMESTAMP_WHITERABBIT(id=0x100);
-    
+        
     // first three words are meaningless
     UINT32 w1;
     UINT32 w2;

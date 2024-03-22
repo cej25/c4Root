@@ -31,6 +31,7 @@
 #pragma link C++ class FrsTPCData+;
 #pragma link C++ class FrsUserData+;
 #pragma link C++ class FrsVFTXData+;
+#pragma link C++ class FrsTpatData+;
 #pragma link C++ class FrsMainCalData+;
 #pragma link C++ class FrsTPCCalData+;
 #pragma link C++ class FrsUserCalData+;
