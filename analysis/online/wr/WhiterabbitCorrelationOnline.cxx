@@ -417,19 +417,27 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         
     }
 
+    int prev_bplast_wr = 0;
     for (Int_t ihit = 0; ihit < nHitsbPlast; ihit++)
     {
         bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(ihit);
         if (!hitbPlast) continue;
 
+        int bplast_wr = hitbPlast->Get_wr_t();
+        if (bplast_wr == prev_bplast_wr) continue;
+
+        //std::cout << "bplast-ge" << std::endl;
         for (Int_t jhit = 0; jhit < nHitsGe; jhit++)
         {
             GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(jhit);
             if (!hitGe) continue;
             
             int dt = hitbPlast->Get_wr_t() - hitGe->Get_wr_t();
+            //std::cout << "dt: " << dt << std::endl;
             h1_whiterabbit_correlation_bplast_ge->Fill(dt);
         }
+
+        prev_bplast_wr = bplast_wr;
     }
     
 
