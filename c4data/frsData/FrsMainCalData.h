@@ -10,7 +10,7 @@ class FrsMainCalData : public TObject
     public:
         FrsMainCalData();
 
-        FrsMainCalData(uint64_t WR_TS, 
+        FrsMainCalData(
                 uint32_t Scalers_N, 
                 std::vector<uint32_t> Scalers_Index, 
                 std::vector<uint32_t> V830_Scalers,
@@ -23,7 +23,7 @@ class FrsMainCalData : public TObject
 
         ~FrsMainCalData();
 
-        inline const uint64_t Get_wr_t() const { return fWR_TS; }
+        //inline const uint64_t Get_wr_t() const { return fWR_TS; }
         
         
         inline const Int_t Get_Scalers_N() const { return fScalers_N; }
@@ -48,8 +48,6 @@ class FrsMainCalData : public TObject
         // Setters
 
     private:
-
-        uint64_t fWR_TS;
 
         Int_t fScalers_N;
         std::vector<uint32_t> fScalers_Index;

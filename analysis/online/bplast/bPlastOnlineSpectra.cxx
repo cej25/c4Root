@@ -164,8 +164,8 @@ InitStatus bPlastOnlineSpectra::Init()
     for (int ihist = 0; ihist < NDetectors; ihist++){
         c_bplast_fast_v_slow->cd(ihist+1);
         h2_bplast_slowToT_vs_fastToT[ihist] = new TH2F(Form("h2_bplast_slowToT_vs_fastToT_ToT_%d",ihist),Form("bplast fast vs. slow detector %d",ihist),1000,0,2.5e3,1000,0,2.5e3);
-        h2_bplast_slowToT_vs_fastToT[ihist]->GetXaxis()->SetTitle("Fast ToT (ns)");
-        h2_bplast_slowToT_vs_fastToT[ihist]->GetYaxis()->SetTitle("Slow ToT (ns)");
+        h2_bplast_slowToT_vs_fastToT[ihist]->GetXaxis()->SetTitle("Slow ToT (ns)");
+        h2_bplast_slowToT_vs_fastToT[ihist]->GetYaxis()->SetTitle("Fast ToT (ns)");
         h2_bplast_slowToT_vs_fastToT[ihist]->Draw("COLZ");
         folder_bplast_fast_v_slow->Add(h2_bplast_slowToT_vs_fastToT[ihist]);
     }
@@ -259,7 +259,7 @@ InitStatus bPlastOnlineSpectra::Init()
             h1_bplast_fastToT[hit->Get_detector_id()]->Fill(hit->Get_fast_ToT());
 
 
-            h2_bplast_slowToT_vs_fastToT[hit->Get_detector_id()]->Fill(hit->Get_fast_ToT(),hit->Get_slow_ToT());
+            h2_bplast_slowToT_vs_fastToT[hit->Get_detector_id()]->Fill(hit->Get_slow_ToT(),hit->Get_fast_ToT());
 
             // h1_bplast_abs_time[hit->Get_detector_id()]->Fill(hit->Get_fast_lead_time());
 

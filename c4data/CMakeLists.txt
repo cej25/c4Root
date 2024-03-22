@@ -30,6 +30,7 @@ frsData/FrsMainData.cxx
 frsData/FrsTPCData.cxx
 frsData/FrsUserData.cxx
 frsData/FrsVFTXData.cxx
+frsData/FrsTpatData.cxx
 frsData/FrsMainCalData.cxx
 frsData/FrsTPCCalData.cxx
 frsData/FrsUserCalData.cxx
@@ -60,6 +61,8 @@ fatimaData/FatimaVmeData.cxx
 fatimaData/FatimaVmeCalData.cxx
 timemachineData/TimeMachineData.cxx
 bb7Data/BB7VmeData.cxx
+bb7Data/BB7VmeCalData.cxx
+bb7Data/TBB7VmeConfiguration.cxx
 frsData/TFRSParameter.cxx
 baseData/TCorrelationsConfiguration.cxx
 )

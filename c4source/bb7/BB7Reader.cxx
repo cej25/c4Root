@@ -63,11 +63,19 @@ Bool_t BB7Reader::Read()
 
     bb7VmeHit->Set_wr_t(wr_t);
 
-    for (int i = 0; i < fData->bb7_v7x51n; i++)
+  
+    for (int i = 0; i < fData->bb7_v7x5_module1n; i++)
     {   
-        v7x5_geo.emplace_back(fData->bb7_v7x51geov[i]);
-        v7x5_channel.emplace_back(fData->bb7_v7x51channelv[i]);
-        v7x5_data.emplace_back(fData->bb7_v7x51data[i]);
+        v7x5_geo.emplace_back(fData->bb7_v7x5_module1geov[i]);
+        v7x5_channel.emplace_back(fData->bb7_v7x5_module1channelv[i]);
+        v7x5_data.emplace_back(fData->bb7_v7x5_module1data[i]);
+    }
+
+    for (int i = 0; i < fData->bb7_v7x5_module2n; i++)
+    {   
+        v7x5_geo.emplace_back(fData->bb7_v7x5_module2geov[i]);
+        v7x5_channel.emplace_back(fData->bb7_v7x5_module2channelv[i]);
+        v7x5_data.emplace_back(fData->bb7_v7x5_module2data[i]);
     }
 
     bb7VmeHit->Set_v7x5_geo(v7x5_geo);

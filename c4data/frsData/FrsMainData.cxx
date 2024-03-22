@@ -1,8 +1,7 @@
 #include "FrsMainData.h"
 
 FrsMainData::FrsMainData()
-    :   fWR_TS(0)
-    ,   fScalers_N(0)
+    :   fScalers_N(0)
     ,   fScalers_Index(0)
     ,   fV830_Scalers(0)
     ,   fV792_Geo(0)
@@ -14,8 +13,7 @@ FrsMainData::FrsMainData()
 {
 }
 
-FrsMainData::FrsMainData(uint64_t WR_TS, 
-                uint32_t Scalers_N, 
+FrsMainData::FrsMainData(uint32_t Scalers_N, 
                 std::vector<uint32_t> Scalers_Index, 
                 std::vector<uint32_t> V830_Scalers,
                 uint32_t V792_Geo,
@@ -24,8 +22,7 @@ FrsMainData::FrsMainData(uint64_t WR_TS,
                 std::vector<uint32_t> V1290_Channel,
                 std::vector<uint32_t> V1290_Data,
                 std::vector<uint32_t> V1290_LoT)
-    :   fWR_TS(WR_TS)
-    ,   fScalers_N(Scalers_N)
+    :   fScalers_N(Scalers_N)
     ,   fScalers_Index(Scalers_Index)
     ,   fV830_Scalers(V830_Scalers)
     ,   fV792_Geo(V792_Geo)
