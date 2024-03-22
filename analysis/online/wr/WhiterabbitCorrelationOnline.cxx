@@ -296,6 +296,9 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
     Int_t nHitsbPlast = 0;
     Int_t nHitsGe = 0;
     Int_t nHitsAida = 0;
+    
+    
+    
 
     if (fHitFatimaTwinpeaks) nHitsFatima = fHitFatimaTwinpeaks->GetEntriesFast();
 
@@ -309,135 +312,117 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
 
 
     // start with aida...
+    int aidaCounter = 0;
     for (auto & i : *fAidaDecays)
     {
+        if (aidaCounter > 0) break;
         AidaHit hitAida = i;
-
-        // aida-fatima
-        for (Int_t ihit = 0; ihit < nHitsFatima; ihit++)
+        int wr_aida = hitAida.Time;
+        
+        if (fHitFatimaTwinpeaks)
         {
-            FatimaTwinpeaksCalData* hitFatima = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(ihit);
+            FatimaTwinpeaksCalData* hitFatima = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(0);
+            if (!hitFatima) continue;
 
-            int dt = hitAida.Time - hitFatima->Get_wr_t();
+            int dt = wr_aida - hitFatima->Get_wr_t();
             h1_whiterabbit_correlation_fatima_aida->Fill(dt);
-
         }
         
-        // aida-fatima vme
-        for (Int_t ihit = 0; ihit < nHitsFatimaVme; ihit++)
+        if (fHitFatimaVme)
         {
-            FatimaVmeCalData* hitFatimaVme = (FatimaVmeCalData*)fHitFatimaVme->At(ihit);
+            FatimaVmeCalData* hitFatimaVme = (FatimaVmeCalData*)fHitFatimaVme->At(0);
+            if (!hitFatimaVme) continue;
             
-            int dt = hitAida.Time - hitFatimaVme->Get_wr_t();
+            int dt = wr_aida - hitFatimaVme->Get_wr_t();
             h1_whiterabbit_correlation_fatimavme_aida->Fill(dt);
         }
-
-        // aida-bplast
-        for (Int_t jhit = 0; jhit < nHitsbPlast; jhit++)
+        
+        if (fHitbPlastTwinpeaks)
         {
-            bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(jhit);
+            bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(0);
             if (!hitbPlast) continue;
 
-            int dt = hitAida.Time - hitbPlast->Get_wr_t();
+            int dt = wr_aida - hitbPlast->Get_wr_t();
             h1_whiterabbit_correlation_aida_bplast->Fill(dt);
         }
         
-        // aida-ge
-        for (Int_t jhit = 0; jhit < nHitsGe; jhit++)
+        if (fHitGe)
         {
-            GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(jhit);
+            GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(0);
             if (!hitGe) continue;
 
-            int dt = hitAida.Time - hitGe->Get_wr_t();
+            int dt = wr_aida - hitGe->Get_wr_t();
             h1_whiterabbit_correlation_aida_germanium->Fill(dt);
         }
         
+        aidaCounter++;
+        
     }
-
-    for (Int_t ihit = 0; ihit < nHitsFatima; ihit++)
+    
+    
+    if (fHitFatimaTwinpeaks)
     {
-        FatimaTwinpeaksCalData* hitFatima = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(ihit);
-        if (!hitFatima) continue;
-
-        // fatima-fatima vme
-        for (Int_t jhit = 0; jhit < nHitsFatimaVme; jhit++)
+        FatimaTwinpeaksCalData* hitFatima = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(0);
+        if (hitFatima)
         {
-            FatimaVmeCalData* hitFatimaVme = (FatimaVmeCalData*)fHitFatimaVme->At(jhit);
-            if (!hitFatimaVme) continue;
-
-            int dt = hitFatima->Get_wr_t() - hitFatimaVme->Get_wr_t();
-            h1_whiterabbit_correlation_fatima_fatimavme->Fill(dt);
-        }
-        
-        // fatima-bplast
-        for (Int_t jhit = 0; jhit < nHitsbPlast; jhit++)
-        {
-            bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(jhit);
-            if (!hitbPlast) continue;
-
-            int dt = hitFatima->Get_wr_t() - hitbPlast->Get_wr_t();
-            h1_whiterabbit_correlation_bplast_fatima->Fill(dt);
-        }
-        
-        // fatima-ge
-        for (Int_t jhit = 0; jhit < nHitsGe; jhit++)
-        {
-            GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(jhit);
-            if (!hitGe) continue;
-
-            int dt = hitFatima->Get_wr_t() - hitGe->Get_wr_t();
-            h1_whiterabbit_correlation_fatima_ge->Fill(dt);
+            FatimaVmeCalData* hitFatimaVme = (FatimaVmeCalData*)fHitFatimaVme->At(0);
+            if (hitFatimaVme)
+            {
+                int dt = hitFatima->Get_wr_t() - hitFatimaVme->Get_wr_t();
+                h1_whiterabbit_correlation_fatima_fatimavme->Fill(dt);
+            }
+            
+            bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(0);
+            if (hitbPlast)
+            {
+                int dt = hitFatima->Get_wr_t() - hitbPlast->Get_wr_t();
+                h1_whiterabbit_correlation_bplast_fatima->Fill(dt);
+            }
+            
+            GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(0);
+            if (hitGe)
+            {
+                int dt = hitFatima->Get_wr_t() - hitGe->Get_wr_t();
+                h1_whiterabbit_correlation_fatima_ge->Fill(dt);
+            }
         }
     }
     
-
-    // fatima vme-bplast,ge 
-    for (Int_t ihit = 0; ihit < nHitsFatimaVme; ihit++)
+    if (fHitFatimaVme)
     {
-        FatimaVmeCalData* hitFatimaVme = (FatimaVmeCalData*)fHitFatimaVme->At(ihit);
-        if (!hitFatimaVme) continue;
-
-        for (Int_t jhit = 0; jhit < nHitsbPlast; jhit++)
+        FatimaVmeCalData* hitFatimaVme = (FatimaVmeCalData*)fHitFatimaVme->At(0);
+        if (hitFatimaVme)
         {
-            bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(jhit);
-            if (!hitbPlast) continue;
-
-            int dt = hitFatimaVme->Get_wr_t() - hitbPlast->Get_wr_t();
-            h1_whiterabbit_correlation_bplast_fatimavme->Fill(dt);
-        }
-        
-        for (Int_t jhit = 0; jhit < nHitsGe; jhit++)
-        {
-            GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(jhit);
-            if (!hitGe) continue;
-
-            int dt = hitFatimaVme->Get_wr_t() - hitGe->Get_wr_t();
-            h1_whiterabbit_correlation_fatimavme_ge->Fill(dt);
-        }
-        
-    }
-
-    int prev_bplast_wr = 0;
-    for (Int_t ihit = 0; ihit < nHitsbPlast; ihit++)
-    {
-        bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(ihit);
-        if (!hitbPlast) continue;
-
-        int bplast_wr = hitbPlast->Get_wr_t();
-        if (bplast_wr == prev_bplast_wr) continue;
-
-        //std::cout << "bplast-ge" << std::endl;
-        for (Int_t jhit = 0; jhit < nHitsGe; jhit++)
-        {
-            GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(jhit);
-            if (!hitGe) continue;
+            bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(0);
+            if (hitbPlast)
+            {
+                int dt = hitFatimaVme->Get_wr_t() - hitbPlast->Get_wr_t();
+                h1_whiterabbit_correlation_bplast_fatimavme->Fill(dt);
+            }
             
-            int dt = hitbPlast->Get_wr_t() - hitGe->Get_wr_t();
-            //std::cout << "dt: " << dt << std::endl;
-            h1_whiterabbit_correlation_bplast_ge->Fill(dt);
+            GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(0);
+            if (hitGe)
+            {
+                int dt = hitFatimaVme->Get_wr_t() - hitGe->Get_wr_t();
+                h1_whiterabbit_correlation_fatimavme_ge->Fill(dt);
+            }
         }
-
-        prev_bplast_wr = bplast_wr;
+    }
+        
+    if (fHitbPlastTwinpeaks)
+    {
+        bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(0);
+        if (hitbPlast)
+        {
+            int bplast_wr = hitbPlast->Get_wr_t();
+            GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(0);
+            if (hitGe)
+            {
+                int wr_ge = hitGe->Get_wr_t();
+                int dt = bplast_wr - wr_ge;
+                h1_whiterabbit_correlation_bplast_ge->Fill(dt);
+            }
+        }
     }
     
 
