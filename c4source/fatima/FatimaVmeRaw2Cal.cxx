@@ -90,6 +90,7 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
 
             FatimaVmeCalData* FatimaCalHit = new FatimaVmeCalData();
 
+            FatimaCalHit->Set_wr_t(FatimaHit->Get_wr_t());
 
             int Fat_QDC_ID;
             int Fat_TDC_ID_single;
