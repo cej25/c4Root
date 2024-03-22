@@ -69,7 +69,7 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     // TString filename = "stream://x86l-117";
     // TString filename = "trans://lxg1257";
     //TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
-    TString filename = "~/lustre/despec/bb7_files/*";
+    TString filename = "~/lustre/despec/bb7_files/test_pulser_caen2_210324_0001.lmd";
     TString outputpath = "bb7_test_output";
     TString outputFileName = outputpath + ".root";
 
@@ -145,8 +145,8 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
     TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_new.txt");
     // FRS? Eventually will get around to mapping crates properly
-    TGermaniumConfiguration::SetDetectorMapFile(config_path + "/germanium/Germanium_Detector_Map.txt");
-    
+    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/Germanium_Detector_Map.txt");
+    TBB7VmeConfiguration::SetDetectorConfigurationFile("/u/cjones/c4Root/config/s100/bb7/BB7_Detector_Map.txt");    
 
     // ------------------------------------------------------------------------------------- //
     // *** Read Subsystems - comment out unwanted systems ********************************** //
@@ -281,9 +281,6 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     if (GERMANIUM_ON)
     {
         GermaniumRaw2Cal* calge = new GermaniumRaw2Cal();
-        // these will not be need anymore with config class
-        calge->SetDetectorMapFile(config_path + "/germanium/Germanium_Detector_Map.txt");
-        calge->PrintDetectorMap();
         
         calge->SetOnline(true);
         run->AddTask(calge);
@@ -304,6 +301,14 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
         run->AddTask(calfrstpc);
         run->AddTask(calfrsuser);
         run->AddTask(calfrsvftx);
+    }
+
+    if (BB7_ON)
+    {
+        BB7Raw2Cal* calbb7 = new BB7Raw2Cal();
+
+        calbb7->SetOnline(false);
+        run->AddTask(calbb7);
     }
 
 

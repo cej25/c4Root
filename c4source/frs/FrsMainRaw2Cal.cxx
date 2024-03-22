@@ -83,7 +83,8 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
         fRawHit = (FrsMainData*)fRawArray->At(0); // event multiplicity
         
         
-        WR_TS = fRawHit->Get_wr_t();
+        // no wr in main now
+        //WR_TS = fRawHit->Get_wr_t();
         // CEJ: fCalHit->Set_wr_t(fRawHit->Get_wr_t);
         
 
@@ -311,7 +312,7 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
     
             new ((*fCalArray)[fCalArray->GetEntriesFast()]) FrsMainCalData(
                 // V830 scalers
-                WR_TS,
+                //WR_TS,
                 fRawHit->Get_Scalers_N(),
                 fRawHit->Get_Scalers_Index(),
                 fRawHit->Get_V830_Scalers(),

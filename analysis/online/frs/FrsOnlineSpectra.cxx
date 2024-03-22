@@ -160,6 +160,8 @@ InitStatus FrsOnlineSpectra::Init()
     for (int i = 0; i < 66; i++) frs_spectra_folder_scalers->Add(hScaler_per_100ms[i]);
     for (int i = 0; i < 66; i++) frs_spectra_folder_scalers->Add(hScaler_per_spill[i]);
  
+    //h1_raw_tpat = new TH1I("h1_raw_tpat", "TPAT", 20, 0, 20);
+
     // Register command to reset histograms
     run->GetHttpServer()->RegisterCommand("Reset_IncomingID_HIST", Form("/Objects/%s/->Reset_Histo()", GetName()));
 

@@ -1,8 +1,7 @@
 #include "FrsMainCalData.h"
 
 FrsMainCalData::FrsMainCalData()
-    :   fWR_TS(0)
-    ,   fScalers_N(0)
+    :   fScalers_N(0)
     ,   fScalers_Index(0)
     ,   fV830_Scalers(0)
 {
@@ -15,7 +14,7 @@ FrsMainCalData::FrsMainCalData()
     }
 }
 
-FrsMainCalData::FrsMainCalData(uint64_t WR_TS, 
+FrsMainCalData::FrsMainCalData( 
             uint32_t Scalers_N, 
             std::vector<uint32_t> Scalers_Index, 
             std::vector<uint32_t> V830_Scalers,
@@ -23,8 +22,7 @@ FrsMainCalData::FrsMainCalData(uint64_t WR_TS,
             const std::vector<uint32_t>* tdc_array,
             const uint32_t* music_t1,
             const uint32_t* music_t2)
-    :   fWR_TS(WR_TS)
-    ,   fScalers_N(Scalers_N)
+    :   fScalers_N(Scalers_N)
     ,   fScalers_Index(Scalers_Index)
     ,   fV830_Scalers(V830_Scalers)
 {

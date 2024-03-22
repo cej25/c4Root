@@ -19,7 +19,7 @@ SUBEVENT(bgo_tamex_subevent)
 {
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x2000);
+        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1900);
     }
     trigger_window = TAMEX4_HEADER();
     select several 
@@ -28,8 +28,8 @@ SUBEVENT(bgo_tamex_subevent)
     }
     select several
     {
-        tamex[0] = TAMEX4_SFP(sfp=0,card=0);
-        tamex[1] = TAMEX4_SFP(sfp=0,card=1);
+        tamex[0] = TAMEX4_SFP(sfp=1,card=0);
+        tamex[1] = TAMEX4_SFP(sfp=1,card=1);
     }  
 }
 
@@ -97,11 +97,13 @@ SUBEVENT(fatima_vme_subev)
     }
 
     // we always get some readout from 5 QCD boards
-    qdc[0] = VME_CAEN_V1751();
-    qdc[1] = VME_CAEN_V1751();
-    qdc[2] = VME_CAEN_V1751();
-    qdc[3] = VME_CAEN_V1751();
-    //qdc[4] = VME_CAEN_V1751();
+    
+    qdc[0] = VME_CAEN_V1751(board=6);
+    qdc[1] = VME_CAEN_V1751(board=7);
+    qdc[2] = VME_CAEN_V1751(board=8);
+    qdc[3] = VME_CAEN_V1751(board=9);
+    //qdc[4] = VME_CAEN_V1751(board=10);
+   
 
     select several
     {
@@ -153,16 +155,26 @@ SUBEVENT(bplast_subev)
 SUBEVENT(frs_main_subev)
 {   
     // CEJ: I don't remember why this has to be select several
-    select several
+    /*select several
     {
         wr = TIMESTAMP_WHITERABBIT(id = 0x100);
-    };
+    };*/
 
     // catch weird trig3 events
     select several
     {
         trig3 = TRIG3EVENT();
     };
+
+    select several
+    {
+        spill_on = SPILL_ON();
+    }
+
+    select several
+    {
+        spill_off = SPILL_OFF();
+    }
 
     // CEJ: this should be optional vs several? if several then we get overwritten - check.
     select several
@@ -178,6 +190,16 @@ SUBEVENT(frs_tpc_subev)
         trig3 = TRIG3EVENT();
     };
 
+    select several
+    {
+        spill_on = SPILL_ON();
+    }
+
+    select several
+    {
+        spill_off = SPILL_OFF();
+    }
+
     // as above should be select optional i think
     select several
     {
@@ -191,6 +213,16 @@ SUBEVENT(frs_user_subev)
     {
         trig3 = TRIG3EVENT();
     };
+
+    select several
+    {
+        spill_on = SPILL_ON();
+    }
+
+    select several
+    {
+        spill_off = SPILL_OFF();
+    }
 
     // same as above
     select several
@@ -212,6 +244,24 @@ SUBEVENT(frs_vftx_subev)
     {
         data = VFTX_CRATE_DATA();
     };
+}
+
+SUBEVENT(frs_tpat_subev)
+{
+    select several
+    {
+        wr = TIMESTAMP_WHITERABBIT(id = 0x100);
+    };
+
+    select several
+    {
+        trig3 = TRIG3EVENT();
+    };
+
+    select several
+    {
+        data = TPAT_CRATE_DATA();
+    }
 }
 
 SUBEVENT(bm_subev)
@@ -272,12 +322,13 @@ EVENT
     fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = 75, control = 20);
     fatimavme = fatima_vme_subev(type = 10, subtype = 1, procid = 70, control = 20); // apparenlty there are fatimavme things in NovTest data..comment out
     bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20);
-    //bgo = bgo_tamex_subevent(procid = 100);
+    bgo = bgo_tamex_subevent(procid = 100);
 
     frsmain = frs_main_subev(procid = 10);
     frstpc = frs_tpc_subev(procid = 20);
     frsuser = frs_user_subev(procid = 30);
     frsvftx = frs_vftx_subev(procid = 40);
+    frstpat = frs_tpat_subev(procid = 15); // wr here now
     
     beammonitor = bm_subev(procid = 1);
 

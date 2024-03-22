@@ -4,18 +4,18 @@
 #define FATIMA_ON 1
 #define FATIMA_VME_ON 0
 #define AIDA_ON 1
-#define BPLAST_ON 0
+#define BPLAST_ON 1
 #define GERMANIUM_ON 1
 #define BGO_ON 0
-#define FRS_ON 0
-#define TIME_MACHINE_ON 0
+#define FRS_ON 1
+#define TIME_MACHINE_ON 1
 #define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 1
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
 {
-    #include "../../config/s100/frs/setup_s100.C"
+    #include "../../config/s100/frs/setup_s100_dryrun.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -31,8 +31,9 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_frstpc_onion_t frstpc;
     EXT_STR_h101_frsuser_onion_t frsuser;
     EXT_STR_h101_frsvftx_onion_t frsvftx;
+    EXT_STR_h101_frstpat_onion_t frstpat;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
-    //EXT_STR_h101_bgo_onion_t bgo;
+    EXT_STR_h101_bgo_onion_t bgo;
     // EXT_STR_h101_bb7febex_onion_t bb7febex;
 } EXT_STR_h101;
 
@@ -68,12 +69,13 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    // TString filename = "stream://x86l-117"; // fatima tamex
-    //TString filename = "trans://lxg1257"; // timesorter
+    //TString filename = "stream://x86l-182"; // BGO
+    // DO NOT CHANGE THIS DURING A RUN!!!!!!!
+    TString filename = "trans://lxg1257"; // timesorter.
     //TString filename = "trans://R4L-21"; // beammonitor
     // TString filename = "stream://R4L-36"; // fatima vme
-    TString filename = "/lustre/despec/dryrunmarch24/Eu152_19March_00**.lmd ";
-    //TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd ~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0025_0001.lmd";
+    //TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
+    //TString filename = "~/lustre/despec/dryrun24/ts/Au_beam_10_*.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
@@ -147,11 +149,11 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     TFatimaVmeConfiguration::Set_QDC_T_CalFile(config_path + "/fatima/Fatima_QDC_Time_Calibration.txt");
     TFatimaVmeConfiguration::Set_TDC_T_CalFile(config_path + "/fatima/Fatima_TDC_Time_Calibration.txt");
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
-    TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_mar19.txt");
+    TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_mar20.txt");
     // FRS? Eventually will get around to mapping crates properly
-    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/Germanium_Detector_Map_mar19.txt");
-    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/Germanium_Energy_Calibration.txt");
-    //TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
+    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_mar21.txt");
+    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_calib_2203.txt");
+    TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
     
     
 
@@ -192,8 +194,8 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (BPLAST_ON)
     {
         bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_bplast_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
-        //unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_histos_111223_bplast.root", 100000);
-        unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_histos_111223_bplast.root");
+        //unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_histos_2103_pulser_bplast.root", 343682);
+        unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_histos_2103_pulser_bplast.root");
         
         unpackbplast->SetOnline(true);
         source->AddReader(unpackbplast);
@@ -206,17 +208,17 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         unpackgermanium->SetOnline(true);
         source->AddReader(unpackgermanium);
     }
-    /*
+    
     if (BGO_ON)
     {
         BGOReader* unpackbgo = new BGOReader((EXT_STR_h101_bgo_onion*)&ucesb_struct.bgo, offsetof(EXT_STR_h101, bgo));
-        unpackbgo->DoFineTimeCalOnline(config_path + "/bgo/fine_time_histos_19mar.root", 1000000);
-        //unpackbgo->SetInputFileFineTimeHistos(config_path + "/bgo/fine_time_histos_19mar.root");
+        //unpackbgo->DoFineTimeCalOnline(config_path + "/bgo/fine_time_histos_19mar.root", 1000000);
+        unpackbgo->SetInputFileFineTimeHistos(config_path + "/bgo/fine_time_histos_19mar.root");
         
         unpackbgo->SetOnline(true);
         source->AddReader(unpackbgo);
         
-    }*/
+    }
     
     if (FRS_ON)
     {
@@ -224,16 +226,19 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         FrsTPCReader* unpackfrstpc = new FrsTPCReader((EXT_STR_h101_frstpc_onion*)&ucesb_struct.frstpc, offsetof(EXT_STR_h101, frstpc));
         FrsUserReader* unpackfrsuser = new FrsUserReader((EXT_STR_h101_frsuser_onion*)&ucesb_struct.frsuser, offsetof(EXT_STR_h101, frsuser));
         FrsVFTXReader* unpackfrsvftx = new FrsVFTXReader((EXT_STR_h101_frsvftx_onion*)&ucesb_struct.frsvftx, offsetof(EXT_STR_h101, frsvftx));
+        FrsTpatReader* unpackfrstpat = new FrsTpatReader((EXT_STR_h101_frstpat_onion*)&ucesb_struct.frstpat, offsetof(EXT_STR_h101, frstpat));
         
         unpackfrsmain->SetOnline(true);
         unpackfrstpc->SetOnline(true);
         unpackfrsuser->SetOnline(true);
         unpackfrsvftx->SetOnline(true);
+        unpackfrstpat->SetOnline(true);
         
         source->AddReader(unpackfrsmain);
         source->AddReader(unpackfrstpc);
         source->AddReader(unpackfrsuser);
         source->AddReader(unpackfrsvftx);
+        source->AddReader(unpackfrstpat);
     }
     
     if (BEAMMONITOR_ON)
@@ -280,7 +285,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     {
         bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
         // CEJ: these are not needed anymore, code was updated
-        calbplast->SetDetectorMapFile(config_path + "/bplast/bplast_alloc.txt");
+        //calbplast->SetDetectorMapFile(config_path + "/bplast/bplast_alloc.txt");
         
         calbplast->SetOnline(true);
         run->AddTask(calbplast);
@@ -297,15 +302,15 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         calge->SetOnline(true);
         run->AddTask(calge);
     }
-    /*
+    
     if (BGO_ON)
     {
-        BGOTwinpeaksRaw2Cal* calbgo = new BGOTwinpeaksRaw2Cal();
-        // calbgo->PrintDetectorCal();
+        BGORaw2Cal* calbgo = new BGORaw2Cal();
+        calbgo->PrintDetectorMap();
         
         calbgo->SetOnline(true);
         run->AddTask(calbgo);
-    }*/
+    }
         
     
     if (FRS_ON)
@@ -358,14 +363,14 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (FATIMA_ON)
     {
         FatimaOnlineSpectra* onlinefatima = new FatimaOnlineSpectra();
-        onlinefatima->SetBinningSlowToT(5000,0.1,1700.1);
+        onlinefatima->SetBinningSlowToT(2000,560,660);
         onlinefatima->SetBinningFastToT(1000,0.1,100.1);
-        onlinefatima->SetBinningEnergy(1500,0.1,1500.1);
+        onlinefatima->SetBinningEnergy(1000,0.1,1500.1);
 
         std::vector<int> fat_dets = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64};
         onlinefatima->SetDetectorsToPlot(fat_dets);
         
-        std::vector<int> fat_ref_dets = {0,1,2,54};
+        std::vector<int> fat_ref_dets = {54};
         onlinefatima->SetReferenceDetectorsForTimeDifferences(fat_ref_dets);
         
         run->AddTask(onlinefatima);
@@ -396,26 +401,20 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (GERMANIUM_ON)
     {
         GermaniumOnlineSpectra* onlinege = new GermaniumOnlineSpectra();
-        onlinege->SetBinningEnergy(8000,0,8e6);
-        onlinege->AddReferenceDetector(13,0);
+        onlinege->SetBinningEnergy(3000,0,3e3);
+        onlinege->AddReferenceDetector(15,0);
+        onlinege->AddReferenceDetector(1,0);
         run->AddTask(onlinege);
     }
     
     if (BGO_ON)
     {
-        //BGOOnlineSpectra* onlinebgo = new BGOOnlineSpectra();
-        /*onlinebgo->SetBinningSlowToT(5000,0.1,1700.1);
-        onlinebgo->SetBinningFastToT(1000,0.1,100.1);
+        BGOOnlineSpectra* onlinebgo = new BGOOnlineSpectra();
         onlinebgo->SetBinningEnergy(1500,0.1,1500.1);
 
-        std::vector<int> bgo_dets = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64};
-        onlinebgo->SetDetectorsToPlot(bgo_dets);
-        
-        std::vector<int> bgo_ref_dets = {0,1,2,54};
-        onlinebgo->SetReferenceDetectorsForTimeDifferences(bgo_ref_dets);
         
         run->AddTask(onlinebgo);
-        */
+        
     }
     
     if (FRS_ON)
@@ -447,7 +446,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {e};
+        std::vector a {b, c, d, e, f};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
@@ -456,7 +455,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({b,d,f});
+        wronline->SetDetectorSystems({b, c, d, e, f});
     
         run->AddTask(wronline);
     }
@@ -466,16 +465,16 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
 
     if (FATIMA_ON && FRS_ON)
     {
-        FrsFatimaCorrelations* frsfatimacorr = new FrsFatimaCorrelations(FrsGates, FatimaPrompt);
+        //FrsFatimaCorrelations* frsfatimacorr = new FrsFatimaCorrelations(FrsGates, FatimaPrompt);
         
-        run->AddTask(frsfatimacorr);
+        //run->AddTask(frsfatimacorr);
     }
     
     if (AIDA_ON && FRS_ON)
     {
-        FrsAidaCorrelations* frsaidacorr = new FrsAidaCorrelations(FrsGates);
+        //FrsAidaCorrelations* frsaidacorr = new FrsAidaCorrelations(FrsGates);
         
-        run->AddTask(frsaidacorr);
+        //run->AddTask(frsaidacorr);
     }
     
     

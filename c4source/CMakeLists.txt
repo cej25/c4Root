@@ -54,6 +54,7 @@ set(SRCS
 ./frs/FrsTPCReader.cxx
 ./frs/FrsUserReader.cxx
 ./frs/FrsVFTXReader.cxx
+./frs/FrsTpatReader.cxx
 ./frs/FrsMainRaw2Cal.cxx
 ./frs/FrsTPCRaw2Cal.cxx
 ./frs/FrsUserRaw2Cal.cxx
@@ -72,6 +73,7 @@ set(SRCS
 ./fatima/FatimaVmeReader.cxx
 ./fatima/FatimaVmeRaw2Cal.cxx
 ./bb7/BB7Reader.cxx
+./bb7/BB7Raw2Cal.cxx
 )
 
 Set(STRUCT_HEADERS
