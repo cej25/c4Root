@@ -116,15 +116,46 @@ class WhiterabbitCorrelationOnline : public FairTask
         // Histograms
 
         TH1I* h1_whiterabbit_correlation_fatima_aida;
+        TH1I* h1_whiterabbit_trigger1_fatima_aida;
+        TH1I* h1_whiterabbit_trigger3_fatima_aida;
+
         TH1I* h1_whiterabbit_correlation_fatimavme_aida;
+        TH1I* h1_whiterabbit_trigger1_fatimavme_aida;
+        TH1I* h1_whiterabbit_trigger3_fatimavme_aida;
+
         TH1I* h1_whiterabbit_correlation_aida_bplast;
+        TH1I* h1_whiterabbit_trigger1_aida_bplast;
+        TH1I* h1_whiterabbit_trigger3_aida_bplast;
+
         TH1I* h1_whiterabbit_correlation_aida_germanium;
+        TH1I* h1_whiterabbit_trigger1_aida_germanium;
+        TH1I* h1_whiterabbit_trigger3_aida_germanium;
+
         TH1I* h1_whiterabbit_correlation_fatima_fatimavme;
+        TH1I* h1_whiterabbit_trigger1_fatima_fatimavme;
+        TH1I* h1_whiterabbit_trigger3_fatima_fatimavme;
+
         TH1I* h1_whiterabbit_correlation_bplast_fatima;
+        TH1I* h1_whiterabbit_trigger1_bplast_fatima;
+        TH1I* h1_whiterabbit_trigger3_bplast_fatima;
+
         TH1I* h1_whiterabbit_correlation_fatima_ge;
+        TH1I* h1_whiterabbit_trigger1_fatima_ge;
+        TH1I* h1_whiterabbit_trigger3_fatima_ge;
+
         TH1I* h1_whiterabbit_correlation_bplast_fatimavme;
+        TH1I* h1_whiterabbit_trigger1_bplast_fatimavme;
+        TH1I* h1_whiterabbit_trigger3_bplast_fatimavme;
+
         TH1I* h1_whiterabbit_correlation_fatimavme_ge;
+        TH1I* h1_whiterabbit_trigger1_fatimavme_ge;
+        TH1I* h1_whiterabbit_trigger3_fatimavme_ge;
+
         TH1I* h1_whiterabbit_correlation_bplast_ge;
+        TH1I* h1_whiterabbit_trigger1_bplast_ge;
+        TH1I* h1_whiterabbit_trigger3_bplast_ge;
+
+        TH1I* h1_whiterabbit_trigger;
 
 
 

@@ -60,6 +60,7 @@ class TimeMachineOnline : public FairTask
         int fNumDetectorSystems;
 
         EventHeader* header;
+        Int_t fNEvents;
 
         // Canvas
         TCanvas* c_time_undelayed;
@@ -73,22 +74,19 @@ class TimeMachineOnline : public FairTask
         TFolder* folder_time_machine;
         TFile* file_time_machine_snapshot;
 
-        // Histograms 
-        TH1F * h1_time_undelayed[20];
-        TH1F * h1_time_delayed[20];
-        TH1F * h1_time_diff[20];
-
-        TH2F * h2_time_diff_corrs[20*19];
-
-        // Initial variables
-        int fNEvents = 0;
+        // Histograms
+        // would also be nice to set this up from the detector setup
+        std::vector<TH1F*> h1_time_undelayed;
+        std::vector<TH1F*> h1_time_delayed;
+        std::vector<TH1F*> h1_time_diff;
+        std::vector<TH2F*> h2_time_diff_corrs;
 
         double delayed_time = 0;
         double undelayed_time = 0;
 
         double diffs[20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
-        // 20?
+        // 20? - show the diffs 20 times
         uint64_t wr[20] = {0};
 
 
