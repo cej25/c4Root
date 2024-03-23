@@ -68,7 +68,7 @@ class FatimaVmeOnlineSpectra : public FairTask
         TCanvas* c_fatima_vme_snapshot;
 
         // Histograms
-        // these should be vectors based on detector config.
+        // these should be vectors based on detector config. 
         TH1D* h1_FatVME_RawE[36];
         TH1D* h1_FatVME_RawT[36];
         TH1D* h1_FatVME_E[36];

@@ -100,6 +100,16 @@ inline bool TbPlastConfiguration::MappingLoaded() const
     return DetectorMap_loaded;
 }
 
+inline int TbPlastConfiguration::NDetectors() const
+{
+    return num_detectors;
+}
+
+inline int TbPlastConfiguration::NTamexBoards() const
+{
+    return num_tamex_boards;
+}
+
 inline std::set<int> TbPlastConfiguration::UpDetectors() const
 {
     return up_detectors;

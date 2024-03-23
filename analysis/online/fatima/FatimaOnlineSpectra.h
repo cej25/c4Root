@@ -145,10 +145,6 @@ class FatimaOnlineSpectra : public FairTask
             
         int event_multiplicity;
 
-        
-
-
-
     public:
         ClassDef(FatimaOnlineSpectra, 1)
 };

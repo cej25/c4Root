@@ -75,7 +75,6 @@ InitStatus FatimaOnlineSpectra::Init()
     //create folders
     folder_fatima = new TFolder("FATIMA", "FATIMA");
 
-    
 
     run->AddObject(folder_fatima);
 
@@ -226,13 +225,12 @@ InitStatus FatimaOnlineSpectra::Init()
     // Hit patterns:
     c_fatima_event_multiplicity  = new TCanvas("c_fatima_event_multiplicity","Fatima event multiplicities",650,350);
     
-    h1_fatima_multiplicity = new TH1F("h1_fatima_multiplicity","FATIMA event multiplicity",50,0,50);
+    h1_fatima_multiplicity = new TH1F("h1_fatima_multiplicity","FATIMA event multiplicity",20,0,20);
     h1_fatima_multiplicity->GetXaxis()->SetTitle("Event multiplicity");
+    h1_fatima_multiplicity->GetYaxis()->SetTitle("Counts");
     h1_fatima_multiplicity->Draw();
     folder_fatima_hitpattern->Add(h1_fatima_multiplicity);
     c_fatima_event_multiplicity->cd(0);
-    
-    folder_fatima_hitpattern->Add(c_fatima_event_multiplicity);
     
     //
     h1_fatima_time_differences = new TH1F ** [number_reference_detectors];
@@ -291,13 +289,18 @@ void FatimaOnlineSpectra::Reset_Histo()
     for (int ihist = 0; ihist<number_detectors; ihist++) h1_fatima_abs_time[ihist]->Reset();
     for (int ihist = 0; ihist<number_detectors; ihist++) h1_fatima_energy[ihist]->Reset();
     for (int ihist = 0; ihist<number_detectors; ihist++) h2_fatima_fast_v_slow[ihist]->Reset();
+    std::cout << "error fati" << std::endl; 
+    for (int ihist = 0; ihist<number_reference_detectors; ihist++){
+        for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++) h1_fatima_time_differences[ihist][detid_idx]->Reset();
+        for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++) h2_fatima_time_differences_vs_energy[ihist][detid_idx]->Reset();
+    }
     
     h1_fatima_hitpattern_fast->Reset();
     h1_fatima_hitpattern_slow->Reset();
     h2_fatima_energy_vs_detid->Reset();
-
+    h1_fatima_multiplicity->Reset();
     h2_fatima_energy_uncal_vs_detid->Reset();
-    //for (int ihist = 0; ihist<number_detectors; ihist++) h1_fatima_time_differences[ihist]->Reset();
+
 }
 
 // not complete maybe different spectra need to be added here, but anyway correlations between Sc41 and are something for later analysis (?)
@@ -347,6 +350,59 @@ void FatimaOnlineSpectra::Snapshot_Histo()
             c_fatima_snapshot->SaveAs(Form("h2_fatima_fast_v_slow_%d.png",detectors.at(ihist)));
             c_fatima_snapshot->Clear();
         }
+
+        if(h2_fatima_energy_vs_detid->GetEntries() != 0)
+        {
+            h2_fatima_energy_vs_detid->Draw("COLZ");
+            c_fatima_snapshot->SaveAs("h2_fatima_energy_vs_detid.png");
+            c_fatima_snapshot->Clear();
+        }
+
+        if(h2_fatima_energy_uncal_vs_detid->GetEntries() != 0)
+        {
+            h2_fatima_energy_uncal_vs_detid->Draw("COLZ");
+            c_fatima_snapshot->SaveAs("h2_fatima_energy_uncal_vs_detid.png");
+            c_fatima_snapshot->Clear();
+        }
+
+    }
+
+    for (int ihist = 0; ihist<number_reference_detectors; ihist++)
+    {
+        for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++)
+        {
+            if(h1_fatima_time_differences[ihist][detid_idx]->GetEntries() != 0)
+            {
+                h1_fatima_time_differences[ihist][detid_idx]->Draw();
+                c_fatima_snapshot->SaveAs(Form("h1_fatima_rel_time_det_%i_det_%i.png",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
+                c_fatima_snapshot->Clear();
+            }
+            if(h2_fatima_time_differences_vs_energy[ihist][detid_idx]->GetEntries() != 0)
+            {
+                h2_fatima_time_differences_vs_energy[ihist][detid_idx]->Draw("COLZ");
+                c_fatima_snapshot->SaveAs(Form("h2_fatima_rel_time_det_%i_det_%i_vs_energy.png",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
+                c_fatima_snapshot->Clear();
+            }
+        }
+    }
+
+    if (h1_fatima_hitpattern_fast->GetEntries() != 0)
+    {
+        h1_fatima_hitpattern_fast->Draw();
+        c_fatima_snapshot->SaveAs("h1_fatima_hitpattern_fast.png");
+        c_fatima_snapshot->Clear();
+    }
+    if (h1_fatima_hitpattern_slow->GetEntries() != 0)
+    {
+        h1_fatima_hitpattern_slow->Draw();
+        c_fatima_snapshot->SaveAs("h1_fatima_hitpattern_slow.png");
+        c_fatima_snapshot->Clear();
+    }
+    if (h1_fatima_multiplicity->GetEntries() != 0)
+    {
+        h1_fatima_multiplicity->Draw();
+        c_fatima_snapshot->SaveAs("h1_fatima_multiplicity.png");
+        c_fatima_snapshot->Clear();
     }
 
     delete c_fatima_snapshot;
