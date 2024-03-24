@@ -37,7 +37,7 @@ VME_CAEN_V7X5_FRS(card) // V775 and V785 unpack the same
     {
         0_23: nothing; //eventcounter;
         24_26: 0b100;
-        27_31: geom;
+        27_31: id = MATCH(card);
     }
 
     list (0 <= i < 2)
@@ -46,7 +46,7 @@ VME_CAEN_V7X5_FRS(card) // V775 and V785 unpack the same
         {  
             0_23: nothing; //eventcounter;
             24_26: id = MATCH(0b110);
-            27_31: geom;
+            27_31: geom; // i don't think this is true
         };
     }
 }
