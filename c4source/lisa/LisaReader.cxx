@@ -66,7 +66,7 @@ Bool_t LisaReader::Init(ext_data_struct_info* a_struct_info)
 Bool_t LisaReader::Read()
 {
     // Reading is done in here on a per-event basis!
-
+    
     return kTRUE;
 }
 
