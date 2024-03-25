@@ -66,7 +66,7 @@ class AidaOnlineSpectra : public FairTask
         // Canvas
         TCanvas* c_aida_snapshots;
 
-        // Folders
+        // Folders and Files
         TFolder* folder_aida;
         TFolder* folder_implant;
         TFolder* folder_stopped_implant;
@@ -75,6 +75,7 @@ class AidaOnlineSpectra : public FairTask
         std::vector<TFolder*> folder_implant_dssd;
         std::vector<TFolder*> folder_stopped_implant_dssd;
         std::vector<TFolder*> folder_decay_dssd;
+        TFile* file_aida_snapshot;
 
         // Histograms
         // Implant Histograms

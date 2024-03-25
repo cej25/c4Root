@@ -325,7 +325,7 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     // Fatima - Germanium
     c_whiterabbit_correlation_fatima_ge = new TCanvas("c_whiterabbit_correlation_fatima_ge", "White Rabbit FATIMA-DEGAS", 10, 10, 800, 700);
     c_whiterabbit_correlation_fatima_ge->cd();
-    h1_whiterabbit_correlation_fatima_ge = new TH1I("h1_whiterabbit_correlation_fatima_ge", "FATIMA - DEGAS WR dT", 1000, -1e3, 1e5);
+    h1_whiterabbit_correlation_fatima_ge = new TH1I("h1_whiterabbit_correlation_fatima_ge", "FATIMA - DEGAS WR dT", 1000, -1e3, 1e3);
     h1_whiterabbit_correlation_fatima_ge->GetXaxis()->SetTitle("Time difference (FATIMA - DEGAS) [ns]");
     h1_whiterabbit_correlation_fatima_ge->GetYaxis()->SetTitle("Counts");
     h1_whiterabbit_correlation_fatima_ge->Draw();
@@ -382,7 +382,7 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     // FatimaVme - Germanium
     c_whiterabbit_correlation_fatimavme_ge = new TCanvas("c_whiterabbit_correlation_fatimavme_ge", "FATIMA VME - DEGAS WR dT (ns)", 10, 10, 800, 700);
     c_whiterabbit_correlation_fatimavme_ge->cd();
-    h1_whiterabbit_correlation_fatimavme_ge = new TH1I("h1_whiterabbit_correlation_fatimavme_ge", "FATIMA VME - DEGAS WR dT", 1000, -1e3, 1e5);
+    h1_whiterabbit_correlation_fatimavme_ge = new TH1I("h1_whiterabbit_correlation_fatimavme_ge", "FATIMA VME - DEGAS WR dT", 1000, -1e3, 1e3);
     h1_whiterabbit_correlation_fatimavme_ge->GetXaxis()->SetTitle("Time difference (FATIMA VME - DEGAS) [ns]");
     h1_whiterabbit_correlation_fatimavme_ge->GetYaxis()->SetTitle("Counts");
     h1_whiterabbit_correlation_fatimavme_ge->Draw();
@@ -681,8 +681,8 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         {
             FatimaTwinpeaksCalData* hitFatima = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(0);
             if (!hitFatima) continue;
-
-            int dt = wr_aida - hitFatima->Get_wr_t();
+            int wr_fatima = hitFatima->Get_wr_t();
+            int dt = wr_aida - wr_fatima;
             h1_whiterabbit_correlation_fatima_aida->Fill(dt);
             if (fEventHeader->GetTrigger() == 1)
             {
@@ -698,8 +698,8 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         {
             FatimaVmeCalData* hitFatimaVme = (FatimaVmeCalData*)fHitFatimaVme->At(0);
             if (!hitFatimaVme) continue;
-            
-            int dt = wr_aida - hitFatimaVme->Get_wr_t();
+            int wr_fatimavme = hitFatimaVme->Get_wr_t();
+            int dt = wr_aida - wr_fatimavme;
             h1_whiterabbit_correlation_fatimavme_aida->Fill(dt);
             if (fEventHeader->GetTrigger() == 1)
             {
@@ -715,8 +715,8 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         {
             bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(0);
             if (!hitbPlast) continue;
-
-            int dt = wr_aida - hitbPlast->Get_wr_t();
+            int wr_bplast = hitbPlast->Get_wr_t();
+            int dt = wr_aida - wr_bplast;
             h1_whiterabbit_correlation_aida_bplast->Fill(dt);
             if (fEventHeader->GetTrigger() == 1)
             {
@@ -732,8 +732,8 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         {
             GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(0);
             if (!hitGe) continue;
-
-            int dt = wr_aida - hitGe->Get_wr_t();
+            int wr_ge = hitGe->Get_wr_t();
+            int dt = wr_aida - wr_ge;
             h1_whiterabbit_correlation_aida_germanium->Fill(dt);
             if (fEventHeader->GetTrigger() == 1)
             {
@@ -755,10 +755,12 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         FatimaTwinpeaksCalData* hitFatima = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(0);
         if (hitFatima)
         {
+            int wr_fatima = hitFatima->Get_wr_t();
             FatimaVmeCalData* hitFatimaVme = (FatimaVmeCalData*)fHitFatimaVme->At(0);
             if (hitFatimaVme)
             {
-                int dt = hitFatima->Get_wr_t() - hitFatimaVme->Get_wr_t();
+                int wr_fatima_vme = hitFatimaVme->Get_wr_t();
+                int dt = wr_fatima - wr_fatima_vme;
                 h1_whiterabbit_correlation_fatima_fatimavme->Fill(dt);
                 if (fEventHeader->GetTrigger() == 1)
                 {
@@ -773,7 +775,8 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(0);
             if (hitbPlast)
             {
-                int dt = hitFatima->Get_wr_t() - hitbPlast->Get_wr_t();
+                int wr_bplast = hitbPlast->Get_wr_t();
+                int dt = wr_bplast - wr_fatima;
                 h1_whiterabbit_correlation_bplast_fatima->Fill(dt);
                 if (fEventHeader->GetTrigger() == 1)
                 {
@@ -788,7 +791,8 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(0);
             if (hitGe)
             {
-                int dt = hitFatima->Get_wr_t() - hitGe->Get_wr_t();
+                int wr_ge = hitGe->Get_wr_t();
+                int dt = wr_fatima - wr_ge;
                 h1_whiterabbit_correlation_fatima_ge->Fill(dt);
                 if (fEventHeader->GetTrigger() == 1)
                 {
@@ -807,10 +811,12 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         FatimaVmeCalData* hitFatimaVme = (FatimaVmeCalData*)fHitFatimaVme->At(0);
         if (hitFatimaVme)
         {
+            int wr_fatimavme= hitFatimaVme->Get_wr_t();
             bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(0);
             if (hitbPlast)
             {
-                int dt = hitFatimaVme->Get_wr_t() - hitbPlast->Get_wr_t();
+                int wr_bplast = hitbPlast->Get_wr_t();
+                int dt = wr_bplast - wr_fatimavme;
                 h1_whiterabbit_correlation_bplast_fatimavme->Fill(dt);
                 if (fEventHeader->GetTrigger() == 1)
                 {
@@ -825,7 +831,8 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(0);
             if (hitGe)
             {
-                int dt = hitFatimaVme->Get_wr_t() - hitGe->Get_wr_t();
+                int wr_ge = hitGe->Get_wr_t();
+                int dt = wr_fatimavme - wr_ge;
                 h1_whiterabbit_correlation_fatimavme_ge->Fill(dt);
                 if (fEventHeader->GetTrigger() == 1)
                 {

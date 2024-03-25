@@ -44,7 +44,7 @@ class TbPlastConfiguration
 
         static TbPlastConfiguration* instance;
 
-        std::map<std::pair<int, int>, std::pair<int, std::pair<std::string, std::string>>> detector_mapping;
+        std::map<std::pair<int, int>, std::pair<int, std::pair<std::string, std::string>>> detector_mapping; // <tamex_board, tamex_channel> -> <detector_id, <stream, orientation>>
         std::set<int> up_detectors;
         std::set<int> down_detectors;
         std::set<int> top_detectors;

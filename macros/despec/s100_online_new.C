@@ -45,9 +45,9 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     TString fExpName = "s100";
     //TString fExpName = "beammonitor";
 
-
     // Define important paths.
     TString c4Root_path = "/u/jbormans/c4Root";
+    TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
     //TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");

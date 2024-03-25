@@ -26,16 +26,13 @@
 #include <vector>
 #include <string>
 
-TimeMachineOnline::TimeMachineOnline()
-    : FairTask()
-    , fTimeMachine(NULL)
-    , fNEvents(0)
-    , header(nullptr)
-{
-    correl_config = TCorrelationsConfiguration::GetInstance();
-    Correl = correl_config->CorrelationsMap();
-    TMGates = correl_config->TimeMachineMap();
-}
+TimeMachineOnline::TimeMachineOnline() 
+    : TimeMachineOnline("TimeMachineOnline")
+    {
+        correl_config = TCorrelationsConfiguration::GetInstance();
+        Correl = correl_config->CorrelationsMap();
+        TMGates = correl_config->TimeMachineMap();
+    }
 
 TimeMachineOnline::TimeMachineOnline(const TString& name, Int_t verbose)
     : FairTask(name, verbose)
@@ -100,14 +97,20 @@ InitStatus TimeMachineOnline::Init()
     TDirectory::TContext ctx(nullptr);
 
     folder_time_machine = new TFolder("TimeMachines", "TimeMachines");
-    run->AddObject(folder_time_machine);
 
-    h1_time_undelayed.resize(fNumDetectorSystems*(fNumDetectorSystems-1));
-    h1_time_delayed.resize(fNumDetectorSystems*(fNumDetectorSystems - 1));
+    run->AddObject(folder_time_machine);
+    folder_time_machine_undelayed = new TFolder("Time Machine Undelayed", "Time Machine Undelayed");
+    folder_time_machine_delayed = new TFolder("Time Machine Delayed", "Time Machine Delayed");
+    folder_time_machine_diff = new TFolder("Time Machine Difference", "Time Machine Difference");
+    folder_time_machine_corrs = new TFolder("Time Machine Correlations", "Time Machine Correlations");
+
+
+    h1_time_undelayed.resize(fNumDetectorSystems);
+    h1_time_delayed.resize(fNumDetectorSystems);
     h1_time_diff.resize(fNumDetectorSystems*(fNumDetectorSystems - 1));
     h2_time_diff_corrs.resize((fNumDetectorSystems*fNumDetectorSystems)*(fNumDetectorSystems*fNumDetectorSystems-1)); // pairs from n items
     
-    c_time_undelayed  = new TCanvas("Time Machine Undealyed","Time Machine Undelayed",650,350);
+    c_time_undelayed  = new TCanvas("Time Machine Undelayed","Time Machine Undelayed",650,350);
     c_time_undelayed->Divide(1,fNumDetectorSystems);
 
     for (int ihist = 0; ihist < fNumDetectorSystems; ihist++){
@@ -170,7 +173,11 @@ InitStatus TimeMachineOnline::Init()
 
     folder_time_machine->Add(c_time_corrs);
 
-    run->RegisterHttpCommand("Reset TimeMachine", "/TimeMachineOnline->Reset_Histo()");
+
+    run->GetHttpServer()->RegisterCommand("Reset_TimeMachine_Histograms", Form("/Objects/%s/->Reset_Histo()", GetName()));
+
+    run->GetHttpServer()->RegisterCommand("Snapshot_TimeMachine_Histograms", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
+
     c4LOG(info, "Setup of TimeMachineOnline complete.");
     return kSUCCESS;
     

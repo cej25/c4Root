@@ -72,6 +72,10 @@ class TimeMachineOnline : public FairTask
 
         // Folders and Files
         TFolder* folder_time_machine;
+        TFolder* folder_time_machine_undelayed;
+        TFolder* folder_time_machine_delayed;
+        TFolder* folder_time_machine_diff;
+        TFolder* folder_time_machine_corrs;
         TFile* file_time_machine_snapshot;
 
         // Histograms

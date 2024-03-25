@@ -48,10 +48,16 @@ class bPlastOnlineSpectra : public FairTask
         EventHeader* header;
         Int_t fNEvents;
 
+        int nDetectors;
+        int nTamexBoards;
+
+        TString screenshot_path;
+
         // Canvases
         TCanvas* c_bplast_slowToT;
         TCanvas* c_bplast_fastToT;
         TCanvas* c_bplast_hitpatterns;
+        TCanvas* c_bplast_tamex_card_hitpattern;
         TCanvas* c_bplast_fast_v_slow;
         TCanvas* c_bplast_time_spectra;
         TCanvas* c_bplast_multiplicity;
@@ -72,9 +78,10 @@ class bPlastOnlineSpectra : public FairTask
         std::vector<TH1F*> h1_bplast_slowToT;
         std::vector<TH1F*> h1_bplast_fastToT;
         std::vector<TH1F*> h1_bplast_hitpatterns;
+        std::vector<TH1F*> h1_bplast_tamex_card_hitpattern;
 
         std::vector<TH2F*> h2_bplast_fastToT_vs_slowToT;
-        std::vector<TH1F*> h1_bplast_abs_time;
+        std::vector<TH1F*> h1_bplast_time_spectra;
 
         // Scaler spectra TBA
 
@@ -82,8 +89,6 @@ class bPlastOnlineSpectra : public FairTask
         TH1F* h1_bplast_multiplicity;
 
         int event_multiplicity;
-
-        int nDetectors;
 
     public:
         ClassDef(bPlastOnlineSpectra, 1)
