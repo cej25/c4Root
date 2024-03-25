@@ -31,7 +31,7 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     TString ucesb_dir = getenv("HOME");
     TString temp_path = ucesb_dir + "/c4Root/unpack/exps";
     //TString ucesb_path = ucesb_dir + "/lisa/lisa --allow-errors --input-buffer=200Mi";
-    TString ucesb_path = temp_path + "/lisa/lisa --allow-errors --input-buffer=200Mi --print";
+    TString ucesb_path = temp_path + "/lisa/lisa --allow-errors --input-buffer=200Mi";
     ucesb_path.ReplaceAll("//","/");
 
     FairRunOnline* run = new FairRunOnline();
@@ -56,6 +56,10 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     FairRuntimeDb* rtdb = run->GetRuntimeDb();
 
     // Add analysis task here at some point
+
+    LisaOnlineSpectra* onlinelisa = new LisaOnlineSpectra();
+
+    run->AddTask(onlinelisa);
 
     run->Init();
     FairLogger::GetLogger()->SetLogScreenLevel("info");
