@@ -179,7 +179,7 @@ InitStatus GermaniumOnlineSpectra::Init()
 
 
     //time differences!
-    int number_reference_detectors = dt_reference_detectors.size();
+    number_reference_detectors = dt_reference_detectors.size();
     h1_germanium_time_differences = new TH1F ** [number_reference_detectors];
     h2_germanium_time_differences_vs_energy = new TH2F ** [number_reference_detectors];
     for (int ihist = 0; ihist < number_reference_detectors; ihist++){
@@ -247,25 +247,33 @@ InitStatus GermaniumOnlineSpectra::Init()
 
 void GermaniumOnlineSpectra::Reset_Ge_Histo()
 {
-    c4LOG(info, "Reset command received. Clearing histograms.");
-    h1_germanium_multiplicity->Reset();
-    h1_germanium_hitpattern->Reset();
-    h2_germanium_energy_vs_detidx->Reset();
+    c4LOG(info, "Resetting DEGAS histograms.");
+    for (int i = 0; i < number_reference_detectors; i++){
+       for (int ihist = 0; ihist<number_of_detectors_to_plot; ihist++) 
+        {
+            h1_germanium_time_differences[i][ihist]->Reset();
+            h2_germanium_time_differences_vs_energy[i][ihist]->Reset();
+        }
+    }
     for (int ihist = 0; ihist<number_of_detectors_to_plot; ihist++) 
     {
         h1_germanium_energy[ihist]->Reset();
         h1_germanium_time[ihist]->Reset();
-        for (int ihist2 = 0; ihist2 < dt_reference_detectors.size(); ihist2++){
-            h1_germanium_time_differences[ihist2][ihist]->Reset();
-            h2_germanium_time_differences_vs_energy[ihist2][ihist]->Reset();
-        }
-
     }
+
+
+    h1_germanium_multiplicity->Reset();
+    h1_germanium_hitpattern->Reset();
+    h2_germanium_energy_vs_detidx->Reset();
+    h1_germanium_energy_summed->Reset();
+    h1_germanium_energy_summed_vetosci41->Reset();
+    h2_germanium_energy_summed_vs_tsci41->Reset();
+    c4LOG(info, "DEGAS histograms reset.");
 }
 
 void GermaniumOnlineSpectra::Snapshot_Ge_Histo()
 {
-    c4LOG(fatal, "NOT FULLY IMPLEMENTED: TODO!!!");
+    c4LOG(info, "Snapshotting DEGAS histograms.");
     //date and time
     time_t now = time(0);
     tm *ltm = localtime(&now);
@@ -297,7 +305,7 @@ void GermaniumOnlineSpectra::Snapshot_Ge_Histo()
     delete file_germanium_snapshot;
 
     gSystem->cd("..");
-    c4LOG(info, "Snapshot saved to:" << snapshot_dir);
+    c4LOG(info, "DEGAS snapshots saved to:" << snapshot_dir);
 }
 
 void GermaniumOnlineSpectra::Exec(Option_t* option)

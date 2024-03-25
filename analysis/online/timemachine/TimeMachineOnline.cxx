@@ -174,11 +174,10 @@ InitStatus TimeMachineOnline::Init()
     folder_time_machine->Add(c_time_corrs);
 
 
-    run->GetHttpServer()->RegisterCommand("Reset_TimeMachine_Histograms", Form("/Objects/%s/->Reset_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Reset_TimeMachine_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
 
-    run->GetHttpServer()->RegisterCommand("Snapshot_TimeMachine_Histograms", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Snapshot_TimeMachine_Histo", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
 
-    c4LOG(info, "Setup of TimeMachineOnline complete.");
     return kSUCCESS;
     
 }

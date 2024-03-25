@@ -80,11 +80,11 @@ InitStatus FatimaVmeOnlineSpectra::Init()
 
 
     // Setting histogram sizes
-    h1_FatVME_RawE.resize(nDetectors+1);
-    h1_FatVME_E.resize(nDetectors+1);
-    h1_FatVME_RawT.resize(nDetectors+1);
-    h1_FatVME_TDC_dt_refCh1.resize(nDetectors+1);
-    h1_FatVME_TDC_dT_refSC41L.resize(nDetectors+1);
+    h1_FatVME_RawE.resize(nDetectors);
+    h1_FatVME_E.resize(nDetectors);
+    h1_FatVME_RawT.resize(nDetectors);
+    h1_FatVME_TDC_dt_refCh1.resize(nDetectors);
+    h1_FatVME_TDC_dT_refSC41L.resize(nDetectors);
 
     h1_FatVME_QDCMult = new TH1I("h1_FatVME_QDCMult", "Fatima VME QDC Multiplicity", nDetectors, 0, nDetectors);
     h1_FatVME_TDCMult = new TH1I("h1_FatVME_TDCMult", "Fatime VME TDC Multiplicity", nDetectors, 0, nDetectors);
