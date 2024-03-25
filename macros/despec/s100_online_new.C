@@ -7,7 +7,7 @@
 #define BPLAST_ON 1
 #define GERMANIUM_ON 1
 #define BGO_ON 0
-#define FRS_ON 1
+#define FRS_ON 0
 #define TIME_MACHINE_ON 1
 #define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 1
@@ -74,7 +74,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     // TString filename = "trans://lxg1257"; // timesorter.
     //TString filename = "trans://R4L-21"; // beammonitor
     // TString filename = "stream://R4L-36"; // fatima vme
-    TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0008_00**.lmd";
+    TString filename = "/lustre/gamma/dryrunmarch24/ts/Au_beam_0008_00**.lmd";
     //TString filename = "~/lustre/despec/dryrun24/ts/Au_beam_10_*.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
