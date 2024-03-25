@@ -684,6 +684,14 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
 
             int dt = wr_aida - hitFatima->Get_wr_t();
             h1_whiterabbit_correlation_fatima_aida->Fill(dt);
+            if (fEventHeader->GetTrigger() == 1)
+            {
+                h1_whiterabbit_trigger1_fatima_aida->Fill(dt);
+            }
+            if (fEventHeader->GetTrigger() == 3)
+            {
+                h1_whiterabbit_trigger3_fatima_aida->Fill(dt);
+            }
         }
         
         if (fHitFatimaVme)
@@ -693,6 +701,14 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             
             int dt = wr_aida - hitFatimaVme->Get_wr_t();
             h1_whiterabbit_correlation_fatimavme_aida->Fill(dt);
+            if (fEventHeader->GetTrigger() == 1)
+            {
+                h1_whiterabbit_trigger1_fatimavme_aida->Fill(dt);
+            }
+            if (fEventHeader->GetTrigger() == 3)
+            {
+                h1_whiterabbit_trigger3_fatimavme_aida->Fill(dt);
+            }
         }
         
         if (fHitbPlastTwinpeaks)
@@ -702,6 +718,14 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
 
             int dt = wr_aida - hitbPlast->Get_wr_t();
             h1_whiterabbit_correlation_aida_bplast->Fill(dt);
+            if (fEventHeader->GetTrigger() == 1)
+            {
+                h1_whiterabbit_trigger1_aida_bplast->Fill(dt);
+            }
+            if (fEventHeader->GetTrigger() == 3)
+            {
+                h1_whiterabbit_trigger3_aida_bplast->Fill(dt);
+            }
         }
         
         if (fHitGe)
@@ -711,6 +735,14 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
 
             int dt = wr_aida - hitGe->Get_wr_t();
             h1_whiterabbit_correlation_aida_germanium->Fill(dt);
+            if (fEventHeader->GetTrigger() == 1)
+            {
+                h1_whiterabbit_trigger1_aida_germanium->Fill(dt);
+            }
+            if (fEventHeader->GetTrigger() == 3)
+            {
+                h1_whiterabbit_trigger3_aida_germanium->Fill(dt);
+            }
         }
         
         aidaCounter++;
@@ -728,6 +760,14 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             {
                 int dt = hitFatima->Get_wr_t() - hitFatimaVme->Get_wr_t();
                 h1_whiterabbit_correlation_fatima_fatimavme->Fill(dt);
+                if (fEventHeader->GetTrigger() == 1)
+                {
+                    h1_whiterabbit_trigger1_fatima_fatimavme->Fill(dt);
+                }
+                if (fEventHeader->GetTrigger() == 3)
+                {
+                    h1_whiterabbit_trigger3_fatima_fatimavme->Fill(dt);
+                }
             }
             
             bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(0);
@@ -735,6 +775,14 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             {
                 int dt = hitFatima->Get_wr_t() - hitbPlast->Get_wr_t();
                 h1_whiterabbit_correlation_bplast_fatima->Fill(dt);
+                if (fEventHeader->GetTrigger() == 1)
+                {
+                    h1_whiterabbit_trigger1_bplast_fatima->Fill(dt);
+                }
+                if (fEventHeader->GetTrigger() == 3)
+                {
+                    h1_whiterabbit_trigger3_bplast_fatima->Fill(dt);
+                }
             }
             
             GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(0);
@@ -742,6 +790,14 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             {
                 int dt = hitFatima->Get_wr_t() - hitGe->Get_wr_t();
                 h1_whiterabbit_correlation_fatima_ge->Fill(dt);
+                if (fEventHeader->GetTrigger() == 1)
+                {
+                    h1_whiterabbit_trigger1_fatima_ge->Fill(dt);
+                }
+                if (fEventHeader->GetTrigger() == 3)
+                {
+                    h1_whiterabbit_trigger3_fatima_ge->Fill(dt);
+                }
             }
         }
     }
@@ -771,6 +827,14 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             {
                 int dt = hitFatimaVme->Get_wr_t() - hitGe->Get_wr_t();
                 h1_whiterabbit_correlation_fatimavme_ge->Fill(dt);
+                if (fEventHeader->GetTrigger() == 1)
+                {
+                    h1_whiterabbit_trigger1_fatimavme_ge->Fill(dt);
+                }
+                if (fEventHeader->GetTrigger() == 3)
+                {
+                    h1_whiterabbit_trigger3_fatimavme_ge->Fill(dt);
+                }
             }
         }
     }
