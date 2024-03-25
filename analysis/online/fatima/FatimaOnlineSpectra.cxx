@@ -22,9 +22,10 @@
 #include "TFile.h"
 #include "TRandom.h"
 
-FatimaOnlineSpectra::FatimaOnlineSpectra() : FatimaOnlineSpectra("FatimaOnlineSpectra")
-{
-}
+FatimaOnlineSpectra::FatimaOnlineSpectra() 
+    : FatimaOnlineSpectra("FatimaOnlineSpectra")
+    {
+    }
 
 FatimaOnlineSpectra::FatimaOnlineSpectra(const TString& name, Int_t verbose)
     : FairTask(name, verbose)
@@ -51,16 +52,12 @@ void FatimaOnlineSpectra::SetParContainers()
 
 InitStatus FatimaOnlineSpectra::Init()
 {
-
-    // number of dets 
-
     c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
     FairRunOnline * run = FairRunOnline::Instance();
     run->GetHttpServer()->Register("", this);
-    c4LOG(info, "HERE");
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
@@ -274,8 +271,9 @@ InitStatus FatimaOnlineSpectra::Init()
     }
 
     
-    run->GetHttpServer()->RegisterCommand("Reset_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
-    run->GetHttpServer()->RegisterCommand("Snapshot_Histo", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Reset_FATIMA_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
+
+    run->GetHttpServer()->RegisterCommand("Snapshot_FATIMA_Histo", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
 
     return kSUCCESS;
     
@@ -283,13 +281,12 @@ InitStatus FatimaOnlineSpectra::Init()
 
 void FatimaOnlineSpectra::Reset_Histo()
 {
-    c4LOG(info, "Resetting histograms!");
+    c4LOG(info,"Biswarup clicked me :-). Resetting FATIMA histograms.");
     for (int ihist = 0; ihist<number_detectors; ihist++) h1_fatima_slowToT[ihist]->Reset();
     for (int ihist = 0; ihist<number_detectors; ihist++) h1_fatima_fastToT[ihist]->Reset();
     for (int ihist = 0; ihist<number_detectors; ihist++) h1_fatima_abs_time[ihist]->Reset();
     for (int ihist = 0; ihist<number_detectors; ihist++) h1_fatima_energy[ihist]->Reset();
     for (int ihist = 0; ihist<number_detectors; ihist++) h2_fatima_fast_v_slow[ihist]->Reset();
-    std::cout << "error fati" << std::endl; 
     for (int ihist = 0; ihist<number_reference_detectors; ihist++){
         for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++) h1_fatima_time_differences[ihist][detid_idx]->Reset();
         for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++) h2_fatima_time_differences_vs_energy[ihist][detid_idx]->Reset();
@@ -300,6 +297,7 @@ void FatimaOnlineSpectra::Reset_Histo()
     h2_fatima_energy_vs_detid->Reset();
     h1_fatima_multiplicity->Reset();
     h2_fatima_energy_uncal_vs_detid->Reset();
+    c4LOG(info, "FATIMA histograms reset.");
 
 }
 
