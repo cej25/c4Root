@@ -132,6 +132,7 @@ FEBEX_EVENT_TRACES(card)
 	MEMBER(DATA32 event_trigger_time_lo); // "..."
     MEMBER(DATA16 hit_pattern);
     MEMBER(DATA32 num_channels_fired);
+    MEMBER(DATA8 board_num);
 
 	MEMBER(DATA8 channel_id[16] ZERO_SUPPRESS);
 	MEMBER(DATA16 channel_trigger_time_hi[16] ZERO_SUPPRESS);
@@ -151,8 +152,11 @@ FEBEX_EVENT_TRACES(card)
         12_15: sfpnr;
         16_23: board_id = MATCH(card);
         24_31: 0xFF;
+        ENCODE(board_num, (value = board_id));
 
     }
+
+    //ENCODE(board_num, (value = sumchannel.board_id));
 
     UINT32 channel_size NOENCODE
     {

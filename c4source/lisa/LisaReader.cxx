@@ -65,7 +65,21 @@ Bool_t LisaReader::Init(ext_data_struct_info* a_struct_info)
 
 Bool_t LisaReader::Read()
 {
+
     // Reading is done in here on a per-event basis!
+    for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
+    {
+        LisaData* lisa_item = new LisaData(); // LisaData class item
+
+        uint32_t board_num = fData->lisa_data[it_board_number].board_num;
+        lisa_item->SetBoardNum(board_num);
+        //since the febex card has a 100MHz clock which timestamps events.
+        uint64_t event_trigger_time_long = (((uint64_t)(fData->lisa_data[it_board_number].event_trigger_time_hi) << 32) + (fData->lisa_data[it_board_number].event_trigger_time_lo))*10;
+        lisa_item->SetEventTime(event_trigger_time_long);
+
+        new ((*fArray)[fArray->GetEntriesFast()]) LisaData(*lisa_item);
+
+    }
     
     return kTRUE;
 }
