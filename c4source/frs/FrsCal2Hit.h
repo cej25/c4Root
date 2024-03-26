@@ -9,6 +9,7 @@
 #include "FrsTPCCalData.h"
 #include "FrsUserCalData.h"
 #include "FrsVFTXCalData.h"
+#include "FrsTpatData.h"
 #include "FrsHitData.h"
 #include <TRandom3.h>
 
@@ -73,9 +74,11 @@ class FrsCal2Hit : public FairTask
         TClonesArray* fCalArrayTPC;
         TClonesArray* fCalArrayUser;
         TClonesArray* fCalArrayVFTX;
+        TClonesArray* fRawArrayTpat;
         TClonesArray* fHitArray;
         TClonesArray* fEventItems;
 
+        FrsTpatData* fRawHitTpat;
         FrsMainCalData* fCalHitMain;
         FrsTPCCalData* fCalHitTPC;
         FrsUserCalData* fCalHitUser;

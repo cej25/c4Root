@@ -37,7 +37,7 @@ void TCorrelationsConfiguration::ReadCorrelationsFile()
             std::vector<int> values;
             while (iss >> value) values.push_back(value);
             
-            std::cout << "maybe we only get here once" << std::endl;
+            std::cout << "Reading Time Machine Mapping" << std::endl;
 
             if (!values.empty())
             {

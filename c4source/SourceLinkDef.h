@@ -14,6 +14,7 @@
 #pragma link C++ class FrsTPCReader+;
 #pragma link C++ class FrsUserReader+;
 #pragma link C++ class FrsVFTXReader+;
+#pragma link C++ class FrsTpatReader+;
 #pragma link C++ class FrsMainRaw2Cal+;
 #pragma link C++ class FrsTPCRaw2Cal+;
 #pragma link C++ class FrsUserRaw2Cal+;
@@ -44,6 +45,7 @@
 #pragma link C++ class EXT_STR_h101_frsmain_onion_t;
 #pragma link C++ class EXT_STR_h101_frsuser_onion_t;
 #pragma link C++ class EXT_STR_h101_frsvftx_onion_t;
+#pragma link C++ class EXT_STR_h101_frstpat_onion_t;
 #pragma link C++ class EXT_STR_h101_germanium_onion_t;
 #pragma link C++ class EXT_STR_h101_fatima_onion_t;
 #pragma link C++ class EXT_STR_h101_fatimavme_onion_t;

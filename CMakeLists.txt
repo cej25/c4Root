@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.11.0 FATAL_ERROR)
 
 cmake_policy(VERSION 3.11...3.20)
 
-project(C4ROOT LANGUAGES C CXX Fortran)
+project(C4ROOT LANGUAGES C CXX)
 
 if(NOT EXISTS "${PROJECT_SOURCE_DIR}/macros")
     message(FATAL_ERROR

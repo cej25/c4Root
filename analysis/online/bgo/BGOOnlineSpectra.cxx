@@ -146,7 +146,7 @@ InitStatus BGOOnlineSpectra::Init()
     h1_germanium_bgo_veto_energy = new TH1F*[number_of_detectors_to_plot];
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
         c_germanium_bgo_veto_energy->cd(ihist+1);
-        h1_germanium_bgo_veto_energy[ihist] = new TH1F(Form("h1_germanium_bgo_veto_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c - BGO vetoed",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,10e3);
+        h1_germanium_bgo_veto_energy[ihist] = new TH1F(Form("h1_germanium_bgo_veto_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c - BGO vetoed",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,3e3);
         h1_germanium_bgo_veto_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
         h1_germanium_bgo_veto_energy[ihist]->Draw();
         folder_bgo_germanim_veto_energy->Add(h1_germanium_bgo_veto_energy[ihist]);
@@ -162,7 +162,7 @@ InitStatus BGOOnlineSpectra::Init()
     h1_germanium_bgo_veto_timedifferences = new TH1F*[number_of_detectors_to_plot];
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
         c_germanium_bgo_veto_timedifferences->cd(ihist+1);
-        h1_germanium_bgo_veto_timedifferences[ihist] = new TH1F(Form("h1_germanium_bgo_veto_timedifferences_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("BGO-DEGAS time spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,10e3);
+        h1_germanium_bgo_veto_timedifferences[ihist] = new TH1F(Form("h1_germanium_bgo_veto_timedifferences_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("BGO-DEGAS time spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e2,-10e3,10e3);
         h1_germanium_bgo_veto_timedifferences[ihist]->GetXaxis()->SetTitle("time BGO-Ge (ns)");
         h1_germanium_bgo_veto_timedifferences[ihist]->Draw();
         folder_bgo_germanim_veto_energy->Add(h1_germanium_bgo_veto_timedifferences[ihist]);
@@ -186,14 +186,15 @@ void BGOOnlineSpectra::Reset_BGO_Histo()
     {
         h1_bgo_energy[ihist]->Reset();
         h1_bgo_time[ihist]->Reset();
+        h1_germanium_bgo_veto_energy[ihist]->Reset();
+        h1_germanium_bgo_veto_timedifferences[ihist]->Reset();
     }
 }
 
 void BGOOnlineSpectra::Snapshot_BGO_Histo()
 {
-    c4LOG(fatal, "NOT FULLY IMPLEMENTED: TODO!!!");
+    c4LOG(info, "");
 
-    /*
     //date and time
     time_t now = time(0);
     tm *ltm = localtime(&now);
@@ -203,18 +204,24 @@ void BGOOnlineSpectra::Snapshot_BGO_Histo()
     gSystem->cd(snapshot_dir);
 
     // save histograms to canvases
-    c_bgo_snapshot = new TCanvas("c","c",650,350);
+    c_bgo_snapshot = new TCanvas("c_bgo_snapshot","BGO snapshot",650,350);
 
-    for (int ihist = 0; ihist<number_of_detectors_to_plot; ihist++)
+    for (int ihist = 0; ihist<number_of_detectors_to_plot; ihist++) 
     {
-        if(h1_bgo_energy[ihist]->GetEntries()!=0)
-        {
-            h1_bgo_energy[ihist]->Draw();
-            c_bgo_snapshot->SaveAs(Form("h1_bgo_energy_%d_%d.png",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second));
-            c_bgo_snapshot->Clear();
-        }
-
+        h1_bgo_energy[ihist]->Draw();
+        c_bgo_snapshot->SaveAs(Form("bgo_energy_%d_%d.png",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second));
+        c_bgo_snapshot->Clear();
+        h1_bgo_time[ihist]->Draw();
+        c_bgo_snapshot->SaveAs(Form("bgo_time_%d_%d.png",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second));
+        c_bgo_snapshot->Clear();
+        h1_germanium_bgo_veto_energy[ihist]->Draw();
+        c_bgo_snapshot->SaveAs(Form("germanium_bgo_veto_energy_%d_%d.png",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second));
+        c_bgo_snapshot->Clear();
+        h1_germanium_bgo_veto_timedifferences[ihist]->Draw();
+        c_bgo_snapshot->SaveAs(Form("germanium_bgo_veto_timedifferences_%d_%d.png",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second));
+        c_bgo_snapshot->Clear();
     }
+
     delete c_bgo_snapshot;
 
     // snapshot .root file with data and time
@@ -226,7 +233,7 @@ void BGOOnlineSpectra::Snapshot_BGO_Histo()
 
     gSystem->cd("..");
     c4LOG(info, "Snapshot saved to:" << snapshot_dir);
-    */
+
 }
 
 void BGOOnlineSpectra::Exec(Option_t* option)
@@ -269,9 +276,13 @@ void BGOOnlineSpectra::Exec(Option_t* option)
 
             int crystal_index_ge = std::distance(crystals_to_plot.begin(), std::find(crystals_to_plot.begin(),crystals_to_plot.end(),std::pair<int,int>(detector_id_ge,crystal_id_ge)));
             if (crystal_index_ge >= crystals_to_plot.size()) continue;
+            
 
             bool veto = false;
+            
+            int crystal_index_bgo2 = 0;
 
+            
             if (fHitBGO && fHitBGO->GetEntriesFast() > 0){
                 Int_t nBGOHits = fHitBGO->GetEntriesFast();
                 for (Int_t ihit2 = 0; ihit2 < nBGOHits; ihit2++)
@@ -280,9 +291,13 @@ void BGOOnlineSpectra::Exec(Option_t* option)
                     if (!hit2) continue;
                     int detector_id_bgo2 = hit2->Get_detector_id();
                     int crystal_id_bgo2 = hit2->Get_crystal_id();
+                    
+                    crystal_index_bgo2 = std::distance(crystals_to_plot.begin(), std::find(crystals_to_plot.begin(),crystals_to_plot.end(),std::pair<int,int>(detector_id_bgo2,crystal_id_bgo2)));
+                    if (crystal_index_bgo2 >= crystals_to_plot.size()) continue;
 
+                
                     if (detector_id_bgo2 == detector_id_ge && crystal_id_ge == crystal_id_bgo2){
-                        h1_germanium_bgo_veto_timedifferences[crystal_index_ge]->Fill(hit2->Get_wr_t() - hit_ge->Get_wr_t());    
+                        h1_germanium_bgo_veto_timedifferences[crystal_index_bgo2]->Fill(hit2->Get_wr_t() - hit_ge->Get_wr_t());    
                         if (TMath::Abs((int64_t)hit2->Get_wr_t() - (int64_t)hit_ge->Get_wr_t())<BGO_Germanium_wr_coincidence_window){
                             //VETO!
                             veto = true;
@@ -291,7 +306,7 @@ void BGOOnlineSpectra::Exec(Option_t* option)
                 }
             }
             if (!veto){
-                h1_germanium_bgo_veto_energy[crystal_id_ge]->Fill(energy_ge);
+                h1_germanium_bgo_veto_energy[crystal_index_ge]->Fill(energy_ge);
             }
         }
     }

@@ -17,6 +17,30 @@ TRIG3EVENT()
     }
 }
 
+SPILL_ON()
+{
+    UINT32 on NOENCODE
+    {
+        0_31: 0x30303030;
+    }
+}
+
+SPILL_OFF()
+{
+    UINT32 off1 NOENCODE
+    {
+        0_31: 0x4040400a;
+    }
+    UINT32 off2 NOENCODE
+    {
+        0_31: 0x4040400b;
+    }
+    UINT32 off3 NOENCODE
+    {
+        0_31: 0x4040400c;
+    }
+}
+
 
 // for now this catches all of the barrier
 BARRIER()
@@ -38,12 +62,10 @@ ZERO_FILLER()
 
 // procID = 15
 
-VULOM_CRATE_DATE() 
+TPAT_CRATE_DATA() 
 {
     MEMBER(DATA16 tpat);
-    
-    wr = TIMESTAMP_WHITERABBIT(id=0x100);
-    
+        
     // first three words are meaningless
     UINT32 w1;
     UINT32 w2;

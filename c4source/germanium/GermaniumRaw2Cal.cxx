@@ -189,8 +189,9 @@ void GermaniumRaw2Cal::Exec(Option_t* option){
                 detector_id,
                 funcal_hit->Get_wr_subsystem_id(),
                 funcal_hit->Get_wr_t());
+            fNEvents++;
         }
-    }    
+    }
 }
 
 /*

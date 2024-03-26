@@ -65,7 +65,8 @@ Bool_t FrsMainReader::Read()
     if (fData == nullptr) return kFALSE;
 
     // whiterabbit timestamp - includes 20202020 events...
-    wr_t = (((uint64_t)fData->frsmain_wr_t[3]) << 48) + (((uint64_t)fData->frsmain_wr_t[2]) << 32) + (((uint64_t)fData->frsmain_wr_t[1]) << 16) + (uint64_t)(fData->frsmain_wr_t[0]);
+    // main no longer reads wr ts
+    //wr_t = (((uint64_t)fData->frsmain_wr_t[3]) << 48) + (((uint64_t)fData->frsmain_wr_t[2]) << 32) + (((uint64_t)fData->frsmain_wr_t[1]) << 16) + (uint64_t)(fData->frsmain_wr_t[0]);
     
     // V830
     scalers_n = fData->frsmain_data_v830_n;
@@ -110,7 +111,7 @@ Bool_t FrsMainReader::Read()
     if (v1290_channel.size() > 0 || v792_channel.size() > 0)
     {
         new ((*fArray)[fArray->GetEntriesFast()]) FrsMainData(
-            wr_t,
+            //wr_t,
             scalers_n,
             scalers_index,
             scalers_main,

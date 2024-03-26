@@ -31,6 +31,7 @@
 #pragma link C++ class FrsTPCData+;
 #pragma link C++ class FrsUserData+;
 #pragma link C++ class FrsVFTXData+;
+#pragma link C++ class FrsTpatData+;
 #pragma link C++ class FrsMainCalData+;
 #pragma link C++ class FrsTPCCalData+;
 #pragma link C++ class FrsUserCalData+;
@@ -65,7 +66,7 @@
 #pragma link C++ class TGermaniumConfiguration+;
 #pragma link C++ class TFatimaTwinpeaksConfiguration+;
 #pragma link C++ class TFatimaVmeConfiguration+;
-#pragma link C++ class TBGOConfiguration+;
+#pragma link C++ class TBGOTwinpeaksConfiguration+;
 #pragma link C++ class TbPlastConfiguration+;
 #pragma link C++ class TCorrelationsConfiguration+;
 #pragma link C++ class TBB7VmeConfiguration+;
