@@ -1,0 +1,166 @@
+#bPlast TAM ID | bPlast TAM Chan | bPlast Det | Stream | Position
+#bPlast detector
+#clockwise rotation : Left - Top - Right - Bot
+# Downstream - Right: 97-104
+0   1   97   D   R
+0   2   98   D   R
+0   3   99   D   R
+0   4   100  D   R
+0   5   101  D   R
+0   6   102  D   R	
+0   7   103  D   R
+0   8   104  D   R
+# Downstream - Left: 65-72
+0   9   65   D   L
+0   10  66   D   L
+0   11  67   D   L
+0   12  68   D   L
+0   13  69   D   L
+0   14  70   D   L
+0   15  71   D   L
+0   16  72   D   L
+# Downstream - Top: 73-96
+1   1   73   D   T
+1   2   74   D   T
+1   3   75   D   T
+1   4   76   D   T
+1   5   77   D   T
+1   6   78   D   T
+1   7   79   D   T
+1   8   80   D   T
+1   9   81   D   T
+1   10  82   D   T
+1   11  83   D   T
+1   12  84   D   T
+1   13  85   D   T
+1   14  86   D   T
+1   15  87   D   T
+1   16  88   D   T
+2   1   89   D   T
+2   2   90   D   T
+2   3   91   D   T
+2   4   92   D   T
+2   5   93   D   T
+2   6   94   D   T
+2   7   95   D   T
+2   8   96   D   T
+# Downstream - Bottom: 105-128
+2   9   105  D   B
+2   10  106  D   B
+2   11  107  D   B
+2   12  108  D   B
+2   13  109  D   B
+2   14  110  D   B
+2   15  111  D   B
+2   16  112  D   B
+3   1   113  D   B
+3   2   114  D   B
+3   3   115  D   B
+3   4   116  D   B
+3   5   117  D   B
+3   6   118  D   B
+3   7   119  D   B
+3   8   120  D   B
+3   9   121  D   B
+3   10  122  D   B
+3   11  123  D   B
+3   12  124  D   B
+3   13  125  D   B
+3   14  126  D   B
+3   15  127  D   B
+3   16  128  D   B
+# Upstream - Right: 5-8
+4   1   8   U   R
+4   2   7   U   R
+4   3   6   U   R
+4   4   5   U   R
+# Upstream - Top: 9-20
+4   5   9    U   T
+4   6   10   U   T
+4   7   11   U   T
+4   8   12   U   T
+4   9   13   U   T
+4   10  14   U   T
+4   11  15   U   T
+4   12  16   U   T
+4   13  17   U   T
+4   14  18   U   T
+4   15  19   U   T
+4   16  20   U   T
+# Upstream - Left: 33-36
+5   1   33   U   L
+5   2   34   U   L
+5   3   35   U   L
+5   4   36   U   L
+# Upstream - Top: 21-32
+5   5   32   U   T
+5   6   31   U   T
+5   7   30   U   T
+5   8   29   U   T
+5   9   28   U   T
+5   10  27   U   T
+5   11  26   U   T
+5   12  25   U   T
+5   13  24   U   T
+5   14  23   U   T
+5   15  22   U   T
+5   16  21   U   T
+# Upstream - Left: 37-40
+6   1   40   U   L
+6   2   39   U   L
+6   3   38   U   L
+6   4   37   U   L
+# Upstream - Bottom: 41-52
+6   5   41   U   B
+6   6   42   U   B
+6   7   43   U   B
+6   8   44   U   B
+6   9   45   U   B
+6   10  46   U   B
+6   11  47   U   B
+6   12  48   U   B
+6   13  49   U   B
+6   14  50   U   B
+6   15  51   U   B
+6   16  52   U   B
+# Upstream - Right: 1-4
+7   1   1    U   R
+7   2   2    U   R
+7   3   3    U   R
+7   4   4    U   R
+# Upstream - Bottom: 53-64
+7   5   64   U   B
+7   6   63   U   B
+7   7   62   U   B
+7   8   61   U   B
+7   9   60   U   B
+7   10  59   U   B
+7   11  58   U   B
+7   12  57   U   B
+7   13  56   U   B
+7   14  55   U   B
+7   15  54   U   B
+7   16  53   U   B
+#Other signals
+#Time Machine Un/Uelayed
+TimeMachineU 8   1   129   D   B
+TimeMachineD 8  2   130   D   B
+#Empty
+8   3   131   D   B
+8   4   132   D   B
+#SC41-L/R
+SC41L_D 8   5   133   D   B
+SC41R_D 8   6   134   D   B
+#Empty 
+8   7   135  D   B
+8   8   136  D   B
+#Fatima Triggers
+FATIMA_ACCEPT 8   9   137  D   B
+FATIMA_FREE 8   10  138   D   B
+#Empty
+8   11  139   D   B
+8   12  140   D   B
+8   13  141   D   B
+8   14  142   D   B
+8   15  143   D   B
+8   16  144   D   B

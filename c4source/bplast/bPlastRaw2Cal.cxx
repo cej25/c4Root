@@ -178,7 +178,8 @@ Bool_t bPlastRaw2Cal::SetDetectorCalFile(TString filename){
 /*
 Writes the detector map to console.
 */
-void bPlastRaw2Cal::PrintDetectorMap(){
+void bPlastRaw2Cal::PrintDetectorMap()
+{
     if (DetectorMap_loaded){
         for (const auto& entry : detector_mapping){
             std::cout << "tamexMODULE: " << entry.first.first << " tamexCHANNEL: " << entry.first.second;
@@ -276,7 +277,7 @@ void bPlastRaw2Cal::Exec(Option_t* option){
                 if (bplast_config->MappingLoaded())
                 {
                     
-                    std::map<std::pair<int, int>, std::pair<int, std::pair<std::string, std::string>>> fmap;
+                    std::map<std::pair<int, int>, std::pair<int, std::pair<char, char>>> fmap;
                     fmap = bplast_config->Mapping();
                     std::pair<int, int> unmapped_det { funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2 };
 
@@ -354,6 +355,8 @@ void bPlastRaw2Cal::Exec(Option_t* option){
                 funcal_hit->Get_board_id(),
                 (int)((funcal_hit->Get_ch_ID()+1)/2),
                 detector_id,
+                detector_stream,
+                detector_position,
                 slow_lead_time,
                 slow_trail_time,
                 fast_lead_time,

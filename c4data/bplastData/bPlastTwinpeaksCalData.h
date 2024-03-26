@@ -13,6 +13,8 @@ class bPlastTwinpeaksCalData : public TObject
         uint16_t board_id,
         uint16_t ch_ID,
         uint16_t detector_id,
+        char detector_stream,
+        char detector_position,
         
         double slow_lead_time,
         double slow_trail_time,
@@ -33,6 +35,8 @@ class bPlastTwinpeaksCalData : public TObject
         inline const uint16_t Get_board_id() const {return fboard_id; }
         inline const uint16_t Get_ch_ID() const {return fch_ID; }
         inline const uint16_t Get_detector_id() const {return fdetector_id; }
+        inline const char Get_detector_stream() const {return fdetector_stream; }
+        inline const char Get_detector_position() const {return fdetector_position; }
         inline const double Get_slow_lead_time() const {return fslow_lead_time; }
         inline const double Get_slow_trail_time() const {return fslow_trail_time; }
         inline const double Get_fast_lead_time() const {return ffast_lead_time; }
@@ -47,6 +51,8 @@ class bPlastTwinpeaksCalData : public TObject
         void Set_board_id(uint16_t v){fboard_id = v; }
         void Set_ch_ID(uint16_t v){ fch_ID = v; }
         void Set_detector_id(uint16_t v){ fdetector_id = v; }
+        void Set_detector_stream(char v){ fdetector_stream = v; }
+        void Set_detector_position(char v){ fdetector_position = v; }
         void Set_slow_lead_time(double v){ fslow_lead_time = v; }
         void Set_slow_trail_time(double v){ fslow_trail_time = v; }
         void Set_fast_lead_time(double v){ ffast_lead_time = v; }
@@ -64,6 +70,8 @@ class bPlastTwinpeaksCalData : public TObject
         uint16_t fboard_id;
         uint16_t fch_ID;
         uint16_t fdetector_id;
+        char fdetector_stream;
+        char fdetector_position;
         
         double fslow_lead_time;
         double fslow_trail_time;

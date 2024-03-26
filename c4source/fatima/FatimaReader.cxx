@@ -231,7 +231,7 @@ void FatimaReader::WriteFineTimeHistosToFile()
 
     outputfile->Close();
 
-    c4LOG(fatal,"You have successfully done fine time calibration. These are written to file. Please restart the program and add ReadFineTimehistosFromFile instead for FatimaReader.\n (yeah this is not a fatal error per se just restart it with your fresh calibrations :) )");
+    c4LOG(info,"You have successfully done fine time calibration. These are written to file. Please restart the program and add ReadFineTimehistosFromFile instead for FatimaReader.\n (yeah this is not a fatal error per se just restart it with your fresh calibrations :) )");
 
 }
 

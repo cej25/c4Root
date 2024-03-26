@@ -19,7 +19,7 @@ SUBEVENT(bgo_tamex_subevent)
 {
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x2000);
+        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1900);
     }
     trigger_window = TAMEX4_HEADER();
     select several 
@@ -155,16 +155,26 @@ SUBEVENT(bplast_subev)
 SUBEVENT(frs_main_subev)
 {   
     // CEJ: I don't remember why this has to be select several
-    select several
+    /*select several
     {
         wr = TIMESTAMP_WHITERABBIT(id = 0x100);
-    };
+    };*/
 
     // catch weird trig3 events
     select several
     {
         trig3 = TRIG3EVENT();
     };
+
+    select several
+    {
+        spill_on = SPILL_ON();
+    }
+
+    select several
+    {
+        spill_off = SPILL_OFF();
+    }
 
     // CEJ: this should be optional vs several? if several then we get overwritten - check.
     select several
@@ -180,6 +190,16 @@ SUBEVENT(frs_tpc_subev)
         trig3 = TRIG3EVENT();
     };
 
+    select several
+    {
+        spill_on = SPILL_ON();
+    }
+
+    select several
+    {
+        spill_off = SPILL_OFF();
+    }
+
     // as above should be select optional i think
     select several
     {
@@ -193,6 +213,16 @@ SUBEVENT(frs_user_subev)
     {
         trig3 = TRIG3EVENT();
     };
+
+    select several
+    {
+        spill_on = SPILL_ON();
+    }
+
+    select several
+    {
+        spill_off = SPILL_OFF();
+    }
 
     // same as above
     select several
@@ -214,6 +244,24 @@ SUBEVENT(frs_vftx_subev)
     {
         data = VFTX_CRATE_DATA();
     };
+}
+
+SUBEVENT(frs_tpat_subev)
+{
+    select several
+    {
+        wr = TIMESTAMP_WHITERABBIT(id = 0x100);
+    };
+
+    select several
+    {
+        trig3 = TRIG3EVENT();
+    };
+
+    select several
+    {
+        data = TPAT_CRATE_DATA();
+    }
 }
 
 SUBEVENT(bm_subev)
@@ -280,6 +328,7 @@ EVENT
     frstpc = frs_tpc_subev(procid = 20);
     frsuser = frs_user_subev(procid = 30);
     frsvftx = frs_vftx_subev(procid = 40);
+    frstpat = frs_tpat_subev(procid = 15); // wr here now
     
     beammonitor = bm_subev(procid = 1);
 

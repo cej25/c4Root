@@ -139,7 +139,7 @@ Bool_t FatimaVmeReader::Read()
     for (int tdc = 0; tdc < 2; tdc++)
     {
         int geo = fData->fatimavme_tdc[tdc]._geo;
-
+        
         int hit_index = 0;
         for (uint32_t channel_index = 0; channel_index < fData->fatimavme_tdc[tdc]._nM; channel_index++)
         {

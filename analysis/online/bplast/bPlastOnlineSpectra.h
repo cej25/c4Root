@@ -2,6 +2,8 @@
 #define bPlastOnlineSpectra_H
 
 #include "FairTask.h"
+#include "TbPlastConfiguration.h"
+#include <vector>
 
 class TClonesArray;
 class EventHeader;
@@ -15,7 +17,6 @@ class bPlastOnlineSpectra : public FairTask
     public:
         bPlastOnlineSpectra();
         bPlastOnlineSpectra(const TString& name, Int_t verbose = 1);
-
 
         void CreateHistograms();
 
@@ -41,16 +42,25 @@ class bPlastOnlineSpectra : public FairTask
     private:
         TClonesArray* fHitbPlastTwinpeaks;
 
+        TbPlastConfiguration const* bplast_conf;
+        std::map<std::pair<int, int>, std::pair<int, std::pair<char, char>>> bplast_map;
 
         EventHeader* header;
         Int_t fNEvents;
+
+        int nDetectors;
+        int nTamexBoards;
+
+        TString screenshot_path;
 
         // Canvases
         TCanvas* c_bplast_slowToT;
         TCanvas* c_bplast_fastToT;
         TCanvas* c_bplast_hitpatterns;
+        TCanvas* c_bplast_tamex_card_hitpattern;
         TCanvas* c_bplast_fast_v_slow;
         TCanvas* c_bplast_time_spectra;
+        TCanvas* c_bplast_multiplicity;
         TCanvas* c_bplast_snapshot;
 
         //Folders and files
@@ -63,22 +73,22 @@ class bPlastOnlineSpectra : public FairTask
         TFolder* folder_bplast_time_spectra;
         TFile* file_bplast_snapshot;
 
-
-        // number of detectors
-        static const int NDetectors = 150;
-
         // Histograms
-        TH1F * h1_bplast_slowToT[NDetectors];
-        TH1F * h1_bplast_fastToT[NDetectors];
 
-        TH1F * h1_bplast_fast_hitpatterns;
-        TH1F * h1_bplast_slow_hitpatterns;
+        std::vector<TH1F*> h1_bplast_slowToT;
+        std::vector<TH1F*> h1_bplast_fastToT;
+        std::vector<TH1F*> h1_bplast_hitpatterns;
+        std::vector<TH1F*> h1_bplast_tamex_card_hitpattern;
 
-        TH2F * h2_bplast_slowToT_vs_fastToT[NDetectors];
+        std::vector<TH2F*> h2_bplast_fastToT_vs_slowToT;
+        std::vector<TH1F*> h1_bplast_time_spectra;
 
-        // Absolute time spectra
-        TH1F * h1_bplast_abs_time[NDetectors];
+        // Scaler spectra TBA
 
+        // Detector Multiplicity
+        TH1F* h1_bplast_multiplicity;
+
+        int event_multiplicity;
 
     public:
         ClassDef(bPlastOnlineSpectra, 1)

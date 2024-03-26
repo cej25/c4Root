@@ -54,6 +54,7 @@ set(SRCS
 ./frs/FrsTPCReader.cxx
 ./frs/FrsUserReader.cxx
 ./frs/FrsVFTXReader.cxx
+./frs/FrsTpatReader.cxx
 ./frs/FrsMainRaw2Cal.cxx
 ./frs/FrsTPCRaw2Cal.cxx
 ./frs/FrsUserRaw2Cal.cxx

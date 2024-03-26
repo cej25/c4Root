@@ -22,19 +22,17 @@
 #include "TMath.h"
 #include "TRandom.h"
 #include "TDirectory.h"
+#include <iostream>
 #include <vector>
 #include <string>
 
-TimeMachineOnline::TimeMachineOnline()
-    : FairTask()
-    , fTimeMachine(NULL)
-    , fNEvents(0)
-    , header(nullptr)
-{
-    correl_config = TCorrelationsConfiguration::GetInstance();
-    Correl = correl_config->CorrelationsMap();
-    TMGates = correl_config->TimeMachineMap();
-}
+TimeMachineOnline::TimeMachineOnline() 
+    : TimeMachineOnline("TimeMachineOnline")
+    {
+        correl_config = TCorrelationsConfiguration::GetInstance();
+        Correl = correl_config->CorrelationsMap();
+        TMGates = correl_config->TimeMachineMap();
+    }
 
 TimeMachineOnline::TimeMachineOnline(const TString& name, Int_t verbose)
     : FairTask(name, verbose)
@@ -71,7 +69,7 @@ void TimeMachineOnline::SetDetectorSystems(std::vector<TString> detectorsystems)
     fNumDetectorSystems = detectorsystems.size();
     
     fDetectorSystems = std::vector<TString>(0);
-    
+
     for (int i = 0; i < fNumDetectorSystems; i++) fDetectorSystems.push_back(detectorsystems.at(i));
 
 }
@@ -79,7 +77,7 @@ void TimeMachineOnline::SetDetectorSystems(std::vector<TString> detectorsystems)
 InitStatus TimeMachineOnline::Init()
 {
 
-    c4LOG_IF(fatal, (fNumDetectorSystems==0) || ((fNumDetectorSystems>20) && (fNumDetectorSystems<0)), "Detector systems not specified for TimeMachineOnline. Please add SetDetectorSystems before Init().");
+    c4LOG_IF(fatal, (fNumDetectorSystems == 0) || (fNumDetectorSystems < 0), "Detector systems not specified for TimeMachineOnline. Please add SetDetectorSystems before Init().");
 
     c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
@@ -88,7 +86,6 @@ InitStatus TimeMachineOnline::Init()
     FairRunOnline * run = FairRunOnline::Instance();
     run->GetHttpServer()->Register("", this);
 
-    c4LOG(info,"Allocating fTimeMachine");
     fTimeMachine = new TClonesArray*[fNumDetectorSystems];
 
     for (int det = 0; det<fNumDetectorSystems; det++){
@@ -97,14 +94,23 @@ InitStatus TimeMachineOnline::Init()
         c4LOG_IF(fatal, !fTimeMachine[det], "Branch TimeMachineData not found!");
     }
 
-    c4LOG(info,"allocating histograms.");
-    
     TDirectory::TContext ctx(nullptr);
 
     folder_time_machine = new TFolder("TimeMachines", "TimeMachines");
+
     run->AddObject(folder_time_machine);
+    folder_time_machine_undelayed = new TFolder("Time Machine Undelayed", "Time Machine Undelayed");
+    folder_time_machine_delayed = new TFolder("Time Machine Delayed", "Time Machine Delayed");
+    folder_time_machine_diff = new TFolder("Time Machine Difference", "Time Machine Difference");
+    folder_time_machine_corrs = new TFolder("Time Machine Correlations", "Time Machine Correlations");
+
+
+    h1_time_undelayed.resize(fNumDetectorSystems);
+    h1_time_delayed.resize(fNumDetectorSystems);
+    h1_time_diff.resize(fNumDetectorSystems*(fNumDetectorSystems - 1));
+    h2_time_diff_corrs.resize((fNumDetectorSystems*fNumDetectorSystems)*(fNumDetectorSystems*fNumDetectorSystems-1)); // pairs from n items
     
-    c_time_undelayed  = new TCanvas("time_undelayed","Time Machine Undelayed",650,350);
+    c_time_undelayed  = new TCanvas("Time Machine Undelayed","Time Machine Undelayed",650,350);
     c_time_undelayed->Divide(1,fNumDetectorSystems);
 
     for (int ihist = 0; ihist < fNumDetectorSystems; ihist++){
@@ -134,7 +140,6 @@ InitStatus TimeMachineOnline::Init()
 
     folder_time_machine->Add(c_time_delayed);
 
-
     c_time_diff  = new TCanvas("c_time_diff","Time Machine Difference",650,350);
     c_time_diff->Divide(1,fNumDetectorSystems);
 
@@ -150,13 +155,13 @@ InitStatus TimeMachineOnline::Init()
 
     folder_time_machine->Add(c_time_diff);
 
-
     c_time_corrs = new TCanvas("c_time_corrs","Time Machine Correlations", 650,350);
     c_time_corrs->Divide(1,fNumDetectorSystems*(fNumDetectorSystems-1));
 
     for (int ihist = 0; ihist < fNumDetectorSystems; ihist++){
         for (int ihist2 = ihist + 1; ihist2 < fNumDetectorSystems; ihist2++){
-            c_time_corrs->cd(ihist*fNumDetectorSystems + ihist2);
+  
+            c_time_corrs->cd(ihist*fNumDetectorSystems + ihist2);  
             h2_time_diff_corrs[ihist*fNumDetectorSystems + ihist2] = new TH2F("time_corr_" + fDetectorSystems.at(ihist) + "_" + fDetectorSystems.at(ihist2),"time_corr_" + fDetectorSystems.at(ihist) + "_" + fDetectorSystems.at(ihist2),250,-100,1600,250,-100,1600);
             h2_time_diff_corrs[ihist*fNumDetectorSystems + ihist2]->GetYaxis()->SetTitle("Time (ns)");
             h2_time_diff_corrs[ihist*fNumDetectorSystems + ihist2]->GetXaxis()->SetTitle("Time (ns)");
@@ -168,11 +173,16 @@ InitStatus TimeMachineOnline::Init()
 
     folder_time_machine->Add(c_time_corrs);
 
-    run->RegisterHttpCommand("Reset TimeMachine", "/TimeMachineOnline->Reset_Histo()");
-    c4LOG(info, "Setup of TimeMachineOnline complete.");
+
+    run->GetHttpServer()->RegisterCommand("Reset_TimeMachine_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
+
+    run->GetHttpServer()->RegisterCommand("Snapshot_TimeMachine_Histo", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
+
     return kSUCCESS;
     
 }
+
+
 
 void TimeMachineOnline::Reset_Histo()
 {
@@ -180,7 +190,7 @@ void TimeMachineOnline::Reset_Histo()
     for (int ihist = 0; ihist<fNumDetectorSystems; ihist++) h1_time_delayed[ihist]->Reset();
     for (int ihist = 0; ihist<fNumDetectorSystems; ihist++) h1_time_undelayed[ihist]->Reset();
     for (int ihist = 0; ihist<fNumDetectorSystems; ihist++) h1_time_diff[ihist]->Reset();
-    for (int ihist = 0; ihist < fNumDetectorSystems; ihist++){
+    for (int ihist = 0; ihist<fNumDetectorSystems; ihist++){
         for (int ihist2 = ihist + 1; ihist2 < fNumDetectorSystems; ihist2++){
         h2_time_diff_corrs[ihist*fNumDetectorSystems + ihist2]->Reset();
         }
@@ -200,7 +210,7 @@ void TimeMachineOnline::Snapshot_Histo()
     // save histograms to canvases
     c_time_machine_time_snapshot = new TCanvas("c_time_machine_time_snapshot","c_time_machine_time_snapshot",650,350);
 
-    for (int ihist = 0; ihist<fNumDetectorSystems; ihist++)
+    for (int ihist = 0; ihist< fNumDetectorSystems; ihist++)
     {
         if(h1_time_delayed[ihist]->GetEntries()>0)
         {
@@ -229,7 +239,6 @@ void TimeMachineOnline::Snapshot_Histo()
 
 void TimeMachineOnline::Exec(Option_t* option) // if two machines (undelayed + delayed are in one event, the last corr is taken.)
 {   
-
     // Delayed and undelayed time machine   
     for (int system = 0; system<fNumDetectorSystems; system++)
     {
@@ -269,7 +278,7 @@ void TimeMachineOnline::Exec(Option_t* option) // if two machines (undelayed + d
             }
         }
     }
-
+    
     // Time differences
     for (int ihist = 0; ihist < fNumDetectorSystems; ihist++)
     {
@@ -278,15 +287,16 @@ void TimeMachineOnline::Exec(Option_t* option) // if two machines (undelayed + d
 
         for (int ihist2 = ihist + 1; ihist2 < fNumDetectorSystems; ihist2++)
         {
+
             std::string systemName2 = fDetectorSystems[ihist2].Data();
             uint64_t wr_t2 = wr[ihist2];
             uint64_t wr_diff = wr_t1 - wr_t2;
+            
 
             if (systemName1 == "Aida") {wr_diff -= 14000;}
             else if (systemName2 == "Aida") {wr_diff += 14000;}
-
             if((diffs[ihist]!=0) && (diffs[ihist2]!=0))// && wr_diff > TMGates[Form("%s-%s TM Gate", systemName1.c_str(), systemName2.c_str())][0] && wr_diff < TMGates[Form("%s-%s TM Gate", systemName1.c_str(), systemName2.c_str())][1])
-            {
+            {   
                 h2_time_diff_corrs[ihist*fNumDetectorSystems + ihist2]->Fill(diffs[ihist],diffs[ihist2]);
             }
         }

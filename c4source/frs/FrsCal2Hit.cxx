@@ -36,6 +36,7 @@ FrsCal2Hit::FrsCal2Hit(TFRSParameter* ffrs,
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
+    ,   fRawArrayTpat(new TClonesArray("FrsTpatData"))
     ,   fCalArrayMain(new TClonesArray("FrsMainCalData"))
     ,   fCalArrayTPC(new TClonesArray("FrsTPCCalData"))
     ,   fCalArrayUser(new TClonesArray("FrsUserCalData"))
@@ -61,6 +62,7 @@ FrsCal2Hit::FrsCal2Hit(const TString& name, Int_t verbose)
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
+    ,   fRawArrayTpat(new TClonesArray("FrsTpatData"))
     ,   fCalArrayMain(new TClonesArray("FrsMainCalData"))
     ,   fCalArrayTPC(new TClonesArray("FrsTPCCalData"))
     ,   fCalArrayUser(new TClonesArray("FrsUserCalData"))
@@ -107,6 +109,9 @@ InitStatus FrsCal2Hit::Init()
     fCalArrayVFTX = (TClonesArray*)mgr->GetObject("FrsVFTXCalData");
     c4LOG_IF(fatal, !fCalArrayVFTX, "FrsVFTXCalData branch not found!");
 
+    fRawArrayTpat = (TClonesArray*)mgr->GetObject("FrsTpatData");
+    c4LOG_IF(fatal, !fRawArrayTpat, "FrsTpatData branch not found!");
+
     mgr->Register("FrsHitData", "FRS Hit Data", fHitArray, !fOnline);
     mgr->Register("EventData", "Event Data", fEventItems, !fOnline);
 
@@ -149,18 +154,21 @@ void FrsCal2Hit::Exec(Option_t* option)
     FrsHitData* FrsHit = new FrsHitData();
 
     fNEvents++;
+    fRawHitTpat = (FrsTpatData*)fRawArrayTpat->At(0);
     fCalHitMain = (FrsMainCalData*)fCalArrayMain->At(0);
     fCalHitTPC = (FrsTPCCalData*)fCalArrayTPC->At(0);
     fCalHitUser = (FrsUserCalData*)fCalArrayUser->At(0);
+
+    // we don't have vftx crate at the moment
     fCalHitVFTX = (FrsVFTXCalData*)fCalArrayVFTX->At(0);
 
     // old
-    //WR_TS = fCalHitMain->Get_WR();
     // new
-    FrsHit->Set_wr_t(fCalHitMain->Get_wr_t());
+    //FrsHit->Set_wr_t(fCalHitMain->Get_wr_t());
+    FrsHit->Set_wr_t(fRawHitTpat->Get_wr_t()); // raw or cal, not sure if we need a cal step
 
     
-
+    uint16_t tpat = fRawHitTpat->Get_tpat();
 
     /* -------------------------------- */
     // Scalers "analysis" 

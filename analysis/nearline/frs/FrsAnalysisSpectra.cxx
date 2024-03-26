@@ -105,11 +105,15 @@ InitStatus FrsAnalysisSpectra::Init()
     //mgr->Register("FrsAnalysisData", "FRS Analysis Data", fFrsAnalysisArray, !fOnline);
     TDirectory::TContext ctx(nullptr);
 
+    /*
     folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
-    if (!folder_frs_hists) folder_frs_hists = new TFolder("FRS", "FRS");
+    if (!folder_frs_hists) folder_frs_hists = new TFolder("FRS", "FRS");*/
 
-    frs_analysis_hists = new TFolder("Analysis Histograms", "Analysis Histograms");
-    folder_frs_hists->Add(frs_analysis_hists);
+    frs_analysis_hists = new TFolder("FRS Analysis Histograms", "FRS Analysis Histograms");
+    
+    run->AddObject(frs_analysis_hists);
+    
+    //folder_frs_hists->Add(frs_analysis_hists);
 
     frs_tac_hists = new TFolder("TAC", "TAC");
     frs_analysis_hists->Add(frs_tac_hists);
@@ -1008,7 +1012,7 @@ void FrsAnalysisSpectra::FinishEvent()
 void FrsAnalysisSpectra::FinishTask()
 {
     c4LOG(info, "Writing FRS analysis histograms to file.");
-    folder_frs_hists->Write();
+    frs_analysis_hists->Write();
 }
 
 ClassImp(FrsAnalysisSpectra)
