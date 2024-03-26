@@ -47,6 +47,22 @@ class GermaniumOnlineSpectra : public FairTask
 
         void AddReferenceDetector(int detector_id, int crystal_id){
             dt_reference_detectors.emplace_back(std::pair<int,int>(detector_id,crystal_id));
+            dt_reference_detectors_energy_gates.emplace_back(std::pair<double,double>(0.0, 0.0));
+        }
+
+        void AddReferenceDetectorWithEnergyGates(int detector_id, int crystal_id, double energy_in_other, double energy_in_ref_det){
+            dt_reference_detectors.emplace_back(std::pair<int,int>(detector_id,crystal_id));
+            dt_reference_detectors_energy_gates.emplace_back(std::pair<double,double>(energy_in_other,energy_in_ref_det));
+        }
+
+        void AddReferenceDetectorWithEnergyGates(int detector_id, int crystal_id, double energy_in_ref_det){
+            dt_reference_detectors.emplace_back(std::pair<int,int>(detector_id,crystal_id));
+            dt_reference_detectors_energy_gates.emplace_back(std::pair<double,double>(0.0, energy_in_ref_det));
+        }
+
+        
+        void SetEnergyGateWidth(double width){
+            energygate_width = width;
         }
 
         // range setters
@@ -63,6 +79,8 @@ class GermaniumOnlineSpectra : public FairTask
         std::vector<std::pair<int,int>> crystals_to_plot;
 
         std::vector<std::pair<int,int>> dt_reference_detectors;
+        std::vector<std::pair<double,double>> dt_reference_detectors_energy_gates;
+        double energygate_width = 5;
 
         // still hard coded memes
         int fenergy_nbins = 1500;
@@ -107,6 +125,7 @@ class GermaniumOnlineSpectra : public FairTask
         TFolder* folder_germanium_hitpattern;
         TFolder* folder_germanium_multiplicity;
         TFolder* folder_germanium_time_differences;
+        TFolder* folder_germanium_sci41;
 
         TFile* file_germanium_snapshot;
 
