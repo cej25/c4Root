@@ -5,7 +5,7 @@ bPlastTwinpeaksCalData::bPlastTwinpeaksCalData()
     fboard_id(0),
     fch_ID(0),
     fdetector_id(0),
-    
+
     fslow_lead_time(0),
     fslow_trail_time(0),
 
@@ -25,6 +25,8 @@ bPlastTwinpeaksCalData::bPlastTwinpeaksCalData(
         uint16_t board_id,
         uint16_t ch_ID,
         uint16_t detector_id,
+        char detector_stream,
+        char detector_position,
         
         double slow_lead_time,
         double slow_trail_time,
@@ -41,6 +43,8 @@ bPlastTwinpeaksCalData::bPlastTwinpeaksCalData(
         fboard_id(board_id),
         fch_ID(ch_ID),
         fdetector_id(detector_id),
+        fdetector_stream(detector_stream),
+        fdetector_position(detector_position),
         fslow_lead_time(slow_lead_time),
         fslow_trail_time(slow_trail_time),
         ffast_lead_time(fast_lead_time),
