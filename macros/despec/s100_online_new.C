@@ -7,7 +7,7 @@
 #define BPLAST_ON 1
 #define GERMANIUM_ON 1
 #define BGO_ON 0
-#define FRS_ON 0
+#define FRS_ON 1
 #define TIME_MACHINE_ON 1
 #define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 1
