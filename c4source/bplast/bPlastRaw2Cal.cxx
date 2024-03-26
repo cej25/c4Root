@@ -355,6 +355,8 @@ void bPlastRaw2Cal::Exec(Option_t* option){
                 funcal_hit->Get_board_id(),
                 (int)((funcal_hit->Get_ch_ID()+1)/2),
                 detector_id,
+                detector_stream,
+                detector_position,
                 slow_lead_time,
                 slow_trail_time,
                 fast_lead_time,

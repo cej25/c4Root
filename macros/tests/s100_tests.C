@@ -71,11 +71,11 @@ void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     //TString filename = "stream://x86l-182"; // BGO
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
-    TString filename = "trans://lxg1257"; // timesorter.
+    //TString filename = "trans://lxg1257"; // timesorter.
     //TString filename = "trans://R4L-21"; // beammonitor
     // TString filename = "stream://R4L-36"; // fatima vme
     //TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
-    //TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd ~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0025_0001.lmd";
+    TString filename = "/u/cjones/lustre/gamma/dryrunmarch24/ts/Au_beam_0003_0011.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
@@ -168,8 +168,8 @@ void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     if (FATIMA_ON)
     {
         FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-        unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_histos_19mar.root", 1000000);
-        //unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_histos_19mar.root");
+        //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_histos_19mar.root", 1000000);
+        unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_histos_19mar.root");
 
         unpackfatima->SetOnline(true);
         source->AddReader(unpackfatima);
@@ -194,8 +194,8 @@ void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     if (BPLAST_ON)
     {
         bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_bplast_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
-        unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_histos_2103_pulser_bplast.root", 343682);
-        //unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_histos_2103_pulser_bplast.root");
+        //unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_histos_2103_pulser_bplast.root", 343682);
+        unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_histos_2103_pulser_bplast.root");
         
         unpackbplast->SetOnline(true);
         source->AddReader(unpackbplast);

@@ -19,26 +19,32 @@ TRIG3EVENT()
 
 SPILL_ON()
 {
+    MEMBER(DATA8 spillon);
     UINT32 on NOENCODE
     {
         0_31: 0x30303030;
     }
+    ENCODE(spillon, (value = 1));
 }
 
 SPILL_OFF()
 {
+    MEMBER(DATA8 spilloff);
+
     UINT32 off1 NOENCODE
     {
         0_31: 0x4040400a;
-    }
+    };
     UINT32 off2 NOENCODE
     {
         0_31: 0x4040400b;
-    }
+    };
     UINT32 off3 NOENCODE
     {
         0_31: 0x4040400c;
-    }
+    };
+
+    ENCODE(spilloff, (value = 1));
 }
 
 

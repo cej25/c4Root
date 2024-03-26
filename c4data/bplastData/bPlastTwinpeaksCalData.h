@@ -11,7 +11,7 @@ class bPlastTwinpeaksCalData : public TObject
 
         bPlastTwinpeaksCalData(
         uint16_t board_id,
-        uint16_t ch_ID,
+        int ch_ID, // uint16_t
         uint16_t detector_id,
         
         double slow_lead_time,
@@ -64,8 +64,8 @@ class bPlastTwinpeaksCalData : public TObject
         uint16_t fboard_id;
         uint16_t fch_ID;
         uint16_t fdetector_id;
-        char fdetector_stream;
-        char fdetector_position;
+        std::string fdetector_stream;
+        std::string fdetector_position;
         
         double fslow_lead_time;
         double fslow_trail_time;

@@ -3,6 +3,8 @@
 
 #include "FairTask.h"
 #include "AidaHitData.h"
+#include "AidaData.h"
+#include "TAidaConfiguration.h"
 #include <vector>
 
 class TClonesArray;
@@ -44,11 +46,14 @@ class WhiterabbitCorrelationOnline : public FairTask
 
     
     private:
+        TAidaConfiguration const* conf;
+
         TClonesArray* fHitFatimaTwinpeaks;
         TClonesArray* fHitFatimaVme;
         TClonesArray* fHitbPlastTwinpeaks;
         TClonesArray* fHitGe;
         std::vector<AidaHit> const* fAidaDecays;
+        std::vector<AidaUnpackScalerItem> const* fAidaScalers;
 
         std::vector<TString> fDetectorSystems;
         int fNumDetectorSystems;
