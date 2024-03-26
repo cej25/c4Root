@@ -46,9 +46,9 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     //TString fExpName = "beammonitor";
 
     // Define important paths.
-    TString c4Root_path = "/u/jbormans/c4Root";
+    //TString c4Root_path = "/u/jbormans/c4Root";
     TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
-    //TString c4Root_path = "/u/cjones/c4Root";
+    TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -74,7 +74,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     // TString filename = "trans://lxg1257"; // timesorter.
     //TString filename = "trans://R4L-21"; // beammonitor
     // TString filename = "stream://R4L-36"; // fatima vme
-    TString filename = "/lustre/gamma/dryrunmarch24/ts/Au_beam_0008_00**.lmd";
+    TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0008_0001.lmd";
     //TString filename = "~/lustre/despec/dryrun24/ts/Au_beam_10_*.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
