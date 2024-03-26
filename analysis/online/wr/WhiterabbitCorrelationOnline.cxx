@@ -262,8 +262,6 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     folder_whiterabbit_trigger3->Add(h1_whiterabbit_trigger3_aida_germanium);
     c_whiterabbit_trigger3_aida_germanium->cd(0);
     
-
-    c4LOG(info, "im the error 1");
     // FATIMA
     // Fatima - FatimaVme
     c_whiterabbit_correlation_fatima_fatimavme = new TCanvas("c_whiterabbit_correlation_fatima_fatimavme", "FATIMA - FATIMA VME WR dT (ns)", 10, 10, 800, 700);
@@ -448,8 +446,7 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     c_whiterabbit_trigger->cd(0);
 
 
-    c4LOG(info, "im the error 2");
-    // Canvas addition for 10 detector systems
+    // Canvas addition for 10 detector systems try to get rid of this hardcoded stuff
 
     c_whiterabbit_correlation = new TCanvas("c_whiterabbit_correlation", "White Rabbit Correlation", 10, 10, 800, 700);
     c_whiterabbit_correlation->Divide(5, 2);
@@ -530,8 +527,6 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     folder_whiterabbit_trigger3->Add(c_whiterabbit_trigger3);
 
     // Register command to reset histograms
-
-    c4LOG(info, "im the error 3");
 
     run->GetHttpServer()->RegisterCommand("Reset_Whiterabbit_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
     run->GetHttpServer()->RegisterCommand("Snapshot_Whiterabbit_Hist", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
@@ -635,6 +630,10 @@ void WhiterabbitCorrelationOnline::Snapshot_Histo()
     c_whiterabbit_correlation_bplast_fatimavme->SaveAs("c_whiterabbit_correlation_bplast_fatimavme.png");
     c_whiterabbit_trigger1_bplast_fatimavme->SaveAs("c_whiterabbit_trigger1_bplast_fatimavme.png");
     c_whiterabbit_trigger3_bplast_fatimavme->SaveAs("c_whiterabbit_trigger3_bplast_fatimavme.png");
+
+    c_whiterabbit_correlation->SaveAs("c_whiterabbit_correlation.png");
+    c_whiterabbit_trigger1->SaveAs("c_whiterabbit_trigger1.png");
+    c_whiterabbit_trigger3->SaveAs("c_whiterabbit_trigger3.png");
 
     c_whiterabbit_trigger->SaveAs("c_whiterabbit_trigger.png");
 
