@@ -15,9 +15,6 @@ class FatimaOnlineSpectra : public FairTask
         FatimaOnlineSpectra();
         FatimaOnlineSpectra(const TString& name, Int_t verbose = 1);
 
-
-        void CreateHistograms();
-
         virtual ~FatimaOnlineSpectra();
 
         virtual void SetParContainers();
@@ -29,8 +26,6 @@ class FatimaOnlineSpectra : public FairTask
         virtual void FinishEvent();
 
         virtual void FinishTask();
-
-        virtual void Reset_Histo();
 
         void SetBinningFastToT(int nbins, float binlow, float binhigh){
             ffast_tot_nbins = nbins;
@@ -70,6 +65,8 @@ class FatimaOnlineSpectra : public FairTask
             //return the index of the detector id in the vector, to index the TH arrays / histograms
             return std::distance(detectors.begin(), std::find(detectors.begin(), detectors.end(), detector_id));
         }
+
+        virtual void Reset_Histo();
 
         virtual void Snapshot_Histo();
 
@@ -144,10 +141,6 @@ class FatimaOnlineSpectra : public FairTask
         float fenergy_bin_high = 1500;
             
         int event_multiplicity;
-
-        
-
-
 
     public:
         ClassDef(FatimaOnlineSpectra, 1)

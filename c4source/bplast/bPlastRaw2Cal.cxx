@@ -178,7 +178,8 @@ Bool_t bPlastRaw2Cal::SetDetectorCalFile(TString filename){
 /*
 Writes the detector map to console.
 */
-void bPlastRaw2Cal::PrintDetectorMap(){
+void bPlastRaw2Cal::PrintDetectorMap()
+{
     if (DetectorMap_loaded){
         for (const auto& entry : detector_mapping){
             std::cout << "tamexMODULE: " << entry.first.first << " tamexCHANNEL: " << entry.first.second;
