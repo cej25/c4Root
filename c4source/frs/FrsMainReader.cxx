@@ -47,6 +47,12 @@ Bool_t FrsMainReader::Init(ext_data_struct_info* a_struct_info)
         return kFALSE;
     }
 
+    FairRootManager* mgr = FairRootManager::Instance();
+    c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
+
+    header = (EventHeader*)mgr->GetObject("EventHeader.");
+    c4LOG_IF(error, !header, "Branch EventHeader. not found");
+
     FairRootManager::Instance()->Register("FrsMainData", "FRS Main Data", fArray, !fOnline);
     fArray->Clear();
 
@@ -64,10 +70,17 @@ Bool_t FrsMainReader::Read()
     if (!fData) return kTRUE;
     if (fData == nullptr) return kFALSE;
 
-    // whiterabbit timestamp - includes 20202020 events...
-    // main no longer reads wr ts
-    //wr_t = (((uint64_t)fData->frsmain_wr_t[3]) << 48) + (((uint64_t)fData->frsmain_wr_t[2]) << 32) + (((uint64_t)fData->frsmain_wr_t[1]) << 16) + (uint64_t)(fData->frsmain_wr_t[0]);
-    
+    // get spill on and spill off
+    int spill_on = fData->frsmain_spill_on_spillon;
+    int spill_off = fData->frsmain_spill_off_spilloff;
+
+    if (spill_on == 1) spill_flag = true;
+    if (spill_off == 1) spill_flag = false;
+
+    std::cout << "spill_flag: " << spill_flag << std::endl;
+
+    header->SetSpillFlag(spill_flag);
+
     // V830
     scalers_n = fData->frsmain_data_v830_n;
     for (uint32_t i = 0; i < scalers_n; i++)
