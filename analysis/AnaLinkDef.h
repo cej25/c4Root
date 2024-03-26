@@ -32,7 +32,7 @@
 
 #pragma link C++ class FatimaTimingAnalysis+;
 #pragma link C++ class FatimaSinglesAnalysis+;
-
+#pragma link C++ class AidaGermaniumCorrelations+;
 //#pragma link C++ class FatimaAidaSpectra+;
 
 
