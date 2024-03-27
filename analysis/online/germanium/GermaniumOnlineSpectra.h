@@ -59,10 +59,12 @@ class GermaniumOnlineSpectra : public FairTask
 
         // ranges
         int number_of_detectors_to_plot;
+        int number_reference_detectors; 
         std::vector<std::pair<int,int>> crystals_to_plot;
 
         std::vector<std::pair<int,int>> dt_reference_detectors;
 
+        // still hard coded memes
         int fenergy_nbins = 1500;
         int fenergy_bin_low = 0;
         int fenergy_bin_high = 1500;

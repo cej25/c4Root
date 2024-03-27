@@ -186,14 +186,15 @@ void BGOOnlineSpectra::Reset_BGO_Histo()
     {
         h1_bgo_energy[ihist]->Reset();
         h1_bgo_time[ihist]->Reset();
+        h1_germanium_bgo_veto_energy[ihist]->Reset();
+        h1_germanium_bgo_veto_timedifferences[ihist]->Reset();
     }
 }
 
 void BGOOnlineSpectra::Snapshot_BGO_Histo()
 {
-    c4LOG(fatal, "NOT FULLY IMPLEMENTED: TODO!!!");
+    c4LOG(info, "");
 
-    /*
     //date and time
     time_t now = time(0);
     tm *ltm = localtime(&now);
@@ -203,18 +204,24 @@ void BGOOnlineSpectra::Snapshot_BGO_Histo()
     gSystem->cd(snapshot_dir);
 
     // save histograms to canvases
-    c_bgo_snapshot = new TCanvas("c","c",650,350);
+    c_bgo_snapshot = new TCanvas("c_bgo_snapshot","BGO snapshot",650,350);
 
-    for (int ihist = 0; ihist<number_of_detectors_to_plot; ihist++)
+    for (int ihist = 0; ihist<number_of_detectors_to_plot; ihist++) 
     {
-        if(h1_bgo_energy[ihist]->GetEntries()!=0)
-        {
-            h1_bgo_energy[ihist]->Draw();
-            c_bgo_snapshot->SaveAs(Form("h1_bgo_energy_%d_%d.png",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second));
-            c_bgo_snapshot->Clear();
-        }
-
+        h1_bgo_energy[ihist]->Draw();
+        c_bgo_snapshot->SaveAs(Form("bgo_energy_%d_%d.png",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second));
+        c_bgo_snapshot->Clear();
+        h1_bgo_time[ihist]->Draw();
+        c_bgo_snapshot->SaveAs(Form("bgo_time_%d_%d.png",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second));
+        c_bgo_snapshot->Clear();
+        h1_germanium_bgo_veto_energy[ihist]->Draw();
+        c_bgo_snapshot->SaveAs(Form("germanium_bgo_veto_energy_%d_%d.png",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second));
+        c_bgo_snapshot->Clear();
+        h1_germanium_bgo_veto_timedifferences[ihist]->Draw();
+        c_bgo_snapshot->SaveAs(Form("germanium_bgo_veto_timedifferences_%d_%d.png",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second));
+        c_bgo_snapshot->Clear();
     }
+
     delete c_bgo_snapshot;
 
     // snapshot .root file with data and time
@@ -226,7 +233,7 @@ void BGOOnlineSpectra::Snapshot_BGO_Histo()
 
     gSystem->cd("..");
     c4LOG(info, "Snapshot saved to:" << snapshot_dir);
-    */
+
 }
 
 void BGOOnlineSpectra::Exec(Option_t* option)

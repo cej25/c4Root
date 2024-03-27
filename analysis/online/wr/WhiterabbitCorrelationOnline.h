@@ -3,6 +3,8 @@
 
 #include "FairTask.h"
 #include "AidaHitData.h"
+#include "AidaData.h"
+#include "TAidaConfiguration.h"
 #include <vector>
 
 class TClonesArray;
@@ -44,54 +46,121 @@ class WhiterabbitCorrelationOnline : public FairTask
 
     
     private:
+        TAidaConfiguration const* conf;
+
         TClonesArray* fHitFatimaTwinpeaks;
         TClonesArray* fHitFatimaVme;
         TClonesArray* fHitbPlastTwinpeaks;
         TClonesArray* fHitGe;
         std::vector<AidaHit> const* fAidaDecays;
-        TimeMachineData* fWhiterabbitHit;
+        std::vector<AidaUnpackScalerItem> const* fAidaScalers;
 
         std::vector<TString> fDetectorSystems;
         int fNumDetectorSystems;
 
-        // ranges
-
-        EventHeader* header;
+        // Header
+        EventHeader* fEventHeader;
         Int_t fNEvents;
 
         // Canvas
         TCanvas* c_whiterabbit_correlation;
+        TCanvas* c_whiterabbit_trigger1;
+        TCanvas* c_whiterabbit_trigger3;
+
         TCanvas* c_whiterabbit_correlation_bplast_fatima;
+        TCanvas* c_whiterabbit_trigger1_bplast_fatima;
+        TCanvas* c_whiterabbit_trigger3_bplast_fatima;
+
         TCanvas* c_whiterabbit_correlation_fatima_aida;
+        TCanvas* c_whiterabbit_trigger1_fatima_aida;
+        TCanvas* c_whiterabbit_trigger3_fatima_aida;
+
         TCanvas* c_whiterabbit_correlation_bplast_ge;
+        TCanvas* c_whiterabbit_trigger1_bplast_ge;
+        TCanvas* c_whiterabbit_trigger3_bplast_ge;
+
         TCanvas* c_whiterabbit_correlation_fatima_ge;
-        TCanvas* c_whiterabbit_correlation_fatimavme_aida;
-        TCanvas* c_whiterabbit_correlation_aida_bplast;
-        TCanvas* c_whiterabbit_correlation_aida_germanium;
-        TCanvas* c_whiterabbit_correlation_fatima_fatimavme;
-        TCanvas* c_whiterabbit_correlation_bplast_fatimavme;
-        TCanvas* c_whiterabbit_correlation_fatimavme_ge;
+        TCanvas* c_whiterabbit_trigger1_fatima_ge;
+        TCanvas* c_whiterabbit_trigger3_fatima_ge;
         
+        TCanvas* c_whiterabbit_correlation_fatimavme_aida;
+        TCanvas* c_whiterabbit_trigger1_fatimavme_aida;
+        TCanvas* c_whiterabbit_trigger3_fatimavme_aida;
+
+        TCanvas* c_whiterabbit_correlation_aida_bplast;
+        TCanvas* c_whiterabbit_trigger1_aida_bplast;
+        TCanvas* c_whiterabbit_trigger3_aida_bplast;
+
+        TCanvas* c_whiterabbit_correlation_aida_germanium;
+        TCanvas* c_whiterabbit_trigger1_aida_germanium;
+        TCanvas* c_whiterabbit_trigger3_aida_germanium;
+
+        TCanvas* c_whiterabbit_correlation_fatima_fatimavme;
+        TCanvas* c_whiterabbit_trigger1_fatima_fatimavme;
+        TCanvas* c_whiterabbit_trigger3_fatima_fatimavme;
+
+        TCanvas* c_whiterabbit_correlation_bplast_fatimavme;
+        TCanvas* c_whiterabbit_trigger1_bplast_fatimavme;
+        TCanvas* c_whiterabbit_trigger3_bplast_fatimavme;
+
+        TCanvas* c_whiterabbit_correlation_fatimavme_ge;
+        TCanvas* c_whiterabbit_trigger1_fatimavme_ge;
+        TCanvas* c_whiterabbit_trigger3_fatimavme_ge;
+        
+        TCanvas* c_whiterabbit_trigger;
 
         //Folders and directories
         TDirectory* dir_whiterabbit;
         TFolder* folder_whiterabbit;
+        TFolder* folder_whiterabbit_correlation;
+        TFolder* folder_whiterabbit_trigger1;
+        TFolder* folder_whiterabbit_trigger3;
         TFile* file_whiterabbit_snapshot;
 
         
         // Histograms
 
-
         TH1I* h1_whiterabbit_correlation_fatima_aida;
+        TH1I* h1_whiterabbit_trigger1_fatima_aida;
+        TH1I* h1_whiterabbit_trigger3_fatima_aida;
+
         TH1I* h1_whiterabbit_correlation_fatimavme_aida;
+        TH1I* h1_whiterabbit_trigger1_fatimavme_aida;
+        TH1I* h1_whiterabbit_trigger3_fatimavme_aida;
+
         TH1I* h1_whiterabbit_correlation_aida_bplast;
+        TH1I* h1_whiterabbit_trigger1_aida_bplast;
+        TH1I* h1_whiterabbit_trigger3_aida_bplast;
+
         TH1I* h1_whiterabbit_correlation_aida_germanium;
+        TH1I* h1_whiterabbit_trigger1_aida_germanium;
+        TH1I* h1_whiterabbit_trigger3_aida_germanium;
+
         TH1I* h1_whiterabbit_correlation_fatima_fatimavme;
+        TH1I* h1_whiterabbit_trigger1_fatima_fatimavme;
+        TH1I* h1_whiterabbit_trigger3_fatima_fatimavme;
+
         TH1I* h1_whiterabbit_correlation_bplast_fatima;
+        TH1I* h1_whiterabbit_trigger1_bplast_fatima;
+        TH1I* h1_whiterabbit_trigger3_bplast_fatima;
+
         TH1I* h1_whiterabbit_correlation_fatima_ge;
+        TH1I* h1_whiterabbit_trigger1_fatima_ge;
+        TH1I* h1_whiterabbit_trigger3_fatima_ge;
+
         TH1I* h1_whiterabbit_correlation_bplast_fatimavme;
+        TH1I* h1_whiterabbit_trigger1_bplast_fatimavme;
+        TH1I* h1_whiterabbit_trigger3_bplast_fatimavme;
+
         TH1I* h1_whiterabbit_correlation_fatimavme_ge;
+        TH1I* h1_whiterabbit_trigger1_fatimavme_ge;
+        TH1I* h1_whiterabbit_trigger3_fatimavme_ge;
+
         TH1I* h1_whiterabbit_correlation_bplast_ge;
+        TH1I* h1_whiterabbit_trigger1_bplast_ge;
+        TH1I* h1_whiterabbit_trigger3_bplast_ge;
+
+        TH1I* h1_whiterabbit_trigger;
 
 
 
