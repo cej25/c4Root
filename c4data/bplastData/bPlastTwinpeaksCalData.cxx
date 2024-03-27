@@ -23,10 +23,10 @@ bPlastTwinpeaksCalData::bPlastTwinpeaksCalData()
 
 bPlastTwinpeaksCalData::bPlastTwinpeaksCalData(
         uint16_t board_id,
-        uint16_t ch_ID,
+        int ch_ID,
         uint16_t detector_id,
-        char detector_stream,
-        char detector_position,
+        std::string detector_stream,
+        std::string detector_position,
         
         double slow_lead_time,
         double slow_trail_time,

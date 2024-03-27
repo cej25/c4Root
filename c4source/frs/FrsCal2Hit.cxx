@@ -140,13 +140,10 @@ void FrsCal2Hit::Exec(Option_t* option)
     int multUser = fCalArrayUser->GetEntriesFast();
     int multVFTX = fCalArrayVFTX->GetEntriesFast();
 
-    EventData* EventItem = new EventData();
-    ((*fEventItems)[fEventItems->GetEntriesFast()]) = EventItem;
 
     // something strange with VFTX
     if (multMain == 0 || multTPC == 0 || multUser == 0) 
     {
-        EventItem->Set_Spill_Flag(prevSpillOn);
         return;
     }
 
@@ -239,16 +236,6 @@ void FrsCal2Hit::Exec(Option_t* option)
         sc_user_previous[i] = v830_scalers_user[i];
     }
 
-    if (increase_sc_temp_user[8] > 0)
-    {
-        EventItem->Set_Spill_Flag(true);
-        prevSpillOn = true;
-    }
-    if (increase_sc_temp_user[9] > 0)
-    {
-        EventItem->Set_Spill_Flag(false);
-        prevSpillOn = false;
-    }
             
     FrsHit->Set_time_in_ms(time_in_ms);
     FrsHit->Set_ibin_for_s(ibin_for_s);

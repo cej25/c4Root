@@ -37,9 +37,11 @@ WhiterabbitCorrelationOnline::WhiterabbitCorrelationOnline(const TString& name, 
     , fHitGe(NULL)
     , fHitFatimaVme(NULL)
     , fAidaDecays(new std::vector<AidaHit>)
+    , fAidaScalers(new std::vector<AidaUnpackScalerItem>)
     , fNEvents(0)
     , fEventHeader(nullptr)
 {
+    conf = TAidaConfiguration::GetInstance();
 }
 
 
@@ -126,7 +128,9 @@ InitStatus WhiterabbitCorrelationOnline::Init()
         else if (fDetectorSystems.at(i) == "Aida")
         {
             fAidaDecays = mgr->InitObjectAs<decltype(fAidaDecays)>("AidaDecayHits");
-            c4LOG_IF(fatal, !fAidaDecays, "Branch fAidaDecayHits not found!");
+            c4LOG_IF(fatal, !fAidaDecays, "Branch AidaDecayHits not found!");
+            fAidaScalers = mgr->InitObjectAs<decltype(fAidaScalers)>("AidaScalerData");
+            c4LOG_IF(fatal, !fAidaScalers, "Branch AidaScalerData not found!");
         }
         else
         {
@@ -671,11 +675,20 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
 
     // start with aida...
     int aidaCounter = 0;
-    for (auto & i : *fAidaDecays)
+    int wr_aida = 0;
+    for (auto & i : *fAidaScalers)
     {
         if (aidaCounter > 0) break;
-        AidaHit hitAida = i;
-        int wr_aida = hitAida.Time;
+
+        AidaUnpackScalerItem scalerAida = i;
+        if (scalerAida.Fee() == conf->TM_Undelayed())
+        {
+            wr_aida = scalerAida.Time();
+        }
+        else
+        {
+            continue;
+        }
         
         if (fHitFatimaTwinpeaks)
         {
@@ -857,7 +870,10 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             {
                 int wr_ge = hitGe->Get_wr_t();
                 int dt = bplast_wr - wr_ge;
+<<<<<<< HEAD
                 //if (header->GetTrigger() == 3) std::cout << "trigger: " << header->GetTrigger() << std::endl;
+=======
+>>>>>>> main
                 h1_whiterabbit_correlation_bplast_ge->Fill(dt);
                 if (fEventHeader->GetTrigger() == 1)
                 {
@@ -908,7 +924,7 @@ void WhiterabbitCorrelationOnline::FinishTask()
     }
     if (fHitFatimaTwinpeaks || fHitbPlastTwinpeaks || fHitGe || fHitFatimaVme || fAidaDecays)
     {   
-        //folder_whiterabbit->Write();
+        folder_whiterabbit->Write();
         c4LOG(info, "Processed " << fNEvents << " events.");
         c4LOG(info, "WhiteRabbit histograms written to file.");
     }
