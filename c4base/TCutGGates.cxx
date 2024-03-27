@@ -1,7 +1,4 @@
-
-
 #include "TCutGGates.h"
-
 #include "TFile.h"
 #include "TSystem.h"
 #include "TROOT.h"
