@@ -45,10 +45,10 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     TString fExpName = "s100";
     //TString fExpName = "beammonitor";
 
-
     // Define important paths.
-    TString c4Root_path = "/u/despec/s100_online/c4Root";
-    //TString c4Root_path = "/u/cjones/c4Root";
+    //TString c4Root_path = "/u/jbormans/c4Root";
+    TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
+    TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -71,17 +71,17 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     //TString filename = "stream://x86l-182"; // BGO
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
-   // TString filename = "trans://lxg1257"; // timesorter.
+    // TString filename = "trans://lxg1257"; // timesorter.
     //TString filename = "trans://R4L-21"; // beammonitor
-     TString filename = "stream://x86l-87"; // fatima vme
-    //TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
+    // TString filename = "stream://R4L-36"; // fatima vme
+    TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0008_0001.lmd";
     //TString filename = "~/lustre/despec/dryrun24/ts/Au_beam_10_*.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 5000; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 5500; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
