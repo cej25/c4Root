@@ -5,6 +5,7 @@
 #include "c4Reader.h"
 #include <Rtypes.h>
 #include <vector>
+#include "EventHeader.h"
 
 extern "C"
 {
@@ -48,8 +49,9 @@ class FrsMainReader : public c4Reader
         Bool_t fOnline;
 
         TClonesArray* fArray;
+        EventHeader* header;
 
-        uint64_t wr_t;
+        bool spill_flag = false;
 
         uint32_t scalers_n;
         std::vector<uint32_t> scalers_index;
