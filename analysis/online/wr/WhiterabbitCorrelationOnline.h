@@ -124,7 +124,7 @@ class WhiterabbitCorrelationOnline : public FairTask
         TH1I* h1_whiterabbit_trigger1_aida_fatima;
         TH1I* h1_whiterabbit_trigger3_aida_fatima;
 
-        TH1I* h1_whiterabbit_correlation_aida_fatimvme;
+        TH1I* h1_whiterabbit_correlation_aida_fatimavme;
         TH1I* h1_whiterabbit_trigger1_aida_fatimavme;
         TH1I* h1_whiterabbit_trigger3_aida_fatimavme;
 
