@@ -240,6 +240,7 @@ void TimeMachineOnline::Snapshot_Histo()
 void TimeMachineOnline::Exec(Option_t* option) // if two machines (undelayed + delayed are in one event, the last corr is taken.)
 {   
     // Delayed and undelayed time machine   
+    
     for (int system = 0; system<fNumDetectorSystems; system++)
     {
         if (fTimeMachine[system] && fTimeMachine[system]->GetEntriesFast() > 0)
@@ -290,14 +291,24 @@ void TimeMachineOnline::Exec(Option_t* option) // if two machines (undelayed + d
 
             std::string systemName2 = fDetectorSystems[ihist2].Data();
             uint64_t wr_t2 = wr[ihist2];
-            uint64_t wr_diff = wr_t1 - wr_t2;
+            int wr_diff = wr_t1 - wr_t2;
             
 
-            if (systemName1 == "Aida") {wr_diff -= 14000;}
-            else if (systemName2 == "Aida") {wr_diff += 14000;}
-            if((diffs[ihist]!=0) && (diffs[ihist2]!=0))// && wr_diff > TMGates[Form("%s-%s TM Gate", systemName1.c_str(), systemName2.c_str())][0] && wr_diff < TMGates[Form("%s-%s TM Gate", systemName1.c_str(), systemName2.c_str())][1])
+            /*if (systemName1 == "Aida") {wr_diff -= 14000;}
+            else if (systemName2 == "Aida") {wr_diff += 14000;}*/
+
+            std::string key = systemName1 + "-" + systemName2 + " TM Gate";
+            
+            /*if((diffs[ihist]!=0) && (diffs[ihist2]!=0))
+            {
+                std::cout << "this part works for key: " << key << std::endl;
+
+            }*/
+
+            if((diffs[ihist]!=0) && (diffs[ihist2]!=0) && wr_diff > TMGates[key][0] && wr_diff < TMGates[key][1])
             {   
                 h2_time_diff_corrs[ihist*fNumDetectorSystems + ihist2]->Fill(diffs[ihist],diffs[ihist2]);
+                //std::cout << "sooo we are here!!?? " << std::endl;
             }
         }
     }

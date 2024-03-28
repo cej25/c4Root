@@ -77,8 +77,6 @@ Bool_t FrsMainReader::Read()
     if (spill_on == 1) spill_flag = true;
     if (spill_off == 1) spill_flag = false;
 
-    std::cout << "spill_flag: " << spill_flag << std::endl;
-
     header->SetSpillFlag(spill_flag);
 
     // V830
