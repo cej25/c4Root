@@ -85,58 +85,47 @@ InitStatus FrsGermaniumCorrelations::Init()
 
     folder_germanium = new TFolder(TString("DEGAS FRS GATE " + frsgate->GetName()), TString("DEGAS FRS GATE" + frsgate->GetName()));
 
-    run->AddObject(folder_germanium);
-
-
-
-    // Spectra relating to SCI41:
-    c_germanium_energy_summed_vetosci41 = new TCanvas(TString("c_germanium_energy_summed_vetosci41_frs_gate"+frsgate->GetName()),TString("Calibrated Germanium spectra summed all dets veto sci41_frs_gate"+frsgate->GetName()),650,350);
-    h1_germanium_energy_summed_vetosci41 = new TH1F(TString("h1_germanium_energy_summed_vetosci41_frs_gate"+frsgate->GetName()),TString("Calibrated Germanium spectra summed all dets veto sci 41_frs_gate"+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
-    h1_germanium_energy_summed_vetosci41->GetXaxis()->SetTitle("energy (keV)");
-    h1_germanium_energy_summed_vetosci41->GetYaxis()->SetTitle("counts");
-    h1_germanium_energy_summed_vetosci41->Draw();
-    c_germanium_energy_summed_vetosci41->cd(0);
-    folder_germanium->Add(c_germanium_energy_summed_vetosci41);
-    folder_germanium->Add(h1_germanium_energy_summed_vetosci41);
+    run->AddObject(folder_germanium);    
     
     
-    
-    c_germanium_energy_summed_vs_tsci41 = new TCanvas(TString("c_germanium_energy_summed_vs_tsci41_frs_gate"+frsgate->GetName()),TString("Calibrated Germanium spectra summed all energyies vs t(det) - t(sci41)_frs_gate"+frsgate->GetName()),650,350);
-    h2_germanium_energy_summed_vs_tsci41 = new TH2F(TString("h2_germanium_energy_summed_vs_tsci41_frs_gate"+frsgate->GetName()),TString("Calibrated Germanium spectra summed all energyies vs t(det) - t(sci41)_frs_gate"+frsgate->GetName()),1000,-500,5000,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
-    h2_germanium_energy_summed_vs_tsci41->GetXaxis()->SetTitle("time difference (ns)");
-    h2_germanium_energy_summed_vs_tsci41->GetYaxis()->SetTitle("energy (keV)");
-    h2_germanium_energy_summed_vs_tsci41->Draw("COLZ");
-    c_germanium_energy_summed_vs_tsci41->cd(0);
-    folder_germanium->Add(c_germanium_energy_summed_vs_tsci41);
-    folder_germanium->Add(h2_germanium_energy_summed_vs_tsci41);
+    c_germanium_energy_vs_tsci41 = new TCanvas(TString("c_germanium_summed_vs_tsci41_frs_gate_"+frsgate->GetName()),TString("Germanium energies vs t(det) - t(sci41) gated FRS on "+frsgate->GetName()),650,350);
+    h2_germanium_summed_vs_tsci41 = new TH2F(TString("h2_germanium_summed_vs_tsci41_frs_gate_"+frsgate->GetName()),TString("Germanium energies vs t(det) - t(sci41) gated FRS on "+frsgate->GetName()),1000,-500,5000,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h2_germanium_summed_vs_tsci41->GetXaxis()->SetTitle("time difference (ns)");
+    h2_germanium_summed_vs_tsci41->GetYaxis()->SetTitle("energy (keV)");
+    h2_germanium_summed_vs_tsci41->Draw("COLZ");
+    c_germanium_energy_vs_tsci41->cd(0);
+    folder_germanium->Add(c_germanium_energy_vs_tsci41);
+    folder_germanium->Add(h2_germanium_summed_vs_tsci41);
 
     
-    c_germanium_energy_summed_vs_tsci41_cut = new TCanvas(TString("c_germanium_energy_summed_vs_tsci41_cut_frs_gate"+frsgate->GetName()),TString("Calibrated Germanium spectra summed all energyies, t(det) - t(sci41) > 200 ns_frs_gate"+frsgate->GetName()),650,350);
-    h1_germanium_energy_summed_vs_tsci41_cut = new TH1F(TString("h1_germanium_energy_summed_vs_tsci41_cut_frs_gate"+frsgate->GetName()),TString("Calibrated Germanium spectra summed all energyies, t(det) - t(sci41) > 200 ns_frs_gate"+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
-    h1_germanium_energy_summed_vs_tsci41_cut->GetXaxis()->SetTitle("energy (keV)");
-    h1_germanium_energy_summed_vs_tsci41_cut->Draw("COLZ");
-    c_germanium_energy_summed_vs_tsci41_cut->cd(0);
-    folder_germanium->Add(c_germanium_energy_summed_vs_tsci41_cut);
-    folder_germanium->Add(h1_germanium_energy_summed_vs_tsci41_cut);
+    c_germanium_energy_promptflash_cut = new TCanvas(TString("c_germanium_energy_promptflash_cut_frs_gate_"+frsgate->GetName()),TString("Germanium energy, prompt flash cut out, gated FRS on "+frsgate->GetName()),650,350);
+    h1_germanium_energy_promptflash_cut = new TH1F(TString("h1_germanium_energy_promptflash_cut_frs_gate_"+frsgate->GetName()),TString("Germanium energy, prompt flash cut out, gated FRS on "+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h1_germanium_energy_promptflash_cut->GetXaxis()->SetTitle("energy (keV)");
+    h1_germanium_energy_promptflash_cut->Draw("COLZ");
+    c_germanium_energy_promptflash_cut->cd(0);
+    folder_germanium->Add(c_germanium_energy_promptflash_cut);
+    folder_germanium->Add(h1_germanium_energy_promptflash_cut);
+
+
+
+    c_germanium_energy_vs_wr_long = new TCanvas(TString("c_germanium_summed_vs_wr_long_frs_gate_"+frsgate->GetName()),TString("Germanium energies vs t(det,wr) - t(sci41,wr) long, gated FRS on "+frsgate->GetName()),650,350);
+    h2_germanium_summed_vs_wr_long = new TH2F(TString("h2_germanium_summed_vs_wr_long_frs_gate_"+frsgate->GetName()),TString("Germanium energies vs t(det,wr) - t(sci41,wr) long, gated FRS on "+frsgate->GetName()),1000,-500,5000,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h2_germanium_summed_vs_wr_long->GetXaxis()->SetTitle("time difference (ns)");
+    h2_germanium_summed_vs_wr_long->GetYaxis()->SetTitle("energy (keV)");
+    h2_germanium_summed_vs_wr_long->Draw("COLZ");
+    c_germanium_energy_vs_wr_long->cd(0);
+    folder_germanium->Add(c_germanium_energy_vs_wr_long);
+    folder_germanium->Add(h2_germanium_summed_vs_wr_long);
 
     
-    c_germanium_energy_energy_vetosci41 = new TCanvas(TString("c_germanium_energy_energy_vetosci41_frs_gate"+frsgate->GetName()),TString("Calibrated Germanium spectra summed all energyies, t(det) - t(sci41) > 200 ns_frs_gate"+frsgate->GetName()),650,350);
-    h2_germanium_energy_energy_vetosci41 = new TH2F(TString("h2_germanium_energy_energy_vetosci41_frs_gate"+frsgate->GetName()),TString("Calibrated Germanium spectra summed all energyies, t(det) - t(sci41) > 200 ns_frs_gate"+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
-    h2_germanium_energy_energy_vetosci41->GetXaxis()->SetTitle("energy (keV)");
-    h2_germanium_energy_energy_vetosci41->Draw("COLZ");
-    c_germanium_energy_energy_vetosci41->cd(0);
-    folder_germanium->Add(c_germanium_energy_energy_vetosci41);
-    folder_germanium->Add(h2_germanium_energy_energy_vetosci41);
-
+    c_germanium_energy_promptflash_cut_long = new TCanvas(TString("c_germanium_energy_promptflash_cut_long_frs_gate_"+frsgate->GetName()),TString("Germanium energy, prompt flash cut out, gated FRS on "+frsgate->GetName()),650,350);
+    h1_germanium_energy_promptflash_cut_long = new TH1F(TString("h1_germanium_energy_promptflash_cut_long_frs_gate_"+frsgate->GetName()),TString("Germanium energy, prompt flash cut out, gated FRS on "+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h1_germanium_energy_promptflash_cut_long->GetXaxis()->SetTitle("energy (keV)");
+    h1_germanium_energy_promptflash_cut_long->Draw("COLZ");
+    c_germanium_energy_promptflash_cut_long->cd(0);
+    folder_germanium->Add(c_germanium_energy_promptflash_cut_long);
+    folder_germanium->Add(h1_germanium_energy_promptflash_cut_long);
     
-    c_germanium_energy_energy_sci41_cut = new TCanvas(TString("c_germanium_energy_energy_sci41_cut_frs_gate"+frsgate->GetName()),TString("Calibrated Germanium spectra summed all energyies, t(det) - t(sci41) > 200 ns_frs_gate"+frsgate->GetName()),650,350);
-    h2_germanium_energy_energy_sci41_cut = new TH2F(TString("h2_germanium_energy_energy_sci41_cut_frs_gate"+frsgate->GetName()),TString("Calibrated Germanium spectra summed all energyies, t(det) - t(sci41) > 200 ns_frs_gate"+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
-    h2_germanium_energy_energy_sci41_cut->GetXaxis()->SetTitle("energy (keV)");
-    h2_germanium_energy_energy_sci41_cut->Draw("COLZ");
-    c_germanium_energy_energy_sci41_cut->cd(0);
-    folder_germanium->Add(c_germanium_energy_summed_vs_tsci41_cut);
-    folder_germanium->Add(h2_germanium_energy_energy_sci41_cut);
-
     
 
     run->GetHttpServer()->RegisterCommand("Reset_Ge_Histo", Form("/Objects/%s/->Reset_Ge_Histo()", GetName()));
@@ -165,6 +154,8 @@ void FrsGermaniumCorrelations::Exec(Option_t* option){
             if (positive_PID){
                 wr_t_last_frs_hit = wr_t;
             }
+
+            
         }
     }
 
@@ -217,11 +208,40 @@ void FrsGermaniumCorrelations::Exec(Option_t* option){
 
                 double timediff = time1 - time_sci41 - germanium_configuration->GetTimeshiftCoefficient(detector_id1,crystal_id1);
                 
-                h2_germanium_energy_summed_vs_tsci41->Fill(timediff ,energy1);
-                if ((TMath::Abs(time1-time_sci41 > 2000)) || (germanium_configuration->IsInsidePromptFlashCut(timediff ,energy1)==true) ) h1_germanium_energy_summed_vs_tsci41_cut->Fill(energy1);
+                h2_germanium_summed_vs_tsci41->Fill(timediff ,energy1);
+                if ((TMath::Abs(time1-time_sci41 > 2000)) || (germanium_configuration->IsInsidePromptFlashCut(timediff ,energy1)==true) ) h1_germanium_energy_promptflash_cut->Fill(energy1);
             }
         }
         }
+
+        if (nHits >= 1 && !sci41_seen && ((int64_t)((GermaniumCalData*)fHitGe->At(0))->Get_wr_t() - (int64_t)wr_t_last_frs_hit) > 1000 && ((int64_t)((GermaniumCalData*)fHitGe->At(0))->Get_wr_t() - (int64_t)wr_t_last_frs_hit) < 801000){
+            //long isomer.
+            for (int ihit1 = 0; ihit1 < nHits; ihit1 ++){
+
+            GermaniumCalData* hit_long = (GermaniumCalData*)fHitGe->At(ihit1);
+            if (!hit_long) continue;
+            int detector_id_long = hit_long->Get_detector_id();
+            int crystal_id_long = hit_long->Get_crystal_id();
+            double energy_long = hit_long->Get_channel_energy();
+            double time_long = hit_long->Get_channel_trigger_time();
+            uint64_t ge_wr = hit_long->Get_wr_t();
+
+            if (germanium_configuration->IsDetectorAuxilliary(detector_id_long)) continue;
+            
+            if (((int64_t)ge_wr-(int64_t)wr_t_last_frs_hit)>1000 && ((int64_t)ge_wr- (int64_t)wr_t_last_frs_hit) < 101000){
+                h2_germanium_summed_vs_wr_long->Fill((int64_t)ge_wr- (int64_t)wr_t_last_frs_hit, energy_long);
+                h1_germanium_energy_promptflash_cut_long->Fill(energy_long);
+            }else if (((int64_t)ge_wr-(int64_t)wr_t_last_frs_hit)>701000 && ((int64_t)ge_wr- (int64_t)wr_t_last_frs_hit) < 801000){
+                h2_germanium_summed_vs_wr_long->Fill((int64_t)ge_wr- (int64_t)wr_t_last_frs_hit, energy_long,-1);
+                h1_germanium_energy_promptflash_cut_long->Fill(energy_long,-1); 
+            }
+
+
+            }
+
+        }
+
+
     }
 
     fNEvents += 1;

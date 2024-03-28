@@ -65,27 +65,21 @@ class FrsGermaniumCorrelations : public FairTask
         EventHeader* header;
         Int_t fNEvents;
 
-        // Canvas
-        TCanvas* c_germanium_energy_summed_vetosci41;
-        TCanvas* c_germanium_energy_summed_vs_tsci41;
-        
-        TCanvas * c_germanium_energy_summed_vs_tsci41_cut;
-        TH1F * h1_germanium_energy_summed_vs_tsci41_cut;
+        // Canvases and histograms
+        TCanvas * c_germanium_energy_vs_tsci41;
+        TH2F * h2_germanium_summed_vs_tsci41;
+        TCanvas * c_germanium_energy_promptflash_cut;
+        TH1F * h1_germanium_energy_promptflash_cut;
+        TCanvas * c_germanium_energy_vs_wr_long;
+        TH2F * h2_germanium_summed_vs_wr_long;
+        TCanvas * c_germanium_energy_promptflash_cut_long;
+        TH1F * h1_germanium_energy_promptflash_cut_long;
 
-        TCanvas * c_germanium_energy_energy_vetosci41;
-        TH2F * h2_germanium_energy_energy_vetosci41;
-
-        TCanvas * c_germanium_energy_energy_sci41_cut;
-        TH2F * h2_germanium_energy_energy_sci41_cut;
 
         // Folder and files
         TFolder* folder_germanium;
-        TFolder* folder_germanium_sci41;
 
 
-        // Histograms energ
-        TH1F * h1_germanium_energy_summed_vetosci41;
-        TH2F * h2_germanium_energy_summed_vs_tsci41;
 
 
     public:

@@ -870,10 +870,6 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             {
                 int wr_ge = hitGe->Get_wr_t();
                 int dt = bplast_wr - wr_ge;
-<<<<<<< HEAD
-                //if (header->GetTrigger() == 3) std::cout << "trigger: " << header->GetTrigger() << std::endl;
-=======
->>>>>>> main
                 h1_whiterabbit_correlation_bplast_ge->Fill(dt);
                 if (fEventHeader->GetTrigger() == 1)
                 {
