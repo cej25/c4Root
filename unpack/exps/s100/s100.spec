@@ -320,7 +320,7 @@ EVENT
     revisit aida = aida_subev(type = 10, subtype = 1, procid = 90, control = 37);
     germanium = febex_subev(type = 10, subtype = 1, procid = 60, control = 20);
     fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = 75, control = 20);
-    fatimavme = fatima_vme_subev(type = 10, subtype = 1, procid = 70, control = 20); // apparenlty there are fatimavme things in NovTest data..comment out
+    fatimavme = fatima_vme_subev(type = 10, subtype = 1, procid = 70, control = 20);
     bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20);
     //bgo = bgo_tamex_subevent(procid = 100);
 
@@ -328,7 +328,7 @@ EVENT
     frstpc = frs_tpc_subev(procid = 20);
     frsuser = frs_user_subev(procid = 30);
     frsvftx = frs_vftx_subev(procid = 40);
-    frstpat = frs_tpat_subev(procid = 15); // wr here now
+    frstpat = frs_tpat_subev(procid = 15);
     
     beammonitor = bm_subev(procid = 1);
 
