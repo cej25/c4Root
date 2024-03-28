@@ -185,11 +185,11 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     // AIDA - FatimaVme
     c_whiterabbit_correlation_aida_fatimavme = new TCanvas("c_whiterabbit_correlation_aida_fatimavme", "AIDA - FATIMA (VME) WR dT (ns)", 10, 10, 800, 700);
     c_whiterabbit_correlation_aida_fatimavme->cd();
-    h1_whiterabbit_correlation_aida_fatimvme = new TH1I("h1_whiterabbit_correlation_aida_fatimvme", "AIDA - FATIMA (VME) WR dT", 1000, -1e3, 5e4);
-    h1_whiterabbit_correlation_aida_fatimvme->GetXaxis()->SetTitle("Time difference (AIDA - FATIMA (VME)) [ns]");
-    h1_whiterabbit_correlation_aida_fatimvme->GetYaxis()->SetTitle("Counts");
-    h1_whiterabbit_correlation_aida_fatimvme->Draw();
-    folder_whiterabbit_correlation->Add(h1_whiterabbit_correlation_aida_fatimvme);
+    h1_whiterabbit_correlation_aida_fatimavme = new TH1I("h1_whiterabbit_correlation_aida_fatimavme", "AIDA - FATIMA (VME) WR dT", 1000, -1e3, 5e4);
+    h1_whiterabbit_correlation_aida_fatimavme->GetXaxis()->SetTitle("Time difference (AIDA - FATIMA (VME)) [ns]");
+    h1_whiterabbit_correlation_aida_fatimavme->GetYaxis()->SetTitle("Counts");
+    h1_whiterabbit_correlation_aida_fatimavme->Draw();
+    folder_whiterabbit_correlation->Add(h1_whiterabbit_correlation_aida_fatimavme);
     c_whiterabbit_correlation_aida_fatimavme->cd(0);
 
     c_whiterabbit_trigger1_aida_fatimavme = new TCanvas("c_whiterabbit_trigger1_aida_fatimavme", "White Rabbit Trigger 1 AIDA - FATIMA (VME)", 10, 10, 800, 700);
@@ -797,7 +797,7 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
                 }
                 if (fEventHeader->GetTrigger() == 3)
                 {
-                    h1_whiterabbit_trigger3_bplast_fatima->Fill(dt);
+                    h1_whiterabbit_trigger3_fatima_bplast->Fill(dt);
                 }
             }
             
@@ -829,15 +829,15 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             if (hitbPlast)
             {
                 int wr_bplast = hitbPlast->Get_wr_t();
-                int dt = wr_bplast - wr_fatimavme;
-                h1_whiterabbit_correlation_bplast_fatimavme->Fill(dt);
+                int dt = wr_fatimavme - wr_bplast;
+                h1_whiterabbit_correlation_fatimavme_bplast->Fill(dt);
                 if (fEventHeader->GetTrigger() == 1)
                 {
-                    h1_whiterabbit_trigger1_bplast_fatimavme->Fill(dt);
+                    h1_whiterabbit_trigger1_fatimavme_bplast->Fill(dt);
                 }
                 if (fEventHeader->GetTrigger() == 3)
                 {
-                    h1_whiterabbit_trigger3_bplast_fatimavme->Fill(dt);
+                    h1_whiterabbit_trigger3_fatimavme_bplast->Fill(dt);
                 }
             }
             
