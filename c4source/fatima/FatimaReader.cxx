@@ -127,11 +127,8 @@ Bool_t FatimaReader::Init(ext_data_struct_info* a_struct_info)
 
     if (fine_time_calibration_read_from_file)
     {
-        std::cout << "we're here!" << std::endl;
         ReadFineTimeHistosFromFile();
-        std::cout << "reading was success" << std::endl;
         DoFineTimeCalibration();
-        std::cout << "doing was success " << std::endl;
         fine_time_calibration_set = true;
         c4LOG(info,"Fine Time calibration set from file.");
     }
@@ -166,11 +163,19 @@ This can be called explicitly if desired - but will be done automatically by the
 void FatimaReader::DoFineTimeCalibration()
 {
     c4LOG(info, "Doing fine time calibrations.");
+    std::vector<std::pair<int>> warning_channels;
+    int warning_counter = 0;
     for (int i = 0; i < NBoards; i++) {
         for (int j = 0; j < NChannels; j++) {
             int running_sum = 0;
             int total_counts = fine_time_hits[i][j]->GetEntries();
-            if (total_counts == 0) {c4LOG(warning,Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));}
+            if (total_counts == 0) 
+            {
+                std::pair<int, int> pair = std::make_pair(j, i); // channel, board
+                warning_channels.emplace_back(pair); // dump to a log file in future
+                warning_counter++;
+                // c4LOG(warning,Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));
+            }
 
             for (int k = 0; k < Nbins_fine_time; k++) {
                 
@@ -184,6 +189,9 @@ void FatimaReader::DoFineTimeCalibration()
             }
         }
     }
+
+    if (warning_counter > 0) c4LOG(warning, Form("%i channels do not have any fine time hits in the interval.", warning_counter));
+
     fine_time_calibration_set = true;
 }
 

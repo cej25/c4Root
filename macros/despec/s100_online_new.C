@@ -257,7 +257,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (FATIMA_ON)
     {
         FatimaRaw2Cal* calfatima = new FatimaRaw2Cal();
-        calfatima->PrintDetectorMap();
+        // calfatima->PrintDetectorMap();
         // calfatima->PrintDetectorCal();
         
         calfatima->SetOnline(true);
@@ -285,8 +285,6 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (BPLAST_ON)
     {
         bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
-        // CEJ: these are not needed anymore, code was updated
-        //calbplast->SetDetectorMapFile(config_path + "/bplast/bplast_alloc.txt");
         
         calbplast->SetOnline(true);
         run->AddTask(calbplast);
@@ -297,9 +295,8 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (GERMANIUM_ON)
     {
         GermaniumRaw2Cal* calge = new GermaniumRaw2Cal();
-        // these will not be need anymore with config class
-        //calge->SetDetectorConfigurationFile(config_path + "/germanium/Germanium_Detector_Map.txt");
-        calge->PrintDetectorMap();
+        // calge->PrintDetectorMap();
+
         calge->SetOnline(true);
         run->AddTask(calge);
     }
@@ -307,7 +304,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (BGO_ON)
     {
         BGORaw2Cal* calbgo = new BGORaw2Cal();
-        calbgo->PrintDetectorMap();
+        // calbgo->PrintDetectorMap();
         
         calbgo->SetOnline(true);
         run->AddTask(calbgo);
@@ -478,7 +475,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         //run->AddTask(frsaidacorr);
     }
     
-    
+        
 
     // Initialise
     run->Init();
