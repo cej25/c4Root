@@ -150,5 +150,5 @@ void TCorrelationsConfiguration::ReadCorrelationsFile()
         }
     }
 
-    c4LOG(info, "Success.");
+    c4LOG(info, "Success - File: " + filepath);
 }

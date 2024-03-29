@@ -435,9 +435,9 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         run->AddTask(onlinebm);
     }
 
-    TString b = "Fatima";
-    TString c = "FatimaVme";
-    TString d = "Aida";
+    TString b = "Aida";
+    TString c = "Fatima";
+    TString d = "FatimaVme";
     TString e = "bPlast";
     TString f = "Germanium";
 
