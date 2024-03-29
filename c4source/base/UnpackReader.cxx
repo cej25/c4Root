@@ -48,7 +48,7 @@ Bool_t UnpackReader::Init(ext_data_struct_info* a_struct_info)
         c4LOG(warn, "EventHeader. not found");
     }
    
-    c4LOG(info, "Success.");
+    c4LOG(info, "Success (this step is vital)!");
 
     return kTRUE;
 }
