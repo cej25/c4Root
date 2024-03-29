@@ -278,7 +278,7 @@ void bPlastReader::ReadFineTimeHistosFromFile()
     }
 
     inputfile->Close();
-    c4LOG(info) << Form("bPlast fine time calibration read from file: %s", fine_time_histo_infile.Data());
+    LOG(info) << Form("bPlast fine time calibration read from file: %s", fine_time_histo_infile.Data());
 }
 
 /*
