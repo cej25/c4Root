@@ -93,7 +93,7 @@ InitStatus FrsCalSpectra::Init()
 
     //TFolder * folder_frs_cal_hists = new TFolder("frs_detectors_histograms", "frs_detectors_histograms");
 
-    run->AddObject(folder_frs_cal_hists);
+    //run->AddObject(folder_frs_cal_hists);
 
     //Main crate detectors:
 
