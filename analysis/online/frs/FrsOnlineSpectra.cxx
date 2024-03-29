@@ -79,7 +79,7 @@ InitStatus FrsOnlineSpectra::Init()
 
     //folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
     folder_frs_hists = new TFolder("FRS", "FRS");
-    mgr->Register("FRS", "FRS Folder", folder_frs_hists, true);
+    mgr->Register("FRS", "FRS Folder", folder_frs_hists, false);
 
 
 
