@@ -91,8 +91,6 @@ void WhiterabbitCorrelationOnline::SetDetectorSystems(std::vector<TString> detec
 
 InitStatus WhiterabbitCorrelationOnline::Init()
 {
-
-    c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
@@ -267,7 +265,6 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     c_whiterabbit_trigger3_aida_germanium->cd(0);
     
 
-    c4LOG(info, "im the error 1");
     // FATIMA
     // Fatima - FatimaVme
     c_whiterabbit_correlation_fatima_fatimavme = new TCanvas("c_whiterabbit_correlation_fatima_fatimavme", "FATIMA - FATIMA VME WR dT (ns)", 10, 10, 800, 700);
@@ -452,7 +449,6 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     c_whiterabbit_trigger->cd(0);
 
 
-    c4LOG(info, "im the error 2");
     // Canvas addition for 10 detector systems
 
     c_whiterabbit_correlation = new TCanvas("c_whiterabbit_correlation", "White Rabbit Correlation", 10, 10, 800, 700);
@@ -534,8 +530,6 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     folder_whiterabbit_trigger3->Add(c_whiterabbit_trigger3);
 
     // Register command to reset histograms
-
-    c4LOG(info, "im the error 3");
 
     run->GetHttpServer()->RegisterCommand("Reset_Whiterabbit_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
     run->GetHttpServer()->RegisterCommand("Snapshot_Whiterabbit_Hist", Form("/Objects/%s/->Snapshot_Histo()", GetName()));

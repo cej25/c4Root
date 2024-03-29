@@ -167,8 +167,8 @@ This does the fine time calibrations of the fine times and builds the required l
 
 This can be called explicitly if desired - but will be done automatically by the rest of the code. Throws a warning if there are channels without hits. These are mapped tdc_channel = tdc_channel/512*5 ns
 */
-void bPlastReader::DoFineTimeCalibration(){
-    c4LOG(info, "Doing fine time calibrations.");
+void bPlastReader::DoFineTimeCalibration()
+{
     std::vector<std::pair<int, int>> warning_channels;
     int warning_counter = 0;
     for (int i = 0; i < NBoards; i++) {
@@ -198,6 +198,8 @@ void bPlastReader::DoFineTimeCalibration(){
 
     if (warning_counter > 0) c4LOG(warning, Form("%i channels do not have any fine time hits in the interval.", warning_counter));
     fine_time_calibration_set = true;
+
+    c4LOG(info, "Success.");
 }
 
 /*
@@ -244,14 +246,13 @@ Read the fine time histograms which are written by the function above.
 
 Assumes the names of the histograms are fine_time_hist_module_channel and that they have 1024 bins (since the TAMEX fine time is written with 2^10 bits).
 */
-void bPlastReader::ReadFineTimeHistosFromFile() {
-
+void bPlastReader::ReadFineTimeHistosFromFile() 
+{
     TFile* inputfile = TFile::Open(fine_time_histo_infile, "READ");
     if (!inputfile || inputfile->IsZombie()) {
         c4LOG(fatal, "File to read histos not opened.");
     }
 
-    c4LOG(info,"Reading the histograms used in fine time calibration from file.");
     fine_time_hits = new TH1I**[NBoards];
     for (int i = 0; i < NBoards; i++) {
         fine_time_hits[i] = new TH1I*[NChannels];
@@ -301,7 +302,6 @@ Bool_t bPlastReader::Read() //do fine time here:
 
     if ((fNEvent==fine_time_calibration_after)  & (!fine_time_calibration_set))
     {
-        c4LOG(info, "Doing fine time calibration now.");
         DoFineTimeCalibration();
         if (fine_time_calibration_save) WriteFineTimeHistosToFile();
     }

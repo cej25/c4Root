@@ -159,7 +159,6 @@ This can be called explicitly if desired - but will be done automatically by the
 */
 void FatimaReader::DoFineTimeCalibration()
 {
-    c4LOG(info, "Doing fine time calibrations.");
     std::vector<std::pair<int, int>> warning_channels;
     int warning_counter = 0;
     for (int i = 0; i < NBoards; i++) {
@@ -190,6 +189,8 @@ void FatimaReader::DoFineTimeCalibration()
     if (warning_counter > 0) c4LOG(warning, Form("%i channels do not have any fine time hits in the interval.", warning_counter));
 
     fine_time_calibration_set = true;
+
+    c4LOG(info, "Success.");
 }
 
 /*
@@ -254,7 +255,6 @@ void FatimaReader::ReadFineTimeHistosFromFile()
         c4LOG(fatal, "File to read histos not opened.");
     }
 
-    c4LOG(info,"Reading the histograms used in fine time calibration from file.");
     fine_time_hits = new TH1I**[NBoards];
     for (int i = 0; i < NBoards; i++) {
         fine_time_hits[i] = new TH1I*[NChannels];
@@ -303,7 +303,6 @@ Bool_t FatimaReader::Read() //do fine time here:
     if (!fData) return kTRUE;
 
     if ((fNEvent==fine_time_calibration_after)  & (!fine_time_calibration_set)){
-        c4LOG(info, "Doing fine time calibration now.");
         DoFineTimeCalibration();
         if (fine_time_calibration_save) WriteFineTimeHistosToFile();
     }
