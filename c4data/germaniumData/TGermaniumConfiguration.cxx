@@ -1,6 +1,7 @@
 #include "TGermaniumConfiguration.h"
 
 #include "c4Logger.h"
+#include "FairLogger.h"
 
 #include <iostream>
 #include <sstream>
@@ -93,8 +94,7 @@ void TGermaniumConfiguration::ReadConfiguration()
 
 void TGermaniumConfiguration::ReadCalibrationCoefficients(){
 
-    c4LOG(info, "Reading Calibration coefficients.");
-
+    c4LOG(info, "Reading Germanium Calibration coefficients.");
 
     std::ifstream cal_map_file (calibration_file);
 

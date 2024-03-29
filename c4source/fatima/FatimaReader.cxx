@@ -96,7 +96,6 @@ If not new histograms are allocated and ready for filling and calibration.
 Bool_t FatimaReader::Init(ext_data_struct_info* a_struct_info)
 {
     Int_t ok;
-    c4LOG(info, "");
 
     EXT_STR_h101_fatima_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_fatima, 0);
 
@@ -149,8 +148,6 @@ Bool_t FatimaReader::Init(ext_data_struct_info* a_struct_info)
     fArray->Clear();
 
     memset(fData, 0, sizeof *fData);
-
-    c4LOG(info,"FatimaReader init setup completed.");
 
     return kTRUE;
 }

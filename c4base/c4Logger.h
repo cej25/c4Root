@@ -9,6 +9,9 @@
 
 #include "FairLogger.h"
 
+// CEJ: removing line number and function brackets
+// may change again or completely revert
+
 class c4Logger;
 
 class c4Logger : public FairLogger
@@ -21,7 +24,7 @@ class c4Logger : public FairLogger
         {                                                                                                              \
             std::string fileName(__FILE__);                                                                            \
             std::stringstream ss;                                                                                      \
-            ss << fileName.substr(fileName.find_last_of("/") + 1) << ":" << __LINE__ << ":" << __FUNCTION__ << "(): "; \
+            ss << fileName.substr(fileName.find_last_of("/") + 1) << ":" << __FUNCTION__; \
             LOG(severity) << ss.str() << x;                                                                            \
         }                                                                                                              \
         else                                                                                                           \
@@ -37,8 +40,7 @@ class c4Logger : public FairLogger
         {                                                                                                         \
             std::string fileNameif(__FILE__);                                                                     \
             std::stringstream ssif;                                                                               \
-            ssif << fileNameif.substr(fileNameif.find_last_of("/") + 1) << ":" << __LINE__ << ":" << __FUNCTION__ \
-                 << "(): ";                                                                                       \
+            ssif << fileNameif.substr(fileNameif.find_last_of("/") + 1) << ":" << __FUNCTION__;\
             LOG_IF(severity, condition) << ssif.str() << x;                                                       \
         }                                                                                                         \
         else                                                                                                      \
