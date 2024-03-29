@@ -10,6 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <regex>
+#include "c4Logger.h"
 
 TCutGGates::TCutGGates(const std::string& type,
                     const std::vector<std::string>& gate_files,
@@ -43,11 +44,10 @@ TCutGGates::TCutGGates(const std::string& type,
                 }
             }
             file.close();
-            std::cout << "Added " << filename << " to TCutGGates" << std::endl;
         }
         else
         {
-            std::cout << "Unable to open file. " << std::endl;
+            c4LOG(warn, "Unable to open file: " + totpath);
         }
 
         // change this bit to grab the actual name for use later

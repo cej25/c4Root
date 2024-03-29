@@ -1,0 +1,18 @@
+# Window Conditon for Scintillator ToFs
+# Low Limit           High Limit
+    2000		80000 // SCI_LL2 (21L -> 41L)
+    2500		80000 // SCI_RR2 (21R -> 41R)
+    2500		80000 // SCI_LL3 (21L -> 42L)
+    2500		80000 // SCI_RR3 (21R -> 42R)
+    2500		80000 // SCI_LL4 (21L -> 43L)
+    2500		80000 // SCI_RR4 (21R -> 43R)
+    2500        800000 // SCI_LL5 (22L -> 41L)
+    2500        800000 // SCI_RR5 (22R -> 41R)
+# SCI_LL2 (21L -> 41L)
+# SCI_RR2 (21R -> 41R)
+# SCI_LL3 (21L -> 42L)
+# SCI_RR3 (21R -> 42R)
+# SCI_LL4 (21L -> 43L)
+# SCI_RR4 (21R -> 43R)
+# SCI_LL5 (22L -> 41L)
+# SCI_RR5 (22R -> 41R)

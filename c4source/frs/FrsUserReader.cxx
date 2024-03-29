@@ -37,8 +37,6 @@ Bool_t FrsUserReader::Init(ext_data_struct_info* a_struct_info)
 {
     Int_t ok;
 
-    c4LOG(info, "");
-    
     EXT_STR_h101_frsuser_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_frsuser, 0);
 
     if (!ok)
@@ -51,8 +49,6 @@ Bool_t FrsUserReader::Init(ext_data_struct_info* a_struct_info)
     fArray->Clear();
 
     memset(fData, 0, sizeof *fData);
-
-    c4LOG(info, "FrsUserReader init complete.");
 
     return kTRUE;
 }

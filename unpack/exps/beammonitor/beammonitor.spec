@@ -1,21 +1,21 @@
 // -*- C++ -*-
 
-#define BM_MAX_HITS 100000 // setup.hh
+#include "../../../config/setup.h"
+#include "../../common/whiterabbit.spec"
 
-SKIP(n)
-{
-    list (0 <= i < n)
-    {
-        UINT32 skip NOENCODE;
-    }
-}
+#define BM_MAX_HITS 100000
+
 
 SUBEVENT(bm_subev)
 {
-    //skip = SKIP(n=23);
 
     MEMBER(DATA32 dataS2[BM_MAX_HITS] NO_INDEX_LIST);// ZERO_SUPPRESS);
     MEMBER(DATA32 dataS4[BM_MAX_HITS] NO_INDEX_LIST);// ZERO_SUPPRESS);
+
+    select optional
+    {
+        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1700);
+    }
 
     UINT32 headS2 NOENCODE
     {

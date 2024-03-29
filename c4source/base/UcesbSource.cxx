@@ -52,12 +52,12 @@ Bool_t UcesbSource::Init()
 {
     // Register of EventHeader in the output root file
 
-    c4LOG(debug, "checking whether EventHeader has been defined in FairRun");
+    c4LOG(debug1, "checking whether EventHeader has been defined in FairRun");
     auto run = FairRun::Instance();
     auto EvtHead = dynamic_cast<EventHeader*>(run->GetEventHeader());
     if (EvtHead)
     {
-        c4LOG(info, "EventHeader. was defined properly");
+        c4LOG(info, "EventHeader. was defined properly - success!");
     }
     else
     {
@@ -77,7 +77,7 @@ Bool_t UcesbSource::Init()
     {
         command << " --max-events=" << fLastEventNo;
     }
-    LOG(info) << "Calling ucesb with command: " << command.str();
+    c4LOG(debug1, "Calling ucesb with command: " + command.str());
 
     /* Fork off ucesb (calls fork() and pipe()) */
     fFd = popen(command.str().c_str(), "r");
@@ -118,16 +118,12 @@ Bool_t UcesbSource::InitUnpackers()
     FairRootManager* frm = FairRootManager::Instance();
     c4LOG_IF(fatal, !frm, "FairRootManager no found");
 
-    c4LOG(info, "Checking the register of EventHeader");
     fEventHeader = dynamic_cast<EventHeader*>(frm->GetObject("EventHeader."));
-    if (fEventHeader)
-    {
-        c4LOG(info, "EventHeader. was defined properly");
-    }
-    else
+    if (!fEventHeader)
     {
         c4LOG(error, "EventHeader. was not defined properly!");
     }
+    // CEJ: changed this because we don't need multiple success statements for the header from UCESB
 
     /* Initialize all readers */
     for (int i = 0; i < fReaders->GetEntriesFast(); ++i)

@@ -34,9 +34,7 @@ AidaUnpack2Cal::AidaUnpack2Cal() :
   fImplantOnline(false),
   fDecayOnline(false),
   fScalersOnline(false),
-  conf(nullptr),
-  aida_tm_delayed_ch(0),
-  aida_tm_undelayed_ch(0)
+  conf(nullptr)
 {
 }
 
@@ -53,24 +51,23 @@ void AidaUnpack2Cal::SetParContainers()
 
 InitStatus AidaUnpack2Cal::Init()
 {
-  c4LOG(info, "");
-  FairRootManager* mgr = FairRootManager::Instance();
-  c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
+    FairRootManager* mgr = FairRootManager::Instance();
+    c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-  unpackArray = mgr->InitObjectAs<decltype(unpackArray)>("AidaAdcData");
-  c4LOG_IF(fatal, !unpackArray, "Branch AidaAdcData not found!");
+    unpackArray = mgr->InitObjectAs<decltype(unpackArray)>("AidaAdcData");
+    c4LOG_IF(fatal, !unpackArray, "Branch AidaAdcData not found!");
 
-  scalerArray = mgr->InitObjectAs<decltype(scalerArray)>("AidaScalerData");
-  c4LOG_IF(fatal, !scalerArray, "Branch AidaScalerData not found!");
+    scalerArray = mgr->InitObjectAs<decltype(scalerArray)>("AidaScalerData");
+    c4LOG_IF(fatal, !scalerArray, "Branch AidaScalerData not found!");
 
-  mgr->RegisterAny("AidaImplantCalAdcData", implantCalArray, !fImplantOnline);
-  mgr->RegisterAny("AidaDecayCalAdcData", decayCalArray, !fDecayOnline);
-  mgr->Register("AidaTimeMachineData", "AidaTimeMachineDataFolder", aidaTimeMachineArray, !fScalersOnline);
+    mgr->RegisterAny("AidaImplantCalAdcData", implantCalArray, !fImplantOnline);
+    mgr->RegisterAny("AidaDecayCalAdcData", decayCalArray, !fDecayOnline);
+    mgr->Register("AidaTimeMachineData", "AidaTimeMachineDataFolder", aidaTimeMachineArray, !fScalersOnline);
 
-  conf = TAidaConfiguration::GetInstance();
-  ignoredEvents = 0;
+    conf = TAidaConfiguration::GetInstance();
+    ignoredEvents = 0;
 
-  return kSUCCESS;
+    return kSUCCESS;
 }
 
 
@@ -164,11 +161,11 @@ void AidaUnpack2Cal::Exec(Option_t* option)
   // Check scalers - for now just for Time Machine (raw is otherwise fine)
   for (auto const& scaler : *scalerArray)
   {
-    if (scaler.Fee() == aida_tm_undelayed_ch)
+    if (scaler.Fee() == conf->TM_Undelayed())
     {
       wr_undelayed = scaler.Time();
     }
-    if (scaler.Fee() == aida_tm_delayed_ch)
+    if (scaler.Fee() == conf->TM_Delayed())
     {
       wr_delayed = scaler.Time();
     }

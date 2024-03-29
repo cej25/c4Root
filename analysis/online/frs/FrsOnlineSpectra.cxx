@@ -21,6 +21,7 @@
 #include "THttpServer.h"
 #include "TMath.h"
 #include "TRandom.h"
+#include "TDirectory.h"
 
 FrsOnlineSpectra::FrsOnlineSpectra()
     : FrsOnlineSpectra("FrsOnlineSpectra", 1)
@@ -35,8 +36,8 @@ FrsOnlineSpectra::FrsOnlineSpectra(const TString& name, Int_t iVerbose)
     , fMax_Z(100.)
     , fMin_AoQ(1.6)
     , fMax_AoQ(4.0)
-    , fMin_x4(-100.) // no idea
-    , fMax_x4(100.0) // no idea
+    , fMin_x4(-100.)
+    , fMax_x4(100.0)
     , fMin_Z_gate(30.)
     , fMax_Z_gate(100.)
     , fMin_AoQ_gate(1.6)
@@ -61,7 +62,6 @@ void FrsOnlineSpectra::SetParContainers()
 
 InitStatus FrsOnlineSpectra::Init()
 {
-    c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
@@ -73,24 +73,31 @@ InitStatus FrsOnlineSpectra::Init()
 
     fHitFrsArray = (TClonesArray*)mgr->GetObject("FrsHitData");
     c4LOG_IF(fatal, !fHitFrsArray, "Branch FrsHitData not found");
+    
+    TDirectory::TContext ctx(nullptr);
+
+    //folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
+    folder_frs_hists = new TFolder("FRS", "FRS");
+    mgr->Register("FRS", "FRS Folder", folder_frs_hists, false);
+
+    run->AddObject(folder_frs_hists);
 
 
-    frs_spectra_folder = new TFolder("frs", "frs");
     // CEJ: name should be more specfic? we want to break down histograms by type
     // will come back to and re-adjust names later.
-    TFolder* frs_spectra_folder_histograms = new TFolder("frs_histograms", "frs_histograms");
-    TFolder* frs_spectra_folder_scalers = new TFolder("frs_scalers", "frs_scalers");
+    TFolder* frs_spectra_folder_histograms = new TFolder("Basic Histograms", "Basic Histograms");
+    TFolder* frs_spectra_folder_scalers = new TFolder("Scalers", "Scalers");
 
-    frs_spectra_folder->Add(frs_spectra_folder_histograms);
-    frs_spectra_folder->Add(frs_spectra_folder_scalers);
+    folder_frs_hists->Add(frs_spectra_folder_histograms);
+    folder_frs_hists->Add(frs_spectra_folder_scalers);
 
     c_frs_z1_vs_AoQ = new TCanvas("h_frs_z1_vs_AoQ","Z1 vs A/Q",600,600);
     h_frs_z1_vs_AoQ = new TH2F("h_frs_z1_vs_AoQ","Z1 vs A/Q",5000,fMin_AoQ,fMax_AoQ,5000,fMin_Z,fMax_Z);
     c_frs_x4_vs_AoQ = new TCanvas("h_frs_x4_vs_AoQ","x4 pos vs A/Q",600,600);
     h_frs_x4_vs_AoQ = new TH2F("h_frs_x4_vs_AoQ","x4 pos vs A/Q",1000,fMin_AoQ,fMax_AoQ,1000,fMin_x4,fMax_x4);
-    frs_spectra_folder->Add(c_frs_z1_vs_AoQ);
+    folder_frs_hists->Add(c_frs_z1_vs_AoQ);
     frs_spectra_folder_histograms->Add(h_frs_z1_vs_AoQ);
-    frs_spectra_folder->Add(c_frs_x4_vs_AoQ);
+    folder_frs_hists->Add(c_frs_x4_vs_AoQ);
     frs_spectra_folder_histograms->Add(h_frs_x4_vs_AoQ);
 
     h_frs_beta_sci = new TH1D("h_frs_beta_sci", "beta from SCI TOF", 1000,0,1);
@@ -150,6 +157,8 @@ InitStatus FrsOnlineSpectra::Init()
     for (int i = 0; i < 66; i++) frs_spectra_folder_scalers->Add(hScaler_per_100ms[i]);
     for (int i = 0; i < 66; i++) frs_spectra_folder_scalers->Add(hScaler_per_spill[i]);
  
+    //h1_raw_tpat = new TH1I("h1_raw_tpat", "TPAT", 20, 0, 20);
+
     // Register command to reset histograms
     run->GetHttpServer()->RegisterCommand("Reset_IncomingID_HIST", Form("/Objects/%s/->Reset_Histo()", GetName()));
 
@@ -237,12 +246,7 @@ void FrsOnlineSpectra::FinishEvent()
 
 void FrsOnlineSpectra::FinishTask()
 {   
-    if (fHitFrsArray)
-    {
-        
-        frs_spectra_folder->Write();
-
-    }
+    //folder_frs_hists->Write();
 }
 
 ClassImp(FrsOnlineSpectra)

@@ -1,10 +1,6 @@
 *.root
 *core_dump*
-unpack/exps/*/
-!unpack/exps/*/*.spec
-!unpack/exps/*/*.cc
-!unpack/exps/*/*.hh
-!unpack/exps/*/Makefile
-!unpack/exps/*/makefile_additional.inc
+*.nfs*
 *.o
 *.vscode*
+*.png

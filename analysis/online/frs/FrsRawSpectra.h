@@ -4,7 +4,7 @@
 #include "FairTask.h"
 #include "TH1.h"
 #include "TH2.h"
-#include "../../../config/frs_config.h"
+#include "../../../config/setup.h"
 
 class TClonesArray;
 class EventHeader;
@@ -101,6 +101,26 @@ class FrsRawSpectra : public FairTask
         TH2I* h2_vftx_vftx_lead_time_ref_ch8_vs_event[VFTX_MAX_CHN];
         TH2I* h2_vftx_vftx_lead_time_ch0vs4;
 
+        // Canvases
+        TCanvas* c_v792_main;
+        TCanvas* c_v1290_main_mult;
+        TCanvas* c_v1290_main_leads;
+        TCanvas* c_v7x5_tpc_geo12;
+        TCanvas* c_v7x5_tpc_geo8;
+        TCanvas* c_v1190_tpc;
+        TCanvas* c_v7x5_user_geo10;
+        TCanvas* c_v7x5_user_geo12;
+        TCanvas* c_vftx_lead_mult;
+        TCanvas* c_vftx_trail_mult;
+        TCanvas* c_vftx_lead_cc;
+        TCanvas* c_vftx_lead_ft;
+        TCanvas* c_vftx_lead_time;
+        TCanvas* c_vftx_trail_cc;
+        TCanvas* c_vftx_trail_ft;
+        TCanvas* c_vftx_trail_time;
+        TCanvas* c_vftx_lead_refch0;
+        TCanvas* c_vftx_lead_refch0_vs_event;
+        TCanvas* c_vftx_lead_refch8_vs_event;
 
         // variables
         int v1290_mult[32] = {0};

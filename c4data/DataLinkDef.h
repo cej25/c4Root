@@ -8,8 +8,12 @@
 
 #pragma link C++ class GermaniumFebexData+;
 #pragma link C++ class GermaniumCalData+;
+#pragma link C++ class BGOTwinpeaksData+;
+#pragma link C++ class BGOTwinpeaksCalData+;
 #pragma link C++ class FatimaTwinpeaksData+;
 #pragma link C++ class FatimaTwinpeaksCalData+;
+#pragma link C++ class FatimaVmeData+;
+#pragma link C++ class FatimaVmeCalData+;
 
 #pragma link C++ class bPlastTwinpeaksData+;
 #pragma link C++ class bPlastTwinpeaksCalData+;
@@ -17,11 +21,17 @@
 #pragma link C++ class LisaTraceData+;
 #pragma link C++ class BeamMonitorData+;
 #pragma link C++ class TimeMachineData+;
+#pragma link C++ class BB7VmeData+;
+#pragma link C++ class BB7VmeCalData+;
+
+#pragma link C++ class BGOTwinpeaksData+;
+#pragma link C++ class BGOTwinpeaksCalData+;
 
 #pragma link C++ class FrsMainData+;
 #pragma link C++ class FrsTPCData+;
 #pragma link C++ class FrsUserData+;
 #pragma link C++ class FrsVFTXData+;
+#pragma link C++ class FrsTpatData+;
 #pragma link C++ class FrsMainCalData+;
 #pragma link C++ class FrsTPCCalData+;
 #pragma link C++ class FrsUserCalData+;
@@ -53,5 +63,12 @@
 #pragma link C++ class std::vector<AidaHit>+;
 
 #pragma link C++ class TAidaConfiguration+;
+#pragma link C++ class TGermaniumConfiguration+;
+#pragma link C++ class TFatimaTwinpeaksConfiguration+;
+#pragma link C++ class TFatimaVmeConfiguration+;
+#pragma link C++ class TBGOTwinpeaksConfiguration+;
+#pragma link C++ class TbPlastConfiguration+;
+#pragma link C++ class TCorrelationsConfiguration+;
+#pragma link C++ class TBB7VmeConfiguration+;
 
 #endif

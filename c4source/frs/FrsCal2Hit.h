@@ -1,6 +1,7 @@
 #ifndef FrsCal2Hit_H
 #define FrsCal2Hit_H
 
+#include "../../config/setup.h"
 #include "FairTask.h"
 #include "TFRSParameter.h"
 #include "TClonesArray.h"
@@ -8,6 +9,7 @@
 #include "FrsTPCCalData.h"
 #include "FrsUserCalData.h"
 #include "FrsVFTXCalData.h"
+#include "FrsTpatData.h"
 #include "FrsHitData.h"
 #include <TRandom3.h>
 
@@ -32,7 +34,9 @@ class FrsCal2Hit : public FairTask
                 TIDParameter* fid,
                 TSIParameter* fsi,
                 TMRTOFMSParameter* fmrtof,
-                TRangeParameter* frange);
+                TRangeParameter* frange,
+                TString& fExpName);
+
         FrsCal2Hit(const TString& name, Int_t verbose);
 
         virtual ~FrsCal2Hit();
@@ -64,14 +68,17 @@ class FrsCal2Hit : public FairTask
     private:
 
         Bool_t fOnline;
+        TString expName;
 
         TClonesArray* fCalArrayMain;
         TClonesArray* fCalArrayTPC;
         TClonesArray* fCalArrayUser;
         TClonesArray* fCalArrayVFTX;
+        TClonesArray* fRawArrayTpat;
         TClonesArray* fHitArray;
         TClonesArray* fEventItems;
 
+        FrsTpatData* fRawHitTpat;
         FrsMainCalData* fCalHitMain;
         FrsTPCCalData* fCalHitTPC;
         FrsUserCalData* fCalHitUser;

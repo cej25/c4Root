@@ -2,7 +2,7 @@
 #define GermaniumRaw2Cal_H
 
 #include "FairTask.h"
-
+#include "TGermaniumConfiguration.h"
 
 class TClonesArray;
 class EventHeader;
@@ -23,8 +23,8 @@ class GermaniumRaw2Cal : public FairTask
         void PrintDetectorMap();
         void PrintDetectorCal();
 
-        Bool_t SetDetectorMapFile(TString);
-        Bool_t SetDetectorCalFile(TString);
+        //Bool_t SetDetectorMapFile(TString);
+        //Bool_t SetDetectorCalFile(TString);
 
 
         void SetTimeMachineChannels(int ftime_machine_delayed_detector_id, int ftime_machine_delayed_crystal_id, int ftime_machine_undelayed_detector_id, int ftime_machine_undelayed_crystal_id);//AFTER mapping.
@@ -47,13 +47,14 @@ class GermaniumRaw2Cal : public FairTask
         TClonesArray* fcal_data;
         TClonesArray* funcal_data;
         TClonesArray* ftime_machine_array;
-
+        
+        const TGermaniumConfiguration *  germanium_configuration;
 
         GermaniumFebexData* funcal_hit;
         GermaniumCalData* fcal_hit;
 
-        uint16_t detector_id;
-        uint16_t crystal_id;
+        int detector_id;
+        int crystal_id;
         double channel_energy_cal;
 
 
@@ -64,7 +65,7 @@ class GermaniumRaw2Cal : public FairTask
 
 
         EventHeader * header;
-        Int_t fNEvents;
+        Int_t fNEvents = 0;
 
         //internal status flags for detector map and calibration map:
         Bool_t DetectorMap_loaded = 0;
