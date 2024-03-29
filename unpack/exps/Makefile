@@ -17,13 +17,15 @@ include $(UCESB_BASE_DIR)/makefile_direxist.inc
 
 #########################################################
 
-EXPS= s452 \
+EXPS=s452 \
 	beammonitor \
 	lisa \
 	s450 \
 	NovTest \
 	onlyFATIMA \
-	onlybPlast
+	s100 \
+	bb7 \
+	onlyBGO
 
 ALL_EXPS = $(EXPS)
 

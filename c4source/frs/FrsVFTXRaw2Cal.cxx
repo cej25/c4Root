@@ -13,8 +13,6 @@
 #include "TFRSParameter.h"
 #include "c4Logger.h"
 
-#include "../../config/frs_config.h"
-
 #include "TClonesArray.h"
 
 #include <vector>
@@ -51,7 +49,6 @@ FrsVFTXRaw2Cal::~FrsVFTXRaw2Cal()
 
 InitStatus FrsVFTXRaw2Cal::Init()
 {
-    c4LOG(info, "Grabbing FairRootManager, RunOnline and EventHeader.");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 

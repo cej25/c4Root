@@ -46,7 +46,6 @@ FrsMainRaw2Cal::~FrsMainRaw2Cal()
 
 InitStatus FrsMainRaw2Cal::Init()
 {
-    c4LOG(info, "Grabbing FairRootManager, RunOnline and EventHeader.");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
@@ -83,7 +82,8 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
         fRawHit = (FrsMainData*)fRawArray->At(0); // event multiplicity
         
         
-        WR_TS = fRawHit->Get_wr_t();
+        // no wr in main now
+        //WR_TS = fRawHit->Get_wr_t();
         // CEJ: fCalHit->Set_wr_t(fRawHit->Get_wr_t);
         
 
@@ -311,7 +311,7 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
     
             new ((*fCalArray)[fCalArray->GetEntriesFast()]) FrsMainCalData(
                 // V830 scalers
-                WR_TS,
+                //WR_TS,
                 fRawHit->Get_Scalers_N(),
                 fRawHit->Get_Scalers_Index(),
                 fRawHit->Get_V830_Scalers(),
@@ -359,6 +359,7 @@ void FrsMainRaw2Cal::FinishEvent()
 void FrsMainRaw2Cal::FinishTask()
 {
     c4LOG(info, Form("Wrote %i events.",fNEvents));
+
 }
 
 ClassImp(FrsMainRaw2Cal)

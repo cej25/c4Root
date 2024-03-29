@@ -2,12 +2,17 @@
 #define BeamMonitorOnlineSpectra_H
 
 #include "FairTask.h"
+#include "BeamMonitorData.h"
+#include "TGraph.h"
+#include "TFolder.h"
 
 class TClonesArray;
 class EventHeader;
 class TCanvas;
 class TH1F;
 class TH2F;
+class TGraph;
+class TH1D;
 
 class BeamMonitorOnlineSpectra : public FairTask
 {
@@ -37,34 +42,64 @@ class BeamMonitorOnlineSpectra : public FairTask
     private:
         TClonesArray* fHitBM;
 
-        // ranges
-        //Double_t
-
         EventHeader* header;
         Int_t fNEvents;
 
-        // Canvas
-        TCanvas* cS4tdiff; // channel 1 out of 28 for now?
-        //temporary!!       
-        TCanvas* ct1;
-        TCanvas* cQF;
-        TCanvas* cNormDiff;
-        TCanvas* cPoisson;
-        TCanvas* cCum;
-        TCanvas* cCumPoisson;
-        TCanvas* cDev; 
+        TFolder* folder_beammonitor;
 
-        // Histograms
-        TH1F* fh1_S4tdiff;
-        // temporary!!!!!!
-        TH1F* hbm_s4h_t1;
-        TH1F* fh1_S4_QF;
-        TH1F* hBM_s4h_c;
-        TH1F* hBM_s4h_cp;
-        TH1F* hBM_s4h_dc;
-        TH1F* hBM_s4h_poisson;
-        TH1F* hBM_s4h_norm_tdiff;
+        // S2
+        Int_t BM_S2_count = 0;
+        const Int_t BM_S2_DoAnalysisEvery = 100000;
+        Long64_t BM_S2_QFcount = 0;
+        Long64_t BM_S2_SumTdiff;
+        const Int_t BM_S2_MaxTdiffs = 300000;
+        
 
+        // S4
+        Int_t BM_S4_count = 0;
+        const Int_t BM_S4_DoAnalysisEvery = 30000;
+        Long64_t BM_S4_QFcount = 0;
+        Long64_t BM_S4_SumTdiff;
+        const Int_t BM_S4_MaxTdiffs = 100000;
+
+        // Both
+        const Int_t BM_NBinsMax = 100000;
+        const Int_t BM_NTimeMax = 10000; // time axis displays for HitTimes [ms]
+        const Int_t BM_MaxTimeDiff = 100000; // [100ns units]
+
+        TCanvas* c_quality_factor;
+
+        TH1D* hG_BM_s4h_norm_tdiff;
+        TH1D* hG_BM_s4h_tdiff;
+        TH1D* hG_BM_s4h_t1;
+        TH1D* hG_BM_s4h_n;
+        TH1D* hG_BM_s4h_poisson;
+        TH1D* hG_BM_s4h_c;
+        TH1D* hG_BM_s4h_dc;
+        TH1D* hG_BM_s4h_cp;
+
+        TGraph* hG_BM_s4gr_dt_avg;
+        TGraph* hG_BM_s4gr_qf;
+        TGraph* hG_BM_s4gr_dcmin;
+        TGraph* hG_BM_s4gr_dctime;
+
+        TH1D* hG_BM_S4_Tmean;
+
+        TH1D* hG_BM_s2h_norm_tdiff;
+        TH1D* hG_BM_s2h_tdiff;
+        TH1D* hG_BM_s2h_t1;
+        TH1D* hG_BM_s2h_n;
+        TH1D* hG_BM_s2h_poisson;
+        TH1D* hG_BM_s2h_c;
+        TH1D* hG_BM_s2h_dc;
+        TH1D* hG_BM_s2h_cp;
+
+        TGraph* hG_BM_s2gr_dt_avg;
+        TGraph* hG_BM_s2gr_qf;
+        TGraph* hG_BM_s2gr_dcmin;
+        TGraph* hG_BM_s2gr_dctime;
+
+        TH1D* hG_BM_S2_Tmean;
 
     public:
         ClassDef(BeamMonitorOnlineSpectra, 1)

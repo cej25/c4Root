@@ -24,6 +24,7 @@
 #include "THttpServer.h"
 #include "TMath.h"
 #include "TRandom.h"
+#include "TDirectory.h"
 
 FrsCalSpectra::FrsCalSpectra()
     : FrsCalSpectra("FrsCalSpectra", 1)
@@ -59,7 +60,6 @@ void FrsCalSpectra::SetParContainers()
 
 InitStatus FrsCalSpectra::Init()
 {
-    c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
@@ -79,12 +79,20 @@ InitStatus FrsCalSpectra::Init()
     c4LOG_IF(fatal, !fFrsTPCCalArray, "Branch FrsTPCCalData not found");
     fFrsVFTXCalArray = (TClonesArray*)mgr->GetObject("FrsVFTXCalData");
     c4LOG_IF(fatal, !fFrsVFTXCalArray, "Branch FrsVFTXCalData not found");
+    
+    TDirectory::TContext ctx(nullptr);
 
+    
+    folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
+    //if (!folder_frs_hists) folder_frs_hists = new TFolder("FRS", "FRS");
+    
 
+    TFolder* folder_frs_cal_hists = new TFolder("Cal Histograms", "Cal Histograms");
+    folder_frs_hists->Add(folder_frs_cal_hists);
 
-    TFolder * frs_detectors_spectra_folder_histograms = new TFolder("frs_detectors_histograms", "frs_detectors_histograms");
+    //TFolder * folder_frs_cal_hists = new TFolder("frs_detectors_histograms", "frs_detectors_histograms");
 
-    run->AddObject(frs_detectors_spectra_folder_histograms);
+    //run->AddObject(folder_frs_cal_hists);
 
     //Main crate detectors:
 
@@ -92,64 +100,64 @@ InitStatus FrsCalSpectra::Init()
     int sc_xx_bins = 1000;
     int sc_xx_max_e= 4096; //12 bit adc
     h_sci_21l_de = new TH1D("h_sci_21l_de", "FRS Scintillator 21 l energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_21l_de);
+    folder_frs_cal_hists->Add(h_sci_21l_de);
     h_sci_21r_de = new TH1D("h_sci_21r_de", "FRS Scintillator 21 r energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_21r_de);
+    folder_frs_cal_hists->Add(h_sci_21r_de);
     h_sci_22l_de = new TH1D("h_sci_22l_de", "FRS Scintillator 22 l energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_22l_de);
+    folder_frs_cal_hists->Add(h_sci_22l_de);
     h_sci_22r_de = new TH1D("h_sci_22r_de", "FRS Scintillator 22 r energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_22r_de);
+    folder_frs_cal_hists->Add(h_sci_22r_de);
     h_sci_41l_de = new TH1D("h_sci_41l_de", "FRS Scintillator 41 l energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_41l_de);
+    folder_frs_cal_hists->Add(h_sci_41l_de);
     h_sci_41r_de = new TH1D("h_sci_41r_de", "FRS Scintillator 41 r energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_41r_de);
+    folder_frs_cal_hists->Add(h_sci_41r_de);
     h_sci_42l_de = new TH1D("h_sci_42l_de", "FRS Scintillator 42 l energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_42l_de);
+    folder_frs_cal_hists->Add(h_sci_42l_de);
     h_sci_42r_de = new TH1D("h_sci_42r_de", "FRS Scintillator 42 r energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_42r_de);
+    folder_frs_cal_hists->Add(h_sci_42r_de);
     h_sci_43l_de = new TH1D("h_sci_43l_de", "FRS Scintillator 43 l energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_43l_de);
+    folder_frs_cal_hists->Add(h_sci_43l_de);
     h_sci_43r_de = new TH1D("h_sci_43r_de", "FRS Scintillator 43 r energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_43r_de);
+    folder_frs_cal_hists->Add(h_sci_43r_de);
     h_sci_81l_de = new TH1D("h_sci_81l_de", "FRS Scintillator 81 l energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_81l_de);
+    folder_frs_cal_hists->Add(h_sci_81l_de);
     h_sci_81r_de = new TH1D("h_sci_81r_de", "FRS Scintillator 81 r energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_81r_de);
+    folder_frs_cal_hists->Add(h_sci_81r_de);
 
     int sc_xx_bins_t = 1000;
     double sc_xx_max_t = 1048576; // 2^20 bits in v1290 data word
     h_sci_21l_t = new TH1D("h_sci_21l_t", "FRS Scintillator 21 l time V1190 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_21l_t);
+    folder_frs_cal_hists->Add(h_sci_21l_t);
     h_sci_21r_t = new TH1D("h_sci_21r_t", "FRS Scintillator 21 r time V1190 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_21r_t);
+    folder_frs_cal_hists->Add(h_sci_21r_t);
     h_sci_22l_t = new TH1D("h_sci_22l_t", "FRS Scintillator 22 l time V1190 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_22l_t);
+    folder_frs_cal_hists->Add(h_sci_22l_t);
     h_sci_22r_t = new TH1D("h_sci_22r_t", "FRS Scintillator 22 r time V1190 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_22r_t);
+    folder_frs_cal_hists->Add(h_sci_22r_t);
     h_sci_41l_t = new TH1D("h_sci_41l_t", "FRS Scintillator 41 l time V1190 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_41l_t);
+    folder_frs_cal_hists->Add(h_sci_41l_t);
     h_sci_41r_t = new TH1D("h_sci_41r_t", "FRS Scintillator 41 r time V1190 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_41r_t);
+    folder_frs_cal_hists->Add(h_sci_41r_t);
     h_sci_42l_t = new TH1D("h_sci_42l_t", "FRS Scintillator 42 l time V1190 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_42l_t);
+    folder_frs_cal_hists->Add(h_sci_42l_t);
     h_sci_42r_t = new TH1D("h_sci_42r_t", "FRS Scintillator 42 r time V1190 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_42r_t);
+    folder_frs_cal_hists->Add(h_sci_42r_t);
     h_sci_43l_t = new TH1D("h_sci_43l_t", "FRS Scintillator 43 l time V1190 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_43l_t);
+    folder_frs_cal_hists->Add(h_sci_43l_t);
     h_sci_43r_t = new TH1D("h_sci_43r_t", "FRS Scintillator 43 r time V1190 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_43r_t);
+    folder_frs_cal_hists->Add(h_sci_43r_t);
     h_sci_81l_t = new TH1D("h_sci_81l_t", "FRS Scintillator 81 l time V1190 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_81l_t);
+    folder_frs_cal_hists->Add(h_sci_81l_t);
     h_sci_81r_t = new TH1D("h_sci_81r_t", "FRS Scintillator 81 r time V1190 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    frs_detectors_spectra_folder_histograms->Add(h_sci_81r_t);
+    folder_frs_cal_hists->Add(h_sci_81r_t);
     
     //MUSIC timings:
     int music_xx_bins = 1000;
     double music_xx_max_t = 1048576; // 2^20 bits in v1290 data word
     h_music41_t = new TH2D("h_music41_t", "FRS MUSIC 41 Timestamps V1190 main crate",8,-0.5,7.5,music_xx_bins,0,music_xx_max_t);
-    frs_detectors_spectra_folder_histograms->Add(h_music41_t);
+    folder_frs_cal_hists->Add(h_music41_t);
     h_music42_t = new TH2D("h_music42_t", "FRS MUSIC 42 Timestamps V1190 main crate",8,-0.5,7.5,music_xx_bins,0,music_xx_max_t); 
-    frs_detectors_spectra_folder_histograms->Add(h_music42_t);
+    folder_frs_cal_hists->Add(h_music42_t);
 
     
     //TPC timings:
@@ -158,15 +166,15 @@ InitStatus FrsCalSpectra::Init()
     int tpc_v1190_bins = 1000;
     
     h_tpc_timings_lead = new TH2D("h_tpc_timings_lead","TPC lead timings V1190 TPC crate vs channels",tpc_v1190_channels,0,tpc_v1190_channels,tpc_v1190_bins,0,tpc_v1190_max);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_timings_lead);
+    folder_frs_cal_hists->Add(h_tpc_timings_lead);
     h_tpc_timings_trail = new TH2D("h_tpc_timings_trail","TPC trail timings V1190 TPC crate vs channels",tpc_v1190_channels,0,tpc_v1190_channels,tpc_v1190_bins,0,tpc_v1190_max);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_timings_trail);
+    folder_frs_cal_hists->Add(h_tpc_timings_trail);
 
 
     int check_sums_bins = 1000;
     int check_sums_max = 20000;
     h_tpc_check_sums = new TH2D("h_tpc_check_sums","Check sums calculated for each anode (7 tpcs * 4 anodes)", number_of_anodes_per_tpc*number_of_tpcs,0,number_of_anodes_per_tpc*number_of_tpcs, check_sums_bins,0,check_sums_max);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_check_sums);
+    folder_frs_cal_hists->Add(h_tpc_check_sums);
 
     int tpc_min_x = -100;
     int tpc_min_y = -100;
@@ -177,101 +185,101 @@ InitStatus FrsCalSpectra::Init()
     int tpc_bins = 100;
 
     h_tpc_angle_x_s2_foc_21_22 = new TH1D("h_tpc_angle_x_s2_foc_21_22", "TPC h_tpc_angle_x_s2_foc_21_22",tpc_bins,tpc_min_angle,tpc_max_angle);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_x_s2_foc_21_22);
+    folder_frs_cal_hists->Add(h_tpc_angle_x_s2_foc_21_22);
     h_tpc_angle_y_s2_foc_21_22 = new TH1D("h_tpc_angle_y_s2_foc_21_22", "TPC h_tpc_angle_y_s2_foc_21_22",tpc_bins,tpc_min_angle,tpc_max_angle);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_y_s2_foc_21_22);
+    folder_frs_cal_hists->Add(h_tpc_angle_y_s2_foc_21_22);
     h_tpc_x_s2_foc_21_22 = new TH1D("h_tpc_x_s2_foc_21_22", "TPC h_tpc_x_s2_foc_21_22",tpc_bins,tpc_min_x,tpc_max_x);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_x_s2_foc_21_22);
+    folder_frs_cal_hists->Add(h_tpc_x_s2_foc_21_22);
     h_tpc_y_s2_foc_21_22 = new TH1D("h_tpc_y_s2_foc_21_22", "TPC h_tpc_y_s2_foc_21_22",tpc_bins,tpc_min_y,tpc_max_y);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_y_s2_foc_21_22);
+    folder_frs_cal_hists->Add(h_tpc_y_s2_foc_21_22);
     h_tpc21_22_sc21_x = new TH1D("h_tpc21_22_sc21_x", "TPC h_tpc21_22_sc21_x",tpc_bins,tpc_min_x,tpc_max_x);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc21_22_sc21_x);
+    folder_frs_cal_hists->Add(h_tpc21_22_sc21_x);
     h_tpc21_22_sc22_x = new TH1D("h_tpc21_22_sc22_x", "TPC h_tpc21_22_sc22_x",tpc_bins,tpc_min_y,tpc_max_y);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc21_22_sc22_x);
+    folder_frs_cal_hists->Add(h_tpc21_22_sc22_x);
     h_tpc_angle_x_s2_foc_23_24 = new TH1D("h_tpc_angle_x_s2_foc_23_24", "TPC h_tpc_angle_x_s2_foc_23_24",tpc_bins,tpc_min_angle,tpc_max_angle);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_x_s2_foc_23_24);
+    folder_frs_cal_hists->Add(h_tpc_angle_x_s2_foc_23_24);
     h_tpc_angle_y_s2_foc_23_24 = new TH1D("h_tpc_angle_y_s2_foc_23_24", "TPC h_tpc_angle_y_s2_foc_23_24",tpc_bins,tpc_min_angle,tpc_max_angle);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_y_s2_foc_23_24);
+    folder_frs_cal_hists->Add(h_tpc_angle_y_s2_foc_23_24);
     h_tpc_x_s2_foc_23_24 = new TH1D("h_tpc_x_s2_foc_23_24", "TPC h_tpc_x_s2_foc_23_24",tpc_bins,tpc_min_x,tpc_max_x);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_x_s2_foc_23_24);
+    folder_frs_cal_hists->Add(h_tpc_x_s2_foc_23_24);
     h_tpc_y_s2_foc_23_24 = new TH1D("h_tpc_y_s2_foc_23_24", "TPC h_tpc_y_s2_foc_23_24",tpc_bins,tpc_min_y,tpc_max_y);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_y_s2_foc_23_24);
+    folder_frs_cal_hists->Add(h_tpc_y_s2_foc_23_24);
     h_tpc23_24_sc21_x = new TH1D("h_tpc23_24_sc21_x", "TPC h_tpc23_24_sc21_x",tpc_bins,tpc_min_x,tpc_max_x);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc23_24_sc21_x);
+    folder_frs_cal_hists->Add(h_tpc23_24_sc21_x);
     h_tpc23_24_sc21_y = new TH1D("h_tpc23_24_sc21_y", "TPC h_tpc23_24_sc21_y",tpc_bins,tpc_min_y,tpc_max_y);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc23_24_sc21_y);
+    folder_frs_cal_hists->Add(h_tpc23_24_sc21_y);
     h_tpc23_24_sc22_x = new TH1D("h_tpc23_24_sc22_x", "TPC h_tpc23_24_sc22_x",tpc_bins,tpc_min_x,tpc_max_x);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc23_24_sc22_x);
+    folder_frs_cal_hists->Add(h_tpc23_24_sc22_x);
     h_tpc23_24_sc22_y = new TH1D("h_tpc23_24_sc22_y", "TPC h_tpc23_24_sc22_y",tpc_bins,tpc_min_y,tpc_max_y);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc23_24_sc22_y);
+    folder_frs_cal_hists->Add(h_tpc23_24_sc22_y);
     h_tpc_angle_x_s2_foc_22_24 = new TH1D("h_tpc_angle_x_s2_foc_22_24", "TPC h_tpc_angle_x_s2_foc_22_24",tpc_bins,tpc_min_angle,tpc_max_angle);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_x_s2_foc_22_24);
+    folder_frs_cal_hists->Add(h_tpc_angle_x_s2_foc_22_24);
     h_tpc_angle_y_s2_foc_22_24 = new TH1D("h_tpc_angle_y_s2_foc_22_24", "TPC h_tpc_angle_y_s2_foc_22_24",tpc_bins,tpc_min_angle,tpc_max_angle);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_y_s2_foc_22_24);
+    folder_frs_cal_hists->Add(h_tpc_angle_y_s2_foc_22_24);
     h_tpc_x_s2_foc_22_24 = new TH1D("h_tpc_x_s2_foc_22_24", "TPC h_tpc_x_s2_foc_22_24",tpc_bins,tpc_min_x,tpc_max_x);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_x_s2_foc_22_24);
+    folder_frs_cal_hists->Add(h_tpc_x_s2_foc_22_24);
     h_tpc_y_s2_foc_22_24 = new TH1D("h_tpc_y_s2_foc_22_24", "TPC h_tpc_y_s2_foc_22_24",tpc_bins,tpc_min_y,tpc_max_y);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_y_s2_foc_22_24);
+    folder_frs_cal_hists->Add(h_tpc_y_s2_foc_22_24);
     h_tpc_angle_x_s4 = new TH1D("h_tpc_angle_x_s4", "TPC h_tpc_angle_x_s4",tpc_bins,tpc_min_angle,tpc_max_angle);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_x_s4);
+    folder_frs_cal_hists->Add(h_tpc_angle_x_s4);
     h_tpc_angle_y_s4 = new TH1D("h_tpc_angle_y_s4", "TPC h_tpc_angle_y_s4",tpc_bins,tpc_min_angle,tpc_max_angle);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_angle_y_s4);
+    folder_frs_cal_hists->Add(h_tpc_angle_y_s4);
     h_tpc_x_s4 = new TH1D("h_tpc_x_s4", "TPC h_tpc_x_s4",tpc_bins,tpc_min_x,tpc_max_x);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_x_s4);
+    folder_frs_cal_hists->Add(h_tpc_x_s4);
     h_tpc_y_s4 = new TH1D("h_tpc_y_s4", "TPC h_tpc_y_s4",tpc_bins,tpc_min_y,tpc_max_y);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_y_s4);
+    folder_frs_cal_hists->Add(h_tpc_y_s4);
     h_tpc_sc41_x = new TH1D("h_tpc_sc41_x", "TPC h_tpc_sc41_x",tpc_bins,tpc_min_x,tpc_max_x);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_sc41_x);
+    folder_frs_cal_hists->Add(h_tpc_sc41_x);
     h_tpc_sc41_y = new TH1D("h_tpc_sc41_y", "TPC h_tpc_sc41_y",tpc_bins,tpc_min_y,tpc_max_y);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_sc41_y);
+    folder_frs_cal_hists->Add(h_tpc_sc41_y);
     h_tpc_sc42_x = new TH1D("h_tpc_sc42_x", "TPC h_tpc_sc42_x",tpc_bins,tpc_min_x,tpc_max_x);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_sc42_x);
+    folder_frs_cal_hists->Add(h_tpc_sc42_x);
     h_tpc_sc42_y = new TH1D("h_tpc_sc42_y", "TPC h_tpc_sc42_y",tpc_bins,tpc_min_y,tpc_max_y);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_sc42_y);
+    folder_frs_cal_hists->Add(h_tpc_sc42_y);
     h_tpc_sc43_x = new TH1D("h_tpc_sc43_x", "TPC h_tpc_sc43_x",tpc_bins,tpc_min_x,tpc_max_x);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_sc43_x);
+    folder_frs_cal_hists->Add(h_tpc_sc43_x);
     h_tpc_music41_x = new TH1D("h_tpc_music41_x", "TPC h_tpc_music41_x",tpc_bins,tpc_min_x,tpc_max_x);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_music41_x);
+    folder_frs_cal_hists->Add(h_tpc_music41_x);
     h_tpc_music42_x = new TH1D("h_tpc_music42_x", "TPC h_tpc_music42_x",tpc_bins,tpc_min_x,tpc_max_x);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_music42_x);
+    folder_frs_cal_hists->Add(h_tpc_music42_x);
     h_tpc_music43_x = new TH1D("h_tpc_music43_x", "TPC h_tpc_music43_x",tpc_bins,tpc_min_x,tpc_max_x);
-    frs_detectors_spectra_folder_histograms->Add(h_tpc_music43_x);
+    folder_frs_cal_hists->Add(h_tpc_music43_x);
 
 
     int tac_bins = 1000;
     int max_tac_value = 5000;
     h_tac_user_dt_21l_21r = new TH1D("h_tac_user_dt_21l_21r","dt sci 21l - 21r TAC in User Crate",tac_bins,0,max_tac_value);
-    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_21l_21r);
+    folder_frs_cal_hists->Add(h_tac_user_dt_21l_21r);
     h_tac_user_dt_41l_41r = new TH1D("h_tac_user_dt_41l_41r","dt sci 41l - 41r TAC in User Crate",tac_bins,0,max_tac_value);
-    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_41l_41r);
+    folder_frs_cal_hists->Add(h_tac_user_dt_41l_41r);
     h_tac_user_dt_42l_42r = new TH1D("h_tac_user_dt_42l_42r","dt sci 42l - 42r TAC in User Crate",tac_bins,0,max_tac_value);
-    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_42l_42r);
+    folder_frs_cal_hists->Add(h_tac_user_dt_42l_42r);
     h_tac_user_dt_43l_43r = new TH1D("h_tac_user_dt_43l_43r","dt sci 43l - 43r TAC in User Crate",tac_bins,0,max_tac_value);
-    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_43l_43r);
+    folder_frs_cal_hists->Add(h_tac_user_dt_43l_43r);
     h_tac_user_dt_81l_81r = new TH1D("h_tac_user_dt_81l_81r","dt sci 81l - 81r TAC in User Crate",tac_bins,0,max_tac_value);
-    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_81l_81r);
+    folder_frs_cal_hists->Add(h_tac_user_dt_81l_81r);
     h_tac_user_dt_21l_41l = new TH1D("h_tac_user_dt_21l_41l","dt sci 21l - 41l TAC in User Crate",tac_bins,0,max_tac_value);
-    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_21l_41l);
+    folder_frs_cal_hists->Add(h_tac_user_dt_21l_41l);
     h_tac_user_dt_21r_41r = new TH1D("h_tac_user_dt_21r_41r","dt sci 21r - 41r TAC in User Crate",tac_bins,0,max_tac_value);
-    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_21r_41r);
+    folder_frs_cal_hists->Add(h_tac_user_dt_21r_41r);
     h_tac_user_dt_42r_21r = new TH1D("h_tac_user_dt_42r_21r","dt sci 42r - 21r TAC in User Crate",tac_bins,0,max_tac_value);
-    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_42r_21r);
+    folder_frs_cal_hists->Add(h_tac_user_dt_42r_21r);
     h_tac_user_dt_42l_21l = new TH1D("h_tac_user_dt_42l_21l","dt sci 42l - 21l TAC in User Crate",tac_bins,0,max_tac_value);
-    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_42l_21l);
+    folder_frs_cal_hists->Add(h_tac_user_dt_42l_21l);
     h_tac_user_dt_21l_81l = new TH1D("h_tac_user_dt_21l_81l","dt sci 21l - 81l TAC in User Crate",tac_bins,0,max_tac_value);
-    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_21l_81l);
+    folder_frs_cal_hists->Add(h_tac_user_dt_21l_81l);
     h_tac_user_dt_21r_81r = new TH1D("h_tac_user_dt_21r_81r","dt sci 21r - 81r TAC in User Crate",tac_bins,0,max_tac_value);
-    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_21r_81r);
+    folder_frs_cal_hists->Add(h_tac_user_dt_21r_81r);
     h_tac_user_dt_22l_22r = new TH1D("h_tac_user_dt_22l_22r","dt sci 22l - 22r TAC in User Crate",tac_bins,0,max_tac_value);
-    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_22l_22r);
+    folder_frs_cal_hists->Add(h_tac_user_dt_22l_22r);
     h_tac_user_dt_22l_41l = new TH1D("h_tac_user_dt_22l_41l","dt sci 22l - 41l TAC in User Crate",tac_bins,0,max_tac_value);
-    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_22l_41l);
+    folder_frs_cal_hists->Add(h_tac_user_dt_22l_41l);
     h_tac_user_dt_22r_41r = new TH1D("h_tac_user_dt_22r_41r","dt sci 22r - 41r TAC in User Crate",tac_bins,0,max_tac_value);
-    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_22r_41r);
+    folder_frs_cal_hists->Add(h_tac_user_dt_22r_41r);
     h_tac_user_dt_22l_81l = new TH1D("h_tac_user_dt_22l_81l","dt sci 22l - 81l TAC in User Crate",tac_bins,0,max_tac_value);
-    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_22l_81l);
+    folder_frs_cal_hists->Add(h_tac_user_dt_22l_81l);
     h_tac_user_dt_22r_81r = new TH1D("h_tac_user_dt_22r_81r","dt sci 22r - 81r TAC in User Crate",tac_bins,0,max_tac_value);
-    frs_detectors_spectra_folder_histograms->Add(h_tac_user_dt_22r_81r);
+    folder_frs_cal_hists->Add(h_tac_user_dt_22r_81r);
 
     // Register command to reset histograms
     run->GetHttpServer()->RegisterCommand("Reset_IncomingID_HIST", Form("/Objects/%s/->Reset_Histo()", GetName()));
@@ -493,7 +501,7 @@ void FrsCalSpectra::FinishEvent()
 
 void FrsCalSpectra::FinishTask()
 {
-    
+    //folder_frs_cal_hists->Write();
 }
 
 ClassImp(FrsCalSpectra)

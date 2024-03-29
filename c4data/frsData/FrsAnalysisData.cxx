@@ -4,10 +4,6 @@ FrsAnalysisData::FrsAnalysisData()
 {
 }
 
-// FrsAnalysisData::FrsAnalysisData(/*overload*/)
-// {
-// }
-
 FrsAnalysisData::~FrsAnalysisData()
 {
 }

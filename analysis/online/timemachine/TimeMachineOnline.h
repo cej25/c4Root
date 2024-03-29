@@ -4,6 +4,8 @@
 #include "FairTask.h"
 #include "TFolder.h"
 #include <vector>
+#include <map>
+#include "TCorrelationsConfiguration.h"
 
 class TClonesArray;
 class EventHeader;
@@ -22,6 +24,8 @@ class TimeMachineOnline : public FairTask
 
 
         void SetDetectorSystems(std::vector<TString> detectorsystems);
+
+        int* GetGateValues(std::string name1, std::string name2);
 
         virtual ~TimeMachineOnline();
 
@@ -42,6 +46,12 @@ class TimeMachineOnline : public FairTask
 
     
     private:
+
+        TCorrelationsConfiguration const* correl_config;
+
+        std::map<std::string, std::vector<int>> Correl;
+        std::map<std::string, std::vector<int>> TMGates;
+
         TClonesArray ** fTimeMachine;
         TimeMachineData* fTimeMachineHit;
 
@@ -50,7 +60,7 @@ class TimeMachineOnline : public FairTask
         int fNumDetectorSystems;
 
         EventHeader* header;
-
+        Int_t fNEvents;
 
         // Canvas
         TCanvas* c_time_undelayed;
@@ -62,23 +72,26 @@ class TimeMachineOnline : public FairTask
 
         // Folders and Files
         TFolder* folder_time_machine;
+        TFolder* folder_time_machine_undelayed;
+        TFolder* folder_time_machine_delayed;
+        TFolder* folder_time_machine_diff;
+        TFolder* folder_time_machine_corrs;
         TFile* file_time_machine_snapshot;
 
-        // Histograms 
-        TH1F * h1_time_undelayed[20];
-        TH1F * h1_time_delayed[20];
-        TH1F * h1_time_diff[20];
-
-        TH2F * h2_time_diff_corrs[20*19];
-
-        // Initial variables
-        int fNEvents = 0;
+        // Histograms
+        // would also be nice to set this up from the detector setup
+        std::vector<TH1F*> h1_time_undelayed;
+        std::vector<TH1F*> h1_time_delayed;
+        std::vector<TH1F*> h1_time_diff;
+        std::vector<TH2F*> h2_time_diff_corrs;
 
         double delayed_time = 0;
         double undelayed_time = 0;
 
         double diffs[20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
+        // 20? - show the diffs 20 times
+        uint64_t wr[20] = {0};
 
 
     public:

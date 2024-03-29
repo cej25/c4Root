@@ -96,7 +96,6 @@ If not new histograms are allocated and ready for filling and calibration.
 Bool_t FatimaReader::Init(ext_data_struct_info* a_struct_info)
 {
     Int_t ok;
-    c4LOG(info, "");
 
     EXT_STR_h101_fatima_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_fatima, 0);
 
@@ -130,7 +129,6 @@ Bool_t FatimaReader::Init(ext_data_struct_info* a_struct_info)
         ReadFineTimeHistosFromFile();
         DoFineTimeCalibration();
         fine_time_calibration_set = true;
-        c4LOG(info,"Fine Time calibration set from file.");
     }
     else
     {
@@ -150,8 +148,6 @@ Bool_t FatimaReader::Init(ext_data_struct_info* a_struct_info)
 
     memset(fData, 0, sizeof *fData);
 
-    c4LOG(info,"FatimaReader init setup completed.");
-
     return kTRUE;
 }
 
@@ -162,26 +158,38 @@ This can be called explicitly if desired - but will be done automatically by the
 */
 void FatimaReader::DoFineTimeCalibration()
 {
-    c4LOG(info, "Doing fine time calibrations.");
+    std::vector<std::pair<int, int>> warning_channels;
+    int warning_counter = 0;
     for (int i = 0; i < NBoards; i++) {
         for (int j = 0; j < NChannels; j++) {
             int running_sum = 0;
             int total_counts = fine_time_hits[i][j]->GetEntries();
-            if (total_counts == 0) {c4LOG(warning,Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));}
+            if (total_counts == 0) 
+            {
+                std::pair<int, int> pair = std::make_pair(j, i); // channel, board
+                warning_channels.emplace_back(pair); // dump to a log file in future
+                warning_counter++;
+                c4LOG(debug1, Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));
+            }
 
             for (int k = 0; k < Nbins_fine_time; k++) {
-                running_sum += fine_time_hits[i][j]->GetBinContent(k+1); //bin 0 is the underflow bin, hence we start at [1,Nbins_fine_time].
                 
                 if (total_counts == 0) { // in case of no hits.
                     fine_time_calibration_coeffs[i][j][k] = k*TAMEX_fine_time_clock/(double)Nbins_fine_time;
                     continue;
                 }
 
-                fine_time_calibration_coeffs[i][j][k] = TAMEX_fine_time_clock*(double)running_sum/(double)total_counts;
+                fine_time_calibration_coeffs[i][j][k] = TAMEX_fine_time_clock*((double)running_sum + ((double)fine_time_hits[i][j]->GetBinContent(k+1))/2)/(double)total_counts;
+                running_sum += fine_time_hits[i][j]->GetBinContent(k+1); //bin 0 is the underflow bin, hence we start at [1,Nbins_fine_time].
             }
         }
     }
+
+    if (warning_counter > 0) c4LOG(warning, Form("%i channels do not have any fine time hits in the interval.", warning_counter));
+
     fine_time_calibration_set = true;
+
+    c4LOG(info, "Success.");
 }
 
 /*
@@ -224,11 +232,11 @@ void FatimaReader::WriteFineTimeHistosToFile()
             }
         }
     }
-    c4LOG(info,Form("Written fine time calibrations (i.e. raw fine time histograms) to  %s",fine_time_histo_outfile.Data()));
+    LOG(info) << Form("Fatima fine time calibrations (i.e. raw fine time histograms) written to  %s",fine_time_histo_outfile.Data());
 
     outputfile->Close();
 
-    c4LOG(fatal,"You have successfully done fine time calibration. These are written to file. Please restart the program and add ReadFineTimehistosFromFile instead for FatimaReader.\n (yeah this is not a fatal error per se just restart it with your fresh calibrations :) )");
+    c4LOG(info,"You have successfully done fine time calibration. These are written to file. Please restart the program and add ReadFineTimehistosFromFile instead for FatimaReader.\n (yeah this is not a fatal error per se just restart it with your fresh calibrations :) )");
 
 }
 
@@ -246,7 +254,6 @@ void FatimaReader::ReadFineTimeHistosFromFile()
         c4LOG(fatal, "File to read histos not opened.");
     }
 
-    c4LOG(info,"Reading the histograms used in fine time calibration from file.");
     fine_time_hits = new TH1I**[NBoards];
     for (int i = 0; i < NBoards; i++) {
         fine_time_hits[i] = new TH1I*[NChannels];
@@ -273,7 +280,7 @@ void FatimaReader::ReadFineTimeHistosFromFile()
     }
 
     inputfile->Close();
-    c4LOG(info, Form("Read fine time calibrations (i.e. raw fine time histograms) from %s", fine_time_histo_infile.Data()));
+    LOG(info) << Form("Fatima fine time calibration read from file: %s", fine_time_histo_infile.Data());
 }
 
 /*
@@ -295,7 +302,6 @@ Bool_t FatimaReader::Read() //do fine time here:
     if (!fData) return kTRUE;
 
     if ((fNEvent==fine_time_calibration_after)  & (!fine_time_calibration_set)){
-        c4LOG(info, "Doing fine time calibration now.");
         DoFineTimeCalibration();
         if (fine_time_calibration_save) WriteFineTimeHistosToFile();
     }
@@ -318,6 +324,8 @@ Bool_t FatimaReader::Read() //do fine time here:
         last_tdc_hit.lead_epoch_counter = 0;
         last_tdc_hit.lead_coarse_T = 0;
         last_tdc_hit.lead_fine_T = 0;
+
+        accepted_trigger_time = 0;
 
 
         //c4LOG(info,"\n\n\n\n New event:");
@@ -366,18 +374,18 @@ Bool_t FatimaReader::Read() //do fine time here:
                     last_word_read_was_epoch = true;
                     continue;
             }
-              
+
+
             //from this point we should have seen an epoch for channel id.
 
-            uint32_t channelid = fData->fatima_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // 1-32
-            if (channelid == 0) {continue;} // skip channel 0 for now. This is the trigger information.
+            uint32_t channelid = fData->fatima_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // 0-32
             
             //if (it_board_number == 1) c4LOG(info,Form("ch = %i, coarse = %i, edge = %i", channelid, fData->fatima_tamex[it_board_number].time_coarsev[it_hits], fData->fatima_tamex[it_board_number].time_edgev[it_hits]));
 
-            if (fData->fatima_tamex[it_board_number].time_finev[it_hits] == 0x3FF) {fNevents_TAMEX_fail[it_board_number][channelid-1]++; continue;} // this happens if TAMEX loses the fine time - skip it
+            if (fData->fatima_tamex[it_board_number].time_finev[it_hits] == 0x3FF) {fNevents_TAMEX_fail[it_board_number][channelid]++; continue;} // this happens if TAMEX loses the fine time - skip it
 
 
-            if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch){fNevents_lacking_epoch[it_board_number][channelid-1]++; c4LOG(warning, "Event lacking epoch.");} // if the channel has changed but no epoch word was seen in between, channel 0 is always the first one so dont check if that s the case.
+            if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch){fNevents_lacking_epoch[it_board_number][channelid]++; c4LOG(debug1, "Event lacking epoch.");} // if the channel has changed but no epoch word was seen in between, channel 0 is always the first one so dont check if that s the case.
 
             if (!(channelid >= last_channel_read)) {c4LOG(fatal, Form("Data format is inconcistent with assumption: Channels are not read out in increasing order. This channel = %i, last channel = %i",channelid,last_channel_read));}
 
@@ -385,16 +393,23 @@ Bool_t FatimaReader::Read() //do fine time here:
             last_word_read_was_epoch = false;
             last_channel_read = channelid;
 
+            bool is_leading = fData->fatima_tamex[it_board_number].time_edgev[it_hits] & 0x1;
+            
             //Fill fine times and skip.
-            if (!fine_time_calibration_set) 
+            if (!fine_time_calibration_set && is_leading)
             {
-                fine_time_hits[it_board_number][channelid-1]->Fill(fData->fatima_tamex[it_board_number].time_finev[it_hits]);
+                fine_time_hits[it_board_number][channelid]->Fill(fData->fatima_tamex[it_board_number].time_finev[it_hits]);
                 continue;
             }
 
-            bool is_leading = fData->fatima_tamex[it_board_number].time_edgev[it_hits] & 0x1;
+
             uint32_t coarse_T = fData->fatima_tamex[it_board_number].time_coarsev[it_hits] & 0x7FF;
-            double fine_T = GetFineTime(fData->fatima_tamex[it_board_number].time_finev[it_hits],it_board_number,channelid-1);
+            double fine_T = GetFineTime(fData->fatima_tamex[it_board_number].time_finev[it_hits],it_board_number,channelid);
+
+            if (channelid == 0) {
+                accepted_trigger_time = ((uint64_t)previous_epoch_word)*10.24e3 + ((uint64_t)coarse_T)*5.0 - (uint64_t)fine_T; // round it off to ns resolution
+                continue;
+            } // skip channel 0 for now. This is the trigger information. The trigger time is kept, the wr timestamp is corrected by the difference of the hit and the acc trigger time.
 
             //if(it_board_number == 1) c4LOG(info,fData->fatima_tamex[it_board_number].time_edgev[it_hits]);
 
@@ -403,37 +418,36 @@ Bool_t FatimaReader::Read() //do fine time here:
                 //if (it_board_number == 1) c4LOG(info,Form("Found rise: ch = %i, le = %i, lc = %i, lf = %f", channelid, previous_epoch_word,coarse_T,fine_T));
                 
                 //count number of double leads
-                if (last_tdc_hit.hit) {fNevents_second_lead_seen[it_board_number][channelid-1]++;}
+                if (last_tdc_hit.hit) {fNevents_second_lead_seen[it_board_number][channelid]++;}
                 
                 last_tdc_hit.hit = true;
                 last_tdc_hit.lead_epoch_counter = previous_epoch_word;
                 last_tdc_hit.lead_coarse_T = coarse_T;
                 last_tdc_hit.lead_fine_T = fine_T;
 
-                
-                fNleads_read[it_board_number][channelid-1]++;
+                fNleads_read[it_board_number][channelid]++;
                 continue;
             }
             else if (!is_leading && last_tdc_hit.hit)
             { 
                 //trail and rise are matched
-                //if (it_board_number == 1) c4LOG(info,Form("Writing: ch = %i, le = %i lc = %i, lf = %f, te = %i tc = %i, tf = %f ",channelid,last_hits[it_board_number][channelid-1].lead_epoch_counter, last_hits[it_board_number][channelid-1].lead_coarse_T, last_hits[it_board_number][channelid-1].lead_fine_T,last_epoch[channelid-1],coarse_T,fine_T));
+                //if (it_board_number == 1) c4LOG(info,Form("Writing: ch = %i, le = %i lc = %i, lf = %f, te = %i tc = %i, tf = %f ",channelid,last_hits[it_board_number][channelid].lead_epoch_counter, last_hits[it_board_number][channelid].lead_coarse_T, last_hits[it_board_number][channelid].lead_fine_T,last_epoch[channelid],coarse_T,fine_T));
 
                 new ((*fArray)[fArray->GetEntriesFast()]) FatimaTwinpeaksData(
                     it_board_number,
                     channelid,
-                    //last_hits[it_board_number][channelid-1].lead_epoch_counter,
+
                     last_tdc_hit.lead_epoch_counter,
-                    //last_hits[it_board_number][channelid-1].lead_coarse_T,
                     last_tdc_hit.lead_coarse_T,
-                    //last_hits[it_board_number][channelid-1].lead_fine_T,
                     last_tdc_hit.lead_fine_T,
 
                     previous_epoch_word,
                     coarse_T,
                     fine_T,
+                    
                     fData->fatima_ts_subsystem_id,
-                    wr_t);
+                    wr_t + 0* ( (((uint64_t)previous_epoch_word)*10.24e3 + ((uint64_t)coarse_T)*5.0 - (uint64_t)fine_T) - accepted_trigger_time) // corrected by the time difference to the acc trigger time
+                );
             
                 //reset:
 
@@ -442,16 +456,17 @@ Bool_t FatimaReader::Read() //do fine time here:
                 last_tdc_hit.lead_coarse_T = 0;
                 last_tdc_hit.lead_fine_T = 0;
                 
-                fNmatched[it_board_number][channelid-1]++;
-                fNtrails_read[it_board_number][channelid-1]++;
+                fNmatched[it_board_number][channelid]++;
+                fNtrails_read[it_board_number][channelid]++;
 
                 continue;
             }
             else
             {
                 // do nothing, trail found with no rise.
-                fNevents_trail_seen_no_lead[it_board_number][channelid-1]++;
-                fNtrails_read[it_board_number][channelid-1]++;
+                fNevents_trail_seen_no_lead[it_board_number][channelid]++;
+                fNtrails_read[it_board_number][channelid]++;
+                
             }
         }
 

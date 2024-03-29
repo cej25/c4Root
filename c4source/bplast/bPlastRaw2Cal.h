@@ -2,6 +2,7 @@
 #define bPlastRaw2Cal_H
 
 #include "FairTask.h"
+#include "TbPlastConfiguration.h"
 
 
 class TClonesArray;
@@ -39,6 +40,9 @@ class bPlastRaw2Cal : public FairTask
         virtual InitStatus Init();
 
     private:
+
+        TbPlastConfiguration const* bplast_config;
+
         Bool_t fOnline;
 
         TClonesArray* fcal_data;
@@ -50,8 +54,8 @@ class bPlastRaw2Cal : public FairTask
         bPlastTwinpeaksCalData* fcal_hit;
 
         uint16_t detector_id;
-        char detector_stream;
-        char detector_position;
+        std::string detector_stream;
+        std::string detector_position;
         
         double slow_lead_time;
         double slow_trail_time;
@@ -72,10 +76,12 @@ class bPlastRaw2Cal : public FairTask
         Bool_t DetectorCal_loaded = 0;
 
         // time machine variables:
+        int tm_delayed;
+        int tm_undelayed;
         int time_machine_delayed_detector_id;
         int time_machine_undelayed_detector_id;
         //maps:
-        std::map<std::pair<int, int>, std::pair<int, std::pair<char, char>>> detector_mapping; // [board_id][channel_id] -> [detector_id][detector_stream][detector_position]
+        std::map<std::pair<int, int>, std::pair<int, std::pair<std::string, std::string>>> detector_mapping; // [board_id][channel_id] -> [detector_id][detector_stream][detector_position]
         std::map<int,std::pair<double,double>> calibration_coeffs; // key: [detector id] -> [a0][a1]
 
     public:

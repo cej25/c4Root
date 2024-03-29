@@ -1,7 +1,7 @@
 #ifndef FrsAnalysisSpectra_H
 #define FrsAnalysisSpectra_H
 
-#include "../../../config/frs_config.h"
+#include "../../../config/setup.h"
 #include "FairTask.h"
 #include "TFRSParameter.h"
 #include "TH2.h"
@@ -67,6 +67,7 @@ class FrsAnalysisSpectra : public FairTask
         TRangeParameter* range;
 
         // folders
+        TFolder* folder_frs_hists;
         TFolder* frs_analysis_hists;
         TFolder* frs_tac_hists;
         TFolder* frs_mhtdc_hists;

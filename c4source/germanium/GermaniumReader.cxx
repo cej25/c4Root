@@ -34,7 +34,6 @@ GermaniumReader::~GermaniumReader() {
 Bool_t GermaniumReader::Init(ext_data_struct_info* a_struct_info)
 {
     Int_t ok;
-    c4LOG(info, "");
 
     EXT_STR_h101_germanium_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_germanium, 0);
 
@@ -80,7 +79,7 @@ Bool_t GermaniumReader::Read()
                 0,
                 0,
                 0,
-                fData->germanium_ts_subsystem_id,
+                0,//fData->germanium_ts_subsystem_id,
                 wr_t
             );
         }
@@ -92,7 +91,7 @@ Bool_t GermaniumReader::Read()
         {   
             
             
-            c4LOG(info,Form("channel_energy = %i, channel_energyI[%i] = %d, channel_energyv[%i] = %d;",fData->germanium_data[it_board_number].channel_energy,index,fData->germanium_data[it_board_number].channel_energyI[index],index,fData->germanium_data[it_board_number].channel_energyv[index]));
+            //c4LOG(info,Form("channel_energy = %i, channel_energyI[%i] = %d, channel_energyv[%i] = %d;",fData->germanium_data[it_board_number].channel_energy,index,fData->germanium_data[it_board_number].channel_energyI[index],index,fData->germanium_data[it_board_number].channel_energyv[index]));
             //c4LOG(info,Form("channel_id = %i, channel_idI[%i] = %d, channel_idv[%i] = %d;",fData->germanium_data[it_board_number].channel_id,index,fData->germanium_data[it_board_number].channel_idI[index],index,fData->germanium_data[it_board_number].channel_idv[index]));
             if (fData->germanium_data[it_board_number].channel_trigger_time_hiI[index] != fData->germanium_data[it_board_number].channel_trigger_time_loI[index]) c4LOG(fatal, "Wrong in array fillings. channel_trigger_time_loI != channel_trigger_time_hiI "); 
             if (fData->germanium_data[it_board_number].channel_trigger_time_hiI[index] != fData->germanium_data[it_board_number].pileupI[index]) c4LOG(fatal, "Wrong in array fillings. pileupI != channel_trigger_time_hiI ");
@@ -109,7 +108,7 @@ Bool_t GermaniumReader::Read()
             if (VetoPileup & fData->germanium_data[it_board_number].pileupv[index]) continue;
             
 
-            //according to febex manual on gsi website the 24th bit of the energy bits denotes the sign to indicate the polarity of the pulse
+            //according to febex manual on gsi website, the 24th bit of the energy denotes the sign to indicate the polarity of the pulse
             if (fData->germanium_data[it_board_number].channel_energyv[index] & (1 << 23)){
                 channel_energy = -(int32_t)(fData->germanium_data[it_board_number].channel_energyv[index] & 0x007FFFFF);
             }else{
@@ -134,7 +133,7 @@ Bool_t GermaniumReader::Read()
                 channel_trigger_time_long,
                 channel_energy,
                 fData->germanium_ts_subsystem_id,
-                wr_t
+                wr_t + (channel_trigger_time_long - event_trigger_time_long)
             );
         }
 
