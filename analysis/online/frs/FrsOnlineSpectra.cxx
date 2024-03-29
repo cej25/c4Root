@@ -81,6 +81,7 @@ InitStatus FrsOnlineSpectra::Init()
     folder_frs_hists = new TFolder("FRS", "FRS");
     mgr->Register("FRS", "FRS Folder", folder_frs_hists, false);
 
+    run->AddObject(folder_frs_hists);
 
 
     // CEJ: name should be more specfic? we want to break down histograms by type
