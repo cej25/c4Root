@@ -56,7 +56,6 @@ void AidaOnlineSpectra::SetParContainers()
 
 InitStatus AidaOnlineSpectra::Init()
 {
-    c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 

@@ -72,6 +72,8 @@ void TimeMachineOnline::SetDetectorSystems(std::vector<TString> detectorsystems)
 
     for (int i = 0; i < fNumDetectorSystems; i++) fDetectorSystems.push_back(detectorsystems.at(i));
 
+    c4LOG(info, "Success");
+
 }
 
 InitStatus TimeMachineOnline::Init()
@@ -88,8 +90,8 @@ InitStatus TimeMachineOnline::Init()
 
     fTimeMachine = new TClonesArray*[fNumDetectorSystems];
 
-    for (int det = 0; det<fNumDetectorSystems; det++){
-        c4LOG(info, "Looking for " + fDetectorSystems.at(det));
+    for (int det = 0; det<fNumDetectorSystems; det++)
+    {
         fTimeMachine[det] = (TClonesArray*) mgr->GetObject(fDetectorSystems.at(det)+"TimeMachineData");
         c4LOG_IF(fatal, !fTimeMachine[det], "Branch TimeMachineData not found!");
     }

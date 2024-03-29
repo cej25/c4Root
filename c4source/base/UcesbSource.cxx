@@ -52,12 +52,12 @@ Bool_t UcesbSource::Init()
 {
     // Register of EventHeader in the output root file
 
-    c4LOG(debug, "checking whether EventHeader has been defined in FairRun");
+    c4LOG(debug1, "checking whether EventHeader has been defined in FairRun");
     auto run = FairRun::Instance();
     auto EvtHead = dynamic_cast<EventHeader*>(run->GetEventHeader());
     if (EvtHead)
     {
-        c4LOG(info, "EventHeader. was defined properly");
+        c4LOG(info, "EventHeader. was defined properly - success!");
     }
     else
     {

@@ -37,7 +37,6 @@ FrsTpatReader::~FrsTpatReader()
 Bool_t FrsTpatReader::Init(ext_data_struct_info* a_struct_info)
 {
     Int_t ok;
-    c4LOG(info, "");
     
     EXT_STR_h101_frstpat_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_frstpat, 0);
 
@@ -51,8 +50,6 @@ Bool_t FrsTpatReader::Init(ext_data_struct_info* a_struct_info)
     fArray->Clear();
 
     memset(fData, 0, sizeof *fData);
-
-    c4LOG(info, "FrsMainReader init complete.");
 
     return kTRUE;
 }
