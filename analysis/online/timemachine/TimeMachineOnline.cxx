@@ -64,15 +64,20 @@ void TimeMachineOnline::SetParContainers()
 
 void TimeMachineOnline::SetDetectorSystems(std::vector<TString> detectorsystems){
     
-    c4LOG(info, "");
     
     fNumDetectorSystems = detectorsystems.size();
     
     fDetectorSystems = std::vector<TString>(0);
 
-    for (int i = 0; i < fNumDetectorSystems; i++) fDetectorSystems.push_back(detectorsystems.at(i));
+    std::string det_log;
+    for (int i = 0; i < fNumDetectorSystems; i++) 
+    {
+        fDetectorSystems.push_back(detectorsystems.at(i));
+        if (i < fNumDetectorSystems - 1) det_log += std::string(detectorsystems.at(i).Data()) + ", ";
+        else det_log += std::string(detectorsystems.at(i).Data());
+    }
 
-    c4LOG(info, "Success");
+    c4LOG(info, "Success: " + det_log);
 
 }
 
@@ -81,7 +86,6 @@ InitStatus TimeMachineOnline::Init()
 
     c4LOG_IF(fatal, (fNumDetectorSystems == 0) || (fNumDetectorSystems < 0), "Detector systems not specified for TimeMachineOnline. Please add SetDetectorSystems before Init().");
 
-    c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 

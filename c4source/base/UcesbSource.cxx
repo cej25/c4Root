@@ -118,7 +118,6 @@ Bool_t UcesbSource::InitUnpackers()
     FairRootManager* frm = FairRootManager::Instance();
     c4LOG_IF(fatal, !frm, "FairRootManager no found");
 
-    c4LOG(info, "Checking the register of EventHeader");
     fEventHeader = dynamic_cast<EventHeader*>(frm->GetObject("EventHeader."));
     if (fEventHeader)
     {
