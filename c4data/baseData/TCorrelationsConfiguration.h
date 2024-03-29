@@ -36,7 +36,6 @@ inline TCorrelationsConfiguration const* TCorrelationsConfiguration::GetInstance
 {
     if (!instance)
     {
-        c4LOG(info, "creating instance of correlationsconfig, testing.. ");
         TCorrelationsConfiguration::Create();
     }
     return instance;

@@ -1,6 +1,7 @@
 #include "TCorrelationsConfiguration.h"
 
 #include "c4Logger.h"
+#include "FairLogger.h"
 
 #include <iostream>
 #include <sstream>
@@ -20,8 +21,8 @@ void TCorrelationsConfiguration::ReadCorrelationsFile()
     std::ifstream file(filepath);
     std::string line;
 
-    if (file.fail()) c4LOG(warn, "Cannot open correlations file!");
-    c4LOG(info, "Reading correlations.dat file");
+    if (file.fail()) c4LOG(warn, "Cannot open correlations.dat file!");
+    c4LOG(info, "Reading correlations.dat file.");
     
     while (std::getline(file, line))
     {

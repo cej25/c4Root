@@ -64,7 +64,7 @@ void TimeMachineOnline::SetParContainers()
 
 void TimeMachineOnline::SetDetectorSystems(std::vector<TString> detectorsystems){
     
-    c4LOG(info, "Set detector systems.");
+    c4LOG(info, "");
     
     fNumDetectorSystems = detectorsystems.size();
     
