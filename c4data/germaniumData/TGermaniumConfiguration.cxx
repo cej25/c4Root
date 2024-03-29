@@ -86,16 +86,16 @@ void TGermaniumConfiguration::ReadConfiguration()
 
     detector_mapping_loaded = 1;
     detector_map_file.close();
+
+    c4LOG(info, "Success.");
     return;
 
 }
 
 
 
-void TGermaniumConfiguration::ReadCalibrationCoefficients(){
-
-    c4LOG(info, "Reading Germanium Calibration coefficients.");
-
+void TGermaniumConfiguration::ReadCalibrationCoefficients()
+{
     std::ifstream cal_map_file (calibration_file);
 
     int rdetector_id,rcrystal_id; // temp read variables
@@ -114,15 +114,14 @@ void TGermaniumConfiguration::ReadCalibrationCoefficients(){
     }
     detector_calibrations_loaded = 1;
     cal_map_file.close();
+
+    c4LOG(info, "Success.");
 };
 
 
 
-void TGermaniumConfiguration::ReadTimeshiftSCI41Coefficients(){
-
-    c4LOG(info, "Reading TimeshiftSCI41 coefficients.");
-
-
+void TGermaniumConfiguration::ReadTimeshiftSCI41Coefficients()
+{
     std::ifstream cal_map_file (timeshift_calibration_file);
 
     int rdetector_id,rcrystal_id; // temp read variables
@@ -140,4 +139,6 @@ void TGermaniumConfiguration::ReadTimeshiftSCI41Coefficients(){
     }
     timeshift_calibration_coeffs_loaded = 1;
     cal_map_file.close();
+
+    c4LOG(info, "Success.");
 };
