@@ -85,7 +85,7 @@ InitStatus FrsCalSpectra::Init()
 
     
     folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
-    if (!folder_frs_hists) folder_frs_hists = new TFolder("FRS", "FRS");
+    //if (!folder_frs_hists) folder_frs_hists = new TFolder("FRS", "FRS");
     
 
     TFolder* folder_frs_cal_hists = new TFolder("Cal Histograms", "Cal Histograms");
