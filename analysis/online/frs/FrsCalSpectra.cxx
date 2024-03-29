@@ -81,7 +81,7 @@ InitStatus FrsCalSpectra::Init()
     fFrsVFTXCalArray = (TClonesArray*)mgr->GetObject("FrsVFTXCalData");
     c4LOG_IF(fatal, !fFrsVFTXCalArray, "Branch FrsVFTXCalData not found");
     
-    TDirectory::TContext ctx(nullptr);
+    //TDirectory::TContext ctx(nullptr);
 
     
     folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
