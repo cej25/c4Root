@@ -172,11 +172,20 @@ This can be called explicitly if desired - but will be done automatically by the
 */
 void bPlastReader::DoFineTimeCalibration(){
     c4LOG(info, "Doing fine time calibrations.");
+    std::vector<std::pair<int>> warning_channels;
+    int warning_counter = 0;
     for (int i = 0; i < NBoards; i++) {
         for (int j = 0; j < NChannels; j++) {
             int running_sum = 0;
             int total_counts = fine_time_hits[i][j]->GetEntries();
-            if (total_counts == 0) {c4LOG(warning,Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));}
+            if (total_counts == 0) 
+            {
+                std::pair<int, int> pair = std::make_pair(j, i); // channel, board
+                warning_channels.emplace_back(pair); // dump to a log file in future
+                warning_counter++;
+                // c4LOG(warning,Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));
+            
+            }
             for (int k = 0; k < Nbins_fine_time; k++) {
                 running_sum += fine_time_hits[i][j]->GetBinContent(k+1); //bin 0 is the underflow bin, hence we start at [1,Nbins_fine_time].
                 //no counts?
@@ -189,6 +198,8 @@ void bPlastReader::DoFineTimeCalibration(){
             }
         }
     }
+
+    if (warning_counter > 0) c4LOG(warning, Form("%i channels do not have any fine time hits in the interval.", warning_counter));
     fine_time_calibration_set = true;
 }
 
@@ -259,7 +270,7 @@ void bPlastReader::ReadFineTimeHistosFromFile() {
             TH1I* a = nullptr;
             inputfile->GetObject(Form("fine_time_hits_%i_%i", i, j), a);
             if (a) {
-                c4LOG(info,Form("Accessing i = %i, j = %i",i,j));
+                c4LOG(debug1, Form("Accessing i = %i, j = %i",i,j));
                 fine_time_hits[i][j] = (TH1I*)a->Clone();
                 c4LOG_IF(fatal,fine_time_hits==nullptr,"Failed reading the file for fine time calibration histograms");
                 delete a;
