@@ -103,7 +103,7 @@ InitStatus FrsAnalysisSpectra::Init()
     c4LOG_IF(fatal, !fFrsHitArray, "FrsHitData branch not found!");
 
     //mgr->Register("FrsAnalysisData", "FRS Analysis Data", fFrsAnalysisArray, !fOnline);
-    //TDirectory::TContext ctx(nullptr);
+    TDirectory::TContext ctx(nullptr);
 
     
     folder_frs_hists = (TFolder*)mgr->GetObject("FRS");

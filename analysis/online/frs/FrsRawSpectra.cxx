@@ -80,7 +80,7 @@ InitStatus FrsRawSpectra::Init()
     fFrsVFTXArray = (TClonesArray*)mgr->GetObject("FrsVFTXData");
     c4LOG_IF(fatal, !fFrsVFTXArray, "Branch FrsVFTXData not found");
     
-    //TDirectory::TContext ctx(nullptr);
+    TDirectory::TContext ctx(nullptr);
 
     
     folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
