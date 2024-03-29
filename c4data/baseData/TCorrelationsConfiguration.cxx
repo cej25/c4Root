@@ -22,7 +22,6 @@ void TCorrelationsConfiguration::ReadCorrelationsFile()
     std::string line;
 
     if (file.fail()) c4LOG(warn, "Cannot open correlations.dat file!");
-    c4LOG(info, "Reading correlations.dat file.");
     
     while (std::getline(file, line))
     {
@@ -150,4 +149,6 @@ void TCorrelationsConfiguration::ReadCorrelationsFile()
             }
         }
     }
+
+    c4LOG(info, "Success.");
 }

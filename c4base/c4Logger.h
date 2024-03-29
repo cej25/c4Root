@@ -23,8 +23,11 @@ class c4Logger : public FairLogger
         if (true)                                                                                                      \
         {                                                                                                              \
             std::string fileName(__FILE__);                                                                            \
+            fileName = fileName.substr(fileName.find_last_of("/") + 1);                                                \
+            size_t lastDotPos = fileName.find_last_of(".");                                                            \
+            if (lastDotPos != std::string::npos) { fileName = fileName.substr(0, lastDotPos); }                        \
             std::stringstream ss;                                                                                      \
-            ss << fileName.substr(fileName.find_last_of("/") + 1) << ":" << __FUNCTION__; \
+            ss << fileName.substr(fileName.find_last_of("/") + 1) << ":" << __FUNCTION__ << " ";                       \
             LOG(severity) << ss.str() << x;                                                                            \
         }                                                                                                              \
         else                                                                                                           \
@@ -39,8 +42,11 @@ class c4Logger : public FairLogger
         if (true)                                                                                                 \
         {                                                                                                         \
             std::string fileNameif(__FILE__);                                                                     \
+            fileNameif = fileNameif.substr(fileNameif.find_last_of("/") + 1);                                                \
+            size_t lastDotPos = fileNameif.find_last_of(".");                                                            \
+            if (lastDotPos != std::string::npos) { fileNameif = fileNameif.substr(0, lastDotPos); }                        \
             std::stringstream ssif;                                                                               \
-            ssif << fileNameif.substr(fileNameif.find_last_of("/") + 1) << ":" << __FUNCTION__;\
+            ssif << fileNameif.substr(fileNameif.find_last_of("/") + 1) << ":" << __FUNCTION__ << " ";            \
             LOG_IF(severity, condition) << ssif.str() << x;                                                       \
         }                                                                                                         \
         else                                                                                                      \
