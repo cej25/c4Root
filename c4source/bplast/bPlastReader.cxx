@@ -172,7 +172,7 @@ This can be called explicitly if desired - but will be done automatically by the
 */
 void bPlastReader::DoFineTimeCalibration(){
     c4LOG(info, "Doing fine time calibrations.");
-    std::vector<std::pair<int>> warning_channels;
+    std::vector<std::pair<int, int>> warning_channels;
     int warning_counter = 0;
     for (int i = 0; i < NBoards; i++) {
         for (int j = 0; j < NChannels; j++) {
