@@ -139,7 +139,6 @@ Bool_t bPlastReader::Init(ext_data_struct_info* a_struct_info)
         ReadFineTimeHistosFromFile();
         DoFineTimeCalibration();
         fine_time_calibration_set = true;
-        c4LOG(info,"Fine Time calibration set from file.");
     }
     else
     {

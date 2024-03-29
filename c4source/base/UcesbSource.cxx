@@ -77,7 +77,7 @@ Bool_t UcesbSource::Init()
     {
         command << " --max-events=" << fLastEventNo;
     }
-    LOG(info) << "Calling ucesb with command: " << command.str();
+    c4LOG(debug1, "Calling ucesb with command: " + command.str());
 
     /* Fork off ucesb (calls fork() and pipe()) */
     fFd = popen(command.str().c_str(), "r");
