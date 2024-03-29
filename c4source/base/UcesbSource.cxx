@@ -119,14 +119,11 @@ Bool_t UcesbSource::InitUnpackers()
     c4LOG_IF(fatal, !frm, "FairRootManager no found");
 
     fEventHeader = dynamic_cast<EventHeader*>(frm->GetObject("EventHeader."));
-    if (fEventHeader)
-    {
-        c4LOG(info, "EventHeader. was defined properly");
-    }
-    else
+    if (!fEventHeader)
     {
         c4LOG(error, "EventHeader. was not defined properly!");
     }
+    // CEJ: changed this because we don't need multiple success statements for the header from UCESB
 
     /* Initialize all readers */
     for (int i = 0; i < fReaders->GetEntriesFast(); ++i)

@@ -179,7 +179,7 @@ void bPlastReader::DoFineTimeCalibration()
                 std::pair<int, int> pair = std::make_pair(j, i); // channel, board
                 warning_channels.emplace_back(pair); // dump to a log file in future
                 warning_counter++;
-                // c4LOG(warning,Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));
+                c4LOG(debug1, Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));
             
             }
             for (int k = 0; k < Nbins_fine_time; k++) {
@@ -234,7 +234,7 @@ void bPlastReader::WriteFineTimeHistosToFile(){
             }
         }
     }
-    c4LOG(info,Form("Written fine time calibrations (i.e. raw fine time histograms) to  %s",fine_time_histo_outfile.Data()));
+    LOG(info) << Form("bPlast fine time calibrations (i.e. raw fine time histograms) written to  %s",fine_time_histo_outfile.Data());
 
     outputfile->Close();
 
@@ -278,7 +278,7 @@ void bPlastReader::ReadFineTimeHistosFromFile()
     }
 
     inputfile->Close();
-    c4LOG(info, Form("Success - File: %s", fine_time_histo_infile.Data()));
+    c4LOG(info) << Form("bPlast fine time calibration read from file: %s", fine_time_histo_infile.Data());
 }
 
 /*

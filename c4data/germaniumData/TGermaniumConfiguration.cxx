@@ -87,7 +87,7 @@ void TGermaniumConfiguration::ReadConfiguration()
     detector_mapping_loaded = 1;
     detector_map_file.close();
 
-    c4LOG(info, "Success - File: " + configuration_file);
+    LOG(info) << "Germanium Configuration File: " + configuration_file;
     return;
 
 }
@@ -115,7 +115,7 @@ void TGermaniumConfiguration::ReadCalibrationCoefficients()
     detector_calibrations_loaded = 1;
     cal_map_file.close();
 
-    c4LOG(info, "Success - File: " + calibration_file);
+    LOG(info) << "Germanium Calibration File: " + calibration_file;
 };
 
 
@@ -140,5 +140,5 @@ void TGermaniumConfiguration::ReadTimeshiftSCI41Coefficients()
     timeshift_calibration_coeffs_loaded = 1;
     cal_map_file.close();
 
-    c4LOG(info, "Success - File: " + timeshift_calibration_file);
+    LOG(info) << "Germanium SC41 Timeshift File: " + timeshift_calibration_file;
 };
