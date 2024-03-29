@@ -77,12 +77,9 @@ InitStatus FrsOnlineSpectra::Init()
     
     TDirectory::TContext ctx(nullptr);
 
-    folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
-    if (!folder_frs_hists)
-    {
-       folder_frs_hists = new TFolder("FRS", "FRS");
-       mgr->Register("FRS", "FRS Folder", folder_frs_hists, true);
-    }
+    //folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
+    folder_frs_hists = new TFolder("FRS", "FRS");
+    mgr->Register("FRS", "FRS Folder", folder_frs_hists, true);
 
 
 
@@ -249,7 +246,7 @@ void FrsOnlineSpectra::FinishEvent()
 
 void FrsOnlineSpectra::FinishTask()
 {   
-    folder_frs_hists->Write();
+    //folder_frs_hists->Write();
 }
 
 ClassImp(FrsOnlineSpectra)
