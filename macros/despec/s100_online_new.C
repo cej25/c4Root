@@ -30,7 +30,7 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_frsmain_onion_t frsmain;
     EXT_STR_h101_frstpc_onion_t frstpc;
     EXT_STR_h101_frsuser_onion_t frsuser;
-    EXT_STR_h101_frsvftx_onion_t frsvftx;
+    //EXT_STR_h101_frsvftx_onion_t frsvftx;
     EXT_STR_h101_frstpat_onion_t frstpat;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
     EXT_STR_h101_bgo_onion_t bgo;
@@ -226,19 +226,16 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         FrsMainReader* unpackfrsmain = new FrsMainReader((EXT_STR_h101_frsmain_onion*)&ucesb_struct.frsmain, offsetof(EXT_STR_h101, frsmain));
         FrsTPCReader* unpackfrstpc = new FrsTPCReader((EXT_STR_h101_frstpc_onion*)&ucesb_struct.frstpc, offsetof(EXT_STR_h101, frstpc));
         FrsUserReader* unpackfrsuser = new FrsUserReader((EXT_STR_h101_frsuser_onion*)&ucesb_struct.frsuser, offsetof(EXT_STR_h101, frsuser));
-        FrsVFTXReader* unpackfrsvftx = new FrsVFTXReader((EXT_STR_h101_frsvftx_onion*)&ucesb_struct.frsvftx, offsetof(EXT_STR_h101, frsvftx));
         FrsTpatReader* unpackfrstpat = new FrsTpatReader((EXT_STR_h101_frstpat_onion*)&ucesb_struct.frstpat, offsetof(EXT_STR_h101, frstpat));
         
         unpackfrsmain->SetOnline(true);
         unpackfrstpc->SetOnline(true);
         unpackfrsuser->SetOnline(true);
-        unpackfrsvftx->SetOnline(true);
         unpackfrstpat->SetOnline(true);
         
         source->AddReader(unpackfrsmain);
         source->AddReader(unpackfrstpc);
         source->AddReader(unpackfrsuser);
-        source->AddReader(unpackfrsvftx);
         source->AddReader(unpackfrstpat);
     }
     
@@ -316,16 +313,13 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         FrsMainRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
         FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
         FrsUserRaw2Cal* calfrsuser = new FrsUserRaw2Cal();
-        FrsVFTXRaw2Cal* calfrsvftx = new FrsVFTXRaw2Cal();
         
         calfrsmain->SetOnline(true);
         calfrstpc->SetOnline(true);
         calfrsuser->SetOnline(true);
-        calfrsvftx->SetOnline(true);
         run->AddTask(calfrsmain);
         run->AddTask(calfrstpc);
         run->AddTask(calfrsuser);
-        run->AddTask(calfrsvftx);
     }
 
 
