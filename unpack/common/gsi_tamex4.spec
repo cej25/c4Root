@@ -2,21 +2,23 @@
 
 TAMEX4_HEADER()
 {
-	MEMBER(DATA16 post_trig_ns[64] NO_INDEX_LIST);
-	MEMBER(DATA16 pre_trig_ns[64] NO_INDEX_LIST);
-	UINT32 trigger_window NOENCODE {
+	MEMBER(DATA16 post_trig_ns);
+	MEMBER(DATA16 pre_trig_ns);
+	UINT32 trigger_window NOENCODE 
+	{
 		 0_15: post_trig_ns;
 		16_31: pre_trig_ns;
 
-		ENCODE(post_trig_ns APPEND_LIST, (value=post_trig_ns));
-		ENCODE(pre_trig_ns APPEND_LIST, (value=pre_trig_ns));
+		ENCODE(post_trig_ns, (value=post_trig_ns));
+		ENCODE(pre_trig_ns, (value=pre_trig_ns));
 	}
 
 }
 
 TAMEX4_PADDING()
 {
-	UINT32 padding NOENCODE {
+	UINT32 padding NOENCODE 
+	{
 		 0_11: counter;
 		12_19: index;
 		20_31: 0xadd;
@@ -31,7 +33,8 @@ TAMEX4_TIME_DATA(sfp, card, time_coarse, time_fine, time_edge, time_channel, tim
 	MEMBER(DATA12 time_channel[MAX_TDC_HITS] NO_INDEX_LIST);
 	MEMBER(DATA32 time_epoch[MAX_TDC_HITS] NO_INDEX_LIST);
 
-	UINT32 data NOENCODE {
+	UINT32 data NOENCODE 
+	{
 		 0_10: coarse;
 		   11: is_leading;
 		// fine=0x3ff -> no TDC time.
@@ -56,9 +59,9 @@ TAMEX4_EPOCH_DATA(sfp, card, time_coarse, time_fine, time_edge, time_channel, ti
 	MEMBER(DATA12 time_channel[MAX_TDC_HITS] NO_INDEX_LIST);
 	MEMBER(DATA32 time_epoch[MAX_TDC_HITS] NO_INDEX_LIST);
 
-	UINT32 data NOENCODE {
+	UINT32 data NOENCODE 
+	{
 		0_27: epoch;
-		//28: reserved;
 		28_31: 0x6;
 
 		ENCODE(time_coarse APPEND_LIST, (value=0));
@@ -89,7 +92,8 @@ TAMEX4_SFP(sfp, card)
 
 	MATCH_END;
 
-	UINT32 data_size NOENCODE {
+	UINT32 data_size NOENCODE 
+	{
 		// TDC header + epocs + times + error + trailer.
 		0_31: bytes;
 
@@ -104,19 +108,23 @@ TAMEX4_SFP(sfp, card)
 		24_31: 0xaa;
 	}
 
-	list (0 <= i < data_size.bytes / 4 - 3) {
-		select {
+	list (0 <= i < data_size.bytes / 4 - 3) 
+	{
+		select 
+		{
 			epoch = TAMEX4_EPOCH_DATA(sfp=sfp, card=card, time_coarse=time_coarse, time_fine=time_fine, time_edge=time_edge, time_channel=time_channel, time_epoch=time_epoch);
 			time = TAMEX4_TIME_DATA(sfp=sfp, card=card, time_coarse=time_coarse, time_fine=time_fine, time_edge=time_edge, time_channel=time_channel, time_epoch=time_epoch);
 		}
 	}
 
-	UINT32 error_bits NOENCODE {
+	UINT32 error_bits NOENCODE 
+	{
 		 0_23: bits;
 		24_31: 0xee;
 	}
 
-	UINT32 trailer NOENCODE {
+	UINT32 trailer NOENCODE 
+	{
 		0_15: lec;
 		16: buf_no;
 		17_19: reserved;

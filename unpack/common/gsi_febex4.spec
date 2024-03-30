@@ -2,19 +2,6 @@
 #define TRACE_CHANNELS 1 // this needs to be read from the data stream somehow
 
 
-DUMMY()
-{
-    UINT32 no NOENCODE;
-}
-
-FEBEX_BAD_EVENT()
-{
-    UINT32 bad NOENCODE
-    {
-        0_31: 0xBAD00BAD;
-    }
-}
-
 // Reads the Padding between FEBEX events:
 FEBEX_PADDING()
 {
@@ -25,9 +12,6 @@ FEBEX_PADDING()
         20_31: 0xADD;
     }
 }
-
-
-
 
 FEBEX_EVENT(card)
 {

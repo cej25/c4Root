@@ -8,6 +8,7 @@
 //#include "../../common/vme_caen_v1x90.spec"
 #include "../frs/frs_s100.spec" //r3b frs
 #include "fatima_vme.spec"
+#include "../../common/general.spec"
 
 #define BM_MAX_HITS 100000
 
@@ -17,22 +18,32 @@ external EXT_AIDA();
 
 SUBEVENT(bgo_tamex_subevent)
 {
+    select several
+    {
+        badevent = BAD_EVENT();
+    };
+
     select optional
     {
         ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1900);
-    }
-    trigger_window = TAMEX4_HEADER();
+    };
+
+    select optional
+    {
+        trigger_window = TAMEX4_HEADER();
+    };
+
     select several 
     {
         padding = TAMEX4_PADDING();
-    }
+    };
+
     select several
     {
         tamex[0] = TAMEX4_SFP(sfp=1,card=0);
         tamex[1] = TAMEX4_SFP(sfp=1,card=1);
     }  
 }
-
 
 SUBEVENT(aida_subev)
 {
@@ -43,7 +54,15 @@ SUBEVENT(aida_subev)
 // this must change to be more general, or name should change from febex_subev
 SUBEVENT(febex_subev)
 {
-    ts = TIMESTAMP_WHITERABBIT(id = 0x400);
+    select several
+    {
+        badevent = BAD_EVENT();
+    };
+
+    select optional
+    {
+        ts = TIMESTAMP_WHITERABBIT(id = 0x400);
+    };
 
     select several
     {
@@ -61,13 +80,21 @@ SUBEVENT(febex_subev)
 
 SUBEVENT(fatima_tamex_subev)
 {
+    select several
+    {
+        badevent = BAD_EVENT();
+    };
 
-    // !! catch bad events like LISA
+    select optional
+    {
+        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1600);
+    };
 
-    ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1600);
-
-    trigger_window = TAMEX4_HEADER();
-
+    select optional
+    {
+        trigger_window = TAMEX4_HEADER();
+    };
+    
     select several
     {
         padding = TAMEX4_PADDING();
@@ -84,19 +111,25 @@ SUBEVENT(fatima_tamex_subev)
 
 SUBEVENT(fatima_vme_subev)
 {
-    ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1500);
+    select several
+    {
+        badevent = BAD_EVENT();
+    };
+
+    select optional
+    {
+        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1500);
+    };
 
     select several
     {
         error1 = ERR_WORD_SIX();
-    }
+    };
 
     select optional
     {
         scalers = FATIMA_VME_SCALERS();
-    }
-
-    // we always get some readout from 5 QCD boards
+    };
     
     qdc[0] = VME_CAEN_V1751(board=6);
     qdc[1] = VME_CAEN_V1751(board=7);
@@ -104,7 +137,6 @@ SUBEVENT(fatima_vme_subev)
     qdc[3] = VME_CAEN_V1751(board=9);
     //qdc[4] = VME_CAEN_V1751(board=10);
    
-
     select several
     {
         error2 = ERR_WORD_SIX();
@@ -129,9 +161,20 @@ SUBEVENT(fatima_vme_subev)
 
 SUBEVENT(bplast_subev)
 {
-    ts = TIMESTAMP_WHITERABBIT(id = 0x500);
+    select several
+    {
+        badevent = BAD_EVENT();
+    };
 
-    trigger_window = TAMEX4_HEADER();
+    select optional
+    {
+        ts = TIMESTAMP_WHITERABBIT(id = 0x500);
+    };
+
+    select optional
+    {
+        trigger_window = TAMEX4_HEADER();
+    };
 
     select several
     {
@@ -154,11 +197,11 @@ SUBEVENT(bplast_subev)
 
 SUBEVENT(frs_main_subev)
 {   
-    // CEJ: I don't remember why this has to be select several
-    /*select several
+
+    select several
     {
-        wr = TIMESTAMP_WHITERABBIT(id = 0x100);
-    };*/
+        badevent = BAD_EVENT();
+    };
 
     // catch weird trig3 events
     select several
@@ -169,15 +212,15 @@ SUBEVENT(frs_main_subev)
     select several
     {
         spill_on = SPILL_ON();
-    }
+    };
 
     select several
     {
         spill_off = SPILL_OFF();
-    }
+    };
 
     // CEJ: this should be optional vs several? if several then we get overwritten - check.
-    select several
+    select optional
     {
         data = MAIN_CRATE_DATA();
     };
@@ -187,6 +230,11 @@ SUBEVENT(frs_tpc_subev)
 {
     select several
     {
+        badevent = BAD_EVENT();
+    };
+
+    select several
+    {
         trig3 = TRIG3EVENT();
     };
 
@@ -198,10 +246,9 @@ SUBEVENT(frs_tpc_subev)
     select several
     {
         spill_off = SPILL_OFF();
-    }
+    };
 
-    // as above should be select optional i think
-    select several
+    select optional
     {
         data = TPC_CRATE_DATA();
     };
@@ -211,36 +258,44 @@ SUBEVENT(frs_user_subev)
 {
     select several
     {
+        badevent = BAD_EVENT();
+    };
+
+    select several
+    {
         trig3 = TRIG3EVENT();
     };
 
     select several
     {
         spill_on = SPILL_ON();
-    }
+    };
 
     select several
     {
         spill_off = SPILL_OFF();
-    }
+    };
 
     // same as above
-    select several
+    select optional
     {
         data = USER_CRATE_DATA();
     }
 }
 
-// unpacking very occasionally throws error
 SUBEVENT(frs_vftx_subev)
 {
     select several
     {
-        trig3 = TRIG3EVENT();
-    }
+        badevent = BAD_EVENT();
+    };
 
-    // as above
     select several
+    {
+        trig3 = TRIG3EVENT();
+    };
+
+    select optional
     {
         data = VFTX_CRATE_DATA();
     };
@@ -250,6 +305,11 @@ SUBEVENT(frs_tpat_subev)
 {
     select several
     {
+        badevent = BAD_EVENT();
+    };
+
+    select optional
+    {
         wr = TIMESTAMP_WHITERABBIT(id = 0x100);
     };
 
@@ -258,7 +318,7 @@ SUBEVENT(frs_tpat_subev)
         trig3 = TRIG3EVENT();
     };
 
-    select several
+    select optional
     {
         data = TPAT_CRATE_DATA();
     }
@@ -270,16 +330,22 @@ SUBEVENT(bm_subev)
     MEMBER(DATA32 dataS2[BM_MAX_HITS] NO_INDEX_LIST);// ZERO_SUPPRESS);
     MEMBER(DATA32 dataS4[BM_MAX_HITS] NO_INDEX_LIST);// ZERO_SUPPRESS);
 
+    select several
+    {
+        badevent = BAD_EVENT();
+    };
+
     select optional
     {
         ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1700);
     }
 
+    // CEJ: wrap in select several later to catch bad events
     UINT32 headS2 NOENCODE
     {
         0_12: l_hit_ct;
         13_15: reserved;
-        16_31: l_id = MATCH(0xAAAA); // MATCH(0xAAAA);
+        16_31: l_id = MATCH(0xAAAA);
     };
 
     list (0 <= l_i < headS2.l_hit_ct)
@@ -296,7 +362,7 @@ SUBEVENT(bm_subev)
     {
         0_12: l_hit_ct;
         13_15: reserved;
-        16_31: l_id = MATCH(0xBBBB); // MATCH(0xBBBB);
+        16_31: l_id = MATCH(0xBBBB);
     }
 
     list (0 <= l_i < headS4.l_hit_ct)
@@ -311,7 +377,7 @@ SUBEVENT(bm_subev)
     UINT32 trailer NOENCODE
     {
         0_15: reserved;
-        16_31: l_id = MATCH(0xCCCC); // MATCH(0xCCCC);
+        16_31: l_id = MATCH(0xCCCC);
     }
 }
 
