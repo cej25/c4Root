@@ -62,7 +62,6 @@ void FrsOnlineSpectra::SetParContainers()
 
 InitStatus FrsOnlineSpectra::Init()
 {
-    c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
@@ -77,13 +76,11 @@ InitStatus FrsOnlineSpectra::Init()
     
     TDirectory::TContext ctx(nullptr);
 
-    folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
-    if (!folder_frs_hists)
-    {
-       folder_frs_hists = new TFolder("FRS", "FRS");
-       run->AddObject(folder_frs_hists);
-    }
+    //folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
+    folder_frs_hists = new TFolder("FRS", "FRS");
+    mgr->Register("FRS", "FRS Folder", folder_frs_hists, false);
 
+    run->AddObject(folder_frs_hists);
 
 
     // CEJ: name should be more specfic? we want to break down histograms by type
@@ -249,7 +246,7 @@ void FrsOnlineSpectra::FinishEvent()
 
 void FrsOnlineSpectra::FinishTask()
 {   
-    folder_frs_hists->Write();
+    //folder_frs_hists->Write();
 }
 
 ClassImp(FrsOnlineSpectra)

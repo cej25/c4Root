@@ -65,7 +65,7 @@ class GermaniumRaw2Cal : public FairTask
 
 
         EventHeader * header;
-        Int_t fNEvents;
+        Int_t fNEvents = 0;
 
         //internal status flags for detector map and calibration map:
         Bool_t DetectorMap_loaded = 0;

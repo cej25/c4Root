@@ -24,6 +24,7 @@
 #include "TRandom.h"
 #include <TDirectory.h>
 #include <sstream>
+#include "TFile.h"
 
 AidaOnlineSpectra::AidaOnlineSpectra() : AidaOnlineSpectra("AidaOnline")
 {
@@ -55,7 +56,6 @@ void AidaOnlineSpectra::SetParContainers()
 
 InitStatus AidaOnlineSpectra::Init()
 {
-    c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
@@ -120,6 +120,10 @@ InitStatus AidaOnlineSpectra::Init()
     h_implant_e_xy.resize(conf->DSSDs());
     h_implant_strip_1d_energy.resize(conf->DSSDs());
     h_implant_x_ex.resize(conf->DSSDs());
+    h_implant_strip_xy_stopped.resize(conf->DSSDs());
+    h_implant_pos_xy_stopped.resize(conf->DSSDs());
+    h_implant_e_stopped.resize(conf->DSSDs());
+    h_implant_x_ex_stopped.resize(conf->DSSDs());
     h_decay_strip_xy.resize(conf->DSSDs());
     h_decay_pos_xy.resize(conf->DSSDs());
     h_decay_e.resize(conf->DSSDs());
@@ -128,6 +132,8 @@ InitStatus AidaOnlineSpectra::Init()
     aida_implant_scaler_queue.resize(conf->DSSDs());
     aida_implant_scaler_cur_sec.resize(conf->DSSDs());
     aida_implant_scaler_graph.resize(conf->DSSDs());
+    aida_implant_stopped_scaler_queue.resize(conf->DSSDs());
+    aida_implant_stopped_scaler_graph.resize(conf->DSSDs());
     aida_decay_scaler_queue.resize(conf->DSSDs());
     aida_decay_scaler_cur_sec.resize(conf->DSSDs());
     aida_decay_scaler_graph.resize(conf->DSSDs());
@@ -207,6 +213,45 @@ InitStatus AidaOnlineSpectra::Init()
 
         name.str("");
         title.str("");
+        name << "aida_implants_stopped_d" << (i + 1) << "_implants_strip_xy";
+        title << "DSSD " << (i + 1) << " stopped implant hit pattern";
+        h_implant_strip_xy_stopped[i] = new TH2F(name.str().c_str(), title.str().c_str(),
+                xstrips, 0, xstrips, 128, 0, 128);
+        h_implant_strip_xy_stopped[i]->GetXaxis()->SetTitle("X strip");
+        h_implant_strip_xy_stopped[i]->GetYaxis()->SetTitle("Y strip");
+        folder_stopped_implant_dssd[i]->Add(h_implant_strip_xy_stopped[i]);
+
+        name.str("");
+        title.str("");
+        name << "aida_implants_stopped_d" << (i + 1) << "_implants_pos_xy";
+        title << "DSSD " << (i + 1) << " stopped implant position";
+        h_implant_pos_xy_stopped[i] = new TH2F(name.str().c_str(), title.str().c_str(),
+                xstrips, -xmax, xmax, 128, -37.8, 37.8);
+        h_implant_pos_xy_stopped[i]->GetXaxis()->SetTitle("X position/mm");
+        h_implant_pos_xy_stopped[i]->GetYaxis()->SetTitle("Y position/mm");
+        folder_stopped_implant_dssd[i]->Add(h_implant_pos_xy_stopped[i]);
+
+        name.str("");
+        title.str("");
+        name << "aida_implants_stopped_d" << (i + 1) << "_implants_e";
+        title << "DSSD " << (i + 1) << " stopped implant energy";
+        h_implant_e_stopped[i] = new TH1F(name.str().c_str(), title.str().c_str(),
+                2000, 0, 20000);
+        h_implant_e_stopped[i]->GetXaxis()->SetTitle("Implant Energy/MeV");
+        folder_stopped_implant_dssd[i]->Add(h_implant_e_stopped[i]);
+
+        name.str("");
+        title.str("");
+        name << "aida_implants_stopped_d" << (i + 1) << "_implants_x_ex";
+        title << "DSSD " << (i + 1) << " stopped X position vs Energy";
+        h_implant_x_ex_stopped[i] = new TH2F(name.str().c_str(), title.str().c_str(),
+                xstrips, -xmax, xmax, 2000, 0, 20000);
+        h_implant_x_ex_stopped[i]->GetXaxis()->SetTitle("X Position/mm");
+        h_implant_x_ex_stopped[i]->GetYaxis()->SetTitle("Energy/MeV");
+        folder_stopped_implant_dssd[i]->Add(h_implant_x_ex_stopped[i]);
+
+        name.str("");
+        title.str("");
         name << "aida_decays_d" << (i + 1) << "_decays_strip_xy";
         title << "DSSD " << (i + 1) << " decay hit pattern";
         h_decay_strip_xy[i] = new TH2F(name.str().c_str(), title.str().c_str(),
@@ -268,6 +313,18 @@ InitStatus AidaOnlineSpectra::Init()
         aida_implant_scaler_graph[i]->SetMinimum(0);
         folder_scalers->Add(aida_implant_scaler_graph[i]);
 
+        aida_implant_stopped_scaler_queue[i].clear();
+        aida_implant_stopped_scaler_graph[i] = new TGraph(3600);
+        name.str("");
+        title.str("");
+        name << "aida_scaler_implants_stopped_d" << (i + 1);
+        title << "AIDA DSSD " << (i+ 1) << " Stopped Implant Rate";
+        title << ";Time before now (s);Frequency (Hz)";
+        aida_implant_stopped_scaler_graph[i]->SetName(name.str().c_str());
+        aida_implant_stopped_scaler_graph[i]->SetTitle(title.str().c_str());
+        aida_implant_stopped_scaler_graph[i]->SetMinimum(0);
+        folder_scalers->Add(aida_implant_stopped_scaler_graph[i]);
+
         aida_decay_scaler_queue[i].clear();
         aida_decay_scaler_cur_sec[i] = -1;
         aida_decay_scaler_graph[i] = new TGraph(3600);
@@ -303,7 +360,8 @@ InitStatus AidaOnlineSpectra::Init()
 
 void AidaOnlineSpectra::Reset_Histo()
 {
-    c4LOG(info, "");
+    c4LOG(info, "Resetting AIDA histograms.");
+    //implants
     for (auto& h : h_implant_strip_xy) h->Reset();
     for (auto& h : h_implant_pos_xy) h->Reset();
     for (auto& h : h_implant_e) h->Reset();
@@ -312,16 +370,24 @@ void AidaOnlineSpectra::Reset_Histo()
     for (auto& h : h_implant_strip_xy) h->Reset();
     for (auto& h : h_implant_x_ex) h->Reset();
 
+    // stopped implants
+    for (auto& h : h_implant_strip_xy_stopped) h->Reset();
+    for (auto& h : h_implant_pos_xy_stopped) h->Reset();
+    for (auto& h : h_implant_e_stopped) h->Reset();
+    for (auto& h : h_implant_x_ex_stopped) h->Reset();
+
+    //decays
     for (auto& h : h_decay_strip_xy) h->Reset();
     for (auto& h : h_decay_pos_xy) h->Reset();
     for (auto& h : h_decay_e) h->Reset();
     for (auto& h : h_decay_e_xy) h->Reset();
     for (auto& h : h_decay_strip_1d_energy) h->Reset();
+    c4LOG(info, "AIDA histograms reset.");
 }
 
 void AidaOnlineSpectra::Snapshot_Histo()
 {
-    c4LOG(info, "");
+    c4LOG(info, "Snapshotting AIDA histograms.");
 
     //date and timestamp
     time_t now = time(0);
@@ -329,6 +395,7 @@ void AidaOnlineSpectra::Snapshot_Histo()
     const char* snapshot_dir = Form("AIDA_Snapshots_%d%02d%02d_%02d%02d%02d",
             1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday,
             ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
+    
     gSystem->mkdir(snapshot_dir, true);
     gSystem->cd(snapshot_dir);
 
@@ -407,14 +474,22 @@ void AidaOnlineSpectra::Snapshot_Histo()
 
     delete c_aida_snapshots;
 
+
+    // snapshot .root file with date and time
+    file_aida_snapshot = new TFile(Form("AIDA_snapshot_%d_%d_%d_%d_%d_%d.root", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec), "RECREATE");
+    file_aida_snapshot->cd();
+    folder_aida->Write();
+    file_aida_snapshot->Close();
+    delete file_aida_snapshot;
+
     gSystem->cd("..");
-    c4LOG(info, "Snapshot saved in:" << snapshot_dir);
+    c4LOG(info, "AIDA snapshot saved in:" << snapshot_dir);
 
 }
 
 void AidaOnlineSpectra::Reset_Scalers()
 {
-    c4LOG(info, "");
+    c4LOG(info, "Resetting AIDA scalers.");
     for (auto& scaler : conf->ScalerMap())
     {
         aida_scaler_queue[scaler.first].clear();
@@ -424,9 +499,11 @@ void AidaOnlineSpectra::Reset_Scalers()
     {
         aida_implant_scaler_queue[i].clear();
         aida_implant_scaler_cur_sec[i] = -1;
+        aida_implant_stopped_scaler_queue[i].clear();
         aida_decay_scaler_queue[i].clear();
         aida_decay_scaler_cur_sec[i] = -1;
     }
+    c4LOG(info, "AIDA scalers reset.");
 }
 
 void AidaOnlineSpectra::Exec(Option_t* option)
@@ -454,10 +531,20 @@ void AidaOnlineSpectra::Exec(Option_t* option)
         h_implant_e_xy[hit.DSSD - 1]->Fill(hit.EnergyX, hit.EnergyY);
         h_implant_x_ex[hit.DSSD - 1]->Fill(hit.PosX, hit.EnergyX);
 
+        if (hit.Stopped)
+        {
+            h_implant_strip_xy_stopped[hit.DSSD - 1]->Fill(hit.StripX, hit.StripY);
+            h_implant_pos_xy_stopped[hit.DSSD - 1]->Fill(hit.PosX, hit.PosY);
+            h_implant_e_stopped[hit.DSSD - 1]->Fill(hit.Energy);
+            h_implant_x_ex_stopped[hit.DSSD - 1]->Fill(hit.PosX, hit.EnergyX);
+        }
+
         int second = (hit.Time / 1000000000ULL);
         if (second == aida_implant_scaler_cur_sec[hit.DSSD - 1])
         {
             aida_implant_scaler_queue[hit.DSSD - 1].front() += 1;
+            if (hit.Stopped)
+                aida_implant_scaler_queue[hit.DSSD - 1].front() += 1;
         }
         else
         {
@@ -465,13 +552,22 @@ void AidaOnlineSpectra::Exec(Option_t* option)
             if (aida_implant_scaler_cur_sec[hit.DSSD - 1] != -1)
             {
                 int diff = second - aida_implant_scaler_cur_sec[hit.DSSD - 1];
-                if (diff > 3600)
+                if (diff > 3600) {
                     aida_implant_scaler_queue[hit.DSSD - 1].clear();
+                    aida_implant_stopped_scaler_queue[hit.DSSD - 1].clear();
+                }
                 else
-                    while (diff-- > 1) aida_implant_scaler_queue[hit.DSSD - 1].push_front(0);
+                    while (diff-- > 1) {
+                        aida_implant_scaler_queue[hit.DSSD - 1].push_front(0);
+                        aida_implant_stopped_scaler_queue[hit.DSSD - 1].push_front(0);
+                    }
             }
             aida_implant_scaler_queue[hit.DSSD - 1].push_front(1);
-            while (aida_implant_scaler_queue[hit.DSSD - 1].size() > 3600) aida_implant_scaler_queue[hit.DSSD - 1].pop_back();
+            aida_implant_stopped_scaler_queue[hit.DSSD - 1].push_front(hit.Stopped ? 1 : 0);
+            while (aida_implant_scaler_queue[hit.DSSD - 1].size() > 3600)
+                aida_implant_scaler_queue[hit.DSSD - 1].pop_back();
+            while (aida_implant_stopped_scaler_queue[hit.DSSD - 1].size() > 3600)
+                aida_implant_stopped_scaler_queue[hit.DSSD - 1].pop_back();
         }
         aida_implant_scaler_cur_sec[hit.DSSD - 1] = second;
     }
