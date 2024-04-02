@@ -3,27 +3,22 @@
 #include "../../../config/lisa/setup.hh"
 #include "../../common/whiterabbit.spec"
 #include "../../common/gsi_febex4.spec"
+#include "../../common/general.spec"
 
-/*
-DUMMY()
-{
-    UINT32 no NOENCODE;
-}
-*/
+#define TRACE_LENGTH 3000
 
 SUBEVENT(febex_subev_traces)
 { 
     select several
     {
-        badevent = FEBEX_BAD_EVENT();
+        badevent = BAD_EVENT();
     }
-    if (WR_USED)  
-    {   
-        select several
-        {
-            ts = TIMESTAMP_WHITERABBIT(id=WR_ID);
-        }
+  
+    select optional
+    {
+        ts = TIMESTAMP_WHITERABBIT(id=WR_ID);
     }
+    
     select several
     {
         padding = FEBEX_PADDING();
@@ -31,9 +26,15 @@ SUBEVENT(febex_subev_traces)
 
     select several
     {   
-        // it refuses to do this with a list loop, so we can auto-generate this with config settings
+        // eventually 125 detectors requires 8 cards
         data[0] = FEBEX_EVENT_TRACES(card = 0);
-        // data[1] = FEBEX_EVENT_TRACES(card = 1);
+        data[1] = FEBEX_EVENT_TRACES(card = 1);
+        data[2] = FEBEX_EVENT_TRACES(card = 2);
+        data[3] = FEBEX_EVENT_TRACES(card = 3);
+        data[4] = FEBEX_EVENT_TRACES(card = 4);
+        data[5] = FEBEX_EVENT_TRACES(card = 5);
+        data[6] = FEBEX_EVENT_TRACES(card = 6);
+        data[7] = FEBEX_EVENT_TRACES(card = 7);
     }
    
 }
@@ -41,10 +42,7 @@ SUBEVENT(febex_subev_traces)
 EVENT
 {
 
-  lisa = febex_subev_traces(procid = PROCID);
+  lisa = febex_subev_traces(procid = 60);
 
   ignore_unknown_subevent;
 }
-
-// for mapping UNPACK -> RAW
-//#include "mapping.hh"

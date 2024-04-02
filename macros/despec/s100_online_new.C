@@ -30,7 +30,7 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_frsmain_onion_t frsmain;
     EXT_STR_h101_frstpc_onion_t frstpc;
     EXT_STR_h101_frsuser_onion_t frsuser;
-    EXT_STR_h101_frsvftx_onion_t frsvftx;
+    //EXT_STR_h101_frsvftx_onion_t frsvftx;
     EXT_STR_h101_frstpat_onion_t frstpat;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
     EXT_STR_h101_bgo_onion_t bgo;
@@ -47,6 +47,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
 
     // Define important paths.
     //TString c4Root_path = "/u/jbormans/c4Root";
+    //TString c4Root_path = "/u/despec/s100_online/c4Root";
     TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
     TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
@@ -81,13 +82,20 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 5500; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 5000; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
     run->SetSink(new FairRootFileSink(outputFileName));
     run->ActivateHttpServer(refresh, port);
+
+    // trying to kill ParSet errors
+    /*FairRuntimeDb* rtdb = FairRunOnline::Instance()->GetRuntimeDb();
+    FairGeoParSet* geo = new FairGeoParSet("FairGeoParSet");
+    FairBaseParSet* base = new FairBaseParSet("FairBaseParSet");
+    rtdb->addContainer(geo);rtdb->addContainer(base);*/
 
     // Create source using ucesb for input
     EXT_STR_h101 ucesb_struct;
@@ -225,19 +233,16 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         FrsMainReader* unpackfrsmain = new FrsMainReader((EXT_STR_h101_frsmain_onion*)&ucesb_struct.frsmain, offsetof(EXT_STR_h101, frsmain));
         FrsTPCReader* unpackfrstpc = new FrsTPCReader((EXT_STR_h101_frstpc_onion*)&ucesb_struct.frstpc, offsetof(EXT_STR_h101, frstpc));
         FrsUserReader* unpackfrsuser = new FrsUserReader((EXT_STR_h101_frsuser_onion*)&ucesb_struct.frsuser, offsetof(EXT_STR_h101, frsuser));
-        FrsVFTXReader* unpackfrsvftx = new FrsVFTXReader((EXT_STR_h101_frsvftx_onion*)&ucesb_struct.frsvftx, offsetof(EXT_STR_h101, frsvftx));
         FrsTpatReader* unpackfrstpat = new FrsTpatReader((EXT_STR_h101_frstpat_onion*)&ucesb_struct.frstpat, offsetof(EXT_STR_h101, frstpat));
         
         unpackfrsmain->SetOnline(true);
         unpackfrstpc->SetOnline(true);
         unpackfrsuser->SetOnline(true);
-        unpackfrsvftx->SetOnline(true);
         unpackfrstpat->SetOnline(true);
         
         source->AddReader(unpackfrsmain);
         source->AddReader(unpackfrstpc);
         source->AddReader(unpackfrsuser);
-        source->AddReader(unpackfrsvftx);
         source->AddReader(unpackfrstpat);
     }
     
@@ -256,7 +261,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (FATIMA_ON)
     {
         FatimaRaw2Cal* calfatima = new FatimaRaw2Cal();
-        calfatima->PrintDetectorMap();
+        // calfatima->PrintDetectorMap();
         // calfatima->PrintDetectorCal();
         
         calfatima->SetOnline(true);
@@ -284,8 +289,6 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (BPLAST_ON)
     {
         bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
-        // CEJ: these are not needed anymore, code was updated
-        //calbplast->SetDetectorMapFile(config_path + "/bplast/bplast_alloc.txt");
         
         calbplast->SetOnline(true);
         run->AddTask(calbplast);
@@ -296,9 +299,8 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (GERMANIUM_ON)
     {
         GermaniumRaw2Cal* calge = new GermaniumRaw2Cal();
-        // these will not be need anymore with config class
-        //calge->SetDetectorConfigurationFile(config_path + "/germanium/Germanium_Detector_Map.txt");
-        calge->PrintDetectorMap();
+        // calge->PrintDetectorMap();
+
         calge->SetOnline(true);
         run->AddTask(calge);
     }
@@ -306,7 +308,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (BGO_ON)
     {
         BGORaw2Cal* calbgo = new BGORaw2Cal();
-        calbgo->PrintDetectorMap();
+        // calbgo->PrintDetectorMap();
         
         calbgo->SetOnline(true);
         run->AddTask(calbgo);
@@ -318,16 +320,13 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         FrsMainRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
         FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
         FrsUserRaw2Cal* calfrsuser = new FrsUserRaw2Cal();
-        FrsVFTXRaw2Cal* calfrsvftx = new FrsVFTXRaw2Cal();
         
         calfrsmain->SetOnline(true);
         calfrstpc->SetOnline(true);
         calfrsuser->SetOnline(true);
-        calfrsvftx->SetOnline(true);
         run->AddTask(calfrsmain);
         run->AddTask(calfrstpc);
         run->AddTask(calfrsuser);
-        run->AddTask(calfrsvftx);
     }
 
 
@@ -437,9 +436,9 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         run->AddTask(onlinebm);
     }
 
-    TString b = "Fatima";
-    TString c = "FatimaVme";
-    TString d = "Aida";
+    TString b = "Aida";
+    TString c = "Fatima";
+    TString d = "FatimaVme";
     TString e = "bPlast";
     TString f = "Germanium";
 
@@ -477,7 +476,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         //run->AddTask(frsaidacorr);
     }
     
-    
+   
 
     // Initialise
     run->Init();

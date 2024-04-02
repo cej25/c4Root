@@ -17,6 +17,8 @@ extern "C"
     #include "ext_h101_frstpc.h"
 }
 
+#include <stdio.h>
+
 FrsTPCReader::FrsTPCReader(EXT_STR_h101_frstpc_onion* data, size_t offset)
     : c4Reader("FrsTPCReader")
     , fNEvent(0)
@@ -36,7 +38,6 @@ FrsTPCReader::~FrsTPCReader()
 Bool_t FrsTPCReader::Init(ext_data_struct_info* a_struct_info)
 {
     Int_t ok;
-    c4LOG(info, "");
     
     EXT_STR_h101_frstpc_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_frstpc, 0);
 
@@ -52,8 +53,6 @@ Bool_t FrsTPCReader::Init(ext_data_struct_info* a_struct_info)
 
     memset(fData, 0, sizeof *fData);
 
-    c4LOG(info, "FrsTPCReader init complete.");
-
     return kTRUE;
 }
 
@@ -63,6 +62,18 @@ Bool_t FrsTPCReader::Read()
 
     if (!fData) return kTRUE;
     if (fData == nullptr) return kFALSE;
+
+    bool bad_event = fData->frstpc_be;
+    if (bad_event)
+    {   
+        bad_event_counter++;
+        printf("\033[999;999H"); // move to bottom of screen
+        printf("\033[2A"); // move up 2 lines?
+        printf("\033[K"); // clear the line
+        c4LOG(info, "TPC bad event! Number: " << bad_event_counter);
+        printf("\033[1B"); // move down 1 line
+        return kTRUE;
+    }
 
     if (fData->frstpc_data_v775_n == 0 && fData->frstpc_data_v785_n == 0 && fData->frstpc_data_v1190_nM == 0) return kTRUE;
     ClearVectors();

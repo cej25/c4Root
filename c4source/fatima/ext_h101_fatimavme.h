@@ -111,19 +111,6 @@ typedef struct EXT_STR_h101_fatimavme_t
   uint32_t fatimavme_qdc4qshortv[64 EXT_STRUCT_CTRL(fatimavme_qdc4qshort)] /* [0,65535] */;
   uint32_t fatimavme_qdc4qlong /* [0,64] */;
   uint32_t fatimavme_qdc4qlongv[64 EXT_STRUCT_CTRL(fatimavme_qdc4qlong)] /* [0,65535] */;
-  uint32_t fatimavme_qdc5board_id /* [0,255] */;
-  uint32_t fatimavme_qdc5channels /* [0,255] */;
-  uint32_t fatimavme_qdc5board_time /* [-1,-1] */;
-  uint32_t fatimavme_qdc5channel_time /* [0,64] */;
-  uint32_t fatimavme_qdc5channel_timev[64 EXT_STRUCT_CTRL(fatimavme_qdc5channel_time)] /* [-1,-1] */;
-  uint32_t fatimavme_qdc5chan_ext_time /* [0,64] */;
-  uint32_t fatimavme_qdc5chan_ext_timev[64 EXT_STRUCT_CTRL(fatimavme_qdc5chan_ext_time)] /* [0,65535] */;
-  uint32_t fatimavme_qdc5chan_fine_time /* [0,64] */;
-  uint32_t fatimavme_qdc5chan_fine_timev[64 EXT_STRUCT_CTRL(fatimavme_qdc5chan_fine_time)] /* [0,65535] */;
-  uint32_t fatimavme_qdc5qshort /* [0,64] */;
-  uint32_t fatimavme_qdc5qshortv[64 EXT_STRUCT_CTRL(fatimavme_qdc5qshort)] /* [0,65535] */;
-  uint32_t fatimavme_qdc5qlong /* [0,64] */;
-  uint32_t fatimavme_qdc5qlongv[64 EXT_STRUCT_CTRL(fatimavme_qdc5qlong)] /* [0,65535] */;
 
 } EXT_STR_h101_fatimavme;
 
@@ -168,7 +155,7 @@ typedef struct EXT_STR_h101_fatimavme_onion_t
     uint32_t qshortv[64 /* qshort */];
     uint32_t qlong;
     uint32_t qlongv[64 /* qlong */];
-  } fatimavme_qdc[5];
+  } fatimavme_qdc[4];
 
 } EXT_STR_h101_fatimavme_onion;
 
@@ -423,45 +410,6 @@ typedef struct EXT_STR_h101_fatimavme_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      fatimavme_qdc4qlongv,            UINT32,\
                     "fatimavme_qdc4qlongv",            "fatimavme_qdc4qlong",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5board_id,          UINT32,\
-                    "fatimavme_qdc5board_id",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5channels,          UINT32,\
-                    "fatimavme_qdc5channels",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5board_time,        UINT32,\
-                    "fatimavme_qdc5board_time",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5channel_time,      UINT32,\
-                    "fatimavme_qdc5channel_time",64,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5channel_timev,     UINT32,\
-                    "fatimavme_qdc5channel_timev",     "fatimavme_qdc5channel_time",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5chan_ext_time,     UINT32,\
-                    "fatimavme_qdc5chan_ext_time",64,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5chan_ext_timev,    UINT32,\
-                    "fatimavme_qdc5chan_ext_timev",    "fatimavme_qdc5chan_ext_time",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5chan_fine_time,    UINT32,\
-                    "fatimavme_qdc5chan_fine_time",64,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5chan_fine_timev,   UINT32,\
-                    "fatimavme_qdc5chan_fine_timev",   "fatimavme_qdc5chan_fine_time",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5qshort,            UINT32,\
-                    "fatimavme_qdc5qshort",64,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5qshortv,           UINT32,\
-                    "fatimavme_qdc5qshortv",           "fatimavme_qdc5qshort",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5qlong,             UINT32,\
-                    "fatimavme_qdc5qlong",64,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5qlongv,            UINT32,\
-                    "fatimavme_qdc5qlongv",            "fatimavme_qdc5qlong",0/*flags*/); \
   \
 } while (0);
 

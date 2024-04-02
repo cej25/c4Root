@@ -51,24 +51,23 @@ void AidaUnpack2Cal::SetParContainers()
 
 InitStatus AidaUnpack2Cal::Init()
 {
-  c4LOG(info, "");
-  FairRootManager* mgr = FairRootManager::Instance();
-  c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
+    FairRootManager* mgr = FairRootManager::Instance();
+    c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-  unpackArray = mgr->InitObjectAs<decltype(unpackArray)>("AidaAdcData");
-  c4LOG_IF(fatal, !unpackArray, "Branch AidaAdcData not found!");
+    unpackArray = mgr->InitObjectAs<decltype(unpackArray)>("AidaAdcData");
+    c4LOG_IF(fatal, !unpackArray, "Branch AidaAdcData not found!");
 
-  scalerArray = mgr->InitObjectAs<decltype(scalerArray)>("AidaScalerData");
-  c4LOG_IF(fatal, !scalerArray, "Branch AidaScalerData not found!");
+    scalerArray = mgr->InitObjectAs<decltype(scalerArray)>("AidaScalerData");
+    c4LOG_IF(fatal, !scalerArray, "Branch AidaScalerData not found!");
 
-  mgr->RegisterAny("AidaImplantCalAdcData", implantCalArray, !fImplantOnline);
-  mgr->RegisterAny("AidaDecayCalAdcData", decayCalArray, !fDecayOnline);
-  mgr->Register("AidaTimeMachineData", "AidaTimeMachineDataFolder", aidaTimeMachineArray, !fScalersOnline);
+    mgr->RegisterAny("AidaImplantCalAdcData", implantCalArray, !fImplantOnline);
+    mgr->RegisterAny("AidaDecayCalAdcData", decayCalArray, !fDecayOnline);
+    mgr->Register("AidaTimeMachineData", "AidaTimeMachineDataFolder", aidaTimeMachineArray, !fScalersOnline);
 
-  conf = TAidaConfiguration::GetInstance();
-  ignoredEvents = 0;
+    conf = TAidaConfiguration::GetInstance();
+    ignoredEvents = 0;
 
-  return kSUCCESS;
+    return kSUCCESS;
 }
 
 

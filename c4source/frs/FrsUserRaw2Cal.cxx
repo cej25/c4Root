@@ -49,7 +49,6 @@ FrsUserRaw2Cal::~FrsUserRaw2Cal()
 
 InitStatus FrsUserRaw2Cal::Init()
 {
-    c4LOG(info, "Grabbing FairRootManager, RunOnline and EventHeader.");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 

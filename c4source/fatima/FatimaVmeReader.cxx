@@ -42,7 +42,6 @@ FatimaVmeReader::~FatimaVmeReader()
 Bool_t FatimaVmeReader::Init(ext_data_struct_info* a_struct_info)
 {
     Int_t ok;
-    c4LOG(info, "");
 
     EXT_STR_h101_fatimavme_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_fatimavme, 0);
 
@@ -63,12 +62,8 @@ Bool_t FatimaVmeReader::Init(ext_data_struct_info* a_struct_info)
     TFatimaVmeConfiguration const* fatvme_conf = TFatimaVmeConfiguration::GetInstance();
     num_qdc_boards = fatvme_conf->NQDCBoards();
     num_tdc_boards = fatvme_conf->NTDCBoards();
-    std::cout << "num qdc_boards: " << num_qdc_boards << std::endl;
-    std::cout << "num_tdc_boards: " << num_tdc_boards << std::endl;
     dets_qdc = fatvme_conf->QDCMapping();
     dets_tdc = fatvme_conf->TDCMapping();
-
-    c4LOG(info, "FatimaVmeReader init setup completed.");
 
     return kTRUE;
 

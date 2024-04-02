@@ -1,6 +1,7 @@
 #include "TCorrelationsConfiguration.h"
 
 #include "c4Logger.h"
+#include "FairLogger.h"
 
 #include <iostream>
 #include <sstream>
@@ -20,8 +21,7 @@ void TCorrelationsConfiguration::ReadCorrelationsFile()
     std::ifstream file(filepath);
     std::string line;
 
-    if (file.fail()) c4LOG(warn, "Cannot open correlations file!");
-    c4LOG(info, "Reading correlations.dat file");
+    if (file.fail()) c4LOG(warn, "Cannot open correlations.dat file!");
     
     while (std::getline(file, line))
     {
@@ -37,8 +37,6 @@ void TCorrelationsConfiguration::ReadCorrelationsFile()
             std::vector<int> values;
             while (iss >> value) values.push_back(value);
             
-            std::cout << "Reading Time Machine Mapping" << std::endl;
-
             if (!values.empty())
             {
                 std::vector<int> reverse_values;
@@ -91,45 +89,21 @@ void TCorrelationsConfiguration::ReadCorrelationsFile()
                 else if (firstWord == "BDG_PID") correlations_map["Beta-Delayed Gamma PID"] = values;
 
                 // time machine map - we should use {all capitals} only for FRS. We can standardise this after dryrun
+                
                 else if (firstWord == "FRS_AIDA_TM")
                 {
                     timemachine_map["FRS-Aida TM Gate"] = values;
                     timemachine_map["Aida-FRS TM Gate"] = reverse_values;
                 }
-                else if (firstWord == "FATIMA_TAMEX_FATIMA_VME")
+                else if (firstWord == "AIDA_FATIMA_TAMEX_TM")
                 {
-                    timemachine_map["Fatima-FatimaVme TM Gate"] = values;
-                    timemachine_map["FatimaVme-Fatima TM Gate"] = reverse_values;
+                    timemachine_map["Aida-Fatima TM Gate"] = values;
+                    timemachine_map["Fatima-Aida TM Gate"] = reverse_values;
                 }
-                else if (firstWord == "FATIMA_TAMEX_AIDA_TM")
+                else if (firstWord == "AIDA_FATIMA_VME_TM")
                 {
-                    timemachine_map["Fatima-Aida TM Gate"] = values;
-                    timemachine_map["Aida-Fatima TM Gate"] = reverse_values;
-                }
-                else if (firstWord == "FATIMA_TAMEX_BPLAST_TM")
-                {
-                    timemachine_map["Fatima-bPlast TM Gate"] = values;
-                    timemachine_map["bPlast-Fatima TM Gate"] = reverse_values;
-                }
-                else if (firstWord == "FATIMA_TAMEX_GERMANIUM_TM")
-                {
-                    timemachine_map["Fatima-Germanium TM Gate"] = values;
-                    timemachine_map["Germanium-Fatima TM Gate"] = reverse_values;
-                }
-                else if (firstWord == "FATIMA_VME_AIDA_TM")
-                {
-                    timemachine_map["FatimaVme-Aida TM Gate"] = values;
-                    timemachine_map["Aida-FatimaVme TM Gate"] = reverse_values;
-                }
-                else if (firstWord == "FATIMA_VME_BPLAST_TM")
-                {
-                    timemachine_map["FatimaVme-bPlast TM Gate"] = values;
-                    timemachine_map["bPlast-FatimaVme TM Gate"] = reverse_values;
-                }
-                else if (firstWord == "FATIMA_VME_GERMANIUM_TM")
-                {
-                    timemachine_map["FatimaVme-Germanium TM Gate"] = values;
-                    timemachine_map["Germanium-FatimaVme TM Gate"] = reverse_values;
+                    timemachine_map["Aida-FatimaVme TM Gate"] = values;
+                    timemachine_map["FatimaVme-Aida TM Gate"] = reverse_values;
                 }
                 else if (firstWord == "AIDA_BPLAST_TM")
                 {
@@ -141,6 +115,31 @@ void TCorrelationsConfiguration::ReadCorrelationsFile()
                     timemachine_map["Aida-Germanium TM Gate"] = values;
                     timemachine_map["Germanium-Aida TM Gate"] = reverse_values;
                 }
+                else if (firstWord == "FATIMA_TAMEX_FATIMA_VME_TM")
+                {
+                    timemachine_map["Fatima-FatimaVme TM Gate"] = values;
+                    timemachine_map["FatimaVme-Fatima TM Gate"] = reverse_values;
+                }
+                else if (firstWord == "FATIMA_TAMEX_BPLAST_TM")
+                {
+                    timemachine_map["Fatima-bPlast TM Gate"] = values;
+                    timemachine_map["bPlast-Fatima TM Gate"] = reverse_values;
+                }
+                else if (firstWord == "FATIMA_TAMEX_GERMANIUM_TM")
+                {
+                    timemachine_map["Fatima-Germanium TM Gate"] = values;
+                    timemachine_map["Germanium-Fatima TM Gate"] = reverse_values;
+                }
+                else if (firstWord == "FATIMA_VME_BPLAST_TM")
+                {
+                    timemachine_map["FatimaVme-bPlast TM Gate"] = values;
+                    timemachine_map["bPlast-FatimaVme TM Gate"] = reverse_values;
+                }
+                else if (firstWord == "FATIMA_VME_GERMANIUM_TM")
+                {
+                    timemachine_map["FatimaVme-Germanium TM Gate"] = values;
+                    timemachine_map["Germanium-FatimaVme TM Gate"] = reverse_values;
+                }
                 else if (firstWord == "BPLAST_GERMANIUM_TM")
                 {
                     timemachine_map["bPlast-Germanium TM Gate"] = values;
@@ -150,4 +149,6 @@ void TCorrelationsConfiguration::ReadCorrelationsFile()
             }
         }
     }
+
+    LOG(info) <<  "Correlations File: " + filepath;
 }
