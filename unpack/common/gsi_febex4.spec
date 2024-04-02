@@ -1,4 +1,4 @@
-#define TRACE_SIZE 10000 // some maximum size?
+#define TRACE_SIZE 4000 // some maximum size?
 #define TRACE_CHANNELS 1 // this needs to be read from the data stream somehow
 
 

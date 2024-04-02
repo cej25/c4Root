@@ -49,7 +49,7 @@ class LisaReader : public c4Reader
         TClonesArray* fTraceArray;
 
     public:
-        ClassDefOverride(LisaReader, 1);
+        ClassDefOverride(LisaReader, 0);
 };
 
 #endif
