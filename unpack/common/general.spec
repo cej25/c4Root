@@ -1,9 +1,16 @@
+// -*- C++ -*-
+
+
 BAD_EVENT()
 {
-    UINT32 bad NOENCODE
+    MEMBER(DATA8 bad);
+    
+    UINT32 be NOENCODE
     {
-        0_31: 0xBAD00BAD;
+        0_31: b = MATCH(0xbad00bad);
     }
+
+    ENCODE(bad, (value = 1));
 }
 
 DUMMY()
