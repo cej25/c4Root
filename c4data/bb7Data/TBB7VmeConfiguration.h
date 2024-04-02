@@ -1,6 +1,7 @@
 #ifndef TBB7VmeConfiguration_H
 #define TBB7VmeConfiguration_H
 
+#include <string>
 #include <set>
 #include <map>
 #include <string>
