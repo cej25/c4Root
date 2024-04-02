@@ -4,6 +4,7 @@
 #include "../../common/whiterabbit.spec"
 #include "../../common/gsi_febex4.spec"
 
+#define TRACE_LENGTH 3000
 
 SUBEVENT(febex_subev_traces)
 { 
