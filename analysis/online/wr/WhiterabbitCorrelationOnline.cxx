@@ -631,9 +631,9 @@ void WhiterabbitCorrelationOnline::Snapshot_Histo()
     c_whiterabbit_trigger1_fatimavme_ge->SaveAs("c_whiterabbit_trigger1_fatimavme_ge.png");
     c_whiterabbit_trigger3_fatimavme_ge->SaveAs("c_whiterabbit_trigger3_fatimavme_ge.png");
 
-    c_whiterabbit_correlation_bplast_fatimavme->SaveAs("c_whiterabbit_correlation_bplast_fatimavme.png");
-    c_whiterabbit_trigger1_bplast_fatimavme->SaveAs("c_whiterabbit_trigger1_bplast_fatimavme.png");
-    c_whiterabbit_trigger3_bplast_fatimavme->SaveAs("c_whiterabbit_trigger3_bplast_fatimavme.png");
+    c_whiterabbit_correlation_fatima_bplast->SaveAs("c_whiterabbit_correlation_fatimavme_bplast.png");
+    c_whiterabbit_trigger1_fatimavme_bplast->SaveAs("c_whiterabbit_trigger1_fatimavme_bplast.png");
+    c_whiterabbit_trigger3_fatima_bplast->SaveAs("c_whiterabbit_trigger3_fatima_bplast.png");
 
     c_whiterabbit_correlation->SaveAs("c_whiterabbit_correlation.png");
     c_whiterabbit_trigger1->SaveAs("c_whiterabbit_trigger1.png");
