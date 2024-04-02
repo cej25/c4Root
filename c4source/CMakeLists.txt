@@ -11,7 +11,7 @@ ${C4ROOT_SOURCE_DIR}/c4source
 ${C4ROOT_SOURCE_DIR}/c4source/base
 ${C4ROOT_SOURCE_DIR}/c4source/wr
 ${C4ROOT_SOURCE_DIR}/c4source/frs
-${C4ROOT_SOURCE_DIR}/c4source/lisa  #lisa
+${C4ROOT_SOURCE_DIR}/c4source/lisa
 ${C4ROOT_SOURCE_DIR}/c4source/aida
 ${C4ROOT_SOURCE_DIR}/c4source/bplast
 ${C4ROOT_SOURCE_DIR}/c4source/fatima
@@ -20,7 +20,7 @@ ${C4ROOT_SOURCE_DIR}/c4source/bgo
 ${C4ROOT_SOURCE_DIR}/c4source/beammonitor
 ${C4ROOT_SOURCE_DIR}/c4data
 ${C4ROOT_SOURCE_DIR}/c4data/frsData
-${C4ROOT_SOURCE_DIR}/c4data/lisaData #lisa
+${C4ROOT_SOURCE_DIR}/c4data/lisaData
 ${C4ROOT_SOURCE_DIR}/c4data/bgoData
 ${C4ROOT_SOURCE_DIR}/c4data/wrData
 ${C4ROOT_SOURCE_DIR}/c4data/aidaData
@@ -61,7 +61,7 @@ set(SRCS
 ./frs/FrsVFTXRaw2Cal.cxx
 ./frs/FrsCal2Hit.cxx
 ./germanium/GermaniumReader.cxx
-./lisa/LisaReader.cxx   #lisa
+./lisa/LisaReader.cxx
 ./bplast/bPlastReader.cxx
 ./bplast/bPlastRaw2Cal.cxx
 ./beammonitor/BeamMonitorReader.cxx
@@ -83,7 +83,7 @@ Set(STRUCT_HEADERS
 ./frs/ext_h101_frstpc.h
 ./frs/ext_h101_frsuser.h
 ./frs/ext_h101_frsvftx.h
-./lisa/ext_h101_lisa.h  #lisa
+./lisa/ext_h101_lisa.h
 ./germanium/ext_h101_germanium.h
 ./bplast/ext_h101_bplast.h
 ./beammonitor/ext_h101_beammonitor.h

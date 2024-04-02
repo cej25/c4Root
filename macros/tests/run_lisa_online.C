@@ -1,10 +1,12 @@
 typedef struct EXT_STR_h101_t
-{
+{   
+    EXT_STR_h101_unpack_t eventheaders;
     EXT_STR_h101_lisa_onion_t lisa;
 } EXT_STR_h101;
 
 void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId = 1)
-{
+{   
+
     TString cRunId = Form("%04d", fRunId);
     TString cExpId = Form("%03d", fExpId);
 
@@ -18,42 +20,53 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
 
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
-
-    TString filename = "~/LISA/lustre/despec/lisa/eris_241Am_1000V_0094_0001.lmd";
-    TString outputpath = "/home/lisa_offline/test_online";
+    
+    //TString filename = "trans://R4L-21";
+    //TString filename = "~/lustre/gamma/beam_monitor_2021/s496_00**.lmd";
+    TString filename = "/u/gandolfo/lustre/despec/lisa/eris_241Am_1000V_0094_0001.lmd";
+    //TString outputpath = "/u/gandolfo/watermelon/";
+    TString outputpath = "/u/gandolfo/lustre/gamma/LISA/data/c4data/";
     TString outputFilename = outputpath + "eris_test.root";
 
-    Int_t refresh = 10;
-    Int_t port = 5999;
-
+    Int_t refresh = 10; // Refresh rate for online histograms
+    Int_t port = 6001;
+     
     TString ntuple_options = "UNPACK";
-    //TString ucesb_dir = getenv("UCESB_DIR");
-    TString ucesb_dir = getenv("HOME");
-    TString temp_path = ucesb_dir + "/software/c4Root/unpack/exps";
-    //TString ucesb_path = ucesb_dir + "/lisa/lisa --allow-errors --input-buffer=200Mi";
+   //TString ucesb_dir = getenv("UCESB_DIR"); // .bashrc
+    TString temp_path = "/u/gandolfo/c4/c4Root/unpack/exps"; //at some point move to common computer
+    //TString ucesb_dir = "/u/despec/s100_online/c4Root/unpack/exps";
     TString ucesb_path = temp_path + "/lisa/lisa --allow-errors --input-buffer=200Mi";
     ucesb_path.ReplaceAll("//","/");
 
+    // Create online run
     FairRunOnline* run = new FairRunOnline();
-    EventHeader* EvntHeader = new EventHeader();
-    run->SetEventHeader(EvntHeader);
+    EventHeader* EvtHead = new EventHeader();
+    run->SetEventHeader(EvtHead);
     run->SetRunId(1);
     run->SetSink(new FairRootFileSink(outputFilename));
     run->ActivateHttpServer(refresh, port);
 
+    // Load ucesb structure
     EXT_STR_h101 ucesb_struct;
 
+    // Create source using ucesb for input
     UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
     source->SetMaxEvents(nev);
+    run->SetSource(source);  
+
+    UnpackReader* unpackheader = new UnpackReader((EXT_STR_h101_unpack*)&ucesb_struct.eventheaders, offsetof(EXT_STR_h101, eventheaders));
 
     LisaReader* unpacklisa = new LisaReader((EXT_STR_h101_lisa_onion*)&ucesb_struct.lisa, offsetof(EXT_STR_h101, lisa));
 
+
     unpacklisa->SetOnline(false); //false= write to a tree; true=doesn't write to tree
+    
+    //Add readers
     source->AddReader(unpacklisa);
 
-    run->SetSource(source);
-
+    // Runtime data base
     FairRuntimeDb* rtdb = run->GetRuntimeDb();
+
 
     // Add analysis task here at some point
 
@@ -61,8 +74,9 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
 
     //run->AddTask(onlinelisa);
 
+    // Initialise
     run->Init();
-    FairLogger::GetLogger()->SetLogScreenLevel("info");
+    //FairLogger::GetLogger()->SetLogScreenLevel("info");
 
     // Information about portnumber and main data stream
     cout << "\n\n" << endl;
@@ -71,7 +85,7 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     cout << "\n\n" << endl;
 
     // Run
-    run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev); // no idea
+    run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev);
 
     // Finish
     timer.Stop();
@@ -83,7 +97,5 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     std::cout << "Macro finished successfully." << std::endl;
     std::cout << "Output file is " << outputFilename << std::endl;
     std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl << std::endl;
-    gApplication->Terminate();
-
-
+   // gApplication->Terminate(0);
 }

@@ -87,7 +87,7 @@ Bool_t LisaReader::Read()
 // You must clear any arrays and vectors you use or things will get weird
 void LisaReader::ZeroArrays()
 {   
-
+    fArray->Clear();
 }
 
 void LisaReader::ClearVectors()
