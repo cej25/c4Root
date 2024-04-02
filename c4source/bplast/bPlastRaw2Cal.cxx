@@ -274,7 +274,7 @@ void bPlastRaw2Cal::Exec(Option_t* option){
                 if (bplast_config->MappingLoaded())
                 {
                     
-                    std::map<std::pair<int, int>, std::pair<int, std::pair<std::string, std::string>>> fmap;
+                    std::map<std::pair<int, int>, std::pair<int, std::pair<char, char>>> fmap;
                     fmap = bplast_config->Mapping();
                     std::pair<int, int> unmapped_det { funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2 };
 
