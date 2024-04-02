@@ -42,6 +42,7 @@ typedef struct EXT_STR_h101_fatimavme_t
   uint32_t fatimavme_tdc1_leadOrTrailME[128 EXT_STRUCT_CTRL(fatimavme_tdc1_leadOrTrailM)] /* [1,16384] */;
   uint32_t fatimavme_tdc1_leadOrTrail /* [0,16384] */;
   uint32_t fatimavme_tdc1_leadOrTrailv[16384 EXT_STRUCT_CTRL(fatimavme_tdc1_leadOrTrail)] /* [0,255] */;
+  uint32_t fatimavme_tdc1_geo /* [0,255] */;
   uint32_t fatimavme_tdc2_nM /* [1,128] */;
   uint32_t fatimavme_tdc2_nMI[128 EXT_STRUCT_CTRL(fatimavme_tdc2_nM)] /* [1,128] */;
   uint32_t fatimavme_tdc2_nME[128 EXT_STRUCT_CTRL(fatimavme_tdc2_nM)] /* [1,16384] */;
@@ -52,6 +53,7 @@ typedef struct EXT_STR_h101_fatimavme_t
   uint32_t fatimavme_tdc2_leadOrTrailME[128 EXT_STRUCT_CTRL(fatimavme_tdc2_leadOrTrailM)] /* [1,16384] */;
   uint32_t fatimavme_tdc2_leadOrTrail /* [0,16384] */;
   uint32_t fatimavme_tdc2_leadOrTrailv[16384 EXT_STRUCT_CTRL(fatimavme_tdc2_leadOrTrail)] /* [0,255] */;
+  uint32_t fatimavme_tdc2_geo /* [0,255] */;
   uint32_t fatimavme_ts_subsystem_id /* [0,65535] */;
   uint32_t fatimavme_ts_t1 /* [0,65535] */;
   uint32_t fatimavme_ts_t2 /* [0,65535] */;
@@ -109,19 +111,6 @@ typedef struct EXT_STR_h101_fatimavme_t
   uint32_t fatimavme_qdc4qshortv[64 EXT_STRUCT_CTRL(fatimavme_qdc4qshort)] /* [0,65535] */;
   uint32_t fatimavme_qdc4qlong /* [0,64] */;
   uint32_t fatimavme_qdc4qlongv[64 EXT_STRUCT_CTRL(fatimavme_qdc4qlong)] /* [0,65535] */;
-  uint32_t fatimavme_qdc5board_id /* [0,255] */;
-  uint32_t fatimavme_qdc5channels /* [0,255] */;
-  uint32_t fatimavme_qdc5board_time /* [-1,-1] */;
-  uint32_t fatimavme_qdc5channel_time /* [0,64] */;
-  uint32_t fatimavme_qdc5channel_timev[64 EXT_STRUCT_CTRL(fatimavme_qdc5channel_time)] /* [-1,-1] */;
-  uint32_t fatimavme_qdc5chan_ext_time /* [0,64] */;
-  uint32_t fatimavme_qdc5chan_ext_timev[64 EXT_STRUCT_CTRL(fatimavme_qdc5chan_ext_time)] /* [0,65535] */;
-  uint32_t fatimavme_qdc5chan_fine_time /* [0,64] */;
-  uint32_t fatimavme_qdc5chan_fine_timev[64 EXT_STRUCT_CTRL(fatimavme_qdc5chan_fine_time)] /* [0,65535] */;
-  uint32_t fatimavme_qdc5qshort /* [0,64] */;
-  uint32_t fatimavme_qdc5qshortv[64 EXT_STRUCT_CTRL(fatimavme_qdc5qshort)] /* [0,65535] */;
-  uint32_t fatimavme_qdc5qlong /* [0,64] */;
-  uint32_t fatimavme_qdc5qlongv[64 EXT_STRUCT_CTRL(fatimavme_qdc5qlong)] /* [0,65535] */;
 
 } EXT_STR_h101_fatimavme;
 
@@ -148,6 +137,7 @@ typedef struct EXT_STR_h101_fatimavme_onion_t
     uint32_t _leadOrTrailME[128 /* _leadOrTrailM */];
     uint32_t _leadOrTrail;
     uint32_t _leadOrTrailv[16384 /* _leadOrTrail */];
+    uint32_t _geo;
   } fatimavme_tdc[2];
   uint32_t fatimavme_ts_subsystem_id;
   uint32_t fatimavme_ts_t[4];
@@ -165,7 +155,7 @@ typedef struct EXT_STR_h101_fatimavme_onion_t
     uint32_t qshortv[64 /* qshort */];
     uint32_t qlong;
     uint32_t qlongv[64 /* qlong */];
-  } fatimavme_qdc[5];
+  } fatimavme_qdc[4];
 
 } EXT_STR_h101_fatimavme_onion;
 
@@ -214,6 +204,9 @@ typedef struct EXT_STR_h101_fatimavme_onion_t
                      fatimavme_tdc1_leadOrTrailv,     UINT32,\
                     "fatimavme_tdc1_leadOrTrailv",     "fatimavme_tdc1_leadOrTrail",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     fatimavme_tdc1_geo,              UINT32,\
+                    "fatimavme_tdc1_geo",255,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      fatimavme_tdc2_nM,               UINT32,\
                     "fatimavme_tdc2_nM",128,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
@@ -243,6 +236,9 @@ typedef struct EXT_STR_h101_fatimavme_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      fatimavme_tdc2_leadOrTrailv,     UINT32,\
                     "fatimavme_tdc2_leadOrTrailv",     "fatimavme_tdc2_leadOrTrail",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     fatimavme_tdc2_geo,              UINT32,\
+                    "fatimavme_tdc2_geo",255,0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      fatimavme_ts_subsystem_id,       UINT32,\
                     "fatimavme_ts_subsystem_id",65535,0/*flags*/); \
@@ -414,45 +410,6 @@ typedef struct EXT_STR_h101_fatimavme_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      fatimavme_qdc4qlongv,            UINT32,\
                     "fatimavme_qdc4qlongv",            "fatimavme_qdc4qlong",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5board_id,          UINT32,\
-                    "fatimavme_qdc5board_id",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5channels,          UINT32,\
-                    "fatimavme_qdc5channels",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5board_time,        UINT32,\
-                    "fatimavme_qdc5board_time",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5channel_time,      UINT32,\
-                    "fatimavme_qdc5channel_time",64,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5channel_timev,     UINT32,\
-                    "fatimavme_qdc5channel_timev",     "fatimavme_qdc5channel_time",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5chan_ext_time,     UINT32,\
-                    "fatimavme_qdc5chan_ext_time",64,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5chan_ext_timev,    UINT32,\
-                    "fatimavme_qdc5chan_ext_timev",    "fatimavme_qdc5chan_ext_time",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5chan_fine_time,    UINT32,\
-                    "fatimavme_qdc5chan_fine_time",64,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5chan_fine_timev,   UINT32,\
-                    "fatimavme_qdc5chan_fine_timev",   "fatimavme_qdc5chan_fine_time",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5qshort,            UINT32,\
-                    "fatimavme_qdc5qshort",64,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5qshortv,           UINT32,\
-                    "fatimavme_qdc5qshortv",           "fatimavme_qdc5qshort",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5qlong,             UINT32,\
-                    "fatimavme_qdc5qlong",64,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     fatimavme_qdc5qlongv,            UINT32,\
-                    "fatimavme_qdc5qlongv",            "fatimavme_qdc5qlong",0/*flags*/); \
   \
 } while (0);
 

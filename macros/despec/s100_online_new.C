@@ -47,8 +47,9 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
 
     // Define important paths.
     //TString c4Root_path = "/u/jbormans/c4Root";
+    TString c4Root_path = "/u/despec/s100_online/c4Root";
     TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
-    TString c4Root_path = "/u/cjones/c4Root";
+    //TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -81,7 +82,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 5500; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 5000; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
@@ -256,7 +257,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (FATIMA_ON)
     {
         FatimaRaw2Cal* calfatima = new FatimaRaw2Cal();
-        calfatima->PrintDetectorMap();
+        // calfatima->PrintDetectorMap();
         // calfatima->PrintDetectorCal();
         
         calfatima->SetOnline(true);
@@ -284,8 +285,6 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (BPLAST_ON)
     {
         bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
-        // CEJ: these are not needed anymore, code was updated
-        //calbplast->SetDetectorMapFile(config_path + "/bplast/bplast_alloc.txt");
         
         calbplast->SetOnline(true);
         run->AddTask(calbplast);
@@ -296,9 +295,8 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (GERMANIUM_ON)
     {
         GermaniumRaw2Cal* calge = new GermaniumRaw2Cal();
-        // these will not be need anymore with config class
-        //calge->SetDetectorConfigurationFile(config_path + "/germanium/Germanium_Detector_Map.txt");
-        calge->PrintDetectorMap();
+        // calge->PrintDetectorMap();
+
         calge->SetOnline(true);
         run->AddTask(calge);
     }
@@ -306,7 +304,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (BGO_ON)
     {
         BGORaw2Cal* calbgo = new BGORaw2Cal();
-        calbgo->PrintDetectorMap();
+        // calbgo->PrintDetectorMap();
         
         calbgo->SetOnline(true);
         run->AddTask(calbgo);
@@ -437,9 +435,9 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         run->AddTask(onlinebm);
     }
 
-    TString b = "Fatima";
-    TString c = "FatimaVme";
-    TString d = "Aida";
+    TString b = "Aida";
+    TString c = "Fatima";
+    TString d = "FatimaVme";
     TString e = "bPlast";
     TString f = "Germanium";
 
@@ -477,7 +475,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         //run->AddTask(frsaidacorr);
     }
     
-    
+        
 
     // Initialise
     run->Init();

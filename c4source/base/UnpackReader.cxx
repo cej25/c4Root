@@ -31,8 +31,9 @@ UnpackReader::~UnpackReader()
 Bool_t UnpackReader::Init(ext_data_struct_info* a_struct_info)
 {
     Int_t ok;
-    c4LOG(info, "");
+
     EXT_STR_h101_unpack_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_unpack, 0);
+
     if (!ok)
     {
         c4LOG(error, "Failed to setup structure information.");
@@ -46,8 +47,8 @@ Bool_t UnpackReader::Init(ext_data_struct_info* a_struct_info)
     {
         c4LOG(warn, "EventHeader. not found");
     }
-    else
-        c4LOG(info, "EventHeader. found");
+   
+    c4LOG(info, "Success (this step is vital)!");
 
     return kTRUE;
 }

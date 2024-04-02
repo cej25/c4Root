@@ -90,7 +90,6 @@ void FrsCal2Hit::SetParContainers()
 
 InitStatus FrsCal2Hit::Init()
 {
-    c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
