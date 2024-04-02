@@ -18,11 +18,6 @@ external EXT_AIDA();
 
 SUBEVENT(bgo_tamex_subevent)
 {
-    select several
-    {
-        badevent = BAD_EVENT();
-    };
-
     select optional
     {
         ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1900);
@@ -54,11 +49,6 @@ SUBEVENT(aida_subev)
 // this must change to be more general, or name should change from febex_subev
 SUBEVENT(febex_subev)
 {
-    select several
-    {
-        badevent = BAD_EVENT();
-    };
-
     select optional
     {
         ts = TIMESTAMP_WHITERABBIT(id = 0x400);
@@ -80,10 +70,6 @@ SUBEVENT(febex_subev)
 
 SUBEVENT(fatima_tamex_subev)
 {
-    select several
-    {
-        badevent = BAD_EVENT();
-    };
 
     select optional
     {
@@ -111,11 +97,6 @@ SUBEVENT(fatima_tamex_subev)
 
 SUBEVENT(fatima_vme_subev)
 {
-    select several
-    {
-        badevent = BAD_EVENT();
-    };
-
     select optional
     {
         ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1500);
@@ -161,11 +142,6 @@ SUBEVENT(fatima_vme_subev)
 
 SUBEVENT(bplast_subev)
 {
-    select several
-    {
-        badevent = BAD_EVENT();
-    };
-
     select optional
     {
         ts = TIMESTAMP_WHITERABBIT(id = 0x500);
@@ -197,13 +173,6 @@ SUBEVENT(bplast_subev)
 
 SUBEVENT(frs_main_subev)
 {   
-
-    select several
-    {
-        badevent = BAD_EVENT();
-    };
-
-    // catch weird trig3 events
     select several
     {
         trig3 = TRIG3EVENT();
@@ -219,7 +188,6 @@ SUBEVENT(frs_main_subev)
         spill_off = SPILL_OFF();
     };
 
-    // CEJ: this should be optional vs several? if several then we get overwritten - check.
     select optional
     {
         data = MAIN_CRATE_DATA();
@@ -228,10 +196,7 @@ SUBEVENT(frs_main_subev)
 
 SUBEVENT(frs_tpc_subev)
 {
-    select several
-    {
-        badevent = BAD_EVENT();
-    };
+    optional UINT32 be { 0_31: b = MATCH(0xbad00bad);}
 
     select several
     {
@@ -241,7 +206,7 @@ SUBEVENT(frs_tpc_subev)
     select several
     {
         spill_on = SPILL_ON();
-    }
+    };
 
     select several
     {
@@ -256,11 +221,6 @@ SUBEVENT(frs_tpc_subev)
 
 SUBEVENT(frs_user_subev)
 {
-    select several
-    {
-        badevent = BAD_EVENT();
-    };
-
     select several
     {
         trig3 = TRIG3EVENT();
@@ -283,31 +243,8 @@ SUBEVENT(frs_user_subev)
     }
 }
 
-SUBEVENT(frs_vftx_subev)
-{
-    select several
-    {
-        badevent = BAD_EVENT();
-    };
-
-    select several
-    {
-        trig3 = TRIG3EVENT();
-    };
-
-    select optional
-    {
-        data = VFTX_CRATE_DATA();
-    };
-}
-
 SUBEVENT(frs_tpat_subev)
 {
-    select several
-    {
-        badevent = BAD_EVENT();
-    };
-
     select optional
     {
         wr = TIMESTAMP_WHITERABBIT(id = 0x100);
@@ -329,11 +266,6 @@ SUBEVENT(bm_subev)
 
     MEMBER(DATA32 dataS2[BM_MAX_HITS] NO_INDEX_LIST);// ZERO_SUPPRESS);
     MEMBER(DATA32 dataS4[BM_MAX_HITS] NO_INDEX_LIST);// ZERO_SUPPRESS);
-
-    select several
-    {
-        badevent = BAD_EVENT();
-    };
 
     select optional
     {
@@ -393,7 +325,6 @@ EVENT
     frsmain = frs_main_subev(procid = 10);
     frstpc = frs_tpc_subev(procid = 20);
     frsuser = frs_user_subev(procid = 30);
-    frsvftx = frs_vftx_subev(procid = 40);
     frstpat = frs_tpat_subev(procid = 15);
     
     beammonitor = bm_subev(procid = 1);

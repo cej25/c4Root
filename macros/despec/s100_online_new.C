@@ -47,9 +47,9 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
 
     // Define important paths.
     //TString c4Root_path = "/u/jbormans/c4Root";
-    TString c4Root_path = "/u/despec/s100_online/c4Root";
+    //TString c4Root_path = "/u/despec/s100_online/c4Root";
     TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
-    //TString c4Root_path = "/u/cjones/c4Root";
+    TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -83,12 +83,19 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
     Int_t port = 5000; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
     run->SetSink(new FairRootFileSink(outputFileName));
     run->ActivateHttpServer(refresh, port);
+
+    // trying to kill ParSet errors
+    /*FairRuntimeDb* rtdb = FairRunOnline::Instance()->GetRuntimeDb();
+    FairGeoParSet* geo = new FairGeoParSet("FairGeoParSet");
+    FairBaseParSet* base = new FairBaseParSet("FairBaseParSet");
+    rtdb->addContainer(geo);rtdb->addContainer(base);*/
 
     // Create source using ucesb for input
     EXT_STR_h101 ucesb_struct;
@@ -469,7 +476,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         //run->AddTask(frsaidacorr);
     }
     
-        
+   
 
     // Initialise
     run->Init();

@@ -14,7 +14,7 @@ TRIG3EVENT()
     UINT32 trig3 NOENCODE
     {
         0_31: 0x20202020;
-    }
+    };
 }
 
 SPILL_ON()
