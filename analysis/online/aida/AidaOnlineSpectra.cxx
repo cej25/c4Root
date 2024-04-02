@@ -383,6 +383,7 @@ void AidaOnlineSpectra::Reset_Histo()
     for (auto& h : h_decay_e_xy) h->Reset();
     for (auto& h : h_decay_strip_1d_energy) h->Reset();
     c4LOG(info, "AIDA histograms reset.");
+    
 }
 
 void AidaOnlineSpectra::Snapshot_Histo()
@@ -402,67 +403,60 @@ void AidaOnlineSpectra::Snapshot_Histo()
     //save histograms for implants
     c_aida_snapshots = new TCanvas("c", "c", 1000, 1000);
 
-    for (auto& h : h_implant_strip_xy)
+    for(int i = 0; i < conf->DSSDs(); i++)
     {
-        h->Draw("colz");
-        c_aida_snapshots->SaveAs("aida_implants_strip_xy.png");
+        //implants
+        h_implant_strip_xy[i]->Draw("COLZ");
+        c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_strip_xy.png", i + 1));
+        c_aida_snapshots->Clear();
+        h_implant_pos_xy[i]->Draw("COLZ");
+        c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_pos_xy.png", i + 1));
+        c_aida_snapshots->Clear();
+        h_implant_e[i]->Draw();
+        c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_e.png", i + 1));
+        c_aida_snapshots->Clear();
+        h_implant_e_xy[i]->Draw("COLZ");
+        c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_e_xy.png", i + 1));
+        c_aida_snapshots->Clear();
+        h_implant_strip_1d_energy[i]->Draw("COLZ");
+        c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_strip_1d_energy.png", i + 1));
+        c_aida_snapshots->Clear();
+        h_implant_x_ex[i]->Draw("COLZ");
+        c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_x_ex.png", i + 1));
+        c_aida_snapshots->Clear();
+
+        //stopped implants
+        h_implant_strip_xy_stopped[i]->Draw("COLZ");
+        c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_strip_xy_stopped.png", i + 1));
+        c_aida_snapshots->Clear();
+        h_implant_pos_xy_stopped[i]->Draw("COLZ");
+        c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_pos_xy_stopped.png", i + 1));
+        c_aida_snapshots->Clear();
+        h_implant_e_stopped[i]->Draw();
+        c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_e_stopped.png", i + 1));
+        c_aida_snapshots->Clear();
+        h_implant_x_ex_stopped[i]->Draw("COLZ");
+        c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_x_ex_stopped.png", i + 1));
+        c_aida_snapshots->Clear();
+
+        //decays
+        h_decay_strip_xy[i]->Draw("COLZ");
+        c_aida_snapshots->SaveAs(Form("aida_decays_DSSD_%d_decays_strip_xy.png", i + 1));
+        c_aida_snapshots->Clear();
+        h_decay_pos_xy[i]->Draw("COLZ");
+        c_aida_snapshots->SaveAs(Form("aida_decays_DSSD_%d_decays_pos_xy.png", i + 1));
+        c_aida_snapshots->Clear();
+        h_decay_e[i]->Draw();
+        c_aida_snapshots->SaveAs(Form("aida_decays_DSSD_%d_decays_e.png", i + 1));
+        c_aida_snapshots->Clear();
+        h_decay_e_xy[i]->Draw("COLZ");
+        c_aida_snapshots->SaveAs(Form("aida_decays_DSSD_%d_decays_e_xy.png", i + 1));
+        c_aida_snapshots->Clear();
+        h_decay_strip_1d_energy[i]->Draw("COLZ");
+        c_aida_snapshots->SaveAs(Form("aida_decays_DSSD_%d_decays_strip_1d_energy.png", i + 1));
         c_aida_snapshots->Clear();
     }
-    for (auto& h : h_implant_pos_xy)
-    {
-        h->Draw("colz");
-        c_aida_snapshots->SaveAs("aida_implants_pos_xy.png");
-        c_aida_snapshots->Clear();
-    }
-    for (auto& h : h_implant_e)
-    {
-        h->Draw();
-        c_aida_snapshots->SaveAs("aida_implants_e.png");
-        c_aida_snapshots->Clear();
-    }
-    for (auto& h : h_implant_e_xy)
-    {
-        h->Draw("colz");
-        c_aida_snapshots->SaveAs("aida_implants_e_xy.png");
-        c_aida_snapshots->Clear();
-    }
-    for (auto& h : h_implant_strip_1d_energy)
-    {
-        h->Draw("colz");
-        c_aida_snapshots->SaveAs("aida_implants_strip_1d_energy.png");
-        c_aida_snapshots->Clear();
-    }
-    //decays
-    for (auto& h : h_decay_strip_xy)
-    {
-        h->Draw("colz");
-        c_aida_snapshots->SaveAs("aida_decays_strip_xy.png");
-        c_aida_snapshots->Clear();
-    }
-    for (auto& h : h_decay_pos_xy)
-    {
-        h->Draw("colz");
-        c_aida_snapshots->SaveAs("aida_decays_pos_xy.png");
-        c_aida_snapshots->Clear();
-    }
-    for (auto& h : h_decay_e)
-    {
-        h->Draw();
-        c_aida_snapshots->SaveAs("aida_decays_e.png");
-       c_aida_snapshots->Clear();
-    }
-    for (auto& h : h_decay_e_xy)
-    {
-        h->Draw("colz");
-        c_aida_snapshots->SaveAs("aida_decays_e_xy.png");
-        c_aida_snapshots->Clear();
-    }
-    for (auto& h : h_decay_strip_1d_energy)
-    {
-        h->Draw("colz");
-        c_aida_snapshots->SaveAs("aida_decays_strip_1d_energy.png");
-        c_aida_snapshots->Clear();
-    }
+
 
     //save scalers
     for (auto& scaler : conf->ScalerMap())
