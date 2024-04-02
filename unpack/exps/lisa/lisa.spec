@@ -3,6 +3,7 @@
 #include "../../../config/lisa/setup.hh"
 #include "../../common/whiterabbit.spec"
 #include "../../common/gsi_febex4.spec"
+#include "../../common/general.spec"
 
 #define TRACE_LENGTH 3000
 
@@ -10,7 +11,7 @@ SUBEVENT(febex_subev_traces)
 { 
     select several
     {
-        badevent = FEBEX_BAD_EVENT();
+        badevent = BAD_EVENT();
     }
   
     select optional
