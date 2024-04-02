@@ -51,6 +51,8 @@ class FrsTPCReader : public c4Reader
 
         uint64_t fWR_TS;
 
+        int bad_event_counter = 0;
+
         std::vector<uint32_t> v7x5_geo[2];
         std::vector<uint32_t> v7x5_channel[2];
         std::vector<uint32_t> v7x5_data[2];
@@ -60,7 +62,7 @@ class FrsTPCReader : public c4Reader
         std::vector<uint32_t> v1190_lot;
     
     public:
-        ClassDefOverride(FrsTPCReader, 0);
+        ClassDefOverride(FrsTPCReader, 1);
 
 
 };
