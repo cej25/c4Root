@@ -55,10 +55,6 @@ void GermaniumOnlineSpectra::SetParContainers()
 
 InitStatus GermaniumOnlineSpectra::Init()
 {
-
-    // number of crystals, number of dets 
-
-    c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
