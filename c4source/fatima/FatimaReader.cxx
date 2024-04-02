@@ -96,7 +96,6 @@ If not new histograms are allocated and ready for filling and calibration.
 Bool_t FatimaReader::Init(ext_data_struct_info* a_struct_info)
 {
     Int_t ok;
-    c4LOG(info, "");
 
     EXT_STR_h101_fatima_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_fatima, 0);
 
@@ -127,13 +126,9 @@ Bool_t FatimaReader::Init(ext_data_struct_info* a_struct_info)
 
     if (fine_time_calibration_read_from_file)
     {
-        std::cout << "we're here!" << std::endl;
         ReadFineTimeHistosFromFile();
-        std::cout << "reading was success" << std::endl;
         DoFineTimeCalibration();
-        std::cout << "doing was success " << std::endl;
         fine_time_calibration_set = true;
-        c4LOG(info,"Fine Time calibration set from file.");
     }
     else
     {
@@ -153,8 +148,6 @@ Bool_t FatimaReader::Init(ext_data_struct_info* a_struct_info)
 
     memset(fData, 0, sizeof *fData);
 
-    c4LOG(info,"FatimaReader init setup completed.");
-
     return kTRUE;
 }
 
@@ -165,12 +158,19 @@ This can be called explicitly if desired - but will be done automatically by the
 */
 void FatimaReader::DoFineTimeCalibration()
 {
-    c4LOG(info, "Doing fine time calibrations.");
+    std::vector<std::pair<int, int>> warning_channels;
+    int warning_counter = 0;
     for (int i = 0; i < NBoards; i++) {
         for (int j = 0; j < NChannels; j++) {
             int running_sum = 0;
             int total_counts = fine_time_hits[i][j]->GetEntries();
-            if (total_counts == 0) {c4LOG(warning,Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));}
+            if (total_counts == 0) 
+            {
+                std::pair<int, int> pair = std::make_pair(j, i); // channel, board
+                warning_channels.emplace_back(pair); // dump to a log file in future
+                warning_counter++;
+                c4LOG(debug1, Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));
+            }
 
             for (int k = 0; k < Nbins_fine_time; k++) {
                 
@@ -184,7 +184,12 @@ void FatimaReader::DoFineTimeCalibration()
             }
         }
     }
+
+    if (warning_counter > 0) c4LOG(warning, Form("%i channels do not have any fine time hits in the interval.", warning_counter));
+
     fine_time_calibration_set = true;
+
+    c4LOG(info, "Success.");
 }
 
 /*
@@ -227,11 +232,11 @@ void FatimaReader::WriteFineTimeHistosToFile()
             }
         }
     }
-    c4LOG(info,Form("Written fine time calibrations (i.e. raw fine time histograms) to  %s",fine_time_histo_outfile.Data()));
+    LOG(info) << Form("Fatima fine time calibrations (i.e. raw fine time histograms) written to  %s",fine_time_histo_outfile.Data());
 
     outputfile->Close();
 
-    c4LOG(fatal,"You have successfully done fine time calibration. These are written to file. Please restart the program and add ReadFineTimehistosFromFile instead for FatimaReader.\n (yeah this is not a fatal error per se just restart it with your fresh calibrations :) )");
+    c4LOG(info,"You have successfully done fine time calibration. These are written to file. Please restart the program and add ReadFineTimehistosFromFile instead for FatimaReader.\n (yeah this is not a fatal error per se just restart it with your fresh calibrations :) )");
 
 }
 
@@ -249,7 +254,6 @@ void FatimaReader::ReadFineTimeHistosFromFile()
         c4LOG(fatal, "File to read histos not opened.");
     }
 
-    c4LOG(info,"Reading the histograms used in fine time calibration from file.");
     fine_time_hits = new TH1I**[NBoards];
     for (int i = 0; i < NBoards; i++) {
         fine_time_hits[i] = new TH1I*[NChannels];
@@ -276,7 +280,7 @@ void FatimaReader::ReadFineTimeHistosFromFile()
     }
 
     inputfile->Close();
-    c4LOG(info, Form("Read fine time calibrations (i.e. raw fine time histograms) from %s", fine_time_histo_infile.Data()));
+    LOG(info) << Form("Fatima fine time calibration read from file: %s", fine_time_histo_infile.Data());
 }
 
 /*
@@ -298,7 +302,6 @@ Bool_t FatimaReader::Read() //do fine time here:
     if (!fData) return kTRUE;
 
     if ((fNEvent==fine_time_calibration_after)  & (!fine_time_calibration_set)){
-        c4LOG(info, "Doing fine time calibration now.");
         DoFineTimeCalibration();
         if (fine_time_calibration_save) WriteFineTimeHistosToFile();
     }

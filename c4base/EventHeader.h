@@ -17,10 +17,12 @@ class EventHeader : public FairEventHeader
     void SetEventno(const uint64_t eventno) { fEventno = eventno; }
     void SetTrigger(const Int_t trigger) { fTrigger = trigger; }
     void SetTimeStamp(const uint64_t timeStamp) { fTimeStamp = timeStamp; }
+    inline void SetSpillFlag(bool flag) { fSpillFlag = flag; }
 
     uint64_t GetEventno() const { return fEventno; }
     Int_t GetTrigger() const { return fTrigger; }
     uint64_t GetTimeStamp() const { return fTimeStamp; }
+    inline bool GetSpillFlag() { return fSpillFlag; }
 
     virtual void Register(Bool_t Persistance = kTRUE);
 
@@ -28,6 +30,7 @@ class EventHeader : public FairEventHeader
     uint64_t fEventno;
     Int_t fTrigger;
     uint64_t fTimeStamp;
+    bool fSpillFlag;
 
     ClassDef(EventHeader, 1)
 };

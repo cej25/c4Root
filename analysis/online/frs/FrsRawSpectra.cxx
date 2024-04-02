@@ -61,7 +61,6 @@ void FrsRawSpectra::SetParContainers()
 
 InitStatus FrsRawSpectra::Init()
 {
-    c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
@@ -82,15 +81,15 @@ InitStatus FrsRawSpectra::Init()
     
     TDirectory::TContext ctx(nullptr);
 
-    /*
+    
     folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
-    if (!folder_frs_hists) folder_frs_hists = new TFolder("FRS", "FRS");
-    */
+    //if (!folder_frs_hists) folder_frs_hists = new TFolder("FRS", "FRS");
+    
  
     folder_frs_raw_hists = new TFolder("Raw Histograms", "Raw Histograms");
-    //folder_frs_hists->Add(folder_frs_raw_hists);
+    folder_frs_hists->Add(folder_frs_raw_hists);
     
-    run->AddObject(folder_frs_raw_hists);
+    //run->AddObject(folder_frs_raw_hists);
 
     folder_frs_raw_main_hists = new TFolder("Main Raw_Histograms", "Main Raw Histograms");
     folder_frs_raw_tpc_hists = new TFolder("TPC Raw Histograms", "TPC Raw Histograms");
@@ -584,7 +583,7 @@ void FrsRawSpectra::FinishEvent()
 void FrsRawSpectra::FinishTask()
 {
     // Can add a "WRITE" task if necessary
-    folder_frs_raw_hists->Write();
+    //folder_frs_raw_hists->Write();
 }
 
 ClassImp(FrsRawSpectra)

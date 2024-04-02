@@ -66,7 +66,7 @@ class AidaOnlineSpectra : public FairTask
         // Canvas
         TCanvas* c_aida_snapshots;
 
-        // Folders
+        // Folders and Files
         TFolder* folder_aida;
         TFolder* folder_implant;
         TFolder* folder_stopped_implant;
@@ -75,6 +75,7 @@ class AidaOnlineSpectra : public FairTask
         std::vector<TFolder*> folder_implant_dssd;
         std::vector<TFolder*> folder_stopped_implant_dssd;
         std::vector<TFolder*> folder_decay_dssd;
+        TFile* file_aida_snapshot;
 
         // Histograms
         // Implant Histograms
@@ -87,7 +88,11 @@ class AidaOnlineSpectra : public FairTask
         std::vector<TH2F*> h_implant_x_ex;
         std::vector<TH2F*> h_implant_y_ey;
         std::vector<TH1F*> h_implant_time_delta;
+        // Stopped Implant Histograms
         std::vector<TH2F*> h_implant_strip_xy_stopped;
+        std::vector<TH2F*> h_implant_pos_xy_stopped;
+        std::vector<TH1F*> h_implant_e_stopped;
+        std::vector<TH2F*> h_implant_x_ex_stopped;
         // Decay Histograms
         std::vector<TH2F*> h_decay_strip_xy;
         std::vector<TH2F*> h_decay_pos_xy;
@@ -103,6 +108,8 @@ class AidaOnlineSpectra : public FairTask
         std::vector<std::deque<int>> aida_implant_scaler_queue;
         std::vector<int> aida_implant_scaler_cur_sec;
         std::vector<TGraph*> aida_implant_scaler_graph;
+        std::vector<std::deque<int>> aida_implant_stopped_scaler_queue;
+        std::vector<TGraph*> aida_implant_stopped_scaler_graph;
         std::vector<std::deque<int>> aida_decay_scaler_queue;
         std::vector<int> aida_decay_scaler_cur_sec;
         std::vector<TGraph*> aida_decay_scaler_graph;

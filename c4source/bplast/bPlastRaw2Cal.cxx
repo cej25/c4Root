@@ -80,9 +80,6 @@ Initialiser called by the FairRoot manager. Gets the required FairRootManager ob
 */
 InitStatus bPlastRaw2Cal::Init()
 {
-    //grabs instance managers and handles.
-
-    c4LOG(info, "Grabbing FairRootManager, RunOnline and EventHeader.");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
@@ -178,7 +175,8 @@ Bool_t bPlastRaw2Cal::SetDetectorCalFile(TString filename){
 /*
 Writes the detector map to console.
 */
-void bPlastRaw2Cal::PrintDetectorMap(){
+void bPlastRaw2Cal::PrintDetectorMap()
+{
     if (DetectorMap_loaded){
         for (const auto& entry : detector_mapping){
             std::cout << "tamexMODULE: " << entry.first.first << " tamexCHANNEL: " << entry.first.second;
@@ -354,6 +352,8 @@ void bPlastRaw2Cal::Exec(Option_t* option){
                 funcal_hit->Get_board_id(),
                 (int)((funcal_hit->Get_ch_ID()+1)/2),
                 detector_id,
+                detector_stream,
+                detector_position,
                 slow_lead_time,
                 slow_trail_time,
                 fast_lead_time,

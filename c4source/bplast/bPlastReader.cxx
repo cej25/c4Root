@@ -96,7 +96,6 @@ If not new histograms are allocated and ready for filling and calibration.
 Bool_t bPlastReader::Init(ext_data_struct_info* a_struct_info)
 {
     Int_t ok;
-    c4LOG(info, "");
 
     EXT_STR_h101_bplast_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_bplast, 0);
 
@@ -140,7 +139,6 @@ Bool_t bPlastReader::Init(ext_data_struct_info* a_struct_info)
         ReadFineTimeHistosFromFile();
         DoFineTimeCalibration();
         fine_time_calibration_set = true;
-        c4LOG(info,"Fine Time calibration set from file.");
     }
     else
     {
@@ -160,8 +158,6 @@ Bool_t bPlastReader::Init(ext_data_struct_info* a_struct_info)
 
     memset(fData, 0, sizeof *fData);
 
-    c4LOG(info,"bPlastReader init setup.");
-
     return kTRUE;
 }
 
@@ -170,13 +166,22 @@ This does the fine time calibrations of the fine times and builds the required l
 
 This can be called explicitly if desired - but will be done automatically by the rest of the code. Throws a warning if there are channels without hits. These are mapped tdc_channel = tdc_channel/512*5 ns
 */
-void bPlastReader::DoFineTimeCalibration(){
-    c4LOG(info, "Doing fine time calibrations.");
+void bPlastReader::DoFineTimeCalibration()
+{
+    std::vector<std::pair<int, int>> warning_channels;
+    int warning_counter = 0;
     for (int i = 0; i < NBoards; i++) {
         for (int j = 0; j < NChannels; j++) {
             int running_sum = 0;
             int total_counts = fine_time_hits[i][j]->GetEntries();
-            if (total_counts == 0) {c4LOG(warning,Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));}
+            if (total_counts == 0) 
+            {
+                std::pair<int, int> pair = std::make_pair(j, i); // channel, board
+                warning_channels.emplace_back(pair); // dump to a log file in future
+                warning_counter++;
+                c4LOG(debug1, Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));
+            
+            }
             for (int k = 0; k < Nbins_fine_time; k++) {
                 running_sum += fine_time_hits[i][j]->GetBinContent(k+1); //bin 0 is the underflow bin, hence we start at [1,Nbins_fine_time].
                 //no counts?
@@ -189,7 +194,11 @@ void bPlastReader::DoFineTimeCalibration(){
             }
         }
     }
+
+    if (warning_counter > 0) c4LOG(warning, Form("%i channels do not have any fine time hits in the interval.", warning_counter));
     fine_time_calibration_set = true;
+
+    c4LOG(info, "Success.");
 }
 
 /*
@@ -225,7 +234,7 @@ void bPlastReader::WriteFineTimeHistosToFile(){
             }
         }
     }
-    c4LOG(info,Form("Written fine time calibrations (i.e. raw fine time histograms) to  %s",fine_time_histo_outfile.Data()));
+    LOG(info) << Form("bPlast fine time calibrations (i.e. raw fine time histograms) written to  %s",fine_time_histo_outfile.Data());
 
     outputfile->Close();
 
@@ -236,14 +245,13 @@ Read the fine time histograms which are written by the function above.
 
 Assumes the names of the histograms are fine_time_hist_module_channel and that they have 1024 bins (since the TAMEX fine time is written with 2^10 bits).
 */
-void bPlastReader::ReadFineTimeHistosFromFile() {
-
+void bPlastReader::ReadFineTimeHistosFromFile() 
+{
     TFile* inputfile = TFile::Open(fine_time_histo_infile, "READ");
     if (!inputfile || inputfile->IsZombie()) {
         c4LOG(fatal, "File to read histos not opened.");
     }
 
-    c4LOG(info,"Reading the histograms used in fine time calibration from file.");
     fine_time_hits = new TH1I**[NBoards];
     for (int i = 0; i < NBoards; i++) {
         fine_time_hits[i] = new TH1I*[NChannels];
@@ -259,7 +267,7 @@ void bPlastReader::ReadFineTimeHistosFromFile() {
             TH1I* a = nullptr;
             inputfile->GetObject(Form("fine_time_hits_%i_%i", i, j), a);
             if (a) {
-                c4LOG(info,Form("Accessing i = %i, j = %i",i,j));
+                c4LOG(debug1, Form("Accessing i = %i, j = %i",i,j));
                 fine_time_hits[i][j] = (TH1I*)a->Clone();
                 c4LOG_IF(fatal,fine_time_hits==nullptr,"Failed reading the file for fine time calibration histograms");
                 delete a;
@@ -270,7 +278,7 @@ void bPlastReader::ReadFineTimeHistosFromFile() {
     }
 
     inputfile->Close();
-    c4LOG(info, Form("Read fine time calibrations (i.e. raw fine time histograms) from %s", fine_time_histo_infile.Data()));
+    LOG(info) << Form("bPlast fine time calibration read from file: %s", fine_time_histo_infile.Data());
 }
 
 /*
@@ -293,7 +301,6 @@ Bool_t bPlastReader::Read() //do fine time here:
 
     if ((fNEvent==fine_time_calibration_after)  & (!fine_time_calibration_set))
     {
-        c4LOG(info, "Doing fine time calibration now.");
         DoFineTimeCalibration();
         if (fine_time_calibration_save) WriteFineTimeHistosToFile();
     }
@@ -379,7 +386,7 @@ Bool_t bPlastReader::Read() //do fine time here:
 
             if (fData->bplast_tamex[it_board_number].time_finev[it_hits] == 0x3FF) {fNevents_TAMEX_fail[it_board_number][channelid-1]++; continue;} // this happens if TAMEX loses the fine time - skip it
 
-            if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch){fNevents_lacking_epoch[it_board_number][channelid-1]++; c4LOG(warning, "Event lacking epoch.");} // if the channel has changed but no epoch word was seen in between, channel 0 is always the first one so dont check if that s the case.
+            if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch){fNevents_lacking_epoch[it_board_number][channelid-1]++; c4LOG(warning, Form("Event lacking epoch in channel %d",channelid));} // if the channel has changed but no epoch word was seen in between, channel 0 is always the first one so dont check if that s the case.
 
             if (!(channelid >= last_channel_read)) {c4LOG(fatal, Form("Data format is inconcistent with assumption: Channels are not read out in increasing order. This channel = %i, last channel = %i",channelid,last_channel_read));}
 

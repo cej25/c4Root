@@ -89,8 +89,6 @@ class bPlastReader : public c4Reader
 
         uint64_t wr_t;
 
-
-
         static const int NBoards = sizeof(fData->bplast_tamex) / sizeof(fData->bplast_tamex[0]);
         static const int NChannels = 32; //slow + fast per board
 
