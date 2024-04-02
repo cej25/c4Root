@@ -64,13 +64,20 @@ void TimeMachineOnline::SetParContainers()
 
 void TimeMachineOnline::SetDetectorSystems(std::vector<TString> detectorsystems){
     
-    c4LOG(info, "Set detector systems.");
     
     fNumDetectorSystems = detectorsystems.size();
     
     fDetectorSystems = std::vector<TString>(0);
 
-    for (int i = 0; i < fNumDetectorSystems; i++) fDetectorSystems.push_back(detectorsystems.at(i));
+    std::string det_log;
+    for (int i = 0; i < fNumDetectorSystems; i++) 
+    {
+        fDetectorSystems.push_back(detectorsystems.at(i));
+        if (i < fNumDetectorSystems - 1) det_log += std::string(detectorsystems.at(i).Data()) + ", ";
+        else det_log += std::string(detectorsystems.at(i).Data());
+    }
+
+    c4LOG(info, "Success: " + det_log);
 
 }
 
@@ -79,7 +86,6 @@ InitStatus TimeMachineOnline::Init()
 
     c4LOG_IF(fatal, (fNumDetectorSystems == 0) || (fNumDetectorSystems < 0), "Detector systems not specified for TimeMachineOnline. Please add SetDetectorSystems before Init().");
 
-    c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
@@ -88,8 +94,8 @@ InitStatus TimeMachineOnline::Init()
 
     fTimeMachine = new TClonesArray*[fNumDetectorSystems];
 
-    for (int det = 0; det<fNumDetectorSystems; det++){
-        c4LOG(info, "Looking for " + fDetectorSystems.at(det));
+    for (int det = 0; det<fNumDetectorSystems; det++)
+    {
         fTimeMachine[det] = (TClonesArray*) mgr->GetObject(fDetectorSystems.at(det)+"TimeMachineData");
         c4LOG_IF(fatal, !fTimeMachine[det], "Branch TimeMachineData not found!");
     }
@@ -240,6 +246,7 @@ void TimeMachineOnline::Snapshot_Histo()
 void TimeMachineOnline::Exec(Option_t* option) // if two machines (undelayed + delayed are in one event, the last corr is taken.)
 {   
     // Delayed and undelayed time machine   
+    
     for (int system = 0; system<fNumDetectorSystems; system++)
     {
         if (fTimeMachine[system] && fTimeMachine[system]->GetEntriesFast() > 0)
@@ -290,14 +297,24 @@ void TimeMachineOnline::Exec(Option_t* option) // if two machines (undelayed + d
 
             std::string systemName2 = fDetectorSystems[ihist2].Data();
             uint64_t wr_t2 = wr[ihist2];
-            uint64_t wr_diff = wr_t1 - wr_t2;
+            int wr_diff = wr_t1 - wr_t2;
             
 
-            if (systemName1 == "Aida") {wr_diff -= 14000;}
-            else if (systemName2 == "Aida") {wr_diff += 14000;}
-            if((diffs[ihist]!=0) && (diffs[ihist2]!=0))// && wr_diff > TMGates[Form("%s-%s TM Gate", systemName1.c_str(), systemName2.c_str())][0] && wr_diff < TMGates[Form("%s-%s TM Gate", systemName1.c_str(), systemName2.c_str())][1])
+            /*if (systemName1 == "Aida") {wr_diff -= 14000;}
+            else if (systemName2 == "Aida") {wr_diff += 14000;}*/
+
+            std::string key = systemName1 + "-" + systemName2 + " TM Gate";
+            
+            /*if((diffs[ihist]!=0) && (diffs[ihist2]!=0))
+            {
+                std::cout << "this part works for key: " << key << std::endl;
+
+            }*/
+
+            if((diffs[ihist]!=0) && (diffs[ihist2]!=0) && wr_diff > TMGates[key][0] && wr_diff < TMGates[key][1])
             {   
                 h2_time_diff_corrs[ihist*fNumDetectorSystems + ihist2]->Fill(diffs[ihist],diffs[ihist2]);
+                //std::cout << "sooo we are here!!?? " << std::endl;
             }
         }
     }

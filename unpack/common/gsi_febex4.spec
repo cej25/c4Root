@@ -1,19 +1,5 @@
-#define TRACE_SIZE 10000 // some maximum size?
-#define TRACE_CHANNELS 1 // this needs to be read from the data stream somehow
+#define TRACE_SIZE 4000 // some maximum size
 
-
-DUMMY()
-{
-    UINT32 no NOENCODE;
-}
-
-FEBEX_BAD_EVENT()
-{
-    UINT32 bad NOENCODE
-    {
-        0_31: 0xBAD00BAD;
-    }
-}
 
 // Reads the Padding between FEBEX events:
 FEBEX_PADDING()
@@ -25,9 +11,6 @@ FEBEX_PADDING()
         20_31: 0xADD;
     }
 }
-
-
-
 
 FEBEX_EVENT(card)
 {
@@ -132,6 +115,7 @@ FEBEX_EVENT_TRACES(card)
 	MEMBER(DATA32 event_trigger_time_lo); // "..."
     MEMBER(DATA16 hit_pattern);
     MEMBER(DATA32 num_channels_fired);
+    MEMBER(DATA8 board_num);
 
 	MEMBER(DATA8 channel_id[16] ZERO_SUPPRESS);
 	MEMBER(DATA16 channel_trigger_time_hi[16] ZERO_SUPPRESS);
@@ -151,8 +135,11 @@ FEBEX_EVENT_TRACES(card)
         12_15: sfpnr;
         16_23: board_id = MATCH(card);
         24_31: 0xFF;
+        ENCODE(board_num, (value = board_id));
 
     }
+
+    //ENCODE(board_num, (value = sumchannel.board_id));
 
     UINT32 channel_size NOENCODE
     {
@@ -194,7 +181,8 @@ FEBEX_EVENT_TRACES(card)
     {
         list(0 <= index < (((channel_size.size) / 4) - 1))
         {
-            UINT32 channelids NOENCODE{
+            UINT32 channelids NOENCODE
+            {
                 0_15: chan_ts_hi;
                 16_23: channel_id_bits;
                 24_31: 0xF0;
@@ -225,9 +213,9 @@ FEBEX_EVENT_TRACES(card)
             }
         }
 
-        if (hp.hp != 0)
+        if (hp.hp != 0) // needed?
         {
-            list (0 <= i < TRACE_CHANNELS)
+            list (0 <= i < (((channel_size.size) / 4) - 1))
             {
                 UINT32 header NOENCODE
                 {
@@ -247,10 +235,10 @@ FEBEX_EVENT_TRACES(card)
                     24_31: head;
                 }
             
-                //for example, when trace_length = 4000:
-                //tracesize = 8008
-                //tracesize / 2 - 4 gives total tracelength
-                //tracesize / 4 - 2 gives loop length requirement (2000)
+                // for example, when trace_length = 4000:
+                // tracesize = 8008
+                // tracesize / 2 - 4 gives total tracelength
+                // tracesize / 4 - 2 gives loop length requirement (2000)
             
         
                 list (0 <= j < (tracesize.size / 4 - 2))
@@ -277,7 +265,7 @@ FEBEX_EVENT_TRACES(card)
                 }
             }
         }
-   }
+    }
     else if (sumchannel.trigger_type == 3)
     {   
 
