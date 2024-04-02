@@ -14,7 +14,7 @@ class TbPlastConfiguration
         static void Create();
         static void SetDetectorMapFile(std::string fp) { filepath = fp; }
 
-        std::map<std::pair<int, int>, std::pair<int, std::pair<std::string, std::string>>> Mapping() const;
+        std::map<std::pair<int, int>, std::pair<int, std::pair<char, char>>> Mapping() const;
         int NDetectors() const;
         int NUpDetectors() const;
         std::set<int> UpDetectors() const;
@@ -44,7 +44,7 @@ class TbPlastConfiguration
 
         static TbPlastConfiguration* instance;
 
-        std::map<std::pair<int, int>, std::pair<int, std::pair<std::string, std::string>>> detector_mapping; // <tamex_board, tamex_channel> -> <detector_id, <stream, orientation>>
+        std::map<std::pair<int, int>, std::pair<int, std::pair<char, char>>> detector_mapping; // <tamex_board, tamex_channel> -> <detector_id, <stream, orientation>>
         std::set<int> up_detectors;
         std::set<int> down_detectors;
         std::set<int> top_detectors;
@@ -90,7 +90,7 @@ inline void TbPlastConfiguration::Create()
     instance = new TbPlastConfiguration();
 }
 
-inline std::map<std::pair<int, int>, std::pair<int, std::pair<std::string, std::string>>> TbPlastConfiguration::Mapping() const
+inline std::map<std::pair<int, int>, std::pair<int, std::pair<char, char>>> TbPlastConfiguration::Mapping() const
 {
     return detector_mapping;
 }

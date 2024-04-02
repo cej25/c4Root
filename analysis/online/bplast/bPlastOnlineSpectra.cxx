@@ -324,8 +324,8 @@ void bPlastOnlineSpectra::Exec(Option_t* option)
             {
                 if (entry.second.first == detector_id)
                 {
-                    if (entry.second.second.first == "U") h1_bplast_hitpatterns[0]->Fill(detector_id);
-                    if (entry.second.second.first == "D") h1_bplast_hitpatterns[1]->Fill(detector_id);
+                    if (entry.second.second.first == 'U') h1_bplast_hitpatterns[0]->Fill(detector_id);
+                    if (entry.second.second.first == 'D') h1_bplast_hitpatterns[1]->Fill(detector_id);
 
                     for (int i = 0; i < nTamexBoards; i++)
                     {

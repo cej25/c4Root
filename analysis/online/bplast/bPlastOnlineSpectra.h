@@ -43,7 +43,7 @@ class bPlastOnlineSpectra : public FairTask
         TClonesArray* fHitbPlastTwinpeaks;
 
         TbPlastConfiguration const* bplast_conf;
-        std::map<std::pair<int, int>, std::pair<int, std::pair<std::string, std::string>>> bplast_map;
+        std::map<std::pair<int, int>, std::pair<int, std::pair<char, char>>> bplast_map;
 
         EventHeader* header;
         Int_t fNEvents;
