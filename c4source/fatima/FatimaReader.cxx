@@ -13,6 +13,7 @@
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
+#include <chrono>
 #include "ext_data_struct_info.hh"
 
 extern "C"
@@ -82,6 +83,8 @@ FatimaReader::~FatimaReader() {
 
     if (fArray != nullptr) delete fArray;
 
+    c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvent << " microseconds.");
+    c4LOG(info, "Events: " << fNEvent);
     c4LOG(info, "Destroyed FatimaReader properly.");
 
 }
@@ -297,7 +300,7 @@ Some assumptions:
 */
 Bool_t FatimaReader::Read() //do fine time here:
 {
-    c4LOG(debug2, "Event Data");
+    auto start = std::chrono::high_resolution_clock::now();
 
     if (!fData) return kTRUE;
 
@@ -336,27 +339,12 @@ Bool_t FatimaReader::Read() //do fine time here:
 
         for (int it_hits = 0; it_hits < fData->fatima_tamex[it_board_number].event_size/4 - 3 ; it_hits++)
         {
-            //if (fData->fatima_tamex[it_board_number].time_channelv[it_hits] != 1) continue;
-
-
-          
-            //if (it_hits + 1 == fData->fatima_tamex[it_board_number].event_size/4 - 3) {c4LOG(fatal, "Data ends on a epoch...");}
-
-            //c4LOG(info, Form("epoch = %i",fData->fatima_tamex[it_board_number].time_epochv[it_hits]));
-            //c4LOG(info, Form("coarse = %i",fData->fatima_tamex[it_board_number].time_coarsev[it_hits]));
-            //c4LOG(info, Form("fine = %i",fData->fatima_tamex[it_board_number].time_finev[it_hits]));
-            //c4LOG(info, Form("channel = %i",fData->fatima_tamex[it_board_number].time_channelv[it_hits]));
-            //c4LOG(info, Form("edge = %i \n",fData->fatima_tamex[it_board_number].time_edgev[it_hits]));
-
-            //continue;
-
             // now operating under the assumption 16.01.2024:
             /*
             the TAMEX readout happens channel after channel with increasing channel number. Multiple hits within one channel are time ordered.
             e.g.: ch1-hit1, ch1-hit2, ch1-hit3, ch2-hit1, ch2-hit2, ch3-hit1, ....., chN-hitN.
             from M Reese 08.12.23
             */
-
 
             // check if arrays are overflowing. These could be placed outside this inner loop, but now it sums up the number of lost events in case they are not equal. This indicates an error in UCESB/MBS i believe if this fails.
             if (fData->fatima_tamex[it_board_number].time_epoch <= it_hits) {fNevents_skipped++; continue;}
@@ -384,7 +372,6 @@ Bool_t FatimaReader::Read() //do fine time here:
 
             if (fData->fatima_tamex[it_board_number].time_finev[it_hits] == 0x3FF) {fNevents_TAMEX_fail[it_board_number][channelid]++; continue;} // this happens if TAMEX loses the fine time - skip it
 
-
             if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch){fNevents_lacking_epoch[it_board_number][channelid]++; c4LOG(debug2, "Event lacking epoch.");} // if the channel has changed but no epoch word was seen in between, channel 0 is always the first one so dont check if that s the case.
 
             if (!(channelid >= last_channel_read)) {c4LOG(fatal, Form("Data format is inconcistent with assumption: Channels are not read out in increasing order. This channel = %i, last channel = %i",channelid,last_channel_read));}
@@ -406,7 +393,8 @@ Bool_t FatimaReader::Read() //do fine time here:
             uint32_t coarse_T = fData->fatima_tamex[it_board_number].time_coarsev[it_hits] & 0x7FF;
             double fine_T = GetFineTime(fData->fatima_tamex[it_board_number].time_finev[it_hits],it_board_number,channelid);
 
-            if (channelid == 0) {
+            if (channelid == 0) 
+            {
                 accepted_trigger_time = ((uint64_t)previous_epoch_word)*10.24e3 + ((uint64_t)coarse_T)*5.0 - (uint64_t)fine_T; // round it off to ns resolution
                 continue;
             } // skip channel 0 for now. This is the trigger information. The trigger time is kept, the wr timestamp is corrected by the difference of the hit and the acc trigger time.
@@ -473,6 +461,10 @@ Bool_t FatimaReader::Read() //do fine time here:
     } // boards
         
     fNEvent += 1;
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    total_time_microsecs += duration.count();
+    
     return kTRUE;
 }
 
