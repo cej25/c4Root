@@ -75,7 +75,7 @@ class TGermaniumConfiguration
         std::map<std::pair<int,int>,double> timeshift_calibration_coeffs;
         std::set<int> extra_signals;
 
-        TCutG * prompt_flash_cut;
+        TCutG* prompt_flash_cut;
 
         int num_detectors;
         int num_crystals;

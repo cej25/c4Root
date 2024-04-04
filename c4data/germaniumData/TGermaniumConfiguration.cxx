@@ -158,7 +158,9 @@ void TGermaniumConfiguration::ReadTimeshiftCoefficients()
 
 void TGermaniumConfiguration::ReadPromptFlashCut()
 {
-
+    // this requires a lot of things that are not documented
+    // must be a root file (not always the case from saving TCuts)
+    // must be named "prompt_flash_cut" precisely (not a good idea since there is a Fatima prompt cut also)
     TFile * cut = TFile::Open(TString(promptflash_cut_file),"READ");
 
     prompt_flash_cut = (TCutG*)cut->Get("prompt_flash_cut");

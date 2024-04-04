@@ -12,6 +12,7 @@
 #include "AidaCalData.h"
 #include <FairTask.h>
 #include <unordered_map>
+#include <chrono>
 
 // AIDA coordinate (DSSD, Side, Strip)
 using aida_coord_t = std::tuple<int, int, int>;
@@ -49,6 +50,7 @@ AidaCal2Hit::AidaCal2Hit() :
 
 AidaCal2Hit::~AidaCal2Hit()
 {
+    c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fExecs << " microseconds.");
 }
 
 void AidaCal2Hit::SetParContainers()
@@ -75,6 +77,8 @@ InitStatus AidaCal2Hit::Init()
 
 void AidaCal2Hit::Exec(Option_t* option)
 {
+    auto start = std::chrono::high_resolution_clock::now();
+
     implantHitArray->clear();
     decayHitArray->clear();
 
@@ -211,6 +215,16 @@ void AidaCal2Hit::Exec(Option_t* option)
             decayHitArray->push_back(hit);
         }
     }
+
+    fExecs++;
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    total_time_microsecs += duration.count();
+}
+
+void AidaCal2Hit::FinishTask()
+{
+    c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fExecs << " microseconds.");
 }
 
 // Perform clustering: adjacent strips firing simultaenously are summed into one cluster

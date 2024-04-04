@@ -54,7 +54,7 @@ Bool_t BeamMonitorReader::Init(ext_data_struct_info* a_struct_info)
 
 Bool_t BeamMonitorReader::Read()
 {
-    c4LOG(debug1, "Event Data");
+    c4LOG(debug2, "Event Data");
 
     BeamMonitorData* BeamMonitorHit = new BeamMonitorData();
 
