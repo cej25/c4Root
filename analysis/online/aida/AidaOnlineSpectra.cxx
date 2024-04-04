@@ -25,6 +25,7 @@
 #include <TDirectory.h>
 #include <sstream>
 #include "TFile.h"
+#include <chrono>
 
 AidaOnlineSpectra::AidaOnlineSpectra() : AidaOnlineSpectra("AidaOnline")
 {
@@ -502,6 +503,8 @@ void AidaOnlineSpectra::Reset_Scalers()
 
 void AidaOnlineSpectra::Exec(Option_t* option)
 {
+    auto start = std::chrono::high_resolution_clock::now();
+
     //for (auto const& entry : *adcArray)
     //{
         //int fee = entry.Fee();
@@ -689,6 +692,9 @@ void AidaOnlineSpectra::Exec(Option_t* option)
     // Calculate amount of 1s from interval to END
     // Fill all from current_time?
     fNEvents += 1;
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    total_time_microsecs += duration.count();
 }
 
 void AidaOnlineSpectra::FinishEvent()
@@ -705,6 +711,7 @@ void AidaOnlineSpectra::FinishTask()
     if (fNEvents > 0){
         folder_aida->Write();
         c4LOG(info, "AIDA histograms written to file.");
+        c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvents << " microseconds.");
     }
     
 }

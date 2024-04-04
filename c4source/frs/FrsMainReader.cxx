@@ -62,7 +62,7 @@ Bool_t FrsMainReader::Init(ext_data_struct_info* a_struct_info)
 
 Bool_t FrsMainReader::Read()
 {
-    c4LOG(debug1, "Event data");
+    c4LOG(debug2, "Event data");
 
     if (!fData) return kTRUE;
     if (fData == nullptr) return kFALSE;

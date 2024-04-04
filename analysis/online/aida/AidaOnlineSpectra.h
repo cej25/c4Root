@@ -62,6 +62,7 @@ class AidaOnlineSpectra : public FairTask
 
         EventHeader* header;
         Int_t fNEvents;
+        int total_time_microsecs = 0;
 
         // Canvas
         TCanvas* c_aida_snapshots;

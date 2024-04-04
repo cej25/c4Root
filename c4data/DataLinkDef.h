@@ -48,6 +48,7 @@
 #pragma link C++ class TRangeParameter+;
 #pragma link C++ class TLABRParameter+;
 #pragma link C++ class TMRTOFMSParameter+;
+#pragma link C++ class FrsGate+;
 
 #pragma link C++ class AidaUnpackAdcItem+;
 #pragma link C++ class AidaUnpackFlowItem+;

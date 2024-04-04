@@ -75,7 +75,8 @@ class bPlastReader : public c4Reader
 
 
     private:
-        unsigned int fNEvent;
+        Int_t fNEvent;
+        int total_time_microsecs = 0;
 
         EXT_STR_h101_bplast_onion* fData;
 
@@ -90,7 +91,7 @@ class bPlastReader : public c4Reader
         uint64_t wr_t;
 
         static const int NBoards = sizeof(fData->bplast_tamex) / sizeof(fData->bplast_tamex[0]);
-        static const int NChannels = 32; //slow + fast per board
+        static const int NChannels = 33; //slow + fast per board
 
         //global
         uint64_t fNepochwordsread = 0;
@@ -125,6 +126,8 @@ class bPlastReader : public c4Reader
         bool fine_time_calibration_set = false;
         bool fine_time_calibration_save = false;
         bool fine_time_calibration_read_from_file = false;
+        
+        uint64_t accepted_trigger_time = 0;
 
 
     public:

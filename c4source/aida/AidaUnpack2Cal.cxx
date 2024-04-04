@@ -13,6 +13,7 @@
 #include "TimeMachineData.h"
 #include <FairTask.h>
 #include <TClonesArray.h>
+#include <chrono>
 
 // Static mapping of a FEE channel to DSSD Strip 
 // Defined by AIDA hardware, not configurable
@@ -73,6 +74,7 @@ InitStatus AidaUnpack2Cal::Init()
 
 void AidaUnpack2Cal::Exec(Option_t* option)
 {
+  auto start = std::chrono::high_resolution_clock::now();
   implantCalArray->clear();
   decayCalArray->clear();
 
@@ -176,6 +178,15 @@ void AidaUnpack2Cal::Exec(Option_t* option)
     new ((*aidaTimeMachineArray)[aidaTimeMachineArray->GetEntriesFast()]) TimeMachineData((double)(wr_undelayed & 0xFFFFFFFF), 0, 0x700, wr_undelayed);
     new ((*aidaTimeMachineArray)[aidaTimeMachineArray->GetEntriesFast()]) TimeMachineData(0, (double)(wr_delayed & 0xFFFFFFFF), 0x700, wr_delayed);
   }
+    fExecs++;
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    total_time_microsecs += duration.count();
+}
+
+void AidaUnpack2Cal::FinishTask()
+{
+    c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fExecs << " microseconds.");
 }
 
 ClassImp(AidaUnpack2Cal)

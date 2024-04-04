@@ -8,7 +8,6 @@
 #include "FrsMainCalData.h"
 #include "FrsTPCCalData.h"
 #include "FrsUserCalData.h"
-#include "FrsVFTXCalData.h"
 #include "FrsTpatData.h"
 #include "FrsHitData.h"
 #include <TRandom3.h>
@@ -17,7 +16,7 @@ class TClonesArray;
 class FrsMainCalData;
 class FrsTPCCalData;
 class FrsUserCalData;
-class FrsVFTXCalData;
+class FrsTpatData;
 class FrsHitData;
 class EventHeader;
 class EventData;
@@ -35,7 +34,7 @@ class FrsCal2Hit : public FairTask
                 TSIParameter* fsi,
                 TMRTOFMSParameter* fmrtof,
                 TRangeParameter* frange,
-                TString& fExpName);
+                std::string fpathToConfigFiles);
 
         FrsCal2Hit(const TString& name, Int_t verbose);
 
@@ -68,12 +67,11 @@ class FrsCal2Hit : public FairTask
     private:
 
         Bool_t fOnline;
-        TString expName;
+        TString pathToConfigFiles;
 
         TClonesArray* fCalArrayMain;
         TClonesArray* fCalArrayTPC;
         TClonesArray* fCalArrayUser;
-        TClonesArray* fCalArrayVFTX;
         TClonesArray* fRawArrayTpat;
         TClonesArray* fHitArray;
         TClonesArray* fEventItems;
@@ -82,9 +80,7 @@ class FrsCal2Hit : public FairTask
         FrsMainCalData* fCalHitMain;
         FrsTPCCalData* fCalHitTPC;
         FrsUserCalData* fCalHitUser;
-        FrsVFTXCalData* fCalHitVFTX;
         FrsHitData* fFrsHit;
-        //EventData* EventItem;
 
         Bool_t prevSpillOn = false;
 
@@ -297,47 +293,6 @@ class FrsCal2Hit : public FairTask
         float temp_tm_to_MeV = 299.792458;
         float temp_mu = 931.4940954; //MeV
 
-        const std::vector<uint32_t>* TRaw_vftx;
-
-        std::vector<Float_t> vftx_tof2141;
-        std::vector<Float_t> vftx_tof2141_calib;
-        std::vector<Float_t> vftx_tof2241;
-        std::vector<Float_t> vftx_tof2241_calib;
-        std::vector<Float_t> vftx_tof2142;
-        std::vector<Float_t> vftx_tof2142_calib;
-        std::vector<Float_t> vftx_tof2242;
-        std::vector<Float_t> vftx_tof2242_calib;
-
-        std::vector<Float_t> id_vftx_beta_2141;
-        std::vector<Float_t> id_vftx_gamma_2141;
-        std::vector<Float_t> id_vftx_aoq_2141;
-        std::vector<Float_t> id_vftx_aoq_corr_2141;
-        std::vector<Float_t> id_vftx_z_2141;
-        std::vector<Float_t> id_vftx_z2_2141;
-        std::vector<Float_t> id_vftx_vcor_2141;
-        std::vector<Float_t> id_vftx_beta_2241;
-        std::vector<Float_t> id_vftx_gamma_2241;
-        std::vector<Float_t> id_vftx_aoq_2241;
-        std::vector<Float_t> id_vftx_aoq_corr_2241;
-        std::vector<Float_t> id_vftx_z_2241;
-        std::vector<Float_t> id_vftx_z2_2241;
-        std::vector<Float_t> id_vftx_vcor_2241;
-        std::vector<Float_t> id_vftx_beta_2142;
-        std::vector<Float_t> id_vftx_gamma_2142;
-        std::vector<Float_t> id_vftx_aoq_2142;
-        std::vector<Float_t> id_vftx_aoq_corr_2142;
-        std::vector<Float_t> id_vftx_z_2142;
-        std::vector<Float_t> id_vftx_z2_2142;
-        std::vector<Float_t> id_vftx_vcor_2142;
-        std::vector<Float_t> id_vftx_beta_2242;
-        std::vector<Float_t> id_vftx_gamma_2242;
-        std::vector<Float_t> id_vftx_aoq_2242;
-        std::vector<Float_t> id_vftx_aoq_corr_2242;
-        std::vector<Float_t> id_vftx_z_2242;
-        std::vector<Float_t> id_vftx_z2_2242;
-        std::vector<Float_t> id_vftx_vcor_2242;
-        Float_t id_vftx_delta_24;
-
         Double_t power;
         Double_t sum;
         Double_t Corr;
@@ -394,9 +349,10 @@ class FrsCal2Hit : public FairTask
         EventHeader* header;
         Int_t fNEvents = 0;
 
+        int total_time_microsecs = 0;
+
         bool conditions_files_read = false;
 
-        // analysis stuff..
 
     public:
         ClassDef(FrsCal2Hit, 1);

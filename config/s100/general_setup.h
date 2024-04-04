@@ -25,10 +25,10 @@
 #define FAT_VME_MAX_DETS 60
 
 // aida
-#define AIDA_MAX_FEES 12
+#define AIDA_MAX_FEES 16
 #define AIDA_MAX_HITS 13000
 #define AIDA_UCESB_SHIFT 14000 // ns ucesb1 shifts MBS timestamps of AIDA
-#define AIDA_DSSDS 3
+#define AIDA_DSSDS 2
 
 // bplast
 #define BPLAST_TAMEX_MODULES 9

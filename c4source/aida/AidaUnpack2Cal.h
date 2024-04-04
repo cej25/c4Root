@@ -24,6 +24,8 @@ public:
     void SetDecayOnline(Bool_t option) { fDecayOnline = option; }
     void SetScalersOnline(Bool_t option) { fScalersOnline = option; }
 
+    virtual void FinishTask();
+
 private:
     std::vector<AidaUnpackAdcItem> const* unpackArray;
     std::vector<AidaUnpackScalerItem> const* scalerArray;
@@ -38,6 +40,9 @@ private:
 
     TAidaConfiguration const* conf;
     unsigned int ignoredEvents;
+
+    Int_t fExecs = 0;
+    int total_time_microsecs = 0;
 
 public:
     ClassDef(AidaUnpack2Cal, 2)
