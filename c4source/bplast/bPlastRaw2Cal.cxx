@@ -17,6 +17,7 @@
 
 #include "bPlastRaw2Cal.h"
 #include <string>
+#include <chrono>
 
 /*
 empty constructor required for FairRoot.
@@ -213,8 +214,10 @@ If no detector map is set then be careful with how the mapping happens: tamex mo
 
 Writes the times in ns!
 */
-void bPlastRaw2Cal::Exec(Option_t* option){
-
+void bPlastRaw2Cal::Exec(Option_t* option)
+{
+    
+    auto start = std::chrono::high_resolution_clock::now();
 
     if (funcal_data && funcal_data->GetEntriesFast() > 1){ // only get events with two hits.or more
         Int_t event_multiplicity = funcal_data->GetEntriesFast();
@@ -274,7 +277,7 @@ void bPlastRaw2Cal::Exec(Option_t* option){
                 if (bplast_config->MappingLoaded())
                 {
                     
-                    std::map<std::pair<int, int>, std::pair<int, std::pair<std::string, std::string>>> fmap;
+                    std::map<std::pair<int, int>, std::pair<int, std::pair<char, char>>> fmap;
                     fmap = bplast_config->Mapping();
                     std::pair<int, int> unmapped_det { funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2 };
 
@@ -364,7 +367,14 @@ void bPlastRaw2Cal::Exec(Option_t* option){
             //ihit++; //increment it by one extra.
             }
         }
-    }
+        fExecs++; // count once every time we do something with bplast
+    } // if bplast hit exists
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    total_time_microsecs += duration.count();
+
+
 }
 
 
@@ -373,7 +383,8 @@ THIS FUNCTION IS EXTREMELY IMPORTANT!!!!
 
 Clears the TClonesArray used in the function. If they are not cleared after each event they will eat all your RAM.
 */
-void bPlastRaw2Cal::FinishEvent(){
+void bPlastRaw2Cal::FinishEvent()
+{
     // reset output array
     funcal_data->Clear();
     fcal_data->Clear();
@@ -383,10 +394,11 @@ void bPlastRaw2Cal::FinishEvent(){
 /*
 Some stats are written when finishing.
 */
-void bPlastRaw2Cal::FinishTask(){
+void bPlastRaw2Cal::FinishTask()
+{
     c4LOG(info, Form("Wrote %i events.",fNEvents));
     c4LOG(info, Form("%i events are unmatched (not written).",fNunmatched));
-    
+    c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fExecs << " microseconds.");
 }
 
 

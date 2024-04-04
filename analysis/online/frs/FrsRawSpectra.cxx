@@ -37,7 +37,6 @@ FrsRawSpectra::FrsRawSpectra(const TString& name, Int_t iVerbose)
     ,   fFrsMainArray(NULL)
     ,   fFrsUserArray(NULL)
     ,   fFrsTPCArray(NULL)
-    ,   fFrsVFTXArray(NULL)  
     ,   fNEvents(0)
     ,   header(nullptr)  
 {
@@ -49,7 +48,6 @@ FrsRawSpectra::~FrsRawSpectra()
     if (fFrsMainArray) delete fFrsMainArray;
     if (fFrsTPCArray) delete fFrsTPCArray;
     if (fFrsUserArray) delete fFrsUserArray;
-    if (fFrsVFTXArray) delete fFrsVFTXArray;
 }
 
 void FrsRawSpectra::SetParContainers()
@@ -76,8 +74,6 @@ InitStatus FrsRawSpectra::Init()
     c4LOG_IF(fatal, !fFrsUserArray, "Branch FrsUserData not found");
     fFrsTPCArray = (TClonesArray*)mgr->GetObject("FrsTPCData");
     c4LOG_IF(fatal, !fFrsTPCArray, "Branch FrsTPCData not found");
-    fFrsVFTXArray = (TClonesArray*)mgr->GetObject("FrsVFTXData");
-    c4LOG_IF(fatal, !fFrsVFTXArray, "Branch FrsVFTXData not found");
     
     TDirectory::TContext ctx(nullptr);
 
@@ -94,11 +90,11 @@ InitStatus FrsRawSpectra::Init()
     folder_frs_raw_main_hists = new TFolder("Main Raw_Histograms", "Main Raw Histograms");
     folder_frs_raw_tpc_hists = new TFolder("TPC Raw Histograms", "TPC Raw Histograms");
     folder_frs_raw_user_hists = new TFolder("User Raw Histograms", "User Raw Histograms");
-    folder_frs_raw_vftx_hists = new TFolder("VFTX Raw Histograms", "VFTX_Raw Histograms");
+    //folder_frs_raw_vftx_hists = new TFolder("VFTX Raw Histograms", "VFTX_Raw Histograms");
     folder_frs_raw_hists->Add(folder_frs_raw_main_hists);
     folder_frs_raw_hists->Add(folder_frs_raw_tpc_hists);
     folder_frs_raw_hists->Add(folder_frs_raw_user_hists);
-    folder_frs_raw_hists->Add(folder_frs_raw_vftx_hists);
+    //folder_frs_raw_hists->Add(folder_frs_raw_vftx_hists);
 
 
     // ---- * Main Crate * ---- //
@@ -252,147 +248,6 @@ InitStatus FrsRawSpectra::Init()
     folder_raw_v7x5_user_hists->Add(h2_v7x5_user_data12_vs_chan);
     // ----------------------- //
 
-    // ---- * VFTX Crate * ---- //
-    folder_raw_vftx_vftx_hists = new TFolder("VFTX Histograms", "VFTX Histograms");
-    folder_frs_raw_vftx_hists->Add(folder_raw_vftx_vftx_hists);
-
-    // Geo = ?? VFTX TDC. Should we used VFTX_N? Only one module..
-    c_vftx_lead_mult = new TCanvas("c_vftx_lead_mult", "VFTX Lead Multiplciity", 650, 350);
-    c_vftx_lead_mult->Divide(4, 4);
-    for (int ihist = 0; ihist < VFTX_MAX_CHN; ihist++)
-    {
-        c_vftx_lead_mult->cd(ihist+1);
-        h1_vftx_vftx_lead_mult[ihist] = new TH1I(Form("h1_vftx_vftx_lead_%i_mult", ihist), Form("VFTX Lead Multiplicity - Channel %i", ihist), VFTX_MAX_HITS, 0, VFTX_MAX_HITS);
-        h1_vftx_vftx_lead_mult[ihist]->Draw();
-        folder_raw_vftx_vftx_hists->Add(h1_vftx_vftx_lead_mult[ihist]);
-    }
-    c_vftx_lead_mult->cd(0);
-    folder_raw_vftx_vftx_hists->Add(c_vftx_lead_mult);
-
-    c_vftx_trail_mult = new TCanvas("c_vftx_trail_mult", "VFTX Trail Multiplcity", 650, 350);
-    c_vftx_trail_mult->Divide(4, 4);
-    for (int ihist = 0; ihist < VFTX_MAX_CHN; ihist++)
-    {
-        c_vftx_trail_mult->cd(ihist+1);
-        h1_vftx_vftx_trail_mult[ihist] = new TH1I(Form("h1_vftx_vftx_trail_%i_mult", ihist), Form("VFTX Trail Multiplicity - Channel %i", ihist), VFTX_MAX_HITS, 0, VFTX_MAX_HITS);
-        h1_vftx_vftx_trail_mult[ihist]->Draw();
-        folder_raw_vftx_vftx_hists->Add(h1_vftx_vftx_trail_mult[ihist]);
-    }
-    c_vftx_trail_mult->cd(0);
-    folder_raw_vftx_vftx_hists->Add(c_vftx_trail_mult);
-
-    c_vftx_lead_cc = new TCanvas("c_vftx_lead_cc", "VFTX Lead Coarse Times", 650, 350);
-    c_vftx_lead_cc->Divide(4, 4);
-    for (int ihist = 0; ihist < VFTX_MAX_CHN; ihist++)
-    {
-        c_vftx_lead_cc->cd(ihist+1);
-        h1_vftx_vftx_lead_cc[ihist] = new TH1I(Form("h1_vftx_vftx_lead_%i_cc", ihist), Form("VFTX Clock (Leading) - Channel %i", ihist), 9000, 0., 9000.);
-        h1_vftx_vftx_lead_cc[ihist]->Draw();
-        folder_raw_vftx_vftx_hists->Add(h1_vftx_vftx_lead_cc[ihist]);
-    }
-    c_vftx_lead_cc->cd(0);
-    folder_raw_vftx_vftx_hists->Add(c_vftx_lead_cc);
-
-    c_vftx_lead_ft = new TCanvas("c_vftx_lead_ft", "VFTX Lead Fine Times", 650, 350);
-    c_vftx_lead_ft->Divide(4, 4);
-    for (int ihist = 0; ihist < VFTX_MAX_CHN; ihist++)
-    {
-        c_vftx_lead_ft->cd(ihist+1);
-        h1_vftx_vftx_lead_ft[ihist] = new TH1I(Form("h1_vftx_vftx_lead_%i_ft", ihist), Form("VFTX FineTime (Leading) - Channel %i", ihist), 1000, 0., 1000.);
-        h1_vftx_vftx_lead_ft[ihist]->Draw();
-        folder_raw_vftx_vftx_hists->Add(h1_vftx_vftx_lead_ft[ihist]);
-    }
-    c_vftx_lead_ft->cd(0);
-    folder_raw_vftx_vftx_hists->Add(c_vftx_lead_ft);
-
-    c_vftx_lead_time = new TCanvas("c_vftx_lead_time", "VFTX Lead Times", 650, 350);
-    c_vftx_lead_time->Divide(4, 4);
-    for (int ihist = 0; ihist < VFTX_MAX_CHN; ihist++)
-    {
-        c_vftx_lead_time->cd(ihist+1);
-        h1_vftx_vftx_lead_time[ihist] = new TH1I(Form("h1_vftx_vftx_lead_%i_time", ihist), Form("VFTX Leading Time (ps) - Channel %i", ihist), 1000, 0., 1000.);
-        h1_vftx_vftx_lead_time[ihist]->Draw();
-        folder_raw_vftx_vftx_hists->Add(h1_vftx_vftx_lead_time[ihist]);
-    }
-    c_vftx_lead_time->cd(0);
-    folder_raw_vftx_vftx_hists->Add(c_vftx_lead_time);
-
-    c_vftx_trail_cc = new TCanvas("c_vftx_trail_cc", "VFTX Trail Coarse Times", 650, 350);
-    c_vftx_trail_cc->Divide(4, 4);
-    for (int ihist = 0; ihist < VFTX_MAX_CHN; ihist++)
-    {
-        c_vftx_trail_cc->cd(ihist+1);
-        h1_vftx_vftx_trail_cc[ihist] = new TH1I(Form("h1_vftx_vftx_trail_%i_cc", ihist), Form("VFTX Clock (Trailing) - Channel %i", ihist), 9000, 0., 9000.);
-        h1_vftx_vftx_trail_cc[ihist]->Draw();
-        folder_raw_vftx_vftx_hists->Add(h1_vftx_vftx_trail_cc[ihist]);
-    }
-    c_vftx_trail_cc->cd(0);
-    folder_raw_vftx_vftx_hists->Add(c_vftx_trail_cc);
-
-    c_vftx_trail_ft = new TCanvas("c_vftx_trail_ft", "VFTX Trail Fine Times", 650, 350);
-    c_vftx_trail_ft->Divide(4, 4);
-    for (int ihist = 0; ihist < VFTX_MAX_CHN; ihist++)
-    {
-        c_vftx_trail_ft->cd(ihist+1);
-        h1_vftx_vftx_trail_ft[ihist] = new TH1I(Form("h1_vftx_vftx_trail_%i_ft", ihist), Form("VFTX FineTime (Trailing) - Channel %i", ihist), 1000, 0., 1000.);
-        h1_vftx_vftx_trail_ft[ihist]->Draw();
-        folder_raw_vftx_vftx_hists->Add(h1_vftx_vftx_trail_ft[ihist]);
-    }
-    c_vftx_trail_ft->cd(0);
-    folder_raw_vftx_vftx_hists->Add(c_vftx_trail_ft);
-
-    c_vftx_trail_time = new TCanvas("c_vftx_trail_time", "VFTX Trail Times", 650, 350);
-    c_vftx_trail_time->Divide(4, 4);
-    for (int ihist = 0; ihist < VFTX_MAX_CHN; ihist++)
-    {
-        c_vftx_trail_time->cd(ihist+1);
-        h1_vftx_vftx_trail_time[ihist] = new TH1I(Form("h1_vftx_vftx_trail_%i_time", ihist), Form("VFTX Trailing Time (ps) - Channel %i", ihist), 1000, 0., 1000.);
-        h1_vftx_vftx_trail_time[ihist]->Draw();
-        folder_raw_vftx_vftx_hists->Add(h1_vftx_vftx_trail_time[ihist]);
-    }
-    c_vftx_trail_time->cd(0);
-    folder_raw_vftx_vftx_hists->Add(c_vftx_trail_time);
-
-    c_vftx_lead_refch0 = new TCanvas("c_vftx_lead_refch0", "VFTX Lead Time - Ref Channel 0", 650, 350);
-    c_vftx_lead_refch0->Divide(4, 4);
-    for (int ihist = 0; ihist < VFTX_MAX_CHN; ihist++)
-    {
-        c_vftx_lead_refch0->cd(ihist+1);
-        h1_vftx_vftx_lead_time_ref_ch0[ihist] = new TH1I(Form("h1_vftx_vftx_lead_time_%i_ref_ch0", ihist), Form("VFTX Time Difference (Ref Channel 0) - Channel %i", ihist), 20000, -10000., 10000.);
-        h1_vftx_vftx_lead_time_ref_ch0[ihist]->Draw();
-        folder_raw_vftx_vftx_hists->Add(h1_vftx_vftx_lead_time_ref_ch0[ihist]);
-    }
-    c_vftx_lead_refch0->cd(0);
-    folder_raw_vftx_vftx_hists->Add(c_vftx_lead_refch0);
-
-    c_vftx_lead_refch0_vs_event = new TCanvas("c_vftx_lead_refch0_vs_event", "VFTX Lead Time - Reference Channel 0 vs Event", 650, 350);
-    c_vftx_lead_refch0_vs_event->Divide(4, 4);
-    for (int ihist = 0; ihist < VFTX_MAX_CHN; ihist++)
-    {
-        c_vftx_lead_refch0_vs_event->cd(ihist+1);
-        h2_vftx_vftx_lead_time_ref_ch0_vs_event[ihist] = new TH2I(Form("h2_vftx_vftx_lead_time_%i_ref_ch0_vs_event", ihist), Form("VFTX Time Difference (Ref Channel 0) vs Event - Channel %i", ihist), 400, 0, 4000000, 2000, -10000., 10000.);
-        h2_vftx_vftx_lead_time_ref_ch0_vs_event[ihist]->Draw();
-        folder_raw_vftx_vftx_hists->Add(h2_vftx_vftx_lead_time_ref_ch0_vs_event[ihist]);
-    }
-    c_vftx_lead_refch0_vs_event->cd(0);
-    folder_raw_vftx_vftx_hists->Add(c_vftx_lead_refch0_vs_event);
-
-    c_vftx_lead_refch8_vs_event = new TCanvas("c_vftx_lead_refch8_vs_event", "VFTX Lead Time - Reference Channel 8 vs Event", 650, 350);
-    c_vftx_lead_refch8_vs_event->Divide(4, 4);
-    for (int ihist = 0; ihist < VFTX_MAX_CHN; ihist++)
-    {
-        c_vftx_lead_refch8_vs_event->cd(ihist+1);
-        h2_vftx_vftx_lead_time_ref_ch8_vs_event[ihist] = new TH2I(Form("h2_vftx_vftx_lead_time_%i_ref_ch8_vs_event", ihist), Form("VFTX Time Difference (Ref Channel 8) vs Event - Channel %i", ihist), 400, 0, 4000000, 2000, -10000., 10000.);
-        h2_vftx_vftx_lead_time_ref_ch8_vs_event[ihist]->Draw();
-        folder_raw_vftx_vftx_hists->Add(h2_vftx_vftx_lead_time_ref_ch8_vs_event[ihist]);
-    }
-    c_vftx_lead_refch8_vs_event->cd(0);
-    folder_raw_vftx_vftx_hists->Add(c_vftx_lead_refch8_vs_event);
-
-    h2_vftx_vftx_lead_time_ch0vs4 = new TH2I("h2_vftx_vftx_lead_time_ch0vs4", "VFTX Lead Time Channel 0 vs Channel 4", 1000, 0., 100000., 1000, 0., 100000.);
-    folder_raw_vftx_vftx_hists->Add(h2_vftx_vftx_lead_time_ch0vs4);
-    // ----------------------- //
-
     return kSUCCESS;
 
 }
@@ -525,50 +380,6 @@ void FrsRawSpectra::Exec(Option_t* option)
         } // nhits
     } // user crate
 
-
-    /* ---- VFTX Crate ---- */
-    if (fFrsVFTXArray && fFrsVFTXArray->GetEntriesFast() > 0)
-    {
-        Int_t nHits = fFrsVFTXArray->GetEntriesFast();
-        for (Int_t ihit = 0; ihit < nHits; ihit++)
-        {   
-            fHitFrsVFTXRaw = (FrsVFTXData*)fFrsVFTXArray->At(ihit);
-            if (!fHitFrsVFTXRaw) continue;
-
-            std::vector<uint32_t>* vftx_leading_cc = fHitFrsVFTXRaw->Get_vftx_leading_cc();
-            std::vector<uint32_t>* vftx_leading_ft = fHitFrsVFTXRaw->Get_vftx_leading_ft();
-            std::vector<uint32_t>* vftx_leading_time = fHitFrsVFTXRaw->Get_vftx_leading_time();
-            std::vector<uint32_t>* vftx_trailing_cc = fHitFrsVFTXRaw->Get_vftx_trailing_cc();
-            std::vector<uint32_t>* vftx_trailing_ft = fHitFrsVFTXRaw->Get_vftx_trailing_ft();
-            std::vector<uint32_t>* vftx_trailing_time = fHitFrsVFTXRaw->Get_vftx_trailing_time();
-
-            for (int i = 0; i < VFTX_MAX_CHN; i++)
-            {   
-                h1_vftx_vftx_lead_mult[i]->Fill(vftx_leading_time[i].size());
-                for (int j = 0; j < vftx_leading_time[i].size(); j++)
-                {   
-                    h1_vftx_vftx_lead_cc[i]->Fill(vftx_leading_cc[i].at(j));
-                    h1_vftx_vftx_lead_ft[i]->Fill(vftx_leading_ft[i].at(j));
-                    h1_vftx_vftx_lead_time[i]->Fill(vftx_leading_time[i].at(j));
-                    // h1_vftx_vftx_lead_time_ref_ch0[i]->Fill(vftx_leading_time[i].at(j) - vftx_leading_time[0].at(j));
-                    // h1_vftx_vftx_lead_time_ref_ch0[i]->Fill(vftx_leading_time[i].at(j) - vftx_leading_time[0].at(j));
-                    // h2_vftx_vftx_lead_time_ref_ch0_vs_event[i]->Fill(fNEvents, vftx_leading_time[i].at(j) - vftx_leading_time[0].at(j));
-                    // h2_vftx_vftx_lead_time_ref_ch8_vs_event[i]->Fill(fNEvents, vftx_leading_time[i].at(j) - vftx_leading_time[8].at(j));
-                }
-                h1_vftx_vftx_trail_mult[i]->Fill(vftx_trailing_time[i].size());
-                for (int j = 0; j < vftx_trailing_time[i].size(); j++)
-                {   
-                    h1_vftx_vftx_trail_cc[i]->Fill(vftx_trailing_cc[i].at(j));
-                    h1_vftx_vftx_trail_ft[i]->Fill(vftx_trailing_ft[i].at(j));
-                    h1_vftx_vftx_trail_time[i]->Fill(vftx_trailing_time[i].at(j));
-                }
-            }
-            // h2_vftx_vftx_lead_time_ch0vs4->Fill();
-
-        } // nHits
-    } // VFTX crate
-
-
 }
 
 void FrsRawSpectra::FinishEvent()
@@ -576,7 +387,6 @@ void FrsRawSpectra::FinishEvent()
     if (fFrsMainArray) fFrsMainArray->Clear();
     if (fFrsTPCArray) fFrsTPCArray->Clear();
     if (fFrsUserArray) fFrsUserArray->Clear();
-    if (fFrsVFTXArray) fFrsVFTXArray->Clear();
 }
 
 

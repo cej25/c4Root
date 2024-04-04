@@ -24,6 +24,7 @@
 #include "TFile.h"
 #include "TROOT.h"
 #include "TDirectory.h"
+#include <chrono>
 
 bPlastOnlineSpectra::bPlastOnlineSpectra() : bPlastOnlineSpectra("bPlastOnlineSpectra")
 {
@@ -288,8 +289,9 @@ void bPlastOnlineSpectra::Snapshot_Histo()
 
 void bPlastOnlineSpectra::Exec(Option_t* option)
 {   
+    auto start = std::chrono::high_resolution_clock::now();
         
-        bplast_map = bplast_conf->Mapping();
+    bplast_map = bplast_conf->Mapping();
 
     if (fHitbPlastTwinpeaks && fHitbPlastTwinpeaks->GetEntriesFast() > 0)
     {
@@ -324,8 +326,8 @@ void bPlastOnlineSpectra::Exec(Option_t* option)
             {
                 if (entry.second.first == detector_id)
                 {
-                    if (entry.second.second.first == "U") h1_bplast_hitpatterns[0]->Fill(detector_id);
-                    if (entry.second.second.first == "D") h1_bplast_hitpatterns[1]->Fill(detector_id);
+                    if (entry.second.second.first == 'U') h1_bplast_hitpatterns[0]->Fill(detector_id);
+                    if (entry.second.second.first == 'D') h1_bplast_hitpatterns[1]->Fill(detector_id);
 
                     for (int i = 0; i < nTamexBoards; i++)
                     {
@@ -343,6 +345,10 @@ void bPlastOnlineSpectra::Exec(Option_t* option)
         h1_bplast_multiplicity->Fill(event_multiplicity);
     }
     fNEvents += 1;
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    total_time_microsecs += duration.count();
 }
 
     void bPlastOnlineSpectra::FinishEvent()
@@ -355,13 +361,16 @@ void bPlastOnlineSpectra::Exec(Option_t* option)
 
     void bPlastOnlineSpectra::FinishTask()
     {
-    if(fNEvents == 0){ 
+    if(fNEvents == 0)
+    { 
         c4LOG(warn, "No events found, not saving histograms!");
         return;
     }
-    if (fHitbPlastTwinpeaks){
+    if (fHitbPlastTwinpeaks)
+    {
         folder_bplast->Write();
         c4LOG(info, "bPlast histograms written to file.");
+        c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvents << " microseconds.");
     }
     }
 

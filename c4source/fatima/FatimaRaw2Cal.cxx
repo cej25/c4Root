@@ -14,6 +14,7 @@
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
+#include <chrono>
 
 #include "FatimaRaw2Cal.h"
 
@@ -138,6 +139,8 @@ Writes the times in ns!
 */
 void FatimaRaw2Cal::Exec(Option_t* option)
 {
+    auto start = std::chrono::high_resolution_clock::now();
+    
     if (funcal_data && funcal_data->GetEntriesFast() > 1)
     { // only get events with two hits or more
         Int_t event_multiplicity = funcal_data->GetEntriesFast();
@@ -287,7 +290,12 @@ void FatimaRaw2Cal::Exec(Option_t* option)
             //ihit++; //increment it by one extra.
             }
         }
-    }    
+        fExecs++; // count once every time we do something with fatima
+    }
+    
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    total_time_microsecs += duration.count();
 }
 
 /*
@@ -311,6 +319,7 @@ void FatimaRaw2Cal::FinishTask()
 {
     c4LOG(info, Form("Wrote %i events.",fNEvents));
     c4LOG(info, Form("%i events are unmatched (not written).",fNunmatched));
+    c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fExecs << " microseconds.");
 }
 
 

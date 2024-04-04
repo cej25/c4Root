@@ -37,7 +37,6 @@ FrsCalSpectra::FrsCalSpectra(const TString& name, Int_t iVerbose)
     , fFrsUserCalArray(NULL)
     , fFrsTPCArray(NULL)
     , fFrsTPCCalArray(NULL)
-    , fFrsVFTXCalArray(NULL)
     , fNEvents(0)
     , header(nullptr)
 {
@@ -77,8 +76,7 @@ InitStatus FrsCalSpectra::Init()
     c4LOG_IF(fatal, !fFrsTPCArray, "Branch FrsTPCData not found");
     fFrsTPCCalArray = (TClonesArray*)mgr->GetObject("FrsTPCCalData");
     c4LOG_IF(fatal, !fFrsTPCCalArray, "Branch FrsTPCCalData not found");
-    fFrsVFTXCalArray = (TClonesArray*)mgr->GetObject("FrsVFTXCalData");
-    c4LOG_IF(fatal, !fFrsVFTXCalArray, "Branch FrsVFTXCalData not found");
+
     
     TDirectory::TContext ctx(nullptr);
 
@@ -496,7 +494,6 @@ void FrsCalSpectra::FinishEvent()
     if(fFrsMainCalArray) fFrsMainCalArray->Clear();
     if(fFrsTPCArray) fFrsTPCArray->Clear();
     if(fFrsTPCCalArray) fFrsTPCCalArray->Clear();
-    if(fFrsVFTXCalArray) fFrsVFTXCalArray->Clear();
 }
 
 void FrsCalSpectra::FinishTask()

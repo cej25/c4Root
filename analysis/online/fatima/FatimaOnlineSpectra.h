@@ -79,6 +79,7 @@ class FatimaOnlineSpectra : public FairTask
         // ranges
         EventHeader* header;
         Int_t fNEvents;
+        int total_time_microsecs = 0;
 
         // Canvas
         TCanvas* c_fatima_slowToT;
