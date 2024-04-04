@@ -13,8 +13,9 @@
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
-#include "ext_data_struct_info.hh"
+#include <chrono>
 
+#include "ext_data_struct_info.hh"
 extern "C"
 {
     #include "ext_data_client.h"
@@ -51,37 +52,45 @@ bPlastReader::~bPlastReader() {
         PrintStatistics();
     }
 
-    for (int i = 0; i < NBoards; i++) {
-        for (int j = 0; j < NChannels; j++) {
-            if (fine_time_calibration_coeffs[i][j] != nullptr) {
+    for (int i = 0; i < NBoards; i++) 
+    {
+        for (int j = 0; j < NChannels; j++) 
+        {
+            if (fine_time_calibration_coeffs[i][j] != nullptr) 
+            {
                 delete[] fine_time_calibration_coeffs[i][j];
                 fine_time_calibration_coeffs[i][j] = nullptr;
             }
         }
 
-        if (fine_time_calibration_coeffs[i] != nullptr) {
+        if (fine_time_calibration_coeffs[i] != nullptr) 
+        {
             delete[] fine_time_calibration_coeffs[i];
             fine_time_calibration_coeffs[i] = nullptr;
         }
 
-        if (fine_time_hits[i] != nullptr) {
+        if (fine_time_hits[i] != nullptr) 
+        {
             delete[] fine_time_hits[i];
             fine_time_hits[i] = nullptr;
         }
     }
 
-    if (fine_time_hits != nullptr) {
+    if (fine_time_hits != nullptr) 
+    {
         delete[] fine_time_hits;
         fine_time_hits = nullptr;
     }
 
-    if (fine_time_calibration_coeffs != nullptr) {
+    if (fine_time_calibration_coeffs != nullptr) 
+    {
         delete[] fine_time_calibration_coeffs;
         fine_time_calibration_coeffs = nullptr;
     }
 
     if (fArray != nullptr) delete fArray;
 
+    c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvent << " microseconds.");
     c4LOG(info, "Destroyed bPlastReader properly.");
 
 }
@@ -179,7 +188,7 @@ void bPlastReader::DoFineTimeCalibration()
                 std::pair<int, int> pair = std::make_pair(j, i); // channel, board
                 warning_channels.emplace_back(pair); // dump to a log file in future
                 warning_counter++;
-                c4LOG(debug1, Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));
+                c4LOG(debug2, Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));
             
             }
             for (int k = 0; k < Nbins_fine_time; k++) {
@@ -204,7 +213,8 @@ void bPlastReader::DoFineTimeCalibration()
 /*
 Uses the conversion table to look-up fine times in ns.
 */
-double bPlastReader::GetFineTime(int tdc_fine_time_channel, int board_id, int channel_id){
+double bPlastReader::GetFineTime(int tdc_fine_time_channel, int board_id, int channel_id)
+{
     return fine_time_calibration_coeffs[board_id][channel_id][tdc_fine_time_channel];
 }
 
@@ -212,7 +222,8 @@ double bPlastReader::GetFineTime(int tdc_fine_time_channel, int board_id, int ch
 Fine time histograms are stored as ROOT TH1I histograms as they are efficient and compresses when written.
 This function saves the fine time hits directly to file. On restart this file can then be read and the look-up table reconstructed.
 */
-void bPlastReader::WriteFineTimeHistosToFile(){
+void bPlastReader::WriteFineTimeHistosToFile()
+{
 
     if (!fine_time_calibration_set) {
         c4LOG(info,"Fine time calibrations not set, cannot write to file.");
@@ -267,7 +278,7 @@ void bPlastReader::ReadFineTimeHistosFromFile()
             TH1I* a = nullptr;
             inputfile->GetObject(Form("fine_time_hits_%i_%i", i, j), a);
             if (a) {
-                c4LOG(debug1, Form("Accessing i = %i, j = %i",i,j));
+                c4LOG(debug2, Form("Accessing i = %i, j = %i",i,j));
                 fine_time_hits[i][j] = (TH1I*)a->Clone();
                 c4LOG_IF(fatal,fine_time_hits==nullptr,"Failed reading the file for fine time calibration histograms");
                 delete a;
@@ -295,7 +306,7 @@ Some assumptions:
 */
 Bool_t bPlastReader::Read() //do fine time here:
 {
-    c4LOG(debug1, "Event Data");
+    auto start = std::chrono::high_resolution_clock::now();
 
     if (!fData) return kTRUE;
 
@@ -466,6 +477,11 @@ Bool_t bPlastReader::Read() //do fine time here:
     } // boards
     
     fNEvent += 1;
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    total_time_microsecs += duration.count();
+
     return kTRUE;
 }
 
@@ -479,7 +495,8 @@ Bool_t bPlastReader::Read() //do fine time here:
 /*
 Playing with colors :D
 */
-void bPlastReader::PrintStatistics(){
+void bPlastReader::PrintStatistics()
+{
     std::ostringstream oss;
     // Print column labels
     oss << "\n";

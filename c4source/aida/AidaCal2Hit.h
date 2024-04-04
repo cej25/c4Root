@@ -22,6 +22,8 @@ public:
     void SetImplantOnline(Bool_t option) { fImplantOnline = option; }
     void SetDecayOnline(Bool_t option) { fDecayOnline = option; }
 
+    virtual void FinishTask();
+
 private:
     std::vector<AidaCalAdcItem> const* implantCalArray;
     std::vector<AidaCalAdcItem> const* decayCalArray;
@@ -33,6 +35,9 @@ private:
     bool fDecayOnline;
 
     TAidaConfiguration const* conf;
+
+    Int_t fExecs = 0;
+    int total_time_microsecs = 0;
 
     std::vector<AidaCluster> ItemsToClusters(std::vector<AidaCalAdcItem> const& );
     AidaHit ClusterPairToHit(std::pair<AidaCluster, AidaCluster> const&);

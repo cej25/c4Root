@@ -17,7 +17,7 @@ FrsGate::FrsGate(std::string gn, std::string file_name)
     cut_dEdeg_Z = (TCutG*)infile->Get("cut_dEdeg_Z");
 
     c4LOG(info, Form("PID gate %s loaded with cuts on Z/AoQ = %i, Z/Z2 = %i, x2/AoQ = %i, x4/AoQ = %i, dEdeg/Z = %i",
-    gate_name,
+    gate_name.c_str(),
     cut_Z_AoQ!=nullptr,
     cut_Z_Z2!=nullptr,
     cut_x2_AoQ!=nullptr,

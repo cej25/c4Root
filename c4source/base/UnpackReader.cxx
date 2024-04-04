@@ -21,7 +21,7 @@ UnpackReader::UnpackReader(EXT_STR_h101_unpack* data, size_t offset)
 
 UnpackReader::~UnpackReader()
 {
-    c4LOG(debug1, "");
+    c4LOG(debug2, "");
     if (fHeader)
     {
         delete fHeader;
@@ -68,7 +68,7 @@ Bool_t UnpackReader::Read()
 
     if (0 == (fNEvent % 1000))
     {
-        c4LOG(debug1, "event : " << fNEvent << ", trigger : " << fData->TRIGGER);
+        c4LOG(debug2, "event : " << fNEvent << ", trigger : " << fData->TRIGGER);
     }
 
     if (fHeader)

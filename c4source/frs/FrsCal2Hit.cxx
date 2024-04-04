@@ -18,6 +18,7 @@
 #include <vector>
 #include <iostream>
 #include <TROOT.h>
+#include <chrono>
 
 #define MUSIC_ANA_NEW
 
@@ -31,7 +32,7 @@ FrsCal2Hit::FrsCal2Hit(TFRSParameter* ffrs,
         TSIParameter* fsi,
         TMRTOFMSParameter* fmrtof,
         TRangeParameter* frange,
-        TString& fpathToConfigFiles)
+        std::string fpathToConfigFiles)
     :   FairTask()
     ,   fNEvents(0)
     ,   header(nullptr)
@@ -127,7 +128,8 @@ InitStatus FrsCal2Hit::ReInit()
 }
 
 void FrsCal2Hit::Exec(Option_t* option)
-{
+{   
+    auto start = std::chrono::high_resolution_clock::now();
 
     int multMain = fCalArrayMain->GetEntriesFast();
     int multTPC = fCalArrayTPC->GetEntriesFast();
@@ -1349,6 +1351,11 @@ void FrsCal2Hit::Exec(Option_t* option)
 
     new ((*fHitArray)[fHitArray->GetEntriesFast()]) FrsHitData(*FrsHit);
    
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    total_time_microsecs += duration.count();
+    //c4LOG(info, "FrsCal2Hit Exec time: " << duration.count() << " microseconds");
+
 }
 
 
@@ -1669,6 +1676,7 @@ void FrsCal2Hit::FinishEvent()
 void FrsCal2Hit::FinishTask()
 {
     c4LOG(info, Form("Wrote %i events. ", fNEvents));
+    c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvents);
 }
 
 ClassImp(FrsCal2Hit)

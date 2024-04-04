@@ -47,7 +47,7 @@ set(SRCS
 ./base/UnpackReader.cxx
 ./base/c4Reader.cxx
 ./base/CorrelationsMap.cxx
-./aida/c4AidaReader.cxx
+./aida/AidaReader.cxx
 ./aida/AidaCal2Hit.cxx
 ./aida/AidaUnpack2Cal.cxx
 ./frs/FrsMainReader.cxx

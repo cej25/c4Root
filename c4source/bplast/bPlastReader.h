@@ -75,7 +75,8 @@ class bPlastReader : public c4Reader
 
 
     private:
-        unsigned int fNEvent;
+        Int_t fNEvent;
+        int total_time_microsecs = 0;
 
         EXT_STR_h101_bplast_onion* fData;
 

@@ -47,6 +47,7 @@ class bPlastOnlineSpectra : public FairTask
 
         EventHeader* header;
         Int_t fNEvents;
+        int total_time_microsecs = 0;
 
         int nDetectors;
         int nTamexBoards;

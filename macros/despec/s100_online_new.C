@@ -1,16 +1,16 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define FATIMA_ON 1
-#define FATIMA_VME_ON 1
+#define FATIMA_ON 0
+#define FATIMA_VME_ON 0
 #define AIDA_ON 1
 #define BPLAST_ON 1
-#define GERMANIUM_ON 1
+#define GERMANIUM_ON 0
 #define BGO_ON 0
-#define FRS_ON 1
-#define TIME_MACHINE_ON 1
+#define FRS_ON 0
+#define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
-#define WHITE_RABBIT_CORS 1
+#define WHITE_RABBIT_CORS 0
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
@@ -141,6 +141,10 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     std::vector<std::string> FatimaPromptCuts = {"FatPromptCut1"};
     TCutGGates* FatimaPrompt = new TCutGGates("FatimaEdT", FatimaPromptCuts, fatima_gate_path);
 
+    /*std::string germanium_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/germanium/Gates/";
+    std::vector<std::string> GePromptCuts = {"GePromptCut1"};
+    TCutGGates* GePrompt = new TCutGGates("GeEdT", GePromptCuts, germanium_gate_path);
+    TGermaniumConfiguration::SetPromptFlashCut(germanium_gate_path + "/GePromptCut1");*/
     
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Correlations ******************************************************** //
@@ -344,7 +348,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     
     if (FRS_ON)
     {
-        FrsCal2Hit* hitfrs = new FrsCal2Hit(frs,mw,tpc,music,labr,sci,id,si,mrtof,range,fExpName);
+        FrsCal2Hit* hitfrs = new FrsCal2Hit(frs,mw,tpc,music,labr,sci,id,si,mrtof,range,config_path + "/frs/");
         
         hitfrs->SetOnline(true); 
         run->AddTask(hitfrs);
@@ -399,11 +403,11 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     
     if (GERMANIUM_ON)
     {
-        GermaniumOnlineSpectra* onlinege = new GermaniumOnlineSpectra();
+       /* GermaniumOnlineSpectra* onlinege = new GermaniumOnlineSpectra();
         onlinege->SetBinningEnergy(3000,0,3e3);
         onlinege->AddReferenceDetector(15,0);
         onlinege->AddReferenceDetector(1,0);
-        run->AddTask(onlinege);
+        run->AddTask(onlinege);*/
     }
     
     if (BGO_ON)
@@ -445,7 +449,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {b, c, d, e, f};
+        std::vector a {b, c, d, f};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
@@ -454,7 +458,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({b, c, d, e, f});
+        wronline->SetDetectorSystems({b, c, d, f});
     
         run->AddTask(wronline);
     }

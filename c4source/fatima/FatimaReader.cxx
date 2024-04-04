@@ -169,7 +169,7 @@ void FatimaReader::DoFineTimeCalibration()
                 std::pair<int, int> pair = std::make_pair(j, i); // channel, board
                 warning_channels.emplace_back(pair); // dump to a log file in future
                 warning_counter++;
-                c4LOG(debug1, Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));
+                c4LOG(debug2, Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));
             }
 
             for (int k = 0; k < Nbins_fine_time; k++) {
@@ -269,7 +269,7 @@ void FatimaReader::ReadFineTimeHistosFromFile()
             TH1I* a = nullptr;
             inputfile->GetObject(Form("fine_time_hits_%i_%i", i, j), a);
             if (a) {
-                c4LOG(debug1,Form("Accessing i = %i, j = %i",i,j));
+                c4LOG(debug2,Form("Accessing i = %i, j = %i",i,j));
                 fine_time_hits[i][j] = (TH1I*)a->Clone();
                 c4LOG_IF(fatal,fine_time_hits==nullptr,"Failed reading the file for fine time calibration histograms");
                 delete a;
@@ -297,7 +297,7 @@ Some assumptions:
 */
 Bool_t FatimaReader::Read() //do fine time here:
 {
-    c4LOG(debug1, "Event Data");
+    c4LOG(debug2, "Event Data");
 
     if (!fData) return kTRUE;
 
@@ -385,7 +385,7 @@ Bool_t FatimaReader::Read() //do fine time here:
             if (fData->fatima_tamex[it_board_number].time_finev[it_hits] == 0x3FF) {fNevents_TAMEX_fail[it_board_number][channelid]++; continue;} // this happens if TAMEX loses the fine time - skip it
 
 
-            if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch){fNevents_lacking_epoch[it_board_number][channelid]++; c4LOG(debug1, "Event lacking epoch.");} // if the channel has changed but no epoch word was seen in between, channel 0 is always the first one so dont check if that s the case.
+            if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch){fNevents_lacking_epoch[it_board_number][channelid]++; c4LOG(debug2, "Event lacking epoch.");} // if the channel has changed but no epoch word was seen in between, channel 0 is always the first one so dont check if that s the case.
 
             if (!(channelid >= last_channel_read)) {c4LOG(fatal, Form("Data format is inconcistent with assumption: Channels are not read out in increasing order. This channel = %i, last channel = %i",channelid,last_channel_read));}
 

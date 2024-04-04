@@ -34,7 +34,7 @@ class FrsCal2Hit : public FairTask
                 TSIParameter* fsi,
                 TMRTOFMSParameter* fmrtof,
                 TRangeParameter* frange,
-                TString& fpathToConfigFiles);
+                std::string fpathToConfigFiles);
 
         FrsCal2Hit(const TString& name, Int_t verbose);
 
@@ -348,6 +348,8 @@ class FrsCal2Hit : public FairTask
 
         EventHeader* header;
         Int_t fNEvents = 0;
+
+        int total_time_microsecs = 0;
 
         bool conditions_files_read = false;
 
