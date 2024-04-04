@@ -91,6 +91,7 @@ bPlastReader::~bPlastReader() {
     if (fArray != nullptr) delete fArray;
 
     c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvent << " microseconds.");
+    c4LOG(info, "Events: " << fNEvent);
     c4LOG(info, "Destroyed bPlastReader properly.");
 
 }
@@ -322,8 +323,6 @@ Bool_t bPlastReader::Read() //do fine time here:
 
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
     { //per board:
-        
-        //for (int i = 0; i<32; i++) last_epoch[i] = 0;
 
         if (fData->bplast_tamex[it_board_number].event_size == 0) continue; // empty event skip
         
@@ -348,25 +347,12 @@ Bool_t bPlastReader::Read() //do fine time here:
 
         for (int it_hits = 0; it_hits < fData->bplast_tamex[it_board_number].event_size/4 - 3 ; it_hits++)
         {
-
-            //if (it_hits + 1 == fData->bplast_tamex[it_board_number].event_size/4 - 3) { c4LOG(fatal, "Data ends on a epoch..."); }
-            //if (fData->bplast_tamex[it_board_number].time_channelv[it_hits] != 1) continue;
-
-            //c4LOG(info, Form("epoch = %i",fData->bplast_tamex[it_board_number].time_epochv[it_hits]));
-            //c4LOG(info, Form("coarse = %i",fData->bplast_tamex[it_board_number].time_coarsev[it_hits]));
-            //c4LOG(info, Form("fine = %i",fData->bplast_tamex[it_board_number].time_finev[it_hits]));
-            //c4LOG(info, Form("channel = %i",fData->bplast_tamex[it_board_number].time_channelv[it_hits]));
-            //c4LOG(info, Form("edge = %i \n",fData->bplast_tamex[it_board_number].time_edgev[it_hits]));
-
-            //continue;
-
             // now operating under the assumption 16.01.2024:
             /*
             the TAMEX readout happens channel after channel with increasing channel number. Multiple hits within one channel are time ordered.
             e.g.: ch1-hit1, ch1-hit2, ch1-hit3, ch2-hit1, ch2-hit2, ch3-hit1, ....., chN-hitN.
             from M Reese 08.12.23
             */
-
 
             // check if arrays are overflowing. These could be placed outside this inner loop, but now it sums up the number of lost events in case they are not equal. This indicates an error in UCESB/MBS i believe if this fails.
             if (fData->bplast_tamex[it_board_number].time_epoch <= it_hits) {fNevents_skipped++; continue;}
@@ -387,34 +373,38 @@ Bool_t bPlastReader::Read() //do fine time here:
 
             //from this point we should have seen an epoch for channel id.
 
-            uint32_t channelid = fData->bplast_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // 1-32
-            if (channelid == 0) {continue;} // skip channel 0 for now. This is the trigger information.
+            uint32_t channelid = fData->bplast_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // 0-32
             
             //if (it_board_number == 1) c4LOG(info,Form("ch = %i, coarse = %i, edge = %i", channelid, fData->bplast_tamex[it_board_number].time_coarsev[it_hits], fData->bplast_tamex[it_board_number].time_edgev[it_hits]));
-
-            if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch) { fNevents_lacking_epoch[it_board_number][channelid-1]++; continue; } // c4LOG(warning, "Event lacking epoch."); continue;}
-        
-
-            if (fData->bplast_tamex[it_board_number].time_finev[it_hits] == 0x3FF) {fNevents_TAMEX_fail[it_board_number][channelid-1]++; continue;} // this happens if TAMEX loses the fine time - skip it
-
-            if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch){fNevents_lacking_epoch[it_board_number][channelid-1]++; c4LOG(warning, Form("Event lacking epoch in channel %d",channelid));} // if the channel has changed but no epoch word was seen in between, channel 0 is always the first one so dont check if that s the case.
+            
+            if (fData->bplast_tamex[it_board_number].time_finev[it_hits] == 0x3FF) {fNevents_TAMEX_fail[it_board_number][channelid]++; continue;} // this happens if TAMEX loses the fine time - skip it
+            
+            // why channelid-1 and why skip 0 above. fatima does not do this?
+            if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch){fNevents_lacking_epoch[it_board_number][channelid]++; c4LOG(debug2, Form("Event lacking epoch in channel %d",channelid)); continue;} // if the channel has changed but no epoch word was seen in between, channel 0 is always the first one so dont check if that s the case.
 
             if (!(channelid >= last_channel_read)) {c4LOG(fatal, Form("Data format is inconcistent with assumption: Channels are not read out in increasing order. This channel = %i, last channel = %i",channelid,last_channel_read));}
 
     
             last_word_read_was_epoch = false;
             last_channel_read = channelid;
+            
+            bool is_leading = fData->bplast_tamex[it_board_number].time_edgev[it_hits] & 0x1;
 
             //Fill fine times and skip.
-            if (!fine_time_calibration_set) 
+            if (!fine_time_calibration_set && is_leading) 
             {
-                fine_time_hits[it_board_number][channelid-1]->Fill(fData->bplast_tamex[it_board_number].time_finev[it_hits]);
+                fine_time_hits[it_board_number][channelid]->Fill(fData->bplast_tamex[it_board_number].time_finev[it_hits]);
                 continue;
             }
 
-            bool is_leading = fData->bplast_tamex[it_board_number].time_edgev[it_hits] & 0x1;
             uint32_t coarse_T = fData->bplast_tamex[it_board_number].time_coarsev[it_hits] & 0x7FF;
-            double fine_T = GetFineTime(fData->bplast_tamex[it_board_number].time_finev[it_hits],it_board_number,channelid-1);
+            double fine_T = GetFineTime(fData->bplast_tamex[it_board_number].time_finev[it_hits],it_board_number,channelid);
+            
+            if (channelid == 0) 
+            {
+                accepted_trigger_time = ((uint64_t)previous_epoch_word)*10.24e3 + ((uint64_t)coarse_T)*5.0 - (uint64_t)fine_T; // round it off to ns resolution
+                continue;
+            } // skip channel 0 for now. This is the trigger information. The trigger time is kept, the wr timestamp is corrected by the difference of the hit and the acc trigger time.
 
             //if(it_board_number == 1) c4LOG(info,fData->bplast_tamex[it_board_number].time_edgev[it_hits]);
 
@@ -423,7 +413,7 @@ Bool_t bPlastReader::Read() //do fine time here:
                 //if (it_board_number == 1) c4LOG(info,Form("Found rise: ch = %i, le = %i, lc = %i, lf = %f", channelid, previous_epoch_word,coarse_T,fine_T));
                 
                 //count number of double leads
-                if (last_tdc_hit.hit) {fNevents_second_lead_seen[it_board_number][channelid-1]++;}
+                if (last_tdc_hit.hit) {fNevents_second_lead_seen[it_board_number][channelid]++;}
                 
                 last_tdc_hit.hit = true;
                 last_tdc_hit.lead_epoch_counter = previous_epoch_word;
@@ -457,21 +447,21 @@ Bool_t bPlastReader::Read() //do fine time here:
             
                     //reset:
 
-                    last_tdc_hit.hit=false;
-                    last_tdc_hit.lead_epoch_counter = 0;
-                    last_tdc_hit.lead_coarse_T = 0;
-                    last_tdc_hit.lead_fine_T = 0;
-                
-                fNmatched[it_board_number][channelid-1]++;
-                fNtrails_read[it_board_number][channelid-1]++;
+                last_tdc_hit.hit=false;
+                last_tdc_hit.lead_epoch_counter = 0;
+                last_tdc_hit.lead_coarse_T = 0;
+                last_tdc_hit.lead_fine_T = 0;
+            
+                fNmatched[it_board_number][channelid]++;
+                fNtrails_read[it_board_number][channelid]++;
 
                 continue;
             }
             else
             {
                 // do nothing, trail found with no rise.
-                fNevents_trail_seen_no_lead[it_board_number][channelid-1]++;
-                fNtrails_read[it_board_number][channelid-1]++;
+                fNevents_trail_seen_no_lead[it_board_number][channelid]++;
+                fNtrails_read[it_board_number][channelid]++;
             }
         }
     } // boards

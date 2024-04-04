@@ -72,6 +72,8 @@ class FatimaRaw2Cal : public FairTask
 
         EventHeader * header;
         Int_t fNEvents = 0;
+        Int_t fExecs = 0;
+        int total_time_microsecs = 0;
 
         //internal status flags for detector map and calibration map:
         //Bool_t DetectorMap_loaded = 0;

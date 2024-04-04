@@ -21,6 +21,7 @@
 #include "TMath.h"
 #include "TFile.h"
 #include "TRandom.h"
+#include <chrono>
 
 FatimaOnlineSpectra::FatimaOnlineSpectra() 
     : FatimaOnlineSpectra("FatimaOnlineSpectra")
@@ -417,6 +418,9 @@ void FatimaOnlineSpectra::Snapshot_Histo()
 
 void FatimaOnlineSpectra::Exec(Option_t* option)
 {   
+    
+    auto start = std::chrono::high_resolution_clock::now();
+    
     //suspects that the lead and trail flags are	
     if (fHitFatimaTwinpeaks && fHitFatimaTwinpeaks->GetEntriesFast() > 0)
     {
@@ -476,8 +480,15 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
             }
         }
         h1_fatima_multiplicity->Fill(event_multiplicity);
+        // ++events should go here, no?
     }
+    
     fNEvents += 1;
+    
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    total_time_microsecs += duration.count();
+    
 }
 
 
@@ -500,6 +511,7 @@ void FatimaOnlineSpectra::FinishTask()
     {
         folder_fatima->Write();
         c4LOG(info, "FATIMA histograms written to file");
+        c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvents << " microseconds.");
     }
 }
 

@@ -1,16 +1,16 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define FATIMA_ON 0
-#define FATIMA_VME_ON 0
+#define FATIMA_ON 1
+#define FATIMA_VME_ON 1
 #define AIDA_ON 1
 #define BPLAST_ON 1
-#define GERMANIUM_ON 0
+#define GERMANIUM_ON 1
 #define BGO_ON 0
-#define FRS_ON 0
-#define TIME_MACHINE_ON 0
+#define FRS_ON 1
+#define TIME_MACHINE_ON 1
 #define BEAMMONITOR_ON 0
-#define WHITE_RABBIT_CORS 0
+#define WHITE_RABBIT_CORS 1
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
@@ -47,9 +47,9 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
 
     // Define important paths.
     //TString c4Root_path = "/u/jbormans/c4Root";
-    //TString c4Root_path = "/u/despec/s100_online/c4Root";
+    TString c4Root_path = "/u/despec/s100_online/c4Root";
     TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
-    TString c4Root_path = "/u/cjones/c4Root";
+    //TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -75,7 +75,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     // TString filename = "trans://lxg1257"; // timesorter.
     //TString filename = "trans://R4L-21"; // beammonitor
     // TString filename = "stream://R4L-36"; // fatima vme
-    TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0008_0001.lmd";
+    TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
     //TString filename = "~/lustre/despec/dryrun24/ts/Au_beam_10_*.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
@@ -180,8 +180,8 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (FATIMA_ON)
     {
         FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-        //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_histos_19mar.root", 1000000);
-        unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_histos_19mar.root");
+        //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_4apr_test.root", 1000000);
+        unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_4apr_test.root");
 
         unpackfatima->SetOnline(true);
         source->AddReader(unpackfatima);
@@ -206,8 +206,8 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (BPLAST_ON)
     {
         bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_bplast_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
-        //unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_histos_2103_pulser_bplast.root", 343682);
-        unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_histos_2103_pulser_bplast.root");
+        //unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_4apr_test.root", 1000000);
+        unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_4apr_test.root");
         
         unpackbplast->SetOnline(true);
         source->AddReader(unpackbplast);
@@ -423,13 +423,13 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (FRS_ON)
     {
         FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
-        FrsRawSpectra* frsrawspec = new FrsRawSpectra();
-        FrsCalSpectra* frscalspec = new FrsCalSpectra();
+        //FrsRawSpectra* frsrawspec = new FrsRawSpectra();
+        //FrsCalSpectra* frscalspec = new FrsCalSpectra();
         FrsAnalysisSpectra* frsanlspec = new FrsAnalysisSpectra(frs,mw,tpc,music,labr,sci,id,si,mrtof,range,FrsGates);
         
         run->AddTask(onlinefrs);
-        run->AddTask(frsrawspec);
-        run->AddTask(frscalspec);
+        //run->AddTask(frsrawspec);
+        //run->AddTask(frscalspec);
         run->AddTask(frsanlspec);
     }
     
@@ -449,7 +449,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {b, c, d, f};
+        std::vector a {b, c, d, e, f};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
@@ -458,7 +458,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({b, c, d, f});
+        wronline->SetDetectorSystems({b, c, d, e, f});
     
         run->AddTask(wronline);
     }
