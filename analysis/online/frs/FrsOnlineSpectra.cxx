@@ -141,19 +141,19 @@ InitStatus FrsOnlineSpectra::Init()
     h2_Z_vs_AoQ_corr = new TH2D("h2_Z_vs_AoQ_corr", "Z1 vs. A/Q (corr)", 1500, fMin_AoQ, fMax_AoQ, 1000, fMin_Z, fMax_Z);
     h2_Z_vs_AoQ_corr->GetXaxis()->SetTitle("A/Q");
     h2_Z_vs_AoQ_corr->GetYaxis()->SetTitle("Z (MUSIC 1)");
-    h2_Z_vs_AoQ->SetOption("COLZ");
+    h2_Z_vs_AoQ_corr->SetOption("COLZ");
     folder_pids->Add(h2_Z_vs_AoQ_corr);
     
     h2_Z_vs_Z2 = new TH2D("h2_Z_vs_Z2", "Z1 vs. Z2", 1000, fMin_Z, fMax_Z, 400, fMin_Z, fMax_Z);
     h2_Z_vs_Z2->GetXaxis()->SetTitle("Z (MUSIC 1)");
     h2_Z_vs_Z2->GetYaxis()->SetTitle("Z (MUSIC 2)");
-    h2_Z_vs_AoQ->SetOption("COLZ");
+    h2_Z_vs_Z2->SetOption("COLZ");
     folder_pids->Add(h2_Z_vs_Z2);
 
     h2_Z_vs_AoQ_Zsame = new TH2D("h2_Z_vs_AoQ_Zsame", "Z1 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, fMin_AoQ, fMax_AoQ, 1000, fMin_Z, fMax_Z);
     h2_Z_vs_AoQ_Zsame->GetXaxis()->SetTitle("A/Q");
     h2_Z_vs_AoQ_Zsame->GetYaxis()->SetTitle("Z (MUSIC 1)");
-    h2_Z_vs_AoQ->SetOption("COLZ");
+    h2_Z_vs_AoQ_Zsame->SetOption("COLZ");
     folder_pids->Add(h2_Z_vs_AoQ_Zsame);
 
     h2_x4_vs_AoQ_Zsame = new TH2D("h2_x4_vs_AoQ_Zsame", "x4 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, fMin_AoQ, fMax_AoQ, 300, fMin_x4, fMax_x4);

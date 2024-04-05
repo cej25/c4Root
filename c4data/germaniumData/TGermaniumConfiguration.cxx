@@ -161,9 +161,22 @@ void TGermaniumConfiguration::ReadPromptFlashCut()
     // this requires a lot of things that are not documented
     // must be a root file (not always the case from saving TCuts)
     // must be named "prompt_flash_cut" precisely (not a good idea since there is a Fatima prompt cut also)
-    TFile * cut = TFile::Open(TString(promptflash_cut_file),"READ");
-
-    prompt_flash_cut = (TCutG*)cut->Get("prompt_flash_cut");
+    TFile* cut = TFile::Open(TString(promptflash_cut_file),"READ");
+    
+    if (!cut || cut->IsZombie() || cut->TestBit(TFile::kRecovered))
+    {
+        c4LOG(warn, "Germanium prompt flash cut file provided (" << promptflash_cut_file << ") is not a ROOT file.");
+        return;
+    }
+    
+    if (cut->Get("prompt_flash_cut"))
+    {
+        prompt_flash_cut = (TCutG*)cut->Get("prompt_flash_cut");
+    }
+    else
+    {
+        c4LOG(warn, "Germanium prompt flash cut does not exist in file: " << promptflash_cut_file);
+    }
 
     cut->Close();
 }
