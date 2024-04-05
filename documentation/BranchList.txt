@@ -1,0 +1,62 @@
+Tree name: "evt"
+
+Branch:
+    "EventHeader."
+        - "fTrigger"
+        - "fTimeStamp"
+        - "fEventno"
+        - "fSpillFlag" [bool]
+ 
+    "AidaAdcData"
+        - "rawTime"
+        - "slowTime"
+        - "fastTime"
+        - "fee"
+        - "channel"
+        - "range"
+        - "value"
+    "AidaFlowData"
+        - "time"
+        - "fee"
+        - "pause"
+    "AidaScalerData"
+        - "time"
+        - "value"
+        - "fee"
+    
+    "AidaImplantCalAdcData"
+        - "slowTime"
+        - "fastTime"
+        - "fee"
+        - "channel"
+        - "dssd"
+        - "side"
+        - "strip"
+        - "range"
+        - "intensity"
+        - "energy"
+    "AidaDecayCalAdcData"
+        - same as above
+    "AidaTimeMachineData"
+        - "fundelayed_time"
+        - "fdelayed_time"
+        - "fwr_subsystem_id"
+        - "fwr_t"
+
+    "AidaImplantHits"
+        - "DSSD" [int]
+        - "StripX" [double]
+        - "StripY" [double]
+        - "PosX" [double]
+        - "PosY" [double]
+        - "Energy" [double]
+        - "EnergyX" [double]
+        - "EnergyY" [double]
+        - "StripXMin" [int]
+    "AidaDecayHits"
+        - same as above
+    
+
+    
+
+    
