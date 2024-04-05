@@ -74,8 +74,9 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
     // TString filename = "trans://lxg1257"; // timesorter.
     //TString filename = "trans://R4L-21"; // beammonitor
-    // TString filename = "stream://R4L-36"; // fatima vme
-    TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
+     TString filename = "stream://R4L-36"; // fatima vme
+    //TString filename = "stream://x86l-117"; // fatima tamex
+    //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
     //TString filename = "~/lustre/despec/dryrun24/ts/Au_beam_10_*.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
@@ -141,10 +142,10 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     std::vector<std::string> FatimaPromptCuts = {"FatPromptCut1"};
     TCutGGates* FatimaPrompt = new TCutGGates("FatimaEdT", FatimaPromptCuts, fatima_gate_path);
 
-    /*std::string germanium_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/germanium/Gates/";
+    std::string germanium_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/germanium/Gates/";
     std::vector<std::string> GePromptCuts = {"GePromptCut1"};
     TCutGGates* GePrompt = new TCutGGates("GeEdT", GePromptCuts, germanium_gate_path);
-    TGermaniumConfiguration::SetPromptFlashCut(germanium_gate_path + "/GePromptCut1");*/
+    TGermaniumConfiguration::SetPromptFlashCut(germanium_gate_path + "/GePromptCut1");
     
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Correlations ******************************************************** //
@@ -180,7 +181,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (FATIMA_ON)
     {
         FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-        //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_4apr_test.root", 1000000);
+        //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_4apr_test.root", 100000);
         unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_4apr_test.root");
 
         unpackfatima->SetOnline(true);
@@ -403,11 +404,11 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     
     if (GERMANIUM_ON)
     {
-       /* GermaniumOnlineSpectra* onlinege = new GermaniumOnlineSpectra();
+        GermaniumOnlineSpectra* onlinege = new GermaniumOnlineSpectra();
         onlinege->SetBinningEnergy(3000,0,3e3);
         onlinege->AddReferenceDetector(15,0);
         onlinege->AddReferenceDetector(1,0);
-        run->AddTask(onlinege);*/
+        run->AddTask(onlinege);
     }
     
     if (BGO_ON)
@@ -423,14 +424,13 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (FRS_ON)
     {
         FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
-        //FrsRawSpectra* frsrawspec = new FrsRawSpectra();
-        //FrsCalSpectra* frscalspec = new FrsCalSpectra();
-        FrsAnalysisSpectra* frsanlspec = new FrsAnalysisSpectra(frs,mw,tpc,music,labr,sci,id,si,mrtof,range,FrsGates);
+        // For monitoring FRS on our side
+        // FrsRawSpectra* frsrawspec = new FrsRawSpectra();
+        // FrsCalSpectra* frscalspec = new FrsCalSpectra();
         
         run->AddTask(onlinefrs);
-        //run->AddTask(frsrawspec);
-        //run->AddTask(frscalspec);
-        run->AddTask(frsanlspec);
+        // run->AddTask(frsrawspec);
+        // run->AddTask(frscalspec);
     }
     
     if (BEAMMONITOR_ON)
@@ -463,25 +463,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
         run->AddTask(wronline);
     }
 
-    // ---------------------------------------------------------------------------------------- //
-    // *** Correlations *********************************************************************** //
-
-    if (FATIMA_ON && FRS_ON)
-    {
-        //FrsFatimaCorrelations* frsfatimacorr = new FrsFatimaCorrelations(FrsGates, FatimaPrompt);
-        
-        //run->AddTask(frsfatimacorr);
-    }
     
-    if (AIDA_ON && FRS_ON)
-    {
-        //FrsAidaCorrelations* frsaidacorr = new FrsAidaCorrelations(FrsGates);
-        
-        //run->AddTask(frsaidacorr);
-    }
-    
-   
-
     // Initialise
     run->Init();
     
