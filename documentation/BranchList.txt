@@ -53,6 +53,18 @@ Branch:
         - "EnergyX" [double]
         - "EnergyY" [double]
         - "StripXMin" [int]
+        - "StripXMax" [int]
+        - "StripYMin" [int]
+        - "StripYMax" [int]
+        - "ClusterSizeX" [int]
+        - "ClusterSizeY" [int]
+        - "Time" [int64_t]
+        - "TimeX" [int64_t]
+        - "TimeY" [int64_t]
+        - "FastTime" [int64_t]
+        - "FastTimeX" [int64_t]
+        - "FastTimeY" [int64_t]
+        - "Stopped" [bool]
     "AidaDecayHits"
         - same as above
     
