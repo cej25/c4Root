@@ -66,7 +66,7 @@ InitStatus FrsOnlineSpectra::Init()
     
     TDirectory::TContext ctx(nullptr);
 
-    // check if exists, i.e. if task is done out of order (?)
+    // TODO: check if exists, i.e. if task is done out of order (?)
     folder_frs_hists = new TFolder("FRS", "FRS");
     mgr->Register("FRS", "FRS Folder", folder_frs_hists, false); // add it to tree
     run->AddObject(folder_frs_hists); // add it to online server
@@ -133,103 +133,198 @@ InitStatus FrsOnlineSpectra::Init()
     folder_pids->Add(folder_ZvsAoQ_hists);
 
     h2_Z_vs_AoQ = new TH2D("h2_Z_vs_AoQ", "Z1 vs. A/Q", 1500, fMin_AoQ, fMax_AoQ, 1000, fMin_Z, fMax_Z);
+    h2_Z_vs_AoQ->GetXaxis()->SetTitle("A/Q");
+    h2_Z_vs_AoQ->GetYaxis()->SetTitle("Z (MUSIC 1)");
+    h2_Z_vs_AoQ->SetOption("COLZ");
     folder_pids->Add(h2_Z_vs_AoQ);
     
     h2_Z_vs_AoQ_corr = new TH2D("h2_Z_vs_AoQ_corr", "Z1 vs. A/Q (corr)", 1500, fMin_AoQ, fMax_AoQ, 1000, fMin_Z, fMax_Z);
+    h2_Z_vs_AoQ_corr->GetXaxis()->SetTitle("A/Q");
+    h2_Z_vs_AoQ_corr->GetYaxis()->SetTitle("Z (MUSIC 1)");
+    h2_Z_vs_AoQ->SetOption("COLZ");
     folder_pids->Add(h2_Z_vs_AoQ_corr);
-
+    
     h2_Z_vs_Z2 = new TH2D("h2_Z_vs_Z2", "Z1 vs. Z2", 1000, fMin_Z, fMax_Z, 400, fMin_Z, fMax_Z);
+    h2_Z_vs_Z2->GetXaxis()->SetTitle("Z (MUSIC 1)");
+    h2_Z_vs_Z2->GetYaxis()->SetTitle("Z (MUSIC 2)");
+    h2_Z_vs_AoQ->SetOption("COLZ");
     folder_pids->Add(h2_Z_vs_Z2);
 
     h2_Z_vs_AoQ_Zsame = new TH2D("h2_Z_vs_AoQ_Zsame", "Z1 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, fMin_AoQ, fMax_AoQ, 1000, fMin_Z, fMax_Z);
+    h2_Z_vs_AoQ_Zsame->GetXaxis()->SetTitle("A/Q");
+    h2_Z_vs_AoQ_Zsame->GetYaxis()->SetTitle("Z (MUSIC 1)");
+    h2_Z_vs_AoQ->SetOption("COLZ");
     folder_pids->Add(h2_Z_vs_AoQ_Zsame);
 
-    h2_x4_vs_AoQ_Zsame = new TH2D("h2_x4_vs_AoQ_Zsame", "x4 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, fMin_AoQ, fMax_AoQ, 300, fMin_x4, fMax_x4); 
+    h2_x4_vs_AoQ_Zsame = new TH2D("h2_x4_vs_AoQ_Zsame", "x4 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, fMin_AoQ, fMax_AoQ, 300, fMin_x4, fMax_x4);
+    h2_x4_vs_AoQ_Zsame->GetXaxis()->SetTitle("A/Q");
+    h2_x4_vs_AoQ_Zsame->GetYaxis()->SetTitle("S4 x-position");
+    h2_x4_vs_AoQ_Zsame->SetOption("COLZ");
     folder_pids->Add(h2_x4_vs_AoQ_Zsame);
 
     h2_x2_vs_AoQ_Zsame = new TH2D("h2_x2_vs_AoQ_Zsame", "x4 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, fMin_AoQ, fMax_AoQ, 300, fMin_x2, fMax_x2);
+    h2_x2_vs_AoQ_Zsame->GetXaxis()->SetTitle("A/Q");
+    h2_x2_vs_AoQ_Zsame->GetYaxis()->SetTitle("S2 x-position");
+    h2_x2_vs_AoQ_Zsame->SetOption("COLZ");
     folder_pids->Add(h2_x2_vs_AoQ_Zsame);
    
     h2_x2_vs_AoQ = new TH2D("h2_x2_vs_AoQ", "x2 vs. A/Q", 1500, fMin_AoQ, fMax_AoQ, 200, fMin_x2, fMax_x2);
+    h2_x2_vs_AoQ->GetXaxis()->SetTitle("A/Q");
+    h2_x2_vs_AoQ->GetYaxis()->SetTitle("S2 x-position");
+    h2_x2_vs_AoQ->SetOption("COLZ");
     folder_pids->Add(h2_x2_vs_AoQ);
 
     h2_x4_vs_AoQ = new TH2D("h2_x4_vs_AoQ", "x4 vs. A/Q", 1500, fMin_AoQ, fMax_AoQ, 200, fMin_x4, fMax_x4);
+    h2_x4_vs_AoQ->GetXaxis()->SetTitle("A/Q");
+    h2_x4_vs_AoQ->GetYaxis()->SetTitle("S4 x-position");
+    h2_x4_vs_AoQ->SetOption("COLZ");
     folder_pids->Add(h2_x4_vs_AoQ);
 
     h2_dEdegoQ_vs_Z = new TH2D("h2_dEdegoQ_vs_Z", "dE in S2 degrader / Q vs. Z1", 1000, fMin_Z, fMax_Z, 1000, fMin_dEoQ, fMax_dEoQ);
+    h2_dEdegoQ_vs_Z->GetXaxis()->SetTitle("dE in S2 degrader / Q");
+    h2_dEdegoQ_vs_Z->GetYaxis()->SetTitle("Z (MUSIC 1)");
+    h2_dEdegoQ_vs_Z->SetOption("COLZ");
     folder_pids->Add(h2_dEdegoQ_vs_Z);
 
     h2_dEdeg_vs_Z = new TH2D("h2_dEdeg_vs_Z", "dE in S2 degrader vs. Z1", 1000, fMin_Z, fMax_Z, 1000, fMin_dE, fMax_dE);
+    h2_dEdeg_vs_Z->GetXaxis()->SetTitle("dE in S2 degrader");
+    h2_dEdeg_vs_Z->GetYaxis()->SetTitle("Z (MUSIC 1)");
+    h2_dEdeg_vs_Z->SetOption("COLZ");
     folder_pids->Add(h2_dEdeg_vs_Z);
 
-    h2_a2_vs_AoQ = new TH2D("h2_a2_vs_AoQ", "A/Q vs. Angle (S2)", 500, fMin_AoQ, fMax_AoQ, 500, fMin_a2, fMax_a2);
+    h2_a2_vs_AoQ = new TH2D("h2_a2_vs_AoQ", "A/Q vs. AngleX (S2)", 500, fMin_AoQ, fMax_AoQ, 500, fMin_a2, fMax_a2);
+    h2_a2_vs_AoQ->GetXaxis()->SetTitle("A/Q");
+    h2_a2_vs_AoQ->GetYaxis()->SetTitle("Angle (S2)");
+    h2_a2_vs_AoQ->SetOption("COLZ");
     folder_pids->Add(h2_a2_vs_AoQ);
 
-    h2_a4_vs_AoQ = new TH2D("h2_a4_vs_AoQ", "A/Q vs. Angle (S4)", 500, fMin_AoQ, fMax_AoQ, 500, fMin_a4, fMax_a4);
+    h2_a4_vs_AoQ = new TH2D("h2_a4_vs_AoQ", "A/Q vs. AngleX (S4)", 500, fMin_AoQ, fMax_AoQ, 500, fMin_a4, fMax_a4);
+    h2_a4_vs_AoQ->GetXaxis()->SetTitle("A/Q");
+    h2_a4_vs_AoQ->GetYaxis()->SetTitle("AngleX (S4)");
+    h2_a4_vs_AoQ->SetOption("COLZ");
     folder_pids->Add(h2_a4_vs_AoQ);
 
     h2_Z_vs_dE2 = new TH2D("h2_Z_vs_dE2", "Z1 vs. dE in MUSIC2", 400, fMin_Z, fMax_Z, 250, fMin_dE_Music2, fMax_dE_Music2);
+    h2_Z_vs_dE2->GetXaxis()->SetTitle("Z (MUSIC 1)");
+    h2_Z_vs_dE2->GetYaxis()->SetTitle("dE in MUSIC 2");
+    h2_Z_vs_dE2->SetOption("COLZ");
     folder_pids->Add(h2_Z_vs_dE2);
 
     h2_x2_vs_x4 = new TH2D("h2_x2_vs_x4", "x2 vs. x4", 200, fMin_x2, fMax_x2, 200, fMin_x4, fMax_x4);
+    h2_x2_vs_x4->GetXaxis()->SetTitle("S2 x-position");
+    h2_x2_vs_x4->GetYaxis()->SetTitle("S4 x-position");
+    h2_x2_vs_x4->SetOption("COLZ");
     folder_pids->Add(h2_x2_vs_x4);
   
     h2_SC41dE_vs_AoQ = new TH2D("h2_SC41dE_vs_AoQ", "A/Q vs. dE in SC41", 1000, fMin_AoQ, fMax_AoQ, 1000, 0., 4000.);
+    h2_SC41dE_vs_AoQ->GetXaxis()->SetTitle("A/Q");
+    h2_SC41dE_vs_AoQ->GetYaxis()->SetTitle("dE in SC41");
+    h2_SC41dE_vs_AoQ->SetOption("COLZ");
     folder_pids->Add(h2_SC41dE_vs_AoQ);
 
     h2_dE_vs_ToF = new TH2D("h2_dE_vs_ToF", "ToF S2-S4 vs. dE in MUSIC1", 2000, 0., 70000., 400, fMin_dE_Music1, fMax_dE_Music1);
+    h2_dE_vs_ToF->GetXaxis()->SetTitle("Time of Flight (S2 - S4)");
+    h2_dE_vs_ToF->GetYaxis()->SetTitle("dE in MUSIC 1");
+    h2_dE_vs_ToF->SetOption("COLZ");
     folder_pids->Add(h2_dE_vs_ToF);
 
     h2_x2_vs_Z = new TH2D("h2_x2_vs_Z", "x2 vs. Z1", 400, fMin_Z, fMax_Z, 200, fMin_x2, fMax_x2);
+    h2_x2_vs_Z->GetXaxis()->SetTitle("Z (MUSIC 1)");
+    h2_x2_vs_Z->GetYaxis()->SetTitle("S2 x-position");
+    h2_x2_vs_Z->SetOption("COLZ");
     folder_pids->Add(h2_x2_vs_Z);
 
     h2_x4_vs_Z = new TH2D("h2_x4_vs_Z", "x4 vs. Z1", 400, fMin_Z, fMax_Z, 200, fMin_x4, fMax_x4);
+    h2_x4_vs_Z->GetXaxis()->SetTitle("Z (MUSIC 1)");
+    h2_x4_vs_Z->GetYaxis()->SetTitle("S4 x-position");
+    h2_x4_vs_Z->SetOption("COLZ");
     folder_pids->Add(h2_x4_vs_Z);
 
     h2_dE1_vs_x2 = new TH2D("h2_dE1_vs_x2", "x2 vs. dE in MUSIC1", 200, fMin_x2, fMax_x2, 400, fMin_dE_Music1, fMax_dE_Music1);
+    h2_dE1_vs_x2->GetXaxis()->SetTitle("S2 x-position");
+    h2_dE1_vs_x2->GetYaxis()->SetTitle("dE in MUSIC 1");
+    h2_dE1_vs_x2->SetOption("COLZ");
     folder_pids->Add(h2_dE1_vs_x2);
 
     h2_dE1_vs_x4 = new TH2D("h2_dE1_vs_x4", "x4 vs. dE in MUSIC1", 200, fMin_x4, fMax_x4, 400, fMin_dE_Music1, fMax_dE_Music1);
+    h2_dE1_vs_x4->GetXaxis()->SetTitle("S4 x-position");
+    h2_dE1_vs_x4->GetYaxis()->SetTitle("dE in MUSIC 1");
+    h2_dE1_vs_x4->SetOption("COLZ");
     folder_pids->Add(h2_dE1_vs_x4);
 
     h2_x2_vs_a2 = new TH2D("h2_x2_vs_a2", "x2 vs. AngleX (S2)", 200, fMin_x2, fMax_x2, 200, fMin_a2, fMax_a2);
+    h2_x2_vs_a2->GetXaxis()->SetTitle("S2 x-position");
+    h2_x2_vs_a2->GetYaxis()->SetTitle("AngleX (S2)");
+    h2_x2_vs_a2->SetOption("COLZ");
     folder_pids->Add(h2_x2_vs_a2);
 
     h2_y2_vs_b2 = new TH2D("h2_y2_vs_b2", "y2 vs. AngleY (S2)", 200, fMin_y2, fMax_y2, 200, fMin_b2, fMax_b2);
+    h2_y2_vs_b2->GetXaxis()->SetTitle("S2 y-position");
+    h2_y2_vs_b2->GetYaxis()->SetTitle("AngleY (S2)");
+    h2_y2_vs_b2->SetOption("COLZ");
     folder_pids->Add(h2_y2_vs_b2);
 
     h2_x4_vs_a4 = new TH2D("h2_x4_vs_a4", "x4 vs. AngleX (S4)", 200, fMin_x4, fMax_x4, 200, fMin_a4, fMax_a4);
+    h2_x4_vs_a4->GetXaxis()->SetTitle("S4 x-position");
+    h2_x4_vs_a4->GetYaxis()->SetTitle("AngleX (S4)");
+    h2_x4_vs_a4->SetOption("COLZ");
     folder_pids->Add(h2_x4_vs_a4);
 
     h2_y4_vs_b4 = new TH2D("h2_y4_vs_b4", "y4 vs. AngleY (S4)", 200, fMin_y4, fMax_y4, 200, fMin_b4, fMax_b4);
+    h2_y4_vs_b4->GetXaxis()->SetTitle("S4 y-position");
+    h2_y4_vs_b4->GetYaxis()->SetTitle("AngleY (S4)");
+    h2_y4_vs_b4->SetOption("COLZ");
     folder_pids->Add(h2_y4_vs_b4);
 
     h2_Z_vs_Sc21E = new TH2D("h2_Z_vs_Sc21E", "Z1 vs. SQRT(Sc21_L * Sc21_R)", 300, fMin_Z, fMax_Z, 400, 0., 4000.);
+    h2_Z_vs_Sc21E->GetXaxis()->SetTitle("Z (MUSIC 1)");
+    h2_Z_vs_Sc21E->GetYaxis()->SetTitle("Sc21 E");
+    h2_Z_vs_Sc21E->SetOption("COLZ");
     folder_pids->Add(h2_Z_vs_Sc21E);
     
     // ZvsAoQ gates
     h2_Z_vs_AoQ_ZAoQgate = new TH2I("h2_Z_vs_AoQ_ZAoQgate", "Z vs. A/Q - ZAoQ Gate", 750, fMin_AoQ, fMax_AoQ, 750, fMin_Z, fMax_Z);
+    h2_Z_vs_AoQ_ZAoQgate->GetXaxis()->SetTitle("A/Q");
+    h2_Z_vs_AoQ_ZAoQgate->GetYaxis()->SetTitle("Z (MUSIC 1)");
+    h2_Z_vs_AoQ_ZAoQgate->SetOption("COLZ");
     folder_ZvsAoQ_hists->Add(h2_Z_vs_AoQ_ZAoQgate);
 
     h2_Z1_vs_Z2_ZAoQgate = new TH2I("h2_Z1_vs_Z2_ZAoQgate", "Z1 vs. Z2 - ZAoQ Gate", 750, fMin_Z, fMax_Z, 750, fMin_Z, fMax_Z);
+    h2_Z1_vs_Z2_ZAoQgate->GetXaxis()->SetTitle("Z (MUSIC 1)");
+    h2_Z1_vs_Z2_ZAoQgate->GetYaxis()->SetTitle("Z (MUSIC 2)");
+    h2_Z1_vs_Z2_ZAoQgate->SetOption("COLZ");
     folder_ZvsAoQ_hists->Add(h2_Z1_vs_Z2_ZAoQgate);
 
     h2_x2_vs_AoQ_ZAoQgate = new TH2I("h2_x2_vs_AoQ_ZAoQgate", "x2 vs. A/Q - ZAoQ Gate", 750, fMin_AoQ, fMax_AoQ, 200, fMin_x2, fMax_x2);
+    h2_x2_vs_AoQ_ZAoQgate->GetXaxis()->SetTitle("A/Q");
+    h2_x2_vs_AoQ_ZAoQgate->GetYaxis()->SetTitle("S2 x-position)");
+    h2_x2_vs_AoQ_ZAoQgate->SetOption("COLZ");
     folder_ZvsAoQ_hists->Add(h2_x2_vs_AoQ_ZAoQgate);
 
     h2_x4_vs_AoQ_ZAoQgate = new TH2I("h2_x4_vs_AoQ_ZAoQgate", "x4 vs. A/Q - ZAoQ Gate", 750, fMin_AoQ, fMax_AoQ, 200, fMin_x4, fMax_x4);
+    h2_x4_vs_AoQ_ZAoQgate->GetXaxis()->SetTitle("A/Q");
+    h2_x4_vs_AoQ_ZAoQgate->GetYaxis()->SetTitle("S4 x-position)");
+    h2_x4_vs_AoQ_ZAoQgate->SetOption("COLZ");
     folder_ZvsAoQ_hists->Add(h2_x4_vs_AoQ_ZAoQgate);
 
     h2_dEdeg_vs_Z_ZAoQgate = new TH2I("h2_dEdeg_vs_Z_ZAoQgate", "Z1 vs. dE in S2 degrader - ZAoQ Gate", 750, fMin_Z, fMax_Z, 750, fMin_dE, fMax_dE);
+    h2_dEdeg_vs_Z_ZAoQgate->GetXaxis()->SetTitle("Z (MUSIC 1)");
+    h2_dEdeg_vs_Z_ZAoQgate->GetYaxis()->SetTitle("dE in S2 degrader");
+    h2_dEdeg_vs_Z_ZAoQgate->SetOption("COLZ");
     folder_ZvsAoQ_hists->Add(h2_dEdeg_vs_Z_ZAoQgate);
 
-    h2_dedegoQ_vs_Z_ZAoQgate = new TH2I("h2_dedegoQ_vs_Z_ZAoQgate", "Z1 vs. dE in S2 degrader - ZAoQ Gate", 750, fMin_Z, fMax_Z, 750, fMin_dE, fMax_dE);
+    h2_dedegoQ_vs_Z_ZAoQgate = new TH2I("h2_dedegoQ_vs_Z_ZAoQgate", "Z1 vs. dE in S2 degrader / Q - ZAoQ Gate", 750, fMin_Z, fMax_Z, 750, fMin_dEoQ, fMax_dEoQ);
+    h2_dedegoQ_vs_Z_ZAoQgate->GetXaxis()->SetTitle("Z (MUSIC 1)");
+    h2_dedegoQ_vs_Z_ZAoQgate->GetYaxis()->SetTitle("dE in S2 degrader / Q");
+    h2_dedegoQ_vs_Z_ZAoQgate->SetOption("COLZ");
     folder_ZvsAoQ_hists->Add(h2_dedegoQ_vs_Z_ZAoQgate);
 
     h1_a2_ZAoQ_gate = new TH1I("h1_a2_ZAoQ_gate", "Angle S2 [mrad] - ZAoQ Gate", 100, -1000, 1000);
+    h1_a2_ZAoQ_gate->GetXaxis()->SetTitle("AngleX (S2)");
     folder_ZvsAoQ_hists->Add(h1_a2_ZAoQ_gate);
 
     h1_a4_ZAoQ_gate = new TH1I("h1_a4_ZAoQ_gate", "Angle S4 [mrad] - ZAoQ Gate", 100, -1000, 1000);
+    h1_a4_ZAoQ_gate->GetXaxis()->SetTitle("AngleX (S4)");
     folder_ZvsAoQ_hists->Add(h1_a4_ZAoQ_gate);
         
 
