@@ -22,17 +22,7 @@
 
 #define MUSIC_ANA_NEW
 
-FrsCal2Hit::FrsCal2Hit(TFRSParameter* ffrs,
-        TMWParameter* fmw,
-        TTPCParameter* ftpc,
-        TMUSICParameter* fmusic,
-        TLABRParameter* flabr,
-        TSCIParameter* fsci,
-        TIDParameter* fid,
-        TSIParameter* fsi,
-        TMRTOFMSParameter* fmrtof,
-        TRangeParameter* frange,
-        std::string fpathToConfigFiles)
+FrsCal2Hit::FrsCal2Hit()
     :   FairTask()
     ,   fNEvents(0)
     ,   header(nullptr)
@@ -42,19 +32,20 @@ FrsCal2Hit::FrsCal2Hit(TFRSParameter* ffrs,
     ,   fCalArrayTPC(new TClonesArray("FrsTPCCalData"))
     ,   fCalArrayUser(new TClonesArray("FrsUserCalData"))
     ,   fHitArray(new TClonesArray("FrsHitData"))
-    ,   fEventItems(new TClonesArray("EventData"))
+    ,   fEventItems(new TClonesArray("EventData")) // we don't need this anymore
 {
-    frs = ffrs;
-    mw = fmw;
-    tpc = ftpc;
-    music = fmusic;
-    labr = flabr;
-    sci = fsci;
-    id = fid;
-    si = fsi;
-    mrtof = fmrtof;
-    range = frange;
-    pathToConfigFiles = fpathToConfigFiles;
+    frs_config = TFrsConfiguration::GetInstance();
+    frs = frs_config->FRS();
+    mw = frs_config->MW();
+    tpc = frs_config->TPC();
+    music = frs_config->MUSIC();
+    labr = frs_config->LABR();
+    sci = frs_config->SCI();
+    id = frs_config->ID();
+    si = frs_config->SI();
+    mrtof = frs_config->MRTOF();
+    range = frs_config->Range();
+    pathToConfigFiles = frs_config->GetConfigPath();
 }
 
 FrsCal2Hit::FrsCal2Hit(const TString& name, Int_t verbose)
@@ -69,6 +60,18 @@ FrsCal2Hit::FrsCal2Hit(const TString& name, Int_t verbose)
     ,   fHitArray(new TClonesArray("FrsHitData"))
     ,   fEventItems(new TClonesArray("EventData"))
 {
+    frs_config = TFrsConfiguration::GetInstance();
+    frs = frs_config->FRS();
+    mw = frs_config->MW();
+    tpc = frs_config->TPC();
+    music = frs_config->MUSIC();
+    labr = frs_config->LABR();
+    sci = frs_config->SCI();
+    id = frs_config->ID();
+    si = frs_config->SI();
+    mrtof = frs_config->MRTOF();
+    range = frs_config->Range();
+    pathToConfigFiles = frs_config->GetConfigPath();
 }
 
 FrsCal2Hit::~FrsCal2Hit()
@@ -135,11 +138,8 @@ void FrsCal2Hit::Exec(Option_t* option)
     int multTPC = fCalArrayTPC->GetEntriesFast();
     int multUser = fCalArrayUser->GetEntriesFast();
 
-    if (multMain == 0 || multTPC == 0 || multUser == 0) 
-    {
-        return;
-    }
-
+    if (multMain == 0 || multTPC == 0 || multUser == 0) return;
+    
     FrsHitData* FrsHit = new FrsHitData();
 
     fNEvents++;
@@ -148,9 +148,9 @@ void FrsCal2Hit::Exec(Option_t* option)
     fCalHitTPC = (FrsTPCCalData*)fCalArrayTPC->At(0);
     fCalHitUser = (FrsUserCalData*)fCalArrayUser->At(0);
 
-    // pass along Tpat info
     FrsHit->Set_wr_t(fRawHitTpat->Get_wr_t()); // raw or cal, not sure if we need a cal step    
-    uint16_t tpat = fRawHitTpat->Get_tpat();
+    FrsHit->Set_tpat(fRawHitTpat->Get_tpat());
+
 
     /* -------------------------------- */
     // Scalers "analysis" 
@@ -1359,14 +1359,14 @@ void FrsCal2Hit::Exec(Option_t* option)
 }
 
 
-void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
+void FrsCal2Hit::Setup_Conditions(std::string path_to_config_files)
 {
     std::string line;
     int line_number = 0;
 
     const char* format = "%f %f %f %f %f %f %f %f %f %f %f %f %f %f";
 
-    std::ifstream cond_a(path_to_folder_with_frs_config_files +  TString("lim_csum.txt"));
+    std::ifstream cond_a(path_to_config_files +  TString("lim_csum.txt"));
 
     while(/*cond_a.good()*/getline(cond_a,line,'\n'))
     {
@@ -1389,7 +1389,7 @@ void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
 
     format = "%f %f";
 
-    std::ifstream cond_b(path_to_folder_with_frs_config_files +  TString("lim_xsum.txt"));
+    std::ifstream cond_b(path_to_config_files +  TString("lim_xsum.txt"));
 
     while(/*cond_b.good()*/getline(cond_b,line,'\n'))
     {
@@ -1404,7 +1404,7 @@ void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
 
     format = "%f %f";
 
-    std::ifstream cond_c(path_to_folder_with_frs_config_files +  TString("lim_ysum.txt"));
+    std::ifstream cond_c(path_to_config_files +  TString("lim_ysum.txt"));
 
     while(/*cond_c.good()*/getline(cond_c,line,'\n'))
     {
@@ -1421,7 +1421,7 @@ void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
 
     format = "%f %f %f %f";
 
-    std::ifstream cond_d(path_to_folder_with_frs_config_files +  TString("MUSIC1.txt"));
+    std::ifstream cond_d(path_to_config_files +  TString("MUSIC1.txt"));
 
     while(/*cond_d.good()*/getline(cond_d,line,'\n'))
     {
@@ -1436,7 +1436,7 @@ void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
 
     format = "%f %f %f %f";
 
-    std::ifstream cond_e(path_to_folder_with_frs_config_files +  TString("MUSIC2.txt"));
+    std::ifstream cond_e(path_to_config_files +  TString("MUSIC2.txt"));
 
     while(/*cond_e.good()*/getline(cond_e,line,'\n'))
     {
@@ -1450,7 +1450,7 @@ void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
 
     format = "%f %f %f %f";
 
-    std::ifstream cond_f(path_to_folder_with_frs_config_files +  TString("MUSIC3.txt"));
+    std::ifstream cond_f(path_to_config_files +  TString("MUSIC3.txt"));
 
     while(/*cond_f.good()*/getline(cond_f,line,'\n'))
     {
@@ -1465,7 +1465,7 @@ void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
 
     format = "%f %f";
 
-    std::ifstream cond_g(path_to_folder_with_frs_config_files +  TString("MUSIC_dEc3.txt"));
+    std::ifstream cond_g(path_to_config_files +  TString("MUSIC_dEc3.txt"));
 
     while(/*cond_g.good()*/getline(cond_g,line,'\n'))
     {
@@ -1480,7 +1480,7 @@ void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
 
     format = "%f %f";
 
-    std::ifstream cond_h(path_to_folder_with_frs_config_files +  TString("SCI_Cons.txt"));
+    std::ifstream cond_h(path_to_config_files +  TString("SCI_Cons.txt"));
 
     while(/*cond_h.good()*/getline(cond_h,line,'\n'))
     {
@@ -1504,7 +1504,7 @@ void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
 
     format = "%f %f";
 
-    std::ifstream cond_i(path_to_folder_with_frs_config_files +  TString("SCI_LLRR.txt"));
+    std::ifstream cond_i(path_to_config_files +  TString("SCI_LLRR.txt"));
     c4LOG_IF(fatal, !cond_i.is_open(), "Failed to open SCI_LLRR config file");
     while(cond_i.good())
     {
@@ -1534,7 +1534,7 @@ void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
 
     format = "%f %f";
 
-    std::ifstream cond_k(path_to_folder_with_frs_config_files +  TString("ID_x2.txt"));
+    std::ifstream cond_k(path_to_config_files +  TString("ID_x2.txt"));
 
 
     while(/*cond_k.good()*/getline(cond_k,line,'\n'))
@@ -1543,7 +1543,7 @@ void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
             sscanf(line.c_str(),format,&cID_x2[0],&cID_x2[1]);
     }
 
-    std::ifstream cond_l(path_to_folder_with_frs_config_files +  TString("ID_x4.txt"));
+    std::ifstream cond_l(path_to_config_files +  TString("ID_x4.txt"));
 
     while(/*cond_l.good()*/getline(cond_l,line,'\n'))
     {
@@ -1551,7 +1551,7 @@ void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
             sscanf(line.c_str(),format,&cID_x4[0],&cID_x4[1]);
     }
 
-    std::ifstream cond_m(path_to_folder_with_frs_config_files +  TString("ID_Z_Z.txt"));
+    std::ifstream cond_m(path_to_config_files +  TString("ID_Z_Z.txt"));
 
     while(/*cond_m.good()*/getline(cond_m,line,'\n'))
     {

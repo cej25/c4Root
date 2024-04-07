@@ -62,6 +62,7 @@ set(SRCS
 ## correlations ##
 ./correlations/FrsAidaCorrelations.cxx
 ./correlations/FrsFatimaCorrelations.cxx
+./correlations/FrsFatimaVmeCorrelations.cxx
 ./correlations/FrsGermaniumCorrelations.cxx
 ./correlations/AidaFatimaCorrelations.cxx
 ./nearline/fatima/FatimaTimingAnalysis.cxx

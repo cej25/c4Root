@@ -1,6 +1,7 @@
 #ifndef FrsTPCRaw2Cal_H
 #define FrsTPCRaw2Cal_H
 
+#include "TFrsConfiguration.h"
 #include "TFRSParameter.h"
 #include "FrsTPCCalData.h"
 #include <vector>
@@ -13,16 +14,8 @@ class FrsTPCCalData;
 class FrsTPCRaw2Cal : public FairTask
 {
     public:
-        FrsTPCRaw2Cal(TFRSParameter* ffrs,
-                    TMWParameter* fmw,
-                    TTPCParameter* ftpc,
-                    TMUSICParameter* fmusic,
-                    TLABRParameter* flabr,
-                    TSCIParameter* fsci,
-                    TIDParameter* fid,
-                    TSIParameter* fsi,
-                    TMRTOFMSParameter* fmrtof,
-                    TRangeParameter* frange);
+        FrsTPCRaw2Cal();
+
         FrsTPCRaw2Cal(const TString& name, Int_t verbose);
 
         ~FrsTPCRaw2Cal();
@@ -43,6 +36,8 @@ class FrsTPCRaw2Cal : public FairTask
         void SetOnline(Bool_t set_online) { fOnline = set_online; }
 
     private:
+        TFrsConfiguration const* frs_config;
+
         Bool_t fOnline;
 
         TClonesArray* fCalArray;

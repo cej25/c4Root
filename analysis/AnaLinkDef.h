@@ -26,6 +26,7 @@
 #pragma link C++ class FrsAnalysisSpectra+;
 #pragma link C++ class FrsAidaCorrelations+;
 #pragma link C++ class FrsFatimaCorrelations+;
+#pragma link C++ class FrsFatimaVmeCorrelations+;
 #pragma link C++ class FrsGermaniumCorrelations+;
 #pragma link C++ class AidaFatimaCorrelations+;
 #pragma link C++ class WhiterabbitCorrelationOnline+;
