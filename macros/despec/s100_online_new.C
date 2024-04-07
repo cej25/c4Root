@@ -1,7 +1,7 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define FATIMA_ON 1
+#define FATIMA_ON 0
 #define FATIMA_VME_ON 1
 #define AIDA_ON 1
 #define BPLAST_ON 1
@@ -30,7 +30,6 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_frsmain_onion_t frsmain;
     EXT_STR_h101_frstpc_onion_t frstpc;
     EXT_STR_h101_frsuser_onion_t frsuser;
-    //EXT_STR_h101_frsvftx_onion_t frsvftx;
     EXT_STR_h101_frstpat_onion_t frstpat;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
     EXT_STR_h101_bgo_onion_t bgo;
@@ -38,8 +37,10 @@ typedef struct EXT_STR_h101_t
 } EXT_STR_h101;
 
 
-void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId = 1)
+void s100_online_new()
 {   
+    const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
+
     // Name your experiment. Make sure all relevant directories are named identically.
     // TString fExpName = "NovTest";
     TString fExpName = "s100";
@@ -47,9 +48,9 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
 
     // Define important paths.
     //TString c4Root_path = "/u/jbormans/c4Root";
-    TString c4Root_path = "/u/despec/s100_online/c4Root";
+    //TString c4Root_path = "/u/despec/s100_online/c4Root";
     TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
-    //TString c4Root_path = "/u/cjones/c4Root";
+    TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -74,9 +75,9 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
     // TString filename = "trans://lxg1257"; // timesorter.
     //TString filename = "trans://R4L-21"; // beammonitor
-     TString filename = "stream://R4L-36"; // fatima vme
+    //TString filename = "stream://R4L-36"; // fatima vme
     //TString filename = "stream://x86l-117"; // fatima tamex
-    //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
+    TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
     //TString filename = "~/lustre/despec/dryrun24/ts/Au_beam_10_*.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
@@ -119,6 +120,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     TMRTOFMSParameter* mrtof = new TMRTOFMSParameter();
     TRangeParameter* range = new TRangeParameter();
     setup(frs,mw,tpc,music,labr,sci,id,si,mrtof,range); // Function defined in frs setup.C macro
+    TFrsConfiguration::SetParameters(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
     
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Gates *************************************************************** //
@@ -156,14 +158,13 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
     TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_new.txt");
-    //TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(config_path + "/fatima/fatima_cal.txt");
     TFatimaVmeConfiguration::SetDetectorMapFile(config_path + "/fatima/Fatima_VME_allocation.txt");
     TFatimaVmeConfiguration::Set_QDC_E_CalFile(config_path + "/fatima/Fatima_QDC_Energy_Calibration.txt");
     TFatimaVmeConfiguration::Set_QDC_T_CalFile(config_path + "/fatima/Fatima_QDC_Time_Calibration.txt");
     TFatimaVmeConfiguration::Set_TDC_T_CalFile(config_path + "/fatima/Fatima_TDC_Time_Calibration.txt");
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
     TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_mar20.txt");
-    // FRS? Eventually will get around to mapping crates properly
+    TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_mar21.txt");
     TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_calib_2203.txt");
     TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
@@ -323,7 +324,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     if (FRS_ON)
     {
         FrsMainRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
-        FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
+        FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal();
         FrsUserRaw2Cal* calfrsuser = new FrsUserRaw2Cal();
         
         calfrsmain->SetOnline(true);
@@ -349,7 +350,7 @@ void s100_online_new(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     
     if (FRS_ON)
     {
-        FrsCal2Hit* hitfrs = new FrsCal2Hit(frs,mw,tpc,music,labr,sci,id,si,mrtof,range,config_path + "/frs/");
+        FrsCal2Hit* hitfrs = new FrsCal2Hit();
         
         hitfrs->SetOnline(true); 
         run->AddTask(hitfrs);

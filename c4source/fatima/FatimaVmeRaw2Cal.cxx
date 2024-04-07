@@ -170,13 +170,11 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
 
             for (int i = 0; i < tdcs_fired; i++)
             {
-                // CEJ: Gonna do a weird mix of Go4/what I think is correct
                 uint32_t timestamp_raw = v1290_data[i];
                 uint32_t timestamp = Calibrate_TDC_T(v1290_data[i], tdc_detectors[i]);
                 
-                // CEJ: FIX THIS! YOU ARE COMPARING UINT TO NEGATIVE VALUE, NEVER PASSES!!
-               if (tdc_detectors[i] >= 0)
-               {
+                if (tdc_detectors[i] >= 0)
+                {
                     if (extra_signals.find(tdc_detectors[i]) == extra_signals.end())
                     {  
                         Singles_TDC_timestamp.emplace_back(timestamp);

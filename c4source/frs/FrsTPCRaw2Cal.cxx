@@ -18,16 +18,7 @@
 #include <vector>
 #include <iostream>
 
-FrsTPCRaw2Cal::FrsTPCRaw2Cal(TFRSParameter* ffrs,
-                            TMWParameter* fmw,
-                            TTPCParameter* ftpc,
-                            TMUSICParameter* fmusic,
-                            TLABRParameter* flabr,
-                            TSCIParameter* fsci,
-                            TIDParameter* fid,
-                            TSIParameter* fsi,
-                            TMRTOFMSParameter* fmrtof,
-                            TRangeParameter* frange)
+FrsTPCRaw2Cal::FrsTPCRaw2Cal()
     :   FairTask()
     ,   fNEvents(0)
     ,   header(nullptr)
@@ -35,16 +26,17 @@ FrsTPCRaw2Cal::FrsTPCRaw2Cal(TFRSParameter* ffrs,
     ,   fRawArray(new TClonesArray("FrsTPCData"))
     ,   fCalArray(new TClonesArray("FrsTPCCalData"))
 {
-    frs = ffrs;
-    mw = fmw;
-    tpc = ftpc;
-    music = fmusic;
-    labr = flabr;
-    sci = fsci;
-    id = fid;
-    si = fsi;
-    mrtof = fmrtof;
-    range = frange;
+    frs_config = TFrsConfiguration::GetInstance();
+    frs = frs_config->FRS();
+    mw = frs_config->MW();
+    tpc = frs_config->TPC();
+    music = frs_config->MUSIC();
+    labr = frs_config->LABR();
+    sci = frs_config->SCI();
+    id = frs_config->ID();
+    si = frs_config->SI();
+    mrtof = frs_config->MRTOF();
+    range = frs_config->Range();
 }
 
 FrsTPCRaw2Cal::FrsTPCRaw2Cal(const TString& name, Int_t verbose)
@@ -55,7 +47,17 @@ FrsTPCRaw2Cal::FrsTPCRaw2Cal(const TString& name, Int_t verbose)
     ,   fRawArray(new TClonesArray("FrsTPCData"))
     ,   fCalArray(new TClonesArray("FrsTPCCalData"))
 {
-
+    frs_config = TFrsConfiguration::GetInstance();
+    frs = frs_config->FRS();
+    mw = frs_config->MW();
+    tpc = frs_config->TPC();
+    music = frs_config->MUSIC();
+    labr = frs_config->LABR();
+    sci = frs_config->SCI();
+    id = frs_config->ID();
+    si = frs_config->SI();
+    mrtof = frs_config->MRTOF();
+    range = frs_config->Range();
 }
 
 FrsTPCRaw2Cal::~FrsTPCRaw2Cal()
