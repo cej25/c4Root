@@ -51,7 +51,6 @@ class FatimaVmeData : public TObject
         uint16_t fwr_subsystem_id;
         std::vector<uint32_t> fqdc_coarse_times;
         std::vector<uint64_t> fqdc_fine_times;
-        uint64_t fqdc_channel_time[QDC_BOARDS][CHANNELS_PER_QDC];
         std::vector<uint32_t> fqdc_qlong_raw;
         std::vector<uint32_t> fqdc_qshort_raw;
 

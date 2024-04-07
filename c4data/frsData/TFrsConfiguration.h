@@ -70,7 +70,8 @@ class TFrsConfiguration
         void Set_dE_Music1_range(Double_t min, Double_t max);
         void Set_dE_Music2_range(Double_t min, Double_t max);
 
-        //void AddPIDGate(std::string type, TCutG* gate);
+        // need to be able to add 1 or multiple PIDs from different filetypes
+        
 
     private:
 
