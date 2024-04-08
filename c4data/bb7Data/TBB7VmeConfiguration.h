@@ -4,6 +4,7 @@
 #include <string>
 #include <set>
 #include <map>
+#include <string>
 
 class TBB7VmeConfiguration
 {

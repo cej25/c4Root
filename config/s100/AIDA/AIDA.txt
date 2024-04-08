@@ -4,8 +4,8 @@
 #---------------------------
 # Configuration
 #---------------------------
-FEEs: 8
-DSSDs: 1
+FEEs: 16
+DSSDs: 2
 Wide: true
 
 #---------------------------
@@ -46,12 +46,24 @@ Analysis:
 DSSD: 1
 - Top: 2
 - Bottom: 4
-- LeftLeft: 7
-- LeftRight: 6
+- LeftLeft: 15
+- LeftRight: 9
 - CentreLeft: 3
 - CentreRight: 1
-- RightLeft: 8
+- RightLeft: 12
 - RightRight: 5
+- X: Junction
+- Y: Ohmic
+- MEC: false
+DSSD: 2
+- Top: 6
+- Bottom: 8
+- LeftLeft: 11
+- LeftRight: 10
+- CentreLeft: 7
+- CentreRight: 14
+- RightLeft: 16
+- RightRight: 13
 - X: Junction
 - Y: Ohmic
 - MEC: false
@@ -61,6 +73,7 @@ DSSD: 1
 #---------------------------
 Scalers:
 - 1: Pulser
+- 2: FRS Accepted
 - 3: TimeMachineU
 - 4: TimeMachineD
 - 5: SC41L_D

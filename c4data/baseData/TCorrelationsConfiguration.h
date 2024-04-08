@@ -36,7 +36,6 @@ inline TCorrelationsConfiguration const* TCorrelationsConfiguration::GetInstance
 {
     if (!instance)
     {
-        c4LOG(info, "creating instance of correlationsconfig, testing.. ");
         TCorrelationsConfiguration::Create();
     }
     return instance;
@@ -50,7 +49,6 @@ inline void TCorrelationsConfiguration::Create()
 
 inline std::map<std::string, std::vector<int>> TCorrelationsConfiguration::CorrelationsMap() const
 {
-    c4LOG(info, "Passing correlations map to some function...testing");
     return correlations_map;
 }
 
