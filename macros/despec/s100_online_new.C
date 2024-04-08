@@ -1,7 +1,7 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define FATIMA_ON 0
+#define FATIMA_ON 1
 #define FATIMA_VME_ON 1
 #define AIDA_ON 1
 #define BPLAST_ON 1
@@ -77,8 +77,8 @@ void s100_online_new()
     //TString filename = "trans://R4L-21"; // beammonitor
     //TString filename = "stream://R4L-36"; // fatima vme
     //TString filename = "stream://x86l-117"; // fatima tamex
-    TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
-    //TString filename = "~/lustre/despec/dryrun24/ts/Au_beam_10_*.lmd";
+    //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
+    TString filename = "~/Au_beam_0010_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
@@ -421,6 +421,9 @@ void s100_online_new()
         run->AddTask(onlinebgo);
         
     }
+    
+    TFrsConfiguration::Set_Z_range(70,100);
+    TFrsConfiguration::Set_AoQ_range(2.3,2.7);
     
     if (FRS_ON)
     {

@@ -41,34 +41,34 @@ class TFrsConfiguration
         std::string GetConfigPath() const;
 
         // public should allow access with arrow operator?
-        Double_t fMin_Z = 0., fMax_Z = 100.;
-        Double_t fMin_AoQ = 2., fMax_AoQ = 3.;
-        Double_t fMin_x2 = -100., fMax_x2 = 100.;
-        Double_t fMin_x4 = -100., fMax_x4 = 100.;
-        Double_t fMin_a2 = -100., fMax_a2 = 100.;
-        Double_t fMin_a4 = -100., fMax_a4 = 100.;
-        Double_t fMin_y2 = -100., fMax_y2 = 100.;
-        Double_t fMin_y4 = -100., fMax_y4 = 100.;
-        Double_t fMin_b2 = -100., fMax_b2 = 100.;
-        Double_t fMin_b4 = -100., fMax_b4 = 100.;
-        Double_t fMin_dE = 10., fMax_dE = 100.;
-        Double_t fMin_dEoQ = 0.1, fMax_dEoQ = 0.8;
-        Double_t fMin_dE_Music1 = 0., fMax_dE_Music1 = 4000.;
-        Double_t fMin_dE_Music2 = 0., fMax_dE_Music2 = 4000.;
-        void Set_Z_range(Double_t min, Double_t max);
-        void Set_AoQ_range(Double_t min, Double_t max);
-        void Set_x2_range(Double_t min, Double_t max);
-        void Set_y2_range(Double_t min, Double_t max);
-        void Set_a2_range(Double_t min, Double_t max);
-        void Set_b2_range(Double_t min, Double_t max);
-        void Set_x4_range(Double_t min, Double_t max);
-        void Set_y4_range(Double_t min, Double_t max);
-        void Set_a4_range(Double_t min, Double_t max);
-        void Set_b4_range(Double_t min, Double_t max);
-        void Set_dEdeg_range(Double_t min, Double_t max);
-        void Set_dEdegoQ_range(Double_t min, Double_t max);
-        void Set_dE_Music1_range(Double_t min, Double_t max);
-        void Set_dE_Music2_range(Double_t min, Double_t max);
+        static Double_t fMin_Z, fMax_Z;
+        static Double_t fMin_AoQ, fMax_AoQ;
+        static Double_t fMin_x2, fMax_x2;
+        static Double_t fMin_x4, fMax_x4;
+        static Double_t fMin_a2, fMax_a2;
+        static Double_t fMin_a4, fMax_a4;
+        static Double_t fMin_y2, fMax_y2;
+        static Double_t fMin_y4, fMax_y4;
+        static Double_t fMin_b2, fMax_b2;
+        static Double_t fMin_b4, fMax_b4;
+        static Double_t fMin_dE, fMax_dE;
+        static Double_t fMin_dEoQ, fMax_dEoQ;
+        static Double_t fMin_dE_Music1, fMax_dE_Music1;
+        static Double_t fMin_dE_Music2, fMax_dE_Music2;
+        static void Set_Z_range(Double_t, Double_t);
+        static void Set_AoQ_range(Double_t, Double_t);
+        static void Set_x2_range(Double_t, Double_t);
+        static void Set_y2_range(Double_t, Double_t);
+        static void Set_a2_range(Double_t, Double_t);
+        static void Set_b2_range(Double_t, Double_t);
+        static void Set_x4_range(Double_t, Double_t);
+        static void Set_y4_range(Double_t, Double_t);
+        static void Set_a4_range(Double_t, Double_t);
+        static void Set_b4_range(Double_t, Double_t);
+        static void Set_dEdeg_range(Double_t, Double_t);
+        static void Set_dEdegoQ_range(Double_t, Double_t);
+        static void Set_dE_Music1_range(Double_t, Double_t);
+        static void Set_dE_Music2_range(Double_t, Double_t);
 
         // need to be able to add 1 or multiple PIDs from different filetypes
         
