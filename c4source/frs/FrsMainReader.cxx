@@ -37,7 +37,6 @@ FrsMainReader::~FrsMainReader()
 Bool_t FrsMainReader::Init(ext_data_struct_info* a_struct_info)
 {
     Int_t ok;
-    c4LOG(info, "");
     
     EXT_STR_h101_frsmain_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_frsmain, 0);
 
@@ -58,8 +57,6 @@ Bool_t FrsMainReader::Init(ext_data_struct_info* a_struct_info)
 
     memset(fData, 0, sizeof *fData);
 
-    c4LOG(info, "FrsMainReader init complete.");
-
     return kTRUE;
 }
 
@@ -76,7 +73,6 @@ Bool_t FrsMainReader::Read()
 
     if (spill_on == 1) spill_flag = true;
     if (spill_off == 1) spill_flag = false;
-
 
     header->SetSpillFlag(spill_flag);
 

@@ -3,6 +3,8 @@
 #include "c4Logger.h"
 #include "TCutG.h"
 #include "TFile.h"
+#include "FairLogger.h"
+
 
 #include <iostream>
 #include <sstream>
@@ -91,17 +93,17 @@ void TGermaniumConfiguration::ReadConfiguration()
 
     detector_mapping_loaded = 1;
     detector_map_file.close();
+
+    LOG(info) << "Germanium Configuration File: " + configuration_file;
     return;
 
 }
 
 
 
-void TGermaniumConfiguration::ReadCalibrationCoefficients(){
 
-    c4LOG(info, "Reading Calibration coefficients.");
-
-
+void TGermaniumConfiguration::ReadCalibrationCoefficients()
+{
 
     std::ifstream cal_map_file (calibration_file);
     if (cal_map_file.fail()) c4LOG(fatal, "Could not open Germanium calibration coefficients");    
@@ -122,16 +124,15 @@ void TGermaniumConfiguration::ReadCalibrationCoefficients(){
     }
     detector_calibrations_loaded = 1;
     cal_map_file.close();
+
+    LOG(info) << "Germanium Calibration File: " + calibration_file;
 };
 
 
-
-void TGermaniumConfiguration::ReadTimeshiftCoefficients(){
-
-    c4LOG(info, "Reading Timeshift coefficients!");
-
-
+void TGermaniumConfiguration::ReadTimeshiftCoefficients()
+{
     std::ifstream timeshift_file (timeshift_calibration_file);
+
 
     if (timeshift_file.fail()) c4LOG(fatal, "Could not open Germanium timeshifts");    
     int rdetector_id,rcrystal_id; // temp read variables
@@ -149,10 +150,14 @@ void TGermaniumConfiguration::ReadTimeshiftCoefficients(){
         }
     }
     timeshift_calibration_coeffs_loaded = 1;
+
     timeshift_file.close();
+
+    LOG(info) << "Germanium SC41 Timeshift File: " + timeshift_calibration_file;
 };
 
-void TGermaniumConfiguration::ReadPromptFlashCut(){
+void TGermaniumConfiguration::ReadPromptFlashCut()
+{
 
     TFile * cut = TFile::Open(TString(promptflash_cut_file),"READ");
 
@@ -160,3 +165,4 @@ void TGermaniumConfiguration::ReadPromptFlashCut(){
 
     cut->Close();
 }
+
