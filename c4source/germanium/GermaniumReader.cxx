@@ -34,7 +34,6 @@ GermaniumReader::~GermaniumReader() {
 Bool_t GermaniumReader::Init(ext_data_struct_info* a_struct_info)
 {
     Int_t ok;
-    c4LOG(info, "");
 
     EXT_STR_h101_germanium_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_germanium, 0);
 

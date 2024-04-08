@@ -37,7 +37,6 @@ FrsCalSpectra::FrsCalSpectra(const TString& name, Int_t iVerbose)
     , fFrsUserCalArray(NULL)
     , fFrsTPCArray(NULL)
     , fFrsTPCCalArray(NULL)
-    , fFrsVFTXCalArray(NULL)
     , fNEvents(0)
     , header(nullptr)
 {
@@ -60,7 +59,6 @@ void FrsCalSpectra::SetParContainers()
 
 InitStatus FrsCalSpectra::Init()
 {
-    c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
@@ -78,22 +76,21 @@ InitStatus FrsCalSpectra::Init()
     c4LOG_IF(fatal, !fFrsTPCArray, "Branch FrsTPCData not found");
     fFrsTPCCalArray = (TClonesArray*)mgr->GetObject("FrsTPCCalData");
     c4LOG_IF(fatal, !fFrsTPCCalArray, "Branch FrsTPCCalData not found");
-    fFrsVFTXCalArray = (TClonesArray*)mgr->GetObject("FrsVFTXCalData");
-    c4LOG_IF(fatal, !fFrsVFTXCalArray, "Branch FrsVFTXCalData not found");
+
     
     TDirectory::TContext ctx(nullptr);
 
-    /*
+    
     folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
-    if (!folder_frs_hists) folder_frs_hists = new TFolder("FRS", "FRS");
-    */
+    //if (!folder_frs_hists) folder_frs_hists = new TFolder("FRS", "FRS");
+    
 
     TFolder* folder_frs_cal_hists = new TFolder("Cal Histograms", "Cal Histograms");
-    //folder_frs_hists->Add(folder_frs_cal_hists);
+    folder_frs_hists->Add(folder_frs_cal_hists);
 
     //TFolder * folder_frs_cal_hists = new TFolder("frs_detectors_histograms", "frs_detectors_histograms");
 
-    run->AddObject(folder_frs_cal_hists);
+    //run->AddObject(folder_frs_cal_hists);
 
     //Main crate detectors:
 
@@ -497,7 +494,6 @@ void FrsCalSpectra::FinishEvent()
     if(fFrsMainCalArray) fFrsMainCalArray->Clear();
     if(fFrsTPCArray) fFrsTPCArray->Clear();
     if(fFrsTPCCalArray) fFrsTPCCalArray->Clear();
-    if(fFrsVFTXCalArray) fFrsVFTXCalArray->Clear();
 }
 
 void FrsCalSpectra::FinishTask()
