@@ -230,8 +230,6 @@ FEBEX_EVENT_TRACES(card)
             }
         }
 
-        if (hp.hp != 0) // needed?
-        {
             list (0 <= i < (((channel_size.size) / 4) - 1))
             {
                 UINT32 header NOENCODE
@@ -281,7 +279,6 @@ FEBEX_EVENT_TRACES(card)
                     24_31: id = RANGE(0xb0,0xbf);
                 }
             }
-        }
     }
     else if (sumchannel.trigger_type == 3)
     {   
@@ -290,38 +287,6 @@ FEBEX_EVENT_TRACES(card)
         {
             dummy = DUMMY();
         }
-        /*
-        // trigger 3 events send only headers
-        if (hp.hp != 0)
-        {
-        list (0 <= i < TRACE_CHANNELS)
-        {
-            UINT32 header NOENCODE
-            {
-                0_7: 0x34;
-                8_23: other;
-                24_31: ch_id;
-            }
-
-            UINT32 tracesize NOENCODE
-            {
-                0_31: size;
-            }
-
-            UINT32 tracehead NOENCODE
-            {
-                0_23: other;
-                24_31: head;
-            }
-
-            UINT32 trace_trailer NOENCODE
-            {
-                0_23: notused;
-                24_31: id = RANGE(0xb0,0xbf);
-            }
-        }
-        }
-        */
     }
 
 }

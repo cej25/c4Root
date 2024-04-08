@@ -44,6 +44,7 @@ class LisaReader : public c4Reader
         Bool_t fOnline;
 
         int NBoards = 1;
+        int32_t energy;
 
         TClonesArray* fArray;
         TClonesArray* fTraceArray;
