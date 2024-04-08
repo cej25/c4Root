@@ -60,7 +60,6 @@ void FrsCalSpectra::SetParContainers()
 
 InitStatus FrsCalSpectra::Init()
 {
-    c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
@@ -83,17 +82,17 @@ InitStatus FrsCalSpectra::Init()
     
     TDirectory::TContext ctx(nullptr);
 
-    /*
+    
     folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
-    if (!folder_frs_hists) folder_frs_hists = new TFolder("FRS", "FRS");
-    */
+    //if (!folder_frs_hists) folder_frs_hists = new TFolder("FRS", "FRS");
+    
 
     TFolder* folder_frs_cal_hists = new TFolder("Cal Histograms", "Cal Histograms");
-    //folder_frs_hists->Add(folder_frs_cal_hists);
+    folder_frs_hists->Add(folder_frs_cal_hists);
 
     //TFolder * folder_frs_cal_hists = new TFolder("frs_detectors_histograms", "frs_detectors_histograms");
 
-    run->AddObject(folder_frs_cal_hists);
+    //run->AddObject(folder_frs_cal_hists);
 
     //Main crate detectors:
 

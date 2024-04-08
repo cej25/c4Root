@@ -73,13 +73,10 @@ void GermaniumRaw2Cal::SetParContainers()
 /*
 Init - register data to output tree and gets input data.
 */
-InitStatus GermaniumRaw2Cal::Init(){
-    //grabs instance managers and handles.
-
-    c4LOG(info, "Grabbing FairRootManager, RunOnline and EventHeader.");
+InitStatus GermaniumRaw2Cal::Init()
+{
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
-
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
@@ -189,8 +186,9 @@ void GermaniumRaw2Cal::Exec(Option_t* option){
                 detector_id,
                 funcal_hit->Get_wr_subsystem_id(),
                 funcal_hit->Get_wr_t());
+            fNEvents++;
         }
-    }    
+    }
 }
 
 /*

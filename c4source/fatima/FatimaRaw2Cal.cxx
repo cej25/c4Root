@@ -68,9 +68,6 @@ Initializer called by the FairRoot manager. Gets the required FairRootManager ob
 */
 InitStatus FatimaRaw2Cal::Init()
 {  
-    //grabs instance managers and handles.
-
-    c4LOG(info, "Grabbing FairRootManager, RunOnline and EventHeader.");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 

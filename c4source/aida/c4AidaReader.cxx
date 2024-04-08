@@ -39,9 +39,9 @@ AidaReader::~AidaReader()
 
 Bool_t AidaReader::Init(ext_data_struct_info* a_struct_info)
 {
-    c4LOG(info, "");
     Int_t ok;
-    EXT_STR_h101_AIDA_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_aida, 0);
+
+    EXT_STR_h101_aida_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_aida, 0);
 
     if (!ok)
     {
