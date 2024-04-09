@@ -98,7 +98,7 @@ class FrsGermaniumCorrelations : public FairTask
         int start_short_lifetime_collection = 0;
         int stop_short_lifetime_collection = 0;
 
-        int germanium_coincidence_gate = 200; //ns
+        int germanium_coincidence_gate = 500; //ns
 
         std::vector<double> gamma_energies_of_interest;
         std::vector<double> gate_width_gamma_energies_of_interest;

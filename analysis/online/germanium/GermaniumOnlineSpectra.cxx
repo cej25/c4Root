@@ -477,7 +477,7 @@ void GermaniumOnlineSpectra::Exec(Option_t* option){
 
                 if (germanium_configuration->IsDetectorAuxilliary(detector_id2)) continue;
 
-                if (TMath::Abs(time1 - time2) < 50) h2_germanium_energy_energy_sci41_cut->Fill(energy1,energy2);
+                if (TMath::Abs(time1 - time2) < 500) h2_germanium_energy_energy_sci41_cut->Fill(energy1,energy2);
                 }
             }
         }
