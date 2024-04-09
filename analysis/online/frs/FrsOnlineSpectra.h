@@ -6,11 +6,13 @@
 #include "FairTask.h"
 #include "TH2.h"
 #include "TCutG.h"
+#include "TDirectory.h"
 
 class TClonesArray;
 class EventHeader;
 class FrsHitData;
 class TFolder;
+class TDirectory;
 class TCanvas;
 class TH1F;
 class TH2F;
@@ -105,6 +107,11 @@ class FrsOnlineSpectra : public FairTask
         TH1I* h1_a2_ZAoQ_gate;
         TH1I* h1_a4_ZAoQ_gate;
         TH1I* h1_tpat;
+
+        TH1I* test_hist;
+
+        TDirectory* dir_frs;
+        TFolder* histograms;
 
         // Histograms for Scalers
         char scaler_name[66][256];

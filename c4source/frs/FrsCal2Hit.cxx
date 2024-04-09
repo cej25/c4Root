@@ -474,7 +474,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     for (int i = 0; i < tdc_array[2].size(); i++)
     {      
         if (!(tdc_array[2].size()>0 && tdc_array[3].size() > 0)) continue;
-        // CEJ: maybe all of this can be rewritten to use vectors..figure out later
+        
         if (i >= tdc_array[3].size()) break; // needed range check
 
         mhtdc_sc21lr_dt.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[2].at(i) - tdc_array[3].at(i)));
@@ -516,7 +516,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     
     // only take first hit (?) for 41, 42, 43, 31, 81
     if (tdc_array[0].size() > 0 && tdc_array[1].size() > 0)
-    {
+    {   
         mhtdc_sc41lr_dt = sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[0].at(0) - tdc_array[1].at(0));
         mhtdc_sc41lr_x = mhtdc_sc41lr_dt * sci->mhtdc_factor_41l_41r + sci->mhtdc_offset_41l_41r;
     }
