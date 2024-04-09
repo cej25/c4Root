@@ -18,20 +18,11 @@
 #include <vector>
 #include <iostream>
 #include <TROOT.h>
+#include <chrono>
 
 #define MUSIC_ANA_NEW
 
-FrsCal2Hit::FrsCal2Hit(TFRSParameter* ffrs,
-        TMWParameter* fmw,
-        TTPCParameter* ftpc,
-        TMUSICParameter* fmusic,
-        TLABRParameter* flabr,
-        TSCIParameter* fsci,
-        TIDParameter* fid,
-        TSIParameter* fsi,
-        TMRTOFMSParameter* fmrtof,
-        TRangeParameter* frange,
-        TString& fExpName)
+FrsCal2Hit::FrsCal2Hit()
     :   FairTask()
     ,   fNEvents(0)
     ,   header(nullptr)
@@ -40,21 +31,21 @@ FrsCal2Hit::FrsCal2Hit(TFRSParameter* ffrs,
     ,   fCalArrayMain(new TClonesArray("FrsMainCalData"))
     ,   fCalArrayTPC(new TClonesArray("FrsTPCCalData"))
     ,   fCalArrayUser(new TClonesArray("FrsUserCalData"))
-    ,   fCalArrayVFTX(new TClonesArray("FrsVFTXCalData"))
     ,   fHitArray(new TClonesArray("FrsHitData"))
-    ,   fEventItems(new TClonesArray("EventData"))
+    ,   fEventItems(new TClonesArray("EventData")) // we don't need this anymore
 {
-    frs = ffrs;
-    mw = fmw;
-    tpc = ftpc;
-    music = fmusic;
-    labr = flabr;
-    sci = fsci;
-    id = fid;
-    si = fsi;
-    mrtof = fmrtof;
-    range = frange;
-    expName = fExpName;
+    frs_config = TFrsConfiguration::GetInstance();
+    frs = frs_config->FRS();
+    mw = frs_config->MW();
+    tpc = frs_config->TPC();
+    music = frs_config->MUSIC();
+    labr = frs_config->LABR();
+    sci = frs_config->SCI();
+    id = frs_config->ID();
+    si = frs_config->SI();
+    mrtof = frs_config->MRTOF();
+    range = frs_config->Range();
+    pathToConfigFiles = frs_config->GetConfigPath();
 }
 
 FrsCal2Hit::FrsCal2Hit(const TString& name, Int_t verbose)
@@ -66,19 +57,30 @@ FrsCal2Hit::FrsCal2Hit(const TString& name, Int_t verbose)
     ,   fCalArrayMain(new TClonesArray("FrsMainCalData"))
     ,   fCalArrayTPC(new TClonesArray("FrsTPCCalData"))
     ,   fCalArrayUser(new TClonesArray("FrsUserCalData"))
-    ,   fCalArrayVFTX(new TClonesArray("FrsVFTXCalData"))
     ,   fHitArray(new TClonesArray("FrsHitData"))
     ,   fEventItems(new TClonesArray("EventData"))
 {
+    frs_config = TFrsConfiguration::GetInstance();
+    frs = frs_config->FRS();
+    mw = frs_config->MW();
+    tpc = frs_config->TPC();
+    music = frs_config->MUSIC();
+    labr = frs_config->LABR();
+    sci = frs_config->SCI();
+    id = frs_config->ID();
+    si = frs_config->SI();
+    mrtof = frs_config->MRTOF();
+    range = frs_config->Range();
+    pathToConfigFiles = frs_config->GetConfigPath();
 }
 
 FrsCal2Hit::~FrsCal2Hit()
 {   
     c4LOG(info, "Deleting FrsCal2Hit task");
+    if (fRawArrayTpat) delete fRawArrayTpat;
     if (fCalArrayMain) delete fCalArrayMain;
     if (fCalArrayTPC) delete fCalArrayTPC;
     if (fCalArrayUser) delete fCalArrayUser;
-    if (fCalArrayVFTX) delete fCalArrayVFTX;
     if (fHitArray) delete fHitArray;
 }
 
@@ -105,16 +107,13 @@ InitStatus FrsCal2Hit::Init()
     fCalArrayUser = (TClonesArray*)mgr->GetObject("FrsUserCalData");
     c4LOG_IF(fatal, !fCalArrayUser, "FrsUserCalData branch not found!");
 
-    fCalArrayVFTX = (TClonesArray*)mgr->GetObject("FrsVFTXCalData");
-    c4LOG_IF(fatal, !fCalArrayVFTX, "FrsVFTXCalData branch not found!");
-
     fRawArrayTpat = (TClonesArray*)mgr->GetObject("FrsTpatData");
     c4LOG_IF(fatal, !fRawArrayTpat, "FrsTpatData branch not found!");
 
     mgr->Register("FrsHitData", "FRS Hit Data", fHitArray, !fOnline);
     mgr->Register("EventData", "Event Data", fEventItems, !fOnline);
 
-    Setup_Conditions("../../config/" + expName + "/frs/");
+    Setup_Conditions(pathToConfigFiles);
     c4LOG_IF(fatal,!conditions_files_read, "You must set FrsCal2Hit->Setup_Conditions('your file path') to the folder containing the frs condition gates.");
     
     fCalArrayMain->Clear();
@@ -132,21 +131,15 @@ InitStatus FrsCal2Hit::ReInit()
 }
 
 void FrsCal2Hit::Exec(Option_t* option)
-{
+{   
+    auto start = std::chrono::high_resolution_clock::now();
 
     int multMain = fCalArrayMain->GetEntriesFast();
     int multTPC = fCalArrayTPC->GetEntriesFast();
     int multUser = fCalArrayUser->GetEntriesFast();
-    int multVFTX = fCalArrayVFTX->GetEntriesFast();
 
-
-    // something strange with VFTX
-    if (multMain == 0 || multTPC == 0 || multUser == 0) 
-    {
-        return;
-    }
-
-    // CEJ: new - updating how we set data values
+    if (multMain == 0 || multTPC == 0 || multUser == 0) return;
+    
     FrsHitData* FrsHit = new FrsHitData();
 
     fNEvents++;
@@ -155,16 +148,9 @@ void FrsCal2Hit::Exec(Option_t* option)
     fCalHitTPC = (FrsTPCCalData*)fCalArrayTPC->At(0);
     fCalHitUser = (FrsUserCalData*)fCalArrayUser->At(0);
 
-    // we don't have vftx crate at the moment
-    fCalHitVFTX = (FrsVFTXCalData*)fCalArrayVFTX->At(0);
+    FrsHit->Set_wr_t(fRawHitTpat->Get_wr_t()); // raw or cal, not sure if we need a cal step    
+    FrsHit->Set_tpat(fRawHitTpat->Get_tpat());
 
-    // old
-    // new
-    //FrsHit->Set_wr_t(fCalHitMain->Get_wr_t());
-    FrsHit->Set_wr_t(fRawHitTpat->Get_wr_t()); // raw or cal, not sure if we need a cal step
-
-    
-    uint16_t tpat = fRawHitTpat->Get_tpat();
 
     /* -------------------------------- */
     // Scalers "analysis" 
@@ -488,7 +474,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     for (int i = 0; i < tdc_array[2].size(); i++)
     {      
         if (!(tdc_array[2].size()>0 && tdc_array[3].size() > 0)) continue;
-        // CEJ: maybe all of this can be rewritten to use vectors..figure out later
+        
         if (i >= tdc_array[3].size()) break; // needed range check
 
         mhtdc_sc21lr_dt.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[2].at(i) - tdc_array[3].at(i)));
@@ -530,7 +516,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     
     // only take first hit (?) for 41, 42, 43, 31, 81
     if (tdc_array[0].size() > 0 && tdc_array[1].size() > 0)
-    {
+    {   
         mhtdc_sc41lr_dt = sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[0].at(0) - tdc_array[1].at(0));
         mhtdc_sc41lr_x = mhtdc_sc41lr_dt * sci->mhtdc_factor_41l_41r + sci->mhtdc_offset_41l_41r;
     }
@@ -1161,214 +1147,6 @@ void FrsCal2Hit::Exec(Option_t* option)
         temp_s4x = fCalHitTPC->Get_tpc_x_s4();
     }*/
 
-    /* --------------------------------------------------------------------------*/
-    // VFTX start here
-    // (moved from Go4 as we need id_a2 and it gets calculated twice otherwise?)
-    /* --------------------------------------------------------------------------*/
-    //c4LOG(info,"EXEC VFTX");
-
-    if (multVFTX > 0)
-    {
-        TRaw_vftx = fCalHitVFTX->Get_TRaw_vftx();
-
-        // loop over 21 or 22 size, check 41l/r are not empty
-        for (int i = 0; i < TRaw_vftx[0].size(); i++)
-        {   
-            // 2141
-            if (TRaw_vftx[4].size() != 0)
-            {
-                vftx_tof2141.emplace_back((0.5 * ((Double_t)TRaw_vftx[4].at(0) + (Double_t)TRaw_vftx[5].at(0)) - 0.5 * ((Double_t)TRaw_vftx[0].at(i) + (Double_t)TRaw_vftx[1].at(i))));
-                vftx_tof2141_calib.emplace_back(vftx_tof2141.at(i) / 1000. + sci->vftx_offset_2141);
-            }
-
-            // 2142
-            if (TRaw_vftx[6].size() != 0)
-            {
-                vftx_tof2142.emplace_back((0.5 * ((Double_t)TRaw_vftx[6].at(0) + (Double_t)TRaw_vftx[7].at(0)) - 0.5 * ((Double_t)TRaw_vftx[0].at(i) + (Double_t)TRaw_vftx[1].at(i))));
-                vftx_tof2142_calib.emplace_back(vftx_tof2142.at(i) / 1000. + sci->vftx_offset_2142);
-        
-            }
-        }
-
-        for (int i = 0; i < TRaw_vftx[2].size(); i++)
-        {
-            // 2241
-            if (TRaw_vftx[4].size() != 0)
-            {
-                vftx_tof2241.emplace_back((0.5 * ((Double_t)TRaw_vftx[4].at(0) + (Double_t)TRaw_vftx[5].at(0)) - 0.5 * ((Double_t)TRaw_vftx[2].at(i) + (Double_t)TRaw_vftx[3].at(i))));
-                vftx_tof2241_calib.emplace_back(vftx_tof2241.at(i) / 1000. + sci->vftx_offset_2241);
-            }
-
-            // 2242
-            if (TRaw_vftx[6].size() != 0)
-            {
-                vftx_tof2242.emplace_back((0.5 * ((Double_t)TRaw_vftx[6].at(0) + (Double_t)TRaw_vftx[7].at(0)) - 0.5 * ((Double_t)TRaw_vftx[2].at(i) + (Double_t)TRaw_vftx[3].at(i))));
-                vftx_tof2242_calib.emplace_back(vftx_tof2242.at(i) / 1000. + sci->vftx_offset_2242);
-            }
-        }
-
-        /*
-        temp_s4x = -999.;
-        if (b_tpc_xy[4] && b_tpc_xy[5])
-        {
-            temp_s4x = fCalHitTPC->Get_tpc_x_s4();
-        }*/
-
-        float temp_sci21x = -999.;
-        if (id->vftx_s2pos_option == 1)
-        {
-            // do nothing?
-        }
-        else if (id->vftx_s2pos_option == 2)
-        {
-            if (b_tpc_xy[0] && b_tpc_xy[1])
-            {
-                temp_sci21x = fCalHitTPC->Get_tpc_x_s2_foc_21_22();
-            }
-            else if (b_tpc_xy[2] && b_tpc_xy[3])
-            {
-                temp_sci21x = fCalHitTPC->Get_tpc_x_s2_foc_23_24();
-            }
-            else if (b_tpc_xy[1] && b_tpc_xy[3])
-            {
-                temp_sci21x = fCalHitTPC->Get_tpc_x_s2_foc_22_24();
-            }
-        }
-        
-        // number of 21l hits
-        for (int i = 0; i < TRaw_vftx[0].size(); i++)
-        {
-            id_vftx_beta_2141.emplace_back((id->vftx_length_2141 / vftx_tof2141_calib.at(i)) / speed_light);
-            id_vftx_beta_2142.emplace_back((id->vftx_length_2142 / vftx_tof2142_calib.at(i)) / speed_light);
-            id_vftx_gamma_2141.emplace_back(1. / sqrt(1. - id_vftx_beta_2141.at(i) * id_vftx_beta_2141.at(i)));
-            id_vftx_gamma_2142.emplace_back(1. / sqrt(1. - id_vftx_beta_2142.at(i) * id_vftx_beta_2142.at(i)));
-
-            if (temp_s4x > -200. && temp_s4x < 200. && temp_sci21x > -200. && temp_sci21x < 200)
-            {
-                id_vftx_delta_24 = (temp_s4x - (temp_sci21x * frs->magnification[1])) / (-1.0 * frs->dispersion[1] * 1000.0);
-                if (id_vftx_beta_2141.at(i) > 0.0 && id_vftx_beta_2141.at(i) < 1.0)
-                {
-                    id_vftx_aoq_2141.emplace_back(mean_brho_s2s4 * (1. + id_vftx_delta_24) * temp_tm_to_MeV / (temp_mu * id_vftx_beta_2141.at(i) * id_vftx_gamma_2141.at(i)));
-                    id_vftx_aoq_corr_2141.emplace_back(id_vftx_aoq_2141.at(i) - id->a2AoQCorr * id_a2);
-                }
-                if (id_vftx_beta_2142.at(i) > 0.0 && id_vftx_beta_2142.at(i) < 1.0)
-                {
-                    id_vftx_aoq_2142.emplace_back(mean_brho_s2s4 * (1. + id_vftx_delta_24) * temp_tm_to_MeV / (temp_mu * id_vftx_beta_2142.at(i) * id_vftx_gamma_2142.at(i)));
-                    id_vftx_aoq_corr_2142.emplace_back(id_vftx_aoq_2142.at(i) - id->a2AoQCorr * id_a2);
-                }
-            }
-
-            if ((de[0] > 0.0) && (id_vftx_beta_2141.at(i) > 0.0) && (id_vftx_beta_2141.at(i) < 1.0))
-            {
-                power = 1.;
-                sum = 0.;
-                for (int j = 0; j < 4; j++)
-                {
-                    sum += power * id->vftx_vel_a_music41[j];
-                    power *= id_vftx_beta_2141.at(i);
-                }
-
-                id_vftx_vcor_2141.emplace_back(sum);
-                
-                if (id_vftx_vcor_2141.at(i) > 0.0)
-                {
-                    id_vftx_z_2141.emplace_back(frs->primary_z * sqrt(de[0] / id_vftx_vcor_2141.at(i)));
-                    id_vftx_z2_2141.emplace_back(frs->primary_z * sqrt(de[1] / id_vftx_vcor_2141.at(i)));
-                }
-            }
-
-            if ((de[0] > 0.0) && (id_vftx_beta_2142.at(i) > 0.0) && (id_vftx_beta_2142.at(i) < 1.0))
-            {
-                power = 1.;
-                sum = 0.;
-                for (int j = 0; j < 4; j++)
-                {
-                    sum += power * id->vftx_vel_a_music41[j];
-                    power *= id_vftx_beta_2142.at(i);
-                }
-
-                id_vftx_vcor_2142.emplace_back(sum);
-
-                if (id_vftx_vcor_2142.at(i) > 0.0)
-                {
-                    id_vftx_z_2142.emplace_back(frs->primary_z * sqrt(de[0] / id_vftx_vcor_2142.at(i)));
-                    id_vftx_z2_2142.emplace_back(frs->primary_z * sqrt(de[1] / id_vftx_vcor_2142.at(i)));
-                }
-            }
-
-        }
-
-        // number of 22l hits
-        for (int i = 0; i < TRaw_vftx[2].size(); i++)
-        {
-            id_vftx_beta_2241.emplace_back((id->vftx_length_2241 / vftx_tof2241_calib.at(i)) / speed_light);
-            id_vftx_beta_2242.emplace_back((id->vftx_length_2242 / vftx_tof2242_calib.at(i)) / speed_light);
-            id_vftx_gamma_2241.emplace_back(1. / sqrt(1. - id_vftx_beta_2241.at(i) * id_vftx_beta_2241.at(i)));
-            id_vftx_gamma_2242.emplace_back(1. / sqrt(1. - id_vftx_beta_2242.at(i) * id_vftx_beta_2242.at(i)));
-
-            if (temp_s4x > -200. && temp_s4x < 200. && temp_sci21x > -200. && temp_sci21x < 200)
-            {
-                id_vftx_delta_24 = (temp_s4x - (temp_sci21x * frs->magnification[1])) / (-1.0 * frs->dispersion[1] * 1000.0);
-                if (id_vftx_beta_2241.at(i) > 0.0 && id_vftx_beta_2241.at(i) < 1.0)
-                {
-                    id_vftx_aoq_2241.emplace_back(mean_brho_s2s4 * (1. + id_vftx_delta_24) * temp_tm_to_MeV / (temp_mu * id_vftx_beta_2241.at(i) * id_vftx_gamma_2241.at(i)));
-                    id_vftx_aoq_corr_2241.emplace_back(id_vftx_aoq_2241.at(i) - id->a2AoQCorr * id_a2);
-                }
-                if (id_vftx_beta_2242.at(i) > 0.0 && id_vftx_beta_2242.at(i) < 1.0)
-                {
-                    id_vftx_aoq_2242.emplace_back(mean_brho_s2s4 * (1. + id_vftx_delta_24) * temp_tm_to_MeV / (temp_mu * id_vftx_beta_2242.at(i) * id_vftx_gamma_2242.at(i)));
-                    id_vftx_aoq_corr_2242.emplace_back(id_vftx_aoq_2242.at(i) - id->a2AoQCorr * id_a2);
-                }
-            }
-
-            if ((de[0] > 0.0) && (id_vftx_beta_2241.at(i) > 0.0) && (id_vftx_beta_2241.at(i) < 1.0))
-            {
-                power = 1.;
-                sum = 0.;
-                for (int j = 0; j < 4; j++)
-                {
-                    sum += power * id->vftx_vel_a_music41[j];
-                    power *= id_vftx_beta_2241.at(i);
-                }
-
-                id_vftx_vcor_2241.emplace_back(sum);
-
-                if (id_vftx_vcor_2241.at(i) > 0.0)
-                {
-                    id_vftx_z_2241.emplace_back(frs->primary_z * sqrt(de[0] / id_vftx_vcor_2241.at(i)));
-                    id_vftx_z2_2241.emplace_back(frs->primary_z * sqrt(de[1] / id_vftx_vcor_2241.at(i)));
-                }
-            }
-
-            if ((de[0] > 0.0) && (id_vftx_beta_2242.at(i) > 0.0) && (id_vftx_beta_2242.at(i) < 1.0))
-            {
-                power = 1.;
-                sum = 0.;
-                for (int j = 0; j < 4; j++)
-                {
-                    sum += power * id->vftx_vel_a_music41[j];
-                    power *= id_vftx_beta_2242.at(i);
-                }
-
-                id_vftx_vcor_2242.emplace_back(sum);
-
-                if (id_vftx_vcor_2242.at(i) > 0.0)
-                {
-                    id_vftx_z_2242.emplace_back(frs->primary_z * sqrt(de[0] / id_vftx_vcor_2242.at(i)));
-                    id_vftx_z2_2242.emplace_back(frs->primary_z * sqrt(de[1] / id_vftx_vcor_2242.at(i)));
-                }
-            }
-
-        }
-
-        // CEJ: Set outputs here later
-
-    } // if vftx has data??
-    
-    /*----------------------------------------------------------*/
-    /* End of VFTX  */
-    /*----------------------------------------------------------*/
-
 
     //c4LOG(info,"EXEC BETA CALC");
     /*----------------------------------------------------------*/
@@ -1573,17 +1351,22 @@ void FrsCal2Hit::Exec(Option_t* option)
 
     new ((*fHitArray)[fHitArray->GetEntriesFast()]) FrsHitData(*FrsHit);
    
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    total_time_microsecs += duration.count();
+    //c4LOG(info, "FrsCal2Hit Exec time: " << duration.count() << " microseconds");
+
 }
 
 
-void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
+void FrsCal2Hit::Setup_Conditions(std::string path_to_config_files)
 {
     std::string line;
     int line_number = 0;
 
     const char* format = "%f %f %f %f %f %f %f %f %f %f %f %f %f %f";
 
-    std::ifstream cond_a(path_to_folder_with_frs_config_files +  TString("lim_csum.txt"));
+    std::ifstream cond_a(path_to_config_files +  TString("lim_csum.txt"));
 
     while(/*cond_a.good()*/getline(cond_a,line,'\n'))
     {
@@ -1606,7 +1389,7 @@ void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
 
     format = "%f %f";
 
-    std::ifstream cond_b(path_to_folder_with_frs_config_files +  TString("lim_xsum.txt"));
+    std::ifstream cond_b(path_to_config_files +  TString("lim_xsum.txt"));
 
     while(/*cond_b.good()*/getline(cond_b,line,'\n'))
     {
@@ -1621,7 +1404,7 @@ void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
 
     format = "%f %f";
 
-    std::ifstream cond_c(path_to_folder_with_frs_config_files +  TString("lim_ysum.txt"));
+    std::ifstream cond_c(path_to_config_files +  TString("lim_ysum.txt"));
 
     while(/*cond_c.good()*/getline(cond_c,line,'\n'))
     {
@@ -1638,7 +1421,7 @@ void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
 
     format = "%f %f %f %f";
 
-    std::ifstream cond_d(path_to_folder_with_frs_config_files +  TString("MUSIC1.txt"));
+    std::ifstream cond_d(path_to_config_files +  TString("MUSIC1.txt"));
 
     while(/*cond_d.good()*/getline(cond_d,line,'\n'))
     {
@@ -1653,7 +1436,7 @@ void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
 
     format = "%f %f %f %f";
 
-    std::ifstream cond_e(path_to_folder_with_frs_config_files +  TString("MUSIC2.txt"));
+    std::ifstream cond_e(path_to_config_files +  TString("MUSIC2.txt"));
 
     while(/*cond_e.good()*/getline(cond_e,line,'\n'))
     {
@@ -1667,7 +1450,7 @@ void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
 
     format = "%f %f %f %f";
 
-    std::ifstream cond_f(path_to_folder_with_frs_config_files +  TString("MUSIC3.txt"));
+    std::ifstream cond_f(path_to_config_files +  TString("MUSIC3.txt"));
 
     while(/*cond_f.good()*/getline(cond_f,line,'\n'))
     {
@@ -1682,7 +1465,7 @@ void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
 
     format = "%f %f";
 
-    std::ifstream cond_g(path_to_folder_with_frs_config_files +  TString("MUSIC_dEc3.txt"));
+    std::ifstream cond_g(path_to_config_files +  TString("MUSIC_dEc3.txt"));
 
     while(/*cond_g.good()*/getline(cond_g,line,'\n'))
     {
@@ -1697,7 +1480,7 @@ void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
 
     format = "%f %f";
 
-    std::ifstream cond_h(path_to_folder_with_frs_config_files +  TString("SCI_Cons.txt"));
+    std::ifstream cond_h(path_to_config_files +  TString("SCI_Cons.txt"));
 
     while(/*cond_h.good()*/getline(cond_h,line,'\n'))
     {
@@ -1721,7 +1504,7 @@ void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
 
     format = "%f %f";
 
-    std::ifstream cond_i(path_to_folder_with_frs_config_files +  TString("SCI_LLRR.txt"));
+    std::ifstream cond_i(path_to_config_files +  TString("SCI_LLRR.txt"));
     c4LOG_IF(fatal, !cond_i.is_open(), "Failed to open SCI_LLRR config file");
     while(cond_i.good())
     {
@@ -1751,7 +1534,7 @@ void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
 
     format = "%f %f";
 
-    std::ifstream cond_k(path_to_folder_with_frs_config_files +  TString("ID_x2.txt"));
+    std::ifstream cond_k(path_to_config_files +  TString("ID_x2.txt"));
 
 
     while(/*cond_k.good()*/getline(cond_k,line,'\n'))
@@ -1760,7 +1543,7 @@ void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
             sscanf(line.c_str(),format,&cID_x2[0],&cID_x2[1]);
     }
 
-    std::ifstream cond_l(path_to_folder_with_frs_config_files +  TString("ID_x4.txt"));
+    std::ifstream cond_l(path_to_config_files +  TString("ID_x4.txt"));
 
     while(/*cond_l.good()*/getline(cond_l,line,'\n'))
     {
@@ -1768,7 +1551,7 @@ void FrsCal2Hit::Setup_Conditions(TString path_to_folder_with_frs_config_files)
             sscanf(line.c_str(),format,&cID_x4[0],&cID_x4[1]);
     }
 
-    std::ifstream cond_m(path_to_folder_with_frs_config_files +  TString("ID_Z_Z.txt"));
+    std::ifstream cond_m(path_to_config_files +  TString("ID_Z_Z.txt"));
 
     while(/*cond_m.good()*/getline(cond_m,line,'\n'))
     {
@@ -1893,6 +1676,7 @@ void FrsCal2Hit::FinishEvent()
 void FrsCal2Hit::FinishTask()
 {
     c4LOG(info, Form("Wrote %i events. ", fNEvents));
+    c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvents);
 }
 
 ClassImp(FrsCal2Hit)

@@ -80,7 +80,9 @@ class FatimaReader : public c4Reader
 
 
     private:
-        unsigned int fNEvent;
+        Int_t fNEvent;
+        int total_time_microsecs = 0;
+        
 
         EXT_STR_h101_fatima_onion* fData;
 

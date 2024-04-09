@@ -39,7 +39,7 @@ void TbPlastConfiguration::ReadConfiguration()
         std::istringstream iss(line);
         std::string signal;
         int tamex_board, tamex_channel, detector_id;
-        std::string stream, orientation;
+        char stream, orientation;
 
         iss >> signal;
 
@@ -50,14 +50,14 @@ void TbPlastConfiguration::ReadConfiguration()
             iss >> tamex_channel >> detector_id >> stream >> orientation;
 
             // stream
-            if (stream == "U") up_detectors.insert(detector_id);
-            else if (stream == "D") down_detectors.insert(detector_id);
+            if (stream == 'U') up_detectors.insert(detector_id);
+            else if (stream == 'D') down_detectors.insert(detector_id);
 
             // orientation
-            if (orientation == "T") top_detectors.insert(detector_id);
-            else if (orientation == "B") bottom_detectors.insert(detector_id);
-            else if (orientation == "L") left_detectors.insert(detector_id);
-            else if (orientation == "R") right_detectors.insert(detector_id);
+            if (orientation == 'T') top_detectors.insert(detector_id);
+            else if (orientation == 'B') bottom_detectors.insert(detector_id);
+            else if (orientation == 'L') left_detectors.insert(detector_id);
+            else if (orientation == 'R') right_detectors.insert(detector_id);
         }
         else // some additional signal
         {
@@ -77,7 +77,7 @@ void TbPlastConfiguration::ReadConfiguration()
         if (detector_id > -1) detector_ids.insert(detector_id);
 
         std::pair<int, int> tamex_mc = {tamex_board, tamex_channel};
-        std::pair<std::string, std::string> position = {stream, orientation};
+        std::pair<char, char> position = {stream, orientation};
 
         detector_mapping.insert(std::make_pair(tamex_mc, std::make_pair(detector_id, position)));
 

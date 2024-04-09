@@ -2,9 +2,13 @@
 #define FrsCalSpectra_H 1
 
 #include "FairTask.h"
+#include "TDirectory.h"
+#include "TFolder.h"
 #include "TH1.h"
 #include "TH2.h"
 
+class TFolder;
+class TDirectory;
 class TClonesArray;
 class EventHeader;
 class FrsHitData;
@@ -155,6 +159,9 @@ class FrsCalSpectra : public FairTask
         TH1D * h_tac_user_dt_22r_41r;
         TH1D * h_tac_user_dt_22l_81l;
         TH1D * h_tac_user_dt_22r_81r;
+
+        TDirectory* dir_frs_cal;
+        TFolder* histograms;
         
     public:
         ClassDef(FrsCalSpectra, 1)

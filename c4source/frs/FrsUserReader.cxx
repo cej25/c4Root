@@ -55,7 +55,7 @@ Bool_t FrsUserReader::Init(ext_data_struct_info* a_struct_info)
 
 Bool_t FrsUserReader::Read()
 {
-    c4LOG(debug1, "Event data");
+    c4LOG(debug2, "Event data");
 
     if (!fData) return kTRUE;
     if (fData == nullptr) return kFALSE;
@@ -73,8 +73,6 @@ Bool_t FrsUserReader::Read()
         scalers_user.emplace_back(fData->frsuser_data_v830_data[fData->frsuser_data_v830_nI[i]]);
     }
 
-    // CEJ: this will change because we don't need to "unpack" the channel
-    // also it reads a bit horribly
     // v775 x2
     for (int i = 0; i < fData->frsuser_data_v7751n; i++)
     {

@@ -37,7 +37,6 @@ FrsCalSpectra::FrsCalSpectra(const TString& name, Int_t iVerbose)
     , fFrsUserCalArray(NULL)
     , fFrsTPCArray(NULL)
     , fFrsTPCCalArray(NULL)
-    , fFrsVFTXCalArray(NULL)
     , fNEvents(0)
     , header(nullptr)
 {
@@ -77,12 +76,15 @@ InitStatus FrsCalSpectra::Init()
     c4LOG_IF(fatal, !fFrsTPCArray, "Branch FrsTPCData not found");
     fFrsTPCCalArray = (TClonesArray*)mgr->GetObject("FrsTPCCalData");
     c4LOG_IF(fatal, !fFrsTPCCalArray, "Branch FrsTPCCalData not found");
-    fFrsVFTXCalArray = (TClonesArray*)mgr->GetObject("FrsVFTXCalData");
-    c4LOG_IF(fatal, !fFrsVFTXCalArray, "Branch FrsVFTXCalData not found");
-    
+
+    histograms = (TFolder*)mgr->GetObject("Histograms");
+
     TDirectory::TContext ctx(nullptr);
 
-    
+    dir_frs_cal = new TDirectory("FRS Cal", "FRS Cal", "", 0); // check if exists
+    mgr->Register("FRS", "FRS Directory", dir_frs_cal, false);
+    histograms->Add(dir_frs_cal);
+
     folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
     //if (!folder_frs_hists) folder_frs_hists = new TFolder("FRS", "FRS");
     
@@ -496,12 +498,11 @@ void FrsCalSpectra::FinishEvent()
     if(fFrsMainCalArray) fFrsMainCalArray->Clear();
     if(fFrsTPCArray) fFrsTPCArray->Clear();
     if(fFrsTPCCalArray) fFrsTPCCalArray->Clear();
-    if(fFrsVFTXCalArray) fFrsVFTXCalArray->Clear();
 }
 
 void FrsCalSpectra::FinishTask()
 {
-    //folder_frs_cal_hists->Write();
+    
 }
 
 ClassImp(FrsCalSpectra)

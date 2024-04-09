@@ -229,7 +229,7 @@ InitStatus FrsAnalysisSpectra::Init()
     h2_y4_vs_b4 = new TH2D("h2_y4_vs_b4", "y4 vs. AngleY (S4)", 200, -100., 100., 200, -100., 100.);
     frs_tac_hists->Add(h2_y4_vs_b4);
     //hID_Z_Sc21E
-    h2_Z_vs_Sc21E = new TH2D("h2_Z_vs_Sc21E", "Z1 vs. SQRT(Sc21_L * Sc21_R)", 300, 0, 25., 400, 0., 4000.); // CEJ: why are Z limits so low?
+    h2_Z_vs_Sc21E = new TH2D("h2_Z_vs_Sc21E", "Z1 vs. SQRT(Sc21_L * Sc21_R)", 300, 60, 100, 400, 0., 4000.); // CEJ: why are Z limits so low?
     frs_tac_hists->Add(h2_Z_vs_Sc21E);
 
     // ----------- MHTDC --------------

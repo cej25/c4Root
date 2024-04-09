@@ -1,4 +1,4 @@
-#include "c4AidaReader.h"
+#include "AidaReader.h"
 
 // FairRoot
 #include "FairLogger.h"
@@ -8,9 +8,10 @@
 #include "AidaData.h"
 #include "c4Logger.h"
 
+#include <chrono>
+
 // ucesb
 #include "ext_data_struct_info.hh"
-
 extern "C"
 {
 #include "ext_h101_aida.h"
@@ -35,6 +36,7 @@ AidaReader::~AidaReader()
     delete adcArray;
     delete flowArray;
     delete scalerArray;
+    c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvent << " microseconds.");
 }
 
 Bool_t AidaReader::Init(ext_data_struct_info* a_struct_info)
@@ -59,6 +61,7 @@ Bool_t AidaReader::Init(ext_data_struct_info* a_struct_info)
 
 Bool_t AidaReader::Read()
 {
+    auto start = std::chrono::high_resolution_clock::now();
     // fData is valid here, shove it into the vector
     // Clean vectors
     adcArray->clear();
@@ -97,6 +100,10 @@ Bool_t AidaReader::Read()
         entry.SetAll(t, v, f);
     }
 
+    fNEvent++;
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    total_time_microsecs += duration.count();
     return kTRUE;
 }
 

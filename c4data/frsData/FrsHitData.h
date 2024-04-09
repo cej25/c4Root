@@ -12,7 +12,8 @@ class FrsHitData : public TObject
 
         ~FrsHitData();
 
-        inline const uint64_t Get_wr_t() const { return fWR_TS; }
+        inline const uint64_t Get_wr_t() const { return fwr_t; }
+        inline const uint16_t Get_tpat() const { return ftpat; }
         
         inline const Float_t Get_ID_x2() const { return fID_x2; }
         inline const Float_t Get_ID_y2() const { return fID_x2; }
@@ -118,7 +119,8 @@ class FrsHitData : public TObject
 
 
         // ----- Setter -------------------------------
-        inline void Set_wr_t(ULong64_t ts) { fWR_TS = ts; }
+        inline void Set_wr_t(ULong64_t ts) { fwr_t = ts; }
+        inline void Set_tpat(uint16_t tpat) { ftpat = tpat; }
         
         inline void Set_time_in_ms(uint32_t time) { ftime_in_ms = time; }
         inline void Set_ibin_for_s(uint32_t ibin) { fibin_for_s = ibin; }
@@ -171,7 +173,8 @@ class FrsHitData : public TObject
 
     protected:
 
-        uint64_t fWR_TS;
+        uint64_t fwr_t;
+        uint16_t ftpat;
         Float_t fID_x2;
         Float_t fID_y2;
         Float_t fID_x4;

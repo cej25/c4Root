@@ -1,7 +1,10 @@
 #include "TGermaniumConfiguration.h"
 
 #include "c4Logger.h"
+#include "TCutG.h"
+#include "TFile.h"
 #include "FairLogger.h"
+
 
 #include <iostream>
 #include <sstream>
@@ -11,6 +14,8 @@ TGermaniumConfiguration* TGermaniumConfiguration::instance = nullptr;
 std::string TGermaniumConfiguration::configuration_file = "blank";
 std::string TGermaniumConfiguration::calibration_file = "blank";
 std::string TGermaniumConfiguration::timeshift_calibration_file = "blank";
+std::string TGermaniumConfiguration::promptflash_cut_file = "blank";
+
 
 TGermaniumConfiguration::TGermaniumConfiguration()
 :   num_detectors(0)
@@ -21,6 +26,8 @@ TGermaniumConfiguration::TGermaniumConfiguration()
     else c4LOG(fatal,"You must set TGermaniumConfiguration::SetConfigurationFile()!!");
 
     if (calibration_file != "blank") ReadCalibrationCoefficients();
+    if (timeshift_calibration_file != "blank") ReadTimeshiftCoefficients();
+    if (promptflash_cut_file != "blank") ReadPromptFlashCut();
  }
 
 
@@ -94,9 +101,12 @@ void TGermaniumConfiguration::ReadConfiguration()
 
 
 
+
 void TGermaniumConfiguration::ReadCalibrationCoefficients()
 {
+
     std::ifstream cal_map_file (calibration_file);
+    if (cal_map_file.fail()) c4LOG(fatal, "Could not open Germanium calibration coefficients");    
 
     int rdetector_id,rcrystal_id; // temp read variables
     double a0,a1;
@@ -119,26 +129,55 @@ void TGermaniumConfiguration::ReadCalibrationCoefficients()
 };
 
 
-
-void TGermaniumConfiguration::ReadTimeshiftSCI41Coefficients()
+void TGermaniumConfiguration::ReadTimeshiftCoefficients()
 {
-    std::ifstream cal_map_file (timeshift_calibration_file);
+    std::ifstream timeshift_file (timeshift_calibration_file);
 
+
+    if (timeshift_file.fail()) c4LOG(fatal, "Could not open Germanium timeshifts");    
     int rdetector_id,rcrystal_id; // temp read variables
     double t0;
     
     //assumes the first line in the file is num-modules used
-    while(!cal_map_file.eof()){
-        if(cal_map_file.peek()=='#') cal_map_file.ignore(256,'\n');
+    while(!timeshift_file.eof()){
+        if(timeshift_file.peek()=='#') timeshift_file.ignore(256,'\n');
         else{
-            cal_map_file >> rdetector_id >> rcrystal_id >> t0;
+            timeshift_file >> rdetector_id >> rcrystal_id >> t0;
+            c4LOG(info,Form("det = %i , cr = %i, t = %f",rdetector_id,rcrystal_id,t0));
             std::pair<int,int> detector_crystal = {rdetector_id,rcrystal_id};
             timeshift_calibration_coeffs.insert(std::pair<std::pair<int,int>,double>{detector_crystal,t0});
-            cal_map_file.ignore(256,'\n');
+            timeshift_file.ignore(256,'\n');
         }
     }
     timeshift_calibration_coeffs_loaded = 1;
-    cal_map_file.close();
+
+    timeshift_file.close();
 
     LOG(info) << "Germanium SC41 Timeshift File: " + timeshift_calibration_file;
 };
+
+void TGermaniumConfiguration::ReadPromptFlashCut()
+{
+    // this requires a lot of things that are not documented
+    // must be a root file (not always the case from saving TCuts)
+    // must be named "prompt_flash_cut" precisely (not a good idea since there is a Fatima prompt cut also)
+    TFile* cut = TFile::Open(TString(promptflash_cut_file),"READ");
+    
+    if (!cut || cut->IsZombie() || cut->TestBit(TFile::kRecovered))
+    {
+        c4LOG(warn, "Germanium prompt flash cut file provided (" << promptflash_cut_file << ") is not a ROOT file.");
+        return;
+    }
+    
+    if (cut->Get("prompt_flash_cut"))
+    {
+        prompt_flash_cut = (TCutG*)cut->Get("prompt_flash_cut");
+    }
+    else
+    {
+        c4LOG(warn, "Germanium prompt flash cut does not exist in file: " << promptflash_cut_file);
+    }
+
+    cut->Close();
+}
+

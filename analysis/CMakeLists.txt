@@ -42,6 +42,7 @@ link_directories(${FAIRROOT_LIBRARY_DIR} ${ROOT_LIBRARY_DIR})
 set(SRCS
 #online
 ./online/germanium/GermaniumOnlineSpectra.cxx
+./nearline/germanium/GermaniumResolution.cxx
 ./online/beammonitor/BeamMonitorOnlineSpectra.cxx
 ./online/lisa/LisaOnlineSpectra.cxx
 ./online/aida/AidaOnlineSpectra.cxx
@@ -62,9 +63,12 @@ set(SRCS
 ## correlations ##
 ./correlations/FrsAidaCorrelations.cxx
 ./correlations/FrsFatimaCorrelations.cxx
+./correlations/FrsFatimaVmeCorrelations.cxx
+./correlations/FrsGermaniumCorrelations.cxx
 ./correlations/AidaFatimaCorrelations.cxx
 ./nearline/fatima/FatimaTimingAnalysis.cxx
 ./nearline/fatima/FatimaSinglesAnalysis.cxx
+./correlations/AidaGermaniumCorrelations.cxx
 #nearline
 # ./nearline/bPlastNearlineSpectra.cxx
 # ./nearline/AidaNearlineSpectra.cxx
