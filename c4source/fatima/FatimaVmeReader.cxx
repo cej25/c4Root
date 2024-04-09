@@ -71,7 +71,7 @@ Bool_t FatimaVmeReader::Init(ext_data_struct_info* a_struct_info)
 
 Bool_t FatimaVmeReader::Read()
 {
-    c4LOG(debug1, "Event Data");
+    c4LOG(debug2, "Event Data");
 
     if (!fData) return kTRUE;
 

@@ -29,7 +29,8 @@ class AidaReader : public c4Reader
         void SetOnline(Bool_t option) { SetAdcOnline(option); SetFlowScalerOnline(option); }
     
     private:
-        unsigned int fNEvent;
+        Int_t fNEvent = 0;
+        int total_time_microsecs = 0;
 
         EXT_STR_h101_aida_onion* fData;
 

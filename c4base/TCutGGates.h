@@ -22,7 +22,6 @@ class TCutGGates : public TNamed
         ~TCutGGates() {};
 
     public:
-
         std::vector<TCutG*> Gates;
         std::string Type;
 

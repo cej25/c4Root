@@ -72,8 +72,6 @@ void FrsUserRaw2Cal::Exec(Option_t* option)
     int mult = fRawArray->GetEntriesFast();
     if (!mult) return;
 
-    // do we have to sort out the scalers here? seems weird. do we have to merge user and frs somehow??
-
     fRawHit = (FrsUserData*)fRawArray->At(mult-1);
 
     v7x5_geo_user = fRawHit->Get_v7x5_geo_user();

@@ -39,7 +39,7 @@ UcesbSource::UcesbSource(const TString& FileName,
 
 UcesbSource::~UcesbSource()
 {
-    c4LOG(debug1, "UcesbSource destructor.");
+    c4LOG(debug2, "UcesbSource destructor.");
     if (fReaders)
     {
         fReaders->Delete();
@@ -52,7 +52,7 @@ Bool_t UcesbSource::Init()
 {
     // Register of EventHeader in the output root file
 
-    c4LOG(debug1, "checking whether EventHeader has been defined in FairRun");
+    c4LOG(debug2, "checking whether EventHeader has been defined in FairRun");
     auto run = FairRun::Instance();
     auto EvtHead = dynamic_cast<EventHeader*>(run->GetEventHeader());
     if (EvtHead)
@@ -77,7 +77,7 @@ Bool_t UcesbSource::Init()
     {
         command << " --max-events=" << fLastEventNo;
     }
-    c4LOG(debug1, "Calling ucesb with command: " + command.str());
+    c4LOG(debug2, "Calling ucesb with command: " + command.str());
 
     /* Fork off ucesb (calls fork() and pipe()) */
     fFd = popen(command.str().c_str(), "r");
@@ -208,7 +208,7 @@ Int_t UcesbSource::ReadEvent(UInt_t i)
     int ret;
     (void)i; /* Why is i not used? Outer loop seems not to use it. */
 
-    c4LOG(debug1, "ReadEvent " << fNEvent);
+    c4LOG(debug2, "ReadEvent " << fNEvent);
 
     fNEvent++;
 
@@ -274,7 +274,7 @@ Int_t UcesbSource::ReadEvent(UInt_t i)
     {   
         c4Reader* reader = (c4Reader*)fReaders->At(r);
 
-        LOG(debug1) << "  Reading reader " << r << " (" << reader->GetName() << ")";
+        LOG(debug2) << "  Reading reader " << r << " (" << reader->GetName() << ")";
         reader->Read();
     }
 
