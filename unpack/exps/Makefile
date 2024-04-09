@@ -25,8 +25,8 @@ EXPS=s452 \
 	onlyFATIMA \
 	s100 \
 	bb7 \
-	onlyBGO
-
+	onlyBGO \
+	onlyGerm 
 ALL_EXPS = $(EXPS)
 
 #########################################################

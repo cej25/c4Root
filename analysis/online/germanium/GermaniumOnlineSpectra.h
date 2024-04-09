@@ -82,7 +82,7 @@ class GermaniumOnlineSpectra : public FairTask
         std::vector<std::pair<double,double>> dt_reference_detectors_energy_gates;
         double energygate_width = 5;
 
-        // still hard coded memes
+        
         int fenergy_nbins = 1500;
         int fenergy_bin_low = 0;
         int fenergy_bin_high = 1500;
