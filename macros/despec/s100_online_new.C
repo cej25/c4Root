@@ -51,7 +51,7 @@ void s100_online_new()
     //TString c4Root_path = "/u/despec/s100_online/c4Root";
     TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
     TString c4Root_path = "/u/cjones/c4Root";
-    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
+    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors --max-events=100000";
     ucesb_path.ReplaceAll("//","/");
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
@@ -84,7 +84,7 @@ void s100_online_new()
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 5000; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 8080; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -92,6 +92,9 @@ void s100_online_new()
     run->SetRunId(1);
     run->SetSink(new FairRootFileSink(outputFileName));
     run->ActivateHttpServer(refresh, port);
+    TFolder* histograms = new TFolder("Histograms", "Histograms");
+    FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
+    run->AddObject(histograms);
 
     // trying to kill ParSet errors
     /*FairRuntimeDb* rtdb = FairRunOnline::Instance()->GetRuntimeDb();
@@ -430,11 +433,11 @@ void s100_online_new()
         FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
         // For monitoring FRS on our side
         // FrsRawSpectra* frsrawspec = new FrsRawSpectra();
-        // FrsCalSpectra* frscalspec = new FrsCalSpectra();
+        FrsCalSpectra* frscalspec = new FrsCalSpectra();
         
         run->AddTask(onlinefrs);
         // run->AddTask(frsrawspec);
-        // run->AddTask(frscalspec);
+        run->AddTask(frscalspec);
     }
     
     if (BEAMMONITOR_ON)
@@ -466,7 +469,6 @@ void s100_online_new()
     
         run->AddTask(wronline);
     }
-
     
     // Initialise
     run->Init();
@@ -479,12 +481,21 @@ void s100_online_new()
     cout << "Online port server: " << port << endl;
     cout << "\n\n" << endl;
 
+    // create sink object before run starts    
+    FairSink* sf = FairRunOnline::Instance()->GetSink();
+
     // Run
     run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev); 
+
+    // write online histograms if desired.
+    TFile* tf = new TFile(sf->GetFileName(), "UPDATE");
+    histograms->Write();
 
     // ---------------------------------------------------------------------------------------- //
     // *** Finish Macro *********************************************************************** //
     
+
+
     timer.Stop();
     Double_t rtime = timer.RealTime();
     Double_t ctime = timer.CpuTime();
