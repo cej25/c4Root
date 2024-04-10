@@ -65,23 +65,37 @@ InitStatus LisaOnlineSpectra::Init()
     // spectra definition
 
     //Define histograms
-    //:::::::::::Hit Pattern
     
     TFolder *lisaFold = new TFolder("Lisa", "Lisa");
-    
     run->AddObject(lisaFold);
 
+    //:::::::::::Hit Pattern
     h1_hitpattern = new TH1I("h1_hitpattern","LISA Hit Pattern",16,0,16);
-    //set visual stuff for histo
-
+    h1_hitpatter->GetXaxis()->SetTitle("ChID Fired");
     lisaFold->Add(h1_hitpattern);
 
-    h1_energy = new TH1F("h1_energy", "LISA Energy", 400,0,1000000); //in case of data from 241Am
+    //:::::::::::Multiplicity
+    h1_multiplicity = new TH1I("h1_multiplicity","LISA Multiplicity",8,0,8); //for 3 layer 2x2 + 1
+    h1_multipicity->GetXaxis()->SetTitle("Multiplicity");
+    lisaFold->Add(h1_multiplicity);
+
+    //:::::::::::Energy Layer 1
+    /*
+    c_energy_layer1  = new TCanvas("c_energy_layer1","Energy - Layer 1",650,350);
+    c_energy_layer1->Divide(2,2);
+    h1_energy_layer1 = new TH1F*[4];
+    for (int ihist = 0; ihist < 4; ihist++){ //loop over ch_ID?
+        c_energy_layer1->cd(ihist+1);
+        h1_energy_layer1[ihist] = new TH1F(Form("h1_energy_%d",ihist),Form("Layer 1 - %d",ihist),400,0,250000);
+        h1_energy_layer1[ihist]->GetXaxis()->SetTitle("Energy (a.u.)");
+        h1_energy_laye1[ihist]->Draw();
+        lisaFold->Add(h1_energy_layer[ihist]);
+    }
+    */
+
+    h1_energy = new TH1F("h1_energy", "LISA Energy", 400,0,250000); //in case of data from 241Am
+    h1_energy->Draw("COLZ");
     lisaFold->Add(h1_energy);
-
-    //h1_energy = new TH1I("h1_energy", "LISA Energy", 400,0,1000000); //in case of data from 241Am
-    //lisaFold->Add(h1_energy);
-
 
 
     run->GetHttpServer()->RegisterCommand("Reset_Lisa_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
@@ -113,10 +127,21 @@ void LisaOnlineSpectra::Exec(Option_t* option)
                 h1_hitpattern->Fill(hit_pattern[n]);
             }
 
+            uint32_t M = hit->GetMultiplicity(); 
+            h1_multiplicity->Fill(M);
+
             //get stuff looping over M
             std::vector<uint32_t> ch_energy = hit->GetEnergy(); 
             for (int index = 0; index < M; index++)
             {
+
+                h1_energy->Fill(ch_energy[index]);
+            }
+
+            std::vector<uint32_t> traces = hit->GetTraces(); 
+            for (int index = 0; index < M; index++)
+            {
+                //loop over _
                 h1_energy->Fill(ch_energy[index]);
             }
             
