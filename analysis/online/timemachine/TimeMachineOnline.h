@@ -2,10 +2,13 @@
 #define TimeMachineOnline_H
 
 #include "FairTask.h"
+#include "TCorrelationsConfiguration.h"
+
 #include "TFolder.h"
+#include "TH1F.h"
+#include "TH2F.h"
 #include <vector>
 #include <map>
-#include "TCorrelationsConfiguration.h"
 
 class TClonesArray;
 class EventHeader;
@@ -15,6 +18,7 @@ class TH1F;
 class TH2F;
 class TFile;
 class TFolder;
+class TDirectory;
 
 class TimeMachineOnline : public FairTask
 {
@@ -71,11 +75,12 @@ class TimeMachineOnline : public FairTask
         TCanvas* c_time_machine_time_snapshot;
 
         // Folders and Files
-        TFolder* folder_time_machine;
-        TFolder* folder_time_machine_undelayed;
-        TFolder* folder_time_machine_delayed;
-        TFolder* folder_time_machine_diff;
-        TFolder* folder_time_machine_corrs;
+        TFolder* histograms;
+        TDirectory* dir_time_machine;
+        TDirectory* dir_time_machine_undelayed;
+        TDirectory* dir_time_machine_delayed;
+        TDirectory* dir_time_machine_diff;
+        TDirectory* dir_time_machine_corrs;
         TFile* file_time_machine_snapshot;
 
         // Histograms

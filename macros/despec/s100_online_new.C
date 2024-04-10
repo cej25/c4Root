@@ -8,7 +8,7 @@
 #define GERMANIUM_ON 0
 #define BGO_ON 0
 #define FRS_ON 1
-#define TIME_MACHINE_ON 0
+#define TIME_MACHINE_ON 1
 #define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 0
 
@@ -456,7 +456,7 @@ void s100_online_new()
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {b, c, d, e, f};
+        std::vector a {b, d, e};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
@@ -465,7 +465,7 @@ void s100_online_new()
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({b, c, d, e, f});
+        wronline->SetDetectorSystems({b, d, e});
     
         run->AddTask(wronline);
     }
