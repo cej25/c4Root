@@ -105,12 +105,11 @@ InitStatus BGOOnlineSpectra::Init()
 
     number_of_detectors_to_plot = crystals_to_plot.size();
 
-    
-    dir_bgo_energy->cd();
     // energy spectra:
+    dir_bgo_energy->cd();
     c_bgo_energy  = new TCanvas("c_bgo_energy","Calibrated bgo spectra",650,350);
     c_bgo_energy->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
-    h1_bgo_energy = new TH1F*[number_of_detectors_to_plot];
+    h1_bgo_energy.resize(number_of_detectors_to_plot);
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
         c_bgo_energy->cd(ihist+1);
         h1_bgo_energy[ihist] = new TH1F(Form("h1_bgo_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("BGO uncal energy spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
@@ -119,11 +118,11 @@ InitStatus BGOOnlineSpectra::Init()
     }
     c_bgo_energy->cd(0);
     
-    dir_bgo_time->cd();
     // time spectra:
+    dir_bgo_time->cd();
     c_bgo_time  = new TCanvas("c_bgo_time","BGO tamex time spectra",650,350);
     c_bgo_time->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
-    h1_bgo_time = new TH1F*[number_of_detectors_to_plot];
+    h1_bgo_time.resize(number_of_detectors_to_plot);
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
         c_bgo_time->cd(ihist+1);
         h1_bgo_time[ihist] = new TH1F(Form("h1_bgo_time_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("BGO time spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,1e12);
@@ -136,7 +135,7 @@ InitStatus BGOOnlineSpectra::Init()
     // energy spectra:
     c_germanium_bgo_veto_energy  = new TCanvas("c_germanium_bgo_veto_energy","Calibrated Germanium spectra vetoed BGO",650,350);
     c_germanium_bgo_veto_energy->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
-    h1_germanium_bgo_veto_energy = new TH1F*[number_of_detectors_to_plot];
+    h1_germanium_bgo_veto_energy.resize(number_of_detectors_to_plot);
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
         c_germanium_bgo_veto_energy->cd(ihist+1);
         h1_germanium_bgo_veto_energy[ihist] = new TH1F(Form("h1_germanium_bgo_veto_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c - BGO vetoed",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,3e3);
@@ -150,7 +149,7 @@ InitStatus BGOOnlineSpectra::Init()
     // time differences spectra:
     c_germanium_bgo_veto_timedifferences  = new TCanvas("c_germanium_bgo_veto_timedifferences","WR BGO-Germanium time differences",650,350);
     c_germanium_bgo_veto_timedifferences->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
-    h1_germanium_bgo_veto_timedifferences = new TH1F*[number_of_detectors_to_plot];
+    h1_germanium_bgo_veto_timedifferences.resize(number_of_detectors_to_plot);
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
         c_germanium_bgo_veto_timedifferences->cd(ihist+1);
         h1_germanium_bgo_veto_timedifferences[ihist] = new TH1F(Form("h1_germanium_bgo_veto_timedifferences_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("BGO-DEGAS time spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e2,-10e3,10e3);
