@@ -126,7 +126,7 @@ InitStatus FrsGermaniumCorrelations::Init()
 
 
     c_germanium_energy_vs_wr_long = new TCanvas(TString("c_germanium_summed_vs_wr_long_frs_gate_"+frsgate->GetName()),TString("Germanium energies vs t(det,wr) - t(sci41,wr) long lifetime, gated FRS on "+frsgate->GetName()),650,350);
-    h2_germanium_summed_vs_wr_long = new TH2F(TString("h2_germanium_summed_vs_wr_long_frs_gate_"+frsgate->GetName()),TString("Germanium energies vs t(det,wr) - t(sci41,wr) long lifetime, gated FRS on "+frsgate->GetName()),1000,-500,5000,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h2_germanium_summed_vs_wr_long = new TH2F(TString("h2_germanium_summed_vs_wr_long_frs_gate_"+frsgate->GetName()),TString("Germanium energies vs t(det,wr) - t(sci41,wr) long lifetime, gated FRS on "+frsgate->GetName()),1000,-1000,stop_long_lifetime_collection,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     h2_germanium_summed_vs_wr_long->GetXaxis()->SetTitle("time difference (ns)");
     h2_germanium_summed_vs_wr_long->GetYaxis()->SetTitle("energy (keV)");
     h2_germanium_summed_vs_wr_long->Draw("COLZ");
@@ -236,6 +236,8 @@ void FrsGermaniumCorrelations::Exec(Option_t* option){
                 }
             }
         }
+    }else{
+        positive_PID = false;
     }
 
     if (fHitGe && fHitGe->GetEntriesFast() > 0){
@@ -245,6 +247,7 @@ void FrsGermaniumCorrelations::Exec(Option_t* option){
         
         
         bool sci41_seen = false; // off-spill raw spectra
+        int sci41_hit_idx = -1; // sci41's hit index, for getting the time
 
         for (Int_t ihit = 0; ihit < nHits; ihit++){ // find the sci41 hit if it is there.
     
@@ -258,7 +261,10 @@ void FrsGermaniumCorrelations::Exec(Option_t* option){
             
             if (!(germanium_configuration->IsDetectorAuxilliary(detector_id1))) event_multiplicity ++; // count only physical events in germaniums
 
-            if (detector_id1 == germanium_configuration->SC41L() || detector_id1 == germanium_configuration->SC41R()) sci41_seen = true;
+            if (detector_id1 == germanium_configuration->SC41L() || detector_id1 == germanium_configuration->SC41R()) {
+                sci41_seen = true;
+                sci41_hit_idx = ihit;
+            }
         }
 
         // Spectra with respect to SCI41 - 'short' isomers
@@ -288,7 +294,9 @@ void FrsGermaniumCorrelations::Exec(Option_t* option){
                 double timediff1 = time1 - time_sci41 - germanium_configuration->GetTimeshiftCoefficient(detector_id1,crystal_id1);
                 
                 h2_germanium_summed_vs_tsci41->Fill(timediff1 ,energy1);
-                if ((germanium_configuration->IsInsidePromptFlashCut(timediff1 ,energy1)==true) ) h1_germanium_energy_promptflash_cut->Fill(energy1);
+
+                if ((germanium_configuration->IsInsidePromptFlashCut(timediff1 ,energy1)==false) ) continue;
+                h1_germanium_energy_promptflash_cut->Fill(energy1);
 
                 for (int idx_gamma_gate = 0; idx_gamma_gate < gamma_energies_of_interest.size(); idx_gamma_gate++){
                     if (!(TMath::Abs(energy1 - gamma_energies_of_interest.at(idx_gamma_gate))<gate_width_gamma_energies_of_interest.at(idx_gamma_gate)) && germanium_configuration->IsInsidePromptFlashCut(timediff1,energy1)==true) continue;
@@ -303,6 +311,7 @@ void FrsGermaniumCorrelations::Exec(Option_t* option){
                             GermaniumCalData* hit3 = (GermaniumCalData*)fHitGe->At(ihit3);
                             if (!hit3) continue;
                             if (ihit3 == ihit2) continue;
+                            if (ihit3 == ihit1) continue;
                             int detector_id2 = hit3->Get_detector_id();
                             int crystal_id2 = hit3->Get_crystal_id();
                             double energy2 = hit3->Get_channel_energy();
@@ -317,16 +326,14 @@ void FrsGermaniumCorrelations::Exec(Option_t* option){
 
                             // energy1 and energy2 are both in coincidence and outside the promptflash here:
                             h1_germanium_energy_promptflash_cut_energy_gated[idx_gamma_gate]->Fill(energy2);
-
                         }
-                        
                     }
                 }
             }
         }
         }
 
-        if (nHits >= 1 && !sci41_seen && ((int64_t)((GermaniumCalData*)fHitGe->At(0))->Get_wr_t() - (int64_t)wr_t_last_frs_hit) > start_long_lifetime_collection && ((int64_t)((GermaniumCalData*)fHitGe->At(0))->Get_wr_t() - (int64_t)wr_t_last_frs_hit) < stop_long_lifetime_collection_background){
+        if (nHits >= 1){
             //long isomer.
             for (int ihit1 = 0; ihit1 < nHits; ihit1 ++){
 
@@ -339,9 +346,24 @@ void FrsGermaniumCorrelations::Exec(Option_t* option){
             uint64_t ge_wr = hit_long1->Get_wr_t();
 
             if (germanium_configuration->IsDetectorAuxilliary(detector_id_long)) continue;
+
+            //this requirement checks that the wr_t_last_frs_hit is within the collection window for long isomer:
+            if (!((int64_t)ge_wr-(int64_t)wr_t_last_frs_hit > -1000 &&  (int64_t)ge_wr-(int64_t)wr_t_last_frs_hit < stop_long_lifetime_collection_background)) continue;
             
-            if (((int64_t)ge_wr-(int64_t)wr_t_last_frs_hit)>start_long_lifetime_collection && ((int64_t)ge_wr- (int64_t)wr_t_last_frs_hit) < stop_long_lifetime_collection){
-                h2_germanium_summed_vs_wr_long->Fill((int64_t)ge_wr- (int64_t)wr_t_last_frs_hit, energy_long);
+
+            h2_germanium_summed_vs_wr_long->Fill((int64_t)ge_wr-(int64_t)wr_t_last_frs_hit, energy_long);
+            
+            //given that sci41 is seen then we must compare the prompt flash and make sure it is not a y-ray from the flash.
+            if (sci41_seen){
+                //require that the signal is outside the prompt flash.
+                double timediff_to_sci41 = time_long - ((GermaniumCalData*)fHitGe->At(sci41_hit_idx))->Get_channel_trigger_time() - germanium_configuration->GetTimeshiftCoefficient(detector_id_long,crystal_id_long);
+                if (!germanium_configuration->IsInsidePromptFlashCut(timediff_to_sci41,energy_long)) continue; // this is inside the prompt flash...
+                
+            }else if ((int64_t)ge_wr - (int64_t)wr_t_last_frs_hit < 1e3) continue;
+            
+            //prompt flash is cut out after here.
+            
+            if  (((int64_t)ge_wr - (int64_t)wr_t_last_frs_hit) < stop_long_lifetime_collection){
                 h1_germanium_energy_promptflash_cut_long->Fill(energy_long);
 
             for (int idx_gamma_gate = 0; idx_gamma_gate < gamma_energies_of_interest.size(); idx_gamma_gate++){
@@ -361,25 +383,29 @@ void FrsGermaniumCorrelations::Exec(Option_t* option){
                             int crystal_id_long2 = hit_long2->Get_crystal_id();
                             double energy_long2 = hit_long2->Get_channel_energy();
                             double time_long2 = hit_long2->Get_channel_trigger_time();
+                            uint64_t ge_wr2 = hit_long2->Get_wr_t();
+
 
                             if (germanium_configuration->IsDetectorAuxilliary(detector_id_long2)) continue;
                             if (TMath::Abs(time_long2-time_long) > germanium_coincidence_gate) continue; // this req also makes sure that the second hit is outside the prompt flash
                             if (detector_id_long == detector_id_long2) continue; //this is likely a good veto before the add-back is done
-
+                            
+                            if (sci41_seen){
+                                //require that the signal is outside the prompt flash.
+                                double timediff_to_sci41_2 = time_long2 - ((GermaniumCalData*)fHitGe->At(sci41_hit_idx))->Get_channel_trigger_time() - germanium_configuration->GetTimeshiftCoefficient(detector_id_long2,crystal_id_long2);
+                                if (!germanium_configuration->IsInsidePromptFlashCut(timediff_to_sci41_2,energy_long2)) continue; // this is inside the prompt flash...
+                            }else if ((int64_t)ge_wr2 - (int64_t)wr_t_last_frs_hit < 1e3) continue;
 
                             // energy1 and energy2 are both in coincidence and outside the promptflash here:
                             h1_germanium_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]->Fill(energy_long2);
-
                         }
-                        
                     }
                 }
 
             }else if (((int64_t)ge_wr-(int64_t)wr_t_last_frs_hit)>start_long_lifetime_collection_background && ((int64_t)ge_wr- (int64_t)wr_t_last_frs_hit) < stop_long_lifetime_collection_background){
                 h2_germanium_summed_vs_wr_long->Fill((int64_t)ge_wr- (int64_t)wr_t_last_frs_hit, energy_long,-1);
-                h1_germanium_energy_promptflash_cut_long->Fill(energy_long,-1); 
+                h1_germanium_energy_promptflash_cut_long->Fill(energy_long,-1);
             }
-
             }
 
         }

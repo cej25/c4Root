@@ -16,15 +16,12 @@
 
 #include "TCanvas.h"
 #include "TClonesArray.h"
-#include "TFolder.h"
-#include "TH1F.h"
-#include "TH2F.h"
 #include "TGraph.h"
 #include "THttpServer.h"
 #include "TMath.h"
 #include "TRandom.h"
 #include "TFile.h"
-#include "TDirectory.h"
+#include <sstream>
 
 GermaniumOnlineSpectra::GermaniumOnlineSpectra() : GermaniumOnlineSpectra("GermaniumOnlineSpectra")
 {
@@ -67,6 +64,8 @@ InitStatus GermaniumOnlineSpectra::Init()
     fHitGe = (TClonesArray*)mgr->GetObject("GermaniumCalData");
     c4LOG_IF(fatal, !fHitGe, "Branch GermaniumCalData not found!");
 
+    histograms = (TFolder*)mgr->GetObject("Histograms");
+
 
     crystals_to_plot.clear();
     std::map<std::pair<int,int>,std::pair<int,int>> gmap = germanium_configuration->Mapping();
@@ -79,24 +78,21 @@ InitStatus GermaniumOnlineSpectra::Init()
     
     TDirectory::TContext ctx(nullptr);
 
-    folder_germanium = new TFolder("DEGAS", "DEGAS");
+    dir_germanium = new TDirectory("DEGAS", "DEGAS", "", 0);
+    mgr->Register("DEGAS", "DEGAS Directory", dir_germanium, false);
+    histograms->Add(dir_germanium);
 
-    run->AddObject(folder_germanium);
+    dir_germanium_energy = dir_germanium->mkdir("Calibrated Energy Spectra");
+    dir_germanium_time = dir_germanium->mkdir("Time Spectra");
+    dir_germanium_hitpattern = dir_germanium->mkdir("Hit Pattern");
+    dir_germanium_multiplicity = dir_germanium->mkdir("Multiplicity");
+    dir_germanium_sci41 = dir_germanium->mkdir("SCI41");
 
-    folder_germanium_energy = new TFolder("Calibrated Energy Spectra", "Calibrated Energy Spectra");
-    folder_germanium_time = new TFolder("Time Spectra", "Time Spectra");
-    folder_germanium_hitpattern = new TFolder("Hit pattern", "Hit pattern");
-    folder_germanium_multiplicity = new TFolder("Multiplicity", "Multiplicity");
-    folder_germanium_sci41 = new TFolder("SCI41","SCI41");
 
-    folder_germanium->Add(folder_germanium_energy);
-    folder_germanium->Add(folder_germanium_time);
-    folder_germanium->Add(folder_germanium_hitpattern);
-    folder_germanium->Add(folder_germanium_multiplicity);
-    folder_germanium->Add(folder_germanium_sci41);
 
 
     // energy spectra:
+    dir_germanium_energy->cd();
     c_germanium_energy  = new TCanvas("c_germanium_energy","Calibrated Germanium spectra",650,350);
     c_germanium_energy->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
     h1_germanium_energy = new TH1F*[number_of_detectors_to_plot];
@@ -105,11 +101,8 @@ InitStatus GermaniumOnlineSpectra::Init()
         h1_germanium_energy[ihist] = new TH1F(Form("h1_germanium_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
         h1_germanium_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
         h1_germanium_energy[ihist]->Draw();
-        folder_germanium_energy->Add(h1_germanium_energy[ihist]);
     }
     c_germanium_energy->cd(0);
-    folder_germanium_energy->Add(c_germanium_energy);
-
 
     c_germanium_energy_vs_detidx = new TCanvas("c_germanium_energy_vs_detidx","Calibrated Germanium spectra vs. detector index",650,350);
     h2_germanium_energy_vs_detidx = new TH2F("h2_germanium_energy_vs_detidx","Calibrated Germanium spectra vs. detector index",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,number_of_detectors_to_plot,0,number_of_detectors_to_plot);
@@ -117,9 +110,6 @@ InitStatus GermaniumOnlineSpectra::Init()
     h2_germanium_energy_vs_detidx->GetYaxis()->SetTitle("detector index");
     h2_germanium_energy_vs_detidx->Draw("COLZ");
     c_germanium_energy_vs_detidx->cd(0);
-    folder_germanium_energy->Add(c_germanium_energy_vs_detidx);
-    folder_germanium_energy->Add(h2_germanium_energy_vs_detidx);
-
 
     c_germanium_energy_summed = new TCanvas("c_germanium_energy_summed","Calibrated Germanium spectra summed all dets",650,350);
     h1_germanium_energy_summed = new TH1F("h1_germanium_energy_summed","Calibrated Germanium spectra summed all dets",fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
@@ -127,22 +117,15 @@ InitStatus GermaniumOnlineSpectra::Init()
     h1_germanium_energy_summed->GetYaxis()->SetTitle("counts");
     h1_germanium_energy_summed->Draw();
     c_germanium_energy_summed->cd(0);
-    folder_germanium_energy->Add(c_germanium_energy_summed);
-    folder_germanium_energy->Add(h1_germanium_energy_summed);
-
-
 
     // Spectra relating to SCI41:
+    dir_germanium_sci41->cd();
     c_germanium_energy_summed_vetosci41 = new TCanvas("c_germanium_energy_summed_vetosci41","Calibrated Germanium spectra summed all dets veto sci41",650,350);
     h1_germanium_energy_summed_vetosci41 = new TH1F("h1_germanium_energy_summed_vetosci41","Calibrated Germanium spectra summed all dets veto sci 41",fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     h1_germanium_energy_summed_vetosci41->GetXaxis()->SetTitle("energy (keV)");
     h1_germanium_energy_summed_vetosci41->GetYaxis()->SetTitle("counts");
     h1_germanium_energy_summed_vetosci41->Draw();
     c_germanium_energy_summed_vetosci41->cd(0);
-    folder_germanium_sci41->Add(c_germanium_energy_summed_vetosci41);
-    folder_germanium_sci41->Add(h1_germanium_energy_summed_vetosci41);
-    
-    
     
     c_germanium_energy_summed_vs_tsci41 = new TCanvas("c_germanium_energy_summed_vs_tsci41","Calibrated Germanium spectra summed all energyies vs t(det) - t(sci41)",650,350);
     h2_germanium_energy_summed_vs_tsci41 = new TH2F("h2_germanium_energy_summed_vs_tsci41","Calibrated Germanium spectra summed all energyies vs t(det) - t(sci41)",1000,-500,5000,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
@@ -150,42 +133,27 @@ InitStatus GermaniumOnlineSpectra::Init()
     h2_germanium_energy_summed_vs_tsci41->GetYaxis()->SetTitle("energy (keV)");
     h2_germanium_energy_summed_vs_tsci41->Draw("COLZ");
     c_germanium_energy_summed_vs_tsci41->cd(0);
-    folder_germanium_sci41->Add(c_germanium_energy_summed_vs_tsci41);
-    folder_germanium_sci41->Add(h2_germanium_energy_summed_vs_tsci41);
 
-    
     c_germanium_energy_summed_vs_tsci41_cut = new TCanvas("c_germanium_energy_summed_vs_tsci41_cut","Calibrated Germanium spectra summed all energyies, t(det) - t(sci41) > 200 ns",650,350);
     h1_germanium_energy_summed_vs_tsci41_cut = new TH1F("h1_germanium_energy_summed_vs_tsci41_cut","Calibrated Germanium spectra summed all energyies, t(det) - t(sci41) > 200 ns",fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     h1_germanium_energy_summed_vs_tsci41_cut->GetXaxis()->SetTitle("energy (keV)");
     h1_germanium_energy_summed_vs_tsci41_cut->Draw("COLZ");
     c_germanium_energy_summed_vs_tsci41_cut->cd(0);
-    folder_germanium_sci41->Add(c_germanium_energy_summed_vs_tsci41_cut);
-    folder_germanium_sci41->Add(h1_germanium_energy_summed_vs_tsci41_cut);
 
-    
     c_germanium_energy_energy_vetosci41 = new TCanvas("c_germanium_energy_energy_vetosci41","Calibrated Germanium spectra summed all energyies, t(det) - t(sci41) > 200 ns",650,350);
     h2_germanium_energy_energy_vetosci41 = new TH2F("h2_germanium_energy_energy_vetosci41","Calibrated Germanium spectra summed all energyies, t(det) - t(sci41) > 200 ns",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     h2_germanium_energy_energy_vetosci41->GetXaxis()->SetTitle("energy (keV)");
     h2_germanium_energy_energy_vetosci41->Draw("COLZ");
     c_germanium_energy_energy_vetosci41->cd(0);
-    folder_germanium_sci41->Add(c_germanium_energy_energy_vetosci41);
-    folder_germanium_sci41->Add(h2_germanium_energy_energy_vetosci41);
 
-    
     c_germanium_energy_energy_sci41_cut = new TCanvas("c_germanium_energy_energy_sci41_cut","Calibrated Germanium spectra summed all energyies, t(det) - t(sci41) > 200 ns",650,350);
     h2_germanium_energy_energy_sci41_cut = new TH2F("h2_germanium_energy_energy_sci41_cut","Calibrated Germanium spectra summed all energyies, t(det) - t(sci41) > 200 ns",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     h2_germanium_energy_energy_sci41_cut->GetXaxis()->SetTitle("energy (keV)");
     h2_germanium_energy_energy_sci41_cut->Draw("COLZ");
     c_germanium_energy_energy_sci41_cut->cd(0);
-    folder_germanium_sci41->Add(c_germanium_energy_summed_vs_tsci41_cut);
-    folder_germanium_sci41->Add(h2_germanium_energy_energy_sci41_cut);
-
-    
-
-
-    
 
     // time spectra:
+    dir_germanium_time->cd();
     c_germanium_time  = new TCanvas("c_germanium_time","Calibrated Germanium spectra",650,350);
     c_germanium_time->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
     h1_germanium_time = new TH1F*[number_of_detectors_to_plot];
@@ -194,29 +162,30 @@ InitStatus GermaniumOnlineSpectra::Init()
         h1_germanium_time[ihist] = new TH1F(Form("h1_germanium_time_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS time spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,1e16);
         h1_germanium_time[ihist]->GetXaxis()->SetTitle("time (ns)");
         h1_germanium_time[ihist]->Draw();
-        folder_germanium_time->Add(h1_germanium_time[ihist]);
     }
     c_germanium_time->cd(0);
-    folder_germanium_time->Add(c_germanium_time);
 
-
+    dir_germanium_multiplicity->cd();
     c_germanium_multiplicity = new TCanvas("c_germanium_multiplicity","Multiplicity of Germanium events",650,350);
     h1_germanium_multiplicity = new TH1F("h1_germanium_multiplicity","Multiplicity of Germanium events",number_of_detectors_to_plot,0,number_of_detectors_to_plot);
     h1_germanium_multiplicity->GetXaxis()->SetTitle("event multiplicity");
     h1_germanium_multiplicity->GetYaxis()->SetTitle("counts");
     h1_germanium_multiplicity->Draw();
-    folder_germanium_multiplicity->Add(c_germanium_multiplicity);
-    folder_germanium_multiplicity->Add(h1_germanium_multiplicity);
 
 
     //time differences!
     number_reference_detectors = dt_reference_detectors.size();
+    dir_germanium_time_differences.resize(number_reference_detectors);
+
     h1_germanium_time_differences = new TH1F ** [number_reference_detectors];
     h2_germanium_time_differences_vs_energy = new TH2F ** [number_reference_detectors];
-    for (int ihist = 0; ihist < number_reference_detectors; ihist++){
-        folder_germanium_time_differences = new TFolder(Form("time_differences_rel_%d_%d_energy_gate_%d_%d",dt_reference_detectors.at(ihist).first,dt_reference_detectors.at(ihist).second,(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second), Form("time_differences_rel_%d_%d_energy_gate_%d_%d",dt_reference_detectors.at(ihist).first,dt_reference_detectors.at(ihist).second,(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second));
-        folder_germanium->Add(folder_germanium_time_differences);
-
+    for (int ihist = 0; ihist < number_reference_detectors; ihist++)
+    {
+        std::stringstream name;
+        name << "time_differences_rel_" << dt_reference_detectors.at(ihist).first << "_" << dt_reference_detectors.at(ihist).second << "_energy_gate_" << (int)dt_reference_detectors_energy_gates.at(ihist).first << "_" << (int)dt_reference_detectors_energy_gates.at(ihist).second;
+        dir_germanium_time_differences[ihist] = dir_germanium->mkdir(name.str().c_str());
+        dir_germanium_time_differences[ihist]->cd();
+    
         c_germanium_time_differences  = new TCanvas(Form("c_germanium_time_differences_rel_det_%d_%d_energy_gate_%d_%d",dt_reference_detectors.at(ihist).first,dt_reference_detectors.at(ihist).second,(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),"germanium relative time differences",650,350);
         c_germanium_time_differences->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
         h1_germanium_time_differences[ihist] = new TH1F*[number_of_detectors_to_plot];
@@ -226,13 +195,9 @@ InitStatus GermaniumOnlineSpectra::Init()
             h1_germanium_time_differences[ihist][detid_idx] = new TH1F(Form("h1_germanium_rel_time_det_%d_%d_to_det_%d_%d_energy_gate_%d_%d",crystals_to_plot.at(detid_idx).first,crystals_to_plot.at(detid_idx).second,dt_reference_detectors.at(ihist).first,dt_reference_detectors.at(ihist).second,(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("Germanium delta time t(%d%c) - t(%d%c) gated %d and %d",crystals_to_plot.at(detid_idx).first,(char)(crystals_to_plot.at(detid_idx).second+65),dt_reference_detectors.at(ihist).first,(char)(dt_reference_detectors.at(ihist).second+65),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),1000,-1000,1000); 
             h1_germanium_time_differences[ihist][detid_idx]->GetXaxis()->SetTitle(Form("dt t(%d%c) - t(%d%c) (ns)",crystals_to_plot.at(detid_idx).first,(char)(crystals_to_plot.at(detid_idx).second+65),dt_reference_detectors.at(ihist).first,(char)(dt_reference_detectors.at(ihist).second+65)));
             h1_germanium_time_differences[ihist][detid_idx]->Draw();
-            folder_germanium_time_differences->Add(h1_germanium_time_differences[ihist][detid_idx]);
             
         }
         c_germanium_time_differences->cd(0);
-        folder_germanium_time_differences->Add(c_germanium_time_differences);
-
-
 
         c_germanium_time_differences_vs_energy  = new TCanvas(Form("c_germanium_time_differences_rel_det_%d_%d_vs_energy_energy_gate_%d_%d",dt_reference_detectors.at(ihist).first,dt_reference_detectors.at(ihist).second,(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),"germanium relative time differences vs energy",650,350);
         c_germanium_time_differences_vs_energy->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
@@ -244,14 +209,12 @@ InitStatus GermaniumOnlineSpectra::Init()
             h2_germanium_time_differences_vs_energy[ihist][detid_idx]->GetYaxis()->SetTitle(Form("dt t(%d%c) - t(%d%c) (ns)",crystals_to_plot.at(detid_idx).first,(char)(crystals_to_plot.at(detid_idx).second+65),dt_reference_detectors.at(ihist).first,(char)(dt_reference_detectors.at(ihist).second+65)));
             h2_germanium_time_differences_vs_energy[ihist][detid_idx]->GetXaxis()->SetTitle(Form("energy det %d%c (keV)",crystals_to_plot.at(detid_idx).first,(char)(crystals_to_plot.at(detid_idx).second+65)));
             h2_germanium_time_differences_vs_energy[ihist][detid_idx]->Draw("COLZ");
-            folder_germanium_time_differences->Add(h2_germanium_time_differences_vs_energy[ihist][detid_idx]);
             
         }
         c_germanium_time_differences_vs_energy->cd(0);
-        folder_germanium_time_differences->Add(c_germanium_time_differences_vs_energy);
     }
         
-    
+    dir_germanium_hitpattern->cd();
     c_germanium_hitpattern = new TCanvas("c_germanium_hitpattern","Hit pattern DEGAS",650,350);
     detector_labels = new char*[number_of_detectors_to_plot];
     h1_germanium_hitpattern = new TH1F("h1_germanium_hitpattern","Hit pattern of DEGAS",number_of_detectors_to_plot,0,number_of_detectors_to_plot);
@@ -267,8 +230,8 @@ InitStatus GermaniumOnlineSpectra::Init()
     h1_germanium_hitpattern->SetStats(0);
     h1_germanium_hitpattern->Draw();
     c_germanium_hitpattern->cd(0);
-    folder_germanium_hitpattern->Add(h1_germanium_hitpattern);
-    folder_germanium_hitpattern->Add(c_germanium_hitpattern);
+
+    dir_germanium->cd();
 
     run->GetHttpServer()->RegisterCommand("Reset_Ge_Histo", Form("/Objects/%s/->Reset_Ge_Histo()", GetName()));
     run->GetHttpServer()->RegisterCommand("Snapshot_Ge_Histo", Form("/Objects/%s/->Snapshot_Ge_Histo()", GetName()));
@@ -331,7 +294,7 @@ void GermaniumOnlineSpectra::Snapshot_Ge_Histo()
     // snapshot .root file with data and time
     file_germanium_snapshot = new TFile(Form("Germanium_snapshot_%d_%d_%d_%d_%d_%d.root",ltm->tm_year+1900,ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec),"RECREATE");
     file_germanium_snapshot->cd();
-    folder_germanium->Write();
+    dir_germanium->Write();
     file_germanium_snapshot->Close();
     delete file_germanium_snapshot;
 
@@ -477,7 +440,7 @@ void GermaniumOnlineSpectra::Exec(Option_t* option){
 
                 if (germanium_configuration->IsDetectorAuxilliary(detector_id2)) continue;
 
-                if (TMath::Abs(time1 - time2) < 50) h2_germanium_energy_energy_sci41_cut->Fill(energy1,energy2);
+                if (TMath::Abs(time1 - time2) < 500) h2_germanium_energy_energy_sci41_cut->Fill(energy1,energy2);
                 }
             }
         }
@@ -508,7 +471,6 @@ void GermaniumOnlineSpectra::FinishTask()
     }
     if (fHitGe)
     {
-        folder_germanium->Write();
         c4LOG(info, "DEGAS histograms written to file.");
     }
 }

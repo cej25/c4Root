@@ -1,14 +1,18 @@
 #ifndef FrsOnlineSpectra_H
 #define FrsOnlineSpectra_H 1
 
+#include "TFrsConfiguration.h"
+
 #include "FairTask.h"
 #include "TH2.h"
 #include "TCutG.h"
+#include "TDirectory.h"
 
 class TClonesArray;
 class EventHeader;
 class FrsHitData;
 class TFolder;
+class TDirectory;
 class TCanvas;
 class TH1F;
 class TH2F;
@@ -38,40 +42,23 @@ class FrsOnlineSpectra : public FairTask
 
         virtual void Reset_Histo();
 
-        // actually these are unnecessary/useless -> set with TFrsConfiguration when it's set up
-        void SetRangeZ(Double_t min, Double_t max)
-        {
-            fMin_Z = min;
-            fMax_Z = max;
-        }
-
-        void SetRangeAoQ(Double_t min, Double_t max)
-        {
-            fMin_AoQ = min;
-            fMax_AoQ = max;
-        }
-
 
     private:
+        TFrsConfiguration const* frs_config;
+
+        TFRSParameter* frs;
+        TMWParameter* mw;
+        TTPCParameter* tpc;
+        TMUSICParameter* music;
+        TLABRParameter* labr;
+        TSCIParameter* sci;
+        TIDParameter* id;
+        TSIParameter* si;
+        TMRTOFMSParameter* mrtof;
+        TRangeParameter* range;
+
         TClonesArray* fHitFrsArray; // array with hit items
         FrsHitData* FrsHit; // array with hit items
-
-        // Ranges for histograms - set defaults.
-        Double_t fMin_Z = 0., fMax_Z = 100.;
-        Double_t fMin_AoQ = 2., fMax_AoQ = 3.;
-        Double_t fMin_x2 = -100., fMax_x2 = 100.;
-        Double_t fMin_x4 = -100., fMax_x4 = 100.;
-        Double_t fMin_a2 = -100., fMax_a2 = 100.;
-        Double_t fMin_a4 = -100., fMax_a4 = 100.;
-        Double_t fMin_y2 = -100., fMax_y2 = 100.;
-        Double_t fMin_y4 = -100., fMax_y4 = 100.;
-        Double_t fMin_b2 = -100., fMax_b2 = 100.;
-        Double_t fMin_b4 = -100., fMax_b4 = 100.;
-        Double_t fMin_dE = 10., fMax_dE = 100.;
-        Double_t fMin_dEoQ = 0.1, fMax_dEoQ = 0.8;
-        Double_t fMin_dE_Music1 = 0., fMax_dE_Music1 = 4000.;
-        Double_t fMin_dE_Music2 = 0., fMax_dE_Music2 = 4000.;
-        // a2? b2? y2? a4? b4? y4?
 
         EventHeader* header;
         Int_t fNEvents;
@@ -119,6 +106,12 @@ class FrsOnlineSpectra : public FairTask
         TH2I* h2_dedegoQ_vs_Z_ZAoQgate;
         TH1I* h1_a2_ZAoQ_gate;
         TH1I* h1_a4_ZAoQ_gate;
+        TH1I* h1_tpat;
+
+        TH1I* test_hist;
+
+        TDirectory* dir_frs;
+        TFolder* histograms;
 
         // Histograms for Scalers
         char scaler_name[66][256];

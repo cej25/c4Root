@@ -14,9 +14,6 @@
 
 #include "TCanvas.h"
 #include "TClonesArray.h"
-#include "TFolder.h"
-#include "TH1F.h"
-#include "TH2F.h"
 #include "THttpServer.h"
 #include "TMath.h"
 #include "TRandom.h"
@@ -65,27 +62,24 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     fHitBM = (TClonesArray*)mgr->GetObject("BeamMonitorData");
     c4LOG_IF(fatal, !fHitBM, "Branch BeamMonitorData not found!");
 
+    histograms = (TFolder*)mgr->GetObject("Histograms");
+
     TDirectory::TContext ctx(nullptr);
 
-    folder_beammonitor = new TFolder("Beam Monitor", "Beam Monitor");
-    run->AddObject(folder_beammonitor);
+    dir_beammonitor = new TDirectory("Beam Monitor", "Beam Monitor", "", 0);
+    //mgr->Register("Beam Monitor", "Beam Monitor Directory", dir_beammonitor, false); // allow other tasks to access
+    histograms->Add(dir_beammonitor);
+
+    dir_beammonitor->cd();
 
     hG_BM_s4h_norm_tdiff = new TH1D("hG_BM_s4h_norm_tdiff", "S4 Normalised Hit Time Difference [100ns]", 100000, 0, 100000);
-    folder_beammonitor->Add(hG_BM_s4h_norm_tdiff);
     hG_BM_s4h_tdiff = new TH1D("hG_BM_s4h_tdiff", "S4 Hit Time Difference [100ns]", 100000, 0, 100000);
-    folder_beammonitor->Add(hG_BM_s4h_tdiff);
     hG_BM_s4h_t1 = new TH1D("hG_BM_s4h_t1", "S4 Hit Time [ms]: bins are 100us wide", 100000, 0, 100000);
-    folder_beammonitor->Add(hG_BM_s4h_t1);
     hG_BM_s4h_n = new TH1D("hG_BM_s4h_n", "S4 Hits per Spill", 600, 0, 6000);
-    folder_beammonitor->Add(hG_BM_s4h_n);
     hG_BM_s4h_poisson = new TH1D("hG_BM_s4h_poisson", "S4 Poisson", 100000, 0, 100000);
-    folder_beammonitor->Add(hG_BM_s4h_poisson);
     hG_BM_s4h_c = new TH1D("hG_BM_s4h_c", "S4 Cumulative Hit Times [100ns]", 100000, 0, 100000);
-    folder_beammonitor->Add(hG_BM_s4h_c);
     hG_BM_s4h_dc = new TH1D("hG_BM_s4h_dc", "S4 Deviation of Cumulative Hit Times [100ns]", 100000, 0, 100000);
-    folder_beammonitor->Add(hG_BM_s4h_dc);
     hG_BM_s4h_cp = new TH1D("hG_BM_s4h_cp", "S4 Cumulative Poissson [100ns]", 100000, 0, 100000);
-    folder_beammonitor->Add(hG_BM_s4h_cp);
 
     hG_BM_s4gr_dt_avg = new TGraph(1);
     hG_BM_s4gr_dt_avg->SetName("hG_BM_s4gr_dt_avg");
@@ -100,7 +94,7 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     hG_BM_s4gr_dt_avg->SetLineColor(kBlue);
     hG_BM_s4gr_dt_avg->SetLineWidth(2);
     hG_BM_s4gr_dt_avg->GetXaxis()->SetNdivisions(-4);
-    folder_beammonitor->Add(hG_BM_s4gr_dt_avg);
+    dir_beammonitor->Append(hG_BM_s4gr_dt_avg);
 
     hG_BM_s4gr_qf = new TGraph(1);
     hG_BM_s4gr_qf->SetName("hG_BM_s4gr_qf");
@@ -115,7 +109,7 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     hG_BM_s4gr_qf->SetLineColor(kBlue);
     hG_BM_s4gr_qf->SetLineWidth(2);
     hG_BM_s4gr_qf->GetXaxis()->SetNdivisions(-4);
-    folder_beammonitor->Add(hG_BM_s4gr_qf);
+    dir_beammonitor->Append(hG_BM_s4gr_qf);
 
     hG_BM_s4gr_dcmin = new TGraph(1);
     hG_BM_s4gr_dcmin->SetName("hG_BM_s4gr_dcmin");
@@ -130,7 +124,7 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     hG_BM_s4gr_dcmin->SetLineColor(kBlue);
     hG_BM_s4gr_dcmin->SetLineWidth(2);
     hG_BM_s4gr_dcmin->GetXaxis()->SetNdivisions(-4);
-    folder_beammonitor->Add(hG_BM_s4gr_dcmin);
+    dir_beammonitor->Append(hG_BM_s4gr_dcmin);
 
     hG_BM_s4gr_dctime = new TGraph(1);
     hG_BM_s4gr_dctime->SetName("hG_BM_s4gr_dctime");
@@ -145,28 +139,18 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     hG_BM_s4gr_dctime->SetLineColor(kBlue);
     hG_BM_s4gr_dctime->SetLineWidth(2);
     hG_BM_s4gr_dctime->GetXaxis()->SetNdivisions(-4);
-    folder_beammonitor->Add(hG_BM_s4gr_dctime);
+    dir_beammonitor->Append(hG_BM_s4gr_dctime);
 
     hG_BM_S4_Tmean = new TH1D("hG_BM_S4_Tmean", "S4 Average time difference", 100000, 0, 100000);
-    folder_beammonitor->Add(hG_BM_S4_Tmean);
-
 
     hG_BM_s2h_norm_tdiff = new TH1D("hG_BM_s2h_norm_tdiff", "S2 Normalised Hit Time Difference [100ns]", 100000, 0, 100000);
-    folder_beammonitor->Add(hG_BM_s2h_norm_tdiff);
     hG_BM_s2h_tdiff = new TH1D("hG_BM_s2h_tdiff", "S2 Hit Time Difference [100ns]", 100000, 0, 100000);
-    folder_beammonitor->Add(hG_BM_s2h_tdiff);
     hG_BM_s2h_t1 = new TH1D("hG_BM_s2h_t1", "S2 Hit Time [ms]: bins are 100us wide", 100000l, 0, 100000);
-    folder_beammonitor->Add(hG_BM_s2h_t1);
     hG_BM_s2h_n = new TH1D("hG_BM_s2h_n", "S2 Hits per Spill", 600, 0, 6000);
-    folder_beammonitor->Add(hG_BM_s2h_n);
     hG_BM_s2h_poisson = new TH1D("hG_BM_s2h_poisson", "S2 Poisson", 100000, 0, 100000);
-    folder_beammonitor->Add(hG_BM_s2h_poisson);
     hG_BM_s2h_c = new TH1D("hG_BM_s2h_c", "S2 Cumulative Hit Times [100ns]", 100000, 0, 100000);
-    folder_beammonitor->Add(hG_BM_s2h_c);
     hG_BM_s2h_dc = new TH1D("hG_BM_s2h_dc", "S2 Deviation of Cumulative Hit Times [100ns]", 100000, 0, 100000);
-    folder_beammonitor->Add(hG_BM_s2h_dc);
     hG_BM_s2h_cp = new TH1D("hG_BM_s2h_cp", "S2 Cumulative Poisson [100ns]", 100000, 0, 100000);
-    folder_beammonitor->Add(hG_BM_s2h_cp);
 
     hG_BM_s2gr_dt_avg = new TGraph(1);
     hG_BM_s2gr_dt_avg->SetName("hG_BM_s2gr_dt_avg");
@@ -181,7 +165,7 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     hG_BM_s2gr_dt_avg->SetLineColor(kRed);
     hG_BM_s2gr_dt_avg->SetLineWidth(2);
     hG_BM_s2gr_dt_avg->GetXaxis()->SetNdivisions(-4);
-    folder_beammonitor->Add(hG_BM_s2gr_dt_avg);
+    dir_beammonitor->Append(hG_BM_s2gr_dt_avg);
 
     hG_BM_s2gr_qf = new TGraph(1);
     hG_BM_s2gr_qf->SetName("hG_BM_s2gr_qf");
@@ -196,7 +180,7 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     hG_BM_s2gr_qf->SetLineColor(kRed);
     hG_BM_s2gr_qf->SetLineWidth(2);
     hG_BM_s2gr_qf->GetXaxis()->SetNdivisions(-4);
-    folder_beammonitor->Add(hG_BM_s2gr_qf);
+    dir_beammonitor->Append(hG_BM_s2gr_qf);
 
     hG_BM_s2gr_dcmin = new TGraph(1);
     hG_BM_s2gr_dcmin->SetName("hG_BM_s2gr_dcmin");
@@ -211,7 +195,7 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     hG_BM_s2gr_dcmin->SetLineColor(kRed);
     hG_BM_s2gr_dcmin->SetLineWidth(2);
     hG_BM_s2gr_dcmin->GetXaxis()->SetNdivisions(-4);
-    folder_beammonitor->Add(hG_BM_s2gr_dcmin);
+    dir_beammonitor->Append(hG_BM_s2gr_dcmin);
 
     hG_BM_s2gr_dctime = new TGraph(1);
     hG_BM_s2gr_dctime->SetName("hG_BM_s2gr_dctime");
@@ -226,10 +210,9 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     hG_BM_s2gr_dctime->SetLineColor(kRed);
     hG_BM_s2gr_dctime->SetLineWidth(2);
     hG_BM_s2gr_dctime->GetXaxis()->SetNdivisions(-4);
-    folder_beammonitor->Add(hG_BM_s2gr_dctime);
+    dir_beammonitor->Append(hG_BM_s2gr_dctime);
 
     hG_BM_S2_Tmean = new TH1D("hG_BM_S2_Tmean", "S2 Average time difference", 100000, 0, 100000);
-    folder_beammonitor->Add(hG_BM_S2_Tmean);
 
     // add S2 and S4 equivalent TGraphs to same canvas
     c_quality_factor = new TCanvas("Quality Factors", "Quality Factors");
@@ -248,24 +231,13 @@ InitStatus BeamMonitorOnlineSpectra::Init()
 
 void BeamMonitorOnlineSpectra::Reset_Histo()
 {
-    c4LOG(info, "");
-    /*
-    hG_BM_s4h_norm_tdiff->Set(0); // try this for reseting histos
-    fh1_S4tdiff->Reset();
-    hbm_s4h_t1->Reset();
-    fh1_S4_QF->Reset();
-    hBM_s4h_c->Reset();
-    hBM_s4h_cp->Reset();
-    hBM_s4h_dc->Reset();
-    hBM_s4h_poisson->Reset();
-    hBM_s4h_norm_tdiff->Reset();
-    */
-
+    c4LOG(info, "Not currently functional.");
 }
 
 // change as needed depending on changes
 void BeamMonitorOnlineSpectra::Snapshot_Histo()
 {
+    c4LOG(info, "Not currently functional.");
     //date and time stamp folder
     /*
     time_t now = time(0);
@@ -499,24 +471,7 @@ void BeamMonitorOnlineSpectra::FinishEvent()
 
 void BeamMonitorOnlineSpectra::FinishTask()
 {
-    folder_beammonitor->Write();
-    /*if (fHitBM)
-    {
-        // CEJ testing only
-        hG_BM_s4h_norm_tdiff->Write();
-        hG_BM_s4h_tdiff->Write();
-        hG_BM_s4h_t1->Write();
-        hG_BM_s4h_n->Write();
-        hG_BM_s4h_poisson->Write();
-        hG_BM_s4h_c->Write();
-        hG_BM_s4h_dc->Write();
-        hG_BM_s4h_cp->Write();
 
-        hG_BM_s4gr_dt_avg->Write();
-        hG_BM_s4gr_qf->Write();
-        hG_BM_s4gr_dcmin->Write();
-        hG_BM_s4gr_dctime->Write();
-    }*/
 }
 
 ClassImp(BeamMonitorOnlineSpectra)
