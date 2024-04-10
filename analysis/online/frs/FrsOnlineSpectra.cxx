@@ -69,10 +69,10 @@ InitStatus FrsOnlineSpectra::Init()
     histograms = (TFolder*)mgr->GetObject("Histograms");
     
     TDirectory::TContext ctx(nullptr);
-    TDirectory* top_level = gDirectory;
+    TDirectory* top_level = gDirectory; // not sure this is needed
 
-    dir_frs = new TDirectory("FRS", "FRS", "", 0); // check if exists
-    mgr->Register("FRS", "FRS Directory", dir_frs, false);
+    dir_frs = new TDirectory("FRS", "FRS", "", 0); // we need a check for if this exists
+    mgr->Register("FRS", "FRS Directory", dir_frs, false); // allow other tasks to find this
     histograms->Add(dir_frs);
 
     TDirectory* dir_pids = dir_frs->mkdir("PIDs");
@@ -504,9 +504,7 @@ void FrsOnlineSpectra::FinishEvent()
 
 void FrsOnlineSpectra::FinishTask()
 {   
-    //folder_frs_hists->Write();
-    //test_hist->Write();
-   // histograms->Write();
+
 }
 
 ClassImp(FrsOnlineSpectra)
