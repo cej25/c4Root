@@ -2,8 +2,13 @@
 #define GermaniumOnlineSpectra_H
 
 #include "FairTask.h"
-
 #include "TGermaniumConfiguration.h"
+
+#include "TDirectory.h"
+#include "TFolder.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include <vector>
 
 class TClonesArray;
 class EventHeader;
@@ -12,6 +17,7 @@ class TH1F;
 class TH2F;
 class TFile;
 class TFolder;
+class TDirectory;
 
 class GermaniumOnlineSpectra : public FairTask
 {
@@ -118,14 +124,14 @@ class GermaniumOnlineSpectra : public FairTask
         char ** detector_labels;
 
         // Folder and files
+        TFolder* histograms;
         TDirectory* dir_germanium;
-        TFolder* folder_germanium;
-        TFolder* folder_germanium_energy;
-        TFolder* folder_germanium_time;
-        TFolder* folder_germanium_hitpattern;
-        TFolder* folder_germanium_multiplicity;
-        TFolder* folder_germanium_time_differences;
-        TFolder* folder_germanium_sci41;
+        TDirectory* dir_germanium_energy;
+        TDirectory* dir_germanium_time;
+        TDirectory* dir_germanium_hitpattern;
+        TDirectory* dir_germanium_multiplicity;
+        TDirectory* dir_germanium_sci41;
+        std::vector<TDirectory*> dir_germanium_time_differences;
 
         TFile* file_germanium_snapshot;
 

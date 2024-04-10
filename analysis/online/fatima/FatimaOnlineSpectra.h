@@ -2,12 +2,19 @@
 #define FatimaOnlineSpectra_H
 
 #include "FairTask.h"
+#include "TDirectory.h"
+#include "TFolder.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include <vector>
 
 class TClonesArray;
 class EventHeader;
 class TCanvas;
 class TH1F;
 class TH2F;
+class TDirectory;
+class TFolder;
 
 class FatimaOnlineSpectra : public FairTask
 {
@@ -98,14 +105,17 @@ class FatimaOnlineSpectra : public FairTask
     
 
         //Folders and files
-        TFolder* folder_fatima;
-        TFolder* folder_fatima_slowToT;
-        TFolder* folder_fatima_fastToT;
-        TFolder* folder_fatima_fast_v_slow;
-        TFolder* folder_fatima_time_spectra;
-        TFolder* folder_fatima_hitpattern;
-        TFolder* folder_fatima_energy_spectra;
-        TFolder* folder_fatima_time_differences;
+        TFolder* histograms;
+        TDirectory* dir_fatima;
+        TDirectory* dir_fatima_slowToT;
+        TDirectory* dir_fatima_fastToT;
+        TDirectory* dir_fatima_fast_v_slow;
+        TDirectory* dir_fatima_hitpattern;
+        TDirectory* dir_fatima_energy_spectra;
+        TDirectory* dir_fatima_time_spectra;
+        std::vector<TDirectory*> dir_fatima_time_differences;
+        
+
         TFile* file_fatima_snapshot;
 
         std::vector<int> detectors = {0,1,2};
