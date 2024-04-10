@@ -126,12 +126,6 @@ class FatimaOnlineSpectra : public FairTask
         int number_reference_detectors = 1;
         
         // Histograms 
-        // TH1F ** h1_fatima_slowToT;
-        // TH1F ** h1_fatima_fastToT;
-        // TH1F ** h1_fatima_energy;
-        // TH1F ** h1_fatima_abs_time;
-        // TH2F ** h2_fatima_fast_v_slow;
-
         std::vector<TH1F*> h1_fatima_slowToT;
         std::vector<TH1F*> h1_fatima_fastToT;
         std::vector<TH1F*> h1_fatima_energy;
@@ -146,11 +140,7 @@ class FatimaOnlineSpectra : public FairTask
         std::vector<std::vector<TH1F*>> h1_fatima_time_differences;
         std::vector<std::vector<TH2F*>> h2_fatima_time_differences_vs_energy;
 
-       // TH1F *** h1_fatima_time_differences;
-       // TH2F *** h2_fatima_time_differences_vs_energy;
-
-
-        //Binnings:
+        // Binnings:
         int ffast_tot_nbins = 500;
         float ffast_tot_bin_low = 0;
         float ffast_tot_bin_high = 100; 
