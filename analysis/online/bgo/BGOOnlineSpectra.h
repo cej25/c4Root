@@ -6,6 +6,7 @@
 #include "TDirectory.h"
 #include "TH1F.h"
 #include "TH2F.h"
+#include <vector>
 
 #include "TGermaniumConfiguration.h"
 #include "TBGOTwinpeaksConfiguration.h"
@@ -95,11 +96,10 @@ class BGOOnlineSpectra : public FairTask
         //TFile* file_germanium_snapshot;
 
         // Histograms energy
-        TH1F ** h1_bgo_energy;
-        TH1F ** h1_bgo_time;
-        
-        TH1F ** h1_germanium_bgo_veto_energy;
-        TH1F ** h1_germanium_bgo_veto_timedifferences;
+        std::vector<TH1F*> h1_bgo_energy;
+        std::vector<TH1F*> h1_bgo_time;
+        std::vector<TH1F*> h1_germanium_bgo_veto_energy;
+        std::vector<TH1F*> h1_germanium_bgo_veto_timedifferences;
 
     public:
         ClassDef(BGOOnlineSpectra, 1)

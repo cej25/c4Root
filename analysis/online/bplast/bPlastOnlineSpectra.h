@@ -82,7 +82,6 @@ class bPlastOnlineSpectra : public FairTask
         TFile* file_bplast_snapshot;
 
         // Histograms
-
         std::vector<TH1F*> h1_bplast_slowToT;
         std::vector<TH1F*> h1_bplast_fastToT;
         std::vector<TH1F*> h1_bplast_hitpatterns;
