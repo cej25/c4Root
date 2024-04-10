@@ -47,6 +47,7 @@ class LisaOnlineSpectra : public FairTask
 
         // Histograms
         TH1I* h1_hitpattern;
+        TH1I* h1_multiplicity;
         TH1F* h1_energy;
         TH2F* h2_traces;
 
