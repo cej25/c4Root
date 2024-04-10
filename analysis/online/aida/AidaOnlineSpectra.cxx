@@ -85,7 +85,7 @@ InitStatus AidaOnlineSpectra::Init()
     TDirectory::TContext ctx(nullptr);
 
     dir_aida = new TDirectory("AIDA", "AIDA", "", 0);
-    //mgr->Register("AIDA", "AIDA", dir_aida, false); // allow other tasks to find folder
+    //mgr->Register("AIDA", "AIDA", dir_aida, false); // allow other tasks to find directory
     histograms->Add(dir_aida);
 
     dir_implant = dir_aida->mkdir("Implants");
@@ -96,30 +96,12 @@ InitStatus AidaOnlineSpectra::Init()
     // Aida configuration
     conf = TAidaConfiguration::GetInstance();
 
-
-    // Create folders 
-    // folder_aida = new TFolder("AIDA", "AIDA");
-    // run->AddObject(folder_aida);
-
-    // folder_implant = new TFolder("Implants", "Implants");
-    // folder_stopped_implant = new TFolder("Stopped_Implants", "Stopped Implants");
-    // folder_decay = new TFolder("Decays", "Decays");
-    // folder_scalers = new TFolder("Scalers", "Scalers");
-    // folder_aida->Add(folder_implant);
-    // folder_aida->Add(folder_stopped_implant);
-    // folder_aida->Add(folder_decay);
-    // folder_aida->Add(folder_scalers);
-
     int xstrips = conf->Wide() ? 386 : 128;
     double xmax = conf->Wide() ? 113.4 : 37.8;
 
     dir_implant_dssd.resize(conf->DSSDs());
     dir_stopped_implant_dssd.resize(conf->DSSDs());
     dir_decay_dssd.resize(conf->DSSDs());
-
-    // folder_implant_dssd.resize(conf->DSSDs());
-    // folder_stopped_implant_dssd.resize(conf->DSSDs());
-    // folder_decay_dssd.resize(conf->DSSDs());
 
     h_implant_strip_xy.resize(conf->DSSDs());
     h_implant_pos_xy.resize(conf->DSSDs());
@@ -151,15 +133,8 @@ InitStatus AidaOnlineSpectra::Init()
         std::stringstream title;
         name << "DSSD" << (i + 1);
         dir_implant_dssd[i] = dir_implant->mkdir(name.str().c_str());
-        // folder_implant_dssd[i] = new TFolder(name.str().c_str(), name.str().c_str());
-        // folder_implant_dssd[i]->SetOwner(true);
-        // folder_implant->Add(folder_implant_dssd[i]);
         dir_stopped_implant_dssd[i] = dir_stopped_implant->mkdir(name.str().c_str());
-        // folder_stopped_implant_dssd[i] = new TFolder(name.str().c_str(), name.str().c_str());
-        // folder_stopped_implant->Add(folder_stopped_implant_dssd[i]);
         dir_decay_dssd[i] = dir_decay->mkdir(name.str().c_str());
-        // folder_decay_dssd[i] = new TFolder(name.str().c_str(), name.str().c_str());
-        // folder_decay->Add(folder_decay_dssd[i]);
 
         dir_implant_dssd[i]->cd();
         name.str("");
@@ -170,7 +145,6 @@ InitStatus AidaOnlineSpectra::Init()
                 xstrips, 0, xstrips, 128, 0, 128);
         h_implant_strip_xy[i]->GetXaxis()->SetTitle("X strip");
         h_implant_strip_xy[i]->GetYaxis()->SetTitle("Y strip");
-        //folder_implant_dssd[i]->Add(h_implant_strip_xy[i]);
 
         name.str("");
         title.str("");
@@ -180,7 +154,6 @@ InitStatus AidaOnlineSpectra::Init()
                 xstrips, -xmax, xmax, 128, -37.8, 37.8);
         h_implant_pos_xy[i]->GetXaxis()->SetTitle("X position/mm");
         h_implant_pos_xy[i]->GetYaxis()->SetTitle("Y position/mm");
-        //folder_implant_dssd[i]->Add(h_implant_pos_xy[i]);
 
         name.str("");
         title.str("");
@@ -189,7 +162,6 @@ InitStatus AidaOnlineSpectra::Init()
         h_implant_e[i] = new TH1F(name.str().c_str(), title.str().c_str(),
                 2000, 0, 20000);
         h_implant_e[i]->GetXaxis()->SetTitle("Implant Energy/MeV");
-        //folder_implant_dssd[i]->Add(h_implant_e[i]);
 
         name.str("");
         title.str("");
@@ -199,7 +171,6 @@ InitStatus AidaOnlineSpectra::Init()
                 2000, 0, 20000, 2000, 0, 20000);
         h_implant_e_xy[i]->GetXaxis()->SetTitle("Implant X Energy/MeV");
         h_implant_e_xy[i]->GetYaxis()->SetTitle("Implant Y Energy/MeV");
-        //folder_implant_dssd[i]->Add(h_implant_e_xy[i]);
 
         // TODO move outof implants as it's not FB matched?
         name.str("");
@@ -210,7 +181,6 @@ InitStatus AidaOnlineSpectra::Init()
                 128 + xstrips, 0, 128 + xstrips, 2000, 0, 20000);
         h_implant_strip_1d_energy[i]->GetXaxis()->SetTitle("Strip (X then Y");
         h_implant_strip_1d_energy[i]->GetYaxis()->SetTitle("Implant Energy/MeV");
-        //folder_implant_dssd[i]->Add(h_implant_strip_1d_energy[i]);
 
         name.str("");
         title.str("");
@@ -220,7 +190,6 @@ InitStatus AidaOnlineSpectra::Init()
                 xstrips, -xmax, xmax, 2000, 0, 20000);
         h_implant_x_ex[i]->GetXaxis()->SetTitle("X Position/mm");
         h_implant_x_ex[i]->GetYaxis()->SetTitle("Energy/MeV");
-        //folder_implant_dssd[i]->Add(h_implant_x_ex[i]);
 
         dir_stopped_implant_dssd[i]->cd();
         name.str("");
@@ -231,7 +200,6 @@ InitStatus AidaOnlineSpectra::Init()
                 xstrips, 0, xstrips, 128, 0, 128);
         h_implant_strip_xy_stopped[i]->GetXaxis()->SetTitle("X strip");
         h_implant_strip_xy_stopped[i]->GetYaxis()->SetTitle("Y strip");
-        //folder_stopped_implant_dssd[i]->Add(h_implant_strip_xy_stopped[i]);
 
         name.str("");
         title.str("");
@@ -241,7 +209,6 @@ InitStatus AidaOnlineSpectra::Init()
                 xstrips, -xmax, xmax, 128, -37.8, 37.8);
         h_implant_pos_xy_stopped[i]->GetXaxis()->SetTitle("X position/mm");
         h_implant_pos_xy_stopped[i]->GetYaxis()->SetTitle("Y position/mm");
-        //folder_stopped_implant_dssd[i]->Add(h_implant_pos_xy_stopped[i]);
 
         name.str("");
         title.str("");
@@ -250,7 +217,6 @@ InitStatus AidaOnlineSpectra::Init()
         h_implant_e_stopped[i] = new TH1F(name.str().c_str(), title.str().c_str(),
                 2000, 0, 20000);
         h_implant_e_stopped[i]->GetXaxis()->SetTitle("Implant Energy/MeV");
-        //folder_stopped_implant_dssd[i]->Add(h_implant_e_stopped[i]);
 
         name.str("");
         title.str("");
@@ -260,7 +226,6 @@ InitStatus AidaOnlineSpectra::Init()
                 xstrips, -xmax, xmax, 2000, 0, 20000);
         h_implant_x_ex_stopped[i]->GetXaxis()->SetTitle("X Position/mm");
         h_implant_x_ex_stopped[i]->GetYaxis()->SetTitle("Energy/MeV");
-        //folder_stopped_implant_dssd[i]->Add(h_implant_x_ex_stopped[i]);
 
         dir_decay_dssd[i]->cd();
         name.str("");
@@ -271,7 +236,6 @@ InitStatus AidaOnlineSpectra::Init()
                 xstrips, 0, xstrips, 128, 0, 128);
         h_decay_strip_xy[i]->GetXaxis()->SetTitle("X strip");
         h_decay_strip_xy[i]->GetYaxis()->SetTitle("Y strip");
-        // folder_decay_dssd[i]->Add(h_decay_strip_xy[i]);
 
         name.str("");
         title.str("");
@@ -281,7 +245,6 @@ InitStatus AidaOnlineSpectra::Init()
                 xstrips, -xmax, xmax, 128, -37.8, 37.8);
         h_decay_pos_xy[i]->GetXaxis()->SetTitle("X position/mm");
         h_decay_pos_xy[i]->GetYaxis()->SetTitle("Y position/mm");
-        // folder_decay_dssd[i]->Add(h_decay_pos_xy[i]);
 
         name.str("");
         title.str("");
@@ -290,7 +253,6 @@ InitStatus AidaOnlineSpectra::Init()
         h_decay_e[i] = new TH1F(name.str().c_str(), title.str().c_str(),
                 2000, 0, 20000);
         h_decay_e[i]->GetXaxis()->SetTitle("Decay Energy/keV");
-        // folder_decay_dssd[i]->Add(h_decay_e[i]);
 
         name.str("");
         title.str("");
@@ -300,7 +262,6 @@ InitStatus AidaOnlineSpectra::Init()
                 2000, 0, 20000, 2000, 0, 20000);
         h_decay_e_xy[i]->GetXaxis()->SetTitle("Decay X Energy/keV");
         h_decay_e_xy[i]->GetYaxis()->SetTitle("Decay Y Energy/keV");
-        // folder_decay_dssd[i]->Add(h_decay_e_xy[i]);
 
         // TODO move outof decays as it's not FB matched?
         name.str("");
@@ -311,8 +272,6 @@ InitStatus AidaOnlineSpectra::Init()
                 128 + xstrips, 0, 128 + xstrips, 2000, 0, 20000);
         h_decay_strip_1d_energy[i]->GetXaxis()->SetTitle("Strip (X then Y");
         h_decay_strip_1d_energy[i]->GetYaxis()->SetTitle("Decay Energy/keV");
-        // folder_decay_dssd[i]->Add(h_decay_strip_1d_energy[i]);
-
 
         dir_scalers->cd();
         aida_implant_scaler_queue[i].clear();
@@ -327,7 +286,6 @@ InitStatus AidaOnlineSpectra::Init()
         aida_implant_scaler_graph[i]->SetTitle(title.str().c_str());
         aida_implant_scaler_graph[i]->SetMinimum(0);
         dir_scalers->Append(aida_implant_scaler_graph[i]);
-        //folder_scalers->Add(aida_implant_scaler_graph[i]);
 
         aida_implant_stopped_scaler_queue[i].clear();
         aida_implant_stopped_scaler_graph[i] = new TGraph(3600);
@@ -340,7 +298,6 @@ InitStatus AidaOnlineSpectra::Init()
         aida_implant_stopped_scaler_graph[i]->SetTitle(title.str().c_str());
         aida_implant_stopped_scaler_graph[i]->SetMinimum(0);
         dir_scalers->Append(aida_implant_stopped_scaler_graph[i]);
-        //folder_scalers->Add(aida_implant_stopped_scaler_graph[i]);
 
         aida_decay_scaler_queue[i].clear();
         aida_decay_scaler_cur_sec[i] = -1;
@@ -353,7 +310,6 @@ InitStatus AidaOnlineSpectra::Init()
         aida_decay_scaler_graph[i]->SetTitle(title.str().c_str());
         aida_decay_scaler_graph[i]->SetMinimum(0);
         dir_scalers->Append(aida_decay_scaler_graph[i]);
-        //folder_scalers->Add(aida_decay_scaler_graph[i]);
     }
 
     dir_scalers->cd();
@@ -371,7 +327,6 @@ InitStatus AidaOnlineSpectra::Init()
         aida_scaler_graph[scaler.first]->SetTitle(title.str().c_str());
         aida_scaler_graph[scaler.first]->SetMinimum(0);
         dir_scalers->Append(aida_scaler_graph[scaler.first]);
-        //folder_scalers->Add(aida_scaler_graph[scaler.first]);
     }
 
     dir_aida->cd();
@@ -500,7 +455,6 @@ void AidaOnlineSpectra::Snapshot_Histo()
     file_aida_snapshot = new TFile(Form("AIDA_snapshot_%d_%d_%d_%d_%d_%d.root", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec), "RECREATE");
     file_aida_snapshot->cd();
     dir_aida->Write();
-    //folder_aida->Write();
     file_aida_snapshot->Close();
     delete file_aida_snapshot;
 
@@ -735,9 +689,8 @@ void AidaOnlineSpectra::FinishTask()
         c4LOG(warn, "No events found, not saving histograms!");
         return;
     }
-    if (fNEvents > 0){
-        //folder_aida->Write();
-        //c4LOG(info, "AIDA histograms written to file.");
+    if (fNEvents > 0)
+    {
         c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvents << " microseconds.");
     }
     

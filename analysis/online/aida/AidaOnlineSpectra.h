@@ -91,15 +91,6 @@ class AidaOnlineSpectra : public FairTask
         std::vector<TDirectory*> dir_implant_dssd;
         std::vector<TDirectory*> dir_stopped_implant_dssd;
         std::vector<TDirectory*> dir_decay_dssd;
-
-        // TFolder* folder_aida;
-        // TFolder* folder_implant;
-        // TFolder* folder_stopped_implant;
-        // TFolder* folder_decay;
-        // TFolder* folder_scalers;
-        // std::vector<TFolder*> folder_implant_dssd;
-        // std::vector<TFolder*> folder_stopped_implant_dssd;
-        // std::vector<TFolder*> folder_decay_dssd;
         TFile* file_aida_snapshot;
 
         // Histograms
