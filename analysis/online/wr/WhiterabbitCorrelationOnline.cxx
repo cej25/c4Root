@@ -18,13 +18,11 @@
 
 #include "TCanvas.h"
 #include "TClonesArray.h"
-#include "TFolder.h"
 #include "TH1I.h"
 #include "THttpServer.h"
 #include "TMath.h"
 #include "TFile.h"
 #include "TRandom.h"
-#include "TDirectory.h"
 #include <chrono>
 
 WhiterabbitCorrelationOnline::WhiterabbitCorrelationOnline() : WhiterabbitCorrelationOnline("WhiterabbitCorrelationOnline")
@@ -101,6 +99,8 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     fEventHeader = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !fEventHeader, "Branch EventHeader. not found");
 
+    histograms = (TFolder*)mgr->GetObject("Histograms");
+
     for (int i = 0; i < fNumDetectorSystems; i++)
     {
         // check each subsystem and get the corresponding TClonesArray
@@ -139,319 +139,310 @@ InitStatus WhiterabbitCorrelationOnline::Init()
 
     TDirectory::TContext ctx(nullptr);
 
-    folder_whiterabbit = new TFolder("White Rabbit", "White Rabbit");
+    dir_whiterabbit = new TDirectory("White Rabbit", "White Rabbit", "", 0);
+    mgr->Register("White Rabbit", "White Rabbit Directory", dir_whiterabbit, false); // allow other tasks to access directory.
+    histograms->Add(dir_whiterabbit);
 
-    run->AddObject(folder_whiterabbit);
+    dir_whiterabbit_correlation = dir_whiterabbit->mkdir("Trigger 1 & 3");
+    dir_whiterabbit_trigger1 = dir_whiterabbit->mkdir("Trigger 1");
+    dir_whiterabbit_trigger3 = dir_whiterabbit->mkdir("Trigger 3");
 
-    folder_whiterabbit_correlation = new TFolder("Trigger 1 & 3", "Trigger 1 & 3");
-    folder_whiterabbit_trigger1 = new TFolder("Trigger 1", "Trigger 1");
-    folder_whiterabbit_trigger3 = new TFolder("Trigger 3", "Trigger 3");
-
-    folder_whiterabbit->Add(folder_whiterabbit_correlation);
-    folder_whiterabbit->Add(folder_whiterabbit_trigger1);
-    folder_whiterabbit->Add(folder_whiterabbit_trigger3);
 
     // AIDA 
     // AIDA - Fatima
+    dir_whiterabbit_correlation->cd();
     c_whiterabbit_correlation_aida_fatima = new TCanvas("c_whiterabbit_correlation_aida_fatima", "AIDA - FATIMA (TAMEX) WR dT (ns)", 10, 10, 800, 700);
     c_whiterabbit_correlation_aida_fatima->cd();
     h1_whiterabbit_correlation_aida_fatima = new TH1I("h1_whiterabbit_correlation_aida_fatima", "AIDA - FATIMA (TAMEX) WR dT", 1000, -1e3, 5e4);
     h1_whiterabbit_correlation_aida_fatima->GetXaxis()->SetTitle("Time difference (AIDA - FATIMA) [ns]");
     h1_whiterabbit_correlation_aida_fatima->GetYaxis()->SetTitle("Counts");
     h1_whiterabbit_correlation_aida_fatima->Draw();
-    folder_whiterabbit_correlation->Add(h1_whiterabbit_correlation_aida_fatima);
     c_whiterabbit_correlation_aida_fatima->cd(0);
 
+    dir_whiterabbit_trigger1->cd();
     c_whiterabbit_trigger1_aida_fatima = new TCanvas("c_whiterabbit_trigger1_aida_fatima", "White Rabbit Trigger 1 AIDA - FATIMA (TAMEX)", 10, 10, 800, 700);
     c_whiterabbit_trigger1_aida_fatima->cd();
     h1_whiterabbit_trigger1_aida_fatima = new TH1I("h1_whiterabbit_trigger1_aida_fatima", "White Rabbit Trigger 1 FATIMA-AIDA",1000,-1e3,5e4);
     h1_whiterabbit_trigger1_aida_fatima->GetXaxis()->SetTitle("AIDA - FATIMA WR dT (ns)");
     h1_whiterabbit_trigger1_aida_fatima->GetYaxis()->SetTitle("Counts (Trigger 1)");
     h1_whiterabbit_trigger1_aida_fatima->Draw();
-    folder_whiterabbit_trigger1->Add(h1_whiterabbit_trigger1_aida_fatima);
     c_whiterabbit_trigger1_aida_fatima->cd(0);
 
+    dir_whiterabbit_trigger3->cd();
     c_whiterabbit_trigger3_aida_fatima = new TCanvas("c_whiterabbit_trigger3_aida_fatima", "White Rabbit Trigger 3 AIDA - FATIMA (TAMEX)", 10, 10, 800, 700);
     c_whiterabbit_trigger3_aida_fatima->cd();
     h1_whiterabbit_trigger3_aida_fatima = new TH1I("h1_whiterabbit_trigger3_aida_fatima", "White Rabbit Trigger 3 AIDA - FATIMA (TAMEX)",1000,-1e3,5e4);
     h1_whiterabbit_trigger3_aida_fatima->GetXaxis()->SetTitle("AIDA - FATIMA WR dT (ns)");
     h1_whiterabbit_trigger3_aida_fatima->GetYaxis()->SetTitle("Counts (Trigger 3)");
     h1_whiterabbit_trigger3_aida_fatima->Draw();
-    folder_whiterabbit_trigger3->Add(h1_whiterabbit_trigger3_aida_fatima);
     c_whiterabbit_trigger3_aida_fatima->cd(0);
 
 
     // AIDA - FatimaVme
+    dir_whiterabbit_correlation->cd();
     c_whiterabbit_correlation_aida_fatimavme = new TCanvas("c_whiterabbit_correlation_aida_fatimavme", "AIDA - FATIMA (VME) WR dT (ns)", 10, 10, 800, 700);
     c_whiterabbit_correlation_aida_fatimavme->cd();
     h1_whiterabbit_correlation_aida_fatimavme = new TH1I("h1_whiterabbit_correlation_aida_fatimavme", "AIDA - FATIMA (VME) WR dT", 1000, -1e3, 5e4);
     h1_whiterabbit_correlation_aida_fatimavme->GetXaxis()->SetTitle("Time difference (AIDA - FATIMA (VME)) [ns]");
     h1_whiterabbit_correlation_aida_fatimavme->GetYaxis()->SetTitle("Counts");
     h1_whiterabbit_correlation_aida_fatimavme->Draw();
-    folder_whiterabbit_correlation->Add(h1_whiterabbit_correlation_aida_fatimavme);
     c_whiterabbit_correlation_aida_fatimavme->cd(0);
 
+    dir_whiterabbit_trigger1->cd();
     c_whiterabbit_trigger1_aida_fatimavme = new TCanvas("c_whiterabbit_trigger1_aida_fatimavme", "White Rabbit Trigger 1 AIDA - FATIMA (VME)", 10, 10, 800, 700);
     c_whiterabbit_trigger1_aida_fatimavme->cd();
     h1_whiterabbit_trigger1_aida_fatimavme = new TH1I("h1_whiterabbit_trigger1_aida_fatimavme", "White Rabbit Trigger 1 AIDA - FATIMA (VME)",1000,-1e3,5e4);
     h1_whiterabbit_trigger1_aida_fatimavme->GetXaxis()->SetTitle("AIDA - FATIMA (VME) WR dT (ns)");
     h1_whiterabbit_trigger1_aida_fatimavme->GetYaxis()->SetTitle("Counts (Trigger 1)");
     h1_whiterabbit_trigger1_aida_fatimavme->Draw();
-    folder_whiterabbit_trigger1->Add(h1_whiterabbit_trigger1_aida_fatimavme);
     c_whiterabbit_trigger1_aida_fatimavme->cd(0);
 
+    dir_whiterabbit_trigger3->cd();
     c_whiterabbit_trigger3_aida_fatimavme = new TCanvas("c_whiterabbit_trigger3_aida_fatimavme", "White Rabbit Trigger 3 AIDA - FATIMA (VME)", 10, 10, 800, 700);
     c_whiterabbit_trigger3_aida_fatimavme->cd();
     h1_whiterabbit_trigger3_aida_fatimavme = new TH1I("h1_whiterabbit_trigger3_aida_fatimavme", "White Rabbit Trigger 3 AIDA - FATIMA (VME)",1000,-1e3,5e4);
     h1_whiterabbit_trigger3_aida_fatimavme->GetXaxis()->SetTitle("AIDA - FATIMA (VME) WR dT (ns)");
     h1_whiterabbit_trigger3_aida_fatimavme->GetYaxis()->SetTitle("Counts (Trigger 3)");
     h1_whiterabbit_trigger3_aida_fatimavme->Draw();
-    folder_whiterabbit_trigger3->Add(h1_whiterabbit_trigger3_aida_fatimavme);
     c_whiterabbit_trigger3_aida_fatimavme->cd(0);
 
     // AIDA - bPlast
+    dir_whiterabbit_correlation->cd();
     c_whiterabbit_correlation_aida_bplast = new TCanvas("c_whiterabbit_correlation_aida_bplast", "AIDA - bPlast WR dT (ns)", 10, 10, 800, 700);
     c_whiterabbit_correlation_aida_bplast->cd();
     h1_whiterabbit_correlation_aida_bplast = new TH1I("h1_whiterabbit_correlation_aida_bplast", "AIDA - bPlast WR dT", 1000, -1e3, 5e4);
     h1_whiterabbit_correlation_aida_bplast->GetXaxis()->SetTitle("Time difference (AIDA - bPlast) [ns]");
     h1_whiterabbit_correlation_aida_bplast->GetYaxis()->SetTitle("Counts");
     h1_whiterabbit_correlation_aida_bplast->Draw();
-    folder_whiterabbit_correlation->Add(h1_whiterabbit_correlation_aida_bplast);
     c_whiterabbit_correlation_aida_bplast->cd(0);
 
+    dir_whiterabbit_trigger1->cd();
     c_whiterabbit_trigger1_aida_bplast = new TCanvas("c_whiterabbit_correlation_trigger1_aida_bplast", "White Rabbit Trigger 1 AIDA-bPlast", 10, 10, 800, 700);
     c_whiterabbit_trigger1_aida_bplast->cd();
     h1_whiterabbit_trigger1_aida_bplast = new TH1I("h1_whiterabbit_trigger1_aida_bplast", "White Rabbit Trigger 1 AIDA-bPlast",1000,-1e3,5e4);
     h1_whiterabbit_trigger1_aida_bplast->GetXaxis()->SetTitle("AIDA - bPlast WR dT (ns)");
     h1_whiterabbit_trigger1_aida_bplast->GetYaxis()->SetTitle("Counts (Trigger 1)");
     h1_whiterabbit_trigger1_aida_bplast->Draw();
-    folder_whiterabbit_trigger1->Add(h1_whiterabbit_trigger1_aida_bplast);
     c_whiterabbit_trigger1_aida_bplast->cd(0);
 
+    dir_whiterabbit_trigger3->cd();
     c_whiterabbit_trigger3_aida_bplast = new TCanvas("c_whiterabbit_correlation_trigger3_aida_bplast", "White Rabbit Trigger 3 AIDA-bPlast", 10, 10, 800, 700);
     c_whiterabbit_trigger3_aida_bplast->cd();
     h1_whiterabbit_trigger3_aida_bplast = new TH1I("h1_whiterabbit_trigger3_aida_bplast", "White Rabbit Trigger 3 AIDA-bPlast",1000,-1e3,5e4);
     h1_whiterabbit_trigger3_aida_bplast->GetXaxis()->SetTitle("AIDA - bPlast WR dT (ns)");
     h1_whiterabbit_trigger3_aida_bplast->GetYaxis()->SetTitle("Counts (Trigger 3)");
     h1_whiterabbit_trigger3_aida_bplast->Draw();
-    folder_whiterabbit_trigger3->Add(h1_whiterabbit_trigger3_aida_bplast);
     c_whiterabbit_trigger3_aida_bplast->cd(0);
 
     // AIDA - Germanium
+    dir_whiterabbit_correlation->cd();
     c_whiterabbit_correlation_aida_germanium = new TCanvas("c_whiterabbit_correlation_aida_germanium", "AIDA - DEGAS WR dT (ns)", 10, 10, 800, 700);
     c_whiterabbit_correlation_aida_germanium->cd();
     h1_whiterabbit_correlation_aida_germanium = new TH1I("h1_whiterabbit_correlation_aida_germanium", "AIDA - DEGAS WR dT", 1000, -1e3, 5e4);
     h1_whiterabbit_correlation_aida_germanium->GetXaxis()->SetTitle("Time difference (AIDA - DEGAS) [ns]");
     h1_whiterabbit_correlation_aida_germanium->GetYaxis()->SetTitle("Counts");
     h1_whiterabbit_correlation_aida_germanium->Draw();
-    folder_whiterabbit_correlation->Add(h1_whiterabbit_correlation_aida_germanium);
     c_whiterabbit_correlation_aida_germanium->cd(0);
 
+    dir_whiterabbit_trigger1->cd();
     c_whiterabbit_trigger1_aida_germanium = new TCanvas("c_whiterabbit_correlation_trigger1_aida_germanium", "White Rabbit Trigger 1 AIDA-DEGAS", 10, 10, 800, 700);
     c_whiterabbit_trigger1_aida_germanium->cd();
     h1_whiterabbit_trigger1_aida_germanium = new TH1I("h1_whiterabbit_trigger1_aida_germanium", "White Rabbit Trigger 1 AIDA-DEGAS",1000,-1e3,5e4);
     h1_whiterabbit_trigger1_aida_germanium->GetXaxis()->SetTitle("AIDA - DEGAS WR dT (ns)");
     h1_whiterabbit_trigger1_aida_germanium->GetYaxis()->SetTitle("Counts (Trigger 1)");
     h1_whiterabbit_trigger1_aida_germanium->Draw();
-    folder_whiterabbit_trigger1->Add(h1_whiterabbit_trigger1_aida_germanium);
     c_whiterabbit_trigger1_aida_germanium->cd(0);
 
+    dir_whiterabbit_trigger3->cd();
     c_whiterabbit_trigger3_aida_germanium = new TCanvas("c_whiterabbit_correlation_trigger3_aida_germanium", "White Rabbit Trigger 3 AIDA-DEGAS", 10, 10, 800, 700);
     c_whiterabbit_trigger3_aida_germanium->cd();
     h1_whiterabbit_trigger3_aida_germanium = new TH1I("h1_whiterabbit_trigger3_aida_germanium", "White Rabbit Trigger 3 AIDA-DEGAS",1000,-1e3,5e4);
     h1_whiterabbit_trigger3_aida_germanium->GetXaxis()->SetTitle("AIDA - DEGAS WR dT (ns)");
     h1_whiterabbit_trigger3_aida_germanium->GetYaxis()->SetTitle("Counts (Trigger 3)");
     h1_whiterabbit_trigger3_aida_germanium->Draw();
-    folder_whiterabbit_trigger3->Add(h1_whiterabbit_trigger3_aida_germanium);
     c_whiterabbit_trigger3_aida_germanium->cd(0);
     
-
     // FATIMA
     // Fatima - FatimaVme
+    dir_whiterabbit_correlation->cd();
     c_whiterabbit_correlation_fatima_fatimavme = new TCanvas("c_whiterabbit_correlation_fatima_fatimavme", "FATIMA - FATIMA VME WR dT (ns)", 10, 10, 800, 700);
     c_whiterabbit_correlation_fatima_fatimavme->cd();
     h1_whiterabbit_correlation_fatima_fatimavme = new TH1I("h1_whiterabbit_correlation_fatima_fatimavme", "FATIMA - FATIMA VME WR dT", 1000, -1e3, 1e3);
     h1_whiterabbit_correlation_fatima_fatimavme->GetXaxis()->SetTitle("Time difference (FATIMA - FATIMA VME) [ns]");
     h1_whiterabbit_correlation_fatima_fatimavme->GetYaxis()->SetTitle("Counts");
     h1_whiterabbit_correlation_fatima_fatimavme->Draw();
-    folder_whiterabbit_correlation->Add(h1_whiterabbit_correlation_fatima_fatimavme);
     c_whiterabbit_correlation_fatima_fatimavme->cd(0);
 
+    dir_whiterabbit_trigger1->cd();
     c_whiterabbit_trigger1_fatima_fatimavme = new TCanvas("c_whiterabbit_correlation_trigger1_fatima_fatimavme", "White Rabbit Trigger 1 FATIMA-FATIMA VME", 10, 10, 800, 700);
     c_whiterabbit_trigger1_fatima_fatimavme->cd();
     h1_whiterabbit_trigger1_fatima_fatimavme = new TH1I("h1_whiterabbit_trigger1_fatima_fatimavme", "White Rabbit Trigger 1 FATIMA-FATIMA VME", 1e3, -1e3, 1e3);
     h1_whiterabbit_trigger1_fatima_fatimavme->GetXaxis()->SetTitle("FATIMA - FATIMA VME WR dT (ns)");
     h1_whiterabbit_trigger1_fatima_fatimavme->GetYaxis()->SetTitle("Counts (Trigger 1)");
     h1_whiterabbit_trigger1_fatima_fatimavme->Draw();
-    folder_whiterabbit_trigger1->Add(h1_whiterabbit_trigger1_fatima_fatimavme);
     c_whiterabbit_trigger1_fatima_fatimavme->cd(0);
 
+    dir_whiterabbit_trigger3->cd();
     c_whiterabbit_trigger3_fatima_fatimavme = new TCanvas("c_whiterabbit_correlation_trigger3_fatima_fatimavme", "White Rabbit Trigger 3 FATIMA-FATIMA VME", 10, 10, 800, 700);
     c_whiterabbit_trigger3_fatima_fatimavme->cd();
     h1_whiterabbit_trigger3_fatima_fatimavme = new TH1I("h1_whiterabbit_trigger3_fatima_fatimavme", "White Rabbit Trigger 3 FATIMA-FATIMA VME",1e3,-1e3,1e3);
     h1_whiterabbit_trigger3_fatima_fatimavme->GetXaxis()->SetTitle("FATIMA - FATIMA VME WR dT (ns)");
     h1_whiterabbit_trigger3_fatima_fatimavme->GetYaxis()->SetTitle("Counts (Trigger 3)");
     h1_whiterabbit_trigger3_fatima_fatimavme->Draw();
-    folder_whiterabbit_trigger3->Add(h1_whiterabbit_trigger3_fatima_fatimavme);
     c_whiterabbit_trigger3_fatima_fatimavme->cd(0);
 
-
     // Fatima - bPlast
+    dir_whiterabbit_correlation->cd();
     c_whiterabbit_correlation_fatima_bplast = new TCanvas("c_whiterabbit_correlation_fatima_bplast", "FATIMA (TAMEX) - bPlast WR dT (ns)", 10, 10, 800, 700);
     c_whiterabbit_correlation_fatima_bplast->cd();
     h1_whiterabbit_correlation_fatima_bplast = new TH1I("h1_whiterabbit_correlation_fatima_bplast", "FATIMA (TAMEX) - bPlast WR dT", 1000, -1e3, 1e3);
     h1_whiterabbit_correlation_fatima_bplast->GetXaxis()->SetTitle("Time difference (FATIMA (TAMEX) - bPlast) [ns]");
     h1_whiterabbit_correlation_fatima_bplast->GetYaxis()->SetTitle("Counts");
     h1_whiterabbit_correlation_fatima_bplast->Draw();
-    folder_whiterabbit_correlation->Add(h1_whiterabbit_correlation_fatima_bplast);
     c_whiterabbit_correlation_fatima_bplast->cd(0);
 
+    dir_whiterabbit_trigger1->cd();
     c_whiterabbit_trigger1_fatima_bplast = new TCanvas("c_whiterabbit_trigger1_fatima_bplast", "White Rabbit Trigger 1 FATIMA (TAMEX) - bPlast", 10, 10, 800, 700);
     c_whiterabbit_trigger1_fatima_bplast->cd();
     h1_whiterabbit_trigger1_fatima_bplast = new TH1I("h1_whiterabbit_trigger1_fatima_bplast", "White Rabbit Trigger 1 FATIMA (TAMEX) - bPlast", 1e3,-1e3,1e3);
     h1_whiterabbit_trigger1_fatima_bplast->GetXaxis()->SetTitle("FATIMA (TAMEX) - bPlast WR dT (ns)");
     h1_whiterabbit_trigger1_fatima_bplast->GetYaxis()->SetTitle("Counts (Trigger 1)");
     h1_whiterabbit_trigger1_fatima_bplast->Draw();
-    folder_whiterabbit_trigger1->Add(h1_whiterabbit_trigger1_fatima_bplast);
     c_whiterabbit_trigger1_fatima_bplast->cd(0);
 
+    dir_whiterabbit_trigger3->cd();
     c_whiterabbit_trigger3_fatima_bplast = new TCanvas("c_whiterabbit_trigger3_fatima_bplast", "White Rabbit Trigger 3 FATIMA (TAMEX) - bPlast", 10, 10, 800, 700);
     c_whiterabbit_trigger3_fatima_bplast->cd();
     h1_whiterabbit_trigger3_fatima_bplast = new TH1I("h1_whiterabbit_trigger3_fatima_bplast", "White Rabbit Trigger 3 FATIMA (TAMEX) - bPlast",1e3,-1e3,1e3);
     h1_whiterabbit_trigger3_fatima_bplast->GetXaxis()->SetTitle("FATIMA (TAMEX) - bPlast WR dT (ns)");
     h1_whiterabbit_trigger3_fatima_bplast->GetYaxis()->SetTitle("Counts (Trigger 3)");
     h1_whiterabbit_trigger3_fatima_bplast->Draw();
-    folder_whiterabbit_trigger3->Add(h1_whiterabbit_trigger3_fatima_bplast);
     c_whiterabbit_trigger3_fatima_bplast->cd(0);
 
     // Fatima - Germanium
+    dir_whiterabbit_correlation->cd();
     c_whiterabbit_correlation_fatima_ge = new TCanvas("c_whiterabbit_correlation_fatima_ge", "White Rabbit FATIMA-DEGAS", 10, 10, 800, 700);
     c_whiterabbit_correlation_fatima_ge->cd();
     h1_whiterabbit_correlation_fatima_ge = new TH1I("h1_whiterabbit_correlation_fatima_ge", "FATIMA - DEGAS WR dT", 1000, -1e3, 1e3);
     h1_whiterabbit_correlation_fatima_ge->GetXaxis()->SetTitle("Time difference (FATIMA - DEGAS) [ns]");
     h1_whiterabbit_correlation_fatima_ge->GetYaxis()->SetTitle("Counts");
     h1_whiterabbit_correlation_fatima_ge->Draw();
-    folder_whiterabbit_correlation->Add(h1_whiterabbit_correlation_fatima_ge);
     c_whiterabbit_correlation_fatima_ge->cd(0);
 
+    dir_whiterabbit_trigger1->cd();
     c_whiterabbit_trigger1_fatima_ge = new TCanvas("c_whiterabbit_correlation_trigger1_fatima_ge", "White Rabbit Trigger 1 FATIMA-DEGAS", 10, 10, 800, 700);
     c_whiterabbit_trigger1_fatima_ge->cd();
     h1_whiterabbit_trigger1_fatima_ge = new TH1I("h1_whiterabbit_trigger1_fatima_ge", "White Rabbit Trigger 1 FATIMA-DEGAS", 1e3,-1e3,1e3);
     h1_whiterabbit_trigger1_fatima_ge->GetXaxis()->SetTitle("FATIMA - DEGAS WR dT (ns)");
     h1_whiterabbit_trigger1_fatima_ge->GetYaxis()->SetTitle("Counts (Trigger 1)");
     h1_whiterabbit_trigger1_fatima_ge->Draw();
-    folder_whiterabbit_trigger1->Add(h1_whiterabbit_trigger1_fatima_ge);
     c_whiterabbit_trigger1_fatima_ge->cd(0);
 
+    dir_whiterabbit_trigger3->cd();
     c_whiterabbit_trigger3_fatima_ge = new TCanvas("c_whiterabbit_correlation_trigger3_fatima_ge", "White Rabbit Trigger 3 FATIMA-DEGAS", 10, 10, 800, 700);
     c_whiterabbit_trigger3_fatima_ge->cd();
     h1_whiterabbit_trigger3_fatima_ge = new TH1I("h1_whiterabbit_trigger3_fatima_ge", "White Rabbit Trigger 3 FATIMA-DEGAS",1e3,-1e3,1e3);
     h1_whiterabbit_trigger3_fatima_ge->GetXaxis()->SetTitle("FATIMA - DEGAS WR dT (ns)");
     h1_whiterabbit_trigger3_fatima_ge->GetYaxis()->SetTitle("Counts (Trigger 3)");
     h1_whiterabbit_trigger3_fatima_ge->Draw();
-    folder_whiterabbit_trigger3->Add(h1_whiterabbit_trigger3_fatima_ge);
     c_whiterabbit_trigger3_fatima_ge->cd(0);
 
-    
     // FatimaVme - bPlast
+    dir_whiterabbit_correlation->cd();
     c_whiterabbit_correlation_fatimavme_bplast = new TCanvas("c_whiterabbit_correlation_fatimavme_bplast", "FATIMA (VME) - bPlast WR dT (ns)", 10, 10, 800, 700);
     c_whiterabbit_correlation_fatimavme_bplast->cd();
     h1_whiterabbit_correlation_fatimavme_bplast = new TH1I("h1_whiterabbit_correlation_fatimavme_bplast", "FATIMA (VME) - bPlast WR dT", 1000, -1e3, 1e3);
     h1_whiterabbit_correlation_fatimavme_bplast->GetXaxis()->SetTitle("Time difference (FATIMA (VME) - bPlast) [ns]");
     h1_whiterabbit_correlation_fatimavme_bplast->GetYaxis()->SetTitle("Counts");
     h1_whiterabbit_correlation_fatimavme_bplast->Draw();
-    folder_whiterabbit_correlation->Add(h1_whiterabbit_correlation_fatimavme_bplast);
     c_whiterabbit_correlation_fatimavme_bplast->cd(0);
 
+    dir_whiterabbit_trigger1->cd();
     c_whiterabbit_trigger1_fatimavme_bplast = new TCanvas("c_whiterabbit_trigger1_fatimavme_bplast", "White Rabbit Trigger 1 FATIMA (VME) - bPlast", 10, 10, 800, 700);
     c_whiterabbit_trigger1_fatimavme_bplast->cd();
     h1_whiterabbit_trigger1_fatimavme_bplast = new TH1I("h1_whiterabbit_trigger1_fatimavme_bplast", "White Rabbit Trigger 1 FATIMA (VME) - bPlast", 1e3,-1e3,1e3);
     h1_whiterabbit_trigger1_fatimavme_bplast->GetXaxis()->SetTitle("FATIMA (VME) - bPlast WR dT (ns)");
     h1_whiterabbit_trigger1_fatimavme_bplast->GetYaxis()->SetTitle("Counts (Trigger 1)");
     h1_whiterabbit_trigger1_fatimavme_bplast->Draw();
-    folder_whiterabbit_trigger1->Add(h1_whiterabbit_trigger1_fatimavme_bplast);
     c_whiterabbit_trigger1_fatimavme_bplast->cd(0);
 
+    dir_whiterabbit_trigger3->cd();
     c_whiterabbit_trigger3_fatimavme_bplast = new TCanvas("c_whiterabbit_trigger3_fatimavme_bplast", "White Rabbit Trigger 3 FATIMA (VME) - bPlast", 10, 10, 800, 700);
     c_whiterabbit_trigger3_fatimavme_bplast->cd();
     h1_whiterabbit_trigger3_fatimavme_bplast = new TH1I("h1_whiterabbit_trigger3_fatimavme_bplast", "White Rabbit Trigger 3 FATIMA (VME) - bPlast",1e3,-1e3,1e3);
     h1_whiterabbit_trigger3_fatimavme_bplast->GetXaxis()->SetTitle("FATIMA (VME) - bPlast WR dT (ns)");
     h1_whiterabbit_trigger3_fatimavme_bplast->GetYaxis()->SetTitle("Counts (Trigger 3)");
     h1_whiterabbit_trigger3_fatimavme_bplast->Draw();
-    folder_whiterabbit_trigger3->Add(h1_whiterabbit_trigger3_fatimavme_bplast);
     c_whiterabbit_trigger3_fatimavme_bplast->cd(0);
 
     // FatimaVme - Germanium
+    dir_whiterabbit_correlation->cd();
     c_whiterabbit_correlation_fatimavme_ge = new TCanvas("c_whiterabbit_correlation_fatimavme_ge", "FATIMA VME - DEGAS WR dT (ns)", 10, 10, 800, 700);
     c_whiterabbit_correlation_fatimavme_ge->cd();
     h1_whiterabbit_correlation_fatimavme_ge = new TH1I("h1_whiterabbit_correlation_fatimavme_ge", "FATIMA VME - DEGAS WR dT", 1000, -1e3, 1e3);
     h1_whiterabbit_correlation_fatimavme_ge->GetXaxis()->SetTitle("Time difference (FATIMA VME - DEGAS) [ns]");
     h1_whiterabbit_correlation_fatimavme_ge->GetYaxis()->SetTitle("Counts");
     h1_whiterabbit_correlation_fatimavme_ge->Draw();
-    folder_whiterabbit_correlation->Add(h1_whiterabbit_correlation_fatimavme_ge);
     c_whiterabbit_correlation_fatimavme_ge->cd(0);
 
+    dir_whiterabbit_trigger1->cd();
     c_whiterabbit_trigger1_fatimavme_ge = new TCanvas("c_whiterabbit_correlation_trigger1_fatimavme_ge", "White Rabbit Trigger 1 FATIMA VME-DEGAS", 10, 10, 800, 700);
     c_whiterabbit_trigger1_fatimavme_ge->cd();
     h1_whiterabbit_trigger1_fatimavme_ge = new TH1I("h1_whiterabbit_trigger1_fatimavme_ge", "White Rabbit Trigger 1 FATIMA VME-DEGAS", 1e3,-1e3,1e3);
     h1_whiterabbit_trigger1_fatimavme_ge->GetXaxis()->SetTitle("FATIMA VME - DEGAS WR dT (ns)");
     h1_whiterabbit_trigger1_fatimavme_ge->GetYaxis()->SetTitle("Counts (Trigger 1)");
     h1_whiterabbit_trigger1_fatimavme_ge->Draw();
-    folder_whiterabbit_trigger1->Add(h1_whiterabbit_trigger1_fatimavme_ge);
     c_whiterabbit_trigger1_fatimavme_ge->cd(0);
 
+    dir_whiterabbit_trigger3->cd();
     c_whiterabbit_trigger3_fatimavme_ge = new TCanvas("c_whiterabbit_correlation_trigger3_fatimavme_ge", "White Rabbit Trigger 3 FATIMA VME-DEGAS", 10, 10, 800, 700);
     c_whiterabbit_trigger3_fatimavme_ge->cd();
     h1_whiterabbit_trigger3_fatimavme_ge = new TH1I("h1_whiterabbit_trigger3_fatimavme_ge", "White Rabbit Trigger 3 FATIMA VME-DEGAS",1e3,-1e3,1e3);
     h1_whiterabbit_trigger3_fatimavme_ge->GetXaxis()->SetTitle("FATIMA VME - DEGAS WR dT (ns)");
     h1_whiterabbit_trigger3_fatimavme_ge->GetYaxis()->SetTitle("Counts (Trigger 3)");
     h1_whiterabbit_trigger3_fatimavme_ge->Draw();
-    folder_whiterabbit_trigger3->Add(h1_whiterabbit_trigger3_fatimavme_ge);
     c_whiterabbit_trigger3_fatimavme_ge->cd(0);
 
-    // bPlast
     // bPlast - Germanium
+    dir_whiterabbit_correlation->cd();
     c_whiterabbit_correlation_bplast_ge = new TCanvas("c_whiterabbit_correlation_bplast_ge", "bPlast - DEGAS WR dT (ns)", 10, 10, 800, 700);
     c_whiterabbit_correlation_bplast_ge->cd();
     h1_whiterabbit_correlation_bplast_ge = new TH1I("h1_whiterabbit_correlation_bplast_ge", "bPlast - DEGAS WR dT", 1000, -1e3, 1e3);
     h1_whiterabbit_correlation_bplast_ge->GetXaxis()->SetTitle("Time difference (bPlast - DEGAS) [ns]");
     h1_whiterabbit_correlation_bplast_ge->GetYaxis()->SetTitle("Counts");
     h1_whiterabbit_correlation_bplast_ge->Draw();
-    folder_whiterabbit_correlation->Add(h1_whiterabbit_correlation_bplast_ge);
     c_whiterabbit_correlation_bplast_ge->cd(0);
 
+    dir_whiterabbit_trigger1->cd();
     c_whiterabbit_trigger1_bplast_ge = new TCanvas("c_whiterabbit_correlation_trigger1_bplast_ge", "White Rabbit Trigger 1 bPlast-DEGAS", 10, 10, 800, 700);
     c_whiterabbit_trigger1_bplast_ge->cd();
     h1_whiterabbit_trigger1_bplast_ge = new TH1I("h1_whiterabbit_trigger1_bplast_ge", "White Rabbit Trigger 1 bPlast-DEGAS", 1e3,-1e3,1e3);
     h1_whiterabbit_trigger1_bplast_ge->GetXaxis()->SetTitle("bPlast - DEGAS WR dT (ns)");
     h1_whiterabbit_trigger1_bplast_ge->GetYaxis()->SetTitle("Counts (Trigger 1)");
     h1_whiterabbit_trigger1_bplast_ge->Draw();
-    folder_whiterabbit_trigger1->Add(h1_whiterabbit_trigger1_bplast_ge);
     c_whiterabbit_trigger1_bplast_ge->cd(0);
 
+    dir_whiterabbit_trigger3->cd();
     c_whiterabbit_trigger3_bplast_ge = new TCanvas("c_whiterabbit_correlation_trigger3_bplast_ge", "White Rabbit Trigger 3 bPlast-DEGAS", 10, 10, 800, 700);
     c_whiterabbit_trigger3_bplast_ge->cd();
     h1_whiterabbit_trigger3_bplast_ge = new TH1I("h1_whiterabbit_trigger3_bplast_ge", "White Rabbit Trigger 3 bPlast-DEGAS",1e3,-1e3,1e3);
     h1_whiterabbit_trigger3_bplast_ge->GetXaxis()->SetTitle("bPlast - DEGAS WR dT (ns)");
     h1_whiterabbit_trigger3_bplast_ge->GetYaxis()->SetTitle("Counts (Trigger 3)");
     h1_whiterabbit_trigger3_bplast_ge->Draw();
-    folder_whiterabbit_trigger3->Add(h1_whiterabbit_trigger3_bplast_ge);
     c_whiterabbit_trigger3_bplast_ge->cd(0);
 
     // Trigger ID
-
+    dir_whiterabbit->cd();
     c_whiterabbit_trigger = new TCanvas("c_whiterabbit_trigger", "White Rabbit Trigger ID", 10, 10, 800, 700);
     c_whiterabbit_trigger->cd();
     h1_whiterabbit_trigger = new TH1I("h1_whiterabbit_trigger", "White Rabbit Trigger ID", 5, 0, 5);
     h1_whiterabbit_trigger->GetXaxis()->SetTitle("Trigger ID");
     h1_whiterabbit_trigger->GetYaxis()->SetTitle("Counts");
     h1_whiterabbit_trigger->Draw();
-    folder_whiterabbit->Add(h1_whiterabbit_trigger);
     c_whiterabbit_trigger->cd(0);
 
-
     // Canvas addition for 10 detector systems
-
+    dir_whiterabbit_correlation->cd();
     c_whiterabbit_correlation = new TCanvas("c_whiterabbit_correlation", "White Rabbit Correlation", 10, 10, 800, 700);
     c_whiterabbit_correlation->Divide(5, 2);
     c_whiterabbit_correlation->cd(1);
@@ -476,8 +467,7 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     h1_whiterabbit_correlation_fatimavme_bplast->Draw();
     c_whiterabbit_correlation->cd(0);
 
-    folder_whiterabbit_correlation->Add(c_whiterabbit_correlation);
-
+    dir_whiterabbit_trigger1->cd();
     c_whiterabbit_trigger1 = new TCanvas("c_whiterabbit_trigger1", "White Rabbit Trigger 1", 10, 10, 800, 700);
     c_whiterabbit_trigger1->Divide(5, 2);
     c_whiterabbit_trigger1->cd(1);
@@ -502,8 +492,7 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     h1_whiterabbit_trigger1_fatimavme_bplast->Draw();
     c_whiterabbit_trigger1->cd(0);
 
-    folder_whiterabbit_trigger1->Add(c_whiterabbit_trigger1);
-
+    dir_whiterabbit_trigger3->cd();
     c_whiterabbit_trigger3 = new TCanvas("c_whiterabbit_trigger3", "White Rabbit Trigger 3", 10, 10, 800, 700);
     c_whiterabbit_trigger3->Divide(5, 2);
     c_whiterabbit_trigger3->cd(1);
@@ -528,10 +517,9 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     h1_whiterabbit_trigger3_fatimavme_bplast->Draw();
     c_whiterabbit_trigger3->cd(0);
 
-    folder_whiterabbit_trigger3->Add(c_whiterabbit_trigger3);
+    dir_whiterabbit->cd();
 
     // Register command to reset histograms
-
     run->GetHttpServer()->RegisterCommand("Reset_Whiterabbit_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
     run->GetHttpServer()->RegisterCommand("Snapshot_Whiterabbit_Hist", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
     
@@ -641,7 +629,7 @@ void WhiterabbitCorrelationOnline::Snapshot_Histo()
 
     file_whiterabbit_snapshot = new TFile(Form("whiterabbit_snapshot_%d_%d_%d_%d_%d_%d.root", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec), "RECREATE");
     file_whiterabbit_snapshot->cd();
-    folder_whiterabbit->Write();
+    dir_whiterabbit->Write();
     file_whiterabbit_snapshot->Close();
     delete file_whiterabbit_snapshot;
 
@@ -965,9 +953,7 @@ void WhiterabbitCorrelationOnline::FinishTask()
     }
     if (fHitFatimaTwinpeaks || fHitbPlastTwinpeaks || fHitGe || fHitFatimaVme || fAidaDecays)
     {   
-        folder_whiterabbit->Write();
         c4LOG(info, "Processed " << fNEvents << " events.");
-        c4LOG(info, "WhiteRabbit histograms written to file.");
         c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvents);
     }
 }
