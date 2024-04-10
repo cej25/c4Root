@@ -8,6 +8,7 @@ class EventHeader;
 class TCanvas;
 class TH1F;
 class TH2F;
+class TH1I;
 
 class LisaOnlineSpectra : public FairTask
 {
@@ -45,7 +46,9 @@ class LisaOnlineSpectra : public FairTask
         // TCanvas*
 
         // Histograms
-        // TH1F
+        TH1I* h1_hitpattern;
+        TH1F* h1_energy;
+        TH2F* h2_traces;
 
     public:
         ClassDef(LisaOnlineSpectra, 1)

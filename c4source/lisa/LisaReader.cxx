@@ -100,58 +100,87 @@ Bool_t LisaReader::Read()
         
         //::::::::::::::Hit Pattern
         uint32_t hit_pattern = fData->lisa_data[it_board_number].hit_pattern;
-        lisa_item->SetHitPattern(hit_pattern);
+        std::vector<int> hitpattern = Get_Channels(hit_pattern);
+        lisa_item->SetHitPattern(hitpattern);
 
         //::::::::::::::Multiplicity: Called num_channels_fired from unpacker
         uint32_t M = fData->lisa_data[it_board_number].num_channels_fired;
         lisa_item->SetMultiplicity(M);
         //std::cout<<M<<std::endl;
 
+        std::vector<uint32_t> ch_ID; 
+        std::vector<uint64_t> channel_trigger_time_long;
+        std::vector<bool> pile_up;
+        std::vector<bool> over_flow;
+        std::vector<uint32_t> ch_energy;
+        std::vector<uint32_t> traces;
+
         for (int index = 0; index < M; index++) 
         {
             //::::::::::::::Channel ID
-            uint32_t ID = fData->lisa_data[it_board_number].channel_idv[index];
-            lisa_item->SetID(ID);
-            std::cout<<ID<<std::endl;
+            ch_ID.emplace_back(fData->lisa_data[it_board_number].channel_idv[index]);
 
             //::::::::::::::Channel Trigger Time
-            uint64_t channel_trigger_time_long = (((uint64_t)(fData->lisa_data[it_board_number].channel_trigger_time_hiv[index]) << 32) + 
-            (fData->lisa_data[it_board_number].channel_trigger_time_lov[index]))*10;
-            lisa_item->SetChannelTime(channel_trigger_time_long);
+            channel_trigger_time_long.emplace_back((((uint64_t)(fData->lisa_data[it_board_number].channel_trigger_time_hiv[index]) << 32) + 
+            (fData->lisa_data[it_board_number].channel_trigger_time_lov[index]))*10);
 
             //::::::::::::::Channel PileUp
-            bool pile_up = fData->lisa_data[it_board_number].pileup[index] & 0x1;
-            lisa_item->SetPileUp(pile_up);     
-
+            pile_up.emplace_back(fData->lisa_data[it_board_number].pileup[index] & 0x1);
+    
             //::::::::::::::Channel OverFlow
-            bool over_flow = fData->lisa_data[it_board_number].overflow[index] & 0x1;
-            lisa_item->SetOverFlow(over_flow); 
+            over_flow.emplace_back(fData->lisa_data[it_board_number].overflow[index] & 0x1);
 
             //::::::::::::::Channel Energy
-
             //according to febex manual on gsi website, the 24th bit of the energy denotes the sign to indicate the polarity of the pulse
-           
             if (fData->lisa_data[it_board_number].channel_energyv[index] & (1 << 23)){
                 energy = -(int32_t)(fData->lisa_data[it_board_number].channel_energyv[index] & 0x007FFFFF);
             }else{
                 energy = +(int32_t)(fData->lisa_data[it_board_number].channel_energyv[index] & 0x007FFFFF);            
             }
+            ch_energy.emplace_back(energy);
             
-            //int32_t energy = (int32_t)fData->lisa_data[it_board_number].channel_energyv[index];
-            lisa_item->SetEnergy(energy); 
-            //std::cout<<energy<<std::endl;
-
             //::::::::::::::Channel Traces
+            for (int l = 0 ; l < fData->lisa_data[it_board_number].traces[index]._ ; l++)
+            {
+                traces.emplace_back(fData->lisa_data[it_board_number].traces[index].v[l]);
 
-            //Fill array with lisa_item
-            new ((*fArray)[fArray->GetEntriesFast()]) LisaData(*lisa_item);
+                std::cout<< fData->lisa_data[it_board_number].traces[index].I[l] <<std::endl;
+            }
 
         }
 
+        lisa_item->SetID(ch_ID);
+        lisa_item->SetChannelTime(channel_trigger_time_long);
+        lisa_item->SetPileUp(pile_up);
+        lisa_item->SetOverFlow(over_flow);
+        lisa_item->SetEnergy(ch_energy);
+        lisa_item->SetTraces(traces);
+
+        //Fill array with lisa_item
+        new ((*fArray)[fArray->GetEntriesFast()]) LisaData(*lisa_item);
 
     }
     
     return kTRUE;
+}
+
+
+std::vector<int> LisaReader::Get_Channels(uint32_t channel_mask)
+{
+    std::vector<int> channels;
+
+    for (int i = 15; i >= 0; i--)
+    {
+        if (channel_mask >= pow(2, i))
+        {
+            channels.push_back(i);
+            channel_mask -= pow(2, i);
+        }
+    }
+
+    std::sort(channels.begin(), channels.end());
+
+    return channels;
 }
 
 // You must clear any arrays and vectors you use or things will get weird

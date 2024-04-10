@@ -30,7 +30,7 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     //TString outputFilename = outputpath + "tokyo_test.root";	
 
     Int_t refresh = 10; // Refresh rate for online histograms
-    Int_t port = 6001;
+    Int_t port = 8080;
      
     TString ntuple_options = "UNPACK";
    //TString ucesb_dir = getenv("UCESB_DIR"); // .bashrc
@@ -71,9 +71,9 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
 
     // Add analysis task here at some point
 
-    //LisaOnlineSpectra* onlinelisa = new LisaOnlineSpectra();
+    LisaOnlineSpectra* onlinelisa = new LisaOnlineSpectra();
 
-    //run->AddTask(onlinelisa);
+    run->AddTask(onlinelisa);
 
     // Initialise
     run->Init();
