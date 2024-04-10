@@ -1,21 +1,35 @@
 #ifndef AidaOnlineSpectra_H
 #define AidaOnlineSpectra_H
 
+// FairRoot
+#include "FairTask.h"
+
+// c4
 #include "AidaCalData.h"
 #include "AidaData.h"
 #include "AidaHitData.h"
-#include "FairTask.h"
 #include "TAidaConfiguration.h"
+
+// ROOT
+#include "TDirectory.h"
+#include "TFolder.h"
+#include "TCanvas.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TGraph.h"
+#include "TClonesArray.h"
 #include <array>
 #include <deque>
 #include <map>
 #include <vector>
 
-class TClonesArray;
 class EventHeader;
-class TCanvas;
+
+class TClonesArray;
+class TDirectory;
 class TFolder;
 class TGraph;
+class TCanvas;
 class TH1F;
 class TH2F;
 
@@ -68,14 +82,15 @@ class AidaOnlineSpectra : public FairTask
         TCanvas* c_aida_snapshots;
 
         // Folders and Files
-        TFolder* folder_aida;
-        TFolder* folder_implant;
-        TFolder* folder_stopped_implant;
-        TFolder* folder_decay;
-        TFolder* folder_scalers;
-        std::vector<TFolder*> folder_implant_dssd;
-        std::vector<TFolder*> folder_stopped_implant_dssd;
-        std::vector<TFolder*> folder_decay_dssd;
+        TFolder* histograms;
+        TDirectory* dir_aida;
+        TDirectory* dir_implant;
+        TDirectory* dir_stopped_implant;
+        TDirectory* dir_decay;
+        TDirectory* dir_scalers;
+        std::vector<TDirectory*> dir_implant_dssd;
+        std::vector<TDirectory*> dir_stopped_implant_dssd;
+        std::vector<TDirectory*> dir_decay_dssd;
         TFile* file_aida_snapshot;
 
         // Histograms
@@ -116,6 +131,9 @@ class AidaOnlineSpectra : public FairTask
         std::vector<TGraph*> aida_decay_scaler_graph;
 
         // Deadtime
+
+
+
 
     public:
         ClassDef(AidaOnlineSpectra, 1)

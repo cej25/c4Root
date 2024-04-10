@@ -77,10 +77,14 @@ InitStatus FrsCalSpectra::Init()
     fFrsTPCCalArray = (TClonesArray*)mgr->GetObject("FrsTPCCalData");
     c4LOG_IF(fatal, !fFrsTPCCalArray, "Branch FrsTPCCalData not found");
 
-    
+    histograms = (TFolder*)mgr->GetObject("Histograms");
+
     TDirectory::TContext ctx(nullptr);
 
-    
+    dir_frs_cal = new TDirectory("FRS Cal", "FRS Cal", "", 0); // check if exists
+    mgr->Register("FRS", "FRS Directory", dir_frs_cal, false);
+    histograms->Add(dir_frs_cal);
+
     folder_frs_hists = (TFolder*)mgr->GetObject("FRS");
     //if (!folder_frs_hists) folder_frs_hists = new TFolder("FRS", "FRS");
     
@@ -498,7 +502,7 @@ void FrsCalSpectra::FinishEvent()
 
 void FrsCalSpectra::FinishTask()
 {
-    //folder_frs_cal_hists->Write();
+    
 }
 
 ClassImp(FrsCalSpectra)

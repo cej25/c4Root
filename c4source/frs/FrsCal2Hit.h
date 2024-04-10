@@ -1,6 +1,8 @@
 #ifndef FrsCal2Hit_H
 #define FrsCal2Hit_H
 
+#include "TFrsConfiguration.h"
+
 #include "../../config/setup.h"
 #include "FairTask.h"
 #include "TFRSParameter.h"
@@ -24,17 +26,7 @@ class EventData;
 class FrsCal2Hit : public FairTask
 {
     public:
-        FrsCal2Hit(TFRSParameter* ffrs,
-                TMWParameter* fmw,
-                TTPCParameter* ftpc,
-                TMUSICParameter* fmusic,
-                TLABRParameter* flabr,
-                TSCIParameter* fsci,
-                TIDParameter* fid,
-                TSIParameter* fsi,
-                TMRTOFMSParameter* fmrtof,
-                TRangeParameter* frange,
-                std::string fpathToConfigFiles);
+        FrsCal2Hit();
 
         FrsCal2Hit(const TString& name, Int_t verbose);
 
@@ -46,7 +38,7 @@ class FrsCal2Hit : public FairTask
         virtual void Exec(Option_t* option); // virtual?
         
         virtual void SetParContainers();
-        void Setup_Conditions(TString path_to_folder_with_frs_config_files);
+        void Setup_Conditions(std::string path_to_config_files);
         void FRS_GainMatching();
 
         Bool_t Check_WinCond(Float_t P, Float_t* V);
@@ -66,8 +58,20 @@ class FrsCal2Hit : public FairTask
     
     private:
 
+        TFrsConfiguration const* frs_config;
+        TFRSParameter* frs;
+        TMWParameter* mw;
+        TTPCParameter* tpc;
+        TMUSICParameter* music;
+        TLABRParameter* labr;
+        TSCIParameter* sci;
+        TIDParameter* id;
+        TSIParameter* si;
+        TMRTOFMSParameter* mrtof;
+        TRangeParameter* range;
+        std::string pathToConfigFiles;
+
         Bool_t fOnline;
-        TString pathToConfigFiles;
 
         TClonesArray* fCalArrayMain;
         TClonesArray* fCalArrayTPC;
@@ -333,18 +337,6 @@ class FrsCal2Hit : public FairTask
         Float_t id_dEdeg;
 
         Float_t aoq_factor = 931.4940 / 299.792458; // 'f' in go4 code
-
-        // parameters from FRS setup
-        TFRSParameter* frs;
-        TMWParameter* mw;
-        TTPCParameter* tpc;
-        TMUSICParameter* music;
-        TLABRParameter* labr;
-        TSCIParameter* sci;
-        TIDParameter* id;
-        TSIParameter* si;
-        TMRTOFMSParameter* mrtof;
-        TRangeParameter* range;
 
         EventHeader* header;
         Int_t fNEvents = 0;
