@@ -86,7 +86,6 @@ InitStatus FatimaOnlineSpectra::Init()
     dir_fatima_slowToT->cd();
     c_fatima_slowToT  = new TCanvas("c_fatima_slowToT","slow ToT Fatima spectra",650,350);
     c_fatima_slowToT->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
-    //h1_fatima_slowToT = new TH1F*[number_detectors];
     h1_fatima_slowToT.resize(number_detectors);
     for (int ihist = 0; ihist < number_detectors; ihist++){
         c_fatima_slowToT->cd(ihist+1);
@@ -100,7 +99,6 @@ InitStatus FatimaOnlineSpectra::Init()
     dir_fatima_fastToT->cd();
     c_fatima_fastToT  = new TCanvas("c_fatima_fastToT","Fast ToT Fatima spectra",650,350);
     c_fatima_fastToT->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
-    //h1_fatima_fastToT = new TH1F*[number_detectors];
     h1_fatima_fastToT.resize(number_detectors);
     for (int ihist = 0; ihist < number_detectors; ihist++){
         c_fatima_fastToT->cd(ihist+1);
@@ -115,7 +113,6 @@ InitStatus FatimaOnlineSpectra::Init()
     dir_fatima_energy_spectra->cd();
     c_fatima_energy  = new TCanvas("c_fatima_energy","Fatima energy spectra",650,350);
     c_fatima_energy->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
-    //h1_fatima_energy = new TH1F*[number_detectors];
     h1_fatima_energy.resize(number_detectors);
     for (int ihist = 0; ihist < number_detectors; ihist++){
         c_fatima_energy->cd(ihist+1);
@@ -129,7 +126,6 @@ InitStatus FatimaOnlineSpectra::Init()
     dir_fatima_fast_v_slow->cd();
     c_fatima_fast_v_slow  = new TCanvas("c_fatima_fast_v_slow","fast vs slow ToT Fatima spectra",650,350);
     c_fatima_fast_v_slow->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
-    //h2_fatima_fast_v_slow = new TH2F * [number_detectors];
     h2_fatima_fast_v_slow.resize(number_detectors);
     for (int ihist = 0; ihist < number_detectors; ihist++){
         c_fatima_fast_v_slow->cd(ihist+1);
@@ -144,7 +140,6 @@ InitStatus FatimaOnlineSpectra::Init()
     dir_fatima_time_spectra->cd();
     c_fatima_time_spectra_divided  = new TCanvas("c_fatima_time_spectra_divided","Fatima absolute time spectra",650,350);
     c_fatima_time_spectra_divided->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
-    //h1_fatima_abs_time = new TH1F*[number_detectors];
     h1_fatima_abs_time.resize(number_detectors);
     for (int ihist = 0; ihist < number_detectors; ihist++){
         c_fatima_time_spectra_divided->cd(ihist+1);
@@ -197,10 +192,8 @@ InitStatus FatimaOnlineSpectra::Init()
     c_fatima_event_multiplicity->cd(0);
     
     dir_fatima_time_differences.resize(number_reference_detectors);
-    //h1_fatima_time_differences = new TH1F ** [number_reference_detectors];
     h1_fatima_time_differences.resize(number_reference_detectors);
     h2_fatima_time_differences_vs_energy.resize(number_reference_detectors);
-    //h2_fatima_time_differences_vs_energy = new TH2F ** [number_reference_detectors];
     for (int ihist = 0; ihist < number_reference_detectors; ihist++)
     {
         std::stringstream name;
@@ -210,7 +203,6 @@ InitStatus FatimaOnlineSpectra::Init()
 
         c_fatima_time_differences  = new TCanvas(Form("c_fatima_time_differences_rel_det_%i",dt_reference_detectors.at(ihist)),"Fatima relative time differences",650,350);
         c_fatima_time_differences->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
-        //h1_fatima_time_differences[ihist] = new TH1F*[number_detectors];
         h1_fatima_time_differences[ihist].resize(number_detectors);
 
         for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++)
@@ -224,7 +216,6 @@ InitStatus FatimaOnlineSpectra::Init()
 
         c_fatima_time_differences_vs_energy  = new TCanvas(Form("c_fatima_time_differences_rel_det_%i_vs_energy",dt_reference_detectors.at(ihist)),"Fatima relative time differences vs energy",650,350);
         c_fatima_time_differences_vs_energy->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
-        //h2_fatima_time_differences_vs_energy[ihist] = new TH2F*[number_detectors];
         h2_fatima_time_differences_vs_energy[ihist].resize(number_detectors);
 
         for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++)
