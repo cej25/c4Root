@@ -126,18 +126,28 @@ class FatimaOnlineSpectra : public FairTask
         int number_reference_detectors = 1;
         
         // Histograms 
-        TH1F ** h1_fatima_slowToT;
-        TH1F ** h1_fatima_fastToT;
-        TH1F ** h1_fatima_energy;
-        TH1F ** h1_fatima_abs_time;
-        TH2F ** h2_fatima_fast_v_slow;
+        // TH1F ** h1_fatima_slowToT;
+        // TH1F ** h1_fatima_fastToT;
+        // TH1F ** h1_fatima_energy;
+        // TH1F ** h1_fatima_abs_time;
+        // TH2F ** h2_fatima_fast_v_slow;
+
+        std::vector<TH1F*> h1_fatima_slowToT;
+        std::vector<TH1F*> h1_fatima_fastToT;
+        std::vector<TH1F*> h1_fatima_energy;
+        std::vector<TH1F*> h1_fatima_abs_time;
+        std::vector<TH2F*> h2_fatima_fast_v_slow;
+
         TH1F * h1_fatima_multiplicity;
         TH2F * h2_fatima_energy_vs_detid;
         TH2F * h2_fatima_energy_uncal_vs_detid;
         TH1F * h1_fatima_hitpattern_slow;
         TH1F * h1_fatima_hitpattern_fast;
-        TH1F *** h1_fatima_time_differences;
-        TH2F *** h2_fatima_time_differences_vs_energy;
+        std::vector<std::vector<TH1F*>> h1_fatima_time_differences;
+        std::vector<std::vector<TH2F*>> h2_fatima_time_differences_vs_energy;
+
+       // TH1F *** h1_fatima_time_differences;
+       // TH2F *** h2_fatima_time_differences_vs_energy;
 
 
         //Binnings:

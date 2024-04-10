@@ -1,11 +1,11 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define FATIMA_ON 0
+#define FATIMA_ON 1
 #define FATIMA_VME_ON 1
 #define AIDA_ON 1
 #define BPLAST_ON 1
-#define GERMANIUM_ON 0
+#define GERMANIUM_ON 1
 #define BGO_ON 0
 #define FRS_ON 1
 #define TIME_MACHINE_ON 1
@@ -456,7 +456,7 @@ void s100_online_new()
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {b, d, e};
+        std::vector a {b, d, f};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
@@ -465,11 +465,11 @@ void s100_online_new()
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({b, d, e});
+        wronline->SetDetectorSystems({b, d, f});
     
         run->AddTask(wronline);
     }
-    
+
     // Initialise
     run->Init();
     
@@ -488,8 +488,8 @@ void s100_online_new()
     run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev); 
 
     // write online histograms if desired.
-    TFile* tf = new TFile(sf->GetFileName(), "UPDATE");
-    histograms->Write();
+    //TFile* tf = new TFile(sf->GetFileName(), "UPDATE");
+    //histograms->Write();
 
     // ---------------------------------------------------------------------------------------- //
     // *** Finish Macro *********************************************************************** //
