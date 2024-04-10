@@ -26,6 +26,8 @@ class LisaReader : public c4Reader
         virtual Bool_t Init(ext_data_struct_info*) override;
 
         virtual Bool_t Read() override;
+        std::vector<int> Get_Channels(uint32_t channel_mask);
+
 
         void ZeroArrays();
         void ClearVectors();
@@ -44,6 +46,7 @@ class LisaReader : public c4Reader
         Bool_t fOnline;
 
         int NBoards = 1;
+        
         int32_t energy;
 
         TClonesArray* fArray;

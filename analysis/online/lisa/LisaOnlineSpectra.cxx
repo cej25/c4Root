@@ -49,7 +49,6 @@ void LisaOnlineSpectra::SetParContainers()
 
 InitStatus LisaOnlineSpectra::Init()
 {
-    c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
@@ -64,11 +63,26 @@ InitStatus LisaOnlineSpectra::Init()
 
     //sum time spectrum
     // spectra definition
+
+    //Define histograms
+    //:::::::::::Hit Pattern
     
     TFolder *lisaFold = new TFolder("Lisa", "Lisa");
-
     
     run->AddObject(lisaFold);
+
+    h1_hitpattern = new TH1I("h1_hitpattern","LISA Hit Pattern",16,0,16);
+    //set visual stuff for histo
+
+    lisaFold->Add(h1_hitpattern);
+
+    h1_energy = new TH1F("h1_energy", "LISA Energy", 400,0,1000000); //in case of data from 241Am
+    lisaFold->Add(h1_energy);
+
+    //h1_energy = new TH1I("h1_energy", "LISA Energy", 400,0,1000000); //in case of data from 241Am
+    //lisaFold->Add(h1_energy);
+
+
 
     run->GetHttpServer()->RegisterCommand("Reset_Lisa_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
 
@@ -92,8 +106,19 @@ void LisaOnlineSpectra::Exec(Option_t* option)
             LisaData* hit = (LisaData*)fHitLisa->At(ihit);
             if (!hit)
                 continue;
-
             
+            std::vector<int> hit_pattern = hit->GetHitPattern(); 
+            for (int n = 0; n< hit_pattern.size(); n++ )
+            {
+                h1_hitpattern->Fill(hit_pattern[n]);
+            }
+
+            //get stuff looping over M
+            std::vector<uint32_t> ch_energy = hit->GetEnergy(); 
+            for (int index = 0; index < M; index++)
+            {
+                h1_energy->Fill(ch_energy[index]);
+            }
             
         }
     }
