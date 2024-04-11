@@ -465,7 +465,8 @@ void GermaniumOnlineSpectra::Exec(Option_t* option){
                 double timediff = time1 - time_sci41 - germanium_configuration->GetTimeshiftCoefficient(detector_id1,crystal_id1);
                 
                 h2_germanium_energy_summed_vs_tsci41->Fill(timediff ,energy1);
-                if ((TMath::Abs(time1-time_sci41 > 2000)) || (germanium_configuration->IsInsidePromptFlashCut(timediff ,energy1)==true) ) h1_germanium_energy_summed_vs_tsci41_cut->Fill(energy1);
+
+                if ((TMath::Abs(time1-time_sci41 > 0)) || (germanium_configuration->IsInsidePromptFlashCut(timediff ,energy1)==false) ) h1_germanium_energy_summed_vs_tsci41_cut->Fill(energy1);
 
                 for (int ihit3 = ihit2+1; ihit3 < nHits; ihit3 ++){
                 GermaniumCalData* hit3 = (GermaniumCalData*)fHitGe->At(ihit3);
