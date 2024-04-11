@@ -1,14 +1,27 @@
 #include <TROOT.h>
 
+// Switch all tasks related to {subsystem} on (1)/off (0)
+#define FATIMA_ON 1
+#define FATIMA_VME_ON 0
+#define AIDA_ON 0
+#define BPLAST_ON 1
+#define GERMANIUM_ON 0
+#define BGO_ON 0
+#define FRS_ON 0
+#define TIME_MACHINE_ON 0
+#define BEAMMONITOR_ON 0
+#define WHITE_RABBIT_CORS 0
+
 // Struct should containt all subsystem h101 structures
 typedef struct EXT_STR_h101_t
 {   
     EXT_STR_h101_unpack_t eventheaders;
     EXT_STR_h101_bplast_onion_t bplast;
+    EXT_STR_h101_fatima_onion_t fatima;
 } EXT_STR_h101;
 
 
-void bplast_make_trees()
+void nearline()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
 
@@ -38,52 +51,53 @@ void bplast_make_trees()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    TString filename = "~/Au_beam_0010_0001.lmd";
-    TString outputpath = "bplast_trees";
+    TString filename = "Au_beam_0010_0001_tree.root";
+    TString outputpath = "Au_beam_0010_0001_histograms";
     TString outputFileName = outputpath + ".root";
 
-    Int_t refresh = 1;
-    //Int_t port = 8080;
-
-    FairRunOnline* run = new FairRunOnline();
+    FairRunAna* run = new FairRunAna();
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
     run->SetSink(new FairRootFileSink(outputFileName));
-
-
-
-    // Create source using ucesb for input
-    EXT_STR_h101 ucesb_struct;
-    TString ntuple_options = "UNPACK"; // Define which level of data to unpack - we don't use "RAW" or "CAL"
-    UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
-    source->SetMaxEvents(nev);
-    run->SetSource(source);
+    FairSource* fs = new FairFileSource(filename);
+    run->SetSource(fs);
 
     TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_mar20.txt");
+    TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_new.txt");
 
-    // ------------------------------------------------------------------------------------- //
-    // *** Read Subsystems - comment out unwanted systems ********************************** //
-
-    // EventHeader - should always be done
-    UnpackReader* unpackheader = new UnpackReader((EXT_STR_h101_unpack*)&ucesb_struct.eventheaders, offsetof(EXT_STR_h101, eventheaders));
-    source->AddReader(unpackheader);
-
- 
-    bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_bplast_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
-    //unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_4apr_test.root", 1000000);
-    unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_4apr_test.root");
+    // ======================================================================================== //
+    // =========== **** SPECTRA ***** ========================================================= //
+    // ======================================================================================== //
     
-    unpackbplast->SetOnline(true);
-    source->AddReader(unpackbplast);
-
     // ---------------------------------------------------------------------------------------- //
-    // *** Calibrate Subsystems - comment out unwanted systems ******************************** //
-  
-    bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
+    // *** Nearline Spectra ********************************************************************* //
+
+    if (BPLAST_ON)
+    {
+        bPlastNearlineSpectra* nearlinebplast = new bPlastNearlineSpectra();
     
-    calbplast->SetOnline(true);
-    run->AddTask(calbplast);
+        run->AddTask(nearlinebplast);
+    }
+
+    if (FATIMA_ON)
+    {
+        FatimaNearlineSpectra* nearlinefatima = new FatimaNearlineSpectra();
+        nearlinefatima->SetBinningSlowToT(2000,560,660);
+        nearlinefatima->SetBinningFastToT(1000,0.1,100.1);
+        nearlinefatima->SetBinningEnergy(1000,0.1,1500.1);
+
+        // why is this set to 64
+        std::vector<int> fat_dets = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64};
+        nearlinefatima->SetDetectorsToPlot(fat_dets);
+        
+        std::vector<int> fat_ref_dets = {};
+        nearlinefatima->SetReferenceDetectorsForTimeDifferences(fat_ref_dets);
+    
+        run->AddTask(nearlinefatima);
+    }
+   
+
 
     // Initialise
     run->Init();
@@ -96,9 +110,8 @@ void bplast_make_trees()
     cout << "\n\n" << endl;
 
     // Run
-    run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev); 
-
-   
+    //run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev); 
+    run->Run(0,10000000); // most files around 9m events? can increase this number? dunno
 
     // ---------------------------------------------------------------------------------------- //
     // *** Finish Macro *********************************************************************** //

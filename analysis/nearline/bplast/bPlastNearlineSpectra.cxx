@@ -1,7 +1,6 @@
 // FairRoot
 #include "FairLogger.h"
 #include "FairRootManager.h"
-#include "FairRunOnline.h"
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"
 #include "FairSink.h"
@@ -41,15 +40,8 @@ bPlastNearlineSpectra::~bPlastNearlineSpectra()
         delete fHitbPlastTwinpeaks;
 }
 
-void bPlastNearlineSpectra::SetParContainers()
-{
-    FairRuntimeDb *rtdb = FairRuntimeDb::instance();
-    c4LOG_IF(fatal, NULL == rtdb, "FairRuntimeDb not found.");
-}
-
 InitStatus bPlastNearlineSpectra::Init()
 {
-
     // set batch mode // ok but why here specifically?
     gROOT->SetBatch(kTRUE);
 
@@ -77,23 +69,11 @@ InitStatus bPlastNearlineSpectra::Init()
 
     gDirectory = tmp;
 
-    //dir_bplast = new TDirectory("bPlast", "bPlast", "", 0);
-    //mgr->Register("bPlast", "bPlast Directory", dir_bplast, true); 
-
-    /*
-    dir_bplast_slowToT = dir_bplast->mkdir("Slow ToT");
-    dir_bplast_fastToT = dir_bplast->mkdir("Fast ToT");
-    dir_bplast_hitpattern = dir_bplast->mkdir("Hit Pattern");
-    dir_bplast_fast_vs_slow = dir_bplast->mkdir("Fast Vs. Slow");
-    dir_bplast_time_spectra = dir_bplast->mkdir("Time Spectra");
-    */
-
     // bPlast Configuration
     bplast_conf = TbPlastConfiguration::GetInstance();
     nDetectors = bplast_conf->NDetectors();
     nTamexBoards = bplast_conf->NTamexBoards();
 
-    
     // Setting histogram sizes
     h1_bplast_slowToT.resize(nDetectors+1); // index from 1 
     h1_bplast_fastToT.resize(nDetectors+1);
@@ -109,7 +89,6 @@ InitStatus bPlastNearlineSpectra::Init()
         h1_bplast_slowToT[ihist] = new TH1F(Form("h1_bplast_slowToT_%d",ihist),Form("bPlastic Slow ToT %d",ihist),10000,0,3.5e3);
         h1_bplast_slowToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
     }
-
 
     // Fast ToT
     dir_bplast_fastToT->cd();
@@ -256,5 +235,4 @@ void bPlastNearlineSpectra::FinishTask()
 
 }
 
-
-    ClassImp(bPlastNearlineSpectra)
+ClassImp(bPlastNearlineSpectra)
