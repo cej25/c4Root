@@ -2,6 +2,11 @@
 #define BGOOnlineSpectra_H
 
 #include "FairTask.h"
+#include "TFolder.h"
+#include "TDirectory.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include <vector>
 
 #include "TGermaniumConfiguration.h"
 #include "TBGOTwinpeaksConfiguration.h"
@@ -13,6 +18,7 @@ class TH1F;
 class TH2F;
 class TFile;
 class TFolder;
+class TDirectory;
 
 class BGOOnlineSpectra : public FairTask
 {
@@ -78,21 +84,22 @@ class BGOOnlineSpectra : public FairTask
         TCanvas* c_bgo_snapshot;
         
         // Folder and files
-        TFolder* folder_bgo;
-        TFolder* folder_bgo_energy;
-        TFolder* folder_bgo_time;
-        TFolder* folder_bgo_germanim_veto_energy;
-        TFolder* folder_bgo_germanim_veto_timedifferences;
+        TFolder* histograms;
+        TDirectory* dir_bgo;
+        TDirectory* dir_bgo_energy;
+        TDirectory* dir_bgo_time;
+        TDirectory* dir_bgo_germanium_veto_energy;
+        TDirectory* dir_bgo_germanium_veto_timedifferences;
+
         TFile* file_bgo_snapshot;
 
         //TFile* file_germanium_snapshot;
 
         // Histograms energy
-        TH1F ** h1_bgo_energy;
-        TH1F ** h1_bgo_time;
-        
-        TH1F ** h1_germanium_bgo_veto_energy;
-        TH1F ** h1_germanium_bgo_veto_timedifferences;
+        std::vector<TH1F*> h1_bgo_energy;
+        std::vector<TH1F*> h1_bgo_time;
+        std::vector<TH1F*> h1_germanium_bgo_veto_energy;
+        std::vector<TH1F*> h1_germanium_bgo_veto_timedifferences;
 
     public:
         ClassDef(BGOOnlineSpectra, 1)

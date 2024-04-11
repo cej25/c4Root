@@ -2,14 +2,19 @@
 #define WhiterabbitCorrelationOnline_H
 
 #include "FairTask.h"
+#include "TAidaConfiguration.h"
 #include "AidaHitData.h"
 #include "AidaData.h"
-#include "TAidaConfiguration.h"
+
+#include "TFolder.h"
+#include "TDirectory.h"
 #include <vector>
 
 class TClonesArray;
 class EventHeader;
 class TimeMachineData;
+class TFolder;
+class TDirectory;
 class TCanvas;
 class TH1I;
 class TH2F;
@@ -111,11 +116,11 @@ class WhiterabbitCorrelationOnline : public FairTask
         TCanvas* c_whiterabbit_trigger;
 
         //Folders and directories
+        TFolder* histograms;
         TDirectory* dir_whiterabbit;
-        TFolder* folder_whiterabbit;
-        TFolder* folder_whiterabbit_correlation;
-        TFolder* folder_whiterabbit_trigger1;
-        TFolder* folder_whiterabbit_trigger3;
+        TDirectory* dir_whiterabbit_correlation;
+        TDirectory* dir_whiterabbit_trigger1;
+        TDirectory* dir_whiterabbit_trigger3;
         TFile* file_whiterabbit_snapshot;
 
         

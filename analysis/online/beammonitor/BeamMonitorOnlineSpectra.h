@@ -5,9 +5,14 @@
 #include "BeamMonitorData.h"
 #include "TGraph.h"
 #include "TFolder.h"
+#include "TDirectory.h"
+#include "TH1F.h"
+#include "TH2F.h"
 
 class TClonesArray;
 class EventHeader;
+class TDirectory;
+class TFolder;
 class TCanvas;
 class TH1F;
 class TH2F;
@@ -45,7 +50,8 @@ class BeamMonitorOnlineSpectra : public FairTask
         EventHeader* header;
         Int_t fNEvents;
 
-        TFolder* folder_beammonitor;
+        TFolder* histograms;
+        TDirectory* dir_beammonitor;
 
         // S2
         Int_t BM_S2_count = 0;
