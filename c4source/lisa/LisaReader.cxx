@@ -144,7 +144,7 @@ Bool_t LisaReader::Read()
             {
                 traces.emplace_back(fData->lisa_data[it_board_number].traces[index].v[l]);
 
-                std::cout<< fData->lisa_data[it_board_number].traces[index].I[l] <<std::endl;
+                //std::cout<< fData->lisa_data[it_board_number].traces[index].I[l] <<std::endl;
             }
 
         }
