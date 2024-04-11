@@ -43,19 +43,12 @@ GermaniumNearlineSpectra::~GermaniumNearlineSpectra()
         delete fHitGe;
 }
 
-void GermaniumNearlineSpectra::SetParContainers()
-{
-    FairRuntimeDb *rtdb = FairRuntimeDb::instance();
-    c4LOG_IF(fatal, NULL == rtdb, "FairRuntimeDb not found.");
-}
-
 InitStatus GermaniumNearlineSpectra::Init()
 {
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-    FairRunOnline * run = FairRunOnline::Instance();
-    run->GetHttpServer()->Register("", this);
+    FairRunAna* run = FairRunAna::Instance();
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
@@ -71,12 +64,11 @@ InitStatus GermaniumNearlineSpectra::Init()
     }
 
     number_of_detectors_to_plot = crystals_to_plot.size();
-    
-    TDirectory::TContext ctx(nullptr);
 
-    dir_germanium = new TDirectory("DEGAS", "DEGAS", "", 0);
-    mgr->Register("DEGAS", "DEGAS Directory", dir_germanium, false);
-    histograms->Add(dir_germanium);
+    TDirectory* tmp = gDirectory;
+    FairRootManager::Instance()->GetOutFile()->cd();
+    dir_germanium = gDirectory->mkdir("DEGAS");
+    gDirectory->cd("DEGAS");
 
     dir_germanium_energy = dir_germanium->mkdir("Calibrated Energy Spectra");
     dir_germanium_time = dir_germanium->mkdir("Time Spectra");
@@ -184,6 +176,7 @@ InitStatus GermaniumNearlineSpectra::Init()
     h1_germanium_hitpattern->SetStats(0);
 
     dir_germanium->cd();
+    gDirectory = tmp;
 
     return kSUCCESS;
 }
@@ -355,10 +348,12 @@ void GermaniumNearlineSpectra::FinishTask()
         c4LOG(warning, "No events processed, no histograms written.");
         return;
     }
-    if (fHitGe)
-    {
-        c4LOG(info, "DEGAS histograms written to file.");
-    }
+    
+    TDirectory* tmp = gDirectory;
+    FairRootManager::Instance()->GetOutFile()->cd();
+    dir_germanium->Write();
+    gDirectory = tmp;
+    c4LOG(info, "DEGAS histograms written to file.");
 }
 
 ClassImp(GermaniumNearlineSpectra)
