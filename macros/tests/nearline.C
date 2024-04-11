@@ -2,7 +2,7 @@
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define FATIMA_ON 1
-#define FATIMA_VME_ON 0
+#define FATIMA_VME_ON 1
 #define AIDA_ON 0
 #define BPLAST_ON 1
 #define GERMANIUM_ON 0
@@ -65,6 +65,11 @@ void nearline()
 
     TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_mar20.txt");
     TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_new.txt");
+    TFatimaVmeConfiguration::SetDetectorMapFile(config_path + "/fatima/Fatima_VME_allocation.txt");
+    TAidaConfiguration::SetBasePath(config_path + "/AIDA");
+    TFrsConfiguration::SetConfigPath(config_path + "/frs/");
+    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_mar21.txt");
+    TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
 
     // ======================================================================================== //
     // =========== **** SPECTRA ***** ========================================================= //
@@ -97,6 +102,12 @@ void nearline()
         run->AddTask(nearlinefatima);
     }
    
+    if (FATIMA_VME_ON)
+    {    
+        FatimaVmeNearlineSpectra* nearlinefatimavme = new FatimaVmeNearlineSpectra();
+        
+        run->AddTask(nearlinefatimavme);
+    }
 
 
     // Initialise
