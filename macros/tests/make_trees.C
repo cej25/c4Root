@@ -1,14 +1,27 @@
 #include <TROOT.h>
 
+// Switch all tasks related to {subsystem} on (1)/off (0)
+#define FATIMA_ON 1
+#define FATIMA_VME_ON 0
+#define AIDA_ON 0
+#define BPLAST_ON 1
+#define GERMANIUM_ON 0
+#define BGO_ON 0
+#define FRS_ON 0
+#define TIME_MACHINE_ON 0
+#define BEAMMONITOR_ON 0
+#define WHITE_RABBIT_CORS 0
+
 // Struct should containt all subsystem h101 structures
 typedef struct EXT_STR_h101_t
 {   
     EXT_STR_h101_unpack_t eventheaders;
     EXT_STR_h101_bplast_onion_t bplast;
+    EXT_STR_h101_fatima_onion_t fatima;
 } EXT_STR_h101;
 
 
-void bplast_make_trees()
+void make_trees()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
 
@@ -18,7 +31,7 @@ void bplast_make_trees()
     // Define important paths.
     TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
     TString c4Root_path = "/u/cjones/c4Root";
-    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors --max-events=300000";
+    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors"; // --max-events=300000;
     ucesb_path.ReplaceAll("//","/");
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
@@ -39,19 +52,14 @@ void bplast_make_trees()
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     TString filename = "~/Au_beam_0010_0001.lmd";
-    TString outputpath = "bplast_trees";
+    TString outputpath = "Au_beam_0010_0001_tree";
     TString outputFileName = outputpath + ".root";
-
-    Int_t refresh = 1;
-    //Int_t port = 8080;
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
     run->SetSink(new FairRootFileSink(outputFileName));
-
-
 
     // Create source using ucesb for input
     EXT_STR_h101 ucesb_struct;
@@ -61,6 +69,7 @@ void bplast_make_trees()
     run->SetSource(source);
 
     TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_mar20.txt");
+    TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_new.txt");
 
     // ------------------------------------------------------------------------------------- //
     // *** Read Subsystems - comment out unwanted systems ********************************** //
@@ -69,21 +78,45 @@ void bplast_make_trees()
     UnpackReader* unpackheader = new UnpackReader((EXT_STR_h101_unpack*)&ucesb_struct.eventheaders, offsetof(EXT_STR_h101, eventheaders));
     source->AddReader(unpackheader);
 
- 
-    bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_bplast_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
-    //unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_4apr_test.root", 1000000);
-    unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_4apr_test.root");
-    
-    unpackbplast->SetOnline(true);
-    source->AddReader(unpackbplast);
+    if (FATIMA_ON)
+    {
+        FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
+        //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_4apr_test.root", 100000);
+        unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_4apr_test.root");
+
+        unpackfatima->SetOnline(true);
+        source->AddReader(unpackfatima);
+    }
+
+    if (BPLAST_ON)
+    {
+        bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_bplast_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
+        //unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_4apr_test.root", 1000000);
+        unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_4apr_test.root");
+        
+        unpackbplast->SetOnline(true);
+        source->AddReader(unpackbplast);
+    }
+
 
     // ---------------------------------------------------------------------------------------- //
     // *** Calibrate Subsystems - comment out unwanted systems ******************************** //
   
-    bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
-    
-    calbplast->SetOnline(true);
-    run->AddTask(calbplast);
+    if (BPLAST_ON)
+    {
+        bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
+        
+        calbplast->SetOnline(false);
+        run->AddTask(calbplast);
+    }
+
+    if (FATIMA_ON)
+    {
+        FatimaRaw2Cal* calfatima = new FatimaRaw2Cal();
+           
+        calfatima->SetOnline(false);
+        run->AddTask(calfatima);
+    }
 
     // Initialise
     run->Init();

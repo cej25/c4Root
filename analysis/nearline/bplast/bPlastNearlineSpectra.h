@@ -27,8 +27,6 @@ class bPlastNearlineSpectra : public FairTask
 
         virtual ~bPlastNearlineSpectra();
 
-        virtual void SetParContainers();
-
         virtual InitStatus Init();
 
         virtual void Exec(Option_t* option);
@@ -36,8 +34,6 @@ class bPlastNearlineSpectra : public FairTask
         virtual void FinishEvent();
 
         virtual void FinishTask();
-
-
 
     
     private:
@@ -53,10 +49,7 @@ class bPlastNearlineSpectra : public FairTask
         int nDetectors;
         int nTamexBoards;
 
-        TString screenshot_path;
-
         //Folders and files
-        TFolder* histograms;
         TDirectory* dir_bplast;
         TDirectory* dir_bplast_slowToT;
         TDirectory* dir_bplast_fastToT;
