@@ -49,7 +49,7 @@ class LisaOnlineSpectra : public FairTask
         TH1I* h1_hitpattern;
         TH1I* h1_multiplicity;
         TH1F* h1_energy;
-        TH1F* h2_traces; //must be TH2F but something is off?
+        TH2F* h2_traces;
 
     public:
         ClassDef(LisaOnlineSpectra, 1)

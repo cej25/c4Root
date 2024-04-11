@@ -79,12 +79,14 @@ InitStatus LisaOnlineSpectra::Init()
     h1_multiplicity->GetXaxis()->SetTitle("Multiplicity");
     lisaFold->Add(h1_multiplicity);
 
+
+
     //:::::::::::Energy Layer 1
     /*
     c_energy_layer1  = new TCanvas("c_energy_layer1","Energy - Layer 1",650,350);
     c_energy_layer1->Divide(2,2);
     h1_energy_layer1 = new TH1F*[4];
-    for (int ihist = 0; ihist < 4; ihist++){ //loop over ch_ID? but maybe I can do it from gui and I just have to discriminate between id
+    for (int ihist = 0; ihist < 4; ihist++){ //this should be fine for 241test, but has to be integrated with mapping for experiment
         c_energy_layer1->cd(ihist+1);
         h1_energy_layer1[ihist] = new TH1F(Form("h1_energy_%d",ihist),Form("Layer 1 - %d",ihist),400,0,250000);
         h1_energy_layer1[ihist]->GetXaxis()->SetTitle("Energy (a.u.)");
@@ -98,8 +100,7 @@ InitStatus LisaOnlineSpectra::Init()
     lisaFold->Add(h1_energy);
 
     //::::::::::::Traces
-    //to be TH2F but now something wierd is happening
-    h2_traces = new TH1F("h2_traces", "Traces", 400, 0, 16000);
+    h2_traces = new TH2F("h2_traces", "Traces", 400, 0, 16000,100,0,4000);
     lisaFold->Add(h2_traces);
 
     run->GetHttpServer()->RegisterCommand("Reset_Lisa_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
@@ -124,30 +125,31 @@ void LisaOnlineSpectra::Exec(Option_t* option)
             LisaData* hit = (LisaData*)fHitLisa->At(ihit);
             if (!hit)
                 continue;
-            
+            //:::::::::::Hit Pattern
             std::vector<int> hit_pattern = hit->GetHitPattern(); 
             for (int n = 0; n< hit_pattern.size(); n++ )
             {
                 h1_hitpattern->Fill(hit_pattern[n]);
             }
-
+            //:::::::::::Multiplicity
             uint32_t M = hit->GetMultiplicity(); 
             h1_multiplicity->Fill(M);
 
             //get stuff looping over M
+            //:::::::::::Energy
             std::vector<uint32_t> ch_energy = hit->GetEnergy(); 
             for (int index = 0; index < M; index++)
             {
                 h1_energy->Fill(ch_energy[index]);
             }
-
-            //something wrong, doesn't like how I did 2d? try 1d
-            std::vector<uint32_t> traces = hit->GetTraces();
+            //:::::::::::Traces
+            std::vector<uint64_t> traces = hit->GetTraces();
+            std::vector<uint64_t> tracesI = hit->GetTracesI();
             for (int index = 0; index < M; index++)
             {    
-                h2_traces->Fill(traces[index]);
+                h2_traces->Fill(tracesI[index],traces[index]);
             }
-
+            //but how do I clean the histo between events?
 
         }
     }
