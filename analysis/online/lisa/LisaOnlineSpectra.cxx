@@ -71,12 +71,12 @@ InitStatus LisaOnlineSpectra::Init()
 
     //:::::::::::Hit Pattern
     h1_hitpattern = new TH1I("h1_hitpattern","LISA Hit Pattern",16,0,16);
-    h1_hitpatter->GetXaxis()->SetTitle("ChID Fired");
+    h1_hitpattern->GetXaxis()->SetTitle("ChID Fired");
     lisaFold->Add(h1_hitpattern);
 
     //:::::::::::Multiplicity
     h1_multiplicity = new TH1I("h1_multiplicity","LISA Multiplicity",8,0,8); //for 3 layer 2x2 + 1
-    h1_multipicity->GetXaxis()->SetTitle("Multiplicity");
+    h1_multiplicity->GetXaxis()->SetTitle("Multiplicity");
     lisaFold->Add(h1_multiplicity);
 
     //:::::::::::Energy Layer 1
@@ -84,7 +84,7 @@ InitStatus LisaOnlineSpectra::Init()
     c_energy_layer1  = new TCanvas("c_energy_layer1","Energy - Layer 1",650,350);
     c_energy_layer1->Divide(2,2);
     h1_energy_layer1 = new TH1F*[4];
-    for (int ihist = 0; ihist < 4; ihist++){ //loop over ch_ID?
+    for (int ihist = 0; ihist < 4; ihist++){ //loop over ch_ID? but maybe I can do it from gui and I just have to discriminate between id
         c_energy_layer1->cd(ihist+1);
         h1_energy_layer1[ihist] = new TH1F(Form("h1_energy_%d",ihist),Form("Layer 1 - %d",ihist),400,0,250000);
         h1_energy_layer1[ihist]->GetXaxis()->SetTitle("Energy (a.u.)");
@@ -94,9 +94,13 @@ InitStatus LisaOnlineSpectra::Init()
     */
 
     h1_energy = new TH1F("h1_energy", "LISA Energy", 400,0,250000); //in case of data from 241Am
-    h1_energy->Draw("COLZ");
+    //h1_energy->Draw("COLZ");
     lisaFold->Add(h1_energy);
 
+    //::::::::::::Traces
+    //to be TH2F but now something wierd is happening
+    h2_traces = new TH1F("h2_traces", "Traces", 400, 0, 16000);
+    lisaFold->Add(h2_traces);
 
     run->GetHttpServer()->RegisterCommand("Reset_Lisa_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
 
@@ -134,17 +138,17 @@ void LisaOnlineSpectra::Exec(Option_t* option)
             std::vector<uint32_t> ch_energy = hit->GetEnergy(); 
             for (int index = 0; index < M; index++)
             {
-
                 h1_energy->Fill(ch_energy[index]);
             }
 
-            std::vector<uint32_t> traces = hit->GetTraces(); 
+            //something wrong, doesn't like how I did 2d? try 1d
+            std::vector<uint32_t> traces = hit->GetTraces();
             for (int index = 0; index < M; index++)
-            {
-                //loop over _
-                h1_energy->Fill(ch_energy[index]);
+            {    
+                h2_traces->Fill(traces[index]);
             }
-            
+
+
         }
     }
 
