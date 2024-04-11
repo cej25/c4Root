@@ -66,8 +66,6 @@ InitStatus bPlastNearlineSpectra::Init()
     dir_bplast_fast_vs_slow = gDirectory->mkdir("Fast Vs. Slow");
     dir_bplast_time_spectra = gDirectory->mkdir("Time Spectra");
 
-    gDirectory = tmp;
-
     // bPlast Configuration
     bplast_conf = TbPlastConfiguration::GetInstance();
     nDetectors = bplast_conf->NDetectors();
@@ -141,6 +139,7 @@ InitStatus bPlastNearlineSpectra::Init()
     // log y?
 
     dir_bplast->cd();
+    gDirectory = tmp;
 
     return kSUCCESS;
 }
