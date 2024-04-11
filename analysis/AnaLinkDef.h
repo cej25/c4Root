@@ -24,6 +24,11 @@
 #pragma link C++ class BB7OnlineSpectra+;
 
 // nearline/correlations
+#pragma link C++ class bPlastNearlineSpectra+;
+#pragma link C++ class FatimaNearlineSpectra+;
+#pragma link C++ class FatimaVmeNearlineSpectra+;
+#pragma link C++ class AidaNearlineSpectra+;
+
 #pragma link C++ class FrsAnalysisSpectra+;
 #pragma link C++ class FrsAidaCorrelations+;
 #pragma link C++ class FrsFatimaCorrelations+;

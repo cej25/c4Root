@@ -1,5 +1,5 @@
-#ifndef FatimaVmeOnlineSpectra_H
-#define FatimaVmeOnlineSpectra_H
+#ifndef FatimaVmeNearlineSpectra_H
+#define FatimaVmeNearlineSpectra_H
 
 #include "FairTask.h"
 #include "TCanvas.h"
@@ -20,13 +20,13 @@ class TH1I;
 class TH1D;
 class TH2D;
 
-class FatimaVmeOnlineSpectra : public FairTask
+class FatimaVmeNearlineSpectra : public FairTask
 {
     public:
-        FatimaVmeOnlineSpectra();
-        FatimaVmeOnlineSpectra(const TString& name, Int_t verbose = 1);
+        FatimaVmeNearlineSpectra();
+        FatimaVmeNearlineSpectra(const TString& name, Int_t verbose = 1);
 
-        virtual ~FatimaVmeOnlineSpectra();
+        virtual ~FatimaVmeNearlineSpectra();
 
         virtual InitStatus Init();
 
@@ -35,10 +35,6 @@ class FatimaVmeOnlineSpectra : public FairTask
         virtual void FinishEvent();
 
         virtual void FinishTask();
-
-        virtual void Reset_Histo();
-
-        virtual void Snapshot_Histo();
 
     private:
         TFatimaVmeConfiguration const* fatima_vme_config;
@@ -53,7 +49,6 @@ class FatimaVmeOnlineSpectra : public FairTask
         TFile* file_fatima_vme_snapshot;
 
         // Folders
-        TFolder* histograms;
         TDirectory* dir_fatima_vme;
         TDirectory* dir_stats_vme;
         TDirectory* dir_raw_vme;
@@ -66,17 +61,7 @@ class FatimaVmeOnlineSpectra : public FairTask
         TDirectory* dir_dt_ch1;
         TDirectory* dir_dt_sc41;
 
-        // Canvases
-        TCanvas* c_FatVME_E;
-        TCanvas* c_FatVME_RawE;
-        TCanvas* c_FatVME_RawT;
-        TCanvas* c_FatVME_T;
-        TCanvas* c_FatVME_dTrefCh1;
-        TCanvas* c_FatVME_dTrefSC41;
-        TCanvas* c_fatima_vme_snapshot;
-
         // Histograms
-
         std::vector<TH1D*> h1_FatVME_RawE;
         std::vector<TH1D*> h1_FatVME_RawT;
         std::vector<TH1D*> h1_FatVME_E;
@@ -97,7 +82,7 @@ class FatimaVmeOnlineSpectra : public FairTask
         TH1D* h1_FatVME_sc41r;
 
     public:
-        ClassDef(FatimaVmeOnlineSpectra, 1);
+        ClassDef(FatimaVmeNearlineSpectra, 1);
 };
 
 

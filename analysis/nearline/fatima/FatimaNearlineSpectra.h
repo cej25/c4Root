@@ -1,5 +1,5 @@
-#ifndef FatimaOnlineSpectra_H
-#define FatimaOnlineSpectra_H
+#ifndef FatimaNearlineSpectra_H
+#define FatimaNearlineSpectra_H
 
 #include "FairTask.h"
 #include "TDirectory.h"
@@ -16,15 +16,13 @@ class TH2F;
 class TDirectory;
 class TFolder;
 
-class FatimaOnlineSpectra : public FairTask
+class FatimaNearlineSpectra : public FairTask
 {
     public:
-        FatimaOnlineSpectra();
-        FatimaOnlineSpectra(const TString& name, Int_t verbose = 1);
+        FatimaNearlineSpectra();
+        FatimaNearlineSpectra(const TString& name, Int_t verbose = 1);
 
-        virtual ~FatimaOnlineSpectra();
-
-        virtual void SetParContainers();
+        virtual ~FatimaNearlineSpectra();
 
         virtual InitStatus Init();
 
@@ -52,7 +50,6 @@ class FatimaOnlineSpectra : public FairTask
             fenergy_bin_high = binhigh; 
         };
 
-
         void SetDetectorsToPlot(std::vector<int> detectors_to_analyze){
             detectors = detectors_to_analyze;
             number_detectors = detectors.size();
@@ -62,8 +59,6 @@ class FatimaOnlineSpectra : public FairTask
             return std::distance(detectors.begin(), std::find(detectors.begin(), detectors.end(), detector_id));
         }
 
-
-
         void SetReferenceDetectorsForTimeDifferences(std::vector<int> ref_dets){
             dt_reference_detectors = ref_dets;
             number_reference_detectors = dt_reference_detectors.size();
@@ -72,10 +67,6 @@ class FatimaOnlineSpectra : public FairTask
             //return the index of the detector id in the vector, to index the TH arrays / histograms
             return std::distance(detectors.begin(), std::find(detectors.begin(), detectors.end(), detector_id));
         }
-
-        virtual void Reset_Histo();
-
-        virtual void Snapshot_Histo();
 
         // range setters
 
@@ -88,24 +79,7 @@ class FatimaOnlineSpectra : public FairTask
         Int_t fNEvents;
         int total_time_microsecs = 0;
 
-        // Canvas
-        TCanvas* c_fatima_slowToT;
-        TCanvas* c_fatima_fastToT;
-        TCanvas* c_fatima_fast_v_slow;
-        TCanvas* c_fatima_time_spectra_divided;
-        TCanvas* c_fatima_hitpatterns;
-        TCanvas* c_fatima_energy;
-        TCanvas* c_fatima_energy_vs_detid;
-        TCanvas* c_fatima_energies;
-        TCanvas* c_fatima_energy_uncal;
-        TCanvas* c_fatima_time_differences;
-        TCanvas* c_fatima_time_differences_vs_energy;
-        TCanvas* c_fatima_snapshot;
-        TCanvas* c_fatima_event_multiplicity;
-    
-
         //Folders and files
-        TFolder* histograms;
         TDirectory* dir_fatima;
         TDirectory* dir_fatima_slowToT;
         TDirectory* dir_fatima_fastToT;
@@ -115,9 +89,6 @@ class FatimaOnlineSpectra : public FairTask
         TDirectory* dir_fatima_time_spectra;
         std::vector<TDirectory*> dir_fatima_time_differences;
         
-
-        TFile* file_fatima_snapshot;
-
         std::vector<int> detectors = {0,1,2};
         int number_detectors = 3;
 
@@ -154,7 +125,7 @@ class FatimaOnlineSpectra : public FairTask
         int event_multiplicity;
 
     public:
-        ClassDef(FatimaOnlineSpectra, 1)
+        ClassDef(FatimaNearlineSpectra, 1)
 };
 
 #endif
