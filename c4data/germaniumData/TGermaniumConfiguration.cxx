@@ -66,6 +66,9 @@ void TGermaniumConfiguration::ReadConfiguration()
             else if (signal == "TimeMachineD") tm_delayed = detector_id;
             else if (signal == "SC41L_D") sc41l_d = detector_id;
             else if (signal == "SC41R_D") sc41r_d = detector_id;
+            else if (signal == "FRS_ACCEPT") frs_accept = detector_id;
+            else if (signal == "BPLAST_ACCEPT") bplast_accept = detector_id;
+            else if (signal == "BPLAST_FREE") bplast_free = detector_id;
 
             extra_signals.insert(detector_id);
         }
@@ -153,14 +156,13 @@ void TGermaniumConfiguration::ReadTimeshiftCoefficients()
 
     timeshift_file.close();
 
-    LOG(info) << "Germanium SC41 Timeshift File: " + timeshift_calibration_file;
+    LOG(info) << "Germanium Timeshift File: " + timeshift_calibration_file;
 };
 
 void TGermaniumConfiguration::ReadPromptFlashCut()
 {
-    // this requires a lot of things that are not documented
     // must be a root file (not always the case from saving TCuts)
-    // must be named "prompt_flash_cut" precisely (not a good idea since there is a Fatima prompt cut also)
+    // must be named "ge_prompt_flash_cut" precisely 
     TFile* cut = TFile::Open(TString(promptflash_cut_file),"READ");
     
     if (!cut || cut->IsZombie() || cut->TestBit(TFile::kRecovered))
@@ -169,9 +171,9 @@ void TGermaniumConfiguration::ReadPromptFlashCut()
         return;
     }
     
-    if (cut->Get("prompt_flash_cut"))
+    if (cut->Get("ge_prompt_flash_cut"))
     {
-        prompt_flash_cut = (TCutG*)cut->Get("prompt_flash_cut");
+        prompt_flash_cut = (TCutG*)cut->Get("ge_prompt_flash_cut");
     }
     else
     {

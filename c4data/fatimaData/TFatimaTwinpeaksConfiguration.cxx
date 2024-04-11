@@ -6,10 +6,14 @@
 #include <sstream>
 #include <string>
 #include <set>
+#include "TFile.h"
 
 TFatimaTwinpeaksConfiguration* TFatimaTwinpeaksConfiguration::instance = nullptr;
 std::string TFatimaTwinpeaksConfiguration::configuration_file = "blank";
 std::string TFatimaTwinpeaksConfiguration::calibration_file = "blank";
+std::string TFatimaTwinpeaksConfiguration::timeshift_calibration_file = "blank";
+std::string TFatimaTwinpeaksConfiguration::promptflash_cut_file = "blank";
+
 
 TFatimaTwinpeaksConfiguration::TFatimaTwinpeaksConfiguration()
     :   num_detectors(0)
@@ -107,3 +111,60 @@ void TFatimaTwinpeaksConfiguration::ReadCalibrationCoefficients(){
     calibration_coeff_file.close();
     return; 
 }
+
+
+
+
+
+
+void TFatimaTwinpeaksConfiguration::ReadTimeshiftCoefficients()
+{
+    std::ifstream timeshift_file (timeshift_calibration_file);
+
+
+    if (timeshift_file.fail()) c4LOG(fatal, "Could not open FatimaTwinpeaks timeshifts");    
+    int rdetector_id; // temp read variables
+    double t0;
+    
+    //assumes the first line in the file is num-modules used
+    while(!timeshift_file.eof()){
+        if(timeshift_file.peek()=='#') timeshift_file.ignore(256,'\n');
+        else{
+            timeshift_file >> rdetector_id >> t0;
+            c4LOG(info,Form("det = %i , t = %f ns",rdetector_id,t0));
+            timeshift_calibration_coeffs.insert(std::pair<int,double>{rdetector_id,t0});
+            timeshift_file.ignore(256,'\n');
+        }
+    }
+    timeshift_calibration_coeffs_loaded = 1;
+
+    timeshift_file.close();
+
+    LOG(info) << "FatimaTwinpeaks Timeshift File: " + timeshift_calibration_file;
+};
+
+
+void TFatimaTwinpeaksConfiguration::ReadPromptFlashCut()
+{
+    // must be a root file (not always the case from saving TCuts)
+    // must be named "fatima_prompt_flash_cut"!
+    TFile* cut = TFile::Open(TString(promptflash_cut_file),"READ");
+    
+    if (!cut || cut->IsZombie() || cut->TestBit(TFile::kRecovered))
+    {
+        c4LOG(warn, "FatimaTwinpeaks prompt flash cut file provided (" << promptflash_cut_file << ") is not a ROOT file.");
+        return;
+    }
+    
+    if (cut->Get("fatima_prompt_flash_cut"))
+    {
+        prompt_flash_cut = (TCutG*)cut->Get("fatima_prompt_flash_cut");
+    }
+    else
+    {
+        c4LOG(warn, "FatimaTwinpeaks prompt flash cut does not exist in file: " << promptflash_cut_file);
+    }
+
+    cut->Close();
+}
+

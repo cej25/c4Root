@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <set>
+#include "TCutG.h"
 
 
 //structs
@@ -17,11 +18,25 @@ class TFatimaTwinpeaksConfiguration
         static void Create();
         static void SetDetectorConfigurationFile(std::string fp) { configuration_file = fp; }
         static void SetDetectorCoefficientFile(std::string fp) { calibration_file = fp; }
+        static void SetDetectorTimeshiftsFile(std::string fp) { timeshift_calibration_file = fp; }
+        static void SetPromptFlashCut(std::string fp) {promptflash_cut_file = fp; }
+
 
         std::map<std::pair<int,int>,int> Mapping() const;
         bool MappingLoaded() const;
+        
         bool CalibrationCoefficientsLoaded() const;
         std::map<int,std::vector<double>> CalibrationCoefficients() const;
+
+        bool TimeshiftCalibrationCoefficientsLoaded() const;
+        std::map<int,double> TimeshiftCalibrationCoefficients() const;
+        inline double GetTimeshiftCoefficient(int detector_id) const;
+
+
+        inline bool IsDetectorAuxilliary(int detector_id) const;
+
+
+
         int NDetectors() const;
         int NTamexBoards() const;
         int TM_Undelayed() const;
@@ -37,18 +52,27 @@ class TFatimaTwinpeaksConfiguration
 
         static std::string configuration_file;
         static std::string calibration_file;
+        static std::string timeshift_calibration_file;
+        static std::string promptflash_cut_file;
+
 
         TFatimaTwinpeaksConfiguration();
         void ReadConfiguration();
         void ReadCalibrationCoefficients();
+        void ReadTimeshiftCoefficients();
+        void ReadPromptFlashCut();
 
         static TFatimaTwinpeaksConfiguration* instance;
         
         std::map<std::pair<int,int>,int> detector_mapping; // [board_id][channel_id] -> [detector_id]
         std::map<int,std::vector<double>> calibration_coeffs; // key: [detector id] -> vector[a0 - a3] index is coefficient number 0 = offset +++ expects quadratic.
-
+        std::map<int,double> timeshift_calibration_coeffs;
 
         std::set<int> extra_signals;
+
+
+        TCutG* prompt_flash_cut = nullptr;
+
 
         int num_detectors;
         int num_tamex_boards;
@@ -58,12 +82,26 @@ class TFatimaTwinpeaksConfiguration
         int tm_delayed;
         int sc41l_d;
         int sc41r_d;
+
         int frs_accept;
         int bplast_accept;
         int bplast_free;
 
         bool detector_map_loaded = 0;
         bool detector_calibrations_loaded = 0;
+        bool timeshift_calibration_coeffs_loaded = 0;
+
+};
+
+
+
+
+inline bool TFatimaTwinpeaksConfiguration::IsDetectorAuxilliary(int detector_id) const{
+    if (extra_signals.count(detector_id)>0){
+        return true;
+    }else{
+        return false;
+    }
 };
 
 inline std::map<int,std::vector<double>> TFatimaTwinpeaksConfiguration::CalibrationCoefficients() const 
@@ -73,6 +111,25 @@ inline std::map<int,std::vector<double>> TFatimaTwinpeaksConfiguration::Calibrat
 
 inline bool TFatimaTwinpeaksConfiguration::CalibrationCoefficientsLoaded() const {
     return detector_calibrations_loaded;
+}
+
+
+inline std::map<int,double> TFatimaTwinpeaksConfiguration::TimeshiftCalibrationCoefficients() const
+{
+    return timeshift_calibration_coeffs;
+}
+
+inline double TFatimaTwinpeaksConfiguration::GetTimeshiftCoefficient(int detector_id) const
+{
+    if (!timeshift_calibration_coeffs_loaded){
+        return 0;
+    }else{
+        if (timeshift_calibration_coeffs.count(detector_id) > 0){
+            return timeshift_calibration_coeffs.at(detector_id);
+        }else{
+            return 0;
+        }
+    }
 }
 
 inline TFatimaTwinpeaksConfiguration const* TFatimaTwinpeaksConfiguration::GetInstance()
@@ -89,6 +146,13 @@ inline void TFatimaTwinpeaksConfiguration::Create()
     delete instance;
     instance = new TFatimaTwinpeaksConfiguration();
 }
+
+
+inline bool TFatimaTwinpeaksConfiguration::TimeshiftCalibrationCoefficientsLoaded() const
+{
+    return timeshift_calibration_coeffs_loaded;
+}
+
 
 inline std::map<std::pair<int,int>,int> TFatimaTwinpeaksConfiguration::Mapping() const
 {
