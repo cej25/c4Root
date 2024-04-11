@@ -26,6 +26,8 @@ class LisaData : public TObject
         inline std::vector<uint32_t> GetEnergy() { return f_ch_energy; }
         inline std::vector<uint32_t> GetTraces() { return f_traces;}
         inline std::vector<uint32_t> GetTracesI() { return f_tracesI;}
+        //inline uint32_t GetTracesL() { return f_traces_l;}
+
 
 
         // Setters
@@ -43,6 +45,9 @@ class LisaData : public TObject
         inline void SetEnergy(std::vector<uint32_t> ch_energy ) { f_ch_energy = ch_energy; }
         inline void SetTraces(std::vector<uint32_t> traces) { f_traces = traces;}
         inline void SetTracesI(std::vector<uint32_t> tracesI) { f_tracesI = tracesI;}
+        //inline void SetTracesL(uint32_t traces_l) { f_traces_l = traces_l;}
+
+        //inline void SetTraces_(std::vector<uint32_t> traces_) { f_traces_ = traces_;}
 
     protected:
         // Data items
@@ -60,6 +65,7 @@ class LisaData : public TObject
         std::vector<uint32_t> f_ch_energy;
         std::vector<uint32_t> f_traces;
         std::vector<uint32_t> f_tracesI;
+        //uint32_t f_traces_l;
 
 
 
