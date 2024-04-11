@@ -133,7 +133,7 @@ Bool_t GermaniumReader::Read()
                 channel_trigger_time_long,
                 channel_energy,
                 fData->germanium_ts_subsystem_id,
-                wr_t + (uint64_t)((int64_t)channel_trigger_time_long - (int64_t)event_trigger_time_long)
+                wr_t //+ (uint64_t)((int64_t)channel_trigger_time_long - (int64_t)event_trigger_time_long)
             );
         }
 

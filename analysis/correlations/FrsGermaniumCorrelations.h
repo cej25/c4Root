@@ -51,26 +51,16 @@ class FrsGermaniumCorrelations : public FairTask
             fenergy_bin_high = binhigh; 
         };
 
-        void SetShortLifetimeCollectionWindow(int start, int stop){
-            start_short_lifetime_collection = start;
+        void SetShortLifetimeCollectionWindow(int stop){
             stop_short_lifetime_collection = stop;
         }
 
-        void SetLongLifetimeCollectionWindow(int start, int stop)
+        void SetLongLifetimeCollectionWindow(int start, int stop) // cut the WR on the start!!
         {
             start_long_lifetime_collection = start;
             stop_long_lifetime_collection = stop;
-            start_long_lifetime_collection_background = stop;
-            stop_long_lifetime_collection_background = stop;
         }
         
-        void SetLongLifetimeCollectionWindow(int start, int stop, int bgstart, int bgstop)
-        {
-            start_long_lifetime_collection = start;
-            stop_long_lifetime_collection = stop;
-            start_long_lifetime_collection_background = bgstart;
-            stop_long_lifetime_collection_background = bgstop;
-        }
         
     
     private:
@@ -81,7 +71,7 @@ class FrsGermaniumCorrelations : public FairTask
         
         FrsGate * frsgate;
 
-        uint64_t wr_t_last_frs_hit = 0;
+        int64_t wr_t_last_frs_hit = 0;
         bool positive_PID = false;
 
         
@@ -90,12 +80,9 @@ class FrsGermaniumCorrelations : public FairTask
         int fenergy_bin_high = 1500;
 
 
-        int start_long_lifetime_collection = 0;
-        int stop_long_lifetime_collection = 0;
-        int start_long_lifetime_collection_background = 0;
-        int stop_long_lifetime_collection_background = 0;
+        int start_long_lifetime_collection = 1e3; // must cut the prompt flash
+        int stop_long_lifetime_collection = 1e3; // for how long to collect? 
 
-        int start_short_lifetime_collection = 0;
         int stop_short_lifetime_collection = 0;
 
         int germanium_coincidence_gate = 500; //ns
@@ -129,7 +116,7 @@ class FrsGermaniumCorrelations : public FairTask
         //Implant rate
         TCanvas * c_frs_rate;
         TGraph * g_frs_rate;
-        uint64_t frs_rate_time = 0;
+        int64_t frs_rate_time = 0;
         int frs_rate_implanted = 0;
 
         // Energy-gated histograms:
