@@ -14,7 +14,6 @@
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
-#include "THttpServer.h"
 #include "TMath.h"
 #include "TRandom.h"
 #include "TFile.h"

@@ -13,7 +13,6 @@
 
 #include "TCanvas.h"
 #include "TClonesArray.h"
-#include "THttpServer.h"
 #include "TMath.h"
 #include "TFile.h"
 #include "TRandom.h"
@@ -64,8 +63,6 @@ InitStatus FatimaNearlineSpectra::Init()
     dir_fatima_fast_v_slow = gDirectory->mkdir("Fast Vs. Slow");
     dir_fatima_energy_spectra = gDirectory->mkdir("Energy Spectra");
     dir_fatima_time_spectra = gDirectory->mkdir("Time Spectra");
-
-    gDirectory = tmp;
 
     int min_detector_id = *min_element(detectors.begin(),detectors.end());
     int max_detector_id = *max_element(detectors.begin(), detectors.end());
@@ -176,6 +173,7 @@ InitStatus FatimaNearlineSpectra::Init()
     }
 
     dir_fatima->cd();
+    gDirectory = tmp;
  
     return kSUCCESS;
     

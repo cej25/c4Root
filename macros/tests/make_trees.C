@@ -3,7 +3,7 @@
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define FATIMA_ON 1
 #define FATIMA_VME_ON 1
-#define AIDA_ON 0
+#define AIDA_ON 1
 #define BPLAST_ON 1
 #define GERMANIUM_ON 0
 #define BGO_ON 0
@@ -12,15 +12,29 @@
 #define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 0
 
+// Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
+extern "C"
+{
+    #include "../../config/s100/frs/setup_s100_dryrun.C"
+}
+
 // Struct should containt all subsystem h101 structures
 typedef struct EXT_STR_h101_t
 {   
     EXT_STR_h101_unpack_t eventheaders;
-    EXT_STR_h101_bplast_onion_t bplast;
     EXT_STR_h101_fatima_onion_t fatima;
     EXT_STR_h101_fatimavme_onion_t fatimavme;
+    EXT_STR_h101_aida_onion_t aida;
+    EXT_STR_h101_bplast_onion_t bplast;
+    EXT_STR_h101_germanium_onion_t germanium;
+    EXT_STR_h101_frsmain_onion_t frsmain;
+    EXT_STR_h101_frstpc_onion_t frstpc;
+    EXT_STR_h101_frsuser_onion_t frsuser;
+    EXT_STR_h101_frstpat_onion_t frstpat;
+    EXT_STR_h101_beammonitor_onion_t beammonitor;
+    EXT_STR_h101_bgo_onion_t bgo;
+    // EXT_STR_h101_bb7febex_onion_t bb7febex;
 } EXT_STR_h101;
-
 
 void make_trees()
 {   
@@ -69,6 +83,25 @@ void make_trees()
     source->SetMaxEvents(nev);
     run->SetSource(source);
 
+    // ------------------------------------------------------------------------------------ //
+    // *** Initialise FRS parameters ****************************************************** //
+    
+    TFRSParameter* frs = new TFRSParameter();
+    TMWParameter* mw = new TMWParameter();
+    TTPCParameter* tpc = new TTPCParameter();
+    TMUSICParameter* music = new TMUSICParameter();
+    TLABRParameter* labr = new TLABRParameter();
+    TSCIParameter* sci = new TSCIParameter();
+    TIDParameter* id = new TIDParameter();
+    TSIParameter* si = new TSIParameter();
+    TMRTOFMSParameter* mrtof = new TMRTOFMSParameter();
+    TRangeParameter* range = new TRangeParameter();
+    setup(frs,mw,tpc,music,labr,sci,id,si,mrtof,range); // Function defined in frs setup.C macro
+    TFrsConfiguration::SetParameters(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
+
+    // ------------------------------------------------------------------------------------ //
+    // *** Initialise Gates *************************************************************** //
+
     TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_mar20.txt");
     TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_new.txt");
     TFatimaVmeConfiguration::SetDetectorMapFile(config_path + "/fatima/Fatima_VME_allocation.txt");
@@ -106,6 +139,14 @@ void make_trees()
         source->AddReader(unpackfatimavme);
     }
 
+    if (AIDA_ON)
+    {
+        AidaReader* unpackaida = new AidaReader((EXT_STR_h101_aida_onion*)&ucesb_struct.aida, offsetof(EXT_STR_h101, aida));
+        
+        unpackaida->SetOnline(false);
+        source->AddReader(unpackaida);
+    }
+
     if (BPLAST_ON)
     {
         bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_bplast_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
@@ -119,14 +160,6 @@ void make_trees()
 
     // ---------------------------------------------------------------------------------------- //
     // *** Calibrate Subsystems - comment out unwanted systems ******************************** //
-  
-    if (BPLAST_ON)
-    {
-        bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
-        
-        calbplast->SetOnline(false);
-        run->AddTask(calbplast);
-    }
 
     if (FATIMA_ON)
     {
@@ -143,6 +176,35 @@ void make_trees()
         calfatimavme->SetOnline(false);
         run->AddTask(calfatimavme);
     }
+
+    if (AIDA_ON)
+    {
+        AidaUnpack2Cal* aidaCalibrator = new AidaUnpack2Cal();
+        
+        aidaCalibrator->SetOnline(true);
+        run->AddTask(aidaCalibrator);  
+    }
+
+    if (BPLAST_ON)
+    {
+        bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
+        
+        calbplast->SetOnline(false);
+        run->AddTask(calbplast);
+    }
+
+
+    // ---------------------------------------------------------------------------------------- //
+    // *** Analyse Subsystem Hits ************************************************************* //
+    
+    if (AIDA_ON)
+    {        
+        AidaCal2Hit* aidaHitter = new AidaCal2Hit();
+        
+        aidaHitter->SetOnline(false);
+        run->AddTask(aidaHitter);
+    }
+
 
     // Initialise
     run->Init();
