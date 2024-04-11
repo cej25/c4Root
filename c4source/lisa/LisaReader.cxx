@@ -114,6 +114,7 @@ Bool_t LisaReader::Read()
         std::vector<bool> over_flow;
         std::vector<uint32_t> ch_energy;
         std::vector<uint32_t> traces;
+        std::vector<uint32_t> tracesI;
 
         for (int index = 0; index < M; index++) 
         {
@@ -143,7 +144,7 @@ Bool_t LisaReader::Read()
             for (int l = 0 ; l < fData->lisa_data[it_board_number].traces[index]._ ; l++)
             {
                 traces.emplace_back(fData->lisa_data[it_board_number].traces[index].v[l]);
-
+                tracesI.emplace_back(fData->lisa_data[it_board_number].traces[index].I[l]);
                 //std::cout<< fData->lisa_data[it_board_number].traces[index].I[l] <<std::endl;
             }
 
@@ -155,6 +156,7 @@ Bool_t LisaReader::Read()
         lisa_item->SetOverFlow(over_flow);
         lisa_item->SetEnergy(ch_energy);
         lisa_item->SetTraces(traces);
+        lisa_item->SetTracesI(tracesI);
 
         //Fill array with lisa_item
         new ((*fArray)[fArray->GetEntriesFast()]) LisaData(*lisa_item);

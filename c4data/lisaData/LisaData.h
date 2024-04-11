@@ -25,6 +25,7 @@ class LisaData : public TObject
         inline std::vector<bool> GetOverFlow() { return f_over_flow; }
         inline std::vector<uint32_t> GetEnergy() { return f_ch_energy; }
         inline std::vector<uint32_t> GetTraces() { return f_traces;}
+        inline std::vector<uint32_t> GetTracesI() { return f_tracesI;}
 
 
         // Setters
@@ -41,6 +42,7 @@ class LisaData : public TObject
         inline void SetOverFlow(std::vector<bool> over_flow ) { f_over_flow = over_flow; }
         inline void SetEnergy(std::vector<uint32_t> ch_energy ) { f_ch_energy = ch_energy; }
         inline void SetTraces(std::vector<uint32_t> traces) { f_traces = traces;}
+        inline void SetTracesI(std::vector<uint32_t> tracesI) { f_tracesI = tracesI;}
 
     protected:
         // Data items
@@ -57,6 +59,8 @@ class LisaData : public TObject
         std::vector<bool> f_over_flow;
         std::vector<uint32_t> f_ch_energy;
         std::vector<uint32_t> f_traces;
+        std::vector<uint32_t> f_tracesI;
+
 
 
     public:
