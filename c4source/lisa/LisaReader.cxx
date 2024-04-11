@@ -103,6 +103,8 @@ Bool_t LisaReader::Read()
         std::vector<int> hitpattern = Get_Channels(hit_pattern);
         lisa_item->SetHitPattern(hitpattern);
 
+        std::cout << "hit pattern: " << hit_pattern << std::endl;
+
         //::::::::::::::Multiplicity: Called num_channels_fired from unpacker
         uint32_t M = fData->lisa_data[it_board_number].num_channels_fired;
         lisa_item->SetMultiplicity(M);
@@ -120,6 +122,8 @@ Bool_t LisaReader::Read()
         {
             //::::::::::::::Channel ID
             ch_ID.emplace_back(fData->lisa_data[it_board_number].channel_idv[index]);
+
+            std::cout << ch_ID[index] << std::endl;
 
             //::::::::::::::Channel Trigger Time
             channel_trigger_time_long.emplace_back((((uint64_t)(fData->lisa_data[it_board_number].channel_trigger_time_hiv[index]) << 32) + 
@@ -140,11 +144,13 @@ Bool_t LisaReader::Read()
             }
             ch_energy.emplace_back(energy);
             
+            //uint32_t trace_l = fData->lisa_data[it_board_number].traces[index]._;
+            
             //::::::::::::::Channel Traces
-            for (int l = 0 ; l < fData->lisa_data[it_board_number].traces[index]._ ; l++)
+            for (int l = 0 ; l < fData->lisa_data[it_board_number].traces[ch_ID[index]]._ ; l++)
             {
-                traces.emplace_back(fData->lisa_data[it_board_number].traces[index].v[l]);
-                tracesI.emplace_back(fData->lisa_data[it_board_number].traces[index].I[l]);
+                traces.emplace_back(fData->lisa_data[it_board_number].traces[ch_ID[index]].v[l]);
+                tracesI.emplace_back(fData->lisa_data[it_board_number].traces[ch_ID[index]].I[l]);
                 //std::cout<< fData->lisa_data[it_board_number].traces[index].I[l] <<std::endl;
             }
 
@@ -157,6 +163,7 @@ Bool_t LisaReader::Read()
         lisa_item->SetEnergy(ch_energy);
         lisa_item->SetTraces(traces);
         lisa_item->SetTracesI(tracesI);
+        //lisa_item->SetTracesL(trace_l);
 
         //Fill array with lisa_item
         new ((*fArray)[fArray->GetEntriesFast()]) LisaData(*lisa_item);

@@ -77,6 +77,7 @@ InitStatus LisaOnlineSpectra::Init()
     //:::::::::::Multiplicity
     h1_multiplicity = new TH1I("h1_multiplicity","LISA Multiplicity",8,0,8); //for 3 layer 2x2 + 1
     h1_multiplicity->GetXaxis()->SetTitle("Multiplicity");
+    h1_multiplicity->SetStats(0);
     lisaFold->Add(h1_multiplicity);
 
 
@@ -91,17 +92,23 @@ InitStatus LisaOnlineSpectra::Init()
         h1_energy_layer1[ihist] = new TH1F(Form("h1_energy_%d",ihist),Form("Layer 1 - %d",ihist),400,0,250000);
         h1_energy_layer1[ihist]->GetXaxis()->SetTitle("Energy (a.u.)");
         h1_energy_laye1[ihist]->Draw();
+        h1_energy_layer1[ihist]->SetOption("logy");
         lisaFold->Add(h1_energy_layer[ihist]);
     }
+    c_energy_layer1->cd(0);
     */
 
     h1_energy = new TH1F("h1_energy", "LISA Energy", 400,0,250000); //in case of data from 241Am
-    //h1_energy->Draw("COLZ");
+    h1_energy->SetOption("logy");
+    h1_energy->SetLineColor(kBlack);
+    h1_energy->SetFillColor(kBlue);
     lisaFold->Add(h1_energy);
 
     //::::::::::::Traces
-    h2_traces = new TH2F("h2_traces", "Traces", 400, 0, 16000,100,0,4000);
+    h2_traces = new TH2F("h2_traces", "Traces", 400, 0,2000,100,6000,9000);
+    h2_traces->SetOption("colz");
     lisaFold->Add(h2_traces);
+
 
     run->GetHttpServer()->RegisterCommand("Reset_Lisa_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
 
@@ -142,14 +149,21 @@ void LisaOnlineSpectra::Exec(Option_t* option)
             {
                 h1_energy->Fill(ch_energy[index]);
             }
-            //:::::::::::Traces
-            std::vector<uint64_t> traces = hit->GetTraces();
-            std::vector<uint64_t> tracesI = hit->GetTracesI();
-            for (int index = 0; index < M; index++)
-            {    
-                h2_traces->Fill(tracesI[index],traces[index]);
+            //:::::::::::Traces           
+            std::vector<uint32_t> traces = hit->GetTraces();
+            std::cout << "trace size:" << traces.size() << "mult: " << M << std::endl;
+            std::vector<uint32_t> tracesI = hit->GetTracesI();
+            //int traceLenght = traces.size();
+
+            for (int index = 0; index < M ; index++)
+            {
+                uint32_t traceLength = traces.size()/M;
+                for (int i = 0; i < traceLength ; i++)
+                {
+                    h2_traces->Fill(i,traces[traceLength*index + i]);
+                    //h2_traces->SetBinContent(i,traces[traceLength*index + i],1); 
+                }
             }
-            //but how do I clean the histo between events?
 
         }
     }
