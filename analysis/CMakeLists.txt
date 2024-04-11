@@ -60,6 +60,7 @@ set(SRCS
 # nearline/offline
 ./nearline/bplast/bPlastNearlineSpectra.cxx
 ./nearline/fatima/FatimaNearlineSpectra.cxx
+./nearline/fatima/FatimaVmeNearlineSpectra.cxx
 ./nearline/frs/FrsAnalysisSpectra.cxx
 
 ## correlations ##

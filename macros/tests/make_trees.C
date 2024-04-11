@@ -2,7 +2,7 @@
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define FATIMA_ON 1
-#define FATIMA_VME_ON 0
+#define FATIMA_VME_ON 1
 #define AIDA_ON 0
 #define BPLAST_ON 1
 #define GERMANIUM_ON 0
@@ -18,6 +18,7 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_unpack_t eventheaders;
     EXT_STR_h101_bplast_onion_t bplast;
     EXT_STR_h101_fatima_onion_t fatima;
+    EXT_STR_h101_fatimavme_onion_t fatimavme;
 } EXT_STR_h101;
 
 
@@ -70,6 +71,15 @@ void make_trees()
 
     TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_mar20.txt");
     TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_new.txt");
+    TFatimaVmeConfiguration::SetDetectorMapFile(config_path + "/fatima/Fatima_VME_allocation.txt");
+    TFatimaVmeConfiguration::Set_QDC_E_CalFile(config_path + "/fatima/Fatima_QDC_Energy_Calibration.txt");
+    TFatimaVmeConfiguration::Set_QDC_T_CalFile(config_path + "/fatima/Fatima_QDC_Time_Calibration.txt");
+    TFatimaVmeConfiguration::Set_TDC_T_CalFile(config_path + "/fatima/Fatima_TDC_Time_Calibration.txt");
+    TAidaConfiguration::SetBasePath(config_path + "/AIDA");
+    TFrsConfiguration::SetConfigPath(config_path + "/frs/");
+    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_mar21.txt");
+    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_calib_2203.txt");
+    TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
 
     // ------------------------------------------------------------------------------------- //
     // *** Read Subsystems - comment out unwanted systems ********************************** //
@@ -86,6 +96,14 @@ void make_trees()
 
         unpackfatima->SetOnline(true);
         source->AddReader(unpackfatima);
+    }
+
+    if (FATIMA_VME_ON)
+    {
+        FatimaVmeReader* unpackfatimavme = new FatimaVmeReader((EXT_STR_h101_fatimavme_onion*)&ucesb_struct.fatimavme, offsetof(EXT_STR_h101, fatimavme));
+        
+        unpackfatimavme->SetOnline(true);
+        source->AddReader(unpackfatimavme);
     }
 
     if (BPLAST_ON)
@@ -113,9 +131,17 @@ void make_trees()
     if (FATIMA_ON)
     {
         FatimaRaw2Cal* calfatima = new FatimaRaw2Cal();
-           
+
         calfatima->SetOnline(false);
         run->AddTask(calfatima);
+    }
+
+    if (FATIMA_VME_ON)
+    {
+        FatimaVmeRaw2Cal* calfatimavme = new FatimaVmeRaw2Cal();
+        
+        calfatimavme->SetOnline(false);
+        run->AddTask(calfatimavme);
     }
 
     // Initialise
