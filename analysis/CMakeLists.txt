@@ -22,8 +22,8 @@ ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 ${C4ROOT_SOURCE_DIR}/analysis
 ${C4ROOT_SOURCE_DIR}/analysis/pars
 ${C4ROOT_SOURCE_DIR}/analysis/offline
-${C4ROOT_SOURCE_DIR}/analysis/fatima_aida_correlations
-${C4ROOT_SOURCE_DIR}/analysis/fatima
+${C4ROOT_SOURCE_DIR}/analysis/nearline
+${C4ROOT_SOURCE_DIR}/analysis/nearline/bplast
 ${C4ROOT_SOURCE_DIR}/analysis/online
 ${C4ROOT_SOURCE_DIR}/analysis/online/frs
 ${C4ROOT_SOURCE_DIR}/correlations
@@ -58,6 +58,7 @@ set(SRCS
 ./online/bb7/BB7OnlineSpectra.cxx
 
 # nearline/offline
+./nearline/bplast/bPlastNearlineSpectra.cxx
 ./nearline/frs/FrsAnalysisSpectra.cxx
 
 ## correlations ##
@@ -69,10 +70,6 @@ set(SRCS
 ./nearline/fatima/FatimaTimingAnalysis.cxx
 ./nearline/fatima/FatimaSinglesAnalysis.cxx
 ./correlations/AidaGermaniumCorrelations.cxx
-#nearline
-# ./nearline/bPlastNearlineSpectra.cxx
-# ./nearline/AidaNearlineSpectra.cxx
-
 )
 
 
