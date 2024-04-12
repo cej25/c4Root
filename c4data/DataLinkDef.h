@@ -18,6 +18,7 @@
 #pragma link C++ class bPlastTwinpeaksData+;
 #pragma link C++ class bPlastTwinpeaksCalData+;
 #pragma link C++ class LisaData+;
+#pragma link C++ class LisaCalData+;
 #pragma link C++ class LisaTraceData+;
 #pragma link C++ class BeamMonitorData+;
 #pragma link C++ class TimeMachineData+;

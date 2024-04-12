@@ -38,6 +38,7 @@ frsData/FrsVFTXCalData.cxx
 frsData/FrsHitData.cxx
 frsData/FrsAnalysisData.cxx
 lisaData/LisaData.cxx
+lisaData/LisaCalData.cxx
 lisaData/LisaTraceData.cxx
 aidaData/AidaData.cxx
 aidaData/AidaCalData.cxx
