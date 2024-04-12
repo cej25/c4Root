@@ -72,5 +72,6 @@
 #pragma link C++ class TbPlastConfiguration+;
 #pragma link C++ class TCorrelationsConfiguration+;
 #pragma link C++ class TBB7VmeConfiguration+;
+#pragma link C++ class TLisaConfiguration+;
 
 #endif
