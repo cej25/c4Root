@@ -21,6 +21,7 @@ class TH1I;
 class TCutG;
 class TCutGGates;
 class TFile;
+class TDirectory;
 
 class FrsNearlineSpectra : public FairTask
 {
@@ -99,7 +100,6 @@ class FrsNearlineSpectra : public FairTask
         */
 
 
-       // CEJ pls change how this is done
         // histograms
         TH2D* h2_Z1_vs_T;
         TH2D* h2_AoQ_vs_T;
