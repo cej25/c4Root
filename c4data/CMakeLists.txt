@@ -67,6 +67,7 @@ frsData/TFRSParameter.cxx
 frsData/TFrsConfiguration.cxx
 frsData/FrsGate.cxx
 baseData/TCorrelationsConfiguration.cxx
+lisaData/TLisaConfiguration.cxx
 )
 
 # fill list of header files from list of source files by exchanging the file extension
