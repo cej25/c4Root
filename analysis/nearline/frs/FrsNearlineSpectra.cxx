@@ -709,6 +709,9 @@ InitStatus FrsNearlineSpectra::Init()
         }
     }
 
+    dir_frs->cd();
+    gDirectory = tmp;
+
     return kSUCCESS;
 
 }
@@ -1100,8 +1103,11 @@ void FrsNearlineSpectra::FinishEvent()
 
 void FrsNearlineSpectra::FinishTask()
 {
-    c4LOG(info, "Writing FRS analysis histograms to file.");
-    //frs_analysis_hists->Write();
+    TDirectory* tmp = gDirectory;
+    FairRootManager::Instance()->GetOutFile()->cd();
+    dir_frs->Write();
+    gDirectory = tmp;
+    c4LOG(info, "Written FRS analysis histograms to file.");
 }
 
 ClassImp(FrsNearlineSpectra)
