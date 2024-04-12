@@ -37,6 +37,16 @@ class TFatimaTwinpeaksConfiguration
 
 
 
+        inline bool IsInsidePromptFlashCut(double timediff, double energy) const{
+            if (prompt_flash_cut != nullptr){
+                return prompt_flash_cut->IsInside(timediff,energy);
+            }else{
+                return true;
+            }
+        }
+
+
+
         int NDetectors() const;
         int NTamexBoards() const;
         int TM_Undelayed() const;
