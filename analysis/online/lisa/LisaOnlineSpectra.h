@@ -43,7 +43,7 @@ class LisaOnlineSpectra : public FairTask
         Int_t fNEvents;
 
         // Canvas
-        // TCanvas*
+        //TCanvas* c_h2_traces;
 
         // Histograms
         TH1I* h1_hitpattern;

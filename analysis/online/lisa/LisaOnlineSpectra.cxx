@@ -101,13 +101,22 @@ InitStatus LisaOnlineSpectra::Init()
     h1_energy = new TH1F("h1_energy", "LISA Energy", 400,0,250000); //in case of data from 241Am
     h1_energy->SetOption("logy");
     h1_energy->SetLineColor(kBlack);
-    h1_energy->SetFillColor(kBlue);
+    h1_energy->SetFillColor(kViolet+4);
     lisaFold->Add(h1_energy);
 
     //::::::::::::Traces
-    h2_traces = new TH2F("h2_traces", "Traces", 400, 0,2000,100,6000,9000);
-    h2_traces->SetOption("colz");
+    //c_h2_traces = new TCanvas("c_h2_traces","Traces LISA",650,350);
+    h2_traces = new TH2F("h2_traces", "Traces", 100, 0,20,100,8000,8500);
+    h2_traces->GetXaxis()->SetTitle("Time[us]");
+    h2_traces->GetYaxis()->SetTitle("ADC [a.u.]");
+    h2_traces->SetMarkerColor(kViolet+4);
+    h2_traces->SetMarkerSize(20);
+    //h2_traces->SetFillColor(kRed-6);
+    h2_traces->Draw("HIST L P");
+    //c_h2_traces->cd(0);
+    
     lisaFold->Add(h2_traces);
+    lisaFold->Add(c_h2_traces);
 
 
     run->GetHttpServer()->RegisterCommand("Reset_Lisa_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
@@ -155,13 +164,13 @@ void LisaOnlineSpectra::Exec(Option_t* option)
             std::vector<uint32_t> tracesI = hit->GetTracesI();
             //int traceLenght = traces.size();
 
+            h2_traces->Reset();
             for (int index = 0; index < M ; index++)
             {
-                uint32_t traceLength = traces.size()/M;
-                for (int i = 0; i < traceLength ; i++)
+                uint32_t traceL = traces.size()/M;
+                for (int i = 0; i < traceL ; i++)
                 {
-                    h2_traces->Fill(i,traces[traceLength*index + i]);
-                    //h2_traces->SetBinContent(i,traces[traceLength*index + i],1); 
+                    h2_traces->Fill(i*(0.01),traces[traceL*index + i]);
                 }
             }
 
