@@ -82,7 +82,7 @@ InitStatus FrsFatimaCorrelations::Init()
 
     TDirectory::TContext ctx(nullptr);
 
-    folder_fatima = new TFolder(TString("DEGAS FRS GATE " + frsgate->GetName()), TString("DEGAS FRS GATE" + frsgate->GetName()));
+    folder_fatima = new TFolder(TString("FATIMA FRS GATE " + frsgate->GetName()), TString("FATIMA FRS GATE" + frsgate->GetName()));
 
     run->AddObject(folder_fatima);
 
@@ -105,7 +105,7 @@ InitStatus FrsFatimaCorrelations::Init()
 
     
     c_fatima_energy_vs_tsci41 = new TCanvas(TString("c_fatima_summed_vs_tsci41_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det) - t(sci41), short lifetime, gated FRS on "+frsgate->GetName()),650,350);
-    h2_fatima_summed_vs_tsci41 = new TH2F(TString("h2_fatima_summed_vs_tsci41_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det) - t(sci41), short lifetime,  gated FRS on "+frsgate->GetName()),1000,-500,8000,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h2_fatima_summed_vs_tsci41 = new TH2F(TString("h2_fatima_summed_vs_tsci41_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det) - t(sci41), short lifetime,  gated FRS on "+frsgate->GetName()),1000,-8000,8000,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     h2_fatima_summed_vs_tsci41->GetXaxis()->SetTitle("time difference (ns)");
     h2_fatima_summed_vs_tsci41->GetYaxis()->SetTitle("energy (keV)");
     h2_fatima_summed_vs_tsci41->Draw("COLZ");
@@ -125,7 +125,7 @@ InitStatus FrsFatimaCorrelations::Init()
 
 
     c_fatima_energy_vs_wr_long = new TCanvas(TString("c_fatima_summed_vs_wr_long_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det,wr) - t(sci41,wr) long lifetime, gated FRS on "+frsgate->GetName()),650,350);
-    h2_fatima_summed_vs_wr_long = new TH2F(TString("h2_fatima_summed_vs_wr_long_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det,wr) - t(sci41,wr) long lifetime, gated FRS on "+frsgate->GetName()),1000,-1000,stop_long_lifetime_collection,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h2_fatima_summed_vs_wr_long = new TH2F(TString("h2_fatima_summed_vs_wr_long_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det,wr) - t(sci41,wr) long lifetime, gated FRS on "+frsgate->GetName()),1000,-1e3,stop_long_lifetime_collection,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     h2_fatima_summed_vs_wr_long->GetXaxis()->SetTitle("time difference (ns)");
     h2_fatima_summed_vs_wr_long->GetYaxis()->SetTitle("energy (keV)");
     h2_fatima_summed_vs_wr_long->Draw("COLZ");
@@ -165,7 +165,7 @@ InitStatus FrsFatimaCorrelations::Init()
         folder_fatima->Add(folder_energy_gated[idx_gamma_gate]);
 
         c_fatima_tsci41_energy_gated[idx_gamma_gate] = new TCanvas(TString(Form("c_fatima_tsci41_energy_gated_%i_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("t(det) - t(sci41) gated on E = %i keV, gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate))+frsgate->GetName()));
-        h1_fatima_tsci41_energy_gated[idx_gamma_gate] = new TH1F(TString(Form("h1_fatima_tsci41_energy_gated_%i_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("t(det) - t(sci41) gated on E = %i keV, gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate))+frsgate->GetName()),1000,-1e3,stop_short_lifetime_collection);
+        h1_fatima_tsci41_energy_gated[idx_gamma_gate] = new TH1F(TString(Form("h1_fatima_tsci41_energy_gated_%i_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("t(det) - t(sci41) gated on E = %i keV, gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate))+frsgate->GetName()),1000,-10e3,stop_short_lifetime_collection);
         h1_fatima_tsci41_energy_gated[idx_gamma_gate]->GetXaxis()->SetTitle("time (ns)");
         h1_fatima_tsci41_energy_gated[idx_gamma_gate]->Draw();
         c_fatima_tsci41_energy_gated[idx_gamma_gate]->cd(0);
@@ -249,6 +249,9 @@ void FrsFatimaCorrelations::Exec(Option_t* option){
         
         bool sci41_seen = false; // off-spill raw spectra
         int sci41_hit_idx = -1; // sci41's hit index, for getting the time
+        int detector_id_sci41 = 0;
+        double energy_sci41 = 0;
+        double time_sci41 = 0;
 
         for (Int_t ihit = 0; ihit < nHits; ihit++){ // find the sci41 hit if it is there.
     
@@ -259,72 +262,70 @@ void FrsFatimaCorrelations::Exec(Option_t* option){
             double time1 = hit1->Get_fast_lead_time();
 
             
-            if (!(fatima_configuration->IsDetectorAuxilliary(detector_id1))) event_multiplicity ++; // count only physical events in Fatimas
-
+            if (!(fatima_configuration->IsDetectorAuxilliary(detector_id1))) event_multiplicity ++; // count only physical events in germaniums
+            
             if (detector_id1 == fatima_configuration->SC41L() || detector_id1 == fatima_configuration->SC41R()) {
+                detector_id_sci41 = hit1->Get_detector_id();
+                energy_sci41 = hit1->Get_energy();
+                time_sci41 = hit1->Get_fast_lead_time();
+                
                 sci41_seen = true;
                 sci41_hit_idx = ihit;
+                break;
             }
         }
 
         // Spectra with respect to SCI41 - 'short' isomers
         if (nHits >= 2 && sci41_seen && positive_PID){
 
-        FatimaTwinpeaksCalData* hit_sci41 = (FatimaTwinpeaksCalData*)fHitFatima->At(sci41_hit_idx);
-        int detector_id_sci41 = hit_sci41->Get_detector_id();
-        double energy_sci41 = hit_sci41->Get_energy();
-        double time_sci41 = hit_sci41->Get_fast_lead_time();
-        // after this test we have the sci41 hit.
-        if (!hit_sci41 || detector_id_sci41 != fatima_configuration->SC41L() || detector_id_sci41 != fatima_configuration->SC41R()) c4LOG(fatal,"Error in picking out sci41. Should never happen.");
+            for (int ihit1 = 0; ihit1 < nHits; ihit1 ++){
+                if (ihit1 == sci41_hit_idx) continue;
+                FatimaTwinpeaksCalData* hit1 = (FatimaTwinpeaksCalData*)fHitFatima->At(ihit1);
+                if (!hit1) continue;
+                int detector_id1 = hit1->Get_detector_id();
+                double energy1 = hit1->Get_energy();
+                double time1 = hit1->Get_fast_lead_time();
 
+                if (fatima_configuration->IsDetectorAuxilliary(detector_id1)) continue;
 
-        for (int ihit1 = 0; ihit1 < nHits; ihit1 ++){
-            FatimaTwinpeaksCalData* hit1 = (FatimaTwinpeaksCalData*)fHitFatima->At(ihit1);
-            if (!hit1) continue;
-            int detector_id1 = hit1->Get_detector_id();
-            double energy1 = hit1->Get_energy();
-            double time1 = hit1->Get_fast_lead_time();
+                double timediff1 = time1 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(detector_id1);
+                
+                h2_fatima_summed_vs_tsci41->Fill(timediff1 ,energy1);
 
-            if (fatima_configuration->IsDetectorAuxilliary(detector_id1)) continue;
+                if ((fatima_configuration->IsInsidePromptFlashCut(timediff1 ,energy1)==true) ) continue;
+                
+                h1_fatima_energy_promptflash_cut->Fill(energy1);
 
-            double timediff1 = time1 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(detector_id1);
-            
-            h2_fatima_summed_vs_tsci41->Fill(timediff1 ,energy1);
+                for (int idx_gamma_gate = 0; idx_gamma_gate < gamma_energies_of_interest.size(); idx_gamma_gate++){
+                    if (!(TMath::Abs(energy1 - gamma_energies_of_interest.at(idx_gamma_gate))<gate_width_gamma_energies_of_interest.at(idx_gamma_gate)) && fatima_configuration->IsInsidePromptFlashCut(timediff1,energy1)==false) continue;
+                        //now energy1 fulfills the energy requirement and is outside prompt flash
+                        
+                        h1_fatima_tsci41_energy_gated[idx_gamma_gate]->Fill(timediff1);
+                                                
+                        if (nHits >= 3){
+                        
+                        for (int ihit2 = 0; ihit2<nHits; ihit2 ++){
+                            if (ihit2 == sci41_hit_idx) continue;
+                            FatimaTwinpeaksCalData* hit2 = (FatimaTwinpeaksCalData*)fHitFatima->At(ihit2);
+                            if (!hit2) continue;
+                            if (ihit2 == ihit1) continue;
+                            int detector_id2 = hit2->Get_detector_id();
+                            double energy2 = hit2->Get_energy();
+                            double time2 = hit2->Get_fast_lead_time();
 
-            if ((fatima_configuration->IsInsidePromptFlashCut(timediff1 ,energy1)==true) ) continue;
-            
-            h1_fatima_energy_promptflash_cut->Fill(energy1);
+                            if (fatima_configuration->IsDetectorAuxilliary(detector_id2)) continue;
+                            if (TMath::Abs(time2-time1) > fatima_coincidence_gate) continue;
 
-            for (int idx_gamma_gate = 0; idx_gamma_gate < gamma_energies_of_interest.size(); idx_gamma_gate++){
-                if (!(TMath::Abs(energy1 - gamma_energies_of_interest.at(idx_gamma_gate))<gate_width_gamma_energies_of_interest.at(idx_gamma_gate)) && fatima_configuration->IsInsidePromptFlashCut(timediff1,energy1)==false) continue;
-                    //now energy1 fulfills the energy requirement and is outside prompt flash
-                    
-                    h1_fatima_tsci41_energy_gated[idx_gamma_gate]->Fill(timediff1);
-                                            
-                    if (nHits >= 3){
-                    
-                    for (int ihit2 = 0; ihit2<nHits; ihit2 ++){
-                        FatimaTwinpeaksCalData* hit2 = (FatimaTwinpeaksCalData*)fHitFatima->At(ihit2);
-                        if (!hit2) continue;
-                        if (ihit2 == ihit1) continue;
-                        if (ihit2 == sci41_hit_idx) continue;
-                        int detector_id2 = hit2->Get_detector_id();
-                        double energy2 = hit2->Get_energy();
-                        double time2 = hit2->Get_fast_lead_time();
+                            double timediff2 = time2 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(detector_id2);
+                            if ((fatima_configuration->IsInsidePromptFlashCut(timediff2,energy2))) continue;
 
-                        if (fatima_configuration->IsDetectorAuxilliary(detector_id2)) continue;
-                        if (TMath::Abs(time2-time1) > fatima_coincidence_gate) continue;
-
-                        double timediff2 = time2 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(detector_id2);
-                        if ((fatima_configuration->IsInsidePromptFlashCut(timediff2,energy2))) continue;
-
-                        // energy1 and energy2 are both in coincidence and outside the promptflash here:
-                        h1_fatima_energy_promptflash_cut_energy_gated[idx_gamma_gate]->Fill(energy2);
+                            // energy1 and energy2 are both in coincidence and outside the promptflash here:
+                            h1_fatima_energy_promptflash_cut_energy_gated[idx_gamma_gate]->Fill(energy2);
+                        }
                     }
                 }
+        
             }
-    
-        }
         }
 
         if (nHits >= 1 && wr_t_last_frs_hit != 0){
@@ -408,7 +409,7 @@ void FrsFatimaCorrelations::FinishTask()
     if (fHitFatima)
     {
         folder_fatima->Write();
-        c4LOG(info, "DEGAS histograms written to file.");
+        c4LOG(info, "FATIMA-FRS histograms written to file.");
     }
 }
 

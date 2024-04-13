@@ -85,15 +85,15 @@ class TGermaniumConfiguration
         std::map<int,int> crystals_per_detector;
         int num_febex_boards;
 
-        int tm_undelayed;
-        int tm_delayed;
-        int sc41l_d;
-        int sc41r_d;
+        int tm_undelayed = -1;
+        int tm_delayed = -1;
+        int sc41l_d = -1;
+        int sc41r_d = -1;
 
 
-        int frs_accept;
-        int bplast_accept;
-        int bplast_free;
+        int frs_accept = -1;
+        int bplast_accept = -1;
+        int bplast_free = -1;
 
 
         bool detector_mapping_loaded = 0;
