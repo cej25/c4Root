@@ -51,6 +51,11 @@ class FatimaOnlineSpectra : public FairTask
             fenergy_bin_low = binlow;
             fenergy_bin_high = binhigh; 
         };
+        void SetBinningCoincidences(int nbins, float binlow, float binhigh){
+            ftime_coincidence_nbins = nbins;
+            ftime_coincidence_low = binlow;
+            ftime_coincidence_high = binhigh;
+        }
 
 
         void SetDetectorsToPlot(std::vector<int> detectors_to_analyze){
@@ -70,7 +75,7 @@ class FatimaOnlineSpectra : public FairTask
         }
         int GetReferenceDetectorIndex(int detector_id){
             //return the index of the detector id in the vector, to index the TH arrays / histograms
-            return std::distance(detectors.begin(), std::find(detectors.begin(), detectors.end(), detector_id));
+            return std::distance(dt_reference_detectors.begin(), std::find(dt_reference_detectors.begin(), dt_reference_detectors.end(), detector_id));
         }
 
         virtual void Reset_Histo();
@@ -150,6 +155,9 @@ class FatimaOnlineSpectra : public FairTask
         int fenergy_nbins = 500;
         float fenergy_bin_low = 0;
         float fenergy_bin_high = 1500;
+        int ftime_coincidence_nbins = 1000;
+        float ftime_coincidence_low = -100;
+        float ftime_coincidence_high = 100;
             
         int event_multiplicity;
 

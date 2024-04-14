@@ -19,7 +19,7 @@ class TFatimaTwinpeaksConfiguration
         static void SetDetectorConfigurationFile(std::string fp) { configuration_file = fp; }
         static void SetDetectorCoefficientFile(std::string fp) { calibration_file = fp; }
         static void SetDetectorTimeshiftsFile(std::string fp) { timeshift_calibration_file = fp; }
-        static void SetPromptFlashCut(std::string fp) {promptflash_cut_file = fp; }
+        static void SetPromptFlashCutFile(std::string fp) {promptflash_cut_file = fp; }
 
 
         std::map<std::pair<int,int>,int> Mapping() const;

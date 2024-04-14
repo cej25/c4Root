@@ -92,6 +92,7 @@ InitStatus FrsFatimaCorrelations::Init()
     g_frs_rate->SetName(TString("g_frs_rate_monitor_gated_")+frsgate->GetName());
     g_frs_rate->SetTitle(TString("FRS identified ions per second, avg 60 secs"));
     g_frs_rate->Draw("ALP");
+    c_frs_rate->cd(0);
     folder_fatima->Add(c_frs_rate);
     folder_fatima->Add(g_frs_rate);
 
@@ -99,13 +100,14 @@ InitStatus FrsFatimaCorrelations::Init()
     h2_frs_Z_vs_AoQ_gated = new TH2F(TString("h2_frs_Z_vs_AoQ_gated_")+frsgate->GetName(),TString("Z vs AoQ plot gated on FRS ")+frsgate->GetName(),1000,2.35,2.60,1000,70,82);
     h2_frs_Z_vs_AoQ_gated->GetXaxis()->SetTitle("A/Q");
     h2_frs_Z_vs_AoQ_gated->GetYaxis()->SetTitle("Z");
+    h2_frs_Z_vs_AoQ_gated->Draw("COLZ");
     c_frs_Z_vs_AoQ_gated->cd(0);
     folder_fatima->Add(c_frs_Z_vs_AoQ_gated);
     folder_fatima->Add(h2_frs_Z_vs_AoQ_gated);
 
     
     c_fatima_energy_vs_tsci41 = new TCanvas(TString("c_fatima_summed_vs_tsci41_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det) - t(sci41), short lifetime, gated FRS on "+frsgate->GetName()),650,350);
-    h2_fatima_summed_vs_tsci41 = new TH2F(TString("h2_fatima_summed_vs_tsci41_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det) - t(sci41), short lifetime,  gated FRS on "+frsgate->GetName()),1000,-8000,8000,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h2_fatima_summed_vs_tsci41 = new TH2F(TString("h2_fatima_summed_vs_tsci41_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det) - t(sci41), short lifetime,  gated FRS on "+frsgate->GetName()),1000,-2000,8000,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     h2_fatima_summed_vs_tsci41->GetXaxis()->SetTitle("time difference (ns)");
     h2_fatima_summed_vs_tsci41->GetYaxis()->SetTitle("energy (keV)");
     h2_fatima_summed_vs_tsci41->Draw("COLZ");
@@ -317,7 +319,7 @@ void FrsFatimaCorrelations::Exec(Option_t* option){
                             if (TMath::Abs(time2-time1) > fatima_coincidence_gate) continue;
 
                             double timediff2 = time2 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(detector_id2);
-                            if ((fatima_configuration->IsInsidePromptFlashCut(timediff2,energy2))) continue;
+                            if ((fatima_configuration->IsInsidePromptFlashCut(timediff2,energy2)==true)) continue;
 
                             // energy1 and energy2 are both in coincidence and outside the promptflash here:
                             h1_fatima_energy_promptflash_cut_energy_gated[idx_gamma_gate]->Fill(energy2);

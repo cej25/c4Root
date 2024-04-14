@@ -22,6 +22,8 @@ TFatimaTwinpeaksConfiguration::TFatimaTwinpeaksConfiguration()
 {
     if (configuration_file != "blank") ReadConfiguration();
     if (calibration_file != "blank") ReadCalibrationCoefficients();
+    if (timeshift_calibration_file != "blank") ReadTimeshiftCoefficients();
+    if (promptflash_cut_file != "blank") ReadPromptFlashCut();
 }
 
 void TFatimaTwinpeaksConfiguration::ReadConfiguration()
@@ -83,6 +85,7 @@ void TFatimaTwinpeaksConfiguration::ReadConfiguration()
 
     detector_map_loaded = 1;
     detector_map_file.close();
+    LOG(info) << "FatimaTwinpeaks Allocation coefficients File: " + configuration_file;
     return;
 }
 
@@ -109,6 +112,8 @@ void TFatimaTwinpeaksConfiguration::ReadCalibrationCoefficients(){
     }
     detector_calibrations_loaded = 1;
     calibration_coeff_file.close();
+
+    LOG(info) << "FatimaTwinpeaks Calibration coefficients File: " + calibration_file;
     return; 
 }
 
@@ -158,7 +163,9 @@ void TFatimaTwinpeaksConfiguration::ReadPromptFlashCut()
     
     if (cut->Get("fatima_prompt_flash_cut"))
     {
+        
         prompt_flash_cut = (TCutG*)cut->Get("fatima_prompt_flash_cut");
+        LOG(info) << "FatimaTwinpeaks Prompt flash cut File: " + promptflash_cut_file;
     }
     else
     {

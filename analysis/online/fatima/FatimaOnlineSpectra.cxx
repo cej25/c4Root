@@ -208,7 +208,7 @@ InitStatus FatimaOnlineSpectra::Init()
         for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++)
         {
             c_fatima_time_differences->cd(detid_idx+1);
-            h1_fatima_time_differences[ihist][detid_idx] = new TH1F(Form("h1_fatima_rel_time_det_%i_det_%i",detectors.at(detid_idx),dt_reference_detectors.at(ihist)),Form("Fatima delta time t(%i) - t(%i)",detectors.at(detid_idx),dt_reference_detectors.at(ihist)),1000,-100,100); 
+            h1_fatima_time_differences[ihist][detid_idx] = new TH1F(Form("h1_fatima_rel_time_det_%i_det_%i",detectors.at(detid_idx),dt_reference_detectors.at(ihist)),Form("Fatima delta time t(%i) - t(%i)",detectors.at(detid_idx),dt_reference_detectors.at(ihist)),ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high); 
             h1_fatima_time_differences[ihist][detid_idx]->GetXaxis()->SetTitle(Form("dt t(%i) - t(%i) (ns)",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
             h1_fatima_time_differences[ihist][detid_idx]->Draw();
         }
@@ -221,7 +221,7 @@ InitStatus FatimaOnlineSpectra::Init()
         for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++)
         {
             c_fatima_time_differences_vs_energy->cd(detid_idx+1);
-            h2_fatima_time_differences_vs_energy[ihist][detid_idx] = new TH2F(Form("h1_fatima_rel_time_det_%i_det_%i_vs_energy",detectors.at(detid_idx),dt_reference_detectors.at(ihist)),Form("Fatima delta time t(%i) - t(%i) vs energy",detectors.at(detid_idx),dt_reference_detectors.at(ihist)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,1000,-100,100); 
+            h2_fatima_time_differences_vs_energy[ihist][detid_idx] = new TH2F(Form("h1_fatima_rel_time_det_%i_det_%i_vs_energy",detectors.at(detid_idx),dt_reference_detectors.at(ihist)),Form("Fatima delta time t(%i) - t(%i) vs energy",detectors.at(detid_idx),dt_reference_detectors.at(ihist)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high); 
             h2_fatima_time_differences_vs_energy[ihist][detid_idx]->GetYaxis()->SetTitle(Form("dt t(%i) - t(%i) (ns)",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
             h2_fatima_time_differences_vs_energy[ihist][detid_idx]->GetXaxis()->SetTitle(Form("energy det %i (keV)",detectors.at(detid_idx)));
             h2_fatima_time_differences_vs_energy[ihist][detid_idx]->Draw("COLZ");
@@ -420,11 +420,12 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
                     if (ihit2 == ihit) {continue;}
 
                     FatimaTwinpeaksCalData * hit2 = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(ihit2); // I want this to be the reference detector for easier code:
-                    if (!(TMath::Abs(hit->Get_fast_lead_time() - hit2->Get_fast_lead_time())<100)) continue;
+                    //if (!(TMath::Abs(hit->Get_fast_lead_time() - hit2->Get_fast_lead_time())<100)) continue;
                     
                     int detector_id2 = hit2->Get_detector_id();
                     int detector_index2 = GetReferenceDetectorIndex(detector_id2);
                     if (detector_index2 >= number_reference_detectors) {continue;} // this implies that the hit corresponds to a detector that is not specified as a reference detector.
+                    
 
                     double slow_ToT2 = hit2->Get_slow_ToT();
                     double fast_ToT2 = hit2->Get_fast_ToT();

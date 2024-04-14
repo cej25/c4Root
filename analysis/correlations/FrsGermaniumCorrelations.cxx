@@ -281,8 +281,6 @@ void FrsGermaniumCorrelations::Exec(Option_t* option){
 
         // Spectra with respect to SCI41 - 'short' isomers
         if (nHits >= 2 && sci41_seen && positive_PID){
-            for (int ihit1 = 0; ihit1 < nHits; ihit1 ++){
-
                 for (int ihit2 = 0; ihit2 < nHits; ihit2 ++){
                     if (ihit2 == sci41_hit_idx) continue;
                     GermaniumCalData* hit2 = (GermaniumCalData*)fHitGe->At(ihit2);
@@ -297,7 +295,6 @@ void FrsGermaniumCorrelations::Exec(Option_t* option){
                     double timediff1 = time1 - time_sci41 - germanium_configuration->GetTimeshiftCoefficient(detector_id1,crystal_id1);
                     
                     h2_germanium_summed_vs_tsci41->Fill(timediff1 ,energy1);
-
                     if ((germanium_configuration->IsInsidePromptFlashCut(timediff1 ,energy1)==true) ) continue;
                     
                     h1_germanium_energy_promptflash_cut->Fill(energy1);
@@ -334,7 +331,6 @@ void FrsGermaniumCorrelations::Exec(Option_t* option){
                         }
                     }
                 }
-            }
         }
 
         if (nHits >= 1 && wr_t_last_frs_hit != 0){

@@ -167,7 +167,7 @@ void TGermaniumConfiguration::ReadPromptFlashCut()
     
     if (!cut || cut->IsZombie() || cut->TestBit(TFile::kRecovered))
     {
-        c4LOG(warn, "Germanium prompt flash cut file provided (" << promptflash_cut_file << ") is not a ROOT file.");
+        c4LOG(warn, "Germanium prompt flash cut file provided (" << promptflash_cut_file << ") failed to load!.");
         return;
     }
     
