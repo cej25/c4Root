@@ -77,7 +77,7 @@ void AidaUnpack2Cal::Exec(Option_t* option)
   auto start = std::chrono::high_resolution_clock::now();
   implantCalArray->clear();
   decayCalArray->clear();
-  aidaTimeMachineArray->clear();
+  aidaTimeMachineArray->Clear();
 
   for (auto const& unpack : *unpackArray)
   {
