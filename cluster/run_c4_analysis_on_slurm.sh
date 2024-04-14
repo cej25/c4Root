@@ -1,17 +1,16 @@
 #!/bin/bash
 #SBATCH --job-name=s100_make_trees
 #SBATCH --partition=main
-#SBATCH --time=00:30:00
-#SBATCH --output=/lustre/gamma/s100_nearline/cluster/logs/s100_make_trees%j.log
+#SBATCH --time=02:00:00
+#SBATCH --output=s100_make_trees%j.log
 #SBATCH -a 1-10
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=2
-#SBATCH --mem-per-cpu=8GB
+#SBATCH --cpus-per-task=1
 
 
-export FAIRROOTPATH=/cvmfs/fairsoft.gsi.de/debian11/fairroot/v18.8.0_nov22p1
-export SIMPATH=/cvmfs/fairsoft.gsi.de/debian11/fairsoft/nov22p1
+export FAIRROOTPATH=/cvmfs/fairsoft.gsi.de/debian10/fairroot/v18.8.0_fs_nov22p1
+export SIMPATH=/cvmfs/fairsoft.gsi.de/debian10/fairsoft/nov22p1
 export UCESB_DIR=/lustre/gamma/s100_nearline/ucesb
 export UCESB_BASE_DIR=/lustre/gamma/s100_nearline/ucesb
 
@@ -26,8 +25,8 @@ export LD_LIBRARY_PATH="${FAIRROOTPATH}/lib:${SIMPATH}/lib:${UCESB_DIR}/lib:${LD
 . "/lustre/gamma/s100_nearline/virgobuild/config.sh"
 
 #for some reasion thisroot.sh seems to unset some of these guys:
-export FAIRROOTPATH=/cvmfs/fairsoft.gsi.de/debian11/fairroot/v18.8.0_nov22p1
-export SIMPATH=/cvmfs/fairsoft.gsi.de/debian11/fairsoft/nov22p1
+export FAIRROOTPATH=/cvmfs/fairsoft.gsi.de/debian10/fairroot/v18.8.0_fs_nov22p1
+export SIMPATH=/cvmfs/fairsoft.gsi.de/debian10/fairsoft/nov22p1
 export UCESB_DIR=/lustre/gamma/s100_nearline/ucesb
 export UCESB_BASE_DIR=/lustre/gamma/s100_nearline/ucesb
 
@@ -36,8 +35,7 @@ export UCESB_BASE_DIR=/lustre/gamma/s100_nearline/ucesb
 
 # Compile the ROOT script
 #for file in $files
-file="/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_00$(printf "%02d" $SLURM_ARRAY_TASK_ID).lmd"
-#file="/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd"
+file="Au_beam_0010_00$(printf "%02d" $SLURM_ARRAY_TASK_ID).root"
 
 echo $file
 
@@ -45,11 +43,15 @@ root -b -l <<EOF
 gSystem->AddIncludePath("${FAIRROOTPATH}/include");
 gSystem->AddIncludePath("${SIMPATH}/include");
 
+gSystem->AddIncludePath("/lustre/gamma/jlarsson/c4code/c4Root/c4source/fatima");
+
 gSystem->AddLinkedLibs("-L/lustre/gamma/s100_nearline/virgobuild/lib -llibc4source.so");
 gSystem->AddLinkedLibs("-L/lustre/gamma/s100_nearline/virgobuild/lib -llibc4Analysis.so");  
 gSystem->AddLinkedLibs("-L/lustre/gamma/s100_nearline/virgobuild/lib -llibc4Data.so"); 
 gSystem->AddLinkedLibs("-L/lustre/gamma/s100_nearline/virgobuild/lib -llibc4MacroCompiler.so"); 
 gSystem->AddLinkedLibs("-L/lustre/gamma/s100_nearline/virgobuild/lib -llibc4Base.so"); 
 
-.x /lustre/gamma/s100_nearline/cluster/s100_make_trees.C("$file")
+.x /lustre/gamma/s100_nearline/macros/s100_make_trees.C("$file")
 EOF
+
+
