@@ -13,6 +13,22 @@
 #include <vector>
 #include "TDirectory.h"
 
+// under(?)load, in case no gates provided
+FrsNearlineSpectra::FrsNearlineSpectra() : FrsNearlineSpectra("FrsNearlineSpectra", 1)
+{
+    frs_config = TFrsConfiguration::GetInstance();
+    frs = frs_config->FRS();
+    mw = frs_config->MW();
+    tpc = frs_config->TPC();
+    music = frs_config->MUSIC();
+    labr = frs_config->LABR();
+    sci = frs_config->SCI();
+    id = frs_config->ID();
+    si = frs_config->SI();
+    mrtof = frs_config->MRTOF();
+    range = frs_config->Range();
+}
+
 FrsNearlineSpectra::FrsNearlineSpectra(std::vector<FrsGate*> fg)
     :   FairTask()
     ,   fNEvents()
