@@ -62,7 +62,7 @@ set(SRCS
 ./nearline/fatima/FatimaNearlineSpectra.cxx
 ./nearline/fatima/FatimaVmeNearlineSpectra.cxx
 ./nearline/aida/AidaNearlineSpectra.cxx
-./nearline/frs/FrsAnalysisSpectra.cxx
+./nearline/frs/FrsNearlineSpectra.cxx
 
 ## correlations ##
 ./correlations/FrsAidaCorrelations.cxx

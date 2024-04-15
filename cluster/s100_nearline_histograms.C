@@ -37,7 +37,7 @@ typedef struct EXT_STR_h101_t
 } EXT_STR_h101;
 
 
-void nearline()
+void nearline(TString filename)
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
 
@@ -67,7 +67,6 @@ void nearline()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    TString filename = "Au_beam_0010_0001_tree.root";
     TString outputpath = "Au_beam_0010_0001_histograms";
     TString outputFileName = outputpath + ".root";
 
@@ -115,58 +114,58 @@ void nearline()
 
     if (FATIMA_ON)
     {
-        FatimaOnlineSpectra* onlinefatima = new FatimaOnlineSpectra();
-        onlinefatima->SetBinningSlowToT(2000,560,660);
-        onlinefatima->SetBinningFastToT(1000,0.1,100.1);
-        onlinefatima->SetBinningEnergy(1000,0.1,1500.1);
+        FatimaNearlineSpectra* nearlinefatima = new FatimaNearlineSpectra();
+        nearlinefatima->SetBinningSlowToT(2000,560,660);
+        nearlinefatima->SetBinningFastToT(1000,0.1,100.1);
+        nearlinefatima->SetBinningEnergy(1000,0.1,1500.1);
 
         std::vector<int> fat_dets = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64};
-        onlinefatima->SetDetectorsToPlot(fat_dets);
+        nearlinefatima->SetDetectorsToPlot(fat_dets);
         
         std::vector<int> fat_ref_dets = {54};
-        onlinefatima->SetReferenceDetectorsForTimeDifferences(fat_ref_dets);
+        nearlinefatima->SetReferenceDetectorsForTimeDifferences(fat_ref_dets);
         
-        run->AddTask(onlinefatima);
+        run->AddTask(nearlinefatima);
     }
     
     if (FATIMA_VME_ON)
     {    
-        FatimaVmeOnlineSpectra* onlinefatimavme = new FatimaVmeOnlineSpectra();
+        FatimaVmeNearlineSpectra* nearlinefatimavme = new FatimaVmeNearlineSpectra();
         
-        run->AddTask(onlinefatimavme);
+        run->AddTask(nearlinefatimavme);
     }
     
     if (AIDA_ON)
     {
-        AidaOnlineSpectra* aidaOnline = new AidaOnlineSpectra();
+        AidaNearlineSpectra* aidaNearline = new AidaNearlineSpectra();
         
-        run->AddTask(aidaOnline);
+        run->AddTask(aidaNearline);
     }
     
     if (BPLAST_ON)
     {
-        bPlastOnlineSpectra* onlinebplast = new bPlastOnlineSpectra();
+        bPlastNearlineSpectra* nearlinebplast = new bPlastNearlineSpectra();
         
-        run->AddTask(onlinebplast);
+        run->AddTask(nearlinebplast);
         
     }
     
     if (GERMANIUM_ON)
     {
-        GermaniumOnlineSpectra* onlinege = new GermaniumOnlineSpectra();
-        onlinege->SetBinningEnergy(3000,0,3e3);
-        onlinege->AddReferenceDetector(15,0);
-        onlinege->AddReferenceDetector(1,0);
-        run->AddTask(onlinege);
+        GermaniumNearlineSpectra* nearlinege = new GermaniumNearlineSpectra();
+        nearlinege->SetBinningEnergy(3000,0,3e3);
+        nearlinege->AddReferenceDetector(15,0);
+        nearlinege->AddReferenceDetector(1,0);
+        run->AddTask(nearlinege);
     }
     
     if (BGO_ON)
     {
-        BGOOnlineSpectra* onlinebgo = new BGOOnlineSpectra();
-        onlinebgo->SetBinningEnergy(1500,0.1,1500.1);
+        BGOOnlineSpectra* nearlinebgo = new BGONearlineSpectra();
+        nearlinebgo->SetBinningEnergy(1500,0.1,1500.1);
 
         
-        run->AddTask(onlinebgo);
+        run->AddTask(nearlinebgo);
         
     }
     
@@ -175,23 +174,11 @@ void nearline()
     
     if (FRS_ON)
     {
-        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
-        // For monitoring FRS on our side
-        // FrsRawSpectra* frsrawspec = new FrsRawSpectra();
-        FrsCalSpectra* frscalspec = new FrsCalSpectra();
+        FrsNearlineSpectra* nearlinefrs = new FrsNearlineSpectra();
         
-        run->AddTask(onlinefrs);
-        // run->AddTask(frsrawspec);
-        run->AddTask(frscalspec);
+        run->AddTask(nearlinefrs);
     }
     
-    if (BEAMMONITOR_ON)
-    {
-        BeamMonitorOnlineSpectra* onlinebm = new BeamMonitorOnlineSpectra();
-        
-        run->AddTask(onlinebm);
-    }
-
     TString b = "Aida";
     TString c = "Fatima";
     TString d = "FatimaVme";
