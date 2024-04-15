@@ -14,10 +14,10 @@ class LisaData : public TObject
         // Getters
         inline uint64_t Get_wr_t() { return f_wr_time; }
         inline uint32_t Get_wr_subsystem_id() { return f_wr_id; }
-        inline uint32_t GetBoardNum() { return f_board_num; }
-        inline uint64_t GetEventTime() { return f_event_time; }
+        inline std::vector<int> GetBoardNum() { return f_board_num; }
+        inline std::vector<uint64_t> GetEventTime() { return f_event_time; }
         inline std::vector<int> GetHitPattern() { return f_hit_pattern; }
-        inline uint32_t GetMultiplicity() { return f_M; }
+        inline std::vector<uint32_t> GetMultiplicity() { return f_M; }
         
         inline std::vector<uint32_t> GetID() { return f_ch_ID; }
         inline std::vector<uint64_t> GetChannelTime() {return f_channel_time;}
@@ -33,10 +33,10 @@ class LisaData : public TObject
         // Setters
         inline void Set_wr_t(uint64_t wr_time) { f_wr_time = wr_time; }
         inline void Set_wr_subsystem_id(uint32_t wr_id) { f_wr_id = wr_id; }
-        inline void SetBoardNum(uint32_t board_num) { f_board_num = board_num; }
-        inline void SetEventTime(uint64_t event_time) { f_event_time = event_time; }
+        inline void SetBoardNum(std::vector<int> board_num) { f_board_num = board_num; }
+        inline void SetEventTime(std::vector<uint64_t> event_time) { f_event_time = event_time; }
         inline void SetHitPattern(std::vector<int> hit_pattern) { f_hit_pattern = hit_pattern; }
-        inline void SetMultiplicity(uint32_t M) { f_M = M; }
+        inline void SetMultiplicity(std::vector<uint32_t> M) { f_M = M; }
         
         inline void SetID(std::vector<uint32_t> ch_ID) { f_ch_ID = ch_ID; }
         inline void SetChannelTime(std::vector<uint64_t> channel_time ) { f_channel_time = channel_time; }
@@ -51,12 +51,12 @@ class LisaData : public TObject
 
     protected:
         // Data items
-        uint64_t f_board_num;
-        uint64_t f_event_time;
+        std::vector<int> f_board_num;
+        std::vector<uint64_t> f_event_time;
         uint64_t f_wr_time;
         uint32_t f_wr_id;
         std::vector<int> f_hit_pattern;
-        uint32_t f_M;
+        std::vector<uint32_t> f_M;
 
         std::vector<uint32_t> f_ch_ID;
         std::vector<uint64_t> f_channel_time;
