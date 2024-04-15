@@ -29,8 +29,6 @@ class GermaniumNearlineSpectra : public FairTask
 
         virtual ~GermaniumNearlineSpectra();
 
-        virtual void SetParContainers();
-
         virtual InitStatus Init();
 
         virtual void Exec(Option_t* option);
@@ -96,11 +94,11 @@ class GermaniumNearlineSpectra : public FairTask
        
         
        
-        TH1F * h1_germanium_energy_summed_vs_tsci41_cut;
-        TH2F * h2_germanium_energy_energy_vetosci41;
-        TH2F * h2_germanium_energy_energy_sci41_cut;
+        TH1F* h1_germanium_energy_summed_vs_tsci41_cut;
+        TH2F* h2_germanium_energy_energy_vetosci41;
+        TH2F* h2_germanium_energy_energy_sci41_cut;
 
-        char ** detector_labels;
+        char** detector_labels;
 
         // Folder and files
         TDirectory* dir_germanium;
