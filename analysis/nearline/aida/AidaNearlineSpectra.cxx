@@ -512,7 +512,6 @@ void AidaNearlineSpectra::Exec(Option_t* option)
     // Calculate amount of 1s from interval to END
     // Fill all from current_time?
     fNEvents += 1;
-    if (fNEvents % 100000 == 0) printf("\033[K"); LOG(info) << "Analysed " << fNEvents << " events.";
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
     total_time_microsecs += duration.count();
