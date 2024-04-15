@@ -18,6 +18,7 @@ extern "C"
 // maybe no longer needed to define
 #define TRACE_CHANNELS 16
 
+
 LisaReader::LisaReader(EXT_STR_h101_lisa_onion* data, size_t offset)
     : c4Reader("LisaReader")
     , fNEvent(0)
@@ -65,19 +66,88 @@ Bool_t LisaReader::Init(ext_data_struct_info* a_struct_info)
 
 Bool_t LisaReader::Read()
 {
-
     // Reading is done in here on a per-event basis!
+
+    LisaData* lisa_item = new LisaData(); // LisaData class item
+
+    //::::::::::::::White Rabbit::::::::::::::
+    //WR time stamp
+    uint64_t wr_time_long = (((uint64_t)fData->lisa_ts_t[3]) << 48) + 
+    (((uint64_t)fData->lisa_ts_t[2]) << 32) + 
+    (((uint64_t)fData->lisa_ts_t[1]) << 16) + 
+    (uint64_t)(fData->lisa_ts_t[0]);
+    lisa_item->Set_wr_t(wr_time_long);
+
+    //WR ID. It is 0700 for lisa (= 1792 in decimal)
+    uint32_t wr_id = fData->lisa_ts_subsystem_id;
+    lisa_item->Set_wr_subsystem_id(wr_id);
+    //::::::::::::::::::::::::::::::::::::::::
+
+    //Loop over board number (NBoards hardcoded as 8 temp)
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
     {
-        LisaData* lisa_item = new LisaData(); // LisaData class item
+        //LisaData* lisa_item = new LisaData(); // LisaData class item
 
+        //::::::::::::::Board Number (=0 may2024)
         uint32_t board_num = fData->lisa_data[it_board_number].board_num;
         lisa_item->SetBoardNum(board_num);
-        //since the febex card has a 100MHz clock which timestamps events.
-        uint64_t event_trigger_time_long = (((uint64_t)(fData->lisa_data[it_board_number].event_trigger_time_hi) << 32) + (fData->lisa_data[it_board_number].event_trigger_time_lo))*10;
-        lisa_item->SetEventTime(event_trigger_time_long);
 
-        new ((*fArray)[fArray->GetEntriesFast()]) LisaData(*lisa_item);
+        //::::::::::::::Event Time stamp (converted to ns)
+        //P.S: Febex card has a 100MHz, it samples data every 10 ns (hence the unit and the *10 multiplication).
+        uint64_t event_trigger_time_long = (((uint64_t)(fData->lisa_data[it_board_number].event_trigger_time_hi) << 32) + 
+        (fData->lisa_data[it_board_number].event_trigger_time_lo))*10;
+        lisa_item->SetEventTime(event_trigger_time_long);
+        
+        //::::::::::::::Hit Pattern
+        uint32_t hit_pattern = fData->lisa_data[it_board_number].hit_pattern;
+        lisa_item->SetHitPattern(hit_pattern);
+
+        //::::::::::::::Multiplicity: Called num_channels_fired from unpacker
+        uint32_t M = fData->lisa_data[it_board_number].num_channels_fired;
+        lisa_item->SetMultiplicity(M);
+        //std::cout<<M<<std::endl;
+
+        for (int index = 0; index < M; index++) 
+        {
+            //::::::::::::::Channel ID
+            uint32_t ID = fData->lisa_data[it_board_number].channel_idv[index];
+            lisa_item->SetID(ID);
+            std::cout<<ID<<std::endl;
+
+            //::::::::::::::Channel Trigger Time
+            uint64_t channel_trigger_time_long = (((uint64_t)(fData->lisa_data[it_board_number].channel_trigger_time_hiv[index]) << 32) + 
+            (fData->lisa_data[it_board_number].channel_trigger_time_lov[index]))*10;
+            lisa_item->SetChannelTime(channel_trigger_time_long);
+
+            //::::::::::::::Channel PileUp
+            bool pile_up = fData->lisa_data[it_board_number].pileup[index] & 0x1;
+            lisa_item->SetPileUp(pile_up);     
+
+            //::::::::::::::Channel OverFlow
+            bool over_flow = fData->lisa_data[it_board_number].overflow[index] & 0x1;
+            lisa_item->SetOverFlow(over_flow); 
+
+            //::::::::::::::Channel Energy
+
+            //according to febex manual on gsi website, the 24th bit of the energy denotes the sign to indicate the polarity of the pulse
+           
+            if (fData->lisa_data[it_board_number].channel_energyv[index] & (1 << 23)){
+                energy = -(int32_t)(fData->lisa_data[it_board_number].channel_energyv[index] & 0x007FFFFF);
+            }else{
+                energy = +(int32_t)(fData->lisa_data[it_board_number].channel_energyv[index] & 0x007FFFFF);            
+            }
+            
+            //int32_t energy = (int32_t)fData->lisa_data[it_board_number].channel_energyv[index];
+            lisa_item->SetEnergy(energy); 
+            //std::cout<<energy<<std::endl;
+
+            //::::::::::::::Channel Traces
+
+            //Fill array with lisa_item
+            new ((*fArray)[fArray->GetEntriesFast()]) LisaData(*lisa_item);
+
+        }
+
 
     }
     
@@ -88,6 +158,7 @@ Bool_t LisaReader::Read()
 void LisaReader::ZeroArrays()
 {   
     fArray->Clear();
+    fTraceArray->Clear();
 }
 
 void LisaReader::ClearVectors()

@@ -4,7 +4,6 @@
 
 #include "FrsAidaCorrelations.h"
 #include "FrsHitData.h"
-#include "FrsAnalysisData.h"
 #include "AidaHitData.h"
 #include "TAidaConfiguration.h"
 #include "c4Logger.h"
