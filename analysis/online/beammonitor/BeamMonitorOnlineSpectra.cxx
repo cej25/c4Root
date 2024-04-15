@@ -221,6 +221,8 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     hG_BM_s2gr_qf->Draw();
     c_quality_factor->cd(2);
     hG_BM_s4gr_qf->Draw();
+    dir_beammonitor->Append(c_quality_factor);
+    
 
 
     run->GetHttpServer()->RegisterCommand("Reset_BM_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));

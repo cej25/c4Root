@@ -91,7 +91,8 @@ InitStatus BGOOnlineSpectra::Init()
     std::map<std::pair<int,int>,std::pair<int,int>> gmap = germanium_configuration->Mapping();
 
 
-    for (auto it_mapping = bgomap.begin(); it_mapping != bgomap.end(); ++it_mapping){
+    for (auto it_mapping = bgomap.begin(); it_mapping != bgomap.end(); ++it_mapping)
+    {
         std::pair<int,int> detector_crystal_pair {it_mapping->second.first,it_mapping->second.second};
         if (it_mapping->second.first >= 0) crystals_to_plot.emplace_back(detector_crystal_pair);
         
@@ -117,6 +118,7 @@ InitStatus BGOOnlineSpectra::Init()
         h1_bgo_energy[ihist]->Draw();
     }
     c_bgo_energy->cd(0);
+    dir_bgo_energy->Append(c_bgo_energy);
     
     // time spectra:
     dir_bgo_time->cd();
@@ -130,6 +132,7 @@ InitStatus BGOOnlineSpectra::Init()
         h1_bgo_time[ihist]->Draw();
     }
     c_bgo_time->cd(0);
+    dir_bgo_time->Append(c_bgo_time);
 
     dir_bgo_germanium_veto_energy->cd();
     // energy spectra:
@@ -143,6 +146,7 @@ InitStatus BGOOnlineSpectra::Init()
         h1_germanium_bgo_veto_energy[ihist]->Draw();
     }
     c_germanium_bgo_veto_energy->cd(0);
+    dir_bgo_germanium_veto_energy->Append(c_germanium_bgo_veto_energy);
 
 
     // CEJ: should we cd to timedifference spectra folder?
@@ -157,7 +161,7 @@ InitStatus BGOOnlineSpectra::Init()
         h1_germanium_bgo_veto_timedifferences[ihist]->Draw();
     }
     c_germanium_bgo_veto_timedifferences->cd(0);
-
+    dir_bgo_germanium_veto_energy->Append(c_germanium_bgo_veto_timedifferences);
 
     dir_bgo->cd();
 

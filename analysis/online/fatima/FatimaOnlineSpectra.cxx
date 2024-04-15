@@ -94,6 +94,7 @@ InitStatus FatimaOnlineSpectra::Init()
         h1_fatima_slowToT[ihist]->Draw();
     }
     c_fatima_slowToT->cd(0);
+    dir_fatima_slowToT->Append(c_fatima_slowToT);
 
     //fast ToT
     dir_fatima_fastToT->cd();
@@ -108,6 +109,7 @@ InitStatus FatimaOnlineSpectra::Init()
         
     }
     c_fatima_fastToT->cd(0);
+    dir_fatima_fastToT->Add(c_fatima_fastToT);
     
     //energy spectrum:
     dir_fatima_energy_spectra->cd();
@@ -121,6 +123,7 @@ InitStatus FatimaOnlineSpectra::Init()
         h1_fatima_energy[ihist]->Draw();
     }
     c_fatima_energy->cd(0);
+    dir_fatima_energy_spectra->Append(c_fatima_energy);
     
     // fast vs slow:
     dir_fatima_fast_v_slow->cd();
@@ -135,6 +138,7 @@ InitStatus FatimaOnlineSpectra::Init()
         h2_fatima_fast_v_slow[ihist]->Draw("COLZ");        
     }
     c_fatima_fast_v_slow->cd(0);
+    dir_fatima_fast_v_slow->Append(c_fatima_fast_v_slow);
     
     // Time spectra:
     dir_fatima_time_spectra->cd();
@@ -146,9 +150,9 @@ InitStatus FatimaOnlineSpectra::Init()
         h1_fatima_abs_time[ihist] = new TH1F(Form("h1_fatima_abs_time_%d",detectors.at(ihist)),Form("Fatima absolute DAQ time detector %d",detectors.at(ihist)),1000,0,2.7e12); // up to 45 mins in ns :)
         h1_fatima_abs_time[ihist]->GetXaxis()->SetTitle("Timestamp (ns)");
         h1_fatima_abs_time[ihist]->Draw();
-        
     }
     c_fatima_time_spectra_divided->cd(0);
+    dir_fatima_time_spectra->Append(c_fatima_time_spectra_divided);
 
     //2D energy spectrum
     dir_fatima_energy_spectra->cd();
@@ -157,6 +161,7 @@ InitStatus FatimaOnlineSpectra::Init()
     h2_fatima_energy_vs_detid->GetXaxis()->SetTitle("Energy (keV)");
     h2_fatima_energy_vs_detid->GetYaxis()->SetTitle("Detector nr.");
     h2_fatima_energy_vs_detid->Draw("COLZ");
+    dir_fatima_energy_spectra->Append(c_fatima_energy_vs_detid);
 
     //2D uncalibrated energy spectrum
     c_fatima_energy_uncal = new TCanvas("c_fatima_energy_uncal","Fatima energy spectrum",650,350);
@@ -164,6 +169,7 @@ InitStatus FatimaOnlineSpectra::Init()
     h2_fatima_energy_uncal_vs_detid->GetXaxis()->SetTitle("Energy (arb.)");
     h2_fatima_energy_uncal_vs_detid->GetYaxis()->SetTitle("Detector nr.");
     h2_fatima_energy_uncal_vs_detid->Draw("COLZ");
+    dir_fatima_energy_spectra->Append(c_fatima_energy_uncal);
 
     // Hit patterns:
     dir_fatima_hitpattern->cd();
@@ -182,6 +188,7 @@ InitStatus FatimaOnlineSpectra::Init()
     h1_fatima_hitpattern_fast->GetYaxis()->SetTitle("Hits");
     h1_fatima_hitpattern_fast->Draw();
     c_fatima_hitpatterns->cd(0);
+    dir_fatima_hitpattern->Append(c_fatima_hitpatterns);
     
     c_fatima_event_multiplicity  = new TCanvas("c_fatima_event_multiplicity","Fatima event multiplicities",650,350);
     
@@ -190,6 +197,7 @@ InitStatus FatimaOnlineSpectra::Init()
     h1_fatima_multiplicity->GetYaxis()->SetTitle("Counts");
     h1_fatima_multiplicity->Draw();
     c_fatima_event_multiplicity->cd(0);
+    dir_fatima_hitpattern->Append(c_fatima_event_multiplicity);
     
     dir_fatima_time_differences.resize(number_reference_detectors);
     h1_fatima_time_differences.resize(number_reference_detectors);
@@ -213,6 +221,7 @@ InitStatus FatimaOnlineSpectra::Init()
             h1_fatima_time_differences[ihist][detid_idx]->Draw();
         }
         c_fatima_time_differences->cd(0);
+        dir_fatima_time_differences[ihist]->Append(c_fatima_time_differences);
 
         c_fatima_time_differences_vs_energy  = new TCanvas(Form("c_fatima_time_differences_rel_det_%i_vs_energy",dt_reference_detectors.at(ihist)),"Fatima relative time differences vs energy",650,350);
         c_fatima_time_differences_vs_energy->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
@@ -228,6 +237,7 @@ InitStatus FatimaOnlineSpectra::Init()
             
         }
         c_fatima_time_differences_vs_energy->cd(0);
+        dir_fatima_time_differences[ihist]->Append(c_fatima_time_differences_vs_energy);
     }
 
     dir_fatima->cd();

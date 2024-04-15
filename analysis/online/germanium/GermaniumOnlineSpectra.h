@@ -110,14 +110,14 @@ class GermaniumOnlineSpectra : public FairTask
         TCanvas* c_germanium_energy_summed_vetosci41;
         TCanvas* c_germanium_energy_summed_vs_tsci41;
         
-        TCanvas * c_germanium_energy_summed_vs_tsci41_cut;
-        TH1F * h1_germanium_energy_summed_vs_tsci41_cut;
+        TCanvas* c_germanium_energy_summed_vs_tsci41_cut;
+        TH1F* h1_germanium_energy_summed_vs_tsci41_cut;
 
-        TCanvas * c_germanium_energy_energy_vetosci41;
-        TH2F * h2_germanium_energy_energy_vetosci41;
+        TCanvas* c_germanium_energy_energy_vetosci41;
+        TH2F* h2_germanium_energy_energy_vetosci41;
 
-        TCanvas * c_germanium_energy_energy_sci41_cut;
-        TH2F * h2_germanium_energy_energy_sci41_cut;
+        TCanvas* c_germanium_energy_energy_sci41_cut;
+        TH2F* h2_germanium_energy_energy_sci41_cut;
 
         TCanvas* c_germanium_snapshot;
 
