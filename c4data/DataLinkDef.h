@@ -37,7 +37,6 @@
 #pragma link C++ class FrsUserCalData+;
 #pragma link C++ class FrsVFTXCalData+;
 #pragma link C++ class FrsHitData+;
-#pragma link C++ class FrsAnalysisData+;
 #pragma link C++ class TFRSParameter+;
 #pragma link C++ class TMWParameter+;
 #pragma link C++ class TTPCParameter+;
