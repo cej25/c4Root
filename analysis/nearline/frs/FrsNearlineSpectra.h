@@ -1,13 +1,17 @@
-#ifndef FrsAnalysisSpectra_H
-#define FrsAnalysisSpectra_H
+#ifndef FrsNearlineSpectra_H
+#define FrsNearlineSpectra_H
 
 #include "../../../config/setup.h"
+#include "TFrsConfiguration.h"
 #include "FairTask.h"
 #include "TFRSParameter.h"
 #include "TH2.h"
 #include "TH1.h"
 #include "TCutG.h"
-#include "TFolder.h"
+#include "TDirectory.h"
+#include "TFile.h"
+#include "FrsGate.h"
+//#include "TCutGGates.h" 
 
 class EventHeader;
 class TClonesArray;
@@ -16,28 +20,20 @@ class FrsAnalysisData;
 class TH2D;
 class TH2I;
 class TH1I;
-class TFolder;
 class TCutG;
-class TCutGGates;
+//class TCutGGates;
+class FrsGate;
+class TFile;
+class TDirectory;
 
-class FrsAnalysisSpectra : public FairTask
+class FrsNearlineSpectra : public FairTask
 {
     public:
-        FrsAnalysisSpectra(TFRSParameter* ffrs,
-                        TMWParameter* fmw,
-                        TTPCParameter* ftpc,
-                        TMUSICParameter* fmusic,
-                        TLABRParameter* flabr,
-                        TSCIParameter* fsci,
-                        TIDParameter* fid,
-                        TSIParameter* fsi,
-                        TMRTOFMSParameter* fmrtof,
-                        TRangeParameter* frange,
-                        std::vector<TCutGGates*> fFrsGates);
+        FrsNearlineSpectra();
+        FrsNearlineSpectra(std::vector<FrsGate*> fFrsGates);
+        FrsNearlineSpectra(const TString& name, Int_t verbose = 1);
 
-        FrsAnalysisSpectra(const TString& name, Int_t verbose = 1);
-
-        virtual ~FrsAnalysisSpectra();
+        virtual ~FrsNearlineSpectra();
 
         virtual InitStatus Init();
 
@@ -49,11 +45,12 @@ class FrsAnalysisSpectra : public FairTask
 
     private:
 
+        TFrsConfiguration const* frs_config;
+
         Int_t fNEvents;
         EventHeader* header;
-
+        
         TClonesArray* fFrsHitArray;
-        TClonesArray* fFrsAnalysisArray;
 
         TFRSParameter* frs;
         TMWParameter* mw;
@@ -66,26 +63,27 @@ class FrsAnalysisSpectra : public FairTask
         TMRTOFMSParameter* mrtof;
         TRangeParameter* range;
 
-        // folders
-        TFolder* folder_frs_hists;
-        TFolder* frs_analysis_hists;
-        TFolder* frs_tac_hists;
-        TFolder* frs_mhtdc_hists;
-        TFolder* frs_ZvsAoQ_hists;
-        TFolder* frs_Z1vsZ2_hists;
-        TFolder* frs_x2vsAoQ_hists;
-        TFolder* frs_x4vsAoQ_hists;
-        TFolder* frs_dEdegvsZ_hists;
-        TFolder* frs_x2vsAoQ_Z1vsZ2_hists;
-        TFolder* frs_x4vsAoQ_Z1vsZ2_hists;
-        TFolder* frs_ZvsAoQ_hists_mhtdc;
-        TFolder* frs_Z1vsZ2_hists_mhtdc;
-        TFolder* frs_x2vsAoQ_hists_mhtdc;
-        TFolder* frs_x4vsAoQ_hists_mhtdc;
-        TFolder* frs_dEdegvsZ_hists_mhtdc;
-        TFolder* frs_x2vsAoQ_Z1vsZ2_hists_mhtdc;
-        TFolder* frs_x4vsAoQ_Z1vsZ2_hists_mhtdc;
+        std::vector<FrsGate*> FrsGates;
 
+        // folders
+        TDirectory* dir_frs; // for now fine, maybe needs to be...overarching branch? dunno
+        TDirectory* dir_tac_hists;
+        TDirectory* dir_mhtdc_hists;
+        TDirectory* dir_ZvsAoQ_hists;
+        TDirectory* dir_Z1vsZ2_hists;
+        TDirectory* dir_x2vsAoQ_hists;
+        TDirectory* dir_x4vsAoQ_hists;
+        TDirectory* dir_dEdegvsZ_hists;
+        TDirectory* dir_x2vsAoQ_Z1vsZ2_hists;
+        TDirectory* dir_x4vsAoQ_Z1vsZ2_hists;
+        TDirectory* dir_ZvsAoQ_hists_mhtdc;
+        TDirectory* dir_Z1vsZ2_hists_mhtdc;
+        TDirectory* dir_x2vsAoQ_hists_mhtdc;
+        TDirectory* dir_x4vsAoQ_hists_mhtdc;
+        TDirectory* dir_dEdegvsZ_hists_mhtdc;
+        TDirectory* dir_x2vsAoQ_Z1vsZ2_hists_mhtdc;
+        TDirectory* dir_x4vsAoQ_Z1vsZ2_hists_mhtdc;
+    
         // histograms
         TH2D* h2_Z1_vs_T;
         TH2D* h2_AoQ_vs_T;
@@ -225,14 +223,16 @@ class FrsAnalysisSpectra : public FairTask
         std::vector<TH2I*> h2_Z_vs_AoQ_Zsame_dEdegZgate_mhtdc;
 
         // Conditions/Cuts
+        /*
         std::vector<TCutG*> cutID_Z_AoQ;
         std::vector<TCutG*> cutID_Z_Z2;
         std::vector<TCutG*> cutID_x2AoQ;
         std::vector<TCutG*> cutID_x4AoQ;
         std::vector<TCutG*> cutID_dEdegZ;
+        */
 
     public:
-        ClassDef(FrsAnalysisSpectra, 1);
+        ClassDef(FrsNearlineSpectra, 1);
 };
 
 #endif

@@ -2,12 +2,19 @@
 #define FatimaOnlineSpectra_H
 
 #include "FairTask.h"
+#include "TDirectory.h"
+#include "TFolder.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include <vector>
 
 class TClonesArray;
 class EventHeader;
 class TCanvas;
 class TH1F;
 class TH2F;
+class TDirectory;
+class TFolder;
 
 class FatimaOnlineSpectra : public FairTask
 {
@@ -98,14 +105,17 @@ class FatimaOnlineSpectra : public FairTask
     
 
         //Folders and files
-        TFolder* folder_fatima;
-        TFolder* folder_fatima_slowToT;
-        TFolder* folder_fatima_fastToT;
-        TFolder* folder_fatima_fast_v_slow;
-        TFolder* folder_fatima_time_spectra;
-        TFolder* folder_fatima_hitpattern;
-        TFolder* folder_fatima_energy_spectra;
-        TFolder* folder_fatima_time_differences;
+        TFolder* histograms;
+        TDirectory* dir_fatima;
+        TDirectory* dir_fatima_slowToT;
+        TDirectory* dir_fatima_fastToT;
+        TDirectory* dir_fatima_fast_v_slow;
+        TDirectory* dir_fatima_hitpattern;
+        TDirectory* dir_fatima_energy_spectra;
+        TDirectory* dir_fatima_time_spectra;
+        std::vector<TDirectory*> dir_fatima_time_differences;
+        
+
         TFile* file_fatima_snapshot;
 
         std::vector<int> detectors = {0,1,2};
@@ -116,21 +126,21 @@ class FatimaOnlineSpectra : public FairTask
         int number_reference_detectors = 1;
         
         // Histograms 
-        TH1F ** h1_fatima_slowToT;
-        TH1F ** h1_fatima_fastToT;
-        TH1F ** h1_fatima_energy;
-        TH1F ** h1_fatima_abs_time;
-        TH2F ** h2_fatima_fast_v_slow;
+        std::vector<TH1F*> h1_fatima_slowToT;
+        std::vector<TH1F*> h1_fatima_fastToT;
+        std::vector<TH1F*> h1_fatima_energy;
+        std::vector<TH1F*> h1_fatima_abs_time;
+        std::vector<TH2F*> h2_fatima_fast_v_slow;
+
         TH1F * h1_fatima_multiplicity;
         TH2F * h2_fatima_energy_vs_detid;
         TH2F * h2_fatima_energy_uncal_vs_detid;
         TH1F * h1_fatima_hitpattern_slow;
         TH1F * h1_fatima_hitpattern_fast;
-        TH1F *** h1_fatima_time_differences;
-        TH2F *** h2_fatima_time_differences_vs_energy;
+        std::vector<std::vector<TH1F*>> h1_fatima_time_differences;
+        std::vector<std::vector<TH2F*>> h2_fatima_time_differences_vs_energy;
 
-
-        //Binnings:
+        // Binnings:
         int ffast_tot_nbins = 500;
         float ffast_tot_bin_low = 0;
         float ffast_tot_bin_high = 100; 

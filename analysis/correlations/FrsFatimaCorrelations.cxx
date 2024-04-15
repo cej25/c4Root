@@ -65,11 +65,7 @@ FrsFatimaCorrelations::~FrsFatimaCorrelations()
 
 
 InitStatus FrsFatimaCorrelations::Init()
-{   
-
-    std::cout << "are we even here" << std::endl;
-    // get branches etc
-    c4LOG(info, "");
+{
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
@@ -187,8 +183,6 @@ InitStatus FrsFatimaCorrelations::Init()
         }
     }
 
-    // simply read in prompt cut like FrsGates
-
     return kSUCCESS;
 
 }
@@ -238,9 +232,7 @@ void FrsFatimaCorrelations::Exec(Option_t* option)
             // if (FatimaHit->Get_detector_id() > NDetectors || FatimaHit->Get_detector_id() < 0) continue;
             if (FatimaHit->Get_detector_id() == fatima_config->SC41L() || FatimaHit->Get_detector_id() == fatima_config->SC41R()) continue; // veto_sc41
 
-            // Start-Stop
-            // CEJ: not done yet
-
+           
 
             // FRS-Fatima
             Long64_t dT_FRS_Fatima = 0;

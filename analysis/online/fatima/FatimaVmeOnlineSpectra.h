@@ -2,15 +2,20 @@
 #define FatimaVmeOnlineSpectra_H
 
 #include "FairTask.h"
-#include "TFolder.h"
 #include "TCanvas.h"
 #include <vector>
 #include "TH1.h"
 #include "TFile.h"
+#include "TFolder.h"
+#include "TDirectory.h"
+#include "TH1F.h"
+#include "TH2F.h"
 #include "TFatimaVmeConfiguration.h"
 
 class EventHeader;
-
+class TFolder;
+class TDirectory;
+class TFile;
 class TH1I;
 class TH1D;
 class TH2D;
@@ -47,19 +52,19 @@ class FatimaVmeOnlineSpectra : public FairTask
 
         TFile* file_fatima_vme_snapshot;
 
-
         // Folders
-        TFolder* folder_fatima_vme;
-        TFolder* folder_stats_vme;
-        TFolder* folder_raw_vme;
-        TFolder* folder_cal_vme;
-        TFolder* folder_raw_energy;
-        TFolder* folder_raw_time;
-        TFolder* folder_cal_energy;
-        TFolder* folder_cal_time;
-        TFolder* folder_tdc_dt;
-        TFolder* folder_dt_ch1;
-        TFolder* folder_dt_sc41;
+        TFolder* histograms;
+        TDirectory* dir_fatima_vme;
+        TDirectory* dir_stats_vme;
+        TDirectory* dir_raw_vme;
+        TDirectory* dir_cal_vme;
+        TDirectory* dir_raw_energy;
+        TDirectory* dir_raw_time;
+        TDirectory* dir_cal_energy;
+        TDirectory* dir_cal_time;
+        TDirectory* dir_tdc_dt;
+        TDirectory* dir_dt_ch1;
+        TDirectory* dir_dt_sc41;
 
         // Canvases
         TCanvas* c_FatVME_E;

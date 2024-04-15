@@ -36,7 +36,6 @@ frsData/FrsTPCCalData.cxx
 frsData/FrsUserCalData.cxx
 frsData/FrsVFTXCalData.cxx
 frsData/FrsHitData.cxx
-frsData/FrsAnalysisData.cxx
 lisaData/LisaData.cxx
 lisaData/LisaTraceData.cxx
 aidaData/AidaData.cxx
@@ -64,6 +63,7 @@ bb7Data/BB7VmeData.cxx
 bb7Data/BB7VmeCalData.cxx
 bb7Data/TBB7VmeConfiguration.cxx
 frsData/TFRSParameter.cxx
+frsData/TFrsConfiguration.cxx
 frsData/FrsGate.cxx
 baseData/TCorrelationsConfiguration.cxx
 )

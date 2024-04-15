@@ -37,7 +37,6 @@
 #pragma link C++ class FrsUserCalData+;
 #pragma link C++ class FrsVFTXCalData+;
 #pragma link C++ class FrsHitData+;
-#pragma link C++ class FrsAnalysisData+;
 #pragma link C++ class TFRSParameter+;
 #pragma link C++ class TMWParameter+;
 #pragma link C++ class TTPCParameter+;
@@ -63,6 +62,7 @@
 #pragma link C++ class AidaHit+;
 #pragma link C++ class std::vector<AidaHit>+;
 
+#pragma link C++ class TFrsConfiguration+;
 #pragma link C++ class TAidaConfiguration+;
 #pragma link C++ class TGermaniumConfiguration+;
 #pragma link C++ class TFatimaTwinpeaksConfiguration+;

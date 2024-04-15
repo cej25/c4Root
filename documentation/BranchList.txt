@@ -1,0 +1,190 @@
+Tree name: "evt"
+
+For the most part "Cal" or "Hit" branches are useful -
+but all are included for completeness.
+
+Branch:
+    "EventHeader."
+        - "fTrigger"
+        - "fTimeStamp"
+        - "fEventno"
+        - "fSpillFlag" [bool]
+ 
+    "AidaAdcData"
+        - "rawTime"
+        - "slowTime"
+        - "fastTime"
+        - "fee"
+        - "channel"
+        - "range"
+        - "value"
+    "AidaFlowData"
+        - "time"
+        - "fee"
+        - "pause"
+    "AidaScalerData"
+        - "time"
+        - "value"
+        - "fee"
+    
+    "AidaImplantCalAdcData"
+        - "slowTime"
+        - "fastTime"
+        - "fee"
+        - "channel"
+        - "dssd"
+        - "side"
+        - "strip"
+        - "range"
+        - "intensity"
+        - "energy"
+    "AidaDecayCalAdcData"
+        - same as above
+    "AidaTimeMachineData"
+        - "fundelayed_time"
+        - "fdelayed_time"
+        - "fwr_subsystem_id"
+        - "fwr_t"
+
+    "AidaImplantHits"
+        - "DSSD" [int]
+        - "StripX" [double]
+        - "StripY" [double]
+        - "PosX" [double]
+        - "PosY" [double]
+        - "Energy" [double]
+        - "EnergyX" [double]
+        - "EnergyY" [double]
+        - "StripXMin" [int]
+        - "StripXMax" [int]
+        - "StripYMin" [int]
+        - "StripYMax" [int]
+        - "ClusterSizeX" [int]
+        - "ClusterSizeY" [int]
+        - "Time" [int64_t]
+        - "TimeX" [int64_t]
+        - "TimeY" [int64_t]
+        - "FastTime" [int64_t]
+        - "FastTimeX" [int64_t]
+        - "FastTimeY" [int64_t]
+        - "Stopped" [bool]
+    "AidaDecayHits"
+        - same as above
+    
+    "bPlastTwinpeaksData"
+        - "fboard_id" [uint16_t]
+        - "fch_ID" [uint32_t]
+        - "flead_epoch_counter" [uint32_t]
+        - "flead_coarse_T" [uint32_t]
+        - "flead_fine_T" [double]
+        - "ftrail_epoch_counter" [uint32_t]
+        - "ftrail_coarse_T" [uint32_t]
+        - "ftrail_fine_T" [double]
+        - "fwr_subsystem_id" [uint32_t]
+        - "fwr_t" [uint64_t]
+    "bPlastTwinpeaksCalData"
+        - "fboard_id" [uint16_t]
+        - "fch_ID" [uint16_t]
+        - "fdetector_id" [uint16_t]
+        - "fdetector_stream" [std::string]
+        - "fdetector_position" [std::string]
+        - "fslow_lead_time" [double]
+        - "fslow_trail_time [double]
+        - "ffast_lead_time" [double]
+        - "ffast_trail_time" [double]
+        - "ffast_ToT" [double]
+        - "fslow_ToT" [double]
+        - "fwr_subsystem_id" [uint16_t]
+        - "fwr_t" [uint64_t]
+    
+    "FatimaTwinpeaksData"
+        - "fboard_id" [uint16_t]
+        - "fch_ID" [uint32_t]
+        - "flead_epoch_counter" [uint32_t]
+        - "flead_coarse_T" [uint32_t]
+        - "flead_fine_T" [double]
+        - "ftrail_epoch_counter" [uint32_t]
+        - "ftrail_coarse_T" [uint32_t]
+        - "ftrail_fine_T" [double]
+        - "fwr_subsystem_id" [uint32_t]
+        - "fwr_t" [uint64_t]
+    "FatimaTwinpeaksCalData"
+        - "fboard_id" [uint16_t]
+        - "fch_ID" [uint16_t]
+        - "fdetector_id" [uint16_t]
+        - "fslow_lead_time" [double]
+        - "fslow_trail_time" [double]
+        - "ffast_lead_time" [double]
+        - "ffast_trail_time" [double]
+        - "ffast_ToT" [double]
+        - "fslow_ToT" [double]
+        - "fenergy" [double]
+        - "fwr_subsystem_id" [uint16_t]
+        - "fwr_t" [uint64_t]
+    "FatimaVmeData"
+        - "fwr_t" [uint64_t]
+        - "fwr_subsystem_id" [uint16_t]
+        - "fqdc_coarse_times" [std::vector<uint32_t>]
+        - "fqdc_fine_times" [std::vector<uint64_t>]
+        - "fqdc_qlong_raw" [std::vector<uint32_t>]
+        - "fqdc_qshort_raw" [std::vector<uint32_t>]
+        - "fv1290_channels" [std::vector<uint32_t>]
+        - "fv1290_data" [std::vector<uint32_t>]
+        - "fv1290_lot" [std::vector<uint32_t>]
+        - "ftdcs_fired" [int]
+        - "fqdcs_fired" [int]
+        - "ftdc_detectors" [std::vector<uint32_t]
+        - "fqdc_detectors" [std::vector<uint32_t]
+    "FatimaVmeCalData"
+        - "fsingles_e" [std::vector<uint32_t>]
+        - "fsingles_e_raw" [std::vector<uint32_t>]
+        - "fsingles_qdc_id" [std::vector<uint32_t>]
+        - "fsingles_coarse_time" [std::vector<uint32_t>]
+        - "fsingles_fine_time" [std::vector<uint64_t>]
+        - "fsingles_tdc_timestamp" [std::vector<uint32_t>]
+        - "fsingles_tdc_timestamp_raw" [std::vector<uint32_t>]
+        - "fsingles_tdc_id" [std::vector<uint32_t>]
+        - "fsc41l_hits" [std::vector<uint32_t>]
+        - "fsc41r_hits" [std::vector<uint32_t>]
+        - "ftm_undelayed_hits" [std::vector<uint32_t>]
+        - "ftm_delayed_hits" [std::vector<uint32_t>]
+        - "fsc41l_e_hits" [std::vector<uint32_t>]
+        - "fsc41r_e_hits" [std::vector<uint32_t>]
+        - "ftm_undelayed_e_hits" [std::vector<uint32_t>]
+        - "ftm_delayed_e_hits" [std::vector<uint32_t>]
+        - "ffatvme_mult" [int]
+        - "fqdc_id" [std::vector<uint32_t>]
+        - "fqdc_e" [std::vector<uint32_t>]
+        - "fqdc_e_raw" [std::vector<uint32_t>]
+        - "fqdc_t_coarse" [std::vector<uint32_t>]
+        - "fqdc_t_fine" [std::vector<uint32_t>]
+        - "ftdc_id" [std::vector<uint32_t>]
+        - "ftdc_time" [std::vector<uint32_t>]
+        - "ftdc_time_raw" [std::vector<uint32_t>]
+    
+    "FrsMainData"
+        - "fScalers_N" [Int_t]
+        - "fScalers_Index" [std::vector<uint32_t>]
+        - "fV830_Scalers" [std::vector<uint]
+    "FrsMainCalData"
+        -
+    "FrsTPCData"
+        -
+    "FrsTPCCalData"
+        -
+    "FrsUserData"   
+        -
+    "FrsUserCalData"
+        -
+    "FrsTpatData"
+        -
+    "FrsHitData"
+        -
+
+
+    
+
+
+    
+
+    

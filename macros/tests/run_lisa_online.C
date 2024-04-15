@@ -22,11 +22,12 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     FairLogger::GetLogger()->SetColoredLog(true);
     
     //TString filename = "trans://R4L-21";
-    //TString filename = "~/lustre/gamma/beam_monitor_2021/s496_00**.lmd";
     TString filename = "/u/gandolfo/lustre/despec/lisa/eris_241Am_1000V_0094_0001.lmd";
+    //TString filename = "/u/gandolfo/lustre/despec/lisa/tokyo_10dec_0076_0001.lmd";
     //TString outputpath = "/u/gandolfo/watermelon/";
     TString outputpath = "/u/gandolfo/lustre/gamma/LISA/data/c4data/";
     TString outputFilename = outputpath + "eris_test.root";
+    //TString outputFilename = outputpath + "tokyo_test.root";	
 
     Int_t refresh = 10; // Refresh rate for online histograms
     Int_t port = 6001;

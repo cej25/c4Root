@@ -2,6 +2,10 @@
 #define bPlastOnlineSpectra_H
 
 #include "FairTask.h"
+#include "TFolder.h"
+#include "TDirectory.h"
+#include "TH1F.h"
+#include "TH2F.h"
 #include "TbPlastConfiguration.h"
 #include <vector>
 
@@ -11,6 +15,8 @@ class TCanvas;
 class TH1F;
 class TH2F;
 class TFile;
+class TFolder;
+class TDirectory;
 
 class bPlastOnlineSpectra : public FairTask
 {
@@ -65,17 +71,17 @@ class bPlastOnlineSpectra : public FairTask
         TCanvas* c_bplast_snapshot;
 
         //Folders and files
+        TFolder* histograms;
         TDirectory* dir_bplast;
-        TFolder* folder_bplast;
-        TFolder* folder_bplast_slowToT;
-        TFolder* folder_bplast_fastToT;
-        TFolder* folder_bplast_hitpattern;
-        TFolder* folder_bplast_fast_v_slow;
-        TFolder* folder_bplast_time_spectra;
+        TDirectory* dir_bplast_slowToT;
+        TDirectory* dir_bplast_fastToT;
+        TDirectory* dir_bplast_hitpattern;
+        TDirectory* dir_bplast_fast_vs_slow;
+        TDirectory* dir_bplast_time_spectra;
+
         TFile* file_bplast_snapshot;
 
         // Histograms
-
         std::vector<TH1F*> h1_bplast_slowToT;
         std::vector<TH1F*> h1_bplast_fastToT;
         std::vector<TH1F*> h1_bplast_hitpatterns;
