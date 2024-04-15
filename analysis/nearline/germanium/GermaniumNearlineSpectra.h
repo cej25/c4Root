@@ -24,7 +24,6 @@ class GermaniumNearlineSpectra : public FairTask
         GermaniumNearlineSpectra();
         GermaniumNearlineSpectra(const TString& name, Int_t verbose = 1);
 
-
         void CreateHistograms();
 
         virtual ~GermaniumNearlineSpectra();
