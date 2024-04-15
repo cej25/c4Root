@@ -6,7 +6,8 @@
 // c4
 #include "FrsNearlineSpectra.h"
 #include "FrsHitData.h"
-#include "TCutGGates.h"
+#include "TCutGGates.h" 
+//#include "FrsGate.h"
 #include "c4Logger.h"
 
 // ROOT

@@ -101,6 +101,7 @@ InitStatus FatimaVmeOnlineSpectra::Init()
         h1_FatVME_RawE[i]->Draw();
     }
     c_FatVME_RawE->cd(0);
+    dir_raw_energy->Append(c_FatVME_RawE);
 
     dir_cal_energy->cd();
     c_FatVME_E = new TCanvas("c_FatVME_E", "Fatima VME Calibrated Energies", 650, 350);
@@ -112,6 +113,7 @@ InitStatus FatimaVmeOnlineSpectra::Init()
         h1_FatVME_E[i]->Draw();
     }
     c_FatVME_E->cd(0);
+    dir_cal_energy->Append(c_FatVME_E);
 
     h1_FatVME_E_Sum = new TH1D("h1_FatVME_E_Sum", "Fatima VME Energy - All Detectors summed", 4000, 0, 4000);
     
@@ -125,6 +127,7 @@ InitStatus FatimaVmeOnlineSpectra::Init()
         h1_FatVME_RawT[i]->Draw();
     }
     c_FatVME_RawT->cd(0);
+    dir_raw_time->Append(c_FatVME_RawT);
 
     dir_tdc_dt = dir_cal_vme->mkdir("Time Differences");
     dir_dt_sc41 = dir_tdc_dt->mkdir("SC41L dT");
@@ -140,6 +143,7 @@ InitStatus FatimaVmeOnlineSpectra::Init()
         h1_FatVME_TDC_dT_refSC41L[i]->Draw();
     }
     c_FatVME_dTrefSC41->cd(0);
+    dir_dt_sc41->Append(c_FatVME_dTrefSC41);
 
     dir_dt_ch1->cd();
     c_FatVME_dTrefCh1 = new TCanvas("c_FatVME_dTrefCh1", "Fatima VME T - Ch1 T dT", 650, 350);
@@ -151,6 +155,7 @@ InitStatus FatimaVmeOnlineSpectra::Init()
         h1_FatVME_TDC_dt_refCh1[i]->Draw();
     }
     c_FatVME_dTrefCh1->cd(0);
+    dir_dt_ch1->Append(c_FatVME_dTrefCh1);
     
     dir_fatima_vme->cd();
     h1_FatVME_time_machine_undelayed = new TH1D("h1_FatVME_time_machine_undelayed", "Time Machine Undelayed - FATIMA VME", 2000, 0, 40000);
