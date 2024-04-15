@@ -3,10 +3,10 @@
 #SBATCH --partition=main
 #SBATCH --time=00:30:00
 #SBATCH --output=/lustre/gamma/s100_nearline/cluster/logs/s100_hadd%j.log
-#SBATCH -a 1-10
+##SBATCH -a 1-10
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=2
+##SBATCH --cpus-per-task=2
 #SBATCH --mem-per-cpu=8GB
 
 export FAIRROOTPATH=/cvmfs/fairsoft.gsi.de/debian11/fairroot/v18.8.0_nov22p1
@@ -31,7 +31,7 @@ export UCESB_DIR=/lustre/gamma/s100_nearline/ucesb
 export UCESB_BASE_DIR=/lustre/gamma/s100_nearline/ucesb
 
 # Define input and output files
-input_file_list="input_files.txt"
+input_file_list="/lustre/gamma/s100_nearline/histograms/input_files.txt"
 output_file="/lustre/gamma/s100_nearline/histograms/summed_histogram.root"
 
 # Check if the input file list exists

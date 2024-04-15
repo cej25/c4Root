@@ -51,5 +51,5 @@ gSystem->AddLinkedLibs("-L/lustre/gamma/s100_nearline/virgobuild/lib -llibc4Data
 gSystem->AddLinkedLibs("-L/lustre/gamma/s100_nearline/virgobuild/lib -llibc4MacroCompiler.so"); 
 gSystem->AddLinkedLibs("-L/lustre/gamma/s100_nearline/virgobuild/lib -llibc4Base.so"); 
 
-.x /lustre/gamma/s100_nearline/cluster/s100_make_trees.C("$file")
+.x /lustre/gamma/s100_nearline/cluster/s100_nearline_histograms.C("$file")
 EOF
