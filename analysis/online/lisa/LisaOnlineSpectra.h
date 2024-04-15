@@ -43,10 +43,12 @@ class LisaOnlineSpectra : public FairTask
         Int_t fNEvents;
 
         // Canvas
+        std::vector<TCanvas*> c_energy_layer_ch;
         //TCanvas* c_h2_traces;
 
         // Histograms
-        TH1I* h1_hitpattern;
+        //TH1I* h1_hitpattern;
+        std::vector<TH1F> h1_energy_layer_ch;
         TH1I* h1_multiplicity;
         TH1F* h1_energy;
         TH2F* h2_traces;

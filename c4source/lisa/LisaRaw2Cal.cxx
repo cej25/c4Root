@@ -24,7 +24,7 @@ LisaRaw2Cal::LisaRaw2Cal()
     //,   fTimeMachineArray(new TClonesArray("TimeMachineData"))
 {
     lisa_config = TLisaConfiguration::GetInstance();
-    detector_mapping = lisa_config->Mapping();
+    detector_mapping = lisa_config->Mapping();   
 }
 
 LisaRaw2Cal::~LisaRaw2Cal()
@@ -65,20 +65,57 @@ void LisaRaw2Cal::Exec(Option_t* option)
             if (!lisa_item) continue;
 
             // get boards, channel ids (vectors)
-            // loop through boards, channels
-                // if mapping is loaded do mapping
-                    // create std::pair<int, int> of board, channel
-                    // if (mapping.count(unmapped) > 0)
-                        // extract layer, x, y
-                        // add to vector
-                        // add e, traces etc to new vector
-            
+            data_boards = lisa_item->GetBoardNum();
+            data_channel = lisa_item->GetID();
+            data_energy = lisa_item->GetEnergy();
+            data_traces = lisa_item->GetTraces();
+            data_multiplicity = lisa_item->GetMultiplicity();
+            int tot_multiplicity = std::accumulate(data_multiplicity.begin(),data_multiplicity.end(),0); //tot multiplicity in all boards
+            int traceLength = data_traces.size()/tot_multiplicity;
 
-                // calibration of energy whatever ...
+            std::vector<int> layers;
+            std::vector<int> xpositions;
+            std::vector<int> ypositions;
+            std::vector<uint32_t> raw_energy;
+            std::vector<uint32_t> raw_traces;
+
+            int count = 0;
+            for (int i=0; i < data_boards.size(); i++)
+            {
+                for (int j=count; j < data_multiplicity[i] + count; j++)
+                {
+                    std::pair<int,int> unmapped_channel = {data_boards.at(i), data_channel.at(j)};
+                    if (detector_mapping.count(unmapped_channel) > 0)
+                    {
+                        int layer = detector_mapping.at(unmapped_channel).first;
+                        int xpos = detector_mapping.at(unmapped_channel).second.first;
+                        int ypos = detector_mapping.at(unmapped_channel).second.second;
+
+                        layers.emplace_back(layer);
+                        xpositions.emplace_back(xpos);
+                        ypositions.emplace_back(ypos);
+                        raw_energy.emplace_back(data_energy.at(j));
+
+                        for (int n = 0; n < traceLength ; n++)
+                        {
+                            raw_traces.emplace_back(data_traces.at(j*traceLength + n));
+                        }
+
+                    }
+                }
+
+                count += data_multiplicity[i];
+            }
+            
             
             LisaCalData* lisa_cal_item = new LisaCalData();
 
             // set layer, x, y, e, traces etc. vectors into new caldata_item
+            lisa_cal_item->SetLayers(layers);
+            lisa_cal_item->SetXPositions(xpositions);
+            lisa_cal_item->SetYPositions(ypositions);
+            lisa_cal_item->SetRawEnergy(raw_energy);
+            lisa_cal_item->SetRawTraces(raw_traces);
 
             new ((*fLisaCalArray)[fLisaCalArray->GetEntriesFast()]) LisaCalData(*lisa_cal_item);
             

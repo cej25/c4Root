@@ -43,7 +43,15 @@ class LisaRaw2Cal : public FairTask
 
         uint64_t wr_t;
 
+        //int NBoards = 1; 
+
         std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> detector_mapping;
+
+        std::vector<int> data_boards;
+        std::vector<uint32_t> data_channel;
+        std::vector<uint32_t> data_energy;
+        std::vector<uint32_t> data_traces;
+        std::vector<uint32_t> data_multiplicity;
 
 
     public:

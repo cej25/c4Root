@@ -23,6 +23,7 @@
 
 LisaOnlineSpectra::LisaOnlineSpectra()
 {
+    lisa_config = TLisaConfiguration::GetInstance();
 }
 
 LisaOnlineSpectra::LisaOnlineSpectra(const TString& name, Int_t verbose)
@@ -32,6 +33,7 @@ LisaOnlineSpectra::LisaOnlineSpectra(const TString& name, Int_t verbose)
     , header(nullptr)
     // ranges
 {
+    
 }
 
 LisaOnlineSpectra::~LisaOnlineSpectra()
@@ -69,16 +71,26 @@ InitStatus LisaOnlineSpectra::Init()
     TFolder *lisaFold = new TFolder("Lisa", "Lisa");
     run->AddObject(lisaFold);
 
-    //:::::::::::Hit Pattern
-    h1_hitpattern = new TH1I("h1_hitpattern","LISA Hit Pattern",16,0,16);
-    h1_hitpattern->GetXaxis()->SetTitle("ChID Fired");
-    lisaFold->Add(h1_hitpattern);
+    /*
+    //:::::::::::Channel IDs
+    h1_channelID = new TH1I("h1_channelID","LISA Channel IDs",16,0,16);
+    h1_channelID->GetXaxis()->SetTitle("ChID Fired");
+    lisaFold->Add(h1_channelID);
+    */
 
     //:::::::::::Multiplicity
     h1_multiplicity = new TH1I("h1_multiplicity","LISA Multiplicity",8,0,8); //for 3 layer 2x2 + 1
     h1_multiplicity->GetXaxis()->SetTitle("Multiplicity");
     h1_multiplicity->SetStats(0);
     lisaFold->Add(h1_multiplicity);
+
+
+    //:::::::::::::Energy per Layer
+    det_number=lisa_config->NLayers();
+    c_energy_layer_ch.resize(det_number);
+
+
+    
 
 
 
@@ -116,7 +128,7 @@ InitStatus LisaOnlineSpectra::Init()
     //c_h2_traces->cd(0);
     
     lisaFold->Add(h2_traces);
-    lisaFold->Add(c_h2_traces);
+    //lisaFold->Add(c_h2_traces);
 
 
     run->GetHttpServer()->RegisterCommand("Reset_Lisa_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
@@ -142,32 +154,42 @@ void LisaOnlineSpectra::Exec(Option_t* option)
             if (!hit)
                 continue;
             //:::::::::::Hit Pattern
-            std::vector<int> hit_pattern = hit->GetHitPattern(); 
+            //std::vector<int> hit_pattern = hit->GetHitPattern(); 
+            //std::cout << "hit pattern:" << hit_pattern.size() << std::endl;
+
+            /*
             for (int n = 0; n< hit_pattern.size(); n++ )
             {
                 h1_hitpattern->Fill(hit_pattern[n]);
             }
+            */
+
+            //:::::::::::Channel ID
+
+            
             //:::::::::::Multiplicity
-            uint32_t M = hit->GetMultiplicity(); 
-            h1_multiplicity->Fill(M);
+            std::vector<uint32_t> M = hit->GetMultiplicity(); 
+            //h1_multiplicity->Fill(M);
 
             //get stuff looping over M
             //:::::::::::Energy
             std::vector<uint32_t> ch_energy = hit->GetEnergy(); 
-            for (int index = 0; index < M; index++)
+
+
+            for (int index = 0; index < M[0]; index++)
             {
                 h1_energy->Fill(ch_energy[index]);
             }
             //:::::::::::Traces           
             std::vector<uint32_t> traces = hit->GetTraces();
-            std::cout << "trace size:" << traces.size() << "mult: " << M << std::endl;
+            //std::cout << "trace size:" << traces.size() << "mult: " << M << std::endl;
             std::vector<uint32_t> tracesI = hit->GetTracesI();
             //int traceLenght = traces.size();
 
             h2_traces->Reset();
-            for (int index = 0; index < M ; index++)
+            for (int index = 0; index < M[0] ; index++)
             {
-                uint32_t traceL = traces.size()/M;
+                uint32_t traceL = traces.size()/M[0];
                 for (int i = 0; i < traceL ; i++)
                 {
                     h2_traces->Fill(i*(0.01),traces[traceL*index + i]);
