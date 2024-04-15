@@ -23,7 +23,7 @@
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
 {
-    #include "../../config/s100/frs/setup_s100_dryrun.C"
+    #include "/lustre/gamma/s100_nearline/c4Root/config/s100/frs/setup_s100_dryrun.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -45,7 +45,7 @@ typedef struct EXT_STR_h101_t
 } EXT_STR_h101;
 
 
-void nearline(TString filename)
+void s100_nearline_histograms(TString filename)
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
 
@@ -101,23 +101,6 @@ void nearline(TString filename)
 
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Gates *************************************************************** //
-    
-    // Note: please add the same number of each type of gate
-    std::string frs_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/frs/Gates/";
-    std::vector<std::string> ZAoQ_cuts = {"ZvsAoQ1"};
-    TCutGGates* ZAoQ = new TCutGGates("ZAoQ", ZAoQ_cuts, frs_gate_path);
-    std::vector<std::string> Z1Z2_cuts = {"Z1vsZ21"};
-    TCutGGates* Z1Z2 = new TCutGGates("Z1Z2", Z1Z2_cuts, frs_gate_path);
-    std::vector<std::string> x2AoQ_cuts = {"x2vsAoQ1"};
-    TCutGGates* x2AoQ = new TCutGGates("x2AoQ", x2AoQ_cuts, frs_gate_path);
-    std::vector<std::string> x4AoQ_cuts = {"x4vsAoQ1"};
-    TCutGGates* x4AoQ = new TCutGGates("x4AoQ", x4AoQ_cuts, frs_gate_path);
-    std::vector<std::string> dEdegZ_cuts = {"dEdegvsZ1"};
-    TCutGGates* dEdegZ = new TCutGGates("dEdegZ", dEdegZ_cuts, frs_gate_path);
-    std::vector<TCutGGates*> FrsGates = {ZAoQ, Z1Z2, x2AoQ, x4AoQ, dEdegZ};
-
-    // ------------------------------------------------------------------------------------ //
-    // *** Initialise Configurations *************************************************************** //
 
     TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_mar20.txt");
     TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_new.txt");
@@ -171,7 +154,7 @@ void nearline(TString filename)
         run->AddTask(nearlinebplast);
         
     }
-    
+    /*
     if (GERMANIUM_ON)
     {
         GermaniumNearlineSpectra* nearlinege = new GermaniumNearlineSpectra();
@@ -199,7 +182,7 @@ void nearline(TString filename)
         FrsNearlineSpectra* nearlinefrs = new FrsNearlineSpectra();
         
         run->AddTask(nearlinefrs);
-    }
+    }*/
     
     TString b = "Aida";
     TString c = "Fatima";

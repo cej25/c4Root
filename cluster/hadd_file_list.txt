@@ -1,0 +1,8 @@
+/lustre/gamma/s100_nearline/histograms/Au_beam_0010_0001_tree_histograms.root
+/lustre/gamma/s100_nearline/histograms/Au_beam_0010_0002_tree_histograms.root
+/lustre/gamma/s100_nearline/histograms/Au_beam_0010_0003_tree_histograms.root
+/lustre/gamma/s100_nearline/histograms/Au_beam_0010_0004_tree_histograms.root
+/lustre/gamma/s100_nearline/histograms/Au_beam_0010_0005_tree_histograms.root
+/lustre/gamma/s100_nearline/histograms/Au_beam_0010_0006_tree_histograms.root
+/lustre/gamma/s100_nearline/histograms/Au_beam_0010_0007_tree_histograms.root
+/lustre/gamma/s100_nearline/histograms/Au_beam_0010_0007_tree_histograms.root
