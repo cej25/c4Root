@@ -21,8 +21,8 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
     
-    //TString filename = "trans://R4L-21";
-    TString filename = "/u/gandolfo/lustre/despec/lisa/eris_241Am_1000V_0094_0001.lmd";
+    TString filename = "stream://x86l-166";
+    //TString filename = "/u/gandolfo/lustre/despec/lisa/eris_241Am_1000V_0094_0001.lmd";
     //TString filename = "/u/gandolfo/lustre/despec/lisa/tokyo_10dec_0076_0001.lmd";
     //TString outputpath = "/u/gandolfo/watermelon/";
     TString outputpath = "/u/gandolfo/lustre/gamma/LISA/data/c4data/";
