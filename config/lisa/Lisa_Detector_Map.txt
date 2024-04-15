@@ -1,6 +1,6 @@
 #:::::::::::::::LISA Mapping - 3 layers in one board::::::::::::::
 #---------------------------------------------------------#
-#           FEBEXID  FEBEXCHA  LayerID(z)  DiamondlID(xy)
+#           FEBEXID  FEBEXCHA  LayerID(z)  DiamondID(x) DiamondID(y)
 #---------------------------------------------------------#
 
 #Front side (xy)
