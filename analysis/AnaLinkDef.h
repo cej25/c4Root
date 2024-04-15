@@ -29,6 +29,7 @@
 #pragma link C++ class FatimaVmeNearlineSpectra+;
 #pragma link C++ class AidaNearlineSpectra+;
 #pragma link C++ class FrsNearlineSpectra+;
+#pragma link C++ class GermaniumNearlineSpectra+;
 
 #pragma link C++ class FrsAidaCorrelations+;
 #pragma link C++ class FrsFatimaCorrelations+;

@@ -1,5 +1,13 @@
 #include <TROOT.h>
 
+#define GET_FILENAME(path) \
+    ({ \
+        std::string fullPath(path); \
+        size_t lastSlashPos = fullPath.find_last_of("/"); \
+        std::string fn = fullPath.substr(lastSlashPos + 1, fullPath.find_last_of(".") - lastSlashPos - 1); \
+        fn; \
+    })
+
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define FATIMA_ON 1
 #define FATIMA_VME_ON 1
@@ -45,10 +53,7 @@ void nearline(TString filename)
     TString fExpName = "s100";
 
     // Define important paths.
-    TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
-    TString c4Root_path = "/u/cjones/c4Root";
-    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors --max-events=300000";
-    ucesb_path.ReplaceAll("//","/");
+    TString c4Root_path = "/lustre/gamma/s100_nearline/c4Root";
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
 
@@ -67,8 +72,8 @@ void nearline(TString filename)
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    TString outputpath = "Au_beam_0010_0001_histograms";
-    TString outputFileName = outputpath + ".root";
+    TString outputpath = "/lustre/gamma/s100_nearline/histograms/";
+    TString outputFileName = outputpath + TString(GET_FILENAME(filename)) + "_histograms.root";
 
     FairRunAna* run = new FairRunAna();
     EventHeader* EvtHead = new EventHeader();
@@ -96,6 +101,23 @@ void nearline(TString filename)
 
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Gates *************************************************************** //
+    
+    // Note: please add the same number of each type of gate
+    std::string frs_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/frs/Gates/";
+    std::vector<std::string> ZAoQ_cuts = {"ZvsAoQ1"};
+    TCutGGates* ZAoQ = new TCutGGates("ZAoQ", ZAoQ_cuts, frs_gate_path);
+    std::vector<std::string> Z1Z2_cuts = {"Z1vsZ21"};
+    TCutGGates* Z1Z2 = new TCutGGates("Z1Z2", Z1Z2_cuts, frs_gate_path);
+    std::vector<std::string> x2AoQ_cuts = {"x2vsAoQ1"};
+    TCutGGates* x2AoQ = new TCutGGates("x2AoQ", x2AoQ_cuts, frs_gate_path);
+    std::vector<std::string> x4AoQ_cuts = {"x4vsAoQ1"};
+    TCutGGates* x4AoQ = new TCutGGates("x4AoQ", x4AoQ_cuts, frs_gate_path);
+    std::vector<std::string> dEdegZ_cuts = {"dEdegvsZ1"};
+    TCutGGates* dEdegZ = new TCutGGates("dEdegZ", dEdegZ_cuts, frs_gate_path);
+    std::vector<TCutGGates*> FrsGates = {ZAoQ, Z1Z2, x2AoQ, x4AoQ, dEdegZ};
+
+    // ------------------------------------------------------------------------------------ //
+    // *** Initialise Configurations *************************************************************** //
 
     TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_mar20.txt");
     TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_new.txt");

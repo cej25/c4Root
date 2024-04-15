@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=s100_make_trees
+#SBATCH --job-name=s100_tree_maker
 #SBATCH --partition=main
 #SBATCH --time=00:30:00
 #SBATCH --output=/lustre/gamma/s100_nearline/cluster/logs/s100_make_trees%j.log
@@ -37,7 +37,7 @@ export UCESB_BASE_DIR=/lustre/gamma/s100_nearline/ucesb
 # Compile the ROOT script
 #for file in $files
 file="/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_00$(printf "%02d" $SLURM_ARRAY_TASK_ID).lmd"
-#file="/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd"
+
 
 echo $file
 
@@ -51,5 +51,5 @@ gSystem->AddLinkedLibs("-L/lustre/gamma/s100_nearline/virgobuild/lib -llibc4Data
 gSystem->AddLinkedLibs("-L/lustre/gamma/s100_nearline/virgobuild/lib -llibc4MacroCompiler.so"); 
 gSystem->AddLinkedLibs("-L/lustre/gamma/s100_nearline/virgobuild/lib -llibc4Base.so"); 
 
-.x /lustre/gamma/s100_nearline/cluster/s100_make_trees.C("$file")
+.x /lustre/gamma/s100_nearline/cluster/s100_nearline_histograms.C("$file")
 EOF
