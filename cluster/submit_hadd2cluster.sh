@@ -31,8 +31,8 @@ export UCESB_DIR=/lustre/gamma/s100_nearline/ucesb
 export UCESB_BASE_DIR=/lustre/gamma/s100_nearline/ucesb
 
 # Define input and output files
-input_file_list="/lustre/gamma/s100_nearline/histograms/input_files.txt"
-output_file="/lustre/gamma/s100_nearline/histograms/summed_histogram.root"
+input_file_list="/lustre/gamma/s100_nearline/cluster/hadd_file_list.txt"
+output_file="/lustre/gamma/s100_nearline/histograms/Au_beam_0010_summed_histograms.root"
 
 # Check if the input file list exists
 if [ ! -f "$input_file_list" ]; then

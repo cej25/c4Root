@@ -1,9 +1,9 @@
 #!/bin/bash
 #SBATCH --job-name=s100_histo_maker
 #SBATCH --partition=main
-#SBATCH --time=00:30:00
+#SBATCH --time=02:00:00
 #SBATCH --output=/lustre/gamma/s100_nearline/cluster/logs/s100_make_histos%j.log
-#SBATCH -a 1-10
+#SBATCH -a 1-8
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=2

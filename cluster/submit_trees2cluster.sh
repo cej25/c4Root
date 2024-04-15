@@ -3,7 +3,7 @@
 #SBATCH --partition=main
 #SBATCH --time=00:30:00
 #SBATCH --output=/lustre/gamma/s100_nearline/cluster/logs/s100_make_trees%j.log
-#SBATCH -a 1-10
+#SBATCH -a 1-2
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=2
@@ -36,7 +36,7 @@ export UCESB_BASE_DIR=/lustre/gamma/s100_nearline/ucesb
 
 # Compile the ROOT script
 #for file in $files
-file="/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_00$(printf "%02d" $SLURM_ARRAY_TASK_ID).lmd"
+file="/lustre/gamma/dryrunmarch24/ts/Au_beam_0012_00$(printf "%02d" $SLURM_ARRAY_TASK_ID).lmd"
 
 
 echo $file
