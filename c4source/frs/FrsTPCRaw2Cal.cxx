@@ -158,7 +158,7 @@ void FrsTPCRaw2Cal::SetParameters()
     v1190_channel_calibgrid[3] = 107+1;//tpc24grid
     v1190_channel_calibgrid[4] = 108+1;//tpc41grid
     v1190_channel_calibgrid[5] = 109+1;//tpc42grid
-    v1190_channel_calibgrid[6] = 110+1;//tpc31grid //to be checked maybe 111
+    v1190_channel_calibgrid[6] = 110+1;//tpc31grid //to be checked maybe 111+1
 
 }
 
@@ -572,11 +572,11 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
         }
     }
 
-    bool checkrange1 = 0;
-    bool checkrange2 = 0;
-    bool checkrange3 = 0;
-    bool checkrange4 = 0;
-    bool checkrange5 = 0;
+    //bool checkrange1 = 0;
+    //bool checkrange2 = 0;
+    //bool checkrange3 = 0;
+    //bool checkrange4 = 0;
+    //bool checkrange5 = 0;
 
     // CEJ: the loops I built here are different to Go4 so I'm sure I caused some issue
     // I'm just not sure what yet...
@@ -584,6 +584,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
     {
         for (int j = 0; j < tpc_lt[i][0].size(); j++)
         {
+            bool checkrange1 = 0;
             Int_t thisdata = tpc_lt[i][0][j];
 
             Int_t currently_selected = tpc_lt_s[i][0];
@@ -591,6 +592,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
             if (thisdata > tpc->lim_lt[i][0][0] && thisdata < tpc->lim_lt[i][0][1])
             {
                 checkrange1 = true;
+
             }
 
             if (checkrange1 && (currently_selected <= 0 || (currently_selected > 0 && thisdata  < currently_selected)))
@@ -601,6 +603,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
 
         for (int j = 0; j < tpc_rt[i][0].size(); j++)
         {
+            bool checkrange2 = 0;
             Int_t thisdata = tpc_rt[i][0][j];
 
             Int_t currently_selected = tpc_rt_s[i][0];
@@ -618,6 +621,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
 
         for (int j = 0; j < tpc_lt[i][1].size(); j++)
         {
+            bool checkrange3 = 0;
             Int_t thisdata = tpc_lt[i][1][j];
 
             Int_t currently_selected = tpc_lt_s[i][1];
@@ -635,6 +639,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
 
         for (int j = 0; j < tpc_rt[i][1].size(); j++)
         {
+            bool checkrange4 = 0;
             Int_t thisdata = tpc_rt[i][1][j];
 
             Int_t currently_selected = tpc_rt_s[i][1];
@@ -654,6 +659,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
         {
             for (int k = 0; k < tpc_dt[i][j].size(); k++)
             {
+                bool checkrange5 = 0;
                 Int_t thisdata = tpc_dt[i][j][k];
 
                 Int_t currently_selected = tpc_dt_s[i][j];
@@ -670,7 +676,6 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
             }
         }
         
-
         for (int j = 0; j < 4; j++)
         {
             // calculate control sums
@@ -678,7 +683,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
             {
                 tpc_csum[i][j] = (tpc_lt_s[i][0] + tpc_rt_s[i][0] - 2 * tpc_dt_s[i][j]);
             }
-            else if (tpc_lt_s[i][1] > 0 && tpc_rt_s[i][1] > 0 && tpc_dt_s[i][j] > 0)
+            else if (2 <= j && j < 4 && tpc_lt_s[i][1] > 0 && tpc_rt_s[i][1] > 0 && tpc_dt_s[i][j] > 0)
             {
                 tpc_csum[i][j] = (tpc_lt_s[i][1] + tpc_rt_s[i][1] - 2 * tpc_dt_s[i][j]);
             }

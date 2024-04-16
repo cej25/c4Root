@@ -403,7 +403,9 @@ void FrsCal2Hit::Exec(Option_t* option)
     if (b_tpc_xy[4] && b_tpc_xy[5])
     {
         music1_x_mean = fCalHitTPC->Get_tpc_music41_x();
+        std::cout << "1: " << music1_x_mean << std::endl;
         music2_x_mean = fCalHitTPC->Get_tpc_music42_x();
+        std::cout << "2: " << music2_x_mean << std::endl;
         //music3_x_mean = fCalHitTPC->Get_tpc_music43_x();
 
         if (b_de1)
