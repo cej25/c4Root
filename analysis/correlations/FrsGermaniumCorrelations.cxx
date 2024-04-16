@@ -288,27 +288,9 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
         }
 
         // Spectra with respect to SCI41 - 'short' isomers
-<<<<<<< HEAD
         if (nHits >= 2 && sci41_seen && positive_PID){
                 for (int ihit2 = 0; ihit2 < nHits; ihit2 ++){
                     if (ihit2 == sci41_hit_idx) continue;
-=======
-        if (nHits >= 2 && sci41_seen && positive_PID)
-        {
-            for (int ihit1 = 0; ihit1 < nHits; ihit1 ++)
-            {
-                GermaniumCalData* hit_sci41 = (GermaniumCalData*)fHitGe->At(ihit1);
-                if (!hit_sci41) continue;
-                int detector_id_sci41 = hit_sci41->Get_detector_id();
-                int crystal_id_sci41 = hit_sci41->Get_crystal_id();
-                double energy_sci41 = hit_sci41->Get_channel_energy();
-                double time_sci41 = hit_sci41->Get_channel_trigger_time();
-
-                // after this test we have the sci41 hit.
-                if (detector_id_sci41 != germanium_configuration->SC41L() && detector_id_sci41 != germanium_configuration->SC41R()) continue;
-
-                for (int ihit2 = 0; ihit2 < nHits; ihit2 ++){
->>>>>>> main
                     GermaniumCalData* hit2 = (GermaniumCalData*)fHitGe->At(ihit2);
                     if (!hit2) continue;
                     int detector_id1 = hit2->Get_detector_id();
@@ -321,7 +303,6 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
                     double timediff1 = time1 - time_sci41 - germanium_configuration->GetTimeshiftCoefficient(detector_id1,crystal_id1);
                     
                     h2_germanium_summed_vs_tsci41->Fill(timediff1 ,energy1);
-<<<<<<< HEAD
                     if ((germanium_configuration->IsInsidePromptFlashCut(timediff1 ,energy1)==true) ) continue;
                     
                     h1_germanium_energy_promptflash_cut->Fill(energy1);
@@ -340,26 +321,6 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
 
                                 GermaniumCalData* hit3 = (GermaniumCalData*)fHitGe->At(ihit3);
                                 if (!hit3) continue;
-=======
-
-                    if ((germanium_configuration->IsInsidePromptFlashCut(timediff1 ,energy1)==false) ) continue;
-                    h1_germanium_energy_promptflash_cut->Fill(energy1);
-
-                    for (int idx_gamma_gate = 0; idx_gamma_gate < gamma_energies_of_interest.size(); idx_gamma_gate++){
-                        if (!(TMath::Abs(energy1 - gamma_energies_of_interest.at(idx_gamma_gate))<gate_width_gamma_energies_of_interest.at(idx_gamma_gate)) && germanium_configuration->IsInsidePromptFlashCut(timediff1,energy1)==true) continue;
-                            //now energy1 fulfills the energy requirement and is outside prompt flash
-                            
-                            h1_germanium_tsci41_energy_gated[idx_gamma_gate]->Fill(timediff1);
-
-                            
-                            if (nHits >= 3){
-                            
-                            for (int ihit3 = 0; ihit3<nHits; ihit3 ++){
-                                GermaniumCalData* hit3 = (GermaniumCalData*)fHitGe->At(ihit3);
-                                if (!hit3) continue;
-                                if (ihit3 == ihit2) continue;
-                                if (ihit3 == ihit1) continue;
->>>>>>> main
                                 int detector_id2 = hit3->Get_detector_id();
                                 int crystal_id2 = hit3->Get_crystal_id();
                                 double energy2 = hit3->Get_channel_energy();
@@ -370,11 +331,7 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
                                 if (detector_id1 == detector_id2) continue; //this is likely a good veto before the add-back is done
 
                                 double timediff2 = time2 - time_sci41 - germanium_configuration->GetTimeshiftCoefficient(detector_id2,crystal_id2);
-<<<<<<< HEAD
                                 if ((germanium_configuration->IsInsidePromptFlashCut(timediff2,energy2))) continue;
-=======
-                                if (!(germanium_configuration->IsInsidePromptFlashCut(timediff2,energy2))) continue;
->>>>>>> main
 
                                 // energy1 and energy2 are both in coincidence and outside the promptflash here:
                                 h1_germanium_energy_promptflash_cut_energy_gated[idx_gamma_gate]->Fill(energy2);
@@ -382,7 +339,6 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
                         }
                     }
                 }
-<<<<<<< HEAD
         }
 
         if (nHits >= 1 && wr_t_last_frs_hit != 0){
@@ -396,28 +352,9 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
             double energy_long = hit_long1->Get_channel_energy();
             double time_long = hit_long1->Get_channel_trigger_time();
             int64_t ge_wr_long = hit_long1->Get_wr_t();
-=======
-            }
-        }
-
-        if (nHits >= 1)
-        {
-            //long isomer.
-            for (int ihit1 = 0; ihit1 < nHits; ihit1 ++)
-            {
-
-                GermaniumCalData* hit_long1 = (GermaniumCalData*)fHitGe->At(ihit1);
-                if (!hit_long1) continue;
-                int detector_id_long = hit_long1->Get_detector_id();
-                int crystal_id_long = hit_long1->Get_crystal_id();
-                double energy_long = hit_long1->Get_channel_energy();
-                double time_long = hit_long1->Get_channel_trigger_time();
-                uint64_t ge_wr = hit_long1->Get_wr_t();
->>>>>>> main
 
                 if (germanium_configuration->IsDetectorAuxilliary(detector_id_long)) continue;
 
-<<<<<<< HEAD
 
             h2_germanium_summed_vs_wr_long->Fill((int64_t)ge_wr_long-(int64_t)wr_t_last_frs_hit, energy_long);
             
@@ -428,39 +365,13 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
 
             
             if ((int64_t)ge_wr_long - (int64_t)wr_t_last_frs_hit < stop_long_lifetime_collection) h1_germanium_energy_promptflash_cut_long->Fill(energy_long);
-=======
-                //this requirement checks that the wr_t_last_frs_hit is within the collection window for long isomer:
-                if (!((int64_t)ge_wr-(int64_t)wr_t_last_frs_hit > -1000 &&  (int64_t)ge_wr-(int64_t)wr_t_last_frs_hit < stop_long_lifetime_collection_background)) continue;
-            
-                h2_germanium_summed_vs_wr_long->Fill((int64_t)ge_wr-(int64_t)wr_t_last_frs_hit, energy_long);
-            
-                //given that sci41 is seen then we must compare the prompt flash and make sure it is not a y-ray from the flash.
-                if (sci41_seen)
-                {
-                    //require that the signal is outside the prompt flash.
-                    double timediff_to_sci41 = time_long - ((GermaniumCalData*)fHitGe->At(sci41_hit_idx))->Get_channel_trigger_time() - germanium_configuration->GetTimeshiftCoefficient(detector_id_long,crystal_id_long);
-                    if (!germanium_configuration->IsInsidePromptFlashCut(timediff_to_sci41,energy_long)) continue; // this is inside the prompt flash...
-                    
-                }
-                else if ((int64_t)ge_wr - (int64_t)wr_t_last_frs_hit < 1e3) continue;
-            
-            //prompt flash is cut out after here.
-            
-            if  (((int64_t)ge_wr - (int64_t)wr_t_last_frs_hit) < stop_long_lifetime_collection)
-            {
-                h1_germanium_energy_promptflash_cut_long->Fill(energy_long);
->>>>>>> main
 
                 for (int idx_gamma_gate = 0; idx_gamma_gate < gamma_energies_of_interest.size(); idx_gamma_gate++)
                 {
                     if (!(TMath::Abs(energy_long - gamma_energies_of_interest.at(idx_gamma_gate))<gate_width_gamma_energies_of_interest.at(idx_gamma_gate))) continue;
                     //now energy1 fulfills the energy requirement and is outside prompt flash
                         
-<<<<<<< HEAD
                         h1_germanium_twr_sci41_energy_gated[idx_gamma_gate]->Fill((int64_t)ge_wr_long-(int64_t)wr_t_last_frs_hit);
-=======
-                    h1_germanium_twr_sci41_energy_gated[idx_gamma_gate]->Fill((int64_t)ge_wr-(int64_t)wr_t_last_frs_hit);
->>>>>>> main
 
                         
                         if (nHits >= 2)
