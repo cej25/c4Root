@@ -133,7 +133,7 @@ void s100_make_trees(TString filename)
         //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_4apr_test.root", 100000);
         unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_4apr_test.root");
 
-        unpackfatima->SetOnline(false);
+        unpackfatima->SetOnline(true);
         source->AddReader(unpackfatima);
     }
 
@@ -141,7 +141,7 @@ void s100_make_trees(TString filename)
     {
         FatimaVmeReader* unpackfatimavme = new FatimaVmeReader((EXT_STR_h101_fatimavme_onion*)&ucesb_struct.fatimavme, offsetof(EXT_STR_h101, fatimavme));
         
-        unpackfatimavme->SetOnline(false);
+        unpackfatimavme->SetOnline(true);
         source->AddReader(unpackfatimavme);
     }
 
@@ -159,7 +159,7 @@ void s100_make_trees(TString filename)
         //unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_4apr_test.root", 1000000);
         unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_4apr_test.root");
         
-        unpackbplast->SetOnline(false);
+        unpackbplast->SetOnline(true);
         source->AddReader(unpackbplast);
     }
 
@@ -167,7 +167,7 @@ void s100_make_trees(TString filename)
     {
         GermaniumReader* unpackgermanium = new GermaniumReader((EXT_STR_h101_germanium_onion*)&ucesb_struct.germanium, offsetof(EXT_STR_h101, germanium));
         
-        unpackgermanium->SetOnline(false);
+        unpackgermanium->SetOnline(true);
         source->AddReader(unpackgermanium);
     }
 
@@ -177,7 +177,7 @@ void s100_make_trees(TString filename)
         //unpackbgo->DoFineTimeCalOnline(config_path + "/bgo/fine_time_histos_19mar.root", 1000000);
         unpackbgo->SetInputFileFineTimeHistos(config_path + "/bgo/fine_time_histos_19mar.root");
         
-        unpackbgo->SetOnline(false);
+        unpackbgo->SetOnline(true);
         source->AddReader(unpackbgo);
         
     }
@@ -189,10 +189,10 @@ void s100_make_trees(TString filename)
         FrsUserReader* unpackfrsuser = new FrsUserReader((EXT_STR_h101_frsuser_onion*)&ucesb_struct.frsuser, offsetof(EXT_STR_h101, frsuser));
         FrsTpatReader* unpackfrstpat = new FrsTpatReader((EXT_STR_h101_frstpat_onion*)&ucesb_struct.frstpat, offsetof(EXT_STR_h101, frstpat));
         
-        unpackfrsmain->SetOnline(false);
-        unpackfrstpc->SetOnline(false);
-        unpackfrsuser->SetOnline(false);
-        unpackfrstpat->SetOnline(false);
+        unpackfrsmain->SetOnline(true);
+        unpackfrstpc->SetOnline(true);
+        unpackfrsuser->SetOnline(true);
+        unpackfrstpat->SetOnline(true);
         
         source->AddReader(unpackfrsmain);
         source->AddReader(unpackfrstpc);
@@ -258,9 +258,9 @@ void s100_make_trees(TString filename)
         FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal();
         FrsUserRaw2Cal* calfrsuser = new FrsUserRaw2Cal();
         
-        calfrsmain->SetOnline(false);
-        calfrstpc->SetOnline(false);
-        calfrsuser->SetOnline(false);
+        calfrsmain->SetOnline(true);
+        calfrstpc->SetOnline(true);
+        calfrsuser->SetOnline(true);
         run->AddTask(calfrsmain);
         run->AddTask(calfrstpc);
         run->AddTask(calfrsuser);
