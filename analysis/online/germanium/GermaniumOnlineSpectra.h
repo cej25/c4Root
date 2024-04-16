@@ -136,11 +136,11 @@ class GermaniumOnlineSpectra : public FairTask
         TFile* file_germanium_snapshot;
 
         // Histograms energy
-        std::vector<TH1F*> h1_germanium_energy;
+        TH1F** h1_germanium_energy;
         TH2F* h2_germanium_energy_vs_detidx;
 
-        std::vector<std::vector<TH1F*>> h1_germanium_time_differences; // [reference_dector][detector index]
-        std::vector<std::vector<TH2F*>> h2_germanium_time_differences_vs_energy; // [reference_dector][detector index]
+        TH1F*** h1_germanium_time_differences; // [reference_dector][detector index]
+        TH2F*** h2_germanium_time_differences_vs_energy; // [reference_dector][detector index]
 
         TH1F* h1_germanium_energy_summed;
         TH1F* h1_germanium_energy_summed_vetosci41;
@@ -150,7 +150,7 @@ class GermaniumOnlineSpectra : public FairTask
         TH1F* h1_germanium_hitpattern;
 
         // Histograms time
-        std::vector<TH1F*> h1_germanium_time;
+        TH1F** h1_germanium_time;
 
     public:
         ClassDef(GermaniumOnlineSpectra, 1)
