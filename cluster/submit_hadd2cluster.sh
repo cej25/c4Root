@@ -1,14 +1,13 @@
 #!/bin/bash
-#SBATCH --job-name=s100_make_trees
+#SBATCH --job-name=s100_hadd
 #SBATCH --partition=main
 #SBATCH --time=00:30:00
-#SBATCH --output=/lustre/gamma/s100_nearline/cluster/logs/s100_make_trees%j.log
-#SBATCH -a 1-10
+#SBATCH --output=/lustre/gamma/s100_nearline/cluster/logs/s100_hadd%j.log
+##SBATCH -a 1-10
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=2
+##SBATCH --cpus-per-task=2
 #SBATCH --mem-per-cpu=8GB
-
 
 export FAIRROOTPATH=/cvmfs/fairsoft.gsi.de/debian11/fairroot/v18.8.0_nov22p1
 export SIMPATH=/cvmfs/fairsoft.gsi.de/debian11/fairsoft/nov22p1
@@ -31,25 +30,15 @@ export SIMPATH=/cvmfs/fairsoft.gsi.de/debian11/fairsoft/nov22p1
 export UCESB_DIR=/lustre/gamma/s100_nearline/ucesb
 export UCESB_BASE_DIR=/lustre/gamma/s100_nearline/ucesb
 
+# Define input and output files
+input_file_list="/lustre/gamma/s100_nearline/cluster/hadd_file_list.txt"
+output_file="/lustre/gamma/s100_nearline/histograms/Au_beam_0010_summed_histograms.root"
 
-#files=$(cat /lustre/gamma/s100_nearline/macros/file_list.txt)
+# Check if the input file list exists
+if [ ! -f "$input_file_list" ]; then
+    echo "Error: Input file list $input_file_list not found."
+    exit 1
+fi
 
-# Compile the ROOT script
-#for file in $files
-file="/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_00$(printf "%02d" $SLURM_ARRAY_TASK_ID).lmd"
-#file="/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd"
-
-echo $file
-
-root -b -l <<EOF
-gSystem->AddIncludePath("${FAIRROOTPATH}/include");
-gSystem->AddIncludePath("${SIMPATH}/include");
-
-gSystem->AddLinkedLibs("-L/lustre/gamma/s100_nearline/virgobuild/lib -llibc4source.so");
-gSystem->AddLinkedLibs("-L/lustre/gamma/s100_nearline/virgobuild/lib -llibc4Analysis.so");  
-gSystem->AddLinkedLibs("-L/lustre/gamma/s100_nearline/virgobuild/lib -llibc4Data.so"); 
-gSystem->AddLinkedLibs("-L/lustre/gamma/s100_nearline/virgobuild/lib -llibc4MacroCompiler.so"); 
-gSystem->AddLinkedLibs("-L/lustre/gamma/s100_nearline/virgobuild/lib -llibc4Base.so"); 
-
-.x /lustre/gamma/s100_nearline/cluster/s100_make_trees.C("$file")
-EOF
+# Submit hadd job
+srun hadd -f $output_file `cat $input_file_list`

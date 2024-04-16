@@ -105,19 +105,21 @@ InitStatus bPlastOnlineSpectra::Init()
         h1_bplast_slowToT[ihist]->Draw();
     }
     c_bplast_slowToT->cd(0);
+    dir_bplast_slowToT->Append(c_bplast_slowToT);
 
     // Fast ToT
     dir_bplast_fastToT->cd();
     c_bplast_fastToT  = new TCanvas("c_bplast_fastToT","Fast ToT bPlast spectra",1200,800);
     c_bplast_fastToT->Divide(5,(nDetectors%5==0) ? (nDetectors/5) : (nDetectors/5 + 1));
-    
-    for (int ihist = 1; ihist <= nDetectors; ihist++){
+    for (int ihist = 1; ihist <= nDetectors; ihist++)
+    {
         c_bplast_fastToT->cd(ihist);
         h1_bplast_fastToT[ihist] = new TH1F(Form("h1_bplast_fastToT_%d",ihist),Form("bPlastic Fast ToT %d",ihist),10000,0,3.5e3);
         h1_bplast_fastToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
         h1_bplast_fastToT[ihist]->Draw();   
     }
     c_bplast_fastToT->cd(0);
+    dir_bplast_fastToT->Append(c_bplast_fastToT);
 
     // Hit Pattern
     dir_bplast_hitpattern->cd();
@@ -134,6 +136,7 @@ InitStatus bPlastOnlineSpectra::Init()
     h1_bplast_hitpatterns[1]->GetYaxis()->SetTitle("Counts");
     h1_bplast_hitpatterns[1]->Draw();
     c_bplast_hitpatterns->cd(0);
+    dir_bplast_hitpattern->Append(c_bplast_hitpatterns);
 
     // tamex card hit pattern
     c_bplast_tamex_card_hitpattern  = new TCanvas("c_bplast_tamex_card_hitpattern","bPlast Tamex Card Hit Pattern",1200,800);
@@ -145,8 +148,8 @@ InitStatus bPlastOnlineSpectra::Init()
         h1_bplast_tamex_card_hitpattern[ihist]->GetYaxis()->SetTitle("Counts");
         h1_bplast_tamex_card_hitpattern[ihist]->Draw();
     }
-    
     c_bplast_tamex_card_hitpattern->cd(0);
+    dir_bplast_hitpattern->Append(c_bplast_hitpatterns);
 
     // Time spectra
     dir_bplast_time_spectra->cd();
@@ -159,6 +162,7 @@ InitStatus bPlastOnlineSpectra::Init()
         h1_bplast_time_spectra[ihist]->Draw();
     }
     c_bplast_time_spectra->cd(0);
+    dir_bplast_time_spectra->Append(c_bplast_time_spectra);
 
     dir_bplast_fast_vs_slow->cd();
     c_bplast_fast_v_slow  = new TCanvas("c_bplast_fast_v_slow","fast vs slow ToT bplast spectra",1200,800);
@@ -171,6 +175,7 @@ InitStatus bPlastOnlineSpectra::Init()
         h2_bplast_fastToT_vs_slowToT[ihist]->Draw("COLZ");
     }
     c_bplast_fast_v_slow->cd(0);
+    dir_bplast_fast_vs_slow->Append(c_bplast_fast_v_slow);
 
     dir_bplast_hitpattern->cd();
     c_bplast_multiplicity  = new TCanvas("Multiplicity","bPlast multiplicity spectra",1200,800);
@@ -180,6 +185,7 @@ InitStatus bPlastOnlineSpectra::Init()
     h1_bplast_multiplicity->Draw();
     c_bplast_multiplicity->SetLogy();
     c_bplast_multiplicity->cd(0);
+    dir_bplast_hitpattern->Append(c_bplast_multiplicity);
 
     dir_bplast->cd();
 
