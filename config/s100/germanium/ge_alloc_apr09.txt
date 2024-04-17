@@ -2,8 +2,8 @@
 #           FEBEXID  FEBEXCHA  DetID  CrystalID
 #----------------------------------------------------#
 #ch 1 - 16
-TimeMachineU 0   1   13   0
-TimeMachineD 0   2   14   0
+TimeMachineD 0   1   13   0
+TimeMachineU 0   2   14   0
 SC41L_D 0   3   15  0
 SC41R_D 0   4   16  0
 0   5   17    0
