@@ -73,9 +73,8 @@ void s100_online_new()
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     //TString filename = "stream://x86l-182"; // BGO
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
-
-    //TString filename = "trans://x86l-144"; // timesorter.
-    //TString filename = "trans://x86l-86"; // timesorter.
+    //TString filename = "trans://x86l-144"; // ??
+    //TString filename = "trans://x86l-86"; // ??.
     //TString filename = "trans://x86l-144"; // 
     //TString filename = "stream://x86l-182"; // bgo
     TString filename = "trans://lxg1257"; // timesorter.
@@ -84,7 +83,7 @@ void s100_online_new()
     //TString filename = "stream://x86l-117"; // fatima tamex
     //TString filename = "stream://x86l-87"; //bplast
     //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
-    //TString filename = "~/Au_beam_0010_0001.lmd";
+    TString filename = "~/Au_beam_0010_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
