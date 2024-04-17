@@ -93,7 +93,7 @@ Bool_t FatimaVmeReader::Read()
     int qdcs_fired = 0;
 
     //std::cout << "num qdc boards from config: " << num_qdc_boards << std::endl;
-    for (int qdc = 0; qdc < 4; qdc++)
+    for (int qdc = 0; qdc < 5; qdc++)
     {
         Int_t board_id = fData->fatimavme_qdc[qdc]._board_id;
         
