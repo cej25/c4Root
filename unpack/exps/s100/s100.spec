@@ -37,6 +37,7 @@ SUBEVENT(bgo_tamex_subevent)
     {
         tamex[0] = TAMEX4_SFP(sfp=1,card=0);
         tamex[1] = TAMEX4_SFP(sfp=1,card=1);
+        tamex[2] = TAMEX4_SFP(sfp=1,card=2);
     }  
 }
 
@@ -320,7 +321,7 @@ EVENT
     fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = 75, control = 20);
     fatimavme = fatima_vme_subev(type = 10, subtype = 1, procid = 70, control = 20);
     bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20);
-    //bgo = bgo_tamex_subevent(procid = 100);
+    bgo = bgo_tamex_subevent(procid = 100);
 
     frsmain = frs_main_subev(procid = 10);
     frstpc = frs_tpc_subev(procid = 20);
