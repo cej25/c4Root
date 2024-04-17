@@ -1,23 +1,13 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-<<<<<<< HEAD
 #define FATIMA_ON 1
 #define FATIMA_VME_ON 1
 #define AIDA_ON 0
 #define BPLAST_ON 0
 #define GERMANIUM_ON 1
-#define BGO_ON 0
+#define BGO_ON 1
 #define FRS_ON 0
-=======
-#define FATIMA_ON 0
-#define FATIMA_VME_ON 0
-#define AIDA_ON 0
-#define BPLAST_ON 0
-#define GERMANIUM_ON 0
-#define BGO_ON 0
-#define FRS_ON 1
->>>>>>> 1a02526e38526746afeef3e81919c63998b4235f
 #define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 0
