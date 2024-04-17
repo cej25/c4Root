@@ -28,6 +28,7 @@ TLisaConfiguration::TLisaConfiguration()
 
 void TLisaConfiguration::ReadMappingFile()
 {   
+    std::cout<<"un elefante"<<std::endl;
     std::set<int> febex_boards;
     std::set<int> layers;
     int detectors = 0;
@@ -35,7 +36,7 @@ void TLisaConfiguration::ReadMappingFile()
     std::ifstream detector_map_file(mapping_file);
     std::string line;
 
-    if (detector_map_file.fail()) c4LOG(warn, "Could not open Lisa mapping file"); return;
+    if (detector_map_file.fail()) c4LOG(fatal, "Could not open Lisa mapping file"); //return;
 
     while (std::getline(detector_map_file, line))
     {
@@ -95,7 +96,7 @@ void TLisaConfiguration::ReadMappingFile()
     detector_mapping_loaded = 1;
     detector_map_file.close();
 
-    LOG(info) << "Lisa Configuration File: " + mapping_file;
+    c4LOG(info, "Lisa Configuration File: " + mapping_file);
     return;
 
 }
