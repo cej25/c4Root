@@ -34,6 +34,9 @@ class TbPlastConfiguration
         int TM_Delayed() const;
         int SC41L() const;
         int SC41R() const;
+        int FRS_ACCEPT() const;
+        int FATIMA_ACCEPT() const;
+        int FATIMA_FREE() const;
         std::set<int> ExtraSignals() const;
     
     private:
@@ -70,6 +73,7 @@ class TbPlastConfiguration
         int sc41r_d;
         int fatima_accept;
         int fatima_free;
+        int frs_accept;
 
         bool DetectorMap_loaded = 0;
 
@@ -158,6 +162,21 @@ inline int TbPlastConfiguration::SC41L() const
 inline int TbPlastConfiguration::SC41R() const
 {
     return sc41r_d;
+}
+
+inline int TbPlastConfiguration::FRS_ACCEPT() const
+{
+    return frs_accept;
+}
+
+inline int TbPlastConfiguration::FATIMA_ACCEPT() const
+{
+    return fatima_accept;
+}
+
+inline int TbPlastConfiguration::FATIMA_FREE() const
+{
+    return fatima_free;
 }
 
 
