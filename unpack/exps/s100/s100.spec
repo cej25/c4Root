@@ -111,12 +111,37 @@ SUBEVENT(fatima_vme_subev)
     {
         scalers = FATIMA_VME_SCALERS();
     };
+
+    select optional
+    {
+        qdc1 = VME_CAEN_V1751(board=6);
+    }
+
+    select optional
+    {
+        qdc2 = VME_CAEN_V1751(board=7);
+    }
+
+    select optional
+    {
+        qdc3 = VME_CAEN_V1751(board=8);
+    }
+
+    select optional
+    {
+        qdc4 = VME_CAEN_V1751(board=9);
+    }
+
+    select optional
+    {
+        qdc5 = VME_CAEN_V1751(board=10);
+    }
     
-    qdc[0] = VME_CAEN_V1751(board=6);
+    /*qdc[0] = VME_CAEN_V1751(board=6);
     qdc[1] = VME_CAEN_V1751(board=7);
     qdc[2] = VME_CAEN_V1751(board=8);
     qdc[3] = VME_CAEN_V1751(board=9);
-    qdc[4] = VME_CAEN_V1751(board=10);
+    qdc[4] = VME_CAEN_V1751(board=10);*/
    
     select several
     {
