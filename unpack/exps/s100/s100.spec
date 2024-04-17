@@ -117,7 +117,7 @@ SUBEVENT(fatima_vme_subev)
     qdc[1] = VME_CAEN_V1751(board=7);
     qdc[2] = VME_CAEN_V1751(board=8);
     qdc[3] = VME_CAEN_V1751(board=9);
-    //qdc[4] = VME_CAEN_V1751(board=10);
+    qdc[4] = VME_CAEN_V1751(board=10);
    
     select several
     {

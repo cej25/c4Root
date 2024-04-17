@@ -67,6 +67,9 @@ void TFatimaVmeConfiguration::ReadConfiguration()
             else if (signal == "BPLAST_UP") bplast_up = det;
             else if (signal == "BPLAST_DOWN") bplast_down = det;
             else if (signal == "BPLAST_COINC") bplast_coinc = det;
+            else if (signal == "FRS_ACCEPT") frs_accept = det;
+            else if (signal == "BPLAST_ACCEPT") bplast_accept = det;
+            else if (signal == "BPLAST_FREE") bplast_free = det;
 
             extra_signals.insert(det);
         }
