@@ -2,6 +2,9 @@
 #define LisaOnlineSpectra_H
 
 #include "FairTask.h"
+#include "TLisaConfiguration.h"
+#include <vector>
+#include <memory>
 
 class TClonesArray;
 class EventHeader;
@@ -34,21 +37,28 @@ class LisaOnlineSpectra : public FairTask
 
     
     private:
+        TLisaConfiguration const* lisa_config;
         TClonesArray* fHitLisa;
 
+
+        int layer_number;
+        int det_number;
         // ranges
         //Double_t
 
         EventHeader* header;
         Int_t fNEvents;
+        
 
         // Canvas
         std::vector<TCanvas*> c_energy_layer_ch;
+        std::vector<TCanvas*> c_traces_layer_ch;
         //TCanvas* c_h2_traces;
 
         // Histograms
         //TH1I* h1_hitpattern;
-        std::vector<TH1F> h1_energy_layer_ch;
+        std::vector<std::vector<TH1F*>> h1_energy_layer_ch;
+        std::vector<std::vector<TH2F*>> h2_traces_layer_ch;
         TH1I* h1_multiplicity;
         TH1F* h1_energy;
         TH2F* h2_traces;

@@ -12,7 +12,9 @@
 
 // ROOT
 #include "TClonesArray.h"
+
 #include <vector>
+#include <numeric>
 
 LisaRaw2Cal::LisaRaw2Cal()
     :   FairTask()
@@ -58,7 +60,8 @@ void LisaRaw2Cal::Exec(Option_t* option)
 {
     if (fLisaArray && fLisaArray->GetEntriesFast() > 0)
     {
-        Int_t nHits = fLisaArray->GetEntriesFast() > 0;
+        Int_t nHits = fLisaArray->GetEntriesFast();
+        //std::cout<< nHits <<std::endl;
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {
             LisaData* lisa_item = (LisaData*)fLisaArray->At(ihit);
@@ -70,14 +73,28 @@ void LisaRaw2Cal::Exec(Option_t* option)
             data_energy = lisa_item->GetEnergy();
             data_traces = lisa_item->GetTraces();
             data_multiplicity = lisa_item->GetMultiplicity();
-            int tot_multiplicity = std::accumulate(data_multiplicity.begin(),data_multiplicity.end(),0); //tot multiplicity in all boards
-            int traceLength = data_traces.size()/tot_multiplicity;
 
+            int tot_multiplicity = 0;
+            for (int i=0; i<data_multiplicity.size(); i++)
+            {
+               tot_multiplicity += data_multiplicity[i]; 
+            } 
+
+            uint32_t traceLength;
+            if(tot_multiplicity == 0)
+            {
+                traceLength = 0;
+            } else {
+
+                traceLength = data_traces.size()/tot_multiplicity;
+            }
+            
             std::vector<int> layers;
             std::vector<int> xpositions;
             std::vector<int> ypositions;
             std::vector<uint32_t> raw_energy;
             std::vector<uint32_t> raw_traces;
+
 
             int count = 0;
             for (int i=0; i < data_boards.size(); i++)
@@ -96,6 +113,8 @@ void LisaRaw2Cal::Exec(Option_t* option)
                         ypositions.emplace_back(ypos);
                         raw_energy.emplace_back(data_energy.at(j));
 
+                        std::cout<<layers[j]<<std::endl;
+
                         for (int n = 0; n < traceLength ; n++)
                         {
                             raw_traces.emplace_back(data_traces.at(j*traceLength + n));
@@ -103,7 +122,6 @@ void LisaRaw2Cal::Exec(Option_t* option)
 
                     }
                 }
-
                 count += data_multiplicity[i];
             }
             
@@ -124,7 +142,6 @@ void LisaRaw2Cal::Exec(Option_t* option)
 
 
 }
-
 
 
 void LisaRaw2Cal::FinishEvent()

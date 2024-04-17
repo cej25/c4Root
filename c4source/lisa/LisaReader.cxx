@@ -67,7 +67,6 @@ Bool_t LisaReader::Init(ext_data_struct_info* a_struct_info)
 Bool_t LisaReader::Read()
 {
     // Reading is done in here on a per-event basis!
-
     LisaData* lisa_item = new LisaData(); // LisaData class item
 
     //::::::::::::::White Rabbit::::::::::::::
@@ -103,9 +102,6 @@ Bool_t LisaReader::Read()
         //::::::::::::::Board Number (=0 may2024)
         uint32_t board_num = fData->lisa_data[it_board_number].board_num;
         boards_fired.emplace_back(board_num); //number of boards fired
-        //lisa_item->SetBoardNum(board_num);
-        //std::cout << "size boardnum " << boardnum.size() << std::endl;
-
 
         //::::::::::::::Event Time stamp (converted to ns)
         //P.S: Febex card has a 100MHz, it samples data every 10 ns (hence the unit and the *10 multiplication).
@@ -113,11 +109,6 @@ Bool_t LisaReader::Read()
         (fData->lisa_data[it_board_number].event_trigger_time_lo))*10;
         evt_timestamp.emplace_back(event_trigger_time_long);
         
-        //::::::::::::::Hit Pattern -- same info of ch_ID -> don't really need it
-        //uint32_t hit_pattern = fData->lisa_data[it_board_number].hit_pattern;
-        //std::vector<int> hitpattern = Get_Channels(hit_pattern);
-        //std::cout << "hit pattern: " << hit_pattern << std::endl;
-
         //::::::::::::::Multiplicity: Called num_channels_fired from unpacker
         uint32_t M = fData->lisa_data[it_board_number].num_channels_fired;
         ch_fired_perboard.emplace_back(M); //number of channels fired in the board of the loop 
@@ -164,13 +155,9 @@ Bool_t LisaReader::Read()
 
         }
 
-        //Fill array with lisa_item
-        new ((*fArray)[fArray->GetEntriesFast()]) LisaData(*lisa_item);
-
     }
 
     lisa_item->SetBoardNum(boards_fired);
-    //lisa_item->SetHitPattern(hitpattern);
     lisa_item->SetMultiplicity(ch_fired_perboard);
     lisa_item->SetEventTime(evt_timestamp);
     lisa_item->SetID(ch_ID);
@@ -181,6 +168,9 @@ Bool_t LisaReader::Read()
     lisa_item->SetTraces(traces);
     lisa_item->SetTracesI(tracesI);
     //lisa_item->SetTracesL(trace_l);
+
+    //Fill array with lisa_item
+    new ((*fArray)[fArray->GetEntriesFast()]) LisaData(*lisa_item);
 
     return kTRUE;
 }

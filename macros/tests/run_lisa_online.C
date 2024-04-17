@@ -39,6 +39,10 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     TString ucesb_path = temp_path + "/lisa/lisa --allow-errors --input-buffer=200Mi";
     ucesb_path.ReplaceAll("//","/");
 
+    //set mapping
+    TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map.txt");
+
+
     // Create online run
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -58,21 +62,18 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     UnpackReader* unpackheader = new UnpackReader((EXT_STR_h101_unpack*)&ucesb_struct.eventheaders, offsetof(EXT_STR_h101, eventheaders));
 
     LisaReader* unpacklisa = new LisaReader((EXT_STR_h101_lisa_onion*)&ucesb_struct.lisa, offsetof(EXT_STR_h101, lisa));
-
+    
 
     unpacklisa->SetOnline(false); //false= write to a tree; true=doesn't write to tree
     
     //Add readers
     source->AddReader(unpacklisa);
 
-    // Runtime data base
-    FairRuntimeDb* rtdb = run->GetRuntimeDb();
-
+    LisaRaw2Cal* lisaraw2cal = new LisaRaw2Cal();
+    run->AddTask(lisaraw2cal);
 
     // Add analysis task here at some point
-
     LisaOnlineSpectra* onlinelisa = new LisaOnlineSpectra();
-
     run->AddTask(onlinelisa);
 
     // Initialise

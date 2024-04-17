@@ -20,6 +20,7 @@
 #include "THttpServer.h"
 #include "TMath.h"
 #include "TRandom.h"
+#include <string>
 
 LisaOnlineSpectra::LisaOnlineSpectra()
 {
@@ -86,38 +87,86 @@ InitStatus LisaOnlineSpectra::Init()
 
 
     //:::::::::::::Energy per Layer
-    det_number=lisa_config->NLayers();
-    c_energy_layer_ch.resize(det_number);
+    //get numbers of layer and detectors
+    layer_number = lisa_config->NLayers();
+    det_number = lisa_config->NDetectors();
+    c_energy_layer_ch.resize(layer_number);
+    h1_energy_layer_ch.resize(layer_number);
+    c_traces_layer_ch.resize(layer_number);
+    h2_traces_layer_ch.resize(layer_number);
 
-
+    std::cout<<layer_number<<std::endl;
+ 
+    //:::::::::::Energy canvas for layer 1 and 2
+    //define name of detectors
+    std::string det_names[layer_number][2][2] = {
+    {{"Quito","Caracas"},{"Reykjavik","Amsterdam"}}, //Eris (Layer 1)
+    {{"Novi Sad","Havana"},{"Dublin","Sucre"}} //Sparrow (Layer2)
+    };
     
+    for (int i = 1; i < layer_number; i++) //create a canvas for each layer
+    {
+        
+        c_energy_layer_ch[i] = new TCanvas(Form("c_energy_layer_%d",i),Form("c_energy_layer_%d",i), 650,350);
+        c_energy_layer_ch[i]->SetTitle(Form("Layer %d - Energy",i));
 
+        c_energy_layer_ch[i]->Divide(2,2); 
 
+        //h1_energy_layer_ch = new TH1F*[4];
+        for(int j = 0; j < 4; j++)
+        {
+            c_energy_layer_ch[i]->cd(j+1);
+            h1_energy_layer_ch[i].resize(4);
+            //put histo in each canvas per layer
+            h1_energy_layer_ch[i][j] = new TH1F(Form("h1_energy_layer_%d_ch_%d",i,j),
+                                                Form("Det %d%d%d - %s",i, (j % 2 == 0 ? 0 : 1), (j < 2 ? 1 : 0), det_names[i-1][j/2][j%2].c_str()),
+                                                400, 0, 250000);            
+            h1_energy_layer_ch[i][j]->GetXaxis()->SetTitle("Energy [a.u.]");
+            h1_energy_layer_ch[i][j]->Draw();
+            h1_energy_layer_ch[i][j]->SetLineColor(kBlack);
+            h1_energy_layer_ch[i][j]->SetFillColor(kViolet+4);
+            
+            lisaFold->Add(h1_energy_layer_ch[i][j]);
+        }
+        
+        lisaFold->Add(c_energy_layer_ch[i]);
 
-    //:::::::::::Energy Layer 1
-    /*
-    c_energy_layer1  = new TCanvas("c_energy_layer1","Energy - Layer 1",650,350);
-    c_energy_layer1->Divide(2,2);
-    h1_energy_layer1 = new TH1F*[4];
-    for (int ihist = 0; ihist < 4; ihist++){ //this should be fine for 241test, but has to be integrated with mapping for experiment
-        c_energy_layer1->cd(ihist+1);
-        h1_energy_layer1[ihist] = new TH1F(Form("h1_energy_%d",ihist),Form("Layer 1 - %d",ihist),400,0,250000);
-        h1_energy_layer1[ihist]->GetXaxis()->SetTitle("Energy (a.u.)");
-        h1_energy_laye1[ihist]->Draw();
-        h1_energy_layer1[ihist]->SetOption("logy");
-        lisaFold->Add(h1_energy_layer[ihist]);
     }
-    c_energy_layer1->cd(0);
-    */
 
-    h1_energy = new TH1F("h1_energy", "LISA Energy", 400,0,250000); //in case of data from 241Am
-    h1_energy->SetOption("logy");
-    h1_energy->SetLineColor(kBlack);
-    h1_energy->SetFillColor(kViolet+4);
-    lisaFold->Add(h1_energy);
+     //:::::::::::Traces canvas for layer 1 and 2   
+    for (int i = 1; i < layer_number; i++) //create a canvas for each layer
+    {
+        
+        c_traces_layer_ch[i] = new TCanvas(Form("c_traces_layer_%d",i),Form("c_traces_layer_%d",i), 650,350);
+        c_traces_layer_ch[i]->SetTitle(Form("Layer %d - Traces",i));
 
+        c_traces_layer_ch[i]->Divide(2,2); 
+
+        //h1_energy_layer_ch = new TH1F*[4];
+        for(int j = 0; j < 4; j++)
+        {
+            c_traces_layer_ch[i]->cd(j+1);
+            h2_traces_layer_ch[i].resize(4);
+            //put histo in each canvas per layer
+            h2_traces_layer_ch[i][j] = new TH2F(Form("h1_traces_layer_%d_ch_%d",i,j),
+                                                Form("Det %d%d%d - %s",i, (j % 2 == 0 ? 0 : 1), (j < 2 ? 1 : 0), det_names[i-1][j/2][j%2].c_str()),
+                                                100, 0,20,100,8000,8500);            
+            h2_traces_layer_ch[i][j]->GetXaxis()->SetTitle("Time [us]");
+            h2_traces_layer_ch[i][j]->GetYaxis()->SetTitle("ADC [a.u.]");
+            h2_traces_layer_ch[i][j]->Draw();
+            h2_traces_layer_ch[i][j]->SetLineColor(kBlack);
+            h2_traces_layer_ch[i][j]->SetFillColor(kViolet+4);
+            h2_traces_layer_ch[i][j]->Draw("HIST L P");
+            
+            lisaFold->Add(h2_traces_layer_ch[i][j]);
+        }
+        
+        lisaFold->Add(c_traces_layer_ch[i]);
+
+    }
+    /*
     //::::::::::::Traces
-    //c_h2_traces = new TCanvas("c_h2_traces","Traces LISA",650,350);
+    c_h2_traces = new TCanvas("c_h2_traces","Traces LISA",650,350);
     h2_traces = new TH2F("h2_traces", "Traces", 100, 0,20,100,8000,8500);
     h2_traces->GetXaxis()->SetTitle("Time[us]");
     h2_traces->GetYaxis()->SetTitle("ADC [a.u.]");
@@ -127,9 +176,9 @@ InitStatus LisaOnlineSpectra::Init()
     h2_traces->Draw("HIST L P");
     //c_h2_traces->cd(0);
     
-    lisaFold->Add(h2_traces);
+    //lisaFold->Add(h2_traces);
     //lisaFold->Add(c_h2_traces);
-
+    */
 
     run->GetHttpServer()->RegisterCommand("Reset_Lisa_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
 
@@ -153,20 +202,10 @@ void LisaOnlineSpectra::Exec(Option_t* option)
             LisaData* hit = (LisaData*)fHitLisa->At(ihit);
             if (!hit)
                 continue;
-            //:::::::::::Hit Pattern
-            //std::vector<int> hit_pattern = hit->GetHitPattern(); 
-            //std::cout << "hit pattern:" << hit_pattern.size() << std::endl;
-
-            /*
-            for (int n = 0; n< hit_pattern.size(); n++ )
-            {
-                h1_hitpattern->Fill(hit_pattern[n]);
-            }
-            */
 
             //:::::::::::Channel ID
 
-            
+    
             //:::::::::::Multiplicity
             std::vector<uint32_t> M = hit->GetMultiplicity(); 
             //h1_multiplicity->Fill(M);
@@ -175,11 +214,12 @@ void LisaOnlineSpectra::Exec(Option_t* option)
             //:::::::::::Energy
             std::vector<uint32_t> ch_energy = hit->GetEnergy(); 
 
-
+/*
             for (int index = 0; index < M[0]; index++)
             {
                 h1_energy->Fill(ch_energy[index]);
             }
+*/
             //:::::::::::Traces           
             std::vector<uint32_t> traces = hit->GetTraces();
             //std::cout << "trace size:" << traces.size() << "mult: " << M << std::endl;
