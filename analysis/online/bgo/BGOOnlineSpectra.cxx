@@ -85,6 +85,7 @@ InitStatus BGOOnlineSpectra::Init()
     dir_bgo_energy = dir_bgo->mkdir("Raw Energy Spectra");
     dir_bgo_time = dir_bgo->mkdir("Time Spectra");
     dir_bgo_germanium_veto_energy = dir_bgo->mkdir("BGO vetoed Germanium spectra");
+    dir_bgo_germanium_vetotrue_energy = dir_bgo->mkdir("BGO veto true Germanium spectra");
 
     crystals_to_plot.clear();
     std::map<std::pair<int,int>,std::pair<int,int>> bgomap = BGO_configuration->Mapping();
@@ -148,6 +149,19 @@ InitStatus BGOOnlineSpectra::Init()
     c_germanium_bgo_veto_energy->cd(0);
     dir_bgo_germanium_veto_energy->Append(c_germanium_bgo_veto_energy);
 
+    dir_bgo_germanium_vetotrue_energy->cd();
+    c_germanium_bgo_vetotrue_energy  = new TCanvas("c_germanium_bgo_vetotrue_energy","Cal Germanium E spectra - BGO veto = true",650,350);
+    c_germanium_bgo_vetotrue_energy->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
+    h1_germanium_bgo_vetotrue_energy.resize(number_of_detectors_to_plot);
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
+        c_germanium_bgo_vetotrue_energy->cd(ihist+1);
+        h1_germanium_bgo_vetotrue_energy[ihist] = new TH1F(Form("h1_germanium_bgo_vetotrue_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c - BGO veto = true",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,3e3);
+        h1_germanium_bgo_vetotrue_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
+        h1_germanium_bgo_vetotrue_energy[ihist]->Draw();
+    }
+    c_germanium_bgo_vetotrue_energy->cd(0);
+    dir_bgo_germanium_vetotrue_energy->Append(c_germanium_bgo_vetotrue_energy);
+
 
     // CEJ: should we cd to timedifference spectra folder?
     // time differences spectra:
@@ -180,6 +194,7 @@ void BGOOnlineSpectra::Reset_BGO_Histo()
         h1_bgo_energy[ihist]->Reset();
         h1_bgo_time[ihist]->Reset();
         h1_germanium_bgo_veto_energy[ihist]->Reset();
+        h1_germanium_bgo_vetotrue_energy[ihist]->Reset();
         h1_germanium_bgo_veto_timedifferences[ihist]->Reset();
     }
 }
@@ -291,16 +306,16 @@ void BGOOnlineSpectra::Exec(Option_t* option)
                 
                     if (detector_id_bgo2 == detector_id_ge && crystal_id_ge == crystal_id_bgo2){
                         h1_germanium_bgo_veto_timedifferences[crystal_index_bgo2]->Fill(hit2->Get_wr_t() - hit_ge->Get_wr_t());    
-                        if (TMath::Abs((int64_t)hit2->Get_wr_t() - (int64_t)hit_ge->Get_wr_t())<BGO_Germanium_wr_coincidence_window){
+                        if (TMath::Abs((int64_t)hit2->Get_wr_t() - (int64_t)hit_ge->Get_wr_t())<BGO_Germanium_wr_coincidence_window + BGO_Germanium_wr_coincidence_window_offset){
                             //VETO!
                             veto = true;
                         }
                     } 
                 }
             }
-            if (!veto){
-                h1_germanium_bgo_veto_energy[crystal_index_ge]->Fill(energy_ge);
-            }
+            if (!veto) h1_germanium_bgo_veto_energy[crystal_index_ge]->Fill(energy_ge);
+            else h1_germanium_bgo_vetotrue_energy[crystal_index_ge]->Fill(energy_ge);
+            
         }
     }
     
