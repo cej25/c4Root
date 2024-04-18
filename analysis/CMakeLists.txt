@@ -70,6 +70,7 @@ set(SRCS
 
 ## correlations ##
 ./correlations/FrsAidaCorrelations.cxx
+./online/onlineCorrelations/FrsAidaCorrelationsOnline.cxx
 ./correlations/FrsFatimaCorrelations.cxx
 ./correlations/FrsFatimaVmeCorrelations.cxx
 ./correlations/FrsGermaniumCorrelations.cxx

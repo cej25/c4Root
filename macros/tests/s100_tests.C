@@ -3,7 +3,7 @@
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define FATIMA_ON 0
 #define FATIMA_VME_ON 0
-#define AIDA_ON 0
+#define AIDA_ON 1
 #define BPLAST_ON 0
 #define GERMANIUM_ON 0
 #define BGO_ON 0
@@ -89,7 +89,7 @@ void s100_tests()
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 8080; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 7070; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -436,7 +436,9 @@ void s100_tests()
 
     std::vector<FrsGate*> fgs;
     FrsGate* Pt191 = new FrsGate("191Pt",config_path + "/frs/Gates/191Pt.root");
+    FrsGate* Au195 = new FrsGate("195Au",config_path + "/frs/Gates/195Au.root");
     fgs.emplace_back(Pt191);
+    fgs.emplace_back(Au195);
     
     if (FRS_ON)
     {
@@ -478,6 +480,13 @@ void s100_tests()
         wronline->SetDetectorSystems({b, d, f});
     
         run->AddTask(wronline);
+    }
+
+    if (FRS_ON && AIDA_ON)
+    {
+        FrsAidaCorrelationsOnline* frsaidaonline = new FrsAidaCorrelationsOnline(fgs);
+
+        run->AddTask(frsaidaonline);
     }
 
     // Initialise
