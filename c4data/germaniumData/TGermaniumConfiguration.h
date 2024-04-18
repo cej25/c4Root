@@ -52,6 +52,9 @@ class TGermaniumConfiguration
         int TM_Delayed() const;
         int SC41L() const;
         int SC41R() const;
+        int FRS_accept() const;
+        int bPlast_accept() const;
+        int bPlast_free() const;
         std::set<int> ExtraSignals() const;
 
     private:
@@ -82,10 +85,16 @@ class TGermaniumConfiguration
         std::map<int,int> crystals_per_detector;
         int num_febex_boards;
 
-        int tm_undelayed;
-        int tm_delayed;
-        int sc41l_d;
-        int sc41r_d;
+        int tm_undelayed = -1;
+        int tm_delayed = -1;
+        int sc41l_d = -1;
+        int sc41r_d = -1;
+
+
+        int frs_accept = -1;
+        int bplast_accept = -1;
+        int bplast_free = -1;
+
 
         bool detector_mapping_loaded = 0;
         bool detector_calibrations_loaded = 0;
@@ -205,5 +214,27 @@ inline int TGermaniumConfiguration::SC41R() const
 {
     return sc41r_d;
 }
+
+
+inline int TGermaniumConfiguration::FRS_accept() const
+{
+    return frs_accept;
+}
+
+inline int TGermaniumConfiguration::bPlast_accept() const
+{
+    return bplast_accept;
+}
+
+inline int TGermaniumConfiguration::bPlast_free() const
+{
+    return bplast_free;
+}
+
+inline std::set<int> TGermaniumConfiguration::ExtraSignals() const
+{
+    return extra_signals;
+}
+
 
 #endif
