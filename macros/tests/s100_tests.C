@@ -3,9 +3,9 @@
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define FATIMA_ON 0
 #define FATIMA_VME_ON 0
-#define AIDA_ON 1
-#define BPLAST_ON 0
-#define GERMANIUM_ON 0
+#define AIDA_ON 0
+#define BPLAST_ON 1
+#define GERMANIUM_ON 1
 #define BGO_ON 0
 #define FRS_ON 1
 #define TIME_MACHINE_ON 0
@@ -384,7 +384,7 @@ void s100_tests()
         onlinefatima->SetDetectorsToPlot(fat_dets);
         
         std::vector<int> fat_ref_dets = {22};
-        onlinefatima->SetReferenceDetectorsForTimeDifferences(fat_ref_dets);
+        //onlinefatima->SetReferenceDetectorsForTimeDifferences(fat_ref_dets);
         
         run->AddTask(onlinefatima);
     }
@@ -487,6 +487,13 @@ void s100_tests()
         FrsAidaCorrelationsOnline* frsaidaonline = new FrsAidaCorrelationsOnline(fgs);
 
         run->AddTask(frsaidaonline);
+    }
+
+    if (BPLAST_ON && GERMANIUM_ON)
+    {
+        bPlastGermaniumCorrelations* bplastgecorr = new bPlastGermaniumCorrelations();
+        
+        run->AddTask(bplastgecorr);
     }
 
     // Initialise
