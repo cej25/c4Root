@@ -23,6 +23,8 @@ SUBEVENT(bgo_tamex_subevent)
         ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1900);
     };
 
+    optional UINT32 be { 0_31: b = MATCH(0xbad00bad);}
+
     select optional
     {
         trigger_window = TAMEX4_HEADER();
@@ -113,6 +115,7 @@ SUBEVENT(fatima_vme_subev)
         scalers = FATIMA_VME_SCALERS();
     };
 
+    // don't love this but ucesb is a real pain in the ass
     select optional
     {
         qdc1 = VME_CAEN_V1751(board=6);
