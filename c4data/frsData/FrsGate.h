@@ -17,6 +17,11 @@ class FrsGate
         bool Passed_x2vsAoQ(double x2, double AoQ);
         bool Passed_x4vsAoQ(double x4, double AoQ);
         bool Passed_dEdegvsZ(double Z, double dEdeg);
+        bool cut_ZvsAoQ_exists() {  return cut_Z_AoQ != nullptr; } 
+        bool cut_ZvsZ2_exists() {  return cut_Z_Z2 != nullptr; } 
+        bool cut_x2vsAoQ_exists() {  return cut_x2_AoQ != nullptr; } 
+        bool cut_x4vsAoQ_exists() {  return cut_x4_AoQ != nullptr; } 
+        bool cut_dEvsZ_exists() {  return cut_dEdeg_Z != nullptr; } 
 
     public:
         std::string gate_name;

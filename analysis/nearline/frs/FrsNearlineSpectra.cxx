@@ -535,7 +535,7 @@ void FrsNearlineSpectra::Exec(Option_t* option)
             {   
                 for (int gate = 0; gate < cutID_x2AoQ.size(); gate++)
                 {*/
-                    if (FrsGates[gate]->Passed_x2vsAoQ(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2()))
+                    if (FrsGates[gate]->Passed_x2vsAoQ(FrsHit->Get_ID_x2(), FrsHit->Get_ID_AoQ()))
                     {
                     /*if(cutID_x2AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2()))
                     {*/
@@ -568,7 +568,7 @@ void FrsNearlineSpectra::Exec(Option_t* option)
             {   
                 for (int gate = 0; gate < cutID_x4AoQ.size(); gate++)
                 {*/
-                    if (FrsGates[gate]->Passed_x4vsAoQ(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4()))
+                    if (FrsGates[gate]->Passed_x4vsAoQ(FrsHit->Get_ID_x4(), FrsHit->Get_ID_AoQ()))
                     {
                     /*if(cutID_x4AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4()))
                     {*/
