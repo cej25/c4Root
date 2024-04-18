@@ -199,40 +199,44 @@ InitStatus FatimaOnlineSpectra::Init()
     c_fatima_event_multiplicity->cd(0);
     dir_fatima_hitpattern->Append(c_fatima_event_multiplicity);
     
+    //time differences!
+    number_reference_detectors = (int) dt_reference_detectors.size();
     dir_fatima_time_differences.resize(number_reference_detectors);
+
     h1_fatima_time_differences.resize(number_reference_detectors);
     h2_fatima_time_differences_vs_energy.resize(number_reference_detectors);
     for (int ihist = 0; ihist < number_reference_detectors; ihist++)
     {
         std::stringstream name;
-        name << "time_differences_rel_det_" << dt_reference_detectors.at(ihist);
+        name << "time_differences_rel_" << dt_reference_detectors.at(ihist) << "_energy_gate_" << (int)dt_reference_detectors_energy_gates.at(ihist).first << "_" << (int)dt_reference_detectors_energy_gates.at(ihist).second;
         dir_fatima_time_differences[ihist] = dir_fatima->mkdir(name.str().c_str());
         dir_fatima_time_differences[ihist]->cd();
-
-        c_fatima_time_differences  = new TCanvas(Form("c_fatima_time_differences_rel_det_%i",dt_reference_detectors.at(ihist)),"Fatima relative time differences",650,350);
+    
+        c_fatima_time_differences  = new TCanvas(Form("c_fatima_time_differences_rel_det_%d_energy_gate_%d_%d",dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),"fatima relative time differences",650,350);
         c_fatima_time_differences->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
+        //h1_fatima_time_differences[ihist] = new TH1F*[number_detectors];
         h1_fatima_time_differences[ihist].resize(number_detectors);
 
-        for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++)
-        {
+        for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++){
             c_fatima_time_differences->cd(detid_idx+1);
-            h1_fatima_time_differences[ihist][detid_idx] = new TH1F(Form("h1_fatima_rel_time_det_%i_det_%i",detectors.at(detid_idx),dt_reference_detectors.at(ihist)),Form("Fatima delta time t(%i) - t(%i)",detectors.at(detid_idx),dt_reference_detectors.at(ihist)),1000,-100,100); 
-            h1_fatima_time_differences[ihist][detid_idx]->GetXaxis()->SetTitle(Form("dt t(%i) - t(%i) (ns)",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
+            h1_fatima_time_differences[ihist][detid_idx] = new TH1F(Form("h1_fatima_rel_time_det_%d_to_det_%d_energy_gate_%d_%d",dt_reference_detectors.at(ihist),detectors.at(detid_idx),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("fatima delta time t(%d) - t(%d) gated %d and %d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high); 
+            h1_fatima_time_differences[ihist][detid_idx]->GetXaxis()->SetTitle(Form("dt t(%d) - t(%d) (ns)",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
             h1_fatima_time_differences[ihist][detid_idx]->Draw();
+            
         }
         c_fatima_time_differences->cd(0);
         dir_fatima_time_differences[ihist]->Append(c_fatima_time_differences);
 
-        c_fatima_time_differences_vs_energy  = new TCanvas(Form("c_fatima_time_differences_rel_det_%i_vs_energy",dt_reference_detectors.at(ihist)),"Fatima relative time differences vs energy",650,350);
+        c_fatima_time_differences_vs_energy  = new TCanvas(Form("c_fatima_time_differences_rel_det_%d_vs_energy_energy_gate_%d_%d",dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),"fatima relative time differences vs energy",650,350);
         c_fatima_time_differences_vs_energy->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
+        //h2_fatima_time_differences_vs_energy[ihist] = new TH2F*[number_detectors];
         h2_fatima_time_differences_vs_energy[ihist].resize(number_detectors);
 
-        for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++)
-        {
+        for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++){
             c_fatima_time_differences_vs_energy->cd(detid_idx+1);
-            h2_fatima_time_differences_vs_energy[ihist][detid_idx] = new TH2F(Form("h1_fatima_rel_time_det_%i_det_%i_vs_energy",detectors.at(detid_idx),dt_reference_detectors.at(ihist)),Form("Fatima delta time t(%i) - t(%i) vs energy",detectors.at(detid_idx),dt_reference_detectors.at(ihist)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,1000,-100,100); 
-            h2_fatima_time_differences_vs_energy[ihist][detid_idx]->GetYaxis()->SetTitle(Form("dt t(%i) - t(%i) (ns)",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
-            h2_fatima_time_differences_vs_energy[ihist][detid_idx]->GetXaxis()->SetTitle(Form("energy det %i (keV)",detectors.at(detid_idx)));
+            h2_fatima_time_differences_vs_energy[ihist][detid_idx] = new TH2F(Form("h1_fatima_rel_time_det_%d_to_det_%d_vs_energy_energy_gate_%d_%d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("fatima delta time t(%d) - t(%d) vs energy, energy gate %d, %d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high); 
+            h2_fatima_time_differences_vs_energy[ihist][detid_idx]->GetYaxis()->SetTitle(Form("dt t(%d) - t(%d) (ns)",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
+            h2_fatima_time_differences_vs_energy[ihist][detid_idx]->GetXaxis()->SetTitle(Form("energy det %d (keV)",detectors.at(detid_idx)));
             h2_fatima_time_differences_vs_energy[ihist][detid_idx]->Draw("COLZ");
             
         }
@@ -241,6 +245,7 @@ InitStatus FatimaOnlineSpectra::Init()
     }
 
     dir_fatima->cd();
+    
     
     run->GetHttpServer()->RegisterCommand("Reset_FATIMA_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
     run->GetHttpServer()->RegisterCommand("Snapshot_FATIMA_Histo", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
@@ -425,27 +430,42 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
             if (slow_ToT1 != 0 ) h1_fatima_hitpattern_slow->Fill(detector_id1);
             
             //TWO FOLD COINCIDENCES:
-            if (nHits > 1 && number_reference_detectors > 0){
+            if (nHits >= 2 && number_reference_detectors > 0){
                 for (Int_t ihit2 = 0; ihit2 < nHits; ihit2++){
                     if (ihit2 == ihit) {continue;}
 
                     FatimaTwinpeaksCalData * hit2 = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(ihit2); // I want this to be the reference detector for easier code:
-                    if (!(TMath::Abs(hit->Get_fast_lead_time() - hit2->Get_fast_lead_time())<100)) continue;
+                    //if (!(TMath::Abs(hit->Get_fast_lead_time() - hit2->Get_fast_lead_time())<100)) continue;
                     
                     int detector_id2 = hit2->Get_detector_id();
-                    int detector_index2 = GetReferenceDetectorIndex(detector_id2);
-                    if (detector_index2 >= number_reference_detectors) {continue;} // this implies that the hit corresponds to a detector that is not specified as a reference detector.
-
                     double slow_ToT2 = hit2->Get_slow_ToT();
                     double fast_ToT2 = hit2->Get_fast_ToT();
                     double energy2 = hit2->Get_energy();
                     double fast_lead2 = hit2->Get_fast_lead_time();
 
-                    h1_fatima_time_differences[detector_index2][detector_index1]->Fill(fast_lead1 - fast_lead2);
-                    h2_fatima_time_differences_vs_energy[detector_index2][detector_index1]->Fill(energy1,fast_lead1-fast_lead2);
+                        
+                    for (int detector_index2 = 0; detector_index2<number_reference_detectors; detector_index2++){
+                    
+                    if (detector_id2 == dt_reference_detectors.at(detector_index2)) {
 
-
-
+                    if (dt_reference_detectors_energy_gates.at(detector_index2).first != 0 && dt_reference_detectors_energy_gates.at(detector_index2).second != 0){
+                        if ((TMath::Abs(energy2 - dt_reference_detectors_energy_gates.at(detector_index2).second) < energygate_width) && (TMath::Abs(energy1 - dt_reference_detectors_energy_gates.at(detector_index2).first) < energygate_width)){
+                            h1_fatima_time_differences[detector_index2][detector_index1]->Fill(fast_lead1 - fast_lead2);
+                            h2_fatima_time_differences_vs_energy[detector_index2][detector_index1]->Fill(energy1,fast_lead1-fast_lead2);
+                        }
+                    }else if(dt_reference_detectors_energy_gates.at(detector_index2).second != 0 && dt_reference_detectors_energy_gates.at(detector_index2).first == 0){
+                        if ((TMath::Abs(energy2 - dt_reference_detectors_energy_gates.at(detector_index2).second) < energygate_width)){
+                            h1_fatima_time_differences[detector_index2][detector_index1]->Fill(fast_lead1 - fast_lead2);
+                            h2_fatima_time_differences_vs_energy[detector_index2][detector_index1]->Fill(energy1,fast_lead1-fast_lead2);
+                        }
+                    }
+                    else{ // no gates
+                        h1_fatima_time_differences[detector_index2][detector_index1]->Fill(fast_lead1 - fast_lead2);
+                        h2_fatima_time_differences_vs_energy[detector_index2][detector_index1]->Fill(energy1,fast_lead1-fast_lead2);
+                    }
+                    }
+                    
+                    }
                 }
             }
         }
