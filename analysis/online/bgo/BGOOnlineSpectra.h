@@ -55,12 +55,12 @@ class BGOOnlineSpectra : public FairTask
         void SetCoincidenceWindow(int window)
         {
             BGO_Germanium_wr_coincidence_window = window;
-        }
+        };
 
         void SetCoincidenceOffset(int offset)
         {
             BGO_Germanium_wr_coincidence_window_offset = offset;
-        }
+        };
         
     
     private:
