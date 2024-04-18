@@ -407,9 +407,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     if (b_tpc_xy[4] && b_tpc_xy[5])
     {
         music1_x_mean = fCalHitTPC->Get_tpc_music41_x();
-        std::cout << "1: " << music1_x_mean << std::endl;
         music2_x_mean = fCalHitTPC->Get_tpc_music42_x();
-        std::cout << "2: " << music2_x_mean << std::endl;
         //music3_x_mean = fCalHitTPC->Get_tpc_music43_x();
 
         if (b_de1)
@@ -1002,8 +1000,8 @@ void FrsCal2Hit::Exec(Option_t* option)
                 id_mhtdc_z_music41.emplace_back(frs->primary_z * sqrt(de[0] / id_mhtdc_v_cor_music41.at(i)) + id->mhtdc_offset_z_music41);
             }
             
-            std::cout << "do we get a z value" << std::endl;
-            std::cout << id_mhtdc_z_music41[i] << std::endl;
+            //std::cout << "do we get a z value" << std::endl;
+            //std::cout << id_mhtdc_z_music41[i] << std::endl;
         }
         
     }
@@ -1090,7 +1088,6 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
         
 
-        std::cout << "id_x2: " << id_x2 << std::endl;  
     }
     else if (id->x_s2_select == 2)
     {   
