@@ -29,6 +29,11 @@ FrsGate::FrsGate(std::string gn, std::string file_name)
 
 };
 
+FrsGate::~FrsGate()
+{
+    
+}
+
 
 std::string FrsGate::GetName()
 {

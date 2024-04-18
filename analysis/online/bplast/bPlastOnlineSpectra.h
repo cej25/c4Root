@@ -24,8 +24,6 @@ class bPlastOnlineSpectra : public FairTask
         bPlastOnlineSpectra();
         bPlastOnlineSpectra(const TString& name, Int_t verbose = 1);
 
-        void CreateHistograms();
-
         virtual ~bPlastOnlineSpectra();
 
         virtual void SetParContainers();

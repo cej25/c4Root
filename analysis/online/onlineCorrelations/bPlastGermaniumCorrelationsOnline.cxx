@@ -33,7 +33,8 @@ bPlastGermaniumCorrelationsOnline::bPlastGermaniumCorrelationsOnline(const TStri
 
 bPlastGermaniumCorrelationsOnline::~bPlastGermaniumCorrelationsOnline()
 {
-
+    delete fHitbPlastTwinpeaks;
+    delete fHitGermanium;
 }
 
 InitStatus bPlastGermaniumCorrelationsOnline::Init()
