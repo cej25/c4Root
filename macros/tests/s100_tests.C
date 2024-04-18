@@ -5,9 +5,9 @@
 #define FATIMA_VME_ON 0
 #define AIDA_ON 0
 #define BPLAST_ON 1
-#define GERMANIUM_ON 1
+#define GERMANIUM_ON 0
 #define BGO_ON 0
-#define FRS_ON 1
+#define FRS_ON 0
 #define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 0
@@ -134,7 +134,7 @@ void s100_tests()
     // *** Initialise Gates *************************************************************** //
     
     // Note: please add the same number of each type of gate
-    std::string frs_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/frs/Gates/";
+    /*std::string frs_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/frs/Gates/";
     std::vector<std::string> ZAoQ_cuts = {"ZvsAoQ1"};
     TCutGGates* ZAoQ = new TCutGGates("ZAoQ", ZAoQ_cuts, frs_gate_path);
     std::vector<std::string> Z1Z2_cuts = {"Z1vsZ21"};
@@ -145,17 +145,17 @@ void s100_tests()
     TCutGGates* x4AoQ = new TCutGGates("x4AoQ", x4AoQ_cuts, frs_gate_path);
     std::vector<std::string> dEdegZ_cuts = {"dEdegvsZ1"};
     TCutGGates* dEdegZ = new TCutGGates("dEdegZ", dEdegZ_cuts, frs_gate_path);
-    std::vector<TCutGGates*> FrsGates = {ZAoQ, Z1Z2, x2AoQ, x4AoQ, dEdegZ};
+    std::vector<TCutGGates*> FrsGates = {ZAoQ, Z1Z2, x2AoQ, x4AoQ, dEdegZ};*/
     
     // Define prompt cut EdT gates for Fatima Prompt analysis
-    std::string fatima_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Gates/";
+    /*std::string fatima_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Gates/";
     std::vector<std::string> FatimaPromptCuts = {"FatPromptCut1"};
     TCutGGates* FatimaPrompt = new TCutGGates("FatimaEdT", FatimaPromptCuts, fatima_gate_path);
 
     std::string germanium_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/germanium/Gates/";
     std::vector<std::string> GePromptCuts = {"GePromptCut1"};
-    TCutGGates* GePrompt = new TCutGGates("GeEdT", GePromptCuts, germanium_gate_path);
-    TGermaniumConfiguration::SetPromptFlashCut(germanium_gate_path + "/GePromptCut1");
+    TCutGGates* GePrompt = new TCutGGates("GeEdT", GePromptCuts, germanium_gate_path);*/
+    //TGermaniumConfiguration::SetPromptFlashCut(germanium_gate_path + "/GePromptCut1");
     
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Correlations ******************************************************** //
@@ -477,7 +477,7 @@ void s100_tests()
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({b, d, f});
+        wronline->SetDetectorSystems({c, d, e, f});
     
         run->AddTask(wronline);
     }
@@ -507,9 +507,6 @@ void s100_tests()
     cout << "Data stream is: " << filename << endl;
     cout << "Online port server: " << port << endl;
     cout << "\n\n" << endl;
-
-    // create sink object before run starts    
-    FairSink* sf = FairRunOnline::Instance()->GetSink();
 
     // Run
     run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev); 

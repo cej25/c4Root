@@ -146,6 +146,7 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     dir_whiterabbit_correlation = dir_whiterabbit->mkdir("Trigger 1 & 3");
     dir_whiterabbit_trigger1 = dir_whiterabbit->mkdir("Trigger 1");
     dir_whiterabbit_trigger3 = dir_whiterabbit->mkdir("Trigger 3");
+    dir_whiterabbit_time_differences = dir_whiterabbit->mkdir("Time Differences");
 
 
     // AIDA 
@@ -549,6 +550,14 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     c_whiterabbit_trigger3->cd(0);
     dir_whiterabbit_trigger3->Append(c_whiterabbit_trigger3);
 
+
+    dir_whiterabbit_time_differences->cd();
+    h1_whiterabbit_dt_germanium = new TH1I("h1_whiterabbit_dt_germanium", "Time between success WR hits in Germanium", 1000, 0, 500000);
+    h1_whiterabbit_dt_bplast = new TH1I("h1_whiterabbit_dt_bplast", "Time between success WR hits in bPlast", 1000, 0, 500000);
+    h1_whiterabbit_dt_fatima = new TH1I("h1_whiterabbit_dt_fatima", "Time between success WR hits in FATIMA", 1000, 0, 500000);
+    h1_whiterabbit_dt_fatimavme = new TH1I("h1_whiterabbit_dt_fatimavme", "Time between success WR hits in FATIMA VME", 1000, 0, 500000);
+
+
     dir_whiterabbit->cd();
 
     // Register command to reset histograms
@@ -684,23 +693,69 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
     if (fHitFatimaTwinpeaks)
     {
         nHitsFatima = fHitFatimaTwinpeaks->GetEntriesFast();
-        if (nHitsFatima > 0) systems += 1;
+        if (nHitsFatima > 0) 
+        {
+            systems += 1;
+        
+            FatimaTwinpeaksCalData* FatimaHit = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(0);
+            int wr_fatima = FatimaHit->Get_wr_t();
+            if (last_wr_fatima != wr_fatima) 
+            {
+                h1_whiterabbit_dt_fatima->Fill(wr_fatima - last_wr_fatima);
+                last_wr_fatima = wr_fatima;
+            }
+        }
     }
+
     if (fHitbPlastTwinpeaks) 
     {
-         nHitsbPlast = fHitbPlastTwinpeaks->GetEntriesFast();
-         if (nHitsbPlast > 0) systems += 1;
+        nHitsbPlast = fHitbPlastTwinpeaks->GetEntriesFast();
+        if (nHitsbPlast > 0) 
+        {
+            systems += 1;
+
+            bPlastTwinpeaksCalData* bPlastHit = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(0);
+            int wr_bplast = bPlastHit->Get_wr_t();
+            if (last_wr_bplast != wr_bplast) 
+            {
+                h1_whiterabbit_dt_bplast->Fill(wr_bplast - last_wr_bplast);
+                last_wr_bplast = wr_bplast;
+            }
+        }
     }
+
     if (fHitGe) 
     {
         nHitsGe = fHitGe->GetEntriesFast();
-        if (nHitsGe > 0) systems += 1;
+        if (nHitsGe > 0) 
+        {
+            systems += 1;
+
+            GermaniumCalData* GermaniumHit = (GermaniumCalData*)fHitGe->At(0);
+            int wr_germanium = GermaniumHit->Get_wr_t();
+            if (last_wr_germanium != wr_germanium) 
+            {
+                h1_whiterabbit_dt_germanium->Fill(wr_germanium - last_wr_germanium);
+                last_wr_germanium = wr_germanium;
+            }
+        }
     }
 
     if (fHitFatimaVme) 
     {
         nHitsFatimaVme = fHitFatimaVme->GetEntriesFast();
-        if (nHitsFatimaVme > 0) systems += 1;
+        if (nHitsFatimaVme > 0) 
+        {
+            systems += 1;
+
+            FatimaVmeCalData* FatimaVmeHit = (FatimaVmeCalData*)fHitFatimaVme->At(0);
+            int wr_fatimavme = FatimaVmeHit->Get_wr_t();
+            if (last_wr_fatimavme != wr_fatimavme) 
+            {
+                h1_whiterabbit_dt_fatimavme->Fill(wr_fatimavme - last_wr_fatimavme);
+                last_wr_fatimavme = wr_fatimavme;
+            }
+        }
     }
     
     if (fAidaDecays)
@@ -744,6 +799,7 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             {
                 h1_whiterabbit_trigger3_aida_fatima->Fill(dt);
             }
+
         }
         
         if (fHitFatimaVme)
@@ -914,35 +970,34 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         }
     }
         
-    if (fHitbPlastTwinpeaks)
+   
+    if (fHitbPlastTwinpeaks) 
     {
-        if (fHitbPlastTwinpeaks) 
+        bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(0);
+        if (hitbPlast)
         {
-            bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(0);
-            if (hitbPlast)
+            int wr_bplast = hitbPlast->Get_wr_t();
+            if (fHitGe)
             {
-                int bplast_wr = hitbPlast->Get_wr_t();
-                if (fHitGe)
+                GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(0);
+                if (hitGe)
                 {
-                    GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(0);
-                    if (hitGe)
+                    int wr_ge = hitGe->Get_wr_t();
+                    int dt = wr_bplast - wr_ge;
+                    h1_whiterabbit_correlation_bplast_ge->Fill(dt);
+                    if (fEventHeader->GetTrigger() == 1)
                     {
-                        int wr_ge = hitGe->Get_wr_t();
-                        int dt = bplast_wr - wr_ge;
-                        h1_whiterabbit_correlation_bplast_ge->Fill(dt);
-                        if (fEventHeader->GetTrigger() == 1)
-                        {
-                            h1_whiterabbit_trigger1_bplast_ge->Fill(dt);
-                        }
-                        if (fEventHeader->GetTrigger() == 3)
-                        {
-                            h1_whiterabbit_trigger3_bplast_ge->Fill(dt);
-                        }
+                        h1_whiterabbit_trigger1_bplast_ge->Fill(dt);
+                    }
+                    if (fEventHeader->GetTrigger() == 3)
+                    {
+                        h1_whiterabbit_trigger3_bplast_ge->Fill(dt);
                     }
                 }
             }
         }
     }
+
     h1_whiterabbit_trigger->Fill(fEventHeader->GetTrigger());
 
     fNEvents += 1;
