@@ -42,6 +42,7 @@
 #pragma link C++ class AidaFatimaCorrelations+;
 #pragma link C++ class WhiterabbitCorrelationOnline+;
 #pragma link C++ class bPlastGermaniumCorrelations+;
+#pragma link C++ class bPlastGermaniumCorrelationsOnline+;
 
 
 #pragma link C++ class FatimaTimingAnalysis+;

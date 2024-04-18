@@ -89,7 +89,7 @@ void s100_tests()
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 7070; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 6060; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -491,8 +491,9 @@ void s100_tests()
 
     if (BPLAST_ON && GERMANIUM_ON)
     {
-        bPlastGermaniumCorrelations* bplastgecorr = new bPlastGermaniumCorrelations();
-        
+        bPlastGermaniumCorrelationsOnline* bplastgecorr = new bPlastGermaniumCorrelationsOnline();
+        // set bplast multiplicity
+        // ???
         run->AddTask(bplastgecorr);
     }
 
