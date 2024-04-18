@@ -270,7 +270,7 @@ void GermaniumNearlineSpectra::Exec(Option_t* option){
                         double time2 = hit2->Get_channel_trigger_time();
 
                         if (germanium_configuration->IsDetectorAuxilliary(detector_id2) && detector_id1 != detector_id2) continue;
-                        if (TMath::Abs(time2 - time1) < 20) {
+                        if (TMath::Abs(time2 - time1) < 200) {
                             h2_germanium_energy_energy_vetosci41->Fill(energy1,energy2);
                         }
                     }
