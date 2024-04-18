@@ -183,10 +183,13 @@ void s100_nearline_histograms(TString filename)
     
     TFrsConfiguration::Set_Z_range(70,100);
     TFrsConfiguration::Set_AoQ_range(2.3,2.7);
+    std::vector<FrsGate*> fg;
+    FrsGate* Pt191 = new FrsGate("191Pt", "/lustre/gamma/s100_nearline/c4Root/config/s100/frs/Gates/191Pt.root");
+    fg.emplace_back(Pt191);
     
     if (FRS_ON)
     {
-        FrsNearlineSpectra* nearlinefrs = new FrsNearlineSpectra();
+        FrsNearlineSpectra* nearlinefrs = new FrsNearlineSpectra(fg);
         
         run->AddTask(nearlinefrs);
     }
