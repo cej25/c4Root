@@ -3,14 +3,14 @@
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define FATIMA_ON 1
 #define FATIMA_VME_ON 1
-#define AIDA_ON 0
-#define BPLAST_ON 0
+#define AIDA_ON 1
+#define BPLAST_ON 1
 #define GERMANIUM_ON 1
 #define BGO_ON 1
 #define FRS_ON 0
-#define TIME_MACHINE_ON 0
+#define TIME_MACHINE_ON 1
 #define BEAMMONITOR_ON 0
-#define WHITE_RABBIT_CORS 0
+#define WHITE_RABBIT_CORS 1
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
@@ -74,7 +74,7 @@ void s100_online_new()
     //TString filename = "stream://x86l-182"; // BGO
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
     //TString filename = "trans://x86l-144"; // ??
-    //TString filename = "trans://x86l-86"; // ??.
+//    TString filename = "trans://x86l-86"; // ??.
     //TString filename = "trans://x86l-144"; // 
     //TString filename = "stream://x86l-182"; // bgo
     TString filename = "trans://lxg1257"; // timesorter.
@@ -83,7 +83,7 @@ void s100_online_new()
     //TString filename = "stream://x86l-117"; // fatima tamex
     //TString filename = "stream://x86l-87"; //bplast
     //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
-    TString filename = "~/Au_beam_0010_0001.lmd";
+    //TString filename = "~/Au_beam_0010_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
@@ -165,16 +165,17 @@ void s100_online_new()
 
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
-    TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_new.txt");
+    TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_apr18.txt");
+    TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(config_path + "/fatima/fatima_cal_apr18.txt");
     TFatimaVmeConfiguration::SetDetectorMapFile(config_path + "/fatima/Fatima_VME_allocation.txt");
     TFatimaVmeConfiguration::Set_QDC_E_CalFile(config_path + "/fatima/Fatima_QDC_Energy_Calibration.txt");
     TFatimaVmeConfiguration::Set_QDC_T_CalFile(config_path + "/fatima/Fatima_QDC_Time_Calibration.txt");
     TFatimaVmeConfiguration::Set_TDC_T_CalFile(config_path + "/fatima/Fatima_TDC_Time_Calibration.txt");
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
-    TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_mar20.txt");
+    TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_mapping_s100.txt");
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_apr15.txt");
-    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_uncal_apr15.txt");
+    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_cal_apr18.txt");
     TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
     
     
@@ -378,13 +379,13 @@ void s100_online_new()
         FatimaOnlineSpectra* onlinefatima = new FatimaOnlineSpectra();
         onlinefatima->SetBinningSlowToT(2000,560,660);
         onlinefatima->SetBinningFastToT(1000,0.1,100.1);
-        onlinefatima->SetBinningEnergy(2000,608,610);
+        onlinefatima->SetBinningEnergy(2000,0,1500);
 
-        std::vector<int> fat_dets = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64};
+        std::vector<int> fat_dets = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43};
         onlinefatima->SetDetectorsToPlot(fat_dets);
         
-        std::vector<int> fat_ref_dets = {22};
-        onlinefatima->SetReferenceDetectorsForTimeDifferences(fat_ref_dets);
+        std::vector<int> fat_ref_dets = {1};
+        //onlinefatima->SetReferenceDetectorsForTimeDifferences(1);
         
         run->AddTask(onlinefatima);
     }
@@ -417,7 +418,9 @@ void s100_online_new()
         onlinege->SetBinningEnergy(3000,0,3e3);
         onlinege->AddReferenceDetector(15,0);
         onlinege->AddReferenceDetector(1,0);
-        onlinege->AddReferenceDetectorWithEnergyGates(1,0,1332);
+        onlinege->AddReferenceDetectorWithEnergyGates(1,0,778);
+        onlinege->AddReferenceDetectorWithEnergyGates(1,0,344,778);
+        onlinege->SetEnergyGateWidth(10);
         run->AddTask(onlinege);
     }
     
@@ -462,7 +465,7 @@ void s100_online_new()
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {c, e, f};
+        std::vector a {b,c,e,d,f};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
@@ -471,7 +474,7 @@ void s100_online_new()
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({b, d, f});
+        wronline->SetDetectorSystems({b,c,d,e,f});
     
         run->AddTask(wronline);
     }
