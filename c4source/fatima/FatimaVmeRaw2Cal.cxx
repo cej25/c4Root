@@ -169,8 +169,8 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
 
             for (int i = 0; i < tdcs_fired; i++)
             {
-                double timestamp_raw = (double)v1290_data[i];
-                double timestamp = (double)Calibrate_TDC_T(v1290_data[i], tdc_detectors[i]);
+                uint32_t timestamp_raw = v1290_data[i];
+                double timestamp = Calibrate_TDC_T(v1290_data[i], tdc_detectors[i]);
                 
                 if (tdc_detectors[i] >= 0)
                 {
@@ -204,16 +204,16 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
 
                 if (((tdc_detectors[i] == tm_delayed) || (tdc_detectors[i] == tm_undelayed)) && tm_delayed != 0 && tm_undelayed != 0)
                 {
-                    new ((*fTimeMachineArray)[fTimeMachineArray->GetEntriesFast()]) TimeMachineData((tdc_detectors[i] == tm_undelayed) ? (timestamp) : (0), (tdc_detectors[i] == tm_undelayed) ? (0) : (timestamp), FatimaHit->Get_wr_subsystem_id(), FatimaHit->Get_wr_t());
+                    new ((*fTimeMachineArray)[fTimeMachineArray->GetEntriesFast()]) TimeMachineData((tdc_detectors[i] == tm_undelayed) ? (timestamp * 0.025) : (0), (tdc_detectors[i] == tm_undelayed) ? (0) : (timestamp * 0.025), FatimaHit->Get_wr_subsystem_id(), FatimaHit->Get_wr_t());
                 }
 
                 if (tdc_detectors[i] == tm_undelayed && timestamp != 0.)
                 {
-                    FatVME_TMU.emplace_back(timestamp * 0.025);
+                    FatVME_TMU.emplace_back((double)(timestamp * 0.025));
                 }
                 if (tdc_detectors[i] == tm_delayed && timestamp != 0.)
                 {
-                    FatVME_TMD.emplace_back(timestamp * 0.025);
+                    FatVME_TMD.emplace_back((double)(timestamp * 0.025));
                 }
 
                 
