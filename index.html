@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>DESPEC Virtual Messhütte</title>
+    <!-- MDB icon -->
+    <!-- <link rel="icon" href="img/mdb-favicon.ico" type="image/x-icon" /> -->
+    <!-- Font Awesome  unused for now
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    /> -->
+    <!-- Google Fonts Roboto - SELF HOSTED -->
+    <link
+      rel="stylesheet"
+      href="css/fonts.css"
+    />
+    <!-- MDB -->
+    <link rel="stylesheet" href="css/mdb.min.css" />
+  </head>
+  <body>
+    <!--Main Navigation-->
+	<header>
+
+		<div class="row">
+			<div class="p-5 text-center bg-light">
+				<h1 class="mb-3">DESPEC Virtual Messh&uuml;tte</h1>
+				<p class="">Please check the links below, most will require you to login with your <em>GSI Web Login</em></p>
+				<a class="btn btn-primary" href="/zoom/">Zoom Details</a>
+				<a class="btn" href="https://elog.gsi.de/despec/S100/">S100 ELOG</a>
+				<a class="btn" href="https://despec-vm-01.gsi.de/docs/">Documentation</a>
+				<a class="btn" href="/shift">Shift Schedule</a>
+			  </div>
+		</div>
+	</header>
+	<!--Main Navigation-->
+
+	<!--Main layout-->
+	<main>
+	  <div class="container">		
+		<div class="row mt-5">
+			<div class="card col-lg-4">
+			  <div class="card-body">
+				<h5 class="card-title">DAQ</h5>
+				<div class="text-center">
+				<a href="/ucesb" class="btn btn-primary" data-mdb-toggle="tooltip" title="Monitor all DAQ rates and scalers">ucesb</a>
+				<a href="/dabc"  class="btn btn-primary" data-mdb-toggle="tooltip" title="Control the DAQs directly">DABC</a>
+				<a href="/dabc/?items=[MBS/MBS_Despec_TS/EventRate,MBS/MBS_AIDA/EventRate,MBS/MBS_bPlas/EventRate,MBS/MBS_FRS/EventRate,MBS/MBS_Fatima_TAMEX/EventRate,MBS/MBS_Fatima_VME/EventRate,MBS/MBS_DEGAS/EventRate,MBS/MBS_BGO/EventRate,MBS/MBS_BeamMonitor/EventRate]&layout=grid3x3&monitoring=1000&nobrowser" class="btn">All DAQ Rates</a>
+				<a href="/dabc/MBS/MBS_Despec_TS/ControlGUI/" class="btn">Time Sorter Control</a>
+				<a href="/ucesb/implant.html" class="btn">ucesb Implantation</a>
+				</div>
+			  </div>
+			</div>
+			
+			<div class="card col-lg-4">
+			  <div class="card-body">
+				<h5 class="card-title">Slow Control</h5>
+				<div class="text-center">
+					<a href="/grafana/" class="btn btn-primary">Grafana</a>
+					<a href="/oscilloscope/Tektronix/#/client/c/Tek%20e*Scope" class="btn">Oscilloscope</a>
+				</div>
+			  </div>
+			</div>
+			
+			<div class="card col-lg-4">
+			  <div class="card-body">
+				<h5 class="card-title">Accelerator/FRS</h5>
+				<div class="text-center">
+				<a href="http://ope-acc.gsi.de/" class="btn btn-primary">Accelerator O-LOG</a>
+				<a href="https://web-docs.gsi.de/~frs-phys/frs-status/" class="btn">FRS</a>
+				<a href="http://sist-dl.gsi.de/" class="btn">Radiation Safety</a>
+				</div>
+			  </div>
+			</div>
+		</div>
+		
+		<div class="row mt-5">
+			<div class="card col-lg-6">
+			  <div class="card-body">
+				<h5 class="card-title">c4 - Online</h5>
+				<div class="text-center">
+				<a href="/c4/?layout=flex&monitoring=1000" class="btn btn-primary">c4 Online</a>
+				<a href="/c4/?items=[TimeMachines/c_time_diff]" class="btn">Time Machine Time Differences</a>
+				<a href="/c4/?items=[TimeMachine/c_time_corrs]" class="btn">Time Machine Correlations</a>
+				</div>
+			  </div>
+			</div>
+			
+			<div class="card col-lg-6">
+			  <div class="card-body">
+				<h5 class="card-title">JSRoot - Nearline</h5>
+				<div class="text-center">
+				<a href="/jsroot/" class="btn btn-primary">JSRoot</a>
+				</div>
+			  </div>
+			</div>
+		</div>
+			
+		<div class="row mt-5">
+			<div class="card col-lg-3">
+				<div class="card-body">
+				<h5 class="card-title">Beam Monitor</h5>
+				<div class="text-center">
+				<a href="/c4/?items=[Histograms/BEAM_MONITOR/S2/CumulativeHitDiffS2,Histograms/BEAM_MONITOR/S4/CumulativeHitDiffS4,Histograms/BEAM_MONITOR/S2/HitTimesS2,Histograms/BEAM_MONITOR/S4/HitTimesS4,Histograms/BEAM_MONITOR/S2/CumulativeHitsS2,Histograms/BEAM_MONITOR/S4/CumulativeHitsS4,UserObjects/BEAM_MONITOR/S2/LargestDeviationFromIdeal,UserObjects/BEAM_MONITOR/S4/LargestDeviationFromIdeal,UserObjects/BEAM_MONITOR/S2/QualityFactor,UserObjects/BEAM_MONITOR/S4/QualityFactor]&layout=grid2x5&monitoring=1000&nobrowser" class="btn">Histograms</a>
+				<a href="/c4/?items=[UserObjects/BEAM_MONITOR/S2/QualityFactor,UserObjects/BEAM_MONITOR/S4/QualityFactor]&layout=grid1x2&monitoring=1000&nobrowser" class="btn">Quality Factor</a>
+				</div>
+			  </div>
+			</div>
+			
+			<div class="card col-lg-3">
+				<div class="card-body">
+				<h5 class="card-title">FRS</h5>
+				<div class="text-center">
+				<a href="/c4/?items=[FRS_Analysis_Histograms/TAC/h2_dEdeg_vs_Z,FRS_Analysis_Histograms/TAC/h2_x2_vs_Z,FRS_Analysis_Histograms/TAC/h2_x4_vs_Z,FRS_Analysis_Histograms/TAC/h2_dEdeg_vs_Z,FRS_Analysis_Histograms/TAC/h2_x2_vs_AoQ_Zsame,FRS_Analysis_Histograms/TAC/h2_x4_vs_AoQ_Zsame,FRS_Analysis_Histograms/TAC/h2_Z_vs_AoQ_Zsame,FRS_Analysis_Histograms/TAC/h2_Z_vs_Z2]&layout=grid2x4&monitoring=1000&nobrowser&opts=[colz,colz,colz,colz,colz,colz,colz,colz]" class="btn">FRS PID</a>
+				</div>
+			  </div>
+			</div>
+			
+			<div class="card col-lg-3">
+				<div class="card-body">
+				<h5 class="card-title">AIDA</h5>
+				<div class="text-center">
+				<a href="/c4/?items=[AIDA/Implants/DSSD1/aida_implants_d1_strip_xy,AIDA/Implants/DSSD2/aida_implants_d2_strip_xy,,]&layout=grid2x2&monitoring=1000&nobrowser&opts=[colz,colz,colz,colz]" class="btn">Implantation</a>
+				<a href="/c4/?items=[AIDA/Decays/DSSD1/aida_decays_d1_decays_strip_xy,AIDA/Decays/DSSD2/aida_decays_d2_strip_xy,AIDA/Scalers/aida_scaler_implants_d1,AIDA/Scalers/aida_scaler_decays_d1]&layout=grid2x2&monitoring=1000&nobrowser&opts=[colz,colz,'','']" class="btn">Decay &amp; Scalers</a>
+				<a href="/c4/?items=[]" class="btn">Dead Time - TBA</a>
+				</div>
+			  </div>
+			</div>
+			
+			<div class="card col-lg-3">
+				<div class="card-body">
+				<h5 class="card-title">&beta;Plastic</h5>
+				<div class="text-center">
+				<a href="/c4/?items=[bPlast/Slow_ToT/h1_bplast_slowToT_5,bPlast/Slow_ToT/h1_bPlast_slowToT_17,bPlast/Slow_ToT/h1_bPlast_slowToT_36,bPlast/Slow_ToT/h1_bPlast_slowToT_45,bPlast/Fast_ToT/h1_bplast_fastToT_5,bPlast/Fast_ToT/h1_bplast_fastToT_17,bPlast/Fast_ToT/h1_bplast_fastToT_36,bPlast/Fast_ToT/h1_bplast_fastToT_45,bPlast/Fast_Vs._Slow/h1_bplast_fast_v_slow_5,bPlast/Fast_Vs._Slow/h1_bplast_fast_v_slow_17,bPlast/Fast_Vs._Slow/h1_bplast_fast_v_slow_36,bPlast/Fast_Vs._Slow/h1_bplast_fast_v_slow_45]&layout=grid3x4&monitoring=1000&nobrowser&opts=[logy,logy,logy,logy,logy,logy,logy,logy,,,,]" class="btn">Upstream</a>
+				<a href="/c4/?items=[bPlast/Slow_ToT/h1_bplast_slowToT_67,bPlast/Slow_ToT/h1_bPlast_slowToT_80,bPlast/Slow_ToT/h1_bPlast_slowToT_102,bPlast/Slow_ToT/h1_bPlast_slowToT_115,bPlast/Fast_ToT/h1_bplast_fastToT_67,bPlast/Fast_ToT/h1_bplast_fastToT_80,bPlast/Fast_ToT/h1_bplast_fastToT_102,bPlast/Fast_ToT/h1_bplast_fastToT_115,bPlast/Fast_Vs._Slow/h1_bplast_fast_v_slow_67,bPlast/Fast_Vs._Slow/h1_bplast_fast_v_slow_80,bPlast/Fast_Vs._Slow/h1_bplast_fast_v_slow_102,bPlast/Fast_Vs._Slow/h1_bplast_fast_v_slow_115]&layout=grid3x4&monitoring=1000&nobrowser&opts=[logy,logy,logy,logy,logy,logy,logy,logy,,,,]" class="btn">Downstream</a>
+				<a href="/c4/?items=[bPlast/Hit_Pattern/h1_bplast_hitpattern_upstream,bPlast/Hit_Pattern/h1_bplast_hitpattern_downstream,bPlast/Hit_Pattern/Multiplicity]&layout=grid2x2&monitoring=1000&nobrowser&opts=[logy,logy,logy]" class="btn">Detector Hit Patterns</a>
+				<a href="/c4/?items=[bPlast/c_plast_tamex_card_hitpattern]&monitoring=1000&nobrowser" class="btn">TAMEX Board Hit Patterns</a>
+				</div>
+			  </div>
+			</div>
+
+		</div>
+
+		<div class="row mt-5">
+			<div class="card col-lg-3">
+				<div class="card-body">
+				<h5 class="card-title">FATIMA</h5>
+				<div class="text-center">
+				<a href="/c4/?items=[FATIMA/SlowToT/c_fatima_slowToT]&monitoring=1000&nobrowser" class="btn">Slow ToT</a>
+				<a href="/c4/?items=[FATIMA/FastToT/c_fatima_fastToT]&monitoring=1000&nobrowser" class="btn">Fast ToT</a>
+				<a href="/c4/?items=[FATIMA/Hitpattern/c_fatima_hitpatterns]&monitoring=1000&nobrowser" class="btn">Hit Pattern</a>
+				</div>
+			  </div>
+			</div>
+
+			<div class="card col-lg-3">
+				<div class="card-body">
+				<h5 class="card-title">DEGAS</h5>
+				<div class="text-center">
+				<a href="/c4/?items=[DEGAS/Calibrated_Energy_Spectra/c_germanium_energy]&monitoring=1000&nobrowser" class="btn">Energy Spectra</a>
+				<a href="/c4/?items=[DEGAS/Hit_pattern/h1_germanium_hitpattern]&monitoring=1000&nobrowser&opts=[logy]" class="btn">Hit Pattern</a>
+				</div>
+			  </div>
+			</div>
+
+
+
+		</div>
+				
+		
+		<div class="row mt-5">
+			<div class="card col-lg-6">
+			  <div class="card-body">
+				<h5 class="card-title">ELog Archive</h5>
+				<div class="text-center">
+				<a class="btn" href="https://elog.gsi.de/despec/Dry+Run+2024/">Dry Run 2024 ELOG</a>
+				<a class="btn" href="https://elog.gsi.de/despec/Implantation+Test+1/">IT1 ELOG</a>
+				<a href="https://elog.gsi.de/despec/S505" class="btn">S505</a>
+				<a href="https://elog.gsi.de/despec/S506+Planar/" class="btn">S506</a>
+				<a href="https://elog.gsi.de/despec/S450" class="btn">S450</a>
+				<a href="https://elog.gsi.de/despec/Dry+Run+2022/" class="btn">Dry Run 2022</a>
+				<a href="https://elog.gsi.de/despec/S496" class="btn">S496</a>
+				<a href="https://elog.gsi.de/despec/S460" class="btn">S460</a>
+				<a href="https://elog.gsi.de/despec/Experiment+S452/" class="btn">S452</a>
+				<a href="https://elog.gsi.de/despec/Dry+Run+2020/page" class="btn">Dry Run 2020</a>
+				</div>
+			  </div>
+			</div>
+			
+			<div class="card col-lg-6">
+			  <div class="card-body">
+				<h5 class="card-title">Resources</h5>
+				<div class="text-center">
+				<a class="btn" href="https://despec-vm-01.gsi.de/docs/">S100 Documentation</a>
+				<a href="https://sf.gsi.de/d/a4fb2134e06a450ca777/" class="btn">2021 Documentation</a>
+				</div>
+			  </div>
+			</div>
+		</div>
+		
+ 
+	  </div>
+	</main>
+	<!--Main layout-->
+
+	<!--Footer-->
+	<footer class="text-center text-lg-start bg-light text-muted mt-5">
+	 <!-- Grid container -->
+	  <div class="container p-4">
+		<!--Grid row-->
+		<div class="row">
+		  <!--Grid column-->
+		  <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+			<h5 class="text-uppercase">Legal</h5>
+
+			<ul class="list-unstyled mb-0">
+			  <li>
+				<a href="https://www.gsi.de/en/bottommenu/legal_notice.htm" class="text-dark">GSI Legal Notice</a>
+			  </li>
+			  <li>
+				<a href="https://www.gsi.de/en/bottommenu/data_privacy_protection.htm" class="text-dark">GSI Data Privacy Protection</a>
+			  </li>
+			</ul>
+		  </div>
+		  <!--Grid column-->	
+    <!-- Left -->
+	</footer>
+	<!--Footer-->
+
+    <!-- MDB -->
+    <script type="text/javascript" src="js/mdb.min.js"></script>
+    <!-- Custom scripts -->
+    <script type="text/javascript"></script>
+  </body>
+</html>

@@ -11,6 +11,7 @@
 #include "TClonesArray.h"
 #include "TH1.h"
 #include "TH2.h"
+#include "TGraph.h"
 #include "TCutG.h"
 #include "TFolder.h"
 #include <vector>
@@ -30,6 +31,7 @@ class TCorrelationsConfiguration;
 class TFolder;
 class TDirectory;
 class FrsGate;
+class TGraph;
 
 class FrsAidaCorrelationsOnline : public FairTask
 {
@@ -65,10 +67,22 @@ class FrsAidaCorrelationsOnline : public FairTask
         TFolder* histograms;
         TDirectory* dir_frs;
         TDirectory* dir_frs_aida_corr;
-        // TDirectory* 
+        TDirectory* dir_implants;
+        TDirectory* dir_stopped_implants;
 
         TH1I* h1_stopped_implanted_passed_gate;
-        int** stopped_implant_passed_gate_count;
+        int* stopped_implant_passed_gate_count_dssd1;
+        int* stopped_implant_passed_gate_count_dssd2;
+        std::vector<TGraph*> hG_stopped_implants_ratio;
+
+        int plotRatioEvery = 50;
+        int* r_plotted;
+        
+        std::vector<std::vector<TH1I*>> h1_AidaImplant_ZvsAoQGated_energy;
+        std::vector<std::vector<TH2I*>> h2_AidaImplant_ZvsAoQGated_position;
+        std::vector<std::vector<TH1I*>> h1_AidaImplant_ZvsAoQGated_energy_stopped;
+        std::vector<std::vector<TH2I*>> h2_AidaImplant_ZvsAoQGated_position_stopped;
+
 
 
        

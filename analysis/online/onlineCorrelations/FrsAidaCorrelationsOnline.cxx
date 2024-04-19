@@ -75,9 +75,11 @@ InitStatus FrsAidaCorrelationsOnline::Init()
     }
 
     dir_frs_aida_corr = dir_frs->mkdir("FRS-AIDA Correlations");
+    dir_implants = dir_frs_aida_corr->mkdir("Implants");
+    dir_stopped_implants = dir_frs_aida_corr->mkdir("Stopped Implants");
 
     // init tgraphs/histograms here
-    dir_frs_aida_corr->cd();
+    dir_stopped_implants->cd();
     int bins = FrsGates.size() * aida_config->DSSDs();
     h1_stopped_implanted_passed_gate = new TH1I("h1_stopped_implanted_passed_gate", "Stopped ions by DSSD, passing FRS PID Gates", bins, 0, bins);
 
@@ -97,8 +99,59 @@ InitStatus FrsAidaCorrelationsOnline::Init()
 
     }
 
-    stopped_implant_passed_gate_count = new int*[FrsGates.size()];
-    for (int i = 0; i < FrsGates.size(); i++) stopped_implant_passed_gate_count[i] = new int[aida_config->DSSDs()];
+    // CEJ: use to calculate ratio later
+    stopped_implant_passed_gate_count_dssd1 = new int[FrsGates.size()];
+    for (int i = 0; i < FrsGates.size(); i++) stopped_implant_passed_gate_count_dssd1[i] = 0;
+    stopped_implant_passed_gate_count_dssd2 = new int[FrsGates.size()];
+    for (int i = 0; i < FrsGates.size(); i++) stopped_implant_passed_gate_count_dssd2[i] = 0;
+    // dssd3 ?
+
+    hG_stopped_implants_ratio.resize(FrsGates.size());
+    r_plotted = new int[FrsGates.size()];
+    for (int gate = 0; gate < FrsGates.size(); gate++)
+    {
+        r_plotted[gate] = 0;
+        hG_stopped_implants_ratio[gate] = new TGraph(1);
+        hG_stopped_implants_ratio[gate]->SetName("hG_stopped_implants_ratio");
+        hG_stopped_implants_ratio[gate]->SetTitle(Form("Ratio of %s Gated ions stopped in DSSD1:DSSD2", FrsGates[gate]->GetName().c_str()));
+        hG_stopped_implants_ratio[gate]->GetXaxis()->SetTimeDisplay(1);
+        hG_stopped_implants_ratio[gate]->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
+        hG_stopped_implants_ratio[gate]->GetXaxis()->SetTimeOffset(0, "local");
+        hG_stopped_implants_ratio[gate]->GetYaxis()->SetTitle("Ratio");
+        hG_stopped_implants_ratio[gate]->GetXaxis()->SetTitle("Time [Y-M-D H:M]");
+        hG_stopped_implants_ratio[gate]->SetMarkerColor(kBlack);
+        hG_stopped_implants_ratio[gate]->SetMarkerStyle(20);
+        if (gate == 0) hG_stopped_implants_ratio[gate]->SetLineColor(kBlue);
+        else if (gate == 1) hG_stopped_implants_ratio[gate]->SetLineColor(kRed);
+        hG_stopped_implants_ratio[gate]->SetLineWidth(2);
+        hG_stopped_implants_ratio[gate]->GetXaxis()->SetNdivisions(-4);
+        dir_stopped_implants->Append(hG_stopped_implants_ratio[gate]);
+    }
+
+    
+    //dir_pid_gated->cd();
+    h2_AidaImplant_ZvsAoQGated_position.resize(aida_config->DSSDs());
+    h1_AidaImplant_ZvsAoQGated_energy.resize(aida_config->DSSDs());
+    h2_AidaImplant_ZvsAoQGated_position_stopped.resize(aida_config->DSSDs());
+    h1_AidaImplant_ZvsAoQGated_energy_stopped.resize(aida_config->DSSDs());
+    for (int dssd = 0; dssd < aida_config->DSSDs(); dssd++)
+    {
+        h2_AidaImplant_ZvsAoQGated_position[dssd].resize(FrsGates.size());
+        h1_AidaImplant_ZvsAoQGated_energy[dssd].resize(FrsGates.size());
+        h2_AidaImplant_ZvsAoQGated_position_stopped[dssd].resize(FrsGates.size());
+        h1_AidaImplant_ZvsAoQGated_energy_stopped[dssd].resize(FrsGates.size());
+
+        for (int gate = 0; gate < FrsGates.size(); gate++)
+        {
+            dir_implants->cd();
+            h2_AidaImplant_ZvsAoQGated_position[dssd][gate] = new TH2I(Form("h2_AidaImplant_ZvsAoQGate%d_position_dssd%d", gate, dssd + 1), Form("DSSD %d Implant position FRS ZAoQ Gate: %d", dssd + 1, gate), 128, -37.8, 37.8, 128, -37.8, 37.8);
+            h1_AidaImplant_ZvsAoQGated_energy[dssd][gate] = new TH1I(Form("h1_AidaImplant_ZvsAoQGate%d_energy_dssd%d", gate, dssd + 1), Form("DSSD %d Implant energy FRS ZAoQ Gate: %d", dssd + 1, gate), 1000, 0, 10000);
+            dir_stopped_implants->cd();
+            h2_AidaImplant_ZvsAoQGated_position_stopped[dssd][gate] = new TH2I(Form("h2_AidaImplant_ZvsAoQGate%d_position_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) position FRS ZAoQ Gate: %d", dssd + 1, gate), 128, -37.8, 37.8, 128, -37.8, 37.8);
+            h1_AidaImplant_ZvsAoQGated_energy_stopped[dssd][gate] = new TH1I(Form("h1_AidaImplant_ZvsAoQGate%d_energy_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) energy FRS ZAoQ Gate: %d", dssd + 1, gate), 1000, 0, 10000);
+        }
+    }
+    
 
     return kSUCCESS;
 
@@ -125,6 +178,19 @@ void FrsAidaCorrelationsOnline::Exec(Option_t* option)
                 
                 if (hit.Time - FrsHit->Get_wr_t() > Correl["FRS-AIDA WR Gate"][0] && hit.Time - FrsHit->Get_wr_t() < Correl["FRS-AIDA WR Gate"][1])
                 {
+                    if (!FrsGates.empty())
+                    {
+                        for (int gate = 0; gate < FrsGates.size(); gate++)
+                        {
+                            // hit pattern and energy
+                            if (FrsGates[gate]->Passed_ZvsAoQ(FrsHit->Get_ID_z(), FrsHit->Get_ID_AoQ()))
+                            {
+                                h2_AidaImplant_ZvsAoQGated_position[hit.DSSD-1][gate]->Fill(hit.PosX, hit.PosY);
+                                h1_AidaImplant_ZvsAoQGated_energy[hit.DSSD-1][gate]->Fill(hit.Energy);
+                            }
+                        }
+                    }
+
                     if (hit.Stopped)
                     {
                         if (!FrsGates.empty())
@@ -135,12 +201,31 @@ void FrsAidaCorrelationsOnline::Exec(Option_t* option)
                                 {
                                     h1_stopped_implanted_passed_gate->Fill(gate * aida_config->DSSDs() + hit.DSSD - 1);
 
-                                    stopped_implant_passed_gate_count[gate][hit.DSSD - 1]++;
+                                    if (hit.DSSD == 1) stopped_implant_passed_gate_count_dssd1[gate]++;
+                                    else if (hit.DSSD == 2) stopped_implant_passed_gate_count_dssd2[gate]++;
                                 }
+
+                                int sum = stopped_implant_passed_gate_count_dssd1[gate] + stopped_implant_passed_gate_count_dssd2[gate];
+                                if (sum % plotRatioEvery == 0 && sum > 0)
+                                {   
+                                    time_t rawtime; time(&rawtime);
+                                    //double ratio = stopped_implant_passed_gate_count_dssd1[gate] / stopped_implant_passed_gate_count_dssd2[gate];
+                                    float ratio = stopped_implant_passed_gate_count_dssd1[gate] / 5; // for testing graph
+                                    hG_stopped_implants_ratio[gate]->SetPoint(r_plotted[gate], rawtime, ratio);
+                                    r_plotted[gate]++;
+                                    stopped_implant_passed_gate_count_dssd1[gate] = 0;
+                                    stopped_implant_passed_gate_count_dssd2[gate] = 0;
+                                }
+
+                                // hit pattern and energy
+                                if (FrsGates[gate]->Passed_ZvsAoQ(FrsHit->Get_ID_z(), FrsHit->Get_ID_AoQ()))
+                                {
+                                    h2_AidaImplant_ZvsAoQGated_position_stopped[hit.DSSD-1][gate]->Fill(hit.PosX, hit.PosY);
+                                    h1_AidaImplant_ZvsAoQGated_energy_stopped[hit.DSSD-1][gate]->Fill(hit.Energy);
+                                }
+
                             }
 
-
-                            // calculate ratio
                         }
                         
                     } // Stopped
