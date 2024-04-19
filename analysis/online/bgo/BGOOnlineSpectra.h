@@ -102,7 +102,7 @@ class BGOOnlineSpectra : public FairTask
         TDirectory* dir_bgo_time;
         TDirectory* dir_bgo_germanium_veto_energy;
         TDirectory* dir_bgo_germanium_vetotrue_energy;
-        TDirectory* dir_bgo_germanium_veto_timedifferences;
+        TDirectory* dir_bgo_germanium_veto_time_differences;
 
         TFile* file_bgo_snapshot;
 

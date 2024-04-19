@@ -85,6 +85,7 @@ InitStatus BGOOnlineSpectra::Init()
     dir_bgo_energy = dir_bgo->mkdir("Raw Energy Spectra");
     dir_bgo_time = dir_bgo->mkdir("Time Spectra");
     dir_bgo_germanium_veto_energy = dir_bgo->mkdir("BGO vetoed Germanium spectra");
+    dir_bgo_germanium_veto_time_differences = dir_bgo->mkdir("BGO veto time differences");
     dir_bgo_germanium_vetotrue_energy = dir_bgo->mkdir("BGO veto true Germanium spectra");
 
     crystals_to_plot.clear();
@@ -165,6 +166,7 @@ InitStatus BGOOnlineSpectra::Init()
 
     // CEJ: should we cd to timedifference spectra folder?
     // time differences spectra:
+    dir_bgo_germanium_veto_time_differences->cd();
     c_germanium_bgo_veto_timedifferences  = new TCanvas("c_germanium_bgo_veto_timedifferences","WR BGO-Germanium time differences",650,350);
     c_germanium_bgo_veto_timedifferences->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
     h1_germanium_bgo_veto_timedifferences.resize(number_of_detectors_to_plot);
@@ -175,7 +177,7 @@ InitStatus BGOOnlineSpectra::Init()
         h1_germanium_bgo_veto_timedifferences[ihist]->Draw();
     }
     c_germanium_bgo_veto_timedifferences->cd(0);
-    dir_bgo_germanium_veto_energy->Append(c_germanium_bgo_veto_timedifferences);
+    dir_bgo_germanium_veto_time_differences->Append(c_germanium_bgo_veto_timedifferences);
 
     dir_bgo->cd();
 
