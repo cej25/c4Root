@@ -1,14 +1,14 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define FATIMA_ON 0
-#define FATIMA_VME_ON 0
+#define FATIMA_ON 1
+#define FATIMA_VME_ON 1
 #define AIDA_ON 0
 #define BPLAST_ON 1
-#define GERMANIUM_ON 0
+#define GERMANIUM_ON 1
 #define BGO_ON 0
 #define FRS_ON 0
-#define TIME_MACHINE_ON 0
+#define TIME_MACHINE_ON 1
 #define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 0
 
@@ -77,13 +77,13 @@ void s100_tests()
     //TString filename = "trans://x86l-86"; // ??.
     //TString filename = "trans://x86l-144"; // 
     //TString filename = "stream://x86l-182"; // bgo
-    //TString filename = "trans://lxg1257"; // timesorter.
+    TString filename = "trans://lxg1257"; // timesorter.
     //TString filename = "trans://R4L-21"; // beammonitor
     //TString filename = "stream://R4L-36"; // fatima vme
     //TString filename = "stream://x86l-117"; // fatima tamex
     //TString filename = "stream://x86l-87"; //bplast
     //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
-    TString filename = "~/Au_beam_0010_0001.lmd";
+    //TString filename = "~/Au_beam_0010_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
@@ -469,7 +469,7 @@ void s100_tests()
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {c, e, f};
+        std::vector a {c, d, e, f};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
