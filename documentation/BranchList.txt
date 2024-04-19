@@ -96,6 +96,11 @@ Branch:
         - "fslow_ToT" [double]
         - "fwr_subsystem_id" [uint16_t]
         - "fwr_t" [uint64_t]
+    "bPlastTimeMachineData"
+        - "fundelayed_time"
+        - "fdelayed_time"
+        - "fwr_subsystem_id"
+        - "fwr_t"
     
     "FatimaTwinpeaksData"
         - "fboard_id" [uint16_t]
@@ -121,6 +126,12 @@ Branch:
         - "fenergy" [double]
         - "fwr_subsystem_id" [uint16_t]
         - "fwr_t" [uint64_t]
+    "FatimaTimeMachineData"
+        - "fundelayed_time"
+        - "fdelayed_time"
+        - "fwr_subsystem_id"
+        - "fwr_t"
+
     "FatimaVmeData"
         - "fwr_t" [uint64_t]
         - "fwr_subsystem_id" [uint16_t]
@@ -161,25 +172,202 @@ Branch:
         - "ftdc_id" [std::vector<uint32_t>]
         - "ftdc_time" [std::vector<uint32_t>]
         - "ftdc_time_raw" [std::vector<uint32_t>]
+    "FatimaVmeTimeMachineData"
+        - "fundelayed_time"
+        - "fdelayed_time"
+        - "fwr_subsystem_id"
+        - "fwr_t"
     
     "FrsMainData"
         - "fScalers_N" [Int_t]
         - "fScalers_Index" [std::vector<uint32_t>]
-        - "fV830_Scalers" [std::vector<uint]
+        - "fV830_Scalers" [std::vector<uint32_t>]
+        - "fV792_Geo" [uint32_t]
+        - "fV792_Channel" [std::vector<uint32_t>];
+        - "fV792_Data" [std::vector<uint32_t>]
+        - "fV1290_Channel" [std::vector<uint32_t>]
+        - "fV1290_Data" [std::vector<uint32_t>]
+        - "fV1290_LoT" [std::vector<uint32_t>]
     "FrsMainCalData"
-        -
+        - "fScalers_N" [Int_t]
+        - "fScalers_Index" [std::vector<uint32_t>]
+        - "fV830_Scalers" [std::vector<uint32_t>]
+        - "fDe_array[14]" [uint32_t array]
+        - "fTdc_array[15]" [std::vector<uint32_t> array]
+        - "fmusic_t1[8]" [uint32_t array]
+        - "fmusic_t2[8]" [uint32_t array]]
     "FrsTPCData"
-        -
+        - "fv7x5_geo[2]" [std::vector<uint32_t> array]
+        - "fv7x5_channel[2]" [std::vector<uint32_t> array]
+        - "fv7x5_data[2]" [std::vector<uint32_t> array]
+        - "fV1190_Channel" [std::vector<uint32_t>]
+        - "fV1190_Data" [std::vector<uint32_t>]
+        - "fV1190_LoT" [std::vector<uint32_t>]
     "FrsTPCCalData"
-        -
+        - "fb_tpc_de[7]" [Bool_t array]
+        - "ftpc_x[7]" [Float_t array]
+        - "ftpc_y[7]" [Float_t array]
+        - "fb_tpc_xy[7]" [Bool_t array]
+        - "ftpc_csum[7][4]" [Int_t array]
+        - "ftpc_angle_x_s2_foc_21_22" [Float_t]
+        - "ftpc_angle_y_s2_foc_21_22" [Float_t]
+        - "ftpc_x_s2_foc_21_22" [Float_t]
+        - "ftpc_y_s2_foc_21_22" [Float_t]
+        - "ftpc21_22_sc21_x" [Float_t]
+        - "ftpc21_22_sc22_x" [Float_t]
+        - "ftpc_angle_x_s2_foc_23_24" [Float_t]
+        - "ftpc_angle_y_s2_foc_23_24" [Float_t]
+        - "ftpc_x_s2_foc_23_24" [Float_t]
+        - "ftpc_y_s2_foc_23_24" [Float_t]
+        - "ftpc23_24_sc21_x" [Float_t]
+        - "ftpc23_24_sc21_y" [Float_t]
+        - "ftpc23_24_sc22_x" [Float_t]
+        - "ftpc23_24_sc22_y" [Float_t]
+        - "ftpc_angle_x_s2_foc_22_24" [Float_t]
+        - "ftpc_angle_y_s2_foc_22_24" [Float_t]
+        - "ftpc_x_s2_foc_22_24" [Float_t]
+        - "ftpc_y_s2_foc_22_24" [Float_t]
+        - "ftpc_angle_x_s4" [Float_t]
+        - "ftpc_angle_y_s4" [Float_t]
+        - "ftpc_x_s4" [Float_t]
+        - "ftpc_y_s4" [Float_t]
+        - "ftpc_sc41_x" [Float_t]
+        - "ftpc_sc41_y" [Float_t]
+        - "ftpc_sc42_x" [Float_t]
+        - "ftpc_sc42_y" [Float_t]
+        - "ftpc_sc43_x" [Float_t]
+        - "ftpc_music41_x" [Float_t]
+        - "ftpc_music42_x" [Float_t]
+        - "ftpc_music43_x" [Float_t]
     "FrsUserData"   
-        -
+        - "fScalers_N" [Int_t]
+        - "fScalers_Index" [std::vector<uint32_t>]
+        - "fV830_Scalers" [std::vector<uint32_t>]
+        - "fv7x5_geo_user[4]" [std::vector<uint32_t> array]
+        - "fv7x5_channel_user[4]" [std::vector<uint32_t> array]
+        - "fv7x5_data_user[4]" [std::vector<uint32_t> array]
     "FrsUserCalData"
-        -
+        - "fScalers_N" [Int_t]
+        - "fScalers_Index" [std::vector<uint32_t>]
+        - "fV830_Scalers" [std::vector<uint32_t>]
+        - "fdt_array[16]" [uint32_t array]
+        - "fmusic_e1[8]" [uint32_t array]
+        - "fmusic_e2[8]" [uint32_t array]
     "FrsTpatData"
-        -
+        - "fwr_t" [uint64_t]
+        - "ftpat" [uint16_t]
     "FrsHitData"
-        -
+        - "fwr_t" [uint64_t]
+        - "ftpat" [uint16_t]
+        - "fID_x2" [Float_t]
+        - "fID_y2" [Float_t]
+        - "fID_x4" [Float_t]
+        - "fID_y4" [Float_t]
+        - "fID_a2" [Float_t]
+        - "fID_b2" [Float_t]
+        - "fID_a4" [Float_t]
+        - "fID_b4" [Float_t]
+        - "fID_AoQ" [Float_t]
+        - "fID_AoQ_corr" [Float_t]
+        - "fID_z" [Float_t]
+        - "fID_z2" [Float_t]
+        - "fID_beta" [Float_t]
+        - "fID_dEdegoQ" [Float_t]
+        - "fID_dEdeg" [Float_t]
+        - "fID_rho[2]" [Float_t array] 
+        - "fID_brho[2]" [Float_t array]
+        - "fmusic_dE[2]" [Float_t array]
+        - "fmusic_dE_cor[2]" [Float_t array]
+        - "fsci_e[6]" [Float_t array]
+        - "fsci_l[6]" [Float_t array]
+        - "fsci_r[6]" [Float_t array]
+        - "fsci_tof2" [Float_t array]
+        - "fsci_tof[6]" [Float_t array]
+        - "fsci_tof_calib[6]" [Float_t array]
+        - "fID_beta_mhtdc" [std::vector<Float_t>]
+        - "fID_AoQ_mhtdc" [std::vector<Float_t>]
+        - "fID_AoQ_corr_mhtdc" [std::vector<Float_t>]
+        - "fID_z_mhtdc" [std::vector<Float_t>]
+        - "fID_z2_mhtdc" [std::vector<Float_t>]
+        - "fID_dEdeg_mhtdc" [std::vector<Float_t>]
+        - "fID_dEdegoQ_mhtdc" [std::vector<Float_t>]
+        - "ftime_in_ms" [uint32_t]
+        - "fibin_for_s" [uint32_t]
+        - "fibin_for_100ms" [uint32_t]
+        - "fibin_for_spill" [uint32_t]
+        - "fincrease_sc_temp_main[32]" [uint32_t array]
+        - "fincrease_sc_temp_user[32]" [uint32_t array]
+        - "fincrease_sc_temp2" [uint32_t]
+        - "fincrease_sc_temp3" [uint32_t]
+        - "fextraction_time_ms" [uint32_t]
+        - "fibin_clean_for_s" [uint32_t]
+        - "fibin_clean_for_100ms" [uint32_t]
+        - "fibin_clean_for_spill" [uint32_t]
+    
+    "GermaniumFebexData"
+        - "fnum_channels_fired" [uint32_t]
+        - "fevent_trigger_time" [uint64_t]
+        - "fhit_pattern" [uint16_t]
+        - "fboard_id" [uint8_t]
+        - "fpileup" [uint8_t]
+        - "foverflow" [uint8_t]
+        - "fchannel_id" [uint8_t]
+        - "fchannel_trigger_time" [double]
+        - "fchannel_energy" [int32_t]
+        - "fwr_subsystem_id" [uint32_t]
+        - "fwr_t" [uint64_t]
+    "GermaniumCalData"
+        - "fevent_trigger_time" [uint64_t]
+        - "fpileup" [uint8_t]
+        - "foverflow" [uint8_t]
+        - "fchannel_trigger_time" [uint64_t]
+        - fchannel_energy" [double]
+        - "fcrystal_id" [uint32_t]
+        - "fdetector_id" [uint32_t]
+        - "fwr_subsystem_id" [uint32_t]
+        - "fwr_t" [uint64_t]
+    "GermaniumTimeMachineData"
+        - "fundelayed_time"
+        - "fdelayed_time"
+        - "fwr_subsystem_id"
+        - "fwr_t"
+    
+    "BGOTwinpeaksData"
+        - "fboard_id" [uint16_t]
+        - "fch_ID" [uint32_t]
+        - "flead_epoch_counter" [uint32_t]
+        - "flead_coarse_T" [uint32_t]
+        - "flead_fine_T" [double]
+        - "ftrail_epoch_counter" [uint32_t]
+        - "ftrail_coarse_T" [uint32_t]
+        - "ftrail_fine_T" [double]
+        - "fwr_subsystem_id" [uint32_t]
+        - "fwr_t" [uint64_t]
+    "BGOCalData"
+        - "fboard_id" [uint16_t]
+        - "fch_ID" [uint16_t]
+        - "fdetector_id" [int]
+        - "fcrystal_id" [int]
+        - "fslow_lead_time" [double]
+        - "fslow_trail_time" [double]
+        - "ffast_lead_time" [double]
+        - "ffast_trail_time" [double]
+        - "ffast_ToT" [double]
+        - "fslow_ToT" [double]
+        - "fenergy" [double]
+        - "fwr_subsystem_id" [uint16_t]
+        - "fwr_t" [uint64_t]
+    
+    "BB7VmeData"
+        - "fwr_t" [uint64_t]
+        - "fv7x5_geo" [std::vector<uint32_t>]
+        - "fv7x5_channel" [std::vector<uint32_t>]
+        - "fv7x5_data" [std::vector<uint32_t>]
+    "BB7VmeCalData"
+        - "fwr_t" [uint64_t]
+        - "fsides" [std::vector<int>]
+        - "fstrips" [std::vector<int>]
+        - "fraw_adc" [std::vector<uint32_t>]
 
 
     
