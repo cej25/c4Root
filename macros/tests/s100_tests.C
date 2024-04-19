@@ -425,6 +425,7 @@ void s100_tests()
     {
         BGOOnlineSpectra* onlinebgo = new BGOOnlineSpectra();
         onlinebgo->SetBinningEnergy(1500,0.1,1500.1);
+        onlinebgo->SetCoincidenceWindow(5000);
 
         
         run->AddTask(onlinebgo);

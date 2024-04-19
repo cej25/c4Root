@@ -7,7 +7,6 @@
 #include "FairRuntimeDb.h"
 
 // c4
-//#include "TimeMachineData.h" // ? maybe
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
@@ -170,8 +169,8 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
 
             for (int i = 0; i < tdcs_fired; i++)
             {
-                uint32_t timestamp_raw = v1290_data[i];
-                uint32_t timestamp = Calibrate_TDC_T(v1290_data[i], tdc_detectors[i]);
+                double timestamp_raw = (double)v1290_data[i];
+                double timestamp = (double)Calibrate_TDC_T(v1290_data[i], tdc_detectors[i]);
                 
                 if (tdc_detectors[i] >= 0)
                 {
