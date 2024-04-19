@@ -175,8 +175,8 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
                 
                 if (tdc_detectors[i] >= 0)
                 {
-                    if (extra_signals.find(tdc_detectors[i]) == extra_signals.end())
-                    {  
+                    //if (extra_signals.find(tdc_detectors[i]) == extra_signals.end())
+                    //{  
                         Singles_TDC_timestamp.emplace_back(timestamp);
                         Singles_TDC_timestamp_raw.emplace_back(timestamp_raw);
                         Singles_TDC_ID.emplace_back(tdc_detectors[i]);
@@ -191,7 +191,7 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
                             dummytdcmult++;
                         }
                         
-                    }
+                    //}
                 }
 
                 if (tdc_detectors[i] == sc41l && timestamp != 0.)
@@ -255,8 +255,8 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
 
                 if (qdc_detectors[i] >= 0)
                 {
-                    if (extra_signals.find(qdc_detectors[i]) == extra_signals.end())
-                    {   
+                    //if (extra_signals.find(qdc_detectors[i]) == extra_signals.end())
+                    //{   
                         Singles_E.emplace_back(QLong[i]);
                         Singles_QDC_ID.emplace_back(qdc_detectors[i]);
                         Singles_coarse_time.emplace_back(QDC_time_coarse[i]);
@@ -273,7 +273,7 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
                             dummy_qdc_id[i] = qdc_detectors[i];
                             dummyqdcmult++;
                         }
-                    }
+                    //}
                 }
                 
                 if (qdc_detectors[i] == sc41l)
