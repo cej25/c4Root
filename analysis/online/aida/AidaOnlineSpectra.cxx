@@ -371,7 +371,7 @@ void AidaOnlineSpectra::Snapshot_Histo()
     //date and timestamp
     time_t now = time(0);
     tm *ltm = localtime(&now);
-    const char* snapshot_dir = Form("AIDA_Snapshots_%d%02d%02d_%02d%02d%02d",
+    const char* snapshot_dir = Form("AIDA_Snapshots_%d_%02d_%02d_%02d_%02d_%02d",
             1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday,
             ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
     gSystem->mkdir(screenshot_path, true);
