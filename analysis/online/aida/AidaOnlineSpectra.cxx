@@ -344,8 +344,8 @@ void AidaOnlineSpectra::Reset_Histo()
     for (auto& h : h_implant_e_xy) h->Reset();
     for (auto& h : h_implant_strip_1d_energy) h->Reset();
     for (auto& h : h_implant_x_ex) h->Reset();
-    for (auto& h : h_implant_y_ey) h->Reset();
-    for (auto& h : h_implant_time_delta) h->Reset();
+    // for (auto& h : h_implant_y_ey) h->Reset();
+    // for (auto& h : h_implant_time_delta) h->Reset();
 
     // stopped implants
     for (auto& h : h_implant_strip_xy_stopped) h->Reset();
@@ -359,7 +359,7 @@ void AidaOnlineSpectra::Reset_Histo()
     for (auto& h : h_decay_e) h->Reset();
     for (auto& h : h_decay_e_xy) h->Reset();
     for (auto& h : h_decay_strip_1d_energy) h->Reset();
-    for (auto& h : h_decay_time_delta) h->Reset();
+    // for (auto& h : h_decay_time_delta) h->Reset();
     c4LOG(info, "AIDA histograms reset.");
     
 }
@@ -402,9 +402,9 @@ void AidaOnlineSpectra::Snapshot_Histo()
         h_implant_x_ex[i]->Draw("COLZ");
         c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_x_ex.png", i + 1));
         c_aida_snapshots->Clear();
-        h_implant_y_ey[i]->Draw("COLZ");
-        c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_y_ey.png", i + 1));
-        c_aida_snapshots->Clear();
+        // h_implant_y_ey[i]->Draw("COLZ");
+        // c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_y_ey.png", i + 1));
+        // c_aida_snapshots->Clear();
         h_implant_time_delta[i]->Draw();
         c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_time_delta.png", i + 1));
         c_aida_snapshots->Clear();
@@ -439,9 +439,9 @@ void AidaOnlineSpectra::Snapshot_Histo()
         h_decay_strip_1d_energy[i]->Draw("COLZ");
         c_aida_snapshots->SaveAs(Form("aida_decays_DSSD_%d_decays_strip_1d_energy.png", i + 1));
         c_aida_snapshots->Clear();
-        h_decay_time_delta[i]->Draw();
-        c_aida_snapshots->SaveAs(Form("aida_decays_DSSD_%d_decays_time_delta.png", i + 1));
-        c_aida_snapshots->Clear();
+        // h_decay_time_delta[i]->Draw();
+        // c_aida_snapshots->SaveAs(Form("aida_decays_DSSD_%d_decays_time_delta.png", i + 1));
+        // c_aida_snapshots->Clear();
     }
 
 
