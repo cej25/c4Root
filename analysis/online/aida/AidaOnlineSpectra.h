@@ -102,7 +102,7 @@ class AidaOnlineSpectra : public FairTask
         std::vector<TH1F*> h_implant_e;
         std::vector<TH2F*> h_implant_e_xy;
         std::vector<TH2F*> h_implant_strip_1d_energy;
-        std::vector<TH2F*> h_implant_strip_1d;
+        // std::vector<TH2F*> h_implant_strip_1d;  // I saw this here but it isn't being filled anywhere...
         std::vector<TH2F*> h_implant_x_ex;
         std::vector<TH2F*> h_implant_y_ey;
         std::vector<TH1F*> h_implant_time_delta;
