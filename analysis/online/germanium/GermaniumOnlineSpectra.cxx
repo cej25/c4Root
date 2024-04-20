@@ -231,6 +231,9 @@ InitStatus GermaniumOnlineSpectra::Init()
         dir_germanium_time_differences[ihist]->Append(c_germanium_time_differences_vs_energy);
 
     }
+    
+    run->GetHttpServer()->RegisterCommand("Reset_Ge_Histo", Form("/Objects/%s/->Reset_Ge_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Snapshot_Ge_Histo", Form("/Objects/%s/->Snapshot_Ge_Histo()", GetName()));
         
     dir_germanium_hitpattern->cd();
     c_germanium_hitpattern = new TCanvas("c_germanium_hitpattern","Hit pattern DEGAS",650,350);
@@ -253,8 +256,6 @@ InitStatus GermaniumOnlineSpectra::Init()
     dir_germanium_hitpattern->Append(c_germanium_hitpattern);
     dir_germanium->cd();
 
-    run->GetHttpServer()->RegisterCommand("Reset_Ge_Histo", Form("/Objects/%s/->Reset_Ge_Histo()", GetName()));
-    run->GetHttpServer()->RegisterCommand("Snapshot_Ge_Histo", Form("/Objects/%s/->Snapshot_Ge_Histo()", GetName()));
 
     return kSUCCESS;
 }
