@@ -4,6 +4,7 @@ FatimaTwinpeaksData::FatimaTwinpeaksData()
     : 
     fboard_id(0),
     fch_ID(0),
+    faccepted_trigger_time(0),
     flead_epoch_counter(0),
     flead_coarse_T(0),
     flead_fine_T(0),
@@ -18,6 +19,8 @@ FatimaTwinpeaksData::FatimaTwinpeaksData()
 FatimaTwinpeaksData::FatimaTwinpeaksData(
         uint16_t board_id,
         uint32_t ch_ID,
+        int64_t accepted_trigger_time,
+
         uint32_t lead_epoch_counter,
         uint32_t lead_coarse_T,
         double lead_fine_T,
@@ -30,6 +33,7 @@ FatimaTwinpeaksData::FatimaTwinpeaksData(
     : 
     fboard_id(board_id),
     fch_ID(ch_ID),
+    faccepted_trigger_time(accepted_trigger_time),
     flead_epoch_counter(lead_epoch_counter),
     flead_coarse_T(lead_coarse_T),
     flead_fine_T(lead_fine_T),
