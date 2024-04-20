@@ -284,8 +284,6 @@ void bPlastRaw2Cal::Exec(Option_t* option)
                     if (auto result_find = fmap.find(unmapped_det); result_find != fmap.end())
                     {
                         detector_id = result_find->second.first;
-                        detector_stream = result_find->second.second.first;
-                        detector_position = result_find->second.second.second;
                         if (detector_id == -1) { fNunmatched++; continue; } // if only one event is left
                     }
                     else c4LOG(warn, "Detector mapping is not complete! CEJ: Warning only for now...");
@@ -355,8 +353,6 @@ void bPlastRaw2Cal::Exec(Option_t* option)
                 funcal_hit->Get_board_id(),
                 (int)((funcal_hit->Get_ch_ID()+1)/2),
                 detector_id,
-                detector_stream,
-                detector_position,
                 slow_lead_time,
                 slow_trail_time,
                 fast_lead_time,
