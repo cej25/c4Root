@@ -343,7 +343,6 @@ void AidaOnlineSpectra::Reset_Histo()
     for (auto& h : h_implant_e) h->Reset();
     for (auto& h : h_implant_e_xy) h->Reset();
     for (auto& h : h_implant_strip_1d_energy) h->Reset();
-    for (auto& h : h_implant_strip_1d) h->Reset();
     for (auto& h : h_implant_x_ex) h->Reset();
     for (auto& h : h_implant_y_ey) h->Reset();
     for (auto& h : h_implant_time_delta) h->Reset();
@@ -399,9 +398,6 @@ void AidaOnlineSpectra::Snapshot_Histo()
         c_aida_snapshots->Clear();
         h_implant_strip_1d_energy[i]->Draw("COLZ");
         c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_strip_1d_energy.png", i + 1));
-        c_aida_snapshots->Clear();
-        h_implant_strip_1d[i]->Draw("COLZ");
-        c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_strip_1d.png", i + 1));
         c_aida_snapshots->Clear();
         h_implant_x_ex[i]->Draw("COLZ");
         c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_x_ex.png", i + 1));
