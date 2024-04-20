@@ -231,30 +231,31 @@ InitStatus GermaniumOnlineSpectra::Init()
         dir_germanium_time_differences[ihist]->Append(c_germanium_time_differences_vs_energy);
 
     }
+    
+    run->GetHttpServer()->RegisterCommand("Reset_Ge_Histo", Form("/Objects/%s/->Reset_Ge_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Snapshot_Ge_Histo", Form("/Objects/%s/->Snapshot_Ge_Histo()", GetName()));
         
     dir_germanium_hitpattern->cd();
     c_germanium_hitpattern = new TCanvas("c_germanium_hitpattern","Hit pattern DEGAS",650,350);
     detector_labels = new char*[number_of_detectors_to_plot];
+    
     h1_germanium_hitpattern = new TH1F("h1_germanium_hitpattern","Hit pattern of DEGAS",number_of_detectors_to_plot,0,number_of_detectors_to_plot);
     h1_germanium_hitpattern->GetXaxis()->SetAlphanumeric();
+    h1_germanium_hitpattern->GetXaxis()->LabelsOption("a");
+    h1_germanium_hitpattern->GetXaxis()->SetTitle("crystal");
     
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
         detector_labels[ihist] = Form("%d%c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65));
         h1_germanium_hitpattern->GetXaxis()->SetBinLabel(ihist+1,detector_labels[ihist]);
-        c4LOG(info,detector_labels[ihist]);
-    }    
-    h1_germanium_hitpattern->GetXaxis()->LabelsOption("a");
-    h1_germanium_hitpattern->GetXaxis()->SetTitle("crystal");
+    }
+
     h1_germanium_hitpattern->GetYaxis()->SetTitle("counts");
     h1_germanium_hitpattern->SetStats(0);
     h1_germanium_hitpattern->Draw();
     c_germanium_hitpattern->cd(0);
     dir_germanium_hitpattern->Append(c_germanium_hitpattern);
-
     dir_germanium->cd();
 
-    run->GetHttpServer()->RegisterCommand("Reset_Ge_Histo", Form("/Objects/%s/->Reset_Ge_Histo()", GetName()));
-    run->GetHttpServer()->RegisterCommand("Snapshot_Ge_Histo", Form("/Objects/%s/->Snapshot_Ge_Histo()", GetName()));
 
     return kSUCCESS;
 }
@@ -459,7 +460,7 @@ void GermaniumOnlineSpectra::Exec(Option_t* option){
                         double time2 = hit2->Get_channel_trigger_time();
 
                         if (germanium_configuration->IsDetectorAuxilliary(detector_id2) && detector_id1 != detector_id2) continue;
-                        if (TMath::Abs(time2 - time1) < 20) {
+                        if (TMath::Abs(time2 - time1) < 200) {
                             h2_germanium_energy_energy_vetosci41->Fill(energy1,energy2);
                         }
                     }
@@ -512,6 +513,7 @@ void GermaniumOnlineSpectra::Exec(Option_t* option){
                 if (TMath::Abs(time1 - time2) < 500) h2_germanium_energy_energy_sci41_cut->Fill(energy1,energy2);
                 }
             }
+            break;
         }
         }
         

@@ -92,6 +92,9 @@ InitStatus BGOOnlineSpectra::Init()
     std::map<std::pair<int,int>,std::pair<int,int>> bgomap = BGO_configuration->Mapping();
     std::map<std::pair<int,int>,std::pair<int,int>> gmap = germanium_configuration->Mapping();
 
+    BGO_Germanium_wr_coincidence_window = BGO_configuration->Window();
+    BGO_Germanium_wr_coincidence_window_offset = BGO_configuration->Offset();
+
 
     for (auto it_mapping = bgomap.begin(); it_mapping != bgomap.end(); ++it_mapping)
     {
@@ -309,8 +312,10 @@ void BGOOnlineSpectra::Exec(Option_t* option)
 
                 
                     if (detector_id_bgo2 == detector_id_ge && crystal_id_ge == crystal_id_bgo2){
-                        h1_germanium_bgo_veto_timedifferences[crystal_index_bgo2]->Fill(hit2->Get_wr_t() - hit_ge->Get_wr_t());    
-                        if (TMath::Abs((int64_t)hit2->Get_wr_t() - (int64_t)hit_ge->Get_wr_t())<BGO_Germanium_wr_coincidence_window + BGO_Germanium_wr_coincidence_window_offset){
+                        int64_t dt = hit2->Get_wr_t() - hit_ge->Get_wr_t();
+                        h1_germanium_bgo_veto_timedifferences[crystal_index_bgo2]->Fill(dt);    
+                        if (TMath::Abs(dt)<BGO_Germanium_wr_coincidence_window + BGO_Germanium_wr_coincidence_window_offset)
+                        {
                             //VETO!
                             veto = true;
                         }

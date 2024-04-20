@@ -9,7 +9,8 @@ GermaniumCalData::GermaniumCalData()
       fcrystal_id(0),
       fdetector_id(0),
       fwr_subsystem_id(0),
-      fwr_t(0)
+      fwr_t(0),
+      fabsolute_event_time(0)
 {
 }
 
@@ -22,7 +23,8 @@ GermaniumCalData::GermaniumCalData(
         uint32_t crystal_id,
         uint32_t detector_id,
         uint16_t wr_subsystem_id,
-        uint64_t wr_t)
+        uint64_t wr_t,
+        int64_t absolute_event_time)
     : 
     fevent_trigger_time(event_trigger_time),
     fpileup(pileup),
@@ -32,7 +34,8 @@ GermaniumCalData::GermaniumCalData(
     fcrystal_id(crystal_id),
     fdetector_id(detector_id),
     fwr_subsystem_id(wr_subsystem_id),
-    fwr_t(wr_t)
+    fwr_t(wr_t),
+    fabsolute_event_time(absolute_event_time)
 {
 }
 

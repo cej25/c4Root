@@ -50,22 +50,44 @@ class FatimaNearlineSpectra : public FairTask
             fenergy_bin_high = binhigh; 
         };
 
+        void SetBinningCoincidences(int nbins, float binlow, float binhigh){
+            ftime_coincidence_nbins = nbins;
+            ftime_coincidence_low = binlow;
+            ftime_coincidence_high = binhigh;
+        }
+
         void SetDetectorsToPlot(std::vector<int> detectors_to_analyze){
             detectors = detectors_to_analyze;
             number_detectors = detectors.size();
         }
+
         int GetDetectorIndex(int detector_id){
             //return the index of the detector id in the vector, to index the TH arrays / histograms
             return std::distance(detectors.begin(), std::find(detectors.begin(), detectors.end(), detector_id));
         }
 
-        void SetReferenceDetectorsForTimeDifferences(std::vector<int> ref_dets){
-            dt_reference_detectors = ref_dets;
+        void AddReferenceDetectorForTimeDifferences(int det){
+            dt_reference_detectors.emplace_back(det);
             number_reference_detectors = dt_reference_detectors.size();
+            dt_reference_detectors_energy_gates.emplace_back(std::pair<double,double>(0.0, 0.0));
         }
-        int GetReferenceDetectorIndex(int detector_id){
-            //return the index of the detector id in the vector, to index the TH arrays / histograms
-            return std::distance(detectors.begin(), std::find(detectors.begin(), detectors.end(), detector_id));
+        
+        void AddReferenceDetectorForTimeDifferencesWithEnergyGates(int detector_id, double energy_in_other, double energy_in_ref_det){
+            dt_reference_detectors.emplace_back(detector_id);
+            number_reference_detectors = dt_reference_detectors.size();
+            dt_reference_detectors_energy_gates.emplace_back(std::pair<double,double>(energy_in_other,energy_in_ref_det));
+        }
+
+        void AddReferenceDetectorForTimeDifferencesWithEnergyGates(int detector_id, double energy_in_ref_det){
+            dt_reference_detectors.emplace_back(detector_id);
+            number_reference_detectors = dt_reference_detectors.size();
+            dt_reference_detectors_energy_gates.emplace_back(std::pair<double,double>(0.0, energy_in_ref_det));
+        }
+
+
+        
+        void SetEnergyGateWidth(double width){
+            energygate_width = width;
         }
 
         // range setters
@@ -93,8 +115,9 @@ class FatimaNearlineSpectra : public FairTask
         int number_detectors = 3;
 
 
-        std::vector<int> dt_reference_detectors = {0};
-        int number_reference_detectors = 1;
+        std::vector<int> dt_reference_detectors = {};
+        std::vector<std::pair<double,double>> dt_reference_detectors_energy_gates = {};
+        int number_reference_detectors = 0;
         
         // Histograms 
         std::vector<TH1F*> h1_fatima_slowToT;
@@ -121,6 +144,12 @@ class FatimaNearlineSpectra : public FairTask
         int fenergy_nbins = 500;
         float fenergy_bin_low = 0;
         float fenergy_bin_high = 1500;
+        int   ftime_coincidence_nbins = 1000;
+        float ftime_coincidence_low = -100;
+        float ftime_coincidence_high = 100;
+
+
+        double energygate_width = 20;        
             
         int event_multiplicity;
 
