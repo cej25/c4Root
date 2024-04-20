@@ -453,7 +453,7 @@ void s100_tests()
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {c, d, e, f};
+        std::vector a {b, c, d, e, f};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
@@ -462,7 +462,7 @@ void s100_tests()
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({c, d, e, f});
+        wronline->SetDetectorSystems({b, c, d, e, f});
     
         run->AddTask(wronline);
     }
