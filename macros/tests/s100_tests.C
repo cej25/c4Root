@@ -1,14 +1,14 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define FATIMA_ON 1
-#define FATIMA_VME_ON 1
-#define AIDA_ON 0
-#define BPLAST_ON 1
-#define GERMANIUM_ON 1
+#define FATIMA_ON 0
+#define FATIMA_VME_ON 0
+#define AIDA_ON 1
+#define BPLAST_ON 0
+#define GERMANIUM_ON 0
 #define BGO_ON 0
-#define FRS_ON 0
-#define TIME_MACHINE_ON 1
+#define FRS_ON 1
+#define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 0
 
@@ -77,19 +77,19 @@ void s100_tests()
     //TString filename = "trans://x86l-86"; // ??.
     //TString filename = "trans://x86l-144"; // 
     //TString filename = "stream://x86l-182"; // bgo
-    TString filename = "trans://lxg1257"; // timesorter.
+    //TString filename = "trans://lxg1257"; // timesorter.
     //TString filename = "trans://R4L-21"; // beammonitor
     //TString filename = "stream://R4L-36"; // fatima vme
     //TString filename = "stream://x86l-117"; // fatima tamex
     //TString filename = "stream://x86l-87"; //bplast
     //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
-    //TString filename = "~/Au_beam_0010_0001.lmd";
+    TString filename = "~/Au_beam_0010_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 6060; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 5005; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -100,12 +100,6 @@ void s100_tests()
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
     run->AddObject(histograms);
-
-    // trying to kill ParSet errors
-    /*FairRuntimeDb* rtdb = FairRunOnline::Instance()->GetRuntimeDb();
-    FairGeoParSet* geo = new FairGeoParSet("FairGeoParSet");
-    FairBaseParSet* base = new FairBaseParSet("FairBaseParSet");
-    rtdb->addContainer(geo);rtdb->addContainer(base);*/
 
     // Create source using ucesb for input
     EXT_STR_h101 ucesb_struct;
@@ -133,19 +127,6 @@ void s100_tests()
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Gates *************************************************************** //
     
-    // Note: please add the same number of each type of gate
-    /*std::string frs_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/frs/Gates/";
-    std::vector<std::string> ZAoQ_cuts = {"ZvsAoQ1"};
-    TCutGGates* ZAoQ = new TCutGGates("ZAoQ", ZAoQ_cuts, frs_gate_path);
-    std::vector<std::string> Z1Z2_cuts = {"Z1vsZ21"};
-    TCutGGates* Z1Z2 = new TCutGGates("Z1Z2", Z1Z2_cuts, frs_gate_path);
-    std::vector<std::string> x2AoQ_cuts = {"x2vsAoQ1"};
-    TCutGGates* x2AoQ = new TCutGGates("x2AoQ", x2AoQ_cuts, frs_gate_path);
-    std::vector<std::string> x4AoQ_cuts = {"x4vsAoQ1"};
-    TCutGGates* x4AoQ = new TCutGGates("x4AoQ", x4AoQ_cuts, frs_gate_path);
-    std::vector<std::string> dEdegZ_cuts = {"dEdegvsZ1"};
-    TCutGGates* dEdegZ = new TCutGGates("dEdegZ", dEdegZ_cuts, frs_gate_path);
-    std::vector<TCutGGates*> FrsGates = {ZAoQ, Z1Z2, x2AoQ, x4AoQ, dEdegZ};*/
     
     // Define prompt cut EdT gates for Fatima Prompt analysis
     /*std::string fatima_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Gates/";
