@@ -284,7 +284,8 @@ void FatimaRaw2Cal::Exec(Option_t* option)
                 slow_ToT,
                 energy,
                 funcal_hit->Get_wr_subsystem_id(),
-                funcal_hit->Get_wr_t());
+                funcal_hit->Get_wr_t(),
+                (double)funcal_hit->Get_wr_t() + (fast_lead_time - funcal_hit->Get_accepted_trigger_time() ));
 
             fNEvents++;
             //ihit++; //increment it by one extra.
