@@ -167,6 +167,7 @@ void s100_online_new()
     // *** Load Detector Configurations *************************************************** //
     TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_apr18.txt");
     TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(config_path + "/fatima/fatima_cal_apr18.txt");
+    TFatimaTwinpeaksConfiguration::SetDetectorTimeshiftsFile(config_path + "/fatima/fatima_timeshifts_apr20.txt");
 
     TFatimaVmeConfiguration::SetDetectorMapFile(config_path + "/fatima/Fatima_VME_allocation.txt");
     TFatimaVmeConfiguration::Set_QDC_E_CalFile(config_path + "/fatima/Fatima_QDC_Energy_Calibration.txt");
@@ -427,13 +428,13 @@ void s100_online_new()
         onlinege->SetEnergyGateWidth(10);
         run->AddTask(onlinege);
     }
-    
+    TBGOTwinpeaksConfiguration::SetCoincidenceWindow(5000);
+    TBGOTwinpeaksConfiguration::SetCoincidenceOffset(0);
     if (BGO_ON)
     {
         BGOOnlineSpectra* onlinebgo = new BGOOnlineSpectra();
         onlinebgo->SetBinningEnergy(1500,0.1,1500.1);
 
-        onlinebgo->SetCoincidenceWindow(20000);
         run->AddTask(onlinebgo);
         
     }
