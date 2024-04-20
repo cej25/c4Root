@@ -23,15 +23,17 @@
 
 FatimaOnlineSpectra::FatimaOnlineSpectra() 
     : FatimaOnlineSpectra("FatimaOnlineSpectra")
-    {
-    }
+{
+    fatima_configuration = TFatimaTwinpeaksConfiguration::GetInstance();
+}
 
 FatimaOnlineSpectra::FatimaOnlineSpectra(const TString& name, Int_t verbose)
     : FairTask(name, verbose)
     , fHitFatimaTwinpeaks(NULL)
     , fNEvents(0)
     , header(nullptr)
-{
+{    
+    fatima_configuration = TFatimaTwinpeaksConfiguration::GetInstance();
 }
 
 FatimaOnlineSpectra::~FatimaOnlineSpectra()
@@ -415,7 +417,7 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
             int detector_id1 = hit->Get_detector_id();
             int detector_index1 = GetDetectorIndex(detector_id1);
             if (detector_index1 >= number_detectors) {continue;} // this implies that the hit corresponds to a detector that is not specified for plotting.
-
+            
             event_multiplicity ++; // count only "valid events"
             h1_fatima_slowToT[detector_index1]->Fill(slow_ToT1);
             h1_fatima_energy[detector_index1]->Fill(energy1);
@@ -435,7 +437,6 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
                     if (ihit2 == ihit) {continue;}
 
                     FatimaTwinpeaksCalData * hit2 = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(ihit2); // I want this to be the reference detector for easier code:
-                    //if (!(TMath::Abs(hit->Get_fast_lead_time() - hit2->Get_fast_lead_time())<100)) continue;
                     
                     int detector_id2 = hit2->Get_detector_id();
                     double slow_ToT2 = hit2->Get_slow_ToT();

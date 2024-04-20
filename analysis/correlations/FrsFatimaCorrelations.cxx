@@ -223,6 +223,12 @@ InitStatus FrsFatimaCorrelations::Init()
 
     c_fatima_twr_sci41_energy_gated = new TCanvas*[gamma_energies_of_interest.size()];
     h1_fatima_twr_sci41_energy_gated = new TH1F*[gamma_energies_of_interest.size()];
+
+    c_fatima_energy_gated_energy_vs_dt_prompt_flash_cut = new TCanvas*[gamma_energies_of_interest.size()];
+    h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut = new TH2F*[gamma_energies_of_interest.size()];
+    
+    c_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long = new TCanvas*[gamma_energies_of_interest.size()];
+    h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long = new TH2F*[gamma_energies_of_interest.size()];
         
     
     for (int idx_gamma_gate = 0; idx_gamma_gate < gamma_energies_of_interest.size(); idx_gamma_gate++){
@@ -260,7 +266,28 @@ InitStatus FrsFatimaCorrelations::Init()
         h1_fatima_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]->Draw();
         c_fatima_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]->cd(0);
         folder_energy_gated[idx_gamma_gate]->Add(c_fatima_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]);
-        folder_energy_gated[idx_gamma_gate]->Add(h1_fatima_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]);        
+        folder_energy_gated[idx_gamma_gate]->Add(h1_fatima_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]);
+
+        c_fatima_energy_gated_energy_vs_dt_prompt_flash_cut [idx_gamma_gate] = new TCanvas(TString(Form("c_fatima_energy_gated_%i_energy_vs_dt_prompt_flash_cut_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("Coincident gamma with start Ey1 = %i keV, Ey2 vs t(Ey1)-t(Ey2), short isomer,  gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName());
+        h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut[idx_gamma_gate] = new TH2F(TString(Form("h2_fatima_energy_gated_%i_energy_vs_dt_prompt_flash_cut_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("Coincident gamma with start Ey1 = %i keV, Ey2 vs t(Ey1)-t(Ey2), short isomer,  gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+        h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut[idx_gamma_gate]->GetXaxis()->SetTitle("time between gammas (ns)");
+        h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut[idx_gamma_gate]->GetYaxis()->SetTitle("energy of start gamma (keV)");
+        h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut[idx_gamma_gate]->Draw("COLZ");
+        c_fatima_energy_gated_energy_vs_dt_prompt_flash_cut[idx_gamma_gate]->cd(0);
+        folder_energy_gated[idx_gamma_gate]->Add(c_fatima_energy_gated_energy_vs_dt_prompt_flash_cut[idx_gamma_gate]);
+        folder_energy_gated[idx_gamma_gate]->Add(h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut[idx_gamma_gate]);
+
+        
+        c_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long[idx_gamma_gate] = new TCanvas(TString(Form("c_fatima_energy_gated_%i_energy_vs_dt_prompt_flash_cut_long_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("Coincident gamma with start Ey1 = %i keV, Ey2 vs t(Ey1)-t(Ey2), long isomer, gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName());
+        h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long[idx_gamma_gate] = new TH2F(TString(Form("h2_fatima_energy_gated_%i_energy_vs_dt_prompt_flash_cut_long_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("Coincident gamma with start Ey1 = %i keV, Ey2 vs t(Ey1)-t(Ey2), long isomer , gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+        h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long[idx_gamma_gate]->GetXaxis()->SetTitle("time between gammas (ns)");
+        h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long[idx_gamma_gate]->GetYaxis()->SetTitle("energy of start gamma (keV)");
+        h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long[idx_gamma_gate]->Draw("COLZ");
+        c_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long[idx_gamma_gate]->cd(0);
+        folder_energy_gated[idx_gamma_gate]->Add(c_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long[idx_gamma_gate]);
+        folder_energy_gated[idx_gamma_gate]->Add(h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long[idx_gamma_gate]);
+
+        
 
     }
     
@@ -399,19 +426,20 @@ void FrsFatimaCorrelations::Exec(Option_t* option)
                     double time2 = hit3->Get_fast_lead_time();
 
                     if (fatima_configuration->IsDetectorAuxilliary(detector_id2)) continue;
-                    if (TMath::Abs(time2-time1) > fatima_coincidence_gate) continue;
 
                     double timediff2 = time2 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(detector_id2);
                     
                     if ((fatima_configuration->IsInsidePromptFlashCut(timediff2, energy2)==true)) continue;
 
-                    if (ihit3 > ihit2) h2_fatima_energy_energy_promptflash_cut->Fill(energy1,energy2); // avoid double filling ... 
+                    if (ihit3 > ihit2 && (TMath::Abs(time2-fatima_configuration->GetTimeshiftCoefficient(detector_id2)-time1+fatima_configuration->GetTimeshiftCoefficient(detector_id1)) < fatima_coincidence_gate)) h2_fatima_energy_energy_promptflash_cut->Fill(energy1,energy2); // avoid double filling ... 
 
 
                     for (int idx_gamma_gate = 0; idx_gamma_gate < gamma_energies_of_interest.size(); idx_gamma_gate++){
                         if (!(TMath::Abs(energy1 - gamma_energies_of_interest.at(idx_gamma_gate))<gate_width_gamma_energies_of_interest.at(idx_gamma_gate))) continue;
                             // energy1 and energy2 are both in coincidence and outside the promptflash here:
-                            h1_fatima_energy_promptflash_cut_energy_gated[idx_gamma_gate]->Fill(energy2);
+                            if (TMath::Abs(time2-fatima_configuration->GetTimeshiftCoefficient(detector_id2)-time1+fatima_configuration->GetTimeshiftCoefficient(detector_id1)) < fatima_coincidence_gate) h1_fatima_energy_promptflash_cut_energy_gated[idx_gamma_gate]->Fill(energy2);
+                            
+                            h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut[idx_gamma_gate]->Fill(time1 - fatima_configuration->GetTimeshiftCoefficient(detector_id1) - time2 + fatima_configuration->GetTimeshiftCoefficient(detector_id2), energy2);
                         }
                     }
                 }
@@ -472,17 +500,18 @@ void FrsFatimaCorrelations::Exec(Option_t* option)
                     if (detector_id_long == detector_id_long2) continue; //this is likely a good veto before the add-back is done
                     
                     // check coincidence, this should also make it so that the second hit is outside the prompt flash as well...:
-                    if (TMath::Abs(time_long2-time_long- fatima_configuration->GetTimeshiftCoefficient(detector_id_long2)- fatima_configuration->GetTimeshiftCoefficient(detector_id_long)) > fatima_coincidence_gate) continue; 
 
                     //avoid double filling:
-                    if (ihit2>ihit1) h2_fatima_energy_energy_promptflash_cut_long->Fill(energy_long,energy_long2);
+                    if (ihit2>ihit1 && (TMath::Abs(time_long2-time_long- fatima_configuration->GetTimeshiftCoefficient(detector_id_long2)- fatima_configuration->GetTimeshiftCoefficient(detector_id_long)) < fatima_coincidence_gate)) h2_fatima_energy_energy_promptflash_cut_long->Fill(energy_long,energy_long2);
                     
                     for (int idx_gamma_gate = 0; idx_gamma_gate < gamma_energies_of_interest.size(); idx_gamma_gate++)
                     {
                         if (!(TMath::Abs(energy_long - gamma_energies_of_interest.at(idx_gamma_gate))<gate_width_gamma_energies_of_interest.at(idx_gamma_gate))) continue;
                         //now energy1 fulfills the energy requirement and is outside prompt flash
                         // energy1 and energy2 are both in coincidence and outside the promptflash here:
-                        if (fat_wr_long2 - wr_t_last_frs_hit < stop_long_lifetime_collection) h1_fatima_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]->Fill(energy_long2);
+                        if (fat_wr_long2 - wr_t_last_frs_hit < stop_long_lifetime_collection && (TMath::Abs(time_long2-time_long- fatima_configuration->GetTimeshiftCoefficient(detector_id_long2)- fatima_configuration->GetTimeshiftCoefficient(detector_id_long)) < fatima_coincidence_gate)) h1_fatima_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]->Fill(energy_long2);
+
+                        h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long[idx_gamma_gate]->Fill(time_long - fatima_configuration->GetTimeshiftCoefficient(detector_id_long) - time_long2 + fatima_configuration->GetTimeshiftCoefficient(detector_id_long2), energy_long2);
                     }
                 }
             }   
