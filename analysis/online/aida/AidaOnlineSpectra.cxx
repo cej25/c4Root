@@ -405,9 +405,9 @@ void AidaOnlineSpectra::Snapshot_Histo()
         // h_implant_y_ey[i]->Draw("COLZ");
         // c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_y_ey.png", i + 1));
         // c_aida_snapshots->Clear();
-        h_implant_time_delta[i]->Draw();
-        c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_time_delta.png", i + 1));
-        c_aida_snapshots->Clear();
+        // h_implant_time_delta[i]->Draw();
+        // c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_time_delta.png", i + 1));
+        // c_aida_snapshots->Clear();
 
         //stopped implants
         h_implant_strip_xy_stopped[i]->Draw("COLZ");
