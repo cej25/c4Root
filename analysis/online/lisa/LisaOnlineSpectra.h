@@ -51,17 +51,23 @@ class LisaOnlineSpectra : public FairTask
         
 
         // Canvas
+        TCanvas* c_channelID;
+        TCanvas* c_multiplicity;
+        TCanvas* c_multiplicity_layer;
         std::vector<TCanvas*> c_energy_layer_ch;
         std::vector<TCanvas*> c_traces_layer_ch;
-        //TCanvas* c_h2_traces;
+        TCanvas* c_energy_layer0;
+        TCanvas* c_traces_layer0;
+        
 
         // Histograms
-        //TH1I* h1_hitpattern;
-        std::vector<std::vector<TH1F*>> h1_energy_layer_ch;
-        std::vector<std::vector<TH2F*>> h2_traces_layer_ch;
+        TH1I* h1_channelID;
         TH1I* h1_multiplicity;
-        TH1F* h1_energy;
-        TH2F* h2_traces;
+        std::vector<TH1I*> h1_multiplicity_layer; 
+        TH1F* h1_energy_layer0;
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch;
+        TH2F* h2_traces_layer0;
+        std::vector<std::vector<TH2F*>> h2_traces_layer_ch;
 
     public:
         ClassDef(LisaOnlineSpectra, 1)

@@ -21,7 +21,8 @@ class TLisaConfiguration
         static void SetDetectorCoefficientFile(std::string fp) { calibration_file = fp; }
 
         // mapping
-        std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> Mapping() const;
+        //std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> Mapping() const;
+        std::map<std::pair<int,int>, std::pair<std::pair<int,std::string>, std::pair<int,int>>> Mapping() const;
         bool MappingLoaded() const;
 
         void SetTraceLength(int length) { trace_length = length; }
@@ -49,7 +50,8 @@ class TLisaConfiguration
 
         static TLisaConfiguration* instance;
 
-        std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> detector_mapping;
+        //std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> detector_mapping;
+        std::map<std::pair<int,int>, std::pair<std::pair<int,std::string>, std::pair<int,int>>> detector_mapping;
         //std::map<std::pair<int,int>,std::pair<double,double>> calibration_coeffs;
         std::set<int> extra_signals;
 
@@ -87,7 +89,8 @@ inline void TLisaConfiguration::Create()
     instance = new TLisaConfiguration();
 }
 
-inline std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> TLisaConfiguration::Mapping() const
+//inline std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> TLisaConfiguration::Mapping() const
+inline std::map<std::pair<int,int>, std::pair<std::pair<int,std::string>, std::pair<int,int>>> TLisaConfiguration::Mapping() const
 {
     return detector_mapping;
 }

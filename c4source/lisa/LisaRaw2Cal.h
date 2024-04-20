@@ -45,7 +45,7 @@ class LisaRaw2Cal : public FairTask
 
         //int NBoards = 1; 
 
-        std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> detector_mapping;
+        std::map<std::pair<int, int>, std::pair<std::pair<int,std::string>, std::pair<int, int>>> detector_mapping;
 
         std::vector<int> data_boards;
         std::vector<uint32_t> data_channel;
