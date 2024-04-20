@@ -104,8 +104,8 @@ class AidaOnlineSpectra : public FairTask
         std::vector<TH2F*> h_implant_strip_1d_energy;
         // std::vector<TH2F*> h_implant_strip_1d;  // I saw this here but it isn't being filled anywhere...
         std::vector<TH2F*> h_implant_x_ex;
-        std::vector<TH2F*> h_implant_y_ey;
-        std::vector<TH1F*> h_implant_time_delta;
+        // std::vector<TH2F*> h_implant_y_ey; // also not filled
+        // std::vector<TH1F*> h_implant_time_delta; // also ... not filled
         // Stopped Implant Histograms
         std::vector<TH2F*> h_implant_strip_xy_stopped;
         std::vector<TH2F*> h_implant_pos_xy_stopped;
@@ -117,7 +117,7 @@ class AidaOnlineSpectra : public FairTask
         std::vector<TH1F*> h_decay_e;
         std::vector<TH2F*> h_decay_e_xy;
         std::vector<TH2F*> h_decay_strip_1d_energy;
-        std::vector<TH1F*> h_decay_time_delta;
+        // std::vector<TH1F*> h_decay_time_delta; // not filled.
 
         // Scalers
         std::map<int, std::deque<int>> aida_scaler_queue;
