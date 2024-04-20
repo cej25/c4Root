@@ -1,16 +1,16 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define FATIMA_ON 0
-#define FATIMA_VME_ON 0
-#define AIDA_ON 0
+#define FATIMA_ON 1
+#define FATIMA_VME_ON 1
+#define AIDA_ON 1
 #define BPLAST_ON 1
-#define GERMANIUM_ON 0
-#define BGO_ON 0
+#define GERMANIUM_ON 1
+#define BGO_ON 1
 #define FRS_ON 0
-#define TIME_MACHINE_ON 0
+#define TIME_MACHINE_ON 1
 #define BEAMMONITOR_ON 0
-#define WHITE_RABBIT_CORS 0
+#define WHITE_RABBIT_CORS 1
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
@@ -82,7 +82,7 @@ void s100_online_new()
     // TString filename = "stream://x86l-87"; // bplast
     //TString filename = "stream://x86l-117"; // fatima tamex
     //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
-    TString filename = "~/Au_beam_0010_0001.lmd";
+    // TString filename = "~/Au_beam_0010_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 

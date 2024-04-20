@@ -56,7 +56,7 @@ class bPlastOnlineSpectra : public FairTask
         int nDetectors;
         int nTamexBoards;
 
-        TString screenshot_path = "/u/jbormans/screenshots/";
+        TString screenshot_path = "/u/despec/screenshots/";
 
         // Canvases
         TCanvas* c_bplast_slowToT;

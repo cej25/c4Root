@@ -81,6 +81,8 @@ class AidaOnlineSpectra : public FairTask
         // Canvas
         TCanvas* c_aida_snapshots;
 
+        TString screenshot_path = "/u/despec/screenshots/";
+
         // Folders and Files
         TFolder* histograms;
         TDirectory* dir_aida;
