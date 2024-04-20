@@ -1,16 +1,16 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define FATIMA_ON 1
-#define FATIMA_VME_ON 1
-#define AIDA_ON 1
+#define FATIMA_ON 0
+#define FATIMA_VME_ON 0
+#define AIDA_ON 0
 #define BPLAST_ON 1
-#define GERMANIUM_ON 1
+#define GERMANIUM_ON 0
 #define BGO_ON 0
-#define FRS_ON 1
-#define TIME_MACHINE_ON 1
+#define FRS_ON 0
+#define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
-#define WHITE_RABBIT_CORS 1
+#define WHITE_RABBIT_CORS 0
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
@@ -47,10 +47,10 @@ void s100_online_new()
     //TString fExpName = "beammonitor";
 
     // Define important paths.
-    //TString c4Root_path = "/u/jbormans/c4Root";
+    TString c4Root_path = "/u/jbormans/c4Root";
     //TString c4Root_path = "/u/despec/s100_online/c4Root";
-    TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
-    TString c4Root_path = "/u/cjones/c4Root";
+    TString screenshot_path = "/u/jbormans/screenshots/";
+    //TString c4Root_path = "/u/despec/s100_online/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -73,18 +73,20 @@ void s100_online_new()
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     //TString filename = "stream://x86l-182"; // BGO
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
-    //TString filename = "trans://lxg1257"; // timesorter.
+    TString filename = "trans://lxg1257"; // timesorter.
     //TString filename = "trans://R4L-21"; // beammonitor
-    //TString filename = "stream://R4L-36"; // fatima vme
+    // TString filename = "stream://x86l-87"; // bplast
     //TString filename = "stream://x86l-117"; // fatima tamex
-    //TString filename = "/lustre/gamma/dryrunmarch24/ts/Au_beam_0008_0001.lmd";
-    TString filename = "~/Au_beam_0010_0001.lmd";
+    //TString filename = "stream://x86l-182";
+    // TString file = "/lustre/despec/dryrun2
+    //TString filename = "~/lustre/despec/s100/calibrations/152Eu_calib_*.lmd";
+    // TString filename = "~/Au_beam_0010_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 8080; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 5500; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -166,10 +168,10 @@ void s100_online_new()
     TFatimaVmeConfiguration::Set_QDC_T_CalFile(config_path + "/fatima/Fatima_QDC_Time_Calibration.txt");
     TFatimaVmeConfiguration::Set_TDC_T_CalFile(config_path + "/fatima/Fatima_TDC_Time_Calibration.txt");
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
-    TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_mar20.txt");
+    TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_mapping_s100.txt");
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
-    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_mar21.txt");
-    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_calib_2203.txt");
+    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_apr15.txt");
+    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_uncal_apr15.txt");
     TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
     
     
@@ -229,8 +231,8 @@ void s100_online_new()
     if (BGO_ON)
     {
         BGOReader* unpackbgo = new BGOReader((EXT_STR_h101_bgo_onion*)&ucesb_struct.bgo, offsetof(EXT_STR_h101, bgo));
-        //unpackbgo->DoFineTimeCalOnline(config_path + "/bgo/fine_time_histos_19mar.root", 1000000);
-        unpackbgo->SetInputFileFineTimeHistos(config_path + "/bgo/fine_time_histos_19mar.root");
+        //unpackbgo->DoFineTimeCalOnline(config_path + "/bgo/fine_time_histos_17apr.root", 1000000);
+        unpackbgo->SetInputFileFineTimeHistos(config_path + "/bgo/fine_time_histos_17apr.root");
         
         unpackbgo->SetOnline(true);
         source->AddReader(unpackbgo);
@@ -341,7 +343,6 @@ void s100_online_new()
 
     // ---------------------------------------------------------------------------------------- //
     // *** Analyse Subsystem Hits ************************************************************* //
-    
     
     if (AIDA_ON)
     {        
@@ -456,7 +457,7 @@ void s100_online_new()
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {b, d, f};
+        std::vector a {b,c,d,e,f};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
@@ -465,7 +466,7 @@ void s100_online_new()
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({b, d, f});
+        wronline->SetDetectorSystems({b,c,d,e,f});
     
         run->AddTask(wronline);
     }
