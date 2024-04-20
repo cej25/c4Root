@@ -90,6 +90,7 @@ void LisaRaw2Cal::Exec(Option_t* option)
             }
             
             std::vector<int> layers;
+            std::vector<std::string> cities;
             std::vector<int> xpositions;
             std::vector<int> ypositions;
             std::vector<uint32_t> raw_energy;
@@ -104,16 +105,19 @@ void LisaRaw2Cal::Exec(Option_t* option)
                     std::pair<int,int> unmapped_channel = {data_boards.at(i), data_channel.at(j)};
                     if (detector_mapping.count(unmapped_channel) > 0)
                     {
-                        int layer = detector_mapping.at(unmapped_channel).first;
+                        int layer = detector_mapping.at(unmapped_channel).first.first;
+                        std::string city = detector_mapping.at(unmapped_channel).first.second;
                         int xpos = detector_mapping.at(unmapped_channel).second.first;
                         int ypos = detector_mapping.at(unmapped_channel).second.second;
 
                         layers.emplace_back(layer);
+                        cities.emplace_back(city);
                         xpositions.emplace_back(xpos);
                         ypositions.emplace_back(ypos);
                         raw_energy.emplace_back(data_energy.at(j));
 
                         std::cout<<layers[j]<<std::endl;
+                        std::cout<<cities[j]<<std::endl;
 
                         for (int n = 0; n < traceLength ; n++)
                         {
@@ -130,6 +134,7 @@ void LisaRaw2Cal::Exec(Option_t* option)
 
             // set layer, x, y, e, traces etc. vectors into new caldata_item
             lisa_cal_item->SetLayers(layers);
+            lisa_cal_item->SetCities(cities);
             lisa_cal_item->SetXPositions(xpositions);
             lisa_cal_item->SetYPositions(ypositions);
             lisa_cal_item->SetRawEnergy(raw_energy);

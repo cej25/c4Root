@@ -31,6 +31,7 @@ void TLisaConfiguration::ReadMappingFile()
     std::cout<<"un elefante"<<std::endl;
     std::set<int> febex_boards;
     std::set<int> layers;
+    std::set<std::string> det_names;
     int detectors = 0;
     
     std::ifstream detector_map_file(mapping_file);
@@ -44,9 +45,12 @@ void TLisaConfiguration::ReadMappingFile()
 
         std::istringstream iss(line);
         std::string signal;
+        std::string det_name;
         int febex_board, febex_channel, layer_id, x_pos, y_pos;
         std::pair<int, int> xy;
         std::pair<int, std::pair<int, int>> layer_xy;
+        std::pair<int, std::string> layer_det_name;
+        std::pair<std::pair<int,std::string>, std::pair<int,int>> layer_det_name_xy; //include det names
         std::pair<int, int> febex_bc;
 
         iss >> signal;
@@ -56,7 +60,7 @@ void TLisaConfiguration::ReadMappingFile()
         {
             febex_board = std::stoi(signal);
 
-            iss >> febex_channel >> layer_id >> x_pos >> y_pos;
+            iss >> febex_channel >> layer_id >> x_pos >> y_pos >> det_name;
 
             // count only real layers, detectors
             layers.insert(layer_id);
@@ -65,7 +69,7 @@ void TLisaConfiguration::ReadMappingFile()
         }
         else
         {
-            iss >> febex_board >> febex_channel >> layer_id >> x_pos >> y_pos;
+            iss >> febex_board >> febex_channel >> layer_id >> x_pos >> y_pos >>det_name;
 
             if (signal == "TimeMachineU") tm_undelayed = layer_id;
             else if (signal == "TimeMachineD") tm_delayed = layer_id;
@@ -84,8 +88,11 @@ void TLisaConfiguration::ReadMappingFile()
 
         xy = std::make_pair(x_pos, y_pos);
         layer_xy = std::make_pair(layer_id, xy);
+        layer_det_name = std::make_pair(layer_id,det_name);
+        layer_det_name_xy = std::make_pair(layer_det_name, xy);
 
-        detector_mapping.insert(std::make_pair(febex_bc, layer_xy));
+        //detector_mapping.insert(std::make_pair(febex_bc, layer_xy));
+        detector_mapping.insert(std::make_pair(febex_bc, layer_det_name_xy));
 
     }
 
@@ -100,7 +107,6 @@ void TLisaConfiguration::ReadMappingFile()
     return;
 
 }
-
 
 
 

@@ -40,7 +40,8 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     ucesb_path.ReplaceAll("//","/");
 
     //set mapping
-    TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map.txt");
+    //TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map.txt");
+    TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map_names.txt");
 
 
     // Create online run
