@@ -36,10 +36,14 @@ void run_bm_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fEx
     // Create online run
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
+    EvtHead->Register(false);
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
     run->SetSink(new FairRootFileSink(outputFileName));
     run->ActivateHttpServer(refresh, port);
+    TFolder* histograms = new TFolder("Histograms", "Histograms");
+    FairRootManager::Instance()->Register("Histograms", "Histograms Folder", histograms, false);
+    run->AddObject(histograms);
 
     // Load ucesb structure
     EXT_STR_h101 ucesb_struct;

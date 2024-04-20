@@ -79,7 +79,7 @@ class BGOOnlineSpectra : public FairTask
         int fenergy_bin_low = 0;
         int fenergy_bin_high = 1500;
 
-        int BGO_Germanium_wr_coincidence_window = 2000;
+        int BGO_Germanium_wr_coincidence_window = 20000;
         int BGO_Germanium_wr_coincidence_window_offset = 0;
 
         EventHeader* header;
