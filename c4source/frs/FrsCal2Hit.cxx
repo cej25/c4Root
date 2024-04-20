@@ -259,8 +259,10 @@ void FrsCal2Hit::Exec(Option_t* option)
         /*  8 anodes of TUM MUSIC */
         // first MUSIC threshold changed to 4 (01/12/23)
         if (music_e1[i] > 4)
-        {
-            music_b_e1[i] = Check_WinCond_Multi(music_e1[i], cMusic1_E, i);
+        {   
+            if (music->exclude_de1_adc_channel[i] == kTRUE) music_b_e1[i] = false;
+            else music_b_e1[i] = Check_WinCond_Multi(music_e1[i], cMusic1_E, i);
+
             if (music_b_e1[i])
             {
                 music1_anodes_cnt++;
@@ -274,7 +276,9 @@ void FrsCal2Hit::Exec(Option_t* option)
         // second MUSIC
         if (music_e2[i] > 4)
         {
-            music_b_e2[i] = Check_WinCond_Multi(music_e2[i], cMusic2_E, i);
+            if (music->exclude_de2_adc_channel[i] == kTRUE) music_b_e2[i] = false;
+            else music_b_e2[i] = Check_WinCond_Multi(music_e2[i], cMusic2_E, i);
+            
             if (music_b_e2[i])
             {
                 music2_anodes_cnt++;
@@ -284,7 +288,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         {
             music_b_t2[i] = Check_WinCond_Multi(music_t2[i], cMusic2_T, i);
         }
-    }
+    } // i loop
 
     /*for (int i = 0; i < 4; i++)
     {
@@ -996,8 +1000,8 @@ void FrsCal2Hit::Exec(Option_t* option)
                 id_mhtdc_z_music41.emplace_back(frs->primary_z * sqrt(de[0] / id_mhtdc_v_cor_music41.at(i)) + id->mhtdc_offset_z_music41);
             }
             
-            std::cout << "do we get a z value" << std::endl;
-            std::cout << id_mhtdc_z_music41[i] << std::endl;
+            //std::cout << "do we get a z value" << std::endl;
+            //std::cout << id_mhtdc_z_music41[i] << std::endl;
         }
         
     }
@@ -1082,6 +1086,8 @@ void FrsCal2Hit::Exec(Option_t* option)
             id_a2 = fCalHitTPC->Get_tpc_angle_x_s2_foc_21_22();
             id_b2 = fCalHitTPC->Get_tpc_angle_y_s2_foc_21_22();
         }
+        
+
     }
     else if (id->x_s2_select == 2)
     {   
@@ -1124,21 +1130,16 @@ void FrsCal2Hit::Exec(Option_t* option)
     id_b_x2 = Check_WinCond(id_x2, cID_x2);
     id_b_x4 = Check_WinCond(id_x4, cID_x4);
     
-    // should these be conditions?
-    if (id_b_x2)
-    {
-        FrsHit->Set_ID_x2(id_x2);
-        FrsHit->Set_ID_y2(id_y2);
-        FrsHit->Set_ID_a2(id_a2);
-        FrsHit->Set_ID_b2(id_b2);
-    }
-    if (id_b_x4)
-    {
-        FrsHit->Set_ID_x4(id_x4);
-        FrsHit->Set_ID_y4(id_y4);
-        FrsHit->Set_ID_a4(id_a4);
-        FrsHit->Set_ID_b4(id_b4);
-    }
+    FrsHit->Set_ID_x2(id_x2);
+    FrsHit->Set_ID_y2(id_y2);
+    FrsHit->Set_ID_a2(id_a2);
+    FrsHit->Set_ID_b2(id_b2);
+
+    FrsHit->Set_ID_x4(id_x4);
+    FrsHit->Set_ID_y4(id_y4);
+    FrsHit->Set_ID_a4(id_a4);
+    FrsHit->Set_ID_b4(id_b4);
+    
 
     // CEJ: commented because double def?
     /*temp_s4x = -999.;
@@ -1298,6 +1299,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     }
     
     // Gain match Z -- unclear where ts_mins comes from
+    /*
     for (int i = 0; i < Z_Shift_array; i++)
     {
         if (ts_mins >= FRS_WR_a[i] && ts_mins < FRS_WR_b[i])
@@ -1306,6 +1308,7 @@ void FrsCal2Hit::Exec(Option_t* option)
             id_z2 = id_z2 - Z2_shift_value[i];
         }
     }
+    */
 
     // S4 (MUSIC)
     /*
@@ -1330,7 +1333,8 @@ void FrsCal2Hit::Exec(Option_t* option)
     }
     */
     //c4LOG(info,"Finalize:");
-    
+
+
     FrsHit->Set_ID_z(id_z);
     FrsHit->Set_ID_z2(id_z2);
 

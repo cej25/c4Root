@@ -1,16 +1,16 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define FATIMA_ON 1
-#define FATIMA_VME_ON 1
+#define FATIMA_ON 0
+#define FATIMA_VME_ON 0
 #define AIDA_ON 1
-#define BPLAST_ON 1
-#define GERMANIUM_ON 1
+#define BPLAST_ON 0
+#define GERMANIUM_ON 0
 #define BGO_ON 0
 #define FRS_ON 1
-#define TIME_MACHINE_ON 1
+#define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
-#define WHITE_RABBIT_CORS 1
+#define WHITE_RABBIT_CORS 0
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
@@ -30,7 +30,6 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_frsmain_onion_t frsmain;
     EXT_STR_h101_frstpc_onion_t frstpc;
     EXT_STR_h101_frsuser_onion_t frsuser;
-    EXT_STR_h101_frsvftx_onion_t frsvftx;
     EXT_STR_h101_frstpat_onion_t frstpat;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
     EXT_STR_h101_bgo_onion_t bgo;
@@ -38,16 +37,19 @@ typedef struct EXT_STR_h101_t
 } EXT_STR_h101;
 
 
-void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId = 1)
+void s100_tests()
 {   
+    const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
+
     // Name your experiment. Make sure all relevant directories are named identically.
     // TString fExpName = "NovTest";
     TString fExpName = "s100";
     //TString fExpName = "beammonitor";
 
-
     // Define important paths.
+    //TString c4Root_path = "/u/jbormans/c4Root";
     //TString c4Root_path = "/u/despec/s100_online/c4Root";
+    TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
     TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
@@ -71,23 +73,33 @@ void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     //TString filename = "stream://x86l-182"; // BGO
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
+    //TString filename = "trans://x86l-144"; // ??
+    //TString filename = "trans://x86l-86"; // ??.
+    //TString filename = "trans://x86l-144"; // 
+    //TString filename = "stream://x86l-182"; // bgo
     //TString filename = "trans://lxg1257"; // timesorter.
     //TString filename = "trans://R4L-21"; // beammonitor
-    // TString filename = "stream://R4L-36"; // fatima vme
-    //TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
-    TString filename = "/u/cjones/lustre/gamma/dryrunmarch24/ts/Au_beam_0003_0011.lmd";
+    //TString filename = "stream://R4L-36"; // fatima vme
+    //TString filename = "stream://x86l-117"; // fatima tamex
+    //TString filename = "stream://x86l-87"; //bplast
+    //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
+    TString filename = "~/Au_beam_0010_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 5000; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 5005; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
     run->SetSink(new FairRootFileSink(outputFileName));
     run->ActivateHttpServer(refresh, port);
+    TFolder* histograms = new TFolder("Histograms", "Histograms");
+    FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
+    run->AddObject(histograms);
 
     // Create source using ucesb for input
     EXT_STR_h101 ucesb_struct;
@@ -110,29 +122,21 @@ void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     TMRTOFMSParameter* mrtof = new TMRTOFMSParameter();
     TRangeParameter* range = new TRangeParameter();
     setup(frs,mw,tpc,music,labr,sci,id,si,mrtof,range); // Function defined in frs setup.C macro
+    TFrsConfiguration::SetParameters(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
     
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Gates *************************************************************** //
     
-    // Note: please add the same number of each type of gate
-    std::string frs_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/frs/Gates/";
-    std::vector<std::string> ZAoQ_cuts = {"ZvsAoQ1"};
-    TCutGGates* ZAoQ = new TCutGGates("ZAoQ", ZAoQ_cuts, frs_gate_path);
-    std::vector<std::string> Z1Z2_cuts = {"Z1vsZ21"};
-    TCutGGates* Z1Z2 = new TCutGGates("Z1Z2", Z1Z2_cuts, frs_gate_path);
-    std::vector<std::string> x2AoQ_cuts = {"x2vsAoQ1"};
-    TCutGGates* x2AoQ = new TCutGGates("x2AoQ", x2AoQ_cuts, frs_gate_path);
-    std::vector<std::string> x4AoQ_cuts = {"x4vsAoQ1"};
-    TCutGGates* x4AoQ = new TCutGGates("x4AoQ", x4AoQ_cuts, frs_gate_path);
-    std::vector<std::string> dEdegZ_cuts = {"dEdegvsZ1"};
-    TCutGGates* dEdegZ = new TCutGGates("dEdegZ", dEdegZ_cuts, frs_gate_path);
-    std::vector<TCutGGates*> FrsGates = {ZAoQ, Z1Z2, x2AoQ, x4AoQ, dEdegZ};
     
     // Define prompt cut EdT gates for Fatima Prompt analysis
-    std::string fatima_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Gates/";
+    /*std::string fatima_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Gates/";
     std::vector<std::string> FatimaPromptCuts = {"FatPromptCut1"};
     TCutGGates* FatimaPrompt = new TCutGGates("FatimaEdT", FatimaPromptCuts, fatima_gate_path);
 
+    std::string germanium_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/germanium/Gates/";
+    std::vector<std::string> GePromptCuts = {"GePromptCut1"};
+    TCutGGates* GePrompt = new TCutGGates("GeEdT", GePromptCuts, germanium_gate_path);*/
+    //TGermaniumConfiguration::SetPromptFlashCut(germanium_gate_path + "/GePromptCut1");
     
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Correlations ******************************************************** //
@@ -143,16 +147,15 @@ void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
     TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_new.txt");
-    //TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(config_path + "/fatima/fatima_cal.txt");
     TFatimaVmeConfiguration::SetDetectorMapFile(config_path + "/fatima/Fatima_VME_allocation.txt");
     TFatimaVmeConfiguration::Set_QDC_E_CalFile(config_path + "/fatima/Fatima_QDC_Energy_Calibration.txt");
     TFatimaVmeConfiguration::Set_QDC_T_CalFile(config_path + "/fatima/Fatima_QDC_Time_Calibration.txt");
     TFatimaVmeConfiguration::Set_TDC_T_CalFile(config_path + "/fatima/Fatima_TDC_Time_Calibration.txt");
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
     TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_mar20.txt");
-    // FRS? Eventually will get around to mapping crates properly
-    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_mar21.txt");
-    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_calib_2203.txt");
+    TFrsConfiguration::SetConfigPath(config_path + "/frs/");
+    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_apr15.txt");
+    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_uncal_apr15.txt");
     TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
     
     
@@ -168,8 +171,8 @@ void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     if (FATIMA_ON)
     {
         FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-        //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_histos_19mar.root", 1000000);
-        unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_histos_19mar.root");
+        //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_4apr_test.root", 100000);
+        unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_4apr_test.root");
 
         unpackfatima->SetOnline(true);
         source->AddReader(unpackfatima);
@@ -194,8 +197,8 @@ void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     if (BPLAST_ON)
     {
         bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_bplast_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
-        //unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_histos_2103_pulser_bplast.root", 343682);
-        unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_histos_2103_pulser_bplast.root");
+        //unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_4apr_test.root", 1000000);
+        unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_4apr_test.root");
         
         unpackbplast->SetOnline(true);
         source->AddReader(unpackbplast);
@@ -212,8 +215,8 @@ void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     if (BGO_ON)
     {
         BGOReader* unpackbgo = new BGOReader((EXT_STR_h101_bgo_onion*)&ucesb_struct.bgo, offsetof(EXT_STR_h101, bgo));
-        //unpackbgo->DoFineTimeCalOnline(config_path + "/bgo/fine_time_histos_19mar.root", 1000000);
-        unpackbgo->SetInputFileFineTimeHistos(config_path + "/bgo/fine_time_histos_19mar.root");
+        //unpackbgo->DoFineTimeCalOnline(config_path + "/bgo/fine_time_histos_17apr.root", 1000000);
+        unpackbgo->SetInputFileFineTimeHistos(config_path + "/bgo/fine_time_histos_17apr.root");
         
         unpackbgo->SetOnline(true);
         source->AddReader(unpackbgo);
@@ -225,19 +228,16 @@ void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
         FrsMainReader* unpackfrsmain = new FrsMainReader((EXT_STR_h101_frsmain_onion*)&ucesb_struct.frsmain, offsetof(EXT_STR_h101, frsmain));
         FrsTPCReader* unpackfrstpc = new FrsTPCReader((EXT_STR_h101_frstpc_onion*)&ucesb_struct.frstpc, offsetof(EXT_STR_h101, frstpc));
         FrsUserReader* unpackfrsuser = new FrsUserReader((EXT_STR_h101_frsuser_onion*)&ucesb_struct.frsuser, offsetof(EXT_STR_h101, frsuser));
-        FrsVFTXReader* unpackfrsvftx = new FrsVFTXReader((EXT_STR_h101_frsvftx_onion*)&ucesb_struct.frsvftx, offsetof(EXT_STR_h101, frsvftx));
         FrsTpatReader* unpackfrstpat = new FrsTpatReader((EXT_STR_h101_frstpat_onion*)&ucesb_struct.frstpat, offsetof(EXT_STR_h101, frstpat));
         
         unpackfrsmain->SetOnline(true);
         unpackfrstpc->SetOnline(true);
         unpackfrsuser->SetOnline(true);
-        unpackfrsvftx->SetOnline(true);
         unpackfrstpat->SetOnline(true);
         
         source->AddReader(unpackfrsmain);
         source->AddReader(unpackfrstpc);
         source->AddReader(unpackfrsuser);
-        source->AddReader(unpackfrsvftx);
         source->AddReader(unpackfrstpat);
     }
     
@@ -256,7 +256,7 @@ void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     if (FATIMA_ON)
     {
         FatimaRaw2Cal* calfatima = new FatimaRaw2Cal();
-        calfatima->PrintDetectorMap();
+        // calfatima->PrintDetectorMap();
         // calfatima->PrintDetectorCal();
         
         calfatima->SetOnline(true);
@@ -284,8 +284,6 @@ void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     if (BPLAST_ON)
     {
         bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
-        // CEJ: these are not needed anymore, code was updated
-        //calbplast->SetDetectorMapFile(config_path + "/bplast/bplast_alloc.txt");
         
         calbplast->SetOnline(true);
         run->AddTask(calbplast);
@@ -296,9 +294,8 @@ void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     if (GERMANIUM_ON)
     {
         GermaniumRaw2Cal* calge = new GermaniumRaw2Cal();
-        // these will not be need anymore with config class
-        //calge->SetDetectorConfigurationFile(config_path + "/germanium/Germanium_Detector_Map.txt");
-        calge->PrintDetectorMap();
+        // calge->PrintDetectorMap();
+
         calge->SetOnline(true);
         run->AddTask(calge);
     }
@@ -306,7 +303,7 @@ void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     if (BGO_ON)
     {
         BGORaw2Cal* calbgo = new BGORaw2Cal();
-        calbgo->PrintDetectorMap();
+        // calbgo->PrintDetectorMap();
         
         calbgo->SetOnline(true);
         run->AddTask(calbgo);
@@ -316,18 +313,15 @@ void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     if (FRS_ON)
     {
         FrsMainRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
-        FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
+        FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal();
         FrsUserRaw2Cal* calfrsuser = new FrsUserRaw2Cal();
-        FrsVFTXRaw2Cal* calfrsvftx = new FrsVFTXRaw2Cal();
         
         calfrsmain->SetOnline(true);
         calfrstpc->SetOnline(true);
         calfrsuser->SetOnline(true);
-        calfrsvftx->SetOnline(true);
         run->AddTask(calfrsmain);
         run->AddTask(calfrstpc);
         run->AddTask(calfrsuser);
-        run->AddTask(calfrsvftx);
     }
 
 
@@ -345,7 +339,7 @@ void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     
     if (FRS_ON)
     {
-        FrsCal2Hit* hitfrs = new FrsCal2Hit(frs,mw,tpc,music,labr,sci,id,si,mrtof,range,fExpName);
+        FrsCal2Hit* hitfrs = new FrsCal2Hit();
         
         hitfrs->SetOnline(true); 
         run->AddTask(hitfrs);
@@ -365,13 +359,13 @@ void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
         FatimaOnlineSpectra* onlinefatima = new FatimaOnlineSpectra();
         onlinefatima->SetBinningSlowToT(2000,560,660);
         onlinefatima->SetBinningFastToT(1000,0.1,100.1);
-        onlinefatima->SetBinningEnergy(1000,0.1,1500.1);
+        onlinefatima->SetBinningEnergy(2000,608,610);
 
         std::vector<int> fat_dets = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64};
         onlinefatima->SetDetectorsToPlot(fat_dets);
         
-        std::vector<int> fat_ref_dets = {54};
-        onlinefatima->SetReferenceDetectorsForTimeDifferences(fat_ref_dets);
+        std::vector<int> fat_ref_dets = {22};
+        //onlinefatima->SetReferenceDetectorsForTimeDifferences(fat_ref_dets);
         
         run->AddTask(onlinefatima);
     }
@@ -404,6 +398,7 @@ void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
         onlinege->SetBinningEnergy(3000,0,3e3);
         onlinege->AddReferenceDetector(15,0);
         onlinege->AddReferenceDetector(1,0);
+        onlinege->AddReferenceDetectorWithEnergyGates(1,0,1332);
         run->AddTask(onlinege);
     }
     
@@ -411,23 +406,32 @@ void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     {
         BGOOnlineSpectra* onlinebgo = new BGOOnlineSpectra();
         onlinebgo->SetBinningEnergy(1500,0.1,1500.1);
+        onlinebgo->SetCoincidenceWindow(5000);
 
         
         run->AddTask(onlinebgo);
         
     }
     
+    TFrsConfiguration::Set_Z_range(70,100);
+    TFrsConfiguration::Set_AoQ_range(2.3,2.7);
+
+    std::vector<FrsGate*> fgs;
+    FrsGate* Pt191 = new FrsGate("191Pt",config_path + "/frs/Gates/191Pt.root");
+    FrsGate* Au195 = new FrsGate("195Au",config_path + "/frs/Gates/195Au.root");
+    fgs.emplace_back(Pt191);
+    fgs.emplace_back(Au195);
+    
     if (FRS_ON)
     {
-        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
+        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra(fgs);
+        // For monitoring FRS on our side
         FrsRawSpectra* frsrawspec = new FrsRawSpectra();
         FrsCalSpectra* frscalspec = new FrsCalSpectra();
-        FrsAnalysisSpectra* frsanlspec = new FrsAnalysisSpectra(frs,mw,tpc,music,labr,sci,id,si,mrtof,range,FrsGates);
         
         run->AddTask(onlinefrs);
         run->AddTask(frsrawspec);
         run->AddTask(frscalspec);
-        run->AddTask(frsanlspec);
     }
     
     if (BEAMMONITOR_ON)
@@ -437,16 +441,16 @@ void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
         run->AddTask(onlinebm);
     }
 
-    TString b = "Fatima";
-    TString c = "FatimaVme";
-    TString d = "Aida";
+    TString b = "Aida";
+    TString c = "Fatima";
+    TString d = "FatimaVme";
     TString e = "bPlast";
     TString f = "Germanium";
 
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {b, c, d, e, f};
+        std::vector a {c, d, e, f};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
@@ -455,29 +459,25 @@ void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({b, c, d, e, f});
+        wronline->SetDetectorSystems({c, d, e, f});
     
         run->AddTask(wronline);
     }
 
-    // ---------------------------------------------------------------------------------------- //
-    // *** Correlations *********************************************************************** //
+    if (FRS_ON && AIDA_ON)
+    {
+        FrsAidaCorrelationsOnline* frsaidaonline = new FrsAidaCorrelationsOnline(fgs);
 
-    if (FATIMA_ON && FRS_ON)
-    {
-        //FrsFatimaCorrelations* frsfatimacorr = new FrsFatimaCorrelations(FrsGates, FatimaPrompt);
-        
-        //run->AddTask(frsfatimacorr);
+        run->AddTask(frsaidaonline);
     }
-    
-    if (AIDA_ON && FRS_ON)
+
+    if (BPLAST_ON && GERMANIUM_ON)
     {
-        //FrsAidaCorrelations* frsaidacorr = new FrsAidaCorrelations(FrsGates);
-        
-        //run->AddTask(frsaidacorr);
+        bPlastGermaniumCorrelationsOnline* bplastgecorr = new bPlastGermaniumCorrelationsOnline();
+        // set bplast multiplicity
+        // ???
+        run->AddTask(bplastgecorr);
     }
-    
-    
 
     // Initialise
     run->Init();
@@ -493,9 +493,15 @@ void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
     // Run
     run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev); 
 
+    // write online histograms if desired.
+    //TFile* tf = new TFile(sf->GetFileName(), "UPDATE");
+    //histograms->Write();
+
     // ---------------------------------------------------------------------------------------- //
     // *** Finish Macro *********************************************************************** //
     
+
+
     timer.Stop();
     Double_t rtime = timer.RealTime();
     Double_t ctime = timer.CpuTime();
@@ -508,4 +514,6 @@ void s100_tests(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId
    // gApplication->Terminate(0);
    
    // ----------------------------------------------------------------------------------------- //
+
 }
+

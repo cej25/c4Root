@@ -23,12 +23,6 @@ class GermaniumRaw2Cal : public FairTask
         void PrintDetectorMap();
         void PrintDetectorCal();
 
-        //Bool_t SetDetectorMapFile(TString);
-        //Bool_t SetDetectorCalFile(TString);
-
-
-        void SetTimeMachineChannels(int ftime_machine_delayed_detector_id, int ftime_machine_delayed_crystal_id, int ftime_machine_undelayed_detector_id, int ftime_machine_undelayed_crystal_id);//AFTER mapping.
-
 
         virtual void Exec(Option_t* option);
 
@@ -37,9 +31,7 @@ class GermaniumRaw2Cal : public FairTask
         virtual void SetParContainers();
 
         virtual InitStatus Init();
-
-        //virtual InitStatus ReInit() {return kSUCCESS;}
-
+        
 
     private:
         Bool_t fOnline;
@@ -56,12 +48,6 @@ class GermaniumRaw2Cal : public FairTask
         int detector_id;
         int crystal_id;
         double channel_energy_cal;
-
-
-        int time_machine_delayed_detector_id;
-        int time_machine_undelayed_detector_id;
-        int time_machine_delayed_crystal_id;
-        int time_machine_undelayed_crystal_id;
 
 
         EventHeader * header;

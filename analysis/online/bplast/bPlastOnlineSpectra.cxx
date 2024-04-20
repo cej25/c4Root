@@ -38,8 +38,7 @@ bPlastOnlineSpectra::bPlastOnlineSpectra(const TString& name, Int_t verbose)
 bPlastOnlineSpectra::~bPlastOnlineSpectra()
 {
     c4LOG(info, "");
-    if (fHitbPlastTwinpeaks)
-        delete fHitbPlastTwinpeaks;
+    if (fHitbPlastTwinpeaks) delete fHitbPlastTwinpeaks;
 }
 
 void bPlastOnlineSpectra::SetParContainers()
@@ -50,15 +49,10 @@ void bPlastOnlineSpectra::SetParContainers()
 
 InitStatus bPlastOnlineSpectra::Init()
 {
-
-    // set batch mode
-    gROOT->SetBatch(kTRUE);
-    // number of dets 
-
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-    FairRunOnline * run = FairRunOnline::Instance();
+    FairRunOnline* run = FairRunOnline::Instance();
     run->GetHttpServer()->Register("", this);
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
@@ -82,6 +76,7 @@ InitStatus bPlastOnlineSpectra::Init()
 
     // bPlast Configuration
     bplast_conf = TbPlastConfiguration::GetInstance();
+    bplast_map = bplast_conf->Mapping();
     nDetectors = bplast_conf->NDetectors();
     nTamexBoards = bplast_conf->NTamexBoards();
 
@@ -95,9 +90,10 @@ InitStatus bPlastOnlineSpectra::Init()
     h2_bplast_fastToT_vs_slowToT.resize(nDetectors+1);
 
     // Slow ToT
-    dir_bplast_slowToT->cd();
+    dir_bplast_slowToT->cd(); 
     c_bplast_slowToT  = new TCanvas("c_bplast_slowToT","slow ToT bPlast spectra",1200,800);
     c_bplast_slowToT->Divide(5,(nDetectors%5==0) ? (nDetectors/5) : (nDetectors/5 + 1));
+    h1_bplast_slowToT.resize(nDetectors+1); // index from 1
     for (int ihist = 1; ihist <= nDetectors; ihist++){
         c_bplast_slowToT->cd(ihist);
         h1_bplast_slowToT[ihist] = new TH1F(Form("h1_bplast_slowToT_%d",ihist),Form("bPlastic Slow ToT %d",ihist),10000,0,3.5e3);
@@ -111,6 +107,7 @@ InitStatus bPlastOnlineSpectra::Init()
     dir_bplast_fastToT->cd();
     c_bplast_fastToT  = new TCanvas("c_bplast_fastToT","Fast ToT bPlast spectra",1200,800);
     c_bplast_fastToT->Divide(5,(nDetectors%5==0) ? (nDetectors/5) : (nDetectors/5 + 1));
+    h1_bplast_fastToT.resize(nDetectors+1);
     for (int ihist = 1; ihist <= nDetectors; ihist++)
     {
         c_bplast_fastToT->cd(ihist);
@@ -123,9 +120,10 @@ InitStatus bPlastOnlineSpectra::Init()
 
     // Hit Pattern
     dir_bplast_hitpattern->cd();
-    c_bplast_hitpatterns  = new TCanvas("c_bplast_hitpatterns","bPlast Hit Pattern",1200,800);
+    c_bplast_hitpatterns = new TCanvas("c_bplast_hitpatterns","bPlast Hit Pattern",1200,800);
     c_bplast_hitpatterns->Divide(2,1);
     c_bplast_hitpatterns->cd(1);
+    h1_bplast_hitpatterns.resize(2); // this is hard coded yeah i know, but we aren't going to more bplasts?
     h1_bplast_hitpatterns[0] = new TH1F("h1_bplast_hitpattern_upstream","Upstream detector hit patterns",64,1,65);
     h1_bplast_hitpatterns[0]->GetXaxis()->SetTitle("Detector ID");
     h1_bplast_hitpatterns[0]->GetYaxis()->SetTitle("Counts");
@@ -141,6 +139,7 @@ InitStatus bPlastOnlineSpectra::Init()
     // tamex card hit pattern
     c_bplast_tamex_card_hitpattern  = new TCanvas("c_bplast_tamex_card_hitpattern","bPlast Tamex Card Hit Pattern",1200,800);
     c_bplast_tamex_card_hitpattern->Divide(5,(nTamexBoards%5==0) ? (nTamexBoards/5) : (nTamexBoards/5 + 1));
+    h1_bplast_tamex_card_hitpattern.resize(nTamexBoards);
     for (int ihist = 0; ihist < nTamexBoards; ihist++){
         c_bplast_tamex_card_hitpattern->cd(ihist+1);
         h1_bplast_tamex_card_hitpattern[ihist] = new TH1F(Form("h1_bplast_tamex_card_hitpattern_%d",ihist),Form("bPlastic Tamex Card Hit Pattern %d",ihist),16,1,17);
@@ -154,6 +153,7 @@ InitStatus bPlastOnlineSpectra::Init()
     dir_bplast_fast_vs_slow->cd();
     c_bplast_fast_v_slow  = new TCanvas("c_bplast_fast_v_slow","fast vs slow ToT bplast spectra",1200,800);
     c_bplast_fast_v_slow->Divide(5,(nDetectors%5==0) ? (nDetectors/5) : (nDetectors/5 + 1));
+    h2_bplast_fastToT_vs_slowToT.resize(nDetectors+1);
     for (int ihist = 1; ihist <= nDetectors; ihist++){
         c_bplast_fast_v_slow->cd(ihist);
         h2_bplast_fastToT_vs_slowToT[ihist] = new TH2F(Form("h1_bplast_fast_v_slow_%d",ihist),Form("bplast fast vs. slow detector %d",ihist),1000,0,3.5e3,1000,0,3.5e3);
@@ -278,8 +278,6 @@ void bPlastOnlineSpectra::Snapshot_Histo()
 void bPlastOnlineSpectra::Exec(Option_t* option)
 {   
     auto start = std::chrono::high_resolution_clock::now();
-        
-    bplast_map = bplast_conf->Mapping();
 
     if (fHitbPlastTwinpeaks && fHitbPlastTwinpeaks->GetEntriesFast() > 0)
     {
@@ -356,25 +354,24 @@ void bPlastOnlineSpectra::Exec(Option_t* option)
     total_time_microsecs += duration.count();
 }
 
-    void bPlastOnlineSpectra::FinishEvent()
-    {
+void bPlastOnlineSpectra::FinishEvent()
+{
     if (fHitbPlastTwinpeaks)
     {
         fHitbPlastTwinpeaks->Clear();
     }
-    }
+}
 
-    void bPlastOnlineSpectra::FinishTask()
-    {
+void bPlastOnlineSpectra::FinishTask()
+{
     if(fNEvents == 0)
     { 
         c4LOG(warn, "No events found, not saving histograms!");
         return;
     }
-    if (fHitbPlastTwinpeaks)
-    {
-        c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvents << " microseconds.");
-    }
-    }
+   
+    c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvents << " microseconds.");
+    
+}
 
-    ClassImp(bPlastOnlineSpectra)
+ClassImp(bPlastOnlineSpectra)

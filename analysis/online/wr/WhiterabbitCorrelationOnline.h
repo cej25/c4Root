@@ -121,6 +121,7 @@ class WhiterabbitCorrelationOnline : public FairTask
         TDirectory* dir_whiterabbit_correlation;
         TDirectory* dir_whiterabbit_trigger1;
         TDirectory* dir_whiterabbit_trigger3;
+        TDirectory* dir_whiterabbit_time_differences;
         TFile* file_whiterabbit_snapshot;
 
         
@@ -167,6 +168,18 @@ class WhiterabbitCorrelationOnline : public FairTask
         TH1I* h1_whiterabbit_trigger3_bplast_ge;
 
         TH1I* h1_whiterabbit_trigger;
+
+        // time differences
+        TH1I* h1_whiterabbit_dt_germanium;
+        TH1I* h1_whiterabbit_dt_bplast;
+        TH1I* h1_whiterabbit_dt_fatima;
+        TH1I* h1_whiterabbit_dt_fatimavme;
+        // frs? aida?
+
+        int last_wr_germanium;
+        int last_wr_bplast;
+        int last_wr_fatima;
+        int last_wr_fatimavme;
 
 
 

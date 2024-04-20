@@ -16,9 +16,9 @@
 #define GERMANIUM_ON 1
 #define BGO_ON 0
 #define FRS_ON 1
-#define TIME_MACHINE_ON 0
+#define TIME_MACHINE_ON 1
 #define BEAMMONITOR_ON 0
-#define WHITE_RABBIT_CORS 0
+#define WHITE_RABBIT_CORS 1
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
@@ -110,6 +110,12 @@ void s100_nearline_histograms(TString filename)
     TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_mar21.txt");
     TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
 
+    // ------------------------------------------------------------------------------------ //
+    // *** Initialise Correlations ******************************************************** //
+    
+    TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations.dat");
+
+
     // ======================================================================================== //
     // =========== **** SPECTRA ***** ========================================================= //
     // ======================================================================================== //
@@ -154,7 +160,8 @@ void s100_nearline_histograms(TString filename)
         run->AddTask(nearlinebplast);
         
     }
-    /*
+    
+    
     if (GERMANIUM_ON)
     {
         GermaniumNearlineSpectra* nearlinege = new GermaniumNearlineSpectra();
@@ -166,7 +173,7 @@ void s100_nearline_histograms(TString filename)
     
     if (BGO_ON)
     {
-        BGOOnlineSpectra* nearlinebgo = new BGONearlineSpectra();
+        BGONearlineSpectra* nearlinebgo = new BGONearlineSpectra();
         nearlinebgo->SetBinningEnergy(1500,0.1,1500.1);
 
         
@@ -176,13 +183,17 @@ void s100_nearline_histograms(TString filename)
     
     TFrsConfiguration::Set_Z_range(70,100);
     TFrsConfiguration::Set_AoQ_range(2.3,2.7);
+    std::vector<FrsGate*> fg;
+    FrsGate* Pt191 = new FrsGate("191Pt", "/lustre/gamma/s100_nearline/c4Root/config/s100/frs/Gates/191Pt.root");
+    fg.emplace_back(Pt191);
     
     if (FRS_ON)
     {
-        FrsNearlineSpectra* nearlinefrs = new FrsNearlineSpectra();
+        FrsNearlineSpectra* nearlinefrs = new FrsNearlineSpectra(fg);
         
         run->AddTask(nearlinefrs);
-    }*/
+    }
+    
     
     TString b = "Aida";
     TString c = "Fatima";
@@ -192,19 +203,19 @@ void s100_nearline_histograms(TString filename)
 
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
-        TimeMachineOnline* tms = new TimeMachineOnline();
+        TimeMachineNearline* tmnearline = new TimeMachineNearline();
         std::vector a {b, c, d, e, f};
-        tms->SetDetectorSystems(a);
+        tmnearline->SetDetectorSystems(a);
         
-        run->AddTask(tms);
+        run->AddTask(tmnearline);
     }
     
     if (WHITE_RABBIT_CORS)
     {
-        WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({b, c, d, e, f});
+        WhiterabbitCorrelationNearline* wrnearline = new WhiterabbitCorrelationNearline();
+        wrnearline->SetDetectorSystems({b, c, d, e, f});
     
-        run->AddTask(wronline);
+        run->AddTask(wrnearline);
     }
 
 

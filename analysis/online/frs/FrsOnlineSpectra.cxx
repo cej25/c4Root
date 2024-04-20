@@ -24,9 +24,42 @@
 #include "TFile.h"
 
 FrsOnlineSpectra::FrsOnlineSpectra()
-    : FrsOnlineSpectra("FrsOnlineSpectra", 1)
+    : FairTask()
+    , fHitFrsArray(NULL)
+    , fNEvents(0)
+    , header(nullptr)
 {
     frs_config = TFrsConfiguration::GetInstance();
+    frs = frs_config->FRS();
+    mw = frs_config->MW();
+    tpc = frs_config->TPC();
+    music = frs_config->MUSIC();
+    labr = frs_config->LABR();
+    sci = frs_config->SCI();
+    id = frs_config->ID();
+    si = frs_config->SI();
+    mrtof = frs_config->MRTOF();
+    range = frs_config->Range();
+}
+
+FrsOnlineSpectra::FrsOnlineSpectra(std::vector<FrsGate*> fg)
+    : FairTask()
+    , fHitFrsArray(NULL)
+    , fNEvents(0)
+    , header(nullptr)
+{
+    frs_config = TFrsConfiguration::GetInstance();
+    frs = frs_config->FRS();
+    mw = frs_config->MW();
+    tpc = frs_config->TPC();
+    music = frs_config->MUSIC();
+    labr = frs_config->LABR();
+    sci = frs_config->SCI();
+    id = frs_config->ID();
+    si = frs_config->SI();
+    mrtof = frs_config->MRTOF();
+    range = frs_config->Range();
+    FrsGates = fg;
 }
 
 FrsOnlineSpectra::FrsOnlineSpectra(const TString& name, Int_t iVerbose)
@@ -79,10 +112,11 @@ InitStatus FrsOnlineSpectra::Init()
         histograms->Add(dir_frs);
     }
 
-    TDirectory* dir_pids = dir_frs->mkdir("PIDs");
-    TDirectory* dir_ZvsAoQ = dir_pids->mkdir("ZvsAoQ Gated");
-    TDirectory* dir_scalers = dir_frs->mkdir("Scalers");
-    
+    dir_pids = dir_frs->mkdir("PIDs");
+    dir_ZvsZ2 = dir_pids->mkdir("ZvsZ2 Gated");
+    dir_ZvsZ2_x2vsAoQ = dir_ZvsZ2->mkdir("x2vsAoQ Gated");
+    dir_ZvsZ2_x4vsAoQ = dir_ZvsZ2->mkdir("x4vsAoQ Gated");
+    dir_scalers = dir_frs->mkdir("Scalers");
     
     // Scalers // -- TODO: Add this name mapping to TFrsConfig or something of the like.
     for (int i = 0; i < 66; i++) sprintf(scaler_name[i], "scaler_ch%d", i);
@@ -168,7 +202,6 @@ InitStatus FrsOnlineSpectra::Init()
     h2_x2_vs_AoQ->GetXaxis()->SetTitle("A/Q");
     h2_x2_vs_AoQ->GetYaxis()->SetTitle("S2 x-position");
     h2_x2_vs_AoQ->SetOption("COLZ");
-    //folder_pids->Add(h2_x2_vs_AoQ);
 
     h2_x4_vs_AoQ = new TH2D("h2_x4_vs_AoQ", "x4 vs. A/Q", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4);
     h2_x4_vs_AoQ->GetXaxis()->SetTitle("A/Q");
@@ -260,44 +293,133 @@ InitStatus FrsOnlineSpectra::Init()
     h2_Z_vs_Sc21E->GetYaxis()->SetTitle("Sc21 E");
     h2_Z_vs_Sc21E->SetOption("COLZ");
 
-    dir_ZvsAoQ->cd();
+    // ZvsZ2 gates
+    if (!FrsGates.empty())
+    {
+        h2_Z_vs_AoQ_Z1Z2gate.resize(FrsGates.size());
+        h2_Z1_vs_Z2_Z1Z2gate.resize(FrsGates.size());
+        h2_x2_vs_AoQ_Z1Z2gate.resize(FrsGates.size());
+        h2_x4_vs_AoQ_Z1Z2gate.resize(FrsGates.size());
+        h2_dEdeg_vs_Z_Z1Z2gate.resize(FrsGates.size());
+        h2_dedegoQ_vs_Z_Z1Z2gate.resize(FrsGates.size());
+        h1_a2_Z1Z2_gate.resize(FrsGates.size());
+        h1_a4_Z1Z2_gate.resize(FrsGates.size());
+        h2_x2_vs_AoQ_Z1Z2x2AoQgate.resize(FrsGates.size());
+        h2_x4_vs_AoQ_Z1Z2x2AoQgate.resize(FrsGates.size());
+        h2_Z_vs_AoQ_Z1Z2x2AoQgate.resize(FrsGates.size());
+        h2_dEdeg_vs_Z_Z1Z2x2AoQgate.resize(FrsGates.size());
+        h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate.resize(FrsGates.size());
+        h1_a2_Z1Z2x2AoQgate.resize(FrsGates.size());
+        h1_a4_Z1Z2x2AoQgate.resize(FrsGates.size());
+        h2_x2_vs_AoQ_Z1Z2x4AoQgate.resize(FrsGates.size());
+        h2_x4_vs_AoQ_Z1Z2x4AoQgate.resize(FrsGates.size());
+        h2_Z_vs_AoQ_Z1Z2x4AoQgate.resize(FrsGates.size());
+        h2_dEdeg_vs_Z_Z1Z2x4AoQgate.resize(FrsGates.size());
+        h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate.resize(FrsGates.size());
+        h1_a2_Z1Z2x4AoQgate.resize(FrsGates.size());
+        h1_a4_Z1Z2x4AoQgate.resize(FrsGates.size());
 
-    // ZvsAoQ gates
-    h2_Z_vs_AoQ_ZAoQgate = new TH2I("h2_Z_vs_AoQ_ZAoQgate", "Z vs. A/Q - ZAoQ Gate", 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z);
-    h2_Z_vs_AoQ_ZAoQgate->GetXaxis()->SetTitle("A/Q");
-    h2_Z_vs_AoQ_ZAoQgate->GetYaxis()->SetTitle("Z (MUSIC 1)");
-    h2_Z_vs_AoQ_ZAoQgate->SetOption("COLZ");
+        for (int gate = 0; gate < FrsGates.size(); gate++)
+        {   
+            // CEJ: Prioritising Z1Z2 for now.
+            /*
+            dir_ZvsAoQ->cd();
+            h2_Z_vs_AoQ_ZAoQgate[gate] = new TH2I(Form("h2_Z_vs_AoQ_ZAoQgate%i", gate), Form("Z vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z);
+            h2_Z_vs_AoQ_ZAoQgate[gate]->GetXaxis()->SetTitle("A/Q");
+            h2_Z_vs_AoQ_ZAoQgate[gate]->GetYaxis()->SetTitle("Z (MUSIC 1)");
+            h2_Z_vs_AoQ_ZAoQgate[gate]->SetOption("COLZ");
 
-    h2_Z1_vs_Z2_ZAoQgate = new TH2I("h2_Z1_vs_Z2_ZAoQgate", "Z1 vs. Z2 - ZAoQ Gate", 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_Z, frs_config->fMax_Z);
-    h2_Z1_vs_Z2_ZAoQgate->GetXaxis()->SetTitle("Z (MUSIC 1)");
-    h2_Z1_vs_Z2_ZAoQgate->GetYaxis()->SetTitle("Z (MUSIC 2)");
-    h2_Z1_vs_Z2_ZAoQgate->SetOption("COLZ");
+            h2_Z1_vs_Z2_ZAoQgate[gate] = new TH2I(Form("h2_Z1_vs_Z2_ZAoQgate%i", gate), Form("Z1 vs. Z2 - ZAoQ Gate %i", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_Z, frs_config->fMax_Z);
+            h2_Z1_vs_Z2_ZAoQgate[gate]->GetXaxis()->SetTitle("Z (MUSIC 1)");
+            h2_Z1_vs_Z2_ZAoQgate[gate]->GetYaxis()->SetTitle("Z (MUSIC 2)");
+            h2_Z1_vs_Z2_ZAoQgate[gate]->SetOption("COLZ");
 
-    h2_x2_vs_AoQ_ZAoQgate = new TH2I("h2_x2_vs_AoQ_ZAoQgate", "x2 vs. A/Q - ZAoQ Gate", 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2);
-    h2_x2_vs_AoQ_ZAoQgate->GetXaxis()->SetTitle("A/Q");
-    h2_x2_vs_AoQ_ZAoQgate->GetYaxis()->SetTitle("S2 x-position)");
-    h2_x2_vs_AoQ_ZAoQgate->SetOption("COLZ");
+            h2_x2_vs_AoQ_ZAoQgate[gate] = new TH2I(Form("h2_x2_vs_AoQ_ZAoQgate%i", gate), Form("x2 vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2);
+            h2_x2_vs_AoQ_ZAoQgate[gate]->GetXaxis()->SetTitle("A/Q");
+            h2_x2_vs_AoQ_ZAoQgate[gate]->GetYaxis()->SetTitle("S2 x-position)");
+            h2_x2_vs_AoQ_ZAoQgate[gate]->SetOption("COLZ");
 
-    h2_x4_vs_AoQ_ZAoQgate = new TH2I("h2_x4_vs_AoQ_ZAoQgate", "x4 vs. A/Q - ZAoQ Gate", 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4);
-    h2_x4_vs_AoQ_ZAoQgate->GetXaxis()->SetTitle("A/Q");
-    h2_x4_vs_AoQ_ZAoQgate->GetYaxis()->SetTitle("S4 x-position)");
-    h2_x4_vs_AoQ_ZAoQgate->SetOption("COLZ");
+            h2_x4_vs_AoQ_ZAoQgate[gate] = new TH2I(Form("h2_x4_vs_AoQ_ZAoQgate%i", gate), Form("x4 vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4);
+            h2_x4_vs_AoQ_ZAoQgate[gate]->GetXaxis()->SetTitle("A/Q");
+            h2_x4_vs_AoQ_ZAoQgate[gate]->GetYaxis()->SetTitle("S4 x-position)");
+            h2_x4_vs_AoQ_ZAoQgate[gate]->SetOption("COLZ");
 
-    h2_dEdeg_vs_Z_ZAoQgate = new TH2I("h2_dEdeg_vs_Z_ZAoQgate", "Z1 vs. dE in S2 degrader - ZAoQ Gate", 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dE, frs_config->fMax_dE);
-    h2_dEdeg_vs_Z_ZAoQgate->GetXaxis()->SetTitle("Z (MUSIC 1)");
-    h2_dEdeg_vs_Z_ZAoQgate->GetYaxis()->SetTitle("dE in S2 degrader");
-    h2_dEdeg_vs_Z_ZAoQgate->SetOption("COLZ");
+            h2_dEdeg_vs_Z_ZAoQgate[gate] = new TH2I(Form("h2_dEdeg_vs_Z_ZAoQgate%i", gate), Form("Z1 vs. dE in S2 degrader - ZAoQ Gate %i", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dE, frs_config->fMax_dE);
+            h2_dEdeg_vs_Z_ZAoQgate[gate]->GetXaxis()->SetTitle("Z (MUSIC 1)");
+            h2_dEdeg_vs_Z_ZAoQgate[gate]->GetYaxis()->SetTitle("dE in S2 degrader");
+            h2_dEdeg_vs_Z_ZAoQgate[gate]->SetOption("COLZ");
 
-    h2_dedegoQ_vs_Z_ZAoQgate = new TH2I("h2_dedegoQ_vs_Z_ZAoQgate", "Z1 vs. dE in S2 degrader / Q - ZAoQ Gate", 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ);
-    h2_dedegoQ_vs_Z_ZAoQgate->GetXaxis()->SetTitle("Z (MUSIC 1)");
-    h2_dedegoQ_vs_Z_ZAoQgate->GetYaxis()->SetTitle("dE in S2 degrader / Q");
-    h2_dedegoQ_vs_Z_ZAoQgate->SetOption("COLZ");
+            h2_dedegoQ_vs_Z_ZAoQgate[gate] = new TH2I(Form("h2_dedegoQ_vs_Z_ZAoQgate%i", gate), Form("Z1 vs. dE in S2 degrader / Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ);
+            h2_dedegoQ_vs_Z_ZAoQgate[gate]->GetXaxis()->SetTitle("Z (MUSIC 1)");
+            h2_dedegoQ_vs_Z_ZAoQgate[gate]->GetYaxis()->SetTitle("dE in S2 degrader / Q");
+            h2_dedegoQ_vs_Z_ZAoQgate[gate]->SetOption("COLZ");
 
-    h1_a2_ZAoQ_gate = new TH1I("h1_a2_ZAoQ_gate", "Angle S2 [mrad] - ZAoQ Gate", 100, -1000, 1000);
-    h1_a2_ZAoQ_gate->GetXaxis()->SetTitle("AngleX (S2)");
+            h1_a2_ZAoQ_gate[gate] = new TH1I(Form("h1_a2_ZAoQ_gate%i", gate), Form("Angle S2 [mrad] - ZAoQ Gate %i", gate), 100, -1000, 1000);
+            h1_a2_ZAoQ_gate[gate]->GetXaxis()->SetTitle("AngleX (S2)");
 
-    h1_a4_ZAoQ_gate = new TH1I("h1_a4_ZAoQ_gate", "Angle S4 [mrad] - ZAoQ Gate", 100, -1000, 1000);
-    h1_a4_ZAoQ_gate->GetXaxis()->SetTitle("AngleX (S4)");
+            h1_a4_ZAoQ_gate[gate] = new TH1I(Form("h1_a4_ZAoQ_gate%i", gate), Form("Angle S4 [mrad] - ZAoQ Gate %i", gate), 100, -1000, 1000);
+            h1_a4_ZAoQ_gate[gate]->GetXaxis()->SetTitle("AngleX (S4)");
+            */
+
+            dir_ZvsZ2->cd();
+            h2_Z_vs_AoQ_Z1Z2gate[gate] = new TH2I(Form("h2_Z_vs_AoQ_ZAoQgate%i", gate), Form("Z vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z);
+            h2_Z_vs_AoQ_Z1Z2gate[gate]->GetXaxis()->SetTitle("A/Q");
+            h2_Z_vs_AoQ_Z1Z2gate[gate]->GetYaxis()->SetTitle("Z (MUSIC 1)");
+            h2_Z_vs_AoQ_Z1Z2gate[gate]->SetOption("COLZ");
+
+            h2_Z1_vs_Z2_Z1Z2gate[gate] = new TH2I(Form("h2_Z1_vs_Z2_ZAoQgate%i", gate), Form("Z1 vs. Z2 - ZAoQ Gate %i", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_Z, frs_config->fMax_Z);
+            h2_Z1_vs_Z2_Z1Z2gate[gate]->GetXaxis()->SetTitle("Z (MUSIC 1)");
+            h2_Z1_vs_Z2_Z1Z2gate[gate]->GetYaxis()->SetTitle("Z (MUSIC 2)");
+            h2_Z1_vs_Z2_Z1Z2gate[gate]->SetOption("COLZ");
+
+            h2_x2_vs_AoQ_Z1Z2gate[gate] = new TH2I(Form("h2_x2_vs_AoQ_ZAoQgate%i", gate), Form("x2 vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2);
+            h2_x2_vs_AoQ_Z1Z2gate[gate]->GetXaxis()->SetTitle("A/Q");
+            h2_x2_vs_AoQ_Z1Z2gate[gate]->GetYaxis()->SetTitle("S2 x-position)");
+            h2_x2_vs_AoQ_Z1Z2gate[gate]->SetOption("COLZ");
+
+            h2_x4_vs_AoQ_Z1Z2gate[gate] = new TH2I(Form("h2_x4_vs_AoQ_ZAoQgate%i", gate), Form("x4 vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4);
+            h2_x4_vs_AoQ_Z1Z2gate[gate]->GetXaxis()->SetTitle("A/Q");
+            h2_x4_vs_AoQ_Z1Z2gate[gate]->GetYaxis()->SetTitle("S4 x-position)");
+            h2_x4_vs_AoQ_Z1Z2gate[gate]->SetOption("COLZ");
+
+            h2_dEdeg_vs_Z_Z1Z2gate[gate] = new TH2I(Form("h2_dEdeg_vs_Z_ZAoQgate%i", gate), Form("Z1 vs. dE in S2 degrader - ZAoQ Gate %i", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dE, frs_config->fMax_dE);
+            h2_dEdeg_vs_Z_Z1Z2gate[gate]->GetXaxis()->SetTitle("Z (MUSIC 1)");
+            h2_dEdeg_vs_Z_Z1Z2gate[gate]->GetYaxis()->SetTitle("dE in S2 degrader");
+            h2_dEdeg_vs_Z_Z1Z2gate[gate]->SetOption("COLZ");
+
+            h2_dedegoQ_vs_Z_Z1Z2gate[gate] = new TH2I(Form("h2_dedegoQ_vs_Z_ZAoQgate%i", gate), Form("Z1 vs. dE in S2 degrader / Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ);
+            h2_dedegoQ_vs_Z_Z1Z2gate[gate]->GetXaxis()->SetTitle("Z (MUSIC 1)");
+            h2_dedegoQ_vs_Z_Z1Z2gate[gate]->GetYaxis()->SetTitle("dE in S2 degrader / Q");
+            h2_dedegoQ_vs_Z_Z1Z2gate[gate]->SetOption("COLZ");
+
+            h1_a2_Z1Z2_gate[gate] = new TH1I(Form("h1_a2_ZAoQ_gate%i", gate), Form("Angle S2 [mrad] - ZAoQ Gate %i", gate), 100, -1000, 1000);
+            h1_a2_Z1Z2_gate[gate]->GetXaxis()->SetTitle("AngleX (S2)");
+
+            h1_a4_Z1Z2_gate[gate] = new TH1I(Form("h1_a4_ZAoQ_gate%i", gate), Form("Angle S4 [mrad] - ZAoQ Gate %i", gate), 100, -1000, 1000);
+            h1_a4_Z1Z2_gate[gate]->GetXaxis()->SetTitle("AngleX (S4)");
+
+            // Second gate - x2 vs AoQ
+            dir_ZvsZ2_x2vsAoQ->cd();
+            h2_x2_vs_AoQ_Z1Z2x2AoQgate[gate] = new TH2I(Form("h2_x2_vs_AoQ_Z1Z2x2AoQgate%d", gate), Form("x2 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2);                
+            h2_x4_vs_AoQ_Z1Z2x2AoQgate[gate] = new TH2I(Form("h2_x4_vs_AoQ_Z1Z2x2AoQgate%d", gate), Form("x4 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4);                
+            h2_Z_vs_AoQ_Z1Z2x2AoQgate[gate] = new TH2I(Form("h2_Z_vs_AoQ_Z1Z2x2AoQgate%d", gate), Form("Z1 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, frs_config->fMin_AoQ, frs_config->fMax_AoQ, FRS_HISTO_BIN, frs_config->fMin_Z, frs_config->fMax_Z);                
+            h2_dEdeg_vs_Z_Z1Z2x2AoQgate[gate] = new TH2I(Form("h2_dEdeg_vs_Z_Z1Z2x2AoQgate%d", gate), Form("dE in S2 degrader vs. Z1 - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, frs_config->fMin_Z, frs_config->fMax_Z, FRS_HISTO_BIN, frs_config->fMin_dE, frs_config->fMax_dE);                
+            h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate[gate] = new TH2I(Form("h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate%d", gate), Form("dE in S2 degrader / Q vs. Z1 - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, frs_config->fMin_Z, frs_config->fMax_Z, FRS_HISTO_BIN, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ);               
+            h1_a2_Z1Z2x2AoQgate[gate] = new TH1I(Form("h1_a2_Z1Z2x2AoQgate%d", gate), Form("Angle S2 [mrad] - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 100, -1000, 1000);           
+            h1_a4_Z1Z2x2AoQgate[gate] = new TH1I(Form("h1_a4_Z1Z2x2AoQgate%d", gate), Form("Angle S4 [mrad] - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 100, -1000, 1000);
+
+            // Second gate - x4 vs AoQ
+            dir_ZvsZ2_x4vsAoQ->cd();
+            h2_x2_vs_AoQ_Z1Z2x4AoQgate[gate] = new TH2I(Form("h2_x2_vs_AoQ_Z1Z2x4AoQgate%d", gate), Form("x2 vs. A/Q - Z1Z2, x4AoQ Gate: %d", gate), FRS_HISTO_BIN, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2);               
+            h2_x4_vs_AoQ_Z1Z2x4AoQgate[gate] = new TH2I(Form("h2_x4_vs_AoQ_Z1Z2x4AoQgate%d", gate), Form("x4 vs. A/Q - Z1Z2, x4AoQ Gate: %d", gate), FRS_HISTO_BIN, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4);                
+            h2_Z_vs_AoQ_Z1Z2x4AoQgate[gate] = new TH2I(Form("h2_Z_vs_AoQ_Z1Z2x4AoQgate%d", gate), Form("Z1 vs. A/Q - Z1Z2, x4AoQ Gate: %d", gate), FRS_HISTO_BIN, frs_config->fMin_AoQ, frs_config->fMax_AoQ, FRS_HISTO_BIN, frs_config->fMin_Z, frs_config->fMax_Z);                
+            h2_dEdeg_vs_Z_Z1Z2x4AoQgate[gate] = new TH2I(Form("h2_dEdeg_vs_Z_Z1Z2x4AoQgate%d", gate), Form("dE in S2 degrader vs. Z1 - Z1Z2, x4AoQ Gate: %d", gate), FRS_HISTO_BIN, frs_config->fMin_Z, frs_config->fMax_Z, FRS_HISTO_BIN, frs_config->fMin_dE, frs_config->fMax_dE);                
+            h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate[gate] = new TH2I(Form("h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate%d", gate), Form("dE in S2 degrader / Q vs. Z1 - Z1Z2, x4AoQ Gate: %d", gate), FRS_HISTO_BIN, frs_config->fMin_Z, frs_config->fMax_Z, FRS_HISTO_BIN, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ);                
+            h1_a2_Z1Z2x4AoQgate[gate] = new TH1I(Form("h1_a2_Z1Z2x4AoQgate%d", gate), Form("Angle S2 [mrad] - Z1Z2, x4AoQ Gate: %d", gate), 100, -1000, 1000);                
+            h1_a4_Z1Z2x4AoQgate[gate] = new TH1I(Form("h1_a4_Z1Z2x4AoQgate%d", gate), Form("Angle S4 [mrad] - Z1Z2, x4AoQ Gate: %d", gate), 100, -1000, 1000);
+
+        }
+    }
 
     dir_scalers->cd();
 
@@ -325,7 +447,6 @@ void FrsOnlineSpectra::Reset_Histo()
 void FrsOnlineSpectra::Exec(Option_t* option)
 {
     // Fill hit data
-    //test_hist->Fill(2);
     if (fHitFrsArray && fHitFrsArray->GetEntriesFast() > 0)
     {
         Int_t nHits = fHitFrsArray->GetEntriesFast();
@@ -386,19 +507,45 @@ void FrsOnlineSpectra::Exec(Option_t* option)
             // CEJ: changed [2] -> [0]
             if (FrsHit->Get_ID_z() != 0 && FrsHit->Get_sci_l(0) != 0 && FrsHit->Get_sci_r(0) != 0) h2_Z_vs_Sc21E->Fill(FrsHit->Get_ID_z(), sqrt(FrsHit->Get_sci_l(0) * FrsHit->Get_sci_r(0)));
 
-            if (cutID_Z_AoQ != nullptr)
+            if (!FrsGates.empty())
             {   
-                if (cutID_Z_AoQ->IsInside(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z()))
+                for (int gate = 0; gate < FrsGates.size(); gate++)
                 {
-                    h2_Z_vs_AoQ_ZAoQgate->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z());
-                    h2_Z1_vs_Z2_ZAoQgate->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2());
-                    h2_x2_vs_AoQ_ZAoQgate->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2());
-                    h2_x4_vs_AoQ_ZAoQgate->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4());
-                    h2_dEdeg_vs_Z_ZAoQgate->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdeg());
-                    h2_dedegoQ_vs_Z_ZAoQgate->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdegoQ());
-                    h1_a2_ZAoQ_gate->Fill(FrsHit->Get_ID_a2());
-                    h1_a4_ZAoQ_gate->Fill(FrsHit->Get_ID_a4());
+                    if (FrsGates[gate]->Passed_ZvsZ2(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2()))
+                    {
+                        h2_Z_vs_AoQ_Z1Z2gate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z());
+                        h2_Z1_vs_Z2_Z1Z2gate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2());
+                        h2_x2_vs_AoQ_Z1Z2gate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2());
+                        h2_x4_vs_AoQ_Z1Z2gate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4());
+                        h2_dEdeg_vs_Z_Z1Z2gate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdeg());
+                        h2_dedegoQ_vs_Z_Z1Z2gate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdegoQ());
+                        h1_a2_Z1Z2_gate[gate]->Fill(FrsHit->Get_ID_a2());
+                        h1_a4_Z1Z2_gate[gate]->Fill(FrsHit->Get_ID_a4());
+
+                        if (FrsGates[gate]->Passed_x2vsAoQ(FrsHit->Get_ID_x2(), FrsHit->Get_ID_AoQ()))
+                        {
+                            h2_x2_vs_AoQ_Z1Z2x2AoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2());
+                            h2_x4_vs_AoQ_Z1Z2x2AoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4());
+                            h2_Z_vs_AoQ_Z1Z2x2AoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z());
+                            h2_dEdeg_vs_Z_Z1Z2x2AoQgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdeg());
+                            h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdegoQ());
+                            h1_a2_Z1Z2x2AoQgate[gate]->Fill(FrsHit->Get_ID_a2());
+                            h1_a4_Z1Z2x2AoQgate[gate]->Fill(FrsHit->Get_ID_a4());
+                        }
+
+                        if (FrsGates[gate]->Passed_x4vsAoQ(FrsHit->Get_ID_x4(), FrsHit->Get_ID_AoQ()))
+                        {
+                            h2_x2_vs_AoQ_Z1Z2x4AoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2());
+                            h2_x4_vs_AoQ_Z1Z2x4AoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4());
+                            h2_Z_vs_AoQ_Z1Z2x4AoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z());
+                            h2_dEdeg_vs_Z_Z1Z2x4AoQgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdeg());
+                            h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdegoQ());
+                            h1_a2_Z1Z2x4AoQgate[gate]->Fill(FrsHit->Get_ID_a2());
+                            h1_a4_Z1Z2x4AoQgate[gate]->Fill(FrsHit->Get_ID_a4());
+                        }
+                    }
                 }
+                
             }
             /* ---------------------------------------------------------------------------- */
 
