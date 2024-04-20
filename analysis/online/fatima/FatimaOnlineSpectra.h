@@ -114,7 +114,6 @@ class FatimaOnlineSpectra : public FairTask
         TDirectory* dir_fatima_energy_spectra;
         TDirectory* dir_fatima_time_spectra;
         std::vector<TDirectory*> dir_fatima_time_differences;
-        
 
         TFile* file_fatima_snapshot;
 

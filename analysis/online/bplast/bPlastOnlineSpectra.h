@@ -23,9 +23,7 @@ class bPlastOnlineSpectra : public FairTask
     public:
         bPlastOnlineSpectra();
         bPlastOnlineSpectra(const TString& name, Int_t verbose = 1);
-
-        void CreateHistograms();
-
+        
         virtual ~bPlastOnlineSpectra();
 
         virtual void SetParContainers();
@@ -58,7 +56,7 @@ class bPlastOnlineSpectra : public FairTask
         int nDetectors;
         int nTamexBoards;
 
-        TString screenshot_path;
+        TString screenshot_path = "/u/jbormans/screenshots/";
 
         // Canvases
         TCanvas* c_bplast_slowToT;
@@ -68,6 +66,8 @@ class bPlastOnlineSpectra : public FairTask
         TCanvas* c_bplast_fast_v_slow;
         TCanvas* c_bplast_time_spectra;
         TCanvas* c_bplast_multiplicity;
+        TCanvas* c_bplast_channel_multiplicity;
+        TCanvas* c_bplast_wr_time_diff;
         TCanvas* c_bplast_snapshot;
 
         //Folders and files
@@ -77,7 +77,6 @@ class bPlastOnlineSpectra : public FairTask
         TDirectory* dir_bplast_fastToT;
         TDirectory* dir_bplast_hitpattern;
         TDirectory* dir_bplast_fast_vs_slow;
-        TDirectory* dir_bplast_time_spectra;
 
         TFile* file_bplast_snapshot;
 
@@ -89,13 +88,16 @@ class bPlastOnlineSpectra : public FairTask
 
         std::vector<TH2F*> h2_bplast_fastToT_vs_slowToT;
         std::vector<TH1F*> h1_bplast_time_spectra;
+        TH1F* h1_bplast_wr_time_diff;
 
-        // Scaler spectra TBA
 
         // Detector Multiplicity
-        TH1F* h1_bplast_multiplicity;
+        std::vector<TH1F*> h1_bplast_multiplicity;
 
-        int event_multiplicity;
+        int event_multiplicity_upstream;
+        int event_multiplicity_downstream;
+        int wr_t;
+        int wr_prev;
 
     public:
         ClassDef(bPlastOnlineSpectra, 1)
