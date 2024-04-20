@@ -137,6 +137,8 @@ class FatimaOnlineSpectra : public FairTask
 
         TFile* file_fatima_snapshot;
 
+        TString screenshot_path = "/u/despec/screenshots/";
+
         std::vector<int> detectors = {0,1,2};
         int number_detectors = 3;
 

@@ -86,7 +86,7 @@ InitStatus bPlastOnlineSpectra::Init()
     h1_bplast_fastToT.resize(nDetectors+1);
     h1_bplast_hitpatterns.resize(2); // this is hard coded yeah i know, but we aren't going to more bplasts?
     h1_bplast_multiplicity.resize(2);
-    h1_bplast_tamex_card_hitpattern.resize(nTamexBoards);
+    h1_bplast_tamex_card_hitpattern.resize(nTamexBoards+1);
     h2_bplast_fastToT_vs_slowToT.resize(nDetectors+1);
 
     // Slow ToT
@@ -210,7 +210,6 @@ void bPlastOnlineSpectra::Reset_Histo()
     h1_bplast_multiplicity[0]->Reset();
     h1_bplast_multiplicity[1]->Reset();
     h1_bplast_wr_time_diff->Reset();
-    for (int ihist = 1; ihist<=nDetectors; ihist++) h1_bplast_time_spectra[ihist]->Reset();
     for (int ihist = 0; ihist < nTamexBoards; ihist++) h1_bplast_tamex_card_hitpattern[ihist]->Reset();
     
     c4LOG(info, "bPlast histograms reset.");
@@ -232,44 +231,38 @@ void bPlastOnlineSpectra::Snapshot_Histo()
     gSystem->mkdir(snapshot_dir);
     gSystem->cd(snapshot_dir);
 
-    // // save histograms
-    // c_bplast_snapshot = new TCanvas("c","c",1200,800);
-    // for (int ihist = 1; ihist<=nDetectors; ihist++) {
-    //     h1_bplast_slowToT[ihist]->Draw();
-    //     c_bplast_snapshot->SaveAs(Form("Slow_ToT_%d.png", ihist));
-    //     c_bplast_snapshot->Clear();
-    //     h1_bplast_fastToT[ihist]->Draw();
-    //     c_bplast_snapshot->SaveAs(Form("Fast_ToT_%d.png", ihist));
-    //     c_bplast_snapshot->Clear();
-    //     h2_bplast_fastToT_vs_slowToT[ihist]->Draw("COLZ");
-    //     c_bplast_snapshot->SaveAs(Form("Fast_vs._Slow_ToT_%d.png", ihist));
-    //     c_bplast_snapshot->Clear();
-    // }
-    
-    // // save hit patterns
-    // c_bplast_hitpatterns->SaveAs("bPlast_HitPatterns.png");
-    // c_bplast_multiplicity->SaveAs("bPlast_Multiplicity.png");
-
-    // for (int ihist = 0; ihist < nTamexBoards; ihist++){
-    //     h1_bplast_tamex_card_hitpattern[ihist]->Draw();
-    //     c_bplast_snapshot->SaveAs(Form("Tamex_Card_HitPattern_%d.png", ihist));
-    //     c_bplast_snapshot->Clear();
-    // }
-    if (dir_bplast) {
-        // Print the contents of dir_bplast
-        dir_bplast->ls();
-    } else {
-        std::cout << "dir_bplast is not set up correctly" << std::endl;
+    // save histograms
+    c_bplast_snapshot = new TCanvas("c","c",1200,800);
+    for (int ihist = 1; ihist<=nDetectors; ihist++) {
+        h1_bplast_slowToT[ihist]->Draw();
+        c_bplast_snapshot->SaveAs(Form("Slow_ToT_%d.png", ihist));
+        c_bplast_snapshot->Clear();
+        h1_bplast_fastToT[ihist]->Draw();
+        c_bplast_snapshot->SaveAs(Form("Fast_ToT_%d.png", ihist));
+        c_bplast_snapshot->Clear();
+        h2_bplast_fastToT_vs_slowToT[ihist]->Draw("COLZ");
+        c_bplast_snapshot->SaveAs(Form("Fast_vs._Slow_ToT_%d.png", ihist));
+        c_bplast_snapshot->Clear();
     }
-    // Create a new ROOT file
+    
+    // save hit patterns
+    c_bplast_hitpatterns->SaveAs("bPlast_HitPatterns.png");
+    c_bplast_multiplicity->SaveAs("bPlast_Multiplicity.png");
+    c_bplast_wr_time_diff->SaveAs("bPlast_WR_Time_Difference.png");
 
-    // snapshot .root file with date and time
-    file_bplast_snapshot = new TFile(Form("bPlast_snapshot_%d_%d_%d_%d_%d_%d.root", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec), "RECREATE");
-    file_bplast_snapshot->cd();
-    dir_bplast->Write();
+    for (int ihist = 0; ihist < nTamexBoards; ihist++){
+        h1_bplast_tamex_card_hitpattern[ihist]->Draw();
+        c_bplast_snapshot->SaveAs(Form("Tamex_Card_HitPattern_%d.png", ihist));
+        c_bplast_snapshot->Clear();
+    }
+    //uncommented for now, I cannot 
+    // // snapshot .root file with date and time
+    // file_bplast_snapshot = new TFile(Form("bPlast_snapshot_%d_%d_%d_%d_%d_%d.root", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec), "RECREATE");
+    // file_bplast_snapshot->cd();
+    // dir_bplast->Write();
 
-    file_bplast_snapshot->Close();
-    delete file_bplast_snapshot;
+    // file_bplast_snapshot->Close();
+    // delete file_bplast_snapshot;
 
     gSystem->cd("..");
     c4LOG(info, "bPlast snapshot saved in:" << screenshot_path + snapshot_dir);

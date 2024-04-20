@@ -85,6 +85,8 @@ class BGOOnlineSpectra : public FairTask
         EventHeader* header;
         Int_t fNEvents;
 
+        TString screenshot_path = "/u/despec/screenshots/";
+
         // Canvas
         TCanvas* c_bgo_time;
         TCanvas* c_bgo_energy;

@@ -343,8 +343,10 @@ void AidaOnlineSpectra::Reset_Histo()
     for (auto& h : h_implant_e) h->Reset();
     for (auto& h : h_implant_e_xy) h->Reset();
     for (auto& h : h_implant_strip_1d_energy) h->Reset();
-    for (auto& h : h_implant_strip_xy) h->Reset();
+    for (auto& h : h_implant_strip_1d) h->Reset();
     for (auto& h : h_implant_x_ex) h->Reset();
+    for (auto& h : h_implant_y_ey) h->Reset();
+    for (auto& h : h_implant_time_delta) h->Reset();
 
     // stopped implants
     for (auto& h : h_implant_strip_xy_stopped) h->Reset();
@@ -358,6 +360,7 @@ void AidaOnlineSpectra::Reset_Histo()
     for (auto& h : h_decay_e) h->Reset();
     for (auto& h : h_decay_e_xy) h->Reset();
     for (auto& h : h_decay_strip_1d_energy) h->Reset();
+    for (auto& h : h_decay_time_delta) h->Reset();
     c4LOG(info, "AIDA histograms reset.");
     
 }
@@ -372,7 +375,7 @@ void AidaOnlineSpectra::Snapshot_Histo()
     const char* snapshot_dir = Form("AIDA_Snapshots_%d%02d%02d_%02d%02d%02d",
             1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday,
             ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
-    
+    gSystem->mkdir(screenshot_path, true);
     gSystem->mkdir(snapshot_dir, true);
     gSystem->cd(snapshot_dir);
 
@@ -397,8 +400,17 @@ void AidaOnlineSpectra::Snapshot_Histo()
         h_implant_strip_1d_energy[i]->Draw("COLZ");
         c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_strip_1d_energy.png", i + 1));
         c_aida_snapshots->Clear();
+        h_implant_strip_1d[i]->Draw("COLZ");
+        c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_strip_1d.png", i + 1));
+        c_aida_snapshots->Clear();
         h_implant_x_ex[i]->Draw("COLZ");
         c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_x_ex.png", i + 1));
+        c_aida_snapshots->Clear();
+        h_implant_y_ey[i]->Draw("COLZ");
+        c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_y_ey.png", i + 1));
+        c_aida_snapshots->Clear();
+        h_implant_time_delta[i]->Draw();
+        c_aida_snapshots->SaveAs(Form("aida_implants_DSSD_%d_implants_time_delta.png", i + 1));
         c_aida_snapshots->Clear();
 
         //stopped implants
@@ -431,6 +443,9 @@ void AidaOnlineSpectra::Snapshot_Histo()
         h_decay_strip_1d_energy[i]->Draw("COLZ");
         c_aida_snapshots->SaveAs(Form("aida_decays_DSSD_%d_decays_strip_1d_energy.png", i + 1));
         c_aida_snapshots->Clear();
+        h_decay_time_delta[i]->Draw();
+        c_aida_snapshots->SaveAs(Form("aida_decays_DSSD_%d_decays_time_delta.png", i + 1));
+        c_aida_snapshots->Clear();
     }
 
 
@@ -438,21 +453,21 @@ void AidaOnlineSpectra::Snapshot_Histo()
     for (auto& scaler : conf->ScalerMap())
     {
         aida_scaler_graph[scaler.first]->Draw("ALP");
-        c_aida_snapshots->SaveAs("aida_scalers.png");
+        c_aida_snapshots->SaveAs(Form("aida_scalers#%d.png",scaler.first));
         c_aida_snapshots->Clear();
     }
 
     delete c_aida_snapshots;
 
+    // commented for now. I cannot implement the snapshot from the directory.
+    // // snapshot .root file with date and time
+    // file_aida_snapshot = new TFile(Form("AIDA_snapshot_%d_%d_%d_%d_%d_%d.root", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec), "RECREATE");
+    // file_aida_snapshot->cd();
+    // dir_aida->Write();
+    // file_aida_snapshot->Close();
+    // delete file_aida_snapshot;
 
-    // snapshot .root file with date and time
-    file_aida_snapshot = new TFile(Form("AIDA_snapshot_%d_%d_%d_%d_%d_%d.root", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec), "RECREATE");
-    file_aida_snapshot->cd();
-    dir_aida->Write();
-    file_aida_snapshot->Close();
-    delete file_aida_snapshot;
-
-    gSystem->cd("..");
+    // gSystem->cd("..");
     c4LOG(info, "AIDA snapshot saved in:" << snapshot_dir);
 
 }
