@@ -92,6 +92,9 @@ InitStatus BGOOnlineSpectra::Init()
     std::map<std::pair<int,int>,std::pair<int,int>> bgomap = BGO_configuration->Mapping();
     std::map<std::pair<int,int>,std::pair<int,int>> gmap = germanium_configuration->Mapping();
 
+    BGO_Germanium_wr_coincidence_window = BGO_configuration->Window();
+    BGO_Germanium_wr_coincidence_window_offset = BGO_configuration->Offset();
+
 
     for (auto it_mapping = bgomap.begin(); it_mapping != bgomap.end(); ++it_mapping)
     {

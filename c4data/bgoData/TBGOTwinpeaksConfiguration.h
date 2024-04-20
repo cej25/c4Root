@@ -33,6 +33,11 @@ class TBGOTwinpeaksConfiguration
         int bPlast_free() const;
         std::set<int> ExtraSignals() const;
 
+        int Window() const;
+        int Offset() const;
+        static void SetCoincidenceWindow(int value) { window = value; }
+        static void SetCoincidenceOffset(int value) { offset = value; }
+
     private:
 
         static std::string configuration_file;
@@ -61,6 +66,9 @@ class TBGOTwinpeaksConfiguration
         int frs_accept;
         int bplast_accept;
         int bplast_free;
+
+        static int window;
+        static int offset;
 
         bool detector_map_loaded = 0;
         bool detector_calibrations_loaded = 0;
@@ -150,6 +158,16 @@ inline int TBGOTwinpeaksConfiguration::bPlast_free() const
 inline std::set<int> TBGOTwinpeaksConfiguration::ExtraSignals() const
 {
     return extra_signals;
+}
+
+inline int TBGOTwinpeaksConfiguration::Window() const
+{
+    return window;
+}
+
+inline int TBGOTwinpeaksConfiguration::Offset() const
+{
+    return offset;
 }
 
 #endif

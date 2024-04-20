@@ -28,6 +28,8 @@ class UnpackReader : public c4Reader
     // Reset
     virtual void Reset() override;
 
+    void SetOnline(Bool_t option) { fOnline = option; }
+
   private:
     // An event counter
     uint64_t fNEvent;
@@ -37,6 +39,8 @@ class UnpackReader : public c4Reader
     size_t fOffset;
     // A pointer to the EventHeader structure
     EventHeader* fHeader;
+
+    Bool_t fOnline;
 
   public:
     ClassDefOverride(UnpackReader, 0);
