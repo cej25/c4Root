@@ -11,40 +11,40 @@ Branch:
         - "fSpillFlag" [bool]
  
     "AidaAdcData"
-        - "rawTime"
-        - "slowTime"
-        - "fastTime"
-        - "fee"
-        - "channel"
-        - "range"
-        - "value"
+        - "rawTime" [uint64_t]
+        - "slowTime" [uint64_t]
+        - "fastTime" [uint64_t]
+        - "fee" [int]
+        - "channel" [int]
+        - "range" [bool]
+        - "value" [uint16_t]
     "AidaFlowData"
-        - "time"
-        - "fee"
-        - "pause"
+        - "time" [uint64_t]
+        - "fee" [int]
+        - "pause" [bool]
     "AidaScalerData"
-        - "time"
-        - "value"
-        - "fee"
+        - "time" [uint64_t]
+        - "value" [uint64_t]
+        - "fee" [int]
     
     "AidaImplantCalAdcData"
-        - "slowTime"
-        - "fastTime"
-        - "fee"
-        - "channel"
-        - "dssd"
-        - "side"
-        - "strip"
-        - "range"
-        - "intensity"
-        - "energy"
+        - "slowTime" [uint64_t]
+        - "fastTime" [uint64_t]
+        - "fee" [int]
+        - "channel" [int]
+        - "dssd" [int]
+        - "side" [int]
+        - "strip" [int]
+        - "range" [bool]
+        - "intensity" [double]
+        - "energy" [double]
     "AidaDecayCalAdcData"
         - same as above
     "AidaTimeMachineData"
-        - "fundelayed_time"
-        - "fdelayed_time"
-        - "fwr_subsystem_id"
-        - "fwr_t"
+        - "fundelayed_time" [double]
+        - "fdelayed_time" [double]
+        - "fwr_subsystem_id" [uint32_t]
+        - "fwr_t" [uint64_t]
 
     "AidaImplantHits"
         - "DSSD" [int]
@@ -97,10 +97,10 @@ Branch:
         - "fwr_subsystem_id" [uint16_t]
         - "fwr_t" [uint64_t]
     "bPlastTimeMachineData"
-        - "fundelayed_time"
-        - "fdelayed_time"
-        - "fwr_subsystem_id"
-        - "fwr_t"
+        - "fundelayed_time" [double]
+        - "fdelayed_time" [double]
+        - "fwr_subsystem_id" [uint32_t]
+        - "fwr_t" [uint64_t]
     
     "FatimaTwinpeaksData"
         - "fboard_id" [uint16_t]
@@ -127,10 +127,10 @@ Branch:
         - "fwr_subsystem_id" [uint16_t]
         - "fwr_t" [uint64_t]
     "FatimaTimeMachineData"
-        - "fundelayed_time"
-        - "fdelayed_time"
-        - "fwr_subsystem_id"
-        - "fwr_t"
+        - "fundelayed_time" [double]
+        - "fdelayed_time" [double]
+        - "fwr_subsystem_id" [uint32_t]
+        - "fwr_t" [uint64_t]
 
     "FatimaVmeData"
         - "fwr_t" [uint64_t]
@@ -173,10 +173,10 @@ Branch:
         - "ftdc_time" [std::vector<uint32_t>]
         - "ftdc_time_raw" [std::vector<uint32_t>]
     "FatimaVmeTimeMachineData"
-        - "fundelayed_time"
-        - "fdelayed_time"
-        - "fwr_subsystem_id"
-        - "fwr_t"
+        - "fundelayed_time" [double]
+        - "fdelayed_time" [double]
+        - "fwr_subsystem_id" [uint32_t]
+        - "fwr_t" [uint64_t]
     
     "FrsMainData"
         - "fScalers_N" [Int_t]
@@ -327,10 +327,10 @@ Branch:
         - "fwr_subsystem_id" [uint32_t]
         - "fwr_t" [uint64_t]
     "GermaniumTimeMachineData"
-        - "fundelayed_time"
-        - "fdelayed_time"
-        - "fwr_subsystem_id"
-        - "fwr_t"
+        - "fundelayed_time" [double]
+        - "fdelayed_time" [double]
+        - "fwr_subsystem_id" [uint32_t]
+        - "fwr_t" [uint64_t]
     
     "BGOTwinpeaksData"
         - "fboard_id" [uint16_t]
