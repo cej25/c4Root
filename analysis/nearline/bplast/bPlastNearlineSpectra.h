@@ -23,8 +23,6 @@ class bPlastNearlineSpectra : public FairTask
         bPlastNearlineSpectra();
         bPlastNearlineSpectra(const TString& name, Int_t verbose = 1);
 
-        void CreateHistograms();
-
         virtual ~bPlastNearlineSpectra();
 
         virtual InitStatus Init();

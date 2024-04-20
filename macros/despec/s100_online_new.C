@@ -48,9 +48,9 @@ void s100_online_new()
 
     // Define important paths.
     //TString c4Root_path = "/u/jbormans/c4Root";
-    TString c4Root_path = "/u/despec/s100_online/c4Root";
+    //TString c4Root_path = "/u/despec/s100_online/c4Root";
     TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
-    //TString c4Root_path = "/u/cjones/c4Root";
+    TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -79,9 +79,8 @@ void s100_online_new()
     //TString filename = "stream://x86l-182"; // bgo
     TString filename = "trans://lxg1257"; // timesorter.
     //TString filename = "trans://R4L-21"; // beammonitor
-    //TString filename = "stream://R4L-36"; // fatima vme
+    // TString filename = "stream://x86l-87"; // bplast
     //TString filename = "stream://x86l-117"; // fatima tamex
-    //TString filename = "stream://x86l-87"; //bplast
     //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
     //TString filename = "~/lustre/gamma/s100_files/ts/calibrations/152Eu_calib_0016_*.lmd";
     TString outputpath = "output";
@@ -174,8 +173,8 @@ void s100_online_new()
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
     TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_mapping_s100.txt");
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
-    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_apr15.txt");
-    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_cal_apr18.txt");
+    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_mar21.txt");
+    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_calib_2203.txt");
     TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
     
     
@@ -348,7 +347,6 @@ void s100_online_new()
     // ---------------------------------------------------------------------------------------- //
     // *** Analyse Subsystem Hits ************************************************************* //
     
-    
     if (AIDA_ON)
     {        
         AidaCal2Hit* aidaHitter = new AidaCal2Hit();
@@ -466,7 +464,7 @@ void s100_online_new()
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {b,c,e,d,f};
+        std::vector a {b, c, d, e, f};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
