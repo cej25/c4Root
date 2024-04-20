@@ -99,7 +99,6 @@ InitStatus FrsAidaCorrelationsOnline::Init()
 
     }
 
-    // CEJ: use to calculate ratio later
     stopped_implant_passed_gate_count_dssd1 = new int[FrsGates.size()];
     for (int i = 0; i < FrsGates.size(); i++) stopped_implant_passed_gate_count_dssd1[i] = 0;
     stopped_implant_passed_gate_count_dssd2 = new int[FrsGates.size()];
@@ -128,8 +127,9 @@ InitStatus FrsAidaCorrelationsOnline::Init()
         dir_stopped_implants->Append(hG_stopped_implants_ratio[gate]);
     }
 
+    double xmax = aida_config->Wide() ? 113.4 : 37.8;
+    int xstrips = aida_config->Wide() ? 386 : 128;
     
-    //dir_pid_gated->cd();
     h2_AidaImplant_ZvsAoQGated_position.resize(aida_config->DSSDs());
     h1_AidaImplant_ZvsAoQGated_energy.resize(aida_config->DSSDs());
     h2_AidaImplant_ZvsAoQGated_position_stopped.resize(aida_config->DSSDs());
@@ -144,11 +144,17 @@ InitStatus FrsAidaCorrelationsOnline::Init()
         for (int gate = 0; gate < FrsGates.size(); gate++)
         {
             dir_implants->cd();
-            h2_AidaImplant_ZvsAoQGated_position[dssd][gate] = new TH2I(Form("h2_AidaImplant_ZvsAoQGate%d_position_dssd%d", gate, dssd + 1), Form("DSSD %d Implant position FRS ZAoQ Gate: %d", dssd + 1, gate), 128, -37.8, 37.8, 128, -37.8, 37.8);
-            h1_AidaImplant_ZvsAoQGated_energy[dssd][gate] = new TH1I(Form("h1_AidaImplant_ZvsAoQGate%d_energy_dssd%d", gate, dssd + 1), Form("DSSD %d Implant energy FRS ZAoQ Gate: %d", dssd + 1, gate), 1000, 0, 10000);
+            h2_AidaImplant_ZvsAoQGated_position[dssd][gate] = new TH2I(Form("h2_AidaImplant_ZvsAoQGate%d_position_dssd%d", gate, dssd + 1), Form("DSSD %d Implant position FRS ZAoQ Gate: %s", dssd + 1, FrsGates[gate]->GetName().c_str()), xstrips, -xmax, xmax, 128, -37.8, 37.8);
+            h2_AidaImplant_ZvsAoQGated_position[dssd][gate]->GetXaxis()->SetTitle("X position [mm]");
+            h2_AidaImplant_ZvsAoQGated_position[dssd][gate]->GetYaxis()->SetTitle("Y position [mm]");
+            h2_AidaImplant_ZvsAoQGated_position[dssd][gate]->SetOption("COLZ");
+            h1_AidaImplant_ZvsAoQGated_energy[dssd][gate] = new TH1I(Form("h1_AidaImplant_ZvsAoQGate%d_energy_dssd%d", gate, dssd + 1), Form("DSSD %d Implant energy FRS ZAoQ Gate: %s", dssd + 1, FrsGates[gate]->GetName().c_str()), 1000, 0, 10000);
             dir_stopped_implants->cd();
-            h2_AidaImplant_ZvsAoQGated_position_stopped[dssd][gate] = new TH2I(Form("h2_AidaImplant_ZvsAoQGate%d_position_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) position FRS ZAoQ Gate: %d", dssd + 1, gate), 128, -37.8, 37.8, 128, -37.8, 37.8);
-            h1_AidaImplant_ZvsAoQGated_energy_stopped[dssd][gate] = new TH1I(Form("h1_AidaImplant_ZvsAoQGate%d_energy_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) energy FRS ZAoQ Gate: %d", dssd + 1, gate), 1000, 0, 10000);
+            h2_AidaImplant_ZvsAoQGated_position_stopped[dssd][gate] = new TH2I(Form("h2_AidaImplant_ZvsAoQGate%d_position_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) position FRS ZAoQ Gate: %s", dssd + 1, FrsGates[gate]->GetName().c_str()), xstrips, -xmax, xmax, 128, -37.8, 37.8);
+            h2_AidaImplant_ZvsAoQGated_position_stopped[dssd][gate]->GetXaxis()->SetTitle("X position [mm]");
+            h2_AidaImplant_ZvsAoQGated_position_stopped[dssd][gate]->GetYaxis()->SetTitle("Y position [mm]");
+            h2_AidaImplant_ZvsAoQGated_position_stopped[dssd][gate]->SetOption("COLZ");
+            h1_AidaImplant_ZvsAoQGated_energy_stopped[dssd][gate] = new TH1I(Form("h1_AidaImplant_ZvsAoQGate%d_energy_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) energy FRS ZAoQ Gate: %s", dssd + 1, FrsGates[gate]->GetName().c_str()), 1000, 0, 10000);
         }
     }
     
