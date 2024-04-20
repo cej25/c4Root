@@ -26,7 +26,8 @@ class FatimaTwinpeaksCalData : public TObject
         double energy,
 
         uint16_t wr_subsystem_id,
-        uint64_t wr_t);
+        uint64_t wr_t,
+        int64_t absolute_event_time);
 
         // Destructor
         virtual ~FatimaTwinpeaksCalData() {}
@@ -45,6 +46,7 @@ class FatimaTwinpeaksCalData : public TObject
         inline const double Get_energy() const {return fenergy; }
         inline const uint16_t Get_wr_subsystem_id() const {return fwr_subsystem_id; }
         inline const uint64_t Get_wr_t() const {return fwr_t; }
+        inline const double Get_absolute_event_time() const { return fabsolute_event_time; }
 
 
         // Setters
@@ -60,6 +62,7 @@ class FatimaTwinpeaksCalData : public TObject
         void Set_energy(double v){ fenergy = v; }
         void Set_wr_subsystem_id(uint16_t v){ fwr_subsystem_id = v; }
         void Set_wr_t(uint64_t v){ fwr_t = v; }
+        void Set_absolute_event_time(int64_t v){ fabsolute_event_time = v; }
 
 
     protected:
@@ -81,6 +84,7 @@ class FatimaTwinpeaksCalData : public TObject
 
         uint16_t fwr_subsystem_id;
         uint64_t fwr_t;
+        int64_t fabsolute_event_time;
     
 
     public:
