@@ -24,7 +24,7 @@ void run_bm_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fEx
     TString outputpath = "run_online_bm_test";
     TString outputFileName = outputpath + ".root";
 
-    Int_t refresh = 10; // Refresh rate for online histograms
+    Int_t refresh = 1; // Refresh rate for online histograms
     Int_t port = 6001;
      
     TString ntuple_options = "UNPACK";
@@ -55,7 +55,7 @@ void run_bm_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fEx
     BeamMonitorReader* unpackbeammonitor = new BeamMonitorReader((EXT_STR_h101_beammonitor_onion*)&ucesb_struct.beammonitor, offsetof(EXT_STR_h101, beammonitor));
 
     // Add readers
-    unpackbeammonitor->SetOnline(false);
+    unpackbeammonitor->SetOnline(true);
     source->AddReader(unpackbeammonitor);
 
     run->SetSource(source);
