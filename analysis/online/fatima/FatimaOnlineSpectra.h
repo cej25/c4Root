@@ -3,6 +3,7 @@
 
 #include "FairTask.h"
 #include "TDirectory.h"
+#include "TFatimaTwinpeaksConfiguration.h"
 #include "TFolder.h"
 #include "TH1F.h"
 #include "TH2F.h"
@@ -100,6 +101,8 @@ class FatimaOnlineSpectra : public FairTask
 
     
     private:
+        const TFatimaTwinpeaksConfiguration * fatima_configuration;
+
         TClonesArray* fHitFatimaTwinpeaks;
 
         // ranges

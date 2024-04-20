@@ -52,6 +52,13 @@ class FrsFatimaCorrelations : public FairTask
             fenergy_bin_high = binhigh; 
         };
 
+
+        void SetBinningCoincidences(int nbins, float binlow, float binhigh){
+            ftime_coincidence_nbins = nbins;
+            ftime_coincidence_low = binlow;
+            ftime_coincidence_high = binhigh;
+        }
+
         void SetShortLifetimeCollectionWindow(int stop){
             stop_short_lifetime_collection = stop;
         }
@@ -66,6 +73,8 @@ class FrsFatimaCorrelations : public FairTask
             long_lifetime_binlow = start;
             long_lifetime_binhigh = stop;
         }
+
+        
         
         
     
@@ -86,6 +95,9 @@ class FrsFatimaCorrelations : public FairTask
         int fenergy_nbins = 1500;
         int fenergy_bin_low = 0;
         int fenergy_bin_high = 1500;
+        int ftime_coincidence_nbins = 1000;
+        int ftime_coincidence_low = 0;
+        int ftime_coincidence_high = 1000;
 
 
         int start_long_lifetime_collection = 1e3; // must cut the prompt flash
@@ -158,6 +170,9 @@ class FrsFatimaCorrelations : public FairTask
 
         TCanvas ** c_fatima_energy_promptflash_cut_energy_gated;
         TH1F ** h1_fatima_energy_promptflash_cut_energy_gated;
+
+        TCanvas ** c_fatima_energy_gated_energy_vs_dt_prompt_flash_cut;
+        TH2F ** h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut;
         
         //long:
         TCanvas ** c_fatima_energy_promptflash_cut_long_energy_gated;
@@ -165,6 +180,9 @@ class FrsFatimaCorrelations : public FairTask
         
         TCanvas ** c_fatima_twr_sci41_energy_gated;
         TH1F ** h1_fatima_twr_sci41_energy_gated;
+
+        TCanvas ** c_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long;
+        TH2F ** h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long;
         
 
 
