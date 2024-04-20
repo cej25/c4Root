@@ -465,6 +465,7 @@ void GermaniumOnlineSpectra::Exec(Option_t* option){
                 if (TMath::Abs(time1 - time2) < 500) h2_germanium_energy_energy_sci41_cut->Fill(energy1,energy2);
                 }
             }
+            break;
         }
         }
         
