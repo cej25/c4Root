@@ -71,6 +71,7 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     dir_stats_vme = dir_fatima_vme->mkdir("Stats");
     dir_raw_vme = dir_fatima_vme->mkdir("Raw Spectra");
     dir_cal_vme = dir_fatima_vme->mkdir("Calibrated Spectra");
+    dir_residuals = dir_fatima_vme->mkdir("Residual Signals");
 
 
     // Setting histogram sizes
@@ -89,7 +90,6 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     dir_raw_energy = dir_raw_vme->mkdir("Raw Energy");
     dir_cal_energy = dir_cal_vme->mkdir("Calibrated Energy");
     dir_raw_time = dir_raw_vme->mkdir("Raw Time");
-    dir_cal_time = dir_cal_vme->mkdir("Calibrated Time");
 
     dir_raw_energy->cd();
     c_FatVME_RawE = new TCanvas("c_FatVME_RawE","Fatima VME Raw Energies", 650, 350);
@@ -129,7 +129,7 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     c_FatVME_RawT->cd(0);
     dir_raw_time->Append(c_FatVME_RawT);
 
-    dir_tdc_dt = dir_cal_vme->mkdir("Time Differences");
+    dir_tdc_dt = dir_fatima_vme->mkdir("Time Differences");
     dir_dt_sc41 = dir_tdc_dt->mkdir("SC41L dT");
     dir_dt_ch1 = dir_tdc_dt->mkdir("Ch1 dT");
 
@@ -157,13 +157,15 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     c_FatVME_dTrefCh1->cd(0);
     dir_dt_ch1->Append(c_FatVME_dTrefCh1);
     
-    dir_fatima_vme->cd();
+    dir_residuals->cd();
     h1_FatVME_time_machine_undelayed = new TH1D("h1_FatVME_time_machine_undelayed", "Time Machine Undelayed - FATIMA VME", 2000, 0, 40000);
     h1_FatVME_time_machine_delayed = new TH1D("h1_FatVME_time_machine_delayed", "Time Machine Delayed - FATIMA VME", 2000, 0, 40000);
-    h1_FatVME_sc41l = new TH1D("h1_FatVME_sc41l", "SC41L E - FATIMA VME", 2000, 0, 40000);
-    h1_FatVME_sc41r = new TH1D("h1_FatVME_sc41r", "SC41R E - FATIMA VME", 2000, 0, 40000);
+    //h1_FatVME_sc41l = new TH1D("h1_FatVME_sc41l", "SC41L E - FATIMA VME", 2000, 0, 40000);
+    //h1_FatVME_sc41r = new TH1D("h1_FatVME_sc41r", "SC41R E - FATIMA VME", 2000, 0, 40000);
     h1_FatVME_sc41l_time = new TH1D("h1_FatVME_sc41l_time", "SC41L T - FATIMA VME", 5000, -1e6, 7e7);
     h1_FatVME_sc41r_time = new TH1D("h1_FatVME_sc41r_time", "SC41R T - FATIMA VME", 5000, -1e6, 7e7);
+
+    dir_fatima_vme->cd();
 
     run->GetHttpServer()->RegisterCommand("Reset_FATIMA_VME_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
     run->GetHttpServer()->RegisterCommand("Snapshot_FATIMA_VME_Histo", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
@@ -189,8 +191,8 @@ void FatimaVmeOnlineSpectra::Reset_Histo()
     h1_FatVME_TDCMult->Reset();
     h1_FatVME_time_machine_undelayed->Reset();
     h1_FatVME_time_machine_delayed->Reset();
-    h1_FatVME_sc41l->Reset();
-    h1_FatVME_sc41r->Reset();
+    //h1_FatVME_sc41l->Reset();
+    //h1_FatVME_sc41r->Reset();
     h1_FatVME_sc41l_time->Reset();
     h1_FatVME_sc41r_time->Reset();
     c4LOG(info, "FATIMA VME Histograms reset");
@@ -285,10 +287,10 @@ void FatimaVmeOnlineSpectra::Exec(Option_t* option)
             std::vector<uint32_t> SC41L_Hits = FatimaVmeHit->Get_SC41L_hits();
             std::vector<uint32_t> SC41R_Hits = FatimaVmeHit->Get_SC41R_hits(); // for plotting if wanted?
             
-            std::vector<uint32_t> SC41L_E_Hits = FatimaVmeHit->Get_SC41L_E_hits();
-            std::vector<uint32_t> SC41R_E_Hits = FatimaVmeHit->Get_SC41R_E_hits();
-            std::vector<uint32_t> TM_Undelayed_E_Hits = FatimaVmeHit->Get_TM_undelayed_E_hits();
-            std::vector<uint32_t> TM_Delayed_E_Hits = FatimaVmeHit->Get_TM_delayed_E_hits();
+            //std::vector<uint32_t> SC41L_E_Hits = FatimaVmeHit->Get_SC41L_E_hits();
+            //std::vector<uint32_t> SC41R_E_Hits = FatimaVmeHit->Get_SC41R_E_hits();
+            std::vector<uint32_t> TM_Undelayed_Hits = FatimaVmeHit->Get_TM_undelayed_hits();
+            std::vector<uint32_t> TM_Delayed_Hits = FatimaVmeHit->Get_TM_delayed_hits();
 
             h1_FatVME_TDCMult->Fill(TDC_IDs.size());
             for (int i = 0; i < TDC_IDs.size(); i++)
@@ -321,22 +323,22 @@ void FatimaVmeOnlineSpectra::Exec(Option_t* option)
             
             
             // special channels
-            for (int i = 0; i < TM_Undelayed_E_Hits.size(); i++)
+            for (int i = 0; i < TM_Undelayed_Hits.size(); i++)
             {
-                h1_FatVME_time_machine_undelayed->Fill(TM_Undelayed_E_Hits[i]);
+                h1_FatVME_time_machine_undelayed->Fill(TM_Undelayed_Hits[i]);
             }
-            for (int i = 0; i < TM_Delayed_E_Hits.size(); i++)
+            for (int i = 0; i < TM_Delayed_Hits.size(); i++)
             {
-                h1_FatVME_time_machine_delayed->Fill(TM_Delayed_E_Hits[i]);
+                h1_FatVME_time_machine_delayed->Fill(TM_Delayed_Hits[i]);
             }
-            for (int i = 0; i < SC41L_E_Hits.size(); i++)
+            /*for (int i = 0; i < SC41L_E_Hits.size(); i++)
             {
                 h1_FatVME_sc41l->Fill(SC41L_E_Hits[i]);
             }
             for (int i = 0; i < SC41R_E_Hits.size(); i++)
             {
                 h1_FatVME_sc41r->Fill(SC41R_E_Hits[i]);
-            }
+            }*/
             for (int i = 0; i < SC41L_Hits.size(); i++)
             {
                 h1_FatVME_sc41l_time->Fill(SC41L_Hits[i]);

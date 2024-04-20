@@ -7,7 +7,6 @@
 #include "FairRuntimeDb.h"
 
 // c4
-//#include "TimeMachineData.h" // ? maybe
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
@@ -171,12 +170,12 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
             for (int i = 0; i < tdcs_fired; i++)
             {
                 uint32_t timestamp_raw = v1290_data[i];
-                uint32_t timestamp = Calibrate_TDC_T(v1290_data[i], tdc_detectors[i]);
+                double timestamp = Calibrate_TDC_T(v1290_data[i], tdc_detectors[i]);
                 
                 if (tdc_detectors[i] >= 0)
                 {
-                    if (extra_signals.find(tdc_detectors[i]) == extra_signals.end())
-                    {  
+                    //if (extra_signals.find(tdc_detectors[i]) == extra_signals.end())
+                    //{  
                         Singles_TDC_timestamp.emplace_back(timestamp);
                         Singles_TDC_timestamp_raw.emplace_back(timestamp_raw);
                         Singles_TDC_ID.emplace_back(tdc_detectors[i]);
@@ -191,7 +190,7 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
                             dummytdcmult++;
                         }
                         
-                    }
+                    //}
                 }
 
                 if (tdc_detectors[i] == sc41l && timestamp != 0.)
@@ -205,16 +204,16 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
 
                 if (((tdc_detectors[i] == tm_delayed) || (tdc_detectors[i] == tm_undelayed)) && tm_delayed != 0 && tm_undelayed != 0)
                 {
-                    new ((*fTimeMachineArray)[fTimeMachineArray->GetEntriesFast()]) TimeMachineData((tdc_detectors[i] == tm_undelayed) ? (timestamp) : (0), (tdc_detectors[i] == tm_undelayed) ? (0) : (timestamp), FatimaHit->Get_wr_subsystem_id(), FatimaHit->Get_wr_t());
+                    new ((*fTimeMachineArray)[fTimeMachineArray->GetEntriesFast()]) TimeMachineData((tdc_detectors[i] == tm_undelayed) ? (timestamp * 0.025) : (0), (tdc_detectors[i] == tm_undelayed) ? (0) : (timestamp * 0.025), FatimaHit->Get_wr_subsystem_id(), FatimaHit->Get_wr_t());
                 }
 
                 if (tdc_detectors[i] == tm_undelayed && timestamp != 0.)
                 {
-                    FatVME_TMU.emplace_back(timestamp * 0.025);
+                    FatVME_TMU.emplace_back((double)(timestamp * 0.025));
                 }
                 if (tdc_detectors[i] == tm_delayed && timestamp != 0.)
                 {
-                    FatVME_TMD.emplace_back(timestamp * 0.025);
+                    FatVME_TMD.emplace_back((double)(timestamp * 0.025));
                 }
 
                 
@@ -255,8 +254,8 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
 
                 if (qdc_detectors[i] >= 0)
                 {
-                    if (extra_signals.find(qdc_detectors[i]) == extra_signals.end())
-                    {   
+                    //if (extra_signals.find(qdc_detectors[i]) == extra_signals.end())
+                    //{   
                         Singles_E.emplace_back(QLong[i]);
                         Singles_QDC_ID.emplace_back(qdc_detectors[i]);
                         Singles_coarse_time.emplace_back(QDC_time_coarse[i]);
@@ -273,7 +272,7 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
                             dummy_qdc_id[i] = qdc_detectors[i];
                             dummyqdcmult++;
                         }
-                    }
+                    //}
                 }
                 
                 if (qdc_detectors[i] == sc41l)

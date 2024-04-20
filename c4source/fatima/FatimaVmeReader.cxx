@@ -93,11 +93,11 @@ Bool_t FatimaVmeReader::Read()
     int qdcs_fired = 0;
 
     //std::cout << "num qdc boards from config: " << num_qdc_boards << std::endl;
-    for (int qdc = 0; qdc < 4; qdc++)
+    for (int qdc = 0; qdc < 5; qdc++)
     {
-        Int_t board_id = fData->fatimavme_qdc[qdc].board_id;
+        Int_t board_id = fData->fatimavme_qdc[qdc]._board_id;
         
-        Int_t channel_mask = fData->fatimavme_qdc[qdc].channels;
+        Int_t channel_mask = fData->fatimavme_qdc[qdc]._channels;
         std::vector<int> channels_fired = Get_Channels(channel_mask);
 
         for (uint32_t channel = 0; channel < channels_fired.size(); channel++)
@@ -105,13 +105,13 @@ Bool_t FatimaVmeReader::Read()
             int current_detector = dets_qdc[std::make_pair(board_id, channels_fired[channel])];
             qdc_detectors.emplace_back(current_detector);
 
-            QDC_time_coarse.emplace_back(fData->fatimavme_qdc[qdc].channel_timev[channel]);
+            QDC_time_coarse.emplace_back(fData->fatimavme_qdc[qdc]._channel_timev[channel]);
 
-            QDC_time_fine.emplace_back((uint64_t)fData->fatimavme_qdc[qdc].channel_timev[channel] + ((uint64_t)(fData->fatimavme_qdc[qdc].chan_ext_timev[channel]) << 32) + fData->fatimavme_qdc[qdc].chan_fine_timev[channel] / 1024.);
+            QDC_time_fine.emplace_back((uint64_t)fData->fatimavme_qdc[qdc]._channel_timev[channel] + ((uint64_t)(fData->fatimavme_qdc[qdc]._chan_ext_timev[channel]) << 32) + fData->fatimavme_qdc[qdc]._chan_fine_timev[channel] / 1024.);
 
-            QLong_raw.emplace_back(fData->fatimavme_qdc[qdc].qlongv[channel]);
+            QLong_raw.emplace_back(fData->fatimavme_qdc[qdc]._qlongv[channel]);
 
-            QShort_raw.emplace_back(fData->fatimavme_qdc[qdc].qshortv[channel]);
+            QShort_raw.emplace_back(fData->fatimavme_qdc[qdc]._qshortv[channel]);
 
             qdcs_fired++;
         }

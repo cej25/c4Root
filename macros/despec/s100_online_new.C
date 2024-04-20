@@ -47,10 +47,10 @@ void s100_online_new()
     //TString fExpName = "beammonitor";
 
     // Define important paths.
-    TString c4Root_path = "/u/jbormans/c4Root";
+    //TString c4Root_path = "/u/jbormans/c4Root";
     //TString c4Root_path = "/u/despec/s100_online/c4Root";
-    TString screenshot_path = "/u/jbormans/screenshots/";
-    //TString c4Root_path = "/u/despec/s100_online/c4Root";
+    TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
+    TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -73,14 +73,16 @@ void s100_online_new()
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     //TString filename = "stream://x86l-182"; // BGO
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
+    //TString filename = "trans://x86l-144"; // ??
+//    TString filename = "trans://x86l-86"; // ??.
+    //TString filename = "trans://x86l-144"; // 
+    //TString filename = "stream://x86l-182"; // bgo
     TString filename = "trans://lxg1257"; // timesorter.
     //TString filename = "trans://R4L-21"; // beammonitor
     // TString filename = "stream://x86l-87"; // bplast
     //TString filename = "stream://x86l-117"; // fatima tamex
-    //TString filename = "stream://x86l-182";
-    // TString file = "/lustre/despec/dryrun2
-    //TString filename = "~/lustre/despec/s100/calibrations/152Eu_calib_*.lmd";
-    // TString filename = "~/Au_beam_0010_0001.lmd";
+    //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
+    TString filename = "~/Au_beam_0010_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
@@ -162,7 +164,8 @@ void s100_online_new()
 
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
-    TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_new.txt");
+    TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_apr18.txt");
+    TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(config_path + "/fatima/fatima_cal_apr18.txt");
     TFatimaVmeConfiguration::SetDetectorMapFile(config_path + "/fatima/Fatima_VME_allocation.txt");
     TFatimaVmeConfiguration::Set_QDC_E_CalFile(config_path + "/fatima/Fatima_QDC_Energy_Calibration.txt");
     TFatimaVmeConfiguration::Set_QDC_T_CalFile(config_path + "/fatima/Fatima_QDC_Time_Calibration.txt");
@@ -170,8 +173,8 @@ void s100_online_new()
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
     TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_mapping_s100.txt");
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
-    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_apr15.txt");
-    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_uncal_apr15.txt");
+    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_mar21.txt");
+    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_calib_2203.txt");
     TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
     
     
@@ -374,13 +377,13 @@ void s100_online_new()
         FatimaOnlineSpectra* onlinefatima = new FatimaOnlineSpectra();
         onlinefatima->SetBinningSlowToT(2000,560,660);
         onlinefatima->SetBinningFastToT(1000,0.1,100.1);
-        onlinefatima->SetBinningEnergy(1000,0.1,1500.1);
+        onlinefatima->SetBinningEnergy(2000,0,1500);
 
-        std::vector<int> fat_dets = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64};
+        std::vector<int> fat_dets = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43};
         onlinefatima->SetDetectorsToPlot(fat_dets);
         
-        std::vector<int> fat_ref_dets = {54};
-        onlinefatima->SetReferenceDetectorsForTimeDifferences(fat_ref_dets);
+        std::vector<int> fat_ref_dets = {1};
+        //onlinefatima->SetReferenceDetectorsForTimeDifferences(1);
         
         run->AddTask(onlinefatima);
     }
@@ -413,6 +416,9 @@ void s100_online_new()
         onlinege->SetBinningEnergy(3000,0,3e3);
         onlinege->AddReferenceDetector(15,0);
         onlinege->AddReferenceDetector(1,0);
+        onlinege->AddReferenceDetectorWithEnergyGates(1,0,778);
+        onlinege->AddReferenceDetectorWithEnergyGates(1,0,344,778);
+        onlinege->SetEnergyGateWidth(10);
         run->AddTask(onlinege);
     }
     
@@ -433,12 +439,12 @@ void s100_online_new()
     {
         FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
         // For monitoring FRS on our side
-        //FrsRawSpectra* frsrawspec = new FrsRawSpectra();
-        //FrsCalSpectra* frscalspec = new FrsCalSpectra();
+        FrsRawSpectra* frsrawspec = new FrsRawSpectra();
+        FrsCalSpectra* frscalspec = new FrsCalSpectra();
         
         run->AddTask(onlinefrs);
-        //run->AddTask(frsrawspec);
-        //run->AddTask(frscalspec);
+        run->AddTask(frsrawspec);
+        run->AddTask(frscalspec);
     }
     
     if (BEAMMONITOR_ON)
@@ -457,7 +463,7 @@ void s100_online_new()
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {b,c,d,e,f};
+        std::vector a {b, d, f};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
@@ -509,4 +515,6 @@ void s100_online_new()
    // gApplication->Terminate(0);
    
    // ----------------------------------------------------------------------------------------- //
+
 }
+
