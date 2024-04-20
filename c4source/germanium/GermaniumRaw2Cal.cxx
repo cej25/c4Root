@@ -176,7 +176,10 @@ void GermaniumRaw2Cal::Exec(Option_t* option){
                 crystal_id,
                 detector_id,
                 funcal_hit->Get_wr_subsystem_id(),
-                funcal_hit->Get_wr_t());
+                funcal_hit->Get_wr_t(),
+                ((int64_t)funcal_hit->Get_wr_t() + ((int64_t)funcal_hit->Get_channel_trigger_time() - (int64_t)funcal_hit->Get_event_trigger_time()))
+                );
+            
             fNEvents++;
         }
     }

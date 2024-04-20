@@ -3,6 +3,7 @@
 
 #include "FairTask.h"
 #include "TDirectory.h"
+#include "TFatimaTwinpeaksConfiguration.h"
 #include "TFolder.h"
 #include "TH1F.h"
 #include "TH2F.h"
@@ -100,6 +101,8 @@ class FatimaOnlineSpectra : public FairTask
 
     
     private:
+        const TFatimaTwinpeaksConfiguration * fatima_configuration;
+
         TClonesArray* fHitFatimaTwinpeaks;
 
         // ranges
@@ -132,6 +135,7 @@ class FatimaOnlineSpectra : public FairTask
         TDirectory* dir_fatima_hitpattern;
         TDirectory* dir_fatima_energy_spectra;
         TDirectory* dir_fatima_time_spectra;
+        TDirectory* dir_fatima_sci41;
         std::vector<TDirectory*> dir_fatima_time_differences = {};
         
 
@@ -159,6 +163,14 @@ class FatimaOnlineSpectra : public FairTask
         TH1F * h1_fatima_hitpattern_fast;
         std::vector<std::vector<TH1F*>> h1_fatima_time_differences;
         std::vector<std::vector<TH2F*>> h2_fatima_time_differences_vs_energy;
+
+        //sci41 spectra:
+        TCanvas * c_fatima_energy_summed_vs_tsci41;
+        TH2F * h2_fatima_energy_summed_vs_tsci41;
+        TCanvas * c_fatima_energy_summed_vs_tsci41_cut;
+        TH1F * h1_fatima_energy_summed_vs_tsci41_cut;
+        TCanvas * c_fatima_energy_energy_sci41_cut;
+        TH2F * h2_fatima_energy_energy_sci41_cut;
         
         // Binnings:
         int ffast_tot_nbins = 500;
