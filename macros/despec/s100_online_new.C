@@ -83,7 +83,7 @@ void s100_online_new()
     //TString filename = "stream://x86l-117"; // fatima tamex
     //TString filename = "stream://x86l-87"; //bplast
     //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
-    //TString filename = "~/Au_beam_0010_0001.lmd";
+    //TString filename = "~/lustre/gamma/s100_files/ts/calibrations/152Eu_calib_0016_*.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
@@ -95,7 +95,7 @@ void s100_online_new()
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
-    run->SetSink(new FairRootFileSink(outputFileName));
+    //run->SetSink(new FairRootFileSink(outputFileName));
     run->ActivateHttpServer(refresh, port);
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
@@ -384,7 +384,8 @@ void s100_online_new()
         std::vector<int> fat_dets = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43};
         onlinefatima->SetDetectorsToPlot(fat_dets);
         
-        std::vector<int> fat_ref_dets = {1};
+         onlinefatima->AddReferenceDetectorForTimeDifferencesWithEnergyGates(1,1332);
+        onlinefatima->SetEnergyGateWidth(20);
         //onlinefatima->SetReferenceDetectorsForTimeDifferences(1);
         
         run->AddTask(onlinefatima);
@@ -418,8 +419,8 @@ void s100_online_new()
         onlinege->SetBinningEnergy(3000,0,3e3);
         onlinege->AddReferenceDetector(15,0);
         onlinege->AddReferenceDetector(1,0);
-        onlinege->AddReferenceDetectorWithEnergyGates(1,0,778);
-        onlinege->AddReferenceDetectorWithEnergyGates(1,0,344,778);
+        onlinege->AddReferenceDetectorWithEnergyGates(1,0,1332);
+        onlinege->AddReferenceDetectorWithEnergyGates(1,0,1173,1332);
         onlinege->SetEnergyGateWidth(10);
         run->AddTask(onlinege);
     }
@@ -429,7 +430,7 @@ void s100_online_new()
         BGOOnlineSpectra* onlinebgo = new BGOOnlineSpectra();
         onlinebgo->SetBinningEnergy(1500,0.1,1500.1);
 
-        
+        onlinebgo->SetCoincidenceWindow(20000);
         run->AddTask(onlinebgo);
         
     }

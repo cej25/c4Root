@@ -6,16 +6,11 @@
 #define BM_MAX_HITS 100000
 
 
-SUBEVENT(bm_subev)
+S2_DATA()
 {
 
     MEMBER(DATA32 dataS2[BM_MAX_HITS] NO_INDEX_LIST);// ZERO_SUPPRESS);
-    MEMBER(DATA32 dataS4[BM_MAX_HITS] NO_INDEX_LIST);// ZERO_SUPPRESS);
 
-    select optional
-    {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1700);
-    }
 
     UINT32 headS2 NOENCODE
     {
@@ -33,7 +28,11 @@ SUBEVENT(bm_subev)
         };
 
     }
+}
 
+S4_DATA()
+{
+    MEMBER(DATA32 dataS4[BM_MAX_HITS] NO_INDEX_LIST);// ZERO_SUPPRESS);
     UINT32 headS4 NOENCODE
     {
         0_12: l_hit_ct;
@@ -49,12 +48,36 @@ SUBEVENT(bm_subev)
             ENCODE(dataS4 APPEND_LIST, (value = data));
         }
     }
+}
 
+TRAILER()
+{
     UINT32 trailer NOENCODE
     {
         0_15: reserved;
         16_31: l_id = MATCH(0xCCCC); // MATCH(0xCCCC);
     }
+}
+
+SUBEVENT(bm_subev)
+{ 
+   select optional 
+   {
+        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1700);
+   }
+   select several
+   {
+       s2 = S2_DATA();
+   }
+   select several
+   {
+       s4 = S4_DATA();
+   }
+
+   select several
+   {
+       t = TRAILER();
+   }
 }
 
 EVENT
