@@ -77,13 +77,13 @@ void s100_tests()
     //TString filename = "trans://x86l-86"; // ??.
     //TString filename = "trans://x86l-144"; // 
     //TString filename = "stream://x86l-182"; // bgo
-    //TString filename = "trans://lxg1257"; // timesorter.
+    TString filename = "trans://lxg1257"; // timesorter.
     //TString filename = "trans://R4L-21"; // beammonitor
     //TString filename = "stream://R4L-36"; // fatima vme
     //TString filename = "stream://x86l-117"; // fatima tamex
     //TString filename = "stream://x86l-87"; //bplast
     //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
-    TString filename = "~/Au_beam_0010_0001.lmd";
+    //TString filename = "~/Au_beam_0010_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
@@ -93,9 +93,10 @@ void s100_tests()
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
+    //EvtHead->Register(false);
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
-    run->SetSink(new FairRootFileSink(outputFileName));
+    //run->SetSink(new FairRootFileSink(outputFileName));
     run->ActivateHttpServer(refresh, port);
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
@@ -402,11 +403,13 @@ void s100_tests()
         run->AddTask(onlinege);
     }
     
+    TBGOTwinpeaksConfiguration::SetCoincidenceWindow(5000); 
+    TBGOTwinpeaksConfiguration::SetCoincidenceOffset(0);
     if (BGO_ON)
     {
         BGOOnlineSpectra* onlinebgo = new BGOOnlineSpectra();
         onlinebgo->SetBinningEnergy(1500,0.1,1500.1);
-        onlinebgo->SetCoincidenceWindow(5000);
+        //onlinebgo->SetCoincidenceWindow(5000);
 
         
         run->AddTask(onlinebgo);
