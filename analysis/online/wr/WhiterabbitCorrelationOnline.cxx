@@ -638,28 +638,34 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
     if (fAidaDecays)
     {
         nHitsAida = fAidaDecays->size();
-        if (nHitsAida > 0) systems += 1;
+        if (nHitsAida > 0) 
+        {
+            systems += 1;
+        }
+
     }
 
     if (systems < 2) return;
 
 
+
     // start with aida...
     int aidaCounter = 0;
     int64_t wr_aida = 0;
-    for (auto & i : *fAidaScalers)
+    for (auto & i : *fAidaDecays)
     {
         if (aidaCounter > 0) break;
 
-        AidaUnpackScalerItem scalerAida = i;
-        if (scalerAida.Fee() == conf->TM_Undelayed())
+        AidaHit decayAida = i;
+        wr_aida = decayAida.Time;
+        /*if (adcAida.Fee() == conf->TM_Undelayed())
         {
             wr_aida = scalerAida.Time();
-        }
-        else
+        }*/
+        /*else
         {
             continue;
-        }
+        }*/
         
         if (fHitFatimaTwinpeaks)
         {
