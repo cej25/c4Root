@@ -43,6 +43,8 @@ bool FrsGate::PassedGate(double Z, double Z2, double x2, double x4, double AoQ, 
     bool passed_gate_cut_x2_AoQ = false;
     bool passed_gate_cut_x4_AoQ = false;
     bool passed_gate_cut_dEdeg_Z = false;
+
+    //NB ORDER OF GATES!!
     
     if (cut_Z_AoQ != nullptr) {
         passed_gate_cut_Z_AoQ = cut_Z_AoQ->IsInside(AoQ,Z);
@@ -85,7 +87,7 @@ bool FrsGate::Passed_ZvsAoQ(double Z, double AoQ)
 bool FrsGate::Passed_ZvsZ2(double Z, double Z2)
 {
     bool passed_gate_cut_Z_Z2 = false;
-    if (cut_Z_Z2 != nullptr) passed_gate_cut_Z_Z2 = cut_Z_Z2->IsInside(Z, Z2);
+    if (cut_Z_Z2 != nullptr) passed_gate_cut_Z_Z2 = cut_Z_Z2->IsInside(Z2, Z);
     else passed_gate_cut_Z_Z2 = true;
     
     return passed_gate_cut_Z_Z2;

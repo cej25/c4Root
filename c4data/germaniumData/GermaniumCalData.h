@@ -22,7 +22,8 @@ class GermaniumCalData : public TObject
                               uint32_t detector_id,
                               //whiterabbit timestamps:
                               uint16_t wr_subsystem_id, 
-                              uint64_t wr_t // ns
+                              uint64_t wr_t, // ns
+                              int64_t absolute_event_time // ns
                               );
 
         // Destructor
@@ -42,6 +43,7 @@ class GermaniumCalData : public TObject
         inline const uint32_t Get_detector_id() const { return fdetector_id; }
         inline const uint16_t Get_wr_subsystem_id() const { return fwr_subsystem_id; }
         inline const uint64_t Get_wr_t() const { return fwr_t; }
+        inline const int64_t Get_absolute_event_time() const { return fabsolute_event_time; }
 
 
 
@@ -59,6 +61,7 @@ class GermaniumCalData : public TObject
         void Set_detector_id(uint32_t v) { fdetector_id = v; }
         void Set_wr_subsystem_id(uint32_t v) { fwr_subsystem_id = v; }
         void Set_wr_t(uint64_t v) { fwr_t = v; }
+        void Set_absolute_event_time(int64_t v) { fabsolute_event_time = v; }
 
     protected:
         // Data items
@@ -78,6 +81,7 @@ class GermaniumCalData : public TObject
         //whiterabbit
         uint32_t fwr_subsystem_id;
         uint64_t fwr_t;
+        int64_t fabsolute_event_time;
     
 
     public:
