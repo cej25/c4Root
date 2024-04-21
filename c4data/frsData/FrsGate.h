@@ -8,7 +8,7 @@ class FrsGate
     public:
         FrsGate(std::string gate_name, std::string file_name);
 
-        ~FrsGate() {};
+        virtual ~FrsGate();
 
         std::string GetName();
         bool PassedGate(double Z1, double Z2, double x2, double x4, double AoQ, double dEdeg);

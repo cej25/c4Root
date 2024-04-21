@@ -46,6 +46,8 @@ class FrsOnlineSpectra : public FairTask
 
         virtual void Reset_Histo();
 
+        virtual void Snapshot_Histo();
+
 
     private:
         TFrsConfiguration const* frs_config;
@@ -69,6 +71,8 @@ class FrsOnlineSpectra : public FairTask
         EventHeader* header;
         Int_t fNEvents;
 
+        TString screenshot_path = "/u/despec/screenshots/";
+
         // we shouldn't need these anymore.
         TFolder* folder_frs_hists;
         TFolder* folder_scalers;
@@ -78,6 +82,7 @@ class FrsOnlineSpectra : public FairTask
         // Canvas
         TCanvas* c_frs_z1_vs_AoQ;
         TCanvas* c_frs_x4_vs_AoQ;
+        TCanvas* c_frs_snapshot;
 
         // Histograms for PID:
         TH2D* h2_Z_vs_AoQ;

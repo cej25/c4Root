@@ -23,23 +23,9 @@
 #include "TRandom.h"
 #include "TFile.h"
 
-FrsOnlineSpectra::FrsOnlineSpectra()
-    : FairTask()
-    , fHitFrsArray(NULL)
-    , fNEvents(0)
-    , header(nullptr)
+FrsOnlineSpectra::FrsOnlineSpectra(): FrsOnlineSpectra("FrsOnlineSpectra")
 {
-    frs_config = TFrsConfiguration::GetInstance();
-    frs = frs_config->FRS();
-    mw = frs_config->MW();
-    tpc = frs_config->TPC();
-    music = frs_config->MUSIC();
-    labr = frs_config->LABR();
-    sci = frs_config->SCI();
-    id = frs_config->ID();
-    si = frs_config->SI();
-    mrtof = frs_config->MRTOF();
-    range = frs_config->Range();
+    
 }
 
 FrsOnlineSpectra::FrsOnlineSpectra(std::vector<FrsGate*> fg)
@@ -429,7 +415,9 @@ InitStatus FrsOnlineSpectra::Init()
     //h_frs_beta_sci = new TH1D("h_frs_beta_sci", "beta from SCI TOF", 1000,0,1);
 
     // Register command to reset histograms
-    run->GetHttpServer()->RegisterCommand("Reset_IncomingID_HIST", Form("/Objects/%s/->Reset_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Reset_FRS_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Snapshot_FRS_Histo", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
+
 
     dir_frs->cd();
 
@@ -439,9 +427,231 @@ InitStatus FrsOnlineSpectra::Init()
 
 void FrsOnlineSpectra::Reset_Histo()
 {
-    c4LOG(info, "");
-   // fh1_TdcRaw->Clear();
-   // fh1_TdcChan->Clear();
+    c4LOG(info,"Resetting FRS Spectra");
+    h2_Z_vs_AoQ->Reset();
+    h2_Z_vs_AoQ_corr->Reset();
+    h2_Z_vs_Z2->Reset();
+    h2_Z_vs_AoQ_Zsame->Reset();
+    h2_x2_vs_AoQ_Zsame->Reset();
+    h2_x4_vs_AoQ_Zsame->Reset();
+    h2_x2_vs_AoQ->Reset();
+    h2_x4_vs_AoQ->Reset();
+    h2_dEdegoQ_vs_Z->Reset();
+    h2_dEdeg_vs_Z->Reset();
+    h2_a2_vs_AoQ->Reset();
+    h2_a4_vs_AoQ->Reset();
+    h2_Z_vs_dE2->Reset();
+    h2_x2_vs_x4->Reset();
+    h2_SC41dE_vs_AoQ->Reset();
+    h2_dE_vs_ToF->Reset();
+    h2_x2_vs_Z->Reset();
+    h2_x4_vs_Z->Reset();
+    h2_dE1_vs_x2->Reset();
+    h2_dE1_vs_x4->Reset();
+    h2_x2_vs_a2->Reset();
+    h2_y2_vs_b2->Reset();
+    h2_x4_vs_a4->Reset();
+    h2_y4_vs_b4->Reset();
+    h2_Z_vs_Sc21E->Reset();
+    h1_tpat->Reset();
+
+    if (!FrsGates.empty())
+    {
+        for (int gate = 0; gate < FrsGates.size(); gate++)
+        {
+            h2_Z_vs_AoQ_Z1Z2gate[gate]->Reset();
+            h2_Z1_vs_Z2_Z1Z2gate[gate]->Reset();
+            h2_x2_vs_AoQ_Z1Z2gate[gate]->Reset();
+            h2_x4_vs_AoQ_Z1Z2gate[gate]->Reset();
+            h2_dEdeg_vs_Z_Z1Z2gate[gate]->Reset();
+            h2_dedegoQ_vs_Z_Z1Z2gate[gate]->Reset();
+            h1_a2_Z1Z2_gate[gate]->Reset();
+            h1_a4_Z1Z2_gate[gate]->Reset();
+            h2_x2_vs_AoQ_Z1Z2x2AoQgate[gate]->Reset();
+            h2_x4_vs_AoQ_Z1Z2x2AoQgate[gate]->Reset();
+            h2_Z_vs_AoQ_Z1Z2x2AoQgate[gate]->Reset();
+            h2_dEdeg_vs_Z_Z1Z2x2AoQgate[gate]->Reset();
+            h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate[gate]->Reset();
+            h1_a2_Z1Z2x2AoQgate[gate]->Reset();
+            h1_a4_Z1Z2x2AoQgate[gate]->Reset();
+            h2_x2_vs_AoQ_Z1Z2x4AoQgate[gate]->Reset();
+            h2_x4_vs_AoQ_Z1Z2x4AoQgate[gate]->Reset();
+            h2_Z_vs_AoQ_Z1Z2x4AoQgate[gate]->Reset();
+            h2_dEdeg_vs_Z_Z1Z2x4AoQgate[gate]->Reset();
+            h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate[gate]->Reset();
+            h1_a2_Z1Z2x4AoQgate[gate]->Reset();
+            h1_a4_Z1Z2x4AoQgate[gate]->Reset();
+        }
+    }
+    c4LOG(info,"FRS Spectra Reset");
+}
+
+void FrsOnlineSpectra::Snapshot_Histo()
+{
+    // create folder with data and time
+    c4LOG(info,"Taking FRS Spectra Snapshot");
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
+    TString snapshot_dir = Form("FRS_Spectra_%i_%i_%i_%i_%i_%i", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
+    gSystem->cd(screenshot_path);
+    gSystem->mkdir(snapshot_dir);
+    gSystem->cd(snapshot_dir);
+
+    // save all histograms
+    c_frs_snapshot = new TCanvas("c_frs_snapshot", "FRS Spectra Snapshot", 800, 600);
+    h2_Z_vs_AoQ->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_Z_vs_AoQ.png");
+    c_frs_snapshot->Clear();
+    h2_Z_vs_AoQ_corr->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_Z_vs_AoQ_corr.png");
+    c_frs_snapshot->Clear();
+    h2_Z_vs_Z2->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_Z_vs_Z2.png");
+    c_frs_snapshot->Clear();
+    h2_Z_vs_AoQ_Zsame->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_Z_vs_AoQ_Zsame.png");
+    c_frs_snapshot->Clear();
+    h2_x2_vs_AoQ_Zsame->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_x2_vs_AoQ_Zsame.png");
+    c_frs_snapshot->Clear();
+    h2_x4_vs_AoQ_Zsame->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_x4_vs_AoQ_Zsame.png");
+    c_frs_snapshot->Clear();
+    h2_x2_vs_AoQ->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_x2_vs_AoQ.png");
+    c_frs_snapshot->Clear();
+    h2_x4_vs_AoQ->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_x4_vs_AoQ.png");
+    c_frs_snapshot->Clear();
+    h2_dEdegoQ_vs_Z->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_dEdegoQ_vs_Z.png");
+    c_frs_snapshot->Clear();
+    h2_dEdeg_vs_Z->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_dEdeg_vs_Z.png");
+    c_frs_snapshot->Clear();
+    h2_a2_vs_AoQ->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_a2_vs_AoQ.png");
+    c_frs_snapshot->Clear();
+    h2_a4_vs_AoQ->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_a4_vs_AoQ.png");
+    c_frs_snapshot->Clear();
+    h2_Z_vs_dE2->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_Z_vs_dE2.png");
+    c_frs_snapshot->Clear();
+    h2_x2_vs_x4->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_x2_vs_x4.png");
+    c_frs_snapshot->Clear();
+    h2_SC41dE_vs_AoQ->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_SC41dE_vs_AoQ.png");
+    c_frs_snapshot->Clear();
+    h2_dE_vs_ToF->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_dE_vs_ToF.png");
+    c_frs_snapshot->Clear();
+    h2_x2_vs_Z->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_x2_vs_Z.png");
+    c_frs_snapshot->Clear();
+    h2_x4_vs_Z->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_x4_vs_Z.png");
+    c_frs_snapshot->Clear();
+    h2_dE1_vs_x2->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_dE1_vs_x2.png");
+    c_frs_snapshot->Clear();
+    h2_dE1_vs_x4->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_dE1_vs_x4.png");
+    c_frs_snapshot->Clear();
+    h2_x2_vs_a2->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_x2_vs_a2.png");
+    c_frs_snapshot->Clear();
+    h2_y2_vs_b2->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_y2_vs_b2.png");
+    c_frs_snapshot->Clear();
+    h2_x4_vs_a4->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_x4_vs_a4.png");
+    c_frs_snapshot->Clear();
+    h2_y4_vs_b4->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_y4_vs_b4.png");
+    c_frs_snapshot->Clear();
+    h2_Z_vs_Sc21E->Draw("COLZ");
+    c_frs_snapshot->SaveAs("h2_Z_vs_Sc21E.png");
+    c_frs_snapshot->Clear();
+
+    if(!FrsGates.empty())
+    {
+        for (int gate = 0; gate < FrsGates.size(); gate++)
+        {
+            h2_Z_vs_AoQ_Z1Z2gate[gate]->Draw("COLZ");
+            c_frs_snapshot->SaveAs(Form("h2_Z_vs_AoQ_Z1Z2gate%i.png", gate));
+            c_frs_snapshot->Clear();
+            h2_Z1_vs_Z2_Z1Z2gate[gate]->Draw("COLZ");
+            c_frs_snapshot->SaveAs(Form("h2_Z1_vs_Z2_Z1Z2gate%i.png", gate));
+            c_frs_snapshot->Clear();
+            h2_x2_vs_AoQ_Z1Z2gate[gate]->Draw("COLZ");
+            c_frs_snapshot->SaveAs(Form("h2_x2_vs_AoQ_Z1Z2gate%i.png", gate));
+            c_frs_snapshot->Clear();
+            h2_x4_vs_AoQ_Z1Z2gate[gate]->Draw("COLZ");
+            c_frs_snapshot->SaveAs(Form("h2_x4_vs_AoQ_Z1Z2gate%i.png", gate));
+            c_frs_snapshot->Clear();
+            h2_dEdeg_vs_Z_Z1Z2gate[gate]->Draw("COLZ");
+            c_frs_snapshot->SaveAs(Form("h2_dEdeg_vs_Z_Z1Z2gate%i.png", gate));
+            c_frs_snapshot->Clear();
+            h2_dedegoQ_vs_Z_Z1Z2gate[gate]->Draw("COLZ");
+            c_frs_snapshot->SaveAs(Form("h2_dedegoQ_vs_Z_Z1Z2gate%i.png", gate));
+            c_frs_snapshot->Clear();
+            h1_a2_Z1Z2_gate[gate]->Draw();
+            c_frs_snapshot->SaveAs(Form("h1_a2_Z1Z2_gate%i.png", gate));
+            c_frs_snapshot->Clear();
+            h1_a4_Z1Z2_gate[gate]->Draw();
+            c_frs_snapshot->SaveAs(Form("h1_a4_Z1Z2_gate%i.png", gate));
+            c_frs_snapshot->Clear();
+            h2_x2_vs_AoQ_Z1Z2x2AoQgate[gate]->Draw("COLZ");
+            c_frs_snapshot->SaveAs(Form("h2_x2_vs_AoQ_Z1Z2x2AoQgate%i.png", gate));
+            c_frs_snapshot->Clear();
+            h2_x4_vs_AoQ_Z1Z2x2AoQgate[gate]->Draw("COLZ");
+            c_frs_snapshot->SaveAs(Form("h2_x4_vs_AoQ_Z1Z2x2AoQgate%i.png", gate));
+            c_frs_snapshot->Clear();
+            h2_Z_vs_AoQ_Z1Z2x2AoQgate[gate]->Draw("COLZ");
+            c_frs_snapshot->SaveAs(Form("h2_Z_vs_AoQ_Z1Z2x2AoQgate%i.png", gate));
+            c_frs_snapshot->Clear();
+            h2_dEdeg_vs_Z_Z1Z2x2AoQgate[gate]->Draw("COLZ");
+            c_frs_snapshot->SaveAs(Form("h2_dEdeg_vs_Z_Z1Z2x2AoQgate%i.png", gate));
+            c_frs_snapshot->Clear();
+            h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate[gate]->Draw("COLZ");
+            c_frs_snapshot->SaveAs(Form("h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate%i.png", gate));
+            c_frs_snapshot->Clear();
+            h1_a2_Z1Z2x2AoQgate[gate]->Draw();
+            c_frs_snapshot->SaveAs(Form("h1_a2_Z1Z2x2AoQgate%i.png", gate));
+            c_frs_snapshot->Clear();
+            h1_a4_Z1Z2x2AoQgate[gate]->Draw();
+            c_frs_snapshot->SaveAs(Form("h1_a4_Z1Z2x2AoQgate%i.png", gate));
+            c_frs_snapshot->Clear();
+            h2_x2_vs_AoQ_Z1Z2x4AoQgate[gate]->Draw("COLZ");
+            c_frs_snapshot->SaveAs(Form("h2_x2_vs_AoQ_Z1Z2x4AoQgate%i.png", gate));
+            c_frs_snapshot->Clear();
+            h2_x4_vs_AoQ_Z1Z2x4AoQgate[gate]->Draw("COLZ");
+            c_frs_snapshot->SaveAs(Form("h2_x4_vs_AoQ_Z1Z2x4AoQgate%i.png", gate));
+            c_frs_snapshot->Clear();
+            h2_Z_vs_AoQ_Z1Z2x4AoQgate[gate]->Draw("COLZ");
+            c_frs_snapshot->SaveAs(Form("h2_Z_vs_AoQ_Z1Z2x4AoQgate%i.png", gate));
+            c_frs_snapshot->Clear();
+            h2_dEdeg_vs_Z_Z1Z2x4AoQgate[gate]->Draw("COLZ");
+            c_frs_snapshot->SaveAs(Form("h2_dEdeg_vs_Z_Z1Z2x4AoQgate%i.png", gate));
+            c_frs_snapshot->Clear();
+            h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate[gate]->Draw("COLZ");
+            c_frs_snapshot->SaveAs(Form("h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate%i.png", gate));
+            c_frs_snapshot->Clear();
+            h1_a2_Z1Z2x4AoQgate[gate]->Draw();
+            c_frs_snapshot->SaveAs(Form("h1_a2_Z1Z2x4AoQgate%i.png", gate));
+            c_frs_snapshot->Clear();
+            h1_a4_Z1Z2x4AoQgate[gate]->Draw();
+            c_frs_snapshot->SaveAs(Form("h1_a4_Z1Z2x4AoQgate%i.png", gate));
+            c_frs_snapshot->Clear();
+            h1_tpat->Draw();
+            c_frs_snapshot->SaveAs("h1_tpat.png");
+            c_frs_snapshot->Clear();         
+        }
+    }
+    c4LOG(info,"FRS Spectra Snapshot saved in: " << screenshot_path + snapshot_dir);
+
 }
 
 void FrsOnlineSpectra::Exec(Option_t* option)

@@ -308,6 +308,7 @@ void FatimaOnlineSpectra::Reset_Histo()
 // not complete maybe different spectra need to be added here, but anyway correlations between Sc41 and are something for later analysis (?)
 void FatimaOnlineSpectra::Snapshot_Histo()
 {
+    c4LOG(info, "Snapshotting FATIMA histograms.");
     // date and time stamp
     time_t now = time(0);
     tm *ltm = localtime(&now);
@@ -416,7 +417,7 @@ void FatimaOnlineSpectra::Snapshot_Histo()
     delete file_fatima_snapshot;
 
     gSystem->cd("..");
-    c4LOG(info, "Snapshots saved in: " << snapshot_dir);
+    c4LOG(info, "FATIMA Snapshots saved in: " << screenshot_path +  snapshot_dir);
 }
 
 

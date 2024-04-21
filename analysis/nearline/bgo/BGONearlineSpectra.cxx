@@ -68,6 +68,8 @@ InitStatus BGONearlineSpectra::Init()
     dir_bgo_energy = dir_bgo->mkdir("Raw Energy Spectra");
     dir_bgo_time = dir_bgo->mkdir("Time Spectra");
     dir_bgo_germanium_veto_energy = dir_bgo->mkdir("BGO vetoed Germanium spectra");
+    dir_bgo_germanium_veto_time_differences = dir_bgo->mkdir("BGO veto time differences");
+    dir_bgo_germanium_vetotrue_energy = dir_bgo->mkdir("BGO veto true Germanium spectra");
 
     crystals_to_plot.clear();
     std::map<std::pair<int,int>,std::pair<int,int>> bgomap = BGO_configuration->Mapping();
@@ -112,8 +114,15 @@ InitStatus BGONearlineSpectra::Init()
         h1_germanium_bgo_veto_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
     }
 
-    // CEJ: should we cd to timedifference spectra folder?
+    dir_bgo_germanium_vetotrue_energy->cd();
+    h1_germanium_bgo_vetotrue_energy.resize(number_of_detectors_to_plot);
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
+        h1_germanium_bgo_vetotrue_energy[ihist] = new TH1F(Form("h1_germanium_bgo_vetotrue_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c - BGO veto = true",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,3e3);
+        h1_germanium_bgo_vetotrue_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
+    }
+
     // time differences spectra:
+    dir_bgo_germanium_veto_time_differences->cd();
     h1_germanium_bgo_veto_timedifferences.resize(number_of_detectors_to_plot);
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
         h1_germanium_bgo_veto_timedifferences[ihist] = new TH1F(Form("h1_germanium_bgo_veto_timedifferences_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("BGO-DEGAS time spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e2,-10e3,10e3);
@@ -187,17 +196,17 @@ void BGONearlineSpectra::Exec(Option_t* option)
 
                 
                     if (detector_id_bgo2 == detector_id_ge && crystal_id_ge == crystal_id_bgo2){
-                        h1_germanium_bgo_veto_timedifferences[crystal_index_bgo2]->Fill(hit2->Get_wr_t() - hit_ge->Get_wr_t());    
-                        if (TMath::Abs((int64_t)hit2->Get_wr_t() - (int64_t)hit_ge->Get_wr_t())<BGO_Germanium_wr_coincidence_window){
+                        int64_t dt = hit2->Get_wr_t() - hit_ge->Get_wr_t();
+                        h1_germanium_bgo_veto_timedifferences[crystal_index_bgo2]->Fill(dt);    
+                        if (TMath::Abs(dt)<BGO_Germanium_wr_coincidence_window){
                             //VETO!
                             veto = true;
                         }
                     } 
                 }
             }
-            if (!veto){
-                h1_germanium_bgo_veto_energy[crystal_index_ge]->Fill(energy_ge);
-            }
+            if (!veto) h1_germanium_bgo_veto_energy[crystal_index_ge]->Fill(energy_ge);
+            else h1_germanium_bgo_vetotrue_energy[crystal_index_ge]->Fill(energy_ge);
         }
     }
     

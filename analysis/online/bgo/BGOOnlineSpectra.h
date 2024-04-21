@@ -51,6 +51,16 @@ class BGOOnlineSpectra : public FairTask
             fenergy_bin_low = binlow;
             fenergy_bin_high = binhigh; 
         };
+
+        void SetCoincidenceWindow(int window)
+        {
+            BGO_Germanium_wr_coincidence_window = window;
+        };
+
+        void SetCoincidenceOffset(int offset)
+        {
+            BGO_Germanium_wr_coincidence_window_offset = offset;
+        };
         
     
     private:
@@ -69,16 +79,20 @@ class BGOOnlineSpectra : public FairTask
         int fenergy_bin_low = 0;
         int fenergy_bin_high = 1500;
 
-        int BGO_Germanium_wr_coincidence_window = 2000;
+        int BGO_Germanium_wr_coincidence_window = 20000;
+        int BGO_Germanium_wr_coincidence_window_offset = 0;
 
         EventHeader* header;
         Int_t fNEvents;
+
+        TString screenshot_path = "/u/despec/screenshots/";
 
         // Canvas
         TCanvas* c_bgo_time;
         TCanvas* c_bgo_energy;
         
         TCanvas* c_germanium_bgo_veto_energy;
+        TCanvas* c_germanium_bgo_vetotrue_energy;
         TCanvas* c_germanium_bgo_veto_timedifferences;
 
         TCanvas* c_bgo_snapshot;
@@ -89,7 +103,8 @@ class BGOOnlineSpectra : public FairTask
         TDirectory* dir_bgo_energy;
         TDirectory* dir_bgo_time;
         TDirectory* dir_bgo_germanium_veto_energy;
-        TDirectory* dir_bgo_germanium_veto_timedifferences;
+        TDirectory* dir_bgo_germanium_vetotrue_energy;
+        TDirectory* dir_bgo_germanium_veto_time_differences;
 
         TFile* file_bgo_snapshot;
 
@@ -99,6 +114,7 @@ class BGOOnlineSpectra : public FairTask
         std::vector<TH1F*> h1_bgo_energy;
         std::vector<TH1F*> h1_bgo_time;
         std::vector<TH1F*> h1_germanium_bgo_veto_energy;
+        std::vector<TH1F*> h1_germanium_bgo_vetotrue_energy; // plot what we're vetoing
         std::vector<TH1F*> h1_germanium_bgo_veto_timedifferences;
 
     public:

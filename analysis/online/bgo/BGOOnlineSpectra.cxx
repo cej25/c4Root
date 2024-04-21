@@ -85,10 +85,15 @@ InitStatus BGOOnlineSpectra::Init()
     dir_bgo_energy = dir_bgo->mkdir("Raw Energy Spectra");
     dir_bgo_time = dir_bgo->mkdir("Time Spectra");
     dir_bgo_germanium_veto_energy = dir_bgo->mkdir("BGO vetoed Germanium spectra");
+    dir_bgo_germanium_veto_time_differences = dir_bgo->mkdir("BGO veto time differences");
+    dir_bgo_germanium_vetotrue_energy = dir_bgo->mkdir("BGO veto true Germanium spectra");
 
     crystals_to_plot.clear();
     std::map<std::pair<int,int>,std::pair<int,int>> bgomap = BGO_configuration->Mapping();
     std::map<std::pair<int,int>,std::pair<int,int>> gmap = germanium_configuration->Mapping();
+
+    BGO_Germanium_wr_coincidence_window = BGO_configuration->Window();
+    BGO_Germanium_wr_coincidence_window_offset = BGO_configuration->Offset();
 
 
     for (auto it_mapping = bgomap.begin(); it_mapping != bgomap.end(); ++it_mapping)
@@ -148,9 +153,21 @@ InitStatus BGOOnlineSpectra::Init()
     c_germanium_bgo_veto_energy->cd(0);
     dir_bgo_germanium_veto_energy->Append(c_germanium_bgo_veto_energy);
 
+    dir_bgo_germanium_vetotrue_energy->cd();
+    c_germanium_bgo_vetotrue_energy  = new TCanvas("c_germanium_bgo_vetotrue_energy","Cal Germanium E spectra - BGO veto = true",650,350);
+    c_germanium_bgo_vetotrue_energy->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
+    h1_germanium_bgo_vetotrue_energy.resize(number_of_detectors_to_plot);
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
+        c_germanium_bgo_vetotrue_energy->cd(ihist+1);
+        h1_germanium_bgo_vetotrue_energy[ihist] = new TH1F(Form("h1_germanium_bgo_vetotrue_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c - BGO veto = true",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,3e3);
+        h1_germanium_bgo_vetotrue_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
+        h1_germanium_bgo_vetotrue_energy[ihist]->Draw();
+    }
+    c_germanium_bgo_vetotrue_energy->cd(0);
+    dir_bgo_germanium_vetotrue_energy->Append(c_germanium_bgo_vetotrue_energy);
 
-    // CEJ: should we cd to timedifference spectra folder?
     // time differences spectra:
+    dir_bgo_germanium_veto_time_differences->cd();
     c_germanium_bgo_veto_timedifferences  = new TCanvas("c_germanium_bgo_veto_timedifferences","WR BGO-Germanium time differences",650,350);
     c_germanium_bgo_veto_timedifferences->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
     h1_germanium_bgo_veto_timedifferences.resize(number_of_detectors_to_plot);
@@ -161,7 +178,7 @@ InitStatus BGOOnlineSpectra::Init()
         h1_germanium_bgo_veto_timedifferences[ihist]->Draw();
     }
     c_germanium_bgo_veto_timedifferences->cd(0);
-    dir_bgo_germanium_veto_energy->Append(c_germanium_bgo_veto_timedifferences);
+    dir_bgo_germanium_veto_time_differences->Append(c_germanium_bgo_veto_timedifferences);
 
     dir_bgo->cd();
 
@@ -180,6 +197,7 @@ void BGOOnlineSpectra::Reset_BGO_Histo()
         h1_bgo_energy[ihist]->Reset();
         h1_bgo_time[ihist]->Reset();
         h1_germanium_bgo_veto_energy[ihist]->Reset();
+        h1_germanium_bgo_vetotrue_energy[ihist]->Reset();
         h1_germanium_bgo_veto_timedifferences[ihist]->Reset();
     }
 }
@@ -193,6 +211,7 @@ void BGOOnlineSpectra::Snapshot_BGO_Histo()
     tm *ltm = localtime(&now);
     //make folder with date and time
     const char* snapshot_dir = Form("bgo_snapshot_%d_%d_%d_%d_%d_%d",ltm->tm_year+1900,ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec);
+    gSystem->cd(screenshot_path);
     gSystem->mkdir(snapshot_dir);
     gSystem->cd(snapshot_dir);
 
@@ -217,12 +236,13 @@ void BGOOnlineSpectra::Snapshot_BGO_Histo()
 
     delete c_bgo_snapshot;
 
-    // snapshot .root file with data and time
-    file_bgo_snapshot = new TFile(Form("bgo_snapshot_%d_%d_%d_%d_%d_%d.root",ltm->tm_year+1900,ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec),"RECREATE");
-    file_bgo_snapshot->cd();
-    dir_bgo->Write();
-    file_bgo_snapshot->Close();
-    delete file_bgo_snapshot;
+    //commented for now. directories :()
+    // // snapshot .root file with data and time
+    // file_bgo_snapshot = new TFile(Form("bgo_snapshot_%d_%d_%d_%d_%d_%d.root",ltm->tm_year+1900,ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec),"RECREATE");
+    // file_bgo_snapshot->cd();
+    // dir_bgo->Write();
+    // file_bgo_snapshot->Close();
+    // delete file_bgo_snapshot;
 
     gSystem->cd("..");
     c4LOG(info, "Snapshot saved to:" << snapshot_dir);
@@ -290,17 +310,19 @@ void BGOOnlineSpectra::Exec(Option_t* option)
 
                 
                     if (detector_id_bgo2 == detector_id_ge && crystal_id_ge == crystal_id_bgo2){
-                        h1_germanium_bgo_veto_timedifferences[crystal_index_bgo2]->Fill(hit2->Get_wr_t() - hit_ge->Get_wr_t());    
-                        if (TMath::Abs((int64_t)hit2->Get_wr_t() - (int64_t)hit_ge->Get_wr_t())<BGO_Germanium_wr_coincidence_window){
+                        int64_t dt = hit2->Get_wr_t() - hit_ge->Get_wr_t();
+                        h1_germanium_bgo_veto_timedifferences[crystal_index_bgo2]->Fill(dt);    
+                        if (TMath::Abs(dt)<BGO_Germanium_wr_coincidence_window + BGO_Germanium_wr_coincidence_window_offset)
+                        {
                             //VETO!
                             veto = true;
                         }
                     } 
                 }
             }
-            if (!veto){
-                h1_germanium_bgo_veto_energy[crystal_index_ge]->Fill(energy_ge);
-            }
+            if (!veto) h1_germanium_bgo_veto_energy[crystal_index_ge]->Fill(energy_ge);
+            else h1_germanium_bgo_vetotrue_energy[crystal_index_ge]->Fill(energy_ge);
+            
         }
     }
     
