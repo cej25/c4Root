@@ -166,8 +166,6 @@ InitStatus BGOOnlineSpectra::Init()
     c_germanium_bgo_vetotrue_energy->cd(0);
     dir_bgo_germanium_vetotrue_energy->Append(c_germanium_bgo_vetotrue_energy);
 
-
-    // CEJ: should we cd to timedifference spectra folder?
     // time differences spectra:
     dir_bgo_germanium_veto_time_differences->cd();
     c_germanium_bgo_veto_timedifferences  = new TCanvas("c_germanium_bgo_veto_timedifferences","WR BGO-Germanium time differences",650,350);
