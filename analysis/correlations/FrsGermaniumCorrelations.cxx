@@ -265,9 +265,7 @@ InitStatus FrsGermaniumCorrelations::Init()
     }
     
 
-    run->GetHttpServer()->RegisterCommand("Reset_Ge_Histo", Form("/Objects/%s/->Reset_Ge_Histo()", GetName()));
-    run->GetHttpServer()->RegisterCommand("Snapshot_Ge_Histo", Form("/Objects/%s/->Snapshot_Ge_Histo()", GetName()));
-
+    
     return kSUCCESS;
 }
 
