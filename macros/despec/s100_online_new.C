@@ -7,7 +7,7 @@
 #define BPLAST_ON 1
 #define GERMANIUM_ON 1
 #define BGO_ON 1
-#define FRS_ON 0
+#define FRS_ON 1
 #define TIME_MACHINE_ON 1
 #define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 1
@@ -15,7 +15,7 @@
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
 {
-    #include "../../config/s100/frs/setup_s100_dryrun.C"
+    #include "../../config/s100/frs/setup_des_s100_028_2024_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -48,9 +48,9 @@ void s100_online_new()
 
     // Define important paths.
     //TString c4Root_path = "/u/jbormans/c4Root";
-    //TString c4Root_path = "/u/despec/s100_online/c4Root";
+    TString c4Root_path = "/u/despec/s100_online/c4Root";
     TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
-    TString c4Root_path = "/u/cjones/c4Root";
+    //TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -167,6 +167,7 @@ void s100_online_new()
     TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_apr18.txt");
     TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(config_path + "/fatima/fatima_cal_apr18.txt");
     TFatimaTwinpeaksConfiguration::SetDetectorTimeshiftsFile(config_path + "/fatima/fatima_timeshifts_apr20.txt");
+    TFatimaTwinpeaksConfiguration::SetPromptFlashCutFile(config_path + "/fatima/fatima_prompt_flash.root");
 
     TFatimaVmeConfiguration::SetDetectorMapFile(config_path + "/fatima/Fatima_VME_allocation.txt");
     TFatimaVmeConfiguration::Set_QDC_E_CalFile(config_path + "/fatima/Fatima_QDC_Energy_Calibration.txt");
@@ -178,6 +179,8 @@ void s100_online_new()
     TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_apr15.txt");
     TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_cal_apr18.txt");
     TGermaniumConfiguration::SetDetectorTimeshiftsFile(config_path + "/germanium/ge_timeshifts_apr20.txt");
+    TGermaniumConfiguration::SetPromptFlashCut(config_path + "/germanium/ge_prompt_flash.root");
+
     TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
     
     
@@ -436,8 +439,8 @@ void s100_online_new()
         
     }
     
-    TFrsConfiguration::Set_Z_range(70,100);
-    TFrsConfiguration::Set_AoQ_range(2.3,2.7);
+    TFrsConfiguration::Set_Z_range(50,75);
+    TFrsConfiguration::Set_AoQ_range(2.3,3.0);
     
     if (FRS_ON)
     {
@@ -456,6 +459,26 @@ void s100_online_new()
         BeamMonitorOnlineSpectra* onlinebm = new BeamMonitorOnlineSpectra();
         
         run->AddTask(onlinebm);
+    }
+    
+    //FRS GATES::
+    
+    FrsGate * frsgate170Er = new FrsGate("170Er",config_path+"/frs/Gates/170Er.root");
+    
+    if (AIDA_ON && FRS_ON){
+        std::vector<FrsGate*> frsgates{};
+        
+        frsgates.emplace_back(frsgate170Er);
+        
+        FrsAidaCorrelationsOnline * frsaida = new FrsAidaCorrelationsOnline(frsgates);
+        
+        run->AddTask(frsaida);
+    }
+    
+    
+    if (FRS_ON && GERMANIUM_ON){
+        FrsGermaniumCorrelations * ge170Er = new FrsGermaniumCorrelations(frsgate170Er);
+        run->AddTask(ge170Er);
     }
 
     TString b = "Aida";
@@ -477,7 +500,7 @@ void s100_online_new()
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
         wronline->SetDetectorSystems({b,c,d,e,f});
-    
+        
         run->AddTask(wronline);
     }
 

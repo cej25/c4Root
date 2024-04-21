@@ -176,10 +176,10 @@ class WhiterabbitCorrelationOnline : public FairTask
         TH1I* h1_whiterabbit_dt_fatimavme;
         // frs? aida?
 
-        int last_wr_germanium;
-        int last_wr_bplast;
-        int last_wr_fatima;
-        int last_wr_fatimavme;
+        int64_t last_wr_germanium;
+        int64_t last_wr_bplast;
+        int64_t last_wr_fatima;
+        int64_t last_wr_fatimavme;
 
 
 
