@@ -443,6 +443,7 @@ void FatimaVmeRaw2Cal::FinishEvent()
 {
     fcal_data->Clear();
     funcal_data->Clear();
+    fTimeMachine->Clear();
 }
 
 void FatimaVmeRaw2Cal::FinishTask()
