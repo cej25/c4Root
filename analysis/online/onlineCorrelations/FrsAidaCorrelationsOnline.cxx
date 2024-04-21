@@ -111,7 +111,7 @@ InitStatus FrsAidaCorrelationsOnline::Init()
     {
         r_plotted[gate] = 0;
         hG_stopped_implants_ratio[gate] = new TGraph(1);
-        hG_stopped_implants_ratio[gate]->SetName("hG_stopped_implants_ratio");
+        hG_stopped_implants_ratio[gate]->SetName(Form("hG_stopped_implants_ratio_gate%i",gate));
         hG_stopped_implants_ratio[gate]->SetTitle(Form("Ratio of %s Gated ions stopped in DSSD1:DSSD2", FrsGates[gate]->GetName().c_str()));
         hG_stopped_implants_ratio[gate]->GetXaxis()->SetTimeDisplay(1);
         hG_stopped_implants_ratio[gate]->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
