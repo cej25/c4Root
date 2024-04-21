@@ -24,15 +24,18 @@ class EventHeader : public FairEventHeader
     uint64_t GetTimeStamp() const { return fTimeStamp; }
     inline bool GetSpillFlag() { return fSpillFlag; }
 
-    virtual void Register(Bool_t Persistance = kTRUE);
+    static void SetRegister(bool option) { fPersistance = option; }
+    virtual void Register(Bool_t Persistance) override;
 
   private:
     uint64_t fEventno;
     Int_t fTrigger;
     uint64_t fTimeStamp;
     bool fSpillFlag;
+    static bool fPersistance;
 
-    ClassDef(EventHeader, 1)
+  public:
+    ClassDefOverride(EventHeader, 1)
 };
 
 

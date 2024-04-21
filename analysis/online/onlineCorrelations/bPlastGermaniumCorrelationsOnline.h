@@ -1,5 +1,5 @@
-#ifndef bPlastGermaniumCorrelations_H
-#define bPlastGermaniumCorrelations_H
+#ifndef bPlastGermaniumCorrelationsOnline_H
+#define bPlastGermaniumCorrelationsOnline_H
 
 #include "FairTask.h"
 #include "TDirectory.h"
@@ -19,13 +19,13 @@ class EventHeader;
 class TDirectory;
 class TH1F;
 
-class bPlastGermaniumCorrelations : public FairTask
+class bPlastGermaniumCorrelationsOnline : public FairTask
 {
     public:
-        bPlastGermaniumCorrelations();
-        bPlastGermaniumCorrelations(const TString& name, Int_t verbose = 1);
+        bPlastGermaniumCorrelationsOnline();
+        bPlastGermaniumCorrelationsOnline(const TString& name, Int_t verbose = 1);
         
-        virtual ~bPlastGermaniumCorrelations();
+        virtual ~bPlastGermaniumCorrelationsOnline();
 
         virtual InitStatus Init();
 
@@ -62,7 +62,7 @@ class bPlastGermaniumCorrelations : public FairTask
 
 
     public:
-        ClassDef(bPlastGermaniumCorrelations, 1)
+        ClassDef(bPlastGermaniumCorrelationsOnline, 1)
 };
 
 

@@ -5,8 +5,8 @@
  * Do not edit - automatically generated.
  */
 
-#ifndef __GUARD_H101_BEAMMONITOR_EXT_H101_BEAMMONITOR_H__
-#define __GUARD_H101_BEAMMONITOR_EXT_H101_BEAMMONITOR_H__
+#ifndef __GUARD_H101_BM_EXT_H101_BM_H__
+#define __GUARD_H101_BM_EXT_H101_BM_H__
 
 #ifndef __CINT__
 # include <stdint.h>
@@ -26,7 +26,7 @@ typedef          int  int32_t;
  * Plain structure (layout as ntuple/root file):
  */
 
-typedef struct EXT_STR_h101_beammonitor_t
+typedef struct EXT_STR_h101_bm_t
 {
   /* UNPACK */
   uint32_t beammonitor_ts_subsystem_id /* [0,65535] */;
@@ -39,7 +39,7 @@ typedef struct EXT_STR_h101_beammonitor_t
   uint32_t beammonitor_s4_dataS4 /* [0,100000] */;
   uint32_t beammonitor_s4_dataS4v[100000 EXT_STRUCT_CTRL(beammonitor_s4_dataS4)] /* [-1,-1] */;
 
-} EXT_STR_h101_beammonitor;
+} EXT_STR_h101_bm;
 
 /********************************************************
  *
@@ -47,7 +47,7 @@ typedef struct EXT_STR_h101_beammonitor_t
  * recovered (recommended):
  */
 
-typedef struct EXT_STR_h101_beammonitor_onion_t
+typedef struct EXT_STR_h101_bm_onion_t
 {
   /* UNPACK */
   uint32_t beammonitor_ts_subsystem_id;
@@ -57,11 +57,11 @@ typedef struct EXT_STR_h101_beammonitor_onion_t
   uint32_t beammonitor_s4_dataS4;
   uint32_t beammonitor_s4_dataS4v[100000 /* beammonitor_s4_dataS4 */];
 
-} EXT_STR_h101_beammonitor_onion;
+} EXT_STR_h101_bm_onion;
 
 /*******************************************************/
 
-#define EXT_STR_h101_beammonitor_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
+#define EXT_STR_h101_bm_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
   ok = 1; \
   /* UNPACK */ \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
@@ -94,6 +94,6 @@ typedef struct EXT_STR_h101_beammonitor_onion_t
   \
 } while (0);
 
-#endif/*__GUARD_H101_BEAMMONITOR_EXT_H101_BEAMMONITOR_H__*/
+#endif/*__GUARD_H101_BM_EXT_H101_BM_H__*/
 
 /*******************************************************/

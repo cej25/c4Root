@@ -96,6 +96,8 @@ class GermaniumOnlineSpectra : public FairTask
         EventHeader* header;
         Int_t fNEvents;
 
+        TString screenshot_path = "/u/despec/screenshots/";
+
         // Canvas
         TCanvas* c_germanium_time;
         TCanvas* c_germanium_energy;

@@ -1,19 +1,19 @@
-#include "bPlastGermaniumCorrelations.h"
+#include "bPlastGermaniumCorrelationsOnline.h"
 
 // FairROOT
 #include "FairLogger.h"
 #include "FairRootManager.h"
-#include "FairRunAna.h"
+#include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
 
 // c4
-#include "bPlastGermaniumCorrelations.h"
+#include "bPlastGermaniumCorrelationsOnline.h"
 #include "EventHeader.h"
 #include "c4Logger.h"
 
 #include <map>
 
-bPlastGermaniumCorrelations::bPlastGermaniumCorrelations()
+bPlastGermaniumCorrelationsOnline::bPlastGermaniumCorrelationsOnline()
     :   FairTask()
     ,   header(nullptr)
     ,   fNEvents(0)
@@ -22,7 +22,7 @@ bPlastGermaniumCorrelations::bPlastGermaniumCorrelations()
     bplast_config = TbPlastConfiguration::GetInstance();
 }
 
-bPlastGermaniumCorrelations::bPlastGermaniumCorrelations(const TString& name, Int_t verbose)
+bPlastGermaniumCorrelationsOnline::bPlastGermaniumCorrelationsOnline(const TString& name, Int_t verbose)
     :   FairTask(name, verbose)
     ,   header(nullptr)
     ,   fNEvents(0)
@@ -31,17 +31,18 @@ bPlastGermaniumCorrelations::bPlastGermaniumCorrelations(const TString& name, In
     bplast_config = TbPlastConfiguration::GetInstance();
 }
 
-bPlastGermaniumCorrelations::~bPlastGermaniumCorrelations()
+bPlastGermaniumCorrelationsOnline::~bPlastGermaniumCorrelationsOnline()
 {
-
+    delete fHitbPlastTwinpeaks;
+    delete fHitGermanium;
 }
 
-InitStatus bPlastGermaniumCorrelations::Init()
+InitStatus bPlastGermaniumCorrelationsOnline::Init()
 {
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-    FairRunAna* run = FairRunAna::Instance();
+    FairRunOnline* run = FairRunOnline::Instance();
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
@@ -83,7 +84,7 @@ InitStatus bPlastGermaniumCorrelations::Init()
 
 }
 
-void bPlastGermaniumCorrelations::Exec(Option_t* option)
+void bPlastGermaniumCorrelationsOnline::Exec(Option_t* option)
 {
     if (header->GetSpillFlag() == 1) return; // skip on-spill
     if (fHitbPlastTwinpeaks->GetEntriesFast() == 0 || fHitGermanium->GetEntriesFast() == 0) return;
@@ -114,15 +115,11 @@ void bPlastGermaniumCorrelations::Exec(Option_t* option)
 
 }
 
-void bPlastGermaniumCorrelations::FinishEvent()
+void bPlastGermaniumCorrelationsOnline::FinishEvent()
 {
 
 }
 
-void bPlastGermaniumCorrelations::FinishTask()
+void bPlastGermaniumCorrelationsOnline::FinishTask()
 {
-    TDirectory* tmp = gDirectory;
-    FairRootManager::Instance()->GetOutFile()->cd();
-    dir_bplast_germanium_corrs->Write();
-    gDirectory = tmp;
 }

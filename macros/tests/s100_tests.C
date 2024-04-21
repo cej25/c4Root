@@ -1,16 +1,16 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define FATIMA_ON 0
-#define FATIMA_VME_ON 0
-#define AIDA_ON 0
-#define BPLAST_ON 0
-#define GERMANIUM_ON 0
-#define BGO_ON 0
-#define FRS_ON 1
-#define TIME_MACHINE_ON 0
+#define FATIMA_ON 1
+#define FATIMA_VME_ON 1
+#define AIDA_ON 1
+#define BPLAST_ON 1
+#define GERMANIUM_ON 1
+#define BGO_ON 1
+#define FRS_ON 0
+#define TIME_MACHINE_ON 1
 #define BEAMMONITOR_ON 0
-#define WHITE_RABBIT_CORS 0
+#define WHITE_RABBIT_CORS 1
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
@@ -77,35 +77,30 @@ void s100_tests()
     //TString filename = "trans://x86l-86"; // ??.
     //TString filename = "trans://x86l-144"; // 
     //TString filename = "stream://x86l-182"; // bgo
-    //TString filename = "trans://lxg1257"; // timesorter.
+    TString filename = "trans://lxg1257"; // timesorter.
     //TString filename = "trans://R4L-21"; // beammonitor
     //TString filename = "stream://R4L-36"; // fatima vme
     //TString filename = "stream://x86l-117"; // fatima tamex
     //TString filename = "stream://x86l-87"; //bplast
     //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
-    TString filename = "~/Au_beam_0010_0001.lmd";
+    //TString filename = "~/Au_beam_0010_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 8080; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 5005; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
+    //EvtHead->Register(false);
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
-    run->SetSink(new FairRootFileSink(outputFileName));
+    //run->SetSink(new FairRootFileSink(outputFileName));
     run->ActivateHttpServer(refresh, port);
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
     run->AddObject(histograms);
-
-    // trying to kill ParSet errors
-    /*FairRuntimeDb* rtdb = FairRunOnline::Instance()->GetRuntimeDb();
-    FairGeoParSet* geo = new FairGeoParSet("FairGeoParSet");
-    FairBaseParSet* base = new FairBaseParSet("FairBaseParSet");
-    rtdb->addContainer(geo);rtdb->addContainer(base);*/
 
     // Create source using ucesb for input
     EXT_STR_h101 ucesb_struct;
@@ -133,29 +128,16 @@ void s100_tests()
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Gates *************************************************************** //
     
-    // Note: please add the same number of each type of gate
-    std::string frs_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/frs/Gates/";
-    std::vector<std::string> ZAoQ_cuts = {"ZvsAoQ1"};
-    TCutGGates* ZAoQ = new TCutGGates("ZAoQ", ZAoQ_cuts, frs_gate_path);
-    std::vector<std::string> Z1Z2_cuts = {"Z1vsZ21"};
-    TCutGGates* Z1Z2 = new TCutGGates("Z1Z2", Z1Z2_cuts, frs_gate_path);
-    std::vector<std::string> x2AoQ_cuts = {"x2vsAoQ1"};
-    TCutGGates* x2AoQ = new TCutGGates("x2AoQ", x2AoQ_cuts, frs_gate_path);
-    std::vector<std::string> x4AoQ_cuts = {"x4vsAoQ1"};
-    TCutGGates* x4AoQ = new TCutGGates("x4AoQ", x4AoQ_cuts, frs_gate_path);
-    std::vector<std::string> dEdegZ_cuts = {"dEdegvsZ1"};
-    TCutGGates* dEdegZ = new TCutGGates("dEdegZ", dEdegZ_cuts, frs_gate_path);
-    std::vector<TCutGGates*> FrsGates = {ZAoQ, Z1Z2, x2AoQ, x4AoQ, dEdegZ};
     
     // Define prompt cut EdT gates for Fatima Prompt analysis
-    std::string fatima_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Gates/";
+    /*std::string fatima_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Gates/";
     std::vector<std::string> FatimaPromptCuts = {"FatPromptCut1"};
     TCutGGates* FatimaPrompt = new TCutGGates("FatimaEdT", FatimaPromptCuts, fatima_gate_path);
 
     std::string germanium_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/germanium/Gates/";
     std::vector<std::string> GePromptCuts = {"GePromptCut1"};
-    TCutGGates* GePrompt = new TCutGGates("GeEdT", GePromptCuts, germanium_gate_path);
-    TGermaniumConfiguration::SetPromptFlashCut(germanium_gate_path + "/GePromptCut1");
+    TCutGGates* GePrompt = new TCutGGates("GeEdT", GePromptCuts, germanium_gate_path);*/
+    //TGermaniumConfiguration::SetPromptFlashCut(germanium_gate_path + "/GePromptCut1");
     
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Correlations ******************************************************** //
@@ -384,7 +366,7 @@ void s100_tests()
         onlinefatima->SetDetectorsToPlot(fat_dets);
         
         std::vector<int> fat_ref_dets = {22};
-        onlinefatima->SetReferenceDetectorsForTimeDifferences(fat_ref_dets);
+        //onlinefatima->SetReferenceDetectorsForTimeDifferences(fat_ref_dets);
         
         run->AddTask(onlinefatima);
     }
@@ -421,10 +403,13 @@ void s100_tests()
         run->AddTask(onlinege);
     }
     
+    TBGOTwinpeaksConfiguration::SetCoincidenceWindow(5000); 
+    TBGOTwinpeaksConfiguration::SetCoincidenceOffset(0);
     if (BGO_ON)
     {
         BGOOnlineSpectra* onlinebgo = new BGOOnlineSpectra();
         onlinebgo->SetBinningEnergy(1500,0.1,1500.1);
+        //onlinebgo->SetCoincidenceWindow(5000);
 
         
         run->AddTask(onlinebgo);
@@ -436,7 +421,9 @@ void s100_tests()
 
     std::vector<FrsGate*> fgs;
     FrsGate* Pt191 = new FrsGate("191Pt",config_path + "/frs/Gates/191Pt.root");
+    FrsGate* Au195 = new FrsGate("195Au",config_path + "/frs/Gates/195Au.root");
     fgs.emplace_back(Pt191);
+    fgs.emplace_back(Au195);
     
     if (FRS_ON)
     {
@@ -466,7 +453,7 @@ void s100_tests()
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {c, e, f};
+        std::vector a {b, c, d, e, f};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
@@ -475,9 +462,24 @@ void s100_tests()
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({b, d, f});
+        wronline->SetDetectorSystems({b, c, d, e, f});
     
         run->AddTask(wronline);
+    }
+
+    if (FRS_ON && AIDA_ON)
+    {
+        FrsAidaCorrelationsOnline* frsaidaonline = new FrsAidaCorrelationsOnline(fgs);
+
+        run->AddTask(frsaidaonline);
+    }
+
+    if (BPLAST_ON && GERMANIUM_ON)
+    {
+        bPlastGermaniumCorrelationsOnline* bplastgecorr = new bPlastGermaniumCorrelationsOnline();
+        // set bplast multiplicity
+        // ???
+        run->AddTask(bplastgecorr);
     }
 
     // Initialise
@@ -490,9 +492,6 @@ void s100_tests()
     cout << "Data stream is: " << filename << endl;
     cout << "Online port server: " << port << endl;
     cout << "\n\n" << endl;
-
-    // create sink object before run starts    
-    FairSink* sf = FairRunOnline::Instance()->GetSink();
 
     // Run
     run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev); 
