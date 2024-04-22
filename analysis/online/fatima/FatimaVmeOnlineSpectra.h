@@ -99,8 +99,6 @@ class FatimaVmeOnlineSpectra : public FairTask
         //TH1D* h1_FatVME_sc41l;
         //TH1D* h1_FatVME_sc41r;
 
-        TH2D* h2_FatVME_EvsdTsc41;
-
     public:
         ClassDef(FatimaVmeOnlineSpectra, 1);
 };
