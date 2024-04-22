@@ -309,7 +309,7 @@ void BGOOnlineSpectra::Exec(Option_t* option)
                     if (crystal_index_bgo2 >= crystals_to_plot.size()) continue;
 
                 
-                    if (detector_id_bgo2 == detector_id_ge && crystal_id_ge == crystal_id_bgo2){
+                    //if (detector_id_bgo2 == detector_id_ge && crystal_id_ge == crystal_id_bgo2){
                         int64_t dt = hit2->Get_wr_t() - hit_ge->Get_wr_t();
                         h1_germanium_bgo_veto_timedifferences[crystal_index_bgo2]->Fill(dt);    
                         if (TMath::Abs(dt)<BGO_Germanium_wr_coincidence_window + BGO_Germanium_wr_coincidence_window_offset)
@@ -317,7 +317,7 @@ void BGOOnlineSpectra::Exec(Option_t* option)
                             //VETO!
                             veto = true;
                         }
-                    } 
+                    //} 
                 }
             }
             if (!veto) h1_germanium_bgo_veto_energy[crystal_index_ge]->Fill(energy_ge);
