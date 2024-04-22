@@ -80,6 +80,7 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     h1_FatVME_RawT.resize(nDetectors);
     h1_FatVME_TDC_dt_refCh1.resize(nDetectors);
     h1_FatVME_TDC_dT_refSC41L.resize(nDetectors);
+    h2_FatVME_EvsdTsc41.resize(nDetectors);
 
     dir_stats_vme->cd();
     h1_FatVME_QDCMult = new TH1I("h1_FatVME_QDCMult", "Fatima VME QDC Multiplicity", nDetectors, 0, nDetectors);
