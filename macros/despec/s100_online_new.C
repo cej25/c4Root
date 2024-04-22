@@ -15,7 +15,7 @@
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
 {
-    #include "../../config/s100/frs/setup_des_s100_025_2024_conv.C"
+    #include "../../config/s100/frs/setup_des_s100_029_2024_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -88,7 +88,7 @@ void s100_online_new()
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 5500; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 5000; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -479,6 +479,12 @@ void s100_online_new()
     if (FRS_ON && GERMANIUM_ON){
         FrsGermaniumCorrelations * ge170Er = new FrsGermaniumCorrelations(frsgate170Er);
         run->AddTask(ge170Er);
+    }
+
+    if(AIDA_ON && BPLAST_ON){
+        AidabPlastCorrelations * aidabplast = new AidabPlastCorrelations();
+        run->AddTask(aidabplast);
+    
     }
 
     TString b = "Aida";
