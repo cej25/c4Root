@@ -8,10 +8,11 @@
 // c4
 #include "AidaBplastCorrelations.h"
 #include "EventHeader.h"
+#include "EventData.h"
 #include "bPlastTwinpeaksCalData.h"
 
 // other modules
-#include "AidaNearlineSpectra.h" // why do we need this?
+// #include "AidaNearlineSpectra.h" // why do we need this?
 #include "AidaData.h"
 #include "AidaHitData.h"
 #include "TAidaConfiguration.h"
@@ -37,7 +38,8 @@ AidaBplastCorrelations::AidaBplastCorrelations(const TString& name, Int_t verbos
     , implantHitArray(nullptr)
     , decayHitArray(nullptr)
     , fNEvents(0)
-    , header(nullptr)
+    , fEventHeader(nullptr)
+    , fEventData(nullptr)
 {
 }
 
@@ -61,8 +63,11 @@ InitStatus AidaBplastCorrelations::Init()
 
     FairRunAna* run = FairRunAna::Instance(); // do we need to grab the run? maybe we can add objects to it
 
-    header = (EventHeader*)mgr->GetObject("EventHeader.");
-    c4LOG_IF(error, !header, "Branch EventHeader. not found");
+    fEventHeader = (EventHeader*)mgr->GetObject("EventHeader.");
+    c4LOG_IF(error, !fEventHeader, "Branch EventHeader. not found");
+
+    fEventData = (EventData*)mgr->GetObject("EventData.");
+    c4LOG_IF(error, !fEventData, "Branch EventData. not found");
 
     // Hit data
     implantHitArray = mgr->InitObjectAs<decltype(implantHitArray)>("AidaImplantHits");
@@ -195,23 +200,25 @@ void AidaBplastCorrelations::Exec(Option_t* option)
             // // Absolute time spectra
             // if (bplasthit->Get_fast_ToT() !=0 ) h1_bplast_abs_time[bplasthit->Get_detector_id()]->Fill(bplasthit->Get_fast_lead_time());
             // Relative time spectra
-
-            for (auto const& hit : *decayHitArray)
+            if(fEventData->Get_Spill_Flag() == false)
             {
-                if (bplasthit->Get_detector_id() == 1){
-                    Int_t nnHits = fHitbPlastTwinpeaks->GetEntriesFast();
-                    for (Int_t i = 0; i < nnHits; i++) // bplast hits
-                    {   
-                        bPlastTwinpeaksCalData* bplasthitsecond = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(i);
+                for (auto const& hit : *decayHitArray)
+                {
+                    if (bplasthit->Get_detector_id() == 1){
+                        Int_t nnHits = fHitbPlastTwinpeaks->GetEntriesFast();
+                        for (Int_t i = 0; i < nnHits; i++) // bplast hits
+                        {   
+                            bPlastTwinpeaksCalData* bplasthitsecond = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(i);
 
-                        if (!bplasthitsecond) continue;
-                        if (bplasthitsecond->Get_fast_lead_time() == 0 || bplasthit->Get_fast_lead_time() == 0) continue;
-                        if (hit.DSSD == 1 && hit.StripX > 178 && hit.StripX < 206 && hit.StripY > 55 && hit.StripY < 73 ){
-                            h1_bplast_rel_time[bplasthitsecond->Get_detector_id()]->Fill(bplasthitsecond->Get_fast_lead_time()-bplasthit->Get_fast_lead_time());
-                        } // filling histograms gated on aida
-                    } // second loop hits
-                } // SiPM detector 1 condition
-            } // aida loop
+                            if (!bplasthitsecond) continue;
+                            if (bplasthitsecond->Get_fast_lead_time() == 0 || bplasthit->Get_fast_lead_time() == 0) continue;
+                            if (hit.DSSD == 1 && hit.StripX > 81 && hit.StripX < 141 && hit.StripY > 57 && hit.StripY < 97){
+                                h1_bplast_rel_time[bplasthitsecond->Get_detector_id()]->Fill(bplasthitsecond->Get_fast_lead_time()-bplasthit->Get_fast_lead_time());
+                            } // filling histograms gated on aida
+                        } // second loop hits
+                    } // SiPM detector 1 condition
+                } // aida loop
+            } // spill flag condition
         } // bplast loop
     } // if bplast hits
     fNEvents += 1;

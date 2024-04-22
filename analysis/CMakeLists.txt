@@ -82,6 +82,7 @@ set(SRCS
 ./correlations/AidaGermaniumCorrelations.cxx
 ./correlations/bPlastGermaniumCorrelations.cxx
 ./online/onlineCorrelations/bPlastGermaniumCorrelationsOnline.cxx
+./correlations/AidaBplastCorrelations.cxx
 )
 
 

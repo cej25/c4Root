@@ -10,6 +10,7 @@
 
 class TClonesArray;
 class EventHeader;
+class EventData;
 class TCanvas;
 class TH1F;
 class TH2F;
@@ -19,9 +20,6 @@ class AidaBplastCorrelations : public FairTask
     public:
         AidaBplastCorrelations();
         AidaBplastCorrelations(const TString& name, Int_t verbose = 1);
-
-
-        void CreateHistograms();
 
         virtual ~AidaBplastCorrelations();
 
@@ -46,7 +44,8 @@ class AidaBplastCorrelations : public FairTask
         // ranges
         //Double_t
 
-        EventHeader* header;
+        EventHeader* fEventHeader;
+        EventData* fEventData;
         Int_t fNEvents;
 
         // TDirectories
@@ -62,7 +61,7 @@ class AidaBplastCorrelations : public FairTask
         TCanvas* c_bplast_time_spectra;
         TCanvas* c_bplast_rel_time_spectra;
 
-        static const int NDetectors = 48;
+        static const int NDetectors = 128;
 
         // Histograms ToT
 
