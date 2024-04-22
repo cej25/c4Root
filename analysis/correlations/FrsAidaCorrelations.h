@@ -100,6 +100,7 @@ class FrsAidaCorrelations : public FairTask
         */
         //decay
 
+        bool frs_dir_found = true;
 
         // Variables
         Long64_t AidaLastWR;
