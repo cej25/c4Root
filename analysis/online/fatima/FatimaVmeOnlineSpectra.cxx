@@ -155,7 +155,7 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     }
     c_FatVME_EvsdTsc41->cd(0);
     dir_dt_sc41->Append(c_FatVME_EvsdTsc41);
-    h2_FatVME_EvsdTsc41_summed = new TH2D("h2_FatVME_EvsdTsc41_summed", "E vs dT (det - sc41) Summed", 250,-5e3, 2e4, 2000, 0, 4e4)
+    h2_FatVME_EvsdTsc41_summed = new TH2D("h2_FatVME_EvsdTsc41_summed", "E vs dT (det - sc41) Summed", 250,-5e3, 2e4, 2000, 0, 4e4);
 
     dir_dt_ch1->cd();
     c_FatVME_dTrefCh1 = new TCanvas("c_FatVME_dTrefCh1", "Fatima VME T - Ch1 T dT", 650, 350);
@@ -320,7 +320,7 @@ void FatimaVmeOnlineSpectra::Exec(Option_t* option)
                         if (QDC_IDs[k] == TDC_IDs[i])
                         {
                             h2_FatVME_EvsdTsc41_summed->Fill(dt, QDC_E[k]);
-                            h2_FatVME_EvsdTsc41_summed[k]->Fill(dt, QDC_E[k]);
+                            h2_FatVME_EvsdTsc41[k]->Fill(dt, QDC_E[k]);
                         }
                     }
                 }
