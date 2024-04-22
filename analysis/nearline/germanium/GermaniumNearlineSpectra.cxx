@@ -88,8 +88,10 @@ InitStatus GermaniumNearlineSpectra::Init()
     h2_germanium_energy_vs_detidx->GetXaxis()->SetTitle("energy (keV)");
     h2_germanium_energy_vs_detidx->GetYaxis()->SetTitle("detector index");
     h2_germanium_energy_vs_detidx->SetOption("COLZ");
-
-    h1_germanium_energy_summed = new TH1F("h1_germanium_energy_summed","Calibrated Germanium spectra summed all dets",fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    
+    
+    // CEJ temporary adjustment just for summmed spectra
+    h1_germanium_energy_summed = new TH1F("h1_germanium_energy_summed","Calibrated Germanium spectra summed all dets",8000,0,8000);
     h1_germanium_energy_summed->GetXaxis()->SetTitle("energy (keV)");
     h1_germanium_energy_summed->GetYaxis()->SetTitle("counts");
 

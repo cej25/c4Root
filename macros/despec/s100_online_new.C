@@ -83,6 +83,7 @@ void s100_online_new()
     //TString filename = "stream://x86l-117"; // fatima tamex
     //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
     //TString filename = "~/lustre/gamma/s100_files/ts/calibrations/152Eu_calib_0016_*.lmd";
+    //TString filename = "~/lustre/gamma/s100_files/ts/168Dy_0033_0003.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
