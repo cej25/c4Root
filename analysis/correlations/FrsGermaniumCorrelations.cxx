@@ -515,7 +515,7 @@ void FrsGermaniumCorrelations::FinishTask()
     }
     if (fHitGe)
     {
-        folder_germanium->Write();
+        //folder_germanium->Write();
         c4LOG(info, "DEGAS histograms written to file.");
     }
 }
