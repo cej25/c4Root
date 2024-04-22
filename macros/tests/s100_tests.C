@@ -2,7 +2,7 @@
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define FATIMA_ON 0
-#define FATIMA_VME_ON 0
+#define FATIMA_VME_ON 1
 #define AIDA_ON 0
 #define BPLAST_ON 1
 #define GERMANIUM_ON 0
@@ -90,7 +90,7 @@ void s100_tests()
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 5005; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 7777; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
