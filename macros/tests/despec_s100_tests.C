@@ -89,7 +89,7 @@ void despec_s100_tests()
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 5005; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 7000; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
