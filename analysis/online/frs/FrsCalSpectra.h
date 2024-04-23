@@ -49,12 +49,14 @@ class FrsCalSpectra : public FairTask
         TClonesArray* fFrsTPCArray; // array with hit items
         TClonesArray* fFrsTPCCalArray; // array with hit items
         TClonesArray* fFrsVFTXCalArray; // array with hit items
+        TClonesArray* fFrsHitArray;
 
         FrsUserCalData* fHitFrsUserCal; // array with hit items
         FrsMainCalData* fHitFrsMainCal; // array with hit items
         FrsTPCData* fHitFrsTPC; // array with hit items
         FrsTPCCalData* fHitFrsTPCCal; // array with hit items
         FrsVFTXCalData* fHitFrsVFTXCal; // array with hit items
+        
 
    
         // check for trigger should be done globally, somewhere else
@@ -71,6 +73,9 @@ class FrsCalSpectra : public FairTask
         // Canvas
 
         //SCI delta E
+        TH1D* h1_sci21_x;
+         
+         
         TH1D* h_sci_21l_de;
         TH1D* h_sci_21r_de;
         TH1D* h_sci_22l_de;

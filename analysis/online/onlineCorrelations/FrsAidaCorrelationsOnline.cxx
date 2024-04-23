@@ -216,7 +216,7 @@ void FrsAidaCorrelationsOnline::Exec(Option_t* option)
                                 {   
                                     time_t rawtime; time(&rawtime);
                                     //double ratio = stopped_implant_passed_gate_count_dssd1[gate] / stopped_implant_passed_gate_count_dssd2[gate];
-                                    float ratio = stopped_implant_passed_gate_count_dssd1[gate] / 5; // for testing graph
+                                    float ratio = stopped_implant_passed_gate_count_dssd1[gate] / stopped_implant_passed_gate_count_dssd2[gate]; // for testing graph
                                     hG_stopped_implants_ratio[gate]->SetPoint(r_plotted[gate], rawtime, ratio);
                                     r_plotted[gate]++;
                                     stopped_implant_passed_gate_count_dssd1[gate] = 0;
