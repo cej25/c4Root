@@ -323,7 +323,7 @@ void FrsFatimaCorrelationsNearline::Exec(Option_t* option)
 
                 double timediff1 = time1 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(detector_id1);
                 
-                h2_fatima_energy_vs_tsci41->Fill(timediff1 ,energy1);
+                h2_fatima_energy_vs_tsci41->Fill(timediff1, energy1);
 
                 //after this test, the prompt flash is cut out.
                 if ((fatima_configuration->IsInsidePromptFlashCut(timediff1 ,energy1)==true) ) continue;
