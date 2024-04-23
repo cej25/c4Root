@@ -80,6 +80,7 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     h1_FatVME_RawT.resize(nDetectors);
     h1_FatVME_TDC_dt_refCh1.resize(nDetectors);
     h1_FatVME_TDC_dT_refSC41L.resize(nDetectors);
+    h2_FatVME_EvsdTsc41.resize(nDetectors);
 
     dir_stats_vme->cd();
     h1_FatVME_QDCMult = new TH1I("h1_FatVME_QDCMult", "Fatima VME QDC Multiplicity", nDetectors, 0, nDetectors);
@@ -144,6 +145,18 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     }
     c_FatVME_dTrefSC41->cd(0);
     dir_dt_sc41->Append(c_FatVME_dTrefSC41);
+
+    c_FatVME_EvsdTsc41 = new TCanvas("c_FatVME_EvsdTsc41", "E vs dT (det - sc41)", 650, 350);
+    c_FatVME_EvsdTsc41->Divide(4, nDetectors / 4);
+    for (int i = 0; i < nDetectors; i++)
+    {
+        c_FatVME_EvsdTsc41->cd(i+1);
+        h2_FatVME_EvsdTsc41[i] = new TH2D(Form("h2_FatVME_EvsdTsc41_%i", i), Form("E vs dT (det - sc41) Det %i", i), 250, -5e3, 2e4, 2000, 0, 4e4);
+        h2_FatVME_EvsdTsc41[i]->Draw("COLZ");
+    }
+    c_FatVME_EvsdTsc41->cd(0);
+    dir_dt_sc41->Append(c_FatVME_EvsdTsc41);
+    h2_FatVME_EvsdTsc41_summed = new TH2D("h2_FatVME_EvsdTsc41_summed", "E vs dT (det - sc41) Summed", 250,-5e3, 2e4, 2000, 0, 4e4);
 
     dir_dt_ch1->cd();
     c_FatVME_dTrefCh1 = new TCanvas("c_FatVME_dTrefCh1", "Fatima VME T - Ch1 T dT", 650, 350);
@@ -302,6 +315,15 @@ void FatimaVmeOnlineSpectra::Exec(Option_t* option)
                 {
                     double dt = SC41L_Hits[j] - TDC_timestamp[i];
                     if (dt != 0) h1_FatVME_TDC_dT_refSC41L[TDC_IDs[i]]->Fill(dt);
+
+                    for (int k = 0; k < QDC_IDs.size(); k++)
+                    {
+                        if (QDC_IDs[k] == TDC_IDs[i])
+                        {
+                            h2_FatVME_EvsdTsc41_summed->Fill(dt, QDC_E[k]);
+                            h2_FatVME_EvsdTsc41[k]->Fill(dt, QDC_E[k]);
+                        }
+                    }
                 }
 
                 if (TDC_IDs[i] == 1 && TDC_timestamp[i] != 0)

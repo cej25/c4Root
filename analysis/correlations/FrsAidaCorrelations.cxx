@@ -335,7 +335,7 @@ void FrsAidaCorrelations::FinishTask()
 {
     if (frs_dir_found == false)
     {
-         TDirectory* tmp = gDirectory;
+        TDirectory* tmp = gDirectory;
         FairRootManager::Instance()->GetOutFile()->cd();
         dir_frs_aida_corrs->Write();
         gDirectory = tmp;
