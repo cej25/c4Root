@@ -12,6 +12,7 @@
 #include "FrsTPCData.h"
 #include "FrsTPCCalData.h"
 #include "FrsUserCalData.h"
+#include "FrsHitData.h"
 #include "EventHeader.h"
 #include "c4Logger.h"
 
@@ -37,6 +38,7 @@ FrsCalSpectra::FrsCalSpectra(const TString& name, Int_t iVerbose)
     , fFrsUserCalArray(NULL)
     , fFrsTPCArray(NULL)
     , fFrsTPCCalArray(NULL)
+    , fFrsHitArray(NULL)
     , fNEvents(0)
     , header(nullptr)
 {
@@ -76,6 +78,8 @@ InitStatus FrsCalSpectra::Init()
     c4LOG_IF(fatal, !fFrsTPCArray, "Branch FrsTPCData not found");
     fFrsTPCCalArray = (TClonesArray*)mgr->GetObject("FrsTPCCalData");
     c4LOG_IF(fatal, !fFrsTPCCalArray, "Branch FrsTPCCalData not found");
+    fFrsHitArray = (TClonesArray*)mgr->GetObject("FrsHitData");
+    c4LOG_IF(fatal, !fFrsHitArray, "Branch FrsHitData not found");
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
 
@@ -185,6 +189,8 @@ InitStatus FrsCalSpectra::Init()
     h_tpc_music41_x = new TH1D("h_tpc_music41_x", "TPC h_tpc_music41_x",tpc_bins,tpc_min_x,tpc_max_x);
     h_tpc_music42_x = new TH1D("h_tpc_music42_x", "TPC h_tpc_music42_x",tpc_bins,tpc_min_x,tpc_max_x);
     h_tpc_music43_x = new TH1D("h_tpc_music43_x", "TPC h_tpc_music43_x",tpc_bins,tpc_min_x,tpc_max_x);
+    
+    h1_sci21_x = new TH1D("h1_sci21_x", "S2 position SCI21", 200, -100, 100);
 
     dir_frs_cal_user->cd();
     int tac_bins = 1000;
@@ -410,6 +416,17 @@ void FrsCalSpectra::Exec(Option_t* option)
             h_tac_user_dt_22r_81r->Fill(dt_22r_81r);
         }
     }
+    
+    if (fFrsHitArray && fFrsHitArray->GetEntriesFast() > 0)
+    {
+        Int_t nHits = fFrsHitArray->GetEntriesFast();
+        for (Int_t ihit = 0; ihit < nHits; ihit++)
+        {
+            FrsHitData* FrsHit = (FrsHitData*)fFrsHitArray->At(0);
+            if (!FrsHit) continue;
+            h1_sci21_x->Fill(FrsHit->Get_sci_tx(0));
+        }
+    }
 
     fNEvents += 1;
 }
@@ -420,6 +437,7 @@ void FrsCalSpectra::FinishEvent()
     if(fFrsMainCalArray) fFrsMainCalArray->Clear();
     if(fFrsTPCArray) fFrsTPCArray->Clear();
     if(fFrsTPCCalArray) fFrsTPCCalArray->Clear();
+    if(fFrsHitArray) fFrsHitArray->Clear();
 }
 
 void FrsCalSpectra::FinishTask()
