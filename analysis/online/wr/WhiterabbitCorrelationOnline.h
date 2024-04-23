@@ -58,7 +58,9 @@ class WhiterabbitCorrelationOnline : public FairTask
         TClonesArray* fHitbPlastTwinpeaks;
         TClonesArray* fHitGe;
         std::vector<AidaHit> const* fAidaDecays;
+        std::vector<AidaHit> const* fAidaImplants;
         std::vector<AidaUnpackScalerItem> const* fAidaScalers;
+        TClonesArray* fHitFrs;
 
         std::vector<TString> fDetectorSystems;
         int fNumDetectorSystems;
@@ -126,6 +128,10 @@ class WhiterabbitCorrelationOnline : public FairTask
 
         
         // Histograms
+        TH1I* h1_whiterabbit_aida_frs;
+        TH1I* h1_whiterabbit_fatima_frs;
+        TH1I* h1_whiterabbit_bplast_frs;
+        TH1I* h1_whiterabbit_germanium_frs;
 
         TH1I* h1_whiterabbit_correlation_aida_fatima;
         TH1I* h1_whiterabbit_trigger1_aida_fatima;

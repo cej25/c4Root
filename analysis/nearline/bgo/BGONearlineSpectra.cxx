@@ -74,6 +74,8 @@ InitStatus BGONearlineSpectra::Init()
     crystals_to_plot.clear();
     std::map<std::pair<int,int>,std::pair<int,int>> bgomap = BGO_configuration->Mapping();
     std::map<std::pair<int,int>,std::pair<int,int>> gmap = germanium_configuration->Mapping();
+    BGO_Germanium_wr_coincidence_window = BGO_configuration->Window();
+    BGO_Germanium_wr_coincidence_window_offset = BGO_configuration->Offset();
 
 
     for (auto it_mapping = bgomap.begin(); it_mapping != bgomap.end(); ++it_mapping){
@@ -195,14 +197,14 @@ void BGONearlineSpectra::Exec(Option_t* option)
                     if (crystal_index_bgo2 >= crystals_to_plot.size()) continue;
 
                 
-                    if (detector_id_bgo2 == detector_id_ge && crystal_id_ge == crystal_id_bgo2){
+                    //if (detector_id_bgo2 == detector_id_ge && crystal_id_ge == crystal_id_bgo2){
                         int64_t dt = hit2->Get_wr_t() - hit_ge->Get_wr_t();
                         h1_germanium_bgo_veto_timedifferences[crystal_index_bgo2]->Fill(dt);    
-                        if (TMath::Abs(dt)<BGO_Germanium_wr_coincidence_window){
+                        if (TMath::Abs(dt)<BGO_Germanium_wr_coincidence_window + BGO_Germanium_wr_coincidence_window_offset){
                             //VETO!
                             veto = true;
                         }
-                    } 
+                   // } 
                 }
             }
             if (!veto) h1_germanium_bgo_veto_energy[crystal_index_ge]->Fill(energy_ge);

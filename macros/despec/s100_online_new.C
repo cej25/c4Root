@@ -137,7 +137,7 @@ void s100_online_new()
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Correlations ******************************************************** //
     
-    TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations.dat");
+    TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations_tight.dat");
 
 
     // ------------------------------------------------------------------------------------ //
@@ -407,7 +407,7 @@ void s100_online_new()
         run->AddTask(onlinege);
     }
     TBGOTwinpeaksConfiguration::SetCoincidenceWindow(5000);
-    TBGOTwinpeaksConfiguration::SetCoincidenceOffset(-500);
+    TBGOTwinpeaksConfiguration::SetCoincidenceOffset(0);
     if (BGO_ON)
     {
         BGOOnlineSpectra* onlinebgo = new BGOOnlineSpectra();
@@ -449,6 +449,8 @@ void s100_online_new()
     FrsGate * frsgateZEu = new FrsGate("ZEu",config_path+"/frs/Gates/ZEu.root");
     FrsGate * frsgate162Eu = new FrsGate("162Eu",config_path+"/frs/Gates/162Eu.root");
     FrsGate * frsgate163Eu = new FrsGate("163Eu",config_path+"/frs/Gates/163Eu.root");
+    FrsGate * frsgate167Tb = new FrsGate("167Tb",config_path+"/frs/Gates/167Tb.root");
+    FrsGate * frsgate164Gd = new FrsGate("164Gd",config_path+"/frs/Gates/164Gd.root");
     
     if (AIDA_ON && FRS_ON){
         std::vector<FrsGate*> frsgates{};
@@ -456,8 +458,10 @@ void s100_online_new()
         //frsgates.emplace_back(frsgate170Er);
         //frsgates.emplace_back(frsgate168Dy);
         //frsgates.emplace_back(frsgate167Dy);
-        frsgates.emplace_back(frsgate162Eu);
-        frsgates.emplace_back(frsgate163Eu);
+        //frsgates.emplace_back(frsgate162Eu);
+        //frsgates.emplace_back(frsgate163Eu);
+        frsgates.emplace_back(frsgate167Tb);
+        frsgates.emplace_back(frsgate164Gd);
         
         FrsAidaCorrelationsOnline * frsaida = new FrsAidaCorrelationsOnline(frsgates);
         
@@ -492,6 +496,13 @@ void s100_online_new()
         FrsGermaniumCorrelations * geZEu = new FrsGermaniumCorrelations(frsgateZEu);
         geZEu->SetShortLifetimeCollectionWindow(5000);
         run->AddTask(geZEu);
+        
+        FrsGermaniumCorrelations * ge167Tb = new FrsGermaniumCorrelations(frsgate167Tb);
+        ge167Tb->SetShortLifetimeCollectionWindow(5000);
+        run->AddTask(ge167Tb);
+        FrsGermaniumCorrelations * ge164Gd = new FrsGermaniumCorrelations(frsgate164Gd);
+        ge164Gd->SetShortLifetimeCollectionWindow(5000);
+        run->AddTask(ge164Gd);
         
     }
     if (FRS_ON && FATIMA_ON){
