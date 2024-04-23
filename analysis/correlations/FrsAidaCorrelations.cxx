@@ -7,7 +7,7 @@
 #include "AidaHitData.h"
 #include "TAidaConfiguration.h"
 #include "c4Logger.h"
-
+#include "TFile.h"
 
 FrsAidaCorrelations::FrsAidaCorrelations(std::vector<FrsGate*> fg)
     :   FairTask()
@@ -61,6 +61,7 @@ InitStatus FrsAidaCorrelations::Init()
     dir_frs = (TDirectory*)mgr->GetObject("FRS");
     if (dir_frs == nullptr) 
     {
+        frs_dir_found = false;
         dir_frs = new TDirectory("FRS", "FRS", "", 0);
         mgr->Register("FRS", "FRS Directory", dir_frs, false); // allow other tasks to find this
     }
@@ -332,7 +333,13 @@ void FrsAidaCorrelations::FinishEvent()
 
 void FrsAidaCorrelations::FinishTask()
 {
-    
+    if (frs_dir_found == false)
+    {
+        TDirectory* tmp = gDirectory;
+        FairRootManager::Instance()->GetOutFile()->cd();
+        dir_frs_aida_corrs->Write();
+        gDirectory = tmp;
+    }
 }
 
 

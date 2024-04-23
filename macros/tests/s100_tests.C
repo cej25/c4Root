@@ -1,16 +1,16 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define FATIMA_ON 1
+#define FATIMA_ON 0
 #define FATIMA_VME_ON 1
-#define AIDA_ON 1
+#define AIDA_ON 0
 #define BPLAST_ON 1
-#define GERMANIUM_ON 1
-#define BGO_ON 1
-#define FRS_ON 0
-#define TIME_MACHINE_ON 1
+#define GERMANIUM_ON 0
+#define BGO_ON 0
+#define FRS_ON 1
+#define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
-#define WHITE_RABBIT_CORS 1
+#define WHITE_RABBIT_CORS 0
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
@@ -51,6 +51,7 @@ void s100_tests()
     //TString c4Root_path = "/u/despec/s100_online/c4Root";
     TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
     TString c4Root_path = "/u/cjones/c4Root";
+    //TString c4Root_path = "/u/cjones/s100_workspace/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -89,7 +90,7 @@ void s100_tests()
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 5005; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 7777; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -480,6 +481,12 @@ void s100_tests()
         // set bplast multiplicity
         // ???
         run->AddTask(bplastgecorr);
+    }
+
+    if (BPLAST_ON && FRS_ON)
+    {
+	    FrsBplastCorrelations* frsbplast = new FrsBplastCorrelations();
+	    run->AddTask(frsbplast);
     }
 
     // Initialise
