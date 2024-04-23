@@ -13,6 +13,7 @@
 #include "FatimaVmeCalData.h"
 #include "bPlastTwinpeaksCalData.h"
 #include "GermaniumCalData.h"
+#include "FrsHitData.h"
 
 #include "c4Logger.h"
 
@@ -36,6 +37,8 @@ WhiterabbitCorrelationOnline::WhiterabbitCorrelationOnline(const TString& name, 
     , fHitGe(NULL)
     , fHitFatimaVme(NULL)
     , fAidaDecays(new std::vector<AidaHit>)
+    , fAidaImplants(new std::vector<AidaHit>)
+    , fHitFrs(NULL)
     , fAidaScalers(new std::vector<AidaUnpackScalerItem>)
     , fNEvents(0)
     , fEventHeader(nullptr)
@@ -130,12 +133,17 @@ InitStatus WhiterabbitCorrelationOnline::Init()
             c4LOG_IF(fatal, !fAidaDecays, "Branch AidaDecayHits not found!");
             fAidaScalers = mgr->InitObjectAs<decltype(fAidaScalers)>("AidaScalerData");
             c4LOG_IF(fatal, !fAidaScalers, "Branch AidaScalerData not found!");
+            fAidaImplants = mgr->InitObjectAs<decltype(fAidaImplants)>("AidaImplantHits");
+            c4LOG_IF(fatal, !fAidaImplants, "Branch AidaImplantHits not found!");
         }
         else
         {
             c4LOG(fatal, "Unknown detector system: " << fDetectorSystems.at(i));
         }
-    }   
+    }
+    
+    fHitFrs = (TClonesArray*)mgr->GetObject("FrsHitData");
+    c4LOG_IF(error, !fHitFrs, "Branch FrsHitData not found");
 
     TDirectory::TContext ctx(nullptr);
 
@@ -148,8 +156,24 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     dir_whiterabbit_trigger3 = dir_whiterabbit->mkdir("Trigger 3");
     dir_whiterabbit_time_differences = dir_whiterabbit->mkdir("Time Differences");
 
-
-    // AIDA 
+    dir_whiterabbit_correlation->cd();
+    
+    // AIDA
+    h1_whiterabbit_aida_frs = new TH1I("h1_whiterabbit_aida_frs", "AIDA - FRS WR dT", 1000, -5e4, 5e4);
+    h1_whiterabbit_aida_frs->GetXaxis()->SetTitle("Time difference (AIDA - FRS) [ns]");
+    h1_whiterabbit_aida_frs->GetYaxis()->SetTitle("Counts");
+    h1_whiterabbit_fatima_frs = new TH1I("h1_whiterabbit_fatima_frs", "FATIMA (TAMEX) - FRS WR dT", 1000, -1000, 1000);
+    h1_whiterabbit_fatima_frs->GetXaxis()->SetTitle("Time difference (FATIMA (TAMEX) - FRS) [ns]");
+    h1_whiterabbit_fatima_frs->GetYaxis()->SetTitle("Counts");
+    h1_whiterabbit_germanium_frs = new TH1I("h1_whiterabbit_germanium_frs", "DEGAS - FRS WR dT", 1000, -1000, 1000);
+    h1_whiterabbit_germanium_frs->GetXaxis()->SetTitle("Time difference (DEGAS - FRS) [ns]");
+    h1_whiterabbit_germanium_frs->GetYaxis()->SetTitle("Counts");
+    h1_whiterabbit_bplast_frs = new TH1I("h1_whiterabbit_bplast_frs", "bPlast - FRS WR dT", 1000, -1000, 1000);
+    h1_whiterabbit_bplast_frs->GetXaxis()->SetTitle("Time difference (bPlast - FRS) [ns]");
+    h1_whiterabbit_bplast_frs->GetYaxis()->SetTitle("Counts");
+    
+    
+    
     // AIDA - Fatima
     dir_whiterabbit_correlation->cd();
     //c_whiterabbit_correlation_aida_fatima = new TCanvas("c_whiterabbit_correlation_aida_fatima", "AIDA - FATIMA (TAMEX) WR dT (ns)", 10, 10, 800, 700);
@@ -566,6 +590,8 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
     Int_t nHitsGe = 0;
     Int_t nHitsAida = 0;
     Int_t systems = 0;
+    Int_t nHitsAidaImplants = 0;
+    Int_t nHitsFrs = 0;
     
     if (fHitFatimaTwinpeaks)
     {
@@ -635,19 +661,45 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         }
     }
     
-    if (fAidaDecays)
+    if (fAidaDecays || fAidaImplants)
     {
         nHitsAida = fAidaDecays->size();
-        if (nHitsAida > 0) 
-        {
-            systems += 1;
-        }
+        nHitsAidaImplants = fAidaImplants->size();
+        if (nHitsAida > 0 || nHitsAidaImplants > 0) systems++;
 
     }
 
+    
+    if (fHitFrs)
+    {
+        nHitsFrs = fHitFrs->GetEntriesFast();
+        if (nHitsFrs > 0) systems++;
+    }
+    
+
     if (systems < 2) return;
 
-
+    int aidaImplantCounter = 0;
+    for (auto & fa : *fAidaImplants)
+    {
+        if (aidaImplantCounter > 0) break;
+        
+        
+        AidaHit aidaHit = fa;
+        if (fHitFrs)
+        {
+            FrsHitData* FrsHit = (FrsHitData*)fHitFrs->At(0);
+            if (FrsHit)
+            {
+                int64_t wr_frs = FrsHit->Get_wr_t();
+                int64_t wr_aida_imp = aidaHit.Time;
+                int64_t dt = wr_aida_imp - wr_frs;
+                h1_whiterabbit_aida_frs->Fill(dt);
+            }
+        }
+        
+        aidaImplantCounter++;
+    }
 
     // start with aida...
     int aidaCounter = 0;
@@ -666,6 +718,7 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         {
             continue;
         }*/
+        
         
         if (fHitFatimaTwinpeaks)
         {
@@ -754,6 +807,18 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         if (hitFatima)
         {
             int64_t wr_fatima = hitFatima->Get_wr_t();
+            
+            if (fHitFrs)
+            {
+                FrsHitData* FrsHit = (FrsHitData*)fHitFrs->At(0);
+                if (FrsHit)
+                {
+                    int64_t wr_frs = FrsHit->Get_wr_t();
+                    int64_t dt = wr_fatima - wr_frs;
+                    h1_whiterabbit_bplast_frs->Fill(dt);
+                }
+            }
+            
             if (fHitFatimaVme) 
             {
                 FatimaVmeCalData* hitFatimaVme = (FatimaVmeCalData*)fHitFatimaVme->At(0);
@@ -868,6 +933,18 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         if (hitbPlast)
         {
             int64_t wr_bplast = hitbPlast->Get_wr_t();
+            
+            if (fHitFrs)
+            {
+                FrsHitData* FrsHit = (FrsHitData*)fHitFrs->At(0);
+                if (FrsHit)
+                {
+                    int64_t wr_frs = FrsHit->Get_wr_t();
+                    int64_t dt = wr_bplast - wr_frs;
+                    h1_whiterabbit_fatima_frs->Fill(dt);
+                }
+            }
+            
             if (fHitGe)
             {
                 GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(0);
@@ -884,6 +961,25 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
                     {
                         h1_whiterabbit_trigger3_bplast_ge->Fill(dt);
                     }
+                }
+            }
+        }
+    }
+    
+    if (fHitGe)
+    {
+        GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(0);
+        if (hitGe)
+        {
+            int64_t wr_ge = hitGe->Get_wr_t();
+            if (fHitFrs)
+            {
+                FrsHitData* FrsHit = (FrsHitData*)fHitFrs->At(0);
+                if (FrsHit)
+                {
+                    int64_t wr_frs = FrsHit->Get_wr_t();
+                    int64_t dt = wr_ge - wr_frs;
+                    h1_whiterabbit_germanium_frs->Fill(dt);
                 }
             }
         }

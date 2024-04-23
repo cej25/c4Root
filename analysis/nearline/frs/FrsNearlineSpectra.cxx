@@ -424,7 +424,7 @@ void FrsNearlineSpectra::Exec(Option_t* option)
             if (!FrsHit) continue;
 
             Long64_t FRS_time_mins = 0;
-            if(FrsHit->Get_wr_t() > 0) FRS_time_mins = (FrsHit->Get_wr_t() / 60E9) - 26900000; // CEJ: taken from Go4..
+            if(FrsHit->Get_wr_t() > 0) FRS_time_mins = (FrsHit->Get_wr_t() - 1713704823)/ 60E9; // 1713704823 = rough start of s100
 
             /* --------  TAC and PID gates ----------- */
             if (FrsHit->Get_ID_z() > 0 && FRS_time_mins > 0) h2_Z1_vs_T->Fill(FRS_time_mins, FrsHit->Get_ID_z());
