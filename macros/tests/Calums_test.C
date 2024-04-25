@@ -37,7 +37,7 @@ typedef struct EXT_STR_h101_t
 } EXT_STR_h101;
 
 
-void s100_online_new()
+void Calums_test()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
 
@@ -77,11 +77,12 @@ void s100_online_new()
 //    TString filename = "trans://x86l-86"; // ??.
     //TString filename = "trans://x86l-144"; // 
     //TString filename = "stream://x86l-182"; // bgo
-    TString filename = "trans://lxg1257"; // timesorter.
+    //TString filename = "trans://lxg1257"; // timesorter.
     //TString filename = "trans://R4L-21"; // beammonitor
     // TString filename = "stream://x86l-87"; // bplast
     //TString filename = "stream://x86l-117"; // fatima tamex
     //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
+    TString filename = "~/lustre/gamma/nhubbard/162Eu_0052_TEST_0001.lmd";
     //TString filename = "~/lustre/gamma/s100_files/ts/calibrations/152Eu_calib_0016_*.lmd";
     //TString filename = "~/lustre/gamma/s100_files/ts/168Dy_0033_0003.lmd";
     TString outputpath = "output";
@@ -89,7 +90,7 @@ void s100_online_new()
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 5000; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 6969; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -406,8 +407,8 @@ void s100_online_new()
         onlinege->SetEnergyGateWidth(10);
         run->AddTask(onlinege);
     }
-    TBGOTwinpeaksConfiguration::SetCoincidenceWindow(500);
-    TBGOTwinpeaksConfiguration::SetCoincidenceOffset(400);
+    TBGOTwinpeaksConfiguration::SetCoincidenceWindow(5000);
+    TBGOTwinpeaksConfiguration::SetCoincidenceOffset(0);
     if (BGO_ON)
     {
         BGOOnlineSpectra* onlinebgo = new BGOOnlineSpectra();
