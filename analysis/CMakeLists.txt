@@ -74,12 +74,15 @@ set(SRCS
 ./correlations/FrsFatimaCorrelations.cxx
 ./correlations/FrsFatimaVmeCorrelations.cxx
 ./correlations/FrsGermaniumCorrelations.cxx
+./correlations/FrsFatimaCorrelationsNearline.cxx
+./correlations/FrsGermaniumCorrelationsNearline.cxx
 ./correlations/AidaFatimaCorrelations.cxx
 ./nearline/fatima/FatimaTimingAnalysis.cxx
 ./nearline/fatima/FatimaSinglesAnalysis.cxx
 ./correlations/AidaGermaniumCorrelations.cxx
 ./correlations/bPlastGermaniumCorrelations.cxx
 ./online/onlineCorrelations/bPlastGermaniumCorrelationsOnline.cxx
+./correlations/FrsBplastCorrelations.cxx
 )
 
 

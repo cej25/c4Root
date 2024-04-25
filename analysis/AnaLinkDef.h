@@ -39,10 +39,13 @@
 #pragma link C++ class FrsFatimaCorrelations+;
 #pragma link C++ class FrsFatimaVmeCorrelations+;
 #pragma link C++ class FrsGermaniumCorrelations+;
+#pragma link C++ class FrsGermaniumCorrelationsNearline+;
+#pragma link C++ class FrsFatimaCorrelationsNearline+;
 #pragma link C++ class AidaFatimaCorrelations+;
 #pragma link C++ class WhiterabbitCorrelationOnline+;
 #pragma link C++ class bPlastGermaniumCorrelations+;
 #pragma link C++ class bPlastGermaniumCorrelationsOnline+;
+#pragma link C++ class FrsBplastCorrelations+;
 
 
 #pragma link C++ class FatimaTimingAnalysis+;

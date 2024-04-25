@@ -71,17 +71,11 @@ Bool_t FrsTpatReader::Read()
 
     //FrsTpatData* TpatHit = new FrsTpatData();
     wr_t = (((uint64_t)fData->frstpat_wr_t[3]) << 48) + (((uint64_t)fData->frstpat_wr_t[2]) << 32) + (((uint64_t)fData->frstpat_wr_t[1]) << 16) + (uint64_t)(fData->frstpat_wr_t[0]);
-    //TpatHit->Set_wr_t(wr_t);
-
-    //if (wr_t != 0) std::cout << "Event: " << header->GetEventno() << " - FRS WR: " << wr_t << std::endl;
-
-    tpat = fData->frstpat_data_tpat; // single 12bit 
-    //TpatHit->Set_tpat(tpat);
+    
+    tpat = fData->frstpat_data_tpat; // single 12bit
 
     auto & entry = tpatArray->emplace_back();
     entry.SetAll(wr_t, tpat);
-
-    //new ((*fArray)[fArray->GetEntriesFast()]) FrsTpatData(*TpatHit);
         
     fNEvent += 1;
     

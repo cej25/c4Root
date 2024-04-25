@@ -84,7 +84,11 @@ class FrsAidaCorrelations : public FairTask
 
     
 
+<<<<<<< HEAD
         bool frs_found;
+=======
+        bool frs_dir_found = true;
+>>>>>>> 7c1c2dd44ca30049a1a466b7f41aabf92c5d3cc7
 
         // Variables
         Long64_t AidaLastWR;

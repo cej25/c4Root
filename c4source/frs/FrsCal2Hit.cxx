@@ -27,12 +27,6 @@ FrsCal2Hit::FrsCal2Hit()
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
-    // ,   fRawArrayTpat(new TClonesArray("FrsTpatData"))
-    // ,   fCalArrayMain(new TClonesArray("FrsMainCalData"))
-    // ,   fCalArrayTPC(new TClonesArray("FrsTPCCalData"))
-    // ,   fCalArrayUser(new TClonesArray("FrsUserCalData"))
-    // ,   fHitArray(new TClonesArray("FrsHitData"))
-    // ,   fEventItems(new TClonesArray("EventData")) // we don't need this anymore
     ,   mainScalerArray(nullptr)
     ,   mainSciArray(nullptr)
     ,   mainMusicArray(nullptr)
@@ -63,12 +57,6 @@ FrsCal2Hit::FrsCal2Hit(const TString& name, Int_t verbose)
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
-    // ,   fRawArrayTpat(new TClonesArray("FrsTpatData"))
-    // ,   fCalArrayMain(new TClonesArray("FrsMainCalData"))
-    // ,   fCalArrayTPC(new TClonesArray("FrsTPCCalData"))
-    // ,   fCalArrayUser(new TClonesArray("FrsUserCalData"))
-    // ,   fHitArray(new TClonesArray("FrsHitData"))
-    // ,   fEventItems(new TClonesArray("EventData"))
     ,   mainScalerArray(nullptr)
     ,   mainSciArray(nullptr)
     ,   mainMusicArray(nullptr)
@@ -588,6 +576,8 @@ void FrsCal2Hit::Exec(Option_t* option)
     sci_l[5] = de_array[5]; // de_81l
     sci_r[5] = de_array[12]; // de_81r
     sci_tx[5] = dt_81l_81r + rand3();
+    
+    for (int index = 0; index < 6; index++) FrsHit->Set_sci_tx(index, sci_tx[index]);
 
     for (int i = 0; i < 6; i++)
     {
