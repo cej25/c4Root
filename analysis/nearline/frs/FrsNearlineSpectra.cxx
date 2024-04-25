@@ -720,7 +720,7 @@ void FrsNearlineSpectra::FinishEvent()
 
 void FrsNearlineSpectra::FinishTask()
 {
-    if (found_dir_frs == false && FairRunOnline::Instance() == NULL)
+    if (found_dir_frs == false)
     {
         TDirectory* tmp = gDirectory;
         FairRootManager::Instance()->GetOutFile()->cd();
