@@ -689,23 +689,21 @@ void FrsOnlineSpectra::Exec(Option_t* option)
         if (hitItem.Get_ID_AoQ() != 0 && hitItem.Get_ID_a4() != 0) h2_a4_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_a4());
 
         // Z vs Energy loss MUSIC 2
-        Float_t* music_dE = hitItem.Get_music_dE();
-        if (hitItem.Get_ID_z() != 0 && music_dE[1] != 0) h2_Z_vs_dE2->Fill(hitItem.Get_ID_z(), music_dE[1]);
+        if (hitItem.Get_ID_z() != 0 && hitItem.Get_music_dE(1) != 0) h2_Z_vs_dE2->Fill(hitItem.Get_ID_z(), hitItem.Get_music_dE(1));
 
         // x2 vs x4
         if (hitItem.Get_ID_x2() != 0 && hitItem.Get_ID_x4() != 0) h2_x2_vs_x4->Fill(hitItem.Get_ID_x2(), hitItem.Get_ID_x4());
 
         // CEJ: changed from Go4, [5] -> [2]
-        Float_t* sci_e = hitItem.Get_sci_e();
-        if (hitItem.Get_ID_AoQ() != 0 && sci_e[2] != 0) h2_SC41dE_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), sci_e[2]);
+        if (hitItem.Get_ID_AoQ() != 0 && hitItem.Get_sci_e(2) != 0) h2_SC41dE_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_sci_e(2));
 
-        if (hitItem.Get_sci_tof2() != 0 && music_dE[0] != 0) h2_dE_vs_ToF->Fill(hitItem.Get_sci_tof2(), music_dE[0]);
+        if (hitItem.Get_sci_tof2() != 0 && hitItem.Get_music_dE(0) != 0) h2_dE_vs_ToF->Fill(hitItem.Get_sci_tof2(), hitItem.Get_music_dE(0));
 
         if (hitItem.Get_ID_z() != 0 && hitItem.Get_ID_x2() != 0) h2_x2_vs_Z->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_x2());
         if (hitItem.Get_ID_z() != 0 && hitItem.Get_ID_x4() != 0) h2_x4_vs_Z->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_x4());
 
-        if (hitItem.Get_ID_x2() != 0 && music_dE[0] != 0) h2_dE1_vs_x2->Fill(hitItem.Get_ID_x2(), music_dE[0]);
-        if (hitItem.Get_ID_x4() != 0 && music_dE[0] != 0) h2_dE1_vs_x4->Fill(hitItem.Get_ID_x4(), music_dE[0]);
+        if (hitItem.Get_ID_x2() != 0 && hitItem.Get_music_dE(0) != 0) h2_dE1_vs_x2->Fill(hitItem.Get_ID_x2(), hitItem.Get_music_dE(0));
+        if (hitItem.Get_ID_x4() != 0 && hitItem.Get_music_dE(0) != 0) h2_dE1_vs_x4->Fill(hitItem.Get_ID_x4(), hitItem.Get_music_dE(0));
 
         if (hitItem.Get_ID_x2() != 0 && hitItem.Get_ID_a2() != 0) h2_x2_vs_a2->Fill(hitItem.Get_ID_x2(), hitItem.Get_ID_a2());
         if (hitItem.Get_ID_y2() != 0 && hitItem.Get_ID_b2() != 0) h2_y2_vs_b2->Fill(hitItem.Get_ID_y2(), hitItem.Get_ID_b2());
@@ -713,8 +711,7 @@ void FrsOnlineSpectra::Exec(Option_t* option)
         if (hitItem.Get_ID_y4() != 0 && hitItem.Get_ID_b4() != 0) h2_y4_vs_b4->Fill(hitItem.Get_ID_y4(), hitItem.Get_ID_b4());
 
         // CEJ: changed [2] -> [0]
-        Float_t* sci_l = hitItem.Get_sci_l(); Float_t* sci_r = hitItem.Get_sci_r();
-        if (hitItem.Get_ID_z() != 0 && sci_l[0] != 0 && sci_r[0] != 0) h2_Z_vs_Sc21E->Fill(hitItem.Get_ID_z(), sqrt(sci_l[0] * sci_r[0]));
+        if (hitItem.Get_ID_z() != 0 && hitItem.Get_sci_l(0) != 0 && hitItem.Get_sci_r(0) != 0) h2_Z_vs_Sc21E->Fill(hitItem.Get_ID_z(), sqrt(hitItem.Get_sci_l(0) * hitItem.Get_sci_r(0)));
 
         if (!FrsGates.empty())
         {   
@@ -762,17 +759,15 @@ void FrsOnlineSpectra::Exec(Option_t* option)
         /* ---------------------------------------------------------------------------- */
         // Scalers
         /* ---------------------------------------------------------------------------- */
-        uint32_t* increase_sc_temp_main = hitItem.Get_increase_sc_temp_main();
-        uint32_t* increase_sc_temp_user = hitItem.Get_increase_sc_temp_user();
         for (int i = 0; i < 32; i++)
         {   
             // are we significantly slower if we have to "get" every time?
-            hScaler_per_s[i]->AddBinContent(hitItem.Get_ibin_for_s(), increase_sc_temp_main[i]);
-            hScaler_per_s[i+32]->AddBinContent(hitItem.Get_ibin_for_s(), increase_sc_temp_user[i]);
-            hScaler_per_100ms[i]->AddBinContent(hitItem.Get_ibin_for_100ms(), increase_sc_temp_main[i]);
-            hScaler_per_100ms[i+32]->AddBinContent(hitItem.Get_ibin_for_100ms(), increase_sc_temp_user[i]);
-            hScaler_per_spill[i]->AddBinContent(hitItem.Get_ibin_for_spill(), increase_sc_temp_main[i]);
-            hScaler_per_spill[i+32]->AddBinContent(hitItem.Get_ibin_for_spill(), increase_sc_temp_user[i]);
+            hScaler_per_s[i]->AddBinContent(hitItem.Get_ibin_for_s(), hitItem.Get_increase_sc_temp_main(i));
+            hScaler_per_s[i+32]->AddBinContent(hitItem.Get_ibin_for_s(), hitItem.Get_increase_sc_temp_user(i));
+            hScaler_per_100ms[i]->AddBinContent(hitItem.Get_ibin_for_100ms(), hitItem.Get_increase_sc_temp_main(i));
+            hScaler_per_100ms[i+32]->AddBinContent(hitItem.Get_ibin_for_100ms(), hitItem.Get_increase_sc_temp_user(i));
+            hScaler_per_spill[i]->AddBinContent(hitItem.Get_ibin_for_spill(), hitItem.Get_increase_sc_temp_main(i));
+            hScaler_per_spill[i+32]->AddBinContent(hitItem.Get_ibin_for_spill(), hitItem.Get_increase_sc_temp_user(i));
 
         }
 
