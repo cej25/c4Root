@@ -1,6 +1,7 @@
 // FairRoot
 #include "FairRootManager.h"
 #include "FairRunAna.h"
+#include "FairRunOnline.h"
 #include "FairTask.h"
 
 // c4
@@ -33,9 +34,9 @@ FrsNearlineSpectra::FrsNearlineSpectra(std::vector<FrsGate*> fg)
     :   FairTask()
     ,   fNEvents()
     ,   header(nullptr)
-    ,   fFrsHitArray(new TClonesArray("FrsHitData"))
+    ,   hitArray(nullptr)
+    ,   multihitArray(nullptr)
 {
-
     frs_config = TFrsConfiguration::GetInstance();
     frs = frs_config->FRS();
     mw = frs_config->MW();
@@ -55,7 +56,8 @@ FrsNearlineSpectra::FrsNearlineSpectra(const TString& name, Int_t verbose)
     :   FairTask(name, verbose)
     ,   fNEvents()
     ,   header(nullptr)
-    ,   fFrsHitArray(new TClonesArray("FrsHitData"))
+    ,   hitArray(nullptr)
+    ,   multihitArray(nullptr)
 {
 
 }
@@ -63,7 +65,6 @@ FrsNearlineSpectra::FrsNearlineSpectra(const TString& name, Int_t verbose)
 FrsNearlineSpectra::~FrsNearlineSpectra()
 {
     c4LOG(info, "Deleting FrsNearlineSpectra task.");
-    if (fFrsHitArray) delete fFrsHitArray;
 }
 
 InitStatus FrsNearlineSpectra::Init()
@@ -71,18 +72,24 @@ InitStatus FrsNearlineSpectra::Init()
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-    FairRunAna* run = FairRunAna::Instance();
-    
+    // don't look for Ana specifically, we want to test this online
+
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "EventHeader. not found!");
 
-    fFrsHitArray = (TClonesArray*)mgr->GetObject("FrsHitData");
-    c4LOG_IF(fatal, !fFrsHitArray, "FrsHitData branch not found!");
+    hitArray = mgr->InitObjectAs<decltype(hitArray)>("FrsHitData");
+    c4LOG_IF(fatal, !hitArray, "Branch FrsHitData not found!");
+    multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
+    c4LOG_IF(fatal, !multihitArray, "Branch FrsMultiHitData not found!");
 
-    TDirectory* tmp = gDirectory;
-    FairRootManager::Instance()->GetOutFile()->cd();
-    dir_frs = gDirectory->mkdir("FRS");
-    gDirectory->cd("FRS");
+    dir_frs = (TDirectory*)mgr->GetObject("FRS");
+    if (dir_frs == nullptr) 
+    {
+        LOG(info) << "Creating FRS Directory";
+        dir_frs = new TDirectory("FRS", "FRS", "", 0);
+        mgr->Register("FRS", "FRS Directory", dir_frs, false); // allow other tasks to find this
+        found_dir_frs = false;
+    }
     
     dir_tac_hists = dir_frs->mkdir("TAC");
     dir_mhtdc_hists = dir_frs->mkdir("MHTDC");
@@ -101,10 +108,11 @@ InitStatus FrsNearlineSpectra::Init()
     dir_x2vsAoQ_Z1vsZ2_hists_mhtdc = dir_mhtdc_hists->mkdir("x2vsAoQ_Z1vsZ2gated_mhtdc");
     dir_x4vsAoQ_Z1vsZ2_hists_mhtdc = dir_mhtdc_hists->mkdir("x4vsAoQ_Z1vsZ2gated_mhtdc");    
 
-    // init histograms
     dir_tac_hists->cd();
-    h2_Z1_vs_T = new TH2D("h2_Z1_vs_T", "Z1 vs. Time [mins]", 1240, 16600, 29000, 1500, frs_config->fMin_Z, frs_config->fMax_Z);
-    h2_AoQ_vs_T = new TH2D("h2_AoQ_vs_T", "A/Q vs. Time [mins]", 1200, 17000, 29000, 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ);
+    // init histograms
+    //h1_frs_wr = new TH1I("h1_frs_wr", "FRS WR", 1000, 1.71401265e18,1.7140148e18);
+    h2_Z1_vs_T = new TH2D("h2_Z1_vs_T", "Z1 vs. Time [mins]", 5000, 0, 10000, 1500, frs_config->fMin_Z, frs_config->fMax_Z);
+    h2_AoQ_vs_T = new TH2D("h2_AoQ_vs_T", "A/Q vs. Time [mins]", 500, 0, 10000, 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ);
     h2_Z_vs_AoQ = new TH2D("h2_Z_vs_AoQ", "Z1 vs. A/Q", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
     h2_Z_vs_AoQ_corr = new TH2D("h2_Z_vs_AoQ_corr", "Z1 vs. A/Q (corr)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
     h2_Z_vs_Z2 = new TH2D("h2_Z_vs_Z2", "Z1 vs. Z2", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z);
@@ -120,6 +128,9 @@ InitStatus FrsNearlineSpectra::Init()
     h2_Z_vs_dE2 = new TH2D("h2_Z_vs_dE2", "Z1 vs. dE in MUSIC2", 400, id->min_z_plot, id->max_z_plot, 250, 0., 4000.);
     h2_x2_vs_x4 = new TH2D("h2_x2_vs_x4", "x2 vs. x4", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_x4, frs_config->fMax_x4);
     h2_SC41dE_vs_AoQ = new TH2D("h2_SC41dE_vs_AoQ", "A/Q vs. dE in SC41", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000.);
+    h2_SC42dE_vs_AoQ = new TH2D("h2_SC42dE_vs_AoQ", "A/Q vs. dE in SC42", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000.);
+    h2_SC41dE_vs_Z = new TH2D("h2_SC41dE_vs_Z", "Z (MUSIC 1) vs. dE in SC41", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, 0., 4000.);
+    h2_SC42dE_vs_Z = new TH2D("h2_SC42dE_vs_Z", "Z (MUSIC 1) vs. dE in SC42", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, 0., 4000.);
     h2_dE_vs_ToF = new TH2D("h2_dE_vs_ToF", "ToF S2-S4 vs. dE in MUSIC1", 2000, 0., 70000., 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1);
     h2_x2_vs_Z = new TH2D("h2_x2_vs_Z", "x2 vs. Z1", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x2, frs_config->fMax_x2);
     h2_x4_vs_Z = new TH2D("h2_x4_vs_Z", "x4 vs. Z1", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x4, frs_config->fMax_x4);  
@@ -130,6 +141,7 @@ InitStatus FrsNearlineSpectra::Init()
     h2_x4_vs_a4 = new TH2D("h2_x4_vs_a4", "x4 vs. AngleX (S4)", 200, frs_config->fMin_x4, frs_config->fMax_x4, 200, frs_config->fMin_a4, frs_config->fMax_a4);
     h2_y4_vs_b4 = new TH2D("h2_y4_vs_b4", "y4 vs. AngleY (S4)", 200, frs_config->fMin_y4, frs_config->fMax_y4, 200, frs_config->fMin_b4, frs_config->fMax_b4);
     h2_Z_vs_Sc21E = new TH2D("h2_Z_vs_Sc21E", "Z1 vs. SQRT(Sc21_L * Sc21_R)", 300, frs_config->fMin_Z, frs_config->fMax_Z, 400, 0., 4000.);
+    h1_sci21_tx = new TH1D("h1_sci21_tx", "S2 Position SCI21", 200, frs_config->fMin_x2, frs_config->fMax_x2);
 
     // ----------- MHTDC --------------
     dir_mhtdc_hists->cd();
@@ -407,438 +419,320 @@ InitStatus FrsNearlineSpectra::Init()
     }
 
     dir_frs->cd();
-    gDirectory = tmp;
+    //gDirectory = tmp;
 
     return kSUCCESS;
 
 }
 
 void FrsNearlineSpectra::Exec(Option_t* option)
-{
-    if (fFrsHitArray && fFrsHitArray->GetEntriesFast() > 0)
-    {   
-        Int_t nHits = fFrsHitArray->GetEntriesFast();
-        for (Int_t ihit = 0; ihit < nHits; ihit++)
-        {
-            FrsHitData* FrsHit = (FrsHitData*)fFrsHitArray->At(ihit);
-            if (!FrsHit) continue;
+{   
+    if (hitArray->size() <= 0) return;
 
-            Long64_t FRS_time_mins = 0;
-            if(FrsHit->Get_wr_t() > 0) FRS_time_mins = (FrsHit->Get_wr_t() / 60E9) - 26900000; // CEJ: taken from Go4..
+    Long64_t FRS_time_mins = 0;
+    auto const & hitItem = hitArray->at(0); // should only be size=1! check
+    Float_t* music_dE = hitItem.Get_music_dE();
+    Float_t* sci_e = hitItem.Get_sci_e();
+    Float_t* sci_tx = hitItem.Get_sci_x();
+    Float_t* sci_l = hitItem.Get_sci_l(); 
+    Float_t* sci_r = hitItem.Get_sci_r();
 
-            /* --------  TAC and PID gates ----------- */
-            if (FrsHit->Get_ID_z() > 0 && FRS_time_mins > 0) h2_Z1_vs_T->Fill(FRS_time_mins, FrsHit->Get_ID_z());
+    //h1_frs_wr->Fill(hitItem.Get_wr_t());
 
-            if (FrsHit->Get_ID_AoQ() > 0 && FRS_time_mins > 0) h2_AoQ_vs_T->Fill(FRS_time_mins, FrsHit->Get_ID_AoQ());
+    if(hitItem.Get_wr_t() > 0) FRS_time_mins = (hitItem.Get_wr_t() - 1713704823000000000)/ 60E9;
 
-            if (FrsHit->Get_ID_AoQ() > 0 && FrsHit->Get_ID_z() > 0) h2_Z_vs_AoQ->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z());
-            if (FrsHit->Get_ID_AoQ_corr() > 0 && FrsHit->Get_ID_z() > 0) h2_Z_vs_AoQ_corr->Fill(FrsHit->Get_ID_AoQ_corr(), FrsHit->Get_ID_z());
+    /* --------  TAC and PID gates ----------- */
+    if (hitItem.Get_ID_z() > 0 && FRS_time_mins > 0) h2_Z1_vs_T->Fill(FRS_time_mins, hitItem.Get_ID_z());
 
-            if (FrsHit->Get_ID_z() > 0 && FrsHit->Get_ID_z2() > 0) h2_Z_vs_Z2->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2());
-            if (TMath::Abs(FrsHit->Get_ID_z() - FrsHit->Get_ID_z2()) < 0.4) // CEJ: should we .config this condition?
+    if (hitItem.Get_ID_AoQ() > 0 && FRS_time_mins > 0) h2_AoQ_vs_T->Fill(FRS_time_mins, hitItem.Get_ID_AoQ());
+
+    if (hitItem.Get_ID_AoQ() > 0 && hitItem.Get_ID_z() > 0) h2_Z_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_z());
+    if (hitItem.Get_ID_AoQ_corr() > 0 && hitItem.Get_ID_z() > 0) h2_Z_vs_AoQ_corr->Fill(hitItem.Get_ID_AoQ_corr(), hitItem.Get_ID_z());
+
+    if (hitItem.Get_ID_z() > 0 && hitItem.Get_ID_z2() > 0) h2_Z_vs_Z2->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_z2());
+    if (TMath::Abs(hitItem.Get_ID_z() - hitItem.Get_ID_z2()) < 0.4) // CEJ: should we .config this condition?
+    {
+        h2_Z_vs_AoQ_Zsame->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_z());
+        h2_x4_vs_AoQ_Zsame->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x4());
+        h2_x2_vs_AoQ_Zsame->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x2());
+    }
+
+    // CEJ: "analysis" taken from Go4 (DESPEC/FRS)
+    // is stupid, we already demand the x2 condition to fill the hit.
+    // this should be reconidered
+    if (hitItem.Get_ID_AoQ() > 0 && hitItem.Get_ID_x2() > -100 && hitItem.Get_ID_x2() < 100) h2_x2_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x2());
+    if (hitItem.Get_ID_AoQ() > 0 && hitItem.Get_ID_x4() > -100 && hitItem.Get_ID_x4() < 100) h2_x4_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x4());
+
+    // Charge states
+    if (hitItem.Get_ID_z() > 0 && hitItem.Get_ID_dEdegoQ() != 0) h2_dEdegoQ_vs_Z->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdegoQ());
+    if (hitItem.Get_ID_z() > 0 && hitItem.Get_ID_dEdeg() != 0) h2_dEdeg_vs_Z->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdeg());
+
+    // Angles vs AoQ
+    if (hitItem.Get_ID_AoQ() != 0 && hitItem.Get_ID_a2() != 0) h2_a2_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_a2());
+    if (hitItem.Get_ID_AoQ() != 0 && hitItem.Get_ID_a4() != 0) h2_a4_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_a4());
+
+    // Z vs Energy loss MUSIC 2
+    if (hitItem.Get_ID_z() != 0 && music_dE[1] != 0) h2_Z_vs_dE2->Fill(hitItem.Get_ID_z(), music_dE[1]);
+
+    // x2 vs x4
+    if (hitItem.Get_ID_x2() != 0 && hitItem.Get_ID_x4() != 0) h2_x2_vs_x4->Fill(hitItem.Get_ID_x2(), hitItem.Get_ID_x4());
+
+    // CEJ: changed from Go4, [5] -> [2]
+    if (hitItem.Get_ID_AoQ() != 0 && sci_e[2] != 0) h2_SC41dE_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), sci_e[2]);
+    if (hitItem.Get_ID_AoQ() != 0 && sci_e[3] != 0) h2_SC42dE_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), sci_e[3]);
+    if (hitItem.Get_ID_z() != 0 && sci_e[2] != 0) h2_SC41dE_vs_Z->Fill(hitItem.Get_ID_z(), sci_e[2]);
+    if (hitItem.Get_ID_z() != 0 && sci_e[3] != 0) h2_SC42dE_vs_Z->Fill(hitItem.Get_ID_z(), sci_e[3]);
+
+    if (hitItem.Get_sci_tof2() != 0 && music_dE[0] != 0) h2_dE_vs_ToF->Fill(hitItem.Get_sci_tof2(), music_dE[0]);
+
+    if (hitItem.Get_ID_z() != 0 && hitItem.Get_ID_x2() != 0) h2_x2_vs_Z->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_x2());
+    if (hitItem.Get_ID_z() != 0 && hitItem.Get_ID_x4() != 0) h2_x4_vs_Z->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_x4());
+
+    if (hitItem.Get_ID_x2() != 0 && music_dE[0] != 0) h2_dE1_vs_x2->Fill(hitItem.Get_ID_x2(), music_dE[0]);
+    if (hitItem.Get_ID_x4() != 0 && music_dE[0] != 0) h2_dE1_vs_x4->Fill(hitItem.Get_ID_x4(), music_dE[0]);
+
+    if (hitItem.Get_ID_x2() != 0 && hitItem.Get_ID_a2() != 0) h2_x2_vs_a2->Fill(hitItem.Get_ID_x2(), hitItem.Get_ID_a2());
+    if (hitItem.Get_ID_y2() != 0 && hitItem.Get_ID_b2() != 0) h2_y2_vs_b2->Fill(hitItem.Get_ID_y2(), hitItem.Get_ID_b2());
+    if (hitItem.Get_ID_x4() != 0 && hitItem.Get_ID_a4() != 0) h2_x4_vs_a4->Fill(hitItem.Get_ID_x4(), hitItem.Get_ID_a4());
+    if (hitItem.Get_ID_y4() != 0 && hitItem.Get_ID_b4() != 0) h2_y4_vs_b4->Fill(hitItem.Get_ID_y4(), hitItem.Get_ID_b4());
+
+    // CEJ: changed [2] -> [0]
+    if (hitItem.Get_ID_z() != 0 && sci_l[0] != 0 && sci_r[0] != 0) h2_Z_vs_Sc21E->Fill(hitItem.Get_ID_z(), sqrt(sci_l[0] * sci_r[0]));
+
+    if (sci_tx[0] != 0) h1_sci21_tx->Fill(sci_tx[0]);
+
+    if (!FrsGates.empty())
+    {
+        for (int gate = 0; gate < FrsGates.size(); gate++)
+        {   
+            if (FrsGates[gate]->Passed_ZvsAoQ(hitItem.Get_ID_z(), hitItem.Get_ID_AoQ()))
             {
-                h2_Z_vs_AoQ_Zsame->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z());
-                h2_x4_vs_AoQ_Zsame->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2());
-                h2_x2_vs_AoQ_Zsame->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4());
+                h2_Z_vs_AoQ_ZAoQgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_z());
+                h2_Z1_vs_Z2_ZAoQgate[gate]->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_z2());
+                h2_x2_vs_AoQ_ZAoQgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x2());
+                h2_x4_vs_AoQ_ZAoQgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x4());
+                h2_dEdeg_vs_Z_ZAoQgate[gate]->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdeg());
+                h2_dedegoQ_vs_Z_ZAoQgate[gate]->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdegoQ());
+                h1_a2_ZAoQ_gate[gate]->Fill(hitItem.Get_ID_a2());
+                h1_a4_ZAoQ_gate[gate]->Fill(hitItem.Get_ID_a4());
             }
-
-            // CEJ: "analysis" taken from Go4 (DESPEC/FRS)
-            // is stupid, we already demand the x2 condition to fill the hit.
-            // this should be reconidered
-            if (FrsHit->Get_ID_AoQ() > 0 && FrsHit->Get_ID_x2() > -100 && FrsHit->Get_ID_x2() < 100) h2_x2_vs_AoQ->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2());
-            if (FrsHit->Get_ID_AoQ() > 0 && FrsHit->Get_ID_x4() > -100 && FrsHit->Get_ID_x4() < 100) h2_x4_vs_AoQ->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4());
-
-            // Charge states
-            if (FrsHit->Get_ID_z() > 0 && FrsHit->Get_ID_dEdegoQ() != 0) h2_dEdegoQ_vs_Z->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdegoQ());
-            if (FrsHit->Get_ID_z() > 0 && FrsHit->Get_ID_dEdeg() != 0) h2_dEdeg_vs_Z->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdeg());
-
-            // Angles vs AoQ
-            if (FrsHit->Get_ID_AoQ() != 0 && FrsHit->Get_ID_a2() != 0) h2_a2_vs_AoQ->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_a2());
-            if (FrsHit->Get_ID_AoQ() != 0 && FrsHit->Get_ID_a4() != 0) h2_a4_vs_AoQ->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_a4());
-
-            // Z vs Energy loss MUSIC 2
-            if (FrsHit->Get_ID_z() != 0 && FrsHit->Get_music_dE(1) != 0) h2_Z_vs_dE2->Fill(FrsHit->Get_ID_z(), FrsHit->Get_music_dE(1));
-
-            // x2 vs x4
-            if (FrsHit->Get_ID_x2() != 0 && FrsHit->Get_ID_x4() != 0) h2_x2_vs_x4->Fill(FrsHit->Get_ID_x2(), FrsHit->Get_ID_x4());
-
-            // CEJ: changed from Go4, [5] -> [2]
-            if (FrsHit->Get_ID_AoQ() != 0 && FrsHit->Get_sci_e(2) != 0) h2_SC41dE_vs_AoQ->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_sci_e(2));
-
-            if (FrsHit->Get_sci_tof2() != 0 && FrsHit->Get_music_dE(0) != 0) h2_dE_vs_ToF->Fill(FrsHit->Get_sci_tof2(), FrsHit->Get_music_dE(0));
-
-            if (FrsHit->Get_ID_z() != 0 && FrsHit->Get_ID_x2() != 0) h2_x2_vs_Z->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_x2());
-            if (FrsHit->Get_ID_z() != 0 && FrsHit->Get_ID_x4() != 0) h2_x4_vs_Z->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_x4());
-
-            if (FrsHit->Get_ID_x2() != 0 && FrsHit->Get_music_dE(0) != 0) h2_dE1_vs_x2->Fill(FrsHit->Get_ID_x2(), FrsHit->Get_music_dE(0));
-            if (FrsHit->Get_ID_x4() != 0 && FrsHit->Get_music_dE(0) != 0) h2_dE1_vs_x4->Fill(FrsHit->Get_ID_x4(), FrsHit->Get_music_dE(0));
-
-            if (FrsHit->Get_ID_x2() != 0 && FrsHit->Get_ID_a2() != 0) h2_x2_vs_a2->Fill(FrsHit->Get_ID_x2(), FrsHit->Get_ID_a2());
-            if (FrsHit->Get_ID_y2() != 0 && FrsHit->Get_ID_b2() != 0) h2_y2_vs_b2->Fill(FrsHit->Get_ID_y2(), FrsHit->Get_ID_b2());
-            if (FrsHit->Get_ID_x4() != 0 && FrsHit->Get_ID_a4() != 0) h2_x4_vs_a4->Fill(FrsHit->Get_ID_x4(), FrsHit->Get_ID_a4());
-            if (FrsHit->Get_ID_y4() != 0 && FrsHit->Get_ID_b4() != 0) h2_y4_vs_b4->Fill(FrsHit->Get_ID_y4(), FrsHit->Get_ID_b4());
-
-            // CEJ: changed [2] -> [0]
-            if (FrsHit->Get_ID_z() != 0 && FrsHit->Get_sci_l(0) != 0 && FrsHit->Get_sci_r(0) != 0) h2_Z_vs_Sc21E->Fill(FrsHit->Get_ID_z(), sqrt(FrsHit->Get_sci_l(0) * FrsHit->Get_sci_r(0)));
-
-            // Define PID gates
-            // Z1 vs AoQ
-
-            if (!FrsGates.empty())
+        
+            if (FrsGates[gate]->Passed_ZvsZ2(hitItem.Get_ID_z(), hitItem.Get_ID_z2()))
             {
+                h2_dEdeg_vs_Z_Z1Z2gate[gate]->Fill(hitItem.Get_ID_z(),hitItem.Get_ID_dEdeg());
+                h2_dEdegoQ_vs_Z_Z1Z2gate[gate]->Fill(hitItem.Get_ID_z(),hitItem.Get_ID_dEdegoQ());
+                h2_Z1_vs_Z2_Z1Z2gate[gate]->Fill(hitItem.Get_ID_z(),hitItem.Get_ID_z2());
+                h1_a2_Z1Z2gate[gate]->Fill(hitItem.Get_ID_a2());
+                h1_a4_Z1Z2gate[gate]->Fill(hitItem.Get_ID_a4());
 
-            /*if (cutID_Z_AoQ[0] != nullptr)
-            {*/  
-                for (int gate = 0; gate < FrsGates.size(); gate++)
-                {   
-                    if (FrsGates[gate]->Passed_ZvsAoQ(FrsHit->Get_ID_z(), FrsHit->Get_ID_AoQ()))
-                    {
-                    /*if (cutID_Z_AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z()))
-                    {*/
-                        h2_Z_vs_AoQ_ZAoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z());
-                        h2_Z1_vs_Z2_ZAoQgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2());
-                        h2_x2_vs_AoQ_ZAoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2());
-                        h2_x4_vs_AoQ_ZAoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4());
-                        h2_dEdeg_vs_Z_ZAoQgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdeg());
-                        h2_dedegoQ_vs_Z_ZAoQgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdegoQ());
-                        h1_a2_ZAoQ_gate[gate]->Fill(FrsHit->Get_ID_a2());
-                        h1_a4_ZAoQ_gate[gate]->Fill(FrsHit->Get_ID_a4());
-                    }
-                /*}
+                if(hitItem.Get_ID_AoQ() > 1 && hitItem.Get_ID_AoQ() < 3 && hitItem.Get_ID_x2() > -100 && hitItem.Get_ID_x2() < 100) h2_x2_vs_AoQ_Z1Z2gate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x2());
+                if(hitItem.Get_ID_AoQ() > 1 && hitItem.Get_ID_AoQ() < 3 && hitItem.Get_ID_x4() > -100 && hitItem.Get_ID_x4() < 100) h2_x4_vs_AoQ_Z1Z2gate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x4());
+                if(hitItem.Get_ID_AoQ() > 1 && hitItem.Get_ID_AoQ() < 3) h2_Z_vs_AoQ_Z1Z2gate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_z());
+            }
             
-            }
-
-            // Z1 vs Z2
-            if (cutID_Z_Z2[0] != nullptr)
+            if (FrsGates[gate]->Passed_x2vsAoQ(hitItem.Get_ID_x2(), hitItem.Get_ID_AoQ()))
             {
-                for (int gate = 0; gate < cutID_Z_Z2.size(); gate++)
-                {*/
-                    if (FrsGates[gate]->Passed_ZvsZ2(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2()))
-                    {
-                    /*if(cutID_Z_Z2[gate]->IsInside(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2()))
-                    {*/
-                        h2_dEdeg_vs_Z_Z1Z2gate[gate]->Fill(FrsHit->Get_ID_z(),FrsHit->Get_ID_dEdeg());
-                        h2_dEdegoQ_vs_Z_Z1Z2gate[gate]->Fill(FrsHit->Get_ID_z(),FrsHit->Get_ID_dEdegoQ());
-                        h2_Z1_vs_Z2_Z1Z2gate[gate]->Fill(FrsHit->Get_ID_z(),FrsHit->Get_ID_z2());
-                        h1_a2_Z1Z2gate[gate]->Fill(FrsHit->Get_ID_a2());
-                        h1_a4_Z1Z2gate[gate]->Fill(FrsHit->Get_ID_a4());
-
-                        if(FrsHit->Get_ID_AoQ() > 1 && FrsHit->Get_ID_AoQ() < 3 && FrsHit->Get_ID_x2() > -100 && FrsHit->Get_ID_x2() < 100) h2_x2_vs_AoQ_Z1Z2gate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2());
-                        if(FrsHit->Get_ID_AoQ() > 1 && FrsHit->Get_ID_AoQ() < 3 && FrsHit->Get_ID_x4() > -100 && FrsHit->Get_ID_x4() < 100) h2_x4_vs_AoQ_Z1Z2gate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4());
-                        if(FrsHit->Get_ID_AoQ() > 1 && FrsHit->Get_ID_AoQ() < 3) h2_Z_vs_AoQ_Z1Z2gate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z());
-                    }
-                /*}
-            }
-
-            // x2 vs AoQ
-            if (cutID_x2AoQ[0] != nullptr)
-            {   
-                for (int gate = 0; gate < cutID_x2AoQ.size(); gate++)
-                {*/
-                    if (FrsGates[gate]->Passed_x2vsAoQ(FrsHit->Get_ID_x2(), FrsHit->Get_ID_AoQ()))
-                    {
-                    /*if(cutID_x2AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2()))
-                    {*/
-                        h2_x2_vs_AoQ_x2AoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2());
-                        h2_Z1_vs_Z2_x2AoQgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2());
-                        
-                        // Z1 Z2 + x2AoQ
-                        /*if (cutID_Z_Z2[0] != nullptr)
-                        {*/ 
-                            if (FrsGates[gate]->Passed_ZvsZ2(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2()))
-                            {
-                            /*if(cutID_Z_Z2[gate]->IsInside(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2()))
-                            {*/
-
-                                h2_x2_vs_AoQ_Z1Z2x2AoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2());
-                                h2_x4_vs_AoQ_Z1Z2x2AoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4());
-                                h2_Z_vs_AoQ_Z1Z2x2AoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z());
-                                h2_dEdeg_vs_Z_Z1Z2x2AoQgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdeg());
-                                h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdegoQ());
-                                h1_a2_Z1Z2x2AoQgate[gate]->Fill(FrsHit->Get_ID_a2());
-                                h1_a4_Z1Z2x2AoQgate[gate]->Fill(FrsHit->Get_ID_a4()); 
-                            }
-                        }
-                    /*}
+                h2_x2_vs_AoQ_x2AoQgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x2());
+                h2_Z1_vs_Z2_x2AoQgate[gate]->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_z2());
+                
+                if (FrsGates[gate]->Passed_ZvsZ2(hitItem.Get_ID_z(), hitItem.Get_ID_z2()))
+                {
+                    h2_x2_vs_AoQ_Z1Z2x2AoQgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x2());
+                    h2_x4_vs_AoQ_Z1Z2x2AoQgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x4());
+                    h2_Z_vs_AoQ_Z1Z2x2AoQgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_z());
+                    h2_dEdeg_vs_Z_Z1Z2x2AoQgate[gate]->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdeg());
+                    h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate[gate]->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdegoQ());
+                    h1_a2_Z1Z2x2AoQgate[gate]->Fill(hitItem.Get_ID_a2());
+                    h1_a4_Z1Z2x2AoQgate[gate]->Fill(hitItem.Get_ID_a4()); 
                 }
             }
 
-            // x4 vs AoQ
-            if (cutID_x4AoQ[0] != nullptr)
-            {   
-                for (int gate = 0; gate < cutID_x4AoQ.size(); gate++)
-                {*/
-                    if (FrsGates[gate]->Passed_x4vsAoQ(FrsHit->Get_ID_x4(), FrsHit->Get_ID_AoQ()))
-                    {
-                    /*if(cutID_x4AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4()))
-                    {*/
-                        h2_x4_vs_AoQ_x4AoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4());
-                        h2_Z1_vs_Z2_x4AoQgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2());
-                        
-                        ///Z1 Z2 + x4AoQ
-                        /*if (cutID_Z_Z2[0] != nullptr)
-                        {*/
-                            if (FrsGates[gate]->Passed_ZvsZ2(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2()))
-                            {
-                            /*if(cutID_Z_Z2[gate]->IsInside(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2()))
-                            {*/
-                                h2_x2_vs_AoQ_Z1Z2x4AoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2());
-                                h2_x4_vs_AoQ_Z1Z2x4AoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4());
-                                h2_Z_vs_AoQ_Z1Z2x4AoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z());
-                                h2_dEdeg_vs_Z_Z1Z2x4AoQgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdeg());
-                                h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdegoQ());
-                                h1_a2_Z1Z2x4AoQgate[gate]->Fill(FrsHit->Get_ID_a2());
-                                h1_a4_Z1Z2x4AoQgate[gate]->Fill(FrsHit->Get_ID_a4());
-                            }
-                        }
-                    /*}
+            if (FrsGates[gate]->Passed_x4vsAoQ(hitItem.Get_ID_x4(), hitItem.Get_ID_AoQ()))
+            {
+                h2_x4_vs_AoQ_x4AoQgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x4());
+                h2_Z1_vs_Z2_x4AoQgate[gate]->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_z2());
+                
+                if (FrsGates[gate]->Passed_ZvsZ2(hitItem.Get_ID_z(), hitItem.Get_ID_z2()))
+                {
+                    h2_x2_vs_AoQ_Z1Z2x4AoQgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x2());
+                    h2_x4_vs_AoQ_Z1Z2x4AoQgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x4());
+                    h2_Z_vs_AoQ_Z1Z2x4AoQgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_z());
+                    h2_dEdeg_vs_Z_Z1Z2x4AoQgate[gate]->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdeg());
+                    h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate[gate]->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdegoQ());
+                    h1_a2_Z1Z2x4AoQgate[gate]->Fill(hitItem.Get_ID_a2());
+                    h1_a4_Z1Z2x4AoQgate[gate]->Fill(hitItem.Get_ID_a4());
                 }
             }
-
-            // GATE: Energy loss S2 vs Z (Charge states)
-            if (cutID_dEdegZ[0] != nullptr)
-            {   
-                for (int gate = 0; gate < cutID_dEdegZ.size(); gate++)
-                {*/ 
-                    if (FrsGates[gate]->Passed_dEdegvsZ(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdeg()))
-                    {
-                    /*if(cutID_dEdegZ[gate]->IsInside(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdeg()))
-                    {*/
-                        h2_Z_vs_AoQ_dEdegZgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z());
-                        h2_Z1_vs_Z2_dEdegZgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2());
-                        h2_x2_vs_AoQ_dEdegZgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2());
-                        h2_x4_vs_AoQ_dEdegZgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4());
-                        h1_a2_dEdegZgate[gate]->Fill(FrsHit->Get_ID_a2());
-                        h1_a4_dEdegZgate[gate]->Fill(FrsHit->Get_ID_a4());
                     
-                        if(fabs(FrsHit->Get_ID_z2() - FrsHit->Get_ID_z()) < 0.4) h2_Z_vs_AoQ_Zsame_dEdegZgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z());
-                    }
-                }
-            }
-
-            // CEJ I hate this bit
-            /* ----- MHTDC Histograms and PID Gates -------------------------------------------- */
-            for (int i = 0; i < MAX_MHTDC_MULT; i++)
-            {   
-                // Z1 vs Time
-                if (FrsHit->Get_ID_z_mhtdc(i) > 0 && FRS_time_mins > 0) h2_Z1_vs_T_mhtdc->Fill(FRS_time_mins, FrsHit->Get_ID_z_mhtdc(i));
-                // AoQ vs Time
-                if (FrsHit->Get_ID_AoQ_mhtdc(i) > 0 && FRS_time_mins > 0) h2_AoQ_vs_T_mhtdc->Fill(FRS_time_mins, FrsHit->Get_ID_AoQ_mhtdc(i));
-                // AoQ vs Z
-                if(FrsHit->Get_ID_AoQ_mhtdc(i) > 0 && FrsHit->Get_ID_z_mhtdc(i) > 0) h2_Z_vs_AoQ_mhtdc->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_z_mhtdc(i));
-                if(FrsHit->Get_ID_AoQ_corr_mhtdc(i) > 0 && FrsHit->Get_ID_z_mhtdc(i) > 0) h2_Z_vs_AoQ_corr_mhtdc->Fill(FrsHit->Get_ID_AoQ_corr_mhtdc(i), FrsHit->Get_ID_z_mhtdc(i));
-            
-                //Z1 Z2 
-                if(FrsHit->Get_ID_z_mhtdc(i) > 0 && FrsHit->Get_ID_z2_mhtdc(i) > 0) h2_Z_vs_Z2_mhtdc->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_z2_mhtdc(i));
-            
-                if(TMath::Abs(FrsHit->Get_ID_z_mhtdc(i) - FrsHit->Get_ID_z2_mhtdc(i)) < 0.4)
-                {
-                    h2_Z_vs_AoQ_Zsame_mhtdc->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_z_mhtdc(i));
-                    h2_x4_vs_AoQ_Zsame_mhtdc->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x4());
-                    h2_x2_vs_AoQ_Zsame_mhtdc->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x2());
-                }
-            
-                // AoQ vs X2
-                if(FrsHit->Get_ID_AoQ_mhtdc(i) > 0 && FrsHit->Get_ID_x2() > -100 && FrsHit->Get_ID_x2() < 100)  h2_x2_vs_AoQ_mhtdc->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x2());
-            
-                if(FrsHit->Get_ID_AoQ_mhtdc(i) > 0 && FrsHit->Get_ID_x4() > -100 && FrsHit->Get_ID_x4() < 100)  h2_x4_vs_AoQ_mhtdc->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x4());
-                
-                // Charge states
-                // CEJ: dEdeg mhtdc is not used in the check, but it is filled. Why??
-                if(FrsHit->Get_ID_z_mhtdc(i) > 0 && FrsHit->Get_ID_dEdegoQ() != 0) h2_dEdegoQ_vs_Z_mhtdc->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_dEdegoQ_mhtdc(i));
-                if(FrsHit->Get_ID_z_mhtdc(i) > 0 && FrsHit->Get_ID_dEdeg() != 0) h2_dEdeg_vs_Z_mhtdc->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_dEdeg_mhtdc(i));
-            
-                // Angles vs AoQ 
-                if(FrsHit->Get_ID_AoQ_mhtdc(i) != 0 && FrsHit->Get_ID_a2() != 0) h2_a2_vs_AoQ_mhtdc->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_a2());
-                if(FrsHit->Get_ID_AoQ_mhtdc(i) != 0 && FrsHit->Get_ID_a4() != 0) h2_a4_vs_AoQ_mhtdc->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_a4());
-            
-                if(FrsHit->Get_ID_z_mhtdc(i) != 0 && FrsHit->Get_music_dE(1) != 0) h2_Z_vs_dE2_mhtdc->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_music_dE(1));
-                
-                if(FrsHit->Get_ID_z_mhtdc(i) != 0 && FrsHit->Get_sci_l(0) != 0 && FrsHit->Get_sci_r(0) != 0) h2_Z_vs_Sc21E_mhtdc->Fill(FrsHit->Get_ID_z_mhtdc(i), sqrt(FrsHit->Get_sci_l(0) * FrsHit->Get_sci_r(0)));
-            
-                // if > 0 conditions necessary
-                h2_x2_vs_Z_mhtdc->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_x2());
-                
-                h2_x4_vs_Z_mhtdc->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_x4());
-
-            } // multihit loop
-
-            // MHTDC PID Gates
-            // Z vs AoQ
-            if (!FrsGates.empty())
+            if (FrsGates[gate]->Passed_dEdegvsZ(hitItem.Get_ID_z(), hitItem.Get_ID_dEdeg()))
             {
-            /*if (cutID_Z_AoQ[0] != nullptr)
-            {*/
-                for(int gate = 0; gate < FrsGates.size(); gate++)
-                {
-                    for (int i = 0; i < MAX_MHTDC_MULT; i++)
-                    {   
-                        if (FrsGates[gate]->Passed_ZvsAoQ(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_AoQ_mhtdc(i)))
-                        {
-                        /*if(cutID_Z_AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_z_mhtdc(i)))
-                        {*/ 
-                            // CEJ: this will change based on final hit?
-                            h2_x2_vs_AoQ_ZAoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x2());
-                            h2_x4_vs_AoQ_ZAoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x4());
-                            h2_Z_vs_AoQ_ZAoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_z_mhtdc(i));
-                            h2_Z1_vs_Z2_ZAoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_z2_mhtdc(i));
-                            h2_dEdeg_vs_Z_ZAoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_dEdeg_mhtdc(i));
-                            h2_dedegoQ_vs_Z_ZAoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_dEdegoQ_mhtdc(i));
-                            h1_a2_ZAoQ_gate_mhtdc[gate]->Fill(FrsHit->Get_ID_a2());
-                            h1_a4_ZAoQ_gate_mhtdc[gate]->Fill(FrsHit->Get_ID_a4());
-                        }
-                    /*}
-                }
-            }
-
-            // Z1 vs Z2
-            if (cutID_Z_Z2[0] != nullptr)
-            {
-                for(int gate = 0; gate < cutID_Z_Z2.size(); gate++)
-                {
-                    for (int i = 0; i < MAX_MHTDC_MULT; i++)
-                    {*/ 
-                        if (FrsGates[gate]->Passed_ZvsZ2(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_z2_mhtdc(i)))
-                        {
-                        /*if(cutID_Z_Z2[gate]->IsInside(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_z2_mhtdc(i)))
-                        {*/
-                            h2_dEdeg_vs_Z_Z1Z2gate_mhtdc[gate]->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_dEdeg_mhtdc(i));
-                            h2_dEdegoQ_vs_Z_Z1Z2gate_mhtdc[gate]->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_dEdegoQ_mhtdc(i));
-                            h2_Z1_vs_Z2_Z1Z2gate_mhtdc[gate]->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_z2_mhtdc(i));
-                            if(FrsHit->Get_ID_a2() != 0) h1_a2_Z1Z2gate_mhtdc[gate]->Fill(FrsHit->Get_ID_a2());
-                            if(FrsHit->Get_ID_a4() != 0) h1_a4_Z1Z2gate_mhtdc[gate]->Fill(FrsHit->Get_ID_a4());
-                        
-                            // X2 AoQ gated on Z1 Z2
-                            if(FrsHit->Get_ID_x2() > -100 && FrsHit->Get_ID_x2() < 100)
-                            {
-                                h2_x2_vs_AoQ_Z1Z2gate_mhtdc[gate]->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x2());
-                            }
-                            
-                            if(FrsHit->Get_ID_x4() > -100 && FrsHit->Get_ID_x4() < 100)
-                            {
-                                h2_x4_vs_AoQ_Z1Z2gate_mhtdc[gate]->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x4());
-                                
-                                // Z1 AoQ gated on Z1 Z2
-                                if(FrsHit->Get_ID_AoQ_mhtdc(i) != 0 && FrsHit->Get_ID_z_mhtdc(i) != 0) h2_Z_vs_AoQ_Z1Z2gate_mhtdc[gate]->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_z_mhtdc(i));
-                                
-                            }
-                        }
-                    /*}
-                }
-            }
-
-            // ID x2 vs AoQ
-            if (cutID_x2AoQ[0] != nullptr)
-            {
-                for(int gate = 0; gate < cutID_x2AoQ.size(); gate++)
-                {
-                    for (int i = 0; i < MAX_MHTDC_MULT; i++)
-                    {*/
-                        if (FrsGates[gate]->Passed_x2vsAoQ(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x2()))
-                        {
-                        /*if(cutID_x2AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x2()))
-                        {*/
-                            h2_x2_vs_AoQ_x2AoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x2());
-                            h2_Z1_vs_Z2_x2AoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_z2_mhtdc(i));
-                            // The selected Z1 Z2 gate for this part can be found in the Correlations_config.dat file
-                            // Z1 Z2 +X2 AoQ
-                            /*if (cutID_Z_Z2[0] != nullptr)
-                            {*/
-                                if (FrsGates[gate]->Passed_ZvsZ2(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_z2_mhtdc(i)))
-                                {
-                                /*if(cutID_Z_Z2[gate]->IsInside(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_z2_mhtdc(i)))
-                                {*/
-                                    h2_x2_vs_AoQ_Z1Z2x2AoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x2());
-                                    h2_x4_vs_AoQ_Z1Z2x2AoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x4());
-                                    h2_Z1_vs_Z2_Z1Z2x2AoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_z2_mhtdc(i));
-                                    h2_dEdeg_vs_Z_Z1Z2x2AoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_dEdeg_mhtdc(i));
-                                    h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_dEdegoQ_mhtdc(i));
-                                    h1_a2_Z1Z2x2AoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_a2());
-                                    h1_a4_Z1Z2x2AoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_a4());
-                                }
-                            }
-                        /*}
-                    }
-                }
-            }
+                h2_Z_vs_AoQ_dEdegZgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_z());
+                h2_Z1_vs_Z2_dEdegZgate[gate]->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_z2());
+                h2_x2_vs_AoQ_dEdegZgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x2());
+                h2_x4_vs_AoQ_dEdegZgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x4());
+                h1_a2_dEdegZgate[gate]->Fill(hitItem.Get_ID_a2());
+                h1_a4_dEdegZgate[gate]->Fill(hitItem.Get_ID_a4());
             
-            // ID x4 vs AoQ
-            if (cutID_x4AoQ[0] != nullptr)
-            {
-                for(int gate = 0; gate < cutID_x4AoQ.size(); gate++)
-                {
-                    for (int i = 0; i < MAX_MHTDC_MULT; i++)
-                    {*/ 
-                        if (FrsGates[gate]->Passed_x4vsAoQ(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x4()))
-                        {
-                        /*if(cutID_x4AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x4()))
-                        {*/
-                            h2_x4_vs_AoQ_x4AoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x4());
-                            h2_Z1_vs_Z2_x4AoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_z2_mhtdc(i));
-                            // Z1 Z2 +X4 AoQ
-                            /*if (cutID_Z_Z2[0] != nullptr)
-                            {*/
-                                if (FrsGates[gate]->Passed_ZvsZ2(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_z2_mhtdc(i)))
-                                {
-                                /*if(cutID_Z_Z2[gate]->IsInside(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_z2_mhtdc(i)))
-                                {*/
-                                    h2_x2_vs_AoQ_Z1Z2x4AoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x2());
-                                    h2_x4_vs_AoQ_Z1Z2x4AoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x4());
-                                    h2_Z1_vs_Z2_Z1Z2x4AoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_z2_mhtdc(i));
-                                    h2_dEdeg_vs_Z_Z1Z2x4AoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_dEdeg_mhtdc(i));
-                                    h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_dEdegoQ_mhtdc(i));
-                                    h1_a2_Z1Z2x4AoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_a2());
-                                    h1_a4_Z1Z2x4AoQgate_mhtdc[gate]->Fill(FrsHit->Get_ID_a4());
-                                    
-                                }
-                            }
-                        /*}
-                    }
-                }
+                if(fabs(hitItem.Get_ID_z2() - hitItem.Get_ID_z()) < 0.4) h2_Z_vs_AoQ_Zsame_dEdegZgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_z());
             }
-
-            // GATE: Energy loss S2 vs Z (Charge states)
-            if (cutID_dEdegZ[0] != nullptr)
-            {
-                for(int gate = 0; gate < cutID_dEdegZ.size(); gate++)
-                {
-                    for (int i = 0; i < MAX_MHTDC_MULT; i++)
-                    {*/ 
-                        if (FrsGates[gate]->Passed_dEdegvsZ(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_dEdeg()))
-                        {
-                        /*if (cutID_dEdegZ[gate]->IsInside(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_dEdeg()))
-                        {*/
-                            h2_Z_vs_dEdeg_dEdegZgate_mhtdc[gate]->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_dEdeg()); // CEJ: again why not MHTDC here
-                            h2_Z_vs_AoQ_dEdegZgate_mhtdc[gate]->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_z_mhtdc(i));
-                            h2_Z1_vs_Z2_dEdegZgate_mhtdc[gate]->Fill(FrsHit->Get_ID_z_mhtdc(i), FrsHit->Get_ID_z_mhtdc(i));
-                            h2_x2_vs_AoQ_dEdegZgate_mhtdc[gate]->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x2());
-                            h2_x4_vs_AoQ_dEdegZgate_mhtdc[gate]->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_x4());
-                            h1_a2_dEdegZgate_mhtdc[gate]->Fill(FrsHit->Get_ID_a2());
-                            h1_a4_dEdegZgate_mhtdc[gate]->Fill(FrsHit->Get_ID_a4());
-                    
-                            if (fabs(FrsHit->Get_ID_z2_mhtdc(i) - FrsHit->Get_ID_z_mhtdc(i)) < 0.4) h2_Z_vs_AoQ_Zsame_dEdegZgate_mhtdc[gate]->Fill(FrsHit->Get_ID_AoQ_mhtdc(i), FrsHit->Get_ID_z_mhtdc(i));
-                        }
-                    }
-                }
-            }
-        } // ihits
-    } // non-zero FRS entries
+        }
+    }
     
+    for (auto const & multihitItem : *multihitArray)
+    {    
+        // Z1 vs Time
+        if (multihitItem.Get_ID_z_mhtdc() > 0 && FRS_time_mins > 0) h2_Z1_vs_T_mhtdc->Fill(FRS_time_mins, multihitItem.Get_ID_z_mhtdc());
+        // AoQ vs Time
+        if (multihitItem.Get_ID_AoQ_mhtdc() > 0 && FRS_time_mins > 0) h2_AoQ_vs_T_mhtdc->Fill(FRS_time_mins, multihitItem.Get_ID_AoQ_mhtdc());
+        // AoQ vs Z
+        if(multihitItem.Get_ID_AoQ_mhtdc() > 0 && multihitItem.Get_ID_z_mhtdc() > 0) h2_Z_vs_AoQ_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), multihitItem.Get_ID_z_mhtdc());
+        if(multihitItem.Get_ID_AoQ_corr_mhtdc() > 0 && multihitItem.Get_ID_z_mhtdc() > 0) h2_Z_vs_AoQ_corr_mhtdc->Fill(multihitItem.Get_ID_AoQ_corr_mhtdc(), multihitItem.Get_ID_z_mhtdc());
+    
+        //Z1 Z2 
+        if(multihitItem.Get_ID_z_mhtdc() > 0 && multihitItem.Get_ID_z2_mhtdc() > 0) h2_Z_vs_Z2_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_z2_mhtdc());
+    
+        if(TMath::Abs(multihitItem.Get_ID_z_mhtdc() - multihitItem.Get_ID_z2_mhtdc()) < 0.4)
+        {
+            h2_Z_vs_AoQ_Zsame_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), multihitItem.Get_ID_z_mhtdc());
+            h2_x4_vs_AoQ_Zsame_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x4());
+            h2_x2_vs_AoQ_Zsame_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x2());
+        }
+ 
+        // AoQ vs X2
+        if(multihitItem.Get_ID_AoQ_mhtdc() > 0 && hitItem.Get_ID_x2() > -100 && hitItem.Get_ID_x2() < 100)  h2_x2_vs_AoQ_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x2());
+    
+        if(multihitItem.Get_ID_AoQ_mhtdc() > 0 && hitItem.Get_ID_x4() > -100 && hitItem.Get_ID_x4() < 100)  h2_x4_vs_AoQ_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x4());
+        
+        // Charge states
+        // CEJ: dEdeg mhtdc is not used in the check, but it is filled. Why??
+        if(multihitItem.Get_ID_z_mhtdc() > 0 && multihitItem.Get_ID_dEdegoQ_mhtdc() != 0) h2_dEdegoQ_vs_Z_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_dEdegoQ_mhtdc());
+        if(multihitItem.Get_ID_z_mhtdc() > 0 && multihitItem.Get_ID_dEdeg_mhtdc() != 0) h2_dEdeg_vs_Z_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_dEdeg_mhtdc());
+    
+        // Angles vs AoQ 
+        if(multihitItem.Get_ID_AoQ_mhtdc() != 0 && hitItem.Get_ID_a2() != 0) h2_a2_vs_AoQ_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_a2());
+        if(multihitItem.Get_ID_AoQ_mhtdc() != 0 && hitItem.Get_ID_a4() != 0) h2_a4_vs_AoQ_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_a4());
+    
+        if(multihitItem.Get_ID_z_mhtdc() != 0 && music_dE[1] != 0) h2_Z_vs_dE2_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), music_dE[1]);
+        
+        if(multihitItem.Get_ID_z_mhtdc() != 0 && sci_l[0] != 0 && sci_r[0] != 0) h2_Z_vs_Sc21E_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), sqrt(sci_l[0] * sci_r[0]));
+    
+        // if > 0 conditions necessary
+        h2_x2_vs_Z_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), hitItem.Get_ID_x2());
+        
+        h2_x4_vs_Z_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), hitItem.Get_ID_x4());
+
+        // MHTDC PID Gates
+        // Z vs AoQ
+        if (!FrsGates.empty())
+        {
+            for (int gate = 0; gate < FrsGates.size(); gate++)
+            { 
+                if (FrsGates[gate]->Passed_ZvsAoQ(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_AoQ_mhtdc()))
+                {
+                    // CEJ: this will change based on final hit?
+                    h2_x2_vs_AoQ_ZAoQgate_mhtdc[gate]->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x2());
+                    h2_x4_vs_AoQ_ZAoQgate_mhtdc[gate]->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x4());
+                    h2_Z_vs_AoQ_ZAoQgate_mhtdc[gate]->Fill(multihitItem.Get_ID_AoQ_mhtdc(), multihitItem.Get_ID_z_mhtdc());
+                    h2_Z1_vs_Z2_ZAoQgate_mhtdc[gate]->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_z2_mhtdc());
+                    h2_dEdeg_vs_Z_ZAoQgate_mhtdc[gate]->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_dEdeg_mhtdc());
+                    h2_dedegoQ_vs_Z_ZAoQgate_mhtdc[gate]->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_dEdegoQ_mhtdc());
+                    h1_a2_ZAoQ_gate_mhtdc[gate]->Fill(hitItem.Get_ID_a2());
+                    h1_a4_ZAoQ_gate_mhtdc[gate]->Fill(hitItem.Get_ID_a4());
+                }
+                    
+                if (FrsGates[gate]->Passed_ZvsZ2(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_z2_mhtdc()))
+                {
+                    h2_dEdeg_vs_Z_Z1Z2gate_mhtdc[gate]->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_dEdeg_mhtdc());
+                    h2_dEdegoQ_vs_Z_Z1Z2gate_mhtdc[gate]->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_dEdegoQ_mhtdc());
+                    h2_Z1_vs_Z2_Z1Z2gate_mhtdc[gate]->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_z2_mhtdc());
+                    if(hitItem.Get_ID_a2() != 0) h1_a2_Z1Z2gate_mhtdc[gate]->Fill(hitItem.Get_ID_a2());
+                    if(hitItem.Get_ID_a4() != 0) h1_a4_Z1Z2gate_mhtdc[gate]->Fill(hitItem.Get_ID_a4());
+                
+                    // X2 AoQ gated on Z1 Z2
+                    if(hitItem.Get_ID_x2() > -100 && hitItem.Get_ID_x2() < 100)
+                    {
+                        h2_x2_vs_AoQ_Z1Z2gate_mhtdc[gate]->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x2());
+                    }
+                        
+                    if(hitItem.Get_ID_x4() > -100 && hitItem.Get_ID_x4() < 100)
+                    {
+                        h2_x4_vs_AoQ_Z1Z2gate_mhtdc[gate]->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x4());
+                        
+                        // Z1 AoQ gated on Z1 Z2
+                        if(multihitItem.Get_ID_AoQ_mhtdc() != 0 && multihitItem.Get_ID_z_mhtdc() != 0) h2_Z_vs_AoQ_Z1Z2gate_mhtdc[gate]->Fill(multihitItem.Get_ID_AoQ_mhtdc(), multihitItem.Get_ID_z_mhtdc());
+                        
+                    }
+                }
+                    
+                if (FrsGates[gate]->Passed_x2vsAoQ(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x2()))
+                {
+                    h2_x2_vs_AoQ_x2AoQgate_mhtdc[gate]->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x2());
+                    h2_Z1_vs_Z2_x2AoQgate_mhtdc[gate]->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_z2_mhtdc());
+                    
+                    if (FrsGates[gate]->Passed_ZvsZ2(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_z2_mhtdc()))
+                    {      
+                        h2_x2_vs_AoQ_Z1Z2x2AoQgate_mhtdc[gate]->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x2());
+                        h2_x4_vs_AoQ_Z1Z2x2AoQgate_mhtdc[gate]->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x4());
+                        h2_Z1_vs_Z2_Z1Z2x2AoQgate_mhtdc[gate]->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_z2_mhtdc());
+                        h2_dEdeg_vs_Z_Z1Z2x2AoQgate_mhtdc[gate]->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_dEdeg_mhtdc());
+                        h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate_mhtdc[gate]->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_dEdegoQ_mhtdc());
+                        h1_a2_Z1Z2x2AoQgate_mhtdc[gate]->Fill(hitItem.Get_ID_a2());
+                        h1_a4_Z1Z2x2AoQgate_mhtdc[gate]->Fill(hitItem.Get_ID_a4());
+                    }
+                }
+                        
+                if (FrsGates[gate]->Passed_x4vsAoQ(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x4()))
+                {
+                    h2_x4_vs_AoQ_x4AoQgate_mhtdc[gate]->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x4());
+                    h2_Z1_vs_Z2_x4AoQgate_mhtdc[gate]->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_z2_mhtdc());
+                    
+                    if (FrsGates[gate]->Passed_ZvsZ2(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_z2_mhtdc()))
+                    {      
+                        h2_x2_vs_AoQ_Z1Z2x4AoQgate_mhtdc[gate]->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x2());
+                        h2_x4_vs_AoQ_Z1Z2x4AoQgate_mhtdc[gate]->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x4());
+                        h2_Z1_vs_Z2_Z1Z2x4AoQgate_mhtdc[gate]->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_z2_mhtdc());
+                        h2_dEdeg_vs_Z_Z1Z2x4AoQgate_mhtdc[gate]->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_dEdeg_mhtdc());
+                        h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate_mhtdc[gate]->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_dEdegoQ_mhtdc());
+                        h1_a2_Z1Z2x4AoQgate_mhtdc[gate]->Fill(hitItem.Get_ID_a2());
+                        h1_a4_Z1Z2x4AoQgate_mhtdc[gate]->Fill(hitItem.Get_ID_a4());
+                        
+                    }
+                }
+                        
+                if (FrsGates[gate]->Passed_dEdegvsZ(multihitItem.Get_ID_z_mhtdc(), hitItem.Get_ID_dEdeg()))
+                {
+                    
+                    h2_Z_vs_dEdeg_dEdegZgate_mhtdc[gate]->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_dEdeg_mhtdc());
+                    h2_Z_vs_AoQ_dEdegZgate_mhtdc[gate]->Fill(multihitItem.Get_ID_AoQ_mhtdc(), multihitItem.Get_ID_z_mhtdc());
+                    h2_Z1_vs_Z2_dEdegZgate_mhtdc[gate]->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_z_mhtdc());
+                    h2_x2_vs_AoQ_dEdegZgate_mhtdc[gate]->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x2());
+                    h2_x4_vs_AoQ_dEdegZgate_mhtdc[gate]->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x4());
+                    h1_a2_dEdegZgate_mhtdc[gate]->Fill(hitItem.Get_ID_a2());
+                    h1_a4_dEdegZgate_mhtdc[gate]->Fill(hitItem.Get_ID_a4());
+            
+                    if (fabs(multihitItem.Get_ID_z2_mhtdc() - multihitItem.Get_ID_z_mhtdc()) < 0.4) h2_Z_vs_AoQ_Zsame_dEdegZgate_mhtdc[gate]->Fill(multihitItem.Get_ID_AoQ_mhtdc(), multihitItem.Get_ID_z_mhtdc());
+                }
+            }
+        }
+    } // multihitArray
 }
+
 
 void FrsNearlineSpectra::FinishEvent()
 {
-    // clear any arrays/vectors if needed
     
 }
 
 void FrsNearlineSpectra::FinishTask()
 {
-    TDirectory* tmp = gDirectory;
-    FairRootManager::Instance()->GetOutFile()->cd();
-    dir_frs->Write();
-    gDirectory = tmp;
-    c4LOG(info, "Written FRS analysis histograms to file.");
+    if (found_dir_frs == false && FairRunOnline::Instance() == NULL)
+    {
+        TDirectory* tmp = gDirectory;
+        FairRootManager::Instance()->GetOutFile()->cd();
+        dir_frs->Write();
+        gDirectory = tmp;
+        c4LOG(info, "Written FRS analysis histograms to file.");
+    }
 }
 
 ClassImp(FrsNearlineSpectra)

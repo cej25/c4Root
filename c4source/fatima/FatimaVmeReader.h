@@ -11,6 +11,7 @@
 #include <Rtypes.h>
 #include <vector>
 #include <iostream>
+#include <vector>
 
 extern "C"
 {
@@ -43,7 +44,7 @@ class FatimaVmeReader : public c4Reader
         virtual void Reset() override;
 
         void SetOnline(Bool_t option) { fOnline = option; }
-        void Set_Allocation(TString& filepath);
+        //void Set_Allocation(TString& filepath);
 
         std::vector<int> Get_Channels(Int_t channel_mask);
 
@@ -63,14 +64,24 @@ class FatimaVmeReader : public c4Reader
         size_t fOffset;
 
         TClonesArray* fArray;
+        std::vector<FatimaVmeQDCItem>* qdcArray;
+        std::vector<FatimaVmeTDCItem>* tdcArray;
 
         std::map<std::pair<int, int>, int> dets_qdc;
         std::map<std::pair<int, int>, int> dets_tdc;
-        std::set<int> extra_signals = {TM_U, TM_D, SC41L_A, SC41R_A, SC41L_D, SC41R_D};
+        //std::set<int> extra_signals = {TM_U, TM_D, SC41L_A, SC41R_A, SC41L_D, SC41R_D};
         int num_qdc_boards;
         int num_tdc_boards;
 
-   
+        std::vector<uint32_t> qdc_detectors = {};
+        std::vector<uint32_t> QDC_time_coarse = {};
+        std::vector<uint64_t> QDC_time_fine = {};
+        std::vector<uint32_t> QLong_raw = {};
+        std::vector<uint32_t> QShort_raw = {};
+
+        std::vector<uint32_t> tdc_detectors = {};
+        std::vector<uint32_t> v1290_data = {};
+        std::vector<uint32_t> v1290_lot = {};   
 
         uint64_t wr_t;
 

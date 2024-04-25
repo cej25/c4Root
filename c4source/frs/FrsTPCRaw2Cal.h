@@ -4,6 +4,7 @@
 #include "TFrsConfiguration.h"
 #include "TFRSParameter.h"
 #include "FrsTPCCalData.h"
+#include "FrsTPCData.h"
 #include <vector>
 
 class TClonesArray;
@@ -40,8 +41,9 @@ class FrsTPCRaw2Cal : public FairTask
 
         Bool_t fOnline;
 
-        TClonesArray* fCalArray;
-        TClonesArray* fRawArray;
+        std::vector<FrsTPCV7X5Item> const* v7x5array;
+        std::vector<FrsTPCV1190Item> const* v1190array;
+        std::vector<FrsTPCCalItem>* tpcCalArray;
 
         FrsTPCData* fRawHit;
 
@@ -88,9 +90,13 @@ class FrsTPCRaw2Cal : public FairTask
         Int_t tpc_rt_s[7][2] = {0};
         Float_t tpc_de[7] = {0};
         Bool_t b_tpc_de[7] = {0};
+
+        Int_t** tpc_csum;
+        Bool_t* b_tpc_xy;
         
-        Int_t tpc_csum[7][4] = {-9999999};
+        //Int_t tpc_csum[7][4] = {-9999999};
         Bool_t b_tpc_csum[7][4] = {false};
+        
 
         Float_t tpc_x[7] = {0};
         Float_t tpc_y[7] = {0};
@@ -99,7 +105,7 @@ class FrsTPCRaw2Cal : public FairTask
         Int_t tpc_yraw[7][4] = {0};
         Float_t tpc_dx12[7] = {0};
 
-        Bool_t b_tpc_xy[7] = {0};
+        //Bool_t b_tpc_xy[7] = {0};
 
         //TPCs 21 & 22 @ S2 focus
         Float_t tpc_x_s2_foc_21_22 = -999;
@@ -184,12 +190,6 @@ class FrsTPCRaw2Cal : public FairTask
         Float_t music1_y3 = -999; /* parameters to calibrate  */
         Float_t music1_y4 = -999; /* parameters to calibrate  */
         Float_t music2_x = -999;  /* MUSIC1,2 positions */
-        
-
-        std::vector<Int_t> v1190_lead_hits[128];
-
-        // Output
-
 
         EventHeader* header;
         Int_t fNEvents = 0;

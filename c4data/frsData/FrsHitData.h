@@ -230,4 +230,417 @@ class FrsHitData : public TObject
 };
 
 
+class FrsHitItem : public TObject
+{
+    public:
+        FrsHitItem();
+
+        void SetAll(uint64_t wr_t,
+                    uint16_t tpat,
+                    Float_t x2,
+                    Float_t y2,
+                    Float_t x4,
+                    Float_t y4,
+                    Float_t a2,
+                    Float_t b2,
+                    Float_t a4,
+                    Float_t b4,
+                    Float_t AoQ,
+                    Float_t AoQ_corr,
+                    Float_t z,
+                    Float_t z2,
+                    Float_t beta,
+                    Float_t dEdeg,
+                    Float_t dEdegoQ,
+                    Float_t* rho,
+                    Float_t* brho,
+                    Float_t* music_dE,
+                    Float_t* music_dE_cor,
+                    Float_t* sci_e,
+                    Float_t* sci_l,
+                    Float_t* sci_r,
+                    Float_t* sci_x,
+                    Float_t* sci_tof,
+                    Float_t* sci_tof_calib,
+                    Float_t sci_tof2,
+                    uint32_t time_in_ms,
+                    uint32_t ibin_for_s,
+                    uint32_t ibin_for_100ms,
+                    uint32_t ibin_for_spill,
+                    uint32_t* increase_sc_temp_main,
+                    uint32_t* increase_sc_temp_user,
+                    uint32_t increase_sc_temp2,
+                    uint32_t increase_sc_temp3,
+                    uint32_t extraction_time_ms,
+                    uint32_t ibin_clean_for_s,
+                    uint32_t ibin_clean_for_100ms,
+                    uint32_t ibin_clean_for_spill);
+        void Reset();
+
+        uint64_t Get_wr_t() const;
+        uint16_t Get_tpat() const;
+        Float_t Get_ID_x2() const;
+        Float_t Get_ID_y2() const;
+        Float_t Get_ID_x4() const;
+        Float_t Get_ID_y4() const;
+        Float_t Get_ID_a2() const;
+        Float_t Get_ID_b2() const;
+        Float_t Get_ID_a4() const;
+        Float_t Get_ID_b4() const;
+        Float_t Get_ID_AoQ() const;
+        Float_t Get_ID_AoQ_corr() const;
+        Float_t Get_ID_z() const;
+        Float_t Get_ID_z2() const;
+        Float_t Get_ID_beta() const;
+        Float_t Get_ID_dEdeg() const;
+        Float_t Get_ID_dEdegoQ() const;
+        Float_t* Get_ID_rho() const;
+        Float_t* Get_ID_brho() const;
+        Float_t* Get_music_dE() const;
+        Float_t* Get_music_dE_cor() const;
+        Float_t* Get_sci_e() const;
+        Float_t* Get_sci_l() const;
+        Float_t* Get_sci_r() const;
+        Float_t* Get_sci_x() const;
+        Float_t* Get_sci_tof() const;
+        Float_t* Get_sci_tof_calib() const;
+        Float_t Get_sci_tof2() const;
+        uint32_t Get_time_in_ms() const;
+        uint32_t Get_ibin_for_s() const;
+        uint32_t Get_ibin_for_100ms() const;
+        uint32_t Get_ibin_for_spill() const;
+        uint32_t* Get_increase_sc_temp_main() const;
+        uint32_t* Get_increase_sc_temp_user() const;
+        uint32_t Get_increase_sc_temp2() const;
+        uint32_t Get_increase_sc_temp3() const;
+        uint32_t Get_extraction_time_ms() const;
+        uint32_t Get_ibin_clean_for_s() const;
+        uint32_t Get_ibin_clean_for_100ms() const;
+        uint32_t Get_ibin_clean_for_spill() const;
+
+        ClassDefNV(FrsHitItem, 2);
+
+    private:
+
+        uint64_t fwr_t;
+        uint16_t ftpat;
+
+        // ids
+        Float_t fID_x2;
+        Float_t fID_y2;
+        Float_t fID_x4;
+        Float_t fID_y4;
+        Float_t fID_a2;
+        Float_t fID_b2;
+        Float_t fID_a4;
+        Float_t fID_b4;
+        Float_t fID_AoQ;
+        Float_t fID_AoQ_corr;
+        Float_t fID_z;
+        Float_t fID_z2;
+        Float_t fID_beta;
+        Float_t fID_dEdeg;
+        Float_t fID_dEdegoQ;
+        Float_t* fID_rho; // [2]
+        Float_t* fID_brho; // [2]
+
+        // scitillators / energy loss
+        Float_t* fmusic_dE; // [2] // CEJ: 2? 3 for more musics?
+        Float_t* fmusic_dE_cor; // [2]
+        Float_t* fsci_e; // [6] // CEJ: by chance we need [6]. 5->2 but 10->5 (so 6 elements)
+        Float_t* fsci_l; // [6]
+        Float_t* fsci_r; // [6]
+        Float_t* fsci_x; // [6]
+        Float_t fsci_tof2; // should we look at passing all the tof calcs?
+        Float_t* fsci_tof; // [6]
+        Float_t* fsci_tof_calib; // [6]
+
+        // scalers
+        uint32_t ftime_in_ms;
+        uint32_t fibin_for_s;
+        uint32_t fibin_for_100ms;
+        uint32_t fibin_for_spill;
+        uint32_t* fincrease_sc_temp_main; // [32]
+        uint32_t* fincrease_sc_temp_user; // [32]
+        uint32_t fincrease_sc_temp2;
+        uint32_t fincrease_sc_temp3;
+        uint32_t fextraction_time_ms;
+        uint32_t fibin_clean_for_s;
+        uint32_t fibin_clean_for_100ms;
+        uint32_t fibin_clean_for_spill;
+
+};
+
+class FrsMultiHitItem : public TObject
+{
+    public: 
+        FrsMultiHitItem();
+
+        void SetAll(Float_t beta, 
+                    Float_t AoQ, 
+                    Float_t AoQ_corr, 
+                    Float_t z,
+                    Float_t z2,
+                    Float_t dEdeg,
+                    Float_t dEdegoQ);
+        void Reset();
+
+        Float_t Get_ID_beta_mhtdc() const;
+        Float_t Get_ID_AoQ_mhtdc() const;
+        Float_t Get_ID_AoQ_corr_mhtdc() const;
+        Float_t Get_ID_z_mhtdc() const;
+        Float_t Get_ID_z2_mhtdc() const;
+        Float_t Get_ID_dEdeg_mhtdc() const;
+        Float_t Get_ID_dEdegoQ_mhtdc() const;
+
+        ClassDefNV(FrsMultiHitItem, 2);
+
+    private:
+
+        Float_t fID_beta_mhtdc;
+        Float_t fID_AoQ_mhtdc;
+        Float_t fID_AoQ_corr_mhtdc;
+        Float_t fID_z_mhtdc;
+        Float_t fID_z2_mhtdc;
+        Float_t fID_dEdeg_mhtdc;
+        Float_t fID_dEdegoQ_mhtdc;
+
+};
+
+
+inline uint64_t FrsHitItem::Get_wr_t() const
+{
+    return fwr_t;
+}
+
+inline uint16_t FrsHitItem::Get_tpat() const
+{
+    return ftpat;
+}
+
+inline Float_t FrsHitItem::Get_ID_x2() const
+{
+    return fID_x2;
+}
+
+inline Float_t FrsHitItem::Get_ID_y2() const
+{
+    return fID_y2;
+}
+
+inline Float_t FrsHitItem::Get_ID_x4() const
+{
+    return fID_x4;
+}
+
+inline Float_t FrsHitItem::Get_ID_y4() const
+{
+    return fID_y4;
+}
+
+inline Float_t FrsHitItem::Get_ID_a2() const
+{
+    return fID_a2;
+}
+
+inline Float_t FrsHitItem::Get_ID_b2() const
+{
+    return fID_b2;
+}
+
+inline Float_t FrsHitItem::Get_ID_a4() const
+{
+    return fID_a4;
+}
+
+inline Float_t FrsHitItem::Get_ID_b4() const
+{
+    return fID_b4;
+}
+
+inline Float_t FrsHitItem::Get_ID_AoQ() const
+{
+    return fID_AoQ;
+}
+
+inline Float_t FrsHitItem::Get_ID_AoQ_corr() const
+{
+    return fID_AoQ_corr;
+}
+
+inline Float_t FrsHitItem::Get_ID_z() const
+{
+    return fID_z;
+}
+
+inline Float_t FrsHitItem::Get_ID_z2() const
+{
+    return fID_z2;
+}
+
+inline Float_t FrsHitItem::Get_ID_beta() const
+{
+    return fID_beta;
+}
+
+inline Float_t FrsHitItem::Get_ID_dEdeg() const
+{
+    return fID_dEdeg;
+}
+
+inline Float_t FrsHitItem::Get_ID_dEdegoQ() const
+{
+    return fID_dEdegoQ;
+}
+
+inline Float_t* FrsHitItem::Get_ID_rho() const
+{
+    return fID_rho;
+}
+
+inline Float_t* FrsHitItem::Get_ID_brho() const
+{
+    return fID_brho;
+}
+
+inline Float_t* FrsHitItem::Get_music_dE() const
+{
+    return fmusic_dE;
+}
+
+inline Float_t* FrsHitItem::Get_music_dE_cor() const
+{
+    return fmusic_dE_cor;
+}
+
+inline Float_t* FrsHitItem::Get_sci_e() const
+{
+    return fsci_e;
+}
+
+inline Float_t* FrsHitItem::Get_sci_l() const
+{
+    return fsci_l;
+}
+
+inline Float_t* FrsHitItem::Get_sci_r() const
+{
+    return fsci_r;
+}
+
+inline Float_t* FrsHitItem::Get_sci_x() const
+{
+    return fsci_x;
+}
+
+inline Float_t* FrsHitItem::Get_sci_tof() const
+{
+    return fsci_tof;
+}
+
+inline Float_t* FrsHitItem::Get_sci_tof_calib() const
+{
+    return fsci_tof_calib;
+}
+
+inline Float_t FrsHitItem::Get_sci_tof2() const
+{
+    return fsci_tof2;
+}
+
+inline uint32_t FrsHitItem::Get_time_in_ms() const
+{
+    return ftime_in_ms;
+}
+
+inline uint32_t FrsHitItem::Get_ibin_for_s() const
+{
+    return fibin_for_s;
+}
+
+inline uint32_t FrsHitItem::Get_ibin_for_100ms() const
+{
+    return fibin_for_100ms;
+}
+
+inline uint32_t FrsHitItem::Get_ibin_for_spill() const
+{
+    return fibin_for_spill;
+}
+
+inline uint32_t* FrsHitItem::Get_increase_sc_temp_main() const
+{
+    return fincrease_sc_temp_main;
+}
+
+inline uint32_t* FrsHitItem::Get_increase_sc_temp_user() const
+{
+    return fincrease_sc_temp_user;
+}
+
+inline uint32_t FrsHitItem::Get_increase_sc_temp2() const
+{
+    return fincrease_sc_temp2;
+}
+
+inline uint32_t FrsHitItem::Get_increase_sc_temp3() const
+{
+    return fincrease_sc_temp3;
+}
+
+inline uint32_t FrsHitItem::Get_extraction_time_ms() const
+{
+    return fextraction_time_ms;
+}
+inline uint32_t FrsHitItem::Get_ibin_clean_for_s() const
+{
+    return fibin_clean_for_s;
+}
+
+inline uint32_t FrsHitItem::Get_ibin_clean_for_100ms() const
+{
+    return fibin_clean_for_100ms;
+}
+
+inline uint32_t FrsHitItem::Get_ibin_clean_for_spill() const
+{
+    return fibin_clean_for_spill;
+}
+
+inline Float_t FrsMultiHitItem::Get_ID_beta_mhtdc() const
+{
+    return fID_beta_mhtdc;
+}
+
+inline Float_t FrsMultiHitItem::Get_ID_AoQ_mhtdc() const
+{
+    return fID_AoQ_mhtdc;
+}
+
+inline Float_t FrsMultiHitItem::Get_ID_AoQ_corr_mhtdc() const
+{
+    return fID_AoQ_corr_mhtdc;
+}
+
+inline Float_t FrsMultiHitItem::Get_ID_z_mhtdc() const
+{
+    return fID_z_mhtdc;
+}
+
+inline Float_t FrsMultiHitItem::Get_ID_z2_mhtdc() const
+{
+    return fID_z2_mhtdc;
+}
+
+inline Float_t FrsMultiHitItem::Get_ID_dEdeg_mhtdc() const
+{
+    return fID_dEdeg_mhtdc;
+}
+
+inline Float_t FrsMultiHitItem::Get_ID_dEdegoQ_mhtdc() const
+{
+    return fID_dEdegoQ_mhtdc;
+}
+
+
 #endif

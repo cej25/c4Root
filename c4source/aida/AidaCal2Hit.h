@@ -7,6 +7,7 @@
 #include "FairTask.h"
 #include "TAidaConfiguration.h"
 #include <vector>
+#include "EventHeader.h"
 
 class AidaCluster;
 
@@ -29,6 +30,8 @@ private:
     std::vector<AidaCalAdcItem> const* decayCalArray;
     std::vector<AidaHit>* implantHitArray;
     std::vector<AidaHit>* decayHitArray;
+
+    EventHeader* header;
 
     void SetParameter();
     bool fImplantOnline;

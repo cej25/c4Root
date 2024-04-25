@@ -47,7 +47,8 @@ class FrsTPCReader : public c4Reader
 
         Bool_t fOnline;
 
-        TClonesArray* fArray;
+        std::vector<FrsTPCV7X5Item>* v7x5array;
+        std::vector<FrsTPCV1190Item>* v1190array;
 
         uint64_t fWR_TS;
 

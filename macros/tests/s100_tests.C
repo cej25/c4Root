@@ -1,21 +1,21 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define FATIMA_ON 1
-#define FATIMA_VME_ON 1
+#define FATIMA_ON 0
+#define FATIMA_VME_ON 0
 #define AIDA_ON 1
-#define BPLAST_ON 1
-#define GERMANIUM_ON 1
-#define BGO_ON 1
-#define FRS_ON 0
-#define TIME_MACHINE_ON 1
+#define BPLAST_ON 0
+#define GERMANIUM_ON 0
+#define BGO_ON 0
+#define FRS_ON 1
+#define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 1
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
 {
-    #include "../../config/s100/frs/setup_s100_dryrun.C"
+    #include "../../config/s100/frs/setup_des_s100_030_2024_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -84,12 +84,14 @@ void s100_tests()
     //TString filename = "stream://x86l-87"; //bplast
     //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
     //TString filename = "~/Au_beam_0010_0001.lmd";
+    //TString filename =  "~/lustre/gamma/s100_files/ts/162Eu_0075_0006.lmd";
+    //TString filename = "~/lustre/gamma/nhubbard/162Eu_0052_TEST_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 5005; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 7070; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -416,14 +418,12 @@ void s100_tests()
         
     }
     
-    TFrsConfiguration::Set_Z_range(70,100);
+    TFrsConfiguration::Set_Z_range(50,100);
     TFrsConfiguration::Set_AoQ_range(2.3,2.7);
 
     std::vector<FrsGate*> fgs;
-    FrsGate* Pt191 = new FrsGate("191Pt",config_path + "/frs/Gates/191Pt.root");
-    FrsGate* Au195 = new FrsGate("195Au",config_path + "/frs/Gates/195Au.root");
-    fgs.emplace_back(Pt191);
-    fgs.emplace_back(Au195);
+    FrsGate* Gd164 = new FrsGate("Gd164", config_path + "/frs/Gates/164Gd.root");
+    fgs.emplace_back(Gd164);
     
     if (FRS_ON)
     {
@@ -435,6 +435,7 @@ void s100_tests()
         run->AddTask(onlinefrs);
         run->AddTask(frsrawspec);
         run->AddTask(frscalspec);
+
     }
     
     if (BEAMMONITOR_ON)
@@ -449,6 +450,7 @@ void s100_tests()
     TString d = "FatimaVme";
     TString e = "bPlast";
     TString f = "Germanium";
+    TString g = "Frs";
 
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
@@ -462,14 +464,15 @@ void s100_tests()
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({b, c, d, e, f});
+        wronline->SetDetectorSystems({b, g});
     
         run->AddTask(wronline);
     }
 
     if (FRS_ON && AIDA_ON)
     {
-        FrsAidaCorrelationsOnline* frsaidaonline = new FrsAidaCorrelationsOnline(fgs);
+        //FrsAidaCorrelationsOnline* frsaidaonline = new FrsAidaCorrelationsOnline(fgs);
+        FrsAidaCorrelations* frsaidaonline = new FrsAidaCorrelations(fgs);
 
         run->AddTask(frsaidaonline);
     }
