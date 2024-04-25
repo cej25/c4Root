@@ -297,23 +297,23 @@ class FrsHitItem : public TObject
         Float_t Get_ID_beta() const;
         Float_t Get_ID_dEdeg() const;
         Float_t Get_ID_dEdegoQ() const;
-        Float_t* Get_ID_rho() const;
-        Float_t* Get_ID_brho() const;
-        Float_t* Get_music_dE() const;
-        Float_t* Get_music_dE_cor() const;
-        Float_t* Get_sci_e() const;
-        Float_t* Get_sci_l() const;
-        Float_t* Get_sci_r() const;
-        Float_t* Get_sci_x() const;
-        Float_t* Get_sci_tof() const;
-        Float_t* Get_sci_tof_calib() const;
+        Float_t Get_ID_rho(int index) const;
+        Float_t Get_ID_brho(int index) const;
+        Float_t Get_music_dE(int index) const;
+        Float_t Get_music_dE_cor(int index) const;
+        Float_t Get_sci_e(int index) const;
+        Float_t Get_sci_l(int index) const;
+        Float_t Get_sci_r(int index) const;
+        Float_t Get_sci_x(int index) const;
+        Float_t Get_sci_tof(int index) const;
+        Float_t Get_sci_tof_calib(int index) const;
         Float_t Get_sci_tof2() const;
         uint32_t Get_time_in_ms() const;
         uint32_t Get_ibin_for_s() const;
         uint32_t Get_ibin_for_100ms() const;
         uint32_t Get_ibin_for_spill() const;
-        uint32_t* Get_increase_sc_temp_main() const;
-        uint32_t* Get_increase_sc_temp_user() const;
+        uint32_t Get_increase_sc_temp_main(int index) const;
+        uint32_t Get_increase_sc_temp_user(int index) const;
         uint32_t Get_increase_sc_temp2() const;
         uint32_t Get_increase_sc_temp3() const;
         uint32_t Get_extraction_time_ms() const;
@@ -344,27 +344,28 @@ class FrsHitItem : public TObject
         Float_t fID_beta;
         Float_t fID_dEdeg;
         Float_t fID_dEdegoQ;
-        Float_t* fID_rho; // [2]
-        Float_t* fID_brho; // [2]
+        Float_t fID_rho[2]; // [2]
+        Float_t fID_brho[2]; // [2]
 
         // scitillators / energy loss
-        Float_t* fmusic_dE; // [2] // CEJ: 2? 3 for more musics?
-        Float_t* fmusic_dE_cor; // [2]
-        Float_t* fsci_e; // [6] // CEJ: by chance we need [6]. 5->2 but 10->5 (so 6 elements)
-        Float_t* fsci_l; // [6]
-        Float_t* fsci_r; // [6]
-        Float_t* fsci_x; // [6]
+        // we can't store this stuff in a tree as a pointer.....
+        Float_t fmusic_dE[2]; // [2] // CEJ: 2? 3 for more musics?
+        Float_t fmusic_dE_cor[2]; // [2]
+        Float_t fsci_e[6]; // [6] // CEJ: by chance we need [6]. 5->2 but 10->5 (so 6 elements)
+        Float_t fsci_l[6]; // [6]
+        Float_t fsci_r[6]; // [6]
+        Float_t fsci_x[6]; // [6]
         Float_t fsci_tof2; // should we look at passing all the tof calcs?
-        Float_t* fsci_tof; // [6]
-        Float_t* fsci_tof_calib; // [6]
+        Float_t fsci_tof[6]; // [6]
+        Float_t fsci_tof_calib[6]; // [6]
 
         // scalers
         uint32_t ftime_in_ms;
         uint32_t fibin_for_s;
         uint32_t fibin_for_100ms;
         uint32_t fibin_for_spill;
-        uint32_t* fincrease_sc_temp_main; // [32]
-        uint32_t* fincrease_sc_temp_user; // [32]
+        uint32_t fincrease_sc_temp_main[32]; // [32]
+        uint32_t fincrease_sc_temp_user[32]; // [32]
         uint32_t fincrease_sc_temp2;
         uint32_t fincrease_sc_temp3;
         uint32_t fextraction_time_ms;
@@ -496,54 +497,54 @@ inline Float_t FrsHitItem::Get_ID_dEdegoQ() const
     return fID_dEdegoQ;
 }
 
-inline Float_t* FrsHitItem::Get_ID_rho() const
+inline Float_t FrsHitItem::Get_ID_rho(int index) const
 {
-    return fID_rho;
+    return fID_rho[index];
 }
 
-inline Float_t* FrsHitItem::Get_ID_brho() const
+inline Float_t FrsHitItem::Get_ID_brho(int index) const
 {
-    return fID_brho;
+    return fID_brho[index];
 }
 
-inline Float_t* FrsHitItem::Get_music_dE() const
+inline Float_t FrsHitItem::Get_music_dE(int index) const
 {
-    return fmusic_dE;
+    return fmusic_dE[index];
 }
 
-inline Float_t* FrsHitItem::Get_music_dE_cor() const
+inline Float_t FrsHitItem::Get_music_dE_cor(int index) const
 {
-    return fmusic_dE_cor;
+    return fmusic_dE_cor[index];
 }
 
-inline Float_t* FrsHitItem::Get_sci_e() const
+inline Float_t FrsHitItem::Get_sci_e(int index) const
 {
-    return fsci_e;
+    return fsci_e[index];
 }
 
-inline Float_t* FrsHitItem::Get_sci_l() const
+inline Float_t FrsHitItem::Get_sci_l(int index) const
 {
-    return fsci_l;
+    return fsci_l[index];
 }
 
-inline Float_t* FrsHitItem::Get_sci_r() const
+inline Float_t FrsHitItem::Get_sci_r(int index) const
 {
-    return fsci_r;
+    return fsci_r[index];
 }
 
-inline Float_t* FrsHitItem::Get_sci_x() const
+inline Float_t FrsHitItem::Get_sci_x(int index) const
 {
-    return fsci_x;
+    return fsci_x[index];
 }
 
-inline Float_t* FrsHitItem::Get_sci_tof() const
+inline Float_t FrsHitItem::Get_sci_tof(int index) const
 {
-    return fsci_tof;
+    return fsci_tof[index];
 }
 
-inline Float_t* FrsHitItem::Get_sci_tof_calib() const
+inline Float_t FrsHitItem::Get_sci_tof_calib(int index) const
 {
-    return fsci_tof_calib;
+    return fsci_tof_calib[index];
 }
 
 inline Float_t FrsHitItem::Get_sci_tof2() const
@@ -571,14 +572,14 @@ inline uint32_t FrsHitItem::Get_ibin_for_spill() const
     return fibin_for_spill;
 }
 
-inline uint32_t* FrsHitItem::Get_increase_sc_temp_main() const
+inline uint32_t FrsHitItem::Get_increase_sc_temp_main(int index) const
 {
-    return fincrease_sc_temp_main;
+    return fincrease_sc_temp_main[index];
 }
 
-inline uint32_t* FrsHitItem::Get_increase_sc_temp_user() const
+inline uint32_t FrsHitItem::Get_increase_sc_temp_user(int index) const
 {
-    return fincrease_sc_temp_user;
+    return fincrease_sc_temp_user[index];
 }
 
 inline uint32_t FrsHitItem::Get_increase_sc_temp2() const
