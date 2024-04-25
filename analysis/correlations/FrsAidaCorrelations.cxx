@@ -10,7 +10,6 @@
 #include "c4Logger.h"
 #include "TFile.h"
 
-
 FrsAidaCorrelations::FrsAidaCorrelations(std::vector<FrsGate*> fg)
     :   FairTask()
     ,   fNEvents(0)

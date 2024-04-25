@@ -88,8 +88,10 @@ InitStatus GermaniumNearlineSpectra::Init()
     h2_germanium_energy_vs_detidx->GetXaxis()->SetTitle("energy (keV)");
     h2_germanium_energy_vs_detidx->GetYaxis()->SetTitle("detector index");
     h2_germanium_energy_vs_detidx->SetOption("COLZ");
-
-    h1_germanium_energy_summed = new TH1F("h1_germanium_energy_summed","Calibrated Germanium spectra summed all dets",fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    
+    
+    // CEJ temporary adjustment just for summmed spectra
+    h1_germanium_energy_summed = new TH1F("h1_germanium_energy_summed","Calibrated Germanium spectra summed all dets",8000,0,8000);
     h1_germanium_energy_summed->GetXaxis()->SetTitle("energy (keV)");
     h1_germanium_energy_summed->GetYaxis()->SetTitle("counts");
 
@@ -206,6 +208,7 @@ void GermaniumNearlineSpectra::Exec(Option_t* option){
             if (detector_id1 == germanium_configuration->SC41L() || detector_id1 == germanium_configuration->SC41R()) sci41_seen = true;
             
             int crystal_index1 = std::distance(crystals_to_plot.begin(), std::find(crystals_to_plot.begin(),crystals_to_plot.end(),std::pair<int,int>(detector_id1,crystal_id1)));
+            if (crystal_index1 >= crystals_to_plot.size()) continue;
             
             h1_germanium_energy[crystal_index1]->Fill(energy1);
             h2_germanium_energy_vs_detidx->Fill(hit1->Get_channel_energy(),crystal_index1);
@@ -307,7 +310,8 @@ void GermaniumNearlineSpectra::Exec(Option_t* option){
                 double timediff = time1 - time_sci41 - germanium_configuration->GetTimeshiftCoefficient(detector_id1,crystal_id1);
                 
                 h2_germanium_energy_summed_vs_tsci41->Fill(timediff ,energy1);
-                if ((TMath::Abs(time1-time_sci41 > 2000)) || (germanium_configuration->IsInsidePromptFlashCut(timediff ,energy1)==true) ) h1_germanium_energy_summed_vs_tsci41_cut->Fill(energy1);
+
+                if ((TMath::Abs(time1-time_sci41 > 0)) || (germanium_configuration->IsInsidePromptFlashCut(timediff ,energy1)==false) ) h1_germanium_energy_summed_vs_tsci41_cut->Fill(energy1);
 
                 for (int ihit3 = ihit2+1; ihit3 < nHits; ihit3 ++){
                 GermaniumCalData* hit3 = (GermaniumCalData*)fHitGe->At(ihit3);
@@ -322,6 +326,7 @@ void GermaniumNearlineSpectra::Exec(Option_t* option){
                 if (TMath::Abs(time1 - time2) < 500) h2_germanium_energy_energy_sci41_cut->Fill(energy1,energy2);
                 }
             }
+            break;
         }
         }
         
@@ -332,6 +337,7 @@ void GermaniumNearlineSpectra::Exec(Option_t* option){
 
     fNEvents += 1;
 }
+
 
 void GermaniumNearlineSpectra::FinishEvent()
 {

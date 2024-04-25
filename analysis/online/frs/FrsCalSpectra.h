@@ -77,6 +77,9 @@ class FrsCalSpectra : public FairTask
         // Canvas
 
         //SCI delta E
+        TH1D* h1_sci21_x;
+         
+         
         TH1D* h_sci_21l_de;
         TH1D* h_sci_21r_de;
         TH1D* h_sci_22l_de;

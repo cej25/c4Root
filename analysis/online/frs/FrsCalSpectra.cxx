@@ -12,6 +12,7 @@
 #include "FrsTPCData.h"
 #include "FrsTPCCalData.h"
 #include "FrsUserCalData.h"
+#include "FrsHitData.h"
 #include "EventHeader.h"
 #include "c4Logger.h"
 
@@ -32,6 +33,7 @@ FrsCalSpectra::FrsCalSpectra()
 }
 
 FrsCalSpectra::FrsCalSpectra(const TString& name, Int_t iVerbose)
+<<<<<<< HEAD
     :   FairTask(name, iVerbose)
     ,   fNEvents(0)
     ,   header(nullptr)
@@ -43,6 +45,16 @@ FrsCalSpectra::FrsCalSpectra(const TString& name, Int_t iVerbose)
     ,   userSciArray(nullptr)
     ,   userMusicArray(nullptr)
     ,   tpatArray(nullptr)
+=======
+    : FairTask(name, iVerbose)
+    , fFrsMainCalArray(NULL)
+    , fFrsUserCalArray(NULL)
+    , fFrsTPCArray(NULL)
+    , fFrsTPCCalArray(NULL)
+    , fFrsHitArray(NULL)
+    , fNEvents(0)
+    , header(nullptr)
+>>>>>>> 7c1c2dd44ca30049a1a466b7f41aabf92c5d3cc7
 {
 }
 
@@ -63,6 +75,7 @@ InitStatus FrsCalSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
+<<<<<<< HEAD
     // also needs TPC raw I think
     v7x5array = mgr->InitObjectAs<decltype(v7x5array)>("FrsTPCV7X5Data");
     c4LOG_IF(fatal, !v7x5array, "Branch v7x5array not found!");
@@ -84,6 +97,18 @@ InitStatus FrsCalSpectra::Init()
     c4LOG_IF(fatal, !userMusicArray, "Branch FrsUserCalMusicData not found!");
     tpatArray = mgr->InitObjectAs<decltype(tpatArray)>("FrsTpatData");
     c4LOG_IF(fatal, !tpatArray, "Branch FrsTpatData not found!");
+=======
+    fFrsMainCalArray = (TClonesArray*)mgr->GetObject("FrsMainCalData");
+    c4LOG_IF(fatal, !fFrsMainCalArray, "Branch FrsMainCalData not found");
+    fFrsUserCalArray = (TClonesArray*)mgr->GetObject("FrsUserCalData");
+    c4LOG_IF(fatal, !fFrsUserCalArray, "Branch FrsUserCalData not found");
+    fFrsTPCArray = (TClonesArray*)mgr->GetObject("FrsTPCData");
+    c4LOG_IF(fatal, !fFrsTPCArray, "Branch FrsTPCData not found");
+    fFrsTPCCalArray = (TClonesArray*)mgr->GetObject("FrsTPCCalData");
+    c4LOG_IF(fatal, !fFrsTPCCalArray, "Branch FrsTPCCalData not found");
+    fFrsHitArray = (TClonesArray*)mgr->GetObject("FrsHitData");
+    c4LOG_IF(fatal, !fFrsHitArray, "Branch FrsHitData not found");
+>>>>>>> 7c1c2dd44ca30049a1a466b7f41aabf92c5d3cc7
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
 
@@ -194,6 +219,8 @@ InitStatus FrsCalSpectra::Init()
     h_tpc_music41_x = new TH1D("h_tpc_music41_x", "TPC h_tpc_music41_x",tpc_bins,tpc_min_x,tpc_max_x);
     h_tpc_music42_x = new TH1D("h_tpc_music42_x", "TPC h_tpc_music42_x",tpc_bins,tpc_min_x,tpc_max_x);
     h_tpc_music43_x = new TH1D("h_tpc_music43_x", "TPC h_tpc_music43_x",tpc_bins,tpc_min_x,tpc_max_x);
+    
+    h1_sci21_x = new TH1D("h1_sci21_x", "S2 position SCI21", 200, -100, 100);
 
     dir_frs_cal_user->cd();
     int tac_bins = 1000;
@@ -321,6 +348,7 @@ void FrsCalSpectra::Exec(Option_t* option)
         }
     }
 
+<<<<<<< HEAD
     h_tpc_angle_x_s2_foc_21_22->Fill(tpcCalItem.Get_tpc_angle_x_s2_foc_21_22());
     h_tpc_angle_y_s2_foc_21_22->Fill(tpcCalItem.Get_tpc_angle_y_s2_foc_21_22());
     h_tpc_x_s2_foc_21_22->Fill(tpcCalItem.Get_tpc_x_s2_foc_21_22());
@@ -387,6 +415,59 @@ void FrsCalSpectra::Exec(Option_t* option)
     h_tac_user_dt_22l_81l->Fill(dt_22l_81l);
     uint32_t dt_22r_81r = dt_array[15];
     h_tac_user_dt_22r_81r->Fill(dt_22r_81r);
+=======
+    if (fFrsUserCalArray && fFrsUserCalArray->GetEntriesFast() > 0){
+        Int_t nhits = fFrsUserCalArray->GetEntriesFast();
+        for (Int_t ihit = 0; ihit<nhits; ihit++){
+            fHitFrsUserCal = (FrsUserCalData*)fFrsUserCalArray->At(ihit);
+            if (!fHitFrsUserCal) continue;
+            dt_array = fHitFrsUserCal->Get_dt_array();
+            uint32_t dt_21l_21r = dt_array[0];
+            h_tac_user_dt_21l_21r->Fill(dt_21l_21r);
+            uint32_t dt_41l_41r = dt_array[1];
+            h_tac_user_dt_41l_41r->Fill(dt_41l_41r);
+            uint32_t dt_42l_42r = dt_array[2];
+            h_tac_user_dt_42l_42r->Fill(dt_42l_42r);
+            uint32_t dt_43l_43r = dt_array[3];
+            h_tac_user_dt_43l_43r->Fill(dt_43l_43r);
+            uint32_t dt_81l_81r = dt_array[4];
+            h_tac_user_dt_81l_81r->Fill(dt_81l_81r);
+            uint32_t dt_21l_41l = dt_array[5];
+            h_tac_user_dt_21l_41l->Fill(dt_21l_41l);
+            uint32_t dt_21r_41r = dt_array[6];
+            h_tac_user_dt_21r_41r->Fill(dt_21r_41r);
+            uint32_t dt_42r_21r = dt_array[7];
+            h_tac_user_dt_42r_21r->Fill(dt_42r_21r);
+            uint32_t dt_42l_21l = dt_array[8];
+            h_tac_user_dt_42l_21l->Fill(dt_42l_21l);
+            uint32_t dt_21l_81l = dt_array[9];
+            h_tac_user_dt_21l_81l->Fill(dt_21l_81l);
+            uint32_t dt_21r_81r = dt_array[10];
+            h_tac_user_dt_21r_81r->Fill(dt_21r_81r);
+            uint32_t dt_22l_22r = dt_array[11];
+            h_tac_user_dt_22l_22r->Fill(dt_22l_22r);
+            uint32_t dt_22l_41l = dt_array[12];
+            h_tac_user_dt_22l_41l->Fill(dt_22l_41l);
+            uint32_t dt_22r_41r = dt_array[13];
+            h_tac_user_dt_22r_41r->Fill(dt_22r_41r);
+            uint32_t dt_22l_81l = dt_array[14];
+            h_tac_user_dt_22l_81l->Fill(dt_22l_81l);
+            uint32_t dt_22r_81r = dt_array[15];
+            h_tac_user_dt_22r_81r->Fill(dt_22r_81r);
+        }
+    }
+    
+    if (fFrsHitArray && fFrsHitArray->GetEntriesFast() > 0)
+    {
+        Int_t nHits = fFrsHitArray->GetEntriesFast();
+        for (Int_t ihit = 0; ihit < nHits; ihit++)
+        {
+            FrsHitData* FrsHit = (FrsHitData*)fFrsHitArray->At(0);
+            if (!FrsHit) continue;
+            h1_sci21_x->Fill(FrsHit->Get_sci_tx(0));
+        }
+    }
+>>>>>>> 7c1c2dd44ca30049a1a466b7f41aabf92c5d3cc7
 
     fNEvents += 1;
 
@@ -394,7 +475,15 @@ void FrsCalSpectra::Exec(Option_t* option)
 
 void FrsCalSpectra::FinishEvent()
 {
+<<<<<<< HEAD
 
+=======
+    if(fFrsUserCalArray) fFrsUserCalArray->Clear();
+    if(fFrsMainCalArray) fFrsMainCalArray->Clear();
+    if(fFrsTPCArray) fFrsTPCArray->Clear();
+    if(fFrsTPCCalArray) fFrsTPCCalArray->Clear();
+    if(fFrsHitArray) fFrsHitArray->Clear();
+>>>>>>> 7c1c2dd44ca30049a1a466b7f41aabf92c5d3cc7
 }
 
 void FrsCalSpectra::FinishTask()

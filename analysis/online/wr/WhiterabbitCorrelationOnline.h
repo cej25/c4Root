@@ -68,6 +68,9 @@ class WhiterabbitCorrelationOnline : public FairTask
         EventHeader* fEventHeader;
         Int_t fNEvents;
         int total_time_microsecs = 0;
+        int frs_and_aida = 0;
+        int frsEvents = 0;
+        int implantEvents = 0;
 
         // Canvas
         TCanvas* c_whiterabbit_correlation;
@@ -181,10 +184,10 @@ class WhiterabbitCorrelationOnline : public FairTask
         TH1I* h1_whiterabbit_dt_fatimavme;
         // frs? aida?
 
-        int last_wr_germanium;
-        int last_wr_bplast;
-        int last_wr_fatima;
-        int last_wr_fatimavme;
+        int64_t last_wr_germanium;
+        int64_t last_wr_bplast;
+        int64_t last_wr_fatima;
+        int64_t last_wr_fatimavme;
 
 
 

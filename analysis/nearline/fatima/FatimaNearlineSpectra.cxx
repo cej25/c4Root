@@ -22,6 +22,8 @@
 FatimaNearlineSpectra::FatimaNearlineSpectra() 
     : FatimaNearlineSpectra("FatimaNearlineSpectra")
     {
+            fatima_configuration = TFatimaTwinpeaksConfiguration::GetInstance();
+
     }
 
 FatimaNearlineSpectra::FatimaNearlineSpectra(const TString& name, Int_t verbose)
@@ -30,6 +32,8 @@ FatimaNearlineSpectra::FatimaNearlineSpectra(const TString& name, Int_t verbose)
     , fNEvents(0)
     , header(nullptr)
 {
+        fatima_configuration = TFatimaTwinpeaksConfiguration::GetInstance();
+
 }
 
 FatimaNearlineSpectra::~FatimaNearlineSpectra()
@@ -63,6 +67,7 @@ InitStatus FatimaNearlineSpectra::Init()
     dir_fatima_fast_v_slow = gDirectory->mkdir("Fast Vs. Slow");
     dir_fatima_energy_spectra = gDirectory->mkdir("Energy Spectra");
     dir_fatima_time_spectra = gDirectory->mkdir("Time Spectra");
+    dir_fatima_sci41 = dir_fatima->mkdir("SCI41");
 
     int min_detector_id = *min_element(detectors.begin(),detectors.end());
     int max_detector_id = *max_element(detectors.begin(), detectors.end());
@@ -101,6 +106,31 @@ InitStatus FatimaNearlineSpectra::Init()
         h2_fatima_fast_v_slow[ihist]->GetXaxis()->SetTitle("fast ToT (ns)");
         h2_fatima_fast_v_slow[ihist]->GetYaxis()->SetTitle("slow ToT (ns)");
     }
+
+    // Spectra relating to SCI41:
+    dir_fatima_sci41->cd();   
+    c_fatima_energy_summed_vs_tsci41 = new TCanvas("c_fatima_energy_summed_vs_tsci41","Calibrated FATIMA spectra summed all energyies vs t(det) - t(sci41)",650,350);
+    h2_fatima_energy_summed_vs_tsci41 = new TH2F("h2_fatima_energy_summed_vs_tsci41","Calibrated FATIMA spectra summed all energyies vs t(det) - t(sci41)",1000,-500,5000,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h2_fatima_energy_summed_vs_tsci41->GetXaxis()->SetTitle("time difference (ns)");
+    h2_fatima_energy_summed_vs_tsci41->GetYaxis()->SetTitle("energy (keV)");
+    h2_fatima_energy_summed_vs_tsci41->Draw("COLZ");
+    c_fatima_energy_summed_vs_tsci41->cd(0);
+    dir_fatima_sci41->Append(c_fatima_energy_summed_vs_tsci41);
+
+    c_fatima_energy_summed_vs_tsci41_cut = new TCanvas("c_fatima_energy_summed_vs_tsci41_cut","Calibrated FATIMA spectra summed all energyies, prompt flash cut",650,350);
+    h1_fatima_energy_summed_vs_tsci41_cut = new TH1F("h1_fatima_energy_summed_vs_tsci41_cut","Calibrated FATIMA spectra summed all energyies, prompt flash cut",fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h1_fatima_energy_summed_vs_tsci41_cut->GetXaxis()->SetTitle("energy (keV)");
+    h1_fatima_energy_summed_vs_tsci41_cut->Draw("COLZ");
+    c_fatima_energy_summed_vs_tsci41_cut->cd(0);
+    dir_fatima_sci41->Append(c_fatima_energy_summed_vs_tsci41_cut);
+
+    c_fatima_energy_energy_sci41_cut = new TCanvas("c_fatima_energy_energy_sci41_cut","Calibrated FATIMA spectra summed all energyies, t(det) - t(sci41) > 200 ns",650,350);
+    h2_fatima_energy_energy_sci41_cut = new TH2F("h2_fatima_energy_energy_sci41_cut","Calibrated FATIMA spectra energy vs energy, prompt flash cut",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h2_fatima_energy_energy_sci41_cut->GetXaxis()->SetTitle("energy (keV)");
+    h2_fatima_energy_energy_sci41_cut->GetYaxis()->SetTitle("energy (keV)");
+    h2_fatima_energy_energy_sci41_cut->Draw("COLZ");
+    c_fatima_energy_energy_sci41_cut->cd(0);
+    dir_fatima_sci41->Append(c_fatima_energy_energy_sci41_cut);
     
     // Time spectra:
     dir_fatima_time_spectra->cd();
@@ -184,7 +214,9 @@ void FatimaNearlineSpectra::Exec(Option_t* option)
     
     auto start = std::chrono::high_resolution_clock::now();
     
-    //suspects that the lead and trail flags are	
+    bool sci41_seen = false;
+
+
     if (fHitFatimaTwinpeaks && fHitFatimaTwinpeaks->GetEntriesFast() > 0)
     {
         event_multiplicity = 0;
@@ -201,9 +233,12 @@ void FatimaNearlineSpectra::Exec(Option_t* option)
             double fast_lead1 = hit->Get_fast_lead_time();
             
             int detector_id1 = hit->Get_detector_id();
+
+            if (detector_id1 == fatima_configuration->SC41L() || detector_id1 == fatima_configuration->SC41R()) sci41_seen = true;
+
             int detector_index1 = GetDetectorIndex(detector_id1);
             if (detector_index1 >= number_detectors) {continue;} // this implies that the hit corresponds to a detector that is not specified for plotting.
-            
+
             event_multiplicity ++; // count only "valid events"
             h1_fatima_slowToT[detector_index1]->Fill(slow_ToT1);
             h1_fatima_energy[detector_index1]->Fill(energy1);
@@ -256,6 +291,56 @@ void FatimaNearlineSpectra::Exec(Option_t* option)
                 }
             }
         }
+
+        // Spectra with respect to SCI41:
+        if (nHits >= 2 && sci41_seen){
+        for (int ihit1 = 0; ihit1 < nHits; ihit1 ++){
+
+            FatimaTwinpeaksCalData* hit_sci41 = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(ihit1);
+            if (!hit_sci41) continue;
+            int detector_id_sci41 = hit_sci41->Get_detector_id();
+            double energy_sci41 = hit_sci41->Get_energy();
+            double time_sci41 = hit_sci41->Get_fast_lead_time();
+
+            // after this test we have the sci41 hit.
+            if (detector_id_sci41 != fatima_configuration->SC41L() && detector_id_sci41 != fatima_configuration->SC41R()) continue;
+
+            for (int ihit2 = 0; ihit2 < nHits; ihit2 ++){
+                FatimaTwinpeaksCalData* hit2 = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(ihit2);
+                if (!hit2) continue;
+                int detector_id1 = hit2->Get_detector_id();
+                double energy1 = hit2->Get_energy();
+                double time1 = hit2->Get_fast_lead_time();
+
+                if (fatima_configuration->IsDetectorAuxilliary(detector_id1)) continue;
+
+                double timediff = time1 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(detector_id1);
+                
+                h2_fatima_energy_summed_vs_tsci41->Fill(timediff ,energy1);
+
+                if ((fatima_configuration->IsInsidePromptFlashCut(timediff ,energy1)==false) ) h1_fatima_energy_summed_vs_tsci41_cut->Fill(energy1);
+
+                for (int ihit3 = ihit2+1; ihit3 < nHits; ihit3 ++){
+                FatimaTwinpeaksCalData* hit3 = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(ihit3);
+                if (!hit3) continue;
+                int detector_id2 = hit3->Get_detector_id();
+                double energy2 = hit3->Get_energy();
+                double time2 = hit3->Get_fast_lead_time();
+
+                if (fatima_configuration->IsDetectorAuxilliary(detector_id2)) continue;
+                double timediff2 = time2 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(detector_id2);
+
+                if ((fatima_configuration->IsInsidePromptFlashCut(timediff2,energy2)==true)) continue;
+                
+                if (TMath::Abs(time1 - time2) < 500) h2_fatima_energy_energy_sci41_cut->Fill(energy1,energy2);
+
+                }
+            }
+            break;
+        }
+        }
+
+
         h1_fatima_multiplicity->Fill(event_multiplicity);
         // ++events should go here, no?
     }

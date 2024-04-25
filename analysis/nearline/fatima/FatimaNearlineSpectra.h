@@ -4,6 +4,7 @@
 #include "FairTask.h"
 #include "TDirectory.h"
 #include "TFolder.h"
+#include "TFatimaTwinpeaksConfiguration.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include <vector>
@@ -95,6 +96,7 @@ class FatimaNearlineSpectra : public FairTask
     
     private:
         TClonesArray* fHitFatimaTwinpeaks;
+        const TFatimaTwinpeaksConfiguration * fatima_configuration;
 
         // ranges
         EventHeader* header;
@@ -109,6 +111,7 @@ class FatimaNearlineSpectra : public FairTask
         TDirectory* dir_fatima_hitpattern;
         TDirectory* dir_fatima_energy_spectra;
         TDirectory* dir_fatima_time_spectra;
+        TDirectory* dir_fatima_sci41;
         std::vector<TDirectory*> dir_fatima_time_differences;
         
         std::vector<int> detectors = {0,1,2};
@@ -147,6 +150,16 @@ class FatimaNearlineSpectra : public FairTask
         int   ftime_coincidence_nbins = 1000;
         float ftime_coincidence_low = -100;
         float ftime_coincidence_high = 100;
+
+
+        //sci41 spectra:
+        TCanvas * c_fatima_energy_summed_vs_tsci41;
+        TH2F * h2_fatima_energy_summed_vs_tsci41;
+        TCanvas * c_fatima_energy_summed_vs_tsci41_cut;
+        TH1F * h1_fatima_energy_summed_vs_tsci41_cut;
+        TCanvas * c_fatima_energy_energy_sci41_cut;
+        TH2F * h2_fatima_energy_energy_sci41_cut;
+        
 
 
         double energygate_width = 20;        

@@ -36,6 +36,7 @@ class FrsHitData : public TObject
         inline const Float_t Get_sci_tof2() const { return fsci_tof2; }
         inline const Float_t Get_sci_l(int channel) const { return fsci_l[channel]; }
         inline const Float_t Get_sci_r(int channel) const { return fsci_r[channel]; }
+        inline const Float_t Get_sci_tx(int channel) const { return fsci_tx[channel]; }
 
         inline const Float_t Get_ID_z_mhtdc(int mhit) const 
         {
@@ -139,6 +140,7 @@ class FrsHitData : public TObject
         inline void Set_music_dE_cor(int index, Float_t dE_cor) { fmusic_dE_cor[index] = dE_cor; }
         inline void Set_sci_l(int index, Float_t sci_l) { fsci_l[index] = sci_l; }
         inline void Set_sci_r(int index, Float_t sci_r) { fsci_r[index] = sci_r; }
+        inline void Set_sci_tx(int index, Float_t sci_tx) { fsci_tx[index] = sci_tx; }
         inline void Set_sci_e(int index, Float_t sci_e) { fsci_e[index] = sci_e; }
         inline void Set_sci_tof2(Float_t sci_tof2) { fsci_tof2 = sci_tof2; }
         inline void Set_sci_tof(int index, Float_t sci_tof) { fsci_tof[index] = sci_tof; }
@@ -198,6 +200,7 @@ class FrsHitData : public TObject
         Float_t fsci_e[6]; // CEJ: by chance we need [6]. 5->2 but 10->5 (so 6 elements)
         Float_t fsci_l[6];
         Float_t fsci_r[6];
+        Float_t fsci_tx[6];
         Float_t fsci_tof2;
         Float_t fsci_tof[6];
         Float_t fsci_tof_calib[6];
