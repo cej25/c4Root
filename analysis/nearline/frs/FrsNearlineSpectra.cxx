@@ -86,7 +86,9 @@ InitStatus FrsNearlineSpectra::Init()
     if (dir_frs == nullptr) 
     {
         LOG(info) << "Creating FRS Directory";
-        dir_frs = new TDirectory("FRS", "FRS", "", 0);
+        //dir_frs = new TDirectory("FRS", "FRS", "", 0);
+        FairRootManager::Instance()->GetOutFile()->cd();
+        dir_frs = gDirectory->mkdir("FRS");
         mgr->Register("FRS", "FRS Directory", dir_frs, false); // allow other tasks to find this
         found_dir_frs = false;
     }
