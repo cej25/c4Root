@@ -51,6 +51,9 @@ class FrsTpatReader : public c4Reader
 
         uint64_t wr_t;
         uint16_t tpat;
+        
+        int tpatEvent = 0;
+        bool written = false;
 
     
     public:

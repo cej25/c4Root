@@ -63,12 +63,24 @@ Bool_t FrsTpatReader::Read()
 
     FrsTpatData* TpatHit = new FrsTpatData();
     wr_t = (((uint64_t)fData->frstpat_wr_t[3]) << 48) + (((uint64_t)fData->frstpat_wr_t[2]) << 32) + (((uint64_t)fData->frstpat_wr_t[1]) << 16) + (uint64_t)(fData->frstpat_wr_t[0]);
+    if (wr_t != 0) 
+    {
+        tpatEvent++;
+        written = false;
+    }
+        
     TpatHit->Set_wr_t(wr_t);
 
     tpat = fData->frstpat_data_tpat; // single 12bit 
     TpatHit->Set_tpat(tpat);
 
     new ((*fArray)[fArray->GetEntriesFast()]) FrsTpatData(*TpatHit);
+    
+    if (tpatEvent % 5000 == 0 && tpatEvent > 0 && written == false)
+    {
+        c4LOG(info, "FRS WhiteRabbits: " << tpatEvent);
+        written = true;
+    }
         
     fNEvent += 1;
     

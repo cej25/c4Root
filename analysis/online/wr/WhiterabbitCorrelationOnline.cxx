@@ -666,6 +666,7 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         nHitsAida = fAidaDecays->size();
         nHitsAidaImplants = fAidaImplants->size();
         if (nHitsAida > 0 || nHitsAidaImplants > 0) systems++;
+        if (nHitsAidaImplants > 0) implantEvents++;
 
     }
 
@@ -674,10 +675,19 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
     {
         nHitsFrs = fHitFrs->GetEntriesFast();
         if (nHitsFrs > 0) systems++;
+        if (nHitsFrs > 0) frsEvents++;
     }
+    
+    if (nHitsFrs > 0 && nHitsAidaImplants > 0) frs_and_aida++;
+    
+//     if (implantEvents % 5000 == 0 && implantEvents > 0) std::cout << "implantEvents: " << implantEvents << std::endl;
+//     if (frsEvents % 5000 == 0 && frsEvents > 0) std::cout << "frsEvents: " << frsEvents << std::endl;
+//     if (frs_and_aida % 500 == 0 && frs_and_aida > 0) std::cout << "frs_and_aida: " << frs_and_aida << std::endl;
     
 
     if (systems < 2) return;
+    
+    
 
     int aidaImplantCounter = 0;
     for (auto & fa : *fAidaImplants)

@@ -146,7 +146,7 @@ InitStatus BGOOnlineSpectra::Init()
     h1_germanium_bgo_veto_energy.resize(number_of_detectors_to_plot);
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
         c_germanium_bgo_veto_energy->cd(ihist+1);
-        h1_germanium_bgo_veto_energy[ihist] = new TH1F(Form("h1_germanium_bgo_veto_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c - BGO vetoed",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,3e3);
+        h1_germanium_bgo_veto_energy[ihist] = new TH1F(Form("h1_germanium_bgo_veto_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c - BGO vetoed",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),3*10e2,0,3e3);
         h1_germanium_bgo_veto_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
         h1_germanium_bgo_veto_energy[ihist]->Draw();
     }
@@ -159,7 +159,7 @@ InitStatus BGOOnlineSpectra::Init()
     h1_germanium_bgo_vetotrue_energy.resize(number_of_detectors_to_plot);
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
         c_germanium_bgo_vetotrue_energy->cd(ihist+1);
-        h1_germanium_bgo_vetotrue_energy[ihist] = new TH1F(Form("h1_germanium_bgo_vetotrue_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c - BGO veto = true",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,3e3);
+        h1_germanium_bgo_vetotrue_energy[ihist] = new TH1F(Form("h1_germanium_bgo_vetotrue_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c - BGO veto = true",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),3*10e2,0,3e3);
         h1_germanium_bgo_vetotrue_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
         h1_germanium_bgo_vetotrue_energy[ihist]->Draw();
     }
@@ -173,7 +173,7 @@ InitStatus BGOOnlineSpectra::Init()
     h1_germanium_bgo_veto_timedifferences.resize(number_of_detectors_to_plot);
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
         c_germanium_bgo_veto_timedifferences->cd(ihist+1);
-        h1_germanium_bgo_veto_timedifferences[ihist] = new TH1F(Form("h1_germanium_bgo_veto_timedifferences_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("BGO-DEGAS time spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e2,-10e3,10e3);
+        h1_germanium_bgo_veto_timedifferences[ihist] = new TH1F(Form("h1_germanium_bgo_veto_timedifferences_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("BGO-DEGAS time spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),2*10e2,-2e3,2e3);
         h1_germanium_bgo_veto_timedifferences[ihist]->GetXaxis()->SetTitle("time BGO-Ge (ns)");
         h1_germanium_bgo_veto_timedifferences[ihist]->Draw();
     }
@@ -311,9 +311,10 @@ void BGOOnlineSpectra::Exec(Option_t* option)
                 
                     //if (detector_id_bgo2 == detector_id_ge && crystal_id_ge == crystal_id_bgo2){
                         int64_t dt = hit2->Get_wr_t() - hit_ge->Get_wr_t();
-                        h1_germanium_bgo_veto_timedifferences[crystal_index_bgo2]->Fill(dt);    
-                        if (TMath::Abs(dt)<BGO_Germanium_wr_coincidence_window + BGO_Germanium_wr_coincidence_window_offset)
+                            
+                        if (TMath::Abs(dt+BGO_Germanium_wr_coincidence_window_offset)<BGO_Germanium_wr_coincidence_window)
                         {
+                            h1_germanium_bgo_veto_timedifferences[crystal_index_bgo2]->Fill(dt);
                             //VETO!
                             veto = true;
                         }

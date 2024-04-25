@@ -143,6 +143,10 @@ void FrsCal2Hit::Exec(Option_t* option)
     FrsHitData* FrsHit = new FrsHitData();
 
     fNEvents++;
+    
+    if (fNEvents % 5000 == 0) c4LOG(info, "FRS Events in Hit stage: " << fNEvents);
+    
+    
     fRawHitTpat = (FrsTpatData*)fRawArrayTpat->At(0);
     fCalHitMain = (FrsMainCalData*)fCalArrayMain->At(0);
     fCalHitTPC = (FrsTPCCalData*)fCalArrayTPC->At(0);
