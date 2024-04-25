@@ -35,10 +35,10 @@ WhiterabbitCorrelationOnline::WhiterabbitCorrelationOnline(const TString& name, 
     , fHitFatimaTwinpeaks(NULL)
     , fHitbPlastTwinpeaks(NULL)
     , fHitGe(NULL)
-    , fHitFatimaVme(NULL)
     , fAidaDecays(nullptr)
     , fAidaScalers(nullptr)
     , fAidaImplants(nullptr)
+    , fatVmeArray(nullptr)
     , hitArrayFrs(nullptr)
     , fNEvents(0)
     , fEventHeader(nullptr)
@@ -49,14 +49,9 @@ WhiterabbitCorrelationOnline::WhiterabbitCorrelationOnline(const TString& name, 
 
 WhiterabbitCorrelationOnline::~WhiterabbitCorrelationOnline()
 {
-    c4LOG(info, "");
     if (fHitFatimaTwinpeaks)
     {
         delete fHitFatimaTwinpeaks;
-    }
-    if (fHitFatimaVme)
-    {
-        delete fHitFatimaVme;
     }
     if (fHitbPlastTwinpeaks)
     {
@@ -118,8 +113,8 @@ InitStatus WhiterabbitCorrelationOnline::Init()
         }
         else if (fDetectorSystems.at(i) == "FatimaVme")
         {
-            fHitFatimaVme = (TClonesArray*)mgr->GetObject("FatimaVmeCalData");
-            c4LOG_IF(error, !fHitFatimaVme, "Branch FatimaVmeCalData. not found");
+            fatVmeArray = mgr->InitObjectAs<decltype(fatVmeArray)>("FatimaVmeTDCCalData");
+            c4LOG_IF(fatal, !fatVmeArray, "Branch FatimaVmeTDCCalData not found!");
         }
         else if (fDetectorSystems.at(i) == "Germanium")
         {
@@ -627,22 +622,19 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         }
     }
 
-    if (fHitFatimaVme) 
+    if (fatVmeArray->size() > 0) 
     {
-        nHitsFatimaVme = fHitFatimaVme->GetEntriesFast();
-        if (nHitsFatimaVme > 0) 
-        {
-            systems += 1;
+        auto const & hitFatVme = fatVmeArray->at(0);
+        systems += 1;
 
-            FatimaVmeCalData* FatimaVmeHit = (FatimaVmeCalData*)fHitFatimaVme->At(0);
-            int64_t wr_fatimavme = FatimaVmeHit->Get_wr_t();
-            if (last_wr_fatimavme != wr_fatimavme) 
-            {
-                h1_whiterabbit_dt_fatimavme->Fill(wr_fatimavme - last_wr_fatimavme);
-                last_wr_fatimavme = wr_fatimavme;
-            }
+        int64_t wr_fatimavme = hitFatVme.Get_wr_t();
+        if (last_wr_fatimavme != wr_fatimavme) 
+        {
+            h1_whiterabbit_dt_fatimavme->Fill(wr_fatimavme - last_wr_fatimavme);
+            last_wr_fatimavme = wr_fatimavme;
         }
     }
+    
     if (fAidaDecays || fAidaImplants)
     {
         nHitsAida = fAidaDecays->size();
@@ -657,11 +649,6 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
     }
     
     if (nHitsFrs > 0 && nHitsAidaImplants > 0) frs_and_aida++;
-    
-//     if (implantEvents % 5000 == 0 && implantEvents > 0) std::cout << "implantEvents: " << implantEvents << std::endl;
-//     if (frsEvents % 5000 == 0 && frsEvents > 0) std::cout << "frsEvents: " << frsEvents << std::endl;
-//     if (frs_and_aida % 500 == 0 && frs_and_aida > 0) std::cout << "frs_and_aida: " << frs_and_aida << std::endl;
-    
 
     int aidaImplantCounter = 0;
     for (auto & fa : *fAidaImplants)
@@ -711,23 +698,22 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             }
         }
         
-        if (fHitFatimaVme)
+        if (fatVmeArray->size() > 0)
         {
-            FatimaVmeCalData* hitFatimaVme = (FatimaVmeCalData*)fHitFatimaVme->At(0);
-            if (hitFatimaVme)
+            auto const & hitFatimaVme = fatVmeArray->at(0);
+
+            int64_t wr_fatimavme = hitFatimaVme.Get_wr_t();
+            int64_t dt = wr_aida - wr_fatimavme;
+            h1_whiterabbit_correlation_aida_fatimavme->Fill(dt);
+            if (fEventHeader->GetTrigger() == 1)
             {
-                int64_t wr_fatimavme = hitFatimaVme->Get_wr_t();
-                int64_t dt = wr_aida - wr_fatimavme;
-                h1_whiterabbit_correlation_aida_fatimavme->Fill(dt);
-                if (fEventHeader->GetTrigger() == 1)
-                {
-                    h1_whiterabbit_trigger1_aida_fatimavme->Fill(dt);
-                }
-                if (fEventHeader->GetTrigger() == 3)
-                {
-                    h1_whiterabbit_trigger3_aida_fatimavme->Fill(dt);
-                }
+                h1_whiterabbit_trigger1_aida_fatimavme->Fill(dt);
             }
+            if (fEventHeader->GetTrigger() == 3)
+            {
+                h1_whiterabbit_trigger3_aida_fatimavme->Fill(dt);
+            }
+            
         }
         
         if (fHitbPlastTwinpeaks)
@@ -788,23 +774,22 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
                 h1_whiterabbit_correlation_fatima_frs->Fill(dt);
             }
 
-            if (fHitFatimaVme) 
+            if (fatVmeArray->size() > 0) 
             {
-                FatimaVmeCalData* hitFatimaVme = (FatimaVmeCalData*)fHitFatimaVme->At(0);
-                if (hitFatimaVme)
+                auto const & hitFatVme = fatVmeArray->at(0);
+                
+                int64_t wr_fatima_vme = hitFatVme.Get_wr_t();
+                int64_t dt = wr_fatima - wr_fatima_vme;
+                h1_whiterabbit_correlation_fatima_fatimavme->Fill(dt);
+                if (fEventHeader->GetTrigger() == 1)
                 {
-                    int64_t wr_fatima_vme = hitFatimaVme->Get_wr_t();
-                    int64_t dt = wr_fatima - wr_fatima_vme;
-                    h1_whiterabbit_correlation_fatima_fatimavme->Fill(dt);
-                    if (fEventHeader->GetTrigger() == 1)
-                    {
-                        h1_whiterabbit_trigger1_fatima_fatimavme->Fill(dt);
-                    }
-                    if (fEventHeader->GetTrigger() == 3)
-                    {
-                        h1_whiterabbit_trigger3_fatima_fatimavme->Fill(dt);
-                    }
+                    h1_whiterabbit_trigger1_fatima_fatimavme->Fill(dt);
                 }
+                if (fEventHeader->GetTrigger() == 3)
+                {
+                    h1_whiterabbit_trigger3_fatima_fatimavme->Fill(dt);
+                }
+                
             }
             
             if (fHitbPlastTwinpeaks) 
@@ -848,48 +833,46 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         }
     }
     
-    if (fHitFatimaVme)
+    if (fatVmeArray->size() > 0)
     {
-        FatimaVmeCalData* hitFatimaVme = (FatimaVmeCalData*)fHitFatimaVme->At(0);
-        if (hitFatimaVme)
-        {
-            int64_t wr_fatimavme= hitFatimaVme->Get_wr_t();
+        auto const & hitFatVme = fatVmeArray->at(0);
+        
+        int64_t wr_fatimavme = hitFatVme.Get_wr_t();
 
-            if (fHitbPlastTwinpeaks) 
+        if (fHitbPlastTwinpeaks) 
+        {
+            bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(0);
+            if (hitbPlast)
             {
-                bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(0);
-                if (hitbPlast)
+                int64_t wr_bplast = hitbPlast->Get_wr_t();
+                int64_t dt = wr_fatimavme - wr_bplast;
+                h1_whiterabbit_correlation_fatimavme_bplast->Fill(dt);
+                if (fEventHeader->GetTrigger() == 1)
                 {
-                    int64_t wr_bplast = hitbPlast->Get_wr_t();
-                    int64_t dt = wr_fatimavme - wr_bplast;
-                    h1_whiterabbit_correlation_fatimavme_bplast->Fill(dt);
-                    if (fEventHeader->GetTrigger() == 1)
-                    {
-                        h1_whiterabbit_trigger1_fatimavme_bplast->Fill(dt);
-                    }
-                    if (fEventHeader->GetTrigger() == 3)
-                    {
-                        h1_whiterabbit_trigger3_fatimavme_bplast->Fill(dt);
-                    }
+                    h1_whiterabbit_trigger1_fatimavme_bplast->Fill(dt);
+                }
+                if (fEventHeader->GetTrigger() == 3)
+                {
+                    h1_whiterabbit_trigger3_fatimavme_bplast->Fill(dt);
                 }
             }
-            
-            if (fHitGe) 
+        }
+
+        if (fHitGe) 
+        {
+            GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(0);
+            if (hitGe)
             {
-                GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(0);
-                if (hitGe)
+                int64_t wr_ge = hitGe->Get_wr_t();
+                int64_t dt = wr_fatimavme - wr_ge;
+                h1_whiterabbit_correlation_fatimavme_ge->Fill(dt);
+                if (fEventHeader->GetTrigger() == 1)
                 {
-                    int64_t wr_ge = hitGe->Get_wr_t();
-                    int64_t dt = wr_fatimavme - wr_ge;
-                    h1_whiterabbit_correlation_fatimavme_ge->Fill(dt);
-                    if (fEventHeader->GetTrigger() == 1)
-                    {
-                        h1_whiterabbit_trigger1_fatimavme_ge->Fill(dt);
-                    }
-                    if (fEventHeader->GetTrigger() == 3)
-                    {
-                        h1_whiterabbit_trigger3_fatimavme_ge->Fill(dt);
-                    }
+                    h1_whiterabbit_trigger1_fatimavme_ge->Fill(dt);
+                }
+                if (fEventHeader->GetTrigger() == 3)
+                {
+                    h1_whiterabbit_trigger3_fatimavme_ge->Fill(dt);
                 }
             }
         }
@@ -975,10 +958,6 @@ void WhiterabbitCorrelationOnline::FinishEvent()
     {
         fHitGe->Clear();
     }
-    if (fHitFatimaVme)
-    {
-        fHitFatimaVme->Clear();
-    }
 }
 
 void WhiterabbitCorrelationOnline::FinishTask()
@@ -988,11 +967,10 @@ void WhiterabbitCorrelationOnline::FinishTask()
         c4LOG(warning, "No events found, no histograms written.");
         return;
     }
-    if (fHitFatimaTwinpeaks || fHitbPlastTwinpeaks || fHitGe || fHitFatimaVme || fAidaDecays)
-    {   
-        c4LOG(info, "Processed " << fNEvents << " events.");
-        c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvents);
-    }
+   
+    c4LOG(info, "Processed " << fNEvents << " events.");
+    c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvents);
+
 }
 
 ClassImp(WhiterabbitCorrelationOnline)
