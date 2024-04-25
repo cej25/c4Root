@@ -186,7 +186,7 @@ class FatimaVmeResiduals : public TObject
         double Get_TM_Delayed() const;
         double Get_TM_Undelayed() const;
 
-        ClassDefNV(FatimaVmeResiduals, 2)
+        ClassDefNV(FatimaVmeResiduals, 2);
 
     private:
         double sc41l;
@@ -250,5 +250,25 @@ inline uint32_t FatimaVmeQDCCalItem::Get_qshort_raw() const
 {
     return qshort_raw;
 }
+
+inline double FatimaVmeResiduals::Get_SC41L() const
+{
+    return sc41l;
+} 
+
+inline double FatimaVmeResiduals::Get_SC41R() const
+{
+    return sc41r;
+} 
+
+inline double FatimaVmeResiduals::Get_TM_Delayed() const
+{
+    return tm_delayed;
+} 
+
+inline double FatimaVmeResiduals::Get_TM_Undelayed() const
+{
+    return tm_undelayed;
+} 
 
 #endif

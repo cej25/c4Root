@@ -6,6 +6,7 @@
 #include "AidaHitData.h"
 #include "AidaData.h"
 #include "FrsHitData.h"
+#include "FatimaVmeCalData.h"
 
 #include "TFolder.h"
 #include "TDirectory.h"
@@ -53,7 +54,8 @@ class WhiterabbitCorrelationOnline : public FairTask
         TAidaConfiguration const* conf;
 
         TClonesArray* fHitFatimaTwinpeaks;
-        TClonesArray* fHitFatimaVme;
+        //TClonesArray* fHitFatimaVme;
+        std::vector<FatimaVmeTDCCalItem> const* fatVmeArray;
         TClonesArray* fHitbPlastTwinpeaks;
         TClonesArray* fHitGe;
         std::vector<AidaHit> const* fAidaDecays;

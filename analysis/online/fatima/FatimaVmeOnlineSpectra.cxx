@@ -26,7 +26,6 @@ FatimaVmeOnlineSpectra::FatimaVmeOnlineSpectra()
 
 FatimaVmeOnlineSpectra::FatimaVmeOnlineSpectra(const TString& name, Int_t verbose)
     :   FairTask(name, verbose)
-    ,   fHitFatimaVme(NULL)
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   qdcCalArray(nullptr)
@@ -39,10 +38,7 @@ FatimaVmeOnlineSpectra::FatimaVmeOnlineSpectra(const TString& name, Int_t verbos
 FatimaVmeOnlineSpectra::~FatimaVmeOnlineSpectra()
 {
     c4LOG(info, "");
-    if (fHitFatimaVme) delete fHitFatimaVme;
 }
-
-// par containers
 
 InitStatus FatimaVmeOnlineSpectra::Init()
 {
@@ -62,6 +58,8 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     c4LOG_IF(fatal, !qdcCalArray, "Branch qdcCalArray not found!");
     tdcCalArray = mgr->InitObjectAs<decltype(tdcCalArray)>("FatimaVmeTDCCalData");
     c4LOG_IF(fatal, !tdcCalArray, "Branch tdcCalArray not found!");
+    residualArray = mgr->InitObjectAs<decltype(residualArray)>("FatimaVmeResiduals");
+    c4LOG_IF(fatal, !residualArray, "Branch FatimaVmeResiduals not found!");
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
     
@@ -180,10 +178,8 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     dir_residuals->cd();
     h1_FatVME_time_machine_undelayed = new TH1D("h1_FatVME_time_machine_undelayed", "Time Machine Undelayed - FATIMA VME", 2000, 0, 40000);
     h1_FatVME_time_machine_delayed = new TH1D("h1_FatVME_time_machine_delayed", "Time Machine Delayed - FATIMA VME", 2000, 0, 40000);
-    //h1_FatVME_sc41l = new TH1D("h1_FatVME_sc41l", "SC41L E - FATIMA VME", 2000, 0, 40000);
-    //h1_FatVME_sc41r = new TH1D("h1_FatVME_sc41r", "SC41R E - FATIMA VME", 2000, 0, 40000);
-    h1_FatVME_sc41l_time = new TH1D("h1_FatVME_sc41l_time", "SC41L T - FATIMA VME", 5000, -1e6, 7e7);
-    h1_FatVME_sc41r_time = new TH1D("h1_FatVME_sc41r_time", "SC41R T - FATIMA VME", 5000, -1e6, 7e7);
+    h1_FatVME_sc41l_time = new TH1D("h1_FatVME_sc41l_time", "SC41L T - FATIMA VME", 5000, -1e6, 2e6);
+    h1_FatVME_sc41r_time = new TH1D("h1_FatVME_sc41r_time", "SC41R T - FATIMA VME", 5000, -1e6, 236);
 
     dir_fatima_vme->cd();
 
@@ -305,11 +301,13 @@ void FatimaVmeOnlineSpectra::Exec(Option_t* option)
         
         h1_FatVME_RawT[det]->Fill(timestamp * 25); // time in [ps]
         h1_FatVME_TDC_HitPattern->Fill(det);
+
+        tdc_mult++;
     }
     // fill tdc_mult
     h1_FatVME_TDCMult->Fill(tdc_mult);
 
-    /*
+    
     for (auto const & residualItem : *residualArray)
     {
         double ts_sc41l = residualItem.Get_SC41L();
@@ -322,7 +320,7 @@ void FatimaVmeOnlineSpectra::Exec(Option_t* option)
         if (ts_sc41l > 0) h1_FatVME_sc41l_time->Fill(ts_sc41l);
         if (ts_sc41r > 0) h1_FatVME_sc41l_time->Fill(ts_sc41r);
 
-    }*/
+    }
 
     /*for (int j = 0; j < SC41L_Hits.size(); j++)
                 {

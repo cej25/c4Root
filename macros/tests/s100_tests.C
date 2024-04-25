@@ -1,16 +1,16 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define FATIMA_ON 0
-#define FATIMA_VME_ON 0
+#define FATIMA_ON 1
+#define FATIMA_VME_ON 1
 #define AIDA_ON 1
-#define BPLAST_ON 0
-#define GERMANIUM_ON 0
-#define BGO_ON 0
+#define BPLAST_ON 1
+#define GERMANIUM_ON 1
+#define BGO_ON 1
 #define FRS_ON 1
-#define TIME_MACHINE_ON 0
+#define TIME_MACHINE_ON 1
 #define BEAMMONITOR_ON 0
-#define WHITE_RABBIT_CORS 0
+#define WHITE_RABBIT_CORS 1
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
@@ -465,15 +465,15 @@ void s100_tests()
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({b, g});
+        wronline->SetDetectorSystems({b, c, d, e, f, g});
     
         run->AddTask(wronline);
     }
 
     if (FRS_ON && AIDA_ON)
     {
-        //FrsAidaCorrelationsOnline* frsaidaonline = new FrsAidaCorrelationsOnline(fgs);
-        FrsAidaCorrelations* frsaidaonline = new FrsAidaCorrelations(fgs);
+        FrsAidaCorrelationsOnline* frsaidaonline = new FrsAidaCorrelationsOnline(fgs);
+        //FrsAidaCorrelations* frsaidaonline = new FrsAidaCorrelations(fgs);
 
         run->AddTask(frsaidaonline);
     }
@@ -488,8 +488,8 @@ void s100_tests()
 
     if (BPLAST_ON && FRS_ON)
     {
-	    FrsBplastCorrelations* frsbplast = new FrsBplastCorrelations();
-	    run->AddTask(frsbplast);
+	    //FrsBplastCorrelations* frsbplast = new FrsBplastCorrelations();
+	    //run->AddTask(frsbplast);
     }
 
     // Initialise
@@ -512,8 +512,6 @@ void s100_tests()
 
     // ---------------------------------------------------------------------------------------- //
     // *** Finish Macro *********************************************************************** //
-    
-
 
     timer.Stop();
     Double_t rtime = timer.RealTime();
