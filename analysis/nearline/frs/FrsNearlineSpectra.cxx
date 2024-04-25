@@ -429,7 +429,6 @@ void FrsNearlineSpectra::Exec(Option_t* option)
 {   
     if (hitArray->size() <= 0) return;
 
-<<<<<<< HEAD
     Long64_t FRS_time_mins = 0;
     auto const & hitItem = hitArray->at(0); // should only be size=1! check
     Float_t* music_dE = hitItem.Get_music_dE();
@@ -437,10 +436,6 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     Float_t* sci_tx = hitItem.Get_sci_x();
     Float_t* sci_l = hitItem.Get_sci_l(); 
     Float_t* sci_r = hitItem.Get_sci_r();
-=======
-            Long64_t FRS_time_mins = 0;
-            if(FrsHit->Get_wr_t() > 0) FRS_time_mins = (FrsHit->Get_wr_t() - 1713704823)/ 60E9; // 1713704823 = rough start of s100
->>>>>>> 7c1c2dd44ca30049a1a466b7f41aabf92c5d3cc7
 
     //h1_frs_wr->Fill(hitItem.Get_wr_t());
 

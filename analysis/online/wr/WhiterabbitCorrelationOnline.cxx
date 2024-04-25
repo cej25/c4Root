@@ -36,10 +36,8 @@ WhiterabbitCorrelationOnline::WhiterabbitCorrelationOnline(const TString& name, 
     , fHitbPlastTwinpeaks(NULL)
     , fHitGe(NULL)
     , fHitFatimaVme(NULL)
-    , fAidaDecays(new std::vector<AidaHit>)
-    , fAidaImplants(new std::vector<AidaHit>)
-    , fHitFrs(NULL)
-    , fAidaScalers(new std::vector<AidaUnpackScalerItem>)
+    , fAidaDecays(nullptr)
+    , fAidaScalers(nullptr)
     , fAidaImplants(nullptr)
     , hitArrayFrs(nullptr)
     , fNEvents(0)
@@ -144,9 +142,6 @@ InitStatus WhiterabbitCorrelationOnline::Init()
             c4LOG(fatal, "Unknown detector system: " << fDetectorSystems.at(i));
         }
     }
-    
-    fHitFrs = (TClonesArray*)mgr->GetObject("FrsHitData");
-    c4LOG_IF(error, !fHitFrs, "Branch FrsHitData not found");
 
     TDirectory::TContext ctx(nullptr);
 
@@ -160,7 +155,6 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     dir_whiterabbit_time_differences = dir_whiterabbit->mkdir("Time Differences");
 
     dir_whiterabbit_correlation->cd();
-<<<<<<< HEAD
     h1_whiterabbit_correlation_aida_frs = new TH1I("h1_whiterabbit_correlation_aida_frs", "AIDA - FRS WR dT", 1000, -5e4, 5e4);
     h1_whiterabbit_correlation_aida_frs->GetXaxis()->SetTitle("Time difference (AIDA - FRS) [ns]");
     h1_whiterabbit_correlation_aida_frs->GetYaxis()->SetTitle("Counts");
@@ -179,25 +173,6 @@ InitStatus WhiterabbitCorrelationOnline::Init()
 
 
     // AIDA 
-=======
-    
-    // AIDA
-    h1_whiterabbit_aida_frs = new TH1I("h1_whiterabbit_aida_frs", "AIDA - FRS WR dT", 1000, -5e4, 5e4);
-    h1_whiterabbit_aida_frs->GetXaxis()->SetTitle("Time difference (AIDA - FRS) [ns]");
-    h1_whiterabbit_aida_frs->GetYaxis()->SetTitle("Counts");
-    h1_whiterabbit_fatima_frs = new TH1I("h1_whiterabbit_fatima_frs", "FATIMA (TAMEX) - FRS WR dT", 1000, -1000, 1000);
-    h1_whiterabbit_fatima_frs->GetXaxis()->SetTitle("Time difference (FATIMA (TAMEX) - FRS) [ns]");
-    h1_whiterabbit_fatima_frs->GetYaxis()->SetTitle("Counts");
-    h1_whiterabbit_germanium_frs = new TH1I("h1_whiterabbit_germanium_frs", "DEGAS - FRS WR dT", 1000, -1000, 1000);
-    h1_whiterabbit_germanium_frs->GetXaxis()->SetTitle("Time difference (DEGAS - FRS) [ns]");
-    h1_whiterabbit_germanium_frs->GetYaxis()->SetTitle("Counts");
-    h1_whiterabbit_bplast_frs = new TH1I("h1_whiterabbit_bplast_frs", "bPlast - FRS WR dT", 1000, -1000, 1000);
-    h1_whiterabbit_bplast_frs->GetXaxis()->SetTitle("Time difference (bPlast - FRS) [ns]");
-    h1_whiterabbit_bplast_frs->GetYaxis()->SetTitle("Counts");
-    
-    
-    
->>>>>>> 7c1c2dd44ca30049a1a466b7f41aabf92c5d3cc7
     // AIDA - Fatima
     
     h1_whiterabbit_correlation_aida_fatima = new TH1I("h1_whiterabbit_correlation_aida_fatima", "AIDA - FATIMA (TAMEX) WR dT", 1000, -5e4, 5e4);
@@ -600,8 +575,6 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
     Int_t nHitsAidaImplants = 0;
     Int_t nHitsFrs = 0;
     Int_t systems = 0;
-    Int_t nHitsAidaImplants = 0;
-    Int_t nHitsFrs = 0;
     
     if (fHitFatimaTwinpeaks)
     {
@@ -681,14 +654,6 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
     {
         nHitsFrs = hitArrayFrs->size();
         if (nHitsFrs > 0) systems++;
-    }
-
-    
-    if (fHitFrs)
-    {
-        nHitsFrs = fHitFrs->GetEntriesFast();
-        if (nHitsFrs > 0) systems++;
-        if (nHitsFrs > 0) frsEvents++;
     }
     
     if (nHitsFrs > 0 && nHitsAidaImplants > 0) frs_and_aida++;
@@ -962,25 +927,6 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
                     {
                         h1_whiterabbit_trigger3_bplast_ge->Fill(dt);
                     }
-                }
-            }
-        }
-    }
-    
-    if (fHitGe)
-    {
-        GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(0);
-        if (hitGe)
-        {
-            int64_t wr_ge = hitGe->Get_wr_t();
-            if (fHitFrs)
-            {
-                FrsHitData* FrsHit = (FrsHitData*)fHitFrs->At(0);
-                if (FrsHit)
-                {
-                    int64_t wr_frs = FrsHit->Get_wr_t();
-                    int64_t dt = wr_ge - wr_frs;
-                    h1_whiterabbit_germanium_frs->Fill(dt);
                 }
             }
         }
