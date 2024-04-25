@@ -2,6 +2,9 @@
 #define FrsRawSpectra_H
 
 #include "FairTask.h"
+#include "FrsMainData.h"
+#include "FrsTPCData.h"
+#include "FrsUserData.h"
 
 #include "TDirectory.h"
 #include "TFolder.h"
@@ -34,8 +37,6 @@ class FrsRawSpectra : public FairTask
 
         virtual ~FrsRawSpectra();
 
-        virtual void SetParContainers();
-
         virtual InitStatus Init();
 
         virtual void Exec(Option_t* option);
@@ -48,15 +49,12 @@ class FrsRawSpectra : public FairTask
 
     private:
 
-        TClonesArray* fFrsMainArray;
-        TClonesArray* fFrsTPCArray;
-        TClonesArray* fFrsUserArray;
-        TClonesArray* fFrsVFTXArray;
+        std::vector<FrsMainV792Item> const* v792arrayMain;
+        std::vector<FrsMainV1290Item> const* v1290arrayMain;
+        std::vector<FrsTPCV7X5Item> const* v7x5arrayTPC;
+        std::vector<FrsTPCV1190Item> const* v1190arrayTPC;
+        std::vector<FrsUserV7X5Item> const* v7x5arrayUser;
 
-        FrsMainData* fHitFrsMainRaw;
-        FrsTPCData* fHitFrsTPCRaw;
-        FrsUserData* fHitFrsUserRaw;
-        FrsVFTXData* fHitFrsVFTXRaw;
 
         EventHeader* header;
         Int_t fNEvents;

@@ -2,10 +2,18 @@
 #define FrsCalSpectra_H 1
 
 #include "FairTask.h"
+#include "FrsHitData.h"
+#include "FrsMainCalData.h"
+#include "FrsTPCData.h"
+#include "FrsTPCCalData.h"
+#include "FrsUserCalData.h"
+#include "FrsTpatData.h"
+
 #include "TDirectory.h"
 #include "TFolder.h"
 #include "TH1.h"
 #include "TH2.h"
+#include <vector>
 
 class TFolder;
 class TDirectory;
@@ -30,8 +38,6 @@ class FrsCalSpectra : public FairTask
 
         virtual ~FrsCalSpectra();
 
-        virtual void SetParContainers();
-
         virtual InitStatus Init();
 
         virtual void Exec(Option_t* option);
@@ -44,17 +50,17 @@ class FrsCalSpectra : public FairTask
 
 
     private:
-        TClonesArray* fFrsUserCalArray; // array with hit items
-        TClonesArray* fFrsMainCalArray; // array with hit items
-        TClonesArray* fFrsTPCArray; // array with hit items
-        TClonesArray* fFrsTPCCalArray; // array with hit items
-        TClonesArray* fFrsVFTXCalArray; // array with hit items
 
-        FrsUserCalData* fHitFrsUserCal; // array with hit items
-        FrsMainCalData* fHitFrsMainCal; // array with hit items
-        FrsTPCData* fHitFrsTPC; // array with hit items
-        FrsTPCCalData* fHitFrsTPCCal; // array with hit items
-        FrsVFTXCalData* fHitFrsVFTXCal; // array with hit items
+        std::vector<FrsTPCV7X5Item> const* v7x5array;
+        std::vector<FrsTPCV1190Item> const* v1190array;
+        std::vector<FrsMainCalScalerItem> const* mainScalerArray;
+        std::vector<FrsMainCalSciItem> const* mainSciArray;
+        std::vector<FrsMainCalMusicItem> const* mainMusicArray;
+        std::vector<FrsTPCCalItem> const* tpcCalArray;
+        std::vector<FrsUserCalScalerItem> const* userScalerArray;
+        std::vector<FrsUserCalSciItem> const* userSciArray;
+        std::vector<FrsUserCalMusicItem> const* userMusicArray;
+        std::vector<FrsTpatItem> const* tpatArray;
 
    
         // check for trigger should be done globally, somewhere else
@@ -144,7 +150,7 @@ class FrsCalSpectra : public FairTask
 
 
         //User crate:
-        uint32_t * dt_array;
+        //uint32_t * dt_array;
         TH2D* h_music41_e;
         TH2D* h_music42_e;
         TH1D* h_tac_user_dt_21l_21r;

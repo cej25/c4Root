@@ -5,6 +5,7 @@
 #include "TAidaConfiguration.h"
 #include "AidaHitData.h"
 #include "AidaData.h"
+#include "FrsHitData.h"
 
 #include "TFolder.h"
 #include "TDirectory.h"
@@ -33,8 +34,6 @@ class WhiterabbitCorrelationOnline : public FairTask
 
         virtual ~WhiterabbitCorrelationOnline();
 
-        virtual void SetParContainers();
-
         virtual InitStatus Init();
 
         virtual void Exec(Option_t* option);
@@ -58,7 +57,9 @@ class WhiterabbitCorrelationOnline : public FairTask
         TClonesArray* fHitbPlastTwinpeaks;
         TClonesArray* fHitGe;
         std::vector<AidaHit> const* fAidaDecays;
+        std::vector<AidaHit> const* fAidaImplants;
         std::vector<AidaUnpackScalerItem> const* fAidaScalers;
+        std::vector<FrsHitItem> const* hitArrayFrs;
 
         std::vector<TString> fDetectorSystems;
         int fNumDetectorSystems;
@@ -126,6 +127,10 @@ class WhiterabbitCorrelationOnline : public FairTask
 
         
         // Histograms
+        TH1I* h1_whiterabbit_correlation_aida_frs;
+        TH1I* h1_whiterabbit_correlation_fatima_frs;
+        TH1I* h1_whiterabbit_correlation_bplast_frs;
+        TH1I* h1_whiterabbit_correlation_germanium_frs;
 
         TH1I* h1_whiterabbit_correlation_aida_fatima;
         TH1I* h1_whiterabbit_trigger1_aida_fatima;

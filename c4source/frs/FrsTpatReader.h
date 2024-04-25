@@ -5,6 +5,7 @@
 #include "c4Reader.h"
 #include <Rtypes.h>
 #include <vector>
+#include "EventHeader.h"
 
 extern "C"
 {
@@ -40,6 +41,7 @@ class FrsTpatReader : public c4Reader
     private:
 
         unsigned int fNEvent;
+        EventHeader* header;
         
         EXT_STR_h101_frstpat_onion* fData;
 
@@ -48,6 +50,7 @@ class FrsTpatReader : public c4Reader
         Bool_t fOnline;
 
         TClonesArray* fArray;
+        std::vector<FrsTpatItem>* tpatArray;
 
         uint64_t wr_t;
         uint16_t tpat;

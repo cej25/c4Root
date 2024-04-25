@@ -21,6 +21,7 @@ extern "C"
 AidaReader::AidaReader(EXT_STR_h101_aida_onion* data, size_t offset)
     : c4Reader("AidaReader"),
       fNEvent(0),
+      header(nullptr),
       fData(data),
       fOffset(offset),
       fAdcOnline(false),
@@ -50,6 +51,9 @@ Bool_t AidaReader::Init(ext_data_struct_info* a_struct_info)
         c4LOG(error, "Failed to set up structure information");
         return kFALSE;
     }
+
+    header = (EventHeader*)FairRootManager::Instance()->GetObject("EventHeader.");
+    c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
     // Register vector(?) of data here
     FairRootManager::Instance()->RegisterAny("AidaAdcData", adcArray, !fAdcOnline);

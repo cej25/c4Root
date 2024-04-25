@@ -27,12 +27,22 @@ FrsCal2Hit::FrsCal2Hit()
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
-    ,   fRawArrayTpat(new TClonesArray("FrsTpatData"))
-    ,   fCalArrayMain(new TClonesArray("FrsMainCalData"))
-    ,   fCalArrayTPC(new TClonesArray("FrsTPCCalData"))
-    ,   fCalArrayUser(new TClonesArray("FrsUserCalData"))
-    ,   fHitArray(new TClonesArray("FrsHitData"))
-    ,   fEventItems(new TClonesArray("EventData")) // we don't need this anymore
+    // ,   fRawArrayTpat(new TClonesArray("FrsTpatData"))
+    // ,   fCalArrayMain(new TClonesArray("FrsMainCalData"))
+    // ,   fCalArrayTPC(new TClonesArray("FrsTPCCalData"))
+    // ,   fCalArrayUser(new TClonesArray("FrsUserCalData"))
+    // ,   fHitArray(new TClonesArray("FrsHitData"))
+    // ,   fEventItems(new TClonesArray("EventData")) // we don't need this anymore
+    ,   mainScalerArray(nullptr)
+    ,   mainSciArray(nullptr)
+    ,   mainMusicArray(nullptr)
+    ,   tpcCalArray(nullptr)
+    ,   userScalerArray(nullptr)
+    ,   userSciArray(nullptr)
+    ,   userMusicArray(nullptr)
+    ,   tpatArray(nullptr)
+    ,   hitArray(new std::vector<FrsHitItem>)
+    ,   multihitArray(new std::vector<FrsMultiHitItem>)
 {
     frs_config = TFrsConfiguration::GetInstance();
     frs = frs_config->FRS();
@@ -53,12 +63,22 @@ FrsCal2Hit::FrsCal2Hit(const TString& name, Int_t verbose)
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
-    ,   fRawArrayTpat(new TClonesArray("FrsTpatData"))
-    ,   fCalArrayMain(new TClonesArray("FrsMainCalData"))
-    ,   fCalArrayTPC(new TClonesArray("FrsTPCCalData"))
-    ,   fCalArrayUser(new TClonesArray("FrsUserCalData"))
-    ,   fHitArray(new TClonesArray("FrsHitData"))
-    ,   fEventItems(new TClonesArray("EventData"))
+    // ,   fRawArrayTpat(new TClonesArray("FrsTpatData"))
+    // ,   fCalArrayMain(new TClonesArray("FrsMainCalData"))
+    // ,   fCalArrayTPC(new TClonesArray("FrsTPCCalData"))
+    // ,   fCalArrayUser(new TClonesArray("FrsUserCalData"))
+    // ,   fHitArray(new TClonesArray("FrsHitData"))
+    // ,   fEventItems(new TClonesArray("EventData"))
+    ,   mainScalerArray(nullptr)
+    ,   mainSciArray(nullptr)
+    ,   mainMusicArray(nullptr)
+    ,   tpcCalArray(nullptr)
+    ,   userScalerArray(nullptr)
+    ,   userSciArray(nullptr)
+    ,   userMusicArray(nullptr)
+    ,   tpatArray(nullptr)
+    ,   hitArray(new std::vector<FrsHitItem>)
+    ,   multihitArray(new std::vector<FrsMultiHitItem>)
 {
     frs_config = TFrsConfiguration::GetInstance();
     frs = frs_config->FRS();
@@ -77,17 +97,6 @@ FrsCal2Hit::FrsCal2Hit(const TString& name, Int_t verbose)
 FrsCal2Hit::~FrsCal2Hit()
 {   
     c4LOG(info, "Deleting FrsCal2Hit task");
-    if (fRawArrayTpat) delete fRawArrayTpat;
-    if (fCalArrayMain) delete fCalArrayMain;
-    if (fCalArrayTPC) delete fCalArrayTPC;
-    if (fCalArrayUser) delete fCalArrayUser;
-    if (fHitArray) delete fHitArray;
-}
-
-void FrsCal2Hit::SetParContainers()
-{
-    FairRuntimeDb *rtdb = FairRuntimeDb::instance();
-    c4LOG_IF(fatal, NULL == rtdb, "FairRuntimeDb not found.");
 }
 
 InitStatus FrsCal2Hit::Init()
@@ -98,27 +107,47 @@ InitStatus FrsCal2Hit::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "EventHeader. not found!");
 
-    fCalArrayMain = (TClonesArray*)mgr->GetObject("FrsMainCalData");
-    c4LOG_IF(fatal, !fCalArrayMain, "FrsMainCalData branch not found!");
+    mainScalerArray = mgr->InitObjectAs<decltype(mainScalerArray)>("FrsMainCalScalerData");
+    c4LOG_IF(fatal, !mainScalerArray, "Branch FrsMainCalScalerData not found!");
+    mainSciArray = mgr->InitObjectAs<decltype(mainSciArray)>("FrsMainCalSciData");
+    c4LOG_IF(fatal, !mainSciArray, "Branch FrsMainCalSciData not found!");
+    mainMusicArray = mgr->InitObjectAs<decltype(mainMusicArray)>("FrsMainCalMusicData");
+    c4LOG_IF(fatal, !mainMusicArray, "Branch FrsMainCalMusicData not found!");
+    tpcCalArray = mgr->InitObjectAs<decltype(tpcCalArray)>("FrsTPCCalData");
+    c4LOG_IF(fatal, !tpcCalArray, "Branch FrsTPCCalData not found!");
+    userScalerArray = mgr->InitObjectAs<decltype(userScalerArray)>("FrsUserCalScalerData");
+    c4LOG_IF(fatal, !userScalerArray, "Branch FrsUserCalScalerData not found!");
+    userSciArray = mgr->InitObjectAs<decltype(userSciArray)>("FrsUserCalSciData");
+    c4LOG_IF(fatal, !userSciArray, "Branch FrsUserCalSciData not found!");
+    userMusicArray = mgr->InitObjectAs<decltype(userMusicArray)>("FrsUserCalMusicData");
+    c4LOG_IF(fatal, !userMusicArray, "Branch FrsUserCalMusicData not found!");
+    tpatArray = mgr->InitObjectAs<decltype(tpatArray)>("FrsTpatData");
+    c4LOG_IF(fatal, !tpatArray, "Branch FrsTpatData not found!");
 
-    fCalArrayTPC = (TClonesArray*)mgr->GetObject("FrsTPCCalData");
-    c4LOG_IF(fatal, !fCalArrayTPC, "FrsTPCCalData branch not found!");
-
-    fCalArrayUser = (TClonesArray*)mgr->GetObject("FrsUserCalData");
-    c4LOG_IF(fatal, !fCalArrayUser, "FrsUserCalData branch not found!");
-
-    fRawArrayTpat = (TClonesArray*)mgr->GetObject("FrsTpatData");
-    c4LOG_IF(fatal, !fRawArrayTpat, "FrsTpatData branch not found!");
-
-    mgr->Register("FrsHitData", "FRS Hit Data", fHitArray, !fOnline);
-    mgr->Register("EventData", "Event Data", fEventItems, !fOnline);
-
+    mgr->RegisterAny("FrsHitData", hitArray, !fOnline);
+    mgr->RegisterAny("FrsMultiHitData", multihitArray, !fOnline);
+    
     Setup_Conditions(pathToConfigFiles);
     c4LOG_IF(fatal,!conditions_files_read, "You must set FrsCal2Hit->Setup_Conditions('your file path') to the folder containing the frs condition gates.");
     
-    fCalArrayMain->Clear();
-    fCalArrayTPC->Clear();
-    fHitArray->Clear();
+    hitArray->clear();
+    multihitArray->clear();
+
+    tdc_array = new uint32_t*[15];
+    for (int i = 0; i < 10; i++) tdc_array[i] = new uint32_t[10];
+    de_array = new uint32_t[14];
+    dt_array = new uint32_t[16];
+    de = new Float_t[3];
+    de_cor = new Float_t[3];
+    sci_l = new Float_t[6];
+    sci_r = new Float_t[6];
+    sci_tx = new Float_t[6];
+    sci_e = new Float_t[6];
+    sci_x = new Float_t[6];
+    music_e1 = new uint32_t[8];
+    music_e2 = new uint32_t[8];
+    music_t1 = new uint32_t[8];
+    music_t2 = new uint32_t[8];
 
     return kSUCCESS;
 }
@@ -134,68 +163,62 @@ void FrsCal2Hit::Exec(Option_t* option)
 {   
     auto start = std::chrono::high_resolution_clock::now();
 
-    int multMain = fCalArrayMain->GetEntriesFast();
-    int multTPC = fCalArrayTPC->GetEntriesFast();
-    int multUser = fCalArrayUser->GetEntriesFast();
+    hitArray->clear();
+    multihitArray->clear();
 
-    if (multMain == 0 || multTPC == 0 || multUser == 0) return;
-    
-    FrsHitData* FrsHit = new FrsHitData();
-
+    if (mainMusicArray->size() == 0) return;
     fNEvents++;
-    fRawHitTpat = (FrsTpatData*)fRawArrayTpat->At(0);
-    fCalHitMain = (FrsMainCalData*)fCalArrayMain->At(0);
-    fCalHitTPC = (FrsTPCCalData*)fCalArrayTPC->At(0);
-    fCalHitUser = (FrsUserCalData*)fCalArrayUser->At(0);
+    
+    uint64_t wr_t = 0; uint16_t tpat = 0;
 
-    FrsHit->Set_wr_t(fRawHitTpat->Get_wr_t()); // raw or cal, not sure if we need a cal step    
-    FrsHit->Set_tpat(fRawHitTpat->Get_tpat());
+    auto const & tpatItem = tpatArray->at(0);
 
+    wr_t = tpatItem.Get_wr_t();
+    tpat = tpatItem.Get_tpat();
 
-    /* -------------------------------- */
-    // Scalers "analysis" 
-    // (Moved from Calib in Go4)
-    /* -------------------------------- */
+    if (wr_t == 0) return; // ACTUAL no whiterabbit
 
-    v830_n_main = fCalHitMain->Get_Scalers_N();
-    v830_n_user = fCalHitUser->Get_Scalers_N();
-    v830_index_main = fCalHitMain->Get_Scalers_Index();
-    v830_index_user = fCalHitUser->Get_Scalers_Index();
-    v830_scalers_main = fCalHitMain->Get_V830_Scalers();
-    v830_scalers_user = fCalHitUser->Get_V830_Scalers();
-
-    // maybe sc_long was better
     if (scaler_check_first_event == 1)
     {
-        for (int i = 0; i < 32; i++)
+        for (auto const & mainScalerItem : *mainScalerArray)
         {
-            sc_main_initial[i] = v830_scalers_main[i];
-            sc_main_previous[i] = v830_scalers_main[i];
-            sc_user_initial[i] = v830_scalers_user[i];
-            sc_user_previous[i] = v830_scalers_user[i];
+            uint32_t index = mainScalerItem.Get_index();
+            uint32_t scaler = mainScalerItem.Get_scaler();
+            sc_main_initial[index] = scaler; // index -1? test
+            sc_main_previous[index] = scaler;
+            sc_main_current[index] = scaler;
         }
 
-        scaler_check_first_event = 0; 
+        for (auto const & userScalerItem : *userScalerArray)
+        {
+            uint32_t index = userScalerItem.Get_index();
+            uint32_t scaler = userScalerItem.Get_scaler();
+            sc_user_initial[index] = scaler; // index -1? test
+            sc_user_previous[index] = scaler;
+            sc_user_current[index] = scaler;
+        }
+
+        scaler_check_first_event = 0;
     }
 
-    time_in_ms = v830_scalers_main[scaler_ch_1kHz] - sc_main_initial[scaler_ch_1kHz];
-    
+    time_in_ms = sc_main_current[scaler_ch_1kHz] - sc_main_initial[scaler_ch_1kHz];
+
     if (time_in_ms < 0)
     {
-        sc_main_initial[scaler_ch_1kHz] = v830_scalers_main[scaler_ch_1kHz];
+        sc_main_initial[scaler_ch_1kHz] = sc_main_current[scaler_ch_1kHz];
         time_in_ms = 0;
     }
-        
-    spill_count = v830_scalers_user[scaler_ch_spillstart] - sc_user_initial[scaler_ch_spillstart];
+
+    spill_count = sc_user_current[scaler_ch_spillstart] - sc_user_initial[scaler_ch_spillstart];
 
     ibin_for_s = ((time_in_ms / 1000) % 1000) + 1;
     ibin_for_100ms = ((time_in_ms / 100) % 4000) + 1;
     ibin_for_spill  = (spill_count % 1000) + 1;
-            
+
     for (int k = 0; k < 32; k++)
     {
-        increase_sc_temp_main[k] = v830_scalers_main[k] - sc_main_previous[k];
-        increase_sc_temp_user[k] = v830_scalers_user[k] - sc_user_previous[k];
+        increase_sc_temp_main[k] = sc_main_current[k] - sc_main_previous[k];
+        increase_sc_temp_user[k] = sc_user_current[k] - sc_user_previous[k];
     }
 
     if (increase_sc_temp_user[0] != 0) // not sure how the go4 is dealing with this zero dividing
@@ -203,52 +226,38 @@ void FrsCal2Hit::Exec(Option_t* option)
         increase_sc_temp2 = 100 * increase_sc_temp_user[1] / increase_sc_temp_user[0];
         increase_sc_temp3 = 100 * increase_sc_temp_user[5] / increase_sc_temp_user[6];
     }
-    
-    extraction_time_ms += v830_scalers_main[scaler_ch_1kHz] - sc_main_previous[scaler_ch_1kHz];
 
-    if((v830_scalers_user[scaler_ch_spillstart] - sc_user_previous[scaler_ch_spillstart]) != 0)
+    extraction_time_ms += sc_main_current[scaler_ch_1kHz] - sc_main_previous[scaler_ch_1kHz];
+
+    if((sc_user_current[scaler_ch_spillstart] - sc_user_previous[scaler_ch_spillstart]) != 0)
     {
         extraction_time_ms = 0;
     }
-            
+
     ibin_clean_for_s = (((time_in_ms / 1000) + 20) % 1000) + 1;
     ibin_clean_for_100ms = (((time_in_ms / 100) + 200) % 4000) + 1;
     ibin_clean_for_spill = ((spill_count + 990) % 20) + 1;
 
     for (int i = 0; i < 32; i++)
     {   
-        sc_main_previous[i] = v830_scalers_main[i];
-        sc_user_previous[i] = v830_scalers_user[i];
+        sc_main_previous[i] = sc_main_current[i];
+        sc_user_previous[i] = sc_user_current[i];
     }
-
-            
-    FrsHit->Set_time_in_ms(time_in_ms);
-    FrsHit->Set_ibin_for_s(ibin_for_s);
-    FrsHit->Set_ibin_for_100ms(ibin_for_100ms);
-    FrsHit->Set_ibin_for_spill(ibin_for_spill);
-    for (int index = 0; index < 32; index ++) FrsHit->Set_increase_sc_temp_user(index, increase_sc_temp_user[index]);
-    for (int index = 0; index < 32; index ++) FrsHit->Set_increase_sc_temp_main(index, increase_sc_temp_main[index]);
-    FrsHit->Set_increase_sc_temp2(increase_sc_temp2);
-    FrsHit->Set_increase_sc_temp3(increase_sc_temp3);
-    FrsHit->Set_extraction_time_ms(extraction_time_ms);
-    FrsHit->Set_ibin_clean_for_s(ibin_clean_for_s);
-    FrsHit->Set_ibin_clean_for_100ms(ibin_clean_for_100ms);
-    FrsHit->Set_ibin_clean_for_spill(ibin_clean_for_spill);
-
 
 
     /* ---------------------------------------------------- */
     // Start of MUSIC analysis                              //
     /* ---------------------------------------------------- */
+    
+    auto const & mainMusicItem = mainMusicArray->at(0);
+    
+    music_t1 = mainMusicItem.Get_music_t1();
+    music_t2 = mainMusicItem.Get_music_t2();
 
-    music_e1 = fCalHitUser->Get_music_e1();
-    music_e2 = fCalHitUser->Get_music_e2();
-    music_t1 = fCalHitMain->Get_music_t1();
-    music_t2 = fCalHitMain->Get_music_t2();
-    // we don't use music 3
+    auto const & userMusicItem = userMusicArray->at(0);
+    music_e1 = userMusicItem.Get_music_e1();
+    music_e2 = userMusicItem.Get_music_e2();
 
-
-    //c4LOG(info,"MUSIC Energy analysis.");
     music1_anodes_cnt = 0;
     music2_anodes_cnt = 0;
 
@@ -284,29 +293,13 @@ void FrsCal2Hit::Exec(Option_t* option)
                 music2_anodes_cnt++;
             }
         }
+        
         if (music_t2[i] > 0)
         {
             music_b_t2[i] = Check_WinCond_Multi(music_t2[i], cMusic2_T, i);
         }
-    } // i loop
 
-    /*for (int i = 0; i < 4; i++)
-    {
-        // 4 anodes of MUSIC OLD
-        // third MUSIC travelling
-        if (music_e3[i] > 0)
-        {
-            music_b_e3[i] = Check_WinCond_Multi(music_e3[i], cMusic3_E, i);
-            if (music_b_e3[i])
-            {
-                music3_anodes_cnt++;
-            }
-        }
-        if (music_t3[i] > 0)
-        {
-            music_b_t3[i] = Check_WinCond_Multi(music_t3[i], cMusicT_3, i);
-        }
-    }*/
+    } // i loop
 
     #ifndef MUSIC_ANA_NEW
     if (music1_anodes_cnt == 8)
@@ -382,33 +375,22 @@ void FrsCal2Hit::Exec(Option_t* option)
     }
     #endif
 
-    // CEJ: 8 in go4, but how can it be 8?
-    /*if (music3_anodes_cnt == 8)
-    {
-        Float_t r1 = ((music_e3[0]) * music->e3_gain[0] + music->e3_off[0]) * ((music_e3[1]) * music->e3_gain[1] + music->e3_off[1]);
-        Float_t r2 = ((music_e3[2]) * music->e3_gain[2] + music->e3_off[2]) * ((music_e3[3]) * music->e3_gain[3] + music->e3_off[3]);
-
-        if ((r1 > 0) && (r2 > 0))
-        {
-            // b_de3 = kTRUE;
-            de[2] = sqrt(sqrt(r1) * sqrt(r2));
-            de_cor[2] = de[2];
-        }
-    }*/
+    
 
     // Position (X) correction by TPC //
     // this should not be in the music3_anodes_cnt if{}
     // but it is in our Go4
-    
-    //c4LOG(info,"EXEC TPC analysis");
-    b_tpc_xy = fCalHitTPC->Get_b_tpc_xy(); // maybe this should be outside? JEL: Yep this must go here!
-    
+
+    // we should extract everything from tpc.....
+    auto const & tpcCalItem = tpcCalArray->at(0);
+
+    b_tpc_xy = tpcCalItem.Get_b_tpc_xy();
     
     if (b_tpc_xy[4] && b_tpc_xy[5])
     {
-        music1_x_mean = fCalHitTPC->Get_tpc_music41_x();
-        music2_x_mean = fCalHitTPC->Get_tpc_music42_x();
-        //music3_x_mean = fCalHitTPC->Get_tpc_music43_x();
+        music1_x_mean = tpcCalItem.Get_tpc_music41_x();
+        music2_x_mean = tpcCalItem.Get_tpc_music41_x();
+        // music 3
 
         if (b_de1)
         {
@@ -460,154 +442,105 @@ void FrsCal2Hit::Exec(Option_t* option)
     }
 
 
-    for (int index = 0; index < 2; index++) FrsHit->Set_music_dE(index, de[index]);
-    for (int index = 0; index < 2; index++) FrsHit->Set_music_dE_cor(index, de_cor[index]);
-
-    
     /* ----------------------------------------------- */
     // Start of Scintillator Analysis
     /* ----------------------------------------------- */
 
-    
-    // V1290
-    //c4LOG(info,"EXEC SCI V1290s");
+    auto const & mainSciItem = mainSciArray->at(0);
+    auto const & userSciItem = userSciArray->at(0);
 
-    for (int i = 0; i < 15; i++) tdc_array[i] = fCalHitMain->Get_TDC_channel(i);
+    tdc_array = mainSciItem.Get_tdc_array();
 
     // SCI 21 L and R
-    for (int i = 0; i < tdc_array[2].size(); i++)
-    {      
-        if (!(tdc_array[2].size()>0 && tdc_array[3].size() > 0)) continue;
-        
-        if (i >= tdc_array[3].size()) break; // needed range check
-
-        mhtdc_sc21lr_dt.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[2].at(i) - tdc_array[3].at(i)));
-        mhtdc_sc21lr_x.emplace_back(mhtdc_sc21lr_dt.at(i) * sci->mhtdc_factor_21l_21r + sci->mhtdc_offset_21l_21r);
+    for (int i = 0; i < 10; i++)
+    {
+        mhtdc_sc21lr_dt[i] = sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[2][i] - tdc_array[3][i]);
+        mhtdc_sc21lr_x[i] = mhtdc_sc21lr_dt[i] * sci->mhtdc_factor_21l_21r + sci->mhtdc_offset_21l_21r;
     }
-    // always check these conditions (go4 does it 10x without if-statement)
+
     float sc21pos_from_tpc = -999.9;
     if (b_tpc_xy[0] && b_tpc_xy[1])
     {
-        sc21pos_from_tpc = fCalHitTPC->Get_tpc21_22_sc21_x();
+        sc21pos_from_tpc = tpcCalItem.Get_tpc21_22_sc21_x();
     }
     else if (b_tpc_xy[2] && b_tpc_xy[3])
     {
-        sc21pos_from_tpc = fCalHitTPC->Get_tpc23_24_sc21_x();
+        sc21pos_from_tpc = tpcCalItem.Get_tpc23_24_sc21_x();
     }
 
     // SCI 22 L and R
-    for (int i = 0; i < tdc_array[12].size(); i++)
+    for (int i = 0; i < 10; i++)
     {
-        if (!(tdc_array[12].size()>0 && tdc_array[13].size() > 0)) continue;
-        if (i >= tdc_array[13].size()) break; // needed range check // CEJ: this is never true or the analysis doesn't make sense
-        mhtdc_sc22lr_dt.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[12].at(i) - tdc_array[13].at(i)));
-        mhtdc_sc22lr_x.emplace_back(mhtdc_sc22lr_dt.at(i) * sci->mhtdc_factor_22l_22r + sci->mhtdc_offset_22l_22r);
+        mhtdc_sc22lr_dt[i] = sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[12][i] - tdc_array[13][i]);
+        mhtdc_sc22lr_x[i] = mhtdc_sc22lr_dt[i] * sci->mhtdc_factor_22l_22r + sci->mhtdc_offset_22l_22r;
+
         if (i == 0)
         {
             // only do this if there is a case for 22l and 22r != 0. we don't need to do it 10x though
             float sc22pos_from_tpc = -999.9;
             if (b_tpc_xy[0] && b_tpc_xy[1])
             {
-                sc22pos_from_tpc = fCalHitTPC->Get_tpc21_22_sc22_x();
+                sc22pos_from_tpc = tpcCalItem.Get_tpc21_22_sc22_x();
             }
             else if (b_tpc_xy[2] && b_tpc_xy[3])
             {
-                sc22pos_from_tpc = fCalHitTPC->Get_tpc23_24_sc22_x();
+                sc22pos_from_tpc = tpcCalItem.Get_tpc23_24_sc22_x();
             }
         }
     }
+
+    mhtdc_sc41lr_dt = sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[0][0] - tdc_array[1][0]);
+    mhtdc_sc41lr_x = mhtdc_sc41lr_dt * sci->mhtdc_factor_41l_41r + sci->mhtdc_offset_41l_41r;
     
+    mhtdc_sc42lr_dt = sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[4][0] - tdc_array[14][0]);
+    mhtdc_sc42lr_x = mhtdc_sc42lr_dt * sci->mhtdc_factor_42l_42r + sci->mhtdc_offset_42l_42r;
+
+    mhtdc_sc43lr_dt = sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[5][0] - tdc_array[6][0]);
+    mhtdc_sc43lr_x = mhtdc_sc43lr_dt * sci->mhtdc_factor_43l_43r + sci->mhtdc_offset_43l_43r;
+
+    mhtdc_sc31lr_dt = sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[9][0] - tdc_array[10][0]);
+    mhtdc_sc31lr_x = mhtdc_sc31lr_dt * sci->mhtdc_factor_31l_31r + sci->mhtdc_offset_31l_31r;
+
+    mhtdc_sc81lr_dt = sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[7][0] - tdc_array[8][0]);
+    mhtdc_sc81lr_x = mhtdc_sc81lr_dt * sci->mhtdc_factor_81l_81r + sci->mhtdc_offset_81l_81r;
     
-    // only take first hit (?) for 41, 42, 43, 31, 81
-    if (tdc_array[0].size() > 0 && tdc_array[1].size() > 0)
-    {   
-        mhtdc_sc41lr_dt = sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[0].at(0) - tdc_array[1].at(0));
-        mhtdc_sc41lr_x = mhtdc_sc41lr_dt * sci->mhtdc_factor_41l_41r + sci->mhtdc_offset_41l_41r;
-    }
-    if (tdc_array[4].size() > 0 && tdc_array[14].size() > 0)
+      
+    // 21 -> 41
+    for (int i = 0; i < 10; i++)
     {
-        mhtdc_sc42lr_dt = sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[4].at(0) - tdc_array[14].at(0));
-        mhtdc_sc42lr_x = mhtdc_sc42lr_dt * sci->mhtdc_factor_42l_42r + sci->mhtdc_offset_42l_42r;
-    }
-    if (tdc_array[5].size() > 0 && tdc_array[6].size() > 0)
-    {
-        mhtdc_sc43lr_dt = sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[5].at(0) - tdc_array[6].at(0));
-        mhtdc_sc43lr_x = mhtdc_sc43lr_dt * sci->mhtdc_factor_43l_43r + sci->mhtdc_offset_43l_43r;
-    }
-    if (tdc_array[9].size() > 0 && tdc_array[10].size() > 0)
-    {
-        mhtdc_sc31lr_dt = sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[9].at(0) - tdc_array[10].at(0));
-        mhtdc_sc31lr_x = mhtdc_sc31lr_dt * sci->mhtdc_factor_31l_31r + sci->mhtdc_offset_31l_31r;
-    }
-    if (tdc_array[7].size() > 0 && tdc_array[8].size() > 0)
-    {
-        mhtdc_sc81lr_dt = sci->mhtdc_factor_ch_to_ns * (rand3() + tdc_array[7].at(0) - tdc_array[8].at(0));
-        mhtdc_sc81lr_x = mhtdc_sc81lr_dt * sci->mhtdc_factor_81l_81r + sci->mhtdc_offset_81l_81r;
+        mhtdc_tof4121[i] = sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0][0] + tdc_array[1][0]) - 0.5 * (tdc_array[2][i] + tdc_array[3][i])) + sci->mhtdc_offset_41_21;
     }
 
-
-    if (tdc_array[0].size() > 0 && tdc_array[1].size() > 0)
-    {   
-        // 21 -> 41
-        if (tdc_array[3].size() > 0 && tdc_array[2].size() > 0)
-        {
-            for (int i = 0; i < tdc_array[2].size(); i++)
-            {
-                if (tdc_array[0].size() <= i || tdc_array[1].size() <= i || tdc_array[3].size() <= i) break;
-                
-                mhtdc_tof4121.emplace_back(sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0].at(0) + tdc_array[1].at(0)) - 0.5 * (tdc_array[2].at(i) + tdc_array[3].at(i))) + sci->mhtdc_offset_41_21);
-            }
-        }
-
-        // 22 -> 41
-        if (tdc_array[12].size() > 0 && tdc_array[13].size() > 0)
-        {
-            for (int i = 0; i < tdc_array[12].size(); i++)
-            {
-                if (tdc_array[0].size() <= i || tdc_array[1].size() <= i || tdc_array[13].size() <= i) break;
-                mhtdc_tof4122.emplace_back(sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0].at(0) + tdc_array[1].at(0)) - 0.5 * (tdc_array[12].at(i) + tdc_array[13].at(i))) + sci->mhtdc_offset_41_22);
-            }
-        }
+    // 22 -> 41
+    for (int i = 0; i < 10; i++)
+    {
+        mhtdc_tof4122[i] = sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0][0] + tdc_array[1][0]) - 0.5 * (tdc_array[12][i] + tdc_array[13][i])) + sci->mhtdc_offset_41_22;
     }
 
-
-    if ((tdc_array[2].size() > 0 ) && (tdc_array[0].size() > 0) && (tdc_array[1].size() > 0))
-    {
-        if (tdc_array[3].size() > 0) // CEJ: should be implicitly true or this all falls apart..
-        {
-            // 21 -> 42
-            if (tdc_array[4].size() > 0 && tdc_array[14].size() > 0)
-            {
-                mhtdc_tof4221 = sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0].at(0) + tdc_array[1].at(0)) - 0.5 * (tdc_array[4].at(0) + tdc_array[14].at(0))) + sci->mhtdc_offset_42_21;
-            }
+    // 21 -> 42
+    mhtdc_tof4221 = sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0][0] + tdc_array[1][0]) - 0.5 * (tdc_array[4][0] + tdc_array[14][0])) + sci->mhtdc_offset_42_21;
             
-            // 21 -> 43
-            if (tdc_array[5].size() > 0 && tdc_array[6].size() > 0)
-            {
-                mhtdc_tof4321 = sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0].at(0) + tdc_array[1].at(0)) - 0.5 * (tdc_array[5].at(0) + tdc_array[6].at(0))) + sci->mhtdc_offset_43_21;
-            }
+    // 21 -> 43
+    mhtdc_tof4321 = sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0][0] + tdc_array[1][0]) - 0.5 * (tdc_array[5][0] + tdc_array[6][0])) + sci->mhtdc_offset_43_21;
 
-            // 21 -> 31
-            if (tdc_array[9].size() > 0 && tdc_array[10].size() > 0)
-            {
-                mhtdc_tof3121 = sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0].at(0) + tdc_array[1].at(0)) - 0.5 * (tdc_array[9].at(0) + tdc_array[10].at(0))) + sci->mhtdc_offset_31_21;
-            }
+    // 21 -> 31
+    mhtdc_tof3121 = sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0][0] + tdc_array[1][0]) - 0.5 * (tdc_array[9][0] + tdc_array[10][0])) + sci->mhtdc_offset_31_21;
+        
+    // 21 -> 81
+    mhtdc_tof8121 = sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0][0] + tdc_array[1][0]) - 0.5 * (tdc_array[7][0] + tdc_array[8][0])) + sci->mhtdc_offset_81_21;
 
-            // 21 -> 81
-            if (tdc_array[7].size() > 0 && tdc_array[8].size() > 0)
-            {
-                mhtdc_tof8121 = sci->mhtdc_factor_ch_to_ns * (0.5 * (tdc_array[0].at(0) + tdc_array[1].at(0)) - 0.5 * (tdc_array[7].at(0) + tdc_array[8].at(0))) + sci->mhtdc_offset_81_21;
-            }
-        }
-    }
+
+  
     
 
-    //c4LOG(info,"EXEC TAC and ADC's in main crate.");
-    for (int index = 0; index < 14; index++) de_array[index] = fCalHitMain->Get_De_channel(index);
-    dt_array = fCalHitUser->Get_dt_array();
+   
+    
+    
 
+   
 
-    c4LOG_IF(fatal, (de_array == nullptr) || (dt_array == nullptr), "These two arrays are not declared correctly." );
+    de_array = mainSciItem.Get_de_array();
+    dt_array = userSciItem.Get_dt_array();
 
     dt_21l_21r = dt_array[0];
     dt_41l_41r = dt_array[1];
@@ -655,7 +588,6 @@ void FrsCal2Hit::Exec(Option_t* option)
     sci_l[5] = de_array[5]; // de_81l
     sci_r[5] = de_array[12]; // de_81r
     sci_tx[5] = dt_81l_81r + rand3();
-
 
     for (int i = 0; i < 6; i++)
     {
@@ -710,14 +642,12 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     } // loop for sci values
 
-    for (int index = 0; index < 6; index++) FrsHit->Set_sci_l(index, sci_l[index]);
-    for (int index = 0; index < 6; index++) FrsHit->Set_sci_r(index, sci_r[index]);
-    for (int index = 0; index < 6; index++) FrsHit->Set_sci_e(index, sci_e[index]);
-
-    //c4LOG(info,"EXEC calibrate TOF");
     /*----------------------------------------------------------*/
     // Calibrated ToF - dt will be in dt_array, from UserCrate
     /*----------------------------------------------------------*/
+    Float_t sci_tof[6];
+    Float_t sci_tof_calib[6];
+
     sci_tofll2 = dt_21l_41l * sci->tac_factor[2] - sci->tac_off[2];
     sci_tofrr2 = dt_21r_41r * sci->tac_factor[3] - sci->tac_off[3];
     sci_b_tofll2 = Check_WinCond(sci_tofll2, cSCI_LL2);
@@ -734,6 +664,9 @@ void FrsCal2Hit::Exec(Option_t* option)
         sci_tof2_calib = 0;
     }
 
+    sci_tof[2] = sci_tof2;
+    sci_tof_calib[2] = sci_tof2_calib;
+
     sci_tofll3 = dt_42l_21l * sci->tac_factor[5] - sci->tac_off[5];
     sci_tofrr3 = dt_42r_21r * sci->tac_factor[6] - sci->tac_off[6];
     sci_b_tofll3 = Check_WinCond(sci_tofll3, cSCI_LL3);
@@ -748,6 +681,9 @@ void FrsCal2Hit::Exec(Option_t* option)
         sci_tof3 = 0;
         sci_tof3_calib = 0;
     }
+
+    sci_tof[3] = sci_tof3;
+    sci_tof_calib[3] = sci_tof3_calib;
 
     sci_tofll4 = dt_21l_81l * sci->tac_factor[9] - sci->tac_off[9];
     sci_tofrr4 = dt_21r_81r * sci->tac_factor[10] - sci->tac_off[10];
@@ -764,6 +700,9 @@ void FrsCal2Hit::Exec(Option_t* option)
         sci_tof4_calib = 0;
     }
 
+    sci_tof[4] = sci_tof4;
+    sci_tof_calib[4] = sci_tof4_calib;
+
     sci_tofll5 = dt_22l_41l * sci->tac_factor[12] - sci->tac_off[12];
     sci_tofrr5 = dt_22r_41r * sci->tac_factor[13] - sci->tac_off[13];
     sci_b_tofll5 = Check_WinCond(sci_tofll5, cSCI_LL5);
@@ -778,26 +717,19 @@ void FrsCal2Hit::Exec(Option_t* option)
         sci_tof5 = 0;
         sci_tof5_calib = 0;
     }
-
-    FrsHit->Set_sci_tof2(sci_tof2);
-    FrsHit->Set_sci_tof(2, sci_tof2);
-    FrsHit->Set_sci_tof(3, sci_tof3);
-    FrsHit->Set_sci_tof(4, sci_tof4);
-    FrsHit->Set_sci_tof(5, sci_tof5);
-    FrsHit->Set_sci_tof_calib(2, sci_tof2_calib);
-    FrsHit->Set_sci_tof_calib(3, sci_tof3_calib);
-    FrsHit->Set_sci_tof_calib(4, sci_tof4_calib);
-    FrsHit->Set_sci_tof_calib(5, sci_tof5_calib);
+    
+    sci_tof[5] = sci_tof5;
+    sci_tof_calib[5] = sci_tof5_calib;
 
     /*----------------------------------------------------------*/
     // Start of MHTDC ID analysis
     /*----------------------------------------------------------*/
-    //c4LOG(info,"EXEC MHTDC ANALYSIS");
+   
     float temp_s8x = mhtdc_sc81lr_x;
     temp_s4x = -999.;
     if (b_tpc_xy[4] && b_tpc_xy[5])
     {
-        temp_s4x = fCalHitTPC->Get_tpc_x_s4();
+        temp_s4x = tpcCalItem.Get_tpc_x_s4();
     }
 
     float temp_s2x = -999.;
@@ -806,34 +738,34 @@ void FrsCal2Hit::Exec(Option_t* option)
 
     if (id->mhtdc_s2pos_option == 1)
     {
-        for (int i = 0; i < mhtdc_sc21lr_x.size(); i++)
+        for (int i = 0; i < 10; i++)
         {
-            temp_s2x_mhtdc.emplace_back(mhtdc_sc21lr_x[i]);
+            temp_s2x_mhtdc[i] = mhtdc_sc21lr_x[i];
         }
     }
     else if (id->mhtdc_s2pos_option == 3)
     {
-        for (int i = 0; i < mhtdc_sc22lr_x.size(); i++)
+        for (int i = 0; i < 10; i++)
         {
-            temp_s2x_mhtdc.emplace_back(mhtdc_sc22lr_x[i]);
+            temp_s2x_mhtdc[i] = mhtdc_sc22lr_x[i];
         }
     }
     else if (id->mhtdc_s2pos_option == 2)
     {
         if (b_tpc_xy[2] && b_tpc_xy[3])
         {
-            temp_s2x = fCalHitTPC->Get_tpc_x_s2_foc_23_24();
-            temp_a2 = fCalHitTPC->Get_tpc_angle_x_s2_foc_23_24();
+            temp_s2x = tpcCalItem.Get_tpc_x_s2_foc_23_24();
+            temp_a2 = tpcCalItem.Get_tpc_angle_x_s2_foc_23_24();
         }
         else if (b_tpc_xy[1] && b_tpc_xy[3])
         {
-            temp_s2x = fCalHitTPC->Get_tpc_x_s2_foc_22_24();
-            temp_a2 = fCalHitTPC->Get_tpc_angle_x_s2_foc_22_24();
+            temp_s2x = tpcCalItem.Get_tpc_x_s2_foc_22_24();
+            temp_a2 = tpcCalItem.Get_tpc_angle_x_s2_foc_22_24();
         }
         else if (b_tpc_xy[0] && b_tpc_xy[1])
         {
-            temp_s2x = fCalHitTPC->Get_tpc_x_s2_foc_21_22();
-            temp_a2 = fCalHitTPC->Get_tpc_angle_x_s2_foc_21_22();
+            temp_s2x = tpcCalItem.Get_tpc_x_s2_foc_21_22();
+            temp_a2 = tpcCalItem.Get_tpc_angle_x_s2_foc_21_22();
         }
     }
 
@@ -846,29 +778,29 @@ void FrsCal2Hit::Exec(Option_t* option)
     {
         if (id->tof_s4_select == 1)
         {
-            for (int i = 0; i < mhtdc_tof4121.size(); i++)
+            for (int i = 0; i < 10; i++)
             {
-                if (mhtdc_tof4121.at(i) > -100)
+                if (mhtdc_tof4121[i] > -100)
                 {
-                    id_mhtdc_beta_s2s4.emplace_back((id->mhtdc_length_sc2141 / mhtdc_tof4121.at(i)) / speed_light);
+                    id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2141 / mhtdc_tof4121[i]) / speed_light;
                 }
             }
         }
         else if (id->tof_s4_select == 3)
         {
-            for (int i = 0; i < mhtdc_tof4122.size(); i++)
+            for (int i = 0; i < 10; i++)
             {
-                if (mhtdc_tof4122.at(i) > -100)
+                if (mhtdc_tof4122[i] > -100)
                 {
-                    id_mhtdc_beta_s2s4.emplace_back((id->mhtdc_length_sc2241 / mhtdc_tof4122.at(i)) / speed_light);
+                    id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2241 / mhtdc_tof4122[i]) / speed_light;
                 }
             }
         }
 
         // calculate delta (momentum deviation) and AoQ
-        for (int i = 0; i < id_mhtdc_beta_s2s4.size(); i++)
+        for (int i = 0; i < 10; i++)
         {
-            id_mhtdc_gamma_s2s4.emplace_back(1. / sqrt(1. - id_mhtdc_beta_s2s4.at(i) * id_mhtdc_beta_s2s4.at(i)));
+            id_mhtdc_gamma_s2s4[i] = 1. / sqrt(1. - id_mhtdc_beta_s2s4[i] * id_mhtdc_beta_s2s4[i]);
             
             // does this bit just clear arrays? can we just clear vectors at the end of event and skip this?
             /*if (temp_s4x == -999 || temp_s2x_mhtdc[i] == -999)
@@ -879,22 +811,22 @@ void FrsCal2Hit::Exec(Option_t* option)
             /*else*/ 
             if (temp_s4x > -200. && temp_s4x < 200. && temp_s2x_mhtdc[i] > -200. && temp_s2x_mhtdc[i] < 200.)
             {
-                id_mhtdc_delta_s2s4.emplace_back((temp_s4x - (temp_s2x_mhtdc[i] * frs->magnification[1])) / (-1.0 * frs->dispersion[1] * 1000.0)); // metre to mm
-                if (id_mhtdc_beta_s2s4.at(i) > 0.0 && id_mhtdc_beta_s2s4.at(i) < 1.0)
+                id_mhtdc_delta_s2s4[i] = (temp_s4x - (temp_s2x_mhtdc[i] * frs->magnification[1])) / (-1.0 * frs->dispersion[1] * 1000.0); // metre to mm
+                if (id_mhtdc_beta_s2s4[i] > 0.0 && id_mhtdc_beta_s2s4[i] < 1.0)
                 {
-                    id_mhtdc_aoq_s2s4.emplace_back(mean_brho_s2s4 * (1. + id_mhtdc_delta_s2s4[i]) * temp_tm_to_MeV / (temp_mu * id_mhtdc_beta_s2s4.at(i) * id_mhtdc_gamma_s2s4[i]));
+                    id_mhtdc_aoq_s2s4[i] = mean_brho_s2s4 * (1. + id_mhtdc_delta_s2s4[i]) * temp_tm_to_MeV / (temp_mu * id_mhtdc_beta_s2s4[i] * id_mhtdc_gamma_s2s4[i]);
 
-                    // Gain match AoQ
-                    for (int j = 0; j < AoQ_Shift_array; j++)
+                    // Gain match AoQ // CEJ: to do before offline
+                    /*for (int j = 0; j < AoQ_Shift_array; j++)
                     {
                         if (ts_mins >= FRS_WR_i[j] && ts_mins < FRS_WR_j[j])
                         {
                             id_mhtdc_aoq_s2s4.at(i) = (id_mhtdc_aoq_s2s4.at(i) - AoQ_shift_Sci21_value[j]) - 0.029100; // Why isn't this float coded in a config file?
                         }
-                    }
+                    }*/
 
                     // No angle correction for SCI
-                    id_mhtdc_aoq_corr_s2s4.emplace_back(id_mhtdc_aoq_s2s4.at(i));
+                    id_mhtdc_aoq_corr_s2s4[i] = id_mhtdc_aoq_s2s4[i];
 
                     /*mhtdc_gamma1square.emplace_back(1.0 + TMath::Power(((1.0 / aoq_factor) * (id_brho[0] / id_mhtdc_aoq_s2s4[i])), 2));
                     id_mhtdc_gamma_ta_s2.emplace_back(TMath::Sqrt(mhtdc_gamma1square[i]));
@@ -911,29 +843,29 @@ void FrsCal2Hit::Exec(Option_t* option)
     {
         if (id->tof_s4_select == 1)
         {
-            for (int i = 0; i < mhtdc_tof4121.size(); i++)
+            for (int i = 0; i < 10; i++)
             {
                 if (mhtdc_tof4121[i] > -100)
                 {
-                    id_mhtdc_beta_s2s4.emplace_back((id->mhtdc_length_sc2141 / mhtdc_tof4121[i]) / speed_light);
+                    id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2141 / mhtdc_tof4121[i]) / speed_light;
                 }
             }
         }
         else if (id->tof_s4_select == 3)
         {
-            for (int i = 0; i < mhtdc_tof4122.size(); i++)
+            for (int i = 0; i < 10; i++)
             {
                 if (mhtdc_tof4122[i] > -100)
                 {
-                    id_mhtdc_beta_s2s4.emplace_back((id->mhtdc_length_sc2241 / mhtdc_tof4122[i]) / speed_light);
+                    id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2241 / mhtdc_tof4122[i]) / speed_light;
                 }
             }
         }
         
         // Calculation of velocity beta and gamma
-        for (int i = 0; i < id_mhtdc_beta_s2s4.size(); i++)
+        for (int i = 0; i < 10; i++)
         {
-            id_mhtdc_gamma_s2s4.emplace_back(1. / sqrt(1. - id_mhtdc_beta_s2s4.at(i) * id_mhtdc_beta_s2s4.at(i)));
+            id_mhtdc_gamma_s2s4[i] = 1. / sqrt(1. - id_mhtdc_beta_s2s4[i] * id_mhtdc_beta_s2s4[i]);
 
             // Calculate delta (momentum deviation) and AoQ
             /*if(temp_s4x == -999 || temp_s2x == -999)
@@ -944,23 +876,22 @@ void FrsCal2Hit::Exec(Option_t* option)
             else*/ if (temp_s4x > -200. && temp_s4x < 200. && temp_s2x > -200. && temp_s2x < 200.)
             {   
                 // CEJ: this is a pointlessly repeated calculation, takes single value
-                id_mhtdc_delta_s2s4.emplace_back((temp_s4x - (temp_s2x * frs->magnification[1])) / (-1.0 * frs->dispersion[1] * 1000.0)); //1000 is dispertsion from meter to mm. -1.0 is sign definition.
+                id_mhtdc_delta_s2s4[i] = (temp_s4x - (temp_s2x * frs->magnification[1])) / (-1.0 * frs->dispersion[1] * 1000.0); //1000 is dispertsion from meter to mm. -1.0 is sign definition.
 
-                if (id_mhtdc_beta_s2s4.at(i) > 0.0 && id_mhtdc_beta_s2s4.at(i) < 1.0)
+                if (id_mhtdc_beta_s2s4[i] > 0.0 && id_mhtdc_beta_s2s4[i] < 1.0)
                 {
-                    id_mhtdc_aoq_s2s4.emplace_back(mean_brho_s2s4 *(1. + id_mhtdc_delta_s2s4[i]) * temp_tm_to_MeV / (temp_mu * id_mhtdc_beta_s2s4.at(i) * id_mhtdc_gamma_s2s4.at(i)));
+                    id_mhtdc_aoq_s2s4[i] = mean_brho_s2s4 *(1. + id_mhtdc_delta_s2s4[i]) * temp_tm_to_MeV / (temp_mu * id_mhtdc_beta_s2s4[i] * id_mhtdc_gamma_s2s4[i]);
                 
-                    // Gain match AoQ
-                    // ** OLD STARTS BELOW ** //
-                    for(int j = 0; j < AoQ_Shift_array; j++)
+                    // Gain match AoQ -- to do before offline
+                    /*for(int j = 0; j < AoQ_Shift_array; j++)
                     {
                         if(ts_mins >= FRS_WR_i[j] && ts_mins < FRS_WR_j[j])
                         {
                             id_mhtdc_aoq_s2s4.at(i) = id_mhtdc_aoq_s2s4.at(i) - AoQ_shift_TPC_value[j] - 0.01097;
                         }
-                    }
+                    }*/
                     
-                    id_mhtdc_aoq_corr_s2s4.emplace_back(id_mhtdc_aoq_s2s4.at(i) - id->a2AoQCorr * temp_a2);
+                    id_mhtdc_aoq_corr_s2s4[i] = id_mhtdc_aoq_s2s4[i] - id->a2AoQCorr * temp_a2;
                     
                     /*mhtdc_gamma1square.emplace_back(1.0 + TMath::Power(((1.0 / aoq_factor) * (id_brho[0] / id_mhtdc_aoq_s2s4[i])), 2));
                     id_mhtdc_gamma_ta_s2.emplace_back(TMath::Sqrt(mhtdc_gamma1square[i]));
@@ -973,31 +904,27 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
 
-    FrsHit->Set_ID_beta_mhtdc(id_mhtdc_beta_s2s4);
-    FrsHit->Set_ID_AoQ_mhtdc(id_mhtdc_aoq_s2s4);
-    FrsHit->Set_ID_AoQ_corr_mhtdc(id_mhtdc_aoq_corr_s2s4);
-
     // Calculation of dE and Z from MUSIC41
     // CEJ: we should investigate why the couts here never print
-    for (int i = 0; i < id_mhtdc_beta_s2s4.size(); i++)
+    for (int i = 0; i < 10; i++)
     {
         float temp_music41_de = de[0] > 0.0;
-        if ((temp_music41_de > 0.0) && (id_mhtdc_beta_s2s4.at(i) > 0.0) && (id_mhtdc_beta_s2s4.at(i) < 1.0))
+        if ((temp_music41_de > 0.0) && (id_mhtdc_beta_s2s4[i] > 0.0) && (id_mhtdc_beta_s2s4[i] < 1.0))
         {
             power = 1.;
             sum = 0.;
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->mhtdc_vel_a_music41[j];
-                power *= id_mhtdc_beta_s2s4.at(i);
+                power *= id_mhtdc_beta_s2s4[i];
                 
             }
-            id_mhtdc_v_cor_music41.emplace_back(sum);
+            id_mhtdc_v_cor_music41[i] = sum;
 
             
-            if (id_mhtdc_v_cor_music41.at(i) > 0.0)
+            if (id_mhtdc_v_cor_music41[i] > 0.0)
             {
-                id_mhtdc_z_music41.emplace_back(frs->primary_z * sqrt(de[0] / id_mhtdc_v_cor_music41.at(i)) + id->mhtdc_offset_z_music41);
+                id_mhtdc_z_music41[i] = frs->primary_z * sqrt(de[0] / id_mhtdc_v_cor_music41[i]) + id->mhtdc_offset_z_music41;
             }
             
             //std::cout << "do we get a z value" << std::endl;
@@ -1006,29 +933,29 @@ void FrsCal2Hit::Exec(Option_t* option)
         
     }
 
-    for (int i = 0; i < id_mhtdc_beta_s2s4.size(); i++)
+    for (int i = 0; i < 10; i++)
     {
         float temp_music42_de = de[1] > 0.0;
-        if((temp_music42_de > 0.0)  && (id_mhtdc_beta_s2s4.at(i) > 0.0) && (id_mhtdc_beta_s2s4.at(i) < 1.0))
+        if((temp_music42_de > 0.0)  && (id_mhtdc_beta_s2s4[i] > 0.0) && (id_mhtdc_beta_s2s4[i] < 1.0))
         {
             power = 1.;
             sum = 0.;
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->mhtdc_vel_a_music42[j];
-                power *= id_mhtdc_beta_s2s4.at(i);
+                power *= id_mhtdc_beta_s2s4[i];
             }
-            id_mhtdc_v_cor_music42.emplace_back(sum);
+            id_mhtdc_v_cor_music42[i] = sum;
             
-            if (id_mhtdc_v_cor_music42.at(i)> 0.0)
+            if (id_mhtdc_v_cor_music42[i] > 0.0)
             {
-                id_mhtdc_z_music42.emplace_back(frs->primary_z * sqrt(de[1] / id_mhtdc_v_cor_music42.at(i)) + id->mhtdc_offset_z_music42);
+                id_mhtdc_z_music42[i] = frs->primary_z * sqrt(de[1] / id_mhtdc_v_cor_music42[i]) + id->mhtdc_offset_z_music42;
             }
         }
     }
 
-    // Gain match Z
-    for (int i = 0; i < Z_Shift_array; i++)
+    // Gain match Z -- to do before offline
+    /*for (int i = 0; i < Z_Shift_array; i++)
     {   
         // music41 and 42 same size
         for (int j = 0; j < id_mhtdc_z_music41.size(); j++)
@@ -1039,52 +966,42 @@ void FrsCal2Hit::Exec(Option_t* option)
                 id_mhtdc_z_music42.at(j) = id_mhtdc_z_music42.at(j) - Z2_shift_value[i];
             }
         }
-    }
+    }*/
 
-    FrsHit->Set_ID_z_mhtdc(id_mhtdc_z_music41);
-    FrsHit->Set_ID_z2_mhtdc(id_mhtdc_z_music42);
-
-    for (int i = 0; i < id_mhtdc_beta_s2s4.size(); i++)
+    for (int i = 0; i < 10; i++)
     {
-        if (id_mhtdc_aoq_s2s4.at(i) != 0)
+        if (id_mhtdc_aoq_s2s4[i] != 0)
         {
-            mhtdc_gamma1square.emplace_back(1.0 + TMath::Power(((1.0 / aoq_factor) * (id_brho[0] / id_mhtdc_aoq_s2s4.at(i))), 2));
-            id_mhtdc_gamma_ta_s2.emplace_back(TMath::Sqrt(mhtdc_gamma1square.at(i)));
-            id_mhtdc_dEdegoQ.emplace_back((id_mhtdc_gamma_ta_s2[i] - id_mhtdc_gamma_s2s4[i]) * id_mhtdc_aoq_s2s4.at(i));
-            id_mhtdc_dEdeg.emplace_back(id_mhtdc_dEdegoQ[i] * id_mhtdc_z_music41[i]);
+            mhtdc_gamma1square[i] = 1.0 + TMath::Power(((1.0 / aoq_factor) * (id_brho[0] / id_mhtdc_aoq_s2s4[i])), 2);
+            id_mhtdc_gamma_ta_s2[i] = TMath::Sqrt(mhtdc_gamma1square[i]);
+            id_mhtdc_dEdegoQ[i] = (id_mhtdc_gamma_ta_s2[i] - id_mhtdc_gamma_s2s4[i]) * id_mhtdc_aoq_s2s4[i];
+            id_mhtdc_dEdeg[i] = id_mhtdc_dEdegoQ[i] * id_mhtdc_z_music41[i];
 
         }
     }
     
-    FrsHit->Set_ID_dEdegoQ_mhtdc(id_mhtdc_dEdegoQ);
-    FrsHit->Set_ID_dEdeg_mhtdc(id_mhtdc_dEdeg);
-
-
-
-
-    //c4LOG(info,"EXEC EXtraction of TPC values");
     if (id->x_s2_select == 1)
     {   
         if (b_tpc_xy[2] && b_tpc_xy[3])
         {   
-            id_x2 = fCalHitTPC->Get_tpc_x_s2_foc_23_24();
-            id_y2 = fCalHitTPC->Get_tpc_y_s2_foc_23_24();
-            id_a2 = fCalHitTPC->Get_tpc_angle_x_s2_foc_23_24();
-            id_b2 = fCalHitTPC->Get_tpc_angle_y_s2_foc_23_24();
+            id_x2 = tpcCalItem.Get_tpc_x_s2_foc_23_24();
+            id_y2 = tpcCalItem.Get_tpc_y_s2_foc_23_24();
+            id_a2 = tpcCalItem.Get_tpc_angle_x_s2_foc_23_24();
+            id_b2 = tpcCalItem.Get_tpc_angle_y_s2_foc_23_24();
         }
         else if (b_tpc_xy[1] && b_tpc_xy[3])
         {
-            id_x2 = fCalHitTPC->Get_tpc_x_s2_foc_22_24();
-            id_y2 = fCalHitTPC->Get_tpc_y_s2_foc_22_24();
-            id_a2 = fCalHitTPC->Get_tpc_angle_x_s2_foc_22_24();
-            id_b2 = fCalHitTPC->Get_tpc_angle_y_s2_foc_22_24();
+            id_x2 = tpcCalItem.Get_tpc_x_s2_foc_22_24();
+            id_y2 = tpcCalItem.Get_tpc_y_s2_foc_22_24();
+            id_a2 = tpcCalItem.Get_tpc_angle_x_s2_foc_22_24();
+            id_b2 = tpcCalItem.Get_tpc_angle_y_s2_foc_22_24();
         }
         else if (b_tpc_xy[0] && b_tpc_xy[1])
         {   
-            id_x2 = fCalHitTPC->Get_tpc_x_s2_foc_21_22();
-            id_y2 = fCalHitTPC->Get_tpc_y_s2_foc_21_22();
-            id_a2 = fCalHitTPC->Get_tpc_angle_x_s2_foc_21_22();
-            id_b2 = fCalHitTPC->Get_tpc_angle_y_s2_foc_21_22();
+            id_x2 = tpcCalItem.Get_tpc_x_s2_foc_21_22();
+            id_y2 = tpcCalItem.Get_tpc_y_s2_foc_21_22();
+            id_a2 = tpcCalItem.Get_tpc_angle_x_s2_foc_21_22();
+            id_b2 = tpcCalItem.Get_tpc_angle_y_s2_foc_21_22();
         }
         
 
@@ -1113,10 +1030,10 @@ void FrsCal2Hit::Exec(Option_t* option)
 
     if (b_tpc_xy[4] && b_tpc_xy[5])
     {   
-        id_x4 = fCalHitTPC->Get_tpc_x_s4();
-        id_y4 = fCalHitTPC->Get_tpc_y_s4();
-        id_a4 = fCalHitTPC->Get_tpc_angle_x_s4();
-        id_b4 = fCalHitTPC->Get_tpc_angle_y_s4();
+        id_x4 = tpcCalItem.Get_tpc_x_s4();
+        id_y4 = tpcCalItem.Get_tpc_y_s4();
+        id_a4 = tpcCalItem.Get_tpc_angle_x_s4();
+        id_b4 = tpcCalItem.Get_tpc_angle_y_s4();
     }
 
     if (sci_b_x[5])
@@ -1130,26 +1047,12 @@ void FrsCal2Hit::Exec(Option_t* option)
     id_b_x2 = Check_WinCond(id_x2, cID_x2);
     id_b_x4 = Check_WinCond(id_x4, cID_x4);
     
-    FrsHit->Set_ID_x2(id_x2);
-    FrsHit->Set_ID_y2(id_y2);
-    FrsHit->Set_ID_a2(id_a2);
-    FrsHit->Set_ID_b2(id_b2);
-
-    FrsHit->Set_ID_x4(id_x4);
-    FrsHit->Set_ID_y4(id_y4);
-    FrsHit->Set_ID_a4(id_a4);
-    FrsHit->Set_ID_b4(id_b4);
-    
-
-    // CEJ: commented because double def?
-    /*temp_s4x = -999.;
+    temp_s4x = -999.;
     if (b_tpc_xy[4] && b_tpc_xy[5])
     {
-        temp_s4x = fCalHitTPC->Get_tpc_x_s4();
-    }*/
+        temp_s4x = tpcCalItem.Get_tpc_x_s4();
+    }
 
-
-    //c4LOG(info,"EXEC BETA CALC");
     /*----------------------------------------------------------*/
     /* Determination of beta                                    */
     /*----------------------------------------------------------*/
@@ -1176,9 +1079,6 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
 
-    FrsHit->Set_ID_beta(id_beta);
-
-    //c4LOG(info,"EXEC BROO");
     /*------------------------------------------------------*/
     /* Determination of Brho                                */
     /*------------------------------------------------------*/
@@ -1188,21 +1088,14 @@ void FrsCal2Hit::Exec(Option_t* option)
         id_rho[0] = frs->rho0[0] * (1. - id_x2 / 1000. / frs->dispersion[0]);
         id_brho[0] = (fabs(frs->bfield[0]) + fabs(frs->bfield[1])) / 2. * id_rho[0];
 
-        FrsHit->Set_ID_rho(0, id_rho[0]);
-        FrsHit->Set_ID_brho(0, id_brho[0]);
-
         if (id_b_x4)
         {
             id_rho[1] = frs->rho0[1] * (1. - (id_x4 - frs->magnification[1] * id_x2) / 1000. / frs->dispersion[1]);
             id_brho[1] = (fabs(frs->bfield[2]) + fabs(frs->bfield[3])) / 2. * id_rho[1];
 
-            FrsHit->Set_ID_rho(1, id_rho[1]);
-            FrsHit->Set_ID_brho(1, id_brho[1]);
         }
     }
 
-
-    //c4LOG(info,"EXEC A/Q");
     /*--------------------------------------------------------------*/
     /* Determination of A/Q                                         */
     /*--------------------------------------------------------------*/
@@ -1218,39 +1111,36 @@ void FrsCal2Hit::Exec(Option_t* option)
 
             // this is not done in FRS Go4, and in DESPEC Go4 I can't understand where "ts_mins" comes from?
             // is it just WR in minutes somehow? 
-            // why don't FRS GainMatch?
-            if (id_AoQ_corr > 0)
-            {
-                for (int i = 0; i < AoQ_Shift_array; i++)
-                {
-                    if (ts_mins >= FRS_WR_i[i] && ts_mins < FRS_WR_j[i])
-                    {
-                        if (id->x_s2_select == 2)
-                        {
-                            id_AoQ = id_AoQ - AoQ_shift_Sci21_value[i];
-                            id_AoQ_corr = id_AoQ_corr - AoQ_shift_Sci21_value[i];
-                        }
-                        else if (id->x_s2_select == 3)
-                        {
-                            id_AoQ = id_AoQ - AoQ_shift_Sci22_value[i];
-                            id_AoQ_corr = id_AoQ_corr - AoQ_shift_Sci22_value[i];
-                        }
-                        else
-                        {
-                            id_AoQ = id_AoQ - AoQ_shift_TPC_value[i];
-                            id_AoQ_corr = id_AoQ_corr - AoQ_shift_TPC_value[i];
-                        }
-                    }
-                }
-            }
+            // why don't FRS GainMatch? -- anyway, TODO before offline
+            // if (id_AoQ_corr > 0)
+            // {
+            //     for (int i = 0; i < AoQ_Shift_array; i++)
+            //     {
+            //         if (ts_mins >= FRS_WR_i[i] && ts_mins < FRS_WR_j[i])
+            //         {
+            //             if (id->x_s2_select == 2)
+            //             {
+            //                 id_AoQ = id_AoQ - AoQ_shift_Sci21_value[i];
+            //                 id_AoQ_corr = id_AoQ_corr - AoQ_shift_Sci21_value[i];
+            //             }
+            //             else if (id->x_s2_select == 3)
+            //             {
+            //                 id_AoQ = id_AoQ - AoQ_shift_Sci22_value[i];
+            //                 id_AoQ_corr = id_AoQ_corr - AoQ_shift_Sci22_value[i];
+            //             }
+            //             else
+            //             {
+            //                 id_AoQ = id_AoQ - AoQ_shift_TPC_value[i];
+            //                 id_AoQ_corr = id_AoQ_corr - AoQ_shift_TPC_value[i];
+            //             }
+            //         }
+            //     }
+            // }
 
             id_b_AoQ = true;
-            FrsHit->Set_ID_AoQ(id_AoQ);
-            FrsHit->Set_ID_AoQ_corr(id_AoQ_corr);
         }
     }
 
-    //c4LOG(info,"EXEC ZZ");
     /*------------------------------------------------*/
     /* Determination of Z                             */
     /*------------------------------------------------*/
@@ -1332,11 +1222,6 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
     */
-    //c4LOG(info,"Finalize:");
-
-
-    FrsHit->Set_ID_z(id_z);
-    FrsHit->Set_ID_z2(id_z2);
 
     
     // non mhtdc version?
@@ -1347,18 +1232,63 @@ void FrsCal2Hit::Exec(Option_t* option)
         id_dEdegoQ = (id_gamma_ta_s2 - id_gamma) * id_AoQ;
         id_dEdeg = id_dEdegoQ * id_z;
 
-        FrsHit->Set_ID_dEdegoQ(id_dEdegoQ);
-        FrsHit->Set_ID_dEdeg(id_dEdeg);
+    auto & hitEntry = hitArray->emplace_back();
+    hitEntry.SetAll(wr_t,
+                    tpat,
+                    id_x2,
+                    id_y2,
+                    id_x4,
+                    id_y4,
+                    id_a2,
+                    id_b2,
+                    id_a4,
+                    id_b4,
+                    id_AoQ,
+                    id_AoQ_corr,
+                    id_z,
+                    id_z2,
+                    id_beta,
+                    id_dEdeg,
+                    id_dEdegoQ,
+                    id_rho,
+                    id_brho,
+                    de,
+                    de_cor,
+                    sci_e,
+                    sci_l,
+                    sci_r,
+                    sci_x,
+                    sci_tof,
+                    sci_tof_calib,
+                    sci_tof2,
+                    time_in_ms,
+                    ibin_for_s,
+                    ibin_for_100ms,
+                    ibin_for_spill,
+                    increase_sc_temp_main,
+                    increase_sc_temp_user,
+                    increase_sc_temp2,
+                    increase_sc_temp3,
+                    extraction_time_ms,
+                    ibin_clean_for_s,
+                    ibin_clean_for_100ms,
+                    ibin_clean_for_spill);
 
-
-    // above is end of FRS_Anl
-
-    new ((*fHitArray)[fHitArray->GetEntriesFast()]) FrsHitData(*FrsHit);
+    for (int i = 0; i < 10; i++)
+    {
+        auto & multihitEntry = multihitArray->emplace_back();
+        multihitEntry.SetAll(id_mhtdc_beta_s2s4[i], 
+                            id_mhtdc_aoq_s2s4[i], 
+                            id_mhtdc_aoq_corr_s2s4[i], 
+                            id_mhtdc_z_music41[i],
+                            id_mhtdc_z_music42[i],
+                            id_mhtdc_dEdeg[i],
+                            id_mhtdc_dEdegoQ[i]);
+    }
    
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
     total_time_microsecs += duration.count();
-    //c4LOG(info, "FrsCal2Hit Exec time: " << duration.count() << " microseconds");
 
 }
 
@@ -1639,8 +1569,8 @@ Float_t FrsCal2Hit::rand3()
 
 void FrsCal2Hit::ZeroArrays()
 {
-    fHitArray->Clear();
-    fEventItems->Clear();
+    //fHitArray->Clear();
+    //fEventItems->Clear();
 }
 
 void FrsCal2Hit::ZeroVariables()

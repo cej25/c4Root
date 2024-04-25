@@ -21,10 +21,12 @@ extern "C"
 FrsTpatReader::FrsTpatReader(EXT_STR_h101_frstpat_onion* data, size_t offset)
     : c4Reader("FrsTpatReader")
     , fNEvent(0)
+    , header(nullptr)
     , fData(data)
     , fOffset(offset)
     , fOnline(kFALSE)
     , fArray(new TClonesArray("FrsTpatData"))
+    , tpatArray(new std::vector<FrsTpatItem>)
 {
 }
 
@@ -46,8 +48,13 @@ Bool_t FrsTpatReader::Init(ext_data_struct_info* a_struct_info)
         return kFALSE;
     }
 
-    FairRootManager::Instance()->Register("FrsTpatData", "FRS Tpat Data", fArray, !fOnline);
+    header = (EventHeader*)FairRootManager::Instance()->GetObject("EventHeader.");
+    c4LOG_IF(error, !header, "Branch EventHeader. not found");
+
+    //FairRootManager::Instance()->Register("FrsTpatData", "FRS Tpat Data", fArray, !fOnline);
+    FairRootManager::Instance()->RegisterAny("FrsTpatData", tpatArray, !fOnline);
     fArray->Clear();
+    tpatArray->clear();
 
     memset(fData, 0, sizeof *fData);
 
@@ -56,19 +63,25 @@ Bool_t FrsTpatReader::Init(ext_data_struct_info* a_struct_info)
 
 Bool_t FrsTpatReader::Read()
 {
+    tpatArray->clear();
     c4LOG(debug2, "Event data");
 
     if (!fData) return kTRUE;
     if (fData == nullptr) return kFALSE;
 
-    FrsTpatData* TpatHit = new FrsTpatData();
+    //FrsTpatData* TpatHit = new FrsTpatData();
     wr_t = (((uint64_t)fData->frstpat_wr_t[3]) << 48) + (((uint64_t)fData->frstpat_wr_t[2]) << 32) + (((uint64_t)fData->frstpat_wr_t[1]) << 16) + (uint64_t)(fData->frstpat_wr_t[0]);
-    TpatHit->Set_wr_t(wr_t);
+    //TpatHit->Set_wr_t(wr_t);
+
+    //if (wr_t != 0) std::cout << "Event: " << header->GetEventno() << " - FRS WR: " << wr_t << std::endl;
 
     tpat = fData->frstpat_data_tpat; // single 12bit 
-    TpatHit->Set_tpat(tpat);
+    //TpatHit->Set_tpat(tpat);
 
-    new ((*fArray)[fArray->GetEntriesFast()]) FrsTpatData(*TpatHit);
+    auto & entry = tpatArray->emplace_back();
+    entry.SetAll(wr_t, tpat);
+
+    //new ((*fArray)[fArray->GetEntriesFast()]) FrsTpatData(*TpatHit);
         
     fNEvent += 1;
     

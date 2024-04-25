@@ -30,7 +30,7 @@ FrsOnlineSpectra::FrsOnlineSpectra(): FrsOnlineSpectra("FrsOnlineSpectra")
 
 FrsOnlineSpectra::FrsOnlineSpectra(std::vector<FrsGate*> fg)
     : FairTask()
-    , fHitFrsArray(NULL)
+    , hitArray(nullptr)
     , fNEvents(0)
     , header(nullptr)
 {
@@ -50,7 +50,7 @@ FrsOnlineSpectra::FrsOnlineSpectra(std::vector<FrsGate*> fg)
 
 FrsOnlineSpectra::FrsOnlineSpectra(const TString& name, Int_t iVerbose)
     : FairTask(name, iVerbose)
-    , fHitFrsArray(NULL)
+    , hitArray(NULL)
     , fNEvents(0)
     , header(nullptr)
 {
@@ -60,7 +60,7 @@ FrsOnlineSpectra::FrsOnlineSpectra(const TString& name, Int_t iVerbose)
 FrsOnlineSpectra::~FrsOnlineSpectra()
 {
     c4LOG(info, "");
-    if (fHitFrsArray) delete fHitFrsArray;
+    if (hitArray) delete hitArray;
 }
 
 // Public Method SetParContainers
@@ -82,17 +82,17 @@ InitStatus FrsOnlineSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fHitFrsArray = (TClonesArray*)mgr->GetObject("FrsHitData");
-    c4LOG_IF(fatal, !fHitFrsArray, "Branch FrsHitData not found");
+    hitArray = mgr->InitObjectAs<decltype(hitArray)>("FrsHitData");
+    c4LOG_IF(fatal, !hitArray, "Branch FrsHitData not found!");
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
     
     TDirectory::TContext ctx(nullptr);
 
-    // look for FRS directory, create it if not found
     dir_frs = (TDirectory*)mgr->GetObject("FRS");
     if (dir_frs == nullptr) 
     {
+        LOG(info) << "Creating FRS Online Directory";
         dir_frs = new TDirectory("FRS Online", "FRS Online", "", 0);
         mgr->Register("FRS", "FRS Online Directory", dir_frs, false); // allow other tasks to find this
         histograms->Add(dir_frs);
@@ -179,7 +179,7 @@ InitStatus FrsOnlineSpectra::Init()
     h2_x4_vs_AoQ_Zsame->GetYaxis()->SetTitle("S4 x-position");
     h2_x4_vs_AoQ_Zsame->SetOption("COLZ");
 
-    h2_x2_vs_AoQ_Zsame = new TH2D("h2_x2_vs_AoQ_Zsame", "x4 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 300, frs_config->fMin_x2, frs_config->fMax_x2);
+    h2_x2_vs_AoQ_Zsame = new TH2D("h2_x2_vs_AoQ_Zsame", "x2 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 300, frs_config->fMin_x2, frs_config->fMax_x2);
     h2_x2_vs_AoQ_Zsame->GetXaxis()->SetTitle("A/Q");
     h2_x2_vs_AoQ_Zsame->GetYaxis()->SetTitle("S2 x-position");
     h2_x2_vs_AoQ_Zsame->SetOption("COLZ");
@@ -348,7 +348,7 @@ InitStatus FrsOnlineSpectra::Init()
             */
 
             dir_ZvsZ2->cd();
-            h2_Z_vs_AoQ_Z1Z2gate[gate] = new TH2I(Form("h2_Z_vs_AoQ_ZAoQgate%i", gate), Form("Z vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z);
+            h2_Z_vs_AoQ_Z1Z2gate[gate] = new TH2I(Form("h2_Z_vs_AoQ_ZAoQgate%s", FrsGates[gate]->GetName().c_str()), Form("Z vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z);
             h2_Z_vs_AoQ_Z1Z2gate[gate]->GetXaxis()->SetTitle("A/Q");
             h2_Z_vs_AoQ_Z1Z2gate[gate]->GetYaxis()->SetTitle("Z (MUSIC 1)");
             h2_Z_vs_AoQ_Z1Z2gate[gate]->SetOption("COLZ");
@@ -411,8 +411,8 @@ InitStatus FrsOnlineSpectra::Init()
 
     h1_tpat = new TH1I("h1_tpat", "Trigger Pattern", 20, 0, 20);
 
-    // this we'll comment out because it wasn't in go4, looks useful, but will redefine how it fits in
-    //h_frs_beta_sci = new TH1D("h_frs_beta_sci", "beta from SCI TOF", 1000,0,1);
+    //hG_frs_wr = new TGraph(1);
+    
 
     // Register command to reset histograms
     run->GetHttpServer()->RegisterCommand("Reset_FRS_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
@@ -454,6 +454,7 @@ void FrsOnlineSpectra::Reset_Histo()
     h2_y4_vs_b4->Reset();
     h2_Z_vs_Sc21E->Reset();
     h1_tpat->Reset();
+   //h1_frs_wr->Reset();
 
     if (!FrsGates.empty())
     {
@@ -656,156 +657,152 @@ void FrsOnlineSpectra::Snapshot_Histo()
 
 void FrsOnlineSpectra::Exec(Option_t* option)
 {
-    // Fill hit data
-    if (fHitFrsArray && fHitFrsArray->GetEntriesFast() > 0)
+
+    for (auto const & hitItem : *hitArray)
     {
-        Int_t nHits = fHitFrsArray->GetEntriesFast();
-        for (Int_t ihit = 0; ihit < nHits; ihit++)
+        h1_tpat->Fill(hitItem.Get_tpat());
+        //h1_frs_wr->Fill(hitItem.Get_wr_t());
+
+        /* ---------------------------------------------------------------------------- */
+        // PIDs //
+        /* ---------------------------------------------------------------------------- */
+        if (hitItem.Get_ID_AoQ() > 0 && hitItem.Get_ID_z() > 0) h2_Z_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_z());
+        if (hitItem.Get_ID_AoQ_corr() > 0 && hitItem.Get_ID_z() > 0) h2_Z_vs_AoQ_corr->Fill(hitItem.Get_ID_AoQ_corr(), hitItem.Get_ID_z());
+
+        if (hitItem.Get_ID_z() > 0 && hitItem.Get_ID_z2() > 0) h2_Z_vs_Z2->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_z2());
+        if (TMath::Abs(hitItem.Get_ID_z() - hitItem.Get_ID_z2()) < 0.4)
         {
-            FrsHit = (FrsHitData*)fHitFrsArray->At(ihit);
-            if (!FrsHit) continue;
+            h2_Z_vs_AoQ_Zsame->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_z());
+            h2_x4_vs_AoQ_Zsame->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x4());
+            h2_x2_vs_AoQ_Zsame->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x2());
+        }
 
-            h1_tpat->Fill(FrsHit->Get_tpat());
+        if (hitItem.Get_ID_AoQ() > 0 && hitItem.Get_ID_x2() > -100 && hitItem.Get_ID_x2() < 100) h2_x2_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x2());
+        if (hitItem.Get_ID_AoQ() > 0 && hitItem.Get_ID_x4() > -100 && hitItem.Get_ID_x4() < 100) h2_x4_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x4());
 
-            /* ---------------------------------------------------------------------------- */
-            // PIDs //
-            /* ---------------------------------------------------------------------------- */
-            if (FrsHit->Get_ID_AoQ() > 0 && FrsHit->Get_ID_z() > 0) h2_Z_vs_AoQ->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z());
-            if (FrsHit->Get_ID_AoQ_corr() > 0 && FrsHit->Get_ID_z() > 0) h2_Z_vs_AoQ_corr->Fill(FrsHit->Get_ID_AoQ_corr(), FrsHit->Get_ID_z());
+        // Charge states
+        if (hitItem.Get_ID_z() > 0 && hitItem.Get_ID_dEdegoQ() != 0) h2_dEdegoQ_vs_Z->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdegoQ());
+        if (hitItem.Get_ID_z() > 0 && hitItem.Get_ID_dEdeg() != 0) h2_dEdeg_vs_Z->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdeg());
 
-            if (FrsHit->Get_ID_z() > 0 && FrsHit->Get_ID_z2() > 0) h2_Z_vs_Z2->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2());
-            if (TMath::Abs(FrsHit->Get_ID_z() - FrsHit->Get_ID_z2()) < 0.4)
+        // Angles vs AoQ
+        if (hitItem.Get_ID_AoQ() != 0 && hitItem.Get_ID_a2() != 0) h2_a2_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_a2());
+        if (hitItem.Get_ID_AoQ() != 0 && hitItem.Get_ID_a4() != 0) h2_a4_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_a4());
+
+        // Z vs Energy loss MUSIC 2
+        Float_t* music_dE = hitItem.Get_music_dE();
+        if (hitItem.Get_ID_z() != 0 && music_dE[1] != 0) h2_Z_vs_dE2->Fill(hitItem.Get_ID_z(), music_dE[1]);
+
+        // x2 vs x4
+        if (hitItem.Get_ID_x2() != 0 && hitItem.Get_ID_x4() != 0) h2_x2_vs_x4->Fill(hitItem.Get_ID_x2(), hitItem.Get_ID_x4());
+
+        // CEJ: changed from Go4, [5] -> [2]
+        Float_t* sci_e = hitItem.Get_sci_e();
+        if (hitItem.Get_ID_AoQ() != 0 && sci_e[2] != 0) h2_SC41dE_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), sci_e[2]);
+
+        if (hitItem.Get_sci_tof2() != 0 && music_dE[0] != 0) h2_dE_vs_ToF->Fill(hitItem.Get_sci_tof2(), music_dE[0]);
+
+        if (hitItem.Get_ID_z() != 0 && hitItem.Get_ID_x2() != 0) h2_x2_vs_Z->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_x2());
+        if (hitItem.Get_ID_z() != 0 && hitItem.Get_ID_x4() != 0) h2_x4_vs_Z->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_x4());
+
+        if (hitItem.Get_ID_x2() != 0 && music_dE[0] != 0) h2_dE1_vs_x2->Fill(hitItem.Get_ID_x2(), music_dE[0]);
+        if (hitItem.Get_ID_x4() != 0 && music_dE[0] != 0) h2_dE1_vs_x4->Fill(hitItem.Get_ID_x4(), music_dE[0]);
+
+        if (hitItem.Get_ID_x2() != 0 && hitItem.Get_ID_a2() != 0) h2_x2_vs_a2->Fill(hitItem.Get_ID_x2(), hitItem.Get_ID_a2());
+        if (hitItem.Get_ID_y2() != 0 && hitItem.Get_ID_b2() != 0) h2_y2_vs_b2->Fill(hitItem.Get_ID_y2(), hitItem.Get_ID_b2());
+        if (hitItem.Get_ID_x4() != 0 && hitItem.Get_ID_a4() != 0) h2_x4_vs_a4->Fill(hitItem.Get_ID_x4(), hitItem.Get_ID_a4());
+        if (hitItem.Get_ID_y4() != 0 && hitItem.Get_ID_b4() != 0) h2_y4_vs_b4->Fill(hitItem.Get_ID_y4(), hitItem.Get_ID_b4());
+
+        // CEJ: changed [2] -> [0]
+        Float_t* sci_l = hitItem.Get_sci_l(); Float_t* sci_r = hitItem.Get_sci_r();
+        if (hitItem.Get_ID_z() != 0 && sci_l[0] != 0 && sci_r[0] != 0) h2_Z_vs_Sc21E->Fill(hitItem.Get_ID_z(), sqrt(sci_l[0] * sci_r[0]));
+
+        if (!FrsGates.empty())
+        {   
+            for (int gate = 0; gate < FrsGates.size(); gate++)
             {
-                h2_Z_vs_AoQ_Zsame->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z());
-                h2_x4_vs_AoQ_Zsame->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2());
-                h2_x2_vs_AoQ_Zsame->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4());
-            }
-
-            if (FrsHit->Get_ID_AoQ() > 0 && FrsHit->Get_ID_x2() > -100 && FrsHit->Get_ID_x2() < 100) h2_x2_vs_AoQ->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2());
-            if (FrsHit->Get_ID_AoQ() > 0 && FrsHit->Get_ID_x4() > -100 && FrsHit->Get_ID_x4() < 100) h2_x4_vs_AoQ->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4());
-
-            // Charge states
-            if (FrsHit->Get_ID_z() > 0 && FrsHit->Get_ID_dEdegoQ() != 0) h2_dEdegoQ_vs_Z->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdegoQ());
-            if (FrsHit->Get_ID_z() > 0 && FrsHit->Get_ID_dEdeg() != 0) h2_dEdeg_vs_Z->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdeg());
-
-            // Angles vs AoQ
-            if (FrsHit->Get_ID_AoQ() != 0 && FrsHit->Get_ID_a2() != 0) h2_a2_vs_AoQ->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_a2());
-            if (FrsHit->Get_ID_AoQ() != 0 && FrsHit->Get_ID_a4() != 0) h2_a4_vs_AoQ->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_a4());
-
-            // Z vs Energy loss MUSIC 2
-            if (FrsHit->Get_ID_z() != 0 && FrsHit->Get_music_dE(1) != 0) h2_Z_vs_dE2->Fill(FrsHit->Get_ID_z(), FrsHit->Get_music_dE(1));
-
-            // x2 vs x4
-            if (FrsHit->Get_ID_x2() != 0 && FrsHit->Get_ID_x4() != 0) h2_x2_vs_x4->Fill(FrsHit->Get_ID_x2(), FrsHit->Get_ID_x4());
-
-            // CEJ: changed from Go4, [5] -> [2]
-            if (FrsHit->Get_ID_AoQ() != 0 && FrsHit->Get_sci_e(2) != 0) h2_SC41dE_vs_AoQ->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_sci_e(2));
-
-            if (FrsHit->Get_sci_tof2() != 0 && FrsHit->Get_music_dE(0) != 0) h2_dE_vs_ToF->Fill(FrsHit->Get_sci_tof2(), FrsHit->Get_music_dE(0));
-
-            if (FrsHit->Get_ID_z() != 0 && FrsHit->Get_ID_x2() != 0) h2_x2_vs_Z->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_x2());
-            if (FrsHit->Get_ID_z() != 0 && FrsHit->Get_ID_x4() != 0) h2_x4_vs_Z->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_x4());
-
-            if (FrsHit->Get_ID_x2() != 0 && FrsHit->Get_music_dE(0) != 0) h2_dE1_vs_x2->Fill(FrsHit->Get_ID_x2(), FrsHit->Get_music_dE(0));
-            if (FrsHit->Get_ID_x4() != 0 && FrsHit->Get_music_dE(0) != 0) h2_dE1_vs_x4->Fill(FrsHit->Get_ID_x4(), FrsHit->Get_music_dE(0));
-
-            if (FrsHit->Get_ID_x2() != 0 && FrsHit->Get_ID_a2() != 0) h2_x2_vs_a2->Fill(FrsHit->Get_ID_x2(), FrsHit->Get_ID_a2());
-            if (FrsHit->Get_ID_y2() != 0 && FrsHit->Get_ID_b2() != 0) h2_y2_vs_b2->Fill(FrsHit->Get_ID_y2(), FrsHit->Get_ID_b2());
-            if (FrsHit->Get_ID_x4() != 0 && FrsHit->Get_ID_a4() != 0) h2_x4_vs_a4->Fill(FrsHit->Get_ID_x4(), FrsHit->Get_ID_a4());
-            if (FrsHit->Get_ID_y4() != 0 && FrsHit->Get_ID_b4() != 0) h2_y4_vs_b4->Fill(FrsHit->Get_ID_y4(), FrsHit->Get_ID_b4());
-
-            // CEJ: changed [2] -> [0]
-            if (FrsHit->Get_ID_z() != 0 && FrsHit->Get_sci_l(0) != 0 && FrsHit->Get_sci_r(0) != 0) h2_Z_vs_Sc21E->Fill(FrsHit->Get_ID_z(), sqrt(FrsHit->Get_sci_l(0) * FrsHit->Get_sci_r(0)));
-
-            if (!FrsGates.empty())
-            {   
-                for (int gate = 0; gate < FrsGates.size(); gate++)
+                if (FrsGates[gate]->Passed_ZvsZ2(hitItem.Get_ID_z(), hitItem.Get_ID_z2()))
                 {
-                    if (FrsGates[gate]->Passed_ZvsZ2(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2()))
+                    h2_Z_vs_AoQ_Z1Z2gate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_z());
+                    h2_Z1_vs_Z2_Z1Z2gate[gate]->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_z2());
+                    h2_x2_vs_AoQ_Z1Z2gate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x2());
+                    h2_x4_vs_AoQ_Z1Z2gate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x4());
+                    h2_dEdeg_vs_Z_Z1Z2gate[gate]->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdeg());
+                    h2_dedegoQ_vs_Z_Z1Z2gate[gate]->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdegoQ());
+                    h1_a2_Z1Z2_gate[gate]->Fill(hitItem.Get_ID_a2());
+                    h1_a4_Z1Z2_gate[gate]->Fill(hitItem.Get_ID_a4());
+
+                    if (FrsGates[gate]->Passed_x2vsAoQ(hitItem.Get_ID_x2(), hitItem.Get_ID_AoQ()))
                     {
-                        h2_Z_vs_AoQ_Z1Z2gate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z());
-                        h2_Z1_vs_Z2_Z1Z2gate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2());
-                        h2_x2_vs_AoQ_Z1Z2gate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2());
-                        h2_x4_vs_AoQ_Z1Z2gate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4());
-                        h2_dEdeg_vs_Z_Z1Z2gate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdeg());
-                        h2_dedegoQ_vs_Z_Z1Z2gate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdegoQ());
-                        h1_a2_Z1Z2_gate[gate]->Fill(FrsHit->Get_ID_a2());
-                        h1_a4_Z1Z2_gate[gate]->Fill(FrsHit->Get_ID_a4());
+                        h2_x2_vs_AoQ_Z1Z2x2AoQgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x2());
+                        h2_x4_vs_AoQ_Z1Z2x2AoQgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x4());
+                        h2_Z_vs_AoQ_Z1Z2x2AoQgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_z());
+                        h2_dEdeg_vs_Z_Z1Z2x2AoQgate[gate]->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdeg());
+                        h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate[gate]->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdegoQ());
+                        h1_a2_Z1Z2x2AoQgate[gate]->Fill(hitItem.Get_ID_a2());
+                        h1_a4_Z1Z2x2AoQgate[gate]->Fill(hitItem.Get_ID_a4());
+                    }
 
-                        if (FrsGates[gate]->Passed_x2vsAoQ(FrsHit->Get_ID_x2(), FrsHit->Get_ID_AoQ()))
-                        {
-                            h2_x2_vs_AoQ_Z1Z2x2AoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2());
-                            h2_x4_vs_AoQ_Z1Z2x2AoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4());
-                            h2_Z_vs_AoQ_Z1Z2x2AoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z());
-                            h2_dEdeg_vs_Z_Z1Z2x2AoQgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdeg());
-                            h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdegoQ());
-                            h1_a2_Z1Z2x2AoQgate[gate]->Fill(FrsHit->Get_ID_a2());
-                            h1_a4_Z1Z2x2AoQgate[gate]->Fill(FrsHit->Get_ID_a4());
-                        }
-
-                        if (FrsGates[gate]->Passed_x4vsAoQ(FrsHit->Get_ID_x4(), FrsHit->Get_ID_AoQ()))
-                        {
-                            h2_x2_vs_AoQ_Z1Z2x4AoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2());
-                            h2_x4_vs_AoQ_Z1Z2x4AoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4());
-                            h2_Z_vs_AoQ_Z1Z2x4AoQgate[gate]->Fill(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z());
-                            h2_dEdeg_vs_Z_Z1Z2x4AoQgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdeg());
-                            h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate[gate]->Fill(FrsHit->Get_ID_z(), FrsHit->Get_ID_dEdegoQ());
-                            h1_a2_Z1Z2x4AoQgate[gate]->Fill(FrsHit->Get_ID_a2());
-                            h1_a4_Z1Z2x4AoQgate[gate]->Fill(FrsHit->Get_ID_a4());
-                        }
+                    if (FrsGates[gate]->Passed_x4vsAoQ(hitItem.Get_ID_x4(), hitItem.Get_ID_AoQ()))
+                    {
+                        h2_x2_vs_AoQ_Z1Z2x4AoQgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x2());
+                        h2_x4_vs_AoQ_Z1Z2x4AoQgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x4());
+                        h2_Z_vs_AoQ_Z1Z2x4AoQgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_z());
+                        h2_dEdeg_vs_Z_Z1Z2x4AoQgate[gate]->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdeg());
+                        h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate[gate]->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdegoQ());
+                        h1_a2_Z1Z2x4AoQgate[gate]->Fill(hitItem.Get_ID_a2());
+                        h1_a4_Z1Z2x4AoQgate[gate]->Fill(hitItem.Get_ID_a4());
                     }
                 }
-                
             }
-            /* ---------------------------------------------------------------------------- */
+        }
+
+        /* ---------------------------------------------------------------------------- */
 
 
-            /* ---------------------------------------------------------------------------- */
-            // Scalers - CEJ: ok yeah sc_long is way easier, ok change
-            /* ---------------------------------------------------------------------------- */
-            for (int i = 0; i < 32; i++)
-            {   
-                // are we significantly slower if we have to "get" every time?
-                hScaler_per_s[i]->AddBinContent(FrsHit->Get_ibin_for_s(), FrsHit->Get_increase_sc_temp_main()[i]);
-                hScaler_per_s[i+32]->AddBinContent(FrsHit->Get_ibin_for_s(), FrsHit->Get_increase_sc_temp_user()[i]);
-                hScaler_per_100ms[i]->AddBinContent(FrsHit->Get_ibin_for_100ms(), FrsHit->Get_increase_sc_temp_main()[i]);
-                hScaler_per_100ms[i+32]->AddBinContent(FrsHit->Get_ibin_for_100ms(), FrsHit->Get_increase_sc_temp_user()[i]);
-                hScaler_per_spill[i]->AddBinContent(FrsHit->Get_ibin_for_spill(), FrsHit->Get_increase_sc_temp_main()[i]);
-                hScaler_per_spill[i+32]->AddBinContent(FrsHit->Get_ibin_for_spill(), FrsHit->Get_increase_sc_temp_user()[i]);
-
-            }
-
-            Int_t ratio_product = int(0.95 * FrsHit->Get_increase_sc_temp2() + 0.05 * ratio_previous);
-            hScaler_per_s[64]->SetBinContent(FrsHit->Get_ibin_for_s(), ratio_product);
-            hScaler_per_100ms[64]->SetBinContent(FrsHit->Get_ibin_for_100ms(), ratio_product);
-            hScaler_per_spill[64]->SetBinContent(FrsHit->Get_ibin_for_spill(), ratio_product);
-            Int_t ratio_product2 = int(0.95 * FrsHit->Get_increase_sc_temp3() + 0.05 * ratio_previous2);
-            hScaler_per_s[65]->SetBinContent(FrsHit->Get_ibin_for_s(), ratio_product2);
-            hScaler_per_100ms[65]->SetBinContent(FrsHit->Get_ibin_for_100ms(), ratio_product2);
-            hScaler_per_spill[65]->SetBinContent(FrsHit->Get_ibin_for_spill(), ratio_product2);
-
-            for (int i = 0; i < 32; i++)
-            {
-                hScaler_per_s[i]->SetBinContent(FrsHit->Get_ibin_clean_for_s(), 0);
-                hScaler_per_s[i+32]->SetBinContent(FrsHit->Get_ibin_clean_for_s(),0);
-                hScaler_per_100ms[i]->SetBinContent(FrsHit->Get_ibin_clean_for_100ms(), 0);
-                hScaler_per_100ms[i+32]->SetBinContent(FrsHit->Get_ibin_clean_for_100ms(), 0);
-                hScaler_per_spill[i]->SetBinContent(FrsHit->Get_ibin_clean_for_spill(), 0);
-                hScaler_per_spill[i+32]->SetBinContent(FrsHit->Get_ibin_clean_for_spill(), 0);
-            }
+        /* ---------------------------------------------------------------------------- */
+        // Scalers
+        /* ---------------------------------------------------------------------------- */
+        uint32_t* increase_sc_temp_main = hitItem.Get_increase_sc_temp_main();
+        uint32_t* increase_sc_temp_user = hitItem.Get_increase_sc_temp_user();
+        for (int i = 0; i < 32; i++)
+        {   
+            // are we significantly slower if we have to "get" every time?
+            hScaler_per_s[i]->AddBinContent(hitItem.Get_ibin_for_s(), increase_sc_temp_main[i]);
+            hScaler_per_s[i+32]->AddBinContent(hitItem.Get_ibin_for_s(), increase_sc_temp_user[i]);
+            hScaler_per_100ms[i]->AddBinContent(hitItem.Get_ibin_for_100ms(), increase_sc_temp_main[i]);
+            hScaler_per_100ms[i+32]->AddBinContent(hitItem.Get_ibin_for_100ms(), increase_sc_temp_user[i]);
+            hScaler_per_spill[i]->AddBinContent(hitItem.Get_ibin_for_spill(), increase_sc_temp_main[i]);
+            hScaler_per_spill[i+32]->AddBinContent(hitItem.Get_ibin_for_spill(), increase_sc_temp_user[i]);
 
         }
-    }
 
+        Int_t ratio_product = int(0.95 * hitItem.Get_increase_sc_temp2() + 0.05 * ratio_previous);
+        hScaler_per_s[64]->SetBinContent(hitItem.Get_ibin_for_s(), ratio_product);
+        hScaler_per_100ms[64]->SetBinContent(hitItem.Get_ibin_for_100ms(), ratio_product);
+        hScaler_per_spill[64]->SetBinContent(hitItem.Get_ibin_for_spill(), ratio_product);
+        Int_t ratio_product2 = int(0.95 * hitItem.Get_increase_sc_temp3() + 0.05 * ratio_previous2);
+        hScaler_per_s[65]->SetBinContent(hitItem.Get_ibin_for_s(), ratio_product2);
+        hScaler_per_100ms[65]->SetBinContent(hitItem.Get_ibin_for_100ms(), ratio_product2);
+        hScaler_per_spill[65]->SetBinContent(hitItem.Get_ibin_for_spill(), ratio_product2);
+
+        for (int i = 0; i < 32; i++)
+        {
+            hScaler_per_s[i]->SetBinContent(hitItem.Get_ibin_clean_for_s(), 0);
+            hScaler_per_s[i+32]->SetBinContent(hitItem.Get_ibin_clean_for_s(),0);
+            hScaler_per_100ms[i]->SetBinContent(hitItem.Get_ibin_clean_for_100ms(), 0);
+            hScaler_per_100ms[i+32]->SetBinContent(hitItem.Get_ibin_clean_for_100ms(), 0);
+            hScaler_per_spill[i]->SetBinContent(hitItem.Get_ibin_clean_for_spill(), 0);
+            hScaler_per_spill[i+32]->SetBinContent(hitItem.Get_ibin_clean_for_spill(), 0);
+        }
+
+    }
+    
     fNEvents += 1;
 }
 
 void FrsOnlineSpectra::FinishEvent()
 {
-    if (fHitFrsArray)
-    {
-        fHitFrsArray->Clear();
-    }
+
 }
 
 void FrsOnlineSpectra::FinishTask()
