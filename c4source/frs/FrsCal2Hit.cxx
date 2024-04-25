@@ -577,8 +577,6 @@ void FrsCal2Hit::Exec(Option_t* option)
     sci_r[5] = de_array[12]; // de_81r
     sci_tx[5] = dt_81l_81r + rand3();
     
-    for (int index = 0; index < 6; index++) FrsHit->Set_sci_tx(index, sci_tx[index]);
-
     for (int i = 0; i < 6; i++)
     {
         int j;
