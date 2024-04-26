@@ -45,7 +45,7 @@ class AidaBplastCorrelations : public FairTask
         //Double_t
 
         EventHeader* fEventHeader;
-        EventData* fEventData;
+        // EventData* fEventData;
         Int_t fNEvents;
 
         // TDirectories

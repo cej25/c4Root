@@ -186,7 +186,7 @@ void make_frs_gates_seq(TString infilename){
     }
 
     TTree * evt;
-    infile->GetObject("cbmsim",evt);
+    infile->GetObject("evt",evt);
 
     bool bool_Z_AoQ = false;
     bool bool_Z_Z2 = false;

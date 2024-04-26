@@ -15,7 +15,7 @@
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
 {
-    #include "../../config/s100/frs/setup_des_s100_029_2024_conv.C"
+    #include "../../config/s100/frs/setup_des_s100_030_2024_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -481,11 +481,11 @@ void s100_online_new()
         run->AddTask(ge170Er);
     }
 
-    if(AIDA_ON && BPLAST_ON){
-        AidabPlastCorrelations * aidabplast = new AidabPlastCorrelations();
-        run->AddTask(aidabplast);
+    // if(AIDA_ON && BPLAST_ON){
+    //     AidabPlastCorrelations * aidabplast = new AidabPlastCorrelations();
+    //     run->AddTask(aidabplast);
     
-    }
+    // }
 
     TString b = "Aida";
     TString c = "Fatima";

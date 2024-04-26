@@ -39,7 +39,7 @@ AidaBplastCorrelations::AidaBplastCorrelations(const TString& name, Int_t verbos
     , decayHitArray(nullptr)
     , fNEvents(0)
     , fEventHeader(nullptr)
-    , fEventData(nullptr)
+    // , fEventData(nullptr)
 {
 }
 
@@ -66,8 +66,8 @@ InitStatus AidaBplastCorrelations::Init()
     fEventHeader = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !fEventHeader, "Branch EventHeader. not found");
 
-    fEventData = (EventData*)mgr->GetObject("EventData.");
-    c4LOG_IF(error, !fEventData, "Branch EventData. not found");
+    // fEventData = (EventData*)mgr->GetObject("EventData.");
+    // c4LOG_IF(error, !fEventData, "Branch EventData. not found");
 
     // Hit data
     implantHitArray = mgr->InitObjectAs<decltype(implantHitArray)>("AidaImplantHits");
@@ -200,8 +200,8 @@ void AidaBplastCorrelations::Exec(Option_t* option)
             // // Absolute time spectra
             // if (bplasthit->Get_fast_ToT() !=0 ) h1_bplast_abs_time[bplasthit->Get_detector_id()]->Fill(bplasthit->Get_fast_lead_time());
             // Relative time spectra
-            if(fEventData->Get_Spill_Flag() == false)
-            {
+            // if(fEventData->Get_Spill_Flag() == false)
+            // {
                 for (auto const& hit : *decayHitArray)
                 {
                     if (bplasthit->Get_detector_id() == 1){
@@ -218,7 +218,7 @@ void AidaBplastCorrelations::Exec(Option_t* option)
                         } // second loop hits
                     } // SiPM detector 1 condition
                 } // aida loop
-            } // spill flag condition
+            // } // spill flag condition
         } // bplast loop
     } // if bplast hits
     fNEvents += 1;
