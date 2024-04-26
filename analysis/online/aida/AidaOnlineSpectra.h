@@ -117,6 +117,7 @@ class AidaOnlineSpectra : public FairTask
         std::vector<TH1F*> h_decay_e;
         std::vector<TH2F*> h_decay_e_xy;
         std::vector<TH2F*> h_decay_strip_1d_energy;
+        std::vector<TH1F*> h_aida_frontback_time;
         // std::vector<TH1F*> h_decay_time_delta; // not filled.
 
         // Scalers
