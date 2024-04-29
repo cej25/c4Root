@@ -64,7 +64,7 @@ void setup(TFRSParameter* frs,
   frs->dist_SC81 = 0;
   
   //=============switches=============//
-  id->x_s2_select   = 1; //1=tpc,2=sc21,3=sc22
+  id->x_s2_select   = 1; //1=tpc,2=sc21,3=sc22 // CEJ: is 1
   id->tof_s4_select = 1; //1=sc21-41, 2=sc21-42, 3=sc22-41 used for TAC and MHTDC
   id->tof_s8_select = 1; //1=sc21-81, 2=sc22-81
   
