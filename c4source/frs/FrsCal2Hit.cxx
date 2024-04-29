@@ -721,39 +721,36 @@ void FrsCal2Hit::Exec(Option_t* option)
     }
 
     float temp_s2x = -999.;
-    std::vector<float> temp_s2x_mhtdc;
+    float temp_s2x_mhtdc[10] = {};
     float temp_a2 = 0;
 
-    if (id->mhtdc_s2pos_option == 1)
+    for (int i = 0; i < 10; i++)
     {
-        for (int i = 0; i < 10; i++)
+        if (id->x_s2_select == 2)
         {
             temp_s2x_mhtdc[i] = mhtdc_sc21lr_x[i];
         }
-    }
-    else if (id->mhtdc_s2pos_option == 3)
-    {
-        for (int i = 0; i < 10; i++)
+        else if (id->x_s2_select == 3)
         {
             temp_s2x_mhtdc[i] = mhtdc_sc22lr_x[i];
         }
-    }
-    else if (id->mhtdc_s2pos_option == 2)
-    {
-        if (b_tpc_xy[2] && b_tpc_xy[3])
+        else if (id->x_s2_select == 1)
         {
-            temp_s2x = tpcCalItem.Get_tpc_x_s2_foc_23_24();
-            temp_a2 = tpcCalItem.Get_tpc_angle_x_s2_foc_23_24();
-        }
-        else if (b_tpc_xy[1] && b_tpc_xy[3])
-        {
-            temp_s2x = tpcCalItem.Get_tpc_x_s2_foc_22_24();
-            temp_a2 = tpcCalItem.Get_tpc_angle_x_s2_foc_22_24();
-        }
-        else if (b_tpc_xy[0] && b_tpc_xy[1])
-        {
-            temp_s2x = tpcCalItem.Get_tpc_x_s2_foc_21_22();
-            temp_a2 = tpcCalItem.Get_tpc_angle_x_s2_foc_21_22();
+            if (b_tpc_xy[2] && b_tpc_xy[3])
+            {
+                temp_s2x_mhtdc[i] = tpcCalItem.Get_tpc_x_s2_foc_23_24();
+                temp_a2 = tpcCalItem.Get_tpc_angle_x_s2_foc_23_24();
+            }
+            else if (b_tpc_xy[1] && b_tpc_xy[3])
+            {
+                temp_s2x_mhtdc[i] = tpcCalItem.Get_tpc_x_s2_foc_22_24();
+                temp_a2 = tpcCalItem.Get_tpc_angle_x_s2_foc_22_24();
+            }
+            else if (b_tpc_xy[0] && b_tpc_xy[1])
+            {
+                temp_s2x_mhtdc[i] = tpcCalItem.Get_tpc_x_s2_foc_21_22();
+                temp_a2 = tpcCalItem.Get_tpc_angle_x_s2_foc_21_22();
+            }
         }
     }
 
@@ -761,9 +758,9 @@ void FrsCal2Hit::Exec(Option_t* option)
     //   S2S4 MultihitTDC ID analysis
     float mean_brho_s2s4 = 0.5 * (frs->bfield[2] + frs->bfield[3]);
 
-    // frs go4 doesn't have this selection
-    if (id->mhtdc_s2pos_option == 1)
-    {
+    // frs go4 doesn't have this selection --lohhhhhhhhhhhhhh
+    //if (id->mhtdc_s2pos_option == 1)
+    //{
         if (id->tof_s4_select == 1)
         {
             for (int i = 0; i < 10; i++)
@@ -797,7 +794,8 @@ void FrsCal2Hit::Exec(Option_t* option)
                 id_mhtdc_aoq_corr_s2s4[i] = 0;
             }*/
             /*else*/ 
-            if (temp_s4x > -200. && temp_s4x < 200. && temp_s2x_mhtdc[i] > -200. && temp_s2x_mhtdc[i] < 200.)
+            //if (temp_s4x > -200. && temp_s4x < 200. && temp_s2x_mhtdc[i] > -200. && temp_s2x_mhtdc[i] < 200.)
+            if (temp_s4x > -200. && temp_s4x < 200. && temp_s2x_mhtdc[i] > -120. && temp_s2x_mhtdc[i] < 120.) // CEJ changed to reflect FRS go4 26.04.24
             {
                 id_mhtdc_delta_s2s4[i] = (temp_s4x - (temp_s2x_mhtdc[i] * frs->magnification[1])) / (-1.0 * frs->dispersion[1] * 1000.0); // metre to mm
                 if (id_mhtdc_beta_s2s4[i] > 0.0 && id_mhtdc_beta_s2s4[i] < 1.0)
@@ -815,6 +813,7 @@ void FrsCal2Hit::Exec(Option_t* option)
 
                     // No angle correction for SCI
                     id_mhtdc_aoq_corr_s2s4[i] = id_mhtdc_aoq_s2s4[i];
+                    //std::cout << "aoq s2s4: " << id_mhtdc_aoq_corr_s2s4[i] << std::endl;
 
                     /*mhtdc_gamma1square.emplace_back(1.0 + TMath::Power(((1.0 / aoq_factor) * (id_brho[0] / id_mhtdc_aoq_s2s4[i])), 2));
                     id_mhtdc_gamma_ta_s2.emplace_back(TMath::Sqrt(mhtdc_gamma1square[i]));
@@ -826,9 +825,9 @@ void FrsCal2Hit::Exec(Option_t* option)
                 }
             }
         }
-    }
-    else if (id->mhtdc_s2pos_option == 2)
-    {
+    //}
+    //else if (id->mhtdc_s2pos_option == 2)
+    //{
         if (id->tof_s4_select == 1)
         {
             for (int i = 0; i < 10; i++)
@@ -881,6 +880,7 @@ void FrsCal2Hit::Exec(Option_t* option)
                     
                     id_mhtdc_aoq_corr_s2s4[i] = id_mhtdc_aoq_s2s4[i] - id->a2AoQCorr * temp_a2;
                     
+                    //std::cout << id_mhtdc_aoq_corr_s2s4[i] << std::endl;
                     /*mhtdc_gamma1square.emplace_back(1.0 + TMath::Power(((1.0 / aoq_factor) * (id_brho[0] / id_mhtdc_aoq_s2s4[i])), 2));
                     id_mhtdc_gamma_ta_s2.emplace_back(TMath::Sqrt(mhtdc_gamma1square[i]));
                     id_mhtdc_dEdegoQ.emplace_back((id_mhtdc_gamma_ta_s2[i]  - id_mhtdc_gamma_s2s4[i]) * id_mhtdc_aoq_s2s4[i]);
@@ -890,7 +890,7 @@ void FrsCal2Hit::Exec(Option_t* option)
                 }
             }
         }
-    }
+    //}
 
     // Calculation of dE and Z from MUSIC41
     // CEJ: we should investigate why the couts here never print
