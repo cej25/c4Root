@@ -18,6 +18,7 @@
 #pragma link C++ class bPlastTwinpeaksData+;
 #pragma link C++ class bPlastTwinpeaksCalData+;
 #pragma link C++ class LisaData+;
+#pragma link C++ class LisaCalData+;
 #pragma link C++ class LisaTraceData+;
 #pragma link C++ class BeamMonitorData+;
 #pragma link C++ class TimeMachineData+;
@@ -71,6 +72,10 @@
 #pragma link C++ class TbPlastConfiguration+;
 #pragma link C++ class TCorrelationsConfiguration+;
 #pragma link C++ class TBB7VmeConfiguration+;
+#pragma link C++ class TLisaConfiguration+;
+
+#pragma link C++ class LisaItem+;
+#pragma link C++ class LisaCalItem+;
 
 #pragma link C++ class FatimaVmeQDCItem+;
 #pragma link C++ class FatimaVmeTDCItem+;

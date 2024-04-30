@@ -4,7 +4,7 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_lisa_onion_t lisa;
 } EXT_STR_h101;
 
-void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId = 1)
+void calum_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId = 1)
 {   
 
     TString cRunId = Form("%04d", fRunId);
@@ -22,10 +22,10 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     FairLogger::GetLogger()->SetColoredLog(true);
     
     //TString filename = "stream://x86l-166";
-    TString filename = "/u/gandolfo/lustre/despec/lisa/eris_241Am_1000V_0094_0001.lmd";
+    TString filename = "/u/cjones/lustre/despec/lisa/eris_241Am_1000V_0094_0001.lmd";
     //TString filename = "/u/gandolfo/lustre/despec/lisa/tokyo_10dec_0076_0001.lmd";
     //TString outputpath = "/u/gandolfo/watermelon/";
-    TString outputpath = "/u/gandolfo/lustre/gamma/LISA/data/c4data/";
+    TString outputpath = "";
     TString outputFilename = outputpath + "eris_test.root";
     //TString outputFilename = outputpath + "tokyo_test.root";	
 
@@ -34,14 +34,14 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
      
     TString ntuple_options = "UNPACK";
    //TString ucesb_dir = getenv("UCESB_DIR"); // .bashrc
-    TString temp_path = "/u/gandolfo/c4/c4Root/unpack/exps"; //at some point move to common computer
+    TString temp_path = "/u/cjones/c4Root/unpack/exps"; //at some point move to common computer
     //TString ucesb_dir = "/u/despec/s100_online/c4Root/unpack/exps";
     TString ucesb_path = temp_path + "/lisa/lisa --allow-errors --input-buffer=200Mi";
     ucesb_path.ReplaceAll("//","/");
 
     //set mapping
     //TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map.txt");
-    TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map_names.txt");
+    TLisaConfiguration::SetMappingFile("/u/cjones/c4Root/config/lisa/Lisa_Detector_Map_names.txt");
 
 
     // Create online run
@@ -51,6 +51,9 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     run->SetRunId(1);
     run->SetSink(new FairRootFileSink(outputFilename));
     run->ActivateHttpServer(refresh, port);
+    TFolder* histograms = new TFolder("Histograms", "Histograms");
+    FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
+    run->AddObject(histograms);
 
     // Load ucesb structure
     EXT_STR_h101 ucesb_struct;
