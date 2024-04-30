@@ -66,9 +66,9 @@ Bool_t BeamMonitorReader::Read()
 
     std::vector<uint32_t> dtS2;
 
-    for (int hit = 0; hit < fData->beammonitor_dataS2; hit++)
+    for (int hit = 0; hit < fData->beammonitor_s2_dataS2; hit++)
     {   
-        ts_curr_S2 = fData->beammonitor_dataS2v[hit];
+        ts_curr_S2 = fData->beammonitor_s2_dataS2v[hit];
         ts_diff_S2 = ts_curr_S2 - ts_prev_S2;
         if (ts_diff_S2 < 0)
         {
@@ -98,9 +98,9 @@ Bool_t BeamMonitorReader::Read()
 
     std::vector<uint32_t> dtS4;
 
-    for (int hit = 0; hit < fData->beammonitor_dataS4; hit++)
+    for (int hit = 0; hit < fData->beammonitor_s4_dataS4; hit++)
     {   
-        ts_curr_S4 = fData->beammonitor_dataS4v[hit];
+        ts_curr_S4 = fData->beammonitor_s4_dataS4v[hit];
         ts_diff_S4 = ts_curr_S4 - ts_prev_S4;
         if (ts_diff_S4 < 0)
         {

@@ -155,12 +155,12 @@ SC41R_D 8   6   134   D   B
 8   7   135  D   B
 8   8   136  D   B
 #Fatima Triggers
-FATIMA_ACCEPT 8   9   137  D   B
-FATIMA_FREE 8   10  138   D   B
+FATIMA_FREE 8   9   137  D   B
+FATIMA_ACCEPT 8   10  138   D   B
 #Empty
 8   11  139   D   B
 8   12  140   D   B
-8   13  141   D   B
+FRS_ACCEPT 8   13  141   D   B
 8   14  142   D   B
 8   15  143   D   B
 8   16  144   D   B

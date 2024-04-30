@@ -1,9 +1,13 @@
 #Fatima TAM ID |Fatima TAM Chan |  Det nr.
 #detector mapping:
 #Time machines:
+
+# first 3 boards are detectors (0, 1, 2)
+# last board ("3") gives 41l, 41r, tmd, tmu, frsaccept, bplasaccept
+
 TimeMachineU 0   1   49
 0   2   50
-TimeMachineD 0   3   51
+0   3   51
 0   4   52
 0   5   53
 0   6   54
@@ -49,10 +53,11 @@ TimeMachineD 0   3   51
 2   14  30
 2   15  31
 2   16  32
+#Other:
 3   1   33
 3   2   34
-3   3   35
-3   4   36
+TimeMachineD 3   3   35
+TimeMachineU 3   4   36
 3   5   37
 3   6   38
 3   7   39

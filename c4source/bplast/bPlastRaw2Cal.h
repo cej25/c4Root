@@ -54,8 +54,6 @@ class bPlastRaw2Cal : public FairTask
         bPlastTwinpeaksCalData* fcal_hit;
 
         uint16_t detector_id;
-        std::string detector_stream;
-        std::string detector_position;
         
         double slow_lead_time;
         double slow_trail_time;

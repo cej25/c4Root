@@ -10,6 +10,9 @@
 TBGOTwinpeaksConfiguration* TBGOTwinpeaksConfiguration::instance = nullptr;
 std::string TBGOTwinpeaksConfiguration::configuration_file = "blank";
 //std::string TBGOTwinpeaksConfiguration::calibration_file = "blank";
+int TBGOTwinpeaksConfiguration::window = 2000;
+int TBGOTwinpeaksConfiguration::offset = 0;
+
 
 TBGOTwinpeaksConfiguration::TBGOTwinpeaksConfiguration()
     :   num_detectors(0)

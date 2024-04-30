@@ -38,7 +38,6 @@
 #pragma link C++ class FrsUserCalData+;
 #pragma link C++ class FrsVFTXCalData+;
 #pragma link C++ class FrsHitData+;
-#pragma link C++ class FrsAnalysisData+;
 #pragma link C++ class TFRSParameter+;
 #pragma link C++ class TMWParameter+;
 #pragma link C++ class TTPCParameter+;
@@ -77,5 +76,29 @@
 
 #pragma link C++ class LisaItem+;
 #pragma link C++ class LisaCalItem+;
+
+#pragma link C++ class FatimaVmeQDCItem+;
+#pragma link C++ class FatimaVmeTDCItem+;
+#pragma link C++ class FatimaVmeQDCCalItem+;
+#pragma link C++ class FatimaVmeTDCCalItem+;
+#pragma link C++ class FatimaVmeResiduals+;
+
+#pragma link C++ class FrsMainV830Item+;
+#pragma link C++ class FrsMainV1290Item+;
+#pragma link C++ class FrsMainV792Item+;
+#pragma link C++ class FrsMainCalScalerItem+;
+#pragma link C++ class FrsMainCalSciItem+;
+#pragma link C++ class FrsMainCalMusicItem+;
+#pragma link C++ class FrsTpatItem+;
+#pragma link C++ class FrsTPCV7X5Item+;
+#pragma link C++ class FrsTPCV1190Item+;
+#pragma link C++ class FrsUserV7X5Item+;
+#pragma link C++ class FrsUserV830Item+;
+#pragma link C++ class FrsTPCCalItem+;
+#pragma link C++ class FrsUserCalScalerItem+;
+#pragma link C++ class FrsUserCalSciItem+;
+#pragma link C++ class FrsUserCalMusicItem+;
+#pragma link C++ class FrsHitItem+;
+#pragma link C++ class FrsMultiHitItem+;
 
 #endif

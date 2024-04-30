@@ -36,7 +36,6 @@ frsData/FrsTPCCalData.cxx
 frsData/FrsUserCalData.cxx
 frsData/FrsVFTXCalData.cxx
 frsData/FrsHitData.cxx
-frsData/FrsAnalysisData.cxx
 lisaData/LisaData.cxx
 lisaData/LisaCalData.cxx
 lisaData/LisaTraceData.cxx
