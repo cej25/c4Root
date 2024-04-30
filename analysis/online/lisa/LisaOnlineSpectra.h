@@ -66,8 +66,8 @@ class LisaOnlineSpectra : public FairTask
         TDirectory* dir_energy;
         TDirectory* dir_traces;
         TDirectory* dir_stats;
-        // TDirectory* dir_music;
-        // TDirectory* dir_correlations;
+        TDirectory* dir_music;
+        TDirectory* dir_correlations;
         
 
         // Canvas

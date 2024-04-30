@@ -38,8 +38,6 @@ LisaOnlineSpectra::LisaOnlineSpectra(const TString& name, Int_t verbose)
 LisaOnlineSpectra::~LisaOnlineSpectra()
 {
     c4LOG(info, "");
-    // if (fHitLisa)
-    //     delete fHitLisa;
 }
 
 void LisaOnlineSpectra::SetParContainers()
@@ -80,6 +78,14 @@ InitStatus LisaOnlineSpectra::Init()
     dir_stats = dir_lisa->mkdir("Stats");
     dir_energy = dir_lisa->mkdir("Energy");
     dir_traces = dir_lisa->mkdir("Traces");
+    
+    dir_music = new TDirectory("MUSIC", "MUSIC", "", 0);
+    mgr->Register("MUSIC", "MUSIC Directory", dir_music, false);
+    histograms->Add(dir_music);
+
+    dir_correlations = new TDirectory("Correlations", "Correlations", "", 0);
+    mgr->Register("Correlations", "Correlations Directory", dir_correlations, false);
+    histograms->Add(dir_correlations);
 
     // layer names: Tokyo, Eris, Sparrow
   
