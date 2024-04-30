@@ -395,7 +395,7 @@ Bool_t FatimaReader::Read() //do fine time here:
 
             if (channelid == 0) 
             {
-                accepted_trigger_time = ((uint64_t)previous_epoch_word)*10.24e3 + ((uint64_t)coarse_T)*5.0 - (uint64_t)fine_T; // round it off to ns resolution
+                accepted_trigger_time = ((double)previous_epoch_word)*10.24e3 + ((double)coarse_T)*5.0 - (double)fine_T; // round it off to ns resolution
                 continue;
             } // skip channel 0 for now. This is the trigger information. The trigger time is kept, the wr timestamp is corrected by the difference of the hit and the acc trigger time.
 
@@ -424,6 +424,7 @@ Bool_t FatimaReader::Read() //do fine time here:
                 new ((*fArray)[fArray->GetEntriesFast()]) FatimaTwinpeaksData(
                     it_board_number,
                     channelid,
+                    accepted_trigger_time,
 
                     last_tdc_hit.lead_epoch_counter,
                     last_tdc_hit.lead_coarse_T,
@@ -434,9 +435,10 @@ Bool_t FatimaReader::Read() //do fine time here:
                     fine_T,
                     
                     fData->fatima_ts_subsystem_id,
-                    wr_t + 0* ( (((uint64_t)previous_epoch_word)*10.24e3 + ((uint64_t)coarse_T)*5.0 - (uint64_t)fine_T) - accepted_trigger_time) // corrected by the time difference to the acc trigger time
+                    wr_t //+ 0*( (((int64_t)previous_epoch_word)*10.24e3 + ((int64_t)coarse_T)*5.0 - (int64_t)fine_T) - accepted_trigger_time) // corrected by the time difference to the acc trigger time
                 );
-            
+
+                
                 //reset:
 
                 last_tdc_hit.hit=false;

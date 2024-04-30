@@ -48,6 +48,9 @@ class FrsUserReader : public c4Reader
         Bool_t fOnline;
 
         TClonesArray* fArray;
+        std::vector<FrsUserV7X5Item>* v7x5array;
+        std::vector<FrsUserV830Item>* v830array;
+
 
 
         uint32_t scalers_n;

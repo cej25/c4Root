@@ -31,6 +31,7 @@ class AidaReader : public c4Reader
     private:
         Int_t fNEvent = 0;
         int total_time_microsecs = 0;
+        EventHeader* header;
 
         EXT_STR_h101_aida_onion* fData;
 

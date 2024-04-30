@@ -67,8 +67,14 @@ void TFatimaVmeConfiguration::ReadConfiguration()
             else if (signal == "BPLAST_UP") bplast_up = det;
             else if (signal == "BPLAST_DOWN") bplast_down = det;
             else if (signal == "BPLAST_COINC") bplast_coinc = det;
+            else if (signal == "FRS_ACCEPT") frs_accept = det;
+            else if (signal == "BPLAST_ACCEPT") bplast_accept = det;
+            else if (signal == "BPLAST_FREE") bplast_free = det;
+
+	  std::cout << "signal: " << signal << " - detector: " << det << std::endl;
 
             extra_signals.insert(det);
+	  detector_ids.insert(det);
         }
 
         //if (det > -1) detector_ids.insert(det);

@@ -1,4 +1,7 @@
 #include "EventHeader.h"
+#include "FairRootManager.h"
+
+Bool_t EventHeader::fPersistance = true;
 
 EventHeader::EventHeader()
     : FairEventHeader()
@@ -18,6 +21,9 @@ EventHeader::EventHeader(uint64_t Eventno, Int_t Trigger, uint64_t TimeStamp)
 
 EventHeader::~EventHeader() {}
 
-void EventHeader::Register(Bool_t Persistence) {}
+void EventHeader::Register(Bool_t Persistance)
+{
+    FairRootManager::Instance()->Register("EventHeader.", "EvtHeader", this, Persistance);
+}
 
 ClassImp(EventHeader);

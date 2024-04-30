@@ -69,6 +69,7 @@ void TbPlastConfiguration::ReadConfiguration()
             else if (signal == "SC41R_D") sc41r_d = detector_id;
             else if (signal == "FATIMA_ACCEPT") fatima_accept = detector_id;
             else if (signal == "FATIMA_FREE") fatima_free = detector_id;
+            else if (signal == "FRS_ACCEPT") frs_accept = detector_id;
 
             extra_signals.insert(detector_id);
         }

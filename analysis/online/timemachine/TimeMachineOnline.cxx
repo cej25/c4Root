@@ -15,9 +15,6 @@
 
 #include "TCanvas.h"
 #include "TClonesArray.h"
-#include "TFolder.h"
-#include "TH1F.h"
-#include "TH2F.h"
 #include "THttpServer.h"
 #include "TMath.h"
 #include "TRandom.h"
@@ -62,9 +59,8 @@ void TimeMachineOnline::SetParContainers()
 }
 
 
-void TimeMachineOnline::SetDetectorSystems(std::vector<TString> detectorsystems){
-    
-    
+void TimeMachineOnline::SetDetectorSystems(std::vector<TString> detectorsystems)
+{
     fNumDetectorSystems = detectorsystems.size();
     
     fDetectorSystems = std::vector<TString>(0);
@@ -89,7 +85,7 @@ InitStatus TimeMachineOnline::Init()
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-    FairRunOnline * run = FairRunOnline::Instance();
+    FairRunOnline* run = FairRunOnline::Instance();
     run->GetHttpServer()->Register("", this);
 
     fTimeMachine = new TClonesArray*[fNumDetectorSystems];
@@ -100,70 +96,66 @@ InitStatus TimeMachineOnline::Init()
         c4LOG_IF(fatal, !fTimeMachine[det], "Branch TimeMachineData not found!");
     }
 
+    histograms = (TFolder*)mgr->GetObject("Histograms");
+
     TDirectory::TContext ctx(nullptr);
 
-    folder_time_machine = new TFolder("TimeMachines", "TimeMachines");
+    dir_time_machine = new TDirectory("TimeMachines", "TimeMachines", "", 0);
+    mgr->Register("TimeMachines", "TimeMachines Directory", dir_time_machine, false); // allow other tasks to access directory;
+    histograms->Add(dir_time_machine);
 
-    run->AddObject(folder_time_machine);
-    folder_time_machine_undelayed = new TFolder("Time Machine Undelayed", "Time Machine Undelayed");
-    folder_time_machine_delayed = new TFolder("Time Machine Delayed", "Time Machine Delayed");
-    folder_time_machine_diff = new TFolder("Time Machine Difference", "Time Machine Difference");
-    folder_time_machine_corrs = new TFolder("Time Machine Correlations", "Time Machine Correlations");
-
+    dir_time_machine_undelayed = dir_time_machine->mkdir("Time Machine Undelayed");
+    dir_time_machine_delayed = dir_time_machine->mkdir("Time Machine Delayed");
+    dir_time_machine_diff = dir_time_machine->mkdir("Time Machine Difference");
+    dir_time_machine_corrs = dir_time_machine->mkdir("Time Machine Correlations");
 
     h1_time_undelayed.resize(fNumDetectorSystems);
     h1_time_delayed.resize(fNumDetectorSystems);
     h1_time_diff.resize(fNumDetectorSystems*(fNumDetectorSystems - 1));
     h2_time_diff_corrs.resize((fNumDetectorSystems*fNumDetectorSystems)*(fNumDetectorSystems*fNumDetectorSystems-1)); // pairs from n items
     
-    c_time_undelayed  = new TCanvas("Time Machine Undelayed","Time Machine Undelayed",650,350);
-    c_time_undelayed->Divide(1,fNumDetectorSystems);
 
-    for (int ihist = 0; ihist < fNumDetectorSystems; ihist++){
+    dir_time_machine_undelayed->cd();
+    c_time_undelayed  = new TCanvas("c_time_undelayed","Time Machine Undelayed",650,350);
+    c_time_undelayed->Divide(1,fNumDetectorSystems);
+    for (int ihist = 0; ihist < fNumDetectorSystems; ihist++)
+    {
         c_time_undelayed->cd(ihist+1);
         h1_time_undelayed[ihist] = new TH1F("time_undelayed_"+fDetectorSystems.at(ihist),"time_undelayed_"+fDetectorSystems.at(ihist),500,165e12,166e12);
         h1_time_undelayed[ihist]->GetXaxis()->SetTitle("time (ns)");
         h1_time_undelayed[ihist]->Draw();
-        folder_time_machine->Add(h1_time_undelayed[ihist]);
-
     }
     c_time_undelayed->cd(0);
+    dir_time_machine_undelayed->Append(c_time_undelayed);
 
-    folder_time_machine->Add(c_time_undelayed);
-
-    c_time_delayed  = new TCanvas("time_delayed","Time Machine Delayed",650,350);
+    dir_time_machine_delayed->cd();
+    c_time_delayed  = new TCanvas("c_time_delayed","Time Machine Delayed",650,350);
     c_time_delayed->Divide(1,fNumDetectorSystems);
-
-    for (int ihist = 0; ihist < fNumDetectorSystems; ihist++){
+    for (int ihist = 0; ihist < fNumDetectorSystems; ihist++)
+    {
         c_time_delayed->cd(ihist+1);
         h1_time_delayed[ihist] = new TH1F("time_delayed_"+fDetectorSystems.at(ihist),"time_delayed_"+fDetectorSystems.at(ihist),500,165e12,166e12);
         h1_time_delayed[ihist]->GetXaxis()->SetTitle("time (ns)");
         h1_time_delayed[ihist]->Draw();
-        folder_time_machine->Add(h1_time_delayed[ihist]);
-
     }
     c_time_delayed->cd(0);
+    dir_time_machine_delayed->Append(c_time_delayed);
 
-    folder_time_machine->Add(c_time_delayed);
-
+    dir_time_machine_diff->cd();
     c_time_diff  = new TCanvas("c_time_diff","Time Machine Difference",650,350);
     c_time_diff->Divide(1,fNumDetectorSystems);
-
     for (int ihist = 0; ihist < fNumDetectorSystems; ihist++){
         c_time_diff->cd(ihist+1);
         h1_time_diff[ihist] = new TH1F("time_diff_"+fDetectorSystems.at(ihist),"time_diff_"+fDetectorSystems.at(ihist),1000,-100,2000);
         h1_time_diff[ihist]->GetXaxis()->SetTitle("time (ns)");
         h1_time_diff[ihist]->Draw();
-        folder_time_machine->Add(h1_time_diff[ihist]);
-
     }
     c_time_diff->cd(0);
+    dir_time_machine_diff->Append(c_time_diff);
 
-    folder_time_machine->Add(c_time_diff);
-
+    dir_time_machine_corrs->cd();
     c_time_corrs = new TCanvas("c_time_corrs","Time Machine Correlations", 650,350);
     c_time_corrs->Divide(1,fNumDetectorSystems*(fNumDetectorSystems-1));
-
     for (int ihist = 0; ihist < fNumDetectorSystems; ihist++){
         for (int ihist2 = ihist + 1; ihist2 < fNumDetectorSystems; ihist2++){
   
@@ -172,16 +164,14 @@ InitStatus TimeMachineOnline::Init()
             h2_time_diff_corrs[ihist*fNumDetectorSystems + ihist2]->GetYaxis()->SetTitle("Time (ns)");
             h2_time_diff_corrs[ihist*fNumDetectorSystems + ihist2]->GetXaxis()->SetTitle("Time (ns)");
             h2_time_diff_corrs[ihist*fNumDetectorSystems + ihist2]->Draw("COLZ");
-            folder_time_machine->Add(h2_time_diff_corrs[ihist*fNumDetectorSystems + ihist2]);
         }
     }
     c_time_corrs->cd(0);
+    dir_time_machine_corrs->Append(c_time_corrs);
 
-    folder_time_machine->Add(c_time_corrs);
-
+    dir_time_machine->cd();
 
     run->GetHttpServer()->RegisterCommand("Reset_TimeMachine_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
-
     run->GetHttpServer()->RegisterCommand("Snapshot_TimeMachine_Histo", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
 
     return kSUCCESS;
@@ -339,11 +329,6 @@ void TimeMachineOnline::FinishTask()
     {
         c4LOG(warning, "No events processed, no histograms written.");
         return;
-    }
-    if (fTimeMachine)
-    {
-        folder_time_machine->Write();
-        c4LOG(info, "TimeMachine Histograms written to file.");
     }
 }
 

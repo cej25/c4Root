@@ -1,21 +1,35 @@
 #ifndef AidaOnlineSpectra_H
 #define AidaOnlineSpectra_H
 
+// FairRoot
+#include "FairTask.h"
+
+// c4
 #include "AidaCalData.h"
 #include "AidaData.h"
 #include "AidaHitData.h"
-#include "FairTask.h"
 #include "TAidaConfiguration.h"
+
+// ROOT
+#include "TDirectory.h"
+#include "TFolder.h"
+#include "TCanvas.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TGraph.h"
+#include "TClonesArray.h"
 #include <array>
 #include <deque>
 #include <map>
 #include <vector>
 
-class TClonesArray;
 class EventHeader;
-class TCanvas;
+
+class TClonesArray;
+class TDirectory;
 class TFolder;
 class TGraph;
+class TCanvas;
 class TH1F;
 class TH2F;
 
@@ -67,15 +81,18 @@ class AidaOnlineSpectra : public FairTask
         // Canvas
         TCanvas* c_aida_snapshots;
 
+        TString screenshot_path = "/u/despec/screenshots/";
+
         // Folders and Files
-        TFolder* folder_aida;
-        TFolder* folder_implant;
-        TFolder* folder_stopped_implant;
-        TFolder* folder_decay;
-        TFolder* folder_scalers;
-        std::vector<TFolder*> folder_implant_dssd;
-        std::vector<TFolder*> folder_stopped_implant_dssd;
-        std::vector<TFolder*> folder_decay_dssd;
+        TFolder* histograms;
+        TDirectory* dir_aida;
+        TDirectory* dir_implant;
+        TDirectory* dir_stopped_implant;
+        TDirectory* dir_decay;
+        TDirectory* dir_scalers;
+        std::vector<TDirectory*> dir_implant_dssd;
+        std::vector<TDirectory*> dir_stopped_implant_dssd;
+        std::vector<TDirectory*> dir_decay_dssd;
         TFile* file_aida_snapshot;
 
         // Histograms
@@ -85,10 +102,10 @@ class AidaOnlineSpectra : public FairTask
         std::vector<TH1F*> h_implant_e;
         std::vector<TH2F*> h_implant_e_xy;
         std::vector<TH2F*> h_implant_strip_1d_energy;
-        std::vector<TH2F*> h_implant_strip_1d;
+        // std::vector<TH2F*> h_implant_strip_1d;  // I saw this here but it isn't being filled anywhere...
         std::vector<TH2F*> h_implant_x_ex;
-        std::vector<TH2F*> h_implant_y_ey;
-        std::vector<TH1F*> h_implant_time_delta;
+        // std::vector<TH2F*> h_implant_y_ey; // also not filled
+        // std::vector<TH1F*> h_implant_time_delta; // also ... not filled
         // Stopped Implant Histograms
         std::vector<TH2F*> h_implant_strip_xy_stopped;
         std::vector<TH2F*> h_implant_pos_xy_stopped;
@@ -100,7 +117,7 @@ class AidaOnlineSpectra : public FairTask
         std::vector<TH1F*> h_decay_e;
         std::vector<TH2F*> h_decay_e_xy;
         std::vector<TH2F*> h_decay_strip_1d_energy;
-        std::vector<TH1F*> h_decay_time_delta;
+        // std::vector<TH1F*> h_decay_time_delta; // not filled.
 
         // Scalers
         std::map<int, std::deque<int>> aida_scaler_queue;
@@ -116,6 +133,9 @@ class AidaOnlineSpectra : public FairTask
         std::vector<TGraph*> aida_decay_scaler_graph;
 
         // Deadtime
+
+
+
 
     public:
         ClassDef(AidaOnlineSpectra, 1)
