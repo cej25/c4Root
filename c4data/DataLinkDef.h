@@ -78,6 +78,7 @@
 #pragma link C++ class LisaItem+;
 #pragma link C++ class LisaCalItem+;
 #pragma link C++ class FimpItem+;
+#pragma link C++ class FimpCalItem+;
 
 #pragma link C++ class FatimaVmeQDCItem+;
 #pragma link C++ class FatimaVmeTDCItem+;
