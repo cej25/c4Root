@@ -3,15 +3,23 @@
 
 #include "FairTask.h"
 #include "TLisaConfiguration.h"
+#include "LisaData.h" // do we need raw?
+#include "LisaCalData.h"
 #include <vector>
 #include <memory>
+#include "TDirectory.h"
+#include "TFolder.h"
 
-class TClonesArray;
+class LisaCalItem;
+class TLisaConfiguration;
 class EventHeader;
 class TCanvas;
 class TH1F;
 class TH2F;
 class TH1I;
+class TFolder;
+class TDirectory;
+
 
 class LisaOnlineSpectra : public FairTask
 {
@@ -38,36 +46,44 @@ class LisaOnlineSpectra : public FairTask
     
     private:
         TLisaConfiguration const* lisa_config;
-        TClonesArray* fHitLisa;
+        // TClonesArray* fHitLisa;
 
+        std::vector<LisaCalItem> const* lisaCalArray;
 
+        // common variables
         int layer_number;
         int det_number;
-        // ranges
-        //Double_t
+        int xmax;
+        int ymax;
+        std::string city = "";
+        
 
         EventHeader* header;
         Int_t fNEvents;
+
+        TFolder* histograms;
+        TDirectory* dir_lisa;
+        TDirectory* dir_energy;
+        TDirectory* dir_traces;
+        TDirectory* dir_stats;
+        // TDirectory* dir_music;
+        // TDirectory* dir_correlations;
         
 
         // Canvas
-        TCanvas* c_channelID;
-        TCanvas* c_multiplicity;
+        TCanvas* c_hitpattern_layer;
         TCanvas* c_multiplicity_layer;
         std::vector<TCanvas*> c_energy_layer_ch;
         std::vector<TCanvas*> c_traces_layer_ch;
-        TCanvas* c_energy_layer0;
-        TCanvas* c_traces_layer0;
-        
-
+    
         // Histograms
-        TH1I* h1_channelID;
+        TH1I* h1_hitpattern_total;
+        std::vector<TH1I*> h1_hitpattern_layer;
         TH1I* h1_multiplicity;
         std::vector<TH1I*> h1_multiplicity_layer; 
-        TH1F* h1_energy_layer0;
+        //TH1F* h1_energy_layer0;
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch;
-        TH2F* h2_traces_layer0;
-        std::vector<std::vector<TH2F*>> h2_traces_layer_ch;
+        std::vector<std::vector<std::vector<TH1F*>>> h1_traces_layer_ch;
 
     public:
         ClassDef(LisaOnlineSpectra, 1)

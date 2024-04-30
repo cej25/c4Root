@@ -31,6 +31,8 @@ class TLisaConfiguration
         //std::map<std::pair<int,int>,std::pair<double,double>> CalibrationCoefficients() const;
 
         int NLayers() const;
+        int XMax() const;
+        int YMax() const;
         int NDetectors() const;
         int NFebexBoards() const;
         int TM_Undelayed() const;
@@ -38,6 +40,13 @@ class TLisaConfiguration
         int SC41L() const;
         int SC41R() const;
         std::set<int> ExtraSignals() const;
+
+        void SetAmplitudeMax(int max) { AmplitudeMax = max; }
+        void SetAmplitudeMin(int min) { AmplitudeMin = min; }
+
+        int AmplitudeMax = 8500;
+        int AmplitudeMin = 7500;
+
 
     private:
 
@@ -55,7 +64,9 @@ class TLisaConfiguration
         //std::map<std::pair<int,int>,std::pair<double,double>> calibration_coeffs;
         std::set<int> extra_signals;
 
-        int num_layers;        
+        int num_layers;   
+        int xmax;
+        int ymax;     
         int num_detectors;
         int num_febex_boards;
         // layer arrangement (set/get with function?)
@@ -105,6 +116,16 @@ inline std::map<std::pair<int,int>,std::pair<double,double>> TLisaConfiguration:
 inline int TLisaConfiguration::NLayers() const
 {
     return num_layers;
+}
+
+inline int TLisaConfiguration::XMax() const
+{
+    return xmax;
+}
+
+inline int TLisaConfiguration::YMax() const
+{
+    return ymax;
 }
 
 inline int TLisaConfiguration::NDetectors() const

@@ -16,7 +16,7 @@
               0       1         1     0     1   Quito    
               0       2         1     1     1   Caracas
               0       5         1     0     0   Reykjavik
-              0       6         1     1     0   Amsterda
+              0       6         1     1     0   Amsterdam
               
 #:::::::::::::::   S P A R R O W   :::::::::::::::#
 #::::::::::::::Layer 2 - Downstream ::::::::::::::#

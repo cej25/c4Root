@@ -1,8 +1,12 @@
 #ifndef LisaReader_H
 #define LisaReader_H 
 
+#include "LisaData.h"
 #include "c4Reader.h"
+
+#include "TClonesArray.h"
 #include <Rtypes.h>
+#include <vector>
 
 extern "C"
 {
@@ -10,6 +14,7 @@ extern "C"
 }
 
 class TClonesArray;
+class LisaItem;
 
 struct EXT_STR_h101_lisa_t;
 typedef struct EXT_STR_h101_lisa_t EXT_STR_h101_lisa;
@@ -26,8 +31,6 @@ class LisaReader : public c4Reader
         virtual Bool_t Init(ext_data_struct_info*) override;
 
         virtual Bool_t Read() override;
-        std::vector<int> Get_Channels(uint32_t channel_mask);
-
 
         void ZeroArrays();
         void ClearVectors();
@@ -49,8 +52,8 @@ class LisaReader : public c4Reader
         
         int32_t energy;
 
-        TClonesArray* fArray;
-        TClonesArray* fTraceArray;
+        std::vector<LisaItem>* lisaArray;
+
 
     public:
         ClassDefOverride(LisaReader, 0);
