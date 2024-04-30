@@ -31,6 +31,8 @@ void TLisaConfiguration::ReadMappingFile()
     std::cout<<"un elefante"<<std::endl;
     std::set<int> febex_boards;
     std::set<int> layers;
+    std::set<int> x_positions;
+    std::set<int> y_positions;
     std::set<std::string> det_names;
     int detectors = 0;
     
@@ -64,6 +66,8 @@ void TLisaConfiguration::ReadMappingFile()
 
             // count only real layers, detectors
             layers.insert(layer_id);
+            x_positions.insert(x_pos);
+            y_positions.insert(y_pos);
             detectors++;
 
         }
@@ -97,6 +101,8 @@ void TLisaConfiguration::ReadMappingFile()
     }
 
     num_layers = layers.size();
+    xmax = x_positions.size();
+    ymax = y_positions.size();
     num_detectors = detectors;
     num_febex_boards = febex_boards.size();
     

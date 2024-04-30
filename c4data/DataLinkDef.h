@@ -75,4 +75,7 @@
 #pragma link C++ class TBB7VmeConfiguration+;
 #pragma link C++ class TLisaConfiguration+;
 
+#pragma link C++ class LisaItem+;
+#pragma link C++ class LisaCalItem+;
+
 #endif

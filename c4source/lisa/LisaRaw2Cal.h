@@ -7,12 +7,13 @@
 #include "LisaData.h"
 #include "LisaCalData.h"
 #include <map>
-#include "TClonesArray.h"
+#include <vector>
 
 class EventHeader;
-class LisaData;
-class LisaCalData;
-class TClonesArray;
+// class LisaData;
+// class LisaCalData;
+class LisaItem;
+class LisaCalItem;
 
 class LisaRaw2Cal : public FairTask
 {
@@ -32,10 +33,13 @@ class LisaRaw2Cal : public FairTask
 
     private:
         TLisaConfiguration const* lisa_config;
+    
+        std::vector<LisaItem> const* lisaArray;
+        std::vector<LisaCalItem>* lisaCalArray;
 
-        TClonesArray* fLisaArray;
-        TClonesArray* fLisaCalArray;
-        //TClonesArray* fTimeMachineArray;
+        // TClonesArray* fLisaArray;
+        // TClonesArray* fLisaCalArray;
+      
 
         EventHeader* header;
         Bool_t fOnline;
