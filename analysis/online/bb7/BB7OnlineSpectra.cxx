@@ -21,7 +21,6 @@
 #include "TMath.h"
 #include "TFile.h"
 #include "TRandom.h"
-#include "TDirectory.h"
 
 
 BB7OnlineSpectra::BB7OnlineSpectra()
@@ -51,33 +50,34 @@ InitStatus BB7OnlineSpectra::Init()
     fHitBB7 = (TClonesArray*)mgr->GetObject("BB7VmeCalData");
     c4LOG_IF(fatal, !fHitBB7, "Branch BB7VmeCalData not found!");
 
+    histograms = (TFolder*)mgr->GetObject("Histograms");
+
     // set up config later
 
     TDirectory::TContext ctx(nullptr);
 
-    folder_bb7_hists = new TFolder("BB7", "BB7");
-    run->AddObject(folder_bb7_hists);
+    dir_bb7 = new TDirectory("BB7", "BB7", "", 0);
+    // mgr->Register("BB7", "BB7 Directory", dir_bb7, false); // allow other tasks to find directory
+    histograms->Add(dir_bb7);
 
-    folder_raw_e = new TFolder("Raw Energy", "Raw Energy");
-    folder_bb7_hists->Add(folder_raw_e);
-    folder_stats = new TFolder("Stats", "Stats");
-    folder_bb7_hists->Add(folder_stats);
+    dir_raw_e = dir_bb7->mkdir("Raw Energy");
+    dir_stats = dir_bb7->mkdir("Stats");
 
     // base on config later - add detector loop later also
     for (int side = 0; side < 2; side++)
-    {
+    {   
+        dir_raw_e->cd();
         for (int strip = 0; strip < 32; strip++)
         {
             h1_bb7_RawE[side][strip] = new TH1D(Form("h1_bb7_RawE_Side%i_Strip%i", side, strip+1), Form("Raw Energy BB7 Side %i Strip %i", side, strip+1), 10000, 0, 10000); // 12 bit adc should only be 4096 max but saw higher?
-            folder_raw_e->Add(h1_bb7_RawE[side][strip]);
         }
 
+        dir_stats->cd();
         h1_bb7_hitpattern[side] = new TH1I(Form("h1_bb7_hitpattern_Side%i", side), Form("BB7 Hit Pattern Side %i", side), 32, 0, 32);
-        folder_stats->Add(h1_bb7_hitpattern[side]);
     }
 
     
-
+    dir_bb7->cd();
 
     return kSUCCESS;
 
@@ -114,5 +114,5 @@ void BB7OnlineSpectra::FinishEvent()
 
 void BB7OnlineSpectra::FinishTask()
 {
-    folder_bb7_hists->Write();
+    //c4LOG(info, Form("Plotted %i Events", fNEvents));
 }

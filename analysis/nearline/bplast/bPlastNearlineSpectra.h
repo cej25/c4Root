@@ -1,18 +1,21 @@
 #ifndef bPlastNearlineSpectra_H
 #define bPlastNearlineSpectra_H
 
-#include "AidaCalData.h"
-#include "AidaData.h"
-#include "AidaHitData.h"
 #include "FairTask.h"
-#include <array>
+#include "TFolder.h"
+#include "TDirectory.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TbPlastConfiguration.h"
 #include <vector>
 
 class TClonesArray;
 class EventHeader;
-class TCanvas;
 class TH1F;
 class TH2F;
+class TFile;
+class TFolder;
+class TDirectory;
 
 class bPlastNearlineSpectra : public FairTask
 {
@@ -20,12 +23,7 @@ class bPlastNearlineSpectra : public FairTask
         bPlastNearlineSpectra();
         bPlastNearlineSpectra(const TString& name, Int_t verbose = 1);
 
-
-        void CreateHistograms();
-
         virtual ~bPlastNearlineSpectra();
-
-        virtual void SetParContainers();
 
         virtual InitStatus Init();
 
@@ -35,47 +33,43 @@ class bPlastNearlineSpectra : public FairTask
 
         virtual void FinishTask();
 
-        virtual void Reset_Histo();
-
-        // range setters
-
     
     private:
         TClonesArray* fHitbPlastTwinpeaks;
 
-        std::vector<AidaHit> const* implantHitArray;
-        std::vector<AidaHit> const* decayHitArray;
-        // ranges
-        //Double_t
+        TbPlastConfiguration const* bplast_conf;
+        std::map<std::pair<int, int>, std::pair<int, std::pair<char, char>>> bplast_map;
 
         EventHeader* header;
         Int_t fNEvents;
+        int total_time_microsecs = 0;
 
-        // Canvas -- we can think about adding lead and trail spectra for each channel/detector
-        TCanvas* c_bplast_slowToT;
-        TCanvas* c_bplast_fastToT;
-        TCanvas* c_bplast_hitpatterns;
-        TCanvas* c_bplast_fast_v_slow;
+        int nDetectors;
+        int nTamexBoards;
 
-        TCanvas* c_bplast_time_spectra;
-        TCanvas* c_bplast_rel_time_spectra;
+        //Folders and files
+        TDirectory* dir_bplast;
+        TDirectory* dir_bplast_slowToT;
+        TDirectory* dir_bplast_fastToT;
+        TDirectory* dir_bplast_hitpattern;
+        TDirectory* dir_bplast_fast_vs_slow;
+        TDirectory* dir_bplast_time_spectra;
 
-        static const int NDetectors = 48;
+        // Histograms
+        std::vector<TH1F*> h1_bplast_slowToT;
+        std::vector<TH1F*> h1_bplast_fastToT;
+        std::vector<TH1F*> h1_bplast_hitpatterns;
+        std::vector<TH1F*> h1_bplast_tamex_card_hitpattern;
 
-        // Histograms ToT
+        std::vector<TH2F*> h2_bplast_fastToT_vs_slowToT;
+        std::vector<TH1F*> h1_bplast_time_spectra;
 
-        TH1F * h1_bplast_slowToT[NDetectors];
-        TH1F * h1_bplast_fastToT[NDetectors];
-        TH1F * h1_bplast_fast_hitpatterns;
-        TH1F * h1_bplast_slow_hitpatterns;
+        // Scaler spectra TBA
 
-        TH2F * h2_bplast_slowToT_vs_fastToT[NDetectors];
+        // Detector Multiplicity
+        TH1F* h1_bplast_multiplicity;
 
-        //Time spectra
-        TH1F * h1_bplast_abs_time[NDetectors];
-        TH1F * h1_bplast_rel_time[NDetectors];
-
-
+        int event_multiplicity;
 
     public:
         ClassDef(bPlastNearlineSpectra, 1)

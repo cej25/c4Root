@@ -104,8 +104,8 @@ Bool_t GermaniumReader::Read()
             
             
 
-            if (VetoOverflow & fData->germanium_data[it_board_number].overflowv[index]) continue;
-            if (VetoPileup & fData->germanium_data[it_board_number].pileupv[index]) continue;
+            if (VetoOverflow && fData->germanium_data[it_board_number].overflowv[index]) continue;
+            if (VetoPileup && fData->germanium_data[it_board_number].pileupv[index]) continue;
             
 
             //according to febex manual on gsi website, the 24th bit of the energy denotes the sign to indicate the polarity of the pulse
@@ -133,7 +133,7 @@ Bool_t GermaniumReader::Read()
                 channel_trigger_time_long,
                 channel_energy,
                 fData->germanium_ts_subsystem_id,
-                wr_t + (uint64_t)((int64_t)channel_trigger_time_long - (int64_t)event_trigger_time_long)
+                wr_t //+ (uint64_t)((int64_t)channel_trigger_time_long - (int64_t)event_trigger_time_long)
             );
         }
 

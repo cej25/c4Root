@@ -24,6 +24,8 @@ FrsUserReader::FrsUserReader(EXT_STR_h101_frsuser_onion* data, size_t offset)
     ,   fOffset(offset)
     ,   fOnline(kFALSE)
     ,   fArray(new TClonesArray("FrsUserData"))
+    ,   v7x5array(new std::vector<FrsUserV7X5Item>)
+    ,   v830array(new std::vector<FrsUserV830Item>)
 {
 }
 
@@ -45,8 +47,12 @@ Bool_t FrsUserReader::Init(ext_data_struct_info* a_struct_info)
         return kFALSE;
     }
 
-    FairRootManager::Instance()->Register("FrsUserData", "FRS User Data", fArray, !fOnline);
+    //FairRootManager::Instance()->Register("FrsUserData", "FRS User Data", fArray, !fOnline);
+    FairRootManager::Instance()->RegisterAny("FrsUserV7X5Data", v7x5array, !fOnline);
+    FairRootManager::Instance()->RegisterAny("FrsUserV830Data", v830array, !fOnline);
     fArray->Clear();
+    v830array->clear();
+    v7x5array->clear();
 
     memset(fData, 0, sizeof *fData);
 
@@ -55,7 +61,8 @@ Bool_t FrsUserReader::Init(ext_data_struct_info* a_struct_info)
 
 Bool_t FrsUserReader::Read()
 {
-    c4LOG(debug2, "Event data");
+    v830array->clear();
+    v7x5array->clear();
 
     if (!fData) return kTRUE;
     if (fData == nullptr) return kFALSE;
@@ -69,19 +76,33 @@ Bool_t FrsUserReader::Read()
     scalers_n = fData->frsuser_data_v830_n;
     for (uint32_t i = 0; i < scalers_n; i++)
     {   
-        scalers_index.emplace_back(fData->frsuser_data_v830_nI[i]);
-        scalers_user.emplace_back(fData->frsuser_data_v830_data[fData->frsuser_data_v830_nI[i]]);
+        auto & entry = v830array->emplace_back();
+        uint32_t index = fData->frsuser_data_v830_nI[i];
+        uint32_t scaler = fData->frsuser_data_v830_data[fData->frsuser_data_v830_nI[i]];
+        entry.SetAll(index, scaler);
+        // scalers_index.emplace_back(fData->frsuser_data_v830_nI[i]);
+        // scalers_user.emplace_back(fData->frsuser_data_v830_data[fData->frsuser_data_v830_nI[i]]);
     }
 
     // v775 x2
     for (int i = 0; i < fData->frsuser_data_v7751n; i++)
     {
-        v7x5_geo[0].emplace_back(fData->frsuser_data_v7751geov[i]);
-        v7x5_channel[0].emplace_back(fData->frsuser_data_v7751channelv[i]);
-        v7x5_data[0].emplace_back(fData->frsuser_data_v7751data[i]);
+        auto & entry = v7x5array->emplace_back();
+        uint32_t geo = fData->frsuser_data_v7751geov[i];
+        uint32_t channel = fData->frsuser_data_v7751channelv[i];
+        uint32_t data = fData->frsuser_data_v7751data[i];
+        entry.SetAll(geo, channel, data);
+        // v7x5_geo[0].emplace_back(fData->frsuser_data_v7751geov[i]);
+        // v7x5_channel[0].emplace_back(fData->frsuser_data_v7751channelv[i]);
+        // v7x5_data[0].emplace_back(fData->frsuser_data_v7751data[i]);
     }
     for (int i = 0; i < fData->frsuser_data_v7752n; i++)
     {
+        auto & entry = v7x5array->emplace_back();
+        uint32_t geo = fData->frsuser_data_v7752geov[i];
+        uint32_t channel = fData->frsuser_data_v7752channelv[i];
+        uint32_t data = fData->frsuser_data_v7752data[i];
+        entry.SetAll(geo, channel, data);
         v7x5_geo[1].emplace_back(fData->frsuser_data_v7752geov[i]);
         v7x5_channel[1].emplace_back(fData->frsuser_data_v7752channelv[i]);
         v7x5_data[1].emplace_back(fData->frsuser_data_v7752data[i]);
@@ -90,15 +111,25 @@ Bool_t FrsUserReader::Read()
     // v785
     for (int i = 0; i < fData->frsuser_data_v7851n; i++)
     {
-        v7x5_geo[2].emplace_back(fData->frsuser_data_v7851geov[i]);
-        v7x5_channel[2].emplace_back(fData->frsuser_data_v7851channelv[i]);
-        v7x5_data[2].emplace_back(fData->frsuser_data_v7851data[i]);
+        auto & entry = v7x5array->emplace_back();
+        uint32_t geo = fData->frsuser_data_v7851geov[i];
+        uint32_t channel = fData->frsuser_data_v7851channelv[i];
+        uint32_t data = fData->frsuser_data_v7851data[i];
+        entry.SetAll(geo, channel, data);
+        // v7x5_geo[2].emplace_back(fData->frsuser_data_v7851geov[i]);
+        // v7x5_channel[2].emplace_back(fData->frsuser_data_v7851channelv[i]);
+        // v7x5_data[2].emplace_back(fData->frsuser_data_v7851data[i]);
     }
     for (int i = 0; i < fData->frsuser_data_v7852n; i++)
     {
-        v7x5_geo[3].emplace_back(fData->frsuser_data_v7852geov[i]);
-        v7x5_channel[3].emplace_back(fData->frsuser_data_v7852channelv[i]);
-        v7x5_data[3].emplace_back(fData->frsuser_data_v7852data[i]);
+        auto & entry = v7x5array->emplace_back();
+        uint32_t geo = fData->frsuser_data_v7852geov[i];
+        uint32_t channel = fData->frsuser_data_v7852channelv[i];
+        uint32_t data = fData->frsuser_data_v7852data[i];
+        entry.SetAll(geo, channel, data);
+        // v7x5_geo[3].emplace_back(fData->frsuser_data_v7852geov[i]);
+        // v7x5_channel[3].emplace_back(fData->frsuser_data_v7852channelv[i]);
+        // v7x5_data[3].emplace_back(fData->frsuser_data_v7852data[i]);
     }
 
     //c4LOG(info,Form("size of vectors: %d %d %d",v7x5_geo[1].at(0),v7x5_geo[2].at(0),v7x5_geo[3].at(0)));
@@ -106,13 +137,13 @@ Bool_t FrsUserReader::Read()
     //c4LOG(info,Form("size of vectors: %d %d %d %d",v7x5_data[0].size(),v7x5_data[1].size(),v7x5_data[2].size(),v7x5_data[3].size()));
     //c4LOG(info,Form("size of vectors: %d %d %d",v7x5_data[1].at(0),v7x5_data[2].at(0),v7x5_data[3].at(0)));
 
-    new ((*fArray)[fArray->GetEntriesFast()]) FrsUserData(
-        scalers_n,
-        scalers_index,
-        scalers_user,
-        v7x5_geo,
-        v7x5_channel,
-        v7x5_data);
+    // new ((*fArray)[fArray->GetEntriesFast()]) FrsUserData(
+    //     scalers_n,
+    //     scalers_index,
+    //     scalers_user,
+    //     v7x5_geo,
+    //     v7x5_channel,
+    //     v7x5_data);
 
     fNEvent++;
     return kTRUE;

@@ -2,6 +2,11 @@
 #define BGOOnlineSpectra_H
 
 #include "FairTask.h"
+#include "TFolder.h"
+#include "TDirectory.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include <vector>
 
 #include "TGermaniumConfiguration.h"
 #include "TBGOTwinpeaksConfiguration.h"
@@ -13,6 +18,7 @@ class TH1F;
 class TH2F;
 class TFile;
 class TFolder;
+class TDirectory;
 
 class BGOOnlineSpectra : public FairTask
 {
@@ -45,6 +51,16 @@ class BGOOnlineSpectra : public FairTask
             fenergy_bin_low = binlow;
             fenergy_bin_high = binhigh; 
         };
+
+        void SetCoincidenceWindow(int window)
+        {
+            BGO_Germanium_wr_coincidence_window = window;
+        };
+
+        void SetCoincidenceOffset(int offset)
+        {
+            BGO_Germanium_wr_coincidence_window_offset = offset;
+        };
         
     
     private:
@@ -63,36 +79,43 @@ class BGOOnlineSpectra : public FairTask
         int fenergy_bin_low = 0;
         int fenergy_bin_high = 1500;
 
-        int BGO_Germanium_wr_coincidence_window = 2000;
+        int BGO_Germanium_wr_coincidence_window = 20000;
+        int BGO_Germanium_wr_coincidence_window_offset = 0;
 
         EventHeader* header;
         Int_t fNEvents;
+
+        TString screenshot_path = "/u/despec/screenshots/";
 
         // Canvas
         TCanvas* c_bgo_time;
         TCanvas* c_bgo_energy;
         
         TCanvas* c_germanium_bgo_veto_energy;
+        TCanvas* c_germanium_bgo_vetotrue_energy;
         TCanvas* c_germanium_bgo_veto_timedifferences;
 
         TCanvas* c_bgo_snapshot;
         
         // Folder and files
-        TFolder* folder_bgo;
-        TFolder* folder_bgo_energy;
-        TFolder* folder_bgo_time;
-        TFolder* folder_bgo_germanim_veto_energy;
-        TFolder* folder_bgo_germanim_veto_timedifferences;
+        TFolder* histograms;
+        TDirectory* dir_bgo;
+        TDirectory* dir_bgo_energy;
+        TDirectory* dir_bgo_time;
+        TDirectory* dir_bgo_germanium_veto_energy;
+        TDirectory* dir_bgo_germanium_vetotrue_energy;
+        TDirectory* dir_bgo_germanium_veto_time_differences;
+
         TFile* file_bgo_snapshot;
 
         //TFile* file_germanium_snapshot;
 
         // Histograms energy
-        TH1F ** h1_bgo_energy;
-        TH1F ** h1_bgo_time;
-        
-        TH1F ** h1_germanium_bgo_veto_energy;
-        TH1F ** h1_germanium_bgo_veto_timedifferences;
+        std::vector<TH1F*> h1_bgo_energy;
+        std::vector<TH1F*> h1_bgo_time;
+        std::vector<TH1F*> h1_germanium_bgo_veto_energy;
+        std::vector<TH1F*> h1_germanium_bgo_vetotrue_energy; // plot what we're vetoing
+        std::vector<TH1F*> h1_germanium_bgo_veto_timedifferences;
 
     public:
         ClassDef(BGOOnlineSpectra, 1)

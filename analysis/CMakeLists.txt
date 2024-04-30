@@ -22,8 +22,8 @@ ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 ${C4ROOT_SOURCE_DIR}/analysis
 ${C4ROOT_SOURCE_DIR}/analysis/pars
 ${C4ROOT_SOURCE_DIR}/analysis/offline
-${C4ROOT_SOURCE_DIR}/analysis/fatima_aida_correlations
-${C4ROOT_SOURCE_DIR}/analysis/fatima
+${C4ROOT_SOURCE_DIR}/analysis/nearline
+${C4ROOT_SOURCE_DIR}/analysis/nearline/bplast
 ${C4ROOT_SOURCE_DIR}/analysis/online
 ${C4ROOT_SOURCE_DIR}/analysis/online/frs
 ${C4ROOT_SOURCE_DIR}/correlations
@@ -58,21 +58,31 @@ set(SRCS
 ./online/bb7/BB7OnlineSpectra.cxx
 
 # nearline/offline
-./nearline/frs/FrsAnalysisSpectra.cxx
+./nearline/bplast/bPlastNearlineSpectra.cxx
+./nearline/fatima/FatimaNearlineSpectra.cxx
+./nearline/fatima/FatimaVmeNearlineSpectra.cxx
+./nearline/aida/AidaNearlineSpectra.cxx
+./nearline/frs/FrsNearlineSpectra.cxx
+./nearline/germanium/GermaniumNearlineSpectra.cxx
+./nearline/bgo/BGONearlineSpectra.cxx
+./nearline/wr/WhiterabbitCorrelationNearline.cxx
+./nearline/timemachine/TimeMachineNearline.cxx
 
 ## correlations ##
 ./correlations/FrsAidaCorrelations.cxx
+./online/onlineCorrelations/FrsAidaCorrelationsOnline.cxx
 ./correlations/FrsFatimaCorrelations.cxx
 ./correlations/FrsFatimaVmeCorrelations.cxx
 ./correlations/FrsGermaniumCorrelations.cxx
+./correlations/FrsFatimaCorrelationsNearline.cxx
+./correlations/FrsGermaniumCorrelationsNearline.cxx
 ./correlations/AidaFatimaCorrelations.cxx
 ./nearline/fatima/FatimaTimingAnalysis.cxx
 ./nearline/fatima/FatimaSinglesAnalysis.cxx
 ./correlations/AidaGermaniumCorrelations.cxx
-#nearline
-# ./nearline/bPlastNearlineSpectra.cxx
-# ./nearline/AidaNearlineSpectra.cxx
-
+./correlations/bPlastGermaniumCorrelations.cxx
+./online/onlineCorrelations/bPlastGermaniumCorrelationsOnline.cxx
+./correlations/FrsBplastCorrelations.cxx
 )
 
 

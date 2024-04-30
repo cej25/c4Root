@@ -2,8 +2,13 @@
 #define GermaniumOnlineSpectra_H
 
 #include "FairTask.h"
-
 #include "TGermaniumConfiguration.h"
+
+#include "TDirectory.h"
+#include "TFolder.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include <vector>
 
 class TClonesArray;
 class EventHeader;
@@ -12,6 +17,7 @@ class TH1F;
 class TH2F;
 class TFile;
 class TFolder;
+class TDirectory;
 
 class GermaniumOnlineSpectra : public FairTask
 {
@@ -90,6 +96,8 @@ class GermaniumOnlineSpectra : public FairTask
         EventHeader* header;
         Int_t fNEvents;
 
+        TString screenshot_path = "/u/despec/screenshots/";
+
         // Canvas
         TCanvas* c_germanium_time;
         TCanvas* c_germanium_energy;
@@ -104,47 +112,47 @@ class GermaniumOnlineSpectra : public FairTask
         TCanvas* c_germanium_energy_summed_vetosci41;
         TCanvas* c_germanium_energy_summed_vs_tsci41;
         
-        TCanvas * c_germanium_energy_summed_vs_tsci41_cut;
-        TH1F * h1_germanium_energy_summed_vs_tsci41_cut;
+        TCanvas* c_germanium_energy_summed_vs_tsci41_cut;
+        TH1F* h1_germanium_energy_summed_vs_tsci41_cut;
 
-        TCanvas * c_germanium_energy_energy_vetosci41;
-        TH2F * h2_germanium_energy_energy_vetosci41;
+        TCanvas* c_germanium_energy_energy_vetosci41;
+        TH2F* h2_germanium_energy_energy_vetosci41;
 
-        TCanvas * c_germanium_energy_energy_sci41_cut;
-        TH2F * h2_germanium_energy_energy_sci41_cut;
+        TCanvas* c_germanium_energy_energy_sci41_cut;
+        TH2F* h2_germanium_energy_energy_sci41_cut;
 
         TCanvas* c_germanium_snapshot;
 
         char ** detector_labels;
 
         // Folder and files
+        TFolder* histograms;
         TDirectory* dir_germanium;
-        TFolder* folder_germanium;
-        TFolder* folder_germanium_energy;
-        TFolder* folder_germanium_time;
-        TFolder* folder_germanium_hitpattern;
-        TFolder* folder_germanium_multiplicity;
-        TFolder* folder_germanium_time_differences;
-        TFolder* folder_germanium_sci41;
+        TDirectory* dir_germanium_energy;
+        TDirectory* dir_germanium_time;
+        TDirectory* dir_germanium_hitpattern;
+        TDirectory* dir_germanium_multiplicity;
+        TDirectory* dir_germanium_sci41;
+        std::vector<TDirectory*> dir_germanium_time_differences;
 
         TFile* file_germanium_snapshot;
 
         // Histograms energy
-        TH1F ** h1_germanium_energy;
-        TH2F * h2_germanium_energy_vs_detidx;
-        
-        TH1F *** h1_germanium_time_differences; // [reference_dector][detector index]
-        TH2F *** h2_germanium_time_differences_vs_energy; // [reference detector][detector index]
+        TH1F** h1_germanium_energy;
+        TH2F* h2_germanium_energy_vs_detidx;
 
-        TH1F * h1_germanium_energy_summed;
-        TH1F * h1_germanium_energy_summed_vetosci41;
-        TH2F * h2_germanium_energy_summed_vs_tsci41;
+        TH1F*** h1_germanium_time_differences; // [reference_dector][detector index]
+        TH2F*** h2_germanium_time_differences_vs_energy; // [reference_dector][detector index]
 
-        TH1F * h1_germanium_multiplicity;
-        TH1F * h1_germanium_hitpattern;
+        TH1F* h1_germanium_energy_summed;
+        TH1F* h1_germanium_energy_summed_vetosci41;
+        TH2F* h2_germanium_energy_summed_vs_tsci41;
+
+        TH1F* h1_germanium_multiplicity;
+        TH1F* h1_germanium_hitpattern;
 
         // Histograms time
-        TH1F ** h1_germanium_time;
+        TH1F** h1_germanium_time;
 
     public:
         ClassDef(GermaniumOnlineSpectra, 1)

@@ -29,6 +29,9 @@ class TFatimaVmeConfiguration
         int TM_Delayed() const;
         int SC41L() const;
         int SC41R() const;
+        int FRS_ACCEPT() const;
+        int BPLAST_FREE() const;
+        int BPLAST_ACCEPT() const;
         std::set<int> ExtraSignals() const;
         double** QDC_E_Calib() const;
         double* QDC_T_Calib() const;
@@ -69,6 +72,9 @@ class TFatimaVmeConfiguration
         int bplast_up;
         int bplast_down;
         int bplast_coinc;
+        int frs_accept;
+        int bplast_free;
+        int bplast_accept;
 
         bool DetectorMap_loaded = 0;
 
@@ -137,6 +143,21 @@ inline int TFatimaVmeConfiguration::SC41L() const
 inline int TFatimaVmeConfiguration::SC41R() const
 {
     return sc41r_d;
+}
+
+inline int TFatimaVmeConfiguration::FRS_ACCEPT() const
+{
+    return frs_accept;
+}
+
+inline int TFatimaVmeConfiguration::BPLAST_FREE() const
+{
+    return bplast_free;
+}
+
+inline int TFatimaVmeConfiguration::BPLAST_ACCEPT() const
+{
+    return bplast_accept;
 }
 
 inline std::set<int> TFatimaVmeConfiguration::ExtraSignals() const

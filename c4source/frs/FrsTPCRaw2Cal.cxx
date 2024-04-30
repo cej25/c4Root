@@ -23,8 +23,9 @@ FrsTPCRaw2Cal::FrsTPCRaw2Cal()
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
-    ,   fRawArray(new TClonesArray("FrsTPCData"))
-    ,   fCalArray(new TClonesArray("FrsTPCCalData"))
+    ,   v1190array(nullptr)
+    ,   v7x5array(nullptr)
+    ,   tpcCalArray(new std::vector<FrsTPCCalItem>)
 {
     frs_config = TFrsConfiguration::GetInstance();
     frs = frs_config->FRS();
@@ -44,8 +45,9 @@ FrsTPCRaw2Cal::FrsTPCRaw2Cal(const TString& name, Int_t verbose)
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
-    ,   fRawArray(new TClonesArray("FrsTPCData"))
-    ,   fCalArray(new TClonesArray("FrsTPCCalData"))
+    ,   v1190array(nullptr)
+    ,   v7x5array(nullptr)
+    ,   tpcCalArray(new std::vector<FrsTPCCalItem>)
 {
     frs_config = TFrsConfiguration::GetInstance();
     frs = frs_config->FRS();
@@ -63,8 +65,6 @@ FrsTPCRaw2Cal::FrsTPCRaw2Cal(const TString& name, Int_t verbose)
 FrsTPCRaw2Cal::~FrsTPCRaw2Cal()
 {
     c4LOG(info, "Deleting FrsTPCRaw2Cal task");
-    if (fRawArray) delete fRawArray;
-    if (fCalArray) delete fCalArray;
 }
 
 void FrsTPCRaw2Cal::SetParameters()
@@ -158,7 +158,7 @@ void FrsTPCRaw2Cal::SetParameters()
     v1190_channel_calibgrid[3] = 107+1;//tpc24grid
     v1190_channel_calibgrid[4] = 108+1;//tpc41grid
     v1190_channel_calibgrid[5] = 109+1;//tpc42grid
-    v1190_channel_calibgrid[6] = 110+1;//tpc31grid //to be checked maybe 111
+    v1190_channel_calibgrid[6] = 110+1;//tpc31grid //to be checked maybe 111+1
 
 }
 
@@ -170,13 +170,17 @@ InitStatus FrsTPCRaw2Cal::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fRawArray = (TClonesArray*)mgr->GetObject("FrsTPCData");
-    c4LOG_IF(fatal, !fRawArray, "FRS branch of TPCData not found");
+    v7x5array = mgr->InitObjectAs<decltype(v7x5array)>("FrsTPCV7X5Data");
+    c4LOG_IF(fatal, !v7x5array, "Branch v7x5array not found!");
+    v1190array = mgr->InitObjectAs<decltype(v1190array)>("FrsTPCV1190Data");
+    c4LOG_IF(fatal, !v1190array, "Branch v1190array not found!");
 
-    FairRootManager::Instance()->Register("FrsTPCCalData", "FRS TPC Cal Data", fCalArray, !fOnline);
+    mgr->RegisterAny("FrsTPCCalData", tpcCalArray, !fOnline);
+    tpcCalArray->clear();
 
-    fRawArray->Clear();
-    fCalArray->Clear();
+    b_tpc_xy = new Bool_t[7];
+    tpc_csum = new Int_t*[7];
+    for (int i = 0; i < 7; i++) tpc_csum[i] = new Int_t[4];
 
     SetParameters();
 
@@ -185,329 +189,162 @@ InitStatus FrsTPCRaw2Cal::Init()
 
 void FrsTPCRaw2Cal::Exec(Option_t* option)
 {
+    tpcCalArray->clear();
 
-    // check there is actual data from module(s)
-    int mult = fRawArray->GetEntriesFast();
-    if (!mult) return;
-
-    fRawHit = (FrsTPCData*)fRawArray->At(mult-1);
-
-    v7x5_geo = fRawHit->Get_v7x5_geo();
-    v7x5_channel = fRawHit->Get_v7x5_channel();
-    v7x5_data = fRawHit->Get_v7x5_data();
-    
-    for (int m = 0; m < 2; m++)
+    // reset
+    std::vector<Int_t> v1190_lead_hits[128];
+    for (int i = 0; i < 7; i++)
     {
-       for (int i = 0; i < v7x5_data[m].size(); i++)
+        b_tpc_xy[i] = false;
+        for (int j = 0; j < 4; j++) tpc_csum[i][j] = -9999999;
+    }
+
+    for (const auto & v7x5item : *v7x5array)
+    {
+        uint32_t channel = v7x5item.Get_channel();
+        uint32_t geo = v7x5item.Get_geo();
+        uint32_t data = v7x5item.Get_v7x5_data();
+
+        switch (channel)
         {
-            switch (v7x5_channel[m][i])
-            {
-                case 0:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_a[0][0] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_a[4][0] = v7x5_data[m][i];
-                    }
-                    break;
-                case 1:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_a[0][1] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_a[4][1] = v7x5_data[m][i];
-                    }
-                    break;
-                case 2:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_a[0][2] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_a[4][2] = v7x5_data[m][i];
-                    }
-                    break;
-                case 3:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_a[0][3] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_a[4][3] = v7x5_data[m][i];
-                    }
-                    break;
-                case 4:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_l[0][0] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_l[4][0] = v7x5_data[m][i];
-                    }
-                    break;
-                case 5:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_r[0][0] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_r[4][0] = v7x5_data[m][i];
-                    }
-                    break;
-                case 6:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_l[0][1] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_l[4][1] = v7x5_data[m][i];
-                    }
-                    break;
-                case 7:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_r[0][1] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_r[4][1] = v7x5_data[m][i];
-                    }
-                    break;
-                case 8:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_a[1][0] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_a[5][0] = v7x5_data[m][i];
-                    }
-                    break;
-                case 9:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_a[1][1] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_a[5][1] = v7x5_data[m][i];
-                    }
-                    break;
-                case 10:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_a[1][2] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_a[5][2] = v7x5_data[m][i];
-                    }
-                    break;
-                case 11:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_a[1][3] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_a[5][3] = v7x5_data[m][i];
-                    }
-                    break;
-                case 12:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_l[1][0] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_l[5][0] = v7x5_data[m][i];
-                    }
-                    break;
-                case 13:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_r[1][0] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_r[5][0] = v7x5_data[m][i];
-                    }
-                    break;
-                case 14:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_l[1][1] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_l[5][1] = v7x5_data[m][i];
-                    }
-                    break;
-                case 15:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_r[1][1] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_r[5][1] = v7x5_data[m][i];
-                    }
-                    break;
-                case 16:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_a[2][0] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_a[6][0] = v7x5_data[m][i];
-                    }
-                    break;
-                case 17:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_a[2][1] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_a[6][1] = v7x5_data[m][i];
-                    }
-                    break;
-                case 18:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_a[2][2] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_a[6][2] = v7x5_data[m][i];
-                    }
-                    break;
-                case 19:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_a[2][3] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_a[6][3] = v7x5_data[m][i];
-                    }
-                    break;
-                case 20:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_l[2][0] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_l[6][0] = v7x5_data[m][i];
-                    }
-                    break;
-                case 21:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_r[2][0] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_r[6][0] = v7x5_data[m][i];
-                    }
-                    break;
-                case 22:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_l[2][1] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_l[6][1] = v7x5_data[m][i];
-                    }
-                    break;
-                case 23:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_r[2][1] = v7x5_data[m][i];
-                    }
-                    else if (v7x5_geo[m][i] == 8)
-                    {
-                        tpc_r[6][1] = v7x5_data[m][i];
-                    }
-                    break;
-                case 24:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_a[3][0] = v7x5_data[m][i];
-                    }
-                    break;
-                case 25:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_a[3][1] = v7x5_data[m][i];
-                    }
-                    break;
-                case 26:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_a[3][2] = v7x5_data[m][i];
-                    }
-                    break;
-                case 27:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_a[3][3] = v7x5_data[m][i];
-                    }
-                    break;
-                case 28:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_l[3][0] = v7x5_data[m][i];
-                    }
-                    break;
-                case 29:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_r[3][0] = v7x5_data[m][i];
-                    }
-                    break;
-                case 30:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_l[3][1] = v7x5_data[m][i];
-                    }
-                    break;
-                case 31:
-                    if (v7x5_geo[m][i] == 12)
-                    {
-                        tpc_r[3][1] = v7x5_data[m][i];
-                    }
-                    break;
-            }
-        }
-    }
- 
-    v1190_channel = fRawHit->Get_V1190_Channel();
-    v1190_data = fRawHit->Get_V1190_Data();
-    v1190_lot = fRawHit->Get_V1190_LoT();
+            case 0:
+                if (geo == 12) tpc_a[0][0] = data;
+                if (geo == 8) tpc_a[4][0] = data;
+                break;
+            case 1:
+                if (geo == 12) tpc_a[0][1] = data;
+                if (geo == 8) tpc_a[4][1] = data;
+                break;
+            case 2:
+                if (geo == 12) tpc_a[0][2] = data;
+                if (geo == 8) tpc_a[4][2] = data;
+                break;
+            case 3:
+                if (geo == 12) tpc_a[0][3] = data;
+                if (geo == 8) tpc_a[4][3] = data;
+                break;
+            case 4:
+                if (geo == 12) tpc_l[0][0] = data;
+                if (geo == 8) tpc_l[4][0] = data;
+                break;
+            case 5:
+                if (geo == 12) tpc_r[0][0] = data;
+                if (geo == 8) tpc_r[4][0] = data;
+                break;
+            case 6:
+                if (geo == 12) tpc_l[0][1] = data;
+                if (geo == 8) tpc_l[4][1] = data;
+                break;
+            case 7:
+                if (geo == 12) tpc_r[0][1] = data;
+                if (geo == 8) tpc_r[4][1] = data;
+                break;
+            case 8:
+                if (geo == 12) tpc_a[1][0] = data;
+                if (geo == 8) tpc_a[5][0] = data;
+                break;
+            case 9:
+                if (geo == 12) tpc_a[1][1] = data;
+                if (geo == 8) tpc_a[5][1] = data;
+                break;
+            case 10:
+                if (geo == 12) tpc_a[1][2] = data;
+                if (geo == 8) tpc_a[5][2] = data;
+                break;
+            case 11:
+                if (geo == 12) tpc_a[1][3] = data;
+                if (geo == 8) tpc_a[5][3] = data;
+                break;
+            case 12:
+                if (geo == 12) tpc_l[1][0] = data;
+                if (geo == 8) tpc_l[5][0] = data;
+                break;
+            case 13:
+                if (geo == 12) tpc_r[1][0] = data;
+                if (geo == 8) tpc_r[5][0] = data;
+                break;
+            case 14:
+                if (geo == 12) tpc_l[1][1] = data;
+                if (geo == 8) tpc_l[5][1] = data;
+                break;
+            case 15:
+                if (geo == 12) tpc_r[1][1] = data;
+                if (geo == 8) tpc_r[5][1] = data;
+                break;
+            case 16:
+                if (geo == 12) tpc_a[2][0] = data;
+                if (geo == 8) tpc_a[6][0] = data;
+                break;
+            case 17:
+                if (geo == 12) tpc_a[2][1] = data;
+                if (geo == 8) tpc_a[6][1] = data;
+                break;
+            case 18:
+                if (geo == 12) tpc_a[2][2] = data;
+                if (geo == 8) tpc_a[6][2] = data;
+                break;
+            case 19:
+                if (geo == 12) tpc_a[2][3] = data;
+                if (geo == 8) tpc_a[6][3] = data;
+                break;
+            case 20:
+                if (geo == 12) tpc_l[2][0] = data;
+                if (geo == 8) tpc_l[6][0] = data;
+                break;
+            case 21:
+                if (geo == 12) tpc_r[2][0] = data;
+                if (geo == 8) tpc_r[6][0] = data;
+                break;
+            case 22:
+                if (geo == 12) tpc_l[2][1] = data;
+                if (geo == 8) tpc_l[6][1] = data;
+                break;
+            case 23:
+                if (geo == 12) tpc_r[2][1] = data;
+                if (geo == 8) tpc_r[6][1] = data;
+                break;
+            case 24:
+                if (geo == 12) tpc_a[3][0] = data;
+                break;
+            case 25:
+                if (geo == 12) tpc_a[3][1] = data;
+                break;
+            case 26:
+                if (geo == 12) tpc_a[3][2] = data;
+                break;
+            case 27:
+                if (geo == 12) tpc_a[3][3] = data;
+                break;
+            case 28:
+                if (geo == 12) tpc_l[3][0] = data;
+                break;
+            case 29:
+                if (geo == 12) tpc_r[3][0] = data;
+                break;
+            case 30:
+                if (geo == 12) tpc_l[3][1] = data;
+                break;
+            case 31:
+                if (geo == 12) tpc_r[3][1] = data;
+                break;
 
-    for (int i = 0; i < v1190_data.size(); i++)
-    {   
-        // select leads
-        if (v1190_lot[i] == 0) // leads 0, trails 1
-        {   
-            if (v1190_lead_hits[v1190_channel[i]].size() < 64) v1190_lead_hits[v1190_channel[i]].emplace_back(v1190_data[i]);
         }
     }
 
+    int v1190_count[128] = {0};
+    for (const auto & v1190item : *v1190array)
+    {
+        uint32_t channel = v1190item.Get_channel();
+        uint32_t data = v1190item.Get_v1190_data();
+        uint32_t lot = v1190item.Get_leadOrTrail();
 
+        // leads 0, trails 1  
+        if (lot == 0 && v1190_count[channel] < 64) v1190_lead_hits[channel].emplace_back(data);
+
+        v1190_count[channel]++;
+    }
+
+   
     for (int i = 0; i < 7; i++)
     {
         double temp_de = 1.0;
@@ -529,6 +366,8 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
             {
                 tpc_de[i] = sqrt(sqrt(temp_de));
                 b_tpc_de[i] = kTRUE; // here we go to Anl with both
+                // CEJ: we never passed these along, its used for another Z calc
+                // we can add this if desired, but later down the line? not urgent I guess
             }
         }
 
@@ -572,18 +411,12 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
         }
     }
 
-    bool checkrange1 = 0;
-    bool checkrange2 = 0;
-    bool checkrange3 = 0;
-    bool checkrange4 = 0;
-    bool checkrange5 = 0;
 
-    // CEJ: the loops I built here are different to Go4 so I'm sure I caused some issue
-    // I'm just not sure what yet...
     for (int i = 0; i < 7; i++)
     {
         for (int j = 0; j < tpc_lt[i][0].size(); j++)
         {
+            bool checkrange1 = 0;
             Int_t thisdata = tpc_lt[i][0][j];
 
             Int_t currently_selected = tpc_lt_s[i][0];
@@ -591,6 +424,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
             if (thisdata > tpc->lim_lt[i][0][0] && thisdata < tpc->lim_lt[i][0][1])
             {
                 checkrange1 = true;
+
             }
 
             if (checkrange1 && (currently_selected <= 0 || (currently_selected > 0 && thisdata  < currently_selected)))
@@ -601,6 +435,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
 
         for (int j = 0; j < tpc_rt[i][0].size(); j++)
         {
+            bool checkrange2 = 0;
             Int_t thisdata = tpc_rt[i][0][j];
 
             Int_t currently_selected = tpc_rt_s[i][0];
@@ -618,6 +453,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
 
         for (int j = 0; j < tpc_lt[i][1].size(); j++)
         {
+            bool checkrange3 = 0;
             Int_t thisdata = tpc_lt[i][1][j];
 
             Int_t currently_selected = tpc_lt_s[i][1];
@@ -635,6 +471,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
 
         for (int j = 0; j < tpc_rt[i][1].size(); j++)
         {
+            bool checkrange4 = 0;
             Int_t thisdata = tpc_rt[i][1][j];
 
             Int_t currently_selected = tpc_rt_s[i][1];
@@ -654,6 +491,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
         {
             for (int k = 0; k < tpc_dt[i][j].size(); k++)
             {
+                bool checkrange5 = 0;
                 Int_t thisdata = tpc_dt[i][j][k];
 
                 Int_t currently_selected = tpc_dt_s[i][j];
@@ -670,7 +508,6 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
             }
         }
         
-
         for (int j = 0; j < 4; j++)
         {
             // calculate control sums
@@ -678,7 +515,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
             {
                 tpc_csum[i][j] = (tpc_lt_s[i][0] + tpc_rt_s[i][0] - 2 * tpc_dt_s[i][j]);
             }
-            else if (tpc_lt_s[i][1] > 0 && tpc_rt_s[i][1] > 0 && tpc_dt_s[i][j] > 0)
+            else if (2 <= j && j < 4 && tpc_lt_s[i][1] > 0 && tpc_rt_s[i][1] > 0 && tpc_dt_s[i][j] > 0)
             {
                 tpc_csum[i][j] = (tpc_lt_s[i][1] + tpc_rt_s[i][1] - 2 * tpc_dt_s[i][j]);
             }
@@ -687,7 +524,6 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
                 tpc_csum[i][j] = -9999999;
             }
 
-            //all csums are currently -9999999 
             if (tpc_csum[i][0] > tpc->lim_csum1[i][0] && tpc_csum[i][0] < tpc->lim_csum1[i][1])
             {   
                 b_tpc_csum[i][0] = true;
@@ -914,12 +750,10 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
         tpc_sc42_y =-999;  
     }
 
-    new ((*fCalArray)[fCalArray->GetEntriesFast()]) FrsTPCCalData(
-        b_tpc_de,
-        tpc_x,
-        tpc_y,
-        tpc_csum,
+    auto & tpcEntry = tpcCalArray->emplace_back();
+    tpcEntry.SetAll(
         b_tpc_xy,
+        tpc_csum,
         tpc_angle_x_s2_foc_21_22,
         tpc_angle_y_s2_foc_21_22,
         tpc_x_s2_foc_21_22,
@@ -949,10 +783,10 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
         tpc_sc43_x,
         tpc_music41_x,
         tpc_music42_x,
-        tpc_music43_x
-    );
+        tpc_music43_x);
 
     fNEvents += 1;
+
 
 }
 
@@ -969,15 +803,12 @@ void FrsTPCRaw2Cal::ZeroArrays()
     memset(tpc_rt_s, 0, sizeof(tpc_rt_s));
     memset(tpc_de, 0, sizeof(tpc_de));
     memset(b_tpc_de, 0, sizeof(b_tpc_de));
-    memset(tpc_csum, 0, sizeof(tpc_csum));
     memset(b_tpc_csum, 0, sizeof(b_tpc_csum));
     memset(tpc_x, 0, sizeof(tpc_x));
     memset(tpc_y, 0, sizeof(tpc_y));
     memset(tpc_xraw, 0, sizeof(tpc_xraw));
     memset(tpc_yraw, 0, sizeof(tpc_yraw));
     memset(tpc_dx12, 0, sizeof(tpc_dx12));
-    memset(b_tpc_xy, 0, sizeof(b_tpc_xy));
-    fCalArray->Clear();
 }
 
 void FrsTPCRaw2Cal::ZeroVariables()
@@ -1069,10 +900,10 @@ void FrsTPCRaw2Cal::ClearVectors()
     {
         tpc_timeref[i].clear();
     }
-    for (int i = 0; i < 128; i++)
+    /*for (int i = 0; i < 128; i++)
     {
         v1190_lead_hits[i].clear();
-    }
+    }*/
     
     
     /*

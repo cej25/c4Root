@@ -25,13 +25,13 @@ FrsTPCReader::FrsTPCReader(EXT_STR_h101_frstpc_onion* data, size_t offset)
     , fData(data)
     , fOffset(offset)
     , fOnline(kFALSE)
-    , fArray(new TClonesArray("FrsTPCData"))
+    , v7x5array(new std::vector<FrsTPCV7X5Item>)
+    , v1190array(new std::vector<FrsTPCV1190Item>)
 {
 }
 
 FrsTPCReader::~FrsTPCReader() 
 { 
-    if (fArray != nullptr) delete fArray;
     c4LOG(info, "Destroyed FrsTPCReader properly.");
 }
 
@@ -48,8 +48,8 @@ Bool_t FrsTPCReader::Init(ext_data_struct_info* a_struct_info)
     }
 
     // Register output array in a tree
-    FairRootManager::Instance()->Register("FrsTPCData", "FRS TPC Data", fArray, !fOnline);
-    fArray->Clear();
+    FairRootManager::Instance()->RegisterAny("FrsTPCV7X5Data", v7x5array, !fOnline);
+    FairRootManager::Instance()->RegisterAny("FrsTPCV1190Data", v1190array, !fOnline);
 
     memset(fData, 0, sizeof *fData);
 
@@ -58,7 +58,8 @@ Bool_t FrsTPCReader::Init(ext_data_struct_info* a_struct_info)
 
 Bool_t FrsTPCReader::Read()
 {
-    c4LOG(debug2, "Event data");
+    v7x5array->clear();
+    v1190array->clear();
 
     if (!fData) return kTRUE;
     if (fData == nullptr) return kFALSE;
@@ -81,19 +82,23 @@ Bool_t FrsTPCReader::Read()
     // v775 -- geo is 12??
     for (int i = 0; i < fData->frstpc_data_v775_n; i++)
     {   
-        v7x5_geo[0].emplace_back(fData->frstpc_data_v775_geov[i]);
-        v7x5_channel[0].emplace_back(fData->frstpc_data_v775_channelv[i]);
-        v7x5_data[0].emplace_back(fData->frstpc_data_v775_data[i]);
-        //std::cout << v7x5_geo[0][i] << std::endl;
+        uint32_t geo = fData->frstpc_data_v775_geov[i];
+        uint32_t channel = fData->frstpc_data_v775_channelv[i];
+        uint32_t data = fData->frstpc_data_v775_data[i];
+    
+        auto & entry = v7x5array->emplace_back();
+        entry.SetAll(geo, data, channel);
     }
 
     // v785 -- geo is 8???
     for (int i = 0; i < fData->frstpc_data_v785_n; i++)
     {   
-        v7x5_geo[1].emplace_back(fData->frstpc_data_v785_geov[i]);
-        v7x5_channel[1].emplace_back(fData->frstpc_data_v785_channelv[i]);
-        v7x5_data[1].emplace_back(fData->frstpc_data_v785_data[i]);
-        //std::cout << v7x5_geo[1][i] << std::endl;
+        uint32_t geo = fData->frstpc_data_v785_geov[i];
+        uint32_t channel = fData->frstpc_data_v785_channelv[i];
+        uint32_t data = fData->frstpc_data_v785_data[i];
+
+        auto & entry = v7x5array->emplace_back();
+        entry.SetAll(geo, data, channel);
     }
 
     // v1190
@@ -108,24 +113,17 @@ Bool_t FrsTPCReader::Read()
 
         for (uint32_t j = hit_index; j < next_channel_start; j++)
         {   
-            v1190_channel.emplace_back(current_channel);
-            v1190_data.emplace_back(fData->frstpc_data_v1190_data[j]);
-            v1190_lot.emplace_back(fData->frstpc_data_v1190_leadOrTrailv[j]);
+            uint32_t channel = current_channel;
+            uint32_t data = fData->frstpc_data_v1190_data[j];
+            uint32_t lot = fData->frstpc_data_v1190_leadOrTrailv[j];
+
+            auto & entry = v1190array->emplace_back();
+            entry.SetAll(channel, data, lot);
         }
 
         hit_index = next_channel_start;
   
     }
-    
-
-    new ((*fArray)[fArray->GetEntriesFast()]) FrsTPCData(
-        v7x5_geo,
-        v7x5_channel,
-        v7x5_data,
-        v1190_channel,
-        v1190_data,
-        v1190_lot);
-    
 
     fNEvent += 1;
     return kTRUE;
@@ -134,7 +132,7 @@ Bool_t FrsTPCReader::Read()
 
 void FrsTPCReader::ZeroArrays()
 {
-    fArray->Clear();
+
 }
 
 void FrsTPCReader::ClearVectors()

@@ -4,6 +4,8 @@
 #include "FairTask.h"
 
 #include "TGermaniumConfiguration.h"
+#include "FrsHitData.h"
+#include "TFrsConfiguration.h"
 
 class TClonesArray;
 class EventHeader;
@@ -51,37 +53,36 @@ class FrsGermaniumCorrelations : public FairTask
             fenergy_bin_high = binhigh; 
         };
 
-        void SetShortLifetimeCollectionWindow(int start, int stop){
-            start_short_lifetime_collection = start;
+        void SetShortLifetimeCollectionWindow(int stop){
             stop_short_lifetime_collection = stop;
         }
 
-        void SetLongLifetimeCollectionWindow(int start, int stop)
+        void SetLongLifetimeCollectionWindow(int start, int stop) // cut the WR on the start!!
         {
             start_long_lifetime_collection = start;
             stop_long_lifetime_collection = stop;
-            start_long_lifetime_collection_background = stop;
-            stop_long_lifetime_collection_background = stop;
+        }
+        void SetLongLifetimePlottingWindow(int start, int stop) // cut the WR on the start!!
+        {
+            long_lifetime_binlow = start;
+            long_lifetime_binhigh = stop;
         }
         
-        void SetLongLifetimeCollectionWindow(int start, int stop, int bgstart, int bgstop)
-        {
-            start_long_lifetime_collection = start;
-            stop_long_lifetime_collection = stop;
-            start_long_lifetime_collection_background = bgstart;
-            stop_long_lifetime_collection_background = bgstop;
-        }
         
     
     private:
         TClonesArray* fHitGe;
         TClonesArray* fHitFrs;
 
+        std::vector<FrsHitItem> const* hitArrayFrs;
+
         const TGermaniumConfiguration * germanium_configuration;
+        const TFrsConfiguration * frs_configuration;
         
         FrsGate * frsgate;
 
-        uint64_t wr_t_last_frs_hit = 0;
+        int64_t wr_t_last_frs_hit = 0;
+        int64_t wr_t_first_frs_hit = 0;
         bool positive_PID = false;
 
         
@@ -90,12 +91,11 @@ class FrsGermaniumCorrelations : public FairTask
         int fenergy_bin_high = 1500;
 
 
-        int start_long_lifetime_collection = 0;
-        int stop_long_lifetime_collection = 0;
-        int start_long_lifetime_collection_background = 0;
-        int stop_long_lifetime_collection_background = 0;
+        int start_long_lifetime_collection = 1e3; // must cut the prompt flash
+        int stop_long_lifetime_collection = 1e3; // for how long to collect? 
+        int long_lifetime_binlow = -10e3;
+        int long_lifetime_binhigh = 100e3;
 
-        int start_short_lifetime_collection = 0;
         int stop_short_lifetime_collection = 0;
 
         int germanium_coincidence_gate = 500; //ns
@@ -107,30 +107,52 @@ class FrsGermaniumCorrelations : public FairTask
         Int_t fNEvents;
 
         // Histograms:
-        //FRS
+        //FRS - for verification of gates:
         TCanvas * c_frs_Z_vs_AoQ_gated;
         TH2F * h2_frs_Z_vs_AoQ_gated;
 
+        TCanvas * c_frs_Z_vs_Z2_gated;
+        TH2F * h2_frs_Z_vs_Z2_gated;
+
+        TCanvas * c_frs_x2_vs_AoQ_gated;
+        TH2F * h2_frs_x2_vs_AoQ_gated;
+        
+        TCanvas * c_frs_x4_vs_AoQ_gated;
+        TH2F * h2_frs_x4_vs_AoQ_gated;
+        
+        //Implant rate
+        TCanvas * c_frs_rate;
+        TGraph * g_frs_rate;
+        int64_t frs_rate_time = 0;
+        int frs_rate_implanted = 0;
+        
+        TCanvas * c_frs_total;
+        TGraph * g_frs_total;
+        uint64_t frs_total_implanted = 0;
+
         //short lifetimes:
         TCanvas * c_germanium_energy_vs_tsci41;
-        TH2F * h2_germanium_summed_vs_tsci41;
+        TH2F * h2_germanium_energy_vs_tsci41;
+
         TCanvas * c_germanium_energy_promptflash_cut;
         TH1F * h1_germanium_energy_promptflash_cut;
+
         TCanvas * c_germanium_energy_energy_promptflash_cut;
         TH2F * h2_germanium_energy_energy_promptflash_cut;
 
         //long lifetimes:
-        TCanvas * c_germanium_energy_vs_wr_long;
-        TH2F * h2_germanium_summed_vs_wr_long;
+        TCanvas * c_germanium_energy_vs_sci41_wr_long;
+        TH2F * h2_germanium_energy_vs_sci41_wr_long;
+        
         TCanvas * c_germanium_energy_promptflash_cut_long;
         TH1F * h1_germanium_energy_promptflash_cut_long;
 
 
-        //Implant rate
-        TCanvas * c_frs_rate;
-        TGraph * g_frs_rate;
-        uint64_t frs_rate_time = 0;
-        int frs_rate_implanted = 0;
+        TCanvas * c_germanium_energy_energy_promptflash_cut_long; 
+        TH2F * h2_germanium_energy_energy_promptflash_cut_long;
+
+
+
 
         // Energy-gated histograms:
         //short:

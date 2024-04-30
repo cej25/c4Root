@@ -135,7 +135,7 @@ class FatimaReader : public c4Reader
         bool fine_time_calibration_save = false;
         bool fine_time_calibration_read_from_file = false;
 
-        uint64_t accepted_trigger_time = 0;
+        double accepted_trigger_time = 0;
 
 
     public:
