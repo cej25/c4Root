@@ -37,7 +37,6 @@ class FrsCal2Hit : public FairTask
 
         virtual void Exec(Option_t* option); // virtual?
         
-        virtual void SetParContainers();
         void Setup_Conditions(std::string path_to_config_files);
         void FRS_GainMatching();
 
@@ -73,18 +72,17 @@ class FrsCal2Hit : public FairTask
 
         Bool_t fOnline;
 
-        TClonesArray* fCalArrayMain;
-        TClonesArray* fCalArrayTPC;
-        TClonesArray* fCalArrayUser;
-        TClonesArray* fRawArrayTpat;
-        TClonesArray* fHitArray;
-        TClonesArray* fEventItems;
+        std::vector<FrsMainCalScalerItem> const* mainScalerArray;
+        std::vector<FrsMainCalSciItem> const* mainSciArray;
+        std::vector<FrsMainCalMusicItem> const* mainMusicArray;
+        std::vector<FrsTPCCalItem> const* tpcCalArray;
+        std::vector<FrsUserCalScalerItem> const* userScalerArray;
+        std::vector<FrsUserCalSciItem> const* userSciArray;
+        std::vector<FrsUserCalMusicItem> const* userMusicArray;
+        std::vector<FrsTpatItem> const* tpatArray;
 
-        FrsTpatData* fRawHitTpat;
-        FrsMainCalData* fCalHitMain;
-        FrsTPCCalData* fCalHitTPC;
-        FrsUserCalData* fCalHitUser;
-        FrsHitData* fFrsHit;
+        std::vector<FrsHitItem>* hitArray;
+        std::vector<FrsMultiHitItem>* multihitArray;
 
         Bool_t prevSpillOn = false;
 
@@ -132,8 +130,10 @@ class FrsCal2Hit : public FairTask
         uint32_t scaler_ch_spillstart = 8; // user (goes into sc_long first in go4)
         uint32_t sc_main_initial[32] = {0};
         uint32_t sc_main_previous[32] = {0};
+        uint32_t sc_main_current[32] = {0};
         uint32_t sc_user_initial[32] = {0};
         uint32_t sc_user_previous[32] = {0};
+        uint32_t sc_user_current[32] = {0};
         uint32_t increase_sc_temp_main[32] = {0}; // main?
         uint32_t increase_sc_temp_user[32] = {0};
 
@@ -149,10 +149,15 @@ class FrsCal2Hit : public FairTask
         uint32_t ibin_clean_for_spill;
         uint32_t spill_count;
 
-        const uint32_t* music_e1;
-        const uint32_t* music_e2;
-        const uint32_t* music_t1;
-        const uint32_t* music_t2;
+        uint32_t* music_e1;
+        uint32_t* music_e2;
+        uint32_t* music_t1;
+        uint32_t* music_t2;
+
+        // const uint32_t* music_e1;
+        // const uint32_t* music_e2;
+        // const uint32_t* music_t1;
+        // const uint32_t* music_t2;
 
         Int_t music1_anodes_cnt;
 	    Int_t music2_anodes_cnt;
@@ -166,16 +171,19 @@ class FrsCal2Hit : public FairTask
         Float_t music1_x_mean;
         Float_t music2_x_mean;
 
-        std::vector<uint32_t> tdc_array[15];
-        uint32_t de_array[14];
-        const uint32_t* dt_array; // not coded in raw->cal yet
-        Float_t de[3];
-        Float_t de_cor[3];
-        uint32_t sci_l[6]; // may change when i know the actual dimensions necessary
-        uint32_t sci_r[6];
-        uint32_t sci_tx[6];
-        uint32_t sci_e[6];
-        uint32_t sci_x[6];
+        uint32_t** tdc_array; // [15][10]
+        //std::vector<uint32_t> tdc_array[15];
+        uint32_t* de_array; // [14]
+        //uint32_t de_array[14];
+        uint32_t* dt_array;
+        //const uint32_t* dt_array; // not coded in raw->cal yet
+        Float_t* de; // [3];
+        Float_t* de_cor; // [3];
+        Float_t* sci_l; // [6]; // may change when i know the actual dimensions necessary
+        Float_t* sci_r; // [6];
+        Float_t* sci_tx; // [6];
+        Float_t* sci_e; // [6];
+        Float_t* sci_x; // [6];
         Bool_t sci_b_l[12]; // size may be reduced
         Bool_t sci_b_r[12]; // size may be reduced
         Bool_t sci_b_e[12]; // size may be reduced
@@ -209,24 +217,24 @@ class FrsCal2Hit : public FairTask
         Float_t AoQ_shift_Sci22_value[200];
         Int_t ts_mins;
 
-        std::vector<Float_t> mhtdc_sc21lr_dt;
-        std::vector<Float_t> mhtdc_sc22lr_dt;
+        Float_t mhtdc_sc21lr_dt[10];
+        Float_t mhtdc_sc22lr_dt[10];
         Float_t mhtdc_sc31lr_dt;
         Float_t mhtdc_sc41lr_dt;
         Float_t mhtdc_sc42lr_dt;
         Float_t mhtdc_sc43lr_dt;
         Float_t mhtdc_sc81lr_dt;
         
-        std::vector<Float_t> mhtdc_sc21lr_x;
-        std::vector<Float_t> mhtdc_sc22lr_x;
+        Float_t mhtdc_sc21lr_x[10];
+        Float_t mhtdc_sc22lr_x[10];
         Float_t mhtdc_sc31lr_x;
         Float_t mhtdc_sc41lr_x;
         Float_t mhtdc_sc42lr_x;
         Float_t mhtdc_sc43lr_x;
         Float_t mhtdc_sc81lr_x;
 
-        std::vector<Float_t> mhtdc_tof4121;
-        std::vector<Float_t> mhtdc_tof4122;
+        Float_t mhtdc_tof4121[10];
+        Float_t mhtdc_tof4122[10];
         Float_t mhtdc_tof4221;
         Float_t mhtdc_tof4321;
         Float_t mhtdc_tof3121;
@@ -276,22 +284,22 @@ class FrsCal2Hit : public FairTask
 
         float temp_s4x; // i think this gets redeclared a bunch.
 
-        std::vector<Float_t> id_mhtdc_beta_s2s4;
-        std::vector<Float_t> id_mhtdc_gamma_s2s4;
-        std::vector<Float_t> id_mhtdc_delta_s2s4; // not sure this needs to be a vector
-        std::vector<Float_t> id_mhtdc_aoq_s2s4;
-        std::vector<Float_t> id_mhtdc_aoq_corr_s2s4;
-        std::vector<Float_t> id_mhtdc_z_music41;
-        std::vector<Float_t> id_mhtdc_zcor_music41;
-        std::vector<Float_t> id_mhtdc_v_cor_music41;
-        std::vector<Float_t> id_mhtdc_z_music42;
-        std::vector<Float_t> id_mhtdc_zcor_music42;
-        std::vector<Float_t> id_mhtdc_v_cor_music42;
+        Float_t id_mhtdc_beta_s2s4[10];
+        Float_t id_mhtdc_gamma_s2s4[10];
+        Float_t id_mhtdc_delta_s2s4[10]; // not sure this needs to be a vector
+        Float_t id_mhtdc_aoq_s2s4[10];
+        Float_t id_mhtdc_aoq_corr_s2s4[10];
+        Float_t id_mhtdc_z_music41[10];
+        Float_t id_mhtdc_zcor_music41[10];
+        Float_t id_mhtdc_v_cor_music41[10];
+        Float_t id_mhtdc_z_music42[10];
+        Float_t id_mhtdc_zcor_music42[10];
+        Float_t id_mhtdc_v_cor_music42[10];
 
-        std::vector<Float_t> id_mhtdc_dEdegoQ;
-        std::vector<Float_t> id_mhtdc_gamma_ta_s2;
-        std::vector<Float_t> mhtdc_gamma1square;
-        std::vector<Float_t> id_mhtdc_dEdeg;
+        Float_t id_mhtdc_dEdegoQ[10];
+        Float_t id_mhtdc_gamma_ta_s2[10];
+        Float_t mhtdc_gamma1square[10];
+        Float_t id_mhtdc_dEdeg[10];
         
         float speed_light = 0.299792458; //m/ns
         float temp_tm_to_MeV = 299.792458;

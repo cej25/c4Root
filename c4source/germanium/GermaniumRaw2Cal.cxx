@@ -54,15 +54,6 @@ GermaniumRaw2Cal::~GermaniumRaw2Cal(){
 }
 
 
-/*
-A way to pass the TimeMachineChannels to the class, should be done after the mapping and before Init.
-*/
-void GermaniumRaw2Cal::SetTimeMachineChannels(int ftime_machine_undelayed_detector_id, int ftime_machine_undelayed_crystal_id, int ftime_machine_delayed_detector_id, int ftime_machine_delayed_crystal_id){
-    time_machine_delayed_detector_id=ftime_machine_delayed_detector_id;
-    time_machine_undelayed_detector_id=ftime_machine_undelayed_detector_id;
-    time_machine_delayed_crystal_id=ftime_machine_delayed_crystal_id;
-    time_machine_undelayed_crystal_id=ftime_machine_undelayed_crystal_id;
-} 
 
 void GermaniumRaw2Cal::SetParContainers()
 {
@@ -185,7 +176,10 @@ void GermaniumRaw2Cal::Exec(Option_t* option){
                 crystal_id,
                 detector_id,
                 funcal_hit->Get_wr_subsystem_id(),
-                funcal_hit->Get_wr_t());
+                funcal_hit->Get_wr_t(),
+                ((int64_t)funcal_hit->Get_wr_t() + ((int64_t)funcal_hit->Get_channel_trigger_time() - (int64_t)funcal_hit->Get_event_trigger_time()))
+                );
+            
             fNEvents++;
         }
     }

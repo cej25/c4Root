@@ -23,6 +23,8 @@ SUBEVENT(bgo_tamex_subevent)
         ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1900);
     };
 
+    optional UINT32 be { 0_31: b = MATCH(0xbad00bad);}
+
     select optional
     {
         trigger_window = TAMEX4_HEADER();
@@ -37,6 +39,7 @@ SUBEVENT(bgo_tamex_subevent)
     {
         tamex[0] = TAMEX4_SFP(sfp=1,card=0);
         tamex[1] = TAMEX4_SFP(sfp=1,card=1);
+        tamex[2] = TAMEX4_SFP(sfp=1,card=2);
     }  
 }
 
@@ -111,12 +114,38 @@ SUBEVENT(fatima_vme_subev)
     {
         scalers = FATIMA_VME_SCALERS();
     };
+
+    // don't love this but ucesb is a real pain in the ass
+    select optional
+    {
+        qdc1 = VME_CAEN_V1751(board=6);
+    }
+
+    select optional
+    {
+        qdc2 = VME_CAEN_V1751(board=7);
+    }
+
+    select optional
+    {
+        qdc3 = VME_CAEN_V1751(board=8);
+    }
+
+    select optional
+    {
+        qdc4 = VME_CAEN_V1751(board=9);
+    }
+
+    select optional
+    {
+        qdc5 = VME_CAEN_V1751(board=10);
+    }
     
-    qdc[0] = VME_CAEN_V1751(board=6);
+    /*qdc[0] = VME_CAEN_V1751(board=6);
     qdc[1] = VME_CAEN_V1751(board=7);
     qdc[2] = VME_CAEN_V1751(board=8);
     qdc[3] = VME_CAEN_V1751(board=9);
-    //qdc[4] = VME_CAEN_V1751(board=10);
+    qdc[4] = VME_CAEN_V1751(board=10);*/
    
     select several
     {
@@ -320,7 +349,7 @@ EVENT
     fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = 75, control = 20);
     fatimavme = fatima_vme_subev(type = 10, subtype = 1, procid = 70, control = 20);
     bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20);
-    //bgo = bgo_tamex_subevent(procid = 100);
+    bgo = bgo_tamex_subevent(procid = 100);
 
     frsmain = frs_main_subev(procid = 10);
     frstpc = frs_tpc_subev(procid = 20);

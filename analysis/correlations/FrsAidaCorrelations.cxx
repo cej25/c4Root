@@ -1,61 +1,38 @@
 #include "FairRootManager.h"
+#include "FairRunAna.h"
 #include "FairRunOnline.h"
 #include "FairTask.h"
 
 #include "FrsAidaCorrelations.h"
 #include "FrsHitData.h"
-#include "FrsAnalysisData.h"
 #include "AidaHitData.h"
 #include "TAidaConfiguration.h"
 #include "c4Logger.h"
+#include "TFile.h"
 
-#include <vector>
-#include "TDirectory.h"
-#include "THttpServer.h"
-
-FrsAidaCorrelations::FrsAidaCorrelations(std::vector<TCutGGates*> fFrsGates)
+FrsAidaCorrelations::FrsAidaCorrelations(std::vector<FrsGate*> fg)
     :   FairTask()
     ,   fNEvents(0)
     ,   header(nullptr)
-    ,   fFrsHitArray(new TClonesArray("FrsHitData"))
-    ,   fAidaImplants(new std::vector<AidaHit>)
+    ,   hitArrayFrs(nullptr)
+    ,   fAidaImplants(nullptr)
 {
-    // Set gates
-    for (auto & Gate : fFrsGates)
-    {
-        if (Gate->Type == "ZAoQ")
-        {
-            cutID_Z_AoQ = Gate->Gates;
-        }
-        else if (Gate->Type == "Z1Z2")
-        {
-            cutID_Z_Z2 = Gate->Gates;
-        }
-        else if (Gate->Type == "x2AoQ")
-        {
-            cutID_x2AoQ = Gate->Gates;
-        }
-        else if (Gate->Type == "x4AoQ")
-        {
-            cutID_x4AoQ = Gate->Gates;
-        }
-        else if (Gate->Type == "dEdegZ")
-        {
-            cutID_dEdegZ = Gate->Gates;
-        }
-    }
-
+    aida_config = TAidaConfiguration::GetInstance();
+    frs_config = TFrsConfiguration::GetInstance();
     correl_config = TCorrelationsConfiguration::GetInstance();
     Correl = correl_config->CorrelationsMap();
+    FrsGates = fg;
 }
 
 FrsAidaCorrelations::FrsAidaCorrelations(const TString& name, Int_t verbose)
     :   FairTask(name, verbose)
     ,   fNEvents(0)
     ,   header(nullptr)
-    ,   fFrsHitArray(new TClonesArray("FrsHitData"))
-    ,   fAidaImplants(new std::vector<AidaHit>)
+    ,   hitArrayFrs(nullptr)
+    ,   fAidaImplants(nullptr)
 {
+    aida_config = TAidaConfiguration::GetInstance();
+    frs_config = TFrsConfiguration::GetInstance();
     correl_config = TCorrelationsConfiguration::GetInstance();
     Correl = correl_config->CorrelationsMap();
 }
@@ -63,7 +40,6 @@ FrsAidaCorrelations::FrsAidaCorrelations(const TString& name, Int_t verbose)
 FrsAidaCorrelations::~FrsAidaCorrelations()
 {
     c4LOG(info, "Deleting FrsAidaCorrelations task.");
-    if (fFrsHitArray) delete fFrsHitArray;
 }
 
 InitStatus FrsAidaCorrelations::Init()
@@ -71,316 +47,265 @@ InitStatus FrsAidaCorrelations::Init()
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-    FairRunOnline* run = FairRunOnline::Instance();
-    run->GetHttpServer()->Register("", this);
+    // don't look for Ana, allow it to latch to online or offline
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "EventHeader. not found!");
 
-    fFrsHitArray = (TClonesArray*)mgr->GetObject("FrsHitData");
-    c4LOG_IF(fatal, !fFrsHitArray, "FrsHitData branch not found!");
+    hitArrayFrs = mgr->InitObjectAs<decltype(hitArrayFrs)>("FrsHitData");
+    c4LOG_IF(fatal, !hitArrayFrs, "Branch FrsHitData not found!");
 
     fAidaImplants = mgr->InitObjectAs<decltype(fAidaImplants)>("AidaImplantHits");
     c4LOG_IF(fatal, !fAidaImplants, "Branch AidaImplantHits not found!");
 
-    // clear stuff
-    
-    TDirectory::TContext ctx(nullptr);
-
-    folder_correlations = (TFolder*)mgr->GetObject("Correlations");
-    if (!folder_correlations)
+    dir_frs = (TDirectory*)mgr->GetObject("FRS");
+    if (dir_frs == nullptr) 
     {
-       folder_correlations = new TFolder("Correlations", "Correlations");
-       if (run) run->AddObject(folder_correlations);
+        LOG(info) << "Creating FRS Directory";
+        dir_frs = new TDirectory("FRS", "FRS", "", 0);
+        mgr->Register("FRS", "FRS Directory", dir_frs, false); // allow other tasks to find this
+        found_dir_frs = false;
     }
 
-    frs_aida_correlations = new TFolder("FRS-AIDA Correlations", "FRS-AIDA Correlations");
-    folder_correlations->Add(frs_aida_correlations);
-    frs_implant_correlations = new TFolder("FRS-Implant_Corr", "FRS-Implant_Corr");
-    frs_stopped_implant_correlations = new TFolder("Stopped_FRS-Implant_Corr", "Stopped_FRS-Implant_Corr");
-    frs_aida_correlations->Add(frs_implant_correlations);
-    frs_aida_correlations->Add(frs_stopped_implant_correlations);
-    frs_implant_correlations_ZvsAoQ = new TFolder("ZvsAoQ-gated_FRS-Implant_Corr", "ZvsAoQ-gated_FRS-Implant_Corr");
-    frs_implant_correlations_Z1vsZ2 = new TFolder("Z1vsZ2-gated_FRS-Implant_Corr", "Z1vsZ2-gated_FRS-Implant_Corr");
-    //frs_implant_correlations_x2vsAoQ = new TFolder("x2vsAoQ-gated_FRS-Implant_Corr", "x2vsAoQ-gated_FRS-Implant_Corr");
-    //frs_implant_correlations_x4vsAoQ = new TFolder("x4vsAoQ-gated_FRS-Implant_Corr", "x4vsAoQ-gated_FRS-Implant_Corr");
-    frs_implant_correlations_ZvsAoQ_stopped = new TFolder("Stopped_ZvsAoQ-gated_FRS-Implant_Corr", "Stopped_ZvsAoQ-gated_FRS-Implant_Corr");
-    frs_implant_correlations_Z1vsZ2_stopped = new TFolder("Stopped_Z1vsZ2-gated_FRS-Implant_Corr", "Stopped_Z1vsZ2-gated_FRS-Implant_Corr");
-    //frs_implant_correlations_x2vsAoQ_stopped = new TFolder("Stopped_x2vsAoQ-gated_FRS-Implant_Corr", "Stopped_x2vsAoQ-gated_FRS-Implant_Corr");
-    //frs_implant_correlations_x4vsAoQ_stopped = new TFolder("Stopped_x4vsAoQ-gated_FRS-Implant_Corr", "Stopped_x4vsAoQ-gated_FRS-Implant_Corr");
-    frs_implant_correlations->Add(frs_implant_correlations_ZvsAoQ);
-    frs_implant_correlations->Add(frs_implant_correlations_Z1vsZ2);
-    //frs_implant_correlations->Add(frs_implant_correlations_x2vsAoQ);
-    //frs_implant_correlations->Add(frs_implant_correlations_x4vsAoQ);
-    frs_stopped_implant_correlations->Add(frs_implant_correlations_ZvsAoQ_stopped);
-    frs_stopped_implant_correlations->Add(frs_implant_correlations_Z1vsZ2_stopped);
-    //frs_stopped_implant_correlations->Add(frs_implant_correlations_x2vsAoQ_stopped);
-    //frs_stopped_implant_correlations->Add(frs_implant_correlations_x4vsAoQ_stopped);
-    frs_imp_corr_Z1Z2_x2vsAoQ = new TFolder("Z1Z2-x2vsAoQ-gated_FRS-Implant_Corr", "Z1Z2-x2vsAoQ-gated_FRS-Implant_Corr");
-    frs_imp_corr_Z1Z2_x4vsAoQ = new TFolder("Z1Z2-x4vsAoQ-gated_FRS-Implant_Corr", "Z1Z2-x4vsAoQ-gated_FRS-Implant_Corr");
-    frs_imp_corr_Z1Z2_x2vsAoQ_stopped = new TFolder("Stopped_Z1Z2-x2vsAoQ-gated_FRS-Implant_Corr", "Stopped_Z1Z2-x2vsAoQ-gated_FRS-Implant_Corr");
-    frs_imp_corr_Z1Z2_x4vsAoQ_stopped = new TFolder("Stopped_Z1Z2-x4vsAoQ-gated_FRS-Implant_Corr", "Stopped_Z1Z2-x4vsAoQ-gated_FRS-Implant_Corr");
-    frs_implant_correlations_Z1vsZ2->Add(frs_imp_corr_Z1Z2_x2vsAoQ);
-    frs_implant_correlations_Z1vsZ2->Add(frs_imp_corr_Z1Z2_x4vsAoQ);
-    frs_implant_correlations_Z1vsZ2_stopped->Add(frs_imp_corr_Z1Z2_x2vsAoQ_stopped);
-    frs_implant_correlations_Z1vsZ2_stopped->Add(frs_imp_corr_Z1Z2_x4vsAoQ_stopped);
+    dir_frs_aida_corrs = dir_frs->mkdir("FRS-AIDA Correlations");
+    dir_implant_corrs = dir_frs_aida_corrs->mkdir("Implants");
+    dir_stopped_implant_corrs = dir_frs_aida_corrs->mkdir("Stopped Implants");
+    dir_implant_corrs_ZvsAoQ = dir_implant_corrs->mkdir("ZvsAoQ Gated");
+    dir_implant_corrs_Z1vsZ2 = dir_implant_corrs->mkdir("Z1vsZ2 Gated");
+    dir_implant_corrs_x2vsAoQ = dir_implant_corrs->mkdir("x2vsAoQ Gated");
+    dir_implant_corrs_x4vsAoQ = dir_implant_corrs->mkdir("x4vsAoQ Gated");
+    dir_implant_corrs_ZvsAoQ_stopped = dir_stopped_implant_corrs->mkdir("ZvsAoQ Gated");
+    dir_implant_corrs_Z1vsZ2_stopped = dir_stopped_implant_corrs->mkdir("Z1vsZ2 Gated");
+    dir_implant_corrs_x2vsAoQ_stopped = dir_stopped_implant_corrs->mkdir("x2vsAoQ Gated");
+    dir_implant_corrs_x4vsAoQ_stopped = dir_stopped_implant_corrs->mkdir("x4vsAoQ Gated");
+    dir_implant_corrs_Z1Z2_x2vsAoQ = dir_implant_corrs_Z1vsZ2->mkdir("x2vsAoQ Gated");
+    dir_implant_corrs_Z1Z2_x4vsAoQ = dir_implant_corrs_Z1vsZ2->mkdir("x4vsAoQ Gated");
+    dir_implant_corrs_Z1Z2_x2vsAoQ_stopped = dir_implant_corrs_Z1vsZ2_stopped->mkdir("x2vsAoQ Gated");
+    dir_implant_corrs_Z1Z2_x4vsAoQ_stopped = dir_implant_corrs_Z1vsZ2_stopped->mkdir("x4vsAoQ Gated");
+    
+    double xmax = aida_config->Wide() ? 113.4 : 37.8;
+    int xstrips = aida_config->Wide() ? 386 : 128;
 
-    // histograms
-    TAidaConfiguration const* conf = TAidaConfiguration::GetInstance();
-
-    //hAida_Implant_deadtime
+    dir_implant_corrs->cd();
     h1_AidaImplant_Deadtime = new TH1I("h1_Aida_Implant_Deadtime", "Dead Time AIDA Implant", 500, 0, 500);
-    frs_implant_correlations->Add(h1_AidaImplant_Deadtime);
-    //hA_Imp_FRS_dT
     h1_AidaImplant_FRS_dT = new TH1I("h1_AidaImplant_FRS_dT", "White Rabbit Aida Implant-FRS", 16000, -40000, 40000);
-    frs_implant_correlations->Add(h1_AidaImplant_FRS_dT);
-    //hAIDA_FRS_x_vs_x4
     h2_AidaImplant_FRS_x_vs_x4 = new TH2F("h1_AidaImplant_FRS_x_vs_x4", "AIDA X position vs FRS ID_x4 position", 200, -20, 20, 200, -20, 20);
-    frs_implant_correlations->Add(h2_AidaImplant_FRS_x_vs_x4);
 
-    for (int dssd = 0; dssd < conf->DSSDs(); dssd++)
+    h2_AidaImplant_FRS_ZAoQgate_strip_xy.resize(aida_config->DSSDs());
+    h1_AidaImplant_FRS_ZAoQgate_e.resize(aida_config->DSSDs());
+    h2_AidaImplant_FRS_ZAoQgate_position.resize(aida_config->DSSDs());
+    h2_AidaImplant_FRS_ZAoQgate_strip_xy_stopped.resize(aida_config->DSSDs());
+    h1_AidaImplant_FRS_ZAoQgate_e_stopped.resize(aida_config->DSSDs());
+    h2_AidaImplant_FRS_ZAoQgate_position_stopped.resize(aida_config->DSSDs());
+
+    h2_AidaImplant_FRS_Z1Z2gate_strip_xy.resize(aida_config->DSSDs());
+    h2_AidaImplant_FRS_Z1Z2gate_position.resize(aida_config->DSSDs());
+    h2_AidaImplant_FRS_Z1Z2gate_strip_xy_stopped.resize(aida_config->DSSDs());
+    h2_AidaImplant_FRS_Z1Z2gate_position_stopped.resize(aida_config->DSSDs());
+
+    h2_AidaImplant_FRS_Z1Z2x2AoQgates_strip_xy.resize(aida_config->DSSDs());
+    h2_AidaImplant_FRS_Z1Z2x2AoQgates_position.resize(aida_config->DSSDs());
+    h1_AidaImplant_FRS_Z1Z2x2AoQgates_e.resize(aida_config->DSSDs());
+
+    h2_AidaImplant_FRS_Z1Z2x2AoQgates_strip_xy_stopped.resize(aida_config->DSSDs());
+    h2_AidaImplant_FRS_Z1Z2x2AoQgates_position_stopped.resize(aida_config->DSSDs());
+    h1_AidaImplant_FRS_Z1Z2x2AoQgates_e_stopped.resize(aida_config->DSSDs());
+
+    h2_AidaImplant_FRS_Z1Z2x4AoQgates_strip_xy.resize(aida_config->DSSDs());
+    h2_AidaImplant_FRS_Z1Z2x4AoQgates_position.resize(aida_config->DSSDs());
+    h1_AidaImplant_FRS_Z1Z2x4AoQgates_e.resize(aida_config->DSSDs());
+
+    h2_AidaImplant_FRS_Z1Z2x4AoQgates_strip_xy_stopped.resize(aida_config->DSSDs());
+    h2_AidaImplant_FRS_Z1Z2x4AoQgates_position_stopped.resize(aida_config->DSSDs());
+    h1_AidaImplant_FRS_Z1Z2x4AoQgates_e_stopped.resize(aida_config->DSSDs());
+
+    for (int dssd = 0; dssd < aida_config->DSSDs(); dssd++)
     {
-
-        if (cutID_Z_AoQ[0] != nullptr)
+        if (!FrsGates.empty())
         {
-            for (int gate = 0; gate < cutID_Z_AoQ.size(); gate++)
+            h2_AidaImplant_FRS_ZAoQgate_strip_xy[dssd].resize(FrsGates.size());
+            h1_AidaImplant_FRS_ZAoQgate_e[dssd].resize(FrsGates.size());
+            h2_AidaImplant_FRS_ZAoQgate_position[dssd].resize(FrsGates.size());
+            h2_AidaImplant_FRS_ZAoQgate_strip_xy_stopped[dssd].resize(FrsGates.size());
+            h1_AidaImplant_FRS_ZAoQgate_e_stopped[dssd].resize(FrsGates.size());
+            h2_AidaImplant_FRS_ZAoQgate_position_stopped[dssd].resize(FrsGates.size());
+
+            h2_AidaImplant_FRS_Z1Z2gate_strip_xy[dssd].resize(FrsGates.size());
+            h2_AidaImplant_FRS_Z1Z2gate_position[dssd].resize(FrsGates.size());
+            h2_AidaImplant_FRS_Z1Z2gate_strip_xy_stopped[dssd].resize(FrsGates.size());
+            h2_AidaImplant_FRS_Z1Z2gate_position_stopped[dssd].resize(FrsGates.size());
+
+            h2_AidaImplant_FRS_Z1Z2x2AoQgates_strip_xy[dssd].resize(FrsGates.size());
+            h2_AidaImplant_FRS_Z1Z2x2AoQgates_position[dssd].resize(FrsGates.size());
+            h1_AidaImplant_FRS_Z1Z2x2AoQgates_e[dssd].resize(FrsGates.size());
+
+            h2_AidaImplant_FRS_Z1Z2x2AoQgates_strip_xy_stopped[dssd].resize(FrsGates.size());
+            h2_AidaImplant_FRS_Z1Z2x2AoQgates_position_stopped[dssd].resize(FrsGates.size());
+            h1_AidaImplant_FRS_Z1Z2x2AoQgates_e_stopped[dssd].resize(FrsGates.size());
+
+            h2_AidaImplant_FRS_Z1Z2x4AoQgates_strip_xy[dssd].resize(FrsGates.size());
+            h2_AidaImplant_FRS_Z1Z2x4AoQgates_position[dssd].resize(FrsGates.size());
+            h1_AidaImplant_FRS_Z1Z2x4AoQgates_e[dssd].resize(FrsGates.size());
+
+            h2_AidaImplant_FRS_Z1Z2x4AoQgates_strip_xy_stopped[dssd].resize(FrsGates.size());
+            h2_AidaImplant_FRS_Z1Z2x4AoQgates_position_stopped[dssd].resize(FrsGates.size());
+            h1_AidaImplant_FRS_Z1Z2x4AoQgates_e_stopped[dssd].resize(FrsGates.size());
+            
+            for (int gate = 0; gate < FrsGates.size(); gate++)
             {
-                //hA_FRS_ZAoQ_implants_strip_xy
-                h2_AidaImplant_FRS_ZAoQgate_strip_xy[dssd].emplace_back(new TH2I(Form("h2_AidaImplant_FRS_ZAoQgate%d_strip_xy_dssd%d", gate, dssd + 1), Form("DSSD %d Implant hit pattern FRS ZAoQ Gate: %d", dssd + 1, gate), 128, 0, 128, 128, 0, 128));
-                frs_implant_correlations_ZvsAoQ->Add(h2_AidaImplant_FRS_ZAoQgate_strip_xy[dssd][gate]);
-                //hA_FRS_ZAoQ_implants_e
-                h1_AidaImplant_FRS_ZAoQgate_e[dssd].emplace_back(new TH1I(Form("h1_AidaImplant_FRS_ZAoQgate%d_e_dssd%d", gate, dssd + 1), Form("DSSD %d Implant energy FRS ZAoQ Gate: %d", dssd + 1, gate), 1000, 0, 10000));
-                frs_implant_correlations_ZvsAoQ->Add(h1_AidaImplant_FRS_ZAoQgate_e[dssd][gate]);
-                //hA_FRS_ZAoQ_implants_position
-                h2_AidaImplant_FRS_ZAoQgate_position[dssd].emplace_back(new TH2D(Form("h2_AidaImplant_FRS_ZAoQgate%d_position_dssd%d", gate, dssd + 1), Form("DSSD %d Implant position FRS ZAoQ Gate: %d", dssd + 1, gate), 128, -37.8, 37.8, 128, -37.8, 37.8));
-                frs_implant_correlations_ZvsAoQ->Add(h2_AidaImplant_FRS_ZAoQgate_position[dssd][gate]);
+                dir_implant_corrs_ZvsAoQ->cd();
+                h2_AidaImplant_FRS_ZAoQgate_strip_xy[dssd][gate] = new TH2I(Form("h2_AidaImplant_FRS_ZAoQgate%d_strip_xy_dssd%d", gate, dssd + 1), Form("DSSD %d Implant hit pattern FRS ZAoQ Gate: %d", dssd + 1, gate), xstrips, 0, xstrips, 128, 0, 128);
+                h1_AidaImplant_FRS_ZAoQgate_e[dssd][gate] = new TH1I(Form("h1_AidaImplant_FRS_ZAoQgate%d_e_dssd%d", gate, dssd + 1), Form("DSSD %d Implant energy FRS ZAoQ Gate: %d", dssd + 1, gate), 1000, 0, 10000);
+                h2_AidaImplant_FRS_ZAoQgate_position[dssd][gate] = new TH2D(Form("h2_AidaImplant_FRS_ZAoQgate%d_position_dssd%d", gate, dssd + 1), Form("DSSD %d Implant position FRS ZAoQ Gate: %d", dssd + 1, gate), xstrips, -xmax, xmax, 128, -37.8, 37.8);
 
                 // ----- STOPPED -------
-                //hA_FRS_ZAoQ_implants_strip_xy
-                h2_AidaImplant_FRS_ZAoQgate_strip_xy_stopped[dssd].emplace_back(new TH2I(Form("h2_AidaImplant_FRS_ZAoQgate%d_strip_xy_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) hit pattern FRS ZAoQ Gate: %d", dssd + 1, gate), 128, 0, 128, 128, 0, 128));
-                frs_implant_correlations_ZvsAoQ_stopped->Add(h2_AidaImplant_FRS_ZAoQgate_strip_xy_stopped[dssd][gate]);
-                //hA_FRS_ZAoQ_implants_e
-                h1_AidaImplant_FRS_ZAoQgate_e_stopped[dssd].emplace_back(new TH1I(Form("h1_AidaImplant_FRS_ZAoQgate%d_e_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) energy FRS ZAoQ Gate: %d", dssd + 1, gate), 1000, 0, 10000));
-                frs_implant_correlations_ZvsAoQ_stopped->Add(h1_AidaImplant_FRS_ZAoQgate_e_stopped[dssd][gate]);
-                //hA_FRS_ZAoQ_implants_position
-                h2_AidaImplant_FRS_ZAoQgate_position_stopped[dssd].emplace_back(new TH2D(Form("h2_AidaImplant_FRS_ZAoQgate%d_position_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) position FRS ZAoQ Gate: %d", dssd + 1, gate), 128, -37.8, 37.8, 128, -37.8, 37.8));
-                frs_implant_correlations_ZvsAoQ_stopped->Add(h2_AidaImplant_FRS_ZAoQgate_position_stopped[dssd][gate]);
-            }
-        }
-
-        if (cutID_Z_Z2[0] != nullptr)
-        {
-            for (int gate = 0; gate < cutID_Z_Z2.size(); gate++)
-            {
-                //hA_FRS_Z1Z2_implants_strip_xy
-                h2_AidaImplant_FRS_Z1Z2gate_strip_xy[dssd].emplace_back(new TH2I(Form("h2_AidaImplant_FRS_Z1Z2gate%d_strip_xy_dssd%d", gate, dssd + 1), Form("DSSD %d Implant hit pattern FRS Z1Z2 Gate: %d", dssd + 1, gate), 128, 0, 128, 128, 0, 128));
-                frs_implant_correlations_Z1vsZ2->Add(h2_AidaImplant_FRS_Z1Z2gate_strip_xy[dssd][gate]);
-                //hA_FRS_Z1Z2_implants_position
-                h2_AidaImplant_FRS_Z1Z2gate_position[dssd].emplace_back(new TH2D(Form("h2_AidaImplant_FRS_Z1Z2gate%d_position_dssd%d", gate, dssd + 1), Form("DSSD %d Implant position FRS Z1Z2 Gate: %d", dssd + 1, gate), 128, -37.8, 37.8, 128, -37.8, 37.8));
-                frs_implant_correlations_Z1vsZ2->Add(h2_AidaImplant_FRS_Z1Z2gate_position[dssd][gate]);
+                dir_implant_corrs_ZvsAoQ_stopped->cd();
+                h2_AidaImplant_FRS_ZAoQgate_strip_xy_stopped[dssd][gate] = new TH2I(Form("h2_AidaImplant_FRS_ZAoQgate%d_strip_xy_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) hit pattern FRS ZAoQ Gate: %d", dssd + 1, gate), xstrips, 0, xstrips, 128, 0, 128);
+                h1_AidaImplant_FRS_ZAoQgate_e_stopped[dssd][gate] = new TH1I(Form("h1_AidaImplant_FRS_ZAoQgate%d_e_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) energy FRS ZAoQ Gate: %d", dssd + 1, gate), 1000, 0, 10000);
+                h2_AidaImplant_FRS_ZAoQgate_position_stopped[dssd][gate] = new TH2D(Form("h2_AidaImplant_FRS_ZAoQgate%d_position_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) position FRS ZAoQ Gate: %d", dssd + 1, gate), xstrips, -xmax, xmax, 128, -37.8, 37.8);
+            
+                dir_implant_corrs_Z1vsZ2->cd();
+                h2_AidaImplant_FRS_Z1Z2gate_strip_xy[dssd][gate] = new TH2I(Form("h2_AidaImplant_FRS_Z1Z2gate%d_strip_xy_dssd%d", gate, dssd + 1), Form("DSSD %d Implant hit pattern FRS Z1Z2 Gate: %d", dssd + 1, gate), xstrips, 0, xstrips, 128, 0, 128);
+                h2_AidaImplant_FRS_Z1Z2gate_position[dssd][gate] = new TH2D(Form("h2_AidaImplant_FRS_Z1Z2gate%d_position_dssd%d", gate, dssd + 1), Form("DSSD %d Implant position FRS Z1Z2 Gate: %d", dssd + 1, gate), xstrips, -xmax, xmax, 128, -37.8, 37.8);
 
                 // ------- STOPPED --------------
-                //hA_FRS_Z1Z2_implants_strip_xy
-                h2_AidaImplant_FRS_Z1Z2gate_strip_xy_stopped[dssd].emplace_back(new TH2I(Form("h2_AidaImplant_FRS_Z1Z2gate%d_strip_xy_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) hit pattern FRS Z1Z2 Gate: %d", dssd + 1, gate), 128, 0, 128, 128, 0, 128));
-                frs_implant_correlations_Z1vsZ2_stopped->Add(h2_AidaImplant_FRS_Z1Z2gate_strip_xy_stopped[dssd][gate]);
-                //hA_FRS_Z1Z2_implants_position
-                h2_AidaImplant_FRS_Z1Z2gate_position_stopped[dssd].emplace_back(new TH2D(Form("h2_AidaImplant_FRS_Z1Z2gate%d_position_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) position FRS Z1Z2 Gate: %d", dssd + 1, gate), 128, -37.8, 37.8, 128, -37.8, 37.8));
-                frs_implant_correlations_Z1vsZ2_stopped->Add(h2_AidaImplant_FRS_Z1Z2gate_position_stopped[dssd][gate]);
+                dir_implant_corrs_Z1vsZ2_stopped->cd();
+                h2_AidaImplant_FRS_Z1Z2gate_strip_xy_stopped[dssd][gate] = new TH2I(Form("h2_AidaImplant_FRS_Z1Z2gate%d_strip_xy_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) hit pattern FRS Z1Z2 Gate: %d", dssd + 1, gate), xstrips, 0, xstrips, 128, 0, 128);            
+                h2_AidaImplant_FRS_Z1Z2gate_position_stopped[dssd][gate] = new TH2D(Form("h2_AidaImplant_FRS_Z1Z2gate%d_position_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) position FRS Z1Z2 Gate: %d", dssd + 1, gate), xstrips, -xmax, xmax, 128, -37.8, 37.8);        
 
-                if (cutID_x2AoQ[0] != nullptr)
-                {
-                    //hA_FRS_Z1Z2_x2AoQ_implants_strip_xy
-                    h2_AidaImplant_FRS_Z1Z2x2AoQgates_strip_xy[dssd].emplace_back(new TH2I(Form("h2_AidaImplant_FRS_Z1Z2x2AoQgates%d_strip_xy_dssd%d", gate, dssd + 1), Form("DSSD %d Implant hit pattern FRS Z1Zx2AoQ Gate: %d", dssd + 1, gate), 128, 0, 128, 128, 0, 128));
-                    frs_imp_corr_Z1Z2_x2vsAoQ->Add(h2_AidaImplant_FRS_Z1Z2x2AoQgates_strip_xy[dssd][gate]);
-                    //hA_FRS_Z1Z2_x2AoQ_implants_position
-                    h2_AidaImplant_FRS_Z1Z2x2AoQgates_position[dssd].emplace_back(new TH2D(Form("h2_AidaImplant_FRS_Z1Z2x2AoQgates%d_position_dssd%d", gate, dssd + 1), Form("DSSD %d Implant position FRS Z1Zx2AoQ Gate: %d", dssd + 1, gate), 128, -37.8, 37.8, 128, -37.8, 37.8));
-                    frs_imp_corr_Z1Z2_x2vsAoQ->Add(h2_AidaImplant_FRS_Z1Z2x2AoQgates_position[dssd][gate]);
-                    //hA_FRS_Z1Z2_x2AoQ_implants_e
-                    h1_AidaImplant_FRS_Z1Z2x2AoQgates_e[dssd].emplace_back(new TH1I(Form("h1_AidaImplant_FRS_Z1Z2x2AoQgates%d_e_dssd%d", gate, dssd + 1), Form("DSSD %d Implant energy FRS Z1Zx2AoQ Gate: %d", dssd + 1, gate), 1000, 0, 10000));
-                    frs_imp_corr_Z1Z2_x2vsAoQ->Add(h1_AidaImplant_FRS_Z1Z2x2AoQgates_e[dssd][gate]);
+                // Second gate x2vsAoQ
+                dir_implant_corrs_Z1Z2_x2vsAoQ->cd();
+                h2_AidaImplant_FRS_Z1Z2x2AoQgates_strip_xy[dssd][gate] = new TH2I(Form("h2_AidaImplant_FRS_Z1Z2x2AoQgates%d_strip_xy_dssd%d", gate, dssd + 1), Form("DSSD %d Implant hit pattern FRS Z1Zx2AoQ Gate: %d", dssd + 1, gate), xstrips, 0, xstrips, 128, 0, 128);
+                h2_AidaImplant_FRS_Z1Z2x2AoQgates_position[dssd][gate] = new TH2D(Form("h2_AidaImplant_FRS_Z1Z2x2AoQgates%d_position_dssd%d", gate, dssd + 1), Form("DSSD %d Implant position FRS Z1Zx2AoQ Gate: %d", dssd + 1, gate), xstrips, -xmax, xmax, 128, -37.8, 37.8);
+                h1_AidaImplant_FRS_Z1Z2x2AoQgates_e[dssd][gate] = new TH1I(Form("h1_AidaImplant_FRS_Z1Z2x2AoQgates%d_e_dssd%d", gate, dssd + 1), Form("DSSD %d Implant energy FRS Z1Zx2AoQ Gate: %d", dssd + 1, gate), 1000, 0, 10000);
 
-                    // ------------- STOPPED ----------------
-                    //hA_FRS_Z1Z2_x2AoQ_implants_strip_xy
-                    h2_AidaImplant_FRS_Z1Z2x2AoQgates_strip_xy_stopped[dssd].emplace_back(new TH2I(Form("h2_AidaImplant_FRS_Z1Z2x2AoQgates%d_strip_xy_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) hit pattern FRS Z1Zx2AoQ Gate: %d", dssd + 1, gate), 128, 0, 128, 128, 0, 128));
-                    frs_imp_corr_Z1Z2_x2vsAoQ_stopped->Add(h2_AidaImplant_FRS_Z1Z2x2AoQgates_strip_xy_stopped[dssd][gate]);
-                    //hA_FRS_Z1Z2_x2AoQ_implants_position
-                    h2_AidaImplant_FRS_Z1Z2x2AoQgates_position_stopped[dssd].emplace_back(new TH2D(Form("h2_AidaImplant_FRS_Z1Z2x2AoQgates%d_position_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) position FRS Z1Zx2AoQ Gate: %d", dssd + 1, gate), 128, -37.8, 37.8, 128, -37.8, 37.8));
-                    frs_imp_corr_Z1Z2_x2vsAoQ_stopped->Add(h2_AidaImplant_FRS_Z1Z2x2AoQgates_position_stopped[dssd][gate]);
-                    //hA_FRS_Z1Z2_x2AoQ_implants_e
-                    h1_AidaImplant_FRS_Z1Z2x2AoQgates_e_stopped[dssd].emplace_back(new TH1I(Form("h1_AidaImplant_FRS_Z1Z2x2AoQgates%d_e_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) energy FRS Z1Zx2AoQ Gate: %d", dssd + 1, gate), 1000, 0, 10000));
-                    frs_imp_corr_Z1Z2_x2vsAoQ_stopped->Add(h1_AidaImplant_FRS_Z1Z2x2AoQgates_e_stopped[dssd][gate]);
-                }
+                // ------------- STOPPED ----------------
+                dir_implant_corrs_Z1Z2_x2vsAoQ_stopped->cd();
+                h2_AidaImplant_FRS_Z1Z2x2AoQgates_strip_xy_stopped[dssd][gate] = new TH2I(Form("h2_AidaImplant_FRS_Z1Z2x2AoQgates%d_strip_xy_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) hit pattern FRS Z1Zx2AoQ Gate: %d", dssd + 1, gate), xstrips, 0, xstrips, 128, 0, 128);
+                h2_AidaImplant_FRS_Z1Z2x2AoQgates_position_stopped[dssd][gate] = new TH2D(Form("h2_AidaImplant_FRS_Z1Z2x2AoQgates%d_position_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) position FRS Z1Zx2AoQ Gate: %d", dssd + 1, gate), xstrips, -xmax, xmax, 128, -37.8, 37.8);
+                h1_AidaImplant_FRS_Z1Z2x2AoQgates_e_stopped[dssd][gate] = new TH1I(Form("h1_AidaImplant_FRS_Z1Z2x2AoQgates%d_e_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) energy FRS Z1Zx2AoQ Gate: %d", dssd + 1, gate), 1000, 0, 10000);
 
-                if (cutID_x4AoQ[0] != nullptr)
-                {
-                    //hA_FRS_Z1Z2_x4AoQ_implants_strip_xy
-                    h2_AidaImplant_FRS_Z1Z2x4AoQgates_strip_xy[dssd].emplace_back(new TH2I(Form("h2_AidaImplant_FRS_Z1Z2x4AoQgates%d_strip_xy_dssd%d", gate, dssd + 1), Form("DSSD %d Implant hit pattern FRS Z1Zx4AoQ Gate: %d", dssd + 1, gate), 128, 0, 128, 128, 0, 128));
-                    frs_imp_corr_Z1Z2_x4vsAoQ->Add(h2_AidaImplant_FRS_Z1Z2x4AoQgates_strip_xy[dssd][gate]);
-                    //hA_FRS_Z1Z2_x4AoQ_implants_position
-                    h2_AidaImplant_FRS_Z1Z2x4AoQgates_position[dssd].emplace_back(new TH2D(Form("h2_AidaImplant_FRS_Z1Z2x4AoQgates%d_position_dssd%d", gate, dssd + 1), Form("DSSD %d Implant position FRS Z1Zx4AoQ Gate: %d", dssd + 1, gate), 128, -37.8, 37.8, 128, -37.8, 37.8));
-                    frs_imp_corr_Z1Z2_x4vsAoQ->Add(h2_AidaImplant_FRS_Z1Z2x4AoQgates_position[dssd][gate]);
-                    //hA_FRS_Z1Z2_x4AoQ_implants_e
-                    h1_AidaImplant_FRS_Z1Z2x4AoQgates_e[dssd].emplace_back(new TH1I(Form("h1_AidaImplant_FRS_Z1Z2x4AoQgates%d_e_dssd%d", gate, dssd + 1), Form("DSSD %d Implant energy FRS Z1Zx4AoQ Gate: %d", dssd + 1, gate), 1000, 0, 10000));
-                    frs_imp_corr_Z1Z2_x4vsAoQ->Add(h1_AidaImplant_FRS_Z1Z2x4AoQgates_e[dssd][gate]);
+                // Second gate x4vsAoQ
+                dir_implant_corrs_Z1Z2_x4vsAoQ->cd();
+                h2_AidaImplant_FRS_Z1Z2x4AoQgates_strip_xy[dssd][gate] = new TH2I(Form("h2_AidaImplant_FRS_Z1Z2x4AoQgates%d_strip_xy_dssd%d", gate, dssd + 1), Form("DSSD %d Implant hit pattern FRS Z1Zx4AoQ Gate: %d", dssd + 1, gate), xstrips, 0, xstrips, 128, 0, 128);
+                h2_AidaImplant_FRS_Z1Z2x4AoQgates_position[dssd][gate] = new TH2D(Form("h2_AidaImplant_FRS_Z1Z2x4AoQgates%d_position_dssd%d", gate, dssd + 1), Form("DSSD %d Implant position FRS Z1Zx4AoQ Gate: %d", dssd + 1, gate), xstrips, -xmax, xmax, 128, -37.8, 37.8);
+                h1_AidaImplant_FRS_Z1Z2x4AoQgates_e[dssd][gate] = new TH1I(Form("h1_AidaImplant_FRS_Z1Z2x4AoQgates%d_e_dssd%d", gate, dssd + 1), Form("DSSD %d Implant energy FRS Z1Zx4AoQ Gate: %d", dssd + 1, gate), 1000, 0, 10000);
 
-                    // ---------- STOPPED
-                    //hA_FRS_Z1Z2_x4AoQ_implants_strip_xy
-                    h2_AidaImplant_FRS_Z1Z2x4AoQgates_strip_xy_stopped[dssd].emplace_back(new TH2I(Form("h2_AidaImplant_FRS_Z1Z2x4AoQgates%d_strip_xy_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) hit pattern FRS Z1Zx4AoQ Gate: %d", dssd + 1, gate), 128, 0, 128, 128, 0, 128));
-                    frs_imp_corr_Z1Z2_x4vsAoQ_stopped->Add(h2_AidaImplant_FRS_Z1Z2x4AoQgates_strip_xy_stopped[dssd][gate]);
-                    //hA_FRS_Z1Z2_x4AoQ_implants_position
-                    h2_AidaImplant_FRS_Z1Z2x4AoQgates_position_stopped[dssd].emplace_back(new TH2D(Form("h2_AidaImplant_FRS_Z1Z2x4AoQgates%d_position_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) position FRS Z1Zx4AoQ Gate: %d", dssd + 1, gate), 128, -37.8, 37.8, 128, -37.8, 37.8));
-                    frs_imp_corr_Z1Z2_x4vsAoQ_stopped->Add(h2_AidaImplant_FRS_Z1Z2x4AoQgates_position_stopped[dssd][gate]);
-                    //hA_FRS_Z1Z2_x4AoQ_implants_e
-                    h1_AidaImplant_FRS_Z1Z2x4AoQgates_e_stopped[dssd].emplace_back(new TH1I(Form("h1_AidaImplant_FRS_Z1Z2x4AoQgates%d_e_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) energy FRS Z1Zx4AoQ Gate: %d", dssd + 1, gate), 1000, 0, 10000));
-                    frs_imp_corr_Z1Z2_x4vsAoQ_stopped->Add(h1_AidaImplant_FRS_Z1Z2x4AoQgates_e_stopped[dssd][gate]);
-                }
+                dir_implant_corrs_Z1Z2_x4vsAoQ_stopped->cd();
+                h2_AidaImplant_FRS_Z1Z2x4AoQgates_strip_xy_stopped[dssd][gate] = new TH2I(Form("h2_AidaImplant_FRS_Z1Z2x4AoQgates%d_strip_xy_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) hit pattern FRS Z1Zx4AoQ Gate: %d", dssd + 1, gate), xstrips, 0, xstrips, 128, 0, 128);
+                h2_AidaImplant_FRS_Z1Z2x4AoQgates_position_stopped[dssd][gate] = new TH2D(Form("h2_AidaImplant_FRS_Z1Z2x4AoQgates%d_position_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) position FRS Z1Zx4AoQ Gate: %d", dssd + 1, gate), xstrips, -xmax, xmax, 128, -37.8, 37.8);
+                h1_AidaImplant_FRS_Z1Z2x4AoQgates_e_stopped[dssd][gate] = new TH1I(Form("h1_AidaImplant_FRS_Z1Z2x4AoQgates%d_e_stopped_dssd%d", gate, dssd + 1), Form("DSSD %d Implant (stopped) energy FRS Z1Zx4AoQ Gate: %d", dssd + 1, gate), 1000, 0, 10000);
             }
         }
     }
 
+    dir_frs->cd();
 
     return kSUCCESS;
-
 
 }
 
 
 void FrsAidaCorrelations::Exec(Option_t* option)
 { 
-    int multFRS = 0;
-    multFRS = fFrsHitArray->GetEntriesFast();
-    if (multFRS == 0) return;
+    if (fAidaImplants->size() <= 0 || hitArrayFrs->size() <= 0) return;
 
-    if (fFrsHitArray && fFrsHitArray->GetEntriesFast() > 0)
+    const auto & hitItemFrs = hitArrayFrs->at(0);
+
+    for (auto & i : *fAidaImplants)
     {
-        Int_t nHits = fFrsHitArray->GetEntriesFast();
-        for (Int_t ihit = 0; ihit < nHits; ihit++)
+        AidaHit hit = i;
+        if (hit.Time > 0)
         {
-            FrsHitData* FrsHit = (FrsHitData*)fFrsHitArray->At(ihit);
-            if (!FrsHit) continue;
-
-            TAidaConfiguration const* conf = TAidaConfiguration::GetInstance();
-
-            for (auto & i : *fAidaImplants)
+            if (AidaLastWR == 0)
             {
-                AidaHit hit = i;
-                if (hit.Time > 0)
-                {
-                    if (AidaLastWR == 0)
-                    {
-                        AidaLastWR = hit.Time;
-                    }
-                    else
-                    {
-                        h1_AidaImplant_Deadtime->Fill((hit.Time - AidaLastWR) / 1000);
-                        AidaLastWR = hit.Time;
-                    }
-                } // aida implant deadtime
+                AidaLastWR = hit.Time;
+            }
+            else
+            {
+                h1_AidaImplant_Deadtime->Fill((hit.Time - AidaLastWR) / 1000);
+                AidaLastWR = hit.Time;
+            }
+        } // aida implant deadtime
                 
-                if (hit.Time > 0 && FrsHit->Get_wr_t() > 0) h1_AidaImplant_FRS_dT->Fill(hit.Time - FrsHit->Get_wr_t());
+        if (hit.Time > 0 && hitItemFrs.Get_wr_t() > 0) h1_AidaImplant_FRS_dT->Fill(hit.Time - hitItemFrs.Get_wr_t());
 
+        if (hit.Time - hitItemFrs.Get_wr_t() > Correl["FRS-AIDA WR Gate"][0] && hit.Time - hitItemFrs.Get_wr_t() < Correl["FRS-AIDA WR Gate"][1])
+        {
+            h2_AidaImplant_FRS_x_vs_x4->Fill(hit.PosX, hitItemFrs.Get_ID_x4());
 
-                if (hit.Time - FrsHit->Get_wr_t() > Correl["FRS-AIDA WR Gate"][0] && hit.Time - FrsHit->Get_wr_t() < Correl["FRS-AIDA WR Gate"][1])
+            if (!FrsGates.empty())
+            {
+                for (int gate = 0; gate < FrsGates.size(); gate++)
                 {
-                    h2_AidaImplant_FRS_x_vs_x4->Fill(hit.PosX, FrsHit->Get_ID_x4());
-
-                    if (cutID_Z_AoQ[0] != nullptr)
+                    if (FrsGates[gate]->Passed_ZvsAoQ(hitItemFrs.Get_ID_z(), hitItemFrs.Get_ID_AoQ()))
                     {
-                        for (int gate = 0; gate < cutID_Z_AoQ.size(); gate++)
-                        {
-                            if (cutID_Z_AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z()))
-                            {
-                                h2_AidaImplant_FRS_ZAoQgate_strip_xy[gate][hit.DSSD - 1]->Fill(hit.StripX, hit.StripY);
-                                h1_AidaImplant_FRS_ZAoQgate_e[gate][hit.DSSD - 1]->Fill(hit.Energy);
-                                h2_AidaImplant_FRS_ZAoQgate_position[gate][hit.DSSD - 1]->Fill(hit.PosX, hit.PosY);
-                            } // Z vs AoQ pass
-                        } // gate loop
-                    } // gate is not null
+                        h2_AidaImplant_FRS_ZAoQgate_strip_xy[hit.DSSD-1][gate]->Fill(hit.StripX, hit.StripY);
+                        h1_AidaImplant_FRS_ZAoQgate_e[hit.DSSD-1][gate]->Fill(hit.Energy);
+                        h2_AidaImplant_FRS_ZAoQgate_position[hit.DSSD-1][gate]->Fill(hit.PosX, hit.PosY);
+                    } // Z vs AoQ pass
 
-                    if (cutID_Z_Z2[0] != nullptr)
+                    if (FrsGates[gate]->Passed_ZvsZ2(hitItemFrs.Get_ID_z(), hitItemFrs.Get_ID_z2()))
                     {
-                        for (int gate = 0; gate < cutID_Z_Z2.size(); gate++)
-                        {
-                            if (cutID_Z_Z2[gate]->IsInside(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2()))
-                            {
-                                h2_AidaImplant_FRS_Z1Z2gate_strip_xy[gate][hit.DSSD - 1]->Fill(hit.StripX, hit.StripY);
-                                h2_AidaImplant_FRS_Z1Z2gate_position[gate][hit.DSSD - 1]->Fill(hit.PosX, hit.PosY);
-                                
-                                // CEJ: should we have a redundant check for x2AoQ gate != nullptr?
-                                if (cutID_x2AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2()))
-                                {
-                                    h2_AidaImplant_FRS_Z1Z2x2AoQgates_strip_xy[gate][hit.DSSD - 1]->Fill(hit.StripX, hit.StripY);
-                                    h2_AidaImplant_FRS_Z1Z2x2AoQgates_position[gate][hit.DSSD - 1]->Fill(hit.PosX, hit.PosY);
-                                    h1_AidaImplant_FRS_Z1Z2x2AoQgates_e[gate][hit.DSSD - 1]->Fill(hit.Energy);
-                                } // x2 vs AoQ pass
-
-                                if (cutID_x4AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4()))
-                                {
-                                    h2_AidaImplant_FRS_Z1Z2x4AoQgates_strip_xy[gate][hit.DSSD - 1]->Fill(hit.StripX, hit.StripY);
-                                    h2_AidaImplant_FRS_Z1Z2x4AoQgates_position[gate][hit.DSSD - 1]->Fill(hit.PosX, hit.PosY);
-                                    h1_AidaImplant_FRS_Z1Z2x4AoQgates_e[gate][hit.DSSD - 1]->Fill(hit.Energy);
-                                } // x4 vs AoQ pass
-
-                            } // Z vs Z2 pass
-                        } // Z vs Z2 gate loop
-                    } // Z vs Z2 gate is not null
-
-                    if (hit.Stopped)
-                    {
-
-                        if (cutID_Z_AoQ[0] != 0)
-                        {
-                            for (int gate = 0; gate < cutID_Z_AoQ.size(); gate++)
-                            {
-                                if (cutID_Z_AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_z()))
-                                {
-                                    h2_AidaImplant_FRS_ZAoQgate_strip_xy_stopped[gate][hit.DSSD - 1]->Fill(hit.StripX, hit.StripY);
-                                    h1_AidaImplant_FRS_ZAoQgate_e_stopped[gate][hit.DSSD - 1]->Fill(hit.Energy);
-                                    h2_AidaImplant_FRS_ZAoQgate_position_stopped[gate][hit.DSSD - 1]->Fill(hit.PosX, hit.PosY);
-                                } // Z vs AoQ pass
-                            } // gate loop
-                        } // Z vs AoQ gate is not null
+                        h2_AidaImplant_FRS_Z1Z2gate_strip_xy[hit.DSSD-1][gate]->Fill(hit.StripX, hit.StripY);
+                        h2_AidaImplant_FRS_Z1Z2gate_position[hit.DSSD-1][gate]->Fill(hit.PosX, hit.PosY);
                         
-                        if (cutID_Z_Z2[0] != 0)
+                        if (FrsGates[gate]->Passed_x2vsAoQ(hitItemFrs.Get_ID_x2(), hitItemFrs.Get_ID_AoQ()))
                         {
-                            for (int gate = 0; gate < cutID_Z_Z2.size(); gate++)
+                            h2_AidaImplant_FRS_Z1Z2x2AoQgates_strip_xy[hit.DSSD-1][gate]->Fill(hit.StripX, hit.StripY);
+                            h2_AidaImplant_FRS_Z1Z2x2AoQgates_position[hit.DSSD-1][gate]->Fill(hit.PosX, hit.PosY);
+                            h1_AidaImplant_FRS_Z1Z2x2AoQgates_e[hit.DSSD-1][gate]->Fill(hit.Energy);
+                        } // x2 vs AoQ pass
+
+                        if (FrsGates[gate]->Passed_x4vsAoQ(hitItemFrs.Get_ID_x4(), hitItemFrs.Get_ID_AoQ()))
+                        {
+                            h2_AidaImplant_FRS_Z1Z2x4AoQgates_strip_xy[hit.DSSD-1][gate]->Fill(hit.StripX, hit.StripY);
+                            h2_AidaImplant_FRS_Z1Z2x4AoQgates_position[hit.DSSD-1][gate]->Fill(hit.PosX, hit.PosY);
+                            h1_AidaImplant_FRS_Z1Z2x4AoQgates_e[hit.DSSD-1][gate]->Fill(hit.Energy);
+                        } // x4 vs AoQ pass
+                    } // Z vs Z2 pass
+                } // gate loop
+            } // gate is not null
+
+            if (hit.Stopped)
+            {
+                if (!FrsGates.empty())
+                {
+                    for (int gate = 0; gate < FrsGates.size(); gate++)
+                    {
+                        if (FrsGates[gate]->Passed_ZvsAoQ(hitItemFrs.Get_ID_z(), hitItemFrs.Get_ID_AoQ()))
+                        {
+                            h2_AidaImplant_FRS_ZAoQgate_strip_xy_stopped[hit.DSSD-1][gate]->Fill(hit.StripX, hit.StripY);
+                            h1_AidaImplant_FRS_ZAoQgate_e_stopped[hit.DSSD-1][gate]->Fill(hit.Energy);
+                            h2_AidaImplant_FRS_ZAoQgate_position_stopped[hit.DSSD-1][gate]->Fill(hit.PosX, hit.PosY);
+                        } // Z vs AoQ pass
+
+                        if (FrsGates[gate]->Passed_ZvsZ2(hitItemFrs.Get_ID_z(), hitItemFrs.Get_ID_z2()))
+                        {
+                            h2_AidaImplant_FRS_Z1Z2gate_strip_xy_stopped[hit.DSSD-1][gate]->Fill(hit.StripX, hit.StripY);
+                            h2_AidaImplant_FRS_Z1Z2gate_position_stopped[hit.DSSD-1][gate]->Fill(hit.PosX, hit.PosY);
+
+                            if (FrsGates[gate]->Passed_x2vsAoQ(hitItemFrs.Get_ID_x2(), hitItemFrs.Get_ID_AoQ()))
                             {
-                                if (cutID_Z_Z2[gate]->IsInside(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2()))
-                                {
-                                    h2_AidaImplant_FRS_Z1Z2gate_strip_xy_stopped[gate][hit.DSSD - 1]->Fill(hit.StripX, hit.StripY);
-                                    h2_AidaImplant_FRS_Z1Z2gate_position_stopped[gate][hit.DSSD - 1]->Fill(hit.PosX, hit.PosY);
+                                h2_AidaImplant_FRS_Z1Z2x2AoQgates_strip_xy_stopped[hit.DSSD-1][gate]->Fill(hit.StripX, hit.StripY);
+                                h1_AidaImplant_FRS_Z1Z2x2AoQgates_e_stopped[hit.DSSD-1][gate]->Fill(hit.Energy);
+                                h2_AidaImplant_FRS_Z1Z2x2AoQgates_position_stopped[hit.DSSD-1][gate]->Fill(hit.PosX, hit.PosY);
+                            } // x2 vs AoQ pass
 
-                                    // CEJ: again should we check for x2AoQ != nullptr? 
-                                    if (cutID_x2AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x2()))
-                                    {
-                                        h2_AidaImplant_FRS_Z1Z2x2AoQgates_strip_xy_stopped[gate][hit.DSSD - 1]->Fill(hit.StripX, hit.StripY);
-                                        h1_AidaImplant_FRS_Z1Z2x2AoQgates_e_stopped[gate][hit.DSSD - 1]->Fill(hit.Energy);
-                                        h2_AidaImplant_FRS_Z1Z2x2AoQgates_position_stopped[gate][hit.DSSD - 1]->Fill(hit.PosX, hit.PosY);
-                                    } // x2 vs AoQ pass
+                            if (FrsGates[gate]->Passed_x4vsAoQ(hitItemFrs.Get_ID_x4(), hitItemFrs.Get_ID_AoQ()))
+                            {
+                                h2_AidaImplant_FRS_Z1Z2x4AoQgates_strip_xy_stopped[hit.DSSD-1][gate]->Fill(hit.StripX, hit.StripY);
+                                h1_AidaImplant_FRS_Z1Z2x4AoQgates_e_stopped[hit.DSSD-1][gate]->Fill(hit.Energy);
+                                h2_AidaImplant_FRS_Z1Z2x4AoQgates_position_stopped[hit.DSSD-1][gate]->Fill(hit.PosX, hit.PosY);
+                            } // x4 vs AoQ pass
+                        } // Z vs Z2 pass
+                    } // gate loop
+                } // Z vs AoQ gate is not null
+            } // Stopped
+        } // FRS-AIDA WR Gate
+    } // Aida Implants
 
-                                    if (cutID_x4AoQ[gate]->IsInside(FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_x4()))
-                                    {
-                                        h2_AidaImplant_FRS_Z1Z2x4AoQgates_strip_xy_stopped[gate][hit.DSSD - 1]->Fill(hit.StripX, hit.StripY);
-                                        h1_AidaImplant_FRS_Z1Z2x4AoQgates_e_stopped[gate][hit.DSSD - 1]->Fill(hit.Energy);
-                                        h2_AidaImplant_FRS_Z1Z2x4AoQgates_position_stopped[gate][hit.DSSD - 1]->Fill(hit.PosX, hit.PosY);
-                                    } // x4 vs AoQ pass
-                                } // Z vs Z2 pass
-                            } // Z vs Z2 gate loop
-                        } // Z vs Z2 gate is not null
-
-                    } // Stopped
-
-                } // FRS-AIDA WR Gate
-            } // Aida Implants
-        } // nHits
-
-
-        // CEJ: does anything need to be registered in the tree here?
-
-        
-    } // GetEntries() > 0
-
-    fNEvents++; // ?? where do i iterate this?
+    fNEvents++;
 }
 
 void FrsAidaCorrelations::FinishEvent()
@@ -390,8 +315,14 @@ void FrsAidaCorrelations::FinishEvent()
 
 void FrsAidaCorrelations::FinishTask()
 {
-    c4LOG(info, Form("Wrote %i events. ", fNEvents));
-    folder_correlations->Write();
+    if (found_dir_frs == false && FairRunOnline::Instance() == NULL)
+    {
+        TDirectory* tmp = gDirectory;
+        FairRootManager::Instance()->GetOutFile()->cd();
+        dir_frs->Write();
+        gDirectory = tmp;
+        c4LOG(info, "Written FRS-AIDA Correlations histograms to file.");
+    }
 }
 
 

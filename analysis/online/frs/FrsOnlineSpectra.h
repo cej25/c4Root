@@ -2,15 +2,19 @@
 #define FrsOnlineSpectra_H 1
 
 #include "TFrsConfiguration.h"
+#include "FrsGate.h"
+#include "FrsHitData.h"
 
 #include "FairTask.h"
 #include "TH2.h"
 #include "TCutG.h"
 #include "TDirectory.h"
+#include <vector>
 
 class TClonesArray;
 class EventHeader;
 class FrsHitData;
+class FrsGate;
 class TFolder;
 class TDirectory;
 class TCanvas;
@@ -25,6 +29,7 @@ class FrsOnlineSpectra : public FairTask
 {
     public:
         FrsOnlineSpectra();
+        FrsOnlineSpectra(std::vector<FrsGate*> fg);
 
         FrsOnlineSpectra(const TString& name, Int_t verbose = 1);
 
@@ -42,6 +47,8 @@ class FrsOnlineSpectra : public FairTask
 
         virtual void Reset_Histo();
 
+        virtual void Snapshot_Histo();
+
 
     private:
         TFrsConfiguration const* frs_config;
@@ -57,12 +64,17 @@ class FrsOnlineSpectra : public FairTask
         TMRTOFMSParameter* mrtof;
         TRangeParameter* range;
 
-        TClonesArray* fHitFrsArray; // array with hit items
-        FrsHitData* FrsHit; // array with hit items
+        std::vector<FrsGate*> FrsGates;
+
+        //TClonesArray* fHitFrsArray; // array with hit items
+        std::vector<FrsHitItem> const* hitArray;
 
         EventHeader* header;
         Int_t fNEvents;
 
+        TString screenshot_path = "/u/despec/screenshots/";
+
+        // we shouldn't need these anymore.
         TFolder* folder_frs_hists;
         TFolder* folder_scalers;
         TFolder* folder_pids;
@@ -71,6 +83,7 @@ class FrsOnlineSpectra : public FairTask
         // Canvas
         TCanvas* c_frs_z1_vs_AoQ;
         TCanvas* c_frs_x4_vs_AoQ;
+        TCanvas* c_frs_snapshot;
 
         // Histograms for PID:
         TH2D* h2_Z_vs_AoQ;
@@ -98,19 +111,50 @@ class FrsOnlineSpectra : public FairTask
         TH2D* h2_x4_vs_a4;
         TH2D* h2_y4_vs_b4;
         TH2D* h2_Z_vs_Sc21E;
-        TH2I* h2_Z_vs_AoQ_ZAoQgate;
+
+        // Prioritising Z1Z2
+        /*TH2I* h2_Z_vs_AoQ_ZAoQgate;
         TH2I* h2_Z1_vs_Z2_ZAoQgate;
         TH2I* h2_x2_vs_AoQ_ZAoQgate;
         TH2I* h2_x4_vs_AoQ_ZAoQgate;
         TH2I* h2_dEdeg_vs_Z_ZAoQgate;
         TH2I* h2_dedegoQ_vs_Z_ZAoQgate;
         TH1I* h1_a2_ZAoQ_gate;
-        TH1I* h1_a4_ZAoQ_gate;
+        TH1I* h1_a4_ZAoQ_gate;*/
+
+        std::vector<TH2I*> h2_Z_vs_AoQ_Z1Z2gate;
+        std::vector<TH2I*> h2_Z1_vs_Z2_Z1Z2gate;
+        std::vector<TH2I*> h2_x2_vs_AoQ_Z1Z2gate;
+        std::vector<TH2I*> h2_x4_vs_AoQ_Z1Z2gate;
+        std::vector<TH2I*> h2_dEdeg_vs_Z_Z1Z2gate;
+        std::vector<TH2I*> h2_dedegoQ_vs_Z_Z1Z2gate;
+        std::vector<TH1I*> h1_a2_Z1Z2_gate;
+        std::vector<TH1I*> h1_a4_Z1Z2_gate;
+
+        std::vector<TH2I*> h2_x2_vs_AoQ_Z1Z2x2AoQgate;
+        std::vector<TH2I*> h2_x4_vs_AoQ_Z1Z2x2AoQgate;
+        std::vector<TH2I*> h2_Z_vs_AoQ_Z1Z2x2AoQgate;
+        std::vector<TH2I*> h2_dEdeg_vs_Z_Z1Z2x2AoQgate;
+        std::vector<TH2I*> h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate;
+        std::vector<TH1I*> h1_a2_Z1Z2x2AoQgate;
+        std::vector<TH1I*> h1_a4_Z1Z2x2AoQgate;
+
+        std::vector<TH2I*> h2_x2_vs_AoQ_Z1Z2x4AoQgate;
+        std::vector<TH2I*> h2_x4_vs_AoQ_Z1Z2x4AoQgate;
+        std::vector<TH2I*> h2_Z_vs_AoQ_Z1Z2x4AoQgate;
+        std::vector<TH2I*> h2_dEdeg_vs_Z_Z1Z2x4AoQgate;
+        std::vector<TH2I*> h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate;
+        std::vector<TH1I*> h1_a2_Z1Z2x4AoQgate;
+        std::vector<TH1I*> h1_a4_Z1Z2x4AoQgate;
+
         TH1I* h1_tpat;
 
-        TH1I* test_hist;
-
         TDirectory* dir_frs;
+        TDirectory* dir_pids;
+        TDirectory* dir_scalers;
+        TDirectory* dir_ZvsZ2;
+        TDirectory* dir_ZvsZ2_x2vsAoQ;
+        TDirectory* dir_ZvsZ2_x4vsAoQ;
         TFolder* histograms;
 
         // Histograms for Scalers
@@ -121,6 +165,7 @@ class FrsOnlineSpectra : public FairTask
         int ratio_previous = 100;
         int ratio_previous2 = 100;
 
+        // I don't think we need this anymore.
         TCutG* cutID_Z_AoQ = nullptr;
 
 

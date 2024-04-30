@@ -3,6 +3,8 @@
 
 #include <vector>
 #include "TFolder.h"
+#include "FrsMainData.h"
+#include "FrsMainCalData.h"
 
 class TClonesArray;
 class EventHeader;
@@ -35,6 +37,14 @@ class FrsMainRaw2Cal : public FairTask
 
         TClonesArray* fCalArray;
         TClonesArray* fRawArray; // from FrsReader
+        
+        
+        std::vector<FrsMainV830Item> const* v830array;
+        std::vector<FrsMainV792Item> const* v792array;
+        std::vector<FrsMainV1290Item> const* v1290array;
+        std::vector<FrsMainCalScalerItem>* scalerArray;
+        std::vector<FrsMainCalSciItem>* sciArray;
+        std::vector<FrsMainCalMusicItem>* musicArray;
 
         FrsMainData* fRawHit;
 
@@ -67,11 +77,16 @@ class FrsMainRaw2Cal : public FairTask
         std::vector<uint32_t> v1290_lot;
 
         std::vector<uint32_t> tdc_array[15];
-        uint32_t music_t1[8];
-        uint32_t music_t2[8];
+       // uint32_t music_t1[8];
+       // uint32_t music_t2[8];
         
         EventHeader* header;
         Int_t fNEvents = 0;
+
+        uint32_t* de;
+        uint32_t** tdc;
+        uint32_t* music_t1;
+        uint32_t* music_t2;
 
 
     public:

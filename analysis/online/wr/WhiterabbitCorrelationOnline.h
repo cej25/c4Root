@@ -2,14 +2,21 @@
 #define WhiterabbitCorrelationOnline_H
 
 #include "FairTask.h"
+#include "TAidaConfiguration.h"
 #include "AidaHitData.h"
 #include "AidaData.h"
-#include "TAidaConfiguration.h"
+#include "FrsHitData.h"
+#include "FatimaVmeCalData.h"
+
+#include "TFolder.h"
+#include "TDirectory.h"
 #include <vector>
 
 class TClonesArray;
 class EventHeader;
 class TimeMachineData;
+class TFolder;
+class TDirectory;
 class TCanvas;
 class TH1I;
 class TH2F;
@@ -27,8 +34,6 @@ class WhiterabbitCorrelationOnline : public FairTask
         void CreateHistograms();
 
         virtual ~WhiterabbitCorrelationOnline();
-
-        virtual void SetParContainers();
 
         virtual InitStatus Init();
 
@@ -49,11 +54,14 @@ class WhiterabbitCorrelationOnline : public FairTask
         TAidaConfiguration const* conf;
 
         TClonesArray* fHitFatimaTwinpeaks;
-        TClonesArray* fHitFatimaVme;
+        //TClonesArray* fHitFatimaVme;
+        std::vector<FatimaVmeTDCCalItem> const* fatVmeArray;
         TClonesArray* fHitbPlastTwinpeaks;
         TClonesArray* fHitGe;
         std::vector<AidaHit> const* fAidaDecays;
+        std::vector<AidaHit> const* fAidaImplants;
         std::vector<AidaUnpackScalerItem> const* fAidaScalers;
+        std::vector<FrsHitItem> const* hitArrayFrs;
 
         std::vector<TString> fDetectorSystems;
         int fNumDetectorSystems;
@@ -62,6 +70,9 @@ class WhiterabbitCorrelationOnline : public FairTask
         EventHeader* fEventHeader;
         Int_t fNEvents;
         int total_time_microsecs = 0;
+        int frs_and_aida = 0;
+        int frsEvents = 0;
+        int implantEvents = 0;
 
         // Canvas
         TCanvas* c_whiterabbit_correlation;
@@ -111,15 +122,20 @@ class WhiterabbitCorrelationOnline : public FairTask
         TCanvas* c_whiterabbit_trigger;
 
         //Folders and directories
+        TFolder* histograms;
         TDirectory* dir_whiterabbit;
-        TFolder* folder_whiterabbit;
-        TFolder* folder_whiterabbit_correlation;
-        TFolder* folder_whiterabbit_trigger1;
-        TFolder* folder_whiterabbit_trigger3;
+        TDirectory* dir_whiterabbit_correlation;
+        TDirectory* dir_whiterabbit_trigger1;
+        TDirectory* dir_whiterabbit_trigger3;
+        TDirectory* dir_whiterabbit_time_differences;
         TFile* file_whiterabbit_snapshot;
 
         
         // Histograms
+        TH1I* h1_whiterabbit_correlation_aida_frs;
+        TH1I* h1_whiterabbit_correlation_fatima_frs;
+        TH1I* h1_whiterabbit_correlation_bplast_frs;
+        TH1I* h1_whiterabbit_correlation_germanium_frs;
 
         TH1I* h1_whiterabbit_correlation_aida_fatima;
         TH1I* h1_whiterabbit_trigger1_aida_fatima;
@@ -162,6 +178,18 @@ class WhiterabbitCorrelationOnline : public FairTask
         TH1I* h1_whiterabbit_trigger3_bplast_ge;
 
         TH1I* h1_whiterabbit_trigger;
+
+        // time differences
+        TH1I* h1_whiterabbit_dt_germanium;
+        TH1I* h1_whiterabbit_dt_bplast;
+        TH1I* h1_whiterabbit_dt_fatima;
+        TH1I* h1_whiterabbit_dt_fatimavme;
+        // frs? aida?
+
+        int64_t last_wr_germanium;
+        int64_t last_wr_bplast;
+        int64_t last_wr_fatima;
+        int64_t last_wr_fatimavme;
 
 
 

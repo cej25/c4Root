@@ -2,6 +2,12 @@
 #define FrsRawSpectra_H
 
 #include "FairTask.h"
+#include "FrsMainData.h"
+#include "FrsTPCData.h"
+#include "FrsUserData.h"
+
+#include "TDirectory.h"
+#include "TFolder.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "../../../config/setup.h"
@@ -14,6 +20,7 @@ class FrsUserData;
 class FrsTPCData;
 class FrsVFTXData;
 class TFolder;
+class TDirectory;
 class TCanvas;
 class TH1F;
 class TH2F;
@@ -30,8 +37,6 @@ class FrsRawSpectra : public FairTask
 
         virtual ~FrsRawSpectra();
 
-        virtual void SetParContainers();
-
         virtual InitStatus Init();
 
         virtual void Exec(Option_t* option);
@@ -44,32 +49,30 @@ class FrsRawSpectra : public FairTask
 
     private:
 
-        TClonesArray* fFrsMainArray; // array with hit items
-        TClonesArray* fFrsTPCArray; // array with hit items
-        TClonesArray* fFrsUserArray; // array with hit items
-        TClonesArray* fFrsVFTXArray; // array with hit items
+        std::vector<FrsMainV792Item> const* v792arrayMain;
+        std::vector<FrsMainV1290Item> const* v1290arrayMain;
+        std::vector<FrsTPCV7X5Item> const* v7x5arrayTPC;
+        std::vector<FrsTPCV1190Item> const* v1190arrayTPC;
+        std::vector<FrsUserV7X5Item> const* v7x5arrayUser;
 
-        FrsMainData* fHitFrsMainRaw; // array with hit items
-        FrsTPCData* fHitFrsTPCRaw; // array with hit items
-        FrsUserData* fHitFrsUserRaw; // array with hit items
-        FrsVFTXData* fHitFrsVFTXRaw; // array with hit items
 
         EventHeader* header;
         Int_t fNEvents;
 
         // folders
-        TFolder* folder_frs_hists;
-        TFolder* folder_frs_raw_hists;
-        TFolder* folder_frs_raw_main_hists;
-        TFolder* folder_frs_raw_tpc_hists;
-        TFolder* folder_frs_raw_user_hists;
-        TFolder* folder_frs_raw_vftx_hists;
-        TFolder* folder_raw_v792_main_hists;
-        TFolder* folder_raw_v1290_main_hists;
-        TFolder* folder_raw_v7x5_tpc_hists;
-        TFolder* folder_raw_v1190_tpc_hists;
-        TFolder* folder_raw_v7x5_user_hists;
-        TFolder* folder_raw_vftx_vftx_hists;
+        TFolder* histograms;
+        TDirectory* dir_frs;
+        TDirectory* dir_frs_raw;
+        TDirectory* dir_frs_raw_main;
+        TDirectory* dir_frs_raw_tpc;
+        TDirectory* dir_frs_raw_user;
+        //TDirectory* dir_frs_raw_vftx;
+        TDirectory* dir_raw_v792_main;
+        TDirectory* dir_raw_v1290_main;
+        TDirectory* dir_raw_v7x5_tpc;
+        TDirectory* dir_raw_v1190_tpc;
+        TDirectory* dir_raw_v7x5_user;
+        //TDirectory* dir_raw_vftx_vftx;
 
         // histograms
         TH1F* h1_v792_main_data[32];
@@ -110,7 +113,7 @@ class FrsRawSpectra : public FairTask
         TCanvas* c_v1190_tpc;
         TCanvas* c_v7x5_user_geo10;
         TCanvas* c_v7x5_user_geo12;
-        TCanvas* c_vftx_lead_mult;
+        /*TCanvas* c_vftx_lead_mult;
         TCanvas* c_vftx_trail_mult;
         TCanvas* c_vftx_lead_cc;
         TCanvas* c_vftx_lead_ft;
@@ -120,7 +123,7 @@ class FrsRawSpectra : public FairTask
         TCanvas* c_vftx_trail_time;
         TCanvas* c_vftx_lead_refch0;
         TCanvas* c_vftx_lead_refch0_vs_event;
-        TCanvas* c_vftx_lead_refch8_vs_event;
+        TCanvas* c_vftx_lead_refch8_vs_event;*/
 
         // variables
         int v1290_mult[32] = {0};

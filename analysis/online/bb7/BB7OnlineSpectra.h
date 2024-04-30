@@ -7,6 +7,7 @@
 
 #include "TClonesArray.h"
 #include "TFolder.h"
+#include "TDirectory.h"
 #include "TCanvas.h"
 #include "TH1.h"
 #include <vector>
@@ -36,9 +37,13 @@ class BB7OnlineSpectra : public FairTask
         EventHeader* header;
 
         // folders
-        TFolder* folder_bb7_hists;
-        TFolder* folder_raw_e;
-        TFolder* folder_stats;
+        // TFolder* folder_bb7_hists;
+        // TFolder* folder_raw_e;
+        // TFolder* folder_stats;
+        TFolder* histograms;
+        TDirectory* dir_bb7;
+        TDirectory* dir_raw_e;
+        TDirectory* dir_stats;
 
         // canvases
         TCanvas* c_raw_e; // per side?
