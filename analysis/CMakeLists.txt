@@ -19,6 +19,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
 ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
 ${C4ROOT_SOURCE_DIR}/c4data/baseData
 ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
+${C4ROOT_SOURCE_DIR}/c4data/fimpData
 ${C4ROOT_SOURCE_DIR}/analysis
 ${C4ROOT_SOURCE_DIR}/analysis/pars
 ${C4ROOT_SOURCE_DIR}/analysis/offline
@@ -56,6 +57,7 @@ set(SRCS
 ./online/timemachine/TimeMachineOnline.cxx
 ./online/wr/WhiterabbitCorrelationOnline.cxx
 ./online/bb7/BB7OnlineSpectra.cxx
+./online/fimp/FimpOnlineSpectra.cxx
 
 # nearline/offline
 ./nearline/bplast/bPlastNearlineSpectra.cxx
@@ -67,6 +69,7 @@ set(SRCS
 ./nearline/bgo/BGONearlineSpectra.cxx
 ./nearline/wr/WhiterabbitCorrelationNearline.cxx
 ./nearline/timemachine/TimeMachineNearline.cxx
+./nearline/fimp/FimpNearlineSpectra.cxx
 
 ## correlations ##
 ./correlations/FrsAidaCorrelations.cxx
