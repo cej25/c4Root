@@ -24,6 +24,7 @@ class TFimpConfiguration
         //std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> Mapping() const;
         std::map<std::pair<int,int>, std::pair<std::pair<int,std::string>, std::pair<int,int>>> Mapping() const;
         bool MappingLoaded() const;
+        bool CalibrationLoaded() const;
 
         //std::map<std::pair<int,int>,std::pair<double,double>> CalibrationCoefficients() const;
 
@@ -138,6 +139,12 @@ inline bool TFimpConfiguration::MappingLoaded() const
 {
     return detector_mapping_loaded;
 }
+
+inline bool TFimpConfiguration::CalibrationLoaded() const
+{
+    return detector_calibrations_loaded;
+}
+
 
 /*
 inline bool TFimpConfiguration::CalibrationCoefficientsLoaded() const

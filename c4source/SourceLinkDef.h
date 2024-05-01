@@ -41,6 +41,7 @@
 #pragma link C++ class BB7Reader+;
 #pragma link C++ class BB7Raw2Cal+;
 #pragma link C++ class FimpReader+;
+#pragma link C++ class FimpRaw2Cal+;
 
 #pragma link C++ class EXT_STR_h101_unpack_t;
 #pragma link C++ class EXT_STR_h101_frstpc_onion_t;

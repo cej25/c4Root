@@ -1,6 +1,7 @@
 #ifndef FimpCalData_H
 #define FimpCalData_H
 
+#include "TObject.h"
 
 class FimpCalItem : public TObject
 {

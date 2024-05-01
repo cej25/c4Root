@@ -48,6 +48,11 @@ typedef struct EXT_STR_h101_fimp_t
   uint32_t fimp_data_time_fineME[258 EXT_STRUCT_CTRL(fimp_data_time_fineM)] /* [1,33024] */;
   uint32_t fimp_data_time_fine /* [0,33024] */;
   uint32_t fimp_data_time_finev[33024 EXT_STRUCT_CTRL(fimp_data_time_fine)] /* [0,65535] */;
+  uint32_t fimp_data_lead_or_trailM /* [1,258] */;
+  uint32_t fimp_data_lead_or_trailMI[258 EXT_STRUCT_CTRL(fimp_data_lead_or_trailM)] /* [1,258] */;
+  uint32_t fimp_data_lead_or_trailME[258 EXT_STRUCT_CTRL(fimp_data_lead_or_trailM)] /* [1,33024] */;
+  uint32_t fimp_data_lead_or_trail /* [0,33024] */;
+  uint32_t fimp_data_lead_or_trailv[33024 EXT_STRUCT_CTRL(fimp_data_lead_or_trail)] /* [0,255] */;
 
 } EXT_STR_h101_fimp;
 
@@ -76,6 +81,11 @@ typedef struct EXT_STR_h101_fimp_onion_t
   uint32_t fimp_data_time_fineME[258 /* fimp_data_time_fineM */];
   uint32_t fimp_data_time_fine;
   uint32_t fimp_data_time_finev[33024 /* fimp_data_time_fine */];
+  uint32_t fimp_data_lead_or_trailM;
+  uint32_t fimp_data_lead_or_trailMI[258 /* fimp_data_lead_or_trailM */];
+  uint32_t fimp_data_lead_or_trailME[258 /* fimp_data_lead_or_trailM */];
+  uint32_t fimp_data_lead_or_trail;
+  uint32_t fimp_data_lead_or_trailv[33024 /* fimp_data_lead_or_trail */];
 
 } EXT_STR_h101_fimp_onion;
 
@@ -141,6 +151,21 @@ typedef struct EXT_STR_h101_fimp_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      fimp_data_time_finev,            UINT32,\
                     "fimp_data_time_finev",            "fimp_data_time_fine",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     fimp_data_lead_or_trailM,        UINT32,\
+                    "fimp_data_lead_or_trailM",258,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     fimp_data_lead_or_trailMI,       UINT32,\
+                    "fimp_data_lead_or_trailMI",       "fimp_data_lead_or_trailM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     fimp_data_lead_or_trailME,       UINT32,\
+                    "fimp_data_lead_or_trailME",       "fimp_data_lead_or_trailM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     fimp_data_lead_or_trail,         UINT32,\
+                    "fimp_data_lead_or_trail",33024,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     fimp_data_lead_or_trailv,        UINT32,\
+                    "fimp_data_lead_or_trailv",        "fimp_data_lead_or_trail",0/*flags*/); \
   \
 } while (0);
 
