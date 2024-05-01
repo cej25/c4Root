@@ -12,13 +12,20 @@ extern "C"
     #include "ext_h101_fimp.h"
 }
 
-class TClonesArray;
 class FimpItem;
 
 struct EXT_STR_h101_fimp_t;
 typedef struct EXT_STR_h101_fimp_t EXT_STR_h101_fimp;
 typedef struct EXT_STR_h101_fimp_onion_t EXT_STR_h101_fimp_onion;
 class ext_data_struct_info;
+
+struct ctdc_data_store
+{   
+    uint16_t channel = 0;
+    uint16_t coarse_time = 0;
+    uint16_t fine_time = 0;
+    int leadOrTrail = -1;
+};
 
 class FimpReader : public c4Reader
 {
@@ -46,12 +53,13 @@ class FimpReader : public c4Reader
         size_t fOffset;
 
         Bool_t fOnline;
-
-        int NBoards = 1;
         
-        int32_t energy;
-
         std::vector<FimpItem>* fimpArray;
+        //ctdc_data_store last_hit;
+
+        int unmatchedLeads = 0;
+        int counter = 0;
+        int lead_trail_unmatched_counter = 0;
 
 
     public:

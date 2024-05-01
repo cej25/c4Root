@@ -28,7 +28,7 @@ TFimpConfiguration::TFimpConfiguration()
 
 void TFimpConfiguration::ReadMappingFile()
 {   
-    std::set<int> febex_boards;
+    /*std::set<int> febex_boards;
     std::set<int> layers;
     std::set<int> x_positions;
     std::set<int> y_positions;
@@ -108,7 +108,7 @@ void TFimpConfiguration::ReadMappingFile()
     detector_mapping_loaded = 1;
     detector_map_file.close();
 
-    c4LOG(info, "Fimp Configuration File: " + mapping_file);
+    c4LOG(info, "Fimp Configuration File: " + mapping_file);*/
     return;
 
 }

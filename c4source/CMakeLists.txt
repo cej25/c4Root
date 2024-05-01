@@ -18,6 +18,8 @@ ${C4ROOT_SOURCE_DIR}/c4source/fatima
 ${C4ROOT_SOURCE_DIR}/c4source/germanium
 ${C4ROOT_SOURCE_DIR}/c4source/bgo
 ${C4ROOT_SOURCE_DIR}/c4source/beammonitor
+${C4ROOT_SOURCE_DIR}/c4source/bb7
+${C4ROOT_SOURCE_DIR}/c4source/fimp
 ${C4ROOT_SOURCE_DIR}/c4data
 ${C4ROOT_SOURCE_DIR}/c4data/frsData
 ${C4ROOT_SOURCE_DIR}/c4data/lisaData
@@ -77,6 +79,7 @@ set(SRCS
 ./bb7/BB7Reader.cxx
 ./bb7/BB7Raw2Cal.cxx
 ./fimp/FimpReader.cxx
+./fimp/FimpRaw2Cal.cxx
 )
 
 Set(STRUCT_HEADERS

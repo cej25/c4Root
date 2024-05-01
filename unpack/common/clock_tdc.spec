@@ -44,6 +44,7 @@ CLOCK_TDC_EVENT(sfp_id, tdc_id)
 	MEMBER(DATA32 trig_coarse_time_hi);
 	MEMBER(DATA12 time_coarse[258] ZERO_SUPPRESS_MULTI(128));
 	MEMBER(DATA12 time_fine[258] ZERO_SUPPRESS_MULTI(128));
+	MEMBER(DATA8 lead_or_trail[258] ZERO_SUPPRESS_MULTI(128));
 
 	UINT32 header NOENCODE
 	{
@@ -75,14 +76,14 @@ CLOCK_TDC_EVENT(sfp_id, tdc_id)
 
 	UINT32 trig_coarse_lo NOENCODE 
 	{
-		  0_9: ignore;
+		0_9: ignore;
 		10_31: value;
 		ENCODE(trig_coarse_time_lo, (value = value));
 	};
 
 	UINT32 trig_coarse_hi NOENCODE 
 	{
-		 0_23: value;
+		0_23: value;
 		24_31: ignore;
 		ENCODE(trig_coarse_time_hi, (value = value));
 	};
@@ -129,6 +130,13 @@ CLOCK_TDC_EVENT(sfp_id, tdc_id)
 			    !(((128 > channel) || (128 == channel && 0 ==
 						    edge)) && (4 == status)) *
 			    257], (value = time_fine));
+			ENCODE(lead_or_trail[
+			    (((128 > channel) || (128 == channel && 0 ==
+						  edge)) && (4 == status)) *
+			    (channel * 2 + edge) +
+			    !(((128 > channel) || (128 == channel && 0 ==
+						    edge)) && (4 == status)) *
+			    257], (value = edge));
 		}
 	}
 }
@@ -141,11 +149,12 @@ CLOCK_TDC_EVENT_16PH(sfp_id, tdc_id)
 	MEMBER(DATA32 trig_coarse_time_hi);
 	MEMBER(DATA12 time_coarse[258] ZERO_SUPPRESS_MULTI(128));
 	MEMBER(DATA12 time_fine[258] ZERO_SUPPRESS_MULTI(128));
+	MEMBER(DATA8 lead_or_trail[258] ZERO_SUPPRESS_MULTI(128));
 
 	UINT32 header NOENCODE
 	{
-		  0_7: threefour = MATCH(0x34);
-		 8_11: trig_type;
+		0_7: threefour = MATCH(0x34);
+		8_11: trig_type;
 		12_15: sfp = MATCH(sfp_id);
 		16_23: tdc = MATCH(tdc_id);
 		24_31: channel_id;
@@ -227,6 +236,13 @@ CLOCK_TDC_EVENT_16PH(sfp_id, tdc_id)
 			    !(((128 > channel) || (128 == channel && 0 ==
 						    edge)) && is_data) *
 			    257], (value = time_fine));
+			ENCODE(lead_or_trail[
+			    (((128 > channel) || (128 == channel && 0 ==
+						  edge)) && is_data) *
+			    (channel * 2 + edge) +
+			    !(((128 > channel) || (128 == channel && 0 ==
+						    edge)) && is_data) *
+			    257], (value = edge));
 		};
 	}
 }
