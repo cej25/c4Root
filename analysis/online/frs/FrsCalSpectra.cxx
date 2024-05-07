@@ -12,6 +12,7 @@
 #include "FrsTPCData.h"
 #include "FrsTPCCalData.h"
 #include "FrsUserCalData.h"
+#include "FrsHitData.h"
 #include "EventHeader.h"
 #include "c4Logger.h"
 
@@ -32,29 +33,24 @@ FrsCalSpectra::FrsCalSpectra()
 }
 
 FrsCalSpectra::FrsCalSpectra(const TString& name, Int_t iVerbose)
-    : FairTask(name, iVerbose)
-    , fFrsMainCalArray(NULL)
-    , fFrsUserCalArray(NULL)
-    , fFrsTPCArray(NULL)
-    , fFrsTPCCalArray(NULL)
-    , fNEvents(0)
-    , header(nullptr)
+    :   FairTask(name, iVerbose)
+    ,   fNEvents(0)
+    ,   header(nullptr)
+    ,   mainScalerArray(nullptr)
+    ,   mainSciArray(nullptr)
+    ,   mainMusicArray(nullptr)
+    ,   tpcCalArray(nullptr)
+    ,   userScalerArray(nullptr)
+    ,   userSciArray(nullptr)
+    ,   userMusicArray(nullptr)
+    ,   tpatArray(nullptr)
 {
 }
 
 FrsCalSpectra::~FrsCalSpectra()
 {
     c4LOG(info, "");
-    if (fFrsMainCalArray)
-        delete fFrsMainCalArray;
-}
-
-// Public Method SetParContainers
-void FrsCalSpectra::SetParContainers()
-{
-    // Parameter Containers
-    FairRuntimeDb* rtdb = FairRuntimeDb::instance();
-    c4LOG_IF(fatal, NULL == rtdb, "FairRuntimeDb not found.");
+    
 }
 
 InitStatus FrsCalSpectra::Init()
@@ -68,14 +64,27 @@ InitStatus FrsCalSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fFrsMainCalArray = (TClonesArray*)mgr->GetObject("FrsMainCalData");
-    c4LOG_IF(fatal, !fFrsMainCalArray, "Branch FrsMainCalData not found");
-    fFrsUserCalArray = (TClonesArray*)mgr->GetObject("FrsUserCalData");
-    c4LOG_IF(fatal, !fFrsUserCalArray, "Branch FrsUserCalData not found");
-    fFrsTPCArray = (TClonesArray*)mgr->GetObject("FrsTPCData");
-    c4LOG_IF(fatal, !fFrsTPCArray, "Branch FrsTPCData not found");
-    fFrsTPCCalArray = (TClonesArray*)mgr->GetObject("FrsTPCCalData");
-    c4LOG_IF(fatal, !fFrsTPCCalArray, "Branch FrsTPCCalData not found");
+    // also needs TPC raw I think
+    v7x5array = mgr->InitObjectAs<decltype(v7x5array)>("FrsTPCV7X5Data");
+    c4LOG_IF(fatal, !v7x5array, "Branch v7x5array not found!");
+    v1190array = mgr->InitObjectAs<decltype(v1190array)>("FrsTPCV1190Data");
+    c4LOG_IF(fatal, !v1190array, "Branch v1190array not found!");
+    mainScalerArray = mgr->InitObjectAs<decltype(mainScalerArray)>("FrsMainCalScalerData");
+    c4LOG_IF(fatal, !mainScalerArray, "Branch FrsMainCalScalerData not found!");
+    mainSciArray = mgr->InitObjectAs<decltype(mainSciArray)>("FrsMainCalSciData");
+    c4LOG_IF(fatal, !mainSciArray, "Branch FrsMainCalSciData not found!");
+    mainMusicArray = mgr->InitObjectAs<decltype(mainMusicArray)>("FrsMainCalMusicData");
+    c4LOG_IF(fatal, !mainMusicArray, "Branch FrsMainCalMusicData not found!");
+    tpcCalArray = mgr->InitObjectAs<decltype(tpcCalArray)>("FrsTPCCalData");
+    c4LOG_IF(fatal, !tpcCalArray, "Branch FrsTPCCalData not found!");
+    userScalerArray = mgr->InitObjectAs<decltype(userScalerArray)>("FrsUserCalScalerData");
+    c4LOG_IF(fatal, !userScalerArray, "Branch FrsUserCalScalerData not found!");
+    userSciArray = mgr->InitObjectAs<decltype(userSciArray)>("FrsUserCalSciData");
+    c4LOG_IF(fatal, !userSciArray, "Branch FrsUserCalSciData not found!");
+    userMusicArray = mgr->InitObjectAs<decltype(userMusicArray)>("FrsUserCalMusicData");
+    c4LOG_IF(fatal, !userMusicArray, "Branch FrsUserCalMusicData not found!");
+    tpatArray = mgr->InitObjectAs<decltype(tpatArray)>("FrsTpatData");
+    c4LOG_IF(fatal, !tpatArray, "Branch FrsTpatData not found!");
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
 
@@ -85,6 +94,7 @@ InitStatus FrsCalSpectra::Init()
     dir_frs = (TDirectory*)mgr->GetObject("FRS");
     if (dir_frs == nullptr) 
     {
+        LOG(info) << "Creating FRS Online Directory";
         dir_frs = new TDirectory("FRS Online", "FRS Online", "", 0);
         mgr->Register("FRS", "FRS Online Directory", dir_frs, false); // allow other tasks to find this
         histograms->Add(dir_frs);
@@ -185,6 +195,8 @@ InitStatus FrsCalSpectra::Init()
     h_tpc_music41_x = new TH1D("h_tpc_music41_x", "TPC h_tpc_music41_x",tpc_bins,tpc_min_x,tpc_max_x);
     h_tpc_music42_x = new TH1D("h_tpc_music42_x", "TPC h_tpc_music42_x",tpc_bins,tpc_min_x,tpc_max_x);
     h_tpc_music43_x = new TH1D("h_tpc_music43_x", "TPC h_tpc_music43_x",tpc_bins,tpc_min_x,tpc_max_x);
+    
+    h1_sci21_x = new TH1D("h1_sci21_x", "S2 position SCI21", 200, -100, 100);
 
     dir_frs_cal_user->cd();
     int tac_bins = 1000;
@@ -217,209 +229,174 @@ InitStatus FrsCalSpectra::Init()
 void FrsCalSpectra::Reset_Histo()
 {
     c4LOG(info, "");
-   // fh1_TdcRaw->Clear();
-   // fh1_TdcChan->Clear();
+    // incoming
 }
 
 void FrsCalSpectra::Exec(Option_t* option)
-{
-    // MainCrate:
-    if (fFrsMainCalArray && fFrsMainCalArray->GetEntriesFast() > 0)
+{   
+    uint64_t wr_t = 0;
+    auto const & tpatItem = tpatArray->at(0);
+    wr_t = tpatItem.Get_wr_t();
+    if (wr_t == 0) return;
+    if (mainMusicArray->size() > 1) std::cout << "weird FRS event" << std::endl;
+
+    auto const & mainSciItem  = mainSciArray->at(0);
+       
+    uint32_t* sci_de = mainSciItem.Get_de_array(); // size 14
+    uint32_t sci_21l_de = sci_de[1];
+    uint32_t sci_21r_de = sci_de[2];  
+    uint32_t sci_22l_de = sci_de[13];  
+    uint32_t sci_22r_de = sci_de[6];  
+    uint32_t sci_41l_de = sci_de[0];  
+    uint32_t sci_41r_de = sci_de[11];  
+    uint32_t sci_42l_de = sci_de[3];  
+    uint32_t sci_42r_de = sci_de[4];  
+    uint32_t sci_43l_de = sci_de[9];  
+    uint32_t sci_43r_de = sci_de[10];  
+    uint32_t sci_81l_de = sci_de[5];  
+    uint32_t sci_81r_de = sci_de[12];
+
+    h_sci_21l_de->Fill(sci_21l_de);
+    h_sci_21r_de->Fill(sci_21r_de);
+    h_sci_22l_de->Fill(sci_22l_de);
+    h_sci_22r_de->Fill(sci_22r_de);
+    h_sci_41l_de->Fill(sci_41l_de);
+    h_sci_41r_de->Fill(sci_41r_de);
+    h_sci_42l_de->Fill(sci_42l_de);
+    h_sci_42r_de->Fill(sci_42r_de);
+    h_sci_43l_de->Fill(sci_43l_de);
+    h_sci_43r_de->Fill(sci_43r_de);
+    h_sci_81l_de->Fill(sci_81l_de);
+    h_sci_81r_de->Fill(sci_81r_de);
+
+    uint32_t** tdc_array = mainSciItem.Get_tdc_array();
+
+    h_sci_21l_t->Fill(tdc_array[2][0]);
+    h_sci_21r_t->Fill(tdc_array[3][0]);
+    h_sci_22l_t->Fill(tdc_array[12][0]);
+    h_sci_22r_t->Fill(tdc_array[13][0]);
+    h_sci_41l_t->Fill(tdc_array[0][0]);
+    h_sci_41r_t->Fill(tdc_array[1][0]);
+    h_sci_42l_t->Fill(tdc_array[4][0]);
+    h_sci_42r_t->Fill(tdc_array[14][0]);
+    h_sci_43l_t->Fill(tdc_array[5][0]);
+    h_sci_43r_t->Fill(tdc_array[6][0]);
+    h_sci_81l_t->Fill(tdc_array[7][0]);
+    h_sci_81r_t->Fill(tdc_array[8][0]);
+    
+    auto const & mainMusicItem  = mainMusicArray->at(0);
+
+    //music timings:
+    uint32_t* music_t1 = mainMusicItem.Get_music_t1();
+    uint32_t* music_t2 = mainMusicItem.Get_music_t2();
+    if (music_t1 != nullptr && music_t2 != nullptr) 
     {
-        Int_t nHits = fFrsMainCalArray->GetEntriesFast();
-        for (Int_t ihit = 0; ihit < nHits; ihit++)
+        for (int anode = 0; anode<8; anode++) 
         {
-            fHitFrsMainCal = (FrsMainCalData*)fFrsMainCalArray->At(ihit);
-            if (!fHitFrsMainCal) continue;
-                    
-            const uint32_t* sci_de = fHitFrsMainCal->Get_De_array(); // size 14
-            uint32_t sci_21l_de = sci_de[1];
-            uint32_t sci_21r_de = sci_de[2];  
-            uint32_t sci_22l_de = sci_de[13];  
-            uint32_t sci_22r_de = sci_de[6];  
-            uint32_t sci_41l_de = sci_de[0];  
-            uint32_t sci_41r_de = sci_de[11];  
-            uint32_t sci_42l_de = sci_de[3];  
-            uint32_t sci_42r_de = sci_de[4];  
-            uint32_t sci_43l_de = sci_de[9];  
-            uint32_t sci_43r_de = sci_de[10];  
-            uint32_t sci_81l_de = sci_de[5];  
-            uint32_t sci_81r_de = sci_de[12];
-
-            h_sci_21l_de->Fill(sci_21l_de);
-            h_sci_21r_de->Fill(sci_21r_de);
-            h_sci_22l_de->Fill(sci_22l_de);
-            h_sci_22r_de->Fill(sci_22r_de);
-            h_sci_41l_de->Fill(sci_41l_de);
-            h_sci_41r_de->Fill(sci_41r_de);
-            h_sci_42l_de->Fill(sci_42l_de);
-            h_sci_42r_de->Fill(sci_42r_de);
-            h_sci_43l_de->Fill(sci_43l_de);
-            h_sci_43r_de->Fill(sci_43r_de);
-            h_sci_81l_de->Fill(sci_81l_de);
-            h_sci_81r_de->Fill(sci_81r_de);
-
-            //music timings:
-            const uint32_t* music_t1 = fHitFrsMainCal->Get_music_t1(); // size 8 arrays
-            const uint32_t* music_t2 = fHitFrsMainCal->Get_music_t2(); // size 8 arrays
-            if (music_t1!=nullptr && music_t2 != nullptr) for (int anode = 0; anode<8; anode++) {h_music41_t->Fill(anode,music_t1[anode]); h_music42_t->Fill(anode,music_t2[anode]);}
-        
-        
-            std::vector<uint32_t> sci_21l_t = fHitFrsMainCal->Get_TDC_channel(2);
-            if (sci_21l_t.size()>0) h_sci_21l_t->Fill(sci_21l_t.at(0));
-            std::vector<uint32_t> sci_21r_t = fHitFrsMainCal->Get_TDC_channel(3);
-            if (sci_21r_t.size()>0) h_sci_21r_t->Fill(sci_21r_t.at(0));
-            std::vector<uint32_t> sci_22l_t = fHitFrsMainCal->Get_TDC_channel(12);
-            if (sci_22l_t.size()>0) h_sci_22l_t->Fill(sci_22l_t.at(0));
-            std::vector<uint32_t> sci_22r_t = fHitFrsMainCal->Get_TDC_channel(13);
-            if (sci_22r_t.size()>0) h_sci_22r_t->Fill(sci_22r_t.at(0));
-            std::vector<uint32_t> sci_41l_t = fHitFrsMainCal->Get_TDC_channel(0);
-            if (sci_41l_t.size()>0) h_sci_41l_t->Fill(sci_41l_t.at(0));
-            std::vector<uint32_t> sci_41r_t = fHitFrsMainCal->Get_TDC_channel(1);
-            if (sci_41r_t.size()>0) h_sci_41r_t->Fill(sci_41r_t.at(0));
-            std::vector<uint32_t> sci_42l_t = fHitFrsMainCal->Get_TDC_channel(4);
-            if (sci_42l_t.size()>0) h_sci_42l_t->Fill(sci_42l_t.at(0));
-            std::vector<uint32_t> sci_42r_t = fHitFrsMainCal->Get_TDC_channel(14);
-            if (sci_42r_t.size()>0) h_sci_42r_t->Fill(sci_42r_t.at(0));
-            std::vector<uint32_t> sci_43l_t = fHitFrsMainCal->Get_TDC_channel(5);
-            if (sci_43l_t.size()>0) h_sci_43l_t->Fill(sci_43l_t.at(0));
-            std::vector<uint32_t> sci_43r_t = fHitFrsMainCal->Get_TDC_channel(6);
-            if (sci_43r_t.size()>0) h_sci_43r_t->Fill(sci_43r_t.at(0));
-            std::vector<uint32_t> sci_81l_t = fHitFrsMainCal->Get_TDC_channel(7);
-            if (sci_81l_t.size()>0) h_sci_81l_t->Fill(sci_81l_t.at(0));
-            std::vector<uint32_t> sci_81r_t = fHitFrsMainCal->Get_TDC_channel(8);
-            if (sci_81r_t.size()>0) h_sci_81r_t->Fill(sci_81r_t.at(0));
-
+            h_music41_t->Fill(anode,music_t1[anode]); 
+            h_music42_t->Fill(anode,music_t2[anode]);
         }
     }
 
-    if (fFrsTPCArray && fFrsTPCArray->GetEntriesFast() > 0)
+    for (auto const & v1190item : *v1190array)
     {
-        Int_t nHits = fFrsTPCArray->GetEntriesFast();
-        for (Int_t ihit = 0; ihit < nHits; ihit++)
+        uint32_t channel = v1190item.Get_channel();
+        uint32_t data = v1190item.Get_v1190_data();
+        uint32_t lot = v1190item.Get_leadOrTrail();
+
+        if (lot == 0)
         {
-            fHitFrsTPC = (FrsTPCData*)fFrsTPCArray->At(ihit);
-            if (!fHitFrsTPC) continue;
-
-            std::vector<uint32_t> tpc_v1190_channels;
-            std::vector<uint32_t> tpc_v1190_lot;
-            std::vector<uint32_t> tpc_v1190_data;
-            tpc_v1190_channels = fHitFrsTPC->Get_V1190_Channel();
-            tpc_v1190_lot = fHitFrsTPC->Get_V1190_LoT();
-            tpc_v1190_data = fHitFrsTPC->Get_V1190_Data();
-
-            for (int v1190_hit = 0; v1190_hit<tpc_v1190_channels.size(); v1190_hit++)
-            {
-                if (!tpc_v1190_lot.at(v1190_hit))
-                {
-                    h_tpc_timings_lead->Fill(tpc_v1190_channels.at(v1190_hit),tpc_v1190_data.at(v1190_hit));
-                }
-                else
-                {
-                    h_tpc_timings_trail->Fill(tpc_v1190_channels.at(v1190_hit),tpc_v1190_data.at(v1190_hit));
-                }
-            }
+            h_tpc_timings_lead->Fill(channel, data);
+        }
+        else if (lot == 1)
+        {
+            h_tpc_timings_trail->Fill(channel, data);
         }
     }
 
-
-    if (fFrsTPCCalArray && fFrsTPCCalArray->GetEntriesFast() > 0)
+    auto const & tpcCalItem = tpcCalArray->at(0);
+    Int_t** tpc_csum = tpcCalItem.Get_tpc_csum();
+    for (int an = 0; an < number_of_anodes_per_tpc; an++)
     {
-        Int_t nHits = fFrsTPCCalArray->GetEntriesFast();
-        for (Int_t ihit = 0; ihit < nHits; ihit++)
+        for (int ntpc = 0; ntpc < number_of_tpcs; ntpc ++)
         {
-            fHitFrsTPCCal = (FrsTPCCalData*)fFrsTPCCalArray->At(ihit);
-            if (!fHitFrsTPCCal) continue;
-
-            for (int an = 0; an < number_of_anodes_per_tpc; an++){
-                for (int ntpc = 0; ntpc < number_of_tpcs; ntpc ++){
-                    h_tpc_check_sums->Fill(ntpc*number_of_anodes_per_tpc + an, fHitFrsTPCCal->Get_tpc_csum(ntpc,an));
-                }
-
-                h_tpc_angle_x_s2_foc_21_22->Fill(fHitFrsTPCCal->Get_tpc_angle_x_s2_foc_21_22());
-                h_tpc_angle_y_s2_foc_21_22->Fill(fHitFrsTPCCal->Get_tpc_angle_y_s2_foc_21_22());
-                h_tpc_x_s2_foc_21_22->Fill(fHitFrsTPCCal->Get_tpc_x_s2_foc_21_22());
-                h_tpc_y_s2_foc_21_22->Fill(fHitFrsTPCCal->Get_tpc_y_s2_foc_21_22());
-                h_tpc21_22_sc21_x->Fill(fHitFrsTPCCal->Get_tpc21_22_sc21_x());
-                h_tpc21_22_sc22_x->Fill(fHitFrsTPCCal->Get_tpc21_22_sc22_x());
-                h_tpc_angle_x_s2_foc_23_24->Fill(fHitFrsTPCCal->Get_tpc_angle_x_s2_foc_23_24());
-                h_tpc_angle_y_s2_foc_23_24->Fill(fHitFrsTPCCal->Get_tpc_angle_y_s2_foc_23_24());
-                h_tpc_x_s2_foc_23_24->Fill(fHitFrsTPCCal->Get_tpc_x_s2_foc_23_24());
-                h_tpc_y_s2_foc_23_24->Fill(fHitFrsTPCCal->Get_tpc_y_s2_foc_23_24());
-                h_tpc23_24_sc21_x->Fill(fHitFrsTPCCal->Get_tpc23_24_sc21_x());
-                h_tpc23_24_sc21_y->Fill(fHitFrsTPCCal->Get_tpc23_24_sc21_y());
-                h_tpc23_24_sc22_x->Fill(fHitFrsTPCCal->Get_tpc23_24_sc22_x());
-                h_tpc23_24_sc22_y->Fill(fHitFrsTPCCal->Get_tpc23_24_sc22_y());
-                h_tpc_angle_x_s2_foc_22_24->Fill(fHitFrsTPCCal->Get_tpc_angle_x_s2_foc_22_24());
-                h_tpc_angle_y_s2_foc_22_24->Fill(fHitFrsTPCCal->Get_tpc_angle_y_s2_foc_22_24());
-                h_tpc_x_s2_foc_22_24->Fill(fHitFrsTPCCal->Get_tpc_x_s2_foc_22_24());
-                h_tpc_y_s2_foc_22_24->Fill(fHitFrsTPCCal->Get_tpc_y_s2_foc_22_24());
-                h_tpc_angle_x_s4->Fill(fHitFrsTPCCal->Get_tpc_angle_x_s4());
-                h_tpc_angle_y_s4->Fill(fHitFrsTPCCal->Get_tpc_angle_y_s4());
-                h_tpc_x_s4->Fill(fHitFrsTPCCal->Get_tpc_x_s4());
-                h_tpc_y_s4->Fill(fHitFrsTPCCal->Get_tpc_y_s4());
-                h_tpc_sc41_x->Fill(fHitFrsTPCCal->Get_tpc_sc41_x());
-                h_tpc_sc41_y->Fill(fHitFrsTPCCal->Get_tpc_sc41_y());
-                h_tpc_sc42_x->Fill(fHitFrsTPCCal->Get_tpc_sc42_x());
-                h_tpc_sc42_y->Fill(fHitFrsTPCCal->Get_tpc_sc42_y());
-                h_tpc_sc43_x->Fill(fHitFrsTPCCal->Get_tpc_sc43_x());
-                h_tpc_music41_x->Fill(fHitFrsTPCCal->Get_tpc_music41_x());
-                h_tpc_music42_x->Fill(fHitFrsTPCCal->Get_tpc_music42_x());
-                h_tpc_music43_x->Fill(fHitFrsTPCCal->Get_tpc_music43_x());
-            }
+            h_tpc_check_sums->Fill(ntpc*number_of_anodes_per_tpc + an, tpc_csum[ntpc][an]);
         }
     }
 
-    if (fFrsUserCalArray && fFrsUserCalArray->GetEntriesFast() > 0){
-        Int_t nhits = fFrsUserCalArray->GetEntriesFast();
-        for (Int_t ihit = 0; ihit<nhits; ihit++){
-            fHitFrsUserCal = (FrsUserCalData*)fFrsUserCalArray->At(ihit);
-            if (!fHitFrsUserCal) continue;
-            dt_array = fHitFrsUserCal->Get_dt_array();
-            uint32_t dt_21l_21r = dt_array[0];
-            h_tac_user_dt_21l_21r->Fill(dt_21l_21r);
-            uint32_t dt_41l_41r = dt_array[1];
-            h_tac_user_dt_41l_41r->Fill(dt_41l_41r);
-            uint32_t dt_42l_42r = dt_array[2];
-            h_tac_user_dt_42l_42r->Fill(dt_42l_42r);
-            uint32_t dt_43l_43r = dt_array[3];
-            h_tac_user_dt_43l_43r->Fill(dt_43l_43r);
-            uint32_t dt_81l_81r = dt_array[4];
-            h_tac_user_dt_81l_81r->Fill(dt_81l_81r);
-            uint32_t dt_21l_41l = dt_array[5];
-            h_tac_user_dt_21l_41l->Fill(dt_21l_41l);
-            uint32_t dt_21r_41r = dt_array[6];
-            h_tac_user_dt_21r_41r->Fill(dt_21r_41r);
-            uint32_t dt_42r_21r = dt_array[7];
-            h_tac_user_dt_42r_21r->Fill(dt_42r_21r);
-            uint32_t dt_42l_21l = dt_array[8];
-            h_tac_user_dt_42l_21l->Fill(dt_42l_21l);
-            uint32_t dt_21l_81l = dt_array[9];
-            h_tac_user_dt_21l_81l->Fill(dt_21l_81l);
-            uint32_t dt_21r_81r = dt_array[10];
-            h_tac_user_dt_21r_81r->Fill(dt_21r_81r);
-            uint32_t dt_22l_22r = dt_array[11];
-            h_tac_user_dt_22l_22r->Fill(dt_22l_22r);
-            uint32_t dt_22l_41l = dt_array[12];
-            h_tac_user_dt_22l_41l->Fill(dt_22l_41l);
-            uint32_t dt_22r_41r = dt_array[13];
-            h_tac_user_dt_22r_41r->Fill(dt_22r_41r);
-            uint32_t dt_22l_81l = dt_array[14];
-            h_tac_user_dt_22l_81l->Fill(dt_22l_81l);
-            uint32_t dt_22r_81r = dt_array[15];
-            h_tac_user_dt_22r_81r->Fill(dt_22r_81r);
-        }
-    }
+    h_tpc_angle_x_s2_foc_21_22->Fill(tpcCalItem.Get_tpc_angle_x_s2_foc_21_22());
+    h_tpc_angle_y_s2_foc_21_22->Fill(tpcCalItem.Get_tpc_angle_y_s2_foc_21_22());
+    h_tpc_x_s2_foc_21_22->Fill(tpcCalItem.Get_tpc_x_s2_foc_21_22());
+    h_tpc_y_s2_foc_21_22->Fill(tpcCalItem.Get_tpc_y_s2_foc_21_22());
+    h_tpc21_22_sc21_x->Fill(tpcCalItem.Get_tpc21_22_sc21_x());
+    h_tpc21_22_sc22_x->Fill(tpcCalItem.Get_tpc21_22_sc22_x());
+    h_tpc_angle_x_s2_foc_23_24->Fill(tpcCalItem.Get_tpc_angle_x_s2_foc_23_24());
+    h_tpc_angle_y_s2_foc_23_24->Fill(tpcCalItem.Get_tpc_angle_y_s2_foc_23_24());
+    h_tpc_x_s2_foc_23_24->Fill(tpcCalItem.Get_tpc_x_s2_foc_23_24());
+    h_tpc_y_s2_foc_23_24->Fill(tpcCalItem.Get_tpc_y_s2_foc_23_24());
+    h_tpc23_24_sc21_x->Fill(tpcCalItem.Get_tpc23_24_sc21_x());
+    h_tpc23_24_sc21_y->Fill(tpcCalItem.Get_tpc23_24_sc21_y());
+    h_tpc23_24_sc22_x->Fill(tpcCalItem.Get_tpc23_24_sc22_x());
+    h_tpc23_24_sc22_y->Fill(tpcCalItem.Get_tpc23_24_sc22_y());
+    h_tpc_angle_x_s2_foc_22_24->Fill(tpcCalItem.Get_tpc_angle_x_s2_foc_22_24());
+    h_tpc_angle_y_s2_foc_22_24->Fill(tpcCalItem.Get_tpc_angle_y_s2_foc_22_24());
+    h_tpc_x_s2_foc_22_24->Fill(tpcCalItem.Get_tpc_x_s2_foc_22_24());
+    h_tpc_y_s2_foc_22_24->Fill(tpcCalItem.Get_tpc_y_s2_foc_22_24());
+    h_tpc_angle_x_s4->Fill(tpcCalItem.Get_tpc_angle_x_s4());
+    h_tpc_angle_y_s4->Fill(tpcCalItem.Get_tpc_angle_y_s4());
+    h_tpc_x_s4->Fill(tpcCalItem.Get_tpc_x_s4());
+    h_tpc_y_s4->Fill(tpcCalItem.Get_tpc_y_s4());
+    h_tpc_sc41_x->Fill(tpcCalItem.Get_tpc_sc41_x());
+    h_tpc_sc41_y->Fill(tpcCalItem.Get_tpc_sc41_y());
+    h_tpc_sc42_x->Fill(tpcCalItem.Get_tpc_sc42_x());
+    h_tpc_sc42_y->Fill(tpcCalItem.Get_tpc_sc42_y());
+    h_tpc_sc43_x->Fill(tpcCalItem.Get_tpc_sc43_x());
+    h_tpc_music41_x->Fill(tpcCalItem.Get_tpc_music41_x());
+    h_tpc_music42_x->Fill(tpcCalItem.Get_tpc_music42_x());
+    h_tpc_music43_x->Fill(tpcCalItem.Get_tpc_music43_x());
+            
+    auto const & userSciItem = userSciArray->at(0);
+    uint32_t* dt_array = userSciItem.Get_dt_array();
+
+    uint32_t dt_21l_21r = dt_array[0];
+    h_tac_user_dt_21l_21r->Fill(dt_21l_21r);
+    uint32_t dt_41l_41r = dt_array[1];
+    h_tac_user_dt_41l_41r->Fill(dt_41l_41r);
+    uint32_t dt_42l_42r = dt_array[2];
+    h_tac_user_dt_42l_42r->Fill(dt_42l_42r);
+    uint32_t dt_43l_43r = dt_array[3];
+    h_tac_user_dt_43l_43r->Fill(dt_43l_43r);
+    uint32_t dt_81l_81r = dt_array[4];
+    h_tac_user_dt_81l_81r->Fill(dt_81l_81r);
+    uint32_t dt_21l_41l = dt_array[5];
+    h_tac_user_dt_21l_41l->Fill(dt_21l_41l);
+    uint32_t dt_21r_41r = dt_array[6];
+    h_tac_user_dt_21r_41r->Fill(dt_21r_41r);
+    uint32_t dt_42r_21r = dt_array[7];
+    h_tac_user_dt_42r_21r->Fill(dt_42r_21r);
+    uint32_t dt_42l_21l = dt_array[8];
+    h_tac_user_dt_42l_21l->Fill(dt_42l_21l);
+    uint32_t dt_21l_81l = dt_array[9];
+    h_tac_user_dt_21l_81l->Fill(dt_21l_81l);
+    uint32_t dt_21r_81r = dt_array[10];
+    h_tac_user_dt_21r_81r->Fill(dt_21r_81r);
+    uint32_t dt_22l_22r = dt_array[11];
+    h_tac_user_dt_22l_22r->Fill(dt_22l_22r);
+    uint32_t dt_22l_41l = dt_array[12];
+    h_tac_user_dt_22l_41l->Fill(dt_22l_41l);
+    uint32_t dt_22r_41r = dt_array[13];
+    h_tac_user_dt_22r_41r->Fill(dt_22r_41r);
+    uint32_t dt_22l_81l = dt_array[14];
+    h_tac_user_dt_22l_81l->Fill(dt_22l_81l);
+    uint32_t dt_22r_81r = dt_array[15];
+    h_tac_user_dt_22r_81r->Fill(dt_22r_81r);
 
     fNEvents += 1;
+
 }
 
 void FrsCalSpectra::FinishEvent()
 {
-    if(fFrsUserCalArray) fFrsUserCalArray->Clear();
-    if(fFrsMainCalArray) fFrsMainCalArray->Clear();
-    if(fFrsTPCArray) fFrsTPCArray->Clear();
-    if(fFrsTPCCalArray) fFrsTPCCalArray->Clear();
 }
 
 void FrsCalSpectra::FinishTask()

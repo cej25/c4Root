@@ -5,8 +5,8 @@
 #include "TFrsConfiguration.h"
 #include "TCorrelationsConfiguration.h"
 #include "AidaHitData.h"
+#include "FrsHitData.h"
 #include "../../config/setup.h"
-#include "TCutGGates.h"
 
 #include "TClonesArray.h"
 #include "TH1.h"
@@ -55,11 +55,13 @@ class FrsAidaCorrelations : public FairTask
         TCorrelationsConfiguration const* correl_config;
         std::map<std::string, std::vector<int>> Correl;
 
-        TClonesArray* fFrsHitArray;
+        std::vector<FrsHitItem> const* hitArrayFrs;
         std::vector<AidaHit> const* fAidaImplants;
 
         Int_t fNEvents;
         EventHeader* header;
+
+        bool found_dir_frs = true;
 
         std::vector<FrsGate*> FrsGates;
 
@@ -80,26 +82,9 @@ class FrsAidaCorrelations : public FairTask
         TDirectory* dir_implant_corrs_Z1Z2_x2vsAoQ_stopped;
         TDirectory* dir_implant_corrs_Z1Z2_x4vsAoQ_stopped;
 
-        /*
-        TFolder* folder_correlations;;
-        TFolder* frs_aida_correlations;
-        TFolder* frs_implant_correlations;
-        TFolder* frs_stopped_implant_correlations;
-        TFolder* frs_implant_correlations_ZvsAoQ;
-        TFolder* frs_implant_correlations_Z1vsZ2;
-        TFolder* frs_implant_correlations_x2vsAoQ;
-        TFolder* frs_implant_correlations_x4vsAoQ;
-        TFolder* frs_implant_correlations_ZvsAoQ_stopped;
-        TFolder* frs_implant_correlations_Z1vsZ2_stopped;
-        TFolder* frs_implant_correlations_x2vsAoQ_stopped;
-        TFolder* frs_implant_correlations_x4vsAoQ_stopped;
-        TFolder* frs_imp_corr_Z1Z2_x2vsAoQ;
-        TFolder* frs_imp_corr_Z1Z2_x4vsAoQ;
-        TFolder* frs_imp_corr_Z1Z2_x2vsAoQ_stopped;
-        TFolder* frs_imp_corr_Z1Z2_x4vsAoQ_stopped;
-        */
-        //decay
+    
 
+        bool frs_dir_found = true;
 
         // Variables
         Long64_t AidaLastWR;

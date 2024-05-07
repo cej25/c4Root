@@ -1,12 +1,9 @@
 #include "FairLogger.h"
 #include "FairRootManager.h"
 
-#include "LisaData.h"
-#include "LisaTraceData.h"
 #include "LisaReader.h"
 #include "c4Logger.h"
 
-#include "TClonesArray.h"
 #include "ext_data_struct_info.hh"
 
 extern "C"
@@ -15,25 +12,19 @@ extern "C"
     #include "ext_h101_lisa.h"
 }
 
-// maybe no longer needed to define
-#define TRACE_CHANNELS 16
-
-
 LisaReader::LisaReader(EXT_STR_h101_lisa_onion* data, size_t offset)
     : c4Reader("LisaReader")
     , fNEvent(0)
     , fData(data)
     , fOffset(offset)
     , fOnline(kFALSE)
-    , fArray(new TClonesArray("LisaData"))
-    , fTraceArray(new TClonesArray("LisaTraceData"))
+    , lisaArray(new std::vector<LisaItem>)
 {
 }
 
 LisaReader::~LisaReader() 
-{ 
-    delete fArray;
-    delete fTraceArray;
+{
+
 }
 
 Bool_t LisaReader::Init(ext_data_struct_info* a_struct_info)
@@ -50,14 +41,8 @@ Bool_t LisaReader::Init(ext_data_struct_info* a_struct_info)
     }
 
     // register output array in a tree
-    // CALUM: I set this up originally having two branches
-    // 1. one for energy, channel ids etc
-    // 2. one for trace data
-    // you don't need to do that, necessarily. 
-    FairRootManager::Instance()->Register("LisaData", "LISA Data", fArray, !fOnline);
-    FairRootManager::Instance()->Register("LisaTraceData", "LISA Trace Data", fTraceArray, !fOnline);
-    fArray->Clear();
-    fTraceArray->Clear();
+    FairRootManager::Instance()->RegisterAny("LisaData", lisaArray, !fOnline);
+    lisaArray->clear();
 
     memset(fData, 0, sizeof *fData);
 
@@ -66,9 +51,8 @@ Bool_t LisaReader::Init(ext_data_struct_info* a_struct_info)
 
 Bool_t LisaReader::Read()
 {
+    lisaArray->clear();
     // Reading is done in here on a per-event basis!
-
-    LisaData* lisa_item = new LisaData(); // LisaData class item
 
     //::::::::::::::White Rabbit::::::::::::::
     //WR time stamp
@@ -76,89 +60,82 @@ Bool_t LisaReader::Read()
     (((uint64_t)fData->lisa_ts_t[2]) << 32) + 
     (((uint64_t)fData->lisa_ts_t[1]) << 16) + 
     (uint64_t)(fData->lisa_ts_t[0]);
-    lisa_item->Set_wr_t(wr_time_long);
 
     //WR ID. It is 0700 for lisa (= 1792 in decimal)
     uint32_t wr_id = fData->lisa_ts_subsystem_id;
-    lisa_item->Set_wr_subsystem_id(wr_id);
     //::::::::::::::::::::::::::::::::::::::::
 
     //Loop over board number (NBoards hardcoded as 8 temp)
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
     {
-        //LisaData* lisa_item = new LisaData(); // LisaData class item
-
         //::::::::::::::Board Number (=0 may2024)
         uint32_t board_num = fData->lisa_data[it_board_number].board_num;
-        lisa_item->SetBoardNum(board_num);
 
         //::::::::::::::Event Time stamp (converted to ns)
         //P.S: Febex card has a 100MHz, it samples data every 10 ns (hence the unit and the *10 multiplication).
         uint64_t event_trigger_time_long = (((uint64_t)(fData->lisa_data[it_board_number].event_trigger_time_hi) << 32) + 
         (fData->lisa_data[it_board_number].event_trigger_time_lo))*10;
-        lisa_item->SetEventTime(event_trigger_time_long);
         
-        //::::::::::::::Hit Pattern
-        uint32_t hit_pattern = fData->lisa_data[it_board_number].hit_pattern;
-        lisa_item->SetHitPattern(hit_pattern);
-
         //::::::::::::::Multiplicity: Called num_channels_fired from unpacker
         uint32_t M = fData->lisa_data[it_board_number].num_channels_fired;
-        lisa_item->SetMultiplicity(M);
-        //std::cout<<M<<std::endl;
 
         for (int index = 0; index < M; index++) 
         {
             //::::::::::::::Channel ID
-            uint32_t ID = fData->lisa_data[it_board_number].channel_idv[index];
-            lisa_item->SetID(ID);
-            std::cout<<ID<<std::endl;
+            uint8_t channel_id = fData->lisa_data[it_board_number].channel_idv[index];
 
             //::::::::::::::Channel Trigger Time
             uint64_t channel_trigger_time_long = (((uint64_t)(fData->lisa_data[it_board_number].channel_trigger_time_hiv[index]) << 32) + 
             (fData->lisa_data[it_board_number].channel_trigger_time_lov[index]))*10;
-            lisa_item->SetChannelTime(channel_trigger_time_long);
 
             //::::::::::::::Channel PileUp
-            bool pile_up = fData->lisa_data[it_board_number].pileup[index] & 0x1;
-            lisa_item->SetPileUp(pile_up);     
-
+            bool pileup = fData->lisa_data[it_board_number].pileup[index] & 0x1;
+    
             //::::::::::::::Channel OverFlow
-            bool over_flow = fData->lisa_data[it_board_number].overflow[index] & 0x1;
-            lisa_item->SetOverFlow(over_flow); 
+            bool overflow = fData->lisa_data[it_board_number].overflow[index] & 0x1;
 
             //::::::::::::::Channel Energy
-
             //according to febex manual on gsi website, the 24th bit of the energy denotes the sign to indicate the polarity of the pulse
-           
             if (fData->lisa_data[it_board_number].channel_energyv[index] & (1 << 23)){
                 energy = -(int32_t)(fData->lisa_data[it_board_number].channel_energyv[index] & 0x007FFFFF);
             }else{
                 energy = +(int32_t)(fData->lisa_data[it_board_number].channel_energyv[index] & 0x007FFFFF);            
             }
-            
-            //int32_t energy = (int32_t)fData->lisa_data[it_board_number].channel_energyv[index];
-            lisa_item->SetEnergy(energy); 
-            //std::cout<<energy<<std::endl;
+            uint32_t ch_energy = energy;
 
+            std::vector<uint16_t> trace;
             //::::::::::::::Channel Traces
+            for (int l = 0 ; l < fData->lisa_data[it_board_number].traces[channel_id]._ ; l++)
+            {
+                trace.emplace_back(fData->lisa_data[it_board_number].traces[channel_id].v[l]);
+                
+            }
 
-            //Fill array with lisa_item
-            new ((*fArray)[fArray->GetEntriesFast()]) LisaData(*lisa_item);
+            auto & entry = lisaArray->emplace_back();
+            entry.SetAll(
+                wr_time_long,
+                wr_id,
+                board_num,
+                event_trigger_time_long,
+                channel_id,
+                channel_trigger_time_long,
+                pileup,
+                overflow,
+                ch_energy,
+                trace
+            );
 
         }
 
-
     }
-    
+
     return kTRUE;
 }
 
 // You must clear any arrays and vectors you use or things will get weird
 void LisaReader::ZeroArrays()
-{   
-    fArray->Clear();
-    fTraceArray->Clear();
+{ 
+
 }
 
 void LisaReader::ClearVectors()

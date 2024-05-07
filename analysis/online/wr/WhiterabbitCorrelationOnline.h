@@ -5,6 +5,8 @@
 #include "TAidaConfiguration.h"
 #include "AidaHitData.h"
 #include "AidaData.h"
+#include "FrsHitData.h"
+#include "FatimaVmeCalData.h"
 
 #include "TFolder.h"
 #include "TDirectory.h"
@@ -33,8 +35,6 @@ class WhiterabbitCorrelationOnline : public FairTask
 
         virtual ~WhiterabbitCorrelationOnline();
 
-        virtual void SetParContainers();
-
         virtual InitStatus Init();
 
         virtual void Exec(Option_t* option);
@@ -54,11 +54,14 @@ class WhiterabbitCorrelationOnline : public FairTask
         TAidaConfiguration const* conf;
 
         TClonesArray* fHitFatimaTwinpeaks;
-        TClonesArray* fHitFatimaVme;
+        //TClonesArray* fHitFatimaVme;
+        std::vector<FatimaVmeTDCCalItem> const* fatVmeArray;
         TClonesArray* fHitbPlastTwinpeaks;
         TClonesArray* fHitGe;
         std::vector<AidaHit> const* fAidaDecays;
+        std::vector<AidaHit> const* fAidaImplants;
         std::vector<AidaUnpackScalerItem> const* fAidaScalers;
+        std::vector<FrsHitItem> const* hitArrayFrs;
 
         std::vector<TString> fDetectorSystems;
         int fNumDetectorSystems;
@@ -67,6 +70,9 @@ class WhiterabbitCorrelationOnline : public FairTask
         EventHeader* fEventHeader;
         Int_t fNEvents;
         int total_time_microsecs = 0;
+        int frs_and_aida = 0;
+        int frsEvents = 0;
+        int implantEvents = 0;
 
         // Canvas
         TCanvas* c_whiterabbit_correlation;
@@ -126,6 +132,10 @@ class WhiterabbitCorrelationOnline : public FairTask
 
         
         // Histograms
+        TH1I* h1_whiterabbit_correlation_aida_frs;
+        TH1I* h1_whiterabbit_correlation_fatima_frs;
+        TH1I* h1_whiterabbit_correlation_bplast_frs;
+        TH1I* h1_whiterabbit_correlation_germanium_frs;
 
         TH1I* h1_whiterabbit_correlation_aida_fatima;
         TH1I* h1_whiterabbit_trigger1_aida_fatima;
@@ -176,10 +186,10 @@ class WhiterabbitCorrelationOnline : public FairTask
         TH1I* h1_whiterabbit_dt_fatimavme;
         // frs? aida?
 
-        int last_wr_germanium;
-        int last_wr_bplast;
-        int last_wr_fatima;
-        int last_wr_fatimavme;
+        int64_t last_wr_germanium;
+        int64_t last_wr_bplast;
+        int64_t last_wr_fatima;
+        int64_t last_wr_fatimavme;
 
 
 
