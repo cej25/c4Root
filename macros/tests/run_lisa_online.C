@@ -21,7 +21,7 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
     
-    //TString filename = "trans://R4L-21";
+    //TString filename = "stream://x86l-166";
     TString filename = "/u/gandolfo/lustre/despec/lisa/eris_241Am_1000V_0094_0001.lmd";
     //TString filename = "/u/gandolfo/lustre/despec/lisa/tokyo_10dec_0076_0001.lmd";
     //TString outputpath = "/u/gandolfo/watermelon/";
@@ -30,7 +30,7 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     //TString outputFilename = outputpath + "tokyo_test.root";	
 
     Int_t refresh = 10; // Refresh rate for online histograms
-    Int_t port = 6001;
+    Int_t port = 8080;
      
     TString ntuple_options = "UNPACK";
    //TString ucesb_dir = getenv("UCESB_DIR"); // .bashrc
@@ -38,6 +38,11 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     //TString ucesb_dir = "/u/despec/s100_online/c4Root/unpack/exps";
     TString ucesb_path = temp_path + "/lisa/lisa --allow-errors --input-buffer=200Mi";
     ucesb_path.ReplaceAll("//","/");
+
+    //set mapping
+    //TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map.txt");
+    TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map_names.txt");
+
 
     // Create online run
     FairRunOnline* run = new FairRunOnline();
@@ -58,22 +63,19 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     UnpackReader* unpackheader = new UnpackReader((EXT_STR_h101_unpack*)&ucesb_struct.eventheaders, offsetof(EXT_STR_h101, eventheaders));
 
     LisaReader* unpacklisa = new LisaReader((EXT_STR_h101_lisa_onion*)&ucesb_struct.lisa, offsetof(EXT_STR_h101, lisa));
-
+    
 
     unpacklisa->SetOnline(false); //false= write to a tree; true=doesn't write to tree
     
     //Add readers
     source->AddReader(unpacklisa);
 
-    // Runtime data base
-    FairRuntimeDb* rtdb = run->GetRuntimeDb();
-
+    LisaRaw2Cal* lisaraw2cal = new LisaRaw2Cal();
+    run->AddTask(lisaraw2cal);
 
     // Add analysis task here at some point
-
-    //LisaOnlineSpectra* onlinelisa = new LisaOnlineSpectra();
-
-    //run->AddTask(onlinelisa);
+    LisaOnlineSpectra* onlinelisa = new LisaOnlineSpectra();
+    run->AddTask(onlinelisa);
 
     // Initialise
     run->Init();

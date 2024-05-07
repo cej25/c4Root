@@ -11,6 +11,7 @@
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TFatimaVmeConfiguration.h"
+#include "FatimaVmeCalData.h"
 
 class EventHeader;
 class TFolder;
@@ -45,6 +46,11 @@ class FatimaVmeOnlineSpectra : public FairTask
 
         TClonesArray* fHitFatimaVme;
 
+        std::vector<FatimaVmeQDCCalItem> const* qdcCalArray;
+        std::vector<FatimaVmeTDCCalItem> const* tdcCalArray;
+        std::vector<FatimaVmeResiduals> const* residualArray;
+        
+
         EventHeader* header;
         Int_t fNEvents;
 
@@ -73,6 +79,7 @@ class FatimaVmeOnlineSpectra : public FairTask
         TCanvas* c_FatVME_T;
         TCanvas* c_FatVME_dTrefCh1;
         TCanvas* c_FatVME_dTrefSC41;
+        TCanvas* c_FatVME_EvsdTsc41;
         TCanvas* c_fatima_vme_snapshot;
 
         // Histograms
@@ -82,11 +89,13 @@ class FatimaVmeOnlineSpectra : public FairTask
         std::vector<TH1D*> h1_FatVME_E;
         std::vector<TH1D*> h1_FatVME_TDC_dt_refCh1;
         std::vector<TH1D*> h1_FatVME_TDC_dT_refSC41L;
+        std::vector<TH2D*> h2_FatVME_EvsdTsc41;
         TH1D* h1_FatVME_E_Sum;
         TH1I* h1_FatVME_QDC_HitPattern;
         TH1I* h1_FatVME_TDC_HitPattern;
         TH1I* h1_FatVME_QDCMult;
         TH1I* h1_FatVME_TDCMult;
+        TH2D* h2_FatVME_EvsdTsc41_summed;
         
         TH1D* h1_FatVME_time_machine_undelayed;
         TH1D* h1_FatVME_time_machine_delayed;

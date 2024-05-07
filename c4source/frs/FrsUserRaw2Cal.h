@@ -3,6 +3,7 @@
 
 #include "TFRSParameter.h"
 #include "FrsUserCalData.h"
+#include "FrsUserData.h"
 #include <vector>
 
 class TClonesArray;
@@ -36,6 +37,13 @@ class FrsUserRaw2Cal : public FairTask
         TClonesArray* fCalArray;
         TClonesArray* fRawArray;
 
+        std::vector<FrsUserV830Item> const* v830array;
+        std::vector<FrsUserV7X5Item> const* v7x5array;
+        std::vector<FrsUserCalScalerItem>* scalerArray;
+        std::vector<FrsUserCalSciItem>* sciArray;
+        std::vector<FrsUserCalMusicItem>* musicArray;
+
+
         FrsUserData* fRawHit;
 
         EventHeader* header;
@@ -45,9 +53,13 @@ class FrsUserRaw2Cal : public FairTask
         std::vector<uint32_t>* v7x5_channel_user;
         std::vector<uint32_t>* v7x5_data_user;
 
-        uint32_t dt_array[16];
+        uint32_t* dt_array;
+        uint32_t* music_e1;
+        uint32_t* music_e2;
+
+       /* uint32_t dt_array[16];
         uint32_t music_e1[8];
-        uint32_t music_e2[8];
+        uint32_t music_e2[8];*/
 
     public:
         ClassDef(FrsUserRaw2Cal, 1);

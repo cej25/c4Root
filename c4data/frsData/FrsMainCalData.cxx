@@ -40,4 +40,55 @@ FrsMainCalData::~FrsMainCalData()
 {
 }
 
+FrsMainCalScalerItem::FrsMainCalScalerItem()
+{
+
+}
+
+void FrsMainCalScalerItem::SetAll(uint32_t in, uint32_t sc)
+{
+    index = in;
+    scaler = sc;
+}
+
+void FrsMainCalScalerItem::Reset()
+{
+
+}
+
+FrsMainCalSciItem::FrsMainCalSciItem()
+{
+
+}
+
+void FrsMainCalSciItem::SetAll(uint32_t* de, uint32_t** tdc)
+{
+    de_array = de;
+    tdc_array = tdc;
+}
+
+void FrsMainCalSciItem::Reset()
+{
+    de_array = 0;
+    tdc_array = 0;
+}
+
+FrsMainCalMusicItem::FrsMainCalMusicItem()
+{
+
+}
+
+void FrsMainCalMusicItem::SetAll(uint32_t* mt1, uint32_t* mt2)
+{
+    music_t1 = mt1;
+    music_t2 = mt2;
+}
+
+void FrsMainCalMusicItem::Reset()
+{
+    music_t1 = 0;
+    music_t2 = 0;
+}
+
+
 ClassImp(FrsMainCalData)
