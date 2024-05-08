@@ -758,7 +758,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     //   S2S4 MultihitTDC ID analysis
     float mean_brho_s2s4 = 0.5 * (frs->bfield[2] + frs->bfield[3]);
 
-    // frs go4 doesn't have this selection --lohhhhhhhhhhhhhh
+    // frs go4 doesn't have this selection
     //if (id->mhtdc_s2pos_option == 1)
     //{
         if (id->tof_s4_select == 1)
@@ -802,19 +802,9 @@ void FrsCal2Hit::Exec(Option_t* option)
                 {
                     id_mhtdc_aoq_s2s4[i] = mean_brho_s2s4 * (1. + id_mhtdc_delta_s2s4[i]) * temp_tm_to_MeV / (temp_mu * id_mhtdc_beta_s2s4[i] * id_mhtdc_gamma_s2s4[i]);
 
-                    // Gain match AoQ // CEJ: to do before offline
-                    /*for (int j = 0; j < AoQ_Shift_array; j++)
-                    {
-                        if (ts_mins >= FRS_WR_i[j] && ts_mins < FRS_WR_j[j])
-                        {
-                            id_mhtdc_aoq_s2s4.at(i) = (id_mhtdc_aoq_s2s4.at(i) - AoQ_shift_Sci21_value[j]) - 0.029100; // Why isn't this float coded in a config file?
-                        }
-                    }*/
-
                     // No angle correction for SCI
                     id_mhtdc_aoq_corr_s2s4[i] = id_mhtdc_aoq_s2s4[i];
-                    //std::cout << "aoq s2s4: " << id_mhtdc_aoq_corr_s2s4[i] << std::endl;
-
+                    
                     /*mhtdc_gamma1square.emplace_back(1.0 + TMath::Power(((1.0 / aoq_factor) * (id_brho[0] / id_mhtdc_aoq_s2s4[i])), 2));
                     id_mhtdc_gamma_ta_s2.emplace_back(TMath::Sqrt(mhtdc_gamma1square[i]));
                     id_mhtdc_dEdegoQ.emplace_back((id_mhtdc_gamma_ta_s2[i] - id_mhtdc_gamma_s2s4[i]) * id_mhtdc_aoq_s2s4[i]);
@@ -893,7 +883,6 @@ void FrsCal2Hit::Exec(Option_t* option)
     //}
 
     // Calculation of dE and Z from MUSIC41
-    // CEJ: we should investigate why the couts here never print
     for (int i = 0; i < 10; i++)
     {
         float temp_music41_de = de[0] > 0.0;
@@ -914,9 +903,6 @@ void FrsCal2Hit::Exec(Option_t* option)
             {
                 id_mhtdc_z_music41[i] = frs->primary_z * sqrt(de[0] / id_mhtdc_v_cor_music41[i]) + id->mhtdc_offset_z_music41;
             }
-            
-            //std::cout << "do we get a z value" << std::endl;
-            //std::cout << id_mhtdc_z_music41[i] << std::endl;
         }
         
     }

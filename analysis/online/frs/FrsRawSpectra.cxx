@@ -245,9 +245,9 @@ void FrsRawSpectra::Exec(Option_t* option)
         uint32_t data = v1290item.Get_v1290_data();
         uint32_t lot = v1290item.Get_leadOrTrail();
 
-        if (lot == 0) h1_v1290_main_leads[channel-1]->Fill(data);
-        h2_v1290_main_data_vs_chan->Fill(channel-1, data);
-        v1290_mult[channel-1]++;
+        if (lot == 0) h1_v1290_main_leads[channel]->Fill(data);
+        h2_v1290_main_data_vs_chan->Fill(channel, data);
+        v1290_mult[channel]++;
     }
     for (int i = 0; i < 32; i++) h1_v1290_main_mult[i]->Fill(v1290_mult[i]);
 

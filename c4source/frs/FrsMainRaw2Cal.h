@@ -88,6 +88,8 @@ class FrsMainRaw2Cal : public FairTask
         uint32_t* music_t1;
         uint32_t* music_t2;
 
+        const int max_hits_in_v1290 = 10;
+
 
     public:
         ClassDef(FrsMainRaw2Cal, 1);

@@ -237,9 +237,6 @@ InitStatus FrsFatimaCorrelationsNearline::Init()
 
 void FrsFatimaCorrelationsNearline::Exec(Option_t* option)
 {
-<<<<<<< HEAD
-        if (fHitFrs && fHitFrs->GetEntriesFast() == 1)
-=======
     if (hitArrayFrs->size() == 0) return;
     positive_PID = false;
     auto const & frshit = hitArrayFrs->at(0);
@@ -257,7 +254,6 @@ void FrsFatimaCorrelationsNearline::Exec(Option_t* option)
     // this must pass all gates given to FrsGate:
     positive_PID = frsgate->PassedGate(ID_z, ID_z2, ID_x2, ID_x4, ID_AoQ, ID_dEdeg);
     if (positive_PID)
->>>>>>> main
     {
         wr_t_last_frs_hit = wr_t;
         frs_rate_implanted ++;
@@ -270,51 +266,6 @@ void FrsFatimaCorrelationsNearline::Exec(Option_t* option)
 
         if (wr_t_last_frs_hit - frs_rate_time > 60e9)
         {
-<<<<<<< HEAD
-            FrsHitData * frshit = (FrsHitData*) fHitFrs->At(frsihit);
-
-            int64_t wr_t = frshit->Get_wr_t();
-            if(wr_t_first_frs_hit == 0) wr_t_first_frs_hit = wr_t;
-            double ID_x2 = frshit->Get_ID_x2();
-            double ID_y2 = frshit->Get_ID_y2();
-            double ID_x4 = frshit->Get_ID_x4();
-            double ID_AoQ = frshit->Get_ID_AoQ();
-            double ID_z = frshit->Get_ID_z();
-            double ID_z2 = frshit->Get_ID_z2();
-            double ID_dEdeg = frshit->Get_ID_dEdeg();
-
-            // this must pass all gates given to FrsGate:
-            positive_PID = frsgate->PassedGate(ID_z, ID_z2, ID_x2, ID_x4, ID_AoQ, ID_dEdeg);
-            if (positive_PID)
-            {
-                wr_t_last_frs_hit = wr_t;
-                frs_rate_implanted ++;
-                frs_total_implanted ++;
-
-                h2_frs_Z_vs_AoQ_gated->Fill(ID_AoQ,ID_z);
-                h2_frs_Z_vs_Z2_gated->Fill(ID_z,ID_z2);
-                h2_frs_x2_vs_AoQ_gated->Fill(ID_AoQ,ID_x2);
-                h2_frs_x4_vs_AoQ_gated->Fill(ID_AoQ,ID_x4);
-
-                if (wr_t_last_frs_hit - frs_rate_time > 60e9)
-                {
-                    g_frs_rate->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_rate_implanted/60.0);
-                    g_frs_total->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_total_implanted);
-                    frs_rate_time = wr_t_last_frs_hit;
-                    frs_rate_implanted = 0;
-                }
-
-                break;
-            }else{
-                wr_t_last_frs_hit = 0;
-            }
-        }
-    }
-    else
-    {
-        positive_PID = false;
-        return;
-=======
             g_frs_rate->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_rate_implanted/60.0);
             g_frs_total->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_total_implanted);
             frs_rate_time = wr_t_last_frs_hit;
@@ -322,7 +273,6 @@ void FrsFatimaCorrelationsNearline::Exec(Option_t* option)
         }
     }else{
         wr_t_last_frs_hit = 0;
->>>>>>> main
     }
 
     if (fHitFatima && fHitFatima->GetEntriesFast() > 0)

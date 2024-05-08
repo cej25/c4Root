@@ -102,7 +102,7 @@ class FrsMainCalSciItem : public TObject
     
     private:
 
-        // lets try arrays in a vector lol
+        // lets try arrays in a vector lol - I like this -  JEL :)
         uint32_t* de_array; // [14];
         uint32_t** tdc_array; // [15][10]
 
