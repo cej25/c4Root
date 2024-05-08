@@ -192,7 +192,7 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
 
 void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
 {
-    if (fHitFrs && fHitFrs->GetEntriesFast() >= 1)
+    if (fHitFrs && fHitFrs->GetEntriesFast() == 1)
     {
         for (int frsihit = 0; frsihit < fHitFrs->GetEntriesFast(); frsihit++)
         {
@@ -236,6 +236,7 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
     else
     {
         positive_PID = false;
+        return;
     }
 
     if (fHitGe && fHitGe->GetEntriesFast() > 0)
@@ -262,7 +263,10 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
             double energy1 = hit1->Get_channel_energy();
             double time1 = hit1->Get_channel_trigger_time();
 
-            if (detector_id1 == germanium_configuration->SC41L() || detector_id1 == germanium_configuration->SC41R()) {
+            if (detector_id1 == germanium_configuration->SC41L() /*|| detector_id1 == germanium_configuration->SC41R()*/) {
+                
+                if (sci41_seen == true) return;
+                
                 detector_id_sci41 = hit1->Get_detector_id();
                 crystal_id_sci41 = hit1->Get_crystal_id();
                 energy_sci41 = hit1->Get_channel_energy();
@@ -293,7 +297,7 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
 
                 //after this test, the prompt flash is cut out.
                 if ((germanium_configuration->IsInsidePromptFlashCut(timediff1 ,energy1)==true) ) continue;
-
+                if ((timediff1 < -400 || timediff1 > stop_short_lifetime_collection)) continue;
                 
                 h1_germanium_energy_promptflash_cut->Fill(energy1);
 
@@ -327,6 +331,7 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
                     double timediff2 = time2 - time_sci41 - germanium_configuration->GetTimeshiftCoefficient(detector_id2,crystal_id2);
                     
                     if ((germanium_configuration->IsInsidePromptFlashCut(timediff2, energy2)==true)) continue;
+                    if ((timediff2 < -400 || timediff2 > stop_short_lifetime_collection)) continue;
 
                     if (ihit3 > ihit2) h2_germanium_energy_energy_promptflash_cut->Fill(energy1,energy2); // avoid double filling ... 
 

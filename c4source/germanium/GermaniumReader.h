@@ -53,7 +53,7 @@ class GermaniumReader : public c4Reader
         const int NBoards = 4; //change
 
         uint64_t event_trigger_time_long;
-        uint64_t channel_trigger_time_long;
+        double channel_trigger_time_long;
 
         int32_t channel_energy;
 

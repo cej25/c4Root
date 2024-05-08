@@ -137,6 +137,15 @@ InitStatus FrsFatimaCorrelationsNearline::Init()
     h1_fatima_energy_promptflash_cut->GetXaxis()->SetTitle("energy (keV)");
 
 
+    h2_fatima_energy_vs_tsci41_mult2 = new TH2F(TString("h2_fatima_energy_vs_tsci41_mult2_frs_gate_"+frsgate->GetName()),TString("Fatima mult = 2 energies vs t(det) - t(sci41), short lifetime,  gated FRS on "+frsgate->GetName()),10000,-2000,stop_short_lifetime_collection,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h2_fatima_energy_vs_tsci41_mult2->GetXaxis()->SetTitle("time difference (ns)");
+    h2_fatima_energy_vs_tsci41_mult2->GetYaxis()->SetTitle("energy (keV)");
+
+    
+
+    h1_fatima_energy_promptflash_cut_mult2 = new TH1F(TString("h1_fatima_energy_promptflash_cut_mult2_frs_gate_"+frsgate->GetName()),TString("Fatima mult = 2 energy, prompt flash cut out, short lifetime, gated FRS on "+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h1_fatima_energy_promptflash_cut_mult2->GetXaxis()->SetTitle("energy (keV)");
+
 
 
     
@@ -230,7 +239,7 @@ InitStatus FrsFatimaCorrelationsNearline::Init()
 
 void FrsFatimaCorrelationsNearline::Exec(Option_t* option)
 {
-    if (fHitFrs && fHitFrs->GetEntriesFast() >= 1)
+        if (fHitFrs && fHitFrs->GetEntriesFast() == 1)
     {
         for (int frsihit = 0; frsihit < fHitFrs->GetEntriesFast(); frsihit++)
         {
@@ -266,6 +275,8 @@ void FrsFatimaCorrelationsNearline::Exec(Option_t* option)
                     frs_rate_time = wr_t_last_frs_hit;
                     frs_rate_implanted = 0;
                 }
+
+                break;
             }else{
                 wr_t_last_frs_hit = 0;
             }
@@ -274,6 +285,7 @@ void FrsFatimaCorrelationsNearline::Exec(Option_t* option)
     else
     {
         positive_PID = false;
+        return;
     }
 
     if (fHitFatima && fHitFatima->GetEntriesFast() > 0)
@@ -297,8 +309,10 @@ void FrsFatimaCorrelationsNearline::Exec(Option_t* option)
             int detector_id1 = hit1->Get_detector_id();
             double energy1 = hit1->Get_energy();
             double time1 = hit1->Get_fast_lead_time();
+            if (detector_id1 == fatima_configuration->SC41L() /*|| detector_id1 == fatima_configuration->SC41R()*/) {
+                
+                if (sci41_seen == true) return;
 
-            if (detector_id1 == fatima_configuration->SC41L() || detector_id1 == fatima_configuration->SC41R()) {
                 detector_id_sci41 = hit1->Get_detector_id();
                 energy_sci41 = hit1->Get_energy();
                 time_sci41 = hit1->Get_fast_lead_time();
@@ -322,12 +336,37 @@ void FrsFatimaCorrelationsNearline::Exec(Option_t* option)
                 if (fatima_configuration->IsDetectorAuxilliary(detector_id1)) continue;
 
                 double timediff1 = time1 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(detector_id1);
+                h2_fatima_energy_vs_tsci41->Fill(timediff1 ,energy1);
+
+                for (int ihit3 = 0; ihit3<nHits; ihit3 ++){
+                    if (ihit3 == sci41_hit_idx) continue;
+                    if (ihit3 == ihit2) continue;
+                    FatimaTwinpeaksCalData* hit3 = (FatimaTwinpeaksCalData*)fHitFatima->At(ihit3);
+                    if (!hit3) continue;                    
+                    int detector_id2 = hit3->Get_detector_id();
+                    if (fatima_configuration->IsDetectorAuxilliary(detector_id2)) continue;
+                    double energy2 = hit3->Get_energy();
+                    double time2 = hit3->Get_fast_lead_time();
+
+                    if (TMath::Abs(time2-fatima_configuration->GetTimeshiftCoefficient(detector_id2)-time1+fatima_configuration->GetTimeshiftCoefficient(detector_id1)) < fatima_coincidence_gate){
+                        double timediff2 = time2 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(detector_id2);
+
+                        h2_fatima_energy_vs_tsci41_mult2->Fill(timediff2,energy2);
+
+                        if ((fatima_configuration->IsInsidePromptFlashCut(timediff2 ,energy2)==true) ) continue;
+                        if (!(timediff2 < stop_short_lifetime_collection && timediff2 > - 500)) continue;
+                        h1_fatima_energy_promptflash_cut_mult2->Fill(energy2);                        
+
+                    }
                 
-                h2_fatima_energy_vs_tsci41->Fill(timediff1, energy1);
+                }
+                
 
                 //after this test, the prompt flash is cut out.
                 if ((fatima_configuration->IsInsidePromptFlashCut(timediff1 ,energy1)==true) ) continue;
 
+                
+                if (!(timediff1 < stop_short_lifetime_collection && timediff1 > - 2000)) continue;
                 
                 h1_fatima_energy_promptflash_cut->Fill(energy1);
 
@@ -359,6 +398,7 @@ void FrsFatimaCorrelationsNearline::Exec(Option_t* option)
                     double timediff2 = time2 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(detector_id2);
                     
                     if ((fatima_configuration->IsInsidePromptFlashCut(timediff2, energy2)==true)) continue;
+                    if (!(timediff2 < stop_short_lifetime_collection && timediff2 > - 500)) continue;
 
                     if (ihit3 > ihit2 && (TMath::Abs(time2-fatima_configuration->GetTimeshiftCoefficient(detector_id2)-time1+fatima_configuration->GetTimeshiftCoefficient(detector_id1)) < fatima_coincidence_gate)) h2_fatima_energy_energy_promptflash_cut->Fill(energy1,energy2); // avoid double filling ... 
 
