@@ -135,7 +135,10 @@ Bool_t FrsMainReader::Read()
         {
             //c4LOG(info,Form("current channel = %i, next channel start = %i, channels fired = %i, data = %i",fData->frsmain_data_v1290_leadOrTrailMI[channel_index], fData->frsmain_data_v1290_leadOrTrailME[channel_index], fData->frsmain_data_v1290_nM, fData->frsmain_data_v1290_leadOrTrailv[j]));
             //c4LOG(info,Form("current channel = %i, next channel start = %i, channels fired = %i, data = %i",current_channel, next_channel_start, fData->frsmain_data_v1290_nM, fData->frsmain_data_v1290_data[j]));
-            uint32_t channel = current_channel;
+            
+            if (current_channel == 0) c4LOG(fatal, "FOUND A CURRENT_CHANNEL = 0!");
+            uint32_t channel = current_channel - 1; // I cannot see why this doesn't get set to zero for channel zero.... Please check. But it seems correct this way.
+            
             uint32_t data = fData->frsmain_data_v1290_data[j];
             uint32_t lot = fData->frsmain_data_v1290_leadOrTrailv[j];
             
