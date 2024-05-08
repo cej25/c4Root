@@ -73,9 +73,12 @@
 #pragma link C++ class TCorrelationsConfiguration+;
 #pragma link C++ class TBB7VmeConfiguration+;
 #pragma link C++ class TLisaConfiguration+;
+#pragma link C++ class TFimpConfiguration+;
 
 #pragma link C++ class LisaItem+;
 #pragma link C++ class LisaCalItem+;
+#pragma link C++ class FimpItem+;
+#pragma link C++ class FimpCalItem+;
 
 #pragma link C++ class FatimaVmeQDCItem+;
 #pragma link C++ class FatimaVmeTDCItem+;
