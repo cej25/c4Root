@@ -7,6 +7,7 @@
 #include "AidaHitData.h"
 #include "../../config/setup.h"
 #include "FrsGate.h"
+#include "FrsHitData.h"
 
 #include "TClonesArray.h"
 #include "TH1.h"
@@ -60,6 +61,7 @@ class FrsAidaCorrelationsOnline : public FairTask
 
         TClonesArray* fFrsHitArray;
         std::vector<AidaHit> const* fAidaImplants;
+        std::vector<FrsHitItem> const* hitArrayFrs;
 
         Int_t fNEvents;
         EventHeader* header;
@@ -82,10 +84,6 @@ class FrsAidaCorrelationsOnline : public FairTask
         std::vector<std::vector<TH2I*>> h2_AidaImplant_ZvsAoQGated_position;
         std::vector<std::vector<TH1I*>> h1_AidaImplant_ZvsAoQGated_energy_stopped;
         std::vector<std::vector<TH2I*>> h2_AidaImplant_ZvsAoQGated_position_stopped;
-
-
-
-       
         
 
     public:

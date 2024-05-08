@@ -3,6 +3,7 @@
 
 #include "TFrsConfiguration.h"
 #include "FrsGate.h"
+#include "FrsHitData.h"
 
 #include "FairTask.h"
 #include "TH2.h"
@@ -65,8 +66,8 @@ class FrsOnlineSpectra : public FairTask
 
         std::vector<FrsGate*> FrsGates;
 
-        TClonesArray* fHitFrsArray; // array with hit items
-        FrsHitData* FrsHit; // array with hit items
+        //TClonesArray* fHitFrsArray; // array with hit items
+        std::vector<FrsHitItem> const* hitArray;
 
         EventHeader* header;
         Int_t fNEvents;

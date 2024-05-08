@@ -46,6 +46,7 @@ FrsFatimaCorrelations::FrsFatimaCorrelations(FrsGate * fg) : FrsFatimaCorrelatio
 FrsFatimaCorrelations::FrsFatimaCorrelations(const TString& name, Int_t verbose)
     : FairTask(name, verbose)
     , fHitFatima(NULL)
+    , hitArrayFrs(nullptr)
     , fNEvents(0)
     , header(nullptr)
 {    
@@ -57,8 +58,7 @@ FrsFatimaCorrelations::~FrsFatimaCorrelations()
     c4LOG(info, "");
     if (fHitFatima)
         delete fHitFatima;
-    if (fHitFrs)
-        delete fHitFrs;
+
 }
 
 
@@ -79,9 +79,8 @@ InitStatus FrsFatimaCorrelations::Init()
 
     fHitFatima = (TClonesArray*)mgr->GetObject("FatimaTwinpeaksCalData");
     c4LOG_IF(fatal, !fHitFatima, "Branch FatimaTwinpeaksCalData not found!");
-
-    fHitFrs = (TClonesArray*)mgr->GetObject("FrsHitData");
-    c4LOG_IF(fatal, !fHitFrs, "Branch FrsHitData not found!");
+    hitArrayFrs = mgr->InitObjectAs<decltype(hitArrayFrs)>("FrsHitData");
+    c4LOG_IF(fatal, !hitArrayFrs, "Branch FrsHitData not found!");
 
 
     TDirectory::TContext ctx(nullptr);
@@ -299,51 +298,44 @@ InitStatus FrsFatimaCorrelations::Init()
 
 void FrsFatimaCorrelations::Exec(Option_t* option)
 {
-    if (fHitFrs && fHitFrs->GetEntriesFast() >= 1)
+    if (hitArrayFrs->size() == 0) return;
+    positive_PID = false;
+    auto const & frshit = hitArrayFrs->at(0);
+
+    int64_t wr_t = frshit.Get_wr_t();
+    if(wr_t_first_frs_hit == 0) wr_t_first_frs_hit = wr_t;
+    double ID_x2 = frshit.Get_ID_x2();
+    double ID_y2 = frshit.Get_ID_y2();
+    double ID_x4 = frshit.Get_ID_x4();
+    double ID_AoQ = frshit.Get_ID_AoQ();
+    double ID_z = frshit.Get_ID_z();
+    double ID_z2 = frshit.Get_ID_z2();
+    double ID_dEdeg = frshit.Get_ID_dEdeg();
+
+    // this must pass all gates given to FrsGate:
+    positive_PID = frsgate->PassedGate(ID_z, ID_z2, ID_x2, ID_x4, ID_AoQ, ID_dEdeg);
+    if (positive_PID)
     {
-        for (int frsihit = 0; frsihit < fHitFrs->GetEntriesFast(); frsihit++)
+        wr_t_last_frs_hit = wr_t;
+        frs_rate_implanted ++;
+        frs_total_implanted ++;
+
+        h2_frs_Z_vs_AoQ_gated->Fill(ID_AoQ,ID_z);
+        h2_frs_Z_vs_Z2_gated->Fill(ID_z,ID_z2);
+        h2_frs_x2_vs_AoQ_gated->Fill(ID_AoQ,ID_x2);
+        h2_frs_x4_vs_AoQ_gated->Fill(ID_AoQ,ID_x4);
+
+        if (wr_t_last_frs_hit - frs_rate_time > 60e9)
         {
-            FrsHitData * frshit = (FrsHitData*) fHitFrs->At(frsihit);
-
-            int64_t wr_t = frshit->Get_wr_t();
-            if(wr_t_first_frs_hit == 0) wr_t_first_frs_hit = wr_t;
-            double ID_x2 = frshit->Get_ID_x2();
-            double ID_y2 = frshit->Get_ID_y2();
-            double ID_x4 = frshit->Get_ID_x4();
-            double ID_AoQ = frshit->Get_ID_AoQ();
-            double ID_z = frshit->Get_ID_z();
-            double ID_z2 = frshit->Get_ID_z2();
-            double ID_dEdeg = frshit->Get_ID_dEdeg();
-
-            // this must pass all gates given to FrsGate:
-            positive_PID = frsgate->PassedGate(ID_z, ID_z2, ID_x2, ID_x4, ID_AoQ, ID_dEdeg);
-            if (positive_PID)
-            {
-                wr_t_last_frs_hit = wr_t;
-                frs_rate_implanted ++;
-                frs_total_implanted ++;
-
-                h2_frs_Z_vs_AoQ_gated->Fill(ID_AoQ,ID_z);
-                h2_frs_Z_vs_Z2_gated->Fill(ID_z,ID_z2);
-                h2_frs_x2_vs_AoQ_gated->Fill(ID_AoQ,ID_x2);
-                h2_frs_x4_vs_AoQ_gated->Fill(ID_AoQ,ID_x4);
-
-                if (wr_t_last_frs_hit - frs_rate_time > 60e9)
-                {
-                    g_frs_rate->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_rate_implanted/60.0);
-                    g_frs_total->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_total_implanted);
-                    frs_rate_time = wr_t_last_frs_hit;
-                    frs_rate_implanted = 0;
-                }
-            }else{
-                wr_t_last_frs_hit = 0;
-            }
+            g_frs_rate->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_rate_implanted/60.0);
+            g_frs_total->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_total_implanted);
+            frs_rate_time = wr_t_last_frs_hit;
+            frs_rate_implanted = 0;
         }
+    }else{
+        wr_t_last_frs_hit = 0;
     }
-    else
-    {
-        positive_PID = false;
-    }
+
 
     if (fHitFatima && fHitFatima->GetEntriesFast() > 0)
     {

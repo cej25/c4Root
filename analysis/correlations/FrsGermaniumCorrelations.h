@@ -4,6 +4,7 @@
 #include "FairTask.h"
 
 #include "TGermaniumConfiguration.h"
+#include "FrsHitData.h"
 #include "TFrsConfiguration.h"
 
 class TClonesArray;
@@ -72,6 +73,8 @@ class FrsGermaniumCorrelations : public FairTask
     private:
         TClonesArray* fHitGe;
         TClonesArray* fHitFrs;
+
+        std::vector<FrsHitItem> const* hitArrayFrs;
 
         const TGermaniumConfiguration * germanium_configuration;
         const TFrsConfiguration * frs_configuration;

@@ -37,6 +37,7 @@ frsData/FrsUserCalData.cxx
 frsData/FrsVFTXCalData.cxx
 frsData/FrsHitData.cxx
 lisaData/LisaData.cxx
+lisaData/LisaCalData.cxx
 lisaData/LisaTraceData.cxx
 aidaData/AidaData.cxx
 aidaData/AidaCalData.cxx
@@ -66,6 +67,7 @@ frsData/TFRSParameter.cxx
 frsData/TFrsConfiguration.cxx
 frsData/FrsGate.cxx
 baseData/TCorrelationsConfiguration.cxx
+lisaData/TLisaConfiguration.cxx
 )
 
 # fill list of header files from list of source files by exchanging the file extension

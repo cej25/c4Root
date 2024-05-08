@@ -49,6 +49,10 @@ class FrsMainReader : public c4Reader
         Bool_t fOnline;
 
         TClonesArray* fArray;
+        std::vector<FrsMainV830Item>* v830array;
+        std::vector<FrsMainV792Item>* v792array;
+        std::vector<FrsMainV1290Item>* v1290array;
+
         EventHeader* header;
 
         bool spill_flag = false;

@@ -15,8 +15,8 @@ FrsAidaCorrelationsOnline::FrsAidaCorrelationsOnline(std::vector<FrsGate*> fg)
     :   FairTask()
     ,   fNEvents(0)
     ,   header(nullptr)
-    ,   fFrsHitArray(new TClonesArray("FrsHitData"))
-    ,   fAidaImplants(new std::vector<AidaHit>)
+    ,   hitArrayFrs(nullptr)
+    ,   fAidaImplants(nullptr)
 {
     FrsGates = fg;
     aida_config = TAidaConfiguration::GetInstance();
@@ -29,8 +29,8 @@ FrsAidaCorrelationsOnline::FrsAidaCorrelationsOnline(const TString& name, Int_t 
     :   FairTask(name, verbose)
     ,   fNEvents(0)
     ,   header(nullptr)
-    ,   fFrsHitArray(new TClonesArray("FrsHitData"))
-    ,   fAidaImplants(new std::vector<AidaHit>)
+    ,   hitArrayFrs(nullptr)
+    ,   fAidaImplants(nullptr)
 {
     aida_config = TAidaConfiguration::GetInstance();
     frs_config = TFrsConfiguration::GetInstance();
@@ -41,7 +41,6 @@ FrsAidaCorrelationsOnline::FrsAidaCorrelationsOnline(const TString& name, Int_t 
 FrsAidaCorrelationsOnline::~FrsAidaCorrelationsOnline()
 {
     c4LOG(info, "Deleting FrsAidaCorrelationsOnline task.");
-    if (fFrsHitArray) delete fFrsHitArray;
 }
 
 InitStatus FrsAidaCorrelationsOnline::Init()
@@ -55,8 +54,8 @@ InitStatus FrsAidaCorrelationsOnline::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "EventHeader. not found!");
 
-    fFrsHitArray = (TClonesArray*)mgr->GetObject("FrsHitData");
-    c4LOG_IF(fatal, !fFrsHitArray, "FrsHitData branch not found!");
+    hitArrayFrs = mgr->InitObjectAs<decltype(hitArrayFrs)>("FrsHitData");
+    c4LOG_IF(fatal, !hitArrayFrs, "Branch FrsHitData not found!");
 
     fAidaImplants = mgr->InitObjectAs<decltype(fAidaImplants)>("AidaImplantHits");
     c4LOG_IF(fatal, !fAidaImplants, "Branch AidaImplantHits not found!");
@@ -68,7 +67,8 @@ InitStatus FrsAidaCorrelationsOnline::Init()
     // look for FRS directory, create it if not found
     dir_frs = (TDirectory*)mgr->GetObject("FRS");
     if (dir_frs == nullptr) 
-    {
+    {   
+        c4LOG(info, "Creating FRS Online Directory");
         dir_frs = new TDirectory("FRS Online", "FRS Online", "", 0);
         mgr->Register("FRS", "FRS Online Directory", dir_frs, false); // allow other tasks to find this
         histograms->Add(dir_frs);
@@ -166,85 +166,70 @@ InitStatus FrsAidaCorrelationsOnline::Init()
 
 void FrsAidaCorrelationsOnline::Exec(Option_t* option)
 { 
-    int multFRS = 0;
-    multFRS = fFrsHitArray->GetEntriesFast();
-    if (multFRS == 0) return;
+    if (fAidaImplants->size() <= 0 || hitArrayFrs->size() <= 0) return;
 
-    if (fFrsHitArray && fFrsHitArray->GetEntriesFast() > 0)
+    const auto & hitItemFrs = hitArrayFrs->at(0);
+
+    for (auto & i : *fAidaImplants)
     {
-        Int_t nHits = fFrsHitArray->GetEntriesFast();
-        for (Int_t ihit = 0; ihit < nHits; ihit++)
+        AidaHit hit = i;
+        
+        if (hit.Time - hitItemFrs.Get_wr_t() > Correl["FRS-AIDA WR Gate"][0] && hit.Time - hitItemFrs.Get_wr_t() < Correl["FRS-AIDA WR Gate"][1])
         {
-            FrsHitData* FrsHit = (FrsHitData*)fFrsHitArray->At(ihit);
-            if (!FrsHit) continue;
-
-            for (auto & i : *fAidaImplants)
+            if (!FrsGates.empty())
             {
-                AidaHit hit = i;
-                
-                if (hit.Time - FrsHit->Get_wr_t() > Correl["FRS-AIDA WR Gate"][0] && hit.Time - FrsHit->Get_wr_t() < Correl["FRS-AIDA WR Gate"][1])
+                for (int gate = 0; gate < FrsGates.size(); gate++)
                 {
-                    if (!FrsGates.empty())
+                    // hit pattern and energy
+                    if (FrsGates[gate]->Passed_ZvsAoQ(hitItemFrs.Get_ID_z(), hitItemFrs.Get_ID_AoQ()))
                     {
-                        for (int gate = 0; gate < FrsGates.size(); gate++)
+                        h2_AidaImplant_ZvsAoQGated_position[hit.DSSD-1][gate]->Fill(hit.PosX, hit.PosY);
+                        h1_AidaImplant_ZvsAoQGated_energy[hit.DSSD-1][gate]->Fill(hit.Energy);
+                    }
+                }
+            }
+
+            if (hit.Stopped)
+            {
+                if (!FrsGates.empty())
+                {
+                    for (int gate = 0; gate < FrsGates.size(); gate++)
+                    {
+                        if (FrsGates[gate]->PassedGate(hitItemFrs.Get_ID_z(), hitItemFrs.Get_ID_z2(), hitItemFrs.Get_ID_x2(), hitItemFrs.Get_ID_x4(), hitItemFrs.Get_ID_AoQ(), hitItemFrs.Get_ID_dEdeg()))
                         {
-                            // hit pattern and energy
-                            if (FrsGates[gate]->Passed_ZvsAoQ(FrsHit->Get_ID_z(), FrsHit->Get_ID_AoQ()))
-                            {
-                                h2_AidaImplant_ZvsAoQGated_position[hit.DSSD-1][gate]->Fill(hit.PosX, hit.PosY);
-                                h1_AidaImplant_ZvsAoQGated_energy[hit.DSSD-1][gate]->Fill(hit.Energy);
-                            }
+                            h1_stopped_implanted_passed_gate->Fill(gate * aida_config->DSSDs() + hit.DSSD - 1);
+
+                            if (hit.DSSD == 1) stopped_implant_passed_gate_count_dssd1[gate]++;
+                            else if (hit.DSSD == 2) stopped_implant_passed_gate_count_dssd2[gate]++;
+                        }
+
+                        int sum = stopped_implant_passed_gate_count_dssd1[gate] + stopped_implant_passed_gate_count_dssd2[gate];
+                        if (sum % plotRatioEvery == 0 && sum > 0)
+                        {   
+                            time_t rawtime; time(&rawtime);
+                            double ratio = (double)stopped_implant_passed_gate_count_dssd1[gate] / (double)stopped_implant_passed_gate_count_dssd2[gate]; // for testing graph
+                            hG_stopped_implants_ratio[gate]->SetPoint(r_plotted[gate], rawtime, (double)ratio);
+                            r_plotted[gate]++;
+                            stopped_implant_passed_gate_count_dssd1[gate] = 0;
+                            stopped_implant_passed_gate_count_dssd2[gate] = 0;
+                        }
+
+                        // hit pattern and energy
+                        if (FrsGates[gate]->Passed_ZvsAoQ(hitItemFrs.Get_ID_z(), hitItemFrs.Get_ID_AoQ()))
+                        {
+                            h2_AidaImplant_ZvsAoQGated_position_stopped[hit.DSSD-1][gate]->Fill(hit.PosX, hit.PosY);
+                            h1_AidaImplant_ZvsAoQGated_energy_stopped[hit.DSSD-1][gate]->Fill(hit.Energy);
                         }
                     }
-
-                    if (hit.Stopped)
-                    {
-                        if (!FrsGates.empty())
-                        {
-                            for (int gate = 0; gate < FrsGates.size(); gate++)
-                            {
-                                if (FrsGates[gate]->PassedGate(FrsHit->Get_ID_z(), FrsHit->Get_ID_z2(), FrsHit->Get_ID_x2(), FrsHit->Get_ID_x4(), FrsHit->Get_ID_AoQ(), FrsHit->Get_ID_dEdeg()))
-                                {
-                                    h1_stopped_implanted_passed_gate->Fill(gate * aida_config->DSSDs() + hit.DSSD - 1);
-
-                                    if (hit.DSSD == 1) stopped_implant_passed_gate_count_dssd1[gate]++;
-                                    else if (hit.DSSD == 2) stopped_implant_passed_gate_count_dssd2[gate]++;
-                                }
-
-                                int sum = stopped_implant_passed_gate_count_dssd1[gate] + stopped_implant_passed_gate_count_dssd2[gate];
-                                if (sum % plotRatioEvery == 0 && sum > 0)
-                                {   
-                                    time_t rawtime; time(&rawtime);
-                                    //double ratio = stopped_implant_passed_gate_count_dssd1[gate] / stopped_implant_passed_gate_count_dssd2[gate];
-                                    float ratio = stopped_implant_passed_gate_count_dssd1[gate] / 5; // for testing graph
-                                    hG_stopped_implants_ratio[gate]->SetPoint(r_plotted[gate], rawtime, ratio);
-                                    r_plotted[gate]++;
-                                    stopped_implant_passed_gate_count_dssd1[gate] = 0;
-                                    stopped_implant_passed_gate_count_dssd2[gate] = 0;
-                                }
-
-                                // hit pattern and energy
-                                if (FrsGates[gate]->Passed_ZvsAoQ(FrsHit->Get_ID_z(), FrsHit->Get_ID_AoQ()))
-                                {
-                                    h2_AidaImplant_ZvsAoQGated_position_stopped[hit.DSSD-1][gate]->Fill(hit.PosX, hit.PosY);
-                                    h1_AidaImplant_ZvsAoQGated_energy_stopped[hit.DSSD-1][gate]->Fill(hit.Energy);
-                                }
-
-                            }
-
-                        }
-                        
-                    } // Stopped
-
-                } // FRS-AIDA WR Gate
-            } // Aida Implants
-        
-        } // nHits
-
-    } // GetEntries() > 0
+                }          
+            } // Stopped
+        } // FRS-AIDA WR Gate
+    } // Aida Implants
 
     fNEvents++;
-}
+        
+} // nHits
+
 
 void FrsAidaCorrelationsOnline::FinishEvent()
 {

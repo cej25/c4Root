@@ -5,6 +5,7 @@
 
 #include "TGermaniumConfiguration.h"
 #include "TFrsConfiguration.h"
+#include "FrsHitData.h"
 
 class TClonesArray;
 class EventHeader;
@@ -72,6 +73,8 @@ class FrsGermaniumCorrelationsNearline : public FairTask
     private:
         TClonesArray* fHitGe;
         TClonesArray* fHitFrs;
+
+        std::vector<FrsHitItem> const* hitArrayFrs;
 
         TDirectory * dir_germanium;
 

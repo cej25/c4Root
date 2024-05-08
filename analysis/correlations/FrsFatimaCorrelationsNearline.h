@@ -5,6 +5,7 @@
 
 #include "TFatimaTwinpeaksConfiguration.h"
 #include "TFrsConfiguration.h"
+#include "FrsHitData.h"
 
 class TClonesArray;
 class EventHeader;
@@ -81,6 +82,8 @@ class FrsFatimaCorrelationsNearline : public FairTask
     private:
         TClonesArray* fHitFatima;
         TClonesArray* fHitFrs;
+
+        std::vector<FrsHitItem> const* hitArrayFrs;
 
         const TFatimaTwinpeaksConfiguration * fatima_configuration;
         const TFrsConfiguration * frs_configuration;

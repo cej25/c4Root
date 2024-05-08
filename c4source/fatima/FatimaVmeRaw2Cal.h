@@ -51,6 +51,12 @@ class FatimaVmeRaw2Cal : public FairTask
         TClonesArray* funcal_data;
         TClonesArray* fTimeMachineArray;
 
+        std::vector<FatimaVmeQDCItem> const* qdcArray;
+        std::vector<FatimaVmeTDCItem> const* tdcArray;
+        std::vector<FatimaVmeQDCCalItem>* qdcCalArray;
+        std::vector<FatimaVmeTDCCalItem>* tdcCalArray;
+        std::vector<FatimaVmeResiduals>* residualArray;
+
         Int_t fNEvents = 0;
         EventHeader* header;
 

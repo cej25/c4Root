@@ -22,6 +22,11 @@ FatimaVmeRaw2Cal::FatimaVmeRaw2Cal()
     ,   funcal_data(new TClonesArray("FatimaVmeData"))
     ,   fcal_data(new TClonesArray("FatimaVmeCalData"))
     ,   fTimeMachineArray(new TClonesArray("TimeMachineData"))
+    ,   qdcArray(nullptr)
+    ,   tdcArray(nullptr)
+    ,   qdcCalArray(new std::vector<FatimaVmeQDCCalItem>)
+    ,   tdcCalArray(new std::vector<FatimaVmeTDCCalItem>)
+    ,   residualArray(new std::vector<FatimaVmeResiduals>)
 {
     fatima_vme_config = TFatimaVmeConfiguration::GetInstance();
 }
@@ -35,6 +40,11 @@ FatimaVmeRaw2Cal::FatimaVmeRaw2Cal(const TString& name, Int_t verbose)
     ,   funcal_data(new TClonesArray("FatimaVmeData"))
     ,   fcal_data(new TClonesArray("FatimaVmeCalData"))
     ,   fTimeMachineArray(new TClonesArray("TimeMachineData"))
+    ,   qdcArray(nullptr)
+    ,   tdcArray(nullptr)
+    ,   qdcCalArray(new std::vector<FatimaVmeQDCCalItem>)
+    ,   tdcCalArray(new std::vector<FatimaVmeTDCCalItem>)
+    ,   residualArray(new std::vector<FatimaVmeResiduals>)
 {
     fatima_vme_config = TFatimaVmeConfiguration::GetInstance();
 }
@@ -42,6 +52,10 @@ FatimaVmeRaw2Cal::FatimaVmeRaw2Cal(const TString& name, Int_t verbose)
 FatimaVmeRaw2Cal::~FatimaVmeRaw2Cal()
 {
     c4LOG(info, "Deleting FatimaVmeRaw2Cal task");
+
+    if (qdcCalArray) delete qdcCalArray;
+    if (tdcCalArray) delete tdcCalArray;
+    if (residualArray) delete residualArray;
 
     if (funcal_data) delete funcal_data;
     if (fcal_data) delete fcal_data;
@@ -62,6 +76,16 @@ InitStatus FatimaVmeRaw2Cal::Init()
     mgr->Register("FatimaVmeCalData", "FatimaVmeCalDataFolder", fcal_data, !fOnline);
     mgr->Register("FatimaVmeTimeMachineData", "FatimaVmeTimeMachineDataFolder", fTimeMachineArray, !fOnline);
 
+    qdcArray = mgr->InitObjectAs<decltype(qdcArray)>("FatimaVmeQDCData");
+    c4LOG_IF(fatal, !qdcArray, "Branch qdcArray not found!");
+
+    tdcArray = mgr->InitObjectAs<decltype(tdcArray)>("FatimaVmeTDCData");
+    c4LOG_IF(fatal, !tdcArray, "Branch tdcArray not found!");
+
+    mgr->RegisterAny("FatimaVmeQDCCalData", qdcCalArray, !fOnline);
+    mgr->RegisterAny("FatimaVmeTDCCalData", tdcCalArray, !fOnline);
+    mgr->RegisterAny("FatimaVmeResiduals", residualArray, !fOnline);
+
     extra_signals = fatima_vme_config->ExtraSignals();
     tm_undelayed = fatima_vme_config->TM_Undelayed();
     tm_delayed = fatima_vme_config->TM_Delayed();
@@ -80,6 +104,204 @@ InitStatus FatimaVmeRaw2Cal::Init()
 
 void FatimaVmeRaw2Cal::Exec(Option_t* option)
 {
+    qdcCalArray->clear();
+    tdcCalArray->clear();
+    residualArray->clear();
+    //timeMachineArray->clear();
+
+    int Fat_QDC_ID;
+    int Fat_TDC_ID_single;
+    int Fat_TDC_ID[48];// ? why 
+    int Fat_TDC_multi[FAT_VME_MAX_HITS] = {0};// max VME channels?
+    bool TimID[FAT_VME_MAX_HITS] = {0};
+    bool EnID[FAT_VME_MAX_HITS] = {0};
+    int counter = 0;
+    int dummy_qdc_id[FAT_VME_MAX_HITS];
+    Double_t dummy_qdc_E[FAT_VME_MAX_HITS] = {0};
+    Double_t dum_qdc_E[FAT_VME_MAX_HITS] = {0};
+    Double_t dummy_qdc_E_raw[FAT_VME_MAX_HITS] = {0};
+    Double_t dum_qdc_E_raw[FAT_VME_MAX_HITS] = {0};
+    Long64_t dummy_qdc_t_coarse[FAT_VME_MAX_HITS] = {0};
+    Long64_t dum_qdc_t_coarse[FAT_VME_MAX_HITS] = {0};
+    Double_t dummy_qdc_t_fine[FAT_VME_MAX_HITS] = {0};
+    Double_t dum_qdc_t_fine[FAT_VME_MAX_HITS] = {0};
+    int dummy_tdc_id[FAT_VME_MAX_HITS];
+    Double_t dummy_tdc_t[FAT_VME_MAX_HITS] = {0};
+    Double_t dum_tdc_t[FAT_VME_MAX_HITS] = {0};
+    Double_t dummy_tdc_t_raw[FAT_VME_MAX_HITS] = {0};
+    Double_t dum_tdc_t_raw[FAT_VME_MAX_HITS] = {0};
+
+    int dum_qdc_id[FAT_VME_MAX_HITS];
+    int dum_tdc_id[FAT_VME_MAX_HITS];
+
+    int dummyqdcmult = 0;
+    int dummytdcmult = 0;
+    int matchedmult = 0;
+    int SC41Lcount= 0;
+    int SC41Rcount = 0;
+    std::vector<uint32_t> SC41L;
+    std::vector<uint32_t> SC41R;
+    std::vector<uint32_t> SC41L_E;
+    std::vector<uint32_t> SC41R_E;
+
+    int FatVME_TMUcount = 0;
+    int FatVME_TMDcount = 0;
+    std::vector<uint32_t> FatVME_TMU;
+    std::vector<uint32_t> FatVME_TMD;
+    std::vector<uint32_t> FatVME_TMU_E;
+    std::vector<uint32_t> FatVME_TMD_E;
+
+    int singlesqdcmult = 0;
+    int singlestdcmult = 0;
+
+    bool qdc_multi_hit_exclude[100] = {0};
+    bool tdc_multi_hit_exclude[100] = {0};
+
+    for (int i = 0; i < FAT_VME_MAX_HITS; i++)
+    {
+        dummy_qdc_id[i] = -1;
+        dummy_tdc_id[i] = -2;
+        dum_qdc_id[i] = -1;
+        dum_tdc_id[i] = -1;
+    }
+
+    std::vector<FatimaVmeTDCItem> const* tdcArray2 = tdcArray;
+    std::vector<FatimaVmeQDCItem> const* qdcArray2 = qdcArray; 
+
+    int m = 0;
+    for (auto const & tdcItem : *tdcArray)
+    {   
+        int n = 0;
+        for (auto const & tdcItem2 : *tdcArray2)
+        {
+            if (tdcItem.Get_detector() == tdcItem2.Get_detector() && m != n)
+            {
+                tdc_multi_hit_exclude[m] = true;
+            }
+            n++;
+        }
+        m++;     
+    }
+
+    for (auto const & tdcItem : *tdcArray)
+    {   
+        int det = tdcItem.Get_detector();
+        uint32_t timestamp_raw = tdcItem.Get_v1290_tdc_data();
+        double timestamp = Calibrate_TDC_T(timestamp_raw, det);
+        uint64_t wr_t = tdcItem.Get_wr_t();
+
+        if (det >= 0)
+        {   
+            // this is unnecessary;
+            double singles_tdc_timestamp = timestamp;
+            uint32_t singles_tdc_timestamp_raw = timestamp_raw;
+            int tdc_id = det;
+
+            auto & entry = tdcCalArray->emplace_back();
+            entry.SetAll(wr_t, det, timestamp, timestamp_raw);
+
+            singlestdcmult++;
+
+            if (timestamp != 0. && tdc_multi_hit_exclude[det] == 0)
+            {
+                dummy_tdc_t[dummytdcmult] = timestamp;
+                dummy_tdc_t_raw[dummytdcmult] = timestamp_raw;
+                dummy_tdc_id[dummytdcmult] = det;
+                dummytdcmult++;
+            }
+        }
+        
+        double ts_sc41l = 0;
+        double ts_sc41r = 0;
+        double ts_tmd = 0;
+        double ts_tmu = 0;
+
+        auto & res_entry = residualArray->emplace_back();
+
+        // put in residuals 
+        if (det == sc41l && timestamp != 0.)
+        {
+            SC41L.emplace_back(timestamp);
+            ts_sc41l = timestamp;
+        }
+        if (det == sc41r && timestamp != 0.)
+        {
+            SC41R.emplace_back(timestamp);
+            ts_sc41r = timestamp; 
+        }
+
+        if (((det == tm_delayed) || (det == tm_undelayed)) && tm_delayed != 0 && tm_undelayed != 0)
+        {
+            new ((*fTimeMachineArray)[fTimeMachineArray->GetEntriesFast()]) TimeMachineData((det == tm_undelayed) ? (timestamp * 0.025) : (0), (det == tm_undelayed) ? (0) : (timestamp * 0.025), tdcItem.Get_wr_subsystem_id(), tdcItem.Get_wr_t());
+        }
+
+        if (det == tm_undelayed && timestamp != 0.)
+        {
+            FatVME_TMU.emplace_back((timestamp * 0.025));
+            ts_tmu = timestamp * 0.025;
+        }
+        if (det == tm_delayed && timestamp != 0.)
+        {
+            FatVME_TMD.emplace_back((timestamp * 0.025));
+            ts_tmd = timestamp * 0.025;
+        }
+
+        res_entry.SetAll(ts_sc41l, ts_sc41r, ts_tmu, ts_tmd);
+
+    }
+
+    int p = 0;
+    for (auto const & qdcItem : *qdcArray)
+    {   
+        int o = 0;
+        for (auto const & qdcItem2 : *qdcArray2)
+        {
+            if (qdcItem.Get_detector() == qdcItem2.Get_detector() && p != o)
+            {
+                qdc_multi_hit_exclude[p] = true;
+            }
+            o++;
+        }
+        p++;     
+    }
+    
+    int z = 0;
+    for (auto const & qdcItem : *qdcArray)
+    {
+        int det = qdcItem.Get_detector();
+        uint32_t qlong_raw = qdcItem.Get_qlong_raw();
+        double qlong = Calibrate_QDC_E(qlong_raw, det);
+        uint32_t qshort_raw = qdcItem.Get_qshort_raw();
+        uint32_t coarse_time = qdcItem.Get_coarse_time();
+        double cal_coarse_time = Calibrate_QDC_T(coarse_time, det);
+        uint64_t fine_time = qdcItem.Get_fine_time();
+        double cal_fine_time = Calibrate_QDC_T(fine_time, det);
+        uint64_t wr_t = qdcItem.Get_wr_t();
+
+        if (det >= 0)
+        {
+            // and presumably create an entry for all of these
+            auto & entry = qdcCalArray->emplace_back();
+            entry.SetAll(wr_t, det, cal_coarse_time, cal_fine_time, qlong, qlong_raw, qshort_raw);
+
+            if (qlong > 10. && qdc_multi_hit_exclude[det] == 0)
+            {
+                dummy_qdc_E[dummyqdcmult] = qlong;
+                dummy_qdc_E_raw[dummyqdcmult] = qlong_raw;
+                dummy_qdc_t_coarse[dummyqdcmult] = cal_coarse_time;
+                dummy_qdc_t_fine[dummyqdcmult] = cal_fine_time;
+                dummy_qdc_id[z] = det;
+                dummyqdcmult++;
+            }
+        }
+        z++;
+    }
+
+
+
+
+/*
+
     if (funcal_data && funcal_data->GetEntriesFast() > 0)
     {
         Int_t nHits = funcal_data->GetEntriesFast();
@@ -90,62 +312,6 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
             FatimaVmeCalData* FatimaCalHit = new FatimaVmeCalData();
 
             FatimaCalHit->Set_wr_t(FatimaHit->Get_wr_t());
-
-            int Fat_QDC_ID;
-            int Fat_TDC_ID_single;
-            int Fat_TDC_ID[48];// ? why 
-            int Fat_TDC_multi[FAT_VME_MAX_HITS] = {0};// max VME channels?
-            bool TimID[FAT_VME_MAX_HITS] = {0};
-            bool EnID[FAT_VME_MAX_HITS] = {0};
-            int counter = 0;
-            int dummy_qdc_id[FAT_VME_MAX_HITS];
-            Double_t dummy_qdc_E[FAT_VME_MAX_HITS] = {0};
-            Double_t dum_qdc_E[FAT_VME_MAX_HITS] = {0};
-            Double_t dummy_qdc_E_raw[FAT_VME_MAX_HITS] = {0};
-            Double_t dum_qdc_E_raw[FAT_VME_MAX_HITS] = {0};
-            Long64_t dummy_qdc_t_coarse[FAT_VME_MAX_HITS] = {0};
-            Long64_t dum_qdc_t_coarse[FAT_VME_MAX_HITS] = {0};
-            Double_t dummy_qdc_t_fine[FAT_VME_MAX_HITS] = {0};
-            Double_t dum_qdc_t_fine[FAT_VME_MAX_HITS] = {0};
-            int dummy_tdc_id[FAT_VME_MAX_HITS];
-            Double_t dummy_tdc_t[FAT_VME_MAX_HITS] = {0};
-            Double_t dum_tdc_t[FAT_VME_MAX_HITS] = {0};
-            Double_t dummy_tdc_t_raw[FAT_VME_MAX_HITS] = {0};
-            Double_t dum_tdc_t_raw[FAT_VME_MAX_HITS] = {0};
-
-            int dum_qdc_id[FAT_VME_MAX_HITS];
-            int dum_tdc_id[FAT_VME_MAX_HITS];
-
-            int dummyqdcmult = 0;
-            int dummytdcmult = 0;
-            int matchedmult = 0;
-            int SC41Lcount= 0;
-            int SC41Rcount = 0;
-            std::vector<uint32_t> SC41L;
-            std::vector<uint32_t> SC41R;
-            std::vector<uint32_t> SC41L_E;
-            std::vector<uint32_t> SC41R_E;
-
-            int FatVME_TMUcount = 0;
-            int FatVME_TMDcount = 0;
-            std::vector<uint32_t> FatVME_TMU;
-            std::vector<uint32_t> FatVME_TMD;
-            std::vector<uint32_t> FatVME_TMU_E;
-            std::vector<uint32_t> FatVME_TMD_E;
-
-            int singlesqdcmult = 0;
-            int singlestdcmult = 0;
-
-            bool qdc_multi_hit_exclude[100] = {0};
-            bool tdc_multi_hit_exclude[100] = {0};
-
-            for (int i = 0; i < FAT_VME_MAX_HITS; i++)
-            {
-                dummy_qdc_id[i] = -1;
-                dummy_tdc_id[i] = -2;
-                dum_qdc_id[i] = -1;
-                dum_tdc_id[i] = -1;
-            }
 
             int tdcs_fired = FatimaHit->Get_TDCs_fired();
             std::vector<uint32_t> tdc_detectors = FatimaHit->Get_TDC_detectors();
@@ -413,7 +579,7 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) FatimaVmeCalData(*FatimaCalHit);
 
         } // ihit loop
-    } // if data
+    } // if data*/
 
 }
 

@@ -137,7 +137,7 @@ void s100_online_new()
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Correlations ******************************************************** //
     
-    TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations.dat");
+    TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations_tight.dat");
 
 
     // ------------------------------------------------------------------------------------ //
@@ -406,8 +406,8 @@ void s100_online_new()
         onlinege->SetEnergyGateWidth(10);
         run->AddTask(onlinege);
     }
-    TBGOTwinpeaksConfiguration::SetCoincidenceWindow(5000);
-    TBGOTwinpeaksConfiguration::SetCoincidenceOffset(0);
+    TBGOTwinpeaksConfiguration::SetCoincidenceWindow(500);
+    TBGOTwinpeaksConfiguration::SetCoincidenceOffset(400);
     if (BGO_ON)
     {
         BGOOnlineSpectra* onlinebgo = new BGOOnlineSpectra();
@@ -441,18 +441,27 @@ void s100_online_new()
     
     //FRS GATES::
     
-    FrsGate * frsgate170Er = new FrsGate("170Er",config_path+"/frs/Gates/170Er.root");
-    FrsGate * frsgate168Dy = new FrsGate("168Dy",config_path+"/frs/Gates/168Dy.root");
-    FrsGate * frsgate167Dy = new FrsGate("167Dy",config_path+"/frs/Gates/167Dy.root");
-    FrsGate * frsgateZDy = new FrsGate("ZDy",config_path+"/frs/Gates/ZDy.root");
-    FrsGate * frsgateZHo = new FrsGate("ZHo",config_path+"/frs/Gates/ZHo.root");
+    //FrsGate * frsgate170Er = new FrsGate("170Er",config_path+"/frs/Gates/170Er.root");
+    //FrsGate * frsgate168Dy = new FrsGate("168Dy",config_path+"/frs/Gates/168Dy.root");
+    //FrsGate * frsgate167Dy = new FrsGate("167Dy",config_path+"/frs/Gates/167Dy.root");
+    //FrsGate * frsgateZDy = new FrsGate("ZDy",config_path+"/frs/Gates/ZDy.root");
+    //FrsGate * frsgateZHo = new FrsGate("ZHo",config_path+"/frs/Gates/ZHo.root");
+    FrsGate * frsgateZEu = new FrsGate("ZEu",config_path+"/frs/Gates/ZEu.root");
+    FrsGate * frsgate162Eu = new FrsGate("162Eu",config_path+"/frs/Gates/162Eu.root");
+    FrsGate * frsgate163Eu = new FrsGate("163Eu",config_path+"/frs/Gates/163Eu.root");
+    FrsGate * frsgate167Tb = new FrsGate("167Tb",config_path+"/frs/Gates/167Tb.root");
+    FrsGate * frsgate164Gd = new FrsGate("164Gd",config_path+"/frs/Gates/164Gd.root");
     
     if (AIDA_ON && FRS_ON){
         std::vector<FrsGate*> frsgates{};
         
-        frsgates.emplace_back(frsgate170Er);
-        frsgates.emplace_back(frsgate168Dy);
-        frsgates.emplace_back(frsgate167Dy);
+        //frsgates.emplace_back(frsgate170Er);
+        //frsgates.emplace_back(frsgate168Dy);
+        //frsgates.emplace_back(frsgate167Dy);
+        //frsgates.emplace_back(frsgate162Eu);
+        //frsgates.emplace_back(frsgate163Eu);
+        frsgates.emplace_back(frsgate167Tb);
+        frsgates.emplace_back(frsgate164Gd);
         
         FrsAidaCorrelationsOnline * frsaida = new FrsAidaCorrelationsOnline(frsgates);
         
@@ -461,6 +470,7 @@ void s100_online_new()
     
     
     if (FRS_ON && GERMANIUM_ON){
+        /*
         FrsGermaniumCorrelations * ge170Er = new FrsGermaniumCorrelations(frsgate170Er);
         run->AddTask(ge170Er);
         FrsGermaniumCorrelations * ge168Dy = new FrsGermaniumCorrelations(frsgate168Dy);
@@ -477,9 +487,26 @@ void s100_online_new()
         FrsGermaniumCorrelations * geZHo = new FrsGermaniumCorrelations(frsgateZHo);
         geZHo->SetShortLifetimeCollectionWindow(5000);
         run->AddTask(geZHo);
+        */
+        FrsGermaniumCorrelations * ge162Eu = new FrsGermaniumCorrelations(frsgate162Eu);
+        run->AddTask(ge162Eu);
+        FrsGermaniumCorrelations * ge163Eu = new FrsGermaniumCorrelations(frsgate163Eu);
+        ge163Eu->SetShortLifetimeCollectionWindow(5000);
+        run->AddTask(ge163Eu);
+        FrsGermaniumCorrelations * geZEu = new FrsGermaniumCorrelations(frsgateZEu);
+        geZEu->SetShortLifetimeCollectionWindow(5000);
+        run->AddTask(geZEu);
+        
+        FrsGermaniumCorrelations * ge167Tb = new FrsGermaniumCorrelations(frsgate167Tb);
+        ge167Tb->SetShortLifetimeCollectionWindow(5000);
+        run->AddTask(ge167Tb);
+        FrsGermaniumCorrelations * ge164Gd = new FrsGermaniumCorrelations(frsgate164Gd);
+        ge164Gd->SetShortLifetimeCollectionWindow(5000);
+        run->AddTask(ge164Gd);
+        
     }
     if (FRS_ON && FATIMA_ON){
-        FrsFatimaCorrelations * fa170Er = new FrsFatimaCorrelations(frsgate170Er);
+        /*FrsFatimaCorrelations * fa170Er = new FrsFatimaCorrelations(frsgate170Er);
         run->AddTask(fa170Er);
         FrsFatimaCorrelations * fa168Dy = new FrsFatimaCorrelations(frsgate168Dy);
         fa168Dy->SetShortLifetimeCollectionWindow(5000);
@@ -495,6 +522,17 @@ void s100_online_new()
         FrsFatimaCorrelations * faZHo = new FrsFatimaCorrelations(frsgateZHo);
         faZHo->SetShortLifetimeCollectionWindow(5000);
         run->AddTask(faZHo);
+        */
+        
+        FrsFatimaCorrelations * fat162Eu = new FrsFatimaCorrelations(frsgate162Eu);
+        run->AddTask(fat162Eu);
+        FrsFatimaCorrelations * fat163Eu = new FrsFatimaCorrelations(frsgate163Eu);
+        fat163Eu->SetShortLifetimeCollectionWindow(5000);
+        run->AddTask(fat163Eu);
+        FrsFatimaCorrelations * fatZEu = new FrsFatimaCorrelations(frsgateZEu);
+        fatZEu->SetShortLifetimeCollectionWindow(5000);
+        run->AddTask(fatZEu);
+        
     }
 
     TString b = "Aida";
