@@ -292,9 +292,7 @@ InitStatus FrsFatimaCorrelations::Init()
     }
     
 
-    run->GetHttpServer()->RegisterCommand("Reset_Ge_Histo", Form("/Objects/%s/->Reset_Ge_Histo()", GetName()));
-    run->GetHttpServer()->RegisterCommand("Snapshot_Ge_Histo", Form("/Objects/%s/->Snapshot_Ge_Histo()", GetName()));
-
+    
     return kSUCCESS;
 }
 
@@ -368,7 +366,7 @@ void FrsFatimaCorrelations::Exec(Option_t* option)
             int detector_id1 = hit1->Get_detector_id();
             double energy1 = hit1->Get_energy();
             double time1 = hit1->Get_fast_lead_time();
-            if (detector_id1 == fatima_configuration->SC41L() || detector_id1 == fatima_configuration->SC41R()) {
+            if (detector_id1 == fatima_configuration->SC41L() /*|| detector_id1 == fatima_configuration->SC41R()*/) {
                 detector_id_sci41 = hit1->Get_detector_id();
                 energy_sci41 = hit1->Get_energy();
                 time_sci41 = hit1->Get_fast_lead_time();
@@ -398,6 +396,8 @@ void FrsFatimaCorrelations::Exec(Option_t* option)
                 //after this test, the prompt flash is cut out.
                 if ((fatima_configuration->IsInsidePromptFlashCut(timediff1 ,energy1)==true) ) continue;
 
+                
+                if (!(timediff1 < stop_short_lifetime_collection && timediff1 > - 500)) continue;
                 
                 h1_fatima_energy_promptflash_cut->Fill(energy1);
 
@@ -429,6 +429,7 @@ void FrsFatimaCorrelations::Exec(Option_t* option)
                     double timediff2 = time2 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(detector_id2);
                     
                     if ((fatima_configuration->IsInsidePromptFlashCut(timediff2, energy2)==true)) continue;
+                    if (!(timediff2 < stop_short_lifetime_collection && timediff2 > - 500)) continue;
 
                     if (ihit3 > ihit2 && (TMath::Abs(time2-fatima_configuration->GetTimeshiftCoefficient(detector_id2)-time1+fatima_configuration->GetTimeshiftCoefficient(detector_id1)) < fatima_coincidence_gate)) h2_fatima_energy_energy_promptflash_cut->Fill(energy1,energy2); // avoid double filling ... 
 

@@ -146,6 +146,8 @@ class FrsFatimaCorrelations : public FairTask
         TCanvas * c_fatima_energy_promptflash_cut;
         TH1F * h1_fatima_energy_promptflash_cut;
 
+
+
         TCanvas * c_fatima_energy_energy_promptflash_cut;
         TH2F * h2_fatima_energy_energy_promptflash_cut;
 
