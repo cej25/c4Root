@@ -25,6 +25,9 @@ FrsMainReader::FrsMainReader(EXT_STR_h101_frsmain_onion* data, size_t offset)
     , fOffset(offset)
     , fOnline(kFALSE)
     , fArray(new TClonesArray("FrsMainData"))
+    , v830array(new std::vector<FrsMainV830Item>)
+    , v792array(new std::vector<FrsMainV792Item>)
+    , v1290array(new std::vector<FrsMainV1290Item>)
 {
 }
 
@@ -53,7 +56,15 @@ Bool_t FrsMainReader::Init(ext_data_struct_info* a_struct_info)
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
     FairRootManager::Instance()->Register("FrsMainData", "FRS Main Data", fArray, !fOnline);
+
+    FairRootManager::Instance()->RegisterAny("FrsMainV830Data", v830array, !fOnline);
+    FairRootManager::Instance()->RegisterAny("FrsMainV792Data", v792array, !fOnline);
+    FairRootManager::Instance()->RegisterAny("FrsMainV1290Data", v1290array, !fOnline);
+
     fArray->Clear();
+    v1290array->clear();
+    v792array->clear();
+    v830array->clear();
 
     memset(fData, 0, sizeof *fData);
 
@@ -62,6 +73,10 @@ Bool_t FrsMainReader::Init(ext_data_struct_info* a_struct_info)
 
 Bool_t FrsMainReader::Read()
 {
+    v830array->clear();
+    v792array->clear();
+    v1290array->clear();
+
     c4LOG(debug2, "Event data");
 
     if (!fData) return kTRUE;
@@ -79,20 +94,32 @@ Bool_t FrsMainReader::Read()
     // V830
     scalers_n = fData->frsmain_data_v830_n;
     for (uint32_t i = 0; i < scalers_n; i++)
-    {   
-        scalers_index.emplace_back(fData->frsmain_data_v830_nI[i]);
-        scalers_main.emplace_back(fData->frsmain_data_v830_data[i]);
+    {       
+        uint32_t index = fData->frsmain_data_v830_nI[i];
+        uint32_t scaler = fData->frsmain_data_v830_data[i];
+        //scalers_index.emplace_back(fData->frsmain_data_v830_nI[i]);
+        //scalers_main.emplace_back(fData->frsmain_data_v830_data[i]);
+
+        auto & entry = v830array->emplace_back();
+        entry.SetAll(index, scaler);
     }
 
     // V792
+    uint32_t geo = fData->frsmain_data_v792_geo;
     v792_geo = fData->frsmain_data_v792_geo;
     int hit_index_v792 = 0;
     for (uint32_t channel_index = 0; channel_index < fData->frsmain_data_v792_nM; channel_index++){
         int current_channel_v792 = fData->frsmain_data_v792_nMI[channel_index];
         int next_channel_start_v792 = fData->frsmain_data_v792_nME[channel_index];
         for (uint32_t j = hit_index_v792; j<next_channel_start_v792; j++){
-            v792_channel.emplace_back(current_channel_v792);
-            v792_data.emplace_back(fData->frsmain_data_v792_data[j]);
+
+            uint32_t channel = current_channel_v792;
+            uint32_t data = fData->frsmain_data_v792_data[j];
+            //v792_channel.emplace_back(current_channel_v792);
+            //v792_data.emplace_back(fData->frsmain_data_v792_data[j]);
+
+            auto & entry = v792array->emplace_back();
+            entry.SetAll(channel, data, geo);
         }
         hit_index_v792 = next_channel_start_v792;
     }
@@ -108,15 +135,22 @@ Bool_t FrsMainReader::Read()
         {
             //c4LOG(info,Form("current channel = %i, next channel start = %i, channels fired = %i, data = %i",fData->frsmain_data_v1290_leadOrTrailMI[channel_index], fData->frsmain_data_v1290_leadOrTrailME[channel_index], fData->frsmain_data_v1290_nM, fData->frsmain_data_v1290_leadOrTrailv[j]));
             //c4LOG(info,Form("current channel = %i, next channel start = %i, channels fired = %i, data = %i",current_channel, next_channel_start, fData->frsmain_data_v1290_nM, fData->frsmain_data_v1290_data[j]));
-            v1290_channel.emplace_back(current_channel);
-            v1290_data.emplace_back(fData->frsmain_data_v1290_data[j]);
-            v1290_lot.emplace_back(fData->frsmain_data_v1290_leadOrTrailv[j]);
+            uint32_t channel = current_channel;
+            uint32_t data = fData->frsmain_data_v1290_data[j];
+            uint32_t lot = fData->frsmain_data_v1290_leadOrTrailv[j];
+            
+            //v1290_channel.emplace_back(current_channel);
+            //v1290_data.emplace_back(fData->frsmain_data_v1290_data[j]);
+            //v1290_lot.emplace_back(fData->frsmain_data_v1290_leadOrTrailv[j]);
+
+            auto & entry = v1290array->emplace_back();
+            entry.SetAll(channel, data, lot);
         }
         hit_index = next_channel_start;
     }
 
     // CEJ: should scalers not write regardless of this?
-    if (v1290_channel.size() > 0 || v792_channel.size() > 0)
+    /*if (v1290_channel.size() > 0 || v792_channel.size() > 0)
     {
         new ((*fArray)[fArray->GetEntriesFast()]) FrsMainData(
             //wr_t,
@@ -131,7 +165,7 @@ Bool_t FrsMainReader::Read()
             v1290_lot);
         
         fNEvent += 1;
-    }
+    }*/
     return kTRUE;
 
 }

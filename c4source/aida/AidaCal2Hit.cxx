@@ -44,6 +44,7 @@ AidaCal2Hit::AidaCal2Hit() :
     decayHitArray(new std::vector<AidaHit>),
     fImplantOnline(false),
     fDecayOnline(false),
+    header(nullptr),
     conf(nullptr)
 {
 }
@@ -61,6 +62,9 @@ InitStatus AidaCal2Hit::Init()
 {
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
+
+    header = (EventHeader*)FairRootManager::Instance()->GetObject("EventHeader.");
+    c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
     implantCalArray = mgr->InitObjectAs<decltype(implantCalArray)>("AidaImplantCalAdcData");
     decayCalArray = mgr->InitObjectAs<decltype(decayCalArray)>("AidaDecayCalAdcData");
@@ -135,6 +139,7 @@ void AidaCal2Hit::Exec(Option_t* option)
             }
 
             implantHitArray->push_back(hit);
+            //if (hit.Time != 0) std::cout << "Event: " << header->GetEventno() << " - AIDA WR: " << hit.Time << std::endl;
         }
     }
     else if (decayCalArray->size() > 1)

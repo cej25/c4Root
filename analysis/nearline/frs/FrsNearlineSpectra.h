@@ -2,6 +2,7 @@
 #define FrsNearlineSpectra_H
 
 #include "../../../config/setup.h"
+#include "FrsHitData.h"
 #include "TFrsConfiguration.h"
 #include "FairTask.h"
 #include "TFRSParameter.h"
@@ -50,7 +51,8 @@ class FrsNearlineSpectra : public FairTask
         Int_t fNEvents;
         EventHeader* header;
         
-        TClonesArray* fFrsHitArray;
+        std::vector<FrsHitItem> const* hitArray;
+        std::vector<FrsMultiHitItem> const* multihitArray;
 
         TFRSParameter* frs;
         TMWParameter* mw;
@@ -66,6 +68,7 @@ class FrsNearlineSpectra : public FairTask
         std::vector<FrsGate*> FrsGates;
 
         // folders
+        bool found_dir_frs = true;
         TDirectory* dir_frs; // for now fine, maybe needs to be...overarching branch? dunno
         TDirectory* dir_tac_hists;
         TDirectory* dir_mhtdc_hists;
@@ -85,6 +88,7 @@ class FrsNearlineSpectra : public FairTask
         TDirectory* dir_x4vsAoQ_Z1vsZ2_hists_mhtdc;
     
         // histograms
+        TH1I* h1_frs_wr;
         TH2D* h2_Z1_vs_T;
         TH2D* h2_AoQ_vs_T;
         TH2D* h2_Z_vs_AoQ;
@@ -102,6 +106,9 @@ class FrsNearlineSpectra : public FairTask
         TH2D* h2_Z_vs_dE2;
         TH2D* h2_x2_vs_x4;
         TH2D* h2_SC41dE_vs_AoQ;
+        TH2D* h2_SC42dE_vs_AoQ;
+        TH2D* h2_SC41dE_vs_Z;
+        TH2D* h2_SC42dE_vs_Z;
         TH2D* h2_dE_vs_ToF;
         TH2D* h2_x2_vs_Z;
         TH2D* h2_x4_vs_Z;
@@ -112,6 +119,7 @@ class FrsNearlineSpectra : public FairTask
         TH2D* h2_x4_vs_a4;
         TH2D* h2_y4_vs_b4;
         TH2D* h2_Z_vs_Sc21E;
+        TH1D* h1_sci21_tx;
         std::vector<TH2I*> h2_Z_vs_AoQ_ZAoQgate;
         std::vector<TH2I*> h2_Z1_vs_Z2_ZAoQgate;
         std::vector<TH2I*> h2_x2_vs_AoQ_ZAoQgate;
@@ -221,15 +229,6 @@ class FrsNearlineSpectra : public FairTask
         std::vector<TH1I*> h1_a2_dEdegZgate_mhtdc;
         std::vector<TH1I*> h1_a4_dEdegZgate_mhtdc;
         std::vector<TH2I*> h2_Z_vs_AoQ_Zsame_dEdegZgate_mhtdc;
-
-        // Conditions/Cuts
-        /*
-        std::vector<TCutG*> cutID_Z_AoQ;
-        std::vector<TCutG*> cutID_Z_Z2;
-        std::vector<TCutG*> cutID_x2AoQ;
-        std::vector<TCutG*> cutID_x4AoQ;
-        std::vector<TCutG*> cutID_dEdegZ;
-        */
 
     public:
         ClassDef(FrsNearlineSpectra, 1);

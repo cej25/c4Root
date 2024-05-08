@@ -18,6 +18,7 @@
 #pragma link C++ class bPlastTwinpeaksData+;
 #pragma link C++ class bPlastTwinpeaksCalData+;
 #pragma link C++ class LisaData+;
+#pragma link C++ class LisaCalData+;
 #pragma link C++ class LisaTraceData+;
 #pragma link C++ class BeamMonitorData+;
 #pragma link C++ class TimeMachineData+;
@@ -71,5 +72,33 @@
 #pragma link C++ class TbPlastConfiguration+;
 #pragma link C++ class TCorrelationsConfiguration+;
 #pragma link C++ class TBB7VmeConfiguration+;
+#pragma link C++ class TLisaConfiguration+;
+
+#pragma link C++ class LisaItem+;
+#pragma link C++ class LisaCalItem+;
+
+#pragma link C++ class FatimaVmeQDCItem+;
+#pragma link C++ class FatimaVmeTDCItem+;
+#pragma link C++ class FatimaVmeQDCCalItem+;
+#pragma link C++ class FatimaVmeTDCCalItem+;
+#pragma link C++ class FatimaVmeResiduals+;
+
+#pragma link C++ class FrsMainV830Item+;
+#pragma link C++ class FrsMainV1290Item+;
+#pragma link C++ class FrsMainV792Item+;
+#pragma link C++ class FrsMainCalScalerItem+;
+#pragma link C++ class FrsMainCalSciItem+;
+#pragma link C++ class FrsMainCalMusicItem+;
+#pragma link C++ class FrsTpatItem+;
+#pragma link C++ class FrsTPCV7X5Item+;
+#pragma link C++ class FrsTPCV1190Item+;
+#pragma link C++ class FrsUserV7X5Item+;
+#pragma link C++ class FrsUserV830Item+;
+#pragma link C++ class FrsTPCCalItem+;
+#pragma link C++ class FrsUserCalScalerItem+;
+#pragma link C++ class FrsUserCalSciItem+;
+#pragma link C++ class FrsUserCalMusicItem+;
+#pragma link C++ class FrsHitItem+;
+#pragma link C++ class FrsMultiHitItem+;
 
 #endif

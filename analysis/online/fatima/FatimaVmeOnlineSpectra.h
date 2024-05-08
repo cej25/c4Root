@@ -11,6 +11,7 @@
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TFatimaVmeConfiguration.h"
+#include "FatimaVmeCalData.h"
 
 class EventHeader;
 class TFolder;
@@ -44,6 +45,11 @@ class FatimaVmeOnlineSpectra : public FairTask
         TFatimaVmeConfiguration const* fatima_vme_config;
 
         TClonesArray* fHitFatimaVme;
+
+        std::vector<FatimaVmeQDCCalItem> const* qdcCalArray;
+        std::vector<FatimaVmeTDCCalItem> const* tdcCalArray;
+        std::vector<FatimaVmeResiduals> const* residualArray;
+        
 
         EventHeader* header;
         Int_t fNEvents;
