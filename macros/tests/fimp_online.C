@@ -21,7 +21,7 @@ void fimp_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
     
-    TString filename = "~/fimp/*.lmd";
+    TString filename = "~/fimp/testfile.lmd";
     TString outputFilename = "fimp_test.root";	
 
     Int_t refresh = 10; // Refresh rate for online histograms
@@ -58,16 +58,18 @@ void fimp_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpI
 
     FimpReader* unpackfimp = new FimpReader((EXT_STR_h101_fimp_onion*)&ucesb_struct.fimp, offsetof(EXT_STR_h101, fimp));
     
-    unpackfimp->SetOnline(false); //false= write to a tree; true=doesn't write to tree
+    unpackfimp->SetOnline(true); //false= write to a tree; true=doesn't write to tree
+    //unpackfimp->DoFineTimeCalOnline("ft_test.root", 100000);
+    unpackfimp->SetInputFileFineTimeHistos("ft_test.root");
     source->AddReader(unpackfimp);
 
     FimpRaw2Cal* calfimp = new FimpRaw2Cal();
-    unpackfimp->SetOnline(false);
+    unpackfimp->SetOnline(true);
     run->AddTask(calfimp);
 
     // Add analysis task here at some point
-    //FimpOnlineSpectra* onlinefimp = new FimpOnlineSpectra();
-    //run->AddTask(onlinefimp);
+    FimpOnlineSpectra* onlinefimp = new FimpOnlineSpectra();
+    run->AddTask(onlinefimp);
 
     // Initialise
     run->Init();

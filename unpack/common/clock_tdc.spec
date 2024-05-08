@@ -147,7 +147,7 @@ CLOCK_TDC_EVENT_16PH(sfp_id, tdc_id)
 	MEMBER(DATA32 event_counter_hi);
 	MEMBER(DATA32 trig_coarse_time_lo);
 	MEMBER(DATA32 trig_coarse_time_hi);
-	MEMBER(DATA12 time_coarse[258] ZERO_SUPPRESS_MULTI(128));
+	MEMBER(DATA16 time_coarse[258] ZERO_SUPPRESS_MULTI(128));
 	MEMBER(DATA12 time_fine[258] ZERO_SUPPRESS_MULTI(128));
 	MEMBER(DATA8 lead_or_trail[258] ZERO_SUPPRESS_MULTI(128));
 
@@ -212,8 +212,8 @@ CLOCK_TDC_EVENT_16PH(sfp_id, tdc_id)
 		UINT32 data NOENCODE
 		{
 			0_4: time_fine;
-			5_16: time_coarse;
-			17: time_coarse_ext;
+			5_17: time_coarse; // 5_16: time_coarse
+			//17: time_coarse_ext;
 			18: edge;
 			19: ws;
 			20: time_coarse_overflow;

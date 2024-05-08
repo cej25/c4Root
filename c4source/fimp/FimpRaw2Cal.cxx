@@ -15,6 +15,8 @@
 #include <vector>
 #include <numeric>
 
+#define CYCLE_TIME 6667 // 16PH, find a way to work this out without compilation
+
 FimpRaw2Cal::FimpRaw2Cal()
     :   FairTask()
     ,   header(nullptr)
@@ -51,35 +53,56 @@ InitStatus FimpRaw2Cal::Init()
 
 void FimpRaw2Cal::Exec(Option_t* option)
 {
-    fimpCalArray->clear();
-
-    // several loops possibly needed
-    // combine coarse+fine+lot into full lead/trails
-    // work out tots
 
     for (auto const & fimpItem : *fimpArray)
     {
         uint16_t channel = fimpItem.Get_channel();
-        uint16_t coarse_time = fimpItem.Get_lead_coarse_time();
-        uint16_t fine_time = fimpItem.Get_lead_fine_time();
-        //bool leadOrTrail = fimpItem.Get_leadOrTrail(); // lead 0, trail 1
+        uint16_t lead_coarse_time = fimpItem.Get_lead_coarse_time();
+        uint16_t lead_fine_time = fimpItem.Get_lead_fine_time();
+        uint16_t trail_coarse_time = fimpItem.Get_trail_coarse_time();
+        uint16_t trail_fine_time = fimpItem.Get_trail_fine_time();
 
+        double lead_time = (double)lead_coarse_time * (double)CYCLE_TIME  - (double)lead_fine_time;
+        double trail_time = (double)trail_coarse_time * (double)CYCLE_TIME - (double)trail_fine_time;
+        double tot = trail_time - lead_time;
+
+        // debugging, ignore
+        if (fNEvents >= 100000000000)
+        {
+            std::cout << "lead calc values: "  << std::endl;
+            std::cout << "fine time: " << -(double)lead_fine_time << std::endl;
+            std::cout << "coarse time: " << (double)lead_coarse_time * (double)CYCLE_TIME << std::endl;
+
+            std::cout << "trail calc values: "  << std::endl;
+            std::cout << "fine time: " << -(double)trail_fine_time << std::endl;
+            std::cout << "coarse time: " << (double)trail_coarse_time * (double)CYCLE_TIME << std::endl;
+        }
+
+        // if there is some mapping loaded, do mapping after FT CAL
         if (fimp_config->MappingLoaded())
         {
             // do mapping
         }
 
-        if (fimp_config->CalibrationLoaded())
-        {
-            // do calibration
-        }
+        auto & entry = fimpCalArray->emplace_back();
+        entry.SetAll(fimpItem.Get_wr_t(), 
+                    fimpItem.Get_wr_id(),
+                    channel, 
+                    tot, 
+                    lead_time, 
+                    trail_time // times in ps
+                    );
+
+      
     }
+
+    fNEvents++;
   
 }
 
 void FimpRaw2Cal::FinishEvent()
 {
-
+   fimpCalArray->clear(); 
 }
 
 void FimpRaw2Cal::FinishTask()

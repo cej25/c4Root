@@ -72,8 +72,8 @@ class TFimpConfiguration
         // will you have extra signals?
         int tm_undelayed;
         int tm_delayed;
-        int sc41l_d;
-        int sc41r_d;
+        int sc41l_d = 0;
+        int sc41r_d = 1;
 
         bool detector_mapping_loaded = 0;
         bool detector_calibrations_loaded = 0;
