@@ -14,6 +14,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
 ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
 ${C4ROOT_SOURCE_DIR}/c4data/baseData
 ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
+${C4ROOT_SOURCE_DIR}/c4data/fimpData
 ${C4ROOT_SOURCE_DIR}/c4source
 ${C4ROOT_SOURCE_DIR}/c4source/frs
 )
@@ -63,6 +64,9 @@ timemachineData/TimeMachineData.cxx
 bb7Data/BB7VmeData.cxx
 bb7Data/BB7VmeCalData.cxx
 bb7Data/TBB7VmeConfiguration.cxx
+fimpData/FimpData.cxx
+fimpData/FimpCalData.cxx
+fimpData/TFimpConfiguration.cxx
 frsData/TFRSParameter.cxx
 frsData/TFrsConfiguration.cxx
 frsData/FrsGate.cxx
