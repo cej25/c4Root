@@ -22,6 +22,7 @@
 #pragma link C++ class FatimaVmeOnlineSpectra+;
 #pragma link C++ class TimeMachineOnline+;
 #pragma link C++ class BB7OnlineSpectra+;
+#pragma link C++ class FimpOnlineSpectra+;
 
 // nearline/correlations
 #pragma link C++ class bPlastNearlineSpectra+;
@@ -33,6 +34,7 @@
 #pragma link C++ class BGONearlineSpectra+;
 #pragma link C++ class WhiterabbitCorrelationNearline+;
 #pragma link C++ class TimeMachineNearline+;
+#pragma link C++ class FimpNearlineSpectra+;
 
 #pragma link C++ class FrsAidaCorrelations+;
 #pragma link C++ class FrsAidaCorrelationsOnline+;
@@ -46,7 +48,6 @@
 #pragma link C++ class bPlastGermaniumCorrelations+;
 #pragma link C++ class bPlastGermaniumCorrelationsOnline+;
 #pragma link C++ class FrsBplastCorrelations+;
-
 
 #pragma link C++ class FatimaTimingAnalysis+;
 #pragma link C++ class FatimaSinglesAnalysis+;

@@ -25,6 +25,7 @@ EXPS=s452 \
 	onlyFATIMA \
 	s100 \
 	bb7 \
+	fimp \
 	onlyBGO \
 	onlyGerm 
 ALL_EXPS = $(EXPS)
