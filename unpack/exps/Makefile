@@ -26,6 +26,7 @@ EXPS=s452 \
 	s100 \
 	bb7 \
 	fimp \
+	pareeksha \
 	onlyBGO \
 	onlyGerm 
 ALL_EXPS = $(EXPS)
