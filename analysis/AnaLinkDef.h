@@ -12,6 +12,7 @@
 #pragma link C++ class FrsOnlineSpectra+;
 #pragma link C++ class FrsRawSpectra+;
 #pragma link C++ class FrsCalSpectra+;
+#pragma link C++ class FrsTravMusSpectra+;
 #pragma link C++ class GermaniumOnlineSpectra+;
 #pragma link C++ class GermaniumResolution+;
 #pragma link C++ class BGOOnlineSpectra+;
@@ -48,6 +49,7 @@
 #pragma link C++ class bPlastGermaniumCorrelations+;
 #pragma link C++ class bPlastGermaniumCorrelationsOnline+;
 #pragma link C++ class FrsBplastCorrelations+;
+#pragma link C++ class LisaFrsCorrelations+;
 
 #pragma link C++ class FatimaTimingAnalysis+;
 #pragma link C++ class FatimaSinglesAnalysis+;
