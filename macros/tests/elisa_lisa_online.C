@@ -4,7 +4,7 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_lisa_onion_t lisa;
 } EXT_STR_h101;
 
-void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId = 1)
+void elisa_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId = 1)
 {   
 
     TString cRunId = Form("%04d", fRunId);
@@ -21,13 +21,22 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
     
+    //:::::online reading
     //TString filename = "stream://x86l-166";
-    TString filename = "/u/gandolfo/data/lustre/despec/lisa/eris_241Am_1000V_0094_0001.lmd";
-    //TString filename = "/u/gandolfo/lustre/despec/lisa/tokyo_10dec_0076_0001.lmd";
-    //TString outputpath = "/u/gandolfo/watermelon/";
+    //TString filename = "trans://lxg1257:6000"; // when reading data time stiched
+
+    //::::::offline reading
+    //TString filename = "/u/gandolfo/data/lustre/despec/lisa/eris_241Am_1000V_0094_0001.lmd";
+    //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0167_*.lmd";
+    TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/daqtest/daqtest_0001_0001.lmd";
+
+    //:::path to root tree
     TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/";
+    //TString outputpath = "";
     TString outputFilename = outputpath + "eris_test.root";
     //TString outputFilename = outputpath + "tokyo_test.root";	
+
+    cout << "blabla" << endl;
 
     Int_t refresh = 10; // Refresh rate for online histograms
     Int_t port = 8080;
@@ -35,7 +44,6 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     TString ntuple_options = "UNPACK";
    //TString ucesb_dir = getenv("UCESB_DIR"); // .bashrc
     TString temp_path = "/u/gandolfo/c4/c4Root/unpack/exps"; //at some point move to common computer
-    //TString ucesb_dir = "/u/despec/s100_online/c4Root/unpack/exps";
     TString ucesb_path = temp_path + "/lisa/lisa --allow-errors --input-buffer=200Mi";
     ucesb_path.ReplaceAll("//","/");
 
@@ -47,28 +55,38 @@ void run_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t f
     // Create online run
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
+
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
+    //cout << "blabla3" << endl;
     run->SetSink(new FairRootFileSink(outputFilename));
     run->ActivateHttpServer(refresh, port);
+    TFolder* histograms = new TFolder("Histograms", "Histograms");
+    FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
+    //cout << "blabla3" << endl;
+
+    run->AddObject(histograms);
 
     // Load ucesb structure
     EXT_STR_h101 ucesb_struct;
+    //cout << "blabla4" << endl;
 
     // Create source using ucesb for input
     UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
     source->SetMaxEvents(nev);
-    run->SetSource(source);  
+    run->SetSource(source);
+    //cout << "blabla5" << endl;
 
     UnpackReader* unpackheader = new UnpackReader((EXT_STR_h101_unpack*)&ucesb_struct.eventheaders, offsetof(EXT_STR_h101, eventheaders));
 
     LisaReader* unpacklisa = new LisaReader((EXT_STR_h101_lisa_onion*)&ucesb_struct.lisa, offsetof(EXT_STR_h101, lisa));
     
 
-    unpacklisa->SetOnline(false); //false= write to a tree; true=doesn't write to tree
+    unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
     
     //Add readers
     source->AddReader(unpacklisa);
+    source->AddReader(unpackheader);
 
     LisaRaw2Cal* lisaraw2cal = new LisaRaw2Cal();
     run->AddTask(lisaraw2cal);
