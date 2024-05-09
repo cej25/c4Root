@@ -19,6 +19,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
 ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
 ${C4ROOT_SOURCE_DIR}/c4data/baseData
 ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
+${C4ROOT_SOURCE_DIR}/c4data/fimpData
 ${C4ROOT_SOURCE_DIR}/analysis
 ${C4ROOT_SOURCE_DIR}/analysis/pars
 ${C4ROOT_SOURCE_DIR}/analysis/offline
@@ -32,6 +33,7 @@ ${C4ROOT_SOURCE_DIR}/c4source/frs
 ${C4ROOT_SOURCE_DIR}/c4source/base
 ${C4ROOT_SOURCE_DIR}/c4source/bplast
 ${C4ROOT_SOURCE_DIR}/c4source/bb7
+${C4ROOT_SOURCE_DIR}/c4source/fimp
 )
 
 include_directories( ${INCLUDE_DIRECTORIES})
@@ -52,10 +54,12 @@ set(SRCS
 ./online/frs/FrsOnlineSpectra.cxx
 ./online/frs/FrsRawSpectra.cxx
 ./online/frs/FrsCalSpectra.cxx
+./online/frs/FrsTravMusSpectra.cxx
 ./online/bgo/BGOOnlineSpectra.cxx
 ./online/timemachine/TimeMachineOnline.cxx
 ./online/wr/WhiterabbitCorrelationOnline.cxx
 ./online/bb7/BB7OnlineSpectra.cxx
+./online/fimp/FimpOnlineSpectra.cxx
 
 # nearline/offline
 ./nearline/bplast/bPlastNearlineSpectra.cxx
@@ -67,6 +71,7 @@ set(SRCS
 ./nearline/bgo/BGONearlineSpectra.cxx
 ./nearline/wr/WhiterabbitCorrelationNearline.cxx
 ./nearline/timemachine/TimeMachineNearline.cxx
+./nearline/fimp/FimpNearlineSpectra.cxx
 
 ## correlations ##
 ./correlations/FrsAidaCorrelations.cxx
@@ -83,6 +88,7 @@ set(SRCS
 ./correlations/bPlastGermaniumCorrelations.cxx
 ./online/onlineCorrelations/bPlastGermaniumCorrelationsOnline.cxx
 ./correlations/FrsBplastCorrelations.cxx
+./correlations/LisaFrsCorrelations.cxx
 )
 
 

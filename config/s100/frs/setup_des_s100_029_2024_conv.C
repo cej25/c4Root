@@ -461,10 +461,10 @@ void setup(TFRSParameter* frs,
   id->vel_a2[2] =  9864.92;//13201.0;//
   id->vel_a2[3] =  0.0;
 
-  //MUSIC43 velocity corr. (old)
-  id->vel_a3[0] =  4825.0; //13951.37; 
-  id->vel_a3[1] =  -4212.0;//-38369.9;
-  id->vel_a3[2] =  2046;//28396.46;
+  //MUSIC43 velocity corr. -- for 170ER // S100!
+  id->vel_a3[0] =  3925.40;// 4825.0; //13951.37;  // 3925.40
+  id->vel_a3[1] =  -2915.05;// -4212.0;//-38369.9;  // -2915.05
+  id->vel_a3[2] =  1580.95; //2046;//28396.46; // 1580.95
   id->vel_a3[3] =  0.0;
 
   //MUSIC44 velocity corr. (not determined)
