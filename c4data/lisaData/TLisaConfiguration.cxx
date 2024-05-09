@@ -105,6 +105,7 @@ void TLisaConfiguration::ReadMappingFile()
     ymax = y_positions.size();
     num_detectors = detectors;
     num_febex_boards = febex_boards.size();
+    //std::cout<<"num layers:"<<num_layers<<std::endl;
     
     detector_mapping_loaded = 1;
     detector_map_file.close();
