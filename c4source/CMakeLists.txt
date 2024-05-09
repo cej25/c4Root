@@ -58,10 +58,12 @@ set(SRCS
 ./frs/FrsUserReader.cxx
 ./frs/FrsVFTXReader.cxx
 ./frs/FrsTpatReader.cxx
+./frs/FrsTravMusReader.cxx
 ./frs/FrsMainRaw2Cal.cxx
 ./frs/FrsTPCRaw2Cal.cxx
 ./frs/FrsUserRaw2Cal.cxx
 ./frs/FrsVFTXRaw2Cal.cxx
+./frs/FrsTravMusRaw2Cal.cxx
 ./frs/FrsCal2Hit.cxx
 ./germanium/GermaniumReader.cxx
 ./lisa/LisaReader.cxx
@@ -89,6 +91,8 @@ Set(STRUCT_HEADERS
 ./frs/ext_h101_frstpc.h
 ./frs/ext_h101_frsuser.h
 ./frs/ext_h101_frsvftx.h
+./frs/ext_h101_frstpat.h
+./frs/ext_h101_travmus.h
 ./lisa/ext_h101_lisa.h
 ./germanium/ext_h101_germanium.h
 ./bplast/ext_h101_bplast.h
