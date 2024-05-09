@@ -32,10 +32,12 @@ frsData/FrsTPCData.cxx
 frsData/FrsUserData.cxx
 frsData/FrsVFTXData.cxx
 frsData/FrsTpatData.cxx
+frsData/FrsTravMusData.cxx
 frsData/FrsMainCalData.cxx
 frsData/FrsTPCCalData.cxx
 frsData/FrsUserCalData.cxx
 frsData/FrsVFTXCalData.cxx
+frsData/FrsTravMusCalData.cxx
 frsData/FrsHitData.cxx
 lisaData/LisaData.cxx
 lisaData/LisaCalData.cxx
