@@ -37,7 +37,7 @@ void pareeksha_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t 
     TString outputFilename = outputpath + "pareeksha_test.root";
 
     Int_t refresh = 10; // Refresh rate for online histograms
-    Int_t port = 8080;
+    Int_t port = 6969;
      
     TString ntuple_options = "UNPACK";
     TString c4Root_path = "/u/cjones/c4Root/";
@@ -135,6 +135,15 @@ void pareeksha_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t 
      
     hitfrs->SetOnline(false); 
     run->AddTask(hitfrs);
+
+
+    // ::::::::: ONLINE SPECTRA ::::::::::::::::
+    TFrsConfiguration::Set_Z_range(50, 80);
+    //FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
+    //run->AddTask(onlinefrs);
+
+    FrsTravMusSpectra* onlinetravmus = new FrsTravMusSpectra();
+    run->AddTask(onlinetravmus);
 
     
 
