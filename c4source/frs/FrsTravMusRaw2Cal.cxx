@@ -33,11 +33,7 @@ FrsTravMusRaw2Cal::FrsTravMusRaw2Cal(const TString& name, Int_t verbose)
     ,   tdcArray(nullptr)
     ,   calArray(new std::vector<FrsTravMusCalItem>)
 {
-    /*frs_config = TFrsConfiguration::GetInstance();
-    frs = frs_config->FRS();
-    music = frs_config->MUSIC();
-    id = frs_config->ID();
-    pathToConfigFiles = frs_config->GetConfigPath();*/
+
 }
 
 FrsTravMusRaw2Cal::~FrsTravMusRaw2Cal()
@@ -67,8 +63,6 @@ InitStatus FrsTravMusRaw2Cal::Init()
     music_e = new uint16_t[8];
     music_t = new uint16_t[8];
 
-    Setup_Conditions(pathToConfigFiles);
-
     return kSUCCESS;
 }
 
@@ -76,7 +70,7 @@ void FrsTravMusRaw2Cal::Exec(Option_t* option)
 {
     calArray->clear();
 
-    uint64_t wr_t;
+    uint64_t wr_t = 0;
     int adc_count = 0;
     for (int i = 0; i < 8; i++) music_e[i] = 0;
     for (auto const & adcItem : *adcArray)

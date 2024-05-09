@@ -13,17 +13,16 @@ class FrsTravMusCalItem : public TObject
 
         // Getters
         uint64_t Get_wr_t() const;
-        uint16_t* Get_music_energy() const;
-        uint16_t* Get_music_time() const;
+        uint16_t Get_music_energy(int index) const;
+        uint16_t Get_music_time(int index) const;
 
         ClassDefNV(FrsTravMusCalItem, 2);
     
     public:
         uint64_t wr_t;
 
-        // can't be written to tree like this..
-        uint16_t* energy;
-        uint16_t* time;
+        uint16_t energy[8];
+        uint16_t time[8];
         
 };
 
@@ -32,14 +31,14 @@ inline uint64_t FrsTravMusCalItem::Get_wr_t() const
     return wr_t;
 }
 
-inline uint16_t* FrsTravMusCalItem::Get_music_energy() const
+inline uint16_t FrsTravMusCalItem::Get_music_energy(int index) const
 {
-    return energy;
+    return energy[index];
 }
 
-inline uint16_t* FrsTravMusCalItem::Get_music_time() const
+inline uint16_t FrsTravMusCalItem::Get_music_time(int index) const
 {
-    return time;
+    return time[index];
 }
 
 

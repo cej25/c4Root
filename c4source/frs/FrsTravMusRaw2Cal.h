@@ -32,9 +32,6 @@ class FrsTravMusRaw2Cal : public FairTask
 
         void SetOnline(Bool_t set_online) { fOnline = set_online; }
 
-        Bool_t Check_WinCond_Multi(Float_t P, Float_t V[8][2], int cond_num);
-        void Setup_Conditions(std::string path_to_config_files);
-
 
     private:
         Bool_t fOnline;
@@ -50,12 +47,6 @@ class FrsTravMusRaw2Cal : public FairTask
         uint16_t* music_t;
         Float_t cMusic_E[8][2];
         Bool_t music_b_e[8];
-
-        TFrsConfiguration const* frs_config;
-        TFRSParameter* frs;
-        TMUSICParameter* music;
-        TIDParameter* id;
-        std::string pathToConfigFiles;
 
 
     public:

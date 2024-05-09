@@ -83,7 +83,7 @@ Bool_t FrsTravMusReader::Read()
             uint32_t adc_data = fData->travmus_data_adcv[j];
 
             auto & entry = adcArray->emplace_back();
-            entry.SetAll(wr_t, channel, adc_data);
+            entry.SetAll(wr_t, channel-1, adc_data); // channel offset by 1 with ZSM
         }
         adc_hit_index = next_chan_start;
     }
@@ -100,7 +100,7 @@ Bool_t FrsTravMusReader::Read()
             uint32_t tdc_data = fData->travmus_data_tdcv[j];
 
             auto & entry = tdcArray->emplace_back();
-            entry.SetAll(channel, tdc_data);
+            entry.SetAll(channel-1, tdc_data); // channel offset by 1 with ZSM
         }
         tdc_hit_index = next_chan_start;
     }
