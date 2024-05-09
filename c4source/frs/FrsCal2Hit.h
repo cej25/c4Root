@@ -155,10 +155,10 @@ class FrsCal2Hit : public FairTask
 
         uint32_t* music_e1;
         uint32_t* music_e2;
-        uint16_t* travmusic_e;
+        uint16_t travmusic_e[8];
         uint32_t* music_t1;
         uint32_t* music_t2;
-        uint16_t* travmusic_t;
+        uint16_t travmusic_t[8];
 
         Int_t music1_anodes_cnt;
 	    Int_t music2_anodes_cnt;
@@ -166,10 +166,10 @@ class FrsCal2Hit : public FairTask
 
         Bool_t music_b_e1[8];
         Bool_t music_b_e2[8];
-        Bool_t travmusic_b_e[8];
+        Bool_t travmusic_b_e[8] = {0};
         Bool_t music_b_t1[8];
         Bool_t music_b_t2[8];
-        Bool_t travmusic_b_t[8];
+        Bool_t travmusic_b_t[8] = {0};
         Bool_t b_de1;
 	    Bool_t b_de2;
         Bool_t b_de_travmus;

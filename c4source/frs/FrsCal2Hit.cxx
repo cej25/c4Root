@@ -93,7 +93,7 @@ InitStatus FrsCal2Hit::Init()
 {
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
-
+    
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "EventHeader. not found!");
 
@@ -138,10 +138,10 @@ InitStatus FrsCal2Hit::Init()
     sci_x = new Float_t[6];
     music_e1 = new uint32_t[8];
     music_e2 = new uint32_t[8];
-    travmusic_e = new uint16_t[8];
+    //travmusic_e = new uint16_t[8];
     music_t1 = new uint32_t[8];
     music_t2 = new uint32_t[8];
-    travmusic_t = new uint16_t[8];
+    //travmusic_t = new uint16_t[8];
 
     return kSUCCESS;
 }
@@ -256,8 +256,8 @@ void FrsCal2Hit::Exec(Option_t* option)
     {
         auto const & travMusicItem = travMusicArray->at(0);
         wr_travmus = travMusicItem.Get_wr_t();
-        travmusic_t = travMusicItem.Get_music_time();
-        travmusic_e = travMusicItem.Get_music_energy();
+        for (int i = 0; i < 8; i++) travmusic_t[i] = travMusicItem.Get_music_time(i);
+        for (int i = 0; i < 8; i++) travmusic_e[i] = travMusicItem.Get_music_energy(i);
     }
 
     music1_anodes_cnt = 0;
@@ -313,6 +313,7 @@ void FrsCal2Hit::Exec(Option_t* option)
                 if (travmusic_b_e[i])
                 {
                     travmusic_anodes_cnt++;
+                    std::cout << "anode count: " << travmusic_anodes_cnt << std::endl;
                 }
             }
         }
@@ -417,12 +418,17 @@ void FrsCal2Hit::Exec(Option_t* option)
         Int_t temp_count_travmus = 0;
         for (int i = 0; i < 8; i++)
         {
+            std::cout << "travmus b: " << travmusic_b_e[i] << std::endl;
             if (travmusic_b_e[i])
             {
+                std::cout << "music e: " << (travmusic_e[i]) << std::endl;
                 temp_de_travmus *= ((travmusic_e[i]) * music->e3_gain[i] + music->e3_off[i]);
+                std::cout << temp_de_travmus << std::endl;
                 temp_count_travmus++;
             }
         }
+        std::cout << "count: " << temp_count_travmus << std::endl;
+        std::cout << "temp_de_travmus after: " << temp_de_travmus << std::endl; 
         de_travmus = TMath::Power(temp_de_travmus, 1. / ((float)(temp_count_travmus)));
         de_cor_travmus = de_travmus;
         b_de_travmus = kTRUE;
@@ -1471,6 +1477,8 @@ void FrsCal2Hit::Setup_Conditions(std::string path_to_config_files)
 
         line_number++;
     }
+
+    std::cout << "condition: " << cMusicTRAV_E[7][0] << std::endl;
 
 
     line_number = 0;
