@@ -5,7 +5,7 @@
 #define FATIMA_ON 1
 #define FRS_ON 1
 #define TRAV_MUSIC_ON 0
-#define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
+#define WHITE_RABBIT_CORS 0 // does not work w/o aida currently DO NOT USE!!
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
