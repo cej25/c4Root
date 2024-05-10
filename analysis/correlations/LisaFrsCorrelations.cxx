@@ -70,6 +70,10 @@ InitStatus LisaFrsCorrelations::Init()
 
     dir_lisa_frs = dir_corr->mkdir("LISA-FRS Correlations");
 
+
+    //add histo
+
+
     return kSUCCESS;
 
 }
@@ -89,6 +93,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     for (const auto & lisaCalItem : *lisaCalArray)
     {
 
+        //same lisa online - loop through lisa item when match frs item
 
     }
 
