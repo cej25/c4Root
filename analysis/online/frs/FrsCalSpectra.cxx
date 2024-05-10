@@ -291,21 +291,20 @@ void FrsCalSpectra::Exec(Option_t* option)
     h_sci_81l_de->Fill(sci_81l_de);
     h_sci_81r_de->Fill(sci_81r_de);
 
-    uint32_t** tdc_array = mainSciItem.Get_tdc_array();
 
     // getting the first hit only: mapping to int32 signed is okay since the max value is 2^20:
-    int32_t sci21l_time = tdc_array[2][0];
-    int32_t sci21r_time = tdc_array[3][0];
-    int32_t sci22l_time = tdc_array[12][0];
-    int32_t sci22r_time = tdc_array[13][0];
-    int32_t sci41l_time = tdc_array[0][0];
-    int32_t sci41r_time = tdc_array[1][0];
-    int32_t sci42l_time = tdc_array[4][0];
-    int32_t sci42r_time = tdc_array[14][0];
-    int32_t sci43l_time = tdc_array[5][0];
-    int32_t sci43r_time = tdc_array[6][0];
-    int32_t sci81l_time = tdc_array[7][0];
-    int32_t sci81r_time = tdc_array[8][0];
+    int32_t sci21l_time = mainSciItem.Get_mhtdc_sc21l_hit(0);
+    int32_t sci21r_time = mainSciItem.Get_mhtdc_sc21r_hit(0);
+    int32_t sci22l_time = mainSciItem.Get_mhtdc_sc22l_hit(0);
+    int32_t sci22r_time = mainSciItem.Get_mhtdc_sc22r_hit(0);
+    int32_t sci41l_time = mainSciItem.Get_mhtdc_sc41l_hit(0);
+    int32_t sci41r_time = mainSciItem.Get_mhtdc_sc41r_hit(0);
+    int32_t sci42l_time = mainSciItem.Get_mhtdc_sc42l_hit(0);
+    int32_t sci42r_time = mainSciItem.Get_mhtdc_sc42r_hit(0);
+    int32_t sci43l_time = mainSciItem.Get_mhtdc_sc43l_hit(0);
+    int32_t sci43r_time = mainSciItem.Get_mhtdc_sc43r_hit(0);
+    int32_t sci81l_time = mainSciItem.Get_mhtdc_sc81l_hit(0);
+    int32_t sci81r_time = mainSciItem.Get_mhtdc_sc81r_hit(0);
 
     if (sci21l_time != 0) h_sci_21l_t->Fill(sci21l_time);
     if (sci21r_time != 0) h_sci_21r_t->Fill(sci21r_time);    

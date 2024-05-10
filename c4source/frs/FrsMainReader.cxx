@@ -136,15 +136,11 @@ Bool_t FrsMainReader::Read()
             //c4LOG(info,Form("current channel = %i, next channel start = %i, channels fired = %i, data = %i",fData->frsmain_data_v1290_leadOrTrailMI[channel_index], fData->frsmain_data_v1290_leadOrTrailME[channel_index], fData->frsmain_data_v1290_nM, fData->frsmain_data_v1290_leadOrTrailv[j]));
             //c4LOG(info,Form("current channel = %i, next channel start = %i, channels fired = %i, data = %i",current_channel, next_channel_start, fData->frsmain_data_v1290_nM, fData->frsmain_data_v1290_data[j]));
             
-            if (current_channel == 0) c4LOG(fatal, "FOUND A CURRENT_CHANNEL = 0!");
             uint32_t channel = current_channel - 1; // I cannot see why this doesn't get set to zero for channel zero.... Please check. But it seems correct this way.
             
             uint32_t data = fData->frsmain_data_v1290_data[j];
             uint32_t lot = fData->frsmain_data_v1290_leadOrTrailv[j];
             
-            //v1290_channel.emplace_back(current_channel);
-            //v1290_data.emplace_back(fData->frsmain_data_v1290_data[j]);
-            //v1290_lot.emplace_back(fData->frsmain_data_v1290_leadOrTrailv[j]);
 
             auto & entry = v1290array->emplace_back();
             entry.SetAll(channel, data, lot);
@@ -152,23 +148,7 @@ Bool_t FrsMainReader::Read()
         hit_index = next_channel_start;
     }
 
-    // CEJ: should scalers not write regardless of this?
-    /*if (v1290_channel.size() > 0 || v792_channel.size() > 0)
-    {
-        new ((*fArray)[fArray->GetEntriesFast()]) FrsMainData(
-            //wr_t,
-            scalers_n,
-            scalers_index,
-            scalers_main,
-            v792_geo,
-            v792_channel,
-            v792_data,
-            v1290_channel,
-            v1290_data,
-            v1290_lot);
-        
-        fNEvent += 1;
-    }*/
+
     return kTRUE;
 
 }

@@ -20,8 +20,6 @@ FrsMainRaw2Cal::FrsMainRaw2Cal()
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
-    // ,   fRawArray(new TClonesArray("FrsMainData"))
-    // ,   fCalArray(new TClonesArray("FrsMainCalData"))
     ,   v830array(nullptr)
     ,   v792array(nullptr)
     ,   v1290array(nullptr)
@@ -36,8 +34,6 @@ FrsMainRaw2Cal::FrsMainRaw2Cal(const TString& name, Int_t verbose)
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
-    // ,   fRawArray(new TClonesArray("FrsMainData"))
-    // ,   fCalArray(new TClonesArray("FrsMainCalData"))
     ,   v830array(nullptr)
     ,   v792array(nullptr)
     ,   v1290array(nullptr)
@@ -51,7 +47,6 @@ FrsMainRaw2Cal::~FrsMainRaw2Cal()
 {
     c4LOG(info, "Deleting FrsMainRaw2Cal task");
     if (fRawArray) delete fRawArray;
-    if (fCalArray) delete fCalArray;
 }
 
 InitStatus FrsMainRaw2Cal::Init()
@@ -65,7 +60,6 @@ InitStatus FrsMainRaw2Cal::Init()
     fRawArray = (TClonesArray*)mgr->GetObject("FrsMainData");
     c4LOG_IF(fatal, !fRawArray, "FRS branch of MainData not found");
 
-    FairRootManager::Instance()->Register("FrsMainCalData", "FRS Main Cal Data", fCalArray, !fOnline);
 
     v830array = mgr->InitObjectAs<decltype(v830array)>("FrsMainV830Data");
     c4LOG_IF(fatal, !v830array, "Branch v830array not found!");
@@ -83,13 +77,11 @@ InitStatus FrsMainRaw2Cal::Init()
     musicArray->clear();
 
     de = new uint32_t[14];
-    tdc = new uint32_t*[15];
-    for (int i = 0; i < 15; i++) tdc[i] = new uint32_t[max_hits_in_v1290];
     music_t1 = new uint32_t[8];
     music_t2 = new uint32_t[8];
 
-    // fRawArray->Clear();
-    // fCalArray->Clear();
+    ZeroArrays();
+
 
     return kSUCCESS;
 }
@@ -111,14 +103,6 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
 
     // V792 
 
-    for (int i = 0; i < 14; i++) de[i] = 0;
-    for (int i = 0; i < 15; i++)
-    {
-        for (int j = 0; j < 10; j++) tdc[i][j] = 0;
-    }
-    for (int i = 0; i < 8; i++) music_t1[i] = 0;
-    for (int i = 0; i < 8; i++) music_t2[i] = 0;
-    
     // should only be 1 entry for this vector of items?
     for (auto const & v792item : *v792array)
     {
@@ -180,19 +164,10 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
 
 
     // V1290
-    
-    
-    /*
-    these also not used until FrsAnl step. (Good, I think).
-    there is probably a nicer way of writing the following,
-    but I didn't want to use big 2d arrays that are mostly empty.
-    */
 
-    // CEJ caving and using arrays instead of vectors for multhit atm
-    // come back and maybe change to SciDE and SciT?
+    auto & sciEntry = sciArray->emplace_back();
 
-    int mh_counter[31];
-    for (int i = 0; i<31; i++) mh_counter[i] = 0;
+    sciEntry.SetdEArray(de);
 
     for (auto const & v1290_item : *v1290array)
     {
@@ -201,137 +176,103 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
             switch (v1290_item.Get_channel()) // for some reason the data readout of v1290 starts from 1 .... Verified that sci41L is ch 0 in MH 08.05.24
             {
                 case 0: // 41l
-                    if (mh_counter[0] < max_hits_in_v1290) tdc[0][mh_counter[0]] = v1290_item.Get_v1290_data();
-                    mh_counter[0]++;
+                    sciEntry.Add_mhtdc_sc41l_hit(v1290_item.Get_v1290_data());
                     break;
                 case 1: // 41r
-                    if (mh_counter[1] < max_hits_in_v1290) tdc[1][mh_counter[1]] = v1290_item.Get_v1290_data();
-                    mh_counter[1]++;
+                    sciEntry.Add_mhtdc_sc41r_hit(v1290_item.Get_v1290_data());
                     break;
                 case 2: // 21l
-                    if (mh_counter[2] < max_hits_in_v1290) tdc[2][mh_counter[2]] = v1290_item.Get_v1290_data();
-                    mh_counter[2]++;
+                    sciEntry.Add_mhtdc_sc21l_hit(v1290_item.Get_v1290_data());
                     break;
                 case 3: // 21r
-                    if (mh_counter[3] < max_hits_in_v1290) tdc[3][mh_counter[3]] = v1290_item.Get_v1290_data();
-                    mh_counter[3]++;
+                    sciEntry.Add_mhtdc_sc21r_hit(v1290_item.Get_v1290_data());
                     break;
                 case 4: // 42l
-                    if (mh_counter[4] < max_hits_in_v1290) tdc[4][mh_counter[4]] = v1290_item.Get_v1290_data();
-                    mh_counter[4]++;
+                    sciEntry.Add_mhtdc_sc42l_hit(v1290_item.Get_v1290_data());
                     break;
                 case 5: // not used
                     break;
                 case 6: // 43l
-                    if (mh_counter[5] < max_hits_in_v1290) tdc[5][mh_counter[5]] = v1290_item.Get_v1290_data();
-                    mh_counter[5]++;
+                    sciEntry.Add_mhtdc_sc43l_hit(v1290_item.Get_v1290_data());
                     break;
                 case 7: // 43r
-                    if (mh_counter[6] < max_hits_in_v1290) tdc[6][mh_counter[6]] = v1290_item.Get_v1290_data();
-                    mh_counter[6]++;
+                    sciEntry.Add_mhtdc_sc43r_hit(v1290_item.Get_v1290_data());
                     break;
                 case 8: // 81l
-                    if (mh_counter[7] < max_hits_in_v1290) tdc[7][mh_counter[7]] = v1290_item.Get_v1290_data();
-                    mh_counter[7]++;
+                    sciEntry.Add_mhtdc_sc81l_hit(v1290_item.Get_v1290_data());
                     break;
                 case 9: // 81r
-                    if (mh_counter[8] < max_hits_in_v1290) tdc[8][mh_counter[8]] = v1290_item.Get_v1290_data();
-                    mh_counter[8]++;
+                    sciEntry.Add_mhtdc_sc81r_hit(v1290_item.Get_v1290_data());
                     break;
                 case 10: // 31l
-                    if (mh_counter[9] < max_hits_in_v1290) tdc[9][mh_counter[9]] = v1290_item.Get_v1290_data();
-                    mh_counter[9]++;
+                    sciEntry.Add_mhtdc_sc31l_hit(v1290_item.Get_v1290_data());
                     break;
                 case 11: // 31r
-                    if (mh_counter[10] < max_hits_in_v1290) tdc[10][mh_counter[10]] = v1290_item.Get_v1290_data();
-                    mh_counter[10]++;
+                    sciEntry.Add_mhtdc_sc31r_hit(v1290_item.Get_v1290_data());
                     break;
                 case 12: // 11
-                    if (mh_counter[11] < max_hits_in_v1290) tdc[11][mh_counter[11]] = v1290_item.Get_v1290_data();
-                    mh_counter[11]++;
+                    sciEntry.Add_mhtdc_sc11_hit(v1290_item.Get_v1290_data());
                     break;
                 case 13: // 22l
-                    if (mh_counter[12] < max_hits_in_v1290) tdc[12][mh_counter[12]] = v1290_item.Get_v1290_data();
-                    mh_counter[12]++;
+                    sciEntry.Add_mhtdc_sc22l_hit(v1290_item.Get_v1290_data());
                     break;
                 case 14: // 22r
-                    if (mh_counter[13] < max_hits_in_v1290) tdc[13][mh_counter[13]] = v1290_item.Get_v1290_data();
-                    mh_counter[13]++;
+                    sciEntry.Add_mhtdc_sc22r_hit(v1290_item.Get_v1290_data());
                     break;
                 case 15: // 42r
-                    if (mh_counter[14] < max_hits_in_v1290) tdc[14][mh_counter[14]] = v1290_item.Get_v1290_data();
-                    mh_counter[14]++;
+                    sciEntry.Add_mhtdc_sc42r_hit(v1290_item.Get_v1290_data());
                     break;
                 case 16:
-                    if (mh_counter[15] == 0) music_t1[0] = v1290_item.Get_v1290_data();
-                    mh_counter[15]++;
+                    if (music_t1[0] != 0) music_t1[0] = v1290_item.Get_v1290_data();
                     break;
                 case 17:
-                    if (mh_counter[16] == 0) music_t1[1] = v1290_item.Get_v1290_data();
-                    mh_counter[16]++;
+                    if (music_t1[1] != 0) music_t1[1] = v1290_item.Get_v1290_data();
                     break;
                 case 18:
-                    if (mh_counter[17] == 0) music_t1[2] = v1290_item.Get_v1290_data();
-                    mh_counter[17]++;
+                    if (music_t1[2] != 0) music_t1[2] = v1290_item.Get_v1290_data();
                     break;
                 case 19:
-                    if (mh_counter[18] == 0) music_t1[3] = v1290_item.Get_v1290_data();
-                    mh_counter[18]++;
+                    if (music_t1[3] != 0) music_t1[3] = v1290_item.Get_v1290_data();
                     break;
                 case 20:
-                    if (mh_counter[19] == 0) music_t1[4] = v1290_item.Get_v1290_data();
-                    mh_counter[19]++;
+                    if (music_t1[4] != 0) music_t1[4] = v1290_item.Get_v1290_data();
                     break;
                 case 21:
-                    if (mh_counter[20] == 0) music_t1[5] = v1290_item.Get_v1290_data();
-                    mh_counter[20]++;
+                    if (music_t1[5] != 0) music_t1[5] = v1290_item.Get_v1290_data();
                     break;
                 case 22:
-                    if (mh_counter[21] == 0) music_t1[6] = v1290_item.Get_v1290_data();
-                    mh_counter[21]++;
+                    if (music_t1[6] != 0) music_t1[6] = v1290_item.Get_v1290_data();
                     break;
                 case 23:
-                    if (mh_counter[22] == 0) music_t1[7] = v1290_item.Get_v1290_data();
-                    mh_counter[22]++;
+                    if (music_t1[7] != 0) music_t1[7] = v1290_item.Get_v1290_data();
                     break;
                 case 24:
-                    if (mh_counter[23] == 0) music_t2[0] = v1290_item.Get_v1290_data();
-                    mh_counter[23]++;
+                    if (music_t2[0] != 0) music_t2[0] = v1290_item.Get_v1290_data();
                     break;
                 case 25:
-                    if (mh_counter[24] == 0) music_t2[1] = v1290_item.Get_v1290_data();
-                    mh_counter[24]++;
+                    if (music_t2[1] != 0) music_t2[1] = v1290_item.Get_v1290_data();
                     break;
                 case 26:
-                    if (mh_counter[25] == 0) music_t2[2] = v1290_item.Get_v1290_data();
-                    mh_counter[25]++;
+                    if (music_t2[2] != 0) music_t2[2] = v1290_item.Get_v1290_data();
                     break;
                 case 27:
-                    if (mh_counter[26] == 0) music_t2[3] = v1290_item.Get_v1290_data();
-                    mh_counter[26]++;
+                    if (music_t2[3] != 0) music_t2[3] = v1290_item.Get_v1290_data();
                     break;
                 case 28:
-                    if (mh_counter[27] == 0) music_t2[4] = v1290_item.Get_v1290_data();
-                    mh_counter[27]++;
+                    if (music_t2[4] != 0) music_t2[4] = v1290_item.Get_v1290_data();
                     break;
                 case 29:
-                    if (mh_counter[28] == 0) music_t2[5] = v1290_item.Get_v1290_data();
-                    mh_counter[28]++;
+                    if (music_t2[5] != 0) music_t2[5] = v1290_item.Get_v1290_data();
                     break;
                 case 30:
-                    if (mh_counter[29] == 0) music_t2[6] = v1290_item.Get_v1290_data();
-                    mh_counter[29]++;
+                    if (music_t2[6] != 0) music_t2[6] = v1290_item.Get_v1290_data();
                     break;
                 case 31:
-                    if (mh_counter[30] == 0) music_t2[7] = v1290_item.Get_v1290_data();
-                    mh_counter[30]++;
+                    if (music_t2[7] != 0) music_t2[7] = v1290_item.Get_v1290_data();
                     break;
             }
         }
     }
-
-    auto & sciEntry = sciArray->emplace_back();
-    sciEntry.SetAll(de, tdc);
 
     auto & musicEntry = musicArray->emplace_back();
     musicEntry.SetAll(music_t1, music_t2);
@@ -342,15 +283,15 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
 
 void FrsMainRaw2Cal::ZeroArrays()
 {
-    memset(de_array, 0, sizeof(de_array));
-    //memset(music_t1, 0, sizeof(music_t1));
-    //memset(music_t2, 0, sizeof(music_t2));
-    // fCalArray->Clear();
+
+    for (int i = 0; i < 14; i++) de[i] = 0;
+    for (int i = 0; i < 8; i++) music_t1[i] = 0;
+    for (int i = 0; i < 8; i++) music_t2[i] = 0;
+    
 }
 
 void FrsMainRaw2Cal::ClearVectors()
 {
-    for (int i = 0; i < 15; i++) tdc_array[i].clear();
     v830_scalers_index.clear();
     v830_scalers_main.clear();
     v792_channel.clear();

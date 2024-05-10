@@ -9,7 +9,6 @@
 class TClonesArray;
 class EventHeader;
 class FrsMainData;
-class FrsMainCalData;
 
 class FrsMainRaw2Cal : public FairTask
 {
@@ -35,7 +34,6 @@ class FrsMainRaw2Cal : public FairTask
     private:
         Bool_t fOnline;
 
-        TClonesArray* fCalArray;
         TClonesArray* fRawArray; // from FrsReader
         
         
@@ -71,24 +69,19 @@ class FrsMainRaw2Cal : public FairTask
         std::vector<uint32_t> v792_data;
         std::vector<uint32_t> v792_channel;
 
-        uint32_t de_array[14];
         std::vector<uint32_t> v1290_data;
         std::vector<uint32_t> v1290_channel;
         std::vector<uint32_t> v1290_lot;
 
-        std::vector<uint32_t> tdc_array[15];
-       // uint32_t music_t1[8];
-       // uint32_t music_t2[8];
-        
+
         EventHeader* header;
         Int_t fNEvents = 0;
 
         uint32_t* de;
-        uint32_t** tdc;
         uint32_t* music_t1;
         uint32_t* music_t2;
 
-        const int max_hits_in_v1290 = 10;
+        const int max_hits_in_v1290 = 100;
 
 
     public:
