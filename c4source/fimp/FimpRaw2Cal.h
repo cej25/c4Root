@@ -41,7 +41,7 @@ class FimpRaw2Cal : public FairTask
 
         uint64_t wr_t;
 
-        // detector mapping
+        std::map<int, std::pair<std::pair<int, int>, std::string>> detector_mapping;
 
 
     public:
