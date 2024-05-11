@@ -22,13 +22,13 @@ void elisa_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t
     FairLogger::GetLogger()->SetColoredLog(true);
     
     //:::::online reading
-    //TString filename = "stream://x86l-166";
+    TString filename = "stream://x86l-166";
     //TString filename = "trans://lxg1257:6000"; // when reading data time stiched
 
     //::::::offline reading
     //TString filename = "/u/gandolfo/data/lustre/despec/lisa/eris_241Am_1000V_0094_0001.lmd";
     //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0167_*.lmd";
-    TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/daqtest/daqtest_0001_0001.lmd";
+    //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/daqtest/daqtest_0001_0001.lmd";
 
     //:::path to root tree
     TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/";
@@ -89,6 +89,8 @@ void elisa_lisa_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t
     source->AddReader(unpackheader);
 
     LisaRaw2Cal* lisaraw2cal = new LisaRaw2Cal();
+    //LisaRaw2Cal->SetOnline(false);
+    
     run->AddTask(lisaraw2cal);
 
     // Add analysis task here at some point

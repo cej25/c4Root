@@ -71,7 +71,6 @@ void s143_online()
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
     run->AddObject(histograms);
      
-
     // Create source using ucesb for input
     EXT_STR_h101 ucesb_struct;
     TString ntuple_options = "UNPACK"; // Define which level of data to unpack - we don't use "RAW" or "CAL"
