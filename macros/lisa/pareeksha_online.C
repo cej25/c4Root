@@ -69,7 +69,7 @@ void pareeksha_online()
 
     //:::::::Create online run
     Int_t refresh = 10; // Refresh rate for online histograms
-    Int_t port = 8080;
+    Int_t port = 2222;
      
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -213,6 +213,18 @@ void pareeksha_online()
     
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
     // ::: Online Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+    //::::::::: Set ranges for histos :::::::::::::::
+    //::::  Channel Energy ::::: (h1_energy_layer_ch)
+    TLisaConfiguration::SetEnergyRange(600000,900000);
+    TLisaConfiguration::SetEnergyBin(900);
+
+    //:::: LISA WR Time Difference :::::: (h1_wr_diff)
+    TLisaConfiguration::SetWrDiffRange(0,100000000);
+    TLisaConfiguration::SetWrDiffBin(20000);
+
+
+
 
     if (LISA_ON)
     {
