@@ -28,7 +28,7 @@ typedef struct EXT_STR_h101_t
 
 void pareeksha_online()
 {   
-    const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId = 1;
+    const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
     TString fExpName = "pareeksha";
 
@@ -115,7 +115,7 @@ void pareeksha_online()
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
-    TLisaConfiguration::SetMappingFile(config_path + "/pareeksha/Lisa_Detector_Map_names.txt");
+    TLisaConfiguration::SetMappingFile(config_path + "/lisa/Lisa_Detector_Map_names.txt");
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // S U B S Y S T E M S
