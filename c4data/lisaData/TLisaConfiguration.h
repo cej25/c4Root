@@ -44,7 +44,7 @@ class TLisaConfiguration
         void SetAmplitudeMax(int max) { AmplitudeMax = max; }
         void SetAmplitudeMin(int min) { AmplitudeMin = min; }
 
-        int AmplitudeMax = 8500;
+        int AmplitudeMax = 10500;
         int AmplitudeMin = 7500;
 
 

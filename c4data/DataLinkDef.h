@@ -73,9 +73,12 @@
 #pragma link C++ class TCorrelationsConfiguration+;
 #pragma link C++ class TBB7VmeConfiguration+;
 #pragma link C++ class TLisaConfiguration+;
+#pragma link C++ class TFimpConfiguration+;
 
 #pragma link C++ class LisaItem+;
 #pragma link C++ class LisaCalItem+;
+#pragma link C++ class FimpItem+;
+#pragma link C++ class FimpCalItem+;
 
 #pragma link C++ class FatimaVmeQDCItem+;
 #pragma link C++ class FatimaVmeTDCItem+;
@@ -94,6 +97,9 @@
 #pragma link C++ class FrsTPCV1190Item+;
 #pragma link C++ class FrsUserV7X5Item+;
 #pragma link C++ class FrsUserV830Item+;
+#pragma link C++ class FrsTravMusAdcItem+;
+#pragma link C++ class FrsTravMusTdcItem+;
+#pragma link C++ class FrsTravMusCalItem+;
 #pragma link C++ class FrsTPCCalItem+;
 #pragma link C++ class FrsUserCalScalerItem+;
 #pragma link C++ class FrsUserCalSciItem+;
