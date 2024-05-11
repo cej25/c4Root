@@ -21,20 +21,15 @@ class TFimpConfiguration
         static void SetDetectorCoefficientFile(std::string fp) { calibration_file = fp; }
 
         // mapping
-        //std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> Mapping() const;
-        std::map<std::pair<int,int>, std::pair<std::pair<int,std::string>, std::pair<int,int>>> Mapping() const;
+        std::map<int, std::pair<std::pair<int, int>, std::string>> Mapping() const;
         bool MappingLoaded() const;
         bool CalibrationLoaded() const;
 
-        //std::map<std::pair<int,int>,std::pair<double,double>> CalibrationCoefficients() const;
 
-        int NLayers() const;
-        int XMax() const;
-        int YMax() const;
+        int NCTDCChannels() const;
         int NDetectors() const;
-        int NFebexBoards() const;
-        int TM_Undelayed() const;
-        int TM_Delayed() const;
+        int NEGroups() const;
+        int NTGroups() const;
         int SC41L() const;
         int SC41R() const;
         std::set<int> ExtraSignals() const;
@@ -57,21 +52,14 @@ class TFimpConfiguration
 
         static TFimpConfiguration* instance;
 
-        //std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> detector_mapping;
-        std::map<std::pair<int,int>, std::pair<std::pair<int,std::string>, std::pair<int,int>>> detector_mapping;
-        //std::map<std::pair<int,int>,std::pair<double,double>> calibration_coeffs;
+        std::map<int, std::pair<std::pair<int, int>, std::string>> detector_mapping;
         std::set<int> extra_signals;
 
-        int num_layers;   
-        int xmax;
-        int ymax;     
-        int num_detectors;
-        int num_febex_boards;
-        // layer arrangement (set/get with function?)
+        int num_ctdc_channels = 0;    
+        int num_detectors = 0;
+        int num_e_groups = 0;
+        int num_t_groups = 0;
 
-        // will you have extra signals?
-        int tm_undelayed;
-        int tm_delayed;
         int sc41l_d = 0;
         int sc41r_d = 1;
 
@@ -97,8 +85,7 @@ inline void TFimpConfiguration::Create()
     instance = new TFimpConfiguration();
 }
 
-//inline std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> TFimpConfiguration::Mapping() const
-inline std::map<std::pair<int,int>, std::pair<std::pair<int,std::string>, std::pair<int,int>>> TFimpConfiguration::Mapping() const
+inline std::map<int, std::pair<std::pair<int, int>, std::string>>  TFimpConfiguration::Mapping() const
 {
     return detector_mapping;
 }
@@ -110,19 +97,9 @@ inline std::map<std::pair<int,int>,std::pair<double,double>> TFimpConfiguration:
 }
 */
 
-inline int TFimpConfiguration::NLayers() const
+inline int TFimpConfiguration::NCTDCChannels() const
 {
-    return num_layers;
-}
-
-inline int TFimpConfiguration::XMax() const
-{
-    return xmax;
-}
-
-inline int TFimpConfiguration::YMax() const
-{
-    return ymax;
+    return num_detectors;
 }
 
 inline int TFimpConfiguration::NDetectors() const
@@ -130,9 +107,14 @@ inline int TFimpConfiguration::NDetectors() const
     return num_detectors;
 }
 
-inline int TFimpConfiguration::NFebexBoards() const
+inline int TFimpConfiguration::NEGroups() const
 {
-    return num_febex_boards;
+    return num_e_groups;
+}
+
+inline int TFimpConfiguration::NTGroups() const
+{
+    return num_t_groups;
 }
 
 inline bool TFimpConfiguration::MappingLoaded() const
@@ -152,16 +134,6 @@ inline bool TFimpConfiguration::CalibrationCoefficientsLoaded() const
     return detector_calibrations_loaded;
 }
 */
-
-inline int TFimpConfiguration::TM_Undelayed() const
-{
-    return tm_undelayed;
-}
-
-inline int TFimpConfiguration::TM_Delayed() const
-{
-    return tm_delayed;
-}
 
 inline int TFimpConfiguration::SC41L() const
 {

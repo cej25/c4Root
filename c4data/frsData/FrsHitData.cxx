@@ -1,13 +1,5 @@
 #include "FrsHitData.h"
 
-FrsHitData::FrsHitData()
-{
-}
-
-FrsHitData::~FrsHitData()
-{
-}
-
 FrsHitItem::FrsHitItem()
 {
 
@@ -152,6 +144,9 @@ void FrsHitItem::Reset()
     fibin_clean_for_spill = 0;
 }
 
+ClassImp(FrsHitItem)
+
+
 FrsMultiHitItem::FrsMultiHitItem()
 {
 
@@ -179,4 +174,4 @@ void FrsMultiHitItem::Reset()
 
 }
 
-ClassImp(FrsHitData)
+ClassImp(FrsMultiHitItem)
