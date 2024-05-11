@@ -77,7 +77,7 @@ set(SRCS
 ./correlations/FrsAidaCorrelations.cxx
 ./online/onlineCorrelations/FrsAidaCorrelationsOnline.cxx
 ./correlations/FrsFatimaCorrelations.cxx
-./correlations/FrsFatimaVmeCorrelations.cxx
+#./correlations/FrsFatimaVmeCorrelations.cxx
 ./correlations/FrsGermaniumCorrelations.cxx
 ./correlations/FrsFatimaCorrelationsNearline.cxx
 ./correlations/FrsGermaniumCorrelationsNearline.cxx
@@ -87,7 +87,7 @@ set(SRCS
 ./correlations/AidaGermaniumCorrelations.cxx
 ./correlations/bPlastGermaniumCorrelations.cxx
 ./online/onlineCorrelations/bPlastGermaniumCorrelationsOnline.cxx
-./correlations/FrsBplastCorrelations.cxx
+#./correlations/FrsBplastCorrelations.cxx
 ./correlations/LisaFrsCorrelations.cxx
 )
 

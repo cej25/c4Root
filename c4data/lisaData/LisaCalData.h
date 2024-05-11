@@ -62,7 +62,10 @@ class LisaCalItem : public TObject
                     int xpos,
                     int ypos,
                     int e,
-                    std::vector<uint16_t> tr); // ?
+                    std::vector<uint16_t> tr,
+                    uint64_t evtno,
+                    int pu,
+                    int ov); 
         void Reset();
 
         uint64_t Get_wr_t() const;
@@ -72,6 +75,9 @@ class LisaCalItem : public TObject
         int Get_yposition() const;
         uint32_t Get_energy() const;
         std::vector<uint16_t> Get_trace() const;
+        //uint64_t Get_evtno();
+        int Get_pileup() const;
+        int Get_overflow() const;
 
         // Getters
         ClassDefNV(LisaCalItem, 2);
@@ -83,6 +89,9 @@ class LisaCalItem : public TObject
         int yposition;
         uint32_t energy; // double? int?
         std::vector<uint16_t> trace;
+        uint64_t event_no;
+        int pileup;
+        int overflow;
         // timing info for correlations
 
 };
@@ -120,6 +129,16 @@ inline uint32_t LisaCalItem::Get_energy() const
 inline std::vector<uint16_t> LisaCalItem::Get_trace() const
 {
     return trace;
+}
+
+inline int LisaCalItem::Get_pileup() const
+{
+    return pileup;
+}
+
+inline int LisaCalItem::Get_overflow() const
+{
+    return overflow;
 }
 
 #endif

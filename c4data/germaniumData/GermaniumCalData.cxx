@@ -18,7 +18,7 @@ GermaniumCalData::GermaniumCalData(
         uint64_t event_trigger_time,
         uint8_t pileup,
         uint8_t overflow,
-        uint64_t channel_trigger_time,
+        double channel_trigger_time,
         double channel_energy, // calibrated in energy of keVs
         uint32_t crystal_id,
         uint32_t detector_id,
