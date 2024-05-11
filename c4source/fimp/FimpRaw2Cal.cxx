@@ -26,7 +26,7 @@ FimpRaw2Cal::FimpRaw2Cal()
     ,   fimpCalArray(new std::vector<FimpCalItem>)
 {
     fimp_config = TFimpConfiguration::GetInstance();
-    // detector_mapping = fimp_config->Mapping();
+    detector_mapping = fimp_config->Mapping();
 }
 
 FimpRaw2Cal::~FimpRaw2Cal()
@@ -81,7 +81,7 @@ void FimpRaw2Cal::Exec(Option_t* option)
         // if there is some mapping loaded, do mapping after FT CAL
         if (fimp_config->MappingLoaded())
         {
-            // do mapping
+            // here we need some mapping function to dig out the 4->16 or 1->16 FIMP channels
         }
 
         auto & entry = fimpCalArray->emplace_back();
