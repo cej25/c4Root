@@ -4,7 +4,7 @@
 #define FIMP_ON 1
 #define FATIMA_ON 1
 #define FRS_ON 1
-#define TRAV_MUSIC_ON 0
+#define TRAV_MUSIC_ON 1
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
@@ -26,7 +26,7 @@ typedef struct EXT_STR_h101_t
     
 } EXT_STR_h101;
 
-void s143_online()
+void s143_tests()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     // Name your experiment. Make sure all relevant directories are named identically.
@@ -54,8 +54,8 @@ void s143_online()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    TString filename = "~/fimp/testfile.lmd";
-    TString outputFilename = "fimp_test.root";	
+    TString filename = "/u/cjones/cs_170er_check_0170_timestitched.lmd";
+    TString outputFilename = "travMUSIC_test.root";	
 
     // Create online run
     Int_t refresh = 2; // Refresh rate for online histograms
@@ -142,15 +142,7 @@ void s143_online()
     }
 
     if (FRS_ON)
-    {   
-        if (TRAV_MUSIC_ON)
-        {
-            FrsTravMusReader* unpacktravmus = new FrsTravMusReader((EXT_STR_h101_travmus_onion*)&ucesb_struct.travmus, offsetof(EXT_STR_h101, travmus));
-    
-            unpacktravmus->SetOnline(true);
-            source->AddReader(unpacktravmus);
-        }
-
+    {
         FrsMainReader* unpackfrsmain = new FrsMainReader((EXT_STR_h101_frsmain_onion*)&ucesb_struct.frsmain, offsetof(EXT_STR_h101, frsmain));
         FrsTPCReader* unpackfrstpc = new FrsTPCReader((EXT_STR_h101_frstpc_onion*)&ucesb_struct.frstpc, offsetof(EXT_STR_h101, frstpc));
         FrsUserReader* unpackfrsuser = new FrsUserReader((EXT_STR_h101_frsuser_onion*)&ucesb_struct.frsuser, offsetof(EXT_STR_h101, frsuser));
@@ -164,6 +156,14 @@ void s143_online()
         source->AddReader(unpackfrstpc);
         source->AddReader(unpackfrsuser);
         source->AddReader(unpackfrstpat);
+
+        if (TRAV_MUSIC_ON)
+        {
+            FrsTravMusReader* unpacktravmus = new FrsTravMusReader((EXT_STR_h101_travmus_onion*)&ucesb_struct.travmus, offsetof(EXT_STR_h101, travmus));
+    
+            unpacktravmus->SetOnline(true);
+            source->AddReader(unpacktravmus);
+        }
     }
 
 
@@ -188,14 +188,6 @@ void s143_online()
 
     if (FRS_ON)
     {
-        if (TRAV_MUSIC_ON)
-        {
-            FrsTravMusRaw2Cal* caltravmus = new FrsTravMusRaw2Cal();
-
-            caltravmus->SetOnline(true);
-            run->AddTask(caltravmus);
-        }
-
         FrsMainRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
         FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal();
         FrsUserRaw2Cal* calfrsuser = new FrsUserRaw2Cal();
@@ -206,6 +198,14 @@ void s143_online()
         run->AddTask(calfrsmain);
         run->AddTask(calfrstpc);
         run->AddTask(calfrsuser);
+
+        if (TRAV_MUSIC_ON)
+        {
+            FrsTravMusRaw2Cal* caltravmus = new FrsTravMusRaw2Cal();
+
+            caltravmus->SetOnline(true);
+            run->AddTask(caltravmus);
+        }
     }
 
 
@@ -254,12 +254,6 @@ void s143_online()
     
     if (FRS_ON)
     {
-        if (TRAV_MUSIC_ON)
-        {
-            FrsTravMusSpectra* onlinetravmus = new FrsTravMusSpectra();
-            run->AddTask(onlinetravmus);
-        }
-
         FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
         // For monitoring FRS on our side
         // FrsRawSpectra* frsrawspec = new FrsRawSpectra();
@@ -268,6 +262,12 @@ void s143_online()
         run->AddTask(onlinefrs);
         // run->AddTask(frsrawspec);
         // run->AddTask(frscalspec);
+
+        if (TRAV_MUSIC_ON)
+        {
+            FrsTravMusSpectra* onlinetravmus = new FrsTravMusSpectra();
+            run->AddTask(onlinetravmus);
+        }
     }
 
     TString b = "Fatima";
