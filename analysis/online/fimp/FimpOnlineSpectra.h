@@ -5,6 +5,7 @@
 #include "TFimpConfiguration.h"
 #include "FimpData.h"
 #include "FimpCalData.h"
+#include <map>
 #include <vector>
 #include <memory>
 #include "TDirectory.h"
@@ -76,6 +77,7 @@ class FimpOnlineSpectra : public FairTask
         std::vector<TH1I*> h1_fimp_fine_bin_lead;
         std::vector<TH1I*> h1_fimp_fine_bin_trail;
 
+        std::map<int, std::pair<std::pair<int, int>, std::string>> detector_mapping;
         
     public:
         ClassDef(FimpOnlineSpectra, 1)
