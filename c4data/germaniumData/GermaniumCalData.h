@@ -16,7 +16,7 @@ class GermaniumCalData : public TObject
                               uint8_t pileup, 
                               uint8_t overflow,
                               //uint8_t channel_id,
-                              uint64_t channel_trigger_time, // ns
+                              double channel_trigger_time, // ns
                               double channel_energy, // keV
                               uint32_t crystal_id,
                               uint32_t detector_id,
@@ -37,7 +37,7 @@ class GermaniumCalData : public TObject
         inline const uint8_t Get_pileup() const { return fpileup; }
         inline const uint8_t Get_overflow() const { return foverflow; }
         //inline const uint8_t Get_channel_id() const { return fchannel_id; }
-        inline const uint64_t Get_channel_trigger_time() const { return fchannel_trigger_time; }
+        inline const double Get_channel_trigger_time() const { return fchannel_trigger_time; }
         inline const double Get_channel_energy() const { return fchannel_energy; }
         inline const uint32_t Get_crystal_id() const { return fcrystal_id; }
         inline const uint32_t Get_detector_id() const { return fdetector_id; }
@@ -55,7 +55,7 @@ class GermaniumCalData : public TObject
         void Set_pileup(uint8_t v) { fpileup = v; }
         void Set_overflow(uint8_t v) { foverflow = v; }
         //void Set_channel_id(uint8_t v) { fchannel_id = v; }
-        void Set_channel_trigger_time(uint64_t v) { fchannel_trigger_time = v; }
+        void Set_channel_trigger_time(double v) { fchannel_trigger_time = v; }
         void Set_channel_energy(double v) { fchannel_energy = v; }
         void Set_crystal_id(uint32_t v) { fcrystal_id = v; }
         void Set_detector_id(uint32_t v) { fdetector_id = v; }
@@ -73,7 +73,7 @@ class GermaniumCalData : public TObject
         uint8_t fpileup;
         uint8_t foverflow;
         //uint8_t fchannel_id;
-        uint64_t fchannel_trigger_time;
+        double fchannel_trigger_time;
         double fchannel_energy;
         uint32_t fcrystal_id;
         uint32_t fdetector_id;
