@@ -27,8 +27,8 @@ bool Gate_Z_AoQ(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_AoQ
         cut_Z_AoQ = (TCutG*)cut_Z_AoQ->Clone("cut_Z_AoQ");
         gROOT->FindObject("CUTG")->Delete();
 
-        cut_Z_AoQ->SetVarX("FrsHitData.fID_z");
-        cut_Z_AoQ->SetVarY("FrsHitData.fID_AoQ");
+        cut_Z_AoQ->SetVarY("FrsHitData.fID_z");
+        cut_Z_AoQ->SetVarX("FrsHitData.fID_AoQ");
         return true;
         std::cout << "Created gate: " << cut_Z_AoQ->GetName() << std::endl;
     }
