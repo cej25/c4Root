@@ -94,6 +94,7 @@ class FrsCalSpectra : public FairTask
         TH1D* h_sci_81r_de;
         //SCI t
         TH1D* h_sci_21l_t;
+        TH1D* h_sci_21lr_dt;
         TH1D* h_sci_21r_t;
         TH1D* h_sci_22l_t;
         TH1D* h_sci_22r_t;
@@ -105,6 +106,23 @@ class FrsCalSpectra : public FairTask
         TH1D* h_sci_43r_t;
         TH1D* h_sci_81l_t;
         TH1D* h_sci_81r_t;
+        //SCI dts
+        TH1D * h_sci_21l_21r_dt;
+        TH1D * h_sci_22l_22r_dt;
+        TH1D * h_sci_41l_41r_dt;
+        TH1D * h_sci_42l_42r_dt;    
+        TH1D * h_sci_22l_21l_dt;    
+        TH1D * h_sci_22r_21r_dt;    
+        TH1D * h_sci_41l_21l_dt;    
+        TH1D * h_sci_41r_21r_dt;    
+        TH1D * h_sci_42l_21l_dt;    
+        TH1D * h_sci_42r_21r_dt;    
+        TH1D * h_sci_41l_22l_dt;    
+        TH1D * h_sci_41r_22r_dt;    
+        TH1D * h_sci_42l_22l_dt;    
+        TH1D * h_sci_42r_22r_dt;    
+        TH1D * h_sci_42l_41l_dt;    
+        TH1D * h_sci_42r_41r_dt;    
 
         //MUSIC timing:
         TH2D* h_music41_t;
