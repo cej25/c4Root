@@ -56,7 +56,7 @@ InitStatus FimpOnlineSpectra::Init()
     fimpCalArray = mgr->InitObjectAs<decltype(fimpCalArray)>("FimpCalData");
     c4LOG_IF(fatal, !fimpCalArray, "Branch FimpCalData not found!");
 
-    auto const & detector_mapping = fimp_config->Mapping();
+    detector_mapping = fimp_config->Mapping();
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
 
@@ -80,67 +80,67 @@ InitStatus FimpOnlineSpectra::Init()
     dir_sc41 = dir_fimp->mkdir("SC41");
 
     // don't hardcode, change!
-    h1_fimp_tot.resize(128);
-    h1_fimp_lead_times.resize(128);
-    h1_fimp_trail_times.resize(128);
-    h1_fimp_sc41l_dT.resize(128);
-    h1_fimp_sc41r_dT.resize(128);
-    h1_fimp_coarse_clock_lead.resize(128);
-    h1_fimp_coarse_clock_trail.resize(128);
-    h1_fimp_fine_bin_lead.resize(128);
-    h1_fimp_fine_bin_trail.resize(128);
+    h1_fimp_tot.resize(fimp_config->NCTDCChannels());
+    h1_fimp_lead_times.resize(fimp_config->NCTDCChannels());
+    h1_fimp_trail_times.resize(fimp_config->NCTDCChannels());
+    h1_fimp_sc41l_dT.resize(fimp_config->NCTDCChannels());
+    h1_fimp_sc41r_dT.resize(fimp_config->NCTDCChannels());
+    h1_fimp_coarse_clock_lead.resize(fimp_config->NCTDCChannels());
+    h1_fimp_coarse_clock_trail.resize(fimp_config->NCTDCChannels());
+    h1_fimp_fine_bin_lead.resize(fimp_config->NCTDCChannels());
+    h1_fimp_fine_bin_trail.resize(fimp_config->NCTDCChannels());
 
     dir_stats->cd();
     // hit patterns, multiplicity...
     h1_fimp_whiterabbit = new TH1I("h1_fimp_whiterabbit", "FIMP White Rabbit Time", 1000, 1.7e19, 1.8e19);
-    h1_fimp_multiplicity = new TH1I("h1_fimp_multiplicity", "FIMP Multiplicity", 129, 0, 129);
-    h1_fimp_hitpattern = new TH1I("h1_fimp_hitpattern", "FIMP Hit Pattern", 128, 0, 128);
+    h1_fimp_multiplicity = new TH1I("h1_fimp_multiplicity", "FIMP Multiplicity", fimp_config->NCTDCChannels()+1, 0, fimp_config->NCTDCChannels()+1);
+    h1_fimp_hitpattern = new TH1I("h1_fimp_hitpattern", "FIMP Hit Pattern", fimp_config->NCTDCChannels(), 0, fimp_config->NCTDCChannels());
 
     dir_tot->cd();
-    for (int i = 0; i < 128; i++)
+    for (int i = 0; i < fimp_config->NCTDCChannels(); i++)
     {
         // canvas stuff?
         h1_fimp_tot[i] = new TH1D(Form("h1_fimp_tot_channel_%i", i), Form("ToT Channel %i", i), 960, 0, 400000);
     }
 
     dir_time_lead->cd();
-    for (int i = 0; i < 128; i++)
+    for (int i = 0; i < fimp_config->NCTDCChannels(); i++)
     {
         h1_fimp_lead_times[i] = new TH1D(Form("h1_fimp_lead_times_channel_%i", i), Form("Lead Times - Channel %i", i), 4000, 0, 1e8);
     }
 
     dir_coarse_clock_lead->cd();
-    for (int i = 0; i < 128; i++)
+    for (int i = 0; i < fimp_config->NCTDCChannels(); i++)
     {
         h1_fimp_coarse_clock_lead[i] = new TH1I(Form("h1_fimp_coarse_clock_lead_channel_%i", i), Form("Lead Coarse Clock - Channel %i", i), 4096, 0, 4096);
     }
     
     dir_fine_lead->cd();
-    for (int i = 0; i < 128; i++)
+    for (int i = 0; i < fimp_config->NCTDCChannels(); i++)
     {
         h1_fimp_fine_bin_lead[i] = new TH1I(Form("h1_fimp_fine_bin_lead_channel_%i", i), Form("Lead Fine Time Bins - Channel %i", i), 19, 0, 19);
     }
 
     dir_time_trail->cd();
-    for (int i = 0; i < 128; i++)
+    for (int i = 0; i < fimp_config->NCTDCChannels(); i++)
     {
         h1_fimp_trail_times[i] = new TH1D(Form("h1_fimp_trail_times_channel_%i", i), Form("Trail times - Channel %i", i), 4000, 0, 1e8);
     }
 
     dir_coarse_clock_trail->cd();
-    for (int i = 0; i < 128; i++)
+    for (int i = 0; i < fimp_config->NCTDCChannels(); i++)
     {
         h1_fimp_coarse_clock_trail[i] = new TH1I(Form("h1_fimp_coarse_clock_trail_channel_%i", i), Form("Trail Coarse Clock - Channel %i", i), 4096, 0, 4096);
     }
     
     dir_fine_trail->cd();
-    for (int i = 0; i < 128; i++)
+    for (int i = 0; i < fimp_config->NCTDCChannels(); i++)
     {
         h1_fimp_fine_bin_trail[i] = new TH1I(Form("h1_fimp_fine_bin_trail_channel_%i", i), Form("Trail Fine Time Bins - Channel %i", i), 19, 0, 19);
     }
 
     dir_sc41->cd();
-    for (int i = 0; i < 128; i++)
+    for (int i = 0; i < fimp_config->NCTDCChannels(); i++)
     {
         h1_fimp_sc41l_dT[i] = new TH1D(Form("h1_fimp_sc41l_dT_channel_%i", i), Form("dT SC41L - Channel %i", i), 1000, 0, 2000);
         h1_fimp_sc41r_dT[i] = new TH1D(Form("h1_fimp_sc41r_dT_channel_%i", i), Form("dT SC41R - Channel %i", i), 1000, 0, 2000);
