@@ -59,8 +59,8 @@ class FrsHitItem : public TObject
         uint64_t Get_wr_t() const;
         uint16_t Get_tpat() const;
         uint64_t Get_wr_travmus() const;
-        Float_t Get_ID_x2() const;
-        Float_t Get_ID_y2() const;
+        Float_t Get_ID_x2() const; //
+        Float_t Get_ID_y2() const; //
         Float_t Get_ID_x4() const;
         Float_t Get_ID_y4() const;
         Float_t Get_ID_a2() const;
@@ -69,17 +69,17 @@ class FrsHitItem : public TObject
         Float_t Get_ID_b4() const;
         Float_t Get_ID_AoQ() const;
         Float_t Get_ID_AoQ_corr() const;
-        Float_t Get_ID_z() const;
-        Float_t Get_ID_z2() const;
-        Float_t Get_ID_z_travmus() const;
+        Float_t Get_ID_z() const; //
+        Float_t Get_ID_z2() const; //
+        Float_t Get_ID_z_travmus() const; //
         Float_t Get_ID_beta() const;
         Float_t Get_ID_dEdeg() const;
         Float_t Get_ID_dEdegoQ() const;
         Float_t Get_ID_rho(int index) const;
-        Float_t Get_ID_brho(int index) const;
-        Float_t Get_music_dE(int index) const;
-        Float_t Get_music_dE_cor(int index) const;
-        Float_t Get_travmusic_dE() const;
+        Float_t Get_ID_brho(int index) const; 
+        Float_t Get_music_dE(int index) const; //index 0 = music 1
+        Float_t Get_music_dE_cor(int index) const; 
+        Float_t Get_travmusic_dE() const; //
         Float_t Get_travmusic_dE_cor() const;
         Float_t Get_sci_e(int index) const;
         Float_t Get_sci_l(int index) const;
