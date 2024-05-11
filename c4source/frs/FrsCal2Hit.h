@@ -11,6 +11,7 @@
 #include "FrsTPCCalData.h"
 #include "FrsUserCalData.h"
 #include "FrsTpatData.h"
+#include "FrsTravMusCalData.h"
 #include "FrsHitData.h"
 #include <TRandom3.h>
 
@@ -80,6 +81,7 @@ class FrsCal2Hit : public FairTask
         std::vector<FrsUserCalSciItem> const* userSciArray;
         std::vector<FrsUserCalMusicItem> const* userMusicArray;
         std::vector<FrsTpatItem> const* tpatArray;
+        std::vector<FrsTravMusCalItem> const* travMusicArray;
 
         std::vector<FrsHitItem>* hitArray;
         std::vector<FrsMultiHitItem>* multihitArray;
@@ -104,6 +106,8 @@ class FrsCal2Hit : public FairTask
         Float_t cMusic1_T[8][2];
         Float_t cMusic2_T[8][2];
         Float_t cMusic3_T[4][2];
+        Float_t cMusicTRAV_E[8][2];
+        Float_t cMusicTRAV_T[8][2];
         Float_t cMusic3_dec[2];
         Float_t cSCI_L[2];
         Float_t cSCI_R[2];
@@ -155,21 +159,29 @@ class FrsCal2Hit : public FairTask
 
         uint32_t* music_e1;
         uint32_t* music_e2;
+        uint16_t travmusic_e[8];
         uint32_t* music_t1;
         uint32_t* music_t2;
 
+        uint16_t travmusic_t[8];
+
 
         Int_t music1_anodes_cnt;
-	    Int_t music2_anodes_cnt;
+	      Int_t music2_anodes_cnt;
+        Int_t travmusic_anodes_cnt;
 
         Bool_t music_b_e1[8];
         Bool_t music_b_e2[8];
+        Bool_t travmusic_b_e[8] = {0};
         Bool_t music_b_t1[8];
         Bool_t music_b_t2[8];
+        Bool_t travmusic_b_t[8] = {0};
         Bool_t b_de1;
-	    Bool_t b_de2;
+	      Bool_t b_de2;
+        Bool_t b_de_travmus;
         Float_t music1_x_mean;
         Float_t music2_x_mean;
+        Float_t travmusic_x_mean;
 
         uint32_t** tdc_array; // [15][max_hits_in_tdc_array]
         //std::vector<uint32_t> tdc_array[15];
@@ -179,6 +191,8 @@ class FrsCal2Hit : public FairTask
         //const uint32_t* dt_array; // not coded in raw->cal yet
         Float_t* de; // [3];
         Float_t* de_cor; // [3];
+        Float_t de_travmus;
+        Float_t de_cor_travmus;
         Float_t* sci_l; // [6]; // may change when i know the actual dimensions necessary
         Float_t* sci_r; // [6];
         Float_t* sci_tx; // [6];
@@ -203,6 +217,7 @@ class FrsCal2Hit : public FairTask
         Bool_t id_b_AoQ;
         Bool_t id_b_z;
         Bool_t id_b_z2;
+        Bool_t id_b_z_travmus;
         Bool_t id_b_z3;
         int Z_Shift_array;
         Float_t FRS_WR_a[200];
@@ -319,7 +334,8 @@ class FrsCal2Hit : public FairTask
         /* ----------------------------------------------- */
         //Hit variables
         /* ----------------------------------------------- */
-        uint64_t WR_TS;
+        uint64_t WR_TS = 0;
+        uint64_t wr_travmus = 0;
 
         Float_t id_x2;
         Float_t id_y2;
@@ -341,9 +357,11 @@ class FrsCal2Hit : public FairTask
         Float_t id_AoQ_corr;
         Float_t id_v_cor;
         Float_t id_v_cor2;
+        Float_t id_v_cor_travmus;
         Float_t id_v_cor3;
         Float_t id_z;
         Float_t id_z2;
+        Float_t id_z_travmus;
         Float_t id_z3;
         Float_t id_gamma_ta_s2;
         Float_t id_dEdegoQ;
