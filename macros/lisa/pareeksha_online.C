@@ -4,7 +4,7 @@
 #define LISA_ON 1
 #define FATIMA_ON 1
 #define FRS_ON 1
-#define TRAV_MUSIC_ON 0
+#define TRAV_MUSIC_ON 1
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
 
 // Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/
@@ -55,8 +55,8 @@ void pareeksha_online()
 
     //::::::::::P A T H   O F   F I L E  to read
     //___O N L I N E
-    TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
-    //TString filename = "trans://lxg1257:6000"; // time stitched
+    //TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
+    TString filename = "trans://lxg1257:6000"; // time stitched
 
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0167_*.lmd";  //data with only lisa
@@ -228,13 +228,6 @@ void pareeksha_online()
     
     if (FRS_ON)
     {
-        if (TRAV_MUSIC_ON)
-        {
-            FrsTravMusSpectra* onlinetravmus = new FrsTravMusSpectra();
-            //add task for raw spec?
-            run->AddTask(onlinetravmus);
-        }
-
         FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
         // For monitoring FRS on our side
         // FrsRawSpectra* frsrawspec = new FrsRawSpectra();
@@ -243,6 +236,13 @@ void pareeksha_online()
         run->AddTask(onlinefrs);
         // run->AddTask(frsrawspec);
         // run->AddTask(frscalspec);
+
+        if (TRAV_MUSIC_ON)
+        {
+            FrsTravMusSpectra* onlinetravmus = new FrsTravMusSpectra();
+            //add task for raw spec?
+            run->AddTask(onlinetravmus);
+        }
     }
 
     TString c = "Lisa";
@@ -258,7 +258,13 @@ void pareeksha_online()
     }
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    // ::: Correlation Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    // ::: Correlation Spectra :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+    if(LISA_ON && FRS_ON)
+    {
+        LisaFrsCorrelations* LISA_FRS_corr = new LisaFrsCorrelations();
+        run->AddTask(LISA_FRS_corr);
+    }
 
     // FrsLisa
 

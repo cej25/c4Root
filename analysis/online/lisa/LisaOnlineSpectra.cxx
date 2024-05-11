@@ -81,16 +81,25 @@ InitStatus LisaOnlineSpectra::Init()
     dir_energy = dir_lisa->mkdir("Energy");
     dir_traces = dir_lisa->mkdir("Traces");
     
-    dir_music = new TDirectory("MUSIC", "MUSIC", "", 0);
-    mgr->Register("MUSIC", "MUSIC Directory", dir_music, false);
-    histograms->Add(dir_music);
+    //dir_music = new TDirectory("MUSIC", "MUSIC", "", 0);
+    //mgr->Register("MUSIC", "MUSIC Directory", dir_music, false);
+    //histograms->Add(dir_music);
 
-    dir_correlations = new TDirectory("Correlations", "Correlations", "", 0);
-    mgr->Register("Correlations", "Correlations Directory", dir_correlations, false);
-    histograms->Add(dir_correlations);
+    //dir_correlations = new TDirectory("Correlations", "Correlations", "", 0);
+    //mgr->Register("Correlations", "Correlations Directory", dir_correlations, false);
+    //histograms->Add(dir_correlations);
 
     // layer names: Tokyo, Eris, Sparrow
   
+    //:::::::::::White Rabbit:::::::::::::::
+    dir_stats->cd();
+    h1_wr_diff = new TH1I("h1_wr_diff", "WR Difference", 1000,0,200000);
+    h1_wr_diff->GetXaxis()->SetTitle("LISA WR Difference [ns]");
+    //h1_wr_diff->SetStats(0);
+    h1_wr_diff->SetLineColor(kBlack);
+    h1_wr_diff->SetFillColor(kRed-3);
+    h1_wr_diff->Draw();
+
     //:::::::::::H I T  P A T T E R N S:::::::::::::::
     //:::::::::::Total
     dir_stats->cd();
@@ -146,7 +155,7 @@ InitStatus LisaOnlineSpectra::Init()
     c_hitpattern_grid = new TCanvas("c_hitpattern_grid", "Hit Pattern Grid", 650, 350);
     c_hitpattern_grid->Divide(layer_number-1);
     h2_hitpattern_grid.resize(layer_number-1);
-    //c_hitpattern_grid->SetLogz();
+    c_hitpattern_grid->SetLogz();
 
     for (int i = 0; i < layer_number-1; i++)
     {   
@@ -510,8 +519,10 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     //c4LOG(info, "Comment to slow down program for testing");
     for (auto const & lisaCalItem : *lisaCalArray)
     {
+
         wr_time = lisaCalItem.Get_wr_t();
         if (wr_time == 0)return;
+
         //::::::: Retrieve Data ::::::::::::::
         layer = lisaCalItem.Get_layer_id();
         city = lisaCalItem.Get_city();
@@ -587,8 +598,19 @@ void LisaOnlineSpectra::Exec(Option_t* option)
 
     }
 
-    c4LOG(info, "::::::::::END LOOP::::::::::::");
+    c4LOG(info, "::::::::::END LOOP::::::::::::" << " Layer number :" << layer_number);
+
     //c4LOG(info, " layer : "<<layer << " multiplicity layer : "<<multiplicity[layer]);
+
+    //:::::: WR Time Difference
+    if( prev_wr > 0 )
+    {
+        wr_diff = wr_time - prev_wr;
+        h1_wr_diff->Fill(wr_diff);
+    }
+    prev_wr = wr_time;
+    c4LOG(info,"wr time: " << wr_time << "   prev wr: " << prev_wr << " wr diff: " << wr_diff);
+
     //::::::: Fill Multiplicity ::::::::::
     for (int i = 0; i < layer_number; i++) h1_multiplicity_layer[i]->Fill(multiplicity[i]);
     h1_multiplicity->Fill(total_multiplicity);
