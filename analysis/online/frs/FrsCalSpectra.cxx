@@ -139,6 +139,28 @@ InitStatus FrsCalSpectra::Init()
     h_sci_81l_t = new TH1D("h_sci_81l_t", "FRS Scintillator 81 l time V1290 main crate",sc_xx_bins_t,0,sc_xx_max_t);
     h_sci_81r_t = new TH1D("h_sci_81r_t", "FRS Scintillator 81 r time V1290 main crate",sc_xx_bins_t,0,sc_xx_max_t);
     
+    //sci time deltas:
+    // l-r
+    int sc_xx_bins_dt = 2000;
+    h_sci_21l_21r_dt = new TH1D("h_sci_21l_21r_dt", "FRS scintillator time 21l - time 21r, v1290 main crate",sc_xx_bins_dt,-10000,10000);
+    h_sci_22l_22r_dt = new TH1D("h_sci_22l_22r_dt", "FRS scintillator time 22l - time 22r, v1290 main crate",sc_xx_bins_dt,-10000,10000);
+    h_sci_41l_41r_dt = new TH1D("h_sci_41l_41r_dt", "FRS scintillator time 41l - time 41r, v1290 main crate",sc_xx_bins_dt,-10000,10000);
+    h_sci_42l_42r_dt = new TH1D("h_sci_42l_42r_dt", "FRS scintillator time 42l - time 42r, v1290 main crate",sc_xx_bins_dt,-10000,10000);
+    h_sci_22l_21l_dt = new TH1D("h_sci_22l_21l_dt", "FRS scintillator time 22l - time 21l, v1290 main crate",sc_xx_bins_dt,-10000,10000);
+    h_sci_22r_21r_dt = new TH1D("h_sci_22r_21r_dt", "FRS scintillator time 22r - time 21r, v1290 main crate",sc_xx_bins_dt,-10000,10000);
+    h_sci_41l_21l_dt = new TH1D("h_sci_41l_21l_dt", "FRS scintillator time 41l - time 21l, v1290 main crate",sc_xx_bins_dt,-10000,10000);
+    h_sci_41r_21r_dt = new TH1D("h_sci_41r_21r_dt", "FRS scintillator time 41r - time 21r, v1290 main crate",sc_xx_bins_dt,-10000,10000);
+    h_sci_42l_21l_dt = new TH1D("h_sci_42l_21l_dt", "FRS scintillator time 42l - time 21l, v1290 main crate",sc_xx_bins_dt,-10000,10000);
+    h_sci_42r_21r_dt = new TH1D("h_sci_42r_21r_dt", "FRS scintillator time 42r - time 21r, v1290 main crate",sc_xx_bins_dt,-10000,10000);
+    h_sci_41l_22l_dt = new TH1D("h_sci_41l_22l_dt", "FRS scintillator time 41l - time 22l, v1290 main crate",sc_xx_bins_dt,-10000,10000);
+    h_sci_41r_22r_dt = new TH1D("h_sci_41r_22r_dt", "FRS scintillator time 41r - time 22r, v1290 main crate",sc_xx_bins_dt,-10000,10000);
+    h_sci_42l_22l_dt = new TH1D("h_sci_42l_22l_dt", "FRS scintillator time 42l - time 22l, v1290 main crate",sc_xx_bins_dt,-10000,10000);
+    h_sci_42r_22r_dt = new TH1D("h_sci_42r_22r_dt", "FRS scintillator time 42r - time 22r, v1290 main crate",sc_xx_bins_dt,-10000,10000);
+    h_sci_42l_41l_dt = new TH1D("h_sci_42l_41l_dt", "FRS scintillator time 42l - time 41l, v1290 main crate",sc_xx_bins_dt,-10000,10000);
+    h_sci_42r_41r_dt = new TH1D("h_sci_42r_41r_dt", "FRS scintillator time 42r - time 41r, v1290 main crate",sc_xx_bins_dt,-10000,10000);
+
+
+
     //MUSIC timings:
     int music_xx_bins = 1000;
     double music_xx_max_t = 1048576; // 2^20 bits in v1290 data word
@@ -269,20 +291,53 @@ void FrsCalSpectra::Exec(Option_t* option)
     h_sci_81l_de->Fill(sci_81l_de);
     h_sci_81r_de->Fill(sci_81r_de);
 
-    uint32_t** tdc_array = mainSciItem.Get_tdc_array();
 
-    h_sci_21l_t->Fill(tdc_array[2][0]);
-    h_sci_21r_t->Fill(tdc_array[3][0]);
-    h_sci_22l_t->Fill(tdc_array[12][0]);
-    h_sci_22r_t->Fill(tdc_array[13][0]);
-    h_sci_41l_t->Fill(tdc_array[0][0]);
-    h_sci_41r_t->Fill(tdc_array[1][0]);
-    h_sci_42l_t->Fill(tdc_array[4][0]);
-    h_sci_42r_t->Fill(tdc_array[14][0]);
-    h_sci_43l_t->Fill(tdc_array[5][0]);
-    h_sci_43r_t->Fill(tdc_array[6][0]);
-    h_sci_81l_t->Fill(tdc_array[7][0]);
-    h_sci_81r_t->Fill(tdc_array[8][0]);
+    // getting the first hit only: mapping to int32 signed is okay since the max value is 2^20:
+    int32_t sci21l_time = mainSciItem.Get_mhtdc_sc21l_hit(0);
+    int32_t sci21r_time = mainSciItem.Get_mhtdc_sc21r_hit(0);
+    int32_t sci22l_time = mainSciItem.Get_mhtdc_sc22l_hit(0);
+    int32_t sci22r_time = mainSciItem.Get_mhtdc_sc22r_hit(0);
+    int32_t sci41l_time = mainSciItem.Get_mhtdc_sc41l_hit(0);
+    int32_t sci41r_time = mainSciItem.Get_mhtdc_sc41r_hit(0);
+    int32_t sci42l_time = mainSciItem.Get_mhtdc_sc42l_hit(0);
+    int32_t sci42r_time = mainSciItem.Get_mhtdc_sc42r_hit(0);
+    int32_t sci43l_time = mainSciItem.Get_mhtdc_sc43l_hit(0);
+    int32_t sci43r_time = mainSciItem.Get_mhtdc_sc43r_hit(0);
+    int32_t sci81l_time = mainSciItem.Get_mhtdc_sc81l_hit(0);
+    int32_t sci81r_time = mainSciItem.Get_mhtdc_sc81r_hit(0);
+
+    if (sci21l_time != 0) h_sci_21l_t->Fill(sci21l_time);
+    if (sci21r_time != 0) h_sci_21r_t->Fill(sci21r_time);    
+    if (sci22l_time != 0) h_sci_22l_t->Fill(sci22l_time);
+    if (sci22r_time != 0) h_sci_22r_t->Fill(sci22r_time);
+    if (sci41l_time != 0) h_sci_41l_t->Fill(sci41l_time);
+    if (sci41r_time != 0) h_sci_41r_t->Fill(sci41r_time);
+    if (sci42l_time != 0) h_sci_42l_t->Fill(sci42l_time);
+    if (sci42r_time != 0) h_sci_42r_t->Fill(sci42r_time);
+    if (sci43l_time != 0) h_sci_43l_t->Fill(sci43l_time);
+    if (sci43r_time != 0) h_sci_43r_t->Fill(sci43r_time);
+    if (sci81l_time != 0) h_sci_81l_t->Fill(sci81l_time);
+    if (sci81r_time != 0) h_sci_81r_t->Fill(sci81r_time);
+
+    if ( sci21l_time != 0 && sci21r_time != 0) h_sci_21l_21r_dt->Fill(sci21l_time - sci21r_time);
+    if ( sci22l_time != 0 && sci22r_time != 0) h_sci_22l_22r_dt->Fill(sci22l_time - sci22r_time);
+    if ( sci41l_time != 0 && sci41r_time != 0) h_sci_41l_41r_dt->Fill(sci41l_time - sci41r_time);
+    if ( sci42l_time != 0 && sci42r_time != 0) h_sci_42l_42r_dt->Fill(sci42l_time - sci42r_time);
+    if ( sci22l_time != 0 && sci21l_time != 0) h_sci_22l_21l_dt->Fill(sci22l_time - sci21l_time);
+    if ( sci22r_time != 0 && sci21r_time != 0) h_sci_22r_21r_dt->Fill(sci22r_time - sci21r_time);
+    if ( sci41l_time != 0 && sci21l_time != 0) h_sci_41l_21l_dt->Fill(sci41l_time - sci21l_time);
+    if ( sci41r_time != 0 && sci21r_time != 0) h_sci_41r_21r_dt->Fill(sci41r_time - sci21r_time);
+    if ( sci42l_time != 0 && sci21l_time != 0) h_sci_42l_21l_dt->Fill(sci42l_time - sci21l_time);
+    if ( sci42r_time != 0 && sci21r_time != 0) h_sci_42r_21r_dt->Fill(sci42r_time - sci21r_time);
+    if ( sci41l_time != 0 && sci22l_time != 0) h_sci_41l_22l_dt->Fill(sci41l_time - sci22l_time);
+    if ( sci41r_time != 0 && sci22r_time != 0) h_sci_41r_22r_dt->Fill(sci41r_time - sci22r_time);
+    if ( sci42l_time != 0 && sci22l_time != 0) h_sci_42l_22l_dt->Fill(sci42l_time - sci22l_time);
+    if ( sci42r_time != 0 && sci22r_time != 0) h_sci_42r_22r_dt->Fill(sci42r_time - sci22r_time);
+    if ( sci42l_time != 0 && sci41l_time != 0) h_sci_42l_41l_dt->Fill(sci42l_time - sci41l_time);
+    if ( sci42r_time != 0 && sci41r_time != 0) h_sci_42r_41r_dt->Fill(sci42r_time - sci41r_time);
+
+
+    
     
     auto const & mainMusicItem  = mainMusicArray->at(0);
 
