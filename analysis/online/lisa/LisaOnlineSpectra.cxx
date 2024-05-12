@@ -81,16 +81,25 @@ InitStatus LisaOnlineSpectra::Init()
     dir_energy = dir_lisa->mkdir("Energy");
     dir_traces = dir_lisa->mkdir("Traces");
     
-    dir_music = new TDirectory("MUSIC", "MUSIC", "", 0);
-    mgr->Register("MUSIC", "MUSIC Directory", dir_music, false);
-    histograms->Add(dir_music);
+    //dir_music = new TDirectory("MUSIC", "MUSIC", "", 0);
+    //mgr->Register("MUSIC", "MUSIC Directory", dir_music, false);
+    //histograms->Add(dir_music);
 
-    dir_correlations = new TDirectory("Correlations", "Correlations", "", 0);
-    mgr->Register("Correlations", "Correlations Directory", dir_correlations, false);
-    histograms->Add(dir_correlations);
+    //dir_correlations = new TDirectory("Correlations", "Correlations", "", 0);
+    //mgr->Register("Correlations", "Correlations Directory", dir_correlations, false);
+    //histograms->Add(dir_correlations);
 
     // layer names: Tokyo, Eris, Sparrow
   
+    //:::::::::::White Rabbit:::::::::::::::
+    dir_stats->cd();
+
+    h1_wr_diff = new TH1I("h1_wr_diff", "WR Difference", lisa_config->bin_wr_diff, lisa_config->min_wr_diff, lisa_config->max_wr_diff);
+    h1_wr_diff->GetXaxis()->SetTitle("LISA WR Difference [ns]");
+    //h1_wr_diff->SetStats(0);
+    h1_wr_diff->SetLineColor(kBlack);
+    h1_wr_diff->SetFillColor(kRed-3);
+
     //:::::::::::H I T  P A T T E R N S:::::::::::::::
     //:::::::::::Total
     dir_stats->cd();
@@ -146,7 +155,7 @@ InitStatus LisaOnlineSpectra::Init()
     c_hitpattern_grid = new TCanvas("c_hitpattern_grid", "Hit Pattern Grid", 650, 350);
     c_hitpattern_grid->Divide(layer_number-1);
     h2_hitpattern_grid.resize(layer_number-1);
-    //c_hitpattern_grid->SetLogz();
+    c_hitpattern_grid->SetLogz();
 
     for (int i = 0; i < layer_number-1; i++)
     {   
@@ -261,11 +270,11 @@ InitStatus LisaOnlineSpectra::Init()
     c_energy_layer_ch[0] = new TCanvas("c_energy_layer_ch0", "Tokyo layer", 650, 350);
     h1_energy_layer_ch[0].resize(1);
     h1_energy_layer_ch[0][0].resize(1);
-    h1_energy_layer_ch[0][0][0] = new TH1F("tokyo", "Tokyo", 400, 0, 250000);
+    h1_energy_layer_ch[0][0][0] = new TH1F("tokyo", "Tokyo", lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
     h1_energy_layer_ch[0][0][0]->GetXaxis()->SetTitle("E(LISA) [a.u.]");
     //h1_energy_layer_ch[0][0][0]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
     //h1_energy_layer_ch[0][0][0]->SetMaximum(lisa_config->AmplitudeMax);
-    h1_energy_layer_ch[0][0][0]->SetStats(0);
+    //h1_energy_layer_ch[0][0][0]->SetStats(0);
     h1_energy_layer_ch[0][0][0]->SetLineColor(kBlue+1);
     h1_energy_layer_ch[0][0][0]->SetFillColor(kOrange-3);
     h1_energy_layer_ch[0][0][0]->Draw();
@@ -298,11 +307,11 @@ InitStatus LisaOnlineSpectra::Init()
                     }
                 }
 
-                h1_energy_layer_ch[i][j][k] = new TH1F(Form("energy_%s_%i_%i_%i", city.c_str(), i, j, k), city.c_str(), 900, 600000, 900000);
+                h1_energy_layer_ch[i][j][k] = new TH1F(Form("energy_%s_%i_%i_%i", city.c_str(), i, j, k), city.c_str(), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
                 h1_energy_layer_ch[i][j][k]->GetXaxis()->SetTitle("E(LISA) [a.u.]");
                 //h1_energy_layer_ch[i][j][k]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
                 //h1_energy_layer_ch[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
-                h1_energy_layer_ch[i][j][k]->SetStats(0);
+                //h1_energy_layer_ch[i][j][k]->SetStats(0);
                 h1_energy_layer_ch[i][j][k]->SetLineColor(kBlue+1);
                 h1_energy_layer_ch[i][j][k]->SetFillColor(kOrange-3);
                 h1_energy_layer_ch[i][j][k]->Draw();
@@ -316,8 +325,8 @@ InitStatus LisaOnlineSpectra::Init()
     //::::::::::: Sum Energy Layer 1 vs Sum Energy Layer 2
     dir_energy->cd();
     c_energy_layer1_vs_layer2 = new TCanvas("c_energy_layer1_vs_layer2","c_energy_layer1_vs_layer2", 650,350);
-    h2_energy_layer1_vs_layer2 = new TH2F("h2_energy_layer1_vs_layer2", "E(Layer 1) vs E(Layer 2)", 2000, 2500000, 2710000, 2000, 2550000, 2750000); //modify limit so you change it only once
-    h2_energy_layer1_vs_layer2->SetStats(0);
+    h2_energy_layer1_vs_layer2 = new TH2F("h2_energy_layer1_vs_layer2", "E(Layer 1) vs E(Layer 2)", lisa_config->bin_energy*4, lisa_config->min_energy*4, lisa_config->max_energy*4,lisa_config->bin_energy*4, lisa_config->min_energy*4, lisa_config->max_energy*4); 
+    //h2_energy_layer1_vs_layer2->SetStats(0);
     h2_energy_layer1_vs_layer2->Draw("colz");
     h2_energy_layer1_vs_layer2->GetXaxis()->SetTitle(Form("Energy - Layer 2 [a.u]"));
     h2_energy_layer1_vs_layer2->GetYaxis()->SetTitle(Form("Energy - Layer 1 [a.u]"));
@@ -501,6 +510,7 @@ void LisaOnlineSpectra::Reset_Histo()
 
 void LisaOnlineSpectra::Exec(Option_t* option)
 {   
+    wr_time = 0;
     int multiplicity[layer_number] = {0};
     int total_multiplicity = 0;
     std::vector<uint32_t> sum_energy_layer;
@@ -510,8 +520,10 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     //c4LOG(info, "Comment to slow down program for testing");
     for (auto const & lisaCalItem : *lisaCalArray)
     {
+
         wr_time = lisaCalItem.Get_wr_t();
         if (wr_time == 0)return;
+
         //::::::: Retrieve Data ::::::::::::::
         layer = lisaCalItem.Get_layer_id();
         city = lisaCalItem.Get_city();
@@ -587,8 +599,21 @@ void LisaOnlineSpectra::Exec(Option_t* option)
 
     }
 
-    c4LOG(info, "::::::::::END LOOP::::::::::::");
+    c4LOG(info, "::::::::::END LOOP::::::::::::" << " Layer number :" << layer_number);
+
     //c4LOG(info, " layer : "<<layer << " multiplicity layer : "<<multiplicity[layer]);
+    if ( wr_time == 0 ) return;
+
+    //:::::: WR Time Difference
+    if( prev_wr > 0 )
+    {
+        wr_diff = wr_time - prev_wr; //to express wr difference in us
+        h1_wr_diff->Fill(wr_diff);
+    }
+    prev_wr = wr_time;
+    c4LOG(info,"wr time: " << wr_time << "   prev wr: " << prev_wr << " wr diff: " << wr_diff);
+
+
     //::::::: Fill Multiplicity ::::::::::
     for (int i = 0; i < layer_number; i++) h1_multiplicity_layer[i]->Fill(multiplicity[i]);
     h1_multiplicity->Fill(total_multiplicity);
@@ -599,7 +624,6 @@ void LisaOnlineSpectra::Exec(Option_t* option)
         //c4LOG(info," layer number : " << layer_number << " layer : " << layer << " multiplicity [layer] : " << multiplicity[layer] << " multiplicity [i] : " << multiplicity[i]);
     }
 
-    
 
     for(int i = 0; i < layer_number; i++)
     {

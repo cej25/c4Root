@@ -84,7 +84,9 @@ class LisaOnlineSpectra : public FairTask
         TDirectory* dir_stats;
         TDirectory* dir_music;
         TDirectory* dir_correlations;
-        
+
+        int64_t prev_wr = 0;
+        int64_t wr_diff;
 
         // Canvas
         TCanvas* c_hitpattern_layer;
@@ -100,6 +102,7 @@ class LisaOnlineSpectra : public FairTask
     
         // Histograms
         TH1I* h1_hitpattern_total;
+        TH1I* h1_wr_diff;
         std::vector<TH1I*> h1_hitpattern_layer;
         std::vector<TH2F*> h2_hitpattern_grid;
         std::vector<TH2F*> h2_pileup_grid;
