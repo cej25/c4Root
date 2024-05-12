@@ -14,6 +14,14 @@ TLisaConfiguration* TLisaConfiguration::instance = nullptr;
 std::string TLisaConfiguration::mapping_file = "blank";
 std::string TLisaConfiguration::calibration_file = "blank";
 
+int TLisaConfiguration::min_energy = 0;
+int TLisaConfiguration::max_energy = 10000000;
+int TLisaConfiguration::bin_energy = 900;
+
+int TLisaConfiguration::min_wr_diff = 0;
+int TLisaConfiguration::max_wr_diff = 200;
+int TLisaConfiguration::bin_wr_diff = 50;
+
 
 TLisaConfiguration::TLisaConfiguration()
     :   num_layers(0)

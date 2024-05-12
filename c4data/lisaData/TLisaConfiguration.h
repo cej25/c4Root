@@ -41,11 +41,28 @@ class TLisaConfiguration
         int SC41R() const;
         std::set<int> ExtraSignals() const;
 
+
+        //:::::Ranges in Histos
         void SetAmplitudeMax(int max) { AmplitudeMax = max; }
         void SetAmplitudeMin(int min) { AmplitudeMin = min; }
 
+        static void SetEnergyRange(int min, int max) { min_energy = min; max_energy = max; }
+        static void SetEnergyBin(int bin_e) { bin_energy = bin_e; }
+
+        static void SetWrDiffRange(int min_wr, int max_wr) { min_wr_diff = min_wr; max_wr_diff = max_wr; }
+        static void SetWrDiffBin(int bin_wr) { bin_wr_diff = bin_wr; }
+
         int AmplitudeMax = 10500;
         int AmplitudeMin = 7500;
+        static int min_energy;
+        static int max_energy;
+        static int bin_energy;
+        static int min_wr_diff;
+        static int max_wr_diff;
+        static int bin_wr_diff;
+
+        //:::::::
+
 
 
     private:
