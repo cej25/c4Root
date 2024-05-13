@@ -33,7 +33,7 @@ void s143_online()
     TString fExpName = "s143";
 
     // Define important paths.
-    TString c4Root_path = "/u/cjones/c4Root";
+    TString c4Root_path = "/u/despec/s143_online/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -54,7 +54,8 @@ void s143_online()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    TString filename = "~/fimp/testfile.lmd";
+    //TString filename = "~/fimp/testfile.lmd";
+    TString filename = "trans://lxg1257";
     TString outputFilename = "fimp_test.root";	
 
     // Create online run
