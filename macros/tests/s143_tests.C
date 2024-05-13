@@ -54,7 +54,9 @@ void s143_tests()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    TString filename = "/u/cjones/cs_170er_check_0170_timestitched.lmd";
+    //TString filename = "/u/cjones/cs_170er_check_0170_timestitched.lmd";
+    //TString filename = "~/fimp/*.lmd";
+    TString filename = "trans://lxg1257";
     TString outputFilename = "travMUSIC_test.root";	
 
     // Create online run
@@ -240,7 +242,8 @@ void s143_tests()
 
         run->AddTask(onlinefatima);
     }
-
+    
+    //TFimpConfiguration::SetEnergyToTRange(0, 5e6);
     if (FIMP_ON)
     {
         // Add analysis task here at some point
