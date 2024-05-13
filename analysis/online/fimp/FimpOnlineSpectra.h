@@ -65,6 +65,7 @@ class FimpOnlineSpectra : public FairTask
         TDirectory* dir_sc41;
 
         TH1I* h1_fimp_whiterabbit;
+        TH1I* h1_fimp_wr_dt;
         TH1I* h1_fimp_multiplicity;
         TH1I* h1_fimp_hitpattern;
         std::vector<TH1D*> h1_fimp_tot;
@@ -76,6 +77,9 @@ class FimpOnlineSpectra : public FairTask
         std::vector<TH1I*> h1_fimp_coarse_clock_trail;
         std::vector<TH1I*> h1_fimp_fine_bin_lead;
         std::vector<TH1I*> h1_fimp_fine_bin_trail;
+
+        int64_t wr_t = 0;
+        int64_t prev_wr_t = 0;
 
         std::map<int, std::pair<std::pair<int, int>, std::string>> detector_mapping;
         
