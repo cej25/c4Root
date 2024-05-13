@@ -97,9 +97,6 @@ InitStatus FimpOnlineSpectra::Init()
     h1_fimp_hitpattern = new TH1I("h1_fimp_hitpattern", "FIMP Hit Pattern", 128, 0, 128);
     h1_fimp_hitpattern->SetFillColor(kAzure+1);
     
-
-    
-
     dir_tot->cd();
     for (int i = 0; i < 128; i++)
     {
