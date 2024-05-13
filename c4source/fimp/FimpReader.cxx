@@ -256,7 +256,8 @@ Bool_t FimpReader::Read()
                 }
                 else
                 {   
-                    if (last_hit.leadOrTrail == -1) c4LOG(warn, "First data item is a trail");
+                    if (last_hit.leadOrTrail == -1) //c4LOG(warn, "First data item is a trail");
+                    {}
                     else if (last_hit.leadOrTrail == 1) 
                     {
                         c4LOG(warn, "Two trails in a row");
