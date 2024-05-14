@@ -9,12 +9,12 @@ void FimpItem::SetAll(uint64_t wr,
                     uint16_t id,
                     uint64_t trig_t, 
                     uint16_t chan, 
-                    uint16_t lead_ct, 
-                    double lead_ft, 
-                    uint16_t trail_ct, 
-                    double trail_ft,
-                    uint16_t raw_lead_ft,
-                    uint16_t raw_trail_ft)
+                    std::vector<uint16_t> lead_ct, 
+                    std::vector<double> lead_ft, 
+                    std::vector<uint16_t> trail_ct, 
+                    std::vector<double> trail_ft,
+                    std::vector<uint16_t> raw_lead_ft,
+                    std::vector<uint16_t> raw_trail_ft)
 {
     wr_t = wr;
     wr_id = id;
@@ -34,12 +34,12 @@ void FimpItem::Reset()
     wr_id = 0;
     trig_time_long = 0;
     channel = 0;
-    lead_coarse_time = 0;
-    lead_fine_time = 0;
-    trail_coarse_time = 0;
-    trail_fine_time = 0;
-    raw_lead_fine_time = 0;
-    raw_trail_fine_time = 0;
+    lead_coarse_time.clear();
+    lead_fine_time.clear();
+    trail_coarse_time.clear();
+    trail_fine_time.clear();
+    raw_lead_fine_time.clear();
+    raw_trail_fine_time.clear();
 }
 
 ClassImp(FimpItem)

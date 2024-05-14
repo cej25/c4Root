@@ -85,6 +85,13 @@ class FimpReader : public c4Reader
         std::vector<FimpItem>* fimpArray;
         //ctdc_data_store last_hit;
 
+        std::vector<uint16_t> lead_coarse;
+        std::vector<double> lead_fine;
+        std::vector<uint16_t> lead_raw_ft;
+        std::vector<uint16_t> trail_coarse;
+        std::vector<double> trail_fine;
+        std::vector<uint16_t> trail_raw_ft;
+
         int unmatchedLeads = 0;
         int counter = 0;
         int lead_trail_unmatched_counter = 0;
