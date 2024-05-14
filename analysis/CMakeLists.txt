@@ -71,6 +71,7 @@ set(SRCS
 ./nearline/bgo/BGONearlineSpectra.cxx
 ./nearline/wr/WhiterabbitCorrelationNearline.cxx
 ./nearline/timemachine/TimeMachineNearline.cxx
+./nearline/lisa/LisaNearlineSpectra.cxx
 ./nearline/fimp/FimpNearlineSpectra.cxx
 
 ## correlations ##

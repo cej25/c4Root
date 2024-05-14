@@ -4,6 +4,7 @@
 #include "TLisaConfiguration.h"
 #include "TFrsConfiguration.h"
 #include "TCorrelationsConfiguration.h"
+#include "FrsTravMusCalData.h"
 #include "LisaCalData.h"
 #include "../../config/setup.h"
 #include "FrsGate.h"
@@ -64,6 +65,7 @@ class LisaFrsCorrelations : public FairTask
 
         std::vector<LisaCalItem> const* lisaCalArray;
         std::vector<FrsHitItem> const* frsHitArray;
+        std::vector<FrsTravMusCalItem> const* travMusicArray;
 
         Int_t fNEvents;
         EventHeader* header;
