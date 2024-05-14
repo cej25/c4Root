@@ -57,42 +57,32 @@ void FimpRaw2Cal::Exec(Option_t* option)
     for (auto const & fimpItem : *fimpArray)
     {
         uint16_t channel = fimpItem.Get_channel();
-        uint16_t lead_coarse_time = fimpItem.Get_lead_coarse_time();
-        uint16_t lead_fine_time = fimpItem.Get_lead_fine_time();
-        uint16_t trail_coarse_time = fimpItem.Get_trail_coarse_time();
-        uint16_t trail_fine_time = fimpItem.Get_trail_fine_time();
+        std::vector<uint16_t> lead_coarse_time = fimpItem.Get_lead_coarse_time();
+        std::vector<double> lead_fine_time = fimpItem.Get_lead_fine_time();
+        std::vector<uint16_t> trail_coarse_time = fimpItem.Get_trail_coarse_time();
+        std::vector<double> trail_fine_time = fimpItem.Get_trail_fine_time();
 
-        double lead_time = (double)lead_coarse_time * (double)CYCLE_TIME  - (double)lead_fine_time;
-        double trail_time = (double)trail_coarse_time * (double)CYCLE_TIME - (double)trail_fine_time;
-        double tot = trail_time - lead_time;
-
-        // debugging, ignore
-        if (fNEvents >= 100000000000)
+        for (int i = 0; i < std::min(lead_coarse_time.size(), trail_coarse_time.size()); i++)
         {
-            std::cout << "lead calc values: "  << std::endl;
-            std::cout << "fine time: " << -(double)lead_fine_time << std::endl;
-            std::cout << "coarse time: " << (double)lead_coarse_time * (double)CYCLE_TIME << std::endl;
+            double lead_time = (double)lead_coarse_time[i] * (double)CYCLE_TIME  - (double)lead_fine_time[i];
+            double trail_time = (double)trail_coarse_time[i] * (double)CYCLE_TIME - (double)trail_fine_time[i];
+            double tot = trail_time - lead_time;
 
-            std::cout << "trail calc values: "  << std::endl;
-            std::cout << "fine time: " << -(double)trail_fine_time << std::endl;
-            std::cout << "coarse time: " << (double)trail_coarse_time * (double)CYCLE_TIME << std::endl;
+            // if there is some mapping loaded, do mapping after FT CAL
+            if (fimp_config->MappingLoaded())
+            {
+                // here we need some mapping function to dig out the 4->16 or 1->16 FIMP channels
+            }
+
+            auto & entry = fimpCalArray->emplace_back();
+            entry.SetAll(fimpItem.Get_wr_t(), 
+                        fimpItem.Get_wr_id(),
+                        channel, 
+                        tot, 
+                        lead_time, 
+                        trail_time // times in ps
+                        );
         }
-
-        // if there is some mapping loaded, do mapping after FT CAL
-        if (fimp_config->MappingLoaded())
-        {
-            // here we need some mapping function to dig out the 4->16 or 1->16 FIMP channels
-        }
-
-        auto & entry = fimpCalArray->emplace_back();
-        entry.SetAll(fimpItem.Get_wr_t(), 
-                    fimpItem.Get_wr_id(),
-                    channel, 
-                    tot, 
-                    lead_time, 
-                    trail_time // times in ps
-                    );
-
       
     }
 

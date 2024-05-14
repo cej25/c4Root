@@ -180,15 +180,13 @@ void FimpOnlineSpectra::Reset_Histo()
 void FimpOnlineSpectra::Exec(Option_t* option)
 {   
     int hit_counter = 0;
+    int64_t wr_t = 0;
     for (auto const & fimpCalItem : *fimpCalArray)
     {   
         // wr same for each hit/channel
-        if (hit_counter == 0)
-        {
-            wr_t = fimpCalItem.Get_wr_t();
-            h1_fimp_whiterabbit->Fill(wr_t);
-        }
-
+        wr_t = fimpCalItem.Get_wr_t();
+        if (hit_counter == 0) h1_fimp_whiterabbit->Fill(wr_t);
+       
         int channel = fimpCalItem.Get_channel();
         h1_fimp_hitpattern->Fill(channel);
 
@@ -223,6 +221,8 @@ void FimpOnlineSpectra::Exec(Option_t* option)
         hit_counter++;
     }
 
+    if (wr_t == 0) return;
+
     int64_t wr_dt = wr_t - prev_wr_t;
     h1_fimp_wr_dt->Fill(wr_dt);
     prev_wr_t = wr_t;
@@ -232,17 +232,20 @@ void FimpOnlineSpectra::Exec(Option_t* option)
     for (auto const & fimpRawItem : *fimpRawArray)
     {
         uint16_t channel = fimpRawItem.Get_channel();
-        uint16_t lead_coarse_time = fimpRawItem.Get_lead_coarse_time();
-        uint16_t trail_coarse_time = fimpRawItem.Get_trail_coarse_time();
-        uint16_t lead_ft_raw = fimpRawItem.Get_raw_lead_fine_time();
-        uint16_t trail_ft_raw = fimpRawItem.Get_raw_trail_fine_time();
+        std::vector<uint16_t> lead_coarse_time = fimpRawItem.Get_lead_coarse_time();
+        std::vector<uint16_t> trail_coarse_time = fimpRawItem.Get_trail_coarse_time();
+        std::vector<uint16_t> lead_ft_raw = fimpRawItem.Get_raw_lead_fine_time();
+        std::vector<uint16_t> trail_ft_raw = fimpRawItem.Get_raw_trail_fine_time();
 
         if (channel == 128) continue;
 
-        h1_fimp_coarse_clock_lead[channel]->Fill(lead_coarse_time & 0xFFF);
-        h1_fimp_fine_bin_lead[channel]->Fill(lead_ft_raw);
-        h1_fimp_coarse_clock_trail[channel]->Fill(trail_coarse_time & 0xFFF);
-        h1_fimp_fine_bin_trail[channel]->Fill(trail_ft_raw);
+        for (int i = 0; i < std::min(lead_coarse_time.size(), trail_coarse_time.size()); i++)
+        {
+            h1_fimp_coarse_clock_lead[channel]->Fill(lead_coarse_time[i] & 0xFFF);
+            h1_fimp_fine_bin_lead[channel]->Fill(lead_ft_raw[i]);
+            h1_fimp_coarse_clock_trail[channel]->Fill(trail_coarse_time[i] & 0xFFF);
+            h1_fimp_fine_bin_trail[channel]->Fill(trail_ft_raw[i]);
+        }
         
     }
     
