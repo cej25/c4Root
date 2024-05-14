@@ -72,7 +72,8 @@ void s143_tests()
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
     run->AddObject(histograms);
-     
+
+    run->GetHttpServer()->SetItemField("/", "_toptitle", "FIMP Online Monitoring"); 
 
     // Create source using ucesb for input
     EXT_STR_h101 ucesb_struct;

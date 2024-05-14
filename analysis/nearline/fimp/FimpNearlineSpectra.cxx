@@ -198,17 +198,20 @@ void FimpNearlineSpectra::Exec(Option_t* option)
     for (auto const & fimpRawItem : *fimpRawArray)
     {
         uint16_t channel = fimpRawItem.Get_channel();
-        uint16_t lead_coarse_time = fimpRawItem.Get_lead_coarse_time();
-        uint16_t trail_coarse_time = fimpRawItem.Get_trail_coarse_time();
-        uint16_t lead_ft_raw = fimpRawItem.Get_raw_lead_fine_time();
-        uint16_t trail_ft_raw = fimpRawItem.Get_raw_trail_fine_time();
+        std::vector<uint16_t> lead_coarse_time = fimpRawItem.Get_lead_coarse_time();
+        std::vector<uint16_t> trail_coarse_time = fimpRawItem.Get_trail_coarse_time();
+        std::vector<uint16_t> lead_ft_raw = fimpRawItem.Get_raw_lead_fine_time();
+        std::vector<uint16_t> trail_ft_raw = fimpRawItem.Get_raw_trail_fine_time();
 
         if (channel == 128) continue;
 
-        h1_fimp_coarse_clock_lead[channel]->Fill(lead_coarse_time & 0xFFF);
-        h1_fimp_fine_bin_lead[channel]->Fill(lead_ft_raw);
-        h1_fimp_coarse_clock_trail[channel]->Fill(trail_coarse_time & 0xFFF);
-        h1_fimp_fine_bin_trail[channel]->Fill(trail_ft_raw);
+        for (int i = 0; i < std::min(lead_coarse_time.size(), trail_coarse_time.size()); i++)
+        {
+            h1_fimp_coarse_clock_lead[channel]->Fill(lead_coarse_time[i] & 0xFFF);
+            h1_fimp_fine_bin_lead[channel]->Fill(lead_ft_raw[i]);
+            h1_fimp_coarse_clock_trail[channel]->Fill(trail_coarse_time[i] & 0xFFF);
+            h1_fimp_fine_bin_trail[channel]->Fill(trail_ft_raw[i]);
+        }
         
     }
     
