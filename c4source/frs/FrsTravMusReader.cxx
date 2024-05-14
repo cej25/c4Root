@@ -69,6 +69,7 @@ Bool_t FrsTravMusReader::Read()
     if (fData == nullptr) return kFALSE;
 
     uint64_t wr_t = (((uint64_t)fData->travmus_ts_t[3]) << 48) + (((uint64_t)fData->travmus_ts_t[2]) << 32) + (((uint64_t)fData->travmus_ts_t[1]) << 16) + (uint64_t)(fData->travmus_ts_t[0]);
+    //c4LOG(info, " wr travMUS : " << wr_t);
 
     // loop through ADC or whatever
     int adc_hit_index = 0;

@@ -81,12 +81,14 @@ InitStatus FrsTravMusSpectra::Init()
     for (int i = 0; i < 8; i++)
     {
         c_raw_adc->cd(i+1);
-        h1_travmus_raw_adc[i] = new TH1I(Form("h1_travmus_raw_adc_anode_%i", i), Form("Raw ADC - Travel MUSIC Anode %i", i), 2500, 1000, 3500);
+        h1_travmus_raw_adc[i] = new TH1I(Form("h1_travmus_raw_adc_anode_%i", i), Form("Raw ADC - Travel MUSIC Anode %i", i), 10500, 100, 12500);
         h1_travmus_raw_adc[i]->SetFillColor(kPink-3);
         h1_travmus_raw_adc[i]->Draw();
     }
     c_raw_adc->cd(0);
     dir_raw_adc->Append(c_raw_adc);
+
+    
 
 
     // Register command to reset histograms
@@ -108,13 +110,19 @@ void FrsTravMusSpectra::Reset_Histo()
 void FrsTravMusSpectra::Exec(Option_t* option)
 {
 
+    uint64_t wr_travMUSIC = 0;
     for (auto const & travMusicItem : *travMusicArray)
     {
+        wr_travMUSIC = travMusicItem.Get_wr_t();
+        if( wr_travMUSIC == 0) return;
         for (int i = 0; i < 8; i++)
         {
             h1_travmus_raw_adc[i]->Fill(travMusicItem.Get_music_energy(i));
+
+            //c4LOG(info,"adc number : " << i << "raw adc : " << travMusicItem.Get_music_energy(i));
         }
     }
+    
 
     fNEvents += 1;
 }
