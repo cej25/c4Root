@@ -313,7 +313,7 @@ void FatimaOnlineSpectra::Snapshot_Histo()
     time_t now = time(0);
     tm *ltm = localtime(&now);
     // make folder with date and time
-    TString snapshot_dir = Form("FATIMA_snapshot_%d_%d_%d_%d_%d_%d",ltm->tm_year+1900,ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec);
+    TString snapshot_dir = Form("FATIMA_snapshot_%d_%d_%d_%d_%d_%d",ltm->tm_year+1900, ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
 
     gSystem->mkdir(snapshot_dir);
     gSystem->cd(snapshot_dir);

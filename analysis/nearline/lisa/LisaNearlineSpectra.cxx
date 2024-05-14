@@ -7,10 +7,11 @@
 
 // c4
 #include "EventHeader.h"
-#include "LisaOnlineSpectra.h"
+#include "LisaNearlineSpectra.h"
 #include "c4Logger.h"
 
 #include "TCanvas.h"
+#include "TFile.h"
 #include "TClonesArray.h"
 #include "TFolder.h"
 #include "TH1F.h"
@@ -21,12 +22,12 @@
 #include "TRandom.h"
 #include <string>
 
-LisaOnlineSpectra::LisaOnlineSpectra()  :   LisaOnlineSpectra("LisaOnlineSpectra")
+LisaNearlineSpectra::LisaNearlineSpectra()  :   LisaNearlineSpectra("LisaNearlineSpectra")
 {
     lisa_config = TLisaConfiguration::GetInstance();
 }
 
-LisaOnlineSpectra::LisaOnlineSpectra(const TString& name, Int_t verbose)
+LisaNearlineSpectra::LisaNearlineSpectra(const TString& name, Int_t verbose)
     : FairTask(name, verbose)
     // , fHitLisa(NULL)
     , fNEvents(0)
@@ -36,24 +37,21 @@ LisaOnlineSpectra::LisaOnlineSpectra(const TString& name, Int_t verbose)
     lisa_config = TLisaConfiguration::GetInstance();
 }
 
-LisaOnlineSpectra::~LisaOnlineSpectra()
+LisaNearlineSpectra::~LisaNearlineSpectra()
 {
     c4LOG(info, "");
 }
 
-void LisaOnlineSpectra::SetParContainers()
+void LisaNearlineSpectra::SetParContainers()
 {
     FairRuntimeDb *rtdb = FairRuntimeDb::instance();
     c4LOG_IF(fatal, NULL == rtdb, "FairRuntimeDb not found.");
 }
 
-InitStatus LisaOnlineSpectra::Init()
+InitStatus LisaNearlineSpectra::Init()
 {
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
-
-    FairRunOnline* run = FairRunOnline::Instance();
-    run->GetHttpServer()->Register("", this);
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
@@ -61,6 +59,12 @@ InitStatus LisaOnlineSpectra::Init()
     lisaCalArray = mgr->InitObjectAs<decltype(lisaCalArray)>("LisaCalData");
     c4LOG_IF(fatal, !lisaCalArray, "Branch LisaCalData not found!");
 
+    FairRootManager::Instance()->GetOutFile()->cd();
+    dir_lisa = gDirectory->mkdir("LISA");
+    mgr->Register("LISA", "LISA Directory", dir_lisa, false); // allow other tasks to find this
+
+
+    
     layer_number = lisa_config->NLayers();
     det_number = lisa_config->NDetectors();
     auto const & detector_mapping = lisa_config->Mapping();
@@ -68,27 +72,13 @@ InitStatus LisaOnlineSpectra::Init()
     ymax = lisa_config->YMax();
     num_layers = lisa_config->NLayers();
 
-    histograms = (TFolder*)mgr->GetObject("Histograms");
-
-    TDirectory::TContext ctx(nullptr);
-
-    dir_lisa = new TDirectory("LISA", "LISA", "", 0);
-    mgr->Register("LISA", "LISA Directory", dir_lisa, false); // allow other tasks to access directory.
-    histograms->Add(dir_lisa);
+    //TDirectory::TContext ctx(nullptr);
 
     dir_lisa->cd();
     dir_stats = dir_lisa->mkdir("Stats");
     dir_energy = dir_lisa->mkdir("Energy");
     dir_traces = dir_lisa->mkdir("Traces");
     
-    //dir_music = new TDirectory("MUSIC", "MUSIC", "", 0);
-    //mgr->Register("MUSIC", "MUSIC Directory", dir_music, false);
-    //histograms->Add(dir_music);
-
-    //dir_correlations = new TDirectory("Correlations", "Correlations", "", 0);
-    //mgr->Register("Correlations", "Correlations Directory", dir_correlations, false);
-    //histograms->Add(dir_correlations);
-
     // layer names: Tokyo, Eris, Sparrow
   
     //:::::::::::White Rabbit:::::::::::::::
@@ -448,7 +438,7 @@ InitStatus LisaOnlineSpectra::Init()
     c_traces_layer_ch[0] = new TCanvas("c_traces_layer_ch0", "Tokyo layer", 650, 350);
     h1_traces_layer_ch[0].resize(1);
     h1_traces_layer_ch[0][0].resize(1);
-    h1_traces_layer_ch[0][0][0] = new TH1F("tokyo", "Tokyo", lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces); // microseconds
+    h1_traces_layer_ch[0][0][0] = new TH1F("tokyo", "Tokyo", 2000, 0, 20); // microseconds
     h1_traces_layer_ch[0][0][0]->GetXaxis()->SetTitle("Time [us]");
     h1_traces_layer_ch[0][0][0]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
     h1_traces_layer_ch[0][0][0]->SetMaximum(lisa_config->AmplitudeMax);
@@ -483,7 +473,7 @@ InitStatus LisaOnlineSpectra::Init()
                     }
                 }
 
-                h1_traces_layer_ch[i][j][k] = new TH1F(Form("traces_%s_%i_%i_%i", city.c_str(), i, j, k), city.c_str(), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces); //2000,0,20
+                h1_traces_layer_ch[i][j][k] = new TH1F(Form("traces_%s_%i_%i_%i", city.c_str(), i, j, k), city.c_str(), 2000, 0, 20);
                 h1_traces_layer_ch[i][j][k]->GetXaxis()->SetTitle("Time [us]");
                 h1_traces_layer_ch[i][j][k]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
                 h1_traces_layer_ch[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
@@ -498,47 +488,11 @@ InitStatus LisaOnlineSpectra::Init()
 
     }
 
-    run->GetHttpServer()->RegisterCommand("Reset_Lisa_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
-    //run->GetHttpServer()->RegisterCommand("Reset_Lisa_Hist", "/Objects/->Reset_Histo()");
-    c4LOG(info,"Get Name: " << GetName() );
-
     return kSUCCESS;
 }
 
-void LisaOnlineSpectra::Reset_Histo()
-{
-    time_t now = time(0);
-    tm *ltm = localtime(&now);
 
-    c4LOG(info,"::: Energy and Multiplicity Histos Reset on day " <<  ltm->tm_mday << "th," << " at " << ltm->tm_hour << ":" << ltm->tm_min << ":" << ltm->tm_sec );
-    //Reset Energy histos
-    
-    h1_energy_layer_ch[0][0][0]->Reset();
-
-    for (int i = 1; i < layer_number; i++) 
-    {
-        for (int j = 0; j < xmax; j++)
-        {
-            for (int z = 0; z < ymax; z++)
-            {
-                h1_energy_layer_ch[i][j][z]->Reset();
-            }
-        }
-    }
-    h2_energy_layer1_vs_layer2->Reset();
-
-    //Reset multiplicity
-    for (int i = 0; i < layer_number; i++)
-    {
-        h1_multiplicity_layer[i]->Reset();
-    }
-    h1_multiplicity->Reset();
-    h1_layer_multiplicity->Reset();
-
-    //Reset hit patter, multiplicity, position with frs
-}
-
-void LisaOnlineSpectra::Exec(Option_t* option)
+void LisaNearlineSpectra::Exec(Option_t* option)
 {   
     wr_time = 0;
     int multiplicity[layer_number] = {0};
@@ -705,14 +659,20 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     fNEvents += 1;
 }
 
-void LisaOnlineSpectra::FinishEvent()
+void LisaNearlineSpectra::FinishEvent()
 {
 
 }
 
-void LisaOnlineSpectra::FinishTask()
+void LisaNearlineSpectra::FinishTask()
 {
+
+    TDirectory* tmp = gDirectory;
+    FairRootManager::Instance()->GetOutFile()->cd();
+    dir_lisa->Write();
+    c4LOG(info, "Written LISA analysis histograms to file.");
+
 
 }
 
-ClassImp(LisaOnlineSpectra)
+ClassImp(LisaNearlineSpectra)

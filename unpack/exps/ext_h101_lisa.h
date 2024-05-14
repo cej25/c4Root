@@ -29,6 +29,7 @@ typedef          int  int32_t;
 typedef struct EXT_STR_h101_lisa_t
 {
   /* UNPACK */
+  uint32_t lisa_badevent_bad /* [0,255] */;
   uint32_t lisa_ts_subsystem_id /* [0,65535] */;
   uint32_t lisa_ts_t1 /* [0,65535] */;
   uint32_t lisa_ts_t2 /* [0,65535] */;
@@ -846,6 +847,7 @@ typedef struct EXT_STR_h101_lisa_t
 typedef struct EXT_STR_h101_lisa_onion_t
 {
   /* UNPACK */
+  uint32_t lisa_badevent_bad;
   uint32_t lisa_ts_subsystem_id;
   uint32_t lisa_ts_t[4];
   struct {
@@ -885,6 +887,9 @@ typedef struct EXT_STR_h101_lisa_onion_t
 #define EXT_STR_h101_lisa_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
   ok = 1; \
   /* UNPACK */ \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     lisa_badevent_bad,               UINT32,\
+                    "lisa_badevent_bad",255,0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_ts_subsystem_id,            UINT32,\
                     "lisa_ts_subsystem_id",65535,0/*flags*/); \
