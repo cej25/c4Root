@@ -113,11 +113,11 @@ InitStatus LisaFrsCorrelations::Init()
     for (int i = 0; i < 2; i++)
     {
         c_xy_pos_layer1->cd(i+1);
-        h2_xy_pos_layer1[i] = new TH2F(Form("FRS_vs_LISA_Position_%i_Layer_1",i), Form("FRS vs LISA Position %i Layer 1",i), 2, 0, 2, 100,-100,100);//change lisa range from macro - sim to sum energy for our online
+        h2_xy_pos_layer1[i] = new TH2F(Form("FRS_vs_LISA_Position_%i_Layer_1",i), Form("FRS vs LISA Position %i Layer 1",i), 2, 0, 2, 400,-50,50);//change lisa range from macro - sim to sum energy for our online
         h2_xy_pos_layer1[i]->GetXaxis()->SetTitle(Form("LISA - Position %i Layer 1",i));
         h2_xy_pos_layer1[i]->GetYaxis()->SetTitle(Form("FRS Position %i",i));
         //h2_xy_position[i]->SetStats(0);
-        h2_xy_pos_layer1[i]->Draw();
+        h2_xy_pos_layer1[i]->Draw("colz");
     }
     c_xy_pos_layer1->cd(0);
     dir_lisa_frs->Append(c_xy_pos_layer1);   
@@ -130,13 +130,14 @@ InitStatus LisaFrsCorrelations::Init()
     for (int i = 0; i < 2; i++)
     {
         c_xy_pos_layer2->cd(i+1);
-        h2_xy_pos_layer2[i] = new TH2F(Form("FRS_vs_LISA_Position_%i_Layer_2",i), Form("FRS vs LISA Position %i Layer 2",i), 2, 0, 2, 100,-100,100);//change lisa range from macro - sim to sum energy for our online
+        h2_xy_pos_layer2[i] = new TH2F(Form("FRS_vs_LISA_Position_%i_Layer_2",i), Form("FRS vs LISA Position %i Layer 2",i), 2, 0, 2, 300,-100,100);//change lisa range from macro - sim to sum energy for our online
         h2_xy_pos_layer2[i]->GetXaxis()->SetTitle(Form("LISA - Position %i Layer 2",i));
         h2_xy_pos_layer2[i]->GetYaxis()->SetTitle(Form("FRS Position %i",i));
         //h2_xy_position[i]->SetStats(0);
-        h2_xy_pos_layer2[i]->Draw();
+        h2_xy_pos_layer2[i]->Draw("colz");
     }
     c_xy_pos_layer2->cd(0);
+
     dir_lisa_frs->Append(c_xy_pos_layer2);   
 
     //MUSIC1 - LISA
@@ -151,7 +152,7 @@ InitStatus LisaFrsCorrelations::Init()
         h2_MUSIC_1_layer[i]->GetXaxis()->SetTitle(Form("E(LISA) - Layer %i",i));
         h2_MUSIC_1_layer[i]->GetYaxis()->SetTitle("dE MUSIC(1)");
         //h2_MUSIC_1_layer[i]->SetStats(0);
-        h2_MUSIC_1_layer[i]->Draw();
+        h2_MUSIC_1_layer[i]->Draw("colz");
     }
     c_MUSIC_1_layer->cd(0);
     dir_lisa_frs->Append(c_MUSIC_1_layer);
@@ -205,22 +206,23 @@ void LisaFrsCorrelations::Reset_Histo()
 void LisaFrsCorrelations::Exec(Option_t* option)
 {   
     // reject events without both subsystems
-    //if (lisaCalArray->size() <= 0 || frsHitArray->size() <= 0) return; //frs and trav music are there
-    if (lisaCalArray->size() <= 0 ) return; //for when travmusic is there but not frs
+    if (lisaCalArray->size() <= 0 || frsHitArray->size() <= 0) return; //frs and trav music are there
+    //if (lisaCalArray->size() <= 0 ) return; //for when travmusic is there but not frs
 
-    //const auto & frsHitItem = frsHitArray->at(0); // *should* only be 1 FRS subevent per event
+    const auto & frsHitItem = frsHitArray->at(0); // *should* only be 1 FRS subevent per event
     const auto & travMusicHitItem = travMusicArray->at(0); 
 
     // FRS WR
     Int_t count_wr = 0;
 
     //wr_travMUSIC = frsHitItem.Get_wr_travmus();
-    //wr_FRS = frsHitItem.Get_wr_t();
+    wr_FRS = frsHitItem.Get_wr_t();
     wr_travMUSIC = travMusicHitItem.Get_wr_t();
 
     //S2 Position x-y
-    //s2_x = frsHitItem.Get_ID_x2();
-    //s2_y = frsHitItem.Get_ID_y2();
+    s2_x = frsHitItem.Get_ID_x2();
+    s2_y = frsHitItem.Get_ID_y2();
+    c4LOG(info, "s2 x : " << s2_x << "s2 y : " << s2_y);
 
     // Energy from frs
     std::vector<uint32_t> sum_energy_layer;
@@ -251,7 +253,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
 
         //:::::::::::::: FRS - LISA position ::::::::::::::::::::::::::
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::   
-        /*
+        
         if (layer == 1)
         {
         h2_xy_pos_layer1[0]->Fill(xpos,s2_x);
@@ -263,7 +265,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         h2_xy_pos_layer2[0]->Fill(xpos,s2_x);
         h2_xy_pos_layer2[1]->Fill(ypos,s2_y);
         }
-        */
+        
 
         //:::: Energies
         uint32_t energy_LISA = lisaCalItem.Get_energy();
@@ -274,12 +276,13 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     
     //:::::::::::::: WR Time differences ::::::::::::::::::::::::::
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    //wr_LISA_FRS = wr_LISA - wr_FRS;
+    wr_LISA_FRS = wr_LISA - wr_FRS;
     wr_LISA_travMUSIC = wr_LISA - wr_travMUSIC;
-    //wr_travMUSIC_FRS = wr_travMUSIC - wr_FRS;
-    //h1_wr_diff[0]->Fill(wr_LISA_FRS);
+    wr_travMUSIC_FRS = wr_travMUSIC - wr_FRS;
 
-    //h1_wr_diff[2]->Fill(wr_travMUSIC_FRS);
+    h1_wr_diff[2]->Fill(wr_travMUSIC_FRS);
+
+    
 
 
     //:::::::::::::: ENERGY correlation ::::::::::::::::::::::::::
@@ -288,16 +291,21 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     for (int i = 0; i < layer_number; i++)
     {
         //MUSIC 1
-        //h2_MUSIC_1_layer[i]->Fill(sum_energy_layer[i],energy_MUSIC_1);
+        h2_MUSIC_1_layer[i]->Fill(sum_energy_layer[i],energy_MUSIC_1);
         //MUSIC 2
-        //h2_MUSIC_2_layer[i]->Fill(sum_energy_layer[i],energy_MUSIC_2);
+        h2_MUSIC_2_layer[i]->Fill(sum_energy_layer[i],energy_MUSIC_2);
         //travMUSIC
-        //h2_travMUSIC_layer[i]->Fill(sum_energy_layer[i],energy_travMUSIC);
+        h2_travMUSIC_layer[i]->Fill(sum_energy_layer[i],energy_travMUSIC);
+        
+        c4LOG(info, "travMUS en : " << energy_travMUSIC << " music 1 : " << energy_MUSIC_1 << " sum energy 1 : " << sum_energy_layer[1]);
+
     }
 
-    //c4LOG(info, "travMUS WR : " << wr_travMUSIC << " LISA WR : " << wr_LISA );
+    //c4LOG(info, "travMUS en : " << energy_travMUSIC << " music 1 : " << energy_MUSIC_1 << " sum energy 1 : " << sum_energy_layer[1]);
     if(wr_travMUSIC == 0) return;
     h1_wr_diff[1]->Fill(wr_LISA_travMUSIC);
+
+    if (wr_FRS != 0 && wr_LISA != 0) h1_wr_diff[0]->Fill(wr_LISA_FRS);
 
     fNEvents++;
 
