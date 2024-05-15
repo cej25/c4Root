@@ -34,11 +34,10 @@ class TFimpConfiguration
         int SC41R() const;
         std::set<int> ExtraSignals() const;
 
-        void SetAmplitudeMax(int max) { AmplitudeMax = max; }
-        void SetAmplitudeMin(int min) { AmplitudeMin = min; }
+        static void SetEnergyToTRange(int min, int max) { EnergyToTMin = min; EnergyToTMax = max; }
 
-        int AmplitudeMax = 8500;
-        int AmplitudeMin = 7500;
+        static int EnergyToTMax;
+        static int EnergyToTMin;
 
 
     private:

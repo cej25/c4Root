@@ -13,6 +13,8 @@
 TFimpConfiguration* TFimpConfiguration::instance = nullptr;
 std::string TFimpConfiguration::mapping_file = "blank";
 std::string TFimpConfiguration::calibration_file = "blank";
+int TFimpConfiguration::EnergyToTMin = 0;
+int TFimpConfiguration::EnergyToTMax = 4e6;
 
 
 TFimpConfiguration::TFimpConfiguration()

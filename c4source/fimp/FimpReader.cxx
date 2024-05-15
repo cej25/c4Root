@@ -191,6 +191,8 @@ Bool_t FimpReader::Read()
     (((uint64_t)fData->fimp_ts_t[1]) << 16) + 
     (uint64_t)(fData->fimp_ts_t[0]);
 
+    if (wr_t == 0) return kTRUE;
+
     uint32_t wr_id = fData->fimp_ts_subsystem_id;
 
     uint64_t trig_time_long = (((uint64_t)fData->fimp_data_trig_coarse_time_hi) << 22) +
@@ -198,6 +200,10 @@ Bool_t FimpReader::Read()
 
     // coarse time
     int hit_index = 0;
+    int channel = -1;
+    int prev_channel = -1;
+    int prev_LoT = -1;
+
     for (uint32_t channel_index = 0; channel_index < fData->fimp_data_time_coarseM; channel_index++)
     {
         int current_channel = fData->fimp_data_time_coarseMI[channel_index]; // channel to read now
@@ -217,10 +223,114 @@ Bool_t FimpReader::Read()
             uint16_t coarse_time = fData->fimp_data_time_coarsev[j];
             double fine_time = GetFineTime(current_channel, raw_ft);
 
-            bool leadOrTrail = fData->fimp_data_lead_or_trailv[j] & 0x1;
-            uint16_t channel = (current_channel - leadOrTrail)/2; // Get actual channel, 128 = trigger
+            int leadOrTrail = fData->fimp_data_lead_or_trailv[j] & 0x1;
+            channel = (current_channel - leadOrTrail)/2; // Get actual channel, 128 = trigger
 
-            // trigger leading edge
+            //std::cout << "lead or trail: " << leadOrTrail << " channel : " << channel << std::endl;
+
+
+            if (channel != prev_channel && channel < 128)
+            {
+                // create an entry for anything that came before.
+                if (lead_coarse.size() > 0 && trail_coarse.size() > 0)
+                {
+                    auto & entry = fimpArray->emplace_back();
+                    entry.SetAll(wr_t, 
+                                wr_id,
+                                trig_time_long, 
+                                prev_channel, 
+                                lead_coarse, // lead coarse
+                                lead_fine, // lead fine
+                                trail_coarse, // trail coarse
+                                trail_fine, // trail fine
+                                lead_raw_ft, // lead fine time bin
+                                trail_raw_ft // trail fine time bin
+                    );
+
+                    lead_coarse.clear();
+                    lead_fine.clear();
+                    lead_raw_ft.clear();
+                    trail_coarse.clear();
+                    trail_fine.clear();
+                    trail_raw_ft.clear();
+                }
+               
+                if (!leadOrTrail)
+                {
+                    // open lead array, collect up to 3 (?)
+                    lead_coarse.emplace_back(coarse_time);
+                    lead_fine.emplace_back(fine_time);
+                    lead_raw_ft.emplace_back(raw_ft);
+                }
+                else
+                {
+                    c4LOG(debug2, "Unmatched trail(s). Channel = " << channel << " Prev channel = " << prev_channel);
+                }
+
+            }
+            else if (channel == prev_channel && channel < 128)
+            {
+                if (!leadOrTrail && !prev_LoT && lead_coarse.size() < 3)
+                {
+                    lead_coarse.emplace_back(coarse_time);
+                    lead_fine.emplace_back(fine_time);
+                    lead_raw_ft.emplace_back(raw_ft);
+                }
+                else if (!leadOrTrail && prev_LoT == 1)
+                {
+                    c4LOG(warn, "Unmatched leads or trails/leads swapped? Should we account for this?");
+                }
+                else if (leadOrTrail == 1 && !prev_LoT)
+                {
+                    trail_coarse.emplace_back(coarse_time);
+                    trail_fine.emplace_back(fine_time);
+                    trail_raw_ft.emplace_back(raw_ft);
+                }
+                else if (leadOrTrail == 1 && prev_LoT == 1 && trail_coarse.size() < 3)
+                {
+                    trail_coarse.emplace_back(coarse_time);
+                    trail_fine.emplace_back(fine_time);
+                    trail_raw_ft.emplace_back(raw_ft);
+                }
+            }
+            else if (channel == 128 && !leadOrTrail) // trigger stuff
+            {
+                lead_coarse.clear();
+                lead_fine.clear();
+                lead_raw_ft.clear();
+                trail_coarse.clear();
+                trail_fine.clear();
+                trail_raw_ft.clear();
+
+                lead_coarse.emplace_back(coarse_time);
+                lead_fine.emplace_back(fine_time);
+                lead_raw_ft.emplace_back(raw_ft);
+
+                auto & entry = fimpArray->emplace_back();
+                entry.SetAll(wr_t, 
+                            wr_id,
+                            trig_time_long, 
+                            prev_channel, 
+                            lead_coarse, // lead coarse
+                            lead_fine, // lead fine
+                            trail_coarse, // trail coarse
+                            trail_fine, // trail fine
+                            lead_raw_ft, // lead fine time bin
+                            trail_raw_ft // trail fine time bin
+                );
+
+                lead_coarse.clear();
+                lead_fine.clear();
+                lead_raw_ft.clear();
+
+            }
+
+
+
+
+
+
+            /*// trigger leading edge
             if (channel == 128 && !leadOrTrail)
             {
                 auto & entry = fimpArray->emplace_back();
@@ -245,7 +355,7 @@ Bool_t FimpReader::Read()
                     if (last_hit.leadOrTrail == 0) 
                     {
                         unmatchedLeads++;
-                        c4LOG(warn, "Unmatched lead in FIMP data: " << unmatchedLeads);
+                        //c4LOG(warn, "Unmatched lead in FIMP data: " << unmatchedLeads);
                     }
 
                     last_hit.channel = channel;
@@ -256,10 +366,11 @@ Bool_t FimpReader::Read()
                 }
                 else
                 {   
-                    if (last_hit.leadOrTrail == -1) c4LOG(warn, "First data item is a trail");
+                    if (last_hit.leadOrTrail == -1) //c4LOG(warn, "First data item is a trail");
+                    {}
                     else if (last_hit.leadOrTrail == 1) 
                     {
-                        c4LOG(warn, "Two trails in a row");
+                        //c4LOG(warn, "Two trails in a row");
                         continue;
                     }
                     else
@@ -297,10 +408,37 @@ Bool_t FimpReader::Read()
                 }
 
             }
-            else continue; // dummy data
+            else continue; // dummy data*/
+
+            prev_channel = channel;
+            prev_LoT = leadOrTrail;
 
         }
         hit_index = next_channel_start;
+    }
+
+    // create entry for last data
+    if (lead_coarse.size() > 0)
+    {
+        auto & entry = fimpArray->emplace_back();
+        entry.SetAll(wr_t, 
+                    wr_id,
+                    trig_time_long, 
+                    prev_channel, 
+                    lead_coarse, // lead coarse
+                    lead_fine, // lead fine
+                    trail_coarse, // trail coarse
+                    trail_fine, // trail fine
+                    lead_raw_ft, // lead fine time bin
+                    trail_raw_ft // trail fine time bin
+        );
+
+        lead_coarse.clear();
+        lead_fine.clear();
+        lead_raw_ft.clear();
+        trail_coarse.clear();
+        trail_fine.clear();
+        trail_raw_ft.clear();
     }
 
     fNEvent++;
