@@ -13,7 +13,6 @@ extern "C"
 }
 
 class TClonesArray;
-class FrsTpatData;
 
 struct EXT_STR_h101_frstpat_t;
 typedef struct EXT_STR_h101_frstpat_t EXT_STR_h101_frstpat;
@@ -49,7 +48,6 @@ class FrsTpatReader : public c4Reader
 
         Bool_t fOnline;
 
-        TClonesArray* fArray;
         std::vector<FrsTpatItem>* tpatArray;
 
         uint64_t wr_t;

@@ -8,7 +8,6 @@
 
 class TClonesArray;
 class EventHeader;
-class FrsMainData;
 
 class FrsMainRaw2Cal : public FairTask
 {
@@ -32,10 +31,7 @@ class FrsMainRaw2Cal : public FairTask
 
 
     private:
-        Bool_t fOnline;
-
-        TClonesArray* fRawArray; // from FrsReader
-        
+        Bool_t fOnline;        
         
         std::vector<FrsMainV830Item> const* v830array;
         std::vector<FrsMainV792Item> const* v792array;
@@ -43,8 +39,6 @@ class FrsMainRaw2Cal : public FairTask
         std::vector<FrsMainCalScalerItem>* scalerArray;
         std::vector<FrsMainCalSciItem>* sciArray;
         std::vector<FrsMainCalMusicItem>* musicArray;
-
-        FrsMainData* fRawHit;
 
         uint64_t WR_TS;
 
