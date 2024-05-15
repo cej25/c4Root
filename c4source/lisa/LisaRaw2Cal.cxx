@@ -73,6 +73,8 @@ void LisaRaw2Cal::Exec(Option_t* option)
                 ypos,
                 lisaItem.Get_channel_energy(),
                 lisaItem.Get_trace(),
+                //lisaItem.Get_board_event_time(),
+                //lisaItem.Get_channel_time(),
                 EVTno,
                 lisaItem.Get_pileup(),
                 lisaItem.Get_overflow()
