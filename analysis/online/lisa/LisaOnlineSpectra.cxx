@@ -153,7 +153,7 @@ InitStatus LisaOnlineSpectra::Init()
     //:::::::::::H I T  P A T T E R N - by grid ::::::::::::::::::
     dir_stats->cd();
     c_hitpattern_grid = new TCanvas("c_hitpattern_grid", "Hit Pattern Grid", 650, 350);
-    c_hitpattern_grid->Divide(layer_number-1);
+    c_hitpattern_grid->Divide(layer_number-1, 1, 0.05, 0.05);
     h2_hitpattern_grid.resize(layer_number-1);
     c_hitpattern_grid->SetLogz();
 
@@ -161,6 +161,8 @@ InitStatus LisaOnlineSpectra::Init()
     {   
 
         c_hitpattern_grid->cd(i+1);
+        gPad->SetLeftMargin(0.15);
+        gPad->SetRightMargin(0.15);
         h2_hitpattern_grid[i] = new TH2F(Form("h2_hitpattern_grid_layer_%i", i), Form("Hit Pattern Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
         h2_hitpattern_grid[i]->SetStats(0);
         h2_hitpattern_grid[i]->Draw("colz");
@@ -182,7 +184,7 @@ InitStatus LisaOnlineSpectra::Init()
     //:::::::::::P I L E   U P::::::::::::
     dir_stats->cd();
     c_pileup_grid = new TCanvas("c_pileup_grid", "Pileup Grid", 650, 350);
-    c_pileup_grid->Divide(layer_number-1);
+    c_pileup_grid->Divide(layer_number-1, 1, 0.05, 0.05);
     h2_pileup_grid.resize(layer_number-1);
     //c_hitpattern_grid->SetLogz();
 
@@ -190,6 +192,8 @@ InitStatus LisaOnlineSpectra::Init()
     {   
 
         c_pileup_grid->cd(i+1);
+        gPad->SetLeftMargin(0.15);
+        gPad->SetRightMargin(0.15);
         h2_pileup_grid[i] = new TH2F(Form("h2_pileup_grid_layer_%i", i), Form("Pile Up Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
         h2_pileup_grid[i]->SetStats(0);
         h2_pileup_grid[i]->Draw("COLZ");
@@ -211,13 +215,15 @@ InitStatus LisaOnlineSpectra::Init()
     //:::::::::::O V E R   F L O W:::::::::::
     dir_stats->cd();
     c_overflow_grid = new TCanvas("c_overflow_grid", "Over Flow Grid", 650, 350);
-    c_overflow_grid->Divide(layer_number-1);
+    c_overflow_grid->Divide(layer_number-1, 1, 0.05, 0.05);
     h2_overflow_grid.resize(layer_number-1);
 
     for (int i = 0; i < layer_number-1; i++)
     {   
 
         c_overflow_grid->cd(i+1);
+        gPad->SetLeftMargin(0.15);
+        gPad->SetRightMargin(0.15);
         h2_overflow_grid[i] = new TH2F(Form("h2_overflow_grid_layer_%i", i), Form("Over Flow Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
         h2_overflow_grid[i]->SetStats(0);
         h2_overflow_grid[i]->Draw("COLZ");
@@ -498,6 +504,45 @@ InitStatus LisaOnlineSpectra::Init()
 
     }
 
+    //:::::::::::Traces for layer 1 and 2    - ALL
+    c_traces_layer_ch_stat.resize(layer_number);
+    h2_traces_layer_ch_stat.resize(layer_number);
+    for (int i = 1; i < layer_number; i++) //create a canvas for each layer
+    {
+        c_traces_layer_ch_stat[i] = new TCanvas(Form("c_traces_layer_stat_%d",i),Form("c_traces_layer_stat_%d",i), 650,350);
+        c_traces_layer_ch_stat[i]->SetTitle(Form("Layer %d - Traces_stat",i));
+        c_traces_layer_ch_stat[i]->Divide(xmax,ymax); 
+        h2_traces_layer_ch_stat[i].resize(xmax);
+        for (int j = 0; j < xmax; j++)
+        {
+            h2_traces_layer_ch_stat[i][j].resize(ymax);
+            for (int k = 0; k < ymax; k++)
+            {   
+                // general formula to place correctly on canvas for x,y coordinates
+                c_traces_layer_ch_stat[i]->cd((ymax-(k+1))*xmax + j + 1);
+                
+                city = "";
+                for (auto & detector : detector_mapping)
+                {
+                    if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
+                    {
+                        city = detector.second.first.second;
+                        break;
+                    }
+                }
+
+                h2_traces_layer_ch_stat[i][j][k] = new TH2F(Form("traces_stat_%s_%i_%i_%i", city.c_str(), i, j, k), city.c_str(), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces, 500,0,10000); //2000,0,20
+                h2_traces_layer_ch_stat[i][j][k]->GetXaxis()->SetTitle("Time [us]");
+                h2_traces_layer_ch_stat[i][j][k]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
+                h2_traces_layer_ch_stat[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
+                h2_traces_layer_ch_stat[i][j][k]->Draw("colz");
+            }
+        }
+        c_traces_layer_ch_stat[i]->cd(0);
+        dir_traces->Append(c_traces_layer_ch_stat[i]);
+
+    }
+
     run->GetHttpServer()->RegisterCommand("Reset_Lisa_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
     //run->GetHttpServer()->RegisterCommand("Reset_Lisa_Hist", "/Objects/->Reset_Histo()");
     c4LOG(info,"Get Name: " << GetName() );
@@ -534,10 +579,10 @@ void LisaOnlineSpectra::Reset_Histo()
     }
     
     //Reset hit grid
-    //for (int i = 1; i < layer_number; i++)
-    //{
-    //    h2_hitpattern_grid[i]->Reset();
-    //}
+    for (int i = 0; i < layer_number-1; i++)
+    {
+        h2_hitpattern_grid[i]->Reset();
+    }
     h1_multiplicity->Reset();
     h1_layer_multiplicity->Reset();
 
@@ -566,11 +611,10 @@ void LisaOnlineSpectra::Exec(Option_t* option)
         int xpos = lisaCalItem.Get_xposition();
         int ypos = lisaCalItem.Get_yposition();
         uint32_t energy = lisaCalItem.Get_energy();
-        std::vector<uint16_t> trace = lisaCalItem.Get_trace();
+        trace = lisaCalItem.Get_trace();
         int pileup = lisaCalItem.Get_pileup();
         int overflow = lisaCalItem.Get_overflow();
         uint64_t evtno = header->GetEventno();
-        
         
         
         //::::::::F I L L   H I S T O S:::::::
@@ -601,8 +645,8 @@ void LisaOnlineSpectra::Exec(Option_t* option)
 
         //::::::::::counter for time display of energy point
         
-        //xp = lisaCalItem.Get_xposition();
-        //yp = lisaCalItem.Get_yposition();
+        xp = lisaCalItem.Get_xposition();
+        yp = lisaCalItem.Get_yposition();
         //lay = lisaCalItem.Get_layer_id();
         //en = lisaCalItem.Get_energy();
         //counter++;
@@ -633,9 +677,20 @@ void LisaOnlineSpectra::Exec(Option_t* option)
 
         }
 
+
+
     }
 
+
     //c4LOG(info, "::::::::::END LOOP::::::::::::" << " Layer number :" << layer_number);
+
+    //::::::::: Fill Traces ALL ::::::::::::::
+    for (int i = 0; i < trace.size(); i++)
+    {
+        h2_traces_layer_ch_stat[layer][xp][yp]->Fill(i*0.01,trace[i]);
+        //c4LOG(info, "layer: " << layer << " x max: " << xmax << " ymax: " << ymax);
+
+    }
 
     //c4LOG(info, " layer : "<<layer << " multiplicity layer : "<<multiplicity[layer]);
     if ( wr_time == 0 ) return;

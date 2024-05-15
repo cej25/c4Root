@@ -169,7 +169,7 @@ InitStatus LisaFrsCorrelations::Init()
         h2_MUSIC_2_layer[i]->GetXaxis()->SetTitle(Form("E(LISA) - Layer %i",i));
         h2_MUSIC_2_layer[i]->GetYaxis()->SetTitle("dE MUSIC(2)");
         //h2_MUSIC_2_layer[i]->SetStats(0);
-        h2_MUSIC_2_layer[i]->Draw();
+        h2_MUSIC_2_layer[i]->Draw("colz");
     }
     c_MUSIC_2_layer->cd(0);
     dir_lisa_frs->Append(c_MUSIC_2_layer);
@@ -185,7 +185,7 @@ InitStatus LisaFrsCorrelations::Init()
         h2_travMUSIC_layer[i]->GetXaxis()->SetTitle(Form("E(LISA) - Layer %i",i));
         h2_travMUSIC_layer[i]->GetYaxis()->SetTitle("dE travMUSIC");
         //h2_travMUSIC_layer[i]->SetStats(0);
-        h2_travMUSIC_layer[i]->Draw();
+        h2_travMUSIC_layer[i]->Draw("colz");
     }
     c_travMUSIC_layer->cd(0);
     dir_lisa_frs->Append(c_travMUSIC_layer);
@@ -222,16 +222,18 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     //S2 Position x-y
     s2_x = frsHitItem.Get_ID_x2();
     s2_y = frsHitItem.Get_ID_y2();
-    c4LOG(info, "s2 x : " << s2_x << "s2 y : " << s2_y);
+    //c4LOG(info, "s2 x : " << s2_x << "s2 y : " << s2_y);
 
     // Energy from frs
     std::vector<uint32_t> sum_energy_layer;
     sum_energy_layer.resize(layer_number);
+    //c4LOG(info, "s2 x : " << s2_x << "s2 y : " << s2_y);
 
-    //energy_MUSIC_1 = frsHitItem.Get_music_dE(0); 
-    //energy_MUSIC_2 = frsHitItem.Get_music_dE(1);
-    //energy_travMUSIC = frsHitItem.Get_travmusic_dE();
+    energy_MUSIC_1 = frsHitItem.Get_music_dE(0); 
+    energy_MUSIC_2 = frsHitItem.Get_music_dE(1);
+    energy_travMUSIC = frsHitItem.Get_travmusic_dE();
     //energy_travMUSIC = travMusHitItem.Get_travmusic_dE();
+    //c4LOG(info, "travMUS en : " << energy_travMUSIC << " music 1 : " << energy_MUSIC_1 << " sum energy 1 : " << sum_energy_layer[1]);
 
 
     // correlation with main FRS (10, 20, 30, 15)
@@ -283,11 +285,15 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     h1_wr_diff[2]->Fill(wr_travMUSIC_FRS);
 
     
+    //c4LOG(info, "travMUS en : " << energy_travMUSIC << " music 1 : " << energy_MUSIC_1 << " sum energy 1 : " << sum_energy_layer[1]);
+    if(wr_travMUSIC == 0) return;
+    h1_wr_diff[1]->Fill(wr_LISA_travMUSIC);
+
+    if (wr_FRS != 0 && wr_LISA != 0) h1_wr_diff[0]->Fill(wr_LISA_FRS);
 
 
     //:::::::::::::: ENERGY correlation ::::::::::::::::::::::::::
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    
     for (int i = 0; i < layer_number; i++)
     {
         //MUSIC 1
@@ -297,15 +303,8 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         //travMUSIC
         h2_travMUSIC_layer[i]->Fill(sum_energy_layer[i],energy_travMUSIC);
         
-        c4LOG(info, "travMUS en : " << energy_travMUSIC << " music 1 : " << energy_MUSIC_1 << " sum energy 1 : " << sum_energy_layer[1]);
-
     }
 
-    //c4LOG(info, "travMUS en : " << energy_travMUSIC << " music 1 : " << energy_MUSIC_1 << " sum energy 1 : " << sum_energy_layer[1]);
-    if(wr_travMUSIC == 0) return;
-    h1_wr_diff[1]->Fill(wr_LISA_travMUSIC);
-
-    if (wr_FRS != 0 && wr_LISA != 0) h1_wr_diff[0]->Fill(wr_LISA_FRS);
 
     fNEvents++;
 
