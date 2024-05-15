@@ -79,10 +79,10 @@ void setup(TFRSParameter* frs,
   id->max_z_plot   = 72;
    
   // bfield (Tm) for new control system. (we put rho = 1)
-  frs->bfield[0] = 6.5434;// 8.5819;    // 100Mo // 6.5434;
-  frs->bfield[1] = 6.5434; // 8.5819;  // 100Mo // 6.5434;
-  frs->bfield[2] = 4.9821; // 7.6261; //;100Mo // 4.9821;
-  frs->bfield[3] = 4.9821;// 7.6261; //;100Mo // 4.9821;
+  frs->bfield[0] = 6.5434; // 8.5819;    // 100Mo
+  frs->bfield[1] = 6.5434; //8.5819;  // 100Mo
+  frs->bfield[2] = 4.9821; //  7.6261; //;100Mo
+  frs->bfield[3] = 4.9821; // 7.6261;//;100Mo
   frs->bfield[4] = 4.8347;   //  D5 (to ESR) not used
   frs->bfield[5] = 4.8347;  //   D6 (to S8)
 

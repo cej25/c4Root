@@ -22,6 +22,8 @@
 #include "TMath.h"
 #include "TRandom.h"
 #include "TFile.h"
+#include "TColor.h"
+#include "TStyle.h"
 
 FrsOnlineSpectra::FrsOnlineSpectra(): FrsOnlineSpectra("FrsOnlineSpectra")
 {
@@ -154,13 +156,17 @@ InitStatus FrsOnlineSpectra::Init()
     for (int i = 0; i < 66; i++) hScaler_per_100ms[i] = new TH1D(Form("hScaler_per_100ms_%s", scaler_name[i]), Form("Scaler %s per 0.1s", scaler_name[i]), 4000, 0, 400);
     for (int i = 0; i < 66; i++) hScaler_per_spill[i] = new TH1D(Form("hScaler_per_spill_%s", scaler_name[i]), Form("Scaler %s per spill ", scaler_name[i]), 1000, 0, 1000);
 
+
     dir_pids->cd();
+
+    gStyle->SetPalette(kDarkBodyRadiator);
 
     h2_Z_vs_AoQ = new TH2D("h2_Z_vs_AoQ", "Z1 vs. A/Q", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
     //h2_Z_vs_AoQ = new TH2D("h2_Z_vs_AoQ", "Z1 vs. A/Q", 1500, 2, frs_config->fMax_AoQ, 1000, 30, frs_config->fMax_Z);
     h2_Z_vs_AoQ->GetXaxis()->SetTitle("A/Q");
     h2_Z_vs_AoQ->GetYaxis()->SetTitle("Z (MUSIC 1)");
     h2_Z_vs_AoQ->SetOption("COLZ");
+    gStyle->SetPalette(kDarkBodyRadiator);
     
     h2_Z_vs_AoQ_corr = new TH2D("h2_Z_vs_AoQ_corr", "Z1 vs. A/Q (corr)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
     //h2_Z_vs_AoQ_corr = new TH2D("h2_Z_vs_AoQ_corr", "Z1 vs. A/Q (corr)", 1500, 2 , frs_config->fMax_AoQ, 1000, 30, frs_config->fMax_Z);
@@ -253,7 +259,6 @@ InitStatus FrsOnlineSpectra::Init()
 
     h2_x4_vs_Z = new TH2D("h2_x4_vs_Z", "x4 vs. Z1", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x4, frs_config->fMax_x4);
     //h2_x4_vs_Z = new TH2D("h2_x4_vs_Z", "x4 vs. Z1", 400, 30, frs_config->fMax_Z, 200, frs_config->fMin_x4, frs_config->fMax_x4);
-    h2_x4_vs_Z = new TH2D("h2_x4_vs_Z", "x4 vs. Z1", 400, 30, frs_config->fMax_Z, 200, frs_config->fMin_x4, frs_config->fMax_x4);
     h2_x4_vs_Z->GetXaxis()->SetTitle("Z (MUSIC 1)");
     h2_x4_vs_Z->GetYaxis()->SetTitle("S4 x-position");
     h2_x4_vs_Z->SetOption("COLZ");
@@ -293,6 +298,17 @@ InitStatus FrsOnlineSpectra::Init()
     h2_Z_vs_Sc21E->GetXaxis()->SetTitle("Z (MUSIC 1)");
     h2_Z_vs_Sc21E->GetYaxis()->SetTitle("Sc21 E");
     h2_Z_vs_Sc21E->SetOption("COLZ");
+
+    // 1D plots to turn on and off
+    if (frs_config->plot_1d)
+    {   
+        // preset wide ranges to "always" see peak, in case it's wrong
+        h1_frs_Z = new TH1D("h1_frs_Z", "Z (MUSIC 1)", 500, 10, 100);
+        h1_frs_Z2 = new TH1D("h1_frs_Z2", "Z (MUSIC 1)", 500, 10, 100);
+        h1_frs_AoQ = new TH1D("h1_frs_AoQ", "A/Q", 500, 1.5, 4.0);
+        h1_frs_AoQ_cor = new TH1D("h1_frs_AoQ_cor", "A/Q corr", 500, 1.5, 4.0);
+    }
+
 
     // ZvsZ2 gates
     if (!FrsGates.empty())
@@ -781,6 +797,17 @@ void FrsOnlineSpectra::Exec(Option_t* option)
         // CEJ: changed [2] -> [0]
         if (hitItem.Get_ID_z() != 0 && hitItem.Get_sci_l(0) != 0 && hitItem.Get_sci_r(0) != 0) h2_Z_vs_Sc21E->Fill(hitItem.Get_ID_z(), sqrt(hitItem.Get_sci_l(0) * hitItem.Get_sci_r(0)));
 
+        // 1d plots to switch on and off
+        // 1D plots to turn on and off
+        if (frs_config->plot_1d)
+        {
+            h1_frs_Z->Fill(hitItem.Get_ID_z());
+            h1_frs_Z2->Fill(hitItem.Get_ID_z2());
+            h1_frs_AoQ->Fill(hitItem.Get_ID_AoQ());
+            h1_frs_AoQ_cor->Fill(hitItem.Get_ID_AoQ_corr());
+        }
+
+
         if (!FrsGates.empty())
         {   
             for (int gate = 0; gate < FrsGates.size(); gate++)
@@ -840,7 +867,7 @@ void FrsOnlineSpectra::Exec(Option_t* option)
 
             h2_travmus_z1->Fill(hitItem.Get_ID_z_travmus(), hitItem.Get_ID_z());
 
-            c4LOG(info, "trav_mus_de : " << hitItem.Get_travmusic_dE() << " music 1 en : " << hitItem.Get_music_dE(0) << "music 2 en : " << hitItem.Get_music_dE(1) );
+            //c4LOG(info, "trav_mus_de : " << hitItem.Get_travmusic_dE() << " music 1 en : " << hitItem.Get_music_dE(0) << "music 2 en : " << hitItem.Get_music_dE(1) );
         }
    
 
