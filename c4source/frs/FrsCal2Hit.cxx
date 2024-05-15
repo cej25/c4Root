@@ -772,16 +772,16 @@ void FrsCal2Hit::Exec(Option_t* option)
     } // loop for sci values
 
 
-    std::cout << ":::::: TESTING SCI SIGNALS :::::" << std::endl;
-    for (int i = 0; i < 6; i++)
-    {   
-        std::cout << "i: " << i << std::endl;
-        std::cout << "sci_l: " << sci_l[i] << std::endl;
-        std::cout << "sci_r: " << sci_r[i] << std::endl;
-        std::cout << "sci_tx: " << sci_tx[i] << std::endl;
-        std::cout << "sci_e: " << sci_e[i] << std::endl;
-        std::cout << "sci_x: " << sci_x[i] << std::endl;
-    }
+    // std::cout << ":::::: TESTING SCI SIGNALS :::::" << std::endl;
+    // for (int i = 0; i < 6; i++)
+    // {   
+    //     std::cout << "i: " << i << std::endl;
+    //     std::cout << "sci_l: " << sci_l[i] << std::endl;
+    //     std::cout << "sci_r: " << sci_r[i] << std::endl;
+    //     std::cout << "sci_tx: " << sci_tx[i] << std::endl;
+    //     std::cout << "sci_e: " << sci_e[i] << std::endl;
+    //     std::cout << "sci_x: " << sci_x[i] << std::endl;
+    // }
 
 
     /*----------------------------------------------------------*/
