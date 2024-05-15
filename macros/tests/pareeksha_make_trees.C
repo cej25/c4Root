@@ -54,17 +54,18 @@ void pareeksha_make_trees()
 
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
-    TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0169_*.lmd";  //data with only lisa
+    //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0169_*.lmd";  //data with only lisa
     //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/daqtest/daqtest_0001_0001.lmd"; //data from ts folder
+    TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0006_*.lmd"; //from time stitched files
 
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/";
-    TString outputFilename = outputpath + "pareeksha_test.root";
+    TString outputpath = "/u/gandolfo/data//lustre/gamma/LISA/data/pareeksha_trees/";
+    TString outputFilename = outputpath + "run_0006_test.root";
 
 
     //:::::::Create online run
-    Int_t refresh = 10; // Refresh rate for online histograms
-    Int_t port = 5000;
+    Int_t refresh = 10; // not needed
+    Int_t port = 5000; // not needed
      
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();

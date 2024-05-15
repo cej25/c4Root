@@ -10,7 +10,7 @@
 // Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/
 extern "C"
 {
-    #include "../../config/pareeksha/frs/setup_des_s100_030_2024_conv.C"
+    #include "../../config/pareeksha/frs/setup_s092_002_2024_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -56,11 +56,11 @@ void pareeksha_online()
     //::::::::::P A T H   O F   F I L E  to read
     //___O N L I N E
     //TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
-    //TString filename = "trans://lxg1257"; // time stitched
+    TString filename = "trans://lxg1257"; // time stitched
 
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0167_*.lmd";  //data with only lisa
-    TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0006_00*.lmd"; //data from ts folder
+    //TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0022_00*.lmd"; //22 good run for statistics, frs, trav, lisa in ts
 
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/";
@@ -216,7 +216,7 @@ void pareeksha_online()
 
     //::::::::: Set ranges for histos :::::::::::::::
     //::::  Channel Energy ::::: (h1_energy_layer_ch)
-    TLisaConfiguration::SetEnergyRange(600000,900000);
+    TLisaConfiguration::SetEnergyRange(0,3000000);
     TLisaConfiguration::SetEnergyBin(900);
 
     //:::: LISA WR Time Difference :::::: (h1_wr_diff)
@@ -226,8 +226,13 @@ void pareeksha_online()
     //:::: LISA Traces Time and Amplitude Ranges :::::: (h1_traces_layer_ch)
     TLisaConfiguration::SetTracesRange(0,20);
     TLisaConfiguration::SetTracesBin(2000);
-    TLisaConfiguration::SetAmplitudeMin(7500);
-    TLisaConfiguration::SetAmplitudeMax(16000);
+    TLisaConfiguration::SetAmplitudeMin(10);
+    TLisaConfiguration::SetAmplitudeMax(9000);
+
+    TFrsConfiguration::Set_Z_range(10,90);
+    TFrsConfiguration::Set_AoQ_range(2,4);
+    TFrsConfiguration::Set_dE_Music1_range(0,4000);
+    TFrsConfiguration::Set_dE_Music2_range(0,4000);
 
 
     if (LISA_ON)
