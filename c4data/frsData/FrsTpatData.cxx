@@ -1,14 +1,5 @@
 #include "FrsTpatData.h"
 
-FrsTpatData::FrsTpatData()
-{
-}
-
-FrsTpatData::~FrsTpatData()
-{
-}
-
-
 FrsTpatItem::FrsTpatItem()
 {
 
@@ -26,4 +17,4 @@ void FrsTpatItem::Reset()
     tpat = 0;
 }
 
-ClassImp(FrsTpatData)
+ClassImp(FrsTpatItem)
