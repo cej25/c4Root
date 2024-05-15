@@ -311,7 +311,6 @@ void FrsCal2Hit::Exec(Option_t* option)
                 if (travmusic_b_e[i])
                 {
                     travmusic_anodes_cnt++;
-                    std::cout << "anode count: " << travmusic_anodes_cnt << std::endl;
                 }
             }
         }
@@ -416,17 +415,12 @@ void FrsCal2Hit::Exec(Option_t* option)
         Int_t temp_count_travmus = 0;
         for (int i = 0; i < 8; i++)
         {
-            std::cout << "travmus b: " << travmusic_b_e[i] << std::endl;
             if (travmusic_b_e[i])
             {
-                std::cout << "music e: " << (travmusic_e[i]) << std::endl;
                 temp_de_travmus *= ((travmusic_e[i]) * music->e3_gain[i] + music->e3_off[i]);
-                std::cout << temp_de_travmus << std::endl;
                 temp_count_travmus++;
             }
         }
-        std::cout << "count: " << temp_count_travmus << std::endl;
-        std::cout << "temp_de_travmus after: " << temp_de_travmus << std::endl; 
         de_travmus = TMath::Power(temp_de_travmus, 1. / ((float)(temp_count_travmus)));
         de_cor_travmus = de_travmus;
         b_de_travmus = kTRUE;
@@ -1162,6 +1156,7 @@ void FrsCal2Hit::Exec(Option_t* option)
             id_AoQ = id_brho[1] / id_beta / id_gamma / aoq_factor;
             id_AoQ_corr = id_AoQ - id->a2AoQCorr * id_a2;
             id_b_AoQ = true;
+
         }
     }
 
@@ -1182,6 +1177,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         if (id_v_cor > 0.0)
         {
             id_z = frs->primary_z * sqrt(de[0] / id_v_cor) + id->offset_z;
+
         }
         if ((id_z > 0.0) && (id_z < 100.0))
         {
@@ -1429,9 +1425,6 @@ void FrsCal2Hit::Setup_Conditions(std::string path_to_config_files)
 
         line_number++;
     }
-
-    std::cout << "condition: " << cMusicTRAV_E[7][0] << std::endl;
-
 
     line_number = 0;
 

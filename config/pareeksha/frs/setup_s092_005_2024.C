@@ -1,18 +1,82 @@
-// initially copied from setup_engrun_049_2024.C
+// initially copied from setup_s092_002_2024.C
 
 #include "Riostream.h"
 
-void setup(TFRSParameter* frs,
-        TMWParameter* mw,
-        TTPCParameter* tpc,
-        TMUSICParameter* music,
-        TLABRParameter* labr,
-        TSCIParameter* sci,
-        TIDParameter* id,
-        TSIParameter* si,
-        TMRTOFMSParameter* mrtof,
-        TRangeParameter* range)
+void setup_s092_005_2024()
 {
+  // look up analysis object and all parameters
+
+  TFRSAnalysis* an = dynamic_cast<TFRSAnalysis*> (TGo4Analysis::Instance());
+  if (an==0) {
+    cout << "!!!  Script should be run in FRS analysis" << endl;
+    return;
+  }
+
+  TFRSParameter* frs = dynamic_cast<TFRSParameter*> (an->GetParameter("FRSPar"));
+  if (frs==0) {
+    cout << "!!!  Parameter FRSPar not found" << endl;
+    return;
+  }
+
+  TMWParameter* mw = dynamic_cast<TMWParameter*> (an->GetParameter("MWPar"));
+  if (mw==0) {
+    cout << "!!!  Parameter MWPar not found" << endl;
+    return;
+  }
+
+  TMUSICParameter* music = dynamic_cast<TMUSICParameter*> (an->GetParameter("MUSICPar"));
+  if (music==0) {
+    cout << "!!!  Parameter MUSICPar not found" << endl;
+    return;
+  }
+
+  TSCIParameter* sci = dynamic_cast<TSCIParameter*> (an->GetParameter("SCIPar"));
+  if (sci==0) {
+    cout << "!!!  Parameter SCIPar not found" << endl;
+return;
+  }
+
+  TIDParameter* id = dynamic_cast<TIDParameter*> (an->GetParameter("IDPar"));
+  if (id==0) {
+    cout << "!!!  Parameter IDPar not found" << endl;
+    return;
+  }
+
+  TTPCParameter* tpc = dynamic_cast<TTPCParameter*> (an->GetParameter("TPCPar"));
+  if (tpc==0) {
+    cout << "!!!  Parameter TPCPar not found" << endl;
+    return;
+  }
+
+  TLABRParameter* labr = dynamic_cast<TLABRParameter*> (an->GetParameter("LABRPar"));
+  if (labr==0) {
+    cout << "!!!  Parameter LABRPar not found" << endl;
+    return;
+  }
+
+  TSIParameter* si = dynamic_cast<TSIParameter*> (an->GetParameter("SIPar"));
+  if (si==0) {
+    cout << "!!!  Parameter SIPar not found" << endl;
+    return;
+  }
+
+  TMRTOFMSParameter* mrtof = dynamic_cast<TMRTOFMSParameter*> (an->GetParameter("MRTOFMSPar"));
+  if (mrtof==0) {
+    cout << "!!!  Parameter MR-TOF-MSPar not found" << endl;
+    return;
+  }
+  
+  TRangeParameter* range = dynamic_cast<TRangeParameter*> (an->GetParameter("RangePar"));
+  if (range==0) {
+    cout << "!!!  Parameter RangePar not found" << endl;
+    return;
+  } 
+ /*
+  TModParameter* ElecMod = dynamic_cast<TModParameter*>(an->GetParameter("ModPar"));
+   */
+  cout << endl << "setup script started" << endl;
+
+  // For the momemnt, we put 1 m for radius,
   // because we get brho from control system.
   frs->rho0[0]   = 1.; //TA-S2
   frs->rho0[1]   = 1.; //S2-S4
@@ -42,7 +106,8 @@ void setup(TFRSParameter* frs,
   frs->dist_TPC24 = 4560.0-578.5; //eng-run 2023-11-16
   frs->dist_SC21  = 1554.5; //eng-run 2023-11-16
   frs->dist_SC22  = 4560.0-1814.5; //eng-run 2023-11-16
-  frs->dist_S2target = 1228.0; // S2 Xslit from eng-run 2023-11-16 //1228.0 without adding lisa + (middle of tpc24 + lisa 280 mm)
+  //frs->dist_S2target = 1228.0; // S2 Xslit from eng-run 2023-11-16
+  frs->dist_S2target = 3701.5; // S2 LISA 2024-05-15
 
   //S4
   frs->dist_SC41    = 2156.0+125.0; // eng-run 2023-11-16
@@ -79,10 +144,10 @@ void setup(TFRSParameter* frs,
   id->max_z_plot   = 72;
    
   // bfield (Tm) for new control system. (we put rho = 1)
-  frs->bfield[0] = 6.5434;// 8.5819;    // 100Mo // 6.5434;
-  frs->bfield[1] = 6.5434; // 8.5819;  // 100Mo // 6.5434;
-  frs->bfield[2] = 4.9821; // 7.6261; //;100Mo // 4.9821;
-  frs->bfield[3] = 4.9821;// 7.6261; //;100Mo // 4.9821;
+  frs->bfield[0] = 8.5819;    // 100Mo
+  frs->bfield[1] = 8.5819;  // 100Mo
+  frs->bfield[2] = 7.8256; //;100Mo
+  frs->bfield[3] = 7.8256;//;100Mo
   frs->bfield[4] = 4.8347;   //  D5 (to ESR) not used
   frs->bfield[5] = 4.8347;  //   D6 (to S8)
 
@@ -498,17 +563,17 @@ void setup(TFRSParameter* frs,
   tpc->id_tpc_timeref[0] = 1; // Do not change id_tpc_timeref. (0:accepttrig, 1:sc21, 2:sc22, 3:sc31, 4:sc41)
   // because calibration parameters (for y) are valid only with timeref used during calibration.
   // if you want to change timeref, you need to calibrate y-position  again ! )
-  tpc->x_offset[0][0] = -0.408463 +0.2 -3.0+3.4 -1.0+1.7;//update on 2021/June/19 slitx, degr.center as ref
+  tpc->x_offset[0][0] = -0.408463 +0.2 -3.0+3.4 -1.0+1.7 - 1.3;//update on 2021/June/19 slitx, degr.center as ref
   tpc->x_factor[0][0] = 0.007978;
-  tpc->x_offset[0][1] = 0.959454  +0.2 -3.0+3.4 -1.0+1.7;
+  tpc->x_offset[0][1] = 0.959454  +0.2 -3.0+3.4 -1.0+1.7 - 1.3;
   tpc->x_factor[0][1] = 0.008105;
-  tpc->y_offset[0][0] = -56.3389688 +0.85 +0.5;//-55.037378 -0.6 -1.5;
+  tpc->y_offset[0][0] = -56.3389688 +0.85 +0.5+21.67;//-55.037378 -0.6 -1.5;
   tpc->y_factor[0][0] = 0.0038418; //0.003956; //vacuum tpc is drift to bottom. positive y-factor
-  tpc->y_offset[0][1] =-56.9720263 +0.85+0.5;// -55.193154 -0.6 -1.5;
+  tpc->y_offset[0][1] =-56.9720263 +0.85+0.5+21.67;// -55.193154 -0.6 -1.5;
   tpc->y_factor[0][1] = 0.0038732;//0.003953;
-  tpc->y_offset[0][2] = -57.2758022 +0.85+0.5;//-56.659256 -0.6 -1.5;
+  tpc->y_offset[0][2] = -57.2758022 +0.85+0.5+21.67;//-56.659256 -0.6 -1.5;
   tpc->y_factor[0][2] = 0.0038965;//0.004082;
-  tpc->y_offset[0][3] = -57.7001232 +0.85+0.5;//-55.009200 -0.6 -1.5;
+  tpc->y_offset[0][3] = -57.7001232 +0.85+0.5+21.67;//-55.009200 -0.6 -1.5;
   tpc->y_factor[0][3] = 0.0039169;//0.003934;
   
   // TPC21 gate conditions:  After changing cut limits => Launch analysis again in Go4GUI
@@ -532,17 +597,17 @@ void setup(TFRSParameter* frs,
   tpc->id_tpc_timeref[1] = 1; // Do not change id_tpc_timeref. (0:accepttrig, 1:sc21, 2:sc22, 3:sc31, 4:sc41)
   // because calibration parameters (y) are valid only with timeref used during calibration.
   // if you want to change timeref, you need to calibrate y-position  again ! )
-  tpc->x_offset[1][0] = 2.483279 +0.7 -0.5 -0.6+1.7;//update on 2021/June/19 slitx, degr.center as ref
+  tpc->x_offset[1][0] = 2.483279 +0.7 -0.5 -0.6+1.7-1.549;//update on 2021/June/19 slitx, degr.center as ref
   tpc->x_factor[1][0] = 0.007781;
-  tpc->x_offset[1][1] = 0.561674 +0.7 -0.5-0.6+1.7;
+  tpc->x_offset[1][1] = 0.561674 +0.7 -0.5-0.6+1.7-1.549;
   tpc->x_factor[1][1] = 0.007574;
-  tpc->y_offset[1][0] = -58.1084677+0.6+0.2;//-57.558218 +1.4 -3.0;
+  tpc->y_offset[1][0] = -58.1084677+0.6+0.2+21.67;//-57.558218 +1.4 -3.0;
   tpc->y_factor[1][0] = 0.0039634;//0.004107;   //vacuum tpc is drift to bottom. positive y-factor
-  tpc->y_offset[1][1] = -58.7300878+0.6+0.2;//-56.781388 +1.4 -3.0;
+  tpc->y_offset[1][1] = -58.7300878+0.6+0.2+21.67;//-56.781388 +1.4 -3.0;
   tpc->y_factor[1][1] = 0.0039666;//0.004016;
-  tpc->y_offset[1][2] = -59.094806+0.6+0.2;//-57.216335 +1.4 -3.0;
+  tpc->y_offset[1][2] = -59.094806+0.6+0.2+21.67;//-57.216335 +1.4 -3.0;
   tpc->y_factor[1][2] = 0.0039668;//0.004024;
-  tpc->y_offset[1][3] = -58.5754908+0.6+0.2;//-56.691696 +1.4 -3.0;
+  tpc->y_offset[1][3] = -58.5754908+0.6+0.2+21.67;//-56.691696 +1.4 -3.0;
   tpc->y_factor[1][3] = 0.0039793;//0.004046;
   // TPC22 gate condition... After changing cut limits => Launch analysis again in Go4GUI
   tpc->lim_dt[1][0][0] = 5000.;  tpc->lim_dt[1][0][1] = 50000.0; //A11 drift time TDC cut
@@ -565,17 +630,17 @@ void setup(TFRSParameter* frs,
   tpc->id_tpc_timeref[2] = 1;// Do not change id_tpc_timeref. (0:accepttrig, 1:sc21, 2:sc22, 3:sc31, 4:sc41)
   // because calibration parameters (y) are valid only with timeref used during calibration.
   // if you want to change timeref, you need to calibrate y-position  again ! )
-  tpc->x_offset[2][0] = 4.389925 +1.5-1.5+1.6-0.57-0.6+1.0-3.0-6.2+5.8+0.3; //11.05.22 -6.2 is to djust for disc-center //update on 2021/Mar/31 tpc calib for timeref id=2 (sc22).
+  tpc->x_offset[2][0] = 4.389925 +1.5-1.5+1.6-0.57-0.6+1.0-3.0-6.2+5.8+0.3-0.1874; //11.05.22 -6.2 is to djust for disc-center //update on 2021/Mar/31 tpc calib for timeref id=2 (sc22).
   tpc->x_factor[2][0] = 0.008002;
-  tpc->x_offset[2][1] = -0.136026 +1.5-1.5+1.6-0.57-0.6+1.0-3.0-6.2+5.8+0.3; //11.05.22 -6.2 is to djust for disc-center
+  tpc->x_offset[2][1] = -0.136026 +1.5-1.5+1.6-0.57-0.6+1.0-3.0-6.2+5.8+0.3-0.1874; //11.05.22 -6.2 is to djust for disc-center
   tpc->x_factor[2][1] = 0.007852;
-  tpc->y_offset[2][0] = 48.588674+7.5+(2.286-7.958)-0.8+2.2;
+  tpc->y_offset[2][0] = 48.588674+7.5+(2.286-7.958)-0.8+2.2-21.83;
   tpc->y_factor[2][0] = -0.004231; //air tpc is drift to top. negative y-factor
-  tpc->y_offset[2][1] = 48.726112+7.5+(2.286-7.958)-0.8+2.2;
+  tpc->y_offset[2][1] = 48.726112+7.5+(2.286-7.958)-0.8+2.2-21.83;
   tpc->y_factor[2][1] = -0.004244;
-  tpc->y_offset[2][2] = 48.746238+7.5+(2.286-7.958)-0.8+2.2;
+  tpc->y_offset[2][2] = 48.746238+7.5+(2.286-7.958)-0.8+2.2-21.83;
   tpc->y_factor[2][2] = -0.004246;
-  tpc->y_offset[2][3] = 48.308878+7.5+(2.286-7.958)-0.8+2.2;
+  tpc->y_offset[2][3] = 48.308878+7.5+(2.286-7.958)-0.8+2.2-21.83;
   tpc->y_factor[2][3] = -0.004220;
 
   // TPC23 gate conditions:  After changing cut limits => Launch analysis again in Go4GUI
@@ -599,17 +664,17 @@ void setup(TFRSParameter* frs,
   tpc->id_tpc_timeref[3] = 1;// Do not change id_tpc_timeref. (0:accepttrig, 1:sc21, 2:sc22, 3:sc31, 4:sc41)
   // because calibration parameters (for y) are valid only with timeref used during calibration.
   // if you want to change timeref, you need to calibrate y-position  again ! )
-  tpc->x_offset[3][0] = 3.539890 -0.6-14.0+14.0-0.57+1.0-0.25-6.2+5.6; //11.05.22 -6.2 is to djust for disc-center /2021/March/31 for all these paramters with timeref=2
+  tpc->x_offset[3][0] = 3.539890 -0.6-14.0+14.0-0.57+1.0-0.25-6.2+5.6-0.2482; //11.05.22 -6.2 is to djust for disc-center /2021/March/31 for all these paramters with timeref=2
   tpc->x_factor[3][0] = 0.008047;
-  tpc->x_offset[3][1] = 2.242643 -0.6-14.0+14.0-0.57+1.0-0.25-6.2+5.6; //11.05.22 -6.2 is to djust for disc-center
+  tpc->x_offset[3][1] = 2.242643 -0.6-14.0+14.0-0.57+1.0-0.25-6.2+5.6-0.2482; //11.05.22 -6.2 is to djust for disc-center
   tpc->x_factor[3][1] = 0.007796;
-  tpc->y_offset[3][0] = 63.4310738-1.3-0.5;//57.682383-1.5+9.0+(1.706-6.991)+1.2;
+  tpc->y_offset[3][0] = 63.4310738-1.3-0.5-22.43;//57.682383-1.5+9.0+(1.706-6.991)+1.2;
   tpc->y_factor[3][0] = -0.0040971;//-0.004033; //air tpc is drift to top. negative y-factor
-  tpc->y_offset[3][1] = 63.8444714-1.3-0.5;//58.217353-1.5+9.0+(1.706-6.991)+1.2;
+  tpc->y_offset[3][1] = 63.8444714-1.3-0.5-22.43;//58.217353-1.5+9.0+(1.706-6.991)+1.2;
   tpc->y_factor[3][1] = -0.0040887;//-0.004044;
-  tpc->y_offset[3][2] = 62.8678718-1.3-0.5;//57.839351-1.5+9.0+(1.706-6.991)+1.2;
+  tpc->y_offset[3][2] = 62.8678718-1.3-0.5-22.43;//57.839351-1.5+9.0+(1.706-6.991)+1.2;
   tpc->y_factor[3][2] = -0.0040725;//-0.004039;
-  tpc->y_offset[3][3] = 62.9917085-1.3-0.5;//57.901361-1.5+9.0+(1.706-6.991)+1.2;
+  tpc->y_offset[3][3] = 62.9917085-1.3-0.5-22.43;//57.901361-1.5+9.0+(1.706-6.991)+1.2;
   tpc->y_factor[3][3] = -0.0040386;//-0.004029;
 
   // TPC24 gate conditions:  After changing cut limits => Launch analysis again in Go4GUI
@@ -1063,7 +1128,7 @@ void setup(TFRSParameter* frs,
      {    0., 4000.},
      {40000., 4000.},
      {40000.,    0.}};
-  //an->SetupPolyCond("cID_dEToF", 4, my_cID_dEToF_points);
+  an->SetupPolyCond("cID_dEToF", 4, my_cID_dEToF_points);
 
   //======
   //LaBr
