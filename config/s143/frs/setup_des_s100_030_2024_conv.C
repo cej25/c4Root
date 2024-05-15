@@ -42,7 +42,7 @@ void setup(TFRSParameter* frs,
   frs->dist_TPC24 = 4560.0-578.5; //eng-run 2023-11-16
   frs->dist_SC21  = 1554.5; //eng-run 2023-11-16
   frs->dist_SC22  = 4560.0-1814.5; //eng-run 2023-11-16
-  frs->dist_S2target = 1228.0; // S2 Xslit from eng-run 2023-11-16 //1228.0 without adding lisa + (middle of tpc24 + lisa 280 mm)
+  frs->dist_S2target = 1228.0; // S2 Xslit from eng-run 2023-11-16
 
   //S4
   frs->dist_SC41    = 2156.0+125.0; // eng-run 2023-11-16
@@ -64,7 +64,7 @@ void setup(TFRSParameter* frs,
   frs->dist_SC81 = 0;
   
   //=============switches=============//
-  id->x_s2_select   = 1; //1=tpc,2=sc21,3=sc22
+  id->x_s2_select   = 1; //1=tpc,2=sc21,3=sc22 // CEJ: is 1
   id->tof_s4_select = 1; //1=sc21-41, 2=sc21-42, 3=sc22-41 used for TAC and MHTDC
   id->tof_s8_select = 1; //1=sc21-81, 2=sc22-81
   
@@ -73,16 +73,16 @@ void setup(TFRSParameter* frs,
   
   //=============primary Z and plot ranges=============//
   frs->primary_z = 68.;   
-  id->min_aoq_plot = 1.90;
-  id->max_aoq_plot = 2.75;
-  id->min_z_plot   = 40;
+  id->min_aoq_plot = 1.50;
+  id->max_aoq_plot = 2.95;
+  id->min_z_plot   = 1;
   id->max_z_plot   = 72;
    
   // bfield (Tm) for new control system. (we put rho = 1)
-  frs->bfield[0] = 6.5434;// 8.5819;    // 100Mo // 6.5434;
-  frs->bfield[1] = 6.5434; // 8.5819;  // 100Mo // 6.5434;
-  frs->bfield[2] = 4.9821; // 7.6261; //;100Mo // 4.9821;
-  frs->bfield[3] = 4.9821;// 7.6261; //;100Mo // 4.9821;
+  frs->bfield[0] = 12.1250;//162Eu with shifted brho
+  frs->bfield[1] = 12.0806;    // 162Eu
+  frs->bfield[2] = 9.5231;//162Eu
+  frs->bfield[3] = 9.5231;//162Eu
   frs->bfield[4] = 4.8347;   //  D5 (to ESR) not used
   frs->bfield[5] = 4.8347;  //   D6 (to S8)
 
@@ -459,10 +459,10 @@ void setup(TFRSParameter* frs,
   id->vel_a2[2] =  9864.92;//13201.0;//
   id->vel_a2[3] =  0.0;
 
-  //MUSIC43 velocity corr. (old)
-  id->vel_a3[0] =  4825.0; //13951.37; 
-  id->vel_a3[1] =  -4212.0;//-38369.9;
-  id->vel_a3[2] =  2046;//28396.46;
+  //MUSIC43 velocity corr. -- for 170ER // S100!
+  id->vel_a3[0] =  3925.40;// 4825.0; //13951.37;  // 3925.40
+  id->vel_a3[1] =  -2915.05;// -4212.0;//-38369.9;  // -2915.05
+  id->vel_a3[2] =  1580.95; //2046;//28396.46; // 1580.95
   id->vel_a3[3] =  0.0;
 
   //MUSIC44 velocity corr. (not determined)
@@ -935,7 +935,7 @@ void setup(TFRSParameter* frs,
   sci->mhtdc_offset_42_21  =  171.5+13.1; //ns // to be checked
   sci->mhtdc_offset_43_21  =  0.0; //ns
   sci->mhtdc_offset_31_21  =  85.0; //ns
-  sci->mhtdc_offset_31_22  =  85.0+50.0; //ns
+  //sci->mhtdc_offset_31_22  =  85.0+50.0; //ns
   sci->mhtdc_offset_81_21  =  -400.0 + 165.214; //ns
   sci->mhtdc_offset_41_22  =  -44.91+203.3+96.7; //ns //s526 107Ag it was 253.3ns
   sci->mhtdc_offset_M01_21  =  -543.38095 + (681.88795 - 628.5) - 7.552; //ns 08.09.2021
