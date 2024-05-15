@@ -110,7 +110,7 @@ void s143_tests()
 
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
-    TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_apr18.txt");
+    TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/labr_alloc_may13.txt");
     //TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(config_path + "/fatima/fatima_cal_apr18.txt");
     //TFatimaTwinpeaksConfiguration::SetDetectorTimeshiftsFile(config_path + "/fatima/fatima_timeshifts_apr20.txt");
     //TFatimaTwinpeaksConfiguration::SetPromptFlashCutFile(config_path + "/fatima/fatima_prompt_flash.root");
@@ -234,11 +234,11 @@ void s143_tests()
     if (FATIMA_ON)
     {
         FatimaOnlineSpectra* onlinefatima = new FatimaOnlineSpectra();
-        onlinefatima->SetBinningSlowToT(2000,560,660);
+        onlinefatima->SetBinningSlowToT(2000,200,1500);
         onlinefatima->SetBinningFastToT(1000,0.1,100.1);
         onlinefatima->SetBinningEnergy(2000,0,1500);
 
-        std::vector<int> fat_dets = {1,2,3,4,5,6,7,8}; // maybe 6-8 with additional signals?
+        std::vector<int> fat_dets = {1,2,3,4}; // maybe 6-8 with additional signals?
         onlinefatima->SetDetectorsToPlot(fat_dets);
 
         run->AddTask(onlinefatima);

@@ -16,11 +16,7 @@
 #include <TRandom3.h>
 
 class TClonesArray;
-class FrsMainCalData;
-class FrsTPCCalData;
-class FrsUserCalData;
-class FrsTpatData;
-class FrsHitData;
+class FrsHitItem;
 class EventHeader;
 class EventData;
 
