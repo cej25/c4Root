@@ -20,6 +20,7 @@
 #include "TMath.h"
 #include "TRandom.h"
 #include "TFile.h"
+#include "TFrsConfiguration.h"
 
 
 FrsTravMusSpectra::FrsTravMusSpectra()
