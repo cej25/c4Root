@@ -61,7 +61,7 @@ void s143_tests()
 
     // Create online run
     Int_t refresh = 2; // Refresh rate for online histograms
-    Int_t port = 6969;
+    Int_t port = 7171;
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
