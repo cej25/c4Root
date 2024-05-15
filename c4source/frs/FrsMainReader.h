@@ -13,7 +13,6 @@ extern "C"
 }
 
 class TClonesArray;
-class FrsMainData;
 
 struct EXT_STR_h101_frsmain_t;
 typedef struct EXT_STR_h101_frsmain_t EXT_STR_h101_frsmain;
@@ -48,7 +47,6 @@ class FrsMainReader : public c4Reader
 
         Bool_t fOnline;
 
-        TClonesArray* fArray;
         std::vector<FrsMainV830Item>* v830array;
         std::vector<FrsMainV792Item>* v792array;
         std::vector<FrsMainV1290Item>* v1290array;

@@ -176,7 +176,6 @@ void FimpReader::ReadFineTimeHistosFromFile()
 
 Bool_t FimpReader::Read()
 {
-    fimpArray->clear();
 
     if ((fNEvent == fine_time_calibration_after) & (!fine_time_calibration_set))
     {
@@ -454,7 +453,13 @@ void FimpReader::ZeroArrays()
 
 void FimpReader::ClearVectors()
 {
-
+    lead_coarse.clear();
+    lead_fine.clear();
+    lead_raw_ft.clear();
+    trail_coarse.clear();
+    trail_fine.clear();
+    trail_raw_ft.clear();
+    fimpArray->clear();
 }
 
 void FimpReader::Reset()

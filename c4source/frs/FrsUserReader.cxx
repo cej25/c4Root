@@ -23,7 +23,6 @@ FrsUserReader::FrsUserReader(EXT_STR_h101_frsuser_onion* data, size_t offset)
     ,   fData(data)
     ,   fOffset(offset)
     ,   fOnline(kFALSE)
-    ,   fArray(new TClonesArray("FrsUserData"))
     ,   v7x5array(new std::vector<FrsUserV7X5Item>)
     ,   v830array(new std::vector<FrsUserV830Item>)
 {
@@ -31,7 +30,6 @@ FrsUserReader::FrsUserReader(EXT_STR_h101_frsuser_onion* data, size_t offset)
 
 FrsUserReader::~FrsUserReader()
 {
-    if (fArray != nullptr) delete fArray;
     c4LOG(info, "Destroyed FrsUserReader properly.");
 }
 
@@ -47,10 +45,8 @@ Bool_t FrsUserReader::Init(ext_data_struct_info* a_struct_info)
         return kFALSE;
     }
 
-    //FairRootManager::Instance()->Register("FrsUserData", "FRS User Data", fArray, !fOnline);
     FairRootManager::Instance()->RegisterAny("FrsUserV7X5Data", v7x5array, !fOnline);
     FairRootManager::Instance()->RegisterAny("FrsUserV830Data", v830array, !fOnline);
-    fArray->Clear();
     v830array->clear();
     v7x5array->clear();
 
@@ -133,7 +129,6 @@ Bool_t FrsUserReader::Read()
 
 void FrsUserReader::ZeroArrays()
 {
-    fArray->Clear();
 }
 
 void FrsUserReader::ClearVectors()

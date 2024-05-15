@@ -56,7 +56,7 @@ void s143_online()
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     //TString filename = "~/fimp/testfile.lmd";
     TString filename = "trans://lxg1257";
-    TString outputFilename = "fimp_test.root";	
+    //TString outputFilename = "fimp_test.root";	
 
     // Create online run
     Int_t refresh = 2; // Refresh rate for online histograms
@@ -71,6 +71,10 @@ void s143_online()
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
     run->AddObject(histograms);
+
+    run->GetHttpServer()->SetItemField("/","_toptitle","FIMP Online Monitoring");
+    run->GetHttpServer()->SetItemField("/","_layout","grid2x2");
+
      
     // Create source using ucesb for input
     EXT_STR_h101 ucesb_struct;
@@ -107,7 +111,7 @@ void s143_online()
 
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
-    TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_apr18.txt");
+    TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/labr_alloc_may13.txt");
     //TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(config_path + "/fatima/fatima_cal_apr18.txt");
     //TFatimaTwinpeaksConfiguration::SetDetectorTimeshiftsFile(config_path + "/fatima/fatima_timeshifts_apr20.txt");
     //TFatimaTwinpeaksConfiguration::SetPromptFlashCutFile(config_path + "/fatima/fatima_prompt_flash.root");
@@ -124,8 +128,8 @@ void s143_online()
     if (FATIMA_ON)
     {
         FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-        //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_14may_test.root", 100000);
-        unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_23apr_beamON.root");
+        //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_13may_test.root", 100000);
+        unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_13may_test.root");
 
         unpackfatima->SetOnline(true);
         source->AddReader(unpackfatima);
@@ -231,11 +235,11 @@ void s143_online()
     if (FATIMA_ON)
     {
         FatimaOnlineSpectra* onlinefatima = new FatimaOnlineSpectra();
-        onlinefatima->SetBinningSlowToT(2000,560,660);
+        onlinefatima->SetBinningSlowToT(2000,300,1500);
         onlinefatima->SetBinningFastToT(1000,0.1,100.1);
         onlinefatima->SetBinningEnergy(2000,0,1500);
 
-        std::vector<int> fat_dets = {1,2,3,4,5,6,7,8}; // maybe 6-8 with additional signals?
+        std::vector<int> fat_dets = {1,2,3,4}; // maybe 6-8 with additional signals?
         onlinefatima->SetDetectorsToPlot(fat_dets);
 
         run->AddTask(onlinefatima);
@@ -311,7 +315,7 @@ void s143_online()
     cout << "CPU used: " << cpuUsage << endl;
     std::cout << std::endl << std::endl;
     std::cout << "Macro finished successfully." << std::endl;
-    std::cout << "Output file is " << outputFilename << std::endl;
+    //std::cout << "Output file is " << outputFilename << std::endl;
     std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl << std::endl;
    // gApplication->Terminate(0);
 }
