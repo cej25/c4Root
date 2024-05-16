@@ -28,16 +28,7 @@
 #pragma link C++ class BGOTwinpeaksData+;
 #pragma link C++ class BGOTwinpeaksCalData+;
 
-#pragma link C++ class FrsMainData+;
-#pragma link C++ class FrsTPCData+;
-#pragma link C++ class FrsUserData+;
-#pragma link C++ class FrsVFTXData+;
-#pragma link C++ class FrsTpatData+;
-#pragma link C++ class FrsMainCalData+;
-#pragma link C++ class FrsTPCCalData+;
-#pragma link C++ class FrsUserCalData+;
-#pragma link C++ class FrsVFTXCalData+;
-#pragma link C++ class FrsHitData+;
+// frs parameter classes
 #pragma link C++ class TFRSParameter+;
 #pragma link C++ class TMWParameter+;
 #pragma link C++ class TTPCParameter+;
@@ -50,6 +41,7 @@
 #pragma link C++ class TMRTOFMSParameter+;
 #pragma link C++ class FrsGate+;
 
+// aida
 #pragma link C++ class AidaUnpackAdcItem+;
 #pragma link C++ class AidaUnpackFlowItem+;
 #pragma link C++ class AidaUnpackScalerItem+;
@@ -63,6 +55,7 @@
 #pragma link C++ class AidaHit+;
 #pragma link C++ class std::vector<AidaHit>+;
 
+// configuration classes
 #pragma link C++ class TFrsConfiguration+;
 #pragma link C++ class TAidaConfiguration+;
 #pragma link C++ class TGermaniumConfiguration+;
@@ -73,9 +66,12 @@
 #pragma link C++ class TCorrelationsConfiguration+;
 #pragma link C++ class TBB7VmeConfiguration+;
 #pragma link C++ class TLisaConfiguration+;
+#pragma link C++ class TFimpConfiguration+;
 
 #pragma link C++ class LisaItem+;
 #pragma link C++ class LisaCalItem+;
+#pragma link C++ class FimpItem+;
+#pragma link C++ class FimpCalItem+;
 
 #pragma link C++ class FatimaVmeQDCItem+;
 #pragma link C++ class FatimaVmeTDCItem+;
@@ -83,6 +79,9 @@
 #pragma link C++ class FatimaVmeTDCCalItem+;
 #pragma link C++ class FatimaVmeResiduals+;
 
+// FRS data classes
+#pragma link C++ class FrsVFTXData+; // change
+#pragma link C++ class FrsVFTXCalData+; // change
 #pragma link C++ class FrsMainV830Item+;
 #pragma link C++ class FrsMainV1290Item+;
 #pragma link C++ class FrsMainV792Item+;
@@ -94,30 +93,9 @@
 #pragma link C++ class FrsTPCV1190Item+;
 #pragma link C++ class FrsUserV7X5Item+;
 #pragma link C++ class FrsUserV830Item+;
-#pragma link C++ class FrsTPCCalItem+;
-#pragma link C++ class FrsUserCalScalerItem+;
-#pragma link C++ class FrsUserCalSciItem+;
-#pragma link C++ class FrsUserCalMusicItem+;
-#pragma link C++ class FrsHitItem+;
-#pragma link C++ class FrsMultiHitItem+;
-
-#pragma link C++ class FatimaVmeQDCItem+;
-#pragma link C++ class FatimaVmeTDCItem+;
-#pragma link C++ class FatimaVmeQDCCalItem+;
-#pragma link C++ class FatimaVmeTDCCalItem+;
-#pragma link C++ class FatimaVmeResiduals+;
-
-#pragma link C++ class FrsMainV830Item+;
-#pragma link C++ class FrsMainV1290Item+;
-#pragma link C++ class FrsMainV792Item+;
-#pragma link C++ class FrsMainCalScalerItem+;
-#pragma link C++ class FrsMainCalSciItem+;
-#pragma link C++ class FrsMainCalMusicItem+;
-#pragma link C++ class FrsTpatItem+;
-#pragma link C++ class FrsTPCV7X5Item+;
-#pragma link C++ class FrsTPCV1190Item+;
-#pragma link C++ class FrsUserV7X5Item+;
-#pragma link C++ class FrsUserV830Item+;
+#pragma link C++ class FrsTravMusAdcItem+;
+#pragma link C++ class FrsTravMusTdcItem+;
+#pragma link C++ class FrsTravMusCalItem+;
 #pragma link C++ class FrsTPCCalItem+;
 #pragma link C++ class FrsUserCalScalerItem+;
 #pragma link C++ class FrsUserCalSciItem+;

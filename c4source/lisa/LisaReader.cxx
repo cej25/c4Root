@@ -61,7 +61,7 @@ Bool_t LisaReader::Read()
     (((uint64_t)fData->lisa_ts_t[1]) << 16) + 
     (uint64_t)(fData->lisa_ts_t[0]);
 
-    //WR ID. It is 0700 for lisa (= 1792 in decimal)
+    //WR ID. It is 700 for lisa (= 1792 in decimal). From May 13 WR = 1200 for LISA
     uint32_t wr_id = fData->lisa_ts_subsystem_id;
     //::::::::::::::::::::::::::::::::::::::::
 

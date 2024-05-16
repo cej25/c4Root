@@ -289,6 +289,7 @@ public:
   float mhtdc_offset_42_21;
   float mhtdc_offset_43_21;
   float mhtdc_offset_31_21;
+  float mhtdc_offset_31_22;
   float mhtdc_offset_81_21;
   float mhtdc_offset_41_22;
   float mhtdc_offset_81_22;

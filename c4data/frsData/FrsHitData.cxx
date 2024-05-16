@@ -1,13 +1,5 @@
 #include "FrsHitData.h"
 
-FrsHitData::FrsHitData()
-{
-}
-
-FrsHitData::~FrsHitData()
-{
-}
-
 FrsHitItem::FrsHitItem()
 {
 
@@ -15,6 +7,7 @@ FrsHitItem::FrsHitItem()
 
 void FrsHitItem::SetAll(uint64_t wr_t,
                     uint16_t tpat,
+                    uint64_t wr_travmus,
                     Float_t x2,
                     Float_t y2,
                     Float_t x4,
@@ -27,6 +20,7 @@ void FrsHitItem::SetAll(uint64_t wr_t,
                     Float_t AoQ_corr,
                     Float_t z,
                     Float_t z2,
+                    Float_t z_travmus,
                     Float_t beta,
                     Float_t dEdeg,
                     Float_t dEdegoQ,
@@ -34,6 +28,8 @@ void FrsHitItem::SetAll(uint64_t wr_t,
                     Float_t* brho,
                     Float_t* music_dE,
                     Float_t* music_dE_cor,
+                    Float_t travmusic_dE,
+                    Float_t travmusic_dE_cor,
                     Float_t* sci_e,
                     Float_t* sci_l,
                     Float_t* sci_r,
@@ -56,6 +52,7 @@ void FrsHitItem::SetAll(uint64_t wr_t,
 {
     fwr_t = wr_t;
     ftpat = tpat;
+    fwr_travmus = wr_travmus;
     fID_x2 = x2;
     fID_y2 = y2;
     fID_x4 = x4;
@@ -68,6 +65,7 @@ void FrsHitItem::SetAll(uint64_t wr_t,
     fID_AoQ_corr = AoQ_corr;
     fID_z = z;
     fID_z2 = z2;
+    fID_z_travmus = z_travmus;
     fID_beta = beta;
     fID_dEdeg = dEdeg;
     fID_dEdegoQ = dEdegoQ;
@@ -75,6 +73,8 @@ void FrsHitItem::SetAll(uint64_t wr_t,
     for (int i = 0; i < 2; i++) fID_brho[i] = brho[i];
     for (int i = 0; i < 2; i++) fmusic_dE[i] = music_dE[i];
     for (int i = 0; i < 2; i++) fmusic_dE_cor[i] = music_dE_cor[i];
+    ftravmusic_dE = travmusic_dE;
+    ftravmusic_dE_cor = travmusic_dE_cor;
     for (int i = 0; i < 6; i++) fsci_e[i] = sci_e[i];
     for (int i = 0; i < 6; i++) fsci_l[i] = sci_l[i];
     for (int i = 0; i < 6; i++) fsci_r[i] = sci_r[i];
@@ -100,6 +100,7 @@ void FrsHitItem::Reset()
 {
     fwr_t = 0;
     ftpat = 0;
+    fwr_travmus = 0;
     fID_x2 = 0;
     fID_y2 = 0;
     fID_x4 = 0;
@@ -112,6 +113,7 @@ void FrsHitItem::Reset()
     fID_AoQ_corr = 0;
     fID_z = 0;
     fID_z2 = 0;
+    fID_z_travmus = 0;
     fID_beta = 0;
     fID_dEdeg = 0;
     fID_dEdegoQ = 0;
@@ -119,6 +121,8 @@ void FrsHitItem::Reset()
     memset(fID_brho, 0, sizeof(fID_brho));
     memset(fmusic_dE, 0, sizeof(fmusic_dE));
     memset(fmusic_dE_cor, 0, sizeof(fmusic_dE_cor));
+    ftravmusic_dE = 0;
+    ftravmusic_dE_cor = 0;
     memset(fsci_e, 0, sizeof(fsci_e));
     memset(fsci_l, 0, sizeof(fsci_l));
     memset(fsci_r, 0, sizeof(fsci_r));
@@ -139,6 +143,9 @@ void FrsHitItem::Reset()
     fibin_clean_for_100ms = 0;
     fibin_clean_for_spill = 0;
 }
+
+ClassImp(FrsHitItem)
+
 
 FrsMultiHitItem::FrsMultiHitItem()
 {
@@ -167,4 +174,4 @@ void FrsMultiHitItem::Reset()
 
 }
 
-ClassImp(FrsHitData)
+ClassImp(FrsMultiHitItem)

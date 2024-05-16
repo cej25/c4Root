@@ -62,6 +62,7 @@ void LisaRaw2Cal::Exec(Option_t* option)
             std::string city = detector_mapping.at(unmapped_channel).first.second;
             int xpos = detector_mapping.at(unmapped_channel).second.first;
             int ypos = detector_mapping.at(unmapped_channel).second.second;
+            uint64_t EVTno = header->GetEventno();
 
             auto & entry = lisaCalArray->emplace_back();
             entry.SetAll(
@@ -71,13 +72,19 @@ void LisaRaw2Cal::Exec(Option_t* option)
                 xpos,
                 ypos,
                 lisaItem.Get_channel_energy(),
-                lisaItem.Get_trace()
+                lisaItem.Get_trace(),
+                //lisaItem.Get_board_event_time(),
+                //lisaItem.Get_channel_time(),
+                EVTno,
+                lisaItem.Get_pileup(),
+                lisaItem.Get_overflow()
             );
+            //c4LOG(info,"event num: "<< EVTno);
+
         }
         else c4LOG(warn, "Unmapped data? Board: "  << unmapped_channel.first << " Channel: " << unmapped_channel.second);
 
     }
-
 }
 
 void LisaRaw2Cal::FinishEvent()

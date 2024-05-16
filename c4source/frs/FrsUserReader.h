@@ -13,7 +13,6 @@ extern "C"
 }
 
 class TClonesArray;
-class FrsUserData;
 
 struct EXT_STR_h101_frsuser_t;
 typedef struct EXT_STR_h101_frsuser_t EXT_STR_h101_frsuser;
@@ -47,11 +46,8 @@ class FrsUserReader : public c4Reader
 
         Bool_t fOnline;
 
-        TClonesArray* fArray;
         std::vector<FrsUserV7X5Item>* v7x5array;
         std::vector<FrsUserV830Item>* v830array;
-
-
 
         uint32_t scalers_n;
         std::vector<uint32_t> scalers_index;
@@ -60,8 +56,6 @@ class FrsUserReader : public c4Reader
         std::vector<uint32_t> v7x5_geo[4];
         std::vector<uint32_t> v7x5_channel[4];
         std::vector<uint32_t> v7x5_data[4];
-
-        
 
 
     public:

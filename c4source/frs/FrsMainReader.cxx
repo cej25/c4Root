@@ -24,7 +24,6 @@ FrsMainReader::FrsMainReader(EXT_STR_h101_frsmain_onion* data, size_t offset)
     , fData(data)
     , fOffset(offset)
     , fOnline(kFALSE)
-    , fArray(new TClonesArray("FrsMainData"))
     , v830array(new std::vector<FrsMainV830Item>)
     , v792array(new std::vector<FrsMainV792Item>)
     , v1290array(new std::vector<FrsMainV1290Item>)
@@ -33,7 +32,6 @@ FrsMainReader::FrsMainReader(EXT_STR_h101_frsmain_onion* data, size_t offset)
 
 FrsMainReader::~FrsMainReader() 
 { 
-    if (fArray != nullptr) delete fArray;
     c4LOG(info, "Destroyed FrsMainReader properly.");
 }
 
@@ -55,13 +53,10 @@ Bool_t FrsMainReader::Init(ext_data_struct_info* a_struct_info)
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    FairRootManager::Instance()->Register("FrsMainData", "FRS Main Data", fArray, !fOnline);
-
     FairRootManager::Instance()->RegisterAny("FrsMainV830Data", v830array, !fOnline);
     FairRootManager::Instance()->RegisterAny("FrsMainV792Data", v792array, !fOnline);
     FairRootManager::Instance()->RegisterAny("FrsMainV1290Data", v1290array, !fOnline);
 
-    fArray->Clear();
     v1290array->clear();
     v792array->clear();
     v830array->clear();
@@ -135,13 +130,12 @@ Bool_t FrsMainReader::Read()
         {
             //c4LOG(info,Form("current channel = %i, next channel start = %i, channels fired = %i, data = %i",fData->frsmain_data_v1290_leadOrTrailMI[channel_index], fData->frsmain_data_v1290_leadOrTrailME[channel_index], fData->frsmain_data_v1290_nM, fData->frsmain_data_v1290_leadOrTrailv[j]));
             //c4LOG(info,Form("current channel = %i, next channel start = %i, channels fired = %i, data = %i",current_channel, next_channel_start, fData->frsmain_data_v1290_nM, fData->frsmain_data_v1290_data[j]));
-            uint32_t channel = current_channel;
+            
+            uint32_t channel = current_channel - 1; // I cannot see why this doesn't get set to zero for channel zero.... Please check. But it seems correct this way.
+            
             uint32_t data = fData->frsmain_data_v1290_data[j];
             uint32_t lot = fData->frsmain_data_v1290_leadOrTrailv[j];
             
-            //v1290_channel.emplace_back(current_channel);
-            //v1290_data.emplace_back(fData->frsmain_data_v1290_data[j]);
-            //v1290_lot.emplace_back(fData->frsmain_data_v1290_leadOrTrailv[j]);
 
             auto & entry = v1290array->emplace_back();
             entry.SetAll(channel, data, lot);
@@ -149,30 +143,14 @@ Bool_t FrsMainReader::Read()
         hit_index = next_channel_start;
     }
 
-    // CEJ: should scalers not write regardless of this?
-    /*if (v1290_channel.size() > 0 || v792_channel.size() > 0)
-    {
-        new ((*fArray)[fArray->GetEntriesFast()]) FrsMainData(
-            //wr_t,
-            scalers_n,
-            scalers_index,
-            scalers_main,
-            v792_geo,
-            v792_channel,
-            v792_data,
-            v1290_channel,
-            v1290_data,
-            v1290_lot);
-        
-        fNEvent += 1;
-    }*/
+
     return kTRUE;
 
 }
 
 void FrsMainReader::ZeroArrays()
 {
-    fArray->Clear();
+    
 }
 
 void FrsMainReader::ClearVectors()
