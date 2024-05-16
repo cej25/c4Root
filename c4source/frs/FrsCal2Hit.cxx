@@ -67,16 +67,6 @@ FrsCal2Hit::FrsCal2Hit(const TString& name, Int_t verbose)
     ,   tpatArray(nullptr)
     ,   hitArray(new std::vector<FrsHitItem>)
     ,   multihitArray(new std::vector<FrsMultiHitItem>)
-    ,   mainScalerArray(nullptr)
-    ,   mainSciArray(nullptr)
-    ,   mainMusicArray(nullptr)
-    ,   tpcCalArray(nullptr)
-    ,   userScalerArray(nullptr)
-    ,   userSciArray(nullptr)
-    ,   userMusicArray(nullptr)
-    ,   tpatArray(nullptr)
-    ,   hitArray(new std::vector<FrsHitItem>)
-    ,   multihitArray(new std::vector<FrsMultiHitItem>)
 {
     frs_config = TFrsConfiguration::GetInstance();
     frs = frs_config->FRS();
@@ -121,26 +111,7 @@ InitStatus FrsCal2Hit::Init()
     c4LOG_IF(fatal, !userMusicArray, "Branch FrsUserCalMusicData not found!");
     tpatArray = mgr->InitObjectAs<decltype(tpatArray)>("FrsTpatData");
     c4LOG_IF(fatal, !tpatArray, "Branch FrsTpatData not found!");
-    mainScalerArray = mgr->InitObjectAs<decltype(mainScalerArray)>("FrsMainCalScalerData");
-    c4LOG_IF(fatal, !mainScalerArray, "Branch FrsMainCalScalerData not found!");
-    mainSciArray = mgr->InitObjectAs<decltype(mainSciArray)>("FrsMainCalSciData");
-    c4LOG_IF(fatal, !mainSciArray, "Branch FrsMainCalSciData not found!");
-    mainMusicArray = mgr->InitObjectAs<decltype(mainMusicArray)>("FrsMainCalMusicData");
-    c4LOG_IF(fatal, !mainMusicArray, "Branch FrsMainCalMusicData not found!");
-    tpcCalArray = mgr->InitObjectAs<decltype(tpcCalArray)>("FrsTPCCalData");
-    c4LOG_IF(fatal, !tpcCalArray, "Branch FrsTPCCalData not found!");
-    userScalerArray = mgr->InitObjectAs<decltype(userScalerArray)>("FrsUserCalScalerData");
-    c4LOG_IF(fatal, !userScalerArray, "Branch FrsUserCalScalerData not found!");
-    userSciArray = mgr->InitObjectAs<decltype(userSciArray)>("FrsUserCalSciData");
-    c4LOG_IF(fatal, !userSciArray, "Branch FrsUserCalSciData not found!");
-    userMusicArray = mgr->InitObjectAs<decltype(userMusicArray)>("FrsUserCalMusicData");
-    c4LOG_IF(fatal, !userMusicArray, "Branch FrsUserCalMusicData not found!");
-    tpatArray = mgr->InitObjectAs<decltype(tpatArray)>("FrsTpatData");
-    c4LOG_IF(fatal, !tpatArray, "Branch FrsTpatData not found!");
 
-    mgr->RegisterAny("FrsHitData", hitArray, !fOnline);
-    mgr->RegisterAny("FrsMultiHitData", multihitArray, !fOnline);
-    
     mgr->RegisterAny("FrsHitData", hitArray, !fOnline);
     mgr->RegisterAny("FrsMultiHitData", multihitArray, !fOnline);
     
@@ -167,22 +138,6 @@ InitStatus FrsCal2Hit::Init()
     music_t2 = new uint32_t[8];
     hitArray->clear();
     multihitArray->clear();
-
-    tdc_array = new uint32_t*[15];
-    for (int i = 0; i < 10; i++) tdc_array[i] = new uint32_t[10];
-    de_array = new uint32_t[14];
-    dt_array = new uint32_t[16];
-    de = new Float_t[3];
-    de_cor = new Float_t[3];
-    sci_l = new Float_t[6];
-    sci_r = new Float_t[6];
-    sci_tx = new Float_t[6];
-    sci_e = new Float_t[6];
-    sci_x = new Float_t[6];
-    music_e1 = new uint32_t[8];
-    music_e2 = new uint32_t[8];
-    music_t1 = new uint32_t[8];
-    music_t2 = new uint32_t[8];
 
     return kSUCCESS;
 }
@@ -1020,7 +975,6 @@ void FrsCal2Hit::Exec(Option_t* option)
                         {
                             id_mhtdc_aoq_s2s4.at(i) = (id_mhtdc_aoq_s2s4.at(i) - AoQ_shift_Sci21_value[j]) - 0.029100; // Why isn't this float coded in a config file?
                         }
-                    }*/
                     }*/
 
                     // No angle correction for SCI
