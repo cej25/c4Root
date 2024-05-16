@@ -9,7 +9,7 @@
 // Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/
 extern "C"
 {
-    #include "../../config/pareeksha/frs/setup_s092_005_2024_conv.C"
+    #include "../../config/pareeksha/frs/setup_s092_010_2024_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -56,11 +56,11 @@ void pareeksha_make_trees()
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0169_*.lmd";  //data with only lisa
     //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/daqtest/daqtest_0001_0001.lmd"; //data from ts folder
-    TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0022_00*.lmd"; //from time stitched files
+    TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0072_00*.lmd"; //from time stitched files
 
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/";
-    TString outputFilename = outputpath + "run_0022_test.root";
+    TString outputFilename = outputpath + "run_0072_test.root";
 
 
     //:::::::Create online run
