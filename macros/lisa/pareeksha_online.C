@@ -7,10 +7,11 @@
 #define TRAV_MUSIC_ON 1
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
 
-// Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/
+// Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/ BUT it has to be converted
 extern "C"
 {
-    #include "../../config/pareeksha/frs/setup_s092_002_2024_conv.C"
+    //#include "../../config/pareeksha/frs/setup_s092_005_2024_conv.C"
+    #include "../../config/pareeksha/frs/setup_s092_005_2024_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -210,13 +211,14 @@ void pareeksha_online()
     // =========== **** SPECTRA ***** ========================================================= //
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
 
-    
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
     // ::: Online Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
     //::::::::: Set ranges for histos :::::::::::::::
     //::::  Channel Energy ::::: (h1_energy_layer_ch)
     TLisaConfiguration::SetEnergyRange(0,3000000);
+    //TLisaConfiguration::SetEnergyRange(0,3500000); //for Chen
+    //TLisaConfiguration::SetEnergyBin(1200); // for Chen
     TLisaConfiguration::SetEnergyBin(900);
 
     //:::: LISA WR Time Difference :::::: (h1_wr_diff)
@@ -226,11 +228,14 @@ void pareeksha_online()
     //:::: LISA Traces Time and Amplitude Ranges :::::: (h1_traces_layer_ch)
     TLisaConfiguration::SetTracesRange(0,20);
     TLisaConfiguration::SetTracesBin(2000);
+    //TLisaConfiguration::SetTracesBin(5000); //for Chens positive signals
     TLisaConfiguration::SetAmplitudeMin(10);
     TLisaConfiguration::SetAmplitudeMax(9000);
+    //TLisaConfiguration::SetAmplitudeMax(15000); //for Chens positiv signals
 
-    TFrsConfiguration::Set_Z_range(10,90);
-    TFrsConfiguration::Set_AoQ_range(2,4);
+
+    TFrsConfiguration::Set_Z_range(5,90);
+    TFrsConfiguration::Set_AoQ_range(0,6);
     TFrsConfiguration::Set_dE_Music1_range(0,4000);
     TFrsConfiguration::Set_dE_Music2_range(0,4000);
 
@@ -280,7 +285,7 @@ void pareeksha_online()
 
     if(LISA_ON && FRS_ON)
     {
-        LisaFrsCorrelations* LISA_FRS_corr = new LisaFrsCorrelations();
+        LisaFrsCorrelationsOnline* LISA_FRS_corr = new LisaFrsCorrelationsOnline();
         run->AddTask(LISA_FRS_corr);
     }
 

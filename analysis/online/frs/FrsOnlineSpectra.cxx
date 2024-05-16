@@ -35,6 +35,7 @@ FrsOnlineSpectra::FrsOnlineSpectra(std::vector<FrsGate*> fg)
     , hitArray(nullptr)
     , fNEvents(0)
     , header(nullptr)
+    , multihitArray(nullptr) //EG
 {
     frs_config = TFrsConfiguration::GetInstance();
     frs = frs_config->FRS();
@@ -52,9 +53,10 @@ FrsOnlineSpectra::FrsOnlineSpectra(std::vector<FrsGate*> fg)
 
 FrsOnlineSpectra::FrsOnlineSpectra(const TString& name, Int_t iVerbose)
     : FairTask(name, iVerbose)
-    , hitArray(NULL)
+    , hitArray(nullptr)
     , fNEvents(0)
     , header(nullptr)
+    , multihitArray(nullptr) //EG
 {
     frs_config = TFrsConfiguration::GetInstance();
 }
@@ -63,6 +65,7 @@ FrsOnlineSpectra::~FrsOnlineSpectra()
 {
     c4LOG(info, "");
     if (hitArray) delete hitArray;
+    if (multihitArray) delete multihitArray; //EG
 }
 
 // Public Method SetParContainers
@@ -86,6 +89,10 @@ InitStatus FrsOnlineSpectra::Init()
 
     hitArray = mgr->InitObjectAs<decltype(hitArray)>("FrsHitData");
     c4LOG_IF(fatal, !hitArray, "Branch FrsHitData not found!");
+
+    //::: EG reading multi hit data 
+    multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
+    c4LOG_IF(fatal, !multihitArray, "Branch FrsHitData not found!");  
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
     
@@ -167,6 +174,15 @@ InitStatus FrsOnlineSpectra::Init()
     h2_Z_vs_AoQ->GetYaxis()->SetTitle("Z (MUSIC 1)");
     h2_Z_vs_AoQ->SetOption("COLZ");
     gStyle->SetPalette(kDarkBodyRadiator);
+
+    //:: EG
+    h2_Z_vs_AoQ_mhit = new TH2D("h2_Z_vs_AoQ_mhit", "Z1 vs. A/Q (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
+    //h2_Z_vs_AoQ = new TH2D("h2_Z_vs_AoQ", "Z1 vs. A/Q", 1500, 2, frs_config->fMax_AoQ, 1000, 30, frs_config->fMax_Z);
+    h2_Z_vs_AoQ_mhit->GetXaxis()->SetTitle("A/Q");
+    h2_Z_vs_AoQ_mhit->GetYaxis()->SetTitle("Z (MUSIC 1) MHTDC");
+    h2_Z_vs_AoQ_mhit->SetOption("COLZ");
+    gStyle->SetPalette(kDarkBodyRadiator);
+    //:: EG
     
     h2_Z_vs_AoQ_corr = new TH2D("h2_Z_vs_AoQ_corr", "Z1 vs. A/Q (corr)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
     //h2_Z_vs_AoQ_corr = new TH2D("h2_Z_vs_AoQ_corr", "Z1 vs. A/Q (corr)", 1500, 2 , frs_config->fMax_AoQ, 1000, 30, frs_config->fMax_Z);
@@ -468,6 +484,30 @@ InitStatus FrsOnlineSpectra::Init()
     h1_z2->Draw();
     c_z_compare->cd(0);
     dir_travmus->Append(c_z_compare);
+
+    //MHTDC
+    c_z_compare_MHTDC = new TCanvas("c_z_compare_MHTDC", "Z from 3 x MUSIC MHTDC", 650, 350);
+    c_z_compare_MHTDC->Divide(1, 3);
+    c_z_compare_MHTDC->cd(1);
+    //h1_travmus_z_MHTDC = new TH1D("h1_travmus_z_MHTDC", "Z (Travel MUSIC)", 750, 10, 90);
+    h1_travmus_z_MHTDC = new TH1D("h1_travmus_z_MHTDC", "Z (Travel MUSIC) ", 750, frs_config->fMin_Z, frs_config->fMax_Z);
+    h1_travmus_z_MHTDC->SetFillColor(kPink-3);
+    h1_travmus_z_MHTDC->Draw();
+    c_z_compare_MHTDC->cd(2);
+    h1_z1_MHTDC = new TH1D("h1_z1_MHTDC", "Z (MUSIC 1) MHTDC", 750, frs_config->fMin_Z, frs_config->fMax_Z);
+    //h1_z1 = new TH1D("h1_z1", "Z (MUSIC 1)", 750, 10, 90);
+    h1_z1_MHTDC->SetFillColor(kAzure+7);
+    h1_z1_MHTDC->SetLineColor(kBlack);
+    h1_z1_MHTDC->Draw();
+    c_z_compare_MHTDC->cd(3);
+    h1_z2_MHTDC = new TH1D("h1_z2_MHTDC", "Z (MUSIC 2) MHTDC", 750, frs_config->fMin_Z, frs_config->fMax_Z);
+    //h1_z2 = new TH1D("h1_z2", "Z (MUSIC 2)", 750, 10, 90);
+    h1_z2_MHTDC->SetFillColor(kAzure+7);
+    h1_z2_MHTDC->SetLineColor(kBlack);
+    h1_z2_MHTDC->Draw();
+    c_z_compare_MHTDC->cd(0);
+    dir_travmus->Append(c_z_compare_MHTDC);
+    //::::
 
     c_dE_compare = new TCanvas("c_dE_compare", "dE from 3 x MUSIC", 650, 350);
     c_dE_compare->Divide(1, 3);
@@ -909,7 +949,27 @@ void FrsOnlineSpectra::Exec(Option_t* option)
         }
 
     }
-    
+
+    //:: EG
+    for (auto const & multihitItem : *multihitArray)
+        {
+            if (multihitItem.Get_ID_AoQ_mhtdc() > 0 && multihitItem.Get_ID_z_mhtdc() > 0) h2_Z_vs_AoQ_mhit->Fill(multihitItem.Get_ID_AoQ_mhtdc(), multihitItem.Get_ID_z_mhtdc());
+        
+            
+            //:::::::::::z
+            //h1_travmus_z_MHTDC->Fill(multihitItem.Get_ID_z_travmus());
+            h1_z1_MHTDC->Fill(multihitItem.Get_ID_z_mhtdc());
+            h1_z2_MHTDC->Fill(multihitItem.Get_ID_z2_mhtdc());
+
+            //h2_travmus_z1_mhtdc->Fill(multihitItem.Get_ID_z_travmus_mhtdc(), multihitItem.Get_ID_z_mhtdc());
+
+            //c4LOG(info, "trav_mus_de : " << hitItem.Get_travmusic_dE() << " music 1 en : " << hitItem.Get_music_dE(0) << "music 2 en : " << hitItem.Get_music_dE(1) );
+        
+        
+        
+        }
+    //::
+
     fNEvents += 1;
 }
 
