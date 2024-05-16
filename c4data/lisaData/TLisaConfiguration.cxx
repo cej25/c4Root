@@ -14,6 +14,21 @@ TLisaConfiguration* TLisaConfiguration::instance = nullptr;
 std::string TLisaConfiguration::mapping_file = "blank";
 std::string TLisaConfiguration::calibration_file = "blank";
 
+int TLisaConfiguration::AmplitudeMin = 7000;
+int TLisaConfiguration::AmplitudeMax = 16000;
+
+int TLisaConfiguration::min_energy = 0;
+int TLisaConfiguration::max_energy = 10000000;
+int TLisaConfiguration::bin_energy = 900;
+
+int TLisaConfiguration::min_wr_diff = 0;
+int TLisaConfiguration::max_wr_diff = 200;
+int TLisaConfiguration::bin_wr_diff = 50;
+
+int TLisaConfiguration::min_traces = 0;
+int TLisaConfiguration::max_traces = 2000;
+int TLisaConfiguration::bin_traces = 900;
+
 
 TLisaConfiguration::TLisaConfiguration()
     :   num_layers(0)
@@ -105,6 +120,7 @@ void TLisaConfiguration::ReadMappingFile()
     ymax = y_positions.size();
     num_detectors = detectors;
     num_febex_boards = febex_boards.size();
+    //std::cout<<"num layers:"<<num_layers<<std::endl;
     
     detector_mapping_loaded = 1;
     detector_map_file.close();

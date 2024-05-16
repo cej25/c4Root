@@ -19,6 +19,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
 ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
 ${C4ROOT_SOURCE_DIR}/c4data/baseData
 ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
+${C4ROOT_SOURCE_DIR}/c4data/fimpData
 ${C4ROOT_SOURCE_DIR}/analysis
 ${C4ROOT_SOURCE_DIR}/analysis/pars
 ${C4ROOT_SOURCE_DIR}/analysis/offline
@@ -32,6 +33,7 @@ ${C4ROOT_SOURCE_DIR}/c4source/frs
 ${C4ROOT_SOURCE_DIR}/c4source/base
 ${C4ROOT_SOURCE_DIR}/c4source/bplast
 ${C4ROOT_SOURCE_DIR}/c4source/bb7
+${C4ROOT_SOURCE_DIR}/c4source/fimp
 )
 
 include_directories( ${INCLUDE_DIRECTORIES})
@@ -52,10 +54,12 @@ set(SRCS
 ./online/frs/FrsOnlineSpectra.cxx
 ./online/frs/FrsRawSpectra.cxx
 ./online/frs/FrsCalSpectra.cxx
+./online/frs/FrsTravMusSpectra.cxx
 ./online/bgo/BGOOnlineSpectra.cxx
 ./online/timemachine/TimeMachineOnline.cxx
 ./online/wr/WhiterabbitCorrelationOnline.cxx
 ./online/bb7/BB7OnlineSpectra.cxx
+./online/fimp/FimpOnlineSpectra.cxx
 
 # nearline/offline
 ./nearline/bplast/bPlastNearlineSpectra.cxx
@@ -63,16 +67,19 @@ set(SRCS
 ./nearline/fatima/FatimaVmeNearlineSpectra.cxx
 ./nearline/aida/AidaNearlineSpectra.cxx
 ./nearline/frs/FrsNearlineSpectra.cxx
+#./nearline/frs/FrsNearlineTravMusSpectra.cxx
 ./nearline/germanium/GermaniumNearlineSpectra.cxx
 ./nearline/bgo/BGONearlineSpectra.cxx
 ./nearline/wr/WhiterabbitCorrelationNearline.cxx
 ./nearline/timemachine/TimeMachineNearline.cxx
+./nearline/lisa/LisaNearlineSpectra.cxx
+./nearline/fimp/FimpNearlineSpectra.cxx
 
 ## correlations ##
 ./correlations/FrsAidaCorrelations.cxx
 ./online/onlineCorrelations/FrsAidaCorrelationsOnline.cxx
 ./correlations/FrsFatimaCorrelations.cxx
-./correlations/FrsFatimaVmeCorrelations.cxx
+#./correlations/FrsFatimaVmeCorrelations.cxx
 ./correlations/FrsGermaniumCorrelations.cxx
 ./correlations/FrsFatimaCorrelationsNearline.cxx
 ./correlations/FrsGermaniumCorrelationsNearline.cxx
@@ -82,7 +89,8 @@ set(SRCS
 ./correlations/AidaGermaniumCorrelations.cxx
 ./correlations/bPlastGermaniumCorrelations.cxx
 ./online/onlineCorrelations/bPlastGermaniumCorrelationsOnline.cxx
-./correlations/FrsBplastCorrelations.cxx
+#./correlations/FrsBplastCorrelations.cxx
+./correlations/LisaFrsCorrelations.cxx
 )
 
 

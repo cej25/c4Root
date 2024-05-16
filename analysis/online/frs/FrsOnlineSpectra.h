@@ -147,7 +147,29 @@ class FrsOnlineSpectra : public FairTask
         std::vector<TH1I*> h1_a2_Z1Z2x4AoQgate;
         std::vector<TH1I*> h1_a4_Z1Z2x4AoQgate;
 
+        // 1D plots
         TH1I* h1_tpat;
+        // :: switched on and off by config :: //
+        TH1D* h1_frs_Z;
+        TH1D* h1_frs_Z2;
+        TH1D* h1_frs_AoQ;
+        TH1D* h1_frs_AoQ_cor;
+        // more to come .. 
+        
+
+
+        // travel music specific
+        TH1I* h1_wr_frs_travmus;
+        TH1D* h1_travmus_z;
+        TH1D* h1_travmus_dE;
+        TH1D* h1_z1;
+        TH1D* h1_z1_dE;
+        TH1D* h1_z2;
+        TH1D* h1_z2_dE;
+        TH2D* h2_travmus_z1;
+        TCanvas* c_z_compare;
+        TCanvas* c_dE_compare;
+
 
         TDirectory* dir_frs;
         TDirectory* dir_pids;
@@ -155,6 +177,7 @@ class FrsOnlineSpectra : public FairTask
         TDirectory* dir_ZvsZ2;
         TDirectory* dir_ZvsZ2_x2vsAoQ;
         TDirectory* dir_ZvsZ2_x4vsAoQ;
+        TDirectory* dir_travmus;
         TFolder* histograms;
 
         // Histograms for Scalers

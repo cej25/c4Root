@@ -25,14 +25,12 @@ FrsTpatReader::FrsTpatReader(EXT_STR_h101_frstpat_onion* data, size_t offset)
     , fData(data)
     , fOffset(offset)
     , fOnline(kFALSE)
-    , fArray(new TClonesArray("FrsTpatData"))
     , tpatArray(new std::vector<FrsTpatItem>)
 {
 }
 
 FrsTpatReader::~FrsTpatReader() 
 { 
-    if (fArray != nullptr) delete fArray;
     c4LOG(info, "Destroyed FrsTpatReader properly.");
 }
 
@@ -53,7 +51,6 @@ Bool_t FrsTpatReader::Init(ext_data_struct_info* a_struct_info)
 
     //FairRootManager::Instance()->Register("FrsTpatData", "FRS Tpat Data", fArray, !fOnline);
     FairRootManager::Instance()->RegisterAny("FrsTpatData", tpatArray, !fOnline);
-    fArray->Clear();
     tpatArray->clear();
 
     memset(fData, 0, sizeof *fData);
@@ -87,7 +84,7 @@ Bool_t FrsTpatReader::Read()
 
 void FrsTpatReader::Reset()
 {
-    fArray->Clear();
+    
 }
 
 ClassImp(FrsTpatReader);

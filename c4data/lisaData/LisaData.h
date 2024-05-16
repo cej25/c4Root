@@ -106,6 +106,7 @@ class LisaItem : public TObject
         // Getters
         ClassDefNV(LisaItem, 2);
     private:
+    
         uint64_t wr_t;
         uint16_t wr_id;
         uint8_t board_id;

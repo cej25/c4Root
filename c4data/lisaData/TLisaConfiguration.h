@@ -41,11 +41,39 @@ class TLisaConfiguration
         int SC41R() const;
         std::set<int> ExtraSignals() const;
 
-        void SetAmplitudeMax(int max) { AmplitudeMax = max; }
-        void SetAmplitudeMin(int min) { AmplitudeMin = min; }
 
-        int AmplitudeMax = 8500;
-        int AmplitudeMin = 7500;
+        //:::::Ranges in Histos
+        //void SetAmplitudeMax(int max) { AmplitudeMax = max; }
+        //void SetAmplitudeMin(int min) { AmplitudeMin = min; }
+
+        static void SetAmplitudeMax(int max_amp) { AmplitudeMax = max_amp; }
+        static void SetAmplitudeMin(int min_amp) { AmplitudeMin = min_amp; }
+
+        static void SetEnergyRange(int min, int max) { min_energy = min; max_energy = max; }
+        static void SetEnergyBin(int bin_e) { bin_energy = bin_e; }
+
+        static void SetWrDiffRange(int min_wr, int max_wr) { min_wr_diff = min_wr; max_wr_diff = max_wr; }
+        static void SetWrDiffBin(int bin_wr) { bin_wr_diff = bin_wr; }
+
+        static void SetTracesRange(int min_tr, int max_tr) { min_traces = min_tr; max_traces = max_tr; }
+        static void SetTracesBin(int bin_tr) { bin_traces = bin_tr; }
+
+        //int AmplitudeMax = 10500;
+        //int AmplitudeMin = 7500;
+        static int AmplitudeMax; // = 10500;
+        static int AmplitudeMin; // = 7500;
+        static int min_energy;
+        static int max_energy;
+        static int bin_energy;
+        static int min_wr_diff;
+        static int max_wr_diff;
+        static int bin_wr_diff;
+        static int min_traces;
+        static int max_traces;
+        static int bin_traces;
+
+        //:::::::
+
 
 
     private:

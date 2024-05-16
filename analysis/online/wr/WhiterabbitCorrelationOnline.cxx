@@ -648,6 +648,7 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         if (nHitsGe > 0) 
         {
             systems += 1;
+            if (fEventHeader->GetSpillFlag()==1){
 
             GermaniumCalData* GermaniumHit = (GermaniumCalData*)fHitGe->At(0);
             int64_t wr_germanium = GermaniumHit->Get_wr_t();
@@ -655,6 +656,7 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             {
                 h1_whiterabbit_dt_germanium->Fill(wr_germanium - last_wr_germanium);
                 last_wr_germanium = wr_germanium;
+            }
             }
         }
     }

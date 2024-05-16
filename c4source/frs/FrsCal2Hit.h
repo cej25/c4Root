@@ -11,15 +11,12 @@
 #include "FrsTPCCalData.h"
 #include "FrsUserCalData.h"
 #include "FrsTpatData.h"
+#include "FrsTravMusCalData.h"
 #include "FrsHitData.h"
 #include <TRandom3.h>
 
 class TClonesArray;
-class FrsMainCalData;
-class FrsTPCCalData;
-class FrsUserCalData;
-class FrsTpatData;
-class FrsHitData;
+class FrsHitItem;
 class EventHeader;
 class EventData;
 
@@ -80,11 +77,16 @@ class FrsCal2Hit : public FairTask
         std::vector<FrsUserCalSciItem> const* userSciArray;
         std::vector<FrsUserCalMusicItem> const* userMusicArray;
         std::vector<FrsTpatItem> const* tpatArray;
+        std::vector<FrsTravMusCalItem> const* travMusicArray;
 
         std::vector<FrsHitItem>* hitArray;
         std::vector<FrsMultiHitItem>* multihitArray;
 
         Bool_t prevSpillOn = false;
+
+
+        static const int max_hits_in_mhtdc = 100;
+
 
         /* ----------------------------------------------- */
         // Intermediate variables
@@ -100,6 +102,8 @@ class FrsCal2Hit : public FairTask
         Float_t cMusic1_T[8][2];
         Float_t cMusic2_T[8][2];
         Float_t cMusic3_T[4][2];
+        Float_t cMusicTRAV_E[8][2];
+        Float_t cMusicTRAV_T[8][2];
         Float_t cMusic3_dec[2];
         Float_t cSCI_L[2];
         Float_t cSCI_R[2];
@@ -151,27 +155,31 @@ class FrsCal2Hit : public FairTask
 
         uint32_t* music_e1;
         uint32_t* music_e2;
+        uint16_t travmusic_e[8];
         uint32_t* music_t1;
         uint32_t* music_t2;
 
-        // const uint32_t* music_e1;
-        // const uint32_t* music_e2;
-        // const uint32_t* music_t1;
-        // const uint32_t* music_t2;
+        uint16_t travmusic_t[8];
+
 
         Int_t music1_anodes_cnt;
-	    Int_t music2_anodes_cnt;
+	      Int_t music2_anodes_cnt;
+        Int_t travmusic_anodes_cnt;
 
         Bool_t music_b_e1[8];
         Bool_t music_b_e2[8];
+        Bool_t travmusic_b_e[8] = {0};
         Bool_t music_b_t1[8];
         Bool_t music_b_t2[8];
+        Bool_t travmusic_b_t[8] = {0};
         Bool_t b_de1;
-	    Bool_t b_de2;
+	      Bool_t b_de2;
+        Bool_t b_de_travmus;
         Float_t music1_x_mean;
         Float_t music2_x_mean;
+        Float_t travmusic_x_mean;
 
-        uint32_t** tdc_array; // [15][10]
+        uint32_t** tdc_array; // [15][max_hits_in_tdc_array]
         //std::vector<uint32_t> tdc_array[15];
         uint32_t* de_array; // [14]
         //uint32_t de_array[14];
@@ -179,11 +187,14 @@ class FrsCal2Hit : public FairTask
         //const uint32_t* dt_array; // not coded in raw->cal yet
         Float_t* de; // [3];
         Float_t* de_cor; // [3];
+        Float_t de_travmus;
+        Float_t de_cor_travmus;
         Float_t* sci_l; // [6]; // may change when i know the actual dimensions necessary
         Float_t* sci_r; // [6];
         Float_t* sci_tx; // [6];
         Float_t* sci_e; // [6];
         Float_t* sci_x; // [6];
+
         Bool_t sci_b_l[12]; // size may be reduced
         Bool_t sci_b_r[12]; // size may be reduced
         Bool_t sci_b_e[12]; // size may be reduced
@@ -202,6 +213,7 @@ class FrsCal2Hit : public FairTask
         Bool_t id_b_AoQ;
         Bool_t id_b_z;
         Bool_t id_b_z2;
+        Bool_t id_b_z_travmus;
         Bool_t id_b_z3;
         int Z_Shift_array;
         Float_t FRS_WR_a[200];
@@ -217,28 +229,31 @@ class FrsCal2Hit : public FairTask
         Float_t AoQ_shift_Sci22_value[200];
         Int_t ts_mins;
 
-        Float_t mhtdc_sc21lr_dt[10];
-        Float_t mhtdc_sc22lr_dt[10];
-        Float_t mhtdc_sc31lr_dt;
-        Float_t mhtdc_sc41lr_dt;
-        Float_t mhtdc_sc42lr_dt;
-        Float_t mhtdc_sc43lr_dt;
-        Float_t mhtdc_sc81lr_dt;
-        
-        Float_t mhtdc_sc21lr_x[10];
-        Float_t mhtdc_sc22lr_x[10];
-        Float_t mhtdc_sc31lr_x;
-        Float_t mhtdc_sc41lr_x;
-        Float_t mhtdc_sc42lr_x;
-        Float_t mhtdc_sc43lr_x;
-        Float_t mhtdc_sc81lr_x;
 
-        Float_t mhtdc_tof4121[10];
-        Float_t mhtdc_tof4122[10];
-        Float_t mhtdc_tof4221;
-        Float_t mhtdc_tof4321;
-        Float_t mhtdc_tof3121;
-        Float_t mhtdc_tof8121;
+        Float_t * mhtdc_sc21lr_dt = nullptr;
+        Float_t * mhtdc_sc22lr_dt = nullptr;
+        Float_t * mhtdc_sc41lr_dt = nullptr;
+        Float_t * mhtdc_sc31lr_dt = nullptr;
+        Float_t * mhtdc_sc42lr_dt = nullptr;
+        Float_t * mhtdc_sc43lr_dt = nullptr;
+        Float_t * mhtdc_sc81lr_dt = nullptr;
+        
+        Float_t * mhtdc_sc21lr_x = nullptr;
+        Float_t * mhtdc_sc22lr_x = nullptr;
+        Float_t * mhtdc_sc41lr_x = nullptr;
+        Float_t * mhtdc_sc31lr_x = nullptr;
+        Float_t * mhtdc_sc81lr_x = nullptr;
+        Float_t * mhtdc_sc42lr_x = nullptr;
+        Float_t * mhtdc_sc43lr_x = nullptr;
+
+        Float_t * mhtdc_tof4121 = nullptr;
+        Float_t * mhtdc_tof4122 = nullptr;
+        Float_t * mhtdc_tof4221 = nullptr;
+        Float_t * mhtdc_tof4321 = nullptr;
+        Float_t * mhtdc_tof8121 = nullptr;
+        Float_t * mhtdc_tof3121 = nullptr;
+
+        Float_t * temp_s2x_mhtdc = nullptr;
 
         Int_t dt_21l_21r;
         Int_t dt_41l_41r;
@@ -283,23 +298,24 @@ class FrsCal2Hit : public FairTask
         Bool_t sci_b_tofrr5;
 
         float temp_s4x; // i think this gets redeclared a bunch.
+        
+        
+        Float_t * id_mhtdc_beta_s2s4 = nullptr;
+        Float_t * id_mhtdc_gamma_s2s4 = nullptr;
+        Float_t * id_mhtdc_delta_s2s4 = nullptr; // not sure this needs to be a vector
+        Float_t * id_mhtdc_aoq_s2s4 = nullptr;
+        Float_t * id_mhtdc_aoq_corr_s2s4 = nullptr;
+        Float_t * id_mhtdc_z_music41 = nullptr;
+        Float_t * id_mhtdc_zcor_music41 = nullptr;
+        Float_t * id_mhtdc_v_cor_music41 = nullptr;
+        Float_t * id_mhtdc_z_music42 = nullptr;
+        Float_t * id_mhtdc_zcor_music42 = nullptr;
+        Float_t * id_mhtdc_v_cor_music42 = nullptr;
 
-        Float_t id_mhtdc_beta_s2s4[10];
-        Float_t id_mhtdc_gamma_s2s4[10];
-        Float_t id_mhtdc_delta_s2s4[10]; // not sure this needs to be a vector
-        Float_t id_mhtdc_aoq_s2s4[10];
-        Float_t id_mhtdc_aoq_corr_s2s4[10];
-        Float_t id_mhtdc_z_music41[10];
-        Float_t id_mhtdc_zcor_music41[10];
-        Float_t id_mhtdc_v_cor_music41[10];
-        Float_t id_mhtdc_z_music42[10];
-        Float_t id_mhtdc_zcor_music42[10];
-        Float_t id_mhtdc_v_cor_music42[10];
-
-        Float_t id_mhtdc_dEdegoQ[10];
-        Float_t id_mhtdc_gamma_ta_s2[10];
-        Float_t mhtdc_gamma1square[10];
-        Float_t id_mhtdc_dEdeg[10];
+        Float_t * id_mhtdc_dEdegoQ = nullptr;
+        Float_t * id_mhtdc_gamma_ta_s2 = nullptr;
+        Float_t * mhtdc_gamma1square = nullptr;
+        Float_t * id_mhtdc_dEdeg = nullptr;
         
         float speed_light = 0.299792458; //m/ns
         float temp_tm_to_MeV = 299.792458;
@@ -314,7 +330,8 @@ class FrsCal2Hit : public FairTask
         /* ----------------------------------------------- */
         //Hit variables
         /* ----------------------------------------------- */
-        uint64_t WR_TS;
+        uint64_t WR_TS = 0;
+        uint64_t wr_travmus = 0;
 
         Float_t id_x2;
         Float_t id_y2;
@@ -336,9 +353,11 @@ class FrsCal2Hit : public FairTask
         Float_t id_AoQ_corr;
         Float_t id_v_cor;
         Float_t id_v_cor2;
+        Float_t id_v_cor_travmus;
         Float_t id_v_cor3;
         Float_t id_z;
         Float_t id_z2;
+        Float_t id_z_travmus;
         Float_t id_z3;
         Float_t id_gamma_ta_s2;
         Float_t id_dEdegoQ;
