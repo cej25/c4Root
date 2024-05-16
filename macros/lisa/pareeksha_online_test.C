@@ -7,11 +7,10 @@
 #define TRAV_MUSIC_ON 1
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
 
-// Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/ BUT it has to be converted
+// Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/ 
 extern "C"
 {
-    //#include "../../config/pareeksha/frs/setup_s092_005_2024_conv.C"
-    #include "../../config/pareeksha/frs/setup_s092_005_2024_conv.C"
+    #include "../../config/pareeksha/frs/setup_s092_010_2024_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -27,7 +26,7 @@ typedef struct EXT_STR_h101_t
 
 } EXT_STR_h101;
 
-void pareeksha_online()
+void pareeksha_online_test()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
@@ -211,14 +210,13 @@ void pareeksha_online()
     // =========== **** SPECTRA ***** ========================================================= //
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
 
+    
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
     // ::: Online Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
     //::::::::: Set ranges for histos :::::::::::::::
     //::::  Channel Energy ::::: (h1_energy_layer_ch)
     TLisaConfiguration::SetEnergyRange(0,3000000);
-    //TLisaConfiguration::SetEnergyRange(0,3500000); //for Chen
-    //TLisaConfiguration::SetEnergyBin(1200); // for Chen
     TLisaConfiguration::SetEnergyBin(900);
 
     //:::: LISA WR Time Difference :::::: (h1_wr_diff)
@@ -228,17 +226,15 @@ void pareeksha_online()
     //:::: LISA Traces Time and Amplitude Ranges :::::: (h1_traces_layer_ch)
     TLisaConfiguration::SetTracesRange(0,20);
     TLisaConfiguration::SetTracesBin(2000);
-    //TLisaConfiguration::SetTracesBin(5000); //for Chens positive signals
     TLisaConfiguration::SetAmplitudeMin(10);
     TLisaConfiguration::SetAmplitudeMax(9000);
-    //TLisaConfiguration::SetAmplitudeMax(15000); //for Chens positiv signals
 
-
-    TFrsConfiguration::Set_Z_range(5,90);
-    TFrsConfiguration::Set_AoQ_range(0,6);
+    //::::: FRS range for Z, AoQ, travMUSIC...
+    TFrsConfiguration::Set_Z_range(20,60);
+    TFrsConfiguration::Set_AoQ_range(1,4);
     TFrsConfiguration::Set_dE_Music1_range(0,4000);
     TFrsConfiguration::Set_dE_Music2_range(0,4000);
-
+    //TFrsConfiguration::Set_dE_travMusic_range(0,30000);
 
     if (LISA_ON)
     {
@@ -285,7 +281,8 @@ void pareeksha_online()
 
     if(LISA_ON && FRS_ON)
     {
-        LisaFrsCorrelationsOnline* LISA_FRS_corr = new LisaFrsCorrelationsOnline();
+        //LisaFrsCorrelationsOnline* LISA_FRS_corr = new LisaFrsOnlineCorrelationsOnline();
+        LisaFrsCorrelations* LISA_FRS_corr = new LisaFrsCorrelations();
         run->AddTask(LISA_FRS_corr);
     }
 

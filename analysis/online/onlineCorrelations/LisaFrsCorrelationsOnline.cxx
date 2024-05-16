@@ -3,7 +3,7 @@
 #include "FairRunOnline.h"
 #include "FairTask.h"
 
-#include "LisaFrsCorrelations.h"
+#include "LisaFrsCorrelationsOnline.h"
 #include "FrsHitData.h"
 #include "FrsTravMusCalData.h"
 #include "LisaCalData.h"
@@ -13,19 +13,19 @@
 #include "THttpServer.h"
 #include "TCanvas.h"
 
-LisaFrsCorrelations::LisaFrsCorrelations() 
-    : LisaFrsCorrelations("LisaFrsCorrelations")
+LisaFrsCorrelationsOnline::LisaFrsCorrelationsOnline() 
+    : LisaFrsCorrelationsOnline("LisaFrsCorrelationsOnline")
 {
 
 }
 
-LisaFrsCorrelations::LisaFrsCorrelations(std::vector<FrsGate*> fg)
-    : LisaFrsCorrelations("LisaFrsCorrelations")
+LisaFrsCorrelationsOnline::LisaFrsCorrelationsOnline(std::vector<FrsGate*> fg)
+    : LisaFrsCorrelationsOnline("LisaFrsCorrelationsOnline")
 {
 
 }
 
-LisaFrsCorrelations::LisaFrsCorrelations(const TString& name, Int_t verbose)
+LisaFrsCorrelationsOnline::LisaFrsCorrelationsOnline(const TString& name, Int_t verbose)
     :   FairTask(name, verbose)
     ,   header(nullptr)
     ,   lisaCalArray(nullptr)
@@ -37,12 +37,12 @@ LisaFrsCorrelations::LisaFrsCorrelations(const TString& name, Int_t verbose)
     frs_config = TFrsConfiguration::GetInstance();
 }
 
-LisaFrsCorrelations::~LisaFrsCorrelations()
+LisaFrsCorrelationsOnline::~LisaFrsCorrelationsOnline()
 {
-    c4LOG(info, "Destroyed LisaFrsCorrelationsProperly.");
+    c4LOG(info, "Destroyed LisaFrsCorrelationsOnlineProperly.");
 }
 
-InitStatus LisaFrsCorrelations::Init()
+InitStatus LisaFrsCorrelationsOnline::Init()
 {
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
@@ -197,13 +197,13 @@ InitStatus LisaFrsCorrelations::Init()
 }
 
 
-void LisaFrsCorrelations::Reset_Histo()
+void LisaFrsCorrelationsOnline::Reset_Histo()
 {
     c4LOG(info, "");
 }
 
 
-void LisaFrsCorrelations::Exec(Option_t* option)
+void LisaFrsCorrelationsOnline::Exec(Option_t* option)
 {   
     // reject events without both subsystems
     if (lisaCalArray->size() <= 0 || frsHitArray->size() <= 0) return; //frs and trav music are there
@@ -310,15 +310,15 @@ void LisaFrsCorrelations::Exec(Option_t* option)
 
 }
 
-void LisaFrsCorrelations::FinishEvent()
+void LisaFrsCorrelationsOnline::FinishEvent()
 {
 
 }
 
-void LisaFrsCorrelations::FinishTask()
+void LisaFrsCorrelationsOnline::FinishTask()
 {
 
 }
 
 
-ClassImp(LisaFrsCorrelations)
+ClassImp(LisaFrsCorrelationsOnline)
