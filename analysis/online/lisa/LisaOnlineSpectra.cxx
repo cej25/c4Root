@@ -532,6 +532,12 @@ void LisaOnlineSpectra::Reset_Histo()
     {
         h1_multiplicity_layer[i]->Reset();
     }
+    
+    //Reset hit grid
+    //for (int i = 1; i < layer_number; i++)
+    //{
+    //    h2_hitpattern_grid[i]->Reset();
+    //}
     h1_multiplicity->Reset();
     h1_layer_multiplicity->Reset();
 
@@ -667,16 +673,17 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     //:::::::Energy vs Time
     //time_t rawtime;
     //time(&rawtime);
-
+    if (wr_time == 0) return;
     int wr_r = round(wr_time/1000000000);
 
-    if (fNEvents % 1000 == 0 && sum_energy_layer[1] > 0) 
+    if (fNEvents % 100 == 0 && wr_time != 0 && ( sum_energy_layer[1] !=0 || sum_energy_layer[2] != 0) ) // && sum_energy_layer[1] > 0) 
     {
         for (int i = 0; i < layer_number; i++)hG_energy_layer_vs_time[i]->SetPoint(en_count1, wr_r, sum_energy_layer[i]);
         en_count1++;
     } 
 
-    if (fNEvents % 1000 == 0 && energy_ch[1][0][0]>0) 
+    /*
+    if (fNEvents % 10 == 0 && wr_time != 0 && ( sum_energy_layer[1] !=0 || sum_energy_layer[2] != 0) ) //&& energy_ch[1][0][0] != 0) 
     {
         hG_energy_layer_ch_vs_time[0][0][0]->SetPoint(en_count2, wr_r, energy_ch[0][0][0]);
         //c4LOG(info, " ENERGY " << energy_ch[0][0][0] );
@@ -690,7 +697,7 @@ void LisaOnlineSpectra::Exec(Option_t* option)
                     hG_energy_layer_ch_vs_time[i][j][z]->SetPoint(en_count2, wr_r, energy_ch[i][j][z]);
                     //c4LOG(info, " ENERGY " << energy_ch[i][j][z] << " i : " << i << " j : " << j << " z : " << z );
                 }
-                
+            
             }
             
         //c4LOG(info, "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
@@ -701,7 +708,44 @@ void LisaOnlineSpectra::Exec(Option_t* option)
 
         en_count2++;
     } 
+    */
 
+   //working version - to merge together in a smarter way pls 
+    if (fNEvents % 100 == 0 && wr_time != 0 && sum_energy_layer[0] !=0 )
+    {
+        hG_energy_layer_ch_vs_time[0][0][0]->SetPoint(en_count2, wr_r, energy_ch[0][0][0]);
+        en_count2++;
+
+    }
+
+    if (fNEvents % 100 == 0 && wr_time != 0 && multiplicity[1] != 0 ) 
+    {
+        for(int j = 0; j < xmax; j++)
+        {
+            for (int z = 0; z < ymax; z++)
+            {
+                hG_energy_layer_ch_vs_time[1][j][z]->SetPoint(en_count3, wr_r, energy_ch[1][j][z]);
+            }
+        }
+        en_count3++;
+    }
+
+    if (fNEvents % 100 == 0 && wr_time != 0 && multiplicity[2] != 0 ) 
+    {
+        for(int j = 0; j < xmax; j++)
+        {
+            for (int z = 0; z < ymax; z++)
+            {
+                hG_energy_layer_ch_vs_time[2][j][z]->SetPoint(en_count4, wr_r, energy_ch[2][j][z]);  
+            }
+        
+        }
+        en_count4++;
+    }
+
+
+    en_count2++;
+ 
     fNEvents += 1;
 }
 

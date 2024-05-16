@@ -9,8 +9,6 @@
 
 class TClonesArray;
 class EventHeader;
-class FrsTPCData;
-class FrsTPCCalData;
 
 class FrsTPCRaw2Cal : public FairTask
 {
@@ -44,8 +42,6 @@ class FrsTPCRaw2Cal : public FairTask
         std::vector<FrsTPCV7X5Item> const* v7x5array;
         std::vector<FrsTPCV1190Item> const* v1190array;
         std::vector<FrsTPCCalItem>* tpcCalArray;
-
-        FrsTPCData* fRawHit;
 
         TFRSParameter* frs;
         TMWParameter* mw;

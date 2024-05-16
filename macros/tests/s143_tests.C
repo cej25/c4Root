@@ -10,7 +10,7 @@
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
 {
-    #include "../../config/s100/frs/setup_des_s100_009_2024_conv.C"
+    #include "../../config/pareeksha/frs/setup_s092_001_2024_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -54,9 +54,9 @@ void s143_tests()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    //TString filename = "/u/cjones/cs_170er_check_0170_timestitched.lmd";
+    TString filename = "/u/cjones/lustre/gamma/s092_s143_files/ts/run_0022_0001.lmd";
     //TString filename = "~/fimp/*.lmd";
-    TString filename = "trans://lxg1257";
+    //TString filename = "trans://lxg1257";
     TString outputFilename = "travMUSIC_test.root";	
 
     // Create online run
@@ -110,7 +110,7 @@ void s143_tests()
 
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
-    TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_apr18.txt");
+    TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/labr_alloc_may13.txt");
     //TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(config_path + "/fatima/fatima_cal_apr18.txt");
     //TFatimaTwinpeaksConfiguration::SetDetectorTimeshiftsFile(config_path + "/fatima/fatima_timeshifts_apr20.txt");
     //TFatimaTwinpeaksConfiguration::SetPromptFlashCutFile(config_path + "/fatima/fatima_prompt_flash.root");
@@ -234,11 +234,11 @@ void s143_tests()
     if (FATIMA_ON)
     {
         FatimaOnlineSpectra* onlinefatima = new FatimaOnlineSpectra();
-        onlinefatima->SetBinningSlowToT(2000,560,660);
+        onlinefatima->SetBinningSlowToT(2000,200,1500);
         onlinefatima->SetBinningFastToT(1000,0.1,100.1);
         onlinefatima->SetBinningEnergy(2000,0,1500);
 
-        std::vector<int> fat_dets = {1,2,3,4,5,6,7,8}; // maybe 6-8 with additional signals?
+        std::vector<int> fat_dets = {1,2,3,4}; // maybe 6-8 with additional signals?
         onlinefatima->SetDetectorsToPlot(fat_dets);
 
         run->AddTask(onlinefatima);
@@ -253,8 +253,8 @@ void s143_tests()
         run->AddTask(onlinefimp);
     }
 
-    TFrsConfiguration::Set_Z_range(50,75);
-    TFrsConfiguration::Set_AoQ_range(2.3,3.0);
+    TFrsConfiguration::Set_Z_range(35,55);
+    TFrsConfiguration::Set_AoQ_range(2.0,3.5);
     
     if (FRS_ON)
     {
