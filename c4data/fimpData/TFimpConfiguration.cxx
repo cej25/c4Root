@@ -19,7 +19,7 @@ int TFimpConfiguration::EnergyToTMax = 4e6;
 
 TFimpConfiguration::TFimpConfiguration()
 {
-    ReadMappingFile();
+    if (mapping_file != "blank") ReadMappingFile();
     //ReadCalibrationCoefficients();
 
 }
