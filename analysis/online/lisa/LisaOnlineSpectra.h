@@ -69,6 +69,8 @@ class LisaOnlineSpectra : public FairTask
 
         Int_t en_count1 = 0;
         Int_t en_count2 = 0;
+        Int_t en_count3 = 0;
+        Int_t en_count4 = 0;
         Int_t counter = 0;
         uint64_t wr_time;
         Int_t layer;

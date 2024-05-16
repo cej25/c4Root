@@ -311,7 +311,6 @@ void FrsCal2Hit::Exec(Option_t* option)
                 if (travmusic_b_e[i])
                 {
                     travmusic_anodes_cnt++;
-                    std::cout << "anode count: " << travmusic_anodes_cnt << std::endl;
                 }
             }
         }
@@ -416,17 +415,12 @@ void FrsCal2Hit::Exec(Option_t* option)
         Int_t temp_count_travmus = 0;
         for (int i = 0; i < 8; i++)
         {
-            std::cout << "travmus b: " << travmusic_b_e[i] << std::endl;
             if (travmusic_b_e[i])
             {
-                std::cout << "music e: " << (travmusic_e[i]) << std::endl;
                 temp_de_travmus *= ((travmusic_e[i]) * music->e3_gain[i] + music->e3_off[i]);
-                std::cout << temp_de_travmus << std::endl;
                 temp_count_travmus++;
             }
         }
-        std::cout << "count: " << temp_count_travmus << std::endl;
-        std::cout << "temp_de_travmus after: " << temp_de_travmus << std::endl; 
         de_travmus = TMath::Power(temp_de_travmus, 1. / ((float)(temp_count_travmus)));
         de_cor_travmus = de_travmus;
         b_de_travmus = kTRUE;
@@ -720,7 +714,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     sci_l[5] = de_array[5]; // de_81l
     sci_r[5] = de_array[12]; // de_81r
     sci_tx[5] = dt_81l_81r + rand3();
-    
+
     for (int i = 0; i < 6; i++)
     {
         int j;
@@ -753,7 +747,9 @@ void FrsCal2Hit::Exec(Option_t* option)
 
         if (sci_b_l[i] && sci_b_r[i])
         {
-            sci_e[i] = (sci_r[i] - sci->re_a[0][j]);
+            //sci_e[i] = (sci_r[i] - sci->re_a[0][j]); // CEJ: old calculation (?? no idea what this was even doing)
+            sci_e[i] = sqrt( (sci_l[i] - sci->le_a[0][j]) * sci->le_a[1][j]
+	   			  * (sci_r[i] - sci->re_a[0][j]) * sci->re_a[1][j]);
             sci_b_e[i] = Check_WinCond(sci_e[i], cSCI_E);
         }
 
@@ -766,13 +762,27 @@ void FrsCal2Hit::Exec(Option_t* option)
             sum = 0.;
             for (int k = 0; k < 7; k++)
             {
-                sum += sci->x_a[k][i] * power;
+                //sum += sci->x_a[k][i] * power;
+                sum += sci->x_a[k][j] * power;
                 power *= R;
             }
             sci_x[i] = sum;
             sci_b_x[i] = Check_WinCond(sci_x[i], cSCI_X);
         }
     } // loop for sci values
+
+
+    // std::cout << ":::::: TESTING SCI SIGNALS :::::" << std::endl;
+    // for (int i = 0; i < 6; i++)
+    // {   
+    //     std::cout << "i: " << i << std::endl;
+    //     std::cout << "sci_l: " << sci_l[i] << std::endl;
+    //     std::cout << "sci_r: " << sci_r[i] << std::endl;
+    //     std::cout << "sci_tx: " << sci_tx[i] << std::endl;
+    //     std::cout << "sci_e: " << sci_e[i] << std::endl;
+    //     std::cout << "sci_x: " << sci_x[i] << std::endl;
+    // }
+
 
     /*----------------------------------------------------------*/
     // Calibrated ToF - dt will be in dt_array, from UserCrate
@@ -1162,6 +1172,7 @@ void FrsCal2Hit::Exec(Option_t* option)
             id_AoQ = id_brho[1] / id_beta / id_gamma / aoq_factor;
             id_AoQ_corr = id_AoQ - id->a2AoQCorr * id_a2;
             id_b_AoQ = true;
+
         }
     }
 
@@ -1182,6 +1193,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         if (id_v_cor > 0.0)
         {
             id_z = frs->primary_z * sqrt(de[0] / id_v_cor) + id->offset_z;
+
         }
         if ((id_z > 0.0) && (id_z < 100.0))
         {
@@ -1429,9 +1441,6 @@ void FrsCal2Hit::Setup_Conditions(std::string path_to_config_files)
 
         line_number++;
     }
-
-    std::cout << "condition: " << cMusicTRAV_E[7][0] << std::endl;
-
 
     line_number = 0;
 

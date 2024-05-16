@@ -71,6 +71,11 @@ class TFrsConfiguration
         static void Set_dE_Music2_range(Double_t, Double_t);
 
         // need to be able to add 1 or multiple PIDs from different filetypes
+
+
+        void Plot1D(bool option) { plot_1d = option; }
+
+        bool plot_1d = true;
         
 
     private:
