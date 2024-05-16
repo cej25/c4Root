@@ -55,7 +55,8 @@ void s143_online()
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     //TString filename = "~/fimp/testfile.lmd";
-    TString filename = "trans://lxg1257";
+    //TString filename = "trans://lxg1257";
+    TString filename = "stream://x86l-164";
     //TString outputFilename = "fimp_test.root";	
 
     // Create online run
