@@ -7,10 +7,10 @@
 #define TRAV_MUSIC_ON 1
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
 
-// Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/
+// Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/ 
 extern "C"
 {
-    #include "../../config/pareeksha/frs/setup_s092_002_2024_conv.C"
+    #include "../../config/pareeksha/frs/setup_s092_010_2024_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -56,11 +56,11 @@ void pareeksha_online_test()
     //::::::::::P A T H   O F   F I L E  to read
     //___O N L I N E
     //TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
-    //TString filename = "trans://lxg1257"; // time stitched
+    TString filename = "trans://lxg1257"; // time stitched
 
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0167_*.lmd";  //data with only lisa
-    TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0022_00*.lmd"; //22 good run for statistics, frs, trav, lisa in ts
+    //TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0022_00*.lmd"; //22 good run for statistics, frs, trav, lisa in ts
 
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/";
@@ -69,7 +69,7 @@ void pareeksha_online_test()
 
     //:::::::Create online run
     Int_t refresh = 10; // Refresh rate for online histograms
-    Int_t port = 2222;
+    Int_t port = 5000;
      
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -281,6 +281,7 @@ void pareeksha_online_test()
 
     if(LISA_ON && FRS_ON)
     {
+        //LisaFrsCorrelationsOnline* LISA_FRS_corr = new LisaFrsOnlineCorrelationsOnline();
         LisaFrsCorrelations* LISA_FRS_corr = new LisaFrsCorrelations();
         run->AddTask(LISA_FRS_corr);
     }

@@ -1,4 +1,4 @@
-// initially copied from setup_engrun_049_2024.C
+// initially copied from setup_s092_005_2024.C
 
 #include "Riostream.h"
 
@@ -73,17 +73,17 @@ void setup(TFRSParameter* frs,
   id->Z_HTM_select = 3; //1=sc21, 2=sc22, 3=scM01
   
   //=============primary Z and plot ranges=============//
-  frs->primary_z = 68.;   
+  frs->primary_z = 42.;   
   id->min_aoq_plot = 1.90;
   id->max_aoq_plot = 2.75;
-  id->min_z_plot   = 40;
-  id->max_z_plot   = 72;
+  id->min_z_plot   = 30;
+  id->max_z_plot   = 45;
    
   // bfield (Tm) for new control system. (we put rho = 1)
-  frs->bfield[0] = 6.5434; //8.5819;    // 100Mo
-  frs->bfield[1] = 6.5434; //8.5819;  // 100Mo
-  frs->bfield[2] = 5.0588; //7.8256; //;100Mo
-  frs->bfield[3] = 5.0588; //7.8256;//;100Mo
+  frs->bfield[0] = 6.5434;    // 100Mo
+  frs->bfield[1] = 6.5434;  // 100Mo
+  frs->bfield[2] = 5.0588; //;100Mo
+  frs->bfield[3] = 5.0588;//;100Mo
   frs->bfield[4] = 4.8347;   //  D5 (to ESR) not used
   frs->bfield[5] = 4.8347;  //   D6 (to S8)
 
@@ -126,16 +126,16 @@ void setup(TFRSParameter* frs,
   id->mhtdc_offset_z_sc81 =  0.0;
 
   // MHTDCAnalysis S2-S4
-  id->mhtdc_length_sc2141 = 125.9*0.299792458;//125.207*0.299792458;//37.204244; // 36.68196; // SCI 21-41 s450
-  id->mhtdc_length_sc2241 = 122.5*0.299792458;//122.677*0.299792458;//36.850489; //35.227152; // SCI 22-41 s450 208Pb
+  id->mhtdc_length_sc2141 = 126.*0.299792458;//125.207*0.299792458;//37.204244; // 36.68196; // SCI 21-41 s450
+  id->mhtdc_length_sc2241 = 123.1*0.299792458;//122.677*0.299792458;//36.850489; //35.227152; // SCI 22-41 s450 208Pb
   //id->mhtdc_length_sc2142 = 128.2*0.299792458;	
-  id->mhtdc_vel_a_music41[0]= 57.677;//526.137;//6459.55; //s496 Xe 210512
-  id->mhtdc_vel_a_music41[1]= 945.562;//1241.28;//-11135.1;
-  id->mhtdc_vel_a_music41[2]= 588.022;//0.0;//5581.45;
+  id->mhtdc_vel_a_music41[0]= -16.788;//526.137;//6459.55; //s496 Xe 210512
+  id->mhtdc_vel_a_music41[1]= 532.337;//1241.28;//-11135.1;
+  id->mhtdc_vel_a_music41[2]= 72.824;//0.0;//5581.45;
   id->mhtdc_vel_a_music41[3]=0.0;
-  id->mhtdc_vel_a_music42[0]= 133.472;//372.998;//7522.75; //s496 Xe 210512
-  id->mhtdc_vel_a_music42[1]= 712.020;//1329.1;//-13599.0;
-  id->mhtdc_vel_a_music42[2]= 706.110;//0.0;//7039.16;
+  id->mhtdc_vel_a_music42[0]= 0.818;//372.998;//7522.75; //s496 Xe 210512
+  id->mhtdc_vel_a_music42[1]= 482.141;//1329.1;//-13599.0;
+  id->mhtdc_vel_a_music42[2]= 94.977;//0.0;//7039.16;
   id->mhtdc_vel_a_music42[3]=0.0;
   id->mhtdc_offset_z_music41=0.0; //s526 107Ag ..earlier 10.7
   id->mhtdc_offset_z_music42=0.0;
@@ -932,13 +932,13 @@ void setup(TFRSParameter* frs,
   sci->mhtdc_offset_81l_81r  =  -410.411;         sci->mhtdc_factor_81l_81r = 43.691; // pos = offset + factor*dt
   sci->mhtdc_offset_22l_22r  =  -39.6625+20.0;    sci->mhtdc_factor_22l_22r = 62.5341;  // pos = offset + factor*dt
   sci->mhtdc_offset_M01l_M01r  =  338.677 + 650 + 14.0;    sci->mhtdc_factor_M01l_M01r = 52.6692; //rough guess with scattered particles
-  sci->mhtdc_offset_41_21  =  19.2661-9.95+171.4 +0.7 ; //ns //s450 208Pb
+  sci->mhtdc_offset_41_21  =  19.2661-9.95+171.4 +0.7 -0.2; //ns //s450 208Pb
   sci->mhtdc_offset_42_21  =  171.5+13.1; //ns // to be checked
   sci->mhtdc_offset_43_21  =  0.0; //ns
   sci->mhtdc_offset_31_21  =  85.0; //ns
   sci->mhtdc_offset_31_22  =  85.0+50.0; //ns
   sci->mhtdc_offset_81_21  =  -400.0 + 165.214; //ns
-  sci->mhtdc_offset_41_22  =  -44.91+203.3+96.7; //ns //s526 107Ag it was 253.3ns
+  sci->mhtdc_offset_41_22  =  -44.91+203.3+96.7 +0.7; //ns //s526 107Ag it was 253.3ns
   sci->mhtdc_offset_M01_21  =  -543.38095 + (681.88795 - 628.5) - 7.552; //ns 08.09.2021
   sci->mhtdc_offset_M01_22  =  0.0; //ns
 
