@@ -70,6 +70,11 @@ class TFrsConfiguration
         static void Set_dE_Music1_range(Double_t, Double_t);
         static void Set_dE_Music2_range(Double_t, Double_t);
 
+        //travMUSIC
+        static Double_t fMin_dE_travMusic, fMax_dE_travMusic;
+        static void Set_dE_travMusic_range(Double_t, Double_t);
+
+
         // need to be able to add 1 or multiple PIDs from different filetypes
 
 

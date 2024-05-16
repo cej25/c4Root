@@ -68,6 +68,7 @@ class FrsOnlineSpectra : public FairTask
 
         //TClonesArray* fHitFrsArray; // array with hit items
         std::vector<FrsHitItem> const* hitArray;
+        std::vector<FrsMultiHitItem> const* multihitArray; //EG
 
         EventHeader* header;
         Int_t fNEvents;
@@ -87,6 +88,7 @@ class FrsOnlineSpectra : public FairTask
 
         // Histograms for PID:
         TH2D* h2_Z_vs_AoQ;
+        TH2D* h2_Z_vs_AoQ_mhit; //EG        
         TH2D* h2_Z_vs_AoQ_corr;
         TH2D* h2_Z_vs_Z2;
         TH2D* h2_Z_vs_AoQ_Zsame;
@@ -161,13 +163,17 @@ class FrsOnlineSpectra : public FairTask
         // travel music specific
         TH1I* h1_wr_frs_travmus;
         TH1D* h1_travmus_z;
+        TH1D* h1_travmus_z_MHTDC;
         TH1D* h1_travmus_dE;
         TH1D* h1_z1;
+        TH1D* h1_z1_MHTDC;
         TH1D* h1_z1_dE;
         TH1D* h1_z2;
+        TH1D* h1_z2_MHTDC;
         TH1D* h1_z2_dE;
         TH2D* h2_travmus_z1;
         TCanvas* c_z_compare;
+        TCanvas* c_z_compare_MHTDC;
         TCanvas* c_dE_compare;
 
 

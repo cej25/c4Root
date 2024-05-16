@@ -995,7 +995,8 @@ void FrsCal2Hit::Exec(Option_t* option)
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->mhtdc_vel_a_music41[j];
-                power *= id_mhtdc_beta_s2s4[i];
+                //power *= id_mhtdc_beta_s2s4[i];
+                power *= 1.0/(id_mhtdc_beta_s2s4[i]*id_mhtdc_beta_s2s4[i]);
                 
             }
             id_mhtdc_v_cor_music41[i] = sum;
@@ -1016,7 +1017,8 @@ void FrsCal2Hit::Exec(Option_t* option)
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->mhtdc_vel_a_music42[j];
-                power *= id_mhtdc_beta_s2s4[i];
+                //power *= id_mhtdc_beta_s2s4[i];
+                power *= 1.0/(id_mhtdc_beta_s2s4[i]*id_mhtdc_beta_s2s4[i]);
             }
             id_mhtdc_v_cor_music42[i] = sum;
             

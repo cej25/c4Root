@@ -78,6 +78,7 @@ class LisaOnlineSpectra : public FairTask
         Int_t xp;
         Int_t yp;
         uint32_t en;
+        std::vector<uint16_t> trace;
 
         TFolder* histograms;
         TDirectory* dir_lisa;
@@ -101,6 +102,8 @@ class LisaOnlineSpectra : public FairTask
         std::vector<TCanvas*> c_energy_layer_ch;
         std::vector<TCanvas*> c_energy_layer_ch_vs_time;
         std::vector<TCanvas*> c_traces_layer_ch;
+        std::vector<TCanvas*> c_traces_layer_ch_stat;
+
     
         // Histograms
         TH1I* h1_hitpattern_total;
@@ -117,6 +120,8 @@ class LisaOnlineSpectra : public FairTask
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch;
         TH2F* h2_energy_layer1_vs_layer2;
         std::vector<std::vector<std::vector<TH1F*>>> h1_traces_layer_ch;
+        std::vector<std::vector<std::vector<TH2F*>>> h2_traces_layer_ch_stat;
+
 
         //TGraph
         std::vector<TGraph*> hG_energy_layer_vs_time;
