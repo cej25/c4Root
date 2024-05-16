@@ -52,6 +52,7 @@
 #pragma link C++ class bPlastGermaniumCorrelationsOnline+;
 // #pragma link C++ class FrsBplastCorrelations+;
 #pragma link C++ class LisaFrsCorrelations+;
+// #pragma link C++ class LisaFrsCorrelationsOnline+;
 
 #pragma link C++ class FatimaTimingAnalysis+;
 #pragma link C++ class FatimaSinglesAnalysis+;
