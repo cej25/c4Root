@@ -117,7 +117,7 @@ void s143_online()
     //TFatimaTwinpeaksConfiguration::SetDetectorTimeshiftsFile(config_path + "/fatima/fatima_timeshifts_apr20.txt");
     //TFatimaTwinpeaksConfiguration::SetPromptFlashCutFile(config_path + "/fatima/fatima_prompt_flash.root");
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
-    TFimpConfiguration::SetMappingFile(config_path + "/fimp/FIMP_Channel_MAP.txt");
+    //TFimpConfiguration::SetMappingFile(config_path + "/fimp/FIMP_Channel_MAP.txt");
 
 
     // ------------------------------------------------------------------------------------- //
