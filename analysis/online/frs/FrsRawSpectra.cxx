@@ -239,6 +239,7 @@ void FrsRawSpectra::Exec(Option_t* option)
         h2_v792_main_data_vs_chan->Fill(channel-1, data);
     }
 
+    int v1290_mult[32] = {0};
     for (auto const & v1290item : *v1290arrayMain)
     {
         uint32_t channel = v1290item.Get_channel();

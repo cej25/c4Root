@@ -10,7 +10,7 @@
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
 {
-    #include "../../config/pareeksha/frs/setup_s092_001_2024_conv.C"
+    #include "../../config/pareeksha/frs/setup_s092_010_2024_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -54,9 +54,9 @@ void s143_tests()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    TString filename = "/u/cjones/lustre/gamma/s092_s143_files/ts/run_0022_0001.lmd";
+    //TString filename = "/u/cjones/lustre/gamma/s092_s143_files/ts/run_0022_0001.lmd";
     //TString filename = "~/fimp/*.lmd";
-    //TString filename = "trans://lxg1257";
+    TString filename = "trans://lxg1257";
     TString outputFilename = "travMUSIC_test.root";	
 
     // Create online run
@@ -111,7 +111,7 @@ void s143_tests()
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
     TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/labr_alloc_may13.txt");
-    //TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(config_path + "/fatima/fatima_cal_apr18.txt");
+    TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(config_path + "/fatima/labr_cal_may15.txt");
     //TFatimaTwinpeaksConfiguration::SetDetectorTimeshiftsFile(config_path + "/fatima/fatima_timeshifts_apr20.txt");
     //TFatimaTwinpeaksConfiguration::SetPromptFlashCutFile(config_path + "/fatima/fatima_prompt_flash.root");
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
@@ -253,19 +253,19 @@ void s143_tests()
         run->AddTask(onlinefimp);
     }
 
-    TFrsConfiguration::Set_Z_range(35,55);
-    TFrsConfiguration::Set_AoQ_range(2.0,3.5);
+    TFrsConfiguration::Set_Z_range(10,80);
+    TFrsConfiguration::Set_AoQ_range(1.0,3.5);
     
     if (FRS_ON)
     {
         FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
         // For monitoring FRS on our side
-        // FrsRawSpectra* frsrawspec = new FrsRawSpectra();
-        // FrsCalSpectra* frscalspec = new FrsCalSpectra();
+        FrsRawSpectra* frsrawspec = new FrsRawSpectra();
+        FrsCalSpectra* frscalspec = new FrsCalSpectra();
         
         run->AddTask(onlinefrs);
-        // run->AddTask(frsrawspec);
-        // run->AddTask(frscalspec);
+        run->AddTask(frsrawspec);
+        run->AddTask(frscalspec);
 
         if (TRAV_MUSIC_ON)
         {
