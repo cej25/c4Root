@@ -326,13 +326,14 @@ InitStatus FrsOnlineSpectra::Init()
         h1_frs_AoQ_corr = new TH1D("h1_frs_AoQ_corr", "A/Q corr", 500, 1.0, 4.0);
         h1_frs_AoQ_corr->SetFillColor(kPink-3);
         h1_frs_x2 = new TH1D("h1_frs_x2", "X Position at S2", 200, -100, 100);
-        h1_frs_x2->SetFillColor(kYellow+1); // experimental
+        h1_frs_x2->SetFillColor(kYellow-7); // experimental
         h1_frs_x2->SetLineColor(kBlack);
         h1_frs_x2->SetLineWidth(1.5);
         h1_frs_x4 = new TH1D("h1_frs_x4", "X Position at S4", 200, -100, 100);
         h1_frs_x4->SetFillColor(kYellow-7); // experimental
         h1_frs_x4->SetLineColor(kBlack);
         h1_frs_x4->SetLineWidth(1.5);
+        
     }
 
     // :::: MHTDC ::: //
