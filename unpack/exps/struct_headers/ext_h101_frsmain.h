@@ -29,11 +29,8 @@ typedef          int  int32_t;
 typedef struct EXT_STR_h101_frsmain_t
 {
   /* UNPACK */
-  uint32_t frsmain_wr_subsystem_id /* [0,65535] */;
-  uint32_t frsmain_wr_t1 /* [0,65535] */;
-  uint32_t frsmain_wr_t2 /* [0,65535] */;
-  uint32_t frsmain_wr_t3 /* [0,65535] */;
-  uint32_t frsmain_wr_t4 /* [0,65535] */;
+  uint32_t frsmain_spill_on_spillon /* [0,255] */;
+  uint32_t frsmain_spill_off_spilloff /* [0,255] */;
   uint32_t frsmain_data_v830_n /* [0,32] */;
   uint32_t frsmain_data_v830_nI[32 EXT_STRUCT_CTRL(frsmain_data_v830_n)] /* [1,32] */;
   uint32_t frsmain_data_v830_data[32 EXT_STRUCT_CTRL(frsmain_data_v830_n)] /* [-1,-1] */;
@@ -53,6 +50,7 @@ typedef struct EXT_STR_h101_frsmain_t
   uint32_t frsmain_data_v1290_leadOrTrailME[128 EXT_STRUCT_CTRL(frsmain_data_v1290_leadOrTrailM)] /* [1,16384] */;
   uint32_t frsmain_data_v1290_leadOrTrail /* [0,16384] */;
   uint32_t frsmain_data_v1290_leadOrTrailv[16384 EXT_STRUCT_CTRL(frsmain_data_v1290_leadOrTrail)] /* [0,255] */;
+  uint32_t frsmain_data_v1290_geo /* [0,255] */;
 
 } EXT_STR_h101_frsmain;
 
@@ -65,8 +63,8 @@ typedef struct EXT_STR_h101_frsmain_t
 typedef struct EXT_STR_h101_frsmain_onion_t
 {
   /* UNPACK */
-  uint32_t frsmain_wr_subsystem_id;
-  uint32_t frsmain_wr_t[4];
+  uint32_t frsmain_spill_on_spillon;
+  uint32_t frsmain_spill_off_spilloff;
   uint32_t frsmain_data_v830_n;
   uint32_t frsmain_data_v830_nI[32 /* frsmain_data_v830_n */];
   uint32_t frsmain_data_v830_data[32 /* frsmain_data_v830_n */];
@@ -86,6 +84,7 @@ typedef struct EXT_STR_h101_frsmain_onion_t
   uint32_t frsmain_data_v1290_leadOrTrailME[128 /* frsmain_data_v1290_leadOrTrailM */];
   uint32_t frsmain_data_v1290_leadOrTrail;
   uint32_t frsmain_data_v1290_leadOrTrailv[16384 /* frsmain_data_v1290_leadOrTrail */];
+  uint32_t frsmain_data_v1290_geo;
 
 } EXT_STR_h101_frsmain_onion;
 
@@ -95,20 +94,11 @@ typedef struct EXT_STR_h101_frsmain_onion_t
   ok = 1; \
   /* UNPACK */ \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     frsmain_wr_subsystem_id,         UINT32,\
-                    "frsmain_wr_subsystem_id",65535,0/*flags*/); \
+                     frsmain_spill_on_spillon,        UINT32,\
+                    "frsmain_spill_on_spillon",255,0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     frsmain_wr_t1,                   UINT32,\
-                    "frsmain_wr_t1",65535,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     frsmain_wr_t2,                   UINT32,\
-                    "frsmain_wr_t2",65535,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     frsmain_wr_t3,                   UINT32,\
-                    "frsmain_wr_t3",65535,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     frsmain_wr_t4,                   UINT32,\
-                    "frsmain_wr_t4",65535,0/*flags*/); \
+                     frsmain_spill_off_spilloff,      UINT32,\
+                    "frsmain_spill_off_spilloff",255,0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      frsmain_data_v830_n,             UINT32,\
                     "frsmain_data_v830_n",32,0/*flags*/); \
@@ -166,6 +156,9 @@ typedef struct EXT_STR_h101_frsmain_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      frsmain_data_v1290_leadOrTrailv, UINT32,\
                     "frsmain_data_v1290_leadOrTrailv", "frsmain_data_v1290_leadOrTrail",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     frsmain_data_v1290_geo,          UINT32,\
+                    "frsmain_data_v1290_geo",255,0/*flags*/); \
   \
 } while (0);
 
