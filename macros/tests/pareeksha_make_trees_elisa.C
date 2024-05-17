@@ -25,7 +25,7 @@ typedef struct EXT_STR_h101_t
 
 } EXT_STR_h101;
 
-void pareeksha_make_trees()
+void pareeksha_make_trees_elisa()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
@@ -56,11 +56,11 @@ void pareeksha_make_trees()
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0169_*.lmd";  //data with only lisa
     //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/daqtest/daqtest_0001_0001.lmd"; //data from ts folder
-    TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0094_*.lmd"; //from time stitched files
+    TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0074_0001.lmd"; //from time stitched files
 
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/";
-    TString outputFilename = outputpath + "run_0094_test.root";
+    TString outputFilename = outputpath + "run_0074_001_test.root";
 
 
     //:::::::Create online run

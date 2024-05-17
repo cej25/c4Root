@@ -50,7 +50,6 @@ class LisaFrsCorrelations : public FairTask
 
         virtual void FinishEvent();
         virtual void FinishTask();
-        virtual void Reset_Histo();
 
     private:
 
@@ -66,11 +65,12 @@ class LisaFrsCorrelations : public FairTask
         std::vector<LisaCalItem> const* lisaCalArray;
         std::vector<FrsHitItem> const* frsHitArray;
         std::vector<FrsTravMusCalItem> const* travMusicArray;
+        std::vector<FrsMultiHitItem> const* multihitArray;
+
 
         Int_t fNEvents;
         EventHeader* header;
 
-        TFolder* histograms;
         TDirectory* dir_corr;
         TDirectory* dir_lisa_frs;
 
@@ -88,6 +88,9 @@ class LisaFrsCorrelations : public FairTask
         Float_t energy_MUSIC_1;
         Float_t energy_MUSIC_2;
         Float_t energy_travMUSIC;
+        int xmax;
+        int ymax;
+        std::string city = "";
 
         Int_t layer;
 
@@ -98,6 +101,8 @@ class LisaFrsCorrelations : public FairTask
         TCanvas* c_travMUSIC_layer;
         TCanvas* c_xy_pos_layer1;
         TCanvas* c_xy_pos_layer2;
+        std::vector<std::vector<TCanvas*>> c_energy_layer_ch_gated;
+        std::vector<std::vector<TCanvas*>> c_energy_layer_ch_gated_T;
 
         //Histograms
         std::vector<TH1I*> h1_wr_diff;
@@ -106,6 +111,8 @@ class LisaFrsCorrelations : public FairTask
         std::vector<TH2F*> h2_travMUSIC_layer;
         std::vector<TH2F*> h2_xy_pos_layer1;
         std::vector<TH2F*> h2_xy_pos_layer2;
+        std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_layer_ch_gated;
+        std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_layer_ch_gated_T;
 
     public:
         ClassDef(LisaFrsCorrelations, 1)
