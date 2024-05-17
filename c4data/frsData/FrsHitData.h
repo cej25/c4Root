@@ -169,6 +169,7 @@ class FrsMultiHitItem : public TObject
                     Float_t AoQ_corr, 
                     Float_t z,
                     Float_t z2,
+                    Float_t z_travmus,
                     Float_t dEdeg,
                     Float_t dEdegoQ);
         void Reset();
@@ -178,6 +179,7 @@ class FrsMultiHitItem : public TObject
         Float_t Get_ID_AoQ_corr_mhtdc() const;
         Float_t Get_ID_z_mhtdc() const;
         Float_t Get_ID_z2_mhtdc() const;
+        Float_t Get_ID_z_travmus_mhtdc() const;
         Float_t Get_ID_dEdeg_mhtdc() const;
         Float_t Get_ID_dEdegoQ_mhtdc() const;
 
@@ -190,6 +192,7 @@ class FrsMultiHitItem : public TObject
         Float_t fID_AoQ_corr_mhtdc;
         Float_t fID_z_mhtdc;
         Float_t fID_z2_mhtdc;
+        Float_t fID_z_travmus_mhtdc;
         Float_t fID_dEdeg_mhtdc;
         Float_t fID_dEdegoQ_mhtdc;
 
@@ -438,6 +441,11 @@ inline Float_t FrsMultiHitItem::Get_ID_z_mhtdc() const
 inline Float_t FrsMultiHitItem::Get_ID_z2_mhtdc() const
 {
     return fID_z2_mhtdc;
+}
+
+inline Float_t FrsMultiHitItem::Get_ID_z_travmus_mhtdc() const
+{
+    return fID_z_travmus_mhtdc;
 }
 
 inline Float_t FrsMultiHitItem::Get_ID_dEdeg_mhtdc() const

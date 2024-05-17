@@ -75,20 +75,14 @@ class FrsOnlineSpectra : public FairTask
 
         TString screenshot_path = "/u/despec/screenshots/";
 
-        // we shouldn't need these anymore.
-        TFolder* folder_frs_hists;
-        TFolder* folder_scalers;
-        TFolder* folder_pids;
-        TFolder* folder_ZvsAoQ_hists;
-
         // Canvas
         TCanvas* c_frs_z1_vs_AoQ;
         TCanvas* c_frs_x4_vs_AoQ;
         TCanvas* c_frs_snapshot;
 
         // Histograms for PID:
+        // TAC
         TH2D* h2_Z_vs_AoQ;
-        TH2D* h2_Z_vs_AoQ_mhit; //EG        
         TH2D* h2_Z_vs_AoQ_corr;
         TH2D* h2_Z_vs_Z2;
         TH2D* h2_Z_vs_AoQ_Zsame;
@@ -113,6 +107,9 @@ class FrsOnlineSpectra : public FairTask
         TH2D* h2_x4_vs_a4;
         TH2D* h2_y4_vs_b4;
         TH2D* h2_Z_vs_Sc21E;
+        // MHTDC
+        TH2D* h2_Z_vs_AoQ_mhtdc; //EG  
+
 
         // Prioritising Z1Z2
         /*TH2I* h2_Z_vs_AoQ_ZAoQgate;
@@ -155,7 +152,9 @@ class FrsOnlineSpectra : public FairTask
         TH1D* h1_frs_Z;
         TH1D* h1_frs_Z2;
         TH1D* h1_frs_AoQ;
-        TH1D* h1_frs_AoQ_cor;
+        TH1D* h1_frs_AoQ_corr;
+        TH1D* h1_frs_x2;
+        TH1D* h1_frs_x4;
         // more to come .. 
         
 
@@ -176,15 +175,27 @@ class FrsOnlineSpectra : public FairTask
         TCanvas* c_z_compare_MHTDC;
         TCanvas* c_dE_compare;
 
-
+        // TDirectory structure
+        TFolder* histograms;
         TDirectory* dir_frs;
-        TDirectory* dir_pids;
+        TDirectory* dir_tac;
+        TDirectory* dir_mhtdc;
         TDirectory* dir_scalers;
+
+        TDirectory* dir_tac_1d;
+        TDirectory* dir_tac_2d;
+        TDirectory* dir_gated_tac;
         TDirectory* dir_ZvsZ2;
         TDirectory* dir_ZvsZ2_x2vsAoQ;
         TDirectory* dir_ZvsZ2_x4vsAoQ;
+
+        TDirectory* dir_mhtdc_1d;
+        TDirectory* dir_mhtdc_2d;
+        TDirectory* dir_gated_mhtdc;
+
         TDirectory* dir_travmus;
-        TFolder* histograms;
+        TDirectory* dir_travmus_tac;
+        TDirectory* dir_travmus_mhtdc;
 
         // Histograms for Scalers
         char scaler_name[66][256];

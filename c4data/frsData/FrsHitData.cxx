@@ -157,6 +157,7 @@ void FrsMultiHitItem::SetAll(Float_t beta,
                             Float_t AoQ_corr, 
                             Float_t z,
                             Float_t z2,
+                            Float_t z_travmus,
                             Float_t dEdeg,
                             Float_t dEdegoQ)
 {
@@ -165,13 +166,21 @@ void FrsMultiHitItem::SetAll(Float_t beta,
     fID_AoQ_corr_mhtdc = AoQ_corr;
     fID_z_mhtdc = z;
     fID_z2_mhtdc = z2;
+    fID_z_travmus_mhtdc = z_travmus;
     fID_dEdeg_mhtdc = dEdeg;
     fID_dEdegoQ_mhtdc = dEdegoQ;
 }
 
 void FrsMultiHitItem::Reset()
 {
-
+    fID_beta_mhtdc = 0;
+    fID_AoQ_mhtdc = 0;
+    fID_AoQ_corr_mhtdc = 0;
+    fID_z_mhtdc = 0;
+    fID_z2_mhtdc = 0;
+    fID_z_travmus_mhtdc = 0;
+    fID_dEdeg_mhtdc = 0;
+    fID_dEdegoQ_mhtdc = 0;
 }
 
 ClassImp(FrsMultiHitItem)

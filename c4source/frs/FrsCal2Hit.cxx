@@ -21,6 +21,7 @@
 #include <chrono>
 
 #define MUSIC_ANA_NEW
+//#define TRAVMUS_TAC_OR_MHTDC
 
 FrsCal2Hit::FrsCal2Hit()
     :   FairTask()
@@ -981,9 +982,11 @@ void FrsCal2Hit::Exec(Option_t* option)
     // Calculation of dE and Z from MUSIC41
     id_mhtdc_v_cor_music41 = new Float_t[hits_in_beta_s2s4];
     id_mhtdc_v_cor_music42 = new Float_t[hits_in_beta_s2s4];
+    id_mhtdc_v_cor_travmus = new Float_t[hits_in_beta_s2s4];
 
     id_mhtdc_z_music41 = new Float_t[hits_in_beta_s2s4];
     id_mhtdc_z_music42 = new Float_t[hits_in_beta_s2s4];
+    id_mhtdc_z_travmus = new Float_t[hits_in_beta_s2s4];
 
     for (int i = 0; i < hits_in_beta_s2s4; i++)
     {
@@ -997,7 +1000,6 @@ void FrsCal2Hit::Exec(Option_t* option)
                 sum += power * id->mhtdc_vel_a_music41[j];
                 //power *= id_mhtdc_beta_s2s4[i];
                 power *= 1.0/(id_mhtdc_beta_s2s4[i]*id_mhtdc_beta_s2s4[i]);
-                
             }
             id_mhtdc_v_cor_music41[i] = sum;
 
@@ -1007,7 +1009,6 @@ void FrsCal2Hit::Exec(Option_t* option)
                 id_mhtdc_z_music41[i] = frs->primary_z * sqrt(de[0] / id_mhtdc_v_cor_music41[i]) + id->mhtdc_offset_z_music41;
             } // else???
         }
-
 
         float temp_music42_de = de[1] > 0.0;
         if((temp_music42_de > 0.0)  && (id_mhtdc_beta_s2s4[i] > 0.0) && (id_mhtdc_beta_s2s4[i] < 1.0))
@@ -1025,6 +1026,32 @@ void FrsCal2Hit::Exec(Option_t* option)
             if (id_mhtdc_v_cor_music42[i] > 0.0)
             {
                 id_mhtdc_z_music42[i] = frs->primary_z * sqrt(de[1] / id_mhtdc_v_cor_music42[i]) + id->mhtdc_offset_z_music42;
+            }
+        }
+
+        if (travMusicArray)
+        {
+            float temp_travmus_de = de_travmus > 0.0;
+            if ((temp_travmus_de > 0.0) && (id_mhtdc_beta_s2s4[i] > 0.0) && (id_mhtdc_beta_s2s4[i] < 1.0))
+            {
+                power = 1.;
+                sum = 0.;
+                for (int j = 0; j < 4; j++)
+                {
+                    sum += power * id->vel_a3[j]; // same parameters for mhtdc as TAC for now....stupid
+                    #ifndef TRAVMUS_TAC_OR_MHTDC
+                    power *= id_mhtdc_beta_s2s4[i];
+                    #endif
+                    #ifdef TRAVMUS_TAC_OR_MHTDC
+                    power *= 1.0/(id_mhtdc_beta_s2s4[i]*id_mhtdc_beta_s2s4[i]);
+                    #endif
+                } 
+                id_mhtdc_v_cor_travmus[i] = sum;
+                
+                if (id_mhtdc_v_cor_travmus[i] > 0.0)
+                {   
+                    id_mhtdc_z_travmus[i] = frs->primary_z * sqrt(de_travmus / id_mhtdc_v_cor_travmus[i]) + id->offset_z3; // same as TAC....for now
+                }
             }
         }
     }
@@ -1308,17 +1335,17 @@ void FrsCal2Hit::Exec(Option_t* option)
     {
         for (int j = 0; j<hits_in_s2x; j ++)
         {
-
-        auto & multihitEntry = multihitArray->emplace_back();
-        multihitEntry.SetAll(
-                            id_mhtdc_beta_s2s4[i], 
-                            id_mhtdc_aoq_s2s4[i*hits_in_s2x + j], 
-                            id_mhtdc_aoq_corr_s2s4[i*hits_in_s2x + j], 
-                            id_mhtdc_z_music41[i],
-                            id_mhtdc_z_music42[i],
-                            id_mhtdc_dEdeg[i*hits_in_s2x + j],
-                            id_mhtdc_dEdegoQ[i*hits_in_s2x + j]
-                            );
+            auto & multihitEntry = multihitArray->emplace_back();
+            multihitEntry.SetAll(
+                                id_mhtdc_beta_s2s4[i], 
+                                id_mhtdc_aoq_s2s4[i*hits_in_s2x + j], 
+                                id_mhtdc_aoq_corr_s2s4[i*hits_in_s2x + j], 
+                                id_mhtdc_z_music41[i],
+                                id_mhtdc_z_music42[i],
+                                id_mhtdc_z_travmus[i],
+                                id_mhtdc_dEdeg[i*hits_in_s2x + j],
+                                id_mhtdc_dEdegoQ[i*hits_in_s2x + j]
+                                );
         }
     }
    

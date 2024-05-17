@@ -109,10 +109,22 @@ InitStatus FrsOnlineSpectra::Init()
         histograms->Add(dir_frs);
     } else dir_travmus = dir_frs->mkdir("Travel MUSIC");
 
-    dir_pids = dir_frs->mkdir("PIDs");
-    dir_ZvsZ2 = dir_pids->mkdir("ZvsZ2 Gated");
+    dir_tac = dir_frs->mkdir("TAC");
+    dir_mhtdc = dir_frs->mkdir("MHTDC");
+    dir_travmus_tac = dir_travmus->mkdir("TAC");
+    dir_travmus_mhtdc = dir_travmus->mkdir("MHTDC");
+
+    dir_tac_1d = dir_tac->mkdir("1D Spectra");
+    dir_tac_2d = dir_tac->mkdir("2D PIDs");
+    dir_gated_tac = dir_tac->mkdir("Gated 2D PIDs");
+    dir_ZvsZ2 = dir_gated_tac->mkdir("ZvsZ2 Gated");
     dir_ZvsZ2_x2vsAoQ = dir_ZvsZ2->mkdir("x2vsAoQ Gated");
     dir_ZvsZ2_x4vsAoQ = dir_ZvsZ2->mkdir("x4vsAoQ Gated");
+
+    dir_mhtdc_1d = dir_mhtdc->mkdir("1D Spectra");
+    dir_mhtdc_2d = dir_mhtdc->mkdir("2D PIDs");
+    dir_gated_mhtdc = dir_mhtdc->mkdir("Gated 2D");
+    
     dir_scalers = dir_frs->mkdir("Scalers");
     
     // Scalers // -- TODO: Add this name mapping to TFrsConfig or something of the like.
@@ -163,59 +175,39 @@ InitStatus FrsOnlineSpectra::Init()
     for (int i = 0; i < 66; i++) hScaler_per_100ms[i] = new TH1D(Form("hScaler_per_100ms_%s", scaler_name[i]), Form("Scaler %s per 0.1s", scaler_name[i]), 4000, 0, 400);
     for (int i = 0; i < 66; i++) hScaler_per_spill[i] = new TH1D(Form("hScaler_per_spill_%s", scaler_name[i]), Form("Scaler %s per spill ", scaler_name[i]), 1000, 0, 1000);
 
-
-    dir_pids->cd();
-
-    gStyle->SetPalette(kDarkBodyRadiator);
+    dir_tac_2d->cd();
 
     h2_Z_vs_AoQ = new TH2D("h2_Z_vs_AoQ", "Z1 vs. A/Q", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
-    //h2_Z_vs_AoQ = new TH2D("h2_Z_vs_AoQ", "Z1 vs. A/Q", 1500, 2, frs_config->fMax_AoQ, 1000, 30, frs_config->fMax_Z);
     h2_Z_vs_AoQ->GetXaxis()->SetTitle("A/Q");
     h2_Z_vs_AoQ->GetYaxis()->SetTitle("Z (MUSIC 1)");
     h2_Z_vs_AoQ->SetOption("COLZ");
-    gStyle->SetPalette(kDarkBodyRadiator);
-
-    //:: EG
-    h2_Z_vs_AoQ_mhit = new TH2D("h2_Z_vs_AoQ_mhit", "Z1 vs. A/Q (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
-    //h2_Z_vs_AoQ = new TH2D("h2_Z_vs_AoQ", "Z1 vs. A/Q", 1500, 2, frs_config->fMax_AoQ, 1000, 30, frs_config->fMax_Z);
-    h2_Z_vs_AoQ_mhit->GetXaxis()->SetTitle("A/Q");
-    h2_Z_vs_AoQ_mhit->GetYaxis()->SetTitle("Z (MUSIC 1) MHTDC");
-    h2_Z_vs_AoQ_mhit->SetOption("COLZ");
-    gStyle->SetPalette(kDarkBodyRadiator);
-    //:: EG
     
     h2_Z_vs_AoQ_corr = new TH2D("h2_Z_vs_AoQ_corr", "Z1 vs. A/Q (corr)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
-    //h2_Z_vs_AoQ_corr = new TH2D("h2_Z_vs_AoQ_corr", "Z1 vs. A/Q (corr)", 1500, 2 , frs_config->fMax_AoQ, 1000, 30, frs_config->fMax_Z);
     h2_Z_vs_AoQ_corr->GetXaxis()->SetTitle("A/Q");
     h2_Z_vs_AoQ_corr->GetYaxis()->SetTitle("Z (MUSIC 1)");
     h2_Z_vs_AoQ_corr->SetOption("COLZ");
     
     h2_Z_vs_Z2 = new TH2D("h2_Z_vs_Z2", "Z1 vs. Z2", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z);
-    //h2_Z_vs_Z2 = new TH2D("h2_Z_vs_Z2", "Z1 vs. Z2", 1000, 30, frs_config->fMax_Z, 400, 30, frs_config->fMax_Z);
     h2_Z_vs_Z2->GetXaxis()->SetTitle("Z (MUSIC 1)");
     h2_Z_vs_Z2->GetYaxis()->SetTitle("Z (MUSIC 2)");
     h2_Z_vs_Z2->SetOption("COLZ");
 
     h2_Z_vs_AoQ_Zsame = new TH2D("h2_Z_vs_AoQ_Zsame", "Z1 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
-    //h2_Z_vs_AoQ_Zsame = new TH2D("h2_Z_vs_AoQ_Zsame", "Z1 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, 2, frs_config->fMax_AoQ, 1000, 30, frs_config->fMax_Z);
     h2_Z_vs_AoQ_Zsame->GetXaxis()->SetTitle("A/Q");
     h2_Z_vs_AoQ_Zsame->GetYaxis()->SetTitle("Z (MUSIC 1)");
     h2_Z_vs_AoQ_Zsame->SetOption("COLZ");
 
     h2_x4_vs_AoQ_Zsame = new TH2D("h2_x4_vs_AoQ_Zsame", "x4 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 300, frs_config->fMin_x4, frs_config->fMax_x4);
-    //h2_x4_vs_AoQ_Zsame = new TH2D("h2_x4_vs_AoQ_Zsame", "x4 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, 2, frs_config->fMax_AoQ, 300, frs_config->fMin_x4, frs_config->fMax_x4);
     h2_x4_vs_AoQ_Zsame->GetXaxis()->SetTitle("A/Q");
     h2_x4_vs_AoQ_Zsame->GetYaxis()->SetTitle("S4 x-position");
     h2_x4_vs_AoQ_Zsame->SetOption("COLZ");
 
     h2_x2_vs_AoQ_Zsame = new TH2D("h2_x2_vs_AoQ_Zsame", "x2 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 300, frs_config->fMin_x2, frs_config->fMax_x2);
-    //h2_x2_vs_AoQ_Zsame = new TH2D("h2_x2_vs_AoQ_Zsame", "x2 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, 2, frs_config->fMax_AoQ, 300, frs_config->fMin_x2, frs_config->fMax_x2);
     h2_x2_vs_AoQ_Zsame->GetXaxis()->SetTitle("A/Q");
     h2_x2_vs_AoQ_Zsame->GetYaxis()->SetTitle("S2 x-position");
     h2_x2_vs_AoQ_Zsame->SetOption("COLZ");
    
     h2_x2_vs_AoQ = new TH2D("h2_x2_vs_AoQ", "x2 vs. A/Q", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2);
-    //h2_x2_vs_AoQ = new TH2D("h2_x2_vs_AoQ", "x2 vs. A/Q", 1500, 2, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2);
     h2_x2_vs_AoQ->GetXaxis()->SetTitle("A/Q");
     h2_x2_vs_AoQ->GetYaxis()->SetTitle("S2 x-position");
     h2_x2_vs_AoQ->SetOption("COLZ");
@@ -246,7 +238,6 @@ InitStatus FrsOnlineSpectra::Init()
     h2_a4_vs_AoQ->SetOption("COLZ");
 
     h2_Z_vs_dE2 = new TH2D("h2_Z_vs_dE2", "Z1 vs. dE in MUSIC2", 400, frs_config->fMin_Z, frs_config->fMax_Z, 250, frs_config->fMin_dE_Music2, frs_config->fMax_dE_Music2);
-    //h2_Z_vs_dE2 = new TH2D("h2_Z_vs_dE2", "Z1 vs. dE in MUSIC2", 400, 30, frs_config->fMax_Z, 250, frs_config->fMin_dE_Music2, frs_config->fMax_dE_Music2);
     h2_Z_vs_dE2->GetXaxis()->SetTitle("Z (MUSIC 1)");
     h2_Z_vs_dE2->GetYaxis()->SetTitle("dE in MUSIC 2");
     h2_Z_vs_dE2->SetOption("COLZ");
@@ -257,7 +248,6 @@ InitStatus FrsOnlineSpectra::Init()
     h2_x2_vs_x4->SetOption("COLZ");
   
     h2_SC41dE_vs_AoQ = new TH2D("h2_SC41dE_vs_AoQ", "A/Q vs. dE in SC41", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000.);
-    //h2_SC41dE_vs_AoQ = new TH2D("h2_SC41dE_vs_AoQ", "A/Q vs. dE in SC41", 1000, 2, frs_config->fMax_AoQ, 1000, 0., 4000.);
     h2_SC41dE_vs_AoQ->GetXaxis()->SetTitle("A/Q");
     h2_SC41dE_vs_AoQ->GetYaxis()->SetTitle("dE in SC41");
     h2_SC41dE_vs_AoQ->SetOption("COLZ");
@@ -268,13 +258,11 @@ InitStatus FrsOnlineSpectra::Init()
     h2_dE_vs_ToF->SetOption("COLZ");
 
     h2_x2_vs_Z = new TH2D("h2_x2_vs_Z", "x2 vs. Z1", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x2, frs_config->fMax_x2);
-    //h2_x2_vs_Z = new TH2D("h2_x2_vs_Z", "x2 vs. Z1", 400, 30, frs_config->fMax_Z, 200, frs_config->fMin_x2, frs_config->fMax_x2);
     h2_x2_vs_Z->GetXaxis()->SetTitle("Z (MUSIC 1)");
     h2_x2_vs_Z->GetYaxis()->SetTitle("S2 x-position");
     h2_x2_vs_Z->SetOption("COLZ");
 
     h2_x4_vs_Z = new TH2D("h2_x4_vs_Z", "x4 vs. Z1", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x4, frs_config->fMax_x4);
-    //h2_x4_vs_Z = new TH2D("h2_x4_vs_Z", "x4 vs. Z1", 400, 30, frs_config->fMax_Z, 200, frs_config->fMin_x4, frs_config->fMax_x4);
     h2_x4_vs_Z->GetXaxis()->SetTitle("Z (MUSIC 1)");
     h2_x4_vs_Z->GetYaxis()->SetTitle("S4 x-position");
     h2_x4_vs_Z->SetOption("COLZ");
@@ -319,11 +307,33 @@ InitStatus FrsOnlineSpectra::Init()
     if (frs_config->plot_1d)
     {   
         // preset wide ranges to "always" see peak, in case it's wrong
+        dir_tac_1d->cd();
+
         h1_frs_Z = new TH1D("h1_frs_Z", "Z (MUSIC 1)", 500, 10, 100);
+        h1_frs_Z->SetFillColor(kPink-3);
         h1_frs_Z2 = new TH1D("h1_frs_Z2", "Z (MUSIC 1)", 500, 10, 100);
-        h1_frs_AoQ = new TH1D("h1_frs_AoQ", "A/Q", 500, 1.5, 4.0);
-        h1_frs_AoQ_cor = new TH1D("h1_frs_AoQ_cor", "A/Q corr", 500, 1.5, 4.0);
+        h1_frs_Z2->SetFillColor(kPink-3);
+        h1_frs_AoQ = new TH1D("h1_frs_AoQ", "A/Q", 500, 1.0, 4.0);
+        h1_frs_AoQ->SetFillColor(kPink-3);
+        h1_frs_AoQ_corr = new TH1D("h1_frs_AoQ_corr", "A/Q corr", 500, 1.0, 4.0);
+        h1_frs_AoQ_corr->SetFillColor(kPink-3);
+        h1_frs_x2 = new TH1D("h1_frs_x2", "X Position at S2", 200, -100, 100);
+        h1_frs_x2->SetFillColor(kYellow+1); // experimental
+        h1_frs_x2->SetLineColor(kBlack);
+        h1_frs_x2->SetLineWidth(1.5);
+        h1_frs_x4 = new TH1D("h1_frs_x4", "X Position at S4", 200, -100, 100);
+        h1_frs_x4->SetFillColor(kYellow-7); // experimental
+        h1_frs_x4->SetLineColor(kBlack);
+        h1_frs_x4->SetLineWidth(1.5);
     }
+
+    // :::: MHTDC ::: //
+    dir_mhtdc_2d->cd();
+
+    h2_Z_vs_AoQ_mhtdc = new TH2D("h2_Z_vs_AoQ_mhtdc", "Z1 vs. A/Q - MHTDC", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
+    h2_Z_vs_AoQ_mhtdc->GetXaxis()->SetTitle("A/Q");
+    h2_Z_vs_AoQ_mhtdc->GetYaxis()->SetTitle("Z (MUSIC 1)");
+    h2_Z_vs_AoQ_mhtdc->SetOption("COLZ");
 
 
     // ZvsZ2 gates
@@ -450,71 +460,50 @@ InitStatus FrsOnlineSpectra::Init()
             h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate[gate] = new TH2I(Form("h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate%d", gate), Form("dE in S2 degrader / Q vs. Z1 - Z1Z2, x4AoQ Gate: %d", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ);                
             h1_a2_Z1Z2x4AoQgate[gate] = new TH1I(Form("h1_a2_Z1Z2x4AoQgate%d", gate), Form("Angle S2 [mrad] - Z1Z2, x4AoQ Gate: %d", gate), 100, -1000, 1000);                
             h1_a4_Z1Z2x4AoQgate[gate] = new TH1I(Form("h1_a4_Z1Z2x4AoQgate%d", gate), Form("Angle S4 [mrad] - Z1Z2, x4AoQ Gate: %d", gate), 100, -1000, 1000);
+            
+
+            // :::: MHTDC :::::
+            //...
+
 
         }
     }
 
     dir_scalers->cd();
-
     h1_tpat = new TH1I("h1_tpat", "Trigger Pattern", 20, 0, 20);
 
 
-    dir_travmus->cd();
 
+    // ::::: Travel MUSIC - treated separately until FRS sorts themselves out ::::: 
+    dir_travmus->cd();
     h1_wr_frs_travmus = new TH1I("h1_wr_frs_travmus", "White Rabbit dT FRS - Travel MUSIC", 500, -3000, -1000);
+
+    // ::::::: TAC :::::::: //
+    dir_travmus_tac->cd();
 
     c_z_compare = new TCanvas("c_z_compare", "Z from 3 x MUSIC", 650, 350);
     c_z_compare->Divide(1, 3);
     c_z_compare->cd(1);
-    //h1_travmus_z = new TH1D("h1_travmus_z", "Z (Travel MUSIC)", 750, 10, 90);
     h1_travmus_z = new TH1D("h1_travmus_z", "Z (Travel MUSIC)", 750, frs_config->fMin_Z, frs_config->fMax_Z);
     h1_travmus_z->SetFillColor(kPink-3);
     h1_travmus_z->Draw();
     c_z_compare->cd(2);
     h1_z1 = new TH1D("h1_z1", "Z (MUSIC 1)", 750, frs_config->fMin_Z, frs_config->fMax_Z);
-    //h1_z1 = new TH1D("h1_z1", "Z (MUSIC 1)", 750, 10, 90);
     h1_z1->SetFillColor(kAzure+7);
     h1_z1->SetLineColor(kBlack);
     h1_z1->Draw();
     c_z_compare->cd(3);
     h1_z2 = new TH1D("h1_z2", "Z (MUSIC 2)", 750, frs_config->fMin_Z, frs_config->fMax_Z);
-    //h1_z2 = new TH1D("h1_z2", "Z (MUSIC 2)", 750, 10, 90);
     h1_z2->SetFillColor(kAzure+7);
     h1_z2->SetLineColor(kBlack);
     h1_z2->Draw();
     c_z_compare->cd(0);
-    dir_travmus->Append(c_z_compare);
-
-    //MHTDC
-    c_z_compare_MHTDC = new TCanvas("c_z_compare_MHTDC", "Z from 3 x MUSIC MHTDC", 650, 350);
-    c_z_compare_MHTDC->Divide(1, 3);
-    c_z_compare_MHTDC->cd(1);
-    //h1_travmus_z_MHTDC = new TH1D("h1_travmus_z_MHTDC", "Z (Travel MUSIC)", 750, 10, 90);
-    h1_travmus_z_MHTDC = new TH1D("h1_travmus_z_MHTDC", "Z (Travel MUSIC) ", 750, frs_config->fMin_Z, frs_config->fMax_Z);
-    h1_travmus_z_MHTDC->SetFillColor(kPink-3);
-    h1_travmus_z_MHTDC->Draw();
-    c_z_compare_MHTDC->cd(2);
-    h1_z1_MHTDC = new TH1D("h1_z1_MHTDC", "Z (MUSIC 1) MHTDC", 750, frs_config->fMin_Z, frs_config->fMax_Z);
-    //h1_z1 = new TH1D("h1_z1", "Z (MUSIC 1)", 750, 10, 90);
-    h1_z1_MHTDC->SetFillColor(kAzure+7);
-    h1_z1_MHTDC->SetLineColor(kBlack);
-    h1_z1_MHTDC->Draw();
-    c_z_compare_MHTDC->cd(3);
-    h1_z2_MHTDC = new TH1D("h1_z2_MHTDC", "Z (MUSIC 2) MHTDC", 750, frs_config->fMin_Z, frs_config->fMax_Z);
-    //h1_z2 = new TH1D("h1_z2", "Z (MUSIC 2)", 750, 10, 90);
-    h1_z2_MHTDC->SetFillColor(kAzure+7);
-    h1_z2_MHTDC->SetLineColor(kBlack);
-    h1_z2_MHTDC->Draw();
-    c_z_compare_MHTDC->cd(0);
-    dir_travmus->Append(c_z_compare_MHTDC);
-    //::::
+    dir_travmus_tac->Append(c_z_compare);
 
     c_dE_compare = new TCanvas("c_dE_compare", "dE from 3 x MUSIC", 650, 350);
     c_dE_compare->Divide(1, 3);
     c_dE_compare->cd(1);
-    
     h1_travmus_dE = new TH1D("h1_travmus_dE", "dE (Travel MUSIC)", 750, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1);
-    //h1_travmus_dE = new TH1D("h1_travmus_dE", "dE (Travel MUSIC)", 3000, 00000, 60000);
     h1_travmus_dE->SetFillColor(kPink-3);
     h1_travmus_dE->Draw();
     c_dE_compare->cd(2);
@@ -528,15 +517,36 @@ InitStatus FrsOnlineSpectra::Init()
     h1_z2_dE->SetLineColor(kBlack);
     h1_z2_dE->Draw();
     c_dE_compare->cd(0);
-    dir_travmus->Append(c_dE_compare);
+    dir_travmus_tac->Append(c_dE_compare);
 
+    // :::: 2D plots ::::::: 
     h2_travmus_z1 = new TH2D("h2_travmus_z1", "Z (Travel MUSIC) vs Z (MUSIC 1)", 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_Z, frs_config->fMax_Z);
     h2_travmus_z1->GetXaxis()->SetTitle("Z (Travel MUSIC)");
     h2_travmus_z1->GetYaxis()->SetTitle("Z (MUSIC 1)");
     h2_travmus_z1->SetOption("COLZ");
 
-    //hG_frs_wr = new TGraph(1);
-    
+    // ::::: Travel Music MHTDC ::::::: //
+    dir_travmus_mhtdc->cd();
+
+    c_z_compare_MHTDC = new TCanvas("c_z_compare_MHTDC", "Z from 3 x MUSIC MHTDC", 650, 350);
+    c_z_compare_MHTDC->Divide(1, 3);
+    c_z_compare_MHTDC->cd(1);
+    h1_travmus_z_MHTDC = new TH1D("h1_travmus_z_MHTDC", "Z (Travel MUSIC) MHTDC ", 750, frs_config->fMin_Z, frs_config->fMax_Z);
+    h1_travmus_z_MHTDC->SetFillColor(kPink-3);
+    h1_travmus_z_MHTDC->Draw();
+    c_z_compare_MHTDC->cd(2);
+    h1_z1_MHTDC = new TH1D("h1_z1_MHTDC", "Z (MUSIC 1) MHTDC", 750, frs_config->fMin_Z, frs_config->fMax_Z);
+    h1_z1_MHTDC->SetFillColor(kAzure+7);
+    h1_z1_MHTDC->SetLineColor(kBlack);
+    h1_z1_MHTDC->Draw();
+    c_z_compare_MHTDC->cd(3);
+    h1_z2_MHTDC = new TH1D("h1_z2_MHTDC", "Z (MUSIC 2) MHTDC", 750, frs_config->fMin_Z, frs_config->fMax_Z);
+    h1_z2_MHTDC->SetFillColor(kAzure+7);
+    h1_z2_MHTDC->SetLineColor(kBlack);
+    h1_z2_MHTDC->Draw();
+    c_z_compare_MHTDC->cd(0);
+    dir_travmus_mhtdc->Append(c_z_compare_MHTDC);
+    // :::::::::::::::::::: //
 
     // Register command to reset histograms
     run->GetHttpServer()->RegisterCommand("Reset_FRS_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
@@ -782,6 +792,7 @@ void FrsOnlineSpectra::Snapshot_Histo()
 void FrsOnlineSpectra::Exec(Option_t* option)
 {
 
+    int64_t trav_mus_wr = 0;
     for (auto const & hitItem : *hitArray)
     {
         h1_tpat->Fill(hitItem.Get_tpat());
@@ -844,7 +855,10 @@ void FrsOnlineSpectra::Exec(Option_t* option)
             h1_frs_Z->Fill(hitItem.Get_ID_z());
             h1_frs_Z2->Fill(hitItem.Get_ID_z2());
             h1_frs_AoQ->Fill(hitItem.Get_ID_AoQ());
-            h1_frs_AoQ_cor->Fill(hitItem.Get_ID_AoQ_corr());
+            h1_frs_AoQ_corr->Fill(hitItem.Get_ID_AoQ_corr());
+            h1_frs_x2->Fill(hitItem.Get_ID_x2());
+            h1_frs_x4->Fill(hitItem.Get_ID_x4());
+            // more..
         }
 
 
@@ -892,18 +906,18 @@ void FrsOnlineSpectra::Exec(Option_t* option)
 
         // ::::: TRAVEL MUSIC ::::::
 
-
-        if (hitItem.Get_wr_travmus() > 0)
+        trav_mus_wr = hitItem.Get_wr_travmus();
+        if (trav_mus_wr > 0)
         {
             h1_wr_frs_travmus->Fill((int64_t)hitItem.Get_wr_t() - (int64_t)hitItem.Get_wr_travmus());
 
-            h1_travmus_z->Fill(hitItem.Get_ID_z_travmus());
-            h1_z1->Fill(hitItem.Get_ID_z());
-            h1_z2->Fill(hitItem.Get_ID_z2());
+            if (hitItem.Get_ID_z_travmus() > 0) h1_travmus_z->Fill(hitItem.Get_ID_z_travmus());
+            if (hitItem.Get_ID_z() > 0) h1_z1->Fill(hitItem.Get_ID_z()); // same as elsewhere, purely for comparison
+            if (hitItem.Get_ID_z2() > 0) h1_z2->Fill(hitItem.Get_ID_z2()); // same as elsewhere, purely for comparison
 
-            h1_travmus_dE->Fill(hitItem.Get_travmusic_dE());
-            h1_z1_dE->Fill(hitItem.Get_music_dE(0));
-            h1_z2_dE->Fill(hitItem.Get_music_dE(1));
+            if (hitItem.Get_travmusic_dE() > 0) h1_travmus_dE->Fill(hitItem.Get_travmusic_dE());
+            if (hitItem.Get_music_dE(0) > 0) h1_z1_dE->Fill(hitItem.Get_music_dE(0));
+            if (hitItem.Get_music_dE(1) > 0) h1_z2_dE->Fill(hitItem.Get_music_dE(1));
 
             h2_travmus_z1->Fill(hitItem.Get_ID_z_travmus(), hitItem.Get_ID_z());
 
@@ -951,23 +965,24 @@ void FrsOnlineSpectra::Exec(Option_t* option)
     }
 
     //:: EG
+    //std::cout << "multhit beginnning" << std::endl;
     for (auto const & multihitItem : *multihitArray)
+    {
+        if (multihitItem.Get_ID_AoQ_mhtdc() > 0 && multihitItem.Get_ID_z_mhtdc() > 0) h2_Z_vs_AoQ_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), multihitItem.Get_ID_z_mhtdc());
+
+        //:::::::::::z
+        h1_z1_MHTDC->Fill(multihitItem.Get_ID_z_mhtdc());
+        h1_z2_MHTDC->Fill(multihitItem.Get_ID_z2_mhtdc());
+
+        // :::::: Travel Music ::::::: //
+        if (trav_mus_wr > 0)
         {
-            if (multihitItem.Get_ID_AoQ_mhtdc() > 0 && multihitItem.Get_ID_z_mhtdc() > 0) h2_Z_vs_AoQ_mhit->Fill(multihitItem.Get_ID_AoQ_mhtdc(), multihitItem.Get_ID_z_mhtdc());
-        
-            
-            //:::::::::::z
-            //h1_travmus_z_MHTDC->Fill(multihitItem.Get_ID_z_travmus());
-            h1_z1_MHTDC->Fill(multihitItem.Get_ID_z_mhtdc());
-            h1_z2_MHTDC->Fill(multihitItem.Get_ID_z2_mhtdc());
-
-            //h2_travmus_z1_mhtdc->Fill(multihitItem.Get_ID_z_travmus_mhtdc(), multihitItem.Get_ID_z_mhtdc());
-
-            //c4LOG(info, "trav_mus_de : " << hitItem.Get_travmusic_dE() << " music 1 en : " << hitItem.Get_music_dE(0) << "music 2 en : " << hitItem.Get_music_dE(1) );
-        
-        
-        
+            if (multihitItem.Get_ID_z_travmus_mhtdc() > 0) 
+            {   
+                h1_travmus_z_MHTDC->Fill(multihitItem.Get_ID_z_travmus_mhtdc());
+            }
         }
+    }
     //::
 
     fNEvents += 1;
