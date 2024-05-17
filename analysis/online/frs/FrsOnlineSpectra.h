@@ -19,12 +19,14 @@ class FrsGate;
 class TFolder;
 class TDirectory;
 class TCanvas;
-class TH1F;
-class TH2F;
-class TH1D;
+class TH1;
+class TH2;
 class TH1I;
-class TH2D;
+class TH1F;
+class TH1D;
 class TH2I;
+class TH2F;
+class TH2D;
 
 class FrsOnlineSpectra : public FairTask
 {
@@ -89,7 +91,8 @@ class FrsOnlineSpectra : public FairTask
 
         // Histograms for PID:
         // TAC
-        TH2D* h2_Z_vs_AoQ;
+        TH2* h2_Z_vs_AoQ;
+        //TH2D* h2_Z_vs_AoQ;
         TH2D* h2_Z_vs_AoQ_corr;
         TH2D* h2_Z_vs_Z2;
         TH2D* h2_Z_vs_AoQ_Zsame;
