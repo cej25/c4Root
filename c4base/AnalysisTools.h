@@ -23,7 +23,7 @@ TH1* MakeTH1(TDirectory* dir, const char* type, const char* name,
             const char* xtitle);
 TH1* MakeTH1(TDirectory* dir, const char* type, const char* name, 
             const char* title, int bins, double xmin, double xmax,
-            const char* xtitle, EColor fillColour, EColor lineColour);
+            const char* xtitle, int fillColour, int lineColour);
 
 TH2* MakeTH2(TDirectory* dir, const char* type, const char* name, const char* title, 
             int xbins, double xmin, double xmax, int ybins, int ymin, int ymax);

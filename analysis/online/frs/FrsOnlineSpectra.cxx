@@ -178,11 +178,17 @@ InitStatus FrsOnlineSpectra::Init()
     for (int i = 0; i < 66; i++) hScaler_per_spill[i] = new TH1D(Form("hScaler_per_spill_%s", scaler_name[i]), Form("Scaler %s per spill ", scaler_name[i]), 1000, 0, 1000);
 
     dir_tac_2d->cd();
+    
+    h2_Z_vs_AoQ = MakeTH2(dir_tac_2d, "D", "h2_Z_vs_AoQ", "Z1 vs. A/Q", 
+                    1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 
+                    1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q", "Z (MUSIC 1)");
 
+    /*
     h2_Z_vs_AoQ = new TH2D("h2_Z_vs_AoQ", "Z1 vs. A/Q", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
     h2_Z_vs_AoQ->GetXaxis()->SetTitle("A/Q");
     h2_Z_vs_AoQ->GetYaxis()->SetTitle("Z (MUSIC 1)");
     h2_Z_vs_AoQ->SetOption("COLZ");
+    */
     
     h2_Z_vs_AoQ_corr = new TH2D("h2_Z_vs_AoQ_corr", "Z1 vs. A/Q (corr)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
     h2_Z_vs_AoQ_corr->GetXaxis()->SetTitle("A/Q");

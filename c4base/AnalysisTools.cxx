@@ -39,7 +39,7 @@ TH1* MakeTH1(TDirectory* dir, const char* type, const char* name,
 // TH1 with axis labels and specified colours
 TH1* MakeTH1(TDirectory* dir, const char* type, const char* name, 
                     const char* title, int bins, double xmin, double xmax,
-                    const char* xtitle, EColor fillColour, EColor lineColour)
+                    const char* xtitle, int fillColour, int lineColour)
 {
     dir->cd();
 
@@ -70,6 +70,8 @@ TH2* MakeTH2(TDirectory* dir, const char* type, const char* name, const char* ti
     else if (*type == 'D') h2 = new TH2D(name, title, xbins, xmin, xmax, ybins, ymin, ymax);
     else h2 = new TH2I(name, title, xbins, xmin, xmax, ybins, ymin, ymax);
     
+    h2->SetOption("COLZ"); // default for now.
+
     return h2;
 }
 
@@ -89,6 +91,8 @@ TH2* MakeTH2(TDirectory* dir, const char* type, const char* name, const char* ti
 
     h2->GetXaxis()->SetTitle(xtitle);
     h2->GetYaxis()->SetTitle(ytitle);
+
+    h2->SetOption("COLZ"); // default for now.
     
     return h2;
 }
