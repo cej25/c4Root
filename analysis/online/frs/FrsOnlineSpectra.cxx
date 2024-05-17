@@ -126,6 +126,7 @@ InitStatus FrsOnlineSpectra::Init()
     dir_gated_mhtdc = dir_mhtdc->mkdir("Gated 2D");
     
     dir_scalers = dir_frs->mkdir("Scalers");
+    //dir_mhtdc = dir_frs->mkdir("MHTDC");
     
     // Scalers // -- TODO: Add this name mapping to TFrsConfig or something of the like.
     for (int i = 0; i < 66; i++) sprintf(scaler_name[i], "scaler_ch%d", i);

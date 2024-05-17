@@ -38,8 +38,6 @@ class FrsNearlineTravMusSpectra : public FairTask
 
         virtual void FinishTask();
 
-        virtual void Reset_Histo();
-
     private:
         TFrsConfiguration const* frs_config;
 

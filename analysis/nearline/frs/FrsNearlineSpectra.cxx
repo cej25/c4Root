@@ -171,6 +171,15 @@ InitStatus FrsNearlineSpectra::Init()
     h2_dE1_vs_x2_mhtdc = new TH2D("h2_dE1_vs_x2_mhtdc", "x2 vs. dE in MUSIC1", 200, frs_config->fMin_x2, frs_config->fMax_x2, 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1);
     h2_dE1_vs_x4_mhtdc = new TH2D("h2_dE1_vs_x4_mhtdc", "x4 vs. dE in MUSIC1", 200, frs_config->fMin_x4, frs_config->fMax_x4, 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1);
 
+    h1_travmus_dE = new TH1D("h1_travmus_dE", "dE (Travel MUSIC)", 750, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1);
+    //h1_travmus_dE = new TH1D("h1_travmus_dE", "dE (Travel MUSIC)", 3000, 00000, 60000);
+    h1_travmus_dE->SetFillColor(kPink-3);
+    h1_travmus_dE->Draw();
+
+    //::LISA
+    h2_Z_vs_AoQ_mhtdc_trav_gate = new TH2D("h2_Z_vs_AoQ_mhtdc_trav_gate", "Z1 vs. A/Q (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
+
+
     // ZvsAoQ gates
     if (!FrsGates.empty())
     {   
@@ -213,7 +222,9 @@ InitStatus FrsNearlineSpectra::Init()
             h2_dedegoQ_vs_Z_ZAoQgate_mhtdc[gate] = new TH2I(Form("h2_dedegoQ_vs_Z_ZAoQgate%d_mhtdc", gate), Form("Z1 vs. dE in S2 degrader - ZAoQ Gate: %d", gate), FRS_HISTO_BIN, id->min_z_plot, id->max_z_plot, FRS_HISTO_BIN, 10., 50.);          
             h1_a2_ZAoQ_gate_mhtdc[gate] = new TH1I(Form("h1_a2_ZAoQ_gate%d_mhtdc", gate), Form("Angle S2 [mrad] - ZAoQ Gate: %d", gate), 100, -1000, 1000);    
             h1_a4_ZAoQ_gate_mhtdc[gate] = new TH1I(Form("h1_a4_ZAoQ_gate%d_mhtdc", gate), Form("Angle S4 [mrad] - ZAoQ Gate: %d", gate), 100, -1000, 1000);
+            
         }
+
 
     }
 
@@ -498,6 +509,9 @@ void FrsNearlineSpectra::Exec(Option_t* option)
 
     if (hitItem.Get_sci_x(0)  != 0) h1_sci21_tx->Fill(hitItem.Get_sci_x(0) );
 
+    h1_travmus_dE->Fill(hitItem.Get_travmusic_dE());
+
+
     if (!FrsGates.empty())
     {
         for (int gate = 0; gate < FrsGates.size(); gate++)
@@ -618,12 +632,21 @@ void FrsNearlineSpectra::Exec(Option_t* option)
         
         h2_x4_vs_Z_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), hitItem.Get_ID_x4());
 
+        
+        //Gate on trav music
+        if(hitItem.Get_travmusic_dE() >= frs_config->fMin_dE_travMus_gate && hitItem.Get_travmusic_dE() <= frs_config->fMax_dE_travMus_gate)
+        {
+            h2_Z_vs_AoQ_mhtdc_trav_gate->Fill(multihitItem.Get_ID_AoQ_mhtdc(), multihitItem.Get_ID_z_mhtdc());
+        }
+
         // MHTDC PID Gates
         // Z vs AoQ
         if (!FrsGates.empty())
         {
             for (int gate = 0; gate < FrsGates.size(); gate++)
             { 
+                
+                
                 if (FrsGates[gate]->Passed_ZvsAoQ(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_AoQ_mhtdc()))
                 {
                     // CEJ: this will change based on final hit?
@@ -635,6 +658,9 @@ void FrsNearlineSpectra::Exec(Option_t* option)
                     h2_dedegoQ_vs_Z_ZAoQgate_mhtdc[gate]->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_dEdegoQ_mhtdc());
                     h1_a2_ZAoQ_gate_mhtdc[gate]->Fill(hitItem.Get_ID_a2());
                     h1_a4_ZAoQ_gate_mhtdc[gate]->Fill(hitItem.Get_ID_a4());
+                
+            
+                
                 }
                     
                 if (FrsGates[gate]->Passed_ZvsZ2(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_z2_mhtdc()))
