@@ -119,6 +119,7 @@ class FrsNearlineSpectra : public FairTask
         TH2D* h2_x4_vs_a4;
         TH2D* h2_y4_vs_b4;
         TH2D* h2_Z_vs_Sc21E;
+        TH1D* h1_travmus_dE;
         TH1D* h1_sci21_tx;
         std::vector<TH2I*> h2_Z_vs_AoQ_ZAoQgate;
         std::vector<TH2I*> h2_Z1_vs_Z2_ZAoQgate;
@@ -229,6 +230,7 @@ class FrsNearlineSpectra : public FairTask
         std::vector<TH1I*> h1_a2_dEdegZgate_mhtdc;
         std::vector<TH1I*> h1_a4_dEdegZgate_mhtdc;
         std::vector<TH2I*> h2_Z_vs_AoQ_Zsame_dEdegZgate_mhtdc;
+        TH2D* h2_Z_vs_AoQ_mhtdc_trav_gate;
 
     public:
         ClassDef(FrsNearlineSpectra, 1);

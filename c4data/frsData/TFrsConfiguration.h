@@ -55,6 +55,8 @@ class TFrsConfiguration
         static Double_t fMin_dEoQ, fMax_dEoQ;
         static Double_t fMin_dE_Music1, fMax_dE_Music1;
         static Double_t fMin_dE_Music2, fMax_dE_Music2;
+        static Double_t fMin_dE_travMus_gate, fMax_dE_travMus_gate;
+
         static void Set_Z_range(Double_t, Double_t);
         static void Set_AoQ_range(Double_t, Double_t);
         static void Set_x2_range(Double_t, Double_t);
@@ -69,6 +71,8 @@ class TFrsConfiguration
         static void Set_dEdegoQ_range(Double_t, Double_t);
         static void Set_dE_Music1_range(Double_t, Double_t);
         static void Set_dE_Music2_range(Double_t, Double_t);
+        static void Set_dE_travMusic_gate(Double_t, Double_t);
+
 
         //travMUSIC
         static Double_t fMin_dE_travMusic, fMax_dE_travMusic;

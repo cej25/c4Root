@@ -29,6 +29,8 @@ Double_t TFrsConfiguration::fMin_dE = 10., TFrsConfiguration::fMax_dE = 100.;
 Double_t TFrsConfiguration::fMin_dEoQ = 0.1, TFrsConfiguration::fMax_dEoQ = 0.8;
 Double_t TFrsConfiguration::fMin_dE_Music1 = 0., TFrsConfiguration::fMax_dE_Music1 = 4000.;
 Double_t TFrsConfiguration::fMin_dE_Music2 = 0., TFrsConfiguration::fMax_dE_Music2 = 4000.;
+Double_t TFrsConfiguration::fMin_dE_travMus_gate = 0., TFrsConfiguration::fMax_dE_travMus_gate = 30000.;
+
 
 //travMUSIC
 Double_t TFrsConfiguration::fMin_dE_travMusic = 0., TFrsConfiguration::fMax_dE_travMusic = 60000.;
@@ -143,6 +145,13 @@ void TFrsConfiguration::Set_dE_Music2_range(Double_t min, Double_t max)
     fMin_dE_Music2 = min;
     fMax_dE_Music2 = max;
 }
+
+void TFrsConfiguration::Set_dE_travMusic_gate(Double_t min, Double_t max)
+{
+    fMin_dE_travMus_gate = min;
+    fMax_dE_travMus_gate = max;
+}
+
 
 
 // read files and stuff

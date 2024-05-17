@@ -22,7 +22,7 @@ LisaFrsCorrelations::LisaFrsCorrelations()
 LisaFrsCorrelations::LisaFrsCorrelations(std::vector<FrsGate*> fg)
     : LisaFrsCorrelations("LisaFrsCorrelations")
 {
-
+    FrsGates = fg;
 }
 
 LisaFrsCorrelations::LisaFrsCorrelations(const TString& name, Int_t verbose)
@@ -32,6 +32,8 @@ LisaFrsCorrelations::LisaFrsCorrelations(const TString& name, Int_t verbose)
     ,   travMusicArray(nullptr)
     ,   frsHitArray(nullptr)
     ,   fNEvents(0)
+    ,   multihitArray(nullptr)
+
 {
     lisa_config = TLisaConfiguration::GetInstance();
     frs_config = TFrsConfiguration::GetInstance();
@@ -46,9 +48,6 @@ InitStatus LisaFrsCorrelations::Init()
 {
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
-    
-    FairRunOnline* run = FairRunOnline::Instance();
-    run->GetHttpServer()->Register("", this);
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
@@ -57,27 +56,33 @@ InitStatus LisaFrsCorrelations::Init()
     c4LOG_IF(fatal, !lisaCalArray, "Branch LisaCalData not found!");
     frsHitArray = mgr->InitObjectAs<decltype(frsHitArray)>("FrsHitData");
     c4LOG_IF(fatal, !frsHitArray, "Branch FrsHitData not found!");
+
+    multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
+    c4LOG_IF(fatal, !multihitArray, "Branch FrsMultiHitData not found!");
+
     travMusicArray = mgr->InitObjectAs<decltype(travMusicArray)>("FrsTravMusCalData");
     c4LOG_IF(fatal, !travMusicArray, "Branch FrsTravMusCalData not found!");
 
+    //c4LOG(info," start init ");
+
     layer_number = lisa_config->NLayers();
+    xmax = lisa_config->XMax();
+    ymax = lisa_config->YMax();
+    auto const & detector_mapping = lisa_config->Mapping();
 
-    histograms = (TFolder*)mgr->GetObject("Histograms");
-
-    TDirectory::TContext ctx(nullptr);
-
-    dir_corr = (TDirectory*)mgr->GetObject("Correlations");
+    /*
     if (dir_corr == nullptr) 
     {   
         c4LOG(info, "Creating Correlations Directory");
         dir_corr = new TDirectory("Correlations", "Correlations", "", 0);
         mgr->Register("Correlations", "Correlations Directory", dir_corr, false); // allow other tasks to find this
-        histograms->Add(dir_corr);
     }
+    */
 
-    dir_lisa_frs = dir_corr->mkdir("LISA-FRS Correlations");
-    
-    dir_lisa_frs->cd();
+    FairRootManager::Instance()->GetOutFile()->cd();
+    dir_corr = gDirectory->mkdir("LISA-FRS Correlations");
+    //dir_corr = new TDirectory("Correlations", "Correlations", "", 0);    
+    dir_corr->cd();
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::::::::: WR Time differences ::::::::::::::::::::::
     c_wr_diff = new TCanvas("c_wr_diff", "WR Time Differences", 650, 350);
@@ -103,7 +108,7 @@ InitStatus LisaFrsCorrelations::Init()
     h1_wr_diff[2]->GetXaxis()->SetTitle("WR (travMUSIC) - WR (FRS)");
 
     c_wr_diff->cd();
-    dir_lisa_frs->Append(c_wr_diff);
+    dir_corr->Append(c_wr_diff);
 
     //FRS position vs LISA position
     //::::::::::::: Layer 1 ::::::::::::::::::
@@ -120,7 +125,7 @@ InitStatus LisaFrsCorrelations::Init()
         h2_xy_pos_layer1[i]->Draw("colz");
     }
     c_xy_pos_layer1->cd(0);
-    dir_lisa_frs->Append(c_xy_pos_layer1);   
+    dir_corr->Append(c_xy_pos_layer1);   
 
     //FRS position vs LISA position
     //::::::::::::: Layer 2 ::::::::::::::::::
@@ -138,7 +143,7 @@ InitStatus LisaFrsCorrelations::Init()
     }
     c_xy_pos_layer2->cd(0);
 
-    dir_lisa_frs->Append(c_xy_pos_layer2);   
+    dir_corr->Append(c_xy_pos_layer2);   
 
     //MUSIC1 - LISA
     //:::::::::::::::::::::::::::::::
@@ -155,7 +160,7 @@ InitStatus LisaFrsCorrelations::Init()
         h2_MUSIC_1_layer[i]->Draw("colz");
     }
     c_MUSIC_1_layer->cd(0);
-    dir_lisa_frs->Append(c_MUSIC_1_layer);
+    dir_corr->Append(c_MUSIC_1_layer);
 
     //MUSIC 2 VS LISA
     //:::::::::::::::::::::::::::::::
@@ -172,7 +177,7 @@ InitStatus LisaFrsCorrelations::Init()
         h2_MUSIC_2_layer[i]->Draw("colz");
     }
     c_MUSIC_2_layer->cd(0);
-    dir_lisa_frs->Append(c_MUSIC_2_layer);
+    dir_corr->Append(c_MUSIC_2_layer);
 
     //travMUSIC VS LISA
     c_travMUSIC_layer = new TCanvas("c_travMUSIC_layer", "travMUSIC vs E(LISA) per Layer", 650, 350);
@@ -188,19 +193,134 @@ InitStatus LisaFrsCorrelations::Init()
         h2_travMUSIC_layer[i]->Draw("colz");
     }
     c_travMUSIC_layer->cd(0);
-    dir_lisa_frs->Append(c_travMUSIC_layer);
- 
+    dir_corr->Append(c_travMUSIC_layer);
 
-    run->GetHttpServer()->RegisterCommand("Reset_LisaFRS_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
+    c4LOG(info," before gate");
+    if (!FrsGates.empty())
+    {
+        c_energy_layer_ch_gated.resize(FrsGates.size());
+        h1_energy_layer_ch_gated.resize(FrsGates.size());
+
+        //c_energy_layer_ch_gated_T.resize(FrsGates.size());
+        //h1_energy_layer_ch_gated_T.resize(FrsGates.size());
+
+    
+        for (int gate = 0; gate < FrsGates.size(); gate++)
+        {
+            
+            //:::.Energy spectra Gated with FRS
+
+            
+            //::::only on ZvsAQ ROI
+            c_energy_layer_ch_gated[gate].resize(layer_number);
+            h1_energy_layer_ch_gated[gate].resize(layer_number);
+            h1_energy_layer_ch_gated[gate][0].resize(1);
+            h1_energy_layer_ch_gated[gate][0][0].resize(1);
+            h1_energy_layer_ch_gated[gate][0][0][0] = new TH1F(Form("energy_000_gated_%i",gate), "Tokyo", lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+
+            //:::::::::::Energy canvas for layer 1 and 2
+            //c4LOG(info," after 000 ");
+            
+            for (int i = 1; i < layer_number; i++) //create a canvas for each layer
+            {
+                c_energy_layer_ch_gated[gate][i] = new TCanvas(Form("c_energy_layer_%d_gate_%i",i, gate),Form("c_energy_layer_%d_gate_%i",i,gate), 650,350);
+                c_energy_layer_ch_gated[gate][i]->SetTitle(Form("Layer %d - Energy Gate %i",i, gate));
+                c_energy_layer_ch_gated[gate][i]->Divide(xmax,ymax); 
+                h1_energy_layer_ch_gated[gate][i].resize(xmax);
+                
+                for (int j = 0; j < xmax; j++)
+                {
+                    h1_energy_layer_ch_gated[gate][i][j].resize(ymax);
+                    for (int k = 0; k < ymax; k++)
+                    {   
+                        //c4LOG(info," layer : "<< i << " gate : "<< gate << " xmax : "<< j << " ymax : "<< k);
+                        // general formula to place correctly on canvas for x,y coordinates
+                        c_energy_layer_ch_gated[gate][i]->cd((ymax-(k+1))*xmax + j + 1);
+                        //std::cout<<"Ciao"<<std::endl;
+                        
+                        city = "";
+                        for (auto & detector : detector_mapping)
+                        {
+                            if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
+                            {
+                                city = detector.second.first.second;
+                                break;
+                            }
+                        }
+                        h1_energy_layer_ch_gated[gate][i][j][k] = new TH1F(Form("energy_%s_%i_%i_%i_gate_%i", city.c_str(), i, j, k, gate), city.c_str(), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+                        h1_energy_layer_ch_gated[gate][i][j][k]->GetXaxis()->SetTitle("E(LISA) [a.u.]");
+                        //h1_energy_layer_ch_gated[gate][i][j][k]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
+                        //h1_energy_layer_ch_gated[gate][i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
+                        //h1_energy_layer_ch_gated[gate][i][j][k]->SetStats(0);
+                        h1_energy_layer_ch_gated[gate][i][j][k]->SetLineColor(kBlue+1);
+                        h1_energy_layer_ch_gated[gate][i][j][k]->SetFillColor(kOrange-3);
+                        h1_energy_layer_ch_gated[gate][i][j][k]->Draw();
+                    }
+                }
+                c_energy_layer_ch_gated[gate][i]->cd(0);
+                dir_corr->Append(c_energy_layer_ch_gated[gate][i]);
+
+            }
+
+            /*
+            //:::::::::::travMUS + ZvsAoQ ROI (gated on trav mus)
+            c_energy_layer_ch_gated_T[gate].resize(layer_number);
+            h1_energy_layer_ch_gated_T[gate].resize(layer_number);
+            h1_energy_layer_ch_gated_T[gate][0].resize(1);
+            h1_energy_layer_ch_gated_T[gate][0][0].resize(1);
+            h1_energy_layer_ch_gated_T[gate][0][0][0] = new TH1F("energy_000_gated_T", "Tokyo T", lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+
+            for (int i = 1; i < layer_number; i++) //create a canvas for each layer
+            {
+                c_energy_layer_ch_gated_T[gate][i] = new TCanvas(Form("c_energy_layer_%d_gate_%i_Trav",i, gate),Form("c_energy_layer_%d_gate_%i_Trav",i,gate), 650,350);
+                c_energy_layer_ch_gated_T[gate][i]->SetTitle(Form("Layer %d - Energy Gate %i + Trav",i, gate));
+                c_energy_layer_ch_gated_T[gate][i]->Divide(xmax,ymax); 
+                h1_energy_layer_ch_gated_T[gate][i].resize(xmax);
+                
+                for (int j = 0; j < xmax; j++)
+                {
+                    h1_energy_layer_ch_gated_T[gate][i][j].resize(ymax);
+                    for (int k = 0; k < ymax; k++)
+                    {   
+                        c4LOG(info," layer : "<< i << " gate : "<< gate << " xmax : "<< j << " ymax : "<< k);
+                        // general formula to place correctly on canvas for x,y coordinates
+                        c_energy_layer_ch_gated_T[gate][i]->cd((ymax-(k+1))*xmax + j + 1);
+                        std::cout<<"Ciao"<<std::endl;
+                        
+                        city = "";
+                        for (auto & detector : detector_mapping)
+                        {
+                            if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
+                            {
+                                city = detector.second.first.second;
+                                break;
+                            }
+                        }
+                        h1_energy_layer_ch_gated_T[gate][i][j][k] = new TH1F(Form("energy_%s_%i_%i_%i_gate_%i_T", city.c_str(), i, j, k, gate), city.c_str(), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+                        h1_energy_layer_ch_gated_T[gate][i][j][k]->GetXaxis()->SetTitle("E(LISA) [a.u.] ");
+                        //h1_energy_layer_ch_gated_T[gate][i][j][k]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
+                        //h1_energy_layer_ch_gated_T[gate][i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
+                        //h1_energy_layer_ch_gated_T[gate][i][j][k]->SetStats(0);
+                        h1_energy_layer_ch_gated_T[gate][i][j][k]->SetLineColor(kBlue+1);
+                        h1_energy_layer_ch_gated_T[gate][i][j][k]->SetFillColor(kOrange-3);
+                        h1_energy_layer_ch_gated_T[gate][i][j][k]->Draw();
+                    }
+                }
+                c_energy_layer_ch_gated_T[gate][i]->cd(0);
+                dir_corr->Append(c_energy_layer_ch_gated_T[gate][i]);
+                
+            }
+            */
+        }
+
+    }
+
+
+ 
     return kSUCCESS;
 
 }
 
-
-void LisaFrsCorrelations::Reset_Histo()
-{
-    c4LOG(info, "");
-}
 
 
 void LisaFrsCorrelations::Exec(Option_t* option)
@@ -211,6 +331,9 @@ void LisaFrsCorrelations::Exec(Option_t* option)
 
     const auto & frsHitItem = frsHitArray->at(0); // *should* only be 1 FRS subevent per event
     const auto & travMusicHitItem = travMusicArray->at(0); 
+    
+    //const auto & multihitItem = multihitArray->at(0); // *should* only be 1 FRS subevent per event
+
 
     // FRS WR
     Int_t count_wr = 0;
@@ -274,6 +397,33 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         layer = lisaCalItem.Get_layer_id();
         sum_energy_layer[layer] += energy_LISA;
 
+        //::::::::: E N E R G Y GATED :::::::::::::::
+        int mh_counter = 0;
+        for ( auto const & multihitItem : *multihitArray )
+        {    
+            if (mh_counter > 0) break;
+            if (!FrsGates.empty())
+            {
+                for (int gate = 0; gate < FrsGates.size(); gate++)
+                {  
+                    if (FrsGates[gate]->Passed_ZvsAoQ(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_AoQ_mhtdc()))
+                    {
+                        //h1_energy_layer_ch_gated[gate][layer][xpos][ypos]->Fill(energy_LISA);
+
+                        if(frsHitItem.Get_travmusic_dE() >= frs_config->fMin_dE_travMus_gate && frsHitItem.Get_travmusic_dE() <= frs_config->fMax_dE_travMus_gate)
+                        {
+                            h1_energy_layer_ch_gated[gate][layer][xpos][ypos]->Fill(energy_LISA);
+                        }
+                    }
+                }
+            }
+        
+            mh_counter++;
+        }
+
+        
+
+
     }
     
     //:::::::::::::: WR Time differences ::::::::::::::::::::::::::
@@ -317,7 +467,10 @@ void LisaFrsCorrelations::FinishEvent()
 
 void LisaFrsCorrelations::FinishTask()
 {
-
+    TDirectory* tmp = gDirectory;
+    FairRootManager::Instance()->GetOutFile()->cd();
+    dir_corr->Write();
+    c4LOG(info, "Written LISA analysis histograms to file.");
 }
 
 

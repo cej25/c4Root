@@ -67,13 +67,14 @@ set(SRCS
 ./nearline/fatima/FatimaVmeNearlineSpectra.cxx
 ./nearline/aida/AidaNearlineSpectra.cxx
 ./nearline/frs/FrsNearlineSpectra.cxx
-#./nearline/frs/FrsNearlineTravMusSpectra.cxx
+./nearline/frs/FrsNearlineTravMusSpectra.cxx
 ./nearline/germanium/GermaniumNearlineSpectra.cxx
 ./nearline/bgo/BGONearlineSpectra.cxx
 ./nearline/wr/WhiterabbitCorrelationNearline.cxx
 ./nearline/timemachine/TimeMachineNearline.cxx
 ./nearline/lisa/LisaNearlineSpectra.cxx
 ./nearline/fimp/FimpNearlineSpectra.cxx
+./nearline/lisa/LisaNearlineSpectra.cxx
 
 ## correlations ##
 ./correlations/FrsAidaCorrelations.cxx
@@ -90,7 +91,9 @@ set(SRCS
 ./correlations/bPlastGermaniumCorrelations.cxx
 ./online/onlineCorrelations/bPlastGermaniumCorrelationsOnline.cxx
 #./correlations/FrsBplastCorrelations.cxx
+./online/onlineCorrelations/LisaFrsCorrelationsOnline.cxx
 ./correlations/LisaFrsCorrelations.cxx
+
 )
 
 
