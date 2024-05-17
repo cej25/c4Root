@@ -36,7 +36,8 @@ FrsOnlineSpectra::FrsOnlineSpectra(std::vector<FrsGate*> fg)
     , fNEvents(0)
     , header(nullptr)
     , multihitArray(nullptr) //EG
-{
+{   
+    //Ana = AnalysisTools::GetInstance();
     frs_config = TFrsConfiguration::GetInstance();
     frs = frs_config->FRS();
     mw = frs_config->MW();
@@ -90,7 +91,6 @@ InitStatus FrsOnlineSpectra::Init()
     hitArray = mgr->InitObjectAs<decltype(hitArray)>("FrsHitData");
     c4LOG_IF(fatal, !hitArray, "Branch FrsHitData not found!");
 
-    //::: EG reading multi hit data 
     multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
     c4LOG_IF(fatal, !multihitArray, "Branch FrsHitData not found!");  
 
@@ -126,6 +126,7 @@ InitStatus FrsOnlineSpectra::Init()
     dir_gated_mhtdc = dir_mhtdc->mkdir("Gated 2D");
     
     dir_scalers = dir_frs->mkdir("Scalers");
+
     //dir_mhtdc = dir_frs->mkdir("MHTDC");
     
     // Scalers // -- TODO: Add this name mapping to TFrsConfig or something of the like.

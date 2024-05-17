@@ -4,6 +4,7 @@
 #include "TFrsConfiguration.h"
 #include "FrsGate.h"
 #include "FrsHitData.h"
+#include "AnalysisTools.h"
 
 #include "FairTask.h"
 #include "TH2.h"
@@ -51,6 +52,8 @@ class FrsOnlineSpectra : public FairTask
 
 
     private:
+        //AnalysisTools const* Ana;
+
         TFrsConfiguration const* frs_config;
 
         TFRSParameter* frs;
@@ -79,6 +82,10 @@ class FrsOnlineSpectra : public FairTask
         TCanvas* c_frs_z1_vs_AoQ;
         TCanvas* c_frs_x4_vs_AoQ;
         TCanvas* c_frs_snapshot;
+
+        // testing...
+        TH1* h1_test_scaler;
+        TH2* h2_test_again;
 
         // Histograms for PID:
         // TAC
