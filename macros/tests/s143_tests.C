@@ -117,6 +117,8 @@ void s143_tests()
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     TFimpConfiguration::SetMappingFile(config_path + "/fimp/FIMP_Channel_MAP.txt");
 
+    TFrsConfiguration::SetScalerMappingPath("/u/cjones/c4Root/config/s181/frs/FRS_Scaler_Name_Mapping.txt");
+
 
     // ------------------------------------------------------------------------------------- //
     // *** Read Subsystems - comment out unwanted systems ********************************** //
