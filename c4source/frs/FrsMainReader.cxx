@@ -92,9 +92,6 @@ Bool_t FrsMainReader::Read()
     {       
         uint32_t index = fData->frsmain_data_v830_nI[i];
         uint32_t scaler = fData->frsmain_data_v830_data[i];
-        //scalers_index.emplace_back(fData->frsmain_data_v830_nI[i]);
-        //scalers_main.emplace_back(fData->frsmain_data_v830_data[i]);
-
         auto & entry = v830array->emplace_back();
         entry.SetAll(index, scaler);
     }
