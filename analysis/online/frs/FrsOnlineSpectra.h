@@ -215,11 +215,21 @@ class FrsOnlineSpectra : public FairTask
         int ratio_previous = 100;
         int ratio_previous2 = 100;
 
-        // Rates
-        // Here are the histos to be included in the c4Root nearline:
-
+        // Rates - TGraph? How do they get checked nearline if they're refreshed every hour lol
         // TGraph??
-        // TH1* 
+        TH1* h1_tpc21_rate;
+        TH1* h1_tpc22_rate;
+        TH1* h1_tpc23_rate;
+        TH1* h1_tpc24_rate;
+        TH1* h1_tpc41_rate;
+        TH1* h1_tpc42_rate;
+        // not actually sure which TPCs and SCIs we have but oh well.
+        TH1* h1_sci21_rate;
+        TH1* h1_sci22_rate;
+        TH1* h1_sci41_rate;
+        TH1* h1_sci42_rate;
+        // variables for rate counting (?)
+
 
         // Rates as a function of WR time (every 2s?) for key detectors (Refreshing e.g., every hour):
         // TPCs @S2 (if possible, also @S4)

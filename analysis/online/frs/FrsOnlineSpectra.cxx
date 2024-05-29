@@ -119,9 +119,9 @@ InitStatus FrsOnlineSpectra::Init()
     dir_rates = dir_frs->mkdir("Rate Monitors");
     
     h1_tpat = MakeTH1(dir_scalers, "I", "h1_tpat", "Trigger Pattern", 20, 0, 20, "Trigger Pattern", kRed-3, kBlack);
-    for (int i = 0; i < 66; i++) hScaler_per_s[i] = MakeTH1(dir_scalers, "D", Form("hScaler_per_s_%s", frs_config->ScalerName(i).c_str()), Form("Scaler %s per 1s ", frs_config->ScalerName(i).c_str()), 1000, 0, 1000);
-    for (int i = 0; i < 66; i++) hScaler_per_100ms[i] = MakeTH1(dir_scalers, "D", Form("hScaler_per_100ms_%s", frs_config->ScalerName(i).c_str()), Form("Scaler %s per 0.1s", frs_config->ScalerName(i).c_str()), 4000, 0, 400);
-    for (int i = 0; i < 66; i++) hScaler_per_spill[i] = MakeTH1(dir_scalers, "D", Form("hScaler_per_spill_%s", frs_config->ScalerName(i).c_str()), Form("Scaler %s per spill ", frs_config->ScalerName(i).c_str()), 1000, 0, 1000);
+    for (int i = 0; i < 66; i++) hScaler_per_s[i] = MakeTH1(dir_scalers, "D", Form("hScaler_per_s_%s", frs_config->ScalerName(i).c_str()), Form("Scaler %s per 1s ", frs_config->ScalerName(i).c_str()), 1000, 0., 1000., "Time [s]", kCyan, kViolet);
+    for (int i = 0; i < 66; i++) hScaler_per_100ms[i] = MakeTH1(dir_scalers, "D", Form("hScaler_per_100ms_%s", frs_config->ScalerName(i).c_str()), Form("Scaler %s per 0.1s", frs_config->ScalerName(i).c_str()), 4000, 0, 400, "Time [100 ms]", kCyan, kViolet);
+    for (int i = 0; i < 66; i++) hScaler_per_spill[i] = MakeTH1(dir_scalers, "D", Form("hScaler_per_spill_%s", frs_config->ScalerName(i).c_str()), Form("Scaler %s per spill ", frs_config->ScalerName(i).c_str()), 1000, 0, 1000, "Spill", kCyan, kViolet);
 
     if (frs_config->plot_tac_2d)
     {
@@ -340,9 +340,25 @@ InitStatus FrsOnlineSpectra::Init()
         }
     }
 
-    // Here we should draw any canvases we need, but we don't need to make histos //
+    // :::::: Rates ::::::: //
+    // should these be filled with some raw scaler counter? dunno maybe tho
+    // only produce if we get raw data branch?
+    // are some of these in scalers frs scalers? SCI ?
+    h1_tpc21_rate = MakeTH1(dir_rates, "I", "h1_tpc21_rate", "TPC 21 Rate", 1800, 0, 1800, "Time [2s]", kOrange, kBlue+2);
+    h1_tpc22_rate = MakeTH1(dir_rates, "I", "h1_tpc22_rate", "TPC 22 Rate", 1800, 0, 1800, "Time [2s]", kOrange, kBlue+2);
+    h1_tpc23_rate = MakeTH1(dir_rates, "I", "h1_tpc23_rate", "TPC 23 Rate", 1800, 0, 1800, "Time [2s]", kOrange, kBlue+2);
+    h1_tpc24_rate = MakeTH1(dir_rates, "I", "h1_tpc24_rate", "TPC 24 Rate", 1800, 0, 1800, "Time [2s]", kOrange, kBlue+2);
+    h1_tpc41_rate = MakeTH1(dir_rates, "I", "h1_tpc41_rate", "TPC 41 Rate", 1800, 0, 1800, "Time [2s]", kOrange, kBlue+2);
+    h1_tpc42_rate = MakeTH1(dir_rates, "I", "h1_tpc42_rate", "TPC 42 Rate", 1800, 0, 1800, "Time [2s]", kOrange, kBlue+2);
+    h1_sci21_rate = MakeTH1(dir_rates, "I", "h1_sci21_rate", "SCI 21 Rate", 1800, 0, 1800, "Time [2s]", kOrange, kBlue+2);
+    h1_sci22_rate = MakeTH1(dir_rates, "I", "h1_sci22_rate", "SCI 22 Rate", 1800, 0, 1800, "Time [2s]", kOrange, kBlue+2);
+    h1_sci41_rate = MakeTH1(dir_rates, "I", "h1_sci41_rate", "SCI 41 Rate", 1800, 0, 1800, "Time [2s]", kOrange, kBlue+2);
+    h1_sci42_rate = MakeTH1(dir_rates, "I", "h1_sci42_rate", "SCI 42 Rate", 1800, 0, 1800, "Time [2s]", kOrange, kBlue+2);
 
 
+
+
+    // Here we can draw any canvases we need, but we don't need to make histos /
 
     // ::::: Travel MUSIC - treated separately until FRS sorts themselves out ::::: 
     h1_wr_frs_travmus = MakeTH1(dir_travmus, "I", "h1_wr_frs_travmus", "White Rabbit dT FRS - Travel MUSIC", 500, -3000, -1000);
@@ -766,13 +782,16 @@ void FrsOnlineSpectra::Exec(Option_t* option)
     h1_tpat->Fill(hitItem.Get_tpat());
 
     for (int i = 0; i < 32; i++)
-    {
-        hScaler_per_s[i]->AddBinContent(hitItem.Get_ibin_for_s(), hitItem.Get_increase_sc_temp_main(i));
-        hScaler_per_s[i+32]->AddBinContent(hitItem.Get_ibin_for_s(), hitItem.Get_increase_sc_temp_user(i));
-        hScaler_per_100ms[i]->AddBinContent(hitItem.Get_ibin_for_100ms(), hitItem.Get_increase_sc_temp_main(i));
-        hScaler_per_100ms[i+32]->AddBinContent(hitItem.Get_ibin_for_100ms(), hitItem.Get_increase_sc_temp_user(i));
-        hScaler_per_spill[i]->AddBinContent(hitItem.Get_ibin_for_spill(), hitItem.Get_increase_sc_temp_main(i));
-        hScaler_per_spill[i+32]->AddBinContent(hitItem.Get_ibin_for_spill(), hitItem.Get_increase_sc_temp_user(i));
+    {   
+        //std::cout << "i: " << i << " - ibin for s: " << hitItem.Get_ibin_for_s() << " - sc_temp_main: " << hitItem.Get_increase_sc_temp_main(i) << " - sc_temp_user: " << hitItem.Get_increase_sc_temp_user(i) <<std::endl;
+
+        // CEJ: swapped main and user (hopefully correct) 29/05/24
+        hScaler_per_s[i]->AddBinContent(hitItem.Get_ibin_for_s(), hitItem.Get_increase_sc_temp_user(i));
+        hScaler_per_s[i+32]->AddBinContent(hitItem.Get_ibin_for_s(), hitItem.Get_increase_sc_temp_main(i));
+        hScaler_per_100ms[i]->AddBinContent(hitItem.Get_ibin_for_100ms(), hitItem.Get_increase_sc_temp_user(i));
+        hScaler_per_100ms[i+32]->AddBinContent(hitItem.Get_ibin_for_100ms(), hitItem.Get_increase_sc_temp_main(i));
+        hScaler_per_spill[i]->AddBinContent(hitItem.Get_ibin_for_spill(), hitItem.Get_increase_sc_temp_user(i));
+        hScaler_per_spill[i+32]->AddBinContent(hitItem.Get_ibin_for_spill(), hitItem.Get_increase_sc_temp_main(i));
     }
 
     Int_t ratio_product = int(0.95 * hitItem.Get_increase_sc_temp2() + 0.05 * ratio_previous);
