@@ -43,7 +43,14 @@ class TFrsConfiguration
         std::string GetConfigPath() const;
         std::string ScalerName(int index) const;
 
-        // public should allow access with arrow operator?
+        // Unpacking / Sorting
+        // These should be set after reading some mapping, change later.
+        int tpc_s2_geo = 12;
+        int tpc_s3_geo = 8;
+        int tpc_s4_geo = 8;
+
+
+        // Analysis / Histograms
         static Double_t fMin_Z, fMax_Z;
         static Double_t fMin_AoQ, fMax_AoQ;
         static Double_t fMin_x2, fMax_x2;
@@ -76,14 +83,8 @@ class TFrsConfiguration
         static void Set_dE_Music2_range(Double_t, Double_t);
         static void Set_dE_travMusic_gate(Double_t, Double_t);
 
-
-        //travMUSIC
         static Double_t fMin_dE_travMusic, fMax_dE_travMusic;
         static void Set_dE_travMusic_range(Double_t, Double_t);
-
-
-        // need to be able to add 1 or multiple PIDs from different filetypes
-
 
         void Plot_TAC_1D(bool option) { plot_tac_1d = option; }
         void Plot_TAC_2D(bool option) { plot_tac_2d = option; }
@@ -94,6 +95,9 @@ class TFrsConfiguration
         bool plot_tac_2d = true;
         bool plot_mhtdc_1d = true;
         bool plot_mhtdc_2d = true;
+
+
+
         
 
     private:
