@@ -459,6 +459,8 @@ void FrsCal2Hit::Exec(Option_t* option)
     // we should extract everything from tpc.....
     auto const & tpcCalItem = tpcCalArray->at(0);
 
+    // calculate "rates" for TPC here perhaps
+
     b_tpc_xy = tpcCalItem.Get_b_tpc_xy();
     
     if (b_tpc_xy[4] && b_tpc_xy[5])

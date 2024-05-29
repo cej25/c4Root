@@ -13,7 +13,8 @@ class FrsTPCCalItem : public TObject
     public:
         FrsTPCCalItem();
 
-        void SetAll(Bool_t* b_tpc_xy,
+        void SetAll(Float_t* tpc_x,
+                    Bool_t* b_tpc_xy,
                     Int_t** tpc_csum, // [7][4]
                     Float_t tpc_angle_x_s2_foc_21_22,
                     Float_t tpc_angle_y_s2_foc_21_22,
@@ -48,6 +49,7 @@ class FrsTPCCalItem : public TObject
 
         void Reset();
 
+        Float_t* Get_tpc_x() const; // using for rates, not sure if optimal
         Bool_t* Get_b_tpc_xy() const;
         Int_t** Get_tpc_csum() const;
         Float_t Get_tpc_x_s2_foc_21_22() const;
@@ -87,7 +89,7 @@ class FrsTPCCalItem : public TObject
 
         // members
         Bool_t fb_tpc_de[7]; // not used yet, tpc_de not even passed along
-        Float_t ftpc_x[7]; // used by frs for plotting and sc31
+        Float_t* ftpc_x; // [7]; // used by frs for plotting and sc31
         Float_t ftpc_y[7]; // used by frs for plotting and sc31
         Bool_t* fb_tpc_xy; // [7]
         Int_t** ftpc_csum; //[7][4]
@@ -125,6 +127,11 @@ class FrsTPCCalItem : public TObject
 
 
 };
+
+inline Float_t* FrsTPCCalItem::Get_tpc_x() const
+{
+    return ftpc_x;
+}
 
 inline Bool_t* FrsTPCCalItem::Get_b_tpc_xy() const
 {
