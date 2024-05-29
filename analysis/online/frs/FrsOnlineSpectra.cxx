@@ -32,10 +32,11 @@ FrsOnlineSpectra::FrsOnlineSpectra(): FrsOnlineSpectra("FrsOnlineSpectra")
 
 FrsOnlineSpectra::FrsOnlineSpectra(std::vector<FrsGate*> fg)
     : FairTask()
-    , hitArray(nullptr)
     , fNEvents(0)
     , header(nullptr)
-    , multihitArray(nullptr) //EG
+    , tpcCalArray(nullptr)
+    , hitArray(nullptr)
+    , multihitArray(nullptr)
 {
     exp_config = TExperimentConfiguration::GetInstance();
     frs_config = TFrsConfiguration::GetInstance();
@@ -54,10 +55,11 @@ FrsOnlineSpectra::FrsOnlineSpectra(std::vector<FrsGate*> fg)
 
 FrsOnlineSpectra::FrsOnlineSpectra(const TString& name, Int_t iVerbose)
     : FairTask(name, iVerbose)
-    , hitArray(nullptr)
     , fNEvents(0)
     , header(nullptr)
-    , multihitArray(nullptr) //EG
+    , tpcCalArray(nullptr)
+    , hitArray(nullptr)
+    , multihitArray(nullptr)
 {
     frs_config = TFrsConfiguration::GetInstance();
     exp_config = TExperimentConfiguration::GetInstance();
@@ -80,6 +82,9 @@ InitStatus FrsOnlineSpectra::Init()
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
+
+    tpcCalArray = mgr->InitObjectAs<decltype(tpcCalArray)>("FrsTPCCalData");
+    c4LOG_IF(fatal, !tpcCalArray, "Branch FrsTPCCalData not found!");
 
     hitArray = mgr->InitObjectAs<decltype(hitArray)>("FrsHitData");
     c4LOG_IF(fatal, !hitArray, "Branch FrsHitData not found!");
@@ -341,19 +346,16 @@ InitStatus FrsOnlineSpectra::Init()
     }
 
     // :::::: Rates ::::::: //
-    // should these be filled with some raw scaler counter? dunno maybe tho
-    // only produce if we get raw data branch?
-    // are some of these in scalers frs scalers? SCI ?
-    h1_tpc21_rate = MakeTH1(dir_rates, "I", "h1_tpc21_rate", "TPC 21 Rate", 1800, 0, 1800, "Time [2s]", kOrange, kBlue+2);
-    h1_tpc22_rate = MakeTH1(dir_rates, "I", "h1_tpc22_rate", "TPC 22 Rate", 1800, 0, 1800, "Time [2s]", kOrange, kBlue+2);
-    h1_tpc23_rate = MakeTH1(dir_rates, "I", "h1_tpc23_rate", "TPC 23 Rate", 1800, 0, 1800, "Time [2s]", kOrange, kBlue+2);
-    h1_tpc24_rate = MakeTH1(dir_rates, "I", "h1_tpc24_rate", "TPC 24 Rate", 1800, 0, 1800, "Time [2s]", kOrange, kBlue+2);
-    h1_tpc41_rate = MakeTH1(dir_rates, "I", "h1_tpc41_rate", "TPC 41 Rate", 1800, 0, 1800, "Time [2s]", kOrange, kBlue+2);
-    h1_tpc42_rate = MakeTH1(dir_rates, "I", "h1_tpc42_rate", "TPC 42 Rate", 1800, 0, 1800, "Time [2s]", kOrange, kBlue+2);
-    h1_sci21_rate = MakeTH1(dir_rates, "I", "h1_sci21_rate", "SCI 21 Rate", 1800, 0, 1800, "Time [2s]", kOrange, kBlue+2);
-    h1_sci22_rate = MakeTH1(dir_rates, "I", "h1_sci22_rate", "SCI 22 Rate", 1800, 0, 1800, "Time [2s]", kOrange, kBlue+2);
-    h1_sci41_rate = MakeTH1(dir_rates, "I", "h1_sci41_rate", "SCI 41 Rate", 1800, 0, 1800, "Time [2s]", kOrange, kBlue+2);
-    h1_sci42_rate = MakeTH1(dir_rates, "I", "h1_sci42_rate", "SCI 42 Rate", 1800, 0, 1800, "Time [2s]", kOrange, kBlue+2);
+    h1_tpc21_rate = MakeTH1(dir_rates, "I", "h1_tpc21_rate", "TPC 21 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
+    h1_tpc22_rate = MakeTH1(dir_rates, "I", "h1_tpc22_rate", "TPC 22 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
+    h1_tpc23_rate = MakeTH1(dir_rates, "I", "h1_tpc23_rate", "TPC 23 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
+    h1_tpc24_rate = MakeTH1(dir_rates, "I", "h1_tpc24_rate", "TPC 24 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
+    h1_tpc41_rate = MakeTH1(dir_rates, "I", "h1_tpc41_rate", "TPC 41 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
+    h1_tpc42_rate = MakeTH1(dir_rates, "I", "h1_tpc42_rate", "TPC 42 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
+    // h1_sci21_rate = MakeTH1(dir_rates, "I", "h1_sci21_rate", "SCI 21 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
+    // h1_sci22_rate = MakeTH1(dir_rates, "I", "h1_sci22_rate", "SCI 22 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
+    // h1_sci41_rate = MakeTH1(dir_rates, "I", "h1_sci41_rate", "SCI 41 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
+    // h1_sci42_rate = MakeTH1(dir_rates, "I", "h1_sci42_rate", "SCI 42 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
 
 
 
@@ -615,9 +617,10 @@ void FrsOnlineSpectra::Snapshot_Histo()
 
 void FrsOnlineSpectra::Exec(Option_t* option)
 {   
-    int64_t trav_mus_wr = 0;
+    int64_t frs_wr = 0; int64_t trav_mus_wr = 0;
     if (hitArray->size() <= 0) return;
     auto const & hitItem  = hitArray->at(0); // should only ever be 1 frs item per event, so take first
+    frs_wr = hitItem.Get_wr_t();
     trav_mus_wr = hitItem.Get_wr_travmus();
 
     // :::::::::: TAC ::::::::::::: //
@@ -812,6 +815,42 @@ void FrsOnlineSpectra::Exec(Option_t* option)
         hScaler_per_spill[i]->SetBinContent(hitItem.Get_ibin_clean_for_spill(), 0);
         hScaler_per_spill[i+32]->SetBinContent(hitItem.Get_ibin_clean_for_spill(), 0);
     }
+
+    auto const & tpcCalItem = tpcCalArray->at(0);
+    tpc_x = tpcCalItem.Get_tpc_x();
+
+    int64_t wr_dt = (frs_wr - saved_frs_wr) / 1e9; // conv to s
+
+    if (wr_dt < 2 && saved_frs_wr != 0)
+    {
+        for (int i = 0; i < 6; i++)
+        {
+            if (tpc_x[i]) tpc_counters[i]++;
+        }
+    }
+    else 
+    {
+        for (int i = 0; i < 6; i++)
+        {
+            tpc_rates[i] = tpc_counters[i] / wr_dt;
+            tpc_counters[i] = 0;
+
+            if (i == 0) h1_tpc21_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
+            else if (i == 1) h1_tpc22_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
+            else if (i == 2) h1_tpc23_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
+            else if (i == 3) h1_tpc24_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
+            else if (i == 4) h1_tpc41_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
+            else if (i == 5) h1_tpc42_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
+
+        }
+
+        saved_frs_wr = frs_wr;
+
+        tpc_running_count++;
+
+        if (tpc_running_count == 1800) tpc_running_count = 0;
+    }
+    
 
     fNEvents += 1;
 }

@@ -5,6 +5,7 @@
 #include "TExperimentConfiguration.h"
 #include "FrsGate.h"
 #include "FrsHitData.h"
+#include "FrsTPCCalData.h"
 #include "AnalysisTools.h"
 
 #include "FairTask.h"
@@ -64,7 +65,7 @@ class FrsOnlineSpectra : public FairTask
 
         std::vector<FrsGate*> FrsGates;
 
-        //TClonesArray* fHitFrsArray; // array with hit items
+        std::vector<FrsTPCCalItem> const* tpcCalArray;
         std::vector<FrsHitItem> const* hitArray;
         std::vector<FrsMultiHitItem> const* multihitArray; //EG
 
@@ -229,6 +230,14 @@ class FrsOnlineSpectra : public FairTask
         TH1* h1_sci41_rate;
         TH1* h1_sci42_rate;
         // variables for rate counting (?)
+
+        Float_t* tpc_x;
+        Float_t tpc_counters[7] = {0};
+        Float_t tpc_rates[7] = {0};
+        Float_t tpc_21_counter = 0;
+        Float_t tpc_21_rate = 0;
+        int tpc_running_count = 0;
+        int64_t saved_frs_wr = 0;
 
 
         // Rates as a function of WR time (every 2s?) for key detectors (Refreshing e.g., every hour):
