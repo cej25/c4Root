@@ -10,8 +10,8 @@
 // Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/ BUT it has to be converted
 extern "C"
 {
-    //#include "../../config/pareeksha/frs/setup_s092_005_2024_conv.C"
-    #include "../../config/pareeksha/frs/setup_s092_005_2024_conv.C"
+    #include "../../config/pareeksha/frs/setup_s092_010_2024_conv.C"
+    //#include "../../config/pareeksha/frs/setup_s092_0005_2024_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -26,7 +26,7 @@ typedef struct EXT_STR_h101_t
 
 
 } EXT_STR_h101;
-
+\
 void elisa_pareeksha_online()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
@@ -61,7 +61,7 @@ void elisa_pareeksha_online()
 
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0167_*.lmd";  //data with only lisa
-    //TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0074_00*.lmd"; //22 good run for statistics, frs, trav, lisa in ts
+    //TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0074_00*.lmd"; //74,22 good run for statistics, frs, trav, lisa in ts
 
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/";
@@ -70,7 +70,7 @@ void elisa_pareeksha_online()
 
     //:::::::Create online run
     Int_t refresh = 10; // Refresh rate for online histograms
-    Int_t port = 2222;
+    Int_t port = 5000;
      
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -229,8 +229,8 @@ void elisa_pareeksha_online()
     TLisaConfiguration::SetTracesRange(0,20);
     TLisaConfiguration::SetTracesBin(2000);
     //TLisaConfiguration::SetTracesBin(5000); //for Chens positive signals
-    TLisaConfiguration::SetAmplitudeMin(10);
-    TLisaConfiguration::SetAmplitudeMax(9000);
+    TLisaConfiguration::SetAmplitudeMin(1000);
+    TLisaConfiguration::SetAmplitudeMax(15000);
     //TLisaConfiguration::SetAmplitudeMax(15000); //for Chens positiv signals
 
 

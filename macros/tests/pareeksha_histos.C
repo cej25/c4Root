@@ -58,8 +58,8 @@ void pareeksha_histos()
     TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/run_0074_test.root";  
     
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/";
-    TString outputFilename = outputpath + "run_0074_histos.root";
+    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/fragments_16may/";
+    TString outputFilename = outputpath + "run_0074_new_GM.root";
 
 
     FairRunAna* run = new FairRunAna();
@@ -90,12 +90,16 @@ void pareeksha_histos()
     //:::: G A T E S - Initialise 
 
     std::vector<FrsGate*> fg;
-    FrsGate* cut_1 = new FrsGate("Nb_1", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/cut_Z_AoQ_1.root");
-    FrsGate* cut_2 = new FrsGate("Nb_2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/cut_Z_AoQ_2.root");
+    FrsGate* cut_0 = new FrsGate("0", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/cut_Z_AoQ_0.root");
+    FrsGate* cut_1 = new FrsGate("1", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/cut_Z_AoQ_1.root");
+    FrsGate* cut_2 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/cut_Z_AoQ_2.root");
+    FrsGate* cut_3 = new FrsGate("3", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/cut_Z_AoQ_3.root");
+    
 
+    fg.emplace_back(cut_0);
     fg.emplace_back(cut_1);
     fg.emplace_back(cut_2);
-
+    fg.emplace_back(cut_3);
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::: C O R R E L A T I O N S - Initialise 
   

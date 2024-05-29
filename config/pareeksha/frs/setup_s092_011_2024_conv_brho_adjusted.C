@@ -1,4 +1,4 @@
-// initially copied from setup_s092_005_2024.C
+// initially copied from setup_s092_008_2024.C
 
 #include "Riostream.h"
 
@@ -129,14 +129,23 @@ void setup(TFRSParameter* frs,
   id->mhtdc_length_sc2141 = 126.*0.299792458;//125.207*0.299792458;//37.204244; // 36.68196; // SCI 21-41 s450
   id->mhtdc_length_sc2241 = 123.1*0.299792458;//122.677*0.299792458;//36.850489; //35.227152; // SCI 22-41 s450 208Pb
   //id->mhtdc_length_sc2142 = 128.2*0.299792458;	
-  id->mhtdc_vel_a_music41[0]= -16.788;//526.137;//6459.55; //s496 Xe 210512
-  id->mhtdc_vel_a_music41[1]= 532.337;//1241.28;//-11135.1;
-  id->mhtdc_vel_a_music41[2]= 72.824;//0.0;//5581.45;
+  id->mhtdc_vel_a_music41[0]= -16.788;//Suraj
+  id->mhtdc_vel_a_music41[1]= 532.337;//Suraj
+  id->mhtdc_vel_a_music41[2]= 72.824;//Suraj
   id->mhtdc_vel_a_music41[3]=0.0;
-  id->mhtdc_vel_a_music42[0]= 0.818;//372.998;//7522.75; //s496 Xe 210512
-  id->mhtdc_vel_a_music42[1]= 482.141;//1329.1;//-13599.0;
-  id->mhtdc_vel_a_music42[2]= 94.977;//0.0;//7039.16;
+  id->mhtdc_vel_a_music42[0]= 0.818;//Suraj
+  id->mhtdc_vel_a_music42[1]= 482.141;//Suraj
+  id->mhtdc_vel_a_music42[2]= 94.977;//Suraj 
   id->mhtdc_vel_a_music42[3]=0.0;
+  /*id->mhtdc_vel_a_music41[0]= -18.223;//Daria
+  id->mhtdc_vel_a_music41[1]= 538.500;//Daria
+  id->mhtdc_vel_a_music41[2]= 66.170;//Daria
+  id->mhtdc_vel_a_music41[3]=0.0;
+  id->mhtdc_vel_a_music42[0]= -5.947;//Daria
+  id->mhtdc_vel_a_music42[1]= 514.487;//Daria
+  id->mhtdc_vel_a_music42[2]= 56.933;//Daria
+  id->mhtdc_vel_a_music42[3]=0.0;*/
+
   id->mhtdc_offset_z_music41=0.0; //s526 107Ag ..earlier 10.7
   id->mhtdc_offset_z_music42=0.0;
 
@@ -1169,4 +1178,3 @@ void setup(TFRSParameter* frs,
   cout << "Focus distance S4: " << frs->dist_focS4 << endl;
   cout << "Setup done " << endl;
 }
-
