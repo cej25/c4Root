@@ -677,13 +677,11 @@ void LisaOnlineSpectra::Exec(Option_t* option)
 
         }
 
-
-
     }
 
 
     //c4LOG(info, "::::::::::END LOOP::::::::::::" << " Layer number :" << layer_number);
-
+/*
     //::::::::: Fill Traces ALL ::::::::::::::
     for (int i = 0; i < trace.size(); i++)
     {
@@ -691,7 +689,7 @@ void LisaOnlineSpectra::Exec(Option_t* option)
         //c4LOG(info, "layer: " << layer << " x max: " << xmax << " ymax: " << ymax);
 
     }
-
+*/
     //c4LOG(info, " layer : "<<layer << " multiplicity layer : "<<multiplicity[layer]);
     if ( wr_time == 0 ) return;
 
@@ -765,7 +763,7 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     } 
     */
 
-   //working version - to merge together in a smarter way pls 
+   //working version - to merge together in a smarter way pls ...ok sorry
     if (fNEvents % 100 == 0 && wr_time != 0 && sum_energy_layer[0] !=0 )
     {
         hG_energy_layer_ch_vs_time[0][0][0]->SetPoint(en_count2, wr_r, energy_ch[0][0][0]);

@@ -50,6 +50,7 @@ class FrsNearlineSpectra : public FairTask
 
         Int_t fNEvents;
         EventHeader* header;
+        int multihit_counter = 0;
         
         std::vector<FrsHitItem> const* hitArray;
         std::vector<FrsMultiHitItem> const* multihitArray;
