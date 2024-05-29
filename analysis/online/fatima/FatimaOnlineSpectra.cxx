@@ -11,6 +11,7 @@
 #include "FatimaTwinpeaksCalData.h"
 
 #include "c4Logger.h"
+#include "AnalysisTools.h"
 
 #include "TCanvas.h"
 #include "TClonesArray.h"
@@ -92,9 +93,13 @@ InitStatus FatimaOnlineSpectra::Init()
     h1_fatima_slowToT.resize(number_detectors);
     for (int ihist = 0; ihist < number_detectors; ihist++){
         c_fatima_slowToT->cd(ihist+1);
+
+        h1_fatima_slowToT[ihist] = MakeTH1(dir_fatima_slowToT, "F", Form("h1_fatima_slowToT_%d",detectors.at(ihist)), Form("Fatima slow ToT detector %d",detectors.at(ihist)),fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high, "ToT (ns)", kSpring, kBlue+2);
+
+        /*
         h1_fatima_slowToT[ihist] = new TH1F(Form("h1_fatima_slowToT_%d",detectors.at(ihist)),Form("Fatima slow ToT detector %d",detectors.at(ihist)),fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high);
         h1_fatima_slowToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
-        h1_fatima_slowToT[ihist]->SetFillColor(kSpring);
+        h1_fatima_slowToT[ihist]->SetFillColor(kSpring);*/
         h1_fatima_slowToT[ihist]->Draw();
     }
     c_fatima_slowToT->cd(0);

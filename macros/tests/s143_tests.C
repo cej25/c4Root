@@ -56,7 +56,8 @@ void s143_tests()
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     //TString filename = "/u/cjones/lustre/gamma/s092_s143_files/ts/run_0022_0001.lmd";
     //TString filename = "~/fimp/*.lmd";
-    TString filename = "trans://lxg1257";
+    //TString filename = "trans://lxg1257";
+    TString filename = "/u/cjones/run_0163_0007.lmd";
     TString outputFilename = "travMUSIC_test.root";	
 
     // Create online run
@@ -116,6 +117,8 @@ void s143_tests()
     //TFatimaTwinpeaksConfiguration::SetPromptFlashCutFile(config_path + "/fatima/fatima_prompt_flash.root");
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     TFimpConfiguration::SetMappingFile(config_path + "/fimp/FIMP_Channel_MAP.txt");
+
+    TFrsConfiguration::SetScalerMappingPath("/u/cjones/c4Root/config/s181/frs/FRS_Scaler_Name_Mapping.txt");
 
 
     // ------------------------------------------------------------------------------------- //

@@ -12,6 +12,7 @@
 class TClonesArray;
 class EventHeader;
 class TCanvas;
+class TH1;
 class TH1F;
 class TH2F;
 class TDirectory;
@@ -152,7 +153,8 @@ class FatimaOnlineSpectra : public FairTask
         int number_reference_detectors = 0;
         
         // Histograms 
-        std::vector<TH1F*> h1_fatima_slowToT;
+        std::vector<TH1*> h1_fatima_slowToT;
+        //std::vector<TH1F*> h1_fatima_slowToT;
         std::vector<TH1F*> h1_fatima_fastToT;
         std::vector<TH1F*> h1_fatima_energy;
         std::vector<TH1F*> h1_fatima_abs_time;

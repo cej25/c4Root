@@ -171,27 +171,49 @@ void FrsCal2Hit::Exec(Option_t* option)
 
     if (wr_t == 0) return; // ACTUAL no whiterabbit
 
+    // does this only get the scaler once atm?
     if (scaler_check_first_event == 1)
+    {
+        std::cout << "first event: " << std::endl;
+        std::cout << "main scalers: " << std::endl;
+        for (auto const & mainScalerItem : *mainScalerArray)
+        {
+            uint32_t index = mainScalerItem.Get_index();
+            uint32_t scaler = mainScalerItem.Get_scaler();
+            sc_main_initial[index-1] = scaler; // index -1? test
+            sc_main_previous[index-1] = scaler;
+            sc_main_current[index-1] = scaler;
+            std::cout << "index: " << index << " scaler: " << scaler << std::endl;
+        }
+
+        std::cout << "user scalers: " << std::endl;
+        for (auto const & userScalerItem : *userScalerArray)
+        {
+            uint32_t index = userScalerItem.Get_index();
+            uint32_t scaler = userScalerItem.Get_scaler();
+            sc_user_initial[index-1] = scaler; // index -1? test
+            sc_user_previous[index-1] = scaler;
+            sc_user_current[index-1] = scaler;
+            std::cout << "index: " << index << " scaler: " << scaler << std::endl;
+        }
+
+        scaler_check_first_event = 0;
+    }
+    else
     {
         for (auto const & mainScalerItem : *mainScalerArray)
         {
             uint32_t index = mainScalerItem.Get_index();
             uint32_t scaler = mainScalerItem.Get_scaler();
-            sc_main_initial[index] = scaler; // index -1? test
-            sc_main_previous[index] = scaler;
-            sc_main_current[index] = scaler;
+            sc_main_current[index-1] = scaler;
         }
 
         for (auto const & userScalerItem : *userScalerArray)
         {
             uint32_t index = userScalerItem.Get_index();
             uint32_t scaler = userScalerItem.Get_scaler();
-            sc_user_initial[index] = scaler; // index -1? test
-            sc_user_previous[index] = scaler;
-            sc_user_current[index] = scaler;
+            sc_user_current[index-1] = scaler;
         }
-
-        scaler_check_first_event = 0;
     }
 
     time_in_ms = sc_main_current[scaler_ch_1kHz] - sc_main_initial[scaler_ch_1kHz];
@@ -214,7 +236,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         increase_sc_temp_user[k] = sc_user_current[k] - sc_user_previous[k];
     }
 
-    if (increase_sc_temp_user[0] != 0) // not sure how the go4 is dealing with this zero dividing
+    if (increase_sc_temp_user[0] != 0 && increase_sc_temp_user[6] != 0) // not sure how the go4 is dealing with this zero dividing
     {
         increase_sc_temp2 = 100 * increase_sc_temp_user[1] / increase_sc_temp_user[0];
         increase_sc_temp3 = 100 * increase_sc_temp_user[5] / increase_sc_temp_user[6];

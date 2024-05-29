@@ -64,6 +64,7 @@
 #pragma link C++ class TBGOTwinpeaksConfiguration+;
 #pragma link C++ class TbPlastConfiguration+;
 #pragma link C++ class TCorrelationsConfiguration+;
+#pragma link C++ class TExperimentConfiguration+;
 #pragma link C++ class TBB7VmeConfiguration+;
 #pragma link C++ class TLisaConfiguration+;
 #pragma link C++ class TFimpConfiguration+;

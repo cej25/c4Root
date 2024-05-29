@@ -16,6 +16,8 @@ class TFrsConfiguration
     public:
         static TFrsConfiguration const* GetInstance();
         static void Create();
+        static void SetScalerMappingPath(std::string fp) { scaler_mapping_file = fp; }
+        //static void SetExpStartTime();
         static void SetParameters(TFRSParameter*,
                         TMWParameter*,
                         TTPCParameter*,
@@ -39,6 +41,7 @@ class TFrsConfiguration
         TMRTOFMSParameter* MRTOF() const;
         TRangeParameter* Range() const;
         std::string GetConfigPath() const;
+        std::string ScalerName(int index) const;
 
         // public should allow access with arrow operator?
         static Double_t fMin_Z, fMax_Z;
@@ -82,15 +85,24 @@ class TFrsConfiguration
         // need to be able to add 1 or multiple PIDs from different filetypes
 
 
-        void Plot1D(bool option) { plot_1d = option; }
+        void Plot_TAC_1D(bool option) { plot_tac_1d = option; }
+        void Plot_TAC_2D(bool option) { plot_tac_2d = option; }
+        void Plot_MHTDC_1D(bool option) { plot_mhtdc_1d = option; }
+        void Plot_MHTDC_2D(bool option) { plot_mhtdc_1d = option; }
 
-        bool plot_1d = true;
+        bool plot_tac_1d = true;
+        bool plot_tac_2d = true;
+        bool plot_mhtdc_1d = true;
+        bool plot_mhtdc_2d = true;
         
 
     private:
 
         static std::string config_path;
         TFrsConfiguration();
+
+        static std::string scaler_mapping_file;
+        void ReadScalerNames();
 
         static TFrsConfiguration* instance;
 
@@ -108,7 +120,7 @@ class TFrsConfiguration
         // Gates
 
         // Mappings
-        char scaler_name_map[66][256];
+        std::string scaler_name[66];
 };
 
 inline TFrsConfiguration const* TFrsConfiguration::GetInstance()
@@ -173,6 +185,11 @@ inline TMRTOFMSParameter* TFrsConfiguration::MRTOF() const
 inline TRangeParameter* TFrsConfiguration::Range() const
 {
     return frange;
+}
+
+inline std::string TFrsConfiguration::ScalerName(int index) const
+{
+    return scaler_name[index];
 }
 
 inline std::string TFrsConfiguration::GetConfigPath() const
