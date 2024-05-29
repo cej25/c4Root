@@ -1,18 +1,82 @@
-// initially copied from setup_s092_005_2024.C
+// initially copied from setup_s092_009_2024.C
 
 #include "Riostream.h"
 
-void setup(TFRSParameter* frs,
-        TMWParameter* mw,
-        TTPCParameter* tpc,
-        TMUSICParameter* music,
-        TLABRParameter* labr,
-        TSCIParameter* sci,
-        TIDParameter* id,
-        TSIParameter* si,
-        TMRTOFMSParameter* mrtof,
-        TRangeParameter* range)
+void setup_s092_010_2024()
 {
+  // look up analysis object and all parameters
+
+  TFRSAnalysis* an = dynamic_cast<TFRSAnalysis*> (TGo4Analysis::Instance());
+  if (an==0) {
+    cout << "!!!  Script should be run in FRS analysis" << endl;
+    return;
+  }
+
+  TFRSParameter* frs = dynamic_cast<TFRSParameter*> (an->GetParameter("FRSPar"));
+  if (frs==0) {
+    cout << "!!!  Parameter FRSPar not found" << endl;
+    return;
+  }
+
+  TMWParameter* mw = dynamic_cast<TMWParameter*> (an->GetParameter("MWPar"));
+  if (mw==0) {
+    cout << "!!!  Parameter MWPar not found" << endl;
+    return;
+  }
+
+  TMUSICParameter* music = dynamic_cast<TMUSICParameter*> (an->GetParameter("MUSICPar"));
+  if (music==0) {
+    cout << "!!!  Parameter MUSICPar not found" << endl;
+    return;
+  }
+
+  TSCIParameter* sci = dynamic_cast<TSCIParameter*> (an->GetParameter("SCIPar"));
+  if (sci==0) {
+    cout << "!!!  Parameter SCIPar not found" << endl;
+return;
+  }
+
+  TIDParameter* id = dynamic_cast<TIDParameter*> (an->GetParameter("IDPar"));
+  if (id==0) {
+    cout << "!!!  Parameter IDPar not found" << endl;
+    return;
+  }
+
+  TTPCParameter* tpc = dynamic_cast<TTPCParameter*> (an->GetParameter("TPCPar"));
+  if (tpc==0) {
+    cout << "!!!  Parameter TPCPar not found" << endl;
+    return;
+  }
+
+  TLABRParameter* labr = dynamic_cast<TLABRParameter*> (an->GetParameter("LABRPar"));
+  if (labr==0) {
+    cout << "!!!  Parameter LABRPar not found" << endl;
+    return;
+  }
+
+  TSIParameter* si = dynamic_cast<TSIParameter*> (an->GetParameter("SIPar"));
+  if (si==0) {
+    cout << "!!!  Parameter SIPar not found" << endl;
+    return;
+  }
+
+  TMRTOFMSParameter* mrtof = dynamic_cast<TMRTOFMSParameter*> (an->GetParameter("MRTOFMSPar"));
+  if (mrtof==0) {
+    cout << "!!!  Parameter MR-TOF-MSPar not found" << endl;
+    return;
+  }
+  
+  TRangeParameter* range = dynamic_cast<TRangeParameter*> (an->GetParameter("RangePar"));
+  if (range==0) {
+    cout << "!!!  Parameter RangePar not found" << endl;
+    return;
+  } 
+ /*
+  TModParameter* ElecMod = dynamic_cast<TModParameter*>(an->GetParameter("ModPar"));
+   */
+  cout << endl << "setup script started" << endl;
+
+  // For the momemnt, we put 1 m for radius,
   // because we get brho from control system.
   frs->rho0[0]   = 1.; //TA-S2
   frs->rho0[1]   = 1.; //S2-S4
@@ -1064,7 +1128,7 @@ void setup(TFRSParameter* frs,
      {    0., 4000.},
      {40000., 4000.},
      {40000.,    0.}};
-  //an->SetupPolyCond("cID_dEToF", 4, my_cID_dEToF_points);
+  an->SetupPolyCond("cID_dEToF", 4, my_cID_dEToF_points);
 
   //======
   //LaBr
@@ -1169,4 +1233,3 @@ void setup(TFRSParameter* frs,
   cout << "Focus distance S4: " << frs->dist_focS4 << endl;
   cout << "Setup done " << endl;
 }
-

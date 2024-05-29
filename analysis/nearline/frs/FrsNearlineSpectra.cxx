@@ -589,8 +589,12 @@ void FrsNearlineSpectra::Exec(Option_t* option)
         }
     }
     
+    int a = 0;
+
     for (auto const & multihitItem : *multihitArray)
     {    
+        if (a == 0) multihit_counter++;
+
         // Z1 vs Time
         if (multihitItem.Get_ID_z_mhtdc() > 0 && FRS_time_mins > 0) h2_Z1_vs_T_mhtdc->Fill(FRS_time_mins, multihitItem.Get_ID_z_mhtdc());
         // AoQ vs Time
@@ -738,6 +742,9 @@ void FrsNearlineSpectra::Exec(Option_t* option)
             }
         }
     } // multihitArray
+
+fNEvents++;
+
 }
 
 
@@ -755,7 +762,9 @@ void FrsNearlineSpectra::FinishTask()
         dir_frs->Write();
         gDirectory = tmp;
         c4LOG(info, "Written FRS analysis histograms to file.");
+        c4LOG(info, "Multi Hit events from FRS : " << multihit_counter << " FRS events : " << fNEvents );
     }
+    
 }
 
 ClassImp(FrsNearlineSpectra)
