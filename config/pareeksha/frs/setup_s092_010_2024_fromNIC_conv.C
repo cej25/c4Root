@@ -1,4 +1,4 @@
-// initially copied from setup_s092_005_2024.C
+// initially copied from setup_s092_009_2024.C
 
 #include "Riostream.h"
 
@@ -1169,4 +1169,3 @@ void setup(TFRSParameter* frs,
   cout << "Focus distance S4: " << frs->dist_focS4 << endl;
   cout << "Setup done " << endl;
 }
-

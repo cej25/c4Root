@@ -1,18 +1,82 @@
-// initially copied from setup_s092_005_2024.C
+// initially copied from setup_s092_008_2024.C
 
 #include "Riostream.h"
 
-void setup(TFRSParameter* frs,
-        TMWParameter* mw,
-        TTPCParameter* tpc,
-        TMUSICParameter* music,
-        TLABRParameter* labr,
-        TSCIParameter* sci,
-        TIDParameter* id,
-        TSIParameter* si,
-        TMRTOFMSParameter* mrtof,
-        TRangeParameter* range)
+void setup_s092_011_2024()
 {
+  // look up analysis object and all parameters
+
+  TFRSAnalysis* an = dynamic_cast<TFRSAnalysis*> (TGo4Analysis::Instance());
+  if (an==0) {
+    cout << "!!!  Script should be run in FRS analysis" << endl;
+    return;
+  }
+
+  TFRSParameter* frs = dynamic_cast<TFRSParameter*> (an->GetParameter("FRSPar"));
+  if (frs==0) {
+    cout << "!!!  Parameter FRSPar not found" << endl;
+    return;
+  }
+
+  TMWParameter* mw = dynamic_cast<TMWParameter*> (an->GetParameter("MWPar"));
+  if (mw==0) {
+    cout << "!!!  Parameter MWPar not found" << endl;
+    return;
+  }
+
+  TMUSICParameter* music = dynamic_cast<TMUSICParameter*> (an->GetParameter("MUSICPar"));
+  if (music==0) {
+    cout << "!!!  Parameter MUSICPar not found" << endl;
+    return;
+  }
+
+  TSCIParameter* sci = dynamic_cast<TSCIParameter*> (an->GetParameter("SCIPar"));
+  if (sci==0) {
+    cout << "!!!  Parameter SCIPar not found" << endl;
+return;
+  }
+
+  TIDParameter* id = dynamic_cast<TIDParameter*> (an->GetParameter("IDPar"));
+  if (id==0) {
+    cout << "!!!  Parameter IDPar not found" << endl;
+    return;
+  }
+
+  TTPCParameter* tpc = dynamic_cast<TTPCParameter*> (an->GetParameter("TPCPar"));
+  if (tpc==0) {
+    cout << "!!!  Parameter TPCPar not found" << endl;
+    return;
+  }
+
+  TLABRParameter* labr = dynamic_cast<TLABRParameter*> (an->GetParameter("LABRPar"));
+  if (labr==0) {
+    cout << "!!!  Parameter LABRPar not found" << endl;
+    return;
+  }
+
+  TSIParameter* si = dynamic_cast<TSIParameter*> (an->GetParameter("SIPar"));
+  if (si==0) {
+    cout << "!!!  Parameter SIPar not found" << endl;
+    return;
+  }
+
+  TMRTOFMSParameter* mrtof = dynamic_cast<TMRTOFMSParameter*> (an->GetParameter("MRTOFMSPar"));
+  if (mrtof==0) {
+    cout << "!!!  Parameter MR-TOF-MSPar not found" << endl;
+    return;
+  }
+  
+  TRangeParameter* range = dynamic_cast<TRangeParameter*> (an->GetParameter("RangePar"));
+  if (range==0) {
+    cout << "!!!  Parameter RangePar not found" << endl;
+    return;
+  } 
+ /*
+  TModParameter* ElecMod = dynamic_cast<TModParameter*>(an->GetParameter("ModPar"));
+   */
+  cout << endl << "setup script started" << endl;
+
+  // For the momemnt, we put 1 m for radius,
   // because we get brho from control system.
   frs->rho0[0]   = 1.; //TA-S2
   frs->rho0[1]   = 1.; //S2-S4
@@ -80,10 +144,10 @@ void setup(TFRSParameter* frs,
   id->max_z_plot   = 45;
    
   // bfield (Tm) for new control system. (we put rho = 1)
-  frs->bfield[0] = 6.6011;    // 98Nb
-  frs->bfield[1] = 6.6011;  // 98Nb
-  frs->bfield[2] = 5.1056; //;98Nb
-  frs->bfield[3] = 5.1056;//;98Nb
+  frs->bfield[0] = 6.5434;    // 100Mo
+  frs->bfield[1] = 6.5434;  // 100Mo
+  frs->bfield[2] = 5.5135; //;100Mo
+  frs->bfield[3] = 5.5135;//;100Mo
   frs->bfield[4] = 4.8347;   //  D5 (to ESR) not used
   frs->bfield[5] = 4.8347;  //   D6 (to S8)
 
@@ -129,14 +193,23 @@ void setup(TFRSParameter* frs,
   id->mhtdc_length_sc2141 = 126.*0.299792458;//125.207*0.299792458;//37.204244; // 36.68196; // SCI 21-41 s450
   id->mhtdc_length_sc2241 = 123.1*0.299792458;//122.677*0.299792458;//36.850489; //35.227152; // SCI 22-41 s450 208Pb
   //id->mhtdc_length_sc2142 = 128.2*0.299792458;	
-  id->mhtdc_vel_a_music41[0]= -16.788;//526.137;//6459.55; //s496 Xe 210512
-  id->mhtdc_vel_a_music41[1]= 532.337;//1241.28;//-11135.1;
-  id->mhtdc_vel_a_music41[2]= 72.824;//0.0;//5581.45;
+  id->mhtdc_vel_a_music41[0]= -16.788;//Suraj
+  id->mhtdc_vel_a_music41[1]= 532.337;//Suraj
+  id->mhtdc_vel_a_music41[2]= 72.824;//Suraj
   id->mhtdc_vel_a_music41[3]=0.0;
-  id->mhtdc_vel_a_music42[0]= 0.818;//372.998;//7522.75; //s496 Xe 210512
-  id->mhtdc_vel_a_music42[1]= 482.141;//1329.1;//-13599.0;
-  id->mhtdc_vel_a_music42[2]= 94.977;//0.0;//7039.16;
+  id->mhtdc_vel_a_music42[0]= 0.818;//Suraj
+  id->mhtdc_vel_a_music42[1]= 482.141;//Suraj
+  id->mhtdc_vel_a_music42[2]= 94.977;//Suraj 
   id->mhtdc_vel_a_music42[3]=0.0;
+  /*id->mhtdc_vel_a_music41[0]= -18.223;//Daria
+  id->mhtdc_vel_a_music41[1]= 538.500;//Daria
+  id->mhtdc_vel_a_music41[2]= 66.170;//Daria
+  id->mhtdc_vel_a_music41[3]=0.0;
+  id->mhtdc_vel_a_music42[0]= -5.947;//Daria
+  id->mhtdc_vel_a_music42[1]= 514.487;//Daria
+  id->mhtdc_vel_a_music42[2]= 56.933;//Daria
+  id->mhtdc_vel_a_music42[3]=0.0;*/
+
   id->mhtdc_offset_z_music41=0.0; //s526 107Ag ..earlier 10.7
   id->mhtdc_offset_z_music42=0.0;
 
@@ -1064,7 +1137,7 @@ void setup(TFRSParameter* frs,
      {    0., 4000.},
      {40000., 4000.},
      {40000.,    0.}};
-  //an->SetupPolyCond("cID_dEToF", 4, my_cID_dEToF_points);
+  an->SetupPolyCond("cID_dEToF", 4, my_cID_dEToF_points);
 
   //======
   //LaBr
@@ -1169,4 +1242,3 @@ void setup(TFRSParameter* frs,
   cout << "Focus distance S4: " << frs->dist_focS4 << endl;
   cout << "Setup done " << endl;
 }
-

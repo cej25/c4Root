@@ -76,6 +76,7 @@ class LisaFrsCorrelations : public FairTask
 
         //common var
         int layer_number;
+        int multi_evt = 0;
 
         int64_t wr_LISA;
         int64_t wr_FRS;
@@ -103,6 +104,8 @@ class LisaFrsCorrelations : public FairTask
         TCanvas* c_xy_pos_layer2;
         std::vector<std::vector<TCanvas*>> c_energy_layer_ch_gated;
         std::vector<std::vector<TCanvas*>> c_energy_layer_ch_gated_T;
+        std::vector<std::vector<std::vector<std::vector<TCanvas*>>>> c_energy;
+
 
         //Histograms
         std::vector<TH1I*> h1_wr_diff;
@@ -111,6 +114,7 @@ class LisaFrsCorrelations : public FairTask
         std::vector<TH2F*> h2_travMUSIC_layer;
         std::vector<TH2F*> h2_xy_pos_layer1;
         std::vector<TH2F*> h2_xy_pos_layer2;
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch;
         std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_layer_ch_gated;
         std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_layer_ch_gated_T;
 

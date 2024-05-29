@@ -64,11 +64,11 @@ void pareeksha_make_trees_gius()
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0169_*.lmd";  //data with only lisa
     //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/daqtest/daqtest_0001_0001.lmd"; //data from ts folder
-	Int_t rnum = 120;
-    TString filename = Form("/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0%d_*.lmd",rnum); //from time stitched files
+	Int_t rnum = 195;
+    TString filename = Form("/u/gandolfo/data1/lustre/gamma/s092_s143_files/ts/run_0%d_*.lmd",rnum); //from time stitched files
 
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/";
+    TString outputpath = "/u/gandolfo/data1/lustre/gamma/LISA/data/pareeksha_trees/";
     TString outputFilename = outputpath + Form("run_0%d_test.root",rnum);
 
 
