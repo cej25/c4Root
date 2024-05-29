@@ -92,6 +92,7 @@ class LisaNearlineSpectra : public FairTask
         TCanvas* c_pileup_grid;
         TCanvas* c_overflow_grid;
         TCanvas* c_energy_layer1_vs_layer2;
+        TCanvas* c_energy_layer1_vs_layer2_GM;
         TCanvas* c_energy_layer_vs_time;
         std::vector<TCanvas*> c_energy_layer_ch;
         std::vector<TCanvas*> c_energy_layer_ch_vs_time;
@@ -110,7 +111,9 @@ class LisaNearlineSpectra : public FairTask
         //TH2F* h2_hitpattern_grid;
         //TH1F* h1_energy_layer0;
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch;
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch_GM;
         TH2F* h2_energy_layer1_vs_layer2;
+        TH2F* h2_energy_layer1_vs_layer2_GM;
         std::vector<std::vector<std::vector<TH1F*>>> h1_traces_layer_ch;
 
         //TGraph
