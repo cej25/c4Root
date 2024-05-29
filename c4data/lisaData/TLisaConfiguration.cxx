@@ -29,6 +29,29 @@ int TLisaConfiguration::min_traces = 0;
 int TLisaConfiguration::max_traces = 2000;
 int TLisaConfiguration::bin_traces = 900;
 
+/*
+//layer1
+int TLisaConfiguration::i100 = 0;
+int TLisaConfiguration::s100 = 0;
+int TLisaConfiguration::i101 = 0;
+int TLisaConfiguration::s101 = 0;
+int TLisaConfiguration::i110 = 0;
+int TLisaConfiguration::s110 = 0;
+int TLisaConfiguration::i111 = 0;
+int TLisaConfiguration::s111 = 0;
+//layer2
+int TLisaConfiguration::i200 = 0;
+int TLisaConfiguration::s200 = 0;
+int TLisaConfiguration::i201 = 0;
+int TLisaConfiguration::s201 = 0;
+int TLisaConfiguration::i210 = 0;
+int TLisaConfiguration::s210 = 0;
+int TLisaConfiguration::i211 = 0;
+int TLisaConfiguration::s211 = 0;
+*/
+
+
+
 
 TLisaConfiguration::TLisaConfiguration()
     :   num_layers(0)
