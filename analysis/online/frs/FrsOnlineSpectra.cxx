@@ -85,10 +85,8 @@ InitStatus FrsOnlineSpectra::Init()
 
     tpcCalArray = mgr->InitObjectAs<decltype(tpcCalArray)>("FrsTPCCalData");
     c4LOG_IF(fatal, !tpcCalArray, "Branch FrsTPCCalData not found!");
-
     hitArray = mgr->InitObjectAs<decltype(hitArray)>("FrsHitData");
     c4LOG_IF(fatal, !hitArray, "Branch FrsHitData not found!");
-
     multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
     c4LOG_IF(fatal, !multihitArray, "Branch FrsHitData not found!");  
 
@@ -352,10 +350,7 @@ InitStatus FrsOnlineSpectra::Init()
     h1_tpc24_rate = MakeTH1(dir_rates, "I", "h1_tpc24_rate", "TPC 24 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
     h1_tpc41_rate = MakeTH1(dir_rates, "I", "h1_tpc41_rate", "TPC 41 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
     h1_tpc42_rate = MakeTH1(dir_rates, "I", "h1_tpc42_rate", "TPC 42 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
-    // h1_sci21_rate = MakeTH1(dir_rates, "I", "h1_sci21_rate", "SCI 21 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
-    // h1_sci22_rate = MakeTH1(dir_rates, "I", "h1_sci22_rate", "SCI 22 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
-    // h1_sci41_rate = MakeTH1(dir_rates, "I", "h1_sci41_rate", "SCI 41 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
-    // h1_sci42_rate = MakeTH1(dir_rates, "I", "h1_sci42_rate", "SCI 42 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
+
 
 
 
@@ -785,10 +780,7 @@ void FrsOnlineSpectra::Exec(Option_t* option)
     h1_tpat->Fill(hitItem.Get_tpat());
 
     for (int i = 0; i < 32; i++)
-    {   
-        //std::cout << "i: " << i << " - ibin for s: " << hitItem.Get_ibin_for_s() << " - sc_temp_main: " << hitItem.Get_increase_sc_temp_main(i) << " - sc_temp_user: " << hitItem.Get_increase_sc_temp_user(i) <<std::endl;
-
-        // CEJ: swapped main and user (hopefully correct) 29/05/24
+    {
         hScaler_per_s[i]->AddBinContent(hitItem.Get_ibin_for_s(), hitItem.Get_increase_sc_temp_user(i));
         hScaler_per_s[i+32]->AddBinContent(hitItem.Get_ibin_for_s(), hitItem.Get_increase_sc_temp_main(i));
         hScaler_per_100ms[i]->AddBinContent(hitItem.Get_ibin_for_100ms(), hitItem.Get_increase_sc_temp_user(i));
@@ -851,8 +843,7 @@ void FrsOnlineSpectra::Exec(Option_t* option)
         if (tpc_running_count == 1800) tpc_running_count = 0;
     }
     
-
-    fNEvents += 1;
+    fNEvents++;
 }
 
 void FrsOnlineSpectra::FinishEvent()
