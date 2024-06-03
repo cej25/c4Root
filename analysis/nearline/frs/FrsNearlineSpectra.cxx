@@ -457,7 +457,6 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     Long64_t FRS_time_mins = 0;
     auto const & hitItem = hitArray->at(0); // should only be size=1! check
     if(hitItem.Get_wr_t() > 0) FRS_time_mins = (hitItem.Get_wr_t() - exp_config->exp_start_time)/ 60E9;
-    //std::cout << "time [mins]: " << FRS_time_mins << std::endl;
 
     // :::::::::: TAC ::::::::::::: //
     // ---------------------------- //
