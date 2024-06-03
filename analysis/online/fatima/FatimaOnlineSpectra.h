@@ -137,6 +137,7 @@ class FatimaOnlineSpectra : public FairTask
         TDirectory* dir_fatima_energy_spectra;
         TDirectory* dir_fatima_time_spectra;
         TDirectory* dir_fatima_sci41;
+        TDirectory* dir_fatima_rates;
         std::vector<TDirectory*> dir_fatima_time_differences = {};
         
 
@@ -175,6 +176,8 @@ class FatimaOnlineSpectra : public FairTask
         TH1F * h1_fatima_energy_summed_vs_tsci41_cut;
         TCanvas * c_fatima_energy_energy_sci41_cut;
         TH2F * h2_fatima_energy_energy_sci41_cut;
+
+        TH1* h1_fatima_rates[36];
         
         // Binnings:
         int ffast_tot_nbins = 500;
@@ -193,6 +196,13 @@ class FatimaOnlineSpectra : public FairTask
         double energygate_width = 10;
             
         int event_multiplicity;
+
+        // rates
+        int64_t saved_fatima_wr = 0;
+        // can probably change to a pointer, and assign by num_detectors variable
+        int detector_counters[36];
+        int detector_rates[36];
+        int rate_running_count = 0;
 
     public:
         ClassDef(FatimaOnlineSpectra, 1)
