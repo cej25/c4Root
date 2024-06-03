@@ -10,13 +10,13 @@ class TExperimentConfiguration
         static void Create();
         static void SetExperimentStart(uint64_t st) { exp_start_time = st; }
 
+        static uint64_t exp_start_time;
+
     private:
         static std::string filepath;
         TExperimentConfiguration();
     
         static TExperimentConfiguration* instance;
-
-        static uint64_t exp_start_time;
 
         // contain list of subsystems used - mainly for WR correlations..
 
