@@ -572,7 +572,6 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
 
         h1_fatima_multiplicity->Fill(event_multiplicity);
 
-        // CEJ this will all need to move inside the actual loop when written
         int64_t wr_dt = (fatima_wr - saved_fatima_wr) / 1e9; // conv to s
         if (wr_dt > 2) 
         {

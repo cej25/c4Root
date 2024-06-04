@@ -5,7 +5,7 @@
 #define FATIMA_VME_ON 0
 #define AIDA_ON 0
 #define BPLAST_ON 0
-#define GERMANIUM_ON 0
+#define GERMANIUM_ON 1
 #define BGO_ON 0
 #define FRS_ON 0
 #define TIME_MACHINE_ON 0
