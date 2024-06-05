@@ -9,6 +9,7 @@ Development:
 * Johan Emil Linnestad Larsson
 * Jeroen Peter Bormans
 * Nicolas James Hubbard
+* Elisa Maria Gandolfo
 
 Documentation on the usage of this software is currently in progress. Basic instructions are otherwise provided below. 
 

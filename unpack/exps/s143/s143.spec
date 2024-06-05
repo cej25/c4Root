@@ -119,9 +119,11 @@ SUBEVENT(travmus_subev)
 
 SUBEVENT(fimp_subev)
 {
+    optional UINT32 be { 0_31: b = MATCH(0xbad00bad);}
+
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT(id=0x300);
+        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1300);
     };
 
     select optional
@@ -146,7 +148,7 @@ SUBEVENT(fatima_tamex_subev)
 
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1600);
+        ts = TIMESTAMP_WHITERABBIT(id = 0x500);
     };
 
     select optional
@@ -161,7 +163,7 @@ SUBEVENT(fatima_tamex_subev)
 
     select several
     {
-        tamex[0] = TAMEX4_SFP(sfp = 0, card = 0); // we'll only use this
+        tamex[0] = TAMEX4_SFP(sfp = 1, card = 0); // we'll only use this
         tamex[1] = TAMEX4_SFP(sfp = 0, card = 1);
         tamex[2] = TAMEX4_SFP(sfp = 0, card = 2);
         tamex[3] = TAMEX4_SFP(sfp = 0, card = 3);
@@ -178,7 +180,7 @@ EVENT
 
     fimp = fimp_subev(procid=100);
 
-    fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = 75, control = 20);
+    fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = 80, control = 20);
 
     ignore_unknown_subevent;
 }

@@ -21,6 +21,7 @@
 #include <chrono>
 
 #define MUSIC_ANA_NEW
+//#define TRAVMUS_TAC_OR_MHTDC
 
 FrsCal2Hit::FrsCal2Hit()
     :   FairTask()
@@ -176,21 +177,37 @@ void FrsCal2Hit::Exec(Option_t* option)
         {
             uint32_t index = mainScalerItem.Get_index();
             uint32_t scaler = mainScalerItem.Get_scaler();
-            sc_main_initial[index] = scaler; // index -1? test
-            sc_main_previous[index] = scaler;
-            sc_main_current[index] = scaler;
+            sc_main_initial[index-1] = scaler;
+            sc_main_previous[index-1] = scaler;
+            sc_main_current[index-1] = scaler;
         }
 
         for (auto const & userScalerItem : *userScalerArray)
         {
             uint32_t index = userScalerItem.Get_index();
             uint32_t scaler = userScalerItem.Get_scaler();
-            sc_user_initial[index] = scaler; // index -1? test
-            sc_user_previous[index] = scaler;
-            sc_user_current[index] = scaler;
+            sc_user_initial[index-1] = scaler;
+            sc_user_previous[index-1] = scaler;
+            sc_user_current[index-1] = scaler;
         }
 
         scaler_check_first_event = 0;
+    }
+    else
+    {
+        for (auto const & mainScalerItem : *mainScalerArray)
+        {
+            uint32_t index = mainScalerItem.Get_index();
+            uint32_t scaler = mainScalerItem.Get_scaler();
+            sc_main_current[index-1] = scaler;
+        }
+
+        for (auto const & userScalerItem : *userScalerArray)
+        {
+            uint32_t index = userScalerItem.Get_index();
+            uint32_t scaler = userScalerItem.Get_scaler();
+            sc_user_current[index-1] = scaler;
+        }
     }
 
     time_in_ms = sc_main_current[scaler_ch_1kHz] - sc_main_initial[scaler_ch_1kHz];
@@ -213,7 +230,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         increase_sc_temp_user[k] = sc_user_current[k] - sc_user_previous[k];
     }
 
-    if (increase_sc_temp_user[0] != 0) // not sure how the go4 is dealing with this zero dividing
+    if (increase_sc_temp_user[0] != 0 && increase_sc_temp_user[6] != 0) // not sure how the go4 is dealing with this zero dividing
     {
         increase_sc_temp2 = 100 * increase_sc_temp_user[1] / increase_sc_temp_user[0];
         increase_sc_temp3 = 100 * increase_sc_temp_user[5] / increase_sc_temp_user[6];
@@ -311,7 +328,6 @@ void FrsCal2Hit::Exec(Option_t* option)
                 if (travmusic_b_e[i])
                 {
                     travmusic_anodes_cnt++;
-                    std::cout << "anode count: " << travmusic_anodes_cnt << std::endl;
                 }
             }
         }
@@ -417,17 +433,12 @@ void FrsCal2Hit::Exec(Option_t* option)
         Int_t temp_count_travmus = 0;
         for (int i = 0; i < 8; i++)
         {
-            std::cout << "travmus b: " << travmusic_b_e[i] << std::endl;
             if (travmusic_b_e[i])
             {
-                std::cout << "music e: " << (travmusic_e[i]) << std::endl;
                 temp_de_travmus *= ((travmusic_e[i]) * music->e3_gain[i] + music->e3_off[i]);
-                std::cout << temp_de_travmus << std::endl;
                 temp_count_travmus++;
             }
         }
-        std::cout << "count: " << temp_count_travmus << std::endl;
-        std::cout << "temp_de_travmus after: " << temp_de_travmus << std::endl; 
         de_travmus = TMath::Power(temp_de_travmus, 1. / ((float)(temp_count_travmus)));
         de_cor_travmus = de_travmus;
         b_de_travmus = kTRUE;
@@ -442,6 +453,8 @@ void FrsCal2Hit::Exec(Option_t* option)
 
     // we should extract everything from tpc.....
     auto const & tpcCalItem = tpcCalArray->at(0);
+
+    // calculate "rates" for TPC here perhaps
 
     b_tpc_xy = tpcCalItem.Get_b_tpc_xy();
     
@@ -808,7 +821,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     sci_l[5] = de_array[5]; // de_81l
     sci_r[5] = de_array[12]; // de_81r
     sci_tx[5] = dt_81l_81r + rand3();
-    
+
     for (int i = 0; i < 6; i++)
     {
         int j;
@@ -841,7 +854,9 @@ void FrsCal2Hit::Exec(Option_t* option)
 
         if (sci_b_l[i] && sci_b_r[i])
         {
-            sci_e[i] = (sci_r[i] - sci->re_a[0][j]);
+            //sci_e[i] = (sci_r[i] - sci->re_a[0][j]); // CEJ: old calculation (?? no idea what this was even doing)
+            sci_e[i] = sqrt( (sci_l[i] - sci->le_a[0][j]) * sci->le_a[1][j]
+	   			  * (sci_r[i] - sci->re_a[0][j]) * sci->re_a[1][j]);
             sci_b_e[i] = Check_WinCond(sci_e[i], cSCI_E);
         }
 
@@ -854,13 +869,27 @@ void FrsCal2Hit::Exec(Option_t* option)
             sum = 0.;
             for (int k = 0; k < 7; k++)
             {
-                sum += sci->x_a[k][i] * power;
+                //sum += sci->x_a[k][i] * power;
+                sum += sci->x_a[k][j] * power;
                 power *= R;
             }
             sci_x[i] = sum;
             sci_b_x[i] = Check_WinCond(sci_x[i], cSCI_X);
         }
     } // loop for sci values
+
+
+    // std::cout << ":::::: TESTING SCI SIGNALS :::::" << std::endl;
+    // for (int i = 0; i < 6; i++)
+    // {   
+    //     std::cout << "i: " << i << std::endl;
+    //     std::cout << "sci_l: " << sci_l[i] << std::endl;
+    //     std::cout << "sci_r: " << sci_r[i] << std::endl;
+    //     std::cout << "sci_tx: " << sci_tx[i] << std::endl;
+    //     std::cout << "sci_e: " << sci_e[i] << std::endl;
+    //     std::cout << "sci_x: " << sci_x[i] << std::endl;
+    // }
+
 
     /*----------------------------------------------------------*/
     // Calibrated ToF - dt will be in dt_array, from UserCrate
@@ -1082,9 +1111,11 @@ void FrsCal2Hit::Exec(Option_t* option)
     // Calculation of dE and Z from MUSIC41
     id_mhtdc_v_cor_music41 = new Float_t[hits_in_beta_s2s4];
     id_mhtdc_v_cor_music42 = new Float_t[hits_in_beta_s2s4];
+    id_mhtdc_v_cor_travmus = new Float_t[hits_in_beta_s2s4];
 
     id_mhtdc_z_music41 = new Float_t[hits_in_beta_s2s4];
     id_mhtdc_z_music42 = new Float_t[hits_in_beta_s2s4];
+    id_mhtdc_z_travmus = new Float_t[hits_in_beta_s2s4];
 
     for (int i = 0; i < hits_in_beta_s2s4; i++)
     {
@@ -1096,8 +1127,8 @@ void FrsCal2Hit::Exec(Option_t* option)
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->mhtdc_vel_a_music41[j];
-                power *= id_mhtdc_beta_s2s4[i];
-                
+                //power *= id_mhtdc_beta_s2s4[i];
+                power *= 1.0/(id_mhtdc_beta_s2s4[i]*id_mhtdc_beta_s2s4[i]);
             }
             id_mhtdc_v_cor_music41[i] = sum;
 
@@ -1112,7 +1143,6 @@ void FrsCal2Hit::Exec(Option_t* option)
             } // else???
         }
 
-
         float temp_music42_de = de[1] > 0.0;
         if((temp_music42_de > 0.0)  && (id_mhtdc_beta_s2s4[i] > 0.0) && (id_mhtdc_beta_s2s4[i] < 1.0))
         {
@@ -1121,7 +1151,8 @@ void FrsCal2Hit::Exec(Option_t* option)
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->mhtdc_vel_a_music42[j];
-                power *= id_mhtdc_beta_s2s4[i];
+                //power *= id_mhtdc_beta_s2s4[i];
+                power *= 1.0/(id_mhtdc_beta_s2s4[i]*id_mhtdc_beta_s2s4[i]);
             }
             id_mhtdc_v_cor_music42[i] = sum;
             
@@ -1131,6 +1162,32 @@ void FrsCal2Hit::Exec(Option_t* option)
 
                 if (music42_mhtdc_z_gain_shifts != nullptr){
                 id_mhtdc_z_music42[i] = id_mhtdc_z_music42[i] + music42_mhtdc_z_gain_shifts->GetGain(wr_t);
+                }
+            }
+        }
+
+        if (travMusicArray)
+        {
+            float temp_travmus_de = de_travmus > 0.0;
+            if ((temp_travmus_de > 0.0) && (id_mhtdc_beta_s2s4[i] > 0.0) && (id_mhtdc_beta_s2s4[i] < 1.0))
+            {
+                power = 1.;
+                sum = 0.;
+                for (int j = 0; j < 4; j++)
+                {
+                    sum += power * id->vel_a3[j]; // same parameters for mhtdc as TAC for now....stupid
+                    #ifndef TRAVMUS_TAC_OR_MHTDC
+                    power *= id_mhtdc_beta_s2s4[i];
+                    #endif
+                    #ifdef TRAVMUS_TAC_OR_MHTDC
+                    power *= 1.0/(id_mhtdc_beta_s2s4[i]*id_mhtdc_beta_s2s4[i]);
+                    #endif
+                } 
+                id_mhtdc_v_cor_travmus[i] = sum;
+                
+                if (id_mhtdc_v_cor_travmus[i] > 0.0)
+                {   
+                    id_mhtdc_z_travmus[i] = frs->primary_z * sqrt(de_travmus / id_mhtdc_v_cor_travmus[i]) + id->offset_z3; // same as TAC....for now
                 }
             }
         }
@@ -1282,6 +1339,7 @@ void FrsCal2Hit::Exec(Option_t* option)
             id_AoQ = id_brho[1] / id_beta / id_gamma / aoq_factor;
             id_AoQ_corr = id_AoQ - id->a2AoQCorr * id_a2;
             id_b_AoQ = true;
+
         }
     }
 
@@ -1302,6 +1360,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         if (id_v_cor > 0.0)
         {
             id_z = frs->primary_z * sqrt(de[0] / id_v_cor) + id->offset_z;
+
         }
         if ((id_z > 0.0) && (id_z < 100.0))
         {
@@ -1431,6 +1490,7 @@ void FrsCal2Hit::Exec(Option_t* option)
                             id_mhtdc_aoq_corr_s2s4[i*hits_in_s2x + j], 
                             id_mhtdc_z_music41[i],
                             id_mhtdc_z_music42[i],
+                            id_mhtdc_z_travmus[i],
                             id_mhtdc_dEdeg[i*hits_in_s2x + j],
                             id_mhtdc_dEdegoQ[i*hits_in_s2x + j]
                             );
@@ -1559,9 +1619,6 @@ void FrsCal2Hit::Setup_Conditions(std::string path_to_config_files)
 
         line_number++;
     }
-
-    std::cout << "condition: " << cMusicTRAV_E[7][0] << std::endl;
-
 
     line_number = 0;
 

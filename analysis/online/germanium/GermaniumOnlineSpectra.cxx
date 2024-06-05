@@ -13,6 +13,7 @@
 #include "TGermaniumConfiguration.h"
 
 #include "c4Logger.h"
+#include "AnalysisTools.h"
 
 #include "TCanvas.h"
 #include "TClonesArray.h"
@@ -93,6 +94,7 @@ InitStatus GermaniumOnlineSpectra::Init()
     dir_germanium_multiplicity = dir_germanium->mkdir("Multiplicity");
     dir_germanium_sci41 = dir_germanium->mkdir("SCI41");
     dir_germanium_resolution = dir_germanium->mkdir("Resolutions");
+    dir_germanium_rates = dir_germanium->mkdir("Rate Monitors");
 
     detector_labels = new const char*[number_of_detectors_to_plot];
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
@@ -243,6 +245,12 @@ InitStatus GermaniumOnlineSpectra::Init()
         dir_germanium_time_differences[ihist]->Append(c_germanium_time_differences_vs_energy);
 
     }
+
+    detector_counters = new int[number_of_detectors_to_plot];
+    detector_rates = new int[number_of_detectors_to_plot];
+    h1_germanium_rates = new TH1*[number_of_detectors_to_plot];
+    for (int i = 0; i < number_of_detectors_to_plot; i++) h1_germanium_rates[i] = MakeTH1(dir_germanium_rates, "I", Form("h1_germanium_rates_det%i_crystal%i", crystals_to_plot.at(i).first, crystals_to_plot.at(i).second), Form("DEGAS Rate Detector %i Crystal %i", crystals_to_plot.at(i).first, crystals_to_plot.at(i).second), 1800, 0, 1800, "Time [2s]", kCyan, kBlack);
+
     
     dir_germanium_hitpattern->cd();
     c_germanium_hitpattern = new TCanvas("c_germanium_hitpattern","Hit pattern DEGAS",650,350);
@@ -524,6 +532,7 @@ void GermaniumOnlineSpectra::Exec(Option_t* option){
     
         Int_t nHits = fHitGe->GetEntriesFast();
         int event_multiplicity = 0;
+        int64_t germanium_wr = 0;
         
         
         bool sci41_seen = false; // off-spill raw spectra
@@ -537,6 +546,7 @@ void GermaniumOnlineSpectra::Exec(Option_t* option){
             int crystal_id1 = hit1->Get_crystal_id();
             double energy1 = hit1->Get_channel_energy();
             double time1 = hit1->Get_channel_trigger_time();
+            
 
             
             if (!(germanium_configuration->IsDetectorAuxilliary(detector_id1))) event_multiplicity ++; // count only physical events in germaniums
@@ -544,6 +554,10 @@ void GermaniumOnlineSpectra::Exec(Option_t* option){
             if (detector_id1 == germanium_configuration->SC41L() || detector_id1 == germanium_configuration->SC41R()) sci41_seen = true;
             
             int crystal_index1 = std::distance(crystals_to_plot.begin(), std::find(crystals_to_plot.begin(),crystals_to_plot.end(),std::pair<int,int>(detector_id1,crystal_id1)));
+
+            detector_counters[crystal_index1]++; // for rates
+            germanium_wr = hit1->Get_wr_t();
+
             if (crystal_index1 >= crystals_to_plot.size()) continue;
             
             h1_germanium_energy[crystal_index1]->Fill(energy1);
@@ -670,6 +684,24 @@ void GermaniumOnlineSpectra::Exec(Option_t* option){
 
 
         h1_germanium_multiplicity->Fill(event_multiplicity);
+
+        int64_t wr_dt = (germanium_wr - saved_germanium_wr) / 1e9; // conv to s
+        if (wr_dt > 2) 
+        {
+            if (saved_germanium_wr != 0)
+            {
+                for (int i = 0; i < number_of_detectors_to_plot; i++)
+                {
+                    detector_rates[i] = detector_counters[i] / wr_dt;
+                    h1_germanium_rates[i]->SetBinContent(rate_running_count, detector_rates[i]);
+                }
+            }
+            
+            saved_germanium_wr = germanium_wr;
+            rate_running_count++;
+            for (int i = 0; i < number_of_detectors_to_plot; i++) detector_counters[i] = 0;
+            if (rate_running_count == 1800) rate_running_count = 0;
+        }
     }
 
     fNEvents += 1;

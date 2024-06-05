@@ -1,38 +1,9 @@
 #include <TROOT.h>
 
-// Switch all tasks related to {subsystem} on (1)/off (0)
-// CEJ !! NOT IMPLEMENTED YET !!
-#define FATIMA_ON 0
-#define FATIMA_VME_ON 0
-#define AIDA_ON 0
-#define BPLAST_ON 0
-#define GERMANIUM_ON 0
-#define FRS_ON 0
-#define TIME_MACHINE_ON 0
-#define BEAMMONITOR_ON 0
-#define BB7_ON 1
-
-// Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
-extern "C"
-{
-    #include "../../config/s100/frs/setup_s100.C"
-}
-
 // Struct should containt all subsystem h101 structures
 typedef struct EXT_STR_h101_t
 {   
     EXT_STR_h101_unpack_t eventheaders;
-    EXT_STR_h101_fatima_onion_t fatima;
-    EXT_STR_h101_fatimavme_onion_t fatimavme;
-    EXT_STR_h101_aida_onion_t aida;
-    EXT_STR_h101_bplast_onion_t bplast;
-    EXT_STR_h101_germanium_onion_t germanium;
-    EXT_STR_h101_frsmain_onion_t frsmain;
-    EXT_STR_h101_frstpc_onion_t frstpc;
-    EXT_STR_h101_frsuser_onion_t frsuser;
-    EXT_STR_h101_frsvftx_onion_t frsvftx;
-    EXT_STR_h101_beammonitor_onion_t beammonitor;
-    // EXT_STR_h101_bgo_onion_t bgo;
     EXT_STR_h101_bb7vme_onion_t bb7vme;
 } EXT_STR_h101;
 
@@ -75,13 +46,16 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 5555; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 7070; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
     run->SetSink(new FairRootFileSink(outputFileName));
     run->ActivateHttpServer(refresh, port);
+    TFolder* histograms = new TFolder("Histograms", "Histograms");
+    FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
+    run->AddObject(histograms);
 
     // Create source using ucesb for input
     EXT_STR_h101 ucesb_struct;
@@ -91,44 +65,6 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     run->SetSource(source);
 
     // ------------------------------------------------------------------------------------ //
-    // *** Initialise FRS parameters ****************************************************** //
-    
-    TFRSParameter* frs = new TFRSParameter();
-    TMWParameter* mw = new TMWParameter();
-    TTPCParameter* tpc = new TTPCParameter();
-    TMUSICParameter* music = new TMUSICParameter();
-    TLABRParameter* labr = new TLABRParameter();
-    TSCIParameter* sci = new TSCIParameter();
-    TIDParameter* id = new TIDParameter();
-    TSIParameter* si = new TSIParameter();
-    TMRTOFMSParameter* mrtof = new TMRTOFMSParameter();
-    TRangeParameter* range = new TRangeParameter();
-    setup(frs,mw,tpc,music,labr,sci,id,si,mrtof,range); // Function defined in frs setup.C macro
-    
-    // ------------------------------------------------------------------------------------ //
-    // *** Initialise Gates *************************************************************** //
-    
-    // Note: please add the same number of each type of gate
-    std::string frs_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/frs/Gates/";
-    std::vector<std::string> ZAoQ_cuts = {"ZvsAoQ1"};
-    TCutGGates* ZAoQ = new TCutGGates("ZAoQ", ZAoQ_cuts, frs_gate_path);
-    std::vector<std::string> Z1Z2_cuts = {"Z1vsZ21"};
-    TCutGGates* Z1Z2 = new TCutGGates("Z1Z2", Z1Z2_cuts, frs_gate_path);
-    std::vector<std::string> x2AoQ_cuts = {"x2vsAoQ1"};
-    TCutGGates* x2AoQ = new TCutGGates("x2AoQ", x2AoQ_cuts, frs_gate_path);
-    std::vector<std::string> x4AoQ_cuts = {"x4vsAoQ1"};
-    TCutGGates* x4AoQ = new TCutGGates("x4AoQ", x4AoQ_cuts, frs_gate_path);
-    std::vector<std::string> dEdegZ_cuts = {"dEdegvsZ1"};
-    TCutGGates* dEdegZ = new TCutGGates("dEdegZ", dEdegZ_cuts, frs_gate_path);
-    std::vector<TCutGGates*> FrsGates = {ZAoQ, Z1Z2, x2AoQ, x4AoQ, dEdegZ};
-    
-    // Define prompt cut EdT gates for Fatima Prompt analysis
-    std::string fatima_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Gates/";
-    std::vector<std::string> FatimaPromptCuts = {"FatPromptCut1"};
-    TCutGGates* FatimaPrompt = new TCutGGates("FatimaEdT", FatimaPromptCuts, fatima_gate_path);
-
-    
-    // ------------------------------------------------------------------------------------ //
     // *** Initialise Correlations ******************************************************** //
     
     TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations.dat");
@@ -136,16 +72,7 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
 
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
-    TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_new.txt");
-    TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(config_path + "/fatima/fatima_cal.txt");
-    TFatimaVmeConfiguration::SetDetectorMapFile(config_path + "/fatima/Fatima_VME_allocation.txt");
-    TFatimaVmeConfiguration::Set_QDC_E_CalFile(config_path + "/fatima/Fatima_QDC_Energy_Calibration.txt");
-    TFatimaVmeConfiguration::Set_QDC_T_CalFile(config_path + "/fatima/Fatima_QDC_Time_Calibration.txt");
-    TFatimaVmeConfiguration::Set_TDC_T_CalFile(config_path + "/fatima/Fatima_TDC_Time_Calibration.txt");
-    TAidaConfiguration::SetBasePath(config_path + "/AIDA");
-    TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_new.txt");
-    // FRS? Eventually will get around to mapping crates properly
-    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/Germanium_Detector_Map.txt");
+    
     TBB7VmeConfiguration::SetDetectorConfigurationFile("/u/cjones/c4Root/config/s100/bb7/BB7_Detector_Map.txt");    
 
     // ------------------------------------------------------------------------------------- //
@@ -156,298 +83,24 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     
     source->AddReader(unpackheader);
     
-    if (FATIMA_ON)
-    {
-        FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-        unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_histos_111223_fatima.root", 50000);
-        // unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_histos_111223_fatima.root");
 
-        unpackfatima->SetOnline(true);
-        source->AddReader(unpackfatima);
-    }
-    
-    if (FATIMA_VME_ON)
-    {
-        FatimaVmeReader* unpackfatimavme = new FatimaVmeReader((EXT_STR_h101_fatimavme_onion*)&ucesb_struct.fatimavme, offsetof(EXT_STR_h101, fatimavme));
-        
-        unpackfatimavme->SetOnline(true);
-        source->AddReader(unpackfatimavme);
-    }
-    
-    if (AIDA_ON)
-    {
-        AidaReader* unpackaida = new AidaReader((EXT_STR_h101_aida_onion*)&ucesb_struct.aida, offsetof(EXT_STR_h101, aida));
-        
-        unpackaida->SetOnline(true);
-        source->AddReader(unpackaida);
-    }
+    BB7Reader* unpackbb7 = new BB7Reader((EXT_STR_h101_bb7vme_onion*)&ucesb_struct.bb7vme, offsetof(EXT_STR_h101, bb7vme));
 
-    if (BPLAST_ON)
-    {
-        bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_bplast_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
-        // unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_histos_111223_bplast.root", 50000);
-        unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_histos_111223_bplast.root");
-        
-        unpackbplast->SetOnline(true);
-        source->AddReader(unpackbplast);
-    }
+    unpackbb7->SetOnline(false);
+    source->AddReader(unpackbb7);
+    
+    TBB7VmeConfiguration::SetImplantThreshold(1500);
 
-    if (GERMANIUM_ON)
-    {
-        GermaniumReader* unpackgermanium = new GermaniumReader((EXT_STR_h101_germanium_onion*)&ucesb_struct.germanium, offsetof(EXT_STR_h101, germanium));
-        
-        unpackgermanium->SetOnline(true);
-        source->AddReader(unpackgermanium);
-    }
-    
-    if (FRS_ON)
-    {
-        FrsMainReader* unpackfrsmain = new FrsMainReader((EXT_STR_h101_frsmain_onion*)&ucesb_struct.frsmain, offsetof(EXT_STR_h101, frsmain));
-        FrsTPCReader* unpackfrstpc = new FrsTPCReader((EXT_STR_h101_frstpc_onion*)&ucesb_struct.frstpc, offsetof(EXT_STR_h101, frstpc));
-        FrsUserReader* unpackfrsuser = new FrsUserReader((EXT_STR_h101_frsuser_onion*)&ucesb_struct.frsuser, offsetof(EXT_STR_h101, frsuser));
-        FrsVFTXReader* unpackfrsvftx = new FrsVFTXReader((EXT_STR_h101_frsvftx_onion*)&ucesb_struct.frsvftx, offsetof(EXT_STR_h101, frsvftx));
-        
-        unpackfrsmain->SetOnline(true);
-        unpackfrstpc->SetOnline(true);
-        unpackfrsuser->SetOnline(true);
-        unpackfrsvftx->SetOnline(true);
-        
-        source->AddReader(unpackfrsmain);
-        source->AddReader(unpackfrstpc);
-        source->AddReader(unpackfrsuser);
-        source->AddReader(unpackfrsvftx);
-    }
-    
-    if (BEAMMONITOR_ON)
-    {
-        BeamMonitorReader* unpackbeammonitor = new BeamMonitorReader((EXT_STR_h101_beammonitor_onion*)&ucesb_struct.beammonitor, offsetof(EXT_STR_h101, beammonitor));
-        
-        unpackbeammonitor->SetOnline(true);
-        source->AddReader(unpackbeammonitor);
-    }
+    BB7Raw2Cal* calbb7 = new BB7Raw2Cal();
 
-    if (BB7_ON)
-    {
-        BB7Reader* unpackbb7 = new BB7Reader((EXT_STR_h101_bb7vme_onion*)&ucesb_struct.bb7vme, offsetof(EXT_STR_h101, bb7vme));
-
-        unpackbb7->SetOnline(false);
-        source->AddReader(unpackbb7);
-    }
-
-   
-    // ---------------------------------------------------------------------------------------- //
-    // *** Calibrate Subsystems - comment out unwanted systems ******************************** //
-    
-    if (FATIMA_ON)
-    {
-        FatimaRaw2Cal* calfatima = new FatimaRaw2Cal();
-        // calfatima->PrintDetectorMap();
-        // calfatima->PrintDetectorCal();
-        
-        calfatima->SetOnline(true);
-        run->AddTask(calfatima);
-    }
-    
-    if (FATIMA_VME_ON)
-    {
-        FatimaVmeRaw2Cal* calfatimavme = new FatimaVmeRaw2Cal();
-        
-        calfatimavme->SetOnline(true);
-        run->AddTask(calfatimavme);
-        
-    }
-    
-    if (AIDA_ON)
-    {
-        AidaUnpack2Cal* aidaCalibrator = new AidaUnpack2Cal();
-        
-        aidaCalibrator->SetOnline(true);
-        run->AddTask(aidaCalibrator);
-        
-    }
-    
-    if (BPLAST_ON)
-    {
-        bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
-        // CEJ: these are not needed anymore, code was updated
-        calbplast->SetDetectorMapFile(config_path + "/bplast/bplast_alloc.txt");
-        
-        calbplast->SetOnline(true);
-        run->AddTask(calbplast);
-        
-        
-    }
-    
-    if (GERMANIUM_ON)
-    {
-        GermaniumRaw2Cal* calge = new GermaniumRaw2Cal();
-        
-        calge->SetOnline(true);
-        run->AddTask(calge);
-    }
-    
-    if (FRS_ON)
-    {
-        FrsMainRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
-        FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
-        FrsUserRaw2Cal* calfrsuser = new FrsUserRaw2Cal();
-        FrsVFTXRaw2Cal* calfrsvftx = new FrsVFTXRaw2Cal();
-        
-        calfrsmain->SetOnline(true);
-        calfrstpc->SetOnline(true);
-        calfrsuser->SetOnline(true);
-        calfrsvftx->SetOnline(true);
-        run->AddTask(calfrsmain);
-        run->AddTask(calfrstpc);
-        run->AddTask(calfrsuser);
-        run->AddTask(calfrsvftx);
-    }
-
-    if (BB7_ON)
-    {
-        BB7Raw2Cal* calbb7 = new BB7Raw2Cal();
-
-        calbb7->SetOnline(false);
-        run->AddTask(calbb7);
-    }
+    calbb7->SetOnline(false);
+    run->AddTask(calbb7);
 
 
-    // ---------------------------------------------------------------------------------------- //
-    // *** Analyse Subsystem Hits ************************************************************* //
-    
-    
-    if (AIDA_ON)
-    {        
-        AidaCal2Hit* aidaHitter = new AidaCal2Hit();
-        
-        aidaHitter->SetOnline(true);
-        run->AddTask(aidaHitter);
-    }
-    
-    if (FRS_ON)
-    {
-        FrsCal2Hit* hitfrs = new FrsCal2Hit(frs,mw,tpc,music,labr,sci,id,si,mrtof,range,fExpName);
-        
-        hitfrs->SetOnline(true); 
-        run->AddTask(hitfrs);
-    }
+    BB7OnlineSpectra* onlinebb7 = new BB7OnlineSpectra();
 
-
-
-    // ======================================================================================== //
-    // =========== **** SPECTRA ***** ========================================================= //
-    // ======================================================================================== //
+    run->AddTask(onlinebb7);
     
-    // ---------------------------------------------------------------------------------------- //
-    // *** Online Spectra ********************************************************************* //
-    
-    if (FATIMA_ON)
-    {
-        FatimaOnlineSpectra* onlinefatima = new FatimaOnlineSpectra();
-        onlinefatima->SetBinningSlowToT(1500,570.1,700.1);
-        onlinefatima->SetBinningFastToT(1000,0.1,100.1);
-        onlinefatima->SetBinningEnergy(1500,0.1,1500.1);
-
-        std::vector<int> fat_dets = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63};
-        onlinefatima->SetDetectorsToPlot(fat_dets);
-        
-        std::vector<int> fat_ref_dets = {0,1,2};
-        onlinefatima->SetReferenceDetectorsForTimeDifferences(fat_ref_dets);
-        
-        run->AddTask(onlinefatima);
-    }
-    
-    if (FATIMA_VME_ON)
-    {    
-        FatimaVmeOnlineSpectra* onlinefatimavme = new FatimaVmeOnlineSpectra();
-        
-        run->AddTask(onlinefatimavme);
-    }
-    
-    if (AIDA_ON)
-    {
-        AidaOnlineSpectra* aidaOnline = new AidaOnlineSpectra();
-        
-        run->AddTask(aidaOnline);
-    }
-    
-    if (BPLAST_ON)
-    {
-        bPlastOnlineSpectra* onlinebplast = new bPlastOnlineSpectra();
-        
-        run->AddTask(onlinebplast);
-        
-    }
-    
-    if (GERMANIUM_ON)
-    {
-        GermaniumOnlineSpectra* onlinege = new GermaniumOnlineSpectra();
-        
-        run->AddTask(onlinege);
-    }
-    
-    if (FRS_ON)
-    {
-        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
-        FrsRawSpectra* frsrawspec = new FrsRawSpectra();
-        FrsCalSpectra* frscalspec = new FrsCalSpectra();
-        FrsAnalysisSpectra* frsanlspec = new FrsAnalysisSpectra(frs,mw,tpc,music,labr,sci,id,si,mrtof,range,FrsGates);
-        
-        run->AddTask(onlinefrs);
-        run->AddTask(frsrawspec);
-        run->AddTask(frscalspec);
-        run->AddTask(frsanlspec);
-    }
-    
-    if (BEAMMONITOR_ON)
-    {
-        BeamMonitorOnlineSpectra* onlinebm = new BeamMonitorOnlineSpectra();
-        
-        run->AddTask(onlinebm);
-    }
-
-    if (BB7_ON)
-    {
-        BB7OnlineSpectra* onlinebb7 = new BB7OnlineSpectra();
-
-        run->AddTask(onlinebb7);
-    }
-
-    TString b = "Fatima";
-    TString c = "FatimaVme";
-    TString d = "Aida";
-    TString e = "bPlast";
-    TString f = "Germanium";
-
-    if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
-    {
-        TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {b, d, e};
-        tms->SetDetectorSystems(a);
-        
-        run->AddTask(tms);
-    }    
-
-
-    // ---------------------------------------------------------------------------------------- //
-    // *** Correlations *********************************************************************** //
-
-    if (FATIMA_ON && FRS_ON)
-    {
-        FrsFatimaCorrelations* frsfatimacorr = new FrsFatimaCorrelations(FrsGates, FatimaPrompt);
-        
-        run->AddTask(frsfatimacorr);
-    }
-    
-    if (AIDA_ON && FRS_ON)
-    {
-        FrsAidaCorrelations* frsaidacorr = new FrsAidaCorrelations(FrsGates);
-        
-        run->AddTask(frsaidacorr);
-    }
-    
-    
-
     // Initialise
     run->Init();
     

@@ -67,9 +67,18 @@ class LisaOnlineSpectra : public FairTask
         EventHeader* header;
         Int_t fNEvents;
 
-        Int_t en_count = 0;
+        Int_t en_count1 = 0;
+        Int_t en_count2 = 0;
+        Int_t en_count3 = 0;
+        Int_t en_count4 = 0;
         Int_t counter = 0;
         uint64_t wr_time;
+        Int_t layer;
+        Int_t lay;
+        Int_t xp;
+        Int_t yp;
+        uint32_t en;
+        std::vector<uint16_t> trace;
 
         TFolder* histograms;
         TDirectory* dir_lisa;
@@ -78,7 +87,9 @@ class LisaOnlineSpectra : public FairTask
         TDirectory* dir_stats;
         TDirectory* dir_music;
         TDirectory* dir_correlations;
-        
+
+        int64_t prev_wr = 0;
+        int64_t wr_diff;
 
         // Canvas
         TCanvas* c_hitpattern_layer;
@@ -89,24 +100,32 @@ class LisaOnlineSpectra : public FairTask
         TCanvas* c_energy_layer1_vs_layer2;
         TCanvas* c_energy_layer_vs_time;
         std::vector<TCanvas*> c_energy_layer_ch;
+        std::vector<TCanvas*> c_energy_layer_ch_vs_time;
         std::vector<TCanvas*> c_traces_layer_ch;
+        std::vector<TCanvas*> c_traces_layer_ch_stat;
+
     
         // Histograms
         TH1I* h1_hitpattern_total;
+        TH1I* h1_wr_diff;
         std::vector<TH1I*> h1_hitpattern_layer;
         std::vector<TH2F*> h2_hitpattern_grid;
         std::vector<TH2F*> h2_pileup_grid;
         std::vector<TH2F*> h2_overflow_grid;
         TH1I* h1_multiplicity;
-        std::vector<TH1I*> h1_multiplicity_layer; 
+        std::vector<TH1I*> h1_multiplicity_layer; ;
+        TH1I* h1_layer_multiplicity;
         //TH2F* h2_hitpattern_grid;
         //TH1F* h1_energy_layer0;
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch;
         TH2F* h2_energy_layer1_vs_layer2;
         std::vector<std::vector<std::vector<TH1F*>>> h1_traces_layer_ch;
+        std::vector<std::vector<std::vector<TH2F*>>> h2_traces_layer_ch_stat;
+
 
         //TGraph
         std::vector<TGraph*> hG_energy_layer_vs_time;
+        std::vector<std::vector<std::vector<TGraph*>>> hG_energy_layer_ch_vs_time;
 
         
 

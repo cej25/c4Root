@@ -16,6 +16,8 @@ void FrsMainCalScalerItem::Reset()
 
 }
 
+ClassImp(FrsMainCalScalerItem)
+
 FrsMainCalSciItem::FrsMainCalSciItem()
 {
 
@@ -39,6 +41,8 @@ void FrsMainCalSciItem::Reset() //?
     tdc_array = 0;
 }
 
+ClassImp(FrsMainCalSciItem)
+
 FrsMainCalMusicItem::FrsMainCalMusicItem()
 {
 
@@ -57,4 +61,3 @@ void FrsMainCalMusicItem::Reset()
 }
 
 ClassImp(FrsMainCalMusicItem)
-ClassImp(FrsMainCalSciItem)

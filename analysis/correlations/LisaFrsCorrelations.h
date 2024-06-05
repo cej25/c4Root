@@ -4,6 +4,7 @@
 #include "TLisaConfiguration.h"
 #include "TFrsConfiguration.h"
 #include "TCorrelationsConfiguration.h"
+#include "FrsTravMusCalData.h"
 #include "LisaCalData.h"
 #include "../../config/setup.h"
 #include "FrsGate.h"
@@ -32,6 +33,7 @@ class TFolder;
 class TDirectory;
 class FrsGate;
 class TGraph;
+class TCanvas;
 
 class LisaFrsCorrelations : public FairTask
 {
@@ -51,6 +53,8 @@ class LisaFrsCorrelations : public FairTask
 
     private:
 
+        
+
         TLisaConfiguration const* lisa_config;
         TFrsConfiguration const* frs_config;
         TCorrelationsConfiguration const* correl_config;
@@ -60,13 +64,59 @@ class LisaFrsCorrelations : public FairTask
 
         std::vector<LisaCalItem> const* lisaCalArray;
         std::vector<FrsHitItem> const* frsHitArray;
+        std::vector<FrsTravMusCalItem> const* travMusicArray;
+        std::vector<FrsMultiHitItem> const* multihitArray;
+
 
         Int_t fNEvents;
         EventHeader* header;
 
-        TFolder* histograms;
         TDirectory* dir_corr;
         TDirectory* dir_lisa_frs;
+
+        //common var
+        int layer_number;
+        int multi_evt = 0;
+
+        int64_t wr_LISA;
+        int64_t wr_FRS;
+        int64_t wr_travMUSIC;
+        int64_t wr_LISA_FRS;
+        int64_t wr_LISA_travMUSIC;
+        int64_t wr_travMUSIC_FRS;
+        Float_t s2_x;
+        Float_t s2_y;
+        Float_t energy_MUSIC_1;
+        Float_t energy_MUSIC_2;
+        Float_t energy_travMUSIC;
+        int xmax;
+        int ymax;
+        std::string city = "";
+
+        Int_t layer;
+
+        //Canvases
+        TCanvas* c_wr_diff;
+        TCanvas* c_MUSIC_1_layer;
+        TCanvas* c_MUSIC_2_layer;
+        TCanvas* c_travMUSIC_layer;
+        TCanvas* c_xy_pos_layer1;
+        TCanvas* c_xy_pos_layer2;
+        std::vector<std::vector<TCanvas*>> c_energy_layer_ch_gated;
+        std::vector<std::vector<TCanvas*>> c_energy_layer_ch_gated_T;
+        std::vector<std::vector<std::vector<std::vector<TCanvas*>>>> c_energy;
+
+
+        //Histograms
+        std::vector<TH1I*> h1_wr_diff;
+        std::vector<TH2F*> h2_MUSIC_1_layer;
+        std::vector<TH2F*> h2_MUSIC_2_layer;
+        std::vector<TH2F*> h2_travMUSIC_layer;
+        std::vector<TH2F*> h2_xy_pos_layer1;
+        std::vector<TH2F*> h2_xy_pos_layer2;
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch;
+        std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_layer_ch_gated;
+        std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_layer_ch_gated_T;
 
     public:
         ClassDef(LisaFrsCorrelations, 1)
