@@ -17,6 +17,7 @@
 
 #include "TCanvas.h"
 #include "TClonesArray.h"
+#include "TF1.h"
 #include "TGraph.h"
 #include "THttpServer.h"
 #include "TMath.h"
@@ -59,6 +60,10 @@ InitStatus GermaniumOnlineSpectra::Init()
     FairRunOnline * run = FairRunOnline::Instance();
     run->GetHttpServer()->Register("", this);
 
+    run->GetHttpServer()->RegisterCommand("Reset_Ge_Histo", Form("/Objects/%s/->Reset_Ge_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Snapshot_Ge_Histo", Form("/Objects/%s/->Snapshot_Ge_Histo()", GetName()));
+    
+
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
@@ -88,7 +93,14 @@ InitStatus GermaniumOnlineSpectra::Init()
     dir_germanium_hitpattern = dir_germanium->mkdir("Hit Pattern");
     dir_germanium_multiplicity = dir_germanium->mkdir("Multiplicity");
     dir_germanium_sci41 = dir_germanium->mkdir("SCI41");
+    dir_germanium_resolution = dir_germanium->mkdir("Resolutions");
     dir_germanium_rates = dir_germanium->mkdir("Rate Monitors");
+
+    detector_labels = new const char*[number_of_detectors_to_plot];
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
+        detector_labels[ihist] = Form("%d%c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65));
+    }
+    
 
     // energy spectra:
     dir_germanium_energy->cd();
@@ -240,28 +252,160 @@ InitStatus GermaniumOnlineSpectra::Init()
     for (int i = 0; i < number_of_detectors_to_plot; i++) h1_germanium_rates[i] = MakeTH1(dir_germanium_rates, "I", Form("h1_germanium_rates_det%i_crystal%i", crystals_to_plot.at(i).first, crystals_to_plot.at(i).second), Form("DEGAS Rate Detector %i Crystal %i", crystals_to_plot.at(i).first, crystals_to_plot.at(i).second), 1800, 0, 1800, "Time [2s]", kCyan, kBlack);
 
     
-    run->GetHttpServer()->RegisterCommand("Reset_Ge_Histo", Form("/Objects/%s/->Reset_Ge_Histo()", GetName()));
-    run->GetHttpServer()->RegisterCommand("Snapshot_Ge_Histo", Form("/Objects/%s/->Snapshot_Ge_Histo()", GetName()));
-        
     dir_germanium_hitpattern->cd();
     c_germanium_hitpattern = new TCanvas("c_germanium_hitpattern","Hit pattern DEGAS",650,350);
-    detector_labels = new char*[number_of_detectors_to_plot];
-    
+        
     h1_germanium_hitpattern = new TH1F("h1_germanium_hitpattern","Hit pattern of DEGAS",number_of_detectors_to_plot,0,number_of_detectors_to_plot);
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
+        h1_germanium_hitpattern->GetXaxis()->SetBinLabel(ihist+1,Form("%d%c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)));
+    }
     h1_germanium_hitpattern->GetXaxis()->SetAlphanumeric();
     h1_germanium_hitpattern->GetXaxis()->LabelsOption("a");
     h1_germanium_hitpattern->GetXaxis()->SetTitle("crystal");
     
-    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
-        detector_labels[ihist] = Form("%d%c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65));
-        h1_germanium_hitpattern->GetXaxis()->SetBinLabel(ihist+1,detector_labels[ihist]);
-    }
 
     h1_germanium_hitpattern->GetYaxis()->SetTitle("counts");
     h1_germanium_hitpattern->SetStats(0);
     h1_germanium_hitpattern->Draw();
     c_germanium_hitpattern->cd(0);
     dir_germanium_hitpattern->Append(c_germanium_hitpattern);
+    dir_germanium->cd();
+
+
+    // RESOLUTIONS:
+    
+    dir_germanium_resolution->cd();
+
+    f1_gaussian = new TF1("f1_gaussian","gaus",centroid_resolution-width_resolution,centroid_resolution+width_resolution);
+
+
+    c1_germanium_energy_last  = new TCanvas("c1_germanium_energy_last","Calibrated Germanium spectra",650,350);
+    c1_germanium_energy_last->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
+    h1_germanium_energy_last = new TH1F*[number_of_detectors_to_plot];
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
+        c1_germanium_energy_last->cd(ihist+1);
+        h1_germanium_energy_last[ihist] = new TH1F(Form("h1_germanium_energy_last_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+        h1_germanium_energy_last[ihist]->GetXaxis()->SetTitle("energy (keV)");
+        h1_germanium_energy_last[ihist]->Draw();
+    }
+    c1_germanium_energy_last->cd(0);
+
+    dir_germanium_resolution->Append(c1_germanium_energy_last);
+
+    c1_germanium_energy_last_fitted  = new TCanvas("c1_germanium_energy_last_fitted","Calibrated Germanium spectra",650,350);
+    c1_germanium_energy_last_fitted->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
+    h1_germanium_energy_last_fitted = new TH1F*[number_of_detectors_to_plot];
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
+        c1_germanium_energy_last_fitted->cd(ihist+1);
+        h1_germanium_energy_last_fitted[ihist] = new TH1F(Form("h1_germanium_energy_last_fitted_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+        h1_germanium_energy_last_fitted[ihist]->GetXaxis()->SetTitle("energy (keV)");
+        h1_germanium_energy_last_fitted[ihist]->Draw();
+    }
+    c1_germanium_energy_last_fitted->cd(0);
+    dir_germanium_resolution->Append(c1_germanium_energy_last_fitted);
+
+    dir_germanium_resolution->cd();
+    c_last_resolutions_FWHM = new TCanvas("c_last_resolutions_FWHM",Form("Last measurement of the resolution at E = %i keV DEGAS",(int)centroid_resolution),650,350);
+    c_last_resolutions_FWHM->Divide(3);
+    c_last_resolutions_FWHM->cd(1);
+    
+    h1_last_resolutions_FWHM = new TH1F("h1_last_resolutions_FWHM",Form("Last measurement of the FWHM at E = %i keV DEGAS",(int)centroid_resolution),number_of_detectors_to_plot,0,number_of_detectors_to_plot);
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
+        h1_last_resolutions_FWHM->GetXaxis()->SetBinLabel(ihist+1,Form("%d%c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)));
+    }
+
+    h1_last_resolutions_FWHM->GetXaxis()->SetAlphanumeric();
+    h1_last_resolutions_FWHM->GetXaxis()->LabelsOption("a");
+    h1_last_resolutions_FWHM->GetXaxis()->SetTitle("crystal");
+    
+    h1_last_resolutions_FWHM->GetYaxis()->SetTitle("FWHM (keV)");
+    h1_last_resolutions_FWHM->SetStats(0);
+    h1_last_resolutions_FWHM->Draw("HIST");
+
+    c_last_resolutions_FWHM->cd(2);    
+    h1_last_resolutions_FWTM = new TH1F("h1_last_resolutions_FWTM",Form("Last measurement of the FWTM at E = %i keV DEGAS",(int)centroid_resolution),number_of_detectors_to_plot,0,number_of_detectors_to_plot);
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
+        h1_last_resolutions_FWTM->GetXaxis()->SetBinLabel(ihist+1,Form("%d%c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)));
+    }
+
+    h1_last_resolutions_FWTM->GetXaxis()->SetAlphanumeric();
+    h1_last_resolutions_FWTM->GetXaxis()->LabelsOption("a");
+    h1_last_resolutions_FWTM->GetXaxis()->SetTitle("crystal");
+    
+    h1_last_resolutions_FWTM->GetYaxis()->SetTitle("counts");
+    h1_last_resolutions_FWTM->SetStats(0);
+    h1_last_resolutions_FWTM->Draw("HIST");
+    
+    c_last_resolutions_FWHM->cd(3);    
+    h1_last_resolutions_gratio = new TH1F("h1_last_resolutions_gratio",Form("Last measurement of the FWTM at E = %i keV DEGAS",(int)centroid_resolution),number_of_detectors_to_plot,0,number_of_detectors_to_plot);
+    
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
+        h1_last_resolutions_gratio->GetXaxis()->SetBinLabel(ihist+1,Form("%d%c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)));
+    }
+
+    h1_last_resolutions_gratio->GetXaxis()->SetAlphanumeric();
+    h1_last_resolutions_gratio->GetXaxis()->LabelsOption("a");
+    h1_last_resolutions_gratio->GetXaxis()->SetTitle("crystal");
+    h1_last_resolutions_gratio->GetYaxis()->SetTitle("counts");
+    h1_last_resolutions_gratio->SetStats(0);
+    h1_last_resolutions_gratio->Draw("HIST");
+
+    dir_germanium_resolution->Append(c_last_resolutions_FWHM);
+
+    
+    c_resolutions_FWHM  = new TCanvas("c_resolutions_FWHM","Resolutions",650,350);
+    c_resolutions_FWHM->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
+    g1_resolutions_FWHM = new TGraph*[number_of_detectors_to_plot];
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
+        c_resolutions_FWHM->cd(ihist+1);
+        g1_resolutions_FWHM[ihist] = new TGraph();
+        g1_resolutions_FWHM[ihist]->SetName(Form("g1_resolutions_FWHM_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second));
+        g1_resolutions_FWHM[ihist]->SetTitle(Form("DEGAS resolution FWHM detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)));
+        g1_resolutions_FWHM[ihist]->GetXaxis()->SetTitle("time since start (sec)");
+        g1_resolutions_FWHM[ihist]->GetYaxis()->SetTitle("FWHM (keV)");
+        g1_resolutions_FWHM[ihist]->Draw("ALP");
+        dir_germanium_resolution->Append(g1_resolutions_FWHM[ihist]);
+    }
+    c_resolutions_FWHM->cd(0);
+    dir_germanium_resolution->Append(c_resolutions_FWHM);
+
+
+    c_resolutions_FWTM  = new TCanvas("c_resolutions_FWTM","Resolutions",650,350);
+    c_resolutions_FWTM->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
+    g1_resolutions_FWTM = new TGraph*[number_of_detectors_to_plot];
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
+        c_resolutions_FWTM->cd(ihist+1);
+        g1_resolutions_FWTM[ihist] = new TGraph();
+        g1_resolutions_FWTM[ihist]->SetName(Form("g1_resolutions_FWTM_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second));
+        g1_resolutions_FWTM[ihist]->SetTitle(Form("DEGAS resolution FWTM detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)));
+        g1_resolutions_FWTM[ihist]->GetXaxis()->SetTitle("time since start (sec)");
+        g1_resolutions_FWTM[ihist]->GetYaxis()->SetTitle("FWTM (keV)");
+        g1_resolutions_FWTM[ihist]->Draw("ALP");
+        dir_germanium_resolution->Append(g1_resolutions_FWTM[ihist]);
+    }
+    c_resolutions_FWTM->cd(0);
+    dir_germanium_resolution->Append(c_resolutions_FWTM);
+
+
+    c_resolutions_gratio  = new TCanvas("c_resolutions_gratio","Resolutions",650,350);
+    c_resolutions_gratio->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
+    g1_resolutions_gratio = new TGraph*[number_of_detectors_to_plot];
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
+        c_resolutions_gratio->cd(ihist+1);
+        g1_resolutions_gratio[ihist] = new TGraph();
+        g1_resolutions_gratio[ihist]->SetName(Form("g1_resolutions_gratio_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second));
+        g1_resolutions_gratio[ihist]->SetTitle(Form("DEGAS resolution gratio detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)));
+        g1_resolutions_gratio[ihist]->GetXaxis()->SetTitle("time since start (sec)");
+        g1_resolutions_gratio[ihist]->GetYaxis()->SetTitle("gratio (keV)");
+        g1_resolutions_gratio[ihist]->Draw("ALP");
+        dir_germanium_resolution->Append(g1_resolutions_gratio[ihist]);
+
+    }
+    c_resolutions_gratio->cd(0);
+    dir_germanium_resolution->Append(c_resolutions_gratio);
+
+
+
     dir_germanium->cd();
 
 
@@ -381,6 +525,10 @@ void GermaniumOnlineSpectra::Snapshot_Ge_Histo()
 void GermaniumOnlineSpectra::Exec(Option_t* option){
 
     if (fHitGe && fHitGe->GetEntriesFast() > 0){
+
+        if (first_time == 0){
+            first_time = ((GermaniumCalData*)fHitGe->At(0))->Get_wr_t();
+        }
     
         Int_t nHits = fHitGe->GetEntriesFast();
         int event_multiplicity = 0;
@@ -390,9 +538,10 @@ void GermaniumOnlineSpectra::Exec(Option_t* option){
         bool sci41_seen = false; // off-spill raw spectra
 
         for (Int_t ihit = 0; ihit < nHits; ihit++){ // core loop for basic detector spectra and simple conincidences.
-    
+            
             GermaniumCalData* hit1 = (GermaniumCalData*)fHitGe->At(ihit);
             if (!hit1) continue;
+            if (ihit == 0) current_wr = hit1->Get_wr_t();
             int detector_id1 = hit1->Get_detector_id();
             int crystal_id1 = hit1->Get_crystal_id();
             double energy1 = hit1->Get_channel_energy();
@@ -412,9 +561,10 @@ void GermaniumOnlineSpectra::Exec(Option_t* option){
             if (crystal_index1 >= crystals_to_plot.size()) continue;
             
             h1_germanium_energy[crystal_index1]->Fill(energy1);
+            h1_germanium_energy_last[crystal_index1]->Fill(energy1);
             h2_germanium_energy_vs_detidx->Fill(hit1->Get_channel_energy(),crystal_index1);
             h1_germanium_time[crystal_index1]->Fill(time1);
-            h1_germanium_hitpattern->Fill(detector_labels[crystal_index1],1);
+            h1_germanium_hitpattern->Fill(Form("%d%c",crystals_to_plot.at(crystal_index1).first,(char)(crystals_to_plot.at(crystal_index1).second+65)),1);
             if (!(germanium_configuration->IsDetectorAuxilliary(detector_id1))) h1_germanium_energy_summed->Fill(energy1);
 
 
@@ -558,11 +708,88 @@ void GermaniumOnlineSpectra::Exec(Option_t* option){
 }
 
 void GermaniumOnlineSpectra::FinishEvent()
-{
-    if (fHitGe)
+{   
+    if (first_time > 0)
     {
+        if (((int64_t)current_wr - (int64_t)last_time_resolution_was_measured)/1e9 > seconds_to_collect_resolution){
+            c4LOG(info, "Finding resolutions");
+            h1_last_resolutions_FWHM->Reset();
+            h1_last_resolutions_FWTM->Reset();
+            h1_last_resolutions_gratio->Reset();
+
+
+            // measure resolutions:
+            for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
+                f1_gaussian->SetParameter(0,1e3);
+                f1_gaussian->SetParameter(1,centroid_resolution);
+                f1_gaussian->SetParameter(2,width_resolution);
+
+                c1_germanium_energy_last_fitted->cd(ihist+1);
+
+                TString name = h1_germanium_energy_last_fitted[ihist]->GetName();
+                if (h1_germanium_energy_last_fitted[ihist] != nullptr){
+                    delete h1_germanium_energy_last_fitted[ihist];
+                }
+                h1_germanium_energy_last_fitted[ihist] = (TH1F*)h1_germanium_energy_last[ihist]->Clone(name);
+                
+                Int_t fitresult = h1_germanium_energy_last_fitted[ihist]->Fit(f1_gaussian,"QRL");
+
+
+                if (fitresult == 0){
+
+                h1_germanium_energy_last_fitted[ihist]->Draw();
+                //f1_gaussian->Draw();
+
+                double fwhm = f1_gaussian->GetParameter(2)*2.355;
+                
+                double tenthmaximum = f1_gaussian->Eval(f1_gaussian->GetParameter(1))/10.0;
+        
+                int binnr1 = h1_germanium_energy[ihist]->FindBin(centroid_resolution-50);
+                int binnr2 = h1_germanium_energy[ihist]->FindBin(centroid_resolution+50);
+                int binlow = h1_germanium_energy_last_fitted[ihist]->FindFirstBinAbove(tenthmaximum,1,binnr1,binnr2);
+                int binhigh = h1_germanium_energy_last_fitted[ihist]->FindLastBinAbove(tenthmaximum,1,binnr1,binnr2);
+
+                double fwtm = h1_germanium_energy_last_fitted[ihist]->GetBinCenter(binhigh) - h1_germanium_energy_last_fitted[ihist]->GetBinCenter(binlow);
+
+                c_resolutions_FWHM->cd(ihist+1);
+                g1_resolutions_FWHM[ihist]->AddPoint(((int64_t)current_wr - (int64_t)first_time)/1e9, fwhm);
+                g1_resolutions_FWHM[ihist]->Draw("ALP");
+                
+                c_resolutions_FWTM->cd(ihist+1);
+                g1_resolutions_FWTM[ihist]->AddPoint(((int64_t)current_wr - (int64_t)first_time)/1e9, fwtm);
+                g1_resolutions_FWTM[ihist]->Draw("ALP");
+                
+                c_resolutions_gratio->cd(ihist+1);
+                g1_resolutions_gratio[ihist]->AddPoint(((int64_t)current_wr - (int64_t)first_time)/1e9, fwtm/fwhm);
+                g1_resolutions_gratio[ihist]->Draw("ALP");
+                //c_resolutions_FWHM->cd(0);
+                
+                c_last_resolutions_FWHM->cd(1);
+                h1_last_resolutions_FWHM->Fill(Form("%d%c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),fwhm);
+                h1_last_resolutions_FWHM->Draw("HIST");
+                c_last_resolutions_FWHM->cd(2);
+                h1_last_resolutions_FWTM->Fill(Form("%d%c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),fwtm);
+                h1_last_resolutions_FWTM->Draw("HIST");
+                c_last_resolutions_FWHM->cd(3);
+                h1_last_resolutions_gratio->Fill(Form("%d%c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),fwtm/fwhm);
+                h1_last_resolutions_gratio->Draw("HIST");
+                c_last_resolutions_FWHM->cd(0);
+
+                }
+
+                last_time_resolution_was_measured = current_wr;
+
+                h1_germanium_energy_last[ihist]->Reset();
+            }
+        }
+    }
+
+    if (fHitGe){
         fHitGe->Clear();
     }
+
+
+
 }
 
 void GermaniumOnlineSpectra::FinishTask()
