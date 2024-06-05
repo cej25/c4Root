@@ -173,16 +173,6 @@ void FrsCal2Hit::Exec(Option_t* option)
 
     if (wr_t == 0) return; // ACTUAL no whiterabbit
 
-    
-    uint64_t wr_t = 0; uint16_t tpat = 0;
-
-    auto const & tpatItem = tpatArray->at(0);
-
-    wr_t = tpatItem.Get_wr_t();
-    tpat = tpatItem.Get_tpat();
-
-    if (wr_t == 0) return; // ACTUAL no whiterabbit
-
     if (scaler_check_first_event == 1)
     {
         for (auto const & mainScalerItem : *mainScalerArray)
@@ -201,40 +191,17 @@ void FrsCal2Hit::Exec(Option_t* option)
             sc_user_initial[index] = scaler; // index -1? test
             sc_user_previous[index] = scaler;
             sc_user_current[index] = scaler;
-        for (auto const & mainScalerItem : *mainScalerArray)
-        {
-            uint32_t index = mainScalerItem.Get_index();
-            uint32_t scaler = mainScalerItem.Get_scaler();
-            sc_main_initial[index] = scaler; // index -1? test
-            sc_main_previous[index] = scaler;
-            sc_main_current[index] = scaler;
         }
-
-        for (auto const & userScalerItem : *userScalerArray)
-        {
-            uint32_t index = userScalerItem.Get_index();
-            uint32_t scaler = userScalerItem.Get_scaler();
-            sc_user_initial[index] = scaler; // index -1? test
-            sc_user_previous[index] = scaler;
-            sc_user_current[index] = scaler;
-        }
-
-        scaler_check_first_event = 0;
         scaler_check_first_event = 0;
     }
-
-    time_in_ms = sc_main_current[scaler_ch_1kHz] - sc_main_initial[scaler_ch_1kHz];
 
     time_in_ms = sc_main_current[scaler_ch_1kHz] - sc_main_initial[scaler_ch_1kHz];
 
     if (time_in_ms < 0)
     {
         sc_main_initial[scaler_ch_1kHz] = sc_main_current[scaler_ch_1kHz];
-        sc_main_initial[scaler_ch_1kHz] = sc_main_current[scaler_ch_1kHz];
         time_in_ms = 0;
     }
-
-    spill_count = sc_user_current[scaler_ch_spillstart] - sc_user_initial[scaler_ch_spillstart];
 
     spill_count = sc_user_current[scaler_ch_spillstart] - sc_user_initial[scaler_ch_spillstart];
 
@@ -247,8 +214,6 @@ void FrsCal2Hit::Exec(Option_t* option)
     {
         increase_sc_temp_main[k] = sc_main_current[k] - sc_main_previous[k];
         increase_sc_temp_user[k] = sc_user_current[k] - sc_user_previous[k];
-        increase_sc_temp_main[k] = sc_main_current[k] - sc_main_previous[k];
-        increase_sc_temp_user[k] = sc_user_current[k] - sc_user_previous[k];
     }
 
     if (increase_sc_temp_user[0] != 0) // not sure how the go4 is dealing with this zero dividing
@@ -259,9 +224,6 @@ void FrsCal2Hit::Exec(Option_t* option)
 
     extraction_time_ms += sc_main_current[scaler_ch_1kHz] - sc_main_previous[scaler_ch_1kHz];
 
-    extraction_time_ms += sc_main_current[scaler_ch_1kHz] - sc_main_previous[scaler_ch_1kHz];
-
-    if((sc_user_current[scaler_ch_spillstart] - sc_user_previous[scaler_ch_spillstart]) != 0)
     if((sc_user_current[scaler_ch_spillstart] - sc_user_previous[scaler_ch_spillstart]) != 0)
     {
         extraction_time_ms = 0;
@@ -277,9 +239,6 @@ void FrsCal2Hit::Exec(Option_t* option)
         sc_main_previous[i] = sc_main_current[i];
         sc_user_previous[i] = sc_user_current[i];
     }
-        sc_main_previous[i] = sc_main_current[i];
-        sc_user_previous[i] = sc_user_current[i];
-    }
 
 
     /* ---------------------------------------------------- */
@@ -290,10 +249,6 @@ void FrsCal2Hit::Exec(Option_t* option)
     
     music_t1 = mainMusicItem.Get_music_t1();
     music_t2 = mainMusicItem.Get_music_t2();
-
-    auto const & userMusicItem = userMusicArray->at(0);
-    music_e1 = userMusicItem.Get_music_e1();
-    music_e2 = userMusicItem.Get_music_e2();
 
     if (travMusicArray)
     {
@@ -483,11 +438,6 @@ void FrsCal2Hit::Exec(Option_t* option)
     auto const & tpcCalItem = tpcCalArray->at(0);
 
     b_tpc_xy = tpcCalItem.Get_b_tpc_xy();
-
-    // we should extract everything from tpc.....
-    auto const & tpcCalItem = tpcCalArray->at(0);
-
-    b_tpc_xy = tpcCalItem.Get_b_tpc_xy();
     
     if (b_tpc_xy[4] && b_tpc_xy[5])
     {
@@ -605,62 +555,6 @@ void FrsCal2Hit::Exec(Option_t* option)
                 sc22pos_from_tpc = tpcCalItem.Get_tpc23_24_sc22_x();
                 sc22pos_from_tpc = tpcCalItem.Get_tpc23_24_sc22_x();
             }
-        }
-    }
-
-    // SCI 41 L and R
-    int hits_in_41lr = mainSciItem.Get_mhtdc_sc41l_nr_hits()*mainSciItem.Get_mhtdc_sc41r_nr_hits();
-    mhtdc_sc41lr_dt = new Float_t[hits_in_41lr];
-    mhtdc_sc41lr_x = new Float_t[hits_in_41lr];
-    for (int i = 0; i < mainSciItem.Get_mhtdc_sc41l_nr_hits(); i++)
-    {
-        for (int j = 0; j < mainSciItem.Get_mhtdc_sc41r_nr_hits(); j ++){
-        mhtdc_sc41lr_dt[i*mainSciItem.Get_mhtdc_sc41r_nr_hits() + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + mainSciItem.Get_mhtdc_sc41l_hit(i) - mainSciItem.Get_mhtdc_sc41r_hit(j));
-        mhtdc_sc41lr_x[i*mainSciItem.Get_mhtdc_sc41r_nr_hits() + j] = mhtdc_sc41lr_dt[i*mainSciItem.Get_mhtdc_sc41r_nr_hits() + j] * sci->mhtdc_factor_41l_41r + sci->mhtdc_offset_41l_41r;
-        }
-    }
-    // SCI 42 L and R
-    int hits_in_42lr = mainSciItem.Get_mhtdc_sc42l_nr_hits()*mainSciItem.Get_mhtdc_sc42r_nr_hits();
-    mhtdc_sc42lr_dt = new Float_t[hits_in_42lr];
-    mhtdc_sc42lr_x = new Float_t[hits_in_42lr];
-    for (int i = 0; i < mainSciItem.Get_mhtdc_sc42l_nr_hits(); i++)
-    {
-        for (int j = 0; j < mainSciItem.Get_mhtdc_sc42r_nr_hits(); j ++){
-        mhtdc_sc42lr_dt[i*mainSciItem.Get_mhtdc_sc42r_nr_hits() + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + mainSciItem.Get_mhtdc_sc42l_hit(i) - mainSciItem.Get_mhtdc_sc42r_hit(j));
-        mhtdc_sc42lr_x[i*mainSciItem.Get_mhtdc_sc42r_nr_hits() + j] = mhtdc_sc42lr_dt[i*mainSciItem.Get_mhtdc_sc42l_nr_hits() + j] * sci->mhtdc_factor_42l_42r + sci->mhtdc_offset_42l_42r;
-        }
-    }
-    // SCI 43 L and R
-    int hits_in_43lr = mainSciItem.Get_mhtdc_sc43l_nr_hits()*mainSciItem.Get_mhtdc_sc43r_nr_hits();
-    mhtdc_sc43lr_dt = new Float_t[hits_in_43lr];
-    mhtdc_sc43lr_x = new Float_t[hits_in_43lr];
-    for (int i = 0; i < mainSciItem.Get_mhtdc_sc43l_nr_hits(); i++)
-    {
-        for (int j = 0; j < mainSciItem.Get_mhtdc_sc43r_nr_hits(); j ++){
-        mhtdc_sc43lr_dt[i*mainSciItem.Get_mhtdc_sc43r_nr_hits() + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + mainSciItem.Get_mhtdc_sc43l_hit(i) - mainSciItem.Get_mhtdc_sc43r_hit(j));
-        mhtdc_sc43lr_x[i*mainSciItem.Get_mhtdc_sc43r_nr_hits() + j] = mhtdc_sc43lr_dt[i*mainSciItem.Get_mhtdc_sc43r_nr_hits() + j] * sci->mhtdc_factor_43l_43r + sci->mhtdc_offset_43l_43r;
-        }
-    }
-    // SCI 31 L and R
-    int hits_in_31lr = mainSciItem.Get_mhtdc_sc31l_nr_hits()*mainSciItem.Get_mhtdc_sc31r_nr_hits();
-    mhtdc_sc31lr_dt = new Float_t[hits_in_31lr];
-    mhtdc_sc31lr_x = new Float_t[hits_in_31lr];
-    for (int i = 0; i < mainSciItem.Get_mhtdc_sc31l_nr_hits(); i++)
-    {
-        for (int j = 0; j < mainSciItem.Get_mhtdc_sc31r_nr_hits(); j ++){
-        mhtdc_sc31lr_dt[i*mainSciItem.Get_mhtdc_sc31r_nr_hits() + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + mainSciItem.Get_mhtdc_sc31l_hit(i) - mainSciItem.Get_mhtdc_sc31r_hit(j));
-        mhtdc_sc31lr_x[i*mainSciItem.Get_mhtdc_sc31r_nr_hits() + j] = mhtdc_sc31lr_dt[i*mainSciItem.Get_mhtdc_sc31r_nr_hits() + j] * sci->mhtdc_factor_31l_31r + sci->mhtdc_offset_31l_31r;
-        }
-    }
-      
-    // 21 -> 41
-    int hits_in_tof4121 = hits_in_41lr*hits_in_21lr;
-    mhtdc_tof4121 = new Float_t[hits_in_tof4121];
-    for (int i = 0; i < hits_in_21lr; i++) // over 21 hits
-    {
-        for (int j = 0; j<hits_in_41lr; j++)
-        {
-            mhtdc_tof4121[i*hits_in_41lr + j] = sci->mhtdc_factor_ch_to_ns * (0.5 * (mainSciItem.Get_mhtdc_sc41l_hit(j) + mainSciItem.Get_mhtdc_sc41r_hit(j)) - 0.5 * (mainSciItem.Get_mhtdc_sc21l_hit(i) + mainSciItem.Get_mhtdc_sc21r_hit(i))) + sci->mhtdc_offset_41_21;
         }
     }
 
@@ -899,9 +793,6 @@ void FrsCal2Hit::Exec(Option_t* option)
     /*----------------------------------------------------------*/
     // Calibrated ToF - dt will be in dt_array, from UserCrate
     /*----------------------------------------------------------*/
-    Float_t sci_tof[6];
-    Float_t sci_tof_calib[6];
-
     Float_t sci_tof[6];
     Float_t sci_tof_calib[6];
 
@@ -1272,8 +1163,6 @@ void FrsCal2Hit::Exec(Option_t* option)
     temp_s4x = -999.;
     if (b_tpc_xy[4] && b_tpc_xy[5])
     {
-        temp_s4x = tpcCalItem.Get_tpc_x_s4();
-    }
         temp_s4x = tpcCalItem.Get_tpc_x_s4();
     }
 

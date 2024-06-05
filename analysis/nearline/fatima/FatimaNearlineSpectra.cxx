@@ -65,6 +65,7 @@ InitStatus FatimaNearlineSpectra::Init()
     dir_fatima_fastToT = gDirectory->mkdir("FastToT");
     dir_fatima_hitpattern = gDirectory->mkdir("Hit Pattern");
     dir_fatima_fast_v_slow = gDirectory->mkdir("Fast Vs. Slow");
+    dir_fatima_drift = gDirectory->mkdir("Energy Drift");
     dir_fatima_energy_spectra = gDirectory->mkdir("Energy Spectra");
     dir_fatima_time_spectra = gDirectory->mkdir("Time Spectra");
     dir_fatima_sci41 = dir_fatima->mkdir("SCI41");
@@ -105,6 +106,15 @@ InitStatus FatimaNearlineSpectra::Init()
         h2_fatima_fast_v_slow[ihist] = new TH2F(Form("h2_fatima_fast_v_slow_ToT_%d",detectors.at(ihist)),Form("FATIMA fast vs. slow detector %d",detectors.at(ihist)),ffast_tot_nbins,ffast_tot_bin_low,ffast_tot_bin_high,fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high);
         h2_fatima_fast_v_slow[ihist]->GetXaxis()->SetTitle("fast ToT (ns)");
         h2_fatima_fast_v_slow[ihist]->GetYaxis()->SetTitle("slow ToT (ns)");
+    }
+
+    dir_fatima_drift->cd();
+    h2_fatima_energy_vs_t.resize(number_detectors);
+    for (int ihist = 0; ihist < number_detectors; ihist++){
+        h2_fatima_energy_vs_t[ihist] = new TH2F(Form("h2_fatima_energy_vs_t_%d",detectors.at(ihist)),Form("FATIMA energy vs. time detector %d",detectors.at(ihist)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,5000,0,10750);
+        h2_fatima_energy_vs_t[ihist]->GetXaxis()->SetTitle("Time (mins)");
+        h2_fatima_energy_vs_t[ihist]->GetYaxis()->SetTitle("Energy (keV)");
+        h2_fatima_energy_vs_t[ihist]->SetOption("COLZ");
     }
 
     // Spectra relating to SCI41:
@@ -221,6 +231,7 @@ void FatimaNearlineSpectra::Exec(Option_t* option)
     {
         event_multiplicity = 0;
         Int_t nHits = fHitFatimaTwinpeaks->GetEntriesFast();
+        Long64_t fati_time = 0;
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {   
             FatimaTwinpeaksCalData* hit = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(ihit);
@@ -231,6 +242,7 @@ void FatimaNearlineSpectra::Exec(Option_t* option)
             double fast_ToT1 = hit->Get_fast_ToT();
             double energy1 = hit->Get_energy();
             double fast_lead1 = hit->Get_fast_lead_time();
+            if (hit->Get_wr_t() > 0) fati_time = (hit->Get_wr_t() - 1.7137224e+18)/ 60E9; // convert ns start to minutes
             
             int detector_id1 = hit->Get_detector_id();
 
@@ -244,6 +256,7 @@ void FatimaNearlineSpectra::Exec(Option_t* option)
             h1_fatima_energy[detector_index1]->Fill(energy1);
             h1_fatima_fastToT[detector_index1]->Fill(fast_ToT1);
             h2_fatima_fast_v_slow[detector_index1]->Fill(fast_ToT1, slow_ToT1);
+            h2_fatima_energy_vs_t[detector_index1]->Fill(fati_time, energy1);
             h1_fatima_abs_time[detector_index1]->Fill(fast_lead1);
             
             h2_fatima_energy_vs_detid->Fill(energy1, detector_id1);
