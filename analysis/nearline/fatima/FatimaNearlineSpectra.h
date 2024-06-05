@@ -5,6 +5,7 @@
 #include "TDirectory.h"
 #include "TFolder.h"
 #include "TFatimaTwinpeaksConfiguration.h"
+#include "TH1.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include <vector>
@@ -12,6 +13,7 @@
 class TClonesArray;
 class EventHeader;
 class TCanvas;
+class TH1;
 class TH1F;
 class TH2F;
 class TDirectory;
@@ -112,6 +114,7 @@ class FatimaNearlineSpectra : public FairTask
         TDirectory* dir_fatima_energy_spectra;
         TDirectory* dir_fatima_time_spectra;
         TDirectory* dir_fatima_sci41;
+        TDirectory* dir_fatima_rates;
         std::vector<TDirectory*> dir_fatima_time_differences;
         
         std::vector<int> detectors = {0,1,2};
@@ -160,11 +163,17 @@ class FatimaNearlineSpectra : public FairTask
         TCanvas * c_fatima_energy_energy_sci41_cut;
         TH2F * h2_fatima_energy_energy_sci41_cut;
         
-
+        TH1** h1_fatima_rates;
 
         double energygate_width = 20;        
             
         int event_multiplicity;
+
+        // rates
+        int64_t saved_fatima_wr = 0;
+        int* detector_counters;
+        int* detector_rates;
+        int rate_running_count = 0;
 
     public:
         ClassDef(FatimaNearlineSpectra, 1)

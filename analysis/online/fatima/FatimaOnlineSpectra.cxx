@@ -283,8 +283,10 @@ InitStatus FatimaOnlineSpectra::Init()
     dir_fatima_sci41->Append(c_fatima_energy_energy_sci41_cut);
     
     // ::: Rates :::: //
-    // replace 36 with number of detectors
-    for (int i = 0; i < 36; i++) h1_fatima_rates[i] = MakeTH1(dir_fatima_rates, "I", Form("h1_fatima_rates_det_%i", i), Form("Rate in FATIMA detector %i", i), 1800, 0, 1800, "Time [2s]", kCyan, kBlack);
+    h1_fatima_rates = new TH1*[number_detectors];
+    detector_counters = new int[number_detectors];
+    detector_rates = new int[number_detectors];
+    for (int i = 0; i < number_detectors; i++) h1_fatima_rates[i] = MakeTH1(dir_fatima_rates, "I", Form("h1_fatima_rates_det_%i", i), Form("Rate in FATIMA detector %i", i), 1800, 0, 1800, "Time [2s]", kCyan, kBlack);
     
     run->GetHttpServer()->RegisterCommand("Reset_FATIMA_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
     run->GetHttpServer()->RegisterCommand("Snapshot_FATIMA_Histo", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
@@ -577,7 +579,7 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
         {
             if (saved_fatima_wr != 0)
             {
-                for (int i = 0; i < 36; i++)
+                for (int i = 0; i < number_detectors; i++)
                 {
                     detector_rates[i] = detector_counters[i] / wr_dt;
                     h1_fatima_rates[i]->SetBinContent(rate_running_count, detector_rates[i]);
@@ -586,7 +588,7 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
             
             saved_fatima_wr = fatima_wr;
             rate_running_count++;
-            for (int i = 0; i < 36; i++) detector_counters[i] = 0;
+            for (int i = 0; i < number_detectors; i++) detector_counters[i] = 0;
             if (rate_running_count == 1800) rate_running_count = 0;
         }
 

@@ -177,7 +177,7 @@ class FatimaOnlineSpectra : public FairTask
         TCanvas * c_fatima_energy_energy_sci41_cut;
         TH2F * h2_fatima_energy_energy_sci41_cut;
 
-        TH1* h1_fatima_rates[36];
+        TH1** h1_fatima_rates;
         
         // Binnings:
         int ffast_tot_nbins = 500;
@@ -199,9 +199,8 @@ class FatimaOnlineSpectra : public FairTask
 
         // rates
         int64_t saved_fatima_wr = 0;
-        // can probably change to a pointer, and assign by num_detectors variable
-        int detector_counters[36];
-        int detector_rates[36];
+        int* detector_counters;
+        int* detector_rates;
         int rate_running_count = 0;
 
     public:
