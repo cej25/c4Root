@@ -12,6 +12,7 @@
 #include "GermaniumCalData.h"
 #include "TGermaniumConfiguration.h"
 
+#include "AnalysisTools.h"
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
@@ -75,6 +76,7 @@ InitStatus GermaniumNearlineSpectra::Init()
     dir_germanium_hitpattern = dir_germanium->mkdir("Hit Pattern");
     dir_germanium_multiplicity = dir_germanium->mkdir("Multiplicity");
     dir_germanium_sci41 = dir_germanium->mkdir("SCI41");
+    dir_germanium_rates = dir_germanium->mkdir("Rates");
 
     // energy spectra:
     dir_germanium_energy->cd();
@@ -161,6 +163,12 @@ InitStatus GermaniumNearlineSpectra::Init()
             h2_germanium_time_differences_vs_energy[ihist][detid_idx]->SetOption("COLZ");
         }
     }
+
+    detector_counters = new int[number_of_detectors_to_plot];
+    detector_rates = new int[number_of_detectors_to_plot];
+    h1_germanium_rates = new TH1*[number_of_detectors_to_plot];
+    for (int i = 0; i < number_of_detectors_to_plot; i++) h1_germanium_rates[i] = MakeTH1(dir_germanium_rates, "I", Form("h1_germanium_rates_det%i_crystal%i", crystals_to_plot.at(i).first, crystals_to_plot.at(i).second), Form("DEGAS Rate Detector %i Crystal %i", crystals_to_plot.at(i).first, crystals_to_plot.at(i).second), 1800, 0, 1800, "Time [2s]", kCyan, kBlack);
+
         
     dir_germanium_hitpattern->cd();
     detector_labels = new char*[number_of_detectors_to_plot];
@@ -189,6 +197,7 @@ void GermaniumNearlineSpectra::Exec(Option_t* option){
     
         Int_t nHits = fHitGe->GetEntriesFast();
         int event_multiplicity = 0;
+        int64_t germanium_wr = 0;
         
         
         bool sci41_seen = false; // off-spill raw spectra
@@ -208,6 +217,10 @@ void GermaniumNearlineSpectra::Exec(Option_t* option){
             if (detector_id1 == germanium_configuration->SC41L() || detector_id1 == germanium_configuration->SC41R()) sci41_seen = true;
             
             int crystal_index1 = std::distance(crystals_to_plot.begin(), std::find(crystals_to_plot.begin(),crystals_to_plot.end(),std::pair<int,int>(detector_id1,crystal_id1)));
+
+            detector_counters[crystal_index1]++; // for rates
+            germanium_wr = hit1->Get_wr_t();
+
             if (crystal_index1 >= crystals_to_plot.size()) continue;
             
             h1_germanium_energy[crystal_index1]->Fill(energy1);
@@ -284,55 +297,75 @@ void GermaniumNearlineSpectra::Exec(Option_t* option){
 
 
         // Spectra with respect to SCI41:
-        if (nHits >= 2 && sci41_seen){
-        for (int ihit1 = 0; ihit1 < nHits; ihit1 ++){
+        if (nHits >= 2 && sci41_seen)
+        {
+            for (int ihit1 = 0; ihit1 < nHits; ihit1 ++)
+            {
 
-            GermaniumCalData* hit_sci41 = (GermaniumCalData*)fHitGe->At(ihit1);
-            if (!hit_sci41) continue;
-            int detector_id_sci41 = hit_sci41->Get_detector_id();
-            int crystal_id_sci41 = hit_sci41->Get_crystal_id();
-            double energy_sci41 = hit_sci41->Get_channel_energy();
-            double time_sci41 = hit_sci41->Get_channel_trigger_time();
+                GermaniumCalData* hit_sci41 = (GermaniumCalData*)fHitGe->At(ihit1);
+                if (!hit_sci41) continue;
+                int detector_id_sci41 = hit_sci41->Get_detector_id();
+                int crystal_id_sci41 = hit_sci41->Get_crystal_id();
+                double energy_sci41 = hit_sci41->Get_channel_energy();
+                double time_sci41 = hit_sci41->Get_channel_trigger_time();
 
-            // after this test we have the sci41 hit.
-            if (detector_id_sci41 != germanium_configuration->SC41L() && detector_id_sci41 != germanium_configuration->SC41R()) continue;
+                // after this test we have the sci41 hit.
+                if (detector_id_sci41 != germanium_configuration->SC41L() && detector_id_sci41 != germanium_configuration->SC41R()) continue;
 
-            for (int ihit2 = 0; ihit2 < nHits; ihit2 ++){
-                GermaniumCalData* hit2 = (GermaniumCalData*)fHitGe->At(ihit2);
-                if (!hit2) continue;
-                int detector_id1 = hit2->Get_detector_id();
-                int crystal_id1 = hit2->Get_crystal_id();
-                double energy1 = hit2->Get_channel_energy();
-                double time1 = hit2->Get_channel_trigger_time();
+                for (int ihit2 = 0; ihit2 < nHits; ihit2 ++)
+                {
+                    GermaniumCalData* hit2 = (GermaniumCalData*)fHitGe->At(ihit2);
+                    if (!hit2) continue;
+                    int detector_id1 = hit2->Get_detector_id();
+                    int crystal_id1 = hit2->Get_crystal_id();
+                    double energy1 = hit2->Get_channel_energy();
+                    double time1 = hit2->Get_channel_trigger_time();
 
-                if (germanium_configuration->IsDetectorAuxilliary(detector_id1)) continue;
+                    if (germanium_configuration->IsDetectorAuxilliary(detector_id1)) continue;
 
-                double timediff = time1 - time_sci41 - germanium_configuration->GetTimeshiftCoefficient(detector_id1,crystal_id1);
-                
-                h2_germanium_energy_summed_vs_tsci41->Fill(timediff ,energy1);
+                    double timediff = time1 - time_sci41 - germanium_configuration->GetTimeshiftCoefficient(detector_id1,crystal_id1);
+                    
+                    h2_germanium_energy_summed_vs_tsci41->Fill(timediff ,energy1);
 
-                if ((TMath::Abs(time1-time_sci41 > 0)) || (germanium_configuration->IsInsidePromptFlashCut(timediff ,energy1)==false) ) h1_germanium_energy_summed_vs_tsci41_cut->Fill(energy1);
+                    if ((TMath::Abs(time1-time_sci41 > 0)) || (germanium_configuration->IsInsidePromptFlashCut(timediff ,energy1)==false) ) h1_germanium_energy_summed_vs_tsci41_cut->Fill(energy1);
 
-                for (int ihit3 = ihit2+1; ihit3 < nHits; ihit3 ++){
-                GermaniumCalData* hit3 = (GermaniumCalData*)fHitGe->At(ihit3);
-                if (!hit3) continue;
-                int detector_id2 = hit3->Get_detector_id();
-                int crystal_id2 = hit3->Get_crystal_id();
-                double energy2 = hit3->Get_channel_energy();
-                double time2 = hit3->Get_channel_trigger_time();
+                    for (int ihit3 = ihit2+1; ihit3 < nHits; ihit3 ++)
+                    {
+                        GermaniumCalData* hit3 = (GermaniumCalData*)fHitGe->At(ihit3);
+                        if (!hit3) continue;
+                        int detector_id2 = hit3->Get_detector_id();
+                        int crystal_id2 = hit3->Get_crystal_id();
+                        double energy2 = hit3->Get_channel_energy();
+                        double time2 = hit3->Get_channel_trigger_time();
 
-                if (germanium_configuration->IsDetectorAuxilliary(detector_id2)) continue;
+                        if (germanium_configuration->IsDetectorAuxilliary(detector_id2)) continue;
 
-                if (TMath::Abs(time1 - time2) < 500) h2_germanium_energy_energy_sci41_cut->Fill(energy1,energy2);
+                        if (TMath::Abs(time1 - time2) < 500) h2_germanium_energy_energy_sci41_cut->Fill(energy1,energy2);
+                    }
+                }
+                break;
+            }
+        }
+    
+        h1_germanium_multiplicity->Fill(event_multiplicity);
+
+        int64_t wr_dt = (germanium_wr - saved_germanium_wr) / 1e9; // conv to s
+        if (wr_dt > 2) 
+        {
+            if (saved_germanium_wr != 0)
+            {
+                for (int i = 0; i < number_of_detectors_to_plot; i++)
+                {
+                    detector_rates[i] = detector_counters[i] / wr_dt;
+                    h1_germanium_rates[i]->SetBinContent(rate_running_count, detector_rates[i]);
                 }
             }
-            break;
+            
+            saved_germanium_wr = germanium_wr;
+            rate_running_count++;
+            for (int i = 0; i < number_of_detectors_to_plot; i++) detector_counters[i] = 0;
+            if (rate_running_count == 1800) rate_running_count = 0;
         }
-        }
-        
-
-
-        h1_germanium_multiplicity->Fill(event_multiplicity);
     }
 
     fNEvents += 1;

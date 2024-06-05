@@ -6,12 +6,14 @@
 
 #include "TDirectory.h"
 #include "TFolder.h"
+#include "TH1.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include <vector>
 
 class TClonesArray;
 class EventHeader;
+class TH1;
 class TH1F;
 class TH2F;
 class TFile;
@@ -106,6 +108,7 @@ class GermaniumNearlineSpectra : public FairTask
         TDirectory* dir_germanium_hitpattern;
         TDirectory* dir_germanium_multiplicity;
         TDirectory* dir_germanium_sci41;
+        TDirectory* dir_germanium_rates;
         std::vector<TDirectory*> dir_germanium_time_differences;
 
         // Histograms energy
@@ -124,6 +127,14 @@ class GermaniumNearlineSpectra : public FairTask
 
         // Histograms time
         std::vector<TH1F*> h1_germanium_time;
+
+        TH1** h1_germanium_rates;
+
+        // rates
+        int64_t saved_germanium_wr = 0;
+        int* detector_counters;
+        int* detector_rates;
+        int rate_running_count = 0;
 
     public:
         ClassDef(GermaniumNearlineSpectra, 1)
