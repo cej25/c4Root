@@ -71,6 +71,13 @@ class GermaniumOnlineSpectra : public FairTask
             energygate_width = width;
         }
 
+
+        void SetResolutionMeasurementParameters(double centr, double width, int64_t time_to_collect_for){
+            centroid_resolution = centr;
+            width_resolution = width;
+            seconds_to_collect_resolution = time_to_collect_for;
+        }
+
         // range setters
 
     
@@ -123,7 +130,7 @@ class GermaniumOnlineSpectra : public FairTask
 
         TCanvas* c_germanium_snapshot;
 
-        char ** detector_labels;
+        const char ** detector_labels;
 
         // Folder and files
         TFolder* histograms;
@@ -133,6 +140,8 @@ class GermaniumOnlineSpectra : public FairTask
         TDirectory* dir_germanium_hitpattern;
         TDirectory* dir_germanium_multiplicity;
         TDirectory* dir_germanium_sci41;
+        TDirectory* dir_germanium_resolution;
+
         std::vector<TDirectory*> dir_germanium_time_differences;
 
         TFile* file_germanium_snapshot;
@@ -153,6 +162,42 @@ class GermaniumOnlineSpectra : public FairTask
 
         // Histograms time
         TH1F** h1_germanium_time;
+
+
+        double centroid_resolution = 1332;
+        double width_resolution = 10;
+
+
+        TF1 * f1_gaussian;
+        
+        TCanvas * c_last_resolutions_FWHM;
+
+        TH1F * h1_last_resolutions_FWHM;
+        TH1F * h1_last_resolutions_FWTM;
+        TH1F * h1_last_resolutions_gratio;
+
+        
+        TGraph ** g1_resolutions_FWHM;
+        TCanvas * c_resolutions_FWHM;
+        
+        TGraph ** g1_resolutions_FWTM;
+        TCanvas * c_resolutions_FWTM;
+
+        TGraph ** g1_resolutions_gratio;
+        TCanvas * c_resolutions_gratio;
+        
+        uint64_t last_time_resolution_was_measured = 0;
+        uint64_t current_wr = 0;
+        uint64_t first_time = 0;
+        int64_t seconds_to_collect_resolution = 10;
+        
+        TCanvas * c1_germanium_energy_last_fitted;
+        TH1F ** h1_germanium_energy_last_fitted;
+        
+        TCanvas * c1_germanium_energy_last;
+        TH1F ** h1_germanium_energy_last;
+
+
 
     public:
         ClassDef(GermaniumOnlineSpectra, 1)

@@ -13,6 +13,7 @@
 #include "FrsTpatData.h"
 #include "FrsHitData.h"
 #include <TRandom3.h>
+#include "GainShift.h"
 
 class TClonesArray;
 class FrsMainCalData;
@@ -51,6 +52,10 @@ class FrsCal2Hit : public FairTask
 
         void FinishEvent();
         void FinishTask();
+
+
+        void SetMusic41GainShift(GainShift * p) {music41_mhtdc_z_gain_shifts = p;}
+        void SetMusic42GainShift(GainShift * p) {music42_mhtdc_z_gain_shifts = p;}
         
         
         void SetOnline(Bool_t option) { fOnline = option; }
@@ -69,6 +74,10 @@ class FrsCal2Hit : public FairTask
         TMRTOFMSParameter* mrtof;
         TRangeParameter* range;
         std::string pathToConfigFiles;
+
+
+        GainShift * music41_mhtdc_z_gain_shifts = nullptr;
+        GainShift * music42_mhtdc_z_gain_shifts = nullptr;
 
         Bool_t fOnline;
 
@@ -290,6 +299,7 @@ class FrsCal2Hit : public FairTask
         
         
         Float_t * id_mhtdc_beta_s2s4 = nullptr;
+        Float_t * id_mhtdc_tof_s2s4 = nullptr;
         Float_t * id_mhtdc_gamma_s2s4 = nullptr;
         Float_t * id_mhtdc_delta_s2s4 = nullptr; // not sure this needs to be a vector
         Float_t * id_mhtdc_aoq_s2s4 = nullptr;
