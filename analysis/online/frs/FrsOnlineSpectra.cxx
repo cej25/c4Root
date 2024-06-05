@@ -94,9 +94,11 @@ InitStatus FrsOnlineSpectra::Init()
     {
         LOG(info) << "Creating FRS Online Directory";
         dir_frs = new TDirectory("FRS Online", "FRS Online", "", 0);
+        dir_travmus = dir_frs->mkdir("Travel MUSIC");
         mgr->Register("FRS", "FRS Online Directory", dir_frs, false); // allow other tasks to find this
+        mgr->Register("Travel MUSIC", "Travel MUSIC Directory", dir_travmus, false);
         histograms->Add(dir_frs);
-    }
+    } else dir_travmus = dir_frs->mkdir("Travel MUSIC");
 
     dir_pids = dir_frs->mkdir("PIDs");
     dir_ZvsZ2 = dir_pids->mkdir("ZvsZ2 Gated");
@@ -386,21 +388,21 @@ InitStatus FrsOnlineSpectra::Init()
 
             // Second gate - x2 vs AoQ
             dir_ZvsZ2_x2vsAoQ->cd();
-            h2_x2_vs_AoQ_Z1Z2x2AoQgate[gate] = new TH2I(Form("h2_x2_vs_AoQ_Z1Z2x2AoQgate%d", gate), Form("x2 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2);                
-            h2_x4_vs_AoQ_Z1Z2x2AoQgate[gate] = new TH2I(Form("h2_x4_vs_AoQ_Z1Z2x2AoQgate%d", gate), Form("x4 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4);                
-            h2_Z_vs_AoQ_Z1Z2x2AoQgate[gate] = new TH2I(Form("h2_Z_vs_AoQ_Z1Z2x2AoQgate%d", gate), Form("Z1 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, frs_config->fMin_AoQ, frs_config->fMax_AoQ, FRS_HISTO_BIN, frs_config->fMin_Z, frs_config->fMax_Z);                
-            h2_dEdeg_vs_Z_Z1Z2x2AoQgate[gate] = new TH2I(Form("h2_dEdeg_vs_Z_Z1Z2x2AoQgate%d", gate), Form("dE in S2 degrader vs. Z1 - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, frs_config->fMin_Z, frs_config->fMax_Z, FRS_HISTO_BIN, frs_config->fMin_dE, frs_config->fMax_dE);                
-            h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate[gate] = new TH2I(Form("h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate%d", gate), Form("dE in S2 degrader / Q vs. Z1 - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), FRS_HISTO_BIN, frs_config->fMin_Z, frs_config->fMax_Z, FRS_HISTO_BIN, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ);               
+            h2_x2_vs_AoQ_Z1Z2x2AoQgate[gate] = new TH2I(Form("h2_x2_vs_AoQ_Z1Z2x2AoQgate%d", gate), Form("x2 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2);                
+            h2_x4_vs_AoQ_Z1Z2x2AoQgate[gate] = new TH2I(Form("h2_x4_vs_AoQ_Z1Z2x2AoQgate%d", gate), Form("x4 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4);                
+            h2_Z_vs_AoQ_Z1Z2x2AoQgate[gate] = new TH2I(Form("h2_Z_vs_AoQ_Z1Z2x2AoQgate%d", gate), Form("Z1 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z);                
+            h2_dEdeg_vs_Z_Z1Z2x2AoQgate[gate] = new TH2I(Form("h2_dEdeg_vs_Z_Z1Z2x2AoQgate%d", gate), Form("dE in S2 degrader vs. Z1 - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dE, frs_config->fMax_dE);                
+            h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate[gate] = new TH2I(Form("h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate%d", gate), Form("dE in S2 degrader / Q vs. Z1 - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ);               
             h1_a2_Z1Z2x2AoQgate[gate] = new TH1I(Form("h1_a2_Z1Z2x2AoQgate%d", gate), Form("Angle S2 [mrad] - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 100, -1000, 1000);           
             h1_a4_Z1Z2x2AoQgate[gate] = new TH1I(Form("h1_a4_Z1Z2x2AoQgate%d", gate), Form("Angle S4 [mrad] - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 100, -1000, 1000);
 
             // Second gate - x4 vs AoQ
             dir_ZvsZ2_x4vsAoQ->cd();
-            h2_x2_vs_AoQ_Z1Z2x4AoQgate[gate] = new TH2I(Form("h2_x2_vs_AoQ_Z1Z2x4AoQgate%d", gate), Form("x2 vs. A/Q - Z1Z2, x4AoQ Gate: %d", gate), FRS_HISTO_BIN, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2);               
-            h2_x4_vs_AoQ_Z1Z2x4AoQgate[gate] = new TH2I(Form("h2_x4_vs_AoQ_Z1Z2x4AoQgate%d", gate), Form("x4 vs. A/Q - Z1Z2, x4AoQ Gate: %d", gate), FRS_HISTO_BIN, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4);                
-            h2_Z_vs_AoQ_Z1Z2x4AoQgate[gate] = new TH2I(Form("h2_Z_vs_AoQ_Z1Z2x4AoQgate%d", gate), Form("Z1 vs. A/Q - Z1Z2, x4AoQ Gate: %d", gate), FRS_HISTO_BIN, frs_config->fMin_AoQ, frs_config->fMax_AoQ, FRS_HISTO_BIN, frs_config->fMin_Z, frs_config->fMax_Z);                
-            h2_dEdeg_vs_Z_Z1Z2x4AoQgate[gate] = new TH2I(Form("h2_dEdeg_vs_Z_Z1Z2x4AoQgate%d", gate), Form("dE in S2 degrader vs. Z1 - Z1Z2, x4AoQ Gate: %d", gate), FRS_HISTO_BIN, frs_config->fMin_Z, frs_config->fMax_Z, FRS_HISTO_BIN, frs_config->fMin_dE, frs_config->fMax_dE);                
-            h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate[gate] = new TH2I(Form("h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate%d", gate), Form("dE in S2 degrader / Q vs. Z1 - Z1Z2, x4AoQ Gate: %d", gate), FRS_HISTO_BIN, frs_config->fMin_Z, frs_config->fMax_Z, FRS_HISTO_BIN, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ);                
+            h2_x2_vs_AoQ_Z1Z2x4AoQgate[gate] = new TH2I(Form("h2_x2_vs_AoQ_Z1Z2x4AoQgate%d", gate), Form("x2 vs. A/Q - Z1Z2, x4AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2);               
+            h2_x4_vs_AoQ_Z1Z2x4AoQgate[gate] = new TH2I(Form("h2_x4_vs_AoQ_Z1Z2x4AoQgate%d", gate), Form("x4 vs. A/Q - Z1Z2, x4AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4);                
+            h2_Z_vs_AoQ_Z1Z2x4AoQgate[gate] = new TH2I(Form("h2_Z_vs_AoQ_Z1Z2x4AoQgate%d", gate), Form("Z1 vs. A/Q - Z1Z2, x4AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z);                
+            h2_dEdeg_vs_Z_Z1Z2x4AoQgate[gate] = new TH2I(Form("h2_dEdeg_vs_Z_Z1Z2x4AoQgate%d", gate), Form("dE in S2 degrader vs. Z1 - Z1Z2, x4AoQ Gate: %d", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dE, frs_config->fMax_dE);                
+            h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate[gate] = new TH2I(Form("h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate%d", gate), Form("dE in S2 degrader / Q vs. Z1 - Z1Z2, x4AoQ Gate: %d", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ);                
             h1_a2_Z1Z2x4AoQgate[gate] = new TH1I(Form("h1_a2_Z1Z2x4AoQgate%d", gate), Form("Angle S2 [mrad] - Z1Z2, x4AoQ Gate: %d", gate), 100, -1000, 1000);                
             h1_a4_Z1Z2x4AoQgate[gate] = new TH1I(Form("h1_a4_Z1Z2x4AoQgate%d", gate), Form("Angle S4 [mrad] - Z1Z2, x4AoQ Gate: %d", gate), 100, -1000, 1000);
 
@@ -410,6 +412,54 @@ InitStatus FrsOnlineSpectra::Init()
     dir_scalers->cd();
 
     h1_tpat = new TH1I("h1_tpat", "Trigger Pattern", 20, 0, 20);
+
+
+    dir_travmus->cd();
+
+    h1_wr_frs_travmus = new TH1I("h1_wr_frs_travmus", "White Rabbit dT FRS - Travel MUSIC", 500, -3000, -1000);
+
+    c_z_compare = new TCanvas("c_z_compare", "Z from 3 x MUSIC", 650, 350);
+    c_z_compare->Divide(1, 3);
+    c_z_compare->cd(1);
+    h1_travmus_z = new TH1D("h1_travmus_z", "Z (Travel MUSIC)", 750, frs_config->fMin_Z, frs_config->fMax_Z);
+    h1_travmus_z->SetFillColor(kPink-3);
+    h1_travmus_z->Draw();
+    c_z_compare->cd(2);
+    h1_z1 = new TH1D("h1_z1", "Z (MUSIC 1)", 750, frs_config->fMin_Z, frs_config->fMax_Z);
+    h1_z1->SetFillColor(kAzure+7);
+    h1_z1->SetLineColor(kBlack);
+    h1_z1->Draw();
+    c_z_compare->cd(3);
+    h1_z2 = new TH1D("h1_z2", "Z (MUSIC 2)", 750, frs_config->fMin_Z, frs_config->fMax_Z);
+    h1_z2->SetFillColor(kAzure+7);
+    h1_z2->SetLineColor(kBlack);
+    h1_z2->Draw();
+    c_z_compare->cd(0);
+    dir_travmus->Append(c_z_compare);
+
+    c_dE_compare = new TCanvas("c_dE_compare", "dE from 3 x MUSIC", 650, 350);
+    c_dE_compare->Divide(1, 3);
+    c_dE_compare->cd(1);
+    h1_travmus_dE = new TH1D("h1_travmus_dE", "dE (Travel MUSIC)", 750, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1);
+    h1_travmus_dE->SetFillColor(kPink-3);
+    h1_travmus_dE->Draw();
+    c_dE_compare->cd(2);
+    h1_z1_dE = new TH1D("h1_z1_dE", "dE (MUSIC 1)", 750, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1);
+    h1_z1_dE->SetFillColor(kAzure+7);
+    h1_z1_dE->SetLineColor(kBlack);
+    h1_z1_dE->Draw();
+    c_dE_compare->cd(3);
+    h1_z2_dE = new TH1D("h1_z2_dE", "dE (MUSIC 2)", 750, frs_config->fMin_dE_Music2, frs_config->fMax_dE_Music2);
+    h1_z2_dE->SetFillColor(kAzure+7);
+    h1_z2_dE->SetLineColor(kBlack);
+    h1_z2_dE->Draw();
+    c_dE_compare->cd(0);
+    dir_travmus->Append(c_dE_compare);
+
+    h2_travmus_z1 = new TH2D("h2_travmus_z1", "Z (Travel MUSIC) vs Z (MUSIC 1)", 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_Z, frs_config->fMax_Z);
+    h2_travmus_z1->GetXaxis()->SetTitle("Z (Travel MUSIC)");
+    h2_travmus_z1->GetYaxis()->SetTitle("Z (MUSIC 1)");
+    h2_travmus_z1->SetOption("COLZ");
 
     //hG_frs_wr = new TGraph(1);
     
@@ -754,6 +804,25 @@ void FrsOnlineSpectra::Exec(Option_t* option)
         }
 
         /* ---------------------------------------------------------------------------- */
+
+        // ::::: TRAVEL MUSIC ::::::
+
+        if (hitItem.Get_wr_travmus() > 0)
+        {
+            h1_wr_frs_travmus->Fill((int64_t)hitItem.Get_wr_t() - (int64_t)hitItem.Get_wr_travmus());
+
+            h1_travmus_z->Fill(hitItem.Get_ID_z_travmus());
+            h1_z1->Fill(hitItem.Get_ID_z());
+            h1_z2->Fill(hitItem.Get_ID_z2());
+
+            h1_travmus_dE->Fill(hitItem.Get_travmusic_dE());
+            h1_z1_dE->Fill(hitItem.Get_music_dE(0));
+            h1_z2_dE->Fill(hitItem.Get_music_dE(1));
+
+            h2_travmus_z1->Fill(hitItem.Get_ID_z_travmus(), hitItem.Get_ID_z());
+        }
+
+        // :::::::::::::::::::::::::
 
 
         /* ---------------------------------------------------------------------------- */

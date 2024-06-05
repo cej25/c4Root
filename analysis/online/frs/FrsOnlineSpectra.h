@@ -149,12 +149,25 @@ class FrsOnlineSpectra : public FairTask
 
         TH1I* h1_tpat;
 
+        TH1I* h1_wr_frs_travmus;
+        TH1D* h1_travmus_z;
+        TH1D* h1_travmus_dE;
+        TH1D* h1_z1;
+        TH1D* h1_z1_dE;
+        TH1D* h1_z2;
+        TH1D* h1_z2_dE;
+        TH2D* h2_travmus_z1;
+        TCanvas* c_z_compare;
+        TCanvas* c_dE_compare;
+
+
         TDirectory* dir_frs;
         TDirectory* dir_pids;
         TDirectory* dir_scalers;
         TDirectory* dir_ZvsZ2;
         TDirectory* dir_ZvsZ2_x2vsAoQ;
         TDirectory* dir_ZvsZ2_x4vsAoQ;
+        TDirectory* dir_travmus;
         TFolder* histograms;
 
         // Histograms for Scalers
