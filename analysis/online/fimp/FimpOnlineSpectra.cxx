@@ -20,9 +20,8 @@
 #include "TRandom.h"
 #include <string>
 
-FimpOnlineSpectra::FimpOnlineSpectra()
+FimpOnlineSpectra::FimpOnlineSpectra()  :   FimpOnlineSpectra("FimpOnlineSpectra")
 {
-    fimp_config = TFimpConfiguration::GetInstance();
 }
 
 FimpOnlineSpectra::FimpOnlineSpectra(const TString& name, Int_t verbose)
@@ -32,7 +31,7 @@ FimpOnlineSpectra::FimpOnlineSpectra(const TString& name, Int_t verbose)
     , fNEvents(0)
     , header(nullptr)
 {
-    
+    fimp_config = TFimpConfiguration::GetInstance();
 }
 
 FimpOnlineSpectra::~FimpOnlineSpectra()
@@ -56,7 +55,7 @@ InitStatus FimpOnlineSpectra::Init()
     fimpCalArray = mgr->InitObjectAs<decltype(fimpCalArray)>("FimpCalData");
     c4LOG_IF(fatal, !fimpCalArray, "Branch FimpCalData not found!");
 
-    auto const & detector_mapping = fimp_config->Mapping();
+    detector_mapping = fimp_config->Mapping();
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
 
@@ -93,14 +92,16 @@ InitStatus FimpOnlineSpectra::Init()
     dir_stats->cd();
     // hit patterns, multiplicity...
     h1_fimp_whiterabbit = new TH1I("h1_fimp_whiterabbit", "FIMP White Rabbit Time", 1000, 1.7e19, 1.8e19);
-    h1_fimp_multiplicity = new TH1I("h1_fimp_multiplicity", "FIMP Multiplicity", 129, 0, 129);
+    h1_fimp_wr_dt = new TH1I("h1_fimp_wr_dt", "WR Time between successive FIMP events", 1000, 0, 1e6);
+    h1_fimp_multiplicity = new TH1I("h1_fimp_multiplicity", "FIMP Multiplicity", 128+1, 0, 128+1);
     h1_fimp_hitpattern = new TH1I("h1_fimp_hitpattern", "FIMP Hit Pattern", 128, 0, 128);
-
+    h1_fimp_hitpattern->SetFillColor(kAzure+1);
+    
     dir_tot->cd();
     for (int i = 0; i < 128; i++)
     {
         // canvas stuff?
-        h1_fimp_tot[i] = new TH1D(Form("h1_fimp_tot_channel_%i", i), Form("ToT Channel %i", i), 960, 0, 400000);
+        h1_fimp_tot[i] = new TH1D(Form("h1_fimp_tot_channel_%i", i), Form("ToT Channel %i", i), 960, fimp_config->EnergyToTMin, fimp_config->EnergyToTMax);
     }
 
     dir_time_lead->cd();
@@ -153,21 +154,39 @@ InitStatus FimpOnlineSpectra::Init()
 
 void FimpOnlineSpectra::Reset_Histo()
 {
-    c4LOG(info, "");
+    for (int i = 0; i < 128; i++)
+    {   
+        h1_fimp_tot[i]->Reset();
+        h1_fimp_lead_times[i]->Reset();
+        h1_fimp_coarse_clock_lead[i]->Reset();
+        h1_fimp_fine_bin_lead[i]->Reset();
+        h1_fimp_trail_times[i]->Reset();
+        h1_fimp_coarse_clock_trail[i]->Reset();
+        h1_fimp_fine_bin_trail[i]->Reset();
+        h1_fimp_sc41l_dT[i]->Reset();
+        h1_fimp_sc41r_dT[i]->Reset();
+    }
+
+    h1_fimp_whiterabbit->Reset();
+    h1_fimp_wr_dt->Reset();
+    h1_fimp_multiplicity->Reset();
+    h1_fimp_hitpattern->Reset();
+
+
+
+    c4LOG(info, "Success!");
 }
 
 void FimpOnlineSpectra::Exec(Option_t* option)
 {   
     int hit_counter = 0;
+    int64_t wr_t = 0;
     for (auto const & fimpCalItem : *fimpCalArray)
     {   
         // wr same for each hit/channel
-        if (hit_counter == 0)
-        {
-            int64_t wr_t = fimpCalItem.Get_wr_t();
-            h1_fimp_whiterabbit->Fill(wr_t);
-        }
-
+        wr_t = fimpCalItem.Get_wr_t();
+        if (hit_counter == 0) h1_fimp_whiterabbit->Fill(wr_t);
+       
         int channel = fimpCalItem.Get_channel();
         h1_fimp_hitpattern->Fill(channel);
 
@@ -202,26 +221,34 @@ void FimpOnlineSpectra::Exec(Option_t* option)
         hit_counter++;
     }
 
+    if (wr_t == 0) return;
+
+    int64_t wr_dt = wr_t - prev_wr_t;
+    h1_fimp_wr_dt->Fill(wr_dt);
+    prev_wr_t = wr_t;
+
     h1_fimp_multiplicity->Fill(hit_counter);
 
     for (auto const & fimpRawItem : *fimpRawArray)
     {
         uint16_t channel = fimpRawItem.Get_channel();
-        uint16_t lead_coarse_time = fimpRawItem.Get_lead_coarse_time();
-        uint16_t trail_coarse_time = fimpRawItem.Get_trail_coarse_time();
-        uint16_t lead_ft_raw = fimpRawItem.Get_raw_lead_fine_time();
-        uint16_t trail_ft_raw = fimpRawItem.Get_raw_trail_fine_time();
+        std::vector<uint16_t> lead_coarse_time = fimpRawItem.Get_lead_coarse_time();
+        std::vector<uint16_t> trail_coarse_time = fimpRawItem.Get_trail_coarse_time();
+        std::vector<uint16_t> lead_ft_raw = fimpRawItem.Get_raw_lead_fine_time();
+        std::vector<uint16_t> trail_ft_raw = fimpRawItem.Get_raw_trail_fine_time();
 
         if (channel == 128) continue;
 
-        h1_fimp_coarse_clock_lead[channel]->Fill(lead_coarse_time & 0xFFF);
-        h1_fimp_fine_bin_lead[channel]->Fill(lead_ft_raw);
-        h1_fimp_coarse_clock_trail[channel]->Fill(trail_coarse_time & 0xFFF);
-        h1_fimp_fine_bin_trail[channel]->Fill(trail_ft_raw);
+        for (int i = 0; i < std::min(lead_coarse_time.size(), trail_coarse_time.size()); i++)
+        {
+            h1_fimp_coarse_clock_lead[channel]->Fill(lead_coarse_time[i] & 0xFFF);
+            h1_fimp_fine_bin_lead[channel]->Fill(lead_ft_raw[i]);
+            h1_fimp_coarse_clock_trail[channel]->Fill(trail_coarse_time[i] & 0xFFF);
+            h1_fimp_fine_bin_trail[channel]->Fill(trail_ft_raw[i]);
+        }
         
     }
     
-
     fNEvents += 1;
 }
 

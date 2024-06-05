@@ -11,6 +11,7 @@
 #include "FatimaTwinpeaksCalData.h"
 
 #include "c4Logger.h"
+#include "AnalysisTools.h"
 
 #include "TCanvas.h"
 #include "TClonesArray.h"
@@ -80,6 +81,7 @@ InitStatus FatimaOnlineSpectra::Init()
     dir_fatima_energy_spectra = dir_fatima->mkdir("Energy Spectra");
     dir_fatima_time_spectra = dir_fatima->mkdir("Time Spectra");
     dir_fatima_sci41 = dir_fatima->mkdir("SCI41");
+    dir_fatima_rates = dir_fatima->mkdir("Rate Monitors");
 
     int min_detector_id = *min_element(detectors.begin(),detectors.end());
     int max_detector_id = *max_element(detectors.begin(), detectors.end());
@@ -92,8 +94,13 @@ InitStatus FatimaOnlineSpectra::Init()
     h1_fatima_slowToT.resize(number_detectors);
     for (int ihist = 0; ihist < number_detectors; ihist++){
         c_fatima_slowToT->cd(ihist+1);
+
+        h1_fatima_slowToT[ihist] = MakeTH1(dir_fatima_slowToT, "F", Form("h1_fatima_slowToT_%d",detectors.at(ihist)), Form("Fatima slow ToT detector %d",detectors.at(ihist)),fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high, "ToT (ns)", kSpring, kBlue+2);
+
+        /*
         h1_fatima_slowToT[ihist] = new TH1F(Form("h1_fatima_slowToT_%d",detectors.at(ihist)),Form("Fatima slow ToT detector %d",detectors.at(ihist)),fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high);
         h1_fatima_slowToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
+        h1_fatima_slowToT[ihist]->SetFillColor(kSpring);*/
         h1_fatima_slowToT[ihist]->Draw();
     }
     c_fatima_slowToT->cd(0);
@@ -275,6 +282,11 @@ InitStatus FatimaOnlineSpectra::Init()
     c_fatima_energy_energy_sci41_cut->cd(0);
     dir_fatima_sci41->Append(c_fatima_energy_energy_sci41_cut);
     
+    // ::: Rates :::: //
+    h1_fatima_rates = new TH1*[number_detectors];
+    detector_counters = new int[number_detectors];
+    detector_rates = new int[number_detectors];
+    for (int i = 0; i < number_detectors; i++) h1_fatima_rates[i] = MakeTH1(dir_fatima_rates, "I", Form("h1_fatima_rates_det_%i", i), Form("Rate in FATIMA detector %i", i), 1800, 0, 1800, "Time [2s]", kCyan, kBlack);
     
     run->GetHttpServer()->RegisterCommand("Reset_FATIMA_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
     run->GetHttpServer()->RegisterCommand("Snapshot_FATIMA_Histo", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
@@ -313,7 +325,7 @@ void FatimaOnlineSpectra::Snapshot_Histo()
     time_t now = time(0);
     tm *ltm = localtime(&now);
     // make folder with date and time
-    TString snapshot_dir = Form("FATIMA_snapshot_%d_%d_%d_%d_%d_%d",ltm->tm_year+1900,ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec);
+    TString snapshot_dir = Form("FATIMA_snapshot_%d_%d_%d_%d_%d_%d",ltm->tm_year+1900, ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
 
     gSystem->mkdir(snapshot_dir);
     gSystem->cd(snapshot_dir);
@@ -430,7 +442,8 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
 
 
     if (fHitFatimaTwinpeaks && fHitFatimaTwinpeaks->GetEntriesFast() > 0)
-    {
+    {   
+        int64_t fatima_wr = 0;
         event_multiplicity = 0;
         Int_t nHits = fHitFatimaTwinpeaks->GetEntriesFast();
         for (Int_t ihit = 0; ihit < nHits; ihit++)
@@ -445,6 +458,8 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
             double fast_lead1 = hit->Get_fast_lead_time();
             
             int detector_id1 = hit->Get_detector_id();
+            detector_counters[detector_id1]++; // CEJ: for rates
+            fatima_wr = hit->Get_wr_t();
 
             if (detector_id1 == fatima_configuration->SC41L() || detector_id1 == fatima_configuration->SC41R()) sci41_seen = true;
 
@@ -505,56 +520,78 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
         }
 
         // Spectra with respect to SCI41:
-        if (nHits >= 2 && sci41_seen){
-        for (int ihit1 = 0; ihit1 < nHits; ihit1 ++){
+        if (nHits >= 2 && sci41_seen)
+        {
+            for (int ihit1 = 0; ihit1 < nHits; ihit1 ++)
+            {
 
-            FatimaTwinpeaksCalData* hit_sci41 = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(ihit1);
-            if (!hit_sci41) continue;
-            int detector_id_sci41 = hit_sci41->Get_detector_id();
-            double energy_sci41 = hit_sci41->Get_energy();
-            double time_sci41 = hit_sci41->Get_fast_lead_time();
+                FatimaTwinpeaksCalData* hit_sci41 = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(ihit1);
+                if (!hit_sci41) continue;
+                int detector_id_sci41 = hit_sci41->Get_detector_id();
+                double energy_sci41 = hit_sci41->Get_energy();
+                double time_sci41 = hit_sci41->Get_fast_lead_time();
 
-            // after this test we have the sci41 hit.
-            if (detector_id_sci41 != fatima_configuration->SC41L() && detector_id_sci41 != fatima_configuration->SC41R()) continue;
+                // after this test we have the sci41 hit.
+                if (detector_id_sci41 != fatima_configuration->SC41L() && detector_id_sci41 != fatima_configuration->SC41R()) continue;
 
-            for (int ihit2 = 0; ihit2 < nHits; ihit2 ++){
-                FatimaTwinpeaksCalData* hit2 = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(ihit2);
-                if (!hit2) continue;
-                int detector_id1 = hit2->Get_detector_id();
-                double energy1 = hit2->Get_energy();
-                double time1 = hit2->Get_fast_lead_time();
+                for (int ihit2 = 0; ihit2 < nHits; ihit2 ++)
+                {
+                    FatimaTwinpeaksCalData* hit2 = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(ihit2);
+                    if (!hit2) continue;
+                    int detector_id1 = hit2->Get_detector_id();
+                    double energy1 = hit2->Get_energy();
+                    double time1 = hit2->Get_fast_lead_time();
 
-                if (fatima_configuration->IsDetectorAuxilliary(detector_id1)) continue;
+                    if (fatima_configuration->IsDetectorAuxilliary(detector_id1)) continue;
 
-                double timediff = time1 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(detector_id1);
-                
-                h2_fatima_energy_summed_vs_tsci41->Fill(timediff ,energy1);
+                    double timediff = time1 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(detector_id1);
+                    
+                    h2_fatima_energy_summed_vs_tsci41->Fill(timediff ,energy1);
 
-                if ((fatima_configuration->IsInsidePromptFlashCut(timediff ,energy1)==false) ) h1_fatima_energy_summed_vs_tsci41_cut->Fill(energy1);
+                    if ((fatima_configuration->IsInsidePromptFlashCut(timediff ,energy1)==false) ) h1_fatima_energy_summed_vs_tsci41_cut->Fill(energy1);
 
-                for (int ihit3 = ihit2+1; ihit3 < nHits; ihit3 ++){
-                FatimaTwinpeaksCalData* hit3 = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(ihit3);
-                if (!hit3) continue;
-                int detector_id2 = hit3->Get_detector_id();
-                double energy2 = hit3->Get_energy();
-                double time2 = hit3->Get_fast_lead_time();
+                    for (int ihit3 = ihit2+1; ihit3 < nHits; ihit3 ++)
+                    {
+                        FatimaTwinpeaksCalData* hit3 = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(ihit3);
+                        if (!hit3) continue;
+                        int detector_id2 = hit3->Get_detector_id();
+                        double energy2 = hit3->Get_energy();
+                        double time2 = hit3->Get_fast_lead_time();
 
-                if (fatima_configuration->IsDetectorAuxilliary(detector_id2)) continue;
-                double timediff2 = time2 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(detector_id2);
+                        if (fatima_configuration->IsDetectorAuxilliary(detector_id2)) continue;
+                        double timediff2 = time2 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(detector_id2);
 
-                if ((fatima_configuration->IsInsidePromptFlashCut(timediff2,energy2)==true)) continue;
-                
-                if (TMath::Abs(time1 - time2) < 500) h2_fatima_energy_energy_sci41_cut->Fill(energy1,energy2);
+                        if ((fatima_configuration->IsInsidePromptFlashCut(timediff2,energy2)==true)) continue;
+                        
+                        if (TMath::Abs(time1 - time2) < 500) h2_fatima_energy_energy_sci41_cut->Fill(energy1,energy2);
 
+                    }
                 }
+                break;
             }
-            break;
-        }
         }
 
 
         h1_fatima_multiplicity->Fill(event_multiplicity);
-        // ++events should go here, no?
+
+        int64_t wr_dt = (fatima_wr - saved_fatima_wr) / 1e9; // conv to s
+        if (wr_dt > 2) 
+        {
+            if (saved_fatima_wr != 0)
+            {
+                for (int i = 0; i < number_detectors; i++)
+                {
+                    detector_rates[i] = detector_counters[i] / wr_dt;
+                    h1_fatima_rates[i]->SetBinContent(rate_running_count, detector_rates[i]);
+                }
+            }
+            
+            saved_fatima_wr = fatima_wr;
+            rate_running_count++;
+            for (int i = 0; i < number_detectors; i++) detector_counters[i] = 0;
+            if (rate_running_count == 1800) rate_running_count = 0;
+        }
+
     }
     
     fNEvents += 1;

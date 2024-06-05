@@ -24,7 +24,6 @@ FrsMainReader::FrsMainReader(EXT_STR_h101_frsmain_onion* data, size_t offset)
     , fData(data)
     , fOffset(offset)
     , fOnline(kFALSE)
-    , fArray(new TClonesArray("FrsMainData"))
     , v830array(new std::vector<FrsMainV830Item>)
     , v792array(new std::vector<FrsMainV792Item>)
     , v1290array(new std::vector<FrsMainV1290Item>)
@@ -33,7 +32,6 @@ FrsMainReader::FrsMainReader(EXT_STR_h101_frsmain_onion* data, size_t offset)
 
 FrsMainReader::~FrsMainReader() 
 { 
-    if (fArray != nullptr) delete fArray;
     c4LOG(info, "Destroyed FrsMainReader properly.");
 }
 
@@ -55,13 +53,10 @@ Bool_t FrsMainReader::Init(ext_data_struct_info* a_struct_info)
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    FairRootManager::Instance()->Register("FrsMainData", "FRS Main Data", fArray, !fOnline);
-
     FairRootManager::Instance()->RegisterAny("FrsMainV830Data", v830array, !fOnline);
     FairRootManager::Instance()->RegisterAny("FrsMainV792Data", v792array, !fOnline);
     FairRootManager::Instance()->RegisterAny("FrsMainV1290Data", v1290array, !fOnline);
 
-    fArray->Clear();
     v1290array->clear();
     v792array->clear();
     v830array->clear();
@@ -97,9 +92,6 @@ Bool_t FrsMainReader::Read()
     {       
         uint32_t index = fData->frsmain_data_v830_nI[i];
         uint32_t scaler = fData->frsmain_data_v830_data[i];
-        //scalers_index.emplace_back(fData->frsmain_data_v830_nI[i]);
-        //scalers_main.emplace_back(fData->frsmain_data_v830_data[i]);
-
         auto & entry = v830array->emplace_back();
         entry.SetAll(index, scaler);
     }
@@ -155,7 +147,7 @@ Bool_t FrsMainReader::Read()
 
 void FrsMainReader::ZeroArrays()
 {
-    fArray->Clear();
+    
 }
 
 void FrsMainReader::ClearVectors()

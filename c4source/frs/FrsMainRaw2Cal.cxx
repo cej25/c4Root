@@ -46,7 +46,6 @@ FrsMainRaw2Cal::FrsMainRaw2Cal(const TString& name, Int_t verbose)
 FrsMainRaw2Cal::~FrsMainRaw2Cal()
 {
     c4LOG(info, "Deleting FrsMainRaw2Cal task");
-    if (fRawArray) delete fRawArray;
 }
 
 InitStatus FrsMainRaw2Cal::Init()
@@ -56,10 +55,6 @@ InitStatus FrsMainRaw2Cal::Init()
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
-
-    fRawArray = (TClonesArray*)mgr->GetObject("FrsMainData");
-    c4LOG_IF(fatal, !fRawArray, "FRS branch of MainData not found");
-
 
     v830array = mgr->InitObjectAs<decltype(v830array)>("FrsMainV830Data");
     c4LOG_IF(fatal, !v830array, "Branch v830array not found!");
@@ -88,8 +83,6 @@ InitStatus FrsMainRaw2Cal::Init()
 
 void FrsMainRaw2Cal::Exec(Option_t* option)
 {
-    
-
     // V830 passed through to Hit step
 
     for (auto const & v830item : *v830array)
@@ -299,13 +292,14 @@ void FrsMainRaw2Cal::ClearVectors()
     v1290_channel.clear();
     v1290_data.clear();
     v1290_lot.clear();
+
+    scalerArray->clear();
+    sciArray->clear();
+    musicArray->clear();
 }
 
 void FrsMainRaw2Cal::FinishEvent()
 {   
-    scalerArray->clear();
-    sciArray->clear();
-    musicArray->clear();
     ClearVectors();
     ZeroArrays();
 };

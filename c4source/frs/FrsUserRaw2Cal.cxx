@@ -23,8 +23,6 @@ FrsUserRaw2Cal::FrsUserRaw2Cal()
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
-    ,   fRawArray(new TClonesArray("FrsUserData"))
-    ,   fCalArray(new TClonesArray("FrsUserCalData"))
     ,   v7x5array(nullptr)
     ,   v830array(nullptr)
     ,   scalerArray(new std::vector<FrsUserCalScalerItem>)
@@ -38,8 +36,6 @@ FrsUserRaw2Cal::FrsUserRaw2Cal(const TString& name, Int_t verbose)
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
-    ,   fRawArray(new TClonesArray("FrsUserData"))
-    ,   fCalArray(new TClonesArray("FrsUserCalData"))
     ,   v7x5array(nullptr)
     ,   v830array(nullptr)
     ,   scalerArray(new std::vector<FrsUserCalScalerItem>)
@@ -51,8 +47,6 @@ FrsUserRaw2Cal::FrsUserRaw2Cal(const TString& name, Int_t verbose)
 FrsUserRaw2Cal::~FrsUserRaw2Cal()
 {
     c4LOG(info, "Deleting FrsUserRaw2Cal task");
-    //if (fRawArray) delete fRawArray;
-    //if (fCalArray) delete fCalArray;
 }
 
 
@@ -64,7 +58,6 @@ InitStatus FrsUserRaw2Cal::Init()
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
-
 
     v7x5array = mgr->InitObjectAs<decltype(v7x5array)>("FrsUserV7X5Data");
     c4LOG_IF(fatal, !v7x5array, "Branch FrsUserV7X5Data not found!");

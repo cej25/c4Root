@@ -1,7 +1,7 @@
 // -*- C++ -*-
 
 #include "../../common/whiterabbit.spec"
-#include "../../common/gsi_febex4.spec"
+//#include "../../common/gsi_febex4.spec"
 #include "../../common/vme_caen_v7x5.spec"
 
 SUBEVENT(bb7_subev)

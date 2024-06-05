@@ -1,45 +1,45 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define FIMP_ON 1
-#define FATIMA_ON 1
+#define LISA_ON 1
+//#define FATIMA_ON 1
 #define FRS_ON 1
-#define TRAV_MUSIC_ON 0
+#define TRAV_MUSIC_ON 1
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
 
-// Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
+// Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/ 
 extern "C"
 {
-    #include "../../config/s100/frs/setup_des_s100_030_2024_conv.C"
+    #include "../../config/pareeksha/frs/setup_s092_010_2024_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
 {   
     EXT_STR_h101_unpack_t eventheaders;
-    EXT_STR_h101_fimp_onion_t fimp;
-    EXT_STR_h101_fatima_onion_t fatima;
+    EXT_STR_h101_lisa_onion_t lisa;
     EXT_STR_h101_travmus_onion_t travmus;
     EXT_STR_h101_frsmain_onion_t frsmain;
     EXT_STR_h101_frstpc_onion_t frstpc;
     EXT_STR_h101_frsuser_onion_t frsuser;
     EXT_STR_h101_frstpat_onion_t frstpat;
-    
+
+
 } EXT_STR_h101;
 
-void s143_online()
+void pareeksha_online_test()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
-    // Name your experiment. Make sure all relevant directories are named identically.
-    TString fExpName = "s143";
+    //:::::::::Experiment name
+    TString fExpName = "pareeksha";
 
-    // Define important paths.
-    TString c4Root_path = "/u/cjones/c4Root";
+    //:::::::::Here you define commonly used path
+    TString c4Root_path = "/u/gandolfo/c4/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
 
-    // Macro timing
+    //:::::::::Macro timing
     TString cRunId = Form("%04d", fRunId);
     TString cExpId = Form("%03d", fExpId);
     TStopwatch timer;
@@ -48,19 +48,29 @@ void s143_online()
     std::ostringstream oss;
     oss << std::put_time(&tm, "%Y%m%d_%H%M%S");
     timer.Start();
-
-    // Set level of debug information
+    
+    //:::::::::::Debug info - set level
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
 
-    // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    TString filename = "~/fimp/testfile.lmd";
-    TString outputFilename = "fimp_test.root";	
+    //::::::::::P A T H   O F   F I L E  to read
+    //___O N L I N E
+    //TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
+    //TString filename = "trans://lxg1257"; // time stitched
 
-    // Create online run
-    Int_t refresh = 2; // Refresh rate for online histograms
-    Int_t port = 6969;
+    //___O F F L I N E
+    //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0167_*.lmd";  //data with only lisa
+    TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0074_00*.lmd"; //22 good run for statistics, frs, trav, lisa in ts
 
+    //___O U T P U T
+    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/";
+    TString outputFilename = outputpath + "pareeksha_test.root";
+
+
+    //:::::::Create online run
+    Int_t refresh = 10; // Refresh rate for online histograms
+    Int_t port = 2222;
+     
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
@@ -71,17 +81,16 @@ void s143_online()
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
     run->AddObject(histograms);
      
-
-    // Create source using ucesb for input
+    //:::::::Take ucesb input and create source
     EXT_STR_h101 ucesb_struct;
-    TString ntuple_options = "UNPACK"; // Define which level of data to unpack - we don't use "RAW" or "CAL"
+    TString ntuple_options = "UNPACK"; //level of unpacked data (UNPACK,RAW,CAL)
     UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
     source->SetMaxEvents(nev);
     run->SetSource(source);
 
-    // ------------------------------------------------------------------------------------ //
-    // *** Initialise FRS parameters ****************************************************** //
-    
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    //::::: F R S parameter - Initialise
+
     TFRSParameter* frs = new TFRSParameter();
     TMWParameter* mw = new TMWParameter();
     TTPCParameter* tpc = new TTPCParameter();
@@ -95,50 +104,36 @@ void s143_online()
     setup(frs,mw,tpc,music,labr,sci,id,si,mrtof,range); // Function defined in frs setup.C macro
     TFrsConfiguration::SetParameters(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
 
-    // ------------------------------------------------------------------------------------ //
-    // *** Initialise Gates *************************************************************** //
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    //:::: G A T E S - Initialise 
 
-
-    // ------------------------------------------------------------------------------------ //
-    // *** Initialise Correlations ******************************************************** //
-    
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    //:::: C O R R E L A T I O N S - Initialise 
+  
     TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations_tight.dat");
 
-
-    // ------------------------------------------------------------------------------------ //
-    // *** Load Detector Configurations *************************************************** //
-    TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_apr18.txt");
-    //TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(config_path + "/fatima/fatima_cal_apr18.txt");
-    //TFatimaTwinpeaksConfiguration::SetDetectorTimeshiftsFile(config_path + "/fatima/fatima_timeshifts_apr20.txt");
-    //TFatimaTwinpeaksConfiguration::SetPromptFlashCutFile(config_path + "/fatima/fatima_prompt_flash.root");
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    //:::::: C O N F I G    F O R   D E T E C T O R - Load
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
-    TFimpConfiguration::SetMappingFile(config_path + "/fimp/FIMP_Channel_MAP.txt");
+    TLisaConfiguration::SetMappingFile(config_path + "/lisa/Lisa_Detector_Map_names.txt");
 
-
-    // ------------------------------------------------------------------------------------- //
-    // *** Read Subsystems - comment out unwanted systems ********************************** //
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    // S U B S Y S T E M S
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+   
+    // ::::::: READ Subsystem  ::::::::
 
     UnpackReader* unpackheader = new UnpackReader((EXT_STR_h101_unpack*)&ucesb_struct.eventheaders, offsetof(EXT_STR_h101, eventheaders));
     source->AddReader(unpackheader);
 
-    if (FATIMA_ON)
+    if (LISA_ON)
     {
-        FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-        //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_14may_test.root", 100000);
-        unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_23apr_beamON.root");
+        LisaReader* unpacklisa = new LisaReader((EXT_STR_h101_lisa_onion*)&ucesb_struct.lisa, offsetof(EXT_STR_h101, lisa));
+        //unpacklisa->DoFineTimeCalOnline("....root", 100000);
+        //unpacklisa->SetInputFileFineTimeHistos(config_path + "....root");
 
-        unpackfatima->SetOnline(true);
-        source->AddReader(unpackfatima);
-    }
-
-    if (FIMP_ON)
-    {
-        FimpReader* unpackfimp = new FimpReader((EXT_STR_h101_fimp_onion*)&ucesb_struct.fimp, offsetof(EXT_STR_h101, fimp));
-        //unpackfimp->DoFineTimeCalOnline("fine_time_14may_test.root", 100000);
-        unpackfimp->SetInputFileFineTimeHistos(config_path + "/fimp/ft_test.root");
-
-        unpackfimp->SetOnline(true);
-        source->AddReader(unpackfimp);
+        unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
+        source->AddReader(unpacklisa);
     }
 
     if (FRS_ON)
@@ -164,27 +159,18 @@ void s143_online()
         source->AddReader(unpackfrstpc);
         source->AddReader(unpackfrsuser);
         source->AddReader(unpackfrstpat);
-    }
+    }   
 
 
-    // ---------------------------------------------------------------------------------------- //
-    // *** Calibrate Subsystems - comment out unwanted systems ******************************** //
+    // ::::::: CALIBRATE Subsystem  ::::::::
 
-    if (FATIMA_ON)
-    {
-        FatimaRaw2Cal* calfatima = new FatimaRaw2Cal();
-        
-        calfatima->SetOnline(true);
-        run->AddTask(calfatima);
-    }
+    if (LISA_ON)
+        {
+            LisaRaw2Cal* lisaraw2cal = new LisaRaw2Cal();
 
-    if (FIMP_ON)
-    {
-        FimpRaw2Cal* calfimp = new FimpRaw2Cal();
-
-        calfimp->SetOnline(true);
-        run->AddTask(calfimp);
-    }
+            lisaraw2cal->SetOnline(true);
+            run->AddTask(lisaraw2cal);
+        }
 
     if (FRS_ON)
     {
@@ -209,8 +195,8 @@ void s143_online()
     }
 
 
-    // ---------------------------------------------------------------------------------------- //
-    // *** Analyse Subsystem Hits ************************************************************* //
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
+    // ::::::: ANALYSE Subsystem  ::::::::
 
     if (FRS_ON)
     {
@@ -220,46 +206,47 @@ void s143_online()
         run->AddTask(hitfrs);
     } 
 
-
-    // ======================================================================================== //
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::   
     // =========== **** SPECTRA ***** ========================================================= //
-    // ======================================================================================== //
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
+
     
-    // ---------------------------------------------------------------------------------------- //
-    // *** Online Spectra ********************************************************************* //
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
+    // ::: Online Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-    if (FATIMA_ON)
-    {
-        FatimaOnlineSpectra* onlinefatima = new FatimaOnlineSpectra();
-        onlinefatima->SetBinningSlowToT(2000,560,660);
-        onlinefatima->SetBinningFastToT(1000,0.1,100.1);
-        onlinefatima->SetBinningEnergy(2000,0,1500);
+    //::::::::: Set ranges for histos :::::::::::::::
+    //::::  Channel Energy ::::: (h1_energy_layer_ch)
+    TLisaConfiguration::SetEnergyRange(0,3000000);
+    TLisaConfiguration::SetEnergyBin(900);
 
-        std::vector<int> fat_dets = {1,2,3,4,5,6,7,8}; // maybe 6-8 with additional signals?
-        onlinefatima->SetDetectorsToPlot(fat_dets);
+    //:::: LISA WR Time Difference :::::: (h1_wr_diff)
+    TLisaConfiguration::SetWrDiffRange(0,100000000);
+    TLisaConfiguration::SetWrDiffBin(20000);
 
-        run->AddTask(onlinefatima);
-    }
+    //:::: LISA Traces Time and Amplitude Ranges :::::: (h1_traces_layer_ch)
+    TLisaConfiguration::SetTracesRange(0,20);
+    TLisaConfiguration::SetTracesBin(2000);
+    TLisaConfiguration::SetAmplitudeMin(10);
+    TLisaConfiguration::SetAmplitudeMax(9000);
 
-    if (FIMP_ON)
+    //::::: FRS range for Z, AoQ, travMUSIC...
+    TFrsConfiguration::Set_Z_range(20,60);
+    TFrsConfiguration::Set_AoQ_range(1,4);
+    TFrsConfiguration::Set_dE_Music1_range(0,4000);
+    TFrsConfiguration::Set_dE_Music2_range(0,4000);
+    //TFrsConfiguration::Set_dE_travMusic_range(0,30000);
+
+    if (LISA_ON)
     {
         // Add analysis task here at some point
-        FimpOnlineSpectra* onlinefimp = new FimpOnlineSpectra();
+        LisaOnlineSpectra* onlinelisa = new LisaOnlineSpectra();
 
-        run->AddTask(onlinefimp);
+        run->AddTask(onlinelisa);
+
     }
-
-    TFrsConfiguration::Set_Z_range(50,75);
-    TFrsConfiguration::Set_AoQ_range(2.3,3.0);
     
     if (FRS_ON)
     {
-        if (TRAV_MUSIC_ON)
-        {
-            FrsTravMusSpectra* onlinetravmus = new FrsTravMusSpectra();
-            run->AddTask(onlinetravmus);
-        }
-
         FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
         // For monitoring FRS on our side
         // FrsRawSpectra* frsrawspec = new FrsRawSpectra();
@@ -268,28 +255,38 @@ void s143_online()
         run->AddTask(onlinefrs);
         // run->AddTask(frsrawspec);
         // run->AddTask(frscalspec);
+
+        if (TRAV_MUSIC_ON)
+        {
+            FrsTravMusSpectra* onlinetravmus = new FrsTravMusSpectra();
+            //add task for raw spec?
+            run->AddTask(onlinetravmus);
+        }
     }
 
-    TString b = "Fatima";
-    TString c = "Fimp";
+    TString c = "Lisa";
     TString d = "Frs";
     TString e = "TravMus";
 
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({b,c,d,e});
+        wronline->SetDetectorSystems({c,d,e});
         
         run->AddTask(wronline);
     }
 
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    // ::: Correlation Spectra :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-    // ---------------------------------------------------------------------------------------- //
-    // *** Correlations Spectra *************************************************************** //
+    if(LISA_ON && FRS_ON)
+    {
+        //LisaFrsCorrelationsOnline* LISA_FRS_corr = new LisaFrsOnlineCorrelationsOnline();
+        LisaFrsCorrelationsOnline* LISA_FRS_corr = new LisaFrsCorrelationsOnline();
+        run->AddTask(LISA_FRS_corr);
+    }
 
-    // FrsFimp
-    // LaBr3Fimp
-    // FrsLaBr3
+    // FrsLisa
 
     // Initialise
     run->Init();
@@ -297,7 +294,7 @@ void s143_online()
     // Information about portnumber and main data stream
     cout << "\n\n" << endl;
     cout << "Data stream is: " << filename << endl;
-    cout << "FIMP online port server: " << port << endl;
+    cout << "LISA online port server: " << port << endl;
     cout << "\n\n" << endl;
 
     // Run

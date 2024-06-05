@@ -20,6 +20,9 @@ class LisaCalData : public TObject
         inline std::vector<int> GetYPositions() const { return f_ypositions; }
         inline std::vector<uint32_t> GetRawEnergy() const { return f_raw_energy; }
         inline std::vector<uint32_t> GetRawTraces() const { return f_raw_traces; }
+
+        //inline uint64_t Get_board_event_t() const { return f_board_event_t; }
+        //inline uint64_t Get_channel_event_t() const { return f_channel_event_t; }
        
 
 
@@ -33,6 +36,9 @@ class LisaCalData : public TObject
         inline void SetRawEnergy(std::vector<uint32_t> raw_energy) { f_raw_energy = raw_energy; }
         inline void SetRawTraces(std::vector<uint32_t> raw_traces) { f_raw_traces = raw_traces; }
 
+        //inline void Set_board_event_t(uint64_t evt_t) { f_board_event_t = evt_t; }
+        //inline void Set_channel_event_t(uint64_t ch_t) { f_channel_event_t = ch_t; }
+
     protected:
 
         // variables
@@ -43,6 +49,9 @@ class LisaCalData : public TObject
         std::vector<int> f_ypositions;
         std::vector<uint32_t> f_raw_energy;
         std::vector<uint32_t> f_raw_traces;
+        
+        //uint64_t f_board_event_t;
+        //uint64_t f_channel_event_t;
 
 
     
@@ -64,6 +73,8 @@ class LisaCalItem : public TObject
                     int e,
                     std::vector<uint16_t> tr,
                     uint64_t evtno,
+                    //uint64_t evt_t,
+                    //uint64_t ch_t,
                     int pu,
                     int ov); 
         void Reset();
@@ -75,6 +86,9 @@ class LisaCalItem : public TObject
         int Get_yposition() const;
         uint32_t Get_energy() const;
         std::vector<uint16_t> Get_trace() const;
+        //uint64_t Get_evtno();
+        //uint64_t Get_board_event_time();
+        //uint64_t Get_channel_event_time();
         int Get_pileup() const;
         int Get_overflow() const;
 
@@ -89,6 +103,8 @@ class LisaCalItem : public TObject
         uint32_t energy; // double? int?
         std::vector<uint16_t> trace;
         uint64_t event_no;
+        //uint64_t evt_t;
+        //uint64_t ch_t;
         int pileup;
         int overflow;
         // timing info for correlations
@@ -139,5 +155,17 @@ inline int LisaCalItem::Get_overflow() const
 {
     return overflow;
 }
+
+/*
+inline uint64_t LisaCalItem::Get_board_evt_t() const
+{
+    return evt_t;
+}
+
+inline uint64_t LisaCalItem::Get_board_ch_t() const
+{
+    return ch_t;
+}
+*/
 
 #endif

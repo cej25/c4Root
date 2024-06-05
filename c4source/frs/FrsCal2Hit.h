@@ -17,11 +17,7 @@
 #include "GainShift.h"
 
 class TClonesArray;
-class FrsMainCalData;
-class FrsTPCCalData;
-class FrsUserCalData;
-class FrsTpatData;
-class FrsHitData;
+class FrsHitItem;
 class EventHeader;
 class EventData;
 
@@ -325,6 +321,9 @@ class FrsCal2Hit : public FairTask
         Float_t * id_mhtdc_z_music42 = nullptr;
         Float_t * id_mhtdc_zcor_music42 = nullptr;
         Float_t * id_mhtdc_v_cor_music42 = nullptr;
+        Float_t * id_mhtdc_z_travmus = nullptr;
+        Float_t * id_mhtdc_z_cor_travmus = nullptr;
+        Float_t * id_mhtdc_v_cor_travmus = nullptr;
 
         Float_t * id_mhtdc_dEdegoQ = nullptr;
         Float_t * id_mhtdc_gamma_ta_s2 = nullptr;

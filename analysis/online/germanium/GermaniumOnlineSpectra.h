@@ -6,6 +6,7 @@
 
 #include "TDirectory.h"
 #include "TFolder.h"
+#include "TH1.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include <vector>
@@ -18,6 +19,7 @@ class TH2F;
 class TFile;
 class TFolder;
 class TDirectory;
+class TH1;
 
 class GermaniumOnlineSpectra : public FairTask
 {
@@ -140,8 +142,12 @@ class GermaniumOnlineSpectra : public FairTask
         TDirectory* dir_germanium_hitpattern;
         TDirectory* dir_germanium_multiplicity;
         TDirectory* dir_germanium_sci41;
+<<<<<<< HEAD
         TDirectory* dir_germanium_resolution;
 
+=======
+        TDirectory* dir_germanium_rates;
+>>>>>>> main
         std::vector<TDirectory*> dir_germanium_time_differences;
 
         TFile* file_germanium_snapshot;
@@ -163,6 +169,7 @@ class GermaniumOnlineSpectra : public FairTask
         // Histograms time
         TH1F** h1_germanium_time;
 
+<<<<<<< HEAD
 
         double centroid_resolution = 1332;
         double width_resolution = 10;
@@ -198,6 +205,15 @@ class GermaniumOnlineSpectra : public FairTask
         TH1F ** h1_germanium_energy_last;
 
 
+=======
+        TH1** h1_germanium_rates;
+
+        // rates
+        int64_t saved_germanium_wr = 0;
+        int* detector_counters;
+        int* detector_rates;
+        int rate_running_count = 0;
+>>>>>>> main
 
     public:
         ClassDef(GermaniumOnlineSpectra, 1)
