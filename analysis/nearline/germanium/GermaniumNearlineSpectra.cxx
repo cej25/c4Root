@@ -72,6 +72,7 @@ InitStatus GermaniumNearlineSpectra::Init()
     gDirectory->cd("DEGAS");
 
     dir_germanium_energy = dir_germanium->mkdir("Calibrated Energy Spectra");
+    dir_germanium_drift = dir_germanium->mkdir("Drift Time Spectra");
     dir_germanium_time = dir_germanium->mkdir("Time Spectra");
     dir_germanium_hitpattern = dir_germanium->mkdir("Hit Pattern");
     dir_germanium_multiplicity = dir_germanium->mkdir("Multiplicity");
@@ -96,6 +97,16 @@ InitStatus GermaniumNearlineSpectra::Init()
     h1_germanium_energy_summed = new TH1F("h1_germanium_energy_summed","Calibrated Germanium spectra summed all dets",8000,0,8000);
     h1_germanium_energy_summed->GetXaxis()->SetTitle("energy (keV)");
     h1_germanium_energy_summed->GetYaxis()->SetTitle("counts");
+
+    dir_germanium_drift->cd();
+    h2_germanium_energy_vs_t.resize(number_of_detectors_to_plot);
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++)
+    {
+        h2_germanium_energy_vs_t[ihist] = new TH2F(Form("h2_germanium_energy_vs_t_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy vs time detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),2150,0,10750,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+        h2_germanium_energy_vs_t[ihist]->GetYaxis()->SetTitle("Energy (keV)");
+        h2_germanium_energy_vs_t[ihist]->GetXaxis()->SetTitle("Time (mins)");
+        h2_germanium_energy_vs_t[ihist]->SetOption("COLZ");
+    }
 
     // Spectra relating to SCI41:
     dir_germanium_sci41->cd();
@@ -198,7 +209,8 @@ void GermaniumNearlineSpectra::Exec(Option_t* option){
         Int_t nHits = fHitGe->GetEntriesFast();
         int event_multiplicity = 0;
         int64_t germanium_wr = 0;
-        
+        Long64_t degas_time = 0;
+
         
         bool sci41_seen = false; // off-spill raw spectra
 
@@ -210,7 +222,7 @@ void GermaniumNearlineSpectra::Exec(Option_t* option){
             int crystal_id1 = hit1->Get_crystal_id();
             double energy1 = hit1->Get_channel_energy();
             double time1 = hit1->Get_channel_trigger_time();
-
+            if (hit1->Get_wr_t() > 0) degas_time = (hit1->Get_wr_t() - 1.7137224e+18)/ 60E9; // convert ns start to minutes
             
             if (!(germanium_configuration->IsDetectorAuxilliary(detector_id1))) event_multiplicity ++; // count only physical events in germaniums
 
@@ -225,6 +237,7 @@ void GermaniumNearlineSpectra::Exec(Option_t* option){
             
             h1_germanium_energy[crystal_index1]->Fill(energy1);
             h2_germanium_energy_vs_detidx->Fill(hit1->Get_channel_energy(),crystal_index1);
+            h2_germanium_energy_vs_t[crystal_index1]->Fill(degas_time,energy1);
             h1_germanium_time[crystal_index1]->Fill(time1);
             h1_germanium_hitpattern->Fill(detector_labels[crystal_index1],1);
             if (!(germanium_configuration->IsDetectorAuxilliary(detector_id1))) h1_germanium_energy_summed->Fill(energy1);

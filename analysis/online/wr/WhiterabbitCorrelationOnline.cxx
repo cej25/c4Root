@@ -14,6 +14,7 @@
 #include "bPlastTwinpeaksCalData.h"
 #include "GermaniumCalData.h"
 #include "FrsHitData.h"
+#include "FrsHitData.h"
 
 #include "c4Logger.h"
 
@@ -125,8 +126,6 @@ InitStatus WhiterabbitCorrelationOnline::Init()
         {
             fAidaDecays = mgr->InitObjectAs<decltype(fAidaDecays)>("AidaDecayHits");
             c4LOG_IF(fatal, !fAidaDecays, "Branch AidaDecayHits not found!");
-            fAidaImplants = mgr->InitObjectAs<decltype(fAidaImplants)>("AidaImplantHits");
-            c4LOG_IF(fatal, !fAidaImplants, "Branch AidaImplantHits not found!");
             fAidaScalers = mgr->InitObjectAs<decltype(fAidaScalers)>("AidaScalerData");
             c4LOG_IF(fatal, !fAidaScalers, "Branch AidaScalerData not found!");
             fAidaImplants = mgr->InitObjectAs<decltype(fAidaImplants)>("AidaImplantHits");
@@ -137,6 +136,8 @@ InitStatus WhiterabbitCorrelationOnline::Init()
             c4LOG(fatal, "Unknown detector system: " << fDetectorSystems.at(i));
         }
     }
+
+
 
     TDirectory::TContext ctx(nullptr);
 
@@ -166,9 +167,27 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     h1_whiterabbit_correlation_germanium_frs->GetXaxis()->SetTitle("Time difference (DEGAS - FRS) [ns]");
     h1_whiterabbit_correlation_germanium_frs->GetYaxis()->SetTitle("Counts");
 
+    dir_whiterabbit_correlation->cd();
+    h1_whiterabbit_correlation_aida_frs = new TH1I("h1_whiterabbit_correlation_aida_frs", "AIDA - FRS WR dT", 1000, -5e4, 5e4);
+    h1_whiterabbit_correlation_aida_frs->GetXaxis()->SetTitle("Time difference (AIDA - FRS) [ns]");
+    h1_whiterabbit_correlation_aida_frs->GetYaxis()->SetTitle("Counts");
+
+    h1_whiterabbit_correlation_fatima_frs = new TH1I("h1_whiterabbit_correlation_fatima_frs", "FATIMA (TAMEX) - FRS WR dT", 1000, -1000, 1000);
+    h1_whiterabbit_correlation_fatima_frs->GetXaxis()->SetTitle("Time difference (FATIMA (TAMEX) - FRS) [ns]");
+    h1_whiterabbit_correlation_fatima_frs->GetYaxis()->SetTitle("Counts");
+
+    h1_whiterabbit_correlation_bplast_frs = new TH1I("h1_whiterabbit_correlation_bplast_frs", "bPlast - FRS WR dT", 1000, -1000, 1000);
+    h1_whiterabbit_correlation_bplast_frs->GetXaxis()->SetTitle("Time difference (bPlast - FRS) [ns]");
+    h1_whiterabbit_correlation_bplast_frs->GetYaxis()->SetTitle("Counts");
+
+    h1_whiterabbit_correlation_germanium_frs = new TH1I("h1_whiterabbit_correlation_germanium_frs", "DEGAS - FRS WR dT", 1000, -1000, 1000);
+    h1_whiterabbit_correlation_germanium_frs->GetXaxis()->SetTitle("Time difference (DEGAS - FRS) [ns]");
+    h1_whiterabbit_correlation_germanium_frs->GetYaxis()->SetTitle("Counts");
+
 
     // AIDA 
     // AIDA - Fatima
+    
     
     h1_whiterabbit_correlation_aida_fatima = new TH1I("h1_whiterabbit_correlation_aida_fatima", "AIDA - FATIMA (TAMEX) WR dT", 1000, -5e4, 5e4);
     h1_whiterabbit_correlation_aida_fatima->GetXaxis()->SetTitle("Time difference (AIDA - FATIMA) [ns]");
@@ -178,6 +197,7 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     h1_whiterabbit_trigger1_aida_fatima = new TH1I("h1_whiterabbit_trigger1_aida_fatima", "White Rabbit Trigger 1 AIDA - FATIMA (TAMEX)",1000,-5e4,5e4);
     h1_whiterabbit_trigger1_aida_fatima->GetXaxis()->SetTitle("AIDA - FATIMA (TAMEX) WR dT (ns)");
     h1_whiterabbit_trigger1_aida_fatima->GetYaxis()->SetTitle("Counts (Trigger 1)");
+
 
 
     dir_whiterabbit_trigger3->cd();
@@ -969,6 +989,10 @@ void WhiterabbitCorrelationOnline::FinishTask()
         c4LOG(warning, "No events found, no histograms written.");
         return;
     }
+   
+    c4LOG(info, "Processed " << fNEvents << " events.");
+    c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvents);
+
    
     c4LOG(info, "Processed " << fNEvents << " events.");
     c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvents);

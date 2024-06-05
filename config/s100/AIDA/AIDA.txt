@@ -24,7 +24,7 @@ EventWindow: 2200
 # Maximum time difference between good front-back coincidences (in nanoseconds)
 FrontBackWindow: 4400
 # Maximum energy difference for implants (in MeV)
-FrontBackEnergyH: 1000
+FrontBackEnergyH: 2000
 # Maximum energy difference for decays (in keV)
 FrontBackEnergyL: 350
 
