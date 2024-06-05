@@ -100,7 +100,8 @@ class FrsGermaniumCorrelations : public FairTask
 
         int germanium_coincidence_gate = 500; //ns
 
-
+        std::vector<double> gamma_energies_of_interest;
+        std::vector<double> gate_width_gamma_energies_of_interest;
 
         EventHeader* header;
         Int_t fNEvents;
