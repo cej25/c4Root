@@ -25,11 +25,11 @@ EXPS=s452 \
 	onlyFATIMA \
 	s100 \
 	s143 \
+	s181 \
 	bb7 \
 	fimp \
 	pareeksha \
-	onlyBGO \
-	onlyGerm 
+	onlyBGO 
 ALL_EXPS = $(EXPS)
 
 #########################################################

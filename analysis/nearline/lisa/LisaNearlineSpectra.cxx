@@ -253,11 +253,12 @@ InitStatus LisaNearlineSpectra::Init()
     //:::::::::::::E N E R G Y:::::::::::::::::
     dir_energy->cd();
 
-    c_energy_layer_ch.resize(layer_number);
+    //::::::::::::RAW ENERGIES
+    //c_energy_layer_ch.resize(layer_number);
     h1_energy_layer_ch.resize(layer_number);
 
     //::::::::::Energy for now special case layer 0
-    c_energy_layer_ch[0] = new TCanvas("c_energy_layer_ch0", "Tokyo layer", 650, 350);
+    //c_energy_layer_ch[0] = new TCanvas("c_energy_layer_ch0", "Tokyo layer", 650, 350);
     h1_energy_layer_ch[0].resize(1);
     h1_energy_layer_ch[0][0].resize(1);
     h1_energy_layer_ch[0][0][0] = new TH1F("tokyo", "Tokyo", lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
@@ -268,15 +269,15 @@ InitStatus LisaNearlineSpectra::Init()
     h1_energy_layer_ch[0][0][0]->SetLineColor(kBlue+1);
     h1_energy_layer_ch[0][0][0]->SetFillColor(kOrange-3);
     h1_energy_layer_ch[0][0][0]->Draw();
-    dir_energy->Append(c_energy_layer_ch[0]);
+    //dir_energy->Append(c_energy_layer_ch[0]);
 
  
     //:::::::::::Energy canvas for layer 1 and 2
     for (int i = 1; i < layer_number; i++) //create a canvas for each layer
     {
-        c_energy_layer_ch[i] = new TCanvas(Form("c_energy_layer_%d",i),Form("c_energy_layer_%d",i), 650,350);
-        c_energy_layer_ch[i]->SetTitle(Form("Layer %d - Energy",i));
-        c_energy_layer_ch[i]->Divide(xmax,ymax); 
+        //c_energy_layer_ch[i] = new TCanvas(Form("c_energy_layer_%d",i),Form("c_energy_layer_%d",i), 650,350);
+        //c_energy_layer_ch[i]->SetTitle(Form("Layer %d - Energy",i));
+        //c_energy_layer_ch[i]->Divide(xmax,ymax); 
         h1_energy_layer_ch[i].resize(xmax);
         
         for (int j = 0; j < xmax; j++)
@@ -285,7 +286,7 @@ InitStatus LisaNearlineSpectra::Init()
             for (int k = 0; k < ymax; k++)
             {   
                 // general formula to place correctly on canvas for x,y coordinates
-                c_energy_layer_ch[i]->cd((ymax-(k+1))*xmax + j + 1);
+                //c_energy_layer_ch[i]->cd((ymax-(k+1))*xmax + j + 1);
                 
                 city = "";
                 for (auto & detector : detector_mapping)
@@ -303,14 +304,76 @@ InitStatus LisaNearlineSpectra::Init()
                 //h1_energy_layer_ch[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
                 //h1_energy_layer_ch[i][j][k]->SetStats(0);
                 h1_energy_layer_ch[i][j][k]->SetLineColor(kBlue+1);
-                h1_energy_layer_ch[i][j][k]->SetFillColor(kOrange-3);
+                //h1_energy_layer_ch[i][j][k]->SetFillColor(kOrange-3);
                 h1_energy_layer_ch[i][j][k]->Draw();
             }
         }
-        c_energy_layer_ch[i]->cd(0);
-        dir_energy->Append(c_energy_layer_ch[i]);
+        //c_energy_layer_ch[i]->cd(0);
+        //dir_energy->Append(c_energy_layer_ch[i]);
 
     }
+
+    //:::::::: Gain Matched Energies 
+    //c_energy_layer_ch.resize(layer_number);
+    h1_energy_layer_ch_GM.resize(layer_number);
+
+    //::::::::::Energy for now special case layer 0
+    //c_energy_layer_ch[0] = new TCanvas("c_energy_layer_ch0", "Tokyo layer", 650, 350);
+    h1_energy_layer_ch_GM[0].resize(1);
+    h1_energy_layer_ch_GM[0][0].resize(1);
+    h1_energy_layer_ch_GM[0][0][0] = new TH1F("tokyo_GM_fake", "Tokyo_GM_fake", lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+    h1_energy_layer_ch_GM[0][0][0]->GetXaxis()->SetTitle("E(LISA) [a.u.]");
+    //h1_energy_layer_ch[0][0][0]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
+    //h1_energy_layer_ch[0][0][0]->SetMaximum(lisa_config->AmplitudeMax);
+    //h1_energy_layer_ch[0][0][0]->SetStats(0);
+    h1_energy_layer_ch_GM[0][0][0]->SetLineColor(kBlue+1);
+    h1_energy_layer_ch_GM[0][0][0]->SetFillColor(kOrange-3);
+    h1_energy_layer_ch_GM[0][0][0]->Draw();
+    //dir_energy->Append(c_energy_layer_ch[0]);
+
+ 
+    //:::::::::::Energy canvas for layer 1 and 2
+    for (int i = 1; i < layer_number; i++) //create a canvas for each layer
+    {
+        //c_energy_layer_ch[i] = new TCanvas(Form("c_energy_layer_%d",i),Form("c_energy_layer_%d",i), 650,350);
+        //c_energy_layer_ch[i]->SetTitle(Form("Layer %d - Energy",i));
+        //c_energy_layer_ch[i]->Divide(xmax,ymax); 
+        h1_energy_layer_ch_GM[i].resize(xmax);
+        
+        for (int j = 0; j < xmax; j++)
+        {
+            h1_energy_layer_ch_GM[i][j].resize(ymax);
+            for (int k = 0; k < ymax; k++)
+            {   
+                // general formula to place correctly on canvas for x,y coordinates
+                //c_energy_layer_ch[i]->cd((ymax-(k+1))*xmax + j + 1);
+                
+                city = "";
+                for (auto & detector : detector_mapping)
+                {
+                    if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
+                    {
+                        city = detector.second.first.second;
+                        break;
+                    }
+                }
+
+                h1_energy_layer_ch_GM[i][j][k] = new TH1F(Form("energy_%s_%i_%i_%i_GM", city.c_str(), i, j, k), city.c_str(), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+                h1_energy_layer_ch_GM[i][j][k]->GetXaxis()->SetTitle("E(LISA) [a.u.]");
+                //h1_energy_layer_ch[i][j][k]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
+                //h1_energy_layer_ch[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
+                //h1_energy_layer_ch[i][j][k]->SetStats(0);
+                h1_energy_layer_ch_GM[i][j][k]->SetLineColor(kBlue+1);
+                //h1_energy_layer_ch[i][j][k]->SetFillColor(kOrange-3);
+                h1_energy_layer_ch_GM[i][j][k]->Draw();
+            }
+        }
+        //c_energy_layer_ch[i]->cd(0);
+        //dir_energy->Append(c_energy_layer_ch[i]);
+
+    }
+
+    
     
     //::::::::::: Sum Energy Layer 1 vs Sum Energy Layer 2
     dir_energy->cd();
@@ -323,7 +386,16 @@ InitStatus LisaNearlineSpectra::Init()
     gPad->SetLogz();
     dir_energy->Append(c_energy_layer1_vs_layer2);
 
-    //:::::::::::::::::energy 101 vs 201...
+    //::::::::::::Sum Energy Layer 1 vs Layer 2 GAIN MATCHED
+    dir_energy->cd();
+    c_energy_layer1_vs_layer2_GM = new TCanvas("c_energy_layer1_vs_layer2_GM","c_energy_layer1_vs_layer2_GM", 650,350);
+    h2_energy_layer1_vs_layer2_GM = new TH2F("h2_energy_layer1_vs_layer2_GM", "E(Layer 1) vs E(Layer 2)Gain Matched", lisa_config->bin_energy*4, lisa_config->min_energy*4, lisa_config->max_energy*4,lisa_config->bin_energy*4, lisa_config->min_energy*4, lisa_config->max_energy*4); 
+    //h2_energy_layer1_vs_layer2->SetStats(0);
+    h2_energy_layer1_vs_layer2_GM->Draw("colz");
+    h2_energy_layer1_vs_layer2_GM->GetXaxis()->SetTitle(Form("Energy - Layer 2 [a.u]"));
+    h2_energy_layer1_vs_layer2_GM->GetYaxis()->SetTitle(Form("Energy - Layer 1 [a.u]"));
+    gPad->SetLogz();
+    dir_energy->Append(c_energy_layer1_vs_layer2_GM);
 
     //::::::::::: E N E R G Y  VS  T I M E::::::::::::
     dir_energy->cd();
@@ -560,6 +632,53 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         //::::::::: E N E R G Y :::::::::::::::
         h1_energy_layer_ch[layer][xpos][ypos]->Fill(energy);
 
+
+        //:::::::::Energy gated ---fast but stupid way to test gain match. Make vectors and loop....
+        //Layer 1
+        
+        if (layer == 1)
+        {
+            if ( xpos == 0 && ypos == 1)
+            {
+                h1_energy_layer_ch_GM[layer][xpos][ypos]->Fill(energy*1.02898 -34831.1);
+            }
+            if ( xpos == 1 && ypos == 1)
+            {
+                h1_energy_layer_ch_GM[layer][xpos][ypos]->Fill(energy*1.11029-34831.1);
+            }
+            if ( xpos == 0 && ypos == 0)
+            {
+                h1_energy_layer_ch_GM[layer][xpos][ypos]->Fill(energy*10462.1-36188.3);
+            }
+            if ( xpos == 1 && ypos == 0)
+            {
+                h1_energy_layer_ch_GM[layer][xpos][ypos]->Fill(energy*1.07383-17326.2);
+            }
+        }
+
+        if (layer == 2)
+        {
+            if ( xpos == 0 && ypos == 1)
+            {
+                h1_energy_layer_ch_GM[layer][xpos][ypos]->Fill(energy*0.976324 + 36216.7);
+            }
+            if ( xpos == 1 && ypos == 1)
+            {
+                h1_energy_layer_ch_GM[layer][xpos][ypos]->Fill(energy*0.968210 + 32599.6);
+            }
+            if ( xpos == 0 && ypos == 0)
+            {
+                h1_energy_layer_ch_GM[layer][xpos][ypos]->Fill(energy*1.04330 + 51716.2);
+            }
+            if ( xpos == 1 && ypos == 0)
+            {
+                h1_energy_layer_ch_GM[layer][xpos][ypos]->Fill(energy*0.992228 + 41137.8);
+            }
+        }
+
+        
+
+
         //::::::::Sum Energy
         
         sum_energy_layer[layer] += energy;
@@ -671,6 +790,8 @@ void LisaNearlineSpectra::FinishTask()
     FairRootManager::Instance()->GetOutFile()->cd();
     dir_lisa->Write();
     c4LOG(info, "Written LISA analysis histograms to file.");
+    c4LOG(info, "LISA events : " << fNEvents);
+
 
 
 }

@@ -11,6 +11,8 @@ TBB7VmeConfiguration* TBB7VmeConfiguration::instance = nullptr;
 std::string TBB7VmeConfiguration::configuration_file = "blank";
 std::string TBB7VmeConfiguration::calibration_file = "blank";
 
+uint32_t TBB7VmeConfiguration::implantThreshold = 5000;
+
 TBB7VmeConfiguration::TBB7VmeConfiguration()
     :   num_detectors(0)
     ,   num_sides(0)

@@ -165,14 +165,24 @@ void GermaniumResolution::FinishTask()
 
     TF1 * gaus = new TF1("gaus","gaus",peak_interest_energy-peak_interest_fitwidth,peak_interest_energy+peak_interest_fitwidth);
     c4LOG(info,"Resolution measurement results");
-    std::cout << "det | crystal | constant | mean (keV) | sigma (keV) | FWHM (keV) | resolution" << std::endl;
+    std::cout << "det | crystal | constant | mean (keV) | sigma (keV) | FWHM (keV) | FWTM | ratio" << std::endl;
 
     if (fHitGe)
     {
         for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){        
         h1_germanium_energy[ihist]->Fit(gaus,"QR");
-        std::cout << Form("%d %c %f %f %f %f %f",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65),gaus->GetParameter(0),gaus->GetParameter(1),gaus->GetParameter(2),gaus->GetParameter(2)*2.355,gaus->GetParameter(2)*2.355) << std::endl;
         
+        double tenthmaximum = gaus->Eval(gaus->GetParameter(1))/10.0;
+        
+        int binnr1 = h1_germanium_energy[ihist]->FindBin(1250.0);
+        int binnr2 = h1_germanium_energy[ihist]->FindBin(1350.0);
+        int binlow = h1_germanium_energy[ihist]->FindFirstBinAbove(tenthmaximum,1,binnr1,binnr2);        
+        int binhigh = h1_germanium_energy[ihist]->FindLastBinAbove(tenthmaximum,1,binnr1,binnr2);
+
+        double fwtm = h1_germanium_energy[ihist]->GetBinCenter(binhigh) - h1_germanium_energy[ihist]->GetBinCenter(binlow);
+
+        std::cout << Form("%d %c %f %f %f %f %f %f",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65),gaus->GetParameter(0),gaus->GetParameter(1),gaus->GetParameter(2),gaus->GetParameter(2)*2.355,fwtm,fwtm/(gaus->GetParameter(2)*2.355)) << std::endl;
+
         int nvals = resoltutions[ihist].size();
         double x[nvals];
         double ex[nvals];

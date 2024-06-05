@@ -23,7 +23,10 @@
 #pragma link C++ class BeamMonitorData+;
 #pragma link C++ class TimeMachineData+;
 #pragma link C++ class BB7VmeData+;
+#pragma link C++ class BB7V7x5Item+;
 #pragma link C++ class BB7VmeCalData+;
+#pragma link C++ class BB7VmeImplantItem+;
+#pragma link C++ class BB7VmeDecayItem+;
 
 #pragma link C++ class BGOTwinpeaksData+;
 #pragma link C++ class BGOTwinpeaksCalData+;
@@ -64,6 +67,7 @@
 #pragma link C++ class TBGOTwinpeaksConfiguration+;
 #pragma link C++ class TbPlastConfiguration+;
 #pragma link C++ class TCorrelationsConfiguration+;
+#pragma link C++ class TExperimentConfiguration+;
 #pragma link C++ class TBB7VmeConfiguration+;
 #pragma link C++ class TLisaConfiguration+;
 #pragma link C++ class TFimpConfiguration+;

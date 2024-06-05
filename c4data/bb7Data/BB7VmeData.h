@@ -41,4 +41,48 @@ class BB7VmeData : public TObject
 };
 
 
+class BB7V7x5Item : public TObject
+{
+    public:
+        BB7V7x5Item();
+
+        void SetAll(uint64_t wr, uint32_t g, uint32_t data, uint32_t ch);
+        void Reset();
+
+        uint64_t Get_wr_t() const;
+        uint32_t Get_geo() const;
+        uint32_t Get_v7x5_data() const;
+        uint32_t Get_channel() const;
+
+        ClassDefNV(BB7V7x5Item, 1);
+
+    private:
+
+        uint64_t wr_t;
+        uint32_t geo;
+        uint32_t v7x5_data;
+        uint32_t channel;
+
+};
+
+inline uint64_t BB7V7x5Item::Get_wr_t() const
+{
+    return wr_t;
+}
+
+inline uint32_t BB7V7x5Item::Get_geo() const
+{
+    return geo;
+}
+
+inline uint32_t BB7V7x5Item::Get_channel() const
+{
+    return channel;
+}
+
+inline uint32_t BB7V7x5Item::Get_v7x5_data() const
+{
+    return v7x5_data;
+}
+
 #endif

@@ -58,6 +58,19 @@ class TLisaConfiguration
         static void SetTracesRange(int min_tr, int max_tr) { min_traces = min_tr; max_traces = max_tr; }
         static void SetTracesBin(int bin_tr) { bin_traces = bin_tr; }
 
+/*
+        static void SetGainM_100(int s100_p, int i100_p) {  s100 = s100_p; i100 = i100_p; }
+        static void SetGainM_101(int s101_p, int i101_p) {  s101 = s101_p; i101 = i101_p; }
+        static void SetGainM_110(int s110_p, int i110_p) {  s110 = s110_p; i110 = i110_p; }
+        static void SetGainM_111(int s111_p, int i111_p) {  s111 = s111_p; i111 = i111_p; }
+        static void SetGainM_200(int s200_p, int i200_p) {  s200 = s200_p; i200 = i200_p; }
+        static void SetGainM_201(int s201_p, int i201_p) {  s201 = s201_p; i201 = i201_p; }
+        static void SetGainM_210(int s210_p, int i210_p) {  s210 = s210_p; i210 = i210_p; }
+        static void SetGainM_211(int s211_p, int i211_p) {  s211 = s211_p; i211 = i211_p; }
+*/
+
+
+
         //int AmplitudeMax = 10500;
         //int AmplitudeMin = 7500;
         static int AmplitudeMax; // = 10500;
@@ -71,6 +84,24 @@ class TLisaConfiguration
         static int min_traces;
         static int max_traces;
         static int bin_traces;
+        /*
+        static int s100;
+        static int s101;
+        static int s110;
+        static int s111;
+        static int s200;
+        static int s201;
+        static int s210;
+        static int s211;
+        static int i100;
+        static int i101;
+        static int i110;
+        static int i111;
+        static int i200;
+        static int i201;
+        static int i210;
+        static int i211;
+        */
 
         //:::::::
 

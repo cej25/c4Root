@@ -29,10 +29,15 @@ typedef          int  int32_t;
 typedef struct EXT_STR_h101_beammonitor_t
 {
   /* UNPACK */
-  uint32_t beammonitor_dataS2 /* [0,100000] */;
-  uint32_t beammonitor_dataS2v[100000 EXT_STRUCT_CTRL(beammonitor_dataS2)] /* [-1,-1] */;
-  uint32_t beammonitor_dataS4 /* [0,100000] */;
-  uint32_t beammonitor_dataS4v[100000 EXT_STRUCT_CTRL(beammonitor_dataS4)] /* [-1,-1] */;
+  uint32_t beammonitor_ts_subsystem_id /* [0,65535] */;
+  uint32_t beammonitor_ts_t1 /* [0,65535] */;
+  uint32_t beammonitor_ts_t2 /* [0,65535] */;
+  uint32_t beammonitor_ts_t3 /* [0,65535] */;
+  uint32_t beammonitor_ts_t4 /* [0,65535] */;
+  uint32_t beammonitor_s2_dataS2 /* [0,100000] */;
+  uint32_t beammonitor_s2_dataS2v[100000 EXT_STRUCT_CTRL(beammonitor_s2_dataS2)] /* [-1,-1] */;
+  uint32_t beammonitor_s4_dataS4 /* [0,100000] */;
+  uint32_t beammonitor_s4_dataS4v[100000 EXT_STRUCT_CTRL(beammonitor_s4_dataS4)] /* [-1,-1] */;
 
 } EXT_STR_h101_beammonitor;
 
@@ -45,10 +50,12 @@ typedef struct EXT_STR_h101_beammonitor_t
 typedef struct EXT_STR_h101_beammonitor_onion_t
 {
   /* UNPACK */
-  uint32_t beammonitor_dataS2;
-  uint32_t beammonitor_dataS2v[100000 /* beammonitor_dataS2 */];
-  uint32_t beammonitor_dataS4;
-  uint32_t beammonitor_dataS4v[100000 /* beammonitor_dataS4 */];
+  uint32_t beammonitor_ts_subsystem_id;
+  uint32_t beammonitor_ts_t[4];
+  uint32_t beammonitor_s2_dataS2;
+  uint32_t beammonitor_s2_dataS2v[100000 /* beammonitor_s2_dataS2 */];
+  uint32_t beammonitor_s4_dataS4;
+  uint32_t beammonitor_s4_dataS4v[100000 /* beammonitor_s4_dataS4 */];
 
 } EXT_STR_h101_beammonitor_onion;
 
@@ -58,17 +65,32 @@ typedef struct EXT_STR_h101_beammonitor_onion_t
   ok = 1; \
   /* UNPACK */ \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     beammonitor_dataS2,              UINT32,\
-                    "beammonitor_dataS2",100000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     beammonitor_dataS2v,             UINT32,\
-                    "beammonitor_dataS2v",             "beammonitor_dataS2",0/*flags*/); \
+                     beammonitor_ts_subsystem_id,     UINT32,\
+                    "beammonitor_ts_subsystem_id",65535,0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     beammonitor_dataS4,              UINT32,\
-                    "beammonitor_dataS4",100000,0/*flags*/); \
+                     beammonitor_ts_t1,               UINT32,\
+                    "beammonitor_ts_t1",65535,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     beammonitor_ts_t2,               UINT32,\
+                    "beammonitor_ts_t2",65535,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     beammonitor_ts_t3,               UINT32,\
+                    "beammonitor_ts_t3",65535,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     beammonitor_ts_t4,               UINT32,\
+                    "beammonitor_ts_t4",65535,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     beammonitor_s2_dataS2,           UINT32,\
+                    "beammonitor_s2_dataS2",100000,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     beammonitor_dataS4v,             UINT32,\
-                    "beammonitor_dataS4v",             "beammonitor_dataS4",0/*flags*/); \
+                     beammonitor_s2_dataS2v,          UINT32,\
+                    "beammonitor_s2_dataS2v",          "beammonitor_s2_dataS2",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     beammonitor_s4_dataS4,           UINT32,\
+                    "beammonitor_s4_dataS4",100000,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     beammonitor_s4_dataS4v,          UINT32,\
+                    "beammonitor_s4_dataS4v",          "beammonitor_s4_dataS4",0/*flags*/); \
   \
 } while (0);
 

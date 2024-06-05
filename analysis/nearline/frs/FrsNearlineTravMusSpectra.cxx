@@ -57,7 +57,7 @@ InitStatus FrsNearlineTravMusSpectra::Init()
 
     FairRootManager::Instance()->GetOutFile()->cd();
     dir_travmus = gDirectory->mkdir("Travel MUSIC");
-    mgr->Register("Travel MUSIC", "Travel MUSIC", dir_travmus, false); // allow other tasks to find this
+    //mgr->Register("Travel MUSIC", "Travel MUSIC", dir_travmus, false); // allow other tasks to find this
     
     dir_raw_adc = dir_travmus->mkdir("Raw ADC");
     dir_raw_adc->cd();

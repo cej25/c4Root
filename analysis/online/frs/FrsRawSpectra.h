@@ -126,7 +126,7 @@ class FrsRawSpectra : public FairTask
         TCanvas* c_vftx_lead_refch8_vs_event;*/
 
         // variables
-        int v1290_mult[32] = {0};
+        //int v1290_mult[32] = {0};
     
     public:
         ClassDef(FrsRawSpectra, 1)

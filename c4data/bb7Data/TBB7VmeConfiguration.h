@@ -14,6 +14,8 @@ class TBB7VmeConfiguration
         static void SetDetectorConfigurationFile(std::string fp) { configuration_file = fp; }
         //static void SetDetectorCoefficientFile(std::string fp) { calibration_file = fp; }
 
+        static void SetImplantThreshold(uint32_t th) { implantThreshold = th; }
+
         std::map<std::pair<int,int>,std::pair<int,int>> Mapping() const;
         bool MappingLoaded() const;
         bool CalibrationCoefficientsLoaded() const;
@@ -29,6 +31,8 @@ class TBB7VmeConfiguration
         //std::pair<int, int> bPlast_accept() const;
         //std::pair<int, int> bPlast_free() const;
         std::set<std::pair<int, int>> ExtraSignals() const;
+
+        static uint32_t implantThreshold;
     
     private:
 
@@ -40,6 +44,7 @@ class TBB7VmeConfiguration
         //void ReadCalibrationCoefficients();
 
         static TBB7VmeConfiguration* instance;
+
         
         std::map<std::pair<int,int>,std::pair<int, int>> detector_mapping; // [board_id][channel_id] -> [side][strip]
         //std::map<int,std::vector<double>> calibration_coeffs; // key: [detector id] -> vector[a0 - a3] index is coefficient number 0 = offset +++ expects quadratic.

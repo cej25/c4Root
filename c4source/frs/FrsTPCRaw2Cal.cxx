@@ -204,128 +204,130 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
         uint32_t channel = v7x5item.Get_channel();
         uint32_t geo = v7x5item.Get_geo();
         uint32_t data = v7x5item.Get_v7x5_data();
-
+        int tpc_s2_geo = 12;
+        int tpc_s3_geo = 8; // lol
+        int tpc_s4_geo = 8; // for NOW!! MAYBE 13????
         switch (channel)
-        {
+        {   
             case 0:
-                if (geo == 12) tpc_a[0][0] = data;
-                if (geo == 8) tpc_a[4][0] = data;
+                if (geo == tpc_s2_geo) tpc_a[0][0] = data; // 21
+                if (geo == tpc_s4_geo) tpc_a[4][0] = data; // 41
                 break;
             case 1:
-                if (geo == 12) tpc_a[0][1] = data;
-                if (geo == 8) tpc_a[4][1] = data;
+                if (geo == tpc_s2_geo) tpc_a[0][1] = data; // 21
+                if (geo == tpc_s4_geo) tpc_a[4][1] = data; // 41
                 break;
             case 2:
-                if (geo == 12) tpc_a[0][2] = data;
-                if (geo == 8) tpc_a[4][2] = data;
+                if (geo == tpc_s2_geo) tpc_a[0][2] = data; // 21
+                if (geo == tpc_s4_geo) tpc_a[4][2] = data; // 41
                 break;
             case 3:
-                if (geo == 12) tpc_a[0][3] = data;
-                if (geo == 8) tpc_a[4][3] = data;
+                if (geo == tpc_s2_geo) tpc_a[0][3] = data; // 21
+                if (geo == tpc_s4_geo) tpc_a[4][3] = data; // 41
                 break;
             case 4:
-                if (geo == 12) tpc_l[0][0] = data;
-                if (geo == 8) tpc_l[4][0] = data;
+                if (geo == tpc_s2_geo) tpc_l[0][0] = data; // 21
+                if (geo == tpc_s4_geo) tpc_l[4][0] = data; // 41
                 break;
             case 5:
-                if (geo == 12) tpc_r[0][0] = data;
-                if (geo == 8) tpc_r[4][0] = data;
+                if (geo == tpc_s2_geo) tpc_r[0][0] = data; // 21
+                if (geo == tpc_s4_geo) tpc_r[4][0] = data; // 41
                 break;
             case 6:
-                if (geo == 12) tpc_l[0][1] = data;
-                if (geo == 8) tpc_l[4][1] = data;
+                if (geo == tpc_s2_geo) tpc_l[0][1] = data; // 21
+                if (geo == tpc_s4_geo) tpc_l[4][1] = data; // 41
                 break;
             case 7:
-                if (geo == 12) tpc_r[0][1] = data;
-                if (geo == 8) tpc_r[4][1] = data;
+                if (geo == tpc_s2_geo) tpc_r[0][1] = data; // 21
+                if (geo == tpc_s4_geo) tpc_r[4][1] = data; // 41
                 break;
             case 8:
-                if (geo == 12) tpc_a[1][0] = data;
-                if (geo == 8) tpc_a[5][0] = data;
+                if (geo == tpc_s2_geo) tpc_a[1][0] = data; // 22
+                if (geo == tpc_s4_geo) tpc_a[5][0] = data; // 42
                 break;
             case 9:
-                if (geo == 12) tpc_a[1][1] = data;
-                if (geo == 8) tpc_a[5][1] = data;
+                if (geo == tpc_s2_geo) tpc_a[1][1] = data; // 22
+                if (geo == tpc_s4_geo) tpc_a[5][1] = data; // 42
                 break;
             case 10:
-                if (geo == 12) tpc_a[1][2] = data;
-                if (geo == 8) tpc_a[5][2] = data;
+                if (geo == tpc_s2_geo) tpc_a[1][2] = data; // 22
+                if (geo == tpc_s4_geo) tpc_a[5][2] = data; // 42
                 break;
             case 11:
-                if (geo == 12) tpc_a[1][3] = data;
-                if (geo == 8) tpc_a[5][3] = data;
+                if (geo == tpc_s2_geo) tpc_a[1][3] = data; // 22
+                if (geo == tpc_s4_geo) tpc_a[5][3] = data; // 42
                 break;
             case 12:
-                if (geo == 12) tpc_l[1][0] = data;
-                if (geo == 8) tpc_l[5][0] = data;
+                if (geo == tpc_s2_geo) tpc_l[1][0] = data; // 22
+                if (geo == tpc_s4_geo) tpc_l[5][0] = data; // 42
                 break;
             case 13:
-                if (geo == 12) tpc_r[1][0] = data;
-                if (geo == 8) tpc_r[5][0] = data;
+                if (geo == tpc_s2_geo) tpc_r[1][0] = data; // 22
+                if (geo == tpc_s4_geo) tpc_r[5][0] = data; // 42
                 break;
             case 14:
-                if (geo == 12) tpc_l[1][1] = data;
-                if (geo == 8) tpc_l[5][1] = data;
+                if (geo == tpc_s2_geo) tpc_l[1][1] = data; // 22
+                if (geo == tpc_s4_geo) tpc_l[5][1] = data; // 42
                 break;
             case 15:
-                if (geo == 12) tpc_r[1][1] = data;
-                if (geo == 8) tpc_r[5][1] = data;
+                if (geo == tpc_s2_geo) tpc_r[1][1] = data; // 22
+                if (geo == tpc_s4_geo) tpc_r[5][1] = data; // 42
                 break;
             case 16:
-                if (geo == 12) tpc_a[2][0] = data;
-                if (geo == 8) tpc_a[6][0] = data;
+                if (geo == tpc_s2_geo) tpc_a[2][0] = data; // 23
+                if (geo == tpc_s3_geo) tpc_a[6][0] = data; // 31
                 break;
             case 17:
-                if (geo == 12) tpc_a[2][1] = data;
-                if (geo == 8) tpc_a[6][1] = data;
+                if (geo == tpc_s2_geo) tpc_a[2][1] = data; // 23
+                if (geo == tpc_s3_geo) tpc_a[6][1] = data; // 31
                 break;
             case 18:
-                if (geo == 12) tpc_a[2][2] = data;
-                if (geo == 8) tpc_a[6][2] = data;
+                if (geo == tpc_s2_geo) tpc_a[2][2] = data; // 23
+                if (geo == tpc_s3_geo) tpc_a[6][2] = data; // 31
                 break;
             case 19:
-                if (geo == 12) tpc_a[2][3] = data;
-                if (geo == 8) tpc_a[6][3] = data;
+                if (geo == tpc_s2_geo) tpc_a[2][3] = data; // 23
+                if (geo == tpc_s3_geo) tpc_a[6][3] = data; // 31
                 break;
             case 20:
-                if (geo == 12) tpc_l[2][0] = data;
-                if (geo == 8) tpc_l[6][0] = data;
+                if (geo == tpc_s2_geo) tpc_l[2][0] = data; // 23
+                if (geo == tpc_s3_geo) tpc_l[6][0] = data; // 31
                 break;
             case 21:
-                if (geo == 12) tpc_r[2][0] = data;
-                if (geo == 8) tpc_r[6][0] = data;
+                if (geo == tpc_s2_geo) tpc_r[2][0] = data; // 23
+                if (geo == tpc_s3_geo) tpc_r[6][0] = data; // 31
                 break;
             case 22:
-                if (geo == 12) tpc_l[2][1] = data;
-                if (geo == 8) tpc_l[6][1] = data;
+                if (geo == tpc_s2_geo) tpc_l[2][1] = data; // 23
+                if (geo == tpc_s3_geo) tpc_l[6][1] = data; // 31
                 break;
             case 23:
-                if (geo == 12) tpc_r[2][1] = data;
-                if (geo == 8) tpc_r[6][1] = data;
+                if (geo == tpc_s2_geo) tpc_r[2][1] = data; // 23
+                if (geo == tpc_s3_geo) tpc_r[6][1] = data; // 31
                 break;
             case 24:
-                if (geo == 12) tpc_a[3][0] = data;
+                if (geo == tpc_s2_geo) tpc_a[3][0] = data; // 24
                 break;
             case 25:
-                if (geo == 12) tpc_a[3][1] = data;
+                if (geo == tpc_s2_geo) tpc_a[3][1] = data; // 24
                 break;
             case 26:
-                if (geo == 12) tpc_a[3][2] = data;
+                if (geo == tpc_s2_geo) tpc_a[3][2] = data; // 24
                 break;
             case 27:
-                if (geo == 12) tpc_a[3][3] = data;
+                if (geo == tpc_s2_geo) tpc_a[3][3] = data; // 24
                 break;
             case 28:
-                if (geo == 12) tpc_l[3][0] = data;
+                if (geo == tpc_s2_geo) tpc_l[3][0] = data; // 24
                 break;
             case 29:
-                if (geo == 12) tpc_r[3][0] = data;
+                if (geo == tpc_s2_geo) tpc_r[3][0] = data; // 24
                 break;
             case 30:
-                if (geo == 12) tpc_l[3][1] = data;
+                if (geo == tpc_s2_geo) tpc_l[3][1] = data; // 24
                 break;
             case 31:
-                if (geo == 12) tpc_r[3][1] = data;
+                if (geo == tpc_s2_geo) tpc_r[3][1] = data; // 24
                 break;
 
         }
@@ -751,7 +753,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
     }
 
     auto & tpcEntry = tpcCalArray->emplace_back();
-    tpcEntry.SetAll(
+    tpcEntry.SetAll(tpc_x,
         b_tpc_xy,
         tpc_csum,
         tpc_angle_x_s2_foc_21_22,

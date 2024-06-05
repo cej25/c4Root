@@ -119,6 +119,8 @@ SUBEVENT(travmus_subev)
 
 SUBEVENT(fimp_subev)
 {
+    optional UINT32 be { 0_31: b = MATCH(0xbad00bad);}
+
     select optional
     {
         ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1300);

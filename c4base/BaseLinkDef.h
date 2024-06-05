@@ -10,6 +10,7 @@
 #pragma link C++ class EventData+;
 #pragma link C++ class c4Logger+;
 #pragma link C++ class TCutGGates+;
+#pragma link C++ class AnalysisTools+;
 
 
 #endif

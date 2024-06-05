@@ -21,6 +21,7 @@ BB7Reader::BB7Reader(EXT_STR_h101_bb7vme_onion* data, size_t offset)
     ,   fOffset(offset)
     ,   fOnline(kFALSE)
     ,   fArray(new TClonesArray("BB7VmeData"))
+    ,   v7x5array(new std::vector<BB7V7x5Item>)
 {
 
 }
@@ -28,6 +29,7 @@ BB7Reader::BB7Reader(EXT_STR_h101_bb7vme_onion* data, size_t offset)
 BB7Reader::~BB7Reader()
 {
     delete fArray;
+    delete v7x5array;
 }
 
 Bool_t BB7Reader::Init(ext_data_struct_info* a_struct_info)
@@ -44,7 +46,9 @@ Bool_t BB7Reader::Init(ext_data_struct_info* a_struct_info)
     }
 
     FairRootManager::Instance()->Register("BB7VmeData", "BB7 Vme Data", fArray, !fOnline);
+    FairRootManager::Instance()->RegisterAny("BB7V7x5Data", v7x5array, !fOnline);
     fArray->Clear();
+    v7x5array->clear();
 
     memset(fData, 0, sizeof *fData);
 
@@ -66,6 +70,13 @@ Bool_t BB7Reader::Read()
   
     for (int i = 0; i < fData->bb7_v7x5_module1n; i++)
     {   
+        uint32_t geo = fData->bb7_v7x5_module1geov[i];
+        uint32_t data = fData->bb7_v7x5_module1data[i];
+        uint32_t channel = fData->bb7_v7x5_module1channelv[i];
+
+        auto & entry = v7x5array->emplace_back();
+        entry.SetAll(wr_t, geo, data, channel);
+
         v7x5_geo.emplace_back(fData->bb7_v7x5_module1geov[i]);
         v7x5_channel.emplace_back(fData->bb7_v7x5_module1channelv[i]);
         v7x5_data.emplace_back(fData->bb7_v7x5_module1data[i]);
@@ -73,6 +84,13 @@ Bool_t BB7Reader::Read()
 
     for (int i = 0; i < fData->bb7_v7x5_module2n; i++)
     {   
+        uint32_t geo = fData->bb7_v7x5_module2geov[i];
+        uint32_t data = fData->bb7_v7x5_module2data[i];
+        uint32_t channel = fData->bb7_v7x5_module2channelv[i];
+
+        auto & entry = v7x5array->emplace_back();
+        entry.SetAll(wr_t, geo, data, channel);
+
         v7x5_geo.emplace_back(fData->bb7_v7x5_module2geov[i]);
         v7x5_channel.emplace_back(fData->bb7_v7x5_module2channelv[i]);
         v7x5_data.emplace_back(fData->bb7_v7x5_module2data[i]);
@@ -83,6 +101,8 @@ Bool_t BB7Reader::Read()
     bb7VmeHit->Set_v7x5_data(v7x5_data);
 
     new ((*fArray)[fArray->GetEntriesFast()]) BB7VmeData(*bb7VmeHit);
+
+
 
 
     fNEvent += 1;
@@ -96,6 +116,7 @@ void BB7Reader::Reset()
     v7x5_channel.clear();
     v7x5_data.clear();
     fArray->Clear();
+    v7x5array->clear();
 }
 
 ClassImp(BB7Reader)

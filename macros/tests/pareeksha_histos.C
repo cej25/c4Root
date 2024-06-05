@@ -10,7 +10,7 @@
 // Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/
 extern "C"
 {
-    #include "../../config/pareeksha/frs/setup_des_s100_030_2024_conv.C"
+    #include "../../config/pareeksha/frs/setup_s092_010_2024_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -55,11 +55,11 @@ void pareeksha_histos()
 
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
-    TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/pareeksha_test.root";  
+    TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/run_0074_test.root";  
     
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/";
-    TString outputFilename = outputpath + "pareeksha_test_histos.root";
+    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/fragments_16may/";
+    TString outputFilename = outputpath + "run_0074_new_GM.root";
 
 
     FairRunAna* run = new FairRunAna();
@@ -89,6 +89,17 @@ void pareeksha_histos()
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::: G A T E S - Initialise 
 
+    std::vector<FrsGate*> fg;
+    FrsGate* cut_0 = new FrsGate("0", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/cut_Z_AoQ_0.root");
+    FrsGate* cut_1 = new FrsGate("1", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/cut_Z_AoQ_1.root");
+    FrsGate* cut_2 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/cut_Z_AoQ_2.root");
+    FrsGate* cut_3 = new FrsGate("3", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/cut_Z_AoQ_3.root");
+    
+
+    fg.emplace_back(cut_0);
+    fg.emplace_back(cut_1);
+    fg.emplace_back(cut_2);
+    fg.emplace_back(cut_3);
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::: C O R R E L A T I O N S - Initialise 
   
@@ -109,12 +120,18 @@ void pareeksha_histos()
 
     //::::::::: Set ranges for histos :::::::::::::::
     //::::  Channel Energy ::::: (h1_energy_layer_ch)
-    TLisaConfiguration::SetEnergyRange(600000,900000);
+    TLisaConfiguration::SetEnergyRange(500000,3000000);
     TLisaConfiguration::SetEnergyBin(900);
 
     //:::: LISA WR Time Difference :::::: (h1_wr_diff)
     TLisaConfiguration::SetWrDiffRange(0,100000000);
     TLisaConfiguration::SetWrDiffBin(20000);
+
+
+    TFrsConfiguration::Set_Z_range(20,60);
+    TFrsConfiguration::Set_AoQ_range(1,3);
+
+    TFrsConfiguration::Set_dE_travMusic_gate(1900,2000);
 
 
     if (LISA_ON)
@@ -126,22 +143,26 @@ void pareeksha_histos()
 
     }
 
-    TFrsConfiguration::Set_Z_range(50,75);
-    TFrsConfiguration::Set_AoQ_range(2.3,3.0);
     
     if (FRS_ON)
     {
         FrsNearlineSpectra* nearlinefrs = new FrsNearlineSpectra();
         run->AddTask(nearlinefrs);
 
-        /*
+        
         if (TRAV_MUSIC_ON)
         {
-            FrsTravMusSpectra* nearlinetravmus = new FrsTravMusSpectra();
+            FrsNearlineTravMusSpectra* nearlinetravmus = new FrsNearlineTravMusSpectra();
             //add task for raw spec?
             run->AddTask(nearlinetravmus);
         }
-        */
+        
+    }
+
+    if(LISA_ON && FRS_ON)
+    {
+        LisaFrsCorrelations* LISA_FRS_corr = new LisaFrsCorrelations(fg);
+        run->AddTask(LISA_FRS_corr);
     }
 
     TString c = "Lisa";
