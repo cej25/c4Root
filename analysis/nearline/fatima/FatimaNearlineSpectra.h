@@ -110,6 +110,7 @@ class FatimaNearlineSpectra : public FairTask
         TDirectory* dir_fatima_slowToT;
         TDirectory* dir_fatima_fastToT;
         TDirectory* dir_fatima_fast_v_slow;
+        TDirectory* dir_fatima_drift;
         TDirectory* dir_fatima_hitpattern;
         TDirectory* dir_fatima_energy_spectra;
         TDirectory* dir_fatima_time_spectra;
@@ -131,6 +132,7 @@ class FatimaNearlineSpectra : public FairTask
         std::vector<TH1F*> h1_fatima_energy;
         std::vector<TH1F*> h1_fatima_abs_time;
         std::vector<TH2F*> h2_fatima_fast_v_slow;
+        std::vector<TH2F*> h2_fatima_energy_vs_t;
 
         TH1F * h1_fatima_multiplicity;
         TH2F * h2_fatima_energy_vs_detid;

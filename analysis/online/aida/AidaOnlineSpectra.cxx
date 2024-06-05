@@ -118,6 +118,7 @@ InitStatus AidaOnlineSpectra::Init()
     h_decay_e.resize(conf->DSSDs());
     h_decay_e_xy.resize(conf->DSSDs());
     h_decay_strip_1d_energy.resize(conf->DSSDs());
+    h_aida_frontback_time.resize(conf->DSSDs());
     aida_implant_scaler_queue.resize(conf->DSSDs());
     aida_implant_scaler_cur_sec.resize(conf->DSSDs());
     aida_implant_scaler_graph.resize(conf->DSSDs());
@@ -226,6 +227,15 @@ InitStatus AidaOnlineSpectra::Init()
                 xstrips, -xmax, xmax, 2000, 0, 20000);
         h_implant_x_ex_stopped[i]->GetXaxis()->SetTitle("X Position/mm");
         h_implant_x_ex_stopped[i]->GetYaxis()->SetTitle("Energy/MeV");
+
+        name.str("");
+        title.str("");
+        name << "aida_frontback_time_d" << (i + 1);
+        title << "DSSD " << (i + 1) << " front-back time";
+        h_aida_frontback_time[i] = new TH1F(name.str().c_str(), title.str().c_str(),
+                1000, -1e4, 1e4);
+        h_aida_frontback_time[i]->GetXaxis()->SetTitle("Front-back time/ns");
+
 
         dir_decay_dssd[i]->cd();
         name.str("");
@@ -521,6 +531,10 @@ void AidaOnlineSpectra::Exec(Option_t* option)
             h_implant_e_stopped[hit.DSSD - 1]->Fill(hit.Energy);
             h_implant_x_ex_stopped[hit.DSSD - 1]->Fill(hit.PosX, hit.EnergyX);
         }
+
+        int dt = hit.FastTimeX - hit.FastTimeY;
+
+        h_aida_frontback_time[hit.DSSD - 1]->Fill(dt);
 
         int second = (hit.Time / 1000000000ULL);
         if (second == aida_implant_scaler_cur_sec[hit.DSSD - 1])

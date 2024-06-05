@@ -104,6 +104,7 @@ class GermaniumNearlineSpectra : public FairTask
         // Folder and files
         TDirectory* dir_germanium;
         TDirectory* dir_germanium_energy;
+        TDirectory* dir_germanium_drift;
         TDirectory* dir_germanium_time;
         TDirectory* dir_germanium_hitpattern;
         TDirectory* dir_germanium_multiplicity;
@@ -113,6 +114,7 @@ class GermaniumNearlineSpectra : public FairTask
 
         // Histograms energy
         std::vector<TH1F*> h1_germanium_energy;
+        std::vector<TH2F*> h2_germanium_energy_vs_t;
         TH2F* h2_germanium_energy_vs_detidx;
 
         std::vector<std::vector<TH1F*>> h1_germanium_time_differences; // [reference_dector][detector index]
