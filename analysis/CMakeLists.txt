@@ -20,6 +20,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
 ${C4ROOT_SOURCE_DIR}/c4data/baseData
 ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 ${C4ROOT_SOURCE_DIR}/analysis
+${C4ROOT_SOURCE_DIR}/analysis/frs
 ${C4ROOT_SOURCE_DIR}/analysis/pars
 ${C4ROOT_SOURCE_DIR}/analysis/offline
 ${C4ROOT_SOURCE_DIR}/analysis/nearline
@@ -83,6 +84,10 @@ set(SRCS
 ./correlations/bPlastGermaniumCorrelations.cxx
 ./online/onlineCorrelations/bPlastGermaniumCorrelationsOnline.cxx
 ./correlations/FrsBplastCorrelations.cxx
+
+
+./frs/MHTDCSpectra.cxx
+./frs/TPCCorrections.cxx
 )
 
 

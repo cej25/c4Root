@@ -192,7 +192,7 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
     if (hitArrayFrs->size() == 0) return;
 
     positive_PID = false;
-    auto const & frshit = hitArrayFrs->at(0);
+    auto const & frshit = hitArrayFrs->at(0);   
 
     int64_t wr_t = frshit.Get_wr_t();
     if(wr_t_first_frs_hit == 0) wr_t_first_frs_hit = wr_t;
