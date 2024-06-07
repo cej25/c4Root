@@ -73,8 +73,8 @@ DSSD: 2
 #---------------------------
 Scalers:
 - 1: Pulser
-- 2: FRS Accepted
+- 7: FRS Accepted
 - 3: TimeMachineU
-- 4: TimeMachineD
+- 9: TimeMachineD
 - 5: SC41L_D
-- 6: SC41R_D
+- 12: SC41R_D
