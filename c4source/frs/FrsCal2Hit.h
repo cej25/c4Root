@@ -14,7 +14,7 @@
 #include "FrsTravMusCalData.h"
 #include "FrsHitData.h"
 #include <TRandom3.h>
-#include "GainShift.h"
+// #include "GainShift.h"
 
 class TClonesArray;
 class FrsHitItem;
@@ -51,8 +51,8 @@ class FrsCal2Hit : public FairTask
         void FinishTask();
 
 
-        void SetMusic41GainShift(GainShift * p) {music41_mhtdc_z_gain_shifts = p;}
-        void SetMusic42GainShift(GainShift * p) {music42_mhtdc_z_gain_shifts = p;}
+        //void SetMusic41GainShift(GainShift * p) {music41_mhtdc_z_gain_shifts = p;}
+        //void SetMusic42GainShift(GainShift * p) {music42_mhtdc_z_gain_shifts = p;}
         
         
         void SetOnline(Bool_t option) { fOnline = option; }
@@ -73,8 +73,8 @@ class FrsCal2Hit : public FairTask
         std::string pathToConfigFiles;
 
 
-        GainShift * music41_mhtdc_z_gain_shifts = nullptr;
-        GainShift * music42_mhtdc_z_gain_shifts = nullptr;
+        //GainShift * music41_mhtdc_z_gain_shifts = nullptr;
+        //GainShift * music42_mhtdc_z_gain_shifts = nullptr;
 
         Bool_t fOnline;
 

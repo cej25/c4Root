@@ -1140,7 +1140,6 @@ void FrsCal2Hit::Exec(Option_t* option)
     {
         float temp_music41_de = de[0] > 0.0;
         if ((temp_music41_de > 0.0) && (id_mhtdc_beta_s2s4[i] > 0.0) && (id_mhtdc_beta_s2s4[i] < 1.0))
-        if ((temp_music41_de > 0.0) && (id_mhtdc_beta_s2s4[i] > 0.0) && (id_mhtdc_beta_s2s4[i] < 1.0))
         {
             power = 1.;
             sum = 0.;
@@ -1153,24 +1152,21 @@ void FrsCal2Hit::Exec(Option_t* option)
 
             }
             id_mhtdc_v_cor_music41[i] = sum;
-            id_mhtdc_v_cor_music41[i] = sum;
 
             
-            if (id_mhtdc_v_cor_music41[i] > 0.0)
             if (id_mhtdc_v_cor_music41[i] > 0.0)
             {
                 id_mhtdc_z_music41[i] = frs->primary_z * sqrt(de[0] / id_mhtdc_v_cor_music41[i]) + id->mhtdc_offset_z_music41;
 
 
-                if (music41_mhtdc_z_gain_shifts != nullptr){
+                /*if (music41_mhtdc_z_gain_shifts != nullptr){
                 id_mhtdc_z_music41[i] = id_mhtdc_z_music41[i]  + music41_mhtdc_z_gain_shifts->GetGain(wr_t);
-                }
+                }*/
 
             } // else???
         }
 
         float temp_music42_de = de[1] > 0.0;
-        if((temp_music42_de > 0.0)  && (id_mhtdc_beta_s2s4[i] > 0.0) && (id_mhtdc_beta_s2s4[i] < 1.0))
         if((temp_music42_de > 0.0)  && (id_mhtdc_beta_s2s4[i] > 0.0) && (id_mhtdc_beta_s2s4[i] < 1.0))
         {
             power = 1.;
@@ -1184,16 +1180,14 @@ void FrsCal2Hit::Exec(Option_t* option)
 
             }
             id_mhtdc_v_cor_music42[i] = sum;
-            id_mhtdc_v_cor_music42[i] = sum;
             
-            if (id_mhtdc_v_cor_music42[i] > 0.0)
             if (id_mhtdc_v_cor_music42[i] > 0.0)
             {
                 id_mhtdc_z_music42[i] = frs->primary_z * sqrt(de[1] / id_mhtdc_v_cor_music42[i]) + id->mhtdc_offset_z_music42;
 
-                if (music42_mhtdc_z_gain_shifts != nullptr){
+                /*if (music42_mhtdc_z_gain_shifts != nullptr){
                 id_mhtdc_z_music42[i] = id_mhtdc_z_music42[i] + music42_mhtdc_z_gain_shifts->GetGain(wr_t);
-                }
+                }*/
             }
         }
 

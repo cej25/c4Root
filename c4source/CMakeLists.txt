@@ -50,7 +50,7 @@ set(SRCS
 ./base/UnpackReader.cxx
 ./base/c4Reader.cxx
 ./base/CorrelationsMap.cxx
-./base/GainShift.cxx
+#./base/GainShift.cxx
 ./aida/AidaReader.cxx
 ./aida/AidaCal2Hit.cxx
 ./aida/AidaUnpack2Cal.cxx
