@@ -9,7 +9,7 @@
 #pragma link C++ class UcesbSource+;
 #pragma link C++ class c4Reader+;
 #pragma link C++ class CorrelationsMap+;
-#pragma link C++ class GainShift+;
+//#pragma link C++ class GainShift+;
 
 #pragma link C++ class FrsMainReader+;
 #pragma link C++ class FrsTPCReader+;
