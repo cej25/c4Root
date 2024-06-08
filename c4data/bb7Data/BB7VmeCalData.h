@@ -46,10 +46,11 @@ class BB7VmeImplantItem : public TObject
     public:
         BB7VmeImplantItem();
 
-        void SetAll(uint64_t wr, int si, int st, uint32_t adc);
+        void SetAll(uint64_t wr, int det, int si, int st, uint32_t adc);
         void Reset();
 
         uint64_t Get_wr_t() const;
+        int Get_detector() const;
         int Get_side() const;
         int Get_strip() const;
         uint32_t Get_raw_adc() const;
@@ -59,6 +60,7 @@ class BB7VmeImplantItem : public TObject
     private:
 
         uint64_t wr_t;
+        int detector;
         int side;
         int strip;
         uint32_t raw_adc;
@@ -70,10 +72,11 @@ class BB7VmeDecayItem : public TObject
     public:
         BB7VmeDecayItem();
 
-        void SetAll(uint64_t wr, int si, int st, uint32_t adc);
+        void SetAll(uint64_t wr, int det, int si, int st, uint32_t adc);
         void Reset();
 
         uint64_t Get_wr_t() const;
+        int Get_detector() const;
         int Get_side() const;
         int Get_strip() const;
         uint32_t Get_raw_adc() const;
@@ -83,6 +86,7 @@ class BB7VmeDecayItem : public TObject
     private:
 
         uint64_t wr_t;
+        int detector;
         int side;
         int strip;
         uint32_t raw_adc;
@@ -115,6 +119,11 @@ inline uint64_t BB7VmeImplantItem::Get_wr_t() const
     return wr_t;
 }
 
+inline int BB7VmeImplantItem::Get_detector() const
+{
+    return detector;
+}
+
 inline int BB7VmeImplantItem::Get_side() const
 {
     return side;
@@ -133,6 +142,11 @@ inline uint32_t BB7VmeImplantItem::Get_raw_adc() const
 inline uint64_t BB7VmeDecayItem::Get_wr_t() const
 {
     return wr_t;
+}
+
+inline int BB7VmeDecayItem::Get_detector() const
+{
+    return detector;
 }
 
 inline int BB7VmeDecayItem::Get_side() const

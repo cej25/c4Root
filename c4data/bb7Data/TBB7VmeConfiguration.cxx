@@ -43,10 +43,11 @@ void TBB7VmeConfiguration::ReadConfiguration()
 
         std::istringstream iss(line);
         std::string signal;
-        int v7x5_board, v7x5_channel, side, strip;
+        int v7x5_board, v7x5_channel, detector, side, strip;
 
         std::pair<int, int> v7x5_mc;
         std::pair<int, int> bb7_ss;
+        std::pair<int, std::pair<int, int>> bb7_dp;
 
         iss >> signal;
 
@@ -54,11 +55,12 @@ void TBB7VmeConfiguration::ReadConfiguration()
         {
             v7x5_board = std::stoi(signal);
 
-            iss >> v7x5_channel >> side >> strip;
+            iss >> v7x5_channel >> detector >> side >> strip;
 
-            if (side < 0 || strip < 0 || v7x5_channel < 0 || v7x5_board < 0) continue;
+            if (v7x5_board < 0 || v7x5_channel < 0 || detector < 0 || side < 0 || strip < 0) continue;
             
             bb7_ss = {side, strip};
+            bb7_dp = {detector, bb7_ss};
 
         }
         else // some additional signal
@@ -82,16 +84,18 @@ void TBB7VmeConfiguration::ReadConfiguration()
         }
 
         if (v7x5_board > -1) v7x5_boards.insert(v7x5_board);
+        if (detector > -1) detectors.insert(detector);
         if (side > -1) sides.insert(side);
         if (strip > -1) strips.insert(strip);
 
         v7x5_mc = {v7x5_board, v7x5_channel};
 
-        detector_mapping.insert(std::pair<std::pair<int, int>, std::pair<int, int>> {v7x5_mc, bb7_ss});  
+        detector_mapping.insert(std::pair<std::pair<int, int>, std::pair<int, std::pair<int,int>>> {v7x5_mc, bb7_dp});  
         
     }
 
     num_v7x5_boards = v7x5_boards.size();
+    num_detectors = detectors.size();
     num_sides = sides.size();
     num_strips = strips.size();
     
