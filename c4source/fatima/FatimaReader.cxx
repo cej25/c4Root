@@ -329,6 +329,10 @@ Bool_t FatimaReader::Read() //do fine time here:
         last_tdc_hit.lead_fine_T = 0;
 
         accepted_trigger_time = 0;
+        accepted_lead_epoch_counter = 0;
+        accepted_lead_coarse_T = 0;
+        accepted_lead_fine_T = 0;
+                
 
 
         //c4LOG(info,"\n\n\n\n New event:");
@@ -396,6 +400,9 @@ Bool_t FatimaReader::Read() //do fine time here:
             if (channelid == 0) 
             {
                 accepted_trigger_time = ((double)previous_epoch_word)*10.24e3 + ((double)coarse_T)*5.0 - (double)fine_T; // round it off to ns resolution
+                accepted_lead_epoch_counter = previous_epoch_word;
+                accepted_lead_coarse_T = coarse_T;
+                accepted_lead_fine_T = fine_T;
                 continue;
             } // skip channel 0 for now. This is the trigger information. The trigger time is kept, the wr timestamp is corrected by the difference of the hit and the acc trigger time.
 
@@ -425,6 +432,9 @@ Bool_t FatimaReader::Read() //do fine time here:
                     it_board_number,
                     channelid,
                     accepted_trigger_time,
+                    accepted_lead_epoch_counter,
+                    accepted_lead_coarse_T,
+                    accepted_lead_fine_T,
 
                     last_tdc_hit.lead_epoch_counter,
                     last_tdc_hit.lead_coarse_T,

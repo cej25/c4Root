@@ -70,6 +70,7 @@ void TFrsConfiguration::ReadScalerNames()
     }
 
     file.close();
+
     return;
 
 }
