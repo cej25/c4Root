@@ -108,8 +108,8 @@ void BB7Raw2Cal::Exec(Option_t* option)
                     std::pair<int, int> unmapped_strip = {v7x5_geo.at(i), v7x5_channel.at(i)};
                     if (detector_mapping.count(unmapped_strip) > 0)
                     {
-                        int side = detector_mapping.at(unmapped_strip).first;
-                        int strip = detector_mapping.at(unmapped_strip).second; 
+                        int side = detector_mapping.at(unmapped_strip).second.first;
+                        int strip = detector_mapping.at(unmapped_strip).second.second; 
 
                         Sides.emplace_back(side);
                         Strips.emplace_back(strip);
@@ -143,27 +143,28 @@ void BB7Raw2Cal::Exec(Option_t* option)
         uint32_t channel = v7x5item.Get_channel();
 
         // add skipping of time machine
-        int side = 0; int strip = 1; // all hits in 0 1 if no mapping
+        int detector = 0; int side = 0; int strip = 1; // all hits in 0 0 1 if no mapping
         if (bb7_config->MappingLoaded())
         {
             std::pair<int, int> unmapped_strip = {geo, channel};
 
             if (detector_mapping.count(unmapped_strip) > 0)
-            {
-                side = detector_mapping.at(unmapped_strip).first;
-                strip = detector_mapping.at(unmapped_strip).second;
+            {   
+                detector = detector_mapping.at(unmapped_strip).first;
+                side = detector_mapping.at(unmapped_strip).second.first;
+                strip = detector_mapping.at(unmapped_strip).second.second;
             }    
         }
 
         if (data >= bb7_config->implantThreshold)
         {
             auto & entry = implantArray->emplace_back();
-            entry.SetAll(wr_t, side, strip, data);
+            entry.SetAll(wr_t, detector, side, strip, data);
         }
         else
         {
             auto & entry = decayArray->emplace_back();
-            entry.SetAll(wr_t, side, strip, data);
+            entry.SetAll(wr_t, detector, side, strip, data);
         }
     }
 

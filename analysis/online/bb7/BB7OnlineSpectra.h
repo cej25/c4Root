@@ -70,19 +70,19 @@ class BB7OnlineSpectra : public FairTask
         // histograms
         TH1* h1_bb7_RawE[2][32]; // 64 strips? use config later
         TH1* h1_bb7_hitpattern[2];
-        TH1*** h1_implant_RawE;
-        TH1*** h1_decay_RawE;
-        TH1** h1_implant_hitpattern;
-        TH1** h1_decay_hitpattern;
-        TH1*** h1_implant_rates;
-        TH1*** h1_decay_rates;
+        TH1**** h1_implant_RawE;
+        TH1**** h1_decay_RawE;
+        TH1*** h1_implant_hitpattern;
+        TH1*** h1_decay_hitpattern;
+        TH1**** h1_implant_rates;
+        TH1**** h1_decay_rates;
 
         int64_t saved_bb7_wr = 0;
         int rate_running_count = 0;
-        int** implant_counters;
-        int** decay_counters;
-        float** implant_rates;
-        float** decay_rates;
+        int*** implant_counters;
+        int*** decay_counters;
+        float*** implant_rates;
+        float*** decay_rates;
 
     public:
         ClassDef(BB7OnlineSpectra, 1)

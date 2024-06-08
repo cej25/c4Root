@@ -51,7 +51,7 @@ class BB7Raw2Cal : public FairTask
 
         //uint64_t wr_t;
 
-        std::map<std::pair<int, int>, std::pair<int, int>> detector_mapping;
+        std::map<std::pair<int,int>, std::pair<int, std::pair<int, int>>> detector_mapping;
 
         std::vector<uint32_t> v7x5_geo;
         std::vector<uint32_t> v7x5_channel;

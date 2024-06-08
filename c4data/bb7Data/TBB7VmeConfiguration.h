@@ -17,15 +17,15 @@ class TBB7VmeConfiguration
 
         static void SetImplantThreshold(uint32_t th) { implantThreshold = th; }
 
-        std::map<std::pair<int,int>,std::pair<int,int>> Mapping() const;
+        std::map<std::pair<int,int>, std::pair<int, std::pair<int, int>>> Mapping() const;
         std::map<std::pair<int, int>, int> Residuals() const;
         bool MappingLoaded() const;
         bool ResidualsLoaded() const;
         bool CalibrationCoefficientsLoaded() const;
         //std::map<int,std::vector<double>> CalibrationCoefficients() const;
         int NDetectors() const;
-        int NSides() const;
-        int NStrips() const;
+        int NSides() const; // unnecessary
+        int NStrips() const; // ??
         int TM_Undelayed() const;
         int TM_Delayed() const;
         int SC41L() const;
@@ -50,8 +50,9 @@ class TBB7VmeConfiguration
 
         static TBB7VmeConfiguration* instance;
 
-        
-        std::map<std::pair<int,int>,std::pair<int, int>> detector_mapping; // [board_id][channel_id] -> [side][strip]
+        std::map<std::pair<int,int>, std::pair<int, std::pair<int, int>>> detector_mapping;
+
+        //std::map<std::pair<int,int>,std::pair<int, int>> detector_mapping; // [board_id][channel_id] -> [side][strip]
         std::map<std::pair<int, int>, int> residual_mapping;
         //std::map<int,std::vector<double>> calibration_coeffs; // key: [detector id] -> vector[a0 - a3] index is coefficient number 0 = offset +++ expects quadratic.
 
@@ -95,7 +96,7 @@ inline void TBB7VmeConfiguration::Create()
     instance = new TBB7VmeConfiguration();
 }
 
-inline std::map<std::pair<int,int>,std::pair<int,int>> TBB7VmeConfiguration::Mapping() const
+inline std::map<std::pair<int,int>, std::pair<int, std::pair<int, int>>> TBB7VmeConfiguration::Mapping() const
 {
   return detector_mapping;
 }
