@@ -61,6 +61,8 @@ class FatimaRaw2Cal : public FairTask
         double fast_ToT;
         double slow_ToT;
 
+        uint64_t absolute_event_time;
+
         double energy;
 
         int fNunmatched = 0;

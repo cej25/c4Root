@@ -51,7 +51,7 @@
 #pragma link C++ class WhiterabbitCorrelationOnline+;
 #pragma link C++ class bPlastGermaniumCorrelations+;
 #pragma link C++ class bPlastGermaniumCorrelationsOnline+;
-// #pragma link C++ class FrsBplastCorrelations+;
+//#pragma link C++ class FrsBplastCorrelations+;
 #pragma link C++ class LisaFrsCorrelations+;
 #pragma link C++ class LisaFrsCorrelationsOnline+;
 

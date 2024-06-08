@@ -457,22 +457,22 @@ void FrsFatimaCorrelations::Exec(Option_t* option)
             if (fatima_configuration->IsDetectorAuxilliary(detector_id_long)==true) continue;
 
 
-            h2_fatima_energy_vs_sci41_wr_long->Fill(fat_wr_long-wr_t_last_frs_hit, energy_long);
+            h2_fatima_energy_vs_sci41_wr_long->Fill(fat_wr_long - (int64_t)wr_t_last_frs_hit - fatima_configuration->GetTimeshiftCoefficient(detector_id_long), energy_long);
             
 
-            // cut the prompt flash on the whiterabbit, roughly, but you are after long isomers ... :)
-            if (fat_wr_long - wr_t_last_frs_hit < start_long_lifetime_collection) continue;
+            // cut the prompt flash on the whiterabbit, roughly:
+            if (fat_wr_long - (int64_t)wr_t_last_frs_hit < start_long_lifetime_collection) continue;
 
 
             
-            if (fat_wr_long - wr_t_last_frs_hit < stop_long_lifetime_collection) h1_fatima_energy_promptflash_cut_long->Fill(energy_long);
+            if (fat_wr_long - (int64_t)wr_t_last_frs_hit < stop_long_lifetime_collection) {h1_fatima_energy_promptflash_cut_long->Fill(energy_long);}
 
                 for (int idx_gamma_gate = 0; idx_gamma_gate < gamma_energies_of_interest.size(); idx_gamma_gate++)
                 {
                     if (!(TMath::Abs(energy_long - gamma_energies_of_interest.at(idx_gamma_gate))<gate_width_gamma_energies_of_interest.at(idx_gamma_gate))) continue;
                     //now energy1 fulfills the energy requirement and is outside prompt flash
                         
-                        h1_fatima_twr_sci41_energy_gated[idx_gamma_gate]->Fill(fat_wr_long-wr_t_last_frs_hit);
+                        h1_fatima_twr_sci41_energy_gated[idx_gamma_gate]->Fill(fat_wr_long-(int64_t)wr_t_last_frs_hit);
                 }
 
                         
@@ -491,7 +491,7 @@ void FrsFatimaCorrelations::Exec(Option_t* option)
 
                     if (fatima_configuration->IsDetectorAuxilliary(detector_id_long2)) continue;
                     
-                    if (fat_wr_long2 - wr_t_last_frs_hit < start_long_lifetime_collection) continue;
+                    if (fat_wr_long2 - (int64_t)wr_t_last_frs_hit < start_long_lifetime_collection) continue;
                     if (detector_id_long == detector_id_long2) continue; //this is likely a good veto before the add-back is done
                     
                     // check coincidence, this should also make it so that the second hit is outside the prompt flash as well...:
@@ -504,7 +504,7 @@ void FrsFatimaCorrelations::Exec(Option_t* option)
                         if (!(TMath::Abs(energy_long - gamma_energies_of_interest.at(idx_gamma_gate))<gate_width_gamma_energies_of_interest.at(idx_gamma_gate))) continue;
                         //now energy1 fulfills the energy requirement and is outside prompt flash
                         // energy1 and energy2 are both in coincidence and outside the promptflash here:
-                        if (fat_wr_long2 - wr_t_last_frs_hit < stop_long_lifetime_collection && (TMath::Abs(time_long2-time_long- fatima_configuration->GetTimeshiftCoefficient(detector_id_long2)- fatima_configuration->GetTimeshiftCoefficient(detector_id_long)) < fatima_coincidence_gate)) h1_fatima_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]->Fill(energy_long2);
+                        if (fat_wr_long2 - (int64_t)wr_t_last_frs_hit < stop_long_lifetime_collection && (TMath::Abs(time_long2-time_long- fatima_configuration->GetTimeshiftCoefficient(detector_id_long2)- fatima_configuration->GetTimeshiftCoefficient(detector_id_long)) < fatima_coincidence_gate)) h1_fatima_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]->Fill(energy_long2);
 
                         h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long[idx_gamma_gate]->Fill(time_long - fatima_configuration->GetTimeshiftCoefficient(detector_id_long) - time_long2 + fatima_configuration->GetTimeshiftCoefficient(detector_id_long2), energy_long2);
                     }

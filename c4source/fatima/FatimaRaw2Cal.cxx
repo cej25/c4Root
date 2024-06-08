@@ -242,6 +242,7 @@ void FatimaRaw2Cal::Exec(Option_t* option)
             // find the slow ToT without encountering round-off errors?:
             slow_ToT =  (double)(funcal_hit_next->Get_trail_epoch_counter() - funcal_hit_next->Get_lead_epoch_counter())*10.24e3 +  (double)(funcal_hit_next->Get_trail_coarse_T() - funcal_hit_next->Get_lead_coarse_T())*5.0 - (funcal_hit_next->Get_trail_fine_T() - funcal_hit_next->Get_lead_fine_T());
             
+            absolute_event_time = (uint64_t)(funcal_hit->Get_wr_t() + (int64_t)(((int32_t)funcal_hit->Get_lead_epoch_counter() - (int32_t)funcal_hit->Get_accepted_lead_epoch_counter()) * 10.24e3 + ((int32_t)funcal_hit->Get_lead_coarse_T() - (int32_t)funcal_hit->Get_accepted_lead_coarse_T()) * 5.0 - (int32_t)(funcal_hit->Get_lead_fine_T() - funcal_hit->Get_accepted_lead_fine_T())));
             //if (detector_id == 0 || detector_id == 1) c4LOG(info,Form("id = %i, fast lead = %f, fast trail = %f, fast ToT = %f",detector_id,fast_lead_time,fast_trail_time,fast_ToT));
 
             if (fatima_configuration->MappingLoaded()){
@@ -285,7 +286,7 @@ void FatimaRaw2Cal::Exec(Option_t* option)
                 energy,
                 funcal_hit->Get_wr_subsystem_id(),
                 funcal_hit->Get_wr_t(),
-                (double)funcal_hit->Get_wr_t() + (fast_lead_time - funcal_hit->Get_accepted_trigger_time() ));
+                absolute_event_time);
 
             fNEvents++;
             //ihit++; //increment it by one extra.

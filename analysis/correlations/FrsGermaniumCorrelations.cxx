@@ -286,6 +286,7 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
 
     // this must pass all gates given to FrsGate:
     positive_PID = frsgate->PassedGate(ID_z, ID_z2, ID_x2, ID_x4, ID_AoQ, ID_dEdeg);
+    
     if (positive_PID)
     {
         wr_t_last_frs_hit = wr_t;

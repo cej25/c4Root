@@ -41,7 +41,7 @@ FatimaTwinpeaksCalData::FatimaTwinpeaksCalData(
         
         uint16_t wr_subsystem_id,
         uint64_t wr_t,
-        int64_t absolute_event_time)
+        uint64_t absolute_event_time)
     : 
         fboard_id(board_id),
         fch_ID(ch_ID),
