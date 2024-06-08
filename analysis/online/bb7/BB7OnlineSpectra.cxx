@@ -31,7 +31,7 @@ BB7OnlineSpectra::BB7OnlineSpectra()
     ,   decayArray(nullptr)
     ,   header(nullptr)
 {
-
+    bb7_config = TBB7VmeConfiguration::GetInstance();
 }
 
 BB7OnlineSpectra::~BB7OnlineSpectra()

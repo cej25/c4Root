@@ -65,6 +65,26 @@ class BB7V7x5Item : public TObject
 
 };
 
+class BB7V1290Item : public TObject
+{
+    public:
+        BB7V1290Item();
+
+        void SetAll(uint32_t ch, uint32_t data, uint32_t lot);
+        uint32_t Get_channel() const;
+        uint32_t Get_v1290_data() const;
+        uint32_t Get_leadOrTrail() const;
+        void Reset();
+
+        ClassDefNV(BB7V1290Item, 1);
+
+    private:
+        uint32_t channel;
+        uint32_t v1290_data;
+        uint32_t leadOrTrail;
+
+};
+
 inline uint64_t BB7V7x5Item::Get_wr_t() const
 {
     return wr_t;
@@ -83,6 +103,21 @@ inline uint32_t BB7V7x5Item::Get_channel() const
 inline uint32_t BB7V7x5Item::Get_v7x5_data() const
 {
     return v7x5_data;
+}
+
+inline uint32_t BB7V1290Item::Get_v1290_data() const
+{
+    return v1290_data;
+}
+
+inline uint32_t BB7V1290Item::Get_leadOrTrail() const
+{
+    return leadOrTrail;
+}
+
+inline uint32_t BB7V1290Item::Get_channel() const
+{
+    return channel;
 }
 
 #endif

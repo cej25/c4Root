@@ -2,7 +2,7 @@
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define FATIMA_ON 1
-#define FATIMA_VME_ON 0
+#define FATIMA_VME_ON 1
 #define AIDA_ON 1
 #define BPLAST_ON 1
 #define GERMANIUM_ON 1
@@ -78,13 +78,13 @@ void s181_tests()
 //    TString filename = "trans://x86l-86"; // ??.
     //TString filename = "trans://x86l-144"; // 
     //TString filename = "stream://x86l-182"; // bgo
-    //TString filename = "trans://lxg1257"; // timesorter.
+    TString filename = "trans://lxg1257"; // timesorter.
     //TString filename = "trans://R4L-21"; // beammonitor
     // TString filename = "stream://x86l-87"; // bplast
     //TString filename = "stream://x86l-117"; // fatima tamex
     //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
     //TString filename = "~/lustre/gamma/s100_files/ts/calibrations/152Eu_calib_0016_*.lmd";
-    TString filename = "~/lustre/gamma/s100_files/ts/168Dy_0033_0003.lmd";
+    //TString filename = "~/lustre/gamma/s100_files/ts/168Dy_0033_0003.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
@@ -148,10 +148,10 @@ void s181_tests()
     TFatimaTwinpeaksConfiguration::SetDetectorTimeshiftsFile(config_path + "/fatima/fatima_timeshifts_apr20.txt");
     TFatimaTwinpeaksConfiguration::SetPromptFlashCutFile(config_path + "/fatima/fatima_prompt_flash.root");
 
-    TFatimaVmeConfiguration::SetDetectorMapFile(config_path + "/fatima/Fatima_VME_allocation.txt");
-    TFatimaVmeConfiguration::Set_QDC_E_CalFile(config_path + "/fatima/Fatima_QDC_Energy_Calibration.txt");
-    TFatimaVmeConfiguration::Set_QDC_T_CalFile(config_path + "/fatima/Fatima_QDC_Time_Calibration.txt");
-    TFatimaVmeConfiguration::Set_TDC_T_CalFile(config_path + "/fatima/Fatima_TDC_Time_Calibration.txt");
+    TFatimaVmeConfiguration::SetDetectorMapFile(config_path + "/fatima/Fatima_VME_allocation_s100.txt");
+    TFatimaVmeConfiguration::Set_QDC_E_CalFile(config_path + "/fatima/Fatima_QDC_Energy_Calibration_s100.txt");
+    TFatimaVmeConfiguration::Set_QDC_T_CalFile(config_path + "/fatima/Fatima_QDC_Time_Calibration_s100.txt");
+    TFatimaVmeConfiguration::Set_TDC_T_CalFile(config_path + "/fatima/Fatima_TDC_Time_Calibration_s100.txt");
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
     TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_mapping_s100.txt");
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");

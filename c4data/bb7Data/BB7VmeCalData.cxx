@@ -51,4 +51,25 @@ void BB7VmeDecayItem::Reset()
     raw_adc = 0;
 }
 
-ClassImp(BB7VmeDecayItem)
+BB7VmeResidualItem::BB7VmeResidualItem()
+{
+
+}
+
+void BB7VmeResidualItem::SetAll(uint32_t left, uint32_t right, uint32_t del, uint32_t un)
+{
+    sc41l = left;
+    sc41r = right;
+    tm_delayed = del;
+    tm_undelayed = un;
+}
+
+void BB7VmeResidualItem::Reset()
+{
+    sc41l = 0;
+    sc41r = 0;
+    tm_delayed = 0;
+    tm_undelayed = 0;
+}
+
+ClassImp(BB7VmeResidualItem)

@@ -709,10 +709,11 @@ void GermaniumOnlineSpectra::Exec(Option_t* option){
 
 void GermaniumOnlineSpectra::FinishEvent()
 {   
+    /*
     if (first_time > 0)
     {
         if (((int64_t)current_wr - (int64_t)last_time_resolution_was_measured)/1e9 > seconds_to_collect_resolution){
-            c4LOG(info, "Finding resolutions");
+            // c4LOG(info, "Finding resolutions"); // CEJ: commenting out for now
             h1_last_resolutions_FWHM->Reset();
             h1_last_resolutions_FWTM->Reset();
             h1_last_resolutions_gratio->Reset();
@@ -783,6 +784,7 @@ void GermaniumOnlineSpectra::FinishEvent()
             }
         }
     }
+    */
 
     if (fHitGe){
         fHitGe->Clear();

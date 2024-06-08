@@ -46,6 +46,7 @@ class BB7Reader : public c4Reader
 
         TClonesArray* fArray;
         std::vector<BB7V7x5Item>* v7x5array;
+        std::vector<BB7V1290Item>* v1290array;
 
         // 
         uint64_t wr_t;
