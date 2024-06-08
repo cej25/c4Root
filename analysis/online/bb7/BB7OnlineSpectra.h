@@ -5,6 +5,7 @@
 
 #include "EventHeader.h"
 #include "BB7VmeCalData.h"
+#include "TBB7VmeConfiguration.h"
 
 #include "TClonesArray.h"
 #include "TFolder.h"
@@ -38,6 +39,7 @@ class BB7OnlineSpectra : public FairTask
         virtual void FinishTask();
 
     private:
+        TBB7VmeConfiguration const* bb7_config;
 
         std::vector<BB7VmeImplantItem> const* implantArray;
         std::vector<BB7VmeDecayItem> const* decayArray;

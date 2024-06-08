@@ -26,10 +26,12 @@ BB7Raw2Cal::BB7Raw2Cal()
     ,   fOnline(kFALSE)
     ,   fBB7VmeArray(new TClonesArray("BB7VmeData"))
     ,   fBB7VmeCalArray(new TClonesArray("BB7VmeCalData"))
-    ,   fTimeMachineArray(new TClonesArray("TimeMachineData"))
     ,   v7x5array(nullptr)
+    ,   v1290array(nullptr)
     ,   implantArray(new std::vector<BB7VmeImplantItem>)
     ,   decayArray(new std::vector<BB7VmeDecayItem>)
+    ,   residualArray(new std::vector<BB7VmeResidualItem>)
+    ,   fTimeMachineArray(new TClonesArray("TimeMachineData"))
 {
     bb7_config = TBB7VmeConfiguration::GetInstance();
     detector_mapping = bb7_config->Mapping();
@@ -59,24 +61,29 @@ InitStatus BB7Raw2Cal::Init()
 
     v7x5array = mgr->InitObjectAs<decltype(v7x5array)>("BB7V7x5Data");
     c4LOG_IF(fatal, !v7x5array, "Branch BB7V7x5Data not found!");
+    v1290array = mgr->InitObjectAs<decltype(v1290array)>("BB7V1290Data");
+    c4LOG_IF(fatal, !v1290array, "Branch BB7V1290Data not found!");
     
     //need to have the name of the detector subsystem here:
     FairRootManager::Instance()->Register("BB7VmeCalData", "BB7 Cal Data", fBB7VmeCalArray, !fOnline);
     FairRootManager::Instance()->Register("BB7TimeMachineData", "BB7 TimeMachine Data", fTimeMachineArray, !fOnline);
     mgr->RegisterAny("BB7ImplantData", implantArray, !fOnline);
     mgr->RegisterAny("BB7DecayData", decayArray, !fOnline);
+    mgr->RegisterAny("BB7ResidualData", residualArray, !fOnline);
 
     fBB7VmeArray->Clear();
     fBB7VmeCalArray->Clear();
 
     implantArray->clear();
     decayArray->clear();
+    residualArray->clear();
 
     return kSUCCESS;
 }
 
 void BB7Raw2Cal::Exec(Option_t* option)
 {
+    // CEJ: old - will be removed
     if (fBB7VmeArray && fBB7VmeArray->GetEntriesFast() > 0)
     {
         Int_t nHits = fBB7VmeArray->GetEntriesFast() > 0;
@@ -125,18 +132,22 @@ void BB7Raw2Cal::Exec(Option_t* option)
         }
     }
 
+    // end of old
+
+    uint32_t wr_t = 0;
     for (auto const & v7x5item : *v7x5array)
     {
-        uint64_t wr_t = v7x5item.Get_wr_t();
+        wr_t = v7x5item.Get_wr_t();
         uint32_t geo = v7x5item.Get_geo();
         uint32_t data = v7x5item.Get_v7x5_data();
         uint32_t channel = v7x5item.Get_channel();
 
         // add skipping of time machine
-        int side = 0; int strip = 0; // all hits in 0 0 if no mapping
+        int side = 0; int strip = 1; // all hits in 0 1 if no mapping
         if (bb7_config->MappingLoaded())
         {
             std::pair<int, int> unmapped_strip = {geo, channel};
+
             if (detector_mapping.count(unmapped_strip) > 0)
             {
                 side = detector_mapping.at(unmapped_strip).first;
@@ -155,6 +166,29 @@ void BB7Raw2Cal::Exec(Option_t* option)
             entry.SetAll(wr_t, side, strip, data);
         }
     }
+
+    uint32_t sc41l = 0, sc41r = 0, tmd = 0, tmu = 0;
+    for (auto const & v1290item : *v1290array)
+    {
+        uint32_t channel = v1290item.Get_channel();
+        uint32_t data = v1290item.Get_v1290_data();
+
+        if (channel == bb7_config->SC41L()) sc41l = data;
+        if (channel == bb7_config->SC41R()) sc41r = data;
+        else if (channel == bb7_config->TM_Delayed()) tmd = data;
+        else if (channel == bb7_config->TM_Undelayed()) tmu = data;
+
+        // CEJ: this is poorly done for now while I figure out residual mapping
+        if (((channel == bb7_config->TM_Delayed()) || (channel == bb7_config->TM_Undelayed())) && bb7_config->TM_Delayed() != -1 && bb7_config->TM_Undelayed() != -1)
+        {
+            new ((*fTimeMachineArray)[fTimeMachineArray->GetEntriesFast()]) TimeMachineData((channel == bb7_config->TM_Undelayed()) ? (data) : (0), (data == bb7_config->TM_Undelayed()) ? (0) : (data), 1800, wr_t);
+        }
+
+    }
+    
+    auto & entry = residualArray->emplace_back();
+    entry.SetAll(sc41l, sc41r, tmd, tmu);
+
 }
 
 
@@ -166,6 +200,7 @@ void BB7Raw2Cal::FinishEvent()
     fTimeMachineArray->Clear();
     implantArray->clear();
     decayArray->clear();
+    residualArray->clear();
 }
 
 void BB7Raw2Cal::FinishTask()

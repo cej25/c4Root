@@ -30,3 +30,24 @@ void BB7V7x5Item::Reset()
 }
 
 ClassImp(BB7V7x5Item)
+
+BB7V1290Item::BB7V1290Item()
+{
+
+}
+
+void BB7V1290Item::SetAll(uint32_t ch, uint32_t data, uint32_t lot)
+{
+    channel = ch;
+    v1290_data = data;
+    leadOrTrail = lot;
+}
+
+void BB7V1290Item::Reset()
+{
+    channel = 0;
+    v1290_data = 0;
+    leadOrTrail = 0;
+}
+
+ClassImp(BB7V1290Item)

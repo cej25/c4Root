@@ -13,6 +13,9 @@ class TBB7VmeConfiguration;
 class BB7V7x5Item;
 class BB7VmeImplantItem;
 class BB7VmeDecayItem;
+class BB7VmeResidualItem;
+class TClonesArray;
+class TimeMachineData;
 
 class BB7Raw2Cal : public FairTask
 {
@@ -35,10 +38,12 @@ class BB7Raw2Cal : public FairTask
 
         TClonesArray* fBB7VmeArray;
         TClonesArray* fBB7VmeCalArray;
-        TClonesArray* fTimeMachineArray;
         std::vector<BB7V7x5Item> const* v7x5array;
+        std::vector<BB7V1290Item> const* v1290array;
         std::vector<BB7VmeImplantItem>* implantArray;
         std::vector<BB7VmeDecayItem>* decayArray;
+        std::vector<BB7VmeResidualItem>* residualArray;
+        TClonesArray* fTimeMachineArray;
 
         EventHeader* header;
         Bool_t fOnline;
