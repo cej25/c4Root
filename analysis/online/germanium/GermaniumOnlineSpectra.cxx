@@ -358,7 +358,7 @@ InitStatus GermaniumOnlineSpectra::Init()
     g1_resolutions_FWHM = new TGraph*[number_of_detectors_to_plot];
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
         c_resolutions_FWHM->cd(ihist+1);
-        g1_resolutions_FWHM[ihist] = new TGraph();
+        g1_resolutions_FWHM[ihist] = new TGraph(1);
         g1_resolutions_FWHM[ihist]->SetName(Form("g1_resolutions_FWHM_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second));
         g1_resolutions_FWHM[ihist]->SetTitle(Form("DEGAS resolution FWHM detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)));
         g1_resolutions_FWHM[ihist]->GetXaxis()->SetTitle("time since start (sec)");
@@ -375,7 +375,7 @@ InitStatus GermaniumOnlineSpectra::Init()
     g1_resolutions_FWTM = new TGraph*[number_of_detectors_to_plot];
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
         c_resolutions_FWTM->cd(ihist+1);
-        g1_resolutions_FWTM[ihist] = new TGraph();
+        g1_resolutions_FWTM[ihist] = new TGraph(1);
         g1_resolutions_FWTM[ihist]->SetName(Form("g1_resolutions_FWTM_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second));
         g1_resolutions_FWTM[ihist]->SetTitle(Form("DEGAS resolution FWTM detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)));
         g1_resolutions_FWTM[ihist]->GetXaxis()->SetTitle("time since start (sec)");
@@ -392,7 +392,7 @@ InitStatus GermaniumOnlineSpectra::Init()
     g1_resolutions_gratio = new TGraph*[number_of_detectors_to_plot];
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
         c_resolutions_gratio->cd(ihist+1);
-        g1_resolutions_gratio[ihist] = new TGraph();
+        g1_resolutions_gratio[ihist] = new TGraph(1);
         g1_resolutions_gratio[ihist]->SetName(Form("g1_resolutions_gratio_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second));
         g1_resolutions_gratio[ihist]->SetTitle(Form("DEGAS resolution gratio detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)));
         g1_resolutions_gratio[ihist]->GetXaxis()->SetTitle("time since start (sec)");

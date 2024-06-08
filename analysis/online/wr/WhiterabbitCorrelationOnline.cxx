@@ -167,22 +167,6 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     h1_whiterabbit_correlation_germanium_frs->GetXaxis()->SetTitle("Time difference (DEGAS - FRS) [ns]");
     h1_whiterabbit_correlation_germanium_frs->GetYaxis()->SetTitle("Counts");
 
-    dir_whiterabbit_correlation->cd();
-    h1_whiterabbit_correlation_aida_frs = new TH1I("h1_whiterabbit_correlation_aida_frs", "AIDA - FRS WR dT", 1000, -5e4, 5e4);
-    h1_whiterabbit_correlation_aida_frs->GetXaxis()->SetTitle("Time difference (AIDA - FRS) [ns]");
-    h1_whiterabbit_correlation_aida_frs->GetYaxis()->SetTitle("Counts");
-
-    h1_whiterabbit_correlation_fatima_frs = new TH1I("h1_whiterabbit_correlation_fatima_frs", "FATIMA (TAMEX) - FRS WR dT", 1000, -1000, 1000);
-    h1_whiterabbit_correlation_fatima_frs->GetXaxis()->SetTitle("Time difference (FATIMA (TAMEX) - FRS) [ns]");
-    h1_whiterabbit_correlation_fatima_frs->GetYaxis()->SetTitle("Counts");
-
-    h1_whiterabbit_correlation_bplast_frs = new TH1I("h1_whiterabbit_correlation_bplast_frs", "bPlast - FRS WR dT", 1000, -1000, 1000);
-    h1_whiterabbit_correlation_bplast_frs->GetXaxis()->SetTitle("Time difference (bPlast - FRS) [ns]");
-    h1_whiterabbit_correlation_bplast_frs->GetYaxis()->SetTitle("Counts");
-
-    h1_whiterabbit_correlation_germanium_frs = new TH1I("h1_whiterabbit_correlation_germanium_frs", "DEGAS - FRS WR dT", 1000, -1000, 1000);
-    h1_whiterabbit_correlation_germanium_frs->GetXaxis()->SetTitle("Time difference (DEGAS - FRS) [ns]");
-    h1_whiterabbit_correlation_germanium_frs->GetYaxis()->SetTitle("Counts");
 
 
     // AIDA 
@@ -631,8 +615,7 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         if (nHitsGe > 0) 
         {
             systems += 1;
-            if (fEventHeader->GetSpillFlag()==1){
-
+            
             GermaniumCalData* GermaniumHit = (GermaniumCalData*)fHitGe->At(0);
             int64_t wr_germanium = GermaniumHit->Get_wr_t();
             if (last_wr_germanium != wr_germanium) 
@@ -640,7 +623,7 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
                 h1_whiterabbit_dt_germanium->Fill(wr_germanium - last_wr_germanium);
                 last_wr_germanium = wr_germanium;
             }
-            }
+            
         }
     }
 
@@ -678,7 +661,7 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         if (aidaImplantCounter > 0) break;
 
         AidaHit aidaHit = fa;
-        if (hitArrayFrs->size() > 0)
+        if (hitArrayFrs && hitArrayFrs->size() > 0)
         {
             auto const & hitFrs = hitArrayFrs->at(0);
             int64_t wr_frs = hitFrs.Get_wr_t();
@@ -788,7 +771,7 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         {
             int64_t wr_fatima = hitFatima->Get_wr_t();
             
-            if (hitArrayFrs->size() > 0)
+            if (hitArrayFrs && hitArrayFrs->size() > 0)
             {
                 auto const & hitFrs = hitArrayFrs->at(0);
                 int64_t wr_frs = hitFrs.Get_wr_t();
@@ -855,7 +838,7 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         }
     }
     
-    if (fatVmeArray->size() > 0)
+    if (fatVmeArray && fatVmeArray->size() > 0)
     {
         auto const & hitFatVme = fatVmeArray->at(0);
         
@@ -908,7 +891,7 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         {
             int64_t wr_bplast = hitbPlast->Get_wr_t();
 
-            if (hitArrayFrs->size() > 0)
+            if (hitArrayFrs && hitArrayFrs->size() > 0)
             {
                 auto const & hitFrs = hitArrayFrs->at(0);
                 int64_t wr_frs = hitFrs.Get_wr_t();
@@ -943,7 +926,7 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         if (hitGe)
         {
             int64_t wr_ge = hitGe->Get_wr_t();
-            if (hitArrayFrs->size() > 0)
+            if (hitArrayFrs && hitArrayFrs->size() > 0)
             {
                 auto const & hitFrs = hitArrayFrs->at(0);
                 int64_t wr_frs = hitFrs.Get_wr_t();
