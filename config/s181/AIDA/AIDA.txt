@@ -75,6 +75,6 @@ Scalers:
 - 1: Pulser
 - 7: FRS Accepted
 - 3: TimeMachineU
-- 9: TimeMachineD
+- 10: TimeMachineD
 - 5: SC41L_D
 - 12: SC41R_D
