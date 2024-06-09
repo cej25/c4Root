@@ -442,8 +442,8 @@ void s181_online()
         
     }
     
-    TFrsConfiguration::Set_Z_range(50,75);
-    TFrsConfiguration::Set_AoQ_range(2.3,3.0);
+    TFrsConfiguration::Set_Z_range(30,100);
+    TFrsConfiguration::Set_AoQ_range(2.0,3.0);
     
     if (FRS_ON)
     {
