@@ -283,21 +283,19 @@ void TimeMachineOnline::Exec(Option_t* option) // if two machines (undelayed + d
     for (int ihist = 0; ihist < fNumDetectorSystems; ihist++)
     {
         std::string systemName1 = fDetectorSystems[ihist].Data();
-        uint64_t wr_t1 = wr[ihist];
+        int64_t wr_t1 = wr[ihist];
 
         for (int ihist2 = ihist + 1; ihist2 < fNumDetectorSystems; ihist2++)
         {
 
             std::string systemName2 = fDetectorSystems[ihist2].Data();
-            uint64_t wr_t2 = wr[ihist2];
-            int wr_diff = wr_t1 - wr_t2;
-            
+            int64_t wr_t2 = wr[ihist2];
+            int64_t wr_diff = wr_t1 - wr_t2;            
 
             /*if (systemName1 == "Aida") {wr_diff -= 14000;}
             else if (systemName2 == "Aida") {wr_diff += 14000;}*/
 
             std::string key = systemName1 + "-" + systemName2 + " TM Gate";
-
             
             /*if((diffs[ihist]!=0) && (diffs[ihist2]!=0))
             {

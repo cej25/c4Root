@@ -10,7 +10,7 @@ class TimeMachineData : public TObject
         // Default Constructor
         TimeMachineData();
 
-        TimeMachineData(double undelayed_time,double delta_time, uint32_t wr_subsystem_id, uint32_t wr_t);
+        TimeMachineData(double undelayed_time,double delta_time, uint32_t wr_subsystem_id, uint64_t wr_t);
 
         // Destructor
         virtual ~TimeMachineData() {};

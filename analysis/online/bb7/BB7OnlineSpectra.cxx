@@ -257,13 +257,13 @@ void BB7OnlineSpectra::Exec(Option_t* option)
     for (auto const & residualItem : *residualArray)
     {
         uint32_t tmd = residualItem.Get_TM_Delayed();
-        h1_residual_signals[0]->Fill(tmd);
+        if (tmd > 0) h1_residual_signals[0]->Fill(tmd);
         uint32_t tmu = residualItem.Get_TM_Undelayed();
-        h1_residual_signals[1]->Fill(tmu);
+        if (tmu > 0) h1_residual_signals[1]->Fill(tmu);
         uint32_t sc41l = residualItem.Get_SC41L();
-        h1_residual_signals[2]->Fill(sc41l);
+        if (sc41l > 0) h1_residual_signals[2]->Fill(sc41l);
         uint32_t sc41r = residualItem.Get_SC41R();
-        h1_residual_signals[3]->Fill(sc41r);
+        if (sc41r > 0) h1_residual_signals[3]->Fill(sc41r);
     }
 }
 
