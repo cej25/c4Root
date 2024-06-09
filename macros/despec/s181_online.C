@@ -198,6 +198,13 @@ void s181_online()
         source->AddReader(unpackaida);
     }
 
+    if (BB7_ON)
+    {
+        BB7Reader* unpackbb7 = new BB7Reader((EXT_STR_h101_bb7vme_onion*)&ucesb_struct.bb7vme, offsetof(EXT_STR_h101, bb7vme));
+        unpackbb7->SetOnline(true);
+        source->AddReader(unpackbb7);
+    }
+
     if (BPLAST_ON)
     {
         bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_bplast_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
@@ -283,6 +290,15 @@ void s181_online()
         aidaCalibrator->SetOnline(true);
         run->AddTask(aidaCalibrator);
         
+    }
+    
+    if (BB7_ON)
+    {
+        TBB7VmeConfiguration::SetImplantThreshold(1500);
+        BB7Raw2Cal* calbb7 = new BB7Raw2Cal();
+        
+        calbb7->SetOnline(true);
+        run->AddTask(calbb7);
     }
     
     if (BPLAST_ON)
@@ -386,6 +402,13 @@ void s181_online()
         AidaOnlineSpectra* aidaOnline = new AidaOnlineSpectra();
         
         run->AddTask(aidaOnline);
+    }
+
+    if (BB7_ON)
+    {
+        BB7OnlineSpectra* onlinebb7 = new BB7OnlineSpectra();
+
+        run->AddTask(onlinebb7);
     }
     
     if (BPLAST_ON)
