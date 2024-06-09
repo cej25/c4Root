@@ -81,10 +81,6 @@ InitStatus BB7OnlineSpectra::Init()
     dir_decay_stats = dir_decays->mkdir("Stats");
     dir_decay_rates = dir_decays->mkdir("Rate Monitors");
 
-    std::cout << "detectors: " << bb7_config->NDetectors() << std::endl;
-    std::cout << "sides: " << bb7_config->NSides() << std::endl;
-    std::cout << "strips: " << bb7_config->NStrips() << std::endl;
-
     h1_implant_RawE = new TH1***[bb7_config->NDetectors()];
     h1_decay_RawE = new TH1***[bb7_config->NDetectors()];
     h1_implant_rates = new TH1***[bb7_config->NDetectors()];
@@ -127,7 +123,6 @@ InitStatus BB7OnlineSpectra::Init()
 
 
 
-    // base on config later - add detector loop later also
     for (int det = 0; det < bb7_config->NDetectors(); det++)
     {
         for (int side = 0; side < bb7_config->NSides(); side++)
@@ -218,7 +213,7 @@ void BB7OnlineSpectra::Exec(Option_t* option)
     {
         if (saved_bb7_wr != 0)
         {
-            std::cout << "hm we should get here" << std::endl;
+            //std::cout << "hm we should get here" << std::endl;
             for (int det = 0; det < bb7_config->NDetectors(); det++)
             {
                 for (int side = 0; side < bb7_config->NSides(); side++)
