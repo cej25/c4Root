@@ -52,7 +52,7 @@ void s181_online()
     //TString c4Root_path = "/u/despec/s181_online/c4Root";
     TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
     TString c4Root_path = "/u/cjones/c4Root";
-    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
+    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --print --data --input-buffer=200Mi --event-sizes";
     ucesb_path.ReplaceAll("//","/");
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());

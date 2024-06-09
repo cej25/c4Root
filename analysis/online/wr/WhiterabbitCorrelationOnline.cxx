@@ -351,10 +351,10 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     h1_whiterabbit_trigger3_bplast_ge->GetXaxis()->SetTitle("bPlast - DEGAS WR dT (ns)");
     h1_whiterabbit_trigger3_bplast_ge->GetYaxis()->SetTitle("Counts (Trigger 3)");
 
-    h1_whiterabbit_correlation_bb7_fatima = MakeTH1(dir_whiterabbit_correlation, "I", "h1_whiterabbit_correlation_bb7_fatima", "White Rabbit BB7 - FATIMA (TAMEX)", 1e3, -1e3, 1e3);
-    h1_whiterabbit_correlation_bb7_fatimavme = MakeTH1(dir_whiterabbit_correlation, "I", "h1_whiterabbit_correlation_bb7_fatimavme", "White Rabbit BB7 - FATIMA (VME)", 1e3, -1e3, 1e3);
-    h1_whiterabbit_correlation_bb7_germanium = MakeTH1(dir_whiterabbit_correlation, "I", "h1_whiterabbit_correlation_bb7_germanium", "White Rabbit BB7 - DEGAS", 1e3, -1e3, 1e3);
-    h1_whiterabbit_correlation_bb7_bplast = MakeTH1(dir_whiterabbit_correlation, "I", "h1_whiterabbit_correlation_bb7_bplast", "White Rabbit BB7 - bPlast", 1e3, -1e3, 1e3);
+    h1_whiterabbit_correlation_bb7_fatima = MakeTH1(dir_whiterabbit_correlation, "I", "h1_whiterabbit_correlation_bb7_fatima", "White Rabbit BB7 - FATIMA (TAMEX)", 1e3, -5e3, 5e3);
+    h1_whiterabbit_correlation_bb7_fatimavme = MakeTH1(dir_whiterabbit_correlation, "I", "h1_whiterabbit_correlation_bb7_fatimavme", "White Rabbit BB7 - FATIMA (VME)", 1e3, -5e3, 5e3);
+    h1_whiterabbit_correlation_bb7_germanium = MakeTH1(dir_whiterabbit_correlation, "I", "h1_whiterabbit_correlation_bb7_germanium", "White Rabbit BB7 - DEGAS", 1e3, -5e3, 5e3);
+    h1_whiterabbit_correlation_bb7_bplast = MakeTH1(dir_whiterabbit_correlation, "I", "h1_whiterabbit_correlation_bb7_bplast", "White Rabbit BB7 - bPlast", 1e3, -5e3, 5e3);
 
 
     // Trigger ID
@@ -961,8 +961,8 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
     }
 
     int bb7_decay_count = 0;
-    /*
-    if (fBB7Decays && fBB7Decays->size())
+    
+    if (fBB7Decays && fBB7Decays->size() > 0)
     {   
         auto const & decayBB7 = fBB7Decays->at(0);
         int64_t wr_bb7 = decayBB7.Get_wr_t();
@@ -1023,7 +1023,7 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             }
         }
     }
-*/
+
     h1_whiterabbit_trigger->Fill(fEventHeader->GetTrigger());
 
     fNEvents += 1;
