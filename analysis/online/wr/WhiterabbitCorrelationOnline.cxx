@@ -961,6 +961,7 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
     }
 
     int bb7_decay_count = 0;
+    /*
     if (fBB7Decays && fBB7Decays->size())
     {   
         auto const & decayBB7 = fBB7Decays->at(0);
@@ -1022,7 +1023,7 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             }
         }
     }
-
+*/
     h1_whiterabbit_trigger->Fill(fEventHeader->GetTrigger());
 
     fNEvents += 1;

@@ -66,65 +66,65 @@ Bool_t BB7Reader::Read()
 
     BB7VmeData* bb7VmeHit = new BB7VmeData();
 
-    wr_t = (((uint64_t)fData->bb7_ts_t4) << 48) + (((uint64_t)fData->bb7_ts_t3) << 32) + (((uint64_t)fData->bb7_ts_t2) << 16) + (uint64_t)(fData->bb7_ts_t1);
+    wr_t = (((uint64_t)fData->bbseven_ts_t[3]) << 48) + (((uint64_t)fData->bbseven_ts_t[2]) << 32) + (((uint64_t)fData->bbseven_ts_t[1]) << 16) + (uint64_t)(fData->bbseven_ts_t[0]);
 
     bb7VmeHit->Set_wr_t(wr_t);
 
   
-    for (int i = 0; i < fData->bb7_v7x5_module1n; i++)
+    for (int i = 0; i < fData->bbseven_v7x5_module1n; i++)
     {   
-        uint32_t geo = fData->bb7_v7x5_module1geov[i];
-        uint32_t data = fData->bb7_v7x5_module1data[i];
-        uint32_t channel = fData->bb7_v7x5_module1channelv[i];
+        uint32_t geo = fData->bbseven_v7x5_module1geov[i];
+        uint32_t data = fData->bbseven_v7x5_module1data[i];
+        uint32_t channel = fData->bbseven_v7x5_module1channelv[i];
 
         auto & entry = v7x5array->emplace_back();
         entry.SetAll(wr_t, geo, data, channel);
 
-        v7x5_geo.emplace_back(fData->bb7_v7x5_module1geov[i]);
-        v7x5_channel.emplace_back(fData->bb7_v7x5_module1channelv[i]);
-        v7x5_data.emplace_back(fData->bb7_v7x5_module1data[i]);
+        v7x5_geo.emplace_back(fData->bbseven_v7x5_module1geov[i]);
+        v7x5_channel.emplace_back(fData->bbseven_v7x5_module1channelv[i]);
+        v7x5_data.emplace_back(fData->bbseven_v7x5_module1data[i]);
     }
 
-    for (int i = 0; i < fData->bb7_v7x5_module2n; i++)
+    for (int i = 0; i < fData->bbseven_v7x5_module2n; i++)
     {   
-        uint32_t geo = fData->bb7_v7x5_module2geov[i];
-        uint32_t data = fData->bb7_v7x5_module2data[i];
-        uint32_t channel = fData->bb7_v7x5_module2channelv[i];
+        uint32_t geo = fData->bbseven_v7x5_module2geov[i];
+        uint32_t data = fData->bbseven_v7x5_module2data[i];
+        uint32_t channel = fData->bbseven_v7x5_module2channelv[i];
 
         auto & entry = v7x5array->emplace_back();
         entry.SetAll(wr_t, geo, data, channel);
 
-        v7x5_geo.emplace_back(fData->bb7_v7x5_module2geov[i]);
-        v7x5_channel.emplace_back(fData->bb7_v7x5_module2channelv[i]);
-        v7x5_data.emplace_back(fData->bb7_v7x5_module2data[i]);
+        v7x5_geo.emplace_back(fData->bbseven_v7x5_module2geov[i]);
+        v7x5_channel.emplace_back(fData->bbseven_v7x5_module2channelv[i]);
+        v7x5_data.emplace_back(fData->bbseven_v7x5_module2data[i]);
     }
 
-    for (int i = 0; i < fData->bb7_v7x5_module3n; i++)
+    for (int i = 0; i < fData->bbseven_v7x5_module3n; i++)
     {   
-        uint32_t geo = fData->bb7_v7x5_module3geov[i];
-        uint32_t data = fData->bb7_v7x5_module3data[i];
-        uint32_t channel = fData->bb7_v7x5_module3channelv[i];
+        uint32_t geo = fData->bbseven_v7x5_module3geov[i];
+        uint32_t data = fData->bbseven_v7x5_module3data[i];
+        uint32_t channel = fData->bbseven_v7x5_module3channelv[i];
 
         auto & entry = v7x5array->emplace_back();
         entry.SetAll(wr_t, geo, data, channel);
 
-        v7x5_geo.emplace_back(fData->bb7_v7x5_module3geov[i]);
-        v7x5_channel.emplace_back(fData->bb7_v7x5_module3channelv[i]);
-        v7x5_data.emplace_back(fData->bb7_v7x5_module3data[i]);
+        v7x5_geo.emplace_back(fData->bbseven_v7x5_module3geov[i]);
+        v7x5_channel.emplace_back(fData->bbseven_v7x5_module3channelv[i]);
+        v7x5_data.emplace_back(fData->bbseven_v7x5_module3data[i]);
     }
 
-    for (int i = 0; i < fData->bb7_v7x5_module4n; i++)
+    for (int i = 0; i < fData->bbseven_v7x5_module4n; i++)
     {   
-        uint32_t geo = fData->bb7_v7x5_module4geov[i];
-        uint32_t data = fData->bb7_v7x5_module4data[i];
-        uint32_t channel = fData->bb7_v7x5_module4channelv[i];
+        uint32_t geo = fData->bbseven_v7x5_module4geov[i];
+        uint32_t data = fData->bbseven_v7x5_module4data[i];
+        uint32_t channel = fData->bbseven_v7x5_module4channelv[i];
 
         auto & entry = v7x5array->emplace_back();
         entry.SetAll(wr_t, geo, data, channel);
 
-        v7x5_geo.emplace_back(fData->bb7_v7x5_module4geov[i]);
-        v7x5_channel.emplace_back(fData->bb7_v7x5_module4channelv[i]);
-        v7x5_data.emplace_back(fData->bb7_v7x5_module4data[i]);
+        v7x5_geo.emplace_back(fData->bbseven_v7x5_module4geov[i]);
+        v7x5_channel.emplace_back(fData->bbseven_v7x5_module4channelv[i]);
+        v7x5_data.emplace_back(fData->bbseven_v7x5_module4data[i]);
     }
 
     bb7VmeHit->Set_v7x5_geo(v7x5_geo);
@@ -133,16 +133,16 @@ Bool_t BB7Reader::Read()
 
     // V1290
     int hit_index = 0;
-    for (uint32_t channel_index = 0; channel_index < fData->bb7_v1290_module_nM; channel_index++)
+    for (uint32_t channel_index = 0; channel_index < fData->bbseven_v1290_module_nM; channel_index++)
     {   
-        int current_channel = fData->bb7_v1290_module_nMI[channel_index]; // channel to read now!
-        int next_channel_start = fData->bb7_v1290_module_nME[channel_index]; // we read this channel until we hit this index
+        int current_channel = fData->bbseven_v1290_module_nMI[channel_index]; // channel to read now!
+        int next_channel_start = fData->bbseven_v1290_module_nME[channel_index]; // we read this channel until we hit this index
         
         for (uint32_t j = hit_index; j < next_channel_start; j++)
         {            
             uint32_t channel = current_channel - 1;
-            uint32_t data = fData->bb7_v1290_module_data[j];
-            uint32_t lot = fData->bb7_v1290_module_leadOrTrailv[j];
+            uint32_t data = fData->bbseven_v1290_module_data[j];
+            uint32_t lot = fData->bbseven_v1290_module_leadOrTrailv[j];
             
             auto & entry = v1290array->emplace_back();
             entry.SetAll(channel, data, lot);
