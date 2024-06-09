@@ -11,7 +11,7 @@
 #define TIME_MACHINE_ON 1
 #define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 1
-#define BB7_ON 0
+#define BB7_ON 1
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
@@ -51,7 +51,7 @@ void s181_online()
     //TString c4Root_path = "/u/jbormans/c4Root";
     TString c4Root_path = "/u/despec/s181_online/c4Root";
     TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
-//     TString c4Root_path = "/u/cjones/c4Root";
+     //TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -162,7 +162,8 @@ void s181_online()
 
     TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
     
-    
+    TBB7VmeConfiguration::SetDetectorConfigurationFile(config_path + "/bb7/BB7_Detector_Map_s181.txt");  
+    TBB7VmeConfiguration::SetResidualSignalsFile(config_path + "/bb7/BB7_Residuals_Map.txt");   
 
     // ------------------------------------------------------------------------------------- //
     // *** Read Subsystems - comment out unwanted systems ********************************** //
