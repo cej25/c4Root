@@ -49,9 +49,9 @@ void s181_online()
 
     // Define important paths.
     //TString c4Root_path = "/u/jbormans/c4Root";
-    TString c4Root_path = "/u/despec/s181_online/c4Root";
+    //TString c4Root_path = "/u/despec/s181_online/c4Root";
     TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
-     //TString c4Root_path = "/u/cjones/c4Root";
+    TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -138,7 +138,7 @@ void s181_online()
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Correlations ******************************************************** //
     
-    TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations_tight.dat");
+    TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations.dat");
 
 
     // ------------------------------------------------------------------------------------ //
@@ -541,11 +541,12 @@ void s181_online()
     TString e = "bPlast";
     TString f = "Germanium";
     TString g = "Frs";
+    TString h = "BB7";
 
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {b, d, c, e, f};
+        std::vector a {b, d, c, e, f, h};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
@@ -554,7 +555,7 @@ void s181_online()
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({b,c,d,e,f});
+        wronline->SetDetectorSystems({b,c,d,e,f,h});
         
         run->AddTask(wronline);
     }

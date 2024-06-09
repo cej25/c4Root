@@ -29,6 +29,7 @@ BB7OnlineSpectra::BB7OnlineSpectra()
     ,   fHitBB7(NULL)
     ,   implantArray(nullptr)
     ,   decayArray(nullptr)
+    ,   residualArray(nullptr)
     ,   header(nullptr)
 {
     bb7_config = TBB7VmeConfiguration::GetInstance();
@@ -57,6 +58,8 @@ InitStatus BB7OnlineSpectra::Init()
     c4LOG_IF(fatal, !implantArray, "Branch BB7ImplantData not found!");
     decayArray = mgr->InitObjectAs<decltype(decayArray)>("BB7DecayData");
     c4LOG_IF(fatal, !decayArray, "Branch BB7DecayData not found!");
+    residualArray = mgr->InitObjectAs<decltype(residualArray)>("BB7ResidualData");
+    c4LOG_IF(fatal, !residualArray, "Branch BB7ResidualData not found!");
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
 
@@ -80,6 +83,7 @@ InitStatus BB7OnlineSpectra::Init()
     dir_decay_raw_e = dir_decays->mkdir("Raw Energy");
     dir_decay_stats = dir_decays->mkdir("Stats");
     dir_decay_rates = dir_decays->mkdir("Rate Monitors");
+    dir_residuals = dir_bb7->mkdir("Residual Signals");
 
     h1_implant_RawE = new TH1***[bb7_config->NDetectors()];
     h1_decay_RawE = new TH1***[bb7_config->NDetectors()];
@@ -121,8 +125,6 @@ InitStatus BB7OnlineSpectra::Init()
         }
     }
 
-
-
     for (int det = 0; det < bb7_config->NDetectors(); det++)
     {
         for (int side = 0; side < bb7_config->NSides(); side++)
@@ -149,6 +151,13 @@ InitStatus BB7OnlineSpectra::Init()
             h1_decay_hitpattern[det][side] = MakeTH1(dir_decay_stats, "I", Form("h1_decay_hitpattern_Det%i_Side%i", det, side), Form("Decay Hit Pattern - Det %i Side %i", det, side), bb7_config->NStrips(), 0, bb7_config->NStrips(), "Strip", kRed+1, kBlack);
         }
     }
+
+    // grab # of residuals 
+    // /h1_residual_signals = new TH1*[4];
+    h1_residual_signals[0] = MakeTH1(dir_residuals, "I", "h1_residual_signals_sc41l", "SC41L", 4000, 0, 20000);
+    h1_residual_signals[1] = MakeTH1(dir_residuals, "I", "h1_residual_signals_sc41r", "SC41R", 4000, 0, 20000);
+    h1_residual_signals[2] = MakeTH1(dir_residuals, "I", "h1_residual_signals_tmd", "Time Machine Delayed", 4000, 0, 20000);
+    h1_residual_signals[3] = MakeTH1(dir_residuals, "I", "h1_residual_signals_tmu", "Time Machine Undelayed", 4000, 0, 20000);
 
     dir_bb7->cd();
 
@@ -243,6 +252,18 @@ void BB7OnlineSpectra::Exec(Option_t* option)
             }
         }
         if (rate_running_count == 1800) rate_running_count = 0;
+    }
+
+    for (auto const & residualItem : *residualArray)
+    {
+        uint32_t tmd = residualItem.Get_TM_Delayed();
+        h1_residual_signals[0]->Fill(tmd);
+        uint32_t tmu = residualItem.Get_TM_Undelayed();
+        h1_residual_signals[1]->Fill(tmu);
+        uint32_t sc41l = residualItem.Get_SC41L();
+        h1_residual_signals[2]->Fill(sc41l);
+        uint32_t sc41r = residualItem.Get_SC41R();
+        h1_residual_signals[3]->Fill(sc41r);
     }
 }
 

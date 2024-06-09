@@ -43,6 +43,7 @@ class BB7OnlineSpectra : public FairTask
 
         std::vector<BB7VmeImplantItem> const* implantArray;
         std::vector<BB7VmeDecayItem> const* decayArray;
+        std::vector<BB7VmeResidualItem> const* residualArray;
 
         TClonesArray* fHitBB7;
         EventHeader* header;
@@ -61,6 +62,7 @@ class BB7OnlineSpectra : public FairTask
         TDirectory* dir_decay_raw_e;
         TDirectory* dir_decay_stats;
         TDirectory* dir_decay_rates;
+        TDirectory* dir_residuals;
 
         // canvases
         TCanvas* c_raw_e; // per side?
@@ -76,6 +78,7 @@ class BB7OnlineSpectra : public FairTask
         TH1*** h1_decay_hitpattern;
         TH1**** h1_implant_rates;
         TH1**** h1_decay_rates;
+        TH1* h1_residual_signals[4];
 
         int64_t saved_bb7_wr = 0;
         int rate_running_count = 0;

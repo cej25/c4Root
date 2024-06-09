@@ -245,6 +245,8 @@ void TimeMachineOnline::Exec(Option_t* option) // if two machines (undelayed + d
             undelayed_time = 0;
 
             Int_t nHits = fTimeMachine[system]->GetEntriesFast();
+            std::string systemName1 = fDetectorSystems[system].Data();
+
             for (Int_t ihit = 0; ihit < nHits; ihit++)
             {   
                 fTimeMachineHit = (TimeMachineData*)fTimeMachine[system]->At(ihit);
@@ -272,10 +274,11 @@ void TimeMachineOnline::Exec(Option_t* option) // if two machines (undelayed + d
                 h1_time_diff[system]->Fill(diffs[system]);
                 undelayed_time = 0;
                 delayed_time = 0;
+
             }
         }
     }
-    
+
     // Time differences
     for (int ihist = 0; ihist < fNumDetectorSystems; ihist++)
     {
@@ -294,6 +297,7 @@ void TimeMachineOnline::Exec(Option_t* option) // if two machines (undelayed + d
             else if (systemName2 == "Aida") {wr_diff += 14000;}*/
 
             std::string key = systemName1 + "-" + systemName2 + " TM Gate";
+
             
             /*if((diffs[ihist]!=0) && (diffs[ihist2]!=0))
             {
@@ -304,7 +308,6 @@ void TimeMachineOnline::Exec(Option_t* option) // if two machines (undelayed + d
             if((diffs[ihist]!=0) && (diffs[ihist2]!=0) && wr_diff > TMGates[key][0] && wr_diff < TMGates[key][1])
             {   
                 h2_time_diff_corrs[ihist*fNumDetectorSystems + ihist2]->Fill(diffs[ihist],diffs[ihist2]);
-                //std::cout << "sooo we are here!!?? " << std::endl;
             }
         }
     }
