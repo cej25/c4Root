@@ -20,10 +20,9 @@ V7X5_DUMMY()
 {
 	UINT32 dummy NOENCODE
 	{
-		0_23: nothing;
+		0_23: 0x000000;
 		24_27: id = RANGE(5,8);
-		28_31: nothing22;
-
+		28_31: 0x0;
 	}
 }
 
