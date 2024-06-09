@@ -16,7 +16,7 @@
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
 {
-    #include "../../config/s181/frs/setup_des_s100_030_2024_conv.C"
+    #include "../../config/s181/frs/setup_s181_008_2024_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -49,10 +49,10 @@ void s181_online()
 
     // Define important paths.
     //TString c4Root_path = "/u/jbormans/c4Root";
-    //TString c4Root_path = "/u/despec/s181_online/c4Root";
+    TString c4Root_path = "/u/despec/s181_online/c4Root";
     TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
-    TString c4Root_path = "/u/cjones/c4Root";
-    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --print --data --input-buffer=200Mi --event-sizes";
+    //TString c4Root_path = "/u/cjones/c4Root";
+    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes";
     ucesb_path.ReplaceAll("//","/");
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
@@ -431,12 +431,12 @@ void s181_online()
         onlinege->SetEnergyGateWidth(10);
         run->AddTask(onlinege);
     }
-    TBGOTwinpeaksConfiguration::SetCoincidenceWindow(50000);
-    TBGOTwinpeaksConfiguration::SetCoincidenceOffset(0);
+    TBGOTwinpeaksConfiguration::SetCoincidenceWindow(1000);
+    TBGOTwinpeaksConfiguration::SetCoincidenceOffset(500);
     if (BGO_ON)
     {
         BGOOnlineSpectra* onlinebgo = new BGOOnlineSpectra();
-        onlinebgo->SetBinningEnergy(1500,0.1,1500.1);
+        onlinebgo->SetBinningEnergy(3000,0.1,3000.1);
 
         run->AddTask(onlinebgo);
         
