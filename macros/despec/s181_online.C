@@ -16,7 +16,7 @@
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
 {
-    #include "../../config/s181/frs/setup_s181_008_2024_conv.C"
+    #include "../../config/s181/frs/setup_s181_009_2024_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -442,7 +442,7 @@ void s181_online()
         
     }
     
-    TFrsConfiguration::Set_Z_range(30,100);
+    TFrsConfiguration::Set_Z_range(30,120);
     TFrsConfiguration::Set_AoQ_range(2.0,3.0);
     
     if (FRS_ON)
