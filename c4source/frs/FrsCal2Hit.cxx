@@ -1354,7 +1354,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         for (int i = 0; i < 4; i++)
         {
             sum += power * id->vel_a[i];
-            power *= id_beta;
+            power *= 1.0/(id_beta*id_beta);
         }
         id_v_cor = sum;
         if (id_v_cor > 0.0)
@@ -1376,7 +1376,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         for (int i = 0; i < 4; i++)
         {
             sum += power * id->vel_a2[i];
-            power *= id_beta;
+            power *= 1.0/(id_beta*id_beta);
         }
         id_v_cor2 = sum;
 

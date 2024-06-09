@@ -206,8 +206,8 @@ InitStatus FrsOnlineSpectra::Init()
     if (frs_config->plot_tac_1d)
     {   
         // preset wide ranges to "always" see peak, in case there's something funky with the FRS
-        h1_Z = MakeTH1(dir_tac_1d, "D", "h1_Z", "Z (MUSIC 1)", 500, 10, 100, "Z (MUSIC 1)", kPink-3, kBlue+2);
-        h1_Z2 = MakeTH1(dir_tac_1d, "D", "h1_Z2", "Z (MUSIC 2)", 500, 10, 100, "Z (MUSIC 2)", kPink-3, kBlue+2);
+        h1_Z = MakeTH1(dir_tac_1d, "D", "h1_Z", "Z (MUSIC 1)", 1000, 10, 150, "Z (MUSIC 1)", kPink-3, kBlue+2);
+        h1_Z2 = MakeTH1(dir_tac_1d, "D", "h1_Z2", "Z (MUSIC 2)", 1000, 10, 150, "Z (MUSIC 2)", kPink-3, kBlue+2);
         h1_Z_travmus = MakeTH1(dir_tac_1d, "D", "h1_Z_travmus", "Z (Travel MUSIC)", 750, 10, 100, "Z (Travel MUSIC)", kPink-3, kBlue+2);
         h1_AoQ = MakeTH1(dir_tac_1d, "D", "h1_AoQ", "A/Q", 500, 1.0, 4.0, "A/Q", kPink-3, kBlue+2); 
         h1_AoQ_corr = MakeTH1(dir_tac_1d, "D", "h1_AoQ_corr", "A/Q (corr)", 500, 1.0, 4.0, "A/Q", kPink-3, kBlue+2);
