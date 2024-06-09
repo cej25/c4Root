@@ -7,7 +7,9 @@
 #include "AidaData.h"
 #include "FrsHitData.h"
 #include "FatimaVmeCalData.h"
+#include "BB7VmeCalData.h"
 
+#include "TH1.h"
 #include "TFolder.h"
 #include "TDirectory.h"
 #include <vector>
@@ -18,6 +20,7 @@ class TimeMachineData;
 class TFolder;
 class TDirectory;
 class TCanvas;
+class TH1;
 class TH1I;
 class TH2F;
 class TFile;
@@ -62,6 +65,8 @@ class WhiterabbitCorrelationOnline : public FairTask
         std::vector<AidaHit> const* fAidaImplants;
         std::vector<AidaUnpackScalerItem> const* fAidaScalers;
         std::vector<FrsHitItem> const* hitArrayFrs;
+        std::vector<BB7VmeDecayItem> const* fBB7Decays;
+        std::vector<BB7VmeImplantItem> const* fBB7Implants;
 
         std::vector<TString> fDetectorSystems;
         int fNumDetectorSystems;
@@ -136,6 +141,7 @@ class WhiterabbitCorrelationOnline : public FairTask
         TH1I* h1_whiterabbit_correlation_fatima_frs;
         TH1I* h1_whiterabbit_correlation_bplast_frs;
         TH1I* h1_whiterabbit_correlation_germanium_frs;
+        TH1* h1_whiterabbit_correlation_bb7_frs;
 
         TH1I* h1_whiterabbit_correlation_aida_fatima;
         TH1I* h1_whiterabbit_trigger1_aida_fatima;
@@ -176,6 +182,11 @@ class WhiterabbitCorrelationOnline : public FairTask
         TH1I* h1_whiterabbit_correlation_bplast_ge;
         TH1I* h1_whiterabbit_trigger1_bplast_ge;
         TH1I* h1_whiterabbit_trigger3_bplast_ge;
+
+        TH1* h1_whiterabbit_correlation_bb7_fatima;
+        TH1* h1_whiterabbit_correlation_bb7_fatimavme;
+        TH1* h1_whiterabbit_correlation_bb7_germanium;
+        TH1* h1_whiterabbit_correlation_bb7_bplast;
 
         TH1I* h1_whiterabbit_trigger;
 
