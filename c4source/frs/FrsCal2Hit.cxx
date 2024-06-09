@@ -267,6 +267,13 @@ void FrsCal2Hit::Exec(Option_t* option)
     music_t1 = mainMusicItem.Get_music_t1();
     music_t2 = mainMusicItem.Get_music_t2();
 
+
+
+    auto const & userMusicItem = userMusicArray->at(0);
+    music_e1 = userMusicItem.Get_music_e1();
+    music_e2 = userMusicItem.Get_music_e2();
+
+
     if (travMusicArray)
     {
         auto const & travMusicItem = travMusicArray->at(0);
