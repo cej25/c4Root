@@ -145,7 +145,31 @@ void TCorrelationsConfiguration::ReadCorrelationsFile()
                     timemachine_map["bPlast-Germanium TM Gate"] = values;
                     timemachine_map["Germanium-bPlast TM Gate"] = reverse_values;
                 }
-
+                else if (firstWord == "FRS_BB7_TM")
+                {
+                    timemachine_map["FRS-BB7 TM Gate"] = values;
+                    timemachine_map["BB7-FRS TM Gate"] = reverse_values;
+                }
+                else if (firstWord == "BB7_FATIMA_TAMEX_TM")
+                {
+                    timemachine_map["BB7-Fatima TM Gate"] = values;
+                    timemachine_map["Fatima-BB7 TM Gate"] = reverse_values;
+                }
+                else if (firstWord == "BB7_FATIMA_VME_TM")
+                {
+                    timemachine_map["BB7-FatimaVme TM Gate"] = values;
+                    timemachine_map["FatimaVme-BB7 TM Gate"] = reverse_values;
+                }
+                else if (firstWord == "BB7_GERMANIUM_TM")
+                {
+                    timemachine_map["BB7-Germanium TM Gate"] = values;
+                    timemachine_map["Germanium-BB7 TM Gate"] = reverse_values;
+                }
+                else if (firstWord == "BB7_BPLAST_TM")
+                {
+                    timemachine_map["BB7-bPlast TM Gate"] = values;
+                    timemachine_map["bPlast-BB7 TM Gate"] = reverse_values;
+                }
             }
         }
     }

@@ -16,6 +16,7 @@
 #include "FrsHitData.h"
 #include "FrsHitData.h"
 
+#include "AnalysisTools.h"
 #include "c4Logger.h"
 
 #include "TCanvas.h"
@@ -131,6 +132,13 @@ InitStatus WhiterabbitCorrelationOnline::Init()
             fAidaImplants = mgr->InitObjectAs<decltype(fAidaImplants)>("AidaImplantHits");
             c4LOG_IF(fatal, !fAidaImplants, "Branch AidaImplantHits not found!");
         }
+        else if (fDetectorSystems.at(i) == "BB7")
+        {
+            fBB7Decays = mgr->InitObjectAs<decltype(fBB7Decays)>("BB7DecayData");
+            c4LOG_IF(fatal, !fBB7Decays, "Branch BB7DecayData not found!");
+            fBB7Implants = mgr->InitObjectAs<decltype(fBB7Implants)>("BB7ImplantData");
+            c4LOG_IF(fatal, !fBB7Implants, "Branch BB7ImplantData not found!");  
+        }
         else
         {
             c4LOG(fatal, "Unknown detector system: " << fDetectorSystems.at(i));
@@ -167,6 +175,7 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     h1_whiterabbit_correlation_germanium_frs->GetXaxis()->SetTitle("Time difference (DEGAS - FRS) [ns]");
     h1_whiterabbit_correlation_germanium_frs->GetYaxis()->SetTitle("Counts");
 
+    h1_whiterabbit_correlation_bb7_frs = MakeTH1(dir_whiterabbit_correlation, "I", "h1_whiterabbit_correlation_bb7_frs", "BB7 - FRS WR dT", 1e3, -1e3, 1e3);
 
 
     // AIDA 
@@ -341,6 +350,12 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     h1_whiterabbit_trigger3_bplast_ge = new TH1I("h1_whiterabbit_trigger3_bplast_ge", "White Rabbit Trigger 3 bPlast-DEGAS",1e3,-1e3,1e3);
     h1_whiterabbit_trigger3_bplast_ge->GetXaxis()->SetTitle("bPlast - DEGAS WR dT (ns)");
     h1_whiterabbit_trigger3_bplast_ge->GetYaxis()->SetTitle("Counts (Trigger 3)");
+
+    h1_whiterabbit_correlation_bb7_fatima = MakeTH1(dir_whiterabbit_correlation, "I", "h1_whiterabbit_correlation_bb7_fatima", "White Rabbit BB7 - FATIMA (TAMEX)", 1e3, -1e3, 1e3);
+    h1_whiterabbit_correlation_bb7_fatimavme = MakeTH1(dir_whiterabbit_correlation, "I", "h1_whiterabbit_correlation_bb7_fatimavme", "White Rabbit BB7 - FATIMA (VME)", 1e3, -1e3, 1e3);
+    h1_whiterabbit_correlation_bb7_germanium = MakeTH1(dir_whiterabbit_correlation, "I", "h1_whiterabbit_correlation_bb7_germanium", "White Rabbit BB7 - DEGAS", 1e3, -1e3, 1e3);
+    h1_whiterabbit_correlation_bb7_bplast = MakeTH1(dir_whiterabbit_correlation, "I", "h1_whiterabbit_correlation_bb7_bplast", "White Rabbit BB7 - bPlast", 1e3, -1e3, 1e3);
+
 
     // Trigger ID
     dir_whiterabbit->cd();
@@ -573,6 +588,8 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
     Int_t nHitsAida = 0;
     Int_t nHitsAidaImplants = 0;
     Int_t nHitsFrs = 0;
+    Int_t nHitsBB7 = 0;
+    Int_t nHitsBB7Implants = 0;
     Int_t systems = 0;
     
     if (fHitFatimaTwinpeaks)
@@ -645,6 +662,13 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         nHitsAida = fAidaDecays->size();
         nHitsAidaImplants = fAidaImplants->size();
         if (nHitsAida > 0 || nHitsAidaImplants > 0) systems++;
+    }
+
+    if (fBB7Decays || fBB7Implants)
+    {
+        nHitsBB7 = fBB7Decays->size();
+        nHitsBB7Implants = fBB7Implants->size();
+        if (nHitsBB7 > 0 || nHitsBB7Implants > 0) systems++;
     }
 
     if (hitArrayFrs)
@@ -932,6 +956,69 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
                 int64_t wr_frs = hitFrs.Get_wr_t();
                 int64_t dt = wr_ge - wr_frs;
                 h1_whiterabbit_correlation_germanium_frs->Fill(dt);
+            }
+        }
+    }
+
+    int bb7_decay_count = 0;
+    if (fBB7Decays && fBB7Decays->size())
+    {   
+        auto const & decayBB7 = fBB7Decays->at(0);
+        int64_t wr_bb7 = decayBB7.Get_wr_t();
+
+        // bb7-frs
+        if (hitArrayFrs && hitArrayFrs->size() > 0)
+        {
+            auto const & hitFrs = hitArrayFrs->at(0);
+            int64_t wr_frs = hitFrs.Get_wr_t();
+            int64_t dt = wr_bb7 - wr_frs;
+            h1_whiterabbit_correlation_bb7_frs->Fill(dt);
+        }
+
+        // bb7-fatima tamex
+        if (fHitFatimaTwinpeaks)
+        {
+            FatimaTwinpeaksCalData* hitFatima = (FatimaTwinpeaksCalData*)fHitFatimaTwinpeaks->At(0);
+            if (hitFatima)
+            {
+                int64_t wr_fatima = hitFatima->Get_wr_t();
+                int64_t dt = wr_bb7 - wr_fatima;
+                h1_whiterabbit_correlation_bb7_fatima->Fill(dt);
+                
+            }
+        }
+
+        // bb7-fatimavme
+        if (fatVmeArray->size() > 0) 
+        {
+            auto const & hitFatVme = fatVmeArray->at(0);
+            
+            int64_t wr_fatima_vme = hitFatVme.Get_wr_t();
+            int64_t dt = wr_bb7 - wr_fatima_vme;
+            h1_whiterabbit_correlation_bb7_fatimavme->Fill(dt); 
+        }
+
+        // bb7-bplast
+        if (fHitbPlastTwinpeaks) 
+        {
+            bPlastTwinpeaksCalData* hitbPlast = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(0);
+            if (hitbPlast)
+            {
+                int64_t wr_bplast = hitbPlast->Get_wr_t();
+                int64_t dt = wr_bb7 - wr_bplast;
+                h1_whiterabbit_correlation_bb7_bplast->Fill(dt);
+            }
+        }
+
+        // bb7-germanium
+        if (fHitGe) 
+        {
+            GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(0);
+            if (hitGe)
+            {
+                int64_t wr_ge = hitGe->Get_wr_t();
+                int64_t dt = wr_bb7 - wr_ge;
+                h1_whiterabbit_correlation_bb7_germanium->Fill(dt);
             }
         }
     }
