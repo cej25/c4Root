@@ -16,6 +16,40 @@
 
 external EXT_AIDA();
 
+V7X5_DUMMY()
+{
+	UINT32 dummy NOENCODE
+	{
+		0_23: 0x000000;
+		24_27: id = RANGE(5,8);
+		28_31: 0x0;
+	}
+}
+
+SUBEVENT(bb7_subev)
+{
+    select optional 
+    {
+        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1800);
+    }
+
+    select several
+    {
+        v7x5_module[0] = VME_CAEN_V7X5_FRS(card=11);
+	    v7x5_dummy = V7X5_DUMMY();
+        v7x5_module[1] = VME_CAEN_V7X5_FRS(card=13);
+        v7x5_module[2] = VME_CAEN_V7X5_FRS(card=15);
+        v7x5_module[3] = VME_CAEN_V7X5_FRS(card=17);
+        v1290_module = VME_CAEN_V1290_FRS();
+    }
+	
+    list (0 <= i < 3)
+    {
+	    optional UINT32 more_eob_words NOENCODE;
+    }
+
+}
+
 SUBEVENT(bgo_tamex_subevent)
 {
     select optional
@@ -350,6 +384,7 @@ EVENT
     fatimavme = fatima_vme_subev(type = 10, subtype = 1, procid = 70, control = 20);
     bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20);
     bgo = bgo_tamex_subevent(procid = 100);
+    //bbseven = bb7_subev(procid=31);
 
     frsmain = frs_main_subev(procid = 10);
     frstpc = frs_tpc_subev(procid = 20);

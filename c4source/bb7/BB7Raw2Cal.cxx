@@ -134,7 +134,7 @@ void BB7Raw2Cal::Exec(Option_t* option)
 
     // end of old
 
-    uint32_t wr_t = 0;
+    uint64_t wr_t = 0;
     for (auto const & v7x5item : *v7x5array)
     {
         wr_t = v7x5item.Get_wr_t();
@@ -173,18 +173,22 @@ void BB7Raw2Cal::Exec(Option_t* option)
     {
         uint32_t channel = v1290item.Get_channel();
         uint32_t data = v1290item.Get_v1290_data();
+        data *= 0.025; // factor from frs, using same module i think? testing..
 
         if (channel == bb7_config->SC41L()) sc41l = data;
         if (channel == bb7_config->SC41R()) sc41r = data;
         else if (channel == bb7_config->TM_Delayed()) tmd = data;
         else if (channel == bb7_config->TM_Undelayed()) tmu = data;
 
-        // CEJ: this is poorly done for now while I figure out residual mapping
-        if (((channel == bb7_config->TM_Delayed()) || (channel == bb7_config->TM_Undelayed())) && bb7_config->TM_Delayed() != -1 && bb7_config->TM_Undelayed() != -1)
-        {
-            new ((*fTimeMachineArray)[fTimeMachineArray->GetEntriesFast()]) TimeMachineData((channel == bb7_config->TM_Undelayed()) ? (data) : (0), (data == bb7_config->TM_Undelayed()) ? (0) : (data), 1800, wr_t);
-        }
+    }
 
+    if (tmd > 0 && tmu > 0)
+    {  
+       // std::cout << "delayed: " << tmd << std::endl;
+       // std::cout << "udelayed: " << tmu << std::endl;
+        // create delayed and undelayed entries, only if we have both
+        new ((*fTimeMachineArray)[fTimeMachineArray->GetEntriesFast()]) TimeMachineData(0, tmd, 1800, wr_t);
+        new ((*fTimeMachineArray)[fTimeMachineArray->GetEntriesFast()]) TimeMachineData(tmu, 0, 1800, wr_t);
     }
     
     auto & entry = residualArray->emplace_back();
