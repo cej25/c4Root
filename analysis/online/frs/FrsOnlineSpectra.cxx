@@ -118,6 +118,9 @@ InitStatus FrsOnlineSpectra::Init()
     dir_mhtdc_1d = dir_mhtdc->mkdir("1D Spectra");
     dir_mhtdc_2d = dir_mhtdc->mkdir("2D PIDs");
     dir_gated_mhtdc = dir_mhtdc->mkdir("Gated 2D");
+    dir_ZvsZ2_mhtdc = dir_gated_mhtdc->mkdir("ZvsZ2 Gated");
+    dir_ZvsZ2_x2vsAoQ_mhtdc = dir_ZvsZ2_mhtdc->mkdir("x2vsAoQ Gated");
+    dir_ZvsZ2_x4vsAoQ_mhtdc = dir_ZvsZ2_mhtdc->mkdir("x2vsAoQ Gated");
     dir_scalers = dir_frs->mkdir("Scalers");
     dir_rates = dir_frs->mkdir("Rate Monitors");
     
@@ -178,7 +181,7 @@ InitStatus FrsOnlineSpectra::Init()
          
             for (int gate = 0; gate < FrsGates.size(); gate++)
             {   
-                h2_Z_vs_AoQ_Z1Z2gate[gate] = MakeTH2(dir_ZvsZ2, "I", Form("h2_Z_vs_AoQ_ZAoQgate%s", FrsGates[gate]->GetName().c_str()), Form("Z vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q", "Z (MUSIC 1)");
+                h2_Z_vs_AoQ_Z1Z2gate[gate] = MakeTH2(dir_ZvsZ2, "I", Form("h2_Z_vs_AoQ_ZAoQgate%i", gate), Form("Z vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q", "Z (MUSIC 1)");
                 h2_Z1_vs_Z2_Z1Z2gate[gate] = MakeTH2(dir_ZvsZ2, "I", Form("h2_Z1_vs_Z2_ZAoQgate%i", gate), Form("Z1 vs. Z2 - ZAoQ Gate %i", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_Z, frs_config->fMax_Z, "Z (MUSIC 1)", "Z (MUSIC 2)");
                 h2_x2_vs_AoQ_Z1Z2gate[gate] = MakeTH2(dir_ZvsZ2, "I", Form("h2_x2_vs_AoQ_ZAoQgate%i", gate), Form("x2 vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q", "S2 x-position");
                 h2_x4_vs_AoQ_Z1Z2gate[gate] = MakeTH2(dir_ZvsZ2, "I", Form("h2_x4_vs_AoQ_ZAoQgate%i", gate), Form("x4 vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q", "S4 x-position");
@@ -294,7 +297,7 @@ InitStatus FrsOnlineSpectra::Init()
          
             for (int gate = 0; gate < FrsGates.size(); gate++)
             {   
-                h2_Z_vs_AoQ_Z1Z2gate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_mhtdc, "I", Form("h2_Z_vs_AoQ_ZAoQgate%s_mhtdc", FrsGates[gate]->GetName().c_str()), Form("Z vs. A/Q (MHTDC) - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q", "Z (MUSIC 1)");
+                h2_Z_vs_AoQ_Z1Z2gate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_mhtdc, "I", Form("h2_Z_vs_AoQ_ZAoQgate%i_mhtdc", gate), Form("Z vs. A/Q (MHTDC) - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q", "Z (MUSIC 1)");
                 h2_Z1_vs_Z2_Z1Z2gate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_mhtdc, "I", Form("h2_Z1_vs_Z2_ZAoQgate%i_mhtdc", gate), Form("Z1 vs. Z2 (MHTDC) - ZAoQ Gate %i", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_Z, frs_config->fMax_Z, "Z (MUSIC 1)", "Z (MUSIC 2)");
                 h2_x2_vs_AoQ_Z1Z2gate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_mhtdc, "I", Form("h2_x2_vs_AoQ_ZAoQgate%i_mhtdc", gate), Form("x2 vs. A/Q (MHTDC) - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q", "S2 x-position");
                 h2_x4_vs_AoQ_Z1Z2gate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_mhtdc, "I", Form("h2_x4_vs_AoQ_ZAoQgate%i_mhtdc", gate), Form("x4 vs. A/Q (MHTDC) - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q", "S4 x-position");

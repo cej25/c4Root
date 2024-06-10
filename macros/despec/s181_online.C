@@ -450,7 +450,7 @@ void s181_online()
 
     if (FRS_ON)
     {
-        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
+        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra(frsgates);
         // For monitoring FRS on our side
         FrsRawSpectra* frsrawspec = new FrsRawSpectra();
         FrsCalSpectra* frscalspec = new FrsCalSpectra();
