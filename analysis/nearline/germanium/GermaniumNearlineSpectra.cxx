@@ -114,7 +114,7 @@ InitStatus GermaniumNearlineSpectra::Init()
     h1_germanium_energy_summed_vetosci41->GetXaxis()->SetTitle("energy (keV)");
     h1_germanium_energy_summed_vetosci41->GetYaxis()->SetTitle("counts");
     
-    h2_germanium_energy_summed_vs_tsci41 = new TH2F("h2_germanium_energy_summed_vs_tsci41","Calibrated Germanium spectra summed all energyies vs t(det) - t(sci41)",1000,-500,5000,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h2_germanium_energy_summed_vs_tsci41 = new TH2F("h2_germanium_energy_summed_vs_tsci41","Calibrated Germanium spectra summed all energyies vs t(det) - t(sci41)",1000,-500,20000,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     h2_germanium_energy_summed_vs_tsci41->GetXaxis()->SetTitle("time difference (ns)");
     h2_germanium_energy_summed_vs_tsci41->GetYaxis()->SetTitle("energy (keV)");
     h2_germanium_energy_summed_vs_tsci41->SetOption("COLZ");
