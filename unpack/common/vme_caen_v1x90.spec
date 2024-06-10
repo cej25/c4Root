@@ -93,7 +93,7 @@ VME_CAEN_V1290_FRS()
     {   
         0_4: geo;
         5_26: event_count;
-        27_31: 0b01000;
+        27_31: type = MATCH(0b01000);
         ENCODE(geo, (value = geo));
     };
 
