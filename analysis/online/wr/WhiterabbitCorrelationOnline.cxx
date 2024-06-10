@@ -348,11 +348,15 @@ InitStatus WhiterabbitCorrelationOnline::Init()
 
 
     dir_whiterabbit_time_differences->cd();
-    h1_whiterabbit_dt_germanium = new TH1I("h1_whiterabbit_dt_germanium", "Time between success WR hits in Germanium", 1000, 0, 500000);
-    h1_whiterabbit_dt_bplast = new TH1I("h1_whiterabbit_dt_bplast", "Time between success WR hits in bPlast", 1000, 0, 500000);
-    h1_whiterabbit_dt_fatima = new TH1I("h1_whiterabbit_dt_fatima", "Time between success WR hits in FATIMA", 1000, 0, 500000);
-    h1_whiterabbit_dt_fatimavme = new TH1I("h1_whiterabbit_dt_fatimavme", "Time between success WR hits in FATIMA VME", 1000, 0, 500000);
-    h1_whiterabbit_dt_bb7 = MakeTH1(dir_whiterabbit_time_differences, "I", "h1_whiterabbit_dt_bb7", "Time between success WR hits in BB7", 1000, 0, 500000);
+    h1_whiterabbit_dt_germanium = MakeTH1(dir_whiterabbit_time_differences, "I", "h1_whiterabbit_dt_germanium", "Time between success WR hits in Germanium", 1e3, 0, 5e5, "dT [ns]", kViolet-3, kBlue+2);
+    //h1_whiterabbit_dt_germanium = new TH1I("h1_whiterabbit_dt_germanium", "Time between success WR hits in Germanium", 1000, 0, 500000);
+    h1_whiterabbit_dt_bplast = MakeTH1(dir_whiterabbit_time_differences, "I", "h1_whiterabbit_dt_bplast", "Time between success WR hits in bPlast", 1e3, 0, 5e5, "dT [ns]", kViolet-3, kBlue+2);
+    //h1_whiterabbit_dt_bplast = new TH1I("h1_whiterabbit_dt_bplast", "Time between success WR hits in bPlast", 1000, 0, 500000);
+    h1_whiterabbit_dt_fatima = MakeTH1(dir_whiterabbit_time_differences, "I", "h1_whiterabbit_dt_fatima", "Time between success WR hits in FATIMA", 1e3, 0, 5e5, "dT [ns]", kViolet-3, kBlue+2);
+    //h1_whiterabbit_dt_fatima = new TH1I("h1_whiterabbit_dt_fatima", "Time between success WR hits in FATIMA", 1000, 0, 500000);
+    h1_whiterabbit_dt_fatimavme = MakeTH1(dir_whiterabbit_time_differences, "I", "h1_whiterabbit_dt_fatimavme", "Time between success WR hits in FATIMA VME", 1e3, 0, 5e5, "dT [ns]", kViolet-3, kBlue+2);
+    //h1_whiterabbit_dt_fatimavme = new TH1I("h1_whiterabbit_dt_fatimavme", "Time between success WR hits in FATIMA VME", 1000, 0, 500000);
+    h1_whiterabbit_dt_bb7 = MakeTH1(dir_whiterabbit_time_differences, "I", "h1_whiterabbit_dt_bb7", "Time between success WR hits in BB7", 1000, 0, 5e5, "dT [ns]", kViolet-3, kBlue+2);
 
     dir_whiterabbit->cd();
 

@@ -195,10 +195,10 @@ class WhiterabbitCorrelationOnline : public FairTask
         TH1I* h1_whiterabbit_trigger;
 
         // time differences
-        TH1I* h1_whiterabbit_dt_germanium;
-        TH1I* h1_whiterabbit_dt_bplast;
-        TH1I* h1_whiterabbit_dt_fatima;
-        TH1I* h1_whiterabbit_dt_fatimavme;
+        TH1* h1_whiterabbit_dt_germanium;
+        TH1* h1_whiterabbit_dt_bplast;
+        TH1* h1_whiterabbit_dt_fatima;
+        TH1* h1_whiterabbit_dt_fatimavme;
         TH1* h1_whiterabbit_dt_bb7;
         // frs? aida?
 
