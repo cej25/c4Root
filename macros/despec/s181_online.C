@@ -10,13 +10,13 @@
 #define FRS_ON 1
 #define TIME_MACHINE_ON 1
 #define BEAMMONITOR_ON 0
-#define WHITE_RABBIT_CORS 1
-#define BB7_ON 1
+#define WHITE_RABBIT_CORS 0
+#define BB7_ON 0
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
 {
-    #include "../../config/s181/frs/setup_s181_009_2024_conv.C"
+    #include "../../config/s181/frs/setup_s181_010_2024_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -34,7 +34,7 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_frstpat_onion_t frstpat;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
     EXT_STR_h101_bgo_onion_t bgo;
-    EXT_STR_h101_bb7vme_onion_t bb7vme;
+    //EXT_STR_h101_bb7vme_onion_t bb7vme;
 } EXT_STR_h101;
 
 
@@ -201,9 +201,9 @@ void s181_online()
 
     if (BB7_ON)
     {
-        BB7Reader* unpackbb7 = new BB7Reader((EXT_STR_h101_bb7vme_onion*)&ucesb_struct.bb7vme, offsetof(EXT_STR_h101, bb7vme));
-        unpackbb7->SetOnline(true);
-        source->AddReader(unpackbb7);
+       // BB7Reader* unpackbb7 = new BB7Reader((EXT_STR_h101_bb7vme_onion*)&ucesb_struct.bb7vme, offsetof(EXT_STR_h101, bb7vme));
+       // unpackbb7->SetOnline(true);
+       // source->AddReader(unpackbb7);
     }
 
     if (BPLAST_ON)
@@ -444,7 +444,10 @@ void s181_online()
     
     TFrsConfiguration::Set_Z_range(30,120);
     TFrsConfiguration::Set_AoQ_range(2.0,3.0);
-    
+    FrsGate* zHeavy = new FrsGate("zHeavy",config_path+"/frs/Gates/zHeavy.root");
+    std::vector<FrsGate*> frsgates{};
+    frsgates.emplace_back(zHeavy);
+
     if (FRS_ON)
     {
         FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
@@ -465,16 +468,14 @@ void s181_online()
     }
     
     //FRS GATES::
-    //FrsGate * frsgate162Eu = new FrsGate("162Eu",config_path+"/frs/Gates/162Eu.root");
 
     
     if (AIDA_ON && FRS_ON)
     {
-        // std::vector<FrsGate*> frsgates{};
         
-        // FrsAidaCorrelationsOnline* frsaida = new FrsAidaCorrelationsOnline(frsgates);
+        //FrsAidaCorrelationsOnline* frsaida = new FrsAidaCorrelationsOnline(frsgates);
         
-        // run->AddTask(frsaida);
+        //run->AddTask(frsaida);
     }
     
     
@@ -546,7 +547,7 @@ void s181_online()
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {b, d, c, e, f, h};
+        std::vector a {b, d, c, e, f};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
@@ -555,7 +556,7 @@ void s181_online()
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({b,c,d,e,f,h});
+        wronline->SetDetectorSystems({b,c,d,e,f});
         
         run->AddTask(wronline);
     }

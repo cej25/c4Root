@@ -384,7 +384,7 @@ EVENT
     fatimavme = fatima_vme_subev(type = 10, subtype = 1, procid = 70, control = 20);
     bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20);
     bgo = bgo_tamex_subevent(procid = 100);
-    bbseven = bb7_subev(procid=31);
+    //bbseven = bb7_subev(procid=31);
 
     frsmain = frs_main_subev(procid = 10);
     frstpc = frs_tpc_subev(procid = 20);
