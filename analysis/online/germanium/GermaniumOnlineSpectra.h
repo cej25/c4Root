@@ -122,13 +122,13 @@ class GermaniumOnlineSpectra : public FairTask
         TCanvas* c_germanium_energy_summed_vs_tsci41;
         
         TCanvas* c_germanium_energy_summed_vs_tsci41_cut;
-        TH1F* h1_germanium_energy_summed_vs_tsci41_cut;
+        TH1* h1_germanium_energy_summed_vs_tsci41_cut;
 
         TCanvas* c_germanium_energy_energy_vetosci41;
-        TH2F* h2_germanium_energy_energy_vetosci41;
+        TH2* h2_germanium_energy_energy_vetosci41;
 
         TCanvas* c_germanium_energy_energy_sci41_cut;
-        TH2F* h2_germanium_energy_energy_sci41_cut;
+        TH2* h2_germanium_energy_energy_sci41_cut;
 
         TCanvas* c_germanium_snapshot;
 
@@ -149,44 +149,44 @@ class GermaniumOnlineSpectra : public FairTask
         TFile* file_germanium_snapshot;
 
         // Histograms energy
-        TH1F** h1_germanium_energy;
-        TH2F* h2_germanium_energy_vs_detidx;
+        TH1** h1_germanium_energy;
+        TH2* h2_germanium_energy_vs_detidx;
 
-        TH1F*** h1_germanium_time_differences; // [reference_dector][detector index]
-        TH2F*** h2_germanium_time_differences_vs_energy; // [reference_dector][detector index]
+        TH1*** h1_germanium_time_differences; // [reference_dector][detector index]
+        TH2*** h2_germanium_time_differences_vs_energy; // [reference_dector][detector index]
 
-        TH1F* h1_germanium_energy_summed;
-        TH1F* h1_germanium_energy_summed_vetosci41;
-        TH2F* h2_germanium_energy_summed_vs_tsci41;
+        TH1* h1_germanium_energy_summed;
+        TH1* h1_germanium_energy_summed_vetosci41;
+        TH2* h2_germanium_energy_summed_vs_tsci41;
 
-        TH1F* h1_germanium_multiplicity;
-        TH1F* h1_germanium_hitpattern;
+        TH1* h1_germanium_multiplicity;
+        TH1* h1_germanium_hitpattern;
 
         // Histograms time
-        TH1F** h1_germanium_time;
+        TH1** h1_germanium_time;
 
 
         double centroid_resolution = 1332;
         double width_resolution = 10;
 
 
-        TF1 * f1_gaussian;
+        TF1* f1_gaussian;
         
-        TCanvas * c_last_resolutions_FWHM;
+        TCanvas* c_last_resolutions_FWHM;
 
-        TH1F * h1_last_resolutions_FWHM;
-        TH1F * h1_last_resolutions_FWTM;
-        TH1F * h1_last_resolutions_gratio;
+        TH1* h1_last_resolutions_FWHM;
+        TH1* h1_last_resolutions_FWTM;
+        TH1* h1_last_resolutions_gratio;
 
         
-        TGraph ** g1_resolutions_FWHM;
-        TCanvas * c_resolutions_FWHM;
+        TGraph** g1_resolutions_FWHM;
+        TCanvas* c_resolutions_FWHM;
         
-        TGraph ** g1_resolutions_FWTM;
-        TCanvas * c_resolutions_FWTM;
+        TGraph** g1_resolutions_FWTM;
+        TCanvas* c_resolutions_FWTM;
 
-        TGraph ** g1_resolutions_gratio;
-        TCanvas * c_resolutions_gratio;
+        TGraph** g1_resolutions_gratio;
+        TCanvas* c_resolutions_gratio;
         
         uint64_t last_time_resolution_was_measured = 0;
         uint64_t current_wr = 0;
@@ -194,10 +194,10 @@ class GermaniumOnlineSpectra : public FairTask
         int64_t seconds_to_collect_resolution = 10;
         
         TCanvas * c1_germanium_energy_last_fitted;
-        TH1F ** h1_germanium_energy_last_fitted;
+        TH1** h1_germanium_energy_last_fitted;
         
         TCanvas * c1_germanium_energy_last;
-        TH1F ** h1_germanium_energy_last;
+        TH1** h1_germanium_energy_last;
 
 
         TH1** h1_germanium_rates;
