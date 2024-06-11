@@ -45,15 +45,11 @@ class BB7OnlineSpectra : public FairTask
         std::vector<BB7VmeDecayItem> const* decayArray;
         std::vector<BB7VmeResidualItem> const* residualArray;
 
-        TClonesArray* fHitBB7;
         EventHeader* header;
 
         // folders
         TFolder* histograms;
         TDirectory* dir_bb7;
-        TDirectory* dir_raw_e;
-        TDirectory* dir_stats;
-        TDirectory* dir_rates;
         TDirectory* dir_implants;
         TDirectory* dir_implant_raw_e;
         TDirectory* dir_implant_stats;
@@ -70,8 +66,6 @@ class BB7OnlineSpectra : public FairTask
 
 
         // histograms
-        TH1* h1_bb7_RawE[2][32]; // 64 strips? use config later
-        TH1* h1_bb7_hitpattern[2];
         TH1**** h1_implant_RawE;
         TH1**** h1_decay_RawE;
         TH1*** h1_implant_hitpattern;

@@ -127,8 +127,6 @@ class WhiterabbitCorrelationOnline : public FairTask
         TCanvas* c_whiterabbit_correlation_fatimavme_ge;
         TCanvas* c_whiterabbit_trigger1_fatimavme_ge;
         TCanvas* c_whiterabbit_trigger3_fatimavme_ge;
-        
-        TCanvas* c_whiterabbit_trigger;
 
         //Folders and directories
         TFolder* histograms;
@@ -192,7 +190,7 @@ class WhiterabbitCorrelationOnline : public FairTask
         TH1* h1_whiterabbit_correlation_bb7_germanium;
         TH1* h1_whiterabbit_correlation_bb7_bplast;
 
-        TH1I* h1_whiterabbit_trigger;
+        TH1* h1_whiterabbit_trigger;
 
         // time differences
         TH1* h1_whiterabbit_dt_germanium;

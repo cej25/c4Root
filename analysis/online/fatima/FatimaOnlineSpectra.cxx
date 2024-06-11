@@ -88,19 +88,14 @@ InitStatus FatimaOnlineSpectra::Init()
     number_detectors = detectors.size();
 
     // Slow ToT:
-    dir_fatima_slowToT->cd();
+    // dir_fatima_slowToT->cd();
     c_fatima_slowToT  = new TCanvas("c_fatima_slowToT","slow ToT Fatima spectra",650,350);
     c_fatima_slowToT->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
     h1_fatima_slowToT.resize(number_detectors);
-    for (int ihist = 0; ihist < number_detectors; ihist++){
+    for (int ihist = 0; ihist < number_detectors; ihist++)
+    {
         c_fatima_slowToT->cd(ihist+1);
-
-        h1_fatima_slowToT[ihist] = MakeTH1(dir_fatima_slowToT, "F", Form("h1_fatima_slowToT_%d",detectors.at(ihist)), Form("Fatima slow ToT detector %d",detectors.at(ihist)),fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high, "ToT (ns)", kSpring, kBlue+2);
-
-        /*
-        h1_fatima_slowToT[ihist] = new TH1F(Form("h1_fatima_slowToT_%d",detectors.at(ihist)),Form("Fatima slow ToT detector %d",detectors.at(ihist)),fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high);
-        h1_fatima_slowToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
-        h1_fatima_slowToT[ihist]->SetFillColor(kSpring);*/
+        h1_fatima_slowToT[ihist] = MakeTH1(dir_fatima_slowToT, "F", Form("h1_fatima_slowToT_%d",detectors.at(ihist)), Form("Fatima slow ToT detector %d",detectors.at(ihist)),fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high, "ToT [ns]", kSpring, kBlue+2);
         h1_fatima_slowToT[ihist]->Draw();
     }
     c_fatima_slowToT->cd(0);
@@ -583,12 +578,18 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
                 {
                     detector_rates[i] = detector_counters[i] / wr_dt;
                     h1_fatima_rates[i]->SetBinContent(rate_running_count, detector_rates[i]);
+
+
                 }
             }
             
             saved_fatima_wr = fatima_wr;
             rate_running_count++;
-            for (int i = 0; i < number_detectors; i++) detector_counters[i] = 0;
+            for (int i = 0; i < number_detectors; i++) 
+            {
+                if (rate_running_count == 1800) h1_fatima_rates[i]->Reset();
+                detector_counters[i] = 0;
+            }
             if (rate_running_count == 1800) rate_running_count = 0;
         }
 
