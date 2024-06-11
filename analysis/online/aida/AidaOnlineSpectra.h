@@ -134,7 +134,10 @@ class AidaOnlineSpectra : public FairTask
         std::vector<TGraph*> aida_decay_scaler_graph;
 
         // Deadtime
-
+        std::vector<std::deque<double>> deadtime_queue;
+        std::vector<std::size_t> deadtime_pos;
+        std::vector<TGraph*> deadtime_graph;
+        std::vector<int64_t> last_pauses;
 
 
 
