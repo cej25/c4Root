@@ -105,7 +105,8 @@ InitStatus FatimaOnlineSpectra::Init()
     c_fatima_fastToT  = new TCanvas("c_fatima_fastToT","Fast ToT Fatima spectra",650,350);
     c_fatima_fastToT->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
     h1_fatima_fastToT.resize(number_detectors);
-    for (int ihist = 0; ihist < number_detectors; ihist++){
+    for (int ihist = 0; ihist < number_detectors; ihist++)
+    {
         c_fatima_fastToT->cd(ihist+1);
         h1_fatima_fastToT[ihist] = MakeTH1(dir_fatima_fastToT, "F", Form("h1_fatima_fastToT_%d",detectors.at(ihist)),Form("Fatima fast ToT detector %d",detectors.at(ihist)),ffast_tot_nbins,ffast_tot_bin_low,ffast_tot_bin_high, "ToT [ns]", kSpring, kBlue+2);
         // h1_fatima_fastToT[ihist] = new TH1F(Form("h1_fatima_fastToT_%d",detectors.at(ihist)),Form("Fatima fast ToT detector %d",detectors.at(ihist)),ffast_tot_nbins,ffast_tot_bin_low,ffast_tot_bin_high);
