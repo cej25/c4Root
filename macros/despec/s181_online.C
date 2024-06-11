@@ -49,9 +49,9 @@ void s181_online()
 
     // Define important paths.
     //TString c4Root_path = "/u/jbormans/c4Root";
-    TString c4Root_path = "/u/despec/s181_online/c4Root";
+    //TString c4Root_path = "/u/despec/s181_online/c4Root";
     TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
-    //TString c4Root_path = "/u/cjones/c4Root";
+    TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes";
     ucesb_path.ReplaceAll("//","/");
 

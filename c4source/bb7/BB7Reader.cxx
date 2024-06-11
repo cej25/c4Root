@@ -20,7 +20,6 @@ BB7Reader::BB7Reader(EXT_STR_h101_bb7vme_onion* data, size_t offset)
     ,   fData(data)
     ,   fOffset(offset)
     ,   fOnline(kFALSE)
-    ,   fArray(new TClonesArray("BB7VmeData"))
     ,   v7x5array(new std::vector<BB7V7x5Item>)
     ,   v1290array(new std::vector<BB7V1290Item>)
 {
@@ -29,8 +28,8 @@ BB7Reader::BB7Reader(EXT_STR_h101_bb7vme_onion* data, size_t offset)
 
 BB7Reader::~BB7Reader()
 {
-    delete fArray;
     delete v7x5array;
+    delete v1290array;
 }
 
 Bool_t BB7Reader::Init(ext_data_struct_info* a_struct_info)
@@ -46,10 +45,8 @@ Bool_t BB7Reader::Init(ext_data_struct_info* a_struct_info)
         return kFALSE;
     }
 
-    FairRootManager::Instance()->Register("BB7VmeData", "BB7 Vme Data", fArray, !fOnline);
     FairRootManager::Instance()->RegisterAny("BB7V7x5Data", v7x5array, !fOnline);
     FairRootManager::Instance()->RegisterAny("BB7V1290Data", v1290array, !fOnline);
-    fArray->Clear();
     v7x5array->clear();
     v1290array->clear();
 
@@ -60,17 +57,10 @@ Bool_t BB7Reader::Init(ext_data_struct_info* a_struct_info)
 
 Bool_t BB7Reader::Read()
 {
-    c4LOG(debug1, "Event Data");
-
     if (!fData) return kTRUE;
-
-    BB7VmeData* bb7VmeHit = new BB7VmeData();
 
     wr_t = (((uint64_t)fData->bbseven_ts_t[3]) << 48) + (((uint64_t)fData->bbseven_ts_t[2]) << 32) + (((uint64_t)fData->bbseven_ts_t[1]) << 16) + (uint64_t)(fData->bbseven_ts_t[0]);
 
-    bb7VmeHit->Set_wr_t(wr_t);
-
-  
     for (int i = 0; i < fData->bbseven_v7x5_module1n; i++)
     {   
         uint32_t geo = fData->bbseven_v7x5_module1geov[i];
@@ -79,10 +69,6 @@ Bool_t BB7Reader::Read()
 
         auto & entry = v7x5array->emplace_back();
         entry.SetAll(wr_t, geo, data, channel);
-
-        v7x5_geo.emplace_back(fData->bbseven_v7x5_module1geov[i]);
-        v7x5_channel.emplace_back(fData->bbseven_v7x5_module1channelv[i]);
-        v7x5_data.emplace_back(fData->bbseven_v7x5_module1data[i]);
     }
 
     for (int i = 0; i < fData->bbseven_v7x5_module2n; i++)
@@ -93,10 +79,6 @@ Bool_t BB7Reader::Read()
 
         auto & entry = v7x5array->emplace_back();
         entry.SetAll(wr_t, geo, data, channel);
-
-        v7x5_geo.emplace_back(fData->bbseven_v7x5_module2geov[i]);
-        v7x5_channel.emplace_back(fData->bbseven_v7x5_module2channelv[i]);
-        v7x5_data.emplace_back(fData->bbseven_v7x5_module2data[i]);
     }
 
     for (int i = 0; i < fData->bbseven_v7x5_module3n; i++)
@@ -107,10 +89,6 @@ Bool_t BB7Reader::Read()
 
         auto & entry = v7x5array->emplace_back();
         entry.SetAll(wr_t, geo, data, channel);
-
-        v7x5_geo.emplace_back(fData->bbseven_v7x5_module3geov[i]);
-        v7x5_channel.emplace_back(fData->bbseven_v7x5_module3channelv[i]);
-        v7x5_data.emplace_back(fData->bbseven_v7x5_module3data[i]);
     }
 
     for (int i = 0; i < fData->bbseven_v7x5_module4n; i++)
@@ -121,15 +99,7 @@ Bool_t BB7Reader::Read()
 
         auto & entry = v7x5array->emplace_back();
         entry.SetAll(wr_t, geo, data, channel);
-
-        v7x5_geo.emplace_back(fData->bbseven_v7x5_module4geov[i]);
-        v7x5_channel.emplace_back(fData->bbseven_v7x5_module4channelv[i]);
-        v7x5_data.emplace_back(fData->bbseven_v7x5_module4data[i]);
     }
-
-    bb7VmeHit->Set_v7x5_geo(v7x5_geo);
-    bb7VmeHit->Set_v7x5_channel(v7x5_channel);
-    bb7VmeHit->Set_v7x5_data(v7x5_data);
 
     // V1290
     int hit_index = 0;
@@ -150,11 +120,6 @@ Bool_t BB7Reader::Read()
         hit_index = next_channel_start;
     }
 
-    new ((*fArray)[fArray->GetEntriesFast()]) BB7VmeData(*bb7VmeHit);
-
-
-
-
     fNEvent += 1;
     return kTRUE;
 
@@ -162,10 +127,6 @@ Bool_t BB7Reader::Read()
 
 void BB7Reader::Reset()
 {
-    v7x5_geo.clear();
-    v7x5_channel.clear();
-    v7x5_data.clear();
-    fArray->Clear();
     v7x5array->clear();
     v1290array->clear();
 }

@@ -26,7 +26,6 @@
 
 BB7OnlineSpectra::BB7OnlineSpectra()
     :   FairTask()
-    ,   fHitBB7(NULL)
     ,   implantArray(nullptr)
     ,   decayArray(nullptr)
     ,   residualArray(nullptr)
@@ -51,9 +50,6 @@ InitStatus BB7OnlineSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fHitBB7 = (TClonesArray*)mgr->GetObject("BB7VmeCalData");
-    c4LOG_IF(fatal, !fHitBB7, "Branch BB7VmeCalData not found!");
-
     implantArray = mgr->InitObjectAs<decltype(implantArray)>("BB7ImplantData");
     c4LOG_IF(fatal, !implantArray, "Branch BB7ImplantData not found!");
     decayArray = mgr->InitObjectAs<decltype(decayArray)>("BB7DecayData");
@@ -72,9 +68,6 @@ InitStatus BB7OnlineSpectra::Init()
     histograms->Add(dir_bb7);
 
     // leave for now - combined
-    dir_raw_e = dir_bb7->mkdir("Raw Energy");
-    dir_stats = dir_bb7->mkdir("Stats");
-    dir_rates = dir_bb7->mkdir("Rate Monitors");
     dir_implants = dir_bb7->mkdir("Implants");
     dir_implant_raw_e = dir_implants->mkdir("Raw Energy");
     dir_implant_stats = dir_implants->mkdir("Stats");
@@ -131,9 +124,6 @@ InitStatus BB7OnlineSpectra::Init()
         {   
             for (int strip = 0; strip < bb7_config->NStrips(); strip++)
             {   
-                // old, remove when unused full
-                if (det == 0) h1_bb7_RawE[side][strip] = MakeTH1(dir_raw_e, "D", Form("h1_bb7_RawE_Side%i_Strip%i", side, strip+1), Form("Raw Energy BB7 - Side %i Strip %i", side, strip+1), 10000, 0, 10000); // 12 bit adc should only be 4096 max but saw higher?
-
                 h1_implant_RawE[det][side][strip] = MakeTH1(dir_implant_raw_e, "D", Form("h1_implant_RawE_Det%i_Side%i_Strip%i", det, side, strip+1), Form("Implant Raw Energy - Det %i Side %i, Strip %i", det, side, strip+1), 10000, 0, 10000, "Raw ADC [a.u.]", kOrange+7, kBlue+2);
                 h1_decay_RawE[det][side][strip] = MakeTH1(dir_decay_raw_e, "D", Form("h1_decay_RawE_Det%i_Side%i_Strip%i", det, side, strip+1), Form("Decay Raw Energy - Det %i Side %i, Strip %i", det, side, strip+1), 10000, 0, 10000, "Raw ADC [a.u.]", kSpring, kBlue+2);
                 
@@ -143,9 +133,6 @@ InitStatus BB7OnlineSpectra::Init()
                 h1_implant_rates[det][side][strip] = MakeTH1(dir_implant_rates, "I", Form("h1_implant_rates_Det%i_Side%i_Strip%i", det, side, strip+1), Form("Implant Rate - Det %i Side %i Strip %i", det, side, strip+1), 1800, 0, 1800, "Time [2s]", kCyan, kBlack);
                 h1_decay_rates[det][side][strip] = MakeTH1(dir_decay_rates, "I", Form("h1_decay_rates_Det%i_Side%i_Strip%i", det, side, strip+1), Form("Decay Rate - Det %i Side %i Strip %i", det, side, strip+1), 1800, 0, 1800, "Time [2s]", kCyan, kBlack);
             }
-
-            // old, removed when fully unused
-            if (det == 0) h1_bb7_hitpattern[side] = MakeTH1(dir_stats, "I", Form("h1_bb7_hitpattern_Side%i", side), Form("BB7 Hit Pattern Side %i", side), bb7_config->NStrips(), 0, bb7_config->NStrips());
 
             h1_implant_hitpattern[det][side] = MakeTH1(dir_implant_stats, "I", Form("h1_implant_hitpattern_Det%i_Side%i", det, side), Form("Implant Hit Pattern - Det %i Side %i", det, side), bb7_config->NStrips(), 0, bb7_config->NStrips(), "Strip", kRed+1, kBlack);
             h1_decay_hitpattern[det][side] = MakeTH1(dir_decay_stats, "I", Form("h1_decay_hitpattern_Det%i_Side%i", det, side), Form("Decay Hit Pattern - Det %i Side %i", det, side), bb7_config->NStrips(), 0, bb7_config->NStrips(), "Strip", kRed+1, kBlack);
@@ -168,27 +155,6 @@ InitStatus BB7OnlineSpectra::Init()
 void BB7OnlineSpectra::Exec(Option_t* option)
 {
     int64_t bb7_wr = 0;
-    if (fHitBB7 && fHitBB7->GetEntriesFast() > 0)
-    {
-        Int_t nHits = fHitBB7->GetEntriesFast();
-        for (Int_t ihit = 0; ihit < nHits; ihit++)
-        {
-            BB7VmeCalData* bb7VmeHit = (BB7VmeCalData*)fHitBB7->At(ihit);
-            if (!bb7VmeHit) continue;
-
-            std::vector<int> sides = bb7VmeHit->Get_Sides();
-            std::vector<int> strips = bb7VmeHit->Get_Strips();
-            std::vector<uint32_t> raw_adc = bb7VmeHit->Get_Raw_ADC();
-
-            for (int j = 0; j < raw_adc.size(); j++)
-            {
-                h1_bb7_RawE[sides[j]][strips[j]-1]->Fill(raw_adc[j]);
-
-                h1_bb7_hitpattern[sides[j]]->Fill(strips[j]-1);
-            }
-        }
-    }
-
     for (auto const & implant : *implantArray)
     {   
         bb7_wr = implant.Get_wr_t();
@@ -218,7 +184,7 @@ void BB7OnlineSpectra::Exec(Option_t* option)
     }
 
     int64_t wr_dt = (bb7_wr - saved_bb7_wr) / 1e9; // conv to s
-    if (wr_dt > 2) 
+    if (wr_dt > 2)
     {
         if (saved_bb7_wr != 0)
         {
@@ -246,6 +212,11 @@ void BB7OnlineSpectra::Exec(Option_t* option)
             {
                 for (int strip = 0; strip < bb7_config->NStrips(); strip++)
                 {   
+                    if (rate_running_count == 1800)
+                    {
+                        h1_implant_rates[det][side][strip]->Reset();
+                        h1_decay_rates[det][side][strip]->Reset();
+                    }
                     implant_counters[det][side][strip] = 0;
                     decay_counters[det][side][strip] = 0;
                 }
@@ -274,5 +245,5 @@ void BB7OnlineSpectra::FinishEvent()
 
 void BB7OnlineSpectra::FinishTask()
 {
-    //c4LOG(info, Form("Plotted %i Events", fNEvents));
+
 }
