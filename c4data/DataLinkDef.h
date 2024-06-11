@@ -22,10 +22,8 @@
 #pragma link C++ class LisaTraceData+;
 #pragma link C++ class BeamMonitorData+;
 #pragma link C++ class TimeMachineData+;
-#pragma link C++ class BB7VmeData+;
 #pragma link C++ class BB7V7x5Item+;
 #pragma link C++ class BB7V1290Item+;
-#pragma link C++ class BB7VmeCalData+;
 #pragma link C++ class BB7VmeImplantItem+;
 #pragma link C++ class BB7VmeDecayItem+;
 #pragma link C++ class BB7VmeResidualItem+;

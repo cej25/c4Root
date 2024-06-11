@@ -41,8 +41,8 @@ class BB7NearlineSpectra : public FairTask
 
         std::vector<BB7VmeImplantItem> const* implantArray;
         std::vector<BB7VmeDecayItem> const* decayArray;
+        // residualArray
 
-        TClonesArray* fHitBB7;
         EventHeader* header;
 
         // folders
