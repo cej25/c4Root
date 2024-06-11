@@ -1,12 +1,5 @@
 #include "BB7VmeData.h"
 
-BB7VmeData::BB7VmeData()
-{
-
-}
-
-ClassImp(BB7VmeData)
-
 
 BB7V7x5Item::BB7V7x5Item()
 {
