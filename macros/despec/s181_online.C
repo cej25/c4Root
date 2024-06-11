@@ -49,9 +49,9 @@ void s181_online()
 
     // Define important paths.
     //TString c4Root_path = "/u/jbormans/c4Root";
-    //TString c4Root_path = "/u/despec/s181_online/c4Root";
+    TString c4Root_path = "/u/despec/s181_online/c4Root";
     TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
-    TString c4Root_path = "/u/cjones/c4Root";
+    //TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes";
     ucesb_path.ReplaceAll("//","/");
 
@@ -384,8 +384,12 @@ void s181_online()
         std::vector<int> fat_dets = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43};
         onlinefatima->SetDetectorsToPlot(fat_dets);
         
-         onlinefatima->AddReferenceDetectorForTimeDifferencesWithEnergyGates(1,1332);
+           onlinefatima->AddReferenceDetectorForTimeDifferencesWithEnergyGates(1,1332);
+           onlinefatima->AddReferenceDetectorForTimeDifferences(37);
+         onlinefatima->AddReferenceDetectorForTimeDifferences(38);         
+         onlinefatima->AddReferenceDetectorForTimeDifferences(1);
         onlinefatima->SetEnergyGateWidth(20);
+        onlinefatima->SetBinningCoincidences(1000,-20e3,20e3);
         //onlinefatima->SetReferenceDetectorsForTimeDifferences(1);
         
         run->AddTask(onlinefatima);
@@ -425,6 +429,7 @@ void s181_online()
         GermaniumOnlineSpectra* onlinege = new GermaniumOnlineSpectra();
         onlinege->SetBinningEnergy(12000,0,3e3);
         onlinege->AddReferenceDetector(15,0);
+        onlinege->AddReferenceDetector(16,0);
         onlinege->AddReferenceDetector(1,0);
         onlinege->AddReferenceDetectorWithEnergyGates(1,0,1332);
         onlinege->AddReferenceDetectorWithEnergyGates(1,0,1173,1332);
