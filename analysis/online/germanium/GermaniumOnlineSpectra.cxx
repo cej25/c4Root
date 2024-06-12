@@ -148,7 +148,7 @@ InitStatus GermaniumOnlineSpectra::Init()
     c_germanium_energy_summed_vetosci41->cd(0);
     dir_germanium_sci41->Append(c_germanium_energy_summed_vetosci41);
     
-    
+
     c_germanium_energy_summed_vs_tsci41 = new TCanvas("c_germanium_energy_summed_vs_tsci41","Calibrated Germanium spectra summed all energyies vs t(det) - t(sci41)",650,350);
     h2_germanium_energy_summed_vs_tsci41 = MakeTH2(dir_germanium_sci41, "F", "h2_germanium_energy_summed_vs_tsci41","Calibrated Germanium spectra summed all energyies vs t(det) - t(sci41)",1000,-500,5000,fenergy_nbins,fenergy_bin_low,fenergy_bin_high, "Time difference [ns]", "Energy [keV]");
     h2_germanium_energy_summed_vs_tsci41->Draw();
@@ -653,7 +653,11 @@ void GermaniumOnlineSpectra::Exec(Option_t* option)
             
             saved_germanium_wr = germanium_wr;
             rate_running_count++;
-            for (int i = 0; i < number_of_detectors_to_plot; i++) detector_counters[i] = 0;
+            for (int i = 0; i < number_of_detectors_to_plot; i++) 
+            {
+                if (rate_running_count == 1800) h1_germanium_rates[i]->Reset();
+                detector_counters[i] = 0;
+            }
             if (rate_running_count == 1800) rate_running_count = 0;
         }
     }
