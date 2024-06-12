@@ -7,6 +7,7 @@
 // c4
 #include "EventHeader.h"
 #include "FimpNearlineSpectra.h"
+#include "AnalysisTools.h"
 #include "c4Logger.h"
 
 #include "TCanvas.h"
@@ -81,63 +82,51 @@ InitStatus FimpNearlineSpectra::Init()
     h1_fimp_coarse_clock_trail.resize(128);
     h1_fimp_fine_bin_lead.resize(128);
     h1_fimp_fine_bin_trail.resize(128);
-
-    dir_stats->cd();
-    // hit patterns, multiplicity...
-    h1_fimp_whiterabbit = new TH1I("h1_fimp_whiterabbit", "FIMP White Rabbit Time", 1000, 1.7e19, 1.8e19);
-    h1_fimp_wr_dt = new TH1I("h1_fimp_wr_dt", "WR Time between successive FIMP events", 1000, 0, 1e6);
-    h1_fimp_multiplicity = new TH1I("h1_fimp_multiplicity", "FIMP Multiplicity", 128+1, 0, 128+1);
-    h1_fimp_hitpattern = new TH1I("h1_fimp_hitpattern", "FIMP Hit Pattern", 128, 0, 128);
-    h1_fimp_hitpattern->SetFillColor(kAzure+1);
     
-    dir_tot->cd();
+    h1_fimp_whiterabbit = MakeTH1(dir_stats, "I", "h1_fimp_whiterabbit", "FIMP White Rabbit Time", 1e3, 1.7e19, 1.8e19, "WR Time [ns]");
+    h1_fimp_wr_dt = MakeTH1(dir_stats, "I", "h1_fimp_wr_dt", "WR Time between successive FIMP events", 1e3, 0, 1e6, "dT [ns]", kMagenta, kBlue+2);
+    h1_fimp_multiplicity = MakeTH1(dir_stats, "I", "h1_fimp_multiplicity", "FIMP Multiplicity", 128+1, 0, 128+1, "Multiplicity", kRed-3, kBlack);
+    h1_fimp_hitpattern = MakeTH1(dir_stats, "I", "h1_fimp_hitpattern", "FIMP Hit Pattern", 128, 0, 128, "Channel", kRed-3, kBlack);
+    
     for (int i = 0; i < 128; i++)
     {
-        // canvas stuff?
-        h1_fimp_tot[i] = new TH1D(Form("h1_fimp_tot_channel_%i", i), Form("ToT Channel %i", i), 960, fimp_config->EnergyToTMin, fimp_config->EnergyToTMax);
+        h1_fimp_tot[i] = MakeTH1(dir_tot, "D", Form("h1_fimp_tot_channel_%i", i), Form("ToT Channel %i", i), 960, fimp_config->EnergyToTMin, fimp_config->EnergyToTMax, "ToT [ns]", kSpring, kBlue+2);
     }
 
-    dir_time_lead->cd();
     for (int i = 0; i < 128; i++)
-    {
-        h1_fimp_lead_times[i] = new TH1D(Form("h1_fimp_lead_times_channel_%i", i), Form("Lead Times - Channel %i", i), 4000, 0, 1e8);
+    {   
+        h1_fimp_lead_times[i] = MakeTH1(dir_time_lead, "D", Form("h1_fimp_lead_times_channel_%i", i), Form("Lead Times - Channel %i", i), 4e3, 0, 1e8, "Lead Time [ns]");
     }
 
-    dir_coarse_clock_lead->cd();
     for (int i = 0; i < 128; i++)
     {
-        h1_fimp_coarse_clock_lead[i] = new TH1I(Form("h1_fimp_coarse_clock_lead_channel_%i", i), Form("Lead Coarse Clock - Channel %i", i), 4096, 0, 4096);
+        h1_fimp_coarse_clock_lead[i] = MakeTH1(dir_coarse_clock_lead, "I", Form("h1_fimp_coarse_clock_lead_channel_%i", i), Form("Lead Coarse Clock - Channel %i", i), 4096, 0, 4096, "Coarse Clock");
     }
     
-    dir_fine_lead->cd();
     for (int i = 0; i < 128; i++)
     {
-        h1_fimp_fine_bin_lead[i] = new TH1I(Form("h1_fimp_fine_bin_lead_channel_%i", i), Form("Lead Fine Time Bins - Channel %i", i), 19, 0, 19);
+        h1_fimp_fine_bin_lead[i] = MakeTH1(dir_fine_lead, "I", Form("h1_fimp_fine_bin_lead_channel_%i", i), Form("Lead Fine Time Bins - Channel %i", i), 19, 0, 19, "Fine Time Bin", kGreen+1, kBlack);
     }
 
-    dir_time_trail->cd();
     for (int i = 0; i < 128; i++)
     {
-        h1_fimp_trail_times[i] = new TH1D(Form("h1_fimp_trail_times_channel_%i", i), Form("Trail times - Channel %i", i), 4000, 0, 1e8);
+        h1_fimp_trail_times[i] = MakeTH1(dir_time_trail, "D", Form("h1_fimp_trail_times_channel_%i", i), Form("Trail times - Channel %i", i), 4e3, 0, 1e8, "Trail Time [ns]");
     }
 
-    dir_coarse_clock_trail->cd();
     for (int i = 0; i < 128; i++)
     {
-        h1_fimp_coarse_clock_trail[i] = new TH1I(Form("h1_fimp_coarse_clock_trail_channel_%i", i), Form("Trail Coarse Clock - Channel %i", i), 4096, 0, 4096);
+        h1_fimp_coarse_clock_trail[i] = MakeTH1(dir_coarse_clock_trail, "D", Form("h1_fimp_coarse_clock_trail_channel_%i", i), Form("Trail Coarse Clock - Channel %i", i), 4096, 0, 4096, "Coarse Clock");
     }
     
-    dir_fine_trail->cd();
     for (int i = 0; i < 128; i++)
-    {
-        h1_fimp_fine_bin_trail[i] = new TH1I(Form("h1_fimp_fine_bin_trail_channel_%i", i), Form("Trail Fine Time Bins - Channel %i", i), 19, 0, 19);
+    {   
+        h1_fimp_fine_bin_trail[i] = MakeTH1(dir_fine_trail, "I", Form("h1_fimp_fine_bin_trail_channel_%i", i), Form("Trail Fine Time Bins - Channel %i", i), 19, 0, 19, "Fine Time Bin", kGreen+1, kBlack);
     }
 
-    dir_sc41->cd();
     for (int i = 0; i < 128; i++)
     {
-        h1_fimp_sc41l_dT[i] = new TH1D(Form("h1_fimp_sc41l_dT_channel_%i", i), Form("dT SC41L - Channel %i", i), 1000, 0, 2000);
-        h1_fimp_sc41r_dT[i] = new TH1D(Form("h1_fimp_sc41r_dT_channel_%i", i), Form("dT SC41R - Channel %i", i), 1000, 0, 2000);
+        h1_fimp_sc41l_dT[i] = MakeTH1(dir_sc41, "D", Form("h1_fimp_sc41l_dT_channel_%i", i), Form("dT SC41L - Channel %i", i), 1e3, 0, 2e3, "dT [ns]", kMagenta, kBlue+2);
+        h1_fimp_sc41r_dT[i] = MakeTH1(dir_sc41, "D", Form("h1_fimp_sc41r_dT_channel_%i", i), Form("dT SC41R - Channel %i", i), 1e3, 0, 2e3, "dT [ns]", kMagenta, kBlue+2);
     }
 
     return kSUCCESS;

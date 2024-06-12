@@ -40,7 +40,8 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     // TString filename = "stream://x86l-117";
     // TString filename = "trans://lxg1257";
     //TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
-    TString filename = "~/lustre/despec/bb7_files/test_trg_210324_0019_0001.lmd";
+    //TString filename = "~/lustre/despec/bb7_files/test_trg_210324_0019_0001.lmd";
+    TString filename = "~/lustre/despec/bb7_files/test_trg_050624_0008_0001.lmd";
     TString outputpath = "bb7_test_output";
     TString outputFileName = outputpath + ".root";
 
@@ -73,7 +74,8 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
     
-    TBB7VmeConfiguration::SetDetectorConfigurationFile("/u/cjones/c4Root/config/s100/bb7/BB7_Detector_Map.txt");    
+    TBB7VmeConfiguration::SetDetectorConfigurationFile("/u/cjones/c4Root/config/s181/bb7/BB7_Detector_Map_s181.txt");  
+    TBB7VmeConfiguration::SetResidualSignalsFile("/u/cjones/c4Root/config/s181/bb7/BB7_Residuals_Map.txt");   
 
     // ------------------------------------------------------------------------------------- //
     // *** Read Subsystems - comment out unwanted systems ********************************** //

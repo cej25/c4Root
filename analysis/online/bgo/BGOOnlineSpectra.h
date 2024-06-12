@@ -111,11 +111,11 @@ class BGOOnlineSpectra : public FairTask
         //TFile* file_germanium_snapshot;
 
         // Histograms energy
-        std::vector<TH1F*> h1_bgo_energy;
-        std::vector<TH1F*> h1_bgo_time;
-        std::vector<TH1F*> h1_germanium_bgo_veto_energy;
-        std::vector<TH1F*> h1_germanium_bgo_vetotrue_energy; // plot what we're vetoing
-        std::vector<TH1F*> h1_germanium_bgo_veto_timedifferences;
+        std::vector<TH1*> h1_bgo_energy;
+        std::vector<TH1*> h1_bgo_time;
+        std::vector<TH1*> h1_germanium_bgo_veto_energy;
+        std::vector<TH1*> h1_germanium_bgo_vetotrue_energy; // plot what we're vetoing
+        std::vector<TH1*> h1_germanium_bgo_veto_timedifferences;
 
     public:
         ClassDef(BGOOnlineSpectra, 1)

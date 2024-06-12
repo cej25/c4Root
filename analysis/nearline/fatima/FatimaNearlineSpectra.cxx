@@ -77,109 +77,126 @@ InitStatus FatimaNearlineSpectra::Init()
     number_detectors = detectors.size();
 
     // Slow ToT:
-    dir_fatima_slowToT->cd();
+    // dir_fatima_slowToT->cd();
     h1_fatima_slowToT.resize(number_detectors);
-    for (int ihist = 0; ihist < number_detectors; ihist++){
-        h1_fatima_slowToT[ihist] = new TH1F(Form("h1_fatima_slowToT_%d",detectors.at(ihist)),Form("Fatima slow ToT detector %d",detectors.at(ihist)),fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high);
-        h1_fatima_slowToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
+    for (int ihist = 0; ihist < number_detectors; ihist++)
+    {
+        h1_fatima_slowToT[ihist] = MakeTH1(dir_fatima_slowToT, "F", Form("h1_fatima_slowToT_%d",detectors.at(ihist)), Form("Fatima slow ToT detector %d",detectors.at(ihist)),fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high, "ToT [ns]", kSpring, kBlue+2);
+        // h1_fatima_slowToT[ihist] = new TH1F(Form("h1_fatima_slowToT_%d",detectors.at(ihist)),Form("Fatima slow ToT detector %d",detectors.at(ihist)),fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high);
+        // h1_fatima_slowToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
     }
 
     //fast ToT
-    dir_fatima_fastToT->cd();
+    // dir_fatima_fastToT->cd();
     h1_fatima_fastToT.resize(number_detectors);
-    for (int ihist = 0; ihist < number_detectors; ihist++){
-        h1_fatima_fastToT[ihist] = new TH1F(Form("h1_fatima_fastToT_%d",detectors.at(ihist)),Form("Fatima fast ToT detector %d",detectors.at(ihist)),ffast_tot_nbins,ffast_tot_bin_low,ffast_tot_bin_high);
-        h1_fatima_fastToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
-        
+    for (int ihist = 0; ihist < number_detectors; ihist++)
+    {
+        h1_fatima_fastToT[ihist] = MakeTH1(dir_fatima_fastToT, "F", Form("h1_fatima_fastToT_%d",detectors.at(ihist)),Form("Fatima fast ToT detector %d",detectors.at(ihist)),ffast_tot_nbins,ffast_tot_bin_low,ffast_tot_bin_high, "ToT [ns]", kSpring, kBlue+2);
+        // h1_fatima_fastToT[ihist] = new TH1F(Form("h1_fatima_fastToT_%d",detectors.at(ihist)),Form("Fatima fast ToT detector %d",detectors.at(ihist)),ffast_tot_nbins,ffast_tot_bin_low,ffast_tot_bin_high);
+        // h1_fatima_fastToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");   
     }
     
     //energy spectrum:
-    dir_fatima_energy_spectra->cd();
+    // dir_fatima_energy_spectra->cd();
     h1_fatima_energy.resize(number_detectors);
-    for (int ihist = 0; ihist < number_detectors; ihist++){
-        h1_fatima_energy[ihist] = new TH1F(Form("h1_fatima_energy_%d",detectors.at(ihist)),Form("Fatima energy detector %d",detectors.at(ihist)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
-        h1_fatima_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
+    for (int ihist = 0; ihist < number_detectors; ihist++)
+    {
+        h1_fatima_energy[ihist] = MakeTH1(dir_fatima_energy_spectra, "F", Form("h1_fatima_energy_%d",detectors.at(ihist)),Form("Fatima energy detector %d",detectors.at(ihist)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high, "Energy [keV]", kOrange-3, kBlue+2);
+        // h1_fatima_energy[ihist] = new TH1F(Form("h1_fatima_energy_%d",detectors.at(ihist)),Form("Fatima energy detector %d",detectors.at(ihist)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+        // h1_fatima_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
     }
     
     // fast vs slow:
-    dir_fatima_fast_v_slow->cd();
+    // dir_fatima_fast_v_slow->cd();
     h2_fatima_fast_v_slow.resize(number_detectors);
-    for (int ihist = 0; ihist < number_detectors; ihist++){
-        h2_fatima_fast_v_slow[ihist] = new TH2F(Form("h2_fatima_fast_v_slow_ToT_%d",detectors.at(ihist)),Form("FATIMA fast vs. slow detector %d",detectors.at(ihist)),ffast_tot_nbins,ffast_tot_bin_low,ffast_tot_bin_high,fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high);
-        h2_fatima_fast_v_slow[ihist]->GetXaxis()->SetTitle("fast ToT (ns)");
-        h2_fatima_fast_v_slow[ihist]->GetYaxis()->SetTitle("slow ToT (ns)");
+    for (int ihist = 0; ihist < number_detectors; ihist++)
+    {
+        h2_fatima_fast_v_slow[ihist] = MakeTH2(dir_fatima_fast_v_slow, "F", Form("h2_fatima_fast_v_slow_ToT_%d",detectors.at(ihist)),Form("FATIMA fast vs. slow detector %d",detectors.at(ihist)),ffast_tot_nbins,ffast_tot_bin_low,ffast_tot_bin_high,fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high, "Fast ToT [ns]", "Slow ToT [ns]");
+        // h2_fatima_fast_v_slow[ihist] = new TH2F(Form("h2_fatima_fast_v_slow_ToT_%d",detectors.at(ihist)),Form("FATIMA fast vs. slow detector %d",detectors.at(ihist)),ffast_tot_nbins,ffast_tot_bin_low,ffast_tot_bin_high,fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high);
+        // h2_fatima_fast_v_slow[ihist]->GetXaxis()->SetTitle("fast ToT (ns)");
+        // h2_fatima_fast_v_slow[ihist]->GetYaxis()->SetTitle("slow ToT (ns)");
     }
 
     dir_fatima_drift->cd();
     h2_fatima_energy_vs_t.resize(number_detectors);
-    for (int ihist = 0; ihist < number_detectors; ihist++){
-        h2_fatima_energy_vs_t[ihist] = new TH2F(Form("h2_fatima_energy_vs_t_%d",detectors.at(ihist)),Form("FATIMA energy vs. time detector %d",detectors.at(ihist)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,5000,0,10750);
-        h2_fatima_energy_vs_t[ihist]->GetXaxis()->SetTitle("Time (mins)");
-        h2_fatima_energy_vs_t[ihist]->GetYaxis()->SetTitle("Energy (keV)");
-        h2_fatima_energy_vs_t[ihist]->SetOption("COLZ");
+    for (int ihist = 0; ihist < number_detectors; ihist++)
+    {
+        h2_fatima_energy_vs_t[ihist] = MakeTH2(dir_fatima_drift, "F", Form("h2_fatima_energy_vs_t_%d",detectors.at(ihist)),Form("FATIMA energy vs. time detector %d",detectors.at(ihist)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high, 5e3, 0, 10750, "Time [mins]", "Energy [keV]");
+        // h2_fatima_energy_vs_t[ihist] = new TH2F(Form("h2_fatima_energy_vs_t_%d",detectors.at(ihist)),Form("FATIMA energy vs. time detector %d",detectors.at(ihist)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,5000,0,10750);
+        // h2_fatima_energy_vs_t[ihist]->GetXaxis()->SetTitle("Time (mins)");
+        // h2_fatima_energy_vs_t[ihist]->GetYaxis()->SetTitle("Energy (keV)");
+        // h2_fatima_energy_vs_t[ihist]->SetOption("COLZ");
     }
 
     // Spectra relating to SCI41:
-    dir_fatima_sci41->cd();   
+    // dir_fatima_sci41->cd();   
     c_fatima_energy_summed_vs_tsci41 = new TCanvas("c_fatima_energy_summed_vs_tsci41","Calibrated FATIMA spectra summed all energyies vs t(det) - t(sci41)",650,350);
-    h2_fatima_energy_summed_vs_tsci41 = new TH2F("h2_fatima_energy_summed_vs_tsci41","Calibrated FATIMA spectra summed all energyies vs t(det) - t(sci41)",1000,-500,5000,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
-    h2_fatima_energy_summed_vs_tsci41->GetXaxis()->SetTitle("time difference (ns)");
-    h2_fatima_energy_summed_vs_tsci41->GetYaxis()->SetTitle("energy (keV)");
-    h2_fatima_energy_summed_vs_tsci41->Draw("COLZ");
+    h2_fatima_energy_summed_vs_tsci41 = MakeTH2(dir_fatima_sci41, "F", "h2_fatima_energy_summed_vs_tsci41","Calibrated FATIMA spectra summed all energyies vs t(det) - t(sci41)",1000,-500,5000,fenergy_nbins,fenergy_bin_low,fenergy_bin_high, "Time difference [ns]", "Energy [keV]");
+    // h2_fatima_energy_summed_vs_tsci41 = new TH2F("h2_fatima_energy_summed_vs_tsci41","Calibrated FATIMA spectra summed all energyies vs t(det) - t(sci41)",1000,-500,5000,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    // h2_fatima_energy_summed_vs_tsci41->GetXaxis()->SetTitle("time difference (ns)");
+    // h2_fatima_energy_summed_vs_tsci41->GetYaxis()->SetTitle("energy (keV)");
+    h2_fatima_energy_summed_vs_tsci41->Draw();
     c_fatima_energy_summed_vs_tsci41->cd(0);
     dir_fatima_sci41->Append(c_fatima_energy_summed_vs_tsci41);
 
     c_fatima_energy_summed_vs_tsci41_cut = new TCanvas("c_fatima_energy_summed_vs_tsci41_cut","Calibrated FATIMA spectra summed all energyies, prompt flash cut",650,350);
-    h1_fatima_energy_summed_vs_tsci41_cut = new TH1F("h1_fatima_energy_summed_vs_tsci41_cut","Calibrated FATIMA spectra summed all energyies, prompt flash cut",fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
-    h1_fatima_energy_summed_vs_tsci41_cut->GetXaxis()->SetTitle("energy (keV)");
-    h1_fatima_energy_summed_vs_tsci41_cut->Draw("COLZ");
+    h1_fatima_energy_summed_vs_tsci41_cut = MakeTH1(dir_fatima_sci41, "F", "h1_fatima_energy_summed_vs_tsci41_cut","Calibrated FATIMA spectra summed all energies, prompt flash cut",fenergy_nbins,fenergy_bin_low,fenergy_bin_high, "Energy [keV]", kMagenta, kBlue+2);
+    // h1_fatima_energy_summed_vs_tsci41_cut = new TH1F("h1_fatima_energy_summed_vs_tsci41_cut","Calibrated FATIMA spectra summed all energyies, prompt flash cut",fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    // h1_fatima_energy_summed_vs_tsci41_cut->GetXaxis()->SetTitle("energy (keV)");
+    h1_fatima_energy_summed_vs_tsci41_cut->Draw();
     c_fatima_energy_summed_vs_tsci41_cut->cd(0);
     dir_fatima_sci41->Append(c_fatima_energy_summed_vs_tsci41_cut);
 
     c_fatima_energy_energy_sci41_cut = new TCanvas("c_fatima_energy_energy_sci41_cut","Calibrated FATIMA spectra summed all energyies, t(det) - t(sci41) > 200 ns",650,350);
-    h2_fatima_energy_energy_sci41_cut = new TH2F("h2_fatima_energy_energy_sci41_cut","Calibrated FATIMA spectra energy vs energy, prompt flash cut",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
-    h2_fatima_energy_energy_sci41_cut->GetXaxis()->SetTitle("energy (keV)");
-    h2_fatima_energy_energy_sci41_cut->GetYaxis()->SetTitle("energy (keV)");
-    h2_fatima_energy_energy_sci41_cut->Draw("COLZ");
+    h2_fatima_energy_energy_sci41_cut = MakeTH2(dir_fatima_sci41, "F", "h2_fatima_energy_energy_sci41_cut","Calibrated FATIMA spectra energy vs energy, prompt flash cut",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,fenergy_nbins,fenergy_bin_low,fenergy_bin_high, "Energy [keV]", "Energy [keV]");
+    // h2_fatima_energy_energy_sci41_cut = new TH2F("h2_fatima_energy_energy_sci41_cut","Calibrated FATIMA spectra energy vs energy, prompt flash cut",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    // h2_fatima_energy_energy_sci41_cut->GetXaxis()->SetTitle("energy (keV)");
+    // h2_fatima_energy_energy_sci41_cut->GetYaxis()->SetTitle("energy (keV)");
+    h2_fatima_energy_energy_sci41_cut->Draw();
     c_fatima_energy_energy_sci41_cut->cd(0);
     dir_fatima_sci41->Append(c_fatima_energy_energy_sci41_cut);
     
     // Time spectra:
     dir_fatima_time_spectra->cd();
     h1_fatima_abs_time.resize(number_detectors);
-    for (int ihist = 0; ihist < number_detectors; ihist++){
-        h1_fatima_abs_time[ihist] = new TH1F(Form("h1_fatima_abs_time_%d",detectors.at(ihist)),Form("Fatima absolute DAQ time detector %d",detectors.at(ihist)),1000,0,2.7e12); // up to 45 mins in ns :)
-        h1_fatima_abs_time[ihist]->GetXaxis()->SetTitle("Timestamp (ns)");
+    for (int ihist = 0; ihist < number_detectors; ihist++)
+    {
+        h1_fatima_abs_time[ihist] = MakeTH1(dir_fatima_time_spectra, "F", Form("h1_fatima_abs_time_%d",detectors.at(ihist)),Form("Fatima absolute DAQ time detector %d",detectors.at(ihist)), 1e3, 0, 2.7e12, "Timestamp [ns]");
+        // h1_fatima_abs_time[ihist] = new TH1F(Form("h1_fatima_abs_time_%d",detectors.at(ihist)),Form("Fatima absolute DAQ time detector %d",detectors.at(ihist)),1000,0,2.7e12); // up to 45 mins in ns :)
+        // h1_fatima_abs_time[ihist]->GetXaxis()->SetTitle("Timestamp (ns)");
     }
 
     //2D energy spectrum
-    dir_fatima_energy_spectra->cd();
-    h2_fatima_energy_vs_detid = new TH2F("h2_fatima_energy_vs_detid","FATIMA energies",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,max_detector_id+1,0-0.5,max_detector_id+0.5); //such that the y-axis is the detector id and not the index
-    h2_fatima_energy_vs_detid->GetXaxis()->SetTitle("Energy (keV)");
-    h2_fatima_energy_vs_detid->GetYaxis()->SetTitle("Detector nr.");
+    // dir_fatima_energy_spectra->cd();
+    h2_fatima_energy_vs_detid = MakeTH2(dir_fatima_energy_spectra, "F", "h2_fatima_energy_vs_detid","FATIMA energies",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,max_detector_id+1,0-0.5,max_detector_id+0.5, "Energy [keV]", "Detector");
+    // h2_fatima_energy_vs_detid = new TH2F("h2_fatima_energy_vs_detid","FATIMA energies",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,max_detector_id+1,0-0.5,max_detector_id+0.5); //such that the y-axis is the detector id and not the index
+    // h2_fatima_energy_vs_detid->GetXaxis()->SetTitle("Energy (keV)");
+    // h2_fatima_energy_vs_detid->GetYaxis()->SetTitle("Detector nr.");
 
     //2D uncalibrated energy spectrum
-    h2_fatima_energy_uncal_vs_detid = new TH2F("h2_fatima_energy_uncal_vs_detid","FATIMA uncal energy (arb.)",fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high,max_detector_id+1,0-0.5,max_detector_id+0.5);
-    h2_fatima_energy_uncal_vs_detid->GetXaxis()->SetTitle("Energy (arb.)");
-    h2_fatima_energy_uncal_vs_detid->GetYaxis()->SetTitle("Detector nr.");
+    h2_fatima_energy_uncal_vs_detid = MakeTH2(dir_fatima_energy_spectra, "F", "h2_fatima_energy_uncal_vs_detid","FATIMA uncal energy (arb.)",fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high,max_detector_id+1,0-0.5,max_detector_id+0.5, "Energy [a.u.]", "Detector");
+    // h2_fatima_energy_uncal_vs_detid = new TH2F("h2_fatima_energy_uncal_vs_detid","FATIMA uncal energy (arb.)",fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high,max_detector_id+1,0-0.5,max_detector_id+0.5);
+    // h2_fatima_energy_uncal_vs_detid->GetXaxis()->SetTitle("Energy (arb.)");
+    // h2_fatima_energy_uncal_vs_detid->GetYaxis()->SetTitle("Detector nr.");
 
     // Hit patterns:
-    dir_fatima_hitpattern->cd();
-
-    h1_fatima_hitpattern_slow = new TH1F("h1_fatima_hitpattern_slow","FATIMA slow hit patterns",max_detector_id+1,0-0.5,max_detector_id+0.5);
-    h1_fatima_hitpattern_slow->GetXaxis()->SetTitle("Detector nr.");
-    h1_fatima_hitpattern_slow->GetYaxis()->SetTitle("Hits");
+    // dir_fatima_hitpattern->cd();
+    h1_fatima_hitpattern_slow = MakeTH1(dir_fatima_hitpattern, "I", "h1_fatima_hitpattern_slow","FATIMA slow hit patterns",max_detector_id+1,0-0.5,max_detector_id+0.5, "Detector", kRed-3, kBlack);
+    // h1_fatima_hitpattern_slow = new TH1F("h1_fatima_hitpattern_slow","FATIMA slow hit patterns",max_detector_id+1,0-0.5,max_detector_id+0.5);
+    // h1_fatima_hitpattern_slow->GetXaxis()->SetTitle("Detector nr.");
+    // h1_fatima_hitpattern_slow->GetYaxis()->SetTitle("Hits");
     
-    h1_fatima_hitpattern_fast = new TH1F("h1_fatima_hitpattern_fast","FATIMA fast hit patterns",max_detector_id+1,0-0.5,max_detector_id+0.5);
-    h1_fatima_hitpattern_fast->GetXaxis()->SetTitle("Detector nr.");
-    h1_fatima_hitpattern_fast->GetYaxis()->SetTitle("Hits");
-    h1_fatima_hitpattern_fast->Draw();
+    h1_fatima_hitpattern_fast = MakeTH1(dir_fatima_hitpattern, "I", "h1_fatima_hitpattern_fast","FATIMA fast hit patterns",max_detector_id+1,0-0.5,max_detector_id+0.5, "Detector", kRed-3, kBlack);
+    // h1_fatima_hitpattern_fast = new TH1F("h1_fatima_hitpattern_fast","FATIMA fast hit patterns",max_detector_id+1,0-0.5,max_detector_id+0.5);
+    // h1_fatima_hitpattern_fast->GetXaxis()->SetTitle("Detector nr.");
+    // h1_fatima_hitpattern_fast->GetYaxis()->SetTitle("Hits");
+    // h1_fatima_hitpattern_fast->Draw();
     
-    
-    h1_fatima_multiplicity = new TH1F("h1_fatima_multiplicity","FATIMA event multiplicity",20,0,20);
-    h1_fatima_multiplicity->GetXaxis()->SetTitle("Event multiplicity");
-    h1_fatima_multiplicity->GetYaxis()->SetTitle("Counts");
-    h1_fatima_multiplicity->Draw();
+    h1_fatima_multiplicity = MakeTH1(dir_fatima_hitpattern, "I", "h1_fatima_multiplicity","FATIMA event multiplicity",20,0,20, "Event Multiplicity", kRed-3, kBlack);
+    // h1_fatima_multiplicity = new TH1F("h1_fatima_multiplicity","FATIMA event multiplicity",20,0,20);
+    // h1_fatima_multiplicity->GetXaxis()->SetTitle("Event multiplicity");
+    // h1_fatima_multiplicity->GetYaxis()->SetTitle("Counts");
+    // h1_fatima_multiplicity->Draw();
     
     //time differences!
     number_reference_detectors = (int) dt_reference_detectors.size();
@@ -192,24 +209,27 @@ InitStatus FatimaNearlineSpectra::Init()
         std::stringstream name;
         name << "time_differences_rel_" << dt_reference_detectors.at(ihist) << "_energy_gate_" << (int)dt_reference_detectors_energy_gates.at(ihist).first << "_" << (int)dt_reference_detectors_energy_gates.at(ihist).second;
         dir_fatima_time_differences[ihist] = dir_fatima->mkdir(name.str().c_str());
-        dir_fatima_time_differences[ihist]->cd();
+        // dir_fatima_time_differences[ihist]->cd();
     
         //h1_fatima_time_differences[ihist] = new TH1F*[number_detectors];
         h1_fatima_time_differences[ihist].resize(number_detectors);
 
-        for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++){
-            h1_fatima_time_differences[ihist][detid_idx] = new TH1F(Form("h1_fatima_rel_time_det_%d_to_det_%d_energy_gate_%d_%d",dt_reference_detectors.at(ihist),detectors.at(detid_idx),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("fatima delta time t(%d) - t(%d) gated %d and %d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high); 
-            h1_fatima_time_differences[ihist][detid_idx]->GetXaxis()->SetTitle(Form("dt t(%d) - t(%d) (ns)",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
+        for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++)
+        {
+            h1_fatima_time_differences[ihist][detid_idx] = MakeTH1(dir_fatima_time_differences[ihist], "F", Form("h1_fatima_rel_time_det_%d_to_det_%d_energy_gate_%d_%d",dt_reference_detectors.at(ihist),detectors.at(detid_idx),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("FATIMA dT t(%d) - t(%d) gated %d and %d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high, Form("dT t(%d) - t(%d) [ns]",detectors.at(detid_idx),dt_reference_detectors.at(ihist)), kMagenta, kBlue+2);
+            // h1_fatima_time_differences[ihist][detid_idx] = new TH1F(Form("h1_fatima_rel_time_det_%d_to_det_%d_energy_gate_%d_%d",dt_reference_detectors.at(ihist),detectors.at(detid_idx),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("fatima delta time t(%d) - t(%d) gated %d and %d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high); 
+            // h1_fatima_time_differences[ihist][detid_idx]->GetXaxis()->SetTitle(Form("dt t(%d) - t(%d) (ns)",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
             
         }
 
         h2_fatima_time_differences_vs_energy[ihist].resize(number_detectors);
 
-        for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++){
-            h2_fatima_time_differences_vs_energy[ihist][detid_idx] = new TH2F(Form("h1_fatima_rel_time_det_%d_to_det_%d_vs_energy_energy_gate_%d_%d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("fatima delta time t(%d) - t(%d) vs energy, energy gate %d, %d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high); 
-            h2_fatima_time_differences_vs_energy[ihist][detid_idx]->GetYaxis()->SetTitle(Form("dt t(%d) - t(%d) (ns)",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
-            h2_fatima_time_differences_vs_energy[ihist][detid_idx]->GetXaxis()->SetTitle(Form("energy det %d (keV)",detectors.at(detid_idx)));
-            
+        for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++)
+        {
+            h2_fatima_time_differences_vs_energy[ihist][detid_idx] = MakeTH2(dir_fatima_time_differences[ihist], "F", Form("h1_fatima_rel_time_det_%d_to_det_%d_vs_energy_energy_gate_%d_%d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("FATIMA dT t(%d) - t(%d) vs Energy, energy gate %d, %d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high, Form("Energy (Detector %d) [keV]",detectors.at(detid_idx)), Form("dT t(%d) - t(%d) [ns]",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
+            // h2_fatima_time_differences_vs_energy[ihist][detid_idx] = new TH2F(Form("h1_fatima_rel_time_det_%d_to_det_%d_vs_energy_energy_gate_%d_%d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("fatima delta time t(%d) - t(%d) vs energy, energy gate %d, %d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high); 
+            // h2_fatima_time_differences_vs_energy[ihist][detid_idx]->GetYaxis()->SetTitle(Form("dt t(%d) - t(%d) (ns)",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
+            // h2_fatima_time_differences_vs_energy[ihist][detid_idx]->GetXaxis()->SetTitle(Form("energy det %d (keV)",detectors.at(detid_idx)));
         }
     }
 
@@ -383,7 +403,11 @@ void FatimaNearlineSpectra::Exec(Option_t* option)
             
             saved_fatima_wr = fatima_wr;
             rate_running_count++;
-            for (int i = 0; i < number_detectors; i++) detector_counters[i] = 0;
+            for (int i = 0; i < number_detectors; i++) 
+            {
+                if (rate_running_count == 1800) h1_fatima_rates[i]->Reset();
+                detector_counters[i] = 0;
+            }
             if (rate_running_count == 1800) rate_running_count = 0;
         }
     }

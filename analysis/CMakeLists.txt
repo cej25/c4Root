@@ -91,11 +91,11 @@ set(SRCS
 ./correlations/AidaGermaniumCorrelations.cxx
 ./correlations/bPlastGermaniumCorrelations.cxx
 ./online/onlineCorrelations/bPlastGermaniumCorrelationsOnline.cxx
-./correlations/FrsBplastCorrelations.cxx
+#./correlations/FrsBplastCorrelations.cxx
 
 
-./frs/MHTDCSpectra.cxx
-./frs/TPCCorrections.cxx
+#./frs/MHTDCSpectra.cxx
+#./frs/TPCCorrections.cxx
 #./correlations/FrsBplastCorrelations.cxx
 ./online/onlineCorrelations/LisaFrsCorrelationsOnline.cxx
 ./correlations/LisaFrsCorrelations.cxx

@@ -56,18 +56,18 @@ class bPlastNearlineSpectra : public FairTask
         TDirectory* dir_bplast_time_spectra;
 
         // Histograms
-        std::vector<TH1F*> h1_bplast_slowToT;
-        std::vector<TH1F*> h1_bplast_fastToT;
-        std::vector<TH1F*> h1_bplast_hitpatterns;
-        std::vector<TH1F*> h1_bplast_tamex_card_hitpattern;
+        std::vector<TH1*> h1_bplast_slowToT;
+        std::vector<TH1*> h1_bplast_fastToT;
+        std::vector<TH1*> h1_bplast_hitpatterns;
+        std::vector<TH1*> h1_bplast_tamex_card_hitpattern;
 
-        std::vector<TH2F*> h2_bplast_fastToT_vs_slowToT;
-        std::vector<TH1F*> h1_bplast_time_spectra;
+        std::vector<TH2*> h2_bplast_fastToT_vs_slowToT;
+        std::vector<TH1*> h1_bplast_time_spectra;
 
         // Scaler spectra TBA
 
         // Detector Multiplicity
-        TH1F* h1_bplast_multiplicity;
+        TH1* h1_bplast_multiplicity;
 
         int event_multiplicity;
 

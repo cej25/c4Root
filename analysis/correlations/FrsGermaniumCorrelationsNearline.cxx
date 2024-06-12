@@ -14,6 +14,7 @@
 #include "FrsHitData.h"
 #include "TGermaniumConfiguration.h"
 
+#include "AnalysisTools.h"
 #include "c4Logger.h"
 
 
@@ -179,6 +180,26 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
         h1_germanium_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]->GetXaxis()->SetTitle("Energy (keV)");
 
     }
+
+    crystals_to_plot.clear();
+    std::map<std::pair<int,int>,std::pair<int,int>> gmap = germanium_configuration->Mapping();
+
+    for (auto it_mapping = gmap.begin(); it_mapping != gmap.end(); ++it_mapping){
+        if (it_mapping->second.first >= 0) crystals_to_plot.emplace_back(std::pair<int,int>(it_mapping->second.first,it_mapping->second.second));
+    }
+
+    number_of_detectors_to_plot = crystals_to_plot.size();
+
+    detector_labels = new char*[number_of_detectors_to_plot];
+    h1_germanium_hitpattern_post6us = MakeTH1(dir_germanium, "I", "h1_germanium_hitpattern_post6us","Hit pattern of DEGAS",number_of_detectors_to_plot,0,number_of_detectors_to_plot, "Crystal", kRed-3, kBlack);
+    h1_germanium_hitpattern_post6us->GetXaxis()->SetAlphanumeric();
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++)
+    {
+        detector_labels[ihist] = Form("%d%c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65));
+        h1_germanium_hitpattern_post6us->GetXaxis()->SetBinLabel(ihist+1,detector_labels[ihist]);
+    }    
+    h1_germanium_hitpattern_post6us->GetXaxis()->LabelsOption("a");
+    h1_germanium_hitpattern_post6us->SetStats(0);
     
     dir_germanium->cd();
     gDirectory = tmp;
@@ -283,6 +304,9 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
                 double timediff1 = time1 - time_sci41 - germanium_configuration->GetTimeshiftCoefficient(detector_id1,crystal_id1);
                 
                 h2_germanium_energy_vs_tsci41->Fill(timediff1 ,energy1);
+
+                int crystal_index1 = std::distance(crystals_to_plot.begin(), std::find(crystals_to_plot.begin(),crystals_to_plot.end(),std::pair<int,int>(detector_id1,crystal_id1)));
+                if (timediff1 > 6000) h1_germanium_hitpattern_post6us->Fill(detector_labels[crystal_index1],1);
 
                 //after this test, the prompt flash is cut out.
                 if ((germanium_configuration->IsInsidePromptFlashCut(timediff1 ,energy1)==true) ) continue;

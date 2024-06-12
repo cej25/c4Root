@@ -11,6 +11,7 @@
 #include "bPlastTwinpeaksCalData.h"
 #include "TbPlastConfiguration.h"
 
+#include "AnalysisTools.h"
 #include "c4Logger.h"
 
 #include "TCanvas.h"
@@ -80,7 +81,6 @@ InitStatus bPlastOnlineSpectra::Init()
     nDetectors = bplast_conf->NDetectors();
     nTamexBoards = bplast_conf->NTamexBoards();
 
-    
     // Setting histogram sizes
     h1_bplast_slowToT.resize(nDetectors+1); // index from 1 
     h1_bplast_fastToT.resize(nDetectors+1);
@@ -90,29 +90,26 @@ InitStatus bPlastOnlineSpectra::Init()
     h2_bplast_fastToT_vs_slowToT.resize(nDetectors+1);
 
     // Slow ToT
-    dir_bplast_slowToT->cd(); 
     c_bplast_slowToT  = new TCanvas("c_bplast_slowToT","slow ToT bPlast spectra",1200,800);
     c_bplast_slowToT->Divide(5,(nDetectors%5==0) ? (nDetectors/5) : (nDetectors/5 + 1));
     h1_bplast_slowToT.resize(nDetectors+1); // index from 1
-    for (int ihist = 1; ihist <= nDetectors; ihist++){
+    for (int ihist = 1; ihist <= nDetectors; ihist++)
+    {
         c_bplast_slowToT->cd(ihist);
-        h1_bplast_slowToT[ihist] = new TH1F(Form("h1_bplast_slowToT_%d",ihist),Form("bPlastic Slow ToT %d",ihist),10000,0,3.5e3);
-        h1_bplast_slowToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
+        h1_bplast_slowToT[ihist] = MakeTH1(dir_bplast_slowToT, "F", Form("h1_bplast_slowToT_%d",ihist),Form("bPlastic Slow ToT %d",ihist), 1e4, 0, 3.5e3, "ToT [ns]", kSpring, kBlue+2);
         h1_bplast_slowToT[ihist]->Draw();
     }
     c_bplast_slowToT->cd(0);
     dir_bplast_slowToT->Append(c_bplast_slowToT);
 
     // Fast ToT
-    dir_bplast_fastToT->cd();
     c_bplast_fastToT  = new TCanvas("c_bplast_fastToT","Fast ToT bPlast spectra",1200,800);
     c_bplast_fastToT->Divide(5,(nDetectors%5==0) ? (nDetectors/5) : (nDetectors/5 + 1));
     h1_bplast_fastToT.resize(nDetectors+1);
     for (int ihist = 1; ihist <= nDetectors; ihist++)
     {
         c_bplast_fastToT->cd(ihist);
-        h1_bplast_fastToT[ihist] = new TH1F(Form("h1_bplast_fastToT_%d",ihist),Form("bPlastic Fast ToT %d",ihist),10000,0,3.5e3);
-        h1_bplast_fastToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
+        h1_bplast_fastToT[ihist] = MakeTH1(dir_bplast_fastToT, "F", Form("h1_bplast_fastToT_%d",ihist),Form("bPlastic Fast ToT %d",ihist),10000,0,3.5e3, "ToT [ns]", kSpring, kBlue+2);
         h1_bplast_fastToT[ihist]->Draw();   
     }
     c_bplast_fastToT->cd(0);
@@ -124,14 +121,10 @@ InitStatus bPlastOnlineSpectra::Init()
     c_bplast_hitpatterns->Divide(2,1);
     c_bplast_hitpatterns->cd(1);
     h1_bplast_hitpatterns.resize(2); // this is hard coded yeah i know, but we aren't going to more bplasts?
-    h1_bplast_hitpatterns[0] = new TH1F("h1_bplast_hitpattern_upstream","Upstream detector hit patterns",64,1,65);
-    h1_bplast_hitpatterns[0]->GetXaxis()->SetTitle("Detector ID");
-    h1_bplast_hitpatterns[0]->GetYaxis()->SetTitle("Counts");
+    h1_bplast_hitpatterns[0] = MakeTH1(dir_bplast_hitpattern, "F", "h1_bplast_hitpattern_upstream","Upstream detector hit patterns",64,1,65, "Detector ID", kRed-3, kBlack);
     h1_bplast_hitpatterns[0]->Draw();
     c_bplast_hitpatterns->cd(2);
-    h1_bplast_hitpatterns[1] = new TH1F("h1_bplast_hitpattern_downstream","Downstream detector hit patterns",64,65,129);
-    h1_bplast_hitpatterns[1]->GetXaxis()->SetTitle("Detector ID");
-    h1_bplast_hitpatterns[1]->GetYaxis()->SetTitle("Counts");
+    h1_bplast_hitpatterns[1] = MakeTH1(dir_bplast_hitpattern, "F", "h1_bplast_hitpattern_downstream","Downstream detector hit patterns",64,65,129, "Detector ID", kRed-3, kBlack);
     h1_bplast_hitpatterns[1]->Draw();
     c_bplast_hitpatterns->cd(0);
     dir_bplast_hitpattern->Append(c_bplast_hitpatterns);
@@ -140,43 +133,34 @@ InitStatus bPlastOnlineSpectra::Init()
     c_bplast_tamex_card_hitpattern  = new TCanvas("c_bplast_tamex_card_hitpattern","bPlast Tamex Card Hit Pattern",1200,800);
     c_bplast_tamex_card_hitpattern->Divide(5,(nTamexBoards%5==0) ? (nTamexBoards/5) : (nTamexBoards/5 + 1));
     h1_bplast_tamex_card_hitpattern.resize(nTamexBoards);
-    for (int ihist = 0; ihist < nTamexBoards; ihist++){
+    for (int ihist = 0; ihist < nTamexBoards; ihist++)
+    {
         c_bplast_tamex_card_hitpattern->cd(ihist+1);
-        h1_bplast_tamex_card_hitpattern[ihist] = new TH1F(Form("h1_bplast_tamex_card_hitpattern_%d",ihist),Form("bPlastic Tamex Card Hit Pattern %d",ihist),16,1,17);
-        h1_bplast_tamex_card_hitpattern[ihist]->GetXaxis()->SetTitle("Channel");
-        h1_bplast_tamex_card_hitpattern[ihist]->GetYaxis()->SetTitle("Counts");
+        h1_bplast_tamex_card_hitpattern[ihist] = MakeTH1(dir_bplast_hitpattern, "I", Form("h1_bplast_tamex_card_hitpattern_%d",ihist),Form("bPlastic Tamex Card Hit Pattern %d",ihist),16,1,17, "Channel", kRed-3, kBlack);
         h1_bplast_tamex_card_hitpattern[ihist]->Draw();
     }
     c_bplast_tamex_card_hitpattern->cd(0);
     dir_bplast_hitpattern->Append(c_bplast_tamex_card_hitpattern);
 
-    dir_bplast_fast_vs_slow->cd();
     c_bplast_fast_v_slow  = new TCanvas("c_bplast_fast_v_slow","fast vs slow ToT bplast spectra",1200,800);
     c_bplast_fast_v_slow->Divide(5,(nDetectors%5==0) ? (nDetectors/5) : (nDetectors/5 + 1));
     h2_bplast_fastToT_vs_slowToT.resize(nDetectors+1);
-    for (int ihist = 1; ihist <= nDetectors; ihist++){
+    for (int ihist = 1; ihist <= nDetectors; ihist++)
+    {
         c_bplast_fast_v_slow->cd(ihist);
-        h2_bplast_fastToT_vs_slowToT[ihist] = new TH2F(Form("h1_bplast_fast_v_slow_%d",ihist),Form("bplast fast vs. slow detector %d",ihist),1000,0,3.5e3,1000,0,3.5e3);
-        h2_bplast_fastToT_vs_slowToT[ihist]->GetXaxis()->SetTitle("Slow ToT (ns)");
-        h2_bplast_fastToT_vs_slowToT[ihist]->GetYaxis()->SetTitle("Fast ToT (ns)");
-        h2_bplast_fastToT_vs_slowToT[ihist]->SetOption("COLZ");
+        h2_bplast_fastToT_vs_slowToT[ihist] = MakeTH2(dir_bplast_fast_vs_slow, "F", Form("h1_bplast_fast_v_slow_%d",ihist),Form("bplast fast vs. slow detector %d",ihist),1000,0,3.5e3,1000,0,3.5e3, "Slow ToT [ns]", "Fast ToT [ns]");
+        h2_bplast_fastToT_vs_slowToT[ihist]->Draw();
     }
     c_bplast_fast_v_slow->cd(0);
     dir_bplast_fast_vs_slow->Append(c_bplast_fast_v_slow);
 
-    dir_bplast_hitpattern->cd();
-
     c_bplast_multiplicity  = new TCanvas("c_bplast_multiplicity","bPlast multiplicity spectra",1200,800);
     c_bplast_multiplicity->Divide(2,1);
     c_bplast_multiplicity->cd(1);
-    h1_bplast_multiplicity[0] = new TH1F("h1_blast_multiplicity_upstream","Upstream bPlast multiplicity => 2",64,0,64);
-    h1_bplast_multiplicity[0]->GetXaxis()->SetTitle("Channel Multiplicity");
-    h1_bplast_multiplicity[0]->GetYaxis()->SetTitle("Counts");
+    h1_bplast_multiplicity[0] = MakeTH1(dir_bplast_hitpattern, "F", "h1_bplast_multiplicity_upstream","Upstream bPlast multiplicity => 2",64,0,64, "Channel Multiplicity", kRed-3, kBlack);
     h1_bplast_multiplicity[0]->Draw();
     c_bplast_multiplicity->cd(2);
-    h1_bplast_multiplicity[1] = new TH1F("h1_blast_multiplicity_downstream","Downstream bPlast multiplicity => 2",64,0,64);
-    h1_bplast_multiplicity[1]->GetXaxis()->SetTitle("Channel Multiplicity");
-    h1_bplast_multiplicity[1]->GetYaxis()->SetTitle("Counts");
+    h1_bplast_multiplicity[1] = MakeTH1(dir_bplast_hitpattern, "F", "h1_bplast_multiplicity_downstream","Downstream bPlast multiplicity => 2",64,0,64, "Channel Multiplicity", kRed-3, kBlack);
     h1_bplast_multiplicity[1]->Draw();
 
     c_bplast_multiplicity->SetLogy();
@@ -184,13 +168,10 @@ InitStatus bPlastOnlineSpectra::Init()
     dir_bplast_hitpattern->Append(c_bplast_multiplicity);
 
     c_bplast_wr_time_diff  = new TCanvas("c_bplast_wr_time_diff","bPlast WR time difference",1200,800);
-    h1_bplast_wr_time_diff = new TH1F("h1_bplast_wr_time_diff","bPlast WR time difference",100,-1e2,80e3);
-    h1_bplast_wr_time_diff->GetXaxis()->SetTitle("White Rabbit Event Time Difference (ns)");
+    h1_bplast_wr_time_diff = MakeTH1(dir_bplast_hitpattern, "F", "h1_bplast_wr_time_diff","bPlast WR time difference",1e3,-1e2,5e5, "White Rabbit Event Time Difference [ns]", kViolet, kBlue+2);
     h1_bplast_wr_time_diff->Draw();
     c_bplast_wr_time_diff->cd(0);
     dir_bplast_hitpattern->Append(c_bplast_wr_time_diff);
-
-    dir_bplast->cd();
 
     run->GetHttpServer()->RegisterCommand("Reset_bPlast_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
     run->GetHttpServer()->RegisterCommand("Snapshot_bPlast_Histo", Form("/Objects/%s/->Snapshot_Histo()", GetName()));

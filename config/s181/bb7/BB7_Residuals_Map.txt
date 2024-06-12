@@ -1,0 +1,9 @@
+#----------------------------------------------------#
+#----------------- Additional signals ---------------------#
+# Residual number (arbirary) || V1290 Mod || V1290 Ch
+#SCI 41L & SCI 41R
+SC41L_D         2       9       2            
+SC41R_D         3       9       3
+#Time machine
+TimeMachineU    0       9       0
+TimeMachineD    1       9       1

@@ -11,6 +11,7 @@
 #include "bPlastTwinpeaksCalData.h"
 #include "TbPlastConfiguration.h"
 
+#include "AnalysisTools.h"
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
@@ -80,62 +81,40 @@ InitStatus bPlastNearlineSpectra::Init()
     h1_bplast_time_spectra.resize(nDetectors+1);
 
     // Slow ToT
-    dir_bplast_slowToT->cd();
     for (int ihist = 1; ihist <= nDetectors; ihist++)
     {
-        h1_bplast_slowToT[ihist] = new TH1F(Form("h1_bplast_slowToT_%d",ihist),Form("bPlastic Slow ToT %d",ihist),10000,0,3.5e3);
-        h1_bplast_slowToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
+        h1_bplast_slowToT[ihist] = MakeTH1(dir_bplast_slowToT, "F", Form("h1_bplast_slowToT_%d",ihist),Form("bPlastic Slow ToT %d",ihist), 1e4, 0, 3.5e3, "ToT [ns]", kSpring, kBlue+2);
     }
 
     // Fast ToT
-    dir_bplast_fastToT->cd();
     for (int ihist = 1; ihist <= nDetectors; ihist++)
     {
-        h1_bplast_fastToT[ihist] = new TH1F(Form("h1_bplast_fastToT_%d",ihist),Form("bPlastic Fast ToT %d",ihist),10000,0,3.5e3);
-        h1_bplast_fastToT[ihist]->GetXaxis()->SetTitle("ToT (ns)"); 
+        h1_bplast_fastToT[ihist] = MakeTH1(dir_bplast_fastToT, "F", Form("h1_bplast_fastToT_%d",ihist),Form("bPlastic Fast ToT %d",ihist), 1e4, 0, 3.5e3, "ToT [ns]", kSpring, kBlue+2);
     }
 
     // Hit Pattern
-    dir_bplast_hitpattern->cd();
-
-    h1_bplast_hitpatterns[0] = new TH1F("h1_bplast_hitpattern_upstream","Upstream detector hit patterns",64,1,65);
-    h1_bplast_hitpatterns[0]->GetXaxis()->SetTitle("Detector ID");
-    h1_bplast_hitpatterns[0]->GetYaxis()->SetTitle("Counts");
+    h1_bplast_hitpatterns[0] = MakeTH1(dir_bplast_hitpattern, "F", "h1_bplast_hitpattern_upstream","Upstream detector hit patterns",64,1,65, "Detector ID", kRed-3, kBlack);
+    h1_bplast_hitpatterns[1] = MakeTH1(dir_bplast_hitpattern, "F", "h1_bplast_hitpattern_downstream","Downstream detector hit patterns",64,65,129, "Detector ID", kRed-3, kBlack);
     
-    h1_bplast_hitpatterns[1] = new TH1F("h1_bplast_hitpattern_downstream","Downstream detector hit patterns",64,65,129);
-    h1_bplast_hitpatterns[1]->GetXaxis()->SetTitle("Detector ID");
-    h1_bplast_hitpatterns[1]->GetYaxis()->SetTitle("Counts");
-
     // tamex card hit pattern
     for (int ihist = 0; ihist < nTamexBoards; ihist++)
     {
-        h1_bplast_tamex_card_hitpattern[ihist] = new TH1F(Form("h1_bplast_tamex_card_hitpattern_%d",ihist),Form("bPlastic Tamex Card Hit Pattern %d",ihist),16,1,17);
-        h1_bplast_tamex_card_hitpattern[ihist]->GetXaxis()->SetTitle("Channel");
-        h1_bplast_tamex_card_hitpattern[ihist]->GetYaxis()->SetTitle("Counts");
+        h1_bplast_tamex_card_hitpattern[ihist] = MakeTH1(dir_bplast_hitpattern, "I", Form("h1_bplast_tamex_card_hitpattern_%d",ihist),Form("bPlastic Tamex Card Hit Pattern %d",ihist),16,1,17, "Channel", kRed-3, kBlack);
     }
 
-    // Time spectra
-    dir_bplast_time_spectra->cd();
+    // Time spectra - CEJ: not in online currently.
     for (int ihist = 1; ihist <= nDetectors; ihist++)
     {
-        h1_bplast_time_spectra[ihist] = new TH1F(Form("h1_bplast_time_spectra_%d",ihist),Form("bPlast Time spectrum detector %d",ihist),10000,0,6e10);
-        h1_bplast_time_spectra[ihist]->GetXaxis()->SetTitle("Time (ns)");
+        h1_bplast_time_spectra[ihist] = MakeTH1(dir_bplast_time_spectra, "F", Form("h1_bplast_time_spectra_%d",ihist),Form("bPlast Time spectrum detector %d",ihist), 1e4, 0, 6e10, "Time [ns]");
     }
 
-    dir_bplast_fast_vs_slow->cd();
+    // fast vs slow
     for (int ihist = 1; ihist <= nDetectors; ihist++)
     {
-        h2_bplast_fastToT_vs_slowToT[ihist] = new TH2F(Form("h1_bplast_fast_v_slow_%d",ihist),Form("bplast fast vs. slow detector %d",ihist),1000,0,3.5e3,1000,0,3.5e3);
-        h2_bplast_fastToT_vs_slowToT[ihist]->GetXaxis()->SetTitle("Slow ToT (ns)");
-        h2_bplast_fastToT_vs_slowToT[ihist]->GetYaxis()->SetTitle("Fast ToT (ns)");
-        h2_bplast_fastToT_vs_slowToT[ihist]->SetOption("COLZ");
+        h2_bplast_fastToT_vs_slowToT[ihist] = MakeTH2(dir_bplast_fast_vs_slow, "F", Form("h1_bplast_fast_v_slow_%d",ihist),Form("bplast fast vs. slow detector %d",ihist), 1e3, 0, 3.5e3, 1e3, 0, 3.5e3, "Slow ToT [ns]", "Fast ToT [ns]");
     }
 
-    dir_bplast_hitpattern->cd();
-
-    h1_bplast_multiplicity = new TH1F("Multiplicity","bPlast multiplicity",128,1,129);
-    h1_bplast_multiplicity->GetXaxis()->SetTitle("Event Multilplicity");
-    h1_bplast_multiplicity->GetYaxis()->SetTitle("Counts");
+    h1_bplast_multiplicity = MakeTH1(dir_bplast_hitpattern, "I", "Multiplicity","bPlast multiplicity",128,1,129, "Event Multiplicity", kRed-3, kBlack);
     // log y?
 
     dir_bplast->cd();

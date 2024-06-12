@@ -10,6 +10,7 @@
 class TClonesArray;
 class EventHeader;
 class TCanvas;
+class TH1;
 class TH1F;
 class TH2F;
 class TFile;
@@ -150,7 +151,6 @@ class FrsGermaniumCorrelations : public FairTask
 
         TCanvas * c_germanium_energy_energy_promptflash_cut_long; 
         TH2F * h2_germanium_energy_energy_promptflash_cut_long;
-
 
 
 

@@ -11,6 +11,7 @@
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TFatimaVmeConfiguration.h"
+#include "FatimaVmeCalData.h"
 
 class EventHeader;
 class TFolder;
@@ -41,6 +42,10 @@ class FatimaVmeNearlineSpectra : public FairTask
 
         TClonesArray* fHitFatimaVme;
 
+        std::vector<FatimaVmeQDCCalItem> const* qdcCalArray;
+        std::vector<FatimaVmeTDCCalItem> const* tdcCalArray;
+        std::vector<FatimaVmeResiduals> const* residualArray;
+
         EventHeader* header;
         Int_t fNEvents;
 
@@ -56,10 +61,13 @@ class FatimaVmeNearlineSpectra : public FairTask
         TDirectory* dir_raw_energy;
         TDirectory* dir_raw_time;
         TDirectory* dir_cal_energy;
+        TDirectory* dir_residuals;
         TDirectory* dir_cal_time;
         TDirectory* dir_tdc_dt;
         TDirectory* dir_dt_ch1;
         TDirectory* dir_dt_sc41;
+
+
 
         // Histograms
         std::vector<TH1D*> h1_FatVME_RawE;
@@ -67,19 +75,19 @@ class FatimaVmeNearlineSpectra : public FairTask
         std::vector<TH1D*> h1_FatVME_E;
         std::vector<TH1D*> h1_FatVME_TDC_dt_refCh1;
         std::vector<TH1D*> h1_FatVME_TDC_dT_refSC41L;
+        std::vector<TH2D*> h2_FatVME_EvsdTsc41;
         TH1D* h1_FatVME_E_Sum;
         TH1I* h1_FatVME_QDC_HitPattern;
         TH1I* h1_FatVME_TDC_HitPattern;
         TH1I* h1_FatVME_QDCMult;
         TH1I* h1_FatVME_TDCMult;
+        TH2D* h2_FatVME_EvsdTsc41_summed;
         
         TH1D* h1_FatVME_time_machine_undelayed;
         TH1D* h1_FatVME_time_machine_delayed;
         
         TH1D* h1_FatVME_sc41l_time;
         TH1D* h1_FatVME_sc41r_time;
-        TH1D* h1_FatVME_sc41l;
-        TH1D* h1_FatVME_sc41r;
 
     public:
         ClassDef(FatimaVmeNearlineSpectra, 1);
