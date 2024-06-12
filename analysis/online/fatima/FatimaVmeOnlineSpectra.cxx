@@ -10,6 +10,7 @@
 #include "EventHeader.h"
 #include "TFatimaVmeConfiguration.h"
 
+#include "AnalysisTools.h"
 #include "c4Logger.h"
 
 #include "TCanvas.h"
@@ -38,6 +39,9 @@ FatimaVmeOnlineSpectra::FatimaVmeOnlineSpectra(const TString& name, Int_t verbos
 FatimaVmeOnlineSpectra::~FatimaVmeOnlineSpectra()
 {
     c4LOG(info, "");
+    delete qdcCalArray;
+    delete tdcCalArray;
+    delete residualArray;
 }
 
 InitStatus FatimaVmeOnlineSpectra::Init()
@@ -51,9 +55,6 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fHitFatimaVme = (TClonesArray*)mgr->GetObject("FatimaVmeCalData");
-    c4LOG_IF(fatal, !fHitFatimaVme, "Branch FatimaVmeCalData not found!");
-
     qdcCalArray = mgr->InitObjectAs<decltype(qdcCalArray)>("FatimaVmeQDCCalData");
     c4LOG_IF(fatal, !qdcCalArray, "Branch qdcCalArray not found!");
     tdcCalArray = mgr->InitObjectAs<decltype(tdcCalArray)>("FatimaVmeTDCCalData");
@@ -64,7 +65,6 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     histograms = (TFolder*)mgr->GetObject("Histograms");
     
     // Configuration
-    fatima_vme_config = TFatimaVmeConfiguration::GetInstance();
     nDetectors = fatima_vme_config->NDetectors();
 
     TDirectory::TContext ctx(nullptr);
@@ -78,7 +78,6 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     dir_cal_vme = dir_fatima_vme->mkdir("Calibrated Spectra");
     dir_residuals = dir_fatima_vme->mkdir("Residual Signals");
 
-
     // Setting histogram sizes
     h1_FatVME_RawE.resize(nDetectors);
     h1_FatVME_E.resize(nDetectors);
@@ -87,11 +86,10 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     h1_FatVME_TDC_dT_refSC41L.resize(nDetectors);
     h2_FatVME_EvsdTsc41.resize(nDetectors);
 
-    dir_stats_vme->cd();
-    h1_FatVME_QDCMult = new TH1I("h1_FatVME_QDCMult", "Fatima VME QDC Multiplicity", nDetectors, 0, nDetectors);
-    h1_FatVME_TDCMult = new TH1I("h1_FatVME_TDCMult", "Fatime VME TDC Multiplicity", nDetectors, 0, nDetectors);
-    h1_FatVME_QDC_HitPattern = new TH1I("h1_FatVME_QDC_HitPattern", "Fatima VME QDC Hit Pattern", nDetectors, 0, nDetectors);
-    h1_FatVME_TDC_HitPattern = new TH1I("h1_FatVME_TDC_HitPattern", "Fatima VME TDC Hit Pattern", nDetectors, 0, nDetectors);
+    h1_FatVME_QDCMult = MakeTH1(dir_stats_vme, "I", "h1_FatVME_QDCMult", "Fatima VME QDC Multiplicity", nDetectors, 0, nDetectors, "Multiplicity", kRed-3, kBlack);
+    h1_FatVME_TDCMult = MakeTH1(dir_stats_vme, "I", "h1_FatVME_TDCMult", "Fatime VME TDC Multiplicity", nDetectors, 0, nDetectors, "Multiplicity", kRed-3, kBlack);
+    h1_FatVME_QDC_HitPattern = MakeTH1(dir_stats_vme, "I", "h1_FatVME_QDC_HitPattern", "Fatima VME QDC Hit Pattern", nDetectors, 0, nDetectors, "Detector", kRed-3, kBlack);
+    h1_FatVME_TDC_HitPattern = MakeTH1(dir_stats_vme, "I", "h1_FatVME_TDC_HitPattern", "Fatima VME TDC Hit Pattern", nDetectors, 0, nDetectors, "Detector", kRed-3, kBlack);
 
     dir_raw_energy = dir_raw_vme->mkdir("Raw Energy");
     dir_cal_energy = dir_cal_vme->mkdir("Calibrated Energy");
@@ -103,7 +101,7 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     for (int i = 0; i < nDetectors; i++)
     {
         c_FatVME_RawE->cd(i+1);
-        h1_FatVME_RawE[i] = new TH1D(Form("h1_FatVme_RawE%i", i), Form("Fatima VME Raw Energy - Detector %i", i), 2000, 0, 40000);
+        h1_FatVME_RawE[i] = MakeTH1(dir_raw_energy, "F", Form("h1_FatVme_RawE%i", i), Form("Fatima VME Raw Energy - Detector %i", i), 2e3, 0, 4e3, "Energy [a.u.]", kSpring, kBlue+2);
         h1_FatVME_RawE[i]->Draw();
     }
     c_FatVME_RawE->cd(0);
