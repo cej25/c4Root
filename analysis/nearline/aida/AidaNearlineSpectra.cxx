@@ -507,7 +507,7 @@ void AidaNearlineSpectra::Exec(Option_t* option)
     // When a RESUME happens after a PAUSE get an interval
     // Track current second (from something?)
     // Push 0s until buffer[0] is at current_second ?
-    // Calcualte amount of 1s from START to interval 
+    // Calculate amount of 1s from START to interval 
     // Calculate number of 1s blocks
     // Calculate amount of 1s from interval to END
     // Fill all from current_time?
