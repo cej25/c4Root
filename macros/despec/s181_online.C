@@ -548,11 +548,12 @@ void s181_online()
     TString f = "Germanium";
     TString g = "Frs";
     TString h = "BB7";
+    TString i = "BGO";
 
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {b, d, c, e, f};
+        std::vector a {b, d, c, e, f, i};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
