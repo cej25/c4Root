@@ -14,6 +14,7 @@ FEBEX_PADDING()
 
 FEBEX_EVENT(card)
 {
+    MEMBER(DATA8 trig);
 	MEMBER(DATA32 event_trigger_time_hi); // trigger time
 	MEMBER(DATA32 event_trigger_time_lo); // "..."
     MEMBER(DATA16 hit_pattern);
@@ -35,7 +36,7 @@ FEBEX_EVENT(card)
         12_15: sfpnr;
         16_23: card = MATCH(card);
         24_31: 0xFF;
-
+        ENCODE(trig, (value=trigger_type));
     }
 
     UINT32 channel_size NOENCODE
@@ -111,6 +112,7 @@ FEBEX_EVENT(card)
 
 FEBEX_EVENT_TRACES(card)
 {
+    MEMBER(DATA8 trig);
 	MEMBER(DATA32 event_trigger_time_hi); // trigger time
 	MEMBER(DATA32 event_trigger_time_lo); // "..."
     MEMBER(DATA16 hit_pattern);
@@ -136,7 +138,7 @@ FEBEX_EVENT_TRACES(card)
         16_23: board_id = MATCH(card);
         24_31: 0xFF;
         ENCODE(board_num, (value = board_id));
-
+        ENCODE(trig, (value=trigger_type));
     }
 
     //ENCODE(board_num, (value = sumchannel.board_id));
