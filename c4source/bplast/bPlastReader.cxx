@@ -324,7 +324,7 @@ Bool_t bPlastReader::Read() //do fine time here:
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
     { //per board:
 
-        int trig = fData->bplast_tamex[it_board_number].trig;
+        uint16_t trig = fData->bplast_tamex[it_board_number].trig;
         if (trig == 1) trig1++;
         if (trig == 3) trig3++;
 

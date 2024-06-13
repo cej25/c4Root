@@ -10,7 +10,7 @@ class BGOTwinpeaksData : public TObject
         BGOTwinpeaksData();
 
         BGOTwinpeaksData(
-        uint8_t trig,
+        uint16_t trig,
         uint16_t board_id,
         uint32_t ch_ID,
         uint32_t lead_epoch_counter,
@@ -27,7 +27,7 @@ class BGOTwinpeaksData : public TObject
         virtual ~BGOTwinpeaksData() {}
 
         // Getters
-        inline const uint8_t Get_trigger() const { return ftrig; }
+        inline const uint16_t Get_trigger() const { return ftrig; }
         inline const uint16_t Get_board_id() const {return fboard_id; }
         inline const uint32_t Get_ch_ID() const {return fch_ID; }
 
@@ -46,7 +46,7 @@ class BGOTwinpeaksData : public TObject
 
 
         // Setters
-        void Set_trigger(uint8_t v) { ftrig = v;}
+        void Set_trigger(uint16_t v) { ftrig = v;}
         void Set_board_id(uint16_t v){fboard_id = v;}
         void Set_ch_ID(uint32_t v){fch_ID = v;}
         void Set_lead_epoch_counter(uint32_t v){flead_epoch_counter = v;}
@@ -60,7 +60,7 @@ class BGOTwinpeaksData : public TObject
 
     protected:
         // Data items
-        uint8_t ftrig;
+        uint16_t ftrig;
         uint16_t fboard_id;
         uint32_t fch_ID;
 

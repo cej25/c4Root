@@ -17,7 +17,7 @@ GermaniumCalData::GermaniumCalData()
 }
 
 GermaniumCalData::GermaniumCalData(
-        uint8_t trig,
+        uint16_t trig,
         uint64_t event_trigger_time,
         uint8_t pileup,
         uint8_t overflow,
