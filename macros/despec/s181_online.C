@@ -1,17 +1,17 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define FATIMA_ON 1
-#define FATIMA_VME_ON 1
-#define AIDA_ON 1
+#define FATIMA_ON 0
+#define FATIMA_VME_ON 0
+#define AIDA_ON 0
 #define BPLAST_ON 1
-#define GERMANIUM_ON 1
-#define BGO_ON 1
+#define GERMANIUM_ON 0
+#define BGO_ON 0
 #define FRS_ON 1
-#define TIME_MACHINE_ON 1
+#define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
-#define WHITE_RABBIT_CORS 1
-#define BB7_ON 1
+#define WHITE_RABBIT_CORS 0
+#define BB7_ON 0
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
@@ -74,9 +74,9 @@ void s181_online()
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     //TString filename = "stream://x86l-182"; // BGO
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
-    //TString filename = "trans://x86l-144"; // ??
+    // TString filename = "trans://x86l-144"; // ??
 //    TString filename = "trans://x86l-86"; // ??.
-    TString filename = "trans://lxg1257"; // 
+    // TString filename = "trans://lxg1257"; // 
     //TString filename = "stream://x86l-182"; // bgo
     //TString filename = "trans://lxg1257"; // timesorter.
     //TString filename = "trans://R4L-21"; // beammonitor
@@ -84,13 +84,14 @@ void s181_online()
     //TString filename = "stream://x86l-117"; // fatima tamex
     //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
     //TString filename = "~/lustre/gamma/s100_files/ts/calibrations/152Eu_calib_0016_*.lmd";
-   // TString filename = "~/lustre/gamma/s100_files/ts/168Dy_0033_0003.lmd";
+//    TString filename = "~/lustre/gamma/s100_files/ts/168Dy_0033_0003.lmd";
+    TString filename = "/lustre/despec/s181/213Tl/213Tl_0065_00*";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 5000; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 2121; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();

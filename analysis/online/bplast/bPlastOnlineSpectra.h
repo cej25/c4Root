@@ -6,6 +6,7 @@
 #include "TDirectory.h"
 #include "TH1F.h"
 #include "TH2F.h"
+#include "TGraph.h"
 #include "TbPlastConfiguration.h"
 #include <vector>
 
@@ -45,11 +46,11 @@ class bPlastOnlineSpectra : public FairTask
     
     private:
         TClonesArray* fHitbPlastTwinpeaks;
+        EventHeader* fEventHeader;
 
         TbPlastConfiguration const* bplast_conf;
         std::map<std::pair<int, int>, std::pair<int, std::pair<char, char>>> bplast_map;
 
-        EventHeader* header;
         Int_t fNEvents;
         int total_time_microsecs = 0;
 
@@ -89,6 +90,7 @@ class bPlastOnlineSpectra : public FairTask
         std::vector<TH2*> h2_bplast_fastToT_vs_slowToT;
         // std::vector<TH1*> h1_bplast_time_spectra; //unused
         TH1* h1_bplast_wr_time_diff;
+        TGraph* gr_bplast_deadtime;
 
         // Detector Multiplicity
         std::vector<TH1*> h1_bplast_multiplicity;
@@ -97,6 +99,9 @@ class bPlastOnlineSpectra : public FairTask
         int event_multiplicity_downstream;
         int wr_t;
         int wr_prev;
+        int pulser_counter = 0; // deadtime counter
+        int timer = 0; // deadtime 1 minute timer
+        int graph_timer = 0; // deadtime 1 hour timer.
 
     public:
         ClassDef(bPlastOnlineSpectra, 1)

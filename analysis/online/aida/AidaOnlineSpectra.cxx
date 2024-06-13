@@ -393,6 +393,8 @@ void AidaOnlineSpectra::Reset_Histo()
     for (auto& h : h_decay_strip_1d_energy) h->Reset();
     // for (auto& h : h_decay_time_delta) h->Reset();
     c4LOG(info, "AIDA histograms reset.");
+
+    // Resetting TGraphs is a bit more involved.
     
 }
 
