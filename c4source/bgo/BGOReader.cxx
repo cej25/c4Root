@@ -305,7 +305,7 @@ Bool_t BGOReader::Read() //do fine time here:
     
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
     { //per board:
-        
+        int trig = fData->bgo_tamex[it_board_number].trig;
         if (fData->bgo_tamex[it_board_number].event_size == 0) continue; // empty event skip
         
         last_word_read_was_epoch = false;
@@ -428,6 +428,7 @@ Bool_t BGOReader::Read() //do fine time here:
                 //if (it_board_number == 1) c4LOG(info,Form("Writing: ch = %i, le = %i lc = %i, lf = %f, te = %i tc = %i, tf = %f ",channelid,last_hits[it_board_number][channelid].lead_epoch_counter, last_hits[it_board_number][channelid].lead_coarse_T, last_hits[it_board_number][channelid].lead_fine_T,last_epoch[channelid],coarse_T,fine_T));
 
                 new ((*fArray)[fArray->GetEntriesFast()]) BGOTwinpeaksData(
+                    trig,
                     it_board_number,
                     channelid,
 

@@ -90,6 +90,9 @@ class bPlastReader : public c4Reader
 
         uint64_t wr_t;
 
+        int trig3 = 0;
+        int trig1 = 0;
+
         static const int NBoards = sizeof(fData->bplast_tamex) / sizeof(fData->bplast_tamex[0]);
         static const int NChannels = 33; //slow + fast per board
 

@@ -2,6 +2,7 @@
 
 bPlastTwinpeaksCalData::bPlastTwinpeaksCalData()
     :
+    ftrig(0),
     fboard_id(0),
     fch_ID(0),
     fdetector_id(0),
@@ -22,6 +23,7 @@ bPlastTwinpeaksCalData::bPlastTwinpeaksCalData()
 }
 
 bPlastTwinpeaksCalData::bPlastTwinpeaksCalData(
+        uint8_t trig,
         uint16_t board_id,
         int ch_ID,
         uint16_t detector_id,
@@ -38,6 +40,7 @@ bPlastTwinpeaksCalData::bPlastTwinpeaksCalData(
         uint16_t wr_subsystem_id,
         uint64_t wr_t)
     : 
+        ftrig(trig),
         fboard_id(board_id),
         fch_ID(ch_ID),
         fdetector_id(detector_id),

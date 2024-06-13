@@ -90,7 +90,7 @@ TAMEX4_SFP(sfp, card)
 		12_15: sfp = MATCH(sfp);
 		16_23: card = MATCH(card);
 		24_31: 0;
-		ENCODE(trig, (value = trigger_type));
+		//ENCODE(trig, (value = trigger_type));
 	}
 
 	MATCH_END;
@@ -109,6 +109,7 @@ TAMEX4_SFP(sfp, card)
 		17_19: reserved;
 		20_23: trigger_type;
 		24_31: 0xaa;
+		ENCODE(trig, (value = trigger_type));
 	}
 
 	list (0 <= i < data_size.bytes / 4 - 3) 

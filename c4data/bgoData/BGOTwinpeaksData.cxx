@@ -2,6 +2,7 @@
 
 BGOTwinpeaksData::BGOTwinpeaksData()
     : 
+    ftrig(0),
     fboard_id(0),
     fch_ID(0),
     flead_epoch_counter(0),
@@ -16,6 +17,7 @@ BGOTwinpeaksData::BGOTwinpeaksData()
 }
 
 BGOTwinpeaksData::BGOTwinpeaksData(
+        uint8_t trig,
         uint16_t board_id,
         uint32_t ch_ID,
         uint32_t lead_epoch_counter,
@@ -28,6 +30,7 @@ BGOTwinpeaksData::BGOTwinpeaksData(
         uint16_t wr_subsystem_id,
         uint64_t wr_t)
     : 
+    ftrig(trig),
     fboard_id(board_id),
     fch_ID(ch_ID),
     flead_epoch_counter(lead_epoch_counter),
