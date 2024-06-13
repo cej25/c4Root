@@ -10,7 +10,7 @@ class GermaniumCalData : public TObject
         GermaniumCalData();
 
         GermaniumCalData(     //uint32_t num_channels_fired,
-                             uint8_t trig,
+                             uint16_t trig,
                              uint64_t event_trigger_time, // ns
                               //uint16_t hit_pattern, 
                               //uint8_t board_id, 
@@ -32,7 +32,7 @@ class GermaniumCalData : public TObject
 
         // Getters
         //inline const uint32_t Get_num_channels_fired() const { return fnum_channels_fired; }
-        inline const uint8_t Get_trigger() const { return ftrig; }
+        inline const uint16_t Get_trigger() const { return ftrig; }
         inline const uint64_t Get_event_trigger_time() const { return fevent_trigger_time; }
         //inline const uint16_t Get_hit_pattern() const { return fhit_pattern; }
         //inline const uint8_t Get_board_id() const { return fboard_id; }
@@ -51,7 +51,7 @@ class GermaniumCalData : public TObject
 
         // Setters
         //void Set_num_channels_fired(uint32_t v) { fnum_channels_fired = v; }
-        void Set_trigger(uint8_t v) { ftrig = v; }
+        void Set_trigger(uint16_t v) { ftrig = v; }
         void Set_event_trigger_time(uint64_t v) { fevent_trigger_time = v; }
         //void Set_hit_pattern(uint16_t v) { fhit_pattern = v; }
         //void Set_board_id(uint8_t v) { fboard_id = v; }
@@ -70,7 +70,7 @@ class GermaniumCalData : public TObject
         // Data items
         
         //uint32_t fnum_channels_fired;
-        uint8_t ftrig;
+        uint16_t ftrig;
         uint64_t fevent_trigger_time;
         //uint16_t fhit_pattern;
         //uint8_t fboard_id;

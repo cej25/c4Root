@@ -23,7 +23,7 @@ bPlastTwinpeaksCalData::bPlastTwinpeaksCalData()
 }
 
 bPlastTwinpeaksCalData::bPlastTwinpeaksCalData(
-        uint8_t trig,
+        uint16_t trig,
         uint16_t board_id,
         int ch_ID,
         uint16_t detector_id,

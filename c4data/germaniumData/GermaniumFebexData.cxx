@@ -20,7 +20,7 @@ GermaniumFebexData::GermaniumFebexData()
 }
 
 GermaniumFebexData::GermaniumFebexData(
-        uint8_t trig,
+        uint16_t trig,
         uint32_t num_channels_fired,
         uint64_t event_trigger_time,
         uint16_t hit_pattern,
