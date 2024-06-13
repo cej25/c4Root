@@ -199,7 +199,7 @@ InitStatus GermaniumOnlineSpectra::Init()
         for (int detid_idx = 0; detid_idx < number_of_detectors_to_plot; detid_idx++)
         {
             c_germanium_time_differences->cd(detid_idx+1);
-            h1_germanium_time_differences[ihist][detid_idx] = MakeTH1(dir_germanium_time_differences[ihist], "F", Form("h1_germanium_rel_time_det_%d_%d_to_det_%d_%d_energy_gate_%d_%d",crystals_to_plot.at(detid_idx).first,crystals_to_plot.at(detid_idx).second,dt_reference_detectors.at(ihist).first,dt_reference_detectors.at(ihist).second,(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("Germanium delta time t(%d%c) - t(%d%c) gated %d and %d",crystals_to_plot.at(detid_idx).first,(char)(crystals_to_plot.at(detid_idx).second+65),dt_reference_detectors.at(ihist).first,(char)(dt_reference_detectors.at(ihist).second+65),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),1e3,-1e3,1e3, Form("dt t(%d%c) - t(%d%c) (ns)",crystals_to_plot.at(detid_idx).first,(char)(crystals_to_plot.at(detid_idx).second+65),dt_reference_detectors.at(ihist).first,(char)(dt_reference_detectors.at(ihist).second+65)), kMagenta, kBlue+2);
+            h1_germanium_time_differences[ihist][detid_idx] = MakeTH1(dir_germanium_time_differences[ihist], "F", Form("h1_germanium_rel_time_det_%d_%d_to_det_%d_%d_energy_gate_%d_%d",crystals_to_plot.at(detid_idx).first,crystals_to_plot.at(detid_idx).second,dt_reference_detectors.at(ihist).first,dt_reference_detectors.at(ihist).second,(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("Germanium delta time t(%d%c) - t(%d%c) gated %d and %d",crystals_to_plot.at(detid_idx).first,(char)(crystals_to_plot.at(detid_idx).second+65),dt_reference_detectors.at(ihist).first,(char)(dt_reference_detectors.at(ihist).second+65),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),2e3,-1e3,20e3, Form("dT t(%d%c) - t(%d%c) (ns)",crystals_to_plot.at(detid_idx).first,(char)(crystals_to_plot.at(detid_idx).second+65),dt_reference_detectors.at(ihist).first,(char)(dt_reference_detectors.at(ihist).second+65)), kMagenta, kBlue+2);
             h1_germanium_time_differences[ihist][detid_idx]->Draw();
         }
         c_germanium_time_differences->cd(0);
@@ -477,7 +477,8 @@ void GermaniumOnlineSpectra::Snapshot_Ge_Histo()
 }
 
 void GermaniumOnlineSpectra::Exec(Option_t* option)
-{
+{   
+    int sc41_hits_seen = 0;
     if (fHitGe && fHitGe->GetEntriesFast() > 0)
     {
 
@@ -489,7 +490,8 @@ void GermaniumOnlineSpectra::Exec(Option_t* option)
         
         bool sci41_seen = false; // off-spill raw spectra
 
-        for (Int_t ihit = 0; ihit < nHits; ihit++){ // core loop for basic detector spectra and simple conincidences.
+        for (Int_t ihit = 0; ihit < nHits; ihit++) // core loop for basic detector spectra and simple conincidences.
+        {
             
             GermaniumCalData* hit1 = (GermaniumCalData*)fHitGe->At(ihit);
             if (!hit1) continue;
@@ -503,7 +505,11 @@ void GermaniumOnlineSpectra::Exec(Option_t* option)
             
             if (!(germanium_configuration->IsDetectorAuxilliary(detector_id1))) event_multiplicity ++; // count only physical events in germaniums
 
-            if (detector_id1 == germanium_configuration->SC41L() || detector_id1 == germanium_configuration->SC41R()) sci41_seen = true;
+            if (detector_id1 == germanium_configuration->SC41L() || detector_id1 == germanium_configuration->SC41R()) 
+            {
+                sc41_hits_seen++;
+                sci41_seen = true;
+            }
             
             int crystal_index1 = std::distance(crystals_to_plot.begin(), std::find(crystals_to_plot.begin(),crystals_to_plot.end(),std::pair<int,int>(detector_id1,crystal_id1)));
 

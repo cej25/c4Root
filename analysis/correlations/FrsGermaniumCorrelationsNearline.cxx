@@ -118,7 +118,7 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
     h2_frs_x4_vs_AoQ_gated->GetXaxis()->SetTitle("A/Q");
     h2_frs_x4_vs_AoQ_gated->GetYaxis()->SetTitle("x4");
 
-    
+    // this is the "bad" one
     h2_germanium_energy_vs_tsci41 = new TH2F(TString("h2_germanium_energy_vs_tsci41_frs_gate_"+frsgate->GetName()),TString("Germanium energies vs t(det) - t(sci41), short lifetime,  gated FRS on "+frsgate->GetName()),10000,-2000,stop_short_lifetime_collection,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     h2_germanium_energy_vs_tsci41->GetXaxis()->SetTitle("time difference (ns)");
     h2_germanium_energy_vs_tsci41->GetYaxis()->SetTitle("energy (keV)");
@@ -135,7 +135,7 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
 
 
 
-
+    // this is the "good" one
     h2_germanium_energy_vs_sci41_wr_long = new TH2F(TString("h2_germanium_energy_vs_sci41_wr_long_frs_gate_"+frsgate->GetName()),TString("Germanium energies vs t(det,wr) - t(sci41,wr) long lifetime, gated FRS on "+frsgate->GetName()),10000,long_lifetime_binlow,long_lifetime_binhigh,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     h2_germanium_energy_vs_sci41_wr_long->GetXaxis()->SetTitle("time difference (ns)");
     h2_germanium_energy_vs_sci41_wr_long->GetYaxis()->SetTitle("energy (keV)");
@@ -360,7 +360,8 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
         }
 
         
-
+        // ok "wr_t_last_frs_hit == 0" means !positivePID
+        // this is not very clear.
         if (nHits >= 1 && wr_t_last_frs_hit != 0){
             //long isomer
         for (int ihit1 = 0; ihit1 < nHits; ihit1 ++){
@@ -375,7 +376,7 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
 
             if (germanium_configuration->IsDetectorAuxilliary(detector_id_long)==true) continue;
 
-
+            // this is the "good" one
             h2_germanium_energy_vs_sci41_wr_long->Fill(ge_wr_long-wr_t_last_frs_hit, energy_long);
             
 

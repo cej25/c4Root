@@ -19,6 +19,7 @@
 #define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 0
+#define BB7_ON 0
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
@@ -50,10 +51,10 @@ void s100_nearline_histograms(TString filename)
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
 
     // Name your experiment. Make sure all relevant directories are named identically.
-    TString fExpName = "s100";
+    TString fExpName = "s181";
 
     // Define important paths.
-    TString c4Root_path = "/lustre/gamma/s100_nearline/c4Root";
+    TString c4Root_path = "/lustre/gamma/s181_nearline/c4Root";
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
 
@@ -72,8 +73,8 @@ void s100_nearline_histograms(TString filename)
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    TString outputpath = "/lustre/gamma/s100_nearline/histograms/";
-    TString outputFileName = outputpath + TString(GET_FILENAME(filename)) + "_histograms_with162Eu_newGatesTest.root";
+    TString outputpath = "/lustre/gamma/s181_nearline/histograms/";
+    TString outputFileName = outputpath + TString(GET_FILENAME(filename)) + "_histograms.root";
 
     FairRunAna* run = new FairRunAna();
     EventHeader* EvtHead = new EventHeader();
@@ -111,7 +112,7 @@ void s100_nearline_histograms(TString filename)
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     
-    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_apr15.txt");
+    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_jun08.txt");
     TGermaniumConfiguration::SetDetectorTimeshiftsFile(config_path + "/germanium/ge_timeshifts_apr20.txt");
     TGermaniumConfiguration::SetPromptFlashCut(config_path + "/germanium/ge_prompt_flash.root" );
     
@@ -169,7 +170,6 @@ void s100_nearline_histograms(TString filename)
         
     }
     
-    
     if (GERMANIUM_ON)
     {
         GermaniumNearlineSpectra* nearlinege = new GermaniumNearlineSpectra();
@@ -190,13 +190,18 @@ void s100_nearline_histograms(TString filename)
         
     }
     
-    TFrsConfiguration::Set_Z_range(50,80);
+    // CEJ: I don't know what ranges or gates are being
+    // used by nearline shifters, sorry. 12/06 17.12
+    TFrsConfiguration::Set_Z_range(30,100);
     TFrsConfiguration::Set_AoQ_range(2.3,2.7);
     std::vector<FrsGate*> fg;
-    FrsGate* Eu163 = new FrsGate("163Eu", "/lustre/gamma/s100_nearline/c4Root/config/s100/frs/Gates/163Eu_test.root");
-    fg.emplace_back(Eu162);
-    
-    
+    FrsGate* zHeavy = new FrsGate("zHeavy", "/lustre/gamma/s181_nearline/c4Root/config/s181/frs/zHeavy.root");
+    FrsGate* Pb1 = new FrsGate("Pb1", "/lustre/gamma/s181_nearline/c4Root/config/s181/frs/Gates/cut_Pb.root");
+    FrsGate* Pb2 = new FrsGate("Pb2", "/lustre/gamma/s181_nearline/c4Root/config/s181/frs/Gates/z82.root");
+    fg.emplace_back(zHeavy);
+    fg.emplace_back(Pb1);
+    fg.emplace_back(Pb2);
+        
     if (FRS_ON)
     {
         FrsNearlineSpectra* nearlinefrs = new FrsNearlineSpectra(fg);
@@ -235,29 +240,29 @@ void s100_nearline_histograms(TString filename)
 
     if (FRS_ON && GERMANIUM_ON)
     {
-        FrsGermaniumCorrelationsNearline* ge162Eu = new FrsGermaniumCorrelationsNearline(Eu162);
-        ge162Eu->SetShortLifetimeCollectionWindow(5000);
-        FrsGermaniumCorrelationsNearline* ge163Eu = new FrsGermaniumCorrelationsNearline(Eu163);
-        ge163Eu->SetShortLifetimeCollectionWindow(5000);
-        FrsGermaniumCorrelationsNearline* ge167Tb = new FrsGermaniumCorrelationsNearline(Tb167);
-        ge167Tb->SetShortLifetimeCollectionWindow(5000);
-        run->AddTask(ge162Eu);
-        run->AddTask(ge163Eu);
-        run->AddTask(ge167Tb);     
+        FrsGermaniumCorrelationsNearline* ge_zHeavy = new FrsGermaniumCorrelationsNearline(ge_zHeavy);
+        ge_zHeavy->SetShortLifetimeCollectionWindow(20000);
+        run->AddTask(ge_zHeavy);  
+        FrsGermaniumCorrelationsNearline* ge_Pb1 = new FrsGermaniumCorrelationsNearline(ge_Pb1);
+        ge_Pb1->SetShortLifetimeCollectionWindow(20000);
+        run->AddTask(ge_Pb1);
+        FrsGermaniumCorrelationsNearline* ge_Pb2 = new FrsGermaniumCorrelationsNearline(ge_Pb2);
+        ge_Pb2->SetShortLifetimeCollectionWindow(20000);
+        run->AddTask(ge_Pb2);
         
 
      }
     if (FATIMA_ON && FRS_ON)
     {
-        FrsFatimaCorrelationsNearline* fat162Eu = new FrsFatimaCorrelationsNearline(Eu162);
-        fat162Eu->SetShortLifetimeCollectionWindow(5000);
-        FrsFatimaCorrelationsNearline* fat163Eu = new FrsFatimaCorrelationsNearline(Eu163);
-        fat163Eu->SetShortLifetimeCollectionWindow(5000);
-        FrsFatimaCorrelationsNearline* fat167Tb = new FrsFatimaCorrelationsNearline(Tb167);
-        fat167Tb->SetShortLifetimeCollectionWindow(5000);
-        run->AddTask(fat162Eu);
-        run->AddTask(fat163Eu);
-        run->AddTask(fat167Tb);
+        FrsFatimaCorrelationsNearline* fat_zHeavy = new FrsFatimaCorrelationsNearline(fat_zHeavy);
+        fat_zHeavy->SetShortLifetimeCollectionWindow(20000);
+        run->AddTask(fat_zHeavy);
+        FrsFatimaCorrelationsNearline* fat_Pb1 = new FrsFatimaCorrelationsNearline(fat_Pb1);
+        fat_Pb1->SetShortLifetimeCollectionWindow(20000);
+        run->AddTask(fat_Pb1);
+        FrsFatimaCorrelationsNearline* fat_Pb2 = new FrsFatimaCorrelationsNearline(fat_Pb2);
+        fat_Pb2->SetShortLifetimeCollectionWindow(20000);
+        run->AddTask(fat_Pb2);
         
     }	
 

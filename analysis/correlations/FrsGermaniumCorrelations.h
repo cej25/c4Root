@@ -170,12 +170,21 @@ class FrsGermaniumCorrelations : public FairTask
         TH1F ** h1_germanium_twr_sci41_energy_gated;
         
 
+        int number_of_detectors_to_plot;
+        std::vector<std::pair<int,int>> crystals_to_plot;
+        TH1** h1_ge_time_ref_frs_wr;
 
 
 
         // Folder and files
+        TFolder* histograms;
         TFolder* folder_germanium;
         TFolder ** folder_energy_gated;
+
+        TDirectory* dir_frs;
+        TDirectory* dir_frs_ge_corr;
+        TDirectory* dir_frs_ge_gate;
+        // other
 
 
 

@@ -49,9 +49,9 @@ void s181_online()
 
     // Define important paths.
     //TString c4Root_path = "/u/jbormans/c4Root";
-    TString c4Root_path = "/u/despec/s181_online/c4Root";
+    //TString c4Root_path = "/u/despec/s181_online/c4Root";
     TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
-    //TString c4Root_path = "/u/cjones/c4Root";
+    TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes";
     ucesb_path.ReplaceAll("//","/");
 
@@ -451,6 +451,7 @@ void s181_online()
     TFrsConfiguration::Set_Z_range(30,120);
     TFrsConfiguration::Set_AoQ_range(2.0,3.0);
     FrsGate* zHeavy = new FrsGate("zHeavy",config_path+"/frs/Gates/zHeavy.root");
+    FrsGate* zHeavy2 = new FrsGate("zHeavy2",config_path+"/frs/Gates/zHeavy.root");
     std::vector<FrsGate*> frsgates{};
     frsgates.emplace_back(zHeavy);
 
@@ -487,29 +488,12 @@ void s181_online()
     
     if (FRS_ON && GERMANIUM_ON)
     {
-        // FrsGermaniumCorrelations * geZDy = new FrsGermaniumCorrelations(frsgateZDy);
-        // geZDy->SetShortLifetimeCollectionWindow(5000);
-        // run->AddTask(geZDy);
-        // FrsGermaniumCorrelations * geZHo = new FrsGermaniumCorrelations(frsgateZHo);
-        // geZHo->SetShortLifetimeCollectionWindow(5000);
-        // run->AddTask(geZHo);
-        // */
-        // FrsGermaniumCorrelations * ge162Eu = new FrsGermaniumCorrelations(frsgate162Eu);
-        // run->AddTask(ge162Eu);
-        // FrsGermaniumCorrelations * ge163Eu = new FrsGermaniumCorrelations(frsgate163Eu);
-        // ge163Eu->SetShortLifetimeCollectionWindow(5000);
-        // run->AddTask(ge163Eu);
-        // FrsGermaniumCorrelations * geZEu = new FrsGermaniumCorrelations(frsgateZEu);
-        // geZEu->SetShortLifetimeCollectionWindow(5000);
-        // run->AddTask(geZEu);
-        
-        // FrsGermaniumCorrelations * ge167Tb = new FrsGermaniumCorrelations(frsgate167Tb);
-        // ge167Tb->SetShortLifetimeCollectionWindow(5000);
-        // run->AddTask(ge167Tb);
-        // FrsGermaniumCorrelations * ge164Gd = new FrsGermaniumCorrelations(frsgate164Gd);
-        // ge164Gd->SetShortLifetimeCollectionWindow(5000);
-        // run->AddTask(ge164Gd);
-        
+        FrsGermaniumCorrelations* zhv = new FrsGermaniumCorrelations(zHeavy);
+        zhv->SetShortLifetimeCollectionWindow(20000);
+        run->AddTask(zhv);
+        FrsGermaniumCorrelations* zhv2 = new FrsGermaniumCorrelations(zHeavy2);
+        zhv2->SetShortLifetimeCollectionWindow(20000);
+        run->AddTask(zhv2);
     }
     if (FRS_ON && FATIMA_ON)
     {

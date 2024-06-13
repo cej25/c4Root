@@ -2,6 +2,7 @@
 
 BGOTwinpeaksCalData::BGOTwinpeaksCalData()
     :
+    ftrig(0),
     fboard_id(0),
     fch_ID(0),
     
@@ -25,6 +26,7 @@ BGOTwinpeaksCalData::BGOTwinpeaksCalData()
 }
 
 BGOTwinpeaksCalData::BGOTwinpeaksCalData(
+        uint8_t trig,
         uint16_t board_id,
         uint16_t ch_ID,
         
@@ -45,6 +47,7 @@ BGOTwinpeaksCalData::BGOTwinpeaksCalData(
         uint16_t wr_subsystem_id,
         uint64_t wr_t)
     : 
+        ftrig(trig),
         fboard_id(board_id),
         fch_ID(ch_ID),
         fdetector_id(detector_id),

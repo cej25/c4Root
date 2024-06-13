@@ -120,43 +120,50 @@ Fatal error if detector map is not set. If calibration coeffs are not written, s
 
 Picks out the TimeMachine.
 */
-void GermaniumRaw2Cal::Exec(Option_t* option){
-    if (funcal_data && funcal_data->GetEntriesFast() > 0){
+void GermaniumRaw2Cal::Exec(Option_t* option)
+{
+    if (funcal_data && funcal_data->GetEntriesFast() > 0)
+    {
         Int_t event_multiplicity = funcal_data->GetEntriesFast();
-        for (Int_t ihit = 0; ihit < event_multiplicity; ihit++){
+        for (Int_t ihit = 0; ihit < event_multiplicity; ihit++)
+        {
             funcal_hit = (GermaniumFebexData*)funcal_data->At(ihit);
             
             //do the detector mapping here:
-            if (germanium_configuration->MappingLoaded()){
+            if (germanium_configuration->MappingLoaded())
+            {
                 std::pair<int,int> unmapped_det {funcal_hit->Get_board_id(), funcal_hit->Get_channel_id()};
                 
-                if (germanium_configuration->Mapping().count(unmapped_det) > 0){
-                detector_id = germanium_configuration->Mapping().at(unmapped_det).first; //.find returns an iterator over the pairs matching key.
-                crystal_id = germanium_configuration->Mapping().at(unmapped_det).second;
+                if (germanium_configuration->Mapping().count(unmapped_det) > 0)
+                {
+                    detector_id = germanium_configuration->Mapping().at(unmapped_det).first; //.find returns an iterator over the pairs matching key.
+                    crystal_id = germanium_configuration->Mapping().at(unmapped_det).second;
 
-                if (detector_id == -1 || crystal_id == -1) continue; //skip
+                    if (detector_id == -1 || crystal_id == -1) continue; //skip
 
-                }else{
-                    continue; // simply ignore unmapped items.
                 }
+                else continue;// simply ignore unmapped items.
 
                 //only do calibrations if mapping is functional:
-                if (germanium_configuration->CalibrationCoefficientsLoaded()){
+                if (germanium_configuration->CalibrationCoefficientsLoaded())
+                {
                     std::pair<int,int> calibdet {detector_id, crystal_id};
-                    if (germanium_configuration->CalibrationCoefficients().count(calibdet) > 0){
-                    double a0 = germanium_configuration->CalibrationCoefficients().at(calibdet).first; //.find returns an iterator over the pairs matching key.
-                    double a1 = germanium_configuration->CalibrationCoefficients().at(calibdet).second;
-                    channel_energy_cal = a0 + a1*(double) funcal_hit->Get_channel_energy();
-                    }else{
+                    if (germanium_configuration->CalibrationCoefficients().count(calibdet) > 0)
+                    {
+                        double a0 = germanium_configuration->CalibrationCoefficients().at(calibdet).first; //.find returns an iterator over the pairs matching key.
+                        double a1 = germanium_configuration->CalibrationCoefficients().at(calibdet).second;
+                        channel_energy_cal = a0 + a1*(double) funcal_hit->Get_channel_energy();
+                    }
+                    else
+                    {
                         //c4LOG(fatal, "Detector Calibrations not set - please set this using SetCalibrationMap to use the Cal Task.");
                         channel_energy_cal = funcal_hit->Get_channel_energy();
                         //continue;
                     }
                 }
             }
-            else{ //no map and cal: ->
-                c4LOG(fatal, "Detector Mapping not set - please set this.");
-            }
+            else c4LOG(fatal, "Detector Mapping not set - please set this."); //no map and cal: ->
+
 
             if (detector_id == germanium_configuration->TM_Delayed()){
                 new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData(0,funcal_hit->Get_channel_trigger_time(),funcal_hit->Get_wr_subsystem_id(),funcal_hit->Get_wr_t());
@@ -168,6 +175,7 @@ void GermaniumRaw2Cal::Exec(Option_t* option){
             }
 
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) GermaniumCalData(
+                funcal_hit->Get_trigger(),
                 funcal_hit->Get_event_trigger_time(),
                 funcal_hit->Get_pileup(),
                 funcal_hit->Get_overflow(),

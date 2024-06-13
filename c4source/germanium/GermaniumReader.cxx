@@ -65,11 +65,13 @@ Bool_t GermaniumReader::Read()
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number ++){
         //since the febex card has a 100MHz clock which timestamps events.
         //the event trigger time is to within a
+        int trig = fData->germanium_data[it_board_number].trig;
         event_trigger_time_long = (((uint64_t)(fData->germanium_data[it_board_number].event_trigger_time_hi) << 32) + (fData->germanium_data[it_board_number].event_trigger_time_lo))*10;
     
         if (WriteZeroMultEvents & (fData->germanium_data[it_board_number].channel_energy == 0)){ 
             // Write if flag is true. See setter to change behaviour.
             new ((*fArray)[fArray->GetEntriesFast()]) GermaniumFebexData(
+                trig,
                 fData->germanium_data[it_board_number].channel_energy,
                 event_trigger_time_long,
                 fData->germanium_data[it_board_number].hit_pattern,
@@ -89,7 +91,6 @@ Bool_t GermaniumReader::Read()
 
         for (int index = 0; index < fData->germanium_data[it_board_number].channel_energy; index++)
         {   
-            
             
             //c4LOG(info,Form("channel_energy = %i, channel_energyI[%i] = %d, channel_energyv[%i] = %d;",fData->germanium_data[it_board_number].channel_energy,index,fData->germanium_data[it_board_number].channel_energyI[index],index,fData->germanium_data[it_board_number].channel_energyv[index]));
             //c4LOG(info,Form("channel_id = %i, channel_idI[%i] = %d, channel_idv[%i] = %d;",fData->germanium_data[it_board_number].channel_id,index,fData->germanium_data[it_board_number].channel_idI[index],index,fData->germanium_data[it_board_number].channel_idv[index]));
@@ -123,6 +124,7 @@ Bool_t GermaniumReader::Read()
 
 
             new ((*fArray)[fArray->GetEntriesFast()]) GermaniumFebexData(
+                trig,
                 fData->germanium_data[it_board_number].channel_energy,
                 event_trigger_time_long,
                 fData->germanium_data[it_board_number].hit_pattern,
