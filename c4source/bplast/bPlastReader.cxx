@@ -325,8 +325,26 @@ Bool_t bPlastReader::Read() //do fine time here:
     { //per board:
 
         uint16_t trig = fData->bplast_tamex[it_board_number].trig;
-        if (trig == 1) trig1++;
-        if (trig == 3) trig3++;
+        if (trig == 3) 
+        {
+            //std::cout << "here we print trig = 3!" << std::endl;
+            // create new structure for trig 3 events perhaps
+            new ((*fArray)[fArray->GetEntriesFast()]) bPlastTwinpeaksData(
+                    trig,
+                    it_board_number,
+                    0,
+                    //last_hits[it_board_number][channelid-1].lead_epoch_counter,
+                    0,
+                    //last_hits[it_board_number][channelid-1].lead_coarse_T,
+                    0,
+                    //last_hits[it_board_number][channelid-1].lead_fine_T,
+                    0,
+                    0,
+                    0,
+                    0,
+                    fData->bplast_ts_subsystem_id,
+                    wr_t);
+        }
 
         if (fData->bplast_tamex[it_board_number].event_size == 0) continue; // empty event skip
         
