@@ -76,15 +76,16 @@ void s181_online()
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
     //TString filename = "trans://x86l-144"; // ??
 //    TString filename = "trans://x86l-86"; // ??.
-    TString filename = "trans://lxg1257"; // 
+    //TString filename = "trans://lxg1257"; // 
     //TString filename = "stream://x86l-182"; // bgo
-    //TString filename = "trans://lxg1257"; // timesorter.
+    TString filename = "trans://lxg1257"; // timesorter.
     //TString filename = "trans://R4L-21"; // beammonitor
     // TString filename = "stream://x86l-87"; // bplast
     //TString filename = "stream://x86l-117"; // fatima tamex
     //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
     //TString filename = "~/lustre/gamma/s100_files/ts/calibrations/152Eu_calib_0016_*.lmd";
-   // TString filename = "~/lustre/gamma/s100_files/ts/168Dy_0033_0003.lmd";
+    //TString filename = "~/lustre/gamma/s100_files/ts/168Dy_0033_0003.lmd";
+    //TString filename = "~/lustre/despec/s100/168Dy/168Dy_0033_0003.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 

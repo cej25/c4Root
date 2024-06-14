@@ -41,6 +41,14 @@ Double_t TFrsConfiguration::fMin_dE_travMusic = 0., TFrsConfiguration::fMax_dE_t
 TFrsConfiguration::TFrsConfiguration()
 {
     ReadScalerNames();
+    // for now:
+    sci_names[0] = "sci21";
+    sci_names[1] = "sci22";
+    sci_names[2] = "sci41";
+    sci_names[3] = "sci42";
+    sci_names[4] = "sci43";
+    sci_names[5] = "sci81";
+    
 }
 
 void TFrsConfiguration::ReadScalerNames()
