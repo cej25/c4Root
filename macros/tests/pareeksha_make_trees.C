@@ -56,11 +56,11 @@ void pareeksha_make_trees()
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0169_*.lmd";  //data with only lisa
     //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/daqtest/daqtest_0001_0001.lmd"; //data from ts folder
-    TString filename = "/u/gandolfo/data1/lustre/gamma/s092_s143_files/ts/run_0150_*.lmd"; //from time stitched files
+    TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0196_*.lmd"; //from time stitched files
 
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data1/lustre/gamma/LISA/data/pareeksha_trees/";
-    TString outputFilename = outputpath + "run_0150_test.root";
+    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/";
+    TString outputFilename = outputpath + "run_0196_test.root";
 
 
     //:::::::Create online run
