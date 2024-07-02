@@ -2,7 +2,6 @@
 //............
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define LISA_ON 1
-//#define FATIMA_ON 1
 #define FRS_ON 1
 #define TRAV_MUSIC_ON 1
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
@@ -57,11 +56,11 @@ void elisa_pareeksha_online()
     //::::::::::P A T H   O F   F I L E  to read
     //___O N L I N E
     //TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
-    TString filename = "trans://lxg1257"; // time stitched
+    //TString filename = "trans://lxg1257"; // time stitched
 
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0167_*.lmd";  //data with only lisa
-    //TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0074_00*.lmd"; //74,22 good run for statistics, frs, trav, lisa in ts
+    TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0036_00*.lmd"; //74,22 good run for statistics, frs, trav, lisa in ts
 
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/";
@@ -70,7 +69,7 @@ void elisa_pareeksha_online()
 
     //:::::::Create online run
     Int_t refresh = 10; // Refresh rate for online histograms
-    Int_t port = 5000;
+    Int_t port = 2222;
      
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -117,6 +116,7 @@ void elisa_pareeksha_online()
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     TLisaConfiguration::SetMappingFile(config_path + "/lisa/Lisa_Detector_Map_names.txt");
+    TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_Detector_Map_names.txt");
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // S U B S Y S T E M S
