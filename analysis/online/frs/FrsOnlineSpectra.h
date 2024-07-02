@@ -2,8 +2,11 @@
 #define FrsOnlineSpectra_H 1
 
 #include "TFrsConfiguration.h"
+#include "TExperimentConfiguration.h"
 #include "FrsGate.h"
 #include "FrsHitData.h"
+#include "FrsTPCCalData.h"
+#include "AnalysisTools.h"
 
 #include "FairTask.h"
 #include "TH2.h"
@@ -11,19 +14,16 @@
 #include "TDirectory.h"
 #include <vector>
 
-class TClonesArray;
+class TFrsConfiguration;
+class TExperimentConfiguration;
 class EventHeader;
 class FrsHitData;
 class FrsGate;
 class TFolder;
 class TDirectory;
 class TCanvas;
-class TH1F;
-class TH2F;
-class TH1D;
-class TH1I;
-class TH2D;
-class TH2I;
+class TH1;
+class TH2;
 
 class FrsOnlineSpectra : public FairTask
 {
@@ -34,8 +34,6 @@ class FrsOnlineSpectra : public FairTask
         FrsOnlineSpectra(const TString& name, Int_t verbose = 1);
 
         virtual ~FrsOnlineSpectra();
-
-        virtual void SetParContainers();
 
         virtual InitStatus Init();
 
@@ -52,6 +50,7 @@ class FrsOnlineSpectra : public FairTask
 
     private:
         TFrsConfiguration const* frs_config;
+        TExperimentConfiguration const* exp_config;
 
         TFRSParameter* frs;
         TMWParameter* mw;
@@ -66,7 +65,7 @@ class FrsOnlineSpectra : public FairTask
 
         std::vector<FrsGate*> FrsGates;
 
-        //TClonesArray* fHitFrsArray; // array with hit items
+        std::vector<FrsTPCCalItem> const* tpcCalArray;
         std::vector<FrsHitItem> const* hitArray;
         std::vector<FrsMultiHitItem> const* multihitArray; //EG
 
@@ -80,99 +79,187 @@ class FrsOnlineSpectra : public FairTask
         TCanvas* c_frs_x4_vs_AoQ;
         TCanvas* c_frs_snapshot;
 
+        // testing...
+        TH1* h1_test_scaler;
+        TH2* h2_test_again;
+
         // Histograms for PID:
-        // TAC
-        TH2D* h2_Z_vs_AoQ;
-        TH2D* h2_Z_vs_AoQ_corr;
-        TH2D* h2_Z_vs_Z2;
-        TH2D* h2_Z_vs_AoQ_Zsame;
-        TH2D* h2_x4_vs_AoQ_Zsame;
-        TH2D* h2_x2_vs_AoQ_Zsame;
-        TH2D* h2_x2_vs_AoQ;
-        TH2D* h2_x4_vs_AoQ;
-        TH2D* h2_dEdegoQ_vs_Z;
-        TH2D* h2_dEdeg_vs_Z;
-        TH2D* h2_a2_vs_AoQ;
-        TH2D* h2_a4_vs_AoQ;
-        TH2D* h2_Z_vs_dE2;
-        TH2D* h2_x2_vs_x4;
-        TH2D* h2_SC41dE_vs_AoQ;
-        TH2D* h2_dE_vs_ToF;
-        TH2D* h2_x2_vs_Z;
-        TH2D* h2_x4_vs_Z;
-        TH2D* h2_dE1_vs_x2;
-        TH2D* h2_dE1_vs_x4;
-        TH2D* h2_x2_vs_a2;
-        TH2D* h2_y2_vs_b2;
-        TH2D* h2_x4_vs_a4;
-        TH2D* h2_y4_vs_b4;
-        TH2D* h2_Z_vs_Sc21E;
-        // MHTDC
-        TH2D* h2_Z_vs_AoQ_mhtdc; //EG  
+        // TAC 2D
+        TH2* h2_Z_vs_AoQ;
+        TH2* h2_Z_vs_AoQ_corr;
+        TH2* h2_Z_vs_Z2;
+        TH2* h2_travmus_vs_Z;
+        TH2* h2_Z_vs_AoQ_Zsame;
+        TH2* h2_x4_vs_AoQ_Zsame;
+        TH2* h2_x2_vs_AoQ_Zsame;
+        TH2* h2_x2_vs_AoQ;
+        TH2* h2_x4_vs_AoQ;
+        TH2* h2_dEdegoQ_vs_Z;
+        TH2* h2_dEdeg_vs_Z;
+        TH2* h2_a2_vs_AoQ;
+        TH2* h2_a4_vs_AoQ;
+        TH2* h2_Z_vs_dE2;
+        TH2* h2_x2_vs_x4;
+        TH2* h2_SC41dE_vs_AoQ;
+        TH2* h2_dE_vs_ToF;
+        TH2* h2_x2_vs_Z;
+        TH2* h2_x4_vs_Z;
+        TH2* h2_dE1_vs_x2;
+        TH2* h2_dE1_vs_x4;
+        TH2* h2_x2_vs_a2;
+        TH2* h2_y2_vs_b2;
+        TH2* h2_x4_vs_a4;
+        TH2* h2_y4_vs_b4;
+        TH2* h2_Z_vs_Sc21E;
+        std::vector<TH2*> h2_Z_vs_AoQ_Z1Z2gate;
+        std::vector<TH2*> h2_Z1_vs_Z2_Z1Z2gate;
+        std::vector<TH2*> h2_x2_vs_AoQ_Z1Z2gate;
+        std::vector<TH2*> h2_x4_vs_AoQ_Z1Z2gate;
+        std::vector<TH2*> h2_dEdeg_vs_Z_Z1Z2gate;
+        std::vector<TH2*> h2_dedegoQ_vs_Z_Z1Z2gate;
+        std::vector<TH2*> h2_x2_vs_AoQ_Z1Z2x2AoQgate;
+        std::vector<TH2*> h2_x4_vs_AoQ_Z1Z2x2AoQgate;
+        std::vector<TH2*> h2_Z_vs_AoQ_Z1Z2x2AoQgate;
+        std::vector<TH2*> h2_dEdeg_vs_Z_Z1Z2x2AoQgate;
+        std::vector<TH2*> h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate;
+        std::vector<TH2*> h2_x2_vs_AoQ_Z1Z2x4AoQgate;
+        std::vector<TH2*> h2_x4_vs_AoQ_Z1Z2x4AoQgate;
+        std::vector<TH2*> h2_Z_vs_AoQ_Z1Z2x4AoQgate;
+        std::vector<TH2*> h2_dEdeg_vs_Z_Z1Z2x4AoQgate;
+        std::vector<TH2*> h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate;
+     
+        // TAC 1D
+        TH1* h1_tpat;
+        TH1* h1_Z;
+        TH1* h1_Z2;
+        TH1* h1_Z_travmus;
+        TH1* h1_AoQ;
+        TH1* h1_AoQ_corr;
+        TH1* h1_x2;
+        TH1* h1_x4;
+        TH1* h1_a2;
+        TH1* h1_a4;
+        TH1* h1_y2;
+        TH1* h1_y4;
+        TH1* h1_b2;
+        TH1* h1_b4;
+        TH1* h1_beta; 
+        TH1* h1_dEdeg;
+        TH1* h1_dEdegoQ;
+        TH1* h1_rho[2];
+        TH1* h1_brho[2];
+        TH1* h1_music_dE[2];
+        TH1* h1_travmus_dE;
+        TH1* h1_music_dEcorr[2];
+        TH1* h1_sci_e[6];
+        TH1* h1_sci_l[6];
+        TH1* h1_sci_r[6];
+        TH1* h1_sci_x[6];
+        TH1* h1_sci_tof[6];
+        TH1* h1_sci_tof_calib[6];
+        // 1D Gated?
 
+        // MHTDC 2D
+        TH2* h2_Z_vs_AoQ_mhtdc;
+        TH2* h2_Z_vs_AoQ_corr_mhtdc;
+        TH2* h2_Z_vs_Z2_mhtdc;
+        TH2* h2_travmus_vs_Z_mhtdc;
+        TH2* h2_Z_vs_AoQ_Zsame_mhtdc;
+        TH2* h2_x2_vs_AoQ_Zsame_mhtdc;
+        TH2* h2_x4_vs_AoQ_Zsame_mhtdc;
+        TH2* h2_x2_vs_AoQ_mhtdc;
+        TH2* h2_x4_vs_AoQ_mhtdc;
+        TH2* h2_dEdegoQ_vs_Z_mhtdc;
+        TH2* h2_dEdeg_vs_Z_mhtdc;
+        TH2* h2_a2_vs_AoQ_mhtdc;
+        TH2* h2_a4_vs_AoQ_mhtdc;
+        TH2* h2_Z_vs_dE2_mhtdc;
+        TH2* h2_SC41dE_vs_AoQ_mhtdc;
+        TH2* h2_x2_vs_Z_mhtdc;
+        TH2* h2_x4_vs_Z_mhtdc;
+        TH2* h2_Z_vs_Sc21E_mhtdc;
+        std::vector<TH2*> h2_Z_vs_AoQ_Z1Z2gate_mhtdc;
+        std::vector<TH2*> h2_Z1_vs_Z2_Z1Z2gate_mhtdc;
+        std::vector<TH2*> h2_x2_vs_AoQ_Z1Z2gate_mhtdc;
+        std::vector<TH2*> h2_x4_vs_AoQ_Z1Z2gate_mhtdc;
+        std::vector<TH2*> h2_dEdeg_vs_Z_Z1Z2gate_mhtdc;
+        std::vector<TH2*> h2_dedegoQ_vs_Z_Z1Z2gate_mhtdc;
+        std::vector<TH2*> h2_x2_vs_AoQ_Z1Z2x2AoQgate_mhtdc;
+        std::vector<TH2*> h2_x4_vs_AoQ_Z1Z2x2AoQgate_mhtdc;
+        std::vector<TH2*> h2_Z_vs_AoQ_Z1Z2x2AoQgate_mhtdc;
+        std::vector<TH2*> h2_dEdeg_vs_Z_Z1Z2x2AoQgate_mhtdc;
+        std::vector<TH2*> h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate_mhtdc;
+        std::vector<TH2*> h2_x2_vs_AoQ_Z1Z2x4AoQgate_mhtdc;
+        std::vector<TH2*> h2_x4_vs_AoQ_Z1Z2x4AoQgate_mhtdc;
+        std::vector<TH2*> h2_Z_vs_AoQ_Z1Z2x4AoQgate_mhtdc;
+        std::vector<TH2*> h2_dEdeg_vs_Z_Z1Z2x4AoQgate_mhtdc;
+        std::vector<TH2*> h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate_mhtdc;
 
-        // Prioritising Z1Z2
-        /*TH2I* h2_Z_vs_AoQ_ZAoQgate;
-        TH2I* h2_Z1_vs_Z2_ZAoQgate;
-        TH2I* h2_x2_vs_AoQ_ZAoQgate;
-        TH2I* h2_x4_vs_AoQ_ZAoQgate;
-        TH2I* h2_dEdeg_vs_Z_ZAoQgate;
-        TH2I* h2_dedegoQ_vs_Z_ZAoQgate;
-        TH1I* h1_a2_ZAoQ_gate;
-        TH1I* h1_a4_ZAoQ_gate;*/
-
-        std::vector<TH2I*> h2_Z_vs_AoQ_Z1Z2gate;
-        std::vector<TH2I*> h2_Z1_vs_Z2_Z1Z2gate;
-        std::vector<TH2I*> h2_x2_vs_AoQ_Z1Z2gate;
-        std::vector<TH2I*> h2_x4_vs_AoQ_Z1Z2gate;
-        std::vector<TH2I*> h2_dEdeg_vs_Z_Z1Z2gate;
-        std::vector<TH2I*> h2_dedegoQ_vs_Z_Z1Z2gate;
-        std::vector<TH1I*> h1_a2_Z1Z2_gate;
-        std::vector<TH1I*> h1_a4_Z1Z2_gate;
-
-        std::vector<TH2I*> h2_x2_vs_AoQ_Z1Z2x2AoQgate;
-        std::vector<TH2I*> h2_x4_vs_AoQ_Z1Z2x2AoQgate;
-        std::vector<TH2I*> h2_Z_vs_AoQ_Z1Z2x2AoQgate;
-        std::vector<TH2I*> h2_dEdeg_vs_Z_Z1Z2x2AoQgate;
-        std::vector<TH2I*> h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate;
-        std::vector<TH1I*> h1_a2_Z1Z2x2AoQgate;
-        std::vector<TH1I*> h1_a4_Z1Z2x2AoQgate;
-
-        std::vector<TH2I*> h2_x2_vs_AoQ_Z1Z2x4AoQgate;
-        std::vector<TH2I*> h2_x4_vs_AoQ_Z1Z2x4AoQgate;
-        std::vector<TH2I*> h2_Z_vs_AoQ_Z1Z2x4AoQgate;
-        std::vector<TH2I*> h2_dEdeg_vs_Z_Z1Z2x4AoQgate;
-        std::vector<TH2I*> h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate;
-        std::vector<TH1I*> h1_a2_Z1Z2x4AoQgate;
-        std::vector<TH1I*> h1_a4_Z1Z2x4AoQgate;
-
-        // 1D plots
-        TH1I* h1_tpat;
-        // :: switched on and off by config :: //
-        TH1D* h1_frs_Z;
-        TH1D* h1_frs_Z2;
-        TH1D* h1_frs_AoQ;
-        TH1D* h1_frs_AoQ_corr;
-        TH1D* h1_frs_x2;
-        TH1D* h1_frs_x4;
-        // more to come .. 
-        
-
+        // MHTDC 1D
+        TH1* h1_beta_mhtdc;
+        TH1* h1_AoQ_mhtdc;
+        TH1* h1_AoQ_corr_mhtdc;
+        TH1* h1_z_mhtdc;
+        TH1* h1_z2_mhtdc;
+        TH1* h1_z_travmus_mhtdc;
+        TH1* h1_dEdeg_mhtdc;
+        TH1* h1_dEdegoQ_mhtdc;
 
         // travel music specific
-        TH1I* h1_wr_frs_travmus;
-        TH1D* h1_travmus_z;
-        TH1D* h1_travmus_z_MHTDC;
-        TH1D* h1_travmus_dE;
-        TH1D* h1_z1;
-        TH1D* h1_z1_MHTDC;
-        TH1D* h1_z1_dE;
-        TH1D* h1_z2;
-        TH1D* h1_z2_MHTDC;
-        TH1D* h1_z2_dE;
-        TH2D* h2_travmus_z1;
+        TH1* h1_wr_frs_travmus;
+
+        // Scalers
+        char scaler_name[66][256]; // don't need perhaps
+        TH1* hScaler_per_s[66];
+        TH1* hScaler_per_100ms[66];
+        TH1* hScaler_per_spill[66];
+        int ratio_previous = 100;
+        int ratio_previous2 = 100;
+
+        // Rates - TGraph? How do they get checked nearline if they're refreshed every hour lol
+        // TGraph??
+        TH1* h1_tpc21_rate;
+        TH1* h1_tpc22_rate;
+        TH1* h1_tpc23_rate;
+        TH1* h1_tpc24_rate;
+        TH1* h1_tpc41_rate;
+        TH1* h1_tpc42_rate;
+        // not actually sure which TPCs and SCIs we have but oh well.
+        TH1* h1_sci21_rate;
+        TH1* h1_sci22_rate;
+        TH1* h1_sci41_rate;
+        TH1* h1_sci42_rate;
+        // variables for rate counting (?)
+
+        Float_t* tpc_x;
+        Float_t tpc_counters[7] = {0};
+        Float_t tpc_rates[7] = {0};
+        Float_t tpc_21_counter = 0;
+        Float_t tpc_21_rate = 0;
+        int tpc_running_count = 0;
+        int64_t saved_frs_wr = 0;
+
+
+        // Rates as a function of WR time (every 2s?) for key detectors (Refreshing e.g., every hour):
+        // TPCs @S2 (if possible, also @S4)
+        // Plastics @S2 (if possible, also @S4)
+        // AIDA, bPlast, BB7 (implant & beta decay)
+        // FATIMA (per detector & DACQ)
+        // DEGAS (per crystal)
+        // The histos to be checked by the dedicated nearline team:
+
+        // probably a nearline thing
+        // Signal drifts (evolution with time along the experiment):
+        // MUSICS
+        // AOQ
+        // TOF detectors
+        // TPCs
+        // DEGAS (per crystal)
+
+
+        // Canvases
         TCanvas* c_z_compare;
-        TCanvas* c_z_compare_MHTDC;
+        TCanvas* c_z_compare_mhtdc;
         TCanvas* c_dE_compare;
 
         // TDirectory structure
@@ -181,34 +268,22 @@ class FrsOnlineSpectra : public FairTask
         TDirectory* dir_tac;
         TDirectory* dir_mhtdc;
         TDirectory* dir_scalers;
-
+        TDirectory* dir_rates;
         TDirectory* dir_tac_1d;
         TDirectory* dir_tac_2d;
         TDirectory* dir_gated_tac;
         TDirectory* dir_ZvsZ2;
         TDirectory* dir_ZvsZ2_x2vsAoQ;
         TDirectory* dir_ZvsZ2_x4vsAoQ;
-
         TDirectory* dir_mhtdc_1d;
         TDirectory* dir_mhtdc_2d;
         TDirectory* dir_gated_mhtdc;
-
+        TDirectory* dir_ZvsZ2_mhtdc;
+        TDirectory* dir_ZvsZ2_x2vsAoQ_mhtdc;
+        TDirectory* dir_ZvsZ2_x4vsAoQ_mhtdc;
         TDirectory* dir_travmus;
         TDirectory* dir_travmus_tac;
         TDirectory* dir_travmus_mhtdc;
-
-        // Histograms for Scalers
-        char scaler_name[66][256];
-        TH1D* hScaler_per_s[66];
-        TH1D* hScaler_per_100ms[66];
-        TH1D* hScaler_per_spill[66];
-        int ratio_previous = 100;
-        int ratio_previous2 = 100;
-
-        // I don't think we need this anymore.
-        TCutG* cutID_Z_AoQ = nullptr;
-
-
 
     public:
         ClassDef(FrsOnlineSpectra, 1)

@@ -74,7 +74,7 @@ Bool_t FrsUserReader::Read()
     {   
         auto & entry = v830array->emplace_back();
         uint32_t index = fData->frsuser_data_v830_nI[i];
-        uint32_t scaler = fData->frsuser_data_v830_data[fData->frsuser_data_v830_nI[i]];
+        uint32_t scaler = fData->frsuser_data_v830_data[i];
         entry.SetAll(index, scaler);
     }
 

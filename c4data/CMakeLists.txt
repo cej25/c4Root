@@ -73,6 +73,7 @@ frsData/TFRSParameter.cxx
 frsData/TFrsConfiguration.cxx
 frsData/FrsGate.cxx
 baseData/TCorrelationsConfiguration.cxx
+baseData/TExperimentConfiguration.cxx
 lisaData/TLisaConfiguration.cxx
 )
 

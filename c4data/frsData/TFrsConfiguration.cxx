@@ -1,8 +1,11 @@
 // c4
 #include "TFrsConfiguration.h"
+#include "c4Logger.h"
+#include <sstream>
 
 TFrsConfiguration* TFrsConfiguration::instance = nullptr;
 std::string TFrsConfiguration::config_path = "blank";
+std::string TFrsConfiguration::scaler_mapping_file = "blank";
 
 TFRSParameter* TFrsConfiguration::ffrs;
 TMWParameter* TFrsConfiguration::fmw;
@@ -37,6 +40,37 @@ Double_t TFrsConfiguration::fMin_dE_travMusic = 0., TFrsConfiguration::fMax_dE_t
 
 TFrsConfiguration::TFrsConfiguration()
 {
+    ReadScalerNames();
+}
+
+void TFrsConfiguration::ReadScalerNames()
+{   
+    // set default names incase not provided by mapping or mapping isn't loaded
+    for (int i = 0; i < 66; i++) scaler_name[i] =  std::string(Form("scaler_ch_%i",i));
+
+    std::ifstream file(scaler_mapping_file);
+    std::string line;
+
+    if (file.fail()) { c4LOG(warn, "Could not open FRS Scaler mapping file"); return; }
+
+    while (std::getline(file, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+
+        std::istringstream iss(line);
+        int scaler;
+        std::string name;
+
+        iss >> scaler >> name;
+
+        std::replace(name.begin(), name.end(), '_', ' ');
+
+        scaler_name[scaler] = name;
+
+    }
+
+    file.close();
+    return;
 
 }
 
