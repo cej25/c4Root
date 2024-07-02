@@ -32,11 +32,13 @@ FrsOnlineSpectra::FrsOnlineSpectra(): FrsOnlineSpectra("FrsOnlineSpectra")
 
 FrsOnlineSpectra::FrsOnlineSpectra(std::vector<FrsGate*> fg)
     : FairTask()
-    , hitArray(nullptr)
     , fNEvents(0)
     , header(nullptr)
-    , multihitArray(nullptr) //EG
+    , tpcCalArray(nullptr)
+    , hitArray(nullptr)
+    , multihitArray(nullptr)
 {
+    exp_config = TExperimentConfiguration::GetInstance();
     frs_config = TFrsConfiguration::GetInstance();
     frs = frs_config->FRS();
     mw = frs_config->MW();
@@ -53,27 +55,21 @@ FrsOnlineSpectra::FrsOnlineSpectra(std::vector<FrsGate*> fg)
 
 FrsOnlineSpectra::FrsOnlineSpectra(const TString& name, Int_t iVerbose)
     : FairTask(name, iVerbose)
-    , hitArray(nullptr)
     , fNEvents(0)
     , header(nullptr)
-    , multihitArray(nullptr) //EG
+    , tpcCalArray(nullptr)
+    , hitArray(nullptr)
+    , multihitArray(nullptr)
 {
     frs_config = TFrsConfiguration::GetInstance();
+    exp_config = TExperimentConfiguration::GetInstance();
 }
 
 FrsOnlineSpectra::~FrsOnlineSpectra()
 {
     c4LOG(info, "");
     if (hitArray) delete hitArray;
-    if (multihitArray) delete multihitArray; //EG
-}
-
-// Public Method SetParContainers
-void FrsOnlineSpectra::SetParContainers()
-{
-    // Parameter Containers
-    FairRuntimeDb* rtdb = FairRuntimeDb::instance();
-    c4LOG_IF(fatal, NULL == rtdb, "FairRuntimeDb not found.");
+    if (multihitArray) delete multihitArray;
 }
 
 InitStatus FrsOnlineSpectra::Init()
@@ -87,10 +83,12 @@ InitStatus FrsOnlineSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
+    tpcCalArray = mgr->InitObjectAs<decltype(tpcCalArray)>("FrsTPCCalData");
+    c4LOG_IF(fatal, !tpcCalArray, "Branch FrsTPCCalData not found!");
+
     hitArray = mgr->InitObjectAs<decltype(hitArray)>("FrsHitData");
     c4LOG_IF(fatal, !hitArray, "Branch FrsHitData not found!");
 
-    //::: EG reading multi hit data 
     multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
     c4LOG_IF(fatal, !multihitArray, "Branch FrsHitData not found!");  
 
@@ -111,450 +109,299 @@ InitStatus FrsOnlineSpectra::Init()
 
     dir_tac = dir_frs->mkdir("TAC");
     dir_mhtdc = dir_frs->mkdir("MHTDC");
-    dir_travmus_tac = dir_travmus->mkdir("TAC");
+    dir_travmus_tac = dir_travmus->mkdir("TAC"); // travel music is "special" for now..
     dir_travmus_mhtdc = dir_travmus->mkdir("MHTDC");
-
     dir_tac_1d = dir_tac->mkdir("1D Spectra");
     dir_tac_2d = dir_tac->mkdir("2D PIDs");
     dir_gated_tac = dir_tac->mkdir("Gated 2D PIDs");
     dir_ZvsZ2 = dir_gated_tac->mkdir("ZvsZ2 Gated");
     dir_ZvsZ2_x2vsAoQ = dir_ZvsZ2->mkdir("x2vsAoQ Gated");
     dir_ZvsZ2_x4vsAoQ = dir_ZvsZ2->mkdir("x4vsAoQ Gated");
-
     dir_mhtdc_1d = dir_mhtdc->mkdir("1D Spectra");
     dir_mhtdc_2d = dir_mhtdc->mkdir("2D PIDs");
     dir_gated_mhtdc = dir_mhtdc->mkdir("Gated 2D");
-    
     dir_scalers = dir_frs->mkdir("Scalers");
-    //dir_mhtdc = dir_frs->mkdir("MHTDC");
+    dir_rates = dir_frs->mkdir("Rate Monitors");
     
-    // Scalers // -- TODO: Add this name mapping to TFrsConfig or something of the like.
-    for (int i = 0; i < 66; i++) sprintf(scaler_name[i], "scaler_ch%d", i);
-    sprintf(scaler_name[0], "IC01curr-new");
-    sprintf(scaler_name[1], "SEETRAM-old");
-    sprintf(scaler_name[2], "SEETRAM-new");
-    sprintf(scaler_name[3], "IC01curr-old");
-    sprintf(scaler_name[4], "IC01 count");
-    sprintf(scaler_name[5], "SCI00");
-    sprintf(scaler_name[6], "SCI01");
-    sprintf(scaler_name[7], "SCI02");
-    sprintf(scaler_name[8], "Start Extr");
-    sprintf(scaler_name[9], "Stop Extr");
-    sprintf(scaler_name[10], "Beam Transformer");
+    h1_tpat = MakeTH1(dir_scalers, "I", "h1_tpat", "Trigger Pattern", 20, 0, 20, "Trigger Pattern", kRed-3, kBlack);
+    for (int i = 0; i < 66; i++) hScaler_per_s[i] = MakeTH1(dir_scalers, "D", Form("hScaler_per_s_%s", frs_config->ScalerName(i).c_str()), Form("Scaler %s per 1s ", frs_config->ScalerName(i).c_str()), 1000, 0., 1000., "Time [s]", kCyan, kViolet);
+    for (int i = 0; i < 66; i++) hScaler_per_100ms[i] = MakeTH1(dir_scalers, "D", Form("hScaler_per_100ms_%s", frs_config->ScalerName(i).c_str()), Form("Scaler %s per 0.1s", frs_config->ScalerName(i).c_str()), 4000, 0, 400, "Time [100 ms]", kCyan, kViolet);
+    for (int i = 0; i < 66; i++) hScaler_per_spill[i] = MakeTH1(dir_scalers, "D", Form("hScaler_per_spill_%s", frs_config->ScalerName(i).c_str()), Form("Scaler %s per spill ", frs_config->ScalerName(i).c_str()), 1000, 0, 1000, "Spill", kCyan, kViolet);
 
-    sprintf(scaler_name[32], "Free Trigger");
-    sprintf(scaler_name[33], "Accept Trigger");
-    sprintf(scaler_name[34], "Spill Counter");
-    sprintf(scaler_name[35], "1 Hz Clock");
-    sprintf(scaler_name[36], "10 Hz Clock");
-    sprintf(scaler_name[37], "100 kHz veto dead-time");
-    sprintf(scaler_name[38], "100 kHz Clock");
-    sprintf(scaler_name[39], "1 kHz Clock");
-
-    sprintf(scaler_name[48], "SCI21L");
-    sprintf(scaler_name[49], "SCI41L");
-    sprintf(scaler_name[50], "SCI42L");
-    sprintf(scaler_name[51], "SCI43L");
-    sprintf(scaler_name[52], "SCI42R");
-    sprintf(scaler_name[53], "SCI21R");
-    sprintf(scaler_name[54], "SCI41R");
-    sprintf(scaler_name[55], "SCI81L");
-    sprintf(scaler_name[56], "SCI43R");
-    sprintf(scaler_name[57], "SCI81R");
-    sprintf(scaler_name[58], "SCI31L");
-    sprintf(scaler_name[59], "SCI31R");
-    sprintf(scaler_name[60], "SCI11");
-    sprintf(scaler_name[61], "SCI22L");
-    sprintf(scaler_name[62], "SCI22R");
-    sprintf(scaler_name[63], "SCI51");
-    sprintf(scaler_name[64], "Accept-ov-Free Trigger");
-    sprintf(scaler_name[65], "veto-dead-time-ov-100kHz");
-
-    dir_scalers->cd();
-
-    for (int i = 0; i < 66; i++) hScaler_per_s[i] = new TH1D(Form("hScaler_per_s_%s", scaler_name[i]), Form("Scaler %s per 1s ", scaler_name[i]), 1000, 0, 1000);
-    for (int i = 0; i < 66; i++) hScaler_per_100ms[i] = new TH1D(Form("hScaler_per_100ms_%s", scaler_name[i]), Form("Scaler %s per 0.1s", scaler_name[i]), 4000, 0, 400);
-    for (int i = 0; i < 66; i++) hScaler_per_spill[i] = new TH1D(Form("hScaler_per_spill_%s", scaler_name[i]), Form("Scaler %s per spill ", scaler_name[i]), 1000, 0, 1000);
-
-    dir_tac_2d->cd();
-
-    h2_Z_vs_AoQ = new TH2D("h2_Z_vs_AoQ", "Z1 vs. A/Q", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
-    h2_Z_vs_AoQ->GetXaxis()->SetTitle("A/Q");
-    h2_Z_vs_AoQ->GetYaxis()->SetTitle("Z (MUSIC 1)");
-    h2_Z_vs_AoQ->SetOption("COLZ");
-    
-    h2_Z_vs_AoQ_corr = new TH2D("h2_Z_vs_AoQ_corr", "Z1 vs. A/Q (corr)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
-    h2_Z_vs_AoQ_corr->GetXaxis()->SetTitle("A/Q");
-    h2_Z_vs_AoQ_corr->GetYaxis()->SetTitle("Z (MUSIC 1)");
-    h2_Z_vs_AoQ_corr->SetOption("COLZ");
-    
-    h2_Z_vs_Z2 = new TH2D("h2_Z_vs_Z2", "Z1 vs. Z2", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z);
-    h2_Z_vs_Z2->GetXaxis()->SetTitle("Z (MUSIC 1)");
-    h2_Z_vs_Z2->GetYaxis()->SetTitle("Z (MUSIC 2)");
-    h2_Z_vs_Z2->SetOption("COLZ");
-
-    h2_Z_vs_AoQ_Zsame = new TH2D("h2_Z_vs_AoQ_Zsame", "Z1 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
-    h2_Z_vs_AoQ_Zsame->GetXaxis()->SetTitle("A/Q");
-    h2_Z_vs_AoQ_Zsame->GetYaxis()->SetTitle("Z (MUSIC 1)");
-    h2_Z_vs_AoQ_Zsame->SetOption("COLZ");
-
-    h2_x4_vs_AoQ_Zsame = new TH2D("h2_x4_vs_AoQ_Zsame", "x4 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 300, frs_config->fMin_x4, frs_config->fMax_x4);
-    h2_x4_vs_AoQ_Zsame->GetXaxis()->SetTitle("A/Q");
-    h2_x4_vs_AoQ_Zsame->GetYaxis()->SetTitle("S4 x-position");
-    h2_x4_vs_AoQ_Zsame->SetOption("COLZ");
-
-    h2_x2_vs_AoQ_Zsame = new TH2D("h2_x2_vs_AoQ_Zsame", "x2 vs. A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 300, frs_config->fMin_x2, frs_config->fMax_x2);
-    h2_x2_vs_AoQ_Zsame->GetXaxis()->SetTitle("A/Q");
-    h2_x2_vs_AoQ_Zsame->GetYaxis()->SetTitle("S2 x-position");
-    h2_x2_vs_AoQ_Zsame->SetOption("COLZ");
-   
-    h2_x2_vs_AoQ = new TH2D("h2_x2_vs_AoQ", "x2 vs. A/Q", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2);
-    h2_x2_vs_AoQ->GetXaxis()->SetTitle("A/Q");
-    h2_x2_vs_AoQ->GetYaxis()->SetTitle("S2 x-position");
-    h2_x2_vs_AoQ->SetOption("COLZ");
-
-    h2_x4_vs_AoQ = new TH2D("h2_x4_vs_AoQ", "x4 vs. A/Q", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4);
-    h2_x4_vs_AoQ->GetXaxis()->SetTitle("A/Q");
-    h2_x4_vs_AoQ->GetYaxis()->SetTitle("S4 x-position");
-    h2_x4_vs_AoQ->SetOption("COLZ");
-
-    h2_dEdegoQ_vs_Z = new TH2D("h2_dEdegoQ_vs_Z", "dE in S2 degrader / Q vs. Z1", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ);
-    h2_dEdegoQ_vs_Z->GetXaxis()->SetTitle("dE in S2 degrader / Q");
-    h2_dEdegoQ_vs_Z->GetYaxis()->SetTitle("Z (MUSIC 1)");
-    h2_dEdegoQ_vs_Z->SetOption("COLZ");
-
-    h2_dEdeg_vs_Z = new TH2D("h2_dEdeg_vs_Z", "dE in S2 degrader vs. Z1", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, frs_config->fMin_dE, frs_config->fMax_dE);
-    h2_dEdeg_vs_Z->GetXaxis()->SetTitle("dE in S2 degrader");
-    h2_dEdeg_vs_Z->GetYaxis()->SetTitle("Z (MUSIC 1)");
-    h2_dEdeg_vs_Z->SetOption("COLZ");
-
-    h2_a2_vs_AoQ = new TH2D("h2_a2_vs_AoQ", "A/Q vs. AngleX (S2)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a2, frs_config->fMax_a2);
-    h2_a2_vs_AoQ->GetXaxis()->SetTitle("A/Q");
-    h2_a2_vs_AoQ->GetYaxis()->SetTitle("Angle (S2)");
-    h2_a2_vs_AoQ->SetOption("COLZ");
-
-    h2_a4_vs_AoQ = new TH2D("h2_a4_vs_AoQ", "A/Q vs. AngleX (S4)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a4, frs_config->fMax_a4);
-    h2_a4_vs_AoQ->GetXaxis()->SetTitle("A/Q");
-    h2_a4_vs_AoQ->GetYaxis()->SetTitle("AngleX (S4)");
-    h2_a4_vs_AoQ->SetOption("COLZ");
-
-    h2_Z_vs_dE2 = new TH2D("h2_Z_vs_dE2", "Z1 vs. dE in MUSIC2", 400, frs_config->fMin_Z, frs_config->fMax_Z, 250, frs_config->fMin_dE_Music2, frs_config->fMax_dE_Music2);
-    h2_Z_vs_dE2->GetXaxis()->SetTitle("Z (MUSIC 1)");
-    h2_Z_vs_dE2->GetYaxis()->SetTitle("dE in MUSIC 2");
-    h2_Z_vs_dE2->SetOption("COLZ");
-
-    h2_x2_vs_x4 = new TH2D("h2_x2_vs_x4", "x2 vs. x4", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_x4, frs_config->fMax_x4);
-    h2_x2_vs_x4->GetXaxis()->SetTitle("S2 x-position");
-    h2_x2_vs_x4->GetYaxis()->SetTitle("S4 x-position");
-    h2_x2_vs_x4->SetOption("COLZ");
-  
-    h2_SC41dE_vs_AoQ = new TH2D("h2_SC41dE_vs_AoQ", "A/Q vs. dE in SC41", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000.);
-    h2_SC41dE_vs_AoQ->GetXaxis()->SetTitle("A/Q");
-    h2_SC41dE_vs_AoQ->GetYaxis()->SetTitle("dE in SC41");
-    h2_SC41dE_vs_AoQ->SetOption("COLZ");
-
-    h2_dE_vs_ToF = new TH2D("h2_dE_vs_ToF", "ToF S2-S4 vs. dE in MUSIC1", 2000, 0., 70000., 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1);
-    h2_dE_vs_ToF->GetXaxis()->SetTitle("Time of Flight (S2 - S4)");
-    h2_dE_vs_ToF->GetYaxis()->SetTitle("dE in MUSIC 1");
-    h2_dE_vs_ToF->SetOption("COLZ");
-
-    h2_x2_vs_Z = new TH2D("h2_x2_vs_Z", "x2 vs. Z1", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x2, frs_config->fMax_x2);
-    h2_x2_vs_Z->GetXaxis()->SetTitle("Z (MUSIC 1)");
-    h2_x2_vs_Z->GetYaxis()->SetTitle("S2 x-position");
-    h2_x2_vs_Z->SetOption("COLZ");
-
-    h2_x4_vs_Z = new TH2D("h2_x4_vs_Z", "x4 vs. Z1", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x4, frs_config->fMax_x4);
-    h2_x4_vs_Z->GetXaxis()->SetTitle("Z (MUSIC 1)");
-    h2_x4_vs_Z->GetYaxis()->SetTitle("S4 x-position");
-    h2_x4_vs_Z->SetOption("COLZ");
-
-    h2_dE1_vs_x2 = new TH2D("h2_dE1_vs_x2", "x2 vs. dE in MUSIC1", 200, frs_config->fMin_x2, frs_config->fMax_x2, 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1);
-    h2_dE1_vs_x2->GetXaxis()->SetTitle("S2 x-position");
-    h2_dE1_vs_x2->GetYaxis()->SetTitle("dE in MUSIC 1");
-    h2_dE1_vs_x2->SetOption("COLZ");
-
-    h2_dE1_vs_x4 = new TH2D("h2_dE1_vs_x4", "x4 vs. dE in MUSIC1", 200, frs_config->fMin_x4, frs_config->fMax_x4, 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1);
-    h2_dE1_vs_x4->GetXaxis()->SetTitle("S4 x-position");
-    h2_dE1_vs_x4->GetYaxis()->SetTitle("dE in MUSIC 1");
-    h2_dE1_vs_x4->SetOption("COLZ");
-
-    h2_x2_vs_a2 = new TH2D("h2_x2_vs_a2", "x2 vs. AngleX (S2)", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_a2, frs_config->fMax_a2);
-    h2_x2_vs_a2->GetXaxis()->SetTitle("S2 x-position");
-    h2_x2_vs_a2->GetYaxis()->SetTitle("AngleX (S2)");
-    h2_x2_vs_a2->SetOption("COLZ");
-
-    h2_y2_vs_b2 = new TH2D("h2_y2_vs_b2", "y2 vs. AngleY (S2)", 200, frs_config->fMin_y2, frs_config->fMax_y2, 200, frs_config->fMin_b2, frs_config->fMax_b2);
-    h2_y2_vs_b2->GetXaxis()->SetTitle("S2 y-position");
-    h2_y2_vs_b2->GetYaxis()->SetTitle("AngleY (S2)");
-    h2_y2_vs_b2->SetOption("COLZ");
-
-    h2_x4_vs_a4 = new TH2D("h2_x4_vs_a4", "x4 vs. AngleX (S4)", 200, frs_config->fMin_x4, frs_config->fMax_x4, 200, frs_config->fMin_a4, frs_config->fMax_a4);
-    h2_x4_vs_a4->GetXaxis()->SetTitle("S4 x-position");
-    h2_x4_vs_a4->GetYaxis()->SetTitle("AngleX (S4)");
-    h2_x4_vs_a4->SetOption("COLZ");
-
-    h2_y4_vs_b4 = new TH2D("h2_y4_vs_b4", "y4 vs. AngleY (S4)", 200, frs_config->fMin_y4, frs_config->fMax_y4, 200, frs_config->fMin_b4, frs_config->fMax_b4);
-    h2_y4_vs_b4->GetXaxis()->SetTitle("S4 y-position");
-    h2_y4_vs_b4->GetYaxis()->SetTitle("AngleY (S4)");
-    h2_y4_vs_b4->SetOption("COLZ");
-
-    h2_Z_vs_Sc21E = new TH2D("h2_Z_vs_Sc21E", "Z1 vs. SQRT(Sc21_L * Sc21_R)", 300, frs_config->fMin_Z, frs_config->fMax_Z, 400, 0., 4000.);
-    //h2_Z_vs_Sc21E = new TH2D("h2_Z_vs_Sc21E", "Z1 vs. SQRT(Sc21_L * Sc21_R)", 300, 30, frs_config->fMax_Z, 400, 0., 4000.);
-    h2_Z_vs_Sc21E->GetXaxis()->SetTitle("Z (MUSIC 1)");
-    h2_Z_vs_Sc21E->GetYaxis()->SetTitle("Sc21 E");
-    h2_Z_vs_Sc21E->SetOption("COLZ");
-
-    // 1D plots to turn on and off
-    if (frs_config->plot_1d)
-    {   
-        // preset wide ranges to "always" see peak, in case it's wrong
-        dir_tac_1d->cd();
-
-        h1_frs_Z = new TH1D("h1_frs_Z", "Z (MUSIC 1)", 500, 10, 100);
-        h1_frs_Z->SetFillColor(kPink-3);
-        h1_frs_Z2 = new TH1D("h1_frs_Z2", "Z (MUSIC 1)", 500, 10, 100);
-        h1_frs_Z2->SetFillColor(kPink-3);
-        h1_frs_AoQ = new TH1D("h1_frs_AoQ", "A/Q", 500, 1.0, 4.0);
-        h1_frs_AoQ->SetFillColor(kPink-3);
-        h1_frs_AoQ_corr = new TH1D("h1_frs_AoQ_corr", "A/Q corr", 500, 1.0, 4.0);
-        h1_frs_AoQ_corr->SetFillColor(kPink-3);
-        h1_frs_x2 = new TH1D("h1_frs_x2", "X Position at S2", 200, -100, 100);
-        h1_frs_x2->SetFillColor(kYellow+1); // experimental
-        h1_frs_x2->SetLineColor(kBlack);
-        h1_frs_x2->SetLineWidth(1.5);
-        h1_frs_x4 = new TH1D("h1_frs_x4", "X Position at S4", 200, -100, 100);
-        h1_frs_x4->SetFillColor(kYellow-7); // experimental
-        h1_frs_x4->SetLineColor(kBlack);
-        h1_frs_x4->SetLineWidth(1.5);
-    }
-
-    // :::: MHTDC ::: //
-    dir_mhtdc_2d->cd();
-
-    h2_Z_vs_AoQ_mhtdc = new TH2D("h2_Z_vs_AoQ_mhtdc", "Z1 vs. A/Q - MHTDC", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
-    h2_Z_vs_AoQ_mhtdc->GetXaxis()->SetTitle("A/Q");
-    h2_Z_vs_AoQ_mhtdc->GetYaxis()->SetTitle("Z (MUSIC 1)");
-    h2_Z_vs_AoQ_mhtdc->SetOption("COLZ");
-
-
-    // ZvsZ2 gates
-    if (!FrsGates.empty())
+    if (frs_config->plot_tac_2d)
     {
-        h2_Z_vs_AoQ_Z1Z2gate.resize(FrsGates.size());
-        h2_Z1_vs_Z2_Z1Z2gate.resize(FrsGates.size());
-        h2_x2_vs_AoQ_Z1Z2gate.resize(FrsGates.size());
-        h2_x4_vs_AoQ_Z1Z2gate.resize(FrsGates.size());
-        h2_dEdeg_vs_Z_Z1Z2gate.resize(FrsGates.size());
-        h2_dedegoQ_vs_Z_Z1Z2gate.resize(FrsGates.size());
-        h1_a2_Z1Z2_gate.resize(FrsGates.size());
-        h1_a4_Z1Z2_gate.resize(FrsGates.size());
-        h2_x2_vs_AoQ_Z1Z2x2AoQgate.resize(FrsGates.size());
-        h2_x4_vs_AoQ_Z1Z2x2AoQgate.resize(FrsGates.size());
-        h2_Z_vs_AoQ_Z1Z2x2AoQgate.resize(FrsGates.size());
-        h2_dEdeg_vs_Z_Z1Z2x2AoQgate.resize(FrsGates.size());
-        h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate.resize(FrsGates.size());
-        h1_a2_Z1Z2x2AoQgate.resize(FrsGates.size());
-        h1_a4_Z1Z2x2AoQgate.resize(FrsGates.size());
-        h2_x2_vs_AoQ_Z1Z2x4AoQgate.resize(FrsGates.size());
-        h2_x4_vs_AoQ_Z1Z2x4AoQgate.resize(FrsGates.size());
-        h2_Z_vs_AoQ_Z1Z2x4AoQgate.resize(FrsGates.size());
-        h2_dEdeg_vs_Z_Z1Z2x4AoQgate.resize(FrsGates.size());
-        h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate.resize(FrsGates.size());
-        h1_a2_Z1Z2x4AoQgate.resize(FrsGates.size());
-        h1_a4_Z1Z2x4AoQgate.resize(FrsGates.size());
+        // directory, type, name, title, xbins, xmin, xmax, ybins, ymin, ymax, xtitle, ytitle
+        h2_Z_vs_AoQ = MakeTH2(dir_tac_2d, "D", "h2_Z_vs_AoQ", "Z1 vs. A/Q", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q", "Z (MUSIC 1)");
+        h2_Z_vs_AoQ_corr = MakeTH2(dir_tac_2d, "D", "h2_Z_vs_AoQ_corr", "Z1 vs. A/Q (corr)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z,"A/Q", "Z (MUSIC 1)");
+        h2_Z_vs_Z2 = MakeTH2(dir_tac_2d, "D", "h2_Z_vs_Z2", "Z1 vs. Z2", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z (MUSIC 1)", "Z (MUSIC 2)");
+        h2_travmus_vs_Z = MakeTH2(dir_tac_2d, "D", "h2_travmus_vs_Z", "Z (Travel MUSIC) vs Z (MUSIC 1)", 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_Z, frs_config->fMax_Z, "Z (Travel MUSIC)", "Z (MUSIC 1)");
+        h2_Z_vs_AoQ_Zsame = MakeTH2(dir_tac_2d, "D", "h2_Z_vs_AoQ_Zsame", "Z1 vs. A/Q [ABS (Z1 - Z2) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q", "Z (MUSIC 1)");
+        h2_x2_vs_AoQ_Zsame = MakeTH2(dir_tac_2d, "D", "h2_x2_vs_AoQ_Zsame", "x2 vs A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q", "S2 x-position");
+        h2_x4_vs_AoQ_Zsame = MakeTH2(dir_tac_2d, "D", "h2_x4_vs_AoQ_Zsame", "x4 vs A/Q - [ABS(Z1 - Z2) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q", "S4 x-position");
+        h2_x2_vs_AoQ = MakeTH2(dir_tac_2d, "D", "h2_x2_vs_AoQ", "x2 vs. A/Q", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q", "S2 x-position");
+        h2_x4_vs_AoQ = MakeTH2(dir_tac_2d, "D", "h2_x4_vs_AoQ", "x4 vs. A/Q", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q", "S4 x-position");
+        h2_dEdegoQ_vs_Z = MakeTH2(dir_tac_2d, "D", "h2_dEdegoQ_vs_Z", "dE in S2 degrader / Q vs. Z1", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ, "dE in S2 degrader / Q", "Z (MUSIC 1)");
+        h2_dEdeg_vs_Z = MakeTH2(dir_tac_2d, "D", "h2_dEdeg_vs_Z", "dE in S2 degrader vs. Z1", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, frs_config->fMin_dE, frs_config->fMax_dE, "dE in S2 degrader", "Z (MUSIC 1)");
+        h2_a2_vs_AoQ = MakeTH2(dir_tac_2d, "D", "h2_a2_vs_AoQ", "A/Q vs. AngleX (S2)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a2, frs_config->fMax_a2, "A/Q", "AngleX (S2)");
+        h2_a4_vs_AoQ = MakeTH2(dir_tac_2d, "D", "h2_a4_vs_AoQ", "A/Q vs. AngleX (S4)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a4, frs_config->fMax_a4, "A/Q", "AngleX (S4)");
+        h2_Z_vs_dE2 = MakeTH2(dir_tac_2d, "D", "h2_Z_vs_dE2", "Z1 vs. dE in MUSIC2", 400, frs_config->fMin_Z, frs_config->fMax_Z, 250, frs_config->fMin_dE_Music2, frs_config->fMax_dE_Music2, "Z (MUSIC 1)", "dE in MUSIC 2");
+        h2_x2_vs_x4 = MakeTH2(dir_tac_2d, "D", "h2_x2_vs_x4", "x2 vs. x4", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_x4, frs_config->fMax_x4, "S2 x-position", "S4 x-position");
+        h2_SC41dE_vs_AoQ = MakeTH2(dir_tac_2d, "D", "h2_SC41dE_vs_AoQ", "A/Q vs. dE in SC41", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000., "A/Q", "dE in SC41");
+        h2_dE_vs_ToF = MakeTH2(dir_tac_2d, "D", "h2_dE_vs_ToF", "ToF S2-S4 vs. dE in MUSIC1", 2000, 0., 70000., 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "Time of Flight (S2 - S4)", "dE in MUSIC 1");
+        h2_x2_vs_Z = MakeTH2(dir_tac_2d, "D", "h2_x2_vs_Z", "x2 vs. Z1", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x2, frs_config->fMax_x2, "Z (MUSIC 1)", "S2 x-position");
+        h2_x4_vs_Z = MakeTH2(dir_tac_2d, "D", "h2_x4_vs_Z", "x4 vs. Z1", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x4, frs_config->fMax_x4, "Z (MUSIC 1)", "S4 x-position");
+        h2_dE1_vs_x2 = MakeTH2(dir_tac_2d, "D", "h2_dE1_vs_x2", "x2 vs. dE in MUSIC1", 200, frs_config->fMin_x2, frs_config->fMax_x2, 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "S2 x-position", "dE in MUSIC 1");
+        h2_dE1_vs_x4 = MakeTH2(dir_tac_2d, "D", "h2_dE1_vs_x4", "x4 vs. dE in MUSIC1", 200, frs_config->fMin_x4, frs_config->fMax_x4, 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "S4 x-position", "dE in MUSIC 1");
+        h2_x2_vs_a2 = MakeTH2(dir_tac_2d, "D", "h2_x2_vs_a2", "x2 vs. AngleX (S2)", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_a2, frs_config->fMax_a2, "S2 x-position", "AngleX (S2)");
+        h2_y2_vs_b2 = MakeTH2(dir_tac_2d, "D", "h2_y2_vs_b2", "y2 vs. AngleY (S2)", 200, frs_config->fMin_y2, frs_config->fMax_y2, 200, frs_config->fMin_b2, frs_config->fMax_b2, "S2 y-position", "AngleY (S2)");
+        h2_x4_vs_a4 = MakeTH2(dir_tac_2d, "D", "h2_x4_vs_a4", "x4 vs. AngleX (S4)", 200, frs_config->fMin_x4, frs_config->fMax_x4, 200, frs_config->fMin_a4, frs_config->fMax_a4, "S4 x-position", "AngleX (S4)");
+        h2_y4_vs_b4 = MakeTH2(dir_tac_2d, "D", "h2_y4_vs_b4", "y4 vs. AngleY (S4)", 200, frs_config->fMin_y4, frs_config->fMax_y4, 200, frs_config->fMin_b4, frs_config->fMax_b4, "S4 y-position", "AngleY (S4)");
+        h2_Z_vs_Sc21E = MakeTH2(dir_tac_2d, "D", "h2_Z_vs_Sc21E", "Z1 vs. SQRT(Sc21_L * Sc21_R)", 300, frs_config->fMin_Z, frs_config->fMax_Z, 400, 0., 4000., "Z (MUSIC 1)", "Sc21 E");
+    
+        // ZvsZ2 gates
+        if (!FrsGates.empty())
+        {
+            h2_Z_vs_AoQ_Z1Z2gate.resize(FrsGates.size());
+            h2_Z1_vs_Z2_Z1Z2gate.resize(FrsGates.size());
+            h2_x2_vs_AoQ_Z1Z2gate.resize(FrsGates.size());
+            h2_x4_vs_AoQ_Z1Z2gate.resize(FrsGates.size());
+            h2_dEdeg_vs_Z_Z1Z2gate.resize(FrsGates.size());
+            h2_dedegoQ_vs_Z_Z1Z2gate.resize(FrsGates.size());
+            h2_x2_vs_AoQ_Z1Z2x2AoQgate.resize(FrsGates.size());
+            h2_x4_vs_AoQ_Z1Z2x2AoQgate.resize(FrsGates.size());
+            h2_Z_vs_AoQ_Z1Z2x2AoQgate.resize(FrsGates.size());
+            h2_dEdeg_vs_Z_Z1Z2x2AoQgate.resize(FrsGates.size());
+            h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate.resize(FrsGates.size());
+            h2_x2_vs_AoQ_Z1Z2x4AoQgate.resize(FrsGates.size());
+            h2_x4_vs_AoQ_Z1Z2x4AoQgate.resize(FrsGates.size());
+            h2_Z_vs_AoQ_Z1Z2x4AoQgate.resize(FrsGates.size());
+            h2_dEdeg_vs_Z_Z1Z2x4AoQgate.resize(FrsGates.size());
+            h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate.resize(FrsGates.size());
+         
+            for (int gate = 0; gate < FrsGates.size(); gate++)
+            {   
+                h2_Z_vs_AoQ_Z1Z2gate[gate] = MakeTH2(dir_ZvsZ2, "I", Form("h2_Z_vs_AoQ_ZAoQgate%s", FrsGates[gate]->GetName().c_str()), Form("Z vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q", "Z (MUSIC 1)");
+                h2_Z1_vs_Z2_Z1Z2gate[gate] = MakeTH2(dir_ZvsZ2, "I", Form("h2_Z1_vs_Z2_ZAoQgate%i", gate), Form("Z1 vs. Z2 - ZAoQ Gate %i", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_Z, frs_config->fMax_Z, "Z (MUSIC 1)", "Z (MUSIC 2)");
+                h2_x2_vs_AoQ_Z1Z2gate[gate] = MakeTH2(dir_ZvsZ2, "I", Form("h2_x2_vs_AoQ_ZAoQgate%i", gate), Form("x2 vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q", "S2 x-position");
+                h2_x4_vs_AoQ_Z1Z2gate[gate] = MakeTH2(dir_ZvsZ2, "I", Form("h2_x4_vs_AoQ_ZAoQgate%i", gate), Form("x4 vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q", "S4 x-position");
+                h2_dEdeg_vs_Z_Z1Z2gate[gate] = MakeTH2(dir_ZvsZ2, "I", Form("h2_dEdeg_vs_Z_ZAoQgate%i", gate), Form("Z1 vs. dE in S2 degrader - ZAoQ Gate %i", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dE, frs_config->fMax_dE, "Z (MUSIC 1)", "dE in S2 degrader");
+                h2_dedegoQ_vs_Z_Z1Z2gate[gate] = MakeTH2(dir_ZvsZ2, "I", Form("h2_dedegoQ_vs_Z_ZAoQgate%i", gate), Form("Z1 vs. dE in S2 degrader / Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ, "Z (MUSIC 1)", "dE in S2 degrader / Q");
+                
+                // Second gate - x2 vs AoQ
+                h2_x2_vs_AoQ_Z1Z2x2AoQgate[gate] = MakeTH2(dir_ZvsZ2_x2vsAoQ, "I", Form("h2_x2_vs_AoQ_Z1Z2x2AoQgate%d", gate), Form("x2 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q", "S2 x-position");
+                h2_x4_vs_AoQ_Z1Z2x2AoQgate[gate] = MakeTH2(dir_ZvsZ2_x2vsAoQ, "I", Form("h2_x4_vs_AoQ_Z1Z2x2AoQgate%d", gate), Form("x4 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q", "S4 x-position");
+                h2_Z_vs_AoQ_Z1Z2x2AoQgate[gate] = MakeTH2(dir_ZvsZ2_x2vsAoQ, "I", Form("h2_Z_vs_AoQ_Z1Z2x2AoQgate%d", gate), Form("Z1 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q", "Z (MUSIC 1)");
+                h2_dEdeg_vs_Z_Z1Z2x2AoQgate[gate] = MakeTH2(dir_ZvsZ2_x2vsAoQ, "I", Form("h2_dEdeg_vs_Z_Z1Z2x2AoQgate%d", gate), Form("dE in S2 degrader vs. Z1 - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dE, frs_config->fMax_dE, "Z (MUSIC 1)", "dE in S2 degrader");
+                h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate[gate] = MakeTH2(dir_ZvsZ2_x2vsAoQ, "I", Form("h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate%d", gate), Form("dE in S2 degrader / Q vs. Z1 - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ, "Z (MUSIC 1)", "dE in S2 degrader / Q");
 
-        for (int gate = 0; gate < FrsGates.size(); gate++)
-        {   
-            // CEJ: Prioritising Z1Z2 for now.
-            /*
-            dir_ZvsAoQ->cd();
-            h2_Z_vs_AoQ_ZAoQgate[gate] = new TH2I(Form("h2_Z_vs_AoQ_ZAoQgate%i", gate), Form("Z vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z);
-            h2_Z_vs_AoQ_ZAoQgate[gate]->GetXaxis()->SetTitle("A/Q");
-            h2_Z_vs_AoQ_ZAoQgate[gate]->GetYaxis()->SetTitle("Z (MUSIC 1)");
-            h2_Z_vs_AoQ_ZAoQgate[gate]->SetOption("COLZ");
-
-            h2_Z1_vs_Z2_ZAoQgate[gate] = new TH2I(Form("h2_Z1_vs_Z2_ZAoQgate%i", gate), Form("Z1 vs. Z2 - ZAoQ Gate %i", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_Z, frs_config->fMax_Z);
-            h2_Z1_vs_Z2_ZAoQgate[gate]->GetXaxis()->SetTitle("Z (MUSIC 1)");
-            h2_Z1_vs_Z2_ZAoQgate[gate]->GetYaxis()->SetTitle("Z (MUSIC 2)");
-            h2_Z1_vs_Z2_ZAoQgate[gate]->SetOption("COLZ");
-
-            h2_x2_vs_AoQ_ZAoQgate[gate] = new TH2I(Form("h2_x2_vs_AoQ_ZAoQgate%i", gate), Form("x2 vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2);
-            h2_x2_vs_AoQ_ZAoQgate[gate]->GetXaxis()->SetTitle("A/Q");
-            h2_x2_vs_AoQ_ZAoQgate[gate]->GetYaxis()->SetTitle("S2 x-position)");
-            h2_x2_vs_AoQ_ZAoQgate[gate]->SetOption("COLZ");
-
-            h2_x4_vs_AoQ_ZAoQgate[gate] = new TH2I(Form("h2_x4_vs_AoQ_ZAoQgate%i", gate), Form("x4 vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4);
-            h2_x4_vs_AoQ_ZAoQgate[gate]->GetXaxis()->SetTitle("A/Q");
-            h2_x4_vs_AoQ_ZAoQgate[gate]->GetYaxis()->SetTitle("S4 x-position)");
-            h2_x4_vs_AoQ_ZAoQgate[gate]->SetOption("COLZ");
-
-            h2_dEdeg_vs_Z_ZAoQgate[gate] = new TH2I(Form("h2_dEdeg_vs_Z_ZAoQgate%i", gate), Form("Z1 vs. dE in S2 degrader - ZAoQ Gate %i", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dE, frs_config->fMax_dE);
-            h2_dEdeg_vs_Z_ZAoQgate[gate]->GetXaxis()->SetTitle("Z (MUSIC 1)");
-            h2_dEdeg_vs_Z_ZAoQgate[gate]->GetYaxis()->SetTitle("dE in S2 degrader");
-            h2_dEdeg_vs_Z_ZAoQgate[gate]->SetOption("COLZ");
-
-            h2_dedegoQ_vs_Z_ZAoQgate[gate] = new TH2I(Form("h2_dedegoQ_vs_Z_ZAoQgate%i", gate), Form("Z1 vs. dE in S2 degrader / Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ);
-            h2_dedegoQ_vs_Z_ZAoQgate[gate]->GetXaxis()->SetTitle("Z (MUSIC 1)");
-            h2_dedegoQ_vs_Z_ZAoQgate[gate]->GetYaxis()->SetTitle("dE in S2 degrader / Q");
-            h2_dedegoQ_vs_Z_ZAoQgate[gate]->SetOption("COLZ");
-
-            h1_a2_ZAoQ_gate[gate] = new TH1I(Form("h1_a2_ZAoQ_gate%i", gate), Form("Angle S2 [mrad] - ZAoQ Gate %i", gate), 100, -1000, 1000);
-            h1_a2_ZAoQ_gate[gate]->GetXaxis()->SetTitle("AngleX (S2)");
-
-            h1_a4_ZAoQ_gate[gate] = new TH1I(Form("h1_a4_ZAoQ_gate%i", gate), Form("Angle S4 [mrad] - ZAoQ Gate %i", gate), 100, -1000, 1000);
-            h1_a4_ZAoQ_gate[gate]->GetXaxis()->SetTitle("AngleX (S4)");
-            */
-
-            dir_ZvsZ2->cd();
-            h2_Z_vs_AoQ_Z1Z2gate[gate] = new TH2I(Form("h2_Z_vs_AoQ_ZAoQgate%s", FrsGates[gate]->GetName().c_str()), Form("Z vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z);
-            h2_Z_vs_AoQ_Z1Z2gate[gate]->GetXaxis()->SetTitle("A/Q");
-            h2_Z_vs_AoQ_Z1Z2gate[gate]->GetYaxis()->SetTitle("Z (MUSIC 1)");
-            h2_Z_vs_AoQ_Z1Z2gate[gate]->SetOption("COLZ");
-
-            h2_Z1_vs_Z2_Z1Z2gate[gate] = new TH2I(Form("h2_Z1_vs_Z2_ZAoQgate%i", gate), Form("Z1 vs. Z2 - ZAoQ Gate %i", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_Z, frs_config->fMax_Z);
-            h2_Z1_vs_Z2_Z1Z2gate[gate]->GetXaxis()->SetTitle("Z (MUSIC 1)");
-            h2_Z1_vs_Z2_Z1Z2gate[gate]->GetYaxis()->SetTitle("Z (MUSIC 2)");
-            h2_Z1_vs_Z2_Z1Z2gate[gate]->SetOption("COLZ");
-
-            h2_x2_vs_AoQ_Z1Z2gate[gate] = new TH2I(Form("h2_x2_vs_AoQ_ZAoQgate%i", gate), Form("x2 vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2);
-            h2_x2_vs_AoQ_Z1Z2gate[gate]->GetXaxis()->SetTitle("A/Q");
-            h2_x2_vs_AoQ_Z1Z2gate[gate]->GetYaxis()->SetTitle("S2 x-position)");
-            h2_x2_vs_AoQ_Z1Z2gate[gate]->SetOption("COLZ");
-
-            h2_x4_vs_AoQ_Z1Z2gate[gate] = new TH2I(Form("h2_x4_vs_AoQ_ZAoQgate%i", gate), Form("x4 vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4);
-            h2_x4_vs_AoQ_Z1Z2gate[gate]->GetXaxis()->SetTitle("A/Q");
-            h2_x4_vs_AoQ_Z1Z2gate[gate]->GetYaxis()->SetTitle("S4 x-position)");
-            h2_x4_vs_AoQ_Z1Z2gate[gate]->SetOption("COLZ");
-
-            h2_dEdeg_vs_Z_Z1Z2gate[gate] = new TH2I(Form("h2_dEdeg_vs_Z_ZAoQgate%i", gate), Form("Z1 vs. dE in S2 degrader - ZAoQ Gate %i", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dE, frs_config->fMax_dE);
-            h2_dEdeg_vs_Z_Z1Z2gate[gate]->GetXaxis()->SetTitle("Z (MUSIC 1)");
-            h2_dEdeg_vs_Z_Z1Z2gate[gate]->GetYaxis()->SetTitle("dE in S2 degrader");
-            h2_dEdeg_vs_Z_Z1Z2gate[gate]->SetOption("COLZ");
-
-            h2_dedegoQ_vs_Z_Z1Z2gate[gate] = new TH2I(Form("h2_dedegoQ_vs_Z_ZAoQgate%i", gate), Form("Z1 vs. dE in S2 degrader / Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ);
-            h2_dedegoQ_vs_Z_Z1Z2gate[gate]->GetXaxis()->SetTitle("Z (MUSIC 1)");
-            h2_dedegoQ_vs_Z_Z1Z2gate[gate]->GetYaxis()->SetTitle("dE in S2 degrader / Q");
-            h2_dedegoQ_vs_Z_Z1Z2gate[gate]->SetOption("COLZ");
-
-            h1_a2_Z1Z2_gate[gate] = new TH1I(Form("h1_a2_ZAoQ_gate%i", gate), Form("Angle S2 [mrad] - ZAoQ Gate %i", gate), 100, -1000, 1000);
-            h1_a2_Z1Z2_gate[gate]->GetXaxis()->SetTitle("AngleX (S2)");
-
-            h1_a4_Z1Z2_gate[gate] = new TH1I(Form("h1_a4_ZAoQ_gate%i", gate), Form("Angle S4 [mrad] - ZAoQ Gate %i", gate), 100, -1000, 1000);
-            h1_a4_Z1Z2_gate[gate]->GetXaxis()->SetTitle("AngleX (S4)");
-
-            // Second gate - x2 vs AoQ
-            dir_ZvsZ2_x2vsAoQ->cd();
-            h2_x2_vs_AoQ_Z1Z2x2AoQgate[gate] = new TH2I(Form("h2_x2_vs_AoQ_Z1Z2x2AoQgate%d", gate), Form("x2 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2);                
-            h2_x4_vs_AoQ_Z1Z2x2AoQgate[gate] = new TH2I(Form("h2_x4_vs_AoQ_Z1Z2x2AoQgate%d", gate), Form("x4 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4);                
-            h2_Z_vs_AoQ_Z1Z2x2AoQgate[gate] = new TH2I(Form("h2_Z_vs_AoQ_Z1Z2x2AoQgate%d", gate), Form("Z1 vs. A/Q - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z);                
-            h2_dEdeg_vs_Z_Z1Z2x2AoQgate[gate] = new TH2I(Form("h2_dEdeg_vs_Z_Z1Z2x2AoQgate%d", gate), Form("dE in S2 degrader vs. Z1 - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dE, frs_config->fMax_dE);                
-            h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate[gate] = new TH2I(Form("h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate%d", gate), Form("dE in S2 degrader / Q vs. Z1 - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ);               
-            h1_a2_Z1Z2x2AoQgate[gate] = new TH1I(Form("h1_a2_Z1Z2x2AoQgate%d", gate), Form("Angle S2 [mrad] - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 100, -1000, 1000);           
-            h1_a4_Z1Z2x2AoQgate[gate] = new TH1I(Form("h1_a4_Z1Z2x2AoQgate%d", gate), Form("Angle S4 [mrad] - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 100, -1000, 1000);
-
-            // Second gate - x4 vs AoQ
-            dir_ZvsZ2_x4vsAoQ->cd();
-            h2_x2_vs_AoQ_Z1Z2x4AoQgate[gate] = new TH2I(Form("h2_x2_vs_AoQ_Z1Z2x4AoQgate%d", gate), Form("x2 vs. A/Q - Z1Z2, x4AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2);               
-            h2_x4_vs_AoQ_Z1Z2x4AoQgate[gate] = new TH2I(Form("h2_x4_vs_AoQ_Z1Z2x4AoQgate%d", gate), Form("x4 vs. A/Q - Z1Z2, x4AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4);                
-            h2_Z_vs_AoQ_Z1Z2x4AoQgate[gate] = new TH2I(Form("h2_Z_vs_AoQ_Z1Z2x4AoQgate%d", gate), Form("Z1 vs. A/Q - Z1Z2, x4AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z);                
-            h2_dEdeg_vs_Z_Z1Z2x4AoQgate[gate] = new TH2I(Form("h2_dEdeg_vs_Z_Z1Z2x4AoQgate%d", gate), Form("dE in S2 degrader vs. Z1 - Z1Z2, x4AoQ Gate: %d", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dE, frs_config->fMax_dE);                
-            h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate[gate] = new TH2I(Form("h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate%d", gate), Form("dE in S2 degrader / Q vs. Z1 - Z1Z2, x4AoQ Gate: %d", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ);                
-            h1_a2_Z1Z2x4AoQgate[gate] = new TH1I(Form("h1_a2_Z1Z2x4AoQgate%d", gate), Form("Angle S2 [mrad] - Z1Z2, x4AoQ Gate: %d", gate), 100, -1000, 1000);                
-            h1_a4_Z1Z2x4AoQgate[gate] = new TH1I(Form("h1_a4_Z1Z2x4AoQgate%d", gate), Form("Angle S4 [mrad] - Z1Z2, x4AoQ Gate: %d", gate), 100, -1000, 1000);
-            
-
-            // :::: MHTDC :::::
-            //...
-
-
+                // Second gate - x4 vs AoQ
+                h2_x2_vs_AoQ_Z1Z2x4AoQgate[gate] = MakeTH2(dir_ZvsZ2_x4vsAoQ, "I", Form("h2_x2_vs_AoQ_Z1Z2x4AoQgate%d", gate), Form("x2 vs. A/Q - Z1Z2 Gate 0, x4AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q", "S2 x-position");
+                h2_x4_vs_AoQ_Z1Z2x4AoQgate[gate] = MakeTH2(dir_ZvsZ2_x4vsAoQ, "I", Form("h2_x4_vs_AoQ_Z1Z2x4AoQgate%d", gate), Form("x4 vs. A/Q - Z1Z2 Gate 0, x4AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q", "S4 x-position");
+                h2_Z_vs_AoQ_Z1Z2x4AoQgate[gate] = MakeTH2(dir_ZvsZ2_x4vsAoQ, "I", Form("h2_Z_vs_AoQ_Z1Z2x4AoQgate%d", gate), Form("Z1 vs. A/Q - Z1Z2 Gate 0, x4AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q", "Z (MUSIC 1)");
+                h2_dEdeg_vs_Z_Z1Z2x4AoQgate[gate] = MakeTH2(dir_ZvsZ2_x4vsAoQ, "I", Form("h2_dEdeg_vs_Z_Z1Z2x4AoQgate%d", gate), Form("dE in S2 degrader vs. Z1 - Z1Z2 Gate 0, x4AoQ Gate: %d", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dE, frs_config->fMax_dE, "Z (MUSIC 1)", "dE in S2 degrader");
+                h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate[gate] = MakeTH2(dir_ZvsZ2_x4vsAoQ, "I", Form("h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate%d", gate), Form("dE in S2 degrader / Q vs. Z1 - Z1Z2 Gate 0, x4AoQ Gate: %d", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ, "Z (MUSIC 1)", "dE in S2 degrader / Q");               
+               
+            }
         }
     }
 
-    dir_scalers->cd();
-    h1_tpat = new TH1I("h1_tpat", "Trigger Pattern", 20, 0, 20);
+    if (frs_config->plot_tac_1d)
+    {   
+        // preset wide ranges to "always" see peak, in case there's something funky with the FRS
+        h1_Z = MakeTH1(dir_tac_1d, "D", "h1_Z", "Z (MUSIC 1)", 500, 10, 100, "Z (MUSIC 1)", kPink-3, kBlue+2);
+        h1_Z2 = MakeTH1(dir_tac_1d, "D", "h1_Z2", "Z (MUSIC 2)", 500, 10, 100, "Z (MUSIC 2)", kPink-3, kBlue+2);
+        h1_Z_travmus = MakeTH1(dir_tac_1d, "D", "h1_Z_travmus", "Z (Travel MUSIC)", 750, 10, 100, "Z (Travel MUSIC)", kPink-3, kBlue+2);
+        h1_AoQ = MakeTH1(dir_tac_1d, "D", "h1_AoQ", "A/Q", 500, 1.0, 4.0, "A/Q", kPink-3, kBlue+2); 
+        h1_AoQ_corr = MakeTH1(dir_tac_1d, "D", "h1_AoQ_corr", "A/Q (corr)", 500, 1.0, 4.0, "A/Q", kPink-3, kBlue+2);
+        h1_x2 = MakeTH1(dir_tac_1d, "D", "h1_x2", "S2 x-position", 200, -100, 100, "S2 x-position", kYellow-7, kBlack);
+        h1_x4 = MakeTH1(dir_tac_1d, "D", "h1_x4", "S4 x-position", 200, -100, 100, "S4 x-position",kYellow-7, kBlack);
+        h1_a2 = MakeTH1(dir_tac_1d, "D", "h1_a2", "AngleX S2", 200, -100, 100, "AngleX S2", kYellow-7, kBlack);
+        h1_a4 = MakeTH1(dir_tac_1d, "D", "h1_a4", "AngleX S4", 200, -100, 100, "AngleX S4", kYellow-7, kBlack);
+        h1_y2 = MakeTH1(dir_tac_1d, "D", "h1_y2", "S2 y-position", 200, -100, 100, "S2 y-position", kYellow-7, kBlack);
+        h1_y4 = MakeTH1(dir_tac_1d, "D", "h1_y4", "S4 y-position", 200, -100, 100, "S4 y-position", kYellow-7, kBlack);
+        h1_b2 = MakeTH1(dir_tac_1d, "D", "h1_b2", "AngleY S2", 200, -100, 100, "AngleY S2", kYellow-7, kBlack);
+        h1_b4 = MakeTH1(dir_tac_1d, "D", "h1_b4", "AngleY S4", 200, -100, 100, "AngleY S4", kYellow-7, kBlack);
+        h1_beta = MakeTH1(dir_tac_1d, "D", "h1_beta", "Beta", 500, 0.0, 1.0, "Beta", kPink-3, kBlue+2);
+        h1_dEdeg = MakeTH1(dir_tac_1d, "D", "h1_dEdeg", "dE in S2 degrader", 1000, 0.0, 1000., "dE", kPink-3, kBlue+2);
+        h1_dEdegoQ = MakeTH1(dir_tac_1d, "D", "h1_dEdegoQ", "dE in S2 degrader / Q", 1000, 0.0, 10.0, "dE / Q", kPink-3, kBlue+2);
+        for (int i = 0; i < 2; i++) h1_rho[i] = MakeTH1(dir_tac_1d, "D", Form("h1_rho_%i", i), Form("rho %i", i), 100, 0.0, 1.0, Form("rho %i", i), kPink-3, kBlue+2); 
+        for (int i = 0; i < 2; i++) h1_brho[i] = MakeTH1(dir_tac_1d, "D", Form("h1_brho_%i", i), Form("brho %i", i), 100, 0.0, 1.0, Form("brho %i", i), kPink-3, kBlue+2);
+        for (int i = 0; i < 2; i++) h1_music_dE[i] = MakeTH1(dir_tac_1d, "D", Form("h1_music_dE_%i", i), Form("Energy loss in MUSIC %i", i+1), 1000, 0.0, 4000.0, Form("dE MUSIC %i", i+1), kPink-3, kBlue+2);
+        h1_travmus_dE = MakeTH1(dir_tac_1d, "D", "h1_travmus_dE", "dE (Travel MUSIC)", 1000, 0, 4000., "dE (Travel MUSIC)", kPink-3, kBlue+2);
+        for (int i = 0; i < 2; i++) h1_music_dEcorr[i] = MakeTH1(dir_tac_1d, "D", Form("h1_music_dEcorr_%i", i), Form("Energy loss (corr) in MUSIC %i", i+1), 4000, 0.0, 4000.0, Form("dE (corr) MUSIC %i", i+1), kPink-3, kBlue+2);
+        for (int i = 0; i < 6; i++) h1_sci_e[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_e_%i", i), Form("SCI E %i", i), 4000, 0.0, 4000.0, Form("SCI E %i", i), kPink-3, kBlue+2);
+        for (int i = 0; i < 6; i++) h1_sci_l[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_l_%i", i), Form("SCI L %i", i), 4000, 0.0, 4000.0, Form("SCI L %i", i), kPink-3, kBlue+2);
+        for (int i = 0; i < 6; i++) h1_sci_r[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_r_%i", i), Form("SCI R %i", i), 4000, 0.0, 4000.0, Form("SCI R %i", i), kPink-3, kBlue+2);
+        for (int i = 0; i < 6; i++) h1_sci_x[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_x_%i", i), Form("SCI X %i", i), 4000, 0.0, 4000.0, Form("SCI X %i", i), kYellow-7, kBlack);
+        for (int i = 0; i < 6; i++) h1_sci_tof[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_tof_%i", i), Form("SCI TOF %i", i), 4000, 0.0, 200000.0, Form("SCI TOF %i", i), kPink-3, kBlue+2);
+        for (int i = 0; i < 6; i++) h1_sci_tof_calib[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_tof_calib_%i", i), Form("SCI TOF CALIB %i", i), 4000, 0.0, 4000.0, Form("SCI TOF (Calib) %i", i), kPink-3, kBlue+2);
+
+        // Are Gated 1D desired?
+    }
+
+    if (frs_config->plot_mhtdc_2d)
+    {
+        // directory, type, name, title, xbins, xmin, xmax, ybins, ymin, ymax, xtitle, ytitle
+        h2_Z_vs_AoQ_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_Z_vs_AoQ_mhtdc", "Z1 vs. A/Q (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q", "Z (MUSIC 1)");
+        h2_Z_vs_AoQ_corr_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_Z_vs_AoQ_corr_mhtdc", "Z1 vs. A/Q (corr) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z,"A/Q", "Z (MUSIC 1)");
+        h2_Z_vs_Z2_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_Z_vs_Z2_mhtdc", "Z1 vs. Z2 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z (MUSIC 1)", "Z (MUSIC 2)");
+        h2_travmus_vs_Z_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_travmus_vs_Z_mhtdc", "Z (Trav) vs. Z1 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z (Travel MUSIC)", "Z (MUSIC 1)");
+        h2_Z_vs_AoQ_Zsame_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_Z_vs_AoQ_Zsame_mhtdc", "Z1 vs. A/Q [ABS (Z1 - Z2) < 0.4] (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q", "Z (MUSIC 1)");
+        h2_x2_vs_AoQ_Zsame_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_x2_vs_AoQ_Zsame_mhtdc", "x2 vs A/Q - [ABS(Z1 - Z2) < 0.4] (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q", "S2 x-position");
+        h2_x4_vs_AoQ_Zsame_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_x4_vs_AoQ_Zsame_mhtdc", "x4 vs A/Q - [ABS(Z1 - Z2) < 0.4] (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q", "S4 x-position");
+        h2_x2_vs_AoQ_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_x2_vs_AoQ_mhtdc", "x2 vs. A/Q (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q", "S2 x-position");
+        h2_x4_vs_AoQ_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_x4_vs_AoQ_mhtdc", "x4 vs. A/Q (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q", "S4 x-position");
+        h2_dEdegoQ_vs_Z_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_dEdegoQ_vs_Z_mhtdc", "dE in S2 degrader / Q vs. Z1 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ, "dE in S2 degrader / Q", "Z (MUSIC 1)");
+        h2_dEdeg_vs_Z_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_dEdeg_vs_Z_mhtdc", "dE in S2 degrader vs. Z1 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, frs_config->fMin_dE, frs_config->fMax_dE, "dE in S2 degrader", "Z (MUSIC 1)");
+        h2_a2_vs_AoQ_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_a2_vs_AoQ_mhtdc", "A/Q vs. AngleX (S2) (MHTDC)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a2, frs_config->fMax_a2, "A/Q", "AngleX (S2)");
+        h2_a4_vs_AoQ_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_a4_vs_AoQ_mhtdc", "A/Q vs. AngleX (S4) (MHTDC)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a4, frs_config->fMax_a4, "A/Q", "AngleX (S4)");
+        h2_Z_vs_dE2_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_Z_vs_dE2_mhtdc", "Z1 vs. dE in MUSIC2 (MHTDC)", 400, frs_config->fMin_Z, frs_config->fMax_Z, 250, frs_config->fMin_dE_Music2, frs_config->fMax_dE_Music2, "Z (MUSIC 1)", "dE in MUSIC 2");
+        h2_SC41dE_vs_AoQ_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_SC41dE_vs_AoQ_mhtdc", "A/Q vs. dE in SC41 (MHTDC)", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000., "A/Q", "dE in SC41");
+        h2_x2_vs_Z_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_x2_vs_Z_mhtdc", "x2 vs. Z1 (MHTDC)", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x2, frs_config->fMax_x2, "Z (MUSIC 1)", "S2 x-position");
+        h2_x4_vs_Z_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_x4_vs_Z_mhtdc", "x4 vs. Z1 (MHTDC)", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x4, frs_config->fMax_x4, "Z (MUSIC 1)", "S4 x-position");
+        h2_Z_vs_Sc21E_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_Z_vs_Sc21E_mhtdc", "Z1 vs. SQRT(Sc21_L * Sc21_R) (MHTDC)", 300, frs_config->fMin_Z, frs_config->fMax_Z, 400, 0., 4000., "Z (MUSIC 1)", "Sc21 E");
+        
+        // neither TAC nor MHTDC, don't plot twice..
+        if (!frs_config->plot_tac_2d)
+        {
+            h2_x2_vs_x4 = MakeTH2(dir_mhtdc_2d, "D", "h2_x2_vs_x4", "x2 vs. x4", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_x4, frs_config->fMax_x4, "S2 x-position", "S4 x-position");
+            h2_dE_vs_ToF = MakeTH2(dir_mhtdc_2d, "D", "h2_dE_vs_ToF", "ToF S2-S4 vs. dE in MUSIC1", 2000, 0., 70000., 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "Time of Flight (S2 - S4)", "dE in MUSIC 1");
+            h2_dE1_vs_x2 = MakeTH2(dir_mhtdc_2d, "D", "h2_dE1_vs_x2", "x2 vs. dE in MUSIC1", 200, frs_config->fMin_x2, frs_config->fMax_x2, 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "S2 x-position", "dE in MUSIC 1");
+            h2_dE1_vs_x4 = MakeTH2(dir_mhtdc_2d, "D", "h2_dE1_vs_x4", "x4 vs. dE in MUSIC1", 200, frs_config->fMin_x4, frs_config->fMax_x4, 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "S4 x-position", "dE in MUSIC 1");
+            h2_x2_vs_a2 = MakeTH2(dir_mhtdc_2d, "D", "h2_x2_vs_a2", "x2 vs. AngleX (S2)", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_a2, frs_config->fMax_a2, "S2 x-position", "AngleX (S2)");
+            h2_y2_vs_b2 = MakeTH2(dir_mhtdc_2d, "D", "h2_y2_vs_b2", "y2 vs. AngleY (S2)", 200, frs_config->fMin_y2, frs_config->fMax_y2, 200, frs_config->fMin_b2, frs_config->fMax_b2, "S2 y-position", "AngleY (S2)");
+            h2_x4_vs_a4 = MakeTH2(dir_mhtdc_2d, "D", "h2_x4_vs_a4", "x4 vs. AngleX (S4)", 200, frs_config->fMin_x4, frs_config->fMax_x4, 200, frs_config->fMin_a4, frs_config->fMax_a4, "S4 x-position", "AngleX (S4)");
+            h2_y4_vs_b4 = MakeTH2(dir_mhtdc_2d, "D", "h2_y4_vs_b4", "y4 vs. AngleY (S4)", 200, frs_config->fMin_y4, frs_config->fMax_y4, 200, frs_config->fMin_b4, frs_config->fMax_b4, "S4 y-position", "AngleY (S4)");
+        }
+
+        // ZvsZ2 gates
+        if (!FrsGates.empty())
+        {
+            h2_Z_vs_AoQ_Z1Z2gate_mhtdc.resize(FrsGates.size());
+            h2_Z1_vs_Z2_Z1Z2gate_mhtdc.resize(FrsGates.size());
+            h2_x2_vs_AoQ_Z1Z2gate_mhtdc.resize(FrsGates.size());
+            h2_x4_vs_AoQ_Z1Z2gate_mhtdc.resize(FrsGates.size());
+            h2_dEdeg_vs_Z_Z1Z2gate_mhtdc.resize(FrsGates.size());
+            h2_dedegoQ_vs_Z_Z1Z2gate_mhtdc.resize(FrsGates.size());
+            h2_x2_vs_AoQ_Z1Z2x2AoQgate_mhtdc.resize(FrsGates.size());
+            h2_x4_vs_AoQ_Z1Z2x2AoQgate_mhtdc.resize(FrsGates.size());
+            h2_Z_vs_AoQ_Z1Z2x2AoQgate_mhtdc.resize(FrsGates.size());
+            h2_dEdeg_vs_Z_Z1Z2x2AoQgate_mhtdc.resize(FrsGates.size());
+            h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate_mhtdc.resize(FrsGates.size());
+            h2_x2_vs_AoQ_Z1Z2x4AoQgate_mhtdc.resize(FrsGates.size());
+            h2_x4_vs_AoQ_Z1Z2x4AoQgate_mhtdc.resize(FrsGates.size());
+            h2_Z_vs_AoQ_Z1Z2x4AoQgate_mhtdc.resize(FrsGates.size());
+            h2_dEdeg_vs_Z_Z1Z2x4AoQgate_mhtdc.resize(FrsGates.size());
+            h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate_mhtdc.resize(FrsGates.size());
+         
+            for (int gate = 0; gate < FrsGates.size(); gate++)
+            {   
+                h2_Z_vs_AoQ_Z1Z2gate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_mhtdc, "I", Form("h2_Z_vs_AoQ_ZAoQgate%s_mhtdc", FrsGates[gate]->GetName().c_str()), Form("Z vs. A/Q (MHTDC) - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q", "Z (MUSIC 1)");
+                h2_Z1_vs_Z2_Z1Z2gate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_mhtdc, "I", Form("h2_Z1_vs_Z2_ZAoQgate%i_mhtdc", gate), Form("Z1 vs. Z2 (MHTDC) - ZAoQ Gate %i", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_Z, frs_config->fMax_Z, "Z (MUSIC 1)", "Z (MUSIC 2)");
+                h2_x2_vs_AoQ_Z1Z2gate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_mhtdc, "I", Form("h2_x2_vs_AoQ_ZAoQgate%i_mhtdc", gate), Form("x2 vs. A/Q (MHTDC) - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q", "S2 x-position");
+                h2_x4_vs_AoQ_Z1Z2gate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_mhtdc, "I", Form("h2_x4_vs_AoQ_ZAoQgate%i_mhtdc", gate), Form("x4 vs. A/Q (MHTDC) - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q", "S4 x-position");
+                h2_dEdeg_vs_Z_Z1Z2gate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_mhtdc, "I", Form("h2_dEdeg_vs_Z_ZAoQgate%i_mhtdc", gate), Form("Z1 vs. dE in S2 degrader (MHTDC) - ZAoQ Gate %i", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dE, frs_config->fMax_dE, "Z (MUSIC 1)", "dE in S2 degrader");
+                h2_dedegoQ_vs_Z_Z1Z2gate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_mhtdc, "I", Form("h2_dedegoQ_vs_Z_ZAoQgate%i_mhtdc", gate), Form("Z1 vs. dE in S2 degrader / Q (MHTDC) - ZAoQ Gate %i", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ, "Z (MUSIC 1)", "dE in S2 degrader / Q");
+                
+                // Second gate - x2 vs AoQ
+                h2_x2_vs_AoQ_Z1Z2x2AoQgate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_x2vsAoQ_mhtdc, "I", Form("h2_x2_vs_AoQ_Z1Z2x2AoQgate%d_mhtdc", gate), Form("x2 vs. A/Q (MHTDC) - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q", "S2 x-position");
+                h2_x4_vs_AoQ_Z1Z2x2AoQgate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_x2vsAoQ_mhtdc, "I", Form("h2_x4_vs_AoQ_Z1Z2x2AoQgate%d_mhtdc", gate), Form("x4 vs. A/Q (MHTDC) - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q", "S4 x-position");
+                h2_Z_vs_AoQ_Z1Z2x2AoQgate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_x2vsAoQ_mhtdc, "I", Form("h2_Z_vs_AoQ_Z1Z2x2AoQgate%d_mhtdc", gate), Form("Z1 vs. A/Q (MHTDC) - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q", "Z (MUSIC 1)");
+                h2_dEdeg_vs_Z_Z1Z2x2AoQgate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_x2vsAoQ_mhtdc, "I", Form("h2_dEdeg_vs_Z_Z1Z2x2AoQgate%d_mhtdc", gate), Form("dE in S2 degrader vs. Z1 (MHTDC) - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dE, frs_config->fMax_dE, "Z (MUSIC 1)", "dE in S2 degrader");
+                h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_x2vsAoQ_mhtdc, "I", Form("h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate%d_mhtdc", gate), Form("dE in S2 degrader / Q vs. Z1 (MHTDC) - Z1Z2 Gate 0, x2AoQ Gate: %d", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ, "Z (MUSIC 1)", "dE in S2 degrader / Q");
+
+                // Second gate - x4 vs AoQ
+                h2_x2_vs_AoQ_Z1Z2x4AoQgate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_x4vsAoQ_mhtdc, "I", Form("h2_x2_vs_AoQ_Z1Z2x4AoQgate%d_mhtdc", gate), Form("x2 vs. A/Q (MHTDC) - Z1Z2 Gate 0, x4AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q", "S2 x-position");
+                h2_x4_vs_AoQ_Z1Z2x4AoQgate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_x4vsAoQ_mhtdc, "I", Form("h2_x4_vs_AoQ_Z1Z2x4AoQgate%d_mhtdc", gate), Form("x4 vs. A/Q (MHTDC) - Z1Z2 Gate 0, x4AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q", "S4 x-position");
+                h2_Z_vs_AoQ_Z1Z2x4AoQgate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_x4vsAoQ_mhtdc, "I", Form("h2_Z_vs_AoQ_Z1Z2x4AoQgate%d_mhtdc", gate), Form("Z1 vs. A/Q (MHTDC) - Z1Z2 Gate 0, x4AoQ Gate: %d", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q", "Z (MUSIC 1)");
+                h2_dEdeg_vs_Z_Z1Z2x4AoQgate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_x4vsAoQ_mhtdc, "I", Form("h2_dEdeg_vs_Z_Z1Z2x4AoQgate%d_mhtdc", gate), Form("dE in S2 degrader vs. Z1 (MHTDC) - Z1Z2 Gate 0, x4AoQ Gate: %d", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dE, frs_config->fMax_dE, "Z (MUSIC 1)", "dE in S2 degrader");
+                h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_x4vsAoQ_mhtdc, "I", Form("h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate%d_mhtdc", gate), Form("dE in S2 degrader / Q vs. Z1 (MHTDC) - Z1Z2 Gate 0, x4AoQ Gate: %d", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ, "Z (MUSIC 1)", "dE in S2 degrader / Q");               
+               
+            }
+        }
+    }
+
+    if (frs_config->plot_mhtdc_1d)
+    {
+        h1_beta_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_beta_mhtdc", "Beta (MHTDC)", 500, 0.0, 1.0, "Beta", kPink-3, kBlue+2);
+        h1_AoQ_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_AoQ_mhtdc", "A/Q (MHTDC)", 500, 1.0, 4.0, "A/Q", kPink-3, kBlue+2);
+        h1_AoQ_corr_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_AoQ_corr_mhtdc", "A/Q (corr) (MHTDC)", 500, 1.0, 4.0, "A/Q", kPink-3, kBlue+2);
+        h1_z_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_z_mhtdc", "Z (MUSIC 1) (MHTDC)", 1000, 0, 100, "Z (MUSIC 1)", kPink-3, kBlue+2);
+        h1_z2_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_z2_mhtdc", "Z (MUSIC 2) (MHTDC)", 1000, 0, 100, "Z (MUSIC 2)", kPink-3, kBlue+2);
+        h1_z_travmus_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_z_travmus_mhtdc", "Z (Travel MUSIC) (MHTDC)", 1000, 0, 100, "Z (Travel MUSIC)", kPink-3, kBlue+2);
+        h1_dEdeg_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_dEdeg_mhtdc", "dE in S2 degrader (MHTDC)", 1000, 0, 100, "dE", kPink-3, kBlue+2);
+        h1_dEdegoQ_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_dEdegoQ_mhtdc", "dE in S2 degrader / Q (MHTDC)", 1000, 0.0, 2.0, "dE / Q", kPink-3, kBlue+2);
+
+        if (!frs_config->plot_tac_1d)
+        {
+            h1_x2 = MakeTH1(dir_tac_1d, "D", "h1_x2", "S2 x-position", 200, -100, 100, "x2", kYellow-7, kBlack);
+            h1_x4 = MakeTH1(dir_tac_1d, "D", "h1_x4", "S4 x-position", 200, -100, 100, "x4", kYellow-7, kBlack);
+            h1_a2 = MakeTH1(dir_tac_1d, "D", "h1_a2", "AngleX S2", 200, -100, 100, "a2", kYellow-7, kBlack);
+            h1_a4 = MakeTH1(dir_tac_1d, "D", "h1_a4", "AngleX S4", 200, -100, 100, "a4", kYellow-7, kBlack);
+            h1_y2 = MakeTH1(dir_tac_1d, "D", "h1_y2", "S2 y-position", 200, -100, 100, "y2", kYellow-7, kBlack);
+            h1_y4 = MakeTH1(dir_tac_1d, "D", "h1_y4", "S4 y-position", 200, -100, 100, "y4", kYellow-7, kBlack);
+            h1_b2 = MakeTH1(dir_tac_1d, "D", "h1_b2", "AngleY S2", 200, -100, 100, "b2", kYellow-7, kBlack);
+            h1_b4 = MakeTH1(dir_tac_1d, "D", "h1_b4", "AngleY S4", 200, -100, 100, "b4", kYellow-7, kBlack);
+        }
+    }
+
+    // :::::: Rates ::::::: //
+    h1_tpc21_rate = MakeTH1(dir_rates, "I", "h1_tpc21_rate", "TPC 21 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
+    h1_tpc22_rate = MakeTH1(dir_rates, "I", "h1_tpc22_rate", "TPC 22 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
+    h1_tpc23_rate = MakeTH1(dir_rates, "I", "h1_tpc23_rate", "TPC 23 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
+    h1_tpc24_rate = MakeTH1(dir_rates, "I", "h1_tpc24_rate", "TPC 24 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
+    h1_tpc41_rate = MakeTH1(dir_rates, "I", "h1_tpc41_rate", "TPC 41 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
+    h1_tpc42_rate = MakeTH1(dir_rates, "I", "h1_tpc42_rate", "TPC 42 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
+    // h1_sci21_rate = MakeTH1(dir_rates, "I", "h1_sci21_rate", "SCI 21 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
+    // h1_sci22_rate = MakeTH1(dir_rates, "I", "h1_sci22_rate", "SCI 22 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
+    // h1_sci41_rate = MakeTH1(dir_rates, "I", "h1_sci41_rate", "SCI 41 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
+    // h1_sci42_rate = MakeTH1(dir_rates, "I", "h1_sci42_rate", "SCI 42 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
 
 
+
+
+    // Here we can draw any canvases we need, but we don't need to make histos /
 
     // ::::: Travel MUSIC - treated separately until FRS sorts themselves out ::::: 
-    dir_travmus->cd();
-    h1_wr_frs_travmus = new TH1I("h1_wr_frs_travmus", "White Rabbit dT FRS - Travel MUSIC", 500, -3000, -1000);
-
-    // ::::::: TAC :::::::: //
-    dir_travmus_tac->cd();
+    h1_wr_frs_travmus = MakeTH1(dir_travmus, "I", "h1_wr_frs_travmus", "White Rabbit dT FRS - Travel MUSIC", 500, -3000, -1000);
 
     c_z_compare = new TCanvas("c_z_compare", "Z from 3 x MUSIC", 650, 350);
     c_z_compare->Divide(1, 3);
     c_z_compare->cd(1);
-    h1_travmus_z = new TH1D("h1_travmus_z", "Z (Travel MUSIC)", 750, frs_config->fMin_Z, frs_config->fMax_Z);
-    h1_travmus_z->SetFillColor(kPink-3);
-    h1_travmus_z->Draw();
+    h1_Z_travmus->Draw();
     c_z_compare->cd(2);
-    h1_z1 = new TH1D("h1_z1", "Z (MUSIC 1)", 750, frs_config->fMin_Z, frs_config->fMax_Z);
-    h1_z1->SetFillColor(kAzure+7);
-    h1_z1->SetLineColor(kBlack);
-    h1_z1->Draw();
+    h1_Z->Draw();
     c_z_compare->cd(3);
-    h1_z2 = new TH1D("h1_z2", "Z (MUSIC 2)", 750, frs_config->fMin_Z, frs_config->fMax_Z);
-    h1_z2->SetFillColor(kAzure+7);
-    h1_z2->SetLineColor(kBlack);
-    h1_z2->Draw();
+    h1_Z2->Draw();
     c_z_compare->cd(0);
     dir_travmus_tac->Append(c_z_compare);
 
     c_dE_compare = new TCanvas("c_dE_compare", "dE from 3 x MUSIC", 650, 350);
     c_dE_compare->Divide(1, 3);
     c_dE_compare->cd(1);
-    h1_travmus_dE = new TH1D("h1_travmus_dE", "dE (Travel MUSIC)", 750, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1);
-    h1_travmus_dE->SetFillColor(kPink-3);
     h1_travmus_dE->Draw();
     c_dE_compare->cd(2);
-    h1_z1_dE = new TH1D("h1_z1_dE", "dE (MUSIC 1)", 750, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1);
-    h1_z1_dE->SetFillColor(kAzure+7);
-    h1_z1_dE->SetLineColor(kBlack);
-    h1_z1_dE->Draw();
+    h1_music_dE[0]->Draw();
     c_dE_compare->cd(3);
-    h1_z2_dE = new TH1D("h1_z2_dE", "dE (MUSIC 2)", 750, frs_config->fMin_dE_Music2, frs_config->fMax_dE_Music2);
-    h1_z2_dE->SetFillColor(kAzure+7);
-    h1_z2_dE->SetLineColor(kBlack);
-    h1_z2_dE->Draw();
+    h1_music_dE[1]->Draw();
     c_dE_compare->cd(0);
     dir_travmus_tac->Append(c_dE_compare);
 
-    // :::: 2D plots ::::::: 
-    h2_travmus_z1 = new TH2D("h2_travmus_z1", "Z (Travel MUSIC) vs Z (MUSIC 1)", 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_Z, frs_config->fMax_Z);
-    h2_travmus_z1->GetXaxis()->SetTitle("Z (Travel MUSIC)");
-    h2_travmus_z1->GetYaxis()->SetTitle("Z (MUSIC 1)");
-    h2_travmus_z1->SetOption("COLZ");
-
-    // ::::: Travel Music MHTDC ::::::: //
-    dir_travmus_mhtdc->cd();
-
-    c_z_compare_MHTDC = new TCanvas("c_z_compare_MHTDC", "Z from 3 x MUSIC MHTDC", 650, 350);
-    c_z_compare_MHTDC->Divide(1, 3);
-    c_z_compare_MHTDC->cd(1);
-    h1_travmus_z_MHTDC = new TH1D("h1_travmus_z_MHTDC", "Z (Travel MUSIC) MHTDC ", 750, frs_config->fMin_Z, frs_config->fMax_Z);
-    h1_travmus_z_MHTDC->SetFillColor(kPink-3);
-    h1_travmus_z_MHTDC->Draw();
-    c_z_compare_MHTDC->cd(2);
-    h1_z1_MHTDC = new TH1D("h1_z1_MHTDC", "Z (MUSIC 1) MHTDC", 750, frs_config->fMin_Z, frs_config->fMax_Z);
-    h1_z1_MHTDC->SetFillColor(kAzure+7);
-    h1_z1_MHTDC->SetLineColor(kBlack);
-    h1_z1_MHTDC->Draw();
-    c_z_compare_MHTDC->cd(3);
-    h1_z2_MHTDC = new TH1D("h1_z2_MHTDC", "Z (MUSIC 2) MHTDC", 750, frs_config->fMin_Z, frs_config->fMax_Z);
-    h1_z2_MHTDC->SetFillColor(kAzure+7);
-    h1_z2_MHTDC->SetLineColor(kBlack);
-    h1_z2_MHTDC->Draw();
-    c_z_compare_MHTDC->cd(0);
-    dir_travmus_mhtdc->Append(c_z_compare_MHTDC);
+    c_z_compare_mhtdc = new TCanvas("c_z_compare_mhtdc", "Z from 3 x MUSIC MHTDC", 650, 350);
+    c_z_compare_mhtdc->Divide(1, 3);
+    c_z_compare_mhtdc->cd(1);
+    h1_z_travmus_mhtdc->Draw();
+    c_z_compare_mhtdc->cd(2);
+    h1_z_mhtdc->Draw();
+    c_z_compare_mhtdc->cd(3);
+    h1_z2_mhtdc->Draw();
+    c_z_compare_mhtdc->cd(0);
+    dir_travmus_mhtdc->Append(c_z_compare_mhtdc);
     // :::::::::::::::::::: //
 
     // Register command to reset histograms
     run->GetHttpServer()->RegisterCommand("Reset_FRS_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
     run->GetHttpServer()->RegisterCommand("Snapshot_FRS_Histo", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
-
-
-    dir_frs->cd();
 
     return kSUCCESS;
 
@@ -589,7 +436,7 @@ void FrsOnlineSpectra::Reset_Histo()
     h2_y4_vs_b4->Reset();
     h2_Z_vs_Sc21E->Reset();
     h1_tpat->Reset();
-   //h1_frs_wr->Reset();
+   //h1_wr->Reset();
 
     if (!FrsGates.empty())
     {
@@ -601,22 +448,16 @@ void FrsOnlineSpectra::Reset_Histo()
             h2_x4_vs_AoQ_Z1Z2gate[gate]->Reset();
             h2_dEdeg_vs_Z_Z1Z2gate[gate]->Reset();
             h2_dedegoQ_vs_Z_Z1Z2gate[gate]->Reset();
-            h1_a2_Z1Z2_gate[gate]->Reset();
-            h1_a4_Z1Z2_gate[gate]->Reset();
             h2_x2_vs_AoQ_Z1Z2x2AoQgate[gate]->Reset();
             h2_x4_vs_AoQ_Z1Z2x2AoQgate[gate]->Reset();
             h2_Z_vs_AoQ_Z1Z2x2AoQgate[gate]->Reset();
             h2_dEdeg_vs_Z_Z1Z2x2AoQgate[gate]->Reset();
             h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate[gate]->Reset();
-            h1_a2_Z1Z2x2AoQgate[gate]->Reset();
-            h1_a4_Z1Z2x2AoQgate[gate]->Reset();
             h2_x2_vs_AoQ_Z1Z2x4AoQgate[gate]->Reset();
             h2_x4_vs_AoQ_Z1Z2x4AoQgate[gate]->Reset();
             h2_Z_vs_AoQ_Z1Z2x4AoQgate[gate]->Reset();
             h2_dEdeg_vs_Z_Z1Z2x4AoQgate[gate]->Reset();
             h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate[gate]->Reset();
-            h1_a2_Z1Z2x4AoQgate[gate]->Reset();
-            h1_a4_Z1Z2x4AoQgate[gate]->Reset();
         }
     }
     c4LOG(info,"FRS Spectra Reset");
@@ -733,12 +574,8 @@ void FrsOnlineSpectra::Snapshot_Histo()
             h2_dedegoQ_vs_Z_Z1Z2gate[gate]->Draw("COLZ");
             c_frs_snapshot->SaveAs(Form("h2_dedegoQ_vs_Z_Z1Z2gate%i.png", gate));
             c_frs_snapshot->Clear();
-            h1_a2_Z1Z2_gate[gate]->Draw();
-            c_frs_snapshot->SaveAs(Form("h1_a2_Z1Z2_gate%i.png", gate));
-            c_frs_snapshot->Clear();
-            h1_a4_Z1Z2_gate[gate]->Draw();
-            c_frs_snapshot->SaveAs(Form("h1_a4_Z1Z2_gate%i.png", gate));
-            c_frs_snapshot->Clear();
+            
+            
             h2_x2_vs_AoQ_Z1Z2x2AoQgate[gate]->Draw("COLZ");
             c_frs_snapshot->SaveAs(Form("h2_x2_vs_AoQ_Z1Z2x2AoQgate%i.png", gate));
             c_frs_snapshot->Clear();
@@ -753,12 +590,6 @@ void FrsOnlineSpectra::Snapshot_Histo()
             c_frs_snapshot->Clear();
             h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate[gate]->Draw("COLZ");
             c_frs_snapshot->SaveAs(Form("h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate%i.png", gate));
-            c_frs_snapshot->Clear();
-            h1_a2_Z1Z2x2AoQgate[gate]->Draw();
-            c_frs_snapshot->SaveAs(Form("h1_a2_Z1Z2x2AoQgate%i.png", gate));
-            c_frs_snapshot->Clear();
-            h1_a4_Z1Z2x2AoQgate[gate]->Draw();
-            c_frs_snapshot->SaveAs(Form("h1_a4_Z1Z2x2AoQgate%i.png", gate));
             c_frs_snapshot->Clear();
             h2_x2_vs_AoQ_Z1Z2x4AoQgate[gate]->Draw("COLZ");
             c_frs_snapshot->SaveAs(Form("h2_x2_vs_AoQ_Z1Z2x4AoQgate%i.png", gate));
@@ -775,12 +606,6 @@ void FrsOnlineSpectra::Snapshot_Histo()
             h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate[gate]->Draw("COLZ");
             c_frs_snapshot->SaveAs(Form("h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate%i.png", gate));
             c_frs_snapshot->Clear();
-            h1_a2_Z1Z2x4AoQgate[gate]->Draw();
-            c_frs_snapshot->SaveAs(Form("h1_a2_Z1Z2x4AoQgate%i.png", gate));
-            c_frs_snapshot->Clear();
-            h1_a4_Z1Z2x4AoQgate[gate]->Draw();
-            c_frs_snapshot->SaveAs(Form("h1_a4_Z1Z2x4AoQgate%i.png", gate));
-            c_frs_snapshot->Clear();
             h1_tpat->Draw();
             c_frs_snapshot->SaveAs("h1_tpat.png");
             c_frs_snapshot->Clear();         
@@ -791,21 +616,22 @@ void FrsOnlineSpectra::Snapshot_Histo()
 }
 
 void FrsOnlineSpectra::Exec(Option_t* option)
-{
+{   
+    int64_t frs_wr = 0; int64_t trav_mus_wr = 0;
+    if (hitArray->size() <= 0) return;
+    auto const & hitItem  = hitArray->at(0); // should only ever be 1 frs item per event, so take first
+    frs_wr = hitItem.Get_wr_t();
+    trav_mus_wr = hitItem.Get_wr_travmus();
 
-    int64_t trav_mus_wr = 0;
-    for (auto const & hitItem : *hitArray)
+    // :::::::::: TAC ::::::::::::: //
+    // ---------------------------- //
+    if (frs_config->plot_tac_2d)
     {
-        h1_tpat->Fill(hitItem.Get_tpat());
-        //h1_frs_wr->Fill(hitItem.Get_wr_t());
-
-        /* ---------------------------------------------------------------------------- */
-        // PIDs //
-        /* ---------------------------------------------------------------------------- */
         if (hitItem.Get_ID_AoQ() > 0 && hitItem.Get_ID_z() > 0) h2_Z_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_z());
         if (hitItem.Get_ID_AoQ_corr() > 0 && hitItem.Get_ID_z() > 0) h2_Z_vs_AoQ_corr->Fill(hitItem.Get_ID_AoQ_corr(), hitItem.Get_ID_z());
-
         if (hitItem.Get_ID_z() > 0 && hitItem.Get_ID_z2() > 0) h2_Z_vs_Z2->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_z2());
+        if (trav_mus_wr > 0 && hitItem.Get_ID_z() > 0 && hitItem.Get_ID_z_travmus() > 0) h2_travmus_vs_Z->Fill(hitItem.Get_ID_z_travmus(), hitItem.Get_ID_z());
+
         if (TMath::Abs(hitItem.Get_ID_z() - hitItem.Get_ID_z2()) < 0.4)
         {
             h2_Z_vs_AoQ_Zsame->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_z());
@@ -815,54 +641,25 @@ void FrsOnlineSpectra::Exec(Option_t* option)
 
         if (hitItem.Get_ID_AoQ() > 0 && hitItem.Get_ID_x2() > -100 && hitItem.Get_ID_x2() < 100) h2_x2_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x2());
         if (hitItem.Get_ID_AoQ() > 0 && hitItem.Get_ID_x4() > -100 && hitItem.Get_ID_x4() < 100) h2_x4_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x4());
-
-        // Charge states
-        if (hitItem.Get_ID_z() > 0 && hitItem.Get_ID_dEdegoQ() != 0) h2_dEdegoQ_vs_Z->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdegoQ());
+        if (hitItem.Get_ID_z() > 0 && hitItem.Get_ID_dEdegoQ() != 0) h2_dEdegoQ_vs_Z->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdegoQ()); // Charge states
         if (hitItem.Get_ID_z() > 0 && hitItem.Get_ID_dEdeg() != 0) h2_dEdeg_vs_Z->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdeg());
-
-        // Angles vs AoQ
         if (hitItem.Get_ID_AoQ() != 0 && hitItem.Get_ID_a2() != 0) h2_a2_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_a2());
         if (hitItem.Get_ID_AoQ() != 0 && hitItem.Get_ID_a4() != 0) h2_a4_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_a4());
-
-        // Z vs Energy loss MUSIC 2
         if (hitItem.Get_ID_z() != 0 && hitItem.Get_music_dE(1) != 0) h2_Z_vs_dE2->Fill(hitItem.Get_ID_z(), hitItem.Get_music_dE(1));
-
-        // x2 vs x4
         if (hitItem.Get_ID_x2() != 0 && hitItem.Get_ID_x4() != 0) h2_x2_vs_x4->Fill(hitItem.Get_ID_x2(), hitItem.Get_ID_x4());
-
-        // CEJ: changed from Go4, [5] -> [2]
-        if (hitItem.Get_ID_AoQ() != 0 && hitItem.Get_sci_e(2) != 0) h2_SC41dE_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_sci_e(2));
-
+        if (hitItem.Get_ID_AoQ() != 0 && hitItem.Get_sci_e(2) != 0) h2_SC41dE_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_sci_e(2)); // CEJ: changed from Go4, [5] -> [2]
         if (hitItem.Get_sci_tof2() != 0 && hitItem.Get_music_dE(0) != 0) h2_dE_vs_ToF->Fill(hitItem.Get_sci_tof2(), hitItem.Get_music_dE(0));
-
         if (hitItem.Get_ID_z() != 0 && hitItem.Get_ID_x2() != 0) h2_x2_vs_Z->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_x2());
         if (hitItem.Get_ID_z() != 0 && hitItem.Get_ID_x4() != 0) h2_x4_vs_Z->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_x4());
-
         if (hitItem.Get_ID_x2() != 0 && hitItem.Get_music_dE(0) != 0) h2_dE1_vs_x2->Fill(hitItem.Get_ID_x2(), hitItem.Get_music_dE(0));
         if (hitItem.Get_ID_x4() != 0 && hitItem.Get_music_dE(0) != 0) h2_dE1_vs_x4->Fill(hitItem.Get_ID_x4(), hitItem.Get_music_dE(0));
-
         if (hitItem.Get_ID_x2() != 0 && hitItem.Get_ID_a2() != 0) h2_x2_vs_a2->Fill(hitItem.Get_ID_x2(), hitItem.Get_ID_a2());
         if (hitItem.Get_ID_y2() != 0 && hitItem.Get_ID_b2() != 0) h2_y2_vs_b2->Fill(hitItem.Get_ID_y2(), hitItem.Get_ID_b2());
         if (hitItem.Get_ID_x4() != 0 && hitItem.Get_ID_a4() != 0) h2_x4_vs_a4->Fill(hitItem.Get_ID_x4(), hitItem.Get_ID_a4());
         if (hitItem.Get_ID_y4() != 0 && hitItem.Get_ID_b4() != 0) h2_y4_vs_b4->Fill(hitItem.Get_ID_y4(), hitItem.Get_ID_b4());
+        if (hitItem.Get_ID_z() != 0 && hitItem.Get_sci_l(0) != 0 && hitItem.Get_sci_r(0) != 0) h2_Z_vs_Sc21E->Fill(hitItem.Get_ID_z(), sqrt(hitItem.Get_sci_l(0) * hitItem.Get_sci_r(0))); // CEJ: changed [2] -> [0]
 
-        // CEJ: changed [2] -> [0]
-        if (hitItem.Get_ID_z() != 0 && hitItem.Get_sci_l(0) != 0 && hitItem.Get_sci_r(0) != 0) h2_Z_vs_Sc21E->Fill(hitItem.Get_ID_z(), sqrt(hitItem.Get_sci_l(0) * hitItem.Get_sci_r(0)));
-
-        // 1d plots to switch on and off
-        // 1D plots to turn on and off
-        if (frs_config->plot_1d)
-        {
-            h1_frs_Z->Fill(hitItem.Get_ID_z());
-            h1_frs_Z2->Fill(hitItem.Get_ID_z2());
-            h1_frs_AoQ->Fill(hitItem.Get_ID_AoQ());
-            h1_frs_AoQ_corr->Fill(hitItem.Get_ID_AoQ_corr());
-            h1_frs_x2->Fill(hitItem.Get_ID_x2());
-            h1_frs_x4->Fill(hitItem.Get_ID_x4());
-            // more..
-        }
-
-
+        // 2D Gated
         if (!FrsGates.empty())
         {   
             for (int gate = 0; gate < FrsGates.size(); gate++)
@@ -875,8 +672,6 @@ void FrsOnlineSpectra::Exec(Option_t* option)
                     h2_x4_vs_AoQ_Z1Z2gate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_x4());
                     h2_dEdeg_vs_Z_Z1Z2gate[gate]->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdeg());
                     h2_dedegoQ_vs_Z_Z1Z2gate[gate]->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdegoQ());
-                    h1_a2_Z1Z2_gate[gate]->Fill(hitItem.Get_ID_a2());
-                    h1_a4_Z1Z2_gate[gate]->Fill(hitItem.Get_ID_a4());
 
                     if (FrsGates[gate]->Passed_x2vsAoQ(hitItem.Get_ID_x2(), hitItem.Get_ID_AoQ()))
                     {
@@ -885,8 +680,6 @@ void FrsOnlineSpectra::Exec(Option_t* option)
                         h2_Z_vs_AoQ_Z1Z2x2AoQgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_z());
                         h2_dEdeg_vs_Z_Z1Z2x2AoQgate[gate]->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdeg());
                         h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate[gate]->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdegoQ());
-                        h1_a2_Z1Z2x2AoQgate[gate]->Fill(hitItem.Get_ID_a2());
-                        h1_a4_Z1Z2x2AoQgate[gate]->Fill(hitItem.Get_ID_a4());
                     }
 
                     if (FrsGates[gate]->Passed_x4vsAoQ(hitItem.Get_ID_x4(), hitItem.Get_ID_AoQ()))
@@ -896,95 +689,168 @@ void FrsOnlineSpectra::Exec(Option_t* option)
                         h2_Z_vs_AoQ_Z1Z2x4AoQgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_z());
                         h2_dEdeg_vs_Z_Z1Z2x4AoQgate[gate]->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdeg());
                         h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate[gate]->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdegoQ());
-                        h1_a2_Z1Z2x4AoQgate[gate]->Fill(hitItem.Get_ID_a2());
-                        h1_a4_Z1Z2x4AoQgate[gate]->Fill(hitItem.Get_ID_a4());
                     }
                 }
             }
         }
-
-        /* ---------------------------------------------------------------------------- */
-
-        // ::::: TRAVEL MUSIC ::::::
-
-        trav_mus_wr = hitItem.Get_wr_travmus();
-        if (trav_mus_wr > 0)
-        {
-            h1_wr_frs_travmus->Fill((int64_t)hitItem.Get_wr_t() - (int64_t)hitItem.Get_wr_travmus());
-
-            if (hitItem.Get_ID_z_travmus() > 0) h1_travmus_z->Fill(hitItem.Get_ID_z_travmus());
-            if (hitItem.Get_ID_z() > 0) h1_z1->Fill(hitItem.Get_ID_z()); // same as elsewhere, purely for comparison
-            if (hitItem.Get_ID_z2() > 0) h1_z2->Fill(hitItem.Get_ID_z2()); // same as elsewhere, purely for comparison
-
-            if (hitItem.Get_travmusic_dE() > 0) h1_travmus_dE->Fill(hitItem.Get_travmusic_dE());
-            if (hitItem.Get_music_dE(0) > 0) h1_z1_dE->Fill(hitItem.Get_music_dE(0));
-            if (hitItem.Get_music_dE(1) > 0) h1_z2_dE->Fill(hitItem.Get_music_dE(1));
-
-            h2_travmus_z1->Fill(hitItem.Get_ID_z_travmus(), hitItem.Get_ID_z());
-
-            //c4LOG(info, "trav_mus_de : " << hitItem.Get_travmusic_dE() << " music 1 en : " << hitItem.Get_music_dE(0) << "music 2 en : " << hitItem.Get_music_dE(1) );
-        }
-   
-
-        // :::::::::::::::::::::::::
-
-
-        /* ---------------------------------------------------------------------------- */
-        // Scalers
-        /* ---------------------------------------------------------------------------- */
-        for (int i = 0; i < 32; i++)
-        {   
-            // are we significantly slower if we have to "get" every time?
-            hScaler_per_s[i]->AddBinContent(hitItem.Get_ibin_for_s(), hitItem.Get_increase_sc_temp_main(i));
-            hScaler_per_s[i+32]->AddBinContent(hitItem.Get_ibin_for_s(), hitItem.Get_increase_sc_temp_user(i));
-            hScaler_per_100ms[i]->AddBinContent(hitItem.Get_ibin_for_100ms(), hitItem.Get_increase_sc_temp_main(i));
-            hScaler_per_100ms[i+32]->AddBinContent(hitItem.Get_ibin_for_100ms(), hitItem.Get_increase_sc_temp_user(i));
-            hScaler_per_spill[i]->AddBinContent(hitItem.Get_ibin_for_spill(), hitItem.Get_increase_sc_temp_main(i));
-            hScaler_per_spill[i+32]->AddBinContent(hitItem.Get_ibin_for_spill(), hitItem.Get_increase_sc_temp_user(i));
-
-        }
-
-        Int_t ratio_product = int(0.95 * hitItem.Get_increase_sc_temp2() + 0.05 * ratio_previous);
-        hScaler_per_s[64]->SetBinContent(hitItem.Get_ibin_for_s(), ratio_product);
-        hScaler_per_100ms[64]->SetBinContent(hitItem.Get_ibin_for_100ms(), ratio_product);
-        hScaler_per_spill[64]->SetBinContent(hitItem.Get_ibin_for_spill(), ratio_product);
-        Int_t ratio_product2 = int(0.95 * hitItem.Get_increase_sc_temp3() + 0.05 * ratio_previous2);
-        hScaler_per_s[65]->SetBinContent(hitItem.Get_ibin_for_s(), ratio_product2);
-        hScaler_per_100ms[65]->SetBinContent(hitItem.Get_ibin_for_100ms(), ratio_product2);
-        hScaler_per_spill[65]->SetBinContent(hitItem.Get_ibin_for_spill(), ratio_product2);
-
-        for (int i = 0; i < 32; i++)
-        {
-            hScaler_per_s[i]->SetBinContent(hitItem.Get_ibin_clean_for_s(), 0);
-            hScaler_per_s[i+32]->SetBinContent(hitItem.Get_ibin_clean_for_s(),0);
-            hScaler_per_100ms[i]->SetBinContent(hitItem.Get_ibin_clean_for_100ms(), 0);
-            hScaler_per_100ms[i+32]->SetBinContent(hitItem.Get_ibin_clean_for_100ms(), 0);
-            hScaler_per_spill[i]->SetBinContent(hitItem.Get_ibin_clean_for_spill(), 0);
-            hScaler_per_spill[i+32]->SetBinContent(hitItem.Get_ibin_clean_for_spill(), 0);
-        }
-
     }
 
-    //:: EG
-    //std::cout << "multhit beginnning" << std::endl;
+    if (frs_config->plot_tac_1d)
+    {
+        if (hitItem.Get_ID_z() > 0) h1_Z->Fill(hitItem.Get_ID_z());
+        if (hitItem.Get_ID_z2() > 0) h1_Z2->Fill(hitItem.Get_ID_z2());
+        if (trav_mus_wr > 0 && hitItem.Get_ID_z_travmus() > 0) h1_Z_travmus->Fill(hitItem.Get_ID_z_travmus());
+        if (hitItem.Get_ID_AoQ() > 0) h1_AoQ->Fill(hitItem.Get_ID_AoQ());
+        if (hitItem.Get_ID_AoQ_corr() > 0) h1_AoQ_corr->Fill(hitItem.Get_ID_AoQ_corr());
+        h1_x2->Fill(hitItem.Get_ID_x2());
+        h1_x4->Fill(hitItem.Get_ID_x4());
+        h1_a2->Fill(hitItem.Get_ID_a2());
+        h1_a4->Fill(hitItem.Get_ID_a4());
+        h1_y2->Fill(hitItem.Get_ID_y2());
+        h1_y4->Fill(hitItem.Get_ID_y4());
+        h1_b2->Fill(hitItem.Get_ID_b2());
+        h1_b4->Fill(hitItem.Get_ID_b4());
+        if (hitItem.Get_ID_beta() > 0) h1_beta->Fill(hitItem.Get_ID_beta()); 
+        if (hitItem.Get_ID_dEdeg() > 0) h1_dEdeg->Fill(hitItem.Get_ID_dEdeg());
+        if (hitItem.Get_ID_dEdegoQ() > 0) h1_dEdegoQ->Fill(hitItem.Get_ID_dEdegoQ());
+        for (int i = 0; i < 2; i++) if (hitItem.Get_ID_rho(i) > 0) h1_rho[i]->Fill(hitItem.Get_ID_rho(i));
+        for (int i = 0; i < 2; i++) if (hitItem.Get_ID_brho(i) > 0) h1_brho[i]->Fill(hitItem.Get_ID_brho(i));
+        for (int i = 0; i < 2; i++) if (hitItem.Get_music_dE(i) > 0) h1_music_dE[i]->Fill(hitItem.Get_music_dE(i));
+        if (trav_mus_wr > 0 && hitItem.Get_travmusic_dE() > 0) h1_travmus_dE->Fill(hitItem.Get_travmusic_dE());
+        for (int i = 0; i < 2; i++) if (hitItem.Get_music_dE_cor(i) > 0) h1_music_dEcorr[i]->Fill(hitItem.Get_music_dE_cor(i));
+        for (int i = 0; i < 6; i++) if (hitItem.Get_sci_e(i) > 0) h1_sci_e[i]->Fill(hitItem.Get_sci_e(i));
+        for (int i = 0; i < 6; i++) if (hitItem.Get_sci_l(i) > 0) h1_sci_l[i]->Fill(hitItem.Get_sci_l(i));
+        for (int i = 0; i < 6; i++) if (hitItem.Get_sci_r(i) > 0) h1_sci_r[i]->Fill(hitItem.Get_sci_r(i));
+        for (int i = 0; i < 6; i++) h1_sci_x[i]->Fill(hitItem.Get_sci_x(i));
+        for (int i = 0; i < 6; i++) if (hitItem.Get_sci_tof(i) > 0) h1_sci_tof[i]->Fill(hitItem.Get_sci_tof(i));
+        for (int i = 0; i < 6; i++) if (hitItem.Get_sci_tof_calib(i) > 0) h1_sci_tof_calib[i]->Fill(hitItem.Get_sci_tof_calib(i));
+
+        // 1D Gated?
+    }
+
+    // :::::: Multi-hit TDC ::::::: //
+    // ---------------------------- //
     for (auto const & multihitItem : *multihitArray)
     {
-        if (multihitItem.Get_ID_AoQ_mhtdc() > 0 && multihitItem.Get_ID_z_mhtdc() > 0) h2_Z_vs_AoQ_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), multihitItem.Get_ID_z_mhtdc());
+        if (frs_config->plot_mhtdc_2d)
+        {   
+            if (multihitItem.Get_ID_z_mhtdc() > 0 && multihitItem.Get_ID_AoQ_mhtdc() > 0) h2_Z_vs_AoQ_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_AoQ_mhtdc());
+            if (multihitItem.Get_ID_z_mhtdc() > 0 && multihitItem.Get_ID_AoQ_corr_mhtdc() > 0) h2_Z_vs_AoQ_corr_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_AoQ_corr_mhtdc());
+            if (multihitItem.Get_ID_z_mhtdc() > 0 && multihitItem.Get_ID_z2_mhtdc() > 0) h2_Z_vs_Z2_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_z2_mhtdc());
+            if (trav_mus_wr > 0 && multihitItem.Get_ID_z_mhtdc() > 0 && multihitItem.Get_ID_z_travmus_mhtdc() > 0) h2_travmus_vs_Z_mhtdc->Fill(multihitItem.Get_ID_z_travmus_mhtdc(), multihitItem.Get_ID_z_mhtdc());
+            if (multihitItem.Get_ID_z_mhtdc() > 0 && multihitItem.Get_ID_AoQ_mhtdc() > 0 && TMath::Abs(multihitItem.Get_ID_z_mhtdc() - multihitItem.Get_ID_z2_mhtdc()) < 0.4) h2_Z_vs_AoQ_Zsame_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_AoQ_mhtdc());
+            if (multihitItem.Get_ID_AoQ_mhtdc() > 0 && TMath::Abs(multihitItem.Get_ID_z_mhtdc() - multihitItem.Get_ID_z2_mhtdc()) < 0.4) h2_x2_vs_AoQ_Zsame_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x2());
+            if (multihitItem.Get_ID_AoQ_mhtdc() > 0 && TMath::Abs(multihitItem.Get_ID_z_mhtdc() - multihitItem.Get_ID_z2_mhtdc()) < 0.4) h2_x4_vs_AoQ_Zsame_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x4());
+            if (multihitItem.Get_ID_AoQ_mhtdc() > 0) h2_x2_vs_AoQ_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x2());
+            if (multihitItem.Get_ID_AoQ_mhtdc() > 0) h2_x4_vs_AoQ_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x4());
+            if (multihitItem.Get_ID_z_mhtdc() > 0 && multihitItem.Get_ID_dEdeg_mhtdc() > 0) h2_dEdeg_vs_Z_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_dEdeg_mhtdc());
+            if (multihitItem.Get_ID_z_mhtdc() > 0 && multihitItem.Get_ID_dEdegoQ_mhtdc() > 0) h2_dEdegoQ_vs_Z_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_dEdegoQ_mhtdc());
+            if (multihitItem.Get_ID_AoQ_mhtdc() > 0) h2_a2_vs_AoQ_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_a2());
+            if (multihitItem.Get_ID_AoQ_mhtdc() > 0) h2_a4_vs_AoQ_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_a4());
+            if (multihitItem.Get_ID_z_mhtdc() > 0 && hitItem.Get_music_dE(1) > 0) h2_Z_vs_dE2_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), hitItem.Get_music_dE(1));
+            if (multihitItem.Get_ID_AoQ_mhtdc() > 0 && hitItem.Get_sci_e(2) > 0) h2_SC41dE_vs_AoQ_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_sci_e(2));
+            if (multihitItem.Get_ID_z_mhtdc() > 0) h2_x2_vs_Z_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), hitItem.Get_ID_x2());
+            if (multihitItem.Get_ID_z_mhtdc() > 0) h2_x4_vs_Z_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), hitItem.Get_ID_x4());
+            if (multihitItem.Get_ID_z_mhtdc() > 0 && hitItem.Get_sci_l(0) != 0 && hitItem.Get_sci_r(0) != 0) h2_Z_vs_Sc21E_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), sqrt(hitItem.Get_sci_l(0) * hitItem.Get_sci_r(0)));
+        }
 
-        //:::::::::::z
-        h1_z1_MHTDC->Fill(multihitItem.Get_ID_z_mhtdc());
-        h1_z2_MHTDC->Fill(multihitItem.Get_ID_z2_mhtdc());
-
-        // :::::: Travel Music ::::::: //
-        if (trav_mus_wr > 0)
+        if (frs_config->plot_mhtdc_1d)
         {
-            if (multihitItem.Get_ID_z_travmus_mhtdc() > 0) 
-            {   
-                h1_travmus_z_MHTDC->Fill(multihitItem.Get_ID_z_travmus_mhtdc());
+            if (multihitItem.Get_ID_beta_mhtdc() > 0) h1_beta_mhtdc->Fill(multihitItem.Get_ID_beta_mhtdc());
+            if (multihitItem.Get_ID_AoQ_mhtdc() > 0) h1_AoQ_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc());
+            if (multihitItem.Get_ID_AoQ_corr_mhtdc() > 0) h1_AoQ_corr_mhtdc->Fill(multihitItem.Get_ID_AoQ_corr_mhtdc());
+            if (multihitItem.Get_ID_z_mhtdc() > 0) h1_z_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc());
+            if (multihitItem.Get_ID_z2_mhtdc() > 0) h1_z2_mhtdc->Fill(multihitItem.Get_ID_z2_mhtdc());
+            if (trav_mus_wr > 0 && multihitItem.Get_ID_z_travmus_mhtdc() > 0) h1_z_travmus_mhtdc->Fill(multihitItem.Get_ID_z_travmus_mhtdc());
+            if (multihitItem.Get_ID_z_travmus_mhtdc() > 0) h1_z_travmus_mhtdc->Fill(multihitItem.Get_ID_z_travmus_mhtdc());
+            if (multihitItem.Get_ID_dEdeg_mhtdc() > 0) h1_dEdeg_mhtdc->Fill(multihitItem.Get_ID_dEdeg_mhtdc());
+            if (multihitItem.Get_ID_dEdegoQ_mhtdc() > 0) h1_dEdegoQ_mhtdc->Fill(multihitItem.Get_ID_dEdegoQ_mhtdc());
+
+            if (!frs_config->plot_tac_1d)
+            {
+                h1_x2->Fill(hitItem.Get_ID_x2());
+                h1_x4->Fill(hitItem.Get_ID_x4());
+                h1_a2->Fill(hitItem.Get_ID_a2());
+                h1_a4->Fill(hitItem.Get_ID_a4());
+                h1_y2->Fill(hitItem.Get_ID_y2());
+                h1_y4->Fill(hitItem.Get_ID_y4());
+                h1_b2->Fill(hitItem.Get_ID_b2());
+                h1_b4->Fill(hitItem.Get_ID_b4());
             }
         }
     }
-    //::
+
+    // :::::::: Scalers ::::::::::: //
+    // ---------------------------- //
+    h1_tpat->Fill(hitItem.Get_tpat());
+
+    for (int i = 0; i < 32; i++)
+    {   
+        //std::cout << "i: " << i << " - ibin for s: " << hitItem.Get_ibin_for_s() << " - sc_temp_main: " << hitItem.Get_increase_sc_temp_main(i) << " - sc_temp_user: " << hitItem.Get_increase_sc_temp_user(i) <<std::endl;
+
+        // CEJ: swapped main and user (hopefully correct) 29/05/24
+        hScaler_per_s[i]->AddBinContent(hitItem.Get_ibin_for_s(), hitItem.Get_increase_sc_temp_user(i));
+        hScaler_per_s[i+32]->AddBinContent(hitItem.Get_ibin_for_s(), hitItem.Get_increase_sc_temp_main(i));
+        hScaler_per_100ms[i]->AddBinContent(hitItem.Get_ibin_for_100ms(), hitItem.Get_increase_sc_temp_user(i));
+        hScaler_per_100ms[i+32]->AddBinContent(hitItem.Get_ibin_for_100ms(), hitItem.Get_increase_sc_temp_main(i));
+        hScaler_per_spill[i]->AddBinContent(hitItem.Get_ibin_for_spill(), hitItem.Get_increase_sc_temp_user(i));
+        hScaler_per_spill[i+32]->AddBinContent(hitItem.Get_ibin_for_spill(), hitItem.Get_increase_sc_temp_main(i));
+    }
+
+    Int_t ratio_product = int(0.95 * hitItem.Get_increase_sc_temp2() + 0.05 * ratio_previous);
+    hScaler_per_s[64]->SetBinContent(hitItem.Get_ibin_for_s(), ratio_product);
+    hScaler_per_100ms[64]->SetBinContent(hitItem.Get_ibin_for_100ms(), ratio_product);
+    hScaler_per_spill[64]->SetBinContent(hitItem.Get_ibin_for_spill(), ratio_product);
+    Int_t ratio_product2 = int(0.95 * hitItem.Get_increase_sc_temp3() + 0.05 * ratio_previous2);
+    hScaler_per_s[65]->SetBinContent(hitItem.Get_ibin_for_s(), ratio_product2);
+    hScaler_per_100ms[65]->SetBinContent(hitItem.Get_ibin_for_100ms(), ratio_product2);
+    hScaler_per_spill[65]->SetBinContent(hitItem.Get_ibin_for_spill(), ratio_product2);
+
+    for (int i = 0; i < 32; i++)
+    {
+        hScaler_per_s[i]->SetBinContent(hitItem.Get_ibin_clean_for_s(), 0);
+        hScaler_per_s[i+32]->SetBinContent(hitItem.Get_ibin_clean_for_s(),0);
+        hScaler_per_100ms[i]->SetBinContent(hitItem.Get_ibin_clean_for_100ms(), 0);
+        hScaler_per_100ms[i+32]->SetBinContent(hitItem.Get_ibin_clean_for_100ms(), 0);
+        hScaler_per_spill[i]->SetBinContent(hitItem.Get_ibin_clean_for_spill(), 0);
+        hScaler_per_spill[i+32]->SetBinContent(hitItem.Get_ibin_clean_for_spill(), 0);
+    }
+
+    auto const & tpcCalItem = tpcCalArray->at(0);
+    tpc_x = tpcCalItem.Get_tpc_x();
+
+    int64_t wr_dt = (frs_wr - saved_frs_wr) / 1e9; // conv to s
+
+    if (wr_dt < 2 && saved_frs_wr != 0)
+    {
+        for (int i = 0; i < 6; i++)
+        {
+            if (tpc_x[i]) tpc_counters[i]++;
+        }
+    }
+    else 
+    {
+        for (int i = 0; i < 6; i++)
+        {
+            tpc_rates[i] = tpc_counters[i] / wr_dt;
+            tpc_counters[i] = 0;
+
+            if (i == 0) h1_tpc21_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
+            else if (i == 1) h1_tpc22_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
+            else if (i == 2) h1_tpc23_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
+            else if (i == 3) h1_tpc24_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
+            else if (i == 4) h1_tpc41_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
+            else if (i == 5) h1_tpc42_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
+
+        }
+
+        saved_frs_wr = frs_wr;
+
+        tpc_running_count++;
+
+        if (tpc_running_count == 1800) tpc_running_count = 0;
+    }
+    
 
     fNEvents += 1;
 }
