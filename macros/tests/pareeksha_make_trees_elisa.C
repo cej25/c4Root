@@ -56,11 +56,11 @@ void pareeksha_make_trees_elisa()
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0169_*.lmd";  //data with only lisa
     //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/daqtest/daqtest_0001_0001.lmd"; //data from ts folder
-    TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0074_0001.lmd"; //from time stitched files
+    TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0036_0001.lmd"; //from time stitched files
 
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/";
-    TString outputFilename = outputpath + "run_0074_001_test.root";
+    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/test_GM/";
+    TString outputFilename = outputpath + "run_0036_001_test.root";
 
 
     //:::::::Create online run
@@ -113,6 +113,8 @@ void pareeksha_make_trees_elisa()
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     TLisaConfiguration::SetMappingFile(config_path + "/lisa/Lisa_Detector_Map_names.txt");
+    TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching.txt");
+
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // S U B S Y S T E M S

@@ -103,6 +103,8 @@ void TLisaConfiguration::ReadMappingFile()
             febex_board = std::stoi(signal);
 
             iss >> febex_channel >> layer_id >> x_pos >> y_pos >> det_name;
+            //std::cout << " Mapping : l "<< layer_id << " x " << x_pos << " y " << y_pos << "\n";
+
 
             // count only real layers, detectors
             layers.insert(layer_id);
@@ -159,9 +161,9 @@ void TLisaConfiguration::ReadMappingFile()
 void TLisaConfiguration::ReadGMFile()
 {   
     std::cout<<"due elefanti"<<std::endl;
-    std::set<int> layers;
-    std::set<int> x_positions;
-    std::set<int> y_positions;
+    //std::set<int> layers;
+    //std::set<int> x_positions;
+    //std::set<int> y_positions;
     
     std::ifstream gain_matching_coeff_file (gain_matching_file);
     std::string line;
