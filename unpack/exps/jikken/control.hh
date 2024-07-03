@@ -21,5 +21,6 @@
 #ifndef __CONTROL_HH__
 #define __CONTROL_HH__
  
+#define RAW_EVENT_USER_FUNCTION raw_user_function
 
 #endif

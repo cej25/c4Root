@@ -2,35 +2,20 @@
 //............
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define LISA_ON 1
-#define FRS_ON 1
-#define TRAV_MUSIC_ON 1
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
-
-// Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/ BUT it has to be converted
-extern "C"
-{
-    #include "../../config/pareeksha/frs/setup_s092_010_2024_conv.C"
-    //#include "../../config/pareeksha/frs/setup_s092_0005_2024_conv.C"
-}
 
 typedef struct EXT_STR_h101_t
 {   
     EXT_STR_h101_unpack_t eventheaders;
     EXT_STR_h101_lisa_onion_t lisa;
-    EXT_STR_h101_travmus_onion_t travmus;
-    EXT_STR_h101_frsmain_onion_t frsmain;
-    EXT_STR_h101_frstpc_onion_t frstpc;
-    EXT_STR_h101_frsuser_onion_t frsuser;
-    EXT_STR_h101_frstpat_onion_t frstpat;
-
 
 } EXT_STR_h101;
 \
-void elisa_pareeksha_online()
+void run_jikken_online_elisa()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
-    TString fExpName = "pareeksha";
+    TString fExpName = "jikken";
 
     //:::::::::Here you define commonly used path
     TString c4Root_path = "/u/gandolfo/c4/c4Root";
@@ -59,12 +44,11 @@ void elisa_pareeksha_online()
     //TString filename = "trans://lxg1257"; // time stitched
 
     //___O F F L I N E
-    //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0167_*.lmd";  //data with only lisa
-    TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0036_00*.lmd"; //74,22 good run for statistics, frs, trav, lisa in ts
+    TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/jikken/run23_0001.lmd"; 
 
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/";
-    TString outputFilename = outputpath + "pareeksha_test.root";
+    TString outputFilename = outputpath + "jikken_test.root";
 
 
     //:::::::Create online run
@@ -89,32 +73,14 @@ void elisa_pareeksha_online()
     run->SetSource(source);
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    //::::: F R S parameter - Initialise
-
-    TFRSParameter* frs = new TFRSParameter();
-    TMWParameter* mw = new TMWParameter();
-    TTPCParameter* tpc = new TTPCParameter();
-    TMUSICParameter* music = new TMUSICParameter();
-    TLABRParameter* labr = new TLABRParameter();
-    TSCIParameter* sci = new TSCIParameter();
-    TIDParameter* id = new TIDParameter();
-    TSIParameter* si = new TSIParameter();
-    TMRTOFMSParameter* mrtof = new TMRTOFMSParameter();
-    TRangeParameter* range = new TRangeParameter();
-    setup(frs,mw,tpc,music,labr,sci,id,si,mrtof,range); // Function defined in frs setup.C macro
-    TFrsConfiguration::SetParameters(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
-
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::: G A T E S - Initialise 
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::: C O R R E L A T I O N S - Initialise 
-  
-    TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations_tight.dat");
-
+  t
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
-    TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     TLisaConfiguration::SetMappingFile(config_path + "/lisa/Lisa_Detector_Map_names.txt");
     TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching.txt");
 
@@ -135,32 +101,7 @@ void elisa_pareeksha_online()
 
         unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
         source->AddReader(unpacklisa);
-    }
-
-    if (FRS_ON)
-    {   
-        if (TRAV_MUSIC_ON)
-        {
-            FrsTravMusReader* unpacktravmus = new FrsTravMusReader((EXT_STR_h101_travmus_onion*)&ucesb_struct.travmus, offsetof(EXT_STR_h101, travmus));
-    
-            unpacktravmus->SetOnline(true);
-            source->AddReader(unpacktravmus);
-        }
-
-        FrsMainReader* unpackfrsmain = new FrsMainReader((EXT_STR_h101_frsmain_onion*)&ucesb_struct.frsmain, offsetof(EXT_STR_h101, frsmain));
-        FrsTPCReader* unpackfrstpc = new FrsTPCReader((EXT_STR_h101_frstpc_onion*)&ucesb_struct.frstpc, offsetof(EXT_STR_h101, frstpc));
-        FrsUserReader* unpackfrsuser = new FrsUserReader((EXT_STR_h101_frsuser_onion*)&ucesb_struct.frsuser, offsetof(EXT_STR_h101, frsuser));
-        FrsTpatReader* unpackfrstpat = new FrsTpatReader((EXT_STR_h101_frstpat_onion*)&ucesb_struct.frstpat, offsetof(EXT_STR_h101, frstpat));
-        
-        unpackfrsmain->SetOnline(true);
-        unpackfrstpc->SetOnline(true);
-        unpackfrsuser->SetOnline(true);
-        unpackfrstpat->SetOnline(true);
-        source->AddReader(unpackfrsmain);
-        source->AddReader(unpackfrstpc);
-        source->AddReader(unpackfrsuser);
-        source->AddReader(unpackfrstpat);
-    }   
+    }  
 
 
     // ::::::: CALIBRATE Subsystem  ::::::::
@@ -173,39 +114,9 @@ void elisa_pareeksha_online()
             run->AddTask(lisaraw2cal);
         }
 
-    if (FRS_ON)
-    {
-        if (TRAV_MUSIC_ON)
-        {
-            FrsTravMusRaw2Cal* caltravmus = new FrsTravMusRaw2Cal();
-
-            caltravmus->SetOnline(true);
-            run->AddTask(caltravmus);
-        }
-
-        FrsMainRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
-        FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal();
-        FrsUserRaw2Cal* calfrsuser = new FrsUserRaw2Cal();
-        
-        calfrsmain->SetOnline(true);
-        calfrstpc->SetOnline(true);
-        calfrsuser->SetOnline(true);
-        run->AddTask(calfrsmain);
-        run->AddTask(calfrstpc);
-        run->AddTask(calfrsuser);
-    }
-
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
     // ::::::: ANALYSE Subsystem  ::::::::
-
-    if (FRS_ON)
-    {
-        FrsCal2Hit* hitfrs = new FrsCal2Hit();
-        
-        hitfrs->SetOnline(true); 
-        run->AddTask(hitfrs);
-    } 
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::   
     // =========== **** SPECTRA ***** ========================================================= //
@@ -234,11 +145,6 @@ void elisa_pareeksha_online()
     //TLisaConfiguration::SetAmplitudeMax(15000); //for Chens positiv signals
 
 
-    TFrsConfiguration::Set_Z_range(5,90);
-    TFrsConfiguration::Set_AoQ_range(0,6);
-    TFrsConfiguration::Set_dE_Music1_range(0,4000);
-    TFrsConfiguration::Set_dE_Music2_range(0,4000);
-
 
     if (LISA_ON)
     {
@@ -248,45 +154,15 @@ void elisa_pareeksha_online()
         run->AddTask(onlinelisa);
 
     }
-    
-    if (FRS_ON)
-    {
-        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
-        // For monitoring FRS on our side
-        // FrsRawSpectra* frsrawspec = new FrsRawSpectra();
-        // FrsCalSpectra* frscalspec = new FrsCalSpectra();
-        
-        run->AddTask(onlinefrs);
-        // run->AddTask(frsrawspec);
-        // run->AddTask(frscalspec);
-
-        if (TRAV_MUSIC_ON)
-        {
-            FrsTravMusSpectra* onlinetravmus = new FrsTravMusSpectra();
-            //add task for raw spec?
-            run->AddTask(onlinetravmus);
-        }
-    }
 
     TString c = "Lisa";
-    TString d = "Frs";
-    TString e = "TravMus";
 
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({c,d,e});
+        wronline->SetDetectorSystems({c});
         
         run->AddTask(wronline);
-    }
-
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    // ::: Correlation Spectra :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-    if(LISA_ON && FRS_ON)
-    {
-        LisaFrsCorrelationsOnline* LISA_FRS_corr = new LisaFrsCorrelationsOnline();
-        run->AddTask(LISA_FRS_corr);
     }
 
     // FrsLisa

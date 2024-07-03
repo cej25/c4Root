@@ -1,8 +1,11 @@
 // -*- C++ -*-
 
+#include "../../../config/lisa/setup.hh"
 #include "../../common/whiterabbit.spec"
 #include "../../common/gsi_febex4.spec"
 #include "../../common/general.spec"
+
+#define TRACE_LENGTH 3000
 
 SUBEVENT(febex_subev_traces)
 { 
@@ -39,7 +42,7 @@ SUBEVENT(febex_subev_traces)
 EVENT
 {
 
-    lisa = febex_subev_traces(procid = 60);
+  lisa = febex_subev_traces(procid = 60);
 
-    ignore_unknown_subevent;
+  ignore_unknown_subevent;
 }
