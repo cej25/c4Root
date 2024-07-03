@@ -148,7 +148,6 @@ class FatimaVmeQDCCalItem : public TObject
 
 };
 
-
 class FatimaVmeTDCCalItem : public TObject
 {
     public:

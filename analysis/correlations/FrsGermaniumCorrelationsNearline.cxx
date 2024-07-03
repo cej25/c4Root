@@ -14,6 +14,7 @@
 #include "FrsHitData.h"
 #include "TGermaniumConfiguration.h"
 
+#include "AnalysisTools.h"
 #include "c4Logger.h"
 
 
@@ -117,7 +118,7 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
     h2_frs_x4_vs_AoQ_gated->GetXaxis()->SetTitle("A/Q");
     h2_frs_x4_vs_AoQ_gated->GetYaxis()->SetTitle("x4");
 
-    
+    // this is the "bad" one
     h2_germanium_energy_vs_tsci41 = new TH2F(TString("h2_germanium_energy_vs_tsci41_frs_gate_"+frsgate->GetName()),TString("Germanium energies vs t(det) - t(sci41), short lifetime,  gated FRS on "+frsgate->GetName()),10000,-2000,stop_short_lifetime_collection,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     h2_germanium_energy_vs_tsci41->GetXaxis()->SetTitle("time difference (ns)");
     h2_germanium_energy_vs_tsci41->GetYaxis()->SetTitle("energy (keV)");
@@ -134,7 +135,7 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
 
 
 
-
+    // this is the "good" one
     h2_germanium_energy_vs_sci41_wr_long = new TH2F(TString("h2_germanium_energy_vs_sci41_wr_long_frs_gate_"+frsgate->GetName()),TString("Germanium energies vs t(det,wr) - t(sci41,wr) long lifetime, gated FRS on "+frsgate->GetName()),10000,long_lifetime_binlow,long_lifetime_binhigh,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     h2_germanium_energy_vs_sci41_wr_long->GetXaxis()->SetTitle("time difference (ns)");
     h2_germanium_energy_vs_sci41_wr_long->GetYaxis()->SetTitle("energy (keV)");
@@ -179,6 +180,26 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
         h1_germanium_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]->GetXaxis()->SetTitle("Energy (keV)");
 
     }
+
+    crystals_to_plot.clear();
+    std::map<std::pair<int,int>,std::pair<int,int>> gmap = germanium_configuration->Mapping();
+
+    for (auto it_mapping = gmap.begin(); it_mapping != gmap.end(); ++it_mapping){
+        if (it_mapping->second.first >= 0) crystals_to_plot.emplace_back(std::pair<int,int>(it_mapping->second.first,it_mapping->second.second));
+    }
+
+    number_of_detectors_to_plot = crystals_to_plot.size();
+
+    detector_labels = new char*[number_of_detectors_to_plot];
+    h1_germanium_hitpattern_post6us = MakeTH1(dir_germanium, "I", "h1_germanium_hitpattern_post6us","Hit pattern of DEGAS",number_of_detectors_to_plot,0,number_of_detectors_to_plot, "Crystal", kRed-3, kBlack);
+    h1_germanium_hitpattern_post6us->GetXaxis()->SetAlphanumeric();
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++)
+    {
+        detector_labels[ihist] = Form("%d%c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65));
+        h1_germanium_hitpattern_post6us->GetXaxis()->SetBinLabel(ihist+1,detector_labels[ihist]);
+    }    
+    h1_germanium_hitpattern_post6us->GetXaxis()->LabelsOption("a");
+    h1_germanium_hitpattern_post6us->SetStats(0);
     
     dir_germanium->cd();
     gDirectory = tmp;
@@ -192,7 +213,7 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
     if (hitArrayFrs->size() == 0) return;
 
     positive_PID = false;
-    auto const & frshit = hitArrayFrs->at(0);
+    auto const & frshit = hitArrayFrs->at(0);   
 
     int64_t wr_t = frshit.Get_wr_t();
     if(wr_t_first_frs_hit == 0) wr_t_first_frs_hit = wr_t;
@@ -284,6 +305,9 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
                 
                 h2_germanium_energy_vs_tsci41->Fill(timediff1 ,energy1);
 
+                int crystal_index1 = std::distance(crystals_to_plot.begin(), std::find(crystals_to_plot.begin(),crystals_to_plot.end(),std::pair<int,int>(detector_id1,crystal_id1)));
+                if (timediff1 > 6000) h1_germanium_hitpattern_post6us->Fill(detector_labels[crystal_index1],1);
+
                 //after this test, the prompt flash is cut out.
                 if ((germanium_configuration->IsInsidePromptFlashCut(timediff1 ,energy1)==true) ) continue;
                 if ((timediff1 < -400 || timediff1 > stop_short_lifetime_collection)) continue;
@@ -336,7 +360,8 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
         }
 
         
-
+        // ok "wr_t_last_frs_hit == 0" means !positivePID
+        // this is not very clear.
         if (nHits >= 1 && wr_t_last_frs_hit != 0){
             //long isomer
         for (int ihit1 = 0; ihit1 < nHits; ihit1 ++){
@@ -351,7 +376,7 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
 
             if (germanium_configuration->IsDetectorAuxilliary(detector_id_long)==true) continue;
 
-
+            // this is the "good" one
             h2_germanium_energy_vs_sci41_wr_long->Fill(ge_wr_long-wr_t_last_frs_hit, energy_long);
             
 

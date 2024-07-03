@@ -305,7 +305,7 @@ Bool_t BGOReader::Read() //do fine time here:
     
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
     { //per board:
-        
+        uint16_t trig = fData->bgo_tamex[it_board_number].trig;
         if (fData->bgo_tamex[it_board_number].event_size == 0) continue; // empty event skip
         
         last_word_read_was_epoch = false;
@@ -379,7 +379,7 @@ Bool_t BGOReader::Read() //do fine time here:
             if (fData->bgo_tamex[it_board_number].time_finev[it_hits] == 0x3FF) {fNevents_TAMEX_fail[it_board_number][channelid]++; continue;} // this happens if TAMEX loses the fine time - skip it
 
 
-            if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch){fNevents_lacking_epoch[it_board_number][channelid]++; c4LOG(warning, "Event lacking epoch.");} // if the channel has changed but no epoch word was seen in between, channel 0 is always the first one so dont check if that s the case.
+            if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch){fNevents_lacking_epoch[it_board_number][channelid]++; /*c4LOG(warning, "Event lacking epoch.");*/} // if the channel has changed but no epoch word was seen in between, channel 0 is always the first one so dont check if that s the case.
 
             if (!(channelid >= last_channel_read)) {c4LOG(fatal, Form("Data format is inconcistent with assumption: Channels are not read out in increasing order. This channel = %i, last channel = %i",channelid,last_channel_read));}
 
@@ -428,6 +428,7 @@ Bool_t BGOReader::Read() //do fine time here:
                 //if (it_board_number == 1) c4LOG(info,Form("Writing: ch = %i, le = %i lc = %i, lf = %f, te = %i tc = %i, tf = %f ",channelid,last_hits[it_board_number][channelid].lead_epoch_counter, last_hits[it_board_number][channelid].lead_coarse_T, last_hits[it_board_number][channelid].lead_fine_T,last_epoch[channelid],coarse_T,fine_T));
 
                 new ((*fArray)[fArray->GetEntriesFast()]) BGOTwinpeaksData(
+                    trig,
                     it_board_number,
                     channelid,
 
