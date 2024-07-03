@@ -169,51 +169,51 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
             switch (v1290_item.Get_channel()) // for some reason the data readout of v1290 starts from 1 .... Verified that sci41L is ch 0 in MH 08.05.24
             {
                 case 0: // 41l
-                    sciEntry.Add_mhtdc_sc41l_hit(v1290_item.Get_v1290_data());
+                    sciEntry.Add_mhtdc_sc41l_hit((int32_t)v1290_item.Get_v1290_data());
                     break;
                 case 1: // 41r
-                    sciEntry.Add_mhtdc_sc41r_hit(v1290_item.Get_v1290_data());
+                    sciEntry.Add_mhtdc_sc41r_hit((int32_t)v1290_item.Get_v1290_data());
                     break;
                 case 2: // 21l
-                    sciEntry.Add_mhtdc_sc21l_hit(v1290_item.Get_v1290_data());
+                    sciEntry.Add_mhtdc_sc21l_hit((int32_t)v1290_item.Get_v1290_data());
                     break;
                 case 3: // 21r
-                    sciEntry.Add_mhtdc_sc21r_hit(v1290_item.Get_v1290_data());
+                    sciEntry.Add_mhtdc_sc21r_hit((int32_t)v1290_item.Get_v1290_data());
                     break;
                 case 4: // 42l
-                    sciEntry.Add_mhtdc_sc42l_hit(v1290_item.Get_v1290_data());
+                    sciEntry.Add_mhtdc_sc42l_hit((int32_t)v1290_item.Get_v1290_data());
                     break;
                 case 5: // not used
                     break;
                 case 6: // 43l
-                    sciEntry.Add_mhtdc_sc43l_hit(v1290_item.Get_v1290_data());
+                    sciEntry.Add_mhtdc_sc43l_hit((int32_t)v1290_item.Get_v1290_data());
                     break;
                 case 7: // 43r
-                    sciEntry.Add_mhtdc_sc43r_hit(v1290_item.Get_v1290_data());
+                    sciEntry.Add_mhtdc_sc43r_hit((int32_t)v1290_item.Get_v1290_data());
                     break;
                 case 8: // 81l
-                    sciEntry.Add_mhtdc_sc81l_hit(v1290_item.Get_v1290_data());
+                    sciEntry.Add_mhtdc_sc81l_hit((int32_t)v1290_item.Get_v1290_data());
                     break;
                 case 9: // 81r
-                    sciEntry.Add_mhtdc_sc81r_hit(v1290_item.Get_v1290_data());
+                    sciEntry.Add_mhtdc_sc81r_hit((int32_t)v1290_item.Get_v1290_data());
                     break;
                 case 10: // 31l
-                    sciEntry.Add_mhtdc_sc31l_hit(v1290_item.Get_v1290_data());
+                    sciEntry.Add_mhtdc_sc31l_hit((int32_t)v1290_item.Get_v1290_data());
                     break;
                 case 11: // 31r
-                    sciEntry.Add_mhtdc_sc31r_hit(v1290_item.Get_v1290_data());
+                    sciEntry.Add_mhtdc_sc31r_hit((int32_t)v1290_item.Get_v1290_data());
                     break;
                 case 12: // 11
-                    sciEntry.Add_mhtdc_sc11_hit(v1290_item.Get_v1290_data());
+                    sciEntry.Add_mhtdc_sc11_hit((int32_t)v1290_item.Get_v1290_data());
                     break;
                 case 13: // 22l
-                    sciEntry.Add_mhtdc_sc22l_hit(v1290_item.Get_v1290_data());
+                    sciEntry.Add_mhtdc_sc22l_hit((int32_t)v1290_item.Get_v1290_data());
                     break;
                 case 14: // 22r
-                    sciEntry.Add_mhtdc_sc22r_hit(v1290_item.Get_v1290_data());
+                    sciEntry.Add_mhtdc_sc22r_hit((int32_t)v1290_item.Get_v1290_data());
                     break;
                 case 15: // 42r
-                    sciEntry.Add_mhtdc_sc42r_hit(v1290_item.Get_v1290_data());
+                    sciEntry.Add_mhtdc_sc42r_hit((int32_t)v1290_item.Get_v1290_data());
                     break;
                 case 16:
                     if (music_t1[0] != 0) music_t1[0] = v1290_item.Get_v1290_data();

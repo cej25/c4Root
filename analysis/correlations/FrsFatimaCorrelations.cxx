@@ -359,6 +359,9 @@ void FrsFatimaCorrelations::Exec(Option_t* option)
             double energy1 = hit1->Get_energy();
             double time1 = hit1->Get_fast_lead_time();
             if (detector_id1 == fatima_configuration->SC41L() /*|| detector_id1 == fatima_configuration->SC41R()*/) {
+                
+                if (sci41_seen == true) return;
+
                 detector_id_sci41 = hit1->Get_detector_id();
                 energy_sci41 = hit1->Get_energy();
                 time_sci41 = hit1->Get_fast_lead_time();

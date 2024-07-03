@@ -1,9 +1,11 @@
 #ifndef BB7Reader_H
 #define BB7Reader_H
 
+#include "BB7VmeData.h"
 #include "c4Reader.h"
 
 #include <Rtypes.h>
+#include <vector>
 
 extern "C"
 {
@@ -11,6 +13,7 @@ extern "C"
 }
 
 class TClonesArray;
+class BB7V7x5Item;
 
 struct EXT_STR_h101_bb7vme_t;
 typedef struct EXT_STR_h101_bb7vme_t EXT_STR_h101_bb7vme;
@@ -40,15 +43,12 @@ class BB7Reader : public c4Reader
         size_t fOffset;
 
         Bool_t fOnline;
+        
+        std::vector<BB7V7x5Item>* v7x5array;
+        std::vector<BB7V1290Item>* v1290array;
 
-        TClonesArray* fArray;
-
-        // 
         uint64_t wr_t;
 
-        std::vector<uint32_t> v7x5_geo;
-        std::vector<uint32_t> v7x5_channel;
-        std::vector<uint32_t> v7x5_data;
     
     public:
         ClassDefOverride(BB7Reader, 1);

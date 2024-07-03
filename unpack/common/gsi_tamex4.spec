@@ -75,6 +75,7 @@ TAMEX4_EPOCH_DATA(sfp, card, time_coarse, time_fine, time_edge, time_channel, ti
 
 TAMEX4_SFP(sfp, card)
 {
+	MEMBER(DATA16 trig);
     MEMBER(DATA32 event_size);
 	MEMBER(DATA12 time_coarse[MAX_TDC_HITS] NO_INDEX_LIST);
 	MEMBER(DATA12 time_fine[MAX_TDC_HITS] NO_INDEX_LIST);
@@ -82,12 +83,14 @@ TAMEX4_SFP(sfp, card)
 	MEMBER(DATA12 time_channel[MAX_TDC_HITS] NO_INDEX_LIST);
 	MEMBER(DATA32 time_epoch[MAX_TDC_HITS] NO_INDEX_LIST);
 
-	UINT32 indicator NOENCODE {
+	UINT32 indicator NOENCODE 
+	{
 		  0_7: 0x34;
 		 8_11: trigger_type;
 		12_15: sfp = MATCH(sfp);
 		16_23: card = MATCH(card);
 		24_31: 0;
+		//ENCODE(trig, (value = trigger_type));
 	}
 
 	MATCH_END;
@@ -106,6 +109,7 @@ TAMEX4_SFP(sfp, card)
 		17_19: reserved;
 		20_23: trigger_type;
 		24_31: 0xaa;
+		ENCODE(trig, (value = trigger_type));
 	}
 
 	list (0 <= i < data_size.bytes / 4 - 3) 
