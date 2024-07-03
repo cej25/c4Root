@@ -2,7 +2,7 @@
 
 #include "../../../config/lisa/setup.hh"
 #include "../../common/whiterabbit.spec"
-#include "../../common/gsi_febex4.spec"
+#include "../../common/gsi_febex4_bug.spec"
 #include "../../common/general.spec"
 
 #define TRACE_LENGTH 3000
