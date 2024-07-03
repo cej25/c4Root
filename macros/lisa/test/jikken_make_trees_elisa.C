@@ -2,34 +2,24 @@
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define LISA_ON 1
-#define FRS_ON 1
-#define TRAV_MUSIC_ON 1
+#define FRS_ON 0
+#define TRAV_MUSIC_ON 0
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
 
-// Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/
-extern "C"
-{
-    #include "../../config/pareeksha/frs/setup_s092_010_2024_conv.C"
-}
+
 
 typedef struct EXT_STR_h101_t
 {   
     EXT_STR_h101_unpack_t eventheaders;
     EXT_STR_h101_lisa_onion_t lisa;
-    EXT_STR_h101_travmus_onion_t travmus;
-    EXT_STR_h101_frsmain_onion_t frsmain;
-    EXT_STR_h101_frstpc_onion_t frstpc;
-    EXT_STR_h101_frsuser_onion_t frsuser;
-    EXT_STR_h101_frstpat_onion_t frstpat;
-
 
 } EXT_STR_h101;
 
-void pareeksha_make_trees_elisa()
+void jikken_make_trees_elisa()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
-    TString fExpName = "pareeksha";
+    TString fExpName = "jikken";
 
     //:::::::::Here you define commonly used path
     TString c4Root_path = "/u/gandolfo/c4/c4Root";
@@ -54,18 +44,11 @@ void pareeksha_make_trees_elisa()
 
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
-    //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0169_*.lmd";  //data with only lisa
-    //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/daqtest/daqtest_0001_0001.lmd"; //data from ts folder
-    TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0074_0001.lmd"; //from time stitched files
+    TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/jikken/run10_0001.lmd"; 
 
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/";
-    TString outputFilename = outputpath + "run_0074_001_test.root";
-
-
-    //:::::::Create online run
-    Int_t refresh = 10; // not needed
-    Int_t port = 5000; // not needed
+    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/jikken_trees_c4/";
+    TString outputFilename = outputpath + "run10_0001.root";
      
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -73,7 +56,6 @@ void pareeksha_make_trees_elisa()
     run->SetRunId(1);
     run->SetSink(new FairRootFileSink(outputFilename)); // don't write after termintion
     
-    run->ActivateHttpServer(refresh, port);
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
     run->AddObject(histograms);
@@ -86,33 +68,16 @@ void pareeksha_make_trees_elisa()
     run->SetSource(source);
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    //::::: F R S parameter - Initialise
-
-    TFRSParameter* frs = new TFRSParameter();
-    TMWParameter* mw = new TMWParameter();
-    TTPCParameter* tpc = new TTPCParameter();
-    TMUSICParameter* music = new TMUSICParameter();
-    TLABRParameter* labr = new TLABRParameter();
-    TSCIParameter* sci = new TSCIParameter();
-    TIDParameter* id = new TIDParameter();
-    TSIParameter* si = new TSIParameter();
-    TMRTOFMSParameter* mrtof = new TMRTOFMSParameter();
-    TRangeParameter* range = new TRangeParameter();
-    setup(frs,mw,tpc,music,labr,sci,id,si,mrtof,range); // Function defined in frs setup.C macro
-    TFrsConfiguration::SetParameters(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
-
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::: G A T E S - Initialise 
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::: C O R R E L A T I O N S - Initialise 
   
-    TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations_tight.dat");
-
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    //:::::: C O N F I G    F O R   D E T E C T O R - Load
-    TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     TLisaConfiguration::SetMappingFile(config_path + "/lisa/Lisa_Detector_Map_names.txt");
+    TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching.txt");
+
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // S U B S Y S T E M S
@@ -133,31 +98,6 @@ void pareeksha_make_trees_elisa()
         source->AddReader(unpacklisa);
     }
 
-    if (FRS_ON)
-    {   
-        if (TRAV_MUSIC_ON)
-        {
-            FrsTravMusReader* unpacktravmus = new FrsTravMusReader((EXT_STR_h101_travmus_onion*)&ucesb_struct.travmus, offsetof(EXT_STR_h101, travmus));
-    
-            unpacktravmus->SetOnline(false);
-            source->AddReader(unpacktravmus);
-        }
-
-        FrsMainReader* unpackfrsmain = new FrsMainReader((EXT_STR_h101_frsmain_onion*)&ucesb_struct.frsmain, offsetof(EXT_STR_h101, frsmain));
-        FrsTPCReader* unpackfrstpc = new FrsTPCReader((EXT_STR_h101_frstpc_onion*)&ucesb_struct.frstpc, offsetof(EXT_STR_h101, frstpc));
-        FrsUserReader* unpackfrsuser = new FrsUserReader((EXT_STR_h101_frsuser_onion*)&ucesb_struct.frsuser, offsetof(EXT_STR_h101, frsuser));
-        FrsTpatReader* unpackfrstpat = new FrsTpatReader((EXT_STR_h101_frstpat_onion*)&ucesb_struct.frstpat, offsetof(EXT_STR_h101, frstpat));
-        
-        unpackfrsmain->SetOnline(true);
-        unpackfrstpc->SetOnline(true);
-        unpackfrsuser->SetOnline(true);
-        unpackfrstpat->SetOnline(true);
-        source->AddReader(unpackfrsmain);
-        source->AddReader(unpackfrstpc);
-        source->AddReader(unpackfrsuser);
-        source->AddReader(unpackfrstpat);
-    }   
-
 
     // ::::::: CALIBRATE Subsystem  ::::::::
 
@@ -169,40 +109,8 @@ void pareeksha_make_trees_elisa()
             run->AddTask(lisaraw2cal);
         }
 
-    if (FRS_ON)
-    {
-        if (TRAV_MUSIC_ON)
-        {
-            FrsTravMusRaw2Cal* caltravmus = new FrsTravMusRaw2Cal();
-
-            caltravmus->SetOnline(false);
-            run->AddTask(caltravmus);
-        }
-
-        FrsMainRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
-        FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal();
-        FrsUserRaw2Cal* calfrsuser = new FrsUserRaw2Cal();
-        
-        calfrsmain->SetOnline(true);
-        calfrstpc->SetOnline(true);
-        calfrsuser->SetOnline(false);
-        run->AddTask(calfrsmain);
-        run->AddTask(calfrstpc);
-        run->AddTask(calfrsuser);
-    }
-
-
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
     // ::::::: ANALYSE Subsystem  ::::::::
-
-    if (FRS_ON)
-    {
-        FrsCal2Hit* hitfrs = new FrsCal2Hit();
-        
-        hitfrs->SetOnline(false); 
-        run->AddTask(hitfrs);
-    } 
-
 
     // Initialise
     run->Init();
@@ -210,7 +118,6 @@ void pareeksha_make_trees_elisa()
     // Information about portnumber and main data stream
     cout << "\n\n" << endl;
     cout << "Data stream is: " << filename << endl;
-    cout << "LISA online port server: " << port << endl;
     cout << "\n\n" << endl;
 
     // Run
