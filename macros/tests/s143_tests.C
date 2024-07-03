@@ -57,7 +57,8 @@ void s143_tests()
     //TString filename = "/u/cjones/lustre/gamma/s092_s143_files/ts/run_0022_0001.lmd";
     //TString filename = "~/fimp/*.lmd";
     //TString filename = "trans://lxg1257";
-    TString filename = "/u/cjones/run_0163_0007.lmd";
+    //TString filename = "/u/cjones/run_0163_0007.lmd";
+    TString filename = "/u/cjones/c4Root/macros/nearline_testing/run_0157_test.root";
     TString outputFilename = "travMUSIC_test.root";	
 
     // Create online run

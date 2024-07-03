@@ -273,6 +273,7 @@ void BGORaw2Cal::Exec(Option_t* option)
             
             
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) BGOTwinpeaksCalData(
+                funcal_hit->Get_trigger(),
                 funcal_hit->Get_board_id(),
                 (int)((funcal_hit->Get_ch_ID()+1)/2),
                 detector_id,

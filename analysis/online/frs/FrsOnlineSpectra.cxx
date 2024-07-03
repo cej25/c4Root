@@ -85,10 +85,8 @@ InitStatus FrsOnlineSpectra::Init()
 
     tpcCalArray = mgr->InitObjectAs<decltype(tpcCalArray)>("FrsTPCCalData");
     c4LOG_IF(fatal, !tpcCalArray, "Branch FrsTPCCalData not found!");
-
     hitArray = mgr->InitObjectAs<decltype(hitArray)>("FrsHitData");
     c4LOG_IF(fatal, !hitArray, "Branch FrsHitData not found!");
-
     multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
     c4LOG_IF(fatal, !multihitArray, "Branch FrsHitData not found!");  
 
@@ -120,6 +118,9 @@ InitStatus FrsOnlineSpectra::Init()
     dir_mhtdc_1d = dir_mhtdc->mkdir("1D Spectra");
     dir_mhtdc_2d = dir_mhtdc->mkdir("2D PIDs");
     dir_gated_mhtdc = dir_mhtdc->mkdir("Gated 2D");
+    dir_ZvsZ2_mhtdc = dir_gated_mhtdc->mkdir("ZvsZ2 Gated");
+    dir_ZvsZ2_x2vsAoQ_mhtdc = dir_ZvsZ2_mhtdc->mkdir("x2vsAoQ Gated");
+    dir_ZvsZ2_x4vsAoQ_mhtdc = dir_ZvsZ2_mhtdc->mkdir("x2vsAoQ Gated");
     dir_scalers = dir_frs->mkdir("Scalers");
     dir_rates = dir_frs->mkdir("Rate Monitors");
     
@@ -180,7 +181,7 @@ InitStatus FrsOnlineSpectra::Init()
          
             for (int gate = 0; gate < FrsGates.size(); gate++)
             {   
-                h2_Z_vs_AoQ_Z1Z2gate[gate] = MakeTH2(dir_ZvsZ2, "I", Form("h2_Z_vs_AoQ_ZAoQgate%s", FrsGates[gate]->GetName().c_str()), Form("Z vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q", "Z (MUSIC 1)");
+                h2_Z_vs_AoQ_Z1Z2gate[gate] = MakeTH2(dir_ZvsZ2, "I", Form("h2_Z_vs_AoQ_ZAoQgate%i", gate), Form("Z vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q", "Z (MUSIC 1)");
                 h2_Z1_vs_Z2_Z1Z2gate[gate] = MakeTH2(dir_ZvsZ2, "I", Form("h2_Z1_vs_Z2_ZAoQgate%i", gate), Form("Z1 vs. Z2 - ZAoQ Gate %i", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_Z, frs_config->fMax_Z, "Z (MUSIC 1)", "Z (MUSIC 2)");
                 h2_x2_vs_AoQ_Z1Z2gate[gate] = MakeTH2(dir_ZvsZ2, "I", Form("h2_x2_vs_AoQ_ZAoQgate%i", gate), Form("x2 vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q", "S2 x-position");
                 h2_x4_vs_AoQ_Z1Z2gate[gate] = MakeTH2(dir_ZvsZ2, "I", Form("h2_x4_vs_AoQ_ZAoQgate%i", gate), Form("x4 vs. A/Q - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q", "S4 x-position");
@@ -208,8 +209,8 @@ InitStatus FrsOnlineSpectra::Init()
     if (frs_config->plot_tac_1d)
     {   
         // preset wide ranges to "always" see peak, in case there's something funky with the FRS
-        h1_Z = MakeTH1(dir_tac_1d, "D", "h1_Z", "Z (MUSIC 1)", 500, 10, 100, "Z (MUSIC 1)", kPink-3, kBlue+2);
-        h1_Z2 = MakeTH1(dir_tac_1d, "D", "h1_Z2", "Z (MUSIC 2)", 500, 10, 100, "Z (MUSIC 2)", kPink-3, kBlue+2);
+        h1_Z = MakeTH1(dir_tac_1d, "D", "h1_Z", "Z (MUSIC 1)", 1000, 10, 150, "Z (MUSIC 1)", kPink-3, kBlue+2);
+        h1_Z2 = MakeTH1(dir_tac_1d, "D", "h1_Z2", "Z (MUSIC 2)", 1000, 10, 150, "Z (MUSIC 2)", kPink-3, kBlue+2);
         h1_Z_travmus = MakeTH1(dir_tac_1d, "D", "h1_Z_travmus", "Z (Travel MUSIC)", 750, 10, 100, "Z (Travel MUSIC)", kPink-3, kBlue+2);
         h1_AoQ = MakeTH1(dir_tac_1d, "D", "h1_AoQ", "A/Q", 500, 1.0, 4.0, "A/Q", kPink-3, kBlue+2); 
         h1_AoQ_corr = MakeTH1(dir_tac_1d, "D", "h1_AoQ_corr", "A/Q (corr)", 500, 1.0, 4.0, "A/Q", kPink-3, kBlue+2);
@@ -225,14 +226,14 @@ InitStatus FrsOnlineSpectra::Init()
         h1_dEdeg = MakeTH1(dir_tac_1d, "D", "h1_dEdeg", "dE in S2 degrader", 1000, 0.0, 1000., "dE", kPink-3, kBlue+2);
         h1_dEdegoQ = MakeTH1(dir_tac_1d, "D", "h1_dEdegoQ", "dE in S2 degrader / Q", 1000, 0.0, 10.0, "dE / Q", kPink-3, kBlue+2);
         for (int i = 0; i < 2; i++) h1_rho[i] = MakeTH1(dir_tac_1d, "D", Form("h1_rho_%i", i), Form("rho %i", i), 100, 0.0, 1.0, Form("rho %i", i), kPink-3, kBlue+2); 
-        for (int i = 0; i < 2; i++) h1_brho[i] = MakeTH1(dir_tac_1d, "D", Form("h1_brho_%i", i), Form("brho %i", i), 100, 0.0, 1.0, Form("brho %i", i), kPink-3, kBlue+2);
+        for (int i = 0; i < 2; i++) h1_brho[i] = MakeTH1(dir_tac_1d, "D", Form("h1_brho_%i", i), Form("brho %i", i), 100, 10.0, 20., Form("brho %i", i), kPink-3, kBlue+2);
         for (int i = 0; i < 2; i++) h1_music_dE[i] = MakeTH1(dir_tac_1d, "D", Form("h1_music_dE_%i", i), Form("Energy loss in MUSIC %i", i+1), 1000, 0.0, 4000.0, Form("dE MUSIC %i", i+1), kPink-3, kBlue+2);
         h1_travmus_dE = MakeTH1(dir_tac_1d, "D", "h1_travmus_dE", "dE (Travel MUSIC)", 1000, 0, 4000., "dE (Travel MUSIC)", kPink-3, kBlue+2);
         for (int i = 0; i < 2; i++) h1_music_dEcorr[i] = MakeTH1(dir_tac_1d, "D", Form("h1_music_dEcorr_%i", i), Form("Energy loss (corr) in MUSIC %i", i+1), 4000, 0.0, 4000.0, Form("dE (corr) MUSIC %i", i+1), kPink-3, kBlue+2);
-        for (int i = 0; i < 6; i++) h1_sci_e[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_e_%i", i), Form("SCI E %i", i), 4000, 0.0, 4000.0, Form("SCI E %i", i), kPink-3, kBlue+2);
-        for (int i = 0; i < 6; i++) h1_sci_l[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_l_%i", i), Form("SCI L %i", i), 4000, 0.0, 4000.0, Form("SCI L %i", i), kPink-3, kBlue+2);
-        for (int i = 0; i < 6; i++) h1_sci_r[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_r_%i", i), Form("SCI R %i", i), 4000, 0.0, 4000.0, Form("SCI R %i", i), kPink-3, kBlue+2);
-        for (int i = 0; i < 6; i++) h1_sci_x[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_x_%i", i), Form("SCI X %i", i), 4000, 0.0, 4000.0, Form("SCI X %i", i), kYellow-7, kBlack);
+        for (int i = 0; i < 6; i++) h1_sci_e[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_e_%s", frs_config->SciName(i).c_str()), Form("SCI E %s", frs_config->SciName(i).c_str()), 4000, 0.0, 4000.0, Form("SCI E %s", frs_config->SciName(i).c_str()), kPink-3, kBlue+2);
+        for (int i = 0; i < 6; i++) h1_sci_l[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_l_%s", frs_config->SciName(i).c_str()), Form("SCI L %s", frs_config->SciName(i).c_str()), 4000, 0.0, 4000.0, Form("SCI L %s", frs_config->SciName(i).c_str()), kPink-3, kBlue+2);
+        for (int i = 0; i < 6; i++) h1_sci_r[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_r_%s", frs_config->SciName(i).c_str()), Form("SCI R %s", frs_config->SciName(i).c_str()), 4000, 0.0, 4000.0, Form("SCI R %s", frs_config->SciName(i).c_str()), kPink-3, kBlue+2);
+        for (int i = 0; i < 6; i++) h1_sci_x[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_x_%s", frs_config->SciName(i).c_str()), Form("SCI X %s", frs_config->SciName(i).c_str()), 4000, 0.0, 4000.0, Form("SCI X %s", frs_config->SciName(i).c_str()), kYellow-7, kBlack);
         for (int i = 0; i < 6; i++) h1_sci_tof[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_tof_%i", i), Form("SCI TOF %i", i), 4000, 0.0, 200000.0, Form("SCI TOF %i", i), kPink-3, kBlue+2);
         for (int i = 0; i < 6; i++) h1_sci_tof_calib[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_tof_calib_%i", i), Form("SCI TOF CALIB %i", i), 4000, 0.0, 4000.0, Form("SCI TOF (Calib) %i", i), kPink-3, kBlue+2);
 
@@ -296,7 +297,7 @@ InitStatus FrsOnlineSpectra::Init()
          
             for (int gate = 0; gate < FrsGates.size(); gate++)
             {   
-                h2_Z_vs_AoQ_Z1Z2gate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_mhtdc, "I", Form("h2_Z_vs_AoQ_ZAoQgate%s_mhtdc", FrsGates[gate]->GetName().c_str()), Form("Z vs. A/Q (MHTDC) - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q", "Z (MUSIC 1)");
+                h2_Z_vs_AoQ_Z1Z2gate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_mhtdc, "I", Form("h2_Z_vs_AoQ_ZAoQgate%i_mhtdc", gate), Form("Z vs. A/Q (MHTDC) - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 750, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q", "Z (MUSIC 1)");
                 h2_Z1_vs_Z2_Z1Z2gate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_mhtdc, "I", Form("h2_Z1_vs_Z2_ZAoQgate%i_mhtdc", gate), Form("Z1 vs. Z2 (MHTDC) - ZAoQ Gate %i", gate), 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_Z, frs_config->fMax_Z, "Z (MUSIC 1)", "Z (MUSIC 2)");
                 h2_x2_vs_AoQ_Z1Z2gate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_mhtdc, "I", Form("h2_x2_vs_AoQ_ZAoQgate%i_mhtdc", gate), Form("x2 vs. A/Q (MHTDC) - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q", "S2 x-position");
                 h2_x4_vs_AoQ_Z1Z2gate_mhtdc[gate] = MakeTH2(dir_ZvsZ2_mhtdc, "I", Form("h2_x4_vs_AoQ_ZAoQgate%i_mhtdc", gate), Form("x4 vs. A/Q (MHTDC) - ZAoQ Gate %i", gate), 750, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q", "S4 x-position");
@@ -352,10 +353,7 @@ InitStatus FrsOnlineSpectra::Init()
     h1_tpc24_rate = MakeTH1(dir_rates, "I", "h1_tpc24_rate", "TPC 24 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
     h1_tpc41_rate = MakeTH1(dir_rates, "I", "h1_tpc41_rate", "TPC 41 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
     h1_tpc42_rate = MakeTH1(dir_rates, "I", "h1_tpc42_rate", "TPC 42 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
-    // h1_sci21_rate = MakeTH1(dir_rates, "I", "h1_sci21_rate", "SCI 21 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
-    // h1_sci22_rate = MakeTH1(dir_rates, "I", "h1_sci22_rate", "SCI 22 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
-    // h1_sci41_rate = MakeTH1(dir_rates, "I", "h1_sci41_rate", "SCI 41 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
-    // h1_sci42_rate = MakeTH1(dir_rates, "I", "h1_sci42_rate", "SCI 42 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
+
 
 
 
@@ -785,10 +783,7 @@ void FrsOnlineSpectra::Exec(Option_t* option)
     h1_tpat->Fill(hitItem.Get_tpat());
 
     for (int i = 0; i < 32; i++)
-    {   
-        //std::cout << "i: " << i << " - ibin for s: " << hitItem.Get_ibin_for_s() << " - sc_temp_main: " << hitItem.Get_increase_sc_temp_main(i) << " - sc_temp_user: " << hitItem.Get_increase_sc_temp_user(i) <<std::endl;
-
-        // CEJ: swapped main and user (hopefully correct) 29/05/24
+    {
         hScaler_per_s[i]->AddBinContent(hitItem.Get_ibin_for_s(), hitItem.Get_increase_sc_temp_user(i));
         hScaler_per_s[i+32]->AddBinContent(hitItem.Get_ibin_for_s(), hitItem.Get_increase_sc_temp_main(i));
         hScaler_per_100ms[i]->AddBinContent(hitItem.Get_ibin_for_100ms(), hitItem.Get_increase_sc_temp_user(i));
@@ -851,8 +846,7 @@ void FrsOnlineSpectra::Exec(Option_t* option)
         if (tpc_running_count == 1800) tpc_running_count = 0;
     }
     
-
-    fNEvents += 1;
+    fNEvents++;
 }
 
 void FrsOnlineSpectra::FinishEvent()

@@ -2,6 +2,7 @@
 
 FatimaTwinpeaksCalData::FatimaTwinpeaksCalData()
     :
+    ftrig(0),
     fboard_id(0),
     fch_ID(0),
     fdetector_id(0),
@@ -24,6 +25,7 @@ FatimaTwinpeaksCalData::FatimaTwinpeaksCalData()
 }
 
 FatimaTwinpeaksCalData::FatimaTwinpeaksCalData(
+        uint16_t trig,
         uint16_t board_id,
         uint16_t ch_ID,
         uint16_t detector_id,
@@ -43,6 +45,7 @@ FatimaTwinpeaksCalData::FatimaTwinpeaksCalData(
         uint64_t wr_t,
         int64_t absolute_event_time)
     : 
+        ftrig(trig),
         fboard_id(board_id),
         fch_ID(ch_ID),
         fdetector_id(detector_id),

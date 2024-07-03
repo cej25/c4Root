@@ -164,7 +164,13 @@ class FrsMultiHitItem : public TObject
     public: 
         FrsMultiHitItem();
 
-        void SetAll(Float_t beta, 
+        void SetAll(
+                    Float_t s2x,
+                    Float_t s2a,
+                    Float_t s4x,
+                    Float_t s4a,
+                    Float_t tof,
+                    Float_t beta, 
                     Float_t AoQ, 
                     Float_t AoQ_corr, 
                     Float_t z,
@@ -174,6 +180,11 @@ class FrsMultiHitItem : public TObject
                     Float_t dEdegoQ);
         void Reset();
 
+        Float_t Get_ID_s2x_mhtdc() const;
+        Float_t Get_ID_s4x_mhtdc() const;
+        Float_t Get_ID_s2a_mhtdc() const;
+        Float_t Get_ID_s4a_mhtdc() const;
+        Float_t Get_ID_tof_mhtdc() const;
         Float_t Get_ID_beta_mhtdc() const;
         Float_t Get_ID_AoQ_mhtdc() const;
         Float_t Get_ID_AoQ_corr_mhtdc() const;
@@ -187,6 +198,11 @@ class FrsMultiHitItem : public TObject
 
     private:
 
+        Float_t fID_s2x_mhtdc;
+        Float_t fID_s4x_mhtdc;
+        Float_t fID_s2a_mhtdc;
+        Float_t fID_s4a_mhtdc;
+        Float_t fID_tof_mhtdc;
         Float_t fID_beta_mhtdc;
         Float_t fID_AoQ_mhtdc;
         Float_t fID_AoQ_corr_mhtdc;
@@ -418,6 +434,14 @@ inline uint32_t FrsHitItem::Get_ibin_clean_for_spill() const
     return fibin_clean_for_spill;
 }
 
+inline Float_t FrsMultiHitItem::Get_ID_s2x_mhtdc() const
+{
+    return fID_s2x_mhtdc;
+}
+inline Float_t FrsMultiHitItem::Get_ID_s4x_mhtdc() const
+{
+    return fID_s4x_mhtdc;
+}
 inline Float_t FrsMultiHitItem::Get_ID_beta_mhtdc() const
 {
     return fID_beta_mhtdc;

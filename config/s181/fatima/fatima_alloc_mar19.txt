@@ -1,0 +1,13 @@
+#   Fatima TAM ID   |   Fatima TAM Chan    |   Det nr.
+#   Make it readable! Empty lines are parsed correctly.
+
+#Time machines:
+TimeMachineU 0   1   16
+TimeMachineD 0   5   17
+
+#SCI41L/R
+SC41L_D     0   9   18
+SC41R_D     0   -1  19
+
+#FRS accepted trigger
+FRS_ACCEPT 0   7   20

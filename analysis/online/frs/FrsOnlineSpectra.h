@@ -78,10 +78,32 @@ class FrsOnlineSpectra : public FairTask
         TCanvas* c_frs_z1_vs_AoQ;
         TCanvas* c_frs_x4_vs_AoQ;
         TCanvas* c_frs_snapshot;
+        TCanvas* c_z_compare;
+        TCanvas* c_z_compare_mhtdc;
+        TCanvas* c_dE_compare;
 
-        // testing...
-        TH1* h1_test_scaler;
-        TH2* h2_test_again;
+        // TDirectory structure
+        TFolder* histograms;
+        TDirectory* dir_frs;
+        TDirectory* dir_tac;
+        TDirectory* dir_mhtdc;
+        TDirectory* dir_scalers;
+        TDirectory* dir_rates;
+        TDirectory* dir_tac_1d;
+        TDirectory* dir_tac_2d;
+        TDirectory* dir_gated_tac;
+        TDirectory* dir_ZvsZ2;
+        TDirectory* dir_ZvsZ2_x2vsAoQ;
+        TDirectory* dir_ZvsZ2_x4vsAoQ;
+        TDirectory* dir_mhtdc_1d;
+        TDirectory* dir_mhtdc_2d;
+        TDirectory* dir_gated_mhtdc;
+        TDirectory* dir_ZvsZ2_mhtdc;
+        TDirectory* dir_ZvsZ2_x2vsAoQ_mhtdc;
+        TDirectory* dir_ZvsZ2_x4vsAoQ_mhtdc;
+        TDirectory* dir_travmus;
+        TDirectory* dir_travmus_tac;
+        TDirectory* dir_travmus_mhtdc;
 
         // Histograms for PID:
         // TAC 2D
@@ -101,6 +123,9 @@ class FrsOnlineSpectra : public FairTask
         TH2* h2_Z_vs_dE2;
         TH2* h2_x2_vs_x4;
         TH2* h2_SC41dE_vs_AoQ;
+        TH2* h2_SC42dE_vs_AoQ; // !! needs to be added !!
+        TH2* h2_SC41dE_vs_Z; // !! needs to be added !!
+        TH2* h2_SC42dE_vs_Z; // !! needs to be added !!
         TH2* h2_dE_vs_ToF;
         TH2* h2_x2_vs_Z;
         TH2* h2_x4_vs_Z;
@@ -175,8 +200,13 @@ class FrsOnlineSpectra : public FairTask
         TH2* h2_a4_vs_AoQ_mhtdc;
         TH2* h2_Z_vs_dE2_mhtdc;
         TH2* h2_SC41dE_vs_AoQ_mhtdc;
+        TH2* h2_SC42dE_vs_AoQ_mhtdc; // !! not added yet !!
+        TH2* h2_SC41dE_vs_Z_mhtdc; // !! not added yet !! 
+        TH2* h2_SC42dE_vs_Z_mhtdc; // !! not added yet !!
         TH2* h2_x2_vs_Z_mhtdc;
         TH2* h2_x4_vs_Z_mhtdc;
+        TH2* h2_dE1_vs_x2_mhtdc; // !! not added yet !!
+        TH2* h2_dE1_vs_x4_mhtdc; // !! not added yet !!
         TH2* h2_Z_vs_Sc21E_mhtdc;
         std::vector<TH2*> h2_Z_vs_AoQ_Z1Z2gate_mhtdc;
         std::vector<TH2*> h2_Z1_vs_Z2_Z1Z2gate_mhtdc;
@@ -216,21 +246,13 @@ class FrsOnlineSpectra : public FairTask
         int ratio_previous = 100;
         int ratio_previous2 = 100;
 
-        // Rates - TGraph? How do they get checked nearline if they're refreshed every hour lol
-        // TGraph??
+        // TPC rates
         TH1* h1_tpc21_rate;
         TH1* h1_tpc22_rate;
         TH1* h1_tpc23_rate;
         TH1* h1_tpc24_rate;
         TH1* h1_tpc41_rate;
         TH1* h1_tpc42_rate;
-        // not actually sure which TPCs and SCIs we have but oh well.
-        TH1* h1_sci21_rate;
-        TH1* h1_sci22_rate;
-        TH1* h1_sci41_rate;
-        TH1* h1_sci42_rate;
-        // variables for rate counting (?)
-
         Float_t* tpc_x;
         Float_t tpc_counters[7] = {0};
         Float_t tpc_rates[7] = {0};
@@ -238,52 +260,6 @@ class FrsOnlineSpectra : public FairTask
         Float_t tpc_21_rate = 0;
         int tpc_running_count = 0;
         int64_t saved_frs_wr = 0;
-
-
-        // Rates as a function of WR time (every 2s?) for key detectors (Refreshing e.g., every hour):
-        // TPCs @S2 (if possible, also @S4)
-        // Plastics @S2 (if possible, also @S4)
-        // AIDA, bPlast, BB7 (implant & beta decay)
-        // FATIMA (per detector & DACQ)
-        // DEGAS (per crystal)
-        // The histos to be checked by the dedicated nearline team:
-
-        // probably a nearline thing
-        // Signal drifts (evolution with time along the experiment):
-        // MUSICS
-        // AOQ
-        // TOF detectors
-        // TPCs
-        // DEGAS (per crystal)
-
-
-        // Canvases
-        TCanvas* c_z_compare;
-        TCanvas* c_z_compare_mhtdc;
-        TCanvas* c_dE_compare;
-
-        // TDirectory structure
-        TFolder* histograms;
-        TDirectory* dir_frs;
-        TDirectory* dir_tac;
-        TDirectory* dir_mhtdc;
-        TDirectory* dir_scalers;
-        TDirectory* dir_rates;
-        TDirectory* dir_tac_1d;
-        TDirectory* dir_tac_2d;
-        TDirectory* dir_gated_tac;
-        TDirectory* dir_ZvsZ2;
-        TDirectory* dir_ZvsZ2_x2vsAoQ;
-        TDirectory* dir_ZvsZ2_x4vsAoQ;
-        TDirectory* dir_mhtdc_1d;
-        TDirectory* dir_mhtdc_2d;
-        TDirectory* dir_gated_mhtdc;
-        TDirectory* dir_ZvsZ2_mhtdc;
-        TDirectory* dir_ZvsZ2_x2vsAoQ_mhtdc;
-        TDirectory* dir_ZvsZ2_x4vsAoQ_mhtdc;
-        TDirectory* dir_travmus;
-        TDirectory* dir_travmus_tac;
-        TDirectory* dir_travmus_mhtdc;
 
     public:
         ClassDef(FrsOnlineSpectra, 1)

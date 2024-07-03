@@ -152,7 +152,13 @@ FrsMultiHitItem::FrsMultiHitItem()
 
 }
 
-void FrsMultiHitItem::SetAll(Float_t beta, 
+void FrsMultiHitItem::SetAll(
+                            Float_t s2x,
+                            Float_t s2a,
+                            Float_t s4x,
+                            Float_t s4a,
+                            Float_t tof,
+                            Float_t beta, 
                             Float_t AoQ, 
                             Float_t AoQ_corr, 
                             Float_t z,
@@ -161,6 +167,11 @@ void FrsMultiHitItem::SetAll(Float_t beta,
                             Float_t dEdeg,
                             Float_t dEdegoQ)
 {
+    fID_s2x_mhtdc = s2x;
+    fID_s2a_mhtdc = s2a;
+    fID_s4x_mhtdc = s4x;
+    fID_s4a_mhtdc = s4a;
+    fID_tof_mhtdc = tof;
     fID_beta_mhtdc = beta;
     fID_AoQ_mhtdc = AoQ;
     fID_AoQ_corr_mhtdc = AoQ_corr;

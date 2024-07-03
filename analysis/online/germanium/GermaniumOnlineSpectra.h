@@ -6,6 +6,7 @@
 
 #include "TDirectory.h"
 #include "TFolder.h"
+#include "TH1.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include <vector>
@@ -18,6 +19,7 @@ class TH2F;
 class TFile;
 class TFolder;
 class TDirectory;
+class TH1;
 
 class GermaniumOnlineSpectra : public FairTask
 {
@@ -71,6 +73,13 @@ class GermaniumOnlineSpectra : public FairTask
             energygate_width = width;
         }
 
+
+        void SetResolutionMeasurementParameters(double centr, double width, int64_t time_to_collect_for){
+            centroid_resolution = centr;
+            width_resolution = width;
+            seconds_to_collect_resolution = time_to_collect_for;
+        }
+
         // range setters
 
     
@@ -113,17 +122,17 @@ class GermaniumOnlineSpectra : public FairTask
         TCanvas* c_germanium_energy_summed_vs_tsci41;
         
         TCanvas* c_germanium_energy_summed_vs_tsci41_cut;
-        TH1F* h1_germanium_energy_summed_vs_tsci41_cut;
+        TH1* h1_germanium_energy_summed_vs_tsci41_cut;
 
         TCanvas* c_germanium_energy_energy_vetosci41;
-        TH2F* h2_germanium_energy_energy_vetosci41;
+        TH2* h2_germanium_energy_energy_vetosci41;
 
         TCanvas* c_germanium_energy_energy_sci41_cut;
-        TH2F* h2_germanium_energy_energy_sci41_cut;
+        TH2* h2_germanium_energy_energy_sci41_cut;
 
         TCanvas* c_germanium_snapshot;
 
-        char ** detector_labels;
+        const char ** detector_labels;
 
         // Folder and files
         TFolder* histograms;
@@ -133,26 +142,71 @@ class GermaniumOnlineSpectra : public FairTask
         TDirectory* dir_germanium_hitpattern;
         TDirectory* dir_germanium_multiplicity;
         TDirectory* dir_germanium_sci41;
+        TDirectory* dir_germanium_resolution;
+        TDirectory* dir_germanium_rates;
         std::vector<TDirectory*> dir_germanium_time_differences;
 
         TFile* file_germanium_snapshot;
 
         // Histograms energy
-        TH1F** h1_germanium_energy;
-        TH2F* h2_germanium_energy_vs_detidx;
+        TH1** h1_germanium_energy;
+        TH2* h2_germanium_energy_vs_detidx;
 
-        TH1F*** h1_germanium_time_differences; // [reference_dector][detector index]
-        TH2F*** h2_germanium_time_differences_vs_energy; // [reference_dector][detector index]
+        TH1*** h1_germanium_time_differences; // [reference_dector][detector index]
+        TH2*** h2_germanium_time_differences_vs_energy; // [reference_dector][detector index]
 
-        TH1F* h1_germanium_energy_summed;
-        TH1F* h1_germanium_energy_summed_vetosci41;
-        TH2F* h2_germanium_energy_summed_vs_tsci41;
+        TH1* h1_germanium_energy_summed;
+        TH1* h1_germanium_energy_summed_vetosci41;
+        TH2* h2_germanium_energy_summed_vs_tsci41;
 
-        TH1F* h1_germanium_multiplicity;
-        TH1F* h1_germanium_hitpattern;
+        TH1* h1_germanium_multiplicity;
+        TH1* h1_germanium_hitpattern;
 
         // Histograms time
-        TH1F** h1_germanium_time;
+        TH1** h1_germanium_time;
+
+
+        double centroid_resolution = 1332;
+        double width_resolution = 10;
+
+
+        TF1* f1_gaussian;
+        
+        TCanvas* c_last_resolutions_FWHM;
+
+        TH1* h1_last_resolutions_FWHM;
+        TH1* h1_last_resolutions_FWTM;
+        TH1* h1_last_resolutions_gratio;
+
+        
+        TGraph** g1_resolutions_FWHM;
+        TCanvas* c_resolutions_FWHM;
+        
+        TGraph** g1_resolutions_FWTM;
+        TCanvas* c_resolutions_FWTM;
+
+        TGraph** g1_resolutions_gratio;
+        TCanvas* c_resolutions_gratio;
+        
+        uint64_t last_time_resolution_was_measured = 0;
+        uint64_t current_wr = 0;
+        uint64_t first_time = 0;
+        int64_t seconds_to_collect_resolution = 10;
+        
+        TCanvas * c1_germanium_energy_last_fitted;
+        TH1** h1_germanium_energy_last_fitted;
+        
+        TCanvas * c1_germanium_energy_last;
+        TH1** h1_germanium_energy_last;
+
+
+        TH1** h1_germanium_rates;
+
+        // rates
+        int64_t saved_germanium_wr = 0;
+        int* detector_counters;
+        int* detector_rates;
+        int rate_running_count = 0;
 
     public:
         ClassDef(GermaniumOnlineSpectra, 1)
