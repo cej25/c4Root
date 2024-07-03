@@ -95,7 +95,7 @@ void LisaRaw2Cal::Exec(Option_t* option)
                 //std::cout << "Layer, x , y: (" << layer_id << ", (" << xpos << ", " << ypos << "))"<< std::endl;
 
 
-                if (lisa_config->GainMatchingLoaded())s
+                if (lisa_config->GainMatchingLoaded())
                 {
                     //std::cout<< " Hello 1 " << "\n";
                     energy_GM = 0;
