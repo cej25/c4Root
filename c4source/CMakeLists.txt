@@ -83,6 +83,8 @@ set(SRCS
 ./bb7/BB7Raw2Cal.cxx
 ./fimp/FimpReader.cxx
 ./fimp/FimpRaw2Cal.cxx
+
+./test/TestReader.cxx
 )
 
 Set(STRUCT_HEADERS
@@ -103,6 +105,8 @@ Set(STRUCT_HEADERS
 ./bgo/ext_h101_bgo.h
 ./bb7/ext_h101_bb7vme.h
 ./fimp/ext_h101_fimp.h
+
+./test/ext_h101_test.h
 )
 
 # fill list of header files from list of source files
