@@ -65,4 +65,7 @@
 #pragma link C++ class EXT_STR_h101_fimp_onion_t;
 
 
+#pragma link C++ class TestReader+;
+#pragma link C++ class EXT_STR_h101_test_onion_t;
+
 #endif
