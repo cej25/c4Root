@@ -116,7 +116,7 @@ void elisa_pareeksha_online()
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     TLisaConfiguration::SetMappingFile(config_path + "/lisa/Lisa_Detector_Map_names.txt");
-    TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_Detector_Map_names.txt");
+    TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching.txt");
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // S U B S Y S T E M S
