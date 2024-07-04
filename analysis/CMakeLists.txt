@@ -73,6 +73,7 @@ set(SRCS
 ./nearline/wr/WhiterabbitCorrelationNearline.cxx
 ./nearline/timemachine/TimeMachineNearline.cxx
 ./nearline/lisa/LisaNearlineSpectra.cxx
+./nearline/lisa/LisaTraceAnalysis.cxx
 ./nearline/fimp/FimpNearlineSpectra.cxx
 ./nearline/lisa/LisaNearlineSpectra.cxx
 
