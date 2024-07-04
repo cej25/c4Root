@@ -12,6 +12,7 @@
 
 TLisaConfiguration* TLisaConfiguration::instance = nullptr;
 std::string TLisaConfiguration::mapping_file = "blank";
+std::string TLisaConfiguration::gain_matching_file = "blank";
 std::string TLisaConfiguration::calibration_file = "blank";
 
 int TLisaConfiguration::AmplitudeMin = 7000;
@@ -59,6 +60,7 @@ TLisaConfiguration::TLisaConfiguration()
     ,   num_febex_boards(0)
 {
     ReadMappingFile();
+    ReadGMFile();
     //ReadCalibrationCoefficients();
 
 }
@@ -101,6 +103,8 @@ void TLisaConfiguration::ReadMappingFile()
             febex_board = std::stoi(signal);
 
             iss >> febex_channel >> layer_id >> x_pos >> y_pos >> det_name;
+            //std::cout << " Mapping : l "<< layer_id << " x " << x_pos << " y " << y_pos << "\n";
+
 
             // count only real layers, detectors
             layers.insert(layer_id);
@@ -153,6 +157,49 @@ void TLisaConfiguration::ReadMappingFile()
 
 }
 
+
+void TLisaConfiguration::ReadGMFile()
+{   
+    std::cout<<"due elefanti"<<std::endl;
+    //std::set<int> layers;
+    //std::set<int> x_positions;
+    //std::set<int> y_positions;
+    
+    std::ifstream gain_matching_coeff_file (gain_matching_file);
+    std::string line;
+
+    if (gain_matching_coeff_file.fail()) c4LOG(fatal, "Could not open LISA calibration coefficients file.");
+
+    while (std::getline(gain_matching_coeff_file, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+
+        std::istringstream iss(line);
+        int layer_id, x_pos, y_pos;
+        double slope, intercept;
+        std::pair<int, int> xy;
+        std::pair<int, std::pair<int, int>> layer_xy;
+        std::pair<double, double> gm_coeff;
+
+        iss >> layer_id >> x_pos >> y_pos >> slope >> intercept;
+
+        gm_coeff = std::make_pair(slope, intercept);
+
+        xy = std::make_pair(x_pos, y_pos);
+        layer_xy = std::make_pair(layer_id, xy);
+
+        gain_matching_coeffs.insert(std::make_pair(layer_xy, gm_coeff));
+
+        std::cout << " l "<< layer_id << " x " << x_pos << " y " << y_pos << " slope " << slope << " intercept " << intercept << "\n";
+    }
+    
+    gain_matching_loaded = 1;
+    gain_matching_coeff_file.close();
+
+    c4LOG(info, "Lisa Gain Matching File: " + gain_matching_file);
+    return;
+
+}
 
 
 void TLisaConfiguration::ReadCalibrationCoefficients()

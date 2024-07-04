@@ -153,7 +153,10 @@ class FrsGermaniumCorrelationsNearline : public FairTask
         TCanvas * c_germanium_energy_energy_promptflash_cut_long; 
         TH2F * h2_germanium_energy_energy_promptflash_cut_long;
 
-
+        int number_of_detectors_to_plot;
+        std::vector<std::pair<int,int>> crystals_to_plot;
+        char** detector_labels;
+        TH1* h1_germanium_hitpattern_post6us;
 
 
         // Energy-gated histograms:
@@ -171,10 +174,6 @@ class FrsGermaniumCorrelationsNearline : public FairTask
         TCanvas ** c_germanium_twr_sci41_energy_gated;
         TH1F ** h1_germanium_twr_sci41_energy_gated;
         
-
-
-
-
         // Folder and files
         TDirectory* folder_germanium;
         TDirectory ** folder_energy_gated;
