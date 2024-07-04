@@ -9,6 +9,7 @@
 #pragma link C++ class UcesbSource+;
 #pragma link C++ class c4Reader+;
 #pragma link C++ class CorrelationsMap+;
+//#pragma link C++ class GainShift+;
 
 #pragma link C++ class FrsMainReader+;
 #pragma link C++ class FrsTPCReader+;
@@ -63,5 +64,8 @@
 #pragma link C++ class EXT_STR_h101_bb7vme_onion_t;
 #pragma link C++ class EXT_STR_h101_fimp_onion_t;
 
+
+#pragma link C++ class TestReader+;
+#pragma link C++ class EXT_STR_h101_test_onion_t;
 
 #endif

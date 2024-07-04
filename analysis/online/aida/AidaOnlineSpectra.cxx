@@ -14,6 +14,7 @@
 #include "THttpServer.h"
 #include "TMath.h"
 #include "TRandom.h"
+#include <cmath>
 #include <sstream>
 #include "TFile.h"
 #include <chrono>
@@ -118,6 +119,7 @@ InitStatus AidaOnlineSpectra::Init()
     h_decay_e.resize(conf->DSSDs());
     h_decay_e_xy.resize(conf->DSSDs());
     h_decay_strip_1d_energy.resize(conf->DSSDs());
+    h_aida_frontback_time.resize(conf->DSSDs());
     aida_implant_scaler_queue.resize(conf->DSSDs());
     aida_implant_scaler_cur_sec.resize(conf->DSSDs());
     aida_implant_scaler_graph.resize(conf->DSSDs());
@@ -126,6 +128,10 @@ InitStatus AidaOnlineSpectra::Init()
     aida_decay_scaler_queue.resize(conf->DSSDs());
     aida_decay_scaler_cur_sec.resize(conf->DSSDs());
     aida_decay_scaler_graph.resize(conf->DSSDs());
+    deadtime_queue.resize(conf->FEEs());
+    deadtime_pos.resize(conf->FEEs());
+    last_pauses.resize(conf->FEEs());
+    deadtime_graph.resize(conf->FEEs());
 
     for (int i = 0; i < conf->DSSDs(); i++)
     {
@@ -227,6 +233,15 @@ InitStatus AidaOnlineSpectra::Init()
         h_implant_x_ex_stopped[i]->GetXaxis()->SetTitle("X Position/mm");
         h_implant_x_ex_stopped[i]->GetYaxis()->SetTitle("Energy/MeV");
 
+        name.str("");
+        title.str("");
+        name << "aida_frontback_time_d" << (i + 1);
+        title << "DSSD " << (i + 1) << " front-back time";
+        h_aida_frontback_time[i] = new TH1F(name.str().c_str(), title.str().c_str(),
+                1000, -1e4, 1e4);
+        h_aida_frontback_time[i]->GetXaxis()->SetTitle("Front-back time/ns");
+
+
         dir_decay_dssd[i]->cd();
         name.str("");
         title.str("");
@@ -327,6 +342,23 @@ InitStatus AidaOnlineSpectra::Init()
         aida_scaler_graph[scaler.first]->SetTitle(title.str().c_str());
         aida_scaler_graph[scaler.first]->SetMinimum(0);
         dir_scalers->Append(aida_scaler_graph[scaler.first]);
+    }
+
+    for (int i = 0; i < conf->FEEs(); i++)
+    {
+        std::stringstream name;
+        std::stringstream title;
+        deadtime_graph[i] = new TGraph(3600);
+        name.str(""); title.str("");
+        name << "aida_deadtime_f" << (i + 1);
+        title << "AIDA FEE " << (i+ 1) << " Dead Time";
+        title << ";Time before now (s);Dead Time(%)";
+        deadtime_graph[i]->SetName(name.str().c_str());
+        deadtime_graph[i]->SetTitle(title.str().c_str());
+        deadtime_graph[i]->SetMinimum(0);
+        dir_scalers->Append(deadtime_graph[i]);
+        deadtime_pos[i] = -1;
+        last_pauses[i] = 0;
     }
 
     dir_aida->cd();
@@ -522,6 +554,10 @@ void AidaOnlineSpectra::Exec(Option_t* option)
             h_implant_x_ex_stopped[hit.DSSD - 1]->Fill(hit.PosX, hit.EnergyX);
         }
 
+        int dt = hit.FastTimeX - hit.FastTimeY;
+
+        h_aida_frontback_time[hit.DSSD - 1]->Fill(dt);
+
         int second = (hit.Time / 1000000000ULL);
         if (second == aida_implant_scaler_cur_sec[hit.DSSD - 1])
         {
@@ -677,6 +713,76 @@ void AidaOnlineSpectra::Exec(Option_t* option)
     // Calculate number of 1s blocks
     // Calculate amount of 1s from interval to END
     // Fill all from current_time?
+    //
+    // Decay time from DSSD0 as the deadtime second
+    hredraw = false;
+    uint64_t deadtime_wr = aida_decay_scaler_cur_sec[0];
+    uint64_t deadtime_bins = deadtime_wr / 1;
+    for (int i = 0; i < conf->FEEs(); i++)
+    {
+        if (deadtime_pos[i] != deadtime_bins)
+        {
+            hredraw = true;
+            double value = last_pauses[i] ? 1 : 0;
+            if (deadtime_pos[i] != -1)
+            {
+                int diff = deadtime_wr - deadtime_pos[i];
+                if (diff > 3600)
+                {
+                    deadtime_queue[i].clear();
+                }
+                else
+                {
+                    while (diff-- > 1) deadtime_queue[i].push_front(value);
+                }
+            }
+            deadtime_queue[i].push_front(value);
+            while (deadtime_queue[i].size() > 3600) deadtime_queue[i].pop_back();
+            deadtime_pos[i] = deadtime_bins;
+        }
+    }
+    for (auto& pr : *flowArray)
+    {
+        if (pr.Paused())
+        {
+            last_pauses[pr.Fee() - 1] = pr.Time();
+            uint64_t ns_left = pr.Time() - (deadtime_bins * 1e9);
+            double frac_left = 1 - (ns_left / 1e9);
+            deadtime_queue[pr.Fee() - 1].front() = frac_left;
+        }
+        else
+        {
+            if (last_pauses[pr.Fee() - 1] == 0) continue;
+
+            int64_t deadtime = pr.Time() - last_pauses[pr.Fee() - 1];
+            int64_t pausebin = last_pauses[pr.Fee() - 1] / 1e9;
+            int64_t resbin = pr.Time() / 1e9;
+            if (pausebin == resbin)
+            {
+                deadtime_queue[pr.Fee() - 1].front() = ((double)deadtime / 1e9);
+            }
+            else
+            {
+                int64_t ns_left = pr.Time() - (deadtime_bins * 1e9);
+                double frac_left = (ns_left / 1e9);
+                deadtime_queue[pr.Fee() - 1].front() = frac_left;
+            }
+            last_pauses[pr.Fee() - 1] = 0;
+        }
+    }
+    if (hredraw)
+    {
+        for (int i = 0; i < conf->FEEs(); i++)
+        {
+            deadtime_graph[i]->Set(deadtime_queue[i].size());
+            int j = 0;
+            for (auto p : deadtime_queue[i])
+            {
+                deadtime_graph[i]->SetPoint(j, j, p * 100.0);
+                j++;
+            }
+        }
+    }
     fNEvents += 1;
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);

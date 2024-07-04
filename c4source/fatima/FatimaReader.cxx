@@ -314,7 +314,8 @@ Bool_t FatimaReader::Read() //do fine time here:
     
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
     { //per board:
-        
+
+        uint16_t trig =  fData->fatima_tamex[it_board_number].trig;       
         if (fData->fatima_tamex[it_board_number].event_size == 0) continue; // empty event skip
         
         last_word_read_was_epoch = false;
@@ -422,6 +423,7 @@ Bool_t FatimaReader::Read() //do fine time here:
                 //if (it_board_number == 1) c4LOG(info,Form("Writing: ch = %i, le = %i lc = %i, lf = %f, te = %i tc = %i, tf = %f ",channelid,last_tdc_hit.lead_epoch_counter, last_tdc_hit.lead_coarse_T, last_tdc_hit.lead_fine_T,last_tdc_hit.lead_epoch_counter,coarse_T,fine_T));
 
                 new ((*fArray)[fArray->GetEntriesFast()]) FatimaTwinpeaksData(
+                    trig,
                     it_board_number,
                     channelid,
                     accepted_trigger_time,

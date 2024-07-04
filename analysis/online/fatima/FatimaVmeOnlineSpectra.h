@@ -84,17 +84,17 @@ class FatimaVmeOnlineSpectra : public FairTask
 
         // Histograms
 
-        std::vector<TH1D*> h1_FatVME_RawE;
+        std::vector<TH1*> h1_FatVME_RawE;
         std::vector<TH1D*> h1_FatVME_RawT;
         std::vector<TH1D*> h1_FatVME_E;
         std::vector<TH1D*> h1_FatVME_TDC_dt_refCh1;
         std::vector<TH1D*> h1_FatVME_TDC_dT_refSC41L;
         std::vector<TH2D*> h2_FatVME_EvsdTsc41;
         TH1D* h1_FatVME_E_Sum;
-        TH1I* h1_FatVME_QDC_HitPattern;
-        TH1I* h1_FatVME_TDC_HitPattern;
-        TH1I* h1_FatVME_QDCMult;
-        TH1I* h1_FatVME_TDCMult;
+        TH1* h1_FatVME_QDC_HitPattern;
+        TH1* h1_FatVME_TDC_HitPattern;
+        TH1* h1_FatVME_QDCMult;
+        TH1* h1_FatVME_TDCMult;
         TH2D* h2_FatVME_EvsdTsc41_summed;
         
         TH1D* h1_FatVME_time_machine_undelayed;
@@ -102,8 +102,6 @@ class FatimaVmeOnlineSpectra : public FairTask
         
         TH1D* h1_FatVME_sc41l_time;
         TH1D* h1_FatVME_sc41r_time;
-        //TH1D* h1_FatVME_sc41l;
-        //TH1D* h1_FatVME_sc41r;
 
     public:
         ClassDef(FatimaVmeOnlineSpectra, 1);

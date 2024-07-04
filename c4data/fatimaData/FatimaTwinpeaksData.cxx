@@ -2,6 +2,7 @@
 
 FatimaTwinpeaksData::FatimaTwinpeaksData()
     : 
+    ftrig(0),
     fboard_id(0),
     fch_ID(0),
     faccepted_trigger_time(0),
@@ -17,6 +18,7 @@ FatimaTwinpeaksData::FatimaTwinpeaksData()
 }
 
 FatimaTwinpeaksData::FatimaTwinpeaksData(
+        uint16_t trig,
         uint16_t board_id,
         uint32_t ch_ID,
         int64_t accepted_trigger_time,
@@ -31,6 +33,7 @@ FatimaTwinpeaksData::FatimaTwinpeaksData(
         uint16_t wr_subsystem_id,
         uint64_t wr_t)
     : 
+    ftrig(trig),
     fboard_id(board_id),
     fch_ID(ch_ID),
     faccepted_trigger_time(accepted_trigger_time),

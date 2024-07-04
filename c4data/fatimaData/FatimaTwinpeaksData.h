@@ -10,6 +10,7 @@ class FatimaTwinpeaksData : public TObject
         FatimaTwinpeaksData();
 
         FatimaTwinpeaksData(
+        uint16_t trig,
         uint16_t board_id,
         uint32_t ch_ID,
         int64_t accepted_trigger_time,
@@ -27,7 +28,7 @@ class FatimaTwinpeaksData : public TObject
         virtual ~FatimaTwinpeaksData() {}
 
         // Getters
-
+        inline const uint16_t Get_trigger() const { return ftrig; }
         inline const uint16_t Get_board_id() const {return fboard_id; }
         inline const uint32_t Get_ch_ID() const {return fch_ID; }
         inline const int64_t Get_accepted_trigger_time() const { return faccepted_trigger_time; }
@@ -47,6 +48,7 @@ class FatimaTwinpeaksData : public TObject
 
 
         // Setters
+        void Set_trigger(uint16_t v) { ftrig = v; }
         void Set_board_id(uint16_t v){fboard_id = v;}
         void Set_ch_ID(uint32_t v){fch_ID = v;}
         void Set_accepted_trigger_time(int64_t v) { faccepted_trigger_time = v; }
@@ -61,7 +63,7 @@ class FatimaTwinpeaksData : public TObject
 
     protected:
         // Data items
-
+        uint16_t ftrig;
         uint16_t fboard_id;
         uint32_t fch_ID;
         int64_t faccepted_trigger_time;
