@@ -70,8 +70,7 @@ InitStatus LisaTraceAnalysis::Init()
     auto const & detector_mapping = lisa_config->Mapping();
     xmax = lisa_config->XMax();
     ymax = lisa_config->YMax();
-    num_layers = lisa_config->NLayers();
-
+    
     //TDirectory::TContext ctx(nullptr);
 
     dir_lisa->cd();
@@ -89,6 +88,11 @@ InitStatus LisaTraceAnalysis::Init()
     h2_traces_nothit.resize(xmax*ymax*(layer_number-1));
 
 
+    // pareeksha negative traces
+    //int tracerange[2] = {0,10000};
+    // jiken positive traces
+    int tracerange[2] = {0,20000}; 
+    
     //:::::::::::Traces canvas for layer 1 and 2   
     for (int i = 0; i < layer_number-1; i++) //create a canvas for each layer
       {
@@ -115,7 +119,7 @@ InitStatus LisaTraceAnalysis::Init()
 		
 		c_energies[i]->cd((ymax-(k+1))*xmax + j + 1);
 
-		h1_energies_hit[i*(xmax*ymax)+ymax*j+k] = new TH1F(Form("energies_hit_%s_%i_%i_%i", city.c_str(), i, j, k),Form("energies_hit_%s_%i_%i_%i", city.c_str(), i, j, k),10000,0,2e6);
+		h1_energies_hit[i*(xmax*ymax)+ymax*j+k] = new TH1F(Form("energies_hit_%s_%i_%i_%i", city.c_str(), i, j, k),Form("energies_hit_%s_%i_%i_%i", city.c_str(), i, j, k),10000,0,3e6);
 		h1_energies_hit[i*(xmax*ymax)+ymax*j+k]->GetXaxis()->SetTitle("Amplitude [arb. units]");
 		h1_energies_hit[i*(xmax*ymax)+ymax*j+k]->Draw();
 
@@ -125,7 +129,7 @@ InitStatus LisaTraceAnalysis::Init()
 		c_traces_cross[i*(xmax*ymax)+ymax*j+k]->Divide(xmax,ymax);
 		c_traces_cross[i*(xmax*ymax)+ymax*j+k]->cd((ymax-(k+1))*xmax + j + 1);
 
-		h2_traces_hit[i*(xmax*ymax)+ymax*j+k] = new TH2F(Form("traces_hit_%s_%i_%i_%i", city.c_str(), i, j, k),Form("traces_hit_%s_%i_%i_%i", city.c_str(), i, j, k),2000,0,2000,1000,0,10000);
+		h2_traces_hit[i*(xmax*ymax)+ymax*j+k] = new TH2F(Form("traces_hit_%s_%i_%i_%i", city.c_str(), i, j, k),Form("traces_hit_%s_%i_%i_%i", city.c_str(), i, j, k),2000,0,2000,1000,tracerange[0],tracerange[1]);
 		h2_traces_hit[i*(xmax*ymax)+ymax*j+k]->GetXaxis()->SetTitle("Time [us]");
 		h2_traces_hit[i*(xmax*ymax)+ymax*j+k]->GetYaxis()->SetTitle("Amplitude [arb. units]");
 		h2_traces_hit[i*(xmax*ymax)+ymax*j+k]->Draw("colz");
@@ -138,7 +142,7 @@ InitStatus LisaTraceAnalysis::Init()
 		      continue;
 		    c_traces_cross[i*(xmax*ymax)+ymax*j+k]->cd((ymax-(kk+1))*xmax + jj + 1);
 		    
-		    h2_traces_nothit[i*(xmax*ymax)+ymax*j+k][ymax*jj+kk] = new TH2F(Form("traces_nothit_%s_%i_%i_%i", city.c_str(), i, jj, kk),Form("traces_nothit_%s_%i_%i_%i", city.c_str(), i, jj, kk),2000,0,2000,1000,0,10000);
+		    h2_traces_nothit[i*(xmax*ymax)+ymax*j+k][ymax*jj+kk] = new TH2F(Form("traces_nothit_%s_%i_%i_%i", city.c_str(), i, jj, kk),Form("traces_nothit_%s_%i_%i_%i", city.c_str(), i, jj, kk),2000,0,2000,1000,tracerange[0],tracerange[1]);
 		    h2_traces_nothit[i*(xmax*ymax)+ymax*j+k][ymax*jj+kk]->GetXaxis()->SetTitle("Time [us]");
 		    h2_traces_nothit[i*(xmax*ymax)+ymax*j+k][ymax*jj+kk]->GetYaxis()->SetTitle("Amplitude [arb. units]");
 		    h2_traces_nothit[i*(xmax*ymax)+ymax*j+k][ymax*jj+kk]->Draw("colz");
@@ -156,7 +160,7 @@ InitStatus LisaTraceAnalysis::Init()
 
 
 void LisaTraceAnalysis::Exec(Option_t* option)
-{   
+{
     wr_time = 0;
 
     int lhit =-1;
@@ -168,10 +172,11 @@ void LisaTraceAnalysis::Exec(Option_t* option)
     {
 
         wr_time = lisaCalItem.Get_wr_t();
-        if (wr_time == 0)return;
+        //if (wr_time == 0)return;
 
         //::::::: Retrieve Data ::::::::::::::
         layer = lisaCalItem.Get_layer_id();
+	//c4LOG(info,"layer uncorrected " << layer);
 	// remove tokyo
 	if(layer<1)
 	  continue;
@@ -186,14 +191,15 @@ void LisaTraceAnalysis::Exec(Option_t* option)
         int overflow = lisaCalItem.Get_overflow();
         uint64_t evtno = header->GetEventno();
         
-        
+	//c4LOG(info,"hit in x = " << xpos << ", y = " << ypos << ", z = " << layer << ", e = " <<energy);
         
         // //::::::::F I L L   H I S T O S:::::::
  
-	if(energy> 1e6){
+	if(energy> -1e6){
 	  lhit = layer;
 	  xhit = xpos;
 	  yhit = ypos;
+	  //c4LOG(info,"filling h2_traces_hit[layer*(xmax*ymax)+ymax*xpos+ypos] " << layer*(xmax*ymax)+ymax*xpos+ypos);
 	  h1_energies_hit[layer*(xmax*ymax)+ymax*xpos+ypos]->Fill(energy);
 	  for (int t = 0; t < trace.size(); t++)
 	    h2_traces_hit[layer*(xmax*ymax)+ymax*xpos+ypos]->Fill(t,trace[t]);
@@ -207,12 +213,14 @@ void LisaTraceAnalysis::Exec(Option_t* option)
         layer = lisaCalItem.Get_layer_id();
 	// same layer
 	layer-=1;
-	if(layer!=lhit)
+	if(layer < 1 || layer!=lhit)
 	  continue;
         int xpos = lisaCalItem.Get_xposition();
         int ypos = lisaCalItem.Get_yposition();
 	if(xpos == xhit && ypos == yhit)
 	  continue;
+	//c4LOG(info,"not hit in x = " << xpos << ", y = " << ypos << ", z = " << layer);
+	//c4LOG(info,"filling h2_traces_nothit[layer*(xmax*ymax)+ymax*xpos+ypos][ymax*xpos+ypos] " << layer*(xmax*ymax)+ymax*xpos+ypos << " " << ymax*xpos+ypos);
 	std::vector<uint16_t> trace = lisaCalItem.Get_trace();
 	for (int t = 0; t < trace.size(); t++)
 	    h2_traces_nothit[layer*(xmax*ymax)+ymax*xhit+yhit][ymax*xpos+ypos]->Fill(t,trace[t]);
@@ -220,6 +228,7 @@ void LisaTraceAnalysis::Exec(Option_t* option)
 	
 
 
+    //c4LOG(info,"done with event " << fNEvents);
     fNEvents += 1;
 }
 

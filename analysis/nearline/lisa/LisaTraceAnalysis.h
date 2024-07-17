@@ -58,7 +58,6 @@ class LisaTraceAnalysis : public FairTask
         int det_number;
         int xmax;
         int ymax;
-        int num_layers;
         std::string city = "";
         
 
