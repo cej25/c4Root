@@ -36,7 +36,7 @@ typedef struct EXT_STR_h101_bplast_t
   uint32_t bplast_ts_t4 /* [0,65535] */;
   uint32_t bplast_trigger_window_post_trig_ns /* [0,65535] */;
   uint32_t bplast_trigger_window_pre_trig_ns /* [0,65535] */;
-  uint32_t bplast_tamex1trig /* [0,255] */;
+  uint32_t bplast_tamex1trig /* [-1,-1] */;
   uint32_t bplast_tamex1event_size /* [-1,-1] */;
   uint32_t bplast_tamex1time_coarse /* [0,1024] */;
   uint32_t bplast_tamex1time_coarsev[1024 EXT_STRUCT_CTRL(bplast_tamex1time_coarse)] /* [0,65535] */;
@@ -48,7 +48,7 @@ typedef struct EXT_STR_h101_bplast_t
   uint32_t bplast_tamex1time_channelv[1024 EXT_STRUCT_CTRL(bplast_tamex1time_channel)] /* [0,65535] */;
   uint32_t bplast_tamex1time_epoch /* [0,1024] */;
   uint32_t bplast_tamex1time_epochv[1024 EXT_STRUCT_CTRL(bplast_tamex1time_epoch)] /* [-1,-1] */;
-  uint32_t bplast_tamex2trig /* [0,255] */;
+  uint32_t bplast_tamex2trig /* [-1,-1] */;
   uint32_t bplast_tamex2event_size /* [-1,-1] */;
   uint32_t bplast_tamex2time_coarse /* [0,1024] */;
   uint32_t bplast_tamex2time_coarsev[1024 EXT_STRUCT_CTRL(bplast_tamex2time_coarse)] /* [0,65535] */;
@@ -60,7 +60,7 @@ typedef struct EXT_STR_h101_bplast_t
   uint32_t bplast_tamex2time_channelv[1024 EXT_STRUCT_CTRL(bplast_tamex2time_channel)] /* [0,65535] */;
   uint32_t bplast_tamex2time_epoch /* [0,1024] */;
   uint32_t bplast_tamex2time_epochv[1024 EXT_STRUCT_CTRL(bplast_tamex2time_epoch)] /* [-1,-1] */;
-  uint32_t bplast_tamex3trig /* [0,255] */;
+  uint32_t bplast_tamex3trig /* [-1,-1] */;
   uint32_t bplast_tamex3event_size /* [-1,-1] */;
   uint32_t bplast_tamex3time_coarse /* [0,1024] */;
   uint32_t bplast_tamex3time_coarsev[1024 EXT_STRUCT_CTRL(bplast_tamex3time_coarse)] /* [0,65535] */;
@@ -72,7 +72,7 @@ typedef struct EXT_STR_h101_bplast_t
   uint32_t bplast_tamex3time_channelv[1024 EXT_STRUCT_CTRL(bplast_tamex3time_channel)] /* [0,65535] */;
   uint32_t bplast_tamex3time_epoch /* [0,1024] */;
   uint32_t bplast_tamex3time_epochv[1024 EXT_STRUCT_CTRL(bplast_tamex3time_epoch)] /* [-1,-1] */;
-  uint32_t bplast_tamex4trig /* [0,255] */;
+  uint32_t bplast_tamex4trig /* [-1,-1] */;
   uint32_t bplast_tamex4event_size /* [-1,-1] */;
   uint32_t bplast_tamex4time_coarse /* [0,1024] */;
   uint32_t bplast_tamex4time_coarsev[1024 EXT_STRUCT_CTRL(bplast_tamex4time_coarse)] /* [0,65535] */;
@@ -84,7 +84,7 @@ typedef struct EXT_STR_h101_bplast_t
   uint32_t bplast_tamex4time_channelv[1024 EXT_STRUCT_CTRL(bplast_tamex4time_channel)] /* [0,65535] */;
   uint32_t bplast_tamex4time_epoch /* [0,1024] */;
   uint32_t bplast_tamex4time_epochv[1024 EXT_STRUCT_CTRL(bplast_tamex4time_epoch)] /* [-1,-1] */;
-  uint32_t bplast_tamex5trig /* [0,255] */;
+  uint32_t bplast_tamex5trig /* [-1,-1] */;
   uint32_t bplast_tamex5event_size /* [-1,-1] */;
   uint32_t bplast_tamex5time_coarse /* [0,1024] */;
   uint32_t bplast_tamex5time_coarsev[1024 EXT_STRUCT_CTRL(bplast_tamex5time_coarse)] /* [0,65535] */;
@@ -96,7 +96,7 @@ typedef struct EXT_STR_h101_bplast_t
   uint32_t bplast_tamex5time_channelv[1024 EXT_STRUCT_CTRL(bplast_tamex5time_channel)] /* [0,65535] */;
   uint32_t bplast_tamex5time_epoch /* [0,1024] */;
   uint32_t bplast_tamex5time_epochv[1024 EXT_STRUCT_CTRL(bplast_tamex5time_epoch)] /* [-1,-1] */;
-  uint32_t bplast_tamex6trig /* [0,255] */;
+  uint32_t bplast_tamex6trig /* [-1,-1] */;
   uint32_t bplast_tamex6event_size /* [-1,-1] */;
   uint32_t bplast_tamex6time_coarse /* [0,1024] */;
   uint32_t bplast_tamex6time_coarsev[1024 EXT_STRUCT_CTRL(bplast_tamex6time_coarse)] /* [0,65535] */;
@@ -108,7 +108,7 @@ typedef struct EXT_STR_h101_bplast_t
   uint32_t bplast_tamex6time_channelv[1024 EXT_STRUCT_CTRL(bplast_tamex6time_channel)] /* [0,65535] */;
   uint32_t bplast_tamex6time_epoch /* [0,1024] */;
   uint32_t bplast_tamex6time_epochv[1024 EXT_STRUCT_CTRL(bplast_tamex6time_epoch)] /* [-1,-1] */;
-  uint32_t bplast_tamex7trig /* [0,255] */;
+  uint32_t bplast_tamex7trig /* [-1,-1] */;
   uint32_t bplast_tamex7event_size /* [-1,-1] */;
   uint32_t bplast_tamex7time_coarse /* [0,1024] */;
   uint32_t bplast_tamex7time_coarsev[1024 EXT_STRUCT_CTRL(bplast_tamex7time_coarse)] /* [0,65535] */;
@@ -120,7 +120,7 @@ typedef struct EXT_STR_h101_bplast_t
   uint32_t bplast_tamex7time_channelv[1024 EXT_STRUCT_CTRL(bplast_tamex7time_channel)] /* [0,65535] */;
   uint32_t bplast_tamex7time_epoch /* [0,1024] */;
   uint32_t bplast_tamex7time_epochv[1024 EXT_STRUCT_CTRL(bplast_tamex7time_epoch)] /* [-1,-1] */;
-  uint32_t bplast_tamex8trig /* [0,255] */;
+  uint32_t bplast_tamex8trig /* [-1,-1] */;
   uint32_t bplast_tamex8event_size /* [-1,-1] */;
   uint32_t bplast_tamex8time_coarse /* [0,1024] */;
   uint32_t bplast_tamex8time_coarsev[1024 EXT_STRUCT_CTRL(bplast_tamex8time_coarse)] /* [0,65535] */;
@@ -132,7 +132,7 @@ typedef struct EXT_STR_h101_bplast_t
   uint32_t bplast_tamex8time_channelv[1024 EXT_STRUCT_CTRL(bplast_tamex8time_channel)] /* [0,65535] */;
   uint32_t bplast_tamex8time_epoch /* [0,1024] */;
   uint32_t bplast_tamex8time_epochv[1024 EXT_STRUCT_CTRL(bplast_tamex8time_epoch)] /* [-1,-1] */;
-  uint32_t bplast_tamex9trig /* [0,255] */;
+  uint32_t bplast_tamex9trig /* [-1,-1] */;
   uint32_t bplast_tamex9event_size /* [-1,-1] */;
   uint32_t bplast_tamex9time_coarse /* [0,1024] */;
   uint32_t bplast_tamex9time_coarsev[1024 EXT_STRUCT_CTRL(bplast_tamex9time_coarse)] /* [0,65535] */;
@@ -203,9 +203,9 @@ typedef struct EXT_STR_h101_bplast_onion_t
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      bplast_trigger_window_pre_trig_ns,UINT32,\
                     "bplast_trigger_window_pre_trig_ns",65535,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      bplast_tamex1trig,               UINT32,\
-                    "bplast_tamex1trig",255,0/*flags*/); \
+                    "bplast_tamex1trig",0/*flags*/); \
   EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      bplast_tamex1event_size,         UINT32,\
                     "bplast_tamex1event_size",0/*flags*/); \
@@ -239,9 +239,9 @@ typedef struct EXT_STR_h101_bplast_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      bplast_tamex1time_epochv,        UINT32,\
                     "bplast_tamex1time_epochv",        "bplast_tamex1time_epoch",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      bplast_tamex2trig,               UINT32,\
-                    "bplast_tamex2trig",255,0/*flags*/); \
+                    "bplast_tamex2trig",0/*flags*/); \
   EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      bplast_tamex2event_size,         UINT32,\
                     "bplast_tamex2event_size",0/*flags*/); \
@@ -275,9 +275,9 @@ typedef struct EXT_STR_h101_bplast_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      bplast_tamex2time_epochv,        UINT32,\
                     "bplast_tamex2time_epochv",        "bplast_tamex2time_epoch",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      bplast_tamex3trig,               UINT32,\
-                    "bplast_tamex3trig",255,0/*flags*/); \
+                    "bplast_tamex3trig",0/*flags*/); \
   EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      bplast_tamex3event_size,         UINT32,\
                     "bplast_tamex3event_size",0/*flags*/); \
@@ -311,9 +311,9 @@ typedef struct EXT_STR_h101_bplast_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      bplast_tamex3time_epochv,        UINT32,\
                     "bplast_tamex3time_epochv",        "bplast_tamex3time_epoch",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      bplast_tamex4trig,               UINT32,\
-                    "bplast_tamex4trig",255,0/*flags*/); \
+                    "bplast_tamex4trig",0/*flags*/); \
   EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      bplast_tamex4event_size,         UINT32,\
                     "bplast_tamex4event_size",0/*flags*/); \
@@ -347,9 +347,9 @@ typedef struct EXT_STR_h101_bplast_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      bplast_tamex4time_epochv,        UINT32,\
                     "bplast_tamex4time_epochv",        "bplast_tamex4time_epoch",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      bplast_tamex5trig,               UINT32,\
-                    "bplast_tamex5trig",255,0/*flags*/); \
+                    "bplast_tamex5trig",0/*flags*/); \
   EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      bplast_tamex5event_size,         UINT32,\
                     "bplast_tamex5event_size",0/*flags*/); \
@@ -383,9 +383,9 @@ typedef struct EXT_STR_h101_bplast_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      bplast_tamex5time_epochv,        UINT32,\
                     "bplast_tamex5time_epochv",        "bplast_tamex5time_epoch",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      bplast_tamex6trig,               UINT32,\
-                    "bplast_tamex6trig",255,0/*flags*/); \
+                    "bplast_tamex6trig",0/*flags*/); \
   EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      bplast_tamex6event_size,         UINT32,\
                     "bplast_tamex6event_size",0/*flags*/); \
@@ -419,9 +419,9 @@ typedef struct EXT_STR_h101_bplast_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      bplast_tamex6time_epochv,        UINT32,\
                     "bplast_tamex6time_epochv",        "bplast_tamex6time_epoch",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      bplast_tamex7trig,               UINT32,\
-                    "bplast_tamex7trig",255,0/*flags*/); \
+                    "bplast_tamex7trig",0/*flags*/); \
   EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      bplast_tamex7event_size,         UINT32,\
                     "bplast_tamex7event_size",0/*flags*/); \
@@ -455,9 +455,9 @@ typedef struct EXT_STR_h101_bplast_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      bplast_tamex7time_epochv,        UINT32,\
                     "bplast_tamex7time_epochv",        "bplast_tamex7time_epoch",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      bplast_tamex8trig,               UINT32,\
-                    "bplast_tamex8trig",255,0/*flags*/); \
+                    "bplast_tamex8trig",0/*flags*/); \
   EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      bplast_tamex8event_size,         UINT32,\
                     "bplast_tamex8event_size",0/*flags*/); \
@@ -491,9 +491,9 @@ typedef struct EXT_STR_h101_bplast_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      bplast_tamex8time_epochv,        UINT32,\
                     "bplast_tamex8time_epochv",        "bplast_tamex8time_epoch",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      bplast_tamex9trig,               UINT32,\
-                    "bplast_tamex9trig",255,0/*flags*/); \
+                    "bplast_tamex9trig",0/*flags*/); \
   EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      bplast_tamex9event_size,         UINT32,\
                     "bplast_tamex9event_size",0/*flags*/); \

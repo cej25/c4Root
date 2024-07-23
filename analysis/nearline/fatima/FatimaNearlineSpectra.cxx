@@ -121,7 +121,7 @@ InitStatus FatimaNearlineSpectra::Init()
     h2_fatima_energy_vs_t.resize(number_detectors);
     for (int ihist = 0; ihist < number_detectors; ihist++)
     {
-        h2_fatima_energy_vs_t[ihist] = MakeTH2(dir_fatima_drift, "F", Form("h2_fatima_energy_vs_t_%d",detectors.at(ihist)),Form("FATIMA energy vs. time detector %d",detectors.at(ihist)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high, 5e3, 0, 10750, "Time [mins]", "Energy [keV]");
+        h2_fatima_energy_vs_t[ihist] = MakeTH2(dir_fatima_drift, "F", Form("h2_fatima_energy_vs_t_%d",detectors.at(ihist)),Form("FATIMA energy vs. time detector %d",detectors.at(ihist)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high, 400, 0, 10750, "Time [mins]", "Energy [keV]");
         // h2_fatima_energy_vs_t[ihist] = new TH2F(Form("h2_fatima_energy_vs_t_%d",detectors.at(ihist)),Form("FATIMA energy vs. time detector %d",detectors.at(ihist)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,5000,0,10750);
         // h2_fatima_energy_vs_t[ihist]->GetXaxis()->SetTitle("Time (mins)");
         // h2_fatima_energy_vs_t[ihist]->GetYaxis()->SetTitle("Energy (keV)");

@@ -103,7 +103,7 @@ InitStatus FatimaVmeNearlineSpectra::Init()
     dir_cal_energy->cd();
     for (int i = 0; i < nDetectors; i++)
     {
-        h1_FatVME_E[i] = new TH1D(Form("h1_FatVME_E%i", i), Form("Fatima VME Energy - Detector %i", i), 4000, 0, 4000);
+        h1_FatVME_E[i] = new TH1D(Form("h1_FatVME_E%i", i), Form("Fatima VME Energy - Detector %i", i), 1500, 0, 1500);
     }
 
     h1_FatVME_E_Sum = new TH1D("h1_FatVME_E_Sum", "Fatima VME Energy - All Detectors summed", 4000, 0, 4000);

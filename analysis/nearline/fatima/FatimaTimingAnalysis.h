@@ -118,9 +118,7 @@ class FatimaTimingAnalysis : public FairTask
         bool timeshifts_loaded = false;
         std::map<std::pair<int,int>,double> timeshifts;
 
-        
-
-
+    
 
     public:
         ClassDef(FatimaTimingAnalysis, 1)
