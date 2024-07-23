@@ -4,6 +4,7 @@
 #include "TObject.h"
 #include <vector>
 
+// :: Not in use -> use CalItam instead
 class LisaCalData : public TObject
 {
     public:
@@ -72,6 +73,7 @@ class LisaCalItem : public TObject
                     int ypos,
                     int e,
                     std::vector<uint16_t> tr,
+                    double e_GM,
                     uint64_t evtno,
                     //uint64_t evt_t,
                     //uint64_t ch_t,
@@ -86,6 +88,7 @@ class LisaCalItem : public TObject
         int Get_yposition() const;
         uint32_t Get_energy() const;
         std::vector<uint16_t> Get_trace() const;
+        double Get_energy_GM() const;
         //uint64_t Get_evtno();
         //uint64_t Get_board_event_time();
         //uint64_t Get_channel_event_time();
@@ -102,6 +105,7 @@ class LisaCalItem : public TObject
         int yposition;
         uint32_t energy; // double? int?
         std::vector<uint16_t> trace;
+        double energy_GM;
         uint64_t event_no;
         //uint64_t evt_t;
         //uint64_t ch_t;
@@ -154,6 +158,11 @@ inline int LisaCalItem::Get_pileup() const
 inline int LisaCalItem::Get_overflow() const
 {
     return overflow;
+}
+
+inline double LisaCalItem::Get_energy_GM() const
+{
+    return energy_GM;
 }
 
 /*

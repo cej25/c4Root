@@ -42,6 +42,7 @@ class TFrsConfiguration
         TRangeParameter* Range() const;
         std::string GetConfigPath() const;
         std::string ScalerName(int index) const;
+        std::string SciName(int index) const;
 
         // Unpacking / Sorting
         // These should be set after reading some mapping, change later.
@@ -125,6 +126,7 @@ class TFrsConfiguration
 
         // Mappings
         std::string scaler_name[66];
+        std::string sci_names[6];
 };
 
 inline TFrsConfiguration const* TFrsConfiguration::GetInstance()
@@ -194,6 +196,11 @@ inline TRangeParameter* TFrsConfiguration::Range() const
 inline std::string TFrsConfiguration::ScalerName(int index) const
 {
     return scaler_name[index];
+}
+
+inline std::string TFrsConfiguration::SciName(int index) const
+{
+    return sci_names[index];
 }
 
 inline std::string TFrsConfiguration::GetConfigPath() const

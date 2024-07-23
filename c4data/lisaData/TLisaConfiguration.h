@@ -18,17 +18,25 @@ class TLisaConfiguration
         static void Create();
 
         static void SetMappingFile(std::string fp) { mapping_file = fp; }
+        static void SetGMFile(std::string fp) { gain_matching_file = fp; }
         static void SetDetectorCoefficientFile(std::string fp) { calibration_file = fp; }
 
-        // mapping
+        //:::: Mapping
         //std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> Mapping() const;
         std::map<std::pair<int,int>, std::pair<std::pair<int,std::string>, std::pair<int,int>>> Mapping() const;
         bool MappingLoaded() const;
+
+        //:::: Gain Matching
+        std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> GainMatchingCoefficients() const;
+        bool GainMatchingLoaded() const;
 
         void SetTraceLength(int length) { trace_length = length; }
         int GetTraceLength() { return trace_length; }
 
         //std::map<std::pair<int,int>,std::pair<double,double>> CalibrationCoefficients() const;
+        //:::: Calibration
+        //std::map<std::pair<int,std::pair<int,int>>, std::pair<int,int>> CalibrationCoefficients() const;
+        //bool CalibrationLoaded() const;
 
         int NLayers() const;
         int XMax() const;
@@ -110,17 +118,20 @@ class TLisaConfiguration
     private:
 
         static std::string mapping_file;
+        static std::string gain_matching_file;
         static std::string calibration_file;
 
         TLisaConfiguration();
         void ReadMappingFile();
+        void ReadGMFile();
         void ReadCalibrationCoefficients();
 
         static TLisaConfiguration* instance;
 
         //std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> detector_mapping;
         std::map<std::pair<int,int>, std::pair<std::pair<int,std::string>, std::pair<int,int>>> detector_mapping;
-        //std::map<std::pair<int,int>,std::pair<double,double>> calibration_coeffs;
+        std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> gain_matching_coeffs;
+        //std::map<std::pair<int,std::pair<int,int>>, std::pair<int,int>> calibration_coeffs;
         std::set<int> extra_signals;
 
         int num_layers;   
@@ -128,15 +139,15 @@ class TLisaConfiguration
         int ymax;     
         int num_detectors;
         int num_febex_boards;
-        // layer arrangement (set/get with function?)
+        
 
-        // will you have extra signals?
         int tm_undelayed;
         int tm_delayed;
         int sc41l_d;
         int sc41r_d;
 
         bool detector_mapping_loaded = 0;
+        bool gain_matching_loaded = 0;
         bool detector_calibrations_loaded = 0;
         bool timeshift_calibration_coeffs_loaded = 0;
 
@@ -159,14 +170,23 @@ inline void TLisaConfiguration::Create()
     instance = new TLisaConfiguration();
 }
 
+//::: Mapping
 //inline std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> TLisaConfiguration::Mapping() const
 inline std::map<std::pair<int,int>, std::pair<std::pair<int,std::string>, std::pair<int,int>>> TLisaConfiguration::Mapping() const
 {
     return detector_mapping;
 }
 
+
+//::: Gain Matching
+inline std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> TLisaConfiguration::GainMatchingCoefficients() const
+{
+    return gain_matching_coeffs;
+}
+
+//::: Calibration
 /*
-inline std::map<std::pair<int,int>,std::pair<double,double>> TLisaConfiguration::CalibrationCoefficients() const
+inline std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> TLisaConfiguration::CalibrationCoefficients() const
 {
     return calibration_coeffs;
 }
@@ -200,6 +220,12 @@ inline int TLisaConfiguration::NFebexBoards() const
 inline bool TLisaConfiguration::MappingLoaded() const
 {
     return detector_mapping_loaded;
+}
+
+
+inline bool TLisaConfiguration::GainMatchingLoaded() const
+{
+    return gain_matching_loaded;
 }
 
 /*

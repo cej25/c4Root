@@ -10,7 +10,7 @@ class GermaniumFebexData : public TObject
         GermaniumFebexData();
 
         GermaniumFebexData( 
-                            uint8_t trig, 
+                            uint16_t trig, 
                             uint32_t num_channels_fired,
                              uint64_t event_trigger_time,
                              uint16_t hit_pattern,
@@ -28,7 +28,7 @@ class GermaniumFebexData : public TObject
         virtual ~GermaniumFebexData() {};
 
         // Getters
-        inline const uint8_t Get_trigger() const { return ftrig; }
+        inline const uint16_t Get_trigger() const { return ftrig; }
         inline const uint32_t Get_num_channels_fired() const { return fnum_channels_fired; }
         inline const uint64_t Get_event_trigger_time() const { return fevent_trigger_time; }
         inline const uint16_t Get_hit_pattern() const { return fhit_pattern; }
@@ -47,7 +47,7 @@ class GermaniumFebexData : public TObject
 
 
         // Setters
-        void Set_trigger(uint8_t v) { ftrig = v; }
+        void Set_trigger(uint16_t v) { ftrig = v; }
         void Set_num_channels_fired(uint32_t v) { fnum_channels_fired = v; }
         void Set_event_trigger_time(uint64_t v) { fevent_trigger_time = v; }
         void Set_hit_pattern(uint16_t v) { fhit_pattern = v; }
@@ -65,7 +65,7 @@ class GermaniumFebexData : public TObject
 
     protected:
         // Data items
-        uint8_t ftrig;
+        uint16_t ftrig;
         uint32_t fnum_channels_fired;
         uint64_t fevent_trigger_time;
         uint16_t fhit_pattern;

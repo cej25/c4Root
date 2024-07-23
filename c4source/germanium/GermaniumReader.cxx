@@ -65,7 +65,7 @@ Bool_t GermaniumReader::Read()
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number ++){
         //since the febex card has a 100MHz clock which timestamps events.
         //the event trigger time is to within a
-        int trig = fData->germanium_data[it_board_number].trig;
+        uint16_t trig = fData->germanium_data[it_board_number].trig;
         event_trigger_time_long = (((uint64_t)(fData->germanium_data[it_board_number].event_trigger_time_hi) << 32) + (fData->germanium_data[it_board_number].event_trigger_time_lo))*10;
     
         if (WriteZeroMultEvents & (fData->germanium_data[it_board_number].channel_energy == 0)){ 

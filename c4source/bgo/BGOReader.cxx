@@ -305,7 +305,7 @@ Bool_t BGOReader::Read() //do fine time here:
     
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
     { //per board:
-        int trig = fData->bgo_tamex[it_board_number].trig;
+        uint16_t trig = fData->bgo_tamex[it_board_number].trig;
         if (fData->bgo_tamex[it_board_number].event_size == 0) continue; // empty event skip
         
         last_word_read_was_epoch = false;
