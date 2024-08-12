@@ -61,6 +61,8 @@
 #pragma link C++ class AidaGermaniumCorrelations+;
 //#pragma link C++ class FatimaAidaSpectra+;
 
+#pragma link C++ class BetaIonCorrelations+;
+
 // #pragma link C++ class MHTDCSpectra+;
 // #pragma link C++ class TPCCorrections+;
 
