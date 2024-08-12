@@ -89,7 +89,7 @@ class GermaniumCalData : public TObject
     
 
     public:
-        ClassDef(GermaniumCalData, 1);
+        ClassDef(GermaniumCalData, 2);
 };
 
 #endif
