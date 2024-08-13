@@ -73,6 +73,8 @@ set(SRCS
 ./nearline/bgo/BGONearlineSpectra.cxx
 ./nearline/wr/WhiterabbitCorrelationNearline.cxx
 ./nearline/timemachine/TimeMachineNearline.cxx
+./nearline/lisa/LisaNearlineSpectra.cxx
+./nearline/lisa/LisaTraceAnalysis.cxx
 ./nearline/fimp/FimpNearlineSpectra.cxx
 ./nearline/bb7/BB7NearlineSpectra.cxx
 ./nearline/lisa/LisaNearlineSpectra.cxx
@@ -92,6 +94,7 @@ set(SRCS
 ./correlations/bPlastGermaniumCorrelations.cxx
 ./online/onlineCorrelations/bPlastGermaniumCorrelationsOnline.cxx
 #./correlations/FrsBplastCorrelations.cxx
+./correlations/triplePlusCorrs/BetaIonCorrelations.cxx
 
 
 #./frs/MHTDCSpectra.cxx
