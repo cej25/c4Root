@@ -15,6 +15,9 @@ std::string TLisaConfiguration::mapping_file = "blank";
 std::string TLisaConfiguration::gain_matching_file = "blank";
 std::string TLisaConfiguration::calibration_file = "blank";
 
+//WR enable setting - X7 data = 0, S2 data = 1
+bool TLisaConfiguration::wr_enable = 1;
+
 int TLisaConfiguration::AmplitudeMin = 7000;
 int TLisaConfiguration::AmplitudeMax = 16000;
 

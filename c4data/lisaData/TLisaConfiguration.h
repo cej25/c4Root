@@ -66,6 +66,8 @@ class TLisaConfiguration
         static void SetTracesRange(int min_tr, int max_tr) { min_traces = min_tr; max_traces = max_tr; }
         static void SetTracesBin(int bin_tr) { bin_traces = bin_tr; }
 
+        static void SetWREnable(bool wr_en) { wr_enable = wr_en; }
+
 /*
         static void SetGainM_100(int s100_p, int i100_p) {  s100 = s100_p; i100 = i100_p; }
         static void SetGainM_101(int s101_p, int i101_p) {  s101 = s101_p; i101 = i101_p; }
@@ -92,6 +94,8 @@ class TLisaConfiguration
         static int min_traces;
         static int max_traces;
         static int bin_traces;
+        
+        static bool wr_enable;
         /*
         static int s100;
         static int s101;

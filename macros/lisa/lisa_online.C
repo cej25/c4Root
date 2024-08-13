@@ -2,8 +2,8 @@
 //............
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define LISA_ON 1
-#define FRS_ON 1
-#define TRAV_MUSIC_ON 1
+#define FRS_ON 0
+#define TRAV_MUSIC_ON 0
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
 
 // Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/ BUT it has to be converted
@@ -26,11 +26,14 @@ typedef struct EXT_STR_h101_t
 
 } EXT_STR_h101;
 \
-void elisa_pareeksha_online()
+void lisa_online()
 {   
+    //:::: IS WR ENABLED?????::::
+    TLisaConfiguration::SetWREnable(false);
+
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
-    TString fExpName = "pareeksha";
+    TString fExpName = "lisa";
 
     //:::::::::Here you define commonly used path
     TString c4Root_path = "/u/gandolfo/c4/c4Root";
@@ -55,12 +58,12 @@ void elisa_pareeksha_online()
 
     //::::::::::P A T H   O F   F I L E  to read
     //___O N L I N E
-    //TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
+    TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
     //TString filename = "trans://lxg1257"; // time stitched
 
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0167_*.lmd";  //data with only lisa
-    TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0036_00*.lmd"; //74,22 good run for statistics, frs, trav, lisa in ts
+    //TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/summer_project_2024/90Sr/eris_90Sr_0003.lmd"; //74,22 good run for statistics, frs, trav, lisa in ts
 
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/";
@@ -115,8 +118,8 @@ void elisa_pareeksha_online()
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
-    TLisaConfiguration::SetMappingFile(config_path + "/lisa/Lisa_Detector_Map_names.txt");
-    TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching.txt");
+    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Detector_Map_names.txt");
+    TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // S U B S Y S T E M S
@@ -216,7 +219,7 @@ void elisa_pareeksha_online()
 
     //::::::::: Set ranges for histos :::::::::::::::
     //::::  Channel Energy ::::: (h1_energy_layer_ch)
-    TLisaConfiguration::SetEnergyRange(0,3000000);
+    TLisaConfiguration::SetEnergyRange(0,300000);
     //TLisaConfiguration::SetEnergyRange(0,3500000); //for Chen
     //TLisaConfiguration::SetEnergyBin(1200); // for Chen
     TLisaConfiguration::SetEnergyBin(900);
@@ -226,11 +229,11 @@ void elisa_pareeksha_online()
     TLisaConfiguration::SetWrDiffBin(20000);
 
     //:::: LISA Traces Time and Amplitude Ranges :::::: (h1_traces_layer_ch)
-    TLisaConfiguration::SetTracesRange(0,20);
-    TLisaConfiguration::SetTracesBin(2000);
+    TLisaConfiguration::SetTracesRange(0,30);
+    TLisaConfiguration::SetTracesBin(3000);
     //TLisaConfiguration::SetTracesBin(5000); //for Chens positive signals
-    TLisaConfiguration::SetAmplitudeMin(1000);
-    TLisaConfiguration::SetAmplitudeMax(15000);
+    TLisaConfiguration::SetAmplitudeMin(7000);
+    TLisaConfiguration::SetAmplitudeMax(9000);
     //TLisaConfiguration::SetAmplitudeMax(15000); //for Chens positiv signals
 
 
