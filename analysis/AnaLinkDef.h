@@ -36,6 +36,7 @@
 #pragma link C++ class WhiterabbitCorrelationNearline+;
 #pragma link C++ class TimeMachineNearline+;
 #pragma link C++ class LisaNearlineSpectra+;
+#pragma link C++ class LisaTraceAnalysis+;
 #pragma link C++ class BB7NearlineSpectra+;
 #pragma link C++ class FimpNearlineSpectra+;
 #pragma link C++ class FrsNearlineTravMusSpectra+;
@@ -59,6 +60,8 @@
 #pragma link C++ class FatimaSinglesAnalysis+;
 #pragma link C++ class AidaGermaniumCorrelations+;
 //#pragma link C++ class FatimaAidaSpectra+;
+
+#pragma link C++ class BetaIonCorrelations+;
 
 // #pragma link C++ class MHTDCSpectra+;
 // #pragma link C++ class TPCCorrections+;
