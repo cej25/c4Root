@@ -2,7 +2,7 @@
 #-----------------------------------------------------------------------------------#
 #           FEBEXID  FEBEXCHA  LayerID(z)  DiamondID(x) DiamondID(y)    Name
 #-----------------------------------------------------------------------------------#
-#::This mapping refers to Pareeksha experiment (s092)
+#::This mapping refers to Jikken experiment (s092)
 
 #Front side (xy)
 #::: 01 :: 11 :::

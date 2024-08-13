@@ -591,6 +591,7 @@ void LisaOnlineSpectra::Reset_Histo()
 
 void LisaOnlineSpectra::Exec(Option_t* option)
 {   
+    //c4LOG(info, ":::::::beginning exec :::::::: ");
     wr_time = 0;
     int multiplicity[layer_number] = {0};
     int total_multiplicity = 0;
@@ -601,9 +602,16 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     //c4LOG(info, "Comment to slow down program for testing");
     for (auto const & lisaCalItem : *lisaCalArray)
     {
-
+        
+        //c4LOG(info, ":::::::beginning loop inside exec :::::::: ");
         wr_time = lisaCalItem.Get_wr_t();
-        if (wr_time == 0)return;
+
+        if (lisa_config->wr_enable == true)
+        {
+            if (wr_time == 0)return; 
+        }
+
+        //c4LOG(info, ":::::::beginning loop after return :::::::: ");
 
         //::::::: Retrieve Data ::::::::::::::
         layer = lisaCalItem.Get_layer_id();
@@ -615,6 +623,8 @@ void LisaOnlineSpectra::Exec(Option_t* option)
         int pileup = lisaCalItem.Get_pileup();
         int overflow = lisaCalItem.Get_overflow();
         uint64_t evtno = header->GetEventno();
+
+        //c4LOG(info, " layer : " << layer );
         
         
         //::::::::F I L L   H I S T O S:::::::
