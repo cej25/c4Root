@@ -32,13 +32,13 @@ class FrsUserCalSciItem : public TObject
         void SetAll(uint32_t* dt);
         void Reset();
 
-        uint32_t* Get_dt_array() const;
+        uint32_t Get_dt_index(int index) const;
         
         ClassDefNV(FrsUserCalSciItem, 2);
 
     private:
 
-        uint32_t* dt_array; // [16]
+        uint32_t dt_array[16]; // [16]
 };
 
 class FrsUserCalMusicItem : public TObject
@@ -49,15 +49,15 @@ class FrsUserCalMusicItem : public TObject
         void SetAll(uint32_t* me1, uint32_t* me2);
         void Reset();
 
-        uint32_t* Get_music_e1() const;
-        uint32_t* Get_music_e2() const;
+        uint32_t Get_music_e1_index(int index) const;
+        uint32_t Get_music_e2_index(int index) const;
 
         ClassDefNV(FrsUserCalMusicItem, 2);
 
     private:
 
-        uint32_t* music_e1; // [8]
-        uint32_t* music_e2; // [8]
+        uint32_t music_e1[8]; // [8]
+        uint32_t music_e2[8]; // [8]
 
 };
 
@@ -71,19 +71,19 @@ inline uint32_t FrsUserCalScalerItem::Get_scaler() const
     return scaler;
 }
 
-inline uint32_t* FrsUserCalSciItem::Get_dt_array() const
+inline uint32_t FrsUserCalSciItem::Get_dt_index(int index) const
 {
-    return dt_array;
+    return dt_array[index];
 }
 
-inline uint32_t* FrsUserCalMusicItem::Get_music_e1() const
+inline uint32_t FrsUserCalMusicItem::Get_music_e1_index(int index) const
 {
-    return music_e1;
+    return music_e1[index];
 }
 
-inline uint32_t* FrsUserCalMusicItem::Get_music_e2() const
+inline uint32_t FrsUserCalMusicItem::Get_music_e2_index(int index) const
 {
-    return music_e2;
+    return music_e2[index];
 }
 
 

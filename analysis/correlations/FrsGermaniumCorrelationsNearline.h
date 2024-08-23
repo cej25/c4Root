@@ -68,7 +68,8 @@ class FrsGermaniumCorrelationsNearline : public FairTask
             long_lifetime_binhigh = stop;
         }
         
-        
+        void SetControlOutput(bool a){fControlOutput = a;} // writes the events that passes the fatima and frs gates to a tree
+        void SetWriteOutput(bool a){fWriteOutput = a;} // writes the events that passes the fatima and frs gates to a tree
     
     private:
         TClonesArray* fHitGe;
@@ -76,7 +77,9 @@ class FrsGermaniumCorrelationsNearline : public FairTask
 
         std::vector<FrsHitItem> const* hitArrayFrs;
 
-        TDirectory * dir_germanium;
+        bool fWriteOutput = true;
+        bool fControlOutput = false;
+        FairRunAna * run;
 
         const TGermaniumConfiguration * germanium_configuration;
         const TFrsConfiguration * frs_configuration;
@@ -121,6 +124,32 @@ class FrsGermaniumCorrelationsNearline : public FairTask
         
         TCanvas * c_frs_x4_vs_AoQ_gated;
         TH2F * h2_frs_x4_vs_AoQ_gated;
+        
+        //reverse energy-gated
+        TCanvas ** c_frs_Z_vs_AoQ_reverse_gated;
+        TH2F ** h2_frs_Z_vs_AoQ_reverse_gated;
+
+        TCanvas ** c_frs_Z_vs_Z2_reverse_gated;
+        TH2F ** h2_frs_Z_vs_Z2_reverse_gated;
+
+        TCanvas ** c_frs_x2_vs_AoQ_reverse_gated;
+        TH2F ** h2_frs_x2_vs_AoQ_reverse_gated;
+        
+        TCanvas ** c_frs_x4_vs_AoQ_reverse_gated;
+        TH2F ** h2_frs_x4_vs_AoQ_reverse_gated;
+        
+        //on wr:
+        TCanvas ** c_frs_Z_vs_AoQ_reverse_wr_gated;
+        TH2F ** h2_frs_Z_vs_AoQ_reverse_wr_gated;
+
+        TCanvas ** c_frs_Z_vs_Z2_reverse_wr_gated;
+        TH2F ** h2_frs_Z_vs_Z2_reverse_wr_gated;
+
+        TCanvas ** c_frs_x2_vs_AoQ_reverse_wr_gated;
+        TH2F ** h2_frs_x2_vs_AoQ_reverse_wr_gated;
+        
+        TCanvas ** c_frs_x4_vs_AoQ_reverse_wr_gated;
+        TH2F ** h2_frs_x4_vs_AoQ_reverse_wr_gated;
         
         //Implant rate
         TCanvas * c_frs_rate;
@@ -176,7 +205,7 @@ class FrsGermaniumCorrelationsNearline : public FairTask
 
 
         // Folder and files
-        TDirectory* folder_germanium;
+        TDirectory* dir_germanium;
         TDirectory ** folder_energy_gated;
 
 

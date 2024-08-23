@@ -150,17 +150,26 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
                 case 15: // 22l
                     de[13] = data;
                     break;
-
             }
         }
     }
 
 
-    // V1290
+    if (!v792array && v792array->size() <= 0){
+        return;
+    }
 
+        
     auto & sciEntry = sciArray->emplace_back();
 
     sciEntry.SetdEArray(de);
+    
+    // V1290
+
+    // V1290
+    if (!v1290array && v1290array->size() <= 0){
+        return;
+    }
 
     for (auto const & v1290_item : *v1290array)
     {

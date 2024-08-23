@@ -411,7 +411,8 @@ void FrsCalSpectra::Exec(Option_t* option)
     h_tpc_music43_x->Fill(tpcCalItem.Get_tpc_music43_x());
             
     auto const & userSciItem = userSciArray->at(0);
-    uint32_t* dt_array = userSciItem.Get_dt_array();
+    uint32_t dt_array[16];
+    for (int i=0;i<16;i++) dt_array[i] = userSciItem.Get_dt_index(i);
 
     uint32_t dt_21l_21r = dt_array[0];
     h_tac_user_dt_21l_21r->Fill(dt_21l_21r);

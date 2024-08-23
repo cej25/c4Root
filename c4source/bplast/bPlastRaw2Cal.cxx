@@ -311,38 +311,40 @@ void bPlastRaw2Cal::Exec(Option_t* option)
                     detector_id = funcal_hit->Get_board_id()*17 + (int)(funcal_hit_next->Get_ch_ID()+1)/2; // do mapping.
                 }*/
 
-                if (funcal_hit_next->Get_trail_epoch_counter() == 0) continue; // missing trail in either
+            if (funcal_hit_next->Get_trail_epoch_counter() == 0 || funcal_hit_next->Get_lead_epoch_counter() == 0) continue; // missing trail in either
+            if (funcal_hit->Get_trail_epoch_counter() == 0 || funcal_hit->Get_lead_epoch_counter() == 0) continue; // missing trail in either
+            //if (funcal_hit_next->Get_trail_coarse_T() == 0 || funcal_hit_next->Get_lead_coarse_T() == 0) continue; // missing trail in either
+            //if (funcal_hit->Get_trail_fine_T() == 0 || funcal_hit->Get_lead_fine_T() == 0) continue; // missing trail in either
 
-                // I am slightly worried about round-off errors by this method (but as far as i can see the maximum epoch counter values is not so large that the digits are suppressed but it is something to keep in mind). However constructing the times like this makes it very easy to use.
-                fast_lead_time = static_cast<double>(funcal_hit->Get_lead_epoch_counter()) * 10.24e3
-                            + static_cast<double>(funcal_hit->Get_lead_coarse_T()) * 5.0
-                            - static_cast<double>(funcal_hit->Get_lead_fine_T());
+            // Round-off error safe:
+            fast_lead_epoch = (int64_t)(funcal_hit->Get_lead_epoch_counter()) * 10240;
 
-                fast_trail_time = static_cast<double>(funcal_hit->Get_trail_epoch_counter()) * 10.24e3
-                                + static_cast<double>(funcal_hit->Get_trail_coarse_T()) * 5.0
-                                - static_cast<double>(funcal_hit->Get_trail_fine_T());
+            fast_lead_time = (double)(funcal_hit->Get_lead_coarse_T()) * 5.0
+                           - (double)(funcal_hit->Get_lead_fine_T());
 
-                slow_lead_time = static_cast<double>(funcal_hit_next->Get_lead_epoch_counter()) * 10.24e3
-                                + static_cast<double>(funcal_hit_next->Get_lead_coarse_T()) * 5.0
-                                - static_cast<double>(funcal_hit_next->Get_lead_fine_T());
+            fast_trail_epoch = (int64_t)(funcal_hit->Get_trail_epoch_counter()) * 10240;
 
-                slow_trail_time = static_cast<double>(funcal_hit_next->Get_trail_epoch_counter()) * 10.24e3
-                                + static_cast<double>(funcal_hit_next->Get_trail_coarse_T()) * 5.0
-                                - static_cast<double>(funcal_hit_next->Get_trail_fine_T());
+            fast_trail_time = (double)(funcal_hit->Get_trail_coarse_T()) * 5.0
+                            - (double)(funcal_hit->Get_trail_fine_T());
 
-                fast_ToT =  fast_trail_time - fast_lead_time;
-                slow_ToT =  slow_trail_time - slow_lead_time;
+            slow_lead_epoch = (int64_t)(funcal_hit_next->Get_lead_epoch_counter()) * 10240;
 
+            slow_lead_time = (double)(funcal_hit_next->Get_lead_coarse_T()) * 5.0
+                            -(double)(funcal_hit_next->Get_lead_fine_T());
+
+            slow_trail_epoch = (int64_t)(funcal_hit_next->Get_trail_epoch_counter()) * 10240;
+
+            slow_trail_time = (double)(funcal_hit_next->Get_trail_coarse_T()) * 5.0
+                            - (double)(funcal_hit_next->Get_trail_fine_T());
+
+            
+            fast_ToT =  (double)(funcal_hit->Get_trail_epoch_counter() - funcal_hit->Get_lead_epoch_counter())*10.24e3 +  (double)((int32_t)funcal_hit->Get_trail_coarse_T() - (int32_t)funcal_hit->Get_lead_coarse_T())*5.0 - (funcal_hit->Get_trail_fine_T() - funcal_hit->Get_lead_fine_T());
+            // find the slow ToT without encountering round-off errors:
+            slow_ToT =  (double)(funcal_hit_next->Get_trail_epoch_counter() - funcal_hit_next->Get_lead_epoch_counter())*10.24e3 +  (double)((int32_t)funcal_hit_next->Get_trail_coarse_T() - (int32_t)funcal_hit_next->Get_lead_coarse_T())*5.0 - (funcal_hit_next->Get_trail_fine_T() - funcal_hit_next->Get_lead_fine_T());
+            
+            absolute_event_time = (uint64_t)(funcal_hit->Get_wr_t() + (int64_t)(((int32_t)funcal_hit->Get_lead_epoch_counter() - (int32_t)funcal_hit->Get_accepted_lead_epoch_counter()) * 10.24e3 + ((int32_t)funcal_hit->Get_lead_coarse_T() - (int32_t)funcal_hit->Get_accepted_lead_coarse_T()) * 5.0 - (int32_t)(funcal_hit->Get_lead_fine_T() - funcal_hit->Get_accepted_lead_fine_T())));
             //if (detector_id == 0 || detector_id == 1) c4LOG(info,Form("id = %i, fast lead = %f, fast trail = %f, fast ToT = %f",detector_id,fast_lead_time,fast_trail_time,fast_ToT));
 
-            // TODO: add channel calibration if needed.
-            /*if (bplast_config->MappingLoaded())
-            {
-                if (bplast_config->CalibrationCoefficientsLoaded())
-                {
-                    // etc etc
-                }
-            }*/
             
             if (((detector_id == bplast_config->TM_Delayed()) || (detector_id == bplast_config->TM_Undelayed())) && bplast_config->TM_Delayed() != 0 && bplast_config->TM_Undelayed() != 0)
             { // currently only gets the TM if it also matches it slow-fast...
@@ -353,14 +355,19 @@ void bPlastRaw2Cal::Exec(Option_t* option)
                 funcal_hit->Get_board_id(),
                 (int)((funcal_hit->Get_ch_ID()+1)/2),
                 detector_id,
+                slow_lead_epoch,
                 slow_lead_time,
+                slow_trail_epoch,
                 slow_trail_time,
+                fast_lead_epoch,
                 fast_lead_time,
+                fast_trail_epoch,
                 fast_trail_time,
                 fast_ToT,
                 slow_ToT,
                 funcal_hit->Get_wr_subsystem_id(),
-                funcal_hit->Get_wr_t());
+                funcal_hit->Get_wr_t(),
+                absolute_event_time);
             
             
             fNEvents++;

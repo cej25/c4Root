@@ -195,7 +195,7 @@ void FrsAidaCorrelationsOnline::Exec(Option_t* option)
                 {
                     for (int gate = 0; gate < FrsGates.size(); gate++)
                     {
-                        if (FrsGates[gate]->PassedGate(hitItemFrs.Get_ID_z(), hitItemFrs.Get_ID_z2(), hitItemFrs.Get_ID_x2(), hitItemFrs.Get_ID_x4(), hitItemFrs.Get_ID_AoQ(), hitItemFrs.Get_ID_dEdeg()))
+                        if (FrsGates[gate]->PassedGate(hitItemFrs.Get_ID_z(), hitItemFrs.Get_ID_z2(), hitItemFrs.Get_ID_x2(), hitItemFrs.Get_ID_x4(), hitItemFrs.Get_ID_AoQ(), hitItemFrs.Get_ID_dEdeg(), hitItemFrs.Get_sci_e(3)))
                         {
                             h1_stopped_implanted_passed_gate->Fill(gate * aida_config->DSSDs() + hit.DSSD - 1);
 

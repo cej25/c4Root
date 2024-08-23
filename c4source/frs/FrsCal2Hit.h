@@ -51,8 +51,11 @@ class FrsCal2Hit : public FairTask
         void FinishTask();
 
 
-        void SetMusic41GainShift(GainShift * p) {music41_mhtdc_z_gain_shifts = p;}
-        void SetMusic42GainShift(GainShift * p) {music42_mhtdc_z_gain_shifts = p;}
+        void SetMusic41TACGainShift(GainShift * p) {music41_tac_z_gain_shifts = p;}
+        void SetMusic42TACGainShift(GainShift * p) {music42_tac_z_gain_shifts = p;}
+        
+        void SetMusic41MHTDCGainShift(GainShift * p) {music41_mhtdc_z_gain_shifts = p;}
+        void SetMusic42MHTDCGainShift(GainShift * p) {music42_mhtdc_z_gain_shifts = p;}
         
         
         void SetOnline(Bool_t option) { fOnline = option; }
@@ -72,6 +75,9 @@ class FrsCal2Hit : public FairTask
         TRangeParameter* range;
         std::string pathToConfigFiles;
 
+
+        GainShift * music41_tac_z_gain_shifts = nullptr;
+        GainShift * music42_tac_z_gain_shifts = nullptr;
 
         GainShift * music41_mhtdc_z_gain_shifts = nullptr;
         GainShift * music42_mhtdc_z_gain_shifts = nullptr;
@@ -324,6 +330,8 @@ class FrsCal2Hit : public FairTask
         Float_t * id_mhtdc_z_travmus = nullptr;
         Float_t * id_mhtdc_z_cor_travmus = nullptr;
         Float_t * id_mhtdc_v_cor_travmus = nullptr;
+        Float_t * mhtdc_brho0 = nullptr;
+        Float_t * mhtdc_rho0 = nullptr;
 
         Float_t * id_mhtdc_dEdegoQ = nullptr;
         Float_t * id_mhtdc_gamma_ta_s2 = nullptr;

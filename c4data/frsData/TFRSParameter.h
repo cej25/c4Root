@@ -371,6 +371,7 @@ public:
   Float_t       mhtdc_offset_z_sc81;
   Float_t       mhtdc_length_sc2141;
   Float_t       mhtdc_length_sc2241;
+  Float_t       mhtdc_length_sc2142;
   Float_t       mhtdc_vel_a_music41[4];
   Float_t       mhtdc_vel_a_music42[4];
   Float_t       mhtdc_offset_z_music41;

@@ -68,11 +68,11 @@ Bool_t FrsTPCReader::Read()
     if (bad_event)
     {   
         bad_event_counter++;
-        printf("\033[999;999H"); // move to bottom of screen
-        printf("\033[2A"); // move up 2 lines?
-        printf("\033[K"); // clear the line
-        c4LOG(info, "TPC bad event! Number: " << bad_event_counter);
-        printf("\033[1B"); // move down 1 line
+        //printf("\033[999;999H"); // move to bottom of screen
+        //printf("\033[2A"); // move up 2 lines?
+        //printf("\033[K"); // clear the line
+        //c4LOG(info, "TPC bad event! Number: " << bad_event_counter);
+        //printf("\033[1B"); // move down 1 line
         return kTRUE;
     }
 

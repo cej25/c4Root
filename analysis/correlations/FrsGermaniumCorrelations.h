@@ -5,6 +5,7 @@
 
 #include "TGermaniumConfiguration.h"
 #include "FrsHitData.h"
+#include "FrsMainCalData.h"
 #include "TFrsConfiguration.h"
 
 class TClonesArray;
@@ -23,7 +24,7 @@ class FrsGermaniumCorrelations : public FairTask
         FrsGermaniumCorrelations(FrsGate * frsgate);
         FrsGermaniumCorrelations(const TString& name, Int_t verbose = 1);
 
-
+        void SetMultiHit(bool v) {use_multi = v;};
 
         virtual ~FrsGermaniumCorrelations();
 
@@ -73,13 +74,18 @@ class FrsGermaniumCorrelations : public FairTask
     private:
         TClonesArray* fHitGe;
         TClonesArray* fHitFrs;
+        TClonesArray* fMultiHitFrs;
 
         std::vector<FrsHitItem> const* hitArrayFrs;
+        std::vector<FrsMultiHitItem> const* multihitArrayFrs;
+        std::vector<FrsMainCalSciItem> const* mainSciArray;
 
         const TGermaniumConfiguration * germanium_configuration;
         const TFrsConfiguration * frs_configuration;
         
         FrsGate * frsgate;
+
+        bool use_multi = false;
 
         int64_t wr_t_last_frs_hit = 0;
         int64_t wr_t_first_frs_hit = 0;
@@ -119,6 +125,12 @@ class FrsGermaniumCorrelations : public FairTask
         
         TCanvas * c_frs_x4_vs_AoQ_gated;
         TH2F * h2_frs_x4_vs_AoQ_gated;
+
+        TCanvas * c_frs_Z_vs_dEdeg_gated;
+        TH2F * h2_frs_Z_vs_dEdeg_gated;
+        
+        TCanvas * c_frs_Z_vs_sci42E_gated;
+        TH2F * h2_frs_Z_vs_sci42E_gated;
         
         //Implant rate
         TCanvas * c_frs_rate;
@@ -174,8 +186,9 @@ class FrsGermaniumCorrelations : public FairTask
 
 
         // Folder and files
-        TFolder* folder_germanium;
-        TFolder ** folder_energy_gated;
+        TFolder * histograms;
+        TDirectory* dir_germanium;
+        TDirectory ** dir_energy_gated;
 
 
 

@@ -6,6 +6,7 @@
 #include "TFatimaTwinpeaksConfiguration.h"
 #include "TFrsConfiguration.h"
 #include "FrsHitData.h"
+#include "FairRunAna.h"
 
 class TClonesArray;
 class EventHeader;
@@ -37,6 +38,9 @@ class FrsFatimaCorrelationsNearline : public FairTask
 
         virtual void FinishTask();
 
+        int CountMultiplicity(TClonesArray *, int);
+        int CountMultiplicityOutsidePromptFlashSCI41(TClonesArray*, int , double , int64_t );
+        int CountMultiplicityOutsidePromptFlashWR(TClonesArray*, int, int64_t);
         //virtual void Reset_Ge_Histo();
 
         //virtual void Snapshot_Ge_Histo();
@@ -75,15 +79,18 @@ class FrsFatimaCorrelationsNearline : public FairTask
             long_lifetime_binhigh = stop;
         }
 
-        
-        
-        
+        void SetControlOutput(bool a){fControlOutput = a;} // writes the events that passes the fatima and frs gates to a tree
+        void SetWriteOutput(bool a){fWriteOutput = a;} // writes the events that passes the fatima and frs gates to a tree
     
     private:
         TClonesArray* fHitFatima;
         TClonesArray* fHitFrs;
 
         std::vector<FrsHitItem> const* hitArrayFrs;
+
+        bool fControlOutput = false;
+        bool fWriteOutput = true;
+        FairRunAna * run;
 
         const TFatimaTwinpeaksConfiguration * fatima_configuration;
         const TFrsConfiguration * frs_configuration;
@@ -99,7 +106,7 @@ class FrsFatimaCorrelationsNearline : public FairTask
         int fenergy_bin_low = 0;
         int fenergy_bin_high = 1500;
         int ftime_coincidence_nbins = 1000;
-        int ftime_coincidence_low = 0;
+        int ftime_coincidence_low = -1000;
         int ftime_coincidence_high = 1000;
 
 
@@ -110,7 +117,7 @@ class FrsFatimaCorrelationsNearline : public FairTask
 
         int stop_short_lifetime_collection = 0;
 
-        int fatima_coincidence_gate = 500; //ns
+        int fatima_coincidence_gate = 10; //ns
 
         std::vector<double> gamma_energies_of_interest;
         std::vector<double> gate_width_gamma_energies_of_interest;
@@ -131,6 +138,12 @@ class FrsFatimaCorrelationsNearline : public FairTask
         
         TCanvas * c_frs_x4_vs_AoQ_gated;
         TH2F * h2_frs_x4_vs_AoQ_gated;
+
+        TCanvas * c_frs_Z_vs_dEdeg_gated;
+        TH2F * h2_frs_Z_vs_dEdeg_gated;
+        
+        TCanvas * c_frs_Z_vs_sci42E_gated;
+        TH2F * h2_frs_Z_vs_sci42E_gated;
         
         //Implant rate
         TCanvas * c_frs_rate;
@@ -149,11 +162,34 @@ class FrsFatimaCorrelationsNearline : public FairTask
         TCanvas * c_fatima_energy_promptflash_cut;
         TH1F * h1_fatima_energy_promptflash_cut;
 
-        TCanvas * c_fatima_energy_vs_tsci41_mult2;
-        TH2F * h2_fatima_energy_vs_tsci41_mult2;
+        TCanvas * c_fatima_multiplicity_vs_tsci41;
+        TH2F * h2_fatima_multiplicity_vs_tsci41;
+
+
+        TCanvas * c_fatima_energy_vs_sci41_mult1;
+        TH2F * h2_fatima_energy_vs_sci41_mult1;
+
+        TCanvas * c_fatima_energy_promptflash_cut_mult1;
+        TH1F * h1_fatima_energy_promptflash_cut_mult1;
+
+        TCanvas * c_fatima_energy_vs_sci41_mult2;
+        TH2F * h2_fatima_energy_vs_sci41_mult2;
 
         TCanvas * c_fatima_energy_promptflash_cut_mult2;
         TH1F * h1_fatima_energy_promptflash_cut_mult2;
+
+        TCanvas * c_fatima_energy_vs_sci41_mult3;
+        TH2F * h2_fatima_energy_vs_sci41_mult3;
+
+        TCanvas * c_fatima_energy_promptflash_cut_mult3;
+        TH1F * h1_fatima_energy_promptflash_cut_mult3;
+
+        TCanvas * c_fatima_energy_vs_sci41_mult4p;
+        TH2F * h2_fatima_energy_vs_sci41_mult4p;
+
+        TCanvas * c_fatima_energy_promptflash_cut_mult4p;
+        TH1F * h1_fatima_energy_promptflash_cut_mult4p;
+
 
         TCanvas * c_fatima_energy_energy_promptflash_cut;
         TH2F * h2_fatima_energy_energy_promptflash_cut;
@@ -161,14 +197,41 @@ class FrsFatimaCorrelationsNearline : public FairTask
         //long lifetimes:
         TCanvas * c_fatima_energy_vs_sci41_wr_long;
         TH2F * h2_fatima_energy_vs_sci41_wr_long;
+
+        TCanvas * c_fatima_multiplicity_vs_sci41_wr_long;
+        TH2F * h2_fatima_multiplicity_vs_sci41_wr_long;
         
         TCanvas * c_fatima_energy_promptflash_cut_long;
         TH1F * h1_fatima_energy_promptflash_cut_long;
 
 
-        TCanvas * c_fatima_energy_energy_promptflash_cut_long; 
+        TCanvas * c_fatima_energy_energy_promptflash_cut_long;
         TH2F * h2_fatima_energy_energy_promptflash_cut_long;
 
+
+        TCanvas * c_fatima_energy_vs_sci41_wr_long_mult1;
+        TH2F * h2_fatima_energy_vs_sci41_wr_long_mult1;
+
+        TCanvas * c_fatima_energy_promptflash_cut_long_mult1;
+        TH1F * h1_fatima_energy_promptflash_cut_long_mult1;
+
+        TCanvas * c_fatima_energy_vs_sci41_wr_long_mult2;
+        TH2F * h2_fatima_energy_vs_sci41_wr_long_mult2;
+
+        TCanvas * c_fatima_energy_promptflash_cut_long_mult2;
+        TH1F * h1_fatima_energy_promptflash_cut_long_mult2;
+
+        TCanvas * c_fatima_energy_vs_sci41_wr_long_mult3;
+        TH2F * h2_fatima_energy_vs_sci41_wr_long_mult3;
+
+        TCanvas * c_fatima_energy_promptflash_cut_long_mult3;
+        TH1F * h1_fatima_energy_promptflash_cut_long_mult3;
+
+        TCanvas * c_fatima_energy_vs_sci41_wr_long_mult4p;
+        TH2F * h2_fatima_energy_vs_sci41_wr_long_mult4p;
+
+        TCanvas * c_fatima_energy_promptflash_cut_long_mult4p;
+        TH1F * h1_fatima_energy_promptflash_cut_long_mult4p;
 
 
 
@@ -193,6 +256,13 @@ class FrsFatimaCorrelationsNearline : public FairTask
         TCanvas ** c_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long;
         TH2F ** h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long;
         
+
+        TCanvas * c_fatima_sci41_hits;
+        TH1F * h1_fatima_sci41_hits;
+
+
+        TCanvas * c_fatima_sci41_energy;
+        TH1F * h1_fatima_sci41_energy;
 
 
 
