@@ -165,6 +165,7 @@ class FrsMultiHitItem : public TObject
         FrsMultiHitItem();
 
         void SetAll(
+                    uint64_t wr_t,
                     Float_t s2x,
                     Float_t s2a,
                     Float_t s4x,
@@ -180,6 +181,7 @@ class FrsMultiHitItem : public TObject
                     Float_t dEdegoQ);
         void Reset();
 
+        uint64_t Get_wr_t() const;
         Float_t Get_ID_s2x_mhtdc() const;
         Float_t Get_ID_s4x_mhtdc() const;
         Float_t Get_ID_s2a_mhtdc() const;
@@ -198,6 +200,7 @@ class FrsMultiHitItem : public TObject
 
     private:
 
+        uint64_t fwr_t;
         Float_t fID_s2x_mhtdc;
         Float_t fID_s4x_mhtdc;
         Float_t fID_s2a_mhtdc;
@@ -432,6 +435,12 @@ inline uint32_t FrsHitItem::Get_ibin_clean_for_100ms() const
 inline uint32_t FrsHitItem::Get_ibin_clean_for_spill() const
 {
     return fibin_clean_for_spill;
+}
+
+
+inline uint64_t FrsMultiHitItem::Get_wr_t() const
+{
+    return fwr_t;
 }
 
 inline Float_t FrsMultiHitItem::Get_ID_s2x_mhtdc() const

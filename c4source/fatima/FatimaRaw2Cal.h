@@ -52,10 +52,14 @@ class FatimaRaw2Cal : public FairTask
 
         uint16_t detector_id;
         
+        int64_t slow_lead_epoch;
         double slow_lead_time;
+        int64_t slow_trail_epoch;
         double slow_trail_time;
 
+        int64_t fast_lead_epoch;
         double fast_lead_time;
+        int64_t fast_trail_epoch;
         double fast_trail_time;
 
         double fast_ToT;

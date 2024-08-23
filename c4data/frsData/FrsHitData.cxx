@@ -153,6 +153,7 @@ FrsMultiHitItem::FrsMultiHitItem()
 }
 
 void FrsMultiHitItem::SetAll(
+                            uint64_t wr_t,
                             Float_t s2x,
                             Float_t s2a,
                             Float_t s4x,
@@ -165,8 +166,10 @@ void FrsMultiHitItem::SetAll(
                             Float_t z2,
                             Float_t z_travmus,
                             Float_t dEdeg,
-                            Float_t dEdegoQ)
+                            Float_t dEdegoQ
+                            )
 {
+    fwr_t = wr_t;
     fID_s2x_mhtdc = s2x;
     fID_s2a_mhtdc = s2a;
     fID_s4x_mhtdc = s4x;

@@ -1,7 +1,7 @@
 #include "EventHeader.h"
 #include "FairRootManager.h"
 
-Bool_t EventHeader::fPersistance = true;
+Bool_t EventHeader::fPersistance = false;
 
 EventHeader::EventHeader()
     : FairEventHeader()

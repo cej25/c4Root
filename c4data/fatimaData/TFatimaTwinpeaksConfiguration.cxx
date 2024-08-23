@@ -124,28 +124,29 @@ void TFatimaTwinpeaksConfiguration::ReadCalibrationCoefficients(){
 
 void TFatimaTwinpeaksConfiguration::ReadTimeshiftCoefficients()
 {
+    c4LOG(info, "Reading Timeshift coefficients.");
+    c4LOG(info, "File reading");
+    c4LOG(info, timeshift_calibration_file);
+
     std::ifstream timeshift_file (timeshift_calibration_file);
 
-
-    if (timeshift_file.fail()) c4LOG(fatal, "Could not open FatimaTwinpeaks timeshifts");    
-    int rdetector_id; // temp read variables
-    double t0;
+    int rdetector_id1, rdetector_id2; // temp read variables
+    double timeshift;
     
     //assumes the first line in the file is num-modules used
     while(!timeshift_file.eof()){
         if(timeshift_file.peek()=='#') timeshift_file.ignore(256,'\n');
         else{
-            timeshift_file >> rdetector_id >> t0;
-            c4LOG(info,Form("det = %i , t = %f ns",rdetector_id,t0));
-            timeshift_calibration_coeffs.insert(std::pair<int,double>{rdetector_id,t0});
+            timeshift_file >> rdetector_id1 >> rdetector_id2 >> timeshift;
+
+            timeshift_calibration_coeffs.insert(std::pair<std::pair<int,int>,double>{std::pair<int,int>(rdetector_id1,rdetector_id2),timeshift});
             timeshift_file.ignore(256,'\n');
         }
     }
     timeshift_calibration_coeffs_loaded = 1;
-
     timeshift_file.close();
+    return; 
 
-    LOG(info) << "FatimaTwinpeaks Timeshift File: " + timeshift_calibration_file;
 };
 
 

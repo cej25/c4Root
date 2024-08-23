@@ -12,6 +12,11 @@ class bPlastTwinpeaksData : public TObject
         bPlastTwinpeaksData(
         uint16_t board_id,
         uint32_t ch_ID,
+        int64_t accepted_trigger_time,
+        uint32_t accepted_lead_epoch_counter,
+        uint32_t accepted_lead_coarse_T,
+        double accepted_lead_fine_T,
+        
         uint32_t lead_epoch_counter,
         uint32_t lead_coarse_T,
         double lead_fine_T,
@@ -29,6 +34,10 @@ class bPlastTwinpeaksData : public TObject
 
         inline const uint16_t Get_board_id() const {return fboard_id; }
         inline const uint32_t Get_ch_ID() const {return fch_ID; }
+        inline const int64_t Get_accepted_trigger_time() const { return faccepted_trigger_time; }
+        inline const uint32_t Get_accepted_lead_epoch_counter() const {return faccepted_lead_epoch_counter; }
+        inline const uint32_t Get_accepted_lead_coarse_T() const {return faccepted_lead_coarse_T; }
+        inline const double Get_accepted_lead_fine_T() const {return faccepted_lead_fine_T; }
 
         inline const uint32_t Get_lead_epoch_counter() const {return flead_epoch_counter; }
         inline const uint32_t Get_lead_coarse_T() const {return flead_coarse_T; }
@@ -47,6 +56,11 @@ class bPlastTwinpeaksData : public TObject
         // Setters
         void Set_board_id(uint16_t v){fboard_id = v;}
         void Set_ch_ID(uint32_t v){fch_ID = v;}
+        void Set_accepted_trigger_time(int64_t v) { faccepted_trigger_time = v; }
+        void Set_accepted_lead_epoch_counter(uint32_t v){faccepted_lead_epoch_counter = v;}
+        void Set_accepted_lead_coarse_T(uint32_t v){faccepted_lead_coarse_T = v;}
+        void Set_accepted_lead_fine_T(double v){faccepted_lead_fine_T = v;}
+
         void Set_lead_epoch_counter(uint32_t v){flead_epoch_counter = v;}
         void Set_lead_coarse_T(uint32_t v){flead_coarse_T = v;}
         void Set_lead_fine_T(double v){flead_fine_T = v;}
@@ -61,6 +75,12 @@ class bPlastTwinpeaksData : public TObject
 
         uint16_t fboard_id;
         uint32_t fch_ID;
+        int64_t faccepted_trigger_time;
+
+        uint32_t faccepted_lead_epoch_counter;
+        uint32_t faccepted_lead_coarse_T;
+        double faccepted_lead_fine_T;
+    
 
         uint32_t flead_epoch_counter;
         uint32_t flead_coarse_T;

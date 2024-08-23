@@ -29,8 +29,8 @@ class TFatimaTwinpeaksConfiguration
         std::map<int,std::vector<double>> CalibrationCoefficients() const;
 
         bool TimeshiftCalibrationCoefficientsLoaded() const;
-        std::map<int,double> TimeshiftCalibrationCoefficients() const;
-        inline double GetTimeshiftCoefficient(int detector_id) const;
+        std::map<std::pair<int,int>,double> TimeshiftCalibrationCoefficients() const;
+        inline double GetTimeshiftCoefficient(int detector_id1, int detector_id2) const;
 
 
         inline bool IsDetectorAuxilliary(int detector_id) const;
@@ -41,7 +41,7 @@ class TFatimaTwinpeaksConfiguration
             if (prompt_flash_cut != nullptr){
                 return prompt_flash_cut->IsInside(timediff,energy);
             }else{
-                return true;
+                return false;
             }
         }
 
@@ -76,7 +76,7 @@ class TFatimaTwinpeaksConfiguration
         
         std::map<std::pair<int,int>,int> detector_mapping; // [board_id][channel_id] -> [detector_id]
         std::map<int,std::vector<double>> calibration_coeffs; // key: [detector id] -> vector[a0 - a3] index is coefficient number 0 = offset +++ expects quadratic.
-        std::map<int,double> timeshift_calibration_coeffs;
+        std::map<std::pair<int,int>,double> timeshift_calibration_coeffs;
 
         std::set<int> extra_signals;
 
@@ -124,22 +124,36 @@ inline bool TFatimaTwinpeaksConfiguration::CalibrationCoefficientsLoaded() const
 }
 
 
-inline std::map<int,double> TFatimaTwinpeaksConfiguration::TimeshiftCalibrationCoefficients() const
+inline std::map<std::pair<int,int>,double> TFatimaTwinpeaksConfiguration::TimeshiftCalibrationCoefficients() const
 {
     return timeshift_calibration_coeffs;
 }
 
-inline double TFatimaTwinpeaksConfiguration::GetTimeshiftCoefficient(int detector_id) const
+inline double TFatimaTwinpeaksConfiguration::GetTimeshiftCoefficient(int detector_id1, int detector_id2) const
 {
+    // where t2 - t1:
+    std::pair<int,int> dets;
     if (!timeshift_calibration_coeffs_loaded){
         return 0;
-    }else{
-        if (timeshift_calibration_coeffs.count(detector_id) > 0){
-            return timeshift_calibration_coeffs.at(detector_id);
-        }else{
-            return 0;
-        }
     }
+    
+    if(detector_id2 > detector_id1){
+        dets.first = detector_id1;
+        dets.second = detector_id2;
+        if (timeshift_calibration_coeffs.count(dets) > 0){
+            return timeshift_calibration_coeffs.at(dets);
+        }else return 0;
+
+    } else if (detector_id1 > detector_id2){
+        dets.first = detector_id2;
+        dets.second = detector_id1;
+        if (timeshift_calibration_coeffs.count(dets) > 0){
+            return - timeshift_calibration_coeffs.at(dets);
+        }else return 0;
+    }else{
+        return 0;
+    }
+     
 }
 
 inline TFatimaTwinpeaksConfiguration const* TFatimaTwinpeaksConfiguration::GetInstance()

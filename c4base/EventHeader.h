@@ -25,14 +25,15 @@ class EventHeader : public FairEventHeader
     inline bool GetSpillFlag() { return fSpillFlag; }
 
     static void SetRegister(bool option) { fPersistance = option; }
-    virtual void Register(Bool_t Persistance) override;
+    virtual void Register(Bool_t Persistance = fPersistance) override;
 
   private:
     uint64_t fEventno;
     Int_t fTrigger;
     uint64_t fTimeStamp;
     bool fSpillFlag;
-    static bool fPersistance;
+
+    static Bool_t fPersistance;
 
   public:
     ClassDefOverride(EventHeader, 1)
