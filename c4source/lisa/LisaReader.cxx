@@ -77,9 +77,12 @@ Bool_t LisaReader::Read()
         (fData->lisa_data[it_board_number].event_trigger_time_lo))*10;
         
         //::::::::::::::Multiplicity: Called num_channels_fired from unpacker
-        uint32_t M = fData->lisa_data[it_board_number].num_channels_fired;
+        uint32_t M = fData->lisa_data[it_board_number].num_channels_fired; //This is not of for cases when header is missing
 
-        for (int index = 0; index < M; index++) 
+
+
+        //for (int index = 0; index < 8; index++) //ONLY FOR JIKKEN -- All mode (Trig?)
+        for (int index = 0; index < M; index++) //GENERAL
         {
             //::::::::::::::Channel ID
             uint8_t channel_id = fData->lisa_data[it_board_number].channel_idv[index];
@@ -104,17 +107,27 @@ Bool_t LisaReader::Read()
             uint32_t ch_energy = energy;
 
             std::vector<uint16_t> trace;
-            //::::::::::::::Channel Traces
-            for (int l = 0 ; l < fData->lisa_data[it_board_number].traces[channel_id]._ ; l++)
+        
+            
+            uint8_t channel_id_trace = fData->lisa_data[it_board_number].channel_id_tracesv[index];
+
+            //::::::::::::::Channel Traces with ID from channel header
+            for (int l = 0 ; l < fData->lisa_data[it_board_number].traces[channel_id_trace]._ ; l++)
             {
-                trace.emplace_back(fData->lisa_data[it_board_number].traces[channel_id].v[l]);
-                
+                trace.emplace_back(fData->lisa_data[it_board_number].traces[channel_id_trace].v[l]);    
             }
+            //std::cout<< "Size of trace? : " << sizeof(fData->lisa_data[it_board_number].traces) <<std::endl;
+
+            // //::::::::::::::Channel Traces
+            // for (int l = 0 ; l < fData->lisa_data[it_board_number].traces[channel_id]._ ; l++)
+            // {
+            //     trace.emplace_back(fData->lisa_data[it_board_number].traces[channel_id].v[l]);    
+            // }
 
             auto & entry = lisaArray->emplace_back();
             entry.SetAll(
                 wr_time_long,
-                wr_id,
+                wr_id, 
                 board_num,
                 event_trigger_time_long,
                 channel_id,
@@ -122,6 +135,7 @@ Bool_t LisaReader::Read()
                 pileup,
                 overflow,
                 ch_energy,
+                channel_id_trace,
                 trace
             );
 

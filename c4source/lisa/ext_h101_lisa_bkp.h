@@ -29,7 +29,6 @@ typedef          int  int32_t;
 typedef struct EXT_STR_h101_lisa_t
 {
   /* UNPACK */
-  uint32_t lisa_badevent_bad /* [0,255] */;
   uint32_t lisa_ts_subsystem_id /* [0,65535] */;
   uint32_t lisa_ts_t1 /* [0,65535] */;
   uint32_t lisa_ts_t2 /* [0,65535] */;
@@ -87,9 +86,6 @@ typedef struct EXT_STR_h101_lisa_t
   uint32_t lisa_data1channel_energy /* [0,16] */;
   uint32_t lisa_data1channel_energyI[16 EXT_STRUCT_CTRL(lisa_data1channel_energy)] /* [1,16] */;
   uint32_t lisa_data1channel_energyv[16 EXT_STRUCT_CTRL(lisa_data1channel_energy)] /* [-1,-1] */;
-  uint32_t lisa_data1channel_id_traces /* [0,16] */;
-  uint32_t lisa_data1channel_id_tracesI[16 EXT_STRUCT_CTRL(lisa_data1channel_id_traces)] /* [1,16] */;
-  uint32_t lisa_data1channel_id_tracesv[16 EXT_STRUCT_CTRL(lisa_data1channel_id_traces)] /* [0,255] */;
   uint32_t lisa_data1traces1 /* [0,4000] */;
   uint32_t lisa_data1traces1I[4000 EXT_STRUCT_CTRL(lisa_data1traces1)] /* [1,4000] */;
   uint32_t lisa_data1traces1v[4000 EXT_STRUCT_CTRL(lisa_data1traces1)] /* [0,65535] */;
@@ -190,9 +186,6 @@ typedef struct EXT_STR_h101_lisa_t
   uint32_t lisa_data2channel_energy /* [0,16] */;
   uint32_t lisa_data2channel_energyI[16 EXT_STRUCT_CTRL(lisa_data2channel_energy)] /* [1,16] */;
   uint32_t lisa_data2channel_energyv[16 EXT_STRUCT_CTRL(lisa_data2channel_energy)] /* [-1,-1] */;
-  uint32_t lisa_data2channel_id_traces /* [0,16] */;
-  uint32_t lisa_data2channel_id_tracesI[16 EXT_STRUCT_CTRL(lisa_data2channel_id_traces)] /* [1,16] */;
-  uint32_t lisa_data2channel_id_tracesv[16 EXT_STRUCT_CTRL(lisa_data2channel_id_traces)] /* [0,255] */;
   uint32_t lisa_data2traces1 /* [0,4000] */;
   uint32_t lisa_data2traces1I[4000 EXT_STRUCT_CTRL(lisa_data2traces1)] /* [1,4000] */;
   uint32_t lisa_data2traces1v[4000 EXT_STRUCT_CTRL(lisa_data2traces1)] /* [0,65535] */;
@@ -293,9 +286,6 @@ typedef struct EXT_STR_h101_lisa_t
   uint32_t lisa_data3channel_energy /* [0,16] */;
   uint32_t lisa_data3channel_energyI[16 EXT_STRUCT_CTRL(lisa_data3channel_energy)] /* [1,16] */;
   uint32_t lisa_data3channel_energyv[16 EXT_STRUCT_CTRL(lisa_data3channel_energy)] /* [-1,-1] */;
-  uint32_t lisa_data3channel_id_traces /* [0,16] */;
-  uint32_t lisa_data3channel_id_tracesI[16 EXT_STRUCT_CTRL(lisa_data3channel_id_traces)] /* [1,16] */;
-  uint32_t lisa_data3channel_id_tracesv[16 EXT_STRUCT_CTRL(lisa_data3channel_id_traces)] /* [0,255] */;
   uint32_t lisa_data3traces1 /* [0,4000] */;
   uint32_t lisa_data3traces1I[4000 EXT_STRUCT_CTRL(lisa_data3traces1)] /* [1,4000] */;
   uint32_t lisa_data3traces1v[4000 EXT_STRUCT_CTRL(lisa_data3traces1)] /* [0,65535] */;
@@ -396,9 +386,6 @@ typedef struct EXT_STR_h101_lisa_t
   uint32_t lisa_data4channel_energy /* [0,16] */;
   uint32_t lisa_data4channel_energyI[16 EXT_STRUCT_CTRL(lisa_data4channel_energy)] /* [1,16] */;
   uint32_t lisa_data4channel_energyv[16 EXT_STRUCT_CTRL(lisa_data4channel_energy)] /* [-1,-1] */;
-  uint32_t lisa_data4channel_id_traces /* [0,16] */;
-  uint32_t lisa_data4channel_id_tracesI[16 EXT_STRUCT_CTRL(lisa_data4channel_id_traces)] /* [1,16] */;
-  uint32_t lisa_data4channel_id_tracesv[16 EXT_STRUCT_CTRL(lisa_data4channel_id_traces)] /* [0,255] */;
   uint32_t lisa_data4traces1 /* [0,4000] */;
   uint32_t lisa_data4traces1I[4000 EXT_STRUCT_CTRL(lisa_data4traces1)] /* [1,4000] */;
   uint32_t lisa_data4traces1v[4000 EXT_STRUCT_CTRL(lisa_data4traces1)] /* [0,65535] */;
@@ -499,9 +486,6 @@ typedef struct EXT_STR_h101_lisa_t
   uint32_t lisa_data5channel_energy /* [0,16] */;
   uint32_t lisa_data5channel_energyI[16 EXT_STRUCT_CTRL(lisa_data5channel_energy)] /* [1,16] */;
   uint32_t lisa_data5channel_energyv[16 EXT_STRUCT_CTRL(lisa_data5channel_energy)] /* [-1,-1] */;
-  uint32_t lisa_data5channel_id_traces /* [0,16] */;
-  uint32_t lisa_data5channel_id_tracesI[16 EXT_STRUCT_CTRL(lisa_data5channel_id_traces)] /* [1,16] */;
-  uint32_t lisa_data5channel_id_tracesv[16 EXT_STRUCT_CTRL(lisa_data5channel_id_traces)] /* [0,255] */;
   uint32_t lisa_data5traces1 /* [0,4000] */;
   uint32_t lisa_data5traces1I[4000 EXT_STRUCT_CTRL(lisa_data5traces1)] /* [1,4000] */;
   uint32_t lisa_data5traces1v[4000 EXT_STRUCT_CTRL(lisa_data5traces1)] /* [0,65535] */;
@@ -602,9 +586,6 @@ typedef struct EXT_STR_h101_lisa_t
   uint32_t lisa_data6channel_energy /* [0,16] */;
   uint32_t lisa_data6channel_energyI[16 EXT_STRUCT_CTRL(lisa_data6channel_energy)] /* [1,16] */;
   uint32_t lisa_data6channel_energyv[16 EXT_STRUCT_CTRL(lisa_data6channel_energy)] /* [-1,-1] */;
-  uint32_t lisa_data6channel_id_traces /* [0,16] */;
-  uint32_t lisa_data6channel_id_tracesI[16 EXT_STRUCT_CTRL(lisa_data6channel_id_traces)] /* [1,16] */;
-  uint32_t lisa_data6channel_id_tracesv[16 EXT_STRUCT_CTRL(lisa_data6channel_id_traces)] /* [0,255] */;
   uint32_t lisa_data6traces1 /* [0,4000] */;
   uint32_t lisa_data6traces1I[4000 EXT_STRUCT_CTRL(lisa_data6traces1)] /* [1,4000] */;
   uint32_t lisa_data6traces1v[4000 EXT_STRUCT_CTRL(lisa_data6traces1)] /* [0,65535] */;
@@ -705,9 +686,6 @@ typedef struct EXT_STR_h101_lisa_t
   uint32_t lisa_data7channel_energy /* [0,16] */;
   uint32_t lisa_data7channel_energyI[16 EXT_STRUCT_CTRL(lisa_data7channel_energy)] /* [1,16] */;
   uint32_t lisa_data7channel_energyv[16 EXT_STRUCT_CTRL(lisa_data7channel_energy)] /* [-1,-1] */;
-  uint32_t lisa_data7channel_id_traces /* [0,16] */;
-  uint32_t lisa_data7channel_id_tracesI[16 EXT_STRUCT_CTRL(lisa_data7channel_id_traces)] /* [1,16] */;
-  uint32_t lisa_data7channel_id_tracesv[16 EXT_STRUCT_CTRL(lisa_data7channel_id_traces)] /* [0,255] */;
   uint32_t lisa_data7traces1 /* [0,4000] */;
   uint32_t lisa_data7traces1I[4000 EXT_STRUCT_CTRL(lisa_data7traces1)] /* [1,4000] */;
   uint32_t lisa_data7traces1v[4000 EXT_STRUCT_CTRL(lisa_data7traces1)] /* [0,65535] */;
@@ -808,9 +786,6 @@ typedef struct EXT_STR_h101_lisa_t
   uint32_t lisa_data8channel_energy /* [0,16] */;
   uint32_t lisa_data8channel_energyI[16 EXT_STRUCT_CTRL(lisa_data8channel_energy)] /* [1,16] */;
   uint32_t lisa_data8channel_energyv[16 EXT_STRUCT_CTRL(lisa_data8channel_energy)] /* [-1,-1] */;
-  uint32_t lisa_data8channel_id_traces /* [0,16] */;
-  uint32_t lisa_data8channel_id_tracesI[16 EXT_STRUCT_CTRL(lisa_data8channel_id_traces)] /* [1,16] */;
-  uint32_t lisa_data8channel_id_tracesv[16 EXT_STRUCT_CTRL(lisa_data8channel_id_traces)] /* [0,255] */;
   uint32_t lisa_data8traces1 /* [0,4000] */;
   uint32_t lisa_data8traces1I[4000 EXT_STRUCT_CTRL(lisa_data8traces1)] /* [1,4000] */;
   uint32_t lisa_data8traces1v[4000 EXT_STRUCT_CTRL(lisa_data8traces1)] /* [0,65535] */;
@@ -871,7 +846,6 @@ typedef struct EXT_STR_h101_lisa_t
 typedef struct EXT_STR_h101_lisa_onion_t
 {
   /* UNPACK */
-  uint32_t lisa_badevent_bad;
   uint32_t lisa_ts_subsystem_id;
   uint32_t lisa_ts_t[4];
   struct {
@@ -897,9 +871,6 @@ typedef struct EXT_STR_h101_lisa_onion_t
     uint32_t channel_energy;
     uint32_t channel_energyI[16 /* channel_energy */];
     uint32_t channel_energyv[16 /* channel_energy */];
-    uint32_t channel_id_traces;
-    uint32_t channel_id_tracesI[16 /* channel_id_traces */];
-    uint32_t channel_id_tracesv[16 /* channel_id_traces */];
     struct {
       uint32_t _;
       uint32_t I[4000 /*  */];
@@ -914,9 +885,6 @@ typedef struct EXT_STR_h101_lisa_onion_t
 #define EXT_STR_h101_lisa_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
   ok = 1; \
   /* UNPACK */ \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_badevent_bad,               UINT32,\
-                    "lisa_badevent_bad",255,0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_ts_subsystem_id,            UINT32,\
                     "lisa_ts_subsystem_id",65535,0/*flags*/); \
@@ -1088,15 +1056,6 @@ typedef struct EXT_STR_h101_lisa_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      lisa_data1channel_energyv,       UINT32,\
                     "lisa_data1channel_energyv",       "lisa_data1channel_energy",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data1channel_id_traces,     UINT32,\
-                    "lisa_data1channel_id_traces",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data1channel_id_tracesI,    UINT32,\
-                    "lisa_data1channel_id_tracesI",    "lisa_data1channel_id_traces",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data1channel_id_tracesv,    UINT32,\
-                    "lisa_data1channel_id_tracesv",    "lisa_data1channel_id_traces",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_data1traces1,               UINT32,\
                     "lisa_data1traces1",4000,0/*flags*/); \
@@ -1398,15 +1357,6 @@ typedef struct EXT_STR_h101_lisa_onion_t
                      lisa_data2channel_energyv,       UINT32,\
                     "lisa_data2channel_energyv",       "lisa_data2channel_energy",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data2channel_id_traces,     UINT32,\
-                    "lisa_data2channel_id_traces",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data2channel_id_tracesI,    UINT32,\
-                    "lisa_data2channel_id_tracesI",    "lisa_data2channel_id_traces",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data2channel_id_tracesv,    UINT32,\
-                    "lisa_data2channel_id_tracesv",    "lisa_data2channel_id_traces",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_data2traces1,               UINT32,\
                     "lisa_data2traces1",4000,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
@@ -1706,15 +1656,6 @@ typedef struct EXT_STR_h101_lisa_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      lisa_data3channel_energyv,       UINT32,\
                     "lisa_data3channel_energyv",       "lisa_data3channel_energy",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data3channel_id_traces,     UINT32,\
-                    "lisa_data3channel_id_traces",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data3channel_id_tracesI,    UINT32,\
-                    "lisa_data3channel_id_tracesI",    "lisa_data3channel_id_traces",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data3channel_id_tracesv,    UINT32,\
-                    "lisa_data3channel_id_tracesv",    "lisa_data3channel_id_traces",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_data3traces1,               UINT32,\
                     "lisa_data3traces1",4000,0/*flags*/); \
@@ -2016,15 +1957,6 @@ typedef struct EXT_STR_h101_lisa_onion_t
                      lisa_data4channel_energyv,       UINT32,\
                     "lisa_data4channel_energyv",       "lisa_data4channel_energy",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data4channel_id_traces,     UINT32,\
-                    "lisa_data4channel_id_traces",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data4channel_id_tracesI,    UINT32,\
-                    "lisa_data4channel_id_tracesI",    "lisa_data4channel_id_traces",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data4channel_id_tracesv,    UINT32,\
-                    "lisa_data4channel_id_tracesv",    "lisa_data4channel_id_traces",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_data4traces1,               UINT32,\
                     "lisa_data4traces1",4000,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
@@ -2324,15 +2256,6 @@ typedef struct EXT_STR_h101_lisa_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      lisa_data5channel_energyv,       UINT32,\
                     "lisa_data5channel_energyv",       "lisa_data5channel_energy",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data5channel_id_traces,     UINT32,\
-                    "lisa_data5channel_id_traces",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data5channel_id_tracesI,    UINT32,\
-                    "lisa_data5channel_id_tracesI",    "lisa_data5channel_id_traces",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data5channel_id_tracesv,    UINT32,\
-                    "lisa_data5channel_id_tracesv",    "lisa_data5channel_id_traces",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_data5traces1,               UINT32,\
                     "lisa_data5traces1",4000,0/*flags*/); \
@@ -2634,15 +2557,6 @@ typedef struct EXT_STR_h101_lisa_onion_t
                      lisa_data6channel_energyv,       UINT32,\
                     "lisa_data6channel_energyv",       "lisa_data6channel_energy",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data6channel_id_traces,     UINT32,\
-                    "lisa_data6channel_id_traces",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data6channel_id_tracesI,    UINT32,\
-                    "lisa_data6channel_id_tracesI",    "lisa_data6channel_id_traces",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data6channel_id_tracesv,    UINT32,\
-                    "lisa_data6channel_id_tracesv",    "lisa_data6channel_id_traces",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_data6traces1,               UINT32,\
                     "lisa_data6traces1",4000,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
@@ -2943,15 +2857,6 @@ typedef struct EXT_STR_h101_lisa_onion_t
                      lisa_data7channel_energyv,       UINT32,\
                     "lisa_data7channel_energyv",       "lisa_data7channel_energy",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data7channel_id_traces,     UINT32,\
-                    "lisa_data7channel_id_traces",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data7channel_id_tracesI,    UINT32,\
-                    "lisa_data7channel_id_tracesI",    "lisa_data7channel_id_traces",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data7channel_id_tracesv,    UINT32,\
-                    "lisa_data7channel_id_tracesv",    "lisa_data7channel_id_traces",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_data7traces1,               UINT32,\
                     "lisa_data7traces1",4000,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
@@ -3251,15 +3156,6 @@ typedef struct EXT_STR_h101_lisa_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      lisa_data8channel_energyv,       UINT32,\
                     "lisa_data8channel_energyv",       "lisa_data8channel_energy",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data8channel_id_traces,     UINT32,\
-                    "lisa_data8channel_id_traces",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data8channel_id_tracesI,    UINT32,\
-                    "lisa_data8channel_id_tracesI",    "lisa_data8channel_id_traces",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data8channel_id_tracesv,    UINT32,\
-                    "lisa_data8channel_id_tracesv",    "lisa_data8channel_id_traces",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_data8traces1,               UINT32,\
                     "lisa_data8traces1",4000,0/*flags*/); \

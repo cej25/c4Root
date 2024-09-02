@@ -24,6 +24,7 @@ class LisaData : public TObject
         inline std::vector<bool> GetPileUp() { return f_pile_up; }
         inline std::vector<bool> GetOverFlow() { return f_over_flow; }
         inline std::vector<uint32_t> GetEnergy() { return f_ch_energy; }
+        inline std::vector<uint32_t> GetIDTraces() { return f_ch_ID_traces; }
         inline std::vector<uint32_t> GetTraces() { return f_traces;}
         inline std::vector<uint32_t> GetTracesI() { return f_tracesI;}
         //inline uint32_t GetTracesL() { return f_traces_l;}
@@ -43,6 +44,7 @@ class LisaData : public TObject
         inline void SetPileUp(std::vector<bool> pile_up ) { f_pile_up = pile_up; }
         inline void SetOverFlow(std::vector<bool> over_flow ) { f_over_flow = over_flow; }
         inline void SetEnergy(std::vector<uint32_t> ch_energy ) { f_ch_energy = ch_energy; }
+        inline void SetIDTraces(std::vector<uint32_t> ch_ID_traces) { f_ch_ID_traces = ch_ID_traces; }
         inline void SetTraces(std::vector<uint32_t> traces) { f_traces = traces;}
         inline void SetTracesI(std::vector<uint32_t> tracesI) { f_tracesI = tracesI;}
         //inline void SetTracesL(uint32_t traces_l) { f_traces_l = traces_l;}
@@ -63,6 +65,7 @@ class LisaData : public TObject
         std::vector<bool> f_pile_up;
         std::vector<bool> f_over_flow;
         std::vector<uint32_t> f_ch_energy;
+        std::vector<uint32_t> f_ch_ID_traces;
         std::vector<uint32_t> f_traces;
         std::vector<uint32_t> f_tracesI;
         //uint32_t f_traces_l;
@@ -89,6 +92,7 @@ class LisaItem : public TObject
                     bool p,
                     bool o,
                     uint32_t ch_energy,
+                    uint8_t ch_id_traces,
                     std::vector<uint16_t> tr);
         void Reset();
 
@@ -101,6 +105,7 @@ class LisaItem : public TObject
         bool Get_pileup() const;
         bool Get_overflow() const;
         uint32_t Get_channel_energy() const;
+        uint8_t Get_channel_id_traces() const;
         std::vector<uint16_t> Get_trace() const;
 
         // Getters
@@ -116,6 +121,7 @@ class LisaItem : public TObject
         bool pileup;
         bool overflow;
         uint32_t channel_energy;
+        uint8_t channel_id_traces;
         std::vector<uint16_t> trace; // maybe a vector inside a vector is ok?
 
 };
@@ -163,6 +169,11 @@ inline bool LisaItem::Get_overflow() const
 inline uint32_t LisaItem::Get_channel_energy() const
 {
     return channel_energy;
+}
+
+inline uint8_t LisaItem::Get_channel_id_traces() const
+{
+    return channel_id_traces;
 }
 
 inline std::vector<uint16_t> LisaItem::Get_trace() const

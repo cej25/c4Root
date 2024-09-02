@@ -71,7 +71,7 @@ TLisaConfiguration::TLisaConfiguration()
 
 void TLisaConfiguration::ReadMappingFile()
 {   
-    std::cout<<"un elefante"<<std::endl;
+    //std::cout<<"un elefante"<<std::endl;
     std::set<int> febex_boards;
     std::set<int> layers;
     std::set<int> x_positions;

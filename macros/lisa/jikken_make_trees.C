@@ -1,12 +1,10 @@
 #include <TROOT.h>
 
-// Switch all tasks related to {subsystem} on (1)/off (0)
 #define LISA_ON 1
-#define FRS_ON 0
-#define TRAV_MUSIC_ON 0
-#define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
 
-
+//Select the data level you want to visualize
+#define LISA_RAW 1
+#define LISA_CAL 1
 
 typedef struct EXT_STR_h101_t
 {   
@@ -15,7 +13,7 @@ typedef struct EXT_STR_h101_t
 
 } EXT_STR_h101;
 
-void jikken_make_trees_elisa()
+void jikken_make_trees()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
@@ -48,7 +46,7 @@ void jikken_make_trees_elisa()
 
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/jikken_trees_c4/";
-    TString outputFilename = outputpath + "run23_0001_c4.root";
+    TString outputFilename = outputpath + "run23_0001_EG.root";
      
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -94,20 +92,36 @@ void jikken_make_trees_elisa()
         //unpacklisa->DoFineTimeCalOnline("....root", 100000);
         //unpacklisa->SetInputFileFineTimeHistos(config_path + "....root");
 
-        unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
+        if (LISA_RAW)
+        {
+            unpacklisa->SetOnline(false); //false= write to a tree; true=doesn't write to tree
+        } else 
+        {
+            unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
+        }
+        
         source->AddReader(unpacklisa);
     }
 
 
     // ::::::: CALIBRATE Subsystem  ::::::::
 
-    if (LISA_ON)
-        {
-            LisaRaw2Cal* lisaraw2cal = new LisaRaw2Cal();
+    if (LISA_CAL)
+    {
+        LisaRaw2Cal* lisaraw2cal = new LisaRaw2Cal();
 
-            lisaraw2cal->SetOnline(false);
-            run->AddTask(lisaraw2cal);
-        }
+        lisaraw2cal->SetOnline(false);
+        run->AddTask(lisaraw2cal);  
+    }
+
+
+    // if (LISA_ON)
+    //     {
+    //         LisaRaw2Cal* lisaraw2cal = new LisaRaw2Cal();
+
+    //         lisaraw2cal->SetOnline(false);
+    //         run->AddTask(lisaraw2cal); 
+    //     }
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
     // ::::::: ANALYSE Subsystem  ::::::::
