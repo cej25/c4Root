@@ -80,8 +80,10 @@ void LisaRaw2Cal::Exec(Option_t* option)
     {
         
                 
-        std::pair<int, int> unmapped_channel = {lisaItem.Get_board_id(), lisaItem.Get_channel_id()};
-        
+        std::pair<int, int> unmapped_channel = {lisaItem.Get_board_id(), lisaItem.Get_channel_id_traces()};
+        //Get_channel_id_traces() when taking the id information from the trace header
+        //Get_channel_id() when taking the id information from the header
+
         if (lisa_config->MappingLoaded())
         {
             if (detector_mapping.count(unmapped_channel) > 0)

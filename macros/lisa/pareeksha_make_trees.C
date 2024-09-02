@@ -2,9 +2,13 @@
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define LISA_ON 1
-#define FRS_ON 1
-#define TRAV_MUSIC_ON 1
+#define FRS_ON 0
+#define TRAV_MUSIC_ON 0
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
+
+//Select the data level you want to visualize
+#define LISA_RAW 0
+#define LISA_CAL 1
 
 // Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/
 extern "C"
@@ -25,7 +29,7 @@ typedef struct EXT_STR_h101_t
 
 } EXT_STR_h101;
 
-void pareeksha_make_trees_elisa()
+void pareeksha_make_trees()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
@@ -59,8 +63,8 @@ void pareeksha_make_trees_elisa()
     TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0036_0001.lmd"; //from time stitched files
 
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/test_GM/";
-    TString outputFilename = outputpath + "run_0036_001_test.root";
+    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/";
+    TString outputFilename = outputpath + "run_0036_001_EG.root";
 
 
     //:::::::Create online run
@@ -72,7 +76,6 @@ void pareeksha_make_trees_elisa()
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
     run->SetSink(new FairRootFileSink(outputFilename)); // don't write after termintion
-    
     run->ActivateHttpServer(refresh, port);
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
@@ -131,7 +134,15 @@ void pareeksha_make_trees_elisa()
         //unpacklisa->DoFineTimeCalOnline("....root", 100000);
         //unpacklisa->SetInputFileFineTimeHistos(config_path + "....root");
 
-        unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
+        if (LISA_RAW)
+        {
+            unpacklisa->SetOnline(false); //false= write to a tree; true=doesn't write to tree
+        } else 
+        {
+            unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
+        }
+        //unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
+        
         source->AddReader(unpacklisa);
     }
 
@@ -163,13 +174,21 @@ void pareeksha_make_trees_elisa()
 
     // ::::::: CALIBRATE Subsystem  ::::::::
 
-    if (LISA_ON)
-        {
-            LisaRaw2Cal* lisaraw2cal = new LisaRaw2Cal();
+    if (LISA_CAL)
+    {
+        LisaRaw2Cal* lisaraw2cal = new LisaRaw2Cal();
 
-            lisaraw2cal->SetOnline(false);
-            run->AddTask(lisaraw2cal);
-        }
+        lisaraw2cal->SetOnline(true);
+        run->AddTask(lisaraw2cal);  
+    }
+
+    // if (LISA_ON)
+    // {
+    //     LisaRaw2Cal* lisaraw2cal = new LisaRaw2Cal();
+
+    //     lisaraw2cal->SetOnline(false);
+    //     run->AddTask(lisaraw2cal);
+    // }
 
     if (FRS_ON)
     {
