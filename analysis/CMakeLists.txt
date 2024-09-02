@@ -49,6 +49,7 @@ set(SRCS
 ./online/beammonitor/BeamMonitorOnlineSpectra.cxx
 ./online/lisa/LisaOnlineSpectra.cxx
 ./online/aida/AidaOnlineSpectra.cxx
+./online/aida/AidaPulserWalkthrough.cxx
 ./online/bplast/bPlastOnlineSpectra.cxx
 ./online/fatima/FatimaOnlineSpectra.cxx
 ./online/fatima/FatimaVmeOnlineSpectra.cxx
