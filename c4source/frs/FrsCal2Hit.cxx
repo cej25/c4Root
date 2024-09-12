@@ -21,7 +21,7 @@
 #include <chrono>
 
 #define MUSIC_ANA_NEW
-//#define TRAVMUS_TAC_OR_MHTDC
+#define TRAVMUS_TAC_OR_MHTDC 1
 
 FrsCal2Hit::FrsCal2Hit()
     :   FairTask()
@@ -1109,6 +1109,7 @@ void FrsCal2Hit::Exec(Option_t* option)
 
 
     // Calculation of dE and Z from MUSIC41
+    // Calibration for MUSIC is done with 1/b2 - last update sept2024
     id_mhtdc_v_cor_music41 = new Float_t[hits_in_beta_s2s4];
     id_mhtdc_v_cor_music42 = new Float_t[hits_in_beta_s2s4];
     id_mhtdc_v_cor_travmus = new Float_t[hits_in_beta_s2s4];
@@ -1166,6 +1167,7 @@ void FrsCal2Hit::Exec(Option_t* option)
             }
         }
 
+        //Calibation for trave music is done with 1/b2 - Last update Sept2024
         if (travMusicArray)
         {
             float temp_travmus_de = de_travmus > 0.0;
@@ -1346,6 +1348,8 @@ void FrsCal2Hit::Exec(Option_t* option)
     /*------------------------------------------------*/
     /* Determination of Z                           */
     /*------------------------------------------------*/
+    // Calibration with MUSIC is done with 1/b2 - last update sept2024
+
     // S4 (MUSIC 1)
     if ((de[0] > 0.0) && (id_beta > 0.0) && (id_beta < 1.0))
     {

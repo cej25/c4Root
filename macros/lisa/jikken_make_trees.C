@@ -101,19 +101,18 @@ void jikken_make_trees()
         }
         
         source->AddReader(unpacklisa);
+
+
+        // ::::::: CALIBRATE Subsystem  ::::::::
+
+        if (LISA_CAL)
+        {
+            LisaRaw2Cal* lisaraw2cal = new LisaRaw2Cal();
+
+            lisaraw2cal->SetOnline(false);
+            run->AddTask(lisaraw2cal);  
+        }
     }
-
-
-    // ::::::: CALIBRATE Subsystem  ::::::::
-
-    if (LISA_CAL)
-    {
-        LisaRaw2Cal* lisaraw2cal = new LisaRaw2Cal();
-
-        lisaraw2cal->SetOnline(false);
-        run->AddTask(lisaraw2cal);  
-    }
-
 
     // if (LISA_ON)
     //     {
@@ -122,10 +121,7 @@ void jikken_make_trees()
     //         lisaraw2cal->SetOnline(false);
     //         run->AddTask(lisaraw2cal); 
     //     }
-
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
-    // ::::::: ANALYSE Subsystem  ::::::::
-
+    
     // Initialise
     run->Init();
 
