@@ -2,7 +2,6 @@
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define LISA_ON 1
-//#define FATIMA_ON 1
 #define FRS_ON 1
 #define TRAV_MUSIC_ON 1
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
@@ -10,7 +9,7 @@
 // Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/
 extern "C"
 {
-    #include "../../config/pareeksha/frs/setup_s092_010_2024_conv.C"
+    #include "../../config/pareeksha/frs/setup_Fragment_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -26,7 +25,7 @@ typedef struct EXT_STR_h101_t
 
 } EXT_STR_h101;
 
-void pareeksha_histos()
+void pareeksha_histos(int fileNumber)
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
@@ -55,11 +54,12 @@ void pareeksha_histos()
 
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
-    TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/run_0074_test.root";  
+    TString inputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/fragments_EG/";
+    TString filename = Form(inputpath + "run_%04d_EG.root", fileNumber);  
     
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/fragments_16may/";
-    TString outputFilename = outputpath + "run_0074_new_GM.root";
+    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/";
+    TString outputFilename = Form(outputpath + "run_%04d_histos_EG_test.root", fileNumber);
 
 
     FairRunAna* run = new FairRunAna();
@@ -90,10 +90,10 @@ void pareeksha_histos()
     //:::: G A T E S - Initialise 
 
     std::vector<FrsGate*> fg;
-    FrsGate* cut_0 = new FrsGate("0", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/cut_Z_AoQ_0.root");
-    FrsGate* cut_1 = new FrsGate("1", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/cut_Z_AoQ_1.root");
-    FrsGate* cut_2 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/cut_Z_AoQ_2.root");
-    FrsGate* cut_3 = new FrsGate("3", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/cut_Z_AoQ_3.root");
+    FrsGate* cut_0 = new FrsGate("0", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/tac_cut_4.root"); //4,5,6,7 second set of trees from 139 to 195
+    FrsGate* cut_1 = new FrsGate("1", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/tac_cut_5.root"); //4,5,6,7 second set of trees from 139 to 195
+    FrsGate* cut_2 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/tac_cut_6.root"); //4,5,6,7 second set of trees from 139 to 195
+    FrsGate* cut_3 = new FrsGate("3", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/tac_cut_7.root"); //4,5,6,7 second set of trees from 139 to 195
     
 
     fg.emplace_back(cut_0);
@@ -109,6 +109,7 @@ void pareeksha_histos()
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     TLisaConfiguration::SetMappingFile(config_path + "/lisa/Lisa_Detector_Map_names.txt");
+    TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching.txt");
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::   
     // =========== **** SPECTRA ***** ========================================================= //
@@ -123,6 +124,10 @@ void pareeksha_histos()
     TLisaConfiguration::SetEnergyRange(500000,3000000);
     TLisaConfiguration::SetEnergyBin(900);
 
+    //::::  Channel Energy GM ::::: (h1_energy_layer_ch)
+    TLisaConfiguration::SetEnergyRangeGM(300,1500);
+    TLisaConfiguration::SetEnergyBinGM(1500);
+
     //:::: LISA WR Time Difference :::::: (h1_wr_diff)
     TLisaConfiguration::SetWrDiffRange(0,100000000);
     TLisaConfiguration::SetWrDiffBin(20000);
@@ -131,7 +136,7 @@ void pareeksha_histos()
     TFrsConfiguration::Set_Z_range(20,60);
     TFrsConfiguration::Set_AoQ_range(1,3);
 
-    TFrsConfiguration::Set_dE_travMusic_gate(1900,2000);
+    TFrsConfiguration::Set_dE_travMusic_gate(1955,2045);
 
 
     if (LISA_ON)
@@ -178,7 +183,7 @@ void pareeksha_histos()
     run->Init();
 
     // Run
-    run->Run(0,10000000);
+    run->Run(0,900);
 
     // Finish
     timer.Stop();

@@ -536,16 +536,16 @@ void FrsCal2Hit::Exec(Option_t* option)
     {
         for (int j = 0; j < hits_in_21r; j ++){
         mhtdc_sc21lr_dt[i*hits_in_21r + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + mainSciItem.Get_mhtdc_sc21l_hit(i) - mainSciItem.Get_mhtdc_sc21r_hit(j));
-        //mhtdc_sc21lr_x[i*hits_in_21r + j] = mhtdc_sc21lr_dt[i*hits_in_21r + j] * sci->mhtdc_factor_21l_21r + sci->mhtdc_offset_21l_21r;
+        mhtdc_sc21lr_x[i*hits_in_21r + j] = mhtdc_sc21lr_dt[i*hits_in_21r + j] * sci->mhtdc_factor_21l_21r + sci->mhtdc_offset_21l_21r;
 
-        double p0 = -72.5554;
-        double p1 =  54.9136;
-        double p2 =  1.14567;
-        double p3 = -5.12242;
-        double p4 =  3.70734;
-        double p5 = -0.72347;
+        // double p0 = -72.5554;
+        // double p1 =  54.9136;
+        // double p2 =  1.14567;
+        // double p3 = -5.12242;
+        // double p4 =  3.70734;
+        // double p5 = -0.72347;
 
-        mhtdc_sc21lr_x[i*hits_in_21r + j] = TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],5)*p5 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],4)*p4 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],3)*p3 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],2)*p2 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],1)*p1 + p0;
+        //mhtdc_sc21lr_x[i*hits_in_21r + j] = TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],5)*p5 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],4)*p4 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],3)*p3 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],2)*p2 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],1)*p1 + p0;
 
         }
     }
@@ -1037,7 +1037,7 @@ void FrsCal2Hit::Exec(Option_t* option)
             id_mhtdc_tof_s2s4[i] = mhtdc_tof4121[i];
             if (mhtdc_tof4121[i] > 0) // what is the value set to if this test fails ... ?
             {
-                id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2141 / mhtdc_tof4121[i]);
+                id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2141 / mhtdc_tof4121[i])/ speed_light;
             }else{
                 id_mhtdc_beta_s2s4[i] = 0;
             }
@@ -1053,7 +1053,7 @@ void FrsCal2Hit::Exec(Option_t* option)
             id_mhtdc_tof_s2s4[i] = mhtdc_tof4122[i];
             if (mhtdc_tof4122[i] > 0)
             {
-                id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2241 / mhtdc_tof4122[i]);
+                id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2241 / mhtdc_tof4122[i])/speed_light;
             }else{
                 id_mhtdc_beta_s2s4[i] = 0;
             }
