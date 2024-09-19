@@ -509,7 +509,6 @@ InitStatus LisaNearlineSpectra::Init()
         }
         c_traces_layer_ch[i]->cd(0);
         dir_lisa->Append(c_traces_layer_ch[i]);
-        dir_lisa->Append(c_traces_layer_ch[i]);
 
     }
 
