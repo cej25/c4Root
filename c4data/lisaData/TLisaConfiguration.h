@@ -60,6 +60,9 @@ class TLisaConfiguration
         static void SetEnergyRange(int min, int max) { min_energy = min; max_energy = max; }
         static void SetEnergyBin(int bin_e) { bin_energy = bin_e; }
 
+        static void SetEnergyRangeGM(int min_GM, int max_GM) { min_energy_GM = min_GM; max_energy_GM = max_GM; }
+        static void SetEnergyBinGM(int bin_e_GM) { bin_energy_GM = bin_e_GM; }
+
         static void SetWrDiffRange(int min_wr, int max_wr) { min_wr_diff = min_wr; max_wr_diff = max_wr; }
         static void SetWrDiffBin(int bin_wr) { bin_wr_diff = bin_wr; }
 
@@ -67,18 +70,6 @@ class TLisaConfiguration
         static void SetTracesBin(int bin_tr) { bin_traces = bin_tr; }
 
         static void SetWREnable(bool wr_en) { wr_enable = wr_en; }
-
-/*
-        static void SetGainM_100(int s100_p, int i100_p) {  s100 = s100_p; i100 = i100_p; }
-        static void SetGainM_101(int s101_p, int i101_p) {  s101 = s101_p; i101 = i101_p; }
-        static void SetGainM_110(int s110_p, int i110_p) {  s110 = s110_p; i110 = i110_p; }
-        static void SetGainM_111(int s111_p, int i111_p) {  s111 = s111_p; i111 = i111_p; }
-        static void SetGainM_200(int s200_p, int i200_p) {  s200 = s200_p; i200 = i200_p; }
-        static void SetGainM_201(int s201_p, int i201_p) {  s201 = s201_p; i201 = i201_p; }
-        static void SetGainM_210(int s210_p, int i210_p) {  s210 = s210_p; i210 = i210_p; }
-        static void SetGainM_211(int s211_p, int i211_p) {  s211 = s211_p; i211 = i211_p; }
-*/
-
 
 
         //int AmplitudeMax = 10500;
@@ -88,6 +79,9 @@ class TLisaConfiguration
         static int min_energy;
         static int max_energy;
         static int bin_energy;
+        static int min_energy_GM;
+        static int max_energy_GM;
+        static int bin_energy_GM;
         static int min_wr_diff;
         static int max_wr_diff;
         static int bin_wr_diff;
@@ -96,24 +90,6 @@ class TLisaConfiguration
         static int bin_traces;
         
         static bool wr_enable;
-        /*
-        static int s100;
-        static int s101;
-        static int s110;
-        static int s111;
-        static int s200;
-        static int s201;
-        static int s210;
-        static int s211;
-        static int i100;
-        static int i101;
-        static int i110;
-        static int i111;
-        static int i200;
-        static int i201;
-        static int i210;
-        static int i211;
-        */
 
         //:::::::
 

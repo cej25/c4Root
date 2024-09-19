@@ -25,6 +25,10 @@ int TLisaConfiguration::min_energy = 0;
 int TLisaConfiguration::max_energy = 10000000;
 int TLisaConfiguration::bin_energy = 900;
 
+int TLisaConfiguration::min_energy_GM = 0;
+int TLisaConfiguration::max_energy_GM = 10000;
+int TLisaConfiguration::bin_energy_GM = 500;
+
 int TLisaConfiguration::min_wr_diff = 0;
 int TLisaConfiguration::max_wr_diff = 200;
 int TLisaConfiguration::bin_wr_diff = 50;
@@ -32,29 +36,6 @@ int TLisaConfiguration::bin_wr_diff = 50;
 int TLisaConfiguration::min_traces = 0;
 int TLisaConfiguration::max_traces = 2000;
 int TLisaConfiguration::bin_traces = 900;
-
-/*
-//layer1
-int TLisaConfiguration::i100 = 0;
-int TLisaConfiguration::s100 = 0;
-int TLisaConfiguration::i101 = 0;
-int TLisaConfiguration::s101 = 0;
-int TLisaConfiguration::i110 = 0;
-int TLisaConfiguration::s110 = 0;
-int TLisaConfiguration::i111 = 0;
-int TLisaConfiguration::s111 = 0;
-//layer2
-int TLisaConfiguration::i200 = 0;
-int TLisaConfiguration::s200 = 0;
-int TLisaConfiguration::i201 = 0;
-int TLisaConfiguration::s201 = 0;
-int TLisaConfiguration::i210 = 0;
-int TLisaConfiguration::s210 = 0;
-int TLisaConfiguration::i211 = 0;
-int TLisaConfiguration::s211 = 0;
-*/
-
-
 
 
 TLisaConfiguration::TLisaConfiguration()
