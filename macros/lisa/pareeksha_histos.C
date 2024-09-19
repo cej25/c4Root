@@ -68,7 +68,12 @@ void pareeksha_histos(int fileNumber)
     run->SetRunId(1);
     run->SetSink(new FairRootFileSink(outputFilename)); // don't write after termintion
     FairSource* fs = new FairFileSource(filename);
-    run->SetSource(fs);   
+    run->SetSource(fs);
+    
+    //Read tree evt
+    TFile* file = TFile::Open(filename);
+    TTree* eventTree = (TTree*)file->Get("evt"); 
+    Int_t totEvt = eventTree->GetEntries();
      
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //::::: F R S parameter - Initialise
@@ -183,7 +188,7 @@ void pareeksha_histos(int fileNumber)
     run->Init();
 
     // Run
-    run->Run(0,900);
+    run->Run(0, totEvt); 
 
     // Finish
     timer.Stop();
@@ -195,5 +200,4 @@ void pareeksha_histos(int fileNumber)
     std::cout << "Macro finished successfully." << std::endl;
     std::cout << "Output file is " << outputFilename << std::endl;
     std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl << std::endl;
-   // gApplication->Terminate(0);
 }
