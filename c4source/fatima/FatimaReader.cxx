@@ -371,7 +371,7 @@ Bool_t FatimaReader::Read() //do fine time here:
             //from this point we should have seen an epoch for channel id.
 
             uint32_t channelid = fData->fatima_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // 0-32
-            
+
             //if (it_board_number == 1) c4LOG(info,Form("ch = %i, coarse = %i, edge = %i", channelid, fData->fatima_tamex[it_board_number].time_coarsev[it_hits], fData->fatima_tamex[it_board_number].time_edgev[it_hits]));
 
             if (fData->fatima_tamex[it_board_number].time_finev[it_hits] == 0x3FF) {fNevents_TAMEX_fail[it_board_number][channelid]++; continue;} // this happens if TAMEX loses the fine time - skip it

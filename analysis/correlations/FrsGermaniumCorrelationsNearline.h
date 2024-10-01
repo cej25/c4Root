@@ -41,6 +41,10 @@ class FrsGermaniumCorrelationsNearline : public FairTask
 
         //virtual void Snapshot_Ge_Histo();
 
+        void SetAnlOrCalInput(TString AnlOrCal){
+            input_anl_or_cal = AnlOrCal;
+        }
+
         void AddGammaEnergyOfInterest(double energy, double gate_width){
             gamma_energies_of_interest.emplace_back(energy);
             gate_width_gamma_energies_of_interest.emplace_back(gate_width);
@@ -79,6 +83,7 @@ class FrsGermaniumCorrelationsNearline : public FairTask
 
         bool fWriteOutput = true;
         bool fControlOutput = false;
+        TString input_anl_or_cal = "Cal";
         FairRunAna * run;
 
         const TGermaniumConfiguration * germanium_configuration;
@@ -91,7 +96,7 @@ class FrsGermaniumCorrelationsNearline : public FairTask
         bool positive_PID = false;
 
         
-        int fenergy_nbins = 1500;
+        int fenergy_nbins = 3000;
         int fenergy_bin_low = 0;
         int fenergy_bin_high = 1500;
 

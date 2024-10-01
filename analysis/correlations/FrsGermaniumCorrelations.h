@@ -42,6 +42,11 @@ class FrsGermaniumCorrelations : public FairTask
 
         //virtual void Snapshot_Ge_Histo();
 
+        void SetAnlOrCalInput(TString AnlOrCal){
+            input_anl_or_cal = AnlOrCal;
+        }
+
+
         void AddGammaEnergyOfInterest(double energy, double gate_width){
             gamma_energies_of_interest.emplace_back(energy);
             gate_width_gamma_energies_of_interest.emplace_back(gate_width);
@@ -79,6 +84,8 @@ class FrsGermaniumCorrelations : public FairTask
         std::vector<FrsHitItem> const* hitArrayFrs;
         std::vector<FrsMultiHitItem> const* multihitArrayFrs;
         std::vector<FrsMainCalSciItem> const* mainSciArray;
+
+        TString input_anl_or_cal = "Cal";
 
         const TGermaniumConfiguration * germanium_configuration;
         const TFrsConfiguration * frs_configuration;

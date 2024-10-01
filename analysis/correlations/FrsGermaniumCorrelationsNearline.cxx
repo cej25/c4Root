@@ -75,13 +75,15 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fHitGe = (TClonesArray*)mgr->GetObject("GermaniumCalData");
-    c4LOG_IF(fatal, !fHitGe, "Branch GermaniumCalData not found!");
+
+    TString data_item = TString("Germanium") + input_anl_or_cal + TString("Data");
+    fHitGe = (TClonesArray*)mgr->GetObject(data_item);
+    c4LOG_IF(fatal, !fHitGe, Form("Branch %s  not found!",data_item));
     hitArrayFrs = mgr->InitObjectAs<decltype(hitArrayFrs)>("FrsHitData");
     c4LOG_IF(fatal, !hitArrayFrs, "Branch FrsHitData not found!");
 
     if (fWriteOutput){
-        FairRootManager::Instance()->Register("GermaniumCalData", "Germanium Cal Data", fHitGe, fWriteOutput);
+        FairRootManager::Instance()->Register(data_item, "Germanium Cal Data", fHitGe, fWriteOutput);
     }
 
 

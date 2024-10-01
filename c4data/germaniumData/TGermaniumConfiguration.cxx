@@ -104,7 +104,9 @@ void TGermaniumConfiguration::ReadConfiguration()
 
 
 
-
+/*
+Takes second order polynomials
+*/
 void TGermaniumConfiguration::ReadCalibrationCoefficients()
 {
 
@@ -112,16 +114,16 @@ void TGermaniumConfiguration::ReadCalibrationCoefficients()
     if (cal_map_file.fail()) c4LOG(fatal, "Could not open Germanium calibration coefficients");    
 
     int rdetector_id,rcrystal_id; // temp read variables
-    double a0,a1;
+    double a0,a1,a2;
     
     //assumes the first line in the file is num-modules used
     while(!cal_map_file.eof()){
         if(cal_map_file.peek()=='#') cal_map_file.ignore(256,'\n');
         else{
-            cal_map_file >> rdetector_id >> rcrystal_id >> a1 >> a0;
+            cal_map_file >> rdetector_id >> rcrystal_id >> a0 >> a1 >> a2;
             std::pair<int,int> detector_crystal = {rdetector_id,rcrystal_id};
-            std::pair<double,double> cals = {a0,a1};
-            calibration_coeffs.insert(std::pair<std::pair<int,int>,std::pair<double,double>>{detector_crystal,cals});
+            std::vector<double> cals = {a0,a1,a2};
+            calibration_coeffs.insert(std::pair<std::pair<int,int>,std::vector<double>>{detector_crystal,cals});
             cal_map_file.ignore(256,'\n');
         }
     }

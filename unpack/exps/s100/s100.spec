@@ -1,6 +1,7 @@
 // -*- C++ -*-
 
 #include "../../../config/setup.h"
+#include "../../common/general.spec"
 #include "../../common/whiterabbit.spec"
 #include "../../common/gsi_febex4.spec"
 #include "../../common/gsi_tamex4.spec"
@@ -8,7 +9,6 @@
 //#include "../../common/vme_caen_v1x90.spec"
 #include "../frs/frs_s100.spec" //r3b frs
 #include "fatima_vme.spec"
-#include "../../common/general.spec"
 
 #define BM_MAX_HITS 100000
 

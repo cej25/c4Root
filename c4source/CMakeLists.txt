@@ -73,6 +73,7 @@ set(SRCS
 ./bplast/bPlastRaw2Cal.cxx
 ./beammonitor/BeamMonitorReader.cxx
 ./germanium/GermaniumRaw2Cal.cxx
+./germanium/GermaniumCal2Anl.cxx
 ./fatima/FatimaReader.cxx
 ./fatima/FatimaRaw2Cal.cxx
 ./bgo/BGOReader.cxx
