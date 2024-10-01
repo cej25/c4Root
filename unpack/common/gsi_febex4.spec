@@ -1,5 +1,5 @@
 #define TRACE_SIZE 4000 // some maximum size
-
+#include "general.spec"
 
 // Reads the Padding between FEBEX events:
 FEBEX_PADDING()

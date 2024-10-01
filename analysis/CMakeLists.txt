@@ -45,6 +45,7 @@ link_directories(${FAIRROOT_LIBRARY_DIR} ${ROOT_LIBRARY_DIR})
 set(SRCS
 #online
 ./online/germanium/GermaniumOnlineSpectra.cxx
+./online/germanium/GermaniumLabTest.cxx
 ./nearline/germanium/GermaniumResolution.cxx
 ./online/beammonitor/BeamMonitorOnlineSpectra.cxx
 ./online/lisa/LisaOnlineSpectra.cxx

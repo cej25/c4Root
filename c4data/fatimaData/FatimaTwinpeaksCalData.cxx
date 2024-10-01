@@ -54,6 +54,7 @@ FatimaTwinpeaksCalData::FatimaTwinpeaksCalData(
         fboard_id(board_id),
         fch_ID(ch_ID),
         fdetector_id(detector_id),
+        
         fslow_lead_epoch(slow_lead_epoch),
         fslow_lead_time(slow_lead_time),
         fslow_trail_epoch(slow_trail_epoch),

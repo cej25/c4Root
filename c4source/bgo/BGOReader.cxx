@@ -82,7 +82,9 @@ BGOReader::~BGOReader() {
 
     if (fArray != nullptr) delete fArray;
 
-    c4LOG(info, "Destroyed BGOReader properly.");
+    c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvent << " microseconds.");
+    c4LOG(info, "Events: " << fNEvent);
+    c4LOG(info, "Destroyed FatimaReader properly.");
 
 }
 
@@ -162,12 +164,19 @@ This can be called explicitly if desired - but will be done automatically by the
 */
 void BGOReader::DoFineTimeCalibration()
 {
-    c4LOG(info, "Doing fine time calibrations.");
+    std::vector<std::pair<int, int>> warning_channels;
+    int warning_counter = 0;
     for (int i = 0; i < NBoards; i++) {
         for (int j = 0; j < NChannels; j++) {
             int running_sum = 0;
             int total_counts = fine_time_hits[i][j]->GetEntries();
-            if (total_counts == 0) {c4LOG(warning,Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));}
+            if (total_counts == 0) 
+            {
+                std::pair<int, int> pair = std::make_pair(j, i); // channel, board
+                warning_channels.emplace_back(pair); // dump to a log file in future
+                warning_counter++;
+                c4LOG(debug2, Form("Channel %i on board %i does not have any fine time hits in the interval.",j,i));
+            }
 
             for (int k = 0; k < Nbins_fine_time; k++) {
                 
@@ -181,7 +190,12 @@ void BGOReader::DoFineTimeCalibration()
             }
         }
     }
+
+    if (warning_counter > 0) c4LOG(warning, Form("%i channels do not have any fine time hits in the interval.", warning_counter));
+
     fine_time_calibration_set = true;
+
+    c4LOG(info, "Success.");
 }
 
 /*
@@ -290,12 +304,11 @@ Some assumptions:
 */
 Bool_t BGOReader::Read() //do fine time here:
 {
-    c4LOG(debug1, "Event Data");
+    auto start = std::chrono::high_resolution_clock::now();
 
     if (!fData) return kTRUE;
 
     if ((fNEvent==fine_time_calibration_after)  & (!fine_time_calibration_set)){
-        c4LOG(info, "Doing fine time calibration now.");
         DoFineTimeCalibration();
         if (fine_time_calibration_save) WriteFineTimeHistosToFile();
     }
@@ -320,6 +333,10 @@ Bool_t BGOReader::Read() //do fine time here:
         last_tdc_hit.lead_fine_T = 0;
 
         accepted_trigger_time = 0;
+        accepted_lead_epoch_counter = 0;
+        accepted_lead_coarse_T = 0;
+        accepted_lead_fine_T = 0;
+                
 
 
         //c4LOG(info,"\n\n\n\n New event:");
@@ -330,20 +347,6 @@ Bool_t BGOReader::Read() //do fine time here:
 
         for (int it_hits = 0; it_hits < fData->bgo_tamex[it_board_number].event_size/4 - 3 ; it_hits++)
         {
-            //if (fData->bgo_tamex[it_board_number].time_channelv[it_hits] != 1) continue;
-
-
-          
-            //if (it_hits + 1 == fData->bgo_tamex[it_board_number].event_size/4 - 3) {c4LOG(fatal, "Data ends on a epoch...");}
-
-            //c4LOG(info, Form("epoch = %i",fData->bgo_tamex[it_board_number].time_epochv[it_hits]));
-            //c4LOG(info, Form("coarse = %i",fData->bgo_tamex[it_board_number].time_coarsev[it_hits]));
-            //c4LOG(info, Form("fine = %i",fData->bgo_tamex[it_board_number].time_finev[it_hits]));
-            //c4LOG(info, Form("channel = %i",fData->bgo_tamex[it_board_number].time_channelv[it_hits]));
-            //c4LOG(info, Form("edge = %i \n",fData->bgo_tamex[it_board_number].time_edgev[it_hits]));
-
-            //continue;
-
             // now operating under the assumption 16.01.2024:
             /*
             the TAMEX readout happens channel after channel with increasing channel number. Multiple hits within one channel are time ordered.
@@ -351,18 +354,20 @@ Bool_t BGOReader::Read() //do fine time here:
             from M Reese 08.12.23
             */
 
-
             // check if arrays are overflowing. These could be placed outside this inner loop, but now it sums up the number of lost events in case they are not equal. This indicates an error in UCESB/MBS i believe if this fails.
             if (fData->bgo_tamex[it_board_number].time_epoch <= it_hits) {fNevents_skipped++; continue;}
             if (fData->bgo_tamex[it_board_number].time_fine <= it_hits) {fNevents_skipped++; continue;}
             if (fData->bgo_tamex[it_board_number].time_coarse <= it_hits) {fNevents_skipped++; continue;}
+
             //the length of the arrays should be equal. 
             if (!(fData->bgo_tamex[it_board_number].time_coarse == fData->bgo_tamex[it_board_number].time_fine && fData->bgo_tamex[it_board_number].time_coarse == fData->bgo_tamex[it_board_number].time_epoch)) {fNevents_skipped++; continue;}
 
             //any time you see an epoch - this epoch will apply to the next time data words until a new epoch word is written. If the following data in the buffer is another channel then it must be preceeded with another epoch. 
+            
             if (fData->bgo_tamex[it_board_number].time_epochv[it_hits] != 0)
             {
                     previous_epoch_word = fData->bgo_tamex[it_board_number].time_epochv[it_hits] & 0xFFFFFFF;
+                    //c4LOG(info,Form("epoch = %i",fData->bgo_tamex[it_board_number].time_epochv[it_hits] & 0xFFFFFFF));
                     //if (it_board_number == 1) c4LOG(info,Form("Found epoch for ch = %i, e = %i",next_channel,fData->bgo_tamex[it_board_number].time_epochv[it_hits] & 0xFFFFFFF));
                     fNepochwordsread++;
                     last_word_read_was_epoch = true;
@@ -372,14 +377,13 @@ Bool_t BGOReader::Read() //do fine time here:
 
             //from this point we should have seen an epoch for channel id.
 
-            uint32_t channelid = fData->bgo_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // 0-32
-            
-            //if (it_board_number == 1) c4LOG(info,Form("ch = %i, coarse = %i, edge = %i", channelid, fData->bgo_tamex[it_board_number].time_coarsev[it_hits], fData->bgo_tamex[it_board_number].time_edgev[it_hits]));
+            uint32_t channelid = fData->bgo_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // 0-127
+                        
+            //c4LOG(info,Form("ch = %i, coarse = %i, edge = %i", channelid, fData->bgo_tamex[it_board_number].time_coarsev[it_hits], fData->bgo_tamex[it_board_number].time_edgev[it_hits]));
 
             if (fData->bgo_tamex[it_board_number].time_finev[it_hits] == 0x3FF) {fNevents_TAMEX_fail[it_board_number][channelid]++; continue;} // this happens if TAMEX loses the fine time - skip it
 
-
-            if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch){fNevents_lacking_epoch[it_board_number][channelid]++; c4LOG(warning, "Event lacking epoch.");} // if the channel has changed but no epoch word was seen in between, channel 0 is always the first one so dont check if that s the case.
+            if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch){fNevents_lacking_epoch[it_board_number][channelid]++; c4LOG(debug2, "Event lacking epoch.");} // if the channel has changed but no epoch word was seen in between, channel 0 is always the first one so dont check if that s the case.
 
             if (!(channelid >= last_channel_read)) {c4LOG(fatal, Form("Data format is inconcistent with assumption: Channels are not read out in increasing order. This channel = %i, last channel = %i",channelid,last_channel_read));}
 
@@ -400,8 +404,12 @@ Bool_t BGOReader::Read() //do fine time here:
             uint32_t coarse_T = fData->bgo_tamex[it_board_number].time_coarsev[it_hits] & 0x7FF;
             double fine_T = GetFineTime(fData->bgo_tamex[it_board_number].time_finev[it_hits],it_board_number,channelid);
 
-            if (channelid == 0) {
-                accepted_trigger_time = ((uint64_t)previous_epoch_word)*10.24e3 + ((uint64_t)coarse_T)*5.0 - (uint64_t)fine_T; // round it off to ns resolution
+            if (channelid == 0) 
+            {
+                accepted_trigger_time = ((double)previous_epoch_word)*10.24e3 + ((double)coarse_T)*5.0 - (double)fine_T; // round it off to ns resolution
+                accepted_lead_epoch_counter = previous_epoch_word;
+                accepted_lead_coarse_T = coarse_T;
+                accepted_lead_fine_T = fine_T;
                 continue;
             } // skip channel 0 for now. This is the trigger information. The trigger time is kept, the wr timestamp is corrected by the difference of the hit and the acc trigger time.
 
@@ -425,11 +433,15 @@ Bool_t BGOReader::Read() //do fine time here:
             else if (!is_leading && last_tdc_hit.hit)
             { 
                 //trail and rise are matched
-                //if (it_board_number == 1) c4LOG(info,Form("Writing: ch = %i, le = %i lc = %i, lf = %f, te = %i tc = %i, tf = %f ",channelid,last_hits[it_board_number][channelid].lead_epoch_counter, last_hits[it_board_number][channelid].lead_coarse_T, last_hits[it_board_number][channelid].lead_fine_T,last_epoch[channelid],coarse_T,fine_T));
+                //if (it_board_number == 1) c4LOG(info,Form("Writing: ch = %i, le = %i lc = %i, lf = %f, te = %i tc = %i, tf = %f ",channelid,last_tdc_hit.lead_epoch_counter, last_tdc_hit.lead_coarse_T, last_tdc_hit.lead_fine_T,last_tdc_hit.lead_epoch_counter,coarse_T,fine_T));
 
                 new ((*fArray)[fArray->GetEntriesFast()]) BGOTwinpeaksData(
                     it_board_number,
                     channelid,
+                    accepted_trigger_time,
+                    accepted_lead_epoch_counter,
+                    accepted_lead_coarse_T,
+                    accepted_lead_fine_T,
 
                     last_tdc_hit.lead_epoch_counter,
                     last_tdc_hit.lead_coarse_T,
@@ -440,9 +452,10 @@ Bool_t BGOReader::Read() //do fine time here:
                     fine_T,
                     
                     fData->bgo_ts_subsystem_id,
-                    wr_t // corrected by the time difference to the acc trigger time
+                    wr_t //+ 0*( (((int64_t)previous_epoch_word)*10.24e3 + ((int64_t)coarse_T)*5.0 - (int64_t)fine_T) - accepted_trigger_time) // corrected by the time difference to the acc trigger time
                 );
-            
+
+                
                 //reset:
 
                 last_tdc_hit.hit=false;
@@ -460,12 +473,17 @@ Bool_t BGOReader::Read() //do fine time here:
                 // do nothing, trail found with no rise.
                 fNevents_trail_seen_no_lead[it_board_number][channelid]++;
                 fNtrails_read[it_board_number][channelid]++;
+                
             }
         }
 
     } // boards
         
     fNEvent += 1;
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    total_time_microsecs += duration.count();
+    
     return kTRUE;
 }
 

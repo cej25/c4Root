@@ -14,6 +14,7 @@
 #pragma link C++ class FrsCalSpectra+;
 #pragma link C++ class FrsTravMusSpectra+;
 #pragma link C++ class GermaniumOnlineSpectra+;
+#pragma link C++ class GermaniumLabTest+;
 #pragma link C++ class GermaniumResolution+;
 #pragma link C++ class BGOOnlineSpectra+;
 #pragma link C++ class bPlastOnlineSpectra+;

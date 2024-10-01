@@ -28,7 +28,7 @@ class TGermaniumConfiguration
         std::map<std::pair<int,int>,std::pair<int,int>> Mapping() const;
         bool MappingLoaded() const;
         bool CalibrationCoefficientsLoaded() const;
-        std::map<std::pair<int,int>,std::pair<double,double>> CalibrationCoefficients() const;
+        std::map<std::pair<int,int>,std::vector<double>> CalibrationCoefficients() const;
         bool TimeshiftCalibrationCoefficientsLoaded() const;
         std::map<std::pair<int,int>,double> TimeshiftCalibrationCoefficients() const;
         inline double GetTimeshiftCoefficient(int detector_id, int crystal_id) const;
@@ -74,7 +74,7 @@ class TGermaniumConfiguration
         static TGermaniumConfiguration* instance;
         
         std::map<std::pair<int,int>,std::pair<int,int>> detector_mapping;
-        std::map<std::pair<int,int>,std::pair<double,double>> calibration_coeffs;
+        std::map<std::pair<int,int>,std::vector<double>> calibration_coeffs;
         std::map<std::pair<int,int>,double> timeshift_calibration_coeffs;
         std::set<int> extra_signals;
 
@@ -131,7 +131,7 @@ inline std::map<std::pair<int,int>,std::pair<int,int>> TGermaniumConfiguration::
     return detector_mapping;
 }
 
-inline std::map<std::pair<int,int>,std::pair<double,double>> TGermaniumConfiguration::CalibrationCoefficients() const
+inline std::map<std::pair<int,int>,std::vector<double>> TGermaniumConfiguration::CalibrationCoefficients() const
 {
     return calibration_coeffs;
 }
