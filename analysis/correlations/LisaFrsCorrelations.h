@@ -117,7 +117,9 @@ class LisaFrsCorrelations : public FairTask
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch_GM;
         std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_layer_ch_GM_PIDgated;
         std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_layer_ch_GM_PIDgated_Trav;
-        std::vector<std::vector<TH1F*>> h1_energy_layer_GM_PIDgated_Trav;
+        
+        std::vector<std::vector<TH1F*>> h1_energy_layer_GM_PID_TM;
+        std::vector<std::vector<TH1F*>> h1_energy_layer2_GM_PID_TM_LISA1;
 
     public:
         ClassDef(LisaFrsCorrelations, 1)

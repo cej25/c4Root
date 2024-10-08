@@ -37,6 +37,8 @@ int TLisaConfiguration::min_traces = 0;
 int TLisaConfiguration::max_traces = 2000;
 int TLisaConfiguration::bin_traces = 900;
 
+int TLisaConfiguration::fMin_dE_LISA1_gate = 1070, TLisaConfiguration::fMax_dE_LISA1_gate = 1100;
+
 
 TLisaConfiguration::TLisaConfiguration()
     :   num_layers(0)

@@ -20,7 +20,7 @@ while read -r number; do
 
     echo "Processing file number: $number"
 
-    root -b  "${macro_path}(${number})"
+    root -b -q  "${macro_path}(${number})"
 
     # Check the exit status
     if [ $? -ne 0 ]; then

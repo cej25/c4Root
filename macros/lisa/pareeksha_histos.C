@@ -58,8 +58,8 @@ void pareeksha_histos(int fileNumber)
     TString filename = Form(inputpath + "run_%04d_EG.root", fileNumber);  
     
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/";
-    TString outputFilename = Form(outputpath + "run_%04d_histos_EG_test.root", fileNumber);
+    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/fragments_LISA1_95Zr/group2/";
+    TString outputFilename = Form(outputpath + "run_%04d_histos_LISA1_95Zr.root", fileNumber);
 
 
     FairRunAna* run = new FairRunAna();
@@ -95,16 +95,24 @@ void pareeksha_histos(int fileNumber)
     //:::: G A T E S - Initialise 
 
     std::vector<FrsGate*> fg;
-    FrsGate* cut_0 = new FrsGate("0", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/tac_cut_4.root"); //4,5,6,7 second set of trees from 139 to 195
-    FrsGate* cut_1 = new FrsGate("1", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/tac_cut_5.root"); //4,5,6,7 second set of trees from 139 to 195
-    FrsGate* cut_2 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/tac_cut_6.root"); //4,5,6,7 second set of trees from 139 to 195
-    FrsGate* cut_3 = new FrsGate("3", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/tac_cut_7.root"); //4,5,6,7 second set of trees from 139 to 195
+    FrsGate* cut_0 = new FrsGate("0", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/tac_cut_0.root"); //4,5,6,7 second set of trees from 139 to 195
+    FrsGate* cut_1 = new FrsGate("1", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/tac_cut_1.root"); //4,5,6,7 second set of trees from 139 to 195
+    FrsGate* cut_2 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/tac_cut_2.root"); //4,5,6,7 second set of trees from 139 to 195
+    //FrsGate* cut_3 = new FrsGate("3", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/tac_cut_3.root"); //4,5,6,7 second set of trees from 139 to 195
     
 
     fg.emplace_back(cut_0);
     fg.emplace_back(cut_1);
     fg.emplace_back(cut_2);
-    fg.emplace_back(cut_3);
+    //fg.emplace_back(cut_3);
+
+    //:::: Gates for histos ::::::::
+    TFrsConfiguration::Set_dE_travMusic_gate(1960,2060);
+    TLisaConfiguration::SetLISAGate(1012,1042); //Gate on LISA 1 for histo of LISA 2 energy (mean +- 3sigma)
+    //98Nb -> 1090 (7)
+    //96Zr -> 1044 (8)
+    //95Zr -> 1027 (5)
+    //after98Nb -> 1171 (9)
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::: C O R R E L A T I O N S - Initialise 
   
@@ -131,18 +139,16 @@ void pareeksha_histos(int fileNumber)
 
     //::::  Channel Energy GM ::::: (h1_energy_layer_ch)
     TLisaConfiguration::SetEnergyRangeGM(300,1500);
-    TLisaConfiguration::SetEnergyBinGM(1500);
+    TLisaConfiguration::SetEnergyBinGM(500);
 
     //:::: LISA WR Time Difference :::::: (h1_wr_diff)
     TLisaConfiguration::SetWrDiffRange(0,100000000);
     TLisaConfiguration::SetWrDiffBin(20000);
 
-
+    //:::: FRS Z and AoQ
     TFrsConfiguration::Set_Z_range(20,60);
     TFrsConfiguration::Set_AoQ_range(1,3);
-
-    TFrsConfiguration::Set_dE_travMusic_gate(1955,2045);
-
+    
 
     if (LISA_ON)
     {
