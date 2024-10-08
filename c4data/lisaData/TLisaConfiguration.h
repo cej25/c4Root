@@ -71,6 +71,9 @@ class TLisaConfiguration
 
         static void SetWREnable(bool wr_en) { wr_enable = wr_en; }
 
+        static void SetLISAGate(int min_de, int max_de) { fMin_dE_LISA1_gate = min_de; fMax_dE_LISA1_gate = max_de; }
+
+
 
         //int AmplitudeMax = 10500;
         //int AmplitudeMin = 7500;
@@ -88,6 +91,8 @@ class TLisaConfiguration
         static int min_traces;
         static int max_traces;
         static int bin_traces;
+        static int fMin_dE_LISA1_gate;
+        static int fMax_dE_LISA1_gate;
         
         static bool wr_enable;
 

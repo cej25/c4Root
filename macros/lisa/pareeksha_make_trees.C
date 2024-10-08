@@ -8,6 +8,7 @@
 
 //Select the data level you want to visualize
 #define LISA_RAW 0
+//#define LISA_MDW 0
 #define LISA_CAL 1
 
 // Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/

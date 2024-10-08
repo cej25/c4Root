@@ -207,7 +207,10 @@ InitStatus LisaFrsCorrelations::Init()
 
         //Energy gated and calibrated gated on ROI on ZvsAoQ & Trav Music, 
         //for each layer and the total stats of the detector on layer
-        h1_energy_layer_GM_PIDgated_Trav.resize(FrsGates.size());
+        h1_energy_layer_GM_PID_TM.resize(FrsGates.size());
+
+        //Energy of Layer2 gated on PID,trav, and 98Nb in LISA1
+        h1_energy_layer2_GM_PID_TM_LISA1.resize(FrsGates.size());
     
         for (int gate = 0; gate < FrsGates.size(); gate++)
         {
@@ -223,62 +226,72 @@ InitStatus LisaFrsCorrelations::Init()
             h1_energy_layer_ch_GM_PIDgated_Trav[gate][0][0].resize(1);
             h1_energy_layer_ch_GM_PIDgated_Trav[gate][0][0][0] = new TH1F(Form("energy_000_GM_PIDgated%i_T",gate), "Tokyo T", lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
 
-            h1_energy_layer_GM_PIDgated_Trav[gate].resize(layer_number);
-            h1_energy_layer_GM_PIDgated_Trav[gate][0] = new TH1F(Form("energy_Layer0_GM_PIDgated%i_Trav",gate), "Tokyo T", lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
+            h1_energy_layer_GM_PID_TM[gate].resize(layer_number);
+            h1_energy_layer_GM_PID_TM[gate][0] = new TH1F(Form("energy_Layer0_GM_PIDgated%i_Trav",gate), "Tokyo T", lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
 
+            h1_energy_layer2_GM_PID_TM_LISA1[gate].resize(layer_number);
+            h1_energy_layer2_GM_PID_TM_LISA1[gate][0] = new TH1F(Form("energy_Layer0_GM_PIDgated%i_TM_LISA1",gate), "Tokyo T+PID+LISA", lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
             //c4LOG(info," after 000 ");
             //::: Energy spectra Gated with FRS for Layer 1 and 2
             for (int i = 1; i < layer_number; i++) 
             {
+                //:::For each layer
                 //Energy GM gated on PID, for all detectors
-                h1_energy_layer_ch_GM_PIDgated[gate][i].resize(xmax);
+                //h1_energy_layer_ch_GM_PIDgated[gate][i].resize(xmax);
                 //Energy GM gated on PID&TravMus, for all detectors
-                h1_energy_layer_ch_GM_PIDgated_Trav[gate][i].resize(xmax);
+                //h1_energy_layer_ch_GM_PIDgated_Trav[gate][i].resize(xmax);
 
                 //Energy GM gated on PID&TravMus, for each layer 
                 //summed stats between detectors
-                h1_energy_layer_GM_PIDgated_Trav[gate][i] = new TH1F(Form("energy_layer_%i_GM_PIDgate_%i_Trav", i, gate), Form("Energy Layer %i gated on PID and TM",i), lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);             
-                h1_energy_layer_GM_PIDgated_Trav[gate][i]->GetXaxis()->SetTitle(Form("E(LISA) Layer %i [MeV]",i));
-                h1_energy_layer_GM_PIDgated_Trav[gate][i]->SetLineColor(i);
-                h1_energy_layer_GM_PIDgated_Trav[gate][i]->SetFillColor(i);
+                h1_energy_layer_GM_PID_TM[gate][i] = new TH1F(Form("energy_layer_%i_GM_PIDgate_%i_Trav", i, gate), Form("Energy Layer %i gated on PID and TM",i), lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);             
+                h1_energy_layer_GM_PID_TM[gate][i]->GetXaxis()->SetTitle(Form("E(LISA) Layer %i [MeV]",i));
+                h1_energy_layer_GM_PID_TM[gate][i]->SetLineColor(i);
+                h1_energy_layer_GM_PID_TM[gate][i]->SetFillColor(i);
 
-                for (int j = 0; j < xmax; j++)
-                {
-                    h1_energy_layer_ch_GM_PIDgated[gate][i][j].resize(ymax);
-                    h1_energy_layer_ch_GM_PIDgated_Trav[gate][i][j].resize(ymax);
+                //Energy of LISA layer gated on PID, TM and LISA
+                h1_energy_layer2_GM_PID_TM_LISA1[gate][i] = new TH1F(Form("energy_layer_%i_GM_PID_%i_TM_LISA1", i, gate), Form("Energy Layer %i gated on PID-TM-LISA1",i), lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);             
+                h1_energy_layer2_GM_PID_TM_LISA1[gate][i]->GetXaxis()->SetTitle(Form("E(LISA) Layer %i [MeV]",i));
+                h1_energy_layer2_GM_PID_TM_LISA1[gate][i]->SetLineColor(i+2);
+                h1_energy_layer2_GM_PID_TM_LISA1[gate][i]->SetFillColor(i+2);
 
-                    for (int k = 0; k < ymax; k++)
-                    {                           
-                        city = "";
-                        for (auto & detector : detector_mapping)
-                        {
-                            if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
-                            {
-                                city = detector.second.first.second;
-                                break;
-                            }
-                        }
+                //:::For each detector
+                // for (int j = 0; j < xmax; j++)
+                // {
+                //     h1_energy_layer_ch_GM_PIDgated[gate][i][j].resize(ymax);
+                //     h1_energy_layer_ch_GM_PIDgated_Trav[gate][i][j].resize(ymax);
+
+                //     for (int k = 0; k < ymax; k++)
+                //     {                           
+                //         city = "";
+                //         for (auto & detector : detector_mapping)
+                //         {
+                //             if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
+                //             {
+                //                 city = detector.second.first.second;
+                //                 break;
+                //             }
+                //         }
                         
-                        h1_energy_layer_ch_GM_PIDgated[gate][i][j][k] = new TH1F(Form("energy_%s_%i_%i_%i_GM_PIDgate_%i", city.c_str(), i, j, k, gate), city.c_str(), lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
-                        h1_energy_layer_ch_GM_PIDgated[gate][i][j][k]->GetXaxis()->SetTitle("E(LISA) [MeV]");
-                        h1_energy_layer_ch_GM_PIDgated[gate][i][j][k]->SetLineColor(kBlack);
-                        h1_energy_layer_ch_GM_PIDgated[gate][i][j][k]->SetFillColor(kBlue);
+                //         h1_energy_layer_ch_GM_PIDgated[gate][i][j][k] = new TH1F(Form("energy_%s_%i_%i_%i_GM_PIDgate_%i", city.c_str(), i, j, k, gate), city.c_str(), lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
+                //         h1_energy_layer_ch_GM_PIDgated[gate][i][j][k]->GetXaxis()->SetTitle("E(LISA) [MeV]");
+                //         h1_energy_layer_ch_GM_PIDgated[gate][i][j][k]->SetLineColor(kBlack);
+                //         h1_energy_layer_ch_GM_PIDgated[gate][i][j][k]->SetFillColor(kBlue);
 
-                        h1_energy_layer_ch_GM_PIDgated_Trav[gate][i][j][k] = new TH1F(Form("energy_%s_%i_%i_%i_GM_PIDgate_%i_Trav", city.c_str(), i, j, k, gate), city.c_str(), lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
-                        h1_energy_layer_ch_GM_PIDgated_Trav[gate][i][j][k]->GetXaxis()->SetTitle("E(LISA) [MeV]");
-                        h1_energy_layer_ch_GM_PIDgated_Trav[gate][i][j][k]->SetLineColor(kBlack);
-                        h1_energy_layer_ch_GM_PIDgated_Trav[gate][i][j][k]->SetFillColor(kRed-3);                        
+                //         h1_energy_layer_ch_GM_PIDgated_Trav[gate][i][j][k] = new TH1F(Form("energy_%s_%i_%i_%i_GM_PIDgate_%i_Trav", city.c_str(), i, j, k, gate), city.c_str(), lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
+                //         h1_energy_layer_ch_GM_PIDgated_Trav[gate][i][j][k]->GetXaxis()->SetTitle("E(LISA) [MeV]");
+                //         h1_energy_layer_ch_GM_PIDgated_Trav[gate][i][j][k]->SetLineColor(kBlack);
+                //         h1_energy_layer_ch_GM_PIDgated_Trav[gate][i][j][k]->SetFillColor(kRed-3);                        
 
-                    }
-                }
+                //     }
+                // }
             }
             
             
         }
 
     }
-
-    //:::Do this offline, no need to do it here
+    //::: Draw on the same plot...
+    //::: ...Do this offline, no need to do it here
     // if (!FrsGates.empty())
     // {
         
@@ -351,6 +364,9 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     sum_energy_layer_GM.resize(layer_number);
     //c4LOG(info, "s2 x : " << s2_x << "s2 y : " << s2_y);
 
+    std::vector<uint32_t> energy_layer_GM;
+    energy_layer_GM.resize(layer_number);
+
     // Energy from frs
     energy_MUSIC_1 = frsHitItem.Get_music_dE(0); 
     energy_MUSIC_2 = frsHitItem.Get_music_dE(1);
@@ -396,8 +412,10 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         uint32_t energy_LISA_GM = lisaCalItem.Get_energy_GM();
 
         layer = lisaCalItem.Get_layer_id();
+        energy_layer_GM[layer] = energy_LISA_GM;
         sum_energy_layer[layer] += energy_LISA;
         sum_energy_layer_GM[layer] += energy_LISA_GM;
+
 
         // //::::::::: E N E R G Y GATED MULTI HIT:::::::::::::::
         // int mh_counter = 0;
@@ -418,7 +436,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         //                 if(frsHitItem.Get_travmusic_dE() >= frs_config->fMin_dE_travMus_gate && frsHitItem.Get_travmusic_dE() <= frs_config->fMax_dE_travMus_gate)
         //                 {   
         //                     h1_energy_layer_ch_GM_PIDgated_Trav[gate][layer][xpos][ypos]->Fill(energy_LISA_GM);
-        //                     h1_energy_layer_GM_PIDgated_Trav[gate][layer]->Fill(energy_LISA_GM);
+        //                     h1_energy_layer_GM_PID_TM[gate][layer]->Fill(energy_LISA_GM);
         //                 }
         //             }
         //         }
@@ -436,13 +454,20 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                 //::: Gate on PID
                 if (FrsGates[gate]->Passed_ZvsAoQ(frsHitItem.Get_ID_z(), frsHitItem.Get_ID_AoQ()))
                 {
-                    h1_energy_layer_ch_GM_PIDgated[gate][layer][xpos][ypos]->Fill(energy_LISA_GM);
+                    //h1_energy_layer_ch_GM_PIDgated[gate][layer][xpos][ypos]->Fill(energy_LISA_GM);
 
                     //::: Gate on Trav Music
                     if(frsHitItem.Get_travmusic_dE() >= frs_config->fMin_dE_travMus_gate && frsHitItem.Get_travmusic_dE() <= frs_config->fMax_dE_travMus_gate)
                     {   
-                        h1_energy_layer_ch_GM_PIDgated_Trav[gate][layer][xpos][ypos]->Fill(energy_LISA_GM);
-                        h1_energy_layer_GM_PIDgated_Trav[gate][layer]->Fill(energy_LISA_GM);
+                        //h1_energy_layer_ch_GM_PIDgated_Trav[gate][layer][xpos][ypos]->Fill(energy_LISA_GM);
+                        h1_energy_layer_GM_PID_TM[gate][layer]->Fill(energy_LISA_GM);
+
+                        //gate on 98Nb in LISA1 for LISA2. On LISA1, 98Nb is at 1090 (+-20)
+                        if(energy_layer_GM[1] >= lisa_config->fMin_dE_LISA1_gate && energy_layer_GM[1] <= lisa_config->fMax_dE_LISA1_gate)
+                        {
+                            h1_energy_layer2_GM_PID_TM_LISA1[gate][layer]->Fill(energy_LISA_GM);
+                        }
+                        
                     }
                 }
             }

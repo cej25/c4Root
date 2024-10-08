@@ -69,7 +69,6 @@ InitStatus LisaOnlineSpectra::Init()
     num_layers = lisa_config->NLayers();
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
-
     TDirectory::TContext ctx(nullptr);
 
     dir_lisa = new TDirectory("LISA", "LISA", "", 0);
@@ -80,16 +79,6 @@ InitStatus LisaOnlineSpectra::Init()
     dir_stats = dir_lisa->mkdir("Stats");
     dir_energy = dir_lisa->mkdir("Energy");
     dir_traces = dir_lisa->mkdir("Traces");
-    
-    //dir_music = new TDirectory("MUSIC", "MUSIC", "", 0);
-    //mgr->Register("MUSIC", "MUSIC Directory", dir_music, false);
-    //histograms->Add(dir_music);
-
-    //dir_correlations = new TDirectory("Correlations", "Correlations", "", 0);
-    //mgr->Register("Correlations", "Correlations Directory", dir_correlations, false);
-    //histograms->Add(dir_correlations);
-
-    // layer names: Tokyo, Eris, Sparrow
   
     //:::::::::::White Rabbit:::::::::::::::
     dir_stats->cd();
