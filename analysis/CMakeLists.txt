@@ -48,6 +48,7 @@ set(SRCS
 ./nearline/germanium/GermaniumResolution.cxx
 ./online/beammonitor/BeamMonitorOnlineSpectra.cxx
 ./online/lisa/LisaOnlineSpectra.cxx
+./online/lisa/LisaOnlineSpectraDaq.cxx
 ./online/aida/AidaOnlineSpectra.cxx
 ./online/bplast/bPlastOnlineSpectra.cxx
 ./online/fatima/FatimaOnlineSpectra.cxx

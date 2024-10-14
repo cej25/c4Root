@@ -1,7 +1,10 @@
 #include <TROOT.h>
 //............
-// Switch all tasks related to {subsystem} on (1)/off (0)
-#define LISA_ON 1
+// Switch all tasks related to LISA :::  on (1)/off (0) :::
+#define LISA_ON 1       //always on
+#define LISA_DAQ 0      //diplay all the channels from the boards
+#define LISA_2x2 1      //display with pareesksha 2x2 mapping system
+// WR syncronization
 #define WR_ENABLED 0
 
 extern "C"
@@ -14,7 +17,8 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_lisa_onion_t lisa;
 
 } EXT_STR_h101;
-\
+
+
 void lisa_online()
 {   
     if (WR_ENABLED)
@@ -84,8 +88,17 @@ void lisa_online()
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
-    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Detector_Map_names.txt");
-    TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
+    if (LISA_2x2)
+    {
+        TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Detector_Map_names.txt");
+        TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
+    }
+
+    if (LISA_DAQ)
+    {
+        TLisaConfiguration::SetMappingFile(config_path + "/Lisa_All_Boards.txt");
+    }
+
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // S U B S Y S T E M S
@@ -96,12 +109,10 @@ void lisa_online()
     UnpackReader* unpackheader = new UnpackReader((EXT_STR_h101_unpack*)&ucesb_struct.eventheaders, offsetof(EXT_STR_h101, eventheaders));
     source->AddReader(unpackheader);
 
-    if (1 == 1)
+    if (LISA_ON)
     {
         LisaReader* unpacklisa = new LisaReader((EXT_STR_h101_lisa_onion*)&ucesb_struct.lisa, offsetof(EXT_STR_h101, lisa));
-        //unpacklisa->DoFineTimeCalOnline("....root", 100000);
-        //unpacklisa->SetInputFileFineTimeHistos(config_path + "....root");
-
+        
         unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
         source->AddReader(unpacklisa);
     }
@@ -109,32 +120,37 @@ void lisa_online()
     // ::::::: CALIBRATE Subsystem  ::::::::
 
     if (LISA_ON)
-        {
-            LisaRaw2Cal* lisaraw2cal = new LisaRaw2Cal();
+    {
+        LisaRaw2Cal* lisaraw2cal = new LisaRaw2Cal();
 
-            lisaraw2cal->SetOnline(true);
-            run->AddTask(lisaraw2cal);
-        }
+        lisaraw2cal->SetOnline(true);
+        run->AddTask(lisaraw2cal);
+    }
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
     // ::: Online Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-    if (LISA_ON)
+    if (LISA_2x2)
     {
-        // Add analysis task here at some point
-        LisaOnlineSpectra* onlinelisa = new LisaOnlineSpectra();
 
+        LisaOnlineSpectra* onlinelisa = new LisaOnlineSpectra();
         run->AddTask(onlinelisa);
 
     }
 
+    if (LISA_DAQ)
+    {
+
+        LisaOnlineSpectraDaq* onlinelisadaq = new LisaOnlineSpectraDaq();
+        run->AddTask(onlinelisadaq);
+
+    }
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    
     // Set Ranges for online histos
 
     //::::  Channel Energy ::::: (h1_energy_layer_ch)
     TLisaConfiguration::SetEnergyRange(0,300000);
-    //TLisaConfiguration::SetEnergyRange(0,3500000); //for Chen
-    //TLisaConfiguration::SetEnergyBin(1200); // for Chen
     TLisaConfiguration::SetEnergyBin(900);
 
     //:::: LISA WR Time Difference :::::: (h1_wr_diff)
@@ -144,10 +160,8 @@ void lisa_online()
     //:::: LISA Traces Time and Amplitude Ranges :::::: (h1_traces_layer_ch)
     TLisaConfiguration::SetTracesRange(0,30);
     TLisaConfiguration::SetTracesBin(3000);
-    //TLisaConfiguration::SetTracesBin(5000); //for Chens positive signals
     TLisaConfiguration::SetAmplitudeMin(7000);
     TLisaConfiguration::SetAmplitudeMax(9000);
-    //TLisaConfiguration::SetAmplitudeMax(15000); //for Chens positiv signals
     
 
     //::::::: Initialise
@@ -172,5 +186,4 @@ void lisa_online()
     std::cout << "Macro finished successfully." << std::endl;
     std::cout << "Output file is " << outputFilename << std::endl;
     std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl << std::endl;
-   // gApplication->Terminate(0);
 }
