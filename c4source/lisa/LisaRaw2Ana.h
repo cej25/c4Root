@@ -29,7 +29,7 @@ class LisaRaw2Ana : public FairTask
         virtual void FinishEvent();
         virtual void FinishTask();
 
-        //void PrintDetectorGainM(); //will be print MDW parameters
+        //void PrintMWDParameter();
 
     private:
         TLisaConfiguration const* lisa_config;

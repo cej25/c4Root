@@ -3,7 +3,7 @@
 
 #include "FairTask.h"
 #include "TLisaConfiguration.h"
-#include "LisaData.h" // do we need raw?
+#include "LisaData.h" 
 #include "LisaCalData.h"
 #include <vector>
 #include <memory>
