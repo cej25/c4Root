@@ -99,7 +99,7 @@ InitStatus LisaOnlineSpectraDaq::Init()
         int x = detector.second.second.first; 
         int y = detector.second.second.second;
         
-        h1_hitpattern_total->GetXaxis()->SetBinLabel(l * xmax * ymax + (ymax-(y+1))*xmax + x + 1 - 3, city.c_str());
+        //h1_hitpattern_total->GetXaxis()->SetBinLabel(l * xmax * ymax + (ymax-(y+1))*xmax + x + 1 - 3, city.c_str());
     }
 
     //:::::::::Layer
@@ -137,10 +137,12 @@ InitStatus LisaOnlineSpectraDaq::Init()
     dir_stats->cd();
     c_hitpattern_grid = new TCanvas("c_hitpattern_grid", "Hit Pattern Grid", 650, 350);
     c_hitpattern_grid->Divide(layer_number-1, 1, 0.05, 0.05);
-    h2_hitpattern_grid.resize(layer_number-1);
+    h2_hitpattern_grid.resize(layer_number);
     c_hitpattern_grid->SetLogz();
+    c4LOG(info, " before hit pattern layer : " << layer_number );
 
-    for (int i = 0; i < layer_number-1; i++)
+
+    for (int i = 0; i < layer_number; i++)
     {   
 
         c_hitpattern_grid->cd(i+1);
@@ -167,11 +169,11 @@ InitStatus LisaOnlineSpectraDaq::Init()
     //:::::::::::P I L E   U P::::::::::::
     dir_stats->cd();
     c_pileup_grid = new TCanvas("c_pileup_grid", "Pileup Grid", 650, 350);
-    c_pileup_grid->Divide(layer_number-1, 1, 0.05, 0.05);
-    h2_pileup_grid.resize(layer_number-1);
+    c_pileup_grid->Divide(layer_number, 1, 0.05, 0.05);
+    h2_pileup_grid.resize(layer_number);
     //c_hitpattern_grid->SetLogz();
 
-    for (int i = 0; i < layer_number-1; i++)
+    for (int i = 0; i < layer_number; i++)
     {   
 
         c_pileup_grid->cd(i+1);
@@ -198,10 +200,10 @@ InitStatus LisaOnlineSpectraDaq::Init()
     //:::::::::::O V E R   F L O W:::::::::::
     dir_stats->cd();
     c_overflow_grid = new TCanvas("c_overflow_grid", "Over Flow Grid", 650, 350);
-    c_overflow_grid->Divide(layer_number-1, 1, 0.05, 0.05);
-    h2_overflow_grid.resize(layer_number-1);
+    c_overflow_grid->Divide(layer_number, 1, 0.05, 0.05);
+    h2_overflow_grid.resize(layer_number);
 
-    for (int i = 0; i < layer_number-1; i++)
+    for (int i = 0; i < layer_number; i++)
     {   
 
         c_overflow_grid->cd(i+1);
@@ -235,7 +237,7 @@ InitStatus LisaOnlineSpectraDaq::Init()
     c_multiplicity_layer = new TCanvas("c_multiplicity_layer", "Multiplicty by Layer", 650, 350);
     c_multiplicity_layer->Divide(layer_number,1);
     h1_multiplicity_layer.resize(layer_number);
-    for (int i = 0; i < layer_number; i++)
+    for (int i = 0; i < layer_number -1; i++)
     {
         c_multiplicity_layer->cd(i+1);
         h1_multiplicity_layer[i] = new TH1I(Form("Multiplicity Layer %i",i), Form("Multiplicity Layer %i",i), xmax * ymax+1, 0, xmax * ymax+1);
@@ -370,7 +372,7 @@ void LisaOnlineSpectraDaq::Reset_Histo()
     }
     
     //Reset hit grid
-    for (int i = 0; i < layer_number-1; i++)
+    for (int i = 0; i < layer_number; i++)
     {
         h2_hitpattern_grid[i]->Reset();
     }
@@ -413,7 +415,7 @@ void LisaOnlineSpectraDaq::Exec(Option_t* option)
         int pileup = lisaCalItem.Get_pileup();
         int overflow = lisaCalItem.Get_overflow();
         uint64_t evtno = header->GetEventno();
-        //c4LOG(info, " layer : " << layer );
+        c4LOG(info, " exec layer : " << layer << "layer number : "<< layer_number );
         
         //::::::::F I L L   H I S T O S:::::::
         //:::::::: H I T  P A T T E R N ::::::::::
@@ -425,16 +427,15 @@ void LisaOnlineSpectraDaq::Exec(Option_t* option)
         hp_total_bin = layer * xmax * ymax + hp_bin - 3; // -3 is a fudge for uneven layers, temporary
         h1_hitpattern_total->Fill(hp_total_bin);
         //::::::::::By grid
-        h2_hitpattern_grid[layer-1]->Fill(xpos,ypos);
-
+        h2_hitpattern_grid[layer]->Fill(xpos,ypos);
 
         //:::::::::P I L E   UP:::::::::::::
         //::::::::::By grid
-        if (pileup != 0) h2_pileup_grid[layer-1]->Fill(xpos,ypos);
+        if (pileup != 0) h2_pileup_grid[layer]->Fill(xpos,ypos);
 
         //:::::::::O V E R  F L O W:::::::::::::
         //::::::::::By grid
-        if (overflow != 0) h2_overflow_grid[layer-1]->Fill(xpos,ypos);
+        if (overflow != 0) h2_overflow_grid[layer]->Fill(xpos,ypos);
         
         //:::::::: Count Multiplicity ::::::::
         multiplicity[layer]++;
@@ -490,21 +491,22 @@ void LisaOnlineSpectraDaq::Exec(Option_t* option)
 
 
     //::::::: Fill Multiplicity ::::::::::
-    for (int i = 0; i < layer_number; i++) h1_multiplicity_layer[i]->Fill(multiplicity[i]);
-    h1_multiplicity->Fill(total_multiplicity);
+    //for (int i = 0; i < layer_number; i++) h1_multiplicity_layer[i]->Fill(multiplicity[i]);
+    //h1_multiplicity->Fill(total_multiplicity);
+    c4LOG(info, " outside exec layer number: " << layer_number );
 
     for (int i = 0; i < layer_number; i++)
     {
         if(multiplicity[i] != 0) h1_layer_multiplicity->Fill(i);
-        //c4LOG(info," layer number : " << layer_number << " layer : " << layer << " multiplicity [layer] : " << multiplicity[layer] << " multiplicity [i] : " << multiplicity[i]);
+        c4LOG(info," layer number : " << layer_number << " layer : " << layer << " multiplicity [layer] : " << multiplicity[layer] << " multiplicity [i] : " << multiplicity[i]);
     }
 
     for(int i = 0; i < layer_number; i++)
     {
-        //c4LOG(info,"multiplicity : "<< multiplicity[i] << " i : " << i );
+        c4LOG(info,"layer_number : " << layer_number << "multiplicity : "<< multiplicity[i] << " i : " << i );
     }
 
-    //c4LOG(info, "counter again : "<< counter);
+    c4LOG(info, "counter again : "<< counter);
  
     fNEvents += 1;
 }

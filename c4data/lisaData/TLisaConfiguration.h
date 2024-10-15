@@ -17,10 +17,15 @@ class TLisaConfiguration
         static TLisaConfiguration const* GetInstance();
         static void Create();
 
+        static void SetMWDParametersFile(std::string fp) { MWD_file = fp; }
         static void SetMappingFile(std::string fp) { mapping_file = fp; }
         static void SetGMFile(std::string fp) { gain_matching_file = fp; }
         static void SetDetectorCoefficientFile(std::string fp) { calibration_file = fp; }
 
+        //::: MWD Parameters
+        //define parameters and value
+        std::map<std::pair<int,int>, std::pair<std::pair<int,std::string>, std::pair<int,int>>> MWD() const;
+        bool MWDParametersLoaded() const;        
         //:::: Mapping
         //std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> Mapping() const;
         std::map<std::pair<int,int>, std::pair<std::pair<int,std::string>, std::pair<int,int>>> Mapping() const;
@@ -102,17 +107,22 @@ class TLisaConfiguration
 
     private:
 
+
+        static std::string MWD_file;
         static std::string mapping_file;
         static std::string gain_matching_file;
         static std::string calibration_file;
 
         TLisaConfiguration();
+
+        void ReadMWDParameters();
         void ReadMappingFile();
         void ReadGMFile();
         void ReadCalibrationCoefficients();
 
         static TLisaConfiguration* instance;
 
+        std::map<std::pair<int,int>, std::pair<std::pair<int,std::string>, std::pair<int,int>>> MWD_parameters;
         //std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> detector_mapping;
         std::map<std::pair<int,int>, std::pair<std::pair<int,std::string>, std::pair<int,int>>> detector_mapping;
         std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> gain_matching_coeffs;
@@ -131,6 +141,8 @@ class TLisaConfiguration
         int sc41l_d;
         int sc41r_d;
 
+
+        bool MWD_parameters_loaded = 0;
         bool detector_mapping_loaded = 0;
         bool gain_matching_loaded = 0;
         bool detector_calibrations_loaded = 0;
@@ -153,6 +165,11 @@ inline void TLisaConfiguration::Create()
 {
     delete instance;
     instance = new TLisaConfiguration();
+}
+
+inline std::map<std::pair<int,int>, std::pair<std::pair<int,std::string>, std::pair<int,int>>> TLisaConfiguration::MWD() const
+{
+    return MWD_parameters;
 }
 
 //::: Mapping
@@ -201,6 +218,12 @@ inline int TLisaConfiguration::NFebexBoards() const
 {
     return num_febex_boards;
 }
+
+inline bool TLisaConfiguration::MWDParametersLoaded() const
+{
+    return MWD_parameters_loaded;
+}
+
 
 inline bool TLisaConfiguration::MappingLoaded() const
 {
