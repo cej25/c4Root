@@ -19,10 +19,18 @@ class EventHeader : public FairEventHeader
     void SetTimeStamp(const uint64_t timeStamp) { fTimeStamp = timeStamp; }
     inline void SetSpillFlag(bool flag) { fSpillFlag = flag; }
 
+    // bplast metadata
+    void SetBplastUpFired(bool b) { fUpFired = b; }
+    void SetBplastDownFired(bool b) { fDownFired = b; }
+
     uint64_t GetEventno() const { return fEventno; }
     Int_t GetTrigger() const { return fTrigger; }
     uint64_t GetTimeStamp() const { return fTimeStamp; }
     inline bool GetSpillFlag() { return fSpillFlag; }
+
+    // bplast metadata
+    bool GetBplastUpFired() { return fUpFired; }
+    bool GetBplastDownFired() { return fDownFired; }
 
     static void SetRegister(bool option) { fPersistance = option; }
     virtual void Register(Bool_t Persistance) override;
@@ -33,6 +41,10 @@ class EventHeader : public FairEventHeader
     uint64_t fTimeStamp;
     bool fSpillFlag;
     static bool fPersistance;
+
+    // bplast metadata
+    bool fUpFired;
+    bool fDownFired;
 
   public:
     ClassDefOverride(EventHeader, 1)

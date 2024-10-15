@@ -8,6 +8,9 @@ EventHeader::EventHeader()
     , fEventno(0)
     , fTrigger(0)
     , fTimeStamp(0)
+    // , fSpillFlag(0)
+    // , fUpFired(0)
+    // , fDownFired(0)
 {
 }
 

@@ -219,6 +219,9 @@ void bPlastRaw2Cal::Exec(Option_t* option)
     int first_trig3 = 1;
     auto start = std::chrono::high_resolution_clock::now();
 
+    int up_fired = 0;
+    int down_fired = 0;
+
     if (funcal_data && funcal_data->GetEntriesFast() > 1){ // only get events with two hits.or more
         Int_t event_multiplicity = funcal_data->GetEntriesFast();
         // event mulitiplicity loop
@@ -299,6 +302,8 @@ void bPlastRaw2Cal::Exec(Option_t* option)
                     {
                         detector_id = result_find->second.first;
                         if (detector_id == -1) { fNunmatched++; continue; } // if only one event is left
+                        if (detector_id >= 0 && detector_id < 65) up_fired++;
+                        if (detector_id >= 65 && detector_id < 129) down_fired++;
                     }
                     else c4LOG(warn, "Detector mapping is not complete! CEJ: Warning only for now...");
                 }
@@ -388,6 +393,14 @@ void bPlastRaw2Cal::Exec(Option_t* option)
         }
         fExecs++; // count once every time we do something with bplast
     } // if bplast hit exists
+
+    // set bplast metadata in event header
+    if (up_fired > 0) header->SetBplastUpFired(true);
+    else header->SetBplastUpFired(false);
+
+    if (down_fired > 0) header->SetBplastDownFired(true);
+    else header->SetBplastDownFired(false);
+
 
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);

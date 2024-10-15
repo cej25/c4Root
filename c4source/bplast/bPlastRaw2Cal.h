@@ -3,6 +3,7 @@
 
 #include "FairTask.h"
 #include "TbPlastConfiguration.h"
+#include "EventHeader.h"
 
 
 class TClonesArray;
@@ -71,7 +72,7 @@ class bPlastRaw2Cal : public FairTask
         int64_t first_event = 1;
         int64_t current_wr_t = 0;
 
-        EventHeader * header;
+        EventHeader* header;
         Int_t fNEvents = 0;
         Int_t fExecs = 0;
         int total_time_microsecs = 0;

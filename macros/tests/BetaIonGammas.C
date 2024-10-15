@@ -51,9 +51,10 @@ void BetaIonGammas()
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     //TString filename = "~/lustre/gamma/jeroen/S100/cluster/trees/162Eu_new_0025_0001_aidaana.root";
-    TString filename = "~/162_combined.root";
+    //TString filename = "~/162_combined.root";
+    TString filename = "~/lustre/gamma/cjones/162Eu_new_0025_0001_aidaana.root";
     //TString filename = "~/lustre/gamma/s100_nearline/trees/162Eu_0031_0001_tree.root";
-    TString outputpath = "test_BIG_43";
+    TString outputpath = "test_BIG_25_1";
     TString outputFileName = outputpath + ".root";
 
     FairRunAna* run = new FairRunAna();

@@ -78,7 +78,13 @@ void s181_online()
 //    TString filename = "trans://x86l-86"; // ??.
     //TString filename = "trans://lxg1257"; // 
     //TString filename = "stream://x86l-182"; // bgo
+
+
+
     TString filename = "trans://lxg1257"; // timesorter.
+
+
+    
     //TString filename = "trans://R4L-21"; // beammonitor
     // TString filename = "stream://x86l-87"; // bplast
     //TString filename = "stream://x86l-117"; // fatima tamex
@@ -177,8 +183,8 @@ void s181_online()
     if (FATIMA_ON)
     {
         FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-        //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_s181_8June.root", 1 000 000);
-        unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_s181_8June.root");
+        unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_s181_8June.root", 1 000 000);
+        //unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_s181_8June.root");
 
         unpackfatima->SetOnline(true);
         source->AddReader(unpackfatima);

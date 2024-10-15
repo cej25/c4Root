@@ -648,16 +648,11 @@ void FrsCal2Hit::Exec(Option_t* option)
     // 21 -> 41
     int hits_in_tof4121 = hits_in_41lr*hits_in_21lr;
     mhtdc_tof4121 = new Float_t[hits_in_tof4121];
-    //c4LOG(info,hits_in_tof4121);
-    //c4LOG(info,hits_in_41lr);
+    
     for (int i = 0; i < hits_in_41l; i++)
     {
         for (int j = 0; j<hits_in_41r; j++)
         {
-            //c4LOG(info,0.5*sci->mhtdc_factor_ch_to_ns * (mainSciItem.Get_mhtdc_sc41l_hit(i) + mainSciItem.Get_mhtdc_sc41r_hit(j)));
-            //c4LOG(info,sci->mhtdc_factor_ch_to_ns * (mainSciItem.Get_mhtdc_sc41l_hit(i)));
-            //c4LOG(info,sci->mhtdc_factor_ch_to_ns * (mainSciItem.Get_mhtdc_sc41r_hit(j)));
-            //c4LOG(info,sci->mhtdc_factor_ch_to_ns * (mainSciItem.Get_mhtdc_sc41l_hit(i)-mainSciItem.Get_mhtdc_sc41r_hit(j)));
             for (int k = 0; k < hits_in_21l; k++) 
             {
                 for (int l = 0; l<hits_in_21r; l++)

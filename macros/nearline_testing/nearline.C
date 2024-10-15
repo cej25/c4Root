@@ -178,7 +178,6 @@ void nearline()
     {
         FrsNearlineSpectra* nearlinefrs = new FrsNearlineSpectra();
         run->AddTask(nearlinefrs);
-        
     }
     
     if (BEAMMONITOR_ON)

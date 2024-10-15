@@ -1,5 +1,5 @@
-#ifndef BetaIonCorrelations_H
-#define BetaIonCorrelations_H
+#ifndef BetaIonTrees_H
+#define BetaIonTrees_H
 
 #include "AidaCalData.h"
 #include "AidaData.h"
@@ -28,14 +28,14 @@ class TH2F;
 
 using ImplantMap = std::multimap<int64_t, std::pair<AidaHit, std::vector<std::pair<AidaHit, std::vector<GermaniumCalData>>>>>;
 
-class BetaIonCorrelations : public FairTask
+class BetaIonTrees : public FairTask
 {
     public:
-        BetaIonCorrelations();
-        BetaIonCorrelations(std::vector<FrsGate*> fgs);
-        BetaIonCorrelations(const TString& name, Int_t verbose = 1); // used for online, generally not an online task
+        BetaIonTrees();
+        BetaIonTrees(std::vector<FrsGate*> fgs);
+        BetaIonTrees(const TString& name, Int_t verbose = 1); // used for online, generally not an online task
 
-        virtual ~BetaIonCorrelations();
+        virtual ~BetaIonTrees();
 
         virtual InitStatus Init();
 
@@ -67,41 +67,51 @@ class BetaIonCorrelations : public FairTask
         TDirectory* dir_beta_gamma;
         bool found_dir_corrs = true;
 
-        // Histograms
-
-
-
-        // Integers
-        int nFrsHitsAll = 0;
-        int nNoFrs = 0;
-        int nPassFrsGate[8];
-        int nImplants[8];
-        int nGates = 0;
-        int nCorrelated = 0;
-        double mean_lifetime;
-        double correlation_window;
-
-        int totalImplants = 0;
      
-    
+
+      
+
+        std::multimap<int64_t , AidaHit> implantMap;
+        std::multimap<int64_t, std::pair<AidaHit, std::vector<std::pair<AidaHit,std::vector<GermaniumCalData*>>>>> implant_map;
+        std::multimap<int64_t, AidaHit> implantMapBkg;
+        std::multimap<int64_t, std::pair<AidaHit, std::vector<AidaHit>>> CandidateMap; 
+        //std::multimap<int64_t, std::pair<AidaHit, AidaHit>> implant_decay_map;
+        std::multimap<int64_t, std::pair<AidaHit, std::pair<AidaHit,std::vector<GermaniumCalData*>>>> implant_decay_map;
+
         // can read these values from correlations.dat if needed
         Int_t WR_AIDA_GE_LO = -18000;
         Int_t WR_AIDA_GE_HI = -12000;
-        Int_t WR_AIDA_GE_BKG_LO = -10000;
-        Int_t WR_AIDA_GE_BKG_HI = -2000;
 
+        Int_t AidaFB_dTcond = 3000;
+        Int_t AidaFB_dEcond = 200;
         Int_t FrontBack_dT = 3000;
         Int_t FrontBack_dE = 200;
 
+        double corrTime = 75e9;
+        double longBkg = 200e9;
 
-       
+        // ns->s * n_halflives * halflife
+        int64_t correlation_window;
+        // halflife / ln(2)
+        int64_t mean_lifetime;
+
+        int nImplants = 0;
+        int nDecays = 0;
+        int nDecaysTotal = 0;
+        int nGammas = 0;
+        int nPass = 0;
+        int nID_Pairs = 0;
+
+        int nGammasInRange = 0;
+        int nGammasOutOfRange = 0;
+
 
         Int_t fNEvents;
         EventHeader* header;
 
 
     public:
-        ClassDef(BetaIonCorrelations, 1)
+        ClassDef(BetaIonTrees, 1)
 };
 
 #endif
