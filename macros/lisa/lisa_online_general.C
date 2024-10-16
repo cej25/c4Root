@@ -2,8 +2,8 @@
 //............
 // Switch all tasks related to LISA :::  on (1)/off (0) :::
 #define LISA_ON 1       //always on
-#define LISA_DAQ 0      //diplay all the channels from the boards (mapped up to 3 boards)
-#define LISA_2x2 1      //display with pareesksha 2x2 mapping system
+#define LISA_DAQ 1      //diplay all the channels from the boards (mapped up to 3 boards)
+#define LISA_2x2 0      //display with pareesksha 2x2 mapping system
 // WR syncronization
 #define WR_ENABLED 0
 
@@ -59,8 +59,8 @@ void lisa_online_general()
     //TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
 
     //___O F F L I N E
-    //TString filename = "/u/gandolfo/lisa_test/daq_test/lmd/test_DAQ_pin_header.lmd";  //data with only lisa
-    TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/run_0072_0001.lmd";  //data with only lisa
+    TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/daq_test/test_DAQ_pin_header_2boards_full.lmd";  //data with only lisa
+    //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/run_0072_0001.lmd";  //data with only lisa
 
     //___O U T P U T - only used if switched on 
     TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/";
@@ -157,8 +157,8 @@ void lisa_online_general()
     // Set Ranges for online histos
 
     //::::  Channel Energy ::::: (h1_energy_layer_ch)
-    TLisaConfiguration::SetEnergyRange(0,300000);
-    TLisaConfiguration::SetEnergyBin(900);
+    TLisaConfiguration::SetEnergyRange(0,5000000);
+    TLisaConfiguration::SetEnergyBin(10000);
 
     //:::: LISA WR Time Difference :::::: (h1_wr_diff)
     TLisaConfiguration::SetWrDiffRange(0,100000000);

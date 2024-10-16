@@ -48,7 +48,7 @@ class LisaReader : public c4Reader
 
         Bool_t fOnline;
 
-        int NBoards = 1;
+        int NBoards = 2;
         
         int32_t energy;
 

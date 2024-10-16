@@ -136,7 +136,7 @@ InitStatus LisaOnlineSpectraDaq::Init()
     //:::::::::::H I T  P A T T E R N - by grid ::::::::::::::::::
     dir_stats->cd();
     c_hitpattern_grid = new TCanvas("c_hitpattern_grid", "Hit Pattern Grid", 650, 350);
-    c_hitpattern_grid->Divide(layer_number-1, 1, 0.05, 0.05);
+    c_hitpattern_grid->Divide(layer_number, 1, 0.05, 0.05);
     h2_hitpattern_grid.resize(layer_number);
     c_hitpattern_grid->SetLogz();
     c4LOG(info, " before hit pattern layer : " << layer_number );
@@ -415,7 +415,7 @@ void LisaOnlineSpectraDaq::Exec(Option_t* option)
         int pileup = lisaCalItem.Get_pileup();
         int overflow = lisaCalItem.Get_overflow();
         uint64_t evtno = header->GetEventno();
-        c4LOG(info, " exec layer : " << layer << "layer number : "<< layer_number );
+        //c4LOG(info, " exec layer : " << layer << "layer number : "<< layer_number );
         
         //::::::::F I L L   H I S T O S:::::::
         //:::::::: H I T  P A T T E R N ::::::::::
@@ -493,7 +493,7 @@ void LisaOnlineSpectraDaq::Exec(Option_t* option)
     //::::::: Fill Multiplicity ::::::::::
     //for (int i = 0; i < layer_number; i++) h1_multiplicity_layer[i]->Fill(multiplicity[i]);
     //h1_multiplicity->Fill(total_multiplicity);
-    c4LOG(info, " outside exec layer number: " << layer_number );
+    //c4LOG(info, " outside exec layer number: " << layer_number );
 
     for (int i = 0; i < layer_number; i++)
     {

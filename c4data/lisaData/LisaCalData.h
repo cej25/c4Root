@@ -51,8 +51,8 @@ class LisaCalData : public TObject
         std::vector<uint32_t> f_raw_energy;
         std::vector<uint32_t> f_raw_traces;
         
-        //uint64_t f_board_event_t;
-        //uint64_t f_channel_event_t;
+        uint64_t f_board_event_t;
+        uint64_t f_channel_event_t;
 
 
     
@@ -74,9 +74,9 @@ class LisaCalItem : public TObject
                     int e,
                     std::vector<uint16_t> tr,
                     double e_GM,
+                    uint64_t evt_t,
+                    uint64_t ch_t,
                     uint64_t evtno,
-                    //uint64_t evt_t,
-                    //uint64_t ch_t,
                     int pu,
                     int ov); 
         void Reset();
@@ -89,9 +89,9 @@ class LisaCalItem : public TObject
         uint32_t Get_energy() const;
         std::vector<uint16_t> Get_trace() const;
         double Get_energy_GM() const;
-        //uint64_t Get_evtno();
-        //uint64_t Get_board_event_time();
-        //uint64_t Get_channel_event_time();
+        // uint64_t Get_board_eventt_time();
+        // uint64_t Get_channel_event_time();
+        uint64_t Get_evtno();
         int Get_pileup() const;
         int Get_overflow() const;
 
@@ -106,9 +106,9 @@ class LisaCalItem : public TObject
         uint32_t energy; // double? int?
         std::vector<uint16_t> trace;
         double energy_GM;
+        uint64_t board_event_time;
+        uint64_t ch_event_time;
         uint64_t event_no;
-        //uint64_t evt_t;
-        //uint64_t ch_t;
         int pileup;
         int overflow;
         // timing info for correlations
@@ -150,6 +150,21 @@ inline std::vector<uint16_t> LisaCalItem::Get_trace() const
     return trace;
 }
 
+inline double LisaCalItem::Get_energy_GM() const
+{
+    return energy_GM;
+}
+
+// inline uint64_t LisaCalItem::Get_board_event_time() const
+// {
+//     return board_event_time;
+// }
+
+// inline uint64_t LisaCalItem::Get_channel_event_time() const
+// {
+//     return ch_event_time;
+// }
+
 inline int LisaCalItem::Get_pileup() const
 {
     return pileup;
@@ -160,21 +175,5 @@ inline int LisaCalItem::Get_overflow() const
     return overflow;
 }
 
-inline double LisaCalItem::Get_energy_GM() const
-{
-    return energy_GM;
-}
-
-/*
-inline uint64_t LisaCalItem::Get_board_evt_t() const
-{
-    return evt_t;
-}
-
-inline uint64_t LisaCalItem::Get_board_ch_t() const
-{
-    return ch_t;
-}
-*/
 
 #endif
