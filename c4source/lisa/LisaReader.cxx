@@ -118,7 +118,7 @@ Bool_t LisaReader::Read()
             }
             //std::cout<< "Size of trace? : " << sizeof(fData->lisa_data[it_board_number].traces) <<std::endl;
 
-            // //::::::::::::::Channel Traces
+            // //::::::::::::::Channel Traces with ID from event header
             // for (int l = 0 ; l < fData->lisa_data[it_board_number].traces[channel_id]._ ; l++)
             // {
             //     trace.emplace_back(fData->lisa_data[it_board_number].traces[channel_id].v[l]);    

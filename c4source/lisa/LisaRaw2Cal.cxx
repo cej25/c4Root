@@ -77,9 +77,7 @@ void LisaRaw2Cal::Exec(Option_t* option)
     lisaCalArray->clear();
 
     for (auto const & lisaItem : *lisaArray)
-    {
-        
-                
+    {          
         std::pair<int, int> unmapped_channel = {lisaItem.Get_board_id(), lisaItem.Get_channel_id_traces()};
         //Get_channel_id_traces() when taking the id information from the trace header
         //Get_channel_id() when taking the id information from the header
@@ -158,8 +156,8 @@ void LisaRaw2Cal::Exec(Option_t* option)
                     lisaItem.Get_channel_energy(),
                     lisaItem.Get_trace(),
                     energy_GM,
-                    //lisaItem.Get_board_event_time(),
-                    //lisaItem.Get_channel_time(),
+                    lisaItem.Get_board_event_time(),
+                    lisaItem.Get_channel_time(),
                     EVTno,
                     lisaItem.Get_pileup(),
                     lisaItem.Get_overflow()

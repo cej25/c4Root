@@ -65,7 +65,8 @@ void pareeksha_make_trees(int fileNumber)
     TString filename = Form(inputpath + "run_%04d_*.lmd", fileNumber);
 
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/elisa/";
+    //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/elisa/";
+    TString outputpath = "/u/gandolfo/lisa_test/pareeksha_trees/";    
     TString outputFilename = Form(outputpath + "run_%04d_EG.root", fileNumber);
 
 
@@ -119,6 +120,7 @@ void pareeksha_make_trees(int fileNumber)
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     TLisaConfiguration::SetMappingFile(config_path + "/lisa/Lisa_Detector_Map_names.txt");
     TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching.txt");
+    TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
 
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
