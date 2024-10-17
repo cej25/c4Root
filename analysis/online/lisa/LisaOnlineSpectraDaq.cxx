@@ -301,7 +301,6 @@ InitStatus LisaOnlineSpectraDaq::Init()
 
     c_traces_layer_ch.resize(layer_number);
     h1_traces_layer_ch.resize(layer_number);
-
     //:::::::::::Traces canvas for each layer   
     for (int i = 0; i < layer_number; i++) 
     {
@@ -329,6 +328,8 @@ InitStatus LisaOnlineSpectraDaq::Init()
 
                 h1_traces_layer_ch[i][j][k] = new TH1F(Form("traces_%i_%i_%i_%s", i, j, k, city.c_str()), city.c_str(), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces); //2000,0,20
                 h1_traces_layer_ch[i][j][k]->GetXaxis()->SetTitle("Time [us]");
+                h1_traces_layer_ch[i][j][k]->SetMinimum(lisa_config->AmplitudeMin);
+                h1_traces_layer_ch[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
                 h1_traces_layer_ch[i][j][k]->SetStats(0);
                 h1_traces_layer_ch[i][j][k]->SetLineColor(kBlue+1);
                 h1_traces_layer_ch[i][j][k]->SetFillColor(kOrange-3);
@@ -476,6 +477,7 @@ void LisaOnlineSpectraDaq::Exec(Option_t* option)
     }
 
     //c4LOG(info, "::::::::::END LOOP::::::::::::" << " Layer number :" << layer_number);
+
 
     //c4LOG(info, " layer : "<<layer << " multiplicity layer : "<<multiplicity[layer]);
     if ( wr_time == 0 ) return;

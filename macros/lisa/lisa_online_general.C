@@ -167,8 +167,8 @@ void lisa_online_general()
     //:::: LISA Traces Time and Amplitude Ranges :::::: (h1_traces_layer_ch)
     TLisaConfiguration::SetTracesRange(0,20);
     TLisaConfiguration::SetTracesBin(2000);
-    TLisaConfiguration::SetAmplitudeMin(2000);
-    TLisaConfiguration::SetAmplitudeMax(9000);
+    TLisaConfiguration::SetAmplitudeMin(0);
+    TLisaConfiguration::SetAmplitudeMax(16000);
     
 
     //::::::: Initialise
