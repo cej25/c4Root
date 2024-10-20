@@ -1,6 +1,3 @@
-// WIP
-// ::::::::  TO BE MODIFIED :::::
-
 // FairRoot
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -10,7 +7,7 @@
 
 // c4
 #include "EventHeader.h"
-#include "LisaNearlineSpectra.h"
+#include "LisaNearlineSpectraDaq.h"
 #include "c4Logger.h"
 
 #include "TCanvas.h"
@@ -27,33 +24,31 @@
 #include "TColor.h"
 #include "TStyle.h"
 
-LisaNearlineSpectra::LisaNearlineSpectra()  :   LisaNearlineSpectra("LisaNearlineSpectra")
+LisaNearlineSpectraDaq::LisaNearlineSpectraDaq()  :   LisaNearlineSpectraDaq("LisaNearlineSpectraDaq")
 {
     lisa_config = TLisaConfiguration::GetInstance();
 }
 
-LisaNearlineSpectra::LisaNearlineSpectra(const TString& name, Int_t verbose)
+LisaNearlineSpectraDaq::LisaNearlineSpectraDaq(const TString& name, Int_t verbose)
     : FairTask(name, verbose)
-    // , fHitLisa(NULL)
     , fNEvents(0)
     , header(nullptr)
-    // ranges
 {
     lisa_config = TLisaConfiguration::GetInstance();
 }
 
-LisaNearlineSpectra::~LisaNearlineSpectra()
+LisaNearlineSpectraDaq::~LisaNearlineSpectraDaq()
 {
     c4LOG(info, "");
 }
 
-void LisaNearlineSpectra::SetParContainers()
+void LisaNearlineSpectraDaq::SetParContainers()
 {
     FairRuntimeDb *rtdb = FairRuntimeDb::instance();
     c4LOG_IF(fatal, NULL == rtdb, "FairRuntimeDb not found.");
 }
 
-InitStatus LisaNearlineSpectra::Init()
+InitStatus LisaNearlineSpectraDaq::Init()
 {
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
@@ -79,41 +74,37 @@ InitStatus LisaNearlineSpectra::Init()
     dir_stats = dir_lisa->mkdir("Stats");
     dir_energy = dir_lisa->mkdir("Energy");
     dir_traces = dir_lisa->mkdir("Traces");
-    
-    // layer names: Tokyo, Eris, Sparrow
-  
+      
     //:::::::::::White Rabbit:::::::::::::::
-    dir_stats->cd();
-    h1_wr_diff = new TH1I("h1_wr_diff", "WR Difference", lisa_config->bin_wr_diff, lisa_config->min_wr_diff, lisa_config->max_wr_diff);
-    h1_wr_diff->GetXaxis()->SetTitle("LISA WR Difference [ns]");
-    h1_wr_diff->SetLineColor(kBlack);
-    h1_wr_diff->SetFillColor(kRed-3);
+    // dir_stats->cd();
+    // h1_wr_diff = new TH1I("h1_wr_diff", "WR Difference", lisa_config->bin_wr_diff, lisa_config->min_wr_diff, lisa_config->max_wr_diff);
+    // h1_wr_diff->GetXaxis()->SetTitle("LISA WR Difference [ns]");
+    // h1_wr_diff->SetLineColor(kBlack);
+    // h1_wr_diff->SetFillColor(kRed-3);
 
     //:::::::::::H I T  P A T T E R N S:::::::::::::::
     //:::::::::::Total
-    dir_stats->cd();
-    h1_hitpattern_total = new TH1I("h1_hitpattern_total", "Hit Pattern", det_number, 0, det_number);
-    for (auto & detector : detector_mapping)
-    {
-        int l = detector.second.first.first;
-        city = detector.second.first.second;
-        int x = detector.second.second.first; 
-        int y = detector.second.second.second;
+    // dir_stats->cd();
+    // h1_hitpattern_total = new TH1I("h1_hitpattern_total", "Hit Pattern", det_number, 0, det_number);
+    // for (auto & detector : detector_mapping)
+    // {
+    //     int l = detector.second.first.first;
+    //     city = detector.second.first.second;
+    //     int x = detector.second.second.first; 
+    //     int y = detector.second.second.second;
         
-        // special case for weird layer
-        if (l != 0) h1_hitpattern_total->GetXaxis()->SetBinLabel(l * xmax * ymax + (ymax-(y+1))*xmax + x + 1 - 3, city.c_str());
-        else h1_hitpattern_total->GetXaxis()->SetBinLabel(1, city.c_str());
-    }
+    //     h1_hitpattern_total->GetXaxis()->SetBinLabel(1, city.c_str());
+    // }
 
     //:::::::::Layer
     c_hitpattern_layer = new TCanvas("c_hitpattern_layer", "Hit Pattern by Layer", 650, 350);
-    c_hitpattern_layer->Divide(2, (layer_number+1)/2);
+    c_hitpattern_layer->Divide(layer_number,1);
     h1_hitpattern_layer.resize(layer_number);
     for (int i = 0; i < layer_number; i++)
     {   
         c_hitpattern_layer->cd(i+1);
         h1_hitpattern_layer[i] = new TH1I(Form("h1_hitpattern_layer_%i", i), Form("Hit Pattern - Layer: %i", i), xmax * ymax, 0, xmax * ymax);
-        h1_hitpattern_layer[i]->SetStats(0);
+        //h1_hitpattern_layer[i]->SetStats(0);
         h1_hitpattern_layer[i]->Draw();
 
         for (int j = 0; j < xmax * ymax; j++)
@@ -139,14 +130,16 @@ InitStatus LisaNearlineSpectra::Init()
     //:::::::::::H I T  P A T T E R N - by grid ::::::::::::::::::
     dir_stats->cd();
     c_hitpattern_grid = new TCanvas("c_hitpattern_grid", "Hit Pattern Grid", 650, 350);
-    c_hitpattern_grid->Divide(layer_number-1);
-    h2_hitpattern_grid.resize(layer_number-1);
+    c_hitpattern_grid->Divide(layer_number);
+    h2_hitpattern_grid.resize(layer_number);
     c_hitpattern_grid->SetLogz();
 
-    for (int i = 0; i < layer_number-1; i++)
+    for (int i = 0; i < layer_number; i++)
     {   
 
         c_hitpattern_grid->cd(i+1);
+        gPad->SetLeftMargin(0.15);
+        gPad->SetRightMargin(0.15);
         h2_hitpattern_grid[i] = new TH2F(Form("h2_hitpattern_grid_layer_%i", i), Form("Hit Pattern Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
         h2_hitpattern_grid[i]->SetStats(0);
         h2_hitpattern_grid[i]->Draw("colz");
@@ -157,7 +150,7 @@ InitStatus LisaNearlineSpectra::Init()
         h2_hitpattern_grid[i]->GetYaxis()->SetTickLength(0);
         h2_hitpattern_grid[i]->SetMinimum(1);
         h2_hitpattern_grid[i]->SetContour(100);
-        
+        gPad->SetLogz();
     }
     
     c_hitpattern_grid->cd();
@@ -166,14 +159,16 @@ InitStatus LisaNearlineSpectra::Init()
     //:::::::::::P I L E   U P::::::::::::
     dir_stats->cd();
     c_pileup_grid = new TCanvas("c_pileup_grid", "Pileup Grid", 650, 350);
-    c_pileup_grid->Divide(layer_number-1);
-    h2_pileup_grid.resize(layer_number-1);
+    c_pileup_grid->Divide(layer_number);
+    h2_pileup_grid.resize(layer_number);
     c_hitpattern_grid->SetLogz();
 
-    for (int i = 0; i < layer_number-1; i++)
+    for (int i = 0; i < layer_number; i++)
     {   
 
         c_pileup_grid->cd(i+1);
+        gPad->SetLeftMargin(0.15);
+        gPad->SetRightMargin(0.15);
         h2_pileup_grid[i] = new TH2F(Form("h2_pileup_grid_layer_%i", i), Form("Pile Up Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
         h2_pileup_grid[i]->SetStats(0);
         h2_pileup_grid[i]->Draw("COLZ");
@@ -183,6 +178,7 @@ InitStatus LisaNearlineSpectra::Init()
         h2_pileup_grid[i]->GetYaxis()->SetLabelSize(0);
         h2_pileup_grid[i]->GetYaxis()->SetTickLength(0);
         h2_pileup_grid[i]->SetMinimum(1);
+        gPad->SetLogz();
         
     }
     
@@ -191,48 +187,51 @@ InitStatus LisaNearlineSpectra::Init()
 
     //:::::::::::O V E R   F L O W:::::::::::
     dir_stats->cd();
-    c_overflow_grid = new TCanvas("c_overflow_grid", "Over Flow Grid", 650, 350);
-    c_overflow_grid->Divide(layer_number-1);
-    h2_overflow_grid.resize(layer_number-1);
+    c_overflow_grid = new TCanvas("c_overflow_grid", "Overflow Grid", 650, 350);
+    c_pileup_grid->Divide(layer_number);
+    h2_overflow_grid.resize(layer_number);
+    c_hitpattern_grid->SetLogz();
 
-    for (int i = 0; i < layer_number-1; i++)
+    for (int i = 0; i < layer_number; i++)
     {   
 
         c_overflow_grid->cd(i+1);
-        h2_overflow_grid[i] = new TH2F(Form("h2_overflow_grid_layer_%i", i), Form("Over Flow Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
+        gPad->SetLeftMargin(0.15);
+        gPad->SetRightMargin(0.15);
+        h2_overflow_grid[i] = new TH2F(Form("h2_overflow_grid_layer_%i", i), Form("Overflow Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
         h2_overflow_grid[i]->SetStats(0);
         h2_overflow_grid[i]->Draw("COLZ");
-        h2_overflow_grid[i]->GetXaxis()->SetTitle(Form("Over Flow Layer %i",i+1));
+        h2_overflow_grid[i]->GetXaxis()->SetTitle(Form("Overflow Layer %i",i+1));
         h2_overflow_grid[i]->GetXaxis()->SetLabelSize(0);
         h2_overflow_grid[i]->GetXaxis()->SetTickLength(0);
         h2_overflow_grid[i]->GetYaxis()->SetLabelSize(0);
         h2_overflow_grid[i]->GetYaxis()->SetTickLength(0);
         h2_overflow_grid[i]->SetMinimum(1);
+        gPad->SetLogz();
         
     }
     
     c_overflow_grid->cd();
     dir_stats->Append(c_overflow_grid);
-
     //:::::::::::M U L T I P L I C I T Y:::::::::::::::
 
-    //:::::::::::Total Multiplicity
-    h1_multiplicity = new TH1I("h1_multiplicity", "Total Multiplicity", det_number, 0, det_number+1);
-    h1_multiplicity->SetStats(0);
+    // //:::::::::::Total Multiplicity
+    // h1_multiplicity = new TH1I("h1_multiplicity", "Total Multiplicity", det_number, 0, det_number+1);
+    // h1_multiplicity->SetStats(0);
     
-    //:::::::::::Multiplicity per layer
-    c_multiplicity_layer = new TCanvas("c_multiplicity_layer", "Multiplicty by Layer", 650, 350);
-    c_multiplicity_layer->Divide(2, (layer_number + 1)/2);
-    h1_multiplicity_layer.resize(layer_number);
-    for (int i = 0; i < layer_number; i++)
-    {
-        c_multiplicity_layer->cd(i+1);
-        h1_multiplicity_layer[i] = new TH1I(Form("Multiplicity_Layer_%i",i), Form("Multiplicity Layer %i",i), xmax * ymax+1, 0, xmax * ymax+1);
-        h1_multiplicity_layer[i]->SetStats(0);
-        h1_multiplicity_layer[i]->Draw();
-    }
-    c_multiplicity_layer->cd(0);
-    dir_stats->Append(c_multiplicity_layer);
+    // //:::::::::::Multiplicity per layer
+    // c_multiplicity_layer = new TCanvas("c_multiplicity_layer", "Multiplicty by Layer", 650, 350);
+    // c_multiplicity_layer->Divide(2, (layer_number + 1)/2);
+    // h1_multiplicity_layer.resize(layer_number);
+    // for (int i = 0; i < layer_number; i++)
+    // {
+    //     c_multiplicity_layer->cd(i+1);
+    //     h1_multiplicity_layer[i] = new TH1I(Form("Multiplicity_Layer_%i",i), Form("Multiplicity Layer %i",i), xmax * ymax+1, 0, xmax * ymax+1);
+    //     h1_multiplicity_layer[i]->SetStats(0);
+    //     h1_multiplicity_layer[i]->Draw();
+    // }
+    // c_multiplicity_layer->cd(0);
+    // dir_stats->Append(c_multiplicity_layer);
 
     //:::::::::::Layer Multiplicity
     h1_layer_multiplicity = new TH1I("h1_layer_multiplicity", "Layer Multiplicity", layer_number, 0, layer_number);
@@ -241,195 +240,73 @@ InitStatus LisaNearlineSpectra::Init()
     //:::::::::::::E N E R G Y:::::::::::::::::
     dir_energy->cd();
 
-    // //:::::::: Gain Matched + Calibrated Energies 
-    // h1_energy_layer_ch_GM.resize(layer_number);
-    // //::::::::::Energy for now special case layer 0
-    // h1_energy_layer_ch_GM[0].resize(1);
-    // h1_energy_layer_ch_GM[0][0].resize(1);
-    // h1_energy_layer_ch_GM[0][0][0] = new TH1F("tokyo_GM_fake", "Tokyo_GM_fake_ch", lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
-    // h1_energy_layer_ch_GM[0][0][0]->Draw();
-    //:::::::::::Energy canvas GM for layer 1 and 2
-    //for (int i = 1; i < layer_number; i++) //create a canvas for each layer
-    //{
+    c_energy_layer_ch.resize(layer_number);
+    h1_energy_layer_ch.resize(layer_number);
 
-        //h1_energy_layer_ch_GM[i].resize(xmax);
-        
-        //for (int j = 0; j < xmax; j++)
-        //{
-            //h1_energy_layer_ch_GM[i][j].resize(ymax);
-            //for (int k = 0; k < ymax; k++)
-            //{   
-                // general formula to place correctly on canvas for x,y coordinates
-                //c_energy_layer_ch[i]->cd((ymax-(k+1))*xmax + j + 1);
-                
-            //    city = "";
-            //    for (auto & detector : detector_mapping)
-            //    {
-            //        if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
-            //        {
-            //            city = detector.second.first.second;
-            //            break;
-            //        }
-            //    }
-
-                // h1_energy_layer_ch_GM[i][j][k] = new TH1F(Form("energy_%s_%i_%i_%i_GM", city.c_str(), i, j, k), city.c_str(), lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
-                // h1_energy_layer_ch_GM[i][j][k]->GetXaxis()->SetTitle("E(LISA) [MeV]");
-                // h1_energy_layer_ch_GM[i][j][k]->SetLineColor(kBlue+1);
-                // h1_energy_layer_ch_GM[i][j][k]->Draw();
-            //}
-        //}
-
-    //}
-    
-    //Gain Matched + Calibrated with summed stats for layer
-    h1_energy_layer_GM.resize(layer_number);
-    //::::::::::Energy for now special case layer 0
-    h1_energy_layer_GM[0] = new TH1F("tokyo_layer_GM_fake", "Tokyo_GM_fake_layer", lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
-    h1_energy_layer_GM[0]->Draw();
-
-     //:::::::::::Energy GM for layer 1 and layer 2 (summed stats between detectors in layer)
-    for (int i = 1; i < layer_number; i++) //create a canvas for each layer
-    {          
-        h1_energy_layer_GM[i] = new TH1F(Form("energy_layer_%i_GM_all_detectors", i), Form("energy_layer_%i_GM_all_detectors", i), lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
-        h1_energy_layer_GM[i]->GetXaxis()->SetTitle(Form("E(LISA) Layer %i [MeV]",i));
-        h1_energy_layer_GM[i]->SetLineColor(i);
-        h1_energy_layer_GM[i]->Draw();   
-    }
-  
-    //::::::::::: Energy Layer 1 vs Energy Layer 2 - stats of all dets together
-    h2_energy_layer1_vs_layer2_GM = new TH2F("h2_energy_layer1_vs_layer2_GM", "E(Layer 1) vs E(Layer 2) GM", lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM,lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM); 
-    h2_energy_layer1_vs_layer2_GM->Draw("colz");
-    h2_energy_layer1_vs_layer2_GM->GetXaxis()->SetTitle(Form("Energy - Layer 2 [MeV]"));
-    h2_energy_layer1_vs_layer2_GM->GetYaxis()->SetTitle(Form("Energy - Layer 1 [MeV]"));
-    
-    //::::::::::::Sum Energy Layer 1 vs Layer 2 GAIN MATCHED
-    h2_sum_energy_layer1_vs_layer2_GM = new TH2F("h2_sum_energy_layer1_vs_layer2_GM", "Sum E(Layer 1) vs Sum E(Layer 2) GM", lisa_config->bin_energy_GM*4, lisa_config->min_energy_GM*4, lisa_config->max_energy_GM*4,lisa_config->bin_energy_GM*4, lisa_config->min_energy_GM*4, lisa_config->max_energy_GM*4); 
-    h2_sum_energy_layer1_vs_layer2_GM->Draw("colz");
-    h2_sum_energy_layer1_vs_layer2_GM->GetXaxis()->SetTitle(Form("Layer 2 E[MeV]"));
-    h2_sum_energy_layer1_vs_layer2_GM->GetYaxis()->SetTitle(Form("Layer 1 E[MeV]"));
-
-    //::::::::::: E N E R G Y  VS  T I M E::::::::::::
-    dir_energy->cd();
-    c_energy_layer_vs_time = new TCanvas("c_energy_layer_vs_wr","c_energy_layer_vs_wr", 650,350);
-    c_energy_layer_vs_time->Divide(1,3);
-    hG_energy_layer_vs_time.resize(layer_number);
-
-    for (int i = 0; i < layer_number; i++)
+    //:::::::::::Energy canvas for all layers
+    for (int i = 0; i < layer_number; i++) //create a canvas for each layer
     {
-        c_energy_layer_vs_time->cd(i+1);
-        hG_energy_layer_vs_time[i] = new TGraph(1);
-        hG_energy_layer_vs_time[i]->SetName(Form("hG_energy_layer%i_vs_time",i));
-        hG_energy_layer_vs_time[i]->SetTitle(Form("E(Layer %i) vs WR",i));
-        hG_energy_layer_vs_time[i]->GetXaxis()->SetTimeDisplay(1);
-        hG_energy_layer_vs_time[i]->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
-        hG_energy_layer_vs_time[i]->GetXaxis()->SetTimeOffset(0, "local");
-        hG_energy_layer_vs_time[i]->GetYaxis()->SetTitle(Form("Energy Layer %i",i));
-        hG_energy_layer_vs_time[i]->GetXaxis()->SetTitle("WR Time [Y-M-D H:M]");
-        hG_energy_layer_vs_time[i]->SetMarkerColor(kBlack);
-        hG_energy_layer_vs_time[i]->SetMarkerStyle(20);
-        hG_energy_layer_vs_time[i]->SetLineColor(kBlue);
-        hG_energy_layer_vs_time[i]->SetLineWidth(2);
-        hG_energy_layer_vs_time[i]->GetXaxis()->SetNdivisions(-4);
-        hG_energy_layer_vs_time[i]->Draw();
-
-    }
-    
-    c_energy_layer_vs_time->cd(0);
-    dir_energy->Append(c_energy_layer_vs_time);
-    
-    //::::::::::: Each Energy Channel vs WR Time
-    dir_energy->cd();
-    c_energy_layer_ch_vs_time.resize(layer_number);
-    hG_energy_layer_ch_vs_time.resize(layer_number);
-
-    //::::::::::Energy vs WR Time - for now special case layer 0
-    c_energy_layer_ch_vs_time[0] = new TCanvas("c_energy_layer_0_ch_vs_wrtime", "Tokyo layer", 650, 350);
-    hG_energy_layer_ch_vs_time[0].resize(1);
-    hG_energy_layer_ch_vs_time[0][0].resize(1);
-
-    hG_energy_layer_ch_vs_time[0][0][0] = new TGraph(1);
-    hG_energy_layer_ch_vs_time[0][0][0]->SetName("Energy vs WR for 000");
-    hG_energy_layer_ch_vs_time[0][0][0]->SetTitle("E(000) vs WR");
-    hG_energy_layer_ch_vs_time[0][0][0]->GetXaxis()->SetTimeDisplay(1);
-    hG_energy_layer_ch_vs_time[0][0][0]->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
-    hG_energy_layer_ch_vs_time[0][0][0]->GetXaxis()->SetTimeOffset(0, "local");
-    hG_energy_layer_ch_vs_time[0][0][0]->GetYaxis()->SetTitle("Energy 000");
-    hG_energy_layer_ch_vs_time[0][0][0]->GetXaxis()->SetTitle("WR Time [Y-M-D H:M]");
-    hG_energy_layer_ch_vs_time[0][0][0]->SetMarkerColor(kBlack);
-    hG_energy_layer_ch_vs_time[0][0][0]->SetMarkerStyle(20);
-    hG_energy_layer_ch_vs_time[0][0][0]->SetLineColor(kBlue);
-    hG_energy_layer_ch_vs_time[0][0][0]->SetLineWidth(2);
-    hG_energy_layer_ch_vs_time[0][0][0]->GetXaxis()->SetNdivisions(-4);
-    hG_energy_layer_ch_vs_time[0][0][0]->Draw();
-    //dir_energy->Append(c_energy_layer_ch_vs_time[0]);
-
-    //::::::::::::Energy vs WR Time - Eris and Sparrow
-    for (int i = 1; i < layer_number; i++) //create a canvas for each layer (not Tokyo)
-    {
-        c_energy_layer_ch_vs_time[i] = new TCanvas(Form("c_energy_layer_%d_ch_vs_wrtime",i),Form("c_energy_layer_%d_ch_vs_wrtime",i), 650,350);
-        c_energy_layer_ch_vs_time[i]->SetTitle(Form("Layer %d - Energy vs WR Time",i));
-        c_energy_layer_ch_vs_time[i]->Divide(xmax,ymax); 
-        hG_energy_layer_ch_vs_time[i].resize(xmax);
+        c_energy_layer_ch[i] = new TCanvas(Form("c_energy_layer_%d",i),Form("c_energy_layer_%d",i), 650,350);
+        c_energy_layer_ch[i]->SetTitle(Form("Layer %d - Energy",i));
+        c_energy_layer_ch[i]->Divide(xmax,ymax);
+        h1_energy_layer_ch[i].resize(xmax);
         
         for (int j = 0; j < xmax; j++)
         {
-            hG_energy_layer_ch_vs_time[i][j].resize(ymax);
+            h1_energy_layer_ch[i][j].resize(ymax);
             for (int k = 0; k < ymax; k++)
             {   
-                // general formula to place correctly on canvas for x,y coordinates
-                c_energy_layer_ch_vs_time[i]->cd((ymax-(k+1))*xmax + j + 1);
+                //general formula to place correctly on canvas for x,y coordinates
+                c_energy_layer_ch[i]->cd((ymax-(k+1))*xmax + j + 1);
                 
-                city = "";
-                for (auto & detector : detector_mapping)
-                {
-                    if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
-                    {
-                        city = detector.second.first.second;
-                        break;
-                    }
-                }
-                hG_energy_layer_ch_vs_time[i][j][k] = new TGraph(1);
-                hG_energy_layer_ch_vs_time[i][j][k]->SetName(Form("Energy vs WR for %i%i%i",i,j,k));
-                hG_energy_layer_ch_vs_time[i][j][k]->SetTitle(Form("E(%i%i%i) vs WR",i,j,k));
-                hG_energy_layer_ch_vs_time[i][j][k]->GetXaxis()->SetTimeDisplay(1);
-                hG_energy_layer_ch_vs_time[i][j][k]->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
-                hG_energy_layer_ch_vs_time[i][j][k]->GetXaxis()->SetTimeOffset(0, "local");
-                hG_energy_layer_ch_vs_time[i][j][k]->GetYaxis()->SetTitle(Form("Energy %i%i%i",i,j,k));
-                hG_energy_layer_ch_vs_time[i][j][k]->GetXaxis()->SetTitle("WR Time [Y-M-D H:M]");
-                hG_energy_layer_ch_vs_time[i][j][k]->SetMarkerColor(kBlack);
-                hG_energy_layer_ch_vs_time[i][j][k]->SetMarkerStyle(20);
-                hG_energy_layer_ch_vs_time[i][j][k]->SetLineColor(kBlue);
-                hG_energy_layer_ch_vs_time[i][j][k]->SetLineWidth(2);
-                hG_energy_layer_ch_vs_time[i][j][k]->GetXaxis()->SetNdivisions(-4);
-                hG_energy_layer_ch_vs_time[i][j][k]->Draw();
+               city = "";
+               for (auto & detector : detector_mapping)
+               {
+                   if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
+                   {
+                       city = detector.second.first.second;
+                       break;
+                   }
+               }
+
+                h1_energy_layer_ch[i][j][k] = new TH1F(Form("energy_%s_%i_%i_%i", city.c_str(), i, j, k), city.c_str(), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+                h1_energy_layer_ch[i][j][k]->GetXaxis()->SetTitle("ADC [a.u.]");
+                h1_energy_layer_ch[i][j][k]->SetLineColor(kBlue+1);
+                h1_energy_layer_ch[i][j][k]->SetFillColor(kOrange-3);
+                h1_energy_layer_ch[i][j][k]->Draw();
             }
         }
-        c_energy_layer_ch_vs_time[i]->cd(0);
-        dir_energy->Append(c_energy_layer_ch_vs_time[i]);
-    }    
+        c_energy_layer_ch[i]->cd(0);
+        dir_energy->Append(c_energy_layer_ch[i]);
 
+    }
+      
 
+    // //::::::::::: E N E R G Y  VS  E V T N O ::::::::::::
+    // dir_energy->cd();
+    // c_energy_layer_vs_evtno = new TCanvas("c_energy_layer_vs_evtno","c_energy_layer_vs_evtno", 650,350);
+    // c_energy_layer_vs_evtno->Divide(layer_number,1);
+    // h2_energy_layer_vs_evtno.resize(layer_number);
+
+    // for (int i = 0; i < layer_number; i++)
+    // {
+    //     c_energy_layer_vs_evtno->cd(i+1);
+    //     h2_energy_layer_vs_evtno[i] = new TH2F(Form("h2_energy_layer_%i_vs_evtno", i), Form("Energy Layer %i vs WR", i));
+    //     h2_energy_layer_vs_evtno[i]->Draw("COLZ");
+    //     h2_energy_layer_vs_evtno[i]->GetXaxis()->SetTitle(Form("EVTno - Layer %i",i));
+    //     //gPad->SetLogz();
+    
+    // }
+    
+    // c_energy_layer_vs_evtno->cd(0);
+    // dir_energy->Append(c_energy_layer_vs_evtno);
+    
     //:::::::::::::T R A C E S:::::::::::::::::
     dir_traces->cd();
     c_traces_layer_ch.resize(layer_number);
     h1_traces_layer_ch.resize(layer_number);
 
-    //::::::::::::Traces for layer 0
-    c_traces_layer_ch[0] = new TCanvas("c_traces_layer_ch0", "Tokyo layer", 650, 350);
-    h1_traces_layer_ch[0].resize(1);
-    h1_traces_layer_ch[0][0].resize(1);
-    h1_traces_layer_ch[0][0][0] = new TH1F("tokyo_traces_layer", "Tokyo", 2000, 0, 20); // microseconds
-    h1_traces_layer_ch[0][0][0]->GetXaxis()->SetTitle("Time [us]");
-    h1_traces_layer_ch[0][0][0]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
-    h1_traces_layer_ch[0][0][0]->SetMaximum(lisa_config->AmplitudeMax);
-    h1_traces_layer_ch[0][0][0]->SetStats(0);
-    h1_traces_layer_ch[0][0][0]->SetLineColor(kBlue+1);
-    h1_traces_layer_ch[0][0][0]->SetFillColor(kOrange-3);
-    h1_traces_layer_ch[0][0][0]->Draw();
-    dir_traces->Append(c_traces_layer_ch[0]);
-
-    //:::::::::::Traces canvas for layer 1 and 2   
-    for (int i = 1; i < layer_number; i++) //create a canvas for each layer
+    for (int i = 0; i < layer_number; i++) 
     {
         c_traces_layer_ch[i] = new TCanvas(Form("c_traces_layer_%d",i),Form("c_traces_layer_%d",i), 650,350);
         c_traces_layer_ch[i]->SetTitle(Form("Layer %d - Traces",i));
@@ -455,7 +332,7 @@ InitStatus LisaNearlineSpectra::Init()
 
                 h1_traces_layer_ch[i][j][k] = new TH1F(Form("traces_%s_%i_%i_%i", city.c_str(), i, j, k), city.c_str(), 2000, 0, 20);
                 h1_traces_layer_ch[i][j][k]->GetXaxis()->SetTitle("Time [us]");
-                h1_traces_layer_ch[i][j][k]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
+                h1_traces_layer_ch[i][j][k]->SetMinimum(lisa_config->AmplitudeMin);
                 h1_traces_layer_ch[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
                 h1_traces_layer_ch[i][j][k]->SetStats(0);
                 h1_traces_layer_ch[i][j][k]->SetLineColor(kBlue+1);
@@ -472,7 +349,7 @@ InitStatus LisaNearlineSpectra::Init()
 }
 
 
-void LisaNearlineSpectra::Exec(Option_t* option)
+void LisaNearlineSpectraDaq::Exec(Option_t* option)
 {   
     wr_time = 0;
     int multiplicity[layer_number] = {0};
@@ -495,8 +372,8 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     for (auto const & lisaCalItem : *lisaCalArray)
     {
 
-        wr_time = lisaCalItem.Get_wr_t();
-        if (wr_time == 0)return;
+        //wr_time = lisaCalItem.Get_wr_t();
+        //if (wr_time == 0)return;
 
         //::::::: Retrieve Data ::::::::::::::
         layer = lisaCalItem.Get_layer_id();
@@ -515,24 +392,23 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         //::::::::F I L L   H I S T O S:::::::
         //:::::::: H I T  P A T T E R N ::::::::::
         //:::::::::Layer
-        int hp_bin = (ymax-(ypos+1))*xmax + xpos; // -1 compared to canvas position
-        h1_hitpattern_layer[layer]->Fill(hp_bin);
+        // int hp_bin = (ymax-(ypos+1))*xmax + xpos; // -1 compared to canvas position
+        // h1_hitpattern_layer[layer]->Fill(hp_bin);
         //:::::::::Total
-        int hp_total_bin;
-        if (layer != 0) hp_total_bin = layer * xmax * ymax + hp_bin - 3; // -3 is a fudge for uneven layers, temporary
-        else hp_total_bin = 0;
-        h1_hitpattern_total->Fill(hp_total_bin);
+        //int hp_total_bin;
+        //hp_total_bin = layer * xmax * ymax + hp_bin - 3; 
+        //h1_hitpattern_total->Fill(hp_total_bin);
         //::::::::::By grid
-        if (layer != 0) h2_hitpattern_grid[layer-1]->Fill(xpos,ypos);
+        h2_hitpattern_grid[layer]->Fill(xpos,ypos);
 
 
         //:::::::::P I L E   UP:::::::::::::
         //::::::::::By grid
-        if (pileup != 0) if (layer != 0) h2_pileup_grid[layer-1]->Fill(xpos,ypos);
+        if (pileup != 0) h2_pileup_grid[layer]->Fill(xpos,ypos);
 
         //:::::::::O V E R  F L O W:::::::::::::
         //::::::::::By grid
-        if (overflow != 0) if (layer != 0) h2_overflow_grid[layer-1]->Fill(xpos,ypos);
+        if (overflow != 0) h2_overflow_grid[layer]->Fill(xpos,ypos);
         
         //:::::::: Count Multiplicity ::::::::
         multiplicity[layer]++;
@@ -545,19 +421,16 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         energy_ch[layer][xpos][ypos] = energy;
 
         //::::Fill Energy Raw
-        //h1_energy_layer_ch[layer][xpos][ypos]->Fill(energy);
+        h1_energy_layer_ch[layer][xpos][ypos]->Fill(energy);
 
         //::::::::Define Sum Energy GM
-        sum_energy_layer_GM[layer] += energy_GM;
         //energy_ch_GM[layer][xpos][ypos] = energy_GM;
-        energy_layer_GM[layer] = energy_GM;
         
         //:::Fill Energy Gain Matched
         //h1_energy_layer_ch_GM[layer][xpos][ypos]->Fill(energy_GM);	//energy per layer and channel
-        h1_energy_layer_GM[layer]->Fill(energy_GM);			        //energy per layer
+        //h1_energy_layer[layer]->Fill(energy);			                //energy per layer
                 
         //::::::::: Fill Traces ::::::::::::::
-        h1_traces_layer_ch[layer][xpos][ypos]->Reset();
         for (int i = 0; i < trace.size(); i++)
         {
             h1_traces_layer_ch[layer][xpos][ypos]->SetBinContent(i, trace[i]);
@@ -568,27 +441,27 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     }
     //c4LOG(info, "::::::::::END LOOP::::::::::::" << " Layer number :" << layer_number);
 
-    if ( wr_time == 0 ) return;
+    //if ( wr_time == 0 ) return;
 
     //:::::: WR Time Difference
-    if( prev_wr > 0 )
-    {
-        wr_diff = wr_time - prev_wr; //to express wr difference in us
-        h1_wr_diff->Fill(wr_diff);
-    }
-    prev_wr = wr_time;
+    // if( prev_wr > 0 )
+    // {
+    //     wr_diff = wr_time - prev_wr; //to express wr difference in us
+    //     h1_wr_diff->Fill(wr_diff);
+    // }
+    // prev_wr = wr_time;
     //c4LOG(info,"wr time: " << wr_time << "   prev wr: " << prev_wr << " wr diff: " << wr_diff);
 
 
     //::::::: Fill Multiplicity ::::::::::
-    for (int i = 0; i < layer_number; i++) h1_multiplicity_layer[i]->Fill(multiplicity[i]);
-    h1_multiplicity->Fill(total_multiplicity);
+    // for (int i = 0; i < layer_number; i++) h1_multiplicity_layer[i]->Fill(multiplicity[i]);
+    // h1_multiplicity->Fill(total_multiplicity);
 
-    for (int i = 0; i < layer_number; i++)
-    {
-        if(multiplicity[i] != 0) h1_layer_multiplicity->Fill(i);
-        //c4LOG(info," layer number : " << layer_number << " layer : " << layer << " multiplicity [layer] : " << multiplicity[layer] << " multiplicity [i] : " << multiplicity[i]);
-    }
+    // for (int i = 0; i < layer_number; i++)
+    // {
+    //     if(multiplicity[i] != 0) h1_layer_multiplicity->Fill(i);
+    //     //c4LOG(info," layer number : " << layer_number << " layer : " << layer << " multiplicity [layer] : " << multiplicity[layer] << " multiplicity [i] : " << multiplicity[i]);
+    // }
 
 
     // for(int i = 0; i < layer_number; i++)
@@ -596,62 +469,16 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     //     c4LOG(info,"multiplicity : "<< multiplicity[i] << " i : " << i );
     // }
 
-    //:::::::Fill Sum Energy::::::::::
-    //h2_sum_energy_layer1_vs_layer2->Fill(sum_energy_layer[2],sum_energy_layer[1]);
-        
-    //:::::::Fill Sum Energy GM::::::::::
-    h2_sum_energy_layer1_vs_layer2_GM->Fill(sum_energy_layer_GM[2],sum_energy_layer_GM[1]);
-
-    //:::::: Fill Energy GM for layers 1 and 2 ::::::::::
-    h2_energy_layer1_vs_layer2_GM->Fill(energy_layer_GM[2],energy_layer_GM[1]);
-    
-    //:::::::Energy vs Time
-    //time_t rawtime;
-    //time(&rawtime);
-
-    int wr_r = round(wr_time/1000000000);
-
-    if (fNEvents % 1000 == 0 && sum_energy_layer[1] > 0) 
-    {
-        for (int i = 0; i < layer_number; i++)hG_energy_layer_vs_time[i]->SetPoint(en_count1, wr_r, sum_energy_layer[i]);
-        en_count1++;
-    } 
-
-    if (fNEvents % 1000 == 0 && energy_ch[1][0][0]>0) 
-    {
-        hG_energy_layer_ch_vs_time[0][0][0]->SetPoint(en_count2, wr_r, energy_ch[0][0][0]);
-        //c4LOG(info, " ENERGY " << energy_ch[0][0][0] );
-
-        for (int i = 1; i < layer_number; i++) 
-        {
-            for(int j = 0; j < xmax; j++)
-            {
-                for (int z = 0; z < ymax; z++)
-                {
-                    hG_energy_layer_ch_vs_time[i][j][z]->SetPoint(en_count2, wr_r, energy_ch[i][j][z]);
-                    //c4LOG(info, " ENERGY " << energy_ch[i][j][z] << " i : " << i << " j : " << j << " z : " << z );
-                }
-                
-            }
-            
-        //c4LOG(info, "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
-        //c4LOG(info, " wr: " << wr_r << " wr tot "<< wr_time);
-
-        }
-
-
-        en_count2++;
-    } 
 
     fNEvents += 1;
 }
 
-void LisaNearlineSpectra::FinishEvent()
+void LisaNearlineSpectraDaq::FinishEvent()
 {
 
 }
 
-void LisaNearlineSpectra::FinishTask()
+void LisaNearlineSpectraDaq::FinishTask()
 {
 
     TDirectory* tmp = gDirectory;
@@ -663,4 +490,4 @@ void LisaNearlineSpectra::FinishTask()
 
 }
 
-ClassImp(LisaNearlineSpectra)
+ClassImp(LisaNearlineSpectraDaq)

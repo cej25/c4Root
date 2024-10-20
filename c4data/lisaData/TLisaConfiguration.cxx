@@ -11,7 +11,7 @@
 #include <string>
 
 TLisaConfiguration* TLisaConfiguration::instance = nullptr;
-std::string TLisaConfiguration::MWD_file = "blank";
+//std::string TLisaConfiguration::MWD_file = "blank";
 std::string TLisaConfiguration::mapping_file = "blank";
 std::string TLisaConfiguration::gain_matching_file = "blank";
 std::string TLisaConfiguration::calibration_file = "blank";
@@ -46,7 +46,7 @@ TLisaConfiguration::TLisaConfiguration()
     ,   num_detectors(0)
     ,   num_febex_boards(0)
 {
-    ReadMWDParameters();
+    //ReadMWDParameters();
     ReadMappingFile();
     ReadGMFile();
     //ReadCalibrationCoefficients();
@@ -54,31 +54,31 @@ TLisaConfiguration::TLisaConfiguration()
 }
 
 
-void TLisaConfiguration::ReadMWDParameters()
-{   
-    std::cout<<"MWD elefanti"<<std::endl;
-    //std::set<int> layers;
-    //std::set<int> x_positions;
-    //std::set<int> y_positions;
+// void TLisaConfiguration::ReadMWDParameters()
+// {   
+//     std::cout<<"MWD elefanti"<<std::endl;
+//     //std::set<int> layers;
+//     //std::set<int> x_positions;
+//     //std::set<int> y_positions;
     
-    std::ifstream MWD_parameters_file (MWD_file);
-    std::string line;
+//     std::ifstream MWD_parameters_file (MWD_file);
+//     std::string line;
 
-    if (MWD_parameters_file.fail()) c4LOG(fatal, "Could not open LISA MWD parameters file.");
+//     if (MWD_parameters_file.fail()) c4LOG(fatal, "Could not open LISA MWD parameters file.");
 
-    while (std::getline(MWD_parameters_file, line))
-    {
-        if (line.empty() || line[0] == '#') continue;
+//     while (std::getline(MWD_parameters_file, line))
+//     {
+//         if (line.empty() || line[0] == '#') continue;
 
-    }
+//     }
     
-    MWD_parameters_loaded = 1;
-    MWD_parameters_file.close();
+//     MWD_parameters_loaded = 1;
+//     MWD_parameters_file.close();
 
-    c4LOG(info, "Lisa MWD Parameters: " + MWD_file);
-    return;
+//     c4LOG(info, "Lisa MWD Parameters: " + MWD_file);
+//     return;
 
-}
+// }
 
 void TLisaConfiguration::ReadMappingFile()
 {   
