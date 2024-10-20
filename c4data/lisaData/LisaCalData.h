@@ -74,8 +74,8 @@ class LisaCalItem : public TObject
                     int e,
                     std::vector<uint16_t> tr,
                     double e_GM,
-                    uint64_t evt_t,
-                    uint64_t ch_t,
+                    //uint64_t evt_t,
+                    //uint64_t ch_t,
                     uint64_t evtno,
                     int pu,
                     int ov); 
@@ -89,7 +89,7 @@ class LisaCalItem : public TObject
         uint32_t Get_energy() const;
         std::vector<uint16_t> Get_trace() const;
         double Get_energy_GM() const;
-        // uint64_t Get_board_eventt_time();
+        // uint64_t Get_board_event_time();
         // uint64_t Get_channel_event_time();
         uint64_t Get_evtno();
         int Get_pileup() const;
@@ -106,8 +106,8 @@ class LisaCalItem : public TObject
         uint32_t energy; // double? int?
         std::vector<uint16_t> trace;
         double energy_GM;
-        uint64_t board_event_time;
-        uint64_t ch_event_time;
+        //uint64_t board_event_time;
+        //uint64_t ch_event_time;
         uint64_t event_no;
         int pileup;
         int overflow;

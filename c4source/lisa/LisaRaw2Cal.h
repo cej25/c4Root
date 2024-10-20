@@ -6,7 +6,7 @@
 #include "TLisaConfiguration.h"
 #include "LisaData.h"
 #include "LisaCalData.h"
-#include "LisaAnaData.h"
+//#include "LisaAnaData.h"
 #include <map>
 #include <vector>
 
@@ -14,7 +14,7 @@ class EventHeader;
 // class LisaData;
 // class LisaCalData;
 class LisaItem;
-class LisaAnaItem;
+//class LisaAnaItem;
 class LisaCalItem;
 
 class LisaRaw2Cal : public FairTask

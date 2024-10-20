@@ -122,7 +122,7 @@ class LisaItem : public TObject
         bool overflow;
         uint32_t channel_energy;
         uint8_t channel_id_traces;
-        std::vector<uint16_t> trace; // maybe a vector inside a vector is ok?
+        std::vector<uint16_t> trace; 
 
 };
 

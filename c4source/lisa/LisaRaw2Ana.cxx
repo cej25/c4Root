@@ -73,21 +73,21 @@ InitStatus LisaRaw2Ana::Init()
 
 void LisaRaw2Ana::Exec(Option_t* option)
 {
-    lisaAnaArray->clear();
+    // lisaAnaArray->clear();
 
-    for (auto const & lisaItem : *lisaArray)
-    {
+    // for (auto const & lisaItem : *lisaArray)
+    // {
         
                 
-        if (lisa_config->MWDParametersLoaded())
-        {
+    //     if (lisa_config->MWDParametersLoaded())
+    //     {
 
-            c4LOG(warn, "MWD Parameters loaded? ");
+    //         c4LOG(warn, "MWD Parameters loaded? ");
 
-        }
+    //     }
 
 
-    }
+    // }
 }
 
 void LisaRaw2Ana::FinishEvent()

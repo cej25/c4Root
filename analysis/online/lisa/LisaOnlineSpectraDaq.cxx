@@ -50,6 +50,7 @@ InitStatus LisaOnlineSpectraDaq::Init()
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
+    // ::: To remove for nearline class
     FairRunOnline* run = FairRunOnline::Instance();
     run->GetHttpServer()->Register("", this);
 
@@ -66,12 +67,12 @@ InitStatus LisaOnlineSpectraDaq::Init()
     ymax = lisa_config->YMax();
     num_layers = lisa_config->NLayers();
 
-    histograms = (TFolder*)mgr->GetObject("Histograms");
-    TDirectory::TContext ctx(nullptr);
+    histograms = (TFolder*)mgr->GetObject("Histograms"); //to remove for nearline
+    TDirectory::TContext ctx(nullptr); //to remove for nearline
 
     dir_lisa = new TDirectory("LISA", "LISA", "", 0);
     mgr->Register("LISA", "LISA Directory", dir_lisa, false); // allow other tasks to access directory.
-    histograms->Add(dir_lisa);
+    histograms->Add(dir_lisa); //to remove for nearline
 
     dir_lisa->cd();
     dir_stats = dir_lisa->mkdir("Stats");
@@ -230,22 +231,22 @@ InitStatus LisaOnlineSpectraDaq::Init()
     //:::::::::::M U L T I P L I C I T Y:::::::::::::::
 
     //:::::::::::Total Multiplicity
-    h1_multiplicity = new TH1I("h1_multiplicity", "Total Multiplicity", det_number, 0, det_number+1);
-    h1_multiplicity->SetStats(0);
+    // h1_multiplicity = new TH1I("h1_multiplicity", "Total Multiplicity", det_number, 0, det_number+1);
+    // h1_multiplicity->SetStats(0);
     
-    //:::::::::::Multiplicity per layer
-    c_multiplicity_layer = new TCanvas("c_multiplicity_layer", "Multiplicty by Layer", 650, 350);
-    c_multiplicity_layer->Divide(layer_number,1);
-    h1_multiplicity_layer.resize(layer_number);
-    for (int i = 0; i < layer_number -1; i++)
-    {
-        c_multiplicity_layer->cd(i+1);
-        h1_multiplicity_layer[i] = new TH1I(Form("Multiplicity Layer %i",i), Form("Multiplicity Layer %i",i), xmax * ymax+1, 0, xmax * ymax+1);
-        h1_multiplicity_layer[i]->SetStats(0);
-        h1_multiplicity_layer[i]->Draw();
-    }
-    c_multiplicity_layer->cd(0);
-    dir_stats->Append(c_multiplicity_layer);
+    // //:::::::::::Multiplicity per layer
+    // c_multiplicity_layer = new TCanvas("c_multiplicity_layer", "Multiplicty by Layer", 650, 350);
+    // c_multiplicity_layer->Divide(layer_number,1);
+    // h1_multiplicity_layer.resize(layer_number);
+    // for (int i = 0; i < layer_number -1; i++)
+    // {
+    //     c_multiplicity_layer->cd(i+1);
+    //     h1_multiplicity_layer[i] = new TH1I(Form("Multiplicity Layer %i",i), Form("Multiplicity Layer %i",i), xmax * ymax+1, 0, xmax * ymax+1);
+    //     h1_multiplicity_layer[i]->SetStats(0);
+    //     h1_multiplicity_layer[i]->Draw();
+    // }
+    // c_multiplicity_layer->cd(0);
+    // dir_stats->Append(c_multiplicity_layer);
 
     //:::::::::::Layer Multiplicity
     h1_layer_multiplicity = new TH1I("h1_layer_multiplicity", "Layer Multiplicity", layer_number, 0, layer_number);
@@ -352,9 +353,12 @@ void LisaOnlineSpectraDaq::Reset_Histo()
     time_t now = time(0);
     tm *ltm = localtime(&now);
 
-    c4LOG(info,"::: Energy and Multiplicity Histos Reset on day " <<  ltm->tm_mday << "th," << " at " << ltm->tm_hour << ":" << ltm->tm_min << ":" << ltm->tm_sec );
+    c4LOG(info,"::: Histos Reset on day " <<  ltm->tm_mday << "th," << " at " << ltm->tm_hour << ":" << ltm->tm_min << ":" << ltm->tm_sec );
     
-    //:::: Reset Energy histos
+    //::: Reset WR
+    h1_wr_diff->Reset();
+
+    //::: Reset Energy histos
     for (int i = 0; i < layer_number; i++) 
     {
         for (int j = 0; j < xmax; j++)
@@ -366,19 +370,36 @@ void LisaOnlineSpectraDaq::Reset_Histo()
         }
     }
 
-    //Reset multiplicity
-    for (int i = 0; i < layer_number; i++)
-    {
-        h1_multiplicity_layer[i]->Reset();
-    }
-    
-    //Reset hit grid
+    //::: Reset multiplicity
+    // for (int i = 0; i < layer_number; i++)
+    // {
+    //     h1_multiplicity_layer[i]->Reset();
+    // }
+    h1_layer_multiplicity->Reset();
+    //h1_multiplicity->Reset();
+
+
+    //::: Reset grids for pileup, overflow, hitpattern
     for (int i = 0; i < layer_number; i++)
     {
         h2_hitpattern_grid[i]->Reset();
+        h2_overflow_grid[i]->Reset();
+        h2_pileup_grid[i]->Reset();
+
+        //::: Reset Traces
+        for (int j = 0; j < xmax; j++)
+        {
+            for (int k = 0; k < ymax; j++)
+            {
+                h1_traces_layer_ch[i][j][k]->Reset();
+            }
+        }
+
     }
-    h1_multiplicity->Reset();
-    h1_layer_multiplicity->Reset();
+    
+    
+
+    
 
 }
 

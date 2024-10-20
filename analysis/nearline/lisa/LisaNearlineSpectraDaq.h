@@ -1,9 +1,5 @@
-// WIP
-// ::::::::  TO BE MODIFIED :::::
-
-
-#ifndef LisaNearlineSpectra_H
-#define LisaNearlineSpectra_H
+#ifndef LisaNearlineSpectraDaq_H
+#define LisaNearlineSpectraDaq_H
 
 #include "FairTask.h"
 #include "TLisaConfiguration.h"
@@ -30,13 +26,13 @@ class TFolder;
 class TDirectory;
 
 
-class LisaNearlineSpectra : public FairTask
+class LisaNearlineSpectraDaq : public FairTask
 {
     public:
-        LisaNearlineSpectra();
-        LisaNearlineSpectra(const TString& name, Int_t verbose = 1);
+        LisaNearlineSpectraDaq();
+        LisaNearlineSpectraDaq(const TString& name, Int_t verbose = 1);
 
-        virtual ~LisaNearlineSpectra();
+        virtual ~LisaNearlineSpectraDaq();
 
         virtual void SetParContainers();
 
@@ -98,6 +94,7 @@ class LisaNearlineSpectra : public FairTask
         TCanvas* c_energy_layer1_vs_layer2;
         TCanvas* c_energy_layer1_vs_layer2_GM;
         TCanvas* c_energy_layer_vs_time;
+        TCanvas* c_energy_layer_vs_evtno;
         std::vector<TCanvas*> c_energy_layer_ch;
         std::vector<TCanvas*> c_energy_layer_ch_vs_time;
         std::vector<TCanvas*> c_traces_layer_ch;
@@ -115,22 +112,13 @@ class LisaNearlineSpectra : public FairTask
         //TH2F* h2_hitpattern_grid;
         //TH1F* h1_energy_layer0;
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch;
-        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch_GM;
-        std::vector<TH1F*> h1_energy_layer_GM;
-        TH1F* h1_energy_all_layers_GM;
-        TH2F* h2_sum_energy_layer1_vs_layer2;
-        TH2F* h2_sum_energy_layer1_vs_layer2_GM;
-        TH2F* h2_energy_layer1_vs_layer2_GM;
         std::vector<std::vector<std::vector<TH1F*>>> h1_traces_layer_ch;
-
-        //TGraph
-        std::vector<TGraph*> hG_energy_layer_vs_time;
-        std::vector<std::vector<std::vector<TGraph*>>> hG_energy_layer_ch_vs_time;
-
+        std::vector<TH2F*> h2_energy_layer_vs_evtno;
+        
         
 
     public:
-        ClassDef(LisaNearlineSpectra, 1)
+        ClassDef(LisaNearlineSpectraDaq, 1)
 };
 
 #endif
