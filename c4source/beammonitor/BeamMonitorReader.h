@@ -48,7 +48,7 @@ class BeamMonitorReader : public c4Reader
         std::vector<uint32_t> s4data;
     
     public:
-        ClassDefOverride(BeamMonitorReader, 0);
+        ClassDef(BeamMonitorReader, 1);
 };
 
 #endif
