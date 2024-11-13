@@ -1,5 +1,5 @@
-#ifndef GermaniumReader_H
-#define GermaniumReader_H
+#ifndef GermaniumTraceReader_H
+#define GermaniumTraceReader_H
 
 #include "c4Reader.h"
 
@@ -7,22 +7,22 @@
 
 extern "C"
 {
-    #include "ext_h101_germanium.h"
+    #include "ext_h101_germanium_traces.h"
 }
 
 class TClonesArray;
 
-struct EXT_STR_h101_germanium_t;
-typedef struct EXT_STR_h101_germanium_t EXT_STR_h101_germanium;
-typedef struct EXT_STR_h101_germanium_onion_t EXT_STR_h101_germanium_onion;
+struct EXT_STR_h101_germanium_traces_t;
+typedef struct EXT_STR_h101_germanium_traces_t EXT_STR_h101_germanium_traces;
+typedef struct EXT_STR_h101_germanium_traces_onion_t EXT_STR_h101_germanium_traces_onion;
 class ext_data_struct_info;
 
-class GermaniumReader : public c4Reader
+class GermaniumTraceReader : public c4Reader
 {
     public:
-        GermaniumReader(EXT_STR_h101_germanium_onion*, size_t);
+        GermaniumTraceReader(EXT_STR_h101_germanium_traces_onion*, size_t);
 
-        virtual ~GermaniumReader();
+        virtual ~GermaniumTraceReader();
 
 
         virtual Bool_t Init(ext_data_struct_info*) override;
@@ -41,7 +41,7 @@ class GermaniumReader : public c4Reader
     private:
         unsigned int fNEvent;
 
-        EXT_STR_h101_germanium_onion* fData;
+        EXT_STR_h101_germanium_traces_onion* fData;
 
         size_t fOffset;
 
@@ -58,7 +58,6 @@ class GermaniumReader : public c4Reader
         int32_t channel_energy;
 
 
-
         uint64_t wr_t;
 
 
@@ -68,7 +67,7 @@ class GermaniumReader : public c4Reader
 
 
     public:
-        ClassDefOverride(GermaniumReader, 0);
+        ClassDefOverride(GermaniumTraceReader, 0);
 };
 
 #endif

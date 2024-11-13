@@ -24,7 +24,7 @@ TString GainShift::GetName(){
 double GainShift::GetGain(uint64_t wr_t){
     
 
-    int64_t time_since_beginning = (wr_t - wr_experiment_start)/1e9;
+    int64_t time_since_beginning = ((int64_t)wr_t - wr_experiment_start)/1e9;
     int64_t slice_number = time_since_beginning/slices_every;
 
     return gain_shifts->GetBinContent(slice_number + 1); 

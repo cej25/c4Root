@@ -79,6 +79,7 @@ InitStatus FrsGermaniumCorrelations::Init()
 
 
     TString data_item = TString("Germanium") + input_anl_or_cal + TString("Data");
+    c4LOG(info, TString("Getting data_item = ")+data_item);
     fHitGe = (TClonesArray*)mgr->GetObject(data_item);
     c4LOG_IF(fatal, !fHitGe, Form("Branch %s  not found!",data_item));
 
@@ -311,6 +312,34 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
 {
     if (!use_multi){
 
+
+    bool flag_sci41l = false;
+    bool flag_sci41r = false;
+    if (fHitGe && fHitGe->GetEntriesFast() > 0){
+        Int_t nHits = fHitGe->GetEntriesFast();
+        //find sci41:
+        for (Int_t ihit = 0; ihit < nHits; ihit++){ // find the sci41 hit if it is there. // NB THE FEBEX WILL PUT PILEUP FLAG ON THE DOUBLE HITS!
+            GermaniumCalData* hit1 = (GermaniumCalData*)fHitGe->At(ihit);
+            if (!hit1) continue;
+            int detector_id1 = hit1->Get_detector_id();
+            if (detector_id1 == germanium_configuration->SC41L()){
+                sci41l_seen_in_febex++;
+                if (hitArrayFrs->size()==0) sci41l_seen_in_febex_no_frs++;
+                flag_sci41l = true;
+            } else if (detector_id1 == germanium_configuration->SC41R()){
+                sci41r_seen_in_febex++;
+                if (hitArrayFrs->size()==0) sci41r_seen_in_febex_no_frs++;
+                flag_sci41r = true;
+            }
+        }
+    }
+    if (!flag_sci41l && hitArrayFrs->size() > 0 ) sci41l_seen_in_frs_no_febex++;
+    if (!flag_sci41r && hitArrayFrs->size() > 0 ) sci41r_seen_in_frs_no_febex++;
+    if (hitArrayFrs->size() > 0 ) sci41l_seen_in_frs++;
+    if (hitArrayFrs->size() > 0 ) sci41r_seen_in_frs++;
+
+    
+
     if (hitArrayFrs->size() == 0) return;
     
 
@@ -328,6 +357,7 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
     double ID_dEdeg = frshit.Get_ID_dEdeg();
     double ID_sci42E = frshit.Get_sci_e(3);
 
+    
     // this must pass all gates given to FrsGate:
     positive_PID = frsgate->PassedGate(ID_z, ID_z2, ID_x2, ID_x4, ID_AoQ, ID_dEdeg, ID_sci42E);
 
@@ -403,6 +433,8 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
     }
 
     }
+
+    
 
     if (fHitGe && fHitGe->GetEntriesFast() > 0)
     {
@@ -603,6 +635,32 @@ void FrsGermaniumCorrelations::FinishTask()
         c4LOG(warning, "No events processed, no histograms written.");
         return;
     }
+
+    c4LOG(info,TString("Counts for  " + frsgate->GetName()));
+    c4LOG(info,Form("wr_t_last_frs_hit = %li",wr_t_last_frs_hit));
+    c4LOG(info,Form("wr_t_first_frs_hit = %li", wr_t_first_frs_hit));
+    c4LOG(info,Form("time (s) = %lf",((int64_t)wr_t_last_frs_hit-(int64_t)wr_t_first_frs_hit)/1e9));
+    c4LOG(info,Form("implants = %li",frs_total_implanted));
+    c4LOG(info,Form("rate = %lf",frs_total_implanted/(((int64_t)wr_t_last_frs_hit-(int64_t)wr_t_first_frs_hit)/1e9)));
+    c4LOG(info,"\n\n");
+
+
+    c4LOG(info, Form("sci41l_seen_in_febex = %d", sci41l_seen_in_febex));
+    c4LOG(info, Form("sci41r_seen_in_febex = %d", sci41r_seen_in_febex));
+
+    c4LOG(info, Form("sci41l_seen_in_frs = %d", sci41l_seen_in_frs));
+    c4LOG(info, Form("sci41r_seen_in_frs = %d", sci41r_seen_in_frs));
+
+    c4LOG(info, Form("sci41l_seen_in_febex_no_frs = %d", sci41l_seen_in_febex_no_frs));
+    c4LOG(info, Form("sci41r_seen_in_febex_no_frs = %d", sci41r_seen_in_febex_no_frs));
+
+    c4LOG(info, Form("sci41l_seen_in_frs_no_febex = %d", sci41l_seen_in_frs_no_febex));
+    c4LOG(info, Form("sci41r_seen_in_frs_no_febex = %d", sci41r_seen_in_frs_no_febex));
+    c4LOG(info, "\n\n");
+
+
+    
+
     if (fHitGe)
     {
         //dir_germanium->Write();

@@ -80,9 +80,14 @@ InitStatus FrsFatimaCorrelationsNearline::Init()
     hitArrayFrs = mgr->InitObjectAs<decltype(hitArrayFrs)>("FrsHitData");
     c4LOG_IF(fatal, !hitArrayFrs, "Branch FrsHitData not found!");
 
+    multihitArrayFrs = mgr->InitObjectAs<decltype(multihitArrayFrs)>("FrsMultiHitData");
+    c4LOG_IF(fatal, !multihitArrayFrs, "Branch FrsHitData not found!");
+
 
     if (fWriteOutput){
         FairRootManager::Instance()->Register("FatimaTwinpeaksCalData", "Fatima Cal Data", fHitFatima, fWriteOutput);
+        FairRootManager::Instance()->RegisterAny("FrsHitData", hitArrayFrs, fWriteOutput);
+        FairRootManager::Instance()->RegisterAny("FrsMultiHitData", multihitArrayFrs, fWriteOutput);
     }
 
 
@@ -440,6 +445,9 @@ void FrsFatimaCorrelationsNearline::Exec(Option_t* option)
         run->MarkFill(false);
     }
 
+    if (!use_multi){
+
+
     if (hitArrayFrs->size() == 0 || hitArrayFrs->size() > 1) return;
     positive_PID = false;
     auto const & frshit = hitArrayFrs->at(0);
@@ -457,6 +465,8 @@ void FrsFatimaCorrelationsNearline::Exec(Option_t* option)
 
     // this must pass all gates given to FrsGate:
     positive_PID = frsgate->PassedGate(ID_z, ID_z2, ID_x2, ID_x4, ID_AoQ, ID_dEdeg, ID_sci42E);
+
+
     if (positive_PID)
     {
         wr_t_last_frs_hit = wr_t;
@@ -480,6 +490,56 @@ void FrsFatimaCorrelationsNearline::Exec(Option_t* option)
     }else{
         //wr_t_last_frs_hit = 0;
     }
+
+    }else{
+
+        if (multihitArrayFrs->size() == 0) return;
+
+
+        
+        positive_PID = false;
+        auto const & frshit = multihitArrayFrs->at(0);
+
+        int64_t wr_t = frshit.Get_wr_t();
+        if(wr_t_first_frs_hit == 0) wr_t_first_frs_hit = wr_t;
+        double ID_x2 = frshit.Get_ID_s2x_mhtdc();
+        double ID_x4 = frshit.Get_ID_s4x_mhtdc();
+        double ID_AoQ = frshit.Get_ID_AoQ_corr_mhtdc();
+        double ID_z = frshit.Get_ID_z_mhtdc();
+        double ID_z2 = frshit.Get_ID_z2_mhtdc();
+        double ID_dEdeg = frshit.Get_ID_dEdeg_mhtdc();
+
+        // this must pass all gates given to FrsGate:
+        positive_PID = frsgate->PassedGate(ID_z, ID_z2, ID_x2, ID_x4, ID_AoQ, ID_dEdeg, 0); // no sci42 e yet
+
+
+        if (positive_PID)
+        {
+            wr_t_last_frs_hit = wr_t;
+            frs_rate_implanted ++;
+            frs_total_implanted ++;
+
+            h2_frs_Z_vs_AoQ_gated->Fill(ID_AoQ,ID_z);
+            h2_frs_Z_vs_Z2_gated->Fill(ID_z,ID_z2);
+            h2_frs_x2_vs_AoQ_gated->Fill(ID_AoQ,ID_x2);
+            h2_frs_x4_vs_AoQ_gated->Fill(ID_AoQ,ID_x4);
+            h2_frs_Z_vs_dEdeg_gated->Fill(ID_dEdeg,ID_z);
+            h2_frs_Z_vs_sci42E_gated->Fill(0.0,ID_z);
+
+            if (wr_t_last_frs_hit - frs_rate_time > 60e9)
+            {
+                g_frs_rate->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_rate_implanted/60.0);
+                g_frs_total->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_total_implanted);
+                frs_rate_time = wr_t_last_frs_hit;
+                frs_rate_implanted = 0;
+            }
+        }else{
+            wr_t_last_frs_hit = 0;
+        }
+
+    }
+
+    if (fControlOutput && positive_PID) run->MarkFill(true);
 
     if (fHitFatima && fHitFatima->GetEntriesFast() > 0)
     {
@@ -541,7 +601,6 @@ void FrsFatimaCorrelationsNearline::Exec(Option_t* option)
         if (sci41r_hits != sci41_hits) return; // veto second hit in sci41r
 
         // write event:
-        if (fControlOutput && positive_PID) run->MarkFill(true);
 
         
         // Spectra with respect to SCI41 - 'short' isomers

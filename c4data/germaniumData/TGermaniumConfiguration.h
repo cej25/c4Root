@@ -8,7 +8,6 @@
 #include <set>
 #include "TCutG.h"
 
-
 //structs
 
 class TGermaniumConfiguration
@@ -22,6 +21,7 @@ class TGermaniumConfiguration
         static void SetDetectorCoefficientFile(std::string fp) { calibration_file = fp; }
         static void SetDetectorTimeshiftsFile(std::string fp) { timeshift_calibration_file = fp; }
         static void SetPromptFlashCut(std::string fp) {promptflash_cut_file = fp; }
+        static void SetPromptFlashCutMulti(std::string fp) {promptflash_cut_file_multi = fp; }
 
 
 
@@ -40,6 +40,23 @@ class TGermaniumConfiguration
             }else{
                 return true;
             }
+        }
+
+        inline bool IsInsidePromptFlashCutMulti(double timediff, double energy, int id) const{
+            if ((prompt_flash_cut_multi.size() >= 1) && (prompt_flash_cut_multi.size() >= id)){
+                return prompt_flash_cut_multi.at(id)->IsInside(timediff,energy);
+            }else{
+                return IsInsidePromptFlashCut(timediff, energy);
+            }
+        }
+
+
+        const TCutG * GetPromptFlashCut() const {return prompt_flash_cut;}
+
+        const TCutG * GetPromptFlashCutMulti(int id) const {
+            // id = (detector_id - 1)*3 + crystal_id
+            if (id < NDetectors() || prompt_flash_cut_multi.size() < 1) return GetPromptFlashCut();
+            else return prompt_flash_cut_multi.at(id);
         }
 
         inline bool IsDetectorAuxilliary(int detector_id) const;
@@ -63,6 +80,7 @@ class TGermaniumConfiguration
         static std::string calibration_file;
         static std::string timeshift_calibration_file;
         static std::string promptflash_cut_file;
+        static std::string promptflash_cut_file_multi;
 
 
         TGermaniumConfiguration();
@@ -70,6 +88,7 @@ class TGermaniumConfiguration
         void ReadCalibrationCoefficients();
         void ReadTimeshiftCoefficients();
         void ReadPromptFlashCut();
+        void ReadPromptFlashCutMulti();
 
         static TGermaniumConfiguration* instance;
         
@@ -79,6 +98,8 @@ class TGermaniumConfiguration
         std::set<int> extra_signals;
 
         TCutG* prompt_flash_cut = nullptr;
+
+        std::vector<TCutG *> prompt_flash_cut_multi = {};
 
         int num_detectors;
         int num_crystals;

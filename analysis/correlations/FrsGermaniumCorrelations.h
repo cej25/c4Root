@@ -198,6 +198,19 @@ class FrsGermaniumCorrelations : public FairTask
         TDirectory ** dir_energy_gated;
 
 
+        int sci41l_seen_in_febex = 0;
+        int sci41r_seen_in_febex = 0;
+
+        int sci41l_seen_in_frs = 0;
+        int sci41r_seen_in_frs = 0;
+
+        int sci41l_seen_in_febex_no_frs = 0;
+        int sci41r_seen_in_febex_no_frs = 0;
+
+        int sci41l_seen_in_frs_no_febex = 0;
+        int sci41r_seen_in_frs_no_febex = 0;
+
+        
 
 
     public:

@@ -168,6 +168,13 @@ void GermaniumRaw2Cal::Exec(Option_t* option){
                 //continue;
             }
 
+            //allow pileups of sci41
+            if (funcal_hit->Get_pileup() == true){
+                if (germanium_configuration->IsDetectorAuxilliary(detector_id) == false || VetoPileupSCI41 == true){
+                    continue;
+                }
+            }
+
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) GermaniumCalData(
                 funcal_hit->Get_event_trigger_time(),
                 funcal_hit->Get_pileup(),

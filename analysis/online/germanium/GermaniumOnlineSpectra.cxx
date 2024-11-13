@@ -587,7 +587,8 @@ void GermaniumOnlineSpectra::Exec(Option_t* option){
                             h1_germanium_time_differences[crystal_index2][crystal_index1]->Fill(time1 - time2);
                             h2_germanium_time_differences_vs_energy[crystal_index2][crystal_index1]->Fill(energy1,time1-time2);
                         }
-                    }else{ // no gates
+                    }else{ // no gates            TCanvas* c_germanium_rates;
+
                         h1_germanium_time_differences[crystal_index2][crystal_index1]->Fill(time1 - time2);
                         h2_germanium_time_differences_vs_energy[crystal_index2][crystal_index1]->Fill(energy1,time1-time2);
                     }
