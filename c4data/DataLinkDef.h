@@ -21,6 +21,7 @@
 #pragma link C++ class LisaCalData+;
 #pragma link C++ class LisaTraceData+;
 #pragma link C++ class BeamMonitorData+;
+#pragma link C++ class BeamMonitorItem+;
 #pragma link C++ class TimeMachineData+;
 #pragma link C++ class BB7V7x5Item+;
 #pragma link C++ class BB7V1290Item+;
