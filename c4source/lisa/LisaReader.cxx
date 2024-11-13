@@ -64,20 +64,27 @@ Bool_t LisaReader::Read()
     //WR ID. It is 700 for lisa (= 1792 in decimal). From May 13 WR = 1200 for LISA
     uint32_t wr_id = fData->lisa_ts_subsystem_id;
     //::::::::::::::::::::::::::::::::::::::::
-
+    
     //Loop over board number (NBoards hardcoded as 8 temp)
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
     {
-        //::::::::::::::Board Number (=0 may2024)
-        uint32_t board_num = fData->lisa_data[it_board_number].board_num;
-
         //::::::::::::::Event Time stamp (converted to ns)
         //P.S: Febex card has a 100MHz, it samples data every 10 ns (hence the unit and the *10 multiplication).
         uint64_t event_trigger_time_long = (((uint64_t)(fData->lisa_data[it_board_number].event_trigger_time_hi) << 32) + 
         (fData->lisa_data[it_board_number].event_trigger_time_lo))*10;
+
+        //For empty event, skip. This filters the fake boards.
+        if (event_trigger_time_long == 0) 
+        {
+            //std::cout<< " ::: iterator ::: " << it_board_number << std::endl;        
+            continue;
+        }
         
+        //::::::::::::::Board Number (=0 may2024)
+        uint32_t board_num = fData->lisa_data[it_board_number].board_num;
+
         //::::::::::::::Multiplicity: Called num_channels_fired from unpacker
-        uint32_t M = fData->lisa_data[it_board_number].num_channels_fired; //This is not of for cases when header is missing
+        uint32_t M = fData->lisa_data[it_board_number].num_channels_fired; //This is not for cases when header is missing
 
 
 

@@ -41,6 +41,7 @@ typedef struct EXT_STR_h101_lisa_t
   uint32_t lisa_data1hit_pattern /* [0,65535] */;
   uint32_t lisa_data1num_channels_fired /* [-1,-1] */;
   uint32_t lisa_data1board_num /* [0,255] */;
+  uint32_t lisa_data1Nboards /* [0,255] */;
   uint32_t lisa_data1channel_id /* [0,16] */;
   uint32_t lisa_data1channel_idI[16 EXT_STRUCT_CTRL(lisa_data1channel_id)] /* [1,16] */;
   uint32_t lisa_data1channel_idv[16 EXT_STRUCT_CTRL(lisa_data1channel_id)] /* [0,255] */;
@@ -145,6 +146,7 @@ typedef struct EXT_STR_h101_lisa_t
   uint32_t lisa_data2hit_pattern /* [0,65535] */;
   uint32_t lisa_data2num_channels_fired /* [-1,-1] */;
   uint32_t lisa_data2board_num /* [0,255] */;
+  uint32_t lisa_data2Nboards /* [0,255] */;
   uint32_t lisa_data2channel_id /* [0,16] */;
   uint32_t lisa_data2channel_idI[16 EXT_STRUCT_CTRL(lisa_data2channel_id)] /* [1,16] */;
   uint32_t lisa_data2channel_idv[16 EXT_STRUCT_CTRL(lisa_data2channel_id)] /* [0,255] */;
@@ -249,6 +251,7 @@ typedef struct EXT_STR_h101_lisa_t
   uint32_t lisa_data3hit_pattern /* [0,65535] */;
   uint32_t lisa_data3num_channels_fired /* [-1,-1] */;
   uint32_t lisa_data3board_num /* [0,255] */;
+  uint32_t lisa_data3Nboards /* [0,255] */;
   uint32_t lisa_data3channel_id /* [0,16] */;
   uint32_t lisa_data3channel_idI[16 EXT_STRUCT_CTRL(lisa_data3channel_id)] /* [1,16] */;
   uint32_t lisa_data3channel_idv[16 EXT_STRUCT_CTRL(lisa_data3channel_id)] /* [0,255] */;
@@ -353,6 +356,7 @@ typedef struct EXT_STR_h101_lisa_t
   uint32_t lisa_data4hit_pattern /* [0,65535] */;
   uint32_t lisa_data4num_channels_fired /* [-1,-1] */;
   uint32_t lisa_data4board_num /* [0,255] */;
+  uint32_t lisa_data4Nboards /* [0,255] */;
   uint32_t lisa_data4channel_id /* [0,16] */;
   uint32_t lisa_data4channel_idI[16 EXT_STRUCT_CTRL(lisa_data4channel_id)] /* [1,16] */;
   uint32_t lisa_data4channel_idv[16 EXT_STRUCT_CTRL(lisa_data4channel_id)] /* [0,255] */;
@@ -457,6 +461,7 @@ typedef struct EXT_STR_h101_lisa_t
   uint32_t lisa_data5hit_pattern /* [0,65535] */;
   uint32_t lisa_data5num_channels_fired /* [-1,-1] */;
   uint32_t lisa_data5board_num /* [0,255] */;
+  uint32_t lisa_data5Nboards /* [0,255] */;
   uint32_t lisa_data5channel_id /* [0,16] */;
   uint32_t lisa_data5channel_idI[16 EXT_STRUCT_CTRL(lisa_data5channel_id)] /* [1,16] */;
   uint32_t lisa_data5channel_idv[16 EXT_STRUCT_CTRL(lisa_data5channel_id)] /* [0,255] */;
@@ -561,6 +566,7 @@ typedef struct EXT_STR_h101_lisa_t
   uint32_t lisa_data6hit_pattern /* [0,65535] */;
   uint32_t lisa_data6num_channels_fired /* [-1,-1] */;
   uint32_t lisa_data6board_num /* [0,255] */;
+  uint32_t lisa_data6Nboards /* [0,255] */;
   uint32_t lisa_data6channel_id /* [0,16] */;
   uint32_t lisa_data6channel_idI[16 EXT_STRUCT_CTRL(lisa_data6channel_id)] /* [1,16] */;
   uint32_t lisa_data6channel_idv[16 EXT_STRUCT_CTRL(lisa_data6channel_id)] /* [0,255] */;
@@ -665,6 +671,7 @@ typedef struct EXT_STR_h101_lisa_t
   uint32_t lisa_data7hit_pattern /* [0,65535] */;
   uint32_t lisa_data7num_channels_fired /* [-1,-1] */;
   uint32_t lisa_data7board_num /* [0,255] */;
+  uint32_t lisa_data7Nboards /* [0,255] */;
   uint32_t lisa_data7channel_id /* [0,16] */;
   uint32_t lisa_data7channel_idI[16 EXT_STRUCT_CTRL(lisa_data7channel_id)] /* [1,16] */;
   uint32_t lisa_data7channel_idv[16 EXT_STRUCT_CTRL(lisa_data7channel_id)] /* [0,255] */;
@@ -769,6 +776,7 @@ typedef struct EXT_STR_h101_lisa_t
   uint32_t lisa_data8hit_pattern /* [0,65535] */;
   uint32_t lisa_data8num_channels_fired /* [-1,-1] */;
   uint32_t lisa_data8board_num /* [0,255] */;
+  uint32_t lisa_data8Nboards /* [0,255] */;
   uint32_t lisa_data8channel_id /* [0,16] */;
   uint32_t lisa_data8channel_idI[16 EXT_STRUCT_CTRL(lisa_data8channel_id)] /* [1,16] */;
   uint32_t lisa_data8channel_idv[16 EXT_STRUCT_CTRL(lisa_data8channel_id)] /* [0,255] */;
@@ -867,214 +875,6 @@ typedef struct EXT_STR_h101_lisa_t
   uint32_t lisa_data8traces16 /* [0,4000] */;
   uint32_t lisa_data8traces16I[4000 EXT_STRUCT_CTRL(lisa_data8traces16)] /* [1,4000] */;
   uint32_t lisa_data8traces16v[4000 EXT_STRUCT_CTRL(lisa_data8traces16)] /* [0,65535] */;
-  uint32_t lisa_data9trig /* [0,255] */;
-  uint32_t lisa_data9event_trigger_time_hi /* [-1,-1] */;
-  uint32_t lisa_data9event_trigger_time_lo /* [-1,-1] */;
-  uint32_t lisa_data9hit_pattern /* [0,65535] */;
-  uint32_t lisa_data9num_channels_fired /* [-1,-1] */;
-  uint32_t lisa_data9board_num /* [0,255] */;
-  uint32_t lisa_data9channel_id /* [0,16] */;
-  uint32_t lisa_data9channel_idI[16 EXT_STRUCT_CTRL(lisa_data9channel_id)] /* [1,16] */;
-  uint32_t lisa_data9channel_idv[16 EXT_STRUCT_CTRL(lisa_data9channel_id)] /* [0,255] */;
-  uint32_t lisa_data9channel_trigger_time_hi /* [0,16] */;
-  uint32_t lisa_data9channel_trigger_time_hiI[16 EXT_STRUCT_CTRL(lisa_data9channel_trigger_time_hi)] /* [1,16] */;
-  uint32_t lisa_data9channel_trigger_time_hiv[16 EXT_STRUCT_CTRL(lisa_data9channel_trigger_time_hi)] /* [0,65535] */;
-  uint32_t lisa_data9channel_trigger_time_lo /* [0,16] */;
-  uint32_t lisa_data9channel_trigger_time_loI[16 EXT_STRUCT_CTRL(lisa_data9channel_trigger_time_lo)] /* [1,16] */;
-  uint32_t lisa_data9channel_trigger_time_lov[16 EXT_STRUCT_CTRL(lisa_data9channel_trigger_time_lo)] /* [-1,-1] */;
-  uint32_t lisa_data9pileup1 /* [0,255] */;
-  uint32_t lisa_data9pileup2 /* [0,255] */;
-  uint32_t lisa_data9pileup3 /* [0,255] */;
-  uint32_t lisa_data9pileup4 /* [0,255] */;
-  uint32_t lisa_data9pileup5 /* [0,255] */;
-  uint32_t lisa_data9pileup6 /* [0,255] */;
-  uint32_t lisa_data9pileup7 /* [0,255] */;
-  uint32_t lisa_data9pileup8 /* [0,255] */;
-  uint32_t lisa_data9pileup9 /* [0,255] */;
-  uint32_t lisa_data9pileup10 /* [0,255] */;
-  uint32_t lisa_data9pileup11 /* [0,255] */;
-  uint32_t lisa_data9pileup12 /* [0,255] */;
-  uint32_t lisa_data9pileup13 /* [0,255] */;
-  uint32_t lisa_data9pileup14 /* [0,255] */;
-  uint32_t lisa_data9pileup15 /* [0,255] */;
-  uint32_t lisa_data9pileup16 /* [0,255] */;
-  uint32_t lisa_data9overflow1 /* [0,255] */;
-  uint32_t lisa_data9overflow2 /* [0,255] */;
-  uint32_t lisa_data9overflow3 /* [0,255] */;
-  uint32_t lisa_data9overflow4 /* [0,255] */;
-  uint32_t lisa_data9overflow5 /* [0,255] */;
-  uint32_t lisa_data9overflow6 /* [0,255] */;
-  uint32_t lisa_data9overflow7 /* [0,255] */;
-  uint32_t lisa_data9overflow8 /* [0,255] */;
-  uint32_t lisa_data9overflow9 /* [0,255] */;
-  uint32_t lisa_data9overflow10 /* [0,255] */;
-  uint32_t lisa_data9overflow11 /* [0,255] */;
-  uint32_t lisa_data9overflow12 /* [0,255] */;
-  uint32_t lisa_data9overflow13 /* [0,255] */;
-  uint32_t lisa_data9overflow14 /* [0,255] */;
-  uint32_t lisa_data9overflow15 /* [0,255] */;
-  uint32_t lisa_data9overflow16 /* [0,255] */;
-  uint32_t lisa_data9channel_cfd /* [0,16] */;
-  uint32_t lisa_data9channel_cfdI[16 EXT_STRUCT_CTRL(lisa_data9channel_cfd)] /* [1,16] */;
-  uint32_t lisa_data9channel_cfdv[16 EXT_STRUCT_CTRL(lisa_data9channel_cfd)] /* [0,255] */;
-  uint32_t lisa_data9channel_energy /* [0,16] */;
-  uint32_t lisa_data9channel_energyI[16 EXT_STRUCT_CTRL(lisa_data9channel_energy)] /* [1,16] */;
-  uint32_t lisa_data9channel_energyv[16 EXT_STRUCT_CTRL(lisa_data9channel_energy)] /* [-1,-1] */;
-  uint32_t lisa_data9channel_id_traces /* [0,16] */;
-  uint32_t lisa_data9channel_id_tracesI[16 EXT_STRUCT_CTRL(lisa_data9channel_id_traces)] /* [1,16] */;
-  uint32_t lisa_data9channel_id_tracesv[16 EXT_STRUCT_CTRL(lisa_data9channel_id_traces)] /* [0,255] */;
-  uint32_t lisa_data9traces1 /* [0,4000] */;
-  uint32_t lisa_data9traces1I[4000 EXT_STRUCT_CTRL(lisa_data9traces1)] /* [1,4000] */;
-  uint32_t lisa_data9traces1v[4000 EXT_STRUCT_CTRL(lisa_data9traces1)] /* [0,65535] */;
-  uint32_t lisa_data9traces2 /* [0,4000] */;
-  uint32_t lisa_data9traces2I[4000 EXT_STRUCT_CTRL(lisa_data9traces2)] /* [1,4000] */;
-  uint32_t lisa_data9traces2v[4000 EXT_STRUCT_CTRL(lisa_data9traces2)] /* [0,65535] */;
-  uint32_t lisa_data9traces3 /* [0,4000] */;
-  uint32_t lisa_data9traces3I[4000 EXT_STRUCT_CTRL(lisa_data9traces3)] /* [1,4000] */;
-  uint32_t lisa_data9traces3v[4000 EXT_STRUCT_CTRL(lisa_data9traces3)] /* [0,65535] */;
-  uint32_t lisa_data9traces4 /* [0,4000] */;
-  uint32_t lisa_data9traces4I[4000 EXT_STRUCT_CTRL(lisa_data9traces4)] /* [1,4000] */;
-  uint32_t lisa_data9traces4v[4000 EXT_STRUCT_CTRL(lisa_data9traces4)] /* [0,65535] */;
-  uint32_t lisa_data9traces5 /* [0,4000] */;
-  uint32_t lisa_data9traces5I[4000 EXT_STRUCT_CTRL(lisa_data9traces5)] /* [1,4000] */;
-  uint32_t lisa_data9traces5v[4000 EXT_STRUCT_CTRL(lisa_data9traces5)] /* [0,65535] */;
-  uint32_t lisa_data9traces6 /* [0,4000] */;
-  uint32_t lisa_data9traces6I[4000 EXT_STRUCT_CTRL(lisa_data9traces6)] /* [1,4000] */;
-  uint32_t lisa_data9traces6v[4000 EXT_STRUCT_CTRL(lisa_data9traces6)] /* [0,65535] */;
-  uint32_t lisa_data9traces7 /* [0,4000] */;
-  uint32_t lisa_data9traces7I[4000 EXT_STRUCT_CTRL(lisa_data9traces7)] /* [1,4000] */;
-  uint32_t lisa_data9traces7v[4000 EXT_STRUCT_CTRL(lisa_data9traces7)] /* [0,65535] */;
-  uint32_t lisa_data9traces8 /* [0,4000] */;
-  uint32_t lisa_data9traces8I[4000 EXT_STRUCT_CTRL(lisa_data9traces8)] /* [1,4000] */;
-  uint32_t lisa_data9traces8v[4000 EXT_STRUCT_CTRL(lisa_data9traces8)] /* [0,65535] */;
-  uint32_t lisa_data9traces9 /* [0,4000] */;
-  uint32_t lisa_data9traces9I[4000 EXT_STRUCT_CTRL(lisa_data9traces9)] /* [1,4000] */;
-  uint32_t lisa_data9traces9v[4000 EXT_STRUCT_CTRL(lisa_data9traces9)] /* [0,65535] */;
-  uint32_t lisa_data9traces10 /* [0,4000] */;
-  uint32_t lisa_data9traces10I[4000 EXT_STRUCT_CTRL(lisa_data9traces10)] /* [1,4000] */;
-  uint32_t lisa_data9traces10v[4000 EXT_STRUCT_CTRL(lisa_data9traces10)] /* [0,65535] */;
-  uint32_t lisa_data9traces11 /* [0,4000] */;
-  uint32_t lisa_data9traces11I[4000 EXT_STRUCT_CTRL(lisa_data9traces11)] /* [1,4000] */;
-  uint32_t lisa_data9traces11v[4000 EXT_STRUCT_CTRL(lisa_data9traces11)] /* [0,65535] */;
-  uint32_t lisa_data9traces12 /* [0,4000] */;
-  uint32_t lisa_data9traces12I[4000 EXT_STRUCT_CTRL(lisa_data9traces12)] /* [1,4000] */;
-  uint32_t lisa_data9traces12v[4000 EXT_STRUCT_CTRL(lisa_data9traces12)] /* [0,65535] */;
-  uint32_t lisa_data9traces13 /* [0,4000] */;
-  uint32_t lisa_data9traces13I[4000 EXT_STRUCT_CTRL(lisa_data9traces13)] /* [1,4000] */;
-  uint32_t lisa_data9traces13v[4000 EXT_STRUCT_CTRL(lisa_data9traces13)] /* [0,65535] */;
-  uint32_t lisa_data9traces14 /* [0,4000] */;
-  uint32_t lisa_data9traces14I[4000 EXT_STRUCT_CTRL(lisa_data9traces14)] /* [1,4000] */;
-  uint32_t lisa_data9traces14v[4000 EXT_STRUCT_CTRL(lisa_data9traces14)] /* [0,65535] */;
-  uint32_t lisa_data9traces15 /* [0,4000] */;
-  uint32_t lisa_data9traces15I[4000 EXT_STRUCT_CTRL(lisa_data9traces15)] /* [1,4000] */;
-  uint32_t lisa_data9traces15v[4000 EXT_STRUCT_CTRL(lisa_data9traces15)] /* [0,65535] */;
-  uint32_t lisa_data9traces16 /* [0,4000] */;
-  uint32_t lisa_data9traces16I[4000 EXT_STRUCT_CTRL(lisa_data9traces16)] /* [1,4000] */;
-  uint32_t lisa_data9traces16v[4000 EXT_STRUCT_CTRL(lisa_data9traces16)] /* [0,65535] */;
-  uint32_t lisa_data10trig /* [0,255] */;
-  uint32_t lisa_data10event_trigger_time_hi /* [-1,-1] */;
-  uint32_t lisa_data10event_trigger_time_lo /* [-1,-1] */;
-  uint32_t lisa_data10hit_pattern /* [0,65535] */;
-  uint32_t lisa_data10num_channels_fired /* [-1,-1] */;
-  uint32_t lisa_data10board_num /* [0,255] */;
-  uint32_t lisa_data10channel_id /* [0,16] */;
-  uint32_t lisa_data10channel_idI[16 EXT_STRUCT_CTRL(lisa_data10channel_id)] /* [1,16] */;
-  uint32_t lisa_data10channel_idv[16 EXT_STRUCT_CTRL(lisa_data10channel_id)] /* [0,255] */;
-  uint32_t lisa_data10channel_trigger_time_hi /* [0,16] */;
-  uint32_t lisa_data10channel_trigger_time_hiI[16 EXT_STRUCT_CTRL(lisa_data10channel_trigger_time_hi)] /* [1,16] */;
-  uint32_t lisa_data10channel_trigger_time_hiv[16 EXT_STRUCT_CTRL(lisa_data10channel_trigger_time_hi)] /* [0,65535] */;
-  uint32_t lisa_data10channel_trigger_time_lo /* [0,16] */;
-  uint32_t lisa_data10channel_trigger_time_loI[16 EXT_STRUCT_CTRL(lisa_data10channel_trigger_time_lo)] /* [1,16] */;
-  uint32_t lisa_data10channel_trigger_time_lov[16 EXT_STRUCT_CTRL(lisa_data10channel_trigger_time_lo)] /* [-1,-1] */;
-  uint32_t lisa_data10pileup1 /* [0,255] */;
-  uint32_t lisa_data10pileup2 /* [0,255] */;
-  uint32_t lisa_data10pileup3 /* [0,255] */;
-  uint32_t lisa_data10pileup4 /* [0,255] */;
-  uint32_t lisa_data10pileup5 /* [0,255] */;
-  uint32_t lisa_data10pileup6 /* [0,255] */;
-  uint32_t lisa_data10pileup7 /* [0,255] */;
-  uint32_t lisa_data10pileup8 /* [0,255] */;
-  uint32_t lisa_data10pileup9 /* [0,255] */;
-  uint32_t lisa_data10pileup10 /* [0,255] */;
-  uint32_t lisa_data10pileup11 /* [0,255] */;
-  uint32_t lisa_data10pileup12 /* [0,255] */;
-  uint32_t lisa_data10pileup13 /* [0,255] */;
-  uint32_t lisa_data10pileup14 /* [0,255] */;
-  uint32_t lisa_data10pileup15 /* [0,255] */;
-  uint32_t lisa_data10pileup16 /* [0,255] */;
-  uint32_t lisa_data10overflow1 /* [0,255] */;
-  uint32_t lisa_data10overflow2 /* [0,255] */;
-  uint32_t lisa_data10overflow3 /* [0,255] */;
-  uint32_t lisa_data10overflow4 /* [0,255] */;
-  uint32_t lisa_data10overflow5 /* [0,255] */;
-  uint32_t lisa_data10overflow6 /* [0,255] */;
-  uint32_t lisa_data10overflow7 /* [0,255] */;
-  uint32_t lisa_data10overflow8 /* [0,255] */;
-  uint32_t lisa_data10overflow9 /* [0,255] */;
-  uint32_t lisa_data10overflow10 /* [0,255] */;
-  uint32_t lisa_data10overflow11 /* [0,255] */;
-  uint32_t lisa_data10overflow12 /* [0,255] */;
-  uint32_t lisa_data10overflow13 /* [0,255] */;
-  uint32_t lisa_data10overflow14 /* [0,255] */;
-  uint32_t lisa_data10overflow15 /* [0,255] */;
-  uint32_t lisa_data10overflow16 /* [0,255] */;
-  uint32_t lisa_data10channel_cfd /* [0,16] */;
-  uint32_t lisa_data10channel_cfdI[16 EXT_STRUCT_CTRL(lisa_data10channel_cfd)] /* [1,16] */;
-  uint32_t lisa_data10channel_cfdv[16 EXT_STRUCT_CTRL(lisa_data10channel_cfd)] /* [0,255] */;
-  uint32_t lisa_data10channel_energy /* [0,16] */;
-  uint32_t lisa_data10channel_energyI[16 EXT_STRUCT_CTRL(lisa_data10channel_energy)] /* [1,16] */;
-  uint32_t lisa_data10channel_energyv[16 EXT_STRUCT_CTRL(lisa_data10channel_energy)] /* [-1,-1] */;
-  uint32_t lisa_data10channel_id_traces /* [0,16] */;
-  uint32_t lisa_data10channel_id_tracesI[16 EXT_STRUCT_CTRL(lisa_data10channel_id_traces)] /* [1,16] */;
-  uint32_t lisa_data10channel_id_tracesv[16 EXT_STRUCT_CTRL(lisa_data10channel_id_traces)] /* [0,255] */;
-  uint32_t lisa_data10traces1 /* [0,4000] */;
-  uint32_t lisa_data10traces1I[4000 EXT_STRUCT_CTRL(lisa_data10traces1)] /* [1,4000] */;
-  uint32_t lisa_data10traces1v[4000 EXT_STRUCT_CTRL(lisa_data10traces1)] /* [0,65535] */;
-  uint32_t lisa_data10traces2 /* [0,4000] */;
-  uint32_t lisa_data10traces2I[4000 EXT_STRUCT_CTRL(lisa_data10traces2)] /* [1,4000] */;
-  uint32_t lisa_data10traces2v[4000 EXT_STRUCT_CTRL(lisa_data10traces2)] /* [0,65535] */;
-  uint32_t lisa_data10traces3 /* [0,4000] */;
-  uint32_t lisa_data10traces3I[4000 EXT_STRUCT_CTRL(lisa_data10traces3)] /* [1,4000] */;
-  uint32_t lisa_data10traces3v[4000 EXT_STRUCT_CTRL(lisa_data10traces3)] /* [0,65535] */;
-  uint32_t lisa_data10traces4 /* [0,4000] */;
-  uint32_t lisa_data10traces4I[4000 EXT_STRUCT_CTRL(lisa_data10traces4)] /* [1,4000] */;
-  uint32_t lisa_data10traces4v[4000 EXT_STRUCT_CTRL(lisa_data10traces4)] /* [0,65535] */;
-  uint32_t lisa_data10traces5 /* [0,4000] */;
-  uint32_t lisa_data10traces5I[4000 EXT_STRUCT_CTRL(lisa_data10traces5)] /* [1,4000] */;
-  uint32_t lisa_data10traces5v[4000 EXT_STRUCT_CTRL(lisa_data10traces5)] /* [0,65535] */;
-  uint32_t lisa_data10traces6 /* [0,4000] */;
-  uint32_t lisa_data10traces6I[4000 EXT_STRUCT_CTRL(lisa_data10traces6)] /* [1,4000] */;
-  uint32_t lisa_data10traces6v[4000 EXT_STRUCT_CTRL(lisa_data10traces6)] /* [0,65535] */;
-  uint32_t lisa_data10traces7 /* [0,4000] */;
-  uint32_t lisa_data10traces7I[4000 EXT_STRUCT_CTRL(lisa_data10traces7)] /* [1,4000] */;
-  uint32_t lisa_data10traces7v[4000 EXT_STRUCT_CTRL(lisa_data10traces7)] /* [0,65535] */;
-  uint32_t lisa_data10traces8 /* [0,4000] */;
-  uint32_t lisa_data10traces8I[4000 EXT_STRUCT_CTRL(lisa_data10traces8)] /* [1,4000] */;
-  uint32_t lisa_data10traces8v[4000 EXT_STRUCT_CTRL(lisa_data10traces8)] /* [0,65535] */;
-  uint32_t lisa_data10traces9 /* [0,4000] */;
-  uint32_t lisa_data10traces9I[4000 EXT_STRUCT_CTRL(lisa_data10traces9)] /* [1,4000] */;
-  uint32_t lisa_data10traces9v[4000 EXT_STRUCT_CTRL(lisa_data10traces9)] /* [0,65535] */;
-  uint32_t lisa_data10traces10 /* [0,4000] */;
-  uint32_t lisa_data10traces10I[4000 EXT_STRUCT_CTRL(lisa_data10traces10)] /* [1,4000] */;
-  uint32_t lisa_data10traces10v[4000 EXT_STRUCT_CTRL(lisa_data10traces10)] /* [0,65535] */;
-  uint32_t lisa_data10traces11 /* [0,4000] */;
-  uint32_t lisa_data10traces11I[4000 EXT_STRUCT_CTRL(lisa_data10traces11)] /* [1,4000] */;
-  uint32_t lisa_data10traces11v[4000 EXT_STRUCT_CTRL(lisa_data10traces11)] /* [0,65535] */;
-  uint32_t lisa_data10traces12 /* [0,4000] */;
-  uint32_t lisa_data10traces12I[4000 EXT_STRUCT_CTRL(lisa_data10traces12)] /* [1,4000] */;
-  uint32_t lisa_data10traces12v[4000 EXT_STRUCT_CTRL(lisa_data10traces12)] /* [0,65535] */;
-  uint32_t lisa_data10traces13 /* [0,4000] */;
-  uint32_t lisa_data10traces13I[4000 EXT_STRUCT_CTRL(lisa_data10traces13)] /* [1,4000] */;
-  uint32_t lisa_data10traces13v[4000 EXT_STRUCT_CTRL(lisa_data10traces13)] /* [0,65535] */;
-  uint32_t lisa_data10traces14 /* [0,4000] */;
-  uint32_t lisa_data10traces14I[4000 EXT_STRUCT_CTRL(lisa_data10traces14)] /* [1,4000] */;
-  uint32_t lisa_data10traces14v[4000 EXT_STRUCT_CTRL(lisa_data10traces14)] /* [0,65535] */;
-  uint32_t lisa_data10traces15 /* [0,4000] */;
-  uint32_t lisa_data10traces15I[4000 EXT_STRUCT_CTRL(lisa_data10traces15)] /* [1,4000] */;
-  uint32_t lisa_data10traces15v[4000 EXT_STRUCT_CTRL(lisa_data10traces15)] /* [0,65535] */;
-  uint32_t lisa_data10traces16 /* [0,4000] */;
-  uint32_t lisa_data10traces16I[4000 EXT_STRUCT_CTRL(lisa_data10traces16)] /* [1,4000] */;
-  uint32_t lisa_data10traces16v[4000 EXT_STRUCT_CTRL(lisa_data10traces16)] /* [0,65535] */;
 
 } EXT_STR_h101_lisa;
 
@@ -1097,6 +897,7 @@ typedef struct EXT_STR_h101_lisa_onion_t
     uint32_t hit_pattern;
     uint32_t num_channels_fired;
     uint32_t board_num;
+    uint32_t Nboards;
     uint32_t channel_id;
     uint32_t channel_idI[16 /* channel_id */];
     uint32_t channel_idv[16 /* channel_id */];
@@ -1122,7 +923,7 @@ typedef struct EXT_STR_h101_lisa_onion_t
       uint32_t I[4000 /*  */];
       uint32_t v[4000 /*  */];
     } traces[16];
-  } lisa_data[10];
+  } lisa_data[8];
 
 } EXT_STR_h101_lisa_onion;
 
@@ -1167,6 +968,9 @@ typedef struct EXT_STR_h101_lisa_onion_t
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_data1board_num,             UINT32,\
                     "lisa_data1board_num",255,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     lisa_data1Nboards,               UINT32,\
+                    "lisa_data1Nboards",255,0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_data1channel_id,            UINT32,\
                     "lisa_data1channel_id",16,0/*flags*/); \
@@ -1480,6 +1284,9 @@ typedef struct EXT_STR_h101_lisa_onion_t
                      lisa_data2board_num,             UINT32,\
                     "lisa_data2board_num",255,0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     lisa_data2Nboards,               UINT32,\
+                    "lisa_data2Nboards",255,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_data2channel_id,            UINT32,\
                     "lisa_data2channel_id",16,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
@@ -1791,6 +1598,9 @@ typedef struct EXT_STR_h101_lisa_onion_t
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_data3board_num,             UINT32,\
                     "lisa_data3board_num",255,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     lisa_data3Nboards,               UINT32,\
+                    "lisa_data3Nboards",255,0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_data3channel_id,            UINT32,\
                     "lisa_data3channel_id",16,0/*flags*/); \
@@ -2104,6 +1914,9 @@ typedef struct EXT_STR_h101_lisa_onion_t
                      lisa_data4board_num,             UINT32,\
                     "lisa_data4board_num",255,0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     lisa_data4Nboards,               UINT32,\
+                    "lisa_data4Nboards",255,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_data4channel_id,            UINT32,\
                     "lisa_data4channel_id",16,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
@@ -2415,6 +2228,9 @@ typedef struct EXT_STR_h101_lisa_onion_t
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_data5board_num,             UINT32,\
                     "lisa_data5board_num",255,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     lisa_data5Nboards,               UINT32,\
+                    "lisa_data5Nboards",255,0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_data5channel_id,            UINT32,\
                     "lisa_data5channel_id",16,0/*flags*/); \
@@ -2728,6 +2544,9 @@ typedef struct EXT_STR_h101_lisa_onion_t
                      lisa_data6board_num,             UINT32,\
                     "lisa_data6board_num",255,0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     lisa_data6Nboards,               UINT32,\
+                    "lisa_data6Nboards",255,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_data6channel_id,            UINT32,\
                     "lisa_data6channel_id",16,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
@@ -3039,6 +2858,9 @@ typedef struct EXT_STR_h101_lisa_onion_t
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_data7board_num,             UINT32,\
                     "lisa_data7board_num",255,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     lisa_data7Nboards,               UINT32,\
+                    "lisa_data7Nboards",255,0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_data7channel_id,            UINT32,\
                     "lisa_data7channel_id",16,0/*flags*/); \
@@ -3352,6 +3174,9 @@ typedef struct EXT_STR_h101_lisa_onion_t
                      lisa_data8board_num,             UINT32,\
                     "lisa_data8board_num",255,0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     lisa_data8Nboards,               UINT32,\
+                    "lisa_data8Nboards",255,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_data8channel_id,            UINT32,\
                     "lisa_data8channel_id",16,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
@@ -3645,630 +3470,6 @@ typedef struct EXT_STR_h101_lisa_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      lisa_data8traces16v,             UINT32,\
                     "lisa_data8traces16v",             "lisa_data8traces16",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9trig,                  UINT32,\
-                    "lisa_data9trig",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
-                     lisa_data9event_trigger_time_hi, UINT32,\
-                    "lisa_data9event_trigger_time_hi",0/*flags*/); \
-  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
-                     lisa_data9event_trigger_time_lo, UINT32,\
-                    "lisa_data9event_trigger_time_lo",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9hit_pattern,           UINT32,\
-                    "lisa_data9hit_pattern",65535,0/*flags*/); \
-  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
-                     lisa_data9num_channels_fired,    UINT32,\
-                    "lisa_data9num_channels_fired",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9board_num,             UINT32,\
-                    "lisa_data9board_num",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9channel_id,            UINT32,\
-                    "lisa_data9channel_id",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9channel_idI,           UINT32,\
-                    "lisa_data9channel_idI",           "lisa_data9channel_id",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9channel_idv,           UINT32,\
-                    "lisa_data9channel_idv",           "lisa_data9channel_id",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9channel_trigger_time_hi,UINT32,\
-                    "lisa_data9channel_trigger_time_hi",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9channel_trigger_time_hiI,UINT32,\
-                    "lisa_data9channel_trigger_time_hiI","lisa_data9channel_trigger_time_hi",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9channel_trigger_time_hiv,UINT32,\
-                    "lisa_data9channel_trigger_time_hiv","lisa_data9channel_trigger_time_hi",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9channel_trigger_time_lo,UINT32,\
-                    "lisa_data9channel_trigger_time_lo",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9channel_trigger_time_loI,UINT32,\
-                    "lisa_data9channel_trigger_time_loI","lisa_data9channel_trigger_time_lo",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9channel_trigger_time_lov,UINT32,\
-                    "lisa_data9channel_trigger_time_lov","lisa_data9channel_trigger_time_lo",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9pileup1,               UINT32,\
-                    "lisa_data9pileup1",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9pileup2,               UINT32,\
-                    "lisa_data9pileup2",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9pileup3,               UINT32,\
-                    "lisa_data9pileup3",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9pileup4,               UINT32,\
-                    "lisa_data9pileup4",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9pileup5,               UINT32,\
-                    "lisa_data9pileup5",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9pileup6,               UINT32,\
-                    "lisa_data9pileup6",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9pileup7,               UINT32,\
-                    "lisa_data9pileup7",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9pileup8,               UINT32,\
-                    "lisa_data9pileup8",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9pileup9,               UINT32,\
-                    "lisa_data9pileup9",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9pileup10,              UINT32,\
-                    "lisa_data9pileup10",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9pileup11,              UINT32,\
-                    "lisa_data9pileup11",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9pileup12,              UINT32,\
-                    "lisa_data9pileup12",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9pileup13,              UINT32,\
-                    "lisa_data9pileup13",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9pileup14,              UINT32,\
-                    "lisa_data9pileup14",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9pileup15,              UINT32,\
-                    "lisa_data9pileup15",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9pileup16,              UINT32,\
-                    "lisa_data9pileup16",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9overflow1,             UINT32,\
-                    "lisa_data9overflow1",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9overflow2,             UINT32,\
-                    "lisa_data9overflow2",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9overflow3,             UINT32,\
-                    "lisa_data9overflow3",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9overflow4,             UINT32,\
-                    "lisa_data9overflow4",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9overflow5,             UINT32,\
-                    "lisa_data9overflow5",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9overflow6,             UINT32,\
-                    "lisa_data9overflow6",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9overflow7,             UINT32,\
-                    "lisa_data9overflow7",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9overflow8,             UINT32,\
-                    "lisa_data9overflow8",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9overflow9,             UINT32,\
-                    "lisa_data9overflow9",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9overflow10,            UINT32,\
-                    "lisa_data9overflow10",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9overflow11,            UINT32,\
-                    "lisa_data9overflow11",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9overflow12,            UINT32,\
-                    "lisa_data9overflow12",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9overflow13,            UINT32,\
-                    "lisa_data9overflow13",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9overflow14,            UINT32,\
-                    "lisa_data9overflow14",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9overflow15,            UINT32,\
-                    "lisa_data9overflow15",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9overflow16,            UINT32,\
-                    "lisa_data9overflow16",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9channel_cfd,           UINT32,\
-                    "lisa_data9channel_cfd",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9channel_cfdI,          UINT32,\
-                    "lisa_data9channel_cfdI",          "lisa_data9channel_cfd",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9channel_cfdv,          UINT32,\
-                    "lisa_data9channel_cfdv",          "lisa_data9channel_cfd",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9channel_energy,        UINT32,\
-                    "lisa_data9channel_energy",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9channel_energyI,       UINT32,\
-                    "lisa_data9channel_energyI",       "lisa_data9channel_energy",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9channel_energyv,       UINT32,\
-                    "lisa_data9channel_energyv",       "lisa_data9channel_energy",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9channel_id_traces,     UINT32,\
-                    "lisa_data9channel_id_traces",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9channel_id_tracesI,    UINT32,\
-                    "lisa_data9channel_id_tracesI",    "lisa_data9channel_id_traces",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9channel_id_tracesv,    UINT32,\
-                    "lisa_data9channel_id_tracesv",    "lisa_data9channel_id_traces",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces1,               UINT32,\
-                    "lisa_data9traces1",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces1I,              UINT32,\
-                    "lisa_data9traces1I",              "lisa_data9traces1",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces1v,              UINT32,\
-                    "lisa_data9traces1v",              "lisa_data9traces1",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces2,               UINT32,\
-                    "lisa_data9traces2",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces2I,              UINT32,\
-                    "lisa_data9traces2I",              "lisa_data9traces2",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces2v,              UINT32,\
-                    "lisa_data9traces2v",              "lisa_data9traces2",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces3,               UINT32,\
-                    "lisa_data9traces3",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces3I,              UINT32,\
-                    "lisa_data9traces3I",              "lisa_data9traces3",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces3v,              UINT32,\
-                    "lisa_data9traces3v",              "lisa_data9traces3",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces4,               UINT32,\
-                    "lisa_data9traces4",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces4I,              UINT32,\
-                    "lisa_data9traces4I",              "lisa_data9traces4",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces4v,              UINT32,\
-                    "lisa_data9traces4v",              "lisa_data9traces4",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces5,               UINT32,\
-                    "lisa_data9traces5",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces5I,              UINT32,\
-                    "lisa_data9traces5I",              "lisa_data9traces5",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces5v,              UINT32,\
-                    "lisa_data9traces5v",              "lisa_data9traces5",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces6,               UINT32,\
-                    "lisa_data9traces6",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces6I,              UINT32,\
-                    "lisa_data9traces6I",              "lisa_data9traces6",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces6v,              UINT32,\
-                    "lisa_data9traces6v",              "lisa_data9traces6",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces7,               UINT32,\
-                    "lisa_data9traces7",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces7I,              UINT32,\
-                    "lisa_data9traces7I",              "lisa_data9traces7",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces7v,              UINT32,\
-                    "lisa_data9traces7v",              "lisa_data9traces7",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces8,               UINT32,\
-                    "lisa_data9traces8",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces8I,              UINT32,\
-                    "lisa_data9traces8I",              "lisa_data9traces8",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces8v,              UINT32,\
-                    "lisa_data9traces8v",              "lisa_data9traces8",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces9,               UINT32,\
-                    "lisa_data9traces9",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces9I,              UINT32,\
-                    "lisa_data9traces9I",              "lisa_data9traces9",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces9v,              UINT32,\
-                    "lisa_data9traces9v",              "lisa_data9traces9",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces10,              UINT32,\
-                    "lisa_data9traces10",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces10I,             UINT32,\
-                    "lisa_data9traces10I",             "lisa_data9traces10",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces10v,             UINT32,\
-                    "lisa_data9traces10v",             "lisa_data9traces10",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces11,              UINT32,\
-                    "lisa_data9traces11",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces11I,             UINT32,\
-                    "lisa_data9traces11I",             "lisa_data9traces11",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces11v,             UINT32,\
-                    "lisa_data9traces11v",             "lisa_data9traces11",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces12,              UINT32,\
-                    "lisa_data9traces12",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces12I,             UINT32,\
-                    "lisa_data9traces12I",             "lisa_data9traces12",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces12v,             UINT32,\
-                    "lisa_data9traces12v",             "lisa_data9traces12",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces13,              UINT32,\
-                    "lisa_data9traces13",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces13I,             UINT32,\
-                    "lisa_data9traces13I",             "lisa_data9traces13",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces13v,             UINT32,\
-                    "lisa_data9traces13v",             "lisa_data9traces13",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces14,              UINT32,\
-                    "lisa_data9traces14",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces14I,             UINT32,\
-                    "lisa_data9traces14I",             "lisa_data9traces14",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces14v,             UINT32,\
-                    "lisa_data9traces14v",             "lisa_data9traces14",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces15,              UINT32,\
-                    "lisa_data9traces15",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces15I,             UINT32,\
-                    "lisa_data9traces15I",             "lisa_data9traces15",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces15v,             UINT32,\
-                    "lisa_data9traces15v",             "lisa_data9traces15",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces16,              UINT32,\
-                    "lisa_data9traces16",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces16I,             UINT32,\
-                    "lisa_data9traces16I",             "lisa_data9traces16",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data9traces16v,             UINT32,\
-                    "lisa_data9traces16v",             "lisa_data9traces16",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10trig,                 UINT32,\
-                    "lisa_data10trig",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
-                     lisa_data10event_trigger_time_hi,UINT32,\
-                    "lisa_data10event_trigger_time_hi",0/*flags*/); \
-  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
-                     lisa_data10event_trigger_time_lo,UINT32,\
-                    "lisa_data10event_trigger_time_lo",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10hit_pattern,          UINT32,\
-                    "lisa_data10hit_pattern",65535,0/*flags*/); \
-  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
-                     lisa_data10num_channels_fired,   UINT32,\
-                    "lisa_data10num_channels_fired",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10board_num,            UINT32,\
-                    "lisa_data10board_num",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10channel_id,           UINT32,\
-                    "lisa_data10channel_id",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10channel_idI,          UINT32,\
-                    "lisa_data10channel_idI",          "lisa_data10channel_id",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10channel_idv,          UINT32,\
-                    "lisa_data10channel_idv",          "lisa_data10channel_id",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10channel_trigger_time_hi,UINT32,\
-                    "lisa_data10channel_trigger_time_hi",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10channel_trigger_time_hiI,UINT32,\
-                    "lisa_data10channel_trigger_time_hiI","lisa_data10channel_trigger_time_hi",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10channel_trigger_time_hiv,UINT32,\
-                    "lisa_data10channel_trigger_time_hiv","lisa_data10channel_trigger_time_hi",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10channel_trigger_time_lo,UINT32,\
-                    "lisa_data10channel_trigger_time_lo",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10channel_trigger_time_loI,UINT32,\
-                    "lisa_data10channel_trigger_time_loI","lisa_data10channel_trigger_time_lo",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10channel_trigger_time_lov,UINT32,\
-                    "lisa_data10channel_trigger_time_lov","lisa_data10channel_trigger_time_lo",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10pileup1,              UINT32,\
-                    "lisa_data10pileup1",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10pileup2,              UINT32,\
-                    "lisa_data10pileup2",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10pileup3,              UINT32,\
-                    "lisa_data10pileup3",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10pileup4,              UINT32,\
-                    "lisa_data10pileup4",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10pileup5,              UINT32,\
-                    "lisa_data10pileup5",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10pileup6,              UINT32,\
-                    "lisa_data10pileup6",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10pileup7,              UINT32,\
-                    "lisa_data10pileup7",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10pileup8,              UINT32,\
-                    "lisa_data10pileup8",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10pileup9,              UINT32,\
-                    "lisa_data10pileup9",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10pileup10,             UINT32,\
-                    "lisa_data10pileup10",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10pileup11,             UINT32,\
-                    "lisa_data10pileup11",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10pileup12,             UINT32,\
-                    "lisa_data10pileup12",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10pileup13,             UINT32,\
-                    "lisa_data10pileup13",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10pileup14,             UINT32,\
-                    "lisa_data10pileup14",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10pileup15,             UINT32,\
-                    "lisa_data10pileup15",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10pileup16,             UINT32,\
-                    "lisa_data10pileup16",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10overflow1,            UINT32,\
-                    "lisa_data10overflow1",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10overflow2,            UINT32,\
-                    "lisa_data10overflow2",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10overflow3,            UINT32,\
-                    "lisa_data10overflow3",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10overflow4,            UINT32,\
-                    "lisa_data10overflow4",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10overflow5,            UINT32,\
-                    "lisa_data10overflow5",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10overflow6,            UINT32,\
-                    "lisa_data10overflow6",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10overflow7,            UINT32,\
-                    "lisa_data10overflow7",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10overflow8,            UINT32,\
-                    "lisa_data10overflow8",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10overflow9,            UINT32,\
-                    "lisa_data10overflow9",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10overflow10,           UINT32,\
-                    "lisa_data10overflow10",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10overflow11,           UINT32,\
-                    "lisa_data10overflow11",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10overflow12,           UINT32,\
-                    "lisa_data10overflow12",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10overflow13,           UINT32,\
-                    "lisa_data10overflow13",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10overflow14,           UINT32,\
-                    "lisa_data10overflow14",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10overflow15,           UINT32,\
-                    "lisa_data10overflow15",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10overflow16,           UINT32,\
-                    "lisa_data10overflow16",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10channel_cfd,          UINT32,\
-                    "lisa_data10channel_cfd",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10channel_cfdI,         UINT32,\
-                    "lisa_data10channel_cfdI",         "lisa_data10channel_cfd",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10channel_cfdv,         UINT32,\
-                    "lisa_data10channel_cfdv",         "lisa_data10channel_cfd",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10channel_energy,       UINT32,\
-                    "lisa_data10channel_energy",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10channel_energyI,      UINT32,\
-                    "lisa_data10channel_energyI",      "lisa_data10channel_energy",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10channel_energyv,      UINT32,\
-                    "lisa_data10channel_energyv",      "lisa_data10channel_energy",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10channel_id_traces,    UINT32,\
-                    "lisa_data10channel_id_traces",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10channel_id_tracesI,   UINT32,\
-                    "lisa_data10channel_id_tracesI",   "lisa_data10channel_id_traces",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10channel_id_tracesv,   UINT32,\
-                    "lisa_data10channel_id_tracesv",   "lisa_data10channel_id_traces",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces1,              UINT32,\
-                    "lisa_data10traces1",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces1I,             UINT32,\
-                    "lisa_data10traces1I",             "lisa_data10traces1",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces1v,             UINT32,\
-                    "lisa_data10traces1v",             "lisa_data10traces1",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces2,              UINT32,\
-                    "lisa_data10traces2",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces2I,             UINT32,\
-                    "lisa_data10traces2I",             "lisa_data10traces2",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces2v,             UINT32,\
-                    "lisa_data10traces2v",             "lisa_data10traces2",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces3,              UINT32,\
-                    "lisa_data10traces3",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces3I,             UINT32,\
-                    "lisa_data10traces3I",             "lisa_data10traces3",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces3v,             UINT32,\
-                    "lisa_data10traces3v",             "lisa_data10traces3",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces4,              UINT32,\
-                    "lisa_data10traces4",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces4I,             UINT32,\
-                    "lisa_data10traces4I",             "lisa_data10traces4",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces4v,             UINT32,\
-                    "lisa_data10traces4v",             "lisa_data10traces4",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces5,              UINT32,\
-                    "lisa_data10traces5",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces5I,             UINT32,\
-                    "lisa_data10traces5I",             "lisa_data10traces5",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces5v,             UINT32,\
-                    "lisa_data10traces5v",             "lisa_data10traces5",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces6,              UINT32,\
-                    "lisa_data10traces6",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces6I,             UINT32,\
-                    "lisa_data10traces6I",             "lisa_data10traces6",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces6v,             UINT32,\
-                    "lisa_data10traces6v",             "lisa_data10traces6",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces7,              UINT32,\
-                    "lisa_data10traces7",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces7I,             UINT32,\
-                    "lisa_data10traces7I",             "lisa_data10traces7",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces7v,             UINT32,\
-                    "lisa_data10traces7v",             "lisa_data10traces7",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces8,              UINT32,\
-                    "lisa_data10traces8",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces8I,             UINT32,\
-                    "lisa_data10traces8I",             "lisa_data10traces8",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces8v,             UINT32,\
-                    "lisa_data10traces8v",             "lisa_data10traces8",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces9,              UINT32,\
-                    "lisa_data10traces9",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces9I,             UINT32,\
-                    "lisa_data10traces9I",             "lisa_data10traces9",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces9v,             UINT32,\
-                    "lisa_data10traces9v",             "lisa_data10traces9",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces10,             UINT32,\
-                    "lisa_data10traces10",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces10I,            UINT32,\
-                    "lisa_data10traces10I",            "lisa_data10traces10",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces10v,            UINT32,\
-                    "lisa_data10traces10v",            "lisa_data10traces10",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces11,             UINT32,\
-                    "lisa_data10traces11",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces11I,            UINT32,\
-                    "lisa_data10traces11I",            "lisa_data10traces11",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces11v,            UINT32,\
-                    "lisa_data10traces11v",            "lisa_data10traces11",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces12,             UINT32,\
-                    "lisa_data10traces12",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces12I,            UINT32,\
-                    "lisa_data10traces12I",            "lisa_data10traces12",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces12v,            UINT32,\
-                    "lisa_data10traces12v",            "lisa_data10traces12",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces13,             UINT32,\
-                    "lisa_data10traces13",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces13I,            UINT32,\
-                    "lisa_data10traces13I",            "lisa_data10traces13",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces13v,            UINT32,\
-                    "lisa_data10traces13v",            "lisa_data10traces13",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces14,             UINT32,\
-                    "lisa_data10traces14",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces14I,            UINT32,\
-                    "lisa_data10traces14I",            "lisa_data10traces14",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces14v,            UINT32,\
-                    "lisa_data10traces14v",            "lisa_data10traces14",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces15,             UINT32,\
-                    "lisa_data10traces15",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces15I,            UINT32,\
-                    "lisa_data10traces15I",            "lisa_data10traces15",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces15v,            UINT32,\
-                    "lisa_data10traces15v",            "lisa_data10traces15",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces16,             UINT32,\
-                    "lisa_data10traces16",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces16I,            UINT32,\
-                    "lisa_data10traces16I",            "lisa_data10traces16",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     lisa_data10traces16v,            UINT32,\
-                    "lisa_data10traces16v",            "lisa_data10traces16",0/*flags*/); \
   \
 } while (0);
 

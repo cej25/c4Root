@@ -74,6 +74,9 @@ InitStatus LisaNearlineSpectraDaq::Init()
     dir_stats = dir_lisa->mkdir("Stats");
     dir_energy = dir_lisa->mkdir("Energy");
     dir_traces = dir_lisa->mkdir("Traces");
+
+    c4LOG(info, "INIT Layer number" << layer_number);
+
       
     //:::::::::::White Rabbit:::::::::::::::
     // dir_stats->cd();
@@ -100,6 +103,7 @@ InitStatus LisaNearlineSpectraDaq::Init()
     c_hitpattern_layer = new TCanvas("c_hitpattern_layer", "Hit Pattern by Layer", 650, 350);
     c_hitpattern_layer->Divide(layer_number,1);
     h1_hitpattern_layer.resize(layer_number);
+    
     for (int i = 0; i < layer_number; i++)
     {   
         c_hitpattern_layer->cd(i+1);
@@ -345,6 +349,48 @@ InitStatus LisaNearlineSpectraDaq::Init()
 
     }
 
+    c_traces_layer_ch_stat.resize(layer_number);
+    h2_traces_layer_ch_stat.resize(layer_number);
+
+    for (int i = 0; i < layer_number; i++) 
+    {
+        c_traces_layer_ch_stat[i] = new TCanvas(Form("c_traces_layer_%d_stat",i),Form("c_traces_layer_%d_stat",i), 650,350);
+        c_traces_layer_ch_stat[i]->SetTitle(Form("Layer %d - Traces",i));
+        c_traces_layer_ch_stat[i]->Divide(xmax,ymax); 
+        h2_traces_layer_ch_stat[i].resize(xmax);
+        for (int j = 0; j < xmax; j++)
+        {
+            h2_traces_layer_ch_stat[i][j].resize(ymax);
+            for (int k = 0; k < ymax; k++)
+            {   
+                // general formula to place correctly on canvas for x,y coordinates
+                c_traces_layer_ch_stat[i]->cd((ymax-(k+1))*xmax + j + 1);
+                
+                city = "";
+                for (auto & detector : detector_mapping)
+                {
+                    if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
+                    {
+                        city = detector.second.first.second;
+                        break;
+                    }
+                }
+
+                h2_traces_layer_ch_stat[i][j][k] = new TH2F(Form("traces_%s_%i_%i_%i_stat", city.c_str(), i, j, k), city.c_str(), 1000, 0, 20,5000,3000,20000);
+                h2_traces_layer_ch_stat[i][j][k]->GetXaxis()->SetTitle("Time [us]");
+                h2_traces_layer_ch_stat[i][j][k]->SetMinimum(lisa_config->AmplitudeMin);
+                h2_traces_layer_ch_stat[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
+                h2_traces_layer_ch_stat[i][j][k]->SetLineColor(kBlue+1);
+                h2_traces_layer_ch_stat[i][j][k]->SetFillColor(kOrange-3);
+                h2_traces_layer_ch_stat[i][j][k]->Draw("colz");
+                gPad->SetLogz();
+            }
+        }
+        c_traces_layer_ch_stat[i]->cd(0);
+        dir_traces->Append(c_traces_layer_ch_stat[i]);
+
+    }
+
     return kSUCCESS;
 }
 
@@ -357,8 +403,8 @@ void LisaNearlineSpectraDaq::Exec(Option_t* option)
 
     std::vector<uint32_t> sum_energy_layer;
     sum_energy_layer.resize(layer_number);
-
     int energy_ch[layer_number][xmax][ymax] = {0,0,0};
+
     //int energy_ch_GM[layer_number][xmax][ymax] = {0,0,0};
 
     std::vector<uint32_t> sum_energy_layer_GM;
@@ -371,6 +417,7 @@ void LisaNearlineSpectraDaq::Exec(Option_t* option)
     //c4LOG(info, "Comment to slow down program for testing");
     for (auto const & lisaCalItem : *lisaCalArray)
     {
+
 
         //wr_time = lisaCalItem.Get_wr_t();
         //if (wr_time == 0)return;
@@ -386,9 +433,7 @@ void LisaNearlineSpectraDaq::Exec(Option_t* option)
         int pileup = lisaCalItem.Get_pileup();
         int overflow = lisaCalItem.Get_overflow();
         uint64_t evtno = header->GetEventno();
-        
-        
-        
+                
         //::::::::F I L L   H I S T O S:::::::
         //:::::::: H I T  P A T T E R N ::::::::::
         //:::::::::Layer
@@ -433,8 +478,14 @@ void LisaNearlineSpectraDaq::Exec(Option_t* option)
         //::::::::: Fill Traces ::::::::::::::
         for (int i = 0; i < trace.size(); i++)
         {
+            if(layer==1)
+            {
+                //c4LOG(info, "EXEC Layer number" << layer_number << " layer id :" << layer);
+            }
+            
             h1_traces_layer_ch[layer][xpos][ypos]->SetBinContent(i, trace[i]);
             //c4LOG(info, "layer: " << layer << " x max: " << xmax << " ymax: " << ymax);
+	        h2_traces_layer_ch_stat[layer][xpos][ypos]->Fill(i*0.01,trace[i]);
 
         }
 

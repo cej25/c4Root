@@ -48,7 +48,9 @@ class LisaReader : public c4Reader
 
         Bool_t fOnline;
 
-        int NBoards = 1; //read from data instead 
+        int NBoards = 10;       //Max number of board over which loop to define real NBoards
+        // 125 diamonds in 5x5 layers. 2 Boards per each layer (+ spare channels). Total of 10 boards.
+
         
         int32_t energy;
 

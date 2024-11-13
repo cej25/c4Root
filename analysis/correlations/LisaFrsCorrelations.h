@@ -18,6 +18,10 @@
 #include "TDirectory.h"
 #include <vector>
 #include <map>
+#include "TString.h"
+
+//Debugging. Replaced std::string with TString 8nov24
+
 
 class EventHeader;
 class TH1I;
@@ -91,7 +95,7 @@ class LisaFrsCorrelations : public FairTask
         Float_t energy_travMUSIC;
         int xmax;
         int ymax;
-        std::string city = "";
+        TString city = "";
 
         Int_t layer;
 
