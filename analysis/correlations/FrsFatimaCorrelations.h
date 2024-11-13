@@ -24,6 +24,7 @@ class FrsFatimaCorrelations : public FairTask
         FrsFatimaCorrelations(FrsGate * frsgate);
         FrsFatimaCorrelations(const TString& name, Int_t verbose = 1);
 
+        void SetMultiHit(bool v) {use_multi = v;};
 
 
         virtual ~FrsFatimaCorrelations();
@@ -86,8 +87,11 @@ class FrsFatimaCorrelations : public FairTask
     private:
         TClonesArray* fHitFatima;
         TClonesArray* fHitFrs;
+        TClonesArray* fMultiHitFrs;
+
 
         std::vector<FrsHitItem> const* hitArrayFrs;
+        std::vector<FrsMultiHitItem> const* multihitArrayFrs;
         std::vector<FrsMainCalSciItem> const* mainSciArray;
 
 
@@ -95,6 +99,8 @@ class FrsFatimaCorrelations : public FairTask
         const TFrsConfiguration * frs_configuration;
         
         FrsGate * frsgate;
+
+        bool use_multi = false;
 
         int64_t wr_t_last_frs_hit = 0;
         int64_t wr_t_first_frs_hit = 0;

@@ -120,15 +120,13 @@ Bool_t FrsMainReader::Read()
     int hit_index = 0;
     for (uint32_t channel_index = 0; channel_index < fData->frsmain_data_v1290_nM; channel_index++)
     {   
-        int current_channel = fData->frsmain_data_v1290_nMI[channel_index]; // channel to read now!
-        int next_channel_start = fData->frsmain_data_v1290_nME[channel_index]; // we read this channel until we hit this index
+        int current_channel = fData->frsmain_data_v1290_nMI[channel_index]; 
+        int next_channel_start = fData->frsmain_data_v1290_nME[channel_index]; 
         
         for (uint32_t j = hit_index; j < next_channel_start; j++)
         {
-            //c4LOG(info,Form("current channel = %i, next channel start = %i, channels fired = %i, data = %i",fData->frsmain_data_v1290_leadOrTrailMI[channel_index], fData->frsmain_data_v1290_leadOrTrailME[channel_index], fData->frsmain_data_v1290_nM, fData->frsmain_data_v1290_leadOrTrailv[j]));
-            //c4LOG(info,Form("current channel = %i, next channel start = %i, channels fired = %i, data = %i",current_channel, next_channel_start, fData->frsmain_data_v1290_nM, fData->frsmain_data_v1290_data[j]));
             
-            uint32_t channel = current_channel - 1; // I cannot see why this doesn't get set to zero for channel zero.... Please check. But it seems correct this way.
+            uint32_t channel = current_channel - 1; 
             
             uint32_t data = fData->frsmain_data_v1290_data[j];
             uint32_t lot = fData->frsmain_data_v1290_leadOrTrailv[j];

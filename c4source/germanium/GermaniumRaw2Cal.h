@@ -31,6 +31,8 @@ class GermaniumRaw2Cal : public FairTask
         virtual void SetParContainers();
 
         virtual InitStatus Init();
+
+        void SetVetoPileupSCI41(bool v){VetoPileupSCI41 = v;}
         
 
     private:
@@ -48,6 +50,8 @@ class GermaniumRaw2Cal : public FairTask
         int detector_id;
         int crystal_id;
         double channel_energy_cal;
+
+        bool VetoPileupSCI41 = true;
 
 
         EventHeader * header;

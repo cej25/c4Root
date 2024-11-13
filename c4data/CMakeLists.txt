@@ -16,6 +16,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/baseData
 ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 ${C4ROOT_SOURCE_DIR}/c4data/fimpData
 ${C4ROOT_SOURCE_DIR}/c4source
+${C4ROOT_SOURCE_DIR}/c4source/base
 ${C4ROOT_SOURCE_DIR}/c4source/frs
 )
 

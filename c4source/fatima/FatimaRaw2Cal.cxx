@@ -268,6 +268,10 @@ void FatimaRaw2Cal::Exec(Option_t* option)
                     energy = slow_ToT;
                 }
             }
+
+            if (fatima_configuration->GainShiftsLoaded() && !(fatima_configuration->IsDetectorAuxilliary(detector_id))){
+                energy = energy*fatima_configuration->GetGainShift(detector_id,funcal_hit->Get_wr_t());
+            }
             
 
             if (((detector_id == fatima_configuration->TM_Delayed()) || (detector_id == fatima_configuration->TM_Undelayed())) && fatima_configuration->TM_Delayed() != 0 && fatima_configuration->TM_Undelayed() != 0)

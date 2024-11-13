@@ -43,22 +43,35 @@ class GermaniumLabTest : public FairTask
 
         virtual void FinishTask();
 
-        void AddNewMeasurement(int, int, int, int, int);
+        int GetVectorIndex(int, int);
+
+        void AddNewMeasurement(int, int, int, int, int, int, int);
 
         TF1 * MakeFitFunc(TString, int);
         double GetFWxM(TF1 *, double, double, double);
+        double GetFWxMHistogram(TH1 * histo, TF1 * fitgaus, double ylim, double xrangemin, double xrangemax);
         void FitPeak(int);
 
         virtual void ResetAllHisto();
-        virtual void ResetOneHisto(int index);
+        virtual void ResetOneHisto(int vector_index);
 
-        void SetFitLimits1173(int index, int xlow, int xhigh);
-        void SetFitLimits1332(int index, int xlow, int xhigh);
+        void SetFitLimits1173(int vector_index, int xlow, int xhigh);
+        void SetFitLimits1332(int vector_index, int xlow, int xhigh);
+
+
+        void StartMeasurement(int vector_index);
+        void PauseMeasurement(int vector_index);
+        void StopMeasurementCompleted(int vector_index);
+        void WriteTestResults(int vector_index);
+        void SetLog(int vector_index);
+        void SetTraceLengthPlot(int v){trace_length_plot = v;}
 
 
     
     private:
         TClonesArray* fHitGeUncal;
+
+        std::string base_path_str = "/u/jlarsson/Documents/DEGAStest/database";
 
         // ranges
         int number_of_boards = 4;
@@ -69,7 +82,9 @@ class GermaniumLabTest : public FairTask
         //per detector:
         std::vector<int> active_channels_indexes;
         std::vector<int> eb_crystal_id;
+        std::vector<int> voltages;
         std::vector<int> degas_detector_id;
+        std::vector<char> degas_detector_channel; //a,b,c
         std::vector<int> board_ids;
         std::vector<int> ch_ids;
 
@@ -84,19 +99,25 @@ class GermaniumLabTest : public FairTask
         std::vector<double> gain_coeff;
         std::vector<double> offset_coeff;
 
-        //std::vector<std::chrono::time_point> timers;
-        //std::vector<bool> test_running;
-        //std::vector<bool> test_finished;
+        std::vector<std::chrono::time_point<std::chrono::steady_clock>> timers;
+        std::vector<bool> test_running;
+        std::vector<bool> test_paused;
+        std::vector<bool> test_finished;
+
+
+        std::chrono::time_point<std::chrono::steady_clock> last_trace_plotted;
         
         
         
-        int fenergy_nbins = 1500;
+        int fenergy_nbins = 3000;
         int fenergy_bin_low = 0;
         int fenergy_bin_high = 1500;
 
-        int funcal_nbins = 4e3;
+        int funcal_nbins = 2e4;
         int funcal_bin_low = 0;
         int funcal_bin_high = 2e6;
+
+        int trace_length_plot = 2000; //unit 10 ns
 
         EventHeader* header;
         Int_t fNEvents;
@@ -107,12 +128,16 @@ class GermaniumLabTest : public FairTask
         TH1F ** h1_germanium_time;
         
         TCanvas ** c_germanium_uncal;
+        TCanvas * c_germanium_raw_all;
+        TCanvas * c_germanium_trace;
         TCanvas ** c_germanium_uncal_1173;
         TCanvas ** c_germanium_uncal_1332;
         
         TText ** tp_measurement;
 
         TH1F ** h1_germanium_uncal;
+        TH1F ** h1_germanium_trace;
+        TH1F ** h1_germanium_raw;
         TH1F ** h1_germanium_uncal_1173;
         TH1F ** h1_germanium_uncal_1332;
 
@@ -121,6 +146,8 @@ class GermaniumLabTest : public FairTask
 
 
         TString fit_function = "gaus"; // "gaus with tail, crystal ball etc"
+
+        float measurements_duration = 600; //s
 
 
         // Folder and files

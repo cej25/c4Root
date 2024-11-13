@@ -17,7 +17,6 @@
 #include "GermaniumCal2Anl.h"
 
 /*
-Empty constructor for FairRoot.
 */
 GermaniumCal2Anl::GermaniumCal2Anl()
 : FairTask(), 
@@ -115,11 +114,13 @@ void GermaniumCal2Anl::Exec(Option_t* option){
             double time1 = fcal_ge_hit->Get_channel_trigger_time();
             int64_t time_wr1 = fcal_ge_hit->Get_absolute_event_time();
 
-            if (detector_id1 > 12) continue;
 
-            if (detector_id1 <= 12 && energy1 < 25) continue;
+            if (energy1 < 25) continue;
             
             //BGO veto:
+            if (detector_id1 <= 12) 
+            {
+                
 
             bool BGO_veto_this_event = false;
             
@@ -184,6 +185,7 @@ void GermaniumCal2Anl::Exec(Option_t* option){
                         }
                     }
                 }
+            }
             }
 
             new ((*fanl_ge_data)[fanl_ge_data->GetEntriesFast()]) GermaniumCalData(

@@ -1,5 +1,5 @@
 #define TRACE_SIZE 4000 // some maximum size
-#include "general.spec"
+#include "general.spec" 
 
 // Reads the Padding between FEBEX events:
 FEBEX_PADDING()
@@ -121,8 +121,8 @@ FEBEX_EVENT_TRACES(card)
 	MEMBER(DATA16 channel_trigger_time_hi[16] ZERO_SUPPRESS);
 	MEMBER(DATA32 channel_trigger_time_lo[16] ZERO_SUPPRESS);
 	
-    MEMBER(DATA8 pileup[16]);
-	MEMBER(DATA8 overflow[16]);
+    MEMBER(DATA8 pileup[16] ZERO_SUPPRESS);
+	MEMBER(DATA8 overflow[16] ZERO_SUPPRESS);
     MEMBER(DATA8 channel_cfd[16] ZERO_SUPPRESS);
 	MEMBER(DATA32 channel_energy[16] ZERO_SUPPRESS);
 
@@ -187,13 +187,13 @@ FEBEX_EVENT_TRACES(card)
                 16_23: channel_id_bits;
                 24_31: 0xF0;
 
-                ENCODE(channel_id[index], (value = channel_id_bits));
-                ENCODE(channel_trigger_time_hi[index], (value = chan_ts_hi));
+                ENCODE(channel_id[channelids.channel_id_bits], (value = channel_id_bits));
+                ENCODE(channel_trigger_time_hi[channelids.channel_id_bits], (value = chan_ts_hi));
             }
             UINT32 channel_ts NOENCODE
             {
                 0_31: chan_ts_lo;
-                ENCODE(channel_trigger_time_lo[index], (value = chan_ts_lo));
+                ENCODE(channel_trigger_time_lo[channelids.channel_id_bits], (value = chan_ts_lo));
             }
             UINT32 chan_enrgy NOENCODE
             {
@@ -202,10 +202,10 @@ FEBEX_EVENT_TRACES(card)
                 30: pileup_flag;
                 31: overflow_flag;
                 
-                ENCODE(channel_cfd[index], (value = TSF));
-                ENCODE(channel_energy[index], (value = chan_energy));
-                ENCODE(pileup[index], (value = pileup_flag));
-                ENCODE(overflow[index], (value = overflow_flag));
+                ENCODE(channel_cfd[channelids.channel_id_bits], (value = TSF));
+                ENCODE(channel_energy[channelids.channel_id_bits], (value = chan_energy));
+                ENCODE(pileup[channelids.channel_id_bits], (value = pileup_flag));
+                ENCODE(overflow[channelids.channel_id_bits], (value = overflow_flag));
             }
             UINT32 future_use NOENCODE
             {
@@ -213,7 +213,7 @@ FEBEX_EVENT_TRACES(card)
             }
         }
 
-            list (0 <= i < (((channel_size.size) / 4) - 1))
+            list (0 <= i < 16)
             {
                 UINT32 header NOENCODE
                 {

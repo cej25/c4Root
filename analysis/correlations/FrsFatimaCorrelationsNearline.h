@@ -24,6 +24,7 @@ class FrsFatimaCorrelationsNearline : public FairTask
         FrsFatimaCorrelationsNearline(FrsGate * frsgate);
         FrsFatimaCorrelationsNearline(const TString& name, Int_t verbose = 1);
 
+        void SetMultiHit(bool v) {use_multi = v;};
 
 
         virtual ~FrsFatimaCorrelationsNearline();
@@ -85,7 +86,10 @@ class FrsFatimaCorrelationsNearline : public FairTask
     private:
         TClonesArray* fHitFatima;
         TClonesArray* fHitFrs;
+        TClonesArray* fMultiHitFrs;
 
+
+        std::vector<FrsMultiHitItem> const* multihitArrayFrs;
         std::vector<FrsHitItem> const* hitArrayFrs;
 
         bool fControlOutput = false;
@@ -96,6 +100,8 @@ class FrsFatimaCorrelationsNearline : public FairTask
         const TFrsConfiguration * frs_configuration;
         
         FrsGate * frsgate;
+
+        bool use_multi = false;
 
         int64_t wr_t_last_frs_hit = 0;
         int64_t wr_t_first_frs_hit = 0;

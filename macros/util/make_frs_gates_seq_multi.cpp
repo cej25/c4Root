@@ -3,12 +3,12 @@ bool Gate_Z_AoQ(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_AoQ
     
     TString cuts;
 
-    if (bool_Z_Z2) cuts = cuts + "cut_Z_Z2+";
-    if (bool_x2_AoQ) cuts = cuts + "cut_x2_AoQ+";
-    if (bool_x4_AoQ) cuts = cuts + "cut_x4_AoQ+";
-    if (bool_dEdeg_Z) cuts = cuts + "cut_dEdeg_Z+";
+    if (bool_Z_Z2) cuts = cuts + "cut_Z_Z2 && ";
+    if (bool_x2_AoQ) cuts = cuts + "cut_x2_AoQ && ";
+    if (bool_x4_AoQ) cuts = cuts + "cut_x4_AoQ && ";
+    if (bool_dEdeg_Z) cuts = cuts + "cut_dEdeg_Z && ";
 
-    if (cuts.EndsWith("+")) cuts = cuts(0,cuts.Length()-1);
+    if (cuts.EndsWith(" && ")) cuts = cuts(0,cuts.Length()-4);
     std::cout << "Drawing with the condition: " << cuts << std::endl;
     
 
@@ -29,8 +29,8 @@ bool Gate_Z_AoQ(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_AoQ
 
         cut_Z_AoQ->SetVarY("FrsMultiHitData.fID_z_mhtdc");
         cut_Z_AoQ->SetVarX("FrsMultiHitData.fID_AoQ_corr_mhtdc");
-        return true;
         std::cout << "Created gate: " << cut_Z_AoQ->GetName() << std::endl;
+        return true;
     }
 };
 
@@ -38,13 +38,13 @@ bool Gate_Z_Z2(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_AoQ,
     
     TString cuts;
 
-    if (bool_Z_AoQ) cuts = cuts + "cut_Z_AoQ+";
-    if (bool_x2_AoQ) cuts = cuts + "cut_x2_AoQ+";
-    if (bool_x4_AoQ) cuts = cuts + "cut_x4_AoQ+";
-    if (bool_dEdeg_Z) cuts = cuts + "cut_dEdeg_Z+";
+    if (bool_Z_AoQ) cuts = cuts + "cut_Z_AoQ && ";
+    if (bool_x2_AoQ) cuts = cuts + "cut_x2_AoQ && ";
+    if (bool_x4_AoQ) cuts = cuts + "cut_x4_AoQ && ";
+    if (bool_dEdeg_Z) cuts = cuts + "cut_dEdeg_Z && ";
 
 
-    if (cuts.EndsWith("+")) cuts = cuts(0,cuts.Length()-1);
+    if (cuts.EndsWith(" && ")) cuts = cuts(0,cuts.Length()-4);
     std::cout << "Drawing with the condition: " << cuts << std::endl;
     
     
@@ -74,13 +74,13 @@ bool Gate_x2_AoQ(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_Ao
     
     TString cuts;
 
-    if (bool_Z_AoQ) cuts = cuts + "cut_Z_AoQ+";
-    if (bool_Z_Z2) cuts = cuts + "cut_Z_Z2+";
-    if (bool_x4_AoQ) cuts = cuts + "cut_x4_AoQ+";
-    if (bool_dEdeg_Z) cuts = cuts + "cut_dEdeg_Z+";
+    if (bool_Z_AoQ) cuts = cuts + "cut_Z_AoQ && ";
+    if (bool_Z_Z2) cuts = cuts + "cut_Z_Z2 && ";
+    if (bool_x4_AoQ) cuts = cuts + "cut_x4_AoQ && ";
+    if (bool_dEdeg_Z) cuts = cuts + "cut_dEdeg_Z && ";
 
 
-    if (cuts.EndsWith("+")) cuts = cuts(0,cuts.Length()-1);
+    if (cuts.EndsWith(" && ")) cuts = cuts(0,cuts.Length()-4);
     std::cout << "Drawing with the condition: " << cuts << std::endl;
     
     
@@ -109,13 +109,13 @@ bool Gate_x4_AoQ(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_Ao
     
     TString cuts;
 
-    if (bool_Z_AoQ) cuts = cuts + "cut_Z_AoQ+";
-    if (bool_Z_Z2) cuts = cuts + "cut_Z_Z2+";
-    if (bool_x2_AoQ) cuts = cuts + "cut_x2_AoQ+";
-    if (bool_dEdeg_Z) cuts = cuts + "cut_dEdeg_Z+";
+    if (bool_Z_AoQ) cuts = cuts + "cut_Z_AoQ && ";
+    if (bool_Z_Z2) cuts = cuts + "cut_Z_Z2 && ";
+    if (bool_x2_AoQ) cuts = cuts + "cut_x2_AoQ && ";
+    if (bool_dEdeg_Z) cuts = cuts + "cut_dEdeg_Z && ";
 
 
-    if (cuts.EndsWith("+")) cuts = cuts(0,cuts.Length()-1);
+    if (cuts.EndsWith(" && ")) cuts = cuts(0,cuts.Length()-4);
     std::cout << "Drawing with the condition: " << cuts << std::endl;
     
     
@@ -144,17 +144,17 @@ bool Gate_dEdeg_Z(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_A
     
     TString cuts;
 
-    if (bool_Z_AoQ) cuts = cuts + "cut_Z_AoQ+";
-    if (bool_Z_Z2) cuts = cuts + "cut_Z_Z2+";
-    if (bool_x2_AoQ) cuts = cuts + "cut_x2_AoQ+";
-    if (bool_x4_AoQ) cuts = cuts + "cut_x4_AoQ+";
+    if (bool_Z_AoQ) cuts = cuts + "cut_Z_AoQ && ";
+    if (bool_Z_Z2) cuts = cuts + "cut_Z_Z2 && ";
+    if (bool_x2_AoQ) cuts = cuts + "cut_x2_AoQ && ";
+    if (bool_x4_AoQ) cuts = cuts + "cut_x4_AoQ && ";
 
 
-    if (cuts.EndsWith("+")) cuts = cuts(0,cuts.Length()-1);
+    if (cuts.EndsWith(" && ")) cuts = cuts(0,cuts.Length()-4);
     std::cout << "Drawing with the condition: " << cuts << std::endl;
     
     
-    evt->Draw("FrsMultiHitData.fID_z_mhtdc:FrsMultiHitData.fID_dEdeg_mhtdc>>h2_dEdeg_vs_Z(1000,42,52,1000,60,70)",cuts);
+    evt->Draw("FrsMultiHitData.fID_z_mhtdc:FrsMultiHitData.fID_dEdeg_mhtdc>>h2_dEdeg_vs_Z(1000,35,52,1000,60,70)",cuts);
     
     TH2F * h2_dEdeg_vs_Z = (TH2F*)gROOT->FindObject("h2_dEdeg_vs_Z");
     
@@ -233,7 +233,7 @@ void make_frs_gates_seq_multi(TString infilename){
     }
 
 
-    TFile * outfile =  TFile::Open(gatename+".root","RECREATE");
+    TFile * outfile =  TFile::Open(gatename + ".root","RECREATE");
 
     if (bool_Z_AoQ) gROOT->FindObject("cut_Z_AoQ")->Write();
     if (bool_Z_Z2) gROOT->FindObject("cut_Z_Z2")->Write();

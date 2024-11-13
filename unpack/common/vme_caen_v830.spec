@@ -17,7 +17,7 @@ VME_CAEN_V830_FRS()
         UINT32 data_word NOENCODE
         {
             0_31: value;
-            ENCODE(data[i], (value = value)); // c4 assumes the index is the channel number - to be checked.
+            ENCODE(data[i], (value = value)); // In the 32-bit word all channels are read out every time thus order index = channel index 
         };
     }
 }

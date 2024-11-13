@@ -7,6 +7,7 @@
 #include <vector>
 #include <set>
 #include "TCutG.h"
+#include "GainShift.h"
 
 
 //structs
@@ -20,6 +21,7 @@ class TFatimaTwinpeaksConfiguration
         static void SetDetectorCoefficientFile(std::string fp) { calibration_file = fp; }
         static void SetDetectorTimeshiftsFile(std::string fp) { timeshift_calibration_file = fp; }
         static void SetPromptFlashCutFile(std::string fp) {promptflash_cut_file = fp; }
+        static void SetGainShiftFile(std::string fp) {gain_shifts_file = fp; }
 
 
         std::map<std::pair<int,int>,int> Mapping() const;
@@ -31,6 +33,9 @@ class TFatimaTwinpeaksConfiguration
         bool TimeshiftCalibrationCoefficientsLoaded() const;
         std::map<std::pair<int,int>,double> TimeshiftCalibrationCoefficients() const;
         inline double GetTimeshiftCoefficient(int detector_id1, int detector_id2) const;
+
+        bool GainShiftsLoaded() const;
+        inline double GetGainShift(int detector_id1, uint64_t wr_t) const;
 
 
         inline bool IsDetectorAuxilliary(int detector_id) const;
@@ -64,6 +69,7 @@ class TFatimaTwinpeaksConfiguration
         static std::string calibration_file;
         static std::string timeshift_calibration_file;
         static std::string promptflash_cut_file;
+        static std::string gain_shifts_file;
 
 
         TFatimaTwinpeaksConfiguration();
@@ -71,6 +77,7 @@ class TFatimaTwinpeaksConfiguration
         void ReadCalibrationCoefficients();
         void ReadTimeshiftCoefficients();
         void ReadPromptFlashCut();
+        void ReadGainShifts();
 
         static TFatimaTwinpeaksConfiguration* instance;
         
@@ -82,6 +89,8 @@ class TFatimaTwinpeaksConfiguration
 
 
         TCutG* prompt_flash_cut = nullptr;
+
+        std::vector<GainShift*> gain_shifts;
 
 
         int num_detectors;
@@ -100,6 +109,7 @@ class TFatimaTwinpeaksConfiguration
         bool detector_map_loaded = 0;
         bool detector_calibrations_loaded = 0;
         bool timeshift_calibration_coeffs_loaded = 0;
+        bool gain_shifts_loaded = 0;
 
 };
 
@@ -121,6 +131,10 @@ inline std::map<int,std::vector<double>> TFatimaTwinpeaksConfiguration::Calibrat
 
 inline bool TFatimaTwinpeaksConfiguration::CalibrationCoefficientsLoaded() const {
     return detector_calibrations_loaded;
+}
+
+inline bool TFatimaTwinpeaksConfiguration::GainShiftsLoaded() const {
+    return gain_shifts_loaded;
 }
 
 
@@ -154,6 +168,12 @@ inline double TFatimaTwinpeaksConfiguration::GetTimeshiftCoefficient(int detecto
         return 0;
     }
      
+}
+
+inline double TFatimaTwinpeaksConfiguration::GetGainShift(int detector_id1, uint64_t wr_t) const
+{
+    if (IsDetectorAuxilliary(detector_id1)) return 1;
+    return gain_shifts.at(detector_id1-1)->GetGain(wr_t);     
 }
 
 inline TFatimaTwinpeaksConfiguration const* TFatimaTwinpeaksConfiguration::GetInstance()

@@ -15,6 +15,7 @@ std::string TGermaniumConfiguration::configuration_file = "blank";
 std::string TGermaniumConfiguration::calibration_file = "blank";
 std::string TGermaniumConfiguration::timeshift_calibration_file = "blank";
 std::string TGermaniumConfiguration::promptflash_cut_file = "blank";
+std::string TGermaniumConfiguration::promptflash_cut_file_multi = "blank";
 
 
 TGermaniumConfiguration::TGermaniumConfiguration()
@@ -28,6 +29,7 @@ TGermaniumConfiguration::TGermaniumConfiguration()
     if (calibration_file != "blank") ReadCalibrationCoefficients();
     if (timeshift_calibration_file != "blank") ReadTimeshiftCoefficients();
     if (promptflash_cut_file != "blank") ReadPromptFlashCut();
+    if (promptflash_cut_file_multi != "blank") ReadPromptFlashCutMulti();
  }
 
 
@@ -184,4 +186,46 @@ void TGermaniumConfiguration::ReadPromptFlashCut()
 
     cut->Close();
 }
+
+
+void TGermaniumConfiguration::ReadPromptFlashCutMulti()
+{
+    // Open the root file containing the cuts
+    c4LOG(info, TString("Opening prompt flash mutli: ") + promptflash_cut_file_multi);
+    TFile* cutFile = TFile::Open(TString(promptflash_cut_file_multi), "READ");
+
+    if (!cutFile || cutFile->IsZombie() || cutFile->TestBit(TFile::kRecovered))
+    {
+        c4LOG(warn, "Germanium prompt flash cut file provided (" << promptflash_cut_file_multi << ") failed to load!");
+        return;
+    }
+
+    int index = 0;  // Start index
+    while (true)
+    {
+        TString cutName = TString::Format("ge_prompt_flash_cut_%d", index);  // Construct cut name
+
+        TCutG* cut = (TCutG*)cutFile->Get(cutName);  // Try to retrieve the cut
+
+        if (cut) // If a cut is found, set it to prompt_flash_cut_multi and break
+        {
+            prompt_flash_cut_multi.push_back(cut);
+        }else{
+            break;
+        }
+        
+        ++index;  // Move to the next cut in sequence
+
+    }
+
+    c4LOG(info,Form("read %i prompt flash cuts",prompt_flash_cut_multi.size()));
+
+    if (prompt_flash_cut_multi.size() == 0) // Log warning if no cut found at all
+    {
+        c4LOG(warn, "No prompt flash cuts found in file: " << promptflash_cut_file_multi);
+    }
+
+    cutFile->Close();
+}
+
 
