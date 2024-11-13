@@ -59,7 +59,7 @@ void lisa_online_general()
     //TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
 
     //___O F F L I N E
-    TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/daq_test/test_DAQ_pin_header_2boards_full.lmd";  //data with only lisa
+    TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/daq_test/test_H_B_13nov.lmd"; 
     //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/run_0072_0001.lmd";  //data with only lisa
 
     //___O U T P U T - only used if switched on 
@@ -68,7 +68,7 @@ void lisa_online_general()
 
     //:::::::Create online run
     Int_t refresh = 10; // Refresh rate for online histograms
-    Int_t port = 4444;
+    Int_t port = 2020;
      
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -93,7 +93,7 @@ void lisa_online_general()
     {
         TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Detector_Map_names.txt");
         TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters.txt");
+        //TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters.txt");
 
 
     }
@@ -102,7 +102,7 @@ void lisa_online_general()
     {
         TLisaConfiguration::SetMappingFile(config_path + "/Lisa_All_Boards.txt");
         TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters.txt");
+        //TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters.txt");
 
     }
 

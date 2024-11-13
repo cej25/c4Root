@@ -54,7 +54,7 @@ class LisaRaw2Cal : public FairTask
         //int NBoards = 1; 
 
         //::: Mapping, GM, Calibration
-        std::map<std::pair<int, int>, std::pair<std::pair<int,std::string>, std::pair<int, int>>> detector_mapping;
+        std::map<std::pair<int, int>, std::pair<std::pair<int,std::string>, std::pair<int, int>>> detector_mapping; //Debugging.Raplace std:string-> TString ?
         std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> detector_gain_matching;
         //std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> detector_calibration;
 

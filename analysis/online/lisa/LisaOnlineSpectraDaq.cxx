@@ -100,7 +100,7 @@ InitStatus LisaOnlineSpectraDaq::Init()
         int x = detector.second.second.first; 
         int y = detector.second.second.second;
         
-        //h1_hitpattern_total->GetXaxis()->SetBinLabel(l * xmax * ymax + (ymax-(y+1))*xmax + x + 1 - 3, city.c_str());
+        //h1_hitpattern_total->GetXaxis()->SetBinLabel(l * xmax * ymax + (ymax-(y+1))*xmax + x + 1 - 3, city.Data());
     }
 
     //:::::::::Layer
@@ -126,7 +126,7 @@ InitStatus LisaOnlineSpectraDaq::Init()
                     break;
                 }
             }
-            h1_hitpattern_layer[i]->GetXaxis()->SetBinLabel(j+1, city.c_str());
+            h1_hitpattern_layer[i]->GetXaxis()->SetBinLabel(j+1, city.Data());
         }
        
     }
@@ -284,7 +284,7 @@ InitStatus LisaOnlineSpectraDaq::Init()
                     }
                 }
 
-                h1_energy_layer_ch[i][j][k] = new TH1F(Form("energy_%i_%i_%i_%s", i, j, k, city.c_str()), city.c_str(), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+                h1_energy_layer_ch[i][j][k] = new TH1F(Form("energy_%i_%i_%i_%s", i, j, k, city.Data()), city.Data(), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
                 h1_energy_layer_ch[i][j][k]->GetXaxis()->SetTitle("E(LISA) [a.u.]");
                 //h1_energy_layer_ch[i][j][k]->SetStats(0);
                 h1_energy_layer_ch[i][j][k]->SetLineColor(kBlue+1);
@@ -327,7 +327,7 @@ InitStatus LisaOnlineSpectraDaq::Init()
                     }
                 }
 
-                h1_traces_layer_ch[i][j][k] = new TH1F(Form("traces_%i_%i_%i_%s", i, j, k, city.c_str()), city.c_str(), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces); //2000,0,20
+                h1_traces_layer_ch[i][j][k] = new TH1F(Form("traces_%i_%i_%i_%s", i, j, k, city.Data()), city.Data(), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces); //2000,0,20
                 h1_traces_layer_ch[i][j][k]->GetXaxis()->SetTitle("Time [us]");
                 h1_traces_layer_ch[i][j][k]->SetMinimum(lisa_config->AmplitudeMin);
                 h1_traces_layer_ch[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
@@ -385,20 +385,20 @@ void LisaOnlineSpectraDaq::Reset_Histo()
         h2_hitpattern_grid[i]->Reset();
         h2_overflow_grid[i]->Reset();
         h2_pileup_grid[i]->Reset();
+    }
 
-        //::: Reset Traces
+
+    //::: Reset Traces
+    for (int i = 0; i < layer_number; i++) 
+    {
         for (int j = 0; j < xmax; j++)
         {
-            for (int k = 0; k < ymax; j++)
+            for (int k = 0; k < ymax; k++)
             {
                 h1_traces_layer_ch[i][j][k]->Reset();
             }
         }
-
     }
-    
-    
-
     
 
 }
@@ -409,6 +409,7 @@ void LisaOnlineSpectraDaq::Exec(Option_t* option)
     wr_time = 0;
     int multiplicity[layer_number] = {0};
     int total_multiplicity = 0;
+    
     std::vector<uint32_t> sum_energy_layer;
     sum_energy_layer.resize(layer_number);
     int energy_ch[layer_number][xmax][ymax] = {0,0,0};

@@ -5,6 +5,7 @@
 #include "FairRunAna.h"
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
+#include "TString.h"
 
 // c4
 #include "LisaRaw2Cal.h"
@@ -87,7 +88,7 @@ void LisaRaw2Cal::Exec(Option_t* option)
             if (detector_mapping.count(unmapped_channel) > 0)
             {
                 int layer_id = detector_mapping.at(unmapped_channel).first.first;
-                std::string city = detector_mapping.at(unmapped_channel).first.second;
+                TString city = detector_mapping.at(unmapped_channel).first.second; //Debugging. std::string to Tstring 
                 int xpos = detector_mapping.at(unmapped_channel).second.first;
                 int ypos = detector_mapping.at(unmapped_channel).second.second;
                 uint64_t EVTno = header->GetEventno();
@@ -147,6 +148,7 @@ void LisaRaw2Cal::Exec(Option_t* option)
                 }
                         
                 auto & entry = lisaCalArray->emplace_back();
+
                 entry.SetAll(
                     lisaItem.Get_wr_t(),
                     layer_id,
@@ -156,8 +158,8 @@ void LisaRaw2Cal::Exec(Option_t* option)
                     lisaItem.Get_channel_energy(),
                     lisaItem.Get_trace(),
                     energy_GM,
-                    //lisaItem.Get_board_event_time(),
-                    //lisaItem.Get_channel_time(),
+                    lisaItem.Get_board_event_time(),
+                    lisaItem.Get_channel_time(),
                     EVTno,
                     lisaItem.Get_pileup(),
                     lisaItem.Get_overflow()

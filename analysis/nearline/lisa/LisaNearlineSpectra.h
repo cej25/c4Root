@@ -12,6 +12,10 @@
 #include "TPad.h"
 #include "TH2I.h"
 #include "TGraph.h"
+#include "TString.h"
+
+//Debugging. Replaced std::string with TString 8nov24
+
 
 
 class LisaCalItem;
@@ -59,7 +63,7 @@ class LisaNearlineSpectra : public FairTask
         int xmax;
         int ymax;
         int num_layers;
-        std::string city = "";
+        TString city = "";
         
 
         EventHeader* header;
@@ -97,6 +101,7 @@ class LisaNearlineSpectra : public FairTask
         std::vector<TCanvas*> c_energy_layer_ch;
         std::vector<TCanvas*> c_energy_layer_ch_vs_time;
         std::vector<TCanvas*> c_traces_layer_ch;
+        std::vector<TCanvas*> c_traces_layer_ch_stat;
     
         // Histograms
         TH1I* h1_hitpattern_total;

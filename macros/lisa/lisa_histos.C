@@ -39,10 +39,10 @@ void lisa_histos()
 
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
-    TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/daq_test_c4tree/cardA.root";
+    TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/daq_test_c4tree/test_F_B_13nov.root";
     
     //___O U T P U T
-    TString outputfile = "/u/gandolfo/data/lustre/gamma/LISA/data/daq_test_c4histo/cardA_histo.root";
+    TString outputfile = "/u/gandolfo/data/lustre/gamma/LISA/data/daq_test_c4histo/test_F_B_13nov_histo.root";
 
 
     FairRunAna* run = new FairRunAna();
@@ -75,7 +75,7 @@ void lisa_histos()
 
     //::::::::: Set ranges for histos :::::::::::::::
     //::::  Channel Energy ::::: (h1_energy_layer_ch)
-    TLisaConfiguration::SetEnergyRange(500000,3000000);
+    TLisaConfiguration::SetEnergyRange(00000,3000000);
     TLisaConfiguration::SetEnergyBin(900);
 
     //::::  Channel Energy GM ::::: (h1_energy_layer_ch)
