@@ -4,5 +4,15 @@ BeamMonitorData::BeamMonitorData()
 {
 }
 
+BeamMonitorItem::BeamMonitorItem()
+{
 
-ClassImp(BeamMonitorData)
+}
+
+void BeamMonitorItem::SetAll(uint32_t dt)
+{
+    tdelta = dt;
+}
+
+
+ClassImp(BeamMonitorItem)

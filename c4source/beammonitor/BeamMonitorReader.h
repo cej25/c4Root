@@ -43,12 +43,13 @@ class BeamMonitorReader : public c4Reader
 
         Bool_t fOnline;
 
-        TClonesArray* fArray;
+        std::vector<BeamMonitorItem>* s2array;
+        std::vector<BeamMonitorItem>* s4array;
 
         std::vector<uint32_t> s4data;
     
     public:
-        ClassDef(BeamMonitorReader, 1);
+        ClassDefOverride(BeamMonitorReader, 1);
 };
 
 #endif
