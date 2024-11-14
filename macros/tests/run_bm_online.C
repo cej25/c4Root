@@ -20,7 +20,7 @@ void run_bm_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fEx
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
     // TString filename = "trans://R4L-36";
-    TString filename = "~/lustre/despec/beam_mon_2024/beammon2sci.lmd";
+    TString filename = "~/lustre/despec/beam_mon_2024/beam_mon_test_x7.lmd";
     // TString outputpath = "run_online_bm_test";
     // TString outputFileName = outputpath + ".root";
 
