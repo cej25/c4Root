@@ -264,6 +264,7 @@ class FrsNearlineSpectra : public FairTask
         // Drifts
         TH2* h2_Z1_vs_T;
         TH2* h2_AoQ_vs_T;
+        TH2* h2_Ztrav_vs_T;
         TH2* h2_Z1_vs_T_mhtdc;
         TH2* h2_AoQ_vs_T_mhtdc;
         TH2* h2_sci_tof_vs_T[6];
