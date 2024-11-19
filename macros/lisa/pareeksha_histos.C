@@ -122,9 +122,13 @@ void pareeksha_histos(int fileNumber)
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
+    // ::: FRS config
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     TFrsConfiguration::SetTravMusDriftFile(config_path + "/frs/TM_Drift_fragments.txt");
+    TFrsConfiguration::SetZ1DriftFile(config_path + "/frs/Z1_Drift_fragments.txt");
+    TFrsConfiguration::SetAoQDriftFile(config_path + "/frs/AoQ_Drift_fragments.txt");
 
+    // ::: LISA config
     TLisaConfiguration::SetMappingFile(config_path + "/lisa/Lisa_Detector_Map_names.txt");
     TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching.txt");
 

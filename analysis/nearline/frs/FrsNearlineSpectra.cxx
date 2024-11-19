@@ -134,6 +134,7 @@ InitStatus FrsNearlineSpectra::Init()
 
         // directory, type, name, title, xbins, xmin, xmax, ybins, ymin, ymax, xtitle, ytitle
         h2_Z_vs_AoQ = MakeTH2(dir_tac_2d, "D", "h2_Z_vs_AoQ", "Z1 vs. A/Q", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q", "Z (MUSIC 1)");
+        h2_Z_vs_AoQ_driftcorr = MakeTH2(dir_tac_2d, "D", "h2_Z_vs_AoQ_driftcorr", "Z1 vs. A/Q DriftCorr", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q DriftCorr", "Z DriftCorr(MUSIC 1)");
         h2_Z_vs_AoQ_corr = MakeTH2(dir_tac_2d, "D", "h2_Z_vs_AoQ_corr", "Z1 vs. A/Q (corr)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z,"A/Q", "Z (MUSIC 1)");
         h2_Z_vs_Z2 = MakeTH2(dir_tac_2d, "D", "h2_Z_vs_Z2", "Z1 vs. Z2", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z (MUSIC 1)", "Z (MUSIC 2)");
         h2_travmus_vs_Z = MakeTH2(dir_tac_2d, "D", "h2_travmus_vs_Z", "Z (Travel MUSIC) vs Z (MUSIC 1)", 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_Z, frs_config->fMax_Z, "Z (Travel MUSIC)", "Z (MUSIC 1)");
@@ -256,9 +257,11 @@ InitStatus FrsNearlineSpectra::Init()
 
         // preset wide ranges to "always" see peak, in case there's something funky with the FRS
         h1_Z = MakeTH1(dir_tac_1d, "D", "h1_Z", "Z (MUSIC 1)", 500, 10, 100, "Z (MUSIC 1)", kPink-3, kBlue+2);
+        h1_Z_driftcorr = MakeTH1(dir_tac_1d, "D", "h1_Z_driftcorr", "Z DriftCorr (MUSIC 1)", 500, 10, 100, "Z DriftCorr (MUSIC 1)", kPink-3, kBlue+2);
         h1_Z2 = MakeTH1(dir_tac_1d, "D", "h1_Z2", "Z (MUSIC 2)", 500, 10, 100, "Z (MUSIC 2)", kPink-3, kBlue+2);
         h1_Z_travmus = MakeTH1(dir_tac_1d, "D", "h1_Z_travmus", "Z (Travel MUSIC)", 750, 10, 100, "Z (Travel MUSIC)", kPink-3, kBlue+2);
         h1_AoQ = MakeTH1(dir_tac_1d, "D", "h1_AoQ", "A/Q", 500, 1.0, 4.0, "A/Q", kPink-3, kBlue+2); 
+        h1_AoQ_driftcorr = MakeTH1(dir_tac_1d, "D", "h1_AoQ_driftcorr", "A/Q DriftCorr", 500, 1.0, 4.0, "A/Q DriftCorr", kPink-3, kBlue+2); 
         h1_AoQ_corr = MakeTH1(dir_tac_1d, "D", "h1_AoQ_corr", "A/Q (corr)", 500, 1.0, 4.0, "A/Q", kPink-3, kBlue+2);
         h1_x2 = MakeTH1(dir_tac_1d, "D", "h1_x2", "S2 x-position", 200, -100, 100, "S2 x-position", kYellow-7, kBlack);
         h1_x4 = MakeTH1(dir_tac_1d, "D", "h1_x4", "S4 x-position", 200, -100, 100, "S4 x-position",kYellow-7, kBlack);
@@ -275,6 +278,7 @@ InitStatus FrsNearlineSpectra::Init()
         for (int i = 0; i < 2; i++) h1_brho[i] = MakeTH1(dir_tac_1d, "D", Form("h1_brho_%i", i), Form("brho %i", i), 100, 0.0, 1.0, Form("brho %i", i), kPink-3, kBlue+2);
         for (int i = 0; i < 2; i++) h1_music_dE[i] = MakeTH1(dir_tac_1d, "D", Form("h1_music_dE_%i", i), Form("Energy loss in MUSIC %i", i+1), 1000, 0.0, 4000.0, Form("dE MUSIC %i", i+1), kPink-3, kBlue+2);
         h1_travmus_dE = MakeTH1(dir_tac_1d, "D", "h1_travmus_dE", "dE (Travel MUSIC)", 1000, 0, 4000., "dE (Travel MUSIC)", kPink-3, kBlue+2);
+        h1_travmus_dE_driftcorr = MakeTH1(dir_tac_1d, "D", "h1_travmus_dE_driftcorr", "dE DriftCorr(Travel MUSIC)", 1000, 0, 4000., "dE DriftCorr (Travel MUSIC)", kPink-3, kBlue+2);
         for (int i = 0; i < 2; i++) h1_music_dEcorr[i] = MakeTH1(dir_tac_1d, "D", Form("h1_music_dEcorr_%i", i), Form("Energy loss (corr) in MUSIC %i", i+1), 4000, 0.0, 4000.0, Form("dE (corr) MUSIC %i", i+1), kPink-3, kBlue+2);
         for (int i = 0; i < 6; i++) h1_sci_e[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_e_%i", i), Form("SCI E %i", i), 4000, 0.0, 4000.0, Form("SCI E %i", i), kPink-3, kBlue+2);
         for (int i = 0; i < 6; i++) h1_sci_l[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_l_%i", i), Form("SCI L %i", i), 4000, 0.0, 4000.0, Form("SCI L %i", i), kPink-3, kBlue+2);
@@ -451,7 +455,9 @@ InitStatus FrsNearlineSpectra::Init()
 
     // Drifts
     h2_Z1_vs_T = MakeTH2(dir_drifts, "D", "h2_Z1_vs_T", "Z1 vs. Time [mins]", 500, 0, 10000, 1500, frs_config->fMin_Z, frs_config->fMax_Z);
+    h2_Z1_driftcorr_vs_T = MakeTH2(dir_drifts, "D", "h2_Z1_driftcorr_vs_T", "Z1 DriftCorr vs. Time [mins]", 500, 0, 10000, 1500, frs_config->fMin_Z, frs_config->fMax_Z);
     h2_AoQ_vs_T = MakeTH2(dir_drifts, "D", "h2_AoQ_vs_T", "A/Q vs. Time [mins]", 500, 0, 10000, 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ);
+    h2_AoQ_driftcorr_vs_T = MakeTH2(dir_drifts, "D", "h2_AoQ_driftcorr_vs_T", "A/Q DriftCorr vs. Time [mins]", 500, 0, 10000, 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ);
     h2_Z1_vs_T_mhtdc = MakeTH2(dir_drifts, "D", "h2_Z1_vs_T_mhtdc", "Z1 (MHTDC) vs. Time [mins]", 500, 0, 10000, 1500, frs_config->fMin_Z, frs_config->fMax_Z);
     h2_AoQ_vs_T_mhtdc = MakeTH2(dir_drifts, "D", "h2_AoQ_vs_T_mhtdc", "A/Q (MHTDC) vs. Time [mins]", 500, 0, 10000, 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ);
     for (int i = 0; i < 6; i++) h2_sci_tof_vs_T[i] = MakeTH2(dir_drifts, "D", Form("h2_sci_tof_vs_T_%i", i), Form("TOF %i vs. Time [mins]" , i), 500, 0, 10000, 4000, 0.0, 200000.0);
@@ -465,7 +471,6 @@ InitStatus FrsNearlineSpectra::Init()
     h2_TravMus_vs_T = new TH2D("h2_TravMus_vs_T", "dE (TravM) vs Time [min]", 1000, 0, 10000, 1000, 0, 4200);
     h2_TravMus_vs_T->GetXaxis()->SetTitle("WR [min]");
     h2_TravMus_vs_T->GetYaxis()->SetTitle("dE (Travel MUSIC)");
-
     // info on run number-not working now damn (EG)
     frs_time_min = std::numeric_limits<double>::max();
     frs_time_max = std::numeric_limits<double>::lowest(); 
@@ -500,6 +505,12 @@ InitStatus FrsNearlineSpectra::Init()
 
     //c_TravMus_drift->cd();
     //dir_drifts->Append(c_TravMus_drift);
+
+    // Drift corrected
+    h2_TravMus_driftcorr_vs_T = new TH2D("h2_TravMus_driftcorr_vs_T", "dE (TravM) DriftCorr vs Time [min]", 1000, 0, 10000, 1000, 0, 4200);
+    h2_TravMus_driftcorr_vs_T->GetXaxis()->SetTitle("WR [min]");
+    h2_TravMus_driftcorr_vs_T->GetYaxis()->SetTitle("dE DriftCorr (Travel MUSIC)");
+    h2_TravMus_driftcorr_vs_T->SetOption("colz");
 
     //:::
 
@@ -540,6 +551,7 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     {
 
         if (hitItem.Get_ID_AoQ() > 0 && hitItem.Get_ID_z() > 0) h2_Z_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_z());
+        if (hitItem.Get_ID_AoQ_driftcorr() > 0 && hitItem.Get_ID_z_driftcorr() > 0) h2_Z_vs_AoQ_driftcorr->Fill(hitItem.Get_ID_AoQ_driftcorr(), hitItem.Get_ID_z_driftcorr());
         if (hitItem.Get_ID_AoQ_corr() > 0 && hitItem.Get_ID_z() > 0) h2_Z_vs_AoQ_corr->Fill(hitItem.Get_ID_AoQ_corr(), hitItem.Get_ID_z());
         if (hitItem.Get_ID_z() > 0 && hitItem.Get_ID_z2() > 0) h2_Z_vs_Z2->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_z2());
         if (TMath::Abs(hitItem.Get_ID_z() - hitItem.Get_ID_z2()) < 0.4) // CEJ: should we .config this condition?
@@ -572,7 +584,6 @@ void FrsNearlineSpectra::Exec(Option_t* option)
         if (hitItem.Get_ID_y4() != 0 && hitItem.Get_ID_b4() != 0) h2_y4_vs_b4->Fill(hitItem.Get_ID_y4(), hitItem.Get_ID_b4());
         if (hitItem.Get_ID_z() != 0 && hitItem.Get_sci_l(0) != 0 && hitItem.Get_sci_r(0)  != 0) h2_Z_vs_Sc21E->Fill(hitItem.Get_ID_z(), sqrt(hitItem.Get_sci_l(0) * hitItem.Get_sci_r(0))); // CEJ: changed [2] -> [0]
 
-        h1_travmus_dE->Fill(hitItem.Get_travmusic_dE());
         // ::: Drift TM        
         if (hitItem.Get_travmusic_dE() > 0 && FRS_time_mins > 0) 
         {
@@ -598,6 +609,7 @@ void FrsNearlineSpectra::Exec(Option_t* option)
             h2_TravMus_vs_T->Fill(FRS_time_mins, hitItem.Get_travmusic_dE());
 
         }
+        if (hitItem.Get_travmusic_dE_driftcorr() > 0 && FRS_time_mins > 0)h2_TravMus_driftcorr_vs_T->Fill(FRS_time_mins, hitItem.Get_travmusic_dE_driftcorr());
  
 
 
@@ -673,9 +685,11 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     if (frs_config->plot_tac_1d)
     {
         if (hitItem.Get_ID_z() > 0) h1_Z->Fill(hitItem.Get_ID_z());
+        if (hitItem.Get_ID_z_driftcorr() > 0) h1_Z_driftcorr->Fill(hitItem.Get_ID_z_driftcorr());
         if (hitItem.Get_ID_z2() > 0) h1_Z2->Fill(hitItem.Get_ID_z2());
         if (trav_mus_wr > 0 && hitItem.Get_ID_z_travmus() > 0) h1_Z_travmus->Fill(hitItem.Get_ID_z_travmus());
         if (hitItem.Get_ID_AoQ() > 0) h1_AoQ->Fill(hitItem.Get_ID_AoQ());
+        if (hitItem.Get_ID_AoQ_driftcorr() > 0) h1_AoQ_driftcorr->Fill(hitItem.Get_ID_AoQ_driftcorr());
         if (hitItem.Get_ID_AoQ_corr() > 0) h1_AoQ_corr->Fill(hitItem.Get_ID_AoQ_corr());
         h1_x2->Fill(hitItem.Get_ID_x2());
         h1_x4->Fill(hitItem.Get_ID_x4());
@@ -691,7 +705,14 @@ void FrsNearlineSpectra::Exec(Option_t* option)
         for (int i = 0; i < 2; i++) if (hitItem.Get_ID_rho(i) > 0) h1_rho[i]->Fill(hitItem.Get_ID_rho(i));
         for (int i = 0; i < 2; i++) if (hitItem.Get_ID_brho(i) > 0) h1_brho[i]->Fill(hitItem.Get_ID_brho(i));
         for (int i = 0; i < 2; i++) if (hitItem.Get_music_dE(i) > 0) h1_music_dE[i]->Fill(hitItem.Get_music_dE(i));
-        if (trav_mus_wr > 0 && hitItem.Get_travmusic_dE() > 0) h1_travmus_dE->Fill(hitItem.Get_travmusic_dE());
+        
+        //::: TM
+        //if (trav_mus_wr > 0 && hitItem.Get_travmusic_dE() > 0) h1_travmus_dE->Fill(hitItem.Get_travmusic_dE());
+        //if (trav_mus_wr > 0 && hitItem.Get_travmusic_dE_driftcorr() > 0) h1_travmus_dE_driftcorr->Fill(hitItem.Get_travmusic_dE_driftcorr());
+        if (hitItem.Get_travmusic_dE() > 0) h1_travmus_dE->Fill(hitItem.Get_travmusic_dE());
+        if (hitItem.Get_travmusic_dE_driftcorr() > 0) h1_travmus_dE_driftcorr->Fill(hitItem.Get_travmusic_dE_driftcorr());
+        //:: TM
+
         for (int i = 0; i < 2; i++) if (hitItem.Get_music_dE_cor(i) > 0) h1_music_dEcorr[i]->Fill(hitItem.Get_music_dE_cor(i));
         for (int i = 0; i < 6; i++) if (hitItem.Get_sci_e(i) > 0) h1_sci_e[i]->Fill(hitItem.Get_sci_e(i));
         for (int i = 0; i < 6; i++) if (hitItem.Get_sci_l(i) > 0) h1_sci_l[i]->Fill(hitItem.Get_sci_l(i));
@@ -886,7 +907,9 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     // ::::: Detector Drifts :::::: //
     // ---------------------------- //
     if (hitItem.Get_ID_z() > 0 && FRS_time_mins > 0) h2_Z1_vs_T->Fill(FRS_time_mins, hitItem.Get_ID_z());
+    if (hitItem.Get_ID_z_driftcorr() > 0 && FRS_time_mins > 0) h2_Z1_driftcorr_vs_T->Fill(FRS_time_mins, hitItem.Get_ID_z_driftcorr());
     if (hitItem.Get_ID_AoQ() > 0 && FRS_time_mins > 0) h2_AoQ_vs_T->Fill(FRS_time_mins, hitItem.Get_ID_AoQ());
+    if (hitItem.Get_ID_AoQ_driftcorr() > 0 && FRS_time_mins > 0) h2_AoQ_driftcorr_vs_T->Fill(FRS_time_mins, hitItem.Get_ID_AoQ_driftcorr());
     //if (multihitItem.Get_ID_z_mhtdc() > 0 && FRS_time_mins > 0) h2_Z1_vs_T_mhtdc->Fill(FRS_time_mins, multihitItem.Get_ID_z_mhtdc());
     //if (multihitItem.Get_ID_AoQ_mhtdc() > 0 && FRS_time_mins > 0) h2_AoQ_vs_T_mhtdc->Fill(FRS_time_mins, multihitItem.Get_ID_AoQ_mhtdc());
     for (int i = 0; i < 6; i++) h2_sci_tof_vs_T[i]->Fill(FRS_time_mins, hitItem.Get_sci_tof(i));

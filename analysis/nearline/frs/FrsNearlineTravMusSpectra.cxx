@@ -73,7 +73,7 @@ InitStatus FrsNearlineTravMusSpectra::Init()
     for (int i = 0; i < 8; i++)
     {
         c_raw_adc->cd(i+1);
-        h1_travmus_raw_adc[i] = new TH1I(Form("h1_travmus_raw_adc_anode_%i", i), Form("Raw ADC - Travel MUSIC Anode %i", i), 10500, 100, 12500);
+        h1_travmus_raw_adc[i] = new TH1I(Form("h1_travmus_raw_adc_anode_%i", i), Form("Raw ADC - Travel MUSIC Anode %i", i), 1050, 100, 12500);
         h1_travmus_raw_adc[i]->SetFillColor(kPink-3);
         h1_travmus_raw_adc[i]->Draw();
     }
@@ -87,7 +87,7 @@ InitStatus FrsNearlineTravMusSpectra::Init()
     for (int i = 0; i < 8; i++)
     {
         c_raw_adc_drift->cd(i+1);
-        h2_travmus_raw_adc_drift[i] = MakeTH2(dir_raw_adc_drift, "I", Form("h2_raw_adc_%i_vs_T",i), Form("Raw ADC Anode %i vs. Time [mins]",i), 500, 0, 10000, 10500, 100, 12500);
+        h2_travmus_raw_adc_drift[i] = MakeTH2(dir_raw_adc_drift, "I", Form("h2_raw_adc_%i_vs_T",i), Form("Raw ADC Anode %i vs. Time [mins]",i), 500, 0, 10000, 1050, 100, 12500);
         h2_travmus_raw_adc_drift[i]->Draw();
     }
     c_raw_adc_drift->cd(0);
