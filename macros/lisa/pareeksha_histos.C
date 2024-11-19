@@ -54,12 +54,14 @@ void pareeksha_histos(int fileNumber)
 
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
-    TString inputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/fragments_EG/";
+    TString inputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/fragments_EG_test/";
     TString filename = Form(inputpath + "run_%04d_EG.root", fileNumber);  
     
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/fragments_LISA1_95Zr/group2/";
-    TString outputFilename = Form(outputpath + "run_%04d_histos_LISA1_95Zr.root", fileNumber);
+    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/fragments_EG_test/"; //test output
+
+    //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/fragments_noGate/";
+    TString outputFilename = Form(outputpath + "test_run_%04d_histos.root", fileNumber);
 
 
     FairRunAna* run = new FairRunAna();
@@ -121,6 +123,8 @@ void pareeksha_histos(int fileNumber)
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
+    TFrsConfiguration::SetTravMusDriftFile(config_path + "/frs/TM_Drift_fragments.txt");
+
     TLisaConfiguration::SetMappingFile(config_path + "/lisa/Lisa_Detector_Map_names.txt");
     TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching.txt");
 
@@ -131,6 +135,14 @@ void pareeksha_histos(int fileNumber)
     
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
     // ::: Nearline Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    
+    // ::: Set experiment star time :::
+    TExperimentConfiguration::SetExperimentStart(1715734200000000000); //Start of pareeksha with primary beam: 15 May 00:50
+    // ::: Get run number :::
+    TFrsConfiguration::SetRunNumber(fileNumber);
+    std::cout << "Run number: " << fileNumber << std::endl;
+
+    
 
     //::::::::: Set ranges for histos :::::::::::::::
     //::::  Channel Energy ::::: (h1_energy_layer_ch)
@@ -175,11 +187,11 @@ void pareeksha_histos(int fileNumber)
         
     }
 
-    if(LISA_ON && FRS_ON)
-    {
-        LisaFrsCorrelations* LISA_FRS_corr = new LisaFrsCorrelations(fg);
-        run->AddTask(LISA_FRS_corr);
-    }
+    // if(LISA_ON && FRS_ON)
+    // {
+    //     LisaFrsCorrelations* LISA_FRS_corr = new LisaFrsCorrelations(fg);
+    //     run->AddTask(LISA_FRS_corr);
+    // }
 
     TString c = "Lisa";
     TString d = "Frs";

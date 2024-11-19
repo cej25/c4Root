@@ -2,6 +2,7 @@
 #define FrsCal2Hit_H
 
 #include "TFrsConfiguration.h"
+#include "TExperimentConfiguration.h"
 
 #include "../../config/setup.h"
 #include "FairTask.h"
@@ -14,6 +15,7 @@
 #include "FrsTravMusCalData.h"
 #include "FrsHitData.h"
 #include <TRandom3.h>
+
 //#include "GainShift.h"
 
 class TClonesArray;
@@ -37,6 +39,7 @@ class FrsCal2Hit : public FairTask
         
         void Setup_Conditions(std::string path_to_config_files);
         void FRS_GainMatching();
+        void FRS_TM_Drift();
 
         Bool_t Check_WinCond(Float_t P, Float_t* V);
         Bool_t Check_WinCond_Multi(Float_t P, Float_t V[8][2], int cond_num);
@@ -60,6 +63,7 @@ class FrsCal2Hit : public FairTask
     private:
 
         TFrsConfiguration const* frs_config;
+        TExperimentConfiguration const* exp_config;
         TFRSParameter* frs;
         TMWParameter* mw;
         TTPCParameter* tpc;
@@ -172,7 +176,7 @@ class FrsCal2Hit : public FairTask
 
 
         Int_t music1_anodes_cnt;
-	      Int_t music2_anodes_cnt;
+	    Int_t music2_anodes_cnt;
         Int_t travmusic_anodes_cnt;
 
         Bool_t music_b_e1[8];
@@ -182,7 +186,7 @@ class FrsCal2Hit : public FairTask
         Bool_t music_b_t2[8];
         Bool_t travmusic_b_t[8] = {0};
         Bool_t b_de1;
-	      Bool_t b_de2;
+	    Bool_t b_de2;
         Bool_t b_de_travmus;
         Float_t music1_x_mean;
         Float_t music2_x_mean;
@@ -384,6 +388,15 @@ class FrsCal2Hit : public FairTask
         int total_time_microsecs = 0;
 
         bool conditions_files_read = false;
+
+
+        //::: Drifts correction
+        std::map<int, std::pair<double,double>> travmus_drift;
+        //std::map<int, std::pair<double,double>> aoq_drift;
+        //std::map<int, std::pair<double,double>> z1_drift;
+        double drift_tm;
+        double drift_tm_error;
+        double de_travmus_driftcorr;
 
 
     public:

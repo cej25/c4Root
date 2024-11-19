@@ -1,3 +1,5 @@
+#include <sstream>
+#include <iomanip>
 // FairRoot
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -9,6 +11,7 @@
 #include "EventHeader.h"
 #include "LisaNearlineSpectra.h"
 #include "c4Logger.h"
+#include "AnalysisTools.h"
 
 #include "TCanvas.h"
 #include "TFile.h"
@@ -37,6 +40,8 @@ LisaNearlineSpectra::LisaNearlineSpectra(const TString& name, Int_t verbose)
     // ranges
 {
     lisa_config = TLisaConfiguration::GetInstance();
+    exp_config = TExperimentConfiguration::GetInstance();
+
 }
 
 LisaNearlineSpectra::~LisaNearlineSpectra()
@@ -76,6 +81,7 @@ InitStatus LisaNearlineSpectra::Init()
     dir_stats = dir_lisa->mkdir("Stats");
     dir_energy = dir_lisa->mkdir("Energy");
     dir_traces = dir_lisa->mkdir("Traces");
+    dir_drift = dir_lisa->mkdir("Drifts");
     
     // layer names: Tokyo, Eris, Sparrow
   
@@ -245,38 +251,38 @@ InitStatus LisaNearlineSpectra::Init()
     // h1_energy_layer_ch_GM[0][0].resize(1);
     // h1_energy_layer_ch_GM[0][0][0] = new TH1F("tokyo_GM_fake", "Tokyo_GM_fake_ch", lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
     // h1_energy_layer_ch_GM[0][0][0]->Draw();
-    //:::::::::::Energy canvas GM for layer 1 and 2
-    //for (int i = 1; i < layer_number; i++) //create a canvas for each layer
-    //{
+    // //:::::::::::Energy canvas GM for layer 1 and 2
+    // for (int i = 1; i < layer_number; i++) //create a canvas for each layer
+    // {
 
-        //h1_energy_layer_ch_GM[i].resize(xmax);
+    //     h1_energy_layer_ch_GM[i].resize(xmax);
         
-        //for (int j = 0; j < xmax; j++)
-        //{
-            //h1_energy_layer_ch_GM[i][j].resize(ymax);
-            //for (int k = 0; k < ymax; k++)
-            //{   
-                // general formula to place correctly on canvas for x,y coordinates
-                //c_energy_layer_ch[i]->cd((ymax-(k+1))*xmax + j + 1);
+    //     for (int j = 0; j < xmax; j++)
+    //     {
+    //         h1_energy_layer_ch_GM[i][j].resize(ymax);
+    //         for (int k = 0; k < ymax; k++)
+    //         {   
+    //             //general formula to place correctly on canvas for x,y coordinates
+    //             c_energy_layer_ch[i]->cd((ymax-(k+1))*xmax + j + 1);
                 
-            //    city = "";
-            //    for (auto & detector : detector_mapping)
-            //    {
-            //        if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
-            //        {
-            //            city = detector.second.first.second;
-            //            break;
-            //        }
-            //    }
+    //            city = "";
+    //            for (auto & detector : detector_mapping)
+    //            {
+    //                if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
+    //                {
+    //                    city = detector.second.first.second;
+    //                    break;
+    //                }
+    //            }
 
-                // h1_energy_layer_ch_GM[i][j][k] = new TH1F(Form("energy_%s_%i_%i_%i_GM", city.Data(), i, j, k), city.Data(), lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
-                // h1_energy_layer_ch_GM[i][j][k]->GetXaxis()->SetTitle("E(LISA) [MeV]");
-                // h1_energy_layer_ch_GM[i][j][k]->SetLineColor(kBlue+1);
-                // h1_energy_layer_ch_GM[i][j][k]->Draw();
-            //}
-        //}
+    //             h1_energy_layer_ch_GM[i][j][k] = new TH1F(Form("energy_%s_%i_%i_%i_GM", city.Data(), i, j, k), city.Data(), lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
+    //             h1_energy_layer_ch_GM[i][j][k]->GetXaxis()->SetTitle("E(LISA) [MeV]");
+    //             h1_energy_layer_ch_GM[i][j][k]->SetLineColor(kBlue+1);
+    //             h1_energy_layer_ch_GM[i][j][k]->Draw();
+    //         }
+    //     }
 
-    //}
+    // }
     
     //Gain Matched + Calibrated with summed stats for layer
     h1_energy_layer_GM.resize(layer_number);
@@ -306,75 +312,58 @@ InitStatus LisaNearlineSpectra::Init()
     h2_sum_energy_layer1_vs_layer2_GM->GetYaxis()->SetTitle(Form("Layer 1 E[MeV]"));
 
     //::::::::::: E N E R G Y  VS  T I M E::::::::::::
-    dir_energy->cd();
+    dir_drift->cd();
+    //::: Layer vs Time (WR)
+    h2_energy_layer_vs_time.resize(layer_number);
+
     c_energy_layer_vs_time = new TCanvas("c_energy_layer_vs_wr","c_energy_layer_vs_wr", 650,350);
     c_energy_layer_vs_time->Divide(1,3);
-    hG_energy_layer_vs_time.resize(layer_number);
-
+    
     for (int i = 0; i < layer_number; i++)
     {
         c_energy_layer_vs_time->cd(i+1);
-        hG_energy_layer_vs_time[i] = new TGraph(1);
-        hG_energy_layer_vs_time[i]->SetName(Form("hG_energy_layer%i_vs_time",i));
-        hG_energy_layer_vs_time[i]->SetTitle(Form("E(Layer %i) vs WR",i));
-        hG_energy_layer_vs_time[i]->GetXaxis()->SetTimeDisplay(1);
-        hG_energy_layer_vs_time[i]->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
-        hG_energy_layer_vs_time[i]->GetXaxis()->SetTimeOffset(0, "local");
-        hG_energy_layer_vs_time[i]->GetYaxis()->SetTitle(Form("Energy Layer %i",i));
-        hG_energy_layer_vs_time[i]->GetXaxis()->SetTitle("WR Time [Y-M-D H:M]");
-        hG_energy_layer_vs_time[i]->SetMarkerColor(kBlack);
-        hG_energy_layer_vs_time[i]->SetMarkerStyle(20);
-        hG_energy_layer_vs_time[i]->SetLineColor(kBlue);
-        hG_energy_layer_vs_time[i]->SetLineWidth(2);
-        hG_energy_layer_vs_time[i]->GetXaxis()->SetNdivisions(-4);
-        hG_energy_layer_vs_time[i]->Draw();
-
+        h2_energy_layer_vs_time[i] = MakeTH2(dir_drift, "F", Form("h2_energyGM_layer%i_vs_time",i), Form("E_GM(Layer %i) vs WR [min]",i), 500, 0, 10000, lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
+        h2_energy_layer_vs_time[i]->SetTitle(Form("E_GM(Layer %i) vs WR",i));
+        h2_energy_layer_vs_time[i]->GetYaxis()->SetTitle(Form("Energy GM Layer %i",i));
+        h2_energy_layer_vs_time[i]->GetXaxis()->SetTitle("WR Time [min]");
+        h2_energy_layer_vs_time[i]->Draw();
     }
     
     c_energy_layer_vs_time->cd(0);
-    dir_energy->Append(c_energy_layer_vs_time);
+    dir_drift->Append(c_energy_layer_vs_time);
     
-    //::::::::::: Each Energy Channel vs WR Time
-    dir_energy->cd();
-    c_energy_layer_ch_vs_time.resize(layer_number);
-    hG_energy_layer_ch_vs_time.resize(layer_number);
+    //::: Channel vs WR Time
+    c_energy_ch_vs_time.resize(layer_number);
+    h2_energy_ch_vs_time.resize(layer_number);
 
     //::::::::::Energy vs WR Time - for now special case layer 0
-    c_energy_layer_ch_vs_time[0] = new TCanvas("c_energy_layer_0_ch_vs_wrtime", "Tokyo layer", 650, 350);
-    hG_energy_layer_ch_vs_time[0].resize(1);
-    hG_energy_layer_ch_vs_time[0][0].resize(1);
+    c_energy_ch_vs_time[0] = new TCanvas("c_energy_layer0_ch_vs_wrtime", "Tokyo layer", 650, 350);
+    h2_energy_ch_vs_time[0].resize(1);
+    h2_energy_ch_vs_time[0][0].resize(1);
 
-    hG_energy_layer_ch_vs_time[0][0][0] = new TGraph(1);
-    hG_energy_layer_ch_vs_time[0][0][0]->SetName("Energy vs WR for 000");
-    hG_energy_layer_ch_vs_time[0][0][0]->SetTitle("E(000) vs WR");
-    hG_energy_layer_ch_vs_time[0][0][0]->GetXaxis()->SetTimeDisplay(1);
-    hG_energy_layer_ch_vs_time[0][0][0]->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
-    hG_energy_layer_ch_vs_time[0][0][0]->GetXaxis()->SetTimeOffset(0, "local");
-    hG_energy_layer_ch_vs_time[0][0][0]->GetYaxis()->SetTitle("Energy 000");
-    hG_energy_layer_ch_vs_time[0][0][0]->GetXaxis()->SetTitle("WR Time [Y-M-D H:M]");
-    hG_energy_layer_ch_vs_time[0][0][0]->SetMarkerColor(kBlack);
-    hG_energy_layer_ch_vs_time[0][0][0]->SetMarkerStyle(20);
-    hG_energy_layer_ch_vs_time[0][0][0]->SetLineColor(kBlue);
-    hG_energy_layer_ch_vs_time[0][0][0]->SetLineWidth(2);
-    hG_energy_layer_ch_vs_time[0][0][0]->GetXaxis()->SetNdivisions(-4);
-    hG_energy_layer_ch_vs_time[0][0][0]->Draw();
-    //dir_energy->Append(c_energy_layer_ch_vs_time[0]);
+    h2_energy_ch_vs_time[0][0][0] = MakeTH2(dir_drift, "F", "h2_energyGM__ch_layer_0_vs_time", "E_GM(Layer 0) vs WR [min]", 500, 0, 10000, lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
+
+    h2_energy_ch_vs_time[0][0][0]->SetTitle("E_GM(Layer 0) vs WR [min]");
+    h2_energy_ch_vs_time[0][0][0]->GetYaxis()->SetTitle("Energy 000");
+    h2_energy_ch_vs_time[0][0][0]->GetXaxis()->SetTitle("WR Time");
+    h2_energy_ch_vs_time[0][0][0]->Draw();
+    dir_drift->Append(c_energy_ch_vs_time[0]);
 
     //::::::::::::Energy vs WR Time - Eris and Sparrow
     for (int i = 1; i < layer_number; i++) //create a canvas for each layer (not Tokyo)
     {
-        c_energy_layer_ch_vs_time[i] = new TCanvas(Form("c_energy_layer_%d_ch_vs_wrtime",i),Form("c_energy_layer_%d_ch_vs_wrtime",i), 650,350);
-        c_energy_layer_ch_vs_time[i]->SetTitle(Form("Layer %d - Energy vs WR Time",i));
-        c_energy_layer_ch_vs_time[i]->Divide(xmax,ymax); 
-        hG_energy_layer_ch_vs_time[i].resize(xmax);
+        c_energy_ch_vs_time[i] = new TCanvas(Form("c_ch_energy_layer_%d_vs_wrtime",i),Form("c_ch_energy_layer_%d_ch_vs_wrtime",i), 650,350);
+        c_energy_ch_vs_time[i]->SetTitle(Form("Layer %d - Channel Energies vs WR Time",i));
+        c_energy_ch_vs_time[i]->Divide(xmax,ymax); 
+        h2_energy_ch_vs_time[i].resize(xmax);
         
         for (int j = 0; j < xmax; j++)
         {
-            hG_energy_layer_ch_vs_time[i][j].resize(ymax);
+            h2_energy_ch_vs_time[i][j].resize(ymax);
             for (int k = 0; k < ymax; k++)
             {   
                 // general formula to place correctly on canvas for x,y coordinates
-                c_energy_layer_ch_vs_time[i]->cd((ymax-(k+1))*xmax + j + 1);
+                c_energy_ch_vs_time[i]->cd((ymax-(k+1))*xmax + j + 1);
                 
                 city = "";
                 for (auto & detector : detector_mapping)
@@ -385,24 +374,16 @@ InitStatus LisaNearlineSpectra::Init()
                         break;
                     }
                 }
-                hG_energy_layer_ch_vs_time[i][j][k] = new TGraph(1);
-                hG_energy_layer_ch_vs_time[i][j][k]->SetName(Form("Energy vs WR for %i%i%i",i,j,k));
-                hG_energy_layer_ch_vs_time[i][j][k]->SetTitle(Form("E(%i%i%i) vs WR",i,j,k));
-                hG_energy_layer_ch_vs_time[i][j][k]->GetXaxis()->SetTimeDisplay(1);
-                hG_energy_layer_ch_vs_time[i][j][k]->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
-                hG_energy_layer_ch_vs_time[i][j][k]->GetXaxis()->SetTimeOffset(0, "local");
-                hG_energy_layer_ch_vs_time[i][j][k]->GetYaxis()->SetTitle(Form("Energy %i%i%i",i,j,k));
-                hG_energy_layer_ch_vs_time[i][j][k]->GetXaxis()->SetTitle("WR Time [Y-M-D H:M]");
-                hG_energy_layer_ch_vs_time[i][j][k]->SetMarkerColor(kBlack);
-                hG_energy_layer_ch_vs_time[i][j][k]->SetMarkerStyle(20);
-                hG_energy_layer_ch_vs_time[i][j][k]->SetLineColor(kBlue);
-                hG_energy_layer_ch_vs_time[i][j][k]->SetLineWidth(2);
-                hG_energy_layer_ch_vs_time[i][j][k]->GetXaxis()->SetNdivisions(-4);
-                hG_energy_layer_ch_vs_time[i][j][k]->Draw();
+                
+                h2_energy_ch_vs_time[i][j][k] = MakeTH2(dir_drift, "F", Form("h2_energyGM_ch_%d%d%d_vs_time",i,j,k), Form("E_GM ch %d%d%d vs WR [min]",i,j,k), 500, 0, 10000, lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
+                h2_energy_ch_vs_time[i][j][k]->SetTitle(Form("E_GM(%d%d%d) vs WR",i,j,k));
+                h2_energy_ch_vs_time[i][j][k]->GetYaxis()->SetTitle(Form("Energy %d%d%d",i,j,k));
+                h2_energy_ch_vs_time[i][j][k]->GetXaxis()->SetTitle("WR Time [min]");
+                h2_energy_ch_vs_time[i][j][k]->Draw();
             }
         }
-        c_energy_layer_ch_vs_time[i]->cd(0);
-        dir_energy->Append(c_energy_layer_ch_vs_time[i]);
+        c_energy_ch_vs_time[i]->cd(0);
+        dir_drift->Append(c_energy_ch_vs_time[i]);
     }    
 
 
@@ -479,7 +460,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     sum_energy_layer.resize(layer_number);
 
     int energy_ch[layer_number][xmax][ymax] = {0,0,0};
-    //int energy_ch_GM[layer_number][xmax][ymax] = {0,0,0};
+    int energy_ch_GM[layer_number][xmax][ymax] = {0,0,0};
 
     std::vector<uint32_t> sum_energy_layer_GM;
     sum_energy_layer_GM.resize(layer_number);
@@ -487,6 +468,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     std::vector<uint32_t> energy_layer_GM;
     energy_layer_GM.resize(layer_number);
 
+    Long64_t LISA_time_mins = 0;
 
     //c4LOG(info, "Comment to slow down program for testing");
     for (auto const & lisaCalItem : *lisaCalArray)
@@ -494,6 +476,10 @@ void LisaNearlineSpectra::Exec(Option_t* option)
 
         wr_time = lisaCalItem.Get_wr_t();
         if (wr_time == 0)return;
+        if(wr_time > 0) LISA_time_mins = (wr_time - exp_config->exp_start_time)/ 60E9;
+
+        //c4LOG(info, "LISA_time_mins: " << LISA_time_mins << " wr time: "<< std::fixed << std::setprecision(10)<< wr_time);
+
 
         //::::::: Retrieve Data ::::::::::::::
         layer = lisaCalItem.Get_layer_id();
@@ -506,8 +492,6 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         int pileup = lisaCalItem.Get_pileup();
         int overflow = lisaCalItem.Get_overflow();
         uint64_t evtno = header->GetEventno();
-        
-        
         
         //::::::::F I L L   H I S T O S:::::::
         //:::::::: H I T  P A T T E R N ::::::::::
@@ -546,13 +530,21 @@ void LisaNearlineSpectra::Exec(Option_t* option)
 
         //::::::::Define Sum Energy GM
         sum_energy_layer_GM[layer] += energy_GM;
-        //energy_ch_GM[layer][xpos][ypos] = energy_GM;
+        energy_ch_GM[layer][xpos][ypos] = energy_GM;
         energy_layer_GM[layer] = energy_GM;
         
         //:::Fill Energy Gain Matched
         //h1_energy_layer_ch_GM[layer][xpos][ypos]->Fill(energy_GM);	//energy per layer and channel
         h1_energy_layer_GM[layer]->Fill(energy_GM);			        //energy per layer
                 
+        //:::::::Energy vs Time
+        if (energy_GM > 0 && LISA_time_mins > 0)
+        {
+            //c4LOG(info, "conditions on LISA time: " << LISA_time_mins << "and energy: " << energy_GM );
+            h2_energy_layer_vs_time[layer]->Fill(LISA_time_mins, energy_GM);
+            h2_energy_ch_vs_time[layer][xpos][ypos]->Fill(LISA_time_mins, energy_GM); 
+        }
+        
         //::::::::: Fill Traces ::::::::::::::
         h1_traces_layer_ch[layer][xpos][ypos]->Reset();
         for (int i = 0; i < trace.size(); i++)
@@ -560,10 +552,12 @@ void LisaNearlineSpectra::Exec(Option_t* option)
             h1_traces_layer_ch[layer][xpos][ypos]->SetBinContent(i, trace[i]);
             //c4LOG(info, "layer: " << layer << " x max: " << xmax << " ymax: " << ymax);
 
-        }
-
+        }    
+    
     }
     //c4LOG(info, "::::::::::END LOOP::::::::::::" << " Layer number :" << layer_number);
+
+    //c4LOG(info, "LISA_time_mins: " << LISA_time_mins << " wr time: "<< std::fixed << std::setprecision(10)<< wr_time);
 
     if ( wr_time == 0 ) return;
 
@@ -587,12 +581,6 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         //c4LOG(info," layer number : " << layer_number << " layer : " << layer << " multiplicity [layer] : " << multiplicity[layer] << " multiplicity [i] : " << multiplicity[i]);
     }
 
-
-    // for(int i = 0; i < layer_number; i++)
-    // {
-    //     c4LOG(info,"multiplicity : "<< multiplicity[i] << " i : " << i );
-    // }
-
     //:::::::Fill Sum Energy::::::::::
     //h2_sum_energy_layer1_vs_layer2->Fill(sum_energy_layer[2],sum_energy_layer[1]);
         
@@ -601,44 +589,44 @@ void LisaNearlineSpectra::Exec(Option_t* option)
 
     //:::::: Fill Energy GM for layers 1 and 2 ::::::::::
     h2_energy_layer1_vs_layer2_GM->Fill(energy_layer_GM[2],energy_layer_GM[1]);
-    
-    //:::::::Energy vs Time
+        
+
+    // ::: old en vs time ---- To be deleted soon
+    //int wr_r = round(wr_time/1000000000);
     //time_t rawtime;
     //time(&rawtime);
+    // if (fNEvents % 1000 == 0 && sum_energy_layer[1] > 0) 
+    // {
+    //     for (int i = 0; i < layer_number; i++)hG_energy_layer_vs_time[i]->SetPoint(en_count1, wr_r, sum_energy_layer[i]);
+    //     en_count1++;
+    // } 
 
-    int wr_r = round(wr_time/1000000000);
+    // if (fNEvents % 1000 == 0 && energy_ch[1][0][0]>0) 
+    // {
+    //     hG_energy_layer_ch_vs_time[0][0][0]->SetPoint(en_count2, wr_r, energy_ch[0][0][0]);
+    //     //c4LOG(info, " ENERGY " << energy_ch[0][0][0] );
 
-    if (fNEvents % 1000 == 0 && sum_energy_layer[1] > 0) 
-    {
-        for (int i = 0; i < layer_number; i++)hG_energy_layer_vs_time[i]->SetPoint(en_count1, wr_r, sum_energy_layer[i]);
-        en_count1++;
-    } 
-
-    if (fNEvents % 1000 == 0 && energy_ch[1][0][0]>0) 
-    {
-        hG_energy_layer_ch_vs_time[0][0][0]->SetPoint(en_count2, wr_r, energy_ch[0][0][0]);
-        //c4LOG(info, " ENERGY " << energy_ch[0][0][0] );
-
-        for (int i = 1; i < layer_number; i++) 
-        {
-            for(int j = 0; j < xmax; j++)
-            {
-                for (int z = 0; z < ymax; z++)
-                {
-                    hG_energy_layer_ch_vs_time[i][j][z]->SetPoint(en_count2, wr_r, energy_ch[i][j][z]);
-                    //c4LOG(info, " ENERGY " << energy_ch[i][j][z] << " i : " << i << " j : " << j << " z : " << z );
-                }
+    //     for (int i = 1; i < layer_number; i++) 
+    //     {
+    //         for(int j = 0; j < xmax; j++)
+    //         {
+    //             for (int z = 0; z < ymax; z++)
+    //             {
+    //                 hG_energy_layer_ch_vs_time[i][j][z]->SetPoint(en_count2, wr_r, energy_ch[i][j][z]);
+    //                 //c4LOG(info, " ENERGY " << energy_ch[i][j][z] << " i : " << i << " j : " << j << " z : " << z );
+    //             }
                 
-            }
+    //         }
             
-        //c4LOG(info, "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
-        //c4LOG(info, " wr: " << wr_r << " wr tot "<< wr_time);
+    //     //c4LOG(info, "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+    //     //c4LOG(info, " wr: " << wr_r << " wr tot "<< wr_time);
 
-        }
+    //     }
 
 
-        en_count2++;
-    } 
+    //     en_count2++;
+    // } 
+    //::::
 
     fNEvents += 1;
 }

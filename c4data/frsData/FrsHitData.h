@@ -34,6 +34,7 @@ class FrsHitItem : public TObject
                     Float_t* music_dE,
                     Float_t* music_dE_cor,
                     Float_t travmusic_dE,
+                    Float_t travmus_dE_driftcorr,
                     Float_t travmusic_dE_cor,
                     Float_t* sci_e,
                     Float_t* sci_l,
@@ -80,6 +81,7 @@ class FrsHitItem : public TObject
         Float_t Get_music_dE(int index) const; //index 0 = music 1
         Float_t Get_music_dE_cor(int index) const; 
         Float_t Get_travmusic_dE() const; //
+        Float_t Get_travmus_dE_driftcorr() const;
         Float_t Get_travmusic_dE_cor() const;
         Float_t Get_sci_e(int index) const;
         Float_t Get_sci_l(int index) const;
@@ -134,6 +136,7 @@ class FrsHitItem : public TObject
         Float_t fmusic_dE[2]; // [2] // CEJ: 2? 3 for more musics?
         Float_t fmusic_dE_cor[2]; // [2]
         Float_t ftravmusic_dE;
+        Float_t ftravmus_dE_driftcorr;
         Float_t ftravmusic_dE_cor;
         Float_t fsci_e[6]; // [6] // CEJ: by chance we need [6]. 5->2 but 10->5 (so 6 elements)
         Float_t fsci_l[6]; // [6]
@@ -335,10 +338,16 @@ inline Float_t FrsHitItem::Get_travmusic_dE() const
     return ftravmusic_dE;
 }
 
+inline Float_t FrsHitItem::Get_travmus_dE_driftcorr() const
+{
+    return ftravmus_dE_driftcorr;
+}
+
 inline Float_t FrsHitItem::Get_travmusic_dE_cor() const
 {
     return ftravmusic_dE_cor;
 }
+
 
 inline Float_t FrsHitItem::Get_sci_e(int index) const
 {

@@ -13,6 +13,8 @@
 #include "TH2I.h"
 #include "TGraph.h"
 #include "TString.h"
+#include "TExperimentConfiguration.h"
+
 
 //Debugging. Replaced std::string with TString 8nov24
 
@@ -20,6 +22,7 @@
 
 class LisaCalItem;
 class TLisaConfiguration;
+class TExperimentConfiguration;
 class EventHeader;
 class TCanvas;
 class TH1F;
@@ -28,6 +31,7 @@ class TH1I;
 class TH2I;
 class TFolder;
 class TDirectory;
+class TH2;
 
 
 class LisaNearlineSpectra : public FairTask
@@ -53,6 +57,8 @@ class LisaNearlineSpectra : public FairTask
     
     private:
         TLisaConfiguration const* lisa_config;
+        TExperimentConfiguration const* exp_config;
+
         // TClonesArray* fHitLisa;
 
         std::vector<LisaCalItem> const* lisaCalArray;
@@ -85,11 +91,12 @@ class LisaNearlineSpectra : public FairTask
         TDirectory* dir_stats;
         TDirectory* dir_music;
         TDirectory* dir_correlations;
+        TDirectory* dir_drift;
 
         int64_t prev_wr = 0;
         int64_t wr_diff;
 
-        // Canvas
+        // ::: Canvas
         TCanvas* c_hitpattern_layer;
         TCanvas* c_multiplicity_layer;
         TCanvas* c_hitpattern_grid;
@@ -99,11 +106,12 @@ class LisaNearlineSpectra : public FairTask
         TCanvas* c_energy_layer1_vs_layer2_GM;
         TCanvas* c_energy_layer_vs_time;
         std::vector<TCanvas*> c_energy_layer_ch;
-        std::vector<TCanvas*> c_energy_layer_ch_vs_time;
+        std::vector<TCanvas*> c_energy_ch_vs_time;
         std::vector<TCanvas*> c_traces_layer_ch;
         std::vector<TCanvas*> c_traces_layer_ch_stat;
     
-        // Histograms
+        // ::: Histograms
+        // stats
         TH1I* h1_hitpattern_total;
         TH1I* h1_wr_diff;
         std::vector<TH1I*> h1_hitpattern_layer;
@@ -115,6 +123,8 @@ class LisaNearlineSpectra : public FairTask
         TH1I* h1_layer_multiplicity;
         //TH2F* h2_hitpattern_grid;
         //TH1F* h1_energy_layer0;
+
+        // energy
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch;
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch_GM;
         std::vector<TH1F*> h1_energy_layer_GM;
@@ -124,9 +134,9 @@ class LisaNearlineSpectra : public FairTask
         TH2F* h2_energy_layer1_vs_layer2_GM;
         std::vector<std::vector<std::vector<TH1F*>>> h1_traces_layer_ch;
 
-        //TGraph
-        std::vector<TGraph*> hG_energy_layer_vs_time;
-        std::vector<std::vector<std::vector<TGraph*>>> hG_energy_layer_ch_vs_time;
+        // ::: Drifts
+        std::vector<TH2*> h2_energy_layer_vs_time;
+        std::vector<std::vector<std::vector<TH2*>>> h2_energy_ch_vs_time;
 
         
 

@@ -322,6 +322,11 @@ void setup(TFRSParameter* frs,
   music->exclude_de4_adc_channel[6] = kTRUE;
   music->exclude_de4_adc_channel[7] = kTRUE;
 
+  //TravMusic exclusions. 
+  //music->exclude_de3_adc_channel[5] = kTRUE;
+  //music->exclude_de3_adc_channel[6] = kTRUE;
+  //music->exclude_de3_adc_channel[7] = kTRUE;
+
   //  
   music->dist_MUSICa1 = 52.5;  // do not change
   music->dist_MUSICa2 = 157.5; // do not change
