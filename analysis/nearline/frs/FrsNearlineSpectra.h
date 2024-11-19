@@ -13,6 +13,9 @@
 #include "TDirectory.h"
 #include "TFile.h"
 #include "FrsGate.h"
+#include "TLine.h"
+#include "TText.h"
+#include "TCanvas.h"
 
 class TFrsConfiguration;
 class TExperimentConfiguration;
@@ -94,6 +97,9 @@ class FrsNearlineSpectra : public FairTask
         TDirectory* dir_x2vsAoQ_mhtdc; 
         TDirectory* dir_x4vsAoQ_mhtdc;
         TDirectory* dir_dEdegvsZ_mhtdc;
+
+        //canvases
+        TCanvas* c_TravMus_drift;
     
         // Histograms
         // TAC 2D + Gated
@@ -268,6 +274,17 @@ class FrsNearlineSpectra : public FairTask
         TH2* h2_AoQ_vs_T_mhtdc;
         TH2* h2_sci_tof_vs_T[6];
         TH2* h2_tpc_vs_T[6];
+        TH2* h2_TravMus_vs_T;
+
+        // Lines and Text
+        TLine* hline;
+        TLine* left_bar;
+        TLine* right_bar;
+        TText* run_number_text;
+
+        double frs_time_min;
+        double frs_time_max;
+        
 
         // Scalers
         char scaler_name[66][256]; // don't need perhaps

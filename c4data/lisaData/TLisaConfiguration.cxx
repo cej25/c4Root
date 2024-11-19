@@ -1,4 +1,5 @@
 #include "TLisaConfiguration.h"
+#include "TExperimentConfiguration.h"
 
 #include "c4Logger.h"
 #include "TCutG.h"
@@ -11,6 +12,7 @@
 #include <string>
 
 TLisaConfiguration* TLisaConfiguration::instance = nullptr;
+
 //std::string TLisaConfiguration::MWD_file = "blank";
 std::string TLisaConfiguration::mapping_file = "blank";
 std::string TLisaConfiguration::gain_matching_file = "blank";
@@ -39,6 +41,8 @@ int TLisaConfiguration::max_traces = 2000;
 int TLisaConfiguration::bin_traces = 900;
 
 int TLisaConfiguration::fMin_dE_LISA1_gate = 1070, TLisaConfiguration::fMax_dE_LISA1_gate = 1100;
+
+int TLisaConfiguration::frun_num = 0;
 
 
 TLisaConfiguration::TLisaConfiguration()

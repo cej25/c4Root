@@ -65,8 +65,8 @@ void pareeksha_make_trees(int fileNumber)
     TString filename = Form(inputpath + "run_%04d_*.lmd", fileNumber);
 
     //___O U T P U T
-    //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/elisa/";
-    TString outputpath = "/u/gandolfo/lisa_test/pareeksha_trees/";    
+    //TString outputpath = "/u/gandolfo/data/"; //testing
+    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/fragments_EG_test/";    
     TString outputFilename = Form(outputpath + "run_%04d_EG.root", fileNumber);
 
 
@@ -117,7 +117,10 @@ void pareeksha_make_trees(int fileNumber)
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
+    TExperimentConfiguration::SetExperimentStart(1715734200000000000);//Start of pareeksha with primary beam: 15 May 00:50
+    
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
+    TFrsConfiguration::SetTravMusDriftFile(config_path + "/frs/TM_Drift_fragments.txt");
     TLisaConfiguration::SetMappingFile(config_path + "/lisa/Lisa_Detector_Map_names.txt");
     TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching.txt");
     //TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");

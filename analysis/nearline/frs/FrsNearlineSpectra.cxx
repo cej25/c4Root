@@ -30,6 +30,7 @@
 #include <vector>
 #include "TDirectory.h"
 
+
 FrsNearlineSpectra::FrsNearlineSpectra() : FrsNearlineSpectra("FrsNearlineSpectra", 1)
 {
     frs_config = TFrsConfiguration::GetInstance();
@@ -456,6 +457,52 @@ InitStatus FrsNearlineSpectra::Init()
     for (int i = 0; i < 6; i++) h2_sci_tof_vs_T[i] = MakeTH2(dir_drifts, "D", Form("h2_sci_tof_vs_T_%i", i), Form("TOF %i vs. Time [mins]" , i), 500, 0, 10000, 4000, 0.0, 200000.0);
     for (int i = 0; i < 6; i++) h2_tpc_vs_T[i] = MakeTH2(dir_drifts, "D", Form("h2_tpc_vs_T_%i", i), Form("TPC %i X vs. T", i), 500,0, 10000, 200, -100, 100);
     
+    //::: TravMus Drift with ref to the run number
+    dir_drifts->cd();
+    //c_TravMus_drift = new TCanvas("c_TravMus_drift", "c_TravMus_drift", 650, 350);
+    //c_TravMus_drift->SetLogz();
+    //c_TravMus_drift->cd();
+    h2_TravMus_vs_T = new TH2D("h2_TravMus_vs_T", "dE (TravM) vs Time [min]", 1000, 0, 10000, 1000, 0, 4200);
+    h2_TravMus_vs_T->GetXaxis()->SetTitle("WR [min]");
+    h2_TravMus_vs_T->GetYaxis()->SetTitle("dE (Travel MUSIC)");
+
+    // info on run number-not working now damn (EG)
+    frs_time_min = std::numeric_limits<double>::max();
+    frs_time_max = std::numeric_limits<double>::lowest(); 
+    double initial_x_min = 0;      
+    double initial_x_max = 10000; 
+    double y_position = 4100;     
+    double text_offset = 50; 
+ 
+    hline = new TLine(initial_x_min, y_position, initial_x_max, y_position);
+    hline->SetLineColor(kRed);
+    hline->SetLineWidth(2);
+
+    left_bar = new TLine(initial_x_min, y_position - 50, initial_x_min, y_position + 50);
+    left_bar->SetLineColor(kRed);
+    left_bar->SetLineWidth(2);
+
+    right_bar = new TLine(initial_x_max, y_position - 50, initial_x_max, y_position + 50);
+    right_bar->SetLineColor(kRed);
+    right_bar->SetLineWidth(2);
+
+    run_number_text = new TText((initial_x_min + initial_x_max) / 2, y_position + text_offset,
+                                Form("run: %d", frs_config->frun_num));
+    run_number_text->SetTextSize(0.03);
+    run_number_text->SetTextAlign(22); // Center alignment
+
+    //hline->Write();
+    //left_bar->Write();
+    //right_bar->Write();
+    //run_number_text->Write();
+    //h2_TravMus_vs_T->Draw();
+    h2_TravMus_vs_T->SetOption("colz");
+
+    //c_TravMus_drift->cd();
+    //dir_drifts->Append(c_TravMus_drift);
+
+    //:::
+
    
     //::LISA
     h2_Z_vs_AoQ_mhtdc_trav_gate = MakeTH2(dir_travmus, "D", "h2_Z_vs_AoQ_mhtdc_trav_gate", "Z1 vs. A/Q (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
@@ -470,8 +517,22 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     if (hitArray->size() <= 0) return;
 
     Long64_t FRS_time_mins = 0;
+    Long64_t FRS_TM_time_mins = 0;
     auto const & hitItem = hitArray->at(0); // should only be size=1! check
     if(hitItem.Get_wr_t() > 0) FRS_time_mins = (hitItem.Get_wr_t() - exp_config->exp_start_time)/ 60E9;
+    if(hitItem.Get_wr_t() > 0) FRS_time_mins = (hitItem.Get_wr_t() - exp_config->exp_start_time)/ 60E9;
+
+
+
+    // Get the minimum and maximum FRS_time_mins
+    if (FRS_time_mins > 0) {
+        frs_time_min = std::min(frs_time_min, static_cast<double>(FRS_time_mins));
+        frs_time_max = std::max(frs_time_max, static_cast<double>(FRS_time_mins));
+    }
+
+    //c4LOG(info, "frs_time_min : " << frs_time_min << " frs_time_max : " <<  frs_time_max);
+
+    
 
     // :::::::::: TAC ::::::::::::: //
     // ---------------------------- //
@@ -512,6 +573,33 @@ void FrsNearlineSpectra::Exec(Option_t* option)
         if (hitItem.Get_ID_z() != 0 && hitItem.Get_sci_l(0) != 0 && hitItem.Get_sci_r(0)  != 0) h2_Z_vs_Sc21E->Fill(hitItem.Get_ID_z(), sqrt(hitItem.Get_sci_l(0) * hitItem.Get_sci_r(0))); // CEJ: changed [2] -> [0]
 
         h1_travmus_dE->Fill(hitItem.Get_travmusic_dE());
+        // ::: Drift TM        
+        if (hitItem.Get_travmusic_dE() > 0 && FRS_time_mins > 0) 
+        {
+            double y_position = 4010;  
+            hline->SetX1(frs_time_min);
+            hline->SetX2(frs_time_max);
+            hline->SetY1(y_position);
+            hline->SetY2(y_position);
+
+            left_bar->SetX1(frs_time_min);
+            left_bar->SetX2(frs_time_min);
+            left_bar->SetY1(y_position - 50);
+            left_bar->SetY2(y_position + 50);
+
+            right_bar->SetX1(frs_time_max);
+            right_bar->SetX2(frs_time_max);
+            right_bar->SetY1(y_position - 50);
+            right_bar->SetY2(y_position + 50);
+
+            run_number_text->SetText((frs_time_min + frs_time_max) / 2, y_position + 50,
+                                    Form("run: %d", frs_config->frun_num));
+            
+            h2_TravMus_vs_T->Fill(FRS_time_mins, hitItem.Get_travmusic_dE());
+
+        }
+ 
+
 
         if (!FrsGates.empty())
         {

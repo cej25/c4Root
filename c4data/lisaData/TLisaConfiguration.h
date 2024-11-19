@@ -78,6 +78,7 @@ class TLisaConfiguration
 
         static void SetLISAGate(int min_de, int max_de) { fMin_dE_LISA1_gate = min_de; fMax_dE_LISA1_gate = max_de; }
 
+        static void SetRunNumber(int run_num) { frun_num = run_num; }
 
 
         //int AmplitudeMax = 10500;
@@ -98,6 +99,7 @@ class TLisaConfiguration
         static int bin_traces;
         static int fMin_dE_LISA1_gate;
         static int fMax_dE_LISA1_gate;
+        static int frun_num;
         
         static bool wr_enable;
 
