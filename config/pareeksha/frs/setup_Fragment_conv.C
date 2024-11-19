@@ -322,6 +322,11 @@ void setup(TFRSParameter* frs,
   music->exclude_de4_adc_channel[6] = kTRUE;
   music->exclude_de4_adc_channel[7] = kTRUE;
 
+  //EG: Excluded anodes with res > 10% for main peak in raw ADC. From fragments runs 72-157.
+  music->exclude_de3_adc_channel[0] = kTRUE;
+  //music->exclude_de3_adc_channel[1] = kTRUE;
+  //music->exclude_de3_adc_channel[5] = kTRUE;
+
   //TravMusic exclusions. 
   //music->exclude_de3_adc_channel[5] = kTRUE;
   //music->exclude_de3_adc_channel[6] = kTRUE;

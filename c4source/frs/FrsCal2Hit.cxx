@@ -1429,30 +1429,36 @@ void FrsCal2Hit::Exec(Option_t* option)
     if (frs_config->TravMusDriftLoaded())
     {
         de_travmus_driftcorr = 0;
+        double drift_tm = 0.0;
+        double drift_tm_error = 0.0;
         int nentry = 0;
         int travmus_wr_time_a = 0; 
         int travmus_wr_time_b = 0;
-        double reference_value = 1956.62; //read from file
-        int bin = 20; //read from file
+        double reference_value = 1956.62;   //!!!! read from file
+        int bin = 20;                       //!!!! read from file
 
-        std::map<int,std::pair<double,double>> drift_coeff = frs_config->TravMusDriftCoefficients();
-        for (const auto& entry : drift_coeff)
+        std::map<int,std::pair<double,double>> travmus_drift = frs_config->TravMusDriftCoefficients();
+        for (const auto& entry : travmus_drift)
         {
+            // std::cout << "Key (travmus_wr_time): " << entry.first 
+            //   << ", Value (coeffs): (" << entry.second.first 
+            //   << ", " << entry.second.second << ")\n";
+            
             int travmus_wr_time = entry.first;
             std::pair<double,double> coeffs = entry.second;
             drift_tm = coeffs.first;
             drift_tm_error = coeffs.second;
 
-            if (nentry == 0)
-            {
-                travmus_wr_time_a = travmus_wr_time;
-                //reference_value = drift_tm;
-            }
-            else if (nentry == 1)
-            {
-                travmus_wr_time_b = travmus_wr_time;
-                //bin = travmus_wr_time_b - travmus_wr_time_a;
-            }
+            // if (nentry == 0)
+            // {
+            //     travmus_wr_time_a = travmus_wr_time;
+            //     //reference_value = drift_tm;
+            // }
+            // else if (nentry == 1)
+            // {
+            //     travmus_wr_time_b = travmus_wr_time;
+            //     //bin = travmus_wr_time_b - travmus_wr_time_a;
+            // }
 
             double tm_shift = drift_tm - reference_value;
             
@@ -1463,21 +1469,80 @@ void FrsCal2Hit::Exec(Option_t* option)
             if ((FRS_TM_time_mins >= (travmus_wr_time - bin/2)) && (FRS_TM_time_mins < (travmus_wr_time + bin/2)))
             {
                 de_travmus_driftcorr = de_travmus - tm_shift;
-                // std::cout   << " Drift... Bin : " << bin 
+                // std::cout  << " reference :" << reference_value
+                //     << " drift (1 coeff) :" << drift_tm 
                 //     << " shift :" << tm_shift 
-                //     << " trav mus de : " << de_travmus
-                //     << " travmus drift corr : " << de_travmus_driftcorr << "\n";
+                //     << " TM dE original : " << de_travmus
+                //     << " TM dE corr : " << de_travmus_driftcorr << "\n";
             }
             
-
-
-
             nentry ++ ;
         }
-        
 
     }
 
+    if (frs_config->AoQDriftLoaded())
+    {
+        id_AoQ_driftcorr = 0;
+        double drift_aoq = 0.0;
+        double drift_aoq_error = 0.0;
+        int nentry = 0;
+        int aoq_frs_wr_time_a = 0; 
+        int aoq_frs_wr_time_b = 0;
+        double aoq_reference_value = 2.39;   //!!!! read from exp configuration - expected value
+        int bin = 20;                        //!!!! read from drift file
+
+        std::map<int,std::pair<double,double>> aoq_drift = frs_config->AoQDriftCoefficients();
+        for (const auto& entry : aoq_drift)
+        {            
+            int aoq_frs_wr_time = entry.first;
+            std::pair<double,double> aoq_coeffs = entry.second;
+            drift_aoq = aoq_coeffs.first;
+            drift_aoq_error = aoq_coeffs.second;
+
+            double aoq_shift = drift_aoq - aoq_reference_value;
+            
+            if ((FRS_TM_time_mins >= (aoq_frs_wr_time - bin/2)) && (FRS_TM_time_mins < (aoq_frs_wr_time + bin/2)))
+            {
+                id_AoQ_driftcorr = id_AoQ - aoq_shift;
+            }
+            
+            nentry ++ ;
+        }
+
+    }
+
+    if (frs_config->Z1DriftLoaded())
+    {
+        id_z_driftcorr = 0;
+        double drift_z1 = 0.0;
+        double drift_z1_error = 0.0;
+        int nentry = 0;
+        int z1_frs_wr_time_a = 0; 
+        int z1_frs_wr_time_b = 0;
+        double z1_reference_value = 41;     //!!!! read from exp configuration - expected value
+        int bin = 20;                       //!!!! read from drift file
+
+        std::map<int,std::pair<double,double>> z1_drift = frs_config->Z1DriftCoefficients();
+        for (const auto& entry : z1_drift)
+        {            
+            int z1_frs_wr_time = entry.first;
+            std::pair<double,double> z1_coeffs = entry.second;
+            drift_z1 = z1_coeffs.first;
+            drift_z1_error = z1_coeffs.second;
+
+            double z1_shift = drift_z1 - z1_reference_value;
+            
+            if ((FRS_TM_time_mins >= (z1_frs_wr_time - bin/2)) && (FRS_TM_time_mins < (z1_frs_wr_time + bin/2)))
+            {
+                id_z_driftcorr = id_z - z1_shift;
+            }
+            
+            nentry ++ ;
+        }
+
+    }
+    
     
 
     float gamma1square = 1.0 + TMath::Power(((1 / aoq_factor) * (id_brho[0] / id_AoQ)), 2);
@@ -1498,8 +1563,10 @@ void FrsCal2Hit::Exec(Option_t* option)
                     id_a4,
                     id_b4,
                     id_AoQ,
+                    id_AoQ_driftcorr,
                     id_AoQ_corr,
                     id_z,
+                    id_z_driftcorr,
                     id_z2,
                     id_z_travmus, // here
                     id_beta,

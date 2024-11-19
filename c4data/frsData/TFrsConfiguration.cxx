@@ -131,10 +131,10 @@ void TFrsConfiguration::ReadTravMusDriftFile()
         double drift_val;
         double drift_err;
         std::pair<double, double> drift_coeff;
-        drift_coeff = std::make_pair(drift_val,drift_err);
 
         iss >> travmus_wr >> drift_val >> drift_err;
 
+        drift_coeff = std::make_pair(drift_val,drift_err);
         travmus_drift_coeff.insert(std::make_pair(travmus_wr, drift_coeff));
 
         //std::cout << " wr :  "<< travmus_wr << " drift coeff: " << drift_val << "\n";

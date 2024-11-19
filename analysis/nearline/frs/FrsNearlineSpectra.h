@@ -104,6 +104,7 @@ class FrsNearlineSpectra : public FairTask
         // Histograms
         // TAC 2D + Gated
         TH2* h2_Z_vs_AoQ;
+        TH2* h2_Z_vs_AoQ_driftcorr;
         TH2* h2_Z_vs_AoQ_corr;
         TH2* h2_Z_vs_Z2;
         TH2* h2_travmus_vs_Z;
@@ -167,9 +168,11 @@ class FrsNearlineSpectra : public FairTask
         // TAC 1D // :: Should add gated a2/a4 here if they're really desired
         TH1* h1_tpat;
         TH1* h1_Z;
+        TH1* h1_Z_driftcorr;
         TH1* h1_Z2;
         TH1* h1_Z_travmus;
         TH1* h1_AoQ;
+        TH1* h1_AoQ_driftcorr;
         TH1* h1_AoQ_corr;
         TH1* h1_x2;
         TH1* h1_x4;
@@ -186,6 +189,7 @@ class FrsNearlineSpectra : public FairTask
         TH1* h1_brho[2];
         TH1* h1_music_dE[2];
         TH1* h1_travmus_dE;
+        TH1* h1_travmus_dE_driftcorr;
         TH1* h1_music_dEcorr[2];
         TH1* h1_sci_e[6];
         TH1* h1_sci_l[6];
@@ -269,12 +273,15 @@ class FrsNearlineSpectra : public FairTask
 
         // Drifts
         TH2* h2_Z1_vs_T;
+        TH2* h2_Z1_driftcorr_vs_T;
         TH2* h2_AoQ_vs_T;
+        TH2* h2_AoQ_driftcorr_vs_T;
         TH2* h2_Z1_vs_T_mhtdc;
         TH2* h2_AoQ_vs_T_mhtdc;
         TH2* h2_sci_tof_vs_T[6];
         TH2* h2_tpc_vs_T[6];
-        TH2* h2_TravMus_vs_T;
+        TH2D* h2_TravMus_vs_T;
+        TH2D* h2_TravMus_driftcorr_vs_T;
 
         // Lines and Text
         TLine* hline;

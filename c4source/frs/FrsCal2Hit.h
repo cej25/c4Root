@@ -391,12 +391,12 @@ class FrsCal2Hit : public FairTask
 
 
         //::: Drifts correction
-        std::map<int, std::pair<double,double>> travmus_drift;
-        //std::map<int, std::pair<double,double>> aoq_drift;
-        //std::map<int, std::pair<double,double>> z1_drift;
-        double drift_tm;
-        double drift_tm_error;
+        // std::map<int, std::pair<double,double>> travmus_drift;
+        // std::map<int, std::pair<double,double>> aoq_drift;
+        // std::map<int, std::pair<double,double>> z1_drift;
         double de_travmus_driftcorr;
+        double id_AoQ_driftcorr;
+        double id_z_driftcorr;
 
 
     public:
