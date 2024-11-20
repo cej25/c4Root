@@ -301,13 +301,13 @@ InitStatus LisaNearlineSpectra::Init()
   
     //::::::::::: Energy Layer 1 vs Energy Layer 2 - stats of all dets together
     h2_energy_layer1_vs_layer2_GM = new TH2F("h2_energy_layer1_vs_layer2_GM", "E(Layer 1) vs E(Layer 2) GM", lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM,lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM); 
-    h2_energy_layer1_vs_layer2_GM->Draw("colz");
+    h2_energy_layer1_vs_layer2_GM->SetOption("colz");
     h2_energy_layer1_vs_layer2_GM->GetXaxis()->SetTitle(Form("Energy - Layer 2 [MeV]"));
     h2_energy_layer1_vs_layer2_GM->GetYaxis()->SetTitle(Form("Energy - Layer 1 [MeV]"));
     
     //::::::::::::Sum Energy Layer 1 vs Layer 2 GAIN MATCHED
     h2_sum_energy_layer1_vs_layer2_GM = new TH2F("h2_sum_energy_layer1_vs_layer2_GM", "Sum E(Layer 1) vs Sum E(Layer 2) GM", lisa_config->bin_energy_GM*4, lisa_config->min_energy_GM*4, lisa_config->max_energy_GM*4,lisa_config->bin_energy_GM*4, lisa_config->min_energy_GM*4, lisa_config->max_energy_GM*4); 
-    h2_sum_energy_layer1_vs_layer2_GM->Draw("colz");
+    h2_sum_energy_layer1_vs_layer2_GM->SetOption("colz");
     h2_sum_energy_layer1_vs_layer2_GM->GetXaxis()->SetTitle(Form("Layer 2 E[MeV]"));
     h2_sum_energy_layer1_vs_layer2_GM->GetYaxis()->SetTitle(Form("Layer 1 E[MeV]"));
 
@@ -388,38 +388,102 @@ InitStatus LisaNearlineSpectra::Init()
 
 
     //:::::::::::::T R A C E S:::::::::::::::::
+    
+    //Useless if not online
+    // dir_traces->cd();
+    // c_traces_layer_ch.resize(layer_number);
+    // h1_traces_layer_ch.resize(layer_number);
+
+    // //::::::::::::Traces for layer 0
+    // c_traces_layer_ch[0] = new TCanvas("c_traces_layer_ch0", "Tokyo layer", 650, 350);
+    // h1_traces_layer_ch[0].resize(1);
+    // h1_traces_layer_ch[0][0].resize(1);
+    // h1_traces_layer_ch[0][0][0] = new TH1F("tokyo_traces_layer", "Tokyo", 2000, 0, 20); // microseconds
+    // h1_traces_layer_ch[0][0][0]->GetXaxis()->SetTitle("Time [us]");
+    // h1_traces_layer_ch[0][0][0]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
+    // h1_traces_layer_ch[0][0][0]->SetMaximum(lisa_config->AmplitudeMax);
+    // h1_traces_layer_ch[0][0][0]->SetStats(0);
+    // h1_traces_layer_ch[0][0][0]->SetLineColor(kBlue+1);
+    // h1_traces_layer_ch[0][0][0]->SetFillColor(kOrange-3);
+    // h1_traces_layer_ch[0][0][0]->Draw();
+    // dir_traces->Append(c_traces_layer_ch[0]);
+
+    // //:::::::::::Traces canvas for layer 1 and 2   
+    // for (int i = 1; i < layer_number; i++) //create a canvas for each layer
+    // {
+    //     c_traces_layer_ch[i] = new TCanvas(Form("c_traces_layer_%d",i),Form("c_traces_layer_%d",i), 650,350);
+    //     c_traces_layer_ch[i]->SetTitle(Form("Layer %d - Traces",i));
+    //     c_traces_layer_ch[i]->Divide(xmax,ymax); 
+    //     h1_traces_layer_ch[i].resize(xmax);
+    //     for (int j = 0; j < xmax; j++)
+    //     {
+    //         h1_traces_layer_ch[i][j].resize(ymax);
+    //         for (int k = 0; k < ymax; k++)
+    //         {   
+    //             // general formula to place correctly on canvas for x,y coordinates
+    //             c_traces_layer_ch[i]->cd((ymax-(k+1))*xmax + j + 1);
+                
+    //             city = "";
+    //             for (auto & detector : detector_mapping)
+    //             {
+    //                 if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
+    //                 {
+    //                     city = detector.second.first.second;
+    //                     break;
+    //                 }
+    //             }
+
+    //             h1_traces_layer_ch[i][j][k] = new TH1F(Form("traces_%s_%i_%i_%i", city.Data(), i, j, k), city.Data(), 2000, 0, 20);
+    //             h1_traces_layer_ch[i][j][k]->GetXaxis()->SetTitle("Time [us]");
+    //             h1_traces_layer_ch[i][j][k]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
+    //             h1_traces_layer_ch[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
+    //             h1_traces_layer_ch[i][j][k]->SetStats(0);
+    //             h1_traces_layer_ch[i][j][k]->SetLineColor(kBlue+1);
+    //             h1_traces_layer_ch[i][j][k]->SetFillColor(kOrange-3);
+    //             h1_traces_layer_ch[i][j][k]->Draw();
+    //         }
+    //     }
+    //     c_traces_layer_ch[i]->cd(0);
+    //     dir_traces->Append(c_traces_layer_ch[i]);
+
+    // }
+
+
+    //::: Traces stats Layer 1 and 2
     dir_traces->cd();
-    c_traces_layer_ch.resize(layer_number);
-    h1_traces_layer_ch.resize(layer_number);
+    c_traces_layer_ch_stat.resize(layer_number);
+    h2_traces_layer_ch_stat.resize(layer_number);
 
     //::::::::::::Traces for layer 0
-    c_traces_layer_ch[0] = new TCanvas("c_traces_layer_ch0", "Tokyo layer", 650, 350);
-    h1_traces_layer_ch[0].resize(1);
-    h1_traces_layer_ch[0][0].resize(1);
-    h1_traces_layer_ch[0][0][0] = new TH1F("tokyo_traces_layer", "Tokyo", 2000, 0, 20); // microseconds
-    h1_traces_layer_ch[0][0][0]->GetXaxis()->SetTitle("Time [us]");
-    h1_traces_layer_ch[0][0][0]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
-    h1_traces_layer_ch[0][0][0]->SetMaximum(lisa_config->AmplitudeMax);
-    h1_traces_layer_ch[0][0][0]->SetStats(0);
-    h1_traces_layer_ch[0][0][0]->SetLineColor(kBlue+1);
-    h1_traces_layer_ch[0][0][0]->SetFillColor(kOrange-3);
-    h1_traces_layer_ch[0][0][0]->Draw();
+    c_traces_layer_ch_stat[0] = new TCanvas("c_traces_layer_ch0", "Tokyo layer", 650, 350);
+    h2_traces_layer_ch_stat[0].resize(1);
+    h2_traces_layer_ch_stat[0][0].resize(1);
+    h2_traces_layer_ch_stat[0][0][0] = new TH2F("tokyo_traces_layer", "Tokyo", 2000, 0, 20,5000,3000,20000
+    
+    ); // microseconds
+    h2_traces_layer_ch_stat[0][0][0]->GetXaxis()->SetTitle("Time [us]");
+    h2_traces_layer_ch_stat[0][0][0]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
+    h2_traces_layer_ch_stat[0][0][0]->SetMaximum(lisa_config->AmplitudeMax);
+    h2_traces_layer_ch_stat[0][0][0]->SetStats(0);
+    h2_traces_layer_ch_stat[0][0][0]->SetLineColor(kBlue+1);
+    h2_traces_layer_ch_stat[0][0][0]->SetFillColor(kOrange-3);
+    h2_traces_layer_ch_stat[0][0][0]->Draw();
     dir_traces->Append(c_traces_layer_ch[0]);
-
-    //:::::::::::Traces canvas for layer 1 and 2   
-    for (int i = 1; i < layer_number; i++) //create a canvas for each layer
+    
+    //Traces stat for layer 1 and 2
+    for (int i = 1; i < layer_number; i++) 
     {
-        c_traces_layer_ch[i] = new TCanvas(Form("c_traces_layer_%d",i),Form("c_traces_layer_%d",i), 650,350);
-        c_traces_layer_ch[i]->SetTitle(Form("Layer %d - Traces",i));
-        c_traces_layer_ch[i]->Divide(xmax,ymax); 
-        h1_traces_layer_ch[i].resize(xmax);
+        c_traces_layer_ch_stat[i] = new TCanvas(Form("c_traces_layer_%d_stat",i),Form("c_traces_layer_%d_stat",i), 650,350);
+        c_traces_layer_ch_stat[i]->SetTitle(Form("Layer %d - Traces",i));
+        c_traces_layer_ch_stat[i]->Divide(xmax,ymax); 
+        h2_traces_layer_ch_stat[i].resize(xmax);
         for (int j = 0; j < xmax; j++)
         {
-            h1_traces_layer_ch[i][j].resize(ymax);
+            h2_traces_layer_ch_stat[i][j].resize(ymax);
             for (int k = 0; k < ymax; k++)
             {   
                 // general formula to place correctly on canvas for x,y coordinates
-                c_traces_layer_ch[i]->cd((ymax-(k+1))*xmax + j + 1);
+                c_traces_layer_ch_stat[i]->cd((ymax-(k+1))*xmax + j + 1);
                 
                 city = "";
                 for (auto & detector : detector_mapping)
@@ -431,18 +495,20 @@ InitStatus LisaNearlineSpectra::Init()
                     }
                 }
 
-                h1_traces_layer_ch[i][j][k] = new TH1F(Form("traces_%s_%i_%i_%i", city.Data(), i, j, k), city.Data(), 2000, 0, 20);
-                h1_traces_layer_ch[i][j][k]->GetXaxis()->SetTitle("Time [us]");
-                h1_traces_layer_ch[i][j][k]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
-                h1_traces_layer_ch[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
-                h1_traces_layer_ch[i][j][k]->SetStats(0);
-                h1_traces_layer_ch[i][j][k]->SetLineColor(kBlue+1);
-                h1_traces_layer_ch[i][j][k]->SetFillColor(kOrange-3);
-                h1_traces_layer_ch[i][j][k]->Draw();
+                h2_traces_layer_ch_stat[i][j][k] = new TH2F(Form("traces_%i_%i_%i_stat", i, j, k), Form("%i%i%i",i,j,k), 2000, 0, 20,5000,3000,20000);
+                h2_traces_layer_ch_stat[i][j][k]->GetXaxis()->SetTitle("Time [us]");
+                h2_traces_layer_ch_stat[i][j][k]->SetMinimum(lisa_config->AmplitudeMin);
+                h2_traces_layer_ch_stat[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
+                h2_traces_layer_ch_stat[i][j][k]->SetLineColor(kBlue+1);
+                h2_traces_layer_ch_stat[i][j][k]->SetFillColor(kOrange-3);
+                h2_traces_layer_ch_stat[i][j][k]->Draw("colz");
+                h2_traces_layer_ch_stat[i][j][k]->SetOption("colz");
+
+                gPad->SetLogz();
             }
         }
-        c_traces_layer_ch[i]->cd(0);
-        dir_traces->Append(c_traces_layer_ch[i]);
+        c_traces_layer_ch_stat[i]->cd(0);
+        dir_traces->Append(c_traces_layer_ch_stat[i]);
 
     }
 
@@ -546,13 +612,27 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         }
         
         //::::::::: Fill Traces ::::::::::::::
-        h1_traces_layer_ch[layer][xpos][ypos]->Reset();
+        // h1_traces_layer_ch[layer][xpos][ypos]->Reset();
+        // for (int i = 0; i < trace.size(); i++)
+        // {
+        //     h1_traces_layer_ch[layer][xpos][ypos]->SetBinContent(i, trace[i]);
+        //     //c4LOG(info, "layer: " << layer << " x max: " << xmax << " ymax: " << ymax);
+
+        // }    
+    
+        // :::: Fill traces stats :::
         for (int i = 0; i < trace.size(); i++)
         {
+            if(layer==1)
+            {
+                //c4LOG(info, "EXEC Layer number" << layer_number << " layer id :" << layer);
+            }
+            
             h1_traces_layer_ch[layer][xpos][ypos]->SetBinContent(i, trace[i]);
             //c4LOG(info, "layer: " << layer << " x max: " << xmax << " ymax: " << ymax);
+	        h2_traces_layer_ch_stat[layer][xpos][ypos]->Fill(i*0.01,trace[i]);
 
-        }    
+        }
     
     }
     //c4LOG(info, "::::::::::END LOOP::::::::::::" << " Layer number :" << layer_number);

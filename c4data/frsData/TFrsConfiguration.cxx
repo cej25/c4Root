@@ -47,7 +47,8 @@ TFrsConfiguration::TFrsConfiguration()
 {
     ReadScalerNames();
     ReadTravMusDriftFile();
-    //ReadAoQDriftFile();
+    ReadAoQDriftFile();
+    ReadZ1DriftFile();
     // for now:
     sci_names[0] = "sci21";
     sci_names[1] = "sci22";
@@ -164,13 +165,14 @@ void TFrsConfiguration::ReadAoQDriftFile()
         double drift_val;
         double drift_err;
         std::pair<double, double> drift_coeff;
-        drift_coeff = std::make_pair(drift_val,drift_err);
 
         iss >> frs_wr >> drift_val >> drift_err;
 
+        drift_coeff = std::make_pair(drift_val,drift_err);
         aoq_drift_coeff.insert(std::make_pair(frs_wr, drift_coeff));
 
-        std::cout << " wr:  "<< frs_wr <<  " AoQ drift coeff: " << drift_val << "\n";
+
+        //std::cout << " wr:  "<< frs_wr <<  " AoQ drift coeff: " << drift_val << "\n";
 
     }
     
@@ -197,17 +199,17 @@ void TFrsConfiguration::ReadZ1DriftFile()
         double drift_val;
         double drift_err;
         std::pair<double, double> drift_coeff;
-        drift_coeff = std::make_pair(drift_val,drift_err);
 
         iss >> frs_wr >> drift_val >> drift_err;
-
+        
+        drift_coeff = std::make_pair(drift_val,drift_err);
         z1_drift_coeff.insert(std::make_pair(frs_wr, drift_coeff));
 
-        std::cout << " wr:  "<< frs_wr << " Z1 drift coeff: " << drift_val << "\n";
+        //std::cout << " wr:  "<< frs_wr << " Z1 drift coeff: " << drift_val << "\n";
 
     }
     
-    z1_drift_coeff_file = 1;
+    z1_drift_loaded = 1;
     Z1_drift_coeff_file.close();
     
     c4LOG(info, "Z1 Drift File: " + z1_drift_coeff_file);

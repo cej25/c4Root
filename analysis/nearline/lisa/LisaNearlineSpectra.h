@@ -133,6 +133,7 @@ class LisaNearlineSpectra : public FairTask
         TH2F* h2_sum_energy_layer1_vs_layer2_GM;
         TH2F* h2_energy_layer1_vs_layer2_GM;
         std::vector<std::vector<std::vector<TH1F*>>> h1_traces_layer_ch;
+        std::vector<std::vector<std::vector<TH2F*>>> h2_traces_layer_ch_stat;
 
         // ::: Drifts
         std::vector<TH2*> h2_energy_layer_vs_time;
