@@ -61,7 +61,7 @@ void pareeksha_histos(int fileNumber)
     TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/fragments_EG_test/"; //test output
 
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/fragments_noGate/";
-    TString outputFilename = Form(outputpath + "test_run_%04d_histos.root", fileNumber);
+    TString outputFilename = Form(outputpath + "run_%04d_histos.root", fileNumber);
 
 
     FairRunAna* run = new FairRunAna();

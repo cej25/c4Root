@@ -77,6 +77,7 @@ class LisaFrsCorrelations : public FairTask
 
         TDirectory* dir_corr;
         TDirectory* dir_lisa_frs;
+        TDirectory* dir_corr_driftcorr;
 
         //common var
         int layer_number;
@@ -93,6 +94,7 @@ class LisaFrsCorrelations : public FairTask
         Float_t energy_MUSIC_1;
         Float_t energy_MUSIC_2;
         Float_t energy_travMUSIC;
+        Float_t energy_travMUSIC_driftcorr;
         int xmax;
         int ymax;
         TString city = "";
@@ -104,6 +106,7 @@ class LisaFrsCorrelations : public FairTask
         TCanvas* c_MUSIC_1_layer_GM;
         TCanvas* c_MUSIC_2_layer_GM;
         TCanvas* c_travMUSIC_layer_GM;
+        TCanvas* c_travMUSIC_driftcorr_layer_GM;
         TCanvas* c_xy_pos_layer1;
         TCanvas* c_xy_pos_layer2;
         std::vector<std::vector<TCanvas*>> c_energy_layer_ch_GM_gated;
@@ -116,6 +119,7 @@ class LisaFrsCorrelations : public FairTask
         std::vector<TH2F*> h2_MUSIC_1_layer_GM;
         std::vector<TH2F*> h2_MUSIC_2_layer_GM;
         std::vector<TH2F*> h2_travMUSIC_layer_GM;
+        std::vector<TH2F*> h2_travMUSIC_driftcorr_layer_GM;
         std::vector<TH2F*> h2_xy_pos_layer1;
         std::vector<TH2F*> h2_xy_pos_layer2;
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch_GM;
@@ -124,6 +128,12 @@ class LisaFrsCorrelations : public FairTask
         
         std::vector<std::vector<TH1F*>> h1_energy_layer_GM_PID_TM;
         std::vector<std::vector<TH1F*>> h1_energy_layer2_GM_PID_TM_LISA1;
+
+        //Histo for drift corrected FRS
+        std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_ch_GM_PID_driftcorr;
+        std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_ch_GM_PID_TM_driftcorr;
+        std::vector<std::vector<TH1F*>> h1_energy_layer_GM_PID_TM_driftcorr;
+        std::vector<std::vector<TH1F*>> h1_energy_layer2_GM_PID_TM_driftcorr_LISA1;
 
     public:
         ClassDef(LisaFrsCorrelations, 1)

@@ -1438,6 +1438,7 @@ void FrsCal2Hit::Exec(Option_t* option)
         int bin = 20;                       //!!!! read from file
 
         std::map<int,std::pair<double,double>> travmus_drift = frs_config->TravMusDriftCoefficients();
+        //std::cout << "::::  TM :::: " << "\n";
         for (const auto& entry : travmus_drift)
         {
             // std::cout << "Key (travmus_wr_time): " << entry.first 
@@ -1480,34 +1481,49 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
 
     }
-
+    
     if (frs_config->AoQDriftLoaded())
     {
         id_AoQ_driftcorr = 0;
         double drift_aoq = 0.0;
         double drift_aoq_error = 0.0;
-        int nentry = 0;
+        int nentry_aoq = 0;
         int aoq_frs_wr_time_a = 0; 
         int aoq_frs_wr_time_b = 0;
         double aoq_reference_value = 2.39;   //!!!! read from exp configuration - expected value
-        int bin = 20;                        //!!!! read from drift file
+        int bin = 20;  
+        
+        //std::cout << "::::  AoQ :::: " << "\n";
+        //std::cout << "::::  AoQ " << id_AoQ <<"\n";
+
 
         std::map<int,std::pair<double,double>> aoq_drift = frs_config->AoQDriftCoefficients();
         for (const auto& entry : aoq_drift)
         {            
+            // std::cout << " AoQ Key (travmus_wr_time): " << entry.first 
+            //   << ", AoQ Value (coeffs): (" << entry.second.first 
+            //   << ", " << entry.second.second << ")\n";
+            
             int aoq_frs_wr_time = entry.first;
             std::pair<double,double> aoq_coeffs = entry.second;
             drift_aoq = aoq_coeffs.first;
             drift_aoq_error = aoq_coeffs.second;
 
             double aoq_shift = drift_aoq - aoq_reference_value;
+            //std::cout << "::::  AoQ value  " << id_AoQ <<"\n";
             
             if ((FRS_TM_time_mins >= (aoq_frs_wr_time - bin/2)) && (FRS_TM_time_mins < (aoq_frs_wr_time + bin/2)))
             {
                 id_AoQ_driftcorr = id_AoQ - aoq_shift;
+                // std::cout  << " reference :" << aoq_reference_value
+                //     << " drift (1 coeff) :" << drift_aoq 
+                //     << " aoq shift :" << aoq_shift 
+                //     << " aoq original : " << id_AoQ
+                //     << " aoq corrected : " << id_AoQ_driftcorr << "\n";
+            
             }
             
-            nentry ++ ;
+            nentry_aoq ++ ;
         }
 
     }
@@ -1517,28 +1533,42 @@ void FrsCal2Hit::Exec(Option_t* option)
         id_z_driftcorr = 0;
         double drift_z1 = 0.0;
         double drift_z1_error = 0.0;
-        int nentry = 0;
+        int nentry_z1 = 0;
         int z1_frs_wr_time_a = 0; 
         int z1_frs_wr_time_b = 0;
         double z1_reference_value = 41;     //!!!! read from exp configuration - expected value
         int bin = 20;                       //!!!! read from drift file
 
+        //std::cout << "::::  Z1 :::: " << "\n";
+        //std::cout << "::::  Z1 " << id_z <<"\n";
+
         std::map<int,std::pair<double,double>> z1_drift = frs_config->Z1DriftCoefficients();
         for (const auto& entry : z1_drift)
         {            
+            // std::cout << "Z1 Key (travmus_wr_time): " << entry.first 
+            // << ", Z1 Value (coeffs): (" << entry.second.first 
+            // << ", " << entry.second.second << ")\n";
+            
             int z1_frs_wr_time = entry.first;
             std::pair<double,double> z1_coeffs = entry.second;
             drift_z1 = z1_coeffs.first;
             drift_z1_error = z1_coeffs.second;
 
             double z1_shift = drift_z1 - z1_reference_value;
-            
+            //std::cout << "::::  Z1 " << id_z <<"\n";
+
             if ((FRS_TM_time_mins >= (z1_frs_wr_time - bin/2)) && (FRS_TM_time_mins < (z1_frs_wr_time + bin/2)))
             {
+                //std::cout << "::::  in loop  Z1 " << id_z <<"\n";
                 id_z_driftcorr = id_z - z1_shift;
+                // std::cout  << " reference :" << z1_reference_value
+                //     << " drift (1 coeff) :" << drift_z1 
+                //     << " shift :" << z1_shift 
+                //     << " Z1 original : " << id_z
+                //     << " Z1 corr : " << id_z_driftcorr << "\n";
             }
             
-            nentry ++ ;
+            nentry_z1 ++ ;
         }
 
     }

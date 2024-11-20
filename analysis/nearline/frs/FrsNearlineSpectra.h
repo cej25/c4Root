@@ -164,6 +164,7 @@ class FrsNearlineSpectra : public FairTask
         std::vector<TH2*> h2_x2_vs_AoQ_dEdegZgate;
         std::vector<TH2*> h2_x4_vs_AoQ_dEdegZgate;
         std::vector<TH2*> h2_Z_vs_AoQ_Zsame_dEdegZgate; // 
+        
 
         // TAC 1D // :: Should add gated a2/a4 here if they're really desired
         TH1* h1_tpat;
@@ -259,6 +260,8 @@ class FrsNearlineSpectra : public FairTask
         std::vector<TH2*> h2_Z_vs_AoQ_Zsame_dEdegZgate_mhtdc; // 
         // not a PID gate but an energy gate on trav Z
         TH2* h2_Z_vs_AoQ_mhtdc_trav_gate;
+        TH2* h2_Z_vs_AoQ_tac_trav_gate_driftcorr;
+        TH2* h2_Z_vs_AoQ_driftcorr_trav_gate;
 
 
         // MHTDC 1D
