@@ -458,9 +458,7 @@ InitStatus LisaNearlineSpectra::Init()
     c_traces_layer_ch_stat[0] = new TCanvas("c_traces_layer_ch0", "Tokyo layer", 650, 350);
     h2_traces_layer_ch_stat[0].resize(1);
     h2_traces_layer_ch_stat[0][0].resize(1);
-    h2_traces_layer_ch_stat[0][0][0] = new TH2F("tokyo_traces_layer", "Tokyo", 2000, 0, 20,5000,3000,20000
-    
-    ); // microseconds
+    h2_traces_layer_ch_stat[0][0][0] = new TH2F("tokyo_traces_layer", "Tokyo", 2000, 0, 20,5000,3000,20000); // microseconds
     h2_traces_layer_ch_stat[0][0][0]->GetXaxis()->SetTitle("Time [us]");
     h2_traces_layer_ch_stat[0][0][0]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
     h2_traces_layer_ch_stat[0][0][0]->SetMaximum(lisa_config->AmplitudeMax);
@@ -468,7 +466,7 @@ InitStatus LisaNearlineSpectra::Init()
     h2_traces_layer_ch_stat[0][0][0]->SetLineColor(kBlue+1);
     h2_traces_layer_ch_stat[0][0][0]->SetFillColor(kOrange-3);
     h2_traces_layer_ch_stat[0][0][0]->Draw();
-    dir_traces->Append(c_traces_layer_ch[0]);
+    dir_traces->Append(c_traces_layer_ch_stat[0]);
     
     //Traces stat for layer 1 and 2
     for (int i = 1; i < layer_number; i++) 
@@ -495,7 +493,7 @@ InitStatus LisaNearlineSpectra::Init()
                     }
                 }
 
-                h2_traces_layer_ch_stat[i][j][k] = new TH2F(Form("traces_%i_%i_%i_stat", i, j, k), Form("%i%i%i",i,j,k), 2000, 0, 20,5000,3000,20000);
+                h2_traces_layer_ch_stat[i][j][k] = new TH2F(Form("traces_%i_%i_%i_stat", i, j, k), Form("%i%i%i",i,j,k), 250, 0, 20,500,3000,15000);
                 h2_traces_layer_ch_stat[i][j][k]->GetXaxis()->SetTitle("Time [us]");
                 h2_traces_layer_ch_stat[i][j][k]->SetMinimum(lisa_config->AmplitudeMin);
                 h2_traces_layer_ch_stat[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
@@ -628,8 +626,6 @@ void LisaNearlineSpectra::Exec(Option_t* option)
                 //c4LOG(info, "EXEC Layer number" << layer_number << " layer id :" << layer);
             }
             
-            h1_traces_layer_ch[layer][xpos][ypos]->SetBinContent(i, trace[i]);
-            //c4LOG(info, "layer: " << layer << " x max: " << xmax << " ymax: " << ymax);
 	        h2_traces_layer_ch_stat[layer][xpos][ypos]->Fill(i*0.01,trace[i]);
 
         }

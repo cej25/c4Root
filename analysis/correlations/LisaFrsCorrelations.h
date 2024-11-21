@@ -132,6 +132,7 @@ class LisaFrsCorrelations : public FairTask
         //Histo for drift corrected FRS
         std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_ch_GM_PID_driftcorr;
         std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_ch_GM_PID_TM_driftcorr;
+        std::vector<std::vector<TH1F*>> h1_energy_layer_GM_PID_driftcorr;
         std::vector<std::vector<TH1F*>> h1_energy_layer_GM_PID_TM_driftcorr;
         std::vector<std::vector<TH1F*>> h1_energy_layer2_GM_PID_TM_driftcorr_LISA1;
 

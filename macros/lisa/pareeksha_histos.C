@@ -97,21 +97,25 @@ void pareeksha_histos(int fileNumber)
     //:::: G A T E S - Initialise 
 
     std::vector<FrsGate*> fg;
-    FrsGate* cut_0 = new FrsGate("0", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/tac_cut_0.root"); //4,5,6,7 second set of trees from 139 to 195
-    FrsGate* cut_1 = new FrsGate("1", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/tac_cut_1.root"); //4,5,6,7 second set of trees from 139 to 195
-    FrsGate* cut_2 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/tac_cut_2.root"); //4,5,6,7 second set of trees from 139 to 195
-    //FrsGate* cut_3 = new FrsGate("3", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/tac_cut_3.root"); //4,5,6,7 second set of trees from 139 to 195
-    
+    FrsGate* cut_0 = new FrsGate("cut", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/all_z_1.root"); 
+    FrsGate* cut_1 = new FrsGate("0", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/1p1n.root"); 
+    FrsGate* cut_2 = new FrsGate("1", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/1p2n.root"); 
+    FrsGate* cut_3 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/all_z_2.root"); 
+    FrsGate* cut_4 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/2p3n.root"); 
+    FrsGate* cut_5 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/2p4n.root"); 
 
+    
     fg.emplace_back(cut_0);
     fg.emplace_back(cut_1);
     fg.emplace_back(cut_2);
-    //fg.emplace_back(cut_3);
+    fg.emplace_back(cut_3);
+    fg.emplace_back(cut_4);
+    fg.emplace_back(cut_5);
 
     //:::: Gates for histos ::::::::
-    TFrsConfiguration::Set_dE_travMusic_gate(1960,2060);
-    TLisaConfiguration::SetLISAGate(1012,1042); //Gate on LISA 1 for histo of LISA 2 energy (mean +- 3sigma)
-    //98Nb -> 1090 (7)
+    TFrsConfiguration::Set_dE_travMusic_gate(1940,2000);
+    TLisaConfiguration::SetLISAGate(1070,11010); //Gate on LISA 1 for histo of LISA 2 energy (mean +- 3sigma)
+    //98Nb -> 1090 (6.6)
     //96Zr -> 1044 (8)
     //95Zr -> 1027 (5)
     //after98Nb -> 1171 (9)
@@ -191,11 +195,11 @@ void pareeksha_histos(int fileNumber)
         
     }
 
-    // if(LISA_ON && FRS_ON)
-    // {
-    //     LisaFrsCorrelations* LISA_FRS_corr = new LisaFrsCorrelations(fg);
-    //     run->AddTask(LISA_FRS_corr);
-    // }
+    if(LISA_ON && FRS_ON)
+    {
+        LisaFrsCorrelations* LISA_FRS_corr = new LisaFrsCorrelations(fg);
+        run->AddTask(LISA_FRS_corr);
+    }
 
     TString c = "Lisa";
     TString d = "Frs";

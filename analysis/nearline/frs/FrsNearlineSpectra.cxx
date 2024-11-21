@@ -261,7 +261,7 @@ InitStatus FrsNearlineSpectra::Init()
         h1_Z2 = MakeTH1(dir_tac_1d, "D", "h1_Z2", "Z (MUSIC 2)", 500, 10, 100, "Z (MUSIC 2)", kPink-3, kBlue+2);
         h1_Z_travmus = MakeTH1(dir_tac_1d, "D", "h1_Z_travmus", "Z (Travel MUSIC)", 750, 10, 100, "Z (Travel MUSIC)", kPink-3, kBlue+2);
         h1_AoQ = MakeTH1(dir_tac_1d, "D", "h1_AoQ", "A/Q", 500, 1.0, 4.0, "A/Q", kPink-3, kBlue+2); 
-        h1_AoQ_driftcorr = MakeTH1(dir_tac_1d, "D", "h1_AoQ_driftcorr", "A/Q DriftCorr", 500, 1.0, 4.0, "A/Q DriftCorr", kPink-3, kBlue+2); 
+        h1_AoQ_driftcorr = MakeTH1(dir_tac_1d, "D", "h1_AoQ_driftcorr", "A/Q DriftCorr", 500, 1, 4.0, "A/Q DriftCorr", kPink-3, kBlue+2); 
         h1_AoQ_corr = MakeTH1(dir_tac_1d, "D", "h1_AoQ_corr", "A/Q (corr)", 500, 1.0, 4.0, "A/Q", kPink-3, kBlue+2);
         h1_x2 = MakeTH1(dir_tac_1d, "D", "h1_x2", "S2 x-position", 200, -100, 100, "S2 x-position", kYellow-7, kBlack);
         h1_x4 = MakeTH1(dir_tac_1d, "D", "h1_x4", "S4 x-position", 200, -100, 100, "S4 x-position",kYellow-7, kBlack);
@@ -518,7 +518,7 @@ InitStatus FrsNearlineSpectra::Init()
     //::LISA
     h2_Z_vs_AoQ_mhtdc_trav_gate = MakeTH2(dir_travmus, "D", "h2_Z_vs_AoQ_mhtdc_trav_gate", "Z1 vs. A/Q (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
     h2_Z_vs_AoQ_tac_trav_gate_driftcorr = MakeTH2(dir_travmus, "D", "h2_Z_vs_AoQ_tac_trav_gate_driftcorr", "Z1 vs. A/Q (TAC) DriftCorr", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
-    h2_Z_vs_AoQ_driftcorr_trav_gate = MakeTH2(dir_travmus, "D", "h2_Z_vs_AoQ_driftcorr_trav_gate", "Z1 vs. A/Q (DriftCorr)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
+    h2_Z_vs_AoQ_driftcorr_trav_gate = MakeTH2(dir_travmus, "D", "h2_Z_vs_AoQ_tac_driftcorr_trav_gate", "Z1 vs. A/Q (DriftCorr)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
 
     return kSUCCESS;
 
