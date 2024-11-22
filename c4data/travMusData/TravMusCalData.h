@@ -1,12 +1,12 @@
-#ifndef FrsTravMusCalData_H
-#define FrsTravMusCalData_H
+#ifndef TravMusCalData_H
+#define TravMusCalData_H
 
 #include "TObject.h"
 
-class FrsTravMusCalItem : public TObject
+class TravMusCalItem : public TObject
 {
     public:
-        FrsTravMusCalItem();
+        TravMusCalItem();
 
         void SetAll(uint64_t wr, uint16_t* e, uint16_t* t);
         void Reset();
@@ -16,7 +16,7 @@ class FrsTravMusCalItem : public TObject
         uint16_t Get_music_energy(int index) const;
         uint16_t Get_music_time(int index) const;
 
-        ClassDefNV(FrsTravMusCalItem, 2);
+        ClassDefNV(TravMusCalItem, 2);
     
     public:
         uint64_t wr_t;
@@ -26,17 +26,17 @@ class FrsTravMusCalItem : public TObject
         
 };
 
-inline uint64_t FrsTravMusCalItem::Get_wr_t() const
+inline uint64_t TravMusCalItem::Get_wr_t() const
 {
     return wr_t;
 }
 
-inline uint16_t FrsTravMusCalItem::Get_music_energy(int index) const
+inline uint16_t TravMusCalItem::Get_music_energy(int index) const
 {
     return energy[index];
 }
 
-inline uint16_t FrsTravMusCalItem::Get_music_time(int index) const
+inline uint16_t TravMusCalItem::Get_music_time(int index) const
 {
     return time[index];
 }

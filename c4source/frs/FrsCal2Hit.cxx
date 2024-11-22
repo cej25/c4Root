@@ -114,7 +114,7 @@ InitStatus FrsCal2Hit::Init()
     c4LOG_IF(fatal, !userMusicArray, "Branch FrsUserCalMusicData not found!");
     tpatArray = mgr->InitObjectAs<decltype(tpatArray)>("FrsTpatData");
     c4LOG_IF(fatal, !tpatArray, "Branch FrsTpatData not found!");
-    travMusicArray = mgr->InitObjectAs<decltype(travMusicArray)>("FrsTravMusCalData");
+    travMusicArray = mgr->InitObjectAs<decltype(travMusicArray)>("TravMusCalData");
     // travMusic optional
 
     mgr->RegisterAny("FrsHitData", hitArray, !fOnline);

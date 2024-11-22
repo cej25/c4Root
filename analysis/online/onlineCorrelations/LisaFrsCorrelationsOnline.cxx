@@ -1,11 +1,10 @@
-#include "FairRootManager.h"
 #include "FairRunAna.h"
 #include "FairRunOnline.h"
 #include "FairTask.h"
 
 #include "LisaFrsCorrelationsOnline.h"
 #include "FrsHitData.h"
-#include "FrsTravMusCalData.h"
+#include "TravMusCalData.h"
 #include "LisaCalData.h"
 #include "TLisaConfiguration.h" // not here
 #include "c4Logger.h"
@@ -57,8 +56,8 @@ InitStatus LisaFrsCorrelationsOnline::Init()
     c4LOG_IF(fatal, !lisaCalArray, "Branch LisaCalData not found!");
     frsHitArray = mgr->InitObjectAs<decltype(frsHitArray)>("FrsHitData");
     c4LOG_IF(fatal, !frsHitArray, "Branch FrsHitData not found!");
-    travMusicArray = mgr->InitObjectAs<decltype(travMusicArray)>("FrsTravMusCalData");
-    c4LOG_IF(fatal, !travMusicArray, "Branch FrsTravMusCalData not found!");
+    travMusicArray = mgr->InitObjectAs<decltype(travMusicArray)>("TravMusCalData");
+    c4LOG_IF(fatal, !travMusicArray, "Branch TravMusCalData not found!");
 
     layer_number = lisa_config->NLayers();
 

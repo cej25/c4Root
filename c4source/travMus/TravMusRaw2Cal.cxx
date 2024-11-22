@@ -7,44 +7,44 @@
 #include "FairRuntimeDb.h"
 
 // c4
-#include "FrsTravMusRaw2Cal.h"
+#include "TravMusRaw2Cal.h"
 #include "c4Logger.h"
 
 #include <vector>
 #include <iostream>
 
-FrsTravMusRaw2Cal::FrsTravMusRaw2Cal()
+TravMusRaw2Cal::TravMusRaw2Cal()
     :   FairTask()
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
     ,   adcArray(nullptr)
     ,   tdcArray(nullptr)
-    ,   calArray(new std::vector<FrsTravMusCalItem>)
+    ,   calArray(new std::vector<TravMusCalItem>)
 {
 }
 
-FrsTravMusRaw2Cal::FrsTravMusRaw2Cal(const TString& name, Int_t verbose)
+TravMusRaw2Cal::TravMusRaw2Cal(const TString& name, Int_t verbose)
     :   FairTask(name, verbose)
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
     ,   adcArray(nullptr)
     ,   tdcArray(nullptr)
-    ,   calArray(new std::vector<FrsTravMusCalItem>)
+    ,   calArray(new std::vector<TravMusCalItem>)
 {
 
 }
 
-FrsTravMusRaw2Cal::~FrsTravMusRaw2Cal()
+TravMusRaw2Cal::~TravMusRaw2Cal()
 {
-    c4LOG(info, "Deleting FrsTravMusRaw2Cal task");
+    c4LOG(info, "Deleting TravMusRaw2Cal task");
     delete adcArray;
     delete tdcArray;
     delete calArray;
 }
 
-InitStatus FrsTravMusRaw2Cal::Init()
+InitStatus TravMusRaw2Cal::Init()
 {
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
@@ -52,12 +52,12 @@ InitStatus FrsTravMusRaw2Cal::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    adcArray = mgr->InitObjectAs<decltype(adcArray)>("FrsTravMusAdcData");
-    c4LOG_IF(fatal, !adcArray, "Branch FrsTravMusAdcData not found!");
-    tdcArray = mgr->InitObjectAs<decltype(tdcArray)>("FrsTravMusTdcData");
-    c4LOG_IF(fatal, !tdcArray, "Branch FrsTravMusTdcData not found!");
+    adcArray = mgr->InitObjectAs<decltype(adcArray)>("TravMusAdcData");
+    c4LOG_IF(fatal, !adcArray, "Branch TravMusAdcData not found!");
+    tdcArray = mgr->InitObjectAs<decltype(tdcArray)>("TravMusTdcData");
+    c4LOG_IF(fatal, !tdcArray, "Branch TravMusTdcData not found!");
 
-    mgr->RegisterAny("FrsTravMusCalData", calArray, !fOnline);
+    mgr->RegisterAny("TravMusCalData", calArray, !fOnline);
     calArray->clear();
 
     music_e = new uint16_t[8];
@@ -66,7 +66,7 @@ InitStatus FrsTravMusRaw2Cal::Init()
     return kSUCCESS;
 }
 
-void FrsTravMusRaw2Cal::Exec(Option_t* option)
+void TravMusRaw2Cal::Exec(Option_t* option)
 {
     calArray->clear();
 
@@ -96,25 +96,25 @@ void FrsTravMusRaw2Cal::Exec(Option_t* option)
 
 }
 
-void FrsTravMusRaw2Cal::ZeroArrays()
+void TravMusRaw2Cal::ZeroArrays()
 {
 
 }
 
-void FrsTravMusRaw2Cal::ClearVectors()
+void TravMusRaw2Cal::ClearVectors()
 {
 
 }
 
-void FrsTravMusRaw2Cal::FinishEvent()
+void TravMusRaw2Cal::FinishEvent()
 {   
     ZeroArrays();
     ClearVectors();
 };
 
-void FrsTravMusRaw2Cal::FinishTask()
+void TravMusRaw2Cal::FinishTask()
 {
     c4LOG(info, Form("Wrote %i events.",fNEvents));
 }
 
-ClassImp(FrsTravMusRaw2Cal)
+ClassImp(TravMusRaw2Cal)

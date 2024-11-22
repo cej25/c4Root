@@ -5,8 +5,7 @@
 #include "FairRunOnline.h"
 
 // c4
-#include "FrsTravMusSpectra.h"
-#include "FrsNearlineTravMusSpectra.h"
+#include "TravMusSpectra.h"
 #include "EventHeader.h"
 #include "c4Logger.h"
 
@@ -21,14 +20,19 @@
 #include "TMath.h"
 #include "TRandom.h"
 #include "TFile.h"
+#include "TFrsConfiguration.h"
 
 
-FrsNearlineTravMusSpectra::FrsNearlineTravMusSpectra() : FrsNearlineTravMusSpectra("FrsNearlineTravMusSpectra")
+TravMusSpectra::TravMusSpectra()
+    : FairTask()
+    , travMusicArray(nullptr)
+    , fNEvents(0)
+    , header(nullptr)
 {
     frs_config = TFrsConfiguration::GetInstance();
 }
 
-FrsNearlineTravMusSpectra::FrsNearlineTravMusSpectra(const TString& name, Int_t iVerbose)
+TravMusSpectra::TravMusSpectra(const TString& name, Int_t iVerbose)
     : FairTask(name, iVerbose)
     , travMusicArray(nullptr)
     , fNEvents(0)
@@ -37,38 +41,48 @@ FrsNearlineTravMusSpectra::FrsNearlineTravMusSpectra(const TString& name, Int_t 
     frs_config = TFrsConfiguration::GetInstance();
 }
 
-FrsNearlineTravMusSpectra::~FrsNearlineTravMusSpectra()
+TravMusSpectra::~TravMusSpectra()
 {
     c4LOG(info, "");
 }
 
-InitStatus FrsNearlineTravMusSpectra::Init()
+InitStatus TravMusSpectra::Init()
 {
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
+    FairRunOnline* run = FairRunOnline::Instance();
+    run->GetHttpServer()->Register("", this);
+
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    travMusicArray = mgr->InitObjectAs<decltype(travMusicArray)>("FrsTravMusCalData");
-    c4LOG_IF(fatal, !travMusicArray, "Branch FrsTravMusCalData not found!");
-    
-    //TDirectory::TContext ctx(nullptr);
+    travMusicArray = mgr->InitObjectAs<decltype(travMusicArray)>("TravMusCalData");
+    c4LOG_IF(fatal, !travMusicArray, "Branch TravMusCalData not found!");
 
-    FairRootManager::Instance()->GetOutFile()->cd();
-    dir_travmus = gDirectory->mkdir("Travel MUSIC");
-    //mgr->Register("Travel MUSIC", "Travel MUSIC", dir_travmus, false); // allow other tasks to find this
+    histograms = (TFolder*)mgr->GetObject("Histograms");
+    
+    TDirectory::TContext ctx(nullptr);
+
+    dir_travmus = (TDirectory*)mgr->GetObject("Travel MUSIC");
+    if (dir_travmus == nullptr) 
+    {
+        LOG(info) << "Creating Travel MUSIC Directory";
+        dir_travmus = new TDirectory("Travel MUSIC", "Travel MUSIC", "", 0);
+        mgr->Register("Travel MUSIC", "Travel MUSIC Directory", dir_travmus, false); // allow other tasks to find this
+        histograms->Add(dir_travmus);
+    }
     
     dir_raw_adc = dir_travmus->mkdir("Raw ADC");
+    
     dir_raw_adc->cd();
 
-    //:::::::::: Raw ADC ::::::::::::::::
     c_raw_adc = new TCanvas("c_raw_adc", "Travel MUSIC Raw ADC", 650, 350);
     c_raw_adc->Divide(4, 2);
     for (int i = 0; i < 8; i++)
     {
         c_raw_adc->cd(i+1);
-        h1_travmus_raw_adc[i] = new TH1I(Form("h1_travmus_raw_adc_anode_%i", i), Form("Raw ADC - Travel MUSIC Anode %i", i), 10500, 100, 12500);
+        h1_travmus_raw_adc[i] = new TH1I(Form("h1_travmus_raw_adc_anode_%i", i), Form("Raw ADC - Travel MUSIC Anode %i", i), 10500, 100, 60500);
         h1_travmus_raw_adc[i]->SetFillColor(kPink-3);
         h1_travmus_raw_adc[i]->Draw();
     }
@@ -77,14 +91,24 @@ InitStatus FrsNearlineTravMusSpectra::Init()
 
     
 
+
+    // Register command to reset histograms
+    run->GetHttpServer()->RegisterCommand("Reset_TravMus_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
+
+
     dir_travmus->cd();
 
     return kSUCCESS;
 
 }
 
+void TravMusSpectra::Reset_Histo()
+{
+    c4LOG(warn,"TravMus Spectra Reset (not yet)");
+}
 
-void FrsNearlineTravMusSpectra::Exec(Option_t* option)
+
+void TravMusSpectra::Exec(Option_t* option)
 {
 
     uint64_t wr_travMUSIC = 0;
@@ -104,19 +128,14 @@ void FrsNearlineTravMusSpectra::Exec(Option_t* option)
     fNEvents += 1;
 }
 
-void FrsNearlineTravMusSpectra::FinishEvent()
+void TravMusSpectra::FinishEvent()
 {
 
 }
 
-void FrsNearlineTravMusSpectra::FinishTask()
+void TravMusSpectra::FinishTask()
 {   
-
-    TDirectory* tmp = gDirectory;
-    FairRootManager::Instance()->GetOutFile()->cd();
-    dir_travmus->Write();
-    c4LOG(info, "Written travMUSIC analysis histograms to file.");
 
 }
 
-ClassImp(FrsNearlineTravMusSpectra)
+ClassImp(TravMusSpectra)

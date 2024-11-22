@@ -1,12 +1,12 @@
-#ifndef FrsTravMusData_H
-#define FrsTravMusData_H
+#ifndef TravMusData_H
+#define TravMusData_H
 
 #include "TObject.h"
 
-class FrsTravMusAdcItem : public TObject
+class TravMusAdcItem : public TObject
 {
     public:
-        FrsTravMusAdcItem();
+        TravMusAdcItem();
 
         void SetAll(uint64_t wr, uint8_t ch, uint16_t adc);
         void Reset();
@@ -15,7 +15,7 @@ class FrsTravMusAdcItem : public TObject
         uint16_t Get_adc_data() const;
         uint8_t Get_channel() const;
 
-        ClassDefNV(FrsTravMusAdcItem, 2);
+        ClassDefNV(TravMusAdcItem, 2);
     
     public:
         uint64_t wr_t;
@@ -23,10 +23,10 @@ class FrsTravMusAdcItem : public TObject
         uint8_t channel;
 };
 
-class FrsTravMusTdcItem : public TObject
+class TravMusTdcItem : public TObject
 {
     public:
-        FrsTravMusTdcItem();
+        TravMusTdcItem();
 
         void SetAll(uint8_t ch, uint16_t tdc);
         void Reset();
@@ -34,34 +34,34 @@ class FrsTravMusTdcItem : public TObject
         uint16_t Get_tdc_data() const;
         uint8_t Get_channel() const;
 
-        ClassDefNV(FrsTravMusTdcItem, 2);
+        ClassDefNV(TravMusTdcItem, 2);
     
     public:
         uint16_t tdc_data;
         uint8_t channel;
 };
 
-inline uint64_t FrsTravMusAdcItem::Get_wr_t() const
+inline uint64_t TravMusAdcItem::Get_wr_t() const
 {
     return wr_t;
 }
 
-inline uint16_t FrsTravMusAdcItem::Get_adc_data() const
+inline uint16_t TravMusAdcItem::Get_adc_data() const
 {
     return adc_data;
 }
 
-inline uint8_t FrsTravMusAdcItem::Get_channel() const
+inline uint8_t TravMusAdcItem::Get_channel() const
 {
     return channel;
 }
 
-inline uint16_t FrsTravMusTdcItem::Get_tdc_data() const
+inline uint16_t TravMusTdcItem::Get_tdc_data() const
 {
     return tdc_data;
 }
 
-inline uint8_t FrsTravMusTdcItem::Get_channel() const
+inline uint8_t TravMusTdcItem::Get_channel() const
 {
     return channel;
 }
