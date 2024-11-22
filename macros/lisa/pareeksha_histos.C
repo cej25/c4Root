@@ -58,7 +58,7 @@ void pareeksha_histos(int fileNumber)
     TString filename = Form(inputpath + "run_%04d_EG.root", fileNumber);  
     
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/fragments_EG_test/"; //test output
+    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/fragments_EG_101gate/"; //test output
 
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/fragments_noGate/";
     TString outputFilename = Form(outputpath + "run_%04d_histos.root", fileNumber);
@@ -114,7 +114,7 @@ void pareeksha_histos(int fileNumber)
 
     //:::: Gates for histos ::::::::
     TFrsConfiguration::Set_dE_travMusic_gate(1940,2000);
-    TLisaConfiguration::SetLISAGate(1070,11010); //Gate on LISA 1 for histo of LISA 2 energy (mean +- 3sigma)
+    TLisaConfiguration::SetLISAGate(1070,1110); //Gate on LISA 1 for histo of LISA 2 energy (mean +- 3sigma)
     //98Nb -> 1090 (6.6)
     //96Zr -> 1044 (8)
     //95Zr -> 1027 (5)
