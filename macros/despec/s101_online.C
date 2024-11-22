@@ -12,6 +12,7 @@
 #define BB7_ON 0
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
+// CEJ: not configured for s101 yet
 extern "C"
 {
     #include "../../config/s101/frs/setup_s181_010_2024_conv.C"
