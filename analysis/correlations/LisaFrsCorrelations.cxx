@@ -5,7 +5,7 @@
 
 #include "LisaFrsCorrelations.h"
 #include "FrsHitData.h"
-#include "FrsTravMusCalData.h"
+#include "TravMusCalData.h"
 #include "LisaCalData.h"
 #include "TLisaConfiguration.h" // not here
 #include "c4Logger.h"
@@ -60,8 +60,8 @@ InitStatus LisaFrsCorrelations::Init()
     multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
     c4LOG_IF(fatal, !multihitArray, "Branch FrsMultiHitData not found!");
 
-    travMusicArray = mgr->InitObjectAs<decltype(travMusicArray)>("FrsTravMusCalData");
-    c4LOG_IF(fatal, !travMusicArray, "Branch FrsTravMusCalData not found!");
+    travMusicArray = mgr->InitObjectAs<decltype(travMusicArray)>("TravMusCalData");
+    c4LOG_IF(fatal, !travMusicArray, "Branch TravMusCalData not found!");
 
     //c4LOG(info," start init ");
 

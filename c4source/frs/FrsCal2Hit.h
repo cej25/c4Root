@@ -11,7 +11,7 @@
 #include "FrsTPCCalData.h"
 #include "FrsUserCalData.h"
 #include "FrsTpatData.h"
-#include "FrsTravMusCalData.h"
+#include "TravMusCalData.h"
 #include "FrsHitData.h"
 #include <TRandom3.h>
 //#include "GainShift.h"
@@ -86,7 +86,7 @@ class FrsCal2Hit : public FairTask
         std::vector<FrsUserCalSciItem> const* userSciArray;
         std::vector<FrsUserCalMusicItem> const* userMusicArray;
         std::vector<FrsTpatItem> const* tpatArray;
-        std::vector<FrsTravMusCalItem> const* travMusicArray;
+        std::vector<TravMusCalItem> const* travMusicArray;
 
         std::vector<FrsHitItem>* hitArray;
         std::vector<FrsMultiHitItem>* multihitArray;

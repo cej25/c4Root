@@ -1,10 +1,10 @@
-#include "FrsTravMusCalData.h"
+#include "TravMusCalData.h"
 
-FrsTravMusCalItem::FrsTravMusCalItem()
+TravMusCalItem::TravMusCalItem()
 {
 }
 
-void FrsTravMusCalItem::SetAll(uint64_t wr, uint16_t* e, uint16_t* t)
+void TravMusCalItem::SetAll(uint64_t wr, uint16_t* e, uint16_t* t)
 {
     wr_t = wr;
     for (int i = 0; i < 8; i++)
@@ -14,7 +14,7 @@ void FrsTravMusCalItem::SetAll(uint64_t wr, uint16_t* e, uint16_t* t)
     }
 }
 
-void FrsTravMusCalItem::Reset()
+void TravMusCalItem::Reset()
 {
     wr_t = 0;
     for (int i = 0; i < 8; i++)
@@ -24,4 +24,4 @@ void FrsTravMusCalItem::Reset()
     }
 }
 
-ClassImp(FrsTravMusCalItem)
+ClassImp(TravMusCalItem)
