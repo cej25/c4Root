@@ -188,7 +188,7 @@ InitStatus LisaFrsCorrelations::Init()
     for (int i = 0; i < layer_number; i++)
     {
         c_travMUSIC_layer_GM->cd(i+1);
-        h2_travMUSIC_layer_GM[i] = new TH2F(Form("travMUSIC_vs_E(LISA)_GM_Layer_%i",i), Form("travMUSIC vs E(LISA) GM Layer %i",i), lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM, 400,0,4096);
+        h2_travMUSIC_layer_GM[i] = new TH2F(Form("travMUSIC_vs_E(LISA)_GM_Layer_%i",i), Form("travMUSIC vs E(LISA) GM Layer %i",i), lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM, 1000,0,4096);
         h2_travMUSIC_layer_GM[i]->GetXaxis()->SetTitle(Form("E(LISA) [MeV] - Layer %i",i));
         h2_travMUSIC_layer_GM[i]->GetYaxis()->SetTitle("dE travMUSIC");
         //h2_travMUSIC_layer[i]->SetStats(0);
@@ -206,7 +206,7 @@ InitStatus LisaFrsCorrelations::Init()
     for (int i = 0; i < layer_number; i++)
     {
         c_travMUSIC_driftcorr_layer_GM->cd(i+1);
-        h2_travMUSIC_driftcorr_layer_GM[i] = new TH2F(Form("travMUSIC_driftcorr_vs_E(LISA)_GM_Layer_%i",i), Form("travMUSIC DriftCorr vs E(LISA) GM Layer %i",i), lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM, 400,0,4096);
+        h2_travMUSIC_driftcorr_layer_GM[i] = new TH2F(Form("travMUSIC_driftcorr_vs_E(LISA)_GM_Layer_%i",i), Form("travMUSIC DriftCorr vs E(LISA) GM Layer %i",i), lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM, 1000,0,4096);
         h2_travMUSIC_driftcorr_layer_GM[i]->GetXaxis()->SetTitle(Form("E(LISA) [MeV] - Layer %i",i));
         h2_travMUSIC_driftcorr_layer_GM[i]->GetYaxis()->SetTitle("dE travMUSIC driftcorr");
         //h2_travMUSIC_layer[i]->SetStats(0);
@@ -331,6 +331,9 @@ InitStatus LisaFrsCorrelations::Init()
 
         //Energy of Layer2 gated on PID,trav, and 98Nb in LISA1
         h1_energy_layer2_GM_PID_TM_driftcorr_LISA1.resize(FrsGates.size()); //drift corrected
+        
+        h1_energy_ch201_GM_PID_TM_driftcorr_ch101.resize(FrsGates.size()); //drift corrected
+
     
         for (int gate = 0; gate < FrsGates.size(); gate++)
         {
@@ -350,6 +353,11 @@ InitStatus LisaFrsCorrelations::Init()
 
             h1_energy_layer2_GM_PID_TM_driftcorr_LISA1[gate].resize(layer_number);
             h1_energy_layer2_GM_PID_TM_driftcorr_LISA1[gate][0] = new TH1F(Form("energy_0_GM_PID%i_TM_driftcorrLISA1",gate), "Tokyo T+PID+LISA", lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
+            
+            h1_energy_ch201_GM_PID_TM_driftcorr_ch101[gate].resize(layer_number);
+            h1_energy_ch201_GM_PID_TM_driftcorr_ch101[gate][0].resize(1);
+            h1_energy_ch201_GM_PID_TM_driftcorr_ch101[gate][0][0].resize(1);
+            h1_energy_ch201_GM_PID_TM_driftcorr_ch101[gate][0][0][0] = new TH1F(Form("energy_201_GM_PID%i_TM_driftcorrch101",gate), "Tokyo T+PID+c101", lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
             //c4LOG(info," after 000 ");
             //::: Energy spectra Gated with FRS for Layer 1 and 2
             for (int i = 1; i < layer_number; i++) 
@@ -357,6 +365,7 @@ InitStatus LisaFrsCorrelations::Init()
                 //:::For each layer
                 //Energy GM gated on PID&TravMus, for all detectors
                 h1_energy_ch_GM_PID_TM_driftcorr[gate][i].resize(xmax);
+                h1_energy_ch201_GM_PID_TM_driftcorr_ch101[gate][i].resize(xmax);
 
                 h1_energy_layer_GM_PID_driftcorr[gate][i] = new TH1F(Form("energy_layer_%i_GM_PID%i_driftcorr", i, gate), Form("Energy Layer %i gated on PID DriftCorr",i), lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);             
                 h1_energy_layer_GM_PID_driftcorr[gate][i]->GetXaxis()->SetTitle(Form("E(LISA) Layer %i [MeV]",i));
@@ -379,6 +388,7 @@ InitStatus LisaFrsCorrelations::Init()
                 for (int j = 0; j < xmax; j++)
                 {
                     h1_energy_ch_GM_PID_TM_driftcorr[gate][i][j].resize(ymax);
+                    h1_energy_ch201_GM_PID_TM_driftcorr_ch101[gate][i][j].resize(ymax);
 
                     for (int k = 0; k < ymax; k++)
                     {                           
@@ -395,7 +405,15 @@ InitStatus LisaFrsCorrelations::Init()
                         h1_energy_ch_GM_PID_TM_driftcorr[gate][i][j][k] = new TH1F(Form("energy_%i_%i_%i_GM_PID%i_TM", i, j, k, gate), Form("%i%i%i",i,j,k), lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
                         h1_energy_ch_GM_PID_TM_driftcorr[gate][i][j][k]->GetXaxis()->SetTitle("E(LISA) [MeV]");
                         h1_energy_ch_GM_PID_TM_driftcorr[gate][i][j][k]->SetLineColor(kBlack);
-                        h1_energy_ch_GM_PID_TM_driftcorr[gate][i][j][k]->SetFillColor(kRed-3);                        
+                        h1_energy_ch_GM_PID_TM_driftcorr[gate][i][j][k]->SetFillColor(kRed-3);
+
+                        //Energy of ch201 gated on ch101 all gm and dc
+                        h1_energy_ch201_GM_PID_TM_driftcorr_ch101[gate][i][j][k] = new TH1F(Form("energy_ch201_%i%i%i_GM_PID%i_TM_ch101", i,j,k,gate), Form("ch201 %i%i%i gated on PID+TM+ch101 DriftCorr",i,j,k), lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);             
+                        h1_energy_ch201_GM_PID_TM_driftcorr_ch101[gate][i][j][k]->GetXaxis()->SetTitle(Form("E(LISA) Layer %i [MeV]",i));
+                        h1_energy_ch201_GM_PID_TM_driftcorr_ch101[gate][i][j][k]->SetLineColor(i+2);
+                        h1_energy_ch201_GM_PID_TM_driftcorr_ch101[gate][i][j][k]->SetFillColor(i+2); 
+
+
 
                     }
                 }
@@ -449,6 +467,9 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     std::vector<uint32_t> energy_layer_GM;
     energy_layer_GM.resize(layer_number);
 
+    uint32_t energy_ch_GM[layer_number][xmax][ymax] = {0,0,0};
+
+
     // Energy from frs
     energy_MUSIC_1 = frsHitItem.Get_music_dE(0); 
     energy_MUSIC_2 = frsHitItem.Get_music_dE(1);
@@ -498,6 +519,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         energy_layer_GM[layer] = energy_LISA_GM;
         sum_energy_layer[layer] += energy_LISA;
         sum_energy_layer_GM[layer] += energy_LISA_GM;
+        energy_ch_GM[layer][xpos][ypos] = energy_LISA_GM;
 
 
         // //::::::::: E N E R G Y GATED MULTI HIT:::::::::::::::
@@ -578,6 +600,12 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                         {
                             h1_energy_layer2_GM_PID_TM_driftcorr_LISA1[gate][layer]->Fill(energy_LISA_GM);
                         }
+
+                        if(energy_ch_GM[1][0][1] >= lisa_config->fMin_dE_LISA1_gate && energy_ch_GM[1][0][1] <= lisa_config->fMax_dE_LISA1_gate)
+                        {
+                            h1_energy_ch201_GM_PID_TM_driftcorr_ch101[gate][layer][xpos][ypos]->Fill(energy_LISA_GM);
+                        }
+
                         
                     }
                 }
