@@ -109,6 +109,70 @@ InitStatus TravMusNearlineSpectra::Init()
 
     // h2_Z_vs_AoQ_mhtdc_trav_gate = MakeTH2(dir_travmus, "D", "h2_Z_vs_AoQ_mhtdc_trav_gate", "Z1 vs. A/Q (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
 
+    // h2_Ztrav_vs_T = MakeTH2(dir_drifts, "D", "h2_Ztrav_vs_T", "Z (Trav Mus) vs Time [mins]", 500, 0, 10000, 1500, frs_config->fMin_Z, frs_config->fMax_Z);
+
+    // from LISA branch, histos in FrsNearline
+    // h1_travmus_dE = MakeTH1(dir_tac_1d, "D", "h1_travmus_dE", "dE (Travel MUSIC)", 1000, 0, 4000., "dE (Travel MUSIC)", kPink-3, kBlue+2);
+    // h1_travmus_dE_driftcorr = MakeTH1(dir_tac_1d, "D", "h1_travmus_dE_driftcorr", "dE DriftCorr(Travel MUSIC)", 1000, 0, 4000., "dE DriftCorr (Travel MUSIC)", kPink-3, kBlue+2);
+
+    // from LISA branch, possible a correlations histos jobby...
+    // h2_Z_vs_AoQ_mhtdc_trav_gate = MakeTH2(dir_travmus, "D", "h2_Z_vs_AoQ_mhtdc_trav_gate", "Z1 vs. A/Q (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
+    // h2_Z_vs_AoQ_tac_trav_gate_driftcorr = MakeTH2(dir_travmus, "D", "h2_Z_vs_AoQ_tac_trav_gate_driftcorr", "Z1 vs. A/Q (TAC) DriftCorr", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
+    // h2_Z_vs_AoQ_driftcorr_trav_gate = MakeTH2(dir_travmus, "D", "h2_Z_vs_AoQ_tac_driftcorr_trav_gate", "Z1 vs. A/Q (DriftCorr)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
+
+
+    // from LISA branch
+    // //::: TravMus Drift with ref to the run number
+    // dir_drifts->cd();
+    // //c_TravMus_drift = new TCanvas("c_TravMus_drift", "c_TravMus_drift", 650, 350);
+    // //c_TravMus_drift->SetLogz();
+    // //c_TravMus_drift->cd();
+    // h2_TravMus_vs_T = new TH2D("h2_TravMus_vs_T", "dE (TravM) vs Time [min]", 1000, 0, 10000, 1000, 0, 4200);
+    // h2_TravMus_vs_T->GetXaxis()->SetTitle("WR [min]");
+    // h2_TravMus_vs_T->GetYaxis()->SetTitle("dE (Travel MUSIC)");
+    // // info on run number-not working now damn (EG)
+    // frs_time_min = std::numeric_limits<double>::max();
+    // frs_time_max = std::numeric_limits<double>::lowest(); 
+    // double initial_x_min = 0;      
+    // double initial_x_max = 10000; 
+    // double y_position = 4100;     
+    // double text_offset = 50; 
+ 
+    // hline = new TLine(initial_x_min, y_position, initial_x_max, y_position);
+    // hline->SetLineColor(kRed);
+    // hline->SetLineWidth(2);
+
+    // left_bar = new TLine(initial_x_min, y_position - 50, initial_x_min, y_position + 50);
+    // left_bar->SetLineColor(kRed);
+    // left_bar->SetLineWidth(2);
+
+    // right_bar = new TLine(initial_x_max, y_position - 50, initial_x_max, y_position + 50);
+    // right_bar->SetLineColor(kRed);
+    // right_bar->SetLineWidth(2);
+
+    // run_number_text = new TText((initial_x_min + initial_x_max) / 2, y_position + text_offset,
+    //                             Form("run: %d", frs_config->frun_num));
+    // run_number_text->SetTextSize(0.03);
+    // run_number_text->SetTextAlign(22); // Center alignment
+
+    // //hline->Write();
+    // //left_bar->Write();
+    // //right_bar->Write();
+    // //run_number_text->Write();
+    // //h2_TravMus_vs_T->Draw();
+    // h2_TravMus_vs_T->SetOption("colz");
+
+    // //c_TravMus_drift->cd();
+    // //dir_drifts->Append(c_TravMus_drift);
+
+    // // Drift corrected
+    // h2_TravMus_driftcorr_vs_T = new TH2D("h2_TravMus_driftcorr_vs_T", "dE (TravM) DriftCorr vs Time [min]", 1000, 0, 10000, 1000, 0, 4200);
+    // h2_TravMus_driftcorr_vs_T->GetXaxis()->SetTitle("WR [min]");
+    // h2_TravMus_driftcorr_vs_T->GetYaxis()->SetTitle("dE DriftCorr (Travel MUSIC)");
+    // h2_TravMus_driftcorr_vs_T->SetOption("colz");
+
+
+
     return kSUCCESS;
 
 }
@@ -144,6 +208,43 @@ void TravMusNearlineSpectra::Exec(Option_t* option)
     // // dE stuff
     
     // if (hitItem.Get_ID_z_travmus() > 0 && FRS_time_mins > 0) h2_Ztrav_vs_T->Fill(FRS_time_mins, hitItem.Get_ID_z_travmus());
+
+
+    // from LISA branch
+    // ::: Drift TM        
+    // if (hitItem.Get_travmusic_dE() > 0 && FRS_time_mins > 0) 
+    // {
+    //     double y_position = 4010;  
+    //     hline->SetX1(frs_time_min);
+    //     hline->SetX2(frs_time_max);
+    //     hline->SetY1(y_position);
+    //     hline->SetY2(y_position);
+
+    //     left_bar->SetX1(frs_time_min);
+    //     left_bar->SetX2(frs_time_min);
+    //     left_bar->SetY1(y_position - 50);
+    //     left_bar->SetY2(y_position + 50);
+
+    //     right_bar->SetX1(frs_time_max);
+    //     right_bar->SetX2(frs_time_max);
+    //     right_bar->SetY1(y_position - 50);
+    //     right_bar->SetY2(y_position + 50);
+
+    //     run_number_text->SetText((frs_time_min + frs_time_max) / 2, y_position + 50,
+    //                             Form("run: %d", frs_config->frun_num));
+        
+    //     h2_TravMus_vs_T->Fill(FRS_time_mins, hitItem.Get_travmusic_dE());
+
+    // }
+    // if (hitItem.Get_travmusic_dE_driftcorr() > 0 && FRS_time_mins > 0)h2_TravMus_driftcorr_vs_T->Fill(FRS_time_mins, hitItem.Get_travmusic_dE_driftcorr());
+
+    // from LISA branch
+    //::: TM
+    // //if (trav_mus_wr > 0 && hitItem.Get_travmusic_dE() > 0) h1_travmus_dE->Fill(hitItem.Get_travmusic_dE());
+    // //if (trav_mus_wr > 0 && hitItem.Get_travmusic_dE_driftcorr() > 0) h1_travmus_dE_driftcorr->Fill(hitItem.Get_travmusic_dE_driftcorr());
+    // if (hitItem.Get_travmusic_dE() > 0) h1_travmus_dE->Fill(hitItem.Get_travmusic_dE());
+    // if (hitItem.Get_travmusic_dE_driftcorr() > 0) h1_travmus_dE_driftcorr->Fill(hitItem.Get_travmusic_dE_driftcorr());
+    // //:: TM
 
     fNEvents += 1;
 }

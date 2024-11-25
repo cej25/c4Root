@@ -49,6 +49,7 @@ set(SRCS
 ./nearline/germanium/GermaniumResolution.cxx
 ./online/beammonitor/BeamMonitorOnlineSpectra.cxx
 ./online/lisa/LisaOnlineSpectra.cxx
+./online/lisa/LisaOnlineSpectraDaq.cxx
 ./online/aida/AidaOnlineSpectra.cxx
 ./online/bplast/bPlastOnlineSpectra.cxx
 ./online/fatima/FatimaOnlineSpectra.cxx
@@ -75,6 +76,7 @@ set(SRCS
 ./nearline/wr/WhiterabbitCorrelationNearline.cxx
 ./nearline/timemachine/TimeMachineNearline.cxx
 ./nearline/lisa/LisaNearlineSpectra.cxx
+./nearline/lisa/LisaNearlineSpectraDaq.cxx
 ./nearline/lisa/LisaTraceAnalysis.cxx
 ./nearline/fimp/FimpNearlineSpectra.cxx
 ./nearline/bb7/BB7NearlineSpectra.cxx

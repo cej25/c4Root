@@ -6,6 +6,11 @@
 TFrsConfiguration* TFrsConfiguration::instance = nullptr;
 std::string TFrsConfiguration::config_path = "blank";
 std::string TFrsConfiguration::scaler_mapping_file = "blank";
+std::string TFrsConfiguration::tm_drift_coeff_file = "blank";
+std::string TFrsConfiguration::aoq_drift_coeff_file = "blank";
+std::string TFrsConfiguration::z1_drift_coeff_file = "blank";
+
+
 
 TFRSParameter* TFrsConfiguration::ffrs;
 TMWParameter* TFrsConfiguration::fmw;
@@ -34,13 +39,16 @@ Double_t TFrsConfiguration::fMin_dE_Music1 = 0., TFrsConfiguration::fMax_dE_Musi
 Double_t TFrsConfiguration::fMin_dE_Music2 = 0., TFrsConfiguration::fMax_dE_Music2 = 4000.;
 Double_t TFrsConfiguration::fMin_dE_travMus_gate = 0., TFrsConfiguration::fMax_dE_travMus_gate = 30000.;
 
-
 //travMUSIC
 Double_t TFrsConfiguration::fMin_dE_travMusic = 0., TFrsConfiguration::fMax_dE_travMusic = 60000.;
+int TFrsConfiguration::frun_num = 0;
 
 TFrsConfiguration::TFrsConfiguration()
 {
     ReadScalerNames();
+    ReadTravMusDriftFile();
+    ReadAoQDriftFile();
+    ReadZ1DriftFile();
     // for now:
     sci_names[0] = "sci21";
     sci_names[1] = "sci22";
@@ -105,6 +113,111 @@ void TFrsConfiguration::SetParameters(
     fmrtof = mrtof;
     frange = range;
 }
+
+// ::: Read Drift from file - TravMus, AoQ and Z :::
+//EG Drift TM for dE (is it better to correct anode? ... not sure)
+void TFrsConfiguration::ReadTravMusDriftFile()
+{
+    std::ifstream travmus_drift_coeff_file (tm_drift_coeff_file);
+    std::string line;
+
+    if (travmus_drift_coeff_file.fail()) c4LOG(fatal, "Could not open Trav Mus drift coefficients file.");
+
+
+    while (std::getline(travmus_drift_coeff_file, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+        std::istringstream iss(line);
+        int travmus_wr;
+        double drift_val;
+        double drift_err;
+        std::pair<double, double> drift_coeff;
+
+        iss >> travmus_wr >> drift_val >> drift_err;
+
+        drift_coeff = std::make_pair(drift_val,drift_err);
+        travmus_drift_coeff.insert(std::make_pair(travmus_wr, drift_coeff));
+
+        //std::cout << " wr :  "<< travmus_wr << " drift coeff: " << drift_val << "\n";
+
+    }
+    
+    travmus_drift_loaded = 1;
+    travmus_drift_coeff_file.close();
+    
+    c4LOG(info, "Trav Mus Drift File: " + tm_drift_coeff_file);
+    return;    
+}
+
+void TFrsConfiguration::ReadAoQDriftFile()
+{
+    std::ifstream AoQ_drift_coeff_file (aoq_drift_coeff_file);
+    std::string line;
+
+    if (AoQ_drift_coeff_file.fail()) c4LOG(fatal, "Could not open AoQ drift coefficients file.");
+
+
+    while (std::getline(AoQ_drift_coeff_file, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+        std::istringstream iss(line);
+        int frs_wr;
+        double drift_val;
+        double drift_err;
+        std::pair<double, double> drift_coeff;
+
+        iss >> frs_wr >> drift_val >> drift_err;
+
+        drift_coeff = std::make_pair(drift_val,drift_err);
+        aoq_drift_coeff.insert(std::make_pair(frs_wr, drift_coeff));
+
+
+        //std::cout << " wr:  "<< frs_wr <<  " AoQ drift coeff: " << drift_val << "\n";
+
+    }
+    
+    aoq_drift_loaded = 1;
+    AoQ_drift_coeff_file.close();
+    
+    c4LOG(info, "AoQ Drift File: " + aoq_drift_coeff_file);
+    return;    
+}
+
+void TFrsConfiguration::ReadZ1DriftFile()
+{
+    std::ifstream Z1_drift_coeff_file (z1_drift_coeff_file);
+    std::string line;
+
+    if (Z1_drift_coeff_file.fail()) c4LOG(fatal, "Could not open Z1 drift coefficients file.");
+
+
+    while (std::getline(Z1_drift_coeff_file, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+        std::istringstream iss(line);
+        int frs_wr;
+        double drift_val;
+        double drift_err;
+        std::pair<double, double> drift_coeff;
+
+        iss >> frs_wr >> drift_val >> drift_err;
+        
+        drift_coeff = std::make_pair(drift_val,drift_err);
+        z1_drift_coeff.insert(std::make_pair(frs_wr, drift_coeff));
+
+        //std::cout << " wr:  "<< frs_wr << " Z1 drift coeff: " << drift_val << "\n";
+
+    }
+    
+    z1_drift_loaded = 1;
+    Z1_drift_coeff_file.close();
+    
+    c4LOG(info, "Z1 Drift File: " + z1_drift_coeff_file);
+    return;    
+}
+
+//:::
+
 
 void TFrsConfiguration::Set_Z_range(Double_t min, Double_t max)
 {

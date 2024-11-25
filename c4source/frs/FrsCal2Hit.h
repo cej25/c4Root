@@ -2,6 +2,7 @@
 #define FrsCal2Hit_H
 
 #include "TFrsConfiguration.h"
+#include "TExperimentConfiguration.h"
 
 #include "../../config/setup.h"
 #include "FairTask.h"
@@ -14,6 +15,7 @@
 #include "TravMusCalData.h"
 #include "FrsHitData.h"
 #include <TRandom3.h>
+
 //#include "GainShift.h"
 
 class TClonesArray;
@@ -37,6 +39,7 @@ class FrsCal2Hit : public FairTask
         
         void Setup_Conditions(std::string path_to_config_files);
         void FRS_GainMatching();
+        void FRS_TM_Drift();
 
         Bool_t Check_WinCond(Float_t P, Float_t* V);
         Bool_t Check_WinCond_Multi(Float_t P, Float_t V[8][2], int cond_num);
@@ -60,6 +63,7 @@ class FrsCal2Hit : public FairTask
     private:
 
         TFrsConfiguration const* frs_config;
+        TExperimentConfiguration const* exp_config;
         TFRSParameter* frs;
         TMWParameter* mw;
         TTPCParameter* tpc;
@@ -364,6 +368,15 @@ class FrsCal2Hit : public FairTask
         int total_time_microsecs = 0;
 
         bool conditions_files_read = false;
+
+
+        //::: Drifts correction
+        // std::map<int, std::pair<double,double>> travmus_drift;
+        // std::map<int, std::pair<double,double>> aoq_drift;
+        // std::map<int, std::pair<double,double>> z1_drift;
+        double de_travmus_driftcorr;
+        double id_AoQ_driftcorr;
+        double id_z_driftcorr;
 
 
     public:

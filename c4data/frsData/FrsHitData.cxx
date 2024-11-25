@@ -16,8 +16,10 @@ void FrsHitItem::SetAll(uint64_t wr_t,
                     Float_t a4,
                     Float_t b4,
                     Float_t AoQ,
+                    Float_t AoQ_driftcorr,
                     Float_t AoQ_corr,
                     Float_t z,
+                    Float_t z_driftcorr,
                     Float_t z2,
                     Float_t beta,
                     Float_t dEdeg,
@@ -57,8 +59,10 @@ void FrsHitItem::SetAll(uint64_t wr_t,
     fID_a4 = a4;
     fID_b4 = b4;
     fID_AoQ = AoQ;
+    fID_AoQ_driftcorr = AoQ_driftcorr;
     fID_AoQ_corr = AoQ_corr;
     fID_z = z;
+    fID_z_driftcorr = z_driftcorr;
     fID_z2 = z2;
     fID_beta = beta;
     fID_dEdeg = dEdeg;
@@ -101,8 +105,10 @@ void FrsHitItem::Reset()
     fID_a4 = 0;
     fID_b4 = 0;
     fID_AoQ = 0;
+    fID_AoQ_driftcorr = 0;
     fID_AoQ_corr = 0;
     fID_z = 0;
+    fID_z_driftcorr = 0;
     fID_z2 = 0;
     fID_beta = 0;
     fID_dEdeg = 0;

@@ -21,8 +21,10 @@ class FrsHitItem : public TObject
                     Float_t a4,
                     Float_t b4,
                     Float_t AoQ,
+                    Float_t AoQ_driftcorr,
                     Float_t AoQ_corr,
                     Float_t z,
+                    Float_t z_driftcorr,
                     Float_t z2,
                     Float_t beta,
                     Float_t dEdeg,
@@ -63,8 +65,10 @@ class FrsHitItem : public TObject
         Float_t Get_ID_a4() const;
         Float_t Get_ID_b4() const;
         Float_t Get_ID_AoQ() const;
+        Float_t Get_ID_AoQ_driftcorr() const;
         Float_t Get_ID_AoQ_corr() const;
         Float_t Get_ID_z() const; //
+        Float_t Get_ID_z_driftcorr() const;
         Float_t Get_ID_z2() const; //
         Float_t Get_ID_beta() const;
         Float_t Get_ID_dEdeg() const;
@@ -110,8 +114,10 @@ class FrsHitItem : public TObject
         Float_t fID_a4;
         Float_t fID_b4;
         Float_t fID_AoQ;
+        Float_t fID_AoQ_driftcorr;
         Float_t fID_AoQ_corr;
         Float_t fID_z;
+        Float_t fID_z_driftcorr;
         Float_t fID_z2;
         Float_t fID_beta;
         Float_t fID_dEdeg;
@@ -255,6 +261,11 @@ inline Float_t FrsHitItem::Get_ID_AoQ() const
     return fID_AoQ;
 }
 
+inline Float_t FrsHitItem::Get_ID_AoQ_driftcorr() const
+{
+    return fID_AoQ_driftcorr;
+}
+
 inline Float_t FrsHitItem::Get_ID_AoQ_corr() const
 {
     return fID_AoQ_corr;
@@ -263,6 +274,11 @@ inline Float_t FrsHitItem::Get_ID_AoQ_corr() const
 inline Float_t FrsHitItem::Get_ID_z() const
 {
     return fID_z;
+}
+
+inline Float_t FrsHitItem::Get_ID_z_driftcorr() const
+{
+    return fID_z_driftcorr;
 }
 
 inline Float_t FrsHitItem::Get_ID_z2() const

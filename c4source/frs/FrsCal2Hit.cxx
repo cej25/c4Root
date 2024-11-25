@@ -39,6 +39,7 @@ FrsCal2Hit::FrsCal2Hit()
     ,   multihitArray(new std::vector<FrsMultiHitItem>)
 {
     frs_config = TFrsConfiguration::GetInstance();
+    exp_config = TExperimentConfiguration::GetInstance();
     frs = frs_config->FRS();
     mw = frs_config->MW();
     tpc = frs_config->TPC();
@@ -69,6 +70,8 @@ FrsCal2Hit::FrsCal2Hit(const TString& name, Int_t verbose)
     ,   multihitArray(new std::vector<FrsMultiHitItem>)
 {
     frs_config = TFrsConfiguration::GetInstance();
+    exp_config = TExperimentConfiguration::GetInstance();
+
     frs = frs_config->FRS();
     mw = frs_config->MW();
     tpc = frs_config->TPC();
@@ -449,16 +452,16 @@ void FrsCal2Hit::Exec(Option_t* option)
     {
         for (int j = 0; j < hits_in_21r; j ++){
         mhtdc_sc21lr_dt[i*hits_in_21r + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + mainSciItem.Get_mhtdc_sc21l_hit(i) - mainSciItem.Get_mhtdc_sc21r_hit(j));
-        //mhtdc_sc21lr_x[i*hits_in_21r + j] = mhtdc_sc21lr_dt[i*hits_in_21r + j] * sci->mhtdc_factor_21l_21r + sci->mhtdc_offset_21l_21r;
+        mhtdc_sc21lr_x[i*hits_in_21r + j] = mhtdc_sc21lr_dt[i*hits_in_21r + j] * sci->mhtdc_factor_21l_21r + sci->mhtdc_offset_21l_21r;
 
-        double p0 = -72.5554;
-        double p1 =  54.9136;
-        double p2 =  1.14567;
-        double p3 = -5.12242;
-        double p4 =  3.70734;
-        double p5 = -0.72347;
+        // double p0 = -72.5554;
+        // double p1 =  54.9136;
+        // double p2 =  1.14567;
+        // double p3 = -5.12242;
+        // double p4 =  3.70734;
+        // double p5 = -0.72347;
 
-        mhtdc_sc21lr_x[i*hits_in_21r + j] = TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],5)*p5 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],4)*p4 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],3)*p3 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],2)*p2 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],1)*p1 + p0;
+        //mhtdc_sc21lr_x[i*hits_in_21r + j] = TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],5)*p5 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],4)*p4 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],3)*p3 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],2)*p2 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],1)*p1 + p0;
 
         }
     }
@@ -950,7 +953,7 @@ void FrsCal2Hit::Exec(Option_t* option)
             id_mhtdc_tof_s2s4[i] = mhtdc_tof4121[i];
             if (mhtdc_tof4121[i] > 0) // what is the value set to if this test fails ... ?
             {
-                id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2141 / mhtdc_tof4121[i]);
+                id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2141 / mhtdc_tof4121[i])/ speed_light;
             }else{
                 id_mhtdc_beta_s2s4[i] = 0;
             }
@@ -966,7 +969,7 @@ void FrsCal2Hit::Exec(Option_t* option)
             id_mhtdc_tof_s2s4[i] = mhtdc_tof4122[i];
             if (mhtdc_tof4122[i] > 0)
             {
-                id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2241 / mhtdc_tof4122[i]);
+                id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2241 / mhtdc_tof4122[i])/speed_light;
             }else{
                 id_mhtdc_beta_s2s4[i] = 0;
             }
@@ -1022,6 +1025,7 @@ void FrsCal2Hit::Exec(Option_t* option)
 
 
     // Calculation of dE and Z from MUSIC41
+    // Calibration for MUSIC is done with 1/b2 - last update sept2024
     id_mhtdc_v_cor_music41 = new Float_t[hits_in_beta_s2s4];
     id_mhtdc_v_cor_music42 = new Float_t[hits_in_beta_s2s4];
 
@@ -1232,6 +1236,8 @@ void FrsCal2Hit::Exec(Option_t* option)
     /*------------------------------------------------*/
     /* Determination of Z                           */
     /*------------------------------------------------*/
+    // Calibration with MUSIC is done with 1/b2 - last update sept2024
+
     // S4 (MUSIC 1)
     if ((de[0] > 0.0) && (id_beta > 0.0) && (id_beta < 1.0))
     {
@@ -1277,6 +1283,97 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
 
+    // CEJ: can be tidied/reconfigured some later
+    if (frs_config->AoQDriftLoaded())
+    {
+        id_AoQ_driftcorr = 0;
+        double drift_aoq = 0.0;
+        double drift_aoq_error = 0.0;
+        int nentry_aoq = 0;
+        int aoq_frs_wr_time_a = 0; 
+        int aoq_frs_wr_time_b = 0;
+        double aoq_reference_value = 2.39;   //!!!! read from exp configuration - expected value
+        int bin = 20;  
+        
+        //std::cout << "::::  AoQ :::: " << "\n";
+        //std::cout << "::::  AoQ " << id_AoQ <<"\n";
+
+
+        std::map<int,std::pair<double,double>> aoq_drift = frs_config->AoQDriftCoefficients();
+        for (const auto& entry : aoq_drift)
+        {            
+            // std::cout << " AoQ Key (travmus_wr_time): " << entry.first 
+            //   << ", AoQ Value (coeffs): (" << entry.second.first 
+            //   << ", " << entry.second.second << ")\n";
+            
+            int aoq_frs_wr_time = entry.first;
+            std::pair<double,double> aoq_coeffs = entry.second;
+            drift_aoq = aoq_coeffs.first;
+            drift_aoq_error = aoq_coeffs.second;
+
+            double aoq_shift = drift_aoq - aoq_reference_value;
+            //std::cout << "::::  AoQ value  " << id_AoQ <<"\n";
+            
+            if ((FRS_TM_time_mins >= (aoq_frs_wr_time - bin/2)) && (FRS_TM_time_mins < (aoq_frs_wr_time + bin/2)))
+            {
+                id_AoQ_driftcorr = id_AoQ - aoq_shift;
+                // std::cout  << " reference :" << aoq_reference_value
+                //     << " drift (1 coeff) :" << drift_aoq 
+                //     << " aoq shift :" << aoq_shift 
+                //     << " aoq original : " << id_AoQ
+                //     << " aoq corrected : " << id_AoQ_driftcorr << "\n";
+            
+            }
+            
+            nentry_aoq ++ ;
+        }
+
+    }
+
+    if (frs_config->Z1DriftLoaded())
+    {
+        id_z_driftcorr = 0;
+        double drift_z1 = 0.0;
+        double drift_z1_error = 0.0;
+        int nentry_z1 = 0;
+        int z1_frs_wr_time_a = 0; 
+        int z1_frs_wr_time_b = 0;
+        double z1_reference_value = 41;     //!!!! read from exp configuration - expected value
+        int bin = 20;                       //!!!! read from drift file
+
+        //std::cout << "::::  Z1 :::: " << "\n";
+        //std::cout << "::::  Z1 " << id_z <<"\n";
+
+        std::map<int,std::pair<double,double>> z1_drift = frs_config->Z1DriftCoefficients();
+        for (const auto& entry : z1_drift)
+        {            
+            // std::cout << "Z1 Key (travmus_wr_time): " << entry.first 
+            // << ", Z1 Value (coeffs): (" << entry.second.first 
+            // << ", " << entry.second.second << ")\n";
+            
+            int z1_frs_wr_time = entry.first;
+            std::pair<double,double> z1_coeffs = entry.second;
+            drift_z1 = z1_coeffs.first;
+            drift_z1_error = z1_coeffs.second;
+
+            double z1_shift = drift_z1 - z1_reference_value;
+            //std::cout << "::::  Z1 " << id_z <<"\n";
+
+            if ((FRS_TM_time_mins >= (z1_frs_wr_time - bin/2)) && (FRS_TM_time_mins < (z1_frs_wr_time + bin/2)))
+            {
+                //std::cout << "::::  in loop  Z1 " << id_z <<"\n";
+                id_z_driftcorr = id_z - z1_shift;
+                // std::cout  << " reference :" << z1_reference_value
+                //     << " drift (1 coeff) :" << drift_z1 
+                //     << " shift :" << z1_shift 
+                //     << " Z1 original : " << id_z
+                //     << " Z1 corr : " << id_z_driftcorr << "\n";
+            }
+            
+            nentry_z1 ++ ;
+        }
+
+    }
     
     float gamma1square = 1.0 + TMath::Power(((1 / aoq_factor) * (id_brho[0] / id_AoQ)), 2);
     id_gamma_ta_s2 = TMath::Sqrt(gamma1square);
@@ -1295,8 +1392,10 @@ void FrsCal2Hit::Exec(Option_t* option)
                     id_a4,
                     id_b4,
                     id_AoQ,
+                    id_AoQ_driftcorr,
                     id_AoQ_corr,
                     id_z,
+                    id_z_driftcorr,
                     id_z2,
                     id_beta,
                     id_dEdeg,

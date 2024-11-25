@@ -18,7 +18,9 @@ void LisaItem::SetAll(uint64_t wr,
                     bool p,
                     bool o,
                     uint32_t ch_energy,
-                    std::vector<uint16_t> tr)
+                    uint8_t ch_id_tr,
+                    std::vector<uint16_t> tr
+                    )
 {
     wr_t = wr;
     wr_id = id;
@@ -29,6 +31,7 @@ void LisaItem::SetAll(uint64_t wr,
     pileup = p;
     overflow = o;
     channel_energy = ch_energy;
+    channel_id_traces = ch_id_tr;
     trace = tr;
 }
 
@@ -43,6 +46,7 @@ void LisaItem::Reset()
     pileup = 0;
     overflow = 0;
     channel_energy = 0;
+    channel_id = 0;
     trace = {};
 }
 

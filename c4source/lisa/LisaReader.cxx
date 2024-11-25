@@ -64,22 +64,37 @@ Bool_t LisaReader::Read()
     //WR ID. It is 700 for lisa (= 1792 in decimal). From May 13 WR = 1200 for LISA
     uint32_t wr_id = fData->lisa_ts_subsystem_id;
     //::::::::::::::::::::::::::::::::::::::::
-
+    
     //Loop over board number (NBoards hardcoded as 8 temp)
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
     {
-        //::::::::::::::Board Number (=0 may2024)
-        uint32_t board_num = fData->lisa_data[it_board_number].board_num;
-
         //::::::::::::::Event Time stamp (converted to ns)
         //P.S: Febex card has a 100MHz, it samples data every 10 ns (hence the unit and the *10 multiplication).
         uint64_t event_trigger_time_long = (((uint64_t)(fData->lisa_data[it_board_number].event_trigger_time_hi) << 32) + 
         (fData->lisa_data[it_board_number].event_trigger_time_lo))*10;
-        
-        //::::::::::::::Multiplicity: Called num_channels_fired from unpacker
-        uint32_t M = fData->lisa_data[it_board_number].num_channels_fired;
 
-        for (int index = 0; index < M; index++) 
+        //For empty event, skip. This filters the fake boards.
+        if (event_trigger_time_long == 0) 
+        {
+            //std::cout<< " ::: iterator ::: " << it_board_number << std::endl;        
+            continue;
+        }
+        
+        //::::::::::::::Board Number (=0 may2024)
+        uint32_t board_num = fData->lisa_data[it_board_number].board_num;
+
+        //::::::::::::::Multiplicity: Called num_channels_fired from unpacker
+        uint32_t M = fData->lisa_data[it_board_number].num_channels_fired; //This is not for cases when header is missing
+
+
+
+<<<<<<< HEAD
+        for (int index = 0; index < 8; index++) //ONLY FOR JIKKEN -- All mode (Trig?)
+	  //for (int index = 0; index < M; index++) //GENERAL
+=======
+        //for (int index = 0; index < 8; index++) //ONLY FOR JIKKEN -- All mode
+        for (int index = 0; index < M; index++) //GENERAL
+>>>>>>> 14b14a3566780bdee5b780bb10213ea68b457aed
         {
             //::::::::::::::Channel ID
             uint8_t channel_id = fData->lisa_data[it_board_number].channel_idv[index];
@@ -104,17 +119,27 @@ Bool_t LisaReader::Read()
             uint32_t ch_energy = energy;
 
             std::vector<uint16_t> trace;
-            //::::::::::::::Channel Traces
-            for (int l = 0 ; l < fData->lisa_data[it_board_number].traces[channel_id]._ ; l++)
+        
+            
+            uint8_t channel_id_trace = fData->lisa_data[it_board_number].channel_id_tracesv[index];
+
+            //::::::::::::::Channel Traces with ID from channel header
+            for (int l = 0 ; l < fData->lisa_data[it_board_number].traces[channel_id_trace]._ ; l++)
             {
-                trace.emplace_back(fData->lisa_data[it_board_number].traces[channel_id].v[l]);
-                
+                trace.emplace_back(fData->lisa_data[it_board_number].traces[channel_id_trace].v[l]);    
             }
+            //std::cout<< "Size of trace? : " << sizeof(fData->lisa_data[it_board_number].traces) <<std::endl;
+
+            // //::::::::::::::Channel Traces with ID from event header
+            // for (int l = 0 ; l < fData->lisa_data[it_board_number].traces[channel_id]._ ; l++)
+            // {
+            //     trace.emplace_back(fData->lisa_data[it_board_number].traces[channel_id].v[l]);    
+            // }
 
             auto & entry = lisaArray->emplace_back();
             entry.SetAll(
                 wr_time_long,
-                wr_id,
+                wr_id, 
                 board_num,
                 event_trigger_time_long,
                 channel_id,
@@ -122,6 +147,7 @@ Bool_t LisaReader::Read()
                 pileup,
                 overflow,
                 ch_energy,
+                channel_id_trace,
                 trace
             );
 
