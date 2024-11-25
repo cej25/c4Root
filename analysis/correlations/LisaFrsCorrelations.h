@@ -19,6 +19,10 @@
 #include "TDirectory.h"
 #include <vector>
 #include <map>
+#include "TString.h"
+
+//Debugging. Replaced std::string with TString 8nov24
+
 
 class EventHeader;
 class TH1I;
@@ -75,6 +79,7 @@ class LisaFrsCorrelations : public FairTask
 
         TDirectory* dir_corr;
         TDirectory* dir_lisa_frs;
+        TDirectory* dir_corr_driftcorr;
 
         //common var
         int layer_number;
@@ -91,34 +96,50 @@ class LisaFrsCorrelations : public FairTask
         Float_t energy_MUSIC_1;
         Float_t energy_MUSIC_2;
         Float_t energy_travMUSIC;
+        Float_t energy_travMUSIC_driftcorr;
         int xmax;
         int ymax;
-        std::string city = "";
+        TString city = "";
 
         Int_t layer;
 
         //Canvases
         TCanvas* c_wr_diff;
-        TCanvas* c_MUSIC_1_layer;
-        TCanvas* c_MUSIC_2_layer;
-        TCanvas* c_travMUSIC_layer;
+        TCanvas* c_MUSIC_1_layer_GM;
+        TCanvas* c_MUSIC_2_layer_GM;
+        TCanvas* c_travMUSIC_layer_GM;
+        TCanvas* c_travMUSIC_driftcorr_layer_GM;
         TCanvas* c_xy_pos_layer1;
         TCanvas* c_xy_pos_layer2;
-        std::vector<std::vector<TCanvas*>> c_energy_layer_ch_gated;
-        std::vector<std::vector<TCanvas*>> c_energy_layer_ch_gated_T;
-        std::vector<std::vector<std::vector<std::vector<TCanvas*>>>> c_energy;
+        std::vector<std::vector<TCanvas*>> c_energy_layer_ch_GM_gated;
+        std::vector<std::vector<TCanvas*>> c_energy_layer_ch_GM_gated_T;
+        std::vector<std::vector<std::vector<std::vector<TCanvas*>>>> c_energy_GM;
 
 
         //Histograms
         std::vector<TH1I*> h1_wr_diff;
-        std::vector<TH2F*> h2_MUSIC_1_layer;
-        std::vector<TH2F*> h2_MUSIC_2_layer;
-        std::vector<TH2F*> h2_travMUSIC_layer;
+        std::vector<TH2F*> h2_MUSIC_1_layer_GM;
+        std::vector<TH2F*> h2_MUSIC_2_layer_GM;
+        std::vector<TH2F*> h2_travMUSIC_layer_GM;
+        std::vector<TH2F*> h2_travMUSIC_driftcorr_layer_GM;
         std::vector<TH2F*> h2_xy_pos_layer1;
         std::vector<TH2F*> h2_xy_pos_layer2;
-        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch;
-        std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_layer_ch_gated;
-        std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_layer_ch_gated_T;
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch_GM;
+        std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_layer_ch_GM_PIDgated;
+        std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_layer_ch_GM_PIDgated_Trav;
+        
+        std::vector<std::vector<TH1F*>> h1_energy_layer_GM_PID_TM;
+        std::vector<std::vector<TH1F*>> h1_energy_layer2_GM_PID_TM_LISA1;
+
+
+        //Histo for drift corrected FRS
+        std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_ch_GM_PID_driftcorr;
+        std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_ch_GM_PID_TM_driftcorr;
+        std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_ch201_GM_PID_TM_driftcorr_ch101;
+
+        std::vector<std::vector<TH1F*>> h1_energy_layer_GM_PID_driftcorr;
+        std::vector<std::vector<TH1F*>> h1_energy_layer_GM_PID_TM_driftcorr;
+        std::vector<std::vector<TH1F*>> h1_energy_layer2_GM_PID_TM_driftcorr_LISA1;
 
     public:
         ClassDef(LisaFrsCorrelations, 1)

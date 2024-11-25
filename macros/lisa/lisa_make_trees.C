@@ -4,9 +4,9 @@
 #define LISA_ON 1
 
 //Select the data level you want to visualize
-#define LISA_RAW 1
+#define LISA_RAW 0
 //#define LISA_MDW 0
-#define LISA_CAL 0
+#define LISA_CAL 1
 
 typedef struct EXT_STR_h101_t
 {   
@@ -22,7 +22,7 @@ void lisa_make_trees()
     TString fExpName = "lisa";
 
     //:::::::::Here you define commonly used path
-    TString c4Root_path = "/u/cjones/c4Root";
+    TString c4Root_path = "/u/gandolfo/c4/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -46,12 +46,14 @@ void lisa_make_trees()
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0169_*.lmd";  //data with only lisa
     //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/daqtest/daqtest_0001_0001.lmd"; //data from ts folder
-    TString filename = "/u/cjones/lustre/gamma/LISA/data/daq_test/cardB_F.lmd";
+    TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/daq_test/test_H_B_I_G_13nov.lmd";
 
     //___O U T P U T
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/elisa/";
-    TString outputpath = "/u/cjones/c4Root/macros/lisa/";    
-    TString outputFilename = outputpath + "cardB_F.root";
+    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/daq_test_c4tree/";    
+        
+
+    TString outputFilename = outputpath + "test_H_B_I_G_13nov.root";
 
     //:::::::Create online run
     Int_t refresh = 10; // not needed
@@ -79,8 +81,8 @@ void lisa_make_trees()
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
-    // TLisaConfiguration::SetMappingFile(config_path + "/Lisa_All_Boards.txt");
-    // TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
+    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_All_Boards.txt");
+    TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
     //TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters.txt");
 
 

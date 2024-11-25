@@ -156,6 +156,63 @@ void TravMusCal2Ana::Exec(Option_t* option)
     // }
     
     // mhtdc stuff?
+
+
+    if (frs_config->TravMusDriftLoaded())
+    {
+        de_travmus_driftcorr = 0;
+        double drift_tm = 0.0;
+        double drift_tm_error = 0.0;
+        int nentry = 0;
+        int travmus_wr_time_a = 0; 
+        int travmus_wr_time_b = 0;
+        double reference_value = 1956.62;   //!!!! read from file
+        int bin = 20;                       //!!!! read from file
+
+        std::map<int,std::pair<double,double>> travmus_drift = frs_config->TravMusDriftCoefficients();
+        //std::cout << "::::  TM :::: " << "\n";
+        for (const auto& entry : travmus_drift)
+        {
+            // std::cout << "Key (travmus_wr_time): " << entry.first 
+            //   << ", Value (coeffs): (" << entry.second.first 
+            //   << ", " << entry.second.second << ")\n";
+            
+            int travmus_wr_time = entry.first;
+            std::pair<double,double> coeffs = entry.second;
+            drift_tm = coeffs.first;
+            drift_tm_error = coeffs.second;
+
+            // if (nentry == 0)
+            // {
+            //     travmus_wr_time_a = travmus_wr_time;
+            //     //reference_value = drift_tm;
+            // }
+            // else if (nentry == 1)
+            // {
+            //     travmus_wr_time_b = travmus_wr_time;
+            //     //bin = travmus_wr_time_b - travmus_wr_time_a;
+            // }
+
+            double tm_shift = drift_tm - reference_value;
+            
+            //std::cout << "bin : " << bin << "\n";
+            //std::cout << "drift travMus : " << drift_tm << " reference value : " << reference_value << "\n";
+
+            //std::cout << "min limit : " << (travmus_wr_time - bin/2) << " max limit : " << (travmus_wr_time + bin/2) << "\n";
+            if ((FRS_TM_time_mins >= (travmus_wr_time - bin/2)) && (FRS_TM_time_mins < (travmus_wr_time + bin/2)))
+            {
+                de_travmus_driftcorr = de_travmus - tm_shift;
+                // std::cout  << " reference :" << reference_value
+                //     << " drift (1 coeff) :" << drift_tm 
+                //     << " shift :" << tm_shift 
+                //     << " TM dE original : " << de_travmus
+                //     << " TM dE corr : " << de_travmus_driftcorr << "\n";
+            }
+            
+            nentry ++ ;
+        }
+
+    }
     
     fNEvents++;
 

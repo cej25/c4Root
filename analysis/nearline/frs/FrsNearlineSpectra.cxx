@@ -30,6 +30,7 @@
 #include <vector>
 #include "TDirectory.h"
 
+
 FrsNearlineSpectra::FrsNearlineSpectra() : FrsNearlineSpectra("FrsNearlineSpectra", 1)
 {
     frs_config = TFrsConfiguration::GetInstance();
@@ -129,6 +130,7 @@ InitStatus FrsNearlineSpectra::Init()
 
         // directory, type, name, title, xbins, xmin, xmax, ybins, ymin, ymax, xtitle, ytitle
         h2_Z_vs_AoQ = MakeTH2(dir_tac_2d, "D", "h2_Z_vs_AoQ", "Z1 vs. A/Q", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q", "Z (MUSIC 1)");
+        h2_Z_vs_AoQ_driftcorr = MakeTH2(dir_tac_2d, "D", "h2_Z_vs_AoQ_driftcorr", "Z1 vs. A/Q DriftCorr", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q DriftCorr", "Z DriftCorr(MUSIC 1)");
         h2_Z_vs_AoQ_corr = MakeTH2(dir_tac_2d, "D", "h2_Z_vs_AoQ_corr", "Z1 vs. A/Q (corr)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z,"A/Q", "Z (MUSIC 1)");
         h2_Z_vs_Z2 = MakeTH2(dir_tac_2d, "D", "h2_Z_vs_Z2", "Z1 vs. Z2", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z (MUSIC 1)", "Z (MUSIC 2)");
         h2_Z_vs_AoQ_Zsame = MakeTH2(dir_tac_2d, "D", "h2_Z_vs_AoQ_Zsame", "Z1 vs. A/Q [ABS (Z1 - Z2) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q", "Z (MUSIC 1)");
@@ -250,8 +252,10 @@ InitStatus FrsNearlineSpectra::Init()
 
         // preset wide ranges to "always" see peak, in case there's something funky with the FRS
         h1_Z = MakeTH1(dir_tac_1d, "D", "h1_Z", "Z (MUSIC 1)", 500, 10, 100, "Z (MUSIC 1)", kPink-3, kBlue+2);
+        h1_Z_driftcorr = MakeTH1(dir_tac_1d, "D", "h1_Z_driftcorr", "Z DriftCorr (MUSIC 1)", 500, 10, 100, "Z DriftCorr (MUSIC 1)", kPink-3, kBlue+2);
         h1_Z2 = MakeTH1(dir_tac_1d, "D", "h1_Z2", "Z (MUSIC 2)", 500, 10, 100, "Z (MUSIC 2)", kPink-3, kBlue+2);
         h1_AoQ = MakeTH1(dir_tac_1d, "D", "h1_AoQ", "A/Q", 500, 1.0, 4.0, "A/Q", kPink-3, kBlue+2); 
+        h1_AoQ_driftcorr = MakeTH1(dir_tac_1d, "D", "h1_AoQ_driftcorr", "A/Q DriftCorr", 500, 1, 4.0, "A/Q DriftCorr", kPink-3, kBlue+2); 
         h1_AoQ_corr = MakeTH1(dir_tac_1d, "D", "h1_AoQ_corr", "A/Q (corr)", 500, 1.0, 4.0, "A/Q", kPink-3, kBlue+2);
         h1_x2 = MakeTH1(dir_tac_1d, "D", "h1_x2", "S2 x-position", 200, -100, 100, "S2 x-position", kYellow-7, kBlack);
         h1_x4 = MakeTH1(dir_tac_1d, "D", "h1_x4", "S4 x-position", 200, -100, 100, "S4 x-position",kYellow-7, kBlack);
@@ -441,14 +445,15 @@ InitStatus FrsNearlineSpectra::Init()
 
     // Drifts
     h2_Z1_vs_T = MakeTH2(dir_drifts, "D", "h2_Z1_vs_T", "Z1 vs. Time [mins]", 500, 0, 10000, 1500, frs_config->fMin_Z, frs_config->fMax_Z);
+    h2_Z1_driftcorr_vs_T = MakeTH2(dir_drifts, "D", "h2_Z1_driftcorr_vs_T", "Z1 DriftCorr vs. Time [mins]", 500, 0, 10000, 1500, frs_config->fMin_Z, frs_config->fMax_Z);
     h2_AoQ_vs_T = MakeTH2(dir_drifts, "D", "h2_AoQ_vs_T", "A/Q vs. Time [mins]", 500, 0, 10000, 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ);
-    h2_Ztrav_vs_T = MakeTH2(dir_drifts, "D", "h2_Ztrav_vs_T", "Z (Trav Mus) vs Time [mins]", 500, 0, 10000, 1500, frs_config->fMin_Z, frs_config->fMax_Z);
+    h2_AoQ_driftcorr_vs_T = MakeTH2(dir_drifts, "D", "h2_AoQ_driftcorr_vs_T", "A/Q DriftCorr vs. Time [mins]", 500, 0, 10000, 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ);
     h2_Z1_vs_T_mhtdc = MakeTH2(dir_drifts, "D", "h2_Z1_vs_T_mhtdc", "Z1 (MHTDC) vs. Time [mins]", 500, 0, 10000, 1500, frs_config->fMin_Z, frs_config->fMax_Z);
     h2_AoQ_vs_T_mhtdc = MakeTH2(dir_drifts, "D", "h2_AoQ_vs_T_mhtdc", "A/Q (MHTDC) vs. Time [mins]", 500, 0, 10000, 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ);
     for (int i = 0; i < 6; i++) h2_sci_tof_vs_T[i] = MakeTH2(dir_drifts, "D", Form("h2_sci_tof_vs_T_%i", i), Form("TOF %i vs. Time [mins]" , i), 500, 0, 10000, 4000, 0.0, 200000.0);
     for (int i = 0; i < 6; i++) h2_tpc_vs_T[i] = MakeTH2(dir_drifts, "D", Form("h2_tpc_vs_T_%i", i), Form("TPC %i X vs. T", i), 500,0, 10000, 200, -100, 100);
     
-   
+
     return kSUCCESS;
 
 }
@@ -459,8 +464,22 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     if (hitArray->size() <= 0) return;
 
     Long64_t FRS_time_mins = 0;
+    Long64_t FRS_TM_time_mins = 0;
     auto const & hitItem = hitArray->at(0); // should only be size=1! check
     if(hitItem.Get_wr_t() > 0) FRS_time_mins = (hitItem.Get_wr_t() - exp_config->exp_start_time)/ 60E9;
+    if(hitItem.Get_wr_t() > 0) FRS_time_mins = (hitItem.Get_wr_t() - exp_config->exp_start_time)/ 60E9;
+
+
+
+    // Get the minimum and maximum FRS_time_mins
+    if (FRS_time_mins > 0) {
+        frs_time_min = std::min(frs_time_min, static_cast<double>(FRS_time_mins));
+        frs_time_max = std::max(frs_time_max, static_cast<double>(FRS_time_mins));
+    }
+
+    //c4LOG(info, "frs_time_min : " << frs_time_min << " frs_time_max : " <<  frs_time_max);
+
+    
 
     // :::::::::: TAC ::::::::::::: //
     // ---------------------------- //
@@ -468,6 +487,12 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     {
 
         if (hitItem.Get_ID_AoQ() > 0 && hitItem.Get_ID_z() > 0) h2_Z_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_z());
+        if (hitItem.Get_ID_AoQ_driftcorr() > 0 && hitItem.Get_ID_z_driftcorr() > 0) h2_Z_vs_AoQ_driftcorr->Fill(hitItem.Get_ID_AoQ_driftcorr(), hitItem.Get_ID_z_driftcorr());
+        if(hitItem.Get_travmusic_dE_driftcorr() >= frs_config->fMin_dE_travMus_gate && hitItem.Get_travmusic_dE_driftcorr() <= frs_config->fMax_dE_travMus_gate)
+        {
+            h2_Z_vs_AoQ_tac_trav_gate_driftcorr->Fill(hitItem.Get_ID_AoQ_driftcorr(), hitItem.Get_ID_z_driftcorr());
+        }
+        
         if (hitItem.Get_ID_AoQ_corr() > 0 && hitItem.Get_ID_z() > 0) h2_Z_vs_AoQ_corr->Fill(hitItem.Get_ID_AoQ_corr(), hitItem.Get_ID_z());
         if (hitItem.Get_ID_z() > 0 && hitItem.Get_ID_z2() > 0) h2_Z_vs_Z2->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_z2());
         if (TMath::Abs(hitItem.Get_ID_z() - hitItem.Get_ID_z2()) < 0.4) // CEJ: should we .config this condition?
@@ -567,13 +592,20 @@ void FrsNearlineSpectra::Exec(Option_t* option)
             }
         }
 
+        if(hitItem.Get_travmusic_dE() >= frs_config->fMin_dE_travMus_gate && hitItem.Get_travmusic_dE() <= frs_config->fMax_dE_travMus_gate)
+        {
+            h2_Z_vs_AoQ_driftcorr_trav_gate->Fill(hitItem.Get_ID_AoQ_driftcorr(), hitItem.Get_ID_z_driftcorr());
+        }
+
     }
 
     if (frs_config->plot_tac_1d)
     {
         if (hitItem.Get_ID_z() > 0) h1_Z->Fill(hitItem.Get_ID_z());
+        if (hitItem.Get_ID_z_driftcorr() > 0) h1_Z_driftcorr->Fill(hitItem.Get_ID_z_driftcorr());
         if (hitItem.Get_ID_z2() > 0) h1_Z2->Fill(hitItem.Get_ID_z2());
         if (hitItem.Get_ID_AoQ() > 0) h1_AoQ->Fill(hitItem.Get_ID_AoQ());
+        if (hitItem.Get_ID_AoQ_driftcorr() > 0) h1_AoQ_driftcorr->Fill(hitItem.Get_ID_AoQ_driftcorr());
         if (hitItem.Get_ID_AoQ_corr() > 0) h1_AoQ_corr->Fill(hitItem.Get_ID_AoQ_corr());
         h1_x2->Fill(hitItem.Get_ID_x2());
         h1_x4->Fill(hitItem.Get_ID_x4());
@@ -775,7 +807,9 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     // ::::: Detector Drifts :::::: //
     // ---------------------------- //
     if (hitItem.Get_ID_z() > 0 && FRS_time_mins > 0) h2_Z1_vs_T->Fill(FRS_time_mins, hitItem.Get_ID_z());
+    if (hitItem.Get_ID_z_driftcorr() > 0 && FRS_time_mins > 0) h2_Z1_driftcorr_vs_T->Fill(FRS_time_mins, hitItem.Get_ID_z_driftcorr());
     if (hitItem.Get_ID_AoQ() > 0 && FRS_time_mins > 0) h2_AoQ_vs_T->Fill(FRS_time_mins, hitItem.Get_ID_AoQ());
+    if (hitItem.Get_ID_AoQ_driftcorr() > 0 && FRS_time_mins > 0) h2_AoQ_driftcorr_vs_T->Fill(FRS_time_mins, hitItem.Get_ID_AoQ_driftcorr());
     //if (multihitItem.Get_ID_z_mhtdc() > 0 && FRS_time_mins > 0) h2_Z1_vs_T_mhtdc->Fill(FRS_time_mins, multihitItem.Get_ID_z_mhtdc());
     //if (multihitItem.Get_ID_AoQ_mhtdc() > 0 && FRS_time_mins > 0) h2_AoQ_vs_T_mhtdc->Fill(FRS_time_mins, multihitItem.Get_ID_AoQ_mhtdc());
     for (int i = 0; i < 6; i++) h2_sci_tof_vs_T[i]->Fill(FRS_time_mins, hitItem.Get_sci_tof(i));
