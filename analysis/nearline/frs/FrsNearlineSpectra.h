@@ -70,14 +70,11 @@ class FrsNearlineSpectra : public FairTask
         // folders
         bool found_dir_frs = true;
         TDirectory* dir_frs; // for now fine, maybe needs to be...overarching branch? dunno
-        TDirectory* dir_travmus;
         TDirectory* dir_scalers;
         TDirectory* dir_rates;
         TDirectory* dir_drifts;
         TDirectory* dir_tac;
         TDirectory* dir_mhtdc;
-        TDirectory* dir_travmus_tac;
-        TDirectory* dir_travmus_mhtdc;
         TDirectory* dir_tac_1d;
         TDirectory* dir_tac_2d;
         TDirectory* dir_gated_tac;
@@ -100,7 +97,6 @@ class FrsNearlineSpectra : public FairTask
         TH2* h2_Z_vs_AoQ;
         TH2* h2_Z_vs_AoQ_corr;
         TH2* h2_Z_vs_Z2;
-        TH2* h2_travmus_vs_Z;
         TH2* h2_Z_vs_AoQ_Zsame;
         TH2* h2_x4_vs_AoQ_Zsame;
         TH2* h2_x2_vs_AoQ_Zsame;
@@ -162,7 +158,6 @@ class FrsNearlineSpectra : public FairTask
         TH1* h1_tpat;
         TH1* h1_Z;
         TH1* h1_Z2;
-        TH1* h1_Z_travmus;
         TH1* h1_AoQ;
         TH1* h1_AoQ_corr;
         TH1* h1_x2;
@@ -179,7 +174,6 @@ class FrsNearlineSpectra : public FairTask
         TH1* h1_rho[2];
         TH1* h1_brho[2];
         TH1* h1_music_dE[2];
-        TH1* h1_travmus_dE;
         TH1* h1_music_dEcorr[2];
         TH1* h1_sci_e[6];
         TH1* h1_sci_l[6];
@@ -193,7 +187,6 @@ class FrsNearlineSpectra : public FairTask
         TH2* h2_Z_vs_AoQ_mhtdc;
         TH2* h2_Z_vs_AoQ_corr_mhtdc;
         TH2* h2_Z_vs_Z2_mhtdc;
-        TH2* h2_travmus_vs_Z_mhtdc;
         TH2* h2_Z_vs_AoQ_Zsame_mhtdc;
         TH2* h2_x4_vs_AoQ_Zsame_mhtdc;
         TH2* h2_x2_vs_AoQ_Zsame_mhtdc;
@@ -257,7 +250,6 @@ class FrsNearlineSpectra : public FairTask
         TH1* h1_AoQ_corr_mhtdc;
         TH1* h1_z_mhtdc;
         TH1* h1_z2_mhtdc;
-        TH1* h1_z_travmus_mhtdc;
         TH1* h1_dEdeg_mhtdc;
         TH1* h1_dEdegoQ_mhtdc;
 

@@ -3,6 +3,7 @@
 
 #include "TFrsConfiguration.h"
 #include "TravMusCalData.h"
+#include "TravMusAnaData.h"
 
 #include "FairTask.h"
 #include "TH1.h"
@@ -41,13 +42,16 @@ class TravMusNearlineSpectra : public FairTask
     private:
         TFrsConfiguration const* frs_config;
 
-        std::vector<TravMusCalItem> const* travMusicArray;
+        std::vector<TravMusCalItem> const* travMusCalArray;
+        std::vector<TravMusAnaItem> const* travMusAnaArray;
 
         EventHeader* header;
         Int_t fNEvents;
 
         TFolder* histograms;
         TDirectory* dir_travmus;
+        // TDirectory* dir_travmus_tac;
+        // TDirectory* dir_travmus_mhtdc;
         TDirectory* dir_raw_adc;
 
         // Canvas
@@ -55,6 +59,14 @@ class TravMusNearlineSpectra : public FairTask
 
         // Histograms
         TH1I* h1_travmus_raw_adc[8];
+        TH2* h2_travmus_vs_Z;
+
+        TH1* h1_Z_travmus;
+        TH1* h1_travmus_dE;
+
+        TH2* h2_travmus_vs_Z_mhtdc;
+
+        TH1* h1_z_travmus_mhtdc;
 
     public:
         ClassDef(TravMusNearlineSpectra, 1)

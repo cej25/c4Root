@@ -23,6 +23,7 @@
 #pragma link C++ class FrsCal2Hit+;
 #pragma link C++ class TravMusReader+;
 #pragma link C++ class TravMusRaw2Cal+;
+#pragma link C++ class TravMusCal2Ana+;
 
 #pragma link C++ class GermaniumReader+;
 #pragma link C++ class GermaniumRaw2Cal+;

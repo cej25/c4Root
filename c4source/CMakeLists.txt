@@ -67,6 +67,7 @@ set(SRCS
 ./frs/FrsCal2Hit.cxx
 ./travMus/TravMusReader.cxx
 ./travMus/TravMusRaw2Cal.cxx
+./travMus/TravMusCal2Ana.cxx
 ./germanium/GermaniumReader.cxx
 ./lisa/LisaReader.cxx
 ./lisa/LisaRaw2Cal.cxx

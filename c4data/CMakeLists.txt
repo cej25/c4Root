@@ -40,6 +40,7 @@ frsData/FrsVFTXCalData.cxx
 frsData/FrsHitData.cxx
 travMusData/TravMusData.cxx
 travMusData/TravMusCalData.cxx
+travMusData/TravMusAnaData.cxx
 lisaData/LisaData.cxx
 lisaData/LisaCalData.cxx
 lisaData/LisaTraceData.cxx
