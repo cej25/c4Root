@@ -1,4 +1,5 @@
 #include "TLisaConfiguration.h"
+#include "TExperimentConfiguration.h"
 
 #include "c4Logger.h"
 #include "TCutG.h"
@@ -11,6 +12,8 @@
 #include <string>
 
 TLisaConfiguration* TLisaConfiguration::instance = nullptr;
+
+//std::string TLisaConfiguration::MWD_file = "blank";
 std::string TLisaConfiguration::mapping_file = "blank";
 std::string TLisaConfiguration::gain_matching_file = "blank";
 std::string TLisaConfiguration::calibration_file = "blank";
@@ -25,6 +28,10 @@ int TLisaConfiguration::min_energy = 0;
 int TLisaConfiguration::max_energy = 10000000;
 int TLisaConfiguration::bin_energy = 900;
 
+int TLisaConfiguration::min_energy_GM = 0;
+int TLisaConfiguration::max_energy_GM = 10000;
+int TLisaConfiguration::bin_energy_GM = 500;
+
 int TLisaConfiguration::min_wr_diff = 0;
 int TLisaConfiguration::max_wr_diff = 200;
 int TLisaConfiguration::bin_wr_diff = 50;
@@ -33,28 +40,9 @@ int TLisaConfiguration::min_traces = 0;
 int TLisaConfiguration::max_traces = 2000;
 int TLisaConfiguration::bin_traces = 900;
 
-/*
-//layer1
-int TLisaConfiguration::i100 = 0;
-int TLisaConfiguration::s100 = 0;
-int TLisaConfiguration::i101 = 0;
-int TLisaConfiguration::s101 = 0;
-int TLisaConfiguration::i110 = 0;
-int TLisaConfiguration::s110 = 0;
-int TLisaConfiguration::i111 = 0;
-int TLisaConfiguration::s111 = 0;
-//layer2
-int TLisaConfiguration::i200 = 0;
-int TLisaConfiguration::s200 = 0;
-int TLisaConfiguration::i201 = 0;
-int TLisaConfiguration::s201 = 0;
-int TLisaConfiguration::i210 = 0;
-int TLisaConfiguration::s210 = 0;
-int TLisaConfiguration::i211 = 0;
-int TLisaConfiguration::s211 = 0;
-*/
+int TLisaConfiguration::fMin_dE_LISA1_gate = 1070, TLisaConfiguration::fMax_dE_LISA1_gate = 1100;
 
-
+int TLisaConfiguration::frun_num = 0;
 
 
 TLisaConfiguration::TLisaConfiguration()
@@ -62,12 +50,39 @@ TLisaConfiguration::TLisaConfiguration()
     ,   num_detectors(0)
     ,   num_febex_boards(0)
 {
+    //ReadMWDParameters();
     ReadMappingFile();
     ReadGMFile();
     //ReadCalibrationCoefficients();
 
 }
 
+
+// void TLisaConfiguration::ReadMWDParameters()
+// {   
+//     std::cout<<"MWD elefanti"<<std::endl;
+//     //std::set<int> layers;
+//     //std::set<int> x_positions;
+//     //std::set<int> y_positions;
+    
+//     std::ifstream MWD_parameters_file (MWD_file);
+//     std::string line;
+
+//     if (MWD_parameters_file.fail()) c4LOG(fatal, "Could not open LISA MWD parameters file.");
+
+//     while (std::getline(MWD_parameters_file, line))
+//     {
+//         if (line.empty() || line[0] == '#') continue;
+
+//     }
+    
+//     MWD_parameters_loaded = 1;
+//     MWD_parameters_file.close();
+
+//     c4LOG(info, "Lisa MWD Parameters: " + MWD_file);
+//     return;
+
+// }
 
 void TLisaConfiguration::ReadMappingFile()
 {   

@@ -19,7 +19,8 @@ void LisaItem::SetAll(uint64_t wr,
                     bool o,
                     uint32_t ch_energy,
                     uint8_t ch_id_tr,
-                    std::vector<uint16_t> tr)
+                    std::vector<uint16_t> tr
+                    )
 {
     wr_t = wr;
     wr_id = id;

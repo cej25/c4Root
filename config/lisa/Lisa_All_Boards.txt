@@ -1,0 +1,89 @@
+#:::::::::::::::::::::::::LISA Mapping - All boards channels::::::::::::::::::::::::
+#----------------------------------------------------------------------------------#
+#           FEBEXID  FEBEXCHA  LayerID(z)  DiamondID(x) DiamondID(y)    Name
+#-----------------------------------------------------------------------------------#
+
+#Front side (xy)
+
+#::: 03 :: 13 :: 23 :: 33 :::
+#::: 02 :: 12 :: 22 :: 32 :::
+#::: 01 :: 11 :: 21 :: 31 :::
+#::: 00 :: 10 :: 20 :: 30 :::
+
+#:::::::::::::::   B O A R D  0   :::::::::::::::#
+#:::::::::::::::     America      :::::::::::::::#
+        0       0         0     0     0   Quito 
+        0       1         0     1     0   Lima  
+        0       2         0     2     0   Caracas 
+        0       3         0     3     0   Sucre  
+        0       4         0     0     1   Belmopan 
+        0       5         0     1     1   San_Salvador  
+        0       6         0     2     1   Tecugigalpa 
+        0       7         0     3     1   Managua 
+        0       8         0     0     2   Sacramento 
+        0       9         0     1     2   Denver  
+        0      10         0     2     2   Topeka 
+        0      11         0     3     2   Atlanta  
+        0      12         0     0     3   Olympia 
+        0      13         0     1     3   Helena  
+        0      14         0     2     3   Bismark 
+        0      15         0     3     3   St_Paul 
+
+
+#:::::::::::::::   B O A R D  1   :::::::::::::::#
+#:::::::::::::::     Africa      :::::::::::::::#
+        1       0         1     0     0   Luanda 
+        1       1         1     1     0   Brazzville  
+        1       2         1     2     0   Lusaka 
+        1       3         1     3     0   Pretoria  
+        1       4         1     0     1   Accra 
+        1       5         1     1     1   Lome  
+        1       6         1     2     1   Malabo 
+        1       7         1     3     1   Kampala 
+        1       8         1     0     2   Bissau 
+        1       9         1     1     2   Monrovia
+        1      10         1     2     2   Abuja 
+        1      11         1     3     2   Bangui  
+        1      12         1     0     3   Praia 
+        1      13         1     1     3   Dakar  
+        1      14         1     2     3   Bamako 
+        1      15         1     3     3   Khartoum 
+
+#:::::::::::::::   B O A R D  2   :::::::::::::::#
+#:::::::::::::::      Europa      :::::::::::::::#
+        2       0         2     0     0   Luanda 
+        2       1         2     1     0   Madrid  
+        2       2         2     2     0   Napoli 
+        2       3         2     3     0   Skopja  
+        2       4         2     0     1   Andorra 
+        2       5         2     1     1   San_Marino  
+        2       6         2     2     1   Ljubljana 
+        2       7         2     3     1   Novi_Sad 
+        2       8         2     0     2   Bern 
+        2       9         2     1     2   Munich  
+        2      10         2     2     2   Vienna 
+        2      11         2     3     2   Budapest  
+        2      12         2     0     3   Paris 
+        2      13         2     1     3   Luxemburg  
+        2      14         2     2     3   Prague 
+        2      15         2     3     3   Warsaw 
+
+#:::::::::::::::   B O A R D  3   :::::::::::::::#
+#:::::::::::::::       Asia       :::::::::::::::#
+        3       0         3     0     0   Asia 
+        3       1         3     1     0   Asia  
+        3       2         3     2     0   Asia  
+        3       3         3     3     0   Asia  
+        3       4         3     0     1   Asia  
+        3       5         3     1     1   Asia    
+        3       6         3     2     1   Asia  
+        3       7         3     3     1   Asia  
+        3       8         3     0     2   Asia  
+        3       9         3     1     2   Asia  
+        3      10         3     2     2   Asia  
+        3      11         3     3     2   Asia  
+        3      12         3     0     3   Asia  
+        3      13         3     1     3   Asia   
+        3      14         3     2     3   Asia  
+        3      15         3     3     3   Asia  
+              

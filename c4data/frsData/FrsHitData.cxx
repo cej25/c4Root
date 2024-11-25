@@ -17,8 +17,10 @@ void FrsHitItem::SetAll(uint64_t wr_t,
                     Float_t a4,
                     Float_t b4,
                     Float_t AoQ,
+                    Float_t AoQ_driftcorr,
                     Float_t AoQ_corr,
                     Float_t z,
+                    Float_t z_driftcorr,
                     Float_t z2,
                     Float_t z_travmus,
                     Float_t beta,
@@ -29,6 +31,7 @@ void FrsHitItem::SetAll(uint64_t wr_t,
                     Float_t* music_dE,
                     Float_t* music_dE_cor,
                     Float_t travmusic_dE,
+                    Float_t travmusic_dE_driftcorr,
                     Float_t travmusic_dE_cor,
                     Float_t* sci_e,
                     Float_t* sci_l,
@@ -62,8 +65,10 @@ void FrsHitItem::SetAll(uint64_t wr_t,
     fID_a4 = a4;
     fID_b4 = b4;
     fID_AoQ = AoQ;
+    fID_AoQ_driftcorr = AoQ_driftcorr;
     fID_AoQ_corr = AoQ_corr;
     fID_z = z;
+    fID_z_driftcorr = z_driftcorr;
     fID_z2 = z2;
     fID_z_travmus = z_travmus;
     fID_beta = beta;
@@ -74,6 +79,7 @@ void FrsHitItem::SetAll(uint64_t wr_t,
     for (int i = 0; i < 2; i++) fmusic_dE[i] = music_dE[i];
     for (int i = 0; i < 2; i++) fmusic_dE_cor[i] = music_dE_cor[i];
     ftravmusic_dE = travmusic_dE;
+    ftravmusic_dE_driftcorr = travmusic_dE_driftcorr;
     ftravmusic_dE_cor = travmusic_dE_cor;
     for (int i = 0; i < 6; i++) fsci_e[i] = sci_e[i];
     for (int i = 0; i < 6; i++) fsci_l[i] = sci_l[i];
@@ -110,8 +116,10 @@ void FrsHitItem::Reset()
     fID_a4 = 0;
     fID_b4 = 0;
     fID_AoQ = 0;
+    fID_AoQ_driftcorr = 0;
     fID_AoQ_corr = 0;
     fID_z = 0;
+    fID_z_driftcorr = 0;
     fID_z2 = 0;
     fID_z_travmus = 0;
     fID_beta = 0;
@@ -122,6 +130,7 @@ void FrsHitItem::Reset()
     memset(fmusic_dE, 0, sizeof(fmusic_dE));
     memset(fmusic_dE_cor, 0, sizeof(fmusic_dE_cor));
     ftravmusic_dE = 0;
+    ftravmusic_dE_driftcorr = 0;
     ftravmusic_dE_cor = 0;
     memset(fsci_e, 0, sizeof(fsci_e));
     memset(fsci_l, 0, sizeof(fsci_l));

@@ -69,7 +69,6 @@ InitStatus LisaOnlineSpectra::Init()
     num_layers = lisa_config->NLayers();
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
-
     TDirectory::TContext ctx(nullptr);
 
     dir_lisa = new TDirectory("LISA", "LISA", "", 0);
@@ -80,16 +79,6 @@ InitStatus LisaOnlineSpectra::Init()
     dir_stats = dir_lisa->mkdir("Stats");
     dir_energy = dir_lisa->mkdir("Energy");
     dir_traces = dir_lisa->mkdir("Traces");
-    
-    //dir_music = new TDirectory("MUSIC", "MUSIC", "", 0);
-    //mgr->Register("MUSIC", "MUSIC Directory", dir_music, false);
-    //histograms->Add(dir_music);
-
-    //dir_correlations = new TDirectory("Correlations", "Correlations", "", 0);
-    //mgr->Register("Correlations", "Correlations Directory", dir_correlations, false);
-    //histograms->Add(dir_correlations);
-
-    // layer names: Tokyo, Eris, Sparrow
   
     //:::::::::::White Rabbit:::::::::::::::
     dir_stats->cd();
@@ -113,8 +102,8 @@ InitStatus LisaOnlineSpectra::Init()
         int y = detector.second.second.second;
         
         // special case for weird layer
-        if (l != 0) h1_hitpattern_total->GetXaxis()->SetBinLabel(l * xmax * ymax + (ymax-(y+1))*xmax + x + 1 - 3, city.c_str());
-        else h1_hitpattern_total->GetXaxis()->SetBinLabel(1, city.c_str());
+        if (l != 0) h1_hitpattern_total->GetXaxis()->SetBinLabel(l * xmax * ymax + (ymax-(y+1))*xmax + x + 1 - 3, city.Data());
+        else h1_hitpattern_total->GetXaxis()->SetBinLabel(1, city.Data());
     }
 
     //:::::::::Layer
@@ -141,7 +130,7 @@ InitStatus LisaOnlineSpectra::Init()
                     break;
                 }
             }
-            h1_hitpattern_layer[i]->GetXaxis()->SetBinLabel(j+1, city.c_str());
+            h1_hitpattern_layer[i]->GetXaxis()->SetBinLabel(j+1, city.Data());
         }
        
     }
@@ -313,7 +302,7 @@ InitStatus LisaOnlineSpectra::Init()
                     }
                 }
 
-                h1_energy_layer_ch[i][j][k] = new TH1F(Form("energy_%s_%i_%i_%i", city.c_str(), i, j, k), city.c_str(), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+                h1_energy_layer_ch[i][j][k] = new TH1F(Form("energy_%s_%i_%i_%i", city.Data(), i, j, k), city.Data(), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
                 h1_energy_layer_ch[i][j][k]->GetXaxis()->SetTitle("E(LISA) [a.u.]");
                 //h1_energy_layer_ch[i][j][k]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
                 //h1_energy_layer_ch[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
@@ -489,7 +478,7 @@ InitStatus LisaOnlineSpectra::Init()
                     }
                 }
 
-                h1_traces_layer_ch[i][j][k] = new TH1F(Form("traces_%s_%i_%i_%i", city.c_str(), i, j, k), city.c_str(), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces); //2000,0,20
+                h1_traces_layer_ch[i][j][k] = new TH1F(Form("traces_%s_%i_%i_%i", city.Data(), i, j, k), city.Data(), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces); //2000,0,20
                 h1_traces_layer_ch[i][j][k]->GetXaxis()->SetTitle("Time [us]");
                 h1_traces_layer_ch[i][j][k]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
                 h1_traces_layer_ch[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
@@ -531,7 +520,7 @@ InitStatus LisaOnlineSpectra::Init()
                     }
                 }
 
-                h2_traces_layer_ch_stat[i][j][k] = new TH2F(Form("traces_stat_%s_%i_%i_%i", city.c_str(), i, j, k), city.c_str(), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces, 500,0,10000); //2000,0,20
+                h2_traces_layer_ch_stat[i][j][k] = new TH2F(Form("traces_stat_%s_%i_%i_%i", city.Data(), i, j, k), city.Data(), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces, 500,0,10000); //2000,0,20
                 h2_traces_layer_ch_stat[i][j][k]->GetXaxis()->SetTitle("Time [us]");
                 h2_traces_layer_ch_stat[i][j][k]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
                 h2_traces_layer_ch_stat[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
