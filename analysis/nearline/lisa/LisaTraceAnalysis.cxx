@@ -87,6 +87,10 @@ InitStatus LisaTraceAnalysis::Init()
     h1_energies_hit.resize(xmax*ymax*(layer_number-1));
     h2_traces_nothit.resize(xmax*ymax*(layer_number-1));
 
+    h2_maxmax.resize(2);
+    h2_maxmin.resize(2);
+    h2_minmin.resize(2);
+    
 
     // pareeksha negative traces
     //int tracerange[2] = {0,10000};
@@ -99,7 +103,9 @@ InitStatus LisaTraceAnalysis::Init()
 	c_energies[i] = new TCanvas(Form("c_energies_%d",i),Form("c_energies_%d",i), 650,350);
 	c_energies[i]->Divide(xmax,ymax);
 	dir_crosstalk->Append(c_energies[i]);
-	
+	h2_maxmax[i].resize(xmax*ymax);
+	h2_maxmin[i].resize(xmax*ymax);
+	h2_minmin[i].resize(xmax*ymax);
 	for (int j = 0; j < xmax; j++)
 	  {
 	    for (int k = 0; k < ymax; k++)
@@ -136,6 +142,9 @@ InitStatus LisaTraceAnalysis::Init()
 
 
 		h2_traces_nothit[i*(xmax*ymax)+ymax*j+k].resize(xmax*ymax);
+		h2_maxmax[i][j*ymax+k].resize(xmax*ymax);
+		h2_maxmin[i][j*ymax+k].resize(xmax*ymax);
+		h2_minmin[i][j*ymax+k].resize(xmax*ymax);
                 for(int jj=0;jj<xmax;jj++){
 		  for(int kk=0;kk<ymax;kk++){
 		    if(jj==j && kk==k)
@@ -146,6 +155,9 @@ InitStatus LisaTraceAnalysis::Init()
 		    h2_traces_nothit[i*(xmax*ymax)+ymax*j+k][ymax*jj+kk]->GetXaxis()->SetTitle("Time [us]");
 		    h2_traces_nothit[i*(xmax*ymax)+ymax*j+k][ymax*jj+kk]->GetYaxis()->SetTitle("Amplitude [arb. units]");
 		    h2_traces_nothit[i*(xmax*ymax)+ymax*j+k][ymax*jj+kk]->Draw("colz");
+		    h2_maxmax[i][(j*ymax)+k][(jj*ymax)+kk] = new TH2F(Form("maxmax_l%i_%i_%i_%i_%i", i, j, k, jj, kk),Form("maxmax_l%i_%i_%i_%i_%i", i, j, k, jj, kk),1000,tracerange[0],tracerange[1],1000,tracerange[0],tracerange[1]);
+		    h2_maxmin[i][(j*ymax)+k][(jj*ymax)+kk] = new TH2F(Form("maxmin_l%i_%i_%i_%i_%i", i, j, k, jj, kk),Form("maxmin_l%i_%i_%i_%i_%i", i, j, k, jj, kk),1000,tracerange[0],tracerange[1],1000,tracerange[0],tracerange[1]);
+		    h2_minmin[i][(j*ymax)+k][(jj*ymax)+kk] = new TH2F(Form("minmin_l%i_%i_%i_%i_%i", i, j, k, jj, kk),Form("minmin_l%i_%i_%i_%i_%i", i, j, k, jj, kk),1000,tracerange[0],tracerange[1],1000,tracerange[0],tracerange[1]);
 		  }// kk
 		}// jj
 
@@ -154,82 +166,146 @@ InitStatus LisaTraceAnalysis::Init()
 	      }// k to ymax
 	  }// j to xmax
       }// i to layers
-    
+    h2_traces_Ams = new TH2F("traces_Ams","traces_Ams",1000,tracerange[0],tracerange[1],1000,tracerange[0],tracerange[1]);
     return kSUCCESS;
 }
 
 
-void LisaTraceAnalysis::Exec(Option_t* option)
-{
-    wr_time = 0;
+void LisaTraceAnalysis::Exec(Option_t* option){
+  wr_time = 0;
 
-    int lhit =-1;
-    int xhit =-1;
-    int yhit =-1;
-    
-    //c4LOG(info, "Comment to slow down program for testing");
-    for (auto const & lisaCalItem : *lisaCalArray)
-    {
+  int lhit =-1;
+  int xhit =-1;
+  int yhit =-1;
 
-        wr_time = lisaCalItem.Get_wr_t();
-        //if (wr_time == 0)return;
 
-        //::::::: Retrieve Data ::::::::::::::
-        layer = lisaCalItem.Get_layer_id();
-	//c4LOG(info,"layer uncorrected " << layer);
-	// remove tokyo
-	if(layer<1)
-	  continue;
-	layer-=1;
+  int tracemax[2][2][2] = {{{0,0},{0,0}},{{0,0},{0,0}}};
+  int tracemin[2][2][2] = {{{9000,9000},{9000,9000}},{{9000,9000},{9000,9000}}};
+  
+  
+  //c4LOG(info, "Comment to slow down program for testing");
+  for (auto const & lisaCalItem : *lisaCalArray){
+
+    wr_time = lisaCalItem.Get_wr_t();
+    //if (wr_time == 0)return;
+
+    //::::::: Retrieve Data ::::::::::::::
+    layer = lisaCalItem.Get_layer_id();
+    //c4LOG(info,"layer uncorrected " << layer);
+    // remove tokyo
+    if(layer<1)
+      continue;
+    layer-=1;
 	
-        city = lisaCalItem.Get_city();
-        int xpos = lisaCalItem.Get_xposition();
-        int ypos = lisaCalItem.Get_yposition();
-        uint32_t energy = lisaCalItem.Get_energy();
-        std::vector<uint16_t> trace = lisaCalItem.Get_trace();
-        int pileup = lisaCalItem.Get_pileup();
-        int overflow = lisaCalItem.Get_overflow();
-        uint64_t evtno = header->GetEventno();
+    city = lisaCalItem.Get_city();
+    int xpos = lisaCalItem.Get_xposition();
+    int ypos = lisaCalItem.Get_yposition();
+    uint32_t energy = lisaCalItem.Get_energy();
+    std::vector<uint16_t> trace = lisaCalItem.Get_trace();
+    int pileup = lisaCalItem.Get_pileup();
+    int overflow = lisaCalItem.Get_overflow();
+    uint64_t evtno = header->GetEventno();
         
-	//c4LOG(info,"hit in x = " << xpos << ", y = " << ypos << ", z = " << layer << ", e = " <<energy);
+    //c4LOG(info,"hit in x = " << xpos << ", y = " << ypos << ", z = " << layer << ", e = " <<energy);
         
-        // //::::::::F I L L   H I S T O S:::::::
+    // //::::::::F I L L   H I S T O S:::::::
  
-	if(energy> -1e6){
-	  lhit = layer;
-	  xhit = xpos;
-	  yhit = ypos;
-	  //c4LOG(info,"filling h2_traces_hit[layer*(xmax*ymax)+ymax*xpos+ypos] " << layer*(xmax*ymax)+ymax*xpos+ypos);
-	  h1_energies_hit[layer*(xmax*ymax)+ymax*xpos+ypos]->Fill(energy);
-	  for (int t = 0; t < trace.size(); t++)
-	    h2_traces_hit[layer*(xmax*ymax)+ymax*xpos+ypos]->Fill(t,trace[t]);
-	}
-	
-	
+    //c4LOG(info,"filling h2_traces_hit[layer*(xmax*ymax)+ymax*xpos+ypos] " << layer*(xmax*ymax)+ymax*xpos+ypos);
+    h1_energies_hit[layer*(xmax*ymax)+ymax*xpos+ypos]->Fill(energy);
+    // since we do not have the energy, cut on a LED here
+    bool thishit = false;
+    for (int t = 0; t < trace.size(); t++){
+      if(trace[t]>tracemax[layer][xpos][ypos])
+	tracemax[layer][xpos][ypos] = trace[t];
+      if(trace[t]<tracemin[layer][xpos][ypos])
+	tracemin[layer][xpos][ypos] = trace[t];
+      
+      if(trace[t]>14000){
+	lhit = layer;
+	xhit = xpos;
+	yhit = ypos;
+	thishit = true;
+	//break;
+      }
+    }//trace points
+    if(thishit){
+      for (int t = 0; t < trace.size(); t++){
+	h2_traces_hit[layer*(xmax*ymax)+ymax*xpos+ypos]->Fill(t,trace[t]);
+      }//trace points
     }
-    for (auto const & lisaCalItem : *lisaCalArray)
-    {
-        //::::::: Retrieve Data ::::::::::::::
-        layer = lisaCalItem.Get_layer_id();
-	// same layer
-	layer-=1;
-	if(layer < 1 || layer!=lhit)
-	  continue;
-        int xpos = lisaCalItem.Get_xposition();
-        int ypos = lisaCalItem.Get_yposition();
-	if(xpos == xhit && ypos == yhit)
-	  continue;
-	//c4LOG(info,"not hit in x = " << xpos << ", y = " << ypos << ", z = " << layer);
-	//c4LOG(info,"filling h2_traces_nothit[layer*(xmax*ymax)+ymax*xpos+ypos][ymax*xpos+ypos] " << layer*(xmax*ymax)+ymax*xpos+ypos << " " << ymax*xpos+ypos);
-	std::vector<uint16_t> trace = lisaCalItem.Get_trace();
-	for (int t = 0; t < trace.size(); t++)
-	    h2_traces_nothit[layer*(xmax*ymax)+ymax*xhit+yhit][ymax*xpos+ypos]->Fill(t,trace[t]);
-	}
 	
+  }
+  for(int l=0;l<2;l++){
+    for(int x=0;x<2;x++){
+      for(int y=0;y<2;y++){
+
+	for(int xp=0;xp<2;xp++){
+	  for(int yp=0;yp<2;yp++){
+	    if(xp==x && yp==y)
+	      continue;
+	    h2_maxmax[l][(x*ymax)+y][(xp*ymax)+yp]->Fill(tracemax[l][x][y],tracemax[l][xp][yp]);
+	    h2_maxmin[l][(x*ymax)+y][(xp*ymax)+yp]->Fill(tracemax[l][x][y],tracemin[l][xp][yp]);
+	    h2_minmin[l][(x*ymax)+y][(xp*ymax)+yp]->Fill(tracemin[l][x][y],tracemin[l][xp][yp]);
+	  }
+	}
+	//
+      }
+    }
+  }
+  
+  for (auto const & lisaCalItem : *lisaCalArray){
+    //::::::: Retrieve Data ::::::::::::::
+    layer = lisaCalItem.Get_layer_id();
+    // same layer
+    layer-=1;
+    if(layer < 0 || layer!=lhit)
+      continue;
+    int xpos = lisaCalItem.Get_xposition();
+    int ypos = lisaCalItem.Get_yposition();
+    if(xpos == xhit && ypos == yhit)
+      continue;
+    //c4LOG(info,"not hit in x = " << xpos << ", y = " << ypos << ", z = " << layer);
+    //c4LOG(info,"filling h2_traces_nothit[layer*(xmax*ymax)+ymax*xpos+ypos][ymax*xpos+ypos] " << layer*(xmax*ymax)+ymax*xpos+ypos << " " << ymax*xpos+ypos);
+    std::vector<uint16_t> trace = lisaCalItem.Get_trace();
+    for (int t = 0; t < trace.size(); t++)
+      h2_traces_nothit[layer*(xmax*ymax)+ymax*xhit+yhit][ymax*xpos+ypos]->Fill(t,trace[t]);
+  }
+
+  // check amsterdam
+  std::vector<uint16_t> trace_Ams;
+  for (auto const & lisaCalItem : *lisaCalArray){
+    layer = lisaCalItem.Get_layer_id();
+    if(layer<1)
+      continue;
+    layer-=1;
+    
+    int xpos = lisaCalItem.Get_xposition();
+    int ypos = lisaCalItem.Get_yposition();
+    if(layer==0 && xpos == 1 && ypos == 0){
+      trace_Ams = lisaCalItem.Get_trace();
+      break;
+    }
+  }
+  if(trace_Ams.size()==0)
+    return;
+  for (auto const & lisaCalItem : *lisaCalArray){
+    layer = lisaCalItem.Get_layer_id();
+    if(layer<1)
+      continue;
+    layer-=1;
+    
+    int xpos = lisaCalItem.Get_xposition();
+    int ypos = lisaCalItem.Get_yposition();
+    if(layer==0 && xpos == 1 && ypos == 1){
+      std::vector<uint16_t> trace = lisaCalItem.Get_trace();
+      for (int t = 0; t < trace.size(); t++)
+	h2_traces_Ams->Fill(trace[t],trace_Ams[t]);
+    }
+  }//lisaCalArray
 
 
-    //c4LOG(info,"done with event " << fNEvents);
-    fNEvents += 1;
+  //c4LOG(info,"done with event " << fNEvents);
+  fNEvents += 1;
 }
 
 void LisaTraceAnalysis::FinishEvent()

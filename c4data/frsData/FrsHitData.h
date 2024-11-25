@@ -12,7 +12,6 @@ class FrsHitItem : public TObject
 
         void SetAll(uint64_t wr_t,
                     uint16_t tpat,
-                    uint64_t wr_travmus,
                     Float_t x2,
                     Float_t y2,
                     Float_t x4,
@@ -27,7 +26,6 @@ class FrsHitItem : public TObject
                     Float_t z,
                     Float_t z_driftcorr,
                     Float_t z2,
-                    Float_t z_travmus,
                     Float_t beta,
                     Float_t dEdeg,
                     Float_t dEdegoQ,
@@ -35,9 +33,6 @@ class FrsHitItem : public TObject
                     Float_t* brho,
                     Float_t* music_dE,
                     Float_t* music_dE_cor,
-                    Float_t travmusic_dE,
-                    Float_t travmusic_dE_driftcorr,
-                    Float_t travmusic_dE_cor,
                     Float_t* sci_e,
                     Float_t* sci_l,
                     Float_t* sci_r,
@@ -61,7 +56,6 @@ class FrsHitItem : public TObject
 
         uint64_t Get_wr_t() const;
         uint16_t Get_tpat() const;
-        uint64_t Get_wr_travmus() const;
         Float_t Get_ID_x2() const; //
         Float_t Get_ID_y2() const; //
         Float_t Get_ID_x4() const;
@@ -76,7 +70,6 @@ class FrsHitItem : public TObject
         Float_t Get_ID_z() const; //
         Float_t Get_ID_z_driftcorr() const;
         Float_t Get_ID_z2() const; //
-        Float_t Get_ID_z_travmus() const; //
         Float_t Get_ID_beta() const;
         Float_t Get_ID_dEdeg() const;
         Float_t Get_ID_dEdegoQ() const;
@@ -84,9 +77,6 @@ class FrsHitItem : public TObject
         Float_t Get_ID_brho(int index) const; 
         Float_t Get_music_dE(int index) const; //index 0 = music 1
         Float_t Get_music_dE_cor(int index) const; 
-        Float_t Get_travmusic_dE() const; //
-        Float_t Get_travmusic_dE_driftcorr() const;
-        Float_t Get_travmusic_dE_cor() const;
         Float_t Get_sci_e(int index) const;
         Float_t Get_sci_l(int index) const;
         Float_t Get_sci_r(int index) const;
@@ -113,7 +103,6 @@ class FrsHitItem : public TObject
 
         uint64_t fwr_t;
         uint16_t ftpat;
-        uint64_t fwr_travmus;
 
         // ids
         Float_t fID_x2;
@@ -130,7 +119,6 @@ class FrsHitItem : public TObject
         Float_t fID_z;
         Float_t fID_z_driftcorr;
         Float_t fID_z2;
-        Float_t fID_z_travmus;
         Float_t fID_beta;
         Float_t fID_dEdeg;
         Float_t fID_dEdegoQ;
@@ -141,9 +129,6 @@ class FrsHitItem : public TObject
         // we can't store this stuff in a tree as a pointer.....
         Float_t fmusic_dE[2]; // [2] // CEJ: 2? 3 for more musics?
         Float_t fmusic_dE_cor[2]; // [2]
-        Float_t ftravmusic_dE;
-        Float_t ftravmusic_dE_driftcorr;
-        Float_t ftravmusic_dE_cor;
         Float_t fsci_e[6]; // [6] // CEJ: by chance we need [6]. 5->2 but 10->5 (so 6 elements)
         Float_t fsci_l[6]; // [6]
         Float_t fsci_r[6]; // [6]
@@ -184,7 +169,6 @@ class FrsMultiHitItem : public TObject
                     Float_t AoQ_corr, 
                     Float_t z,
                     Float_t z2,
-                    Float_t z_travmus,
                     Float_t dEdeg,
                     Float_t dEdegoQ);
         void Reset();
@@ -199,7 +183,6 @@ class FrsMultiHitItem : public TObject
         Float_t Get_ID_AoQ_corr_mhtdc() const;
         Float_t Get_ID_z_mhtdc() const;
         Float_t Get_ID_z2_mhtdc() const;
-        Float_t Get_ID_z_travmus_mhtdc() const;
         Float_t Get_ID_dEdeg_mhtdc() const;
         Float_t Get_ID_dEdegoQ_mhtdc() const;
 
@@ -217,7 +200,6 @@ class FrsMultiHitItem : public TObject
         Float_t fID_AoQ_corr_mhtdc;
         Float_t fID_z_mhtdc;
         Float_t fID_z2_mhtdc;
-        Float_t fID_z_travmus_mhtdc;
         Float_t fID_dEdeg_mhtdc;
         Float_t fID_dEdegoQ_mhtdc;
 
@@ -237,11 +219,6 @@ inline uint16_t FrsHitItem::Get_tpat() const
 inline Float_t FrsHitItem::Get_ID_x2() const
 {
     return fID_x2;
-}
-
-inline uint64_t FrsHitItem::Get_wr_travmus() const
-{
-    return fwr_travmus;
 }
 
 inline Float_t FrsHitItem::Get_ID_y2() const
@@ -309,11 +286,6 @@ inline Float_t FrsHitItem::Get_ID_z2() const
     return fID_z2;
 }
 
-inline Float_t FrsHitItem::Get_ID_z_travmus() const
-{
-    return fID_z_travmus;
-}
-
 inline Float_t FrsHitItem::Get_ID_beta() const
 {
     return fID_beta;
@@ -348,22 +320,6 @@ inline Float_t FrsHitItem::Get_music_dE_cor(int index) const
 {
     return fmusic_dE_cor[index];
 }
-
-inline Float_t FrsHitItem::Get_travmusic_dE() const
-{
-    return ftravmusic_dE;
-}
-
-inline Float_t FrsHitItem::Get_travmusic_dE_driftcorr() const
-{
-    return ftravmusic_dE_driftcorr;
-}
-
-inline Float_t FrsHitItem::Get_travmusic_dE_cor() const
-{
-    return ftravmusic_dE_cor;
-}
-
 
 inline Float_t FrsHitItem::Get_sci_e(int index) const
 {
@@ -490,11 +446,6 @@ inline Float_t FrsMultiHitItem::Get_ID_z_mhtdc() const
 inline Float_t FrsMultiHitItem::Get_ID_z2_mhtdc() const
 {
     return fID_z2_mhtdc;
-}
-
-inline Float_t FrsMultiHitItem::Get_ID_z_travmus_mhtdc() const
-{
-    return fID_z_travmus_mhtdc;
 }
 
 inline Float_t FrsMultiHitItem::Get_ID_dEdeg_mhtdc() const

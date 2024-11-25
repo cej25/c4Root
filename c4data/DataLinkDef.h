@@ -22,6 +22,7 @@
 //#pragma link C++ class LisaAnaData+;
 #pragma link C++ class LisaTraceData+;
 #pragma link C++ class BeamMonitorData+;
+#pragma link C++ class BeamMonitorItem+;
 #pragma link C++ class TimeMachineData+;
 #pragma link C++ class BB7V7x5Item+;
 #pragma link C++ class BB7V1290Item+;
@@ -99,14 +100,15 @@
 #pragma link C++ class FrsTPCV1190Item+;
 #pragma link C++ class FrsUserV7X5Item+;
 #pragma link C++ class FrsUserV830Item+;
-#pragma link C++ class FrsTravMusAdcItem+;
-#pragma link C++ class FrsTravMusTdcItem+;
-#pragma link C++ class FrsTravMusCalItem+;
 #pragma link C++ class FrsTPCCalItem+;
 #pragma link C++ class FrsUserCalScalerItem+;
 #pragma link C++ class FrsUserCalSciItem+;
 #pragma link C++ class FrsUserCalMusicItem+;
 #pragma link C++ class FrsHitItem+;
 #pragma link C++ class FrsMultiHitItem+;
+#pragma link C++ class TravMusAdcItem+;
+#pragma link C++ class TravMusTdcItem+;
+#pragma link C++ class TravMusCalItem+;
+#pragma link C++ class TravMusAnaItem+;
 
 #endif
