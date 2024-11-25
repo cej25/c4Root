@@ -12,7 +12,7 @@
 #pragma link C++ class FrsOnlineSpectra+;
 #pragma link C++ class FrsRawSpectra+;
 #pragma link C++ class FrsCalSpectra+;
-#pragma link C++ class FrsTravMusSpectra+;
+#pragma link C++ class TravMusOnlineSpectra+;
 #pragma link C++ class GermaniumOnlineSpectra+;
 #pragma link C++ class GermaniumResolution+;
 #pragma link C++ class BGOOnlineSpectra+;
@@ -41,7 +41,7 @@
 #pragma link C++ class LisaTraceAnalysis+;
 #pragma link C++ class BB7NearlineSpectra+;
 #pragma link C++ class FimpNearlineSpectra+;
-#pragma link C++ class FrsNearlineTravMusSpectra+;
+#pragma link C++ class TravMusNearlineSpectra+;
 
 #pragma link C++ class FrsAidaCorrelations+;
 #pragma link C++ class FrsAidaCorrelationsOnline+;
