@@ -159,7 +159,7 @@ void pareeksha_histos(int fileNumber)
 
     //::::  Channel Energy GM ::::: (h1_energy_layer_ch)
     TLisaConfiguration::SetEnergyRangeGM(300,1500);
-    TLisaConfiguration::SetEnergyBinGM(500);
+    TLisaConfiguration::SetEnergyBinGM(900);
 
     //:::: LISA WR Time Difference :::::: (h1_wr_diff)
     TLisaConfiguration::SetWrDiffRange(0,100000000);
