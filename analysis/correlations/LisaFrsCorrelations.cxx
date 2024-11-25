@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                       E.M. Gandolfo, C.E. Jones                            *
+ *                               25..11.24                                    *
+ ******************************************************************************/
+
 #include "FairRootManager.h"
 #include "FairRunAna.h"
 #include "FairRunOnline.h"
@@ -5,7 +21,7 @@
 
 #include "LisaFrsCorrelations.h"
 #include "FrsHitData.h"
-#include "FrsTravMusCalData.h"
+#include "TravMusCalData.h"
 #include "LisaCalData.h"
 #include "TLisaConfiguration.h"     // not here
 #include "c4Logger.h"
@@ -29,7 +45,8 @@ LisaFrsCorrelations::LisaFrsCorrelations(const TString& name, Int_t verbose)
     :   FairTask(name, verbose)
     ,   header(nullptr)
     ,   lisaCalArray(nullptr)
-    ,   travMusicArray(nullptr)
+    ,   travMusCalArray(nullptr)
+    ,   travMusAnaArray(nullptr)
     ,   frsHitArray(nullptr)
     ,   fNEvents(0)
     ,   multihitArray(nullptr)
@@ -60,10 +77,13 @@ InitStatus LisaFrsCorrelations::Init()
     multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
     c4LOG_IF(fatal, !multihitArray, "Branch FrsMultiHitData not found!");
 
-    travMusicArray = mgr->InitObjectAs<decltype(travMusicArray)>("FrsTravMusCalData");
-    c4LOG_IF(fatal, !travMusicArray, "Branch FrsTravMusCalData not found!");
+    travMusCalArray = mgr->InitObjectAs<decltype(travMusCalArray)>("TravMusCalData");
+    c4LOG_IF(fatal, !travMusCalArray, "Branch TravMusCalData not found!");
 
-    //c4LOG(info," start init ");
+    // needed?
+    travMusAnaArray = mgr->InitObjectAs<decltype(travMusAnaArray)>("TravMusAnaData");
+    c4LOG_IF(fatal, !travMusAnaArray, "Branch TravMusAnaData not found!");
+
 
     layer_number = lisa_config->NLayers();
     xmax = lisa_config->XMax();
@@ -436,11 +456,10 @@ InitStatus LisaFrsCorrelations::Init()
 void LisaFrsCorrelations::Exec(Option_t* option)
 {   
     // reject events without both subsystems
-    if (lisaCalArray->size() <= 0 || frsHitArray->size() <= 0) return;  //frs and trav music are there
-    //if (lisaCalArray->size() <= 0 ) return;                           //for when travmusic is there but not frs
+    if (frsHitArray->size() <= 0 || travMusAnaArray->size() <= 0 || lisaCalArray->size() <= 0) return; // frs, lisa and travmus subevent exists
 
-    const auto & frsHitItem = frsHitArray->at(0);                       // *should* only be 1 FRS subevent per event
-    const auto & travMusicHitItem = travMusicArray->at(0); 
+    const auto & frsHitItem = frsHitArray->at(0); // *should* only be 1 FRS subevent per event
+    const auto & travMusicHitItem = travMusAnaArray->at(0); 
     
     //const auto & multihitItem = multihitArray->at(0);                 // *should* only be 1 FRS subevent per event
 
@@ -473,9 +492,9 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     // Energy from frs
     energy_MUSIC_1 = frsHitItem.Get_music_dE(0); 
     energy_MUSIC_2 = frsHitItem.Get_music_dE(1);
-    energy_travMUSIC = frsHitItem.Get_travmusic_dE();
-    energy_travMUSIC_driftcorr = frsHitItem.Get_travmusic_dE_driftcorr();
-    //energy_travMUSIC = travMusHitItem.Get_travmusic_dE();
+    energy_travMUSIC = travMusicHitItem.Get_travmusic_dE();
+    // CEJ needs adding
+    energy_travMUSIC_driftcorr = travMusicHitItem.Get_travmusic_dE_driftcorr();
     //c4LOG(info, "travMUS en : " << energy_travMUSIC << " music 1 : " << energy_MUSIC_1 << " sum energy 1 : " << sum_energy_layer[1]);
 
 
@@ -562,7 +581,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                     //h1_energy_layer_ch_GM_PIDgated[gate][layer][xpos][ypos]->Fill(energy_LISA_GM);
 
                     //::: Gate on Trav Music
-                    if(frsHitItem.Get_travmusic_dE() >= frs_config->fMin_dE_travMus_gate && frsHitItem.Get_travmusic_dE() <= frs_config->fMax_dE_travMus_gate)
+                    if(travMusicHitItem.Get_travmusic_dE() >= frs_config->fMin_dE_travMus_gate && travMusicHitItem.Get_travmusic_dE() <= frs_config->fMax_dE_travMus_gate)
                     {   
                         //h1_energy_layer_ch_GM_PIDgated_Trav[gate][layer][xpos][ypos]->Fill(energy_LISA_GM);
                         h1_energy_layer_GM_PID_TM[gate][layer]->Fill(energy_LISA_GM);
@@ -589,7 +608,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
 
                     h1_energy_layer_GM_PID_driftcorr[gate][layer]->Fill(energy_LISA_GM);
                     //::: Gate on Trav Music Drift Corrected
-                    if(frsHitItem.Get_travmusic_dE_driftcorr() >= frs_config->fMin_dE_travMus_gate && frsHitItem.Get_travmusic_dE_driftcorr() <= frs_config->fMax_dE_travMus_gate)
+                    if(travMusicHitItem.Get_travmusic_dE_driftcorr() >= frs_config->fMin_dE_travMus_gate && travMusicHitItem.Get_travmusic_dE_driftcorr() <= frs_config->fMax_dE_travMus_gate)
                     {   
 
                         h1_energy_ch_GM_PID_TM_driftcorr[gate][layer][xpos][ypos]->Fill(energy_LISA_GM);

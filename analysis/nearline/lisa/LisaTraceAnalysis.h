@@ -71,10 +71,13 @@ class LisaTraceAnalysis : public FairTask
         std::vector<TH2F*> h2_traces_hit;
         std::vector<TH1F*> h1_energies_hit;
         std::vector< std::vector<TH2F*> > h2_traces_nothit;
+
         Int_t layer;
         uint64_t wr_time;
- 
-        
+        TH2F* h2_traces_Ams;
+  std::vector<std::vector<std::vector<TH2F*> > > h2_maxmax;
+  std::vector<std::vector<std::vector<TH2F*> > > h2_maxmin;
+  std::vector<std::vector<std::vector<TH2F*> > > h2_minmin;
 
     public:
         ClassDef(LisaTraceAnalysis, 1)
