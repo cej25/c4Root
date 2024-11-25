@@ -1,8 +1,9 @@
-#ifndef FrsTravMusSpectra_H
-#define FrsTravMusSpectra_H 1
+#ifndef TravMusOnlineSpectra_H
+#define TravMusOnlineSpectra_H 1
 
 #include "TFrsConfiguration.h"
-#include "FrsTravMusCalData.h"
+#include "TravMusCalData.h"
+#include "TravMusAnaData.h"
 
 #include "FairTask.h"
 #include "TH1.h"
@@ -13,7 +14,7 @@ class EventHeader;
 class TFolder;
 class TDirectory;
 class TCanvas;
-class FrsTravMusCalItem;
+class TravMusCalItem;
 class TH1F;
 class TH2F;
 class TH1D;
@@ -21,14 +22,14 @@ class TH1I;
 class TH2D;
 class TH2I;
 
-class FrsTravMusSpectra : public FairTask
+class TravMusOnlineSpectra : public FairTask
 {
     public:
-        FrsTravMusSpectra();
+        TravMusOnlineSpectra();
 
-        FrsTravMusSpectra(const TString& name, Int_t verbose = 1);
+        TravMusOnlineSpectra(const TString& name, Int_t verbose = 1);
 
-        virtual ~FrsTravMusSpectra();
+        virtual ~TravMusOnlineSpectra();
 
         virtual InitStatus Init();
 
@@ -43,7 +44,8 @@ class FrsTravMusSpectra : public FairTask
     private:
         TFrsConfiguration const* frs_config;
 
-        std::vector<FrsTravMusCalItem> const* travMusicArray;
+        std::vector<TravMusCalItem> const* travMusCalArray;
+        std::vector<TravMusAnaItem> const* travMusAnaArray;
 
         EventHeader* header;
         Int_t fNEvents;
@@ -59,7 +61,7 @@ class FrsTravMusSpectra : public FairTask
         TH1I* h1_travmus_raw_adc[8];
 
     public:
-        ClassDef(FrsTravMusSpectra, 1)
+        ClassDef(TravMusOnlineSpectra, 1)
 
 };
 

@@ -29,6 +29,11 @@ class TFrsConfiguration
                         TMRTOFMSParameter*,
                         TRangeParameter*);
         static void SetConfigPath(std::string cp) { config_path = cp; }
+        static void SetTravMusDriftFile(std::string fp) { tm_drift_coeff_file = fp; }
+        static void SetAoQDriftFile(std::string fp) { aoq_drift_coeff_file = fp; }
+        static void SetZ1DriftFile(std::string fp) { z1_drift_coeff_file = fp; }
+
+    
 
         TFRSParameter* FRS() const;
         TMWParameter* MW() const;
@@ -67,6 +72,8 @@ class TFrsConfiguration
         static Double_t fMin_dE_Music1, fMax_dE_Music1;
         static Double_t fMin_dE_Music2, fMax_dE_Music2;
         static Double_t fMin_dE_travMus_gate, fMax_dE_travMus_gate;
+        static int frun_num;
+
 
         static void Set_Z_range(Double_t, Double_t);
         static void Set_AoQ_range(Double_t, Double_t);
@@ -92,14 +99,23 @@ class TFrsConfiguration
         void Plot_MHTDC_1D(bool option) { plot_mhtdc_1d = option; }
         void Plot_MHTDC_2D(bool option) { plot_mhtdc_1d = option; }
 
+        static void SetRunNumber(int run_num) { frun_num = run_num; }
+
         bool plot_tac_1d = true;
         bool plot_tac_2d = true;
         bool plot_mhtdc_1d = true;
         bool plot_mhtdc_2d = true;
 
 
+        //:::: Drift for TravMus
+        std::map<int, std::pair<double,double>> TravMusDriftCoefficients() const;
+        bool TravMusDriftLoaded() const;
+        std::map<int, std::pair<double,double>> AoQDriftCoefficients() const;
+        bool AoQDriftLoaded() const;
+        std::map<int, std::pair<double,double>> Z1DriftCoefficients() const;
+        bool Z1DriftLoaded() const;
 
-        
+
 
     private:
 
@@ -108,6 +124,15 @@ class TFrsConfiguration
 
         static std::string scaler_mapping_file;
         void ReadScalerNames();
+
+        static std::string tm_drift_coeff_file;
+        void ReadTravMusDriftFile();
+
+        static std::string aoq_drift_coeff_file;
+        void ReadAoQDriftFile();
+
+        static std::string z1_drift_coeff_file;
+        void ReadZ1DriftFile();
 
         static TFrsConfiguration* instance;
 
@@ -127,6 +152,16 @@ class TFrsConfiguration
         // Mappings
         std::string scaler_name[66];
         std::string sci_names[6];
+
+        // ::_ Drift
+        std::map<int, std::pair<double,double> > travmus_drift_coeff;
+        bool travmus_drift_loaded = 0;
+        std::map<int, std::pair<double,double> > aoq_drift_coeff;
+        bool aoq_drift_loaded = 0;
+        std::map<int, std::pair<double,double> > z1_drift_coeff;
+        bool z1_drift_loaded = 0;
+
+
 };
 
 inline TFrsConfiguration const* TFrsConfiguration::GetInstance()
@@ -208,6 +243,35 @@ inline std::string TFrsConfiguration::GetConfigPath() const
     return config_path;
 }
 
+//::: Drift Trav Mus
+inline std::map<int, std::pair<double,double> > TFrsConfiguration::TravMusDriftCoefficients() const
+{
+    return travmus_drift_coeff;
+}
 
+inline bool TFrsConfiguration::TravMusDriftLoaded() const
+{
+    return travmus_drift_loaded;
+}
+
+inline std::map<int, std::pair<double,double> > TFrsConfiguration::AoQDriftCoefficients() const
+{
+    return aoq_drift_coeff;
+}
+
+inline bool TFrsConfiguration::AoQDriftLoaded() const
+{
+    return aoq_drift_loaded;
+}
+
+inline std::map<int, std::pair<double,double> > TFrsConfiguration::Z1DriftCoefficients() const
+{
+    return z1_drift_coeff;
+}
+
+inline bool TFrsConfiguration::Z1DriftLoaded() const
+{
+    return z1_drift_loaded;
+}
 
 #endif

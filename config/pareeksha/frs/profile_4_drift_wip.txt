@@ -1,0 +1,11 @@
+//::: EG 20nov
+//Notes on profile extraction
+//Soon to be macro 
+
+_file0->cd("FRS/Drift Monitors")
+h2_AoQ_vs_T->Draw()
+TProfile* profileX0 = h2_AoQ_vs_T->ProfileX("CUTG0")
+profileX0->Draw()
+
+TProfile* profileX0 = h2_AoQ_vs_T->ProfileX("CUTG0"); std::ofstream outFile("AoQ_Drift.txt"); outFile << "BinCenter\tBinContent\tBinError" << std::endl; for (int i = 1; i <= profileX0->GetNbinsX(); ++i) { if (profileX0->GetBinContent(i) != 0) { outFile << profileX0->GetBinCenter(i) << "\t" << profileX0->GetBinContent(i) << "\t" << profileX0->GetBinError(i) << std::endl; } } outFile.close();
+

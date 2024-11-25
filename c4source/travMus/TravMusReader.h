@@ -1,7 +1,7 @@
-#ifndef FrsTravMusReader_H
-#define FrsTravMusReader_H
+#ifndef TravMusReader_H
+#define TravMusReader_H
 
-#include "FrsTravMusData.h"
+#include "TravMusData.h"
 #include "c4Reader.h"
 #include <Rtypes.h>
 #include <vector>
@@ -12,19 +12,19 @@ extern "C"
     #include "ext_h101_travmus.h"
 }
 
-class FrsTravMusData;
+class TravMusData;
 
 struct EXT_STR_h101_travmus_t;
 typedef struct EXT_STR_h101_travmus_t EXT_STR_h101_travmus;
 typedef struct EXT_STR_h101_travmus_onion_t EXT_STR_h101_travmus_onion;
 class ext_data_struct_info;
 
-class FrsTravMusReader : public c4Reader
+class TravMusReader : public c4Reader
 {
     public:
-        FrsTravMusReader(EXT_STR_h101_travmus_onion*, size_t);
+        TravMusReader(EXT_STR_h101_travmus_onion*, size_t);
 
-        virtual ~FrsTravMusReader();
+        virtual ~TravMusReader();
 
         virtual Bool_t Init(ext_data_struct_info*) override;
 
@@ -49,11 +49,11 @@ class FrsTravMusReader : public c4Reader
 
         EventHeader* header;
 
-        std::vector<FrsTravMusAdcItem>* adcArray;
-        std::vector<FrsTravMusTdcItem>* tdcArray;
+        std::vector<TravMusAdcItem>* adcArray;
+        std::vector<TravMusTdcItem>* tdcArray;
 
     public:
-        ClassDefOverride(FrsTravMusReader, 0);
+        ClassDefOverride(TravMusReader, 0);
 };
 
 #endif
