@@ -69,7 +69,6 @@ class TravMusNearlineSpectra : public FairTask
         TH2* h2_travmus_vs_Z;
 
         TH1* h1_Z_travmus;
-        TH1* h1_travmus_dE;
 
         TH2* h2_travmus_vs_Z_mhtdc;
 

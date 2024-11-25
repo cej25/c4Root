@@ -246,6 +246,17 @@ void TravMusNearlineSpectra::Exec(Option_t* option)
     // if (hitItem.Get_travmusic_dE_driftcorr() > 0) h1_travmus_dE_driftcorr->Fill(hitItem.Get_travmusic_dE_driftcorr());
     // //:: TM
 
+
+    // if(hitItem.Get_travmusic_dE_driftcorr() >= frs_config->fMin_dE_travMus_gate && hitItem.Get_travmusic_dE_driftcorr() <= frs_config->fMax_dE_travMus_gate)
+    // {
+    //     h2_Z_vs_AoQ_tac_trav_gate_driftcorr->Fill(hitItem.Get_ID_AoQ_driftcorr(), hitItem.Get_ID_z_driftcorr());
+    // }
+
+    // if(hitItem.Get_travmusic_dE() >= frs_config->fMin_dE_travMus_gate && hitItem.Get_travmusic_dE() <= frs_config->fMax_dE_travMus_gate)
+    // {
+    //     h2_Z_vs_AoQ_driftcorr_trav_gate->Fill(hitItem.Get_ID_AoQ_driftcorr(), hitItem.Get_ID_z_driftcorr());
+    // }
+
     fNEvents += 1;
 }
 

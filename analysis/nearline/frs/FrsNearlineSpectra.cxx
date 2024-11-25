@@ -488,10 +488,6 @@ void FrsNearlineSpectra::Exec(Option_t* option)
 
         if (hitItem.Get_ID_AoQ() > 0 && hitItem.Get_ID_z() > 0) h2_Z_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_z());
         if (hitItem.Get_ID_AoQ_driftcorr() > 0 && hitItem.Get_ID_z_driftcorr() > 0) h2_Z_vs_AoQ_driftcorr->Fill(hitItem.Get_ID_AoQ_driftcorr(), hitItem.Get_ID_z_driftcorr());
-        if(hitItem.Get_travmusic_dE_driftcorr() >= frs_config->fMin_dE_travMus_gate && hitItem.Get_travmusic_dE_driftcorr() <= frs_config->fMax_dE_travMus_gate)
-        {
-            h2_Z_vs_AoQ_tac_trav_gate_driftcorr->Fill(hitItem.Get_ID_AoQ_driftcorr(), hitItem.Get_ID_z_driftcorr());
-        }
         
         if (hitItem.Get_ID_AoQ_corr() > 0 && hitItem.Get_ID_z() > 0) h2_Z_vs_AoQ_corr->Fill(hitItem.Get_ID_AoQ_corr(), hitItem.Get_ID_z());
         if (hitItem.Get_ID_z() > 0 && hitItem.Get_ID_z2() > 0) h2_Z_vs_Z2->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_z2());
@@ -590,11 +586,6 @@ void FrsNearlineSpectra::Exec(Option_t* option)
                     if(fabs(hitItem.Get_ID_z2() - hitItem.Get_ID_z()) < 0.4) h2_Z_vs_AoQ_Zsame_dEdegZgate[gate]->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_z());
                 }
             }
-        }
-
-        if(hitItem.Get_travmusic_dE() >= frs_config->fMin_dE_travMus_gate && hitItem.Get_travmusic_dE() <= frs_config->fMax_dE_travMus_gate)
-        {
-            h2_Z_vs_AoQ_driftcorr_trav_gate->Fill(hitItem.Get_ID_AoQ_driftcorr(), hitItem.Get_ID_z_driftcorr());
         }
 
     }
