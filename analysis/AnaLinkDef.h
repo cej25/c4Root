@@ -12,7 +12,7 @@
 #pragma link C++ class FrsOnlineSpectra+;
 #pragma link C++ class FrsRawSpectra+;
 #pragma link C++ class FrsCalSpectra+;
-#pragma link C++ class TravMusSpectra+;
+#pragma link C++ class TravMusOnlineSpectra+;
 #pragma link C++ class GermaniumOnlineSpectra+;
 #pragma link C++ class GermaniumResolution+;
 #pragma link C++ class BGOOnlineSpectra+;

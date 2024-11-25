@@ -107,5 +107,6 @@
 #pragma link C++ class TravMusAdcItem+;
 #pragma link C++ class TravMusTdcItem+;
 #pragma link C++ class TravMusCalItem+;
+#pragma link C++ class TravMusAnaItem+;
 
 #endif
