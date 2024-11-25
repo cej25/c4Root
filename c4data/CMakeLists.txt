@@ -41,6 +41,7 @@ frsData/FrsTravMusCalData.cxx
 frsData/FrsHitData.cxx
 lisaData/LisaData.cxx
 lisaData/LisaCalData.cxx
+#lisaData/LisaAnaData.cxx
 lisaData/LisaTraceData.cxx
 aidaData/AidaData.cxx
 aidaData/AidaCalData.cxx

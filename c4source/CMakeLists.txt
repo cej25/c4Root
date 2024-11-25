@@ -33,6 +33,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
 ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
 ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 ${C4ROOT_SOURCE_DIR}/c4data/fimpData
+${C4ROOT_SOURCE_DIR}/c4data/baseData
 )
 
 set(LINK_DIRECTORIES
@@ -69,6 +70,7 @@ set(SRCS
 ./germanium/GermaniumReader.cxx
 ./lisa/LisaReader.cxx
 ./lisa/LisaRaw2Cal.cxx
+#./lisa/LisaRaw2Ana.cxx
 ./bplast/bPlastReader.cxx
 ./bplast/bPlastRaw2Cal.cxx
 ./beammonitor/BeamMonitorReader.cxx

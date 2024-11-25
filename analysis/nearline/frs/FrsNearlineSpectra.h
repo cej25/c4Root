@@ -13,6 +13,9 @@
 #include "TDirectory.h"
 #include "TFile.h"
 #include "FrsGate.h"
+#include "TLine.h"
+#include "TText.h"
+#include "TCanvas.h"
 
 class TFrsConfiguration;
 class TExperimentConfiguration;
@@ -94,10 +97,14 @@ class FrsNearlineSpectra : public FairTask
         TDirectory* dir_x2vsAoQ_mhtdc; 
         TDirectory* dir_x4vsAoQ_mhtdc;
         TDirectory* dir_dEdegvsZ_mhtdc;
+
+        //canvases
+        TCanvas* c_TravMus_drift;
     
         // Histograms
         // TAC 2D + Gated
         TH2* h2_Z_vs_AoQ;
+        TH2* h2_Z_vs_AoQ_driftcorr;
         TH2* h2_Z_vs_AoQ_corr;
         TH2* h2_Z_vs_Z2;
         TH2* h2_travmus_vs_Z;
@@ -157,13 +164,16 @@ class FrsNearlineSpectra : public FairTask
         std::vector<TH2*> h2_x2_vs_AoQ_dEdegZgate;
         std::vector<TH2*> h2_x4_vs_AoQ_dEdegZgate;
         std::vector<TH2*> h2_Z_vs_AoQ_Zsame_dEdegZgate; // 
+        
 
         // TAC 1D // :: Should add gated a2/a4 here if they're really desired
         TH1* h1_tpat;
         TH1* h1_Z;
+        TH1* h1_Z_driftcorr;
         TH1* h1_Z2;
         TH1* h1_Z_travmus;
         TH1* h1_AoQ;
+        TH1* h1_AoQ_driftcorr;
         TH1* h1_AoQ_corr;
         TH1* h1_x2;
         TH1* h1_x4;
@@ -180,6 +190,7 @@ class FrsNearlineSpectra : public FairTask
         TH1* h1_brho[2];
         TH1* h1_music_dE[2];
         TH1* h1_travmus_dE;
+        TH1* h1_travmus_dE_driftcorr;
         TH1* h1_music_dEcorr[2];
         TH1* h1_sci_e[6];
         TH1* h1_sci_l[6];
@@ -249,6 +260,8 @@ class FrsNearlineSpectra : public FairTask
         std::vector<TH2*> h2_Z_vs_AoQ_Zsame_dEdegZgate_mhtdc; // 
         // not a PID gate but an energy gate on trav Z
         TH2* h2_Z_vs_AoQ_mhtdc_trav_gate;
+        TH2* h2_Z_vs_AoQ_tac_trav_gate_driftcorr;
+        TH2* h2_Z_vs_AoQ_driftcorr_trav_gate;
 
 
         // MHTDC 1D
@@ -263,11 +276,25 @@ class FrsNearlineSpectra : public FairTask
 
         // Drifts
         TH2* h2_Z1_vs_T;
+        TH2* h2_Z1_driftcorr_vs_T;
         TH2* h2_AoQ_vs_T;
+        TH2* h2_AoQ_driftcorr_vs_T;
         TH2* h2_Z1_vs_T_mhtdc;
         TH2* h2_AoQ_vs_T_mhtdc;
         TH2* h2_sci_tof_vs_T[6];
         TH2* h2_tpc_vs_T[6];
+        TH2D* h2_TravMus_vs_T;
+        TH2D* h2_TravMus_driftcorr_vs_T;
+
+        // Lines and Text
+        TLine* hline;
+        TLine* left_bar;
+        TLine* right_bar;
+        TText* run_number_text;
+
+        double frs_time_min;
+        double frs_time_max;
+        
 
         // Scalers
         char scaler_name[66][256]; // don't need perhaps

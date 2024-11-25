@@ -1,5 +1,5 @@
 #:::::::  Gain Matching parameters LISA - Pareeksha :::::::
-#:::::::  ATTENZIONE : these coeff are GM and cal together :::::
+#:::::::  ATTENZIONE : these coeffs are GM and cal together :::::
 #:::::::    | Layer | x | y | slope | intercept |   :::::::
 
 #:::: Layer 1 - Eris :::::

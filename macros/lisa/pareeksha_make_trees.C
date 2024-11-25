@@ -2,18 +2,19 @@
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define LISA_ON 1
-#define FRS_ON 0
-#define TRAV_MUSIC_ON 0
+#define FRS_ON 1
+#define TRAV_MUSIC_ON 1
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
 
 //Select the data level you want to visualize
 #define LISA_RAW 0
+//#define LISA_MDW 0
 #define LISA_CAL 1
 
 // Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/
 extern "C"
 {
-    #include "../../config/pareeksha/frs/setup_s092_010_2024_conv.C"
+    #include "../../config/pareeksha/frs/setup_Fragment_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -29,7 +30,7 @@ typedef struct EXT_STR_h101_t
 
 } EXT_STR_h101;
 
-void pareeksha_make_trees()
+void pareeksha_make_trees(int fileNumber)
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
@@ -60,11 +61,13 @@ void pareeksha_make_trees()
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0169_*.lmd";  //data with only lisa
     //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/daqtest/daqtest_0001_0001.lmd"; //data from ts folder
-    TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0036_0001.lmd"; //from time stitched files
+    TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";
+    TString filename = Form(inputpath + "run_%04d_*.lmd", fileNumber);
 
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/";
-    TString outputFilename = outputpath + "run_0036_001_EG.root";
+    //TString outputpath = "/u/gandolfo/data/"; //testing
+    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/fragments_EG_test/";    
+    TString outputFilename = Form(outputpath + "run_%04d_EG.root", fileNumber);
 
 
     //:::::::Create online run
@@ -114,9 +117,19 @@ void pareeksha_make_trees()
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
+    // ::: Exp config
+    TExperimentConfiguration::SetExperimentStart(1715734200000000000);//Start of pareeksha with primary beam: 15 May 00:50
+    
+    // ::: FRS config
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
+    TFrsConfiguration::SetTravMusDriftFile(config_path + "/frs/TM_Drift_fragments.txt");
+    TFrsConfiguration::SetZ1DriftFile(config_path + "/frs/Z1_Drift_fragments.txt");
+    TFrsConfiguration::SetAoQDriftFile(config_path + "/frs/AoQ_Drift_fragments.txt");
+
+    // ::: Lisa config
     TLisaConfiguration::SetMappingFile(config_path + "/lisa/Lisa_Detector_Map_names.txt");
     TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching.txt");
+    //TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
 
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -178,7 +191,7 @@ void pareeksha_make_trees()
     {
         LisaRaw2Cal* lisaraw2cal = new LisaRaw2Cal();
 
-        lisaraw2cal->SetOnline(true);
+        lisaraw2cal->SetOnline(false);
         run->AddTask(lisaraw2cal);  
     }
 

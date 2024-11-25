@@ -24,7 +24,18 @@ FrsGate::FrsGate(std::string gn, std::string file_name)
     cut_x4_AoQ!=nullptr,
     cut_dEdeg_Z!=nullptr));
 
+    //::: Drift corrected
+    cut_Z_AoQ_driftcorr = (TCutG*)infile->Get("cut_Z_AoQ_driftcorr");
+    
+    if (cut_Z_AoQ_driftcorr)
+    {
+        c4LOG(info, Form("PID gate cut_Z_AoQ_driftcorr loaded with cuts on Z/AoQ = %i",
+        cut_Z_AoQ_driftcorr!=nullptr));
+    }
+
     infile->Close();
+
+
 
 
 };
@@ -124,5 +135,15 @@ bool FrsGate::Passed_dEdegvsZ(double Z, double dEdeg)
     
     return passed_gate_cut_dEdeg_Z;
 }
+
+bool FrsGate::Passed_ZvsAoQ_driftcorr(double Z_driftcorr, double AoQ_driftcorr)
+{
+    bool passed_gate_cut_Z_AoQ_driftcorr = false;
+    if (cut_Z_AoQ_driftcorr != nullptr) passed_gate_cut_Z_AoQ_driftcorr = cut_Z_AoQ_driftcorr->IsInside(AoQ_driftcorr, Z_driftcorr);
+    else passed_gate_cut_Z_AoQ_driftcorr = true;
+    
+    return passed_gate_cut_Z_AoQ_driftcorr;
+}
+
 
 ClassImp(FrsGate)

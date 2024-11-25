@@ -19,6 +19,7 @@
 #pragma link C++ class bPlastOnlineSpectra+;
 #pragma link C++ class BeamMonitorOnlineSpectra+;
 #pragma link C++ class LisaOnlineSpectra+;
+#pragma link C++ class LisaOnlineSpectraDaq+;
 #pragma link C++ class FatimaOnlineSpectra+;
 #pragma link C++ class FatimaVmeOnlineSpectra+;
 #pragma link C++ class TimeMachineOnline+;
@@ -36,6 +37,7 @@
 #pragma link C++ class WhiterabbitCorrelationNearline+;
 #pragma link C++ class TimeMachineNearline+;
 #pragma link C++ class LisaNearlineSpectra+;
+#pragma link C++ class LisaNearlineSpectraDaq+;
 #pragma link C++ class LisaTraceAnalysis+;
 #pragma link C++ class BB7NearlineSpectra+;
 #pragma link C++ class FimpNearlineSpectra+;
