@@ -164,8 +164,11 @@ void FrsCal2Hit::Exec(Option_t* option)
 
     wr_t = tpatItem.Get_wr_t();
     tpat = tpatItem.Get_tpat();
+    if (wr_t == 0) return;
 
-    if (wr_t == 0) return; // ACTUAL no whiterabbit
+    Long64_t FRS_time_mins = 0;
+    FRS_time_mins = (wr_t - exp_config->exp_start_time)/ 60E9;
+
 
     if (scaler_check_first_event == 1)
     {
@@ -1314,7 +1317,7 @@ void FrsCal2Hit::Exec(Option_t* option)
             double aoq_shift = drift_aoq - aoq_reference_value;
             //std::cout << "::::  AoQ value  " << id_AoQ <<"\n";
             
-            if ((FRS_TM_time_mins >= (aoq_frs_wr_time - bin/2)) && (FRS_TM_time_mins < (aoq_frs_wr_time + bin/2)))
+            if ((FRS_time_mins >= (aoq_frs_wr_time - bin/2)) && (FRS_time_mins < (aoq_frs_wr_time + bin/2)))
             {
                 id_AoQ_driftcorr = id_AoQ - aoq_shift;
                 // std::cout  << " reference :" << aoq_reference_value
@@ -1359,7 +1362,7 @@ void FrsCal2Hit::Exec(Option_t* option)
             double z1_shift = drift_z1 - z1_reference_value;
             //std::cout << "::::  Z1 " << id_z <<"\n";
 
-            if ((FRS_TM_time_mins >= (z1_frs_wr_time - bin/2)) && (FRS_TM_time_mins < (z1_frs_wr_time + bin/2)))
+            if ((FRS_time_mins >= (z1_frs_wr_time - bin/2)) && (FRS_time_mins < (z1_frs_wr_time + bin/2)))
             {
                 //std::cout << "::::  in loop  Z1 " << id_z <<"\n";
                 id_z_driftcorr = id_z - z1_shift;

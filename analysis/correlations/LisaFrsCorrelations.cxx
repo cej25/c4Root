@@ -494,7 +494,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     energy_MUSIC_2 = frsHitItem.Get_music_dE(1);
     energy_travMUSIC = travMusicHitItem.Get_travmusic_dE();
     // CEJ needs adding
-    energy_travMUSIC_driftcorr = frsHitItem.Get_travmusic_dE_driftcorr();
+    energy_travMUSIC_driftcorr = travMusicHitItem.Get_travmusic_dE_driftcorr();
     //c4LOG(info, "travMUS en : " << energy_travMUSIC << " music 1 : " << energy_MUSIC_1 << " sum energy 1 : " << sum_energy_layer[1]);
 
 
@@ -608,7 +608,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
 
                     h1_energy_layer_GM_PID_driftcorr[gate][layer]->Fill(energy_LISA_GM);
                     //::: Gate on Trav Music Drift Corrected
-                    if(frsHitItem.Get_travmusic_dE_driftcorr() >= frs_config->fMin_dE_travMus_gate && frsHitItem.Get_travmusic_dE_driftcorr() <= frs_config->fMax_dE_travMus_gate)
+                    if(travMusicHitItem.Get_travmusic_dE_driftcorr() >= frs_config->fMin_dE_travMus_gate && travMusicHitItem.Get_travmusic_dE_driftcorr() <= frs_config->fMax_dE_travMus_gate)
                     {   
 
                         h1_energy_ch_GM_PID_TM_driftcorr[gate][layer][xpos][ypos]->Fill(energy_LISA_GM);
