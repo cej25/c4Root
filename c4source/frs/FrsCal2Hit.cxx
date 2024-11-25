@@ -21,7 +21,6 @@
 #include <chrono>
 
 #define MUSIC_ANA_NEW
-//#define TRAVMUS_TAC_OR_MHTDC
 
 FrsCal2Hit::FrsCal2Hit()
     :   FairTask()
@@ -36,11 +35,11 @@ FrsCal2Hit::FrsCal2Hit()
     ,   userSciArray(nullptr)
     ,   userMusicArray(nullptr)
     ,   tpatArray(nullptr)
-    ,   travMusicArray(nullptr)
     ,   hitArray(new std::vector<FrsHitItem>)
     ,   multihitArray(new std::vector<FrsMultiHitItem>)
 {
     frs_config = TFrsConfiguration::GetInstance();
+    exp_config = TExperimentConfiguration::GetInstance();
     frs = frs_config->FRS();
     mw = frs_config->MW();
     tpc = frs_config->TPC();
@@ -67,11 +66,12 @@ FrsCal2Hit::FrsCal2Hit(const TString& name, Int_t verbose)
     ,   userSciArray(nullptr)
     ,   userMusicArray(nullptr)
     ,   tpatArray(nullptr)
-    ,   travMusicArray(nullptr)
     ,   hitArray(new std::vector<FrsHitItem>)
     ,   multihitArray(new std::vector<FrsMultiHitItem>)
 {
     frs_config = TFrsConfiguration::GetInstance();
+    exp_config = TExperimentConfiguration::GetInstance();
+
     frs = frs_config->FRS();
     mw = frs_config->MW();
     tpc = frs_config->TPC();
@@ -114,8 +114,6 @@ InitStatus FrsCal2Hit::Init()
     c4LOG_IF(fatal, !userMusicArray, "Branch FrsUserCalMusicData not found!");
     tpatArray = mgr->InitObjectAs<decltype(tpatArray)>("FrsTpatData");
     c4LOG_IF(fatal, !tpatArray, "Branch FrsTpatData not found!");
-    travMusicArray = mgr->InitObjectAs<decltype(travMusicArray)>("FrsTravMusCalData");
-    // travMusic optional
 
     mgr->RegisterAny("FrsHitData", hitArray, !fOnline);
     mgr->RegisterAny("FrsMultiHitData", multihitArray, !fOnline);
@@ -137,10 +135,8 @@ InitStatus FrsCal2Hit::Init()
     sci_x = new Float_t[6];
     music_e1 = new uint32_t[8];
     music_e2 = new uint32_t[8];
-    //travmusic_e = new uint16_t[8];
     music_t1 = new uint32_t[8];
     music_t2 = new uint32_t[8];
-    //travmusic_t = new uint16_t[8];
 
     return kSUCCESS;
 }
@@ -168,8 +164,11 @@ void FrsCal2Hit::Exec(Option_t* option)
 
     wr_t = tpatItem.Get_wr_t();
     tpat = tpatItem.Get_tpat();
+    if (wr_t == 0) return;
 
-    if (wr_t == 0) return; // ACTUAL no whiterabbit
+    Long64_t FRS_time_mins = 0;
+    FRS_time_mins = (wr_t - exp_config->exp_start_time)/ 60E9;
+
 
     if (scaler_check_first_event == 1)
     {
@@ -267,17 +266,8 @@ void FrsCal2Hit::Exec(Option_t* option)
     music_e1 = userMusicItem.Get_music_e1();
     music_e2 = userMusicItem.Get_music_e2();
 
-    if (travMusicArray)
-    {
-        auto const & travMusicItem = travMusicArray->at(0);
-        wr_travmus = travMusicItem.Get_wr_t();
-        for (int i = 0; i < 8; i++) travmusic_t[i] = travMusicItem.Get_music_time(i);
-        for (int i = 0; i < 8; i++) travmusic_e[i] = travMusicItem.Get_music_energy(i);
-    }
-
     music1_anodes_cnt = 0;
     music2_anodes_cnt = 0;
-    travmusic_anodes_cnt = 0;
 
     /* reset de[i] and de_cor[i] etc */
 
@@ -315,21 +305,6 @@ void FrsCal2Hit::Exec(Option_t* option)
         if (music_t2[i] > 0)
         {
             music_b_t2[i] = Check_WinCond_Multi(music_t2[i], cMusic2_T, i);
-        }
-
-        // TRAVEL MUSIC
-        if (travMusicArray)
-        {
-            if (travmusic_e[i] > 4)
-            {
-                if (music->exclude_de3_adc_channel[i] == kTRUE) travmusic_b_e[i] = false;
-                else travmusic_b_e[i] = Check_WinCond_Multi(travmusic_e[i], cMusicTRAV_E, i);
-
-                if (travmusic_b_e[i])
-                {
-                    travmusic_anodes_cnt++;
-                }
-            }
         }
 
     } // i loop
@@ -408,43 +383,6 @@ void FrsCal2Hit::Exec(Option_t* option)
         b_de2 = kTRUE;
     }
     #endif
-
-    #ifndef MUSIC_ANA_NEW
-    if (travmusic_anodes_cnt == 8)
-    {
-        Float_t r1 = ((travmusic_e[0]) * music->e3_gain[0] + music->e3_off[0]) * ((travmusic_e[1]) * music->e3_gain[1] + music->e3_off[1]);
-        Float_t r2 = ((travmusic_e[2]) * music->e3_gain[2] + music->e3_off[2]) * ((travmusic_e[3]) * music->e3_gain[3] + music->e3_off[3]);
-        Float_t r3 = ((travmusic_e[4]) * music->e3_gain[4] + music->e3_off[4]) * ((travmusic_e[5]) * music->e3_gain[5] + music->e3_off[5]);
-        Float_t r4 = ((travmusic_e[6]) * music->e3_gain[6] + music->e3_off[6]) * ((travmusic_e[7]) * music->e3_gain[7] + music->e3_off[7]);
-
-        if ((r1 > 0) && (r2 > 0) && (r3 > 0) && (r4 > 0))
-        {
-            b_de_travmus = kTRUE;
-            de_travmus = sqrt(sqrt(sqrt(r1) * sqrt(r2)) * sqrt(sqrt(r3) * sqrt(r4)));
-            de_cor_travmus = de_travmus;
-        }
-    }
-    #endif
-
-    #ifdef MUSIC_ANA_NEW
-    if (travmusic_anodes_cnt >= 4)
-    {
-        Float_t temp_de_travmus = 1.0;
-        Int_t temp_count_travmus = 0;
-        for (int i = 0; i < 8; i++)
-        {
-            if (travmusic_b_e[i])
-            {
-                temp_de_travmus *= ((travmusic_e[i]) * music->e3_gain[i] + music->e3_off[i]);
-                temp_count_travmus++;
-            }
-        }
-        de_travmus = TMath::Power(temp_de_travmus, 1. / ((float)(temp_count_travmus)));
-        de_cor_travmus = de_travmus;
-        b_de_travmus = kTRUE;
-    }
-    #endif
-
     
 
     // Position (X) correction by TPC //
@@ -462,7 +400,6 @@ void FrsCal2Hit::Exec(Option_t* option)
     {
         music1_x_mean = tpcCalItem.Get_tpc_music41_x();
         music2_x_mean = tpcCalItem.Get_tpc_music42_x();
-        travmusic_x_mean = tpcCalItem.Get_tpc_music43_x();
 
         if (b_de1)
         {
@@ -496,24 +433,6 @@ void FrsCal2Hit::Exec(Option_t* option)
             }
         }
         
-        if (travMusicArray)
-        {
-            if (b_de_travmus)
-            {
-                power = 1.;
-                Corr = 0.;
-                for (int i = 0; i < 4; i++)
-                {
-                    Corr += music->pos_a3[i] * power;
-                    power *= travmusic_x_mean;
-                }
-                if (Corr != 0)
-                {
-                    Corr = music->pos_a3[0] / Corr;
-                    de_cor_travmus = de_travmus * Corr;
-                }
-            }
-        }
     }
 
 
@@ -536,16 +455,16 @@ void FrsCal2Hit::Exec(Option_t* option)
     {
         for (int j = 0; j < hits_in_21r; j ++){
         mhtdc_sc21lr_dt[i*hits_in_21r + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + mainSciItem.Get_mhtdc_sc21l_hit(i) - mainSciItem.Get_mhtdc_sc21r_hit(j));
-        //mhtdc_sc21lr_x[i*hits_in_21r + j] = mhtdc_sc21lr_dt[i*hits_in_21r + j] * sci->mhtdc_factor_21l_21r + sci->mhtdc_offset_21l_21r;
+        mhtdc_sc21lr_x[i*hits_in_21r + j] = mhtdc_sc21lr_dt[i*hits_in_21r + j] * sci->mhtdc_factor_21l_21r + sci->mhtdc_offset_21l_21r;
 
-        double p0 = -72.5554;
-        double p1 =  54.9136;
-        double p2 =  1.14567;
-        double p3 = -5.12242;
-        double p4 =  3.70734;
-        double p5 = -0.72347;
+        // double p0 = -72.5554;
+        // double p1 =  54.9136;
+        // double p2 =  1.14567;
+        // double p3 = -5.12242;
+        // double p4 =  3.70734;
+        // double p5 = -0.72347;
 
-        mhtdc_sc21lr_x[i*hits_in_21r + j] = TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],5)*p5 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],4)*p4 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],3)*p3 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],2)*p2 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],1)*p1 + p0;
+        //mhtdc_sc21lr_x[i*hits_in_21r + j] = TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],5)*p5 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],4)*p4 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],3)*p3 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],2)*p2 +TMath::Power(mhtdc_sc21lr_dt[i*hits_in_21r + j],1)*p1 + p0;
 
         }
     }
@@ -1037,7 +956,7 @@ void FrsCal2Hit::Exec(Option_t* option)
             id_mhtdc_tof_s2s4[i] = mhtdc_tof4121[i];
             if (mhtdc_tof4121[i] > 0) // what is the value set to if this test fails ... ?
             {
-                id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2141 / mhtdc_tof4121[i]);
+                id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2141 / mhtdc_tof4121[i])/ speed_light;
             }else{
                 id_mhtdc_beta_s2s4[i] = 0;
             }
@@ -1053,7 +972,7 @@ void FrsCal2Hit::Exec(Option_t* option)
             id_mhtdc_tof_s2s4[i] = mhtdc_tof4122[i];
             if (mhtdc_tof4122[i] > 0)
             {
-                id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2241 / mhtdc_tof4122[i]);
+                id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2241 / mhtdc_tof4122[i])/speed_light;
             }else{
                 id_mhtdc_beta_s2s4[i] = 0;
             }
@@ -1109,13 +1028,12 @@ void FrsCal2Hit::Exec(Option_t* option)
 
 
     // Calculation of dE and Z from MUSIC41
+    // Calibration for MUSIC is done with 1/b2 - last update sept2024
     id_mhtdc_v_cor_music41 = new Float_t[hits_in_beta_s2s4];
     id_mhtdc_v_cor_music42 = new Float_t[hits_in_beta_s2s4];
-    id_mhtdc_v_cor_travmus = new Float_t[hits_in_beta_s2s4];
 
     id_mhtdc_z_music41 = new Float_t[hits_in_beta_s2s4];
     id_mhtdc_z_music42 = new Float_t[hits_in_beta_s2s4];
-    id_mhtdc_z_travmus = new Float_t[hits_in_beta_s2s4];
 
     for (int i = 0; i < hits_in_beta_s2s4; i++)
     {
@@ -1166,31 +1084,6 @@ void FrsCal2Hit::Exec(Option_t* option)
             }
         }
 
-        if (travMusicArray)
-        {
-            float temp_travmus_de = de_travmus > 0.0;
-            if ((temp_travmus_de > 0.0) && (id_mhtdc_beta_s2s4[i] > 0.0) && (id_mhtdc_beta_s2s4[i] < 1.0))
-            {
-                power = 1.;
-                sum = 0.;
-                for (int j = 0; j < 4; j++)
-                {
-                    sum += power * id->vel_a3[j]; // same parameters for mhtdc as TAC for now....stupid
-                    #ifndef TRAVMUS_TAC_OR_MHTDC
-                    power *= id_mhtdc_beta_s2s4[i];
-                    #endif
-                    #ifdef TRAVMUS_TAC_OR_MHTDC
-                    power *= 1.0/(id_mhtdc_beta_s2s4[i]*id_mhtdc_beta_s2s4[i]);
-                    #endif
-                } 
-                id_mhtdc_v_cor_travmus[i] = sum;
-                
-                if (id_mhtdc_v_cor_travmus[i] > 0.0)
-                {   
-                    id_mhtdc_z_travmus[i] = frs->primary_z * sqrt(de_travmus / id_mhtdc_v_cor_travmus[i]) + id->offset_z3; // same as TAC....for now
-                }
-            }
-        }
     }
 
     mhtdc_gamma1square = new Float_t[hits_in_aoq];
@@ -1346,6 +1239,8 @@ void FrsCal2Hit::Exec(Option_t* option)
     /*------------------------------------------------*/
     /* Determination of Z                           */
     /*------------------------------------------------*/
+    // Calibration with MUSIC is done with 1/b2 - last update sept2024
+
     // S4 (MUSIC 1)
     if ((de[0] > 0.0) && (id_beta > 0.0) && (id_beta < 1.0))
     {
@@ -1391,33 +1286,98 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
 
-    if (travMusicArray)
+    // CEJ: can be tidied/reconfigured some later
+    if (frs_config->AoQDriftLoaded())
     {
-        if ((de_travmus > 0.0) && (id_beta > 0.0) && (id_beta < 1.0))
-        {
-            power = 1.;
-            sum = 0.;
-            for (int i = 0; i < 4; i++)
-            {
-                sum += power * id->vel_a3[i];
-                power *= id_beta;
-            }
-            id_v_cor_travmus = sum;
+        id_AoQ_driftcorr = 0;
+        double drift_aoq = 0.0;
+        double drift_aoq_error = 0.0;
+        int nentry_aoq = 0;
+        int aoq_frs_wr_time_a = 0; 
+        int aoq_frs_wr_time_b = 0;
+        double aoq_reference_value = 2.39;   //!!!! read from exp configuration - expected value
+        int bin = 20;  
+        
+        //std::cout << "::::  AoQ :::: " << "\n";
+        //std::cout << "::::  AoQ " << id_AoQ <<"\n";
 
-            if (id_v_cor_travmus > 0.0)
+
+        std::map<int,std::pair<double,double>> aoq_drift = frs_config->AoQDriftCoefficients();
+        for (const auto& entry : aoq_drift)
+        {            
+            // std::cout << " AoQ Key (travmus_wr_time): " << entry.first 
+            //   << ", AoQ Value (coeffs): (" << entry.second.first 
+            //   << ", " << entry.second.second << ")\n";
+            
+            int aoq_frs_wr_time = entry.first;
+            std::pair<double,double> aoq_coeffs = entry.second;
+            drift_aoq = aoq_coeffs.first;
+            drift_aoq_error = aoq_coeffs.second;
+
+            double aoq_shift = drift_aoq - aoq_reference_value;
+            //std::cout << "::::  AoQ value  " << id_AoQ <<"\n";
+            
+            if ((FRS_time_mins >= (aoq_frs_wr_time - bin/2)) && (FRS_time_mins < (aoq_frs_wr_time + bin/2)))
             {
-                id_z_travmus = frs->primary_z * sqrt(de_travmus / id_v_cor_travmus) + id->offset_z3;
+                id_AoQ_driftcorr = id_AoQ - aoq_shift;
+                // std::cout  << " reference :" << aoq_reference_value
+                //     << " drift (1 coeff) :" << drift_aoq 
+                //     << " aoq shift :" << aoq_shift 
+                //     << " aoq original : " << id_AoQ
+                //     << " aoq corrected : " << id_AoQ_driftcorr << "\n";
+            
             }
-            if ((id_z_travmus > 0.0) && (id_z_travmus < 100.0))
-            {   
-                // CEJ: this seems out of order to me, gain matching first?
-                id_b_z_travmus = kTRUE;
-            }
+            
+            nentry_aoq ++ ;
         }
+
+    }
+
+    if (frs_config->Z1DriftLoaded())
+    {
+        id_z_driftcorr = 0;
+        double drift_z1 = 0.0;
+        double drift_z1_error = 0.0;
+        int nentry_z1 = 0;
+        int z1_frs_wr_time_a = 0; 
+        int z1_frs_wr_time_b = 0;
+        double z1_reference_value = 41;     //!!!! read from exp configuration - expected value
+        int bin = 20;                       //!!!! read from drift file
+
+        //std::cout << "::::  Z1 :::: " << "\n";
+        //std::cout << "::::  Z1 " << id_z <<"\n";
+
+        std::map<int,std::pair<double,double>> z1_drift = frs_config->Z1DriftCoefficients();
+        for (const auto& entry : z1_drift)
+        {            
+            // std::cout << "Z1 Key (travmus_wr_time): " << entry.first 
+            // << ", Z1 Value (coeffs): (" << entry.second.first 
+            // << ", " << entry.second.second << ")\n";
+            
+            int z1_frs_wr_time = entry.first;
+            std::pair<double,double> z1_coeffs = entry.second;
+            drift_z1 = z1_coeffs.first;
+            drift_z1_error = z1_coeffs.second;
+
+            double z1_shift = drift_z1 - z1_reference_value;
+            //std::cout << "::::  Z1 " << id_z <<"\n";
+
+            if ((FRS_time_mins >= (z1_frs_wr_time - bin/2)) && (FRS_time_mins < (z1_frs_wr_time + bin/2)))
+            {
+                //std::cout << "::::  in loop  Z1 " << id_z <<"\n";
+                id_z_driftcorr = id_z - z1_shift;
+                // std::cout  << " reference :" << z1_reference_value
+                //     << " drift (1 coeff) :" << drift_z1 
+                //     << " shift :" << z1_shift 
+                //     << " Z1 original : " << id_z
+                //     << " Z1 corr : " << id_z_driftcorr << "\n";
+            }
+            
+            nentry_z1 ++ ;
+        }
+
     }
     
-    
-
     float gamma1square = 1.0 + TMath::Power(((1 / aoq_factor) * (id_brho[0] / id_AoQ)), 2);
     id_gamma_ta_s2 = TMath::Sqrt(gamma1square);
     id_dEdegoQ = (id_gamma_ta_s2 - id_gamma) * id_AoQ;
@@ -1426,7 +1386,6 @@ void FrsCal2Hit::Exec(Option_t* option)
     auto & hitEntry = hitArray->emplace_back();
     hitEntry.SetAll(wr_t,
                     tpat,
-                    wr_travmus,
                     id_x2,
                     id_y2,
                     id_x4,
@@ -1436,10 +1395,11 @@ void FrsCal2Hit::Exec(Option_t* option)
                     id_a4,
                     id_b4,
                     id_AoQ,
+                    id_AoQ_driftcorr,
                     id_AoQ_corr,
                     id_z,
+                    id_z_driftcorr,
                     id_z2,
-                    id_z_travmus, // here
                     id_beta,
                     id_dEdeg,
                     id_dEdegoQ,
@@ -1447,8 +1407,6 @@ void FrsCal2Hit::Exec(Option_t* option)
                     id_brho,
                     de,
                     de_cor,
-                    de_travmus, // here
-                    de_cor_travmus, // here
                     sci_e,
                     sci_l,
                     sci_r,
@@ -1490,7 +1448,6 @@ void FrsCal2Hit::Exec(Option_t* option)
                             id_mhtdc_aoq_corr_s2s4[i*hits_in_s2x + j], 
                             id_mhtdc_z_music41[i],
                             id_mhtdc_z_music42[i],
-                            id_mhtdc_z_travmus[i],
                             id_mhtdc_dEdeg[i*hits_in_s2x + j],
                             id_mhtdc_dEdegoQ[i*hits_in_s2x + j]
                             );
@@ -1601,21 +1558,6 @@ void FrsCal2Hit::Setup_Conditions(std::string path_to_config_files)
     {
         if(line[0] == '#') continue;
             sscanf(line.c_str(),format,&cMusic3_E[line_number][0],&cMusic3_E[line_number][1],&cMusic3_T[line_number][0],&cMusic3_T[line_number][1]);
-
-        line_number++;
-    }
-
-    // ::::: Inserting TRAVEL MUSIC ::::::: //
-    line_number = 0;
-
-    format = "%f %f %f %f";
-
-    std::ifstream cond_travmus(path_to_config_files +  TString("TRAVMUSIC.txt"));
-
-    while(/*cond_f.good()*/getline(cond_travmus,line,'\n'))
-    {
-        if(line[0] == '#') continue;
-            sscanf(line.c_str(),format,&cMusicTRAV_E[line_number][0],&cMusicTRAV_E[line_number][1],&cMusicTRAV_T[line_number][0],&cMusicTRAV_T[line_number][1]);
 
         line_number++;
     }

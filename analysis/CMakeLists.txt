@@ -20,6 +20,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
 ${C4ROOT_SOURCE_DIR}/c4data/baseData
 ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 ${C4ROOT_SOURCE_DIR}/c4data/fimpData
+${C4ROOT_SOURCE_DIR}/c4data/travMusData
 ${C4ROOT_SOURCE_DIR}/analysis
 ${C4ROOT_SOURCE_DIR}/analysis/frs
 ${C4ROOT_SOURCE_DIR}/analysis/pars
@@ -48,6 +49,7 @@ set(SRCS
 ./nearline/germanium/GermaniumResolution.cxx
 ./online/beammonitor/BeamMonitorOnlineSpectra.cxx
 ./online/lisa/LisaOnlineSpectra.cxx
+./online/lisa/LisaOnlineSpectraDaq.cxx
 ./online/aida/AidaOnlineSpectra.cxx
 ./online/bplast/bPlastOnlineSpectra.cxx
 ./online/fatima/FatimaOnlineSpectra.cxx
@@ -55,7 +57,7 @@ set(SRCS
 ./online/frs/FrsOnlineSpectra.cxx
 ./online/frs/FrsRawSpectra.cxx
 ./online/frs/FrsCalSpectra.cxx
-./online/frs/FrsTravMusSpectra.cxx
+./online/travMus/TravMusOnlineSpectra.cxx
 ./online/bgo/BGOOnlineSpectra.cxx
 ./online/timemachine/TimeMachineOnline.cxx
 ./online/wr/WhiterabbitCorrelationOnline.cxx
@@ -68,12 +70,13 @@ set(SRCS
 ./nearline/fatima/FatimaVmeNearlineSpectra.cxx
 ./nearline/aida/AidaNearlineSpectra.cxx
 ./nearline/frs/FrsNearlineSpectra.cxx
-./nearline/frs/FrsNearlineTravMusSpectra.cxx
+./nearline/travMus/TravMusNearlineSpectra.cxx
 ./nearline/germanium/GermaniumNearlineSpectra.cxx
 ./nearline/bgo/BGONearlineSpectra.cxx
 ./nearline/wr/WhiterabbitCorrelationNearline.cxx
 ./nearline/timemachine/TimeMachineNearline.cxx
 ./nearline/lisa/LisaNearlineSpectra.cxx
+./nearline/lisa/LisaNearlineSpectraDaq.cxx
 ./nearline/lisa/LisaTraceAnalysis.cxx
 ./nearline/fimp/FimpNearlineSpectra.cxx
 ./nearline/bb7/BB7NearlineSpectra.cxx

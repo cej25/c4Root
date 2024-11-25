@@ -619,7 +619,6 @@ void FrsOnlineSpectra::Exec(Option_t* option)
     if (hitArray->size() <= 0) return;
     auto const & hitItem  = hitArray->at(0); // should only ever be 1 frs item per event, so take first
     frs_wr = hitItem.Get_wr_t();
-    trav_mus_wr = hitItem.Get_wr_travmus();
 
     // :::::::::: TAC ::::::::::::: //
     // ---------------------------- //
@@ -628,7 +627,6 @@ void FrsOnlineSpectra::Exec(Option_t* option)
         if (hitItem.Get_ID_AoQ() > 0 && hitItem.Get_ID_z() > 0) h2_Z_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_z());
         if (hitItem.Get_ID_AoQ_corr() > 0 && hitItem.Get_ID_z() > 0) h2_Z_vs_AoQ_corr->Fill(hitItem.Get_ID_AoQ_corr(), hitItem.Get_ID_z());
         if (hitItem.Get_ID_z() > 0 && hitItem.Get_ID_z2() > 0) h2_Z_vs_Z2->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_z2());
-        if (trav_mus_wr > 0 && hitItem.Get_ID_z() > 0 && hitItem.Get_ID_z_travmus() > 0) h2_travmus_vs_Z->Fill(hitItem.Get_ID_z_travmus(), hitItem.Get_ID_z());
 
         if (TMath::Abs(hitItem.Get_ID_z() - hitItem.Get_ID_z2()) < 0.4)
         {
@@ -697,7 +695,6 @@ void FrsOnlineSpectra::Exec(Option_t* option)
     {
         if (hitItem.Get_ID_z() > 0) h1_Z->Fill(hitItem.Get_ID_z());
         if (hitItem.Get_ID_z2() > 0) h1_Z2->Fill(hitItem.Get_ID_z2());
-        if (trav_mus_wr > 0 && hitItem.Get_ID_z_travmus() > 0) h1_Z_travmus->Fill(hitItem.Get_ID_z_travmus());
         if (hitItem.Get_ID_AoQ() > 0) h1_AoQ->Fill(hitItem.Get_ID_AoQ());
         if (hitItem.Get_ID_AoQ_corr() > 0) h1_AoQ_corr->Fill(hitItem.Get_ID_AoQ_corr());
         h1_x2->Fill(hitItem.Get_ID_x2());
@@ -714,7 +711,6 @@ void FrsOnlineSpectra::Exec(Option_t* option)
         for (int i = 0; i < 2; i++) if (hitItem.Get_ID_rho(i) > 0) h1_rho[i]->Fill(hitItem.Get_ID_rho(i));
         for (int i = 0; i < 2; i++) if (hitItem.Get_ID_brho(i) > 0) h1_brho[i]->Fill(hitItem.Get_ID_brho(i));
         for (int i = 0; i < 2; i++) if (hitItem.Get_music_dE(i) > 0) h1_music_dE[i]->Fill(hitItem.Get_music_dE(i));
-        if (trav_mus_wr > 0 && hitItem.Get_travmusic_dE() > 0) h1_travmus_dE->Fill(hitItem.Get_travmusic_dE());
         for (int i = 0; i < 2; i++) if (hitItem.Get_music_dE_cor(i) > 0) h1_music_dEcorr[i]->Fill(hitItem.Get_music_dE_cor(i));
         for (int i = 0; i < 6; i++) if (hitItem.Get_sci_e(i) > 0) h1_sci_e[i]->Fill(hitItem.Get_sci_e(i));
         for (int i = 0; i < 6; i++) if (hitItem.Get_sci_l(i) > 0) h1_sci_l[i]->Fill(hitItem.Get_sci_l(i));
@@ -735,7 +731,6 @@ void FrsOnlineSpectra::Exec(Option_t* option)
             if (multihitItem.Get_ID_z_mhtdc() > 0 && multihitItem.Get_ID_AoQ_mhtdc() > 0) h2_Z_vs_AoQ_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_AoQ_mhtdc());
             if (multihitItem.Get_ID_z_mhtdc() > 0 && multihitItem.Get_ID_AoQ_corr_mhtdc() > 0) h2_Z_vs_AoQ_corr_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_AoQ_corr_mhtdc());
             if (multihitItem.Get_ID_z_mhtdc() > 0 && multihitItem.Get_ID_z2_mhtdc() > 0) h2_Z_vs_Z2_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_z2_mhtdc());
-            if (trav_mus_wr > 0 && multihitItem.Get_ID_z_mhtdc() > 0 && multihitItem.Get_ID_z_travmus_mhtdc() > 0) h2_travmus_vs_Z_mhtdc->Fill(multihitItem.Get_ID_z_travmus_mhtdc(), multihitItem.Get_ID_z_mhtdc());
             if (multihitItem.Get_ID_z_mhtdc() > 0 && multihitItem.Get_ID_AoQ_mhtdc() > 0 && TMath::Abs(multihitItem.Get_ID_z_mhtdc() - multihitItem.Get_ID_z2_mhtdc()) < 0.4) h2_Z_vs_AoQ_Zsame_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_AoQ_mhtdc());
             if (multihitItem.Get_ID_AoQ_mhtdc() > 0 && TMath::Abs(multihitItem.Get_ID_z_mhtdc() - multihitItem.Get_ID_z2_mhtdc()) < 0.4) h2_x2_vs_AoQ_Zsame_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x2());
             if (multihitItem.Get_ID_AoQ_mhtdc() > 0 && TMath::Abs(multihitItem.Get_ID_z_mhtdc() - multihitItem.Get_ID_z2_mhtdc()) < 0.4) h2_x4_vs_AoQ_Zsame_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_x4());
@@ -759,8 +754,6 @@ void FrsOnlineSpectra::Exec(Option_t* option)
             if (multihitItem.Get_ID_AoQ_corr_mhtdc() > 0) h1_AoQ_corr_mhtdc->Fill(multihitItem.Get_ID_AoQ_corr_mhtdc());
             if (multihitItem.Get_ID_z_mhtdc() > 0) h1_z_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc());
             if (multihitItem.Get_ID_z2_mhtdc() > 0) h1_z2_mhtdc->Fill(multihitItem.Get_ID_z2_mhtdc());
-            if (trav_mus_wr > 0 && multihitItem.Get_ID_z_travmus_mhtdc() > 0) h1_z_travmus_mhtdc->Fill(multihitItem.Get_ID_z_travmus_mhtdc());
-            if (multihitItem.Get_ID_z_travmus_mhtdc() > 0) h1_z_travmus_mhtdc->Fill(multihitItem.Get_ID_z_travmus_mhtdc());
             if (multihitItem.Get_ID_dEdeg_mhtdc() > 0) h1_dEdeg_mhtdc->Fill(multihitItem.Get_ID_dEdeg_mhtdc());
             if (multihitItem.Get_ID_dEdegoQ_mhtdc() > 0) h1_dEdegoQ_mhtdc->Fill(multihitItem.Get_ID_dEdegoQ_mhtdc());
 

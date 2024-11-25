@@ -3,8 +3,8 @@
 #include "FairRootManager.h"
 
 // c4
-#include "FrsTravMusData.h"
-#include "FrsTravMusReader.h"
+#include "TravMusData.h"
+#include "TravMusReader.h"
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
@@ -18,23 +18,23 @@ extern "C"
     #include "ext_h101_travmus.h"
 }
 
-FrsTravMusReader::FrsTravMusReader(EXT_STR_h101_travmus_onion* data, size_t offset)
-    : c4Reader("FrsTravMusReader")
+TravMusReader::TravMusReader(EXT_STR_h101_travmus_onion* data, size_t offset)
+    : c4Reader("TravMusReader")
     , fNEvent(0)
     , fData(data)
     , fOffset(offset)
     , fOnline(kFALSE)
-    , adcArray(new std::vector<FrsTravMusAdcItem>)
-    , tdcArray(new std::vector<FrsTravMusTdcItem>)
+    , adcArray(new std::vector<TravMusAdcItem>)
+    , tdcArray(new std::vector<TravMusTdcItem>)
 {
 }
 
-FrsTravMusReader::~FrsTravMusReader() 
+TravMusReader::~TravMusReader() 
 { 
-    c4LOG(info, "Destroyed FrsTravMusReader properly.");
+    c4LOG(info, "Destroyed TravMusReader properly.");
 }
 
-Bool_t FrsTravMusReader::Init(ext_data_struct_info* a_struct_info)
+Bool_t TravMusReader::Init(ext_data_struct_info* a_struct_info)
 {
     Int_t ok;
     
@@ -52,8 +52,8 @@ Bool_t FrsTravMusReader::Init(ext_data_struct_info* a_struct_info)
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    mgr->RegisterAny("FrsTravMusAdcData", adcArray, !fOnline);
-    mgr->RegisterAny("FrsTravMusTdcData", tdcArray, !fOnline);
+    mgr->RegisterAny("TravMusAdcData", adcArray, !fOnline);
+    mgr->RegisterAny("TravMusTdcData", tdcArray, !fOnline);
     
     adcArray->clear();
     tdcArray->clear();
@@ -63,7 +63,7 @@ Bool_t FrsTravMusReader::Init(ext_data_struct_info* a_struct_info)
     return kTRUE;
 }
 
-Bool_t FrsTravMusReader::Read()
+Bool_t TravMusReader::Read()
 {
     if (!fData) return kTRUE;
     if (fData == nullptr) return kFALSE;
@@ -110,21 +110,21 @@ Bool_t FrsTravMusReader::Read()
 
 }
 
-void FrsTravMusReader::ZeroArrays()
+void TravMusReader::ZeroArrays()
 {
 
 }
 
-void FrsTravMusReader::ClearVectors()
+void TravMusReader::ClearVectors()
 {
     adcArray->clear();
     tdcArray->clear();
 }
 
-void FrsTravMusReader::Reset()
+void TravMusReader::Reset()
 {
     ZeroArrays();
     ClearVectors();
 }
 
-ClassImp(FrsTravMusReader);
+ClassImp(TravMusReader);

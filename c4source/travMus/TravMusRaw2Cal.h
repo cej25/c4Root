@@ -1,24 +1,24 @@
-#ifndef FrsTravMusRaw2Cal_H
-#define FrsTravMusRaw2Cal_H
+#ifndef TravMusRaw2Cal_H
+#define TravMusRaw2Cal_H
 
 #include <vector>
 #include "TFolder.h"
-#include "FrsTravMusData.h"
-#include "FrsTravMusCalData.h"
+#include "TravMusData.h"
+#include "TravMusCalData.h"
 #include "TFrsConfiguration.h"
 
 class EventHeader;
-class FrsTravMusAdcItem;
-class FrsTravMusTdcItem;
-class FrsTravMusCalItem;
+class TravMusAdcItem;
+class TravMusTdcItem;
+class TravMusCalItem;
 
-class FrsTravMusRaw2Cal : public FairTask
+class TravMusRaw2Cal : public FairTask
 {
     public:
-        FrsTravMusRaw2Cal();
-        FrsTravMusRaw2Cal(const TString& name, Int_t verbose);
+        TravMusRaw2Cal();
+        TravMusRaw2Cal(const TString& name, Int_t verbose);
         
-        ~FrsTravMusRaw2Cal();
+        ~TravMusRaw2Cal();
 
         virtual InitStatus Init();
 
@@ -38,9 +38,9 @@ class FrsTravMusRaw2Cal : public FairTask
         EventHeader* header;
         Int_t fNEvents;
 
-        std::vector<FrsTravMusAdcItem> const* adcArray;
-        std::vector<FrsTravMusTdcItem> const* tdcArray;
-        std::vector<FrsTravMusCalItem>* calArray;
+        std::vector<TravMusAdcItem> const* adcArray;
+        std::vector<TravMusTdcItem> const* tdcArray;
+        std::vector<TravMusCalItem>* calArray;
         
         // init
         uint16_t* music_e;
@@ -50,7 +50,7 @@ class FrsTravMusRaw2Cal : public FairTask
 
 
     public:
-        ClassDef(FrsTravMusRaw2Cal, 1);
+        ClassDef(TravMusRaw2Cal, 1);
 
 };
 

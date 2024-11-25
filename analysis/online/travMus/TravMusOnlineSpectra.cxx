@@ -5,7 +5,7 @@
 #include "FairRunOnline.h"
 
 // c4
-#include "FrsTravMusSpectra.h"
+#include "TravMusOnlineSpectra.h"
 #include "EventHeader.h"
 #include "c4Logger.h"
 
@@ -23,30 +23,32 @@
 #include "TFrsConfiguration.h"
 
 
-FrsTravMusSpectra::FrsTravMusSpectra()
-    : FairTask()
-    , travMusicArray(nullptr)
-    , fNEvents(0)
-    , header(nullptr)
+TravMusOnlineSpectra::TravMusOnlineSpectra()
+    :   FairTask()
+    ,   travMusCalArray(nullptr)
+    ,   travMusAnaArray(nullptr)
+    ,   fNEvents(0)
+    ,   header(nullptr)
 {
     frs_config = TFrsConfiguration::GetInstance();
 }
 
-FrsTravMusSpectra::FrsTravMusSpectra(const TString& name, Int_t iVerbose)
-    : FairTask(name, iVerbose)
-    , travMusicArray(nullptr)
-    , fNEvents(0)
-    , header(nullptr)
+TravMusOnlineSpectra::TravMusOnlineSpectra(const TString& name, Int_t iVerbose)
+    :   FairTask(name, iVerbose)
+    ,   travMusCalArray(nullptr)
+    ,   travMusAnaArray(nullptr)
+    ,   fNEvents(0)
+    ,   header(nullptr)
 {
     frs_config = TFrsConfiguration::GetInstance();
 }
 
-FrsTravMusSpectra::~FrsTravMusSpectra()
+TravMusOnlineSpectra::~TravMusOnlineSpectra()
 {
     c4LOG(info, "");
 }
 
-InitStatus FrsTravMusSpectra::Init()
+InitStatus TravMusOnlineSpectra::Init()
 {
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
@@ -57,8 +59,11 @@ InitStatus FrsTravMusSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    travMusicArray = mgr->InitObjectAs<decltype(travMusicArray)>("FrsTravMusCalData");
-    c4LOG_IF(fatal, !travMusicArray, "Branch FrsTravMusCalData not found!");
+    travMusCalArray = mgr->InitObjectAs<decltype(travMusCalArray)>("TravMusCalData");
+    c4LOG_IF(fatal, !travMusCalArray, "Branch TravMusCalData not found!");
+
+    travMusAnaArray = mgr->InitObjectAs<decltype(travMusAnaArray)>("TravMusAnaData");
+    c4LOG_IF(fatal, !travMusAnaArray, "Branch TravMusAnaData not found!");
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
     
@@ -102,17 +107,16 @@ InitStatus FrsTravMusSpectra::Init()
 
 }
 
-void FrsTravMusSpectra::Reset_Histo()
+void TravMusOnlineSpectra::Reset_Histo()
 {
     c4LOG(warn,"TravMus Spectra Reset (not yet)");
 }
 
 
-void FrsTravMusSpectra::Exec(Option_t* option)
+void TravMusOnlineSpectra::Exec(Option_t* option)
 {
-
     uint64_t wr_travMUSIC = 0;
-    for (auto const & travMusicItem : *travMusicArray)
+    for (auto const & travMusicItem : *travMusCalArray)
     {
         wr_travMUSIC = travMusicItem.Get_wr_t();
         if( wr_travMUSIC == 0) return;
@@ -122,20 +126,28 @@ void FrsTravMusSpectra::Exec(Option_t* option)
 
             //c4LOG(info,"adc number : " << i << "raw adc : " << travMusicItem.Get_music_energy(i));
         }
+
+        // dE spectra for online? 
     }
-    
+
+    // if (trav_mus_wr > 0 && hitItem.Get_ID_z() > 0 && hitItem.Get_ID_z_travmus() > 0) h2_travmus_vs_Z->Fill(hitItem.Get_ID_z_travmus(), hitItem.Get_ID_z());
+    // if (trav_mus_wr > 0 && hitItem.Get_ID_z_travmus() > 0) h1_Z_travmus->Fill(hitItem.Get_ID_z_travmus());
+    // if (trav_mus_wr > 0 && multihitItem.Get_ID_z_mhtdc() > 0 && multihitItem.Get_ID_z_travmus_mhtdc() > 0) h2_travmus_vs_Z_mhtdc->Fill(multihitItem.Get_ID_z_travmus_mhtdc(), multihitItem.Get_ID_z_mhtdc());
+    // if (trav_mus_wr > 0 && multihitItem.Get_ID_z_travmus_mhtdc() > 0) h1_z_travmus_mhtdc->Fill(multihitItem.Get_ID_z_travmus_mhtdc());
+    // if (multihitItem.Get_ID_z_travmus_mhtdc() > 0) h1_z_travmus_mhtdc->Fill(multihitItem.Get_ID_z_travmus_mhtdc());
+    // if (trav_mus_wr > 0 && hitItem.Get_travmusic_dE() > 0) h1_travmus_dE->Fill(hitItem.Get_travmusic_dE());
 
     fNEvents += 1;
 }
 
-void FrsTravMusSpectra::FinishEvent()
+void TravMusOnlineSpectra::FinishEvent()
 {
 
 }
 
-void FrsTravMusSpectra::FinishTask()
+void TravMusOnlineSpectra::FinishTask()
 {   
 
 }
 
-ClassImp(FrsTravMusSpectra)
+ClassImp(TravMusOnlineSpectra)

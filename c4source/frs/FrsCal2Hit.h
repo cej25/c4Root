@@ -2,6 +2,7 @@
 #define FrsCal2Hit_H
 
 #include "TFrsConfiguration.h"
+#include "TExperimentConfiguration.h"
 
 #include "../../config/setup.h"
 #include "FairTask.h"
@@ -11,9 +12,10 @@
 #include "FrsTPCCalData.h"
 #include "FrsUserCalData.h"
 #include "FrsTpatData.h"
-#include "FrsTravMusCalData.h"
+#include "TravMusCalData.h"
 #include "FrsHitData.h"
 #include <TRandom3.h>
+
 //#include "GainShift.h"
 
 class TClonesArray;
@@ -37,6 +39,7 @@ class FrsCal2Hit : public FairTask
         
         void Setup_Conditions(std::string path_to_config_files);
         void FRS_GainMatching();
+        void FRS_TM_Drift();
 
         Bool_t Check_WinCond(Float_t P, Float_t* V);
         Bool_t Check_WinCond_Multi(Float_t P, Float_t V[8][2], int cond_num);
@@ -60,6 +63,7 @@ class FrsCal2Hit : public FairTask
     private:
 
         TFrsConfiguration const* frs_config;
+        TExperimentConfiguration const* exp_config;
         TFRSParameter* frs;
         TMWParameter* mw;
         TTPCParameter* tpc;
@@ -86,7 +90,7 @@ class FrsCal2Hit : public FairTask
         std::vector<FrsUserCalSciItem> const* userSciArray;
         std::vector<FrsUserCalMusicItem> const* userMusicArray;
         std::vector<FrsTpatItem> const* tpatArray;
-        std::vector<FrsTravMusCalItem> const* travMusicArray;
+        std::vector<TravMusCalItem> const* travMusicArray;
 
         std::vector<FrsHitItem>* hitArray;
         std::vector<FrsMultiHitItem>* multihitArray;
@@ -164,29 +168,20 @@ class FrsCal2Hit : public FairTask
 
         uint32_t* music_e1;
         uint32_t* music_e2;
-        uint16_t travmusic_e[8];
         uint32_t* music_t1;
         uint32_t* music_t2;
 
-        uint16_t travmusic_t[8];
-
-
         Int_t music1_anodes_cnt;
-	      Int_t music2_anodes_cnt;
-        Int_t travmusic_anodes_cnt;
+	    Int_t music2_anodes_cnt;
 
         Bool_t music_b_e1[8];
         Bool_t music_b_e2[8];
-        Bool_t travmusic_b_e[8] = {0};
         Bool_t music_b_t1[8];
         Bool_t music_b_t2[8];
-        Bool_t travmusic_b_t[8] = {0};
         Bool_t b_de1;
-	      Bool_t b_de2;
-        Bool_t b_de_travmus;
+	    Bool_t b_de2;
         Float_t music1_x_mean;
         Float_t music2_x_mean;
-        Float_t travmusic_x_mean;
 
         uint32_t** tdc_array; // [15][max_hits_in_tdc_array]
         //std::vector<uint32_t> tdc_array[15];
@@ -196,8 +191,6 @@ class FrsCal2Hit : public FairTask
         //const uint32_t* dt_array; // not coded in raw->cal yet
         Float_t* de; // [3];
         Float_t* de_cor; // [3];
-        Float_t de_travmus;
-        Float_t de_cor_travmus;
         Float_t* sci_l; // [6]; // may change when i know the actual dimensions necessary
         Float_t* sci_r; // [6];
         Float_t* sci_tx; // [6];
@@ -222,7 +215,6 @@ class FrsCal2Hit : public FairTask
         Bool_t id_b_AoQ;
         Bool_t id_b_z;
         Bool_t id_b_z2;
-        Bool_t id_b_z_travmus;
         Bool_t id_b_z3;
         int Z_Shift_array;
         Float_t FRS_WR_a[200];
@@ -321,9 +313,6 @@ class FrsCal2Hit : public FairTask
         Float_t * id_mhtdc_z_music42 = nullptr;
         Float_t * id_mhtdc_zcor_music42 = nullptr;
         Float_t * id_mhtdc_v_cor_music42 = nullptr;
-        Float_t * id_mhtdc_z_travmus = nullptr;
-        Float_t * id_mhtdc_z_cor_travmus = nullptr;
-        Float_t * id_mhtdc_v_cor_travmus = nullptr;
 
         Float_t * id_mhtdc_dEdegoQ = nullptr;
         Float_t * id_mhtdc_gamma_ta_s2 = nullptr;
@@ -343,9 +332,6 @@ class FrsCal2Hit : public FairTask
         /* ----------------------------------------------- */
         //Hit variables
         /* ----------------------------------------------- */
-        uint64_t WR_TS = 0;
-        uint64_t wr_travmus = 0;
-
         Float_t id_x2;
         Float_t id_y2;
         Float_t id_a2;
@@ -366,11 +352,9 @@ class FrsCal2Hit : public FairTask
         Float_t id_AoQ_corr;
         Float_t id_v_cor;
         Float_t id_v_cor2;
-        Float_t id_v_cor_travmus;
         Float_t id_v_cor3;
         Float_t id_z;
         Float_t id_z2;
-        Float_t id_z_travmus;
         Float_t id_z3;
         Float_t id_gamma_ta_s2;
         Float_t id_dEdegoQ;
@@ -384,6 +368,15 @@ class FrsCal2Hit : public FairTask
         int total_time_microsecs = 0;
 
         bool conditions_files_read = false;
+
+
+        //::: Drifts correction
+        // std::map<int, std::pair<double,double>> travmus_drift;
+        // std::map<int, std::pair<double,double>> aoq_drift;
+        // std::map<int, std::pair<double,double>> z1_drift;
+        double de_travmus_driftcorr;
+        double id_AoQ_driftcorr;
+        double id_z_driftcorr;
 
 
     public:
