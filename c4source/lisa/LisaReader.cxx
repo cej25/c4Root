@@ -81,8 +81,8 @@ Bool_t LisaReader::Read()
 
 
 
-        //for (int index = 0; index < 8; index++) //ONLY FOR JIKKEN -- All mode (Trig?)
-        for (int index = 0; index < M; index++) //GENERAL
+        for (int index = 0; index < 8; index++) //ONLY FOR JIKKEN -- All mode (Trig?)
+	  //for (int index = 0; index < M; index++) //GENERAL
         {
             //::::::::::::::Channel ID
             uint8_t channel_id = fData->lisa_data[it_board_number].channel_idv[index];
