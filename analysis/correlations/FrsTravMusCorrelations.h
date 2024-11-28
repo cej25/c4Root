@@ -59,7 +59,7 @@ class FrsTravMusCorrelations : public FairTask
         std::vector<FrsGate*> FrsGates;
 
         std::vector<FrsHitItem> const* frsHitArray;
-        std::vector<FrsMultiHitItem> const* multihitArray;
+        std::vector<FrsMultiHitItem> const* frsMultihitArray;
         std::vector<TravMusCalItem> const* travMusCalArray;
         std::vector<TravMusAnaItem> const* travMusAnaArray;
 
@@ -77,7 +77,9 @@ class FrsTravMusCorrelations : public FairTask
 
 
         // Histograms
-  
+        TH2* h2_Z_vs_AoQ_driftcorr_trav_gate;
+        TH2* h2_Z_vs_AoQ_tac_trav_gate_driftcorr; // ? ok what the f are these names Elisa
+        TH2* h2_Z_vs_AoQ_mhtdc_trav_gate;
 
     public:
         ClassDef(FrsTravMusCorrelations, 1)

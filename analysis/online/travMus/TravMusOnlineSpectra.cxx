@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                       E.M. Gandolfo, C.E. Jones                            *
+ *                               25..11.24                                    *
+ ******************************************************************************/
+
 // FairRoot
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -8,6 +24,7 @@
 #include "TravMusOnlineSpectra.h"
 #include "EventHeader.h"
 #include "c4Logger.h"
+#include "AnalysisTools.h"
 
 // ROOT
 #include "TCanvas.h"
@@ -95,6 +112,7 @@ InitStatus TravMusOnlineSpectra::Init()
     dir_raw_adc->Append(c_raw_adc);
 
     
+    h1_travmus_dE = MakeTH1(dir_travmus, "D", "h1_travmus_dE", "dE (Travel MUSIC)", 1000, 0, 4000., "dE (Travel MUSIC)", kPink-3, kBlue+2);
 
 
     // Register command to reset histograms
@@ -130,12 +148,23 @@ void TravMusOnlineSpectra::Exec(Option_t* option)
         // dE spectra for online? 
     }
 
-    // if (trav_mus_wr > 0 && hitItem.Get_ID_z() > 0 && hitItem.Get_ID_z_travmus() > 0) h2_travmus_vs_Z->Fill(hitItem.Get_ID_z_travmus(), hitItem.Get_ID_z());
+    const auto & travMusicHitItem = travMusAnaArray->at(0); 
+
+    if (travMusicHitItem.Get_wr_t() > 0 && travMusicHitItem.Get_travmusic_dE() > 0) h1_travmus_dE->Fill(travMusicHitItem.Get_travmusic_dE());
+
+
+    // need Sci S1
     // if (trav_mus_wr > 0 && hitItem.Get_ID_z_travmus() > 0) h1_Z_travmus->Fill(hitItem.Get_ID_z_travmus());
+    
+    // need Sci S1
     // if (trav_mus_wr > 0 && multihitItem.Get_ID_z_mhtdc() > 0 && multihitItem.Get_ID_z_travmus_mhtdc() > 0) h2_travmus_vs_Z_mhtdc->Fill(multihitItem.Get_ID_z_travmus_mhtdc(), multihitItem.Get_ID_z_mhtdc());
+    
+    // need Sci S1
     // if (trav_mus_wr > 0 && multihitItem.Get_ID_z_travmus_mhtdc() > 0) h1_z_travmus_mhtdc->Fill(multihitItem.Get_ID_z_travmus_mhtdc());
+
+    // need Sci S1
     // if (multihitItem.Get_ID_z_travmus_mhtdc() > 0) h1_z_travmus_mhtdc->Fill(multihitItem.Get_ID_z_travmus_mhtdc());
-    // if (trav_mus_wr > 0 && hitItem.Get_travmusic_dE() > 0) h1_travmus_dE->Fill(hitItem.Get_travmusic_dE());
+  
 
     fNEvents += 1;
 }
