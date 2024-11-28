@@ -182,6 +182,7 @@ SUBEVENT(frs_tpat_subev)
         wr = TIMESTAMP_WHITERABBIT(id = 0x100);
     };
 
+    // changed for s101 I believe
     select several
     {
         trig3 = TRIG3EVENT();
