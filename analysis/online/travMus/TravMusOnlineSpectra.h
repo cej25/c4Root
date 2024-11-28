@@ -58,7 +58,8 @@ class TravMusOnlineSpectra : public FairTask
         TCanvas* c_raw_adc;
 
         // Histograms
-        TH1I* h1_travmus_raw_adc[8];
+        TH1* h1_travmus_raw_adc[8];
+        TH1* h1_travmus_dE;
 
     public:
         ClassDef(TravMusOnlineSpectra, 1)

@@ -19,6 +19,7 @@
 #include "FairRunOnline.h"
 #include "FairTask.h"
 
+#include "AnalysisTools.h"
 #include "FrsTravMusCorrelations.h"
 #include "c4Logger.h"
 #include "TFile.h"
@@ -41,7 +42,7 @@ FrsTravMusCorrelations::FrsTravMusCorrelations(const TString& name, Int_t verbos
     :   FairTask(name, verbose)
     ,   header(nullptr)
     ,   frsHitArray(nullptr)
-    ,   multihitArray(nullptr)
+    ,   frsMultihitArray(nullptr)
     ,   travMusCalArray(nullptr)
     ,   travMusAnaArray(nullptr)
     ,   fNEvents(0)
@@ -66,8 +67,8 @@ InitStatus FrsTravMusCorrelations::Init()
     frsHitArray = mgr->InitObjectAs<decltype(frsHitArray)>("FrsHitData");
     c4LOG_IF(fatal, !frsHitArray, "Branch FrsHitData not found!");
 
-    multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
-    c4LOG_IF(fatal, !multihitArray, "Branch FrsMultiHitData not found!");
+    frsMultihitArray = mgr->InitObjectAs<decltype(frsMultihitArray)>("FrsMultiHitData");
+    c4LOG_IF(fatal, !frsMultihitArray, "Branch FrsMultiHitData not found!");
 
     travMusCalArray = mgr->InitObjectAs<decltype(travMusCalArray)>("TravMusCalData");
     c4LOG_IF(fatal, !travMusCalArray, "Branch TravMusCalData not found!");
@@ -77,15 +78,19 @@ InitStatus FrsTravMusCorrelations::Init()
 
 
    
-
     FairRootManager::Instance()->GetOutFile()->cd();
     dir_corr = gDirectory->mkdir("FRS-TravMus Correlations");
+ 
+    // correlations + Z from SC1
+    // h2_travmus_vs_Z = MakeTH2(dir_tac_2d, "D", "h2_travmus_vs_Z", "Z (Travel MUSIC) vs Z (MUSIC 1)", 750, frs_config->fMin_Z, frs_config->fMax_Z, 750, frs_config->fMin_Z, frs_config->fMax_Z, "Z (Travel MUSIC)", "Z (MUSIC 1)");
 
-        
-    // hists init                
-                        
-                    
-    
+    // correlations + Z from SC1
+    // h2_travmus_vs_Z_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_travmus_vs_Z_mhtdc", "Z (Trav) vs. Z1 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z (Travel MUSIC)", "Z (MUSIC 1)");
+             
+    h2_Z_vs_AoQ_driftcorr_trav_gate = MakeTH2(dir_corr, "D", "h2_Z_vs_AoQ_tac_driftcorr_trav_gate", "Z1 vs. A/Q (DriftCorr)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);                       
+    h2_Z_vs_AoQ_tac_trav_gate_driftcorr = MakeTH2(dir_corr, "D", "h2_Z_vs_AoQ_tac_trav_gate_driftcorr", "Z1 vs. A/Q (TAC) DriftCorr", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
+    h2_Z_vs_AoQ_mhtdc_trav_gate = MakeTH2(dir_corr, "D", "h2_Z_vs_AoQ_mhtdc_trav_gate", "Z1 vs. A/Q (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z);
+
  
     return kSUCCESS;
 
@@ -100,8 +105,6 @@ void FrsTravMusCorrelations::Exec(Option_t* option)
 
     const auto & frsHitItem = frsHitArray->at(0); // *should* only be 1 FRS subevent per event
     const auto & travMusicHitItem = travMusAnaArray->at(0); 
-    
-    //const auto & multihitItem = multihitArray->at(0);
 
     int64_t wr_FRS = frsHitItem.Get_wr_t();
     int64_t wr_travMUSIC = travMusicHitItem.Get_wr_t();
@@ -112,6 +115,34 @@ void FrsTravMusCorrelations::Exec(Option_t* option)
     double energy_travMUSIC = travMusicHitItem.Get_travmusic_dE();
     double energy_travMUSIC_driftcorr = travMusicHitItem.Get_travmusic_dE_driftcorr();
 
+    // need S1 scintillator
+    // if (wr_travMUSIC > 0 && hitItem.Get_ID_z_travmus() > 0) h1_Z_travmus->Fill(hitItem.Get_ID_z_travmus());
+
+    // need S1 scintillator
+    // if (wr_travMUSIC > 0 && multihitItem.Get_ID_z_travmus_mhtdc() > 0) h1_z_travmus_mhtdc->Fill(multihitItem.Get_ID_z_travmus_mhtdc());
+    
+    // need S1 scintillator
+    // if (hitItem.Get_ID_z_travmus() > 0 && FRS_time_mins > 0) h2_Ztrav_vs_T->Fill(FRS_time_mins, hitItem.Get_ID_z_travmus());
+
+
+    if(travMusicHitItem.Get_travmusic_dE() >= frs_config->fMin_dE_travMus_gate && travMusicHitItem.Get_travmusic_dE() <= frs_config->fMax_dE_travMus_gate)
+    {
+        h2_Z_vs_AoQ_driftcorr_trav_gate->Fill(frsHitItem.Get_ID_AoQ_driftcorr(), frsHitItem.Get_ID_z_driftcorr());
+    }
+
+    if(travMusicHitItem.Get_travmusic_dE_driftcorr() >= frs_config->fMin_dE_travMus_gate && travMusicHitItem.Get_travmusic_dE_driftcorr() <= frs_config->fMax_dE_travMus_gate)
+    {
+        h2_Z_vs_AoQ_tac_trav_gate_driftcorr->Fill(frsHitItem.Get_ID_AoQ_driftcorr(), frsHitItem.Get_ID_z_driftcorr());
+    }
+
+
+    for (auto const & multihitItem : *frsMultihitArray)
+    {
+        if(travMusicHitItem.Get_travmusic_dE() >= frs_config->fMin_dE_travMus_gate && travMusicHitItem.Get_travmusic_dE() <= frs_config->fMax_dE_travMus_gate)
+        {
+            h2_Z_vs_AoQ_mhtdc_trav_gate->Fill(multihitItem.Get_ID_AoQ_mhtdc(), multihitItem.Get_ID_z_mhtdc());
+        }
+    }
 
     fNEvents++;
 
@@ -127,8 +158,7 @@ void FrsTravMusCorrelations::FinishTask()
     TDirectory* tmp = gDirectory;
     FairRootManager::Instance()->GetOutFile()->cd();
     dir_corr->Write();
-    c4LOG(info, "Written LISA analysis histograms to file.");
-    //c4LOG(info, "Multi hit events when LISA is in the event (correlated) : " <<  multi_evt++ << " LISA-FRS events : " << fNEvents);
+    c4LOG(info, "Written FRS-TravMus analysis histograms to file.");
 
 
 }
