@@ -124,7 +124,7 @@ VME_CAEN_V1290_FRS()
     };
     
     // this needs defining properly.......
-    //optional UINT32 eob NOENCODE; // type = 24
+    // optional UINT32 eob NOENCODE; // type = 24
 
 }
 
