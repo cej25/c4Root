@@ -103,6 +103,7 @@ TPAT_CRATE_DATA()
     }
     else
     {
+        // bad event?
         several UINT32 filler NOENCODE;
     }
 
