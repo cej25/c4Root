@@ -83,6 +83,14 @@ TPAT_CRATE_DATA()
         16_31: nothing;
         ENCODE(tpat, (value = pattern));
     }
+
+
+
+    UINT32 coffee NOENCODE
+    {
+        0_7: nothing;
+        8_31: 0xc0ffee
+    }
     
 }
 
