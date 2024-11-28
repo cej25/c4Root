@@ -54,18 +54,7 @@ class FrsMainReader : public c4Reader
         EventHeader* header;
 
         bool spill_flag = false;
-
-        uint32_t scalers_n;
-        std::vector<uint32_t> scalers_index;
-        std::vector<uint32_t> scalers_main;
-
-        uint32_t v792_geo;
-        std::vector<uint32_t> v792_channel;
-        std::vector<uint32_t> v792_data;
         
-        std::vector<uint32_t> v1290_channel;
-        std::vector<uint32_t> v1290_data;
-        std::vector<uint32_t> v1290_lot;
     
     public:
         ClassDefOverride(FrsMainReader, 0);
