@@ -1,0 +1,18 @@
+#Scintillator dT mapping
+GEO 12
+dT_21L_21R  0
+dT_41L_41R  1  
+dT_42L_42R  2
+dT_43L_43R  3
+dT_81L_81R  4
+dT_21L_41L  5
+dT_21R_41R  6
+dT_42R_21R  7
+dT_42L_21L  8
+dT_21L_81L  9
+dT_21R_81R  10
+dT_22L_22R  11
+dT_22L_41L  12
+dT_22R_41R  13
+dT_22L_81L  14
+dT_22R_81R  15

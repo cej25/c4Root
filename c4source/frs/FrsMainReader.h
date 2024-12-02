@@ -57,7 +57,7 @@ class FrsMainReader : public c4Reader
         
     
     public:
-        ClassDefOverride(FrsMainReader, 0);
+        ClassDefOverride(FrsMainReader, 1);
 };
 
 #endif

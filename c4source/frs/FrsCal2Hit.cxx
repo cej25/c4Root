@@ -690,204 +690,221 @@ void FrsCal2Hit::Exec(Option_t* option)
     }
     */
 
-    de_array = mainSciItem.Get_de_array();
-    dt_array = userSciItem.Get_dt_array();
 
-    //TAC:
-    dt_21l_21r = dt_array[0];
-    dt_41l_41r = dt_array[1];
-    dt_42l_42r = dt_array[2];
-    dt_43l_43r = dt_array[3];
-    dt_81l_81r = dt_array[4];
-    dt_21l_41l = dt_array[5];
-    dt_21r_41r = dt_array[6];
-    dt_42r_21r = dt_array[7];
-    dt_42l_21l = dt_array[8];
-    dt_21l_81l = dt_array[9];
-    dt_21r_81r = dt_array[10];
-    dt_22l_22r = dt_array[11];
-    dt_22l_41l = dt_array[12];
-    dt_22r_41r = dt_array[13];
-    dt_22l_81l = dt_array[14];
-    dt_22r_81r = dt_array[15];
-
-    // 2 in go4, 0 now?
-    sci_l[0] = de_array[1]; // de_21l;
-    sci_r[0] = de_array[2]; // de_21r;
-    sci_tx[0] = dt_21l_21r + rand3();
-
-    // 3 in go4, 1 now?
-    sci_l[1] = de_array[13]; // de_22l
-    sci_r[1] = de_array[6]; // de_22r
-    sci_tx[1] = dt_22l_22r + rand3();
-
-    // 5 in go4, 2 now?
-    sci_l[2] = de_array[0]; // de_41l
-    sci_r[2] = de_array[11]; // de_41r;
-    sci_tx[2] = dt_41l_41r + rand3();
-
-    // 6 in go4, 3 now?
-    sci_l[3] = de_array[3]; // de_42l
-    sci_r[3] = de_array[4]; // de_42r
-    sci_tx[3] = dt_42l_42r + rand3();
-
-    // 7 in go4, 4 now?
-    sci_l[4] = de_array[9]; // de_43l
-    sci_r[4] = de_array[10]; // de_43r
-    sci_tx[4] = dt_43l_43r + rand3();
-
-    // 10 in go4, 5 now?
-    sci_l[5] = de_array[5]; // de_81l
-    sci_r[5] = de_array[12]; // de_81r
-    sci_tx[5] = dt_81l_81r + rand3();
-
-    for (int i = 0; i < 6; i++)
-    {
-        int j;
-        switch(i)
-        {
-            case 0:
-                j = 2;
-                break;
-            case 1:
-                j = 3;
-                break;
-            case 2:
-                j = 5;
-                break;
-            case 3:
-                j = 6;
-                break;
-            case 4:
-                j = 7;
-                break;
-            case 5:
-                j = 10;
-                break;
-            default:
-                j = 2;
-        }
-
-        sci_b_l[i] = Check_WinCond(sci_l[i], cSCI_L);
-        sci_b_r[i] = Check_WinCond(sci_r[i], cSCI_R);
-
-        if (sci_b_l[i] && sci_b_r[i])
-        {
-            //sci_e[i] = (sci_r[i] - sci->re_a[0][j]); // CEJ: old calculation (?? no idea what this was even doing)
-            sci_e[i] = sqrt( (sci_l[i] - sci->le_a[0][j]) * sci->le_a[1][j]
-	   			  * (sci_r[i] - sci->re_a[0][j]) * sci->re_a[1][j]);
-            sci_b_e[i] = Check_WinCond(sci_e[i], cSCI_E);
-        }
-
-        /* Position in X direction: */
-        sci_b_tx[i] = Check_WinCond(sci_tx[i], cSCI_Tx);
-        if (sci_b_tx[i])
-        {
-            Float_t R = sci_tx[i];
-            power = 1.;
-            sum = 0.;
-            for (int k = 0; k < 7; k++)
-            {
-                //sum += sci->x_a[k][i] * power;
-                sum += sci->x_a[k][j] * power;
-                power *= R;
-            }
-            sci_x[i] = sum;
-            sci_b_x[i] = Check_WinCond(sci_x[i], cSCI_X);
-        }
-    } // loop for sci values
-
-
-    // std::cout << ":::::: TESTING SCI SIGNALS :::::" << std::endl;
-    // for (int i = 0; i < 6; i++)
-    // {   
-    //     std::cout << "i: " << i << std::endl;
-    //     std::cout << "sci_l: " << sci_l[i] << std::endl;
-    //     std::cout << "sci_r: " << sci_r[i] << std::endl;
-    //     std::cout << "sci_tx: " << sci_tx[i] << std::endl;
-    //     std::cout << "sci_e: " << sci_e[i] << std::endl;
-    //     std::cout << "sci_x: " << sci_x[i] << std::endl;
-    // }
-
-
-    /*----------------------------------------------------------*/
-    // Calibrated ToF - dt will be in dt_array, from UserCrate
-    /*----------------------------------------------------------*/
-    Float_t sci_tof[6];
-    Float_t sci_tof_calib[6];
-
-    sci_tofll2 = dt_21l_41l * sci->tac_factor[2] - sci->tac_off[2];
-    sci_tofrr2 = dt_21r_41r * sci->tac_factor[3] - sci->tac_off[3];
-    sci_b_tofll2 = Check_WinCond(sci_tofll2, cSCI_LL2);
-    sci_b_tofrr2 = Check_WinCond(sci_tofrr2, cSCI_RR2);
-    //c4LOG(info,Form("tof 21l 41l = %f, tof 21r 41r = %f, sci windows = %d %d, cSCILL2 = %f, cSCIRR2 = %f",sci_tofll2, sci_tofrr2,sci_b_tofll2,sci_b_tofrr2,cSCI_LL2[1],cSCI_RR2[1]));
-    if (sci_b_tofll2 && sci_b_tofrr2)
-    {
-        sci_tof2 = (sci->tof_bll2 * sci_tofll2 + sci->tof_a2 + sci->tof_brr2 * sci_tofrr2) / 2.0;
-        sci_tof2_calib = -1.0 * sci_tof2 + id->id_tofoff2;
-    }
-    else
-    {
-        sci_tof2 = 0;
-        sci_tof2_calib = 0;
-    }
-
-    sci_tof[2] = sci_tof2;
-    sci_tof_calib[2] = sci_tof2_calib;
-
-    sci_tofll3 = dt_42l_21l * sci->tac_factor[5] - sci->tac_off[5];
-    sci_tofrr3 = dt_42r_21r * sci->tac_factor[6] - sci->tac_off[6];
-    sci_b_tofll3 = Check_WinCond(sci_tofll3, cSCI_LL3);
-    sci_b_tofrr3 = Check_WinCond(sci_tofrr3, cSCI_RR3);
-    if (sci_b_tofll3 && sci_b_tofrr3)
-    {
-        sci_tof3 = (sci->tof_bll3 * sci_tofll3 + sci->tof_a3 + sci->tof_brr3 * sci_tofrr3) / 2.0;
-        sci_tof3_calib = -1.0 * sci_tof3 + id->id_tofoff3;
-    }
-    else
-    {
-        sci_tof3 = 0;
-        sci_tof3_calib = 0;
-    }
-
-    sci_tof[3] = sci_tof3;
-    sci_tof_calib[3] = sci_tof3_calib;
-
-    sci_tofll4 = dt_21l_81l * sci->tac_factor[9] - sci->tac_off[9];
-    sci_tofrr4 = dt_21r_81r * sci->tac_factor[10] - sci->tac_off[10];
-    sci_b_tofll4 = Check_WinCond(sci_tofll4, cSCI_LL4);
-    sci_b_tofrr4 = Check_WinCond(sci_tofrr4, cSCI_RR4);
-    if (sci_b_tofll4 && sci_b_tofrr4)
-    {
-        sci_tof4 = (sci->tof_bll4 * sci_tofll4 + sci->tof_a4 + sci->tof_brr4 * sci_tofrr4) / 2.0;
-        sci_tof4_calib = -1.0 * sci_tof4 + id->id_tofoff4;
-    }
-    else
-    {
-        sci_tof4 = 0;
-        sci_tof4_calib = 0;
-    }
-
-    sci_tof[4] = sci_tof4;
-    sci_tof_calib[4] = sci_tof4_calib;
-
-    sci_tofll5 = dt_22l_41l * sci->tac_factor[12] - sci->tac_off[12];
-    sci_tofrr5 = dt_22r_41r * sci->tac_factor[13] - sci->tac_off[13];
-    sci_b_tofll5 = Check_WinCond(sci_tofll5, cSCI_LL5);
-    sci_b_tofrr5 = Check_WinCond(sci_tofrr5, cSCI_RR5);
-    if (sci_b_tofll5 && sci_b_tofrr5)
-    {
-        sci_tof5 = (sci->tof_bll5 * sci_tofll5 + sci->tof_a5 + sci->tof_brr5 * sci_tofrr5) / 2.0;
-        sci_tof5_calib = -1.0 * sci_tof5 + id->id_tofoff5;
-    }
-    else
-    {
-        sci_tof5 = 0;
-        sci_tof5_calib = 0;
-    }
+    // SCI 21
+    de_21l = mainSciItem.Get_dE_21l(); bool sci_b_21l = Check_WinCond(de_21l, cSCI_L);
+    de_21r = mainSciItem.Get_dE_21r(); bool sci_b_21r = Check_WinCond(de_21r, cSCI_R);
+    if (sci_b_21l && sci_b_21r) sci_e_21 = sqrt((de_21l - sci->le_a[0][2]) * sci->le_a[1][2] * (de_21r - sci->re_a[0][2]) * sci->re_a[1][2]);
+    bool sci_b_e_21 = Check_WinCond(sci_e_21, cSCI_E);
     
-    sci_tof[5] = sci_tof5;
-    sci_tof_calib[5] = sci_tof5_calib;
+    sci_tx_21lr = userSciItem.Get_dT_21l_21r() + rand3();
+    bool sci_b_tx_21lr = Check_WinCond(sci_tx_21lr, cSCI_Tx);
+    if (sci_b_tx_21lr)
+    {
+        Float_t R = sci_tx_21lr;
+        power = 1.; sum = 0.;
+        for (int i = 0; i < 7; i++)
+        {
+            sum += sci->x_a[i][2] * power; power *= R;
+        }
+        sci_x_21 = sum;
+    }
+    bool sci_b_x_21 = Check_WinCond(sci_x_21, cSCI_X);
+    
+
+    // SCI 22
+    de_22l = mainSciItem.Get_dE_22l(); bool sci_b_22l = Check_WinCond(de_22l, cSCI_L);
+    de_22r = mainSciItem.Get_dE_22r(); bool sci_b_22r = Check_WinCond(de_22r, cSCI_R);
+    if (sci_b_22l && sci_b_22r) sci_e_22 = sqrt((de_22l - sci->le_a[0][3]) * sci->le_a[1][3] * (de_22r - sci->re_a[0][3]) * sci->re_a[1][3]);
+    bool sci_b_e_22 = Check_WinCond(sci_e_22, cSCI_E);
+    
+    sci_tx_22lr = userSciItem.Get_dT_22l_22r() + rand3();
+    bool sci_b_tx_22lr = Check_WinCond(sci_tx_22lr, cSCI_Tx);
+    if (sci_b_tx_22lr)
+    {
+        Float_t R = sci_tx_22lr;
+        power = 1.; sum = 0.;
+        for (int i = 0; i < 7; i++)
+        {
+            sum += sci->x_a[i][3] * power; power *= R;
+        }
+        sci_x_22 = sum;
+    }
+    bool sci_b_x_22 = Check_WinCond(sci_x_22, cSCI_X);
+
+    // SCI 31
+    de_31l = mainSciItem.Get_dE_31l(); bool sci_b_31l = Check_WinCond(de_31l, cSCI_L);
+    de_31r = mainSciItem.Get_dE_31r(); bool sci_b_31r = Check_WinCond(de_31r, cSCI_R);
+    if (sci_b_31l && sci_b_31r) sci_e_31 = sqrt((de_31l - sci->le_a[0][4]) * sci->le_a[1][4] * (de_31r - sci->re_a[0][4]) * sci->re_a[1][4]);
+    bool sci_b_e_31 = Check_WinCond(sci_e_31, cSCI_E);
+
+    // SCI 41
+    de_41l = mainSciItem.Get_dE_41l(); bool sci_b_41l = Check_WinCond(de_41l, cSCI_L);
+    de_41r = mainSciItem.Get_dE_41r(); bool sci_b_41r = Check_WinCond(de_41r, cSCI_R);
+    if (sci_b_41l && sci_b_41r) sci_e_41 = sqrt((de_41l - sci->le_a[0][5]) * sci->le_a[1][5] * (de_41r - sci->re_a[0][5]) * sci->re_a[1][5]);
+    bool sci_b_e_41 = Check_WinCond(sci_e_41, cSCI_E);
+    
+    sci_tx_41lr = userSciItem.Get_dT_41l_41r() + rand3();
+    bool sci_b_tx_41lr = Check_WinCond(sci_tx_41lr, cSCI_Tx);
+    if (sci_b_tx_41lr)
+    {
+        Float_t R = sci_tx_41lr;
+        power = 1.; sum = 0.;
+        for (int i = 0; i < 7; i++)
+        {
+            sum += sci->x_a[i][5] * power; power *= R;
+        }
+        sci_x_41 = sum;
+    }
+    bool sci_b_x_41 = Check_WinCond(sci_x_41, cSCI_X);
+
+    // SCI 42
+    de_42l = mainSciItem.Get_dE_42l(); bool sci_b_42l = Check_WinCond(de_42l, cSCI_L);
+    de_42r = mainSciItem.Get_dE_42r(); bool sci_b_42r = Check_WinCond(de_42r, cSCI_R);
+    if (sci_b_42l && sci_b_42r) sci_e_42 = sqrt((de_42l - sci->le_a[0][6]) * sci->le_a[1][6] * (de_42r - sci->re_a[0][6]) * sci->re_a[1][6]);
+    bool sci_b_e_42 = Check_WinCond(sci_e_42, cSCI_E);
+    
+    sci_tx_42lr = userSciItem.Get_dT_42l_42r() + rand3();
+    bool sci_b_tx_42lr = Check_WinCond(sci_tx_42lr, cSCI_Tx);
+    if (sci_b_tx_42lr)
+    {
+        Float_t R = sci_tx_42lr;
+        power = 1.; sum = 0.;
+        for (int i = 0; i < 7; i++)
+        {
+            sum += sci->x_a[i][6] * power; power *= R;
+        }
+        sci_x_42 = sum;
+    }
+    bool sci_b_x_42 = Check_WinCond(sci_x_42, cSCI_X);
+
+    // SCI 43
+    de_43l = mainSciItem.Get_dE_43l(); bool sci_b_43l = Check_WinCond(de_43l, cSCI_L);
+    de_43r = mainSciItem.Get_dE_43r(); bool sci_b_43r = Check_WinCond(de_43r, cSCI_R);
+    if (sci_b_43l && sci_b_43r) sci_e_43 = sqrt((de_43l - sci->le_a[0][7]) * sci->le_a[1][7] * (de_43r - sci->re_a[0][7]) * sci->re_a[1][7]);
+    bool sci_b_e_43 = Check_WinCond(sci_e_43, cSCI_E);
+
+    sci_tx_43lr = userSciItem.Get_dT_43l_43r() + rand3();
+    bool sci_b_tx_43lr = Check_WinCond(sci_tx_43lr, cSCI_Tx);
+    if (sci_b_tx_43lr)
+    {
+        Float_t R = sci_tx_43lr;
+        power = 1.; sum = 0.;
+        for (int i = 0; i < 7; i++)
+        {
+            sum += sci->x_a[i][7] * power; power *= R;
+        }
+        sci_x_43 = sum;
+    }
+    bool sci_b_x_43 = Check_WinCond(sci_x_43, cSCI_X);
+
+    // SCI 81
+    de_81l = mainSciItem.Get_dE_81l(); bool sci_b_81l = Check_WinCond(de_81l, cSCI_L);
+    de_81r = mainSciItem.Get_dE_81r(); bool sci_b_81r = Check_WinCond(de_81r, cSCI_R);
+    if (sci_b_81l && sci_b_81r) sci_e_81 = sqrt((de_81l - sci->le_a[0][10]) * sci->le_a[1][10] * (de_81r - sci->re_a[0][10]) * sci->re_a[1][10]);
+    bool sci_b_e_81 = Check_WinCond(sci_e_81, cSCI_E);
+    
+    sci_tx_81lr = userSciItem.Get_dT_81l_81r() + rand3();
+    bool sci_b_tx_81lr = Check_WinCond(sci_tx_81lr, cSCI_Tx);
+    if (sci_b_tx_81lr)
+    {
+        Float_t R = sci_tx_81lr;
+        power = 1.; sum = 0.;
+        for (int i = 0; i < 7; i++)
+        {
+            sum += sci->x_a[i][10] * power; power *= R;
+        }
+        sci_x_81 = sum;
+    }
+    bool sci_b_x_81 = Check_WinCond(sci_x_81, cSCI_X);
+
+
+    /*-----------------------------------*/
+    // Calibrated ToF
+    /*-----------------------------------*/
+    // SCI 21 - 41
+    sci_tofll_21_41 = userSciItem.Get_dT_21l_41l() * sci->tac_factor[2] - sci->tac_off[2];
+    sci_tofrr_21_41 = userSciItem.Get_dT_21r_41r() * sci->tac_factor[3] - sci->tac_off[3];
+    bool sci_b_tofll_21_41 = Check_WinCond(sci_tofll_21_41, cSCI_LL2);
+    bool sci_b_tofrr_21_41 = Check_WinCond(sci_tofrr_21_41, cSCI_RR2);
+
+    if (sci_b_tofll_21_41 && sci_b_tofrr_21_41)
+    {
+        sci_tof_21_41 = (sci->tof_bll2 * sci_tofll_21_41 + sci->tof_a2 + sci->tof_brr2 * sci_tofrr_21_41) / 2.0;
+        sci_tof_21_41_calib = -1.0 * sci_tof_21_41 + id->id_tofoff2;
+    }
+    else
+    {
+        sci_tof_21_41 = 0;
+        sci_tof_21_41_calib = 0;
+    }
+
+    // SCI 21 - 42
+    sci_tofll_21_42 = userSciItem.Get_dT_42l_21l() * sci->tac_factor[5] - sci->tac_off[5];
+    sci_tofrr_21_42 = userSciItem.Get_dT_42r_21r() * sci->tac_factor[6] - sci->tac_off[6];
+    bool sci_b_tofll_21_42 = Check_WinCond(sci_tofll_21_42, cSCI_LL3);
+    bool sci_b_tofrr_21_42 = Check_WinCond(sci_tofrr_21_42, cSCI_RR3);
+    if (sci_b_tofll_21_42 && sci_b_tofrr_21_42)
+    {
+        sci_tof_21_42 = (sci->tof_bll3 * sci_tofll_21_42 + sci->tof_a3 + sci->tof_brr3 * sci_tofrr_21_42) / 2.0;
+        sci_tof_21_42_calib = -1.0 * sci_tof_21_42 + id->id_tofoff3;
+    }
+    else
+    {
+        sci_tof_21_42 = 0;
+        sci_tof_21_42_calib = 0;
+    }
+
+    // SCI 21 - 81
+    sci_tofll_21_81 = userSciItem.Get_dT_21l_81l() * sci->tac_factor[9] - sci->tac_off[9];
+    sci_tofrr_21_81 = userSciItem.Get_dT_21r_81r() * sci->tac_factor[10] - sci->tac_off[10];
+    bool sci_b_tofll_21_81 = Check_WinCond(sci_tofll_21_81, cSCI_LL4);
+    bool sci_b_tofrr_21_81 = Check_WinCond(sci_tofrr_21_81, cSCI_RR4);
+    if (sci_b_tofll_21_81 && sci_b_tofrr_21_81)
+    {
+        sci_tof_21_81 = (sci->tof_bll4 * sci_tofll_21_81 + sci->tof_a4 + sci->tof_brr4 * sci_tofrr_21_81) / 2.0;
+        sci_tof_21_81_calib = -1.0 * sci_tof_21_81 + id->id_tofoff4;
+    }
+    else
+    {
+        sci_tof_21_81 = 0;
+        sci_tof_21_81_calib = 0;
+    }
+
+    // SCI 22 - 41
+    sci_tofll_22_41 = userSciItem.Get_dT_22l_41l() * sci->tac_factor[12] - sci->tac_off[12];
+    sci_tofrr_22_41 = userSciItem.Get_dT_22r_41r() * sci->tac_factor[13] - sci->tac_off[13];
+    bool sci_b_tofll_22_41 = Check_WinCond(sci_tofll_22_41, cSCI_LL5);
+    bool sci_b_tofrr_22_41 = Check_WinCond(sci_tofrr_22_41, cSCI_RR5);
+    if (sci_b_tofll_22_41 && sci_b_tofrr_22_41)
+    {
+        sci_tof_22_41 = (sci->tof_bll5 * sci_tofll_22_41 + sci->tof_a5 + sci->tof_brr5 * sci_tofrr_22_41) / 2.0;
+        sci_tof_22_41_calib = -1.0 * sci_tof_22_41 + id->id_tofoff5;
+    }
+    else
+    {
+        sci_tof_22_41 = 0;
+        sci_tof_22_41_calib = 0;
+    }
+
+    // SCI 22 - 81
+    sci_tofll_22_81 = userSciItem.Get_dT_22l_81l() * sci->tac_factor[14] - sci->tac_off[14];
+    sci_tofrr_22_81 = userSciItem.Get_dT_22r_81r() * sci->tac_factor[15] - sci->tac_off[15];
+    bool sci_b_tofll_22_81 = Check_WinCond(sci_tofll_22_81, cSCI_LL6);
+    bool sci_b_tofrr_22_81 = Check_WinCond(sci_tofrr_22_81, cSCI_RR6);
+    if (sci_b_tofll_22_81 && sci_b_tofrr_22_81)
+    {
+        sci_tof_22_81 = (sci->tof_bll6 * sci_tofll_22_81 + sci->tof_a6 + sci->tof_brr6 * sci_tofrr_22_81) / 2.0;
+        sci_tof_22_81_calib = -1.0 * sci_tof_22_81 + id->id_tofoff6;
+    }
+    else
+    {
+        sci_tof_22_81 = 0;
+        sci_tof_22_81_calib = 0;
+    }
+
+
+
 
     /*----------------------------------------------------------*/
     // Start of MHTDC ID analysis
@@ -1182,23 +1199,23 @@ void FrsCal2Hit::Exec(Option_t* option)
     id_beta = 0;
     if (id->tof_s4_select == 1)
     {
-        if (sci_b_tofll2 && sci_b_tofrr2)
+        if (sci_b_tofll_21_41 && sci_b_tofrr_21_41)
         {
-            id_beta = id->id_path2 / sci_tof2_calib;
+            id_beta = id->id_path2 / sci_tof_21_41_calib;
         }
     }
     else if (id->tof_s4_select == 2)
     {
-        if (sci_b_tofll3 && sci_b_tofrr3)
+        if (sci_b_tofll_21_42 && sci_b_tofrr_21_42)
         {
-            id_beta = id->id_path3 / sci_tof3_calib;
+            id_beta = id->id_path3 / sci_tof_21_42_calib;
         }
     }
     else if (id->tof_s4_select == 3)
     {
-        if (sci_b_tofll5 && sci_b_tofrr5)
+        if (sci_b_tofll_22_41 && sci_b_tofrr_22_41)
         {
-            id_beta = id->id_path5 / sci_tof5_calib;
+            id_beta = id->id_path5 / sci_tof_22_41_calib;
         }
     }
 
@@ -1223,8 +1240,8 @@ void FrsCal2Hit::Exec(Option_t* option)
     /* Determination of A/Q                                         */
     /*--------------------------------------------------------------*/
     // for S2-S4
-
-    if (sci_b_tofll2 && sci_b_tofrr2 && id_b_x2 && id_b_x4)
+    // only use 21_41?
+    if (sci_b_tofll_21_41 && sci_b_tofrr_21_41 && id_b_x2 && id_b_x4)
     {
         if ((id_beta > 0.0) && (id_beta < 1.0))
         {
@@ -1249,7 +1266,8 @@ void FrsCal2Hit::Exec(Option_t* option)
         for (int i = 0; i < 4; i++)
         {
             sum += power * id->vel_a[i];
-            power *= 1.0/(id_beta*id_beta);
+            //power *= 1.0/(id_beta*id_beta);
+            power *= id_beta;
         }
         id_v_cor = sum;
         if (id_v_cor > 0.0)
@@ -1271,7 +1289,8 @@ void FrsCal2Hit::Exec(Option_t* option)
         for (int i = 0; i < 4; i++)
         {
             sum += power * id->vel_a2[i];
-            power *= 1.0/(id_beta*id_beta);
+            //power *= 1.0/(id_beta*id_beta);
+            power *= id_beta;
         }
         id_v_cor2 = sum;
 
@@ -1407,13 +1426,43 @@ void FrsCal2Hit::Exec(Option_t* option)
                     id_brho,
                     de,
                     de_cor,
-                    sci_e,
-                    sci_l,
-                    sci_r,
-                    sci_x,
-                    sci_tof,
-                    sci_tof_calib,
-                    sci_tof2,
+                    de_21l,
+                    de_21r,
+                    de_22l,
+                    de_22r,
+                    de_31l,
+                    de_31r,
+                    de_41l,
+                    de_41r,
+                    de_42l,
+                    de_42r,
+                    de_43l,
+                    de_43r,
+                    de_81l,
+                    de_81r,
+                    sci_e_21,
+                    sci_e_22,
+                    sci_e_31,
+                    sci_e_41,
+                    sci_e_42,
+                    sci_e_43,
+                    sci_e_81,
+                    sci_x_21,
+                    sci_x_22,
+                    sci_x_41,
+                    sci_x_42,
+                    sci_x_43,
+                    sci_x_81,
+                    sci_tof_21_41, // 2
+                    sci_tof_21_41_calib,
+                    sci_tof_21_42, // 3
+                    sci_tof_21_42_calib,
+                    sci_tof_21_81, // 4
+                    sci_tof_21_81_calib,
+                    sci_tof_22_41, // 5
+                    sci_tof_22_41_calib,
+                    sci_tof_22_81, // 6
+                    sci_tof_22_81_calib,
                     time_in_ms,
                     ibin_for_s,
                     ibin_for_100ms,
@@ -1626,6 +1675,10 @@ void FrsCal2Hit::Setup_Conditions(std::string path_to_config_files)
         sscanf(line.c_str(),format,&cSCI_LL5[0],&cSCI_LL5[1]);
         getline(cond_i,line,'\n');
         sscanf(line.c_str(),format,&cSCI_RR5[0],&cSCI_RR5[1]);
+        getline(cond_i,line,'\n');
+        sscanf(line.c_str(),format,&cSCI_LL6[0],&cSCI_LL6[1]);
+        getline(cond_i,line,'\n');
+        sscanf(line.c_str(),format,&cSCI_RR6[0],&cSCI_RR6[1]);
 
         break;
 
