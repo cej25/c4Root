@@ -32,11 +32,7 @@ class TFrsConfiguration
         static void SetTravMusDriftFile(std::string fp) { tm_drift_coeff_file = fp; }
         static void SetAoQDriftFile(std::string fp) { aoq_drift_coeff_file = fp; }
         static void SetZ1DriftFile(std::string fp) { z1_drift_coeff_file = fp; }
-        static void SetScidEFile(std::string fp) { dE_file = fp; }
-        static void SetScidTFile(std::string fp) { dT_file = fp; }
         static void SetCrateMapFile(std::string fp) { crate_map_file = fp; }
-
-    
 
         TFRSParameter* FRS() const;
         TMWParameter* MW() const;
@@ -173,12 +169,6 @@ class TFrsConfiguration
 
         static std::string z1_drift_coeff_file;
         void ReadZ1DriftFile();
-
-        static std::string dE_file;
-        void ReadScidEFile();
-
-        static std::string dT_file;
-        void ReadScidTFile();
 
         static std::string crate_map_file;
         void ReadCrateMapFile();
