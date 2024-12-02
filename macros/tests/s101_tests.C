@@ -147,8 +147,9 @@ void s101_tests()
     TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_apr15.txt");
     TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_uncal_apr15.txt");
     TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
-    TFrsConfiguration::SetScidEFile(config_path + "/frs/SCI_dE_Mapping.txt");
-    TFrsConfiguration::SetScidTFile(config_path + "/frs/SCI_dT_Mapping.txt");
+    // TFrsConfiguration::SetScidEFile(config_path + "/frs/SCI_dE_Mapping.txt");
+    // TFrsConfiguration::SetScidTFile(config_path + "/frs/SCI_dT_Mapping.txt");
+    TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
     
 
     // ------------------------------------------------------------------------------------- //
