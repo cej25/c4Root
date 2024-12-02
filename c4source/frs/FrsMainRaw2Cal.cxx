@@ -27,6 +27,7 @@ FrsMainRaw2Cal::FrsMainRaw2Cal()
     ,   sciArray(new std::vector<FrsMainCalSciItem>)
     ,   musicArray(new std::vector<FrsMainCalMusicItem>)
 {
+    frs_config = TFrsConfiguration::GetInstance();
 }
 
 FrsMainRaw2Cal::FrsMainRaw2Cal(const TString& name, Int_t verbose)
@@ -41,6 +42,7 @@ FrsMainRaw2Cal::FrsMainRaw2Cal(const TString& name, Int_t verbose)
     ,   sciArray(new std::vector<FrsMainCalSciItem>)
     ,   musicArray(new std::vector<FrsMainCalMusicItem>)
 {
+    frs_config = TFrsConfiguration::GetInstance();
 }
 
 FrsMainRaw2Cal::~FrsMainRaw2Cal()
@@ -95,73 +97,52 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
 
 
     // V792 
-
-    // should only be 1 entry for this vector of items?
     for (auto const & v792item : *v792array)
     {
         uint32_t geo = v792item.Get_geo();
         uint32_t data = v792item.Get_v792_data();
         uint32_t channel = v792item.Get_channel();
-        if (geo == 14)
-        {
-            switch (channel)
-            {
-                case 1: // 41r
-                    de[0] = data;
-                    break;
-                case 2: // 21l
-                    de[1] = data;
-                    break;
-                case 3: // 21r
-                    de[2] = data;
-                    break;
-                case 4: // 42l
-                    de[3] = data;
-                    break;
-                case 5: // 42r
-                    de[4] = data;
-                    break;
-                case 6: // 81l
-                    de[5] = data;
-                    break;
-                case 7: // not used
-                    break;
-                case 8: // 22r
-                    de[6] = data;
-                    break;
-                case 9: // 31l
-                    de[7] = data;
-                    break;
-                case 10: // 31r
-                    de[8] = data;
-                    break;
-                case 11: // 43l
-                    de[9] = data;
-                    break;
-                case 12: // 43r
-                    de[10] = data;
-                    break;
-                case 13: // 41l
-                    de[11] = data;
-                    break;
-                case 14: // 81r
-                    de[12] = data;
-                    break;
-                case 15: // 22l
-                    de[13] = data;
-                    break;
 
-            }
+        channel -= 1; // 1 based readout, 0 based mapping.
+        if (geo == frs_config->Get_sci_dE_geo())
+        {
+            if (channel == frs_config->Get_dE_21l_chan()) de_21l = data;
+            else if (channel == frs_config->Get_dE_21r_chan()) de_21r = data;
+            else if (channel == frs_config->Get_dE_22l_chan()) de_22l = data;
+            else if (channel == frs_config->Get_dE_22r_chan()) de_22r = data;
+            else if (channel == frs_config->Get_dE_31l_chan()) de_31l = data;
+            else if (channel == frs_config->Get_dE_31r_chan()) de_31r = data;
+            else if (channel == frs_config->Get_dE_41l_chan()) de_41l = data;
+            else if (channel == frs_config->Get_dE_41r_chan()) de_41r = data;
+            else if (channel == frs_config->Get_dE_42l_chan()) de_42l = data;
+            else if (channel == frs_config->Get_dE_42r_chan()) de_42r = data;
+            else if (channel == frs_config->Get_dE_43l_chan()) de_43l = data;
+            else if (channel == frs_config->Get_dE_43r_chan()) de_43r = data;
+            else if (channel == frs_config->Get_dE_81l_chan()) de_81l = data;
+            else if (channel == frs_config->Get_dE_81r_chan()) de_81r = data;            
         }
     }
 
+    auto & sciEntry = sciArray->emplace_back();
+    sciEntry.Set_dE(de_21l,
+                    de_21r,
+                    de_22l,
+                    de_22r,
+                    de_31l,
+                    de_31r,
+                    de_41l,
+                    de_41r,
+                    de_42l,
+                    de_42r,
+                    de_43l,
+                    de_43r,
+                    de_81l,
+                    de_81r);
+    // CEJ: untested !!
+
 
     // V1290
-
-    auto & sciEntry = sciArray->emplace_back();
-
-    sciEntry.SetdEArray(de);
-
+    // CEJ: will add mapping to this at some point
     for (auto const & v1290_item : *v1290array)
     {
         if (v1290_item.Get_leadOrTrail() == 0) // lead 0, trail 1
@@ -296,12 +277,28 @@ void FrsMainRaw2Cal::ClearVectors()
     scalerArray->clear();
     sciArray->clear();
     musicArray->clear();
+
 }
 
 void FrsMainRaw2Cal::FinishEvent()
 {   
     ClearVectors();
     ZeroArrays();
+
+    de_21l = 0;
+    de_21r = 0;
+    de_22l = 0;
+    de_22r = 0;
+    de_31l = 0;
+    de_31r = 0;
+    de_41l = 0;
+    de_41r = 0;
+    de_42l = 0;
+    de_42r = 0;
+    de_43l = 0;
+    de_43r = 0;
+    de_81l = 0;
+    de_81r = 0;
 };
 
 void FrsMainRaw2Cal::FinishTask()

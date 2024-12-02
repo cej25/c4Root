@@ -15,6 +15,7 @@
 #include "FrsHitData.h"
 #include "EventHeader.h"
 #include "c4Logger.h"
+#include "AnalysisTools.h"
 
 // ROOT
 #include "TCanvas.h"
@@ -263,20 +264,20 @@ void FrsCalSpectra::Exec(Option_t* option)
     if (mainMusicArray->size() > 1) std::cout << "weird FRS event" << std::endl;
 
     auto const & mainSciItem  = mainSciArray->at(0);
-       
-    uint32_t* sci_de = mainSciItem.Get_de_array(); // size 14
-    uint32_t sci_21l_de = sci_de[1];
-    uint32_t sci_21r_de = sci_de[2];  
-    uint32_t sci_22l_de = sci_de[13];  
-    uint32_t sci_22r_de = sci_de[6];  
-    uint32_t sci_41l_de = sci_de[0];  
-    uint32_t sci_41r_de = sci_de[11];  
-    uint32_t sci_42l_de = sci_de[3];  
-    uint32_t sci_42r_de = sci_de[4];  
-    uint32_t sci_43l_de = sci_de[9];  
-    uint32_t sci_43r_de = sci_de[10];  
-    uint32_t sci_81l_de = sci_de[5];  
-    uint32_t sci_81r_de = sci_de[12];
+
+
+    uint32_t sci_21l_de = mainSciItem.Get_dE_21l();
+    uint32_t sci_21r_de = mainSciItem.Get_dE_21r();  
+    uint32_t sci_22l_de = mainSciItem.Get_dE_22l();  
+    uint32_t sci_22r_de = mainSciItem.Get_dE_22r();
+    uint32_t sci_41l_de = mainSciItem.Get_dE_41l();
+    uint32_t sci_41r_de = mainSciItem.Get_dE_41r(); 
+    uint32_t sci_42l_de = mainSciItem.Get_dE_42l();
+    uint32_t sci_42r_de = mainSciItem.Get_dE_42r();
+    uint32_t sci_43l_de = mainSciItem.Get_dE_43l();  
+    uint32_t sci_43r_de = mainSciItem.Get_dE_43r();
+    uint32_t sci_81l_de = mainSciItem.Get_dE_81l();
+    uint32_t sci_81r_de = mainSciItem.Get_dE_81r();
 
     h_sci_21l_de->Fill(sci_21l_de);
     h_sci_21r_de->Fill(sci_21r_de);

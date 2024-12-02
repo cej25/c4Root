@@ -32,6 +32,9 @@ class TFrsConfiguration
         static void SetTravMusDriftFile(std::string fp) { tm_drift_coeff_file = fp; }
         static void SetAoQDriftFile(std::string fp) { aoq_drift_coeff_file = fp; }
         static void SetZ1DriftFile(std::string fp) { z1_drift_coeff_file = fp; }
+        static void SetScidEFile(std::string fp) { dE_file = fp; }
+        static void SetScidTFile(std::string fp) { dT_file = fp; }
+        static void SetCrateMapFile(std::string fp) { crate_map_file = fp; }
 
     
 
@@ -115,6 +118,43 @@ class TFrsConfiguration
         std::map<int, std::pair<double,double>> Z1DriftCoefficients() const;
         bool Z1DriftLoaded() const;
 
+        int Get_music_e_geo() const;
+
+        // tac
+        int Get_sci_dE_geo() const;
+        int Get_dE_21l_chan() const;
+        int Get_dE_21r_chan() const;
+        int Get_dE_22l_chan() const;
+        int Get_dE_22r_chan() const;
+        int Get_dE_31l_chan() const;
+        int Get_dE_31r_chan() const;
+        int Get_dE_41l_chan() const;
+        int Get_dE_41r_chan() const;
+        int Get_dE_42l_chan() const;
+        int Get_dE_42r_chan() const;
+        int Get_dE_43l_chan() const;
+        int Get_dE_43r_chan() const;
+        int Get_dE_81l_chan() const;
+        int Get_dE_81r_chan() const;
+
+        // tac, i guess
+        int Get_sci_dT_geo() const;
+        int Get_dT_21l_21r_chan() const;
+        int Get_dT_41l_41r_chan() const;
+        int Get_dT_42l_42r_chan() const;
+        int Get_dT_43l_43r_chan() const;
+        int Get_dT_81l_81r_chan() const;
+        int Get_dT_21l_41l_chan() const;
+        int Get_dT_21r_41r_chan() const;
+        int Get_dT_42r_21r_chan() const;
+        int Get_dT_42l_21l_chan() const;
+        int Get_dT_21l_81l_chan() const;
+        int Get_dT_21r_81r_chan() const;
+        int Get_dT_22l_22r_chan() const;
+        int Get_dT_22l_41l_chan() const;
+        int Get_dT_22r_41r_chan() const;
+        int Get_dT_22l_81l_chan() const;
+        int Get_dT_22r_81r_chan() const;
 
 
     private:
@@ -133,6 +173,15 @@ class TFrsConfiguration
 
         static std::string z1_drift_coeff_file;
         void ReadZ1DriftFile();
+
+        static std::string dE_file;
+        void ReadScidEFile();
+
+        static std::string dT_file;
+        void ReadScidTFile();
+
+        static std::string crate_map_file;
+        void ReadCrateMapFile();
 
         static TFrsConfiguration* instance;
 
@@ -160,6 +209,45 @@ class TFrsConfiguration
         bool aoq_drift_loaded = 0;
         std::map<int, std::pair<double,double> > z1_drift_coeff;
         bool z1_drift_loaded = 0;
+
+        int music_e_geo = 0; // load in file later
+
+        // tac
+        int sci_dE_geo = 0;
+        int de_41r_ch = 0;
+        int de_21l_ch = 0;
+        int de_21r_ch = 0;
+        int de_42l_ch = 0;
+        int de_42r_ch = 0;
+        int de_81l_ch = 0;
+        int de_22r_ch = 0;
+        int de_31l_ch = 0;
+        int de_31r_ch = 0;
+        int de_43l_ch = 0;
+        int de_43r_ch = 0;
+        int de_41l_ch = 0;
+        int de_81r_ch = 0;
+        int de_22l_ch = 0;
+        bool dE_mapping_loaded = false;
+
+        int sci_dT_geo = 0;
+        int dt_21l_21r_ch = 0;
+        int dt_41l_41r_ch = 0;
+        int dt_42l_42r_ch = 0;
+        int dt_43l_43r_ch = 0;
+        int dt_81l_81r_ch = 0;
+        int dt_21l_41l_ch = 0;
+        int dt_21r_41r_ch = 0;
+        int dt_42r_21r_ch = 0;
+        int dt_42l_21l_ch = 0;
+        int dt_21l_81l_ch = 0;
+        int dt_21r_81r_ch = 0;
+        int dt_22l_22r_ch = 0;
+        int dt_22l_41l_ch = 0;
+        int dt_22r_41r_ch = 0;
+        int dt_22l_81l_ch = 0;
+        int dt_22r_81r_ch = 0;
+        bool dT_mapping_loaded = false;
 
 
 };
@@ -273,5 +361,172 @@ inline bool TFrsConfiguration::Z1DriftLoaded() const
 {
     return z1_drift_loaded;
 }
+
+inline int TFrsConfiguration::Get_music_e_geo() const
+{
+    return music_e_geo;
+};
+
+inline int TFrsConfiguration::Get_sci_dE_geo() const
+{
+    return sci_dE_geo;
+};
+
+inline int TFrsConfiguration::Get_dE_21l_chan() const
+{
+    return de_21l_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_21r_chan() const
+{
+    return de_21r_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_22l_chan() const
+{
+    return de_22l_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_22r_chan() const
+{
+    return de_22r_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_31l_chan() const
+{
+    return de_31l_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_31r_chan() const
+{
+    return de_31r_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_41l_chan() const
+{
+    return de_41l_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_41r_chan() const
+{
+    return de_41r_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_42l_chan() const
+{
+    return de_42l_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_42r_chan() const
+{
+    return de_42r_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_43l_chan() const
+{
+    return de_43l_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_43r_chan() const
+{
+    return de_43r_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_81l_chan() const
+{
+    return de_81l_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_81r_chan() const
+{
+    return de_81r_ch;
+};
+
+inline int TFrsConfiguration::Get_sci_dT_geo() const
+{
+    return sci_dT_geo;
+};
+
+inline int TFrsConfiguration::Get_dT_21l_21r_chan() const
+{
+    return dt_21l_21r_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_41l_41r_chan() const
+{
+    return dt_41l_41r_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_42l_42r_chan() const
+{
+    return dt_42l_42r_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_43l_43r_chan() const
+{
+    return dt_43l_43r_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_81l_81r_chan() const
+{
+    return dt_81l_81r_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_21l_41l_chan() const
+{
+    return dt_21l_41l_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_21r_41r_chan() const
+{
+    return dt_21r_41r_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_42r_21r_chan() const
+{
+    return dt_42r_21r_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_42l_21l_chan() const
+{
+    return dt_42l_21l_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_21l_81l_chan() const
+{
+    return dt_21l_81l_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_21r_81r_chan() const
+{
+    return dt_21r_81r_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_22l_22r_chan() const
+{
+    return dt_22l_22r_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_22l_41l_chan() const
+{
+    return dt_22l_41l_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_22r_41r_chan() const
+{
+    return dt_22r_41r_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_22l_81l_chan() const
+{
+    return dt_22l_81l_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_22r_81r_chan() const
+{
+    return dt_22r_81r_ch;
+};
+
+
 
 #endif

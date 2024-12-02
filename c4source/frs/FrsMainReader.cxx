@@ -68,12 +68,6 @@ Bool_t FrsMainReader::Init(ext_data_struct_info* a_struct_info)
 
 Bool_t FrsMainReader::Read()
 {
-    v830array->clear();
-    v792array->clear();
-    v1290array->clear();
-
-    c4LOG(debug2, "Event data");
-
     if (!fData) return kTRUE;
     if (fData == nullptr) return kFALSE;
 
@@ -87,8 +81,7 @@ Bool_t FrsMainReader::Read()
     header->SetSpillFlag(spill_flag);
 
     // V830
-    scalers_n = fData->frsmain_data_v830_n;
-    for (uint32_t i = 0; i < scalers_n; i++)
+    for (uint32_t i = 0; i < fData->frsmain_data_v830_n; i++)
     {       
         uint32_t index = fData->frsmain_data_v830_nI[i];
         uint32_t scaler = fData->frsmain_data_v830_data[i];
@@ -98,48 +91,41 @@ Bool_t FrsMainReader::Read()
 
     // V792
     uint32_t geo = fData->frsmain_data_v792_geo;
-    v792_geo = fData->frsmain_data_v792_geo;
-    int hit_index_v792 = 0;
-    for (uint32_t channel_index = 0; channel_index < fData->frsmain_data_v792_nM; channel_index++){
-        int current_channel_v792 = fData->frsmain_data_v792_nMI[channel_index];
-        int next_channel_start_v792 = fData->frsmain_data_v792_nME[channel_index];
-        for (uint32_t j = hit_index_v792; j<next_channel_start_v792; j++){
+    int hit_index = 0;
+    for (uint32_t channel_index = 0; channel_index < fData->frsmain_data_v792_nM; channel_index++)
+    {
+        int current_channel = fData->frsmain_data_v792_nMI[channel_index];
+        int next_channel_start = fData->frsmain_data_v792_nME[channel_index];
 
-            uint32_t channel = current_channel_v792; // -1 ?? 
+        for (uint32_t j = hit_index; j < next_channel_start; j++)
+        {
+            uint32_t channel = current_channel;
             uint32_t data = fData->frsmain_data_v792_data[j];
-            //v792_channel.emplace_back(current_channel_v792);
-            //v792_data.emplace_back(fData->frsmain_data_v792_data[j]);
 
             auto & entry = v792array->emplace_back();
             entry.SetAll(channel, data, geo);
         }
-        hit_index_v792 = next_channel_start_v792;
+        hit_index = next_channel_start;
     }
 
     // V1290
-    int hit_index = 0;
+    hit_index = 0;
     for (uint32_t channel_index = 0; channel_index < fData->frsmain_data_v1290_nM; channel_index++)
     {   
-        int current_channel = fData->frsmain_data_v1290_nMI[channel_index]; // channel to read now!
-        int next_channel_start = fData->frsmain_data_v1290_nME[channel_index]; // we read this channel until we hit this index
+        int current_channel = fData->frsmain_data_v1290_nMI[channel_index];
+        int next_channel_start = fData->frsmain_data_v1290_nME[channel_index];
         
         for (uint32_t j = hit_index; j < next_channel_start; j++)
         {
-            //c4LOG(info,Form("current channel = %i, next channel start = %i, channels fired = %i, data = %i",fData->frsmain_data_v1290_leadOrTrailMI[channel_index], fData->frsmain_data_v1290_leadOrTrailME[channel_index], fData->frsmain_data_v1290_nM, fData->frsmain_data_v1290_leadOrTrailv[j]));
-            //c4LOG(info,Form("current channel = %i, next channel start = %i, channels fired = %i, data = %i",current_channel, next_channel_start, fData->frsmain_data_v1290_nM, fData->frsmain_data_v1290_data[j]));
-            
             uint32_t channel = current_channel - 1; // I cannot see why this doesn't get set to zero for channel zero.... Please check. But it seems correct this way.
-            
             uint32_t data = fData->frsmain_data_v1290_data[j];
             uint32_t lot = fData->frsmain_data_v1290_leadOrTrailv[j];
             
-
             auto & entry = v1290array->emplace_back();
             entry.SetAll(channel, data, lot);
         }
         hit_index = next_channel_start;
     }
-
 
     return kTRUE;
 
@@ -152,13 +138,9 @@ void FrsMainReader::ZeroArrays()
 
 void FrsMainReader::ClearVectors()
 {
-    scalers_index.clear();
-    scalers_main.clear();
-    v792_channel.clear();
-    v792_data.clear();
-    v1290_channel.clear();
-    v1290_data.clear();
-    v1290_lot.clear();
+    v830array->clear();
+    v792array->clear();
+    v1290array->clear();
 }
 
 void FrsMainReader::Reset()

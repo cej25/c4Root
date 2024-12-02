@@ -80,17 +80,33 @@ TPAT_CRATE_DATA()
     UINT32 trigger_pattern 
     {
         0_15: pattern;
-        16_31: nothing;
+        16_31: nothing; // trigger type?
         ENCODE(tpat, (value = pattern));
     }
 
-
-
+    // sometimes this word is wrong... then what ...
     UINT32 coffee NOENCODE
     {
-        0_7: nothing;
-        8_31: 0xc0ffee
+        0_7: scaler_words;
+        8_31: coffee; // 0xc0ffee;
     }
+
+    if (coffee.coffee == 0xc0ffee)
+    {
+        list (0 <= i < coffee.scaler_words * 3)
+        {
+            UINT32 scaler NOENCODE
+            {
+                0_31: something;
+            }
+        }
+    }
+    else
+    {
+        // bad event?
+        several UINT32 filler NOENCODE;
+    }
+
     
 }
 
@@ -166,9 +182,19 @@ USER_CRATE_DATA()
         // really not sure if this is correct, we'll see
         v775[0] = VME_CAEN_V7X5_FRS(card=8);
         v775[1] = VME_CAEN_V7X5_FRS(card=9);
-        v785[0] = VME_CAEN_V7X5_FRS(card=10);
-        v785[1] = VME_CAEN_V7X5_FRS(card=12);
+        v785[0] = VME_CAEN_V7X5_FRS(card=31); // 10 previousl
+        v785[1] = VME_CAEN_V7X5_FRS(card=12); 
     }
+
+    UINT32 aaahhh NOENCODE
+    {
+        0_31: 0xaaaa1290;
+    };
+    UINT32 filler NOENCODE; // ?
+    barrier2 = BARRIER();
+    v1290 = VME_CAEN_V1290_FRS();
+    optional UINT32 eodb NOENCODE;
+
 
     /*
     barrier[1] = BARRIER();
