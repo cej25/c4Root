@@ -9,8 +9,9 @@ std::string TFrsConfiguration::scaler_mapping_file = "blank";
 std::string TFrsConfiguration::tm_drift_coeff_file = "blank";
 std::string TFrsConfiguration::aoq_drift_coeff_file = "blank";
 std::string TFrsConfiguration::z1_drift_coeff_file = "blank";
-
-
+std::string TFrsConfiguration::dE_file = "blank";
+std::string TFrsConfiguration::dT_file = "blank";
+std::string TFrsConfiguration::crate_map_file = "blank";
 
 TFRSParameter* TFrsConfiguration::ffrs;
 TMWParameter* TFrsConfiguration::fmw;
@@ -46,9 +47,12 @@ int TFrsConfiguration::frun_num = 0;
 TFrsConfiguration::TFrsConfiguration()
 {
     ReadScalerNames();
-    ReadTravMusDriftFile();
-    ReadAoQDriftFile();
-    ReadZ1DriftFile();
+    //ReadTravMusDriftFile();
+    //ReadAoQDriftFile();
+    //ReadZ1DriftFile();
+    // ReadScidEFile();
+    // ReadScidTFile();
+    ReadCrateMapFile();
     // for now:
     sci_names[0] = "sci21";
     sci_names[1] = "sci22";
@@ -215,6 +219,173 @@ void TFrsConfiguration::ReadZ1DriftFile()
     c4LOG(info, "Z1 Drift File: " + z1_drift_coeff_file);
     return;    
 }
+
+
+void TFrsConfiguration::ReadScidEFile()
+{
+    std::ifstream file (dE_file);
+    std::string line;
+
+    if (file.fail()) c4LOG(fatal, "Could not open Sci dE mapping file.");
+
+    while (std::getline(file, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+        
+        std::istringstream iss(line);
+
+        std::string signal;
+        int channel;
+
+        iss >> signal;
+
+        if (isdigit(signal[0])) { std::cout << "Error in Sci dE mapping file. Row begin with a string." << std::endl; return; }
+        else
+        {
+            iss >> channel;
+
+            if (signal == "GEO") sci_dE_geo = channel;
+            else if (signal == "dE_21L") de_21l_ch = channel;
+            else if (signal == "dE_21R") de_21r_ch = channel;
+            else if (signal == "dE_22L") de_22l_ch = channel;
+            else if (signal == "dE_22R") de_22r_ch = channel;
+            else if (signal == "dE_31L") de_31l_ch = channel;
+            else if (signal == "dE_31R") de_31r_ch = channel;
+            else if (signal == "dE_41L") de_41l_ch = channel;
+            else if (signal == "dE_41R") de_41r_ch = channel;
+            else if (signal == "dE_42L") de_42l_ch = channel;
+            else if (signal == "dE_42R") de_42r_ch = channel;
+            else if (signal == "dE_43L") de_43l_ch = channel;
+            else if (signal == "dE_43R") de_43r_ch = channel;
+            else if (signal == "dE_81L") de_81l_ch = channel;
+            else if (signal == "dE_81R") de_81r_ch = channel;
+
+        }
+    }
+
+    dE_mapping_loaded = 1;
+    file.close();
+    
+    return;   
+}
+
+void TFrsConfiguration::ReadScidTFile()
+{
+    std::ifstream file (dT_file);
+    std::string line;
+
+    if (file.fail()) c4LOG(fatal, "Could not open Sci dT mapping file.");
+
+    while (std::getline(file, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+        
+        std::istringstream iss(line);
+
+        std::string signal;
+        int channel;
+
+        iss >> signal;
+
+        if (isdigit(signal[0])) { std::cout << "Error in Sci dT mapping file. Row begin with a string." << std::endl; return; }
+        else
+        {
+            iss >> channel;
+
+            if (signal == "GEO") sci_dT_geo = channel;
+            else if (signal == "dT_21L_21R") dt_21l_21r_ch = channel;
+            else if (signal == "dT_41L_41R") dt_41l_41r_ch = channel;
+            else if (signal == "dT_42L_42R") dt_42l_42r_ch = channel;
+            else if (signal == "dT_43L_43R") dt_43l_43r_ch = channel;
+            else if (signal == "dT_81L_81R") dt_81l_81r_ch = channel;
+            else if (signal == "dT_21L_41L") dt_21l_41l_ch = channel;
+            else if (signal == "dT_21R_41R") dt_21r_41r_ch = channel;
+            else if (signal == "dT_42R_21R") dt_42r_21r_ch = channel;
+            else if (signal == "dT_42L_21L") dt_42l_21l_ch = channel;
+            else if (signal == "dT_21L_81L") dt_21l_81l_ch = channel;
+            else if (signal == "dT_21R_81R") dt_21r_81r_ch = channel;
+            else if (signal == "dT_22L_22R") dt_22l_22r_ch = channel;
+            else if (signal == "dT_22L_41L") dt_22l_41l_ch = channel;
+            else if (signal == "dT_22R_41R") dt_22r_41r_ch = channel;
+            else if (signal == "dT_22L_81L") dt_22l_81l_ch = channel;
+            else if (signal == "dT_22R_81R") dt_22r_81r_ch = channel;
+
+        }
+    }
+
+    dT_mapping_loaded = 1;
+    file.close();
+    
+    return;   
+}
+
+
+void TFrsConfiguration::ReadCrateMapFile()
+{
+    std::ifstream file (crate_map_file);
+    std::string line;
+
+    if (file.fail()) c4LOG(fatal, "Could not open FRS Crate Mapping mapping file.");
+
+    while (std::getline(file, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+        
+        std::istringstream iss(line);
+
+        std::string signal;
+        int channel;
+
+        iss >> signal;
+
+        if (isdigit(signal[0])) { std::cout << "Error in FRS Crate Mapping file. Row begins with a string." << std::endl; return; }
+        else
+        {
+            iss >> channel;
+            
+            if (signal == "MUSIC_E_GEO") music_e_geo = channel;
+            else if (signal == "DE_GEO") sci_dE_geo = channel;
+            else if (signal == "dE_21L") de_21l_ch = channel;
+            else if (signal == "dE_21R") de_21r_ch = channel;
+            else if (signal == "dE_22L") de_22l_ch = channel;
+            else if (signal == "dE_22R") de_22r_ch = channel;
+            else if (signal == "dE_31L") de_31l_ch = channel;
+            else if (signal == "dE_31R") de_31r_ch = channel;
+            else if (signal == "dE_41L") de_41l_ch = channel;
+            else if (signal == "dE_41R") de_41r_ch = channel;
+            else if (signal == "dE_42L") de_42l_ch = channel;
+            else if (signal == "dE_42R") de_42r_ch = channel;
+            else if (signal == "dE_43L") de_43l_ch = channel;
+            else if (signal == "dE_43R") de_43r_ch = channel;
+            else if (signal == "dE_81L") de_81l_ch = channel;
+            else if (signal == "dE_81R") de_81r_ch = channel;
+            else if (signal == "DT_GEO") sci_dT_geo = channel;
+            else if (signal == "dT_21L_21R") dt_21l_21r_ch = channel;
+            else if (signal == "dT_41L_41R") dt_41l_41r_ch = channel;
+            else if (signal == "dT_42L_42R") dt_42l_42r_ch = channel;
+            else if (signal == "dT_43L_43R") dt_43l_43r_ch = channel;
+            else if (signal == "dT_81L_81R") dt_81l_81r_ch = channel;
+            else if (signal == "dT_21L_41L") dt_21l_41l_ch = channel;
+            else if (signal == "dT_21R_41R") dt_21r_41r_ch = channel;
+            else if (signal == "dT_42R_21R") dt_42r_21r_ch = channel;
+            else if (signal == "dT_42L_21L") dt_42l_21l_ch = channel;
+            else if (signal == "dT_21L_81L") dt_21l_81l_ch = channel;
+            else if (signal == "dT_21R_81R") dt_21r_81r_ch = channel;
+            else if (signal == "dT_22L_22R") dt_22l_22r_ch = channel;
+            else if (signal == "dT_22L_41L") dt_22l_41l_ch = channel;
+            else if (signal == "dT_22R_41R") dt_22r_41r_ch = channel;
+            else if (signal == "dT_22L_81L") dt_22l_81l_ch = channel;
+            else if (signal == "dT_22R_81R") dt_22r_81r_ch = channel;
+
+        }
+    }
+
+    dT_mapping_loaded = 1;
+    file.close();
+    
+    return;   
+}
+
 
 //:::
 

@@ -36,6 +36,12 @@ class FrsCal2Hit : public FairTask
         virtual InitStatus ReInit();
 
         virtual void Exec(Option_t* option); // virtual?
+
+
+        void ProcessSCI();
+        void ProcessMHTDC();
+        void ProcessTOF(); // etc..
+        void ProcessScalers();
         
         void Setup_Conditions(std::string path_to_config_files);
         void FRS_GainMatching();
@@ -131,6 +137,8 @@ class FrsCal2Hit : public FairTask
         Float_t cSCI_RR4[2];
         Float_t cSCI_LL5[2];
         Float_t cSCI_RR5[2];
+        Float_t cSCI_LL6[2];
+        Float_t cSCI_RR6[2];
         Float_t cID_x2[2];
         Float_t cID_x4[2];
         Float_t cID_Z_Z[2];
@@ -185,10 +193,40 @@ class FrsCal2Hit : public FairTask
 
         uint32_t** tdc_array; // [15][max_hits_in_tdc_array]
         //std::vector<uint32_t> tdc_array[15];
-        uint32_t* de_array; // [14]
-        //uint32_t de_array[14];
+        uint32_t* de_array; // [14] - not needed
+        uint32_t de_21l;
+        uint32_t de_21r;
+        uint32_t de_22l;
+        uint32_t de_22r;
+        uint32_t de_31l;
+        uint32_t de_31r;
+        uint32_t de_41l;
+        uint32_t de_41r;
+        uint32_t de_42l;
+        uint32_t de_42r;
+        uint32_t de_43l;
+        uint32_t de_43r;
+        uint32_t de_81l;
+        uint32_t de_81r;
+
         uint32_t* dt_array;
-        //const uint32_t* dt_array; // not coded in raw->cal yet
+        uint32_t dt_21l_21r;
+        uint32_t dt_41l_41r;
+        uint32_t dt_42l_42r;
+        uint32_t dt_43l_43r;
+        uint32_t dt_81l_81r;
+        uint32_t dt_21l_41l;
+        uint32_t dt_21r_41r;
+        uint32_t dt_42r_21r;
+        uint32_t dt_42l_21l;
+        uint32_t dt_21l_81l;
+        uint32_t dt_21r_81r;
+        uint32_t dt_22l_22r;
+        uint32_t dt_22l_41l;
+        uint32_t dt_22r_41r;
+        uint32_t dt_22l_81l;
+        uint32_t dt_22r_81r;
+
         Float_t* de; // [3];
         Float_t* de_cor; // [3];
         Float_t* sci_l; // [6]; // may change when i know the actual dimensions necessary
@@ -197,7 +235,26 @@ class FrsCal2Hit : public FairTask
         Float_t* sci_e; // [6];
         Float_t* sci_x; // [6];
 
-        Bool_t sci_b_l[12]; // size may be reduced
+        Float_t sci_e_21;
+        Float_t sci_tx_21lr;
+        Float_t sci_x_21;
+        Float_t sci_e_22;
+        Float_t sci_tx_22lr;
+        Float_t sci_x_22;
+        Float_t sci_e_31;
+        Float_t sci_e_41;
+        Float_t sci_tx_41lr;
+        Float_t sci_x_41;
+        Float_t sci_e_42;
+        Float_t sci_tx_42lr;
+        Float_t sci_x_42;
+        Float_t sci_e_43;
+        Float_t sci_tx_43lr;
+        Float_t sci_x_43;
+        Float_t sci_e_81;
+        Float_t sci_tx_81lr;
+        Float_t sci_x_81;
+
         Bool_t sci_b_r[12]; // size may be reduced
         Bool_t sci_b_e[12]; // size may be reduced
         Bool_t sci_b_tx[12]; // size may be reduced
@@ -256,47 +313,28 @@ class FrsCal2Hit : public FairTask
 
         Float_t * temp_s2x_mhtdc = nullptr;
 
-        Int_t dt_21l_21r;
-        Int_t dt_41l_41r;
-        Int_t dt_42l_42r;
-        Int_t dt_43l_43r;
-        Int_t dt_81l_81r;
-        Int_t dt_21l_41l;
-        Int_t dt_21r_41r;
-        Int_t dt_42r_21r;
-        Int_t dt_42l_21l;
-        Int_t dt_21l_81l;
-        Int_t dt_21r_81r;
-        Int_t dt_22l_22r;
-        Int_t dt_22l_41l;
-        Int_t dt_22r_41r;
-        Int_t dt_22l_81l;
-        Int_t dt_22r_81r;
-
-        Float_t sci_tofll2;
-        Float_t sci_tofrr2;
-        Float_t sci_tof2;
-        Float_t sci_tof2_calib;
-        Float_t sci_tofll3;
-        Float_t sci_tofrr3;
-        Float_t sci_tof3;
-        Float_t sci_tof3_calib;
-        Float_t sci_tofll4;
-        Float_t sci_tofrr4;
-        Float_t sci_tof4;
-        Float_t sci_tof4_calib;
-        Float_t sci_tofll5;
-        Float_t sci_tofrr5;
-        Float_t sci_tof5;
-        Float_t sci_tof5_calib;
-        Bool_t sci_b_tofll2;
-        Bool_t sci_b_tofrr2;
-        Bool_t sci_b_tofll3;
-        Bool_t sci_b_tofrr3;
-        Bool_t sci_b_tofll4;
-        Bool_t sci_b_tofrr4;
-        Bool_t sci_b_tofll5;
-        Bool_t sci_b_tofrr5;
+        Float_t sci_tofll_21_41;
+        Float_t sci_tofrr_21_41;
+        Float_t sci_tof_21_41;
+        Float_t sci_tof_21_41_calib;
+        Float_t sci_tofll_21_42;
+        Float_t sci_tofrr_21_42;
+        Float_t sci_tof_21_42;
+        Float_t sci_tof_21_42_calib;
+        Float_t sci_tofll_21_81;
+        Float_t sci_tofrr_21_81;
+        Float_t sci_tof_21_81;
+        Float_t sci_tof_21_81_calib;
+        Float_t sci_tofll_22_41;
+        Float_t sci_tofrr_22_41;
+        Float_t sci_tof_22_41;
+        Float_t sci_tof_22_41_calib;
+        Float_t sci_tofll_22_81;
+        Float_t sci_tofrr_22_81;
+        Float_t sci_tof_22_81;
+        Float_t sci_tof_22_81_calib;
+        
+       
 
         float temp_s4x; // i think this gets redeclared a bunch.
         

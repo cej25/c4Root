@@ -28,13 +28,43 @@ void FrsHitItem::SetAll(uint64_t wr_t,
                     Float_t* brho,
                     Float_t* music_dE,
                     Float_t* music_dE_cor,
-                    Float_t* sci_e,
-                    Float_t* sci_l,
-                    Float_t* sci_r,
-                    Float_t* sci_x,
-                    Float_t* sci_tof,
-                    Float_t* sci_tof_calib,
-                    Float_t sci_tof2,
+                    Float_t sci_21l,
+                    Float_t sci_21r,
+                    Float_t sci_22l,
+                    Float_t sci_22r,
+                    Float_t sci_31l,
+                    Float_t sci_31r,
+                    Float_t sci_41l,
+                    Float_t sci_41r,
+                    Float_t sci_42l,
+                    Float_t sci_42r,
+                    Float_t sci_43l,
+                    Float_t sci_43r,
+                    Float_t sci_81l,
+                    Float_t sci_81r,
+                    Float_t sci_e_21,
+                    Float_t sci_e_22,
+                    Float_t sci_e_31,
+                    Float_t sci_e_41,
+                    Float_t sci_e_42,
+                    Float_t sci_e_43,
+                    Float_t sci_e_81,
+                    Float_t sci_x_21,
+                    Float_t sci_x_22,
+                    Float_t sci_x_41,
+                    Float_t sci_x_42,
+                    Float_t sci_x_43,
+                    Float_t sci_x_81,
+                    Float_t sci_tof_21_41,
+                    Float_t sci_tof_21_41_calib,
+                    Float_t sci_tof_21_42,
+                    Float_t sci_tof_21_42_calib,
+                    Float_t sci_tof_21_81,
+                    Float_t sci_tof_21_81_calib,
+                    Float_t sci_tof_22_41,
+                    Float_t sci_tof_22_41_calib,
+                    Float_t sci_tof_22_81,
+                    Float_t sci_tof_22_81_calib,
                     uint32_t time_in_ms,
                     uint32_t ibin_for_s,
                     uint32_t ibin_for_100ms,
@@ -71,13 +101,43 @@ void FrsHitItem::SetAll(uint64_t wr_t,
     for (int i = 0; i < 2; i++) fID_brho[i] = brho[i];
     for (int i = 0; i < 2; i++) fmusic_dE[i] = music_dE[i];
     for (int i = 0; i < 2; i++) fmusic_dE_cor[i] = music_dE_cor[i];
-    for (int i = 0; i < 6; i++) fsci_e[i] = sci_e[i];
-    for (int i = 0; i < 6; i++) fsci_l[i] = sci_l[i];
-    for (int i = 0; i < 6; i++) fsci_r[i] = sci_r[i];
-    for (int i = 0; i < 6; i++) fsci_x[i] = sci_x[i];
-    for (int i = 0; i < 6; i++) fsci_tof[i] = sci_tof[i];
-    for (int i = 0; i < 6; i++) fsci_tof_calib[i] = sci_tof_calib[i];
-    fsci_tof2 = sci_tof2;
+    fsci_21l = sci_21l;
+    fsci_21r = sci_21r;
+    fsci_22l = sci_22l;
+    fsci_22r = sci_22r;
+    fsci_31l = sci_31l;
+    fsci_31r = sci_31r;
+    fsci_41l = sci_41l;
+    fsci_41r = sci_41r;
+    fsci_42l = sci_42l;
+    fsci_42r = sci_42r;
+    fsci_43l = sci_43l;
+    fsci_43r = sci_43r;
+    fsci_81l = sci_81l;
+    fsci_81r = sci_81r;
+    fsci_e_21 = sci_e_21;
+    fsci_e_22 = sci_e_22;
+    fsci_e_31 = sci_e_31;
+    fsci_e_41 = sci_e_41;
+    fsci_e_42 = sci_e_42;
+    fsci_e_43 = sci_e_43;
+    fsci_e_81 = sci_e_81;
+    fsci_x_21 = sci_x_21;
+    fsci_x_22 = sci_x_22;
+    fsci_x_41 = sci_x_41;
+    fsci_x_42 = sci_x_42;
+    fsci_x_43 = sci_x_43;
+    fsci_x_81 = sci_x_81;
+    fsci_tof_21_41 = sci_tof_21_41;
+    fsci_tof_21_41_calib = sci_tof_21_41_calib;
+    fsci_tof_21_42 = sci_tof_21_42;
+    fsci_tof_21_42_calib = sci_tof_21_42_calib;
+    fsci_tof_21_81 = sci_tof_21_81;
+    fsci_tof_21_81_calib = sci_tof_21_81_calib;
+    fsci_tof_22_41 = sci_tof_22_41;
+    fsci_tof_22_41_calib = sci_tof_22_41_calib;
+    fsci_tof_22_81 = sci_tof_22_81;
+    fsci_tof_22_81_calib = sci_tof_22_81_calib;
     ftime_in_ms = time_in_ms;
     fibin_for_s = ibin_for_s;
     fibin_for_100ms = ibin_for_100ms;
@@ -117,13 +177,43 @@ void FrsHitItem::Reset()
     memset(fID_brho, 0, sizeof(fID_brho));
     memset(fmusic_dE, 0, sizeof(fmusic_dE));
     memset(fmusic_dE_cor, 0, sizeof(fmusic_dE_cor));
-    memset(fsci_e, 0, sizeof(fsci_e));
-    memset(fsci_l, 0, sizeof(fsci_l));
-    memset(fsci_r, 0, sizeof(fsci_r));
-    memset(fsci_x, 0, sizeof(fsci_x));
-    memset(fsci_tof, 0, sizeof(fsci_tof));
-    memset(fsci_tof_calib, 0, sizeof(fsci_tof_calib));
-    fsci_tof2 = 0;
+    fsci_21l = 0;
+    fsci_21r = 0;
+    fsci_22l = 0;
+    fsci_22r = 0;
+    fsci_31l = 0;
+    fsci_31r = 0;
+    fsci_41l = 0;
+    fsci_41r = 0;
+    fsci_42l = 0;
+    fsci_42r = 0;
+    fsci_43l = 0;
+    fsci_43r = 0;
+    fsci_81l = 0;
+    fsci_81r = 0;
+    fsci_e_21 = 0;
+    fsci_e_22 = 0;
+    fsci_e_31 = 0;
+    fsci_e_41 = 0;
+    fsci_e_42 = 0;
+    fsci_e_43 = 0;
+    fsci_e_81 = 0;
+    fsci_x_21 = 0;
+    fsci_x_22 = 0;
+    fsci_x_41 = 0;
+    fsci_x_42 = 0;
+    fsci_x_43 = 0;
+    fsci_x_81 = 0;
+    fsci_tof_21_41 = 0;
+    fsci_tof_21_41_calib = 0;
+    fsci_tof_21_42 = 0;
+    fsci_tof_21_42_calib = 0;
+    fsci_tof_21_81 = 0;
+    fsci_tof_21_81_calib = 0;
+    fsci_tof_22_41 = 0;
+    fsci_tof_22_41_calib = 0;
+    fsci_tof_22_81 = 0;
+    fsci_tof_22_81_calib = 0;
     ftime_in_ms = 0;
     fibin_for_s = 0;
     fibin_for_100ms = 0;
