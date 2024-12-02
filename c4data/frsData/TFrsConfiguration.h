@@ -34,6 +34,7 @@ class TFrsConfiguration
         static void SetZ1DriftFile(std::string fp) { z1_drift_coeff_file = fp; }
         static void SetScidEFile(std::string fp) { dE_file = fp; }
         static void SetScidTFile(std::string fp) { dT_file = fp; }
+        static void SetCrateMapFile(std::string fp) { crate_map_file = fp; }
 
     
 
@@ -179,6 +180,9 @@ class TFrsConfiguration
         static std::string dT_file;
         void ReadScidTFile();
 
+        static std::string crate_map_file;
+        void ReadCrateMapFile();
+
         static TFrsConfiguration* instance;
 
         static TFRSParameter* ffrs;
@@ -206,7 +210,7 @@ class TFrsConfiguration
         std::map<int, std::pair<double,double> > z1_drift_coeff;
         bool z1_drift_loaded = 0;
 
-        int music_e_geo = 10; // load in file later
+        int music_e_geo = 0; // load in file later
 
         // tac
         int sci_dE_geo = 0;
