@@ -33,13 +33,43 @@ class FrsHitItem : public TObject
                     Float_t* brho,
                     Float_t* music_dE,
                     Float_t* music_dE_cor,
-                    Float_t* sci_e,
-                    Float_t* sci_l,
-                    Float_t* sci_r,
-                    Float_t* sci_x,
-                    Float_t* sci_tof,
-                    Float_t* sci_tof_calib,
-                    Float_t sci_tof2,
+                    Float_t sci_21l,
+                    Float_t sci_21r,
+                    Float_t sci_22l,
+                    Float_t sci_22r,
+                    Float_t sci_31l,
+                    Float_t sci_31r,
+                    Float_t sci_41l,
+                    Float_t sci_41r,
+                    Float_t sci_42l,
+                    Float_t sci_42r,
+                    Float_t sci_43l,
+                    Float_t sci_43r,
+                    Float_t sci_81l,
+                    Float_t sci_81r,
+                    Float_t sci_e_21,
+                    Float_t sci_e_22,
+                    Float_t sci_e_31,
+                    Float_t sci_e_41,
+                    Float_t sci_e_42,
+                    Float_t sci_e_43,
+                    Float_t sci_e_81,
+                    Float_t sci_x_21,
+                    Float_t sci_x_22,
+                    Float_t sci_x_41,
+                    Float_t sci_x_42,
+                    Float_t sci_x_43,
+                    Float_t sci_x_81,
+                    Float_t sci_tof_21_41,
+                    Float_t sci_tof_21_41_calib,
+                    Float_t sci_tof_21_42,
+                    Float_t sci_tof_21_42_calib,
+                    Float_t sci_tof_21_81,
+                    Float_t sci_tof_21_81_calib,
+                    Float_t sci_tof_22_41,
+                    Float_t sci_tof_22_41_calib,
+                    Float_t sci_tof_22_81,
+                    Float_t sci_tof_22_81_calib,
                     uint32_t time_in_ms,
                     uint32_t ibin_for_s,
                     uint32_t ibin_for_100ms,
@@ -77,13 +107,43 @@ class FrsHitItem : public TObject
         Float_t Get_ID_brho(int index) const; 
         Float_t Get_music_dE(int index) const; //index 0 = music 1
         Float_t Get_music_dE_cor(int index) const; 
-        Float_t Get_sci_e(int index) const;
-        Float_t Get_sci_l(int index) const;
-        Float_t Get_sci_r(int index) const;
-        Float_t Get_sci_x(int index) const;
-        Float_t Get_sci_tof(int index) const;
-        Float_t Get_sci_tof_calib(int index) const;
-        Float_t Get_sci_tof2() const;
+        Float_t Get_sci_21l() const { return fsci_21l; }
+        Float_t Get_sci_21r() const { return fsci_21r; }
+        Float_t Get_sci_22l() const { return fsci_22l; }
+        Float_t Get_sci_22r() const { return fsci_22r; }
+        Float_t Get_sci_31l() const { return fsci_31l; }
+        Float_t Get_sci_31r() const { return fsci_31r; }
+        Float_t Get_sci_41l() const { return fsci_41l; }
+        Float_t Get_sci_41r() const { return fsci_41r; }
+        Float_t Get_sci_42l() const { return fsci_42l; }
+        Float_t Get_sci_42r() const { return fsci_42r; }
+        Float_t Get_sci_43l() const { return fsci_43l; }
+        Float_t Get_sci_43r() const { return fsci_43r; }
+        Float_t Get_sci_81l() const { return fsci_81l; }
+        Float_t Get_sci_81r() const { return fsci_81r; }
+        Float_t Get_sci_e_21() const { return fsci_e_21; }
+        Float_t Get_sci_e_22() const { return fsci_e_22; }
+        Float_t Get_sci_e_31() const { return fsci_e_31; }
+        Float_t Get_sci_e_41() const { return fsci_e_41; }
+        Float_t Get_sci_e_42() const { return fsci_e_42; }
+        Float_t Get_sci_e_43() const { return fsci_e_43; }
+        Float_t Get_sci_e_81() const { return fsci_e_81; }
+        Float_t Get_sci_x_21() const { return fsci_x_21; }
+        Float_t Get_sci_x_22() const { return fsci_x_22; }
+        Float_t Get_sci_x_41() const { return fsci_x_41; }
+        Float_t Get_sci_x_42() const { return fsci_x_42; }
+        Float_t Get_sci_x_43() const { return fsci_x_43; }
+        Float_t Get_sci_x_81() const { return fsci_x_81; }
+        Float_t Get_sci_tof_21_41() const { return fsci_tof_21_41; }
+        Float_t Get_sci_tof_21_41_calib() const { return fsci_tof_21_41_calib; }
+        Float_t Get_sci_tof_21_42() const { return fsci_tof_21_42; }
+        Float_t Get_sci_tof_21_42_calib() const { return fsci_tof_21_42_calib; }
+        Float_t Get_sci_tof_21_81() const { return fsci_tof_21_81; }
+        Float_t Get_sci_tof_21_81_calib() const { return fsci_tof_21_81_calib; }
+        Float_t Get_sci_tof_22_41() const { return fsci_tof_22_41; }
+        Float_t Get_sci_tof_22_41_calib() const { return fsci_tof_22_41_calib; }
+        Float_t Get_sci_tof_22_81() const { return fsci_tof_22_81; }
+        Float_t Get_sci_tof_22_81_calib() const { return fsci_tof_22_81_calib; }
         uint32_t Get_time_in_ms() const;
         uint32_t Get_ibin_for_s() const;
         uint32_t Get_ibin_for_100ms() const;
@@ -97,7 +157,7 @@ class FrsHitItem : public TObject
         uint32_t Get_ibin_clean_for_100ms() const;
         uint32_t Get_ibin_clean_for_spill() const;
 
-        ClassDefNV(FrsHitItem, 2);
+        ClassDefNV(FrsHitItem, 1);
 
     private:
 
@@ -129,14 +189,44 @@ class FrsHitItem : public TObject
         // we can't store this stuff in a tree as a pointer.....
         Float_t fmusic_dE[2]; // [2] // CEJ: 2? 3 for more musics?
         Float_t fmusic_dE_cor[2]; // [2]
-        Float_t fsci_e[6]; // [6] // CEJ: by chance we need [6]. 5->2 but 10->5 (so 6 elements)
-        Float_t fsci_l[6]; // [6]
-        Float_t fsci_r[6]; // [6]
-        Float_t fsci_x[6]; // [6]
-        Float_t fsci_tof2; // should we look at passing all the tof calcs?
-        Float_t fsci_tof[6]; // [6]
-        Float_t fsci_tof_calib[6]; // [6]
-
+        Float_t fsci_21l;
+        Float_t fsci_21r;
+        Float_t fsci_22l;
+        Float_t fsci_22r;
+        Float_t fsci_31l;
+        Float_t fsci_31r;
+        Float_t fsci_41l;
+        Float_t fsci_41r;
+        Float_t fsci_42l;
+        Float_t fsci_42r;
+        Float_t fsci_43l;
+        Float_t fsci_43r;
+        Float_t fsci_81l;
+        Float_t fsci_81r;
+        Float_t fsci_e_21;
+        Float_t fsci_e_22;
+        Float_t fsci_e_31;
+        Float_t fsci_e_41;
+        Float_t fsci_e_42;
+        Float_t fsci_e_43;
+        Float_t fsci_e_81;
+        Float_t fsci_x_21;
+        Float_t fsci_x_22;
+        Float_t fsci_x_41;
+        Float_t fsci_x_42;
+        Float_t fsci_x_43;
+        Float_t fsci_x_81;
+        Float_t fsci_tof_21_41; // should we look at passing all the tof calcs?
+        Float_t fsci_tof_21_41_calib;
+        Float_t fsci_tof_21_42;
+        Float_t fsci_tof_21_42_calib;
+        Float_t fsci_tof_21_81;
+        Float_t fsci_tof_21_81_calib;
+        Float_t fsci_tof_22_41;
+        Float_t fsci_tof_22_41_calib;
+        Float_t fsci_tof_22_81;
+        Float_t fsci_tof_22_81_calib;
+        
         // scalers
         uint32_t ftime_in_ms;
         uint32_t fibin_for_s;
@@ -186,7 +276,7 @@ class FrsMultiHitItem : public TObject
         Float_t Get_ID_dEdeg_mhtdc() const;
         Float_t Get_ID_dEdegoQ_mhtdc() const;
 
-        ClassDefNV(FrsMultiHitItem, 2);
+        ClassDefNV(FrsMultiHitItem, 1);
 
     private:
 
@@ -319,41 +409,6 @@ inline Float_t FrsHitItem::Get_music_dE(int index) const
 inline Float_t FrsHitItem::Get_music_dE_cor(int index) const
 {
     return fmusic_dE_cor[index];
-}
-
-inline Float_t FrsHitItem::Get_sci_e(int index) const
-{
-    return fsci_e[index];
-}
-
-inline Float_t FrsHitItem::Get_sci_l(int index) const
-{
-    return fsci_l[index];
-}
-
-inline Float_t FrsHitItem::Get_sci_r(int index) const
-{
-    return fsci_r[index];
-}
-
-inline Float_t FrsHitItem::Get_sci_x(int index) const
-{
-    return fsci_x[index];
-}
-
-inline Float_t FrsHitItem::Get_sci_tof(int index) const
-{
-    return fsci_tof[index];
-}
-
-inline Float_t FrsHitItem::Get_sci_tof_calib(int index) const
-{
-    return fsci_tof_calib[index];
-}
-
-inline Float_t FrsHitItem::Get_sci_tof2() const
-{
-    return fsci_tof2;
 }
 
 inline uint32_t FrsHitItem::Get_time_in_ms() const
