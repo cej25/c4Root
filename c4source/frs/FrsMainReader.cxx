@@ -99,7 +99,7 @@ Bool_t FrsMainReader::Read()
 
         for (uint32_t j = hit_index; j < next_channel_start; j++)
         {
-            uint32_t channel = current_channel;
+            uint32_t channel = current_channel - 1; // also needs a -1 as below.
             uint32_t data = fData->frsmain_data_v792_data[j];
 
             auto & entry = v792array->emplace_back();
@@ -117,7 +117,7 @@ Bool_t FrsMainReader::Read()
         
         for (uint32_t j = hit_index; j < next_channel_start; j++)
         {
-            uint32_t channel = current_channel - 1; // I cannot see why this doesn't get set to zero for channel zero.... Please check. But it seems correct this way.
+            uint32_t channel = current_channel - 1;
             uint32_t data = fData->frsmain_data_v1290_data[j];
             uint32_t lot = fData->frsmain_data_v1290_leadOrTrailv[j];
             

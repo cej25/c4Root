@@ -133,7 +133,6 @@ class TFrsConfiguration
         int Get_dE_81l_chan() const;
         int Get_dE_81r_chan() const;
 
-        // tac, i guess
         int Get_sci_dT_geo() const;
         int Get_dT_21l_21r_chan() const;
         int Get_dT_41l_41r_chan() const;
@@ -151,6 +150,22 @@ class TFrsConfiguration
         int Get_dT_22r_41r_chan() const;
         int Get_dT_22l_81l_chan() const;
         int Get_dT_22r_81r_chan() const;
+
+        int Get_ts_11_ch() const;
+        int Get_ts_21L_ch() const;
+        int Get_ts_21R_ch() const;
+        int Get_ts_22L_ch() const;
+        int Get_ts_22R_ch() const;
+        int Get_ts_31L_ch() const;
+        int Get_ts_31R_ch() const;
+        int Get_ts_41L_ch() const;
+        int Get_ts_41R_ch() const;
+        int Get_ts_42L_ch() const;
+        int Get_ts_42R_ch() const;
+        int Get_ts_43L_ch() const;
+        int Get_ts_43R_ch() const;
+        int Get_ts_81L_ch() const;
+        int Get_ts_81R_ch() const;
 
 
     private:
@@ -190,7 +205,6 @@ class TFrsConfiguration
 
         // Mappings
         std::string scaler_name[66];
-        std::string sci_names[6];
 
         // ::_ Drift
         std::map<int, std::pair<double,double> > travmus_drift_coeff;
@@ -200,44 +214,61 @@ class TFrsConfiguration
         std::map<int, std::pair<double,double> > z1_drift_coeff;
         bool z1_drift_loaded = 0;
 
-        int music_e_geo = 0; // load in file later
+        int music_e_geo = 0;
 
         // tac
-        int sci_dE_geo = 0;
-        int de_41r_ch = 0;
-        int de_21l_ch = 0;
-        int de_21r_ch = 0;
-        int de_42l_ch = 0;
-        int de_42r_ch = 0;
-        int de_81l_ch = 0;
-        int de_22r_ch = 0;
-        int de_31l_ch = 0;
-        int de_31r_ch = 0;
-        int de_43l_ch = 0;
-        int de_43r_ch = 0;
-        int de_41l_ch = 0;
-        int de_81r_ch = 0;
-        int de_22l_ch = 0;
+        int sci_dE_geo = -1;
+        int de_41r_ch = -1;
+        int de_21l_ch = -1;
+        int de_21r_ch = -1;
+        int de_42l_ch = -1;
+        int de_42r_ch = -1;
+        int de_81l_ch = -1;
+        int de_22r_ch = -1;
+        int de_31l_ch = -1;
+        int de_31r_ch = -1;
+        int de_43l_ch = -1;
+        int de_43r_ch = -1;
+        int de_41l_ch = -1;
+        int de_81r_ch = -1;
+        int de_22l_ch = -1;
         bool dE_mapping_loaded = false;
 
-        int sci_dT_geo = 0;
-        int dt_21l_21r_ch = 0;
-        int dt_41l_41r_ch = 0;
-        int dt_42l_42r_ch = 0;
-        int dt_43l_43r_ch = 0;
-        int dt_81l_81r_ch = 0;
-        int dt_21l_41l_ch = 0;
-        int dt_21r_41r_ch = 0;
-        int dt_42r_21r_ch = 0;
-        int dt_42l_21l_ch = 0;
-        int dt_21l_81l_ch = 0;
-        int dt_21r_81r_ch = 0;
-        int dt_22l_22r_ch = 0;
-        int dt_22l_41l_ch = 0;
-        int dt_22r_41r_ch = 0;
-        int dt_22l_81l_ch = 0;
-        int dt_22r_81r_ch = 0;
+        int sci_dT_geo = -1;
+        int dt_21l_21r_ch = -1;
+        int dt_41l_41r_ch = -1;
+        int dt_42l_42r_ch = -1;
+        int dt_43l_43r_ch = -1;
+        int dt_81l_81r_ch = -1;
+        int dt_21l_41l_ch = -1;
+        int dt_21r_41r_ch = -1;
+        int dt_42r_21r_ch = -1;
+        int dt_42l_21l_ch = -1;
+        int dt_21l_81l_ch = -1;
+        int dt_21r_81r_ch = -1;
+        int dt_22l_22r_ch = -1;
+        int dt_22l_41l_ch = -1;
+        int dt_22r_41r_ch = -1;
+        int dt_22l_81l_ch = -1;
+        int dt_22r_81r_ch = -1;
         bool dT_mapping_loaded = false;
+
+        // MHTDC scintillator timestamps
+        int ts_11_ch = -1;
+        int ts_21L_ch = -1;
+        int ts_21R_ch = -1;
+        int ts_22L_ch = -1;
+        int ts_22R_ch = -1;
+        int ts_31L_ch = -1;
+        int ts_31R_ch = -1;
+        int ts_41L_ch = -1;
+        int ts_41R_ch = -1;
+        int ts_42L_ch = -1;
+        int ts_42R_ch = -1;
+        int ts_43L_ch = -1;
+        int ts_43R_ch = -1;
+        int ts_81L_ch = -1;
+        int ts_81R_ch = -1;
 
 
 };
@@ -309,11 +340,6 @@ inline TRangeParameter* TFrsConfiguration::Range() const
 inline std::string TFrsConfiguration::ScalerName(int index) const
 {
     return scaler_name[index];
-}
-
-inline std::string TFrsConfiguration::SciName(int index) const
-{
-    return sci_names[index];
 }
 
 inline std::string TFrsConfiguration::GetConfigPath() const
@@ -516,6 +542,82 @@ inline int TFrsConfiguration::Get_dT_22r_81r_chan() const
 {
     return dt_22r_81r_ch;
 };
+
+inline int TFrsConfiguration::Get_ts_11_ch() const
+{
+    return ts_11_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_21L_ch() const
+{
+    return ts_21L_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_21R_ch() const
+{
+    return ts_21R_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_22L_ch() const
+{
+    return ts_22L_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_22R_ch() const
+{
+    return ts_22R_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_31L_ch() const
+{
+    return ts_31L_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_31R_ch() const
+{
+    return ts_31R_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_41L_ch() const
+{
+    return ts_41L_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_41R_ch() const
+{
+    return ts_41R_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_42L_ch() const
+{
+    return ts_42L_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_42R_ch() const
+{
+    return ts_42R_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_43L_ch() const
+{
+    return ts_43L_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_43R_ch() const
+{
+    return ts_43R_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_81L_ch() const
+{
+    return ts_81L_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_81R_ch() const
+{
+    return ts_81R_ch;
+}
+
 
 
 
