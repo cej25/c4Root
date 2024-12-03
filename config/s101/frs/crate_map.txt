@@ -1,10 +1,11 @@
-#FULL CRATE MAP
+#FULL CRATE MAP S100
 
 #music mapping
 MUSIC_E_GEO 10
-#channels not really needed right now
+#MUSIC_T_GEO irrelevant
+#channels not really needed right now, in coherent order
 
-#Scintillator dE mapping
+#Scintillator dE mapping -- MAIN CRATE
 DE_GEO 14
 dE_21L  2
 dE_21R  3
@@ -21,7 +22,24 @@ dE_43R  12
 dE_81L  6
 dE_81R  14
 
-#Scintillator dT mapping
+#Scintillator MHTDC ts mapping
+ts_11   12
+ts_21L  2
+ts_21R  3
+ts_22L  13
+ts_22R  14
+ts_31L  10
+ts_31R  11
+ts_41L  0
+ts_41R  1
+ts_42L  4
+ts_42R  15
+ts_43L  6
+ts_43R  7
+ts_81L  8
+ts_81R  9
+
+#Scintillator dT mapping -- USER CRATE
 DT_GEO 12
 dT_21L_21R  0
 dT_41L_41R  1  
