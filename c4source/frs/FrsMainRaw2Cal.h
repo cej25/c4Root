@@ -72,7 +72,6 @@ class FrsMainRaw2Cal : public FairTask
         std::vector<uint32_t> v1290_channel;
         std::vector<uint32_t> v1290_lot;
 
-
         EventHeader* header;
         Int_t fNEvents = 0;
 
@@ -82,7 +81,6 @@ class FrsMainRaw2Cal : public FairTask
 
         const int max_hits_in_v1290 = 100;
 
-    
         uint32_t de_21l = 0;
         uint32_t de_21r = 0;
         uint32_t de_22l = 0;

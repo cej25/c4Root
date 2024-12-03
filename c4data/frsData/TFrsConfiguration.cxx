@@ -148,7 +148,7 @@ void TFrsConfiguration::ReadAoQDriftFile()
     std::ifstream AoQ_drift_coeff_file (aoq_drift_coeff_file);
     std::string line;
 
-    if (AoQ_drift_coeff_file.fail()) c4LOG(fatal, "Could not open AoQ drift coefficients file.");
+    if (AoQ_drift_coeff_file.fail()) c4LOG(warn, "Could not open AoQ drift coefficients file.");
 
 
     while (std::getline(AoQ_drift_coeff_file, line))
@@ -182,7 +182,7 @@ void TFrsConfiguration::ReadZ1DriftFile()
     std::ifstream Z1_drift_coeff_file (z1_drift_coeff_file);
     std::string line;
 
-    if (Z1_drift_coeff_file.fail()) c4LOG(fatal, "Could not open Z1 drift coefficients file.");
+    if (Z1_drift_coeff_file.fail()) c4LOG(warn, "Could not open Z1 drift coefficients file.");
 
 
     while (std::getline(Z1_drift_coeff_file, line))

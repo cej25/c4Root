@@ -25,6 +25,7 @@ EXPS=s452 \
 	onlyFATIMA \
 	s100 \
 	s101 \
+	s115 \
 	s143 \
 	s181 \
 	bb7 \
