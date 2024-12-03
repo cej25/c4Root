@@ -95,7 +95,6 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
         entry.SetAll(index, scaler);
     }
 
-
     // V792 
     for (auto const & v792item : *v792array)
     {
