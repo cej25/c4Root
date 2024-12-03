@@ -103,7 +103,6 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
         uint32_t data = v792item.Get_v792_data();
         uint32_t channel = v792item.Get_channel();
 
-        channel -= 1; // 1 based readout, 0 based mapping.
         if (geo == frs_config->Get_sci_dE_geo())
         {
             if (channel == frs_config->Get_dE_21l_chan()) de_21l = data;
@@ -138,114 +137,38 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
                     de_43r,
                     de_81l,
                     de_81r);
-    // CEJ: untested !!
 
 
     // V1290
     // CEJ: will add mapping to this at some point
     for (auto const & v1290_item : *v1290array)
     {
-        if (v1290_item.Get_leadOrTrail() == 0) // lead 0, trail 1
-        {
-            switch (v1290_item.Get_channel()) // for some reason the data readout of v1290 starts from 1 .... Verified that sci41L is ch 0 in MH 08.05.24
-            {
-                case 0: // 41l
-                    sciEntry.Add_mhtdc_sc41l_hit((int32_t)v1290_item.Get_v1290_data());
-                    break;
-                case 1: // 41r
-                    sciEntry.Add_mhtdc_sc41r_hit((int32_t)v1290_item.Get_v1290_data());
-                    break;
-                case 2: // 21l
-                    sciEntry.Add_mhtdc_sc21l_hit((int32_t)v1290_item.Get_v1290_data());
-                    break;
-                case 3: // 21r
-                    sciEntry.Add_mhtdc_sc21r_hit((int32_t)v1290_item.Get_v1290_data());
-                    break;
-                case 4: // 42l
-                    sciEntry.Add_mhtdc_sc42l_hit((int32_t)v1290_item.Get_v1290_data());
-                    break;
-                case 5: // not used
-                    break;
-                case 6: // 43l
-                    sciEntry.Add_mhtdc_sc43l_hit((int32_t)v1290_item.Get_v1290_data());
-                    break;
-                case 7: // 43r
-                    sciEntry.Add_mhtdc_sc43r_hit((int32_t)v1290_item.Get_v1290_data());
-                    break;
-                case 8: // 81l
-                    sciEntry.Add_mhtdc_sc81l_hit((int32_t)v1290_item.Get_v1290_data());
-                    break;
-                case 9: // 81r
-                    sciEntry.Add_mhtdc_sc81r_hit((int32_t)v1290_item.Get_v1290_data());
-                    break;
-                case 10: // 31l
-                    sciEntry.Add_mhtdc_sc31l_hit((int32_t)v1290_item.Get_v1290_data());
-                    break;
-                case 11: // 31r
-                    sciEntry.Add_mhtdc_sc31r_hit((int32_t)v1290_item.Get_v1290_data());
-                    break;
-                case 12: // 11
-                    sciEntry.Add_mhtdc_sc11_hit((int32_t)v1290_item.Get_v1290_data());
-                    break;
-                case 13: // 22l
-                    sciEntry.Add_mhtdc_sc22l_hit((int32_t)v1290_item.Get_v1290_data());
-                    break;
-                case 14: // 22r
-                    sciEntry.Add_mhtdc_sc22r_hit((int32_t)v1290_item.Get_v1290_data());
-                    break;
-                case 15: // 42r
-                    sciEntry.Add_mhtdc_sc42r_hit((int32_t)v1290_item.Get_v1290_data());
-                    break;
-                case 16:
-                    if (music_t1[0] != 0) music_t1[0] = v1290_item.Get_v1290_data();
-                    break;
-                case 17:
-                    if (music_t1[1] != 0) music_t1[1] = v1290_item.Get_v1290_data();
-                    break;
-                case 18:
-                    if (music_t1[2] != 0) music_t1[2] = v1290_item.Get_v1290_data();
-                    break;
-                case 19:
-                    if (music_t1[3] != 0) music_t1[3] = v1290_item.Get_v1290_data();
-                    break;
-                case 20:
-                    if (music_t1[4] != 0) music_t1[4] = v1290_item.Get_v1290_data();
-                    break;
-                case 21:
-                    if (music_t1[5] != 0) music_t1[5] = v1290_item.Get_v1290_data();
-                    break;
-                case 22:
-                    if (music_t1[6] != 0) music_t1[6] = v1290_item.Get_v1290_data();
-                    break;
-                case 23:
-                    if (music_t1[7] != 0) music_t1[7] = v1290_item.Get_v1290_data();
-                    break;
-                case 24:
-                    if (music_t2[0] != 0) music_t2[0] = v1290_item.Get_v1290_data();
-                    break;
-                case 25:
-                    if (music_t2[1] != 0) music_t2[1] = v1290_item.Get_v1290_data();
-                    break;
-                case 26:
-                    if (music_t2[2] != 0) music_t2[2] = v1290_item.Get_v1290_data();
-                    break;
-                case 27:
-                    if (music_t2[3] != 0) music_t2[3] = v1290_item.Get_v1290_data();
-                    break;
-                case 28:
-                    if (music_t2[4] != 0) music_t2[4] = v1290_item.Get_v1290_data();
-                    break;
-                case 29:
-                    if (music_t2[5] != 0) music_t2[5] = v1290_item.Get_v1290_data();
-                    break;
-                case 30:
-                    if (music_t2[6] != 0) music_t2[6] = v1290_item.Get_v1290_data();
-                    break;
-                case 31:
-                    if (music_t2[7] != 0) music_t2[7] = v1290_item.Get_v1290_data();
-                    break;
-            }
-        }
+        uint32_t channel = v1290_item.Get_channel();
+        uint32_t lot = v1290_item.Get_leadOrTrail();
+        int32_t data = v1290_item.Get_v1290_data();
+
+        if (lot != 0) continue; // lead = 0, trail = 1
+        
+        if (channel == frs_config->Get_ts_11_ch()) sciEntry.Add_mhtdc_sc11_hit(data);
+        else if (channel == frs_config->Get_ts_21L_ch()) sciEntry.Add_mhtdc_sc21l_hit(data);
+        else if (channel == frs_config->Get_ts_21R_ch()) sciEntry.Add_mhtdc_sc21r_hit(data);
+        else if (channel == frs_config->Get_ts_22L_ch()) sciEntry.Add_mhtdc_sc22l_hit(data);
+        else if (channel == frs_config->Get_ts_22R_ch()) sciEntry.Add_mhtdc_sc22r_hit(data);
+        else if (channel == frs_config->Get_ts_31L_ch()) sciEntry.Add_mhtdc_sc31l_hit(data);
+        else if (channel == frs_config->Get_ts_31R_ch()) sciEntry.Add_mhtdc_sc31r_hit(data);
+        else if (channel == frs_config->Get_ts_41L_ch()) sciEntry.Add_mhtdc_sc41l_hit(data);
+        else if (channel == frs_config->Get_ts_41R_ch()) sciEntry.Add_mhtdc_sc41r_hit(data);
+        else if (channel == frs_config->Get_ts_42L_ch()) sciEntry.Add_mhtdc_sc42l_hit(data);
+        else if (channel == frs_config->Get_ts_42R_ch()) sciEntry.Add_mhtdc_sc42r_hit(data);
+        else if (channel == frs_config->Get_ts_43L_ch()) sciEntry.Add_mhtdc_sc43l_hit(data);
+        else if (channel == frs_config->Get_ts_43R_ch()) sciEntry.Add_mhtdc_sc43r_hit(data);
+        else if (channel == frs_config->Get_ts_81L_ch()) sciEntry.Add_mhtdc_sc81l_hit(data);
+        else if (channel == frs_config->Get_ts_81R_ch()) sciEntry.Add_mhtdc_sc81r_hit(data);
+
+        // CEJ: possibly need to fill only first value (if multiple) but music_t not used currently, so don't know
+        else if (channel > 15 && channel < 24) music_t1[channel - 16] = data;
+        else if (channel > 23 && channel < 32) music_t1[channel - 24] = data;
+        
     }
 
     auto & musicEntry = musicArray->emplace_back();

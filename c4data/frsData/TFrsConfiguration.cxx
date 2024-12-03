@@ -45,17 +45,11 @@ int TFrsConfiguration::frun_num = 0;
 TFrsConfiguration::TFrsConfiguration()
 {
     ReadScalerNames();
-    //ReadTravMusDriftFile();
-    //ReadAoQDriftFile();
-    //ReadZ1DriftFile();
+    ReadCrateMapFile(); // absolutely critical
+    ReadTravMusDriftFile(); // not critical
+    ReadAoQDriftFile(); // not critical
+    ReadZ1DriftFile(); // not critical
     ReadCrateMapFile();
-    // for now:
-    sci_names[0] = "sci21";
-    sci_names[1] = "sci22";
-    sci_names[2] = "sci41";
-    sci_names[3] = "sci42";
-    sci_names[4] = "sci43";
-    sci_names[5] = "sci81";
     
 }
 
@@ -121,7 +115,7 @@ void TFrsConfiguration::ReadTravMusDriftFile()
     std::ifstream travmus_drift_coeff_file (tm_drift_coeff_file);
     std::string line;
 
-    if (travmus_drift_coeff_file.fail()) c4LOG(fatal, "Could not open Trav Mus drift coefficients file.");
+    if (travmus_drift_coeff_file.fail()) { c4LOG(warn, "Could not open Trav Mus drift coefficients file."); return; }
 
 
     while (std::getline(travmus_drift_coeff_file, line))
@@ -273,6 +267,22 @@ void TFrsConfiguration::ReadCrateMapFile()
             else if (signal == "dT_22R_41R") dt_22r_41r_ch = channel;
             else if (signal == "dT_22L_81L") dt_22l_81l_ch = channel;
             else if (signal == "dT_22R_81R") dt_22r_81r_ch = channel;
+            else if (signal == "dT_41L_41R") dt_41l_41r_ch = channel;
+            else if (signal == "ts_11") ts_11_ch = channel;
+            else if (signal == "ts_21L") ts_21L_ch = channel;
+            else if (signal == "ts_21R") ts_21R_ch = channel;
+            else if (signal == "ts_22L") ts_22L_ch = channel;
+            else if (signal == "ts_22R") ts_22R_ch = channel;
+            else if (signal == "ts_31L") ts_31L_ch = channel;
+            else if (signal == "ts_31R") ts_31R_ch = channel;
+            else if (signal == "ts_41L") ts_41L_ch = channel;
+            else if (signal == "ts_41R") ts_41R_ch = channel;
+            else if (signal == "ts_42L") ts_42L_ch = channel;
+            else if (signal == "ts_42R") ts_42R_ch = channel;
+            else if (signal == "ts_43L") ts_43L_ch = channel;
+            else if (signal == "ts_43R") ts_43R_ch = channel;
+            else if (signal == "ts_81L") ts_81L_ch = channel;
+            else if (signal == "ts_81R") ts_81R_ch = channel;
 
         }
     }
