@@ -117,8 +117,8 @@ TPC_CRATE_DATA()
     select several
     {
         barrier0 = BARRIER();
-        v775 = VME_CAEN_V7X5_FRS(card=12);
-        v785 = VME_CAEN_V7X5_FRS(card=8);
+        v775 = VME_CAEN_V7X5_FRS(geom=12);
+        v785 = VME_CAEN_V7X5_FRS(geom=8);
     }
     
     /*
@@ -156,10 +156,10 @@ USER_CRATE_DATA()
     {
         barrier1 = BARRIER();
         // really not sure if this is correct, we'll see
-        v775[0] = VME_CAEN_V7X5_FRS(card=8);
-        v775[1] = VME_CAEN_V7X5_FRS(card=9);
-        v785[0] = VME_CAEN_V7X5_FRS(card=10);
-        v785[1] = VME_CAEN_V7X5_FRS(card=12);
+        v775[0] = VME_CAEN_V7X5_FRS(geom=8);
+        v775[1] = VME_CAEN_V7X5_FRS(geom=9);
+        v785[0] = VME_CAEN_V7X5_FRS(geom=10);
+        v785[1] = VME_CAEN_V7X5_FRS(geom=12);
     }
 
     /*
