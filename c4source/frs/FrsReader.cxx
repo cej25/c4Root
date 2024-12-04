@@ -4,7 +4,7 @@
 
 // c4
 #include "FrsMainData.h"
-#include "FrsMainReader.h"
+#include "FrsReader.h"
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
@@ -18,8 +18,8 @@ extern "C"
     #include "ext_h101_frsmain.h"
 }
 
-FrsMainReader::FrsMainReader(EXT_STR_h101_frsmain_onion* data, size_t offset)
-    : c4Reader("FrsMainReader")
+FrsReader::FrsReader(EXT_STR_h101_frsmain_onion* data, size_t offset)
+    : c4Reader("FrsReader")
     , fNEvent(0)
     , fData(data)
     , fOffset(offset)
@@ -30,12 +30,12 @@ FrsMainReader::FrsMainReader(EXT_STR_h101_frsmain_onion* data, size_t offset)
 {
 }
 
-FrsMainReader::~FrsMainReader() 
+FrsReader::~FrsReader() 
 { 
-    c4LOG(info, "Destroyed FrsMainReader properly.");
+    c4LOG(info, "Destroyed FrsReader properly.");
 }
 
-Bool_t FrsMainReader::Init(ext_data_struct_info* a_struct_info)
+Bool_t FrsReader::Init(ext_data_struct_info* a_struct_info)
 {
     Int_t ok;
     
@@ -66,7 +66,7 @@ Bool_t FrsMainReader::Init(ext_data_struct_info* a_struct_info)
     return kTRUE;
 }
 
-Bool_t FrsMainReader::Read()
+Bool_t FrsReader::Read()
 {
     if (!fData) return kTRUE;
     if (fData == nullptr) return kFALSE;
@@ -212,22 +212,22 @@ Bool_t FrsMainReader::Read()
 
 }
 
-void FrsMainReader::ZeroArrays()
+void FrsReader::ZeroArrays()
 {
     
 }
 
-void FrsMainReader::ClearVectors()
+void FrsReader::ClearVectors()
 {
     v830array->clear();
     v792array->clear();
     v1290array->clear();
 }
 
-void FrsMainReader::Reset()
+void FrsReader::Reset()
 {
     ZeroArrays();
     ClearVectors();
 }
 
-ClassImp(FrsMainReader);
+ClassImp(FrsReader);

@@ -13,6 +13,8 @@ extern "C"
 
 class TClonesArray;
 class FrsTPCData;
+class tpcAdcItem;
+class tpcTdcItem;
 
 
 struct EXT_STR_h101_frstpc_t;
@@ -49,6 +51,8 @@ class FrsTPCReader : public c4Reader
 
         std::vector<FrsTPCV7X5Item>* v7x5array;
         std::vector<FrsTPCV1190Item>* v1190array;
+        std::vector<tpcAdcItem>* adcArray;
+        std::vector<tpcTdcItem>* tdcArray;
 
         uint64_t fWR_TS;
 

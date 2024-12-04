@@ -27,6 +27,8 @@ FrsTPCReader::FrsTPCReader(EXT_STR_h101_frstpc_onion* data, size_t offset)
     , fOnline(kFALSE)
     , v7x5array(new std::vector<FrsTPCV7X5Item>)
     , v1190array(new std::vector<FrsTPCV1190Item>)
+    ,   adcArray(new std::vector<tpcAdcItem>)
+    ,   tdcArray(new std::vector<tpcTdcItem>)
 {
 }
 
@@ -51,6 +53,12 @@ Bool_t FrsTPCReader::Init(ext_data_struct_info* a_struct_info)
     FairRootManager::Instance()->RegisterAny("FrsTPCV7X5Data", v7x5array, !fOnline);
     FairRootManager::Instance()->RegisterAny("FrsTPCV1190Data", v1190array, !fOnline);
 
+    FairRootManager::Instance()->RegisterAny("tpcAdcData", adcArray, !fOnline);
+    FairRootManager::Instance()->RegisterAny("tpcTdcData", tdcArray, !fOnline);
+    adcArray->clear();
+    tdcArray->clear();
+
+
     memset(fData, 0, sizeof *fData);
 
     return kTRUE;
@@ -60,58 +68,93 @@ Bool_t FrsTPCReader::Read()
 {
     v7x5array->clear();
     v1190array->clear();
+    adcArray->clear();
+    tdcArray->clear();
 
     if (!fData) return kTRUE;
     if (fData == nullptr) return kFALSE;
 
-    if (fData->frstpc_data_v775_n == 0 && fData->frstpc_data_v785_n == 0 && fData->frstpc_data_v1190_nM == 0) return kTRUE;
+    // if (fData->frstpc_data_v775_n == 0 && fData->frstpc_data_v785_n == 0 && fData->frstpc_data_v1190_nM == 0) return kTRUE;
     ClearVectors();
 
+    for (int i = 0; i < 7; i++)
+    {
+        for (int j = 0; j < fData->TPC_ADC[i]._; j++)
+        {   
+            uint32_t channel = fData->TPC_ADC[i].I[j] - 1;
+            uint32_t data = fData->TPC_ADC[i].v[j];
+
+            // tpc#, channel, data
+            auto & entry = adcArray->emplace_back();
+            entry.SetAll(i, channel, data);
+        }
+    }
+
+    int hit_index = 0;
+    for (int channel_index = 0; channel_index < fData->TPC_TDC_TM; channel_index++)
+    {
+        int current_channel = fData->TPC_TDC_TMI[channel_index];
+        int next_channel_start = fData->TPC_TDC_TME[channel_index];
+
+        for (uint32_t j = hit_index; j < next_channel_start; j++)
+        {   
+            uint32_t channel = current_channel - 1; // -1?
+            uint32_t data = fData->TPC_TDC_Tv[j];
+            uint32_t lot = fData->TPC_TDC_LOTv[j];
+
+            auto & entry = tdcArray->emplace_back();
+            entry.SetAll(channel, data, lot);
+        }
+
+        hit_index = next_channel_start;
+    }
+
+
     // v775 -- geo is 12??
-    for (int i = 0; i < fData->frstpc_data_v775_n; i++)
-    {   
-        uint32_t geo = fData->frstpc_data_v775_geov[i];
-        uint32_t channel = fData->frstpc_data_v775_channelv[i];
-        uint32_t data = fData->frstpc_data_v775_data[i];
+    // for (int i = 0; i < fData->frstpc_data_v775_n; i++)
+    // {   
+    //     // uint32_t geo = fData->frstpc_data_v775_geov[i];
+    //     uint32_t channel = fData->frstpc_data_v775_nI[i];
+    //     uint32_t data = fData->frstpc_data_v775_data[i];
     
-        auto & entry = v7x5array->emplace_back();
-        entry.SetAll(geo, data, channel);
-    }
+    //     auto & entry = v7x5array->emplace_back();
+    //     entry.SetAll(12, data, channel);
+    // }
 
-    // v785 -- geo is 8???
-    for (int i = 0; i < fData->frstpc_data_v785_n; i++)
-    {   
-        uint32_t geo = fData->frstpc_data_v785_geov[i];
-        uint32_t channel = fData->frstpc_data_v785_channelv[i];
-        uint32_t data = fData->frstpc_data_v785_data[i];
+    // // v785 -- geo is 8???
+    // for (int i = 0; i < fData->frstpc_data_v785_n; i++)
+    // {   
+    //     // uint32_t geo = fData->frstpc_data_v785_geov[i];
+    //     uint32_t channel = fData->frstpc_data_v785_nI[i];
+    //     uint32_t data = fData->frstpc_data_v785_data[i];
 
-        auto & entry = v7x5array->emplace_back();
-        entry.SetAll(geo, data, channel);
-    }
+    //     auto & entry = v7x5array->emplace_back();
+    //     entry.SetAll(8, data, channel);
+    // }
 
     // v1190
   
     // this loops over a number of channels..is it a mistake?
     // should we loop over a number of hits? 
-    int hit_index = 0;
-    for (uint32_t channel_index = 0; channel_index < fData->frstpc_data_v1190_nM; channel_index++)
-    {   
-        int current_channel = fData->frstpc_data_v1190_nMI[channel_index];
-        int next_channel_start = fData->frstpc_data_v1190_nME[channel_index];
+    // int hit_index = 0;
+    // for (uint32_t channel_index = 0; channel_index < fData->frstpc_data_v1190_nM; channel_index++)
+    // {   
+    //     int current_channel = fData->frstpc_data_v1190_nMI[channel_index];
+    //     int next_channel_start = fData->frstpc_data_v1190_nME[channel_index];
 
-        for (uint32_t j = hit_index; j < next_channel_start; j++)
-        {   
-            uint32_t channel = current_channel;
-            uint32_t data = fData->frstpc_data_v1190_data[j];
-            uint32_t lot = fData->frstpc_data_v1190_leadOrTrailv[j];
+    //     for (uint32_t j = hit_index; j < next_channel_start; j++)
+    //     {   
+    //         uint32_t channel = current_channel;
+    //         uint32_t data = fData->frstpc_data_v1190_data[j];
+    //         uint32_t lot = fData->frstpc_data_v1190_leadOrTrailv[j];
 
-            auto & entry = v1190array->emplace_back();
-            entry.SetAll(channel, data, lot);
-        }
+    //         auto & entry = v1190array->emplace_back();
+    //         entry.SetAll(channel, data, lot);
+    //     }
 
-        hit_index = next_channel_start;
+    //     hit_index = next_channel_start;
   
-    }
+    // }
 
     fNEvent += 1;
     return kTRUE;

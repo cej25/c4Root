@@ -7,6 +7,36 @@
 
 class TClonesArray;
 
+class tpcAdcItem : public TObject
+{
+    public:
+        tpcAdcItem();
+
+        void SetAll(int i, uint32_t chan, uint32_t data);
+        void Reset();
+
+        uint32_t Get_tpc() const { return tpc; }
+        uint32_t Get_channel() const { return channel; }
+        uint32_t Get_adc_data() const { return adcData; }
+
+        ClassDef(tpcAdcItem, 1);
+    
+    private:
+
+        int tpc;
+        uint32_t channel;
+        uint32_t adcData;
+};
+
+class tpcTdcItem : public TObject
+{
+    public:
+        tpcTdcItem();
+
+        void SetAll(int chan, int data, int lot);
+        void Reset();
+};
+
 class FrsTPCV7X5Item : public TObject
 {
     public:

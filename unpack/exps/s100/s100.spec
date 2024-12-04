@@ -225,7 +225,7 @@ SUBEVENT(frs_main_subev)
 
 SUBEVENT(frs_tpc_subev)
 {
-    optional UINT32 be { 0_31: b = MATCH(0xbad00bad);}
+    optional UINT32 be { 0_31: b = MATCH(0xbad00bad); }
 
     select several
     {

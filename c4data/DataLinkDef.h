@@ -111,4 +111,11 @@
 #pragma link C++ class TravMusCalItem+;
 #pragma link C++ class TravMusAnaItem+;
 
+
+
+// testing new FRS
+#pragma link C++ class tpcAdcItem+;
+#pragma link C++ class tpcTdcItem+;
+
+
 #endif

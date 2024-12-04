@@ -1,5 +1,24 @@
 #include "FrsTPCData.h"
 
+tpcAdcItem::tpcAdcItem()
+{
+
+}
+
+void tpcAdcItem::SetAll(int i, uint32_t chan, uint32_t data)
+{
+    tpc = i;
+    channel = chan;
+    adcData = data;
+}
+
+void tpcAdcItem::Reset()
+{
+    tpc = 0;
+    channel = 0;
+    adcData = 0;
+}
+
 
 FrsTPCV7X5Item::FrsTPCV7X5Item()
 {
