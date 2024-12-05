@@ -1,0 +1,2 @@
+USE_LMD_INPUT=1
+CXXFLAGS+=-DCONTROL_INCLUDE -Wfatal-errors -std=c++11

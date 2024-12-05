@@ -1,15 +1,16 @@
 #include <TROOT.h>
-
+//............
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define LISA_ON 1
 #define FRS_ON 1
 #define TRAV_MUSIC_ON 1
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
 
-// Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/
+// Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/ BUT it has to be converted
 extern "C"
 {
     #include "../../config/pareeksha/frs/setup_s092_010_2024_conv.C"
+    //#include "../../config/pareeksha/frs/setup_s092_0005_2024_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -24,8 +25,8 @@ typedef struct EXT_STR_h101_t
 
 
 } EXT_STR_h101;
-
-void pareeksha_make_trees()
+\
+void elisa_pareeksha_online()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
@@ -53,26 +54,28 @@ void pareeksha_make_trees()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     //::::::::::P A T H   O F   F I L E  to read
+    //___O N L I N E
+    //TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
+    //TString filename = "trans://lxg1257"; // time stitched
+
     //___O F F L I N E
-    //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0169_*.lmd";  //data with only lisa
-    //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/daqtest/daqtest_0001_0001.lmd"; //data from ts folder
-    TString filename = "/u/gandolfo/data1/lustre/gamma/s092_s143_files/ts/run_0150_*.lmd"; //from time stitched files
+    //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0167_*.lmd";  //data with only lisa
+    TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0036_00*.lmd"; //74,22 good run for statistics, frs, trav, lisa in ts
 
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data1/lustre/gamma/LISA/data/pareeksha_trees/";
-    TString outputFilename = outputpath + "run_0150_test.root";
+    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/";
+    TString outputFilename = outputpath + "pareeksha_test.root";
 
 
     //:::::::Create online run
-    Int_t refresh = 10; // not needed
-    Int_t port = 5000; // not needed
+    Int_t refresh = 10; // Refresh rate for online histograms
+    Int_t port = 2222;
      
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
-    run->SetSink(new FairRootFileSink(outputFilename)); // don't write after termintion
-    
+    //run->SetSink(new FairRootFileSink(outputFileName)); // don't write after termintion
     run->ActivateHttpServer(refresh, port);
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
@@ -113,6 +116,7 @@ void pareeksha_make_trees()
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     TLisaConfiguration::SetMappingFile(config_path + "/lisa/Lisa_Detector_Map_names.txt");
+    TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching.txt");
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // S U B S Y S T E M S
@@ -139,7 +143,7 @@ void pareeksha_make_trees()
         {
             FrsTravMusReader* unpacktravmus = new FrsTravMusReader((EXT_STR_h101_travmus_onion*)&ucesb_struct.travmus, offsetof(EXT_STR_h101, travmus));
     
-            unpacktravmus->SetOnline(false);
+            unpacktravmus->SetOnline(true);
             source->AddReader(unpacktravmus);
         }
 
@@ -165,7 +169,7 @@ void pareeksha_make_trees()
         {
             LisaRaw2Cal* lisaraw2cal = new LisaRaw2Cal();
 
-            lisaraw2cal->SetOnline(false);
+            lisaraw2cal->SetOnline(true);
             run->AddTask(lisaraw2cal);
         }
 
@@ -175,7 +179,7 @@ void pareeksha_make_trees()
         {
             FrsTravMusRaw2Cal* caltravmus = new FrsTravMusRaw2Cal();
 
-            caltravmus->SetOnline(false);
+            caltravmus->SetOnline(true);
             run->AddTask(caltravmus);
         }
 
@@ -185,7 +189,7 @@ void pareeksha_make_trees()
         
         calfrsmain->SetOnline(true);
         calfrstpc->SetOnline(true);
-        calfrsuser->SetOnline(false);
+        calfrsuser->SetOnline(true);
         run->AddTask(calfrsmain);
         run->AddTask(calfrstpc);
         run->AddTask(calfrsuser);
@@ -199,10 +203,93 @@ void pareeksha_make_trees()
     {
         FrsCal2Hit* hitfrs = new FrsCal2Hit();
         
-        hitfrs->SetOnline(false); 
+        hitfrs->SetOnline(true); 
         run->AddTask(hitfrs);
     } 
 
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::   
+    // =========== **** SPECTRA ***** ========================================================= //
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
+
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
+    // ::: Online Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+    //::::::::: Set ranges for histos :::::::::::::::
+    //::::  Channel Energy ::::: (h1_energy_layer_ch)
+    TLisaConfiguration::SetEnergyRange(0,3000000);
+    //TLisaConfiguration::SetEnergyRange(0,3500000); //for Chen
+    //TLisaConfiguration::SetEnergyBin(1200); // for Chen
+    TLisaConfiguration::SetEnergyBin(900);
+
+    //:::: LISA WR Time Difference :::::: (h1_wr_diff)
+    TLisaConfiguration::SetWrDiffRange(0,100000000);
+    TLisaConfiguration::SetWrDiffBin(20000);
+
+    //:::: LISA Traces Time and Amplitude Ranges :::::: (h1_traces_layer_ch)
+    TLisaConfiguration::SetTracesRange(0,20);
+    TLisaConfiguration::SetTracesBin(2000);
+    //TLisaConfiguration::SetTracesBin(5000); //for Chens positive signals
+    TLisaConfiguration::SetAmplitudeMin(1000);
+    TLisaConfiguration::SetAmplitudeMax(15000);
+    //TLisaConfiguration::SetAmplitudeMax(15000); //for Chens positiv signals
+
+
+    TFrsConfiguration::Set_Z_range(5,90);
+    TFrsConfiguration::Set_AoQ_range(0,6);
+    TFrsConfiguration::Set_dE_Music1_range(0,4000);
+    TFrsConfiguration::Set_dE_Music2_range(0,4000);
+
+
+    if (LISA_ON)
+    {
+        // Add analysis task here at some point
+        LisaOnlineSpectra* onlinelisa = new LisaOnlineSpectra();
+
+        run->AddTask(onlinelisa);
+
+    }
+    
+    if (FRS_ON)
+    {
+        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
+        // For monitoring FRS on our side
+        // FrsRawSpectra* frsrawspec = new FrsRawSpectra();
+        // FrsCalSpectra* frscalspec = new FrsCalSpectra();
+        
+        run->AddTask(onlinefrs);
+        // run->AddTask(frsrawspec);
+        // run->AddTask(frscalspec);
+
+        if (TRAV_MUSIC_ON)
+        {
+            FrsTravMusSpectra* onlinetravmus = new FrsTravMusSpectra();
+            //add task for raw spec?
+            run->AddTask(onlinetravmus);
+        }
+    }
+
+    TString c = "Lisa";
+    TString d = "Frs";
+    TString e = "TravMus";
+
+    if (WHITE_RABBIT_CORS)
+    {
+        WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
+        wronline->SetDetectorSystems({c,d,e});
+        
+        run->AddTask(wronline);
+    }
+
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    // ::: Correlation Spectra :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+    if(LISA_ON && FRS_ON)
+    {
+        LisaFrsCorrelationsOnline* LISA_FRS_corr = new LisaFrsCorrelationsOnline();
+        run->AddTask(LISA_FRS_corr);
+    }
+
+    // FrsLisa
 
     // Initialise
     run->Init();

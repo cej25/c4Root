@@ -302,8 +302,10 @@ void bPlastOnlineSpectra::Exec(Option_t* option)
             // if(fEventHeader->GetTrigger() == 1) std::cout << "Trigger 1 event detected!" << std::endl;
             // if(fEventHeader->GetTrigger() == 3) std::cout << "Trigger 3 event detected!" << std::endl;
             // if(fEventHeader->GetSpillFlag() == true) std::cout << "Spill On!" << std::endl;
+            // int trig = hit->Get_trigger();
+            // std::cout << "Trigger: " << trig << std::endl;
 
-            if (fEventHeader->GetTrigger() == 3)
+            if (hit->Get_trigger() == 3)
             {
                 std::cout << "Pulser event detected!" << std::endl;
                 pulser_counter++;

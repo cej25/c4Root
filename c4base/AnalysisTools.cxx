@@ -104,3 +104,8 @@ TGraph* MakeTGraph()
     // I think TGraphs have to be appended.
 }
 */
+
+enum c4Color 
+{
+    kNapoli,
+};

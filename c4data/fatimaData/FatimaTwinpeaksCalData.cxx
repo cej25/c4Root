@@ -25,7 +25,7 @@ FatimaTwinpeaksCalData::FatimaTwinpeaksCalData()
 }
 
 FatimaTwinpeaksCalData::FatimaTwinpeaksCalData(
-        uint8_t trig,
+        uint16_t trig,
         uint16_t board_id,
         uint16_t ch_ID,
         uint16_t detector_id,

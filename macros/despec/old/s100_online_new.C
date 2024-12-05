@@ -3,20 +3,20 @@
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define FATIMA_ON 1
 #define FATIMA_VME_ON 1
-#define AIDA_ON 1
-#define BPLAST_ON 1
-#define GERMANIUM_ON 1
-#define BGO_ON 1
-#define FRS_ON 1
-#define FRS_ON 1
-#define TIME_MACHINE_ON 1
+#define AIDA_ON 0
+#define BPLAST_ON 0
+#define GERMANIUM_ON 0
+#define BGO_ON 0
+#define FRS_ON 0
+#define FRS_ON 0
+#define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
-#define WHITE_RABBIT_CORS 1
+#define WHITE_RABBIT_CORS 0
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
 {
-    #include "../../config/s100/frs/setup_des_s100_030_2024_conv.C"
+    #include "../../../config/s100/frs/setup_des_s100_029_2024_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -48,9 +48,9 @@ void s100_online_new()
     //TString fExpName = "beammonitor";
 
     // Define important paths.
-    //TString c4Root_path = "/u/jbormans/c4Root";
-    TString c4Root_path = "/u/despec/s100_online/c4Root";
-    TString c4Root_path = "/u/despec/s100_online/c4Root";
+    TString c4Root_path = "~/lustre/gamma/jeroen/S100/c4Root";
+    // TString c4Root_path = "/u/despec/s100_online/c4Root";
+    // TString c4Root_path = "/u/despec/s100_online/c4Root";
     TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
     //TString c4Root_path = "/u/cjones/c4Root";
     //TString c4Root_path = "/u/cjones/c4Root";
@@ -80,12 +80,12 @@ void s100_online_new()
 //    TString filename = "trans://x86l-86"; // ??.
     //TString filename = "trans://x86l-144"; // 
     //TString filename = "stream://x86l-182"; // bgo
-    TString filename = "trans://lxg1257"; // timesorter.
+    // TString filename = "trans://lxg1257"; // timesorter.
     //TString filename = "trans://R4L-21"; // beammonitor
     // TString filename = "stream://x86l-87"; // bplast
     //TString filename = "stream://x86l-117"; // fatima tamex
     //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
-    //TString filename = "~/lustre/gamma/s100_files/ts/calibrations/152Eu_calib_0016_*.lmd";
+    TString filename = "~/lustre/gamma/s100_files/ts/calibrations/152Eu_calib_0044_*.lmd";
     //TString filename = "~/lustre/gamma/s100_files/ts/168Dy_0033_0003.lmd";
     //TString filename = "~/lustre/gamma/s100_files/ts/168Dy_0033_0003.lmd";
     TString outputpath = "output";
@@ -93,7 +93,7 @@ void s100_online_new()
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 5000; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 5050; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();

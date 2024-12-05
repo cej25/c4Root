@@ -17,7 +17,7 @@ bPlastTwinpeaksData::bPlastTwinpeaksData()
 }
 
 bPlastTwinpeaksData::bPlastTwinpeaksData(
-        uint8_t trig,
+        uint16_t trig,
         uint16_t board_id,
         uint32_t ch_ID,
         uint32_t lead_epoch_counter,

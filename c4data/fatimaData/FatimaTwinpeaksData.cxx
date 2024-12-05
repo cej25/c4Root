@@ -18,7 +18,7 @@ FatimaTwinpeaksData::FatimaTwinpeaksData()
 }
 
 FatimaTwinpeaksData::FatimaTwinpeaksData(
-        uint8_t trig,
+        uint16_t trig,
         uint16_t board_id,
         uint32_t ch_ID,
         int64_t accepted_trigger_time,
