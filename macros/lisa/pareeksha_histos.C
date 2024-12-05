@@ -58,7 +58,8 @@ void pareeksha_histos(int fileNumber)
     TString filename = Form(inputpath + "run_%04d_EG.root", fileNumber);  
     
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/fragments_EG_101gate/"; //test output
+    //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/fragments_EG_101gate/"; //test output
+    TString outputpath = "/u/gandolfo/data/"; //test output
 
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/fragments_noGate/";
     TString outputFilename = Form(outputpath + "run_%04d_histos.root", fileNumber);
@@ -178,7 +179,6 @@ void pareeksha_histos(int fileNumber)
         run->AddTask(nearlinelisa);
 
     }
-
     
     if (FRS_ON)
     {
@@ -188,14 +188,17 @@ void pareeksha_histos(int fileNumber)
         
         if (TRAV_MUSIC_ON)
         {
-            FrsNearlineTravMusSpectra* nearlinetravmus = new FrsNearlineTravMusSpectra();
-            //add task for raw spec?
+            TravMusNearlineSpectra* nearlinetravmus = new TravMusNearlineSpectra();
             run->AddTask(nearlinetravmus);
+        
+            FrsTravMusCorrelations* nearlinetravmusfrs = new FrsTravMusCorrelations();
+            run->AddTask(nearlinetravmusfrs);
+
         }
         
     }
 
-    if(LISA_ON && FRS_ON)
+    if(LISA_ON && FRS_ON & TRAV_MUSIC_ON)
     {
         LisaFrsCorrelations* LISA_FRS_corr = new LisaFrsCorrelations(fg);
         run->AddTask(LISA_FRS_corr);
