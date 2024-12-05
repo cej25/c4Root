@@ -25,6 +25,7 @@ TravMusCal2Ana::TravMusCal2Ana()
     ,   travMusArray(nullptr)
     ,   anaArray(new std::vector<TravMusAnaItem>)
 {
+    exp_config = TExperimentConfiguration::GetInstance();
     frs_config = TFrsConfiguration::GetInstance();
     music = frs_config->MUSIC();
 }
@@ -37,6 +38,7 @@ TravMusCal2Ana::TravMusCal2Ana(const TString& name, Int_t verbose)
     ,   travMusArray(nullptr)
     ,   anaArray(new std::vector<TravMusAnaItem>)
 {
+    exp_config = TExperimentConfiguration::GetInstance();
     frs_config = TFrsConfiguration::GetInstance();
     music = frs_config->MUSIC();
 }
@@ -74,6 +76,8 @@ void TravMusCal2Ana::Exec(Option_t* option)
     for (int i = 0; i < 8; i++) travmusic_t[i] = travMusicItem.Get_music_time(i);
     for (int i = 0; i < 8; i++) travmusic_e[i] = travMusicItem.Get_music_energy(i);
 
+    uint64_t TM_time_mins = (wr_travmus - exp_config->exp_start_time)/ 60E9;
+
     travmusic_anodes_cnt = 0;
 
     for (int i = 0; i < 8; i++)
@@ -108,6 +112,7 @@ void TravMusCal2Ana::Exec(Option_t* option)
         b_de_travmus = kTRUE;
     }
     
+    // ::: dE corr, maybe makes sense when we have an S1 scintillator :::
     // b_tpc_xy = tpcCalItem.Get_b_tpc_xy();
 
     // if (b_tpc_xy[4] && b_tpc_xy[5]) // needs changing with S1 scintillator
@@ -132,7 +137,6 @@ void TravMusCal2Ana::Exec(Option_t* option)
     //     }
     // }
 
-    // doesn't make sense without a real tof/beta
     // if ((de_travmus > 0.0) && (id_beta > 0.0) && (id_beta < 1.0))
     // {
     //     power = 1.;
@@ -155,64 +159,52 @@ void TravMusCal2Ana::Exec(Option_t* option)
     //     }
     // }
     
-    // mhtdc stuff?
+ 
+    if (frs_config->TravMusDriftLoaded())
+    {
+        de_travmus_driftcorr = 0;
+        double drift_tm = 0.0;
+        double drift_tm_error = 0.0;
+        int nentry = 0;
+        int travmus_wr_time_a = 0; 
+        int travmus_wr_time_b = 0;
+        double reference_value = 1956.62;   //!!!! read from file
+        int bin = 20;                       //!!!! read from file
 
+        std::map<int,std::pair<double,double>> travmus_drift = frs_config->TravMusDriftCoefficients();
 
-    // if (frs_config->TravMusDriftLoaded())
-    // {
-    //     de_travmus_driftcorr = 0;
-    //     double drift_tm = 0.0;
-    //     double drift_tm_error = 0.0;
-    //     int nentry = 0;
-    //     int travmus_wr_time_a = 0; 
-    //     int travmus_wr_time_b = 0;
-    //     double reference_value = 1956.62;   //!!!! read from file
-    //     int bin = 20;                       //!!!! read from file
+        for (const auto& entry : travmus_drift)
+        {
+            int travmus_wr_time = entry.first;
+            std::pair<double,double> coeffs = entry.second;
+            drift_tm = coeffs.first;
+            drift_tm_error = coeffs.second;
 
-    //     std::map<int,std::pair<double,double>> travmus_drift = frs_config->TravMusDriftCoefficients();
-    //     //std::cout << "::::  TM :::: " << "\n";
-    //     for (const auto& entry : travmus_drift)
-    //     {
-    //         // std::cout << "Key (travmus_wr_time): " << entry.first 
-    //         //   << ", Value (coeffs): (" << entry.second.first 
-    //         //   << ", " << entry.second.second << ")\n";
+            // if (nentry == 0)
+            // {
+            //     travmus_wr_time_a = travmus_wr_time;
+            //     //reference_value = drift_tm;
+            // }
+            // else if (nentry == 1)
+            // {
+            //     travmus_wr_time_b = travmus_wr_time;
+            //     //bin = travmus_wr_time_b - travmus_wr_time_a;
+            // }
+
+            double tm_shift = drift_tm - reference_value;
             
-    //         int travmus_wr_time = entry.first;
-    //         std::pair<double,double> coeffs = entry.second;
-    //         drift_tm = coeffs.first;
-    //         drift_tm_error = coeffs.second;
-
-    //         // if (nentry == 0)
-    //         // {
-    //         //     travmus_wr_time_a = travmus_wr_time;
-    //         //     //reference_value = drift_tm;
-    //         // }
-    //         // else if (nentry == 1)
-    //         // {
-    //         //     travmus_wr_time_b = travmus_wr_time;
-    //         //     //bin = travmus_wr_time_b - travmus_wr_time_a;
-    //         // }
-
-    //         double tm_shift = drift_tm - reference_value;
+            if ((TM_time_mins >= (travmus_wr_time - bin/2)) && (TM_time_mins < (travmus_wr_time + bin/2)))
+            {
+                de_travmus_driftcorr = de_travmus - tm_shift;
+            }
             
-    //         //std::cout << "bin : " << bin << "\n";
-    //         //std::cout << "drift travMus : " << drift_tm << " reference value : " << reference_value << "\n";
+            nentry++;
+        }
 
-    //         //std::cout << "min limit : " << (travmus_wr_time - bin/2) << " max limit : " << (travmus_wr_time + bin/2) << "\n";
-    //         if ((FRS_TM_time_mins >= (travmus_wr_time - bin/2)) && (FRS_TM_time_mins < (travmus_wr_time + bin/2)))
-    //         {
-    //             de_travmus_driftcorr = de_travmus - tm_shift;
-    //             // std::cout  << " reference :" << reference_value
-    //             //     << " drift (1 coeff) :" << drift_tm 
-    //             //     << " shift :" << tm_shift 
-    //             //     << " TM dE original : " << de_travmus
-    //             //     << " TM dE corr : " << de_travmus_driftcorr << "\n";
-    //         }
-            
-    //         nentry ++ ;
-    //     }
+    }
 
-    // }
+    auto & entry = anaArray->emplace_back();
+    entry.SetAll(wr_travmus, de_travmus, de_travmus_driftcorr);
     
     fNEvents++;
 

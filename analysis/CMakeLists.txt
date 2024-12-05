@@ -105,6 +105,7 @@ set(SRCS
 #./correlations/FrsBplastCorrelations.cxx
 ./online/onlineCorrelations/LisaFrsCorrelationsOnline.cxx
 ./correlations/LisaFrsCorrelations.cxx
+./correlations/FrsTravMusCorrelations.cxx
 
 )
 
