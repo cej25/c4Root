@@ -1,10 +1,12 @@
 #ifndef TravMusCal2Ana_H
 #define TravMusCal2Ana_H
 
+#include "TFrsConfiguration.h"
+#include "TExperimentConfiguration.h"
+
 #include <vector>
 #include "TravMusCalData.h"
 #include "TravMusAnaData.h"
-#include "TFrsConfiguration.h"
 #include "TFRSParameter.h"
 
 class EventHeader;
@@ -35,6 +37,7 @@ class TravMusCal2Ana : public FairTask
 
     private:
         TFrsConfiguration const* frs_config;
+        TExperimentConfiguration const* exp_config;
         TMUSICParameter* music;
 
         Bool_t fOnline;
@@ -49,6 +52,7 @@ class TravMusCal2Ana : public FairTask
         
         Float_t de_travmus;
         Float_t de_cor_travmus;
+        Float_t de_travmus_driftcorr;
         Bool_t b_de_travmus;
         Int_t travmusic_anodes_cnt;
         Bool_t travmusic_b_e[8] = {0};

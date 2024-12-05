@@ -9,6 +9,8 @@
 #include "FairTask.h"
 #include "TH1.h"
 #include "TDirectory.h"
+#include "TLine.h"
+#include "TText.h"
 #include <vector>
 
 class TExperimentConfiguration;
@@ -57,6 +59,7 @@ class TravMusNearlineSpectra : public FairTask
         // TDirectory* dir_travmus_tac;
         // TDirectory* dir_travmus_mhtdc;
         TDirectory* dir_raw_adc;
+        TDirectory* dir_drifts;
         TDirectory* dir_raw_adc_drift;
 
         // Canvas
@@ -64,9 +67,10 @@ class TravMusNearlineSpectra : public FairTask
         TCanvas* c_raw_adc_drift;
 
         // Histograms
-        TH1I* h1_travmus_raw_adc[8];
-        // TH2* h2_Ztrav_vs_T;
+        TH1* h1_travmus_raw_adc[8];
+        //TH2* h2_Ztrav_vs_T;
         TH2* h2_travmus_vs_Z;
+
 
         TH1* h1_Z_travmus;
 
@@ -78,6 +82,16 @@ class TravMusNearlineSpectra : public FairTask
         // moved from FRS, LISA branch
         TH1* h1_travmus_dE;
         TH1* h1_travmus_dE_driftcorr;
+        TH2* h2_TravMus_vs_T;
+        TH2* h2_TravMus_driftcorr_vs_T;
+
+        TLine* hline;
+        TLine* left_bar;
+        TLine* right_bar;
+        TText* run_number_text;
+
+        double frs_time_min;
+        double frs_time_max;
 
     public:
         ClassDef(TravMusNearlineSpectra, 1)

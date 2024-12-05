@@ -18,7 +18,7 @@
 #include "FairRunOnline.h"
 #include "FairTask.h"
 
-#include "LisaFrsCorrelationsOnline.h"
+#include "FrsTravMusCorrelationsOnline.h"
 #include "FrsHitData.h"
 #include "TravMusCalData.h"
 #include "LisaCalData.h"
@@ -28,19 +28,19 @@
 #include "THttpServer.h"
 #include "TCanvas.h"
 
-LisaFrsCorrelationsOnline::LisaFrsCorrelationsOnline() 
-    : LisaFrsCorrelationsOnline("LisaFrsCorrelationsOnline")
+FrsTravMusCorrelationsOnline::FrsTravMusCorrelationsOnline() 
+    : FrsTravMusCorrelationsOnline("FrsTravMusCorrelationsOnline")
 {
 
 }
 
-LisaFrsCorrelationsOnline::LisaFrsCorrelationsOnline(std::vector<FrsGate*> fg)
-    : LisaFrsCorrelationsOnline("LisaFrsCorrelationsOnline")
+FrsTravMusCorrelationsOnline::FrsTravMusCorrelationsOnline(std::vector<FrsGate*> fg)
+    : FrsTravMusCorrelationsOnline("FrsTravMusCorrelationsOnline")
 {
 
 }
 
-LisaFrsCorrelationsOnline::LisaFrsCorrelationsOnline(const TString& name, Int_t verbose)
+FrsTravMusCorrelationsOnline::FrsTravMusCorrelationsOnline(const TString& name, Int_t verbose)
     :   FairTask(name, verbose)
     ,   header(nullptr)
     ,   lisaCalArray(nullptr)
@@ -53,12 +53,12 @@ LisaFrsCorrelationsOnline::LisaFrsCorrelationsOnline(const TString& name, Int_t 
     frs_config = TFrsConfiguration::GetInstance();
 }
 
-LisaFrsCorrelationsOnline::~LisaFrsCorrelationsOnline()
+FrsTravMusCorrelationsOnline::~FrsTravMusCorrelationsOnline()
 {
-    c4LOG(info, "Destroyed LisaFrsCorrelationsOnlineProperly.");
+    c4LOG(info, "Destroyed FrsTravMusCorrelationsOnlineProperly.");
 }
 
-InitStatus LisaFrsCorrelationsOnline::Init()
+InitStatus FrsTravMusCorrelationsOnline::Init()
 {
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
@@ -96,9 +96,9 @@ InitStatus LisaFrsCorrelationsOnline::Init()
         histograms->Add(dir_corr);
     }
 
-    dir_lisa_frs = dir_corr->mkdir("LISA-FRS Correlations");
+    dir_frs_travmus = dir_corr->mkdir("FRS-TravMus Correlations");
     
-    dir_lisa_frs->cd();
+    dir_frs_travmus->cd();
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::::::::: WR Time differences ::::::::::::::::::::::
     c_wr_diff = new TCanvas("c_wr_diff", "WR Time Differences", 650, 350);
@@ -209,7 +209,6 @@ InitStatus LisaFrsCorrelationsOnline::Init()
         h2_travMUSIC_layer[i]->Draw("colz");
     }
     c_travMUSIC_layer->cd(0);
-    dir_lisa_frs->Append(c_travMUSIC_layer);
  
 
     run->GetHttpServer()->RegisterCommand("Reset_LisaFRS_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
@@ -218,127 +217,55 @@ InitStatus LisaFrsCorrelationsOnline::Init()
 }
 
 
-void LisaFrsCorrelationsOnline::Reset_Histo()
+void FrsTravMusCorrelationsOnline::Reset_Histo()
 {
     c4LOG(info, "");
 }
 
 
-void LisaFrsCorrelationsOnline::Exec(Option_t* option)
+void FrsTravMusCorrelationsOnline::Exec(Option_t* option)
 {   
-    // reject events without both subsystems
     if (travMusAnaArray->size() <= 0 || frsHitArray->size() <= 0) return; //frs and trav music are there
-    //if (lisaCalArray->size() <= 0 ) return; //for when travmusic is there but not frs
 
     const auto & frsHitItem = frsHitArray->at(0); // *should* only be 1 FRS subevent per event
     const auto & travMusicHitItem = travMusAnaArray->at(0); 
 
-    // FRS WR
-    Int_t count_wr = 0;
 
-    //wr_travMUSIC = frsHitItem.Get_wr_travmus();
     wr_FRS = frsHitItem.Get_wr_t();
     wr_travMUSIC = travMusicHitItem.Get_wr_t();
 
     //S2 Position x-y
     s2_x = frsHitItem.Get_ID_x2();
     s2_y = frsHitItem.Get_ID_y2();
-    //c4LOG(info, "s2 x : " << s2_x << "s2 y : " << s2_y);
-
-    // Energy from frs
-    std::vector<uint32_t> sum_energy_layer;
-    sum_energy_layer.resize(layer_number);
-    //c4LOG(info, "s2 x : " << s2_x << "s2 y : " << s2_y);
 
     energy_MUSIC_1 = frsHitItem.Get_music_dE(0); 
     energy_MUSIC_2 = frsHitItem.Get_music_dE(1);
     energy_travMUSIC = travMusicHitItem.Get_travmusic_dE();
-    //c4LOG(info, "travMUS en : " << energy_travMUSIC << " music 1 : " << energy_MUSIC_1 << " sum energy 1 : " << sum_energy_layer[1]);
 
 
-    // correlation with main FRS (10, 20, 30, 15)
-    for (const auto & lisaCalItem : *lisaCalArray)
-    {        
-        //::::::: Retrieve Data ::::::::::::::
-
-        //:::: White Rabbit
-        if (count_wr == 0)
-        {
-            wr_LISA = lisaCalItem.Get_wr_t();
-        }
-        count_wr++;
-        if (wr_LISA == 0)return;
-
-        //::::Position
-        int xpos = lisaCalItem.Get_xposition();
-        int ypos = lisaCalItem.Get_yposition();
-
-        //:::::::::::::: FRS - LISA position ::::::::::::::::::::::::::
-        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::   
-        
-        if (layer == 1)
-        {
-        h2_xy_pos_layer1[0]->Fill(xpos,s2_x);
-        h2_xy_pos_layer1[1]->Fill(ypos,s2_y);
-        }
-
-        if (layer == 2)
-        {
-        h2_xy_pos_layer2[0]->Fill(xpos,s2_x);
-        h2_xy_pos_layer2[1]->Fill(ypos,s2_y);
-        }
-        
-
-        //:::: Energies
-        uint32_t energy_LISA = lisaCalItem.Get_energy();
-        layer = lisaCalItem.Get_layer_id();
-        sum_energy_layer[layer] += energy_LISA;
-
-    }
-    
-    //:::::::::::::: WR Time differences ::::::::::::::::::::::::::
-    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    wr_LISA_FRS = wr_LISA - wr_FRS;
-    wr_LISA_travMUSIC = wr_LISA - wr_travMUSIC;
     wr_travMUSIC_FRS = wr_travMUSIC - wr_FRS;
 
-    h1_wr_diff[2]->Fill(wr_travMUSIC_FRS);
+    h1_wr_diff->Fill(wr_travMUSIC_FRS);
 
+
+    // this is a correlation, also need Sci S1 
+    // if (trav_mus_wr > 0 && hitItem.Get_ID_z() > 0 && hitItem.Get_ID_z_travmus() > 0) h2_travmus_vs_Z->Fill(hitItem.Get_ID_z_travmus(), hitItem.Get_ID_z());
     
-    //c4LOG(info, "travMUS en : " << energy_travMUSIC << " music 1 : " << energy_MUSIC_1 << " sum energy 1 : " << sum_energy_layer[1]);
-    if(wr_travMUSIC == 0) return;
-    h1_wr_diff[1]->Fill(wr_LISA_travMUSIC);
-
-    if (wr_FRS != 0 && wr_LISA != 0) h1_wr_diff[0]->Fill(wr_LISA_FRS);
-
-
-    //:::::::::::::: ENERGY correlation ::::::::::::::::::::::::::
-    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    for (int i = 0; i < layer_number; i++)
-    {
-        //MUSIC 1
-        h2_MUSIC_1_layer[i]->Fill(sum_energy_layer[i],energy_MUSIC_1);
-        //MUSIC 2
-        h2_MUSIC_2_layer[i]->Fill(sum_energy_layer[i],energy_MUSIC_2);
-        //travMUSIC
-        h2_travMUSIC_layer[i]->Fill(sum_energy_layer[i],energy_travMUSIC);
-        
-    }
 
 
     fNEvents++;
 
 }
 
-void LisaFrsCorrelationsOnline::FinishEvent()
+void FrsTravMusCorrelationsOnline::FinishEvent()
 {
 
 }
 
-void LisaFrsCorrelationsOnline::FinishTask()
+void FrsTravMusCorrelationsOnline::FinishTask()
 {
 
 }
 
 
-ClassImp(LisaFrsCorrelationsOnline)
+ClassImp(FrsTravMusCorrelationsOnline)

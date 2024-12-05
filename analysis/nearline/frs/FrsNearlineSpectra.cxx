@@ -464,12 +464,8 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     if (hitArray->size() <= 0) return;
 
     Long64_t FRS_time_mins = 0;
-    Long64_t FRS_TM_time_mins = 0;
     auto const & hitItem = hitArray->at(0); // should only be size=1! check
     if(hitItem.Get_wr_t() > 0) FRS_time_mins = (hitItem.Get_wr_t() - exp_config->exp_start_time)/ 60E9;
-    if(hitItem.Get_wr_t() > 0) FRS_time_mins = (hitItem.Get_wr_t() - exp_config->exp_start_time)/ 60E9;
-
-
 
     // Get the minimum and maximum FRS_time_mins
     if (FRS_time_mins > 0) {
@@ -478,8 +474,6 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     }
 
     //c4LOG(info, "frs_time_min : " << frs_time_min << " frs_time_max : " <<  frs_time_max);
-
-    
 
     // :::::::::: TAC ::::::::::::: //
     // ---------------------------- //
