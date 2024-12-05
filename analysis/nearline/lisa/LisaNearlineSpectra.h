@@ -100,20 +100,6 @@ class LisaNearlineSpectra : public FairTask
 
         int64_t prev_wr = 0;
         int64_t wr_diff;
-
-        // ::: Canvas
-        TCanvas* c_hitpattern_layer;
-        TCanvas* c_multiplicity_layer;
-        TCanvas* c_hitpattern_grid;
-        TCanvas* c_pileup_grid;
-        TCanvas* c_overflow_grid;
-        TCanvas* c_energy_layer1_vs_layer2;
-        TCanvas* c_energy_layer1_vs_layer2_GM;
-        TCanvas* c_energy_layer_vs_time;
-        std::vector<TCanvas*> c_energy_layer_ch;
-        std::vector<TCanvas*> c_energy_ch_vs_time;
-        std::vector<TCanvas*> c_traces_layer_ch;
-        std::vector<TCanvas*> c_traces_layer_ch_stat;
     
         // ::: Histograms
         // stats
