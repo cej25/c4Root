@@ -1,0 +1,7 @@
+# Window Conditon for Scintillator ToFs
+# Low Limit           High Limit
+    30000		0
+    30000		4096
+    40000		4096
+    40000		0
+    30000		0

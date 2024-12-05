@@ -1,4 +1,3 @@
-*.root
 *core_dump*
 *.nfs*
 *.o

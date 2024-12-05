@@ -12,7 +12,9 @@
 #include "TPad.h"
 #include "TH2I.h"
 #include "TGraph.h"
+#include "TString.h"
 
+//Debugging. Replaced std::string with TString nov24
 
 class LisaCalItem;
 class TLisaConfiguration;
@@ -61,7 +63,7 @@ class LisaOnlineSpectra : public FairTask
         int xmax;
         int ymax;
         int num_layers;
-        std::string city = "";
+        TString city = "";
         
 
         EventHeader* header;

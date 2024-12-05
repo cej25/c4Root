@@ -48,7 +48,7 @@ void jikken_make_trees_elisa()
 
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/jikken_trees_c4/";
-    TString outputFilename = outputpath + "run23_0001.root";
+    TString outputFilename = outputpath + "run23_0001_c4.root";
      
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();

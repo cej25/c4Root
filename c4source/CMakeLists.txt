@@ -33,6 +33,8 @@ ${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
 ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
 ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 ${C4ROOT_SOURCE_DIR}/c4data/fimpData
+${C4ROOT_SOURCE_DIR}/c4data/travMusData
+${C4ROOT_SOURCE_DIR}/c4data/baseData
 )
 
 set(LINK_DIRECTORIES
@@ -59,16 +61,18 @@ set(SRCS
 ./frs/FrsUserReader.cxx
 ./frs/FrsVFTXReader.cxx
 ./frs/FrsTpatReader.cxx
-./frs/FrsTravMusReader.cxx
 ./frs/FrsMainRaw2Cal.cxx
 ./frs/FrsTPCRaw2Cal.cxx
 ./frs/FrsUserRaw2Cal.cxx
 ./frs/FrsVFTXRaw2Cal.cxx
-./frs/FrsTravMusRaw2Cal.cxx
 ./frs/FrsCal2Hit.cxx
+./travMus/TravMusReader.cxx
+./travMus/TravMusRaw2Cal.cxx
+./travMus/TravMusCal2Ana.cxx
 ./germanium/GermaniumReader.cxx
 ./lisa/LisaReader.cxx
 ./lisa/LisaRaw2Cal.cxx
+#./lisa/LisaRaw2Ana.cxx
 ./bplast/bPlastReader.cxx
 ./bplast/bPlastRaw2Cal.cxx
 ./beammonitor/BeamMonitorReader.cxx
@@ -95,7 +99,7 @@ Set(STRUCT_HEADERS
 ./frs/ext_h101_frsuser.h
 ./frs/ext_h101_frsvftx.h
 ./frs/ext_h101_frstpat.h
-./frs/ext_h101_travmus.h
+./travMus/ext_h101_travmus.h
 ./lisa/ext_h101_lisa.h
 ./germanium/ext_h101_germanium.h
 ./bplast/ext_h101_bplast.h

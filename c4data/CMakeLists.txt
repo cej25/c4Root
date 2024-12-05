@@ -15,6 +15,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
 ${C4ROOT_SOURCE_DIR}/c4data/baseData
 ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 ${C4ROOT_SOURCE_DIR}/c4data/fimpData
+${C4ROOT_SOURCE_DIR}/c4data/travMusData
 ${C4ROOT_SOURCE_DIR}/c4source
 ${C4ROOT_SOURCE_DIR}/c4source/frs
 )
@@ -32,15 +33,17 @@ frsData/FrsTPCData.cxx
 frsData/FrsUserData.cxx
 frsData/FrsVFTXData.cxx
 frsData/FrsTpatData.cxx
-frsData/FrsTravMusData.cxx
 frsData/FrsMainCalData.cxx
 frsData/FrsTPCCalData.cxx
 frsData/FrsUserCalData.cxx
 frsData/FrsVFTXCalData.cxx
-frsData/FrsTravMusCalData.cxx
 frsData/FrsHitData.cxx
+travMusData/TravMusData.cxx
+travMusData/TravMusCalData.cxx
+travMusData/TravMusAnaData.cxx
 lisaData/LisaData.cxx
 lisaData/LisaCalData.cxx
+#lisaData/LisaAnaData.cxx
 lisaData/LisaTraceData.cxx
 aidaData/AidaData.cxx
 aidaData/AidaCalData.cxx

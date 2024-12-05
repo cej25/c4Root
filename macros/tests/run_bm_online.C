@@ -19,17 +19,17 @@ void run_bm_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fEx
 
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
-        TString filename = "trans://R4L-21";
-    //TString filename = "~/lustre/gamma/beam_monitor_2021/s496_00**.lmd";
-    TString outputpath = "run_online_bm_test";
-    TString outputFileName = outputpath + ".root";
+    TString filename = "trans://R4L-36";
+    //TString filename = "~/lustre/despec/beam_mon_2024/beam_mon_test_x7.lmd";
+    // TString outputpath = "run_online_bm_test";
+    // TString outputFileName = outputpath + ".root";
 
     Int_t refresh = 1; // Refresh rate for online histograms
     Int_t port = 6001;
      
     TString ntuple_options = "UNPACK";
    //TString ucesb_dir = getenv("UCESB_DIR"); // .bashrc
-    TString ucesb_dir = "/u/despec/s100_online/c4Root/unpack/exps";
+    TString ucesb_dir = "/u/cjones/c4Root/unpack/exps";
     TString ucesb_path = ucesb_dir + "/beammonitor/beammonitor --allow-errors --input-buffer=200Mi";
     ucesb_path.ReplaceAll("//","/");
 
@@ -39,7 +39,7 @@ void run_bm_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fEx
     EvtHead->Register(false);
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
-    run->SetSink(new FairRootFileSink(outputFileName));
+    //run->SetSink(new FairRootFileSink(outputFileName));
     run->ActivateHttpServer(refresh, port);
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histograms Folder", histograms, false);
@@ -89,7 +89,7 @@ void run_bm_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fEx
     cout << "CPU used: " << cpuUsage << endl;
     std::cout << std::endl << std::endl;
     std::cout << "Macro finished successfully." << std::endl;
-    std::cout << "Output file is " << outputFileName << std::endl;
+    // std::cout << "Output file is " << outputFileName << std::endl;
     std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl << std::endl;
    // gApplication->Terminate(0);
 }

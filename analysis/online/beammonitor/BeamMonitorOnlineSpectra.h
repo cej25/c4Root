@@ -8,8 +8,10 @@
 #include "TDirectory.h"
 #include "TH1F.h"
 #include "TH2F.h"
+#include <vector>
 
 class TClonesArray;
+class BeamMonitorItem;
 class EventHeader;
 class TDirectory;
 class TFolder;
@@ -27,8 +29,6 @@ class BeamMonitorOnlineSpectra : public FairTask
 
         virtual ~BeamMonitorOnlineSpectra();
 
-        virtual void SetParContainers();
-
         virtual InitStatus Init();
 
         virtual void Exec(Option_t* option);
@@ -45,7 +45,8 @@ class BeamMonitorOnlineSpectra : public FairTask
 
     
     private:
-        TClonesArray* fHitBM;
+        std::vector<BeamMonitorItem> const* s2HitsBM;
+        std::vector<BeamMonitorItem> const* s4HitsBM;
 
         EventHeader* header;
         Int_t fNEvents;

@@ -13,6 +13,9 @@
 #include "TDirectory.h"
 #include "TFile.h"
 #include "FrsGate.h"
+#include "TLine.h"
+#include "TText.h"
+#include "TCanvas.h"
 
 class TFrsConfiguration;
 class TExperimentConfiguration;
@@ -70,14 +73,11 @@ class FrsNearlineSpectra : public FairTask
         // folders
         bool found_dir_frs = true;
         TDirectory* dir_frs; // for now fine, maybe needs to be...overarching branch? dunno
-        TDirectory* dir_travmus;
         TDirectory* dir_scalers;
         TDirectory* dir_rates;
         TDirectory* dir_drifts;
         TDirectory* dir_tac;
         TDirectory* dir_mhtdc;
-        TDirectory* dir_travmus_tac;
-        TDirectory* dir_travmus_mhtdc;
         TDirectory* dir_tac_1d;
         TDirectory* dir_tac_2d;
         TDirectory* dir_gated_tac;
@@ -94,13 +94,16 @@ class FrsNearlineSpectra : public FairTask
         TDirectory* dir_x2vsAoQ_mhtdc; 
         TDirectory* dir_x4vsAoQ_mhtdc;
         TDirectory* dir_dEdegvsZ_mhtdc;
+
+        //canvases
+        TCanvas* c_TravMus_drift;
     
         // Histograms
         // TAC 2D + Gated
         TH2* h2_Z_vs_AoQ;
+        TH2* h2_Z_vs_AoQ_driftcorr;
         TH2* h2_Z_vs_AoQ_corr;
         TH2* h2_Z_vs_Z2;
-        TH2* h2_travmus_vs_Z;
         TH2* h2_Z_vs_AoQ_Zsame;
         TH2* h2_x4_vs_AoQ_Zsame;
         TH2* h2_x2_vs_AoQ_Zsame;
@@ -116,7 +119,7 @@ class FrsNearlineSpectra : public FairTask
         TH2* h2_SC42dE_vs_AoQ;
         TH2* h2_SC41dE_vs_Z;
         TH2* h2_SC42dE_vs_Z;
-        TH2* h2_dE_vs_ToF;
+        TH2* h2_dE_vs_ToF_21_41;
         TH2* h2_x2_vs_Z;
         TH2* h2_x4_vs_Z;
         TH2* h2_dE1_vs_x2;
@@ -157,13 +160,15 @@ class FrsNearlineSpectra : public FairTask
         std::vector<TH2*> h2_x2_vs_AoQ_dEdegZgate;
         std::vector<TH2*> h2_x4_vs_AoQ_dEdegZgate;
         std::vector<TH2*> h2_Z_vs_AoQ_Zsame_dEdegZgate; // 
+        
 
         // TAC 1D // :: Should add gated a2/a4 here if they're really desired
         TH1* h1_tpat;
         TH1* h1_Z;
+        TH1* h1_Z_driftcorr;
         TH1* h1_Z2;
-        TH1* h1_Z_travmus;
         TH1* h1_AoQ;
+        TH1* h1_AoQ_driftcorr;
         TH1* h1_AoQ_corr;
         TH1* h1_x2;
         TH1* h1_x4;
@@ -179,21 +184,50 @@ class FrsNearlineSpectra : public FairTask
         TH1* h1_rho[2];
         TH1* h1_brho[2];
         TH1* h1_music_dE[2];
-        TH1* h1_travmus_dE;
         TH1* h1_music_dEcorr[2];
-        TH1* h1_sci_e[6];
-        TH1* h1_sci_l[6];
-        TH1* h1_sci_r[6];
-        TH1* h1_sci_x[6];
-        TH1* h1_sci_tof[6];
-        TH1* h1_sci_tof_calib[6];
-
-
+        TH1* h1_sci_21l;
+        TH1* h1_sci_21r;
+        TH1* h1_sci_22l;
+        TH1* h1_sci_22r;
+        TH1* h1_sci_31l;
+        TH1* h1_sci_31r;
+        TH1* h1_sci_41l;
+        TH1* h1_sci_41r;
+        TH1* h1_sci_42l;
+        TH1* h1_sci_42r;
+        TH1* h1_sci_43l;
+        TH1* h1_sci_43r;
+        TH1* h1_sci_81l;
+        TH1* h1_sci_81r;
+        TH1* h1_sci_e_21;
+        TH1* h1_sci_e_22;
+        TH1* h1_sci_e_31;
+        TH1* h1_sci_e_41;
+        TH1* h1_sci_e_42;
+        TH1* h1_sci_e_43;
+        TH1* h1_sci_e_81;
+        TH1* h1_sci_x_21;
+        TH1* h1_sci_x_22;
+        TH1* h1_sci_x_31;
+        TH1* h1_sci_x_41;
+        TH1* h1_sci_x_42;
+        TH1* h1_sci_x_43;
+        TH1* h1_sci_x_81;
+        TH1* h1_sci_tof_21_41;
+        TH1* h1_sci_tof_21_41_calib;
+        TH1* h1_sci_tof_21_42;
+        TH1* h1_sci_tof_21_42_calib;
+        TH1* h1_sci_tof_21_81;
+        TH1* h1_sci_tof_21_81_calib;
+        TH1* h1_sci_tof_22_41;
+        TH1* h1_sci_tof_22_41_calib;
+        TH1* h1_sci_tof_22_81;
+        TH1* h1_sci_tof_22_81_calib;
+    
         // MHTDC 2D
         TH2* h2_Z_vs_AoQ_mhtdc;
         TH2* h2_Z_vs_AoQ_corr_mhtdc;
         TH2* h2_Z_vs_Z2_mhtdc;
-        TH2* h2_travmus_vs_Z_mhtdc;
         TH2* h2_Z_vs_AoQ_Zsame_mhtdc;
         TH2* h2_x4_vs_AoQ_Zsame_mhtdc;
         TH2* h2_x2_vs_AoQ_Zsame_mhtdc;
@@ -249,6 +283,8 @@ class FrsNearlineSpectra : public FairTask
         std::vector<TH2*> h2_Z_vs_AoQ_Zsame_dEdegZgate_mhtdc; // 
         // not a PID gate but an energy gate on trav Z
         TH2* h2_Z_vs_AoQ_mhtdc_trav_gate;
+        TH2* h2_Z_vs_AoQ_tac_trav_gate_driftcorr;
+        TH2* h2_Z_vs_AoQ_driftcorr_trav_gate;
 
 
         // MHTDC 1D
@@ -257,17 +293,34 @@ class FrsNearlineSpectra : public FairTask
         TH1* h1_AoQ_corr_mhtdc;
         TH1* h1_z_mhtdc;
         TH1* h1_z2_mhtdc;
-        TH1* h1_z_travmus_mhtdc;
         TH1* h1_dEdeg_mhtdc;
         TH1* h1_dEdegoQ_mhtdc;
 
         // Drifts
         TH2* h2_Z1_vs_T;
+        TH2* h2_Z1_driftcorr_vs_T;
         TH2* h2_AoQ_vs_T;
+        TH2* h2_AoQ_driftcorr_vs_T;
         TH2* h2_Z1_vs_T_mhtdc;
         TH2* h2_AoQ_vs_T_mhtdc;
-        TH2* h2_sci_tof_vs_T[6];
+        TH2* h2_sci_tof_21_41_vs_T;
+        TH2* h2_sci_tof_21_42_vs_T;
+        TH2* h2_sci_tof_21_81_vs_T;
+        TH2* h2_sci_tof_22_41_vs_T;
+        TH2* h2_sci_tof_22_81_vs_T;
         TH2* h2_tpc_vs_T[6];
+        TH2D* h2_TravMus_vs_T;
+        TH2D* h2_TravMus_driftcorr_vs_T;
+
+        // Lines and Text
+        TLine* hline;
+        TLine* left_bar;
+        TLine* right_bar;
+        TText* run_number_text;
+
+        double frs_time_min;
+        double frs_time_max;
+        
 
         // Scalers
         char scaler_name[66][256]; // don't need perhaps

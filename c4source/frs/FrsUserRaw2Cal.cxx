@@ -29,6 +29,7 @@ FrsUserRaw2Cal::FrsUserRaw2Cal()
     ,   sciArray(new std::vector<FrsUserCalSciItem>)
     ,   musicArray(new std::vector<FrsUserCalMusicItem>)
 {
+    frs_config = TFrsConfiguration::GetInstance();
 }
 
 FrsUserRaw2Cal::FrsUserRaw2Cal(const TString& name, Int_t verbose)
@@ -42,6 +43,7 @@ FrsUserRaw2Cal::FrsUserRaw2Cal(const TString& name, Int_t verbose)
     ,   sciArray(new std::vector<FrsUserCalSciItem>)
     ,   musicArray(new std::vector<FrsUserCalMusicItem>)
 {
+    frs_config = TFrsConfiguration::GetInstance();
 }
 
 FrsUserRaw2Cal::~FrsUserRaw2Cal()
@@ -106,77 +108,52 @@ void FrsUserRaw2Cal::Exec(Option_t* option)
         uint32_t data = v7x5item.Get_v7x5_data();
         uint32_t geo = v7x5item.Get_geo();
 
-        switch (channel)
+        if (geo == frs_config->Get_sci_dT_geo())
         {
-            case 0:
-                if (geo == 12) dt_array[0] = data; // dt_21l_21r
-                if (geo == 10) music_e1[0] = data;
-                break;
-            case 1:
-                if (geo == 12) dt_array[1] = data; // dt_41l_41r
-                if (geo == 10) music_e1[1] = data;
-                break;
-            case 2:
-                if (geo == 12) dt_array[2] = data; // dt_42l_42r
-                if (geo == 10) music_e1[2] = data;
-                break;
-            case 3:
-                if (geo == 12) dt_array[3] = data; // dt_43l_43r
-                if (geo == 10) music_e1[3] = data;
-                break;
-            case 4:
-                if (geo == 12) dt_array[4] = data; // dt_81l_81r
-                if (geo == 10) music_e1[4] = data;
-                break;
-            case 5:
-                if (geo == 12) dt_array[5] = data; // dt_21l_41l
-                if (geo == 10) music_e1[5] = data;
-                break;
-            case 6:
-                if (geo == 12) dt_array[6] = data; // dt_21r_41r
-                if (geo == 10) music_e1[6] = data;
-                break;
-            case 7:
-                if (geo == 12) dt_array[7] = data; // dt_42r_21r
-                if (geo == 10) music_e1[7] = data;
-                break;
-            case 8:
-                if (geo == 12) dt_array[8] = data; // dt_42l_21l
-                if (geo == 10) music_e2[0] = data;
-                break;
-            case 9:
-                if (geo == 12) dt_array[9] = data; // dt_2l_81l
-                if (geo == 10) music_e2[1] = data;
-                break;
-            case 10:
-                if (geo == 12) dt_array[10] = data; // dt_21r_81r
-                if (geo == 10) music_e2[2] = data;
-                break;
-            case 11:
-                if (geo == 12) dt_array[11] = data; // dt_22l_22r
-                if (geo == 10) music_e2[3] = data;
-                break;
-            case 12:
-                if (geo == 12) dt_array[12] = data; // dt_22l_41l
-                if (geo == 10) music_e2[4] = data;
-                break;
-            case 13:
-                if (geo == 12) dt_array[13] = data; // dt_22r_41r
-                if (geo == 10) music_e2[5] = data;
-                break;
-            case 14:
-                if (geo == 12) dt_array[14] = data; // dt_22l_81l
-                if (geo == 10) music_e2[6] = data;
-                break;
-            case 15:
-                if (geo == 12) dt_array[15] = data; // dt_22r_81r
-                if (geo == 10) music_e2[7] = data;
-                break;
+            if (channel == frs_config->Get_dT_21l_21r_chan()) dt_21l_21r = data;
+            else if (channel == frs_config->Get_dT_41l_41r_chan()) dt_41l_41r = data;
+            else if (channel == frs_config->Get_dT_42l_42r_chan()) dt_42l_42r = data;
+            else if (channel == frs_config->Get_dT_43l_43r_chan()) dt_43l_43r = data;
+            else if (channel == frs_config->Get_dT_81l_81r_chan()) dt_81l_81r = data;
+            else if (channel == frs_config->Get_dT_21l_41l_chan()) dt_21l_41l = data;
+            else if (channel == frs_config->Get_dT_21r_41r_chan()) dt_21r_41r = data;
+            else if (channel == frs_config->Get_dT_42r_21r_chan()) dt_42r_21r = data;
+            else if (channel == frs_config->Get_dT_42l_21l_chan()) dt_42l_21l = data;
+            else if (channel == frs_config->Get_dT_21l_81l_chan()) dt_21l_81l = data;
+            else if (channel == frs_config->Get_dT_21r_81r_chan()) dt_21r_81r = data;
+            else if (channel == frs_config->Get_dT_22l_22r_chan()) dt_22l_22r = data;
+            else if (channel == frs_config->Get_dT_22l_41l_chan()) dt_22l_41l = data;
+            else if (channel == frs_config->Get_dT_22r_41r_chan()) dt_22r_41r = data;
+            else if (channel == frs_config->Get_dT_22l_81l_chan()) dt_22l_81l = data;
+            else if (channel == frs_config->Get_dT_22r_81r_chan()) dt_22r_81r = data;
         }
+        else if (geo == frs_config->Get_music_e_geo())
+        {   
+            // this works until the mapping becomes stupid
+            if (channel <= 7) music_e1[channel] = data;
+            else if (channel > 7 && channel <= 15) music_e2[channel - 8] = data;
+        }
+    
     }
 
     auto & sciEntry = sciArray->emplace_back();
     sciEntry.SetAll(dt_array);
+    sciEntry.Set_dT(dt_21l_21r,
+                    dt_41l_41r,
+                    dt_42l_42r,
+                    dt_43l_43r,
+                    dt_81l_81r,
+                    dt_21l_41l,
+                    dt_21r_41r,
+                    dt_42r_21r,
+                    dt_42l_21l,
+                    dt_21l_81l,
+                    dt_21r_81r,
+                    dt_22l_22r,
+                    dt_22l_41l,
+                    dt_22r_41r,
+                    dt_22l_81l,
+                    dt_22r_81r);
 
     auto & musicEntry = musicArray->emplace_back();
     musicEntry.SetAll(music_e1, music_e2);
@@ -200,6 +177,22 @@ void FrsUserRaw2Cal::FinishEvent()
 {   
     ZeroArrays();
     ClearVectors();
+    dt_21l_21r = 0;
+    dt_41l_41r = 0;
+    dt_42l_42r = 0;
+    dt_43l_43r = 0;
+    dt_81l_81r = 0;
+    dt_21l_41l = 0;
+    dt_21r_41r = 0;
+    dt_42r_21r = 0;
+    dt_42l_21l = 0;
+    dt_21l_81l = 0;
+    dt_21r_81r = 0;
+    dt_22l_22r = 0;
+    dt_22l_41l = 0;
+    dt_22r_41r = 0;
+    dt_22l_81l = 0;
+    dt_22r_81r = 0;   
 }
 
 void FrsUserRaw2Cal::FinishTask()

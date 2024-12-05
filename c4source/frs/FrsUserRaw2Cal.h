@@ -1,6 +1,7 @@
 #ifndef FrsUserRaw2Cal_H
 #define FrsUserRaw2Cal_H
 
+#include "TFrsConfiguration.h"
 #include "TFRSParameter.h"
 #include "FrsUserCalData.h"
 #include "FrsUserData.h"
@@ -31,6 +32,8 @@ class FrsUserRaw2Cal : public FairTask
         void SetOnline(Bool_t set_online) { fOnline = set_online; }
 
     private:
+        TFrsConfiguration const* frs_config;
+
         Bool_t fOnline;
 
         std::vector<FrsUserV830Item> const* v830array;
@@ -49,6 +52,23 @@ class FrsUserRaw2Cal : public FairTask
         uint32_t* dt_array;
         uint32_t* music_e1;
         uint32_t* music_e2;
+
+        uint32_t dt_21l_21r;
+        uint32_t dt_41l_41r;
+        uint32_t dt_42l_42r;
+        uint32_t dt_43l_43r;
+        uint32_t dt_81l_81r;
+        uint32_t dt_21l_41l;
+        uint32_t dt_21r_41r;
+        uint32_t dt_42r_21r;
+        uint32_t dt_42l_21l;
+        uint32_t dt_21l_81l;
+        uint32_t dt_21r_81r;
+        uint32_t dt_22l_22r;
+        uint32_t dt_22l_41l;
+        uint32_t dt_22r_41r;
+        uint32_t dt_22l_81l;
+        uint32_t dt_22r_81r;
 
     public:
         ClassDef(FrsUserRaw2Cal, 1);

@@ -33,12 +33,58 @@ class FrsMainCalSciItem : public TObject
     public:
         FrsMainCalSciItem();
 
-        void SetAll(uint32_t* de, uint32_t** tdc, int * mh_counter);
-        void SetdEArray(uint32_t *);
+        //void SetAll(uint32_t* de, uint32_t** tdc, int * mh_counter);
+        void SetAll(uint32_t de21l,
+                    uint32_t de21r,
+                    uint32_t de22l,
+                    uint32_t de22r,
+                    uint32_t de31l,
+                    uint32_t de31r,
+                    uint32_t de41l,
+                    uint32_t de41r,
+                    uint32_t de42l,
+                    uint32_t de42r,
+                    uint32_t de43l,
+                    uint32_t de43r,
+                    uint32_t de81l,
+                    uint32_t de81r,
+                    uint32_t** tdc,
+                    int* multi);
+        // void SetdEArray(uint32_t *);
+        void Set_dE(uint32_t de21l,
+                        uint32_t de21r,
+                        uint32_t de22l,
+                        uint32_t de22r,
+                        uint32_t de31l,
+                        uint32_t de31r,
+                        uint32_t de41l,
+                        uint32_t de41r,
+                        uint32_t de42l,
+                        uint32_t de42r,
+                        uint32_t de43l,
+                        uint32_t de43r,
+                        uint32_t de81l,
+                        uint32_t de81r);
 
         void Reset();
 
         uint32_t* Get_de_array() const;
+
+        uint32_t Get_dE_21l() const;
+        uint32_t Get_dE_21r() const;
+        uint32_t Get_dE_22l() const;
+        uint32_t Get_dE_22r() const;
+        uint32_t Get_dE_31l() const;
+        uint32_t Get_dE_31r() const;
+        uint32_t Get_dE_41l() const;
+        uint32_t Get_dE_41r() const;
+        uint32_t Get_dE_42l() const;
+        uint32_t Get_dE_42r() const;
+        uint32_t Get_dE_43l() const;
+        uint32_t Get_dE_43r() const;
+        uint32_t Get_dE_81l() const;
+        uint32_t Get_dE_81r() const;
+
         uint32_t** Get_tdc_array() const;
         int Get_tdc_array_hits(int channel) const; // index to mh_counter
 
@@ -111,6 +157,20 @@ class FrsMainCalSciItem : public TObject
 
         // lets try arrays in a vector lol - I like this -  JEL :)
         uint32_t* de_array; // [14];
+        uint32_t de_21l;
+        uint32_t de_21r;
+        uint32_t de_22l;
+        uint32_t de_22r;
+        uint32_t de_31l;
+        uint32_t de_31r;
+        uint32_t de_41l;
+        uint32_t de_41r;
+        uint32_t de_42l;
+        uint32_t de_42r;
+        uint32_t de_43l;
+        uint32_t de_43r;
+        uint32_t de_81l;
+        uint32_t de_81r;
         uint32_t** tdc_array; // [15][mh_counter[15]]
 
         int * mh_counter; // this is the number of hits per channel [0-15] are the same as tdc_array and gives the multiplicity of the SCI events.
@@ -182,6 +242,75 @@ inline uint32_t FrsMainCalScalerItem::Get_scaler() const
 inline uint32_t* FrsMainCalSciItem::Get_de_array() const
 {
     return de_array;
+}
+
+inline uint32_t FrsMainCalSciItem::Get_dE_21l() const
+{
+    return de_21l;
+}
+
+inline uint32_t FrsMainCalSciItem::Get_dE_21r() const
+{
+    return de_21r;
+}
+inline uint32_t FrsMainCalSciItem::Get_dE_22l() const
+{
+    return de_22l;
+}
+
+inline uint32_t FrsMainCalSciItem::Get_dE_22r() const
+{
+    return de_22r;
+}
+
+inline uint32_t FrsMainCalSciItem::Get_dE_31l() const
+{
+    return de_31l;
+}
+
+inline uint32_t FrsMainCalSciItem::Get_dE_31r() const
+{
+    return de_31r;
+}
+
+inline uint32_t FrsMainCalSciItem::Get_dE_41l() const
+{
+    return de_41l;
+}
+
+inline uint32_t FrsMainCalSciItem::Get_dE_41r() const
+{
+    return de_41r;
+}
+
+inline uint32_t FrsMainCalSciItem::Get_dE_42l() const
+{
+    return de_42l;
+}
+
+inline uint32_t FrsMainCalSciItem::Get_dE_42r() const
+{
+    return de_42r;
+}
+
+inline uint32_t FrsMainCalSciItem::Get_dE_43l() const
+{
+    return de_43l;
+}
+
+inline uint32_t FrsMainCalSciItem::Get_dE_43r() const
+{
+    return de_43r;
+}
+
+inline uint32_t FrsMainCalSciItem::Get_dE_81l() const
+{
+    return de_81l;
+}
+
+inline uint32_t FrsMainCalSciItem::Get_dE_81r() const
+{
+    return de_81r;
 }
 
 inline uint32_t** FrsMainCalSciItem::Get_tdc_array() const

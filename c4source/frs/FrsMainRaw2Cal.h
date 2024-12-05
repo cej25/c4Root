@@ -1,6 +1,9 @@
 #ifndef FrsMainRaw2Cal_H
 #define FrsMainRaw2Cal_H
 
+
+#include "TFrsConfiguration.h"
+
 #include <vector>
 #include "TFolder.h"
 #include "FrsMainData.h"
@@ -31,7 +34,9 @@ class FrsMainRaw2Cal : public FairTask
 
 
     private:
-        Bool_t fOnline;        
+        Bool_t fOnline;
+
+        TFrsConfiguration const* frs_config;        
         
         std::vector<FrsMainV830Item> const* v830array;
         std::vector<FrsMainV792Item> const* v792array;
@@ -76,6 +81,24 @@ class FrsMainRaw2Cal : public FairTask
         uint32_t* music_t2;
 
         const int max_hits_in_v1290 = 100;
+
+    
+        uint32_t de_21l = 0;
+        uint32_t de_21r = 0;
+        uint32_t de_22l = 0;
+        uint32_t de_22r = 0;
+        uint32_t de_31l = 0;
+        uint32_t de_31r = 0;
+        uint32_t de_41l = 0;
+        uint32_t de_41r = 0;
+        uint32_t de_42l = 0;
+        uint32_t de_42r = 0;
+        uint32_t de_43l = 0;
+        uint32_t de_43r = 0;
+        uint32_t de_81l = 0;
+        uint32_t de_81r = 0;
+
+
 
 
     public:

@@ -29,6 +29,10 @@ class TFrsConfiguration
                         TMRTOFMSParameter*,
                         TRangeParameter*);
         static void SetConfigPath(std::string cp) { config_path = cp; }
+        static void SetTravMusDriftFile(std::string fp) { tm_drift_coeff_file = fp; }
+        static void SetAoQDriftFile(std::string fp) { aoq_drift_coeff_file = fp; }
+        static void SetZ1DriftFile(std::string fp) { z1_drift_coeff_file = fp; }
+        static void SetCrateMapFile(std::string fp) { crate_map_file = fp; }
 
         TFRSParameter* FRS() const;
         TMWParameter* MW() const;
@@ -67,6 +71,8 @@ class TFrsConfiguration
         static Double_t fMin_dE_Music1, fMax_dE_Music1;
         static Double_t fMin_dE_Music2, fMax_dE_Music2;
         static Double_t fMin_dE_travMus_gate, fMax_dE_travMus_gate;
+        static int frun_num;
+
 
         static void Set_Z_range(Double_t, Double_t);
         static void Set_AoQ_range(Double_t, Double_t);
@@ -92,14 +98,75 @@ class TFrsConfiguration
         void Plot_MHTDC_1D(bool option) { plot_mhtdc_1d = option; }
         void Plot_MHTDC_2D(bool option) { plot_mhtdc_1d = option; }
 
+        static void SetRunNumber(int run_num) { frun_num = run_num; }
+
         bool plot_tac_1d = true;
         bool plot_tac_2d = true;
         bool plot_mhtdc_1d = true;
         bool plot_mhtdc_2d = true;
 
 
+        //:::: Drift for TravMus
+        std::map<int, std::pair<double,double>> TravMusDriftCoefficients() const;
+        bool TravMusDriftLoaded() const;
+        std::map<int, std::pair<double,double>> AoQDriftCoefficients() const;
+        bool AoQDriftLoaded() const;
+        std::map<int, std::pair<double,double>> Z1DriftCoefficients() const;
+        bool Z1DriftLoaded() const;
 
-        
+        int Get_music_e_geo() const;
+
+        // tac
+        int Get_sci_dE_geo() const;
+        int Get_dE_21l_chan() const;
+        int Get_dE_21r_chan() const;
+        int Get_dE_22l_chan() const;
+        int Get_dE_22r_chan() const;
+        int Get_dE_31l_chan() const;
+        int Get_dE_31r_chan() const;
+        int Get_dE_41l_chan() const;
+        int Get_dE_41r_chan() const;
+        int Get_dE_42l_chan() const;
+        int Get_dE_42r_chan() const;
+        int Get_dE_43l_chan() const;
+        int Get_dE_43r_chan() const;
+        int Get_dE_81l_chan() const;
+        int Get_dE_81r_chan() const;
+
+        int Get_sci_dT_geo() const;
+        int Get_dT_21l_21r_chan() const;
+        int Get_dT_41l_41r_chan() const;
+        int Get_dT_42l_42r_chan() const;
+        int Get_dT_43l_43r_chan() const;
+        int Get_dT_81l_81r_chan() const;
+        int Get_dT_21l_41l_chan() const;
+        int Get_dT_21r_41r_chan() const;
+        int Get_dT_42r_21r_chan() const;
+        int Get_dT_42l_21l_chan() const;
+        int Get_dT_21l_81l_chan() const;
+        int Get_dT_21r_81r_chan() const;
+        int Get_dT_22l_22r_chan() const;
+        int Get_dT_22l_41l_chan() const;
+        int Get_dT_22r_41r_chan() const;
+        int Get_dT_22l_81l_chan() const;
+        int Get_dT_22r_81r_chan() const;
+
+        int Get_ts_11_ch() const;
+        int Get_ts_21L_ch() const;
+        int Get_ts_21R_ch() const;
+        int Get_ts_22L_ch() const;
+        int Get_ts_22R_ch() const;
+        int Get_ts_31L_ch() const;
+        int Get_ts_31R_ch() const;
+        int Get_ts_41L_ch() const;
+        int Get_ts_41R_ch() const;
+        int Get_ts_42L_ch() const;
+        int Get_ts_42R_ch() const;
+        int Get_ts_43L_ch() const;
+        int Get_ts_43R_ch() const;
+        int Get_ts_81L_ch() const;
+        int Get_ts_81R_ch() const;
+
 
     private:
 
@@ -108,6 +175,18 @@ class TFrsConfiguration
 
         static std::string scaler_mapping_file;
         void ReadScalerNames();
+
+        static std::string tm_drift_coeff_file;
+        void ReadTravMusDriftFile();
+
+        static std::string aoq_drift_coeff_file;
+        void ReadAoQDriftFile();
+
+        static std::string z1_drift_coeff_file;
+        void ReadZ1DriftFile();
+
+        static std::string crate_map_file;
+        void ReadCrateMapFile();
 
         static TFrsConfiguration* instance;
 
@@ -126,7 +205,72 @@ class TFrsConfiguration
 
         // Mappings
         std::string scaler_name[66];
-        std::string sci_names[6];
+
+        // ::_ Drift
+        std::map<int, std::pair<double,double> > travmus_drift_coeff;
+        bool travmus_drift_loaded = 0;
+        std::map<int, std::pair<double,double> > aoq_drift_coeff;
+        bool aoq_drift_loaded = 0;
+        std::map<int, std::pair<double,double> > z1_drift_coeff;
+        bool z1_drift_loaded = 0;
+
+        int music_e_geo = 0;
+
+        // tac
+        int sci_dE_geo = -1;
+        int de_41r_ch = -1;
+        int de_21l_ch = -1;
+        int de_21r_ch = -1;
+        int de_42l_ch = -1;
+        int de_42r_ch = -1;
+        int de_81l_ch = -1;
+        int de_22r_ch = -1;
+        int de_31l_ch = -1;
+        int de_31r_ch = -1;
+        int de_43l_ch = -1;
+        int de_43r_ch = -1;
+        int de_41l_ch = -1;
+        int de_81r_ch = -1;
+        int de_22l_ch = -1;
+        bool dE_mapping_loaded = false;
+
+        int sci_dT_geo = -1;
+        int dt_21l_21r_ch = -1;
+        int dt_41l_41r_ch = -1;
+        int dt_42l_42r_ch = -1;
+        int dt_43l_43r_ch = -1;
+        int dt_81l_81r_ch = -1;
+        int dt_21l_41l_ch = -1;
+        int dt_21r_41r_ch = -1;
+        int dt_42r_21r_ch = -1;
+        int dt_42l_21l_ch = -1;
+        int dt_21l_81l_ch = -1;
+        int dt_21r_81r_ch = -1;
+        int dt_22l_22r_ch = -1;
+        int dt_22l_41l_ch = -1;
+        int dt_22r_41r_ch = -1;
+        int dt_22l_81l_ch = -1;
+        int dt_22r_81r_ch = -1;
+        bool dT_mapping_loaded = false;
+
+        // MHTDC scintillator timestamps
+        int ts_11_ch = -1;
+        int ts_21L_ch = -1;
+        int ts_21R_ch = -1;
+        int ts_22L_ch = -1;
+        int ts_22R_ch = -1;
+        int ts_31L_ch = -1;
+        int ts_31R_ch = -1;
+        int ts_41L_ch = -1;
+        int ts_41R_ch = -1;
+        int ts_42L_ch = -1;
+        int ts_42R_ch = -1;
+        int ts_43L_ch = -1;
+        int ts_43R_ch = -1;
+        int ts_81L_ch = -1;
+        int ts_81R_ch = -1;
+
+
 };
 
 inline TFrsConfiguration const* TFrsConfiguration::GetInstance()
@@ -198,15 +342,282 @@ inline std::string TFrsConfiguration::ScalerName(int index) const
     return scaler_name[index];
 }
 
-inline std::string TFrsConfiguration::SciName(int index) const
-{
-    return sci_names[index];
-}
-
 inline std::string TFrsConfiguration::GetConfigPath() const
 {
     return config_path;
 }
+
+//::: Drift Trav Mus
+inline std::map<int, std::pair<double,double> > TFrsConfiguration::TravMusDriftCoefficients() const
+{
+    return travmus_drift_coeff;
+}
+
+inline bool TFrsConfiguration::TravMusDriftLoaded() const
+{
+    return travmus_drift_loaded;
+}
+
+inline std::map<int, std::pair<double,double> > TFrsConfiguration::AoQDriftCoefficients() const
+{
+    return aoq_drift_coeff;
+}
+
+inline bool TFrsConfiguration::AoQDriftLoaded() const
+{
+    return aoq_drift_loaded;
+}
+
+inline std::map<int, std::pair<double,double> > TFrsConfiguration::Z1DriftCoefficients() const
+{
+    return z1_drift_coeff;
+}
+
+inline bool TFrsConfiguration::Z1DriftLoaded() const
+{
+    return z1_drift_loaded;
+}
+
+inline int TFrsConfiguration::Get_music_e_geo() const
+{
+    return music_e_geo;
+};
+
+inline int TFrsConfiguration::Get_sci_dE_geo() const
+{
+    return sci_dE_geo;
+};
+
+inline int TFrsConfiguration::Get_dE_21l_chan() const
+{
+    return de_21l_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_21r_chan() const
+{
+    return de_21r_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_22l_chan() const
+{
+    return de_22l_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_22r_chan() const
+{
+    return de_22r_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_31l_chan() const
+{
+    return de_31l_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_31r_chan() const
+{
+    return de_31r_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_41l_chan() const
+{
+    return de_41l_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_41r_chan() const
+{
+    return de_41r_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_42l_chan() const
+{
+    return de_42l_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_42r_chan() const
+{
+    return de_42r_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_43l_chan() const
+{
+    return de_43l_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_43r_chan() const
+{
+    return de_43r_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_81l_chan() const
+{
+    return de_81l_ch;
+};
+
+inline int TFrsConfiguration::Get_dE_81r_chan() const
+{
+    return de_81r_ch;
+};
+
+inline int TFrsConfiguration::Get_sci_dT_geo() const
+{
+    return sci_dT_geo;
+};
+
+inline int TFrsConfiguration::Get_dT_21l_21r_chan() const
+{
+    return dt_21l_21r_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_41l_41r_chan() const
+{
+    return dt_41l_41r_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_42l_42r_chan() const
+{
+    return dt_42l_42r_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_43l_43r_chan() const
+{
+    return dt_43l_43r_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_81l_81r_chan() const
+{
+    return dt_81l_81r_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_21l_41l_chan() const
+{
+    return dt_21l_41l_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_21r_41r_chan() const
+{
+    return dt_21r_41r_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_42r_21r_chan() const
+{
+    return dt_42r_21r_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_42l_21l_chan() const
+{
+    return dt_42l_21l_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_21l_81l_chan() const
+{
+    return dt_21l_81l_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_21r_81r_chan() const
+{
+    return dt_21r_81r_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_22l_22r_chan() const
+{
+    return dt_22l_22r_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_22l_41l_chan() const
+{
+    return dt_22l_41l_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_22r_41r_chan() const
+{
+    return dt_22r_41r_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_22l_81l_chan() const
+{
+    return dt_22l_81l_ch;
+};
+
+inline int TFrsConfiguration::Get_dT_22r_81r_chan() const
+{
+    return dt_22r_81r_ch;
+};
+
+inline int TFrsConfiguration::Get_ts_11_ch() const
+{
+    return ts_11_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_21L_ch() const
+{
+    return ts_21L_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_21R_ch() const
+{
+    return ts_21R_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_22L_ch() const
+{
+    return ts_22L_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_22R_ch() const
+{
+    return ts_22R_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_31L_ch() const
+{
+    return ts_31L_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_31R_ch() const
+{
+    return ts_31R_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_41L_ch() const
+{
+    return ts_41L_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_41R_ch() const
+{
+    return ts_41R_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_42L_ch() const
+{
+    return ts_42L_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_42R_ch() const
+{
+    return ts_42R_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_43L_ch() const
+{
+    return ts_43L_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_43R_ch() const
+{
+    return ts_43R_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_81L_ch() const
+{
+    return ts_81L_ch;
+}
+
+inline int TFrsConfiguration::Get_ts_81R_ch() const
+{
+    return ts_81R_ch;
+}
+
 
 
 

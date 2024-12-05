@@ -130,6 +130,8 @@ FEBEX_EVENT_TRACES(card)
     MEMBER(DATA8 channel_cfd[16] ZERO_SUPPRESS);
 	MEMBER(DATA32 channel_energy[16] ZERO_SUPPRESS);
 
+    //:::  Trace info :::
+    MEMBER(DATA8 channel_id_traces[16] ZERO_SUPPRESS);  //Info on channel ID from trace (in case no information from event header) -- Sept2024 EG
     MEMBER(DATA16 traces[16][TRACE_SIZE] ZERO_SUPPRESS);
 
     UINT32 sumchannel NOENCODE
@@ -218,6 +220,7 @@ FEBEX_EVENT_TRACES(card)
         }
 
         //list (0 <= i < (((channel_size.size) / 4) - 1))
+        //::: Trace :::
         // ::::: FORCE TRACE LENGTH HERE :::::::: //
         list (0 <= i < 8)
         {
@@ -226,6 +229,8 @@ FEBEX_EVENT_TRACES(card)
                 0_7: 0x34;
                 8_23: other;
                 24_31: ch_id;
+                ENCODE(channel_id_traces[i], (value = ch_id));
+                //Info on channel ID from trace (in case no information from event header) -- Sept2024 EG
             }
 
             UINT32 tracesize NOENCODE

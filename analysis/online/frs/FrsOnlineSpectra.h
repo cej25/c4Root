@@ -123,10 +123,10 @@ class FrsOnlineSpectra : public FairTask
         TH2* h2_Z_vs_dE2;
         TH2* h2_x2_vs_x4;
         TH2* h2_SC41dE_vs_AoQ;
-        TH2* h2_SC42dE_vs_AoQ; // !! needs to be added !!
-        TH2* h2_SC41dE_vs_Z; // !! needs to be added !!
-        TH2* h2_SC42dE_vs_Z; // !! needs to be added !!
-        TH2* h2_dE_vs_ToF;
+        TH2* h2_SC42dE_vs_AoQ;
+        TH2* h2_SC41dE_vs_Z;
+        TH2* h2_SC42dE_vs_Z;
+        TH2* h2_dE_vs_ToF_21_41;
         TH2* h2_x2_vs_Z;
         TH2* h2_x4_vs_Z;
         TH2* h2_dE1_vs_x2;
@@ -176,12 +176,44 @@ class FrsOnlineSpectra : public FairTask
         TH1* h1_music_dE[2];
         TH1* h1_travmus_dE;
         TH1* h1_music_dEcorr[2];
-        TH1* h1_sci_e[6];
-        TH1* h1_sci_l[6];
-        TH1* h1_sci_r[6];
-        TH1* h1_sci_x[6];
-        TH1* h1_sci_tof[6];
-        TH1* h1_sci_tof_calib[6];
+        TH1* h1_sci_21l;
+        TH1* h1_sci_21r;
+        TH1* h1_sci_22l;
+        TH1* h1_sci_22r;
+        TH1* h1_sci_31l;
+        TH1* h1_sci_31r;
+        TH1* h1_sci_41l;
+        TH1* h1_sci_41r;
+        TH1* h1_sci_42l;
+        TH1* h1_sci_42r;
+        TH1* h1_sci_43l;
+        TH1* h1_sci_43r;
+        TH1* h1_sci_81l;
+        TH1* h1_sci_81r;
+        TH1* h1_sci_e_21;
+        TH1* h1_sci_e_22;
+        TH1* h1_sci_e_31;
+        TH1* h1_sci_e_41;
+        TH1* h1_sci_e_42;
+        TH1* h1_sci_e_43;
+        TH1* h1_sci_e_81;
+        TH1* h1_sci_x_21;
+        TH1* h1_sci_x_22;
+        TH1* h1_sci_x_31;
+        TH1* h1_sci_x_41;
+        TH1* h1_sci_x_42;
+        TH1* h1_sci_x_43;
+        TH1* h1_sci_x_81;
+        TH1* h1_sci_tof_21_41;
+        TH1* h1_sci_tof_21_41_calib;
+        TH1* h1_sci_tof_21_42;
+        TH1* h1_sci_tof_21_42_calib;
+        TH1* h1_sci_tof_21_81;
+        TH1* h1_sci_tof_21_81_calib;
+        TH1* h1_sci_tof_22_41;
+        TH1* h1_sci_tof_22_41_calib;
+        TH1* h1_sci_tof_22_81;
+        TH1* h1_sci_tof_22_81_calib;
         // 1D Gated?
 
         // MHTDC 2D

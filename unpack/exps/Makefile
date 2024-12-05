@@ -24,6 +24,7 @@ EXPS=s452 \
 	NovTest \
 	onlyFATIMA \
 	s100 \
+	s101 \
 	s143 \
 	s181 \
 	bb7 \
