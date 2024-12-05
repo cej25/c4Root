@@ -54,7 +54,8 @@ void pareeksha_histos(int fileNumber)
 
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
-    TString inputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/fragments_EG_test/";
+    //TString inputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/fragments_EG_test/";
+    TString inputpath = "/u/gandolfo/data/";
     TString filename = Form(inputpath + "run_%04d_EG.root", fileNumber);  
     
     //___O U T P U T
@@ -156,11 +157,11 @@ void pareeksha_histos(int fileNumber)
     //::::::::: Set ranges for histos :::::::::::::::
     //::::  Channel Energy ::::: (h1_energy_layer_ch)
     TLisaConfiguration::SetEnergyRange(500000,3000000);
-    TLisaConfiguration::SetEnergyBin(900);
+    TLisaConfiguration::SetEnergyBin(450);
 
     //::::  Channel Energy GM ::::: (h1_energy_layer_ch)
     TLisaConfiguration::SetEnergyRangeGM(300,1500);
-    TLisaConfiguration::SetEnergyBinGM(900);
+    TLisaConfiguration::SetEnergyBinGM(450);
 
     //:::: LISA WR Time Difference :::::: (h1_wr_diff)
     TLisaConfiguration::SetWrDiffRange(0,100000000);
@@ -198,7 +199,7 @@ void pareeksha_histos(int fileNumber)
         
     }
 
-    if(LISA_ON && FRS_ON & TRAV_MUSIC_ON)
+    if(LISA_ON && FRS_ON && TRAV_MUSIC_ON)
     {
         LisaFrsCorrelations* LISA_FRS_corr = new LisaFrsCorrelations(fg);
         run->AddTask(LISA_FRS_corr);

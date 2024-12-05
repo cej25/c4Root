@@ -65,8 +65,8 @@ void pareeksha_make_trees(int fileNumber)
     TString filename = Form(inputpath + "run_%04d_*.lmd", fileNumber);
 
     //___O U T P U T
-    //TString outputpath = "/u/gandolfo/data/"; //testing
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/fragments_EG_test/";    
+    TString outputpath = "/u/gandolfo/data/"; //testing
+    //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/fragments_EG_test/";    
     TString outputFilename = Form(outputpath + "run_%04d_EG.root", fileNumber);
 
 
@@ -163,7 +163,7 @@ void pareeksha_make_trees(int fileNumber)
     {   
         if (TRAV_MUSIC_ON)
         {
-            FrsTravMusReader* unpacktravmus = new FrsTravMusReader((EXT_STR_h101_travmus_onion*)&ucesb_struct.travmus, offsetof(EXT_STR_h101, travmus));
+            TravMusReader* unpacktravmus = new TravMusReader((EXT_STR_h101_travmus_onion*)&ucesb_struct.travmus, offsetof(EXT_STR_h101, travmus));
     
             unpacktravmus->SetOnline(false);
             source->AddReader(unpacktravmus);
@@ -207,10 +207,13 @@ void pareeksha_make_trees(int fileNumber)
     {
         if (TRAV_MUSIC_ON)
         {
-            FrsTravMusRaw2Cal* caltravmus = new FrsTravMusRaw2Cal();
+            TravMusRaw2Cal* caltravmus = new TravMusRaw2Cal();
+            TravMusCal2Ana* anatravmus = new TravMusCal2Ana();
 
             caltravmus->SetOnline(false);
             run->AddTask(caltravmus);
+            anatravmus->SetOnline(false);
+            run->AddTask(anatravmus);
         }
 
         FrsMainRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
