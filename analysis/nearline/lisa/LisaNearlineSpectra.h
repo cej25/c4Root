@@ -92,6 +92,11 @@ class LisaNearlineSpectra : public FairTask
         TDirectory* dir_music;
         TDirectory* dir_correlations;
         TDirectory* dir_drift;
+        TDirectory* dir_energy_ch;
+        TDirectory* dir_drift_ch;
+        TDirectory* dir_energy_tokyo;
+        TDirectory* dir_drift_tokyo;
+        TDirectory* dir_traces_tokyo;
 
         int64_t prev_wr = 0;
         int64_t wr_diff;
@@ -125,15 +130,14 @@ class LisaNearlineSpectra : public FairTask
         //TH1F* h1_energy_layer0;
 
         // energy
-        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch;
-        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch_GM;
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_ch;
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_ch_GM;
         std::vector<TH1F*> h1_energy_layer_GM;
         TH1F* h1_energy_all_layers_GM;
         TH2F* h2_sum_energy_layer1_vs_layer2;
         TH2F* h2_sum_energy_layer1_vs_layer2_GM;
         TH2F* h2_energy_layer1_vs_layer2_GM;
-        std::vector<std::vector<std::vector<TH1F*>>> h1_traces_layer_ch;
-        std::vector<std::vector<std::vector<TH2F*>>> h2_traces_layer_ch_stat;
+        std::vector<std::vector<std::vector<TH2F*>>> h2_traces_ch_stat;
 
         // ::: Drifts
         std::vector<TH2*> h2_energy_layer_vs_time;
