@@ -1,0 +1,28 @@
+# Window Conditon for YSum of MW 
+# YSum Low      YSum High
+    2 		8000
+    2		8000
+    2		8000
+    2		8000
+    2		8000
+    2		8000
+    2		8000
+    2		8000
+    2		8000
+    2		8000
+    2		8000
+    2		8000
+    2		8000
+#MW11
+#MW21
+#MW22
+#MW31
+#MW41
+#MW42
+#MW51
+#MW61
+#MW71
+#MW81
+#MW82
+#MWB1
+#MWB2

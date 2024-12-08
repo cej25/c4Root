@@ -28,6 +28,9 @@ class TbPlastConfiguration
         std::set<int> LeftDetectors() const;
         int NRightDetectors() const;
         std::set<int> RightDetectors() const;
+
+        inline bool IsDetectorAuxilliary(int detector_id) const;
+        
         int NTamexBoards() const;
         bool MappingLoaded() const;
         int TM_Undelayed() const;
@@ -67,17 +70,29 @@ class TbPlastConfiguration
         int num_left_detectors;
         int num_right_detectors;
 
-        int tm_undelayed;
-        int tm_delayed;
-        int sc41l_d;
-        int sc41r_d;
-        int fatima_accept;
-        int fatima_free;
-        int frs_accept;
+        int tm_undelayed = -1;
+        int tm_delayed = -1;
+        int sc41l_d = -1;
+        int sc41r_d = -1;
+        int fatima_accept = -1;
+        int fatima_free = -1;
+        int frs_accept = -1;
 
         bool DetectorMap_loaded = 0;
 
 };
+
+inline bool TbPlastConfiguration::IsDetectorAuxilliary(int detector_id) const
+{
+    if (extra_signals.count(detector_id) > 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
 
 inline TbPlastConfiguration const* TbPlastConfiguration::GetInstance()
 {
@@ -177,6 +192,11 @@ inline int TbPlastConfiguration::FATIMA_ACCEPT() const
 inline int TbPlastConfiguration::FATIMA_FREE() const
 {
     return fatima_free;
+}
+
+inline std::set<int> TbPlastConfiguration::ExtraSignals() const
+{
+    return extra_signals;
 }
 
 

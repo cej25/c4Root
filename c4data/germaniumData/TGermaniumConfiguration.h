@@ -89,8 +89,6 @@ class TGermaniumConfiguration
         int tm_delayed = -1;
         int sc41l_d = -1;
         int sc41r_d = -1;
-
-
         int frs_accept = -1;
         int bplast_accept = -1;
         int bplast_free = -1;
@@ -103,9 +101,12 @@ class TGermaniumConfiguration
 
 
 inline bool TGermaniumConfiguration::IsDetectorAuxilliary(int detector_id) const{
-    if (extra_signals.count(detector_id)>0){
+    if (extra_signals.count(detector_id)>0)
+    {
         return true;
-    }else{
+    }
+    else
+    {
         return false;
     }
 };

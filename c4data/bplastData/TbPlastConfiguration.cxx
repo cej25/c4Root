@@ -95,5 +95,7 @@ void TbPlastConfiguration::ReadConfiguration()
 
     DetectorMap_loaded = 1;
     detector_map_file.close();
+
+    LOG(info) << "bPlast Configuration File: " + filepath;
     return;
 }

@@ -1,0 +1,3 @@
+# Window Conditon for Energy of MUSIC3
+# ELow        EHigh
+    10		4000

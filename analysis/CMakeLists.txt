@@ -98,6 +98,7 @@ set(SRCS
 ./online/onlineCorrelations/bPlastGermaniumCorrelationsOnline.cxx
 #./correlations/FrsBplastCorrelations.cxx
 ./correlations/triplePlusCorrs/BetaIonCorrelations.cxx
+./online/onlineCorrelations/ImplantationStackCorrelationsOnline.cxx
 
 
 #./frs/MHTDCSpectra.cxx

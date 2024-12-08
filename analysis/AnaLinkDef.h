@@ -63,6 +63,7 @@
 #pragma link C++ class FatimaSinglesAnalysis+;
 #pragma link C++ class AidaGermaniumCorrelations+;
 //#pragma link C++ class FatimaAidaSpectra+;
+#pragma link C++ class ImplantationStackCorrelationsOnline+;
 
 #pragma link C++ class BetaIonCorrelations+;
 

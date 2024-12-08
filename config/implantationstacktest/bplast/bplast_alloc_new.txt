@@ -1,0 +1,97 @@
+#bPlast TAM ID | bPlast TAM Chan | bPlast Det
+#bPlast detector
+#clockwise rotation : Left - Top - Right - Bot
+#Right : 33-40
+0   1   33   D   R
+0   2   34   D   R
+0   3   35   D   R
+0   4   36   D   R
+0   5   37   D   R
+0   6   38   D   R	
+0   7   39   D   R
+0   8   40   D   R
+#Left : 1-8
+0   9   1    D   L
+0   10  2    D   L
+0   11  3    D   L
+0   12  4    D   L
+0   13  5    D   L
+0   14  6    D   L
+0   15  7    D   L
+0   16  8    D   L
+#Top : 9-32
+1   1   12   D   T
+1   2   11   D   T
+1   3   22   D   T
+1   4   21   D   T
+1   5   20   D   T
+1   6   19   D   T
+1   7   13   D   T
+1   8   14   D   T
+1   9   10   D   T
+1   10  9    D   T
+1   11  16   D   T
+1   12  15   D   T
+1   13  17   D   T
+1   14  18   D   T
+1   15  23   D   T
+1   16  24   D   T
+2   1   30   D   T
+2   2   29   D   T
+2   3   32   D   T
+2   4   28   D   T
+2   5   31   D   T
+2   6   27   D   T
+2   7   25   D   T
+2   8   26   D   T
+#Bot : 41-64
+2   9   44   D   B
+2   10  43   D   B
+2   11  54   D   B
+2   12  53   D   B
+2   13  52   D   B
+2   14  51   D   B
+2   15  45   D   B
+2   16  46   D   B
+3   1   42   D   B
+3   2   41   D   B
+3   3   48   D   B
+3   4   47   D   B
+3   5   49   D   B
+3   6   50   D   B
+3   7   55   D   B
+3   8   56   D   B
+3   9   62   D   B
+3   10  61   D   B
+3   11  64   D   B
+3   12  60   D   B
+3   13  63   D   B
+3   14  59   D   B
+3   15  57   D   B
+3   16  58   D   B
+#Other signals : 65-80
+#Time Machine Delayed
+TimeMachineD 4   1   65   D   B
+#Time Machine Undelayed
+TimeMachineU 4   2   66   D   B
+#Empty
+4   3   67   D   B
+4   4   68   D   B
+#SC41 R
+SC41R_D 4   5   69   D   B
+#SC41 L
+SC41L_D 4   6   70   D   B
+#Empty
+4   7   71   D   B
+4   8   72   D   B
+#FATIMA Accepted trigger
+FATIMA_ACCEPT 4   9   73   D   B
+#FATIMA Free trigger
+FATIMA_FREE 4   10   74  D   B
+#Empty
+4   11  75   D   B
+4   12  76   D   B
+4   13  77   D   B
+4   14  78   D   B
+4   15  79   D   B
+4   16  80   D   B

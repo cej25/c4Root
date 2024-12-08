@@ -32,7 +32,8 @@ EXPS=s452 \
 	test \
 	pareeksha \
 	jikken \
-	onlyBGO 
+	onlyBGO \
+	implantationstacktest
 ALL_EXPS = $(EXPS)
 
 #########################################################

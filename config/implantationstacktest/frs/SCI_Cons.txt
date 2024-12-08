@@ -1,0 +1,12 @@
+# Window Conditon for Scintillator Parameters
+# Low Limit           High Limit
+    10		4000
+    10		4000
+    10		4000
+    200		4000
+    -100	100
+# SCI_L
+# SCI_R
+# SCI_E
+# SCI_Tx
+# SCI_X
