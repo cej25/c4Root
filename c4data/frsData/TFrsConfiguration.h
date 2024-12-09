@@ -151,21 +151,21 @@ class TFrsConfiguration
         int Get_dT_22l_81l_chan() const;
         int Get_dT_22r_81r_chan() const;
 
-        int Get_ts_11_ch() const;
-        int Get_ts_21L_ch() const;
-        int Get_ts_21R_ch() const;
-        int Get_ts_22L_ch() const;
-        int Get_ts_22R_ch() const;
-        int Get_ts_31L_ch() const;
-        int Get_ts_31R_ch() const;
-        int Get_ts_41L_ch() const;
-        int Get_ts_41R_ch() const;
-        int Get_ts_42L_ch() const;
-        int Get_ts_42R_ch() const;
-        int Get_ts_43L_ch() const;
-        int Get_ts_43R_ch() const;
-        int Get_ts_81L_ch() const;
-        int Get_ts_81R_ch() const;
+        int Get_mhtdc_11_chan() const;
+        int Get_mhtdc_21L_chan() const;
+        int Get_mhtdc_21R_chan() const;
+        int Get_mhtdc_22L_chan() const;
+        int Get_mhtdc_22R_chan() const;
+        int Get_mhtdc_31L_chan() const;
+        int Get_mhtdc_31R_chan() const;
+        int Get_mhtdc_41L_chan() const;
+        int Get_mhtdc_41R_chan() const;
+        int Get_mhtdc_42L_chan() const;
+        int Get_mhtdc_42R_chan() const;
+        int Get_mhtdc_43L_chan() const;
+        int Get_mhtdc_43R_chan() const;
+        int Get_mhtdc_81L_chan() const;
+        int Get_mhtdc_81R_chan() const;
 
 
     private:
@@ -254,21 +254,21 @@ class TFrsConfiguration
         bool dT_mapping_loaded = false;
 
         // MHTDC scintillator timestamps
-        int ts_11_ch = -1;
-        int ts_21L_ch = -1;
-        int ts_21R_ch = -1;
-        int ts_22L_ch = -1;
-        int ts_22R_ch = -1;
-        int ts_31L_ch = -1;
-        int ts_31R_ch = -1;
-        int ts_41L_ch = -1;
-        int ts_41R_ch = -1;
-        int ts_42L_ch = -1;
-        int ts_42R_ch = -1;
-        int ts_43L_ch = -1;
-        int ts_43R_ch = -1;
-        int ts_81L_ch = -1;
-        int ts_81R_ch = -1;
+        int mhtdc_11_ch = -1;
+        int mhtdc_21L_ch = -1;
+        int mhtdc_21R_ch = -1;
+        int mhtdc_22L_ch = -1;
+        int mhtdc_22R_ch = -1;
+        int mhtdc_31L_ch = -1;
+        int mhtdc_31R_ch = -1;
+        int mhtdc_41L_ch = -1;
+        int mhtdc_41R_ch = -1;
+        int mhtdc_42L_ch = -1;
+        int mhtdc_42R_ch = -1;
+        int mhtdc_43L_ch = -1;
+        int mhtdc_43R_ch = -1;
+        int mhtdc_81L_ch = -1;
+        int mhtdc_81R_ch = -1;
 
 
 };
@@ -543,82 +543,80 @@ inline int TFrsConfiguration::Get_dT_22r_81r_chan() const
     return dt_22r_81r_ch;
 };
 
-inline int TFrsConfiguration::Get_ts_11_ch() const
+inline int TFrsConfiguration::Get_mhtdc_11_chan() const
 {
-    return ts_11_ch;
+    return mhtdc_11_ch;
 }
 
-inline int TFrsConfiguration::Get_ts_21L_ch() const
+inline int TFrsConfiguration::Get_mhtdc_21L_chan() const
 {
-    return ts_21L_ch;
+    return mhtdc_21L_ch;
 }
 
-inline int TFrsConfiguration::Get_ts_21R_ch() const
+inline int TFrsConfiguration::Get_mhtdc_21R_chan() const
 {
-    return ts_21R_ch;
+    return mhtdc_21R_ch;
 }
 
-inline int TFrsConfiguration::Get_ts_22L_ch() const
+inline int TFrsConfiguration::Get_mhtdc_22L_chan() const
 {
-    return ts_22L_ch;
+    return mhtdc_22L_ch;
 }
 
-inline int TFrsConfiguration::Get_ts_22R_ch() const
+inline int TFrsConfiguration::Get_mhtdc_22R_chan() const
 {
-    return ts_22R_ch;
+    return mhtdc_22R_ch;
 }
 
-inline int TFrsConfiguration::Get_ts_31L_ch() const
+inline int TFrsConfiguration::Get_mhtdc_31L_chan() const
 {
-    return ts_31L_ch;
+    return mhtdc_31L_ch;
 }
 
-inline int TFrsConfiguration::Get_ts_31R_ch() const
+inline int TFrsConfiguration::Get_mhtdc_31R_chan() const
 {
-    return ts_31R_ch;
+    return mhtdc_31R_ch;
 }
 
-inline int TFrsConfiguration::Get_ts_41L_ch() const
+inline int TFrsConfiguration::Get_mhtdc_41L_chan() const
 {
-    return ts_41L_ch;
+    return mhtdc_41L_ch;
 }
 
-inline int TFrsConfiguration::Get_ts_41R_ch() const
+inline int TFrsConfiguration::Get_mhtdc_41R_chan() const
 {
-    return ts_41R_ch;
+    return mhtdc_41R_ch;
 }
 
-inline int TFrsConfiguration::Get_ts_42L_ch() const
+inline int TFrsConfiguration::Get_mhtdc_42L_chan() const
 {
-    return ts_42L_ch;
+    return mhtdc_42L_ch;
 }
 
-inline int TFrsConfiguration::Get_ts_42R_ch() const
+inline int TFrsConfiguration::Get_mhtdc_42R_chan() const
 {
-    return ts_42R_ch;
+    return mhtdc_42R_ch;
 }
 
-inline int TFrsConfiguration::Get_ts_43L_ch() const
+inline int TFrsConfiguration::Get_mhtdc_43L_chan() const
 {
-    return ts_43L_ch;
+    return mhtdc_43L_ch;
 }
 
-inline int TFrsConfiguration::Get_ts_43R_ch() const
+inline int TFrsConfiguration::Get_mhtdc_43R_chan() const
 {
-    return ts_43R_ch;
+    return mhtdc_43R_ch;
 }
 
-inline int TFrsConfiguration::Get_ts_81L_ch() const
+inline int TFrsConfiguration::Get_mhtdc_81L_chan() const
 {
-    return ts_81L_ch;
+    return mhtdc_81L_ch;
 }
 
-inline int TFrsConfiguration::Get_ts_81R_ch() const
+inline int TFrsConfiguration::Get_mhtdc_81R_chan() const
 {
-    return ts_81R_ch;
+    return mhtdc_81R_ch;
 }
-
-
 
 
 #endif

@@ -144,7 +144,7 @@ Bool_t FrsTPCReader::Read()
 
     //     for (uint32_t j = hit_index; j < next_channel_start; j++)
     //     {   
-    //         uint32_t channel = current_channel;
+    //         uint32_t channel = current_channel - 1;
     //         uint32_t data = fData->frstpc_data_v1190_data[j];
     //         uint32_t lot = fData->frstpc_data_v1190_leadOrTrailv[j];
 

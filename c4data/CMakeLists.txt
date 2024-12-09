@@ -28,11 +28,13 @@ set(LINK_DIRECTORIES ${ROOT_LIBRARY_DIR} ${FAIRROOT_LIBRARY_DIR})
 link_directories(${LINK_DIRECTORIES})
 
 set(SRCS
+frsData/FrsData.cxx
+frsData/FrsCalData.cxx
 frsData/FrsMainData.cxx
 frsData/FrsTPCData.cxx
 frsData/FrsUserData.cxx
 frsData/FrsVFTXData.cxx
-frsData/FrsTpatData.cxx
+# frsData/FrsTpatData.cxx
 frsData/FrsMainCalData.cxx
 frsData/FrsTPCCalData.cxx
 frsData/FrsUserCalData.cxx

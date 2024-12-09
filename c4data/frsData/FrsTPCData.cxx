@@ -19,6 +19,25 @@ void tpcAdcItem::Reset()
     adcData = 0;
 }
 
+tpcTdcItem::tpcTdcItem()
+{
+
+}
+
+void tpcTdcItem::SetAll(uint32_t chan, uint32_t data, uint32_t lot)
+{
+    channel = chan;
+    tdcData = data;
+    leadOrTrail = lot;
+}
+
+void tpcTdcItem::Reset()
+{
+    channel = 0;
+    tdcData = 0;
+    leadOrTrail = 0;
+}
+
 
 FrsTPCV7X5Item::FrsTPCV7X5Item()
 {

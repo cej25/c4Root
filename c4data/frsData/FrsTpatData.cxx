@@ -1,20 +1,20 @@
 #include "FrsTpatData.h"
 
-FrsTpatItem::FrsTpatItem()
-{
+// FrsTpatItem::FrsTpatItem()
+// {
 
-}
+// }
 
-void FrsTpatItem::SetAll(uint64_t wr, uint16_t tp)
-{
-    wr_t = wr;
-    tpat = tp;
-}
+// void FrsTpatItem::SetAll(uint64_t wr, uint16_t tp)
+// {
+//     wr_t = wr;
+//     tpat = tp;
+// }
 
-void FrsTpatItem::Reset()
-{
-    wr_t = 0;
-    tpat = 0;
-}
+// void FrsTpatItem::Reset()
+// {
+//     wr_t = 0;
+//     tpat = 0;
+// }
 
-ClassImp(FrsTpatItem)
+// ClassImp(FrsTpatItem)

@@ -65,57 +65,65 @@ Bool_t FrsUserReader::Read()
 
 
     // nothing to do if all arrays are empty:   
-    if (fData->frsuser_data_v7751n == 0 &&  fData->frsuser_data_v7752n == 0 && fData->frsuser_data_v7851n == 0 && fData->frsuser_data_v7852n == 0) return kTRUE;
+    // if (fData->frsuser_data_v7751n == 0 &&  fData->frsuser_data_v7752n == 0 && fData->frsuser_data_v7851n == 0 && fData->frsuser_data_v7852n == 0) return kTRUE;
 
-
-    // v830 scalers
-    scalers_n = fData->frsuser_data_v830_n;
-    for (uint32_t i = 0; i < scalers_n; i++)
-    {   
+    // V830 Scalers -- we should rename to be general
+    for (int i = 0; i < fData->SCALERS[1]._; i++)
+    {
+        uint32_t index = fData->SCALERS[1].I[i];
+        uint32_t scaler = fData->SCALERS[1].v[i];
         auto & entry = v830array->emplace_back();
-        uint32_t index = fData->frsuser_data_v830_nI[i];
-        uint32_t scaler = fData->frsuser_data_v830_data[i];
         entry.SetAll(index, scaler);
     }
 
+    // // v830 scalers
+    // scalers_n = fData->frsuser_data_v830_n;
+    // for (uint32_t i = 0; i < scalers_n; i++)
+    // {   
+    //     auto & entry = v830array->emplace_back();
+    //     uint32_t index = fData->frsuser_data_v830_nI[i];
+    //     uint32_t scaler = fData->frsuser_data_v830_data[i];
+    //     entry.SetAll(index, scaler);
+    // }
+
     // v775 x2
-    for (int i = 0; i < fData->frsuser_data_v7751n; i++)
-    {
-        auto & entry = v7x5array->emplace_back();
-        uint32_t geo = fData->frsuser_data_v7751geov[i];
-        uint32_t channel = fData->frsuser_data_v7751channelv[i];
-        uint32_t data = fData->frsuser_data_v7751data[i];
-        entry.SetAll(geo, channel, data);
-    }
-    for (int i = 0; i < fData->frsuser_data_v7752n; i++)
-    {
-        auto & entry = v7x5array->emplace_back();
-        uint32_t geo = fData->frsuser_data_v7752geov[i];
-        uint32_t channel = fData->frsuser_data_v7752channelv[i];
-        uint32_t data = fData->frsuser_data_v7752data[i];
-        entry.SetAll(geo, channel, data);
-        v7x5_geo[1].emplace_back(fData->frsuser_data_v7752geov[i]);
-        v7x5_channel[1].emplace_back(fData->frsuser_data_v7752channelv[i]);
-        v7x5_data[1].emplace_back(fData->frsuser_data_v7752data[i]);
-    }
+    // for (int i = 0; i < fData->frsuser_data_v7751n; i++)
+    // {
+    //     auto & entry = v7x5array->emplace_back();
+    //     uint32_t geo = fData->frsuser_data_v7751geov[i];
+    //     uint32_t channel = fData->frsuser_data_v7751channelv[i];
+    //     uint32_t data = fData->frsuser_data_v7751data[i];
+    //     entry.SetAll(geo, channel, data);
+    // }
+    // for (int i = 0; i < fData->frsuser_data_v7752n; i++)
+    // {
+    //     auto & entry = v7x5array->emplace_back();
+    //     uint32_t geo = fData->frsuser_data_v7752geov[i];
+    //     uint32_t channel = fData->frsuser_data_v7752channelv[i];
+    //     uint32_t data = fData->frsuser_data_v7752data[i];
+    //     entry.SetAll(geo, channel, data);
+    //     v7x5_geo[1].emplace_back(fData->frsuser_data_v7752geov[i]);
+    //     v7x5_channel[1].emplace_back(fData->frsuser_data_v7752channelv[i]);
+    //     v7x5_data[1].emplace_back(fData->frsuser_data_v7752data[i]);
+    // }
 
     // v785
-    for (int i = 0; i < fData->frsuser_data_v7851n; i++)
-    {
-        auto & entry = v7x5array->emplace_back();
-        uint32_t geo = fData->frsuser_data_v7851geov[i];
-        uint32_t channel = fData->frsuser_data_v7851channelv[i];
-        uint32_t data = fData->frsuser_data_v7851data[i];
-        entry.SetAll(geo, channel, data);
-    }
-    for (int i = 0; i < fData->frsuser_data_v7852n; i++)
-    {
-        auto & entry = v7x5array->emplace_back();
-        uint32_t geo = fData->frsuser_data_v7852geov[i];
-        uint32_t channel = fData->frsuser_data_v7852channelv[i];
-        uint32_t data = fData->frsuser_data_v7852data[i];
-        entry.SetAll(geo, channel, data);
-    }
+    // for (int i = 0; i < fData->frsuser_data_v7851n; i++)
+    // {
+    //     auto & entry = v7x5array->emplace_back();
+    //     uint32_t geo = fData->frsuser_data_v7851geov[i];
+    //     uint32_t channel = fData->frsuser_data_v7851channelv[i];
+    //     uint32_t data = fData->frsuser_data_v7851data[i];
+    //     entry.SetAll(geo, channel, data);
+    // }
+    // for (int i = 0; i < fData->frsuser_data_v7852n; i++)
+    // {
+    //     auto & entry = v7x5array->emplace_back();
+    //     uint32_t geo = fData->frsuser_data_v7852geov[i];
+    //     uint32_t channel = fData->frsuser_data_v7852channelv[i];
+    //     uint32_t data = fData->frsuser_data_v7852data[i];
+    //     entry.SetAll(geo, channel, data);
+    // }
 
     //c4LOG(info,Form("size of vectors: %d %d %d",v7x5_geo[1].at(0),v7x5_geo[2].at(0),v7x5_geo[3].at(0)));
     //c4LOG(info,Form("size of vectors: %d %d %d %d",fData->frsuser_data_v7751n,fData->frsuser_data_v7752n,fData->frsuser_data_v7851n,fData->frsuser_data_v7852n));
