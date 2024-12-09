@@ -235,8 +235,8 @@ void FrsRawSpectra::Exec(Option_t* option)
         uint32_t data = v792item.Get_v792_data();
         uint32_t channel = v792item.Get_channel();
 
-        h1_v792_main_data[channel-1]->Fill(data);
-        h2_v792_main_data_vs_chan->Fill(channel-1, data);
+        h1_v792_main_data[channel]->Fill(data);
+        h2_v792_main_data_vs_chan->Fill(channel, data);
     }
 
     int v1290_mult[32] = {0};
@@ -278,8 +278,8 @@ void FrsRawSpectra::Exec(Option_t* option)
         uint32_t lot = v1190item.Get_leadOrTrail();
 
         h1_v1190_tpc_data[channel-1]->Fill(data);
-        h2_v1190_tpc_data_vs_chan->Fill(channel-1, data);
-        if (v1190count == 0) h2_v1190_tpc_data_vs_chan_1st_hit->Fill(channel-1, data);
+        h2_v1190_tpc_data_vs_chan->Fill(channel, data);
+        if (v1190count == 0) h2_v1190_tpc_data_vs_chan_1st_hit->Fill(channel, data);
         v1190count++;
     }
 
