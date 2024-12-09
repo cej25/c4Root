@@ -95,7 +95,7 @@
 #pragma link C++ class FrsMainCalScalerItem+;
 #pragma link C++ class FrsMainCalSciItem+;
 #pragma link C++ class FrsMainCalMusicItem+;
-#pragma link C++ class FrsTpatItem+;
+// #pragma link C++ class FrsTpatItem+;
 #pragma link C++ class FrsTPCV7X5Item+;
 #pragma link C++ class FrsTPCV1190Item+;
 #pragma link C++ class FrsUserV7X5Item+;
@@ -112,10 +112,19 @@
 #pragma link C++ class TravMusAnaItem+;
 
 
-
-// testing new FRS
+// old new frs lol
 #pragma link C++ class tpcAdcItem+;
 #pragma link C++ class tpcTdcItem+;
+
+
+// testing new FRS
+#pragma link C++ class FrsTpatItem+;
+#pragma link C++ class FrsScalerItem+;
+#pragma link C++ class FrsSciItem+;
+#pragma link C++ class FrsMusicItem+;
+#pragma link C++ class FrsTpcItem+;
+#pragma link C++ class FrsCalSciItem+;
+#pragma link C++ class FrsCalTpcItem+;
 
 
 #endif

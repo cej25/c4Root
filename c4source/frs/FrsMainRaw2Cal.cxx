@@ -148,21 +148,21 @@ void FrsMainRaw2Cal::Exec(Option_t* option)
 
         if (lot != 0) continue; // lead = 0, trail = 1
         
-        if (channel == frs_config->Get_ts_11_ch()) sciEntry.Add_mhtdc_sc11_hit(data);
-        else if (channel == frs_config->Get_ts_21L_ch()) sciEntry.Add_mhtdc_sc21l_hit(data);
-        else if (channel == frs_config->Get_ts_21R_ch()) sciEntry.Add_mhtdc_sc21r_hit(data);
-        else if (channel == frs_config->Get_ts_22L_ch()) sciEntry.Add_mhtdc_sc22l_hit(data);
-        else if (channel == frs_config->Get_ts_22R_ch()) sciEntry.Add_mhtdc_sc22r_hit(data);
-        else if (channel == frs_config->Get_ts_31L_ch()) sciEntry.Add_mhtdc_sc31l_hit(data);
-        else if (channel == frs_config->Get_ts_31R_ch()) sciEntry.Add_mhtdc_sc31r_hit(data);
-        else if (channel == frs_config->Get_ts_41L_ch()) sciEntry.Add_mhtdc_sc41l_hit(data);
-        else if (channel == frs_config->Get_ts_41R_ch()) sciEntry.Add_mhtdc_sc41r_hit(data);
-        else if (channel == frs_config->Get_ts_42L_ch()) sciEntry.Add_mhtdc_sc42l_hit(data);
-        else if (channel == frs_config->Get_ts_42R_ch()) sciEntry.Add_mhtdc_sc42r_hit(data);
-        else if (channel == frs_config->Get_ts_43L_ch()) sciEntry.Add_mhtdc_sc43l_hit(data);
-        else if (channel == frs_config->Get_ts_43R_ch()) sciEntry.Add_mhtdc_sc43r_hit(data);
-        else if (channel == frs_config->Get_ts_81L_ch()) sciEntry.Add_mhtdc_sc81l_hit(data);
-        else if (channel == frs_config->Get_ts_81R_ch()) sciEntry.Add_mhtdc_sc81r_hit(data);
+        if (channel == frs_config->Get_mhtdc_11_chan()) sciEntry.Add_mhtdc_sc11_hit(data);
+        else if (channel == frs_config->Get_mhtdc_21L_chan()) sciEntry.Add_mhtdc_sc21l_hit(data);
+        else if (channel == frs_config->Get_mhtdc_21R_chan()) sciEntry.Add_mhtdc_sc21r_hit(data);
+        else if (channel == frs_config->Get_mhtdc_22L_chan()) sciEntry.Add_mhtdc_sc22l_hit(data);
+        else if (channel == frs_config->Get_mhtdc_22R_chan()) sciEntry.Add_mhtdc_sc22r_hit(data);
+        else if (channel == frs_config->Get_mhtdc_31L_chan()) sciEntry.Add_mhtdc_sc31l_hit(data);
+        else if (channel == frs_config->Get_mhtdc_31R_chan()) sciEntry.Add_mhtdc_sc31r_hit(data);
+        else if (channel == frs_config->Get_mhtdc_41L_chan()) sciEntry.Add_mhtdc_sc41l_hit(data);
+        else if (channel == frs_config->Get_mhtdc_41R_chan()) sciEntry.Add_mhtdc_sc41r_hit(data);
+        else if (channel == frs_config->Get_mhtdc_42L_chan()) sciEntry.Add_mhtdc_sc42l_hit(data);
+        else if (channel == frs_config->Get_mhtdc_42R_chan()) sciEntry.Add_mhtdc_sc42r_hit(data);
+        else if (channel == frs_config->Get_mhtdc_43L_chan()) sciEntry.Add_mhtdc_sc43l_hit(data);
+        else if (channel == frs_config->Get_mhtdc_43R_chan()) sciEntry.Add_mhtdc_sc43r_hit(data);
+        else if (channel == frs_config->Get_mhtdc_81L_chan()) sciEntry.Add_mhtdc_sc81l_hit(data);
+        else if (channel == frs_config->Get_mhtdc_81R_chan()) sciEntry.Add_mhtdc_sc81r_hit(data);
 
         // CEJ: possibly need to fill only first value (if multiple) but music_t not used currently, so don't know
         else if (channel > 15 && channel < 24) music_t1[channel - 16] = data;

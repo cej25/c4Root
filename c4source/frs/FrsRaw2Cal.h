@@ -1,70 +1,116 @@
-#ifndef FrsTPCRaw2Cal_H
-#define FrsTPCRaw2Cal_H
+#ifndef FrsRaw2Cal_H
+#define FrsRaw2Cal_H
+
 
 #include "TFrsConfiguration.h"
 #include "TFRSParameter.h"
-#include "FrsTPCCalData.h"
-#include "FrsTPCData.h"
+#include "FrsData.h"
+#include "FrsCalData.h"
+
 #include <vector>
+
 
 class TClonesArray;
 class EventHeader;
-class tpcAdcItem;
-class tpcTdcItem;
 
-class FrsTPCRaw2Cal : public FairTask
+class FrsRaw2Cal : public FairTask
 {
     public:
-        FrsTPCRaw2Cal();
-
-        FrsTPCRaw2Cal(const TString& name, Int_t verbose);
-
-        ~FrsTPCRaw2Cal();
-
-        void SetParameters();
+        FrsRaw2Cal();
+        FrsRaw2Cal(const TString& name, Int_t verbose);
+        
+        ~FrsRaw2Cal();
 
         virtual InitStatus Init();
+        void SetParameters();
 
         void Exec(Option_t* option);
 
-        void ZeroArrays();
-        void ZeroVariables();
-        void ClearVectors();
+        void ProcessScintillators();
+        void ProcessTpcs();
 
         void FinishEvent();
         void FinishTask();
 
         void SetOnline(Bool_t set_online) { fOnline = set_online; }
 
+
     private:
-        TFrsConfiguration const* frs_config;
-
         Bool_t fOnline;
+        EventHeader* header;
+        Int_t fNEvents = 0;
 
-        std::vector<FrsTPCV7X5Item> const* v7x5array;
-        std::vector<FrsTPCV1190Item> const* v1190array;
-        std::vector<tpcAdcItem> const* adcArray;
-        std::vector<tpcTdcItem> const* tdcArray;
-        std::vector<FrsTPCCalItem>* tpcCalArray;
-
+        TFrsConfiguration const* frs_config;
         TFRSParameter* frs;
-        TMWParameter* mw;
         TTPCParameter* tpc;
-        TMUSICParameter* music;
-        TLABRParameter* labr;
-        TSCIParameter* sci;
-        TIDParameter* id;
-        TSIParameter* si;
-        TMRTOFMSParameter* mrtof;
-        TRangeParameter* range;
 
-        std::vector<uint32_t>* v7x5_geo;
-        std::vector<uint32_t>* v7x5_channel;
-        std::vector<uint32_t>* v7x5_data;
+        // Arrays
+        std::vector<FrsTpatItem> const* tpatArray;
+        std::vector<FrsSciItem> const* sciArray;
+        std::vector<FrsTpcItem> const* tpcArray;
+        std::vector<FrsCalSciItem>* calSciArray;
+        std::vector<FrsCalTpcItem>* calTpcArray;
 
-        std::vector<uint32_t> v1190_channel;
-        std::vector<uint32_t> v1190_data;
-        std::vector<uint32_t> v1190_lot;
+        // TAC dE
+        const uint32_t* sciDE; //16
+        uint32_t de_21l;
+        uint32_t de_21r;
+        uint32_t de_22l;
+        uint32_t de_22r;
+        uint32_t de_31l;
+        uint32_t de_31r;
+        uint32_t de_41l;
+        uint32_t de_41r;
+        uint32_t de_42l;
+        uint32_t de_42r;
+        uint32_t de_43l;
+        uint32_t de_43r;
+        uint32_t de_81l;
+        uint32_t de_81r;
+
+        // TAC dT
+        const uint32_t* sciDT; // 16
+        uint32_t dt_21l_21r;
+        uint32_t dt_22l_22r;
+        uint32_t dt_41l_41r;
+        uint32_t dt_42l_42r;
+        uint32_t dt_43l_43r;
+        uint32_t dt_81l_81r;
+        uint32_t dt_21l_41l;
+        uint32_t dt_21r_41r;
+        uint32_t dt_42r_21r;
+        uint32_t dt_42l_21l;
+        uint32_t dt_21l_81l;
+        uint32_t dt_21r_81r;
+        uint32_t dt_22l_41l;
+        uint32_t dt_22r_41r;
+        uint32_t dt_22l_81l;
+        uint32_t dt_22r_81r;
+
+        // MHTDC
+        const std::vector<uint32_t>* sciMHTDC; // 16
+        std::vector<uint32_t> sci11_hits;
+        std::vector<uint32_t> sci21l_hits;
+        std::vector<uint32_t> sci21r_hits;
+        std::vector<uint32_t> sci22l_hits;
+        std::vector<uint32_t> sci22r_hits;
+        std::vector<uint32_t> sci31l_hits;
+        std::vector<uint32_t> sci31r_hits;
+        std::vector<uint32_t> sci41l_hits;
+        std::vector<uint32_t> sci41r_hits;
+        std::vector<uint32_t> sci42l_hits;
+        std::vector<uint32_t> sci42r_hits;
+        std::vector<uint32_t> sci43l_hits;
+        std::vector<uint32_t> sci43r_hits;
+        std::vector<uint32_t> sci81l_hits;
+        std::vector<uint32_t> sci81r_hits;
+
+
+        // TPC
+        const uint32_t (*adcData)[8]; // 7, 8
+        const std::vector<uint32_t>* tdcData;
+
+
 
         /*  -------- v1190 channel mappings ----------*/
         Int_t v1190_channel_dt[7][4];
@@ -91,13 +137,12 @@ class FrsTPCRaw2Cal : public FairTask
         Float_t tpc_de[7] = {0};
         Bool_t b_tpc_de[7] = {0};
 
-        Int_t** tpc_csum;
-        Bool_t* b_tpc_xy;
+        Int_t tpc_csum[7][4];
+        Bool_t b_tpc_xy[7];
         
         //Int_t tpc_csum[7][4] = {-9999999};
         Bool_t b_tpc_csum[7][4] = {false};
         
-
         Float_t tpc_x[7] = {0};
         Float_t tpc_y[7] = {0};
 
@@ -191,11 +236,12 @@ class FrsTPCRaw2Cal : public FairTask
         Float_t music1_y4 = -999; /* parameters to calibrate  */
         Float_t music2_x = -999;  /* MUSIC1,2 positions */
 
-        EventHeader* header;
-        Int_t fNEvents = 0;
+
 
     public:
-        ClassDef(FrsTPCRaw2Cal, 1);
+        ClassDef(FrsRaw2Cal, 1);
+
 };
+
 
 #endif

@@ -6,6 +6,7 @@
 #include "FairRuntimeDb.h"
 
 // c4
+#include "FrsData.h"
 #include "FrsCalSpectra.h"
 #include "FrsHitData.h"
 #include "FrsMainCalData.h"

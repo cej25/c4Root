@@ -100,7 +100,6 @@ void FrsUserRaw2Cal::Exec(Option_t* option)
         entry.SetAll(index, scaler);
     }
 
-    // new code
     // CEJ: we're looping over 4 modules but only care about geo == 12 and 10? is this right?
     for (auto const & v7x5item : *v7x5array)
     {

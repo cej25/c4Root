@@ -1,7 +1,7 @@
 #ifndef FrsTpatReader_H
 #define FrsTpatReader_H
 
-#include "FrsTpatData.h"
+#include "FrsData.h" // temp
 #include "c4Reader.h"
 #include <Rtypes.h>
 #include <vector>

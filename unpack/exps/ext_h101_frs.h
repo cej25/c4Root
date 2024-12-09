@@ -5,8 +5,8 @@
  * Do not edit - automatically generated.
  */
 
-#ifndef __GUARD_H101_FRSMAIN_EXT_H101_FRSMAIN_H__
-#define __GUARD_H101_FRSMAIN_EXT_H101_FRSMAIN_H__
+#ifndef __GUARD_H101_FRS_EXT_H101_FRS_H__
+#define __GUARD_H101_FRS_EXT_H101_FRS_H__
 
 #ifndef __CINT__
 # include <stdint.h>
@@ -26,7 +26,7 @@ typedef          int  int32_t;
  * Plain structure (layout as ntuple/root file):
  */
 
-typedef struct EXT_STR_h101_frsmain_t
+typedef struct EXT_STR_h101_frs_t
 {
   /* RAW */
   uint32_t SPILL_ON /* [0,255] */;
@@ -117,7 +117,7 @@ typedef struct EXT_STR_h101_frsmain_t
   uint32_t WR_T4 /* [0,65535] */;
   uint32_t TPAT /* [0,65535] */;
 
-} EXT_STR_h101_frsmain;
+} EXT_STR_h101_frs;
 
 /********************************************************
  *
@@ -125,7 +125,7 @@ typedef struct EXT_STR_h101_frsmain_t
  * recovered (recommended):
  */
 
-typedef struct EXT_STR_h101_frsmain_onion_t
+typedef struct EXT_STR_h101_frs_onion_t
 {
   /* RAW */
   uint32_t SPILL_ON;
@@ -185,11 +185,11 @@ typedef struct EXT_STR_h101_frsmain_onion_t
   uint32_t WR_T[4];
   uint32_t TPAT;
 
-} EXT_STR_h101_frsmain_onion;
+} EXT_STR_h101_frs_onion;
 
 /*******************************************************/
 
-#define EXT_STR_h101_frsmain_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
+#define EXT_STR_h101_frs_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
   ok = 1; \
   /* RAW */ \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
@@ -456,6 +456,6 @@ typedef struct EXT_STR_h101_frsmain_onion_t
   \
 } while (0);
 
-#endif/*__GUARD_H101_FRSMAIN_EXT_H101_FRSMAIN_H__*/
+#endif/*__GUARD_H101_FRS_EXT_H101_FRS_H__*/
 
 /*******************************************************/

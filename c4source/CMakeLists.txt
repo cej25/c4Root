@@ -89,6 +89,9 @@ set(SRCS
 ./fimp/FimpRaw2Cal.cxx
 
 ./test/TestReader.cxx
+./frs/FrsReader.cxx
+./frs/FrsRaw2Cal.cxx
+./frs/FrsCal2Ana.cxx
 )
 
 Set(STRUCT_HEADERS
@@ -111,6 +114,7 @@ Set(STRUCT_HEADERS
 ./fimp/ext_h101_fimp.h
 
 ./test/ext_h101_test.h
+./frs/ext_h101_frs.h
 )
 
 # fill list of header files from list of source files

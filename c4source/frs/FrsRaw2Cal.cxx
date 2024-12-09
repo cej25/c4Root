@@ -7,10 +7,7 @@
 #include "FairRuntimeDb.h"
 
 // c4
-#include "FrsTPCRaw2Cal.h"
-#include "FrsTPCData.h"
-#include "FrsTPCCalData.h"
-#include "TFRSParameter.h"
+#include "FrsRaw2Cal.h"
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
@@ -18,60 +15,45 @@
 #include <vector>
 #include <iostream>
 
-FrsTPCRaw2Cal::FrsTPCRaw2Cal()
+FrsRaw2Cal::FrsRaw2Cal()
     :   FairTask()
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
-    ,   v1190array(nullptr)
-    ,   v7x5array(nullptr)
-    ,   adcArray(nullptr)
-    ,   tdcArray(nullptr)
-    ,   tpcCalArray(new std::vector<FrsTPCCalItem>)
+    ,   tpatArray(nullptr)
+    ,   sciArray(nullptr)
+    ,   tpcArray(nullptr)
+    ,   calSciArray(new std::vector<FrsCalSciItem>)
+    ,   calTpcArray(new std::vector<FrsCalTpcItem>)
 {
     frs_config = TFrsConfiguration::GetInstance();
     frs = frs_config->FRS();
-    mw = frs_config->MW();
     tpc = frs_config->TPC();
-    music = frs_config->MUSIC();
-    labr = frs_config->LABR();
-    sci = frs_config->SCI();
-    id = frs_config->ID();
-    si = frs_config->SI();
-    mrtof = frs_config->MRTOF();
-    range = frs_config->Range();
 }
 
-FrsTPCRaw2Cal::FrsTPCRaw2Cal(const TString& name, Int_t verbose)
+FrsRaw2Cal::FrsRaw2Cal(const TString& name, Int_t verbose)
     :   FairTask(name, verbose)
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
-    ,   v1190array(nullptr)
-    ,   v7x5array(nullptr)
-    ,   adcArray(nullptr)
-    ,   tdcArray(nullptr)
-    ,   tpcCalArray(new std::vector<FrsTPCCalItem>)
+    ,   tpatArray(nullptr)
+    ,   sciArray(nullptr)
+    ,   tpcArray(nullptr)
+    ,   calSciArray(new std::vector<FrsCalSciItem>)
+    ,   calTpcArray(new std::vector<FrsCalTpcItem>)
 {
     frs_config = TFrsConfiguration::GetInstance();
     frs = frs_config->FRS();
-    mw = frs_config->MW();
     tpc = frs_config->TPC();
-    music = frs_config->MUSIC();
-    labr = frs_config->LABR();
-    sci = frs_config->SCI();
-    id = frs_config->ID();
-    si = frs_config->SI();
-    mrtof = frs_config->MRTOF();
-    range = frs_config->Range();
 }
 
-FrsTPCRaw2Cal::~FrsTPCRaw2Cal()
+FrsRaw2Cal::~FrsRaw2Cal()
 {
-    c4LOG(info, "Deleting FrsTPCRaw2Cal task");
+    c4LOG(info, "Deleting FrsRaw2Cal task");
 }
 
-void FrsTPCRaw2Cal::SetParameters()
+// I don't like this, but the map is damn complicated
+void FrsRaw2Cal::SetParameters()
 {   
     // should be mapped from crate_map.txt.....
     v1190_channel_dt[0][0] = 0; //TPC21-A11
@@ -167,7 +149,7 @@ void FrsTPCRaw2Cal::SetParameters()
 
 }
 
-InitStatus FrsTPCRaw2Cal::Init()
+InitStatus FrsRaw2Cal::Init()
 {
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
@@ -175,33 +157,148 @@ InitStatus FrsTPCRaw2Cal::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    v7x5array = mgr->InitObjectAs<decltype(v7x5array)>("FrsTPCV7X5Data");
-    c4LOG_IF(fatal, !v7x5array, "Branch v7x5array not found!");
-    v1190array = mgr->InitObjectAs<decltype(v1190array)>("FrsTPCV1190Data");
-    c4LOG_IF(fatal, !v1190array, "Branch v1190array not found!");
+    tpatArray = mgr->InitObjectAs<decltype(tpatArray)>("FrsTpatData");
+    c4LOG_IF(fatal, !tpatArray, "Branch FrsTpatData not found!");
 
-    adcArray = mgr->InitObjectAs<decltype(adcArray)>("tpcAdcData");
-    c4LOG_IF(fatal, !adcArray, "Branch tpcAdcData not found!");
-    tdcArray = mgr->InitObjectAs<decltype(tdcArray)>("tpcTdcData");
-    c4LOG_IF(fatal, !tdcArray, "Branch tpcTdcData not found!");
+    sciArray = mgr->InitObjectAs<decltype(sciArray)>("FrsSciData");
+    c4LOG_IF(fatal, !sciArray, "Branch FrsSciData not found!");
 
-    mgr->RegisterAny("FrsTPCCalData", tpcCalArray, !fOnline);
-    tpcCalArray->clear();
+    tpcArray = mgr->InitObjectAs<decltype(tpcArray)>("FrsTpcData");
+    c4LOG_IF(fatal, !tpcArray, "Branch FrsTpcData not found!");
 
-    b_tpc_xy = new Bool_t[7];
-    tpc_csum = new Int_t*[7];
-    for (int i = 0; i < 7; i++) tpc_csum[i] = new Int_t[4];
+    mgr->RegisterAny("FrsCalSciData", calSciArray, !fOnline);
+    mgr->RegisterAny("FrsCalTpcData", calTpcArray, !fOnline);
+
+    calSciArray->clear();
+    calTpcArray->clear();
 
     SetParameters();
 
     return kSUCCESS;
 }
 
-void FrsTPCRaw2Cal::Exec(Option_t* option)
+void FrsRaw2Cal::Exec(Option_t* option)
 {
-    tpcCalArray->clear();
+    if (tpatArray->size() == 0) return;
+    // if (sciArray->size() == 0 || tpcArray->size() == 0) continue;
+    /*if (frs_config->AnlSci)*/ ProcessScintillators();
+    /*if (frs_config->AnlTpc)*/ ProcessTpcs();
 
-    // reset
+    fNEvents++;
+
+}
+
+void FrsRaw2Cal::ProcessScintillators()
+{   
+    auto sciItem = sciArray->at(0);
+
+    // TAC DE
+    sciDE = sciItem.Get_de_array();
+    de_21l = sciDE[frs_config->Get_dE_21l_chan()];
+    de_21r = sciDE[frs_config->Get_dE_21r_chan()];
+    de_22l = sciDE[frs_config->Get_dE_22l_chan()];
+    de_22r = sciDE[frs_config->Get_dE_22r_chan()];
+    de_31l = sciDE[frs_config->Get_dE_31l_chan()];
+    de_31r = sciDE[frs_config->Get_dE_31r_chan()];
+    de_41l = sciDE[frs_config->Get_dE_41l_chan()];
+    de_41r = sciDE[frs_config->Get_dE_41r_chan()];
+    de_42l = sciDE[frs_config->Get_dE_42l_chan()];
+    de_42r = sciDE[frs_config->Get_dE_42r_chan()];
+    de_43l = sciDE[frs_config->Get_dE_43l_chan()];
+    de_43r = sciDE[frs_config->Get_dE_43r_chan()];
+    de_81l = sciDE[frs_config->Get_dE_81l_chan()];
+    de_81r = sciDE[frs_config->Get_dE_81r_chan()];
+
+    // TAC DT
+    sciDT = sciItem.Get_dt_array();
+    dt_21l_21r = sciDT[frs_config->Get_dT_21l_21r_chan()];
+    dt_22l_22r = sciDT[frs_config->Get_dT_22l_22r_chan()];
+    dt_41l_41r = sciDT[frs_config->Get_dT_41l_41r_chan()];
+    dt_42l_42r = sciDT[frs_config->Get_dT_42l_42r_chan()];
+    dt_43l_43r = sciDT[frs_config->Get_dT_43l_43r_chan()];
+    dt_81l_81r = sciDT[frs_config->Get_dT_81l_81r_chan()];
+    dt_21l_41l = sciDT[frs_config->Get_dT_21l_41l_chan()];
+    dt_21r_41r = sciDT[frs_config->Get_dT_21r_41r_chan()];
+    dt_42r_21r = sciDT[frs_config->Get_dT_42l_21l_chan()];
+    dt_42l_21l = sciDT[frs_config->Get_dT_42r_21r_chan()];
+    dt_21l_81l = sciDT[frs_config->Get_dT_21l_81l_chan()];
+    dt_21r_81r = sciDT[frs_config->Get_dT_21r_81r_chan()];
+    dt_22l_41l = sciDT[frs_config->Get_dT_22l_41l_chan()];
+    dt_22r_41r = sciDT[frs_config->Get_dT_22r_41r_chan()];
+    dt_22l_81l = sciDT[frs_config->Get_dT_22l_81l_chan()];
+    dt_22r_81r = sciDT[frs_config->Get_dT_22r_81r_chan()];
+
+    // MHTDC T
+    sciMHTDC = sciItem.Get_mhtdc_array();
+
+    sci11_hits = sciMHTDC[frs_config->Get_mhtdc_11_chan()];
+    sci21l_hits = sciMHTDC[frs_config->Get_mhtdc_21L_chan()];
+    sci21r_hits = sciMHTDC[frs_config->Get_mhtdc_21R_chan()];
+    sci22l_hits = sciMHTDC[frs_config->Get_mhtdc_22L_chan()];
+    sci22r_hits = sciMHTDC[frs_config->Get_mhtdc_22R_chan()];
+    sci31l_hits = sciMHTDC[frs_config->Get_mhtdc_31L_chan()];
+    sci31r_hits = sciMHTDC[frs_config->Get_mhtdc_31R_chan()];
+    sci41l_hits = sciMHTDC[frs_config->Get_mhtdc_41L_chan()];
+    sci41r_hits = sciMHTDC[frs_config->Get_mhtdc_41R_chan()];
+    sci42l_hits = sciMHTDC[frs_config->Get_mhtdc_42L_chan()];
+    sci42r_hits = sciMHTDC[frs_config->Get_mhtdc_42R_chan()];
+    sci43l_hits = sciMHTDC[frs_config->Get_mhtdc_43L_chan()];
+    sci43r_hits = sciMHTDC[frs_config->Get_mhtdc_43R_chan()];
+    sci81l_hits = sciMHTDC[frs_config->Get_mhtdc_81L_chan()];
+    sci81r_hits = sciMHTDC[frs_config->Get_mhtdc_81R_chan()];
+
+    auto & entry = calSciArray->emplace_back();
+    entry.SetAll(de_21l,
+                de_21r,
+                de_22l,
+                de_22r,
+                de_31l,
+                de_31r,
+                de_41l,
+                de_41r,
+                de_42l,
+                de_42r,
+                de_43l,
+                de_43r,
+                de_81l,
+                de_81r,
+                dt_21l_21r,
+                dt_22l_22r,
+                dt_41l_41r,
+                dt_42l_42r,
+                dt_43l_43r,
+                dt_81l_81r,
+                dt_21l_41l,
+                dt_21r_41r,
+                dt_42r_21r,
+                dt_42l_21l,
+                dt_21l_81l,
+                dt_21r_81r,
+                dt_22l_41l,
+                dt_22r_41r,
+                dt_22l_81l,
+                dt_22r_81r,
+                sci11_hits,
+                sci21l_hits,
+                sci21r_hits,
+                sci22l_hits,
+                sci22r_hits,
+                sci31l_hits,
+                sci31r_hits,
+                sci41l_hits,
+                sci41r_hits,
+                sci42l_hits,
+                sci42r_hits,
+                sci43l_hits,
+                sci43r_hits,
+                sci81l_hits,
+                sci81r_hits);
+
+}
+
+void FrsRaw2Cal::ProcessTpcs()
+{
+    // reset - do in finish event,,,,
     std::vector<Int_t> v1190_lead_hits[128];
     for (int i = 0; i < 7; i++)
     {
@@ -209,185 +306,23 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
         for (int j = 0; j < 4; j++) tpc_csum[i][j] = -9999999;
     }
 
-    for (const auto & adcItem : *adcArray)
+    auto tpcItem = tpcArray->at(0);
+    adcData = tpcItem.Get_adc_data();
+    for (int i = 0; i < 7; i++)
     {
-        // std::cout << "TPC: " << adcItem.Get_tpc() << " - Channel: " << adcItem.Get_channel() << " - Data: " << adcItem.Get_adc_data() << std::endl; 
-        uint32_t itpc = adcItem.Get_tpc();
-        uint32_t channel = adcItem.Get_channel();
-        uint32_t data = adcItem.Get_adc_data();
-
-        // mapping ...........
-        if (channel >= 0 && channel < 4) tpc_a[itpc][channel] = data;
-        else if (channel == 4) tpc_l[itpc][0] = data;
-        else if (channel == 5) tpc_r[itpc][0] = data;
-        else if (channel == 6) tpc_l[itpc][1] = data;
-        else if (channel == 7) tpc_r[itpc][1] = data;
-    
+        for (int j = 0; j < 4; j++) tpc_a[i][j] = adcData[i][j];
+        tpc_l[i][0] = adcData[i][4];
+        tpc_r[i][0] = adcData[i][5];
+        tpc_l[i][1] = adcData[i][6];
+        tpc_r[i][1] = adcData[i][7];
     }
 
-
-
-    // for (const auto & v7x5item : *v7x5array)
-    // {
-    //     uint32_t channel = v7x5item.Get_channel();
-    //     uint32_t geo = v7x5item.Get_geo();
-    //     uint32_t data = v7x5item.Get_v7x5_data();
-    //     int tpc_s2_geo = 12;
-    //     int tpc_s3_geo = 8; // lol
-    //     int tpc_s4_geo = 8; // for NOW!! MAYBE 13????
-    //     switch (channel)
-    //     {   
-    //         case 0:
-    //             if (geo == tpc_s2_geo) tpc_a[0][0] = data; // 21
-    //             if (geo == tpc_s4_geo) tpc_a[4][0] = data; // 41
-    //             break;
-    //         case 1:
-    //             if (geo == tpc_s2_geo) tpc_a[0][1] = data; // 21
-    //             if (geo == tpc_s4_geo) tpc_a[4][1] = data; // 41
-    //             break;
-    //         case 2:
-    //             if (geo == tpc_s2_geo) tpc_a[0][2] = data; // 21
-    //             if (geo == tpc_s4_geo) tpc_a[4][2] = data; // 41
-    //             break;
-    //         case 3:
-    //             if (geo == tpc_s2_geo) tpc_a[0][3] = data; // 21
-    //             if (geo == tpc_s4_geo) tpc_a[4][3] = data; // 41
-    //             break;
-    //         case 4:
-    //             if (geo == tpc_s2_geo) tpc_l[0][0] = data; // 21
-    //             if (geo == tpc_s4_geo) tpc_l[4][0] = data; // 41
-    //             break;
-    //         case 5:
-    //             if (geo == tpc_s2_geo) tpc_r[0][0] = data; // 21
-    //             if (geo == tpc_s4_geo) tpc_r[4][0] = data; // 41
-    //             break;
-    //         case 6:
-    //             if (geo == tpc_s2_geo) tpc_l[0][1] = data; // 21
-    //             if (geo == tpc_s4_geo) tpc_l[4][1] = data; // 41
-    //             break;
-    //         case 7:
-    //             if (geo == tpc_s2_geo) tpc_r[0][1] = data; // 21
-    //             if (geo == tpc_s4_geo) tpc_r[4][1] = data; // 41
-    //             break;
-    //         case 8:
-    //             if (geo == tpc_s2_geo) tpc_a[1][0] = data; // 22
-    //             if (geo == tpc_s4_geo) tpc_a[5][0] = data; // 42
-    //             break;
-    //         case 9:
-    //             if (geo == tpc_s2_geo) tpc_a[1][1] = data; // 22
-    //             if (geo == tpc_s4_geo) tpc_a[5][1] = data; // 42
-    //             break;
-    //         case 10:
-    //             if (geo == tpc_s2_geo) tpc_a[1][2] = data; // 22
-    //             if (geo == tpc_s4_geo) tpc_a[5][2] = data; // 42
-    //             break;
-    //         case 11:
-    //             if (geo == tpc_s2_geo) tpc_a[1][3] = data; // 22
-    //             if (geo == tpc_s4_geo) tpc_a[5][3] = data; // 42
-    //             break;
-    //         case 12:
-    //             if (geo == tpc_s2_geo) tpc_l[1][0] = data; // 22
-    //             if (geo == tpc_s4_geo) tpc_l[5][0] = data; // 42
-    //             break;
-    //         case 13:
-    //             if (geo == tpc_s2_geo) tpc_r[1][0] = data; // 22
-    //             if (geo == tpc_s4_geo) tpc_r[5][0] = data; // 42
-    //             break;
-    //         case 14:
-    //             if (geo == tpc_s2_geo) tpc_l[1][1] = data; // 22
-    //             if (geo == tpc_s4_geo) tpc_l[5][1] = data; // 42
-    //             break;
-    //         case 15:
-    //             if (geo == tpc_s2_geo) tpc_r[1][1] = data; // 22
-    //             if (geo == tpc_s4_geo) tpc_r[5][1] = data; // 42
-    //             break;
-    //         case 16:
-    //             if (geo == tpc_s2_geo) tpc_a[2][0] = data; // 23
-    //             if (geo == tpc_s3_geo) tpc_a[6][0] = data; // 31
-    //             break;
-    //         case 17:
-    //             if (geo == tpc_s2_geo) tpc_a[2][1] = data; // 23
-    //             if (geo == tpc_s3_geo) tpc_a[6][1] = data; // 31
-    //             break;
-    //         case 18:
-    //             if (geo == tpc_s2_geo) tpc_a[2][2] = data; // 23
-    //             if (geo == tpc_s3_geo) tpc_a[6][2] = data; // 31
-    //             break;
-    //         case 19:
-    //             if (geo == tpc_s2_geo) tpc_a[2][3] = data; // 23
-    //             if (geo == tpc_s3_geo) tpc_a[6][3] = data; // 31
-    //             break;
-    //         case 20:
-    //             if (geo == tpc_s2_geo) tpc_l[2][0] = data; // 23
-    //             if (geo == tpc_s3_geo) tpc_l[6][0] = data; // 31
-    //             break;
-    //         case 21:
-    //             if (geo == tpc_s2_geo) tpc_r[2][0] = data; // 23
-    //             if (geo == tpc_s3_geo) tpc_r[6][0] = data; // 31
-    //             break;
-    //         case 22:
-    //             if (geo == tpc_s2_geo) tpc_l[2][1] = data; // 23
-    //             if (geo == tpc_s3_geo) tpc_l[6][1] = data; // 31
-    //             break;
-    //         case 23:
-    //             if (geo == tpc_s2_geo) tpc_r[2][1] = data; // 23
-    //             if (geo == tpc_s3_geo) tpc_r[6][1] = data; // 31
-    //             break;
-    //         case 24:
-    //             if (geo == tpc_s2_geo) tpc_a[3][0] = data; // 24
-    //             break;
-    //         case 25:
-    //             if (geo == tpc_s2_geo) tpc_a[3][1] = data; // 24
-    //             break;
-    //         case 26:
-    //             if (geo == tpc_s2_geo) tpc_a[3][2] = data; // 24
-    //             break;
-    //         case 27:
-    //             if (geo == tpc_s2_geo) tpc_a[3][3] = data; // 24
-    //             break;
-    //         case 28:
-    //             if (geo == tpc_s2_geo) tpc_l[3][0] = data; // 24
-    //             break;
-    //         case 29:
-    //             if (geo == tpc_s2_geo) tpc_r[3][0] = data; // 24
-    //             break;
-    //         case 30:
-    //             if (geo == tpc_s2_geo) tpc_l[3][1] = data; // 24
-    //             break;
-    //         case 31:
-    //             if (geo == tpc_s2_geo) tpc_r[3][1] = data; // 24
-    //             break;
-
-    //     }
-    // }
-
-    int v1190_count[128] = {0};
-    for (const auto & tdcItem : *tdcArray)
-    {
-        uint32_t channel = tdcItem.Get_channel();
-        uint32_t data = tdcItem.Get_tdc_data();
-        uint32_t lot = tdcItem.Get_lead_or_trail();
-
-        // leads 0, trails 1  
-        if (lot == 0 && v1190_count[channel] < 64) v1190_lead_hits[channel].emplace_back(data);
-
-        v1190_count[channel]++;
+    tdcData = tpcItem.Get_tdc_data();
+    for (int i = 0; i < 128; i++)
+    {   
+        for (int j = 0; j < tdcData[i].size(); j++) v1190_lead_hits[i].emplace_back(tdcData[i].at(j));
     }
-    
 
-    // for (const auto & v1190item : *v1190array)
-    // {
-    //     uint32_t channel = v1190item.Get_channel();
-    //     uint32_t data = v1190item.Get_v1190_data();
-    //     uint32_t lot = v1190item.Get_leadOrTrail();
-
-    //     // leads 0, trails 1  
-    //     if (lot == 0 && v1190_count[channel] < 64) v1190_lead_hits[channel].emplace_back(data);
-
-    //     v1190_count[channel]++;
-    // }
-    
-   
     for (int i = 0; i < 7; i++)
     {
         double temp_de = 1.0;
@@ -399,7 +334,6 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
             // each element a vector
             tpc_dt[i][j] = v1190_lead_hits[v1190_channel_dt[i][j]];
             
-
             if (tpc_a[i][j] - tpc->a_offset[i][j] > 5.0)
             {
                 temp_de *= (tpc_a[i][j] - tpc->a_offset[i][j]);
@@ -793,7 +727,7 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
         tpc_sc42_y =-999;  
     }
 
-    auto & tpcEntry = tpcCalArray->emplace_back();
+    auto & tpcEntry = calTpcArray->emplace_back();
     tpcEntry.SetAll(tpc_x,
         b_tpc_xy,
         tpc_csum,
@@ -828,34 +762,31 @@ void FrsTPCRaw2Cal::Exec(Option_t* option)
         tpc_music42_x,
         tpc_music43_x);
 
-    fNEvents += 1;
-
-
 }
 
 
-void FrsTPCRaw2Cal::ZeroArrays()
+void FrsRaw2Cal::FinishEvent()
 {   
-    memset(tpc_a, 0, sizeof(tpc_a));
-    memset(tpc_l, 0, sizeof(tpc_l));
-    memset(tpc_r, 0, sizeof(tpc_r));
-    memset(b_tpc_timeref, 0, sizeof(b_tpc_timeref));
-    memset(tpc_timeref_s, 0, sizeof(tpc_timeref_s));
-    memset(tpc_dt_s, 0, sizeof(tpc_dt_s));
-    memset(tpc_lt_s, 0, sizeof(tpc_lt_s));
-    memset(tpc_rt_s, 0, sizeof(tpc_rt_s));
-    memset(tpc_de, 0, sizeof(tpc_de));
-    memset(b_tpc_de, 0, sizeof(b_tpc_de));
-    memset(b_tpc_csum, 0, sizeof(b_tpc_csum));
-    memset(tpc_x, 0, sizeof(tpc_x));
-    memset(tpc_y, 0, sizeof(tpc_y));
-    memset(tpc_xraw, 0, sizeof(tpc_xraw));
-    memset(tpc_yraw, 0, sizeof(tpc_yraw));
-    memset(tpc_dx12, 0, sizeof(tpc_dx12));
-}
+    calSciArray->clear();
+    calTpcArray->clear();
+    for (int i = 0; i < 7; i++)
+    {
+        tpc_calibgrid[i].clear();
+        for (int j = 0; j < 2; j++)
+        {
+            tpc_lt[i][j].clear();
+            tpc_rt[i][j].clear();
+        }
+        for (int j = 0; j < 4; j++)
+        {
+            tpc_dt[i][j].clear();
+        }
 
-void FrsTPCRaw2Cal::ZeroVariables()
-{
+    }
+    for (int i = 0; i < 8; i++)
+    {
+        tpc_timeref[i].clear();
+    }
     tpc_x_s2_foc_21_22 = -999;
     tpc_y_s2_foc_21_22 = -999;
     tpc_angle_x_s2_foc_21_22 = -999;
@@ -921,58 +852,28 @@ void FrsTPCRaw2Cal::ZeroVariables()
     music1_y3 = -999;
     music1_y4 = -999;
     music2_x = -999;
+    memset(tpc_a, 0, sizeof(tpc_a));
+    memset(tpc_l, 0, sizeof(tpc_l));
+    memset(tpc_r, 0, sizeof(tpc_r));
+    memset(b_tpc_timeref, 0, sizeof(b_tpc_timeref));
+    memset(tpc_timeref_s, 0, sizeof(tpc_timeref_s));
+    memset(tpc_dt_s, 0, sizeof(tpc_dt_s));
+    memset(tpc_lt_s, 0, sizeof(tpc_lt_s));
+    memset(tpc_rt_s, 0, sizeof(tpc_rt_s));
+    memset(tpc_de, 0, sizeof(tpc_de));
+    memset(b_tpc_de, 0, sizeof(b_tpc_de));
+    memset(b_tpc_csum, 0, sizeof(b_tpc_csum));
+    memset(tpc_x, 0, sizeof(tpc_x));
+    memset(tpc_y, 0, sizeof(tpc_y));
+    memset(tpc_xraw, 0, sizeof(tpc_xraw));
+    memset(tpc_yraw, 0, sizeof(tpc_yraw));
+    memset(tpc_dx12, 0, sizeof(tpc_dx12));
 }
 
-void FrsTPCRaw2Cal::ClearVectors()
+void FrsRaw2Cal::FinishTask()
 {
-    for (int i = 0; i < 7; i++)
-    {
-        tpc_calibgrid[i].clear();
-        for (int j = 0; j < 2; j++)
-        {
-            tpc_lt[i][j].clear();
-            tpc_rt[i][j].clear();
-        }
-        for (int j = 0; j < 4; j++)
-        {
-            tpc_dt[i][j].clear();
-        }
-
-    }
-    for (int i = 0; i < 8; i++)
-    {
-        tpc_timeref[i].clear();
-    }
-    /*for (int i = 0; i < 128; i++)
-    {
-        v1190_lead_hits[i].clear();
-    }*/
-    
-    
-    /*
-    v1190_channel.clear();
-    v1190_data.clear();
-    v1190_lot.clear();
-    for (int i = 0; i < 2; i++)
-    {
-        v7x5_geo[i].clear();
-        v7x5_channel[i].clear();
-        v7x5_data[i].clear();
-    }
-    */
+    c4LOG(info, Form("Wrote %i events.",fNEvents));
 
 }
 
-void FrsTPCRaw2Cal::FinishEvent()
-{
-    ZeroArrays();
-    ZeroVariables();
-    ClearVectors();
-}
-
-void FrsTPCRaw2Cal::FinishTask()
-{
-    c4LOG(info, Form("Wrote %i events.", fNEvents));
-}
-
-ClassImp(FrsTPCRaw2Cal)
+ClassImp(FrsRaw2Cal)

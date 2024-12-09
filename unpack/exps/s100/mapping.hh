@@ -2,11 +2,11 @@
 SIGNAL(SPILL_ON, frsmain.spill_on.spillon, DATA8);
 SIGNAL(SPILL_OFF, frsmain.spill_off.spilloff, DATA8);
 
-SIGNAL(ZERO_SUPPRESS: SCALERS1_32);
+SIGNAL(ZERO_SUPPRESS: SCALERS2_32);
 SIGNAL(SCALERS1_1, frsmain.data.v830.data[0], SCALERS1_32, frsmain.data.v830.data[31], DATA32);
 
-SIGNAL(ZERO_SUPPRESS: SCI_TAC_DE_32);
-SIGNAL(SCI_TAC_DE_1, frsmain.data.v792.data[0], SCI_TAC_DE_32, frsmain.data.v792.data[31], DATA32);
+SIGNAL(ZERO_SUPPRESS: SCI_TAC_DE_16); // 16 should be fine? can increase arrays in software later if needed
+SIGNAL(SCI_TAC_DE_1, frsmain.data.v792.data[0], SCI_TAC_DE_32, frsmain.data.v792.data[15], DATA32);
 
 SIGNAL(ZERO_SUPPRESS_MULTI(128): SCI_MHTDC_T_16);
 SIGNAL(SCI_MHTDC_T_1, frsmain.data.v1290.data[0], SCI_MHTDC_T_16, frsmain.data.v1290.data[15], DATA24);
@@ -42,7 +42,23 @@ SIGNAL(ZERO_SUPPRESS_MULTI(128): TPC_TDC_T_128);
 SIGNAL(TPC_TDC_T_1, frstpc.data.v1190.data[0], TPC_TDC_T_128, frstpc.data.v1190.data[127], DATA24);
 SIGNAL(ZERO_SUPPRESS_MULTI(128): TPC_TDC_LOT_128);
 SIGNAL(TPC_TDC_LOT_1, frstpc.data.v1190.leadOrTrail[0], TPC_TDC_LOT_128, frstpc.data.v1190.leadOrTrail[127], DATA8);
+// :::::::::::::::::::::::::::::::::::::::
 
-// ::::::: User Crate :::::::::::::::::::
+// ::::::: User Crate ::::::::::::::::::::
+SIGNAL(SCALERS2_1, frsuser.data.v830.data[0], SCALERS2_32, frsuser.data.v830.data[31], DATA32);
 
-// ::::::: TPAT Crate :::::::::::::::::::
+SIGNAL(ZERO_SUPPRESS: SCI_TAC_DT_16);
+SIGNAL(SCI_TAC_DT_1, frsuser.data.v785[1].data[0], SCI_TAC_DT_16, frsuser.data.v785[1].data[15], DATA24);
+
+SIGNAL(ZERO_SUPPRESS: MUSIC2_E_8);
+SIGNAL(MUSIC1_E_1, frsuser.data.v785[0].data[0], MUSIC1_E_8, frsuser.data.v785[0].data[7], DATA24);
+SIGNAL(MUSIC2_E_1, frsuser.data.v785[0].data[8], MUSIC2_E_8, frsuser.data.v785[0].data[15], DATA24);
+// :::::::::::::::::::::::::::::::::::::::
+
+// ::::::: TPAT Crate ::::::::::::::::::::
+SIGNAL(WR_ID, frstpat.wr.subsystem_id, DATA12);
+SIGNAL(WR_T1, frstpat.wr.t1, DATA16);
+SIGNAL(WR_T2, frstpat.wr.t2, DATA16);
+SIGNAL(WR_T3, frstpat.wr.t3, DATA16);
+SIGNAL(WR_T4, frstpat.wr.t4, DATA16);
+SIGNAL(TPAT, frstpat.data.tpat, DATA16);

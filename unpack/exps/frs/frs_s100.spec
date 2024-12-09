@@ -156,10 +156,10 @@ USER_CRATE_DATA()
     {
         barrier1 = BARRIER();
         // really not sure if this is correct, we'll see
-        v775[0] = VME_CAEN_V7X5_FRS(geom=8);
-        v775[1] = VME_CAEN_V7X5_FRS(geom=9);
-        v785[0] = VME_CAEN_V7X5_FRS(geom=10);
-        v785[1] = VME_CAEN_V7X5_FRS(geom=12);
+        v775[0] = VME_CAEN_V7X5_FRS(geom=8); // we don't care
+        v775[1] = VME_CAEN_V7X5_FRS(geom=9); // we don't care
+        v785[0] = VME_CAEN_V7X5_FRS(geom=10); // music e
+        v785[1] = VME_CAEN_V7X5_FRS(geom=12); // sci tac dt
     }
 
     /*

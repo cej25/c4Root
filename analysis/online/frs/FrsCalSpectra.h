@@ -8,6 +8,7 @@
 #include "FrsTPCCalData.h"
 #include "FrsUserCalData.h"
 #include "FrsTpatData.h"
+#include "FrsData.h"
 
 #include "TDirectory.h"
 #include "TFolder.h"

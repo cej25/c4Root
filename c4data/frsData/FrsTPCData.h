@@ -33,8 +33,20 @@ class tpcTdcItem : public TObject
     public:
         tpcTdcItem();
 
-        void SetAll(int chan, int data, int lot);
+        void SetAll(uint32_t chan, uint32_t data, uint32_t lot);
         void Reset();
+
+        uint32_t Get_channel() const { return channel; }
+        uint32_t Get_tdc_data() const { return tdcData; }
+        uint32_t Get_lead_or_trail() const { return leadOrTrail; }
+
+        ClassDef(tpcTdcItem, 1);
+    
+    private:
+
+        uint32_t channel;
+        uint32_t tdcData;
+        uint32_t leadOrTrail;
 };
 
 class FrsTPCV7X5Item : public TObject

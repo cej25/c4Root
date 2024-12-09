@@ -12,6 +12,7 @@
 #include "FrsTPCCalData.h"
 #include "FrsUserCalData.h"
 #include "FrsTpatData.h"
+#include "FrsData.h"
 #include "TravMusCalData.h"
 #include "FrsHitData.h"
 #include <TRandom3.h>

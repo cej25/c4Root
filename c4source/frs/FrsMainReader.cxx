@@ -78,10 +78,10 @@ Bool_t FrsMainReader::Read()
     header->SetSpillFlag(spill_flag);
 
     // V830 Scalers -- we should rename to be general
-    for (int i = 0; i < fData->MAIN_SCALERS; i++)
+    for (int i = 0; i < fData->SCALERS[0]._; i++)
     {
-        uint32_t index = fData->MAIN_SCALERSI[i];
-        uint32_t scaler = fData->MAIN_SCALERSv[i];
+        uint32_t index = fData->SCALERS[0].I[i];
+        uint32_t scaler = fData->SCALERS[0].v[i];
         auto & entry = v830array->emplace_back();
         entry.SetAll(index, scaler);
     }
@@ -98,13 +98,12 @@ Bool_t FrsMainReader::Read()
 
     // V792
 
-    uint32_t geo = fData->SCI_DE_GEO;
-    for (int i = 0; i < fData->SCI_DE_TAC; i++)
+    for (int i = 0; i < fData->SCI_TAC_DE; i++)
     {
-        int channel = fData->SCI_DE_TACI[i] - 1;
-        int data = fData->SCI_DE_TACv[channel];
+        int channel = fData->SCI_TAC_DEI[i] - 1;
+        int data = fData->SCI_TAC_DEv[channel];
         auto & entry = v792array->emplace_back();
-        entry.SetAll(channel, data, geo);
+        entry.SetAll(channel, data, 14); // geo was what 14?
     }
 
     // uint32_t geo = fData->frsmain_data_v792_geo;
@@ -130,16 +129,16 @@ Bool_t FrsMainReader::Read()
 
     // V1290
     int hit_index = 0;
-    for (int channel_index = 0; channel_index < fData->SCI_T_MHTDCM; channel_index++)
+    for (int channel_index = 0; channel_index < fData->SCI_MHTDC_TM; channel_index++)
     {
-        int current_channel = fData->SCI_T_MHTDCMI[channel_index];
-        int next_channel_start = fData->SCI_T_MHTDCME[channel_index];
+        int current_channel = fData->SCI_MHTDC_TMI[channel_index];
+        int next_channel_start = fData->SCI_MHTDC_TME[channel_index];
 
         for (int j = hit_index; j < next_channel_start; j++)
         {
             uint32_t channel = current_channel - 1;
-            uint32_t data = fData->SCI_T_MHTDCv[j];
-            uint32_t lot = fData->SCI_LOT_MHTDCv[j];
+            uint32_t data = fData->SCI_MHTDC_Tv[j];
+            uint32_t lot = fData->SCI_MHTDC_LOTv[j];
 
             auto & entry = v1290array->emplace_back();
             entry.SetAll(channel, data, lot);
@@ -159,7 +158,7 @@ Bool_t FrsMainReader::Read()
         {
             uint32_t channel = current_channel - 1 + 16;
             uint32_t data = fData->MUSIC[0].Tv[j];
-            uint32_t lot = fData->MUSIC[0].LOT_Tv[j];
+            uint32_t lot = fData->MUSIC[0].LOTv[j];
 
             auto & entry = v1290array->emplace_back();
             entry.SetAll(channel, data, lot);
@@ -179,7 +178,7 @@ Bool_t FrsMainReader::Read()
         {
             uint32_t channel = current_channel - 1 + 24;
             uint32_t data = fData->MUSIC[1].Tv[j];
-            uint32_t lot = fData->MUSIC[1].LOT_Tv[j];
+            uint32_t lot = fData->MUSIC[1].LOTv[j];
 
             auto & entry = v1290array->emplace_back();
             entry.SetAll(channel, data, lot);
