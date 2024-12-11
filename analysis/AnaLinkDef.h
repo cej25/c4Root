@@ -38,6 +38,7 @@
 #pragma link C++ class TimeMachineNearline+;
 #pragma link C++ class LisaNearlineSpectra+;
 #pragma link C++ class LisaNearlineSpectraDaq+;
+#pragma link C++ class LisaNearlineSpectraAna+;
 #pragma link C++ class LisaTraceAnalysis+;
 #pragma link C++ class BB7NearlineSpectra+;
 #pragma link C++ class FimpNearlineSpectra+;

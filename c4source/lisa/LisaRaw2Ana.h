@@ -29,8 +29,6 @@ class LisaRaw2Ana : public FairTask
         virtual void FinishEvent();
         virtual void FinishTask();
 
-        //void PrintMWDParameter();
-
     private:
         TLisaConfiguration const* lisa_config;
     
@@ -39,6 +37,12 @@ class LisaRaw2Ana : public FairTask
         EventHeader* header;
         Bool_t fOnline;
         Int_t fNEvents;
+
+        //::: Variable calculated with MWD algorithm
+        double energy_MWD;
+        std::vector<int16_t> trace_MWD;
+        //bool pileup_MWD;
+        //bool overflow_MWD;
 
     public:
         ClassDef(LisaRaw2Ana, 1)

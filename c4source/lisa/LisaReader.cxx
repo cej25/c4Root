@@ -113,7 +113,7 @@ Bool_t LisaReader::Read()
             }
             uint32_t ch_energy = energy;
 
-            std::vector<uint16_t> trace;
+            std::vector<int16_t> trace;
         
             
             uint8_t channel_id_trace = fData->lisa_data[it_board_number].channel_id_tracesv[index];

@@ -52,42 +52,67 @@ InitStatus LisaRaw2Ana::Init()
 }
 
 
-//:::
-// void LisaRaw2Cal::PrintMWDParameter()
-// {
-//     if (lisa_config->MWDParameterLoaded())
-//     {
-//         for (const auto& entry : lisa_config->MWDParameters())
-//         {
-//             //print parameters values
-//         }
-//     }
-//     else
-//     {
-//         c4LOG(info, "MWD parameters are not loaded");
-//     }
-// }   
-//:::
-
-
-
 void LisaRaw2Ana::Exec(Option_t* option)
 {
-    // lisaAnaArray->clear();
+    lisaAnaArray->clear();
 
-    // for (auto const & lisaItem : *lisaArray)
-    // {
-        
-                
-    //     if (lisa_config->MWDParametersLoaded())
-    //     {
-
-    //         c4LOG(warn, "MWD Parameters loaded? ");
-
-    //     }
+    for (auto const & lisaItem : *lisaArray)
+    {
+               
+        if (lisa_config->MWDParametersLoaded())
+        {
 
 
-    // }
+            // ::: Calculation for MWD trace (trace_MWD) :::
+            std::vector<int16_t> trace_febex = lisaItem.Get_trace();
+            double par1 = lisa_config->Get_testconstant_1();
+
+            trace_MWD.resize(trace_febex.size());
+            for( int i = 0; i < trace_febex.size(); i++)
+            {
+                trace_MWD.at(i) = trace_febex.at(i) * par1;
+            }
+            
+
+            // ::: Calculation for MWD energy (energy_MWD) :::
+            double energy_febex = lisaItem.Get_channel_energy();
+            double par2 = lisa_config->Get_testconstant_2();
+            energy_MWD = energy_febex * par2;
+
+            
+            
+            // ::: Calculation for MWD pileup (pileup_MWD) :::
+            // ...
+            // ::: Calculation for MWD overflow (overflow_MWD) :::
+            // ...
+
+
+            auto & entry = lisaAnaArray->emplace_back();    
+            
+            uint64_t EVTno = header->GetEventno();
+            entry.SetAll(
+                lisaItem.Get_wr_t(),
+                lisaItem.Get_wr_id(),
+                lisaItem.Get_board_id(),
+                lisaItem.Get_board_event_time(),
+                lisaItem.Get_channel_id(),
+                lisaItem.Get_channel_time(),
+                lisaItem.Get_pileup(),
+                //pileup_MWD,
+                lisaItem.Get_overflow(),
+                //overflow_MWD,
+                lisaItem.Get_channel_energy(),
+                energy_MWD,
+                lisaItem.Get_channel_id_traces(),
+                lisaItem.Get_trace(),
+                trace_MWD
+                //EVTno
+            );
+
+        }
+
+
+    }
 }
 
 void LisaRaw2Ana::FinishEvent()
