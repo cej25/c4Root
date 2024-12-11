@@ -13,7 +13,7 @@
 
 TLisaConfiguration* TLisaConfiguration::instance = nullptr;
 
-//std::string TLisaConfiguration::MWD_file = "blank";
+std::string TLisaConfiguration::MWD_file = "blank";
 std::string TLisaConfiguration::mapping_file = "blank";
 std::string TLisaConfiguration::gain_matching_file = "blank";
 std::string TLisaConfiguration::calibration_file = "blank";
@@ -50,7 +50,7 @@ TLisaConfiguration::TLisaConfiguration()
     ,   num_detectors(0)
     ,   num_febex_boards(0)
 {
-    //ReadMWDParameters();
+    ReadMWDParameters();
     ReadMappingFile();
     ReadGMFile();
     //ReadCalibrationCoefficients();
@@ -58,35 +58,48 @@ TLisaConfiguration::TLisaConfiguration()
 }
 
 
-// void TLisaConfiguration::ReadMWDParameters()
-// {   
-//     std::cout<<"MWD elefanti"<<std::endl;
-//     //std::set<int> layers;
-//     //std::set<int> x_positions;
-//     //std::set<int> y_positions;
+void TLisaConfiguration::ReadMWDParameters()
+{       
+    std::ifstream MWD_parameters_file(MWD_file);
+    std::string line;
+
+    if (MWD_parameters_file.fail()) c4LOG(warn, "Could not open LISA MWD parameters file.");
+
+    std::cout << "::: Parameters MDW ::: " << "\n";        
+    while (std::getline(MWD_parameters_file, line))
+    {
+        if (line.empty() || line[0] == '#') continue; 
+        
+        std::istringstream iss(line);
+        std::string parameter;
+        double value;
+
+        if (!(iss >> parameter >> value)) 
+        {
+            c4LOG(warn, "Malformed line in MWD parameters file: " + line);
+            continue;
+        }
+
+        //iss >> parameter >> value;
+
+        if( parameter == "test_constant1") test_const1 = value;
+        else if( parameter == "test_constant2") test_const2 = value;
+        else if( parameter == "test_constant3") test_const3 = value;
+        else if( parameter == "test_constant4") test_const4 = value;
     
-//     std::ifstream MWD_parameters_file (MWD_file);
-//     std::string line;
-
-//     if (MWD_parameters_file.fail()) c4LOG(fatal, "Could not open LISA MWD parameters file.");
-
-//     while (std::getline(MWD_parameters_file, line))
-//     {
-//         if (line.empty() || line[0] == '#') continue;
-
-//     }
+        std::cout << parameter << " : " << value <<  "\n";
+    }
     
-//     MWD_parameters_loaded = 1;
-//     MWD_parameters_file.close();
+    MWD_parameters_loaded = 1;
+    MWD_parameters_file.close();
 
-//     c4LOG(info, "Lisa MWD Parameters: " + MWD_file);
-//     return;
+    c4LOG(info, "Lisa MWD Parameters: " + MWD_file);
+    return;
 
-// }
+}
 
 void TLisaConfiguration::ReadMappingFile()
 {   
-    //std::cout<<"un elefante"<<std::endl;
     std::set<int> febex_boards;
     std::set<int> layers;
     std::set<int> x_positions;
@@ -97,7 +110,7 @@ void TLisaConfiguration::ReadMappingFile()
     std::ifstream detector_map_file(mapping_file);
     std::string line;
 
-    if (detector_map_file.fail()) c4LOG(fatal, "Could not open Lisa mapping file"); //return;
+    if (detector_map_file.fail()) c4LOG(warn, "Could not open Lisa mapping file"); //return;
 
     while (std::getline(detector_map_file, line))
     {
@@ -178,7 +191,7 @@ void TLisaConfiguration::ReadMappingFile()
 
 void TLisaConfiguration::ReadGMFile()
 {   
-    std::cout<<"due elefanti"<<std::endl;
+    //std::cout<<"due elefanti"<<std::endl;
     //std::set<int> layers;
     //std::set<int> x_positions;
     //std::set<int> y_positions;
@@ -186,7 +199,7 @@ void TLisaConfiguration::ReadGMFile()
     std::ifstream gain_matching_coeff_file (gain_matching_file);
     std::string line;
 
-    if (gain_matching_coeff_file.fail()) c4LOG(fatal, "Could not open LISA calibration coefficients file.");
+    if (gain_matching_coeff_file.fail()) c4LOG(warn, "Could not open LISA calibration coefficients file.");
 
     while (std::getline(gain_matching_coeff_file, line))
     {

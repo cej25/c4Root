@@ -5,20 +5,20 @@
 #include <vector>
 
 //Not in use.
-class LisaAnaData : public TObject
-{
-    public:
-        LisaAnaData();
+// class LisaAnaData : public TObject
+// {
+//     public:
+//         LisaAnaData();
 
-        // Destructor
-        virtual ~LisaAnaData() {}
+//         // Destructor
+//         virtual ~LisaAnaData() {}
        
-    protected:
+//     protected:
 
 
-    public:
-        ClassDef(LisaAnaData, 1)
-};
+//     public:
+//         ClassDef(LisaAnaData, 1)
+// };
 
 class LisaAnaItem : public TObject
 {
@@ -32,11 +32,14 @@ class LisaAnaItem : public TObject
                     uint8_t ch_id,
                     uint64_t ch_time,
                     bool p,
+                    //bool p_MWD,
                     bool o,
+                    //bool o_MWD,
                     uint32_t ch_energy,
-                    uint32_t ch_energy_ana,
+                    uint32_t ch_energy_MWD,
                     uint8_t ch_id_traces,
-                    std::vector<uint16_t> tr);
+                    std::vector<int16_t> tr,
+                    std::vector<int16_t> trace_MWD);
         void Reset();
 
         uint64_t Get_wr_t() const;
@@ -46,14 +49,17 @@ class LisaAnaItem : public TObject
         uint8_t Get_channel_id() const;
         uint64_t Get_channel_time() const;
         bool Get_pileup() const;
+        //bool Get_pileup_MWD() const;
         bool Get_overflow() const;
+        //bool Get_overflow_MWD() const;
         uint32_t Get_channel_energy() const;
-        uint32_t Get_channel_energy_ana() const;
+        uint32_t Get_channel_energy_MWD() const;
         uint8_t Get_channel_id_traces() const;
-        std::vector<uint16_t> Get_trace() const;
+        std::vector<int16_t> Get_trace() const;
+        std::vector<int16_t> Get_trace_MWD() const;
 
         // Getters
-        ClassDefNV(LisaAnaItem, 2);
+        ClassDef(LisaAnaItem, 1);
     private:
 
         uint64_t wr_t;
@@ -63,11 +69,14 @@ class LisaAnaItem : public TObject
         uint8_t channel_id;
         uint64_t channel_time;
         bool pileup;
+        //bool pileup_MWD;
         bool overflow;
+        //bool overflow_MWD;
         uint32_t channel_energy;
-        uint32_t channel_energy_ana;
+        uint32_t channel_energy_MWD;
         uint8_t channel_id_traces;
-        std::vector<uint16_t> trace;
+        std::vector<int16_t> trace;
+        std::vector<int16_t> trace_MWD;
 
 };
 
@@ -106,19 +115,29 @@ inline bool LisaAnaItem::Get_pileup() const
     return pileup;
 }
 
+// inline bool LisaAnaItem::Get_pileup_MWD() const
+// {
+//     return pileup_MWD;
+// }
+
 inline bool LisaAnaItem::Get_overflow() const
 {
     return overflow;
 }
+
+// inline bool LisaAnaItem::Get_overflow_MWD() const
+// {
+//     return overflow_MWD;
+// }
 
 inline uint32_t LisaAnaItem::Get_channel_energy() const
 {
     return channel_energy;
 }
 
-inline uint32_t LisaAnaItem::Get_channel_energy_ana() const
+inline uint32_t LisaAnaItem::Get_channel_energy_MWD() const
 {
-    return channel_energy_ana;
+    return channel_energy_MWD;
 }
 
 inline uint8_t LisaAnaItem::Get_channel_id_traces() const
@@ -126,9 +145,14 @@ inline uint8_t LisaAnaItem::Get_channel_id_traces() const
     return channel_id_traces;
 }
 
-inline std::vector<uint16_t> LisaAnaItem::Get_trace() const
+inline std::vector<int16_t> LisaAnaItem::Get_trace() const
 {
     return trace;
+}
+
+inline std::vector<int16_t> LisaAnaItem::Get_trace_MWD() const
+{
+    return trace_MWD;
 }
 
 #endif

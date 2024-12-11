@@ -77,6 +77,7 @@ set(SRCS
 ./nearline/timemachine/TimeMachineNearline.cxx
 ./nearline/lisa/LisaNearlineSpectra.cxx
 ./nearline/lisa/LisaNearlineSpectraDaq.cxx
+./nearline/lisa/LisaNearlineSpectraAna.cxx
 ./nearline/lisa/LisaTraceAnalysis.cxx
 ./nearline/fimp/FimpNearlineSpectra.cxx
 ./nearline/bb7/BB7NearlineSpectra.cxx

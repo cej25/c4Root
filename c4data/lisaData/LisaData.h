@@ -25,7 +25,7 @@ class LisaData : public TObject
         inline std::vector<bool> GetOverFlow() { return f_over_flow; }
         inline std::vector<uint32_t> GetEnergy() { return f_ch_energy; }
         inline std::vector<uint32_t> GetIDTraces() { return f_ch_ID_traces; }
-        inline std::vector<uint32_t> GetTraces() { return f_traces;}
+        inline std::vector<int32_t> GetTraces() { return f_traces;}
         inline std::vector<uint32_t> GetTracesI() { return f_tracesI;}
         //inline uint32_t GetTracesL() { return f_traces_l;}
 
@@ -45,7 +45,7 @@ class LisaData : public TObject
         inline void SetOverFlow(std::vector<bool> over_flow ) { f_over_flow = over_flow; }
         inline void SetEnergy(std::vector<uint32_t> ch_energy ) { f_ch_energy = ch_energy; }
         inline void SetIDTraces(std::vector<uint32_t> ch_ID_traces) { f_ch_ID_traces = ch_ID_traces; }
-        inline void SetTraces(std::vector<uint32_t> traces) { f_traces = traces;}
+        inline void SetTraces(std::vector<int32_t> traces) { f_traces = traces;}
         inline void SetTracesI(std::vector<uint32_t> tracesI) { f_tracesI = tracesI;}
         //inline void SetTracesL(uint32_t traces_l) { f_traces_l = traces_l;}
 
@@ -66,7 +66,7 @@ class LisaData : public TObject
         std::vector<bool> f_over_flow;
         std::vector<uint32_t> f_ch_energy;
         std::vector<uint32_t> f_ch_ID_traces;
-        std::vector<uint32_t> f_traces;
+        std::vector<int32_t> f_traces;
         std::vector<uint32_t> f_tracesI;
         //uint32_t f_traces_l;
 
@@ -93,7 +93,7 @@ class LisaItem : public TObject
                     bool o,
                     uint32_t ch_energy,
                     uint8_t ch_id_traces,
-                    std::vector<uint16_t> tr);
+                    std::vector<int16_t> tr);
         void Reset();
 
         uint64_t Get_wr_t() const;
@@ -106,7 +106,7 @@ class LisaItem : public TObject
         bool Get_overflow() const;
         uint32_t Get_channel_energy() const;
         uint8_t Get_channel_id_traces() const;
-        std::vector<uint16_t> Get_trace() const;
+        std::vector<int16_t> Get_trace() const;
 
         // Getters
         ClassDefNV(LisaItem, 2);
@@ -122,7 +122,7 @@ class LisaItem : public TObject
         bool overflow;
         uint32_t channel_energy;
         uint8_t channel_id_traces;
-        std::vector<uint16_t> trace; 
+        std::vector<int16_t> trace; 
 
 };
 
@@ -176,7 +176,7 @@ inline uint8_t LisaItem::Get_channel_id_traces() const
     return channel_id_traces;
 }
 
-inline std::vector<uint16_t> LisaItem::Get_trace() const
+inline std::vector<int16_t> LisaItem::Get_trace() const
 {
     return trace;
 }
