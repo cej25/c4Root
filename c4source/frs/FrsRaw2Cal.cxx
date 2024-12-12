@@ -180,7 +180,7 @@ InitStatus FrsRaw2Cal::Init()
 void FrsRaw2Cal::Exec(Option_t* option)
 {
     if (tpatArray->size() == 0) return;
-    // if (sciArray->size() == 0 || tpcArray->size() == 0) continue;
+    
     /*if (frs_config->AnlSci)*/ ProcessScintillators();
     /*if (frs_config->AnlTpc)*/ ProcessTpcs();
 

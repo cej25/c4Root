@@ -125,6 +125,8 @@
 #pragma link C++ class FrsTpcItem+;
 #pragma link C++ class FrsCalSciItem+;
 #pragma link C++ class FrsCalTpcItem+;
+#pragma link C++ class FrsAnaItem+;
+#pragma link C++ class FrsAnaMultiItem+;
 
 
 #endif

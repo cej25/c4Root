@@ -100,10 +100,10 @@ class TFrsConfiguration
 
         static void SetRunNumber(int run_num) { frun_num = run_num; }
 
-        bool plot_tac_1d = true;
-        bool plot_tac_2d = true;
-        bool plot_mhtdc_1d = true;
-        bool plot_mhtdc_2d = true;
+        Bool_t plot_tac_1d = true;
+        Bool_t plot_tac_2d = true;
+        Bool_t plot_mhtdc_1d = true;
+        Bool_t plot_mhtdc_2d = true;
 
 
         //:::: Drift for TravMus
@@ -114,58 +114,58 @@ class TFrsConfiguration
         std::map<int, std::pair<double,double>> Z1DriftCoefficients() const;
         bool Z1DriftLoaded() const;
 
-        int Get_music_e_geo() const;
+        Int_t Get_music_e_geo() const;
 
         // tac
-        int Get_sci_dE_geo() const;
-        int Get_dE_21l_chan() const;
-        int Get_dE_21r_chan() const;
-        int Get_dE_22l_chan() const;
-        int Get_dE_22r_chan() const;
-        int Get_dE_31l_chan() const;
-        int Get_dE_31r_chan() const;
-        int Get_dE_41l_chan() const;
-        int Get_dE_41r_chan() const;
-        int Get_dE_42l_chan() const;
-        int Get_dE_42r_chan() const;
-        int Get_dE_43l_chan() const;
-        int Get_dE_43r_chan() const;
-        int Get_dE_81l_chan() const;
-        int Get_dE_81r_chan() const;
+        Int_t Get_sci_dE_geo() const;
+        Int_t Get_dE_21l_chan() const;
+        Int_t Get_dE_21r_chan() const;
+        Int_t Get_dE_22l_chan() const;
+        Int_t Get_dE_22r_chan() const;
+        Int_t Get_dE_31l_chan() const;
+        Int_t Get_dE_31r_chan() const;
+        Int_t Get_dE_41l_chan() const;
+        Int_t Get_dE_41r_chan() const;
+        Int_t Get_dE_42l_chan() const;
+        Int_t Get_dE_42r_chan() const;
+        Int_t Get_dE_43l_chan() const;
+        Int_t Get_dE_43r_chan() const;
+        Int_t Get_dE_81l_chan() const;
+        Int_t Get_dE_81r_chan() const;
 
-        int Get_sci_dT_geo() const;
-        int Get_dT_21l_21r_chan() const;
-        int Get_dT_41l_41r_chan() const;
-        int Get_dT_42l_42r_chan() const;
-        int Get_dT_43l_43r_chan() const;
-        int Get_dT_81l_81r_chan() const;
-        int Get_dT_21l_41l_chan() const;
-        int Get_dT_21r_41r_chan() const;
-        int Get_dT_42r_21r_chan() const;
-        int Get_dT_42l_21l_chan() const;
-        int Get_dT_21l_81l_chan() const;
-        int Get_dT_21r_81r_chan() const;
-        int Get_dT_22l_22r_chan() const;
-        int Get_dT_22l_41l_chan() const;
-        int Get_dT_22r_41r_chan() const;
-        int Get_dT_22l_81l_chan() const;
-        int Get_dT_22r_81r_chan() const;
+        Int_t Get_sci_dT_geo() const;
+        Int_t Get_dT_21l_21r_chan() const;
+        Int_t Get_dT_41l_41r_chan() const;
+        Int_t Get_dT_42l_42r_chan() const;
+        Int_t Get_dT_43l_43r_chan() const;
+        Int_t Get_dT_81l_81r_chan() const;
+        Int_t Get_dT_21l_41l_chan() const;
+        Int_t Get_dT_21r_41r_chan() const;
+        Int_t Get_dT_42r_21r_chan() const;
+        Int_t Get_dT_42l_21l_chan() const;
+        Int_t Get_dT_21l_81l_chan() const;
+        Int_t Get_dT_21r_81r_chan() const;
+        Int_t Get_dT_22l_22r_chan() const;
+        Int_t Get_dT_22l_41l_chan() const;
+        Int_t Get_dT_22r_41r_chan() const;
+        Int_t Get_dT_22l_81l_chan() const;
+        Int_t Get_dT_22r_81r_chan() const;
 
-        int Get_mhtdc_11_chan() const;
-        int Get_mhtdc_21L_chan() const;
-        int Get_mhtdc_21R_chan() const;
-        int Get_mhtdc_22L_chan() const;
-        int Get_mhtdc_22R_chan() const;
-        int Get_mhtdc_31L_chan() const;
-        int Get_mhtdc_31R_chan() const;
-        int Get_mhtdc_41L_chan() const;
-        int Get_mhtdc_41R_chan() const;
-        int Get_mhtdc_42L_chan() const;
-        int Get_mhtdc_42R_chan() const;
-        int Get_mhtdc_43L_chan() const;
-        int Get_mhtdc_43R_chan() const;
-        int Get_mhtdc_81L_chan() const;
-        int Get_mhtdc_81R_chan() const;
+        Int_t Get_mhtdc_11_chan() const;
+        Int_t Get_mhtdc_21L_chan() const;
+        Int_t Get_mhtdc_21R_chan() const;
+        Int_t Get_mhtdc_22L_chan() const;
+        Int_t Get_mhtdc_22R_chan() const;
+        Int_t Get_mhtdc_31L_chan() const;
+        Int_t Get_mhtdc_31R_chan() const;
+        Int_t Get_mhtdc_41L_chan() const;
+        Int_t Get_mhtdc_41R_chan() const;
+        Int_t Get_mhtdc_42L_chan() const;
+        Int_t Get_mhtdc_42R_chan() const;
+        Int_t Get_mhtdc_43L_chan() const;
+        Int_t Get_mhtdc_43R_chan() const;
+        Int_t Get_mhtdc_81L_chan() const;
+        Int_t Get_mhtdc_81R_chan() const;
 
 
     private:
@@ -207,68 +207,68 @@ class TFrsConfiguration
         std::string scaler_name[66];
 
         // ::_ Drift
-        std::map<int, std::pair<double,double> > travmus_drift_coeff;
-        bool travmus_drift_loaded = 0;
-        std::map<int, std::pair<double,double> > aoq_drift_coeff;
-        bool aoq_drift_loaded = 0;
-        std::map<int, std::pair<double,double> > z1_drift_coeff;
-        bool z1_drift_loaded = 0;
+        std::map<Int_t, std::pair<Double_t,Double_t> > travmus_drift_coeff;
+        Bool_t travmus_drift_loaded = 0;
+        std::map<Int_t, std::pair<Double_t,Double_t> > aoq_drift_coeff;
+        Bool_t aoq_drift_loaded = 0;
+        std::map<Int_t, std::pair<Double_t,Double_t> > z1_drift_coeff;
+        Bool_t z1_drift_loaded = 0;
 
-        int music_e_geo = 0;
+        Int_t music_e_geo = 0;
 
         // tac
-        int sci_dE_geo = -1;
-        int de_41r_ch = -1;
-        int de_21l_ch = -1;
-        int de_21r_ch = -1;
-        int de_42l_ch = -1;
-        int de_42r_ch = -1;
-        int de_81l_ch = -1;
-        int de_22r_ch = -1;
-        int de_31l_ch = -1;
-        int de_31r_ch = -1;
-        int de_43l_ch = -1;
-        int de_43r_ch = -1;
-        int de_41l_ch = -1;
-        int de_81r_ch = -1;
-        int de_22l_ch = -1;
-        bool dE_mapping_loaded = false;
+        Int_t sci_dE_geo = -1;
+        Int_t de_41r_ch = -1;
+        Int_t de_21l_ch = -1;
+        Int_t de_21r_ch = -1;
+        Int_t de_42l_ch = -1;
+        Int_t de_42r_ch = -1;
+        Int_t de_81l_ch = -1;
+        Int_t de_22r_ch = -1;
+        Int_t de_31l_ch = -1;
+        Int_t de_31r_ch = -1;
+        Int_t de_43l_ch = -1;
+        Int_t de_43r_ch = -1;
+        Int_t de_41l_ch = -1;
+        Int_t de_81r_ch = -1;
+        Int_t de_22l_ch = -1;
+        Bool_t dE_mapping_loaded = false;
 
-        int sci_dT_geo = -1;
-        int dt_21l_21r_ch = -1;
-        int dt_41l_41r_ch = -1;
-        int dt_42l_42r_ch = -1;
-        int dt_43l_43r_ch = -1;
-        int dt_81l_81r_ch = -1;
-        int dt_21l_41l_ch = -1;
-        int dt_21r_41r_ch = -1;
-        int dt_42r_21r_ch = -1;
-        int dt_42l_21l_ch = -1;
-        int dt_21l_81l_ch = -1;
-        int dt_21r_81r_ch = -1;
-        int dt_22l_22r_ch = -1;
-        int dt_22l_41l_ch = -1;
-        int dt_22r_41r_ch = -1;
-        int dt_22l_81l_ch = -1;
-        int dt_22r_81r_ch = -1;
-        bool dT_mapping_loaded = false;
+        Int_t sci_dT_geo = -1;
+        Int_t dt_21l_21r_ch = -1;
+        Int_t dt_41l_41r_ch = -1;
+        Int_t dt_42l_42r_ch = -1;
+        Int_t dt_43l_43r_ch = -1;
+        Int_t dt_81l_81r_ch = -1;
+        Int_t dt_21l_41l_ch = -1;
+        Int_t dt_21r_41r_ch = -1;
+        Int_t dt_42r_21r_ch = -1;
+        Int_t dt_42l_21l_ch = -1;
+        Int_t dt_21l_81l_ch = -1;
+        Int_t dt_21r_81r_ch = -1;
+        Int_t dt_22l_22r_ch = -1;
+        Int_t dt_22l_41l_ch = -1;
+        Int_t dt_22r_41r_ch = -1;
+        Int_t dt_22l_81l_ch = -1;
+        Int_t dt_22r_81r_ch = -1;
+        Bool_t dT_mapping_loaded = false;
 
         // MHTDC scintillator timestamps
-        int mhtdc_11_ch = -1;
-        int mhtdc_21L_ch = -1;
-        int mhtdc_21R_ch = -1;
-        int mhtdc_22L_ch = -1;
-        int mhtdc_22R_ch = -1;
-        int mhtdc_31L_ch = -1;
-        int mhtdc_31R_ch = -1;
-        int mhtdc_41L_ch = -1;
-        int mhtdc_41R_ch = -1;
-        int mhtdc_42L_ch = -1;
-        int mhtdc_42R_ch = -1;
-        int mhtdc_43L_ch = -1;
-        int mhtdc_43R_ch = -1;
-        int mhtdc_81L_ch = -1;
-        int mhtdc_81R_ch = -1;
+        Int_t mhtdc_11_ch = -1;
+        Int_t mhtdc_21L_ch = -1;
+        Int_t mhtdc_21R_ch = -1;
+        Int_t mhtdc_22L_ch = -1;
+        Int_t mhtdc_22R_ch = -1;
+        Int_t mhtdc_31L_ch = -1;
+        Int_t mhtdc_31R_ch = -1;
+        Int_t mhtdc_41L_ch = -1;
+        Int_t mhtdc_41R_ch = -1;
+        Int_t mhtdc_42L_ch = -1;
+        Int_t mhtdc_42R_ch = -1;
+        Int_t mhtdc_43L_ch = -1;
+        Int_t mhtdc_43R_ch = -1;
+        Int_t mhtdc_81L_ch = -1;
+        Int_t mhtdc_81R_ch = -1;
 
 
 };

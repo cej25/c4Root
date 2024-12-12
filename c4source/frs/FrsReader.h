@@ -63,7 +63,7 @@ class FrsReader : public c4Reader
 
         uint32_t sciDE[32];
         uint32_t sciDT[16];
-        std::vector<uint32_t> sciMHTDC[16];
+        std::vector<int32_t> sciMHTDC[16];
 
         uint32_t musicE[2][8];
         uint32_t musicT[2][8];
