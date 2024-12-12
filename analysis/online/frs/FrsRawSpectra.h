@@ -2,23 +2,15 @@
 #define FrsRawSpectra_H
 
 #include "FairTask.h"
-#include "FrsMainData.h"
-#include "FrsTPCData.h"
-#include "FrsUserData.h"
+#include "FrsData.h"
 
 #include "TDirectory.h"
 #include "TFolder.h"
 #include "TH1.h"
 #include "TH2.h"
-#include "../../../config/setup.h"
 
 class TClonesArray;
 class EventHeader;
-class FrsHitData;
-class FrsMainData;
-class FrsUserData;
-class FrsTPCData;
-class FrsVFTXData;
 class TFolder;
 class TDirectory;
 class TCanvas;
@@ -49,61 +41,49 @@ class FrsRawSpectra : public FairTask
 
     private:
 
-        std::vector<FrsMainV792Item> const* v792arrayMain;
-        std::vector<FrsMainV1290Item> const* v1290arrayMain;
-        std::vector<FrsTPCV7X5Item> const* v7x5arrayTPC;
-        std::vector<FrsTPCV1190Item> const* v1190arrayTPC;
-        std::vector<FrsUserV7X5Item> const* v7x5arrayUser;
+        std::vector<FrsSciItem> const* sciArray;
+        std::vector<FrsMusicItem> const* musicArray;
+        std::vector<FrsTpcItem> const* tpcArray;
 
 
         EventHeader* header;
         Int_t fNEvents;
 
-        // folders
+        // Directories
         TFolder* histograms;
         TDirectory* dir_frs;
         TDirectory* dir_frs_raw;
-        TDirectory* dir_frs_raw_main;
-        TDirectory* dir_frs_raw_tpc;
-        TDirectory* dir_frs_raw_user;
-        //TDirectory* dir_frs_raw_vftx;
-        TDirectory* dir_raw_v792_main;
-        TDirectory* dir_raw_v1290_main;
-        TDirectory* dir_raw_v7x5_tpc;
-        TDirectory* dir_raw_v1190_tpc;
-        TDirectory* dir_raw_v7x5_user;
-        //TDirectory* dir_raw_vftx_vftx;
-
-        // histograms
-        TH1F* h1_v792_main_data[32];
-        TH2F* h2_v792_main_data_vs_chan;
-        TH1F* h1_v1290_main_mult[32]; 
-        TH1F* h1_v1290_main_leads[32];
-        TH2F* h2_v1290_main_data_vs_chan;
-        TH1F* h1_v7x5_tpc_data12[32];
-        TH2F* h2_v7x5_tpc_data12_vs_chan;
-        TH1F* h1_v7x5_tpc_data8[32];
-        TH2F* h2_v7x5_tpc_data8_vs_chan;
-        TH1F* h1_v1190_tpc_data[128];
-        TH2F* h2_v1190_tpc_data_vs_chan;
-        TH2F* h2_v1190_tpc_data_vs_chan_1st_hit;
-        TH1F* h1_v7x5_user_data10[32];
-        TH2F* h2_v7x5_user_data10_vs_chan;
-        TH1F* h1_v7x5_user_data12[32];
-        TH2F* h2_v7x5_user_data12_vs_chan;
+        TDirectory* dir_sci;
+        TDirectory* dir_music;
+        TDirectory* dir_tpc;
+        TDirectory* dir_sci_de; 
+        TDirectory* dir_sci_dt;
+        TDirectory* dir_sci_mhtdc;
+        TDirectory* dir_music_n[2];
+        TDirectory* dir_tpc_adc;
+        TDirectory* dir_tpc_n_adc[7];
+        TDirectory* dir_tpc_tdc;
+        
+        // Histograms
+        TH1* h1_sci_de[16];
+        TH1* h1_sci_dt[16];
+        TH1* h1_sci_mhtdc[16];
+        TH1* h1_music_anode[2][8];
+        TH1* h1_tpc_adc[7][8];
+        TH1* h1_tpc_tdc[128];
+       
     
         // Canvases
-        TCanvas* c_v792_main;
-        TCanvas* c_v1290_main_mult;
-        TCanvas* c_v1290_main_leads;
-        TCanvas* c_v7x5_tpc_geo12;
-        TCanvas* c_v7x5_tpc_geo8;
-        TCanvas* c_v1190_tpc;
-        TCanvas* c_v7x5_user_geo10;
-        TCanvas* c_v7x5_user_geo12;
+        TCanvas* c_sci_de;
+        TCanvas* c_sci_dt;
+        TCanvas* c_sci_mhtdc;
+        TCanvas* c_music_n[2];
+        TCanvas* c_tpc_n_adc[7];
+        TCanvas* c_tpc_tdc;
 
-        // variables
-        //int v1290_mult[32] = {0};
+
+        // Variables
+        
     
     public:
         ClassDef(FrsRawSpectra, 1)
