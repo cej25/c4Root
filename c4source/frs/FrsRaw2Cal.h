@@ -12,6 +12,7 @@
 
 class TClonesArray;
 class EventHeader;
+typedef UInt_t UInt_t;
 
 class FrsRaw2Cal : public FairTask
 {
@@ -52,63 +53,63 @@ class FrsRaw2Cal : public FairTask
         std::vector<FrsCalTpcItem>* calTpcArray;
 
         // TAC dE
-        const uint32_t* sciDE; //16
-        uint32_t de_21l;
-        uint32_t de_21r;
-        uint32_t de_22l;
-        uint32_t de_22r;
-        uint32_t de_31l;
-        uint32_t de_31r;
-        uint32_t de_41l;
-        uint32_t de_41r;
-        uint32_t de_42l;
-        uint32_t de_42r;
-        uint32_t de_43l;
-        uint32_t de_43r;
-        uint32_t de_81l;
-        uint32_t de_81r;
+        const UInt_t* sciDE; //16
+        UInt_t de_21l;
+        UInt_t de_21r;
+        UInt_t de_22l;
+        UInt_t de_22r;
+        UInt_t de_31l;
+        UInt_t de_31r;
+        UInt_t de_41l;
+        UInt_t de_41r;
+        UInt_t de_42l;
+        UInt_t de_42r;
+        UInt_t de_43l;
+        UInt_t de_43r;
+        UInt_t de_81l;
+        UInt_t de_81r;
 
         // TAC dT
-        const uint32_t* sciDT; // 16
-        uint32_t dt_21l_21r;
-        uint32_t dt_22l_22r;
-        uint32_t dt_41l_41r;
-        uint32_t dt_42l_42r;
-        uint32_t dt_43l_43r;
-        uint32_t dt_81l_81r;
-        uint32_t dt_21l_41l;
-        uint32_t dt_21r_41r;
-        uint32_t dt_42r_21r;
-        uint32_t dt_42l_21l;
-        uint32_t dt_21l_81l;
-        uint32_t dt_21r_81r;
-        uint32_t dt_22l_41l;
-        uint32_t dt_22r_41r;
-        uint32_t dt_22l_81l;
-        uint32_t dt_22r_81r;
+        const UInt_t* sciDT; // 16
+        UInt_t dt_21l_21r;
+        UInt_t dt_22l_22r;
+        UInt_t dt_41l_41r;
+        UInt_t dt_42l_42r;
+        UInt_t dt_43l_43r;
+        UInt_t dt_81l_81r;
+        UInt_t dt_21l_41l;
+        UInt_t dt_21r_41r;
+        UInt_t dt_42r_21r;
+        UInt_t dt_42l_21l;
+        UInt_t dt_21l_81l;
+        UInt_t dt_21r_81r;
+        UInt_t dt_22l_41l;
+        UInt_t dt_22r_41r;
+        UInt_t dt_22l_81l;
+        UInt_t dt_22r_81r;
 
         // MHTDC
-        const std::vector<uint32_t>* sciMHTDC; // 16
-        std::vector<uint32_t> sci11_hits;
-        std::vector<uint32_t> sci21l_hits;
-        std::vector<uint32_t> sci21r_hits;
-        std::vector<uint32_t> sci22l_hits;
-        std::vector<uint32_t> sci22r_hits;
-        std::vector<uint32_t> sci31l_hits;
-        std::vector<uint32_t> sci31r_hits;
-        std::vector<uint32_t> sci41l_hits;
-        std::vector<uint32_t> sci41r_hits;
-        std::vector<uint32_t> sci42l_hits;
-        std::vector<uint32_t> sci42r_hits;
-        std::vector<uint32_t> sci43l_hits;
-        std::vector<uint32_t> sci43r_hits;
-        std::vector<uint32_t> sci81l_hits;
-        std::vector<uint32_t> sci81r_hits;
+        const std::vector<Int_t>* sciMHTDC; // 16
+        std::vector<Int_t> sci11_hits;
+        std::vector<Int_t> sci21l_hits;
+        std::vector<Int_t> sci21r_hits;
+        std::vector<Int_t> sci22l_hits;
+        std::vector<Int_t> sci22r_hits;
+        std::vector<Int_t> sci31l_hits;
+        std::vector<Int_t> sci31r_hits;
+        std::vector<Int_t> sci41l_hits;
+        std::vector<Int_t> sci41r_hits;
+        std::vector<Int_t> sci42l_hits;
+        std::vector<Int_t> sci42r_hits;
+        std::vector<Int_t> sci43l_hits;
+        std::vector<Int_t> sci43r_hits;
+        std::vector<Int_t> sci81l_hits;
+        std::vector<Int_t> sci81r_hits;
 
 
         // TPC
-        const uint32_t (*adcData)[8]; // 7, 8
-        const std::vector<uint32_t>* tdcData;
+        const UInt_t (*adcData)[8]; // 7, 8
+        const std::vector<UInt_t>* tdcData;
 
 
 

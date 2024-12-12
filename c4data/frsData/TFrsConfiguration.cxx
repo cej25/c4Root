@@ -229,7 +229,7 @@ void TFrsConfiguration::ReadCrateMapFile()
 
         iss >> signal;
 
-        if (isdigit(signal[0])) { std::cout << "Error in FRS Crate Mapping file. Row begins with a string." << std::endl; return; }
+        if (isdigit(signal[0])) { std::cout << "Error in FRS Crate Mapping file. Row should begin with a string." << std::endl; return; }
         else
         {
             iss >> channel;

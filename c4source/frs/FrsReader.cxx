@@ -116,7 +116,7 @@ void FrsReader::ScintillatorReader()
     {
         uint32_t channel = fData->SCI_TAC_DEI[i] - 1;
         uint32_t data = fData->SCI_TAC_DEv[i];
-
+        
         sciDE[channel] = data;
     }
 

@@ -30,6 +30,7 @@ link_directories(${LINK_DIRECTORIES})
 set(SRCS
 frsData/FrsData.cxx
 frsData/FrsCalData.cxx
+frsData/FrsAnaData.cxx
 frsData/FrsMainData.cxx
 frsData/FrsTPCData.cxx
 frsData/FrsUserData.cxx

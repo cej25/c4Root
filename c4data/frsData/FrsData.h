@@ -49,12 +49,12 @@ class FrsSciItem : public TObject
     public:
         FrsSciItem();
 
-        void SetAll(uint32_t de[16], uint32_t dt[16], std::vector<uint32_t> mhtdc[16]);
+        void SetAll(uint32_t de[16], uint32_t dt[16], std::vector<int32_t> mhtdc[16]);
 
         // Getters
         const uint32_t (&Get_de_array() const) [16] { return sciDE; }
         const uint32_t (&Get_dt_array() const) [16] { return sciDT; }
-        const std::vector<uint32_t> (&Get_mhtdc_array() const) [16] { return sciMHTDC; }
+        const std::vector<int32_t> (&Get_mhtdc_array() const) [16] { return sciMHTDC; }
 
         ClassDef(FrsSciItem, 1);
     
@@ -62,7 +62,7 @@ class FrsSciItem : public TObject
 
         uint32_t sciDE[16];
         uint32_t sciDT[16];
-        std::vector<uint32_t> sciMHTDC[16];
+        std::vector<int32_t> sciMHTDC[16];
 
 
 };
