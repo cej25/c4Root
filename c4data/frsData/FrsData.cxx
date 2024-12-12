@@ -3,7 +3,7 @@
 
 FrsTpatItem::FrsTpatItem() {}
 
-void FrsTpatItem::SetAll(int64_t wr, int16_t tp)
+void FrsTpatItem::SetAll(Long64_t wr, Short_t tp)
 {
     wr_t = wr;
     tpat = tp;
@@ -20,7 +20,7 @@ ClassImp(FrsTpatItem)
 
 FrsScalerItem::FrsScalerItem() {}
 
-void FrsScalerItem::SetAll(int i, uint32_t sc)
+void FrsScalerItem::SetAll(Int_t i, UInt_t sc)
 {   
     index = i;
     scaler = sc;
@@ -37,7 +37,7 @@ ClassImp(FrsScalerItem)
 
 FrsSciItem::FrsSciItem() {}
 
-void FrsSciItem::SetAll(uint32_t de[16], uint32_t dt[16], std::vector<int32_t> mhtdc[16])
+void FrsSciItem::SetAll(UInt_t de[16], UInt_t dt[16], std::vector<Int_t> mhtdc[16])
 {
     for (int i = 0; i < 16; i++) sciDE[i] = de[i];
     for (int i = 0; i < 16; i++) sciDT[i] = dt[i];
@@ -63,7 +63,7 @@ ClassImp(FrsMusicItem)
 
 FrsTpcItem::FrsTpcItem() {}
 
-void FrsTpcItem::SetAll(uint32_t adc[7][8], std::vector<uint32_t> tdc[128])
+void FrsTpcItem::SetAll(UInt_t adc[7][8], std::vector<UInt_t> tdc[128])
 {
     for (int i = 0; i < 7; i++) for (int j = 0; j < 8; j++) adcData[i][j] = adc[i][j];
     for (int i = 0; i < 128; i++) tdcData[i] = tdc[i];

@@ -91,19 +91,7 @@ class FrsRawSpectra : public FairTask
         TH2F* h2_v7x5_user_data10_vs_chan;
         TH1F* h1_v7x5_user_data12[32];
         TH2F* h2_v7x5_user_data12_vs_chan;
-        TH1I* h1_vftx_vftx_lead_mult[VFTX_MAX_CHN];
-        TH1I* h1_vftx_vftx_trail_mult[VFTX_MAX_CHN];
-        TH1I* h1_vftx_vftx_lead_cc[VFTX_MAX_CHN];
-        TH1I* h1_vftx_vftx_lead_ft[VFTX_MAX_CHN];
-        TH1I* h1_vftx_vftx_lead_time[VFTX_MAX_CHN];
-        TH1I* h1_vftx_vftx_trail_cc[VFTX_MAX_CHN];
-        TH1I* h1_vftx_vftx_trail_ft[VFTX_MAX_CHN];
-        TH1I* h1_vftx_vftx_trail_time[VFTX_MAX_CHN];
-        TH1I* h1_vftx_vftx_lead_time_ref_ch0[VFTX_MAX_CHN];
-        TH2I* h2_vftx_vftx_lead_time_ref_ch0_vs_event[VFTX_MAX_CHN];
-        TH2I* h2_vftx_vftx_lead_time_ref_ch8_vs_event[VFTX_MAX_CHN];
-        TH2I* h2_vftx_vftx_lead_time_ch0vs4;
-
+    
         // Canvases
         TCanvas* c_v792_main;
         TCanvas* c_v1290_main_mult;
@@ -113,17 +101,6 @@ class FrsRawSpectra : public FairTask
         TCanvas* c_v1190_tpc;
         TCanvas* c_v7x5_user_geo10;
         TCanvas* c_v7x5_user_geo12;
-        /*TCanvas* c_vftx_lead_mult;
-        TCanvas* c_vftx_trail_mult;
-        TCanvas* c_vftx_lead_cc;
-        TCanvas* c_vftx_lead_ft;
-        TCanvas* c_vftx_lead_time;
-        TCanvas* c_vftx_trail_cc;
-        TCanvas* c_vftx_trail_ft;
-        TCanvas* c_vftx_trail_time;
-        TCanvas* c_vftx_lead_refch0;
-        TCanvas* c_vftx_lead_refch0_vs_event;
-        TCanvas* c_vftx_lead_refch8_vs_event;*/
 
         // variables
         //int v1290_mult[32] = {0};

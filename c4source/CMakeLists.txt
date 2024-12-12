@@ -59,12 +59,10 @@ set(SRCS
 ./frs/FrsMainReader.cxx
 ./frs/FrsTPCReader.cxx
 ./frs/FrsUserReader.cxx
-./frs/FrsVFTXReader.cxx
 ./frs/FrsTpatReader.cxx
 ./frs/FrsMainRaw2Cal.cxx
 ./frs/FrsTPCRaw2Cal.cxx
 ./frs/FrsUserRaw2Cal.cxx
-./frs/FrsVFTXRaw2Cal.cxx
 ./frs/FrsCal2Hit.cxx
 ./travMus/TravMusReader.cxx
 ./travMus/TravMusRaw2Cal.cxx
@@ -100,7 +98,6 @@ Set(STRUCT_HEADERS
 ./frs/ext_h101_frsmain.h
 ./frs/ext_h101_frstpc.h
 ./frs/ext_h101_frsuser.h
-./frs/ext_h101_frsvftx.h
 ./frs/ext_h101_frstpat.h
 ./travMus/ext_h101_travmus.h
 ./lisa/ext_h101_lisa.h
