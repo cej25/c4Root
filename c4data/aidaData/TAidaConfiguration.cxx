@@ -374,7 +374,7 @@ void TAidaConfiguration::ReadConfiguration()
   }
 
   std::ifstream stripConfig(base_path + "/AIDA_strips.txt");
-  loaded = fs.good();
+  loaded = stripConfig.good();
   warning = false;
 
   while (stripConfig)
