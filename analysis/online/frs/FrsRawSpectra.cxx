@@ -10,7 +10,6 @@
 #include "FrsMainData.h"
 #include "FrsTPCData.h"
 #include "FrsUserData.h"
-#include "FrsVFTXData.h"
 #include "EventHeader.h"
 #include "c4Logger.h"
 

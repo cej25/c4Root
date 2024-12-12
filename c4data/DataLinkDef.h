@@ -87,8 +87,6 @@
 #pragma link C++ class FatimaVmeResiduals+;
 
 // FRS data classes
-#pragma link C++ class FrsVFTXData+; // change
-#pragma link C++ class FrsVFTXCalData+; // change
 #pragma link C++ class FrsMainV830Item+;
 #pragma link C++ class FrsMainV1290Item+;
 #pragma link C++ class FrsMainV792Item+;
