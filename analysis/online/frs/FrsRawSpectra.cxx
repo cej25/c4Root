@@ -195,6 +195,7 @@ void FrsRawSpectra::Exec(Option_t* option)
 {
     if (sciArray->size() == 0) return;
 
+
     auto const & sciItem = sciArray->at(0);
     sciDE = sciItem.Get_de_array();
     sciDT = sciItem.Get_dt_array();
@@ -219,6 +220,7 @@ void FrsRawSpectra::Exec(Option_t* option)
             h1_music_anode_t[i][j]->Fill(musicT[i][j]);
         }
     }
+
 
 
     auto const & tpcItem = tpcArray->at(0);

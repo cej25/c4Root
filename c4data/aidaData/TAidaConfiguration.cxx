@@ -220,9 +220,9 @@ void TAidaConfiguration::ReadConfiguration()
     {
       line >> std::boolalpha >> reducenoise;
     }
-    else if (option == "clusterimpants" && sub && sub_Analysis)
+    else if (option == "clusterimplants" && sub && sub_Analysis)
     {
-      line >> std::boolalpha >> clusterimpants;
+      line >> std::boolalpha >> clusterimplants;
     }
     else if (option == "clusterdecays" && sub && sub_Analysis)
     {
@@ -374,7 +374,7 @@ void TAidaConfiguration::ReadConfiguration()
   }
 
   std::ifstream stripConfig(base_path + "/AIDA_strips.txt");
-  loaded = fs.good();
+  loaded = stripConfig.good();
   warning = false;
 
   while (stripConfig)
@@ -457,9 +457,9 @@ void TAidaConfiguration::ReadConfiguration()
 
   std::stringstream anlopt;
   if (reducenoise) anlopt << "ReduceNoise ";
-  if (clusterimpants && clusterdecays) anlopt << "ClusterImplantsDecays ";
-  if (clusterimpants && !clusterdecays) anlopt << "ClusterImplants";
-  if (!clusterimpants && clusterdecays) anlopt << "ClusterDecays ";
+  if (clusterimplants && clusterdecays) anlopt << "ClusterImplantsDecays ";
+  if (clusterimplants && !clusterdecays) anlopt << "ClusterImplants";
+  if (!clusterimplants && clusterdecays) anlopt << "ClusterDecays ";
   if (calibrate && parallelcalibrate) anlopt << "ParallelCalibrate ";
   if (calibrate && !parallelcalibrate) anlopt << "Calibrate ";
   LOG(info) << "  Analysis Options: " << anlopt.str();
