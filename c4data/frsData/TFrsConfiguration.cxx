@@ -229,13 +229,13 @@ void TFrsConfiguration::ReadCrateMapFile()
 
         iss >> signal;
 
-        if (isdigit(signal[0])) { std::cout << "Error in FRS Crate Mapping file. Row begins with a string." << std::endl; return; }
+        if (isdigit(signal[0])) { std::cout << "Error in FRS Crate Mapping file. Row should begin with a string." << std::endl; return; }
         else
         {
             iss >> channel;
             
-            if (signal == "MUSIC_E_GEO") music_e_geo = channel;
-            else if (signal == "DE_GEO") sci_dE_geo = channel;
+            if (signal == "MUSIC_E_GEO") music_e_geo = channel; // remove
+            else if (signal == "DE_GEO") sci_dE_geo = channel; // remove
             else if (signal == "dE_21L") de_21l_ch = channel;
             else if (signal == "dE_21R") de_21r_ch = channel;
             else if (signal == "dE_22L") de_22l_ch = channel;
@@ -250,7 +250,7 @@ void TFrsConfiguration::ReadCrateMapFile()
             else if (signal == "dE_43R") de_43r_ch = channel;
             else if (signal == "dE_81L") de_81l_ch = channel;
             else if (signal == "dE_81R") de_81r_ch = channel;
-            else if (signal == "DT_GEO") sci_dT_geo = channel;
+            else if (signal == "DT_GEO") sci_dT_geo = channel; // remove
             else if (signal == "dT_21L_21R") dt_21l_21r_ch = channel;
             else if (signal == "dT_41L_41R") dt_41l_41r_ch = channel;
             else if (signal == "dT_42L_42R") dt_42l_42r_ch = channel;
@@ -268,26 +268,26 @@ void TFrsConfiguration::ReadCrateMapFile()
             else if (signal == "dT_22L_81L") dt_22l_81l_ch = channel;
             else if (signal == "dT_22R_81R") dt_22r_81r_ch = channel;
             else if (signal == "dT_41L_41R") dt_41l_41r_ch = channel;
-            else if (signal == "ts_11") ts_11_ch = channel;
-            else if (signal == "ts_21L") ts_21L_ch = channel;
-            else if (signal == "ts_21R") ts_21R_ch = channel;
-            else if (signal == "ts_22L") ts_22L_ch = channel;
-            else if (signal == "ts_22R") ts_22R_ch = channel;
-            else if (signal == "ts_31L") ts_31L_ch = channel;
-            else if (signal == "ts_31R") ts_31R_ch = channel;
-            else if (signal == "ts_41L") ts_41L_ch = channel;
-            else if (signal == "ts_41R") ts_41R_ch = channel;
-            else if (signal == "ts_42L") ts_42L_ch = channel;
-            else if (signal == "ts_42R") ts_42R_ch = channel;
-            else if (signal == "ts_43L") ts_43L_ch = channel;
-            else if (signal == "ts_43R") ts_43R_ch = channel;
-            else if (signal == "ts_81L") ts_81L_ch = channel;
-            else if (signal == "ts_81R") ts_81R_ch = channel;
+            else if (signal == "mhtdc_11") mhtdc_11_ch = channel;
+            else if (signal == "mhtdc_21L") mhtdc_21L_ch = channel;
+            else if (signal == "mhtdc_21R") mhtdc_21R_ch = channel;
+            else if (signal == "mhtdc_22L") mhtdc_22L_ch = channel;
+            else if (signal == "mhtdc_22R") mhtdc_22R_ch = channel;
+            else if (signal == "mhtdc_31L") mhtdc_31L_ch = channel;
+            else if (signal == "mhtdc_31R") mhtdc_31R_ch = channel;
+            else if (signal == "mhtdc_41L") mhtdc_41L_ch = channel;
+            else if (signal == "mhtdc_41R") mhtdc_41R_ch = channel;
+            else if (signal == "mhtdc_42L") mhtdc_42L_ch = channel;
+            else if (signal == "mhtdc_42R") mhtdc_42R_ch = channel;
+            else if (signal == "mhtdc_43L") mhtdc_43L_ch = channel;
+            else if (signal == "mhtdc_43R") mhtdc_43R_ch = channel;
+            else if (signal == "mhtdc_81L") mhtdc_81L_ch = channel;
+            else if (signal == "mhtdc_81R") mhtdc_81R_ch = channel;
 
         }
     }
 
-    dT_mapping_loaded = 1;
+    //dT_mapping_loaded = 1;
     file.close();
     
     return;   
