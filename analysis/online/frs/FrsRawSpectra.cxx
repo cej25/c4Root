@@ -99,7 +99,7 @@ InitStatus FrsRawSpectra::Init()
     for (int ihist = 0; ihist < 16; ihist++)
     {
         c_sci_dt->cd(ihist+1);
-        h1_sci_dt[ihist] = MakeTH1(dir_sci_dt, "F", Form("h1_sci_dt_%i", ihist), Form("Scintillator dT Channel %i", ihist), 2000, 0, 2000); // need to figure out ranges
+        h1_sci_dt[ihist] = MakeTH1(dir_sci_dt, "F", Form("h1_sci_dt_%i", ihist), Form("Scintillator dT Channel %i", ihist), 4096, 0, 4096); // need to figure out ranges
         h1_sci_dt[ihist]->Draw();
     }
     c_sci_dt->cd(0);
@@ -111,7 +111,7 @@ InitStatus FrsRawSpectra::Init()
     for (int ihist = 0; ihist < 16; ihist++)
     {
         c_sci_mhtdc->cd(ihist+1);
-        h1_sci_mhtdc[ihist] = MakeTH1(dir_sci_mhtdc, "F", Form("h1_sci_mhtdc_%i", ihist), Form("Scintillator MHTDC T Channel %i", ihist), 2000, 0, 2000); // need to figure out ranges
+        h1_sci_mhtdc[ihist] = MakeTH1(dir_sci_mhtdc, "F", Form("h1_sci_mhtdc_%i", ihist), Form("Scintillator MHTDC T Channel %i", ihist), 4000, 0, 100000); // need to figure out ranges
         h1_sci_mhtdc[ihist]->Draw();
     }
     c_sci_mhtdc->cd(0);
@@ -119,20 +119,36 @@ InitStatus FrsRawSpectra::Init()
 
     
     // ::: MUSIC :::::: 
+    dir_music_e = dir_music->mkdir("E");
+    dir_music_t = dir_music->mkdir("T");
+
     for (int j = 0; j < 2; j++)
     {
-        dir_music_n[j] = dir_music->mkdir(Form("MUSIC %i", j));
+        dir_music_n_e[j] = dir_music_e->mkdir(Form("MUSIC %i", j));
 
-        c_music_n[j] = new TCanvas(Form("c_music_%i", j), Form("MUSIC %i Anode spectra", j), 650, 350);
-        c_music_n[j]->Divide(2, 4);
+        c_music_n_e[j] = new TCanvas(Form("c_music_%i_e", j), Form("MUSIC %i Anode E spectra", j), 650, 350);
+        c_music_n_e[j]->Divide(2, 4);
         for (int ihist = 0; ihist < 8; ihist++)
         {
-            c_music_n[j]->cd(ihist+1);
-            h1_music_anode[j][ihist] = MakeTH1(dir_music_n[j], "F", Form("h1_music_%i_anode_%i", j, ihist), Form("MUSIC %i Anode %i", j, ihist), 2000, 0, 2000); // need to figure out ranges
-            h1_music_anode[j][ihist]->Draw();
+            c_music_n_e[j]->cd(ihist+1);
+            h1_music_anode_e[j][ihist] = MakeTH1(dir_music_n_e[j], "F", Form("h1_music_%i_e_anode_%i", j, ihist), Form("MUSIC %i Anode %i", j, ihist), 4096, 0, 4096); // need to figure out ranges
+            h1_music_anode_e[j][ihist]->Draw();
         }
-        c_music_n[j]->cd(0);
-        dir_music_n[j]->Append(c_music_n[j]);
+        c_music_n_e[j]->cd(0);
+        dir_music_n_e[j]->Append(c_music_n_e[j]);
+
+        dir_music_n_t[j] = dir_music_t->mkdir(Form("MUSIC %i", j));
+
+        c_music_n_t[j] = new TCanvas(Form("c_music_%i_t", j), Form("MUSIC %i Anode T spectra", j), 650, 350);
+        c_music_n_t[j]->Divide(2, 4);
+        for (int ihist = 0; ihist < 8; ihist++)
+        {
+            c_music_n_t[j]->cd(ihist+1);
+            h1_music_anode_t[j][ihist] = MakeTH1(dir_music_n_t[j], "F", Form("h1_music_%i_t_anode_%i", j, ihist), Form("MUSIC %i Anode %i", j, ihist), 4000, 0, 100000); // need to figure out ranges
+            h1_music_anode_t[j][ihist]->Draw();
+        }
+        c_music_n_t[j]->cd(0);
+        dir_music_n_t[j]->Append(c_music_n_t[j]);
     }
 
     
@@ -177,6 +193,49 @@ InitStatus FrsRawSpectra::Init()
 
 void FrsRawSpectra::Exec(Option_t* option)
 {
+    if (sciArray->size() == 0) return;
+
+    auto const & sciItem = sciArray->at(0);
+    sciDE = sciItem.Get_de_array();
+    sciDT = sciItem.Get_dt_array();
+    sciMHTDC = sciItem.Get_mhtdc_array();
+
+    for (int i = 0; i < 16; i++)
+    {
+        h1_sci_de[i]->Fill(sciDE[i]);
+        h1_sci_dt[i]->Fill(sciDT[i]);
+        for (int j = 0; j < sciMHTDC[i].size(); j++) h1_sci_mhtdc[i]->Fill(sciMHTDC[i][j]);
+    }
+    
+    auto const & musicItem = musicArray->at(0);
+    musicE = musicItem.Get_music_e();
+    musicT = musicItem.Get_music_t();
+
+    for (int i = 0; i < 2; i++)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            h1_music_anode_e[i][j]->Fill(musicE[i][j]);
+            h1_music_anode_t[i][j]->Fill(musicT[i][j]);
+        }
+    }
+
+
+    auto const & tpcItem = tpcArray->at(0);
+    adcData = tpcItem.Get_adc_data();
+    tdcData = tpcItem.Get_tdc_data();
+
+    for (int i = 0; i < 7; i++)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            h1_tpc_adc[i][j]->Fill(adcData[i][j]);
+        }
+    }
+
+    for (int i = 0; i < 128; i++) for (int j = 0; j < tdcData[i].size(); j++) h1_tpc_tdc[i]->Fill(tdcData[i].at(j));
+
+    
     
 
 }

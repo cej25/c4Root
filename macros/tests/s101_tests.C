@@ -365,11 +365,11 @@ void s101_tests()
     {
         // FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra(fgs);
         // // For monitoring FRS on our side
-        // FrsRawSpectra* frsrawspec = new FrsRawSpectra();
+        FrsRawSpectra* frsrawspec = new FrsRawSpectra();
         // FrsCalSpectra* frscalspec = new FrsCalSpectra();
         
         // run->AddTask(onlinefrs);
-        // run->AddTask(frsrawspec);
+        run->AddTask(frsrawspec);
         // run->AddTask(frscalspec);
 
     }
