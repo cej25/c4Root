@@ -490,8 +490,8 @@ void LisaFrsCorrelations::Exec(Option_t* option)
 
 
     // Energy from frs
-    energy_MUSIC_1 = frsHitItem.Get_music_dE(0); 
-    energy_MUSIC_2 = frsHitItem.Get_music_dE(1);
+    energy_MUSIC_1 = frsHitItem.Get_music_dE()[0]; 
+    energy_MUSIC_2 = frsHitItem.Get_music_dE()[1];
     energy_travMUSIC = travMusicHitItem.Get_travmusic_dE();
     // CEJ needs adding
     energy_travMUSIC_driftcorr = travMusicHitItem.Get_travmusic_dE_driftcorr();

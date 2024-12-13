@@ -110,8 +110,8 @@ void FrsTravMusCorrelations::Exec(Option_t* option)
     int64_t wr_travMUSIC = travMusicHitItem.Get_wr_t();
 
     // Energy from frs
-    Float_t energy_MUSIC_1 = frsHitItem.Get_music_dE(0); 
-    Float_t energy_MUSIC_2 = frsHitItem.Get_music_dE(1);
+    Float_t energy_MUSIC_1 = frsHitItem.Get_music_dE()[0]; 
+    Float_t energy_MUSIC_2 = frsHitItem.Get_music_dE()[1];
     double energy_travMUSIC = travMusicHitItem.Get_travmusic_dE();
     double energy_travMUSIC_driftcorr = travMusicHitItem.Get_travmusic_dE_driftcorr();
 

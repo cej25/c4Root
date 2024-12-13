@@ -6,14 +6,7 @@
 #include "FairRuntimeDb.h"
 
 // c4
-#include "FrsData.h"
 #include "FrsCalSpectra.h"
-#include "FrsHitData.h"
-#include "FrsMainCalData.h"
-#include "FrsTPCData.h"
-#include "FrsTPCCalData.h"
-#include "FrsUserCalData.h"
-#include "FrsHitData.h"
 #include "EventHeader.h"
 #include "c4Logger.h"
 #include "AnalysisTools.h"
@@ -38,14 +31,8 @@ FrsCalSpectra::FrsCalSpectra(const TString& name, Int_t iVerbose)
     :   FairTask(name, iVerbose)
     ,   fNEvents(0)
     ,   header(nullptr)
-    ,   mainScalerArray(nullptr)
-    ,   mainSciArray(nullptr)
-    ,   mainMusicArray(nullptr)
-    ,   tpcCalArray(nullptr)
-    ,   userScalerArray(nullptr)
-    ,   userSciArray(nullptr)
-    ,   userMusicArray(nullptr)
-    ,   tpatArray(nullptr)
+    ,   calSciArray(nullptr)
+    ,   calTpcArray(nullptr)
 {
 }
 
@@ -66,27 +53,11 @@ InitStatus FrsCalSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    // also needs TPC raw I think
-    v7x5array = mgr->InitObjectAs<decltype(v7x5array)>("FrsTPCV7X5Data");
-    c4LOG_IF(fatal, !v7x5array, "Branch v7x5array not found!");
-    v1190array = mgr->InitObjectAs<decltype(v1190array)>("FrsTPCV1190Data");
-    c4LOG_IF(fatal, !v1190array, "Branch v1190array not found!");
-    mainScalerArray = mgr->InitObjectAs<decltype(mainScalerArray)>("FrsMainCalScalerData");
-    c4LOG_IF(fatal, !mainScalerArray, "Branch FrsMainCalScalerData not found!");
-    mainSciArray = mgr->InitObjectAs<decltype(mainSciArray)>("FrsMainCalSciData");
-    c4LOG_IF(fatal, !mainSciArray, "Branch FrsMainCalSciData not found!");
-    mainMusicArray = mgr->InitObjectAs<decltype(mainMusicArray)>("FrsMainCalMusicData");
-    c4LOG_IF(fatal, !mainMusicArray, "Branch FrsMainCalMusicData not found!");
-    tpcCalArray = mgr->InitObjectAs<decltype(tpcCalArray)>("FrsTPCCalData");
-    c4LOG_IF(fatal, !tpcCalArray, "Branch FrsTPCCalData not found!");
-    userScalerArray = mgr->InitObjectAs<decltype(userScalerArray)>("FrsUserCalScalerData");
-    c4LOG_IF(fatal, !userScalerArray, "Branch FrsUserCalScalerData not found!");
-    userSciArray = mgr->InitObjectAs<decltype(userSciArray)>("FrsUserCalSciData");
-    c4LOG_IF(fatal, !userSciArray, "Branch FrsUserCalSciData not found!");
-    userMusicArray = mgr->InitObjectAs<decltype(userMusicArray)>("FrsUserCalMusicData");
-    c4LOG_IF(fatal, !userMusicArray, "Branch FrsUserCalMusicData not found!");
-    tpatArray = mgr->InitObjectAs<decltype(tpatArray)>("FrsTpatData");
-    c4LOG_IF(fatal, !tpatArray, "Branch FrsTpatData not found!");
+    calSciArray = mgr->InitObjectAs<decltype(calSciArray)>("FrsCalSciData");
+    c4LOG_IF(fatal, !calSciArray, "Branch FrsCalSciData not found!");
+    calTpcArray = mgr->InitObjectAs<decltype(calTpcArray)>("FrsCalTpcData");
+    c4LOG_IF(fatal, !calTpcArray, "Branch FrsCalTpcData not found!");
+    
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
 
@@ -103,84 +74,97 @@ InitStatus FrsCalSpectra::Init()
     }
 
     dir_frs_cal = dir_frs->mkdir("FRS Cal Spectra");
-    dir_frs_cal_main = dir_frs_cal->mkdir("Main Crate");
-    dir_frs_cal_tpc = dir_frs_cal->mkdir("TPC Crate");
-    dir_frs_cal_user = dir_frs_cal->mkdir("User Crate");
+    dir_cal_sci = dir_frs_cal->mkdir("Scintillators");
+    dir_cal_tpc = dir_frs_cal->mkdir("TPCs");
 
-    //Main crate detectors:
 
-    //SCIs
-    dir_frs_cal_main->cd();
+    // ::: SCIs :::: 
+    dir_sci_tac = dir_cal_sci->mkdir("TAC");
+    dir_sci_tac_de = dir_sci_tac->mkdir("dE");
+    dir_sci_tac_dt = dir_sci_tac->mkdir("dT");
+    dir_sci_mhtdc = dir_cal_sci->mkdir("MHTDC");
+    dir_sci_mhtdc_t = dir_sci_mhtdc->mkdir("T");
+    dir_sci_mhtdc_dt = dir_sci_mhtdc->mkdir("dT");
+
     int sc_xx_bins = 1000;
     int sc_xx_max_e= 4096; //12 bit adc
-    h_sci_21l_de = new TH1D("h_sci_21l_de", "FRS Scintillator 21 l energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
-    h_sci_21r_de = new TH1D("h_sci_21r_de", "FRS Scintillator 21 r energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
-    h_sci_22l_de = new TH1D("h_sci_22l_de", "FRS Scintillator 22 l energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
-    h_sci_22r_de = new TH1D("h_sci_22r_de", "FRS Scintillator 22 r energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
-    h_sci_41l_de = new TH1D("h_sci_41l_de", "FRS Scintillator 41 l energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
-    h_sci_41r_de = new TH1D("h_sci_41r_de", "FRS Scintillator 41 r energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
-    h_sci_42l_de = new TH1D("h_sci_42l_de", "FRS Scintillator 42 l energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
-    h_sci_42r_de = new TH1D("h_sci_42r_de", "FRS Scintillator 42 r energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
-    h_sci_43l_de = new TH1D("h_sci_43l_de", "FRS Scintillator 43 l energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
-    h_sci_43r_de = new TH1D("h_sci_43r_de", "FRS Scintillator 43 r energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
-    h_sci_81l_de = new TH1D("h_sci_81l_de", "FRS Scintillator 81 l energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
-    h_sci_81r_de = new TH1D("h_sci_81r_de", "FRS Scintillator 81 r energy V792 main crate", sc_xx_bins,0,sc_xx_max_e);
 
+    // TAC dE
+    h1_sci_tac_de_21l = MakeTH1(dir_sci_tac_de, "D", "h1_sci_tac_de_21l", "SCI 21L dE", sc_xx_bins, 0, sc_xx_max_e);
+    h1_sci_tac_de_21r = MakeTH1(dir_sci_tac_de, "D", "h1_sci_tac_de_21r", "SCI 21R dE", sc_xx_bins, 0, sc_xx_max_e);
+    h1_sci_tac_de_22l = MakeTH1(dir_sci_tac_de, "D", "h1_sci_tac_de_22l", "SCI 22L dE", sc_xx_bins, 0, sc_xx_max_e);
+    h1_sci_tac_de_22r = MakeTH1(dir_sci_tac_de, "D", "h1_sci_tac_de_22r", "SCI 22R dE", sc_xx_bins, 0, sc_xx_max_e);
+    h1_sci_tac_de_31l = MakeTH1(dir_sci_tac_de, "D", "h1_sci_tac_de_31l", "SCI 31L dE", sc_xx_bins, 0, sc_xx_max_e);
+    h1_sci_tac_de_31r = MakeTH1(dir_sci_tac_de, "D", "h1_sci_tac_de_31r", "SCI 31R dE", sc_xx_bins, 0, sc_xx_max_e);
+    h1_sci_tac_de_41l = MakeTH1(dir_sci_tac_de, "D", "h1_sci_tac_de_41l", "SCI 41L dE", sc_xx_bins, 0, sc_xx_max_e);
+    h1_sci_tac_de_41r = MakeTH1(dir_sci_tac_de, "D", "h1_sci_tac_de_41r", "SCI 41R dE", sc_xx_bins, 0, sc_xx_max_e);
+    h1_sci_tac_de_42l = MakeTH1(dir_sci_tac_de, "D", "h1_sci_tac_de_42l", "SCI 42L dE", sc_xx_bins, 0, sc_xx_max_e);
+    h1_sci_tac_de_42r = MakeTH1(dir_sci_tac_de, "D", "h1_sci_tac_de_42r", "SCI 42R dE", sc_xx_bins, 0, sc_xx_max_e);
+    h1_sci_tac_de_43l = MakeTH1(dir_sci_tac_de, "D", "h1_sci_tac_de_43l", "SCI 43L dE", sc_xx_bins, 0, sc_xx_max_e);
+    h1_sci_tac_de_43r = MakeTH1(dir_sci_tac_de, "D", "h1_sci_tac_de_43r", "SCI 43R dE", sc_xx_bins, 0, sc_xx_max_e);
+    h1_sci_tac_de_81l = MakeTH1(dir_sci_tac_de, "D", "h1_sci_tac_de_81l", "SCI 81L dE", sc_xx_bins, 0, sc_xx_max_e);
+    h1_sci_tac_de_81r = MakeTH1(dir_sci_tac_de, "D", "h1_sci_tac_de_81r", "SCI 81R dE", sc_xx_bins, 0, sc_xx_max_e);
+
+    int tac_bins = 1000;
+    int max_tac_value = 5000;
+    h1_sci_tac_dt_21l_21r = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_21l_21r", "SCI 21L - 21R dT (TAC)", tac_bins, 0, max_tac_value);
+    h1_sci_tac_dt_41l_41r = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_41l_41r", "SCI 41L - 41R dT (TAC)", tac_bins, 0, max_tac_value);
+    h1_sci_tac_dt_42l_42r = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_42l_42r", "SCI 42L - 42R dT (TAC)", tac_bins, 0, max_tac_value);
+    h1_sci_tac_dt_43l_43r = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_43l_43r", "SCI 43L - 43R dT (TAC)", tac_bins, 0, max_tac_value);
+    h1_sci_tac_dt_81l_81r = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_81l_81r", "SCI 81L - 81R dT (TAC)", tac_bins, 0, max_tac_value);
+    h1_sci_tac_dt_21l_41l = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_21l_41l", "SCI 21L - 41L dT (TAC)", tac_bins, 0, max_tac_value);
+    h1_sci_tac_dt_21r_41r = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_21r_41r", "SCI 21R - 41R dT (TAC)", tac_bins, 0, max_tac_value);
+    h1_sci_tac_dt_42r_21r = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_42r_21r", "SCI 42R - 21R dT (TAC)", tac_bins, 0, max_tac_value);
+    h1_sci_tac_dt_42l_21l = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_42l_21l", "SCI 42L - 21L dT (TAC)", tac_bins, 0, max_tac_value);
+    h1_sci_tac_dt_21l_81l = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_21l_81l", "SCI 21L - 81L dT (TAC)", tac_bins, 0, max_tac_value);
+    h1_sci_tac_dt_21r_81r = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_21r_81r", "SCI 21R - 81R dT (TAC)", tac_bins, 0, max_tac_value);
+    h1_sci_tac_dt_22l_22r = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_22l_22r", "SCI 22L - 22R dT (TAC)", tac_bins, 0, max_tac_value);
+    h1_sci_tac_dt_22l_41l = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_22l_41l", "SCI 22L - 41L dT (TAC)", tac_bins, 0, max_tac_value);
+    h1_sci_tac_dt_22r_41r = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_22r_41r", "SCI 22R - 41R dT (TAC)", tac_bins, 0, max_tac_value);
+    h1_sci_tac_dt_22l_81l = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_22l_81l", "SCI 22L - 81L dT (TAC)", tac_bins, 0, max_tac_value);
+    h1_sci_tac_dt_22r_81r = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_22r_81r", "SCI 22R - 81R dT (TAC)", tac_bins, 0, max_tac_value);
+
+
+    // ::: MHTDC T
     int sc_xx_bins_t = 1000;
     double sc_xx_max_t = 1048576; // 2^20 bits in v1290 data word
-    h_sci_21l_t = new TH1D("h_sci_21l_t", "FRS Scintillator 21 l time V1290 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    h_sci_21r_t = new TH1D("h_sci_21r_t", "FRS Scintillator 21 r time V1290 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    h_sci_22l_t = new TH1D("h_sci_22l_t", "FRS Scintillator 22 l time V1290 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    h_sci_22r_t = new TH1D("h_sci_22r_t", "FRS Scintillator 22 r time V1290 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    h_sci_41l_t = new TH1D("h_sci_41l_t", "FRS Scintillator 41 l time V1290 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    h_sci_41r_t = new TH1D("h_sci_41r_t", "FRS Scintillator 41 r time V1290 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    h_sci_42l_t = new TH1D("h_sci_42l_t", "FRS Scintillator 42 l time V1290 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    h_sci_42r_t = new TH1D("h_sci_42r_t", "FRS Scintillator 42 r time V1290 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    h_sci_43l_t = new TH1D("h_sci_43l_t", "FRS Scintillator 43 l time V1290 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    h_sci_43r_t = new TH1D("h_sci_43r_t", "FRS Scintillator 43 r time V1290 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    h_sci_81l_t = new TH1D("h_sci_81l_t", "FRS Scintillator 81 l time V1290 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    h_sci_81r_t = new TH1D("h_sci_81r_t", "FRS Scintillator 81 r time V1290 main crate",sc_xx_bins_t,0,sc_xx_max_t);
-    
-    //sci time deltas:
-    // l-r
+    h1_sci_mhtdc_t_21l = MakeTH1(dir_sci_mhtdc_t, "D", "h1_sci_mhtdc_t_21l", "SCI 21l T (MHTDC)", sc_xx_bins_t, 0, sc_xx_max_t);
+    h1_sci_mhtdc_t_21r = MakeTH1(dir_sci_mhtdc_t, "D", "h1_sci_mhtdc_t_21r", "SCI 21r T (MHTDC)", sc_xx_bins_t, 0, sc_xx_max_t);
+    h1_sci_mhtdc_t_22l = MakeTH1(dir_sci_mhtdc_t, "D", "h1_sci_mhtdc_t_22l", "SCI 22l T (MHTDC)", sc_xx_bins_t, 0, sc_xx_max_t);
+    h1_sci_mhtdc_t_22r = MakeTH1(dir_sci_mhtdc_t, "D", "h1_sci_mhtdc_t_22r", "SCI 22r T (MHTDC)", sc_xx_bins_t, 0, sc_xx_max_t);
+    h1_sci_mhtdc_t_41l = MakeTH1(dir_sci_mhtdc_t, "D", "h1_sci_mhtdc_t_41l", "SCI 41l T (MHTDC)", sc_xx_bins_t, 0, sc_xx_max_t);
+    h1_sci_mhtdc_t_41r = MakeTH1(dir_sci_mhtdc_t, "D", "h1_sci_mhtdc_t_41r", "SCI 41r T (MHTDC)", sc_xx_bins_t, 0, sc_xx_max_t);
+    h1_sci_mhtdc_t_42l = MakeTH1(dir_sci_mhtdc_t, "D", "h1_sci_mhtdc_t_42l", "SCI 42l T (MHTDC)", sc_xx_bins_t, 0, sc_xx_max_t);
+    h1_sci_mhtdc_t_42r = MakeTH1(dir_sci_mhtdc_t, "D", "h1_sci_mhtdc_t_42r", "SCI 42r T (MHTDC)", sc_xx_bins_t, 0, sc_xx_max_t);
+    h1_sci_mhtdc_t_43l = MakeTH1(dir_sci_mhtdc_t, "D", "h1_sci_mhtdc_t_43l", "SCI 43l T (MHTDC)", sc_xx_bins_t, 0, sc_xx_max_t);
+    h1_sci_mhtdc_t_43r = MakeTH1(dir_sci_mhtdc_t, "D", "h1_sci_mhtdc_t_43r", "SCI 43r T (MHTDC)", sc_xx_bins_t, 0, sc_xx_max_t);
+    h1_sci_mhtdc_t_81l = MakeTH1(dir_sci_mhtdc_t, "D", "h1_sci_mhtdc_t_81l", "SCI 81l T (MHTDC)", sc_xx_bins_t, 0, sc_xx_max_t);
+    h1_sci_mhtdc_t_81r = MakeTH1(dir_sci_mhtdc_t, "D", "h1_sci_mhtdc_t_81r", "SCI 81r T (MHTDC)", sc_xx_bins_t, 0, sc_xx_max_t);
+
+    // ::: MHTDC dT 
     int sc_xx_bins_dt = 2000;
-    h_sci_21l_21r_dt = new TH1D("h_sci_21l_21r_dt", "FRS scintillator time 21l - time 21r, v1290 main crate",sc_xx_bins_dt,-10000,10000);
-    h_sci_22l_22r_dt = new TH1D("h_sci_22l_22r_dt", "FRS scintillator time 22l - time 22r, v1290 main crate",sc_xx_bins_dt,-10000,10000);
-    h_sci_41l_41r_dt = new TH1D("h_sci_41l_41r_dt", "FRS scintillator time 41l - time 41r, v1290 main crate",sc_xx_bins_dt,-10000,10000);
-    h_sci_42l_42r_dt = new TH1D("h_sci_42l_42r_dt", "FRS scintillator time 42l - time 42r, v1290 main crate",sc_xx_bins_dt,-10000,10000);
-    h_sci_22l_21l_dt = new TH1D("h_sci_22l_21l_dt", "FRS scintillator time 22l - time 21l, v1290 main crate",sc_xx_bins_dt,-10000,10000);
-    h_sci_22r_21r_dt = new TH1D("h_sci_22r_21r_dt", "FRS scintillator time 22r - time 21r, v1290 main crate",sc_xx_bins_dt,-10000,10000);
-    h_sci_41l_21l_dt = new TH1D("h_sci_41l_21l_dt", "FRS scintillator time 41l - time 21l, v1290 main crate",sc_xx_bins_dt,-10000,10000);
-    h_sci_41r_21r_dt = new TH1D("h_sci_41r_21r_dt", "FRS scintillator time 41r - time 21r, v1290 main crate",sc_xx_bins_dt,-10000,10000);
-    h_sci_42l_21l_dt = new TH1D("h_sci_42l_21l_dt", "FRS scintillator time 42l - time 21l, v1290 main crate",sc_xx_bins_dt,-10000,10000);
-    h_sci_42r_21r_dt = new TH1D("h_sci_42r_21r_dt", "FRS scintillator time 42r - time 21r, v1290 main crate",sc_xx_bins_dt,-10000,10000);
-    h_sci_41l_22l_dt = new TH1D("h_sci_41l_22l_dt", "FRS scintillator time 41l - time 22l, v1290 main crate",sc_xx_bins_dt,-10000,10000);
-    h_sci_41r_22r_dt = new TH1D("h_sci_41r_22r_dt", "FRS scintillator time 41r - time 22r, v1290 main crate",sc_xx_bins_dt,-10000,10000);
-    h_sci_42l_22l_dt = new TH1D("h_sci_42l_22l_dt", "FRS scintillator time 42l - time 22l, v1290 main crate",sc_xx_bins_dt,-10000,10000);
-    h_sci_42r_22r_dt = new TH1D("h_sci_42r_22r_dt", "FRS scintillator time 42r - time 22r, v1290 main crate",sc_xx_bins_dt,-10000,10000);
-    h_sci_42l_41l_dt = new TH1D("h_sci_42l_41l_dt", "FRS scintillator time 42l - time 41l, v1290 main crate",sc_xx_bins_dt,-10000,10000);
-    h_sci_42r_41r_dt = new TH1D("h_sci_42r_41r_dt", "FRS scintillator time 42r - time 41r, v1290 main crate",sc_xx_bins_dt,-10000,10000);
+    h1_sci_mhtdc_dt_21l_21r = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_21l_21r", "SCI 21L - 21R dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
+    h1_sci_mhtdc_dt_22l_22r = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_22l_22r", "SCI 22L - 22R dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
+    h1_sci_mhtdc_dt_41l_41r = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_41l_41r", "SCI 41L - 41R dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
+    h1_sci_mhtdc_dt_42l_42r = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_42l_42r", "SCI 42L - 42R dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
+    h1_sci_mhtdc_dt_22l_21l = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_22l_21l", "SCI 22L - 21L dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
+    h1_sci_mhtdc_dt_22r_21r = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_22r_21r", "SCI 22R - 21R dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
+    h1_sci_mhtdc_dt_41l_21l = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_41l_21l", "SCI 41L - 21L dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
+    h1_sci_mhtdc_dt_41r_21r = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_41r_21r", "SCI 41R - 21R dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
+    h1_sci_mhtdc_dt_42l_21l = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_42l_21l", "SCI 42L - 21L dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
+    h1_sci_mhtdc_dt_42r_21r = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_42r_21r", "SCI 42R - 21R dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
+    h1_sci_mhtdc_dt_41l_22l = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_41l_22l", "SCI 41L - 22L dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
+    h1_sci_mhtdc_dt_41r_22r = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_41r_22r", "SCI 41R - 22R dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
+    h1_sci_mhtdc_dt_42l_22l = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_42l_22l", "SCI 42L - 22L dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
+    h1_sci_mhtdc_dt_42r_22r = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_42r_22r", "SCI 42R - 22R dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
+    h1_sci_mhtdc_dt_42l_41l = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_42l_41l", "SCI 42L - 41L dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
+    h1_sci_mhtdc_dt_42r_41r = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_42r_41r", "SCI 42R - 41R dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
+    
 
-
-
-    //MUSIC timings:
-    int music_xx_bins = 1000;
-    double music_xx_max_t = 1048576; // 2^20 bits in v1290 data word
-    h_music41_t = new TH2D("h_music41_t", "FRS MUSIC 41 Timestamps V1290 main crate",8,-0.5,7.5,music_xx_bins,0,music_xx_max_t);
-    h_music42_t = new TH2D("h_music42_t", "FRS MUSIC 42 Timestamps V1290 main crate",8,-0.5,7.5,music_xx_bins,0,music_xx_max_t); 
-
-    //TPC timings:
-    dir_frs_cal_tpc->cd();
-
-    int tpc_v1190_channels = 128;
-    int tpc_v1190_max = 262144; // 2^18 bits in read out word from CAEN manual
-    int tpc_v1190_bins = 1000;
-    h_tpc_timings_lead = new TH2D("h_tpc_timings_lead","TPC lead timings V1190 TPC crate vs channels",tpc_v1190_channels,0,tpc_v1190_channels,tpc_v1190_bins,0,tpc_v1190_max);
-    h_tpc_timings_trail = new TH2D("h_tpc_timings_trail","TPC trail timings V1190 TPC crate vs channels",tpc_v1190_channels,0,tpc_v1190_channels,tpc_v1190_bins,0,tpc_v1190_max);
-
+    // ::: TPCs :::::
     int check_sums_bins = 1000;
     int check_sums_max = 20000;
-    h_tpc_check_sums = new TH2D("h_tpc_check_sums","Check sums calculated for each anode (7 tpcs * 4 anodes)", number_of_anodes_per_tpc*number_of_tpcs,0,number_of_anodes_per_tpc*number_of_tpcs, check_sums_bins,0,check_sums_max);
+    h2_tpc_check_sums = MakeTH2(dir_cal_tpc, "D", "h2_tpc_check_sums","Check sums calculated for each anode (7 tpcs * 4 anodes)", number_of_anodes_per_tpc*number_of_tpcs,0,number_of_anodes_per_tpc*number_of_tpcs, check_sums_bins,0,check_sums_max);
 
     int tpc_min_x = -100;
     int tpc_min_y = -100;
@@ -189,60 +173,36 @@ InitStatus FrsCalSpectra::Init()
     int tpc_min_angle = -3.14*100;
     int tpc_max_angle = 3.14*100;
     int tpc_bins = 100;
-    h_tpc_angle_x_s2_foc_21_22 = new TH1D("h_tpc_angle_x_s2_foc_21_22", "TPC h_tpc_angle_x_s2_foc_21_22",tpc_bins,tpc_min_angle,tpc_max_angle);
-    h_tpc_angle_y_s2_foc_21_22 = new TH1D("h_tpc_angle_y_s2_foc_21_22", "TPC h_tpc_angle_y_s2_foc_21_22",tpc_bins,tpc_min_angle,tpc_max_angle);
-    h_tpc_x_s2_foc_21_22 = new TH1D("h_tpc_x_s2_foc_21_22", "TPC h_tpc_x_s2_foc_21_22",tpc_bins,tpc_min_x,tpc_max_x);
-    h_tpc_y_s2_foc_21_22 = new TH1D("h_tpc_y_s2_foc_21_22", "TPC h_tpc_y_s2_foc_21_22",tpc_bins,tpc_min_y,tpc_max_y);
-    h_tpc21_22_sc21_x = new TH1D("h_tpc21_22_sc21_x", "TPC h_tpc21_22_sc21_x",tpc_bins,tpc_min_x,tpc_max_x);
-    h_tpc21_22_sc22_x = new TH1D("h_tpc21_22_sc22_x", "TPC h_tpc21_22_sc22_x",tpc_bins,tpc_min_y,tpc_max_y);
-    h_tpc_angle_x_s2_foc_23_24 = new TH1D("h_tpc_angle_x_s2_foc_23_24", "TPC h_tpc_angle_x_s2_foc_23_24",tpc_bins,tpc_min_angle,tpc_max_angle);
-    h_tpc_angle_y_s2_foc_23_24 = new TH1D("h_tpc_angle_y_s2_foc_23_24", "TPC h_tpc_angle_y_s2_foc_23_24",tpc_bins,tpc_min_angle,tpc_max_angle);
-    h_tpc_x_s2_foc_23_24 = new TH1D("h_tpc_x_s2_foc_23_24", "TPC h_tpc_x_s2_foc_23_24",tpc_bins,tpc_min_x,tpc_max_x);
-    h_tpc_y_s2_foc_23_24 = new TH1D("h_tpc_y_s2_foc_23_24", "TPC h_tpc_y_s2_foc_23_24",tpc_bins,tpc_min_y,tpc_max_y);
-    h_tpc23_24_sc21_x = new TH1D("h_tpc23_24_sc21_x", "TPC h_tpc23_24_sc21_x",tpc_bins,tpc_min_x,tpc_max_x);
-    h_tpc23_24_sc21_y = new TH1D("h_tpc23_24_sc21_y", "TPC h_tpc23_24_sc21_y",tpc_bins,tpc_min_y,tpc_max_y);
-    h_tpc23_24_sc22_x = new TH1D("h_tpc23_24_sc22_x", "TPC h_tpc23_24_sc22_x",tpc_bins,tpc_min_x,tpc_max_x);
-    h_tpc23_24_sc22_y = new TH1D("h_tpc23_24_sc22_y", "TPC h_tpc23_24_sc22_y",tpc_bins,tpc_min_y,tpc_max_y);
-    h_tpc_angle_x_s2_foc_22_24 = new TH1D("h_tpc_angle_x_s2_foc_22_24", "TPC h_tpc_angle_x_s2_foc_22_24",tpc_bins,tpc_min_angle,tpc_max_angle);
-    h_tpc_angle_y_s2_foc_22_24 = new TH1D("h_tpc_angle_y_s2_foc_22_24", "TPC h_tpc_angle_y_s2_foc_22_24",tpc_bins,tpc_min_angle,tpc_max_angle);
-    h_tpc_x_s2_foc_22_24 = new TH1D("h_tpc_x_s2_foc_22_24", "TPC h_tpc_x_s2_foc_22_24",tpc_bins,tpc_min_x,tpc_max_x);
-    h_tpc_y_s2_foc_22_24 = new TH1D("h_tpc_y_s2_foc_22_24", "TPC h_tpc_y_s2_foc_22_24",tpc_bins,tpc_min_y,tpc_max_y);
-    h_tpc_angle_x_s4 = new TH1D("h_tpc_angle_x_s4", "TPC h_tpc_angle_x_s4",tpc_bins,tpc_min_angle,tpc_max_angle);
-    h_tpc_angle_y_s4 = new TH1D("h_tpc_angle_y_s4", "TPC h_tpc_angle_y_s4",tpc_bins,tpc_min_angle,tpc_max_angle);
-    h_tpc_x_s4 = new TH1D("h_tpc_x_s4", "TPC h_tpc_x_s4",tpc_bins,tpc_min_x,tpc_max_x);
-    h_tpc_y_s4 = new TH1D("h_tpc_y_s4", "TPC h_tpc_y_s4",tpc_bins,tpc_min_y,tpc_max_y);
-    h_tpc_sc41_x = new TH1D("h_tpc_sc41_x", "TPC h_tpc_sc41_x",tpc_bins,tpc_min_x,tpc_max_x);
-    h_tpc_sc41_y = new TH1D("h_tpc_sc41_y", "TPC h_tpc_sc41_y",tpc_bins,tpc_min_y,tpc_max_y);
-    h_tpc_sc42_x = new TH1D("h_tpc_sc42_x", "TPC h_tpc_sc42_x",tpc_bins,tpc_min_x,tpc_max_x);
-    h_tpc_sc42_y = new TH1D("h_tpc_sc42_y", "TPC h_tpc_sc42_y",tpc_bins,tpc_min_y,tpc_max_y);
-    h_tpc_sc43_x = new TH1D("h_tpc_sc43_x", "TPC h_tpc_sc43_x",tpc_bins,tpc_min_x,tpc_max_x);
-    h_tpc_music41_x = new TH1D("h_tpc_music41_x", "TPC h_tpc_music41_x",tpc_bins,tpc_min_x,tpc_max_x);
-    h_tpc_music42_x = new TH1D("h_tpc_music42_x", "TPC h_tpc_music42_x",tpc_bins,tpc_min_x,tpc_max_x);
-    h_tpc_music43_x = new TH1D("h_tpc_music43_x", "TPC h_tpc_music43_x",tpc_bins,tpc_min_x,tpc_max_x);
+    h1_tpc_angle_x_s2_foc_21_22 = MakeTH1(dir_cal_tpc, "D", "h1_tpc_angle_x_s2_foc_21_22", "TPC h_tpc_angle_x_s2_foc_21_22", tpc_bins, tpc_min_angle, tpc_max_angle);
+    h1_tpc_angle_y_s2_foc_21_22 = MakeTH1(dir_cal_tpc, "D", "h1_tpc_angle_y_s2_foc_21_22", "TPC h_tpc_angle_y_s2_foc_21_22", tpc_bins, tpc_min_angle, tpc_max_angle);
+    h1_tpc_x_s2_foc_21_22 = MakeTH1(dir_cal_tpc, "D", "h1_tpc_x_s2_foc_21_22", "TPC h_tpc_x_s2_foc_21_22", tpc_bins, tpc_min_x,tpc_max_x);
+    h1_tpc_y_s2_foc_21_22 = MakeTH1(dir_cal_tpc, "D", "h1_tpc_y_s2_foc_21_22", "TPC h_tpc_y_s2_foc_21_22", tpc_bins, tpc_min_y,tpc_max_y);
+    h1_tpc21_22_sc21_x = MakeTH1(dir_cal_tpc, "D", "h1_tpc21_22_sc21_x", "TPC h_tpc21_22_sc21_x", tpc_bins, tpc_min_x, tpc_max_x);
+    h1_tpc21_22_sc22_x = MakeTH1(dir_cal_tpc, "D", "h1_tpc21_22_sc22_x", "TPC h_tpc21_22_sc22_x", tpc_bins, tpc_min_y, tpc_max_y);
+    h1_tpc_angle_x_s2_foc_23_24 = MakeTH1(dir_cal_tpc, "D", "h_tpc_angle_x_s2_foc_23_24", "TPC h_tpc_angle_x_s2_foc_23_24", tpc_bins, tpc_min_angle, tpc_max_angle);
+    h1_tpc_angle_y_s2_foc_23_24 = MakeTH1(dir_cal_tpc, "D", "h_tpc_angle_y_s2_foc_23_24", "TPC h_tpc_angle_y_s2_foc_23_24", tpc_bins, tpc_min_angle, tpc_max_angle);
+    h1_tpc_x_s2_foc_23_24 = MakeTH1(dir_cal_tpc, "D", "h_tpc_x_s2_foc_23_24", "TPC h_tpc_x_s2_foc_23_24", tpc_bins,tpc_min_x, tpc_max_x);
+    h1_tpc_y_s2_foc_23_24 = MakeTH1(dir_cal_tpc, "D", "h_tpc_y_s2_foc_23_24", "TPC h_tpc_y_s2_foc_23_24", tpc_bins,tpc_min_y, tpc_max_y);
+    h1_tpc23_24_sc21_x = MakeTH1(dir_cal_tpc, "D", "h_tpc23_24_sc21_x", "TPC h_tpc23_24_sc21_x", tpc_bins, tpc_min_x, tpc_max_x);
+    h1_tpc23_24_sc21_y = MakeTH1(dir_cal_tpc, "D", "h_tpc23_24_sc21_y", "TPC h_tpc23_24_sc21_y", tpc_bins, tpc_min_y, tpc_max_y);
+    h1_tpc23_24_sc22_x = MakeTH1(dir_cal_tpc, "D", "h_tpc23_24_sc22_x", "TPC h_tpc23_24_sc22_x", tpc_bins, tpc_min_x, tpc_max_x);
+    h1_tpc23_24_sc22_y = MakeTH1(dir_cal_tpc, "D", "h_tpc23_24_sc22_y", "TPC h_tpc23_24_sc22_y", tpc_bins, tpc_min_y, tpc_max_y);
+    h1_tpc_angle_x_s2_foc_22_24 = MakeTH1(dir_cal_tpc, "D", "h_tpc_angle_x_s2_foc_22_24", "TPC h_tpc_angle_x_s2_foc_22_24", tpc_bins, tpc_min_angle, tpc_max_angle);
+    h1_tpc_angle_y_s2_foc_22_24 = MakeTH1(dir_cal_tpc, "D", "h_tpc_angle_y_s2_foc_22_24", "TPC h_tpc_angle_y_s2_foc_22_24", tpc_bins, tpc_min_angle, tpc_max_angle);
+    h1_tpc_x_s2_foc_22_24 = MakeTH1(dir_cal_tpc, "D", "h_tpc_x_s2_foc_22_24", "TPC h_tpc_x_s2_foc_22_24", tpc_bins, tpc_min_x, tpc_max_x);
+    h1_tpc_y_s2_foc_22_24 = MakeTH1(dir_cal_tpc, "D", "h_tpc_y_s2_foc_22_24", "TPC h_tpc_y_s2_foc_22_24", tpc_bins, tpc_min_y, tpc_max_y);
+    h1_tpc_angle_x_s4 = MakeTH1(dir_cal_tpc, "D", "h_tpc_angle_x_s4", "TPC h_tpc_angle_x_s4", tpc_bins, tpc_min_angle, tpc_max_angle);
+    h1_tpc_angle_y_s4 = MakeTH1(dir_cal_tpc, "D", "h_tpc_angle_y_s4", "TPC h_tpc_angle_y_s4", tpc_bins, tpc_min_angle, tpc_max_angle);
+    h1_tpc_x_s4 = MakeTH1(dir_cal_tpc, "D", "h_tpc_x_s4", "TPC h_tpc_x_s4", tpc_bins, tpc_min_x, tpc_max_x);
+    h1_tpc_y_s4 = MakeTH1(dir_cal_tpc, "D", "h_tpc_y_s4", "TPC h_tpc_y_s4", tpc_bins, tpc_min_y, tpc_max_y);
+    h1_tpc_sc41_x = MakeTH1(dir_cal_tpc, "D", "h_tpc_sc41_x", "TPC h_tpc_sc41_x", tpc_bins, tpc_min_x, tpc_max_x);
+    h1_tpc_sc41_y = MakeTH1(dir_cal_tpc, "D", "h_tpc_sc41_y", "TPC h_tpc_sc41_y", tpc_bins, tpc_min_y, tpc_max_y);
+    h1_tpc_sc42_x = MakeTH1(dir_cal_tpc, "D", "h_tpc_sc42_x", "TPC h_tpc_sc42_x", tpc_bins, tpc_min_x, tpc_max_x);
+    h1_tpc_sc42_y = MakeTH1(dir_cal_tpc, "D", "h_tpc_sc42_y", "TPC h_tpc_sc42_y", tpc_bins, tpc_min_y, tpc_max_y);
+    h1_tpc_sc43_x = MakeTH1(dir_cal_tpc, "D", "h_tpc_sc43_x", "TPC h_tpc_sc43_x", tpc_bins, tpc_min_x, tpc_max_x);
+    h1_tpc_music41_x = MakeTH1(dir_cal_tpc, "D", "h_tpc_music41_x", "TPC h_tpc_music41_x", tpc_bins, tpc_min_x, tpc_max_x);
+    h1_tpc_music42_x = MakeTH1(dir_cal_tpc, "D", "h_tpc_music42_x", "TPC h_tpc_music42_x", tpc_bins, tpc_min_x, tpc_max_x);
     
-    h1_sci21_x = new TH1D("h1_sci21_x", "S2 position SCI21", 200, -100, 100);
-
-    dir_frs_cal_user->cd();
-    int tac_bins = 1000;
-    int max_tac_value = 5000;
-    h_tac_user_dt_21l_21r = new TH1D("h_tac_user_dt_21l_21r","dt sci 21l - 21r TAC in User Crate",tac_bins,0,max_tac_value);
-    h_tac_user_dt_41l_41r = new TH1D("h_tac_user_dt_41l_41r","dt sci 41l - 41r TAC in User Crate",tac_bins,0,max_tac_value);
-    h_tac_user_dt_42l_42r = new TH1D("h_tac_user_dt_42l_42r","dt sci 42l - 42r TAC in User Crate",tac_bins,0,max_tac_value);
-    h_tac_user_dt_43l_43r = new TH1D("h_tac_user_dt_43l_43r","dt sci 43l - 43r TAC in User Crate",tac_bins,0,max_tac_value);
-    h_tac_user_dt_81l_81r = new TH1D("h_tac_user_dt_81l_81r","dt sci 81l - 81r TAC in User Crate",tac_bins,0,max_tac_value);
-    h_tac_user_dt_21l_41l = new TH1D("h_tac_user_dt_21l_41l","dt sci 21l - 41l TAC in User Crate",tac_bins,0,max_tac_value);
-    h_tac_user_dt_21r_41r = new TH1D("h_tac_user_dt_21r_41r","dt sci 21r - 41r TAC in User Crate",tac_bins,0,max_tac_value);
-    h_tac_user_dt_42r_21r = new TH1D("h_tac_user_dt_42r_21r","dt sci 42r - 21r TAC in User Crate",tac_bins,0,max_tac_value);
-    h_tac_user_dt_42l_21l = new TH1D("h_tac_user_dt_42l_21l","dt sci 42l - 21l TAC in User Crate",tac_bins,0,max_tac_value);
-    h_tac_user_dt_21l_81l = new TH1D("h_tac_user_dt_21l_81l","dt sci 21l - 81l TAC in User Crate",tac_bins,0,max_tac_value);
-    h_tac_user_dt_21r_81r = new TH1D("h_tac_user_dt_21r_81r","dt sci 21r - 81r TAC in User Crate",tac_bins,0,max_tac_value);
-    h_tac_user_dt_22l_22r = new TH1D("h_tac_user_dt_22l_22r","dt sci 22l - 22r TAC in User Crate",tac_bins,0,max_tac_value);
-    h_tac_user_dt_22l_41l = new TH1D("h_tac_user_dt_22l_41l","dt sci 22l - 41l TAC in User Crate",tac_bins,0,max_tac_value);
-    h_tac_user_dt_22r_41r = new TH1D("h_tac_user_dt_22r_41r","dt sci 22r - 41r TAC in User Crate",tac_bins,0,max_tac_value);
-    h_tac_user_dt_22l_81l = new TH1D("h_tac_user_dt_22l_81l","dt sci 22l - 81l TAC in User Crate",tac_bins,0,max_tac_value);
-    h_tac_user_dt_22r_81r = new TH1D("h_tac_user_dt_22r_81r","dt sci 22r - 81r TAC in User Crate",tac_bins,0,max_tac_value);
-
-    dir_frs->cd();
 
     run->GetHttpServer()->RegisterCommand("Reset_IncomingID_HIST", Form("/Objects/%s/->Reset_Histo()", GetName()));
 
@@ -258,197 +218,159 @@ void FrsCalSpectra::Reset_Histo()
 
 void FrsCalSpectra::Exec(Option_t* option)
 {   
-    uint64_t wr_t = 0;
-    auto const & tpatItem = tpatArray->at(0);
-    wr_t = tpatItem.Get_wr_t();
-    if (wr_t == 0) return;
-    if (mainMusicArray->size() > 1) std::cout << "weird FRS event" << std::endl;
+    if (calSciArray->size() == 0) return;
+    
+    auto const & calSciItem = calSciArray->at(0);
+    UInt_t de_21l = calSciItem.Get_dE_21l();
+    UInt_t de_21r = calSciItem.Get_dE_21r();
+    UInt_t de_22l = calSciItem.Get_dE_22l();
+    UInt_t de_22r = calSciItem.Get_dE_22r();
+    UInt_t de_31l = calSciItem.Get_dE_31l();  
+    UInt_t de_31r = calSciItem.Get_dE_31r();
+    UInt_t de_41l = calSciItem.Get_dE_41l();
+    UInt_t de_41r = calSciItem.Get_dE_41r(); 
+    UInt_t de_42l = calSciItem.Get_dE_42l();
+    UInt_t de_42r = calSciItem.Get_dE_42r();
+    UInt_t de_43l = calSciItem.Get_dE_43l();  
+    UInt_t de_43r = calSciItem.Get_dE_43r();
+    UInt_t de_81l = calSciItem.Get_dE_81l();
+    UInt_t de_81r = calSciItem.Get_dE_81r();
 
-    auto const & mainSciItem  = mainSciArray->at(0);
+    h1_sci_tac_de_21l->Fill(de_21l);
+    h1_sci_tac_de_21r->Fill(de_21r);
+    h1_sci_tac_de_22l->Fill(de_22l);
+    h1_sci_tac_de_22r->Fill(de_22r);
+    h1_sci_tac_de_31l->Fill(de_31l);
+    h1_sci_tac_de_31r->Fill(de_31r);
+    h1_sci_tac_de_41l->Fill(de_41l);
+    h1_sci_tac_de_41r->Fill(de_41r);
+    h1_sci_tac_de_42l->Fill(de_42l);
+    h1_sci_tac_de_42r->Fill(de_42r);
+    h1_sci_tac_de_43l->Fill(de_43l);
+    h1_sci_tac_de_43r->Fill(de_43r);
+    h1_sci_tac_de_81l->Fill(de_81l);
+    h1_sci_tac_de_81r->Fill(de_81r);
 
-
-    uint32_t sci_21l_de = mainSciItem.Get_dE_21l();
-    uint32_t sci_21r_de = mainSciItem.Get_dE_21r();  
-    uint32_t sci_22l_de = mainSciItem.Get_dE_22l();  
-    uint32_t sci_22r_de = mainSciItem.Get_dE_22r();
-    uint32_t sci_41l_de = mainSciItem.Get_dE_41l();
-    uint32_t sci_41r_de = mainSciItem.Get_dE_41r(); 
-    uint32_t sci_42l_de = mainSciItem.Get_dE_42l();
-    uint32_t sci_42r_de = mainSciItem.Get_dE_42r();
-    uint32_t sci_43l_de = mainSciItem.Get_dE_43l();  
-    uint32_t sci_43r_de = mainSciItem.Get_dE_43r();
-    uint32_t sci_81l_de = mainSciItem.Get_dE_81l();
-    uint32_t sci_81r_de = mainSciItem.Get_dE_81r();
-
-    h_sci_21l_de->Fill(sci_21l_de);
-    h_sci_21r_de->Fill(sci_21r_de);
-    h_sci_22l_de->Fill(sci_22l_de);
-    h_sci_22r_de->Fill(sci_22r_de);
-    h_sci_41l_de->Fill(sci_41l_de);
-    h_sci_41r_de->Fill(sci_41r_de);
-    h_sci_42l_de->Fill(sci_42l_de);
-    h_sci_42r_de->Fill(sci_42r_de);
-    h_sci_43l_de->Fill(sci_43l_de);
-    h_sci_43r_de->Fill(sci_43r_de);
-    h_sci_81l_de->Fill(sci_81l_de);
-    h_sci_81r_de->Fill(sci_81r_de);
+    UInt_t dt_21l_21r = calSciItem.Get_dT_21l_21r();
+    h1_sci_tac_dt_21l_21r->Fill(dt_21l_21r);
+    UInt_t dt_22l_22r = calSciItem.Get_dT_22l_22r();
+    h1_sci_tac_dt_22l_22r->Fill(dt_22l_22r);
+    UInt_t dt_41l_41r = calSciItem.Get_dT_41l_41r();
+    h1_sci_tac_dt_41l_41r->Fill(dt_41l_41r);
+    UInt_t dt_42l_42r = calSciItem.Get_dT_42l_42r();
+    h1_sci_tac_dt_42l_42r->Fill(dt_42l_42r);
+    UInt_t dt_43l_43r = calSciItem.Get_dT_43l_43r();
+    h1_sci_tac_dt_43l_43r->Fill(dt_43l_43r);
+    UInt_t dt_81l_81r = calSciItem.Get_dT_81l_81r();
+    h1_sci_tac_dt_81l_81r->Fill(dt_81l_81r);
+    UInt_t dt_21l_41l = calSciItem.Get_dT_21l_41l();
+    h1_sci_tac_dt_21l_41l->Fill(dt_21l_41l);
+    UInt_t dt_21r_41r = calSciItem.Get_dT_21r_41r();
+    h1_sci_tac_dt_21r_41r->Fill(dt_21r_41r);
+    UInt_t dt_42l_21l = calSciItem.Get_dT_42l_21l();
+    h1_sci_tac_dt_42l_21l->Fill(dt_42l_21l);
+    UInt_t dt_42r_21r = calSciItem.Get_dT_42r_21r();
+    h1_sci_tac_dt_42r_21r->Fill(dt_42r_21r);
+    UInt_t dt_21l_81l = calSciItem.Get_dT_21l_81l();
+    h1_sci_tac_dt_21l_81l->Fill(dt_21l_81l);
+    UInt_t dt_21r_81r = calSciItem.Get_dT_21r_81r();
+    h1_sci_tac_dt_21r_81r->Fill(dt_21r_81r);
+    UInt_t dt_22l_41l = calSciItem.Get_dT_22l_41l();
+    h1_sci_tac_dt_22l_41l->Fill(dt_22l_41l);
+    UInt_t dt_22r_41r = calSciItem.Get_dT_22r_41r();
+    h1_sci_tac_dt_22r_41r->Fill(dt_22r_41r);
+    UInt_t dt_22l_81l = calSciItem.Get_dT_22l_81l();
+    h1_sci_tac_dt_22l_81l->Fill(dt_22l_81l);
+    UInt_t dt_22r_81r = calSciItem.Get_dT_22r_81r();
+    h1_sci_tac_dt_22r_81r->Fill(dt_22r_81r);
 
 
     // getting the first hit only: mapping to int32 signed is okay since the max value is 2^20:
-    int32_t sci21l_time = mainSciItem.Get_mhtdc_sc21l_hit(0);
-    int32_t sci21r_time = mainSciItem.Get_mhtdc_sc21r_hit(0);
-    int32_t sci22l_time = mainSciItem.Get_mhtdc_sc22l_hit(0);
-    int32_t sci22r_time = mainSciItem.Get_mhtdc_sc22r_hit(0);
-    int32_t sci41l_time = mainSciItem.Get_mhtdc_sc41l_hit(0);
-    int32_t sci41r_time = mainSciItem.Get_mhtdc_sc41r_hit(0);
-    int32_t sci42l_time = mainSciItem.Get_mhtdc_sc42l_hit(0);
-    int32_t sci42r_time = mainSciItem.Get_mhtdc_sc42r_hit(0);
-    int32_t sci43l_time = mainSciItem.Get_mhtdc_sc43l_hit(0);
-    int32_t sci43r_time = mainSciItem.Get_mhtdc_sc43r_hit(0);
-    int32_t sci81l_time = mainSciItem.Get_mhtdc_sc81l_hit(0);
-    int32_t sci81r_time = mainSciItem.Get_mhtdc_sc81r_hit(0);
+    Int_t sci21l_time = calSciItem.Get_mhtdc_sci21l_hits().at(0);
+    Int_t sci21r_time = calSciItem.Get_mhtdc_sci21r_hits().at(0);
+    Int_t sci22l_time = calSciItem.Get_mhtdc_sci22l_hits().at(0);
+    Int_t sci22r_time = calSciItem.Get_mhtdc_sci22r_hits().at(0);
+    Int_t sci41l_time = calSciItem.Get_mhtdc_sci41l_hits().at(0);
+    Int_t sci41r_time = calSciItem.Get_mhtdc_sci41r_hits().at(0);
+    Int_t sci42l_time = calSciItem.Get_mhtdc_sci42l_hits().at(0);
+    Int_t sci42r_time = calSciItem.Get_mhtdc_sci42r_hits().at(0);
+    Int_t sci43l_time = calSciItem.Get_mhtdc_sci43l_hits().at(0);
+    Int_t sci43r_time = calSciItem.Get_mhtdc_sci43r_hits().at(0);
+    Int_t sci81l_time = calSciItem.Get_mhtdc_sci81l_hits().at(0);
+    Int_t sci81r_time = calSciItem.Get_mhtdc_sci81r_hits().at(0);
 
-    if (sci21l_time != 0) h_sci_21l_t->Fill(sci21l_time);
-    if (sci21r_time != 0) h_sci_21r_t->Fill(sci21r_time);    
-    if (sci22l_time != 0) h_sci_22l_t->Fill(sci22l_time);
-    if (sci22r_time != 0) h_sci_22r_t->Fill(sci22r_time);
-    if (sci41l_time != 0) h_sci_41l_t->Fill(sci41l_time);
-    if (sci41r_time != 0) h_sci_41r_t->Fill(sci41r_time);
-    if (sci42l_time != 0) h_sci_42l_t->Fill(sci42l_time);
-    if (sci42r_time != 0) h_sci_42r_t->Fill(sci42r_time);
-    if (sci43l_time != 0) h_sci_43l_t->Fill(sci43l_time);
-    if (sci43r_time != 0) h_sci_43r_t->Fill(sci43r_time);
-    if (sci81l_time != 0) h_sci_81l_t->Fill(sci81l_time);
-    if (sci81r_time != 0) h_sci_81r_t->Fill(sci81r_time);
+    if (sci21l_time != 0) h1_sci_mhtdc_t_21l->Fill(sci21l_time);
+    if (sci21r_time != 0) h1_sci_mhtdc_t_21r->Fill(sci21r_time);    
+    if (sci22l_time != 0) h1_sci_mhtdc_t_22l->Fill(sci22l_time);
+    if (sci22r_time != 0) h1_sci_mhtdc_t_22r->Fill(sci22r_time);
+    if (sci41l_time != 0) h1_sci_mhtdc_t_41l->Fill(sci41l_time);
+    if (sci41r_time != 0) h1_sci_mhtdc_t_41r->Fill(sci41r_time);
+    if (sci42l_time != 0) h1_sci_mhtdc_t_42l->Fill(sci42l_time);
+    if (sci42r_time != 0) h1_sci_mhtdc_t_42r->Fill(sci42r_time);
+    if (sci43l_time != 0) h1_sci_mhtdc_t_43l->Fill(sci43l_time);
+    if (sci43r_time != 0) h1_sci_mhtdc_t_43r->Fill(sci43r_time);
+    if (sci81l_time != 0) h1_sci_mhtdc_t_81l->Fill(sci81l_time);
+    if (sci81r_time != 0) h1_sci_mhtdc_t_81r->Fill(sci81r_time);
 
-    if ( sci21l_time != 0 && sci21r_time != 0) h_sci_21l_21r_dt->Fill(sci21l_time - sci21r_time);
-    if ( sci22l_time != 0 && sci22r_time != 0) h_sci_22l_22r_dt->Fill(sci22l_time - sci22r_time);
-    if ( sci41l_time != 0 && sci41r_time != 0) h_sci_41l_41r_dt->Fill(sci41l_time - sci41r_time);
-    if ( sci42l_time != 0 && sci42r_time != 0) h_sci_42l_42r_dt->Fill(sci42l_time - sci42r_time);
-    if ( sci22l_time != 0 && sci21l_time != 0) h_sci_22l_21l_dt->Fill(sci22l_time - sci21l_time);
-    if ( sci22r_time != 0 && sci21r_time != 0) h_sci_22r_21r_dt->Fill(sci22r_time - sci21r_time);
-    if ( sci41l_time != 0 && sci21l_time != 0) h_sci_41l_21l_dt->Fill(sci41l_time - sci21l_time);
-    if ( sci41r_time != 0 && sci21r_time != 0) h_sci_41r_21r_dt->Fill(sci41r_time - sci21r_time);
-    if ( sci42l_time != 0 && sci21l_time != 0) h_sci_42l_21l_dt->Fill(sci42l_time - sci21l_time);
-    if ( sci42r_time != 0 && sci21r_time != 0) h_sci_42r_21r_dt->Fill(sci42r_time - sci21r_time);
-    if ( sci41l_time != 0 && sci22l_time != 0) h_sci_41l_22l_dt->Fill(sci41l_time - sci22l_time);
-    if ( sci41r_time != 0 && sci22r_time != 0) h_sci_41r_22r_dt->Fill(sci41r_time - sci22r_time);
-    if ( sci42l_time != 0 && sci22l_time != 0) h_sci_42l_22l_dt->Fill(sci42l_time - sci22l_time);
-    if ( sci42r_time != 0 && sci22r_time != 0) h_sci_42r_22r_dt->Fill(sci42r_time - sci22r_time);
-    if ( sci42l_time != 0 && sci41l_time != 0) h_sci_42l_41l_dt->Fill(sci42l_time - sci41l_time);
-    if ( sci42r_time != 0 && sci41r_time != 0) h_sci_42r_41r_dt->Fill(sci42r_time - sci41r_time);
+    if (sci21l_time != 0 && sci21r_time != 0) h1_sci_mhtdc_dt_21l_21r->Fill(sci21l_time - sci21r_time);
+    if (sci22l_time != 0 && sci22r_time != 0) h1_sci_mhtdc_dt_22l_22r->Fill(sci22l_time - sci22r_time);
+    if (sci41l_time != 0 && sci41r_time != 0) h1_sci_mhtdc_dt_41l_41r->Fill(sci41l_time - sci41r_time);
+    if (sci42l_time != 0 && sci42r_time != 0) h1_sci_mhtdc_dt_42l_42r->Fill(sci42l_time - sci42r_time);
+    if (sci22l_time != 0 && sci21l_time != 0) h1_sci_mhtdc_dt_22l_21l->Fill(sci22l_time - sci21l_time);
+    if (sci22r_time != 0 && sci21r_time != 0) h1_sci_mhtdc_dt_22r_21r->Fill(sci22r_time - sci21r_time);
+    if (sci41l_time != 0 && sci21l_time != 0) h1_sci_mhtdc_dt_41l_21l->Fill(sci41l_time - sci21l_time);
+    if (sci41r_time != 0 && sci21r_time != 0) h1_sci_mhtdc_dt_41r_21r->Fill(sci41r_time - sci21r_time);
+    if (sci42l_time != 0 && sci21l_time != 0) h1_sci_mhtdc_dt_42l_21l->Fill(sci42l_time - sci21l_time);
+    if (sci42r_time != 0 && sci21r_time != 0) h1_sci_mhtdc_dt_42r_21r->Fill(sci42r_time - sci21r_time);
+    if (sci41l_time != 0 && sci22l_time != 0) h1_sci_mhtdc_dt_41l_22l->Fill(sci41l_time - sci22l_time);
+    if (sci41r_time != 0 && sci22r_time != 0) h1_sci_mhtdc_dt_41r_22r->Fill(sci41r_time - sci22r_time);
+    if (sci42l_time != 0 && sci22l_time != 0) h1_sci_mhtdc_dt_42l_22l->Fill(sci42l_time - sci22l_time);
+    if (sci42r_time != 0 && sci22r_time != 0) h1_sci_mhtdc_dt_42r_22r->Fill(sci42r_time - sci22r_time);
+    if (sci42l_time != 0 && sci41l_time != 0) h1_sci_mhtdc_dt_42l_41l->Fill(sci42l_time - sci41l_time);
+    if (sci42r_time != 0 && sci41r_time != 0) h1_sci_mhtdc_dt_42r_41r->Fill(sci42r_time - sci41r_time);
 
 
-    
-    
-    auto const & mainMusicItem  = mainMusicArray->at(0);
-
-    //music timings:
-    uint32_t* music_t1 = mainMusicItem.Get_music_t1();
-    uint32_t* music_t2 = mainMusicItem.Get_music_t2();
-    if (music_t1 != nullptr && music_t2 != nullptr) 
-    {
-        for (int anode = 0; anode<8; anode++) 
-        {
-            h_music41_t->Fill(anode,music_t1[anode]); 
-            h_music42_t->Fill(anode,music_t2[anode]);
-        }
-    }
-
-    for (auto const & v1190item : *v1190array)
-    {
-        uint32_t channel = v1190item.Get_channel();
-        uint32_t data = v1190item.Get_v1190_data();
-        uint32_t lot = v1190item.Get_leadOrTrail();
-
-        if (lot == 0)
-        {
-            h_tpc_timings_lead->Fill(channel, data);
-        }
-        else if (lot == 1)
-        {
-            h_tpc_timings_trail->Fill(channel, data);
-        }
-    }
-
-    auto const & tpcCalItem = tpcCalArray->at(0);
-    Int_t** tpc_csum = tpcCalItem.Get_tpc_csum();
+    auto const & calTpcItem = calTpcArray->at(0);
+    const Int_t (*tpc_csum)[4] = calTpcItem.Get_tpc_csum();
     for (int an = 0; an < number_of_anodes_per_tpc; an++)
     {
-        for (int ntpc = 0; ntpc < number_of_tpcs; ntpc ++)
+        for (int ntpc = 0; ntpc < number_of_tpcs; ntpc++)
         {
-            h_tpc_check_sums->Fill(ntpc*number_of_anodes_per_tpc + an, tpc_csum[ntpc][an]);
+            h2_tpc_check_sums->Fill(ntpc*number_of_anodes_per_tpc + an, tpc_csum[ntpc][an]);
         }
     }
 
-    h_tpc_angle_x_s2_foc_21_22->Fill(tpcCalItem.Get_tpc_angle_x_s2_foc_21_22());
-    h_tpc_angle_y_s2_foc_21_22->Fill(tpcCalItem.Get_tpc_angle_y_s2_foc_21_22());
-    h_tpc_x_s2_foc_21_22->Fill(tpcCalItem.Get_tpc_x_s2_foc_21_22());
-    h_tpc_y_s2_foc_21_22->Fill(tpcCalItem.Get_tpc_y_s2_foc_21_22());
-    h_tpc21_22_sc21_x->Fill(tpcCalItem.Get_tpc21_22_sc21_x());
-    h_tpc21_22_sc22_x->Fill(tpcCalItem.Get_tpc21_22_sc22_x());
-    h_tpc_angle_x_s2_foc_23_24->Fill(tpcCalItem.Get_tpc_angle_x_s2_foc_23_24());
-    h_tpc_angle_y_s2_foc_23_24->Fill(tpcCalItem.Get_tpc_angle_y_s2_foc_23_24());
-    h_tpc_x_s2_foc_23_24->Fill(tpcCalItem.Get_tpc_x_s2_foc_23_24());
-    h_tpc_y_s2_foc_23_24->Fill(tpcCalItem.Get_tpc_y_s2_foc_23_24());
-    h_tpc23_24_sc21_x->Fill(tpcCalItem.Get_tpc23_24_sc21_x());
-    h_tpc23_24_sc21_y->Fill(tpcCalItem.Get_tpc23_24_sc21_y());
-    h_tpc23_24_sc22_x->Fill(tpcCalItem.Get_tpc23_24_sc22_x());
-    h_tpc23_24_sc22_y->Fill(tpcCalItem.Get_tpc23_24_sc22_y());
-    h_tpc_angle_x_s2_foc_22_24->Fill(tpcCalItem.Get_tpc_angle_x_s2_foc_22_24());
-    h_tpc_angle_y_s2_foc_22_24->Fill(tpcCalItem.Get_tpc_angle_y_s2_foc_22_24());
-    h_tpc_x_s2_foc_22_24->Fill(tpcCalItem.Get_tpc_x_s2_foc_22_24());
-    h_tpc_y_s2_foc_22_24->Fill(tpcCalItem.Get_tpc_y_s2_foc_22_24());
-    h_tpc_angle_x_s4->Fill(tpcCalItem.Get_tpc_angle_x_s4());
-    h_tpc_angle_y_s4->Fill(tpcCalItem.Get_tpc_angle_y_s4());
-    h_tpc_x_s4->Fill(tpcCalItem.Get_tpc_x_s4());
-    h_tpc_y_s4->Fill(tpcCalItem.Get_tpc_y_s4());
-    h_tpc_sc41_x->Fill(tpcCalItem.Get_tpc_sc41_x());
-    h_tpc_sc41_y->Fill(tpcCalItem.Get_tpc_sc41_y());
-    h_tpc_sc42_x->Fill(tpcCalItem.Get_tpc_sc42_x());
-    h_tpc_sc42_y->Fill(tpcCalItem.Get_tpc_sc42_y());
-    h_tpc_sc43_x->Fill(tpcCalItem.Get_tpc_sc43_x());
-    h_tpc_music41_x->Fill(tpcCalItem.Get_tpc_music41_x());
-    h_tpc_music42_x->Fill(tpcCalItem.Get_tpc_music42_x());
-    h_tpc_music43_x->Fill(tpcCalItem.Get_tpc_music43_x());
-            
-    auto const & userSciItem = userSciArray->at(0);
-    uint32_t* dt_array = userSciItem.Get_dt_array();
+    h1_tpc_angle_x_s2_foc_21_22->Fill(calTpcItem.Get_tpc_angle_x_s2_foc_21_22());
+    h1_tpc_angle_y_s2_foc_21_22->Fill(calTpcItem.Get_tpc_angle_y_s2_foc_21_22());
+    h1_tpc_x_s2_foc_21_22->Fill(calTpcItem.Get_tpc_x_s2_foc_21_22());
+    h1_tpc_y_s2_foc_21_22->Fill(calTpcItem.Get_tpc_y_s2_foc_21_22());
+    h1_tpc21_22_sc21_x->Fill(calTpcItem.Get_tpc21_22_sc21_x());
+    h1_tpc21_22_sc22_x->Fill(calTpcItem.Get_tpc21_22_sc22_x());
+    h1_tpc_angle_x_s2_foc_23_24->Fill(calTpcItem.Get_tpc_angle_x_s2_foc_23_24());
+    h1_tpc_angle_y_s2_foc_23_24->Fill(calTpcItem.Get_tpc_angle_y_s2_foc_23_24());
+    h1_tpc_x_s2_foc_23_24->Fill(calTpcItem.Get_tpc_x_s2_foc_23_24());
+    h1_tpc_y_s2_foc_23_24->Fill(calTpcItem.Get_tpc_y_s2_foc_23_24());
+    h1_tpc23_24_sc21_x->Fill(calTpcItem.Get_tpc23_24_sc21_x());
+    h1_tpc23_24_sc21_y->Fill(calTpcItem.Get_tpc23_24_sc21_y());
+    h1_tpc23_24_sc22_x->Fill(calTpcItem.Get_tpc23_24_sc22_x());
+    h1_tpc23_24_sc22_y->Fill(calTpcItem.Get_tpc23_24_sc22_y());
+    h1_tpc_angle_x_s2_foc_22_24->Fill(calTpcItem.Get_tpc_angle_x_s2_foc_22_24());
+    h1_tpc_angle_y_s2_foc_22_24->Fill(calTpcItem.Get_tpc_angle_y_s2_foc_22_24());
+    h1_tpc_x_s2_foc_22_24->Fill(calTpcItem.Get_tpc_x_s2_foc_22_24());
+    h1_tpc_y_s2_foc_22_24->Fill(calTpcItem.Get_tpc_y_s2_foc_22_24());
+    h1_tpc_angle_x_s4->Fill(calTpcItem.Get_tpc_angle_x_s4());
+    h1_tpc_angle_y_s4->Fill(calTpcItem.Get_tpc_angle_y_s4());
+    h1_tpc_x_s4->Fill(calTpcItem.Get_tpc_x_s4());
+    h1_tpc_y_s4->Fill(calTpcItem.Get_tpc_y_s4());
+    h1_tpc_sc41_x->Fill(calTpcItem.Get_tpc_sc41_x());
+    h1_tpc_sc41_y->Fill(calTpcItem.Get_tpc_sc41_y());
+    h1_tpc_sc42_x->Fill(calTpcItem.Get_tpc_sc42_x());
+    h1_tpc_sc42_y->Fill(calTpcItem.Get_tpc_sc42_y());
+    h1_tpc_sc43_x->Fill(calTpcItem.Get_tpc_sc43_x());
+    h1_tpc_music41_x->Fill(calTpcItem.Get_tpc_music41_x());
+    h1_tpc_music42_x->Fill(calTpcItem.Get_tpc_music42_x());
 
-    uint32_t dt_21l_21r = dt_array[0];
-    h_tac_user_dt_21l_21r->Fill(dt_21l_21r);
-    uint32_t dt_41l_41r = dt_array[1];
-    h_tac_user_dt_41l_41r->Fill(dt_41l_41r);
-    uint32_t dt_42l_42r = dt_array[2];
-    h_tac_user_dt_42l_42r->Fill(dt_42l_42r);
-    uint32_t dt_43l_43r = dt_array[3];
-    h_tac_user_dt_43l_43r->Fill(dt_43l_43r);
-    uint32_t dt_81l_81r = dt_array[4];
-    h_tac_user_dt_81l_81r->Fill(dt_81l_81r);
-    uint32_t dt_21l_41l = dt_array[5];
-    h_tac_user_dt_21l_41l->Fill(dt_21l_41l);
-    uint32_t dt_21r_41r = dt_array[6];
-    h_tac_user_dt_21r_41r->Fill(dt_21r_41r);
-    uint32_t dt_42r_21r = dt_array[7];
-    h_tac_user_dt_42r_21r->Fill(dt_42r_21r);
-    uint32_t dt_42l_21l = dt_array[8];
-    h_tac_user_dt_42l_21l->Fill(dt_42l_21l);
-    uint32_t dt_21l_81l = dt_array[9];
-    h_tac_user_dt_21l_81l->Fill(dt_21l_81l);
-    uint32_t dt_21r_81r = dt_array[10];
-    h_tac_user_dt_21r_81r->Fill(dt_21r_81r);
-    uint32_t dt_22l_22r = dt_array[11];
-    h_tac_user_dt_22l_22r->Fill(dt_22l_22r);
-    uint32_t dt_22l_41l = dt_array[12];
-    h_tac_user_dt_22l_41l->Fill(dt_22l_41l);
-    uint32_t dt_22r_41r = dt_array[13];
-    h_tac_user_dt_22r_41r->Fill(dt_22r_41r);
-    uint32_t dt_22l_81l = dt_array[14];
-    h_tac_user_dt_22l_81l->Fill(dt_22l_81l);
-    uint32_t dt_22r_81r = dt_array[15];
-    h_tac_user_dt_22r_81r->Fill(dt_22r_81r);
-
-    fNEvents += 1;
+    fNEvents++;
 
 }
 
