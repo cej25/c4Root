@@ -2,7 +2,7 @@
 
 c4Root is a FairRoot-based software inspired by R3BRoot [https://github.com/R3BRootGroup/R3BRoot] for the experimental analysis of HISPEC/DESPEC nuclear physics experiments.
 
-Contact: calum.e.jones@gsi.de
+Contact: calum.e.jones@gmail.com
 
 Development: 
 * Calum Eoin Jones
