@@ -34,6 +34,8 @@ UcesbSource::UcesbSource(const TString& FileName,
     , fInputFile()
     , fEntryMax(0)
     , fReaders(new TObjArray())
+    , fTimeStitcherPath()
+    , fTimeStitcherOptions()
 {
 }
 
@@ -69,9 +71,17 @@ Bool_t UcesbSource::Init()
     Bool_t status;
     std::ostringstream command;
 
-    /* Call ucesb with this command */
-    command << fUcesbPath << " " << fFileName << " "
-            << "--ntuple=" << fNtupleOptions << ",STRUCT,-"; // just STRUCT
+    if (fTimeStitcherPath.Length()) {
+	command << fTimeStitcherPath << " " << fFileName << " " 
+	    << fTimeStitcherOptions << " --output=- "
+	    << " | " << fUcesbPath << " file://- "
+	    << "--ntuple=" << fNtupleOptions << ",STRUCT,-";
+    }
+    else {
+        /* Call ucesb with this command */
+        command << fUcesbPath << " " << fFileName << " "
+	    << "--ntuple=" << fNtupleOptions << ",STRUCT,-"; // just STRUCT
+    }
 
     if (fLastEventNo != -1)
     {

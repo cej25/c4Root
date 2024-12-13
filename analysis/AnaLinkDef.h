@@ -9,6 +9,7 @@
 
 // online
 #pragma link C++ class AidaOnlineSpectra+;
+#pragma link C++ class AidaPulserWalkthrough+;
 #pragma link C++ class FrsOnlineSpectra+;
 #pragma link C++ class FrsRawSpectra+;
 #pragma link C++ class FrsCalSpectra+;

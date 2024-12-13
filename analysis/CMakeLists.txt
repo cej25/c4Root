@@ -51,6 +51,7 @@ set(SRCS
 ./online/lisa/LisaOnlineSpectra.cxx
 ./online/lisa/LisaOnlineSpectraDaq.cxx
 ./online/aida/AidaOnlineSpectra.cxx
+./online/aida/AidaPulserWalkthrough.cxx
 ./online/bplast/bPlastOnlineSpectra.cxx
 ./online/fatima/FatimaOnlineSpectra.cxx
 ./online/fatima/FatimaVmeOnlineSpectra.cxx
