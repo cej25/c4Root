@@ -4,7 +4,6 @@
 #include "TFrsConfiguration.h"
 #include "TExperimentConfiguration.h"
 #include "FrsHitData.h"
-#include "FrsTPCCalData.h"
 #include "FairTask.h"
 #include "TFRSParameter.h"
 #include "TH2.h"
@@ -66,7 +65,6 @@ class FrsNearlineSpectra : public FairTask
         EventHeader* header;
         int multihit_counter = 0;
         
-        std::vector<FrsTPCCalItem> const* tpcCalArray;
         std::vector<FrsHitItem> const* hitArray;
         std::vector<FrsMultiHitItem> const* multihitArray;
 

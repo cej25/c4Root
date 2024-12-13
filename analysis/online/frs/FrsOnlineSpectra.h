@@ -5,7 +5,6 @@
 #include "TExperimentConfiguration.h"
 #include "FrsGate.h"
 #include "FrsHitData.h"
-#include "FrsTPCCalData.h"
 #include "AnalysisTools.h"
 
 #include "FairTask.h"
@@ -65,7 +64,6 @@ class FrsOnlineSpectra : public FairTask
 
         std::vector<FrsGate*> FrsGates;
 
-        std::vector<FrsTPCCalItem> const* tpcCalArray;
         std::vector<FrsHitItem> const* hitArray;
         std::vector<FrsMultiHitItem> const* multihitArray; //EG
 

@@ -56,13 +56,8 @@ set(SRCS
 ./aida/AidaReader.cxx
 ./aida/AidaCal2Hit.cxx
 ./aida/AidaUnpack2Cal.cxx
-./frs/FrsMainReader.cxx
-./frs/FrsTPCReader.cxx
-./frs/FrsUserReader.cxx
-./frs/FrsTpatReader.cxx
-./frs/FrsMainRaw2Cal.cxx
-./frs/FrsTPCRaw2Cal.cxx
-./frs/FrsUserRaw2Cal.cxx
+./frs/FrsReader.cxx
+./frs/FrsRaw2Cal.cxx
 ./frs/FrsCal2Hit.cxx
 ./travMus/TravMusReader.cxx
 ./travMus/TravMusRaw2Cal.cxx
@@ -87,18 +82,12 @@ set(SRCS
 ./fimp/FimpRaw2Cal.cxx
 
 ./test/TestReader.cxx
-./frs/FrsReader.cxx
-./frs/FrsRaw2Cal.cxx
-./frs/FrsCal2Ana.cxx
 )
 
 Set(STRUCT_HEADERS
 ./base/ext_h101_unpack.h
 ./aida/ext_h101_aida.h
-./frs/ext_h101_frsmain.h
-./frs/ext_h101_frstpc.h
-./frs/ext_h101_frsuser.h
-./frs/ext_h101_frstpat.h
+./frs/ext_h101_frs.h
 ./travMus/ext_h101_travmus.h
 ./lisa/ext_h101_lisa.h
 ./germanium/ext_h101_germanium.h
@@ -111,7 +100,6 @@ Set(STRUCT_HEADERS
 ./fimp/ext_h101_fimp.h
 
 ./test/ext_h101_test.h
-./frs/ext_h101_frs.h
 )
 
 # fill list of header files from list of source files
