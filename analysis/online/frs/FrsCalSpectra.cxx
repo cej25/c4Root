@@ -218,7 +218,7 @@ void FrsCalSpectra::Reset_Histo()
 
 void FrsCalSpectra::Exec(Option_t* option)
 {   
-    if (calSciArray->size() == 0) return;
+    if (calSciArray->size() == 0 || calTpcArray->size() == 0) return;
     
     auto const & calSciItem = calSciArray->at(0);
     UInt_t de_21l = calSciItem.Get_dE_21l();
@@ -284,52 +284,50 @@ void FrsCalSpectra::Exec(Option_t* option)
     UInt_t dt_22r_81r = calSciItem.Get_dT_22r_81r();
     h1_sci_tac_dt_22r_81r->Fill(dt_22r_81r);
 
-
     // getting the first hit only: mapping to int32 signed is okay since the max value is 2^20:
-    Int_t sci21l_time = calSciItem.Get_mhtdc_sci21l_hits().at(0);
-    Int_t sci21r_time = calSciItem.Get_mhtdc_sci21r_hits().at(0);
-    Int_t sci22l_time = calSciItem.Get_mhtdc_sci22l_hits().at(0);
-    Int_t sci22r_time = calSciItem.Get_mhtdc_sci22r_hits().at(0);
-    Int_t sci41l_time = calSciItem.Get_mhtdc_sci41l_hits().at(0);
-    Int_t sci41r_time = calSciItem.Get_mhtdc_sci41r_hits().at(0);
-    Int_t sci42l_time = calSciItem.Get_mhtdc_sci42l_hits().at(0);
-    Int_t sci42r_time = calSciItem.Get_mhtdc_sci42r_hits().at(0);
-    Int_t sci43l_time = calSciItem.Get_mhtdc_sci43l_hits().at(0);
-    Int_t sci43r_time = calSciItem.Get_mhtdc_sci43r_hits().at(0);
-    Int_t sci81l_time = calSciItem.Get_mhtdc_sci81l_hits().at(0);
-    Int_t sci81r_time = calSciItem.Get_mhtdc_sci81r_hits().at(0);
+    std::vector<Int_t> sci21l_times = calSciItem.Get_mhtdc_sci21l_hits();
+    std::vector<Int_t> sci21r_times = calSciItem.Get_mhtdc_sci21r_hits();
+    std::vector<Int_t> sci22l_times = calSciItem.Get_mhtdc_sci22l_hits();
+    std::vector<Int_t> sci22r_times = calSciItem.Get_mhtdc_sci22r_hits();
+    std::vector<Int_t> sci41l_times = calSciItem.Get_mhtdc_sci41l_hits();
+    std::vector<Int_t> sci41r_times = calSciItem.Get_mhtdc_sci41r_hits();
+    std::vector<Int_t> sci42l_times = calSciItem.Get_mhtdc_sci42l_hits();
+    std::vector<Int_t> sci42r_times = calSciItem.Get_mhtdc_sci42r_hits();
+    std::vector<Int_t> sci43l_times = calSciItem.Get_mhtdc_sci43l_hits();
+    std::vector<Int_t> sci43r_times = calSciItem.Get_mhtdc_sci43r_hits();
+    std::vector<Int_t> sci81l_times = calSciItem.Get_mhtdc_sci81l_hits();
+    std::vector<Int_t> sci81r_times = calSciItem.Get_mhtdc_sci81r_hits();
 
-    if (sci21l_time != 0) h1_sci_mhtdc_t_21l->Fill(sci21l_time);
-    if (sci21r_time != 0) h1_sci_mhtdc_t_21r->Fill(sci21r_time);    
-    if (sci22l_time != 0) h1_sci_mhtdc_t_22l->Fill(sci22l_time);
-    if (sci22r_time != 0) h1_sci_mhtdc_t_22r->Fill(sci22r_time);
-    if (sci41l_time != 0) h1_sci_mhtdc_t_41l->Fill(sci41l_time);
-    if (sci41r_time != 0) h1_sci_mhtdc_t_41r->Fill(sci41r_time);
-    if (sci42l_time != 0) h1_sci_mhtdc_t_42l->Fill(sci42l_time);
-    if (sci42r_time != 0) h1_sci_mhtdc_t_42r->Fill(sci42r_time);
-    if (sci43l_time != 0) h1_sci_mhtdc_t_43l->Fill(sci43l_time);
-    if (sci43r_time != 0) h1_sci_mhtdc_t_43r->Fill(sci43r_time);
-    if (sci81l_time != 0) h1_sci_mhtdc_t_81l->Fill(sci81l_time);
-    if (sci81r_time != 0) h1_sci_mhtdc_t_81r->Fill(sci81r_time);
+    if (sci21l_times.size() > 0) h1_sci_mhtdc_t_21l->Fill(sci21l_times.at(0));
+    if (sci21r_times.size() > 0) h1_sci_mhtdc_t_21r->Fill(sci21r_times.at(0));    
+    if (sci22l_times.size() > 0) h1_sci_mhtdc_t_22l->Fill(sci22l_times.at(0));
+    if (sci22r_times.size() > 0) h1_sci_mhtdc_t_22r->Fill(sci22r_times.at(0));
+    if (sci41l_times.size() > 0) h1_sci_mhtdc_t_41l->Fill(sci41l_times.at(0));
+    if (sci41r_times.size() > 0) h1_sci_mhtdc_t_41r->Fill(sci41r_times.at(0));
+    if (sci42l_times.size() > 0) h1_sci_mhtdc_t_42l->Fill(sci42l_times.at(0));
+    if (sci42r_times.size() > 0) h1_sci_mhtdc_t_42r->Fill(sci42r_times.at(0));
+    if (sci43l_times.size() > 0) h1_sci_mhtdc_t_43l->Fill(sci43l_times.at(0));
+    if (sci43r_times.size() > 0) h1_sci_mhtdc_t_43r->Fill(sci43r_times.at(0));
+    if (sci81l_times.size() > 0) h1_sci_mhtdc_t_81l->Fill(sci81l_times.at(0));
+    if (sci81r_times.size() > 0) h1_sci_mhtdc_t_81r->Fill(sci81r_times.at(0));
 
-    if (sci21l_time != 0 && sci21r_time != 0) h1_sci_mhtdc_dt_21l_21r->Fill(sci21l_time - sci21r_time);
-    if (sci22l_time != 0 && sci22r_time != 0) h1_sci_mhtdc_dt_22l_22r->Fill(sci22l_time - sci22r_time);
-    if (sci41l_time != 0 && sci41r_time != 0) h1_sci_mhtdc_dt_41l_41r->Fill(sci41l_time - sci41r_time);
-    if (sci42l_time != 0 && sci42r_time != 0) h1_sci_mhtdc_dt_42l_42r->Fill(sci42l_time - sci42r_time);
-    if (sci22l_time != 0 && sci21l_time != 0) h1_sci_mhtdc_dt_22l_21l->Fill(sci22l_time - sci21l_time);
-    if (sci22r_time != 0 && sci21r_time != 0) h1_sci_mhtdc_dt_22r_21r->Fill(sci22r_time - sci21r_time);
-    if (sci41l_time != 0 && sci21l_time != 0) h1_sci_mhtdc_dt_41l_21l->Fill(sci41l_time - sci21l_time);
-    if (sci41r_time != 0 && sci21r_time != 0) h1_sci_mhtdc_dt_41r_21r->Fill(sci41r_time - sci21r_time);
-    if (sci42l_time != 0 && sci21l_time != 0) h1_sci_mhtdc_dt_42l_21l->Fill(sci42l_time - sci21l_time);
-    if (sci42r_time != 0 && sci21r_time != 0) h1_sci_mhtdc_dt_42r_21r->Fill(sci42r_time - sci21r_time);
-    if (sci41l_time != 0 && sci22l_time != 0) h1_sci_mhtdc_dt_41l_22l->Fill(sci41l_time - sci22l_time);
-    if (sci41r_time != 0 && sci22r_time != 0) h1_sci_mhtdc_dt_41r_22r->Fill(sci41r_time - sci22r_time);
-    if (sci42l_time != 0 && sci22l_time != 0) h1_sci_mhtdc_dt_42l_22l->Fill(sci42l_time - sci22l_time);
-    if (sci42r_time != 0 && sci22r_time != 0) h1_sci_mhtdc_dt_42r_22r->Fill(sci42r_time - sci22r_time);
-    if (sci42l_time != 0 && sci41l_time != 0) h1_sci_mhtdc_dt_42l_41l->Fill(sci42l_time - sci41l_time);
-    if (sci42r_time != 0 && sci41r_time != 0) h1_sci_mhtdc_dt_42r_41r->Fill(sci42r_time - sci41r_time);
-
-
+    if (sci21l_times.size() > 0 && sci21r_times.size() > 0) h1_sci_mhtdc_dt_21l_21r->Fill(sci21l_times.at(0) - sci21r_times.at(0));
+    if (sci22l_times.size() > 0 && sci22r_times.size() > 0) h1_sci_mhtdc_dt_22l_22r->Fill(sci22l_times.at(0) - sci22r_times.at(0));
+    if (sci41l_times.size() > 0 && sci41r_times.size() > 0) h1_sci_mhtdc_dt_41l_41r->Fill(sci41l_times.at(0) - sci41r_times.at(0));
+    if (sci42l_times.size() > 0 && sci42r_times.size() > 0) h1_sci_mhtdc_dt_42l_42r->Fill(sci42l_times.at(0) - sci42r_times.at(0));
+    if (sci22l_times.size() > 0 && sci21l_times.size() > 0) h1_sci_mhtdc_dt_22l_21l->Fill(sci22l_times.at(0) - sci21l_times.at(0));
+    if (sci22r_times.size() > 0 && sci21r_times.size() > 0) h1_sci_mhtdc_dt_22r_21r->Fill(sci22r_times.at(0) - sci21r_times.at(0));
+    if (sci41l_times.size() > 0 && sci21l_times.size() > 0) h1_sci_mhtdc_dt_41l_21l->Fill(sci41l_times.at(0) - sci21l_times.at(0));
+    if (sci41r_times.size() > 0 && sci21r_times.size() > 0) h1_sci_mhtdc_dt_41r_21r->Fill(sci41r_times.at(0) - sci21r_times.at(0));
+    if (sci42l_times.size() > 0 && sci21l_times.size() > 0) h1_sci_mhtdc_dt_42l_21l->Fill(sci42l_times.at(0) - sci21l_times.at(0));
+    if (sci42r_times.size() > 0 && sci21r_times.size() > 0) h1_sci_mhtdc_dt_42r_21r->Fill(sci42r_times.at(0) - sci21r_times.at(0));
+    if (sci41l_times.size() > 0 && sci22l_times.size() > 0) h1_sci_mhtdc_dt_41l_22l->Fill(sci41l_times.at(0) - sci22l_times.at(0));
+    if (sci41r_times.size() > 0 && sci22r_times.size() > 0) h1_sci_mhtdc_dt_41r_22r->Fill(sci41r_times.at(0) - sci22r_times.at(0));
+    if (sci42l_times.size() > 0 && sci22l_times.size() > 0) h1_sci_mhtdc_dt_42l_22l->Fill(sci42l_times.at(0) - sci22l_times.at(0));
+    if (sci42r_times.size() > 0 && sci22r_times.size() > 0) h1_sci_mhtdc_dt_42r_22r->Fill(sci42r_times.at(0) - sci22r_times.at(0));
+    if (sci42l_times.size() > 0 && sci41l_times.size() > 0) h1_sci_mhtdc_dt_42l_41l->Fill(sci42l_times.at(0) - sci41l_times.at(0));
+    if (sci42r_times.size() > 0 && sci41r_times.size() > 0) h1_sci_mhtdc_dt_42r_41r->Fill(sci42r_times.at(0) - sci41r_times.at(0));
+    
     auto const & calTpcItem = calTpcArray->at(0);
     const Int_t (*tpc_csum)[4] = calTpcItem.Get_tpc_csum();
     for (int an = 0; an < number_of_anodes_per_tpc; an++)

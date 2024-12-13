@@ -15,7 +15,7 @@
 // as long as we use the same one, all good right?
 extern "C"
 {
-    #include "../../config/s100/frs/setup_des_s100_030_2024_conv.C"
+    #include "../../config/s100/frs/setup_des_s100_029_2024_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -25,11 +25,7 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_aida_onion_t aida;
     EXT_STR_h101_bplast_onion_t bplast;
     EXT_STR_h101_germanium_onion_t germanium;
-    EXT_STR_h101_frsmain_onion_t frs;
-    EXT_STR_h101_frsmain_onion_t frsmain;
-    EXT_STR_h101_frstpc_onion_t frstpc;
-    EXT_STR_h101_frsuser_onion_t frsuser;
-    EXT_STR_h101_frstpat_onion_t frstpat;
+    EXT_STR_h101_frs_onion_t frs;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
     EXT_STR_h101_bgo_onion_t bgo;
     // EXT_STR_h101_bb7febex_onion_t bb7febex;
@@ -297,12 +293,7 @@ void s101_tests()
     
     if (FRS_ON)
     {
-        // FrsCal2Hit* hitfrs = new FrsCal2Hit();
-        
-        // hitfrs->SetOnline(true); 
-        // run->AddTask(hitfrs);
-
-        FrsCal2Ana* hitfrs = new FrsCal2Ana();
+        FrsCal2Hit* hitfrs = new FrsCal2Hit();
         hitfrs->SetOnline(false);
         run->AddTask(hitfrs);
     } 
@@ -363,14 +354,14 @@ void s101_tests()
     
     if (FRS_ON)
     {
-        // FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra(fgs);
         // // For monitoring FRS on our side
         FrsRawSpectra* frsrawspec = new FrsRawSpectra();
-        // FrsCalSpectra* frscalspec = new FrsCalSpectra();
+        FrsCalSpectra* frscalspec = new FrsCalSpectra();
+        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
         
-        // run->AddTask(onlinefrs);
         run->AddTask(frsrawspec);
-        // run->AddTask(frscalspec);
+        run->AddTask(frscalspec);
+        run->AddTask(onlinefrs);
 
     }
     

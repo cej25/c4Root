@@ -12,8 +12,8 @@
 #pragma link C++ class BGOTwinpeaksCalData+;
 #pragma link C++ class FatimaTwinpeaksData+;
 #pragma link C++ class FatimaTwinpeaksCalData+;
-// #pragma link C++ class FatimaVmeData+;
-// #pragma link C++ class FatimaVmeCalData+;
+#pragma link C++ class FatimaVmeData+; // remove
+#pragma link C++ class FatimaVmeCalData+; // remove
 #pragma link C++ class FatimaVmeQDCItem+;
 #pragma link C++ class FatimaVmeTDCItem+;
 #pragma link C++ class FatimaVmeQDCCalItem+;
@@ -21,10 +21,10 @@
 #pragma link C++ class FatimaVmeResiduals+;
 #pragma link C++ class bPlastTwinpeaksData+;
 #pragma link C++ class bPlastTwinpeaksCalData+;
-// #pragma link C++ class LisaData+;
-// #pragma link C++ class LisaCalData+;
+#pragma link C++ class LisaData+; // remove?
+#pragma link C++ class LisaCalData+; // remove?
 // #pragma link C++ class LisaAnaData+;
-// #pragma link C++ class LisaTraceData+;
+#pragma link C++ class LisaTraceData+; // remove?
 #pragma link C++ class BeamMonitorData+;
 #pragma link C++ class BeamMonitorItem+;
 #pragma link C++ class TimeMachineData+;
