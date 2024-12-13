@@ -127,6 +127,8 @@ void FrsReader::ScintillatorReader()
         uint32_t data = fData->SCI_TAC_DTv[i];
 
         sciDT[channel] = data;
+        std::cout << channel << std::endl;
+        std::cout << data << std::endl;
     }
 
     // MHTDC - T
@@ -143,6 +145,7 @@ void FrsReader::ScintillatorReader()
             uint32_t lot = fData->SCI_MHTDC_LOTv[j];
 
             if (lot == 0) sciMHTDC[channel].emplace_back(data);
+
         }
 
         hit_index = next_channel_start;

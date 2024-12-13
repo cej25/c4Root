@@ -31,7 +31,7 @@ VME_CAEN_V7X5_FRS(geom) // V775, V785 and V792 unpack the same
 
             //ENCODE(geo[channel], (value = geom));
             //ENCODE(channel[index], (value = channel));
-            ENCODE(data[index],(value = value));
+            ENCODE(data[channel],(value = value));
         }
     };
 

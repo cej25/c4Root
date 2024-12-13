@@ -6,7 +6,7 @@ SIGNAL(ZERO_SUPPRESS: SCALERS2_32);
 SIGNAL(SCALERS1_1, frsmain.data.v830.data[0], SCALERS1_32, frsmain.data.v830.data[31], DATA32);
 
 SIGNAL(ZERO_SUPPRESS: SCI_TAC_DE_16); // 16 should be fine? can increase arrays in software later if needed
-SIGNAL(SCI_TAC_DE_1, frsmain.data.v792.data[0], SCI_TAC_DE_32, frsmain.data.v792.data[15], DATA32);
+SIGNAL(SCI_TAC_DE_1, frsmain.data.v792.data[0], SCI_TAC_DE_16, frsmain.data.v792.data[15], DATA32);
 
 SIGNAL(ZERO_SUPPRESS_MULTI(128): SCI_MHTDC_T_16);
 SIGNAL(SCI_MHTDC_T_1, frsmain.data.v1290.data[0], SCI_MHTDC_T_16, frsmain.data.v1290.data[15], DATA24);

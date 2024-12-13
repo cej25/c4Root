@@ -96,8 +96,8 @@ InitStatus FrsCal2Hit::Init()
     calTpcArray = mgr->InitObjectAs<decltype(calTpcArray)>("FrsCalTpcData");
     c4LOG_IF(fatal, !calTpcArray, "Branch FrsCalTpcData not found!");
 
-    mgr->RegisterAny("FrsAnaData", hitArray, !fOnline);
-    mgr->RegisterAny("FrsAnaMultiData", multihitArray, !fOnline);
+    mgr->RegisterAny("FrsHitData", hitArray, !fOnline);
+    mgr->RegisterAny("FrsMultiHitData", multihitArray, !fOnline);
 
    
     return kSUCCESS;
@@ -710,8 +710,14 @@ void FrsCal2Hit::ProcessSci_TAC()
     // Calibrated ToF
     /*-----------------------------------*/
     // SCI 21 - 41 ["2"]
-    sci_tofll_21_41 = calSciItem.Get_dT_21l_41l() * sci->tac_factor[2] - sci->tac_off[2];
-    sci_tofrr_21_41 = calSciItem.Get_dT_21r_41r() * sci->tac_factor[3] - sci->tac_off[3];
+    sci_tofll_21_41 = (float)calSciItem.Get_dT_21l_41l() * sci->tac_factor[2] - sci->tac_off[2];
+    sci_tofrr_21_41 = (float)calSciItem.Get_dT_21r_41r() * sci->tac_factor[3] - sci->tac_off[3];
+    
+
+    std::cout << "left: " << calSciItem.Get_dT_21l_41l() << std::endl;
+    std::cout << "sci_tofll_21_41:: " << sci_tofll_21_41 << std::endl;
+    std::cout << "sci_tofrr_21_41:: " << sci_tofrr_21_41 << std::endl;
+
     sci_b_tofll_21_41 = ((sci_tofll_21_41 > 2000) && (sci_tofll_21_41 < 80000));
     sci_b_tofrr_21_41 = ((sci_tofrr_21_41 > 2500) && (sci_tofrr_21_41 < 80000));
 
@@ -725,6 +731,10 @@ void FrsCal2Hit::ProcessSci_TAC()
         sci_tof_21_41 = 0;
         sci_tof_21_41_calib = 0;
     }
+
+
+    std::cout << "sci_b_tofll_21_41:: " << sci_b_tofll_21_41 << std::endl;
+    std::cout << "sci_b_tofrr_21_41:: " << sci_b_tofrr_21_41 << std::endl;
 
     // SCI 21 - 42 ["3"]
     sci_tofll_21_42 = calSciItem.Get_dT_42l_21l() * sci->tac_factor[5] - sci->tac_off[5];
@@ -1277,6 +1287,11 @@ void FrsCal2Hit::ProcessIDs()
             id_beta = id->id_path5 / sci_tof_22_41_calib;
         }
     }
+
+    std::cout << "selection:: " << id->tof_s4_select << std::endl;
+    std::cout << "sci_b_tofll_21_41:: " << sci_b_tofll_21_41 << std::endl;
+    std::cout << "sci_b_tofrr_21_41:: " << sci_b_tofrr_21_41 << std::endl;
+    std::cout << "beta: " << id_beta << std::endl;
 
     /*------------------------------------------------------*/
     /* Determination of Brho                                */
