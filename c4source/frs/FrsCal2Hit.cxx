@@ -712,12 +712,6 @@ void FrsCal2Hit::ProcessSci_TAC()
     // SCI 21 - 41 ["2"]
     sci_tofll_21_41 = (float)calSciItem.Get_dT_21l_41l() * sci->tac_factor[2] - sci->tac_off[2];
     sci_tofrr_21_41 = (float)calSciItem.Get_dT_21r_41r() * sci->tac_factor[3] - sci->tac_off[3];
-    
-
-    std::cout << "left: " << calSciItem.Get_dT_21l_41l() << std::endl;
-    std::cout << "sci_tofll_21_41:: " << sci_tofll_21_41 << std::endl;
-    std::cout << "sci_tofrr_21_41:: " << sci_tofrr_21_41 << std::endl;
-
     sci_b_tofll_21_41 = ((sci_tofll_21_41 > 2000) && (sci_tofll_21_41 < 80000));
     sci_b_tofrr_21_41 = ((sci_tofrr_21_41 > 2500) && (sci_tofrr_21_41 < 80000));
 
@@ -731,10 +725,6 @@ void FrsCal2Hit::ProcessSci_TAC()
         sci_tof_21_41 = 0;
         sci_tof_21_41_calib = 0;
     }
-
-
-    std::cout << "sci_b_tofll_21_41:: " << sci_b_tofll_21_41 << std::endl;
-    std::cout << "sci_b_tofrr_21_41:: " << sci_b_tofrr_21_41 << std::endl;
 
     // SCI 21 - 42 ["3"]
     sci_tofll_21_42 = calSciItem.Get_dT_42l_21l() * sci->tac_factor[5] - sci->tac_off[5];

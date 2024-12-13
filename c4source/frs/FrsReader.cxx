@@ -127,8 +127,6 @@ void FrsReader::ScintillatorReader()
         uint32_t data = fData->SCI_TAC_DTv[i];
 
         sciDT[channel] = data;
-        std::cout << channel << std::endl;
-        std::cout << data << std::endl;
     }
 
     // MHTDC - T

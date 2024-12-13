@@ -218,7 +218,6 @@ void FrsRaw2Cal::ProcessScintillators()
     dt_43l_43r = sciDT[frs_config->Get_dT_43l_43r_chan()];
     dt_81l_81r = sciDT[frs_config->Get_dT_81l_81r_chan()];
     dt_21l_41l = sciDT[frs_config->Get_dT_21l_41l_chan()];
-    std::cout << "dt left " << dt_21l_41l << std::endl;
     dt_21r_41r = sciDT[frs_config->Get_dT_21r_41r_chan()];
     dt_42r_21r = sciDT[frs_config->Get_dT_42l_21l_chan()];
     dt_42l_21l = sciDT[frs_config->Get_dT_42r_21r_chan()];
