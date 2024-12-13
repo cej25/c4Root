@@ -15,7 +15,7 @@
 // as long as we use the same one, all good right?
 extern "C"
 {
-    #include "../../config/s100/frs/setup_des_s100_030_2024_conv.C"
+    #include "../../config/s100/frs/setup_des_s100_029_2024_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -25,10 +25,7 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_aida_onion_t aida;
     EXT_STR_h101_bplast_onion_t bplast;
     EXT_STR_h101_germanium_onion_t germanium;
-    EXT_STR_h101_frsmain_onion_t frsmain;
-    EXT_STR_h101_frstpc_onion_t frstpc;
-    EXT_STR_h101_frsuser_onion_t frsuser;
-    EXT_STR_h101_frstpat_onion_t frstpat;
+    EXT_STR_h101_frs_onion_t frs;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
     EXT_STR_h101_bgo_onion_t bgo;
     // EXT_STR_h101_bb7febex_onion_t bb7febex;
@@ -72,15 +69,6 @@ void s101_tests()
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     //TString filename = "stream://x86l-182"; // BGO
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
-    //TString filename = "trans://x86l-144"; // ??
-    //TString filename = "trans://x86l-86"; // ??.
-    //TString filename = "trans://x86l-144"; // 
-    //TString filename = "stream://x86l-182"; // bgo
-    //TString filename = "trans://lxg1257"; // timesorter.
-    //TString filename = "trans://R4L-21"; // beammonitor
-    //TString filename = "stream://x86l-87"; //bplast
-    //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
-    //TString filename = "~/Au_beam_0010_0001.lmd";
     TString filename =  "~/lustre/gamma/s100_files/ts/162Eu_0075_0006.lmd";
     //TString filename = "~/lustre/gamma/nhubbard/162Eu_0052_TEST_0001.lmd";
     TString outputpath = "output";
@@ -95,7 +83,7 @@ void s101_tests()
     //EvtHead->Register(false);
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
-    //run->SetSink(new FairRootFileSink(outputFileName));
+    run->SetSink(new FairRootFileSink(outputFileName));
     run->ActivateHttpServer(refresh, port);
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
@@ -103,7 +91,7 @@ void s101_tests()
 
     // Create source using ucesb for input
     EXT_STR_h101 ucesb_struct;
-    TString ntuple_options = "UNPACK"; // Define which level of data to unpack - we don't use "RAW" or "CAL"
+    TString ntuple_options = "UNPACK,RAW"; // Define which level of data to unpack - we don't use "RAW" or "CAL"
     UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
     source->SetMaxEvents(nev);
     run->SetSource(source);
@@ -200,20 +188,26 @@ void s101_tests()
     
     if (FRS_ON)
     {
-        FrsMainReader* unpackfrsmain = new FrsMainReader((EXT_STR_h101_frsmain_onion*)&ucesb_struct.frsmain, offsetof(EXT_STR_h101, frsmain));
-        FrsTPCReader* unpackfrstpc = new FrsTPCReader((EXT_STR_h101_frstpc_onion*)&ucesb_struct.frstpc, offsetof(EXT_STR_h101, frstpc));
-        FrsUserReader* unpackfrsuser = new FrsUserReader((EXT_STR_h101_frsuser_onion*)&ucesb_struct.frsuser, offsetof(EXT_STR_h101, frsuser));
-        FrsTpatReader* unpackfrstpat = new FrsTpatReader((EXT_STR_h101_frstpat_onion*)&ucesb_struct.frstpat, offsetof(EXT_STR_h101, frstpat));
+        // FrsMainReader* unpackfrsmain = new FrsMainReader((EXT_STR_h101_frsmain_onion*)&ucesb_struct.frsmain, offsetof(EXT_STR_h101, frsmain));
+        // FrsTPCReader* unpackfrstpc = new FrsTPCReader((EXT_STR_h101_frstpc_onion*)&ucesb_struct.frstpc, offsetof(EXT_STR_h101, frstpc));
+        // FrsUserReader* unpackfrsuser = new FrsUserReader((EXT_STR_h101_frsuser_onion*)&ucesb_struct.frsuser, offsetof(EXT_STR_h101, frsuser));
+        // FrsTpatReader* unpackfrstpat = new FrsTpatReader((EXT_STR_h101_frstpat_onion*)&ucesb_struct.frstpat, offsetof(EXT_STR_h101, frstpat));
         
-        unpackfrsmain->SetOnline(true);
-        unpackfrstpc->SetOnline(true);
-        unpackfrsuser->SetOnline(true);
-        unpackfrstpat->SetOnline(true);
+        // unpackfrsmain->SetOnline(false);
+        // unpackfrstpc->SetOnline(false);
+        // unpackfrsuser->SetOnline(false);
+        // unpackfrstpat->SetOnline(false);
         
-        source->AddReader(unpackfrsmain);
-        source->AddReader(unpackfrstpc);
-        source->AddReader(unpackfrsuser);
-        source->AddReader(unpackfrstpat);
+        // source->AddReader(unpackfrsmain);
+        // source->AddReader(unpackfrstpc);
+        // source->AddReader(unpackfrsuser);
+        // source->AddReader(unpackfrstpat);
+
+
+        FrsReader* unpackfrs = new FrsReader((EXT_STR_h101_frs_onion*)&ucesb_struct.frs, offsetof(EXT_STR_h101, frs));
+        unpackfrs->SetOnline(false);
+        source->AddReader(unpackfrs);
+
     }
     
     if (BEAMMONITOR_ON)
@@ -268,16 +262,20 @@ void s101_tests()
     
     if (FRS_ON)
     {
-        FrsMainRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
-        FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal();
-        FrsUserRaw2Cal* calfrsuser = new FrsUserRaw2Cal();
+        // FrsMainRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
+        // FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal();
+        // FrsUserRaw2Cal* calfrsuser = new FrsUserRaw2Cal();
         
-        calfrsmain->SetOnline(true);
-        calfrstpc->SetOnline(true);
-        calfrsuser->SetOnline(true);
-        run->AddTask(calfrsmain);
-        run->AddTask(calfrstpc);
-        run->AddTask(calfrsuser);
+        // calfrsmain->SetOnline(true);
+        // calfrstpc->SetOnline(true);
+        // calfrsuser->SetOnline(true);
+        // run->AddTask(calfrsmain);
+        // run->AddTask(calfrstpc);
+        // run->AddTask(calfrsuser);
+
+        FrsRaw2Cal* calfrs = new FrsRaw2Cal();
+        calfrs->SetOnline(false);
+        run->AddTask(calfrs);
     }
 
 
@@ -296,8 +294,7 @@ void s101_tests()
     if (FRS_ON)
     {
         FrsCal2Hit* hitfrs = new FrsCal2Hit();
-        
-        hitfrs->SetOnline(true); 
+        hitfrs->SetOnline(false);
         run->AddTask(hitfrs);
     } 
 
@@ -357,14 +354,14 @@ void s101_tests()
     
     if (FRS_ON)
     {
-        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra(fgs);
-        // For monitoring FRS on our side
+        // // For monitoring FRS on our side
         FrsRawSpectra* frsrawspec = new FrsRawSpectra();
         FrsCalSpectra* frscalspec = new FrsCalSpectra();
+        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
         
-        run->AddTask(onlinefrs);
         run->AddTask(frsrawspec);
         run->AddTask(frscalspec);
+        run->AddTask(onlinefrs);
 
     }
     
