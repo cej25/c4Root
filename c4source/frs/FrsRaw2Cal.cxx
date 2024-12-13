@@ -230,7 +230,6 @@ void FrsRaw2Cal::ProcessScintillators()
 
     // MHTDC T
     sciMHTDC = sciItem.Get_mhtdc_array();
-
     sci11_hits = sciMHTDC[frs_config->Get_mhtdc_11_chan()];
     sci21l_hits = sciMHTDC[frs_config->Get_mhtdc_21L_chan()];
     sci21r_hits = sciMHTDC[frs_config->Get_mhtdc_21R_chan()];
