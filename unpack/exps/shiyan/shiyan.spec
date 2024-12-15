@@ -4,7 +4,7 @@
 #include "../../common/vme_mesytec_mdpp16.spec"
 #include "../../common/gsi_febex4.spec"
 #include "../../common/general.spec"
-#include "../frs/frs_pareeksha.spec"
+#include "../frs/frs_shiyan.spec"
 
 SUBEVENT(frs_main_subev)
 {   
@@ -163,5 +163,3 @@ EVENT
 
     ignore_unknown_subevent;
 }
-
-#include "mapping.hh"

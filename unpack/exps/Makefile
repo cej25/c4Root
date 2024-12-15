@@ -31,8 +31,9 @@ EXPS=s452 \
 	bb7 \
 	fimp \
 	test \
-	pareeksha \
 	jikken \
+	pareeksha \
+	shiyan \
 	onlyBGO 
 ALL_EXPS = $(EXPS)
 
