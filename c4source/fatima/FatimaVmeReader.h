@@ -3,7 +3,6 @@
 
 #include "c4Reader.h"
 #include "FatimaVmeData.h"
-#include "../../config/setup.h"
 #include <unordered_map>
 #include <map>
 #include <set>

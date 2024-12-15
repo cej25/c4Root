@@ -7,7 +7,6 @@
 #include "TravMusCalData.h"
 #include "TravMusAnaData.h"
 #include "LisaCalData.h"
-#include "../../config/setup.h"
 #include "FrsGate.h"
 #include "FrsHitData.h"
 

@@ -6,7 +6,6 @@
 #include "FatimaVmeCalData.h"
 #include "TFatimaVmeConfiguration.h"
 #include "TimeMachineData.h"
-#include "../../config/setup.h"
 
 #include <vector>
 #include <set>
