@@ -14,6 +14,8 @@
 #include "FatimaVmeRaw2Cal.h"
 #include "TFatimaVmeConfiguration.h"
 
+#define FAT_VME_MAX_HITS 51
+
 FatimaVmeRaw2Cal::FatimaVmeRaw2Cal()
     :   FairTask()
     ,   fNEvents(0)
@@ -112,7 +114,7 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
     int Fat_QDC_ID;
     int Fat_TDC_ID_single;
     int Fat_TDC_ID[48];// ? why 
-    int Fat_TDC_multi[FAT_VME_MAX_HITS] = {0};// max VME channels?
+    int Fat_TDC_multi[FAT_VME_MAX_HITS] = {0};
     bool TimID[FAT_VME_MAX_HITS] = {0};
     bool EnID[FAT_VME_MAX_HITS] = {0};
     int counter = 0;

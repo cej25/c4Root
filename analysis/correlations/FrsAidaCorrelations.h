@@ -6,7 +6,6 @@
 #include "TCorrelationsConfiguration.h"
 #include "AidaHitData.h"
 #include "FrsHitData.h"
-#include "../../config/setup.h"
 
 #include "TClonesArray.h"
 #include "TH1.h"
