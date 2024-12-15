@@ -3,8 +3,7 @@
 #include "../../common/whiterabbit.spec"
 #include "../../common/clock_tdc.spec"
 #include "../../common/vme_mesytec_mdpp16.spec"
-#include "../frs/frs_pareeksha.spec" // same frs
-//#include "../../common/general.spec"
+#include "../frs/frs_s143.spec"
 #include "../../common/gsi_tamex4.spec"
 
 SUBEVENT(frs_main_subev)

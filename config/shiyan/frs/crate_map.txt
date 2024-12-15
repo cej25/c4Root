@@ -1,4 +1,4 @@
-#FULL CRATE MAP S143
+#FULL CRATE MAP S092 (pt 2) / "Shiyan"
 
 #Scintillator dE mapping -- MAIN CRATE
 dE_21L  2
