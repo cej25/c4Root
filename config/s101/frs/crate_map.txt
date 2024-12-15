@@ -1,4 +1,4 @@
-#FULL CRATE MAP S100
+#FULL CRATE MAP S101
 
 #Scintillator dE mapping -- MAIN CRATE
 dE_21L  2
