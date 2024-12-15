@@ -35,12 +35,12 @@ SUBEVENT(bb7_subev)
 
     select several
     {
-        v7x5_module[0] = VME_CAEN_V7X5_FRS(card=11);
+        v7x5_module[0] = VME_CAEN_V775(geom=11);
 	    v7x5_dummy = V7X5_DUMMY();
-        v7x5_module[1] = VME_CAEN_V7X5_FRS(card=13);
-        v7x5_module[2] = VME_CAEN_V7X5_FRS(card=15);
-        v7x5_module[3] = VME_CAEN_V7X5_FRS(card=17);
-        v1290_module = VME_CAEN_V1290_FRS();
+        v7x5_module[1] = VME_CAEN_V775(geom=13);
+        v7x5_module[2] = VME_CAEN_V775(geom=15);
+        v7x5_module[3] = VME_CAEN_V775(geom=17);
+        v1290_module = VME_CAEN_V1290_N();
     }
 	
     list (0 <= i < 3)
@@ -149,7 +149,6 @@ SUBEVENT(fatima_vme_subev)
         scalers = FATIMA_VME_SCALERS();
     };
 
-    // don't love this but ucesb is a real pain in the ass
     select optional
     {
         qdc1 = VME_CAEN_V1751(board=6);
@@ -175,12 +174,6 @@ SUBEVENT(fatima_vme_subev)
         qdc5 = VME_CAEN_V1751(board=10);
     }
     
-    /*qdc[0] = VME_CAEN_V1751(board=6);
-    qdc[1] = VME_CAEN_V1751(board=7);
-    qdc[2] = VME_CAEN_V1751(board=8);
-    qdc[3] = VME_CAEN_V1751(board=9);
-    qdc[4] = VME_CAEN_V1751(board=10);*/
-   
     select several
     {
         error2 = ERR_WORD_SIX();
@@ -189,7 +182,7 @@ SUBEVENT(fatima_vme_subev)
     // we don't always get information from both TDC boards
     select optional
     {
-        tdc1 = VME_CAEN_V1290_FRS();
+        tdc1 = VME_CAEN_V1290_N();
     };
 
     select several
@@ -199,7 +192,7 @@ SUBEVENT(fatima_vme_subev)
 
     select optional
     {
-        tdc2 = VME_CAEN_V1290_FRS();
+        tdc2 = VME_CAEN_V1290_N();
     };
 }
 
