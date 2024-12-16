@@ -21,9 +21,11 @@ std::string TLisaConfiguration::calibration_file = "blank";
 //WR enable setting - X7 data = 0, S2 data = 1
 bool TLisaConfiguration::wr_enable = 1;
 
+// ::: Trace amplitude
 int TLisaConfiguration::AmplitudeMin = 7000;
 int TLisaConfiguration::AmplitudeMax = 16000;
 
+// ::: Energy
 int TLisaConfiguration::min_energy = 0;
 int TLisaConfiguration::max_energy = 10000000;
 int TLisaConfiguration::bin_energy = 900;
@@ -32,17 +34,24 @@ int TLisaConfiguration::min_energy_GM = 0;
 int TLisaConfiguration::max_energy_GM = 10000;
 int TLisaConfiguration::bin_energy_GM = 500;
 
+// ::: WR
 int TLisaConfiguration::min_wr_diff = 0;
 int TLisaConfiguration::max_wr_diff = 200;
 int TLisaConfiguration::bin_wr_diff = 50;
 
+// ::: Traces time 
 int TLisaConfiguration::min_traces = 0;
 int TLisaConfiguration::max_traces = 2000;
 int TLisaConfiguration::bin_traces = 900;
 
+// ::: Gates
 int TLisaConfiguration::fMin_dE_LISA1_gate = 1070, TLisaConfiguration::fMax_dE_LISA1_gate = 1100;
 
 int TLisaConfiguration::frun_num = 0;
+
+// ::: Board number !!only for TraceAnalysis!!
+int TLisaConfiguration:: board_num = 0;     // number of boards for the file
+int TLisaConfiguration:: event_ana = 0;     // event to analyze for MWD trace
 
 
 TLisaConfiguration::TLisaConfiguration()

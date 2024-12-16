@@ -23,7 +23,8 @@ class TLisaConfiguration
         static void SetDetectorCoefficientFile(std::string fp) { calibration_file = fp; }
 
         //::: MWD Parameters
-        bool MWDParametersLoaded() const;        
+        bool MWDParametersLoaded() const;
+
         //:::: Mapping
         //std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> Mapping() const;
         std::map<std::pair<int,int>, std::pair<std::pair<int,std::string>, std::pair<int,int>>> Mapping() const;
@@ -54,9 +55,6 @@ class TLisaConfiguration
 
 
         //:::::Ranges in Histos
-        //void SetAmplitudeMax(int max) { AmplitudeMax = max; }
-        //void SetAmplitudeMin(int min) { AmplitudeMin = min; }
-
         static void SetAmplitudeMax(int max_amp) { AmplitudeMax = max_amp; }
         static void SetAmplitudeMin(int min_amp) { AmplitudeMin = min_amp; }
 
@@ -78,6 +76,12 @@ class TLisaConfiguration
 
         static void SetRunNumber(int run_num) { frun_num = run_num; }
 
+        static void SetBoardNumber(int b_num) { board_num = b_num; }
+
+        static void SetEventToAnalyze(int evt_num) { event_ana = evt_num; }
+
+
+
 
         //int AmplitudeMax = 10500;
         //int AmplitudeMin = 7500;
@@ -98,7 +102,9 @@ class TLisaConfiguration
         static int fMin_dE_LISA1_gate;
         static int fMax_dE_LISA1_gate;
         static int frun_num;
-        
+        static int board_num;
+        static int event_ana;
+
         static bool wr_enable;
 
         // ::: MDW parameters getters

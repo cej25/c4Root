@@ -79,6 +79,7 @@ set(SRCS
 ./nearline/lisa/LisaNearlineSpectraDaq.cxx
 ./nearline/lisa/LisaNearlineSpectraAna.cxx
 ./nearline/lisa/LisaTraceAnalysis.cxx
+./nearline/lisa/LisaTraceCorrelation.cxx
 ./nearline/fimp/FimpNearlineSpectra.cxx
 ./nearline/bb7/BB7NearlineSpectra.cxx
 ./nearline/lisa/LisaNearlineSpectra.cxx
