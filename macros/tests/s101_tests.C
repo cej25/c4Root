@@ -91,7 +91,9 @@ void s101_tests()
 
     // Create source using ucesb for input
     EXT_STR_h101 ucesb_struct;
-    TString ntuple_options = "UNPACK,RAW"; // Define which level of data to unpack - we don't use "RAW" or "CAL"
+    
+    TString ntuple_options = "UNPACK,RAW"; // Define which level of data to unpack - we don't use "CAL"
+    
     UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
     source->SetMaxEvents(nev);
     run->SetSource(source);
@@ -135,6 +137,8 @@ void s101_tests()
     TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_apr15.txt");
     TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_uncal_apr15.txt");
     TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
+    
+    
     TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
     
 
