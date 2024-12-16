@@ -118,6 +118,8 @@ void FrsCal2Hit::Exec(Option_t* option)
     auto & anaEntry = hitArray->emplace_back();
     anaEntry.SetMetaData(wr_t, tpat);
 
+    std::cout << "EVENT NUMBER :::: " << header->GetEventno() << std::endl;
+
     ProcessScalers();
     anaEntry.SetScalerData(time_in_ms,
                         time_in_us,

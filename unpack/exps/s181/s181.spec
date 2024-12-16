@@ -1,11 +1,9 @@
 // -*- C++ -*-
 
-#include "../../../config/setup.h"
 #include "../../common/whiterabbit.spec"
 #include "../../common/gsi_febex4.spec"
 #include "../../common/gsi_tamex4.spec"
 #include "../../common/vme_caen_v1751.spec"
-//#include "../../common/vme_caen_v1x90.spec"
 #include "../frs/frs_s181.spec"
 #include "fatima_vme.spec"
 #include "../../common/general.spec"

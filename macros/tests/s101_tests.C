@@ -192,22 +192,6 @@ void s101_tests()
     
     if (FRS_ON)
     {
-        // FrsMainReader* unpackfrsmain = new FrsMainReader((EXT_STR_h101_frsmain_onion*)&ucesb_struct.frsmain, offsetof(EXT_STR_h101, frsmain));
-        // FrsTPCReader* unpackfrstpc = new FrsTPCReader((EXT_STR_h101_frstpc_onion*)&ucesb_struct.frstpc, offsetof(EXT_STR_h101, frstpc));
-        // FrsUserReader* unpackfrsuser = new FrsUserReader((EXT_STR_h101_frsuser_onion*)&ucesb_struct.frsuser, offsetof(EXT_STR_h101, frsuser));
-        // FrsTpatReader* unpackfrstpat = new FrsTpatReader((EXT_STR_h101_frstpat_onion*)&ucesb_struct.frstpat, offsetof(EXT_STR_h101, frstpat));
-        
-        // unpackfrsmain->SetOnline(false);
-        // unpackfrstpc->SetOnline(false);
-        // unpackfrsuser->SetOnline(false);
-        // unpackfrstpat->SetOnline(false);
-        
-        // source->AddReader(unpackfrsmain);
-        // source->AddReader(unpackfrstpc);
-        // source->AddReader(unpackfrsuser);
-        // source->AddReader(unpackfrstpat);
-
-
         FrsReader* unpackfrs = new FrsReader((EXT_STR_h101_frs_onion*)&ucesb_struct.frs, offsetof(EXT_STR_h101, frs));
         unpackfrs->SetOnline(false);
         source->AddReader(unpackfrs);
@@ -266,17 +250,6 @@ void s101_tests()
     
     if (FRS_ON)
     {
-        // FrsMainRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
-        // FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal();
-        // FrsUserRaw2Cal* calfrsuser = new FrsUserRaw2Cal();
-        
-        // calfrsmain->SetOnline(true);
-        // calfrstpc->SetOnline(true);
-        // calfrsuser->SetOnline(true);
-        // run->AddTask(calfrsmain);
-        // run->AddTask(calfrstpc);
-        // run->AddTask(calfrsuser);
-
         FrsRaw2Cal* calfrs = new FrsRaw2Cal();
         calfrs->SetOnline(false);
         run->AddTask(calfrs);
@@ -351,10 +324,6 @@ void s101_tests()
     
     TFrsConfiguration::Set_Z_range(50,100);
     TFrsConfiguration::Set_AoQ_range(2.3,2.7);
-
-    std::vector<FrsGate*> fgs;
-    FrsGate* Gd164 = new FrsGate("Gd164", config_path + "/frs/Gates/164Gd.root");
-    fgs.emplace_back(Gd164);
     
     if (FRS_ON)
     {
@@ -400,10 +369,10 @@ void s101_tests()
 
     if (FRS_ON && AIDA_ON)
     {
-        FrsAidaCorrelationsOnline* frsaidaonline = new FrsAidaCorrelationsOnline(fgs);
+        //FrsAidaCorrelationsOnline* frsaidaonline = new FrsAidaCorrelationsOnline(fgs);
         //FrsAidaCorrelations* frsaidaonline = new FrsAidaCorrelations(fgs);
 
-        run->AddTask(frsaidaonline);
+        //run->AddTask(frsaidaonline);
     }
 
     if (BPLAST_ON && GERMANIUM_ON)
@@ -434,9 +403,6 @@ void s101_tests()
     // Run
     run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev); 
 
-    // write online histograms if desired.
-    //TFile* tf = new TFile(sf->GetFileName(), "UPDATE");
-    //histograms->Write();
 
     // ---------------------------------------------------------------------------------------- //
     // *** Finish Macro *********************************************************************** //
