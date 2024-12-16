@@ -1,3 +1,10 @@
+/*********************************************************************************************************************************
+ This Task contains the calculation for the Moving Window Deconvolution algorithm applied to the traces form febex (raw traces).
+ It calculates the Trapezoidal shape from the trace, and finally the energy.
+ Last update 16 Dec 2024.
+ E.G.
+**********************************************************************************************************************************/
+
 // FairRoot
 #include "FairTask.h"
 #include "FairLogger.h"
@@ -59,19 +66,52 @@ void LisaRaw2Ana::Exec(Option_t* option)
     for (auto const & lisaItem : *lisaArray)
     {
                
+        // ::: Calculate energy with MWD algorithm ::: 
+        //     - Calculation of trapezoidal shape using moving windows (MWD trace)
+        //     - Extraction of energy as amplitude to the flat top of the trapezoid (MWD energy) 
+
         if (lisa_config->MWDParametersLoaded())
         {
+            
+            // ::: M W D   T R A C E  ::: (trace_MWD)
 
-
-            // ::: Calculation for MWD trace (trace_MWD) :::
+            // 0. ::: Get trace and parameters :::
             std::vector<int16_t> trace_febex = lisaItem.Get_trace();
             double par1 = lisa_config->Get_testconstant_1();
 
+            // 1. ::: Baseline correction :::
+            // ::: Evaluete average from points 20 to 100
+            double sum = 0.0;
+            int count = 0;
+            for( int i = 20; i < 100; i++)
+            {
+                sum += trace_febex.at(i);
+                count++;
+            }
+            double average_baseline  = sum / count;  
+
+            // ::: Shift the trace to previously calculated value
+            for( int i = 0; i < trace_febex.size(); i++)
+            {
+                trace_febex.at(i) = trace_febex.at(i) - average_baseline;
+            }
+
+            // 2. ::: Integration in convoluted windows
+
+            // 3. ::: Calcullation of trapezoid
+
+            // 4. ::: Averaging of flat top
+
+            // :::  M D W   E N E R G Y  ::: (energy_MWD) 
+            
+            //...
             trace_MWD.resize(trace_febex.size());
             for( int i = 0; i < trace_febex.size(); i++)
             {
-                trace_MWD.at(i) = trace_febex.at(i) * par1;
+                trace_MWD.at(i) = trace_febex.at(i);
             }
+
+            // ::::::::::::::::::::::::::::::::::::::::::::::::::::
             
 
             // ::: Calculation for MWD energy (energy_MWD) :::
@@ -80,11 +120,15 @@ void LisaRaw2Ana::Exec(Option_t* option)
             energy_MWD = energy_febex * par2;
 
             
-            
+            // ::::::::::::::::::::::::::::::::::::::::::::::::::::
+
             // ::: Calculation for MWD pileup (pileup_MWD) :::
             // ...
+            // ::::::::::::::::::::::::::::::::::::::::::::::::::::
+
             // ::: Calculation for MWD overflow (overflow_MWD) :::
             // ...
+            // ::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
             auto & entry = lisaAnaArray->emplace_back();    
@@ -104,7 +148,7 @@ void LisaRaw2Ana::Exec(Option_t* option)
                 lisaItem.Get_channel_energy(),
                 energy_MWD,
                 lisaItem.Get_channel_id_traces(),
-                lisaItem.Get_trace(),
+                trace_febex,
                 trace_MWD
                 //EVTno
             );

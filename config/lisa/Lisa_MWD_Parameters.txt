@@ -1,7 +1,20 @@
-#::::: MDW parameters :::::
-# ::: Parameter name  |   Value ::: #
+# :::: MDW parameters ::::
+# Parameter name  |   Value #
 
-test_constant1  3
-test_constant2  6
-test_constant3  12
-test_constant4  15
+test_constant1  3.0
+test_constant2  6.0
+test_constant3  12.0
+test_constant4  15.0
+
+# ::: Real par from MWD alg (eris setting)
+
+#Sample_rate[MHz]                   100
+#Febex4_trace_length                2400    #tracelenght read from raw data. This value should be =< total lenght
+#Rising_time[ns]                    2000
+#Trapezoid_sample_window_0[ns]      14000   #this has to be larger than MWD window length
+#Trapez_sample_window_1[ns]         21000 
+#Trapez_moving_window_length[ns]    3000
+#Trapez_amp_calc_window_0[ns]       17000
+#Trapez_amp_calc_window_1[ns]       17200
+#Decaytime_ch_1                     13000
+#Threshold_ch_1                     9
