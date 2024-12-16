@@ -88,8 +88,11 @@ InitStatus FrsNearlineSpectra::Init()
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-    header = (EventHeader*)mgr->GetObject("EventHeader.");
-    c4LOG_IF(error, !header, "EventHeader. not found!");
+    // header = (EventHeader*)mgr->GetObject("EventHeader.");
+    // c4LOG_IF(error, !header, "EventHeader. not found!");
+
+    header = mgr->InitObjectAs<decltype(header)>("EventHeader.");
+    c4LOG_IF(warn, !header, "EventHeader. not found!");
 
     hitArray = mgr->InitObjectAs<decltype(hitArray)>("FrsHitData");
     c4LOG_IF(fatal, !hitArray, "Branch FrsHitData not found!");

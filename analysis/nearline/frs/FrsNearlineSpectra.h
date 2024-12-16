@@ -6,6 +6,7 @@
 #include "FrsHitData.h"
 #include "FairTask.h"
 #include "TFRSParameter.h"
+#include "EventHeader.h"
 #include "TH2.h"
 #include "TH1.h"
 #include "TCutG.h"
@@ -62,7 +63,7 @@ class FrsNearlineSpectra : public FairTask
         std::vector<FrsGate*> FrsGates;
 
         Int_t fNEvents;
-        EventHeader* header;
+        EventHeader const* header;
         int multihit_counter = 0;
         
         std::vector<FrsHitItem> const* hitArray;
