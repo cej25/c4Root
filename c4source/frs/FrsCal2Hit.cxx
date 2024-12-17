@@ -118,8 +118,6 @@ void FrsCal2Hit::Exec(Option_t* option)
     auto & anaEntry = hitArray->emplace_back();
     anaEntry.SetMetaData(wr_t, tpat);
 
-    std::cout << "EVENT NUMBER :::: " << header->GetEventno() << std::endl;
-
     ProcessScalers();
     anaEntry.SetScalerData(time_in_ms,
                         time_in_us,
@@ -1279,11 +1277,6 @@ void FrsCal2Hit::ProcessIDs()
             id_beta = id->id_path5 / sci_tof_22_41_calib;
         }
     }
-
-    std::cout << "selection:: " << id->tof_s4_select << std::endl;
-    std::cout << "sci_b_tofll_21_41:: " << sci_b_tofll_21_41 << std::endl;
-    std::cout << "sci_b_tofrr_21_41:: " << sci_b_tofrr_21_41 << std::endl;
-    std::cout << "beta: " << id_beta << std::endl;
 
     /*------------------------------------------------------*/
     /* Determination of Brho                                */

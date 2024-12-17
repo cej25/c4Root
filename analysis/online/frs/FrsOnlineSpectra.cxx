@@ -521,8 +521,6 @@ void FrsOnlineSpectra::Exec(Option_t* option)
     auto const & hitItem  = hitArray->at(0); // should only ever be 1 frs item per event, so take first
     frs_wr = hitItem.Get_wr_t();
 
-    std::cout << "EVENTNO:: " << header->GetEventno() << std::endl;
-
     // :::::::::: TAC ::::::::::::: //
     // ---------------------------- //
     if (frs_config->plot_tac_2d)
