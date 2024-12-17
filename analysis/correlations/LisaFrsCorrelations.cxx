@@ -66,8 +66,8 @@ InitStatus LisaFrsCorrelations::Init()
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-    header = (EventHeader*)mgr->GetObject("EventHeader.");
-    c4LOG_IF(error, !header, "Branch EventHeader. not found");
+    header = mgr->InitObjectAs<decltype(header)>("EventHeader.");
+    c4LOG_IF(error, !header, "Branch EventHeader. not found!");
 
     lisaCalArray = mgr->InitObjectAs<decltype(lisaCalArray)>("LisaCalData");
     c4LOG_IF(fatal, !lisaCalArray, "Branch LisaCalData not found!");
