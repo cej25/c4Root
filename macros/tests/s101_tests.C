@@ -1,14 +1,14 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define AIDA_ON 0
-#define BPLAST_ON 0
-#define GERMANIUM_ON 0
+#define AIDA_ON 1
+#define BPLAST_ON 1
+#define GERMANIUM_ON 1
 #define BGO_ON 0
 #define FRS_ON 1
 #define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
-#define WHITE_RABBIT_CORS 0
+#define WHITE_RABBIT_CORS 1
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 
@@ -132,7 +132,7 @@ void s101_tests()
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
-    TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_mar20.txt");
+    TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc.txt");
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_apr15.txt");
     TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_uncal_apr15.txt");

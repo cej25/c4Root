@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                       C.E. Jones, J.P. Bormans                             *
+ *                              17.12.24                                      *
+ ******************************************************************************/
+
 // FairRoot
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -42,6 +58,7 @@ WhiterabbitCorrelationOnline::WhiterabbitCorrelationOnline(const TString& name, 
     , fAidaImplants(nullptr)
     , fatVmeArray(nullptr)
     , hitArrayFrs(nullptr)
+    , fBB7Decays(nullptr)
     , fNEvents(0)
     , fEventHeader(nullptr)
 {
@@ -507,20 +524,23 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             
         }
     }
-
-    if (fatVmeArray->size() > 0) 
+    
+    if (fatVmeArray != nullptr)
     {
-        systems += 1;
-
-        auto const & hitFatVme = fatVmeArray->at(0);
-        wr_fatimavme = hitFatVme.Get_wr_t();
-        
-        if (last_wr_fatimavme != wr_fatimavme) 
+        if (fatVmeArray->size() > 0) 
         {
-            h1_whiterabbit_dt_fatimavme->Fill(wr_fatimavme - last_wr_fatimavme);
-            last_wr_fatimavme = wr_fatimavme;
+            systems += 1;
+
+            auto const & hitFatVme = fatVmeArray->at(0);
+            wr_fatimavme = hitFatVme.Get_wr_t();
+            
+            if (last_wr_fatimavme != wr_fatimavme) 
+            {
+                h1_whiterabbit_dt_fatimavme->Fill(wr_fatimavme - last_wr_fatimavme);
+                last_wr_fatimavme = wr_fatimavme;
+            }
         }
-    }
+    }   
     
     if (fAidaDecays->size() > 0 || fAidaImplants->size() > 0)
     {
@@ -543,19 +563,22 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
     }
 
     // add implants when fixed
-    if (fBB7Decays->size() > 0)
+    if (fBB7Decays != nullptr)
     {
-        nHitsBB7 = fBB7Decays->size();
-        if (nHitsBB7 > 0)
+        if (fBB7Decays->size() > 0)
         {
-            systems++;
-
-            auto const & decay = fBB7Decays->at(0);
-            wr_bb7 = decay.Get_wr_t();
-            if (last_wr_bb7 != wr_bb7) 
+            nHitsBB7 = fBB7Decays->size();
+            if (nHitsBB7 > 0)
             {
-                h1_whiterabbit_dt_bb7->Fill(wr_bb7 - last_wr_bb7);
-                last_wr_bb7 = wr_bb7;
+                systems++;
+
+                auto const & decay = fBB7Decays->at(0);
+                wr_bb7 = decay.Get_wr_t();
+                if (last_wr_bb7 != wr_bb7) 
+                {
+                    h1_whiterabbit_dt_bb7->Fill(wr_bb7 - last_wr_bb7);
+                    last_wr_bb7 = wr_bb7;
+                }
             }
         }
     }
