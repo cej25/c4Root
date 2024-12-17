@@ -6,6 +6,7 @@
 #include "FrsGate.h"
 #include "FrsHitData.h"
 #include "AnalysisTools.h"
+#include "EventHeader.h"
 
 #include "FairTask.h"
 #include "TH2.h"
