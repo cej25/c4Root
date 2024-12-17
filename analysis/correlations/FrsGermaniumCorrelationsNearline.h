@@ -6,6 +6,7 @@
 #include "TGermaniumConfiguration.h"
 #include "TFrsConfiguration.h"
 #include "FrsHitData.h"
+#include "EventHeader.h"
 
 class TClonesArray;
 class EventHeader;
@@ -105,7 +106,7 @@ class FrsGermaniumCorrelationsNearline : public FairTask
         std::vector<double> gamma_energies_of_interest;
         std::vector<double> gate_width_gamma_energies_of_interest;
 
-        EventHeader* header;
+        EventHeader const* header;
         Int_t fNEvents;
 
         // Histograms:

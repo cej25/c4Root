@@ -17,6 +17,7 @@
 #include <vector>
 #include <map>
 #include "TString.h"
+#include "EventHeader.h"
 
 class EventHeader;
 class TH1I;
@@ -64,7 +65,7 @@ class FrsTravMusCorrelations : public FairTask
 
 
         Int_t fNEvents;
-        EventHeader* header;
+        EventHeader const* header;
 
         // Directories
         TDirectory* dir_corr;

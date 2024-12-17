@@ -61,8 +61,8 @@ InitStatus FrsTravMusCorrelations::Init()
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-    header = (EventHeader*)mgr->GetObject("EventHeader.");
-    c4LOG_IF(error, !header, "Branch EventHeader. not found");
+    header = mgr->InitObjectAs<decltype(header)>("EventHeader.");
+    c4LOG_IF(error, !header, "Branch EventHeader. not found!");
 
     frsHitArray = mgr->InitObjectAs<decltype(frsHitArray)>("FrsHitData");
     c4LOG_IF(fatal, !frsHitArray, "Branch FrsHitData not found!");
