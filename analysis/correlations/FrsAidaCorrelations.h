@@ -6,6 +6,7 @@
 #include "TCorrelationsConfiguration.h"
 #include "AidaHitData.h"
 #include "FrsHitData.h"
+#include "EventHeader.h"
 
 #include "TClonesArray.h"
 #include "TH1.h"
@@ -58,7 +59,7 @@ class FrsAidaCorrelations : public FairTask
         std::vector<AidaHit> const* fAidaImplants;
 
         Int_t fNEvents;
-        EventHeader* header;
+        EventHeader const* header;
 
         bool found_dir_frs = true;
 
