@@ -77,8 +77,6 @@ class FrsGermaniumCorrelationsNearline : public FairTask
 
         std::vector<FrsHitItem> const* hitArrayFrs;
 
-        TDirectory * dir_germanium;
-
         const TGermaniumConfiguration * germanium_configuration;
         const TFrsConfiguration * frs_configuration;
         
@@ -176,7 +174,9 @@ class FrsGermaniumCorrelationsNearline : public FairTask
         TH1F ** h1_germanium_twr_sci41_energy_gated;
         
         // Folder and files
-        TDirectory* folder_germanium;
+        bool found_dir_corr = true;
+        TDirectory* dir_corr;
+        TDirectory* dir_germanium;
         TDirectory ** folder_energy_gated;
 
 
