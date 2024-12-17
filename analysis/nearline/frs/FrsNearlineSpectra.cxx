@@ -88,9 +88,6 @@ InitStatus FrsNearlineSpectra::Init()
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-    // header = (EventHeader*)mgr->GetObject("EventHeader.");
-    // c4LOG_IF(error, !header, "EventHeader. not found!");
-
     header = mgr->InitObjectAs<decltype(header)>("EventHeader.");
     c4LOG_IF(warn, !header, "EventHeader. not found!");
 
@@ -103,7 +100,6 @@ InitStatus FrsNearlineSpectra::Init()
     if (dir_frs == nullptr) 
     {
         LOG(info) << "Creating FRS Directory";
-        //dir_frs = new TDirectory("FRS", "FRS", "", 0);
         FairRootManager::Instance()->GetOutFile()->cd();
         dir_frs = gDirectory->mkdir("FRS");
         mgr->Register("FRS", "FRS Directory", dir_frs, false); // allow other tasks to find this
