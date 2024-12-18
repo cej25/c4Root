@@ -84,8 +84,11 @@ void trace_ana_histos(int fileNumber)
     
     //::::::::: Set ranges for histos :::::::::::::::
     //::::  Channel Energy ::::: (h1_energy_)
-    TLisaConfiguration::SetEnergyRange(0,10000000);
-    TLisaConfiguration::SetEnergyBin(450);
+    TLisaConfiguration::SetEnergyRange(0,2500000);
+    TLisaConfiguration::SetEnergyBin(500);
+
+    TLisaConfiguration::SetEnergyRangeMWD(0,4000);
+    TLisaConfiguration::SetEnergyBinMWD(500);
 
     //::::::::: Set ranges for traces :::::::::::::::
     // ::: Trace amplitude :::

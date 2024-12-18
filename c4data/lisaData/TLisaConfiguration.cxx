@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                       E.M. Gandolfo, C.E. Jones                            *
+ *                               25.11.24                                     *
+ ******************************************************************************/
+
 #include "TLisaConfiguration.h"
 #include "TExperimentConfiguration.h"
 
@@ -30,9 +46,14 @@ int TLisaConfiguration::min_energy = 0;
 int TLisaConfiguration::max_energy = 10000000;
 int TLisaConfiguration::bin_energy = 900;
 
+int TLisaConfiguration::min_energy_MWD = 0;
+int TLisaConfiguration::max_energy_MWD = 10000000;
+int TLisaConfiguration::bin_energy_MWD = 900;
+
 int TLisaConfiguration::min_energy_GM = 0;
 int TLisaConfiguration::max_energy_GM = 10000;
 int TLisaConfiguration::bin_energy_GM = 500;
+
 
 // ::: WR
 int TLisaConfiguration::min_wr_diff = 0;
@@ -91,10 +112,19 @@ void TLisaConfiguration::ReadMWDParameters()
 
         //iss >> parameter >> value;
 
-        if( parameter == "test_constant1") test_const1 = value;
-        else if( parameter == "test_constant2") test_const2 = value;
-        else if( parameter == "test_constant3") test_const3 = value;
-        else if( parameter == "test_constant4") test_const4 = value;
+        if( parameter == "Rising_time[ns]")                         rising_time = value;
+        else if( parameter == "Trapez_moving_window_length[ns]")    MWD_length = value;
+        else if( parameter == "Decaytime_ch0[ns]")                  decay_time[0] = value;
+        else if( parameter == "Decaytime_ch1[ns]")                  decay_time[1] = value;
+        else if( parameter == "Trapez_amp_calc_window_0[ns]")       MWD_amp_start = value;
+        else if( parameter == "Trapez_amp_calc_window_1[ns]")       MWD_amp_stop = value;
+        else if( parameter == "Sampling[ns]")                       sampling = value;
+        else if( parameter == "Trapez_sample_window_0[ns]")         MWD_trace_start = value;
+        else if( parameter == "Trapez_sample_window_1[ns]")         MWD_trace_stop = value;
+        else if( parameter == "Trapez_baseline_window_0[ns]")       MWD_baseline_start = value;
+        else if( parameter == "Trapez_baseline_window_1[ns]")       MWD_baseline_stop = value;
+
+
     
         std::cout << parameter << " : " << value <<  "\n";
     }

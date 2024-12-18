@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                       E.M. Gandolfo, C.E. Jones                            *
+ *                               25.11.24                                     *
+ ******************************************************************************/
+
 #ifndef TLisaConfiguration_H
 #define TLisaConfiguration_H
 
@@ -60,6 +76,9 @@ class TLisaConfiguration
 
         static void SetEnergyRange(int min, int max) { min_energy = min; max_energy = max; }
         static void SetEnergyBin(int bin_e) { bin_energy = bin_e; }
+        
+        static void SetEnergyRangeMWD(int min_MWD, int max_MWD) { min_energy_MWD = min_MWD; max_energy_MWD = max_MWD; }
+        static void SetEnergyBinMWD(int bin_e_mwd) { bin_energy_MWD = bin_e_mwd; }
 
         static void SetEnergyRangeGM(int min_GM, int max_GM) { min_energy_GM = min_GM; max_energy_GM = max_GM; }
         static void SetEnergyBinGM(int bin_e_GM) { bin_energy_GM = bin_e_GM; }
@@ -90,6 +109,9 @@ class TLisaConfiguration
         static int min_energy;
         static int max_energy;
         static int bin_energy;
+        static int min_energy_MWD;
+        static int max_energy_MWD;
+        static int bin_energy_MWD;
         static int min_energy_GM;
         static int max_energy_GM;
         static int bin_energy_GM;
@@ -108,10 +130,19 @@ class TLisaConfiguration
         static bool wr_enable;
 
         // ::: MDW parameters getters
-        float Get_testconstant_1() const { return test_const1; }
-        float Get_testconstant_2() const { return test_const2; }
-        float Get_testconstant_3() const { return test_const3; }
-        float Get_testconstant_4() const { return test_const4; }
+        float Get_Rising_Time() const { return rising_time; }
+        float Get_MWD_Length() const { return MWD_length; }
+        //float Get_Decay_Time() const { return decay_time; }
+        const float (&Get_Decay_Time() const) [2] { return decay_time; }
+        float Get_MWD_Amp_Start() const { return MWD_amp_start; }
+        float Get_MWD_Amp_Stop() const { return MWD_amp_stop; }
+        float Get_Sampling() const { return sampling; }
+        float Get_MWD_Trace_Start() const { return MWD_trace_start; }
+        float Get_MWD_Trace_Stop() const { return MWD_trace_stop; }
+        float Get_MWD_Baseline_Start() const { return MWD_baseline_start; }
+        float Get_MWD_Baseline_Stop() const { return MWD_baseline_stop; }
+
+
 
 
         //:::::::
@@ -165,10 +196,21 @@ class TLisaConfiguration
 
 
         //::: Parameter for MWD
-        float test_const1 = 0.1;
-        float test_const2 = 0.1;
-        float test_const3 = 0.1;
-        float test_const4 = 0.1;
+        //::: Used for trapezoid calculation (getMWDTrace from anatraces)
+        float rising_time = 0.1;
+        float MWD_length = 0.1;
+        float decay_time[2] = {0.1};
+        float MWD_amp_start = 0.1;
+        float MWD_amp_stop = 0.1;
+        float sampling = 0.1;
+        float MWD_trace_start = 0.1;
+        float MWD_trace_stop = 0.1;
+        float MWD_baseline_start = 0.1;
+        float MWD_baseline_stop = 0.1;
+
+        //:: test for decay time
+
+        //::: Used for energy calculation (calcEnergy from anatraces)
 
 };
 
