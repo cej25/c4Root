@@ -1278,11 +1278,6 @@ void FrsCal2Hit::ProcessIDs()
         }
     }
 
-    std::cout << "selection:: " << id->tof_s4_select << std::endl;
-    std::cout << "sci_b_tofll_21_41:: " << sci_b_tofll_21_41 << std::endl;
-    std::cout << "sci_b_tofrr_21_41:: " << sci_b_tofrr_21_41 << std::endl;
-    std::cout << "beta: " << id_beta << std::endl;
-
     /*------------------------------------------------------*/
     /* Determination of Brho                                */
     /*------------------------------------------------------*/

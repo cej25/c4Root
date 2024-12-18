@@ -1,14 +1,17 @@
 #ifndef __AIDA_UNPACK__
 #define __AIDA_UNPACK__
 
-#include "../../../config/setup.h"
-
 #include "data_src.hh"
 #include "dummy_external.hh"
 #include "external_data.hh"
 #include "zero_suppress.hh"
 
 #define AIDA_UNPACK_STATS 0
+#define NO_UINT64 1
+#define AIDA_MAX_HITS 13000
+#define AIDA_MAX_FEES 16
+#define AIDA_UCESB_SHIFT 14000
+#define AIDA_DSSDS 2
 
 #if AIDA_UNPACK_STATS
 struct AidaUnpackerStats

@@ -624,11 +624,11 @@ void FrsRaw2Cal::ProcessTpcs()
         Float_t dist_SC21_focS2 = frs->dist_SC21 - frs->dist_focS2;
         tpc23_24_sc21_x = (tpc_angle_x_s2_foc_23_24/1000.*dist_SC21_focS2)+tpc_x_s2_foc_23_24;
         tpc23_24_sc21_y = (tpc_angle_y_s2_foc_23_24/1000.*dist_SC21_focS2)+tpc_y_s2_foc_23_24;
-        /// TPC 23 24 X at SC22 focus ??
+        /// TPC 23 24 X at SC22 focus
         Float_t dist_SC22_focS2 = frs->dist_SC22 - frs->dist_focS2;
         tpc23_24_sc22_x = (tpc_angle_x_s2_foc_23_24/1000.*dist_SC22_focS2)+tpc_x_s2_foc_23_24;
         tpc23_24_sc22_y = (tpc_angle_y_s2_foc_23_24/1000.*dist_SC22_focS2)+tpc_y_s2_foc_23_24;
-        // TPC 23 24 X at target focus ??
+        // TPC 23 24 X at target focus
         Float_t dist_S2target_focS2 = frs->dist_S2target - frs->dist_focS2;
         tpc23_24_s2target_x = (tpc_angle_x_s2_foc_23_24/1000.*dist_S2target_focS2)+tpc_x_s2_foc_23_24;
         tpc23_24_s2target_y = (tpc_angle_y_s2_foc_23_24/1000.*dist_S2target_focS2)+tpc_y_s2_foc_23_24;

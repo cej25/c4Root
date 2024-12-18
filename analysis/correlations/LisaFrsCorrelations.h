@@ -19,9 +19,7 @@
 #include <vector>
 #include <map>
 #include "TString.h"
-
-//Debugging. Replaced std::string with TString 8nov24
-
+#include "EventHeader.h"
 
 class EventHeader;
 class TH1I;
@@ -74,7 +72,7 @@ class LisaFrsCorrelations : public FairTask
 
 
         Int_t fNEvents;
-        EventHeader* header;
+        EventHeader const* header;
 
         TDirectory* dir_corr;
         TDirectory* dir_lisa_frs;

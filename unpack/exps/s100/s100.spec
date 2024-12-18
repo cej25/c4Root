@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-#include "../../../config/setup.h"
+// #include "../../../config/setup.h"
 #include "../../common/whiterabbit.spec"
 #include "../../common/gsi_febex4.spec"
 #include "../../common/gsi_tamex4.spec"
@@ -11,6 +11,7 @@
 #include "../../common/general.spec"
 
 #define BM_MAX_HITS 100000
+#define AIDA_MAX_HITS 13000
 
 // making a change
 

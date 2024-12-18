@@ -7,6 +7,7 @@
 #include "FrsData.h"
 #include "FrsCalData.h"
 #include "FrsHitData.h"
+#include "EventHeader.h"
 
 #include "FairTask.h"
 #include <TRandom3.h>
