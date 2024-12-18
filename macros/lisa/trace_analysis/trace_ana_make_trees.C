@@ -49,7 +49,7 @@ void trace_ana_make_trees(int fileNumber)
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0169_*.lmd";  //data with only lisa
     TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";
-    TString filename = Form(inputpath + "run_%04d_*.lmd", fileNumber);
+    TString filename = Form(inputpath + "run_%04d_0001.lmd", fileNumber);
 
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/trees/"; 

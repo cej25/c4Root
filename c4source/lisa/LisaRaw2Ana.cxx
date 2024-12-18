@@ -1,9 +1,29 @@
-/*********************************************************************************************************************************
- This Task contains the calculation for the Moving Window Deconvolution algorithm applied to the traces form febex (raw traces).
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                       E.M. Gandolfo, C.E. Jones                            *
+ *                               25.11.24                                     *
+ ******************************************************************************/
+
+//...Notes...
+/******************************************************************************
+ This Task contains the calculation for the Moving Window Deconvolution
+ algorithm applied to the traces form febex (raw traces).
  It calculates the Trapezoidal shape from the trace, and finally the energy.
- Last update 16 Dec 2024.
+
+ To check the calculation use macro lisa/trace_analysis/trace_ana_histos.C
+ Last update : 16 Dec 2024.
  E.G.
-**********************************************************************************************************************************/
+*******************************************************************************/
 
 // FairRoot
 #include "FairTask.h"
@@ -63,6 +83,19 @@ void LisaRaw2Ana::Exec(Option_t* option)
 {
     lisaAnaArray->clear();
 
+    double energy_sum;
+    int amp_count;
+    double sum;
+    int count;
+    double average_baseline;
+    double DM;
+    double sum0;
+    double mwd_value;
+    double energy_avg;
+    double baseline_sum;
+    int baseline_count;
+    double baseline_avg;
+
     for (auto const & lisaItem : *lisaArray)
     {
                
@@ -73,53 +106,130 @@ void LisaRaw2Ana::Exec(Option_t* option)
         if (lisa_config->MWDParametersLoaded())
         {
             
+            energy_sum = 0.0;
+            amp_count = 0;
+            sum = 0.0;
+            count = 0;
+            average_baseline = 0.0;
+            mwd_value = 0.0;
+            energy_avg = 0.0;
+            baseline_sum = 0.0;
+            baseline_count = 0;
+            baseline_avg = 0.0;
+
             // ::: M W D   T R A C E  ::: (trace_MWD)
 
             // 0. ::: Get trace and parameters :::
-            std::vector<int16_t> trace_febex = lisaItem.Get_trace();
-            double par1 = lisa_config->Get_testconstant_1();
+            //    ::: For MWD calculation
+            std::vector<int16_t> trace_febex = lisaItem.Get_trace();            //vector with amplitude points of trace
+            float rise_time = lisa_config->Get_Rising_Time();                   //rise time of trace
+            float MWD_length = lisa_config->Get_MWD_Length();                   //lenght of MWD computation
+            const float* decay_time = lisa_config->Get_Decay_Time();                   //decay time of the trace
+            float MWD_trace_start = lisa_config->Get_MWD_Trace_Start();         //start of MWD trace
+            float MWD_trace_stop = lisa_config->Get_MWD_Trace_Stop();           //and stop
+            float sampling = lisa_config->Get_Sampling();                       //Sampling Febex (10 ns)
+            
+            //    ::: Convert parameters to sample points
+            int LL = static_cast<int>(rise_time / sampling);                    // Rising time in samples
+            int MM = static_cast<int>(MWD_length / sampling);                   // MWD length in samples
+            float tau[2];
+            tau[1] = decay_time[1] / sampling;                                  // Decay constant in samples
+            int k0 = static_cast<int>(MWD_trace_start / sampling);              // Start of MWD in samples
+            int kend = static_cast<int>(MWD_trace_stop / sampling);             // Stop of MWD in samples
+            if (kend > trace_febex.size()) kend = trace_febex.size();           // If kend out of bound, replace it with trace_febex limit
 
+            //std::cout << "k0 : " << k0 << " kend : " << kend << "\n";
             // 1. ::: Baseline correction :::
             // ::: Evaluete average from points 20 to 100
-            double sum = 0.0;
-            int count = 0;
             for( int i = 20; i < 100; i++)
             {
                 sum += trace_febex.at(i);
                 count++;
             }
-            double average_baseline  = sum / count;  
+            average_baseline  = sum / count;  
 
-            // ::: Shift the trace to previously calculated value
+            // ::: Shift the trace of the previously calculated value
             for( int i = 0; i < trace_febex.size(); i++)
             {
                 trace_febex.at(i) = trace_febex.at(i) - average_baseline;
             }
 
-            // 2. ::: Integration in convoluted windows
-
-            // 3. ::: Calcullation of trapezoid
-
-            // 4. ::: Averaging of flat top
-
-            // :::  M D W   E N E R G Y  ::: (energy_MWD) 
-            
-            //...
-            trace_MWD.resize(trace_febex.size());
-            for( int i = 0; i < trace_febex.size(); i++)
+            // 2. ::: Calculation of trapezoid :::
+            for (int kk = k0; kk < kend; ++kk) 
             {
-                trace_MWD.at(i) = trace_febex.at(i);
+                DM = 0.0;
+                for (int j = kk - LL; j <= kk - 1; ++j) 
+                {
+                    if (j < 1) continue;                    // Skip if out-of-bounds
+                    sum0 = 0.0;                      // Initialize sum for baseline subtraction
+                    for (int i = j - MM; i <= j - 1; ++i) 
+                    {
+                        if (i < 0) continue;                // Skip if out-of-bounds
+                        sum0 += trace_febex.at(i);          // Sum over the moving window
+                    }
+                    DM += trace_febex.at(j) - trace_febex.at(j - MM) + sum0 / tau[1];
+                }
+                // Calculate MWD value and index
+                mwd_value = DM / LL;                 // Average over the rising time
+                //double mwd_index = static_cast<double>(kk) / sample_rate; // Convert sample index to time in ns
+
+                //std::cout<<" ::: mwd values : " << mwd_value << "\n";
+                trace_MWD.push_back(mwd_value);
             }
 
-            // ::::::::::::::::::::::::::::::::::::::::::::::::::::
-            
 
-            // ::: Calculation for MWD energy (energy_MWD) :::
-            double energy_febex = lisaItem.Get_channel_energy();
-            double par2 = lisa_config->Get_testconstant_2();
-            energy_MWD = energy_febex * par2;
+            // :::  M D W   E N E R G Y  ::: (energy_MWD) 
+            //    ::: Get parameters :::
+            float MWD_amp_start = lisa_config->Get_MWD_Amp_Start();             //start of MWD trace flat top
+            float MWD_amp_stop = lisa_config->Get_MWD_Amp_Stop();               //and stop
+            float MWD_baseline_start = lisa_config->Get_MWD_Baseline_Start();   //start of baseline for MWD trace
+            float MWD_baseline_stop = lisa_config->Get_MWD_Baseline_Stop();     //and stop
 
+            //    ::: Convert parameters to sample points :::
+            int amp_start_idx = static_cast<int>(MWD_amp_start / sampling); 
+            int amp_stop_idx = static_cast<int>(MWD_amp_stop / sampling);
+            int baseline_start_idx = static_cast<int>(MWD_baseline_start / sampling);
+            int baseline_stop_idx = static_cast<int>(MWD_baseline_stop / sampling);         
             
+            //    ::: Check ranges :::
+            //std::cout<<"trace MWD size : " << trace_MWD.size()  << " start : " << k0 << " stop : " << kend <<"\n";            
+            
+            // 4. ::: Integration on the flat top
+            amp_start_idx = amp_start_idx - k0;
+            amp_stop_idx = amp_stop_idx - k0;
+            
+            for (int i = amp_start_idx; i < amp_stop_idx; ++i) 
+            {
+                energy_sum += trace_MWD.at(i);
+                amp_count++;
+                //std::cout<< " inside amp count : " << amp_count << " energy_sum : " << energy_sum << "\n";
+            }
+
+            energy_avg = energy_sum / amp_count;
+
+            //5. ::: Integration of baseline 
+            baseline_start_idx = baseline_start_idx - k0;
+            baseline_stop_idx = baseline_stop_idx - k0;
+
+            for (int i = baseline_start_idx; i < baseline_stop_idx; ++i) 
+            {
+                baseline_sum += trace_MWD.at(i);
+                baseline_count++;
+            }
+    
+            //std::cout << "energy_sum : " << energy_sum << " baseline sum : " << baseline_sum << "\n";
+            baseline_avg = baseline_sum / baseline_count;
+            
+            // 6. ::: Calculate MWD |energy value|
+            energy_MWD = energy_avg - baseline_avg;
+
+            if (energy_MWD < 0) 
+            {
+                energy_MWD = - energy_MWD;
+            }            
+        
+            //std::cout<<" energy MWD : " << energy_MWD << "\n";
+
             // ::::::::::::::::::::::::::::::::::::::::::::::::::::
 
             // ::: Calculation for MWD pileup (pileup_MWD) :::
@@ -130,6 +240,13 @@ void LisaRaw2Ana::Exec(Option_t* option)
             // ...
             // ::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+            // debug stuff...
+            // int channel_ID_trace = lisaItem.Get_channel_id_traces();
+            // if (channel_ID_trace < 8)
+            // {
+            //     std::cout<<"ID : " << channel_ID_trace << " ___ energy MWD : "<< energy_MWD << " ___ size of trace MWD : " << trace_MWD.size() << "\n";
+
+            // }
 
             auto & entry = lisaAnaArray->emplace_back();    
             
@@ -152,7 +269,9 @@ void LisaRaw2Ana::Exec(Option_t* option)
                 trace_MWD
                 //EVTno
             );
-
+            
+            trace_MWD.clear();
+        
         }
 
 
@@ -161,7 +280,7 @@ void LisaRaw2Ana::Exec(Option_t* option)
 
 void LisaRaw2Ana::FinishEvent()
 {
-
+    
 }
 
 void LisaRaw2Ana::FinishTask()

@@ -1,20 +1,38 @@
-# :::: MDW parameters ::::
+# :::::  M W D  P A R A M E T E R S  ::::
 # Parameter name  |   Value #
 
-test_constant1  3.0
-test_constant2  6.0
-test_constant3  12.0
-test_constant4  15.0
 
-# ::: Real par from MWD alg (eris setting)
+# ::: M W D   T R A C E  calculation :::
+# :::Rising time = rising time of the signal
+Rising_time[ns]                    10
 
-#Sample_rate[MHz]                   100
-#Febex4_trace_length                2400    #tracelenght read from raw data. This value should be =< total lenght
-#Rising_time[ns]                    2000
-#Trapezoid_sample_window_0[ns]      14000   #this has to be larger than MWD window length
-#Trapez_sample_window_1[ns]         21000 
-#Trapez_moving_window_length[ns]    3000
-#Trapez_amp_calc_window_0[ns]       17000
-#Trapez_amp_calc_window_1[ns]       17200
-#Decaytime_ch_1                     13000
+# :::Lenght of the moving window for calculation
+Trapez_moving_window_length[ns]    1000
+
+# :::Decay Time of the signal (depending on the preamp)
+# !!! Decay time to be put in a separate file....WIP for the multichannel mode !!!
+# !!! At the moment only Decaytime_ch0 is used for all the channels !!!
+Decaytime_ch0[ns]                  30500
+Decaytime_ch1[ns]                  30500
+
+# :::Start and stop of the entire MWD trace
+Trapez_sample_window_0[ns]         2000  
+Trapez_sample_window_1[ns]         4500 
+
+# :::Sampling from Febex (=10 ns)
+Sampling[ns]                       10
+
+
+# ::: M W D   E N E R G Y calculation :::
+# :::Start and stop of the trapezoid flat top where the energy is computed
+Trapez_amp_calc_window_0[ns]       2800
+Trapez_amp_calc_window_1[ns]       3600
+
+# ::: Range for the baseline calculation of the MWD trace
+Trapez_baseline_window_0[ns]       2200             
+Trapez_baseline_window_1[ns]       2600
+
+
+
+#To implement
 #Threshold_ch_1                     9
