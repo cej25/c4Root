@@ -23,15 +23,6 @@
 
 // c4
 #include "WhiterabbitCorrelationOnline.h"
-#include "EventHeader.h"
-#include "TimeMachineData.h"
-#include "FatimaTwinpeaksCalData.h"
-#include "FatimaVmeCalData.h"
-#include "bPlastTwinpeaksCalData.h"
-#include "GermaniumCalData.h"
-#include "FrsHitData.h"
-#include "FrsHitData.h"
-
 #include "AnalysisTools.h"
 #include "c4Logger.h"
 
@@ -70,26 +61,11 @@ WhiterabbitCorrelationOnline::WhiterabbitCorrelationOnline(const TString& name, 
 
 WhiterabbitCorrelationOnline::~WhiterabbitCorrelationOnline()
 {
-    if (fHitFatimaTwinpeaks)
-    {
-        delete fHitFatimaTwinpeaks;
-    }
-    if (fHitbPlastTwinpeaks)
-    {
-        delete fHitbPlastTwinpeaks;
-    }
-    if (fHitGe)
-    {
-        delete fHitGe;
-    }
-    if (fAidaDecays)
-    {
-        delete fAidaDecays;
-    }
-    if (fEventHeader)
-    {
-        delete fEventHeader;
-    }
+    if (fHitFatimaTwinpeaks) delete fHitFatimaTwinpeaks;
+    if (fHitbPlastTwinpeaks) delete fHitbPlastTwinpeaks;
+    if (fHitGe) delete fHitGe;
+    if (fAidaDecays) delete fAidaDecays;
+    if (fEventHeader) delete fEventHeader;
 }
 
 void WhiterabbitCorrelationOnline::SetDetectorSystems(std::vector<TString> detectorsystems)
@@ -116,7 +92,7 @@ InitStatus WhiterabbitCorrelationOnline::Init()
 
     for (int i = 0; i < fNumDetectorSystems; i++)
     {
-        // check each subsystem and get the corresponding TClonesArray
+        // check each subsystem and get the corresponding array
         if (fDetectorSystems.at(i) == "Frs")
         {
             hitArrayFrs = mgr->InitObjectAs<decltype(hitArrayFrs)>("FrsHitData");
@@ -151,7 +127,7 @@ InitStatus WhiterabbitCorrelationOnline::Init()
             fAidaImplants = mgr->InitObjectAs<decltype(fAidaImplants)>("AidaImplantHits");
             c4LOG_IF(fatal, !fAidaImplants, "Branch AidaImplantHits not found!");
         }
-        else if (fDetectorSystems.at(i) == "BB7")
+        else if (fDetectorSystems.at(i) == "BB7") // make adaptable to spellings...
         {
             fBB7Decays = mgr->InitObjectAs<decltype(fBB7Decays)>("BB7DecayData");
             c4LOG_IF(fatal, !fBB7Decays, "Branch BB7DecayData not found!");
