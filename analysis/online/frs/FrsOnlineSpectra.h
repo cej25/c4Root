@@ -6,6 +6,7 @@
 #include "FrsGate.h"
 #include "FrsHitData.h"
 #include "AnalysisTools.h"
+#include "EventHeader.h"
 
 #include "FairTask.h"
 #include "TH2.h"
@@ -44,9 +45,6 @@ class FrsOnlineSpectra : public FairTask
 
         virtual void Reset_Histo();
 
-        virtual void Snapshot_Histo();
-
-
     private:
         TFrsConfiguration const* frs_config;
         TExperimentConfiguration const* exp_config;
@@ -70,12 +68,10 @@ class FrsOnlineSpectra : public FairTask
         EventHeader* header;
         Int_t fNEvents;
 
-        TString screenshot_path = "/u/despec/screenshots/";
 
         // Canvas
         TCanvas* c_frs_z1_vs_AoQ;
         TCanvas* c_frs_x4_vs_AoQ;
-        TCanvas* c_frs_snapshot;
         TCanvas* c_z_compare;
         TCanvas* c_z_compare_mhtdc;
         TCanvas* c_dE_compare;

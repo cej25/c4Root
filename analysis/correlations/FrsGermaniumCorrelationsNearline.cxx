@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                             J.E.L. Larsson                                 *
+ *                               17.12.24                                     *
+ ******************************************************************************/
+
 // FairRoot
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -73,8 +89,8 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
 
     FairRunAna* run = FairRunAna::Instance();
 
-    header = (EventHeader*)mgr->GetObject("EventHeader.");
-    c4LOG_IF(error, !header, "Branch EventHeader. not found");
+    header = mgr->InitObjectAs<decltype(header)>("EventHeader.");
+    c4LOG_IF(error, !header, "Branch EventHeader. not found!");
 
     fHitGe = (TClonesArray*)mgr->GetObject("GermaniumCalData");
     c4LOG_IF(fatal, !fHitGe, "Branch GermaniumCalData not found!");
@@ -82,12 +98,21 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
     c4LOG_IF(fatal, !hitArrayFrs, "Branch FrsHitData not found!");
 
 
-    TDirectory* tmp = gDirectory;
-    FairRootManager::Instance()->GetOutFile()->cd();
-    dir_germanium = gDirectory->mkdir(TString("DEGAS FRS GATE " + frsgate->GetName()));
-    gDirectory->cd(TString("DEGAS FRS GATE " + frsgate->GetName()));
+    dir_corr = (TDirectory*)mgr->GetObject("Correlations");
+    if (dir_corr == nullptr) 
+    {
+        LOG(info) << "Creating Correlations Directory";
+        FairRootManager::Instance()->GetOutFile()->cd();
+        dir_corr = gDirectory->mkdir("Correlations");
+        mgr->Register("Correlations", "Correlations Directory", dir_corr, false); // allow other tasks to find this
+        found_dir_corr = false;
+    }
+
+    TString dirname = "DEGAS - FRS Gated: " + frsgate->GetName();
+    dir_germanium = dir_corr->mkdir(dirname);
 
     dir_germanium->cd();
+
     //Implant rate
     g_frs_rate = new TGraph();
     g_frs_rate->SetName(TString("g_frs_germanium_rate_monitor_gated_")+frsgate->GetName());
@@ -201,8 +226,6 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
     h1_germanium_hitpattern_post6us->GetXaxis()->LabelsOption("a");
     h1_germanium_hitpattern_post6us->SetStats(0);
     
-    dir_germanium->cd();
-    gDirectory = tmp;
 
     return kSUCCESS;
 }

@@ -1,3 +1,5 @@
+// SIGNAL(TARGET_NAME, unpack_data_name, DATA_TYPE)
+
 // ::::::: Main Crate :::::::::::::::::::
 SIGNAL(SPILL_ON, frsmain.spill_on.spillon, DATA8);
 SIGNAL(SPILL_OFF, frsmain.spill_off.spilloff, DATA8);

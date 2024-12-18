@@ -22,7 +22,7 @@
 #include "FairRuntimeDb.h"
 
 // c4
-#include "FrsRawSpectra.h"
+#include "FrsRawNearlineSpectra.h"
 #include "EventHeader.h"
 #include "c4Logger.h"
 #include "AnalysisTools.h"
@@ -34,13 +34,14 @@
 #include "TMath.h"
 #include "TRandom.h"
 #include <vector>
+#include "TFile.h"
 
-FrsRawSpectra::FrsRawSpectra()
-    :   FrsRawSpectra("FrsRawSpectra", 1)
+FrsRawNearlineSpectra::FrsRawNearlineSpectra()
+    :   FrsRawNearlineSpectra("FrsRawNearlineSpectra", 1)
 {
 }
 
-FrsRawSpectra::FrsRawSpectra(const TString& name, Int_t iVerbose)
+FrsRawNearlineSpectra::FrsRawNearlineSpectra(const TString& name, Int_t iVerbose)
     :   FairTask(name, iVerbose)
     ,   fNEvents(0)
     ,   header(nullptr) 
@@ -50,12 +51,12 @@ FrsRawSpectra::FrsRawSpectra(const TString& name, Int_t iVerbose)
 {
 }
 
-FrsRawSpectra::~FrsRawSpectra()
+FrsRawNearlineSpectra::~FrsRawNearlineSpectra()
 {
     c4LOG(info, "");
 }
 
-InitStatus FrsRawSpectra::Init()
+InitStatus FrsRawNearlineSpectra::Init()
 {
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
@@ -63,8 +64,8 @@ InitStatus FrsRawSpectra::Init()
     FairRunOnline* run = FairRunOnline::Instance();
     run->GetHttpServer()->Register("", this);
 
-    header = (EventHeader*)mgr->GetObject("EventHeader.");
-    c4LOG_IF(error, !header, "Branch EventHeader. not found");
+    header = mgr->InitObjectAs<decltype(header)>("EventHeader.");
+    c4LOG_IF(error, !header, "Branch EventHeader. not found!");
 
     sciArray = mgr->InitObjectAs<decltype(sciArray)>("FrsSciData");
     c4LOG_IF(fatal, !sciArray, "Branch FrsSciData not found!");
@@ -73,20 +74,19 @@ InitStatus FrsRawSpectra::Init()
     tpcArray = mgr->InitObjectAs<decltype(tpcArray)>("FrsTpcData");
     c4LOG_IF(fatal, !tpcArray, "Branch FrsTpcData not found!");
 
-    histograms = (TFolder*)mgr->GetObject("Histograms");
-    
     TDirectory::TContext ctx(nullptr);
 
-    // look for FRS directory, create it if not found
+   
     dir_frs = (TDirectory*)mgr->GetObject("FRS");
     if (dir_frs == nullptr) 
     {
-        LOG(info) << "Creating FRS Online Directory";
-        dir_frs = new TDirectory("FRS Online", "FRS Online", "", 0);
-        mgr->Register("FRS", "FRS Online Directory", dir_frs, false); // allow other tasks to find this
-        histograms->Add(dir_frs);
+        LOG(info) << "Creating FRS Directory";
+        FairRootManager::Instance()->GetOutFile()->cd();
+        dir_frs = gDirectory->mkdir("FRS");
+        mgr->Register("FRS", "FRS Directory", dir_frs, false); // allow other tasks to find this
+        found_dir_frs = false;
     }
-    
+
     dir_frs_raw = dir_frs->mkdir("FRS Raw Spectra");
     dir_sci = dir_frs_raw->mkdir("Scintillators");
     dir_music = dir_frs_raw->mkdir("MUSICs");
@@ -207,7 +207,7 @@ InitStatus FrsRawSpectra::Init()
 }
 
 
-void FrsRawSpectra::Exec(Option_t* option)
+void FrsRawNearlineSpectra::Exec(Option_t* option)
 {
     if (sciArray->size() == 0) return;
 
@@ -258,15 +258,22 @@ void FrsRawSpectra::Exec(Option_t* option)
 
 }
 
-void FrsRawSpectra::FinishEvent()
+void FrsRawNearlineSpectra::FinishEvent()
 {
 
 }
 
 
-void FrsRawSpectra::FinishTask()
+void FrsRawNearlineSpectra::FinishTask()
 {
-
+    if (found_dir_frs == false)
+    {
+        TDirectory* tmp = gDirectory;
+        FairRootManager::Instance()->GetOutFile()->cd();
+        dir_frs->Write();
+        gDirectory = tmp;
+        c4LOG(info, "Written FRS Raw histograms to file.");
+    }
 }
 
-ClassImp(FrsRawSpectra)
+ClassImp(FrsRawNearlineSpectra)
