@@ -37,7 +37,6 @@ To compile:
 
 ```
 > cd ../c4Root/unpack/exps/
-> make s100 -j
 > cd ../../macros/despec/
 > root -l -b s100_online.C
 ```
