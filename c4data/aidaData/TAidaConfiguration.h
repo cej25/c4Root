@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <array>
 
 enum DSSDSide
 {
