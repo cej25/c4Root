@@ -19,9 +19,11 @@
  This Task contains the calculation for the Moving Window Deconvolution
  algorithm applied to the traces form febex (raw traces).
  It calculates the Trapezoidal shape from the trace, and finally the energy.
-
- To check the calculation use macro lisa/trace_analysis/trace_ana_histos.C
- Last update : 16 Dec 2024.
+ The calculations reflect the ones from anaTraces:
+ https://git.gsi.de/lisa/daq_analysis.git
+ 
+ To check the calculation use macros/lisa/trace_analysis/trace_ana_histos.C
+ Last update : January 2025.
  E.G.
 *******************************************************************************/
 
@@ -53,7 +55,6 @@ LisaRaw2Ana::LisaRaw2Ana()
 {
     lisa_config = TLisaConfiguration::GetInstance();
 }
-
 
 
 LisaRaw2Ana::~LisaRaw2Ana()
@@ -140,7 +141,8 @@ void LisaRaw2Ana::Exec(Option_t* option)
 
             //std::cout << "k0 : " << k0 << " kend : " << kend << "\n";
             // 1. ::: Baseline correction :::
-            // ::: Evaluete average from points 20 to 100
+            //        This corresponds to anaTraces function calcCorrectTrace
+            // ::: Evaluate average from points 20 to 100
             for( int i = 20; i < 100; i++)
             {
                 sum += trace_febex.at(i);
@@ -149,12 +151,18 @@ void LisaRaw2Ana::Exec(Option_t* option)
             average_baseline  = sum / count;  
 
             // ::: Shift the trace of the previously calculated value
+            // ::: Calibrate amplitude from ADC to mV considering that febex dynamic range is -+ 1V that corresponds to 16000 ADC
+            // ::: Calibration coefficent is 1/8 (8000 from febex corresponds to 1000 mV)
+            // ::: Ref to the elog:  https://elog.gsi.de/LISA/X7+Lab/50
+
             for( int i = 0; i < trace_febex.size(); i++)
             {
-                trace_febex.at(i) = trace_febex.at(i) - average_baseline;
+                trace_febex.at(i) = (trace_febex.at(i) - average_baseline)/8;
+
             }
 
             // 2. ::: Calculation of trapezoid :::
+            //        This corresponds to anaTraces function calcMWDTrace
             for (int kk = k0; kk < kend; ++kk) 
             {
                 DM = 0.0;
@@ -179,6 +187,8 @@ void LisaRaw2Ana::Exec(Option_t* option)
 
 
             // :::  M D W   E N E R G Y  ::: (energy_MWD) 
+            //      Steps below correspond to anaTraces function calcEnergy
+
             //    ::: Get parameters :::
             float MWD_amp_start = lisa_config->Get_MWD_Amp_Start();             //start of MWD trace flat top
             float MWD_amp_stop = lisa_config->Get_MWD_Amp_Stop();               //and stop
