@@ -3,8 +3,8 @@
 
 
 # ::: M W D   T R A C E  calculation :::
-# :::Rising time = rising time of the signal
-Rising_time[ns]                    10
+# :::Smoothing Parameter
+Rising_time[ns]                    400
 
 # :::Lenght of the moving window for calculation
 Trapez_moving_window_length[ns]    1000
@@ -16,17 +16,16 @@ Decaytime_ch0[ns]                  30500
 Decaytime_ch1[ns]                  30500
 
 # :::Start and stop of the entire MWD trace
-Trapez_sample_window_0[ns]         2000  
+Trapez_sample_window_0[ns]         1800  
 Trapez_sample_window_1[ns]         4500 
 
 # :::Sampling from Febex (=10 ns)
 Sampling[ns]                       10
 
-
 # ::: M W D   E N E R G Y calculation :::
 # :::Start and stop of the trapezoid flat top where the energy is computed
-Trapez_amp_calc_window_0[ns]       2800
-Trapez_amp_calc_window_1[ns]       3600
+Trapez_amp_calc_window_0[ns]       2900
+Trapez_amp_calc_window_1[ns]       3100
 
 # ::: Range for the baseline calculation of the MWD trace
 Trapez_baseline_window_0[ns]       2200             

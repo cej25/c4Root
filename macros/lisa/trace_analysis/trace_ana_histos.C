@@ -49,11 +49,11 @@ void trace_ana_histos(int fileNumber)
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
     TString inputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/trees/";
-    TString filename = Form(inputpath + "run_%04d_trees.root", fileNumber);  
+    TString filename = Form(inputpath + "run_%04d_0001_c4MWD_v7.root", fileNumber);  
     
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/histos/"; 
-    TString outputFilename = Form(outputpath + "run_%04d_histos.root", fileNumber);
+    TString outputFilename = Form(outputpath + "run_%04d_0001_c4MWD_histos_v7.root", fileNumber);
 
 
     FairRunAna* run = new FairRunAna();
@@ -80,7 +80,7 @@ void trace_ana_histos(int fileNumber)
     // ::: Set Board number :::
     //     Since at this stage the mapping is not included, board number is hardcoded.
     TLisaConfiguration::SetBoardNumber(1);
-    TLisaConfiguration::SetEventToAnalyze(200000);
+    TLisaConfiguration::SetEventToAnalyze(600004);
     
     //::::::::: Set ranges for histos :::::::::::::::
     //::::  Channel Energy ::::: (h1_energy_)

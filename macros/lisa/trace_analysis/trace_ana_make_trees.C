@@ -53,7 +53,7 @@ void trace_ana_make_trees(int fileNumber)
 
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/trees/"; 
-    TString outputFilename = Form(outputpath + "run_%04d_trees.root", fileNumber);
+    TString outputFilename = Form(outputpath + "run_%04d_0001_c4MWD_v6.root", fileNumber);
 
 
     //:::::::Create online run
