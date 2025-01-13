@@ -112,7 +112,7 @@ void TLisaConfiguration::ReadMWDParameters()
 
         //iss >> parameter >> value;
 
-        if( parameter == "Rising_time[ns]")                         rising_time = value;
+        if( parameter == "Smoothing_L[ns]")                         smoothing_L = value;
         else if( parameter == "Trapez_moving_window_length[ns]")    MWD_length = value;
         else if( parameter == "Decaytime_ch0[ns]")                  decay_time[0] = value;
         else if( parameter == "Decaytime_ch1[ns]")                  decay_time[1] = value;

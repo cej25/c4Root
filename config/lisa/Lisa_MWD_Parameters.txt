@@ -1,10 +1,11 @@
-# :::::  M W D  P A R A M E T E R S  ::::
-# Parameter name  |   Value #
+# The following parameters are interconnected.
+# Please check the guide on how to define parameters.
 
+# :::::  M W D  P A R A M E T E R S  ::::
 
 # ::: M W D   T R A C E  calculation :::
-# :::Smoothing Parameter
-Rising_time[ns]                    400
+# :::Smoothing Parameter - This corresponds to Rising Time in anatraces
+Smoothing_L[ns]                    400
 
 # :::Lenght of the moving window for calculation
 Trapez_moving_window_length[ns]    1000

@@ -123,21 +123,21 @@ void LisaRaw2Ana::Exec(Option_t* option)
             // 0. ::: Get trace and parameters :::
             //    ::: For MWD calculation
             std::vector<int16_t> trace_febex = lisaItem.Get_trace();            //vector with amplitude points of trace
-            float rise_time = lisa_config->Get_Rising_Time();                   //rise time of trace
+            float smoothing_L = lisa_config->Get_Smoothing_L();                 //L parameters in MWD formula. This corresponds to RisingTime in anatrace. !!IT IS NOT THE TRACE RISING TIME!!
             float MWD_length = lisa_config->Get_MWD_Length();                   //lenght of MWD computation
-            const float* decay_time = lisa_config->Get_Decay_Time();                   //decay time of the trace
+            const float* decay_time = lisa_config->Get_Decay_Time();            //decay time of the trace
             float MWD_trace_start = lisa_config->Get_MWD_Trace_Start();         //start of MWD trace
             float MWD_trace_stop = lisa_config->Get_MWD_Trace_Stop();           //and stop
             float sampling = lisa_config->Get_Sampling();                       //Sampling Febex (10 ns)
             
             //    ::: Convert parameters to sample points
-            int LL = static_cast<int>(rise_time / sampling);                    // Rising time in samples
-            int MM = static_cast<int>(MWD_length / sampling);                   // MWD length in samples
+            int LL = static_cast<int>(smoothing_L / sampling);                   // Smoothing time in samples
+            int MM = static_cast<int>(MWD_length / sampling);                    // MWD length in samples
             float tau[2];
-            tau[1] = decay_time[1] / sampling;                                  // Decay constant in samples
-            int k0 = static_cast<int>(MWD_trace_start / sampling);              // Start of MWD in samples
-            int kend = static_cast<int>(MWD_trace_stop / sampling);             // Stop of MWD in samples
-            if (kend > trace_febex.size()) kend = trace_febex.size();           // If kend out of bound, replace it with trace_febex limit
+            tau[1] = decay_time[1] / sampling;                                   // Decay constant in samples
+            int k0 = static_cast<int>(MWD_trace_start / sampling);               // Start of MWD in samples
+            int kend = static_cast<int>(MWD_trace_stop / sampling);              // Stop of MWD in samples
+            if (kend > trace_febex.size()) kend = trace_febex.size();            // If kend out of bound, replace it with trace_febex limit
 
             //std::cout << "k0 : " << k0 << " kend : " << kend << "\n";
             // 1. ::: Baseline correction :::

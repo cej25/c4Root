@@ -130,7 +130,7 @@ class TLisaConfiguration
         static bool wr_enable;
 
         // ::: MDW parameters getters
-        float Get_Rising_Time() const { return rising_time; }
+        float Get_Smoothing_L() const { return smoothing_L; }
         float Get_MWD_Length() const { return MWD_length; }
         //float Get_Decay_Time() const { return decay_time; }
         const float (&Get_Decay_Time() const) [2] { return decay_time; }
@@ -197,7 +197,7 @@ class TLisaConfiguration
 
         //::: Parameter for MWD
         //::: Used for trapezoid calculation (getMWDTrace from anatraces)
-        float rising_time = 0.1;
+        float smoothing_L = 0.1;
         float MWD_length = 0.1;
         float decay_time[2] = {0.1};
         float MWD_amp_start = 0.1;
