@@ -18,9 +18,7 @@ FEBEX_EVENT(card)
 	MEMBER(DATA32 event_trigger_time_hi); // trigger time
 	MEMBER(DATA32 event_trigger_time_lo); // "..."
     MEMBER(DATA16 hit_pattern);
-    //MEMBER(DATA32 num_channels_fired);
 
-	//MEMBER(DATA8 channel_id[16] ZERO_SUPPRESS);
 	MEMBER(DATA16 channel_trigger_time_hi[16] ZERO_SUPPRESS);
 	MEMBER(DATA32 channel_trigger_time_lo[16] ZERO_SUPPRESS);
 	
@@ -109,6 +107,63 @@ FEBEX_EVENT(card)
     }
 }
 
+TRACE()
+{
+    MEMBER(DATA16 traces[16][TRACE_SIZE] ZERO_SUPPRESS);
+    MEMBER(DATA8 channel_id_traces[16] ZERO_SUPPRESS);
+
+    UINT32 header NOENCODE
+    {
+        0_7: 0x34;
+        8_23: other;
+        24_31: ch_id;
+        ENCODE(channel_id_traces[ch_id], (value = ch_id));
+        //Info on channel ID from trace (in case no information from event header) -- Sept2024 EG
+    }
+
+    UINT32 tracesize NOENCODE
+    {
+        0_31: size;
+    }
+
+    UINT32 tracehead NOENCODE
+    {
+        0_23: other;
+        24_31: head;
+    }
+        
+    // for example, when trace_length = 4000:
+    // tracesize = 8008
+    // tracesize / 2 - 4 gives total tracelength
+    // tracesize / 4 - 2 gives loop length requirement (2000)
+
+
+    list (0 <= j < (tracesize.size / 4 - 2))
+    {
+        
+        UINT32 channel_trace NOENCODE
+        {
+            0_13: data1;
+            14_15: stuff1; 
+            16_29: data2;
+            30_31: stuff2;
+
+            ENCODE(traces[header.ch_id][2*j+0], (value = data1));
+            ENCODE(traces[header.ch_id][2*j+1], (value = data2));
+        }
+
+    } 
+        
+
+    UINT32 trace_trailer NOENCODE
+    {
+        0_23: notused;
+        24_31: id = RANGE(0xb0,0xbf);
+    }
+}
+
+
+
 
 FEBEX_EVENT_TRACES(card)
 {
@@ -130,8 +185,8 @@ FEBEX_EVENT_TRACES(card)
 	MEMBER(DATA32 channel_energy[16] ZERO_SUPPRESS);
 
     //:::  Trace info :::
-    MEMBER(DATA8 channel_id_traces[16] ZERO_SUPPRESS);  //Info on channel ID from trace (in case no information from event header) -- Sept2024 EG
-    MEMBER(DATA16 traces[16][TRACE_SIZE] ZERO_SUPPRESS);
+    // MEMBER(DATA8 channel_id_traces[16] ZERO_SUPPRESS);  //Info on channel ID from trace (in case no information from event header) -- Sept2024 EG
+    // MEMBER(DATA16 traces[16][TRACE_SIZE] ZERO_SUPPRESS);
 
     UINT32 sumchannel NOENCODE
     { //this is the header.
@@ -218,62 +273,14 @@ FEBEX_EVENT_TRACES(card)
             }
         }
 
-        //::: Trace :::
-        list (0 <= i < (((channel_size.size) / 4) - 1))
+        select several
         {
-            UINT32 header NOENCODE
-            {
-                0_7: 0x34;
-                8_23: other;
-                24_31: ch_id;
-                ENCODE(channel_id_traces[i], (value = ch_id));
-                //Info on channel ID from trace (in case no information from event header) -- Sept2024 EG
-            }
-
-            UINT32 tracesize NOENCODE
-            {
-                0_31: size;
-            }
-
-            UINT32 tracehead NOENCODE
-            {
-                0_23: other;
-                24_31: head;
-            }
-        
-            // for example, when trace_length = 4000:
-            // tracesize = 8008
-            // tracesize / 2 - 4 gives total tracelength
-            // tracesize / 4 - 2 gives loop length requirement (2000)
-        
-    
-            list (0 <= j < (tracesize.size / 4 - 2))
-            {
-                
-                UINT32 channel_trace NOENCODE
-                {
-                    0_13: data1;
-                    14_15: stuff1; 
-                    16_29: data2;
-                    30_31: stuff2;
-
-                    ENCODE(traces[header.ch_id][2*j+0], (value = data1));
-                    ENCODE(traces[header.ch_id][2*j+1], (value = data2));
-                }
-
-            } 
-        
-
-            UINT32 trace_trailer NOENCODE
-            {
-                0_23: notused;
-                24_31: id = RANGE(0xb0,0xbf);
-            }
+            trace = TRACE();
         }
+
     }
     else if (sumchannel.trigger_type == 3)
-    {   
-
+    {
         select several
         {
             dummy = DUMMY();
