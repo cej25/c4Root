@@ -15,7 +15,7 @@ TAidaConfiguration* TAidaConfiguration::instance = nullptr;
 std::string TAidaConfiguration::base_path = "Configuration_Files/AIDA";
 
 TAidaConfiguration::TAidaConfiguration() :
-    fees(0), dssds(0), wide(false), adjustadc(false), useucesb(false),
+    fees(0), dssds(0), wide(false), bb7(false), bb7_fee(-1), adjustadc(false), useucesb(false),
     ignorembsts(false), stats(false), ucesbshift(0), eventwindow(2000),
     tm_undelayed(-1), tm_delayed(-1), sc41l_d(-1), sc41r_d(-1)
 {
@@ -96,6 +96,15 @@ void TAidaConfiguration::ReadConfiguration()
     {
       line >> std::boolalpha >> wide;
     }
+    // else if (option == "bb7")
+    // {
+    //   line >> std::boolalpha >> bb7;
+    //   dssd[dssds-1].DSSD = dssds;
+    // }
+    // else if (option == "bb7_fee")
+    // {
+    //   line >> bb7_fee;
+    // }
     else if (option == "ignorembsts")
     {
       line >> std::boolalpha >> ignorembsts;
@@ -137,6 +146,7 @@ void TAidaConfiguration::ReadConfiguration()
       }
       else {
         dssd[sub_DSSD - 1].DSSD = sub_DSSD;
+        dssd[sub_DSSD - 1].Type = 1; // set to regular AIDA by default
       }
     }
     else if (option == "top" && sub && sub_DSSD > 0)
@@ -191,6 +201,13 @@ void TAidaConfiguration::ReadConfiguration()
       line >> arg;
       dssd[sub_DSSD - 1].YSide = ParseSide(arg);
     }
+    else if (option == "full" && sub && sub_DSSD > 0)
+    {
+      // 1 FEE covers full BB7 layer (32 x 2 channels)
+      line >> dssd[sub_DSSD - 1].Full;
+      dssd[sub_DSSD - 1].Type = 2; // change to BB7 type if encountered
+    }
+
     else if (option == "scalers")
     {
       sub_Scaler = true;
@@ -474,6 +491,7 @@ void TAidaConfiguration::DSSDtoFEE()
       c4LOG(fatal, "At least one DSSD was not mapped to any FEEs in AIDA configuration");
       continue;
     }
+
     if (d.Top > FEEs()) {
       c4LOG(fatal, "DSSD top maps to invalid FEE: " << d.Top << " (Max fees: " << FEEs() << ")");
     }
@@ -486,6 +504,15 @@ void TAidaConfiguration::DSSDtoFEE()
     if (d.Left > FEEs()) {
       c4LOG(fatal, "DSSD left maps to invalid FEE: " << d.Left << " (Max fees: " << FEEs() << ")");
     }
+
+    if (d.Type == 2)
+    {
+      fee[d.Full - 1].DSSD = d.DSSD;
+      fee[d.Full - 1].Type = d.Type;
+      continue;
+    }
+
+
     fee[d.Top-1].DSSD = d.DSSD;
     fee[d.Top-1].High = true;
     fee[d.Top-1].Side = d.YSide;

@@ -2,13 +2,13 @@
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define AIDA_ON 1
-#define BPLAST_ON 1
-#define GERMANIUM_ON 1
+#define BPLAST_ON 0
+#define GERMANIUM_ON 0
 #define BGO_ON 0
-#define FRS_ON 1
+#define FRS_ON 0
 #define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
-#define WHITE_RABBIT_CORS 1
+#define WHITE_RABBIT_CORS 0
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 
@@ -43,7 +43,6 @@ void s101_tests()
 
     // Define important paths.
     //TString c4Root_path = "/u/jbormans/c4Root";
-    TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
     TString c4Root_path = "/u/cjones/c4Root";
     //TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + "s100" + "/" + "s100" + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
@@ -69,8 +68,10 @@ void s101_tests()
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     //TString filename = "stream://x86l-182"; // BGO
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
-    TString filename =  "~/lustre/gamma/s100_files/ts/162Eu_0075_0006.lmd";
+    // TString filename =  "~/lustre/gamma/s100_files/ts/162Eu_0075_0006.lmd";
     //TString filename = "~/lustre/gamma/nhubbard/162Eu_0052_TEST_0001.lmd";
+
+    TString filename  = "~/lustre/gamma/stacktest2024_files/ts/aidabplas_OUT_130125_new_0182.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 

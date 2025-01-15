@@ -4,8 +4,9 @@
 #---------------------------
 # Configuration
 #---------------------------
+# 3 DSSDs includes BB7
 FEEs: 16
-DSSDs: 2
+DSSDs: 3
 Wide: true
 
 #---------------------------
@@ -33,8 +34,8 @@ FrontBackEnergyL: 350
 #-------------------------
 Analysis:
 - ReduceNoise: false
-- ClusterImplants: false
-- ClusterDecays: false
+- ClusterImplants: true
+- ClusterDecays: true
 - Calibrate: false
 - ParallelCalibrate: false
 - HugeThreshold: 400
@@ -59,7 +60,7 @@ DSSD: 2
 - Top: 6
 - Bottom: 8
 - LeftLeft: 11
-- LeftRight: 10
+- LeftRight: 9
 - CentreLeft: 7
 - CentreRight: 14
 - RightLeft: 16
@@ -67,6 +68,10 @@ DSSD: 2
 - X: Junction
 - Y: Ohmic
 - MEC: false
+DSSD: 3
+- Full: 10
+- X: Junction
+- Y: Ohmic
 
 #---------------------------
 # Scaler Mapping

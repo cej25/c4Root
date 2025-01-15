@@ -540,6 +540,14 @@ void AidaOnlineSpectra::Exec(Option_t* option)
     bool implant_hredraw = false;
     for (auto const& hit : *implantHitArray)
     {
+        // hacky/stupid BB7 stuff for now
+        if (hit.DSSD > conf->DSSDs())
+        {
+            continue;
+        }
+
+
+
         h_implant_strip_xy[hit.DSSD - 1]->Fill(hit.StripX, hit.StripY);
         h_implant_pos_xy[hit.DSSD - 1]->Fill(hit.PosX, hit.PosY);
         h_implant_e[hit.DSSD - 1]->Fill(hit.Energy);
@@ -594,6 +602,12 @@ void AidaOnlineSpectra::Exec(Option_t* option)
     bool decay_hredraw = false;
     for (auto const& hit : *decayHitArray)
     {
+        // hacky/stupid BB7 stuff for now
+        if (hit.DSSD > conf->DSSDs())
+        {
+            continue;
+        }
+
         h_decay_strip_xy[hit.DSSD - 1]->Fill(hit.StripX, hit.StripY);
         h_decay_pos_xy[hit.DSSD - 1]->Fill(hit.PosX, hit.PosY);
         h_decay_e[hit.DSSD - 1]->Fill(hit.Energy);
@@ -623,6 +637,13 @@ void AidaOnlineSpectra::Exec(Option_t* option)
 
     for (auto const& event : *implantCalArray)
     {
+        // hacky/stupid BB7 stuff for now
+        if (event.DSSD() > conf->DSSDs())
+        {
+            continue;
+        }
+
+
         int offset = 0;
         if (event.Side() == conf->DSSD(event.DSSD() - 1).YSide)
             offset = conf->Wide() ? 386 : 128;
@@ -631,6 +652,12 @@ void AidaOnlineSpectra::Exec(Option_t* option)
     }
     for (auto const& event : *decayCalArray)
     {
+        // hacky/stupid BB7 stuff for now
+        if (event.DSSD() > conf->DSSDs())
+        {
+            continue;
+        }
+
         int offset = 0;
         if (event.Side() == conf->DSSD(event.DSSD() - 1).YSide)
             offset = conf->Wide() ? 386 : 128;

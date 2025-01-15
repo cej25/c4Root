@@ -20,6 +20,7 @@ enum WideAIDASegment
   Right
 };
 
+// type 1 = regular AIDA, type 2 = BB7
 struct DSSDConfiguration
 {
   int DSSD;
@@ -32,6 +33,8 @@ struct DSSDConfiguration
   int CentreLeft;
   int CentreRight;
   int RightLeft;
+  int Type;
+  int Full;
   // Side mapping
   DSSDSide XSide;
   DSSDSide YSide;
@@ -40,6 +43,7 @@ struct DSSDConfiguration
 struct FEEConfiguration
 {
   int DSSD;
+  int Type;
   DSSDSide Side;
   bool High;
   // Wide AIDA only data
@@ -56,6 +60,8 @@ public:
     int FEEs() const;
     int DSSDs() const;
     bool Wide() const;
+    bool BB7() const;
+    int BB7_FEE() const;
 
     bool AdjustADC() const;
     bool ucesb() const;
@@ -102,6 +108,8 @@ private:
     int fees;
     int dssds;
     bool wide;
+    bool bb7; // is bb7 layer in aida electronics?
+    int bb7_fee; // if so, what fee? for now 1 fee.. 
     bool adjustadc;
     bool useucesb;
     bool ignorembsts;
@@ -166,6 +174,16 @@ inline int TAidaConfiguration::DSSDs() const
 inline bool TAidaConfiguration::Wide() const
 {
   return wide;
+}
+
+inline bool TAidaConfiguration::BB7() const
+{
+  return bb7;
+}
+
+inline int TAidaConfiguration::BB7_FEE() const
+{
+  return bb7_fee;
 }
 
 inline bool TAidaConfiguration::AdjustADC() const
