@@ -310,6 +310,37 @@ void FatimaRaw2Cal::Exec(Option_t* option)
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
     total_time_microsecs += duration.count();
+
+
+
+    if (ApplyMultiplicityCondition && fcal_data){
+        FairRunOnline * run = FairRunOnline::Instance();
+        run->MarkFill(false);
+        int mult = CountMultiplicity(fcal_data);
+        if (mult >= MultiplicityGate) run->MarkFill(true);
+    }
+}
+
+int FatimaRaw2Cal::CountMultiplicity(TClonesArray * fcal){
+    //finds the maximum multiplicity hit in the data structure
+    int max_multiplicty = 0;
+    for (int i = 0; i<fcal->GetEntries(); i++){
+        FatimaTwinpeaksCalData * f = (FatimaTwinpeaksCalData*)fcal->At(i);
+        if (fatima_configuration->IsDetectorAuxilliary(f->Get_detector_id())) continue;
+
+        int multiplicty = 1;
+        for (int j = 0; j<fcal->GetEntries(); j++){
+            if (j == i) continue;
+            FatimaTwinpeaksCalData * g = (FatimaTwinpeaksCalData*)fcal->At(j);
+            if (fatima_configuration->IsDetectorAuxilliary(g->Get_detector_id())) continue;             
+
+            if (TMath::Abs((double)((int64_t)f->Get_fast_lead_epoch() - (int64_t)g->Get_fast_lead_epoch()) + (f->Get_fast_lead_time() - g->Get_fast_lead_time()))<1e3){
+                multiplicty ++;
+            }
+        }
+        if (multiplicty > max_multiplicty) max_multiplicty = multiplicty;
+    }
+    return max_multiplicty;
 }
 
 /*

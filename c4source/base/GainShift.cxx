@@ -35,6 +35,10 @@ double GainShift::GetGain(uint64_t wr_t){
 void GainShift::ReadGainShiftFile(){
     TFile * infile = new TFile(file_name,"READ");
 
+    if (!infile->IsOpen()) {
+        c4LOG(fatal,Form("Reading file %s failed!",histogram_name,file_name));
+    }
+
     infile->GetObject(histogram_name,gain_shifts);
 
     if (gain_shifts == nullptr){
