@@ -219,13 +219,14 @@ double radware_fit(Double_t * x, Double_t * p){
     // p(6) bg offset, p(7) bg lin
 
     double x0 = (x[0] - p[1])/p[2];
-    double g1 = p[0]/(TMath::Sqrt(2*TMath::Pi()*p[2]*p[2]))*TMath::Exp(-x0*x0/2);
+    
+    double g1 = p[0]*TMath::Exp(-x0*x0/2);
     
     //y = constant * EXP( (x-c)/beta ) * ERFC( (x-c)/(SQRT(2)*sigma) + sigma/(SQRT(2)*beta) ) 
-    double s2 = p[3]*TMath::Exp((x[0]-p[1])/p[4])*TMath::Erfc((x[0]-p[1])/(p[2]*TMath::Sqrt(2)) + p[2]/(TMath::Sqrt(2)*p[4]));
+    double s2 = (p[3]*p[0])*TMath::Exp((x[0]-p[1])/p[4])*TMath::Erfc((x[0]-p[1])/(p[2]*TMath::Sqrt(2)) + p[2]/(TMath::Sqrt(2)*p[4]));
 
     //y = constant * ERFC( (x-c)/(SQRT(2)*sigma) ) 
-    double s3 = p[5]*TMath::Erfc(x0/TMath::Sqrt(2));
+    double s3 = (p[5]*p[0])*TMath::Erfc(x0/TMath::Sqrt(2));
 
 
     double bg = p[6] + x[0]*p[7];
@@ -432,12 +433,14 @@ void GermaniumLabTest::StopTest(int vector_index){
 
 void GermaniumLabTest::Exec(Option_t* option){
     
-    bool plot_trace = false;
-    if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - last_trace_plotted).count() > 1){
-        plot_trace = true;
-        last_trace_plotted = std::chrono::steady_clock::now();
-    }
 
+    
+    bool plot_trace = true;
+    /*
+    if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - last_trace_plotted).count() > 0.5){
+        plot_trace = true;
+    }
+    */
 
     if (fHitGeUncal && fHitGeUncal->GetEntriesFast() > 0){
 
@@ -458,11 +461,14 @@ void GermaniumLabTest::Exec(Option_t* option){
             int32_t channel_energy1 = hit1->Get_channel_energy();
             uint16_t wr_subsystem_id1 = hit1->Get_wr_subsystem_id();
             uint64_t wr_t1 = hit1->Get_wr_t();
+            
+            int vector_index_this_hit = GetVectorIndex(board_id1,channel_id1);
 
-            if (plot_trace){
+            if (vector_index_this_hit  >= 0 && plot_trace && fit_low_limit_1332.at(vector_index_this_hit) < channel_energy1 && fit_high_limit_1332.at(vector_index_this_hit) > channel_energy1 ){
                 h1_germanium_trace[board_id1*16 + channel_id1]->Reset();
                 for (int trace_index = 0; trace_index < trace_length_plot; trace_index ++){
                     h1_germanium_trace[board_id1*16 + channel_id1]->SetBinContent(trace_index+1, hit1->Get_trace_value(trace_index));
+                    h1_germanium_trace[board_id1*16 + channel_id1]->SetTitle(Form("Trace energy = %3f (*1000)",channel_energy1/1e3));
                 }
             }
 
@@ -473,7 +479,6 @@ void GermaniumLabTest::Exec(Option_t* option){
 
             h1_germanium_raw[board_id1*16 + channel_id1]->Fill(channel_energy1);
 
-            int vector_index_this_hit = GetVectorIndex(board_id1,channel_id1);
             if (vector_index_this_hit < 0) continue;
             
             if (!test_paused.at(vector_index_this_hit) && !test_finished.at(vector_index_this_hit)){
@@ -493,7 +498,7 @@ void GermaniumLabTest::Exec(Option_t* option){
 void GermaniumLabTest::FitPeak(int vector_index){
     c4LOG_IF(fatal, vector_index >= active_channels_indexes.size(), "Wrong index");
     
-    TString fitfunctionname = "skewedgausbg";
+    TString fitfunctionname = "radwarefunc";
 
     if (fitfunc_1173.at(vector_index) == nullptr) fitfunc_1173.at(vector_index) = MakeFitFunc(fitfunctionname,vector_index);
     if (fitfunc_1332.at(vector_index) == nullptr) fitfunc_1332.at(vector_index) = MakeFitFunc(fitfunctionname,vector_index);
@@ -503,13 +508,16 @@ void GermaniumLabTest::FitPeak(int vector_index){
     
     TF1 * simple_gaus = new TF1("gaus","gaus",0,1);
     simple_gaus->SetRange(fit_low_limit_1173.at(vector_index),fit_high_limit_1173.at(vector_index));
+
     h1_germanium_uncal[active_channels_indexes.at(vector_index)]->Fit(simple_gaus,"QRN");
+    fitfunc_1173.at(vector_index)->SetParLimits(0, simple_gaus->GetParameter(0)*0.5, simple_gaus->GetParameter(0));
     fitfunc_1173.at(vector_index)->SetParameter(0, simple_gaus->GetParameter(0));
-    fitfunc_1173.at(vector_index)->SetParLimits(0,0, 1e6*simple_gaus->GetParameter(0));
-    fitfunc_1173.at(vector_index)->SetParameter(1, simple_gaus->GetParameter(1));
-    fitfunc_1173.at(vector_index)->SetParLimits(1,simple_gaus->GetParameter(1)*0.9,simple_gaus->GetParameter(1)*1.1);
-    fitfunc_1173.at(vector_index)->SetParameter(2, simple_gaus->GetParameter(2));
-    fitfunc_1173.at(vector_index)->SetParLimits(2,1, 10*simple_gaus->GetParameter(2));
+
+    fitfunc_1173.at(vector_index)->SetParLimits(1,simple_gaus->GetParameter(1)*0.5, simple_gaus->GetParameter(1)*1.5);
+    fitfunc_1173.at(vector_index)->SetParameter(1,simple_gaus->GetParameter(1));
+    
+    fitfunc_1173.at(vector_index)->SetParLimits(2,simple_gaus->GetParameter(2)*0.5, simple_gaus->GetParameter(2)*1.5);
+    fitfunc_1173.at(vector_index)->SetParameter(2,simple_gaus->GetParameter(2));
     //
     if (fitfunctionname == "skewedgausbg"){
         double xmin = fit_low_limit_1173.at(vector_index);
@@ -538,13 +546,13 @@ void GermaniumLabTest::FitPeak(int vector_index){
 
 
         fitfunc_1173.at(vector_index)->SetParameter(3, 0); // area
-        fitfunc_1173.at(vector_index)->SetParLimits(3, 0, simple_gaus->GetParameter(0)*0.5);
+        fitfunc_1173.at(vector_index)->SetParLimits(3, 0, 1e6);
 
-        fitfunc_1173.at(vector_index)->SetParameter(4, 0); // beta
-        fitfunc_1173.at(vector_index)->SetParLimits(4, 0, 10);
+        fitfunc_1173.at(vector_index)->SetParameter(4, 1e4); // beta
+        fitfunc_1173.at(vector_index)->SetParLimits(4, 1, 1e6);
 
         fitfunc_1173.at(vector_index)->SetParameter(5, 0); // step
-        fitfunc_1173.at(vector_index)->SetParLimits(5, 0, simple_gaus->GetParameter(0)*0.5);
+        fitfunc_1173.at(vector_index)->SetParLimits(5, 0, 1);
 
         fitfunc_1173.at(vector_index)->SetParameter(6, p0guess);
         fitfunc_1173.at(vector_index)->SetParameter(7, p1guess);
@@ -557,12 +565,15 @@ void GermaniumLabTest::FitPeak(int vector_index){
     
     simple_gaus->SetRange(fit_low_limit_1332.at(vector_index),fit_high_limit_1332.at(vector_index));
     h1_germanium_uncal[active_channels_indexes.at(vector_index)]->Fit(simple_gaus,"QRN");
+
+    fitfunc_1332.at(vector_index)->SetParLimits(0, simple_gaus->GetParameter(0)*0.5, simple_gaus->GetParameter(0));
     fitfunc_1332.at(vector_index)->SetParameter(0, simple_gaus->GetParameter(0));
-    fitfunc_1332.at(vector_index)->SetParLimits(0,0, 1e6*simple_gaus->GetParameter(0));
-    fitfunc_1332.at(vector_index)->SetParameter(1, simple_gaus->GetParameter(1));
-    fitfunc_1332.at(vector_index)->SetParLimits(1,simple_gaus->GetParameter(1)*0.9,simple_gaus->GetParameter(1)*1.1);
-    fitfunc_1332.at(vector_index)->SetParameter(2, simple_gaus->GetParameter(2));
-    fitfunc_1332.at(vector_index)->SetParLimits(2,1, 10*simple_gaus->GetParameter(2));
+
+    fitfunc_1332.at(vector_index)->SetParLimits(1,simple_gaus->GetParameter(1)*0.5, simple_gaus->GetParameter(1)*1.5);
+    fitfunc_1332.at(vector_index)->SetParameter(1,simple_gaus->GetParameter(1));
+    
+    fitfunc_1332.at(vector_index)->SetParLimits(2,simple_gaus->GetParameter(2)*0.5, simple_gaus->GetParameter(2)*1.5);
+    fitfunc_1332.at(vector_index)->SetParameter(2,simple_gaus->GetParameter(2));
 
     if (fitfunctionname == "skewedgausbg"){
         double xmin = fit_low_limit_1332.at(vector_index);
@@ -591,13 +602,13 @@ void GermaniumLabTest::FitPeak(int vector_index){
 
 
         fitfunc_1332.at(vector_index)->SetParameter(3, 0); // area
-        fitfunc_1332.at(vector_index)->SetParLimits(3, 0, simple_gaus->GetParameter(0)*0.5);
+        fitfunc_1332.at(vector_index)->SetParLimits(3, 0, 1e6);
 
-        fitfunc_1332.at(vector_index)->SetParameter(4, 0); // beta
-        fitfunc_1332.at(vector_index)->SetParLimits(4, 0, 10);
+        fitfunc_1332.at(vector_index)->SetParameter(4, 1e4); // beta
+        fitfunc_1332.at(vector_index)->SetParLimits(4, 1, 1e6);
 
         fitfunc_1332.at(vector_index)->SetParameter(5, 0); // step
-        fitfunc_1332.at(vector_index)->SetParLimits(5, 0, simple_gaus->GetParameter(0)*0.5);
+        fitfunc_1332.at(vector_index)->SetParLimits(5, 0, 1);
 
         fitfunc_1332.at(vector_index)->SetParameter(6, p0guess);
         fitfunc_1332.at(vector_index)->SetParameter(7, p1guess);

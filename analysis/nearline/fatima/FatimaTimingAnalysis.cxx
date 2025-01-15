@@ -170,6 +170,7 @@ void FatimaTimingAnalysis::Exec(Option_t* option)
                         // det2 is stop
                         // det2 > det1
                         // here det1 is i and det2 is j
+                        
 
                         h_energy_E1_E2_dt[index1][index2]->Fill(- dt - timeshift_to_apply);
                         }

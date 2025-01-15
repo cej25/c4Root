@@ -66,8 +66,8 @@ class GermaniumLabTest : public FairTask
         void SetLog(int vector_index);
         void SetTraceLengthPlot(int v){trace_length_plot = v;}
 
-
-    
+        void SetBinning(int uncal_nbins, int uncal_bin_low, int uncal_bin_high) {funcal_nbins = uncal_nbins; funcal_bin_low = uncal_bin_low; funcal_bin_high = uncal_bin_high;}
+     
     private:
         TClonesArray* fHitGeUncal;
 

@@ -3,6 +3,7 @@
 
 #include "FairTask.h"
 #include "TFatimaTwinpeaksConfiguration.h"
+#include "TClonesArray.h"
 
 class TClonesArray;
 class EventHeader;
@@ -32,6 +33,10 @@ class FatimaRaw2Cal : public FairTask
         virtual void SetParContainers();
 
         virtual InitStatus Init();
+
+        void SetMultiplicityFilter(bool v, int s){ApplyMultiplicityCondition = v; MultiplicityGate = s;}
+
+        int CountMultiplicity(TClonesArray *);
 
 
     private:
@@ -68,6 +73,9 @@ class FatimaRaw2Cal : public FairTask
         uint64_t absolute_event_time;
 
         double energy;
+
+        bool ApplyMultiplicityCondition = false;
+        int MultiplicityGate = 2;
 
         int fNunmatched = 0;
 
