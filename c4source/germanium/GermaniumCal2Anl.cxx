@@ -189,6 +189,7 @@ void GermaniumCal2Anl::Exec(Option_t* option){
             }
 
             new ((*fanl_ge_data)[fanl_ge_data->GetEntriesFast()]) GermaniumCalData(
+                    fcal_ge_hit->Get_trigger(),
                     fcal_ge_hit->Get_event_trigger_time(),
                     fcal_ge_hit->Get_pileup(),
                     fcal_ge_hit->Get_overflow(),

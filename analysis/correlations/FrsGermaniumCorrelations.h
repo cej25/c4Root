@@ -5,7 +5,6 @@
 
 #include "TGermaniumConfiguration.h"
 #include "FrsHitData.h"
-#include "FrsMainCalData.h"
 #include "TFrsConfiguration.h"
 
 class TClonesArray;
@@ -84,7 +83,6 @@ class FrsGermaniumCorrelations : public FairTask
 
         std::vector<FrsHitItem> const* hitArrayFrs;
         std::vector<FrsMultiHitItem> const* multihitArrayFrs;
-        std::vector<FrsMainCalSciItem> const* mainSciArray;
 
         TString input_anl_or_cal = "Cal";
 

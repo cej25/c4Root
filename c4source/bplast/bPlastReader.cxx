@@ -328,21 +328,27 @@ Bool_t bPlastReader::Read() //do fine time here:
         {
             //std::cout << "here we print trig = 3!" << std::endl;
             // create new structure for trig 3 events perhaps
-            new ((*fArray)[fArray->GetEntriesFast()]) bPlastTwinpeaksData(
+            
+                new ((*fArray)[fArray->GetEntriesFast()]) bPlastTwinpeaksData(
                     trig,
                     it_board_number,
                     0,
-                    //last_hits[it_board_number][channelid-1].lead_epoch_counter,
-                    0,
-                    //last_hits[it_board_number][channelid-1].lead_coarse_T,
-                    0,
-                    //last_hits[it_board_number][channelid-1].lead_fine_T,
                     0,
                     0,
                     0,
                     0,
+
+                    0,
+                    0,
+                    0,
+
+                    0,
+                    0,
+                    0,
+                    
                     fData->bplast_ts_subsystem_id,
-                    wr_t);
+                    wr_t //+ 0*( (((int64_t)previous_epoch_word)*10.24e3 + ((int64_t)coarse_T)*5.0 - (int64_t)fine_T) - accepted_trigger_time) // corrected by the time difference to the acc trigger time
+                );
         }
 
         if (fData->bplast_tamex[it_board_number].event_size == 0) continue; // empty event skip

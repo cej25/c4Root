@@ -144,7 +144,6 @@ bool FrsGate::Passed_dEdegvsZ(double Z, double dEdeg)
     return passed_gate_cut_dEdeg_Z;
 }
 
-<<<<<<< HEAD
 bool FrsGate::Passed_sci42EvsZ(double Z, double sci42E)
 {
     bool passed_gate_cut_sci42E_Z = false;
@@ -154,7 +153,6 @@ bool FrsGate::Passed_sci42EvsZ(double Z, double sci42E)
     return passed_gate_cut_sci42E_Z;
 }
 
-=======
 bool FrsGate::Passed_ZvsAoQ_driftcorr(double Z_driftcorr, double AoQ_driftcorr)
 {
     bool passed_gate_cut_Z_AoQ_driftcorr = false;
@@ -165,5 +163,4 @@ bool FrsGate::Passed_ZvsAoQ_driftcorr(double Z_driftcorr, double AoQ_driftcorr)
 }
 
 
->>>>>>> main
 ClassImp(FrsGate)

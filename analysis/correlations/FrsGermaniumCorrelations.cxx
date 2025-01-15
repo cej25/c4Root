@@ -102,10 +102,7 @@ InitStatus FrsGermaniumCorrelations::Init()
     multihitArrayFrs = mgr->InitObjectAs<decltype(multihitArrayFrs)>("FrsMultiHitData");
     c4LOG_IF(fatal, !multihitArrayFrs, "Branch FrsHitData not found!");
 
-    //Multihit vetos:
-    mainSciArray = mgr->InitObjectAs<decltype(mainSciArray)>("FrsMainCalSciData");
-    c4LOG_IF(fatal, !mainSciArray, "Branch FrsMainCalSciData not found!");
-
+    
     
     
     histograms = (TFolder*)mgr->GetObject("Histograms");
@@ -147,8 +144,8 @@ InitStatus FrsGermaniumCorrelations::Init()
     g_frs_rate->SetTitle(TString("FRS identified ions per second, avg 60 secs"));
     g_frs_rate->GetXaxis()->SetTitle("seconds");
     g_frs_rate->Draw("ALP");
-    dir_germanium->Append(c_frs_rate);
-    //dir_germanium->Add(g_frs_rate);
+    dir_frs_ge_corr->Append(c_frs_rate);
+    //dir_frs_ge_corr->Add(g_frs_rate);
 
     c_frs_total = new TCanvas(TString("c_frs_germanium_total_monitor_gated_")+frsgate->GetName(),TString("Implanted total ions gated on ")+frsgate->GetName());
     g_frs_total = new TGraph();
@@ -156,8 +153,8 @@ InitStatus FrsGermaniumCorrelations::Init()
     g_frs_total->SetTitle(TString("FRS identified ions in total"));
     g_frs_total->GetXaxis()->SetTitle("seconds");
     g_frs_total->Draw("ALP");
-    dir_germanium->Append(c_frs_total);
-    //dir_germanium->Add(g_frs_total);
+    dir_frs_ge_corr->Append(c_frs_total);
+    //dir_frs_ge_corr->Add(g_frs_total);
 
     c_frs_Z_vs_AoQ_gated = new TCanvas(TString("c_frs_germanium_Z_vs_AoQ_gated_")+frsgate->GetName(),TString("Z vs AoQ plot gated on FRS ")+frsgate->GetName());
     h2_frs_Z_vs_AoQ_gated = new TH2F(TString("h2_frs_germanium_Z_vs_AoQ_gated_")+frsgate->GetName(),TString("Z vs AoQ plot gated on FRS ")+frsgate->GetName(),1000,frs_configuration->fMin_AoQ,frs_configuration->fMax_AoQ,1000,frs_configuration->fMin_Z,frs_configuration->fMax_Z);
@@ -165,8 +162,8 @@ InitStatus FrsGermaniumCorrelations::Init()
     h2_frs_Z_vs_AoQ_gated->GetYaxis()->SetTitle("Z");
     h2_frs_Z_vs_AoQ_gated->Draw("COLZ");
     c_frs_Z_vs_AoQ_gated->cd(0);
-    dir_germanium->Append(c_frs_Z_vs_AoQ_gated);
-    //dir_germanium->Add(h2_frs_Z_vs_AoQ_gated);
+    dir_frs_ge_corr->Append(c_frs_Z_vs_AoQ_gated);
+    //dir_frs_ge_corr->Add(h2_frs_Z_vs_AoQ_gated);
 
     c_frs_Z_vs_Z2_gated = new TCanvas(TString("c_frs_germanium_Z_vs_Z2_gated_")+frsgate->GetName(),TString("Z1 vs Z2 plot gated on FRS ")+frsgate->GetName());
     h2_frs_Z_vs_Z2_gated = new TH2F(TString("h2_frs_germanium_Z_vs_Z2_gated_")+frsgate->GetName(),TString("Z1 vs Z2 plot gated on FRS ")+frsgate->GetName(),1000,frs_configuration->fMin_Z,frs_configuration->fMax_Z,1000,frs_configuration->fMin_Z,frs_configuration->fMax_Z);
@@ -174,8 +171,8 @@ InitStatus FrsGermaniumCorrelations::Init()
     h2_frs_Z_vs_Z2_gated->GetYaxis()->SetTitle("Z2");
     h2_frs_Z_vs_Z2_gated->Draw("COLZ");
     c_frs_Z_vs_Z2_gated->cd(0);
-    dir_germanium->Append(c_frs_Z_vs_Z2_gated);
-    //dir_germanium->Add(h2_frs_Z_vs_Z2_gated);
+    dir_frs_ge_corr->Append(c_frs_Z_vs_Z2_gated);
+    //dir_frs_ge_corr->Add(h2_frs_Z_vs_Z2_gated);
 
 
     c_frs_x2_vs_AoQ_gated = new TCanvas(TString("c_frs_germanium_x2_vs_AoQ_gated_")+frsgate->GetName(),TString("x2 vs AoQ plot gated on FRS ")+frsgate->GetName());
@@ -184,8 +181,8 @@ InitStatus FrsGermaniumCorrelations::Init()
     h2_frs_x2_vs_AoQ_gated->GetXaxis()->SetTitle("A/Q");
     h2_frs_x2_vs_AoQ_gated->Draw("COLZ");
     c_frs_x2_vs_AoQ_gated->cd(0);
-    dir_germanium->Append(c_frs_x2_vs_AoQ_gated);
-    //dir_germanium->Add(h2_frs_x2_vs_AoQ_gated);
+    dir_frs_ge_corr->Append(c_frs_x2_vs_AoQ_gated);
+    //dir_frs_ge_corr->Add(h2_frs_x2_vs_AoQ_gated);
 
     c_frs_x4_vs_AoQ_gated = new TCanvas(TString("c_frs_germanium_x4_vs_AoQ_gated_")+frsgate->GetName(),TString("x4 vs AoQ plot gated on FRS ")+frsgate->GetName());
     h2_frs_x4_vs_AoQ_gated = new TH2F(TString("h2_frs_germanium_x4_vs_AoQ_gated_")+frsgate->GetName(),TString("x4 vs AoQ plot gated on FRS ")+frsgate->GetName(),1000,frs_configuration->fMin_AoQ,frs_configuration->fMax_AoQ,1000,frs_configuration->fMin_x4,frs_configuration->fMax_x4);
@@ -193,8 +190,8 @@ InitStatus FrsGermaniumCorrelations::Init()
     h2_frs_x4_vs_AoQ_gated->GetYaxis()->SetTitle("x4");
     h2_frs_x4_vs_AoQ_gated->Draw("COLZ");
     c_frs_x4_vs_AoQ_gated->cd(0);
-    dir_germanium->Append(c_frs_x4_vs_AoQ_gated);
-   // dir_germanium->Add(h2_frs_x4_vs_AoQ_gated);
+    dir_frs_ge_corr->Append(c_frs_x4_vs_AoQ_gated);
+   // dir_frs_ge_corr->Add(h2_frs_x4_vs_AoQ_gated);
 
 
     c_frs_Z_vs_dEdeg_gated = new TCanvas(TString("c_frs_germanium_Z_vs_dEdeg_gated_")+frsgate->GetName(),TString("Z vs dEdeg plot gated on FRS ")+frsgate->GetName());
@@ -203,8 +200,8 @@ InitStatus FrsGermaniumCorrelations::Init()
     h2_frs_Z_vs_dEdeg_gated->GetYaxis()->SetTitle("Z");
     h2_frs_Z_vs_dEdeg_gated->Draw("COLZ");
     c_frs_Z_vs_dEdeg_gated->cd(0);
-    dir_germanium->Append(c_frs_Z_vs_dEdeg_gated);
-    //dir_germanium->Add(h2_frs_Z_vs_dEdeg_gated);
+    dir_frs_ge_corr->Append(c_frs_Z_vs_dEdeg_gated);
+    //dir_frs_ge_corr->Add(h2_frs_Z_vs_dEdeg_gated);
 
 
     c_frs_Z_vs_sci42E_gated = new TCanvas(TString("c_frs_germanium_Z_vs_sci42E_gated_")+frsgate->GetName(),TString("Z vs sci42 E plot gated on FRS ")+frsgate->GetName());
@@ -213,8 +210,8 @@ InitStatus FrsGermaniumCorrelations::Init()
     h2_frs_Z_vs_sci42E_gated->GetYaxis()->SetTitle("Z");
     h2_frs_Z_vs_sci42E_gated->Draw("COLZ");
     c_frs_Z_vs_sci42E_gated->cd(0);
-    dir_germanium->Append(c_frs_Z_vs_sci42E_gated);
-    //dir_germanium->Add(h2_frs_Z_vs_sci42E_gated);
+    dir_frs_ge_corr->Append(c_frs_Z_vs_sci42E_gated);
+    //dir_frs_ge_corr->Add(h2_frs_Z_vs_sci42E_gated);
 
 
     
@@ -224,8 +221,8 @@ InitStatus FrsGermaniumCorrelations::Init()
     h2_germanium_energy_vs_tsci41->GetYaxis()->SetTitle("energy (keV)");
     h2_germanium_energy_vs_tsci41->Draw("COLZ");
     c_germanium_energy_vs_tsci41->cd(0);
-    dir_germanium->Append(c_germanium_energy_vs_tsci41);
-    //dir_germanium->Add(h2_germanium_energy_vs_tsci41);
+    dir_frs_ge_corr->Append(c_germanium_energy_vs_tsci41);
+    //dir_frs_ge_corr->Add(h2_germanium_energy_vs_tsci41);
 
     
     c_germanium_energy_promptflash_cut = new TCanvas(TString("c_germanium_energy_promptflash_cut_frs_gate_"+frsgate->GetName()),TString("Germanium energy, prompt flash cut out, short lifetime, gated FRS on "+frsgate->GetName()),650,350);
@@ -233,8 +230,8 @@ InitStatus FrsGermaniumCorrelations::Init()
     h1_germanium_energy_promptflash_cut->GetXaxis()->SetTitle("energy (keV)");
     h1_germanium_energy_promptflash_cut->Draw("COLZ");
     c_germanium_energy_promptflash_cut->cd(0);
-    dir_germanium->Append(c_germanium_energy_promptflash_cut);
-    //dir_germanium->Add(h1_germanium_energy_promptflash_cut);
+    dir_frs_ge_corr->Append(c_germanium_energy_promptflash_cut);
+    //dir_frs_ge_corr->Add(h1_germanium_energy_promptflash_cut);
 
 
     
@@ -244,8 +241,8 @@ InitStatus FrsGermaniumCorrelations::Init()
     h2_germanium_energy_energy_promptflash_cut->GetYaxis()->SetTitle("energy (keV)");
     h2_germanium_energy_energy_promptflash_cut->Draw("COLZ");
     c_germanium_energy_energy_promptflash_cut->cd(0);
-    dir_germanium->Append(c_germanium_energy_energy_promptflash_cut);
-    //dir_germanium->Add(h2_germanium_energy_energy_promptflash_cut);
+    dir_frs_ge_corr->Append(c_germanium_energy_energy_promptflash_cut);
+    //dir_frs_ge_corr->Add(h2_germanium_energy_energy_promptflash_cut);
 
 
 
@@ -256,8 +253,8 @@ InitStatus FrsGermaniumCorrelations::Init()
     h2_germanium_energy_vs_sci41_wr_long->GetYaxis()->SetTitle("energy (keV)");
     h2_germanium_energy_vs_sci41_wr_long->Draw("COLZ");
     c_germanium_energy_vs_sci41_wr_long->cd(0);
-    dir_germanium->Append(c_germanium_energy_vs_sci41_wr_long);
-    //dir_germanium->Add(h2_germanium_energy_vs_sci41_wr_long);
+    dir_frs_ge_corr->Append(c_germanium_energy_vs_sci41_wr_long);
+    //dir_frs_ge_corr->Add(h2_germanium_energy_vs_sci41_wr_long);
 
     
     c_germanium_energy_promptflash_cut_long = new TCanvas(TString("c_germanium_energy_promptflash_cut_long_frs_gate_"+frsgate->GetName()),TString("Germanium energy, prompt flash cut out, long lifetime, gated FRS on "+frsgate->GetName()),650,350);
@@ -265,8 +262,8 @@ InitStatus FrsGermaniumCorrelations::Init()
     h1_germanium_energy_promptflash_cut_long->GetXaxis()->SetTitle("energy (keV)");
     h1_germanium_energy_promptflash_cut_long->Draw("COLZ");
     c_germanium_energy_promptflash_cut_long->cd(0);
-    dir_germanium->Append(c_germanium_energy_promptflash_cut_long);
-    //dir_germanium->Add(h1_germanium_energy_promptflash_cut_long);
+    dir_frs_ge_corr->Append(c_germanium_energy_promptflash_cut_long);
+    //dir_frs_ge_corr->Add(h1_germanium_energy_promptflash_cut_long);
 
     c_germanium_energy_energy_promptflash_cut_long = new TCanvas(TString("c_germanium_energy_energy_promptflash_cut_long_frs_gate_"+frsgate->GetName()),TString(Form("Germanium energy vs energy, |t(det1)-t(det2)|<%i ns, prompt flash cut out, long lifetime, gated FRS on ",germanium_coincidence_gate)+frsgate->GetName()),650,350);
     h2_germanium_energy_energy_promptflash_cut_long = new TH2F(TString("h2_germanium_energy_energy_promptflash_cut_long_frs_gate_"+frsgate->GetName()),TString(Form("Germanium energy vs energy, |t(det1)-t(det2)|<%i ns, prompt flash cut out, long lifetime, gated FRS on ",germanium_coincidence_gate)+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
@@ -274,12 +271,12 @@ InitStatus FrsGermaniumCorrelations::Init()
     h2_germanium_energy_energy_promptflash_cut_long->GetYaxis()->SetTitle("energy (keV)");
     h2_germanium_energy_energy_promptflash_cut_long->Draw("COLZ");
     c_germanium_energy_energy_promptflash_cut_long->cd(0);
-    dir_germanium->Append(c_germanium_energy_energy_promptflash_cut_long);
-    //dir_germanium->Add(h2_germanium_energy_energy_promptflash_cut_long);
+    dir_frs_ge_corr->Append(c_germanium_energy_energy_promptflash_cut_long);
+    //dir_frs_ge_corr->Add(h2_germanium_energy_energy_promptflash_cut_long);
     
 
     //energy-gated spectra:
-    dir_energy_gated = new TDirectory*[gamma_energies_of_interest.size()];
+    folder_energy_gated = new TFolder*[gamma_energies_of_interest.size()];
 
     c_germanium_tsci41_energy_gated = new TCanvas*[gamma_energies_of_interest.size()];
     h1_germanium_tsci41_energy_gated = new TH1F*[gamma_energies_of_interest.size()];
@@ -403,7 +400,7 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
     double ID_z = frshit.Get_ID_z();
     double ID_z2 = frshit.Get_ID_z2();
     double ID_dEdeg = frshit.Get_ID_dEdeg();
-    double ID_sci42E = frshit.Get_sci_e(3);
+    double ID_sci42E = frshit.Get_sci_e_42();
 
     
     // this must pass all gates given to FrsGate:
@@ -508,9 +505,9 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
             double time1 = hit1->Get_channel_trigger_time();
             int crystal_index1 = std::distance(crystals_to_plot.begin(), std::find(crystals_to_plot.begin(),crystals_to_plot.end(),std::pair<int,int>(detector_id1,crystal_id1)));
 
-            if (wr_t > 0)
+            if (wr_t_last_frs_hit > 0)
             {
-                int64_t dt = hit1->Get_absolute_event_time() - wr_t;
+                int64_t dt = hit1->Get_absolute_event_time() - wr_t_last_frs_hit;
                 h1_ge_time_ref_frs_wr[crystal_index1]->Fill(dt);
             }
 
@@ -718,7 +715,7 @@ void FrsGermaniumCorrelations::FinishTask()
 
     if (fHitGe)
     {
-        //dir_germanium->Write();
+        //dir_frs_ge_corr->Write();
         c4LOG(info, "DEGAS histograms written to file.");
     }
 }

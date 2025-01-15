@@ -218,7 +218,10 @@ FEBEX_EVENT_TRACES(card)
             }
         }
 
-            list (0 <= i < 16)
+        //::: Trace :::
+        list (0 <= i < (((channel_size.size) / 4) - 1))
+        {
+            UINT32 header NOENCODE
             {
                 0_7: 0x34;
                 8_23: other;

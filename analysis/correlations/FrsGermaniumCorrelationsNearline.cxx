@@ -337,7 +337,7 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
     ID_z = frshit.Get_ID_z();
     ID_z2 = frshit.Get_ID_z2();
     ID_dEdeg = frshit.Get_ID_dEdeg();
-    ID_sci42E = frshit.Get_sci_e(3);
+    ID_sci42E = frshit.Get_sci_e_42();
 
     // this must pass all gates given to FrsGate:
     positive_PID = frsgate->PassedGate(ID_z, ID_z2, ID_x2, ID_x4, ID_AoQ, ID_dEdeg, ID_sci42E);

@@ -8,6 +8,7 @@
 #include "FrsCalData.h"
 #include "FrsHitData.h"
 #include "EventHeader.h"
+#include "GainShift.h"
 
 #include "FairTask.h"
 #include <TRandom3.h>
@@ -228,8 +229,12 @@ class FrsCal2Hit : public FairTask
 
         // ::: SCI MHTDC ::: //
         Int_t hits_in_21lr = 0;
+        Int_t hits_in_21l = 0;
         Int_t hits_in_21r = 0;
+        Int_t hits_in_22l = 0;
+        Int_t hits_in_22r = 0;
         Int_t hits_in_22lr = 0;
+        Int_t hits_in_tof4221 = 0;
         Int_t hits_in_tof4121 = 0;
         Int_t hits_in_tof4122 = 0;
 
@@ -344,6 +349,8 @@ class FrsCal2Hit : public FairTask
         Float_t* id_mhtdc_v_cor_music42 = nullptr;
         Float_t* id_mhtdc_dEdegoQ = nullptr;
         Float_t* id_mhtdc_gamma_ta_s2 = nullptr;
+        Float_t* id_mhtdc_rho0 = nullptr;
+        Float_t* id_mhtdc_brho0 = nullptr;
         Float_t* mhtdc_gamma1square = nullptr;
         Float_t* id_mhtdc_dEdeg = nullptr;
 

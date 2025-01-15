@@ -5,7 +5,6 @@
 
 #include "TFatimaTwinpeaksConfiguration.h"
 #include "TFrsConfiguration.h"
-#include "FrsMainCalData.h"
 #include "FrsHitData.h"
 
 class TClonesArray;
@@ -92,7 +91,6 @@ class FrsFatimaCorrelations : public FairTask
 
         std::vector<FrsHitItem> const* hitArrayFrs;
         std::vector<FrsMultiHitItem> const* multihitArrayFrs;
-        std::vector<FrsMainCalSciItem> const* mainSciArray;
 
 
         const TFatimaTwinpeaksConfiguration * fatima_configuration;
@@ -271,17 +269,11 @@ class FrsFatimaCorrelations : public FairTask
 
 
         // Folder and files
-<<<<<<< HEAD
-        TFolder * histograms;
-        TDirectory* dir_fatima;
-        TDirectory ** dir_energy_gated;
-=======
         TFolder* histograms;
         TDirectory* dir_corr;
         TDirectory* dir_fatima;
         TDirectory** dir_energy_gated;
 
->>>>>>> main
 
     public:
         ClassDef(FrsFatimaCorrelations, 1)
