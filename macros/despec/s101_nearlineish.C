@@ -25,14 +25,17 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_aida_onion_t aida;
     EXT_STR_h101_bplast_onion_t bplast;
     EXT_STR_h101_germanium_onion_t germanium;
-    EXT_STR_h101_frs_onion_t frs;
+    EXT_STR_h101_frsmain_onion_t frsmain;
+    EXT_STR_h101_frstpc_onion_t frstpc;
+    EXT_STR_h101_frsuser_onion_t frsuser;
+    EXT_STR_h101_frstpat_onion_t frstpat;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
     EXT_STR_h101_bgo_onion_t bgo;
     EXT_STR_h101_bb7vme_onion_t bb7vme;
 } EXT_STR_h101;
 
 
-void s101_online()
+void s101_nearlineish()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
 
@@ -40,6 +43,8 @@ void s101_online()
     TString fExpName = "s101";
 
     // Define important paths.
+    TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
+//     TString c4Root_path = "/u/cjones/c4Root";
     TString c4Root_path = "/u/despec/s101_online/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes";
     ucesb_path.ReplaceAll("//","/");
@@ -67,7 +72,7 @@ void s101_online()
     TString filename = "~/lustre/gamma/stacktest2024_files/ts/aidabplas_100125_0001.lmd";
 //     TString filename = "trans://lxg1257"; // timesorter.
 //     TString filename = "trans://x86l-144"; // ??
-    TString outputpath = "output";
+    TString outputpath = "~/lustre/gamma/stacktest2024_files/weow/output_100125_0001";
     TString outputFileName = outputpath + ".root";
 
     // Create Online run
@@ -187,11 +192,20 @@ void s101_online()
     
     if (FRS_ON)
     {
-        FrsReader* unpackfrs = new FrsReader((EXT_STR_h101_frs_onion*)&ucesb_struct.frs, offsetof(EXT_STR_h101, frs));
+        FrsMainReader* unpackfrsmain = new FrsMainReader((EXT_STR_h101_frsmain_onion*)&ucesb_struct.frsmain, offsetof(EXT_STR_h101, frsmain));
+        FrsTPCReader* unpackfrstpc = new FrsTPCReader((EXT_STR_h101_frstpc_onion*)&ucesb_struct.frstpc, offsetof(EXT_STR_h101, frstpc));
+        FrsUserReader* unpackfrsuser = new FrsUserReader((EXT_STR_h101_frsuser_onion*)&ucesb_struct.frsuser, offsetof(EXT_STR_h101, frsuser));
+        FrsTpatReader* unpackfrstpat = new FrsTpatReader((EXT_STR_h101_frstpat_onion*)&ucesb_struct.frstpat, offsetof(EXT_STR_h101, frstpat));
         
-        unpackfrs->SetOnline(true);
+        unpackfrsmain->SetOnline(true);
+        unpackfrstpc->SetOnline(true);
+        unpackfrsuser->SetOnline(true);
+        unpackfrstpat->SetOnline(true);
         
-        source->AddReader(unpackfrs);
+        source->AddReader(unpackfrsmain);
+        source->AddReader(unpackfrstpc);
+        source->AddReader(unpackfrsuser);
+        source->AddReader(unpackfrstpat);
     }
     
     if (BEAMMONITOR_ON)
@@ -209,7 +223,7 @@ void s101_online()
     {
         AidaUnpack2Cal* aidaCalibrator = new AidaUnpack2Cal();
         
-        aidaCalibrator->SetOnline(true);
+        aidaCalibrator->SetOnline(false);
         run->AddTask(aidaCalibrator);
         
     }
@@ -227,7 +241,7 @@ void s101_online()
     {
         bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
         
-        calbplast->SetOnline(true);
+        calbplast->SetOnline(false);
         run->AddTask(calbplast);
         
         
@@ -254,10 +268,16 @@ void s101_online()
     
     if (FRS_ON)
     {
-        FrsRaw2Cal* calfrs = new FrsRaw2Cal();
+        FrsMainRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
+        FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal();
+        FrsUserRaw2Cal* calfrsuser = new FrsUserRaw2Cal();
         
-        calfrs->SetOnline(true);
-        run->AddTask(calfrs);
+        calfrsmain->SetOnline(true);
+        calfrstpc->SetOnline(true);
+        calfrsuser->SetOnline(true);
+        run->AddTask(calfrsmain);
+        run->AddTask(calfrstpc);
+        run->AddTask(calfrsuser);
     }
 
 
@@ -268,7 +288,7 @@ void s101_online()
     {        
         AidaCal2Hit* aidaHitter = new AidaCal2Hit();
         
-        aidaHitter->SetOnline(true);
+        aidaHitter->SetOnline(false);
         run->AddTask(aidaHitter);
     }
     
