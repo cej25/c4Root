@@ -1,0 +1,99 @@
+#...oooOO0OOooo...           debug section          ...oooOO0OOooo...#
+#0: silent; 1: general debug purpose; 2: xx ;3: display functions; 4: debug openMP#
+Verbose:                      0  #verbos
+
+#...oooOO0OOooo...            data reading           ...oooOO0OOooo...#
+Enable.read.all.entry:       1 #if ture, read all entries.
+Tree.read.from.entry.0:      1 #
+Tree.read.to.entry.1:        20000 #
+Enable.single.channel.analysis.mode:  0 #only analyze ONE channel
+Enable.multi.channel.analysis.mode:   1 #analyze more than one channels
+Febex4.read.from.ch:         0 #0-15;working with single mode.
+
+#...oooOO0OOooo...            data writting           ...oooOO0OOooo...#
+Enable.save.traces:          1 #set as true if you want to export traces to new root file.
+Enable.save.as.root:         1 #set as true if you want to export results to a new root file
+
+#...oooOO0OOooo...          algorithm section        ...oooOO0OOooo...#
+Enable.energyCalculation.integral:    0 #set 'true' if you want to use intergral method;.
+Enable.energyCalculation.algorithm:   1 #Set 'true' if you want to use MWD method.
+Enable.DMi:                           0 #set 'true' if you want to calculate D_M(i).
+Enable.MWDi:                          1 #set 'true' if you want to calculate MWD(i).
+Set.MWD.calculation.threads:          10 #num of threads you plan to use for MWD calculation
+Undershoot.threshold:                 -1000 #
+Enable.baseline.correction:           1 #if true, baseline will be forced to move to 0.
+Sample.rate[MHz]:                     100 #[MHz]
+Febex4.trace.length:                  2400 #trace length read from raw data; this val should be <= total length
+Rising.time[ns]:                      2000 #[ns] ##for MWDi analysis
+Trapez.Sample.window.0:               14000 # this value has to be larger than MWD window length
+Trapez.Sample.window.1:               21000 #[ns]
+Trapez.Moving.Window.Length[ns]:      3000 #[ns]
+Enable.calc.energy.via.range:         1 #set 'true' if you want to calc energy via assigned range
+Trapez.Amp.Calc.window.0:             17000 #[ns]
+Trapez.Amp.Calc.window.1:             17200 #[ns]
+Enable.calc.energy.via.kink:          0 #set 'true' if you want to calc energy via kink
+Read.from.Hit:                        0 # for pileup analysis;start from 0 
+
+#...oooOO0OOooo...   settings for individual channel   ...oooOO0OOooo...#
+Decaytime.ch.1:              13000
+Decaytime.ch.2:              13000
+Decaytime.ch.5:              13000
+Decaytime.ch.6:              13000
+
+#...oooOO0OOooo...  only if multi.channel.mode is enabled     ...oooOO0OOooo...#
+Multimode.read.from.ch.1:     1 # 1: true; 0: false
+Multimode.read.from.ch.2:     1 # 1: true; 0: false
+Multimode.read.from.ch.5:     1 # 1: true; 0: false
+Multimode.read.from.ch.6:     1 # 1: true; 0: false
+
+Threshold.ch.1:               9 #you still need to set Threshold under single mode.
+Threshold.ch.2:               9 #you still need to set Threshold under single mode.
+Threshold.ch.5:               9 #you still need to set Threshold under single mode.
+Threshold.ch.6:               9 #you still need to set Threshold under single mode.
+
+#...oooOO0OOooo...     calibration section     ...oooOO0OOooo...#
+Energy.calib.bias.1:       0
+Energy.calib.gradient.1:   1
+Energy.calib.bias.2:       -2.56
+Energy.calib.gradient.2:   1.086
+Energy.calib.bias.5:       -3.695
+Energy.calib.gradient.5:   1.024
+Energy.calib.bias.6:       0.3347
+Energy.calib.gradient.6:   1.041
+Energy.calib.bias.9:       0
+Energy.calib.gradient.9:   1
+Energy.calib.bias.10:       -5.12
+Energy.calib.gradient.10:   1.006
+Energy.calib.bias.13:       -3.419
+Energy.calib.gradient.13:   1.092
+Energy.calib.bias.14:       -6.785
+Energy.calib.gradient.14:   1.04
+
+#...oooOO0OOooo...         display section          ...oooOO0OOooo...#
+Energy.histogram.range.0:     10 #
+Energy.histogram.range.1:     1010 #
+Histogram.bins:               1000 #
+Energy.spectrum.range.0:      10 #
+Energy.spectrum.range.1:      1010 #
+
+Time.histogram.range.0:       0 #
+Time.histogram.range.1:       5000 #
+Time.spectrum.range.0:        0 #
+Time.spectrum.range.1:        5000 #
+CFD.window.0:                 1500 #find zero point inside this window
+CFD.window.1:                 1700 #[ns]
+CFD.pars.fraction:            0.8 #
+CFD.pars.delay:               10 #[ns]
+CFD.reference:                4600 #used in time drift correction
+
+Trace.graph.Y.min:            -2000 #
+Trace.graph.Y.max:            2000 #
+
+#...oooOO0OOooo...     less useful commands     ...oooOO0OOooo...#
+Subtract.noise.with.baseline:   0 #useless now.
+Enable.time.correction:       0 #useless
+Enable.go4.unpacker:         0 #unpack data with go4: true; 
+Enable.ucesb.unpacker:       1 #unpack data with ucesb: true; 
+Read.from.Jentry:            45 #32129,1
+#...oooOO0OOooo...     fit section     ...oooOO0OOooo...#
+Fit.Pars.Limit:               12 #used to restrict fitting parameters

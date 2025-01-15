@@ -97,4 +97,15 @@ TH2* MakeTH2(TDirectory* dir, const char* type, const char* name, const char* ti
     return h2;
 }
 
-// SetPalette? "Z" title?
+/*
+TGraph* MakeTGraph()
+{
+    // some option
+    // I think TGraphs have to be appended.
+}
+*/
+
+enum c4Color 
+{
+    kNapoli,
+};

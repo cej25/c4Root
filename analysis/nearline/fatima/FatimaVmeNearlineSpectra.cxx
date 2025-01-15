@@ -23,9 +23,11 @@ FatimaVmeNearlineSpectra::FatimaVmeNearlineSpectra()
 
 FatimaVmeNearlineSpectra::FatimaVmeNearlineSpectra(const TString& name, Int_t verbose)
     :   FairTask(name, verbose)
-    ,   fHitFatimaVme(NULL)
     ,   fNEvents(0)
     ,   header(nullptr)
+    ,   qdcCalArray(nullptr)
+    ,   tdcCalArray(nullptr)
+    ,   residualArray(nullptr)
 {
     fatima_vme_config = TFatimaVmeConfiguration::GetInstance();
 }
@@ -50,6 +52,14 @@ InitStatus FatimaVmeNearlineSpectra::Init()
     fHitFatimaVme = (TClonesArray*)mgr->GetObject("FatimaVmeCalData");
     c4LOG_IF(fatal, !fHitFatimaVme, "Branch FatimaVmeCalData not found!");
 
+    qdcCalArray = mgr->InitObjectAs<decltype(qdcCalArray)>("FatimaVmeQDCCalData");
+    c4LOG_IF(fatal, !qdcCalArray, "Branch qdcCalArray not found!");
+    tdcCalArray = mgr->InitObjectAs<decltype(tdcCalArray)>("FatimaVmeTDCCalData");
+    c4LOG_IF(fatal, !tdcCalArray, "Branch tdcCalArray not found!");
+    residualArray = mgr->InitObjectAs<decltype(residualArray)>("FatimaVmeResiduals");
+    c4LOG_IF(fatal, !residualArray, "Branch FatimaVmeResiduals not found!");
+
+
     TDirectory* tmp = gDirectory;
     FairRootManager::Instance()->GetOutFile()->cd();
     dir_fatima_vme = gDirectory->mkdir("FATIMA VME");
@@ -58,13 +68,7 @@ InitStatus FatimaVmeNearlineSpectra::Init()
     dir_stats_vme = dir_fatima_vme->mkdir("Stats");
     dir_raw_vme = dir_fatima_vme->mkdir("Raw Spectra");
     dir_cal_vme = dir_fatima_vme->mkdir("Calibrated Spectra");
-    dir_raw_energy = dir_raw_vme->mkdir("Raw Energy");
-    dir_cal_energy = dir_cal_vme->mkdir("Calibrated Energy");
-    dir_raw_time = dir_raw_vme->mkdir("Raw Time");
-    dir_cal_time = dir_cal_vme->mkdir("Calibrated Time");
-    dir_tdc_dt = dir_cal_vme->mkdir("Time Differences");
-    dir_dt_sc41 = dir_tdc_dt->mkdir("SC41L dT");
-    dir_dt_ch1 = dir_tdc_dt->mkdir("Ch1 dT");
+    dir_residuals = dir_fatima_vme->mkdir("Residual Signals");
 
     gDirectory = tmp;
     
@@ -78,6 +82,7 @@ InitStatus FatimaVmeNearlineSpectra::Init()
     h1_FatVME_RawT.resize(nDetectors);
     h1_FatVME_TDC_dt_refCh1.resize(nDetectors);
     h1_FatVME_TDC_dT_refSC41L.resize(nDetectors);
+    h2_FatVME_EvsdTsc41.resize(nDetectors);
 
     dir_stats_vme->cd();
     h1_FatVME_QDCMult = new TH1I("h1_FatVME_QDCMult", "Fatima VME QDC Multiplicity", nDetectors, 0, nDetectors);
@@ -85,6 +90,9 @@ InitStatus FatimaVmeNearlineSpectra::Init()
     h1_FatVME_QDC_HitPattern = new TH1I("h1_FatVME_QDC_HitPattern", "Fatima VME QDC Hit Pattern", nDetectors, 0, nDetectors);
     h1_FatVME_TDC_HitPattern = new TH1I("h1_FatVME_TDC_HitPattern", "Fatima VME TDC Hit Pattern", nDetectors, 0, nDetectors);
 
+    dir_raw_energy = dir_raw_vme->mkdir("Raw Energy");
+    dir_cal_energy = dir_cal_vme->mkdir("Calibrated Energy");
+    dir_raw_time = dir_raw_vme->mkdir("Raw Time");
 
     dir_raw_energy->cd();
     for (int i = 0; i < nDetectors; i++)
@@ -106,6 +114,10 @@ InitStatus FatimaVmeNearlineSpectra::Init()
         h1_FatVME_RawT[i] = new TH1D(Form("h1_FatVme_RawT%i", i), Form("Fatima VME Raw Time - Detector %i", i), 5000, -1e6, 7e7);
     }
 
+    dir_tdc_dt = dir_fatima_vme->mkdir("Time Differences");
+    dir_dt_sc41 = dir_tdc_dt->mkdir("SC41L dT");
+    dir_dt_ch1 = dir_tdc_dt->mkdir("Ch1 dT");
+
     dir_dt_sc41->cd();
     for (int i = 0; i < nDetectors; i++)
     {
@@ -117,14 +129,18 @@ InitStatus FatimaVmeNearlineSpectra::Init()
     {
         h1_FatVME_TDC_dt_refCh1[i] = new TH1D(Form("h1_FatVME_TDC%i_dt_refCh1", i), Form("Detector %i TDC dT ref. Detector 1", i), 4e4, -2e4, 2e4);
     }
-    
-    dir_fatima_vme->cd();
+
+    for (int i = 0; i < nDetectors; i++)
+    {
+        h2_FatVME_EvsdTsc41[i] = new TH2D(Form("h2_FatVME_EvsdTsc41_%i", i), Form("E vs dT (det - sc41) Det %i", i), 250, -5e3, 2e4, 2000, 0, 4e4);
+    }
+    h2_FatVME_EvsdTsc41_summed = new TH2D("h2_FatVME_EvsdTsc41_summed", "E vs dT (det - sc41) Summed", 250,-5e3, 2e4, 2000, 0, 4e4);
+
+    dir_residuals->cd();
     h1_FatVME_time_machine_undelayed = new TH1D("h1_FatVME_time_machine_undelayed", "Time Machine Undelayed - FATIMA VME", 2000, 0, 40000);
     h1_FatVME_time_machine_delayed = new TH1D("h1_FatVME_time_machine_delayed", "Time Machine Delayed - FATIMA VME", 2000, 0, 40000);
-    h1_FatVME_sc41l = new TH1D("h1_FatVME_sc41l", "SC41L E - FATIMA VME", 2000, 0, 40000);
-    h1_FatVME_sc41r = new TH1D("h1_FatVME_sc41r", "SC41R E - FATIMA VME", 2000, 0, 40000);
-    h1_FatVME_sc41l_time = new TH1D("h1_FatVME_sc41l_time", "SC41L T - FATIMA VME", 5000, -1e6, 7e7);
-    h1_FatVME_sc41r_time = new TH1D("h1_FatVME_sc41r_time", "SC41R T - FATIMA VME", 5000, -1e6, 7e7);
+    h1_FatVME_sc41l_time = new TH1D("h1_FatVME_sc41l_time", "SC41L T - FATIMA VME", 5000, -1e6, 2e6);
+    h1_FatVME_sc41r_time = new TH1D("h1_FatVME_sc41r_time", "SC41R T - FATIMA VME", 5000, -1e6, 236);
 
     return kSUCCESS;
 
@@ -132,46 +148,55 @@ InitStatus FatimaVmeNearlineSpectra::Init()
 
 void FatimaVmeNearlineSpectra::Exec(Option_t* option)
 {
-    if (fHitFatimaVme && fHitFatimaVme->GetEntriesFast())
-    {
-        Int_t nHits = fHitFatimaVme->GetEntriesFast();
+    int qdc_mult = 0;
+    for (auto const & qdcItem : *qdcCalArray)
+    {   
+        int det = qdcItem.Get_detector();
+        int energy = qdcItem.Get_qlong();
+        int energy_raw = qdcItem.Get_qlong_raw();
+
+        h1_FatVME_RawE[det]->Fill(energy_raw);
+        h1_FatVME_E[det]->Fill(energy);
+        h1_FatVME_QDC_HitPattern->Fill(det);
+        h1_FatVME_E_Sum->Fill(energy);
+
+        qdc_mult++;
+
+    }
+    // fill qdc_mult
+    h1_FatVME_QDCMult->Fill(qdc_mult);
+
+    int tdc_mult = 0;
+    for (auto const & tdcItem : *tdcCalArray)
+    {   
+        int det = tdcItem.Get_detector();
+        double timestamp = tdcItem.Get_timestamp();
         
-        for (Int_t ihit = 0; ihit < nHits; ihit++)
-        {
-            FatimaVmeCalData* FatimaVmeHit = (FatimaVmeCalData*)fHitFatimaVme->At(ihit);
-            if (!FatimaVmeHit) continue;
+        h1_FatVME_RawT[det]->Fill(timestamp * 25); // time in [ps]
+        h1_FatVME_TDC_HitPattern->Fill(det);
 
-            std::vector<uint32_t> QDC_IDs = FatimaVmeHit->Get_Singles_QDC_ID();
-            std::vector<uint32_t> QDC_E_raw = FatimaVmeHit->Get_Singles_E_raw();
-            std::vector<uint32_t> QDC_E = FatimaVmeHit->Get_Singles_E();
+        tdc_mult++;
+    }
+    // fill tdc_mult
+    h1_FatVME_TDCMult->Fill(tdc_mult);
 
-            h1_FatVME_QDCMult->Fill((int)QDC_IDs.size());
-            for (int i = 0; i < QDC_IDs.size(); i++)
-            {
-                h1_FatVME_RawE[QDC_IDs[i]]->Fill(QDC_E_raw[i]);
-                h1_FatVME_E[QDC_IDs[i]]->Fill(QDC_E[i]);
-                h1_FatVME_QDC_HitPattern->Fill(QDC_IDs[i]);
-                h1_FatVME_E_Sum->Fill(QDC_E[i]);
-            }
-            
-            std::vector<uint32_t> TDC_IDs = FatimaVmeHit->Get_Singles_TDC_ID();
-            std::vector<uint32_t> TDC_timestamp = FatimaVmeHit->Get_Singles_TDC_timestamp();
-            std::vector<uint32_t> TDC_timestamp_raw = FatimaVmeHit->Get_Singles_TDC_timestamp_raw();
-            std::vector<uint32_t> SC41L_Hits = FatimaVmeHit->Get_SC41L_hits();
-            std::vector<uint32_t> SC41R_Hits = FatimaVmeHit->Get_SC41R_hits(); // for plotting if wanted?
-            
-            std::vector<uint32_t> SC41L_E_Hits = FatimaVmeHit->Get_SC41L_E_hits();
-            std::vector<uint32_t> SC41R_E_Hits = FatimaVmeHit->Get_SC41R_E_hits();
-            std::vector<uint32_t> TM_Undelayed_E_Hits = FatimaVmeHit->Get_TM_undelayed_E_hits();
-            std::vector<uint32_t> TM_Delayed_E_Hits = FatimaVmeHit->Get_TM_delayed_E_hits();
+    
+    for (auto const & residualItem : *residualArray)
+    {
+        double ts_sc41l = residualItem.Get_SC41L();
+        double ts_sc41r = residualItem.Get_SC41R();
+        double ts_tmu = residualItem.Get_TM_Undelayed();
+        double ts_tmd = residualItem.Get_TM_Delayed();
 
-            h1_FatVME_TDCMult->Fill(TDC_IDs.size());
-            for (int i = 0; i < TDC_IDs.size(); i++)
-            {
-                h1_FatVME_RawT[TDC_IDs[i]]->Fill(TDC_timestamp[i] * 25); // time in [ps]
-                h1_FatVME_TDC_HitPattern->Fill(TDC_IDs[i]);
+        if (ts_tmu > 0) h1_FatVME_time_machine_undelayed->Fill(ts_tmu);
+        if (ts_tmd > 0) h1_FatVME_time_machine_delayed->Fill(ts_tmd);
+        if (ts_sc41l > 0) h1_FatVME_sc41l_time->Fill(ts_sc41l);
+        if (ts_sc41r > 0) h1_FatVME_sc41l_time->Fill(ts_sc41r);
 
-                for (int j = 0; j < SC41L_Hits.size(); j++)
+    } 
+
+    // CEJ: Maybe this is something I forgot .. 
+    /*for (int j = 0; j < SC41L_Hits.size(); j++)
                 {
                     double dt = SC41L_Hits[j] - TDC_timestamp[i];
                     if (dt != 0) h1_FatVME_TDC_dT_refSC41L[TDC_IDs[i]]->Fill(dt);
@@ -189,41 +214,8 @@ void FatimaVmeNearlineSpectra::Exec(Option_t* option)
                             if (dt != 0) h1_FatVME_TDC_dt_refCh1[TDC_IDs[j]]->Fill(dt);
                         }
                     }
-                }
-            }
-
-            // add loop for reference channel(s)
-            
-            
-            // special channels
-            for (int i = 0; i < TM_Undelayed_E_Hits.size(); i++)
-            {
-                h1_FatVME_time_machine_undelayed->Fill(TM_Undelayed_E_Hits[i]);
-            }
-            for (int i = 0; i < TM_Delayed_E_Hits.size(); i++)
-            {
-                h1_FatVME_time_machine_delayed->Fill(TM_Delayed_E_Hits[i]);
-            }
-            for (int i = 0; i < SC41L_E_Hits.size(); i++)
-            {
-                h1_FatVME_sc41l->Fill(SC41L_E_Hits[i]);
-            }
-            for (int i = 0; i < SC41R_E_Hits.size(); i++)
-            {
-                h1_FatVME_sc41r->Fill(SC41R_E_Hits[i]);
-            }
-            for (int i = 0; i < SC41L_Hits.size(); i++)
-            {
-                h1_FatVME_sc41l_time->Fill(SC41L_Hits[i]);
-            }
-            for (int i = 0; i < SC41R_Hits.size(); i++)
-            {
-                h1_FatVME_sc41r_time->Fill(SC41R_Hits[i]);
-            }
-
-
-        }
-    }
+                }*/
+    
 }
 
 void FatimaVmeNearlineSpectra::FinishEvent()

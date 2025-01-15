@@ -271,9 +271,17 @@ class FrsFatimaCorrelations : public FairTask
 
 
         // Folder and files
+<<<<<<< HEAD
         TFolder * histograms;
         TDirectory* dir_fatima;
         TDirectory ** dir_energy_gated;
+=======
+        TFolder* histograms;
+        TDirectory* dir_corr;
+        TDirectory* dir_fatima;
+        TDirectory** dir_energy_gated;
+
+>>>>>>> main
 
     public:
         ClassDef(FrsFatimaCorrelations, 1)

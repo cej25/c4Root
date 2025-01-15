@@ -6,6 +6,7 @@
 #include "TFatimaTwinpeaksConfiguration.h"
 #include "TGermaniumConfiguration.h"
 #include "TFrsConfiguration.h"
+#include "EventHeader.h"
 
 class TClonesArray;
 class EventHeader;
@@ -93,7 +94,7 @@ class FatimaGermaniumCorrelations : public FairTask
         std::vector<double> gamma_energies_of_interest_germanium;
         std::vector<double> gate_width_gamma_energies_of_interest_germanium;
 
-        EventHeader* header;
+        EventHeader const* header;
         Int_t fNEvents;
 
 

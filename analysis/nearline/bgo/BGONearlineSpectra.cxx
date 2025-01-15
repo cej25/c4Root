@@ -13,6 +13,7 @@
 #include "TGermaniumConfiguration.h"
 #include "TBGOTwinpeaksConfiguration.h"
 
+#include "AnalysisTools.h"
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
@@ -78,7 +79,8 @@ InitStatus BGONearlineSpectra::Init()
     BGO_Germanium_wr_coincidence_window_offset = BGO_configuration->Offset();
 
 
-    for (auto it_mapping = bgomap.begin(); it_mapping != bgomap.end(); ++it_mapping){
+    for (auto it_mapping = bgomap.begin(); it_mapping != bgomap.end(); ++it_mapping)
+    {
         std::pair<int,int> detector_crystal_pair {it_mapping->second.first,it_mapping->second.second};
         if (it_mapping->second.first >= 0) crystals_to_plot.emplace_back(detector_crystal_pair);
         
@@ -93,42 +95,52 @@ InitStatus BGONearlineSpectra::Init()
     number_of_detectors_to_plot = crystals_to_plot.size();
 
     // energy spectra:
-    dir_bgo_energy->cd();
+    //dir_bgo_energy->cd();
     h1_bgo_energy.resize(number_of_detectors_to_plot);
-    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
-        h1_bgo_energy[ihist] = new TH1F(Form("h1_bgo_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("BGO uncal energy spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
-        h1_bgo_energy[ihist]->GetXaxis()->SetTitle("energy (arb.)");
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++)
+    {
+        h1_bgo_energy[ihist] = MakeTH1(dir_bgo_energy, "F", Form("h1_bgo_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("BGO uncal energy spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high, "Energy [a.u]", kSpring, kBlue+2);
+        //h1_bgo_energy[ihist] = new TH1F(Form("h1_bgo_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("BGO uncal energy spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+        //h1_bgo_energy[ihist]->GetXaxis()->SetTitle("energy (arb.)");
     }
     
     // time spectra:
-    dir_bgo_time->cd();
+    //dir_bgo_time->cd();
     h1_bgo_time.resize(number_of_detectors_to_plot);
-    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
-        h1_bgo_time[ihist] = new TH1F(Form("h1_bgo_time_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("BGO time spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,1e12);
-        h1_bgo_time[ihist]->GetXaxis()->SetTitle("time (ns)");
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++)
+    {
+        h1_bgo_time[ihist] = MakeTH1(dir_bgo_time, "F", Form("h1_bgo_time_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("BGO time spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,1e12, "Time [ns]");
+        //h1_bgo_time[ihist] = new TH1F(Form("h1_bgo_time_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("BGO time spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,1e12);
+        //h1_bgo_time[ihist]->GetXaxis()->SetTitle("time (ns)");
     }
 
-    dir_bgo_germanium_veto_energy->cd();
+    //dir_bgo_germanium_veto_energy->cd();
     // energy spectra:
     h1_germanium_bgo_veto_energy.resize(number_of_detectors_to_plot);
-    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
-        h1_germanium_bgo_veto_energy[ihist] = new TH1F(Form("h1_germanium_bgo_veto_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c - BGO vetoed",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,3e3);
-        h1_germanium_bgo_veto_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++)
+    {
+        h1_germanium_bgo_veto_energy[ihist] = MakeTH1(dir_bgo_germanium_veto_energy, "F", Form("h1_germanium_bgo_veto_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c - BGO vetoed",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,3e3, "Energy [keV]", kOrange-3, kBlue+2);
+        //h1_germanium_bgo_veto_energy[ihist] = new TH1F(Form("h1_germanium_bgo_veto_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c - BGO vetoed",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,3e3);
+        //h1_germanium_bgo_veto_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
     }
 
-    dir_bgo_germanium_vetotrue_energy->cd();
+    //dir_bgo_germanium_vetotrue_energy->cd();
     h1_germanium_bgo_vetotrue_energy.resize(number_of_detectors_to_plot);
-    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
-        h1_germanium_bgo_vetotrue_energy[ihist] = new TH1F(Form("h1_germanium_bgo_vetotrue_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c - BGO veto = true",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,3e3);
-        h1_germanium_bgo_vetotrue_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++)
+    {
+        h1_germanium_bgo_vetotrue_energy[ihist] = MakeTH1(dir_bgo_germanium_vetotrue_energy, "F", Form("h1_germanium_bgo_vetotrue_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c - BGO veto = true",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,3e3, "Energy [keV]", kSpring, kBlue+2);
+        //h1_germanium_bgo_vetotrue_energy[ihist] = new TH1F(Form("h1_germanium_bgo_vetotrue_energy_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("DEGAS energy spectrum detector %d crystal %c - BGO veto = true",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e3,0,3e3);
+        //h1_germanium_bgo_vetotrue_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
     }
 
     // time differences spectra:
-    dir_bgo_germanium_veto_time_differences->cd();
+    //dir_bgo_germanium_veto_time_differences->cd();
     h1_germanium_bgo_veto_timedifferences.resize(number_of_detectors_to_plot);
-    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++){
-        h1_germanium_bgo_veto_timedifferences[ihist] = new TH1F(Form("h1_germanium_bgo_veto_timedifferences_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("BGO-DEGAS time spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e2,-10e3,10e3);
-        h1_germanium_bgo_veto_timedifferences[ihist]->GetXaxis()->SetTitle("time BGO-Ge (ns)");
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++)
+    {
+        h1_germanium_bgo_veto_timedifferences[ihist] = MakeTH1(dir_bgo_germanium_veto_time_differences, "F", Form("h1_germanium_bgo_veto_timedifferences_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("BGO-DEGAS time spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e2,-10e3,10e3, "Time BGO-Ge [ns]", kMagenta, kBlue+2);
+        //h1_germanium_bgo_veto_timedifferences[ihist] = new TH1F(Form("h1_germanium_bgo_veto_timedifferences_%d_%d",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second),Form("BGO-DEGAS time spectrum detector %d crystal %c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65)),10e2,-10e3,10e3);
+        //h1_germanium_bgo_veto_timedifferences[ihist]->GetXaxis()->SetTitle("time BGO-Ge (ns)");
     }
 
     dir_bgo->cd();

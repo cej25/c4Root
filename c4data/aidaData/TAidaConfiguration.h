@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <array>
 
 enum DSSDSide
 {
@@ -113,7 +114,7 @@ private:
 
     // analysis options
     bool reducenoise;
-    bool clusterimpants;
+    bool clusterimplants;
     bool clusterdecays;
     bool calibrate;
     bool parallelcalibrate;
@@ -219,7 +220,7 @@ inline bool TAidaConfiguration::ReduceNoise() const
 
 inline bool TAidaConfiguration::ClusterImplants() const
 {
-  return clusterimpants;
+  return clusterimplants;
 }
 
 inline bool TAidaConfiguration::ClusterDecays() const

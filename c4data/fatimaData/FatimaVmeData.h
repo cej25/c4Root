@@ -2,7 +2,6 @@
 #define FatimaVmeData_H
 
 #include "TObject.h"
-#include "../../config/setup.h"
 #include <vector>
 
 class FatimaVmeData : public TObject

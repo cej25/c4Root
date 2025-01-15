@@ -10,6 +10,7 @@ class BGOTwinpeaksCalData : public TObject
         BGOTwinpeaksCalData();
 
         BGOTwinpeaksCalData(
+        uint16_t trig,
         uint16_t board_id,
         uint16_t ch_ID,
         int detector_id,
@@ -42,7 +43,7 @@ int64_t slow_lead_epoch,
         virtual ~BGOTwinpeaksCalData() {}
 
         // Getters
-
+        inline const uint16_t Get_trigger() const { return ftrig; }
         inline const uint16_t Get_board_id() const {return fboard_id; }
         inline const uint16_t Get_ch_ID() const {return fch_ID; }
         inline const int Get_detector_id() const {return fdetector_id; }
@@ -69,6 +70,7 @@ inline const uint64_t Get_absolute_event_time() const { return fabsolute_event_t
 
 
         // Setters
+        void Set_trigger(uint16_t v) { ftrig = v; }
         void Set_board_id(uint16_t v){ fboard_id = v; }
         void Set_ch_ID(uint16_t v){ fch_ID = v; }
         void Set_detector_id(uint16_t v){ fdetector_id = v; }
@@ -96,6 +98,7 @@ void Set_absolute_event_time(uint64_t v){ fabsolute_event_time = v; }
 
     protected:
         // Data items
+        uint16_t ftrig;
         uint16_t fboard_id;
         uint16_t fch_ID;
         int fdetector_id;

@@ -9,7 +9,7 @@ TimeMachineData::TimeMachineData():
                         fwr_subsystem_id(0),
                         fwr_t(0){};
 
-TimeMachineData::TimeMachineData(double undelayed_time,double delayed_time,uint32_t wr_subsystem_id, uint32_t wr_t):
+TimeMachineData::TimeMachineData(double undelayed_time,double delayed_time,uint32_t wr_subsystem_id, uint64_t wr_t):
                         fundelayed_time(undelayed_time),
                         fdelayed_time(delayed_time),
                         //fdelta_time(delta_time),

@@ -64,19 +64,19 @@ class FimpOnlineSpectra : public FairTask
         TDirectory* dir_fine_trail;
         TDirectory* dir_sc41;
 
-        TH1I* h1_fimp_whiterabbit;
-        TH1I* h1_fimp_wr_dt;
-        TH1I* h1_fimp_multiplicity;
-        TH1I* h1_fimp_hitpattern;
-        std::vector<TH1D*> h1_fimp_tot;
-        std::vector<TH1D*> h1_fimp_lead_times;
-        std::vector<TH1D*> h1_fimp_trail_times;
-        std::vector<TH1D*> h1_fimp_sc41l_dT;
-        std::vector<TH1D*> h1_fimp_sc41r_dT;
-        std::vector<TH1I*> h1_fimp_coarse_clock_lead;
-        std::vector<TH1I*> h1_fimp_coarse_clock_trail;
-        std::vector<TH1I*> h1_fimp_fine_bin_lead;
-        std::vector<TH1I*> h1_fimp_fine_bin_trail;
+        TH1* h1_fimp_whiterabbit;
+        TH1* h1_fimp_wr_dt;
+        TH1* h1_fimp_multiplicity;
+        TH1* h1_fimp_hitpattern;
+        std::vector<TH1*> h1_fimp_tot;
+        std::vector<TH1*> h1_fimp_lead_times;
+        std::vector<TH1*> h1_fimp_trail_times;
+        std::vector<TH1*> h1_fimp_sc41l_dT;
+        std::vector<TH1*> h1_fimp_sc41r_dT;
+        std::vector<TH1*> h1_fimp_coarse_clock_lead;
+        std::vector<TH1*> h1_fimp_coarse_clock_trail;
+        std::vector<TH1*> h1_fimp_fine_bin_lead;
+        std::vector<TH1*> h1_fimp_fine_bin_trail;
 
         //int64_t wr_t = 0;
         int64_t prev_wr_t = 0;

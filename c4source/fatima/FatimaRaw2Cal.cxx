@@ -282,6 +282,7 @@ void FatimaRaw2Cal::Exec(Option_t* option)
             //c4LOG(info,Form("board = %i, ch = %i, det = %i",funcal_hit->Get_board_id(),(int)((funcal_hit->Get_ch_ID()+1)/2), detector_id));
             
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) FatimaTwinpeaksCalData(
+                funcal_hit->Get_trigger(),
                 funcal_hit->Get_board_id(),
                 (int)((funcal_hit->Get_ch_ID()+1)/2),
                 detector_id,

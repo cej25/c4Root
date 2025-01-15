@@ -18,12 +18,15 @@ class FrsGate
         bool Passed_x4vsAoQ(double x4, double AoQ);
         bool Passed_dEdegvsZ(double Z, double dEdeg);
         bool Passed_sci42EvsZ(double Z, double sci42E);
+        bool Passed_ZvsAoQ_driftcorr(double Z_driftcorr, double AoQ_driftcorr);
         bool cut_ZvsAoQ_exists() {  return cut_Z_AoQ != nullptr; } 
         bool cut_ZvsZ2_exists() {  return cut_Z_Z2 != nullptr; } 
         bool cut_x2vsAoQ_exists() {  return cut_x2_AoQ != nullptr; } 
         bool cut_x4vsAoQ_exists() {  return cut_x4_AoQ != nullptr; } 
         bool cut_dEvsZ_exists() {  return cut_dEdeg_Z != nullptr; } 
         bool cut_sci42E_exists() {  return cut_sci42E_Z != nullptr; } 
+        bool cut_ZvsAoQ_driftcorr_exists() {  return cut_Z_AoQ_driftcorr != nullptr; } 
+
 
     public:
         std::string gate_name;
@@ -34,6 +37,7 @@ class FrsGate
         TCutG* cut_x4_AoQ;
         TCutG* cut_dEdeg_Z;
         TCutG* cut_sci42E_Z;
+        TCutG* cut_Z_AoQ_driftcorr;
 
     public:
         ClassDef(FrsGate, 1)

@@ -70,6 +70,9 @@ void setup(TFRSParameter* frs,
   
   id->tof_HTM_select = 1; //1=sc21-M01, 2=sc22-M01
   id->Z_HTM_select = 3; //1=sc21, 2=sc22, 3=scM01
+
+
+  //id->beta_calib_select = 1; // 1: v -> beta, 2: b -> 1/beta^2
   
   //=============primary Z and plot ranges=============//
   frs->primary_z = 68.;   

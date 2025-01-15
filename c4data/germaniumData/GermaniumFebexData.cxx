@@ -1,7 +1,9 @@
 #include "GermaniumFebexData.h"
 
 GermaniumFebexData::GermaniumFebexData()
-    : fnum_channels_fired(0),
+    : 
+        ftrig(0),
+        fnum_channels_fired(0),
       fevent_trigger_time(0),
       fhit_pattern(0),
       fboard_id(0),
@@ -18,6 +20,7 @@ GermaniumFebexData::GermaniumFebexData()
 }
 
 GermaniumFebexData::GermaniumFebexData(
+        uint16_t trig,
         uint32_t num_channels_fired,
         uint64_t event_trigger_time,
         uint16_t hit_pattern,
@@ -30,6 +33,7 @@ GermaniumFebexData::GermaniumFebexData(
         uint16_t wr_subsystem_id,
         uint64_t wr_t)
     : 
+    ftrig(trig),
     fnum_channels_fired(num_channels_fired),
     fevent_trigger_time(event_trigger_time),
     fhit_pattern(hit_pattern),

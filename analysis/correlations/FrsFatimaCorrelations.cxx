@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                             J.E.L. Larsson                                 *
+ *                               17.12.24                                     *
+ ******************************************************************************/
+
 // FairRoot
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -64,10 +80,6 @@ FrsFatimaCorrelations::~FrsFatimaCorrelations()
 
 InitStatus FrsFatimaCorrelations::Init()
 {
-
-    // number of crystals, number of dets 
-
-    c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
@@ -85,18 +97,26 @@ InitStatus FrsFatimaCorrelations::Init()
     mainSciArray = mgr->InitObjectAs<decltype(mainSciArray)>("FrsMainCalSciData");
     c4LOG_IF(fatal, !mainSciArray, "Branch FrsMainCalSciData not found!");
 
+    histograms = (TFolder*)mgr->GetObject("Histograms");
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
 
     TDirectory::TContext ctx(nullptr);
 
+    dir_corr = (TDirectory*)mgr->GetObject("Correlations");
+    if (dir_corr == nullptr) 
+    {
+        LOG(info) << "Creating Correlations Directory";
+        FairRootManager::Instance()->GetOutFile()->cd();
+        dir_corr = gDirectory->mkdir("Correlations");
+        mgr->Register("Correlations", "Correlations Directory", dir_corr, false); // allow other tasks to find this
+        histograms->Add(dir_corr);
+    }
 
-    dir_fatima = new TDirectory(TString("FATIMA FRS GATE " + frsgate->GetName()), TString("FATIMA FRS GATE" + frsgate->GetName()),0);
-    mgr->Register(TString("FATIMA FRS GATE " + frsgate->GetName()), TString("FATIMA FRS GATE" + frsgate->GetName()), dir_fatima, false);
+    TString dirname = "FATIMA - FRS Gated: " + frsgate->GetName();
+    dir_fatima = dir_corr->mkdir(dirname);
 
-    histograms->Add(dir_fatima);
-
-    run->AddObject(dir_fatima);
+    dir_fatima->cd();
 
     //Implant rate
     c_frs_rate = new TCanvas(TString("c_frs_fatima_rate_monitor_gated_")+frsgate->GetName(),TString("Implant rate gated on ")+frsgate->GetName());
@@ -105,8 +125,7 @@ InitStatus FrsFatimaCorrelations::Init()
     g_frs_rate->SetTitle(TString("FRS identified ions per second, avg 60 secs"));
     g_frs_rate->GetXaxis()->SetTitle("seconds");
     g_frs_rate->Draw("ALP");
-    dir_fatima->Add(c_frs_rate);
-    dir_fatima->Add(g_frs_rate);
+    dir_fatima->Append(c_frs_rate);
 
     c_frs_total = new TCanvas(TString("c_frs_fatima_total_monitor_gated_")+frsgate->GetName(),TString("Implanted total ions gated on ")+frsgate->GetName());
     g_frs_total = new TGraph();
@@ -114,8 +133,7 @@ InitStatus FrsFatimaCorrelations::Init()
     g_frs_total->SetTitle(TString("FRS identified ions in total"));
     g_frs_total->GetXaxis()->SetTitle("seconds");
     g_frs_total->Draw("ALP");
-    dir_fatima->Add(c_frs_total);
-    dir_fatima->Add(g_frs_total);
+    dir_fatima->Append(c_frs_total);
 
     c_frs_Z_vs_AoQ_gated = new TCanvas(TString("c_frs_fatima_Z_vs_AoQ_gated_")+frsgate->GetName(),TString("Z vs AoQ plot gated on FRS ")+frsgate->GetName());
     h2_frs_Z_vs_AoQ_gated = new TH2F(TString("h2_frs_fatima_Z_vs_AoQ_gated_")+frsgate->GetName(),TString("Z vs AoQ plot gated on FRS ")+frsgate->GetName(),1000,frs_configuration->fMin_AoQ,frs_configuration->fMax_AoQ,1000,frs_configuration->fMin_Z,frs_configuration->fMax_Z);
@@ -123,8 +141,7 @@ InitStatus FrsFatimaCorrelations::Init()
     h2_frs_Z_vs_AoQ_gated->GetYaxis()->SetTitle("Z");
     h2_frs_Z_vs_AoQ_gated->Draw("COLZ");
     c_frs_Z_vs_AoQ_gated->cd(0);
-    dir_fatima->Add(c_frs_Z_vs_AoQ_gated);
-    dir_fatima->Add(h2_frs_Z_vs_AoQ_gated);
+    dir_fatima->Append(c_frs_Z_vs_AoQ_gated);
 
     c_frs_Z_vs_Z2_gated = new TCanvas(TString("c_frs_fatima_Z_vs_Z2_gated_")+frsgate->GetName(),TString("Z1 vs Z2 plot gated on FRS ")+frsgate->GetName());
     h2_frs_Z_vs_Z2_gated = new TH2F(TString("h2_frs_fatima_Z_vs_Z2_gated_")+frsgate->GetName(),TString("Z1 vs Z2 plot gated on FRS ")+frsgate->GetName(),1000,frs_configuration->fMin_Z,frs_configuration->fMax_Z,1000,frs_configuration->fMin_Z,frs_configuration->fMax_Z);
@@ -132,8 +149,7 @@ InitStatus FrsFatimaCorrelations::Init()
     h2_frs_Z_vs_Z2_gated->GetYaxis()->SetTitle("Z2");
     h2_frs_Z_vs_Z2_gated->Draw("COLZ");
     c_frs_Z_vs_Z2_gated->cd(0);
-    dir_fatima->Add(c_frs_Z_vs_Z2_gated);
-    dir_fatima->Add(h2_frs_Z_vs_Z2_gated);
+    dir_fatima->Append(c_frs_Z_vs_Z2_gated);
 
 
     c_frs_x2_vs_AoQ_gated = new TCanvas(TString("c_frs_fatima_x2_vs_AoQ_gated_")+frsgate->GetName(),TString("x2 vs AoQ plot gated on FRS ")+frsgate->GetName());
@@ -142,8 +158,7 @@ InitStatus FrsFatimaCorrelations::Init()
     h2_frs_x2_vs_AoQ_gated->GetXaxis()->SetTitle("A/Q");
     h2_frs_x2_vs_AoQ_gated->Draw("COLZ");
     c_frs_x2_vs_AoQ_gated->cd(0);
-    dir_fatima->Add(c_frs_x2_vs_AoQ_gated);
-    dir_fatima->Add(h2_frs_x2_vs_AoQ_gated);
+    dir_fatima->Append(c_frs_x2_vs_AoQ_gated);
 
     c_frs_x4_vs_AoQ_gated = new TCanvas(TString("c_frs_fatima_x4_vs_AoQ_gated_")+frsgate->GetName(),TString("x4 vs AoQ plot gated on FRS ")+frsgate->GetName());
     h2_frs_x4_vs_AoQ_gated = new TH2F(TString("h2_frs_fatima_x4_vs_AoQ_gated_")+frsgate->GetName(),TString("x4 vs AoQ plot gated on FRS ")+frsgate->GetName(),1000,frs_configuration->fMin_AoQ,frs_configuration->fMax_AoQ,1000,frs_configuration->fMin_x4,frs_configuration->fMax_x4);
@@ -151,9 +166,8 @@ InitStatus FrsFatimaCorrelations::Init()
     h2_frs_x4_vs_AoQ_gated->GetYaxis()->SetTitle("x4");
     h2_frs_x4_vs_AoQ_gated->Draw("COLZ");
     c_frs_x4_vs_AoQ_gated->cd(0);
-    dir_fatima->Add(c_frs_x4_vs_AoQ_gated);
-    dir_fatima->Add(h2_frs_x4_vs_AoQ_gated);
-
+    dir_fatima->Append(c_frs_x4_vs_AoQ_gated);
+    
 
     c_frs_Z_vs_dEdeg_gated = new TCanvas(TString("c_frs_fatima_Z_vs_dEdeg_gated_")+frsgate->GetName(),TString("Z vs dEdeg plot gated on FRS ")+frsgate->GetName());
     h2_frs_Z_vs_dEdeg_gated = new TH2F(TString("h2_frs_fatima_Z_vs_dEdeg_gated_")+frsgate->GetName(),TString("Z vs dEdeg plot gated on FRS ")+frsgate->GetName(),1000,40,60,1000,frs_configuration->fMin_Z,frs_configuration->fMax_Z);
@@ -161,8 +175,7 @@ InitStatus FrsFatimaCorrelations::Init()
     h2_frs_Z_vs_dEdeg_gated->GetYaxis()->SetTitle("Z");
     h2_frs_Z_vs_dEdeg_gated->Draw("COLZ");
     c_frs_Z_vs_dEdeg_gated->cd(0);
-    dir_fatima->Add(c_frs_Z_vs_dEdeg_gated);
-    dir_fatima->Add(h2_frs_Z_vs_dEdeg_gated);
+    dir_fatima->Append(c_frs_Z_vs_dEdeg_gated);
 
 
     c_frs_Z_vs_sci42E_gated = new TCanvas(TString("c_frs_fatima_Z_vs_sci42E_gated_")+frsgate->GetName(),TString("Z vs sci42 E plot gated on FRS ")+frsgate->GetName());
@@ -171,8 +184,7 @@ InitStatus FrsFatimaCorrelations::Init()
     h2_frs_Z_vs_sci42E_gated->GetYaxis()->SetTitle("Z");
     h2_frs_Z_vs_sci42E_gated->Draw("COLZ");
     c_frs_Z_vs_sci42E_gated->cd(0);
-    dir_fatima->Add(c_frs_Z_vs_sci42E_gated);
-    dir_fatima->Add(h2_frs_Z_vs_sci42E_gated);
+    dir_fatima->Append(c_frs_Z_vs_sci42E_gated);
 
 
     
@@ -182,8 +194,7 @@ InitStatus FrsFatimaCorrelations::Init()
     h2_fatima_energy_vs_tsci41->GetYaxis()->SetTitle("energy (keV)");
     h2_fatima_energy_vs_tsci41->Draw("COLZ");
     c_fatima_energy_vs_tsci41->cd(0);
-    dir_fatima->Add(c_fatima_energy_vs_tsci41);
-    dir_fatima->Add(h2_fatima_energy_vs_tsci41);
+    dir_fatima->Append(c_fatima_energy_vs_tsci41);
     
     
     c_fatima_energy_vs_sci41_mult1 = new TCanvas(TString("c_fatima_energy_vs_sci41_mult1_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det,wr) - t(sci41) short lifetime, multiplicity 1, gated FRS on "+frsgate->GetName()),650,350);
@@ -192,8 +203,7 @@ InitStatus FrsFatimaCorrelations::Init()
     h2_fatima_energy_vs_sci41_mult1->GetYaxis()->SetTitle("energy (keV)");
     h2_fatima_energy_vs_sci41_mult1->Draw("COLZ");
     c_fatima_energy_vs_sci41_mult1->cd(0);
-    dir_fatima->Add(c_fatima_energy_vs_sci41_mult1);
-    dir_fatima->Add(h2_fatima_energy_vs_sci41_mult1);
+    dir_fatima->Append(c_fatima_energy_vs_sci41_mult1);
 
     c_fatima_energy_vs_sci41_mult2 = new TCanvas(TString("c_fatima_energy_vs_sci41_mult2_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det,wr) - t(sci41) short lifetime, multiplicity 2, gated FRS on "+frsgate->GetName()),650,350);
     h2_fatima_energy_vs_sci41_mult2 = new TH2F(TString("h2_fatima_energy_vs_sci41_mult2_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det,wr) - t(sci41) short lifetime, multiplicity 2, gated FRS on "+frsgate->GetName()),10000,long_lifetime_binlow,long_lifetime_binhigh,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
@@ -201,8 +211,7 @@ InitStatus FrsFatimaCorrelations::Init()
     h2_fatima_energy_vs_sci41_mult2->GetYaxis()->SetTitle("energy (keV)");
     h2_fatima_energy_vs_sci41_mult2->Draw("COLZ");
     c_fatima_energy_vs_sci41_mult2->cd(0);
-    dir_fatima->Add(c_fatima_energy_vs_sci41_mult2);
-    dir_fatima->Add(h2_fatima_energy_vs_sci41_mult2);
+    dir_fatima->Append(c_fatima_energy_vs_sci41_mult2);
     
     
     c_fatima_energy_vs_sci41_mult3 = new TCanvas(TString("c_fatima_energy_vs_sci41_mult3_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det,wr) - t(sci41) short lifetime, multiplicity 3, gated FRS on "+frsgate->GetName()),650,350);
@@ -211,8 +220,7 @@ InitStatus FrsFatimaCorrelations::Init()
     h2_fatima_energy_vs_sci41_mult3->GetYaxis()->SetTitle("energy (keV)");
     h2_fatima_energy_vs_sci41_mult3->Draw("COLZ");
     c_fatima_energy_vs_sci41_mult3->cd(0);
-    dir_fatima->Add(c_fatima_energy_vs_sci41_mult3);
-    dir_fatima->Add(h2_fatima_energy_vs_sci41_mult3);
+    dir_fatima->Append(c_fatima_energy_vs_sci41_mult3);
 
     c_fatima_energy_vs_sci41_mult4p = new TCanvas(TString("c_fatima_energy_vs_sci41_mult4p_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det,wr) - t(sci41) short lifetime, multiplicity 3, gated FRS on "+frsgate->GetName()),650,350);
     h2_fatima_energy_vs_sci41_mult4p = new TH2F(TString("h2_fatima_energy_vs_sci41_mult4p_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det,wr) - t(sci41) short lifetime, multiplicity 3, gated FRS on "+frsgate->GetName()),10000,long_lifetime_binlow,long_lifetime_binhigh,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
@@ -220,8 +228,7 @@ InitStatus FrsFatimaCorrelations::Init()
     h2_fatima_energy_vs_sci41_mult4p->GetYaxis()->SetTitle("energy (keV)");
     h2_fatima_energy_vs_sci41_mult4p->Draw("COLZ");
     c_fatima_energy_vs_sci41_mult4p->cd(0);
-    dir_fatima->Add(c_fatima_energy_vs_sci41_mult4p);
-    dir_fatima->Add(h2_fatima_energy_vs_sci41_mult4p);
+    dir_fatima->Append(c_fatima_energy_vs_sci41_mult4p);
     
 
     c_fatima_energy_promptflash_cut_mult1 = new TCanvas(TString("c_fatima_energy_promptflash_cut_mult1_frs_gate_"+frsgate->GetName()),TString("Fatima energy, prompt flash cut out, multiplicity 1, short lifetime, gated FRS on "+frsgate->GetName()),650,350);
@@ -229,32 +236,28 @@ InitStatus FrsFatimaCorrelations::Init()
     h1_fatima_energy_promptflash_cut_mult1->GetXaxis()->SetTitle("energy (keV)");
     h1_fatima_energy_promptflash_cut_mult1->Draw("COLZ");
     c_fatima_energy_promptflash_cut_mult1->cd(0);
-    dir_fatima->Add(c_fatima_energy_promptflash_cut_mult1);
-    dir_fatima->Add(h1_fatima_energy_promptflash_cut_mult1);    
+    dir_fatima->Append(c_fatima_energy_promptflash_cut_mult1);
 
     c_fatima_energy_promptflash_cut_mult2 = new TCanvas(TString("c_fatima_energy_promptflash_cut_mult2_frs_gate_"+frsgate->GetName()),TString("Fatima energy, prompt flash cut out, multiplicity 2, short lifetime, gated FRS on "+frsgate->GetName()),650,350);
     h1_fatima_energy_promptflash_cut_mult2 = new TH1F(TString("h1_fatima_energy_promptflash_cut_mult2_frs_gate_"+frsgate->GetName()),TString("Fatima energy, prompt flash cut out, multiplicity 2, short lifetime, gated FRS on "+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     h1_fatima_energy_promptflash_cut_mult2->GetXaxis()->SetTitle("energy (keV)");
     h1_fatima_energy_promptflash_cut_mult2->Draw("COLZ");
     c_fatima_energy_promptflash_cut_mult2->cd(0);
-    dir_fatima->Add(c_fatima_energy_promptflash_cut_mult2);
-    dir_fatima->Add(h1_fatima_energy_promptflash_cut_mult2);    
+    dir_fatima->Append(c_fatima_energy_promptflash_cut_mult2);
 
     c_fatima_energy_promptflash_cut_mult3 = new TCanvas(TString("c_fatima_energy_promptflash_cut_mult3_frs_gate_"+frsgate->GetName()),TString("Fatima energy, prompt flash cut out, multiplicity 3, short lifetime, gated FRS on "+frsgate->GetName()),650,350);
     h1_fatima_energy_promptflash_cut_mult3 = new TH1F(TString("h1_fatima_energy_promptflash_cut_mult3_frs_gate_"+frsgate->GetName()),TString("Fatima energy, prompt flash cut out, multiplicity 3, short lifetime, gated FRS on "+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     h1_fatima_energy_promptflash_cut_mult3->GetXaxis()->SetTitle("energy (keV)");
     h1_fatima_energy_promptflash_cut_mult3->Draw("COLZ");
     c_fatima_energy_promptflash_cut_mult3->cd(0);
-    dir_fatima->Add(c_fatima_energy_promptflash_cut_mult3);
-    dir_fatima->Add(h1_fatima_energy_promptflash_cut_mult3);    
+    dir_fatima->Append(c_fatima_energy_promptflash_cut_mult3);
 
     c_fatima_energy_promptflash_cut_mult4p = new TCanvas(TString("c_fatima_energy_promptflash_cut_mult4p_frs_gate_"+frsgate->GetName()),TString("Fatima energy, prompt flash cut out, multiplicity 4+, short lifetime, gated FRS on "+frsgate->GetName()),650,350);
     h1_fatima_energy_promptflash_cut_mult4p = new TH1F(TString("h1_fatima_energy_promptflash_cut_mult4p_frs_gate_"+frsgate->GetName()),TString("Fatima energy, prompt flash cut out, multiplicity 4+, short lifetime, gated FRS on "+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     h1_fatima_energy_promptflash_cut_mult4p->GetXaxis()->SetTitle("energy (keV)");
     h1_fatima_energy_promptflash_cut_mult4p->Draw("COLZ");
     c_fatima_energy_promptflash_cut_mult4p->cd(0);
-    dir_fatima->Add(c_fatima_energy_promptflash_cut_mult4p);
-    dir_fatima->Add(h1_fatima_energy_promptflash_cut_mult4p);    
+    dir_fatima->Append(c_fatima_energy_promptflash_cut_mult4p);
 
     c_fatima_multiplicity_vs_tsci41 = new TCanvas(TString("c_fatima_multiplicity_vs_tsci41_frs_gate_"+frsgate->GetName()),TString("Fatima multiplicity vs t(det) - t(sci41), short lifetime, gated FRS on "+frsgate->GetName()),650,350);
     h2_fatima_multiplicity_vs_tsci41 = new TH2F(TString("h2_fatima_multiplicity_vs_tsci41_frs_gate_"+frsgate->GetName()),TString("Fatima multiplicity vs t(det) - t(sci41), short lifetime,  gated FRS on "+frsgate->GetName()),10000,-2000,stop_short_lifetime_collection,36,0,36);
@@ -262,8 +265,8 @@ InitStatus FrsFatimaCorrelations::Init()
     h2_fatima_multiplicity_vs_tsci41->GetYaxis()->SetTitle("multiplicity");
     h2_fatima_multiplicity_vs_tsci41->Draw("COLZ");
     c_fatima_multiplicity_vs_tsci41->cd(0);
-    dir_fatima->Add(c_fatima_multiplicity_vs_tsci41);
-    dir_fatima->Add(h2_fatima_multiplicity_vs_tsci41);
+    dir_fatima->Append(c_fatima_multiplicity_vs_tsci41);
+    dir_fatima->Append(c_fatima_energy_vs_tsci41);
 
     
     c_fatima_energy_promptflash_cut = new TCanvas(TString("c_fatima_energy_promptflash_cut_frs_gate_"+frsgate->GetName()),TString("Fatima energy, prompt flash cut out, short lifetime, gated FRS on "+frsgate->GetName()),650,350);
@@ -271,21 +274,16 @@ InitStatus FrsFatimaCorrelations::Init()
     h1_fatima_energy_promptflash_cut->GetXaxis()->SetTitle("energy (keV)");
     h1_fatima_energy_promptflash_cut->Draw("COLZ");
     c_fatima_energy_promptflash_cut->cd(0);
-    dir_fatima->Add(c_fatima_energy_promptflash_cut);
-    dir_fatima->Add(h1_fatima_energy_promptflash_cut);
+    dir_fatima->Append(c_fatima_energy_promptflash_cut);
 
 
-    
     c_fatima_energy_energy_promptflash_cut = new TCanvas(TString("c_fatima_energy_energy_promptflash_cut_frs_gate_"+frsgate->GetName()),TString(Form("Fatima energy vs energy, |t(det1)-t(det2)|<%i ns, prompt flash cut out, short lifetime, gated FRS on ",fatima_coincidence_gate)+frsgate->GetName()),650,350);
     h2_fatima_energy_energy_promptflash_cut = new TH2F(TString("h2_fatima_energy_energy_promptflash_cut_frs_gate_"+frsgate->GetName()),TString(Form("Fatima energy vs energy, |t(det1)-t(det2)|<%i ns, prompt flash cut out, short lifetime, gated FRS on ",fatima_coincidence_gate)+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     h2_fatima_energy_energy_promptflash_cut->GetXaxis()->SetTitle("energy (keV)");
     h2_fatima_energy_energy_promptflash_cut->GetYaxis()->SetTitle("energy (keV)");
     h2_fatima_energy_energy_promptflash_cut->Draw("COLZ");
     c_fatima_energy_energy_promptflash_cut->cd(0);
-    dir_fatima->Add(c_fatima_energy_energy_promptflash_cut);
-    dir_fatima->Add(h2_fatima_energy_energy_promptflash_cut);
-
-
+    dir_fatima->Append(c_fatima_energy_energy_promptflash_cut);
 
 
     c_fatima_energy_vs_sci41_wr_long = new TCanvas(TString("c_fatima_energy_vs_sci41_wr_long_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det,wr) - t(sci41,wr) long lifetime, gated FRS on "+frsgate->GetName()),650,350);
@@ -294,8 +292,7 @@ InitStatus FrsFatimaCorrelations::Init()
     h2_fatima_energy_vs_sci41_wr_long->GetYaxis()->SetTitle("energy (keV)");
     h2_fatima_energy_vs_sci41_wr_long->Draw("COLZ");
     c_fatima_energy_vs_sci41_wr_long->cd(0);
-    dir_fatima->Add(c_fatima_energy_vs_sci41_wr_long);
-    dir_fatima->Add(h2_fatima_energy_vs_sci41_wr_long);
+    dir_fatima->Append(c_fatima_energy_vs_sci41_wr_long);
 
     c_fatima_multiplicity_vs_sci41_wr_long = new TCanvas(TString("c_fatima_multiplicity_vs_sci41_wr_long_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det,wr) - t(sci41,wr) long lifetime, gated FRS on "+frsgate->GetName()),650,350);
     h2_fatima_multiplicity_vs_sci41_wr_long = new TH2F(TString("h2_fatima_multiplicity_vs_sci41_wr_long_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det,wr) - t(sci41,wr) long lifetime, gated FRS on "+frsgate->GetName()),10000,long_lifetime_binlow,long_lifetime_binhigh,36,0,36);
@@ -303,8 +300,7 @@ InitStatus FrsFatimaCorrelations::Init()
     h2_fatima_multiplicity_vs_sci41_wr_long->GetYaxis()->SetTitle("multiplicity");
     h2_fatima_multiplicity_vs_sci41_wr_long->Draw("COLZ");
     c_fatima_multiplicity_vs_sci41_wr_long->cd(0);
-    dir_fatima->Add(c_fatima_multiplicity_vs_sci41_wr_long);
-    dir_fatima->Add(h2_fatima_multiplicity_vs_sci41_wr_long);
+    dir_fatima->Append(c_fatima_multiplicity_vs_sci41_wr_long);
 
     
     c_fatima_energy_promptflash_cut_long = new TCanvas(TString("c_fatima_energy_promptflash_cut_long_frs_gate_"+frsgate->GetName()),TString("Fatima energy, prompt flash cut out, long lifetime, gated FRS on "+frsgate->GetName()),650,350);
@@ -312,8 +308,7 @@ InitStatus FrsFatimaCorrelations::Init()
     h1_fatima_energy_promptflash_cut_long->GetXaxis()->SetTitle("energy (keV)");
     h1_fatima_energy_promptflash_cut_long->Draw("COLZ");
     c_fatima_energy_promptflash_cut_long->cd(0);
-    dir_fatima->Add(c_fatima_energy_promptflash_cut_long);
-    dir_fatima->Add(h1_fatima_energy_promptflash_cut_long);    
+    dir_fatima->Append(c_fatima_energy_promptflash_cut_long);
     
     
     c_fatima_energy_vs_sci41_wr_long_mult1 = new TCanvas(TString("c_fatima_energy_vs_sci41_wr_long_mult1_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det,wr) - t(sci41,wr) long lifetime, multiplicity 1, gated FRS on "+frsgate->GetName()),650,350);
@@ -322,8 +317,7 @@ InitStatus FrsFatimaCorrelations::Init()
     h2_fatima_energy_vs_sci41_wr_long_mult1->GetYaxis()->SetTitle("energy (keV)");
     h2_fatima_energy_vs_sci41_wr_long_mult1->Draw("COLZ");
     c_fatima_energy_vs_sci41_wr_long_mult1->cd(0);
-    dir_fatima->Add(c_fatima_energy_vs_sci41_wr_long_mult1);
-    dir_fatima->Add(h2_fatima_energy_vs_sci41_wr_long_mult1);
+    dir_fatima->Append(c_fatima_energy_vs_sci41_wr_long_mult1);
 
     c_fatima_energy_vs_sci41_wr_long_mult2 = new TCanvas(TString("c_fatima_energy_vs_sci41_wr_long_mult2_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det,wr) - t(sci41,wr) long lifetime, multiplicity 2, gated FRS on "+frsgate->GetName()),650,350);
     h2_fatima_energy_vs_sci41_wr_long_mult2 = new TH2F(TString("h2_fatima_energy_vs_sci41_wr_long_mult2_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det,wr) - t(sci41,wr) long lifetime, multiplicity 2, gated FRS on "+frsgate->GetName()),10000,long_lifetime_binlow,long_lifetime_binhigh,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
@@ -331,8 +325,7 @@ InitStatus FrsFatimaCorrelations::Init()
     h2_fatima_energy_vs_sci41_wr_long_mult2->GetYaxis()->SetTitle("energy (keV)");
     h2_fatima_energy_vs_sci41_wr_long_mult2->Draw("COLZ");
     c_fatima_energy_vs_sci41_wr_long_mult2->cd(0);
-    dir_fatima->Add(c_fatima_energy_vs_sci41_wr_long_mult2);
-    dir_fatima->Add(h2_fatima_energy_vs_sci41_wr_long_mult2);
+    dir_fatima->Append(c_fatima_energy_vs_sci41_wr_long_mult2);
     
     
     c_fatima_energy_vs_sci41_wr_long_mult3 = new TCanvas(TString("c_fatima_energy_vs_sci41_wr_long_mult3_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det,wr) - t(sci41,wr) long lifetime, multiplicity 3, gated FRS on "+frsgate->GetName()),650,350);
@@ -341,8 +334,7 @@ InitStatus FrsFatimaCorrelations::Init()
     h2_fatima_energy_vs_sci41_wr_long_mult3->GetYaxis()->SetTitle("energy (keV)");
     h2_fatima_energy_vs_sci41_wr_long_mult3->Draw("COLZ");
     c_fatima_energy_vs_sci41_wr_long_mult3->cd(0);
-    dir_fatima->Add(c_fatima_energy_vs_sci41_wr_long_mult3);
-    dir_fatima->Add(h2_fatima_energy_vs_sci41_wr_long_mult3);
+    dir_fatima->Append(c_fatima_energy_vs_sci41_wr_long_mult3);
 
     c_fatima_energy_vs_sci41_wr_long_mult4p = new TCanvas(TString("c_fatima_energy_vs_sci41_wr_long_mult4p_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det,wr) - t(sci41,wr) long lifetime, multiplicity 3, gated FRS on "+frsgate->GetName()),650,350);
     h2_fatima_energy_vs_sci41_wr_long_mult4p = new TH2F(TString("h2_fatima_energy_vs_sci41_wr_long_mult4p_frs_gate_"+frsgate->GetName()),TString("Fatima energies vs t(det,wr) - t(sci41,wr) long lifetime, multiplicity 3, gated FRS on "+frsgate->GetName()),10000,long_lifetime_binlow,long_lifetime_binhigh,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
@@ -350,8 +342,7 @@ InitStatus FrsFatimaCorrelations::Init()
     h2_fatima_energy_vs_sci41_wr_long_mult4p->GetYaxis()->SetTitle("energy (keV)");
     h2_fatima_energy_vs_sci41_wr_long_mult4p->Draw("COLZ");
     c_fatima_energy_vs_sci41_wr_long_mult4p->cd(0);
-    dir_fatima->Add(c_fatima_energy_vs_sci41_wr_long_mult4p);
-    dir_fatima->Add(h2_fatima_energy_vs_sci41_wr_long_mult4p);
+    dir_fatima->Append(c_fatima_energy_vs_sci41_wr_long_mult4p);
 
 
     c_fatima_energy_promptflash_cut_long_mult1 = new TCanvas(TString("c_fatima_energy_promptflash_cut_long_mult1_frs_gate_"+frsgate->GetName()),TString("Fatima energy, prompt flash cut out, multiplicity 1, long lifetime, gated FRS on "+frsgate->GetName()),650,350);
@@ -359,32 +350,28 @@ InitStatus FrsFatimaCorrelations::Init()
     h1_fatima_energy_promptflash_cut_long_mult1->GetXaxis()->SetTitle("energy (keV)");
     h1_fatima_energy_promptflash_cut_long_mult1->Draw("COLZ");
     c_fatima_energy_promptflash_cut_long_mult1->cd(0);
-    dir_fatima->Add(c_fatima_energy_promptflash_cut_long_mult1);
-    dir_fatima->Add(h1_fatima_energy_promptflash_cut_long_mult1);    
+    dir_fatima->Append(c_fatima_energy_promptflash_cut_long_mult1);
 
     c_fatima_energy_promptflash_cut_long_mult2 = new TCanvas(TString("c_fatima_energy_promptflash_cut_long_mult2_frs_gate_"+frsgate->GetName()),TString("Fatima energy, prompt flash cut out, multiplicity 2, long lifetime, gated FRS on "+frsgate->GetName()),650,350);
     h1_fatima_energy_promptflash_cut_long_mult2 = new TH1F(TString("h1_fatima_energy_promptflash_cut_long_mult2_frs_gate_"+frsgate->GetName()),TString("Fatima energy, prompt flash cut out, multiplicity 2, long lifetime, gated FRS on "+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     h1_fatima_energy_promptflash_cut_long_mult2->GetXaxis()->SetTitle("energy (keV)");
     h1_fatima_energy_promptflash_cut_long_mult2->Draw("COLZ");
     c_fatima_energy_promptflash_cut_long_mult2->cd(0);
-    dir_fatima->Add(c_fatima_energy_promptflash_cut_long_mult2);
-    dir_fatima->Add(h1_fatima_energy_promptflash_cut_long_mult2);    
+    dir_fatima->Append(c_fatima_energy_promptflash_cut_long_mult2);
 
     c_fatima_energy_promptflash_cut_long_mult3 = new TCanvas(TString("c_fatima_energy_promptflash_cut_long_mult3_frs_gate_"+frsgate->GetName()),TString("Fatima energy, prompt flash cut out, multiplicity 3, long lifetime, gated FRS on "+frsgate->GetName()),650,350);
     h1_fatima_energy_promptflash_cut_long_mult3 = new TH1F(TString("h1_fatima_energy_promptflash_cut_long_mult3_frs_gate_"+frsgate->GetName()),TString("Fatima energy, prompt flash cut out, multiplicity 3, long lifetime, gated FRS on "+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     h1_fatima_energy_promptflash_cut_long_mult3->GetXaxis()->SetTitle("energy (keV)");
     h1_fatima_energy_promptflash_cut_long_mult3->Draw("COLZ");
     c_fatima_energy_promptflash_cut_long_mult3->cd(0);
-    dir_fatima->Add(c_fatima_energy_promptflash_cut_long_mult3);
-    dir_fatima->Add(h1_fatima_energy_promptflash_cut_long_mult3);    
+    dir_fatima->Append(c_fatima_energy_promptflash_cut_long_mult3);
 
     c_fatima_energy_promptflash_cut_long_mult4p = new TCanvas(TString("c_fatima_energy_promptflash_cut_long_mult4p_frs_gate_"+frsgate->GetName()),TString("Fatima energy, prompt flash cut out, multiplicity 4+, long lifetime, gated FRS on "+frsgate->GetName()),650,350);
     h1_fatima_energy_promptflash_cut_long_mult4p = new TH1F(TString("h1_fatima_energy_promptflash_cut_long_mult4p_frs_gate_"+frsgate->GetName()),TString("Fatima energy, prompt flash cut out, multiplicity 4+, long lifetime, gated FRS on "+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     h1_fatima_energy_promptflash_cut_long_mult4p->GetXaxis()->SetTitle("energy (keV)");
     h1_fatima_energy_promptflash_cut_long_mult4p->Draw("COLZ");
     c_fatima_energy_promptflash_cut_long_mult4p->cd(0);
-    dir_fatima->Add(c_fatima_energy_promptflash_cut_long_mult4p);
-    dir_fatima->Add(h1_fatima_energy_promptflash_cut_long_mult4p);    
+    dir_fatima->Append(c_fatima_energy_promptflash_cut_long_mult4p);
 
 
     c_fatima_energy_energy_promptflash_cut_long = new TCanvas(TString("c_fatima_energy_energy_promptflash_cut_long_frs_gate_"+frsgate->GetName()),TString(Form("Fatima energy vs energy, |t(det1)-t(det2)|<%i ns, prompt flash cut out, long lifetime, gated FRS on ",fatima_coincidence_gate)+frsgate->GetName()),650,350);
@@ -393,9 +380,8 @@ InitStatus FrsFatimaCorrelations::Init()
     h2_fatima_energy_energy_promptflash_cut_long->GetYaxis()->SetTitle("energy (keV)");
     h2_fatima_energy_energy_promptflash_cut_long->Draw("COLZ");
     c_fatima_energy_energy_promptflash_cut_long->cd(0);
-    dir_fatima->Add(c_fatima_energy_energy_promptflash_cut_long);
-    dir_fatima->Add(h2_fatima_energy_energy_promptflash_cut_long);
-
+    dir_fatima->Append(c_fatima_energy_energy_promptflash_cut_long);
+    
 
     
     c_fatima_sci41_hits = new TCanvas(TString("c_fatima_sci41_hits_frs_gate_"+frsgate->GetName()),TString("Hits in sci41, long lifetime, gated FRS on "+frsgate->GetName()),650,350);
@@ -403,16 +389,14 @@ InitStatus FrsFatimaCorrelations::Init()
     h1_fatima_sci41_hits->GetXaxis()->SetTitle("energy (keV)");
     h1_fatima_sci41_hits->Draw("COLZ");
     c_fatima_sci41_hits->cd(0);
-    dir_fatima->Add(c_fatima_sci41_hits);
-    dir_fatima->Add(h1_fatima_sci41_hits);
+    dir_fatima->Append(c_fatima_sci41_hits);
 
     c_fatima_sci41_energy = new TCanvas(TString("c_fatima_sci41_energy_frs_gate_"+frsgate->GetName()),TString("Energy in sci41, gated FRS on "+frsgate->GetName()),650,350);
     h1_fatima_sci41_energy = new TH1F(TString("h1_fatima_sci41_energy_frs_gate_"+frsgate->GetName()),TString("Energy in sci41, gated FRS on "+frsgate->GetName()),3000,0,1500);
     h1_fatima_sci41_energy->GetXaxis()->SetTitle("energy (keV)");
     h1_fatima_sci41_energy->Draw("COLZ");
     c_fatima_sci41_energy->cd(0);
-    dir_fatima->Add(c_fatima_sci41_energy);
-    dir_fatima->Add(h1_fatima_sci41_energy);
+    dir_fatima->Append(c_fatima_sci41_energy);
     
 
     //energy-gated spectra:
@@ -438,42 +422,39 @@ InitStatus FrsFatimaCorrelations::Init()
     h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long = new TH2F*[gamma_energies_of_interest.size()];
         
     
-    for (int idx_gamma_gate = 0; idx_gamma_gate < gamma_energies_of_interest.size(); idx_gamma_gate++){
-        dir_energy_gated[idx_gamma_gate] = new TDirectory(Form("Energy gated coincidence spectra, Eg = %i",(int)gamma_energies_of_interest.at(idx_gamma_gate)),Form("Energy gated coincidence spectra, Eg = %i",(int)gamma_energies_of_interest.at(idx_gamma_gate)));
-        dir_fatima->Add(dir_energy_gated[idx_gamma_gate]);
+    for (int idx_gamma_gate = 0; idx_gamma_gate < gamma_energies_of_interest.size(); idx_gamma_gate++)
+    {
+        dirname = "Energy gated coincidence spectra, Eg = " + (int)gamma_energies_of_interest.at(idx_gamma_gate);
+        dir_energy_gated[idx_gamma_gate] = dir_fatima->mkdir(dirname);
+        dir_energy_gated[idx_gamma_gate]->cd();
 
         c_fatima_tsci41_energy_gated[idx_gamma_gate] = new TCanvas(TString(Form("c_fatima_tsci41_energy_gated_%i_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("t(det) - t(sci41) gated on E = %i keV, gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate))+frsgate->GetName()));
         h1_fatima_tsci41_energy_gated[idx_gamma_gate] = new TH1F(TString(Form("h1_fatima_tsci41_energy_gated_%i_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("t(det) - t(sci41) gated on E = %i keV, gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate))+frsgate->GetName()),10000,-2e3,stop_short_lifetime_collection);
         h1_fatima_tsci41_energy_gated[idx_gamma_gate]->GetXaxis()->SetTitle("time (ns)");
         h1_fatima_tsci41_energy_gated[idx_gamma_gate]->Draw();
         c_fatima_tsci41_energy_gated[idx_gamma_gate]->cd(0);
-        dir_energy_gated[idx_gamma_gate]->Add(c_fatima_tsci41_energy_gated[idx_gamma_gate]);
-        dir_energy_gated[idx_gamma_gate]->Add(h1_fatima_tsci41_energy_gated[idx_gamma_gate]);
+        dir_energy_gated[idx_gamma_gate]->Append(c_fatima_tsci41_energy_gated[idx_gamma_gate]);
 
-        
         c_fatima_energy_promptflash_cut_energy_gated[idx_gamma_gate] = new TCanvas(TString(Form("c_fatima_energy_promptflash_cut_energy_gated_%i_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("Coincident gammas gated on E = %i keV, gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate))+frsgate->GetName()));
         h1_fatima_energy_promptflash_cut_energy_gated[idx_gamma_gate] = new TH1F(TString(Form("h1_fatima_energy_promptflash_cut_energy_gated_%i_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("Coincident gammas gated on E = %i keV, gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate))+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
         h1_fatima_energy_promptflash_cut_energy_gated[idx_gamma_gate]->GetXaxis()->SetTitle("Energy (keV)");
         h1_fatima_energy_promptflash_cut_energy_gated[idx_gamma_gate]->Draw();
         c_fatima_energy_promptflash_cut_energy_gated[idx_gamma_gate]->cd(0);
-        dir_energy_gated[idx_gamma_gate]->Add(c_fatima_energy_promptflash_cut_energy_gated[idx_gamma_gate]);
-        dir_energy_gated[idx_gamma_gate]->Add(h1_fatima_energy_promptflash_cut_energy_gated[idx_gamma_gate]);
+        dir_energy_gated[idx_gamma_gate]->Append(c_fatima_energy_promptflash_cut_energy_gated[idx_gamma_gate]);
 
         c_fatima_twr_sci41_energy_gated[idx_gamma_gate] = new TCanvas(TString(Form("c_fatima_twr_sci41_energy_gated_%i_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("WR t(det) - t(sci41) gated on E = %i keV, gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate))+frsgate->GetName()));
         h1_fatima_twr_sci41_energy_gated[idx_gamma_gate] = new TH1F(TString(Form("h1_fatima_twr_sci41_energy_gated_%i_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("WR t(det) - t(sci41) gated on E = %i keV, gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate))+frsgate->GetName()),10000,long_lifetime_binlow,long_lifetime_binhigh);
         h1_fatima_twr_sci41_energy_gated[idx_gamma_gate]->GetXaxis()->SetTitle("time (ns)");
         h1_fatima_twr_sci41_energy_gated[idx_gamma_gate]->Draw();
         c_fatima_twr_sci41_energy_gated[idx_gamma_gate]->cd(0);
-        dir_energy_gated[idx_gamma_gate]->Add(c_fatima_twr_sci41_energy_gated[idx_gamma_gate]);
-        dir_energy_gated[idx_gamma_gate]->Add(h1_fatima_twr_sci41_energy_gated[idx_gamma_gate]);
+        dir_energy_gated[idx_gamma_gate]->Append(c_fatima_twr_sci41_energy_gated[idx_gamma_gate]);
 
         c_fatima_energy_promptflash_cut_long_energy_gated[idx_gamma_gate] = new TCanvas(TString(Form("c_fatima_energy_promptflash_cut_long_energy_gated_%i_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("Coincident gammas gated on E = %i keV, gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate))+frsgate->GetName()));
         h1_fatima_energy_promptflash_cut_long_energy_gated[idx_gamma_gate] = new TH1F(TString(Form("h1_fatima_energy_promptflash_cut_long_energy_gated_%i_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("Coincident gammas gated on E = %i keV, gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate))+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
         h1_fatima_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]->GetXaxis()->SetTitle("Energy (keV)");
         h1_fatima_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]->Draw();
         c_fatima_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]->cd(0);
-        dir_energy_gated[idx_gamma_gate]->Add(c_fatima_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]);
-        dir_energy_gated[idx_gamma_gate]->Add(h1_fatima_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]);
+        dir_energy_gated[idx_gamma_gate]->Append(c_fatima_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]);
 
         c_fatima_energy_gated_energy_vs_dt_prompt_flash_cut [idx_gamma_gate] = new TCanvas(TString(Form("c_fatima_energy_gated_%i_energy_vs_dt_prompt_flash_cut_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("Coincident gamma with start Ey1 = %i keV, Ey2 vs t(Ey1)-t(Ey2), short isomer,  gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName());
         h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut[idx_gamma_gate] = new TH2F(TString(Form("h2_fatima_energy_gated_%i_energy_vs_dt_prompt_flash_cut_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("Coincident gamma with start Ey1 = %i keV, Ey2 vs t(Ey1)-t(Ey2), short isomer,  gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
@@ -481,20 +462,16 @@ InitStatus FrsFatimaCorrelations::Init()
         h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut[idx_gamma_gate]->GetYaxis()->SetTitle("energy of start gamma (keV)");
         h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut[idx_gamma_gate]->Draw("COLZ");
         c_fatima_energy_gated_energy_vs_dt_prompt_flash_cut[idx_gamma_gate]->cd(0);
-        dir_energy_gated[idx_gamma_gate]->Add(c_fatima_energy_gated_energy_vs_dt_prompt_flash_cut[idx_gamma_gate]);
-        dir_energy_gated[idx_gamma_gate]->Add(h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut[idx_gamma_gate]);
+        dir_energy_gated[idx_gamma_gate]->Append(c_fatima_energy_gated_energy_vs_dt_prompt_flash_cut[idx_gamma_gate]);
 
-        
         c_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long[idx_gamma_gate] = new TCanvas(TString(Form("c_fatima_energy_gated_%i_energy_vs_dt_prompt_flash_cut_long_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("Coincident gamma with start Ey1 = %i keV, Ey2 vs t(Ey1)-t(Ey2), long isomer, gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName());
         h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long[idx_gamma_gate] = new TH2F(TString(Form("h2_fatima_energy_gated_%i_energy_vs_dt_prompt_flash_cut_long_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("Coincident gamma with start Ey1 = %i keV, Ey2 vs t(Ey1)-t(Ey2), long isomer , gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
         h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long[idx_gamma_gate]->GetXaxis()->SetTitle("time between gammas (ns)");
         h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long[idx_gamma_gate]->GetYaxis()->SetTitle("energy of start gamma (keV)");
         h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long[idx_gamma_gate]->Draw("COLZ");
         c_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long[idx_gamma_gate]->cd(0);
-        dir_energy_gated[idx_gamma_gate]->Add(c_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long[idx_gamma_gate]);
-        dir_energy_gated[idx_gamma_gate]->Add(h2_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long[idx_gamma_gate]);
+        dir_energy_gated[idx_gamma_gate]->Append(c_fatima_energy_gated_energy_vs_dt_prompt_flash_cut_long[idx_gamma_gate]);
 
-        
 
     }
     

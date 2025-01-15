@@ -14,16 +14,16 @@
 #define AIDA_ON 1
 #define BPLAST_ON 1
 #define GERMANIUM_ON 1
-#define BGO_ON 0
+#define BGO_ON 1
 #define FRS_ON 1
-#define TIME_MACHINE_ON 1
+#define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
-#define WHITE_RABBIT_CORS 1
+#define WHITE_RABBIT_CORS 0
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
 {
-    #include "/lustre/gamma/s100_nearline/c4Root/config/s100/frs/setup_s100_dryrun.C"
+    #include "/lustre/gamma/s181_nearline/c4Root/config/s181/frs/setup_s181_010_2024_conv_new.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -41,7 +41,7 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_frstpat_onion_t frstpat;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
     EXT_STR_h101_bgo_onion_t bgo;
-    // EXT_STR_h101_bb7febex_onion_t bb7febex;
+    // EXT_STR_h101_bb7vme_onion_t bb7vme;
 } EXT_STR_h101;
 
 
@@ -73,7 +73,7 @@ void s100_nearline_histograms(TString filename)
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     TString outputpath = "/lustre/gamma/s100_nearline/histograms/";
-    TString outputFileName = outputpath + TString(GET_FILENAME(filename)) + "_histograms.root";
+    TString outputFileName = outputpath + TString(GET_FILENAME(filename)) + "_histograms_with162Eu_newGatesTest.root";
 
     FairRunAna* run = new FairRunAna();
     EventHeader* EvtHead = new EventHeader();
@@ -102,13 +102,21 @@ void s100_nearline_histograms(TString filename)
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Gates *************************************************************** //
 
-    TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_mar20.txt");
-    TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_new.txt");
+    TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_mapping_s100.txt");
+    TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_apr18.txt");
+    TFatimaTwinpeaksConfiguration::SetDetectorTimeshiftsFile(config_path + "/fatima/fatima_timeshifts_apr20.txt");
+    
+    
     TFatimaVmeConfiguration::SetDetectorMapFile(config_path + "/fatima/Fatima_VME_allocation.txt");
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
-    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_mar21.txt");
+    
+    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_apr15.txt");
+    TGermaniumConfiguration::SetDetectorTimeshiftsFile(config_path + "/germanium/ge_timeshifts_apr20.txt");
+    TGermaniumConfiguration::SetPromptFlashCut(config_path + "/germanium/ge_prompt_flash.root" );
+    
     TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
+    
 
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Correlations ******************************************************** //
@@ -130,11 +138,11 @@ void s100_nearline_histograms(TString filename)
         nearlinefatima->SetBinningFastToT(1000,0.1,100.1);
         nearlinefatima->SetBinningEnergy(1000,0.1,1500.1);
 
-        std::vector<int> fat_dets = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64};
+        std::vector<int> fat_dets = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44};
         nearlinefatima->SetDetectorsToPlot(fat_dets);
         
-        std::vector<int> fat_ref_dets = {54};
-        nearlinefatima->SetReferenceDetectorsForTimeDifferences(fat_ref_dets);
+        std::vector<int> fat_ref_dets = {1};
+        //nearlinefatima->AddReferenceDetectorsForTimeDifferences(1);
         
         run->AddTask(nearlinefatima);
     }
@@ -170,7 +178,8 @@ void s100_nearline_histograms(TString filename)
         nearlinege->AddReferenceDetector(1,0);
         run->AddTask(nearlinege);
     }
-    
+    //TBGOTwinpeaksConfiguration::SetCoincidenceWindow(5000);
+    //TBGOTwinpeaksConfiguration::SetCoincidenceOffset(0);
     if (BGO_ON)
     {
         BGONearlineSpectra* nearlinebgo = new BGONearlineSpectra();
@@ -181,11 +190,12 @@ void s100_nearline_histograms(TString filename)
         
     }
     
-    TFrsConfiguration::Set_Z_range(70,100);
+    TFrsConfiguration::Set_Z_range(50,80);
     TFrsConfiguration::Set_AoQ_range(2.3,2.7);
     std::vector<FrsGate*> fg;
-    FrsGate* Pt191 = new FrsGate("191Pt", "/lustre/gamma/s100_nearline/c4Root/config/s100/frs/Gates/191Pt.root");
-    fg.emplace_back(Pt191);
+    FrsGate* Eu163 = new FrsGate("163Eu", "/lustre/gamma/s100_nearline/c4Root/config/s100/frs/Gates/163Eu_test.root");
+    fg.emplace_back(Eu162);
+    
     
     if (FRS_ON)
     {
@@ -193,7 +203,6 @@ void s100_nearline_histograms(TString filename)
         
         run->AddTask(nearlinefrs);
     }
-    
     
     TString b = "Aida";
     TString c = "Fatima";
@@ -217,6 +226,40 @@ void s100_nearline_histograms(TString filename)
     
         run->AddTask(wrnearline);
     }
+
+    if (FRS_ON && AIDA_ON)
+    {
+        FrsAidaCorrelations* frsaidacorr = new FrsAidaCorrelations(fg);
+        run->AddTask(frsaidacorr);
+    }
+
+    if (FRS_ON && GERMANIUM_ON)
+    {
+        FrsGermaniumCorrelationsNearline* ge162Eu = new FrsGermaniumCorrelationsNearline(Eu162);
+        ge162Eu->SetShortLifetimeCollectionWindow(5000);
+        FrsGermaniumCorrelationsNearline* ge163Eu = new FrsGermaniumCorrelationsNearline(Eu163);
+        ge163Eu->SetShortLifetimeCollectionWindow(5000);
+        FrsGermaniumCorrelationsNearline* ge167Tb = new FrsGermaniumCorrelationsNearline(Tb167);
+        ge167Tb->SetShortLifetimeCollectionWindow(5000);
+        run->AddTask(ge162Eu);
+        run->AddTask(ge163Eu);
+        run->AddTask(ge167Tb);     
+        
+
+     }
+    if (FATIMA_ON && FRS_ON)
+    {
+        FrsFatimaCorrelationsNearline* fat162Eu = new FrsFatimaCorrelationsNearline(Eu162);
+        fat162Eu->SetShortLifetimeCollectionWindow(5000);
+        FrsFatimaCorrelationsNearline* fat163Eu = new FrsFatimaCorrelationsNearline(Eu163);
+        fat163Eu->SetShortLifetimeCollectionWindow(5000);
+        FrsFatimaCorrelationsNearline* fat167Tb = new FrsFatimaCorrelationsNearline(Tb167);
+        fat167Tb->SetShortLifetimeCollectionWindow(5000);
+        run->AddTask(fat162Eu);
+        run->AddTask(fat163Eu);
+        run->AddTask(fat167Tb);
+        
+    }	
 
 
     // Initialise

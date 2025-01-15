@@ -1,0 +1,52 @@
+#FULL CRATE MAP S092 (pt 2) / "Shiyan"
+
+#Scintillator dE mapping -- MAIN CRATE
+dE_21L  2
+dE_21R  3
+dE_22L  15
+dE_22R  8
+dE_31L  9
+dE_31R  10
+dE_41L  13
+dE_41R  1
+dE_42L  4
+dE_42R  5
+dE_43L  11
+dE_43R  12
+dE_81L  6
+dE_81R  14
+
+#Scintillator MHTDC ts mapping -- MAIN CRATE
+mhtdc_11   12
+mhtdc_21L  2
+mhtdc_21R  3
+mhtdc_22L  13
+mhtdc_22R  14
+mhtdc_31L  10
+mhtdc_31R  11
+mhtdc_41L  0
+mhtdc_41R  1
+mhtdc_42L  4
+mhtdc_42R  15
+mhtdc_43L  6
+mhtdc_43R  7
+mhtdc_81L  8
+mhtdc_81R  9
+
+#Scintillator dT mapping -- USER CRATE
+dT_21L_21R  0
+dT_41L_41R  1  
+dT_42L_42R  2
+dT_43L_43R  3
+dT_81L_81R  4
+dT_21L_41L  5
+dT_21R_41R  6
+dT_42R_21R  7
+dT_42L_21L  8
+dT_21L_81L  9
+dT_21R_81R  10
+dT_22L_22R  11
+dT_22L_41L  12
+dT_22R_41R  13
+dT_22L_81L  14
+dT_22R_81R  15

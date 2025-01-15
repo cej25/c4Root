@@ -19,16 +19,21 @@ extern "C"
 #define UINT_MAX 4294967295
 
 BeamMonitorReader::BeamMonitorReader(EXT_STR_h101_beammonitor_onion* data, size_t offset)
-    : c4Reader("BeamMonitorReader")
-    , fNEvent(0)
-    , fData(data)
-    , fOffset(offset)
-    , fOnline(kFALSE)
-    , fArray(new TClonesArray("BeamMonitorData"))
+    :   c4Reader("BeamMonitorReader")
+    ,   fNEvent(0)
+    ,   fData(data)
+    ,   fOffset(offset)
+    ,   fOnline(kFALSE)
+    ,   s2array(new std::vector<BeamMonitorItem>)
+    ,   s4array(new std::vector<BeamMonitorItem>)
 {
 }
 
-BeamMonitorReader::~BeamMonitorReader() { delete fArray; }
+BeamMonitorReader::~BeamMonitorReader() 
+{ 
+    delete s2array;
+    delete s4array;
+}
 
 Bool_t BeamMonitorReader::Init(ext_data_struct_info* a_struct_info)
 {
@@ -44,8 +49,10 @@ Bool_t BeamMonitorReader::Init(ext_data_struct_info* a_struct_info)
     }
 
     // Register output array in a tree
-    FairRootManager::Instance()->Register("BeamMonitorData", "Beam Monitor Data", fArray, !fOnline);
-    fArray->Clear();
+    FairRootManager::Instance()->RegisterAny("BeamMonitorS2Data", s2array, !fOnline);
+    FairRootManager::Instance()->RegisterAny("BeamMonitorS4Data", s4array, !fOnline);
+    s2array->clear();
+    s4array->clear();
 
     memset(fData, 0, sizeof *fData);
 
@@ -56,15 +63,10 @@ Bool_t BeamMonitorReader::Read()
 {
     c4LOG(debug2, "Event Data");
 
-    BeamMonitorData* BeamMonitorHit = new BeamMonitorData();
-
-    // CEJ doing S2 now, not sure if identical or small differences
     uint32_t ts_prev_S2 = 0;
     uint32_t ts_curr_S2 = 0;
     uint32_t ts_diff_S2 = 0;
     uint32_t ts_first_S2 = 1;
-
-    std::vector<uint32_t> dtS2;
 
     for (int hit = 0; hit < fData->beammonitor_s2_dataS2; hit++)
     {   
@@ -85,7 +87,9 @@ Bool_t BeamMonitorReader::Read()
         }
         else
         {
-            dtS2.emplace_back(ts_diff_S2);
+            auto & entry = s2array->emplace_back();
+            entry.SetAll(ts_diff_S2);
+
         }
         
         ts_prev_S2 = ts_curr_S2;
@@ -95,8 +99,6 @@ Bool_t BeamMonitorReader::Read()
     uint32_t ts_curr_S4 = 0;
     uint32_t ts_diff_S4 = 0;
     uint32_t ts_first_S4 = 1;
-
-    std::vector<uint32_t> dtS4;
 
     for (int hit = 0; hit < fData->beammonitor_s4_dataS4; hit++)
     {   
@@ -117,16 +119,12 @@ Bool_t BeamMonitorReader::Read()
         }
         else
         {
-            dtS4.emplace_back(ts_diff_S4);
+            auto & entry = s4array->emplace_back();
+            entry.SetAll(ts_diff_S4);
         }
         
         ts_prev_S4 = ts_curr_S4;
     }
-    
-    BeamMonitorHit->Set_S2_data(dtS2);
-    BeamMonitorHit->Set_S4_data(dtS4);
-
-    new ((*fArray)[fArray->GetEntriesFast()]) BeamMonitorData(*BeamMonitorHit);
 
     fNEvent += 1;
     return kTRUE;
@@ -134,7 +132,8 @@ Bool_t BeamMonitorReader::Read()
 
 void BeamMonitorReader::Reset()
 {
-    fArray->Clear();
+    s2array->clear();
+    s4array->clear();
 }
 
 ClassImp(BeamMonitorReader);

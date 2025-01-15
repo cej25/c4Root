@@ -10,6 +10,7 @@ class bPlastTwinpeaksCalData : public TObject
         bPlastTwinpeaksCalData();
 
         bPlastTwinpeaksCalData(
+        uint16_t trig,
         uint16_t board_id,
         uint16_t ch_ID, // uint16_t
         uint16_t detector_id,
@@ -38,7 +39,7 @@ class bPlastTwinpeaksCalData : public TObject
         virtual ~bPlastTwinpeaksCalData() {}
 
         // Getters
-
+        inline const uint16_t Get_trigger() const { return ftrig; }
         inline const uint16_t Get_board_id() const {return fboard_id; }
         inline const uint16_t Get_ch_ID() const {return fch_ID; }
         inline const uint16_t Get_detector_id() const {return fdetector_id; }
@@ -63,7 +64,12 @@ class bPlastTwinpeaksCalData : public TObject
 
 
         // Setters
+<<<<<<< HEAD
         void Set_board_id(uint16_t v){ fboard_id = v; }
+=======
+        void Set_trigger(uint16_t v) { ftrig = v; }
+        void Set_board_id(uint16_t v){fboard_id = v; }
+>>>>>>> main
         void Set_ch_ID(uint16_t v){ fch_ID = v; }
         void Set_detector_id(uint16_t v){ fdetector_id = v; }
 
@@ -89,6 +95,7 @@ class bPlastTwinpeaksCalData : public TObject
 
     protected:
         // Data items
+        uint16_t ftrig;
         uint16_t fboard_id;
         uint16_t fch_ID;
         uint16_t fdetector_id;

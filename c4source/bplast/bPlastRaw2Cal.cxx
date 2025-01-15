@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                            J.P. Bormans                                    *
+ *                              17.12.24                                      *
+ ******************************************************************************/
+
 // FairRoot
 #include "FairTask.h"
 #include "FairLogger.h"
@@ -216,7 +232,7 @@ Writes the times in ns!
 */
 void bPlastRaw2Cal::Exec(Option_t* option)
 {
-    
+    int first_trig3 = 1;
     auto start = std::chrono::high_resolution_clock::now();
 
     if (funcal_data && funcal_data->GetEntriesFast() > 1){ // only get events with two hits.or more
@@ -226,6 +242,20 @@ void bPlastRaw2Cal::Exec(Option_t* option)
 
             bPlastTwinpeaksData* first_hit_in_fast_channel = (bPlastTwinpeaksData*)funcal_data->At(ihit);
 
+            current_wr_t = first_hit_in_fast_channel->Get_wr_t();
+            if (first_event == 1) { first_wr_t = current_wr_t; first_event = 0; }
+
+            if (first_hit_in_fast_channel->Get_trigger() == 3)
+            {
+                //std::cout << "We see trig 3 in raw2cal!!"<<std::endl;
+                if (first_trig3) 
+                {
+                    trig3++;
+                    first_trig3 = 0;
+                }
+                continue;
+            }
+            
             // under the assumption fast-slow always follows:
             //assume that only matched lead-trail hits are written.
             if (first_hit_in_fast_channel->Get_ch_ID()%2==0) {continue;} //get the first odd numbered channel
@@ -286,7 +316,7 @@ void bPlastRaw2Cal::Exec(Option_t* option)
                         detector_id = result_find->second.first;
                         if (detector_id == -1) { fNunmatched++; continue; } // if only one event is left
                     }
-                    else c4LOG(warn, "Detector mapping is not complete! CEJ: Warning only for now...");
+                    // else c4LOG(warn, "Detector mapping is not complete! CEJ: Warning only for now...");
                 }
                 
 
@@ -351,7 +381,12 @@ void bPlastRaw2Cal::Exec(Option_t* option)
                 new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData((detector_id == bplast_config->TM_Undelayed()) ? (fast_lead_time) : (0), (detector_id == bplast_config->TM_Undelayed()) ? (0) : (fast_lead_time), funcal_hit->Get_wr_subsystem_id(), funcal_hit->Get_wr_t() );
             }
 
+            uint16_t trig = funcal_hit->Get_trigger();
+            // std::cout << "trig:: "<< trig << std::endl;
+            if (trig == 3) std::cout << "trig in raw2cal: " << trig << std::endl;
+
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) bPlastTwinpeaksCalData(
+                funcal_hit->Get_trigger(),
                 funcal_hit->Get_board_id(),
                 (int)((funcal_hit->Get_ch_ID()+1)/2),
                 detector_id,
@@ -403,6 +438,9 @@ Some stats are written when finishing.
 */
 void bPlastRaw2Cal::FinishTask()
 {
+    c4LOG(info, "We see " << trig3 << " trigger 3 events");
+    int64_t dt = (current_wr_t - first_wr_t) / 1e9;
+    c4LOG(info, "Elapsed real time is: " << dt << " seconds");
     c4LOG(info, Form("Wrote %i events.",fNEvents));
     c4LOG(info, Form("%i events are unmatched (not written).",fNunmatched));
     c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fExecs << " microseconds.");

@@ -143,13 +143,13 @@ public:
   virtual ~TMUSICParameter();
   virtual void Print(Option_t* t="") const;
 
-  Int_t         e1_off[8];       /* ADC offsets              */
+  Float_t         e1_off[8];       /* ADC offsets              */
   Float_t       e1_gain[8];      /* ADC gains                */
-  Int_t         e2_off[8];       /* ADC offsets              */
+  Float_t         e2_off[8];       /* ADC offsets              */
   Float_t       e2_gain[8];      /* ADC gains                */
-  Int_t         e3_off[8];       /* ADC offsets              */
+  Float_t         e3_off[8];       /* ADC offsets              */
   Float_t       e3_gain[8];      /* ADC gains                */
-  Int_t         e4_off[8];       /* ADC offsets              */
+  Float_t         e4_off[8];       /* ADC offsets              */
   Float_t       e4_gain[8];      /* ADC gains                */
   Bool_t        b_selfcorr1;     /* 1 => Music1 x correction */
   Float_t       pos_a1[7];       /* pos. corr. de(i) ->  MUSIC41 */

@@ -370,9 +370,211 @@ Branch:
         - "fraw_adc" [std::vector<uint32_t>]
 
 
+
+FRS up-to-date as of 12/12/24 :: git tag "frs-2.0"
+FRS data typically stored in a vector of {Name}Items
+
+File: "FrsData"
+Classes:
+    "FrsTpatItem"
+        BranchName: "FrsTpatData"
+        Members:
+            "wr_t"      Long64_t
+            "tpat"      Short_t
+        
+    "FrsScalerItem"
+        BranchName: "FrsScalerData"
+        Members:
+            "index"         Int_t
+            "scaler"        UInt_t
     
+    "FrsSciItem"
+        BranchName: "FrsSciData"
+        Members:
+            "sciDE"         UInt_t[16]
+            "sciDT"         UInt_t[16]
+            "sciMHTDC"      std::vector<Int_t>
+        
+    "FrsMusicItem"
+        BranchName: "FrsMusicData"
+        Members:
+            "musicE"        UInt_t[2][8]
+            "musicT"        UInt_t[2][8]
+
+    "FrsTpcItem"
+        BranchName: "FrsTpcData"
+        Members:
+            "adcData"       UInt_t[7][8]
+            "tdcData"       std::vector<Int_t>[128]
+
+File: "FrsCalData"
+Classes:
+    "FrsCalSciItem"
+        BranchName: "FrsCalSciData"
+        Members:
+            "de_21l"                UInt_t
+            "de_21r"                UInt_t
+            "de_22l"                UInt_t
+            "de_22r"                UInt_t
+            "de_31l"                UInt_t
+            "de_31r"                UInt_t
+            "de_41l"                UInt_t
+            "de_41r"                UInt_t
+            "de_42l"                UInt_t
+            "de_42r"                UInt_t
+            "de_43l"                UInt_t
+            "de_43r"                UInt_t
+            "de_81l"                UInt_t
+            "de_81r"                UInt_t
+            "dt_21l_21r"            UInt_t
+            "dt_22l_22r"            UInt_t
+            "dt_41l_41r"            UInt_t
+            "dt_42l_42r"            UInt_t
+            "dt_43l_43r"            UInt_t
+            "dt_81l_81r"            UInt_t
+            "dt_21l_41l"            UInt_t
+            "dt_21r_41r"            UInt_t
+            "dt_42l_21l"            UInt_t
+            "dt_42r_21r"            UInt_t
+            "dt_21l_81l"            UInt_t
+            "dt_21r_81r"            UInt_t
+            "dt_22l_41l"            UInt_t
+            "dt_22r_41r"            UInt_t
+            "dt_22l_81l"            UInt_t
+            "dt_22r_81r"            UInt_t
+            "mhtdc_sci11_hits"      std::vector<Int_t>
+            "mhtdc_sci21l_hits"     std::vector<Int_t>
+            "mhtdc_sci21r_hits"     std::vector<Int_t>
+            "mhtdc_sci22l_hits"     std::vector<Int_t>
+            "mhtdc_sci22r_hits"     std::vector<Int_t>
+            "mhtdc_sci31l_hits"     std::vector<Int_t>
+            "mhtdc_sci31r_hits"     std::vector<Int_t>
+            "mhtdc_sci41l_hits"     std::vector<Int_t>
+            "mhtdc_sci41r_hits"     std::vector<Int_t>
+            "mhtdc_sci42l_hits"     std::vector<Int_t>
+            "mhtdc_sci42r_hits"     std::vector<Int_t>
+            "mhtdc_sci43l_hits"     std::vector<Int_t>
+            "mhtdc_sci43r_hits"     std::vector<Int_t>
+            "mhtdc_sci81l_hits"     std::vector<Int_t>
+            "mhtdc_sci81r_hits"     std::vector<Int_t>
+        
+    "FrsCalTpcItem"
+        BranchName: "FrsCalTpcData"
+        Members:
+            "fb_tpc_de"                     Bool_t[7]
+            "ftpc_x"                        Float_t[7]
+            "ftpc_y"                        Float_t[7]
+            "fb_tpc_xy"                     Bool_t[7]
+            "ftpc_csum"                     Int_t[7][4]
+            "ftpc_angle_x_s2_foc_21_22"     Float_t    
+            "ftpc_angle_y_s2_foc_21_22"     Float_t
+            "ftpc_x_s2_foc_21_22"           Float_t
+            "ftpc_y_s2_foc_21_22"           Float_t
+            "ftpc21_22_sc21_x"              Float_t
+            "ftpc21_22_sc22_x"              Float_t
+            "ftpc_angle_x_s2_foc_23_24"     Float_t
+            "ftpc_angle_y_s2_foc_23_24"     Float_t
+            "ftpc_x_s2_foc_23_24"           Float_t
+            "ftpc_y_s2_foc_23_24"           Float_t
+            "ftpc23_24_sc21_x"              Float_t
+            "ftpc23_24_sc21_y"              Float_t
+            "ftpc23_24_sc22_x"              Float_t
+            "ftpc23_24_sc22_y"              Float_t
+            "ftpc_angle_x_s2_foc_22_24"     Float_t
+            "ftpc_angle_y_s2_foc_22_24"     Float_t
+            "ftpc_x_s2_foc_22_24"           Float_t
+            "ftpc_y_s2_foc_22_24"           Float_t
+            "ftpc_angle_x_s4"               Float_t
+            "ftpc_angle_y_s4"               Float_t
+            "ftpc_x_s4"                     Float_t
+            "ftpc_y_s4"                     Float_t
+            "ftpc_sc41_x"                   Float_t
+            "ftpc_sc41_y"                   Float_t
+            "ftpc_sc42_x"                   Float_t
+            "ftpc_sc42_y"                   Float_t
+            "ftpc_sc43_x"                   Float_t
+            "ftpc_music41_x"                Float_t
+            "ftpc_music42_x"                Float_t
+            "ftpc_music43_x"                Float_t
 
 
-    
+File: "FrsHitData"
+Classes:
+    "FrsHitItem"
+        BranchName: "FrsHitData"
+        Members:
+            "fwr_t"                     Long64_t
+            "ftpat"                     Short_t
+            "ftime_in_ms"               Double_t
+            "ftime_in_us"               Double_t
+            "fibin_for_s"               Int_t
+            "fibin_for_100ms"           Int_t
+            "fibin_for_spill"           Int_t
+            "fibin_clean_for_s"         Int_t
+            "fibin_clean_for_100ms"     Int_t
+            "fibin_clean_for_spill"     Int_t
+            "fextraction_time_ms"       Int_t
+            "fincrease_scaler_temp"     Int_t[67]
+            "fsci_e_21"                 Float_t
+            "fsci_x_21"                 Float_t
+            "fsci_e_22"                 Float_t
+            "fsci_x_22"                 Float_t
+            "fsci_e_31"                 Float_t
+            "fsci_e_41"                 Float_t
+            "fsci_x_41"                 Float_t
+            "fsci_e_42"                 Float_t
+            "fsci_x_42"                 Float_t
+            "fsci_e_43"                 Float_t
+            "fsci_x_43"                 Float_t
+            "fsci_e_81"                 Float_t
+            "fsci_x_81"                 Float_t
+            "fsci_tof_21_41"            Float_t
+            "fsci_tof_21_41_calib"      Float_t     
+            "fsci_tof_21_42"            Float_t
+            "fsci_tof_21_42_calib"      Float_t
+            "fsci_tof_21_81"            Float_t
+            "fsci_tof_21_81_calib"      Float_t
+            "fsci_tof_22_41"            Float_t
+            "fsci_tof_22_41_calib"      Float_t
+            "fsci_tof_22_81"            Float_t
+            "fsci_tof_22_81_calib"      Float_t
+            "fmusic_dE"                 Float_t[2]
+            "fmusic_dE_cor"             Float_t[2]
+            "fID_x2"                    Float_t
+            "fID_y2"                    Float_t
+            "fID_x4"                    Float_t
+            "fID_y4"                    Float_t
+            "fID_a2"                    Float_t
+            "fID_b2"                    Float_t
+            "fID_a4"                    Float_t
+            "fID_b4"                    Float_t
+            "fID_AoQ"                   Float_t
+            "fID_AoQ_corr"              Float_t
+            "fID_z"                     Float_t
+            "fID_z2"                    Float_t
+            "fID_beta"                  Float_t
+            "fID_dEdeg"                 Float_t
+            "fID_dEdegoQ"               Float_t
+            "fID_rho[2]"                Float_t[2]
+            "fID_brho[2]"               Float_t[2]
+            "FRS_time_mins"             Float_t
+            "fID_AoQ_driftcorr"         Float_t
+            "fID_z_driftcorr"           Float_t
+        
+    "FrsMultiHitItem"
+        BranchName: "FrsMultiHitData"
+        Members:
+            "fID_s2x_mhtdc"             Float_t
+            "fID_s4x_mhtdc"             Float_t
+            "fID_s2a_mhtdc"             Float_t
+            "fID_s4a_mhtdc"             Float_t
+            "fID_tof_mhtdc"             Float_t
+            "fID_beta_mhtdc"            Float_t
+            "fID_AoQ_mhtdc"             Float_t
+            "fID_AoQ_corr_mhtdc"        Float_t
+            "fID_z_mhtdc"               Float_t
+            "fID_z2_mhtdc"              Float_t
+            "fID_dEdeg_mhtdc"           Float_t
+            "fID_dEdegoQ_mhtdc"         Float_t
 
-    
+

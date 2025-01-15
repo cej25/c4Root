@@ -27,24 +27,19 @@ BeamMonitorOnlineSpectra::BeamMonitorOnlineSpectra()
 }
 
 BeamMonitorOnlineSpectra::BeamMonitorOnlineSpectra(const TString& name, Int_t verbose)
-    : FairTask(name, verbose)
-    , fHitBM(NULL)
-    , fNEvents(0)
-    , header(nullptr)
+    :   FairTask(name, verbose)
+    ,   fNEvents(0)
+    ,   header(nullptr)
+    ,   s2HitsBM(nullptr)
+    ,   s4HitsBM(nullptr)
 {
 }
 
 BeamMonitorOnlineSpectra::~BeamMonitorOnlineSpectra()
 {
     c4LOG(info, "");
-    if (fHitBM)
-        delete fHitBM;
-}
-
-void BeamMonitorOnlineSpectra::SetParContainers()
-{
-    FairRuntimeDb *rtdb = FairRuntimeDb::instance();
-    c4LOG_IF(fatal, NULL == rtdb, "FairRuntimeDb not found.");
+    delete s2HitsBM;
+    delete s4HitsBM;
 }
 
 InitStatus BeamMonitorOnlineSpectra::Init()
@@ -59,8 +54,11 @@ InitStatus BeamMonitorOnlineSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fHitBM = (TClonesArray*)mgr->GetObject("BeamMonitorData");
-    c4LOG_IF(fatal, !fHitBM, "Branch BeamMonitorData not found!");
+    s2HitsBM = mgr->InitObjectAs<decltype(s2HitsBM)>("BeamMonitorS2Data");
+    c4LOG_IF(fatal, !s2HitsBM, "Branch BeamMonitorS2Data not found!");
+
+    s4HitsBM = mgr->InitObjectAs<decltype(s4HitsBM)>("BeamMonitorS4Data");
+    c4LOG_IF(fatal, !s4HitsBM, "Branch BeamMonitorS4Data not found!");
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
 
@@ -264,211 +262,215 @@ void BeamMonitorOnlineSpectra::Snapshot_Histo()
 
 void BeamMonitorOnlineSpectra::Exec(Option_t* option)
 {   
-    if (fHitBM && fHitBM->GetEntriesFast() > 0)
+    std::vector<uint32_t> BM_S2_Hits = {};
+    std::vector<uint32_t> BM_S4_Hits = {};
+    for (auto const & s2Item : *s2HitsBM)
     {
-        Int_t nHits = fHitBM->GetEntriesFast();
-        for (Int_t ihit = 0; ihit < nHits; ihit++)
-        {   
-            BeamMonitorData* BeamMonitorHit = (BeamMonitorData*)fHitBM->At(ihit);
-            if (!BeamMonitorHit) continue;
+        BM_S2_Hits.emplace_back(s2Item.GetTimeDelta());
+    }
+    
+    for (auto const & s4Item : *s4HitsBM)
+    {
+        BM_S4_Hits.emplace_back(s4Item.GetTimeDelta());
+    }
+    
 
-            // S2
-            //Int_t BM_Hits; // actually we do this slightly differently
-            Double_t BM_CountRate;
-            Double_t BM_CR_timesum;
-            Int_t BM_CR_relevanthits;
-            Double_t BM_CR_Tlimit = pow(10,6); // should be much lower than time between spills, units [100ns]
 
-            Double_t BM_Tdiff_integral;
-            Double_t BM_dc_MinValue;
-            Int_t BM_dc_MinBin;
+    // S2
+    //Int_t BM_Hits; // actually we do this slightly differently
+    Double_t BM_CountRate;
+    Double_t BM_CR_timesum;
+    Int_t BM_CR_relevanthits;
+    Double_t BM_CR_Tlimit = pow(10,6); // should be much lower than time between spills, units [100ns]
 
-            Double_t BM_QF;
-            Double_t BM_Tmean;
-            Float_t BM_S2_Tdiffs[BM_S2_MaxTdiffs] = {0};
-            Float_t BM_S4_Tdiffs[BM_S4_MaxTdiffs] = {0};
-            std::vector<uint32_t> BM_S2_Hits = BeamMonitorHit->Get_S2_data();
-            std::vector<uint32_t> BM_S4_Hits = BeamMonitorHit->Get_S4_data();
+    Double_t BM_Tdiff_integral;
+    Double_t BM_dc_MinValue;
+    Int_t BM_dc_MinBin;
 
-            // S2 -- apparently no S2 data
-            for (Int_t i = 0; i < BM_S2_Hits.size(); i++)
+    Double_t BM_QF;
+    Double_t BM_Tmean;
+    Float_t BM_S2_Tdiffs[BM_S2_MaxTdiffs] = {0};
+    Float_t BM_S4_Tdiffs[BM_S4_MaxTdiffs] = {0};
+
+
+    // S2
+    for (Int_t i = 0; i < BM_S2_Hits.size(); i++)
+    {
+        BM_S2_Tdiffs[BM_S2_count] = BM_S2_Hits.at(i) / 10; // [10ns] -> [100ns]
+        hG_BM_s2h_tdiff->Fill(BM_S2_Tdiffs[BM_S2_count]);
+        BM_S2_count++;
+
+        if (BM_S2_count > BM_S2_MaxTdiffs)
+        {
+            BM_S2_count = BM_S2_count % BM_S2_MaxTdiffs;
+        }
+
+        if (BM_S2_count % BM_S2_DoAnalysisEvery == 0)
+        {
+            BM_CR_timesum = 0;
+            BM_CR_relevanthits = 0;
+
+            for (Int_t k = 0; k < BM_S2_MaxTdiffs; k++)
             {
-                BM_S2_Tdiffs[BM_S2_count] = BM_S2_Hits.at(i) / 10; // [10ns] -> [100ns]
-                hG_BM_s2h_tdiff->Fill(BM_S2_Tdiffs[BM_S2_count]);
-                BM_S2_count++;
-
-                if (BM_S2_count > BM_S2_MaxTdiffs)
+                if ((Double_t) BM_S2_SumTdiff < (Double_t) BM_NTimeMax * pow(10,5))
                 {
-                    BM_S2_count = BM_S2_count % BM_S2_MaxTdiffs;
+                    BM_S2_SumTdiff += BM_S2_Tdiffs[(BM_S2_count + k) % BM_S2_MaxTdiffs];
+                    hG_BM_s2h_t1->Fill((Double_t) BM_S2_SumTdiff * pow(10,-5));
+                }
+                else
+                {
+                    hG_BM_s2h_t1->Reset("ICESM");
+                    BM_S2_SumTdiff = 0;
                 }
 
-                if (BM_S2_count % BM_S2_DoAnalysisEvery == 0)
+                if (BM_S2_Tdiffs[k] < BM_CR_Tlimit)
                 {
-                    BM_CR_timesum = 0;
-                    BM_CR_relevanthits = 0;
-
-                    for (Int_t k = 0; k < BM_S2_MaxTdiffs; k++)
-                    {
-                        if ((Double_t) BM_S2_SumTdiff < (Double_t) BM_NTimeMax * pow(10,5))
-                        {
-                            BM_S2_SumTdiff += BM_S2_Tdiffs[(BM_S2_count + k) % BM_S2_MaxTdiffs];
-                            hG_BM_s2h_t1->Fill((Double_t) BM_S2_SumTdiff * pow(10,-5));
-                        }
-                        else
-                        {
-                            hG_BM_s2h_t1->Reset("ICESM");
-                            BM_S2_SumTdiff = 0;
-                        }
-
-                        if (BM_S2_Tdiffs[k] < BM_CR_Tlimit)
-                        {
-                            BM_CR_timesum += BM_S2_Tdiffs[k];
-                            BM_CR_relevanthits++;
-                        }
-                    }
-
-                    BM_CountRate = (Double_t) BM_CR_relevanthits / BM_CR_timesum;
-
-                    BM_Tdiff_integral = hG_BM_s2h_tdiff->Integral(0, BM_MaxTimeDiff);
-
-                    for (Int_t j = 0; j < BM_S2_MaxTdiffs; j++)
-                    {
-                        hG_BM_s2h_norm_tdiff->SetBinContent(j, hG_BM_s2h_tdiff->GetBinContent(j) / BM_Tdiff_integral);
-                        hG_BM_s2h_poisson->SetBinContent(j, exp(-BM_CountRate * ((Double_t) j)) - exp(-BM_CountRate * ((Double_t) j+1)));
-
-                        if (j == 0)
-                        {
-                            hG_BM_s2h_c->SetBinContent(j, 0);
-                            hG_BM_s2h_cp->SetBinContent(j, 0);
-                        }
-                        else
-                        {
-                            hG_BM_s2h_c->SetBinContent(j, hG_BM_s2h_c->GetBinContent(j-1) + hG_BM_s2h_norm_tdiff->GetBinContent(j));
-                            hG_BM_s2h_cp->SetBinContent(j, hG_BM_s2h_cp->GetBinContent(j-1) + hG_BM_s2h_poisson->GetBinContent(j));
-                        }
-                        hG_BM_s2h_dc->SetBinContent(j, hG_BM_s2h_cp->GetBinContent(j) - hG_BM_s2h_c->GetBinContent(j));
-                    }
-
-                    BM_dc_MinBin = hG_BM_s2h_dc->GetMinimumBin();
-                    BM_dc_MinValue = hG_BM_s2h_dc->GetBinContent(BM_dc_MinBin);
-                    BM_Tmean = hG_BM_s2h_norm_tdiff->GetMean();
-
-                    hG_BM_S2_Tmean->Fill(BM_Tmean);
-
-                    // QF
-                    BM_QF = 100.0 * (1.0 - (hG_BM_s2h_norm_tdiff->Integral(0, (Int_t) BM_Tmean) / hG_BM_s2h_poisson->Integral(0, (Int_t) BM_Tmean)));
-                    
-                    // we could use chrono to get ns resolution? otherwise s
-                    time_t rawtime;
-                    time(&rawtime);
-
-                    if (std::isnan(BM_QF)) continue; // skip divisions by zero
-
-                    // add integral between two time difference ranges...
-
-                    hG_BM_s2gr_qf->SetPoint(BM_S2_QFcount, rawtime, BM_QF);
-                    hG_BM_s2gr_dcmin->SetPoint(BM_S2_QFcount, rawtime, BM_dc_MinValue);
-                    hG_BM_s2gr_dctime->SetPoint(BM_S2_QFcount, rawtime, BM_dc_MinBin / 10);
-                    hG_BM_s2gr_dt_avg->SetPoint(BM_S2_QFcount, rawtime, (Double_t) BM_Tmean / 10.);
-                    BM_S2_QFcount++;                    
+                    BM_CR_timesum += BM_S2_Tdiffs[k];
+                    BM_CR_relevanthits++;
                 }
             }
 
-            // S4
-            for (int i = 0; i < BM_S4_Hits.size(); i++)
-            {
-                BM_S4_Tdiffs[BM_S4_count] = BM_S4_Hits[i] / 10;
-                hG_BM_s4h_tdiff->Fill(BM_S4_Tdiffs[BM_S4_count]);
-                BM_S4_count++;
+            BM_CountRate = (Double_t) BM_CR_relevanthits / BM_CR_timesum;
 
-                if (BM_S4_count > BM_S4_MaxTdiffs)
+            BM_Tdiff_integral = hG_BM_s2h_tdiff->Integral(0, BM_MaxTimeDiff);
+
+            for (Int_t j = 0; j < BM_S2_MaxTdiffs; j++)
+            {
+                hG_BM_s2h_norm_tdiff->SetBinContent(j, hG_BM_s2h_tdiff->GetBinContent(j) / BM_Tdiff_integral);
+                hG_BM_s2h_poisson->SetBinContent(j, exp(-BM_CountRate * ((Double_t) j)) - exp(-BM_CountRate * ((Double_t) j+1)));
+
+                if (j == 0)
                 {
-                    BM_S4_count = BM_S4_count % BM_S4_MaxTdiffs;
+                    hG_BM_s2h_c->SetBinContent(j, 0);
+                    hG_BM_s2h_cp->SetBinContent(j, 0);
+                }
+                else
+                {
+                    hG_BM_s2h_c->SetBinContent(j, hG_BM_s2h_c->GetBinContent(j-1) + hG_BM_s2h_norm_tdiff->GetBinContent(j));
+                    hG_BM_s2h_cp->SetBinContent(j, hG_BM_s2h_cp->GetBinContent(j-1) + hG_BM_s2h_poisson->GetBinContent(j));
+                }
+                hG_BM_s2h_dc->SetBinContent(j, hG_BM_s2h_cp->GetBinContent(j) - hG_BM_s2h_c->GetBinContent(j));
+            }
+
+            BM_dc_MinBin = hG_BM_s2h_dc->GetMinimumBin();
+            BM_dc_MinValue = hG_BM_s2h_dc->GetBinContent(BM_dc_MinBin);
+            BM_Tmean = hG_BM_s2h_norm_tdiff->GetMean();
+
+            hG_BM_S2_Tmean->Fill(BM_Tmean);
+
+            // QF
+            BM_QF = 100.0 * (1.0 - (hG_BM_s2h_norm_tdiff->Integral(0, (Int_t) BM_Tmean) / hG_BM_s2h_poisson->Integral(0, (Int_t) BM_Tmean)));
+            
+            // we could use chrono to get ns resolution? otherwise s
+            time_t rawtime;
+            time(&rawtime);
+
+            if (std::isnan(BM_QF)) continue; // skip divisions by zero
+
+            // add integral between two time difference ranges...
+
+
+            hG_BM_s2gr_qf->SetPoint(BM_S2_QFcount, rawtime, BM_QF);
+            hG_BM_s2gr_dcmin->SetPoint(BM_S2_QFcount, rawtime, BM_dc_MinValue);
+            hG_BM_s2gr_dctime->SetPoint(BM_S2_QFcount, rawtime, BM_dc_MinBin / 10);
+            hG_BM_s2gr_dt_avg->SetPoint(BM_S2_QFcount, rawtime, (Double_t) BM_Tmean / 10.);
+            BM_S2_QFcount++;                    
+        }
+    }
+
+    // S4
+
+    for (int i = 0; i < BM_S4_Hits.size(); i++)
+    {
+        BM_S4_Tdiffs[BM_S4_count] = BM_S4_Hits[i] / 10;
+        hG_BM_s4h_tdiff->Fill(BM_S4_Tdiffs[BM_S4_count]);
+        BM_S4_count++;
+
+        if (BM_S4_count > BM_S4_MaxTdiffs)
+        {
+            BM_S4_count = BM_S4_count % BM_S4_MaxTdiffs;
+        }
+
+        if (BM_S4_count % BM_S4_DoAnalysisEvery == 0)
+        {
+            BM_CR_timesum = 0;
+            BM_CR_relevanthits = 0;
+
+
+            for (Int_t k = 0; k < BM_S4_MaxTdiffs; k++)
+            {
+                if ((Double_t) BM_S4_SumTdiff < (Double_t) BM_NTimeMax * pow(10, 5))
+                {
+                    BM_S4_SumTdiff += BM_S4_Tdiffs[(BM_S4_count + k) % BM_S4_MaxTdiffs];
+                    hG_BM_s4h_t1->Fill((Double_t) BM_S4_SumTdiff * pow(10, -5));
+                }
+                else
+                {
+                    hG_BM_s4h_t1->Reset("ICESM");
+                    BM_S4_SumTdiff = 0;
                 }
 
-                if (BM_S4_count % BM_S4_DoAnalysisEvery == 0)
+                if (BM_S4_Tdiffs[k] < BM_CR_Tlimit)
                 {
-                    BM_CR_timesum = 0;
-                    BM_CR_relevanthits = 0;
+                    BM_CR_timesum += BM_S4_Tdiffs[k];
+                    BM_CR_relevanthits++;
+                }
+            }
 
-                    for (Int_t k = 0; k < BM_S4_MaxTdiffs; k++)
-                    {
-                        if ((Double_t) BM_S4_SumTdiff < (Double_t) BM_NTimeMax * pow(10, 5))
-                        {
-                            BM_S4_SumTdiff += BM_S4_Tdiffs[(BM_S4_count + k) % BM_S4_MaxTdiffs];
-                            hG_BM_s4h_t1->Fill((Double_t) BM_S4_SumTdiff * pow(10, -5));
-                        }
-                        else
-                        {
-                            hG_BM_s4h_t1->Reset("ICESM");
-                            BM_S4_SumTdiff = 0;
-                        }
 
-                        if (BM_S4_Tdiffs[k] < BM_CR_Tlimit)
-                        {
-                            BM_CR_timesum += BM_S4_Tdiffs[k];
-                            BM_CR_relevanthits++;
-                        }
-                    }
+            BM_CountRate = (Double_t) BM_CR_relevanthits / BM_CR_timesum;
 
-                    BM_CountRate = (Double_t) BM_CR_relevanthits / BM_CR_timesum;
+            BM_Tdiff_integral = hG_BM_s4h_tdiff->Integral(0, BM_MaxTimeDiff);
 
-                    BM_Tdiff_integral = hG_BM_s4h_tdiff->Integral(0, BM_MaxTimeDiff);
+            for (Int_t j = 0; j < BM_S4_MaxTdiffs; j++)
+            {
+                hG_BM_s4h_norm_tdiff->SetBinContent(j, hG_BM_s4h_tdiff->GetBinContent(j) / BM_Tdiff_integral);
+                hG_BM_s4h_poisson->SetBinContent(j, exp(-BM_CountRate * ((Double_t) j)) - exp(-BM_CountRate * ((Double_t) j+1)));
 
-                    for (Int_t j = 0; j < BM_S4_MaxTdiffs; j++)
-                    {
-                        hG_BM_s4h_norm_tdiff->SetBinContent(j, hG_BM_s4h_tdiff->GetBinContent(j) / BM_Tdiff_integral);
-                        hG_BM_s4h_poisson->SetBinContent(j, exp(-BM_CountRate * ((Double_t) j)) - exp(-BM_CountRate * ((Double_t) j+1)));
+                // Cumulative histograms
+                if (j == 0)
+                {
+                    hG_BM_s4h_c->SetBinContent(j, 0);
+                    hG_BM_s4h_cp->SetBinContent(j, 0);
+                }
+                else
+                {
+                    hG_BM_s4h_c->SetBinContent(j, hG_BM_s4h_c->GetBinContent(j-1) + hG_BM_s4h_norm_tdiff->GetBinContent(j));
+                    hG_BM_s4h_cp->SetBinContent(j, hG_BM_s4h_cp->GetBinContent(j-1) + hG_BM_s4h_poisson->GetBinContent(j));
+                }
+                hG_BM_s4h_dc->SetBinContent(j, hG_BM_s4h_cp->GetBinContent(j) - hG_BM_s4h_c->GetBinContent(j));
+            }
 
-                        // Cumulative histograms
-                        if (j == 0)
-                        {
-                            hG_BM_s4h_c->SetBinContent(j, 0);
-                            hG_BM_s4h_cp->SetBinContent(j, 0);
-                        }
-                        else
-                        {
-                            hG_BM_s4h_c->SetBinContent(j, hG_BM_s4h_c->GetBinContent(j-1) + hG_BM_s4h_norm_tdiff->GetBinContent(j));
-                            hG_BM_s4h_cp->SetBinContent(j, hG_BM_s4h_cp->GetBinContent(j-1) + hG_BM_s4h_poisson->GetBinContent(j));
-                        }
-                        hG_BM_s4h_dc->SetBinContent(j, hG_BM_s4h_cp->GetBinContent(j) - hG_BM_s4h_c->GetBinContent(j));
-                    }
+            BM_dc_MinBin = hG_BM_s4h_dc->GetMinimumBin();
+            BM_dc_MinValue = hG_BM_s4h_dc->GetBinContent(BM_dc_MinBin);
+            BM_Tmean = hG_BM_s4h_norm_tdiff->GetMean();
 
-                    BM_dc_MinBin = hG_BM_s4h_dc->GetMinimumBin();
-                    BM_dc_MinValue = hG_BM_s4h_dc->GetBinContent(BM_dc_MinBin);
-                    BM_Tmean = hG_BM_s4h_norm_tdiff->GetMean();
+            hG_BM_S4_Tmean->Fill(BM_Tmean);
 
-                    hG_BM_S4_Tmean->Fill(BM_Tmean);
+            BM_QF = 100.0 * (1.0 - (hG_BM_s4h_norm_tdiff->Integral(0, (Int_t) BM_Tmean) / hG_BM_s4h_poisson->Integral(0, (Int_t) BM_Tmean)));
 
-                    BM_QF = 100.0 * (1.0 - (hG_BM_s4h_norm_tdiff->Integral(0, (Int_t) BM_Tmean) / hG_BM_s4h_poisson->Integral(0, (Int_t) BM_Tmean)));
+            // get local time
+            time_t rawtime;
+            time(&rawtime);
 
-                    // get local time
-                    time_t rawtime;
-                    time(&rawtime);
+            if (std::isnan(BM_QF)) continue; // skip divisions by zero
 
-                    if (std::isnan(BM_QF)) continue; // skip divisions by zero
+            hG_BM_s4gr_qf->TGraph::SetPoint(BM_S4_QFcount, rawtime, BM_QF);
+            hG_BM_s4gr_dcmin->TGraph::SetPoint(BM_S4_QFcount, rawtime, BM_dc_MinValue);
+            hG_BM_s4gr_dctime->TGraph::SetPoint(BM_S4_QFcount, rawtime, BM_dc_MinBin / 10);
+            hG_BM_s4gr_dt_avg->TGraph::SetPoint(BM_S4_QFcount, rawtime, (Double_t) BM_Tmean / 10.);
+            BM_S4_QFcount++;
 
-                    hG_BM_s4gr_qf->TGraph::SetPoint(BM_S4_QFcount, rawtime, BM_QF);
-                    hG_BM_s4gr_dcmin->TGraph::SetPoint(BM_S4_QFcount, rawtime, BM_dc_MinValue);
-                    hG_BM_s4gr_dctime->TGraph::SetPoint(BM_S4_QFcount, rawtime, BM_dc_MinBin / 10);
-                    hG_BM_s4gr_dt_avg->TGraph::SetPoint(BM_S4_QFcount, rawtime, (Double_t) BM_Tmean / 10.);
-                    BM_S4_QFcount++;
+        } // analysis every N
+    } // S4 Hits
 
-                } // analysis every N
-            } // S4 Hits
-        
-        } // BM events
-    } // BM event exists
 
     fNEvents += 1;
 }
 
 void BeamMonitorOnlineSpectra::FinishEvent()
 {
-    if (fHitBM)
-    {
-        fHitBM->Clear();
-    }
+    // clear?
 }
 
 void BeamMonitorOnlineSpectra::FinishTask()

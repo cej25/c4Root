@@ -11,6 +11,7 @@
 class TClonesArray;
 class EventHeader;
 class TCanvas;
+class TH1;
 class TH1F;
 class TH2F;
 class TFile;
@@ -172,7 +173,6 @@ class FrsGermaniumCorrelations : public FairTask
 
 
 
-
         // Energy-gated histograms:
         //short:
         TCanvas ** c_germanium_tsci41_energy_gated;
@@ -189,20 +189,22 @@ class FrsGermaniumCorrelations : public FairTask
         TH1F ** h1_germanium_twr_sci41_energy_gated;
         
 
+        int number_of_detectors_to_plot;
+        std::vector<std::pair<int,int>> crystals_to_plot;
+        TH1** h1_ge_time_ref_frs_wr;
 
 
 
         // Folder and files
-        TFolder * histograms;
-        TDirectory* dir_germanium;
-        TDirectory ** dir_energy_gated;
+        TFolder* histograms;
+        TFolder* folder_germanium;
+        TFolder ** folder_energy_gated;
 
+        TDirectory* dir_frs;
+        TDirectory* dir_frs_ge_corr;
+        TDirectory* dir_frs_ge_gate;
+        // other
 
-        int sci41l_seen_in_febex = 0;
-        int sci41r_seen_in_febex = 0;
-
-        int sci41l_seen_in_frs = 0;
-        int sci41r_seen_in_frs = 0;
 
         int sci41l_seen_in_febex_no_frs = 0;
         int sci41r_seen_in_febex_no_frs = 0;
@@ -210,6 +212,11 @@ class FrsGermaniumCorrelations : public FairTask
         int sci41l_seen_in_frs_no_febex = 0;
         int sci41r_seen_in_frs_no_febex = 0;
 
+        int sci41l_seen_in_febex = 0;
+        int sci41r_seen_in_febex = 0;
+
+        int sci41l_seen_in_frs = 0;
+        int sci41r_seen_in_frs = 0;
         
 
 

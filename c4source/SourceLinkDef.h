@@ -9,20 +9,14 @@
 #pragma link C++ class UcesbSource+;
 #pragma link C++ class c4Reader+;
 #pragma link C++ class CorrelationsMap+;
-#pragma link C++ class GainShift+;
+//#pragma link C++ class GainShift+;
 
-#pragma link C++ class FrsMainReader+;
-#pragma link C++ class FrsTPCReader+;
-#pragma link C++ class FrsUserReader+;
-#pragma link C++ class FrsVFTXReader+;
-#pragma link C++ class FrsTpatReader+;
-#pragma link C++ class FrsTravMusReader+;
-#pragma link C++ class FrsMainRaw2Cal+;
-#pragma link C++ class FrsTPCRaw2Cal+;
-#pragma link C++ class FrsUserRaw2Cal+;
-#pragma link C++ class FrsVFTXRaw2Cal+;
-#pragma link C++ class FrsTravMusRaw2Cal+;
+#pragma link C++ class FrsReader+;
+#pragma link C++ class FrsRaw2Cal+;
 #pragma link C++ class FrsCal2Hit+;
+#pragma link C++ class TravMusReader+;
+#pragma link C++ class TravMusRaw2Cal+;
+#pragma link C++ class TravMusCal2Ana+;
 
 #pragma link C++ class GermaniumReader+;
 #pragma link C++ class GermaniumTraceReader+;
@@ -35,6 +29,7 @@
 #pragma link C++ class bPlastRaw2Cal+;
 #pragma link C++ class LisaReader+;
 #pragma link C++ class LisaRaw2Cal+;
+//#pragma link C++ class LisaRaw2Ana+;
 #pragma link C++ class UnpackReader+;
 #pragma link C++ class BeamMonitorReader+;
 #pragma link C++ class FatimaReader+;
@@ -49,11 +44,7 @@
 #pragma link C++ class FimpRaw2Cal+;
 
 #pragma link C++ class EXT_STR_h101_unpack_t;
-#pragma link C++ class EXT_STR_h101_frstpc_onion_t;
-#pragma link C++ class EXT_STR_h101_frsmain_onion_t;
-#pragma link C++ class EXT_STR_h101_frsuser_onion_t;
-#pragma link C++ class EXT_STR_h101_frsvftx_onion_t;
-#pragma link C++ class EXT_STR_h101_frstpat_onion_t;
+#pragma link C++ class EXT_STR_h101_frs_onion_t;
 #pragma link C++ class EXT_STR_h101_travmus_onion_t;
 #pragma link C++ class EXT_STR_h101_germanium_onion_t;
 #pragma link C++ class EXT_STR_h101_germanium_traces_onion_t;
@@ -66,6 +57,10 @@
 #pragma link C++ class EXT_STR_h101_beammonitor_onion_t;
 #pragma link C++ class EXT_STR_h101_bb7vme_onion_t;
 #pragma link C++ class EXT_STR_h101_fimp_onion_t;
+#pragma link C++ class EXT_STR_h101_frs_onion_t;
 
+
+#pragma link C++ class TestReader+;
+#pragma link C++ class EXT_STR_h101_test_onion_t;
 
 #endif

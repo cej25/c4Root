@@ -34,8 +34,10 @@ typedef struct EXT_STR_h101_bgo_t
   uint32_t bgo_ts_t2 /* [0,65535] */;
   uint32_t bgo_ts_t3 /* [0,65535] */;
   uint32_t bgo_ts_t4 /* [0,65535] */;
+  uint32_t bgo_be /* [-1,-1] */;
   uint32_t bgo_trigger_window_post_trig_ns /* [0,65535] */;
   uint32_t bgo_trigger_window_pre_trig_ns /* [0,65535] */;
+  uint32_t bgo_tamex1trig /* [0,255] */;
   uint32_t bgo_tamex1event_size /* [-1,-1] */;
   uint32_t bgo_tamex1time_coarse /* [0,1024] */;
   uint32_t bgo_tamex1time_coarsev[1024 EXT_STRUCT_CTRL(bgo_tamex1time_coarse)] /* [0,65535] */;
@@ -47,6 +49,7 @@ typedef struct EXT_STR_h101_bgo_t
   uint32_t bgo_tamex1time_channelv[1024 EXT_STRUCT_CTRL(bgo_tamex1time_channel)] /* [0,65535] */;
   uint32_t bgo_tamex1time_epoch /* [0,1024] */;
   uint32_t bgo_tamex1time_epochv[1024 EXT_STRUCT_CTRL(bgo_tamex1time_epoch)] /* [-1,-1] */;
+  uint32_t bgo_tamex2trig /* [0,255] */;
   uint32_t bgo_tamex2event_size /* [-1,-1] */;
   uint32_t bgo_tamex2time_coarse /* [0,1024] */;
   uint32_t bgo_tamex2time_coarsev[1024 EXT_STRUCT_CTRL(bgo_tamex2time_coarse)] /* [0,65535] */;
@@ -58,6 +61,7 @@ typedef struct EXT_STR_h101_bgo_t
   uint32_t bgo_tamex2time_channelv[1024 EXT_STRUCT_CTRL(bgo_tamex2time_channel)] /* [0,65535] */;
   uint32_t bgo_tamex2time_epoch /* [0,1024] */;
   uint32_t bgo_tamex2time_epochv[1024 EXT_STRUCT_CTRL(bgo_tamex2time_epoch)] /* [-1,-1] */;
+  uint32_t bgo_tamex3trig /* [0,255] */;
   uint32_t bgo_tamex3event_size /* [-1,-1] */;
   uint32_t bgo_tamex3time_coarse /* [0,1024] */;
   uint32_t bgo_tamex3time_coarsev[1024 EXT_STRUCT_CTRL(bgo_tamex3time_coarse)] /* [0,65535] */;
@@ -83,9 +87,11 @@ typedef struct EXT_STR_h101_bgo_onion_t
   /* UNPACK */
   uint32_t bgo_ts_subsystem_id;
   uint32_t bgo_ts_t[4];
+  uint32_t bgo_be;
   uint32_t bgo_trigger_window_post_trig_ns;
   uint32_t bgo_trigger_window_pre_trig_ns;
   struct {
+    uint32_t trig;
     uint32_t event_size;
     uint32_t time_coarse;
     uint32_t time_coarsev[1024 /* time_coarse */];
@@ -121,12 +127,18 @@ typedef struct EXT_STR_h101_bgo_onion_t
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      bgo_ts_t4,                       UINT32,\
                     "bgo_ts_t4",65535,0/*flags*/); \
+  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
+                     bgo_be,                          UINT32,\
+                    "bgo_be",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      bgo_trigger_window_post_trig_ns, UINT32,\
                     "bgo_trigger_window_post_trig_ns",65535,0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      bgo_trigger_window_pre_trig_ns,  UINT32,\
                     "bgo_trigger_window_pre_trig_ns",65535,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bgo_tamex1trig,                  UINT32,\
+                    "bgo_tamex1trig",255,0/*flags*/); \
   EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      bgo_tamex1event_size,            UINT32,\
                     "bgo_tamex1event_size",0/*flags*/); \
@@ -160,6 +172,9 @@ typedef struct EXT_STR_h101_bgo_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      bgo_tamex1time_epochv,           UINT32,\
                     "bgo_tamex1time_epochv",           "bgo_tamex1time_epoch",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bgo_tamex2trig,                  UINT32,\
+                    "bgo_tamex2trig",255,0/*flags*/); \
   EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      bgo_tamex2event_size,            UINT32,\
                     "bgo_tamex2event_size",0/*flags*/); \
@@ -193,6 +208,9 @@ typedef struct EXT_STR_h101_bgo_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      bgo_tamex2time_epochv,           UINT32,\
                     "bgo_tamex2time_epochv",           "bgo_tamex2time_epoch",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bgo_tamex3trig,                  UINT32,\
+                    "bgo_tamex3trig",255,0/*flags*/); \
   EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      bgo_tamex3event_size,            UINT32,\
                     "bgo_tamex3event_size",0/*flags*/); \

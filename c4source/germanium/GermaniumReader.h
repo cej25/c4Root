@@ -50,7 +50,7 @@ class GermaniumReader : public c4Reader
         TClonesArray* fArray;
 
 
-        const int NBoards = 4; //change
+        const int NBoards = 6; // absolutely maximum for D28 :: (28 * 3 + 4 sci signals) / (16 ch/board)
 
         uint64_t event_trigger_time_long;
         double channel_trigger_time_long;

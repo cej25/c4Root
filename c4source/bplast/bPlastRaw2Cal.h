@@ -71,6 +71,11 @@ class bPlastRaw2Cal : public FairTask
         uint64_t absolute_event_time;
         int fNunmatched = 0;
 
+        int trig3 = 0;
+        int64_t first_wr_t = 0;
+        int64_t first_event = 1;
+        int64_t current_wr_t = 0;
+
         EventHeader * header;
         Int_t fNEvents = 0;
         Int_t fExecs = 0;
