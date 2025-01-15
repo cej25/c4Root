@@ -6,6 +6,10 @@
 TFrsConfiguration* TFrsConfiguration::instance = nullptr;
 std::string TFrsConfiguration::config_path = "blank";
 std::string TFrsConfiguration::scaler_mapping_file = "blank";
+std::string TFrsConfiguration::tm_drift_coeff_file = "blank";
+std::string TFrsConfiguration::aoq_drift_coeff_file = "blank";
+std::string TFrsConfiguration::z1_drift_coeff_file = "blank";
+std::string TFrsConfiguration::crate_map_file = "blank";
 
 TFRSParameter* TFrsConfiguration::ffrs;
 TMWParameter* TFrsConfiguration::fmw;
@@ -34,13 +38,19 @@ Double_t TFrsConfiguration::fMin_dE_Music1 = 0., TFrsConfiguration::fMax_dE_Musi
 Double_t TFrsConfiguration::fMin_dE_Music2 = 0., TFrsConfiguration::fMax_dE_Music2 = 4000.;
 Double_t TFrsConfiguration::fMin_dE_travMus_gate = 0., TFrsConfiguration::fMax_dE_travMus_gate = 30000.;
 
-
 //travMUSIC
 Double_t TFrsConfiguration::fMin_dE_travMusic = 0., TFrsConfiguration::fMax_dE_travMusic = 60000.;
+int TFrsConfiguration::frun_num = 0;
 
 TFrsConfiguration::TFrsConfiguration()
 {
     ReadScalerNames();
+    ReadCrateMapFile(); // absolutely critical
+    ReadTravMusDriftFile(); // not critical
+    ReadAoQDriftFile(); // not critical
+    ReadZ1DriftFile(); // not critical
+    ReadCrateMapFile();
+    
 }
 
 void TFrsConfiguration::ReadScalerNames()
@@ -98,6 +108,195 @@ void TFrsConfiguration::SetParameters(
     fmrtof = mrtof;
     frange = range;
 }
+
+// ::: Read Drift from file - TravMus, AoQ and Z :::
+//EG Drift TM for dE (is it better to correct anode? ... not sure)
+void TFrsConfiguration::ReadTravMusDriftFile()
+{
+    std::ifstream travmus_drift_coeff_file (tm_drift_coeff_file);
+    std::string line;
+
+    if (travmus_drift_coeff_file.fail()) { c4LOG(warn, "Could not open Trav Mus drift coefficients file."); return; }
+
+
+    while (std::getline(travmus_drift_coeff_file, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+        std::istringstream iss(line);
+        int travmus_wr;
+        double drift_val;
+        double drift_err;
+        std::pair<double, double> drift_coeff;
+
+        iss >> travmus_wr >> drift_val >> drift_err;
+
+        drift_coeff = std::make_pair(drift_val,drift_err);
+        travmus_drift_coeff.insert(std::make_pair(travmus_wr, drift_coeff));
+
+        //std::cout << " wr :  "<< travmus_wr << " drift coeff: " << drift_val << "\n";
+
+    }
+    
+    travmus_drift_loaded = 1;
+    travmus_drift_coeff_file.close();
+    
+    c4LOG(info, "Trav Mus Drift File: " + tm_drift_coeff_file);
+    return;    
+}
+
+void TFrsConfiguration::ReadAoQDriftFile()
+{
+    std::ifstream AoQ_drift_coeff_file (aoq_drift_coeff_file);
+    std::string line;
+
+    if (AoQ_drift_coeff_file.fail()) c4LOG(warn, "Could not open AoQ drift coefficients file.");
+
+
+    while (std::getline(AoQ_drift_coeff_file, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+        std::istringstream iss(line);
+        int frs_wr;
+        double drift_val;
+        double drift_err;
+        std::pair<double, double> drift_coeff;
+
+        iss >> frs_wr >> drift_val >> drift_err;
+
+        drift_coeff = std::make_pair(drift_val,drift_err);
+        aoq_drift_coeff.insert(std::make_pair(frs_wr, drift_coeff));
+
+
+        //std::cout << " wr:  "<< frs_wr <<  " AoQ drift coeff: " << drift_val << "\n";
+
+    }
+    
+    aoq_drift_loaded = 1;
+    AoQ_drift_coeff_file.close();
+    
+    c4LOG(info, "AoQ Drift File: " + aoq_drift_coeff_file);
+    return;    
+}
+
+void TFrsConfiguration::ReadZ1DriftFile()
+{
+    std::ifstream Z1_drift_coeff_file (z1_drift_coeff_file);
+    std::string line;
+
+    if (Z1_drift_coeff_file.fail()) c4LOG(warn, "Could not open Z1 drift coefficients file.");
+
+
+    while (std::getline(Z1_drift_coeff_file, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+        std::istringstream iss(line);
+        int frs_wr;
+        double drift_val;
+        double drift_err;
+        std::pair<double, double> drift_coeff;
+
+        iss >> frs_wr >> drift_val >> drift_err;
+        
+        drift_coeff = std::make_pair(drift_val,drift_err);
+        z1_drift_coeff.insert(std::make_pair(frs_wr, drift_coeff));
+
+        //std::cout << " wr:  "<< frs_wr << " Z1 drift coeff: " << drift_val << "\n";
+
+    }
+    
+    z1_drift_loaded = 1;
+    Z1_drift_coeff_file.close();
+    
+    c4LOG(info, "Z1 Drift File: " + z1_drift_coeff_file);
+    return;    
+}
+
+
+void TFrsConfiguration::ReadCrateMapFile()
+{
+    std::ifstream file (crate_map_file);
+    std::string line;
+
+    if (file.fail()) c4LOG(fatal, "Could not open FRS Crate Mapping mapping file.");
+
+    while (std::getline(file, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+        
+        std::istringstream iss(line);
+
+        std::string signal;
+        int channel;
+
+        iss >> signal;
+
+        if (isdigit(signal[0])) { std::cout << "Error in FRS Crate Mapping file. Row should begin with a string." << std::endl; return; }
+        else
+        {
+            iss >> channel;
+            
+            if (signal == "MUSIC_E_GEO") music_e_geo = channel; // remove
+            else if (signal == "DE_GEO") sci_dE_geo = channel; // remove
+            else if (signal == "dE_21L") de_21l_ch = channel;
+            else if (signal == "dE_21R") de_21r_ch = channel;
+            else if (signal == "dE_22L") de_22l_ch = channel;
+            else if (signal == "dE_22R") de_22r_ch = channel;
+            else if (signal == "dE_31L") de_31l_ch = channel;
+            else if (signal == "dE_31R") de_31r_ch = channel;
+            else if (signal == "dE_41L") de_41l_ch = channel;
+            else if (signal == "dE_41R") de_41r_ch = channel;
+            else if (signal == "dE_42L") de_42l_ch = channel;
+            else if (signal == "dE_42R") de_42r_ch = channel;
+            else if (signal == "dE_43L") de_43l_ch = channel;
+            else if (signal == "dE_43R") de_43r_ch = channel;
+            else if (signal == "dE_81L") de_81l_ch = channel;
+            else if (signal == "dE_81R") de_81r_ch = channel;
+            else if (signal == "DT_GEO") sci_dT_geo = channel; // remove
+            else if (signal == "dT_21L_21R") dt_21l_21r_ch = channel;
+            else if (signal == "dT_41L_41R") dt_41l_41r_ch = channel;
+            else if (signal == "dT_42L_42R") dt_42l_42r_ch = channel;
+            else if (signal == "dT_43L_43R") dt_43l_43r_ch = channel;
+            else if (signal == "dT_81L_81R") dt_81l_81r_ch = channel;
+            else if (signal == "dT_21L_41L") dt_21l_41l_ch = channel;
+            else if (signal == "dT_21R_41R") dt_21r_41r_ch = channel;
+            else if (signal == "dT_42R_21R") dt_42r_21r_ch = channel;
+            else if (signal == "dT_42L_21L") dt_42l_21l_ch = channel;
+            else if (signal == "dT_21L_81L") dt_21l_81l_ch = channel;
+            else if (signal == "dT_21R_81R") dt_21r_81r_ch = channel;
+            else if (signal == "dT_22L_22R") dt_22l_22r_ch = channel;
+            else if (signal == "dT_22L_41L") dt_22l_41l_ch = channel;
+            else if (signal == "dT_22R_41R") dt_22r_41r_ch = channel;
+            else if (signal == "dT_22L_81L") dt_22l_81l_ch = channel;
+            else if (signal == "dT_22R_81R") dt_22r_81r_ch = channel;
+            else if (signal == "dT_41L_41R") dt_41l_41r_ch = channel;
+            else if (signal == "mhtdc_11") mhtdc_11_ch = channel;
+            else if (signal == "mhtdc_21L") mhtdc_21L_ch = channel;
+            else if (signal == "mhtdc_21R") mhtdc_21R_ch = channel;
+            else if (signal == "mhtdc_22L") mhtdc_22L_ch = channel;
+            else if (signal == "mhtdc_22R") mhtdc_22R_ch = channel;
+            else if (signal == "mhtdc_31L") mhtdc_31L_ch = channel;
+            else if (signal == "mhtdc_31R") mhtdc_31R_ch = channel;
+            else if (signal == "mhtdc_41L") mhtdc_41L_ch = channel;
+            else if (signal == "mhtdc_41R") mhtdc_41R_ch = channel;
+            else if (signal == "mhtdc_42L") mhtdc_42L_ch = channel;
+            else if (signal == "mhtdc_42R") mhtdc_42R_ch = channel;
+            else if (signal == "mhtdc_43L") mhtdc_43L_ch = channel;
+            else if (signal == "mhtdc_43R") mhtdc_43R_ch = channel;
+            else if (signal == "mhtdc_81L") mhtdc_81L_ch = channel;
+            else if (signal == "mhtdc_81R") mhtdc_81R_ch = channel;
+
+        }
+    }
+
+    //dT_mapping_loaded = 1;
+    file.close();
+    
+    return;   
+}
+
+
+//:::
+
 
 void TFrsConfiguration::Set_Z_range(Double_t min, Double_t max)
 {

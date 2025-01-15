@@ -110,6 +110,7 @@ class FatimaNearlineSpectra : public FairTask
         TDirectory* dir_fatima_slowToT;
         TDirectory* dir_fatima_fastToT;
         TDirectory* dir_fatima_fast_v_slow;
+        TDirectory* dir_fatima_drift;
         TDirectory* dir_fatima_hitpattern;
         TDirectory* dir_fatima_energy_spectra;
         TDirectory* dir_fatima_time_spectra;
@@ -126,19 +127,20 @@ class FatimaNearlineSpectra : public FairTask
         int number_reference_detectors = 0;
         
         // Histograms 
-        std::vector<TH1F*> h1_fatima_slowToT;
-        std::vector<TH1F*> h1_fatima_fastToT;
-        std::vector<TH1F*> h1_fatima_energy;
-        std::vector<TH1F*> h1_fatima_abs_time;
-        std::vector<TH2F*> h2_fatima_fast_v_slow;
+        std::vector<TH1*> h1_fatima_slowToT;
+        std::vector<TH1*> h1_fatima_fastToT;
+        std::vector<TH1*> h1_fatima_energy;
+        std::vector<TH1*> h1_fatima_abs_time;
+        std::vector<TH2*> h2_fatima_fast_v_slow;
+        std::vector<TH2*> h2_fatima_energy_vs_t;
 
-        TH1F * h1_fatima_multiplicity;
-        TH2F * h2_fatima_energy_vs_detid;
-        TH2F * h2_fatima_energy_uncal_vs_detid;
-        TH1F * h1_fatima_hitpattern_slow;
-        TH1F * h1_fatima_hitpattern_fast;
-        std::vector<std::vector<TH1F*>> h1_fatima_time_differences;
-        std::vector<std::vector<TH2F*>> h2_fatima_time_differences_vs_energy;
+        TH1* h1_fatima_multiplicity;
+        TH2* h2_fatima_energy_vs_detid;
+        TH2* h2_fatima_energy_uncal_vs_detid;
+        TH1* h1_fatima_hitpattern_slow;
+        TH1* h1_fatima_hitpattern_fast;
+        std::vector<std::vector<TH1*>> h1_fatima_time_differences;
+        std::vector<std::vector<TH2*>> h2_fatima_time_differences_vs_energy;
 
         // Binnings:
         int ffast_tot_nbins = 500;
@@ -157,11 +159,11 @@ class FatimaNearlineSpectra : public FairTask
 
         //sci41 spectra:
         TCanvas * c_fatima_energy_summed_vs_tsci41;
-        TH2F * h2_fatima_energy_summed_vs_tsci41;
+        TH2 * h2_fatima_energy_summed_vs_tsci41;
         TCanvas * c_fatima_energy_summed_vs_tsci41_cut;
-        TH1F * h1_fatima_energy_summed_vs_tsci41_cut;
+        TH1 * h1_fatima_energy_summed_vs_tsci41_cut;
         TCanvas * c_fatima_energy_energy_sci41_cut;
-        TH2F * h2_fatima_energy_energy_sci41_cut;
+        TH2 * h2_fatima_energy_energy_sci41_cut;
         
         TH1** h1_fatima_rates;
 

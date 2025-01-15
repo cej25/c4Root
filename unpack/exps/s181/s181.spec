@@ -1,11 +1,9 @@
 // -*- C++ -*-
 
-#include "../../../config/setup.h"
 #include "../../common/whiterabbit.spec"
 #include "../../common/gsi_febex4.spec"
 #include "../../common/gsi_tamex4.spec"
 #include "../../common/vme_caen_v1751.spec"
-//#include "../../common/vme_caen_v1x90.spec"
 #include "../frs/frs_s181.spec"
 #include "fatima_vme.spec"
 #include "../../common/general.spec"
@@ -15,6 +13,40 @@
 // making a change
 
 external EXT_AIDA();
+
+V7X5_DUMMY()
+{
+	UINT32 dummy NOENCODE
+	{
+		0_23: 0x000000;
+		24_27: id = RANGE(5,8);
+		28_31: 0x0;
+	}
+}
+
+SUBEVENT(bb7_subev)
+{
+    select optional 
+    {
+        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1800);
+    }
+
+    select several
+    {
+        v7x5_module[0] = VME_CAEN_V775(geom=11);
+	    v7x5_dummy = V7X5_DUMMY();
+        v7x5_module[1] = VME_CAEN_V775(geom=13);
+        v7x5_module[2] = VME_CAEN_V775(geom=15);
+        v7x5_module[3] = VME_CAEN_V775(geom=17);
+        v1290_module = VME_CAEN_V1290_N();
+    }
+	
+    list (0 <= i < 3)
+    {
+	    optional UINT32 more_eob_words NOENCODE;
+    }
+
+}
 
 SUBEVENT(bgo_tamex_subevent)
 {
@@ -115,7 +147,6 @@ SUBEVENT(fatima_vme_subev)
         scalers = FATIMA_VME_SCALERS();
     };
 
-    // don't love this but ucesb is a real pain in the ass
     select optional
     {
         qdc1 = VME_CAEN_V1751(board=6);
@@ -141,12 +172,6 @@ SUBEVENT(fatima_vme_subev)
         qdc5 = VME_CAEN_V1751(board=10);
     }
     
-    /*qdc[0] = VME_CAEN_V1751(board=6);
-    qdc[1] = VME_CAEN_V1751(board=7);
-    qdc[2] = VME_CAEN_V1751(board=8);
-    qdc[3] = VME_CAEN_V1751(board=9);
-    qdc[4] = VME_CAEN_V1751(board=10);*/
-   
     select several
     {
         error2 = ERR_WORD_SIX();
@@ -155,7 +180,7 @@ SUBEVENT(fatima_vme_subev)
     // we don't always get information from both TDC boards
     select optional
     {
-        tdc1 = VME_CAEN_V1290_FRS();
+        tdc1 = VME_CAEN_V1290_N();
     };
 
     select several
@@ -165,7 +190,7 @@ SUBEVENT(fatima_vme_subev)
 
     select optional
     {
-        tdc2 = VME_CAEN_V1290_FRS();
+        tdc2 = VME_CAEN_V1290_N();
     };
 }
 
@@ -350,6 +375,7 @@ EVENT
     fatimavme = fatima_vme_subev(type = 10, subtype = 1, procid = 70, control = 20);
     bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20);
     bgo = bgo_tamex_subevent(procid = 100);
+    bbseven = bb7_subev(procid=31);
 
     frsmain = frs_main_subev(procid = 10);
     frstpc = frs_tpc_subev(procid = 20);
@@ -360,3 +386,6 @@ EVENT
 
     ignore_unknown_subevent;
 };
+
+
+#include "mapping.hh"

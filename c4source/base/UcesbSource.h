@@ -70,6 +70,11 @@ class UcesbSource : public FairSource
 
     void SetInputFileName(TString tstr) { fInputFileName = tstr; }
 
+    void SetTimeStitcher(TString tpath, TString topts) {
+		    fTimeStitcherPath = tpath;
+		    fTimeStitcherOptions = topts;
+	}
+
   private:
     /* File descriptor returned from popen() */
     FILE* fFd;
@@ -98,6 +103,9 @@ class UcesbSource : public FairSource
     TString fInputFileName;
     std::ifstream fInputFile;
     Int_t fEntryMax;
+
+    TString fTimeStitcherPath;
+    TString fTimeStitcherOptions;
 
   public:
     

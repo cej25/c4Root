@@ -24,11 +24,16 @@ EXPS=s452 \
 	NovTest \
 	onlyFATIMA \
 	s100 \
+	s101 \
+	s115 \
 	s143 \
 	s181 \
 	bb7 \
 	fimp \
+	test \
+	jikken \
 	pareeksha \
+	shiyan \
 	onlyBGO 
 ALL_EXPS = $(EXPS)
 

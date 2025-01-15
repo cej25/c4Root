@@ -28,5 +28,8 @@ DUMMY()
 {
     UINT32 no NOENCODE;
 }
+<<<<<<< HEAD
 
 #endif // DUMMY_H
+=======
+>>>>>>> main

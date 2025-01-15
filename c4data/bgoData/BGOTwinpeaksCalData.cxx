@@ -2,6 +2,7 @@
 
 BGOTwinpeaksCalData::BGOTwinpeaksCalData()
     :
+    ftrig(0),
     fboard_id(0),
     fch_ID(0),
     
@@ -30,6 +31,7 @@ ffast_trail_epoch(0),
 }
 
 BGOTwinpeaksCalData::BGOTwinpeaksCalData(
+        uint16_t trig,
         uint16_t board_id,
         uint16_t ch_ID,
         
@@ -55,6 +57,7 @@ int64_t fast_trail_epoch,
         uint64_t wr_t,
         uint64_t absolute_event_time)
     : 
+        ftrig(trig),
         fboard_id(board_id),
         fch_ID(ch_ID),
         fdetector_id(detector_id),

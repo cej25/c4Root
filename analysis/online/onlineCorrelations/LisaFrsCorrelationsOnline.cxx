@@ -1,11 +1,26 @@
-#include "FairRootManager.h"
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                       E.M. Gandolfo, C.E. Jones                            *
+ *                               25..11.24                                    *
+ ******************************************************************************/
+
 #include "FairRunAna.h"
 #include "FairRunOnline.h"
 #include "FairTask.h"
 
 #include "LisaFrsCorrelationsOnline.h"
 #include "FrsHitData.h"
-#include "FrsTravMusCalData.h"
+#include "TravMusCalData.h"
 #include "LisaCalData.h"
 #include "TLisaConfiguration.h" // not here
 #include "c4Logger.h"
@@ -29,7 +44,8 @@ LisaFrsCorrelationsOnline::LisaFrsCorrelationsOnline(const TString& name, Int_t 
     :   FairTask(name, verbose)
     ,   header(nullptr)
     ,   lisaCalArray(nullptr)
-    ,   travMusicArray(nullptr)
+    ,   travMusCalArray(nullptr)
+    ,   travMusAnaArray(nullptr)
     ,   frsHitArray(nullptr)
     ,   fNEvents(0)
 {
@@ -55,10 +71,15 @@ InitStatus LisaFrsCorrelationsOnline::Init()
 
     lisaCalArray = mgr->InitObjectAs<decltype(lisaCalArray)>("LisaCalData");
     c4LOG_IF(fatal, !lisaCalArray, "Branch LisaCalData not found!");
+
     frsHitArray = mgr->InitObjectAs<decltype(frsHitArray)>("FrsHitData");
     c4LOG_IF(fatal, !frsHitArray, "Branch FrsHitData not found!");
-    travMusicArray = mgr->InitObjectAs<decltype(travMusicArray)>("FrsTravMusCalData");
-    c4LOG_IF(fatal, !travMusicArray, "Branch FrsTravMusCalData not found!");
+
+    travMusCalArray = mgr->InitObjectAs<decltype(travMusCalArray)>("TravMusCalData");
+    c4LOG_IF(fatal, !travMusCalArray, "Branch TravMusCalData not found!");
+
+    travMusAnaArray = mgr->InitObjectAs<decltype(travMusAnaArray)>("TravMusAnaData");
+    c4LOG_IF(fatal, !travMusAnaArray, "Branch TravMusAnaData not found!");
 
     layer_number = lisa_config->NLayers();
 
@@ -206,11 +227,11 @@ void LisaFrsCorrelationsOnline::Reset_Histo()
 void LisaFrsCorrelationsOnline::Exec(Option_t* option)
 {   
     // reject events without both subsystems
-    if (lisaCalArray->size() <= 0 || frsHitArray->size() <= 0) return; //frs and trav music are there
+    if (travMusAnaArray->size() <= 0 || frsHitArray->size() <= 0) return; //frs and trav music are there
     //if (lisaCalArray->size() <= 0 ) return; //for when travmusic is there but not frs
 
     const auto & frsHitItem = frsHitArray->at(0); // *should* only be 1 FRS subevent per event
-    const auto & travMusicHitItem = travMusicArray->at(0); 
+    const auto & travMusicHitItem = travMusAnaArray->at(0); 
 
     // FRS WR
     Int_t count_wr = 0;
@@ -229,10 +250,9 @@ void LisaFrsCorrelationsOnline::Exec(Option_t* option)
     sum_energy_layer.resize(layer_number);
     //c4LOG(info, "s2 x : " << s2_x << "s2 y : " << s2_y);
 
-    energy_MUSIC_1 = frsHitItem.Get_music_dE(0); 
-    energy_MUSIC_2 = frsHitItem.Get_music_dE(1);
-    energy_travMUSIC = frsHitItem.Get_travmusic_dE();
-    //energy_travMUSIC = travMusHitItem.Get_travmusic_dE();
+    energy_MUSIC_1 = frsHitItem.Get_music_dE()[0]; 
+    energy_MUSIC_2 = frsHitItem.Get_music_dE()[1];
+    energy_travMUSIC = travMusicHitItem.Get_travmusic_dE();
     //c4LOG(info, "travMUS en : " << energy_travMUSIC << " music 1 : " << energy_MUSIC_1 << " sum energy 1 : " << sum_energy_layer[1]);
 
 

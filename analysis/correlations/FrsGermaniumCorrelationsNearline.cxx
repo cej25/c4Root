@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                             J.E.L. Larsson                                 *
+ *                               17.12.24                                     *
+ ******************************************************************************/
+
 // FairRoot
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -14,6 +30,7 @@
 #include "FrsHitData.h"
 #include "TGermaniumConfiguration.h"
 
+#include "AnalysisTools.h"
 #include "c4Logger.h"
 
 
@@ -73,8 +90,8 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
     run = FairRunAna::Instance();
 
 
-    header = (EventHeader*)mgr->GetObject("EventHeader.");
-    c4LOG_IF(error, !header, "Branch EventHeader. not found");
+    header = mgr->InitObjectAs<decltype(header)>("EventHeader.");
+    c4LOG_IF(error, !header, "Branch EventHeader. not found!");
 
 
     TString data_item = TString("Germanium") + input_anl_or_cal + TString("Data");
@@ -95,12 +112,21 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
     
 
 
-    TDirectory* tmp = gDirectory;
-    FairRootManager::Instance()->GetOutFile()->cd();
-    dir_germanium = gDirectory->mkdir(TString("DEGAS FRS GATE " + frsgate->GetName()));
-    gDirectory->cd(TString("DEGAS FRS GATE " + frsgate->GetName()));
+    dir_corr = (TDirectory*)mgr->GetObject("Correlations");
+    if (dir_corr == nullptr) 
+    {
+        LOG(info) << "Creating Correlations Directory";
+        FairRootManager::Instance()->GetOutFile()->cd();
+        dir_corr = gDirectory->mkdir("Correlations");
+        mgr->Register("Correlations", "Correlations Directory", dir_corr, false); // allow other tasks to find this
+        found_dir_corr = false;
+    }
+
+    TString dirname = "DEGAS - FRS Gated: " + frsgate->GetName();
+    dir_germanium = dir_corr->mkdir(dirname);
 
     dir_germanium->cd();
+
     //Implant rate
     g_frs_rate = new TGraph();
     g_frs_rate->SetName(TString("g_frs_germanium_rate_monitor_gated_")+frsgate->GetName());
@@ -249,9 +275,27 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
         h2_frs_x4_vs_AoQ_reverse_wr_gated[idx_gamma_gate]->GetYaxis()->SetTitle("x4");
 
     }
+
+    crystals_to_plot.clear();
+    std::map<std::pair<int,int>,std::pair<int,int>> gmap = germanium_configuration->Mapping();
+
+    for (auto it_mapping = gmap.begin(); it_mapping != gmap.end(); ++it_mapping){
+        if (it_mapping->second.first >= 0) crystals_to_plot.emplace_back(std::pair<int,int>(it_mapping->second.first,it_mapping->second.second));
+    }
+
+    number_of_detectors_to_plot = crystals_to_plot.size();
+
+    detector_labels = new char*[number_of_detectors_to_plot];
+    h1_germanium_hitpattern_post6us = MakeTH1(dir_germanium, "I", "h1_germanium_hitpattern_post6us","Hit pattern of DEGAS",number_of_detectors_to_plot,0,number_of_detectors_to_plot, "Crystal", kRed-3, kBlack);
+    h1_germanium_hitpattern_post6us->GetXaxis()->SetAlphanumeric();
+    for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++)
+    {
+        detector_labels[ihist] = Form("%d%c",crystals_to_plot.at(ihist).first,(char)(crystals_to_plot.at(ihist).second+65));
+        h1_germanium_hitpattern_post6us->GetXaxis()->SetBinLabel(ihist+1,detector_labels[ihist]);
+    }    
+    h1_germanium_hitpattern_post6us->GetXaxis()->LabelsOption("a");
+    h1_germanium_hitpattern_post6us->SetStats(0);
     
-    dir_germanium->cd();
-    gDirectory = tmp;
 
     return kSUCCESS;
 }
@@ -426,6 +470,9 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
                 
                 h2_germanium_energy_vs_tsci41->Fill(timediff1 ,energy1);
 
+                int crystal_index1 = std::distance(crystals_to_plot.begin(), std::find(crystals_to_plot.begin(),crystals_to_plot.end(),std::pair<int,int>(detector_id1,crystal_id1)));
+                if (timediff1 > 6000) h1_germanium_hitpattern_post6us->Fill(detector_labels[crystal_index1],1);
+
                 //after this test, the prompt flash is cut out.
                 if ((germanium_configuration->IsInsidePromptFlashCut(timediff1 ,energy1)==true) ) continue;
                 if ((timediff1 < -400 || timediff1 > stop_short_lifetime_collection)) continue;
@@ -483,7 +530,8 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
         }
 
         
-
+        // ok "wr_t_last_frs_hit == 0" means !positivePID
+        // this is not very clear.
         if (nHits >= 1 && wr_t_last_frs_hit != 0){
         //long isomer
         for (int ihit1 = 0; ihit1 < nHits; ihit1 ++){
@@ -498,7 +546,7 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
 
             if (germanium_configuration->IsDetectorAuxilliary(detector_id_long)==true) continue;
 
-
+            // this is the "good" one
             h2_germanium_energy_vs_sci41_wr_long->Fill(ge_wr_long-wr_t_last_frs_hit, energy_long);
             
 

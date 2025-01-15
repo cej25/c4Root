@@ -6,7 +6,11 @@
 #include "TFatimaTwinpeaksConfiguration.h"
 #include "TFrsConfiguration.h"
 #include "FrsHitData.h"
+<<<<<<< HEAD
 #include "FairRunAna.h"
+=======
+#include "EventHeader.h"
+>>>>>>> main
 
 class TClonesArray;
 class EventHeader;
@@ -128,7 +132,7 @@ class FrsFatimaCorrelationsNearline : public FairTask
         std::vector<double> gamma_energies_of_interest;
         std::vector<double> gate_width_gamma_energies_of_interest;
 
-        EventHeader* header;
+        EventHeader const* header;
         Int_t fNEvents;
 
         // Histograms:
@@ -274,8 +278,10 @@ class FrsFatimaCorrelationsNearline : public FairTask
 
 
         // Folder and files
+        bool found_dir_corr = true;
+        TDirectory* dir_corr;
         TDirectory* dir_fatima;
-        TDirectory ** folder_energy_gated;
+        TDirectory** folder_energy_gated;
 
 
 

@@ -1,4 +1,5 @@
 #include "TLisaConfiguration.h"
+#include "TExperimentConfiguration.h"
 
 #include "c4Logger.h"
 #include "TCutG.h"
@@ -11,8 +12,14 @@
 #include <string>
 
 TLisaConfiguration* TLisaConfiguration::instance = nullptr;
+
+//std::string TLisaConfiguration::MWD_file = "blank";
 std::string TLisaConfiguration::mapping_file = "blank";
+std::string TLisaConfiguration::gain_matching_file = "blank";
 std::string TLisaConfiguration::calibration_file = "blank";
+
+//WR enable setting - X7 data = 0, S2 data = 1
+bool TLisaConfiguration::wr_enable = 1;
 
 int TLisaConfiguration::AmplitudeMin = 7000;
 int TLisaConfiguration::AmplitudeMax = 16000;
@@ -20,6 +27,10 @@ int TLisaConfiguration::AmplitudeMax = 16000;
 int TLisaConfiguration::min_energy = 0;
 int TLisaConfiguration::max_energy = 10000000;
 int TLisaConfiguration::bin_energy = 900;
+
+int TLisaConfiguration::min_energy_GM = 0;
+int TLisaConfiguration::max_energy_GM = 10000;
+int TLisaConfiguration::bin_energy_GM = 500;
 
 int TLisaConfiguration::min_wr_diff = 0;
 int TLisaConfiguration::max_wr_diff = 200;
@@ -29,28 +40,9 @@ int TLisaConfiguration::min_traces = 0;
 int TLisaConfiguration::max_traces = 2000;
 int TLisaConfiguration::bin_traces = 900;
 
-/*
-//layer1
-int TLisaConfiguration::i100 = 0;
-int TLisaConfiguration::s100 = 0;
-int TLisaConfiguration::i101 = 0;
-int TLisaConfiguration::s101 = 0;
-int TLisaConfiguration::i110 = 0;
-int TLisaConfiguration::s110 = 0;
-int TLisaConfiguration::i111 = 0;
-int TLisaConfiguration::s111 = 0;
-//layer2
-int TLisaConfiguration::i200 = 0;
-int TLisaConfiguration::s200 = 0;
-int TLisaConfiguration::i201 = 0;
-int TLisaConfiguration::s201 = 0;
-int TLisaConfiguration::i210 = 0;
-int TLisaConfiguration::s210 = 0;
-int TLisaConfiguration::i211 = 0;
-int TLisaConfiguration::s211 = 0;
-*/
+int TLisaConfiguration::fMin_dE_LISA1_gate = 1070, TLisaConfiguration::fMax_dE_LISA1_gate = 1100;
 
-
+int TLisaConfiguration::frun_num = 0;
 
 
 TLisaConfiguration::TLisaConfiguration()
@@ -58,15 +50,43 @@ TLisaConfiguration::TLisaConfiguration()
     ,   num_detectors(0)
     ,   num_febex_boards(0)
 {
+    //ReadMWDParameters();
     ReadMappingFile();
+    ReadGMFile();
     //ReadCalibrationCoefficients();
 
 }
 
 
+// void TLisaConfiguration::ReadMWDParameters()
+// {   
+//     std::cout<<"MWD elefanti"<<std::endl;
+//     //std::set<int> layers;
+//     //std::set<int> x_positions;
+//     //std::set<int> y_positions;
+    
+//     std::ifstream MWD_parameters_file (MWD_file);
+//     std::string line;
+
+//     if (MWD_parameters_file.fail()) c4LOG(fatal, "Could not open LISA MWD parameters file.");
+
+//     while (std::getline(MWD_parameters_file, line))
+//     {
+//         if (line.empty() || line[0] == '#') continue;
+
+//     }
+    
+//     MWD_parameters_loaded = 1;
+//     MWD_parameters_file.close();
+
+//     c4LOG(info, "Lisa MWD Parameters: " + MWD_file);
+//     return;
+
+// }
+
 void TLisaConfiguration::ReadMappingFile()
 {   
-    std::cout<<"un elefante"<<std::endl;
+    //std::cout<<"un elefante"<<std::endl;
     std::set<int> febex_boards;
     std::set<int> layers;
     std::set<int> x_positions;
@@ -101,6 +121,8 @@ void TLisaConfiguration::ReadMappingFile()
             febex_board = std::stoi(signal);
 
             iss >> febex_channel >> layer_id >> x_pos >> y_pos >> det_name;
+            //std::cout << " Mapping : l "<< layer_id << " x " << x_pos << " y " << y_pos << "\n";
+
 
             // count only real layers, detectors
             layers.insert(layer_id);
@@ -153,6 +175,49 @@ void TLisaConfiguration::ReadMappingFile()
 
 }
 
+
+void TLisaConfiguration::ReadGMFile()
+{   
+    std::cout<<"due elefanti"<<std::endl;
+    //std::set<int> layers;
+    //std::set<int> x_positions;
+    //std::set<int> y_positions;
+    
+    std::ifstream gain_matching_coeff_file (gain_matching_file);
+    std::string line;
+
+    if (gain_matching_coeff_file.fail()) c4LOG(fatal, "Could not open LISA calibration coefficients file.");
+
+    while (std::getline(gain_matching_coeff_file, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+
+        std::istringstream iss(line);
+        int layer_id, x_pos, y_pos;
+        double slope, intercept;
+        std::pair<int, int> xy;
+        std::pair<int, std::pair<int, int>> layer_xy;
+        std::pair<double, double> gm_coeff;
+
+        iss >> layer_id >> x_pos >> y_pos >> slope >> intercept;
+
+        gm_coeff = std::make_pair(slope, intercept);
+
+        xy = std::make_pair(x_pos, y_pos);
+        layer_xy = std::make_pair(layer_id, xy);
+
+        gain_matching_coeffs.insert(std::make_pair(layer_xy, gm_coeff));
+
+        std::cout << " l "<< layer_id << " x " << x_pos << " y " << y_pos << " slope " << slope << " intercept " << intercept << "\n";
+    }
+    
+    gain_matching_loaded = 1;
+    gain_matching_coeff_file.close();
+
+    c4LOG(info, "Lisa Gain Matching File: " + gain_matching_file);
+    return;
+
+}
 
 
 void TLisaConfiguration::ReadCalibrationCoefficients()

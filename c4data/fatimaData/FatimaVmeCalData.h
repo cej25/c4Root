@@ -2,7 +2,6 @@
 #define FatimaVmeCalData_H
 
 #include "TObject.h"
-#include "../../config/setup.h"
 #include <vector>
 
 class FatimaVmeCalData : public TObject
@@ -147,7 +146,6 @@ class FatimaVmeQDCCalItem : public TObject
         int detector;
 
 };
-
 
 class FatimaVmeTDCCalItem : public TObject
 {

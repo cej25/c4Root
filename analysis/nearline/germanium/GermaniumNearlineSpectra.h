@@ -84,26 +84,23 @@ class GermaniumNearlineSpectra : public FairTask
         std::vector<std::pair<double,double>> dt_reference_detectors_energy_gates;
         double energygate_width = 5;
 
-        
         int fenergy_nbins = 1500;
         int fenergy_bin_low = 0;
         int fenergy_bin_high = 1500;
 
         EventHeader* header;
         Int_t fNEvents;
-
        
-        
-       
-        TH1F* h1_germanium_energy_summed_vs_tsci41_cut;
-        TH2F* h2_germanium_energy_energy_vetosci41;
-        TH2F* h2_germanium_energy_energy_sci41_cut;
+        TH1* h1_germanium_energy_summed_vs_tsci41_cut;
+        TH2* h2_germanium_energy_energy_vetosci41;
+        TH2* h2_germanium_energy_energy_sci41_cut;
 
         char** detector_labels;
 
         // Folder and files
         TDirectory* dir_germanium;
         TDirectory* dir_germanium_energy;
+        TDirectory* dir_germanium_drift;
         TDirectory* dir_germanium_time;
         TDirectory* dir_germanium_hitpattern;
         TDirectory* dir_germanium_multiplicity;
@@ -112,21 +109,22 @@ class GermaniumNearlineSpectra : public FairTask
         std::vector<TDirectory*> dir_germanium_time_differences;
 
         // Histograms energy
-        std::vector<TH1F*> h1_germanium_energy;
-        TH2F* h2_germanium_energy_vs_detidx;
+        std::vector<TH1*> h1_germanium_energy;
+        std::vector<TH2*> h2_germanium_energy_vs_t;
+        TH2* h2_germanium_energy_vs_detidx;
 
-        std::vector<std::vector<TH1F*>> h1_germanium_time_differences; // [reference_dector][detector index]
-        std::vector<std::vector<TH2F*>> h2_germanium_time_differences_vs_energy; // [reference_dector][detector index]
+        std::vector<std::vector<TH1*>> h1_germanium_time_differences; // [reference_dector][detector index]
+        std::vector<std::vector<TH2*>> h2_germanium_time_differences_vs_energy; // [reference_dector][detector index]
 
-        TH1F* h1_germanium_energy_summed;
-        TH1F* h1_germanium_energy_summed_vetosci41;
-        TH2F* h2_germanium_energy_summed_vs_tsci41;
+        TH1* h1_germanium_energy_summed;
+        TH1* h1_germanium_energy_summed_vetosci41;
+        TH2* h2_germanium_energy_summed_vs_tsci41;
 
-        TH1F* h1_germanium_multiplicity;
-        TH1F* h1_germanium_hitpattern;
+        TH1* h1_germanium_multiplicity;
+        TH1* h1_germanium_hitpattern;
 
         // Histograms time
-        std::vector<TH1F*> h1_germanium_time;
+        std::vector<TH1*> h1_germanium_time;
 
         TH1** h1_germanium_rates;
 

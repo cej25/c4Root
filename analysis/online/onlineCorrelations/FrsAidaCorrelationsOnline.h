@@ -5,7 +5,6 @@
 #include "TFrsConfiguration.h"
 #include "TCorrelationsConfiguration.h"
 #include "AidaHitData.h"
-#include "../../config/setup.h"
 #include "FrsGate.h"
 #include "FrsHitData.h"
 

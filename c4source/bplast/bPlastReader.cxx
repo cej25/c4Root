@@ -322,7 +322,29 @@ Bool_t bPlastReader::Read() //do fine time here:
     
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
     { //per board:
-        
+
+        uint16_t trig = fData->bplast_tamex[it_board_number].trig;
+        if (trig == 3) 
+        {
+            //std::cout << "here we print trig = 3!" << std::endl;
+            // create new structure for trig 3 events perhaps
+            new ((*fArray)[fArray->GetEntriesFast()]) bPlastTwinpeaksData(
+                    trig,
+                    it_board_number,
+                    0,
+                    //last_hits[it_board_number][channelid-1].lead_epoch_counter,
+                    0,
+                    //last_hits[it_board_number][channelid-1].lead_coarse_T,
+                    0,
+                    //last_hits[it_board_number][channelid-1].lead_fine_T,
+                    0,
+                    0,
+                    0,
+                    0,
+                    fData->bplast_ts_subsystem_id,
+                    wr_t);
+        }
+
         if (fData->bplast_tamex[it_board_number].event_size == 0) continue; // empty event skip
         
         last_word_read_was_epoch = false;
@@ -437,6 +459,7 @@ Bool_t bPlastReader::Read() //do fine time here:
                 //if (it_board_number == 1) c4LOG(info,Form("Writing: ch = %i, le = %i lc = %i, lf = %f, te = %i tc = %i, tf = %f ",channelid,last_tdc_hit.lead_epoch_counter, last_tdc_hit.lead_coarse_T, last_tdc_hit.lead_fine_T,last_tdc_hit.lead_epoch_counter,coarse_T,fine_T));
 
                 new ((*fArray)[fArray->GetEntriesFast()]) bPlastTwinpeaksData(
+                    trig,
                     it_board_number,
                     channelid,
                     accepted_trigger_time,
