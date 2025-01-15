@@ -91,11 +91,10 @@ InitStatus FrsFatimaCorrelations::Init()
 
     fHitFatima = (TClonesArray*)mgr->GetObject("FatimaTwinpeaksCalData");
     c4LOG_IF(fatal, !fHitFatima, "Branch FatimaTwinpeaksCalData not found!");
+    
     hitArrayFrs = mgr->InitObjectAs<decltype(hitArrayFrs)>("FrsHitData");
     c4LOG_IF(fatal, !hitArrayFrs, "Branch FrsHitData not found!");
     //Multihit vetos:
-    mainSciArray = mgr->InitObjectAs<decltype(mainSciArray)>("FrsMainCalSciData");
-    c4LOG_IF(fatal, !mainSciArray, "Branch FrsMainCalSciData not found!");
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
 
@@ -599,7 +598,7 @@ void FrsFatimaCorrelations::Exec(Option_t* option)
     double ID_z = frshit.Get_ID_z();
     double ID_z2 = frshit.Get_ID_z2();
     double ID_dEdeg = frshit.Get_ID_dEdeg();
-    double ID_sci42E = frshit.Get_sci_e(3);
+    double ID_sci42E = frshit.Get_sci_e_42();
 
     // this must pass all gates given to FrsGate:
     positive_PID = frsgate->PassedGate(ID_z, ID_z2, ID_x2, ID_x4, ID_AoQ, ID_dEdeg, ID_sci42E);

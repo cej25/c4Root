@@ -64,12 +64,8 @@ class bPlastTwinpeaksCalData : public TObject
 
 
         // Setters
-<<<<<<< HEAD
-        void Set_board_id(uint16_t v){ fboard_id = v; }
-=======
         void Set_trigger(uint16_t v) { ftrig = v; }
         void Set_board_id(uint16_t v){fboard_id = v; }
->>>>>>> main
         void Set_ch_ID(uint16_t v){ fch_ID = v; }
         void Set_detector_id(uint16_t v){ fdetector_id = v; }
 

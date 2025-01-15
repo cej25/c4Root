@@ -93,7 +93,6 @@ InitStatus FrsFatimaCorrelationsNearline::Init()
     hitArrayFrs = mgr->InitObjectAs<decltype(hitArrayFrs)>("FrsHitData");
     c4LOG_IF(fatal, !hitArrayFrs, "Branch FrsHitData not found!");
 
-<<<<<<< HEAD
     multihitArrayFrs = mgr->InitObjectAs<decltype(multihitArrayFrs)>("FrsMultiHitData");
     c4LOG_IF(fatal, !multihitArrayFrs, "Branch FrsHitData not found!");
 
@@ -104,7 +103,6 @@ InitStatus FrsFatimaCorrelationsNearline::Init()
         FairRootManager::Instance()->RegisterAny("FrsMultiHitData", multihitArrayFrs, fWriteOutput);
     }
 
-=======
     dir_corr = (TDirectory*)mgr->GetObject("Correlations");
     if (dir_corr == nullptr) 
     {
@@ -114,7 +112,6 @@ InitStatus FrsFatimaCorrelationsNearline::Init()
         mgr->Register("Correlations", "Correlations Directory", dir_corr, false); // allow other tasks to find this
         found_dir_corr = false;
     }
->>>>>>> main
 
     TString dirname = "FATIMA - FRS Gated: " + frsgate->GetName();
     dir_fatima = dir_corr->mkdir(dirname);
@@ -480,7 +477,7 @@ void FrsFatimaCorrelationsNearline::Exec(Option_t* option)
     double ID_z = frshit.Get_ID_z();
     double ID_z2 = frshit.Get_ID_z2();
     double ID_dEdeg = frshit.Get_ID_dEdeg();
-    double ID_sci42E = frshit.Get_sci_e(3);
+    double ID_sci42E = frshit.Get_sci_e_42();
 
     // this must pass all gates given to FrsGate:
     positive_PID = frsgate->PassedGate(ID_z, ID_z2, ID_x2, ID_x4, ID_AoQ, ID_dEdeg, ID_sci42E);
@@ -849,13 +846,6 @@ void FrsFatimaCorrelationsNearline::FinishTask()
         c4LOG(warning, "No events processed, no histograms written.");
         return;
     }
-<<<<<<< HEAD
-    TDirectory* tmp = gDirectory;
-    FairRootManager::Instance()->GetOutFile()->cd();
-    dir_fatima->Write();
-    gDirectory = tmp;
-    c4LOG(info, "FRS-FATIMA histograms written to file.");
-=======
     
     if (found_dir_corr == false)
     {
@@ -866,7 +856,6 @@ void FrsFatimaCorrelationsNearline::FinishTask()
         c4LOG(info, "FRS-FATIMA histograms written to file.");
 
     }
->>>>>>> main
 }
 
 ClassImp(FrsFatimaCorrelationsNearline)

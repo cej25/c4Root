@@ -6,11 +6,8 @@
 #include "TFatimaTwinpeaksConfiguration.h"
 #include "TFrsConfiguration.h"
 #include "FrsHitData.h"
-<<<<<<< HEAD
 #include "FairRunAna.h"
-=======
 #include "EventHeader.h"
->>>>>>> main
 
 class TClonesArray;
 class EventHeader;
