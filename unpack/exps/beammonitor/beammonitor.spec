@@ -1,6 +1,5 @@
 // -*- C++ -*-
 
-#include "../../../config/setup.h"
 #include "../../common/whiterabbit.spec"
 
 #define BM_MAX_HITS 100000
