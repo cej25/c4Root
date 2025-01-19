@@ -288,14 +288,14 @@ class FrsCal2Hit : public FairTask
 
 
         // ::: MUSIC ::: //
-        Int_t music_anodes_count[2] = {0};
+        Int_t music_anodes_count[2] = {0,0};
         const UInt_t (*musicE)[8]; // 2, 8
         const UInt_t (*musicT)[8]; // 2, 8
         Bool_t music_b_e[2][8];
         Bool_t music_b_t[2][8];
-        Float_t de[2] = {0};
-        Float_t de_cor[2] = {0};
-        Bool_t b_de[2] = {0};
+        Float_t de[2] = {0,0};
+        Float_t de_cor[2] = {0,0};
+        Bool_t b_de[2] = {0,0};
 
 
         // ::: TPCs ::: //

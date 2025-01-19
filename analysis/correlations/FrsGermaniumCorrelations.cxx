@@ -402,6 +402,16 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
     double ID_dEdeg = frshit.Get_ID_dEdeg();
     double ID_sci42E = frshit.Get_sci_e_42();
 
+    std::cout << "\n\n" <<
+    "ID_x2 = " <<  ID_x2 <<
+    "ID_y2 = " <<  ID_y2 <<
+    "ID_x4 = " <<  ID_x4 <<
+    "ID_AoQ = " <<  ID_AoQ <<
+    "ID_z = " <<  ID_z <<
+    "ID_z2 = " <<  ID_z2 <<
+    "ID_dEdeg = " <<  ID_dEdeg <<
+    "ID_sci42E = " <<  ID_sci42E << std::endl;
+    
     
     // this must pass all gates given to FrsGate:
     positive_PID = frsgate->PassedGate(ID_z, ID_z2, ID_x2, ID_x4, ID_AoQ, ID_dEdeg, ID_sci42E);

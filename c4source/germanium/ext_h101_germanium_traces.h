@@ -34,6 +34,7 @@ typedef struct EXT_STR_h101_germanium_traces_t
   uint32_t germanium_traces_ts_t2 /* [0,65535] */;
   uint32_t germanium_traces_ts_t3 /* [0,65535] */;
   uint32_t germanium_traces_ts_t4 /* [0,65535] */;
+  uint32_t germanium_traces_data1trig /* [0,255] */;
   uint32_t germanium_traces_data1event_trigger_time_hi /* [-1,-1] */;
   uint32_t germanium_traces_data1event_trigger_time_lo /* [-1,-1] */;
   uint32_t germanium_traces_data1hit_pattern /* [0,65535] */;
@@ -60,6 +61,9 @@ typedef struct EXT_STR_h101_germanium_traces_t
   uint32_t germanium_traces_data1channel_energy /* [0,16] */;
   uint32_t germanium_traces_data1channel_energyI[16 EXT_STRUCT_CTRL(germanium_traces_data1channel_energy)] /* [1,16] */;
   uint32_t germanium_traces_data1channel_energyv[16 EXT_STRUCT_CTRL(germanium_traces_data1channel_energy)] /* [-1,-1] */;
+  uint32_t germanium_traces_data1channel_id_traces /* [0,16] */;
+  uint32_t germanium_traces_data1channel_id_tracesI[16 EXT_STRUCT_CTRL(germanium_traces_data1channel_id_traces)] /* [1,16] */;
+  uint32_t germanium_traces_data1channel_id_tracesv[16 EXT_STRUCT_CTRL(germanium_traces_data1channel_id_traces)] /* [0,255] */;
   uint32_t germanium_traces_data1traces1 /* [0,4000] */;
   uint32_t germanium_traces_data1traces1I[4000 EXT_STRUCT_CTRL(germanium_traces_data1traces1)] /* [1,4000] */;
   uint32_t germanium_traces_data1traces1v[4000 EXT_STRUCT_CTRL(germanium_traces_data1traces1)] /* [0,65535] */;
@@ -108,6 +112,7 @@ typedef struct EXT_STR_h101_germanium_traces_t
   uint32_t germanium_traces_data1traces16 /* [0,4000] */;
   uint32_t germanium_traces_data1traces16I[4000 EXT_STRUCT_CTRL(germanium_traces_data1traces16)] /* [1,4000] */;
   uint32_t germanium_traces_data1traces16v[4000 EXT_STRUCT_CTRL(germanium_traces_data1traces16)] /* [0,65535] */;
+  uint32_t germanium_traces_data2trig /* [0,255] */;
   uint32_t germanium_traces_data2event_trigger_time_hi /* [-1,-1] */;
   uint32_t germanium_traces_data2event_trigger_time_lo /* [-1,-1] */;
   uint32_t germanium_traces_data2hit_pattern /* [0,65535] */;
@@ -134,6 +139,9 @@ typedef struct EXT_STR_h101_germanium_traces_t
   uint32_t germanium_traces_data2channel_energy /* [0,16] */;
   uint32_t germanium_traces_data2channel_energyI[16 EXT_STRUCT_CTRL(germanium_traces_data2channel_energy)] /* [1,16] */;
   uint32_t germanium_traces_data2channel_energyv[16 EXT_STRUCT_CTRL(germanium_traces_data2channel_energy)] /* [-1,-1] */;
+  uint32_t germanium_traces_data2channel_id_traces /* [0,16] */;
+  uint32_t germanium_traces_data2channel_id_tracesI[16 EXT_STRUCT_CTRL(germanium_traces_data2channel_id_traces)] /* [1,16] */;
+  uint32_t germanium_traces_data2channel_id_tracesv[16 EXT_STRUCT_CTRL(germanium_traces_data2channel_id_traces)] /* [0,255] */;
   uint32_t germanium_traces_data2traces1 /* [0,4000] */;
   uint32_t germanium_traces_data2traces1I[4000 EXT_STRUCT_CTRL(germanium_traces_data2traces1)] /* [1,4000] */;
   uint32_t germanium_traces_data2traces1v[4000 EXT_STRUCT_CTRL(germanium_traces_data2traces1)] /* [0,65535] */;
@@ -182,6 +190,7 @@ typedef struct EXT_STR_h101_germanium_traces_t
   uint32_t germanium_traces_data2traces16 /* [0,4000] */;
   uint32_t germanium_traces_data2traces16I[4000 EXT_STRUCT_CTRL(germanium_traces_data2traces16)] /* [1,4000] */;
   uint32_t germanium_traces_data2traces16v[4000 EXT_STRUCT_CTRL(germanium_traces_data2traces16)] /* [0,65535] */;
+  uint32_t germanium_traces_data3trig /* [0,255] */;
   uint32_t germanium_traces_data3event_trigger_time_hi /* [-1,-1] */;
   uint32_t germanium_traces_data3event_trigger_time_lo /* [-1,-1] */;
   uint32_t germanium_traces_data3hit_pattern /* [0,65535] */;
@@ -208,6 +217,9 @@ typedef struct EXT_STR_h101_germanium_traces_t
   uint32_t germanium_traces_data3channel_energy /* [0,16] */;
   uint32_t germanium_traces_data3channel_energyI[16 EXT_STRUCT_CTRL(germanium_traces_data3channel_energy)] /* [1,16] */;
   uint32_t germanium_traces_data3channel_energyv[16 EXT_STRUCT_CTRL(germanium_traces_data3channel_energy)] /* [-1,-1] */;
+  uint32_t germanium_traces_data3channel_id_traces /* [0,16] */;
+  uint32_t germanium_traces_data3channel_id_tracesI[16 EXT_STRUCT_CTRL(germanium_traces_data3channel_id_traces)] /* [1,16] */;
+  uint32_t germanium_traces_data3channel_id_tracesv[16 EXT_STRUCT_CTRL(germanium_traces_data3channel_id_traces)] /* [0,255] */;
   uint32_t germanium_traces_data3traces1 /* [0,4000] */;
   uint32_t germanium_traces_data3traces1I[4000 EXT_STRUCT_CTRL(germanium_traces_data3traces1)] /* [1,4000] */;
   uint32_t germanium_traces_data3traces1v[4000 EXT_STRUCT_CTRL(germanium_traces_data3traces1)] /* [0,65535] */;
@@ -256,6 +268,7 @@ typedef struct EXT_STR_h101_germanium_traces_t
   uint32_t germanium_traces_data3traces16 /* [0,4000] */;
   uint32_t germanium_traces_data3traces16I[4000 EXT_STRUCT_CTRL(germanium_traces_data3traces16)] /* [1,4000] */;
   uint32_t germanium_traces_data3traces16v[4000 EXT_STRUCT_CTRL(germanium_traces_data3traces16)] /* [0,65535] */;
+  uint32_t germanium_traces_data4trig /* [0,255] */;
   uint32_t germanium_traces_data4event_trigger_time_hi /* [-1,-1] */;
   uint32_t germanium_traces_data4event_trigger_time_lo /* [-1,-1] */;
   uint32_t germanium_traces_data4hit_pattern /* [0,65535] */;
@@ -282,6 +295,9 @@ typedef struct EXT_STR_h101_germanium_traces_t
   uint32_t germanium_traces_data4channel_energy /* [0,16] */;
   uint32_t germanium_traces_data4channel_energyI[16 EXT_STRUCT_CTRL(germanium_traces_data4channel_energy)] /* [1,16] */;
   uint32_t germanium_traces_data4channel_energyv[16 EXT_STRUCT_CTRL(germanium_traces_data4channel_energy)] /* [-1,-1] */;
+  uint32_t germanium_traces_data4channel_id_traces /* [0,16] */;
+  uint32_t germanium_traces_data4channel_id_tracesI[16 EXT_STRUCT_CTRL(germanium_traces_data4channel_id_traces)] /* [1,16] */;
+  uint32_t germanium_traces_data4channel_id_tracesv[16 EXT_STRUCT_CTRL(germanium_traces_data4channel_id_traces)] /* [0,255] */;
   uint32_t germanium_traces_data4traces1 /* [0,4000] */;
   uint32_t germanium_traces_data4traces1I[4000 EXT_STRUCT_CTRL(germanium_traces_data4traces1)] /* [1,4000] */;
   uint32_t germanium_traces_data4traces1v[4000 EXT_STRUCT_CTRL(germanium_traces_data4traces1)] /* [0,65535] */;
@@ -345,6 +361,7 @@ typedef struct EXT_STR_h101_germanium_traces_onion_t
   uint32_t germanium_traces_ts_subsystem_id;
   uint32_t germanium_traces_ts_t[4];
   struct {
+    uint32_t trig;
     uint32_t event_trigger_time_hi;
     uint32_t event_trigger_time_lo;
     uint32_t hit_pattern;
@@ -371,6 +388,9 @@ typedef struct EXT_STR_h101_germanium_traces_onion_t
     uint32_t channel_energy;
     uint32_t channel_energyI[16 /* channel_energy */];
     uint32_t channel_energyv[16 /* channel_energy */];
+    uint32_t channel_id_traces;
+    uint32_t channel_id_tracesI[16 /* channel_id_traces */];
+    uint32_t channel_id_tracesv[16 /* channel_id_traces */];
     struct {
       uint32_t _;
       uint32_t I[4000 /*  */];
@@ -400,6 +420,9 @@ typedef struct EXT_STR_h101_germanium_traces_onion_t
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      germanium_traces_ts_t4,          UINT32,\
                     "germanium_traces_ts_t4",65535,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     germanium_traces_data1trig,      UINT32,\
+                    "germanium_traces_data1trig",255,0/*flags*/); \
   EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      germanium_traces_data1event_trigger_time_hi,UINT32,\
                     "germanium_traces_data1event_trigger_time_hi",0/*flags*/); \
@@ -478,6 +501,15 @@ typedef struct EXT_STR_h101_germanium_traces_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      germanium_traces_data1channel_energyv,UINT32,\
                     "germanium_traces_data1channel_energyv","germanium_traces_data1channel_energy",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     germanium_traces_data1channel_id_traces,UINT32,\
+                    "germanium_traces_data1channel_id_traces",16,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     germanium_traces_data1channel_id_tracesI,UINT32,\
+                    "germanium_traces_data1channel_id_tracesI","germanium_traces_data1channel_id_traces",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     germanium_traces_data1channel_id_tracesv,UINT32,\
+                    "germanium_traces_data1channel_id_tracesv","germanium_traces_data1channel_id_traces",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      germanium_traces_data1traces1,   UINT32,\
                     "germanium_traces_data1traces1",4000,0/*flags*/); \
@@ -622,6 +654,9 @@ typedef struct EXT_STR_h101_germanium_traces_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      germanium_traces_data1traces16v, UINT32,\
                     "germanium_traces_data1traces16v", "germanium_traces_data1traces16",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     germanium_traces_data2trig,      UINT32,\
+                    "germanium_traces_data2trig",255,0/*flags*/); \
   EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      germanium_traces_data2event_trigger_time_hi,UINT32,\
                     "germanium_traces_data2event_trigger_time_hi",0/*flags*/); \
@@ -700,6 +735,15 @@ typedef struct EXT_STR_h101_germanium_traces_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      germanium_traces_data2channel_energyv,UINT32,\
                     "germanium_traces_data2channel_energyv","germanium_traces_data2channel_energy",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     germanium_traces_data2channel_id_traces,UINT32,\
+                    "germanium_traces_data2channel_id_traces",16,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     germanium_traces_data2channel_id_tracesI,UINT32,\
+                    "germanium_traces_data2channel_id_tracesI","germanium_traces_data2channel_id_traces",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     germanium_traces_data2channel_id_tracesv,UINT32,\
+                    "germanium_traces_data2channel_id_tracesv","germanium_traces_data2channel_id_traces",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      germanium_traces_data2traces1,   UINT32,\
                     "germanium_traces_data2traces1",4000,0/*flags*/); \
@@ -844,6 +888,9 @@ typedef struct EXT_STR_h101_germanium_traces_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      germanium_traces_data2traces16v, UINT32,\
                     "germanium_traces_data2traces16v", "germanium_traces_data2traces16",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     germanium_traces_data3trig,      UINT32,\
+                    "germanium_traces_data3trig",255,0/*flags*/); \
   EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      germanium_traces_data3event_trigger_time_hi,UINT32,\
                     "germanium_traces_data3event_trigger_time_hi",0/*flags*/); \
@@ -922,6 +969,15 @@ typedef struct EXT_STR_h101_germanium_traces_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      germanium_traces_data3channel_energyv,UINT32,\
                     "germanium_traces_data3channel_energyv","germanium_traces_data3channel_energy",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     germanium_traces_data3channel_id_traces,UINT32,\
+                    "germanium_traces_data3channel_id_traces",16,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     germanium_traces_data3channel_id_tracesI,UINT32,\
+                    "germanium_traces_data3channel_id_tracesI","germanium_traces_data3channel_id_traces",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     germanium_traces_data3channel_id_tracesv,UINT32,\
+                    "germanium_traces_data3channel_id_tracesv","germanium_traces_data3channel_id_traces",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      germanium_traces_data3traces1,   UINT32,\
                     "germanium_traces_data3traces1",4000,0/*flags*/); \
@@ -1066,6 +1122,9 @@ typedef struct EXT_STR_h101_germanium_traces_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      germanium_traces_data3traces16v, UINT32,\
                     "germanium_traces_data3traces16v", "germanium_traces_data3traces16",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     germanium_traces_data4trig,      UINT32,\
+                    "germanium_traces_data4trig",255,0/*flags*/); \
   EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
                      germanium_traces_data4event_trigger_time_hi,UINT32,\
                     "germanium_traces_data4event_trigger_time_hi",0/*flags*/); \
@@ -1144,6 +1203,15 @@ typedef struct EXT_STR_h101_germanium_traces_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      germanium_traces_data4channel_energyv,UINT32,\
                     "germanium_traces_data4channel_energyv","germanium_traces_data4channel_energy",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     germanium_traces_data4channel_id_traces,UINT32,\
+                    "germanium_traces_data4channel_id_traces",16,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     germanium_traces_data4channel_id_tracesI,UINT32,\
+                    "germanium_traces_data4channel_id_tracesI","germanium_traces_data4channel_id_traces",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     germanium_traces_data4channel_id_tracesv,UINT32,\
+                    "germanium_traces_data4channel_id_tracesv","germanium_traces_data4channel_id_traces",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      germanium_traces_data4traces1,   UINT32,\
                     "germanium_traces_data4traces1",4000,0/*flags*/); \
