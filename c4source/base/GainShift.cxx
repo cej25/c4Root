@@ -30,6 +30,7 @@ double GainShift::GetGain(uint64_t wr_t){
     return gain_shifts->GetBinContent(slice_number + 1); 
 
 };
+
         
 
 void GainShift::ReadGainShiftFile(){

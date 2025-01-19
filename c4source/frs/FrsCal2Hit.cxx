@@ -7,6 +7,8 @@
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
 #include "FairTask.h"
+#include "GainShift.h"
+
 
 #include "TClonesArray.h"
 #include "TMath.h"
@@ -1307,7 +1309,7 @@ void FrsCal2Hit::ProcessIDs()
         {
             id_gamma = 1. / sqrt(1. - id_beta * id_beta);
             id_AoQ = id_brho[1] / id_beta / id_gamma / aoq_factor;
-            id_AoQ_corr = id_AoQ - id->a2AoQCorr * id_a2;
+            id_AoQ_corr = id_AoQ - id->a4AoQCorr * id_a4;
             id_b_AoQ = true;
 
         }
@@ -1334,6 +1336,10 @@ void FrsCal2Hit::ProcessIDs()
         {
             id_z = frs->primary_z * sqrt(de[0] / id_v_cor) + id->offset_z;
 
+            if (music41_tac_z_gain_shifts != nullptr){
+                id_z = id_z + music41_tac_z_gain_shifts->GetGain((uint64_t)wr_t);
+            }
+
         }
         if ((id_z > 0.0) && (id_z < 100.0))
         {
@@ -1357,6 +1363,10 @@ void FrsCal2Hit::ProcessIDs()
         if (id_v_cor2 > 0.0)
         {
             id_z2 = frs->primary_z * sqrt(de[1] / id_v_cor2) + id->offset_z2;
+
+            if (music42_tac_z_gain_shifts != nullptr){
+                id_z2 = id_z2 + music42_tac_z_gain_shifts->GetGain((uint64_t)wr_t);
+            }
         }
         if ((id_z2 > 0.0) && (id_z2 < 100.0))
         {   
@@ -1364,6 +1374,12 @@ void FrsCal2Hit::ProcessIDs()
             id_b_z2 = kTRUE;
         }
     }
+
+
+    float gamma1square = 1.0 + TMath::Power(((1 / aoq_factor) * (id_brho[0] / id_AoQ)), 2);
+    id_gamma_ta_s2 = TMath::Sqrt(gamma1square);
+    id_dEdegoQ = (id_gamma_ta_s2 - id_gamma) * id_AoQ;
+    id_dEdeg = id_dEdegoQ * id_z;
 
 }
 
@@ -1563,8 +1579,8 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
                 id_mhtdc_z_music41[i] = frs->primary_z * sqrt(de_cor[0] / id_mhtdc_v_cor_music41[i]) + id->mhtdc_offset_z_music41;
 
                 if (music41_mhtdc_z_gain_shifts != nullptr){
-                id_mhtdc_z_music41[i] = id_mhtdc_z_music41[i]  + music41_mhtdc_z_gain_shifts->GetGain(wr_t);
-                //c4LOG(info,Form("music41_mhtdc_z_gain_shifts->GetGain(wr_t) = %f",music41_mhtdc_z_gain_shifts->GetGain(wr_t)));
+                id_mhtdc_z_music41[i] = id_mhtdc_z_music41[i]  + music41_mhtdc_z_gain_shifts->GetGain((uint64_t)wr_t);
+                //c4LOG(info,Form("music41_mhtdc_z_gain_shifts->GetGain((uint64_t)wr_t) = %f",music41_mhtdc_z_gain_shifts->GetGain((uint64_t)wr_t)));
                 }
             } // else???
         }
@@ -1587,8 +1603,8 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
                 id_mhtdc_z_music42[i] = frs->primary_z * sqrt(de_cor[1] / id_mhtdc_v_cor_music42[i]) + id->mhtdc_offset_z_music42;
 
                 if (music42_mhtdc_z_gain_shifts != nullptr){
-                id_mhtdc_z_music42[i] = id_mhtdc_z_music42[i] + music42_mhtdc_z_gain_shifts->GetGain(wr_t);
-                //c4LOG(info,Form("music42_mhtdc_z_gain_shifts->GetGain(wr_t) = %f",music42_mhtdc_z_gain_shifts->GetGain(wr_t)));
+                id_mhtdc_z_music42[i] = id_mhtdc_z_music42[i] + music42_mhtdc_z_gain_shifts->GetGain((uint64_t)wr_t);
+                //c4LOG(info,Form("music42_mhtdc_z_gain_shifts->GetGain((uint64_t)wr_t) = %f",music42_mhtdc_z_gain_shifts->GetGain((uint64_t)wr_t)));
                 }
             }
         }

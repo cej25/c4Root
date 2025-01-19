@@ -9,7 +9,7 @@
 #pragma link C++ class UcesbSource+;
 #pragma link C++ class c4Reader+;
 #pragma link C++ class CorrelationsMap+;
-//#pragma link C++ class GainShift+;
+#pragma link C++ class GainShift+;
 
 #pragma link C++ class FrsReader+;
 #pragma link C++ class FrsRaw2Cal+;
@@ -21,7 +21,7 @@
 #pragma link C++ class GermaniumReader+;
 #pragma link C++ class GermaniumTraceReader+;
 #pragma link C++ class GermaniumRaw2Cal+;
-#pragma link C++ class GermaniumCal2Anl+;
+#pragma link C++ class GermaniumCal2Anl+;|
 #pragma link C++ class AidaReader+;
 #pragma link C++ class AidaUnpack2Cal+;
 #pragma link C++ class AidaCal2Hit+;
