@@ -29,7 +29,7 @@ void run_bm_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fEx
      
     TString ntuple_options = "UNPACK";
    //TString ucesb_dir = getenv("UCESB_DIR"); // .bashrc
-    TString ucesb_dir = "/u/cjones/c4Root/unpack/exps";
+    TString ucesb_dir = "/u/despec/s101_online/c4Root/unpack/exps";
     TString ucesb_path = ucesb_dir + "/beammonitor/beammonitor --allow-errors --input-buffer=200Mi";
     ucesb_path.ReplaceAll("//","/");
 
