@@ -193,22 +193,18 @@ SUBEVENT(frs_tpat_subev)
     }
 }
 
-SUBEVENT(bm_subev)
+
+S2_DATA()
 {
 
     MEMBER(DATA32 dataS2[BM_MAX_HITS] NO_INDEX_LIST);// ZERO_SUPPRESS);
-    MEMBER(DATA32 dataS4[BM_MAX_HITS] NO_INDEX_LIST);// ZERO_SUPPRESS);
 
-    select optional
-    {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1700);
-    }
 
     UINT32 headS2 NOENCODE
     {
         0_12: l_hit_ct;
         13_15: reserved;
-        16_31: l_id = MATCH(0xAAAA);
+        16_31: l_id = MATCH(0xAAAA); // MATCH(0xAAAA);
     };
 
     list (0 <= l_i < headS2.l_hit_ct)
@@ -220,12 +216,16 @@ SUBEVENT(bm_subev)
         };
 
     }
+}
 
+S4_DATA()
+{
+    MEMBER(DATA32 dataS4[BM_MAX_HITS] NO_INDEX_LIST);// ZERO_SUPPRESS);
     UINT32 headS4 NOENCODE
     {
         0_12: l_hit_ct;
         13_15: reserved;
-        16_31: l_id = MATCH(0xBBBB);
+        16_31: l_id = MATCH(0xBBBB); // MATCH(0xBBBB);
     }
 
     list (0 <= l_i < headS4.l_hit_ct)
@@ -236,13 +236,38 @@ SUBEVENT(bm_subev)
             ENCODE(dataS4 APPEND_LIST, (value = data));
         }
     }
+}
 
+BM_TRAILER()
+{
     UINT32 trailer NOENCODE
     {
         0_15: reserved;
-        16_31: l_id = MATCH(0xCCCC);
+        16_31: l_id = MATCH(0xCCCC); // MATCH(0xCCCC);
     }
 }
+
+SUBEVENT(bm_subev)
+{ 
+   select optional 
+   {
+        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1700);
+   }
+   select several
+   {
+       s2 = S2_DATA();
+   }
+   select several
+   {
+       s4 = S4_DATA();
+   }
+
+   select several
+   {
+       t = BM_TRAILER();
+   }
+}
+
 
 EVENT
 {
