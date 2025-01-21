@@ -196,7 +196,7 @@ bool Gate_sci42E_Z(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_
     std::cout << "Drawing with the condition: " << cuts << std::endl;
     
     
-    evt->Draw("FrsHitData.fID_z:FrsHitData.fsci_e[0][3]>>h2_sci42E_Z(1000,0,2500,1000,60,70)",cuts);
+    evt->Draw("FrsHitData.fID_z:FrsHitData.fsci_e_42>>h2_sci42E_Z(1000,0,2500,1000,60,70)",cuts);
     
     TH2F * h2_sci42E_Z = (TH2F*)gROOT->FindObject("h2_sci42E_Z");
     
@@ -211,7 +211,7 @@ bool Gate_sci42E_Z(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_
         cut_sci42E_Z = (TCutG*)cut_sci42E_Z->Clone("cut_sci42E_Z");
         gROOT->FindObject("CUTG")->Delete();
         cut_sci42E_Z->SetVarY("FrsHitData.fID_z");
-        cut_sci42E_Z->SetVarX("FrsHitData.fsci_e[0][3]");
+        cut_sci42E_Z->SetVarX("FrsHitData.fsci_e_42");
         std::cout << "Created gate: " << cut_sci42E_Z->GetName() << std::endl;
         return true;
     }
