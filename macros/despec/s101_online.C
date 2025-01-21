@@ -7,7 +7,7 @@
 #define BGO_ON 0
 #define FRS_ON 0
 #define TIME_MACHINE_ON 0
-#define BEAMMONITOR_ON 0
+#define BEAMMONITOR_ON 1
 #define WHITE_RABBIT_CORS 0
 #define BB7_ON 0
 
@@ -387,13 +387,13 @@ void s101_online()
     TString c = "bPlast";
     TString d = "Germanium";
     TString e = "Frs";
-    TString f = "BB7";
+    //TString f = "BB7";
     TString g = "BGO";
 
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {b, d, c, e, f, g};
+        std::vector a {b, d, c, e, g};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
