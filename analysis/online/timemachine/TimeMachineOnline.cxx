@@ -172,7 +172,6 @@ InitStatus TimeMachineOnline::Init()
     dir_time_machine->cd();
 
     run->GetHttpServer()->RegisterCommand("Reset_TimeMachine_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
-    run->GetHttpServer()->RegisterCommand("Snapshot_TimeMachine_Histo", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
 
     return kSUCCESS;
     
@@ -191,46 +190,6 @@ void TimeMachineOnline::Reset_Histo()
         h2_time_diff_corrs[ihist*fNumDetectorSystems + ihist2]->Reset();
         }
     }
-}
-
-void TimeMachineOnline::Snapshot_Histo()
-{
-    // date and time
-    time_t now = time(0);
-    tm *ltm = localtime(&now);
-    //make folder with date and time
-    const char* snapshot_dir = Form("TimeMachine_snapshot_%d_%d_%d_%d_%d_%d",ltm->tm_year+1900,ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec);
-    gSystem->mkdir(snapshot_dir);
-    gSystem->cd(snapshot_dir);
-
-    // save histograms to canvases
-    c_time_machine_time_snapshot = new TCanvas("c_time_machine_time_snapshot","c_time_machine_time_snapshot",650,350);
-
-    for (int ihist = 0; ihist< fNumDetectorSystems; ihist++)
-    {
-        if(h1_time_delayed[ihist]->GetEntries()>0)
-        {
-            h1_time_delayed[ihist]->Draw();
-            c_time_machine_time_snapshot->SaveAs(Form("h1_time_delayed_%s.png",fDetectorSystems.at(ihist).Data()));
-            c_time_machine_time_snapshot->Clear();
-        }
-        if(h1_time_undelayed[ihist]->GetEntries()>0)
-        {
-            h1_time_undelayed[ihist]->Draw();
-            c_time_machine_time_snapshot->SaveAs(Form("h1_time_undelayed_%s.png",fDetectorSystems.at(ihist).Data()));
-            c_time_machine_time_snapshot->Clear();
-        }
-        if(h1_time_diff[ihist]->GetEntries()>0)
-        {
-            h1_time_diff[ihist]->Draw();
-            c_time_machine_time_snapshot->SaveAs(Form("h1_time_diff_%s.png",fDetectorSystems.at(ihist).Data()));
-            c_time_machine_time_snapshot->Clear();
-        }
-    }
-    delete c_time_machine_time_snapshot;
-
-    gSystem->cd("..");
-    c4LOG(info, "Snapshot saved to:" << snapshot_dir);
 }
 
 void TimeMachineOnline::Exec(Option_t* option) // if two machines (undelayed + delayed are in one event, the last corr is taken.)

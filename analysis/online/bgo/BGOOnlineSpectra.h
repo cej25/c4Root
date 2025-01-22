@@ -43,8 +43,6 @@ class BGOOnlineSpectra : public FairTask
 
         virtual void Reset_BGO_Histo();
 
-        virtual void Snapshot_BGO_Histo();
-
 
         void SetBinningEnergy(int nbins, float binlow, float binhigh){
             fenergy_nbins = nbins;
@@ -85,8 +83,6 @@ class BGOOnlineSpectra : public FairTask
         EventHeader* header;
         Int_t fNEvents;
 
-        TString screenshot_path = "/u/despec/screenshots/";
-
         // Canvas
         TCanvas* c_bgo_time;
         TCanvas* c_bgo_energy;
@@ -94,8 +90,6 @@ class BGOOnlineSpectra : public FairTask
         TCanvas* c_germanium_bgo_veto_energy;
         TCanvas* c_germanium_bgo_vetotrue_energy;
         TCanvas* c_germanium_bgo_veto_timedifferences;
-
-        TCanvas* c_bgo_snapshot;
         
         // Folder and files
         TFolder* histograms;

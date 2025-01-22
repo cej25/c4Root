@@ -448,7 +448,6 @@ InitStatus FrsOnlineSpectra::Init()
 
     // Register command to reset histograms
     run->GetHttpServer()->RegisterCommand("Reset_FRS_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
-    run->GetHttpServer()->RegisterCommand("Snapshot_FRS_Histo", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
 
     return kSUCCESS;
 

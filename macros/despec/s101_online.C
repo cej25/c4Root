@@ -40,7 +40,7 @@ void s101_online()
     TString fExpName = "s101";
 
     // Define important paths.
-    TString c4Root_path = "/u/despec/s101_online/c4Root";
+    TString c4Root_path = "/lustre/gamma/jeroen/S101/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes";
     ucesb_path.ReplaceAll("//","/");
 
@@ -64,7 +64,8 @@ void s101_online()
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
-    TString filename = "trans://lxg3107";
+    // TString filename = "trans://lxg3107";
+    TString filename = "/lustre/gamma/s101_files/dryrun_ts/*";
 //     TString filename = "trans://lxg1257"; // timesorter.
 //     TString filename = "trans://x86l-144"; // ??
     TString outputpath = "output";
@@ -72,7 +73,7 @@ void s101_online()
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 5000; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 5500; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();

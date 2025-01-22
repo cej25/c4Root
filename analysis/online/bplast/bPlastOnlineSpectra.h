@@ -38,10 +38,6 @@ class bPlastOnlineSpectra : public FairTask
 
         virtual void Reset_Histo();
 
-        virtual void Snapshot_Histo();
-
-        // range setters
-
     
     private:
         TClonesArray* fHitbPlastTwinpeaks;
@@ -55,8 +51,6 @@ class bPlastOnlineSpectra : public FairTask
 
         int nDetectors;
         int nTamexBoards;
-
-        TString screenshot_path = "/u/despec/screenshots/";
 
         // Canvases
         TCanvas* c_bplast_slowToT;

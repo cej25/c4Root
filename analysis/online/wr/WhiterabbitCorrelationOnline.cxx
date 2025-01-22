@@ -313,7 +313,6 @@ InitStatus WhiterabbitCorrelationOnline::Init()
 
     // Register command to reset histograms
     run->GetHttpServer()->RegisterCommand("Reset_Whiterabbit_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
-    run->GetHttpServer()->RegisterCommand("Snapshot_Whiterabbit_Hist", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
     
     return kSUCCESS;
 }
@@ -364,73 +363,6 @@ void WhiterabbitCorrelationOnline::Reset_Histo()
 
     h1_whiterabbit_trigger->Reset();
 }
-void WhiterabbitCorrelationOnline::Snapshot_Histo()
-{
-    c4LOG(info, "Good heavens, would you look at the time!");
-
-    time_t now = time(0);
-    tm *ltm = localtime(&now);
-
-    const char* snapshot_dir = Form("Whiterabbit_correlation_%d_%d_%d_%d_%d_%d", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
-    gSystem->mkdir(snapshot_dir);
-    gSystem->cd(snapshot_dir);
-
-    c_whiterabbit_correlation_fatima_bplast->SaveAs("c_whiterabbit_correlation_fatima_bplast.png");
-    c_whiterabbit_trigger1_fatima_bplast->SaveAs("c_whiterabbit_trigger1_fatima_bplast.png");
-    c_whiterabbit_trigger3_fatima_bplast->SaveAs("c_whiterabbit_trigger3_fatima_bplast.png");
-
-    c_whiterabbit_correlation_fatima_ge->SaveAs("c_whiterabbit_correlation_fatima_ge.png");
-    c_whiterabbit_trigger1_fatima_ge->SaveAs("c_whiterabbit_trigger1_fatima_ge.png");
-    c_whiterabbit_trigger3_fatima_ge->SaveAs("c_whiterabbit_trigger3_fatima_ge.png");
-
-    c_whiterabbit_correlation_aida_fatima->SaveAs("c_whiterabbit_correlation_aida_fatima.png");
-    c_whiterabbit_trigger1_aida_fatima->SaveAs("c_whiterabbit_trigger1_aida_fatima.png");
-    c_whiterabbit_trigger3_aida_fatima->SaveAs("c_whiterabbit_trigger3_aida_fatima.png");
-
-    c_whiterabbit_correlation_bplast_ge->SaveAs("c_whiterabbit_correlation_bplast_ge.png");
-    c_whiterabbit_trigger1_bplast_ge->SaveAs("c_whiterabbit_trigger1_bplast_ge.png");
-    c_whiterabbit_trigger3_bplast_ge->SaveAs("c_whiterabbit_trigger3_bplast_ge.png");
-
-    c_whiterabbit_correlation_aida_fatimavme->SaveAs("c_whiterabbit_correlation_aida_fatimavme.png");
-    c_whiterabbit_trigger1_aida_fatimavme->SaveAs("c_whiterabbit_trigger1_aida_fatimavme.png");
-    c_whiterabbit_trigger3_aida_fatimavme->SaveAs("c_whiterabbit_trigger3_aida_fatimavme.png");
-
-    c_whiterabbit_correlation_aida_bplast->SaveAs("c_whiterabbit_correlation_aida_bplast.png");
-    c_whiterabbit_trigger1_aida_bplast->SaveAs("c_whiterabbit_trigger1_aida_bplast.png");
-    c_whiterabbit_trigger3_aida_bplast->SaveAs("c_whiterabbit_trigger3_aida_bplast.png");
-
-    c_whiterabbit_correlation_aida_germanium->SaveAs("c_whiterabbit_correlation_aida_germanium.png");
-    c_whiterabbit_trigger1_aida_germanium->SaveAs("c_whiterabbit_trigger1_aida_germanium.png");
-    c_whiterabbit_trigger3_aida_germanium->SaveAs("c_whiterabbit_trigger3_aida_germanium.png");
-
-    c_whiterabbit_correlation_fatima_fatimavme->SaveAs("c_whiterabbit_correlation_fatima_fatimavme.png");
-    c_whiterabbit_trigger1_fatima_fatimavme->SaveAs("c_whiterabbit_trigger1_fatima_fatimavme.png");
-    c_whiterabbit_trigger3_fatima_fatimavme->SaveAs("c_whiterabbit_trigger3_fatima_fatimavme.png");
-
-    c_whiterabbit_correlation_fatimavme_ge->SaveAs("c_whiterabbit_correlation_fatimavme_ge.png");
-    c_whiterabbit_trigger1_fatimavme_ge->SaveAs("c_whiterabbit_trigger1_fatimavme_ge.png");
-    c_whiterabbit_trigger3_fatimavme_ge->SaveAs("c_whiterabbit_trigger3_fatimavme_ge.png");
-
-    c_whiterabbit_correlation_fatima_bplast->SaveAs("c_whiterabbit_correlation_fatimavme_bplast.png");
-    c_whiterabbit_trigger1_fatimavme_bplast->SaveAs("c_whiterabbit_trigger1_fatimavme_bplast.png");
-    c_whiterabbit_trigger3_fatima_bplast->SaveAs("c_whiterabbit_trigger3_fatima_bplast.png");
-
-    c_whiterabbit_correlation->SaveAs("c_whiterabbit_correlation.png");
-    c_whiterabbit_trigger1->SaveAs("c_whiterabbit_trigger1.png");
-    c_whiterabbit_trigger3->SaveAs("c_whiterabbit_trigger3.png");
-
-    // snapshot .root file with data and time
-
-    file_whiterabbit_snapshot = new TFile(Form("whiterabbit_snapshot_%d_%d_%d_%d_%d_%d.root", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec), "RECREATE");
-    file_whiterabbit_snapshot->cd();
-    dir_whiterabbit->Write();
-    file_whiterabbit_snapshot->Close();
-    delete file_whiterabbit_snapshot;
-
-    gSystem->cd("..");
-    c4LOG(info, "Snapshot saved in:" << snapshot_dir);    
-}
-
 
 void WhiterabbitCorrelationOnline::Exec(Option_t* option)
 {

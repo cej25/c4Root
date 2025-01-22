@@ -61,7 +61,6 @@ InitStatus GermaniumOnlineSpectra::Init()
     run->GetHttpServer()->Register("", this);
 
     run->GetHttpServer()->RegisterCommand("Reset_Ge_Histo", Form("/Objects/%s/->Reset_Ge_Histo()", GetName()));
-    run->GetHttpServer()->RegisterCommand("Snapshot_Ge_Histo", Form("/Objects/%s/->Snapshot_Ge_Histo()", GetName()));
     
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
@@ -393,87 +392,6 @@ void GermaniumOnlineSpectra::Reset_Ge_Histo()
     h2_germanium_energy_energy_sci41_cut->Reset();
 
     c4LOG(info, "DEGAS histograms reset.");
-}
-
-void GermaniumOnlineSpectra::Snapshot_Ge_Histo()
-{
-    c4LOG(info, "Snapshotting DEGAS histograms.");
-    //date and time
-    time_t now = time(0);
-    tm *ltm = localtime(&now);
-    //make folder with date and time
-    const char* snapshot_dir = Form("DEGAS_snapshot_%d_%d_%d_%d_%d_%d",ltm->tm_year+1900,ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec);
-    gSystem->cd(screenshot_path);
-    gSystem->mkdir(snapshot_dir);
-    gSystem->cd(snapshot_dir);
-
-    // save histograms to canvases
-    c_germanium_snapshot = new TCanvas("c","c",650,350);
-
-    for (int ihist = 0; ihist<number_of_detectors_to_plot; ihist++)
-    {
-        if(h1_germanium_energy[ihist]->GetEntries()!=0)
-        {
-            h1_germanium_energy[ihist]->Draw();
-            c_germanium_snapshot->SaveAs(Form("h1_germanium_energy_%d_%d.png",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second));
-            c_germanium_snapshot->Clear();
-            h1_germanium_time[ihist]->Draw();
-            c_germanium_snapshot->SaveAs(Form("h1_germanium_time_%d_%d.png",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second));
-            c_germanium_snapshot->Clear();
-        }
-        for(int i = 0; i < number_reference_detectors; i++)
-        {
-            if(h1_germanium_time_differences[i][ihist]->GetEntries()!=0)
-            {
-                h1_germanium_time_differences[i][ihist]->Draw();
-                c_germanium_snapshot->SaveAs(Form("h1_germanium_time_differences_%d_%d_to_%d_%d.png",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second,dt_reference_detectors.at(i).first,dt_reference_detectors.at(i).second));
-                c_germanium_snapshot->Clear();
-                h2_germanium_time_differences_vs_energy[i][ihist]->Draw();
-                c_germanium_snapshot->SaveAs(Form("h2_germanium_time_differences_vs_energy_%d_%d_to_%d_%d.png",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second,dt_reference_detectors.at(i).first,dt_reference_detectors.at(i).second));
-                c_germanium_snapshot->Clear();
-            }
-        }
-    }
-    h1_germanium_multiplicity->Draw();
-    c_germanium_snapshot->SaveAs("h1_germanium_multiplicity.png");
-    c_germanium_snapshot->Clear();
-    h1_germanium_hitpattern->Draw();
-    c_germanium_snapshot->SaveAs("h1_germanium_hitpattern.png");
-    c_germanium_snapshot->Clear();
-    h2_germanium_energy_vs_detidx->Draw();
-    c_germanium_snapshot->SaveAs("h2_germanium_energy_vs_detidx.png");
-    c_germanium_snapshot->Clear();
-    h1_germanium_energy_summed->Draw();
-    c_germanium_snapshot->SaveAs("h1_germanium_energy_summed.png");
-    c_germanium_snapshot->Clear();
-    h1_germanium_energy_summed_vetosci41->Draw();
-    c_germanium_snapshot->SaveAs("h1_germanium_energy_summed_vetosci41.png");
-    c_germanium_snapshot->Clear();
-    h2_germanium_energy_summed_vs_tsci41->Draw();
-    c_germanium_snapshot->SaveAs("h2_germanium_energy_summed_vs_tsci41.png");
-    c_germanium_snapshot->Clear();
-    h1_germanium_energy_summed_vs_tsci41_cut->Draw();
-    c_germanium_snapshot->SaveAs("h1_germanium_energy_summed_vs_tsci41_cut.png");
-    c_germanium_snapshot->Clear();
-    h2_germanium_energy_energy_vetosci41->Draw();
-    c_germanium_snapshot->SaveAs("h2_germanium_energy_energy_vetosci41.png");
-    c_germanium_snapshot->Clear();
-    h2_germanium_energy_energy_sci41_cut->Draw();
-    c_germanium_snapshot->SaveAs("h2_germanium_energy_energy_sci41_cut.png");
-    c_germanium_snapshot->Clear();
-
-    delete c_germanium_snapshot;
-    
-    // commented out for now. directories are not working :(())
-    // // snapshot .root file with data and time
-    // file_germanium_snapshot = new TFile(Form("Germanium_snapshot_%d_%d_%d_%d_%d_%d.root",ltm->tm_year+1900,ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec),"RECREATE");
-    // file_germanium_snapshot->cd();
-    // dir_germanium->Write();
-    // file_germanium_snapshot->Close();
-    // delete file_germanium_snapshot;
-
-    gSystem->cd("..");
-    c4LOG(info, "DEGAS snapshots saved to: " << screenshot_path + snapshot_dir);
 }
 
 void GermaniumOnlineSpectra::Exec(Option_t* option)

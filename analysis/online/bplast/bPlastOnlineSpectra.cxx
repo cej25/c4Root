@@ -174,7 +174,6 @@ InitStatus bPlastOnlineSpectra::Init()
     dir_bplast_hitpattern->Append(c_bplast_wr_time_diff);
 
     run->GetHttpServer()->RegisterCommand("Reset_bPlast_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
-    run->GetHttpServer()->RegisterCommand("Snapshot_bPlast_Histo", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
 
     return kSUCCESS;
 
@@ -182,71 +181,38 @@ InitStatus bPlastOnlineSpectra::Init()
 
 void bPlastOnlineSpectra::Reset_Histo()
 {
+
     c4LOG(info, "Resetting bPlast histograms.");
-    for (int ihist = 1; ihist<=nDetectors; ihist++) h1_bplast_slowToT[ihist]->Reset();
-    for (int ihist = 1; ihist<=nDetectors; ihist++) h1_bplast_fastToT[ihist]->Reset();
-    for (int ihist = 1; ihist<=nDetectors; ihist++) h2_bplast_fastToT_vs_slowToT[ihist]->Reset();
-    h1_bplast_hitpatterns[0]->Reset();
-    h1_bplast_hitpatterns[1]->Reset();
-    h1_bplast_multiplicity[0]->Reset();
-    h1_bplast_multiplicity[1]->Reset();
-    h1_bplast_wr_time_diff->Reset();
-    for (int ihist = 0; ihist < nTamexBoards; ihist++) h1_bplast_tamex_card_hitpattern[ihist]->Reset();
     
-    c4LOG(info, "bPlast histograms reset.");
-}
-
-// make a date and time stamped folder with pngs of the histograms and .root file and save them
-void bPlastOnlineSpectra::Snapshot_Histo()
-{
-    c4LOG(info, "Snapshotting bPlast histograms.");
-    // date and time stamp
-
-    time_t now = time(0);
-    tm *ltm = localtime(&now);
-    TDirectory *tmp = gDirectory;
-    tmp = dir_bplast;
-    // make a folder with the date and time
-    const char* snapshot_dir = Form("bPlast_Snapshots_%d_%d_%d_%d_%d_%d", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
-    gSystem->cd(screenshot_path); // hard coded for now 18.04.2024
-    gSystem->mkdir(snapshot_dir);
-    gSystem->cd(snapshot_dir);
-
-    // save histograms
-    c_bplast_snapshot = new TCanvas("c","c",1200,800);
-    for (int ihist = 1; ihist<=nDetectors; ihist++) {
-        h1_bplast_slowToT[ihist]->Draw();
-        c_bplast_snapshot->SaveAs(Form("Slow_ToT_%d.png", ihist));
-        c_bplast_snapshot->Clear();
-        h1_bplast_fastToT[ihist]->Draw();
-        c_bplast_snapshot->SaveAs(Form("Fast_ToT_%d.png", ihist));
-        c_bplast_snapshot->Clear();
-        h2_bplast_fastToT_vs_slowToT[ihist]->Draw("COLZ");
-        c_bplast_snapshot->SaveAs(Form("Fast_vs._Slow_ToT_%d.png", ihist));
-        c_bplast_snapshot->Clear();
+    // Assuming dir_bplast is a TDirectory pointer containing histograms
+    TList* histList = dir_bplast->GetList();
+    if (histList) {
+        TIter next(histList);
+        TObject* obj;
+        
+        while ((obj = next())) {
+            TH1* hist = dynamic_cast<TH1*>(obj); // Check if it's a histogram
+            if (hist) {
+                hist->Reset(); // Reset the histogram
+            }
+        }
+        c4LOG(info, "bPlast histograms reset via GetList.");
+    } else {
+        c4LOG(error, "Failed to get list of histograms from directory.");
     }
+    // c4LOG(info, "Resetting bPlast histograms.");
+    // dir_bplast->GetList();
+    // for (int ihist = 1; ihist<=nDetectors; ihist++) h1_bplast_slowToT[ihist]->Reset();
+    // for (int ihist = 1; ihist<=nDetectors; ihist++) h1_bplast_fastToT[ihist]->Reset();
+    // for (int ihist = 1; ihist<=nDetectors; ihist++) h2_bplast_fastToT_vs_slowToT[ihist]->Reset();
+    // h1_bplast_hitpatterns[0]->Reset();
+    // h1_bplast_hitpatterns[1]->Reset();
+    // h1_bplast_multiplicity[0]->Reset();
+    // h1_bplast_multiplicity[1]->Reset();
+    // h1_bplast_wr_time_diff->Reset();
+    // for (int ihist = 0; ihist < nTamexBoards; ihist++) h1_bplast_tamex_card_hitpattern[ihist]->Reset();
     
-    // save hit patterns
-    c_bplast_hitpatterns->SaveAs("bPlast_HitPatterns.png");
-    c_bplast_multiplicity->SaveAs("bPlast_Multiplicity.png");
-    c_bplast_wr_time_diff->SaveAs("bPlast_WR_Time_Difference.png");
-
-    for (int ihist = 0; ihist < nTamexBoards; ihist++){
-        h1_bplast_tamex_card_hitpattern[ihist]->Draw();
-        c_bplast_snapshot->SaveAs(Form("Tamex_Card_HitPattern_%d.png", ihist));
-        c_bplast_snapshot->Clear();
-    }
-    //uncommented for now, I cannot 
-    // // snapshot .root file with date and time
-    // file_bplast_snapshot = new TFile(Form("bPlast_snapshot_%d_%d_%d_%d_%d_%d.root", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec), "RECREATE");
-    // file_bplast_snapshot->cd();
-    // dir_bplast->Write();
-
-    // file_bplast_snapshot->Close();
-    // delete file_bplast_snapshot;
-
-    gSystem->cd("..");
-    c4LOG(info, "bPlast snapshot saved in:" << screenshot_path + snapshot_dir);
+    // c4LOG(info, "bPlast histograms reset.");
 }
 
 void bPlastOnlineSpectra::Exec(Option_t* option)

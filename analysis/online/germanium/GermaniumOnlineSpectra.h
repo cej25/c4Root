@@ -44,8 +44,6 @@ class GermaniumOnlineSpectra : public FairTask
 
         virtual void Reset_Ge_Histo();
 
-        virtual void Snapshot_Ge_Histo();
-
 
         void SetBinningEnergy(int nbins, float binlow, float binhigh){
             fenergy_nbins = nbins;
@@ -105,8 +103,6 @@ class GermaniumOnlineSpectra : public FairTask
         EventHeader* header;
         Int_t fNEvents;
 
-        TString screenshot_path = "/u/despec/screenshots/";
-
         // Canvas
         TCanvas* c_germanium_time;
         TCanvas* c_germanium_energy;
@@ -129,8 +125,6 @@ class GermaniumOnlineSpectra : public FairTask
 
         TCanvas* c_germanium_energy_energy_sci41_cut;
         TH2* h2_germanium_energy_energy_sci41_cut;
-
-        TCanvas* c_germanium_snapshot;
 
         const char ** detector_labels;
 
