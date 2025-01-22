@@ -24,7 +24,7 @@
 #include "TRandom.h"
 #include "TFile.h"
 
-BGOOnlineSpectra::BGOOnlineSpectra() : BGOOnlineSpectra("BGOOnlineSpectra")
+BGOOnlineSpectra::BGOOnlineSpectra()
 {
     germanium_configuration = TGermaniumConfiguration::GetInstance();
     BGO_configuration = TBGOTwinpeaksConfiguration::GetInstance();

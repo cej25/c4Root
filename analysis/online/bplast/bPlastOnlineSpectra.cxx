@@ -24,7 +24,7 @@
 #include <chrono>
 #include <TKey.h>
 
-bPlastOnlineSpectra::bPlastOnlineSpectra() : bPlastOnlineSpectra("bPlastOnlineSpectra")
+bPlastOnlineSpectra::bPlastOnlineSpectra()
 {
 }
 

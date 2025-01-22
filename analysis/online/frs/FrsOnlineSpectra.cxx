@@ -41,7 +41,7 @@
 #include "TColor.h"
 #include "TStyle.h"
 
-FrsOnlineSpectra::FrsOnlineSpectra(): FrsOnlineSpectra("FrsOnlineSpectra")
+FrsOnlineSpectra::FrsOnlineSpectra()
 {
     
 }
