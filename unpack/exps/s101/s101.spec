@@ -253,16 +253,16 @@ SUBEVENT(bm_subev)
    {
         ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1700);
    }
-   select several
+   select optional
    {
        s2 = S2_DATA();
    }
-   select several
+   select optional
    {
        s4 = S4_DATA();
    }
 
-   select several
+   select optional
    {
        t = BM_TRAILER();
    }
