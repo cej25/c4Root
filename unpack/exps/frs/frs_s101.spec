@@ -94,6 +94,13 @@ TPAT_CRATE_DATA()
                 0_31: something;
             }
         }
+
+        UINT32 dead NOENCODE
+        {
+            0_31: 0xDEADDEAD;
+        }
+
+        several UINT32 eob NOENCODE;
     }
     else
     {
@@ -153,10 +160,10 @@ USER_CRATE_DATA()
     select several
     {
         barrier1 = BARRIER();
-        v775[0] = VME_CAEN_V775(geom=8);
-        v775[1] = VME_CAEN_V775(geom=9);
-        v785[0] = VME_CAEN_V785(geom=31);
-        v785[1] = VME_CAEN_V785(geom=12); 
+        v775[0] = VME_CAEN_V775(geom=8); // 8
+        v775[1] = VME_CAEN_V775(geom=9); // 9
+        v785[0] = VME_CAEN_V785(geom=10); // 31
+        v785[1] = VME_CAEN_V785(geom=12); // 12
     }
 
     UINT32 aaahhh NOENCODE { 0_31: 0xaaaa1290; };
