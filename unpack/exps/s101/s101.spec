@@ -253,16 +253,16 @@ SUBEVENT(bm_subev)
    {
         ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1700);
    }
-   select several
+   select optional
    {
        s2 = S2_DATA();
    }
-   select several
+   select optional
    {
        s4 = S4_DATA();
    }
 
-   select several
+   select optional
    {
        t = BM_TRAILER();
    }
@@ -281,7 +281,7 @@ EVENT
     frsuser = frs_user_subev(procid = 30);
     frstpat = frs_tpat_subev(procid = 15);
     
-    beammonitor = bm_subev(procid = 1);
+    //beammonitor = bm_subev(procid = 1);
 
     ignore_unknown_subevent;
 };

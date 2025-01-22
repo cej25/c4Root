@@ -3,11 +3,11 @@
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define AIDA_ON 1
 #define BPLAST_ON 1
-#define GERMANIUM_ON 0
+#define GERMANIUM_ON 1
 #define BGO_ON 0
 #define FRS_ON 0
 #define TIME_MACHINE_ON 0
-#define BEAMMONITOR_ON 1
+#define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 0
 #define BB7_ON 0
 
@@ -64,7 +64,7 @@ void s101_online()
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
-    TString filename = "~/lustre/gamma/stacktest2024_files/ts/aidabplas_100125_0001.lmd";
+    TString filename = "trans://lxg3107";
 //     TString filename = "trans://lxg1257"; // timesorter.
 //     TString filename = "trans://x86l-144"; // ??
     TString outputpath = "output";
@@ -123,8 +123,8 @@ void s101_online()
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
     TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_mapping_s100.txt");
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
-    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_jun08.txt");
-    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_cal_jun8.txt");
+    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_apr15.txt");
+    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_cal_apr18.txt");
     TGermaniumConfiguration::SetDetectorTimeshiftsFile(config_path + "/germanium/ge_timeshifts_apr20.txt");
     TGermaniumConfiguration::SetPromptFlashCut(config_path + "/germanium/ge_prompt_flash.root");
 
