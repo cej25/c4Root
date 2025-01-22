@@ -6,8 +6,8 @@
 #define GERMANIUM_ON 1
 #define BGO_ON 0
 #define FRS_ON 0
-#define TIME_MACHINE_ON 0
-#define BEAMMONITOR_ON 0
+#define TIME_MACHINE_ON 1
+#define BEAMMONITOR_ON 1
 #define WHITE_RABBIT_CORS 0
 #define BB7_ON 0
 
@@ -121,7 +121,7 @@ void s101_online()
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
-    TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_mapping_s100.txt");
+    TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_mapping_220125.txt");
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_apr15.txt");
     TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_cal_apr18.txt");
@@ -393,7 +393,7 @@ void s101_online()
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {b, d, c, e, g};
+        std::vector a {b, d, c};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
