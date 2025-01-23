@@ -140,8 +140,6 @@ class GermaniumOnlineSpectra : public FairTask
         TDirectory* dir_germanium_rates;
         std::vector<TDirectory*> dir_germanium_time_differences;
 
-        TFile* file_germanium_snapshot;
-
         // Histograms energy
         TH1** h1_germanium_energy;
         TH2* h2_germanium_energy_vs_detidx;

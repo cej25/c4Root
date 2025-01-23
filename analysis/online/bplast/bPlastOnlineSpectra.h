@@ -6,12 +6,14 @@
 #include "TDirectory.h"
 #include "TH1F.h"
 #include "TH2F.h"
+#include "TGraph.h"
 #include "TbPlastConfiguration.h"
 #include <vector>
 
 class TClonesArray;
 class EventHeader;
 class TCanvas;
+class TGraph;
 class TH1F;
 class TH2F;
 class TFile;
@@ -62,7 +64,6 @@ class bPlastOnlineSpectra : public FairTask
         TCanvas* c_bplast_multiplicity;
         TCanvas* c_bplast_channel_multiplicity;
         TCanvas* c_bplast_wr_time_diff;
-        TCanvas* c_bplast_snapshot;
 
         //Folders and files
         TFolder* histograms;
@@ -71,17 +72,16 @@ class bPlastOnlineSpectra : public FairTask
         TDirectory* dir_bplast_fastToT;
         TDirectory* dir_bplast_hitpattern;
         TDirectory* dir_bplast_fast_vs_slow;
-
-        TFile* file_bplast_snapshot;
+        TDirectory* dir_bplast_rates;
 
         // Histograms
         std::vector<TH1*> h1_bplast_slowToT;
         std::vector<TH1*> h1_bplast_fastToT;
         std::vector<TH1*> h1_bplast_hitpatterns;
         std::vector<TH1*> h1_bplast_tamex_card_hitpattern;
+        std::vector<TH1*> h1_bplast_rates;
 
         std::vector<TH2*> h2_bplast_fastToT_vs_slowToT;
-        // std::vector<TH1*> h1_bplast_time_spectra; //unused
         TH1* h1_bplast_wr_time_diff;
 
         // Detector Multiplicity
@@ -89,8 +89,12 @@ class bPlastOnlineSpectra : public FairTask
 
         int event_multiplicity_upstream;
         int event_multiplicity_downstream;
-        int wr_t;
-        int wr_prev;
+        int64_t wr_t = 0;
+        int64_t wr_prev = 0;
+        int64_t wr_prev1s = 0;
+        int* detector_counters;
+        int* detector_rates;
+        int rate_running_count = 0;
 
     public:
         ClassDef(bPlastOnlineSpectra, 1)
