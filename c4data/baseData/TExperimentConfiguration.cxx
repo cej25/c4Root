@@ -12,18 +12,17 @@ TExperimentConfiguration* TExperimentConfiguration::instance = nullptr;
 uint64_t TExperimentConfiguration::exp_start_time = 1.5e19;
 uint64_t TExperimentConfiguration::exp_end_time = 1.5e19;
 
-if(exp_start_time == 1.5e19)
-{
-    c4LOG(warn, "Experiment start time not set.");
-}
-if(exp_end_time == 1.5e19)
-{
-    c4LOG(warn, "Experiment end time not set.");
-}
+
 
 
 TExperimentConfiguration::TExperimentConfiguration()
 {
-    
-    
+    if(exp_start_time == 1.5e19)
+    {
+        c4LOG(warn, "Experiment start time not set.");
+    }
+    if(exp_end_time == 1.5e19)
+    {
+        c4LOG(warn, "Experiment end time not set.");
+    }
 }
