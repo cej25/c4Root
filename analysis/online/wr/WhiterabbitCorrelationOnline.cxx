@@ -35,7 +35,7 @@
 #include "TRandom.h"
 #include <chrono>
 
-WhiterabbitCorrelationOnline::WhiterabbitCorrelationOnline()
+WhiterabbitCorrelationOnline::WhiterabbitCorrelationOnline() : WhiterabbitCorrelationOnline("WhiterabbitCorrelationOnline")
 {
 }
 

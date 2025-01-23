@@ -25,7 +25,7 @@
 #include "TFile.h"
 #include <sstream>
 
-GermaniumOnlineSpectra::GermaniumOnlineSpectra()
+GermaniumOnlineSpectra::GermaniumOnlineSpectra() : GermaniumOnlineSpectra("GermaniumOnlineSpectra")
 {
     germanium_configuration = TGermaniumConfiguration::GetInstance();
 }

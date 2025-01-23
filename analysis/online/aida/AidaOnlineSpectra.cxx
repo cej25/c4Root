@@ -19,7 +19,7 @@
 #include "TFile.h"
 #include <chrono>
 
-AidaOnlineSpectra::AidaOnlineSpectra()
+AidaOnlineSpectra::AidaOnlineSpectra() : AidaOnlineSpectra("AidaOnlineSpectra")
 {
 }
 

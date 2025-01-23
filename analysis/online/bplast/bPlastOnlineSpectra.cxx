@@ -24,7 +24,7 @@
 #include <chrono>
 #include <TKey.h>
 
-bPlastOnlineSpectra::bPlastOnlineSpectra()
+bPlastOnlineSpectra::bPlastOnlineSpectra() : bPlastOnlineSpectra("bPlastOnlineSpectra")
 {
 }
 
@@ -188,40 +188,52 @@ InitStatus bPlastOnlineSpectra::Init()
 
 }
 
-void bPlastOnlineSpectra::Reset_Histo()
-{
+void bPlastOnlineSpectra::ResetHistogramsInDirectory(TDirectory* dir) {
+    if (!dir) return;
 
-    c4LOG(info, "Resetting bPlast histograms.");
-    
-    // Assuming dir_bplast is a TDirectory pointer containing histograms
-    TList* histList = dir_bplast->GetList();
-    if (histList) {
-        TIter next(histList);
-        TObject* obj;
-        
-        while ((obj = next())) {
-            TH1* hist = dynamic_cast<TH1*>(obj); // Check if it's a histogram
+    TList* histList = dir->GetListOfKeys();
+    if (!histList) {
+        c4LOG(error, "Failed to get list of histograms from directory.");
+        return;
+    }
+
+    TIter next(histList);
+    TObject* obj;
+
+    while ((obj = next())) {
+        TKey* key = dynamic_cast<TKey*>(obj);
+        if (!key) continue;
+
+        TObject* obj = key->ReadObj();
+        if (!obj) continue;
+
+        if (obj->InheritsFrom(TDirectory::Class())) {
+            // Recursively process subdirectories
+            TDirectory* subdir = dynamic_cast<TDirectory*>(obj);
+            if (subdir) {
+                ResetHistogramsInDirectory(subdir);
+            }
+        } else if (obj->InheritsFrom(TH1::Class())) {
+            // Reset histograms
+            TH1* hist = dynamic_cast<TH1*>(obj);
             if (hist) {
-                hist->Reset(); // Reset the histogram
+                std::cout << "Resetting histogram: " << hist->GetName() << std::endl;
+                hist->Reset();
             }
         }
+    }
+}
+
+void bPlastOnlineSpectra::Reset_Histo() {
+    c4LOG(info, "Resetting bPlast histograms.");
+
+    // Assuming dir_bplast is a TDirectory pointer containing histograms
+    if (dir_bplast) {
+        ResetHistogramsInDirectory(dir_bplast);
         c4LOG(info, "bPlast histograms reset via GetList.");
     } else {
         c4LOG(error, "Failed to get list of histograms from directory.");
     }
-    // c4LOG(info, "Resetting bPlast histograms.");
-    // dir_bplast->GetList();
-    // for (int ihist = 1; ihist<=nDetectors; ihist++) h1_bplast_slowToT[ihist]->Reset();
-    // for (int ihist = 1; ihist<=nDetectors; ihist++) h1_bplast_fastToT[ihist]->Reset();
-    // for (int ihist = 1; ihist<=nDetectors; ihist++) h2_bplast_fastToT_vs_slowToT[ihist]->Reset();
-    // h1_bplast_hitpatterns[0]->Reset();
-    // h1_bplast_hitpatterns[1]->Reset();
-    // h1_bplast_multiplicity[0]->Reset();
-    // h1_bplast_multiplicity[1]->Reset();
-    // h1_bplast_wr_time_diff->Reset();
-    // for (int ihist = 0; ihist < nTamexBoards; ihist++) h1_bplast_tamex_card_hitpattern[ihist]->Reset();
-    
-    // c4LOG(info, "bPlast histograms reset.");
 }
 
 void bPlastOnlineSpectra::Exec(Option_t* option)

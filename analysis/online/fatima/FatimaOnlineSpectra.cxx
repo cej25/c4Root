@@ -22,7 +22,7 @@
 #include <chrono>
 #include <sstream>
 
-FatimaOnlineSpectra::FatimaOnlineSpectra() 
+FatimaOnlineSpectra::FatimaOnlineSpectra() : FatimaOnlineSpectra("FatimaOnlineSpectra")
 {
     fatima_configuration = TFatimaTwinpeaksConfiguration::GetInstance();
 }

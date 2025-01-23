@@ -23,7 +23,7 @@
 #include <vector>
 #include <string>
 
-TimeMachineOnline::TimeMachineOnline() 
+TimeMachineOnline::TimeMachineOnline() : TimeMachineOnline("TimeMachineOnline") 
 {
     correl_config = TCorrelationsConfiguration::GetInstance();
     Correl = correl_config->CorrelationsMap();

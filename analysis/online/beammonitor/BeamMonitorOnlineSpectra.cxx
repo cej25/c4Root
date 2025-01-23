@@ -22,7 +22,7 @@
 
 #define DEBUG_MODE 0
 
-BeamMonitorOnlineSpectra::BeamMonitorOnlineSpectra()
+BeamMonitorOnlineSpectra::BeamMonitorOnlineSpectra() : BeamMonitorOnlineSpectra("BeamMonitorOnlineSpectra")
 {
 }
 
