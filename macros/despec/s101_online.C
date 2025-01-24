@@ -163,7 +163,7 @@ void s101_online()
         //unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_s181_7June.root", 1000000);
          unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_s181_7June.root");
         
-        unpackbplast->SetOnline(false);
+        unpackbplast->SetOnline(true);
         source->AddReader(unpackbplast);
     }
 
@@ -228,7 +228,7 @@ void s101_online()
     {
         bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
         
-        calbplast->SetOnline(false);
+        calbplast->SetOnline(true);
         run->AddTask(calbplast);
         
         
