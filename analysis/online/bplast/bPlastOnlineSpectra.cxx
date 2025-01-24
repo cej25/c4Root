@@ -182,55 +182,49 @@ InitStatus bPlastOnlineSpectra::Init()
         h1_bplast_rates[ihist] = MakeTH1(dir_bplast_rates,"I",Form("h1_bplast_rates_%d",ihist),Form("bPlast Rates for Channel %d",ihist),1800,0,1800,"Time [10 minute binning]",kCyan,kBlack);
     }
 
-    run->GetHttpServer()->RegisterCommand("Reset_bPlast_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Reset_bPlast_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
 
     return kSUCCESS;
 
 }
 
-void bPlastOnlineSpectra::ResetHistogramsInDirectory(TDirectory* dir) {
-    if (!dir) return;
+// void bPlastOnlineSpectra::ResetHistogramsInDirectory(TDirectory* dir) {
+//     if (!dir) return;
 
-    TList* histList = dir->GetListOfKeys();
-    if (!histList) {
-        c4LOG(error, "Failed to get list of histograms from directory.");
-        return;
-    }
+//     TList* histList = dir->GetList();
+//     if (!histList) {
+//         c4LOG(error, "Failed to get list of histograms from directory.");
+//         return;
+//     }
 
-    TIter next(histList);
-    TObject* obj;
+//     TIter next(histList);
+//     TObject* obj;
 
-    while ((obj = next())) {
-        TKey* key = dynamic_cast<TKey*>(obj);
-        if (!key) continue;
-
-        TObject* obj = key->ReadObj();
-        if (!obj) continue;
-
-        if (obj->InheritsFrom(TDirectory::Class())) {
-            // Recursively process subdirectories
-            TDirectory* subdir = dynamic_cast<TDirectory*>(obj);
-            if (subdir) {
-                ResetHistogramsInDirectory(subdir);
-            }
-        } else if (obj->InheritsFrom(TH1::Class())) {
-            // Reset histograms
-            TH1* hist = dynamic_cast<TH1*>(obj);
-            if (hist) {
-                std::cout << "Resetting histogram: " << hist->GetName() << std::endl;
-                hist->Reset();
-            }
-        }
-    }
-}
+//     while ((obj = next())) {
+//         if (obj->InheritsFrom(TDirectory::Class())) {
+//             // Recursively process subdirectories
+//             TDirectory* subdir = dynamic_cast<TDirectory*>(obj);
+//             if (subdir) {
+//                 ResetHistogramsInDirectory(subdir);
+//             }
+//         } else if (obj->InheritsFrom(TH1::Class())) {
+//             // Reset histograms
+//             TH1* hist = dynamic_cast<TH1*>(obj);
+//             if (hist) {
+//                 std::cout << "Resetting histogram: " << hist->GetName() << std::endl;
+//                 hist->Reset();
+//             }
+//         }
+//     }
+// }
 
 void bPlastOnlineSpectra::Reset_Histo() {
     c4LOG(info, "Resetting bPlast histograms.");
 
     // Assuming dir_bplast is a TDirectory pointer containing histograms
     if (dir_bplast) {
-        ResetHistogramsInDirectory(dir_bplast);
-        c4LOG(info, "bPlast histograms reset via GetList.");
+        AnalysisTools_H::ResetHistogramsInDirectory(dir_bplast);
+        c4LOG(info, "bPlast histograms reset.");
     } else {
         c4LOG(error, "Failed to get list of histograms from directory.");
     }

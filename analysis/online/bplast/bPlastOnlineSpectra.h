@@ -40,7 +40,7 @@ class bPlastOnlineSpectra : public FairTask
 
         virtual void Reset_Histo();
 
-        virtual void ResetHistogramsInDirectory(TDirectory* dir);
+        // virtual void ResetHistogramsInDirectory(TDirectory* dir);
 
     
     private:

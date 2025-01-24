@@ -10,6 +10,7 @@
 #include "EventHeader.h"
 #include "TimeMachineData.h"
 #include "TCorrelationsConfiguration.h"
+#include "AnalysisTools.h"
 
 #include "c4Logger.h"
 
@@ -170,7 +171,7 @@ InitStatus TimeMachineOnline::Init()
 
     dir_time_machine->cd();
 
-    run->GetHttpServer()->RegisterCommand("Reset_TimeMachine_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Reset_TimeMachine_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
 
     return kSUCCESS;
     
@@ -178,16 +179,15 @@ InitStatus TimeMachineOnline::Init()
 
 
 
-void TimeMachineOnline::Reset_Histo()
-{
-    c4LOG(info, "Reset command received. Clearing histograms.");
-    for (int ihist = 0; ihist<fNumDetectorSystems; ihist++) h1_time_delayed[ihist]->Reset();
-    for (int ihist = 0; ihist<fNumDetectorSystems; ihist++) h1_time_undelayed[ihist]->Reset();
-    for (int ihist = 0; ihist<fNumDetectorSystems; ihist++) h1_time_diff[ihist]->Reset();
-    for (int ihist = 0; ihist<fNumDetectorSystems; ihist++){
-        for (int ihist2 = ihist + 1; ihist2 < fNumDetectorSystems; ihist2++){
-        h2_time_diff_corrs[ihist*fNumDetectorSystems + ihist2]->Reset();
-        }
+void TimeMachineOnline::Reset_Histo() {
+    c4LOG(info, "Resetting TimeMachine histograms.");
+
+    // Assuming dir is a TDirectory pointer containing histograms
+    if (dir_time_machine) {
+        AnalysisTools_H::ResetHistogramsInDirectory(dir_time_machine);
+        c4LOG(info, "TimeMachine histograms reset.");
+    } else {
+        c4LOG(error, "Failed to get list of histograms from directory.");
     }
 }
 

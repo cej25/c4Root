@@ -187,28 +187,16 @@ InitStatus FatimaVmeOnlineSpectra::Init()
 
 }
 
-void FatimaVmeOnlineSpectra::Reset_Histo()
-{
-    c4LOG(info, "Resetting FATIMA VME Histograms");
+void FatimaVmeOnlineSpectra::Reset_Histo() {
+    c4LOG(info, "Resetting FATIMA VME histograms.");
 
-    for (int i = 0; i < nDetectors; i++) h1_FatVME_RawE[i]->Reset();
-    for (int i = 0; i < nDetectors; i++) h1_FatVME_E[i]->Reset();
-    for (int i = 0; i < nDetectors; i++) h1_FatVME_RawT[i]->Reset();
-    for (int i = 0; i < nDetectors; i++) h1_FatVME_TDC_dt_refCh1[i]->Reset();
-    for (int i = 0; i < nDetectors; i++) h1_FatVME_TDC_dT_refSC41L[i]->Reset();
-
-    h1_FatVME_E_Sum->Reset();
-    h1_FatVME_QDC_HitPattern->Reset();
-    h1_FatVME_TDC_HitPattern->Reset();
-    h1_FatVME_QDCMult->Reset();
-    h1_FatVME_TDCMult->Reset();
-    h1_FatVME_time_machine_undelayed->Reset();
-    h1_FatVME_time_machine_delayed->Reset();
-    //h1_FatVME_sc41l->Reset();
-    //h1_FatVME_sc41r->Reset();
-    h1_FatVME_sc41l_time->Reset();
-    h1_FatVME_sc41r_time->Reset();
-    c4LOG(info, "FATIMA VME Histograms reset");
+    // Assuming dir is a TDirectory pointer containing histograms
+    if (dir_fatima_vme) {
+        AnalysisTools_H::ResetHistogramsInDirectory(dir_fatima_vme);
+        c4LOG(info, "FATIMA VME histograms reset.");
+    } else {
+        c4LOG(error, "Failed to get list of histograms from directory.");
+    }
 }
 
 

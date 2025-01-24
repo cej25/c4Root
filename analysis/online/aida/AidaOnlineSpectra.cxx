@@ -6,6 +6,7 @@
 #include "FairRuntimeDb.h"
 
 // c4
+#include "AnalysisTools.h"
 #include "AidaOnlineSpectra.h"
 #include "EventHeader.h"
 #include "c4Logger.h"
@@ -53,7 +54,7 @@ InitStatus AidaOnlineSpectra::Init()
 
     FairRunOnline* run = FairRunOnline::Instance();
     run->GetHttpServer()->Register("", this);
-    run->GetHttpServer()->RegisterCommand("Reset_Aida_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Reset_Aida_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
     run->GetHttpServer()->RegisterCommand("Reset_Aida_Scalers", Form("/Objects/%s/->Reset_Scalers()", GetName()));
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
@@ -365,35 +366,18 @@ InitStatus AidaOnlineSpectra::Init()
     return kSUCCESS;
 }
 
-void AidaOnlineSpectra::Reset_Histo()
-{
+void AidaOnlineSpectra::Reset_Histo() {
     c4LOG(info, "Resetting AIDA histograms.");
-    //implants
-    for (auto& h : h_implant_strip_xy) h->Reset();
-    for (auto& h : h_implant_pos_xy) h->Reset();
-    for (auto& h : h_implant_e) h->Reset();
-    for (auto& h : h_implant_e_xy) h->Reset();
-    for (auto& h : h_implant_strip_1d_energy) h->Reset();
-    for (auto& h : h_implant_x_ex) h->Reset();
-    // for (auto& h : h_implant_y_ey) h->Reset();
-    // for (auto& h : h_implant_time_delta) h->Reset();
 
-    // stopped implants
-    for (auto& h : h_implant_strip_xy_stopped) h->Reset();
-    for (auto& h : h_implant_pos_xy_stopped) h->Reset();
-    for (auto& h : h_implant_e_stopped) h->Reset();
-    for (auto& h : h_implant_x_ex_stopped) h->Reset();
-
-    //decays
-    for (auto& h : h_decay_strip_xy) h->Reset();
-    for (auto& h : h_decay_pos_xy) h->Reset();
-    for (auto& h : h_decay_e) h->Reset();
-    for (auto& h : h_decay_e_xy) h->Reset();
-    for (auto& h : h_decay_strip_1d_energy) h->Reset();
-    // for (auto& h : h_decay_time_delta) h->Reset();
-    c4LOG(info, "AIDA histograms reset.");
-    
+    // Assuming dir is a TDirectory pointer containing histograms
+    if (dir_aida) {
+        AnalysisTools_H::ResetHistogramsInDirectory(dir_aida);
+        c4LOG(info, "AIDA histograms reset.");
+    } else {
+        c4LOG(error, "Failed to get list of histograms from directory.");
+    }
 }
+
 
 
 void AidaOnlineSpectra::Reset_Scalers()

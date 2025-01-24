@@ -193,22 +193,20 @@ InitStatus BGOOnlineSpectra::Init()
 
     dir_bgo->cd();
 
-    run->GetHttpServer()->RegisterCommand("Reset_BGO_Histo", Form("/Objects/%s/->Reset_BGO_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Reset_BGO_Histos", Form("/Objects/%s/->Reset_BGO_Histo()", GetName()));
 
     return kSUCCESS;
 }
 
-void BGOOnlineSpectra::Reset_BGO_Histo()
-{
-    c4LOG(info, "Reset command received. Clearing histograms.");
-    
-    for (int ihist = 0; ihist<number_of_detectors_to_plot; ihist++) 
-    {
-        h1_bgo_energy[ihist]->Reset();
-        h1_bgo_time[ihist]->Reset();
-        h1_germanium_bgo_veto_energy[ihist]->Reset();
-        h1_germanium_bgo_vetotrue_energy[ihist]->Reset();
-        h1_germanium_bgo_veto_timedifferences[ihist]->Reset();
+void BGOOnlineSpectra::Reset_Histo() {
+    c4LOG(info, "Resetting BGO histograms.");
+
+    // Assuming dir is a TDirectory pointer containing histograms
+    if (dir_bgo) {
+        AnalysisTools_H::ResetHistogramsInDirectory(dir_bgo);
+        c4LOG(info, "BGO histograms reset.");
+    } else {
+        c4LOG(error, "Failed to get list of histograms from directory.");
     }
 }
 

@@ -312,56 +312,21 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     dir_whiterabbit->cd();
 
     // Register command to reset histograms
-    run->GetHttpServer()->RegisterCommand("Reset_Whiterabbit_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Reset_Whiterabbit_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
     
     return kSUCCESS;
 }
 
-// work in progress
-void WhiterabbitCorrelationOnline::Reset_Histo()
-{
-    c4LOG(info, "I'm late, I'm late, for a very important date! No time to say 'Hello, Good Bye' I'm late, I'm late, I'm late!");
-    h1_whiterabbit_correlation_fatima_bplast->Reset();
-    h1_whiterabbit_trigger1_fatima_bplast->Reset();
-    h1_whiterabbit_trigger3_fatima_bplast->Reset();
+void WhiterabbitCorrelationOnline::Reset_Histo() {
+    c4LOG(info, "Resetting White Wabbit histograms.");
 
-    h1_whiterabbit_correlation_fatima_ge->Reset();
-    h1_whiterabbit_trigger1_fatima_ge->Reset();
-    h1_whiterabbit_trigger3_fatima_ge->Reset();
-
-    h1_whiterabbit_correlation_bplast_ge->Reset();
-    h1_whiterabbit_trigger1_bplast_ge->Reset();
-    h1_whiterabbit_trigger3_bplast_ge->Reset();
-
-    h1_whiterabbit_correlation_aida_fatima->Reset();
-    h1_whiterabbit_trigger1_aida_fatima->Reset();
-    h1_whiterabbit_trigger3_aida_fatima->Reset();
-
-    h1_whiterabbit_correlation_aida_fatimavme->Reset();
-    h1_whiterabbit_trigger1_aida_fatimavme->Reset();
-    h1_whiterabbit_trigger3_aida_fatimavme->Reset();
-
-    h1_whiterabbit_correlation_aida_bplast->Reset();
-    h1_whiterabbit_trigger1_aida_bplast->Reset();
-    h1_whiterabbit_trigger3_aida_bplast->Reset();
-
-    h1_whiterabbit_correlation_aida_germanium->Reset();
-    h1_whiterabbit_trigger1_aida_germanium->Reset();
-    h1_whiterabbit_trigger3_aida_germanium->Reset();
-
-    h1_whiterabbit_correlation_fatima_fatimavme->Reset();
-    h1_whiterabbit_trigger1_fatima_fatimavme->Reset();
-    h1_whiterabbit_trigger3_fatima_fatimavme->Reset();
-
-    h1_whiterabbit_correlation_fatimavme_ge->Reset();
-    h1_whiterabbit_trigger1_fatimavme_ge->Reset();
-    h1_whiterabbit_trigger3_fatimavme_ge->Reset();
-
-    h1_whiterabbit_correlation_fatimavme_bplast->Reset();
-    h1_whiterabbit_trigger1_fatimavme_bplast->Reset();
-    h1_whiterabbit_trigger3_fatimavme_bplast->Reset();
-
-    h1_whiterabbit_trigger->Reset();
+    // Assuming dir is a TDirectory pointer containing histograms
+    if (dir_whiterabbit) {
+        AnalysisTools_H::ResetHistogramsInDirectory(dir_whiterabbit);
+        c4LOG(info, "White Wabbit histograms reset.");
+    } else {
+        c4LOG(error, "Failed to get list of histograms from directory.");
+    }
 }
 
 void WhiterabbitCorrelationOnline::Exec(Option_t* option)

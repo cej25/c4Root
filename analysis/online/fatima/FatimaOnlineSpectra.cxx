@@ -304,32 +304,22 @@ InitStatus FatimaOnlineSpectra::Init()
     detector_rates = new int[number_detectors];
     for (int i = 0; i < number_detectors; i++) h1_fatima_rates[i] = MakeTH1(dir_fatima_rates, "I", Form("h1_fatima_rates_det_%i", i), Form("Rate in FATIMA detector %i", i), 1800, 0, 1800, "Time [2s]", kCyan, kBlack);
     
-    run->GetHttpServer()->RegisterCommand("Reset_FATIMA_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Reset_FATIMA_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
 
     return kSUCCESS;
     
 }
 
-void FatimaOnlineSpectra::Reset_Histo()
-{
-    c4LOG(info,"Biswarup clicked me :-). Resetting FATIMA histograms.");
-    for (int ihist = 0; ihist<number_detectors; ihist++) h1_fatima_slowToT[ihist]->Reset();
-    for (int ihist = 0; ihist<number_detectors; ihist++) h1_fatima_fastToT[ihist]->Reset();
-    for (int ihist = 0; ihist<number_detectors; ihist++) h1_fatima_abs_time[ihist]->Reset();
-    for (int ihist = 0; ihist<number_detectors; ihist++) h1_fatima_energy[ihist]->Reset();
-    for (int ihist = 0; ihist<number_detectors; ihist++) h2_fatima_fast_v_slow[ihist]->Reset();
-    for (int ihist = 0; ihist<number_reference_detectors; ihist++){
-        for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++) h1_fatima_time_differences[ihist][detid_idx]->Reset();
-        for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++) h2_fatima_time_differences_vs_energy[ihist][detid_idx]->Reset();
-    }
-    
-    h1_fatima_hitpattern_fast->Reset();
-    h1_fatima_hitpattern_slow->Reset();
-    h2_fatima_energy_vs_detid->Reset();
-    h1_fatima_multiplicity->Reset();
-    h2_fatima_energy_uncal_vs_detid->Reset();
-    c4LOG(info, "FATIMA histograms reset.");
+void FatimaOnlineSpectra::Reset_Histo() {
+    c4LOG(info, "Resetting FATIMA histograms.");
 
+    // Assuming dir is a TDirectory pointer containing histograms
+    if (dir_fatima) {
+        AnalysisTools_H::ResetHistogramsInDirectory(dir_fatima);
+        c4LOG(info, "FATIMA histograms reset.");
+    } else {
+        c4LOG(error, "Failed to get list of histograms from directory.");
+    }
 }
 
 

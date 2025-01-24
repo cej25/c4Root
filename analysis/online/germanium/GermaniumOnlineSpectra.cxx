@@ -60,7 +60,7 @@ InitStatus GermaniumOnlineSpectra::Init()
     FairRunOnline * run = FairRunOnline::Instance();
     run->GetHttpServer()->Register("", this);
 
-    run->GetHttpServer()->RegisterCommand("Reset_Ge_Histo", Form("/Objects/%s/->Reset_Ge_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Reset_Ge_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
     
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
@@ -365,33 +365,16 @@ InitStatus GermaniumOnlineSpectra::Init()
     return kSUCCESS;
 }
 
-void GermaniumOnlineSpectra::Reset_Ge_Histo()
-{
-    c4LOG(info, "Resetting DEGAS histograms.");
-    for (int i = 0; i < number_reference_detectors; i++){
-       for (int ihist = 0; ihist<number_of_detectors_to_plot; ihist++) 
-        {
-            h1_germanium_time_differences[i][ihist]->Reset();
-            h2_germanium_time_differences_vs_energy[i][ihist]->Reset();
-        }
-    }
-    for (int ihist = 0; ihist<number_of_detectors_to_plot; ihist++) 
-    {
-        h1_germanium_energy[ihist]->Reset();
-        h1_germanium_time[ihist]->Reset();
-    }
+void GermaniumOnlineSpectra::Reset_Histo() {
+    c4LOG(info, "Resetting Germanium histograms.");
 
-    h1_germanium_multiplicity->Reset();
-    h1_germanium_hitpattern->Reset();
-    h2_germanium_energy_vs_detidx->Reset();
-    h1_germanium_energy_summed->Reset();
-    h1_germanium_energy_summed_vetosci41->Reset();
-    h2_germanium_energy_summed_vs_tsci41->Reset();
-    h1_germanium_energy_summed_vs_tsci41_cut->Reset();
-    h2_germanium_energy_energy_vetosci41->Reset();
-    h2_germanium_energy_energy_sci41_cut->Reset();
-
-    c4LOG(info, "DEGAS histograms reset.");
+    // Assuming dir is a TDirectory pointer containing histograms
+    if (dir_germanium) {
+        AnalysisTools_H::ResetHistogramsInDirectory(dir_germanium);
+        c4LOG(info, "Germanium histograms reset.");
+    } else {
+        c4LOG(error, "Failed to get list of histograms from directory.");
+    }
 }
 
 void GermaniumOnlineSpectra::Exec(Option_t* option)

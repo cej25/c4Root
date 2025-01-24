@@ -41,7 +41,7 @@ class BGOOnlineSpectra : public FairTask
 
         virtual void FinishTask();
 
-        virtual void Reset_BGO_Histo();
+        virtual void Reset_Histo();
 
 
         void SetBinningEnergy(int nbins, float binlow, float binhigh){
