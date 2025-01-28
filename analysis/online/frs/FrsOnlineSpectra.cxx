@@ -22,6 +22,7 @@
 #include "FairRuntimeDb.h"
 
 // c4
+#include "AnalysisTools.h"
 #include "FrsOnlineSpectra.h"
 #include "FrsHitData.h"
 #include "EventHeader.h"
@@ -41,7 +42,7 @@
 #include "TColor.h"
 #include "TStyle.h"
 
-FrsOnlineSpectra::FrsOnlineSpectra(): FrsOnlineSpectra("FrsOnlineSpectra")
+FrsOnlineSpectra::FrsOnlineSpectra()
 {
     
 }
@@ -447,70 +448,22 @@ InitStatus FrsOnlineSpectra::Init()
     // :::::::::::::::::::: //
 
     // Register command to reset histograms
-    run->GetHttpServer()->RegisterCommand("Reset_FRS_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
-    run->GetHttpServer()->RegisterCommand("Snapshot_FRS_Histo", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Reset_FRS_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
 
     return kSUCCESS;
 
 }
 
-void FrsOnlineSpectra::Reset_Histo()
-{
-    c4LOG(info,"Resetting FRS Spectra");
-    h2_Z_vs_AoQ->Reset();
-    h2_Z_vs_AoQ_corr->Reset();
-    h2_Z_vs_Z2->Reset();
-    h2_Z_vs_AoQ_Zsame->Reset();
-    h2_x2_vs_AoQ_Zsame->Reset();
-    h2_x4_vs_AoQ_Zsame->Reset();
-    h2_x2_vs_AoQ->Reset();
-    h2_x4_vs_AoQ->Reset();
-    h2_dEdegoQ_vs_Z->Reset();
-    h2_dEdeg_vs_Z->Reset();
-    h2_a2_vs_AoQ->Reset();
-    h2_a4_vs_AoQ->Reset();
-    h2_Z_vs_dE2->Reset();
-    h2_x2_vs_x4->Reset();
-    h2_SC41dE_vs_AoQ->Reset();
-    h2_SC42dE_vs_AoQ->Reset();
-    h2_SC41dE_vs_Z->Reset();
-    h2_SC42dE_vs_Z->Reset();
-    h2_dE_vs_ToF_21_41->Reset();
-    h2_x2_vs_Z->Reset();
-    h2_x4_vs_Z->Reset();
-    h2_dE1_vs_x2->Reset();
-    h2_dE1_vs_x4->Reset();
-    h2_x2_vs_a2->Reset();
-    h2_y2_vs_b2->Reset();
-    h2_x4_vs_a4->Reset();
-    h2_y4_vs_b4->Reset();
-    h2_Z_vs_Sc21E->Reset();
-    h1_tpat->Reset();
-   //h1_wr->Reset();
+void FrsOnlineSpectra::Reset_Histo() {
+    c4LOG(info, "Resetting FRS histograms.");
 
-    if (!FrsGates.empty())
-    {
-        for (int gate = 0; gate < FrsGates.size(); gate++)
-        {
-            h2_Z_vs_AoQ_Z1Z2gate[gate]->Reset();
-            h2_Z1_vs_Z2_Z1Z2gate[gate]->Reset();
-            h2_x2_vs_AoQ_Z1Z2gate[gate]->Reset();
-            h2_x4_vs_AoQ_Z1Z2gate[gate]->Reset();
-            h2_dEdeg_vs_Z_Z1Z2gate[gate]->Reset();
-            h2_dedegoQ_vs_Z_Z1Z2gate[gate]->Reset();
-            h2_x2_vs_AoQ_Z1Z2x2AoQgate[gate]->Reset();
-            h2_x4_vs_AoQ_Z1Z2x2AoQgate[gate]->Reset();
-            h2_Z_vs_AoQ_Z1Z2x2AoQgate[gate]->Reset();
-            h2_dEdeg_vs_Z_Z1Z2x2AoQgate[gate]->Reset();
-            h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate[gate]->Reset();
-            h2_x2_vs_AoQ_Z1Z2x4AoQgate[gate]->Reset();
-            h2_x4_vs_AoQ_Z1Z2x4AoQgate[gate]->Reset();
-            h2_Z_vs_AoQ_Z1Z2x4AoQgate[gate]->Reset();
-            h2_dEdeg_vs_Z_Z1Z2x4AoQgate[gate]->Reset();
-            h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate[gate]->Reset();
-        }
+    // Assuming dir is a TDirectory pointer containing histograms
+    if (dir_frs) {
+        AnalysisTools_H::ResetHistogramsInDirectory(dir_frs);
+        c4LOG(info, "FRS histograms reset.");
+    } else {
+        c4LOG(error, "Failed to get list of histograms from directory.");
     }
-    c4LOG(info,"FRS Spectra Reset");
 }
 
 

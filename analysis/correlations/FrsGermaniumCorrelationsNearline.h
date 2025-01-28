@@ -69,6 +69,9 @@ class FrsGermaniumCorrelationsNearline : public FairTask
             long_lifetime_binhigh = stop;
         }
         
+        void SetGermaniumCoincidenceWindow(int coinc_window){ // ns
+            germanium_coincidence_gate = coinc_window;
+        }
         
     
     private:

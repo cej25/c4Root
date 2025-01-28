@@ -8,9 +8,13 @@ class TExperimentConfiguration
     public:
         static TExperimentConfiguration const* GetInstance();
         static void Create();
+
+        //Setter
         static void SetExperimentStart(uint64_t st) { exp_start_time = st; }
+        static void SetExperimentEnd(uint64_t et) {exp_end_time = et;}
 
         static uint64_t exp_start_time;
+        static uint64_t exp_end_time;
 
     private:
         static std::string filepath;
