@@ -22,8 +22,7 @@
 #include <chrono>
 #include <sstream>
 
-FatimaOnlineSpectra::FatimaOnlineSpectra() 
-    : FatimaOnlineSpectra("FatimaOnlineSpectra")
+FatimaOnlineSpectra::FatimaOnlineSpectra() : FatimaOnlineSpectra("FatimaOnlineSpectra")
 {
     fatima_configuration = TFatimaTwinpeaksConfiguration::GetInstance();
 }
@@ -305,148 +304,22 @@ InitStatus FatimaOnlineSpectra::Init()
     detector_rates = new int[number_detectors];
     for (int i = 0; i < number_detectors; i++) h1_fatima_rates[i] = MakeTH1(dir_fatima_rates, "I", Form("h1_fatima_rates_det_%i", i), Form("Rate in FATIMA detector %i", i), 1800, 0, 1800, "Time [2s]", kCyan, kBlack);
     
-    run->GetHttpServer()->RegisterCommand("Reset_FATIMA_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
-    run->GetHttpServer()->RegisterCommand("Snapshot_FATIMA_Histo", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Reset_FATIMA_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
 
     return kSUCCESS;
     
 }
 
-void FatimaOnlineSpectra::Reset_Histo()
-{
-    c4LOG(info,"Biswarup clicked me :-). Resetting FATIMA histograms.");
-    for (int ihist = 0; ihist<number_detectors; ihist++) h1_fatima_slowToT[ihist]->Reset();
-    for (int ihist = 0; ihist<number_detectors; ihist++) h1_fatima_fastToT[ihist]->Reset();
-    for (int ihist = 0; ihist<number_detectors; ihist++) h1_fatima_abs_time[ihist]->Reset();
-    for (int ihist = 0; ihist<number_detectors; ihist++) h1_fatima_energy[ihist]->Reset();
-    for (int ihist = 0; ihist<number_detectors; ihist++) h2_fatima_fast_v_slow[ihist]->Reset();
-    for (int ihist = 0; ihist<number_reference_detectors; ihist++){
-        for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++) h1_fatima_time_differences[ihist][detid_idx]->Reset();
-        for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++) h2_fatima_time_differences_vs_energy[ihist][detid_idx]->Reset();
+void FatimaOnlineSpectra::Reset_Histo() {
+    c4LOG(info, "Resetting FATIMA histograms.");
+
+    // Assuming dir is a TDirectory pointer containing histograms
+    if (dir_fatima) {
+        AnalysisTools_H::ResetHistogramsInDirectory(dir_fatima);
+        c4LOG(info, "FATIMA histograms reset.");
+    } else {
+        c4LOG(error, "Failed to get list of histograms from directory.");
     }
-    
-    h1_fatima_hitpattern_fast->Reset();
-    h1_fatima_hitpattern_slow->Reset();
-    h2_fatima_energy_vs_detid->Reset();
-    h1_fatima_multiplicity->Reset();
-    h2_fatima_energy_uncal_vs_detid->Reset();
-    c4LOG(info, "FATIMA histograms reset.");
-
-}
-
-// not complete maybe different spectra need to be added here, but anyway correlations between Sc41 and are something for later analysis (?)
-void FatimaOnlineSpectra::Snapshot_Histo()
-{
-    c4LOG(info, "Snapshotting FATIMA histograms.");
-    // date and time stamp
-    time_t now = time(0);
-    tm *ltm = localtime(&now);
-    // make folder with date and time
-    TString snapshot_dir = Form("FATIMA_snapshot_%d_%d_%d_%d_%d_%d",ltm->tm_year+1900, ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
-
-    gSystem->mkdir(snapshot_dir);
-    gSystem->cd(snapshot_dir);
-
-    c_fatima_snapshot = new TCanvas("c_fatima_snapshot","Fatima snapshot",650,350);
-
-    for (int ihist = 0; ihist<number_detectors; ihist++)
-    {
-        if(h1_fatima_slowToT[ihist]->GetEntries() != 0)
-        {
-            h1_fatima_slowToT[ihist]->Draw();
-            c_fatima_snapshot->SaveAs(Form("h1_fatima_slowTot_%d.png",detectors.at(ihist)));
-            c_fatima_snapshot->Clear();
-        }
-        if(h1_fatima_fastToT[ihist]->GetEntries() != 0)
-        {
-            h1_fatima_fastToT[ihist]->Draw();
-            c_fatima_snapshot->SaveAs(Form("h1_fatima_fastTot_%d.png",detectors.at(ihist)));
-            c_fatima_snapshot->Clear();
-        }
-        if(h1_fatima_abs_time[ihist]->GetEntries() != 0)
-        {
-            h1_fatima_abs_time[ihist]->Draw();
-            c_fatima_snapshot->SaveAs(Form("h1_fatima_abs_time_%d.png",detectors.at(ihist)));
-            c_fatima_snapshot->Clear();
-        }
-        if(h1_fatima_energy[ihist]->GetEntries() != 0)
-        {
-            h1_fatima_energy[ihist]->Draw();
-            c_fatima_snapshot->SaveAs(Form("h1_fatima_energy_%d.png",detectors.at(ihist)));
-            c_fatima_snapshot->Clear();
-        }
-
-        if(h2_fatima_fast_v_slow[ihist]->GetEntries() != 0)
-        {
-            h2_fatima_fast_v_slow[ihist]->Draw("COLZ");
-            c_fatima_snapshot->SaveAs(Form("h2_fatima_fast_v_slow_%d.png",detectors.at(ihist)));
-            c_fatima_snapshot->Clear();
-        }
-
-        if(h2_fatima_energy_vs_detid->GetEntries() != 0)
-        {
-            h2_fatima_energy_vs_detid->Draw("COLZ");
-            c_fatima_snapshot->SaveAs("h2_fatima_energy_vs_detid.png");
-            c_fatima_snapshot->Clear();
-        }
-
-        if(h2_fatima_energy_uncal_vs_detid->GetEntries() != 0)
-        {
-            h2_fatima_energy_uncal_vs_detid->Draw("COLZ");
-            c_fatima_snapshot->SaveAs("h2_fatima_energy_uncal_vs_detid.png");
-            c_fatima_snapshot->Clear();
-        }
-
-    }
-
-    for (int ihist = 0; ihist<number_reference_detectors; ihist++)
-    {
-        for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++)
-        {
-            if(h1_fatima_time_differences[ihist][detid_idx]->GetEntries() != 0)
-            {
-                h1_fatima_time_differences[ihist][detid_idx]->Draw();
-                c_fatima_snapshot->SaveAs(Form("h1_fatima_rel_time_det_%i_det_%i.png",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
-                c_fatima_snapshot->Clear();
-            }
-            if(h2_fatima_time_differences_vs_energy[ihist][detid_idx]->GetEntries() != 0)
-            {
-                h2_fatima_time_differences_vs_energy[ihist][detid_idx]->Draw("COLZ");
-                c_fatima_snapshot->SaveAs(Form("h2_fatima_rel_time_det_%i_det_%i_vs_energy.png",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
-                c_fatima_snapshot->Clear();
-            }
-        }
-    }
-
-    if (h1_fatima_hitpattern_fast->GetEntries() != 0)
-    {
-        h1_fatima_hitpattern_fast->Draw();
-        c_fatima_snapshot->SaveAs("h1_fatima_hitpattern_fast.png");
-        c_fatima_snapshot->Clear();
-    }
-    if (h1_fatima_hitpattern_slow->GetEntries() != 0)
-    {
-        h1_fatima_hitpattern_slow->Draw();
-        c_fatima_snapshot->SaveAs("h1_fatima_hitpattern_slow.png");
-        c_fatima_snapshot->Clear();
-    }
-    if (h1_fatima_multiplicity->GetEntries() != 0)
-    {
-        h1_fatima_multiplicity->Draw();
-        c_fatima_snapshot->SaveAs("h1_fatima_multiplicity.png");
-        c_fatima_snapshot->Clear();
-    }
-
-    delete c_fatima_snapshot;
-    // save the snapshot of .root file with data and time stamp
-    file_fatima_snapshot = new TFile(Form("FATIMA_snapshot_%d_%d_%d_%d_%d_%d.root",ltm->tm_year+1900,ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec),"RECREATE"); 
-    file_fatima_snapshot->cd();
-    dir_fatima->Write();
-    file_fatima_snapshot->Close();
-    delete file_fatima_snapshot;
-
-    gSystem->cd("..");
-    c4LOG(info, "FATIMA Snapshots saved in: " << screenshot_path +  snapshot_dir);
 }
 
 

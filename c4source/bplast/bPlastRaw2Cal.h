@@ -53,6 +53,7 @@ class bPlastRaw2Cal : public FairTask
         bPlastTwinpeaksData* funcal_hit_next; // this is the slow or fast hit corresponding to the fast or slow hit :)
         bPlastTwinpeaksCalData* fcal_hit;
 
+        uint16_t trig;
         uint16_t detector_id;
         
         double slow_lead_time;

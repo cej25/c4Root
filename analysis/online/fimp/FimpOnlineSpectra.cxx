@@ -21,7 +21,7 @@
 #include "TRandom.h"
 #include <string>
 
-FimpOnlineSpectra::FimpOnlineSpectra()  :   FimpOnlineSpectra("FimpOnlineSpectra")
+FimpOnlineSpectra::FimpOnlineSpectra()
 {
 }
 

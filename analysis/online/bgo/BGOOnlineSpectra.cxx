@@ -193,71 +193,21 @@ InitStatus BGOOnlineSpectra::Init()
 
     dir_bgo->cd();
 
-    run->GetHttpServer()->RegisterCommand("Reset_BGO_Histo", Form("/Objects/%s/->Reset_BGO_Histo()", GetName()));
-    run->GetHttpServer()->RegisterCommand("Snapshot_BGO_Histo", Form("/Objects/%s/->Snapshot_BGO_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Reset_BGO_Histos", Form("/Objects/%s/->Reset_BGO_Histo()", GetName()));
 
     return kSUCCESS;
 }
 
-void BGOOnlineSpectra::Reset_BGO_Histo()
-{
-    c4LOG(info, "Reset command received. Clearing histograms.");
-    
-    for (int ihist = 0; ihist<number_of_detectors_to_plot; ihist++) 
-    {
-        h1_bgo_energy[ihist]->Reset();
-        h1_bgo_time[ihist]->Reset();
-        h1_germanium_bgo_veto_energy[ihist]->Reset();
-        h1_germanium_bgo_vetotrue_energy[ihist]->Reset();
-        h1_germanium_bgo_veto_timedifferences[ihist]->Reset();
+void BGOOnlineSpectra::Reset_Histo() {
+    c4LOG(info, "Resetting BGO histograms.");
+
+    // Assuming dir is a TDirectory pointer containing histograms
+    if (dir_bgo) {
+        AnalysisTools_H::ResetHistogramsInDirectory(dir_bgo);
+        c4LOG(info, "BGO histograms reset.");
+    } else {
+        c4LOG(error, "Failed to get list of histograms from directory.");
     }
-}
-
-void BGOOnlineSpectra::Snapshot_BGO_Histo()
-{
-    c4LOG(info, "");
-
-    //date and time
-    time_t now = time(0);
-    tm *ltm = localtime(&now);
-    //make folder with date and time
-    const char* snapshot_dir = Form("bgo_snapshot_%d_%d_%d_%d_%d_%d",ltm->tm_year+1900,ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec);
-    gSystem->cd(screenshot_path);
-    gSystem->mkdir(snapshot_dir);
-    gSystem->cd(snapshot_dir);
-
-    // save histograms to canvases
-    c_bgo_snapshot = new TCanvas("c_bgo_snapshot","BGO snapshot",650,350);
-
-    for (int ihist = 0; ihist<number_of_detectors_to_plot; ihist++) 
-    {
-        h1_bgo_energy[ihist]->Draw();
-        c_bgo_snapshot->SaveAs(Form("bgo_energy_%d_%d.png",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second));
-        c_bgo_snapshot->Clear();
-        h1_bgo_time[ihist]->Draw();
-        c_bgo_snapshot->SaveAs(Form("bgo_time_%d_%d.png",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second));
-        c_bgo_snapshot->Clear();
-        h1_germanium_bgo_veto_energy[ihist]->Draw();
-        c_bgo_snapshot->SaveAs(Form("germanium_bgo_veto_energy_%d_%d.png",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second));
-        c_bgo_snapshot->Clear();
-        h1_germanium_bgo_veto_timedifferences[ihist]->Draw();
-        c_bgo_snapshot->SaveAs(Form("germanium_bgo_veto_timedifferences_%d_%d.png",crystals_to_plot.at(ihist).first,crystals_to_plot.at(ihist).second));
-        c_bgo_snapshot->Clear();
-    }
-
-    delete c_bgo_snapshot;
-
-    //commented for now. directories :()
-    // // snapshot .root file with data and time
-    // file_bgo_snapshot = new TFile(Form("bgo_snapshot_%d_%d_%d_%d_%d_%d.root",ltm->tm_year+1900,ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec),"RECREATE");
-    // file_bgo_snapshot->cd();
-    // dir_bgo->Write();
-    // file_bgo_snapshot->Close();
-    // delete file_bgo_snapshot;
-
-    gSystem->cd("..");
-    c4LOG(info, "Snapshot saved to:" << snapshot_dir);
-
 }
 
 void BGOOnlineSpectra::Exec(Option_t* option)

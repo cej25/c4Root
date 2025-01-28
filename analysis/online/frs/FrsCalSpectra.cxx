@@ -39,7 +39,6 @@
 #include "TDirectory.h"
 
 FrsCalSpectra::FrsCalSpectra()
-    : FrsCalSpectra("FrsCalSpectra", 1)
 {
 }
 
