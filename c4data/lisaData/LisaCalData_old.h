@@ -23,7 +23,7 @@
 
 //Debugging. Replaced std::string with TString 8nov24
 
-// :: Not in use -> use CalItem instead
+// :: Not in use -> use CalItam instead
 class LisaCalData : public TObject
 {
     public:
@@ -86,73 +86,50 @@ class LisaCalItem : public TObject
         LisaCalItem();
 
         void SetAll(uint64_t wr,
-                    uint16_t w_id,
-                    uint8_t b_id,
                     int layer,
                     TString c,
                     int xpos,
                     int ypos,
-                    double e, // probably uint32_t e
-                    double e_MWD,
-                    std::vector<int16_t> tr,
-                    std::vector<int16_t> tr_MWD,
+                    int e, // probably uint32_t e
+                    std::vector<uint16_t> tr,
                     double e_GM,
-                    double e_MWD_GM,
                     uint64_t evt_t,
                     uint64_t ch_t,
                     uint64_t evtno,
                     int pu,
-                    //int pu_MWD,
-                    int ov);
-                    //int ov_MWD);
-
+                    int ov); 
         void Reset();
 
         uint64_t Get_wr_t() const;
-        uint16_t Get_wr_id() const;
-        uint8_t Get_board_id() const;
         int Get_layer_id() const;
         TString Get_city() const;
         int Get_xposition() const;
         int Get_yposition() const;
-        double Get_energy() const;
-        double Get_energy_MWD() const;
-        std::vector<int16_t> Get_trace() const;
-        std::vector<int16_t> Get_trace_MWD() const;
+        uint32_t Get_energy() const;
+        std::vector<uint16_t> Get_trace() const;
         double Get_energy_GM() const;
-        double Get_energy_MWD_GM() const;
         uint64_t Get_board_event_time() const;
         uint64_t Get_channel_event_time() const;
         uint64_t Get_evtno();
         int Get_pileup() const;
-        //int Get_pileup_MWD() const;
         int Get_overflow() const;
-        //int Get_overflow_MWD() const;
-
 
         // Getters
         ClassDefNV(LisaCalItem, 2);
     private:
         uint64_t wr_t;
-        uint16_t wr_id;
-        uint8_t board_id;
         int layer_id;
         TString city; // name
         int xposition;
         int yposition;
-        double energy; // double? int?
-        double energy_MWD; // double? int?
-        std::vector<int16_t> trace;
-        std::vector<int16_t> trace_MWD;
+        uint32_t energy; // double? int?
+        std::vector<uint16_t> trace;
         double energy_GM;
-        double energy_MWD_GM;
         uint64_t board_event_time;
         uint64_t ch_event_time;
         uint64_t event_no;
         int pileup;
-        //int pileup_MWD;
         int overflow;
-        //int overflow_MWD;
         // timing info for correlations
 
 };
@@ -160,16 +137,6 @@ class LisaCalItem : public TObject
 inline uint64_t LisaCalItem::Get_wr_t() const
 {
     return wr_t;
-}
-
-inline uint16_t LisaCalItem::Get_wr_id() const
-{
-    return wr_id;
-}
-
-inline uint8_t LisaCalItem::Get_board_id() const
-{
-    return board_id;
 }
 
 inline int LisaCalItem::Get_layer_id() const
@@ -192,34 +159,19 @@ inline int LisaCalItem::Get_yposition() const
     return yposition;
 }
 
-inline double LisaCalItem::Get_energy() const
+inline uint32_t LisaCalItem::Get_energy() const
 {
     return energy;
 }
 
-inline double LisaCalItem::Get_energy_MWD() const
-{
-    return energy_MWD;
-}
-
-inline std::vector<int16_t> LisaCalItem::Get_trace() const
+inline std::vector<uint16_t> LisaCalItem::Get_trace() const
 {
     return trace;
-}
-
-inline std::vector<int16_t> LisaCalItem::Get_trace_MWD() const
-{
-    return trace_MWD;
 }
 
 inline double LisaCalItem::Get_energy_GM() const
 {
     return energy_GM;
-}
-
-inline double LisaCalItem::Get_energy_MWD_GM() const
-{
-    return energy_MWD_GM;
 }
 
 inline uint64_t LisaCalItem::Get_board_event_time() const
@@ -237,20 +189,10 @@ inline int LisaCalItem::Get_pileup() const
     return pileup;
 }
 
-// inline int LisaCalItem::Get_pileupMWD() const
-// {
-//     return pileup_MWD;
-// }
-
 inline int LisaCalItem::Get_overflow() const
 {
     return overflow;
 }
-
-// inline int LisaCalItem::Get_overflow_MWD() const
-// {
-//     return overflow_MWD;
-// }
 
 
 #endif

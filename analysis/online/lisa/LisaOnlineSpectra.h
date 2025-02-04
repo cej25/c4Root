@@ -80,7 +80,7 @@ class LisaOnlineSpectra : public FairTask
         Int_t xp;
         Int_t yp;
         uint32_t en;
-        std::vector<uint16_t> trace;
+        std::vector<int16_t> trace;
 
         TFolder* histograms;
         TDirectory* dir_lisa;

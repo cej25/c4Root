@@ -8,8 +8,8 @@
 
 //Select the data level you want to visualize
 #define LISA_RAW 0
-#define LISA_ANA 1
-#define LISA_CAL 0
+#define LISA_ANA 0
+#define LISA_CAL 1
 
 // Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/
 extern "C"
@@ -129,6 +129,7 @@ void lisadev_make_trees(int fileNumber)
     // ::: Lisa config
     TLisaConfiguration::SetMappingFile(config_path + "/lisa/Lisa_Detector_Map_names.txt");
     TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching.txt");
+    TLisaConfiguration::SetGMFileMWD(config_path + "/lisa/Lisa_GainMatching_MWD.txt");
     TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
 
 
@@ -195,13 +196,13 @@ void lisadev_make_trees(int fileNumber)
         run->AddTask(lisaraw2ana);  
     }
 
-    // if (LISA_CAL)
-    // {
-    //     LisaAna2Cal* lisaana2cal = new LisaAna2Cal();
+    if (LISA_CAL)
+    {
+        LisaAna2Cal* lisaana2cal = new LisaAna2Cal();
 
-    //     lisaana2cal->SetOnline(false);
-    //     run->AddTask(lisaana2cal);
-    // }
+        lisaana2cal->SetOnline(false);
+        run->AddTask(lisaana2cal);
+    }
 
     if (FRS_ON)
     {

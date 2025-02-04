@@ -201,7 +201,7 @@ void LisaTraceCorrelation::Exec(Option_t* option){
     int xpos = lisaCalItem.Get_xposition();
     int ypos = lisaCalItem.Get_yposition();
     uint32_t energy = lisaCalItem.Get_energy();
-    std::vector<uint16_t> trace = lisaCalItem.Get_trace();
+    std::vector<int16_t> trace = lisaCalItem.Get_trace();
     int pileup = lisaCalItem.Get_pileup();
     int overflow = lisaCalItem.Get_overflow();
     uint64_t evtno = header->GetEventno();
@@ -266,13 +266,13 @@ void LisaTraceCorrelation::Exec(Option_t* option){
       continue;
     //c4LOG(info,"not hit in x = " << xpos << ", y = " << ypos << ", z = " << layer);
     //c4LOG(info,"filling h2_traces_nothit[layer*(xmax*ymax)+ymax*xpos+ypos][ymax*xpos+ypos] " << layer*(xmax*ymax)+ymax*xpos+ypos << " " << ymax*xpos+ypos);
-    std::vector<uint16_t> trace = lisaCalItem.Get_trace();
+    std::vector<int16_t> trace = lisaCalItem.Get_trace();
     for (int t = 0; t < trace.size(); t++)
       h2_traces_nothit[layer*(xmax*ymax)+ymax*xhit+yhit][ymax*xpos+ypos]->Fill(t,trace[t]);
   }
 
   // check amsterdam
-  std::vector<uint16_t> trace_Ams;
+  std::vector<int16_t> trace_Ams;
   for (auto const & lisaCalItem : *lisaCalArray){
     layer = lisaCalItem.Get_layer_id();
     if(layer<1)
@@ -297,7 +297,7 @@ void LisaTraceCorrelation::Exec(Option_t* option){
     int xpos = lisaCalItem.Get_xposition();
     int ypos = lisaCalItem.Get_yposition();
     if(layer==0 && xpos == 1 && ypos == 1){
-      std::vector<uint16_t> trace = lisaCalItem.Get_trace();
+      std::vector<int16_t> trace = lisaCalItem.Get_trace();
       for (int t = 0; t < trace.size(); t++)
 	h2_traces_Ams->Fill(trace[t],trace_Ams[t]);
     }
