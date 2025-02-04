@@ -33,6 +33,5 @@ Trapez_baseline_window_0[ns]       2200
 Trapez_baseline_window_1[ns]       2600
 
 
-
 #To implement
 #Threshold_ch_1                     9

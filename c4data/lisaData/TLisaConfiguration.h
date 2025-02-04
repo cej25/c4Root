@@ -36,6 +36,7 @@ class TLisaConfiguration
         static void SetMWDParametersFile(std::string fp) { MWD_file = fp; }
         static void SetMappingFile(std::string fp) { mapping_file = fp; }
         static void SetGMFile(std::string fp) { gain_matching_file = fp; }
+        static void SetGMFileMWD(std::string fp) { gain_matching_file_MWD = fp; }
         static void SetDetectorCoefficientFile(std::string fp) { calibration_file = fp; }
 
         //::: MWD Parameters
@@ -49,6 +50,10 @@ class TLisaConfiguration
         //:::: Gain Matching
         std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> GainMatchingCoefficients() const;
         bool GainMatchingLoaded() const;
+
+        //:::: Gain Matching for MWD 
+        std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> GainMatchingMWDCoefficients() const;
+        bool GainMatchingMWDLoaded() const;
 
         void SetTraceLength(int length) { trace_length = length; }
         int GetTraceLength() { return trace_length; }
@@ -156,6 +161,7 @@ class TLisaConfiguration
         static std::string MWD_file;
         static std::string mapping_file;
         static std::string gain_matching_file;
+        static std::string gain_matching_file_MWD;
         static std::string calibration_file;
 
         TLisaConfiguration();
@@ -163,6 +169,7 @@ class TLisaConfiguration
         void ReadMWDParameters();
         void ReadMappingFile();
         void ReadGMFile();
+        void ReadGMFileMWD();
         void ReadCalibrationCoefficients();
 
         static TLisaConfiguration* instance;
@@ -170,6 +177,7 @@ class TLisaConfiguration
         //std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> detector_mapping;
         std::map<std::pair<int,int>, std::pair<std::pair<int,std::string>, std::pair<int,int>>> detector_mapping;
         std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> gain_matching_coeffs;
+        std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> gain_matching_MWD_coeffs;
         //std::map<std::pair<int,std::pair<int,int>>, std::pair<int,int>> calibration_coeffs;
         std::set<int> extra_signals;
 
@@ -189,6 +197,7 @@ class TLisaConfiguration
         bool MWD_parameters_loaded = 0;
         bool detector_mapping_loaded = 0;
         bool gain_matching_loaded = 0;
+        bool gain_matching_MWD_loaded = 0;
         bool detector_calibrations_loaded = 0;
         bool timeshift_calibration_coeffs_loaded = 0;
 
@@ -245,6 +254,12 @@ inline std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> TLi
     return gain_matching_coeffs;
 }
 
+//::: Gain Matching for MWD
+inline std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> TLisaConfiguration::GainMatchingMWDCoefficients() const
+{
+    return gain_matching_MWD_coeffs;
+}
+
 //::: Calibration
 /*
 inline std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> TLisaConfiguration::CalibrationCoefficients() const
@@ -293,6 +308,11 @@ inline bool TLisaConfiguration::MappingLoaded() const
 inline bool TLisaConfiguration::GainMatchingLoaded() const
 {
     return gain_matching_loaded;
+}
+
+inline bool TLisaConfiguration::GainMatchingMWDLoaded() const
+{
+    return gain_matching_MWD_loaded;
 }
 
 /*

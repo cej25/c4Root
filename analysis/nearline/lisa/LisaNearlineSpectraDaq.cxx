@@ -428,7 +428,7 @@ void LisaNearlineSpectraDaq::Exec(Option_t* option)
         int xpos = lisaCalItem.Get_xposition();
         int ypos = lisaCalItem.Get_yposition();
         uint32_t energy = lisaCalItem.Get_energy();
-        std::vector<uint16_t> trace = lisaCalItem.Get_trace();
+        std::vector<int16_t> trace = lisaCalItem.Get_trace();
         double energy_GM = lisaCalItem.Get_energy_GM();
         int pileup = lisaCalItem.Get_pileup();
         int overflow = lisaCalItem.Get_overflow();

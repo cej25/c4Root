@@ -32,6 +32,7 @@ TLisaConfiguration* TLisaConfiguration::instance = nullptr;
 std::string TLisaConfiguration::MWD_file = "blank";
 std::string TLisaConfiguration::mapping_file = "blank";
 std::string TLisaConfiguration::gain_matching_file = "blank";
+std::string TLisaConfiguration::gain_matching_file_MWD = "blank";
 std::string TLisaConfiguration::calibration_file = "blank";
 
 //WR enable setting - X7 data = 0, S2 data = 1
@@ -238,7 +239,7 @@ void TLisaConfiguration::ReadGMFile()
     std::ifstream gain_matching_coeff_file (gain_matching_file);
     std::string line;
 
-    if (gain_matching_coeff_file.fail()) c4LOG(warn, "Could not open LISA calibration coefficients file.");
+    if (gain_matching_coeff_file.fail()) c4LOG(warn, "Could not open LISA GM - calibration coefficients file.");
 
     while (std::getline(gain_matching_coeff_file, line))
     {
@@ -260,13 +261,56 @@ void TLisaConfiguration::ReadGMFile()
 
         gain_matching_coeffs.insert(std::make_pair(layer_xy, gm_coeff));
 
-        std::cout << " l "<< layer_id << " x " << x_pos << " y " << y_pos << " slope " << slope << " intercept " << intercept << "\n";
+        std::cout << " lxy : "<< layer_id << x_pos << y_pos << " slope " << slope << " intercept " << intercept << "\n";
     }
     
     gain_matching_loaded = 1;
     gain_matching_coeff_file.close();
 
     c4LOG(info, "Lisa Gain Matching File: " + gain_matching_file);
+    return;
+
+}
+
+void TLisaConfiguration::ReadGMFileMWD()
+{   
+    //std::cout<<"due elefanti"<<std::endl;
+    //std::set<int> layers;
+    //std::set<int> x_positions;
+    //std::set<int> y_positions;
+    
+    std::ifstream gain_matching_coeff_file_MWD (gain_matching_file_MWD);
+    std::string line;
+
+    if (gain_matching_coeff_file_MWD.fail()) c4LOG(warn, "Could not open LISA MWD GM - calibration coefficients file.");
+
+    while (std::getline(gain_matching_coeff_file_MWD, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+
+        std::istringstream iss(line);
+        int layer_id, x_pos, y_pos;
+        double slope_MWD, intercept_MWD;
+        std::pair<int, int> xy;
+        std::pair<int, std::pair<int, int>> layer_xy;
+        std::pair<double, double> gm_MWD_coeff;
+
+        iss >> layer_id >> x_pos >> y_pos >> slope_MWD >> intercept_MWD;
+
+        gm_MWD_coeff = std::make_pair(slope_MWD, intercept_MWD);
+
+        xy = std::make_pair(x_pos, y_pos);
+        layer_xy = std::make_pair(layer_id, xy);
+
+        gain_matching_MWD_coeffs.insert(std::make_pair(layer_xy, gm_MWD_coeff));
+
+        std::cout << " lxy : "<< layer_id << x_pos << y_pos << " slope " << slope_MWD << " intercept " << intercept_MWD << "\n";
+    }
+    
+    gain_matching_MWD_loaded = 1;
+    gain_matching_coeff_file_MWD.close();
+
+    c4LOG(info, "Lisa Gain Matching MWD File: " + gain_matching_file_MWD);
     return;
 
 }

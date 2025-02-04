@@ -47,10 +47,10 @@ class LisaAnaItem : public TObject
                     uint64_t ev_time,
                     uint8_t ch_id,
                     uint64_t ch_time,
-                    bool p,
-                    //bool p_MWD,
-                    bool o,
-                    //bool o_MWD,
+                    int p,
+                    //int p_MWD,
+                    int o,
+                    //int o_MWD,
                     uint32_t ch_energy,
                     uint32_t ch_energy_MWD,
                     uint8_t ch_id_traces,
@@ -64,10 +64,10 @@ class LisaAnaItem : public TObject
         uint64_t Get_board_event_time() const;
         uint8_t Get_channel_id() const;
         uint64_t Get_channel_time() const;
-        bool Get_pileup() const;
-        //bool Get_pileup_MWD() const;
-        bool Get_overflow() const;
-        //bool Get_overflow_MWD() const;
+        int Get_pileup() const;
+        //int Get_pileup_MWD() const;
+        int Get_overflow() const;
+        //int Get_overflow_MWD() const;
         uint32_t Get_channel_energy() const;
         uint32_t Get_channel_energy_MWD() const;
         uint8_t Get_channel_id_traces() const;
@@ -84,10 +84,10 @@ class LisaAnaItem : public TObject
         uint64_t board_event_time;
         uint8_t channel_id;
         uint64_t channel_time;
-        bool pileup;
-        //bool pileup_MWD;
-        bool overflow;
-        //bool overflow_MWD;
+        int pileup;
+        //int pileup_MWD;
+        int overflow;
+        //int overflow_MWD;
         uint32_t channel_energy;
         uint32_t channel_energy_MWD;
         uint8_t channel_id_traces;
@@ -126,22 +126,22 @@ inline uint64_t LisaAnaItem::Get_channel_time() const
     return channel_time;
 }
 
-inline bool LisaAnaItem::Get_pileup() const
+inline int LisaAnaItem::Get_pileup() const
 {
     return pileup;
 }
 
-// inline bool LisaAnaItem::Get_pileup_MWD() const
+// inline int LisaAnaItem::Get_pileup_MWD() const
 // {
 //     return pileup_MWD;
 // }
 
-inline bool LisaAnaItem::Get_overflow() const
+inline int LisaAnaItem::Get_overflow() const
 {
     return overflow;
 }
 
-// inline bool LisaAnaItem::Get_overflow_MWD() const
+// inline int LisaAnaItem::Get_overflow_MWD() const
 // {
 //     return overflow_MWD;
 // }

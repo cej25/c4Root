@@ -71,7 +71,7 @@ set(SRCS
 ./travMus/TravMusCal2Ana.cxx
 ./germanium/GermaniumReader.cxx
 ./lisa/LisaReader.cxx
-#./lisa/LisaAna2Cal.cxx
+./lisa/LisaAna2Cal.cxx
 ./lisa/LisaRaw2Ana.cxx
 ./bplast/bPlastReader.cxx
 ./bplast/bPlastRaw2Cal.cxx
