@@ -30,6 +30,7 @@
 #pragma link C++ class TimeMachineData+;
 #pragma link C++ class BB7V7x5Item+;
 #pragma link C++ class BB7V1290Item+;
+#pragma link C++ class BB7FebexItem+;
 #pragma link C++ class BB7VmeImplantItem+;
 #pragma link C++ class BB7VmeDecayItem+;
 #pragma link C++ class BB7VmeResidualItem+;
