@@ -61,6 +61,7 @@ fatimaData/FatimaVmeCalData.cxx
 timemachineData/TimeMachineData.cxx
 bb7Data/BB7VmeData.cxx
 bb7Data/BB7VmeCalData.cxx
+bb7Data/BB7FebexData.cxx
 bb7Data/TBB7VmeConfiguration.cxx
 fimpData/FimpData.cxx
 fimpData/FimpCalData.cxx

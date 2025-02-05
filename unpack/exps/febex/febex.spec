@@ -13,7 +13,7 @@ SUBEVENT(bb7_subev)
 
     select several
     {
-         add = FEBEX_PADDING();
+        add = FEBEX_PADDING();
     }
 
     select several
@@ -25,11 +25,12 @@ SUBEVENT(bb7_subev)
         data[4] = FEBEX_EVENT_TRACES(card=4);
         data[5] = FEBEX_EVENT_TRACES(card=5);
         data[6] = FEBEX_EVENT_TRACES(card=6);
+        data[7] = FEBEX_EVENT_TRACES(card=7);
     }
 	
 }
 
 EVENT
 {
-    bb7 = bb7_subev(procid=60);
+    bbsfebex = bb7_subev(procid=60);
 }

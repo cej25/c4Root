@@ -5,6 +5,7 @@ typedef struct EXT_STR_h101_t
 {   
     EXT_STR_h101_unpack_t eventheaders;
     EXT_STR_h101_bb7vme_onion_t bb7vme;
+    EXT_STR_h101_bb7febex_onion_t bb7febex;
 } EXT_STR_h101;
 
 
@@ -13,11 +14,10 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     // Name your experiment. Make sure all relevant directories are named identically.
     // TString fExpName = "NovTest";
     //TString fExpName = "s100";
-    TString fExpName = "bb7";
+    TString fExpName = "febex";
 
 
     // Define important paths.
-    //TString c4Root_path = "/u/despec/s100_online/c4Root";
     TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes";
     ucesb_path.ReplaceAll("//","/");
@@ -37,11 +37,8 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    // TString filename = "stream://x86l-117";
-    // TString filename = "trans://lxg1257";
-    //TString filename = "~/lustre/gamma/DESPEC_NOV23_FILES/ts/Ubeam_0024_0001.lmd";
-    //TString filename = "~/lustre/despec/bb7_files/test_trg_210324_0019_0001.lmd";
-    TString filename = "~/lustre/despec/bb7_files/test_trg_050624_0008_0001.lmd";
+   // TString filename = "~/lustre/despec/bb7_test_2025/Co_jun_ohm_0200.lmd";
+    TString filename = "~/lustre/despec/bb7_test_2025/bkg_jun_ohm_full_0106.lmd";
     TString outputpath = "bb7_test_output";
     TString outputFileName = outputpath + ".root";
 
@@ -68,14 +65,14 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Correlations ******************************************************** //
     
-    TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations.dat");
+    // TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations.dat");
 
 
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
     
-    TBB7VmeConfiguration::SetDetectorConfigurationFile("/u/cjones/c4Root/config/s181/bb7/BB7_Detector_Map_s181.txt");  
-    TBB7VmeConfiguration::SetResidualSignalsFile("/u/cjones/c4Root/config/s181/bb7/BB7_Residuals_Map.txt");   
+    // TBB7VmeConfiguration::SetDetectorConfigurationFile("/u/cjones/c4Root/config/s181/bb7/BB7_Detector_Map_s181.txt");  
+    // TBB7VmeConfiguration::SetResidualSignalsFile("/u/cjones/c4Root/config/s181/bb7/BB7_Residuals_Map.txt");   
 
     // ------------------------------------------------------------------------------------- //
     // *** Read Subsystems - comment out unwanted systems ********************************** //
@@ -86,22 +83,23 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     source->AddReader(unpackheader);
     
 
-    BB7Reader* unpackbb7 = new BB7Reader((EXT_STR_h101_bb7vme_onion*)&ucesb_struct.bb7vme, offsetof(EXT_STR_h101, bb7vme));
+    //BB7Reader* unpackbb7 = new BB7Reader((EXT_STR_h101_bb7vme_onion*)&ucesb_struct.bb7vme, offsetof(EXT_STR_h101, bb7vme));
+    BB7FebexReader* unpackbb7 = new BB7FebexReader((EXT_STR_h101_bb7febex_onion*)&ucesb_struct.bb7febex, offsetof(EXT_STR_h101, bb7febex));
 
     unpackbb7->SetOnline(false);
     source->AddReader(unpackbb7);
     
-    TBB7VmeConfiguration::SetImplantThreshold(1500);
+    // TBB7VmeConfiguration::SetImplantThreshold(1500);
 
-    BB7Raw2Cal* calbb7 = new BB7Raw2Cal();
+    // BB7Raw2Cal* calbb7 = new BB7Raw2Cal();
 
-    calbb7->SetOnline(false);
-    run->AddTask(calbb7);
+    // calbb7->SetOnline(false);
+    // run->AddTask(calbb7);
 
 
-    BB7OnlineSpectra* onlinebb7 = new BB7OnlineSpectra();
+    // BB7OnlineSpectra* onlinebb7 = new BB7OnlineSpectra();
 
-    run->AddTask(onlinebb7);
+    // run->AddTask(onlinebb7);
     
     // Initialise
     run->Init();
