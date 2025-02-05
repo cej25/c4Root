@@ -273,18 +273,23 @@ FEBEX_EVENT_TRACES(card)
             }
         }
 
-        select several
+        list (0 <= index < (((channel_size.size) / 4) - 1)) // i have no idea.
         {
-            trace = TRACE();
+            select optional
+            {
+                trace = TRACE();
+            }
         }
+
+        //select several
+        //{
+        //    trace = TRACE();
+        //}
 
     }
     else if (sumchannel.trigger_type == 3)
     {
-        select several
-        {
-            dummy = DUMMY();
-        }
+        several  UINT32 dummy NOENCODE;
     }
 
 }

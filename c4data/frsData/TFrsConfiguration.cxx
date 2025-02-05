@@ -49,7 +49,6 @@ TFrsConfiguration::TFrsConfiguration()
     ReadTravMusDriftFile(); // not critical
     ReadAoQDriftFile(); // not critical
     ReadZ1DriftFile(); // not critical
-    ReadCrateMapFile();
     
 }
 
