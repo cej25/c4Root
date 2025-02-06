@@ -70,7 +70,7 @@ void BB7FebexRaw2Cal::Exec(Option_t* option)
         {
             if (detector_mapping.count(unmapped_channel) > 0)
             {
-                int detector = detector_mapping.at(unmapped_channel).first;
+                int dssd = detector_mapping.at(unmapped_channel).first;
                 int side = detector_mapping.at(unmapped_channel).second.first;
                 int strip = detector_mapping.at(unmapped_channel).second.second;
 
@@ -83,12 +83,26 @@ void BB7FebexRaw2Cal::Exec(Option_t* option)
                     // energy_calib = ... 
                 }
 
+                if (energy > 400000000)
+                {
+                    // std::cout << "weird energy, I guess:: " << std::endl;
+                    // std::cout << "Channel:: " << bb7item.Get_channel_id() << std::endl;
+                    // std::cout << "Time:: " << bb7item.Get_channel_time() << std::endl;
+
+                    continue;
+                }
+
+                int64_t absolute_time = bb7item.Get_wr_t() + bb7item.Get_channel_time() - bb7item.Get_board_event_time();
+
+                //std::cout << "Energy:" << energy << std::endl;
+
                 if (energy > implantThreshold)
                 {
                     // implant 
                     auto & entry = bb7calImplants->emplace_back();
                     entry.SetAll(
                         bb7item.Get_wr_t(),
+                        dssd,
                         side,
                         strip,
                         bb7item.Get_channel_energy(),
@@ -96,6 +110,7 @@ void BB7FebexRaw2Cal::Exec(Option_t* option)
                         energy_calib,
                         bb7item.Get_board_event_time(),
                         bb7item.Get_channel_time(),
+                        absolute_time,
                         bb7item.Get_pileup(),
                         bb7item.Get_overflow()
                     );
@@ -106,6 +121,7 @@ void BB7FebexRaw2Cal::Exec(Option_t* option)
                     auto & entry = bb7calDecays->emplace_back();
                     entry.SetAll(
                         bb7item.Get_wr_t(),
+                        dssd,
                         side,
                         strip,
                         bb7item.Get_channel_energy(),
@@ -113,6 +129,7 @@ void BB7FebexRaw2Cal::Exec(Option_t* option)
                         energy_calib,
                         bb7item.Get_board_event_time(),
                         bb7item.Get_channel_time(),
+                        absolute_time,
                         bb7item.Get_pileup(),
                         bb7item.Get_overflow()
                     );

@@ -32,6 +32,7 @@
 #pragma link C++ class BB7V1290Item+;
 #pragma link C++ class BB7FebexItem+;
 #pragma link C++ class BB7FebexCalItem+;
+#pragma link C++ class BB7FebexHitItem+;
 #pragma link C++ class BB7VmeImplantItem+;
 #pragma link C++ class BB7VmeDecayItem+;
 #pragma link C++ class BB7VmeResidualItem+;

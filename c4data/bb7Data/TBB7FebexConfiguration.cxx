@@ -14,7 +14,7 @@ uint32_t TBB7FebexConfiguration::implantThreshold = 5000;
 uint32_t TBB7FebexConfiguration::decayThreshold = 100;
 
 TBB7FebexConfiguration::TBB7FebexConfiguration()
-    :   num_detectors(0)
+    :   num_dssds(0)
 {
     ReadConfiguration();
 }
@@ -24,7 +24,7 @@ void TBB7FebexConfiguration::ReadConfiguration()
 
     std::ifstream detector_map_file(mapping_file);
     std::string line;
-    std::set<int> detectors;
+    std::set<int> dssds;
 
     if (detector_map_file.fail()) c4LOG(fatal, "Could not open BB7_Detector_Map file");
 
@@ -34,7 +34,7 @@ void TBB7FebexConfiguration::ReadConfiguration()
 
         std::istringstream iss(line);
         std::string signal;
-        int board = -1, channel = -1, detector = -1, side = -1, strip = -1;
+        int board = -1, channel = -1, dssd = -1, side = -1, strip = -1;
 
         std::pair<int, int> febex_mc;
         std::pair<int, int> bb7_ss;
@@ -46,12 +46,12 @@ void TBB7FebexConfiguration::ReadConfiguration()
         {
             board = std::stoi(signal);
 
-            iss >> channel >> detector >> side >> strip;
+            iss >> channel >> dssd >> side >> strip;
 
-            if (board < 0 || channel < 0 || detector < 0 || side < 0 || strip < 0) continue;
+            if (board < 0 || channel < 0 || dssd < 0 || side < 0 || strip < 0) continue;
             
             bb7_ss = {side, strip};
-            bb7_dp = {detector, bb7_ss};
+            bb7_dp = {dssd, bb7_ss};
 
         }
         else // some additional signal
@@ -59,7 +59,7 @@ void TBB7FebexConfiguration::ReadConfiguration()
             
         }
 
-        if (detector > -1) detectors.insert(detector);
+        if (dssd > -1) dssds.insert(dssd);
 
         febex_mc = {board, channel};
 
@@ -67,7 +67,7 @@ void TBB7FebexConfiguration::ReadConfiguration()
         
     }
 
-    num_detectors = detectors.size();
+    num_dssds = dssds.size();
     
     detector_map_loaded = 1;
     detector_map_file.close();

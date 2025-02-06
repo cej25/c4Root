@@ -63,6 +63,7 @@ bb7Data/BB7VmeData.cxx
 bb7Data/BB7VmeCalData.cxx
 bb7Data/BB7FebexData.cxx
 bb7Data/BB7FebexCalData.cxx
+bb7Data/BB7FebexHitData.cxx
 bb7Data/TBB7VmeConfiguration.cxx
 bb7Data/TBB7FebexConfiguration.cxx
 fimpData/FimpData.cxx
