@@ -79,6 +79,7 @@ set(SRCS
 ./bb7/BB7Reader.cxx
 ./bb7/BB7FebexReader.cxx
 ./bb7/BB7Raw2Cal.cxx
+./bb7/BB7FebexRaw2Cal.cxx
 ./fimp/FimpReader.cxx
 ./fimp/FimpRaw2Cal.cxx
 
