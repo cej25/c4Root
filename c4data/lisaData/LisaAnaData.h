@@ -55,7 +55,8 @@ class LisaAnaItem : public TObject
                     uint32_t ch_energy_MWD,
                     uint8_t ch_id_traces,
                     std::vector<int16_t> tr,
-                    std::vector<int16_t> trace_MWD);
+                    std::vector<int16_t> tr_MWD,
+                    std::vector<int16_t> tr_x);
         void Reset();
 
         uint64_t Get_wr_t() const;
@@ -71,8 +72,9 @@ class LisaAnaItem : public TObject
         uint32_t Get_channel_energy() const;
         uint32_t Get_channel_energy_MWD() const;
         uint8_t Get_channel_id_traces() const;
-        std::vector<int16_t> Get_trace() const;
+        std::vector<int16_t> Get_trace_febex() const;
         std::vector<int16_t> Get_trace_MWD() const;
+        std::vector<int16_t> Get_trace_x() const;
 
         // Getters
         ClassDef(LisaAnaItem, 1);
@@ -91,8 +93,9 @@ class LisaAnaItem : public TObject
         uint32_t channel_energy;
         uint32_t channel_energy_MWD;
         uint8_t channel_id_traces;
-        std::vector<int16_t> trace;
+        std::vector<int16_t> trace_febex;
         std::vector<int16_t> trace_MWD;
+        std::vector<int16_t> trace_x;
 
 };
 
@@ -161,14 +164,19 @@ inline uint8_t LisaAnaItem::Get_channel_id_traces() const
     return channel_id_traces;
 }
 
-inline std::vector<int16_t> LisaAnaItem::Get_trace() const
+inline std::vector<int16_t> LisaAnaItem::Get_trace_febex() const
 {
-    return trace;
+    return trace_febex;
 }
 
 inline std::vector<int16_t> LisaAnaItem::Get_trace_MWD() const
 {
     return trace_MWD;
+}
+
+inline std::vector<int16_t> LisaAnaItem::Get_trace_x() const
+{
+    return trace_x;
 }
 
 #endif

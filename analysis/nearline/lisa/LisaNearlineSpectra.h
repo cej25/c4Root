@@ -117,17 +117,24 @@ class LisaNearlineSpectra : public FairTask
 
         // energy
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_ch;
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_MWD_ch;
+
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_ch_GM;
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_ch_MWD_GM;
         std::vector<TH1F*> h1_energy_layer_GM;
+        std::vector<TH1F*> h1_energy_layer_MWD_GM;
         TH1F* h1_energy_all_layers_GM;
         TH2F* h2_sum_energy_layer1_vs_layer2;
         TH2F* h2_sum_energy_layer1_vs_layer2_GM;
         TH2F* h2_energy_layer1_vs_layer2_GM;
+        TH2F* h2_energy_layer1_vs_layer2_MWD_GM;
         std::vector<std::vector<std::vector<TH2F*>>> h2_traces_ch_stat;
 
         // ::: Drifts
         std::vector<TH2*> h2_energy_layer_vs_time;
+        std::vector<TH2*> h2_energy_layer_MWD_vs_time;
         std::vector<std::vector<std::vector<TH2*>>> h2_energy_ch_vs_time;
+        std::vector<std::vector<std::vector<TH2*>>> h2_energy_MWD_ch_vs_time;
 
         
 

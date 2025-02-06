@@ -2,6 +2,11 @@
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define LISA_ON 1
+        //LISA_ANA displays only energy and traces; LISA_CAL displays stats,energy,traces. Choose one.
+        //Note that if FRS 1, LISA_CAL is needed. 
+#define LISA_ANA 0
+#define LISA_CAL 1
+
 #define FRS_ON 0
 #define TRAV_MUSIC_ON 0
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
@@ -49,12 +54,12 @@ void lisadev_histos(int fileNumber)
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
     //TString inputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/fragments_EG_test/";
-    TString inputpath = "/u/gandolfo/data/";
+    TString inputpath = "/u/gandolfo/data/test_c4/";
     TString filename = Form(inputpath + "run_%04d_EG.root", fileNumber);  
     
     //___O U T P U T
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/fragments_EG_101gate/"; //test output
-    TString outputpath = "/u/gandolfo/data/"; //test output
+    TString outputpath = "/u/gandolfo/data/test_c4/"; //test output
 
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/fragments_noGate/";
     TString outputFilename = Form(outputpath + "run_%04d_histos.root", fileNumber);
@@ -75,8 +80,10 @@ void lisadev_histos(int fileNumber)
      
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: LISA config
+    TLisaConfiguration::SetMappingFile(config_path + "/lisa/Lisa_Detector_Map_names.txt");
+    TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching.txt");
+    TLisaConfiguration::SetGMFileMWD(config_path + "/lisa/Lisa_GainMatching_MWD.txt");
     TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
-
     
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
     // ::: Nearline Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -86,18 +93,40 @@ void lisadev_histos(int fileNumber)
     TFrsConfiguration::SetRunNumber(fileNumber);
     std::cout << "Run number: " << fileNumber << std::endl;
 
-
+    //::::::::: Set experiment configurations
+    TExperimentConfiguration::SetExperimentStart(1715734200000000000);
+    
     //::::::::: Set ranges for histos :::::::::::::::
     //::::  Channel Energy ::::: (h1_energy_)
     TLisaConfiguration::SetEnergyRange(0,10000000);
     TLisaConfiguration::SetEnergyBin(450);
+    //:::: MWD histos
+    TLisaConfiguration::SetEnergyRangeMWD(0,1000);
+    TLisaConfiguration::SetEnergyBinMWD(450);
 
+    TLisaConfiguration::SetEnergyRangeGM(0,20000);
+    TLisaConfiguration::SetEnergyBinGM(450);
+
+    TLisaConfiguration::SetEnergyRangeMWDGM(0,1000);
+    TLisaConfiguration::SetEnergyBinMWDGM(450);
+
+    TLisaConfiguration::SetWrDiffRange(0,100000);
+    TLisaConfiguration::SetWrDiffBin(500);
 
     if (LISA_ON)
     {
-        LisaNearlineSpectraAna* nearlinelisaana = new LisaNearlineSpectraAna();
+        if(LISA_ANA)
+        {
+            LisaNearlineSpectraAna* nearlinelisaana = new LisaNearlineSpectraAna();
+            run->AddTask(nearlinelisaana);
+        }
 
-        run->AddTask(nearlinelisaana);
+        if(LISA_CAL)
+        {
+            LisaNearlineSpectra* nearlinelisa = new LisaNearlineSpectra();
+            run->AddTask(nearlinelisa);
+        }
+
     }
     
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

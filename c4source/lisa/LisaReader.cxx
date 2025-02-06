@@ -93,6 +93,7 @@ Bool_t LisaReader::Read()
         {
             //::::::::::::::Channel ID
             uint8_t channel_id = fData->lisa_data[it_board_number].channel_idv[index];
+            //std::cout << "Channel ID from header : " << static_cast<int>(channel_id) << std::endl;
 
             //::::::::::::::Channel Trigger Time
             uint64_t channel_trigger_time_long = (((uint64_t)(fData->lisa_data[it_board_number].channel_trigger_time_hiv[index]) << 32) + 
@@ -114,8 +115,7 @@ Bool_t LisaReader::Read()
             uint32_t ch_energy = energy;
 
             std::vector<int16_t> trace;
-        
-            
+            std::vector<int16_t> trace_x;
             uint8_t channel_id_trace = fData->lisa_data[it_board_number].channel_id_tracesv[index];
 
             //::::::::::::::Channel Traces with ID from channel header
@@ -123,7 +123,14 @@ Bool_t LisaReader::Read()
             {
                 trace.emplace_back(fData->lisa_data[it_board_number].traces[channel_id_trace].v[l]);    
             }
+            
+            //::::::::::::::Traces Dimension (This is fixed from Febex (2000) but added for easier displaying)
+            for (int l = 0 ; l < fData->lisa_data[it_board_number].traces[channel_id_trace]._ ; l++)
+            {
+                trace_x.emplace_back(fData->lisa_data[it_board_number].traces[channel_id_trace].I[l]);    
+            }
             //std::cout<< "Size of trace? : " << sizeof(fData->lisa_data[it_board_number].traces) <<std::endl;
+            //std::cout << "Channel ID from trace : " << static_cast<int>(channel_id_trace) << std::endl;
 
             // //::::::::::::::Channel Traces with ID from event header
             // for (int l = 0 ; l < fData->lisa_data[it_board_number].traces[channel_id]._ ; l++)
@@ -143,7 +150,8 @@ Bool_t LisaReader::Read()
                 overflow,
                 ch_energy,
                 channel_id_trace,
-                trace
+                trace,
+                trace_x
             );
 
         }

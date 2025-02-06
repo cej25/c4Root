@@ -34,7 +34,8 @@ void LisaItem::SetAll(uint64_t wr,
                     bool o,
                     uint32_t ch_energy,
                     uint8_t ch_id_tr,
-                    std::vector<int16_t> tr
+                    std::vector<int16_t> tr,
+                    std::vector<int16_t> tr_x
                     )
 {
     wr_t = wr;
@@ -48,6 +49,7 @@ void LisaItem::SetAll(uint64_t wr,
     channel_energy = ch_energy;
     channel_id_traces = ch_id_tr;
     trace = tr;
+    trace_x = tr_x;
 }
 
 void LisaItem::Reset()
@@ -63,6 +65,7 @@ void LisaItem::Reset()
     channel_energy = 0;
     channel_id = 0;
     trace = {};
+    trace_x = {};
 }
 
-ClassImp(LisaData)
+ClassImp(LisaItem)

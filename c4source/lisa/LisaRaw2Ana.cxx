@@ -276,12 +276,13 @@ void LisaRaw2Ana::Exec(Option_t* option)
                 energy_MWD,
                 lisaItem.Get_channel_id_traces(),
                 trace_febex,
-                trace_MWD
+                trace_MWD,
+                lisaItem.Get_trace_x()
                 //EVTno
             );
             
             trace_MWD.clear();
-        
+            trace_febex.clear();
         }
 
 

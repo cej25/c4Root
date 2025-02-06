@@ -178,7 +178,7 @@ void LisaTraceAnalysis::Exec(Option_t* option)
         int ch_ID = lisaAnaItem.Get_channel_id_traces();
         double energy_febex = lisaAnaItem.Get_channel_energy();
         double energy_MWD = lisaAnaItem.Get_channel_energy_MWD();
-        std::vector<int16_t> trace_febex = lisaAnaItem.Get_trace();
+        std::vector<int16_t> trace_febex = lisaAnaItem.Get_trace_febex();
         std::vector<int16_t> trace_MWD = lisaAnaItem.Get_trace_MWD();
 
         

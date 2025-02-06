@@ -92,10 +92,11 @@ class LisaCalItem : public TObject
                     TString c,
                     int xpos,
                     int ypos,
-                    double e, // probably uint32_t e
+                    double e, // uint32_t e?
                     double e_MWD,
                     std::vector<int16_t> tr,
                     std::vector<int16_t> tr_MWD,
+                    std::vector<int16_t> tr_x,
                     double e_GM,
                     double e_MWD_GM,
                     uint64_t evt_t,
@@ -117,8 +118,9 @@ class LisaCalItem : public TObject
         int Get_yposition() const;
         double Get_energy() const;
         double Get_energy_MWD() const;
-        std::vector<int16_t> Get_trace() const;
+        std::vector<int16_t> Get_trace_febex() const;
         std::vector<int16_t> Get_trace_MWD() const;
+        std::vector<int16_t> Get_trace_x() const;
         double Get_energy_GM() const;
         double Get_energy_MWD_GM() const;
         uint64_t Get_board_event_time() const;
@@ -142,8 +144,9 @@ class LisaCalItem : public TObject
         int yposition;
         double energy; // double? int?
         double energy_MWD; // double? int?
-        std::vector<int16_t> trace;
+        std::vector<int16_t> trace_febex;
         std::vector<int16_t> trace_MWD;
+        std::vector<int16_t> trace_x;
         double energy_GM;
         double energy_MWD_GM;
         uint64_t board_event_time;
@@ -202,14 +205,19 @@ inline double LisaCalItem::Get_energy_MWD() const
     return energy_MWD;
 }
 
-inline std::vector<int16_t> LisaCalItem::Get_trace() const
+inline std::vector<int16_t> LisaCalItem::Get_trace_febex() const
 {
-    return trace;
+    return trace_febex;
 }
 
 inline std::vector<int16_t> LisaCalItem::Get_trace_MWD() const
 {
     return trace_MWD;
+}
+
+inline std::vector<int16_t> LisaCalItem::Get_trace_x() const
+{
+    return trace_x;
 }
 
 inline double LisaCalItem::Get_energy_GM() const

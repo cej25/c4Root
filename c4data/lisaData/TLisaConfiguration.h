@@ -88,6 +88,9 @@ class TLisaConfiguration
         static void SetEnergyRangeGM(int min_GM, int max_GM) { min_energy_GM = min_GM; max_energy_GM = max_GM; }
         static void SetEnergyBinGM(int bin_e_GM) { bin_energy_GM = bin_e_GM; }
 
+        static void SetEnergyRangeMWDGM(int min_MWD_GM, int max_MWD_GM) { min_energy_MWD_GM = min_MWD_GM; max_energy_MWD_GM = max_MWD_GM; }
+        static void SetEnergyBinMWDGM(int bin_e_MWD_GM) { bin_energy_MWD_GM = bin_e_MWD_GM; }
+
         static void SetWrDiffRange(int min_wr, int max_wr) { min_wr_diff = min_wr; max_wr_diff = max_wr; }
         static void SetWrDiffBin(int bin_wr) { bin_wr_diff = bin_wr; }
 
@@ -120,6 +123,9 @@ class TLisaConfiguration
         static int min_energy_GM;
         static int max_energy_GM;
         static int bin_energy_GM;
+        static int min_energy_MWD_GM;
+        static int max_energy_MWD_GM;
+        static int bin_energy_MWD_GM;
         static int min_wr_diff;
         static int max_wr_diff;
         static int bin_wr_diff;
