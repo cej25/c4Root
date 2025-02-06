@@ -62,10 +62,10 @@ void lisadev_make_trees(int fileNumber)
     //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0169_*.lmd";  //data with only lisa
     //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/daqtest/daqtest_0001_0001.lmd"; //data from ts folder
     TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";
-    TString filename = Form(inputpath + "run_%04d_*.lmd", fileNumber);
+    TString filename = Form(inputpath + "run_%04d_0001.lmd", fileNumber);
 
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/"; //testing
+    TString outputpath = "/u/gandolfo/data/test_c4/"; //testing
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/fragments_EG_test/";    
     TString outputFilename = Form(outputpath + "run_%04d_EG.root", fileNumber);
 
@@ -188,18 +188,27 @@ void lisadev_make_trees(int fileNumber)
 
     // ::::::: CALIBRATE Subsystem  ::::::::
 
-    if (LISA_ANA)
+    if (LISA_ANA && !LISA_CAL)
     {
         LisaRaw2Ana* lisaraw2ana = new LisaRaw2Ana();
 
         lisaraw2ana->SetOnline(false);
         run->AddTask(lisaraw2ana);  
-    }
+    } 
 
     if (LISA_CAL)
     {
-        LisaAna2Cal* lisaana2cal = new LisaAna2Cal();
+        LisaRaw2Ana* lisaraw2ana = new LisaRaw2Ana();
+        if(LISA_ANA)
+        {
+            lisaraw2ana->SetOnline(false);
+        }else
+        {
+            lisaraw2ana->SetOnline(true);
+        }
+        run->AddTask(lisaraw2ana); 
 
+        LisaAna2Cal* lisaana2cal = new LisaAna2Cal();
         lisaana2cal->SetOnline(false);
         run->AddTask(lisaana2cal);
     }
