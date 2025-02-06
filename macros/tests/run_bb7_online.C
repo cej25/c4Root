@@ -105,8 +105,9 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
 
 
     // BB7OnlineSpectra* onlinebb7 = new BB7OnlineSpectra();
+    BB7FebexOnlineSpectra* onlinebb7 = new BB7FebexOnlineSpectra();
 
-    // run->AddTask(onlinebb7);
+    run->AddTask(onlinebb7);
     
     // Initialise
     run->Init();

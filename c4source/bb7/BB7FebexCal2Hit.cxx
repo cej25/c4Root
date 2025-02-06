@@ -63,10 +63,9 @@ InitStatus BB7FebexCal2Hit::Init()
     c4LOG_IF(fatal, !bb7calImplants, "Branch BB7FebexCalImplants not found!");
     c4LOG_IF(fatal, !bb7calDecays, "Branch BB7FebexCalDecays not found!");
 
-    mgr->RegisterAny("BB7ImplantHits", implantHitArray, !fOnline);
-    mgr->RegisterAny("BB7DecayHits", decayHitArray, !fOnline);
+    mgr->RegisterAny("BB7FebexImplants", implantHitArray, !fOnline);
+    mgr->RegisterAny("BB7FebexDecays", decayHitArray, !fOnline);
 
-   // bb7_config = TBB7FebexConfiguration::GetInstance();
 
     return kSUCCESS;
 }

@@ -1,14 +1,13 @@
-#ifndef AidaOnlineSpectra_H
-#define AidaOnlineSpectra_H
+#ifndef BB7FebexOnlineSpectra_H
+#define BB7FebexOnlineSpectra_H
 
 // FairRoot
 #include "FairTask.h"
 
 // c4
-#include "AidaCalData.h"
-#include "AidaData.h"
-#include "AidaHitData.h"
-#include "TAidaConfiguration.h"
+#include "BB7FebexCalData.h"
+#include "BB7FebexHitData.h"
+#include "TBB7FebexConfiguration.h"
 
 // ROOT
 #include "TDirectory.h"
@@ -33,15 +32,13 @@ class TCanvas;
 class TH1F;
 class TH2F;
 
-class AidaOnlineSpectra : public FairTask
+class BB7FebexOnlineSpectra : public FairTask
 {
     public:
-        AidaOnlineSpectra();
-        AidaOnlineSpectra(const TString& name, Int_t verbose = 1);
+        BB7FebexOnlineSpectra();
+        BB7FebexOnlineSpectra(const TString& name, Int_t verbose = 1);
 
-        virtual ~AidaOnlineSpectra();
-
-        virtual void SetParContainers();
+        virtual ~BB7FebexOnlineSpectra();
 
         virtual InitStatus Init();
 
@@ -54,23 +51,17 @@ class AidaOnlineSpectra : public FairTask
         // HTTP Commands
         virtual void Reset_Histo();
 
-        void Reset_Scalers();
-
         // range setters
 
 
     private:
-        // Data from AIDA Classes
-        std::vector<AidaUnpackAdcItem> const* adcArray;
-        std::vector<AidaUnpackFlowItem> const* flowArray;
-        std::vector<AidaUnpackScalerItem> const* scalerArray;
-        std::vector<AidaCalAdcItem> const* implantCalArray;
-        std::vector<AidaCalAdcItem> const* decayCalArray;
-        std::vector<AidaHit> const* implantHitArray;
-        std::vector<AidaHit> const* decayHitArray;
+        std::vector<BB7FebexCalItem> const* bb7calImplants;
+        std::vector<BB7FebexCalItem> const* bb7calDecays;
+        std::vector<BB7FebexHitItem> const* implantHitArray;
+        std::vector<BB7FebexHitItem> const* decayHitArray;
 
         // AIDA Config
-        TAidaConfiguration const* conf;
+        TBB7FebexConfiguration const* bb7_config;
 
         EventHeader* header;
         Int_t fNEvents;
@@ -78,64 +69,28 @@ class AidaOnlineSpectra : public FairTask
 
         // Folders and Files
         TFolder* histograms;
-        TDirectory* dir_aida;
-        TDirectory* dir_implant;
-        TDirectory* dir_stopped_implant;
-        TDirectory* dir_decay;
-        TDirectory* dir_scalers;
-        std::vector<TDirectory*> dir_implant_dssd;
-        std::vector<TDirectory*> dir_stopped_implant_dssd;
-        std::vector<TDirectory*> dir_decay_dssd;
-        TFile* file_aida_snapshot;
+        TDirectory* dir_bb7;
+        TDirectory* dir_cal;
+        TDirectory* dir_hit;
+        TDirectory* dir_hit_implant;
+        TDirectory* dir_hit_decay;
 
         // Histograms
-        // Implant Histograms
-        std::vector<TH2F*> h_implant_strip_xy;
-        std::vector<TH2F*> h_implant_pos_xy;
-        std::vector<TH1F*> h_implant_e;
-        std::vector<TH2F*> h_implant_e_xy;
-        std::vector<TH2F*> h_implant_strip_1d_energy;
-        // std::vector<TH2F*> h_implant_strip_1d;  // I saw this here but it isn't being filled anywhere...
-        std::vector<TH2F*> h_implant_x_ex;
-        // std::vector<TH2F*> h_implant_y_ey; // also not filled
-        // std::vector<TH1F*> h_implant_time_delta; // also ... not filled
-        // Stopped Implant Histograms
-        std::vector<TH2F*> h_implant_strip_xy_stopped;
-        std::vector<TH2F*> h_implant_pos_xy_stopped;
-        std::vector<TH1F*> h_implant_e_stopped;
-        std::vector<TH2F*> h_implant_x_ex_stopped;
-        // Decay Histograms
-        std::vector<TH2F*> h_decay_strip_xy;
-        std::vector<TH2F*> h_decay_pos_xy;
-        std::vector<TH1F*> h_decay_e;
-        std::vector<TH2F*> h_decay_e_xy;
-        std::vector<TH2F*> h_decay_strip_1d_energy;
-        std::vector<TH1F*> h_aida_frontback_time;
-        // std::vector<TH1F*> h_decay_time_delta; // not filled.
+        TH2* h2_implant_strip_xy;
+        TH1* h1_implant_e;
+        TH2* h2_implant_e_xy;
+        TH2* h2_implant_strip_1d_e;
 
-        // Scalers
-        std::map<int, std::deque<int>> aida_scaler_queue;
-        std::map<int, int> aida_scaler_cur_sec;
-        std::map<int, TGraph*> aida_scaler_graph;
-        std::vector<std::deque<int>> aida_implant_scaler_queue;
-        std::vector<int> aida_implant_scaler_cur_sec;
-        std::vector<TGraph*> aida_implant_scaler_graph;
-        std::vector<std::deque<int>> aida_implant_stopped_scaler_queue;
-        std::vector<TGraph*> aida_implant_stopped_scaler_graph;
-        std::vector<std::deque<int>> aida_decay_scaler_queue;
-        std::vector<int> aida_decay_scaler_cur_sec;
-        std::vector<TGraph*> aida_decay_scaler_graph;
-
-        // Deadtime
-        std::vector<std::deque<double>> deadtime_queue;
-        std::vector<std::size_t> deadtime_pos;
-        std::vector<TGraph*> deadtime_graph;
-        std::vector<int64_t> last_pauses;
+        TH2* h2_decay_strip_xy;
+        TH1* h1_decay_e;
+        TH2* h2_decay_e_xy;
+        TH2* h2_decay_strip_1d_e; 
+      
 
 
 
     public:
-        ClassDef(AidaOnlineSpectra, 1)
+        ClassDef(BB7FebexOnlineSpectra, 1)
 };
 
 #endif
