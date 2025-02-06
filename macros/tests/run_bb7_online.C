@@ -71,7 +71,9 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
     
-    // TBB7VmeConfiguration::SetDetectorConfigurationFile("/u/cjones/c4Root/config/s181/bb7/BB7_Detector_Map_s181.txt");  
+    // TBB7VmeConfiguration::SetDetectorConfigurationFile("/u/cjones/c4Root/config/s181/bb7/BB7_Detector_Map_s181.txt");
+    TBB7FebexConfiguration::SetMappingFile("/u/cjones/c4Root/config/s101/bb7/BB7_Detector_Map.txt");  
+
     // TBB7VmeConfiguration::SetResidualSignalsFile("/u/cjones/c4Root/config/s181/bb7/BB7_Residuals_Map.txt");   
 
     // ------------------------------------------------------------------------------------- //
@@ -92,9 +94,10 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     // TBB7VmeConfiguration::SetImplantThreshold(1500);
 
     // BB7Raw2Cal* calbb7 = new BB7Raw2Cal();
+    BB7FebexRaw2Cal* calbb7 = new BB7FebexRaw2Cal();
 
-    // calbb7->SetOnline(false);
-    // run->AddTask(calbb7);
+    calbb7->SetOnline(false);
+    run->AddTask(calbb7);
 
 
     // BB7OnlineSpectra* onlinebb7 = new BB7OnlineSpectra();
