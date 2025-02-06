@@ -99,6 +99,10 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     calbb7->SetOnline(false);
     run->AddTask(calbb7);
 
+    BB7FebexCal2Hit* hitbb7 = new BB7FebexCal2Hit();
+    hitbb7->SetOnline(false);
+    run->AddTask(hitbb7);
+
 
     // BB7OnlineSpectra* onlinebb7 = new BB7OnlineSpectra();
 

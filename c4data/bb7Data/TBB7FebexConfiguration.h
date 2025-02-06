@@ -19,7 +19,7 @@ class TBB7FebexConfiguration
         std::map<std::pair<int,int>, std::pair<int, std::pair<int, int>>> Mapping() const;
         bool MappingLoaded() const;
         bool CalibrationLoaded() const;
-        int NDetectors() const;
+        int DSSDs() const;
         int TM_Undelayed() const;
         int TM_Delayed() const;
         int SC41L() const;
@@ -42,7 +42,7 @@ class TBB7FebexConfiguration
         // febid,febch --> detector, side,strip
         std::map<std::pair<int,int>, std::pair<int, std::pair<int, int>>> detector_mapping;
 
-        int num_detectors;
+        int num_dssds;
         int tm_undelayed;
         int tm_delayed;
         int sc41l_d;
@@ -82,9 +82,9 @@ inline bool TBB7FebexConfiguration::CalibrationLoaded() const
     return calibration_loaded;
 }
 
-inline int TBB7FebexConfiguration::NDetectors() const
+inline int TBB7FebexConfiguration::DSSDs() const
 {
-    return num_detectors;
+    return num_dssds;
 }
 
 inline int TBB7FebexConfiguration::TM_Undelayed() const
