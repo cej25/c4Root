@@ -186,7 +186,7 @@ void BB7FebexCal2Hit::Exec(Option_t* option)
                 // Must be same DSSD and Y side
                 if (j.DSSD != i.DSSD || j.Side != 1) continue;
                 // Check gates from config
-                if (std::abs(i.Energy - j.Energy) < 350 // frontbackenergyL
+                if (std::abs(i.Energy - j.Energy) < 350000 // frontbackenergyL - set high for now
                         && i.IsGoodTime(j, 4400))
                 {
                     bb7_coord_t x{i.DSSD, i.Side, i.Strip};
@@ -381,7 +381,7 @@ void BB7Cluster::AddItem(BB7FebexCalItem const& item)
   {
     DSSD = item.DSSD;
     Side = item.Side;
-    HighEnergy = item.Energy > 1500; //bb7_config->ImplantTreshold();
+    HighEnergy = item.Energy > 10000000; //bb7_config->ImplantTreshold();
     StripMin = item.Strip;
     StripMax = item.Strip;
     TimeMin = item.AbsoluteTime;

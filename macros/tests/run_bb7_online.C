@@ -37,8 +37,8 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-   // TString filename = "~/lustre/despec/bb7_test_2025/Co_jun_ohm_0200.lmd";
-    TString filename = "~/lustre/despec/bb7_test_2025/bkg_jun_ohm_full_0106.lmd";
+    TString filename = "~/lustre/despec/bb7_test_2025/Co_jun_ohm_0200.lmd";
+    //TString filename = "~/lustre/despec/bb7_test_2025/bkg_jun_ohm_full_0106.lmd";
     TString outputpath = "bb7_test_output";
     TString outputFileName = outputpath + ".root";
 
@@ -72,7 +72,8 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     // *** Load Detector Configurations *************************************************** //
     
     // TBB7VmeConfiguration::SetDetectorConfigurationFile("/u/cjones/c4Root/config/s181/bb7/BB7_Detector_Map_s181.txt");
-    TBB7FebexConfiguration::SetMappingFile("/u/cjones/c4Root/config/s101/bb7/BB7_Detector_Map.txt");  
+    //TBB7FebexConfiguration::SetMappingFile("/u/cjones/c4Root/config/s101/bb7/BB7_Detector_Map.txt");  
+    TBB7FebexConfiguration::SetMappingFile("/u/cjones/c4Root/config/s101/bb7/BB7_Detector_Map_Co.txt"); 
 
     // TBB7VmeConfiguration::SetResidualSignalsFile("/u/cjones/c4Root/config/s181/bb7/BB7_Residuals_Map.txt");   
 
