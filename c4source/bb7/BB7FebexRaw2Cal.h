@@ -44,7 +44,7 @@ class BB7FebexRaw2Cal : public FairTask
 
         int64_t wr_t;
 
-        uint32_t implantThreshold = 1500;
+        uint32_t implantThreshold = 10000000;
         uint32_t decayThreshold = 100;
 
         std::map<std::pair<int,int>, std::pair<int, std::pair<int, int>>> detector_mapping;

@@ -6,14 +6,14 @@ BB7FebexItem::BB7FebexItem()
 
 void BB7FebexItem::SetAll(int64_t wr,
                     uint16_t id,
-                    uint8_t b_id,
+                    uint32_t b_id,
                     uint64_t ev_time,
-                    uint8_t ch_id,
+                    uint32_t ch_id,
                     uint64_t ch_time,
                     bool p,
                     bool o,
                     uint32_t ch_energy,
-                    uint8_t ch_id_tr,
+                    uint32_t ch_id_tr,
                     std::vector<uint16_t> tr
                     )
 {

@@ -117,6 +117,11 @@ void BB7FebexOnlineSpectra::Exec(Option_t* option)
         h2_implant_strip_xy->Fill(i.StripX, i.StripY);
     }
 
+    for (auto const & d : *decayHitArray)
+    {
+        h2_decay_strip_xy->Fill(d.StripX, d.StripY);
+    }
+
     fNEvents++;
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);

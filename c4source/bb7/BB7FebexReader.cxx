@@ -59,7 +59,7 @@ Bool_t BB7FebexReader::Read()
     int64_t wr_t = (((uint64_t)fData->bbsfebex_ts_t[3]) << 48) + (((uint64_t)fData->bbsfebex_ts_t[2]) << 32) + (((uint64_t)fData->bbsfebex_ts_t[1]) << 16) + (uint64_t)(fData->bbsfebex_ts_t[0]);
     uint32_t wr_id = fData->bbsfebex_ts_subsystem_id;
 
-    for (int it_board_number = 0; it_board_number < NBoards; it_board_number ++)
+    for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
     {
         //since the febex card has a 100MHz clock which timestamps events.
         uint16_t trig = fData->bbsfebex_data[it_board_number].trig;
@@ -75,7 +75,7 @@ Bool_t BB7FebexReader::Read()
         for (int index = 0; index < M; index++) //GENERAL
         {
             //::::::::::::::Channel ID
-            uint8_t channel_id = fData->bbsfebex_data[it_board_number].channel_idv[index];
+            uint32_t channel_id = fData->bbsfebex_data[it_board_number].channel_idv[index];
 
             //::::::::::::::Channel Trigger Time
             uint64_t channel_trigger_time_long = (((uint64_t)(fData->bbsfebex_data[it_board_number].channel_trigger_time_hiv[index]) << 32) + 
@@ -98,16 +98,15 @@ Bool_t BB7FebexReader::Read()
                 energy = +(int32_t)(fData->bbsfebex_data[it_board_number].channel_energyv[index] & 0x007FFFFF);            
             }
 
-            // uint32_t ch_energy = energy;
-
             std::vector<uint16_t> trace;
-        
-            uint8_t channel_id_trace = fData->bbsfebex_data[it_board_number].trace_channel_id_tracesv[index];
+
+            // this is changed from "index" to "channel_id" since sometimes we get less than 16 channels fired, but we always get 16 traces in order
+            // not really sure what the solution for LISA is 
 
             //::::::::::::::Channel Traces with ID from channel header
-            for (int l = 0 ; l < fData->bbsfebex_data[it_board_number].trace_traces[channel_id_trace]._ ; l++)
+            for (int l = 0 ; l < fData->bbsfebex_data[it_board_number].trace_traces[channel_id]._ ; l++)
             {
-                trace.emplace_back(fData->bbsfebex_data[it_board_number].trace_traces[channel_id_trace].v[l]);    
+                trace.emplace_back(fData->bbsfebex_data[it_board_number].trace_traces[channel_id].v[l]);    
             }
 
             auto & entry = bb7array->emplace_back();
@@ -121,7 +120,7 @@ Bool_t BB7FebexReader::Read()
                 pileup,
                 overflow,
                 energy,
-                channel_id_trace,
+                channel_id, // can be removed, "ID from trace header"
                 trace
             );
 
