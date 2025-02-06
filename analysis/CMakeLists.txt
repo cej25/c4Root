@@ -63,6 +63,7 @@ set(SRCS
 ./online/timemachine/TimeMachineOnline.cxx
 ./online/wr/WhiterabbitCorrelationOnline.cxx
 ./online/bb7/BB7OnlineSpectra.cxx
+./online/bb7/BB7FebexOnlineSpectra.cxx
 ./online/fimp/FimpOnlineSpectra.cxx
 
 # nearline/offline
