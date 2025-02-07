@@ -132,7 +132,7 @@ InitStatus LisaTraceAnalysis::Init()
     for (int i = 0; i < histo_number; i++) 
     {
         c_trace->cd(i+1);
-        h2_traces[i] = MakeTH2(dir_traces,"F",Form("h2_traces_%i", i), Form("Traces_%i",i), 200, 0, 20,2000,-5000,5000);
+        h2_traces[i] = MakeTH2(dir_traces,"F",Form("h2_traces_%i", i), Form("Traces_%i",i), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces,lisa_config->amplitude_bin,lisa_config->amplitude_min,lisa_config->amplitude_max); //200,0,20,2000,-5000,5000
         h2_traces[i]->GetXaxis()->SetTitle("Time [us]");
         h2_traces[i]->GetYaxis()->SetTitle("Amplitude [mV]");
         h2_traces[i]->SetMarkerColor(kBlack);
@@ -140,7 +140,7 @@ InitStatus LisaTraceAnalysis::Init()
         h2_traces[i]->SetOption("SCAT");
         h2_traces[i]->Draw("SCAT");
 
-        h2_traces_MWD[i] = MakeTH2(dir_traces_MWD,"F",Form("h2_traces_MWD_%i", i), Form("Traces_MWD_%i",i), 200, 0, 20, 2000,-5000,5000);
+        h2_traces_MWD[i] = MakeTH2(dir_traces_MWD,"F",Form("h2_traces_MWD_%i", i), Form("Traces_MWD_%i",i), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces,lisa_config->amplitude_bin,lisa_config->amplitude_min,lisa_config->amplitude_max);
         h2_traces_MWD[i]->GetXaxis()->SetTitle("Time [us]");
         h2_traces_MWD[i]->GetYaxis()->SetTitle("Amplitude [mV]");
         h2_traces_MWD[i]->SetMarkerColor(kRed+1);

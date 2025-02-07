@@ -49,11 +49,11 @@ void trace_ana_histos(int fileNumber)
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
     TString inputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/trees/";
-    TString filename = Form(inputpath + "run_%04d_0001_c4MWD_v7.root", fileNumber);  
+    TString filename = Form(inputpath + "run_%04d_0001_c4MWD_v13.root", fileNumber);  
     
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/histos/"; 
-    TString outputFilename = Form(outputpath + "run_%04d_0001_c4MWD_histos_v7.root", fileNumber);
+    TString outputFilename = Form(outputpath + "run_%04d_0001_c4MWD_histos_v13.root", fileNumber);
 
 
     FairRunAna* run = new FairRunAna();
@@ -80,7 +80,7 @@ void trace_ana_histos(int fileNumber)
     // ::: Set Board number :::
     //     Since at this stage the mapping is not included, board number is hardcoded.
     TLisaConfiguration::SetBoardNumber(1);
-    TLisaConfiguration::SetEventToAnalyze(600004);
+    TLisaConfiguration::SetEventToAnalyze(600004); //for run 0075_0001 good evt is 600004
     
     //::::::::: Set ranges for histos :::::::::::::::
     //::::  Channel Energy ::::: (h1_energy_)
@@ -90,9 +90,15 @@ void trace_ana_histos(int fileNumber)
     TLisaConfiguration::SetEnergyRangeMWD(0,4000);
     TLisaConfiguration::SetEnergyBinMWD(500);
 
-    //::::::::: Set ranges for traces :::::::::::::::
-    // ::: Trace amplitude :::
-    // ::: Trace x axis :::
+    //::::::::: Set ranges for traces for 2D histos :::::::::::::::
+    // ::: Trace time (x axis)
+    TLisaConfiguration::SetTracesBin(500);
+    TLisaConfiguration::SetTracesRange(1,6);
+
+    // ::: Trace amplitude (y axis) :::    TLisaConfiguration::SetTracesBin(1000);
+    TLisaConfiguration::SetAmplitudeBin(500);
+    TLisaConfiguration::SetAmplitudeMin(-400);
+    TLisaConfiguration::SetAmplitudeMax(100);
 
 
     // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

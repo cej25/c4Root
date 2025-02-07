@@ -76,8 +76,9 @@ class TLisaConfiguration
 
 
         //:::::Ranges in Histos
-        static void SetAmplitudeMax(int max_amp) { AmplitudeMax = max_amp; }
-        static void SetAmplitudeMin(int min_amp) { AmplitudeMin = min_amp; }
+        static void SetAmplitudeBin(int bin_amp) { amplitude_bin = bin_amp; }
+        static void SetAmplitudeMax(int max_amp) { amplitude_max = max_amp; }
+        static void SetAmplitudeMin(int min_amp) { amplitude_min = min_amp; }
 
         static void SetEnergyRange(int min, int max) { min_energy = min; max_energy = max; }
         static void SetEnergyBin(int bin_e) { bin_energy = bin_e; }
@@ -96,7 +97,7 @@ class TLisaConfiguration
 
         static void SetTracesRange(int min_tr, int max_tr) { min_traces = min_tr; max_traces = max_tr; }
         static void SetTracesBin(int bin_tr) { bin_traces = bin_tr; }
-
+        
         static void SetWREnable(bool wr_en) { wr_enable = wr_en; }
 
         static void SetLISAGate(int min_de, int max_de) { fMin_dE_LISA1_gate = min_de; fMax_dE_LISA1_gate = max_de; }
@@ -112,8 +113,9 @@ class TLisaConfiguration
 
         //int AmplitudeMax = 10500;
         //int AmplitudeMin = 7500;
-        static int AmplitudeMax; // = 10500;
-        static int AmplitudeMin; // = 7500;
+        static int amplitude_bin; // = 10500;
+        static int amplitude_max; // = 10500;
+        static int amplitude_min; // = 7500;
         static int min_energy;
         static int max_energy;
         static int bin_energy;

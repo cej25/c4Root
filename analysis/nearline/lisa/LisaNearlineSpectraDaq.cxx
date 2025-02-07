@@ -336,8 +336,8 @@ InitStatus LisaNearlineSpectraDaq::Init()
 
                 h1_traces_layer_ch[i][j][k] = new TH1F(Form("traces_%s_%i_%i_%i", city.c_str(), i, j, k), city.c_str(), 2000, 0, 20);
                 h1_traces_layer_ch[i][j][k]->GetXaxis()->SetTitle("Time [us]");
-                h1_traces_layer_ch[i][j][k]->SetMinimum(lisa_config->AmplitudeMin);
-                h1_traces_layer_ch[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
+                h1_traces_layer_ch[i][j][k]->SetMinimum(lisa_config->amplitude_min);
+                h1_traces_layer_ch[i][j][k]->SetMaximum(lisa_config->amplitude_max);
                 h1_traces_layer_ch[i][j][k]->SetStats(0);
                 h1_traces_layer_ch[i][j][k]->SetLineColor(kBlue+1);
                 h1_traces_layer_ch[i][j][k]->SetFillColor(kOrange-3);
@@ -378,8 +378,8 @@ InitStatus LisaNearlineSpectraDaq::Init()
 
                 h2_traces_layer_ch_stat[i][j][k] = new TH2F(Form("traces_%s_%i_%i_%i_stat", city.c_str(), i, j, k), city.c_str(), 1000, 0, 20,5000,3000,20000);
                 h2_traces_layer_ch_stat[i][j][k]->GetXaxis()->SetTitle("Time [us]");
-                h2_traces_layer_ch_stat[i][j][k]->SetMinimum(lisa_config->AmplitudeMin);
-                h2_traces_layer_ch_stat[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
+                h2_traces_layer_ch_stat[i][j][k]->SetMinimum(lisa_config->amplitude_min);
+                h2_traces_layer_ch_stat[i][j][k]->SetMaximum(lisa_config->amplitude_max);
                 h2_traces_layer_ch_stat[i][j][k]->SetLineColor(kBlue+1);
                 h2_traces_layer_ch_stat[i][j][k]->SetFillColor(kOrange-3);
                 h2_traces_layer_ch_stat[i][j][k]->Draw("colz");

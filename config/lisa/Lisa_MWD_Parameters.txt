@@ -8,7 +8,7 @@
 Smoothing_L[ns]                    400
 
 # :::Lenght of the moving window for calculation
-Trapez_moving_window_length[ns]    1000
+Trapez_moving_window_length[ns]    1200
 
 # :::Decay Time of the signal (depending on the preamp)
 # !!! Decay time to be put in a separate file....WIP for the multichannel mode !!!
@@ -25,12 +25,12 @@ Sampling[ns]                       10
 
 # ::: M W D   E N E R G Y calculation :::
 # :::Start and stop of the trapezoid flat top where the energy is computed
-Trapez_amp_calc_window_0[ns]       2900
-Trapez_amp_calc_window_1[ns]       3100
+Trapez_amp_calc_window_0[ns]       3100
+Trapez_amp_calc_window_1[ns]       3300
 
 # ::: Range for the baseline calculation of the MWD trace
-Trapez_baseline_window_0[ns]       2200             
-Trapez_baseline_window_1[ns]       2600
+Trapez_baseline_window_0[ns]       1900             
+Trapez_baseline_window_1[ns]       2500
 
 
 #To implement

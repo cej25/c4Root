@@ -127,8 +127,8 @@ InitStatus LisaNearlineSpectraAna::Init()
     {
         h2_traces[i] = new TH2F(Form("h2_traces_%i", i), Form("Traces_%i",i), 250, 0, 2000,300,3000,15000);
         h2_traces[i]->GetXaxis()->SetTitle("Time [us/0.01]");
-        h2_traces[i]->SetMinimum(lisa_config->AmplitudeMin);
-        h2_traces[i]->SetMaximum(lisa_config->AmplitudeMax);
+        h2_traces[i]->SetMinimum(lisa_config->amplitude_min);
+        h2_traces[i]->SetMaximum(lisa_config->amplitude_max);
         h2_traces[i]->SetOption("colz");
 
     }
