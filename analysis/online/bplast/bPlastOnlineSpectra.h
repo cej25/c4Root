@@ -49,6 +49,9 @@ class bPlastOnlineSpectra : public FairTask
         Int_t fNEvents;
         int total_time_microsecs = 0;
 
+        TClonesArray* fHitbPlastTwinpeaks;
+        TbPlastConfiguration const* bplast_conf;
+
         int nDetectors;
         int nTamexBoards;
 
