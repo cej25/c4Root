@@ -43,7 +43,7 @@ void TBB7VmeConfiguration::ReadConfiguration()
 
         std::istringstream iss(line);
         std::string signal;
-        int v7x5_board, v7x5_channel, detector, side, strip;
+        int v7x5_board = -1, v7x5_channel = -1, detector = -1, side = -1, strip = -1;
 
         std::pair<int, int> v7x5_mc;
         std::pair<int, int> bb7_ss;

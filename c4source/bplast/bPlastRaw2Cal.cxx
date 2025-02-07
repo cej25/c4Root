@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                       J.P. Bormans, C.E. Jones                             *
+ *                              17.12.24                                      *
+ ******************************************************************************/
+
 // FairRoot
 #include "FairTask.h"
 #include "FairLogger.h"
@@ -300,7 +316,7 @@ void bPlastRaw2Cal::Exec(Option_t* option)
                         detector_id = result_find->second.first;
                         if (detector_id == -1) { fNunmatched++; continue; } // if only one event is left
                     }
-                    else c4LOG(warn, "Detector mapping is not complete! CEJ: Warning only for now...");
+                    // else c4LOG(warn, "Detector mapping is not complete! CEJ: Warning only for now...");
                 }
                 
 
@@ -363,12 +379,12 @@ void bPlastRaw2Cal::Exec(Option_t* option)
                 new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData((detector_id == bplast_config->TM_Undelayed()) ? (fast_lead_time) : (0), (detector_id == bplast_config->TM_Undelayed()) ? (0) : (fast_lead_time), funcal_hit->Get_wr_subsystem_id(), funcal_hit->Get_wr_t() );
             }
 
-            uint16_t trig = funcal_hit->Get_trigger();
+            trig = funcal_hit->Get_trigger();
             // std::cout << "trig:: "<< trig << std::endl;
             if (trig == 3) std::cout << "trig in raw2cal: " << trig << std::endl;
 
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) bPlastTwinpeaksCalData(
-                funcal_hit->Get_trigger(),
+                trig,
                 funcal_hit->Get_board_id(),
                 (int)((funcal_hit->Get_ch_ID()+1)/2),
                 detector_id,

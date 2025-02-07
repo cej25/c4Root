@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                             J.E.L. Larsson                                 *
+ *                               25.11.24                                     *
+ ******************************************************************************/
+
 // FairRoot
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -64,28 +80,31 @@ FrsFatimaCorrelationsNearline::~FrsFatimaCorrelationsNearline()
 InitStatus FrsFatimaCorrelationsNearline::Init()
 {
 
-    // number of crystals, number of dets 
-
-    c4LOG(info, "");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
     FairRunAna* run = FairRunAna::Instance();
 
-    header = (EventHeader*)mgr->GetObject("EventHeader.");
-    c4LOG_IF(error, !header, "Branch EventHeader. not found");
+    header = mgr->InitObjectAs<decltype(header)>("EventHeader.");
+    c4LOG_IF(error, !header, "Branch EventHeader. not found!");
 
     fHitFatima = (TClonesArray*)mgr->GetObject("FatimaTwinpeaksCalData");
     c4LOG_IF(fatal, !fHitFatima, "Branch FatimaTwinpeaksCalData not found!");
     hitArrayFrs = mgr->InitObjectAs<decltype(hitArrayFrs)>("FrsHitData");
     c4LOG_IF(fatal, !hitArrayFrs, "Branch FrsHitData not found!");
 
+    dir_corr = (TDirectory*)mgr->GetObject("Correlations");
+    if (dir_corr == nullptr) 
+    {
+        LOG(info) << "Creating Correlations Directory";
+        FairRootManager::Instance()->GetOutFile()->cd();
+        dir_corr = gDirectory->mkdir("Correlations");
+        mgr->Register("Correlations", "Correlations Directory", dir_corr, false); // allow other tasks to find this
+        found_dir_corr = false;
+    }
 
-    TDirectory* tmp = gDirectory;
-    FairRootManager::Instance()->GetOutFile()->cd();
-    dir_fatima = gDirectory->mkdir(TString("FATIMA FRS GATE " + frsgate->GetName()));
-    gDirectory->cd(TString("FATIMA FRS GATE " + frsgate->GetName()));
-
+    TString dirname = "FATIMA - FRS Gated: " + frsgate->GetName();
+    dir_fatima = dir_corr->mkdir(dirname);
 
     dir_fatima->cd();
 
@@ -227,9 +246,6 @@ InitStatus FrsFatimaCorrelationsNearline::Init()
         
 
     }
-    
-    dir_fatima->cd();
-    gDirectory = tmp;
 
     return kSUCCESS;
 }
@@ -494,11 +510,15 @@ void FrsFatimaCorrelationsNearline::FinishTask()
         return;
     }
     
-    TDirectory* tmp = gDirectory;
-    FairRootManager::Instance()->GetOutFile()->cd();
-    dir_fatima->Write();
-    gDirectory = tmp;
-    c4LOG(info, "FRS-FATIMA histograms written to file.");
+    if (found_dir_corr == false)
+    {
+        TDirectory* tmp = gDirectory;
+        FairRootManager::Instance()->GetOutFile()->cd();
+        dir_corr->Write();
+        gDirectory = tmp;
+        c4LOG(info, "FRS-FATIMA histograms written to file.");
+
+    }
 }
 
 ClassImp(FrsFatimaCorrelationsNearline)

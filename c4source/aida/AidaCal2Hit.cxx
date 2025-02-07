@@ -263,7 +263,8 @@ std::vector<AidaCluster> AidaCal2Hit::ItemsToClusters(std::vector<AidaCalAdcItem
             bool docluster = false;
             // Check options for which cluster
             if (j.HighEnergy && conf->ClusterImplants()) docluster = true;
-            if (!j.HighEnergy && conf->ClusterDecays()) docluster = false;
+            if (!j.HighEnergy && conf->ClusterDecays()) docluster = true; // true?
+
             if (docluster && j.IsAdjacent(i) && j.IsGoodTime(i))
             {
                 if (!added)

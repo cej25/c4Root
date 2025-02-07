@@ -37,6 +37,9 @@ TDirectory* CreateDirectory(TDirectory* current_dir);
 
 void FindNextSubDirectory(TDirectory* current_dir, const char* path);
 
+void ResetHistogramsInDirectory(TDirectory* dir);
+
+
 
 
 

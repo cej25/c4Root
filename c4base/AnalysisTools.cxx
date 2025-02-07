@@ -97,6 +97,37 @@ TH2* MakeTH2(TDirectory* dir, const char* type, const char* name, const char* ti
     return h2;
 }
 
+
+void ResetHistogramsInDirectory(TDirectory* dir) {
+    if (!dir) return;
+
+    TList* histList = dir->GetList();
+    if (!histList) {
+        c4LOG(error, "Failed to get list of histograms from directory.");
+        return;
+    }
+
+    TIter next(histList);
+    TObject* obj;
+
+    while ((obj = next())) {
+        if (obj->InheritsFrom(TDirectory::Class())) {
+            // Recursively process subdirectories
+            TDirectory* subdir = dynamic_cast<TDirectory*>(obj);
+            if (subdir) {
+                ResetHistogramsInDirectory(subdir);
+            }
+        } else if (obj->InheritsFrom(TH1::Class())) {
+            // Reset histograms
+            TH1* hist = dynamic_cast<TH1*>(obj);
+            if (hist) {
+                std::cout << "Resetting histogram: " << hist->GetName() << std::endl;
+                hist->Reset();
+            }
+        }
+    }
+}
+
 /*
 TGraph* MakeTGraph()
 {

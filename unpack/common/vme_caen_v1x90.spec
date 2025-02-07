@@ -1,19 +1,3 @@
-#define MEMBERS \
-    MEMBER(DATA24 data[128] ZERO_SUPPRESS_MULTI(128)); \
-    MEMBER(DATA8 leadOrTrail[128] ZERO_SUPPRESS_MULTI(128)); \
-    MEMBER(DATA8 geo);
-
-
-#define PARAMS_DEF \
-    data, \
-    leadOrTrail, \
-    geo
-
-#define PARAMS \
-    data = data, \
-    leadOrTrail = leadOrTrail, \
-    geo = geo
-
 TDC_HEADER()
 {   
     UINT32 tdc_header NOENCODE
@@ -26,9 +10,10 @@ TDC_HEADER()
     }
 }
 
-TDC_DATA_V1290(PARAMS_DEF)
-{   
-    MEMBERS
+TDC_DATA_V1290()
+{
+    MEMBER(DATA24 data[128] ZERO_SUPPRESS_MULTI(128));
+    MEMBER(DATA8 leadOrTrail[128] ZERO_SUPPRESS_MULTI(128));
 
     UINT32 tdc_data NOENCODE
     {
@@ -42,9 +27,10 @@ TDC_DATA_V1290(PARAMS_DEF)
     }
 }
 
-TDC_DATA_V1190(PARAMS_DEF)
-{   
-    MEMBERS
+TDC_DATA_V1190()
+{
+    MEMBER(DATA24 data[128] ZERO_SUPPRESS_MULTI(128));
+    MEMBER(DATA8 leadOrTrail[128] ZERO_SUPPRESS_MULTI(128));
 
     UINT32 tdc_data NOENCODE
     {
@@ -55,7 +41,6 @@ TDC_DATA_V1190(PARAMS_DEF)
         
         ENCODE(data[chn],(value = tdc/*,trailing=trailing*/));
         ENCODE(leadOrTrail[chn], (value = lot));
-
     }
 }
 
@@ -83,24 +68,23 @@ TDC_TRAILER()
     }
 }
 
-// CEJ: don't call this _FRS
-VME_CAEN_V1290_FRS()
-{   
-    MEMBERS
-    
-    // definitely not optional
+VME_CAEN_V1290_N()
+{
+    MEMBER(DATA8 geo);
+
     UINT32 header NOENCODE
     {   
-        0_4: geo;
+        0_4: geom;
         5_26: event_count;
         27_31: type = MATCH(0b01000);
-        ENCODE(geo, (value = geo));
+
+        ENCODE(geo, (value=geom));
     };
 
     select several
     {
         tdc_header = TDC_HEADER();
-        measurement = TDC_DATA_V1290(PARAMS);
+        measurement = TDC_DATA_V1290();
         tdc_err = TDC_ERROR(); // error causes namespace clash...
         tdc_trailer = TDC_TRAILER(); 
     };
@@ -114,7 +98,7 @@ VME_CAEN_V1290_FRS()
 
     UINT32 trailer NOENCODE // type = 16
     {
-        0_4: geo;
+        0_4: geom;
         5_20: word_count;
         21_23: unused;
         24: tdc_error;
@@ -122,27 +106,20 @@ VME_CAEN_V1290_FRS()
         26: trigger_lost;
         27_31: 0b10000;
     };
-    
-    // this needs defining properly.......
-    //optional UINT32 eob NOENCODE; // type = 24
 
 }
 
-// CEJ: probably need to not call this _FRS
-VME_CAEN_V1190_FRS()
+VME_CAEN_V1190_N()
 {
-    MEMBERS
 
-    // for now (12/2023) we need to catch weird events
-    // first two words COULD be 0xFFFFFFFF
-    // i don't know how to do this more simply
-
+    MEMBER(DATA8 geo);
     UINT32 header NOENCODE
     {
-        0_4: geo;
+        0_4: geom;
         5_26: event_count;
         27_31: seven_f; // 0b01000; // if global header
-        ENCODE(geo, (value = geo));
+
+        ENCODE(geo, (value=geom));
     };
 
     if (header.seven_f != 0b01000)
@@ -155,7 +132,7 @@ VME_CAEN_V1190_FRS()
 
         UINT32 real_header NOENCODE
         {
-            0_4: geo;
+            0_4: geom;
             5_26: event_count;
             27_31: 0b01000;
         }
@@ -164,7 +141,7 @@ VME_CAEN_V1190_FRS()
     select several
     {
         tdc_header = TDC_HEADER();
-        measurement = TDC_DATA_V1190(PARAMS);
+        measurement = TDC_DATA_V1190();
         tdc_error = TDC_ERROR();
         tdc_trailer = TDC_TRAILER();
     };
@@ -178,7 +155,7 @@ VME_CAEN_V1190_FRS()
 
     UINT32 trailer NOENCODE // type = 16
     {
-        0_4: geo;
+        0_4: geom;
         5_20: word_count;
         21_23: unused;
         24: tdc_error;

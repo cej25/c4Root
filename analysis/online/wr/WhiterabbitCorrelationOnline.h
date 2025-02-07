@@ -5,11 +5,17 @@
 #include "TAidaConfiguration.h"
 #include "TFatimaTwinpeaksConfiguration.h"
 #include "TGermaniumConfiguration.h"
+
 #include "AidaHitData.h"
 #include "AidaData.h"
-#include "FrsHitData.h"
 #include "FatimaVmeCalData.h"
 #include "BB7VmeCalData.h"
+#include "TimeMachineData.h"
+#include "FatimaTwinpeaksCalData.h"
+#include "bPlastTwinpeaksCalData.h"
+#include "GermaniumCalData.h"
+#include "FrsHitData.h"
+#include "EventHeader.h"
 
 #include "TH1.h"
 #include "TFolder.h"
@@ -49,8 +55,6 @@ class WhiterabbitCorrelationOnline : public FairTask
         virtual void FinishTask();
 
         virtual void Reset_Histo();
-
-        virtual void Snapshot_Histo();
 
         // range setters
 

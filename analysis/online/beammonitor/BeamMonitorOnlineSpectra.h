@@ -38,11 +38,6 @@ class BeamMonitorOnlineSpectra : public FairTask
         virtual void FinishTask();
 
         virtual void Reset_Histo();
-
-        virtual void Snapshot_Histo();
-
-        // range setters
-
     
     private:
         std::vector<BeamMonitorItem> const* s2HitsBM;

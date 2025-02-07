@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                             C.E. Jones                                     *
+ *                              17.12.24                                      *
+ ******************************************************************************/
+
 // FairRoot
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -7,12 +23,9 @@
 
 // c4
 #include "FrsRawSpectra.h"
-#include "FrsMainData.h"
-#include "FrsTPCData.h"
-#include "FrsUserData.h"
-#include "FrsVFTXData.h"
 #include "EventHeader.h"
 #include "c4Logger.h"
+#include "AnalysisTools.h"
 
 // ROOT
 #include "TCanvas.h"
@@ -31,11 +44,9 @@ FrsRawSpectra::FrsRawSpectra(const TString& name, Int_t iVerbose)
     :   FairTask(name, iVerbose)
     ,   fNEvents(0)
     ,   header(nullptr) 
-    ,   v792arrayMain(nullptr)
-    ,   v1290arrayMain(nullptr)
-    ,   v7x5arrayTPC(nullptr)
-    ,   v1190arrayTPC(nullptr)
-    ,   v7x5arrayUser(nullptr)
+    ,   sciArray(nullptr)
+    ,   musicArray(nullptr)
+    ,   tpcArray(nullptr)
 {
 }
 
@@ -55,16 +66,12 @@ InitStatus FrsRawSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    v792arrayMain = mgr->InitObjectAs<decltype(v792arrayMain)>("FrsMainV792Data");
-    c4LOG_IF(fatal, !v792arrayMain, "Branch FrsMainV792Data not found!");
-    v1290arrayMain = mgr->InitObjectAs<decltype(v1290arrayMain)>("FrsMainV1290Data");
-    c4LOG_IF(fatal, !v1290arrayMain, "Branch FrsMainV1290Data not found!");
-    v7x5arrayTPC = mgr->InitObjectAs<decltype(v7x5arrayTPC)>("FrsTPCV7X5Data");
-    c4LOG_IF(fatal, !v7x5arrayTPC, "Branch v7x5array not found!");
-    v1190arrayTPC = mgr->InitObjectAs<decltype(v1190arrayTPC)>("FrsTPCV1190Data");
-    c4LOG_IF(fatal, !v1190arrayTPC, "Branch v1190array not found!");
-    v7x5arrayUser = mgr->InitObjectAs<decltype(v7x5arrayUser)>("FrsUserV7X5Data");
-    c4LOG_IF(fatal, !v7x5arrayUser, "Branch FrsUserV7X5Data not found!");
+    sciArray = mgr->InitObjectAs<decltype(sciArray)>("FrsSciData");
+    c4LOG_IF(fatal, !sciArray, "Branch FrsSciData not found!");
+    musicArray = mgr->InitObjectAs<decltype(musicArray)>("FrsMusicData");
+    c4LOG_IF(fatal, !musicArray, "Branch FrsMusicData not found!");
+    tpcArray = mgr->InitObjectAs<decltype(tpcArray)>("FrsTpcData");
+    c4LOG_IF(fatal, !tpcArray, "Branch FrsTpcData not found!");
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
     
@@ -81,226 +88,173 @@ InitStatus FrsRawSpectra::Init()
     }
     
     dir_frs_raw = dir_frs->mkdir("FRS Raw Spectra");
-    dir_frs_raw_main = dir_frs_raw->mkdir("Main Crate");
-    dir_frs_raw_tpc = dir_frs_raw->mkdir("TPC Crate");
-    dir_frs_raw_user = dir_frs_raw->mkdir("User Crate");
+    dir_sci = dir_frs_raw->mkdir("Scintillators");
+    dir_music = dir_frs_raw->mkdir("MUSICs");
+    dir_tpc = dir_frs_raw->mkdir("TPCs");
 
-    dir_raw_v792_main = dir_frs_raw_main->mkdir("V792 (Main)");
-    dir_raw_v1290_main = dir_frs_raw_main->mkdir("V1290 (Main)");
-    dir_raw_v7x5_tpc = dir_frs_raw_tpc->mkdir("V7X5 (TPC)");
-    dir_raw_v1190_tpc = dir_frs_raw_tpc->mkdir("V1190 (TPC)");
-    dir_raw_v7x5_user = dir_frs_raw_user->mkdir("V7X5 (User)"); 
-
-    // ---- * Main Crate * ---- //
-
-    // Geo = 14
-    dir_raw_v792_main->cd();
-    c_v792_main = new TCanvas("c_v792_main", "Raw V792 (Main Crate) spectra", 650, 350); //?
-    c_v792_main->Divide(4, 8);
-    for (int ihist = 0; ihist < 32; ihist++)
+    // ::: SCI ::::: 
+    dir_sci_de = dir_sci->mkdir("dE");
+    dir_sci_dt = dir_sci->mkdir("dT");
+    dir_sci_mhtdc = dir_sci->mkdir("MHTDC T");
+    
+    // TAC dE
+    c_sci_de = new TCanvas("c_sci_de", "Scintillator dE spectra", 650, 350);
+    c_sci_de->Divide(4, 4);
+    for (int ihist = 0; ihist < 16; ihist++)
     {
-        c_v792_main->cd(ihist+1);
-        h1_v792_main_data[ihist] = new TH1F(Form("h1_v792_main_data_%i", ihist), Form("V792 Data - Channel %i", ihist), 1000, 0, 1000.);
-        h1_v792_main_data[ihist]->Draw();
+        c_sci_de->cd(ihist+1);
+        h1_sci_de[ihist] = MakeTH1(dir_sci_de, "F", Form("h1_sci_de_%i", ihist), Form("Scintillator dE Channel %i", ihist), 4096, 0, 4096);
+        h1_sci_de[ihist]->Draw();
     }
-    c_v792_main->cd(0);
-    dir_raw_v792_main->Append(c_v792_main);
+    c_sci_de->cd(0);
+    dir_sci_de->Append(c_sci_de);
 
-    h2_v792_main_data_vs_chan = new TH2F("h2_v792_main_data_vs_chan", "V792 Data vs Channel", 32, 0, 32, 1000, 0, 1000.);
-
-    // Geo = ?? V1290
-    dir_raw_v1290_main->cd();
-    c_v1290_main_mult = new TCanvas("c_v1290_main_mult", "V1290 (Main Crate) Multiplicity", 650, 350);
-    c_v1290_main_mult->Divide(4, 8);
-    for (int ihist = 0; ihist < 32; ihist++)
+    // TAC dT
+    c_sci_dt = new TCanvas("c_sci_dt", "Scintillator dT spectra", 650, 350);
+    c_sci_dt->Divide(4, 4);
+    for (int ihist = 0; ihist < 16; ihist++)
     {
-        c_v1290_main_mult->cd(ihist+1);
-        h1_v1290_main_mult[ihist] = new TH1F(Form("h1_v1290_main_mult_%i", ihist), Form("V1290 Multiplicity - Channel %i", ihist), 10, 0, 10);
-        h1_v1290_main_mult[ihist]->Draw();
+        c_sci_dt->cd(ihist+1);
+        h1_sci_dt[ihist] = MakeTH1(dir_sci_dt, "F", Form("h1_sci_dt_%i", ihist), Form("Scintillator dT Channel %i", ihist), 4096, 0, 4096); // need to figure out ranges
+        h1_sci_dt[ihist]->Draw();
     }
-    c_v1290_main_mult->cd(0);
-    dir_raw_v1290_main->Append(c_v1290_main_mult);
+    c_sci_dt->cd(0);
+    dir_sci_dt->Append(c_sci_dt);
 
-    c_v1290_main_leads = new TCanvas("c_v1290_main_leads", "V1290 (Main Crate) Leads", 650, 350);
-    c_v1290_main_leads->Divide(4, 8);
-    for (int ihist = 0; ihist < 32; ihist++)
+    // MHTDC T
+    c_sci_mhtdc = new TCanvas("c_sci_mhtdc", "Scintillator MHTDC T spectra", 650, 350);
+    c_sci_mhtdc->Divide(4, 4);
+    for (int ihist = 0; ihist < 16; ihist++)
     {
-        c_v1290_main_leads->cd(ihist+1);
-        h1_v1290_main_leads[ihist] = new TH1F(Form("h1_v1290_main_leads_%i", ihist), Form("V1290 Data (Leads) - Channel %i", ihist), 4000, 0, 200000);
-        h1_v1290_main_leads[ihist]->Draw();
+        c_sci_mhtdc->cd(ihist+1);
+        h1_sci_mhtdc[ihist] = MakeTH1(dir_sci_mhtdc, "F", Form("h1_sci_mhtdc_%i", ihist), Form("Scintillator MHTDC T Channel %i", ihist), 4000, 0, 100000); // need to figure out ranges
+        h1_sci_mhtdc[ihist]->Draw();
     }
-    c_v1290_main_leads->cd(0);
-    dir_raw_v1290_main->Append(c_v1290_main_leads);
+    c_sci_mhtdc->cd(0);
+    dir_sci_mhtdc->Append(c_sci_mhtdc);
 
-    h2_v1290_main_data_vs_chan = new TH2F("h2_v1290_main_data_vs_chan", "V1290 Data vs Channel", 32, 0, 32, 4000, 0, 200000);
-    // ----------------------- //
+    
+    // ::: MUSIC :::::: 
+    dir_music_e = dir_music->mkdir("E");
+    dir_music_t = dir_music->mkdir("T");
 
-    // ---- * TPC Crate * ---- //
-
-    // Geo = 12
-    dir_raw_v7x5_tpc->cd();
-    c_v7x5_tpc_geo12 = new TCanvas("c_v7x5_tpc_geo12", "Raw V7X5 - Geo 12 (TPC Crate) spectra", 650, 350);
-    c_v7x5_tpc_geo12->Divide(4, 8);
-    for (int ihist = 0; ihist < 32; ihist++)
+    for (int j = 0; j < 2; j++)
     {
-        c_v7x5_tpc_geo12->cd(ihist+1);
-        h1_v7x5_tpc_data12[ihist] = new TH1F(Form("h1_v7x5_tpc_data12_%i", ihist), Form("V7X5 Data (Geo 12, Channel %i)", ihist), 2000, 0., 2000.);
-        h1_v7x5_tpc_data12[ihist]->Draw();
+        dir_music_n_e[j] = dir_music_e->mkdir(Form("MUSIC %i", j));
+
+        c_music_n_e[j] = new TCanvas(Form("c_music_%i_e", j), Form("MUSIC %i Anode E spectra", j), 650, 350);
+        c_music_n_e[j]->Divide(2, 4);
+        for (int ihist = 0; ihist < 8; ihist++)
+        {
+            c_music_n_e[j]->cd(ihist+1);
+            h1_music_anode_e[j][ihist] = MakeTH1(dir_music_n_e[j], "F", Form("h1_music_%i_e_anode_%i", j, ihist), Form("MUSIC %i Anode %i", j, ihist), 4096, 0, 4096); // need to figure out ranges
+            h1_music_anode_e[j][ihist]->Draw();
+        }
+        c_music_n_e[j]->cd(0);
+        dir_music_n_e[j]->Append(c_music_n_e[j]);
+
+        dir_music_n_t[j] = dir_music_t->mkdir(Form("MUSIC %i", j));
+
+        c_music_n_t[j] = new TCanvas(Form("c_music_%i_t", j), Form("MUSIC %i Anode T spectra", j), 650, 350);
+        c_music_n_t[j]->Divide(2, 4);
+        for (int ihist = 0; ihist < 8; ihist++)
+        {
+            c_music_n_t[j]->cd(ihist+1);
+            h1_music_anode_t[j][ihist] = MakeTH1(dir_music_n_t[j], "F", Form("h1_music_%i_t_anode_%i", j, ihist), Form("MUSIC %i Anode %i", j, ihist), 4000, 0, 100000); // need to figure out ranges
+            h1_music_anode_t[j][ihist]->Draw();
+        }
+        c_music_n_t[j]->cd(0);
+        dir_music_n_t[j]->Append(c_music_n_t[j]);
     }
-    c_v7x5_tpc_geo12->cd(0);
-    dir_raw_v7x5_tpc->Append(c_v7x5_tpc_geo12);
 
-    h2_v7x5_tpc_data12_vs_chan = new TH2F("h2_v7x5_tpc_data12_vs_chan", "V7X5 Data (Geo 12) vs Channel", 32, 0, 32, 2000, 0., 2000.);
+    
+    // ::: TPCs :::::
+    dir_tpc_adc = dir_tpc->mkdir("ADC");
+    dir_tpc_tdc = dir_tpc->mkdir("TPC");
 
-    // Geo = 8
-    c_v7x5_tpc_geo8 = new TCanvas("c_v7x5_tpc_geo8", "Raw V7X5 - Geo 8 (TPC Crate) spectra", 650, 350);
-    c_v7x5_tpc_geo8->Divide(4, 8);
-    for (int ihist = 0; ihist < 32; ihist++)
+    for (int j = 0; j < 7; j++)
     {
-        c_v7x5_tpc_geo8->cd(ihist+1);
-        h1_v7x5_tpc_data8[ihist] = new TH1F(Form("h1_v7x5_tpc_data8_%i", ihist), Form("V7X5 Data (Geo 8, Channel %i)", ihist), 2000, 0., 2000.);
-        h1_v7x5_tpc_data8[ihist]->Draw();
+        dir_tpc_n_adc[j] = dir_tpc_adc->mkdir(Form("TPC %i ADCs", j));
+
+        c_tpc_n_adc[j] = new TCanvas(Form("c_tpc_%i_adc", j), Form("TPC %i ADC Spectra", j) , 650, 350);
+        c_tpc_n_adc[j]->Divide(2, 4);
+        for (int ihist = 0; ihist < 8; ihist++)
+        {
+            c_tpc_n_adc[j]->cd(ihist+1);
+            h1_tpc_adc[j][ihist] = MakeTH1(dir_tpc_n_adc[j], "F", Form("dir_tpc_%i_adc_%i", j, ihist), Form("TPC %i ADC Channel %i", j, ihist), 2000, 0, 2000);
+            h1_tpc_adc[j][ihist]->Draw();
+        }
+        c_tpc_n_adc[j]->cd(0);
+        dir_tpc_n_adc[j]->Append(c_tpc_n_adc[j]);
     }
-    c_v7x5_tpc_geo8->cd(0);
-    dir_raw_v7x5_tpc->Append(c_v7x5_tpc_geo8);
 
-    h2_v7x5_tpc_data8_vs_chan = new TH2F("h2_v7x5_tpc_data8_vs_chan", "V7X5 Data (Geo 8) vs Channel", 32, 0, 32, 2000, 0, 2000.);
-
-    // Geo = ?? V1190
-    dir_raw_v1190_tpc->cd();
-    c_v1190_tpc = new TCanvas("c_v1190_tpc", "Raw V1190 (TPC Crate) spectra", 650, 350);
-    c_v1190_tpc->Divide(8, 16); // is this sensible lol
+    c_tpc_tdc = new TCanvas("c_tpc_tdc", "TPC TDC Spectra", 650, 350);
+    c_tpc_tdc->Divide(8, 16); // this will obviously look insane
     for (int ihist = 0; ihist < 128; ihist++)
     {
-        c_v1190_tpc->cd(ihist+1);
-        h1_v1190_tpc_data[ihist] = new TH1F(Form("h1_v1190_tpc_data_%i", ihist), Form("V1190 Data - Channel %i", ihist), 4000, 0., 200000.);
-        h1_v1190_tpc_data[ihist]->Draw();
+        c_tpc_tdc->cd(ihist+1);
+        h1_tpc_tdc[ihist] = MakeTH1(dir_tpc_tdc, "F", Form("h1_tpc_tdc_%i", ihist), Form("TPC TDC Channel %i", ihist), 2000, 0, 2000);
+        h1_tpc_tdc[ihist]->Draw();
     }
-    c_v1190_tpc->cd(0);
-    dir_raw_v1190_tpc->Append(c_v1190_tpc);
+    c_tpc_tdc->cd(0);
+    dir_tpc_tdc->Append(c_tpc_tdc);
 
-    h2_v1190_tpc_data_vs_chan = new TH2F("h2_v1190_tpc_data_vs_chan", "V1190 Data vs Chan", 128, 0, 128, 4000, 0, 200000.);
-    h2_v1190_tpc_data_vs_chan_1st_hit = new TH2F("h2_v1190_tpc_data_vs_chan_1st_hit", "V1190 Data vs Chan (1st Hit)", 128, 0, 128, 4000, 0., 200000.);
-    // ------------------------ //
 
-    // ---- * User Crate * ---- //
 
-    // Geo = 10
-    dir_raw_v7x5_user->cd();
-    c_v7x5_user_geo10 = new TCanvas("c_v7x5_user_geo10", "Raw V7X5 Geo 10 (User Crate) spectra", 650, 350);
-    c_v7x5_user_geo10->Divide(4, 8);
-    for (int ihist = 0; ihist < 32; ihist++)
-    {
-        c_v7x5_user_geo10->cd(ihist+1);
-        h1_v7x5_user_data10[ihist] = new TH1F(Form("h1_v7x5_user_data10_%i", ihist), Form("V7X5 Data (Geo 10, Channel %i)", ihist), 4000, 0, 200000);
-        h1_v7x5_user_data10[ihist]->Draw();
-    }
-    c_v7x5_user_geo10->cd(0);
-    dir_raw_v7x5_user->Append(c_v7x5_user_geo10);
-
-    h2_v7x5_user_data10_vs_chan = new TH2F("h2_v7x5_user_data10_vs_chan", "V7X5 Data (Geo 10) vs Channel", 32, 0, 32, 4000, 0, 200000);
-
-    // Geo = 12
-    c_v7x5_user_geo12 = new TCanvas("c_v7x5_user_geo12", "Raw V7X5 Geo 12 (User Crate) spectra", 650, 350);
-    c_v7x5_user_geo12->Divide(4, 8);
-    for (int ihist = 0; ihist < 32; ihist++)
-    {
-        c_v7x5_user_geo12->cd(ihist+1);
-        h1_v7x5_user_data12[ihist] = new TH1F(Form("h1_v7x5_user_data12_%i", ihist), Form("V7X5 Data (Geo 12, Channel %i)", ihist), 4000, 0, 200000);
-        h1_v7x5_user_data12[ihist]->Draw();
-    }
-    c_v7x5_user_geo12->cd(0);
-    dir_raw_v7x5_user->Append(c_v7x5_user_geo12);
-
-    h2_v7x5_user_data12_vs_chan = new TH2F("h2_v7x5_user_data12_vs_chan", "V7X5 Data (Geo 12) vs Channel", 32, 0, 32, 4000, 0, 200000);
-    // ----------------------- //
-
-    dir_frs->cd();
 
     return kSUCCESS;
 
 }
 
 
-// reset histos
-// snapshot histos
-
-
 void FrsRawSpectra::Exec(Option_t* option)
 {
-    // Main
-        
-    for (auto const & v792item : *v792arrayMain)
+    if (sciArray->size() == 0) return;
+
+
+    auto const & sciItem = sciArray->at(0);
+    sciDE = sciItem.Get_de_array();
+    sciDT = sciItem.Get_dt_array();
+    sciMHTDC = sciItem.Get_mhtdc_array();
+
+    for (int i = 0; i < 16; i++)
     {
-        uint32_t data = v792item.Get_v792_data();
-        uint32_t channel = v792item.Get_channel();
-
-        h1_v792_main_data[channel-1]->Fill(data);
-        h2_v792_main_data_vs_chan->Fill(channel-1, data);
-    }
-
-    int v1290_mult[32] = {0};
-    for (auto const & v1290item : *v1290arrayMain)
-    {
-        uint32_t channel = v1290item.Get_channel();
-        uint32_t data = v1290item.Get_v1290_data();
-        uint32_t lot = v1290item.Get_leadOrTrail();
-
-        if (lot == 0) h1_v1290_main_leads[channel]->Fill(data);
-        h2_v1290_main_data_vs_chan->Fill(channel, data);
-        v1290_mult[channel]++;
-    }
-    for (int i = 0; i < 32; i++) h1_v1290_main_mult[i]->Fill(v1290_mult[i]);
-
-    // TPC
-    for (auto const & v7x5item : *v7x5arrayTPC)
-    {
-        uint32_t geo = v7x5item.Get_geo();
-        uint32_t data = v7x5item.Get_v7x5_data();
-        uint32_t channel = v7x5item.Get_channel();
-        if (geo == 12)
-        {
-            h1_v7x5_tpc_data12[channel]->Fill(data);
-            h2_v7x5_tpc_data12_vs_chan->Fill(channel, data);
-        }
-        else if (geo == 8)
-        {
-            h1_v7x5_tpc_data8[channel]->Fill(data);
-            h2_v7x5_tpc_data8_vs_chan->Fill(channel, data);
-        }
+        h1_sci_de[i]->Fill(sciDE[i]);
+        h1_sci_dt[i]->Fill(sciDT[i]);
+        for (int j = 0; j < sciMHTDC[i].size(); j++) h1_sci_mhtdc[i]->Fill(sciMHTDC[i][j]);
     }
     
-    int v1190count = 0;
-    for (auto const & v1190item : *v1190arrayTPC)
+    auto const & musicItem = musicArray->at(0);
+    musicE = musicItem.Get_music_e();
+    musicT = musicItem.Get_music_t();
+
+    for (int i = 0; i < 2; i++)
     {
-        uint32_t channel = v1190item.Get_channel();
-        uint32_t data = v1190item.Get_v1190_data();
-        uint32_t lot = v1190item.Get_leadOrTrail();
-
-        h1_v1190_tpc_data[channel-1]->Fill(data);
-        h2_v1190_tpc_data_vs_chan->Fill(channel-1, data);
-        if (v1190count == 0) h2_v1190_tpc_data_vs_chan_1st_hit->Fill(channel-1, data);
-        v1190count++;
-    }
-
-    // User
-    for (auto const & v7x5item : *v7x5arrayUser)
-    {
-        uint32_t geo = v7x5item.Get_geo();
-        uint32_t data = v7x5item.Get_v7x5_data();
-        uint32_t channel = v7x5item.Get_channel();
-
-        if (geo == 12)
+        for (int j = 0; j < 8; j++)
         {
-            h1_v7x5_user_data12[channel]->Fill(data);
-            h2_v7x5_user_data12_vs_chan->Fill(channel, data);
-        }
-        else if (geo == 10)
-        {
-            h1_v7x5_user_data10[channel]->Fill(data);
-            h2_v7x5_user_data10_vs_chan->Fill(channel, data);
+            h1_music_anode_e[i][j]->Fill(musicE[i][j]);
+            h1_music_anode_t[i][j]->Fill(musicT[i][j]);
         }
     }
+
+
+
+    auto const & tpcItem = tpcArray->at(0);
+    adcData = tpcItem.Get_adc_data();
+    tdcData = tpcItem.Get_tdc_data();
+
+    for (int i = 0; i < 7; i++)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            h1_tpc_adc[i][j]->Fill(adcData[i][j]);
+        }
+    }
+
+    for (int i = 0; i < 128; i++) for (int j = 0; j < tdcData[i].size(); j++) h1_tpc_tdc[i]->Fill(tdcData[i].at(j));
+
+    
+    
 
 }
 

@@ -96,8 +96,6 @@ class FatimaOnlineSpectra : public FairTask
 
         virtual void Reset_Histo();
 
-        virtual void Snapshot_Histo();
-
         // range setters
 
     
@@ -123,7 +121,6 @@ class FatimaOnlineSpectra : public FairTask
         TCanvas* c_fatima_energy_uncal;
         TCanvas* c_fatima_time_differences;
         TCanvas* c_fatima_time_differences_vs_energy;
-        TCanvas* c_fatima_snapshot;
         TCanvas* c_fatima_event_multiplicity;
     
 
@@ -140,11 +137,14 @@ class FatimaOnlineSpectra : public FairTask
         TDirectory* dir_fatima_rates;
         std::vector<TDirectory*> dir_fatima_time_differences = {};
         
+<<<<<<< HEAD
 
         TFile* file_fatima_snapshot;
 
         TString screenshot_path = "/u/despec/screenshots/";
 
+=======
+>>>>>>> main
         std::vector<int> detectors = {0,1,2};
         int number_detectors = 3;
 

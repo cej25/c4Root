@@ -39,8 +39,6 @@ class FatimaVmeOnlineSpectra : public FairTask
 
         virtual void Reset_Histo();
 
-        virtual void Snapshot_Histo();
-
     private:
         TFatimaVmeConfiguration const* fatima_vme_config;
 
@@ -55,8 +53,6 @@ class FatimaVmeOnlineSpectra : public FairTask
         Int_t fNEvents;
 
         int nDetectors;
-
-        TFile* file_fatima_vme_snapshot;
 
         // Folders
         TFolder* histograms;
@@ -80,7 +76,6 @@ class FatimaVmeOnlineSpectra : public FairTask
         TCanvas* c_FatVME_dTrefCh1;
         TCanvas* c_FatVME_dTrefSC41;
         TCanvas* c_FatVME_EvsdTsc41;
-        TCanvas* c_fatima_vme_snapshot;
 
         // Histograms
 

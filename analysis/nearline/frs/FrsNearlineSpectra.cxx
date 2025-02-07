@@ -11,7 +11,7 @@
  * or submit itself to any jurisdiction.                                      *
  ******************************************************************************
  *                             C.E. Jones                                     *
- *                              12.06.24                                      *
+ *                              17.12.24                                      *
  ******************************************************************************/
 
 // FairRoot
@@ -50,7 +50,6 @@ FrsNearlineSpectra::FrsNearlineSpectra(std::vector<FrsGate*> fg)
     :   FairTask()
     ,   fNEvents()
     ,   header(nullptr)
-    ,   tpcCalArray(nullptr)
     ,   hitArray(nullptr)
     ,   multihitArray(nullptr)
 {
@@ -74,7 +73,6 @@ FrsNearlineSpectra::FrsNearlineSpectra(const TString& name, Int_t verbose)
     :   FairTask(name, verbose)
     ,   fNEvents()
     ,   header(nullptr)
-    ,   tpcCalArray(nullptr)
     ,   hitArray(nullptr)
     ,   multihitArray(nullptr)
 {
@@ -90,11 +88,9 @@ InitStatus FrsNearlineSpectra::Init()
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-    header = (EventHeader*)mgr->GetObject("EventHeader.");
-    c4LOG_IF(error, !header, "EventHeader. not found!");
+    header = mgr->InitObjectAs<decltype(header)>("EventHeader.");
+    c4LOG_IF(warn, !header, "EventHeader. not found!");
 
-    tpcCalArray = mgr->InitObjectAs<decltype(tpcCalArray)>("FrsTPCCalData");
-    c4LOG_IF(warn, !tpcCalArray, "Branch FrsTPCCalData not found!");
     hitArray = mgr->InitObjectAs<decltype(hitArray)>("FrsHitData");
     c4LOG_IF(fatal, !hitArray, "Branch FrsHitData not found!");
     multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
@@ -104,7 +100,6 @@ InitStatus FrsNearlineSpectra::Init()
     if (dir_frs == nullptr) 
     {
         LOG(info) << "Creating FRS Directory";
-        //dir_frs = new TDirectory("FRS", "FRS", "", 0);
         FairRootManager::Instance()->GetOutFile()->cd();
         dir_frs = gDirectory->mkdir("FRS");
         mgr->Register("FRS", "FRS Directory", dir_frs, false); // allow other tasks to find this
@@ -148,7 +143,7 @@ InitStatus FrsNearlineSpectra::Init()
         h2_SC42dE_vs_AoQ = MakeTH2(dir_tac_2d, "D", "h2_SC42dE_vs_AoQ", "A/Q vs. dE in SC42", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000., "A/Q", "dE in SC42");
         h2_SC41dE_vs_Z = MakeTH2(dir_tac_2d, "D", "h2_SC41dE_vs_Z", "Z (MUSIC 1) vs. dE in SC41", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, 0., 4000., "Z (MUSIC 1)", "dE in SC41");
         h2_SC42dE_vs_Z = MakeTH2(dir_tac_2d, "D", "h2_SC42dE_vs_Z", "Z (MUSIC 1) vs. dE in SC42", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, 0., 4000., "Z (MUSIC 1)", "dE in SC42");
-        h2_dE_vs_ToF = MakeTH2(dir_tac_2d, "D", "h2_dE_vs_ToF", "ToF S2-S4 vs. dE in MUSIC1", 2000, 0., 70000., 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "Time of Flight (S2 - S4)", "dE in MUSIC 1");
+        h2_dE_vs_ToF_21_41 = MakeTH2(dir_tac_2d, "D", "h2_dE_vs_ToF_21_41", "ToF 21 - 41 vs. dE in MUSIC1", 2000, 0., 70000., 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "Time of Flight (21 - 41)", "dE in MUSIC 1");
         h2_x2_vs_Z = MakeTH2(dir_tac_2d, "D", "h2_x2_vs_Z", "x2 vs. Z1", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x2, frs_config->fMax_x2, "Z (MUSIC 1)", "S2 x-position");
         h2_x4_vs_Z = MakeTH2(dir_tac_2d, "D", "h2_x4_vs_Z", "x4 vs. Z1", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x4, frs_config->fMax_x4, "Z (MUSIC 1)", "S4 x-position");
         h2_dE1_vs_x2 = MakeTH2(dir_tac_2d, "D", "h2_dE1_vs_x2", "x2 vs. dE in MUSIC1", 200, frs_config->fMin_x2, frs_config->fMax_x2, 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "S2 x-position", "dE in MUSIC 1");
@@ -272,12 +267,31 @@ InitStatus FrsNearlineSpectra::Init()
         for (int i = 0; i < 2; i++) h1_brho[i] = MakeTH1(dir_tac_1d, "D", Form("h1_brho_%i", i), Form("brho %i", i), 100, 0.0, 1.0, Form("brho %i", i), kPink-3, kBlue+2);
         for (int i = 0; i < 2; i++) h1_music_dE[i] = MakeTH1(dir_tac_1d, "D", Form("h1_music_dE_%i", i), Form("Energy loss in MUSIC %i", i+1), 1000, 0.0, 4000.0, Form("dE MUSIC %i", i+1), kPink-3, kBlue+2);
         for (int i = 0; i < 2; i++) h1_music_dEcorr[i] = MakeTH1(dir_tac_1d, "D", Form("h1_music_dEcorr_%i", i), Form("Energy loss (corr) in MUSIC %i", i+1), 4000, 0.0, 4000.0, Form("dE (corr) MUSIC %i", i+1), kPink-3, kBlue+2);
-        for (int i = 0; i < 6; i++) h1_sci_e[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_e_%i", i), Form("SCI E %i", i), 4000, 0.0, 4000.0, Form("SCI E %i", i), kPink-3, kBlue+2);
-        for (int i = 0; i < 6; i++) h1_sci_l[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_l_%i", i), Form("SCI L %i", i), 4000, 0.0, 4000.0, Form("SCI L %i", i), kPink-3, kBlue+2);
-        for (int i = 0; i < 6; i++) h1_sci_r[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_r_%i", i), Form("SCI R %i", i), 4000, 0.0, 4000.0, Form("SCI R %i", i), kPink-3, kBlue+2);
-        for (int i = 0; i < 6; i++) h1_sci_x[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_x_%i", i), Form("SCI X %i", i), 4000, 0.0, 4000.0, Form("SCI X %i", i), kYellow-7, kBlack);
-        for (int i = 0; i < 6; i++) h1_sci_tof[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_tof_%i", i), Form("SCI TOF %i", i), 4000, 0.0, 200000.0, Form("SCI TOF %i", i), kPink-3, kBlue+2);
-        for (int i = 0; i < 6; i++) h1_sci_tof_calib[i] = MakeTH1(dir_tac_1d, "D", Form("h1_sci_tof_calib_%i", i), Form("SCI TOF CALIB %i", i), 4000, 0.0, 4000.0, Form("SCI TOF (Calib) %i", i), kPink-3, kBlue+2);
+
+        h1_sci_e_21 = MakeTH1(dir_tac_1d, "F", "h1_sci_e_21", "SCI 21 E", 4000, 0.0, 4000.0, "SCI 21 E", kPink-3, kBlue+2);
+        h1_sci_e_22 = MakeTH1(dir_tac_1d, "F", "h1_sci_e_22", "SCI 22 E", 4000, 0.0, 4000.0, "SCI 22 E", kPink-3, kBlue+2);
+        h1_sci_e_31 = MakeTH1(dir_tac_1d, "F", "h1_sci_e_31", "SCI 31 E", 4000, 0.0, 4000.0, "SCI 31 E", kPink-3, kBlue+2);
+        h1_sci_e_41 = MakeTH1(dir_tac_1d, "F", "h1_sci_e_41", "SCI 41 E", 4000, 0.0, 4000.0, "SCI 41 E", kPink-3, kBlue+2);
+        h1_sci_e_42 = MakeTH1(dir_tac_1d, "F", "h1_sci_e_42", "SCI 42 E", 4000, 0.0, 4000.0, "SCI 42 E", kPink-3, kBlue+2);
+        h1_sci_e_43 = MakeTH1(dir_tac_1d, "F", "h1_sci_e_43", "SCI 43 E", 4000, 0.0, 4000.0, "SCI 43 E", kPink-3, kBlue+2);
+        h1_sci_e_81 = MakeTH1(dir_tac_1d, "F", "h1_sci_e_81", "SCI 81 E", 4000, 0.0, 4000.0, "SCI 81 E", kPink-3, kBlue+2);
+        h1_sci_x_21 = MakeTH1(dir_tac_1d, "F", "h1_sci_x_21", "SCI 21 PosX", 4000, 0.0, 4000.0, "SCI 21 X", kYellow-7, kBlack);
+        h1_sci_x_22 = MakeTH1(dir_tac_1d, "F", "h1_sci_x_22", "SCI 22 PosX", 4000, 0.0, 4000.0, "SCI 22 X", kYellow-7, kBlack);
+        h1_sci_x_31 = MakeTH1(dir_tac_1d, "F", "h1_sci_x_31", "SCI 31 PosX", 4000, 0.0, 4000.0, "SCI 31 X", kYellow-7, kBlack);
+        h1_sci_x_41 = MakeTH1(dir_tac_1d, "F", "h1_sci_x_41", "SCI 41 PosX", 4000, 0.0, 4000.0, "SCI 41 X", kYellow-7, kBlack);
+        h1_sci_x_42 = MakeTH1(dir_tac_1d, "F", "h1_sci_x_42", "SCI 42 PosX", 4000, 0.0, 4000.0, "SCI 42 X", kYellow-7, kBlack);
+        h1_sci_x_43 = MakeTH1(dir_tac_1d, "F", "h1_sci_x_43", "SCI 43 PosX", 4000, 0.0, 4000.0, "SCI 43 X", kYellow-7, kBlack);
+        h1_sci_x_81 = MakeTH1(dir_tac_1d, "F", "h1_sci_x_81", "SCI 81 PosX", 4000, 0.0, 4000.0, "SCI 81 X", kYellow-7, kBlack);
+        h1_sci_tof_21_41 = MakeTH1(dir_tac_1d, "F", "h1_sci_tof_21_41", "SCI TOF 21 - 41", 4000, 0.0, 200000.0, "SCI TOF 21 - 41", kPink-3, kBlue+2);
+        h1_sci_tof_21_41_calib = MakeTH1(dir_tac_1d, "F", "h1_sci_tof_21_41_calib", "SCI TOF 21 - 41 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 21 - 41 (Calib)", kPink-3, kBlue+2);
+        h1_sci_tof_21_42 = MakeTH1(dir_tac_1d, "F", "h1_sci_tof_21_42", "SCI TOF 21 - 42", 4000, 0.0, 200000.0, "SCI TOF 21 - 42", kPink-3, kBlue+2);
+        h1_sci_tof_21_42_calib = MakeTH1(dir_tac_1d, "F", "h1_sci_tof_21_42_calib", "SCI TOF 21 - 42 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 21 - 42 (Calib)", kPink-3, kBlue+2);
+        h1_sci_tof_21_81 = MakeTH1(dir_tac_1d, "F", "h1_sci_tof_21_81", "SCI TOF 21 - 81", 4000, 0.0, 200000.0, "SCI TOF 21 - 81", kPink-3, kBlue+2);
+        h1_sci_tof_21_81_calib = MakeTH1(dir_tac_1d, "F", "h1_sci_tof_21_81_calib", "SCI TOF 21 - 81 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 21 - 81 (Calib)", kPink-3, kBlue+2);
+        h1_sci_tof_22_41 = MakeTH1(dir_tac_1d, "F", "h1_sci_tof_22_41", "SCI TOF 22 - 41", 4000, 0.0, 200000.0, "SCI TOF 22 - 41", kPink-3, kBlue+2);
+        h1_sci_tof_22_41_calib = MakeTH1(dir_tac_1d, "F", "h1_sci_tof_22_41_calib", "SCI TOF 22 - 41 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 22 - 41 (Calib)", kPink-3, kBlue+2);
+        h1_sci_tof_22_81 = MakeTH1(dir_tac_1d, "F", "h1_sci_tof_22_81", "SCI TOF 22 - 81", 4000, 0.0, 200000.0, "SCI TOF 22 - 81", kPink-3, kBlue+2);
+        h1_sci_tof_22_81_calib = MakeTH1(dir_tac_1d, "F", "h1_sci_tof_22_81_calib", "SCI TOF 22 - 81 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 22 - 81 (Calib)", kPink-3, kBlue+2);
 
         // Are Gated 1D desired?
     }
@@ -312,7 +326,7 @@ InitStatus FrsNearlineSpectra::Init()
         if (!frs_config->plot_tac_2d)
         {
             h2_x2_vs_x4 = MakeTH2(dir_mhtdc_2d, "D", "h2_x2_vs_x4", "x2 vs. x4", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_x4, frs_config->fMax_x4, "S2 x-position", "S4 x-position");
-            h2_dE_vs_ToF = MakeTH2(dir_mhtdc_2d, "D", "h2_dE_vs_ToF", "ToF S2-S4 vs. dE in MUSIC1", 2000, 0., 70000., 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "Time of Flight (S2 - S4)", "dE in MUSIC 1");
+            h2_dE_vs_ToF_21_41 = MakeTH2(dir_mhtdc_2d, "D", "h2_dE_vs_ToF_21_41", "ToF 21 - 41 vs. dE in MUSIC1", 2000, 0., 70000., 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "Time of Flight (21 - 41)", "dE in MUSIC 1");
             h2_dE1_vs_x2 = MakeTH2(dir_mhtdc_2d, "D", "h2_dE1_vs_x2", "x2 vs. dE in MUSIC1", 200, frs_config->fMin_x2, frs_config->fMax_x2, 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "S2 x-position", "dE in MUSIC 1");
             h2_dE1_vs_x4 = MakeTH2(dir_mhtdc_2d, "D", "h2_dE1_vs_x4", "x4 vs. dE in MUSIC1", 200, frs_config->fMin_x4, frs_config->fMax_x4, 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "S4 x-position", "dE in MUSIC 1");
             h2_x2_vs_a2 = MakeTH2(dir_mhtdc_2d, "D", "h2_x2_vs_a2", "x2 vs. AngleX (S2)", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_a2, frs_config->fMax_a2, "S2 x-position", "AngleX (S2)");
@@ -450,7 +464,11 @@ InitStatus FrsNearlineSpectra::Init()
     h2_AoQ_driftcorr_vs_T = MakeTH2(dir_drifts, "D", "h2_AoQ_driftcorr_vs_T", "A/Q DriftCorr vs. Time [mins]", 500, 0, 10000, 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ);
     h2_Z1_vs_T_mhtdc = MakeTH2(dir_drifts, "D", "h2_Z1_vs_T_mhtdc", "Z1 (MHTDC) vs. Time [mins]", 500, 0, 10000, 1500, frs_config->fMin_Z, frs_config->fMax_Z);
     h2_AoQ_vs_T_mhtdc = MakeTH2(dir_drifts, "D", "h2_AoQ_vs_T_mhtdc", "A/Q (MHTDC) vs. Time [mins]", 500, 0, 10000, 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ);
-    for (int i = 0; i < 6; i++) h2_sci_tof_vs_T[i] = MakeTH2(dir_drifts, "D", Form("h2_sci_tof_vs_T_%i", i), Form("TOF %i vs. Time [mins]" , i), 500, 0, 10000, 4000, 0.0, 200000.0);
+    h2_sci_tof_21_41_vs_T = MakeTH2(dir_drifts, "F", "h2_sci_tof_21_42_vs_T", "TOF 21 - 41 vs. Time [mins]", 500, 0, 10000, 4000, 0.0, 200000.0);
+    h2_sci_tof_21_42_vs_T = MakeTH2(dir_drifts, "F", "h2_sci_tof_21_42_vs_T", "TOF 21 - 42 vs. Time [mins]", 500, 0, 10000, 4000, 0.0, 200000.0);
+    h2_sci_tof_21_81_vs_T = MakeTH2(dir_drifts, "F", "h2_sci_tof_21_81_vs_T", "TOF 21 - 81 vs. Time [mins]", 500, 0, 10000, 4000, 0.0, 200000.0);
+    h2_sci_tof_22_41_vs_T = MakeTH2(dir_drifts, "F", "h2_sci_tof_22_41_vs_T", "TOF 22 - 41 vs. Time [mins]", 500, 0, 10000, 4000, 0.0, 200000.0);
+    h2_sci_tof_22_81_vs_T = MakeTH2(dir_drifts, "F", "h2_sci_tof_22_81_vs_T", "TOF 22 - 81 vs. Time [mins]", 500, 0, 10000, 4000, 0.0, 200000.0);
     for (int i = 0; i < 6; i++) h2_tpc_vs_T[i] = MakeTH2(dir_drifts, "D", Form("h2_tpc_vs_T_%i", i), Form("TPC %i X vs. T", i), 500,0, 10000, 200, -100, 100);
     
 
@@ -468,12 +486,12 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     if(hitItem.Get_wr_t() > 0) FRS_time_mins = (hitItem.Get_wr_t() - exp_config->exp_start_time)/ 60E9;
 
     // Get the minimum and maximum FRS_time_mins
-    if (FRS_time_mins > 0) {
+    if (FRS_time_mins > 0) 
+    {
         frs_time_min = std::min(frs_time_min, static_cast<double>(FRS_time_mins));
         frs_time_max = std::max(frs_time_max, static_cast<double>(FRS_time_mins));
     }
 
-    //c4LOG(info, "frs_time_min : " << frs_time_min << " frs_time_max : " <<  frs_time_max);
 
     // :::::::::: TAC ::::::::::::: //
     // ---------------------------- //
@@ -498,22 +516,24 @@ void FrsNearlineSpectra::Exec(Option_t* option)
         if (hitItem.Get_ID_z() > 0 && hitItem.Get_ID_dEdeg() != 0) h2_dEdeg_vs_Z->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_dEdeg());
         if (hitItem.Get_ID_AoQ() != 0 && hitItem.Get_ID_a2() != 0) h2_a2_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_a2());
         if (hitItem.Get_ID_AoQ() != 0 && hitItem.Get_ID_a4() != 0) h2_a4_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_ID_a4());
-        if (hitItem.Get_ID_z() != 0 && hitItem.Get_music_dE(1) != 0) h2_Z_vs_dE2->Fill(hitItem.Get_ID_z(), hitItem.Get_music_dE(1));
+        if (hitItem.Get_ID_z() != 0 && hitItem.Get_music_dE()[1] != 0) h2_Z_vs_dE2->Fill(hitItem.Get_ID_z(), hitItem.Get_music_dE()[1]);
         if (hitItem.Get_ID_x2() != 0 && hitItem.Get_ID_x4() != 0) h2_x2_vs_x4->Fill(hitItem.Get_ID_x2(), hitItem.Get_ID_x4());
-        if (hitItem.Get_ID_AoQ() != 0 && hitItem.Get_sci_e(2) != 0) h2_SC41dE_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_sci_e(2)); // CEJ: changed from Go4, [5] -> [2]
-        if (hitItem.Get_ID_AoQ() != 0 && hitItem.Get_sci_e(3) != 0) h2_SC42dE_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_sci_e(3));
-        if (hitItem.Get_ID_z() != 0 && hitItem.Get_sci_e(2) != 0) h2_SC41dE_vs_Z->Fill(hitItem.Get_ID_z(), hitItem.Get_sci_e(2));
-        if (hitItem.Get_ID_z() != 0 && hitItem.Get_sci_e(3) != 0) h2_SC42dE_vs_Z->Fill(hitItem.Get_ID_z(), hitItem.Get_sci_e(3));
-        if (hitItem.Get_sci_tof2() != 0 && hitItem.Get_music_dE(0) != 0) h2_dE_vs_ToF->Fill(hitItem.Get_sci_tof2(), hitItem.Get_music_dE(0));
+
+
+        if (hitItem.Get_ID_AoQ() != 0 && hitItem.Get_sci_e_41() != 0) h2_SC41dE_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_sci_e_41());
+        if (hitItem.Get_ID_AoQ() != 0 && hitItem.Get_sci_e_42() != 0) h2_SC42dE_vs_AoQ->Fill(hitItem.Get_ID_AoQ(), hitItem.Get_sci_e_42());
+        if (hitItem.Get_ID_z() != 0 && hitItem.Get_sci_e_41() != 0) h2_SC41dE_vs_Z->Fill(hitItem.Get_ID_z(), hitItem.Get_sci_e_41());
+        if (hitItem.Get_ID_z() != 0 && hitItem.Get_sci_e_42() != 0) h2_SC42dE_vs_Z->Fill(hitItem.Get_ID_z(), hitItem.Get_sci_e_42());
+        if (hitItem.Get_sci_tof_21_41() != 0 && hitItem.Get_music_dE()[0] != 0) h2_dE_vs_ToF_21_41->Fill(hitItem.Get_sci_tof_21_41(), hitItem.Get_music_dE()[0]);
         if (hitItem.Get_ID_z() != 0 && hitItem.Get_ID_x2() != 0) h2_x2_vs_Z->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_x2());
         if (hitItem.Get_ID_z() != 0 && hitItem.Get_ID_x4() != 0) h2_x4_vs_Z->Fill(hitItem.Get_ID_z(), hitItem.Get_ID_x4());
-        if (hitItem.Get_ID_x2() != 0 && hitItem.Get_music_dE(0) != 0) h2_dE1_vs_x2->Fill(hitItem.Get_ID_x2(), hitItem.Get_music_dE(0));
-        if (hitItem.Get_ID_x4() != 0 && hitItem.Get_music_dE(0) != 0) h2_dE1_vs_x4->Fill(hitItem.Get_ID_x4(), hitItem.Get_music_dE(0));
+        if (hitItem.Get_ID_x2() != 0 && hitItem.Get_music_dE()[0] != 0) h2_dE1_vs_x2->Fill(hitItem.Get_ID_x2(), hitItem.Get_music_dE()[0]);
+        if (hitItem.Get_ID_x4() != 0 && hitItem.Get_music_dE()[0] != 0) h2_dE1_vs_x4->Fill(hitItem.Get_ID_x4(), hitItem.Get_music_dE()[0]);
         if (hitItem.Get_ID_x2() != 0 && hitItem.Get_ID_a2() != 0) h2_x2_vs_a2->Fill(hitItem.Get_ID_x2(), hitItem.Get_ID_a2());
         if (hitItem.Get_ID_y2() != 0 && hitItem.Get_ID_b2() != 0) h2_y2_vs_b2->Fill(hitItem.Get_ID_y2(), hitItem.Get_ID_b2());
         if (hitItem.Get_ID_x4() != 0 && hitItem.Get_ID_a4() != 0) h2_x4_vs_a4->Fill(hitItem.Get_ID_x4(), hitItem.Get_ID_a4());
         if (hitItem.Get_ID_y4() != 0 && hitItem.Get_ID_b4() != 0) h2_y4_vs_b4->Fill(hitItem.Get_ID_y4(), hitItem.Get_ID_b4());
-        if (hitItem.Get_ID_z() != 0 && hitItem.Get_sci_l(0) != 0 && hitItem.Get_sci_r(0)  != 0) h2_Z_vs_Sc21E->Fill(hitItem.Get_ID_z(), sqrt(hitItem.Get_sci_l(0) * hitItem.Get_sci_r(0))); // CEJ: changed [2] -> [0]
+        if (hitItem.Get_ID_z() != 0 && hitItem.Get_sci_e_21() != 0) h2_Z_vs_Sc21E->Fill(hitItem.Get_ID_z(), hitItem.Get_sci_e_21());
 
         if (!FrsGates.empty())
         {
@@ -603,16 +623,33 @@ void FrsNearlineSpectra::Exec(Option_t* option)
         if (hitItem.Get_ID_beta() > 0) h1_beta->Fill(hitItem.Get_ID_beta()); 
         if (hitItem.Get_ID_dEdeg() > 0) h1_dEdeg->Fill(hitItem.Get_ID_dEdeg());
         if (hitItem.Get_ID_dEdegoQ() > 0) h1_dEdegoQ->Fill(hitItem.Get_ID_dEdegoQ());
-        for (int i = 0; i < 2; i++) if (hitItem.Get_ID_rho(i) > 0) h1_rho[i]->Fill(hitItem.Get_ID_rho(i));
-        for (int i = 0; i < 2; i++) if (hitItem.Get_ID_brho(i) > 0) h1_brho[i]->Fill(hitItem.Get_ID_brho(i));
-        for (int i = 0; i < 2; i++) if (hitItem.Get_music_dE(i) > 0) h1_music_dE[i]->Fill(hitItem.Get_music_dE(i));
-        for (int i = 0; i < 2; i++) if (hitItem.Get_music_dE_cor(i) > 0) h1_music_dEcorr[i]->Fill(hitItem.Get_music_dE_cor(i));
-        for (int i = 0; i < 6; i++) if (hitItem.Get_sci_e(i) > 0) h1_sci_e[i]->Fill(hitItem.Get_sci_e(i));
-        for (int i = 0; i < 6; i++) if (hitItem.Get_sci_l(i) > 0) h1_sci_l[i]->Fill(hitItem.Get_sci_l(i));
-        for (int i = 0; i < 6; i++) if (hitItem.Get_sci_r(i) > 0) h1_sci_r[i]->Fill(hitItem.Get_sci_r(i));
-        for (int i = 0; i < 6; i++) h1_sci_x[i]->Fill(hitItem.Get_sci_x(i));
-        for (int i = 0; i < 6; i++) if (hitItem.Get_sci_tof(i) > 0) h1_sci_tof[i]->Fill(hitItem.Get_sci_tof(i));
-        for (int i = 0; i < 6; i++) if (hitItem.Get_sci_tof_calib(i) > 0) h1_sci_tof_calib[i]->Fill(hitItem.Get_sci_tof_calib(i));
+        for (int i = 0; i < 2; i++) if (hitItem.Get_ID_rho()[i] > 0) h1_rho[i]->Fill(hitItem.Get_ID_rho()[i]);
+        for (int i = 0; i < 2; i++) if (hitItem.Get_ID_brho()[i] > 0) h1_brho[i]->Fill(hitItem.Get_ID_brho()[i]);
+        for (int i = 0; i < 2; i++) if (hitItem.Get_music_dE()[i] > 0) h1_music_dE[i]->Fill(hitItem.Get_music_dE()[i]);
+        for (int i = 0; i < 2; i++) if (hitItem.Get_music_dE_cor()[i] > 0) h1_music_dEcorr[i]->Fill(hitItem.Get_music_dE_cor()[i]);
+
+        if (hitItem.Get_sci_e_21() > 0) h1_sci_e_21->Fill(hitItem.Get_sci_e_21());
+        if (hitItem.Get_sci_e_22() > 0) h1_sci_e_22->Fill(hitItem.Get_sci_e_22());
+        if (hitItem.Get_sci_e_41() > 0) h1_sci_e_41->Fill(hitItem.Get_sci_e_41());
+        if (hitItem.Get_sci_e_42() > 0) h1_sci_e_42->Fill(hitItem.Get_sci_e_42());
+        if (hitItem.Get_sci_e_43() > 0) h1_sci_e_43->Fill(hitItem.Get_sci_e_43());
+        if (hitItem.Get_sci_e_81() > 0) h1_sci_e_81->Fill(hitItem.Get_sci_e_81());
+        if (hitItem.Get_sci_x_21() > 0) h1_sci_x_21->Fill(hitItem.Get_sci_x_21());
+        if (hitItem.Get_sci_x_22() > 0) h1_sci_x_22->Fill(hitItem.Get_sci_x_22());
+        if (hitItem.Get_sci_x_41() > 0) h1_sci_x_41->Fill(hitItem.Get_sci_x_41());
+        if (hitItem.Get_sci_x_42() > 0) h1_sci_x_42->Fill(hitItem.Get_sci_x_42());
+        if (hitItem.Get_sci_x_43() > 0) h1_sci_x_43->Fill(hitItem.Get_sci_x_43());
+        if (hitItem.Get_sci_x_81() > 0) h1_sci_x_81->Fill(hitItem.Get_sci_x_81());
+        if (hitItem.Get_sci_tof_21_41() > 0) h1_sci_tof_21_41->Fill(hitItem.Get_sci_tof_21_41());
+        if (hitItem.Get_sci_tof_21_41_calib() > 0) h1_sci_tof_21_41_calib->Fill(hitItem.Get_sci_tof_21_41_calib());
+        if (hitItem.Get_sci_tof_21_42() > 0) h1_sci_tof_21_42->Fill(hitItem.Get_sci_tof_21_42());
+        if (hitItem.Get_sci_tof_21_42_calib() > 0) h1_sci_tof_21_42_calib->Fill(hitItem.Get_sci_tof_21_42_calib());
+        if (hitItem.Get_sci_tof_21_81() > 0) h1_sci_tof_21_81->Fill(hitItem.Get_sci_tof_21_81());
+        if (hitItem.Get_sci_tof_21_81_calib() > 0) h1_sci_tof_21_81_calib->Fill(hitItem.Get_sci_tof_21_81_calib());
+        if (hitItem.Get_sci_tof_22_41() > 0) h1_sci_tof_22_41->Fill(hitItem.Get_sci_tof_22_41());
+        if (hitItem.Get_sci_tof_22_41_calib() > 0) h1_sci_tof_22_41_calib->Fill(hitItem.Get_sci_tof_22_41_calib());
+        if (hitItem.Get_sci_tof_22_81() > 0) h1_sci_tof_22_81->Fill(hitItem.Get_sci_tof_22_81());
+        if (hitItem.Get_sci_tof_22_81_calib() > 0) h1_sci_tof_22_81_calib->Fill(hitItem.Get_sci_tof_22_81_calib());
 
         // 1D Gated?
     }
@@ -645,14 +682,14 @@ void FrsNearlineSpectra::Exec(Option_t* option)
             if(multihitItem.Get_ID_z_mhtdc() > 0 && multihitItem.Get_ID_dEdeg_mhtdc() != 0) h2_dEdeg_vs_Z_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), multihitItem.Get_ID_dEdeg_mhtdc());
             if(multihitItem.Get_ID_AoQ_mhtdc() != 0 && hitItem.Get_ID_a2() != 0) h2_a2_vs_AoQ_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_a2());
             if(multihitItem.Get_ID_AoQ_mhtdc() != 0 && hitItem.Get_ID_a4() != 0) h2_a4_vs_AoQ_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_ID_a4());
-            if(multihitItem.Get_ID_z_mhtdc() != 0 && hitItem.Get_music_dE(1)  != 0) h2_Z_vs_dE2_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), hitItem.Get_music_dE(1));
-            if(multihitItem.Get_ID_z_mhtdc() != 0 && hitItem.Get_sci_l(0) != 0 && hitItem.Get_sci_r(0) != 0) h2_Z_vs_Sc21E_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), sqrt(hitItem.Get_sci_l(0) * hitItem.Get_sci_r(0)));
+            if(multihitItem.Get_ID_z_mhtdc() != 0 && hitItem.Get_music_dE()[1]  != 0) h2_Z_vs_dE2_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), hitItem.Get_music_dE()[1]);
+            if(multihitItem.Get_ID_z_mhtdc() != 0 && hitItem.Get_sci_e_21() != 0) h2_Z_vs_Sc21E_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), hitItem.Get_sci_e_21());
             h2_x2_vs_Z_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), hitItem.Get_ID_x2());
             h2_x4_vs_Z_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), hitItem.Get_ID_x4());
-            if (multihitItem.Get_ID_AoQ_mhtdc() != 0 && hitItem.Get_sci_e(2) != 0) h2_SC41dE_vs_AoQ_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_sci_e(2));
-            if (multihitItem.Get_ID_AoQ_mhtdc() != 0 && hitItem.Get_sci_e(3) != 0) h2_SC42dE_vs_AoQ_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_sci_e(3));
-            if (multihitItem.Get_ID_z_mhtdc() != 0 && hitItem.Get_sci_e(2) != 0) h2_SC41dE_vs_Z_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), hitItem.Get_sci_e(2));
-            if (multihitItem.Get_ID_z_mhtdc() != 0 && hitItem.Get_sci_e(3) != 0) h2_SC42dE_vs_Z_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), hitItem.Get_sci_e(3)); 
+            if (multihitItem.Get_ID_AoQ_mhtdc() != 0 && hitItem.Get_sci_e_41() != 0) h2_SC41dE_vs_AoQ_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_sci_e_41());
+            if (multihitItem.Get_ID_AoQ_mhtdc() != 0 && hitItem.Get_sci_e_42() != 0) h2_SC42dE_vs_AoQ_mhtdc->Fill(multihitItem.Get_ID_AoQ_mhtdc(), hitItem.Get_sci_e_42());
+            if (multihitItem.Get_ID_z_mhtdc() != 0 && hitItem.Get_sci_e_41() != 0) h2_SC41dE_vs_Z_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), hitItem.Get_sci_e_41());
+            if (multihitItem.Get_ID_z_mhtdc() != 0 && hitItem.Get_sci_e_42() != 0) h2_SC42dE_vs_Z_mhtdc->Fill(multihitItem.Get_ID_z_mhtdc(), hitItem.Get_sci_e_42()); 
 
             // Gated PIDs
             if (!FrsGates.empty())
@@ -760,34 +797,35 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     // ---------------------------- //
     h1_tpat->Fill(hitItem.Get_tpat());
 
-    for (int i = 0; i < 32; i++)
-    {
-        hScaler_per_s[i]->AddBinContent(hitItem.Get_ibin_for_s(), hitItem.Get_increase_sc_temp_user(i));
-        hScaler_per_s[i+32]->AddBinContent(hitItem.Get_ibin_for_s(), hitItem.Get_increase_sc_temp_main(i));
-        hScaler_per_100ms[i]->AddBinContent(hitItem.Get_ibin_for_100ms(), hitItem.Get_increase_sc_temp_user(i));
-        hScaler_per_100ms[i+32]->AddBinContent(hitItem.Get_ibin_for_100ms(), hitItem.Get_increase_sc_temp_main(i));
-        hScaler_per_spill[i]->AddBinContent(hitItem.Get_ibin_for_spill(), hitItem.Get_increase_sc_temp_user(i));
-        hScaler_per_spill[i+32]->AddBinContent(hitItem.Get_ibin_for_spill(), hitItem.Get_increase_sc_temp_main(i));
-    }
+    // CEJ:: SCALER analysis to be updated...
+    // for (int i = 0; i < 32; i++)
+    // {
+    //     hScaler_per_s[i]->AddBinContent(hitItem.Get_ibin_for_s(), hitItem.Get_increase_sc_temp_user(i));
+    //     hScaler_per_s[i+32]->AddBinContent(hitItem.Get_ibin_for_s(), hitItem.Get_increase_sc_temp_main(i));
+    //     hScaler_per_100ms[i]->AddBinContent(hitItem.Get_ibin_for_100ms(), hitItem.Get_increase_sc_temp_user(i));
+    //     hScaler_per_100ms[i+32]->AddBinContent(hitItem.Get_ibin_for_100ms(), hitItem.Get_increase_sc_temp_main(i));
+    //     hScaler_per_spill[i]->AddBinContent(hitItem.Get_ibin_for_spill(), hitItem.Get_increase_sc_temp_user(i));
+    //     hScaler_per_spill[i+32]->AddBinContent(hitItem.Get_ibin_for_spill(), hitItem.Get_increase_sc_temp_main(i));
+    // }
 
-    Int_t ratio_product = int(0.95 * hitItem.Get_increase_sc_temp2() + 0.05 * ratio_previous);
-    hScaler_per_s[64]->SetBinContent(hitItem.Get_ibin_for_s(), ratio_product);
-    hScaler_per_100ms[64]->SetBinContent(hitItem.Get_ibin_for_100ms(), ratio_product);
-    hScaler_per_spill[64]->SetBinContent(hitItem.Get_ibin_for_spill(), ratio_product);
-    Int_t ratio_product2 = int(0.95 * hitItem.Get_increase_sc_temp3() + 0.05 * ratio_previous2);
-    hScaler_per_s[65]->SetBinContent(hitItem.Get_ibin_for_s(), ratio_product2);
-    hScaler_per_100ms[65]->SetBinContent(hitItem.Get_ibin_for_100ms(), ratio_product2);
-    hScaler_per_spill[65]->SetBinContent(hitItem.Get_ibin_for_spill(), ratio_product2);
+    // Int_t ratio_product = int(0.95 * hitItem.Get_increase_sc_temp2() + 0.05 * ratio_previous);
+    // hScaler_per_s[64]->SetBinContent(hitItem.Get_ibin_for_s(), ratio_product);
+    // hScaler_per_100ms[64]->SetBinContent(hitItem.Get_ibin_for_100ms(), ratio_product);
+    // hScaler_per_spill[64]->SetBinContent(hitItem.Get_ibin_for_spill(), ratio_product);
+    // Int_t ratio_product2 = int(0.95 * hitItem.Get_increase_sc_temp3() + 0.05 * ratio_previous2);
+    // hScaler_per_s[65]->SetBinContent(hitItem.Get_ibin_for_s(), ratio_product2);
+    // hScaler_per_100ms[65]->SetBinContent(hitItem.Get_ibin_for_100ms(), ratio_product2);
+    // hScaler_per_spill[65]->SetBinContent(hitItem.Get_ibin_for_spill(), ratio_product2);
 
-    for (int i = 0; i < 32; i++)
-    {
-        hScaler_per_s[i]->SetBinContent(hitItem.Get_ibin_clean_for_s(), 0);
-        hScaler_per_s[i+32]->SetBinContent(hitItem.Get_ibin_clean_for_s(),0);
-        hScaler_per_100ms[i]->SetBinContent(hitItem.Get_ibin_clean_for_100ms(), 0);
-        hScaler_per_100ms[i+32]->SetBinContent(hitItem.Get_ibin_clean_for_100ms(), 0);
-        hScaler_per_spill[i]->SetBinContent(hitItem.Get_ibin_clean_for_spill(), 0);
-        hScaler_per_spill[i+32]->SetBinContent(hitItem.Get_ibin_clean_for_spill(), 0);
-    }
+    // for (int i = 0; i < 32; i++)
+    // {
+    //     hScaler_per_s[i]->SetBinContent(hitItem.Get_ibin_clean_for_s(), 0);
+    //     hScaler_per_s[i+32]->SetBinContent(hitItem.Get_ibin_clean_for_s(),0);
+    //     hScaler_per_100ms[i]->SetBinContent(hitItem.Get_ibin_clean_for_100ms(), 0);
+    //     hScaler_per_100ms[i+32]->SetBinContent(hitItem.Get_ibin_clean_for_100ms(), 0);
+    //     hScaler_per_spill[i]->SetBinContent(hitItem.Get_ibin_clean_for_spill(), 0);
+    //     hScaler_per_spill[i+32]->SetBinContent(hitItem.Get_ibin_clean_for_spill(), 0);
+    // }
 
     // ::::: Detector Drifts :::::: //
     // ---------------------------- //
@@ -797,47 +835,52 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     if (hitItem.Get_ID_AoQ_driftcorr() > 0 && FRS_time_mins > 0) h2_AoQ_driftcorr_vs_T->Fill(FRS_time_mins, hitItem.Get_ID_AoQ_driftcorr());
     //if (multihitItem.Get_ID_z_mhtdc() > 0 && FRS_time_mins > 0) h2_Z1_vs_T_mhtdc->Fill(FRS_time_mins, multihitItem.Get_ID_z_mhtdc());
     //if (multihitItem.Get_ID_AoQ_mhtdc() > 0 && FRS_time_mins > 0) h2_AoQ_vs_T_mhtdc->Fill(FRS_time_mins, multihitItem.Get_ID_AoQ_mhtdc());
-    for (int i = 0; i < 6; i++) h2_sci_tof_vs_T[i]->Fill(FRS_time_mins, hitItem.Get_sci_tof(i));
+    h2_sci_tof_21_41_vs_T->Fill(FRS_time_mins, hitItem.Get_sci_tof_21_41()); // calib??
+    h2_sci_tof_21_42_vs_T->Fill(FRS_time_mins, hitItem.Get_sci_tof_21_42()); // calib??
+    h2_sci_tof_21_81_vs_T->Fill(FRS_time_mins, hitItem.Get_sci_tof_21_81()); // calib??
+    h2_sci_tof_22_41_vs_T->Fill(FRS_time_mins, hitItem.Get_sci_tof_22_41()); // calib??
+    h2_sci_tof_22_81_vs_T->Fill(FRS_time_mins, hitItem.Get_sci_tof_22_81()); // calib??
+
     
 
     // :::::::: TPC Rates ::::::::: //
     // ---------------------------- //
-    if (tpcCalArray)
-    {
-        auto const & tpcCalItem = tpcCalArray->at(0);
-        tpc_x = tpcCalItem.Get_tpc_x();
-        for (int i = 0; i < 6; i++) h2_tpc_vs_T[i]->Fill(FRS_time_mins, tpc_x[i]);
+    // if (tpcCalArray)
+    // {
+    //     auto const & tpcCalItem = tpcCalArray->at(0);
+    //     tpc_x = tpcCalItem.Get_tpc_x();
+    //     for (int i = 0; i < 6; i++) h2_tpc_vs_T[i]->Fill(FRS_time_mins, tpc_x[i]);
 
-        int64_t wr_dt = (frs_wr - saved_frs_wr) / 1e9; // conv to s
+    //     int64_t wr_dt = (frs_wr - saved_frs_wr) / 1e9; // conv to s
 
-        if (wr_dt < 2 && saved_frs_wr != 0)
-        {
-            for (int i = 0; i < 6; i++)
-            {
-                if (tpc_x[i]) tpc_counters[i]++;
-            }
-        }
-        else 
-        {
-            for (int i = 0; i < 6; i++)
-            {
-                tpc_rates[i] = tpc_counters[i] / wr_dt;
-                tpc_counters[i] = 0;
+    //     if (wr_dt < 2 && saved_frs_wr != 0)
+    //     {
+    //         for (int i = 0; i < 6; i++)
+    //         {
+    //             if (tpc_x[i]) tpc_counters[i]++;
+    //         }
+    //     }
+    //     else 
+    //     {
+    //         for (int i = 0; i < 6; i++)
+    //         {
+    //             tpc_rates[i] = tpc_counters[i] / wr_dt;
+    //             tpc_counters[i] = 0;
 
-                if (i == 0) h1_tpc21_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
-                else if (i == 1) h1_tpc22_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
-                else if (i == 2) h1_tpc23_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
-                else if (i == 3) h1_tpc24_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
-                else if (i == 4) h1_tpc41_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
-                else if (i == 5) h1_tpc42_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
+    //             if (i == 0) h1_tpc21_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
+    //             else if (i == 1) h1_tpc22_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
+    //             else if (i == 2) h1_tpc23_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
+    //             else if (i == 3) h1_tpc24_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
+    //             else if (i == 4) h1_tpc41_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
+    //             else if (i == 5) h1_tpc42_rate->SetBinContent(tpc_running_count, tpc_rates[i]);
 
-            }
+    //         }
 
-            saved_frs_wr = frs_wr;
-            tpc_running_count++;
-            if (tpc_running_count == 1800) tpc_running_count = 0;
-        }
-    }
+    //         saved_frs_wr = frs_wr;
+    //         tpc_running_count++;
+    //         if (tpc_running_count == 1800) tpc_running_count = 0;
+    //     }
+    // }
 
 
     fNEvents++;

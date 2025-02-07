@@ -182,94 +182,23 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     dir_fatima_vme->cd();
 
     run->GetHttpServer()->RegisterCommand("Reset_FATIMA_VME_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
-    run->GetHttpServer()->RegisterCommand("Snapshot_FATIMA_VME_Histo", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
     
     return kSUCCESS;
 
 }
 
-void FatimaVmeOnlineSpectra::Reset_Histo()
-{
-    c4LOG(info, "Resetting FATIMA VME Histograms");
+void FatimaVmeOnlineSpectra::Reset_Histo() {
+    c4LOG(info, "Resetting FATIMA VME histograms.");
 
-    for (int i = 0; i < nDetectors; i++) h1_FatVME_RawE[i]->Reset();
-    for (int i = 0; i < nDetectors; i++) h1_FatVME_E[i]->Reset();
-    for (int i = 0; i < nDetectors; i++) h1_FatVME_RawT[i]->Reset();
-    for (int i = 0; i < nDetectors; i++) h1_FatVME_TDC_dt_refCh1[i]->Reset();
-    for (int i = 0; i < nDetectors; i++) h1_FatVME_TDC_dT_refSC41L[i]->Reset();
-
-    h1_FatVME_E_Sum->Reset();
-    h1_FatVME_QDC_HitPattern->Reset();
-    h1_FatVME_TDC_HitPattern->Reset();
-    h1_FatVME_QDCMult->Reset();
-    h1_FatVME_TDCMult->Reset();
-    h1_FatVME_time_machine_undelayed->Reset();
-    h1_FatVME_time_machine_delayed->Reset();
-    //h1_FatVME_sc41l->Reset();
-    //h1_FatVME_sc41r->Reset();
-    h1_FatVME_sc41l_time->Reset();
-    h1_FatVME_sc41r_time->Reset();
-    c4LOG(info, "FATIMA VME Histograms reset");
-}
-
-void FatimaVmeOnlineSpectra::Snapshot_Histo()
-{
-    c4LOG(info, "Snapshotting Fatima VME Histograms");
-
-    time_t now = time(0);
-    tm *ltm = localtime(&now);
-
-    TString snapshot_dir = Form("FatimaVme_snapshot_%d_%d_%d_%d_%d_%d",ltm->tm_year+1900,ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec);
-
-    gSystem->mkdir(snapshot_dir);
-    gSystem->cd(snapshot_dir);
-
-    c_fatima_vme_snapshot = new TCanvas("c_fatima_vme_snapshot", "Fatima VME snapshot", 650, 350);
-
-    for (int i = 0; i < nDetectors; i++)
-    {
-        if (h1_FatVME_RawE[i]->GetEntries() != 0)
-        {
-            h1_FatVME_RawE[i]->Draw();
-            c_fatima_vme_snapshot->SaveAs(Form("h1_FatVME_RawE%i.png", i));
-            c_fatima_vme_snapshot->Clear();
-        }
-        if (h1_FatVME_E[i]->GetEntries() != 0)
-        {
-            h1_FatVME_E[i]->Draw();
-            c_fatima_vme_snapshot->SaveAs(Form("h1_FatVME_E%i.png", i));
-            c_fatima_vme_snapshot->Clear();
-        }
-        if (h1_FatVME_RawT[i]->GetEntries() != 0)
-        {
-            h1_FatVME_RawT[i]->Draw();
-            c_fatima_vme_snapshot->SaveAs(Form("h1_FatVME_RawT%i.png", i));
-            c_fatima_vme_snapshot->Clear();
-        }
-        if (h1_FatVME_TDC_dt_refCh1[i]->GetEntries() != 0)
-        {
-            h1_FatVME_TDC_dt_refCh1[i]->Draw();
-            c_fatima_vme_snapshot->SaveAs(Form("h1_FatVME_TDC%i_dt_refCh1.png", i));
-            c_fatima_vme_snapshot->Clear();
-        }
-        if (h1_FatVME_TDC_dT_refSC41L[i]->GetEntries() != 0)
-        {
-            h1_FatVME_TDC_dT_refSC41L[i]->Draw();
-            c_fatima_vme_snapshot->SaveAs(Form("h1_FatVME_TDC%i_dT_refSC41L.png", i));
-            c_fatima_vme_snapshot->Clear();
-        }
+    // Assuming dir is a TDirectory pointer containing histograms
+    if (dir_fatima_vme) {
+        AnalysisTools_H::ResetHistogramsInDirectory(dir_fatima_vme);
+        c4LOG(info, "FATIMA VME histograms reset.");
+    } else {
+        c4LOG(error, "Failed to get list of histograms from directory.");
     }
-
-    delete c_fatima_vme_snapshot;
-
-    file_fatima_vme_snapshot = new TFile(Form("FatimaVme_snapshot_%d_%d_%d_%d_%d_%d",ltm->tm_year+1900,ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec));
-    file_fatima_vme_snapshot->cd();
-    dir_fatima_vme->Write();
-    file_fatima_vme_snapshot->Close();
-
-    gSystem->cd("..");
-    c4LOG(info, "Snapshots saved in: " << snapshot_dir);
 }
+
 
 void FatimaVmeOnlineSpectra::Exec(Option_t* option)
 {

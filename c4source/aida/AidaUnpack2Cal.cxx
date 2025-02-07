@@ -95,6 +95,47 @@ void AidaUnpack2Cal::Exec(Option_t* option)
       return;
     }
 
+
+    // if (conf->BB7()) if (unpack.Fee() == conf->BB7_FEE())
+    // {
+    //   // process BB7 events separately.
+    //   // this is pretty hacky and dumb now, needs to be sorted out
+
+    //   int dssd = conf->DSSDs(); // set to final DSSD..
+    //   int side = (unpack.Channel() >= 0 && unpack.Channel() < 32) ? 0 : ((unpack.Channel() >= 32 && unpack.Channel() < 64) ? 1 : -1);
+    //   int strip = unpack.Channel() - 32 * side;
+
+    //   double intensity = (unpack.Value() - 32768); // * side ?
+    //   bool range = unpack.Range();
+    //   double energy = intensity * 0.7; // energy in MeV for AIDA at least.. 
+
+    //   std::cout << "bb7 event -- " << std::endl;
+    //   std::cout << "strip:: " << strip << std::endl;
+    //   std::cout << "side:: " << side << std::endl;
+
+
+    //   if (range) 
+    //   {
+    //       auto& cal = implantCalArray->emplace_back();
+    //       cal.SetAll(unpack.SlowTime(), unpack.FastTime(), unpack.Fee(),
+    //                 unpack.Channel(), dssd, side, strip,
+    //                 range, intensity, energy);
+    //   }
+    //   else 
+    //   {
+    //       auto& cal = decayCalArray->emplace_back();
+    //       cal.SetAll(unpack.SlowTime(), unpack.FastTime(), unpack.Fee(),
+    //                 unpack.Channel(), dssd, side, strip,
+    //                 range, intensity, energy);
+    //   }
+
+    //   continue;
+  
+    // }
+
+
+
+
     auto feeConf = conf->FEE(unpack.Fee() - 1);
     if (feeConf.DSSD <= 0)
     {
@@ -104,16 +145,29 @@ void AidaUnpack2Cal::Exec(Option_t* option)
     }
 
     int dssd = feeConf.DSSD;
-    int side = feeConf.Side;
+
+    int side = 0;
     int strip = 0;
-    if (feeConf.High)
+    if (feeConf.Type == 2)
     {
-      strip = 127 - FeeToStrip[unpack.Channel()];
+      side = (unpack.Channel() >= 0 && unpack.Channel() < 32) ? -1 : ((unpack.Channel() >= 32 && unpack.Channel() < 64) ? 1 : 0);
+      if (side == -1) strip = unpack.Channel();
+      else if (side == 1) strip = unpack.Channel() - 32;
     }
     else
     {
-      strip = FeeToStrip[unpack.Channel()];
+      side = feeConf.Side;
+      if (feeConf.High)
+      {
+        strip = 127 - FeeToStrip[unpack.Channel()];
+      }
+      else
+      {
+        strip = FeeToStrip[unpack.Channel()];
+      }
     }
+
+ 
     if (conf->Wide() && feeConf.Side == conf->DSSD(dssd - 1).XSide)
     {
       int shift = 0;
@@ -130,9 +184,11 @@ void AidaUnpack2Cal::Exec(Option_t* option)
     }
     else
     {
+
       intensity = (intensity - conf->GetAdcOffset(unpack.Fee() - 1, unpack.Channel()));
       energy = intensity * conf->GetDssdGain(dssd - 1,
           side == conf->DSSD(dssd - 1).XSide ? 0 : 1, strip);
+
     }
 
     // Split into implant and decay arrays, check threshold for decays

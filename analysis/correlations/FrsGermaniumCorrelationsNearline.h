@@ -6,6 +6,7 @@
 #include "TGermaniumConfiguration.h"
 #include "TFrsConfiguration.h"
 #include "FrsHitData.h"
+#include "EventHeader.h"
 
 class TClonesArray;
 class EventHeader;
@@ -68,6 +69,9 @@ class FrsGermaniumCorrelationsNearline : public FairTask
             long_lifetime_binhigh = stop;
         }
         
+        void SetGermaniumCoincidenceWindow(int coinc_window){ // ns
+            germanium_coincidence_gate = coinc_window;
+        }
         
     
     private:
@@ -75,8 +79,6 @@ class FrsGermaniumCorrelationsNearline : public FairTask
         TClonesArray* fHitFrs;
 
         std::vector<FrsHitItem> const* hitArrayFrs;
-
-        TDirectory * dir_germanium;
 
         const TGermaniumConfiguration * germanium_configuration;
         const TFrsConfiguration * frs_configuration;
@@ -105,7 +107,7 @@ class FrsGermaniumCorrelationsNearline : public FairTask
         std::vector<double> gamma_energies_of_interest;
         std::vector<double> gate_width_gamma_energies_of_interest;
 
-        EventHeader* header;
+        EventHeader const* header;
         Int_t fNEvents;
 
         // Histograms:
@@ -175,7 +177,9 @@ class FrsGermaniumCorrelationsNearline : public FairTask
         TH1F ** h1_germanium_twr_sci41_energy_gated;
         
         // Folder and files
-        TDirectory* folder_germanium;
+        bool found_dir_corr = true;
+        TDirectory* dir_corr;
+        TDirectory* dir_germanium;
         TDirectory ** folder_energy_gated;
 
 

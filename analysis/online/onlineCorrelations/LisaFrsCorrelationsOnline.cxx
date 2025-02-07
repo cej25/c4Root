@@ -250,8 +250,8 @@ void LisaFrsCorrelationsOnline::Exec(Option_t* option)
     sum_energy_layer.resize(layer_number);
     //c4LOG(info, "s2 x : " << s2_x << "s2 y : " << s2_y);
 
-    energy_MUSIC_1 = frsHitItem.Get_music_dE(0); 
-    energy_MUSIC_2 = frsHitItem.Get_music_dE(1);
+    energy_MUSIC_1 = frsHitItem.Get_music_dE()[0]; 
+    energy_MUSIC_2 = frsHitItem.Get_music_dE()[1];
     energy_travMUSIC = travMusicHitItem.Get_travmusic_dE();
     //c4LOG(info, "travMUS en : " << energy_travMUSIC << " music 1 : " << energy_MUSIC_1 << " sum energy 1 : " << sum_energy_layer[1]);
 

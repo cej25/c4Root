@@ -1,153 +1,150 @@
 #include "FrsHitData.h"
 
-FrsHitItem::FrsHitItem()
-{
 
-}
+FrsHitItem::FrsHitItem() {}
 
-void FrsHitItem::SetAll(uint64_t wr_t,
-                    uint16_t tpat,
-                    Float_t x2,
-                    Float_t y2,
-                    Float_t x4,
-                    Float_t y4,
-                    Float_t a2,
-                    Float_t b2,
-                    Float_t a4,
-                    Float_t b4,
-                    Float_t AoQ,
-                    Float_t AoQ_driftcorr,
-                    Float_t AoQ_corr,
-                    Float_t z,
-                    Float_t z_driftcorr,
-                    Float_t z2,
-                    Float_t beta,
-                    Float_t dEdeg,
-                    Float_t dEdegoQ,
-                    Float_t* rho,
-                    Float_t* brho,
-                    Float_t* music_dE,
-                    Float_t* music_dE_cor,
-                    Float_t* sci_e,
-                    Float_t* sci_l,
-                    Float_t* sci_r,
-                    Float_t* sci_x,
-                    Float_t* sci_tof,
-                    Float_t* sci_tof_calib,
-                    Float_t sci_tof2,
-                    uint32_t time_in_ms,
-                    uint32_t ibin_for_s,
-                    uint32_t ibin_for_100ms,
-                    uint32_t ibin_for_spill,
-                    uint32_t* increase_sc_temp_main,
-                    uint32_t* increase_sc_temp_user,
-                    uint32_t increase_sc_temp2,
-                    uint32_t increase_sc_temp3,
-                    uint32_t extraction_time_ms,
-                    uint32_t ibin_clean_for_s,
-                    uint32_t ibin_clean_for_100ms,
-                    uint32_t ibin_clean_for_spill)
+void FrsHitItem::SetMetaData(Long64_t wr_t, Short_t tpat)
 {
     fwr_t = wr_t;
     ftpat = tpat;
-    fID_x2 = x2;
-    fID_y2 = y2;
-    fID_x4 = x4;
-    fID_y4 = y4;
-    fID_a2 = a2;
-    fID_b2 = b2;
-    fID_a4 = a4;
-    fID_b4 = b4;
+}
+
+void FrsHitItem::SetScalerData(Double_t time_in_ms,
+                Double_t time_in_us,
+                Int_t ibin_for_s,
+                Int_t ibin_for_100ms,
+                Int_t ibin_for_spill,
+                Int_t ibin_clean_for_s,
+                Int_t ibin_clean_for_100ms,
+                Int_t ibin_clean_for_spill,
+                Int_t extraction_time_ms,
+                Int_t increase_scaler_temp[67])
+{
+    ftime_in_ms = time_in_ms;
+    ftime_in_us = time_in_us;
+    fibin_for_s = ibin_for_s;
+    fibin_for_100ms = ibin_for_100ms;
+    fibin_for_spill = ibin_for_spill;
+    fibin_clean_for_s = ibin_clean_for_s;
+    fibin_clean_for_100ms = ibin_clean_for_100ms;
+    fibin_clean_for_spill = ibin_clean_for_spill;
+    fextraction_time_ms = extraction_time_ms;
+    for (int i = 0; i < 67; i++) fincrease_scaler_temp[i] = fincrease_scaler_temp[i];
+}
+
+void FrsHitItem::SetSciData(Float_t sci_e_21,
+                Float_t sci_x_21,
+                Float_t sci_e_22,
+                Float_t sci_x_22,
+                Float_t sci_e_31,
+                Float_t sci_e_41,
+                Float_t sci_x_41,
+                Float_t sci_e_42,
+                Float_t sci_x_42,
+                Float_t sci_e_43,
+                Float_t sci_x_43,
+                Float_t sci_e_81,
+                Float_t sci_x_81,
+                Float_t sci_tof_21_41,
+                Float_t sci_tof_21_41_calib,
+                Float_t sci_tof_21_42,
+                Float_t sci_tof_21_42_calib,
+                Float_t sci_tof_21_81,
+                Float_t sci_tof_21_81_calib,
+                Float_t sci_tof_22_41,
+                Float_t sci_tof_22_41_calib,
+                Float_t sci_tof_22_81,
+                Float_t sci_tof_22_81_calib)
+{
+   fsci_e_21 = sci_e_21;
+   fsci_x_21 = sci_x_21;
+   fsci_e_22 = sci_e_22;
+   fsci_x_22 = sci_x_22;
+   fsci_e_31 = sci_e_31;
+   fsci_e_41 = sci_e_41;
+   fsci_x_41 = sci_x_41;
+   fsci_e_42 = sci_e_42;
+   fsci_x_42 = sci_x_42;
+   fsci_e_43 = sci_e_43;
+   fsci_x_43 = sci_x_43;
+   fsci_e_81 = sci_e_81;
+   fsci_x_81 = sci_x_81;
+   fsci_tof_21_41 = sci_tof_21_41;
+   fsci_tof_21_41_calib = sci_tof_21_41_calib;
+   fsci_tof_21_42 = sci_tof_21_42;
+   fsci_tof_21_42_calib = sci_tof_21_42_calib;
+   fsci_tof_21_81 = sci_tof_21_81;
+   fsci_tof_21_81_calib = sci_tof_21_81_calib;
+   fsci_tof_22_41 = sci_tof_22_41;
+   fsci_tof_22_41_calib = sci_tof_22_41_calib;
+   fsci_tof_22_81 = sci_tof_22_81;
+   fsci_tof_22_81_calib = sci_tof_22_81_calib;
+}
+
+void FrsHitItem::SetMusicData(Float_t music_dE[2], Float_t music_dE_cor[2])
+{
+    for (int i = 0; i < 2; i++)
+    {
+        fmusic_dE[i] = music_dE[i];
+        fmusic_dE_cor[i] = music_dE[i];
+    }
+}
+        
+void FrsHitItem::SetIDs(Float_t x2,
+            Float_t y2,
+            Float_t x4,
+            Float_t y4,
+            Float_t a2,
+            Float_t b2,
+            Float_t a4,
+            Float_t b4,
+            Float_t AoQ,
+            Float_t AoQ_corr,
+            Float_t z,
+            Float_t z2,
+            Float_t beta,
+            Float_t dEdeg,
+            Float_t dEdegoQ,
+            Float_t rho[2],
+            Float_t brho[2])
+{
+    fID_x2 =  x2;
+    fID_y2 =  y2;
+    fID_x4 =  x4;
+    fID_y4 =  y4;
+    fID_a2 =  a2;
+    fID_b2 =  b2;
+    fID_a4 =  a4;
+    fID_b4 =  b4;
     fID_AoQ = AoQ;
-    fID_AoQ_driftcorr = AoQ_driftcorr;
     fID_AoQ_corr = AoQ_corr;
     fID_z = z;
-    fID_z_driftcorr = z_driftcorr;
     fID_z2 = z2;
     fID_beta = beta;
     fID_dEdeg = dEdeg;
     fID_dEdegoQ = dEdegoQ;
-    for (int i = 0; i < 2; i++) fID_rho[i] = rho[i];
-    for (int i = 0; i < 2; i++) fID_brho[i] = brho[i];
-    for (int i = 0; i < 2; i++) fmusic_dE[i] = music_dE[i];
-    for (int i = 0; i < 2; i++) fmusic_dE_cor[i] = music_dE_cor[i];
-    for (int i = 0; i < 6; i++) fsci_e[i] = sci_e[i];
-    for (int i = 0; i < 6; i++) fsci_l[i] = sci_l[i];
-    for (int i = 0; i < 6; i++) fsci_r[i] = sci_r[i];
-    for (int i = 0; i < 6; i++) fsci_x[i] = sci_x[i];
-    for (int i = 0; i < 6; i++) fsci_tof[i] = sci_tof[i];
-    for (int i = 0; i < 6; i++) fsci_tof_calib[i] = sci_tof_calib[i];
-    fsci_tof2 = sci_tof2;
-    ftime_in_ms = time_in_ms;
-    fibin_for_s = ibin_for_s;
-    fibin_for_100ms = ibin_for_100ms;
-    fibin_for_spill = ibin_for_spill;
-    for (int i = 0; i < 32; i++) fincrease_sc_temp_main[i] = increase_sc_temp_main[i];
-    for (int i = 0; i < 32; i++) fincrease_sc_temp_user[i] = increase_sc_temp_user[i];
-    fincrease_sc_temp2 = increase_sc_temp2;
-    fincrease_sc_temp3 = increase_sc_temp3;
-    fextraction_time_ms = extraction_time_ms;
-    fibin_clean_for_s = ibin_clean_for_s;
-    fibin_clean_for_100ms = ibin_clean_for_100ms;
-    fibin_clean_for_spill = ibin_clean_for_spill;
+    for (int i = 0; i < 2; i++)
+    {
+        fID_rho[i] =  rho[i];
+        fID_brho[i] =  brho[i];
+    }    
 }
 
-void FrsHitItem::Reset()
+void FrsHitItem::SetDriftCorrections(Float_t FRS_time, 
+                        Float_t AoQ_driftcorr, 
+                        Float_t z_driftcorr)
 {
-    fwr_t = 0;
-    ftpat = 0;
-    fID_x2 = 0;
-    fID_y2 = 0;
-    fID_x4 = 0;
-    fID_y4 = 0;
-    fID_a2 = 0;
-    fID_b2 = 0;
-    fID_a4 = 0;
-    fID_b4 = 0;
-    fID_AoQ = 0;
-    fID_AoQ_driftcorr = 0;
-    fID_AoQ_corr = 0;
-    fID_z = 0;
-    fID_z_driftcorr = 0;
-    fID_z2 = 0;
-    fID_beta = 0;
-    fID_dEdeg = 0;
-    fID_dEdegoQ = 0;
-    memset(fID_rho, 0, sizeof(fID_rho));
-    memset(fID_brho, 0, sizeof(fID_brho));
-    memset(fmusic_dE, 0, sizeof(fmusic_dE));
-    memset(fmusic_dE_cor, 0, sizeof(fmusic_dE_cor));
-    memset(fsci_e, 0, sizeof(fsci_e));
-    memset(fsci_l, 0, sizeof(fsci_l));
-    memset(fsci_r, 0, sizeof(fsci_r));
-    memset(fsci_x, 0, sizeof(fsci_x));
-    memset(fsci_tof, 0, sizeof(fsci_tof));
-    memset(fsci_tof_calib, 0, sizeof(fsci_tof_calib));
-    fsci_tof2 = 0;
-    ftime_in_ms = 0;
-    fibin_for_s = 0;
-    fibin_for_100ms = 0;
-    fibin_for_spill = 0;
-    memset(fincrease_sc_temp_main, 0, sizeof(fincrease_sc_temp_main));
-    memset(fincrease_sc_temp_user, 0, sizeof(fincrease_sc_temp_user));
-    fincrease_sc_temp2 = 0;
-    fincrease_sc_temp3 = 0;
-    fextraction_time_ms = 0;
-    fibin_clean_for_s = 0;
-    fibin_clean_for_100ms = 0;
-    fibin_clean_for_spill = 0;
+    FRS_time_mins = FRS_time;
+    fID_AoQ_driftcorr = AoQ_driftcorr;
+    fID_z_driftcorr = z_driftcorr;
 }
 
 ClassImp(FrsHitItem)
 
 
-FrsMultiHitItem::FrsMultiHitItem()
-{
+FrsMultiHitItem::FrsMultiHitItem() {}
 
-}
-
-void FrsMultiHitItem::SetAll(
-                            Float_t s2x,
+void FrsMultiHitItem::SetAll(Float_t s2x,
                             Float_t s2a,
                             Float_t s4x,
                             Float_t s4a,
@@ -172,17 +169,6 @@ void FrsMultiHitItem::SetAll(
     fID_z2_mhtdc = z2;
     fID_dEdeg_mhtdc = dEdeg;
     fID_dEdegoQ_mhtdc = dEdegoQ;
-}
-
-void FrsMultiHitItem::Reset()
-{
-    fID_beta_mhtdc = 0;
-    fID_AoQ_mhtdc = 0;
-    fID_AoQ_corr_mhtdc = 0;
-    fID_z_mhtdc = 0;
-    fID_z2_mhtdc = 0;
-    fID_dEdeg_mhtdc = 0;
-    fID_dEdegoQ_mhtdc = 0;
 }
 
 ClassImp(FrsMultiHitItem)

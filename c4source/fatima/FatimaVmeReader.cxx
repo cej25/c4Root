@@ -129,10 +129,10 @@ Bool_t FatimaVmeReader::Read()
         int geo = fData->fatimavme_tdc[tdc]._geo;
         
         int hit_index = 0;
-        for (uint32_t channel_index = 0; channel_index < fData->fatimavme_tdc[tdc]._nM; channel_index++)
+        for (uint32_t channel_index = 0; channel_index < fData->fatimavme_tdc[tdc]._measurement_nM; channel_index++)
         {
-            int current_channel = fData->fatimavme_tdc[tdc]._nMI[channel_index]; // channel to read now!
-            int next_channel_start = fData->fatimavme_tdc[tdc]._nME[channel_index];
+            int current_channel = fData->fatimavme_tdc[tdc]._measurement_nMI[channel_index]; // channel to read now!
+            int next_channel_start = fData->fatimavme_tdc[tdc]._measurement_nME[channel_index];
 
             int current_detector = dets_tdc[std::make_pair(geo, current_channel)];
 
@@ -140,8 +140,8 @@ Bool_t FatimaVmeReader::Read()
             {
                 auto & entry = tdcArray->emplace_back();
                 //tdc_detectors.emplace_back(current_detector);
-                uint32_t data = fData->fatimavme_tdc[tdc]._data[j];
-                uint8_t lot = fData->fatimavme_tdc[tdc]._leadOrTrailv[j];
+                uint32_t data = fData->fatimavme_tdc[tdc]._measurement_data[j];
+                uint8_t lot = fData->fatimavme_tdc[tdc]._measurement_leadOrTrailv[j];
                 //v1290_data.emplace_back(fData->fatimavme_tdc[tdc]._data[j]);
                 //v1290_lot.emplace_back(fData->fatimavme_tdc[tdc]._leadOrTrailv[j]);
 
