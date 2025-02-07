@@ -39,8 +39,9 @@ std::string TLisaConfiguration::calibration_file = "blank";
 bool TLisaConfiguration::wr_enable = 1;
 
 // ::: Trace amplitude
-int TLisaConfiguration::AmplitudeMin = 7000;
-int TLisaConfiguration::AmplitudeMax = 16000;
+int TLisaConfiguration::amplitude_bin = 1000;
+int TLisaConfiguration::amplitude_min = 7000;
+int TLisaConfiguration::amplitude_max = 16000;
 
 // ::: Energy
 int TLisaConfiguration::min_energy = 0;
@@ -68,7 +69,7 @@ int TLisaConfiguration::bin_wr_diff = 50;
 // ::: Traces time 
 int TLisaConfiguration::min_traces = 0;
 int TLisaConfiguration::max_traces = 2000;
-int TLisaConfiguration::bin_traces = 900;
+int TLisaConfiguration::bin_traces = 2000;
 
 // ::: Gates
 int TLisaConfiguration::fMin_dE_LISA1_gate = 1070, TLisaConfiguration::fMax_dE_LISA1_gate = 1100;

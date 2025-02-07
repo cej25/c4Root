@@ -104,14 +104,14 @@ void lisadev_histos(int fileNumber)
     TLisaConfiguration::SetEnergyRangeMWD(0,1000);
     TLisaConfiguration::SetEnergyBinMWD(450);
 
-    TLisaConfiguration::SetEnergyRangeGM(0,20000);
+    TLisaConfiguration::SetEnergyRangeGM(0,4000);
     TLisaConfiguration::SetEnergyBinGM(450);
 
     TLisaConfiguration::SetEnergyRangeMWDGM(0,1000);
     TLisaConfiguration::SetEnergyBinMWDGM(450);
 
-    TLisaConfiguration::SetWrDiffRange(0,100000);
-    TLisaConfiguration::SetWrDiffBin(500);
+    TLisaConfiguration::SetWrDiffRange(0,100000000000);
+    TLisaConfiguration::SetWrDiffBin(50000);
 
     if (LISA_ON)
     {

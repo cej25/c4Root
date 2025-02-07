@@ -267,8 +267,8 @@ InitStatus LisaOnlineSpectra::Init()
     h1_energy_layer_ch[0][0].resize(1);
     h1_energy_layer_ch[0][0][0] = new TH1F("tokyo", "Tokyo", lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
     h1_energy_layer_ch[0][0][0]->GetXaxis()->SetTitle("E(LISA) [a.u.]");
-    //h1_energy_layer_ch[0][0][0]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
-    //h1_energy_layer_ch[0][0][0]->SetMaximum(lisa_config->AmplitudeMax);
+    //h1_energy_layer_ch[0][0][0]->SetMinimum(lisa_config->amplitude_min); // set in macro
+    //h1_energy_layer_ch[0][0][0]->SetMaximum(lisa_config->amplitude_max);
     //h1_energy_layer_ch[0][0][0]->SetStats(0);
     h1_energy_layer_ch[0][0][0]->SetLineColor(kBlue+1);
     h1_energy_layer_ch[0][0][0]->SetFillColor(kOrange-3);
@@ -304,8 +304,8 @@ InitStatus LisaOnlineSpectra::Init()
 
                 h1_energy_layer_ch[i][j][k] = new TH1F(Form("energy_%s_%i_%i_%i", city.Data(), i, j, k), city.Data(), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
                 h1_energy_layer_ch[i][j][k]->GetXaxis()->SetTitle("E(LISA) [a.u.]");
-                //h1_energy_layer_ch[i][j][k]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
-                //h1_energy_layer_ch[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
+                //h1_energy_layer_ch[i][j][k]->SetMinimum(lisa_config->amplitude_min); // set in macro
+                //h1_energy_layer_ch[i][j][k]->SetMaximum(lisa_config->amplitude_max);
                 //h1_energy_layer_ch[i][j][k]->SetStats(0);
                 h1_energy_layer_ch[i][j][k]->SetLineColor(kBlue+1);
                 h1_energy_layer_ch[i][j][k]->SetFillColor(kOrange-3);
@@ -445,8 +445,8 @@ InitStatus LisaOnlineSpectra::Init()
     h1_traces_layer_ch[0][0].resize(1);
     h1_traces_layer_ch[0][0][0] = new TH1F("tokyo", "Tokyo", lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces); // microseconds
     h1_traces_layer_ch[0][0][0]->GetXaxis()->SetTitle("Time [us]");
-    h1_traces_layer_ch[0][0][0]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
-    h1_traces_layer_ch[0][0][0]->SetMaximum(lisa_config->AmplitudeMax);
+    h1_traces_layer_ch[0][0][0]->SetMinimum(lisa_config->amplitude_min); // set in macro
+    h1_traces_layer_ch[0][0][0]->SetMaximum(lisa_config->amplitude_max);
     h1_traces_layer_ch[0][0][0]->SetStats(0);
     h1_traces_layer_ch[0][0][0]->SetLineColor(kBlue+1);
     h1_traces_layer_ch[0][0][0]->SetFillColor(kOrange-3);
@@ -480,8 +480,8 @@ InitStatus LisaOnlineSpectra::Init()
 
                 h1_traces_layer_ch[i][j][k] = new TH1F(Form("traces_%s_%i_%i_%i", city.Data(), i, j, k), city.Data(), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces); //2000,0,20
                 h1_traces_layer_ch[i][j][k]->GetXaxis()->SetTitle("Time [us]");
-                h1_traces_layer_ch[i][j][k]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
-                h1_traces_layer_ch[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
+                h1_traces_layer_ch[i][j][k]->SetMinimum(lisa_config->amplitude_min); // set in macro
+                h1_traces_layer_ch[i][j][k]->SetMaximum(lisa_config->amplitude_max);
                 h1_traces_layer_ch[i][j][k]->SetStats(0);
                 h1_traces_layer_ch[i][j][k]->SetLineColor(kBlue+1);
                 h1_traces_layer_ch[i][j][k]->SetFillColor(kOrange-3);
@@ -522,8 +522,8 @@ InitStatus LisaOnlineSpectra::Init()
 
                 h2_traces_layer_ch_stat[i][j][k] = new TH2F(Form("traces_stat_%s_%i_%i_%i", city.Data(), i, j, k), city.Data(), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces, 500,0,10000); //2000,0,20
                 h2_traces_layer_ch_stat[i][j][k]->GetXaxis()->SetTitle("Time [us]");
-                h2_traces_layer_ch_stat[i][j][k]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
-                h2_traces_layer_ch_stat[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
+                h2_traces_layer_ch_stat[i][j][k]->SetMinimum(lisa_config->amplitude_min); // set in macro
+                h2_traces_layer_ch_stat[i][j][k]->SetMaximum(lisa_config->amplitude_max);
                 h2_traces_layer_ch_stat[i][j][k]->Draw("colz");
             }
         }
