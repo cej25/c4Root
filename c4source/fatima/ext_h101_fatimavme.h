@@ -102,28 +102,28 @@ typedef struct EXT_STR_h101_fatimavme_t
   uint32_t fatimavme_qdc5_qshortv[64 EXT_STRUCT_CTRL(fatimavme_qdc5_qshort)] /* [0,65535] */;
   uint32_t fatimavme_qdc5_qlong /* [0,64] */;
   uint32_t fatimavme_qdc5_qlongv[64 EXT_STRUCT_CTRL(fatimavme_qdc5_qlong)] /* [0,65535] */;
-  uint32_t fatimavme_tdc1_nM /* [1,128] */;
-  uint32_t fatimavme_tdc1_nMI[128 EXT_STRUCT_CTRL(fatimavme_tdc1_nM)] /* [1,128] */;
-  uint32_t fatimavme_tdc1_nME[128 EXT_STRUCT_CTRL(fatimavme_tdc1_nM)] /* [1,16384] */;
-  uint32_t fatimavme_tdc1_n /* [0,16384] */;
-  uint32_t fatimavme_tdc1_data[16384 EXT_STRUCT_CTRL(fatimavme_tdc1_n)] /* [0,16777215] */;
-  uint32_t fatimavme_tdc1_leadOrTrailM /* [1,128] */;
-  uint32_t fatimavme_tdc1_leadOrTrailMI[128 EXT_STRUCT_CTRL(fatimavme_tdc1_leadOrTrailM)] /* [1,128] */;
-  uint32_t fatimavme_tdc1_leadOrTrailME[128 EXT_STRUCT_CTRL(fatimavme_tdc1_leadOrTrailM)] /* [1,16384] */;
-  uint32_t fatimavme_tdc1_leadOrTrail /* [0,16384] */;
-  uint32_t fatimavme_tdc1_leadOrTrailv[16384 EXT_STRUCT_CTRL(fatimavme_tdc1_leadOrTrail)] /* [0,255] */;
   uint32_t fatimavme_tdc1_geo /* [0,255] */;
-  uint32_t fatimavme_tdc2_nM /* [1,128] */;
-  uint32_t fatimavme_tdc2_nMI[128 EXT_STRUCT_CTRL(fatimavme_tdc2_nM)] /* [1,128] */;
-  uint32_t fatimavme_tdc2_nME[128 EXT_STRUCT_CTRL(fatimavme_tdc2_nM)] /* [1,16384] */;
-  uint32_t fatimavme_tdc2_n /* [0,16384] */;
-  uint32_t fatimavme_tdc2_data[16384 EXT_STRUCT_CTRL(fatimavme_tdc2_n)] /* [0,16777215] */;
-  uint32_t fatimavme_tdc2_leadOrTrailM /* [1,128] */;
-  uint32_t fatimavme_tdc2_leadOrTrailMI[128 EXT_STRUCT_CTRL(fatimavme_tdc2_leadOrTrailM)] /* [1,128] */;
-  uint32_t fatimavme_tdc2_leadOrTrailME[128 EXT_STRUCT_CTRL(fatimavme_tdc2_leadOrTrailM)] /* [1,16384] */;
-  uint32_t fatimavme_tdc2_leadOrTrail /* [0,16384] */;
-  uint32_t fatimavme_tdc2_leadOrTrailv[16384 EXT_STRUCT_CTRL(fatimavme_tdc2_leadOrTrail)] /* [0,255] */;
+  uint32_t fatimavme_tdc1_measurement_nM /* [1,128] */;
+  uint32_t fatimavme_tdc1_measurement_nMI[128 EXT_STRUCT_CTRL(fatimavme_tdc1_measurement_nM)] /* [1,128] */;
+  uint32_t fatimavme_tdc1_measurement_nME[128 EXT_STRUCT_CTRL(fatimavme_tdc1_measurement_nM)] /* [1,16384] */;
+  uint32_t fatimavme_tdc1_measurement_n /* [0,16384] */;
+  uint32_t fatimavme_tdc1_measurement_data[16384 EXT_STRUCT_CTRL(fatimavme_tdc1_measurement_n)] /* [0,16777215] */;
+  uint32_t fatimavme_tdc1_measurement_leadOrTrailM /* [1,128] */;
+  uint32_t fatimavme_tdc1_measurement_leadOrTrailMI[128 EXT_STRUCT_CTRL(fatimavme_tdc1_measurement_leadOrTrailM)] /* [1,128] */;
+  uint32_t fatimavme_tdc1_measurement_leadOrTrailME[128 EXT_STRUCT_CTRL(fatimavme_tdc1_measurement_leadOrTrailM)] /* [1,16384] */;
+  uint32_t fatimavme_tdc1_measurement_leadOrTrail /* [0,16384] */;
+  uint32_t fatimavme_tdc1_measurement_leadOrTrailv[16384 EXT_STRUCT_CTRL(fatimavme_tdc1_measurement_leadOrTrail)] /* [0,255] */;
   uint32_t fatimavme_tdc2_geo /* [0,255] */;
+  uint32_t fatimavme_tdc2_measurement_nM /* [1,128] */;
+  uint32_t fatimavme_tdc2_measurement_nMI[128 EXT_STRUCT_CTRL(fatimavme_tdc2_measurement_nM)] /* [1,128] */;
+  uint32_t fatimavme_tdc2_measurement_nME[128 EXT_STRUCT_CTRL(fatimavme_tdc2_measurement_nM)] /* [1,16384] */;
+  uint32_t fatimavme_tdc2_measurement_n /* [0,16384] */;
+  uint32_t fatimavme_tdc2_measurement_data[16384 EXT_STRUCT_CTRL(fatimavme_tdc2_measurement_n)] /* [0,16777215] */;
+  uint32_t fatimavme_tdc2_measurement_leadOrTrailM /* [1,128] */;
+  uint32_t fatimavme_tdc2_measurement_leadOrTrailMI[128 EXT_STRUCT_CTRL(fatimavme_tdc2_measurement_leadOrTrailM)] /* [1,128] */;
+  uint32_t fatimavme_tdc2_measurement_leadOrTrailME[128 EXT_STRUCT_CTRL(fatimavme_tdc2_measurement_leadOrTrailM)] /* [1,16384] */;
+  uint32_t fatimavme_tdc2_measurement_leadOrTrail /* [0,16384] */;
+  uint32_t fatimavme_tdc2_measurement_leadOrTrailv[16384 EXT_STRUCT_CTRL(fatimavme_tdc2_measurement_leadOrTrail)] /* [0,255] */;
 
 } EXT_STR_h101_fatimavme;
 
@@ -157,17 +157,17 @@ typedef struct EXT_STR_h101_fatimavme_onion_t
     uint32_t _qlongv[64 /* _qlong */];
   } fatimavme_qdc[5];
   struct {
-    uint32_t _nM;
-    uint32_t _nMI[128 /* _nM */];
-    uint32_t _nME[128 /* _nM */];
-    uint32_t _n;
-    uint32_t _data[16384 /* _n */];
-    uint32_t _leadOrTrailM;
-    uint32_t _leadOrTrailMI[128 /* _leadOrTrailM */];
-    uint32_t _leadOrTrailME[128 /* _leadOrTrailM */];
-    uint32_t _leadOrTrail;
-    uint32_t _leadOrTrailv[16384 /* _leadOrTrail */];
     uint32_t _geo;
+    uint32_t _measurement_nM;
+    uint32_t _measurement_nMI[128 /* _measurement_nM */];
+    uint32_t _measurement_nME[128 /* _measurement_nM */];
+    uint32_t _measurement_n;
+    uint32_t _measurement_data[16384 /* _measurement_n */];
+    uint32_t _measurement_leadOrTrailM;
+    uint32_t _measurement_leadOrTrailMI[128 /* _measurement_leadOrTrailM */];
+    uint32_t _measurement_leadOrTrailME[128 /* _measurement_leadOrTrailM */];
+    uint32_t _measurement_leadOrTrail;
+    uint32_t _measurement_leadOrTrailv[16384 /* _measurement_leadOrTrail */];
   } fatimavme_tdc[2];
 
 } EXT_STR_h101_fatimavme_onion;
@@ -397,71 +397,71 @@ typedef struct EXT_STR_h101_fatimavme_onion_t
                      fatimavme_qdc5_qlongv,           UINT32,\
                     "fatimavme_qdc5_qlongv",           "fatimavme_qdc5_qlong",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     fatimavme_tdc1_nM,               UINT32,\
-                    "fatimavme_tdc1_nM",128,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     fatimavme_tdc1_nMI,              UINT32,\
-                    "fatimavme_tdc1_nMI",              "fatimavme_tdc1_nM",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     fatimavme_tdc1_nME,              UINT32,\
-                    "fatimavme_tdc1_nME",              "fatimavme_tdc1_nM",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     fatimavme_tdc1_n,                UINT32,\
-                    "fatimavme_tdc1_n",16384,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     fatimavme_tdc1_data,             UINT32,\
-                    "fatimavme_tdc1_data",             "fatimavme_tdc1_n",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     fatimavme_tdc1_leadOrTrailM,     UINT32,\
-                    "fatimavme_tdc1_leadOrTrailM",128,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     fatimavme_tdc1_leadOrTrailMI,    UINT32,\
-                    "fatimavme_tdc1_leadOrTrailMI",    "fatimavme_tdc1_leadOrTrailM",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     fatimavme_tdc1_leadOrTrailME,    UINT32,\
-                    "fatimavme_tdc1_leadOrTrailME",    "fatimavme_tdc1_leadOrTrailM",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     fatimavme_tdc1_leadOrTrail,      UINT32,\
-                    "fatimavme_tdc1_leadOrTrail",16384,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     fatimavme_tdc1_leadOrTrailv,     UINT32,\
-                    "fatimavme_tdc1_leadOrTrailv",     "fatimavme_tdc1_leadOrTrail",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      fatimavme_tdc1_geo,              UINT32,\
                     "fatimavme_tdc1_geo",255,0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     fatimavme_tdc2_nM,               UINT32,\
-                    "fatimavme_tdc2_nM",128,0/*flags*/); \
+                     fatimavme_tdc1_measurement_nM,   UINT32,\
+                    "fatimavme_tdc1_measurement_nM",128,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     fatimavme_tdc2_nMI,              UINT32,\
-                    "fatimavme_tdc2_nMI",              "fatimavme_tdc2_nM",0/*flags*/); \
+                     fatimavme_tdc1_measurement_nMI,  UINT32,\
+                    "fatimavme_tdc1_measurement_nMI",  "fatimavme_tdc1_measurement_nM",0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     fatimavme_tdc2_nME,              UINT32,\
-                    "fatimavme_tdc2_nME",              "fatimavme_tdc2_nM",0/*flags*/); \
+                     fatimavme_tdc1_measurement_nME,  UINT32,\
+                    "fatimavme_tdc1_measurement_nME",  "fatimavme_tdc1_measurement_nM",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     fatimavme_tdc2_n,                UINT32,\
-                    "fatimavme_tdc2_n",16384,0/*flags*/); \
+                     fatimavme_tdc1_measurement_n,    UINT32,\
+                    "fatimavme_tdc1_measurement_n",16384,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     fatimavme_tdc2_data,             UINT32,\
-                    "fatimavme_tdc2_data",             "fatimavme_tdc2_n",0/*flags*/); \
+                     fatimavme_tdc1_measurement_data, UINT32,\
+                    "fatimavme_tdc1_measurement_data", "fatimavme_tdc1_measurement_n",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     fatimavme_tdc2_leadOrTrailM,     UINT32,\
-                    "fatimavme_tdc2_leadOrTrailM",128,0/*flags*/); \
+                     fatimavme_tdc1_measurement_leadOrTrailM,UINT32,\
+                    "fatimavme_tdc1_measurement_leadOrTrailM",128,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     fatimavme_tdc2_leadOrTrailMI,    UINT32,\
-                    "fatimavme_tdc2_leadOrTrailMI",    "fatimavme_tdc2_leadOrTrailM",0/*flags*/); \
+                     fatimavme_tdc1_measurement_leadOrTrailMI,UINT32,\
+                    "fatimavme_tdc1_measurement_leadOrTrailMI","fatimavme_tdc1_measurement_leadOrTrailM",0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     fatimavme_tdc2_leadOrTrailME,    UINT32,\
-                    "fatimavme_tdc2_leadOrTrailME",    "fatimavme_tdc2_leadOrTrailM",0/*flags*/); \
+                     fatimavme_tdc1_measurement_leadOrTrailME,UINT32,\
+                    "fatimavme_tdc1_measurement_leadOrTrailME","fatimavme_tdc1_measurement_leadOrTrailM",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     fatimavme_tdc2_leadOrTrail,      UINT32,\
-                    "fatimavme_tdc2_leadOrTrail",16384,0/*flags*/); \
+                     fatimavme_tdc1_measurement_leadOrTrail,UINT32,\
+                    "fatimavme_tdc1_measurement_leadOrTrail",16384,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     fatimavme_tdc2_leadOrTrailv,     UINT32,\
-                    "fatimavme_tdc2_leadOrTrailv",     "fatimavme_tdc2_leadOrTrail",0/*flags*/); \
+                     fatimavme_tdc1_measurement_leadOrTrailv,UINT32,\
+                    "fatimavme_tdc1_measurement_leadOrTrailv","fatimavme_tdc1_measurement_leadOrTrail",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      fatimavme_tdc2_geo,              UINT32,\
                     "fatimavme_tdc2_geo",255,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     fatimavme_tdc2_measurement_nM,   UINT32,\
+                    "fatimavme_tdc2_measurement_nM",128,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     fatimavme_tdc2_measurement_nMI,  UINT32,\
+                    "fatimavme_tdc2_measurement_nMI",  "fatimavme_tdc2_measurement_nM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     fatimavme_tdc2_measurement_nME,  UINT32,\
+                    "fatimavme_tdc2_measurement_nME",  "fatimavme_tdc2_measurement_nM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     fatimavme_tdc2_measurement_n,    UINT32,\
+                    "fatimavme_tdc2_measurement_n",16384,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     fatimavme_tdc2_measurement_data, UINT32,\
+                    "fatimavme_tdc2_measurement_data", "fatimavme_tdc2_measurement_n",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     fatimavme_tdc2_measurement_leadOrTrailM,UINT32,\
+                    "fatimavme_tdc2_measurement_leadOrTrailM",128,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     fatimavme_tdc2_measurement_leadOrTrailMI,UINT32,\
+                    "fatimavme_tdc2_measurement_leadOrTrailMI","fatimavme_tdc2_measurement_leadOrTrailM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     fatimavme_tdc2_measurement_leadOrTrailME,UINT32,\
+                    "fatimavme_tdc2_measurement_leadOrTrailME","fatimavme_tdc2_measurement_leadOrTrailM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     fatimavme_tdc2_measurement_leadOrTrail,UINT32,\
+                    "fatimavme_tdc2_measurement_leadOrTrail",16384,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     fatimavme_tdc2_measurement_leadOrTrailv,UINT32,\
+                    "fatimavme_tdc2_measurement_leadOrTrailv","fatimavme_tdc2_measurement_leadOrTrail",0/*flags*/); \
   \
 } while (0);
 

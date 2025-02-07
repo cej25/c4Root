@@ -22,7 +22,7 @@ class EventHeader : public FairEventHeader
     uint64_t GetEventno() const { return fEventno; }
     Int_t GetTrigger() const { return fTrigger; }
     uint64_t GetTimeStamp() const { return fTimeStamp; }
-    inline bool GetSpillFlag() { return fSpillFlag; }
+    inline bool GetSpillFlag() const { return fSpillFlag; }
 
     static void SetRegister(bool option) { fPersistance = option; }
     virtual void Register(Bool_t Persistance) override;

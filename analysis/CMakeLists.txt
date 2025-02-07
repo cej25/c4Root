@@ -51,6 +51,7 @@ set(SRCS
 ./online/lisa/LisaOnlineSpectra.cxx
 ./online/lisa/LisaOnlineSpectraDaq.cxx
 ./online/aida/AidaOnlineSpectra.cxx
+./online/aida/AidaPulserWalkthrough.cxx
 ./online/bplast/bPlastOnlineSpectra.cxx
 ./online/fatima/FatimaOnlineSpectra.cxx
 ./online/fatima/FatimaVmeOnlineSpectra.cxx
@@ -62,6 +63,7 @@ set(SRCS
 ./online/timemachine/TimeMachineOnline.cxx
 ./online/wr/WhiterabbitCorrelationOnline.cxx
 ./online/bb7/BB7OnlineSpectra.cxx
+./online/bb7/BB7FebexOnlineSpectra.cxx
 ./online/fimp/FimpOnlineSpectra.cxx
 
 # nearline/offline
@@ -70,6 +72,7 @@ set(SRCS
 ./nearline/fatima/FatimaVmeNearlineSpectra.cxx
 ./nearline/aida/AidaNearlineSpectra.cxx
 ./nearline/frs/FrsNearlineSpectra.cxx
+./nearline/frs/FrsRawNearlineSpectra.cxx
 ./nearline/travMus/TravMusNearlineSpectra.cxx
 ./nearline/germanium/GermaniumNearlineSpectra.cxx
 ./nearline/bgo/BGONearlineSpectra.cxx

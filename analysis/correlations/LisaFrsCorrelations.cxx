@@ -68,8 +68,8 @@ InitStatus LisaFrsCorrelations::Init()
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-    header = (EventHeader*)mgr->GetObject("EventHeader.");
-    c4LOG_IF(error, !header, "Branch EventHeader. not found");
+    header = mgr->InitObjectAs<decltype(header)>("EventHeader.");
+    c4LOG_IF(error, !header, "Branch EventHeader. not found!");
 
     lisaCalArray = mgr->InitObjectAs<decltype(lisaCalArray)>("LisaCalData");
     c4LOG_IF(fatal, !lisaCalArray, "Branch LisaCalData not found!");
@@ -84,7 +84,7 @@ InitStatus LisaFrsCorrelations::Init()
 
     // needed?
     travMusAnaArray = mgr->InitObjectAs<decltype(travMusAnaArray)>("TravMusAnaData");
-    c4LOG_IF(fatal, !travMusAnaArray, "Branch TravMusAnaData not found!"); 
+    c4LOG_IF(fatal, !travMusAnaArray, "Branch TravMusAnaData not found!");
 
 
     layer_number = lisa_config->NLayers();
@@ -451,11 +451,11 @@ void LisaFrsCorrelations::Exec(Option_t* option)
 
 
     // Energy from frs
-    energy_MUSIC_1 = frsHitItem.Get_music_dE(0); 
-    energy_MUSIC_2 = frsHitItem.Get_music_dE(1);
+    energy_MUSIC_1 = frsHitItem.Get_music_dE()[0]; 
+    energy_MUSIC_2 = frsHitItem.Get_music_dE()[1];
     energy_travMUSIC = travMusicHitItem.Get_travmusic_dE();
     // CEJ needs adding
-    energy_travMUSIC_driftcorr = travMusicHitItem.Get_travmusic_dE_driftcorr(); 
+    energy_travMUSIC_driftcorr = travMusicHitItem.Get_travmusic_dE_driftcorr();
     //c4LOG(info, "travMUS en : " << energy_travMUSIC << " music 1 : " << energy_MUSIC_1 << " sum energy 1 : " << sum_energy_layer[1]);
 
 

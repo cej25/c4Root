@@ -61,8 +61,8 @@ InitStatus FrsTravMusCorrelations::Init()
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-    header = (EventHeader*)mgr->GetObject("EventHeader.");
-    c4LOG_IF(error, !header, "Branch EventHeader. not found");
+    header = mgr->InitObjectAs<decltype(header)>("EventHeader.");
+    c4LOG_IF(error, !header, "Branch EventHeader. not found!");
 
     frsHitArray = mgr->InitObjectAs<decltype(frsHitArray)>("FrsHitData");
     c4LOG_IF(fatal, !frsHitArray, "Branch FrsHitData not found!");
@@ -110,8 +110,8 @@ void FrsTravMusCorrelations::Exec(Option_t* option)
     int64_t wr_travMUSIC = travMusicHitItem.Get_wr_t();
 
     // Energy from frs
-    Float_t energy_MUSIC_1 = frsHitItem.Get_music_dE(0); 
-    Float_t energy_MUSIC_2 = frsHitItem.Get_music_dE(1);
+    Float_t energy_MUSIC_1 = frsHitItem.Get_music_dE()[0]; 
+    Float_t energy_MUSIC_2 = frsHitItem.Get_music_dE()[1];
     double energy_travMUSIC = travMusicHitItem.Get_travmusic_dE();
     double energy_travMUSIC_driftcorr = travMusicHitItem.Get_travmusic_dE_driftcorr();
 

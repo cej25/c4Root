@@ -4,10 +4,10 @@
 #define AIDA_ON 1
 #define BPLAST_ON 1
 #define GERMANIUM_ON 1
-#define BGO_ON 1
-#define FRS_ON 1
-#define TIME_MACHINE_ON 0
-#define BEAMMONITOR_ON 0
+#define BGO_ON 0
+#define FRS_ON 0
+#define TIME_MACHINE_ON 1
+#define BEAMMONITOR_ON 1
 #define WHITE_RABBIT_CORS 0
 #define BB7_ON 0
 
@@ -25,17 +25,14 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_aida_onion_t aida;
     EXT_STR_h101_bplast_onion_t bplast;
     EXT_STR_h101_germanium_onion_t germanium;
-    EXT_STR_h101_frsmain_onion_t frsmain;
-    EXT_STR_h101_frstpc_onion_t frstpc;
-    EXT_STR_h101_frsuser_onion_t frsuser;
-    EXT_STR_h101_frstpat_onion_t frstpat;
+    EXT_STR_h101_frs_onion_t frs;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
     EXT_STR_h101_bgo_onion_t bgo;
     EXT_STR_h101_bb7vme_onion_t bb7vme;
 } EXT_STR_h101;
 
 
-void s181_online()
+void s101_online()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
 
@@ -43,13 +40,13 @@ void s181_online()
     TString fExpName = "s101";
 
     // Define important paths.
-    TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
-    TString c4Root_path = "/u/cjones/c4Root";
-    TString c4Root_path = "/u/despec/c4Root";
+    TString c4Root_path = "/u/despec/s101_online/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes";
     ucesb_path.ReplaceAll("//","/");
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
+    
+    std::cout << config_path << std::endl;
 
     // Macro timing
     TString cRunId = Form("%04d", fRunId);
@@ -67,7 +64,12 @@ void s181_online()
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
-    TString filename = "trans://lxg1257"; // timesorter.
+    TString filename = "trans://lxg3107";
+    // TString filename = "/lustre/gamma/s101_files/dryrun_ts/*";
+//     TString filename = "trans://lxg1257"; // timesorter.
+//     TString filename = "trans://x86l-144"; // ??
+    TString outputpath = "output";
+    TString outputFileName = outputpath + ".root";
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
@@ -77,6 +79,7 @@ void s181_online()
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
+    run->SetSink(new FairRootFileSink(outputFileName));
     run->ActivateHttpServer(refresh, port);
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
@@ -115,14 +118,14 @@ void s181_online()
     
     TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations.dat");
 
-
+    
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
-    TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_mapping_s100.txt");
+    TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_mapping_220125.txt");
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
-    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_jun08.txt");
-    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_cal_jun8.txt");
+    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_apr15.txt");
+    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_cal_apr18.txt");
     TGermaniumConfiguration::SetDetectorTimeshiftsFile(config_path + "/germanium/ge_timeshifts_apr20.txt");
     TGermaniumConfiguration::SetPromptFlashCut(config_path + "/germanium/ge_prompt_flash.root");
 
@@ -185,20 +188,11 @@ void s181_online()
     
     if (FRS_ON)
     {
-        FrsMainReader* unpackfrsmain = new FrsMainReader((EXT_STR_h101_frsmain_onion*)&ucesb_struct.frsmain, offsetof(EXT_STR_h101, frsmain));
-        FrsTPCReader* unpackfrstpc = new FrsTPCReader((EXT_STR_h101_frstpc_onion*)&ucesb_struct.frstpc, offsetof(EXT_STR_h101, frstpc));
-        FrsUserReader* unpackfrsuser = new FrsUserReader((EXT_STR_h101_frsuser_onion*)&ucesb_struct.frsuser, offsetof(EXT_STR_h101, frsuser));
-        FrsTpatReader* unpackfrstpat = new FrsTpatReader((EXT_STR_h101_frstpat_onion*)&ucesb_struct.frstpat, offsetof(EXT_STR_h101, frstpat));
+        FrsReader* unpackfrs = new FrsReader((EXT_STR_h101_frs_onion*)&ucesb_struct.frs, offsetof(EXT_STR_h101, frs));
         
-        unpackfrsmain->SetOnline(true);
-        unpackfrstpc->SetOnline(true);
-        unpackfrsuser->SetOnline(true);
-        unpackfrstpat->SetOnline(true);
+        unpackfrs->SetOnline(true);
         
-        source->AddReader(unpackfrsmain);
-        source->AddReader(unpackfrstpc);
-        source->AddReader(unpackfrsuser);
-        source->AddReader(unpackfrstpat);
+        source->AddReader(unpackfrs);
     }
     
     if (BEAMMONITOR_ON)
@@ -261,16 +255,10 @@ void s181_online()
     
     if (FRS_ON)
     {
-        FrsMainRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
-        FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal();
-        FrsUserRaw2Cal* calfrsuser = new FrsUserRaw2Cal();
+        FrsRaw2Cal* calfrs = new FrsRaw2Cal();
         
-        calfrsmain->SetOnline(true);
-        calfrstpc->SetOnline(true);
-        calfrsuser->SetOnline(true);
-        run->AddTask(calfrsmain);
-        run->AddTask(calfrstpc);
-        run->AddTask(calfrsuser);
+        calfrs->SetOnline(true);
+        run->AddTask(calfrs);
     }
 
 
@@ -347,25 +335,25 @@ void s181_online()
         
     }
     
-    TFrsConfiguration::Set_Z_range(30,120);
-    TFrsConfiguration::Set_AoQ_range(2.0,3.0);
-    FrsGate* zHeavy = new FrsGate("zHeavy",config_path+"/frs/Gates/zHeavy.root");
-    FrsGate* zHeavy2 = new FrsGate("zHeavy2",config_path+"/frs/Gates/zHeavy.root");
-    std::vector<FrsGate*> frsgates{};
-    frsgates.emplace_back(zHeavy);
-
-    if (FRS_ON)
-    {
-        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra(frsgates);
-        // For monitoring FRS on our side
-        FrsRawSpectra* frsrawspec = new FrsRawSpectra();
-        FrsCalSpectra* frscalspec = new FrsCalSpectra();
-        
-        run->AddTask(onlinefrs);
-        run->AddTask(frsrawspec);
-        run->AddTask(frscalspec);
-    }
-    
+//     TFrsConfiguration::Set_Z_range(30,120);
+//     TFrsConfiguration::Set_AoQ_range(2.0,3.0);
+//     FrsGate* zHeavy = new FrsGate("zHeavy",config_path+"/frs/Gates/zHeavy.root");
+//     FrsGate* zHeavy2 = new FrsGate("zHeavy2",config_path+"/frs/Gates/zHeavy.root");
+//     std::vector<FrsGate*> frsgates{};
+//     frsgates.emplace_back(zHeavy);
+// 
+//     if (FRS_ON)
+//     {
+//         FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra(frsgates);
+//         For monitoring FRS on our side
+//         FrsRawSpectra* frsrawspec = new FrsRawSpectra();
+//         FrsCalSpectra* frscalspec = new FrsCalSpectra();
+//         
+//         run->AddTask(onlinefrs);
+//         run->AddTask(frsrawspec);
+//         run->AddTask(frscalspec);
+//     }
+//     
     if (BEAMMONITOR_ON)
     {
         BeamMonitorOnlineSpectra* onlinebm = new BeamMonitorOnlineSpectra();
@@ -376,37 +364,37 @@ void s181_online()
     //FRS GATES::
 
     
-    if (AIDA_ON && FRS_ON)
-    {
-        
-        FrsAidaCorrelationsOnline* frsaida = new FrsAidaCorrelationsOnline(frsgates);
-        
-        run->AddTask(frsaida);
-    }
+//     if (AIDA_ON && FRS_ON)
+//     {
+//         
+//         FrsAidaCorrelationsOnline* frsaida = new FrsAidaCorrelationsOnline(frsgates);
+//         
+//         run->AddTask(frsaida);
+//     }
     
     
-    if (FRS_ON && GERMANIUM_ON)
-    {
-        FrsGermaniumCorrelations* zhv = new FrsGermaniumCorrelations(zHeavy);
-        zhv->SetShortLifetimeCollectionWindow(20000);
-        run->AddTask(zhv);
-        FrsGermaniumCorrelations* zhv2 = new FrsGermaniumCorrelations(zHeavy2);
-        zhv2->SetShortLifetimeCollectionWindow(20000);
-        run->AddTask(zhv2);
-    }
+//     if (FRS_ON && GERMANIUM_ON)
+//     {
+//         FrsGermaniumCorrelations* zhv = new FrsGermaniumCorrelations(zHeavy);
+//         zhv->SetShortLifetimeCollectionWindow(20000);
+//         run->AddTask(zhv);
+//         FrsGermaniumCorrelations* zhv2 = new FrsGermaniumCorrelations(zHeavy2);
+//         zhv2->SetShortLifetimeCollectionWindow(20000);
+//         run->AddTask(zhv2);
+//     }
 
 
     TString b = "Aida";
     TString c = "bPlast";
     TString d = "Germanium";
     TString e = "Frs";
-    TString f = "BB7";
+    //TString f = "BB7";
     TString g = "BGO";
 
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {b, d, c, e, f, g};
+        std::vector a {b, d, c};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
@@ -415,7 +403,7 @@ void s181_online()
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({b,c,d,e,f,g});
+        wronline->SetDetectorSystems({b,c});
         
         run->AddTask(wronline);
     }

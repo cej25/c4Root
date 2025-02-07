@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-#include "../../../config/setup.h"
+// #include "../../../config/setup.h"
 #include "../../common/whiterabbit.spec"
 #include "../../common/gsi_febex4.spec"
 #include "../../common/gsi_tamex4.spec"
@@ -11,6 +11,7 @@
 #include "../../common/general.spec"
 
 #define BM_MAX_HITS 100000
+#define AIDA_MAX_HITS 13000
 
 // making a change
 
@@ -115,37 +116,12 @@ SUBEVENT(fatima_vme_subev)
         scalers = FATIMA_VME_SCALERS();
     };
 
-    // don't love this but ucesb is a real pain in the ass
-    select optional
-    {
-        qdc1 = VME_CAEN_V1751(board=6);
-    }
+    select optional { qdc1 = VME_CAEN_V1751(board=6); }
+    select optional { qdc2 = VME_CAEN_V1751(board=7); }
+    select optional { qdc3 = VME_CAEN_V1751(board=8); }
+    select optional { qdc4 = VME_CAEN_V1751(board=9); }
+    select optional { qdc5 = VME_CAEN_V1751(board=10); }
 
-    select optional
-    {
-        qdc2 = VME_CAEN_V1751(board=7);
-    }
-
-    select optional
-    {
-        qdc3 = VME_CAEN_V1751(board=8);
-    }
-
-    select optional
-    {
-        qdc4 = VME_CAEN_V1751(board=9);
-    }
-
-    select optional
-    {
-        qdc5 = VME_CAEN_V1751(board=10);
-    }
-    
-    /*qdc[0] = VME_CAEN_V1751(board=6);
-    qdc[1] = VME_CAEN_V1751(board=7);
-    qdc[2] = VME_CAEN_V1751(board=8);
-    qdc[3] = VME_CAEN_V1751(board=9);
-    qdc[4] = VME_CAEN_V1751(board=10);*/
    
     select several
     {
@@ -155,7 +131,7 @@ SUBEVENT(fatima_vme_subev)
     // we don't always get information from both TDC boards
     select optional
     {
-        tdc1 = VME_CAEN_V1290_FRS();
+        tdc1 = VME_CAEN_V1290_N();
     };
 
     select several
@@ -165,7 +141,7 @@ SUBEVENT(fatima_vme_subev)
 
     select optional
     {
-        tdc2 = VME_CAEN_V1290_FRS();
+        tdc2 = VME_CAEN_V1290_N();
     };
 }
 
@@ -225,7 +201,7 @@ SUBEVENT(frs_main_subev)
 
 SUBEVENT(frs_tpc_subev)
 {
-    optional UINT32 be { 0_31: b = MATCH(0xbad00bad);}
+    optional UINT32 be { 0_31: b = MATCH(0xbad00bad); }
 
     select several
     {
@@ -360,3 +336,5 @@ EVENT
 
     ignore_unknown_subevent;
 };
+
+#include "mapping.hh"

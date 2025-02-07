@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                       C.E. Jones, J.P. Bormans                             *
+ *                              17.12.24                                      *
+ ******************************************************************************/
+
 // FairRoot
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -7,15 +23,6 @@
 
 // c4
 #include "WhiterabbitCorrelationOnline.h"
-#include "EventHeader.h"
-#include "TimeMachineData.h"
-#include "FatimaTwinpeaksCalData.h"
-#include "FatimaVmeCalData.h"
-#include "bPlastTwinpeaksCalData.h"
-#include "GermaniumCalData.h"
-#include "FrsHitData.h"
-#include "FrsHitData.h"
-
 #include "AnalysisTools.h"
 #include "c4Logger.h"
 
@@ -42,6 +49,7 @@ WhiterabbitCorrelationOnline::WhiterabbitCorrelationOnline(const TString& name, 
     , fAidaImplants(nullptr)
     , fatVmeArray(nullptr)
     , hitArrayFrs(nullptr)
+    , fBB7Decays(nullptr)
     , fNEvents(0)
     , fEventHeader(nullptr)
 {
@@ -53,26 +61,11 @@ WhiterabbitCorrelationOnline::WhiterabbitCorrelationOnline(const TString& name, 
 
 WhiterabbitCorrelationOnline::~WhiterabbitCorrelationOnline()
 {
-    if (fHitFatimaTwinpeaks)
-    {
-        delete fHitFatimaTwinpeaks;
-    }
-    if (fHitbPlastTwinpeaks)
-    {
-        delete fHitbPlastTwinpeaks;
-    }
-    if (fHitGe)
-    {
-        delete fHitGe;
-    }
-    if (fAidaDecays)
-    {
-        delete fAidaDecays;
-    }
-    if (fEventHeader)
-    {
-        delete fEventHeader;
-    }
+    if (fHitFatimaTwinpeaks) delete fHitFatimaTwinpeaks;
+    if (fHitbPlastTwinpeaks) delete fHitbPlastTwinpeaks;
+    if (fHitGe) delete fHitGe;
+    if (fAidaDecays) delete fAidaDecays;
+    if (fEventHeader) delete fEventHeader;
 }
 
 void WhiterabbitCorrelationOnline::SetDetectorSystems(std::vector<TString> detectorsystems)
@@ -99,7 +92,7 @@ InitStatus WhiterabbitCorrelationOnline::Init()
 
     for (int i = 0; i < fNumDetectorSystems; i++)
     {
-        // check each subsystem and get the corresponding TClonesArray
+        // check each subsystem and get the corresponding array
         if (fDetectorSystems.at(i) == "Frs")
         {
             hitArrayFrs = mgr->InitObjectAs<decltype(hitArrayFrs)>("FrsHitData");
@@ -134,7 +127,7 @@ InitStatus WhiterabbitCorrelationOnline::Init()
             fAidaImplants = mgr->InitObjectAs<decltype(fAidaImplants)>("AidaImplantHits");
             c4LOG_IF(fatal, !fAidaImplants, "Branch AidaImplantHits not found!");
         }
-        else if (fDetectorSystems.at(i) == "BB7")
+        else if (fDetectorSystems.at(i) == "BB7") // make adaptable to spellings...
         {
             fBB7Decays = mgr->InitObjectAs<decltype(fBB7Decays)>("BB7DecayData");
             c4LOG_IF(fatal, !fBB7Decays, "Branch BB7DecayData not found!");
@@ -319,125 +312,22 @@ InitStatus WhiterabbitCorrelationOnline::Init()
     dir_whiterabbit->cd();
 
     // Register command to reset histograms
-    run->GetHttpServer()->RegisterCommand("Reset_Whiterabbit_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
-    run->GetHttpServer()->RegisterCommand("Snapshot_Whiterabbit_Hist", Form("/Objects/%s/->Snapshot_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Reset_Whiterabbit_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
     
     return kSUCCESS;
 }
 
-// work in progress
-void WhiterabbitCorrelationOnline::Reset_Histo()
-{
-    c4LOG(info, "I'm late, I'm late, for a very important date! No time to say 'Hello, Good Bye' I'm late, I'm late, I'm late!");
-    h1_whiterabbit_correlation_fatima_bplast->Reset();
-    h1_whiterabbit_trigger1_fatima_bplast->Reset();
-    h1_whiterabbit_trigger3_fatima_bplast->Reset();
+void WhiterabbitCorrelationOnline::Reset_Histo() {
+    c4LOG(info, "Resetting White Wabbit histograms.");
 
-    h1_whiterabbit_correlation_fatima_ge->Reset();
-    h1_whiterabbit_trigger1_fatima_ge->Reset();
-    h1_whiterabbit_trigger3_fatima_ge->Reset();
-
-    h1_whiterabbit_correlation_bplast_ge->Reset();
-    h1_whiterabbit_trigger1_bplast_ge->Reset();
-    h1_whiterabbit_trigger3_bplast_ge->Reset();
-
-    h1_whiterabbit_correlation_aida_fatima->Reset();
-    h1_whiterabbit_trigger1_aida_fatima->Reset();
-    h1_whiterabbit_trigger3_aida_fatima->Reset();
-
-    h1_whiterabbit_correlation_aida_fatimavme->Reset();
-    h1_whiterabbit_trigger1_aida_fatimavme->Reset();
-    h1_whiterabbit_trigger3_aida_fatimavme->Reset();
-
-    h1_whiterabbit_correlation_aida_bplast->Reset();
-    h1_whiterabbit_trigger1_aida_bplast->Reset();
-    h1_whiterabbit_trigger3_aida_bplast->Reset();
-
-    h1_whiterabbit_correlation_aida_germanium->Reset();
-    h1_whiterabbit_trigger1_aida_germanium->Reset();
-    h1_whiterabbit_trigger3_aida_germanium->Reset();
-
-    h1_whiterabbit_correlation_fatima_fatimavme->Reset();
-    h1_whiterabbit_trigger1_fatima_fatimavme->Reset();
-    h1_whiterabbit_trigger3_fatima_fatimavme->Reset();
-
-    h1_whiterabbit_correlation_fatimavme_ge->Reset();
-    h1_whiterabbit_trigger1_fatimavme_ge->Reset();
-    h1_whiterabbit_trigger3_fatimavme_ge->Reset();
-
-    h1_whiterabbit_correlation_fatimavme_bplast->Reset();
-    h1_whiterabbit_trigger1_fatimavme_bplast->Reset();
-    h1_whiterabbit_trigger3_fatimavme_bplast->Reset();
-
-    h1_whiterabbit_trigger->Reset();
+    // Assuming dir is a TDirectory pointer containing histograms
+    if (dir_whiterabbit) {
+        AnalysisTools_H::ResetHistogramsInDirectory(dir_whiterabbit);
+        c4LOG(info, "White Wabbit histograms reset.");
+    } else {
+        c4LOG(error, "Failed to get list of histograms from directory.");
+    }
 }
-void WhiterabbitCorrelationOnline::Snapshot_Histo()
-{
-    c4LOG(info, "Good heavens, would you look at the time!");
-
-    time_t now = time(0);
-    tm *ltm = localtime(&now);
-
-    const char* snapshot_dir = Form("Whiterabbit_correlation_%d_%d_%d_%d_%d_%d", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
-    gSystem->mkdir(snapshot_dir);
-    gSystem->cd(snapshot_dir);
-
-    c_whiterabbit_correlation_fatima_bplast->SaveAs("c_whiterabbit_correlation_fatima_bplast.png");
-    c_whiterabbit_trigger1_fatima_bplast->SaveAs("c_whiterabbit_trigger1_fatima_bplast.png");
-    c_whiterabbit_trigger3_fatima_bplast->SaveAs("c_whiterabbit_trigger3_fatima_bplast.png");
-
-    c_whiterabbit_correlation_fatima_ge->SaveAs("c_whiterabbit_correlation_fatima_ge.png");
-    c_whiterabbit_trigger1_fatima_ge->SaveAs("c_whiterabbit_trigger1_fatima_ge.png");
-    c_whiterabbit_trigger3_fatima_ge->SaveAs("c_whiterabbit_trigger3_fatima_ge.png");
-
-    c_whiterabbit_correlation_aida_fatima->SaveAs("c_whiterabbit_correlation_aida_fatima.png");
-    c_whiterabbit_trigger1_aida_fatima->SaveAs("c_whiterabbit_trigger1_aida_fatima.png");
-    c_whiterabbit_trigger3_aida_fatima->SaveAs("c_whiterabbit_trigger3_aida_fatima.png");
-
-    c_whiterabbit_correlation_bplast_ge->SaveAs("c_whiterabbit_correlation_bplast_ge.png");
-    c_whiterabbit_trigger1_bplast_ge->SaveAs("c_whiterabbit_trigger1_bplast_ge.png");
-    c_whiterabbit_trigger3_bplast_ge->SaveAs("c_whiterabbit_trigger3_bplast_ge.png");
-
-    c_whiterabbit_correlation_aida_fatimavme->SaveAs("c_whiterabbit_correlation_aida_fatimavme.png");
-    c_whiterabbit_trigger1_aida_fatimavme->SaveAs("c_whiterabbit_trigger1_aida_fatimavme.png");
-    c_whiterabbit_trigger3_aida_fatimavme->SaveAs("c_whiterabbit_trigger3_aida_fatimavme.png");
-
-    c_whiterabbit_correlation_aida_bplast->SaveAs("c_whiterabbit_correlation_aida_bplast.png");
-    c_whiterabbit_trigger1_aida_bplast->SaveAs("c_whiterabbit_trigger1_aida_bplast.png");
-    c_whiterabbit_trigger3_aida_bplast->SaveAs("c_whiterabbit_trigger3_aida_bplast.png");
-
-    c_whiterabbit_correlation_aida_germanium->SaveAs("c_whiterabbit_correlation_aida_germanium.png");
-    c_whiterabbit_trigger1_aida_germanium->SaveAs("c_whiterabbit_trigger1_aida_germanium.png");
-    c_whiterabbit_trigger3_aida_germanium->SaveAs("c_whiterabbit_trigger3_aida_germanium.png");
-
-    c_whiterabbit_correlation_fatima_fatimavme->SaveAs("c_whiterabbit_correlation_fatima_fatimavme.png");
-    c_whiterabbit_trigger1_fatima_fatimavme->SaveAs("c_whiterabbit_trigger1_fatima_fatimavme.png");
-    c_whiterabbit_trigger3_fatima_fatimavme->SaveAs("c_whiterabbit_trigger3_fatima_fatimavme.png");
-
-    c_whiterabbit_correlation_fatimavme_ge->SaveAs("c_whiterabbit_correlation_fatimavme_ge.png");
-    c_whiterabbit_trigger1_fatimavme_ge->SaveAs("c_whiterabbit_trigger1_fatimavme_ge.png");
-    c_whiterabbit_trigger3_fatimavme_ge->SaveAs("c_whiterabbit_trigger3_fatimavme_ge.png");
-
-    c_whiterabbit_correlation_fatima_bplast->SaveAs("c_whiterabbit_correlation_fatimavme_bplast.png");
-    c_whiterabbit_trigger1_fatimavme_bplast->SaveAs("c_whiterabbit_trigger1_fatimavme_bplast.png");
-    c_whiterabbit_trigger3_fatima_bplast->SaveAs("c_whiterabbit_trigger3_fatima_bplast.png");
-
-    c_whiterabbit_correlation->SaveAs("c_whiterabbit_correlation.png");
-    c_whiterabbit_trigger1->SaveAs("c_whiterabbit_trigger1.png");
-    c_whiterabbit_trigger3->SaveAs("c_whiterabbit_trigger3.png");
-
-    // snapshot .root file with data and time
-
-    file_whiterabbit_snapshot = new TFile(Form("whiterabbit_snapshot_%d_%d_%d_%d_%d_%d.root", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec), "RECREATE");
-    file_whiterabbit_snapshot->cd();
-    dir_whiterabbit->Write();
-    file_whiterabbit_snapshot->Close();
-    delete file_whiterabbit_snapshot;
-
-    gSystem->cd("..");
-    c4LOG(info, "Snapshot saved in:" << snapshot_dir);    
-}
-
 
 void WhiterabbitCorrelationOnline::Exec(Option_t* option)
 {
@@ -507,20 +397,23 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
             
         }
     }
-
-    if (fatVmeArray->size() > 0) 
+    
+    if (fatVmeArray != nullptr)
     {
-        systems += 1;
-
-        auto const & hitFatVme = fatVmeArray->at(0);
-        wr_fatimavme = hitFatVme.Get_wr_t();
-        
-        if (last_wr_fatimavme != wr_fatimavme) 
+        if (fatVmeArray->size() > 0) 
         {
-            h1_whiterabbit_dt_fatimavme->Fill(wr_fatimavme - last_wr_fatimavme);
-            last_wr_fatimavme = wr_fatimavme;
+            systems += 1;
+
+            auto const & hitFatVme = fatVmeArray->at(0);
+            wr_fatimavme = hitFatVme.Get_wr_t();
+            
+            if (last_wr_fatimavme != wr_fatimavme) 
+            {
+                h1_whiterabbit_dt_fatimavme->Fill(wr_fatimavme - last_wr_fatimavme);
+                last_wr_fatimavme = wr_fatimavme;
+            }
         }
-    }
+    }   
     
     if (fAidaDecays->size() > 0 || fAidaImplants->size() > 0)
     {
@@ -543,19 +436,22 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
     }
 
     // add implants when fixed
-    if (fBB7Decays->size() > 0)
+    if (fBB7Decays != nullptr)
     {
-        nHitsBB7 = fBB7Decays->size();
-        if (nHitsBB7 > 0)
+        if (fBB7Decays->size() > 0)
         {
-            systems++;
-
-            auto const & decay = fBB7Decays->at(0);
-            wr_bb7 = decay.Get_wr_t();
-            if (last_wr_bb7 != wr_bb7) 
+            nHitsBB7 = fBB7Decays->size();
+            if (nHitsBB7 > 0)
             {
-                h1_whiterabbit_dt_bb7->Fill(wr_bb7 - last_wr_bb7);
-                last_wr_bb7 = wr_bb7;
+                systems++;
+
+                auto const & decay = fBB7Decays->at(0);
+                wr_bb7 = decay.Get_wr_t();
+                if (last_wr_bb7 != wr_bb7) 
+                {
+                    h1_whiterabbit_dt_bb7->Fill(wr_bb7 - last_wr_bb7);
+                    last_wr_bb7 = wr_bb7;
+                }
             }
         }
     }
