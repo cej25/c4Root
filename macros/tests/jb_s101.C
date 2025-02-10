@@ -15,7 +15,7 @@
 // CEJ: not configured for s101 yet
 extern "C"
 {
-    #include "../../config/s101/frs/setup_160_003_2025_conv.C"
+    #include "../../config/s101/frs/setup_s181_010_2024_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -32,12 +32,12 @@ typedef struct EXT_STR_h101_t
 } EXT_STR_h101;
 
 
-void s101_online()
+void jb_s101()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
 
     // Name your experiment. Make sure all relevant directories are named identically.
-    TString fExpName = "s101";
+    TString fExpName = "s181";
 
     // Define important paths.
     TString c4Root_path = "/lustre/gamma/jeroen/S101/c4Root";
@@ -64,8 +64,8 @@ void s101_online()
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
-    TString filename = "trans://lxsecdaq01";
-    // TString filename = "/lustre/gamma/s101_files/dryrun_ts/*";
+    // TString filename = "trans://lxsecdaq01";
+    TString filename = "/lustre/gamma/s181_files/ts/213Tl_0100_0182.lmd";
 //     TString filename = "trans://lxg1257"; // timesorter.
 //     TString filename = "trans://x86l-144"; // ??
     TString outputpath = "output";
@@ -73,7 +73,7 @@ void s101_online()
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 5000; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 5500; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
