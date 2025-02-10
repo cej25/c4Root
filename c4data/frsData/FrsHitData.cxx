@@ -89,6 +89,7 @@ void FrsHitItem::SetMusicData(Float_t music_dE[2], Float_t music_dE_cor[2])
         fmusic_dE_cor[i] = music_dE[i];
     }
 }
+
         
 void FrsHitItem::SetIDs(Float_t x2,
             Float_t y2,
@@ -144,6 +145,13 @@ ClassImp(FrsHitItem)
 
 FrsMultiHitItem::FrsMultiHitItem() {}
 
+
+void FrsMultiHitItem::SetMetaData(Long64_t wr_t, Short_t tpat)
+{
+    fwr_t = wr_t;
+    ftpat = tpat;
+}
+
 void FrsMultiHitItem::SetAll(Float_t s2x,
                             Float_t s2a,
                             Float_t s4x,
@@ -155,7 +163,8 @@ void FrsMultiHitItem::SetAll(Float_t s2x,
                             Float_t z,
                             Float_t z2,
                             Float_t dEdeg,
-                            Float_t dEdegoQ)
+                            Float_t dEdegoQ
+                            )
 {
     fID_s2x_mhtdc = s2x;
     fID_s2a_mhtdc = s2a;

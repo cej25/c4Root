@@ -1,13 +1,13 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define AIDA_ON 1
-#define BPLAST_ON 1
-#define GERMANIUM_ON 1
+#define AIDA_ON 0
+#define BPLAST_ON 0
+#define GERMANIUM_ON 0
 #define BGO_ON 0
-#define FRS_ON 0
-#define TIME_MACHINE_ON 1
-#define BEAMMONITOR_ON 1
+#define FRS_ON 1
+#define TIME_MACHINE_ON 0
+#define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 0
 #define BB7_ON 0
 
@@ -37,7 +37,7 @@ void jb_s101()
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
 
     // Name your experiment. Make sure all relevant directories are named identically.
-    TString fExpName = "s101";
+    TString fExpName = "s181";
 
     // Define important paths.
     TString c4Root_path = "/lustre/gamma/jeroen/S101/c4Root";
@@ -64,8 +64,8 @@ void jb_s101()
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
-    // TString filename = "trans://lxg3107";
-    TString filename = "/lustre/gamma/s101_files/dryrun_ts/*";
+    // TString filename = "trans://lxsecdaq01";
+    TString filename = "/lustre/gamma/s181_files/ts/213Tl_0100_0182.lmd";
 //     TString filename = "trans://lxg1257"; // timesorter.
 //     TString filename = "trans://x86l-144"; // ??
     TString outputpath = "output";
@@ -88,7 +88,7 @@ void jb_s101()
   
     // Create source using ucesb for input
     EXT_STR_h101 ucesb_struct;
-    TString ntuple_options = "UNPACK"; // Define which level of data to unpack - we don't use "RAW" or "CAL"
+    TString ntuple_options = "UNPACK,RAW"; // Define which level of data to unpack - we don't use "RAW" or "CAL"
     UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
     source->SetMaxEvents(nev);
     run->SetSource(source);
@@ -128,7 +128,8 @@ void jb_s101()
     TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_cal_apr18.txt");
     TGermaniumConfiguration::SetDetectorTimeshiftsFile(config_path + "/germanium/ge_timeshifts_apr20.txt");
     TGermaniumConfiguration::SetPromptFlashCut(config_path + "/germanium/ge_prompt_flash.root");
-
+    TFrsConfiguration::SetConfigPath(config_path + "/frs/");
+    TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
     TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
     
     TBB7VmeConfiguration::SetDetectorConfigurationFile(config_path + "/bb7/BB7_Detector_Map_s181.txt");  

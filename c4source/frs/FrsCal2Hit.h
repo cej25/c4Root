@@ -8,6 +8,7 @@
 #include "FrsCalData.h"
 #include "FrsHitData.h"
 #include "EventHeader.h"
+#include "GainShift.h"
 
 #include "FairTask.h"
 #include <TRandom3.h>
@@ -45,6 +46,14 @@ class FrsCal2Hit : public FairTask
 
         void FinishEvent();
         void FinishTask();
+
+
+        void SetMusic41TACGainShift(GainShift * p) {music41_tac_z_gain_shifts = p;}
+        void SetMusic42TACGainShift(GainShift * p) {music42_tac_z_gain_shifts = p;}
+        
+        void SetMusic41MHTDCGainShift(GainShift * p) {music41_mhtdc_z_gain_shifts = p;}
+        void SetMusic42MHTDCGainShift(GainShift * p) {music42_mhtdc_z_gain_shifts = p;}
+        
         
         void SetOnline(Bool_t option) { fOnline = option; }
     
@@ -63,6 +72,13 @@ class FrsCal2Hit : public FairTask
         TMRTOFMSParameter* mrtof;
         TRangeParameter* range;
         std::string pathToConfigFiles;
+
+
+        GainShift * music41_tac_z_gain_shifts = nullptr;
+        GainShift * music42_tac_z_gain_shifts = nullptr;
+
+        GainShift * music41_mhtdc_z_gain_shifts = nullptr;
+        GainShift * music42_mhtdc_z_gain_shifts = nullptr;
 
         Bool_t fOnline;
         Int_t fNEvents;
@@ -213,8 +229,12 @@ class FrsCal2Hit : public FairTask
 
         // ::: SCI MHTDC ::: //
         Int_t hits_in_21lr = 0;
+        Int_t hits_in_21l = 0;
         Int_t hits_in_21r = 0;
+        Int_t hits_in_22l = 0;
+        Int_t hits_in_22r = 0;
         Int_t hits_in_22lr = 0;
+        Int_t hits_in_tof4221 = 0;
         Int_t hits_in_tof4121 = 0;
         Int_t hits_in_tof4122 = 0;
 
@@ -268,14 +288,15 @@ class FrsCal2Hit : public FairTask
 
 
         // ::: MUSIC ::: //
-        Int_t music_anodes_count[2] = {0};
+        Int_t music_anodes_count[2] = {0,0};
         const UInt_t (*musicE)[8]; // 2, 8
         const UInt_t (*musicT)[8]; // 2, 8
         Bool_t music_b_e[2][8];
         Bool_t music_b_t[2][8];
-        Float_t de[2] = {0};
-        Float_t de_cor[2] = {0};
-        Bool_t b_de[2] = {0};
+        Float_t de[2] = {0,0};
+        Float_t de_cor[2] = {0,0};
+        Bool_t b_de[2] = {0,0};
+        Float_t music_x_mean[2] = {0,0};
 
 
         // ::: TPCs ::: //
@@ -329,6 +350,8 @@ class FrsCal2Hit : public FairTask
         Float_t* id_mhtdc_v_cor_music42 = nullptr;
         Float_t* id_mhtdc_dEdegoQ = nullptr;
         Float_t* id_mhtdc_gamma_ta_s2 = nullptr;
+        Float_t* id_mhtdc_rho0 = nullptr;
+        Float_t* id_mhtdc_brho0 = nullptr;
         Float_t* mhtdc_gamma1square = nullptr;
         Float_t* id_mhtdc_dEdeg = nullptr;
 
