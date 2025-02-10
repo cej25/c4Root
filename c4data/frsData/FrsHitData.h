@@ -215,7 +215,8 @@ class FrsMultiHitItem : public TObject
     public:
         FrsMultiHitItem();
 
-        void SetAll(Float_t s2x,
+        void SetAll(
+                    Float_t s2x,
                     Float_t s2a,
                     Float_t s4x,
                     Float_t s4a,
@@ -227,7 +228,10 @@ class FrsMultiHitItem : public TObject
                     Float_t z2,
                     Float_t dEdeg,
                     Float_t dEdegoQ);
+        
+        void SetMetaData(Long64_t wr_t, Short_t tpat);
 
+        Float_t Get_wr_t() const { return fwr_t; }
         Float_t Get_ID_s2x_mhtdc() const { return fID_s2x_mhtdc; }
         Float_t Get_ID_s4x_mhtdc() const { return fID_s4x_mhtdc; }
         Float_t Get_ID_s2a_mhtdc() const { return fID_s2a_mhtdc; }
@@ -245,7 +249,9 @@ class FrsMultiHitItem : public TObject
         ClassDef(FrsMultiHitItem, 1);
 
     private:
-
+        
+        Long64_t fwr_t; 
+        Short_t ftpat;
         Float_t fID_s2x_mhtdc;
         Float_t fID_s4x_mhtdc;
         Float_t fID_s2a_mhtdc;
