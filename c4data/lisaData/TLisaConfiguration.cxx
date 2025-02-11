@@ -65,6 +65,9 @@ int TLisaConfiguration::bin_energy_MWD_GM = 500;
 int TLisaConfiguration::min_wr_diff = 0;
 int TLisaConfiguration::max_wr_diff = 200;
 int TLisaConfiguration::bin_wr_diff = 50;
+int TLisaConfiguration::min_wr_rate = 0;
+int TLisaConfiguration::max_wr_rate = 200;
+int TLisaConfiguration::bin_wr_rate = 50;
 
 // ::: Traces time 
 int TLisaConfiguration::min_traces = 0;
