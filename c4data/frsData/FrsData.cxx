@@ -37,11 +37,11 @@ ClassImp(FrsScalerItem)
 
 FrsSciItem::FrsSciItem() {}
 
-void FrsSciItem::SetAll(UInt_t de[16], UInt_t dt[16], std::vector<Int_t> mhtdc[16])
+void FrsSciItem::SetAll(UInt_t de[18], UInt_t dt[19], std::vector<Int_t> mhtdc[24])
 {
-    for (int i = 0; i < 16; i++) sciDE[i] = de[i];
-    for (int i = 0; i < 16; i++) sciDT[i] = dt[i];
-    for (int i = 0; i < 16; i++) sciMHTDC[i] = mhtdc[i];
+    for (int i = 0; i < 18; i++) sciDE[i] = de[i];
+    for (int i = 0; i < 19; i++) sciDT[i] = dt[i];
+    for (int i = 0; i < 24; i++) sciMHTDC[i] = mhtdc[i];
 
 }
 

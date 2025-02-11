@@ -194,6 +194,8 @@ void FrsRaw2Cal::ProcessScintillators()
 
     // TAC DE
     sciDE = sciItem.Get_de_array();
+    de_11l = sciDE[frs_config->Get_dE_11l_chan()];
+    de_11r = sciDE[frs_config->Get_dE_11r_chan()];
     de_21l = sciDE[frs_config->Get_dE_21l_chan()];
     de_21r = sciDE[frs_config->Get_dE_21r_chan()];
     de_22l = sciDE[frs_config->Get_dE_22l_chan()];
@@ -211,12 +213,15 @@ void FrsRaw2Cal::ProcessScintillators()
 
     // TAC DT
     sciDT = sciItem.Get_dt_array();
+    dt_11l_11r = sciDT[frs_config->Get_dT_11l_11r_chan()];
     dt_21l_21r = sciDT[frs_config->Get_dT_21l_21r_chan()];
     dt_22l_22r = sciDT[frs_config->Get_dT_22l_22r_chan()];
     dt_41l_41r = sciDT[frs_config->Get_dT_41l_41r_chan()];
     dt_42l_42r = sciDT[frs_config->Get_dT_42l_42r_chan()];
     dt_43l_43r = sciDT[frs_config->Get_dT_43l_43r_chan()];
     dt_81l_81r = sciDT[frs_config->Get_dT_81l_81r_chan()];
+    dt_11l_21l = sciDT[frs_config->Get_dT_11l_21l_chan()];
+    dt_11r_21r = sciDT[frs_config->Get_dT_11r_21r_chan()];
     dt_21l_41l = sciDT[frs_config->Get_dT_21l_41l_chan()];
     dt_21r_41r = sciDT[frs_config->Get_dT_21r_41r_chan()];
     dt_42r_21r = sciDT[frs_config->Get_dT_42l_21l_chan()];
@@ -230,7 +235,14 @@ void FrsRaw2Cal::ProcessScintillators()
 
     // MHTDC T
     sciMHTDC = sciItem.Get_mhtdc_array();
-    sci11_hits = sciMHTDC[frs_config->Get_mhtdc_11_chan()];
+    sci11la_hits = sciMHTDC[frs_config->Get_mhtdc_11LA_chan()];
+    sci11lb_hits = sciMHTDC[frs_config->Get_mhtdc_11LB_chan()];
+    sci11lc_hits = sciMHTDC[frs_config->Get_mhtdc_11LC_chan()];
+    sci11ld_hits = sciMHTDC[frs_config->Get_mhtdc_11LD_chan()];
+    sci11ra_hits = sciMHTDC[frs_config->Get_mhtdc_11RA_chan()];
+    sci11rb_hits = sciMHTDC[frs_config->Get_mhtdc_11RB_chan()];
+    sci11rc_hits = sciMHTDC[frs_config->Get_mhtdc_11RC_chan()];
+    sci11rd_hits = sciMHTDC[frs_config->Get_mhtdc_11RD_chan()];
     sci21l_hits = sciMHTDC[frs_config->Get_mhtdc_21L_chan()];
     sci21r_hits = sciMHTDC[frs_config->Get_mhtdc_21R_chan()];
     sci22l_hits = sciMHTDC[frs_config->Get_mhtdc_22L_chan()];
@@ -247,7 +259,9 @@ void FrsRaw2Cal::ProcessScintillators()
     sci81r_hits = sciMHTDC[frs_config->Get_mhtdc_81R_chan()];
 
     auto & entry = calSciArray->emplace_back();
-    entry.SetAll(de_21l,
+    entry.SetAll(de_11l,
+                de_11r,
+                de_21l,
                 de_21r,
                 de_22l,
                 de_22r,
@@ -261,12 +275,15 @@ void FrsRaw2Cal::ProcessScintillators()
                 de_43r,
                 de_81l,
                 de_81r,
+                dt_11l_11r,
                 dt_21l_21r,
                 dt_22l_22r,
                 dt_41l_41r,
                 dt_42l_42r,
                 dt_43l_43r,
                 dt_81l_81r,
+                dt_11l_21l,
+                dt_11r_21r,
                 dt_21l_41l,
                 dt_21r_41r,
                 dt_42r_21r,
@@ -277,7 +294,14 @@ void FrsRaw2Cal::ProcessScintillators()
                 dt_22r_41r,
                 dt_22l_81l,
                 dt_22r_81r,
-                sci11_hits,
+                sci11la_hits,
+                sci11lb_hits,
+                sci11lc_hits,
+                sci11ld_hits,
+                sci11ra_hits,
+                sci11rb_hits,
+                sci11rc_hits,
+                sci11rd_hits,
                 sci21l_hits,
                 sci21r_hits,
                 sci22l_hits,
