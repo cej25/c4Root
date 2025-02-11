@@ -99,11 +99,21 @@ Bool_t LisaReader::Read()
             uint64_t channel_trigger_time_long = (((uint64_t)(fData->lisa_data[it_board_number].channel_trigger_time_hiv[index]) << 32) + 
             (fData->lisa_data[it_board_number].channel_trigger_time_lov[index]))*10;
 
-            //::::::::::::::Channel PileUp
-            bool pileup = fData->lisa_data[it_board_number].pileup[index] & 0x1;
-    
+            /* Old pileup and overflow definition (up to 2024)
+            //::::::::::::::Channel PileUp 
+            bool pileup = fData->lisa_data[it_board_number].pileup[index] & 0x1; 
             //::::::::::::::Channel OverFlow
             bool overflow = fData->lisa_data[it_board_number].overflow[index] & 0x1;
+            */ 
+            /* New Pileup and Overflow definition (2025)
+            FEBEX_EVENT_TRACES is changed.Now Pileup and Overflow are ZERO_SUPPRESSED
+            This makes them into 3 branches {info, infoI, infov}
+            (Same as for energy and traces)
+            */
+            //::::::::::::::Channel PileUp 
+            bool pileup = fData->lisa_data[it_board_number].pileupv[index] & 0x1;
+            //::::::::::::::Channel OverFlow
+            bool overflow = fData->lisa_data[it_board_number].overflowv[index] & 0x1;
 
             //::::::::::::::Channel Energy
             //according to febex manual on gsi website, the 24th bit of the energy denotes the sign to indicate the polarity of the pulse
@@ -116,18 +126,18 @@ Bool_t LisaReader::Read()
 
             std::vector<int16_t> trace;
             std::vector<int16_t> trace_x;
-            uint8_t channel_id_trace = fData->lisa_data[it_board_number].channel_id_tracesv[index];
+            uint8_t channel_id_trace = fData->lisa_data[it_board_number].trace_channel_id_tracesv[index];
 
             //::::::::::::::Channel Traces with ID from channel header
-            for (int l = 0 ; l < fData->lisa_data[it_board_number].traces[channel_id_trace]._ ; l++)
+            for (int l = 0 ; l < fData->lisa_data[it_board_number].trace_traces[channel_id_trace]._ ; l++)
             {
-                trace.emplace_back(fData->lisa_data[it_board_number].traces[channel_id_trace].v[l]);    
+                trace.emplace_back(fData->lisa_data[it_board_number].trace_traces[channel_id_trace].v[l]);    
             }
             
             //::::::::::::::Traces Dimension (This is fixed from Febex (2000) but added for easier displaying)
-            for (int l = 0 ; l < fData->lisa_data[it_board_number].traces[channel_id_trace]._ ; l++)
+            for (int l = 0 ; l < fData->lisa_data[it_board_number].trace_traces[channel_id_trace]._ ; l++)
             {
-                trace_x.emplace_back(fData->lisa_data[it_board_number].traces[channel_id_trace].I[l]);    
+                trace_x.emplace_back(fData->lisa_data[it_board_number].trace_traces[channel_id_trace].I[l]);    
             }
             //std::cout<< "Size of trace? : " << sizeof(fData->lisa_data[it_board_number].traces) <<std::endl;
             //std::cout << "Channel ID from trace : " << static_cast<int>(channel_id_trace) << std::endl;

@@ -22,11 +22,7 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_unpack_t eventheaders;
     EXT_STR_h101_lisa_onion_t lisa;
     EXT_STR_h101_travmus_onion_t travmus;
-    EXT_STR_h101_frsmain_onion_t frsmain;
-    EXT_STR_h101_frstpc_onion_t frstpc;
-    EXT_STR_h101_frsuser_onion_t frsuser;
-    EXT_STR_h101_frstpat_onion_t frstpat;
-
+    EXT_STR_h101_frs_onion_t frs;
 
 } EXT_STR_h101;
 
@@ -67,7 +63,7 @@ void lisadev_make_trees(int fileNumber)
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/test_c4/"; //testing
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/fragments_EG_test/";    
-    TString outputFilename = Form(outputpath + "run_%04d_EG.root", fileNumber);
+    TString outputFilename = Form(outputpath + "run_%04d_test-merge.root", fileNumber);
 
 
     //:::::::Create online run
@@ -122,6 +118,7 @@ void lisadev_make_trees(int fileNumber)
     
     // ::: FRS config
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
+    TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
     TFrsConfiguration::SetTravMusDriftFile(config_path + "/frs/TM_Drift_fragments.txt");
     TFrsConfiguration::SetZ1DriftFile(config_path + "/frs/Z1_Drift_fragments.txt");
     TFrsConfiguration::SetAoQDriftFile(config_path + "/frs/AoQ_Drift_fragments.txt");
@@ -170,19 +167,10 @@ void lisadev_make_trees(int fileNumber)
             source->AddReader(unpacktravmus);
         }
 
-        FrsMainReader* unpackfrsmain = new FrsMainReader((EXT_STR_h101_frsmain_onion*)&ucesb_struct.frsmain, offsetof(EXT_STR_h101, frsmain));
-        FrsTPCReader* unpackfrstpc = new FrsTPCReader((EXT_STR_h101_frstpc_onion*)&ucesb_struct.frstpc, offsetof(EXT_STR_h101, frstpc));
-        FrsUserReader* unpackfrsuser = new FrsUserReader((EXT_STR_h101_frsuser_onion*)&ucesb_struct.frsuser, offsetof(EXT_STR_h101, frsuser));
-        FrsTpatReader* unpackfrstpat = new FrsTpatReader((EXT_STR_h101_frstpat_onion*)&ucesb_struct.frstpat, offsetof(EXT_STR_h101, frstpat));
-        
-        unpackfrsmain->SetOnline(true);
-        unpackfrstpc->SetOnline(true);
-        unpackfrsuser->SetOnline(true);
-        unpackfrstpat->SetOnline(true);
-        source->AddReader(unpackfrsmain);
-        source->AddReader(unpackfrstpc);
-        source->AddReader(unpackfrsuser);
-        source->AddReader(unpackfrstpat);
+        FrsReader* unpackfrs = new FrsReader((EXT_STR_h101_frs_onion*)&ucesb_struct.frs, offsetof(EXT_STR_h101, frs)); 
+        unpackfrs->SetOnline(true);
+        source->AddReader(unpackfrs);
+
     }   
 
 
@@ -226,16 +214,11 @@ void lisadev_make_trees(int fileNumber)
             run->AddTask(anatravmus);
         }
 
-        FrsMainRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
-        FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal();
-        FrsUserRaw2Cal* calfrsuser = new FrsUserRaw2Cal();
+        FrsRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
         
-        calfrsmain->SetOnline(true);
-        calfrstpc->SetOnline(true);
-        calfrsuser->SetOnline(false);
-        run->AddTask(calfrsmain);
-        run->AddTask(calfrstpc);
-        run->AddTask(calfrsuser);
+        calfrs->SetOnline(true);
+        run->AddTask(calfrs);
+
     }
 
 
