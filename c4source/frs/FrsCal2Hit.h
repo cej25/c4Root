@@ -143,6 +143,7 @@ class FrsCal2Hit : public FairTask
         Int_t ratio_product3_for_100ms = 0;
 
         // ::: SCI TAC :::::: //
+        UInt_t de_11 = 0;
         UInt_t de_21l = 0;
         UInt_t de_21r = 0;
         UInt_t de_22l = 0;
@@ -184,6 +185,12 @@ class FrsCal2Hit : public FairTask
         Float_t sci_x_81 = -999.;
         Bool_t sci_b_x_81 = false;
 
+        Float_t sci_tofll_11_21 = 0.;
+        Float_t sci_tofrr_11_21 = 0.;
+        Bool_t sci_b_tofll_11_21 = false;
+        Bool_t sci_b_tofrr_11_21 = false;
+        Float_t sci_tof_11_21 = 0.;
+        Float_t sci_tof_11_21_calib = 0.;
         Float_t sci_tofll_21_41 = 0.;
         Float_t sci_tofrr_21_41 = 0.;
         Bool_t sci_b_tofll_21_41 = false;
@@ -224,6 +231,7 @@ class FrsCal2Hit : public FairTask
         Float_t temp_a2;
         Float_t temp_a4;
 
+        //std::vector<Int_t> 
         std::vector<Int_t> sci21l_hits;
         std::vector<Int_t> sci21r_hits;
         std::vector<Int_t> sci22l_hits;
@@ -283,6 +291,10 @@ class FrsCal2Hit : public FairTask
         Bool_t sci_b_x[12] = {false};
 
         // ::: IDs ::: //
+        Float_t id_x1;
+        Float_t id_y1;
+        Float_t id_a1;
+        Float_t id_b1;
         Float_t id_x2;
         Float_t id_y2;
         Float_t id_a2;

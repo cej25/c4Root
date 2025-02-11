@@ -52,20 +52,21 @@ class FrsSciItem : public TObject
     public:
         FrsSciItem();
 
-        void SetAll(UInt_t de[16], UInt_t dt[16], std::vector<Int_t> mhtdc[16]);
+        void SetAll(UInt_t de[18], UInt_t dt[19], std::vector<Int_t> mhtdc[24]);
 
         // Getters
-        const UInt_t (&Get_de_array() const) [16] { return sciDE; }
-        const UInt_t (&Get_dt_array() const) [16] { return sciDT; }
-        const std::vector<Int_t> (&Get_mhtdc_array() const) [16] { return sciMHTDC; }
+        const UInt_t (&Get_de_array() const) [18] { return sciDE; }
+        const UInt_t (&Get_dt_array() const) [19] { return sciDT; }
+        const std::vector<Int_t> (&Get_mhtdc_array() const) [24] { return sciMHTDC; }
 
         ClassDef(FrsSciItem, 1);
     
     private:
 
-        UInt_t sciDE[16];
-        UInt_t sciDT[16];
-        std::vector<Int_t> sciMHTDC[16];
+        // these should all probably just be set to 32...
+        UInt_t sciDE[18]; // 16 --> 18 2025
+        UInt_t sciDT[19]; // 16 --> 19 2025
+        std::vector<Int_t> sciMHTDC[24]; // 15 --> 24 2025
 
 
 };
