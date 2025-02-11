@@ -1,9 +1,5 @@
 #include "BeamMonitorData.h"
 
-BeamMonitorData::BeamMonitorData()
-{
-}
-
 BeamMonitorItem::BeamMonitorItem()
 {
 
