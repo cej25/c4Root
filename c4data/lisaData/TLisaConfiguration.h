@@ -95,6 +95,9 @@ class TLisaConfiguration
         static void SetWrDiffRange(int min_wr, int max_wr) { min_wr_diff = min_wr; max_wr_diff = max_wr; }
         static void SetWrDiffBin(int bin_wr) { bin_wr_diff = bin_wr; }
 
+        static void SetWrRateRange(int min_wr_r, int max_wr_r) { min_wr_rate = min_wr_r; max_wr_rate = max_wr_r; }
+        static void SetWrRateBin(int bin_wr_r) { bin_wr_rate = bin_wr_r; }
+
         static void SetTracesRange(int min_tr, int max_tr) { min_traces = min_tr; max_traces = max_tr; }
         static void SetTracesBin(int bin_tr) { bin_traces = bin_tr; }
         
@@ -131,6 +134,9 @@ class TLisaConfiguration
         static int min_wr_diff;
         static int max_wr_diff;
         static int bin_wr_diff;
+        static int min_wr_rate;
+        static int max_wr_rate;
+        static int bin_wr_rate;
         static int min_traces;
         static int max_traces;
         static int bin_traces;

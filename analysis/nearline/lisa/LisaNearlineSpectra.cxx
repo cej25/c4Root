@@ -11,7 +11,7 @@
  * or submit itself to any jurisdiction.                                      *
  ******************************************************************************
  *                       E.M. Gandolfo, C.E. Jones                            *
- *                               25..11.24                                    *
+ *                               25.11.24                                    *
  ******************************************************************************/
 // ::: Note::: No canvases in Nearline Tasks please :::
 
@@ -98,18 +98,17 @@ InitStatus LisaNearlineSpectra::Init()
     dir_stats = dir_lisa->mkdir("Stats");
 
     dir_energy_febex = dir_lisa->mkdir("Energy_Febex");
-    dir_energy_tokyo = dir_lisa->mkdir("En_Tokyo");
     dir_energy_febex_ch = dir_energy_febex->mkdir("Energy_Febex_Channels");
 
     dir_energy_MWD = dir_lisa->mkdir("Energy_MWD");
-    dir_energy_MWD_ch = dir_energy_MWD->mkdir("Energy_Febex_Channels");
+    dir_energy_MWD_ch = dir_energy_MWD->mkdir("Energy_MWD_Channels");
 
     dir_traces = dir_lisa->mkdir("Traces");
-    dir_traces_tokyo = dir_traces->mkdir("Tr_Tokyo");
     
     dir_drift = dir_lisa->mkdir("Drifts");
     dir_drift_ch = dir_drift->mkdir("Drifts_Channels");
-    dir_drift_tokyo = dir_drift->mkdir("Drifts_Tokyo");
+
+    dir_tokyo = dir_lisa->mkdir("Tokyo");
 
     // layer names: Tokyo, Eris, Sparrow
   
@@ -119,6 +118,11 @@ InitStatus LisaNearlineSpectra::Init()
     h1_wr_diff->GetXaxis()->SetTitle("LISA WR Difference [ns]");
     h1_wr_diff->SetLineColor(kBlack);
     h1_wr_diff->SetFillColor(kRed-3);
+
+    h1_wr_rate = new TH1I("h1_wr_rate", "WR Rate", lisa_config->bin_wr_rate, lisa_config->min_wr_rate, lisa_config->max_wr_rate);
+    h1_wr_rate->GetXaxis()->SetTitle("LISA WR Rate [Hz]");
+    h1_wr_rate->SetLineColor(kBlack);
+    h1_wr_rate->SetFillColor(kRed-3);
 
     //:::::::::::H I T  P A T T E R N S:::::::::::::::
     //:::::::::::Total
@@ -241,7 +245,7 @@ InitStatus LisaNearlineSpectra::Init()
     
     
     //:::::::::::::E N E R G Y:::::::::::::::::
-    dir_energy_tokyo->cd();
+    dir_tokyo->cd();
     //:::::::: Gain Matched + Calibrated Energies 
     h1_energy_febex_ch_GM.resize(layer_number);
     h1_energy_MWD_ch_GM.resize(layer_number);
@@ -327,7 +331,7 @@ InitStatus LisaNearlineSpectra::Init()
 
     }
     
-    dir_energy_tokyo->cd();
+    dir_tokyo->cd();
     //Gain Matched + Calibrated with summed stats for layer
     h1_energy_febex_layer_GM.resize(layer_number);
     h1_energy_MWD_layer_GM.resize(layer_number);
@@ -403,11 +407,11 @@ InitStatus LisaNearlineSpectra::Init()
     h2_energy_MWD_ch_vs_time.resize(layer_number);
 
 
-    dir_drift_tokyo->cd();
+    dir_tokyo->cd();
     //::::::::::Energy vs WR Time - for now special case layer 0
     h2_energy_ch_vs_time[0].resize(1);
     h2_energy_ch_vs_time[0][0].resize(1);
-    h2_energy_ch_vs_time[0][0][0] = MakeTH2(dir_drift_tokyo, "F", "h2_energyGM_ch_layer_0_vs_time", "E_GM(Layer 0) vs WR [min]", 500, 0, 10000, lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
+    h2_energy_ch_vs_time[0][0][0] = MakeTH2(dir_tokyo, "F", "h2_energyGM_ch_layer_0_vs_time", "E_GM(Layer 0) vs WR [min]", 500, 0, 10000, lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
     h2_energy_ch_vs_time[0][0][0]->SetTitle("E_GM(Layer 0) vs WR [min]");
     h2_energy_ch_vs_time[0][0][0]->GetYaxis()->SetTitle("Energy 000");
     h2_energy_ch_vs_time[0][0][0]->GetXaxis()->SetTitle("WR Time");
@@ -415,7 +419,7 @@ InitStatus LisaNearlineSpectra::Init()
 
     h2_energy_MWD_ch_vs_time[0].resize(1);
     h2_energy_MWD_ch_vs_time[0][0].resize(1);
-    h2_energy_MWD_ch_vs_time[0][0][0] = MakeTH2(dir_drift_tokyo, "F", "h2_energyMWD_GM_ch_layer_0_vs_time", "E_GM(Layer 0) vs WR [min]", 500, 0, 10000, lisa_config->bin_energy_MWD_GM, lisa_config->min_energy_MWD_GM, lisa_config->max_energy_MWD_GM);
+    h2_energy_MWD_ch_vs_time[0][0][0] = MakeTH2(dir_tokyo, "F", "h2_energyMWD_GM_ch_layer_0_vs_time", "E_GM(Layer 0) vs WR [min]", 500, 0, 10000, lisa_config->bin_energy_MWD_GM, lisa_config->min_energy_MWD_GM, lisa_config->max_energy_MWD_GM);
     h2_energy_MWD_ch_vs_time[0][0][0]->SetTitle("E_MWD_GM(Layer 0) vs WR [min]");
     h2_energy_MWD_ch_vs_time[0][0][0]->GetYaxis()->SetTitle("Energy MWD 000");
     h2_energy_MWD_ch_vs_time[0][0][0]->GetXaxis()->SetTitle("WR Time");
@@ -466,7 +470,7 @@ InitStatus LisaNearlineSpectra::Init()
 
     //:::::::::::::T R A C E S:::::::::::::::::
     //::: Traces stats Layer Tokyo
-    dir_traces_tokyo->cd();
+    dir_tokyo->cd();
     h2_traces_ch_stat.resize(layer_number);
 
     //::::::::::::Traces for layer 0

@@ -1,3 +1,4 @@
+
 #ifndef LisaNearlineSpectra_H
 #define LisaNearlineSpectra_H
 
@@ -91,7 +92,6 @@ class LisaNearlineSpectra : public FairTask
 
         TDirectory* dir_energy_febex;
         TDirectory* dir_energy_febex_ch;
-        TDirectory* dir_energy_tokyo;
         TDirectory* dir_energy_MWD;
         TDirectory* dir_energy_MWD_ch;
 
@@ -105,6 +105,7 @@ class LisaNearlineSpectra : public FairTask
         TDirectory* dir_music;
         TDirectory* dir_correlations;
 
+        TDirectory* dir_tokyo;
         
 
         int64_t prev_wr = 0;
@@ -114,6 +115,7 @@ class LisaNearlineSpectra : public FairTask
         // ::: Stats
         TH1I* h1_hitpattern_total;
         TH1I* h1_wr_diff;
+        TH1I* h1_wr_rate;
         std::vector<TH1I*> h1_hitpattern_layer;
         std::vector<TH2F*> h2_hitpattern_grid;
         std::vector<TH2F*> h2_pileup_grid;
