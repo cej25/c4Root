@@ -1,9 +1,5 @@
 #include "FatimaVmeCalData.h"
 
-FatimaVmeCalData::FatimaVmeCalData()
-{
-    
-}
 
 FatimaVmeQDCCalItem::FatimaVmeQDCCalItem()
 {
@@ -32,6 +28,8 @@ void FatimaVmeQDCCalItem::Reset()
     detector = 0;
 }
 
+ClassImp(FatimaVmeQDCCalItem)
+
 FatimaVmeTDCCalItem::FatimaVmeTDCCalItem()
 {
 
@@ -52,6 +50,8 @@ void FatimaVmeTDCCalItem::Reset()
     timestamp_raw = 0;
     detector = 0;
 }
+
+ClassImp(FatimaVmeTDCCalItem)
 
 FatimaVmeResiduals::FatimaVmeResiduals()
 {
@@ -75,4 +75,4 @@ void FatimaVmeResiduals::Reset()
 }
 
 
-ClassImp(FatimaVmeCalData)
+ClassImp(FatimaVmeResiduals)
