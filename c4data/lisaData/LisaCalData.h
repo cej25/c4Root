@@ -23,63 +23,6 @@
 
 //Debugging. Replaced std::string with TString 8nov24
 
-// :: Not in use -> use CalItem instead
-class LisaCalData : public TObject
-{
-    public:
-        LisaCalData();
-        
-        virtual ~LisaCalData() {};
-
-        // Getters
-        inline uint64_t Get_wr_t() const { return fwr_t; }
-
-        inline std::vector<int> GetLayers() const { return f_layers; }
-        inline std::vector<TString> GetCities() const { return f_cities; }
-        inline std::vector<int> GetXPositions() const { return f_xpositions; }
-        inline std::vector<int> GetYPositions() const { return f_ypositions; }
-        inline std::vector<uint32_t> GetRawEnergy() const { return f_raw_energy; }
-        inline std::vector<uint32_t> GetRawTraces() const { return f_raw_traces; }
-
-        inline uint64_t Get_board_event_t() const { return f_board_event_t; }
-        inline uint64_t Get_channel_event_t() const { return f_channel_event_t; }
-       
-
-
-        // Setters
-        inline void Set_wr_t(uint64_t wr) { fwr_t = wr; }
-
-        inline void SetLayers(std::vector<int> layers) { f_layers = layers; }
-        inline void SetCities(std::vector<TString> cities) { f_cities = cities; }
-        inline void SetXPositions(std::vector<int> xpositions) { f_xpositions = xpositions; }
-        inline void SetYPositions(std::vector<int> ypositions) { f_ypositions = ypositions; }
-        inline void SetRawEnergy(std::vector<uint32_t> raw_energy) { f_raw_energy = raw_energy; }
-        inline void SetRawTraces(std::vector<uint32_t> raw_traces) { f_raw_traces = raw_traces; }
-
-        inline void Set_board_event_t(uint64_t evt_t) { f_board_event_t = evt_t; }
-        inline void Set_channel_event_t(uint64_t ch_t) { f_channel_event_t = ch_t; }
-
-    protected:
-
-        // variables
-        uint64_t fwr_t;
-        std::vector<int> f_layers;
-        std::vector<TString> f_cities;
-        std::vector<int> f_xpositions;
-        std::vector<int> f_ypositions;
-        std::vector<uint32_t> f_raw_energy;
-        std::vector<uint32_t> f_raw_traces;
-        
-        uint64_t f_board_event_t;
-        uint64_t f_channel_event_t;
-
-
-    
-    public:
-        ClassDef(LisaCalData, 1);
-};
-
-
 class LisaCalItem : public TObject
 {
     public:

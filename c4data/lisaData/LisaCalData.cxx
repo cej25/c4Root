@@ -20,10 +20,7 @@
 //Debugging. Replaced std::string with TString nov24
 
 
-LisaCalData::LisaCalData()
-{
 
-}
 
 LisaCalItem::LisaCalItem()
 {
