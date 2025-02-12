@@ -206,7 +206,7 @@ void LisaRaw2Ana::Exec(Option_t* option)
 
 
             //std::cout << "k0 : " << k0 << " kend : " << kend << "\n";
-            // 1. ::: Baseline correction :::
+            // 1. ::: Baseline correction of febex trace :::
             //        This corresponds to anaTraces function calcCorrectTrace
             // ::: Evaluate average from points 20 to 100
             for( int i = 20; i < 100; i++)
@@ -299,7 +299,7 @@ void LisaRaw2Ana::Exec(Option_t* option)
             //    ::: Check ranges :::
             //std::cout<<"trace MWD size : " << trace_MWD.size()  << " start : " << k0 << " stop : " << kend <<"\n";            
             
-            // 4. ::: Integration on the flat top
+            // 3. ::: Integration on the flat top
             amp_start_idx = amp_start_idx - k0;
             amp_stop_idx = amp_stop_idx - k0;
             
@@ -312,7 +312,7 @@ void LisaRaw2Ana::Exec(Option_t* option)
 
             energy_avg = energy_sum / amp_count;
 
-            //5. ::: Integration of baseline 
+            //4. ::: Integration of baseline 
             baseline_start_idx = baseline_start_idx - k0;
             baseline_stop_idx = baseline_stop_idx - k0;
 
@@ -325,7 +325,7 @@ void LisaRaw2Ana::Exec(Option_t* option)
             //std::cout << "energy_sum : " << energy_sum << " baseline sum : " << baseline_sum << "\n";
             baseline_avg = baseline_sum / baseline_count;
             
-            // 6. ::: Calculate MWD |energy value|
+            // 5. ::: Calculate MWD |energy value|
             energy_MWD = energy_avg - baseline_avg;
 
             if (energy_MWD < 0) 
