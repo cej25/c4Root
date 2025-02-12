@@ -28,6 +28,7 @@ class FrsRaw2Cal : public FairTask
         void Exec(Option_t* option);
 
         void ProcessScintillators();
+        void ProcessMusic();
         void ProcessTpcs();
 
         void FinishEvent();
@@ -48,8 +49,10 @@ class FrsRaw2Cal : public FairTask
         // Arrays
         std::vector<FrsTpatItem> const* tpatArray;
         std::vector<FrsSciItem> const* sciArray;
+        std::vector<FrsMusicItem> const* musicArray;
         std::vector<FrsTpcItem> const* tpcArray;
         std::vector<FrsCalSciItem>* calSciArray;
+        std::vector<FrsCalMusicItem>* calMusicArray;
         std::vector<FrsCalTpcItem>* calTpcArray;
 
         // TAC dE
@@ -117,6 +120,15 @@ class FrsRaw2Cal : public FairTask
         std::vector<Int_t> sci43r_hits;
         std::vector<Int_t> sci81l_hits;
         std::vector<Int_t> sci81r_hits;
+
+        // MUSIC
+        const UInt_t (*musicE)[8]; // 5, 8
+        UInt_t music21_e[8];
+        UInt_t music22_e[8];
+        UInt_t music41_e[8];
+        UInt_t music42_e[8];
+        UInt_t music43_e[8];
+
 
 
         // TPC
@@ -220,6 +232,19 @@ class FrsRaw2Cal : public FairTask
         Float_t tpc22_24_s2target_x = -999; /* S2TARGET x                    */
         Float_t tpc22_24_s2target_y = -999; /* S2TARGET y                    */
     
+        Float_t tpc21_22_music21_x = -999;
+        Float_t tpc21_22_music21_y = -999;
+        Float_t tpc21_22_music22_x = -999;
+        Float_t tpc21_22_music22_y = -999;
+        Float_t tpc23_24_music21_x = -999;
+        Float_t tpc23_24_music21_y = -999;
+        Float_t tpc23_24_music22_x = -999;
+        Float_t tpc23_24_music22_y = -999;
+        Float_t tpc22_24_music21_x = -999;
+        Float_t tpc22_24_music21_y = -999;
+        Float_t tpc22_24_music22_x = -999;
+        Float_t tpc22_24_music22_y = -999;
+
         //TPCs 3 & 4 @ S2 first Si tracking detector (exp s388)
         Float_t tpc_x_s2_target1 = -999;
         Float_t tpc_y_s2_target1 = -999;
