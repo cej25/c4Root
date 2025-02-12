@@ -120,14 +120,25 @@ void LisaRaw2Ana::Exec(Option_t* option)
 
             // ::: M W D   T R A C E  ::: (trace_MWD)
 
+            /*
+            k0     k0+MM-LL          k0+2MM     kend 
+            |---------|                |--------|
+                        *              *              
+                         *            *
+                          *          *
+                           *|======|*
+                         k0+MM   k0+2MM-LL
+            */
+
+
             // 0. ::: Get trace and parameters :::
             //    ::: For MWD calculation
             std::vector<int16_t> trace_febex = lisaItem.Get_trace();            //vector with amplitude points of trace
-            float smoothing_L = lisa_config->Get_Smoothing_L();                 //L parameters in MWD formula. This corresponds to RisingTime in anatrace. !!IT IS NOT THE TRACE RISING TIME!!
-            float MWD_length = lisa_config->Get_MWD_Length();                   //lenght of MWD computation
-            const float* decay_time = lisa_config->Get_Decay_Time();            //decay time of the trace
-            float MWD_trace_start = lisa_config->Get_MWD_Trace_Start();         //start of MWD trace
-            float MWD_trace_stop = lisa_config->Get_MWD_Trace_Stop();           //and stop
+            float smoothing_L = lisa_config->Get_Smoothing_L();                 //Smoothing_L. L parameters in MWD formula. This corresponds to RisingTime in anatrace. !!IT IS NOT THE TRACE RISING TIME!!
+            float MWD_length = lisa_config->Get_MWD_Length();                   //Trapez_moving_window_length. Length of MWD computation
+            const float* decay_time = lisa_config->Get_Decay_Time();            //Decay_time. decay time of the trace
+            float MWD_trace_start = lisa_config->Get_MWD_Trace_Start();         //Trapez_sample_window_0. Start of MWD trace
+            float MWD_trace_stop = lisa_config->Get_MWD_Trace_Stop();           //Trapez_sample_window_1. and stop
             float sampling = lisa_config->Get_Sampling();                       //Sampling Febex (10 ns)
             
             //    ::: Convert parameters to sample points
@@ -137,7 +148,62 @@ void LisaRaw2Ana::Exec(Option_t* option)
             tau[1] = decay_time[1] / sampling;                                   // Decay constant in samples
             int k0 = static_cast<int>(MWD_trace_start / sampling);               // Start of MWD in samples
             int kend = static_cast<int>(MWD_trace_stop / sampling);              // Stop of MWD in samples
-            if (kend > trace_febex.size()) kend = trace_febex.size();            // If kend out of bound, replace it with trace_febex limit
+            
+            //Ensure that the trace limit is not greater then febex trace, and if so replace it with febex trace limit
+            if (kend > trace_febex.size()) 
+            {
+                kend = trace_febex.size();            // If kend out of bound, replace it with trace_febex limit
+                c4LOG(info, "MWD_trace_stop is out of trace range. It has been replaced with febex trace limit");
+            }
+
+            //Check Trace size - this solves problems with events with empty trace
+        
+            if (trace_febex.size() == 0) 
+            {
+                c4LOG(info, "Empty Trace - Skipping event");
+                continue;
+            }
+
+            // ::: Checks on the MWD parameters called so far :::
+            //Smoothing_L
+            if (smoothing_L <= 0)
+            {
+                c4LOG(fatal, "[MWD ERROR] Invalid Smoothing_L (L): " << smoothing_L << 
+                " -- must be > 0 \n");
+            }
+            //Trapez_moving_window_length
+            if (MWD_length <= smoothing_L) 
+            {
+                c4LOG(fatal, "[MWD ERROR] Trapez_moving_window_length (M): " << MWD_length << 
+                " -- must be M > L ( " << smoothing_L << ") \n");    
+            }
+            
+            // M + L conbination
+            if ((MM + LL) >= (kend - k0)) 
+            {
+                c4LOG(fatal, "[MWD ERROR] Invalid Trapez_moving_window_length (M) + Invalid Smoothing_L (L) = " << (MWD_length + smoothing_L) 
+                        << " -- must be < (Trapez_sample_window_1 (kend) - Trapez_sample_window_0 (k0)) = " << (kend - k0)*sampling << "\n");
+            }
+            //Decaytime
+            if (decay_time[1] <= 0) 
+            {
+                c4LOG(fatal,"[MWD ERROR] Invalid Decaytime (tau): " << decay_time[1] << 
+                " -- must be > 0\n");
+            }
+
+            // Trapez_sample_window_0
+            if (k0*sampling < 0 || k0*sampling >= kend*sampling || k0*sampling >= trace_febex.size()) 
+            {
+                c4LOG(fatal, "[MWD ERROR] Invalid Trapez_sample_window_0 (k0): " << k0*sampling <<
+                " -- must be >= 0; < Trapez_sample_window_1 ( " << kend*sampling << "); < febex_trace_size ( " << trace_febex.size() << ")\n");
+            }
+            // Trapez_sample_window_0
+            if (kend <= k0) 
+            {
+                c4LOG(fatal, "[MWD ERROR] Invalid Trapez_sample_window_1 (kend): " << kend*sampling <<
+                " -- must be > Trapez_sample_window_1 ( = " << kend*sampling << ") \n" );
+            }
+
 
             //std::cout << "k0 : " << k0 << " kend : " << kend << "\n";
             // 1. ::: Baseline correction :::
@@ -190,16 +256,45 @@ void LisaRaw2Ana::Exec(Option_t* option)
             //      Steps below correspond to anaTraces function calcEnergy
 
             //    ::: Get parameters :::
-            float MWD_amp_start = lisa_config->Get_MWD_Amp_Start();             //start of MWD trace flat top
-            float MWD_amp_stop = lisa_config->Get_MWD_Amp_Stop();               //and stop
-            float MWD_baseline_start = lisa_config->Get_MWD_Baseline_Start();   //start of baseline for MWD trace
-            float MWD_baseline_stop = lisa_config->Get_MWD_Baseline_Stop();     //and stop
+            float MWD_amp_start = lisa_config->Get_MWD_Amp_Start();             //Trapez_amp_calc_window_0. start of MWD trace flat top
+            float MWD_amp_stop = lisa_config->Get_MWD_Amp_Stop();               //Trapez_amp_calc_window_1. and stop
+            float MWD_baseline_start = lisa_config->Get_MWD_Baseline_Start();   //Trapez_baseline_window_0. Start of baseline for MWD trace
+            float MWD_baseline_stop = lisa_config->Get_MWD_Baseline_Stop();     //Trapez_baseline_window_1. and stop
 
             //    ::: Convert parameters to sample points :::
             int amp_start_idx = static_cast<int>(MWD_amp_start / sampling); 
             int amp_stop_idx = static_cast<int>(MWD_amp_stop / sampling);
             int baseline_start_idx = static_cast<int>(MWD_baseline_start / sampling);
             int baseline_stop_idx = static_cast<int>(MWD_baseline_stop / sampling);         
+            
+            //    ::: Calculation of flat top start and stop (k0,L)
+            int flat_top_start = k0 + MM;           // k0 + M
+            int flat_top_stop = k0 + 2 * MM - LL;   // k0 + 2M - L
+
+            // ::: Checks on the MWD parameters called for energy calculation :::
+            
+            // Trapez_amp_calc_window_0 and Trapez_amp_calc_window_1
+            // Check if amp_start and amp_stop fall inside the flat-top region
+            if (!(flat_top_start <= amp_start_idx && amp_start_idx < amp_stop_idx && amp_stop_idx <= flat_top_stop)) 
+            {
+                c4LOG(fatal, "[MWD ERROR] Trapez_amp_calc_window_0 (" << amp_start_idx * sampling 
+                        << ") and/or Trapez_amp_calc_window_1 (" << amp_stop_idx * sampling 
+                        << ") are outside the valid flat-top range ("
+                        << flat_top_start * sampling << " - " 
+                        << flat_top_stop * sampling << ").\n" );
+            }
+
+
+            if (baseline_start_idx < k0 || baseline_start_idx >= baseline_stop_idx || baseline_start_idx >= (k0 + MM - LL)) 
+            {
+                c4LOG(fatal, "[ MWD ERROR] Invalid Trapez_baseline_window_0: " << baseline_start_idx*sampling <<
+                " -- must be within (k0, k0 + M -L) = ( " << MWD_trace_start << ", " << MWD_trace_start + MWD_length - smoothing_L << " ) \n" );
+            }
+            if (baseline_stop_idx <= baseline_start_idx || baseline_stop_idx > kend || baseline_stop_idx > (k0 + MM - LL)) 
+            {
+                c4LOG(fatal, "[ MWD ERROR] Invalid Trapez_baseline_window_1: " << baseline_stop_idx*sampling <<
+                " -- must be > Trapez_baseline_window_0 and within (k0, k0 + M -L) = ( " << MWD_trace_start << ", " << MWD_trace_start + MWD_length - smoothing_L << " ) \n");
+            }
             
             //    ::: Check ranges :::
             //std::cout<<"trace MWD size : " << trace_MWD.size()  << " start : " << k0 << " stop : " << kend <<"\n";            
