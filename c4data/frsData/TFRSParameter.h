@@ -46,6 +46,8 @@ public:
   Float_t       dist_SC43;       /*        in mm          */
   Float_t       dist_TPC41;
   Float_t       dist_TPC42;
+  Float_t       dist_MUSIC21;
+  Float_t       dist_MUSIC22;
   Float_t       dist_MUSIC41;     /*  MUSIC1               */
   Float_t       dist_MUSIC42;     /*  MUSIC2               */
   Float_t       dist_MUSIC43;     /*  MUSIC3               */
@@ -367,6 +369,7 @@ public:
   virtual void Print(Option_t* t="") const;
 
   Int_t         x_s2_select; //1=tpc,2=sc21,3=sc22
+  Int_t         tof_s2_select;
   Int_t         tof_s4_select; //1=sc21-41, 2=sc21-42, 3=sc22-41
   Int_t         tof_s8_select; //1=sc21-81, 2=sc22-81
   Int_t         tof_HTM_select; //1=sc21-M01, 2=sc22-M01

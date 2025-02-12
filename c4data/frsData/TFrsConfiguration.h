@@ -612,11 +612,6 @@ inline int TFrsConfiguration::Get_mhtdc_11LD_chan() const
     return mhtdc_11LD_ch;
 }
 
-inline int TFrsConfiguration::Get_mhtdc_11R_chan() const
-{
-    return mhtdc_11R_ch;
-}
-
 inline int TFrsConfiguration::Get_mhtdc_11RA_chan() const
 {
     return mhtdc_11RA_ch;

@@ -121,6 +121,24 @@ void FrsCalSciItem::SetAll(UInt_t de11l,
 
 ClassImp(FrsCalSciItem)
 
+FrsCalMusicItem::FrsCalMusicItem() {}
+
+void FrsCalMusicItem::SetAll(UInt_t music21_e[8],
+                            UInt_t music22_e[8],
+                            UInt_t music41_e[8],
+                            UInt_t music42_e[8],
+                            UInt_t music43_e[8])
+{
+    for (int i = 0; i < 8; i++)
+    {
+        fmusic21_e[i] = music21_e[i];
+        fmusic22_e[i] = music22_e[i];
+        fmusic41_e[i] = music41_e[i];
+        fmusic42_e[i] = music42_e[i];
+        fmusic43_e[i] = music43_e[i];
+    }
+}
+
 
 FrsCalTpcItem::FrsCalTpcItem() {}
 
@@ -154,6 +172,18 @@ void FrsCalTpcItem::SetAll(Float_t tpc_x[7],
                     Float_t tpc_sc42_x,
                     Float_t tpc_sc42_y,
                     Float_t tpc_sc43_x,
+                    Float_t tpc21_22_music21_x,
+                    Float_t tpc21_22_music21_y,
+                    Float_t tpc21_22_music22_x,
+                    Float_t tpc21_22_music22_y,
+                    Float_t tpc23_24_music21_x,
+                    Float_t tpc23_24_music21_y,
+                    Float_t tpc23_24_music22_x,
+                    Float_t tpc23_24_music22_y,
+                    Float_t tpc22_24_music21_x,
+                    Float_t tpc22_24_music21_y,
+                    Float_t tpc22_24_music22_x,
+                    Float_t tpc22_24_music22_y,
                     Float_t tpc_music41_x,
                     Float_t tpc_music42_x,
                     Float_t tpc_music43_x)
@@ -188,6 +218,18 @@ void FrsCalTpcItem::SetAll(Float_t tpc_x[7],
     ftpc_sc42_x = tpc_sc42_x;
     ftpc_sc42_y = tpc_sc42_y;
     ftpc_sc43_x = tpc_sc43_x;
+    ftpc21_22_music21_x = tpc21_22_music21_x;
+    ftpc21_22_music21_y = tpc21_22_music21_y;
+    ftpc21_22_music22_x = tpc21_22_music22_x;
+    ftpc21_22_music22_y = tpc21_22_music22_y;
+    ftpc23_24_music21_x = tpc23_24_music21_x;
+    ftpc23_24_music21_y = tpc23_24_music21_y;
+    ftpc23_24_music22_x = tpc23_24_music22_x;
+    ftpc23_24_music22_y = tpc23_24_music22_y;
+    ftpc22_24_music21_x = tpc22_24_music21_x;
+    ftpc22_24_music21_y = tpc22_24_music21_y;
+    ftpc22_24_music22_x = tpc22_24_music22_x;
+    ftpc22_24_music22_y = tpc22_24_music22_y;
     ftpc_music41_x = tpc_music41_x;
     ftpc_music42_x = tpc_music42_x;
     ftpc_music43_x = tpc_music43_x;

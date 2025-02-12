@@ -490,8 +490,8 @@ void LisaFrsCorrelations::Exec(Option_t* option)
 
 
     // Energy from frs
-    energy_MUSIC_1 = frsHitItem.Get_music_dE()[0]; 
-    energy_MUSIC_2 = frsHitItem.Get_music_dE()[1];
+    energy_MUSIC_1 = frsHitItem.Get_music41_dE(); 
+    energy_MUSIC_2 = frsHitItem.Get_music42_dE();
     energy_travMUSIC = travMusicHitItem.Get_travmusic_dE();
     // CEJ needs adding
     energy_travMUSIC_driftcorr = travMusicHitItem.Get_travmusic_dE_driftcorr();
@@ -576,7 +576,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
             for (int gate = 0; gate < FrsGates.size(); gate++)
             {  
                 //::: Gate on PID
-                if (FrsGates[gate]->Passed_ZvsAoQ(frsHitItem.Get_ID_z(), frsHitItem.Get_ID_AoQ()))
+                if (FrsGates[gate]->Passed_ZvsAoQ(frsHitItem.Get_ID_z41(), frsHitItem.Get_ID_AoQ_s2s4()))
                 {
                     //h1_energy_layer_ch_GM_PIDgated[gate][layer][xpos][ypos]->Fill(energy_LISA_GM);
 
