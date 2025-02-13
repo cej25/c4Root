@@ -2,10 +2,10 @@
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define AIDA_ON 0
-#define BPLAST_ON 0
+#define BPLAST_ON 1
 #define GERMANIUM_ON 0
 #define BGO_ON 0
-#define FRS_ON 1
+#define FRS_ON 0
 #define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 0
@@ -15,7 +15,7 @@
 // CEJ: not configured for s101 yet
 extern "C"
 {
-    #include "../../config/s101/frs/setup_s181_010_2024_conv.C"
+    #include "../../config/s100/frs/setup_des_s100_030_2024_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -37,7 +37,7 @@ void jb_s101()
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
 
     // Name your experiment. Make sure all relevant directories are named identically.
-    TString fExpName = "s181";
+    TString fExpName = "s100";
 
     // Define important paths.
     TString c4Root_path = "/lustre/gamma/jeroen/S101/c4Root";
@@ -65,7 +65,8 @@ void jb_s101()
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
     // TString filename = "trans://lxsecdaq01";
-    TString filename = "/lustre/gamma/s181_files/ts/213Tl_0100_0182.lmd";
+    // TString filename = "/lustre/gamma/s181_files/ts/213Tl_0100_0182.lmd";
+    TString filename = "/lustre/gamma/s100_files/new_ts/162Eu/162Eu*.lmd";
 //     TString filename = "trans://lxg1257"; // timesorter.
 //     TString filename = "trans://x86l-144"; // ??
     TString outputpath = "output";
@@ -121,19 +122,25 @@ void jb_s101()
     
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
+    TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_apr18.txt");
+    TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(config_path + "/fatima/fatima_cal_apr18.txt");
+    TFatimaTwinpeaksConfiguration::SetDetectorTimeshiftsFile(config_path + "/fatima/fatima_timeshifts_apr20.txt");
+    TFatimaTwinpeaksConfiguration::SetPromptFlashCutFile(config_path + "/fatima/fatima_prompt_flash_cut.root");
+
+    TFatimaVmeConfiguration::SetDetectorMapFile(config_path + "/fatima/Fatima_VME_allocation.txt");
+    TFatimaVmeConfiguration::Set_QDC_E_CalFile(config_path + "/fatima/Fatima_QDC_Energy_Calibration.txt");
+    TFatimaVmeConfiguration::Set_QDC_T_CalFile(config_path + "/fatima/Fatima_QDC_Time_Calibration.txt");
+    TFatimaVmeConfiguration::Set_TDC_T_CalFile(config_path + "/fatima/Fatima_TDC_Time_Calibration.txt");
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
-    TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_mapping_220125.txt");
-    TFrsConfiguration::SetConfigPath(config_path + "/frs/");
-    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_apr15.txt");
-    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_cal_apr18.txt");
-    TGermaniumConfiguration::SetDetectorTimeshiftsFile(config_path + "/germanium/ge_timeshifts_apr20.txt");
-    TGermaniumConfiguration::SetPromptFlashCut(config_path + "/germanium/ge_prompt_flash.root");
+    TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_mapping_s100.txt");
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
+    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_apr15.txt");
+    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_cal_2709.txt");
+    TGermaniumConfiguration::SetDetectorTimeshiftsFile(config_path + "/germanium/ge_timeshifts_apr20.txt");
+    TGermaniumConfiguration::SetPromptFlashCut(config_path + "/germanium/ge_prompt_close2.root");
     TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
     
-    TBB7VmeConfiguration::SetDetectorConfigurationFile(config_path + "/bb7/BB7_Detector_Map_s181.txt");  
-    TBB7VmeConfiguration::SetResidualSignalsFile(config_path + "/bb7/BB7_Residuals_Map.txt");   
 
     // ------------------------------------------------------------------------------------- //
     // *** Read Subsystems - comment out unwanted systems ********************************** //
