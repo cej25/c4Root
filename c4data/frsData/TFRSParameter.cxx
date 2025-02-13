@@ -1069,7 +1069,13 @@ TIDParameter::TIDParameter() {
    }}}
 }
 
-TIDParameter::TIDParameter(const char* name) {
+TIDParameter::TIDParameter(const char* name) 
+{ 
+  // Default values to deal with old experiments 
+  x_s2_select = 1;
+  tof_s2_select = 1;
+  tof_s4_select = 1;
+  use_sc11x = 0; // sci11 position not used for x
 
   id_tofoff2 = 267690.0;    // Offset (ps), 22sep03
   id_path2 =   123000.0;    // Path/c (ps)

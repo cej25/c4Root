@@ -199,6 +199,17 @@ public:
 
 
   // MUSIC histogram setup
+  int max_adc_music21;
+  int max_adc_music22;
+  int max_adc_music41;
+  int max_adc_music42;
+  int max_adc_music43;
+  int max_tdc_music21;
+  int max_tdc_music22;
+  int max_tdc_music41;
+  int max_tdc_music42;
+  int max_tdc_music43;
+
   int max_adc_music1;
   int max_adc_music2;
   int max_adc_music3;
@@ -368,15 +379,21 @@ public:
   virtual ~TIDParameter();
   virtual void Print(Option_t* t="") const;
 
-  Int_t         x_s2_select; //1=tpc,2=sc21,3=sc22
-  Int_t         tof_s2_select;
-  Int_t         tof_s4_select; //1=sc21-41, 2=sc21-42, 3=sc22-41
+  Int_t         x_s2_select = 1; //1=tpc,2=sc21,3=sc22
+  Int_t         tof_s2_select = 1; // 1=sc11-21, 2=sc11-22
+  Int_t         tof_s4_select = 1; //1=sc21-41, 2=sc21-42, 3=sc22-41
   Int_t         tof_s8_select; //1=sc21-81, 2=sc22-81
   Int_t         tof_HTM_select; //1=sc21-M01, 2=sc22-M01
   Int_t         Z_HTM_select; //1=sc21, 2=sc22, 3=scM01
 
-  Int_t         use_sc11x; //1 = use x position from sc11lr, 0 = set s1 x position to 0
+  Int_t         use_sc11x = 0; //1 = use x position from sc11lr, 0 = set s1 x position to 0
   Int_t         brho_select_s1; // 0 = use brho ta-s2 for aoq, 1 = only use s1-s2 brho (D1) for aoq
+
+  Int_t         beta_z21;
+  Int_t         beta_z22;
+  Int_t         beta_z41;
+  Int_t         beta_z42;
+  Int_t         beta_z43;
   
   Float_t       id_tofoff0[4];      /* Tof offset S1-S2 [ps]    */
   Float_t       id_tofoff1[4];      /* Tof offset S1-S2 [ps]    */
@@ -485,6 +502,13 @@ public:
   float max_aoq_plot;
   float min_z_plot;
   float max_z_plot;
+
+  Int_t ID_Z21_AoverQ_num[5]; // 2025
+  Float_t ID_Z21_AoverQ [5][5][2];
+  Int_t ID_Z22_AoverQ_num[5];
+  Float_t ID_Z22_AoverQ [5][5][2];
+  Int_t ID_Z41_AoverQ_num[5];
+  Float_t ID_Z41_AoverQ [5][5][2];
 
   Int_t   ID_Z_AoverQ_num[5];
   Float_t ID_Z_AoverQ [5][5][2];

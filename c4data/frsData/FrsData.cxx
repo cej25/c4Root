@@ -37,11 +37,11 @@ ClassImp(FrsScalerItem)
 
 FrsSciItem::FrsSciItem() {}
 
-void FrsSciItem::SetAll(UInt_t de[18], UInt_t dt[19], std::vector<Int_t> mhtdc[24])
+void FrsSciItem::SetAll(UInt_t de[32], UInt_t dt[32], std::vector<Int_t> mhtdc[32])
 {
-    for (int i = 0; i < 18; i++) sciDE[i] = de[i];
-    for (int i = 0; i < 19; i++) sciDT[i] = dt[i];
-    for (int i = 0; i < 24; i++) sciMHTDC[i] = mhtdc[i];
+    for (int i = 0; i < 32; i++) sciDE[i] = de[i];
+    for (int i = 0; i < 32; i++) sciDT[i] = dt[i];
+    for (int i = 0; i < 32; i++) sciMHTDC[i] = mhtdc[i];
 
 }
 
@@ -49,9 +49,9 @@ ClassImp(FrsSciItem)
 
 FrsMusicItem::FrsMusicItem() {}
 
-void FrsMusicItem::SetAll(uint32_t e[2][8], uint32_t t[2][8])
+void FrsMusicItem::SetAll(uint32_t e[5][8], uint32_t t[5][8])
 {
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < 5; i++)
     {
         for (int j = 0; j < 8; j++) musicE[i][j] = e[i][j];
         for (int j = 0; j < 8; j++) musicT[i][j] = t[i][j];
