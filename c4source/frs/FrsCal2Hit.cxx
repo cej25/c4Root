@@ -1077,7 +1077,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
                 {
                     if ((sci->mhtdc_factor_ch_to_ns * TMath::Abs(sci21l_hits[i] - sci21r_hits[j]) < 40) && (sci->mhtdc_factor_ch_to_ns * TMath::Abs(sci11l_hits[k] - sci11r_hits[l]) < 40))
                     {
-                        mhtdc_tof2111[i * hits_in_21r * hits_in_11l * hits_in_11r + j * hits_in_11l * hits_in_11r + k * hits_in_11r + l] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci21l_hits[i] - sci21r_hits[j]) - 0.5 * (sci11l_hits[k] - sci11r_hits[l])) + sci->mhtdc_offset_21_11[sci->sci11_select];
+                        mhtdc_tof2111[i * hits_in_21r * hits_in_11l * hits_in_11r + j * hits_in_11l * hits_in_11r + k * hits_in_11r + l] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci21l_hits[i] + sci21r_hits[j]) - 0.5 * (sci11l_hits[k] + sci11r_hits[l])) + sci->mhtdc_offset_21_11[sci->sci11_select];
                     }
                     else
                     {
@@ -1102,7 +1102,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
                 {
                     if ((sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci41l_hits[i] - sci41r_hits[j]) < 40) && (sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci21l_hits[k] - sci21r_hits[l]) < 40))
                     {
-                        mhtdc_tof4121[i * hits_in_41r * hits_in_21l * hits_in_21r + j * hits_in_21l * hits_in_21r + k * hits_in_21r + l] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci41l_hits[i] - sci41r_hits[j]) - 0.5 * (sci21l_hits[k] - sci21r_hits[l])) + sci->mhtdc_offset_41_21;
+                        mhtdc_tof4121[i * hits_in_41r * hits_in_21l * hits_in_21r + j * hits_in_21l * hits_in_21r + k * hits_in_21r + l] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci41l_hits[i] + sci41r_hits[j]) - 0.5 * (sci21l_hits[k] + sci21r_hits[l])) + sci->mhtdc_offset_41_21;
                     }
                     else
                     {
@@ -1126,7 +1126,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
                 {
                     if ((sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci41l_hits[i] - sci41r_hits[j]) < 40) && (sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci22l_hits[k] - sci22r_hits[l]) < 40))
                     {
-                        mhtdc_tof4122[i * hits_in_41r * hits_in_22l*hits_in_22r + j * hits_in_22l * hits_in_22r + k * hits_in_22r + l] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci41l_hits[i] - sci41r_hits[j]) - 0.5 * (sci22l_hits[k] - sci22r_hits[l])) + sci->mhtdc_offset_41_22;
+                        mhtdc_tof4122[i * hits_in_41r * hits_in_22l*hits_in_22r + j * hits_in_22l * hits_in_22r + k * hits_in_22r + l] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci41l_hits[i] + sci41r_hits[j]) - 0.5 * (sci22l_hits[k] + sci22r_hits[l])) + sci->mhtdc_offset_41_22;
                     }
                     else
                     {
@@ -1150,7 +1150,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
                 {
                     if ((sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci42l_hits[i] - sci42r_hits[j]) < 40) && (sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci21l_hits[k] - sci21r_hits[l]) < 40))
                     {
-                        mhtdc_tof4221[i * hits_in_42r * hits_in_21l * hits_in_21r + j * hits_in_21l * hits_in_21r + k * hits_in_21r + l] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci42l_hits[i] - sci42r_hits[j]) - 0.5 * (sci21l_hits[k] - sci21r_hits[l])) + sci->mhtdc_offset_42_21;
+                        mhtdc_tof4221[i * hits_in_42r * hits_in_21l * hits_in_21r + j * hits_in_21l * hits_in_21r + k * hits_in_21r + l] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci42l_hits[i] + sci42r_hits[j]) - 0.5 * (sci21l_hits[k] + sci21r_hits[l])) + sci->mhtdc_offset_42_21;
                     }
                     else
                     {
@@ -1173,7 +1173,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
             {
                 for (int l = 0; l < hits_in_21r; l++)
                 {
-                    mhtdc_tof4321[i * hits_in_43r * hits_in_21l * hits_in_21r + j * hits_in_21l*hits_in_21r + k*hits_in_21r + l] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci43l_hits[i] - sci43r_hits[j]) - 0.5 * (sci21l_hits[k] - sci21r_hits[l])) + sci->mhtdc_offset_43_21;
+                    mhtdc_tof4321[i * hits_in_43r * hits_in_21l * hits_in_21r + j * hits_in_21l*hits_in_21r + k*hits_in_21r + l] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci43l_hits[i] + sci43r_hits[j]) - 0.5 * (sci21l_hits[k] + sci21r_hits[l])) + sci->mhtdc_offset_43_21;
                 }
             }
         }
@@ -1190,7 +1190,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
             {
                 for (int l = 0; l < hits_in_21r; l++)
                 {
-                    mhtdc_tof3121[i * hits_in_31r * hits_in_21l * hits_in_21r + j * hits_in_21l * hits_in_21r + k * hits_in_21r + l] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci31l_hits[i] - sci31r_hits[j]) - 0.5 * (sci21l_hits[k] - sci21r_hits[l])) + sci->mhtdc_offset_31_21;
+                    mhtdc_tof3121[i * hits_in_31r * hits_in_21l * hits_in_21r + j * hits_in_21l * hits_in_21r + k * hits_in_21r + l] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci31l_hits[i] + sci31r_hits[j]) - 0.5 * (sci21l_hits[k] + sci21r_hits[l])) + sci->mhtdc_offset_31_21;
                 }
             }
         }
@@ -1889,7 +1889,6 @@ void FrsCal2Hit::ProcessIDs()
             id_b_z42 = kTRUE;
         }
 
-        std::cout << "id 42: " << id_z42 << std::endl;
     }
 
     // S4 (MUSIC 3)
@@ -1956,7 +1955,12 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
 
         for (int i = 0; i < hits_in_s2x; i++) temp_s2x_mhtdc[i] = -999; 
         temp_a2 = -999;
-        if (b_tpc_xy[2] && b_tpc_xy[3])
+        if (b_tpc_xy[0] && b_tpc_xy[1])
+        {
+            for (int i = 0; i < hits_in_s2x; i++) temp_s2x_mhtdc[i] = calTpcItem.Get_tpc_x_s2_foc_21_22();
+            temp_a2 = calTpcItem.Get_tpc_angle_x_s2_foc_21_22();
+        }
+        else if (b_tpc_xy[2] && b_tpc_xy[3])
         {
             for (int i = 0; i < hits_in_s2x; i++) temp_s2x_mhtdc[i] = calTpcItem.Get_tpc_x_s2_foc_23_24();
             temp_a2 = calTpcItem.Get_tpc_angle_x_s2_foc_23_24();
@@ -1965,11 +1969,6 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
         {
             for (int i = 0; i < hits_in_s2x; i++) temp_s2x_mhtdc[i] = calTpcItem.Get_tpc_x_s2_foc_22_24();
             temp_a2 = calTpcItem.Get_tpc_angle_x_s2_foc_22_24();
-        }
-        else if (b_tpc_xy[0] && b_tpc_xy[1])
-        {
-            for (int i = 0; i < hits_in_s2x; i++) temp_s2x_mhtdc[i] = calTpcItem.Get_tpc_x_s2_foc_21_22();
-            temp_a2 = calTpcItem.Get_tpc_angle_x_s2_foc_21_22();
         }
     }
     else if (id->x_s2_select == 2) // Sci21
@@ -2205,10 +2204,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
 
             if (temp_s4x_mhtdc[i] > -200 && temp_s4x_mhtdc[i] < 200 && temp_s2x_mhtdc[j] > -120 && temp_s2x_mhtdc[j] < 120)
             {
-                id_mhtdc_delta_s2s4[count] = (temp_s4x_mhtdc[i]  - (temp_s2x_mhtdc[j] * frs->magnification[1])) / (-1.0 * frs->dispersion[1] * 1000.0); //1000 is dispertsion from meter to mm. -1.0 is sign definition.
-
-                // CEJ: I've left out "timestamp check" for now, 
-                // I need that one explained to me.. 
+                id_mhtdc_delta_s2s4[count] = (temp_s4x_mhtdc[i]  - (temp_s2x_mhtdc[j] * frs->magnification[1])) / (-1.0 * frs->dispersion[1] * 1000.0); //1000 is dispertsion from meter to mm. -1.0 is sign definition. 
 
                 // Should this be restricted to 0.5 < Beta < 1.0?
                 if (id_mhtdc_beta_s2s4[count] > 0.0 && id_mhtdc_beta_s2s4[count] < 1.0)
@@ -2241,6 +2237,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
             {
                 sum += power * id->mhtdc_vel_a_music41[j];
                 power *= 1.0 / TMath::Power(id_mhtdc_beta_s2s4[i], 2);
+                //power *= id_mhtdc_beta_s2s4[i];
             }
 
             id_mhtdc_v_cor_music41[i] = sum;
@@ -2258,6 +2255,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
             {
                 sum += power * id->mhtdc_vel_a_music42[j];
                 power *= 1.0 / TMath::Power(id_mhtdc_beta_s2s4[i], 2);
+                //power *= id_mhtdc_beta_s2s4[i];
             }
 
             id_mhtdc_v_cor_music42[i] = sum;
