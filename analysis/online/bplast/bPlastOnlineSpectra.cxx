@@ -85,8 +85,8 @@ InitStatus bPlastOnlineSpectra::Init()
     // Setting histogram sizes
     h1_bplast_slowToT.resize(nDetectors+1); // index from 1 
     h1_bplast_fastToT.resize(nDetectors+1);
-    h1_bplast_hitpatterns.resize(2); // this is hard coded yeah i know, but we aren't going to more bplasts?
-    h1_bplast_multiplicity.resize(2);
+    h1_bplast_hitpatterns.resize(2); // this is hard coded yeah i know, but we aren't going to more bplasts? - JB no probably not but this is a limited case
+    h1_bplast_multiplicity.resize(6);
     h1_bplast_tamex_card_hitpattern.resize(nTamexBoards+1);
     h2_bplast_fastToT_vs_slowToT.resize(nDetectors+1);
 
@@ -156,13 +156,28 @@ InitStatus bPlastOnlineSpectra::Init()
     dir_bplast_fast_vs_slow->Append(c_bplast_fast_v_slow);
 
     c_bplast_multiplicity  = new TCanvas("c_bplast_multiplicity","bPlast multiplicity spectra",1200,800);
-    c_bplast_multiplicity->Divide(2,1);
+    c_bplast_multiplicity->Divide(2,3);
     c_bplast_multiplicity->cd(1);
     h1_bplast_multiplicity[0] = MakeTH1(dir_bplast_hitpattern, "F", "h1_bplast_multiplicity_upstream","Upstream bPlast multiplicity => 2",64,0,64, "Channel Multiplicity", kRed-3, kBlack);
     h1_bplast_multiplicity[0]->Draw();
     c_bplast_multiplicity->cd(2);
     h1_bplast_multiplicity[1] = MakeTH1(dir_bplast_hitpattern, "F", "h1_bplast_multiplicity_downstream","Downstream bPlast multiplicity => 2",64,0,64, "Channel Multiplicity", kRed-3, kBlack);
     h1_bplast_multiplicity[1]->Draw();
+    c_bplast_multiplicity->cd(3);
+    h1_bplast_multiplicity[2] = MakeTH1(dir_bplast_hitpattern, "F", "h1_bplast_multiplicity_upstream_frs","Upstream bPlast multiplicity with FRS accepted",64,0,64, "Channel Multiplicity", kRed-3, kBlack);
+    h1_bplast_multiplicity[2]->Draw();
+    c_bplast_multiplicity->cd(4);
+    h1_bplast_multiplicity[3] = MakeTH1(dir_bplast_hitpattern, "F", "h1_bplast_multiplicity_downstream_frs","Downstream bPlast multiplicity with FRS accepted",64,0,64, "Channel Multiplicity", kRed-3, kBlack);
+    h1_bplast_multiplicity[3]->Draw();
+    c_bplast_multiplicity->cd(5);
+    h1_bplast_multiplicity[4] = MakeTH1(dir_bplast_hitpattern, "F", "h1_bplast_multiplicity_anticoincidence_frs_upstream","Upstream bPlast multiplicity with FRS anticoincidence",64,0,64, "Channel Multiplicity", kRed-3, kBlack);
+    h1_bplast_multiplicity[4]->Draw();
+    c_bplast_multiplicity->cd(6);
+    h1_bplast_multiplicity[5] = MakeTH1(dir_bplast_hitpattern, "F", "h1_bplast_multiplicity_anticoincidence_frs_downstream","Downstream bPlast multiplicity with FRS anticoincidence",64,0,64, "Channel Multiplicity", kRed-3, kBlack);
+    h1_bplast_multiplicity[5]->Draw();
+    
+
+
 
     c_bplast_multiplicity->SetLogy();
     c_bplast_multiplicity->cd(0);
@@ -188,36 +203,6 @@ InitStatus bPlastOnlineSpectra::Init()
 
 }
 
-// void bPlastOnlineSpectra::ResetHistogramsInDirectory(TDirectory* dir) {
-//     if (!dir) return;
-
-//     TList* histList = dir->GetList();
-//     if (!histList) {
-//         c4LOG(error, "Failed to get list of histograms from directory.");
-//         return;
-//     }
-
-//     TIter next(histList);
-//     TObject* obj;
-
-//     while ((obj = next())) {
-//         if (obj->InheritsFrom(TDirectory::Class())) {
-//             // Recursively process subdirectories
-//             TDirectory* subdir = dynamic_cast<TDirectory*>(obj);
-//             if (subdir) {
-//                 ResetHistogramsInDirectory(subdir);
-//             }
-//         } else if (obj->InheritsFrom(TH1::Class())) {
-//             // Reset histograms
-//             TH1* hist = dynamic_cast<TH1*>(obj);
-//             if (hist) {
-//                 std::cout << "Resetting histogram: " << hist->GetName() << std::endl;
-//                 hist->Reset();
-//             }
-//         }
-//     }
-// }
-
 void bPlastOnlineSpectra::Reset_Histo() {
     c4LOG(info, "Resetting bPlast histograms.");
 
@@ -238,6 +223,12 @@ void bPlastOnlineSpectra::Exec(Option_t* option)
     {
         event_multiplicity_upstream = 0;
         event_multiplicity_downstream = 0;
+        event_multiplicity_frs_upstream = 0;
+        event_multiplicity_frs_downstream = 0;
+        event_multiplicity_anticoincidence_frs_upstream = 0;
+        event_multiplicity_anticoincidence_frs_downstream = 0;
+        bool frs_accept = false;
+
         Int_t nHits = fHitbPlastTwinpeaks->GetEntriesFast();
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {   
@@ -250,6 +241,7 @@ void bPlastOnlineSpectra::Exec(Option_t* option)
             double fast_lead_time = hit->Get_fast_lead_time();
             
             int detector_id = hit->Get_detector_id();
+            if(bplast_conf->FRS_ACCEPT() == detector_id) frs_accept = true; // we need to check it once through the event loop to see if it is ever true, it might come at the end and then we count wrong
             detector_counters[detector_id]++;
 
             if (detector_id > nDetectors || detector_id < 0) continue;
@@ -321,9 +313,63 @@ void bPlastOnlineSpectra::Exec(Option_t* option)
                 }
             }
         }
-        if(event_multiplicity_upstream >= 2) h1_bplast_multiplicity[0]->Fill(event_multiplicity_upstream);
 
+        // Now we handle if there is an FRS event
+        if(frs_accept){ // we see FRS in the event
+            for (Int_t ihit = 0; ihit < nHits; ihit++)
+            {   
+                bPlastTwinpeaksCalData* hit = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(ihit);
+                if (!hit) continue;
+                int detector_id = hit->Get_detector_id();
+
+                for (const auto& entry : bplast_map)
+                {
+                    if (entry.second.first == detector_id && detector_id < 129)
+                    {
+                        if (entry.second.second.first == 'U')
+                        {
+                            event_multiplicity_frs_upstream ++;
+                        }
+                        if (entry.second.second.first == 'D')
+                        {
+                            event_multiplicity_frs_downstream ++;
+                        }
+                    }
+                }
+
+            }
+        }
+        else{ // we dont see FRS in the event
+            for (Int_t ihit = 0; ihit < nHits; ihit++)
+            {   
+                bPlastTwinpeaksCalData* hit = (bPlastTwinpeaksCalData*)fHitbPlastTwinpeaks->At(ihit);
+                if (!hit) continue;
+                int detector_id = hit->Get_detector_id();
+
+                for (const auto& entry : bplast_map)
+                {
+                    if (entry.second.first == detector_id && detector_id < 129)
+                    {
+                        if (entry.second.second.first == 'U')
+                        {
+                            event_multiplicity_anticoincidence_frs_upstream ++;
+                        }
+                        if (entry.second.second.first == 'D')
+                        {
+                            event_multiplicity_anticoincidence_frs_downstream ++;
+                        }
+                    }
+                }
+            }
+        }
+        // Fill the multiplicity histograms
+        if(event_multiplicity_upstream >= 2) h1_bplast_multiplicity[0]->Fill(event_multiplicity_upstream);
         if(event_multiplicity_downstream >= 2) h1_bplast_multiplicity[1]->Fill(event_multiplicity_downstream);
+        if(event_multiplicity_frs_upstream >= 2) h1_bplast_multiplicity[2]->Fill(event_multiplicity_frs_upstream);
+        if(event_multiplicity_frs_downstream >= 2) h1_bplast_multiplicity[3]->Fill(event_multiplicity_frs_downstream);
+        if(event_multiplicity_anticoincidence_frs_upstream >= 2) h1_bplast_multiplicity[4]->Fill(event_multiplicity_anticoincidence_frs_upstream);
+        if(event_multiplicity_anticoincidence_frs_downstream >= 2) h1_bplast_multiplicity[5]->Fill(event_multiplicity_anticoincidence_frs_downstream);
+
     }
     fNEvents += 1;
 

@@ -111,6 +111,7 @@ void FrsHitItem::SetMusicData(Float_t music21_dE,
     fmusic42_dE_cor =  music42_dE_cor;
     fmusic43_dE_cor =  music43_dE_cor;
 }
+
         
 void FrsHitItem::SetIDs(Float_t x1,
                         Float_t y1,
