@@ -229,7 +229,7 @@ InitStatus FrsOnlineSpectra::Init()
         h1_Z = MakeTH1(dir_tac_1d, "D", "h1_Z", "Z (MUSIC 1)", 1000, 10, 150, "Z (MUSIC 1)", kPink-3, kBlue+2);
         h1_Z2 = MakeTH1(dir_tac_1d, "D", "h1_Z2", "Z (MUSIC 2)", 1000, 10, 150, "Z (MUSIC 2)", kPink-3, kBlue+2);
         h1_Z_travmus = MakeTH1(dir_tac_1d, "D", "h1_Z_travmus", "Z (Travel MUSIC)", 750, 10, 100, "Z (Travel MUSIC)", kPink-3, kBlue+2);
-        h1_AoQ = MakeTH1(dir_tac_1d, "D", "h1_AoQ", "A/Q", 500, 1.0, 4.0, "A/Q", kPink-3, kBlue+2); 
+        h1_AoQ = MakeTH1(dir_tac_1d, "D", "h1_AoQ", "A/Q", 1000, 2.0, 2.7, "A/Q", kPink-3, kBlue+2); 
         h1_AoQ_corr = MakeTH1(dir_tac_1d, "D", "h1_AoQ_corr", "A/Q (corr)", 500, 1.0, 4.0, "A/Q", kPink-3, kBlue+2);
         h1_x2 = MakeTH1(dir_tac_1d, "D", "h1_x2", "S2 x-position", 200, -100, 100, "S2 x-position", kYellow-7, kBlack);
         h1_x4 = MakeTH1(dir_tac_1d, "D", "h1_x4", "S4 x-position", 200, -100, 100, "S4 x-position",kYellow-7, kBlack);
@@ -432,9 +432,9 @@ InitStatus FrsOnlineSpectra::Init()
     c_dE_compare->cd(1);
     h1_travmus_dE->Draw();
     c_dE_compare->cd(2);
-    h1_music_dE[0]->Draw();
+    h1_music41_dE->Draw();
     c_dE_compare->cd(3);
-    h1_music_dE[1]->Draw();
+    h1_music42_dE->Draw();
     c_dE_compare->cd(0);
     dir_travmus_tac->Append(c_dE_compare);
 

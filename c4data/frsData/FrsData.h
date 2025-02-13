@@ -55,18 +55,18 @@ class FrsSciItem : public TObject
         void SetAll(UInt_t de[18], UInt_t dt[19], std::vector<Int_t> mhtdc[24]);
 
         // Getters
-        const UInt_t (&Get_de_array() const) [18] { return sciDE; }
-        const UInt_t (&Get_dt_array() const) [19] { return sciDT; }
-        const std::vector<Int_t> (&Get_mhtdc_array() const) [24] { return sciMHTDC; }
+        const UInt_t (&Get_de_array() const) [32] { return sciDE; }
+        const UInt_t (&Get_dt_array() const) [32] { return sciDT; }
+        const std::vector<Int_t> (&Get_mhtdc_array() const) [32] { return sciMHTDC; }
 
         ClassDef(FrsSciItem, 1);
     
     private:
 
         // these should all probably just be set to 32...
-        UInt_t sciDE[18]; // 16 --> 18 2025
-        UInt_t sciDT[19]; // 16 --> 19 2025
-        std::vector<Int_t> sciMHTDC[24]; // 15 --> 24 2025
+        UInt_t sciDE[32]; // 16 --> 18 2025
+        UInt_t sciDT[32]; // 16 --> 19 2025
+        std::vector<Int_t> sciMHTDC[32]; // 15 --> 24 2025
 
 
 };
@@ -76,18 +76,18 @@ class FrsMusicItem : public TObject
     public:
         FrsMusicItem();
 
-        void SetAll(UInt_t e[2][8], UInt_t t[2][8]);
+        void SetAll(UInt_t e[5][8], UInt_t t[5][8]);
 
-        const UInt_t (&Get_music_e() const) [2][8] { return musicE; }
-        const UInt_t (&Get_music_t() const) [2][8] { return musicT; }
+        const UInt_t (&Get_music_e() const) [5][8] { return musicE; }
+        const UInt_t (&Get_music_t() const) [5][8] { return musicT; }
 
         
         ClassDef(FrsMusicItem, 1);
 
     private:
 
-        UInt_t musicE[2][8];
-        UInt_t musicT[2][8];
+        UInt_t musicE[5][8]; // 2 -> 5 2025
+        UInt_t musicT[5][8];
 
 };
 

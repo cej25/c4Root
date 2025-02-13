@@ -1470,6 +1470,7 @@ void FrsCal2Hit::ProcessMusic()
     #endif
 
     auto const & calTpcItem = calTpcArray->at(0);
+    b_tpc_xy = calTpcItem.Get_b_tpc_xy();
 
     // ::: Position correction by TPC ::::::
     if (b_tpc_xy[0] && b_tpc_xy[1])
@@ -1846,15 +1847,17 @@ void FrsCal2Hit::ProcessIDs()
         {
             // sum += power * id->vel_a1[i];
             sum += power * id->vel_music41_a[i];
-            // power *= id_beta;
-            power *= 1.0 / TMath::Power(id_beta_s2s4, 2);
+            power *= id_beta_s2s4;
+            // power *= 1.0 / TMath::Power(id_beta_s2s4, 2);
         }
         id_music41_v_cor = sum;
+
 
         if (id_music41_v_cor > 0.0)
         {
             id_z41 = frs->primary_z * sqrt(music41_de / id_music41_v_cor) + id->offset_z41;
         }
+
         if ((id_z41 > 0.0) && (id_z41 < 100.0))
         {   
             // CEJ: this seems out of order to me, gain matching first?
@@ -1871,8 +1874,8 @@ void FrsCal2Hit::ProcessIDs()
         {
             // sum += power * id->vel_a2[i];
             sum += power * id->vel_music42_a[i];
-            // power *= id_beta;
-            power *= 1.0 / TMath::Power(id_beta_s2s4, 2);
+            power *= id_beta_s2s4;
+            // power *= 1.0 / TMath::Power(id_beta_s2s4, 2);
         }
         id_music42_v_cor = sum;
 
@@ -1885,6 +1888,8 @@ void FrsCal2Hit::ProcessIDs()
             // CEJ: this seems out of order to me, gain matching first?
             id_b_z42 = kTRUE;
         }
+
+        std::cout << "id 42: " << id_z42 << std::endl;
     }
 
     // S4 (MUSIC 3)
@@ -2016,7 +2021,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
 
     // S8 -- no switch for position, always mhtdc[0]?
     // CEJ deal with if we ever care about S8
-    temp_s8x_mhtdc = mhtdc_sc81lr_x[0];
+    //temp_s8x_mhtdc = mhtdc_sc81lr_x[0];
 
 
     // ::::::::::::::::::::::::::::::::::::

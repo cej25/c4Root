@@ -161,7 +161,7 @@ void FrsHitItem::SetIDs(Float_t x1,
     fID_AoQ_s2s4 = AoQ_s2s4;
     fID_AoQ_corr_s2s4 = AoQ_corr_s2s4;
     fID_z41 = z41;
-    fID_z42 = z41;
+    fID_z42 = z42;
     fID_z43 = z43;
     fID_dEdegoQ = dEdegoQ;
     fID_dEdeg_z41 = dEdeg_z41;
