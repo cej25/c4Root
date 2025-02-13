@@ -91,6 +91,10 @@ class bPlastOnlineSpectra : public FairTask
 
         int event_multiplicity_upstream;
         int event_multiplicity_downstream;
+        int event_multiplicity_frs_upstream;
+        int event_multiplicity_frs_downstream;
+        int event_multiplicity_anticoincidence_frs_upstream;
+        int event_multiplicity_anticoincidence_frs_downstream;
         int64_t wr_t = 0;
         int64_t wr_prev = 0;
         int64_t wr_prev1s = 0;
