@@ -6,8 +6,8 @@
 extern "C"
 {
     // #include "../../config/s101/frs/setup_160_049_2025_conv.C"
-    //#include "../../config/s100/frs/setup_des_s100_030_2024_conv.C"
-    #include "../../config/s100/frs/setup_des_s100_030_2024_conv_jel_conv.C"
+    #include "../../config/s100/frs/setup_des_s100_030_2024_conv.C"
+    //#include "../../config/s100/frs/setup_des_s100_030_2024_conv_jel_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures

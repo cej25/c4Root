@@ -7,6 +7,8 @@
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
 #include "FairTask.h"
+#include "GainShift.h"
+
 
 #include "TClonesArray.h"
 #include "TMath.h"
@@ -1100,7 +1102,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
             {
                 for (int l = 0; l < hits_in_21r; l++)
                 {
-                    if ((sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci41l_hits[i] - sci41r_hits[j]) < 40) && (sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci21l_hits[k] - sci21r_hits[l]) < 40))
+                    if ((sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci41l_hits[i] - sci41r_hits[j]) < 200) && (sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci21l_hits[k] - sci21r_hits[l]) < 200))
                     {
                         mhtdc_tof4121[i * hits_in_41r * hits_in_21l * hits_in_21r + j * hits_in_21l * hits_in_21r + k * hits_in_21r + l] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci41l_hits[i] + sci41r_hits[j]) - 0.5 * (sci21l_hits[k] + sci21r_hits[l])) + sci->mhtdc_offset_41_21;
                     }
@@ -1138,7 +1140,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     }
 
     // 21 -> 42
-    int hits_in_tof4221 = hits_in_42lr * hits_in_21lr;
+    hits_in_tof4221 = hits_in_42lr * hits_in_21lr;
     mhtdc_tof4221 = new Float_t[hits_in_tof4221];
     for (int i = 0; i < hits_in_42l; i++) 
     {
@@ -1682,14 +1684,6 @@ void FrsCal2Hit::ProcessIDs()
         id_b8 = 0.0;
     }
 
-    if (sci_b_x_11)
-    {
-        if (id->use_sc11x == 1) id_x1 = sci_x_11;
-        else id_x1 = 0;
-        id_y1 = 0;
-        id_a1 = 0;
-        id_b1 = 0;
-    }
 
     id_b_x2 = ((id_x2 > -200) && (id_x2 < 100));
     id_b_x4 = ((id_x4 > -200) && (id_x4 < 100));
@@ -1775,6 +1769,7 @@ void FrsCal2Hit::ProcessIDs()
     
     
     // S2-S4
+
     if (sci_b_tofll_21_41 && sci_b_tofrr_21_41 && id_b_x2 && id_b_x4)
     {
         if ((id_beta_s2s4 > 0.0) && (id_beta_s2s4 < 1.0))
@@ -1792,6 +1787,7 @@ void FrsCal2Hit::ProcessIDs()
     /*------------------------------------------------*/
     // Calibration with MUSIC is done with 1/b2 - last update sept2024
     // S2 (MUSIC 1)
+    // CEJ:: can be argued to check de_cor, merge removed it for now
     if ((music21_de > 0.0) && (id_beta_s1s2 > 0.0) && (id_beta_s1s2 < 1.0))
     {
         float power = 1.;
@@ -1866,6 +1862,7 @@ void FrsCal2Hit::ProcessIDs()
     }
 
     // S4 (MUSIC 2)
+    // CEJ::  potentially check de_cor here too
     if ((music42_de > 0.0) && (id_beta_s2s4 > 0.0) && (id_beta_s2s4 < 1.0))
     {
         float power = 1.;
@@ -1879,6 +1876,7 @@ void FrsCal2Hit::ProcessIDs()
         }
         id_music42_v_cor = sum;
 
+        // GainShift removed, because we have DriftCorr?
         if (id_music42_v_cor > 0.0)
         {
             id_z42 = frs->primary_z * sqrt(music42_de / id_music42_v_cor) + id->offset_z42;
@@ -1913,6 +1911,12 @@ void FrsCal2Hit::ProcessIDs()
             id_b_z43 = kTRUE;
         }
     }
+
+
+    float gamma1square_s2s4 = 1.0 + TMath::Power(((1 / aoq_factor) * (id_brho[0] / id_AoQ_s2s4)), 2);
+    id_gamma_ta_s2s4 = TMath::Sqrt(gamma1square_s2s4);
+    id_dEdegoQ = (id_gamma_ta_s2s4 - id_gamma_s2s4) * id_AoQ_s2s4;
+    id_dEdeg_z41 = id_dEdegoQ * id_z41;
 
 }
 

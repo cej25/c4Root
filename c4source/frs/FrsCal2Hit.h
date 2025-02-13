@@ -8,6 +8,7 @@
 #include "FrsCalData.h"
 #include "FrsHitData.h"
 #include "EventHeader.h"
+#include "GainShift.h"
 
 #include "FairTask.h"
 #include <TRandom3.h>
@@ -45,6 +46,14 @@ class FrsCal2Hit : public FairTask
 
         void FinishEvent();
         void FinishTask();
+
+
+        void SetMusic41TACGainShift(GainShift * p) {music41_tac_z_gain_shifts = p;}
+        void SetMusic42TACGainShift(GainShift * p) {music42_tac_z_gain_shifts = p;}
+        
+        void SetMusic41MHTDCGainShift(GainShift * p) {music41_mhtdc_z_gain_shifts = p;}
+        void SetMusic42MHTDCGainShift(GainShift * p) {music42_mhtdc_z_gain_shifts = p;}
+        
         
         void SetOnline(Bool_t option) { fOnline = option; }
     
@@ -63,6 +72,13 @@ class FrsCal2Hit : public FairTask
         TMRTOFMSParameter* mrtof;
         TRangeParameter* range;
         std::string pathToConfigFiles;
+
+
+        GainShift * music41_tac_z_gain_shifts = nullptr;
+        GainShift * music42_tac_z_gain_shifts = nullptr;
+
+        GainShift * music41_mhtdc_z_gain_shifts = nullptr;
+        GainShift * music42_mhtdc_z_gain_shifts = nullptr;
 
         Bool_t fOnline;
         Int_t fNEvents;
@@ -229,10 +245,10 @@ class FrsCal2Hit : public FairTask
         Int_t hits_in_22lr = 0;
         Int_t hits_in_41lr = 0;
         Int_t hits_in_42lr = 0;
-        // Int_t hits_in_21r = 0; // remove if possible
         Int_t hits_in_tof2111 = 0;
         Int_t hits_in_tof4121 = 0;
         Int_t hits_in_tof4122 = 0;
+        Int_t hits_in_tof4221 = 0;
 
         Int_t hits_in_s1x = 0;
         Int_t hits_in_s2x = 0;
