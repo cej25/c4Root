@@ -72,114 +72,125 @@ class FrsNearlineSpectra : public FairTask
         // folders
         bool found_dir_frs = true;
         TDirectory* dir_frs; // for now fine, maybe needs to be...overarching branch? dunno
+        TDirectory* dir_tac;
+        TDirectory* dir_mhtdc;
         TDirectory* dir_scalers;
         TDirectory* dir_rates;
         TDirectory* dir_drifts;
-        TDirectory* dir_tac;
-        TDirectory* dir_mhtdc;
         TDirectory* dir_tac_1d;
         TDirectory* dir_tac_2d;
         TDirectory* dir_gated_tac;
-        TDirectory* dir_ZvsAoQ_tac;
-        TDirectory* dir_Z1vsZ2_tac;
-        TDirectory* dir_x2vsAoQ_tac;
-        TDirectory* dir_x4vsAoQ_tac;
-        TDirectory* dir_dEdegvsZ_tac;
+        TDirectory* dir_Z41vsAoQs2s4_tac;
+        TDirectory* dir_Z41vsZ42_tac;
+        TDirectory* dir_x2vsAoQs2s4_tac;
+        TDirectory* dir_x4vsAoQs2s4_tac;
+        TDirectory* dir_dEdegZ41vsZ41_tac;
         TDirectory* dir_mhtdc_1d;
         TDirectory* dir_mhtdc_2d;
         TDirectory* dir_gated_mhtdc;
-        TDirectory* dir_ZvsAoQ_mhtdc;
-        TDirectory* dir_Z1vsZ2_mhtdc;
-        TDirectory* dir_x2vsAoQ_mhtdc; 
-        TDirectory* dir_x4vsAoQ_mhtdc;
-        TDirectory* dir_dEdegvsZ_mhtdc;
+        TDirectory* dir_Z41vsAoQs2s4_mhtdc;
+        TDirectory* dir_Z41vsZ42_mhtdc;
+        TDirectory* dir_x2vsAoQs2s4_mhtdc; 
+        TDirectory* dir_x4vsAoQs2s4_mhtdc;
+        TDirectory* dir_dEdegZ41vsZ41_mhtdc;
 
         //canvases
         TCanvas* c_TravMus_drift;
     
         // Histograms
         // TAC 2D + Gated
-        TH2* h2_Z_vs_AoQ;
-        TH2* h2_Z_vs_AoQ_driftcorr;
-        TH2* h2_Z_vs_AoQ_corr;
-        TH2* h2_Z_vs_Z2;
-        TH2* h2_Z_vs_AoQ_Zsame;
-        TH2* h2_x4_vs_AoQ_Zsame;
-        TH2* h2_x2_vs_AoQ_Zsame;
-        TH2* h2_x2_vs_AoQ;
-        TH2* h2_x4_vs_AoQ;
-        TH2* h2_dEdegoQ_vs_Z;
-        TH2* h2_dEdeg_vs_Z;
-        TH2* h2_a2_vs_AoQ;
-        TH2* h2_a4_vs_AoQ;
-        TH2* h2_Z_vs_dE2;
+        TH2* h2_Z41_vs_AoQs2s4;
+        TH2* h2_Z41_vs_AoQs2s4_driftcorr;
+        TH2* h2_Z41_vs_AoQs2s4_corr;
+        TH2* h2_Z41_vs_Z42;
+        TH2* h2_travmus_vs_Z41;
+        TH2* h2_Z41_vs_AoQs2s4_Zsame;
+        TH2* h2_x2_vs_AoQs2s4_Zsame;
+        TH2* h2_x4_vs_AoQs2s4_Zsame;
+        TH2* h2_x2_vs_AoQs2s4;
+        TH2* h2_x4_vs_AoQs2s4;
+        TH2* h2_dEdegoQ_vs_Z41;
+        TH2* h2_dEdegZ41_vs_Z41;
+        TH2* h2_a2_vs_AoQs2s4;
+        TH2* h2_a4_vs_AoQs2s4;
+        TH2* h2_Z41_vs_dE42;
         TH2* h2_x2_vs_x4;
-        TH2* h2_SC41dE_vs_AoQ;
-        TH2* h2_SC42dE_vs_AoQ;
-        TH2* h2_SC41dE_vs_Z;
-        TH2* h2_SC42dE_vs_Z;
-        TH2* h2_dE_vs_ToF_21_41;
-        TH2* h2_x2_vs_Z;
-        TH2* h2_x4_vs_Z;
-        TH2* h2_dE1_vs_x2;
-        TH2* h2_dE1_vs_x4;
+        TH2* h2_SC41dE_vs_AoQs2s4;
+        TH2* h2_SC42dE_vs_AoQs2s4;
+        TH2* h2_SC41dE_vs_Z41;
+        TH2* h2_SC42dE_vs_Z41;
+        TH2* h2_dE41_vs_ToF_21_41;
+        TH2* h2_x2_vs_Z41;
+        TH2* h2_x4_vs_Z41;
+        TH2* h2_dE41_vs_x2;
+        TH2* h2_dE41_vs_x4;
         TH2* h2_x2_vs_a2;
         TH2* h2_y2_vs_b2;
         TH2* h2_x4_vs_a4;
         TH2* h2_y4_vs_b4;
-        TH2* h2_Z_vs_Sc21E;
-        std::vector<TH2*> h2_Z_vs_AoQ_ZAoQgate;
-        std::vector<TH2*> h2_Z1_vs_Z2_ZAoQgate;
-        std::vector<TH2*> h2_x2_vs_AoQ_ZAoQgate;
-        std::vector<TH2*> h2_x4_vs_AoQ_ZAoQgate;
-        std::vector<TH2*> h2_dEdeg_vs_Z_ZAoQgate;
-        std::vector<TH2*> h2_dedegoQ_vs_Z_ZAoQgate; // 
-        std::vector<TH2*> h2_dEdeg_vs_Z_Z1Z2gate;
-        std::vector<TH2*> h2_dEdegoQ_vs_Z_Z1Z2gate;
-        std::vector<TH2*> h2_Z1_vs_Z2_Z1Z2gate;
-        std::vector<TH2*> h2_x2_vs_AoQ_Z1Z2gate;
-        std::vector<TH2*> h2_x4_vs_AoQ_Z1Z2gate;
-        std::vector<TH2*> h2_Z_vs_AoQ_Z1Z2gate; //
-        std::vector<TH2*> h2_x2_vs_AoQ_x2AoQgate;
-        std::vector<TH2*> h2_Z1_vs_Z2_x2AoQgate;
-        std::vector<TH2*> h2_x2_vs_AoQ_Z1Z2x2AoQgate;
-        std::vector<TH2*> h2_x4_vs_AoQ_Z1Z2x2AoQgate;
-        std::vector<TH2*> h2_Z_vs_AoQ_Z1Z2x2AoQgate;
-        std::vector<TH2*> h2_dEdeg_vs_Z_Z1Z2x2AoQgate;
-        std::vector<TH2*> h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate; // 
-        std::vector<TH2*> h2_x4_vs_AoQ_x4AoQgate;
-        std::vector<TH2*> h2_Z1_vs_Z2_x4AoQgate;
-        std::vector<TH2*> h2_x2_vs_AoQ_Z1Z2x4AoQgate;
-        std::vector<TH2*> h2_x4_vs_AoQ_Z1Z2x4AoQgate;
-        std::vector<TH2*> h2_Z_vs_AoQ_Z1Z2x4AoQgate;
-        std::vector<TH2*> h2_dEdeg_vs_Z_Z1Z2x4AoQgate;
-        std::vector<TH2*> h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate; // 
-        std::vector<TH2*> h2_Z_vs_AoQ_dEdegZgate;
-        std::vector<TH2*> h2_Z1_vs_Z2_dEdegZgate;
-        std::vector<TH2*> h2_x2_vs_AoQ_dEdegZgate;
-        std::vector<TH2*> h2_x4_vs_AoQ_dEdegZgate;
-        std::vector<TH2*> h2_Z_vs_AoQ_Zsame_dEdegZgate; // 
+        TH2* h2_Z41_vs_Sc21E;
+        std::vector<TH2*> h2_Z41_vs_AoQs2s4_Z41AoQs2s4_gate;
+        std::vector<TH2*> h2_Z41_vs_Z42_Z41AoQs2s4_gate;
+        std::vector<TH2*> h2_x2_vs_AoQs2s4_Z41AoQs2s4_gate;
+        std::vector<TH2*> h2_x4_vs_AoQs2s4_Z41AoQs2s4_gate;
+        std::vector<TH2*> h2_dedegoQ_vs_Z41_Z41AoQs2s4_gate; // 
+        std::vector<TH2*> h2_dEdegZ41_vs_Z41_Z41AoQs2s4_gate;
+        std::vector<TH2*> h2_dEdegoQ_vs_Z41_Zsame_gate;
+        std::vector<TH2*> h2_dEdegZ41_vs_Z41_Zsame_gate;
+        std::vector<TH2*> h2_Z41_vs_Z42_Zsame_gate;
+        std::vector<TH2*> h2_x2_vs_AoQs2s4_Zsame_gate;
+        std::vector<TH2*> h2_x4_vs_AoQs2s4_Zsame_gate;
+        std::vector<TH2*> h2_Z41_vs_AoQs2s4_Zsame_gate; //
+        std::vector<TH2*> h2_x2_vs_AoQs2s4_x2AoQs2s4_gate;
+        std::vector<TH2*> h2_Z41_vs_Z42_x2AoQs2s4_gate;
+        std::vector<TH2*> h2_x2_vs_AoQs2s4_Zsame_x2AoQs2s4_gate;
+        std::vector<TH2*> h2_x4_vs_AoQs2s4_Zsame_x2AoQs2s4_gate;
+        std::vector<TH2*> h2_Z41_vs_AoQs2s4_Zsame_x2AoQs2s4_gate;
+        std::vector<TH2*> h2_dEdegoQ_vs_Z41_Zsame_x2AoQs2s4_gate; // 
+        std::vector<TH2*> h2_dEdegZ41_vs_Z41_Zsame_x2AoQs2s4_gate;
+        std::vector<TH2*> h2_x4_vs_AoQs2s4_x4AoQs2s4_gate;
+        std::vector<TH2*> h2_Z41_vs_Z42_x4AoQs2s4_gate;
+        std::vector<TH2*> h2_x2_vs_AoQs2s4_Zsame_x4AoQs2s4_gate;
+        std::vector<TH2*> h2_x4_vs_AoQs2s4_Zsame_x4AoQs2s4_gate;
+        std::vector<TH2*> h2_Z41_vs_AoQs2s4_Zsame_x4AoQs2s4_gate;
+        std::vector<TH2*> h2_dEdegZ41_vs_Z41_Zsame_x4AoQs2s4_gate;
+        std::vector<TH2*> h2_dEdegoQ_vs_Z41_Zsame_x4AoQs2s4_gate; // 
+        std::vector<TH2*> h2_Z41_vs_AoQs2s4_dEdegZ41_Z41_gate;
+        std::vector<TH2*> h2_Z41_vs_Z42_dEdegZ41_Z41_gate;
+        std::vector<TH2*> h2_x2_vs_AoQs2s4_dEdegZ41_Z41_gate;
+        std::vector<TH2*> h2_x4_vs_AoQs2s4_dEdegZ41_Z41_gate;
+        std::vector<TH2*> h2_Z41_vs_AoQs2s4_Zsame_dEdegZ41_Z41_gate; // 
         
 
         // TAC 1D // :: Should add gated a2/a4 here if they're really desired
         TH1* h1_tpat;
-        TH1* h1_Z;
-        TH1* h1_Z_driftcorr;
-        TH1* h1_Z2;
-        TH1* h1_AoQ;
-        TH1* h1_AoQ_driftcorr;
-        TH1* h1_AoQ_corr;
+        TH1* h1_Z21;
+        TH1* h1_Z22;
+        TH1* h1_Z41;
+        TH1* h1_Z41_driftcorr;
+        TH1* h1_Z42;
+        TH1* h1_Z43;
+        TH1* h1_AoQs1s2;
+        TH1* h1_AoQs2s4;
+        TH1* h1_AoQs2s4_driftcorr;
+        TH1* h1_AoQs1s2_corr;
+        TH1* h1_AoQs2s4_corr;
+        TH1* h1_x1;
         TH1* h1_x2;
         TH1* h1_x4;
+        TH1* h1_a1;
         TH1* h1_a2;
         TH1* h1_a4;
+        TH1* h1_y1;
         TH1* h1_y2;
         TH1* h1_y4;
+        TH1* h1_b1;
         TH1* h1_b2;
         TH1* h1_b4;
-        TH1* h1_beta; 
-        TH1* h1_dEdeg;
+        TH1* h1_beta_s1s2;
+        TH1* h1_beta_s2s4; 
         TH1* h1_dEdegoQ;
+        TH1* h1_dEdegZ41;
         TH1* h1_rho[2];
         TH1* h1_brho[2];
         TH1* h1_music41_dE;
@@ -210,6 +221,7 @@ class FrsNearlineSpectra : public FairTask
         TH1* h1_sci_e_42;
         TH1* h1_sci_e_43;
         TH1* h1_sci_e_81;
+        TH1* h1_sci_x_11;
         TH1* h1_sci_x_21;
         TH1* h1_sci_x_22;
         TH1* h1_sci_x_31;
@@ -231,84 +243,90 @@ class FrsNearlineSpectra : public FairTask
         TH1* h1_sci_tof_22_81_calib;
     
         // MHTDC 2D
-        TH2* h2_Z_vs_AoQ_mhtdc;
-        TH2* h2_Z_vs_AoQ_corr_mhtdc;
-        TH2* h2_Z_vs_Z2_mhtdc;
-        TH2* h2_Z_vs_AoQ_Zsame_mhtdc;
-        TH2* h2_x4_vs_AoQ_Zsame_mhtdc;
-        TH2* h2_x2_vs_AoQ_Zsame_mhtdc;
-        TH2* h2_x2_vs_AoQ_mhtdc;
-        TH2* h2_x4_vs_AoQ_mhtdc;
-        TH2* h2_dEdegoQ_vs_Z_mhtdc;
-        TH2* h2_dEdeg_vs_Z_mhtdc;
-        TH2* h2_a2_vs_AoQ_mhtdc;
-        TH2* h2_a4_vs_AoQ_mhtdc;
-        TH2* h2_Z_vs_dE2_mhtdc;
+        TH2* h2_Z41_vs_AoQs2s4_mhtdc;
+        TH2* h2_Z41_vs_AoQs2s4_corr_mhtdc;
+        TH2* h2_Z41_vs_Z42_mhtdc;
+        TH2* h2_Z41_vs_AoQs2s4_Zsame_mhtdc;
+        TH2* h2_x4_vs_AoQs2s4_Zsame_mhtdc;
+        TH2* h2_x2_vs_AoQs2s4_Zsame_mhtdc;
+        TH2* h2_x2_vs_AoQs2s4_mhtdc;
+        TH2* h2_x4_vs_AoQs2s4_mhtdc;
+        TH2* h2_dEdegoQ_vs_Z41_mhtdc;
+        TH2* h2_dEdegZ41_vs_Z41_mhtdc;
+        TH2* h2_a2_vs_AoQs2s4_mhtdc;
+        TH2* h2_a4_vs_AoQs2s4_mhtdc;
+        TH2* h2_Z41_vs_dE42_mhtdc;
         TH2* h2_x2_vs_x4_mhtdc;
-        TH2* h2_SC41dE_vs_AoQ_mhtdc;
-        TH2* h2_SC42dE_vs_AoQ_mhtdc; // !! not added yet !!
-        TH2* h2_SC41dE_vs_Z_mhtdc; // !! not added yet !! 
-        TH2* h2_SC42dE_vs_Z_mhtdc; // !! not added yet !!
-        TH2* h2_dE_vs_ToF_mhtdc;
-        TH2* h2_x2_vs_Z_mhtdc;
-        TH2* h2_x4_vs_Z_mhtdc;
-        TH2* h2_Z_vs_Sc21E_mhtdc;
-        std::vector<TH2*> h2_Z_vs_AoQ_ZAoQgate_mhtdc;
-        std::vector<TH2*> h2_Z1_vs_Z2_ZAoQgate_mhtdc;
-        std::vector<TH2*> h2_x2_vs_AoQ_ZAoQgate_mhtdc;
-        std::vector<TH2*> h2_x4_vs_AoQ_ZAoQgate_mhtdc;
-        std::vector<TH2*> h2_dEdeg_vs_Z_ZAoQgate_mhtdc;
-        std::vector<TH2*> h2_dedegoQ_vs_Z_ZAoQgate_mhtdc; // 
-        std::vector<TH2*> h2_dEdeg_vs_Z_Z1Z2gate_mhtdc;
-        std::vector<TH2*> h2_dEdegoQ_vs_Z_Z1Z2gate_mhtdc;
-        std::vector<TH2*> h2_Z1_vs_Z2_Z1Z2gate_mhtdc;
-        std::vector<TH2*> h2_x2_vs_AoQ_Z1Z2gate_mhtdc;
-        std::vector<TH2*> h2_x4_vs_AoQ_Z1Z2gate_mhtdc;
-        std::vector<TH2*> h2_Z_vs_AoQ_Z1Z2gate_mhtdc; // 
-        std::vector<TH2*> h2_x2_vs_AoQ_x2AoQgate_mhtdc;
-        std::vector<TH2*> h2_Z1_vs_Z2_x2AoQgate_mhtdc;
-        std::vector<TH2*> h2_x2_vs_AoQ_Z1Z2x2AoQgate_mhtdc;
-        std::vector<TH2*> h2_x4_vs_AoQ_Z1Z2x2AoQgate_mhtdc;
-        std::vector<TH2*> h2_Z1_vs_Z2_Z1Z2x2AoQgate_mhtdc;
-        std::vector<TH2*> h2_Z_vs_AoQ_Z1Z2x2AoQgate_mhtdc;
-        std::vector<TH2*> h2_dEdeg_vs_Z_Z1Z2x2AoQgate_mhtdc;
-        std::vector<TH2*> h2_dEdegoQ_vs_Z_Z1Z2x2AoQgate_mhtdc; // 
-        std::vector<TH2*> h2_x4_vs_AoQ_x4AoQgate_mhtdc;
-        std::vector<TH2*> h2_Z1_vs_Z2_Z1Z2x4AoQgate_mhtdc;
-        std::vector<TH2*> h2_Z1_vs_Z2_x4AoQgate_mhtdc;
-        std::vector<TH2*> h2_x2_vs_AoQ_Z1Z2x4AoQgate_mhtdc;
-        std::vector<TH2*> h2_x4_vs_AoQ_Z1Z2x4AoQgate_mhtdc;
-        std::vector<TH2*> h2_Z_vs_AoQ_Z1Z2x4AoQgate_mhtdc;
-        std::vector<TH2*> h2_dEdeg_vs_Z_Z1Z2x4AoQgate_mhtdc;
-        std::vector<TH2*> h2_dEdegoQ_vs_Z_Z1Z2x4AoQgate_mhtdc; // 
-        std::vector<TH2*> h2_Z_vs_dEdeg_dEdegZgate_mhtdc;
-        std::vector<TH2*> h2_Z_vs_AoQ_dEdegZgate_mhtdc;
-        std::vector<TH2*> h2_Z1_vs_Z2_dEdegZgate_mhtdc;
-        std::vector<TH2*> h2_x2_vs_AoQ_dEdegZgate_mhtdc;
-        std::vector<TH2*> h2_x4_vs_AoQ_dEdegZgate_mhtdc;
-        std::vector<TH2*> h2_Z_vs_AoQ_Zsame_dEdegZgate_mhtdc; // 
+        TH2* h2_SC41dE_vs_AoQs2s4_mhtdc;
+        TH2* h2_SC42dE_vs_AoQs2s4_mhtdc; // !! not added yet !!
+        TH2* h2_SC41dE_vs_Z41_mhtdc; // !! not added yet !! 
+        TH2* h2_SC42dE_vs_Z41_mhtdc; // !! not added yet !!
+        TH2* h2_dE41_vs_ToF_mhtdc;
+        TH2* h2_x2_vs_Z41_mhtdc;
+        TH2* h2_x4_vs_Z41_mhtdc;
+        TH2* h2_Z41_vs_Sc21E_mhtdc;
+        std::vector<TH2*> h2_Z41_vs_AoQs2s4_Z41AoQs2s4_gate_mhtdc;
+        std::vector<TH2*> h2_Z41_vs_Z42_Z41AoQs2s4_gate_mhtdc;
+        std::vector<TH2*> h2_x2_vs_AoQs2s4_Z41AoQs2s4_gate_mhtdc;
+        std::vector<TH2*> h2_x4_vs_AoQs2s4_Z41AoQs2s4_gate_mhtdc;
+        std::vector<TH2*> h2_dedegoQ_vs_Z41_Z41AoQs2s4_gate_mhtdc; //
+        std::vector<TH2*> h2_dEdegZ41_vs_Z41_Z41AoQs2s4_gate_mhtdc; 
+        std::vector<TH2*> h2_dEdegZ41_vs_Z41_Zsame_gate_mhtdc;
+        std::vector<TH2*> h2_dEdegoQ_vs_Z41_Zsame_gate_mhtdc;
+        std::vector<TH2*> h2_Z41_vs_Z42_Zsame_gate_mhtdc;
+        std::vector<TH2*> h2_x2_vs_AoQs2s4_Zsame_gate_mhtdc;
+        std::vector<TH2*> h2_x4_vs_AoQs2s4_Zsame_gate_mhtdc;
+        std::vector<TH2*> h2_Z41_vs_AoQs2s4_Zsame_gate_mhtdc; // 
+        std::vector<TH2*> h2_x2_vs_AoQs2s4_x2AoQs2s4_gate_mhtdc;
+        std::vector<TH2*> h2_Z41_vs_Z42_x2AoQs2s4_gate_mhtdc;
+        std::vector<TH2*> h2_x2_vs_AoQs2s4_Zsame_x2AoQs2s4_gate_mhtdc;
+        std::vector<TH2*> h2_x4_vs_AoQs2s4_Zsame_x2AoQs2s4_gate_mhtdc;
+        std::vector<TH2*> h2_Z41_vs_Z42_Zsame_x2AoQs2s4_gate_mhtdc;
+        std::vector<TH2*> h2_Z41_vs_AoQs2s4_Zsame_x2AoQs2s4_gate_mhtdc;
+        std::vector<TH2*> h2_dEdegoQ_vs_Z41_Zsame_x2AoQs2s4_gate_mhtdc; // 
+        std::vector<TH2*> h2_dEdegZ41_vs_Z41_Zsame_x2AoQs2s4_gate_mhtdc;
+        std::vector<TH2*> h2_x4_vs_AoQs2s4_x4AoQs2s4_gate_mhtdc;
+        std::vector<TH2*> h2_Z41_vs_Z42_x4AoQs2s4_gate_mhtdc;
+        std::vector<TH2*> h2_Z41_vs_Z42_Zsame_x4AoQs2s4_gate_mhtdc;
+        std::vector<TH2*> h2_x2_vs_AoQs2s4_Zsame_x4AoQs2s4_gate_mhtdc;
+        std::vector<TH2*> h2_x4_vs_AoQs2s4_Zsame_x4AoQs2s4_gate_mhtdc;
+        std::vector<TH2*> h2_Z41_vs_AoQs2s4_Zsame_x4AoQs2s4_gate_mhtdc;
+        std::vector<TH2*> h2_dEdegoQ_vs_Z41_Zsame_x4AoQs2s4_gate_mhtdc; //
+        std::vector<TH2*> h2_dEdegZ41_vs_Z41_Zsame_x4AoQs2s4_gate_mhtdc; 
+        std::vector<TH2*> h2_Z41_vs_dEdegZ41_dEdegZ41_Z41_gate_mhtdc;
+        std::vector<TH2*> h2_Z41_vs_AoQs2s4_dEdegZ41_Z41_gate_mhtdc;
+        std::vector<TH2*> h2_Z41_vs_Z42_dEdegZ41_Z41_gate_mhtdc;
+        std::vector<TH2*> h2_x2_vs_AoQs2s4_dEdegZ41_Z41_gate_mhtdc;
+        std::vector<TH2*> h2_x4_vs_AoQs2s4_dEdegZ41_Z41_gate_mhtdc;
+        std::vector<TH2*> h2_Z41_vs_AoQs2s4_Zsame_dEdegZ41_Z41_gate_mhtdc; // 
         // not a PID gate but an energy gate on trav Z
-        TH2* h2_Z_vs_AoQ_mhtdc_trav_gate;
-        TH2* h2_Z_vs_AoQ_tac_trav_gate_driftcorr;
-        TH2* h2_Z_vs_AoQ_driftcorr_trav_gate;
+        TH2* h2_Z41_vs_AoQs2s4_mhtdc_trav_gate;
+        TH2* h2_Z41_vs_AoQs2s4_tac_trav_gate_driftcorr;
+        TH2* h2_Z41_vs_AoQs2s4_driftcorr_trav_gate;
 
 
         // MHTDC 1D
-        TH1* h1_beta_mhtdc;
-        TH1* h1_AoQ_mhtdc;
-        TH1* h1_AoQ_corr_mhtdc;
-        TH1* h1_z_mhtdc;
-        TH1* h1_z2_mhtdc;
-        TH1* h1_dEdeg_mhtdc;
+        TH1* h1_beta_s1s2_mhtdc;
+        TH1* h1_beta_s2s4_mhtdc;
+        TH1* h1_AoQs1s2_mhtdc;
+        TH1* h1_AoQs2s4_mhtdc;
+        TH1* h1_AoQs1s2_corr_mhtdc;
+        TH1* h1_AoQs2s4_corr_mhtdc;
+        TH1* h1_Z21_mhtdc;
+        TH1* h1_Z22_mhtdc;
+        TH1* h1_Z41_mhtdc;
+        TH1* h1_Z42_mhtdc;
+        TH1* h1_Z43_mhtdc;
         TH1* h1_dEdegoQ_mhtdc;
+        TH1* h1_dEdegZ41_mhtdc;
 
         // Drifts
-        TH2* h2_Z1_vs_T;
-        TH2* h2_Z1_driftcorr_vs_T;
-        TH2* h2_AoQ_vs_T;
-        TH2* h2_AoQ_driftcorr_vs_T;
-        TH2* h2_Z1_vs_T_mhtdc;
-        TH2* h2_AoQ_vs_T_mhtdc;
+        TH2* h2_Z41_vs_T;
+        TH2* h2_Z41_driftcorr_vs_T;
+        TH2* h2_AoQs2s4_vs_T;
+        TH2* h2_AoQs2s4_driftcorr_vs_T;
+        TH2* h2_Z41_vs_T_mhtdc;
+        TH2* h2_AoQs2s4_vs_T_mhtdc;
         TH2* h2_sci_tof_11_21_vs_T;
         TH2* h2_sci_tof_21_41_vs_T;
         TH2* h2_sci_tof_21_42_vs_T;
