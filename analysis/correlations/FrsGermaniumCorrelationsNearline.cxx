@@ -93,6 +93,7 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
     header = mgr->InitObjectAs<decltype(header)>("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found!");
 
+    run = FairRunAna::Instance();
 
     TString data_item = TString("Germanium") + input_anl_or_cal + TString("Data");
     fHitGe = (TClonesArray*)mgr->GetObject(data_item);
@@ -110,6 +111,9 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
 
     }
     
+
+    c4LOG(info, "Germanium coincidence window: +/-" + TString(std::to_string(germanium_coincidence_gate)) + " ns");
+
 
 
     dir_corr = (TDirectory*)mgr->GetObject("Correlations");
@@ -429,9 +433,9 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
         double energy_sci41 = 0;
         double time_sci41 = 0;
         
-
         //find sci41:
         for (Int_t ihit = 0; ihit < nHits; ihit++){ // find the sci41 hit if it is there.
+
     
             GermaniumCalData* hit1 = (GermaniumCalData*)fHitGe->At(ihit);
             if (!hit1) continue;
@@ -458,11 +462,16 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
             for (int ihit2 = 0; ihit2 < nHits; ihit2 ++){
                 if (ihit2 == sci41_hit_idx) continue;
                 GermaniumCalData* hit2 = (GermaniumCalData*)fHitGe->At(ihit2);
+
+                double random = gRandom->Rndm() - 0.5;
+                // std::cout << "Random: " << random << std::endl;
                 if (!hit2) continue;
                 int detector_id1 = hit2->Get_detector_id();
                 int crystal_id1 = hit2->Get_crystal_id();
-                double energy1 = hit2->Get_channel_energy();
+                double energy1 = hit2->Get_channel_energy() + random;
                 double time1 = hit2->Get_channel_trigger_time();
+
+                if(energy1 < 25) continue;
 
                 if (germanium_configuration->IsDetectorAuxilliary(detector_id1)) continue;
 
@@ -503,9 +512,12 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
                     int detector_id2 = hit3->Get_detector_id();
                     if (detector_id1 == detector_id2) continue; //this is likely a good veto before the add-back is done ... 
                     
+                    double random2 = gRandom->Rndm() - 0.5;
                     int crystal_id2 = hit3->Get_crystal_id();
-                    double energy2 = hit3->Get_channel_energy();
+                    double energy2 = hit3->Get_channel_energy() + random2;
                     double time2 = hit3->Get_channel_trigger_time();
+
+                    if(energy2 < 25) continue;
 
                     if (germanium_configuration->IsDetectorAuxilliary(detector_id2)) continue;
                     if (TMath::Abs(time2-time1) > germanium_coincidence_gate) continue;
@@ -515,7 +527,10 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
                     if ((germanium_configuration->IsInsidePromptFlashCut(timediff2, energy2)==true)) continue;
                     if ((timediff2 < -400 || timediff2 > stop_short_lifetime_collection)) continue;
 
-                    if (ihit3 > ihit2) h2_germanium_energy_energy_promptflash_cut->Fill(energy1,energy2); // avoid double filling ... 
+                    //symmetric matrix
+                    h2_germanium_energy_energy_promptflash_cut->Fill(energy1,energy2);
+                    // h2_germanium_energy_energy_promptflash_cut->Fill(energy2,energy1);
+
 
 
                     for (int idx_gamma_gate = 0; idx_gamma_gate < gamma_energies_of_interest.size(); idx_gamma_gate++){
@@ -543,6 +558,8 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
             double energy_long = hit_long1->Get_channel_energy();
             double time_long = hit_long1->Get_channel_trigger_time();
             int64_t ge_wr_long = hit_long1->Get_absolute_event_time();
+
+            if (energy_long < 25) continue;
 
             if (germanium_configuration->IsDetectorAuxilliary(detector_id_long)==true) continue;
 
@@ -588,6 +605,7 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
                     double time_long2 = hit_long2->Get_channel_trigger_time();
                     int64_t ge_wr_long2 = hit_long2->Get_absolute_event_time();
 
+                    if (energy_long2 < 25) continue;
 
                     if (germanium_configuration->IsDetectorAuxilliary(detector_id_long2)) continue;
                     
@@ -600,10 +618,11 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
                     if (TMath::Abs(time_long2-time_long- germanium_configuration->GetTimeshiftCoefficient(detector_id_long2,crystal_id_long2)- germanium_configuration->GetTimeshiftCoefficient(detector_id_long,crystal_id_long)) > germanium_coincidence_gate) continue; 
 
                     //avoid double filling:
-                    if (ihit2>ihit1) {
-                        h2_germanium_energy_energy_promptflash_cut_long->Fill(energy_long,energy_long2);
+                    // if (ihit2 ihit1) {
+                    // symmetric matrix
+                    h2_germanium_energy_energy_promptflash_cut_long->Fill(energy_long,energy_long2);
                     
-                    }
+                    // }
                     
                     for (int idx_gamma_gate = 0; idx_gamma_gate < gamma_energies_of_interest.size(); idx_gamma_gate++)
                     {

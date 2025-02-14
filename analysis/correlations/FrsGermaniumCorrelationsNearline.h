@@ -73,6 +73,11 @@ class FrsGermaniumCorrelationsNearline : public FairTask
             long_lifetime_binlow = start;
             long_lifetime_binhigh = stop;
         }
+
+        void SetCoincidenceWindow(int coinc)
+        {
+            germanium_coincidence_gate = coinc;
+        }
         
         void SetControlOutput(bool a){fControlOutput = a;} // writes the events that passes the fatima and frs gates to a tree
         void SetWriteOutput(bool a){fWriteOutput = a;} // writes the events that passes the fatima and frs gates to a tree
@@ -119,7 +124,7 @@ class FrsGermaniumCorrelationsNearline : public FairTask
 
         int stop_short_lifetime_collection = 0;
 
-        int germanium_coincidence_gate = 500; //ns
+        int germanium_coincidence_gate = 250; //ns
 
         std::vector<double> gamma_energies_of_interest;
         std::vector<double> gate_width_gamma_energies_of_interest;

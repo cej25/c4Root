@@ -178,6 +178,7 @@ void TGermaniumConfiguration::ReadPromptFlashCut()
     if (cut->Get("ge_prompt_flash_cut"))
     {
         prompt_flash_cut = (TCutG*)cut->Get("ge_prompt_flash_cut");
+        c4LOG(info, "Germanium prompt flash cut loaded from file: " << promptflash_cut_file);
     }
     else
     {

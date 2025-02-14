@@ -244,4 +244,3 @@ void make_frs_gates_seq_multi(TString infilename){
     outfile->Close();
     
 };
-

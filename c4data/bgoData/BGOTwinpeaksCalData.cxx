@@ -9,14 +9,14 @@ BGOTwinpeaksCalData::BGOTwinpeaksCalData()
     fdetector_id(0),
     fcrystal_id(0),
     
-fslow_lead_epoch(0),
+    fslow_lead_epoch(0),
     fslow_lead_time(0),
-fslow_trail_epoch(0),
+    fslow_trail_epoch(0),
     fslow_trail_time(0),
 
-ffast_lead_epoch(0),
+    ffast_lead_epoch(0),
     ffast_lead_time(0),
-ffast_trail_epoch(0),
+    ffast_trail_epoch(0),
     ffast_trail_time(0),
 
     ffast_ToT(0),
@@ -38,14 +38,14 @@ BGOTwinpeaksCalData::BGOTwinpeaksCalData(
         int detector_id,
         int crystal_id,
         
-int64_t slow_lead_epoch,
+        int64_t slow_lead_epoch,
         double slow_lead_time,
-int64_t slow_trail_epoch,
+        int64_t slow_trail_epoch,
         double slow_trail_time,
 
-int64_t fast_lead_epoch,
+        int64_t fast_lead_epoch,
         double fast_lead_time,
-int64_t fast_trail_epoch,
+        int64_t fast_trail_epoch,
         double fast_trail_time,
 
         double fast_ToT,

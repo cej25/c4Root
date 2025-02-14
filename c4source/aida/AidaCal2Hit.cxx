@@ -172,6 +172,8 @@ void AidaCal2Hit::Exec(Option_t* option)
             return;
         }
 
+
+        // std::cout << "We get past all the checks!" << std::endl;
         // Cluster decays
         auto clusters = ItemsToClusters(*decayCalArray);
         // List of front-back matched clusters for a physical hit
@@ -186,14 +188,20 @@ void AidaCal2Hit::Exec(Option_t* option)
             // TODO: is this possible in c4Root?
             if (i.DSSD == -1) continue;
 
+            // std::cout << "We get past the DSSD check!" << std::endl;
+
             // Only look at X clusters
             if (i.Side != conf->DSSD(i.DSSD - 1).XSide) continue;
+
+            // std::cout << "We get past the side check!" << std::endl;
 
             // Check all clusters again for a corresponding Y
             for (auto& j: clusters)
             {
                 // Must be same DSSD and Y side
                 if (j.DSSD != i.DSSD || j.Side != conf->DSSD(j.DSSD - 1).YSide) continue;
+
+                // std::cout << "We get past the DSSD and side check!" << std::endl;
                 // Check gates from config
                 if (std::abs(i.Energy - j.Energy) < conf->FrontBackEnergyL()
                         && i.IsGoodTime(j, conf->FrontBackWindow()))
@@ -263,7 +271,7 @@ std::vector<AidaCluster> AidaCal2Hit::ItemsToClusters(std::vector<AidaCalAdcItem
             bool docluster = false;
             // Check options for which cluster
             if (j.HighEnergy && conf->ClusterImplants()) docluster = true;
-            if (!j.HighEnergy && conf->ClusterDecays()) docluster = false;
+            if (!j.HighEnergy && conf->ClusterDecays()) docluster = true;
             if (docluster && j.IsAdjacent(i) && j.IsGoodTime(i))
             {
                 if (!added)

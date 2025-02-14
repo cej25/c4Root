@@ -544,6 +544,8 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
                 double energy1 = hit2->Get_channel_energy();
                 double time1 = hit2->Get_channel_trigger_time();
 
+                if (energy1 < 25) continue;
+
                 if (germanium_configuration->IsDetectorAuxilliary(detector_id1)) continue;
 
                 double timediff1 = time1 - time_sci41 - germanium_configuration->GetTimeshiftCoefficient(detector_id1,crystal_id1);
@@ -580,6 +582,8 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
                     double energy2 = hit3->Get_channel_energy();
                     double time2 = hit3->Get_channel_trigger_time();
 
+                    if(energy1<25) continue;
+
                     if (germanium_configuration->IsDetectorAuxilliary(detector_id2)) continue;
                     if (TMath::Abs(time2-time1) > germanium_coincidence_gate) continue;
 
@@ -588,7 +592,7 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
                     if ((germanium_configuration->IsInsidePromptFlashCut(timediff2, energy2)==true)) continue;
                     if ((timediff2 < -400 || timediff2 > stop_short_lifetime_collection)) continue;
 
-                    if (ihit3 > ihit2) h2_germanium_energy_energy_promptflash_cut->Fill(energy1,energy2); // avoid double filling ... 
+                    /*if (ihit3 > ihit2)*/ h2_germanium_energy_energy_promptflash_cut->Fill(energy1,energy2); // avoid double filling ... 
 
 
                     for (int idx_gamma_gate = 0; idx_gamma_gate < gamma_energies_of_interest.size(); idx_gamma_gate++){

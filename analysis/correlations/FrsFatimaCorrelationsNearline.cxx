@@ -707,7 +707,7 @@ void FrsFatimaCorrelationsNearline::Exec(Option_t* option)
                     if ((fatima_configuration->IsInsidePromptFlashCut(timediff2, energy2)==true)) continue;
                     if (!(timediff2 < stop_short_lifetime_collection && timediff2 > - 300)) continue;
 
-                    if (ihit3 > ihit2 && (TMath::Abs((double)(epoch2-epoch1) + time2 - time1 - fatima_configuration->GetTimeshiftCoefficient(detector_id1,detector_id2)) < fatima_coincidence_gate)) h2_fatima_energy_energy_promptflash_cut->Fill(energy1,energy2); // avoid double filling ... 
+                    if (/* ihit3 > ihit2 && */ (TMath::Abs((double)(epoch2-epoch1) + time2 - time1 - fatima_configuration->GetTimeshiftCoefficient(detector_id1,detector_id2)) < fatima_coincidence_gate)) h2_fatima_energy_energy_promptflash_cut->Fill(energy1,energy2); // avoid double filling ... 
 
 
                     for (int idx_gamma_gate = 0; idx_gamma_gate < gamma_energies_of_interest.size(); idx_gamma_gate++){
@@ -808,7 +808,8 @@ void FrsFatimaCorrelationsNearline::Exec(Option_t* option)
                     
                     
                     //avoid double filling:
-                    if (ihit2>ihit1 && (TMath::Abs(time_long2 - time_long - fatima_configuration->GetTimeshiftCoefficient(detector_id_long,detector_id_long2)) < fatima_coincidence_gate)) {
+                    // symmetric matrix
+                    if (/*ihit2>ihit1 &&*/ (TMath::Abs(time_long2 - time_long - fatima_configuration->GetTimeshiftCoefficient(detector_id_long,detector_id_long2)) < fatima_coincidence_gate)) {
                         h2_fatima_energy_energy_promptflash_cut_long->Fill(energy_long,energy_long2);                        
                     }
                     
