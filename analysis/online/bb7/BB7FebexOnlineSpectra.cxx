@@ -77,10 +77,12 @@ InitStatus BB7FebexOnlineSpectra::Init()
 
     // CEJ: All of these should be by detector (eventually?)
     // just decays , testing
-    h1_side_x_mult = MakeTH1(dir_stats, "I", "h1_side_x_mult", "Side X Multiplicity", 33, 0, 33, "X Strip", kRed-3, kBlack); // number of x strips fired
-    h1_side_y_mult = MakeTH1(dir_stats, "I", "h1_side_y_mult", "Side Y Multiplicity", 33, 0, 33, "Y Strip", kRed-3, kBlack); // number of y strips fired
+    h1_side_x_mult = MakeTH1(dir_stats, "I", "h1_side_x_mult", "Side X Multiplicity", 33, 0, 33, "X Strips Fired", kRed-3, kBlack); // number of x strips fired
+    h1_side_y_mult = MakeTH1(dir_stats, "I", "h1_side_y_mult", "Side Y Multiplicity", 33, 0, 33, "Y Strips Fired", kRed-3, kBlack); // number of y strips fired
     // maybe this one is meaningless with FEBEX? can you have multiple hits per event in same channel?
     h2_strip_mult = MakeTH2(dir_stats, "I", "h2_strip_mult", "Strip vs Strip Multiplicity", 65, 0, 65, 10, 0, 10, "Strip (X then Y)", "Strip Multiplicity"); // strip (x then y) vs # of times fired
+    h1_side_x_hitpattern = MakeTH1(dir_stats, "I", "h1_side_x_hitpattern", "Side X Hit Pattern", 32, 0, 32, "X Strip", kRed-3, kBlack);
+    h1_side_y_hitpattern = MakeTH1(dir_stats, "I", "h1_side_y_hitpattern", "Side Y Hit Pattern", 32, 0, 32, "Y Strip", kRed-3, kBlack);
 
     // Concept of "Stopped" is irrelevant right now
     h2_implant_strip_xy = MakeTH2(dir_implants, "I", "h2_implant_strip_xy", "Implant Pattern (Strips)", 32, 0, 32, 32, 0, 32);
@@ -137,6 +139,8 @@ void BB7FebexOnlineSpectra::Exec(Option_t* option)
         side_y_mult[int(d.StripY)]++;
 
         h2_decay_strip_xy->Fill(d.StripX, d.StripY);
+        h1_side_x_hitpattern->Fill(d.StripX);
+        h1_side_y_hitpattern->Fill(d.StripY);
     }
 
     h1_side_x_mult->Fill(strips_fired[0].size());
