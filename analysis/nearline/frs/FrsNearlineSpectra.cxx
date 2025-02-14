@@ -722,6 +722,7 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     std::vector<Float_t> dEdeg_z41_mhtdc = multiHitItem.Get_ID_dEdeg_z41_mhtdc();
 
 
+    // CEJ need a separate loop for S1-S2 analysis
     for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
     {
         if (frs_config->plot_mhtdc_2d)
