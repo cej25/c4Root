@@ -600,7 +600,7 @@ void FrsCal2Hit::ProcessSci_TAC()
         }
         sci_x_21 = sum;
     }
-    sci_b_x_21 = ((sci_x_21 > -100) && (sci_tx_21lr < 100));
+    sci_b_x_21 = ((sci_x_21 > -200) && (sci_tx_21lr < 200));
 
     // SCI 22
     de_22l = calSciItem.Get_dE_22l(); bool sci_b_22l = ((de_22l > 10) && (de_22l < 4000));
@@ -620,7 +620,7 @@ void FrsCal2Hit::ProcessSci_TAC()
         }
         sci_x_22 = sum;
     }
-    sci_b_x_22 = ((sci_x_22 > -100) && (sci_x_22 < 100));
+    sci_b_x_22 = ((sci_x_22 > -200) && (sci_x_22 < 200));
 
     // SCI 31
     de_31l = calSciItem.Get_dE_31l(); bool sci_b_31l = ((de_31l > 10) && (de_31l < 4000));
@@ -646,7 +646,7 @@ void FrsCal2Hit::ProcessSci_TAC()
         }
         sci_x_41 = sum;
     }
-    sci_b_x_41 = ((sci_x_41 > -100) && (sci_x_41 < 100));
+    sci_b_x_41 = ((sci_x_41 > -200) && (sci_x_41 < 200));
 
     // SCI 42
     de_42l = calSciItem.Get_dE_42l(); bool sci_b_42l = ((de_42l > 10) && (de_42l < 4000));
@@ -666,7 +666,7 @@ void FrsCal2Hit::ProcessSci_TAC()
         }
         sci_x_42 = sum;
     }
-    sci_b_x_42 = ((sci_x_42 > -100) && (sci_x_42 < 100));
+    sci_b_x_42 = ((sci_x_42 > -200) && (sci_x_42 < 200));
 
     // SCI 43
     de_43l = calSciItem.Get_dE_43l(); bool sci_b_43l = ((de_43l > 10) && (de_43l < 4000));
@@ -686,7 +686,7 @@ void FrsCal2Hit::ProcessSci_TAC()
         }
         sci_x_43 = sum;
     }
-    sci_b_x_43 = ((sci_x_43 > -100) && (sci_x_43 < 100));
+    sci_b_x_43 = ((sci_x_43 > -200) && (sci_x_43 < 200));
 
     // SCI 81
     de_81l = calSciItem.Get_dE_81l(); bool sci_b_81l = ((de_81l > 10) && (de_81l < 4000));
@@ -706,7 +706,7 @@ void FrsCal2Hit::ProcessSci_TAC()
         }
         sci_x_81 = sum;
     }
-    sci_b_x_81 = ((sci_x_81 > -100) && (sci_x_81 < 100));
+    sci_b_x_81 = ((sci_x_81 > -200) && (sci_x_81 < 200));
 
 
     /*-----------------------------------*/
@@ -1187,6 +1187,9 @@ void FrsCal2Hit::ProcessIDs()
     auto const & calTpcItem = calTpcArray->at(0);
     b_tpc_xy = calTpcItem.Get_b_tpc_xy();
 
+    // Position (X) correction by TPC
+
+
     if (id->x_s2_select == 1)
     {   
         if (b_tpc_xy[2] && b_tpc_xy[3])
@@ -1241,6 +1244,50 @@ void FrsCal2Hit::ProcessIDs()
         id_y4 = calTpcItem.Get_tpc_y_s4();
         id_a4 = calTpcItem.Get_tpc_angle_x_s4();
         id_b4 = calTpcItem.Get_tpc_angle_y_s4();
+
+        // MUSIC x-position correction from TPCs
+
+        music_x_mean[0] = calTpcItem.Get_tpc_music41_x();
+        music_x_mean[1] = calTpcItem.Get_tpc_music42_x();
+
+        if(b_de[0])
+        {
+            float power = 1.;
+            float corr = 0.;
+            for (int i = 0; i <= 6; i++)
+            {
+                corr += music->pos_a1[i]*power; 
+                power *= music_x_mean[0];
+            }
+            if(corr != 0)
+            {
+                corr = music->pos_a1[0]/corr;
+                de_cor[0] = de[0] * corr;
+            }
+            else
+            {
+                de_cor[0] = de[0];
+            }
+        }
+        if(b_de[1])
+        {
+            float power = 1.;
+            float corr = 0.;
+            for (int i = 0; i <= 6; i++)
+            {
+                corr += music->pos_a2[i]*power; 
+                power *= music_x_mean[1];
+            }
+            if(corr != 0)
+            {
+                corr = music->pos_a2[0]/corr;
+                de_cor[1] = de[1] * corr;
+            }
+            else
+            {
+                de_cor[1] = de[1];
+            }
+        }
     }
 
     if (sci_b_x_81)
@@ -1321,20 +1368,20 @@ void FrsCal2Hit::ProcessIDs()
     // Calibration with MUSIC is done with 1/b2 - last update sept2024
 
     // S4 (MUSIC 1)
-    if ((de[0] > 0.0) && (id_beta > 0.0) && (id_beta < 1.0))
+    if ((de_cor[0] > 0.0) && (id_beta > 0.0) && (id_beta < 1.0))
     {
         float power = 1.;
         float sum = 0.;
         for (int i = 0; i < 4; i++)
         {
             sum += power * id->vel_a[i];
-            //power *= 1.0/(id_beta*id_beta);
+            // power *= 1.0/(id_beta*id_beta);
             power *= id_beta;
         }
         id_v_cor = sum;
         if (id_v_cor > 0.0)
         {
-            id_z = frs->primary_z * sqrt(de[0] / id_v_cor) + id->offset_z;
+            id_z = frs->primary_z * sqrt(de_cor[0] / id_v_cor) + id->offset_z;
 
             if (music41_tac_z_gain_shifts != nullptr){
                 id_z = id_z + music41_tac_z_gain_shifts->GetGain((uint64_t)wr_t);
@@ -1348,21 +1395,21 @@ void FrsCal2Hit::ProcessIDs()
     }
 
     // S4 (MUSIC 2)
-    if ((de[1] > 0.0) && (id_beta > 0.0) && (id_beta < 1.0))
+    if ((de_cor[1] > 0.0) && (id_beta > 0.0) && (id_beta < 1.0))
     {
         float power = 1.;
         float sum = 0.;
         for (int i = 0; i < 4; i++)
         {
             sum += power * id->vel_a2[i];
-            //power *= 1.0/(id_beta*id_beta);
+            // power *= 1.0/(id_beta*id_beta);
             power *= id_beta;
         }
         id_v_cor2 = sum;
 
         if (id_v_cor2 > 0.0)
         {
-            id_z2 = frs->primary_z * sqrt(de[1] / id_v_cor2) + id->offset_z2;
+            id_z2 = frs->primary_z * sqrt(de_cor[1] / id_v_cor2) + id->offset_z2;
 
             if (music42_tac_z_gain_shifts != nullptr){
                 id_z2 = id_z2 + music42_tac_z_gain_shifts->GetGain((uint64_t)wr_t);
@@ -1782,6 +1829,7 @@ void FrsCal2Hit::FinishEvent()
     memset(music_anodes_count, 0, sizeof(music_anodes_count));
     memset(music_b_e, false, sizeof(music_b_e));
     memset(music_b_t, false, sizeof(music_b_t));
+    memset(music_x_mean, 0, sizeof(music_x_mean));
 
     // ::: IDs :::::::::: //
     id_x2 = -999.;

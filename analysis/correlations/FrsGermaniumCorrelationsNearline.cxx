@@ -90,7 +90,7 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
     run = FairRunAna::Instance();
 
 
-    header = mgr->InitObjectAs<decltype(header)>("EventHeader.");
+    header = mgr->InitObjectAs<decltype(header)>("EventHeader");
     c4LOG_IF(error, !header, "Branch EventHeader. not found!");
 
     run = FairRunAna::Instance();
@@ -114,7 +114,7 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
 
     c4LOG(info, "Germanium coincidence window: +/-" + TString(std::to_string(germanium_coincidence_gate)) + " ns");
 
-
+    TDirectory::TContext ctx(nullptr);
 
     dir_corr = (TDirectory*)mgr->GetObject("Correlations");
     if (dir_corr == nullptr) 

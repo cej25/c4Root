@@ -296,6 +296,7 @@ class FrsCal2Hit : public FairTask
         Float_t de[2] = {0,0};
         Float_t de_cor[2] = {0,0};
         Bool_t b_de[2] = {0,0};
+        Float_t music_x_mean[2] = {0,0};
 
 
         // ::: TPCs ::: //

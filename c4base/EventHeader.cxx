@@ -23,7 +23,7 @@ EventHeader::~EventHeader() {}
 
 void EventHeader::Register(Bool_t Persistance)
 {
-    FairRootManager::Instance()->Register("EventHeader.", "EvtHeader", this, Persistance);
+    FairRootManager::Instance()->Register("EventHeader", "EvtHeader", this, Persistance);
 }
 
 ClassImp(EventHeader);
