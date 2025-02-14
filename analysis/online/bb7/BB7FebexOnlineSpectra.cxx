@@ -71,22 +71,34 @@ InitStatus BB7FebexOnlineSpectra::Init()
     dir_bb7 = new TDirectory("BB7", "BB7", "", 0);
     histograms->Add(dir_bb7);
 
-    dir_cal = dir_bb7->mkdir("CalData");
-    dir_hit = dir_bb7->mkdir("HitData");
+    dir_stats = dir_bb7->mkdir("Stats"); // not sure where to put this frankly
+    dir_implants = dir_bb7->mkdir("Implants");
+    dir_decays = dir_bb7->mkdir("Decays");
 
-    dir_hit_implant = dir_hit->mkdir("Implants");
-    dir_hit_decay = dir_hit->mkdir("Decays");
+    // CEJ: All of these should be by detector (eventually?)
+    // just decays , testing
+    h1_side_x_mult = MakeTH1(dir_stats, "I", "h1_side_x_mult", "Side X Multiplicity", 33, 0, 33, "X Strip", kRed-3, kBlack); // number of x strips fired
+    h1_side_y_mult = MakeTH1(dir_stats, "I", "h1_side_y_mult", "Side Y Multiplicity", 33, 0, 33, "Y Strip", kRed-3, kBlack); // number of y strips fired
+    // maybe this one is meaningless with FEBEX? can you have multiple hits per event in same channel?
+    h2_strip_mult = MakeTH2(dir_stats, "I", "h2_strip_mult", "Strip vs Strip Multiplicity", 65, 0, 65, 10, 0, 10, "Strip (X then Y)", "Strip Multiplicity"); // strip (x then y) vs # of times fired
 
     // Concept of "Stopped" is irrelevant right now
-    h2_implant_strip_xy = MakeTH2(dir_hit_implant, "I", "h2_implant_strip_xy", "Implant Pattern (Strips)", 32, 0, 32, 32, 0, 32);
-    h1_implant_e = MakeTH1(dir_hit_implant, "F", "h1_implant_e", "Implant Energy", 1000, 0, 200000);
-    h2_implant_e_xy = MakeTH2(dir_hit_implant, "F", "h2_implant_e_xy", "Implant Energy (X vs Y)", 1000, 0, 200000, 1000, 0, 200000);
-    h2_implant_strip_1d_e = MakeTH2(dir_hit_implant, "F", "h2_implant_strip_1d_e", "Implant Energy (X then Y strips)", 64, 0, 64, 1000, 0, 200000);
+    h2_implant_strip_xy = MakeTH2(dir_implants, "I", "h2_implant_strip_xy", "Implant Pattern (Strips)", 32, 0, 32, 32, 0, 32);
+    h1_implant_e = MakeTH1(dir_implants, "F", "h1_implant_e", "Implant Energy", 1000, 0, 200000);
+    h2_implant_e_xy = MakeTH2(dir_implants, "F", "h2_implant_e_xy", "Implant Energy (X vs Y)", 1000, 0, 200000, 1000, 0, 200000);
+    h2_implant_strip_1d_e = MakeTH2(dir_implants, "F", "h2_implant_strip_1d_e", "Implant Energy (X then Y strips)", 64, 0, 64, 1000, 0, 200000);
 
-    h2_decay_strip_xy = MakeTH2(dir_hit_decay, "I", "h2_decay_strip_xy", "Decay Hit Pattern", 32, 0, 32, 32, 0, 32);
-    h1_decay_e = MakeTH1(dir_hit_decay, "F", "h1_decay_e", "Decay Energy", 1000, 0, 200000);
-    h2_decay_e_xy = MakeTH2(dir_hit_decay, "F", "h2_decay_e_xy", "Decay Energy (X vs Y)", 1000, 0, 200000, 1000, 0, 200000);
-    h2_decay_strip_1d_e = MakeTH2(dir_hit_decay, "F", "h2_decay_strip_1d_e", "Decay Energy (X then Y strips)", 64, 0, 64, 1000, 0, 200000);
+    h2_decay_strip_xy = MakeTH2(dir_decays, "I", "h2_decay_strip_xy", "Decay Hit Pattern", 32, 0, 32, 32, 0, 32);
+    h1_decay_e = MakeTH1(dir_decays, "F", "h1_decay_e", "Decay Energy", 1000, 0, 200000);
+    h2_decay_e_xy = MakeTH2(dir_decays, "F", "h2_decay_e_xy", "Decay Energy (X vs Y)", 1000, 0, 200000, 1000, 0, 200000);
+    h2_decay_strip_1d_e = MakeTH2(dir_decays, "F", "h2_decay_strip_1d_e", "Decay Energy (X then Y strips)", 64, 0, 64, 1000, 0, 200000);
+
+    for (int i = 0; i < 32; i++)
+    {
+        side_x_mult[i] = 0;
+        side_y_mult[i] = 0;
+    }
+    strips_fired[0].clear(); strips_fired[1].clear();
 
     return kSUCCESS;
 
@@ -119,8 +131,22 @@ void BB7FebexOnlineSpectra::Exec(Option_t* option)
 
     for (auto const & d : *decayHitArray)
     {
+        strips_fired[0].insert(d.StripX);
+        strips_fired[1].insert(d.StripY);
+        side_x_mult[int(d.StripX)]++;
+        side_y_mult[int(d.StripY)]++;
+
         h2_decay_strip_xy->Fill(d.StripX, d.StripY);
     }
+
+    h1_side_x_mult->Fill(strips_fired[0].size());
+    h1_side_y_mult->Fill(strips_fired[1].size());
+    for (int i = 0; i < 32; i++)
+    {
+        h2_strip_mult->Fill(i, side_x_mult[i]);
+        h2_strip_mult->Fill(i+32, side_y_mult[i]);
+    }
+    // reset
 
     fNEvents++;
     auto end = std::chrono::high_resolution_clock::now();
@@ -130,7 +156,12 @@ void BB7FebexOnlineSpectra::Exec(Option_t* option)
 
 void BB7FebexOnlineSpectra::FinishEvent()
 {
-
+    for (int i = 0; i < 32; i++)
+    {
+        side_x_mult[i] = 0;
+        side_y_mult[i] = 0;
+    }
+    strips_fired[0].clear(); strips_fired[1].clear();
 }
 
 void BB7FebexOnlineSpectra::FinishTask()
