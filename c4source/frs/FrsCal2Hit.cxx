@@ -1558,7 +1558,7 @@ void FrsCal2Hit::ProcessMusic()
         if (b_music41de)
         {
             power = 1., Corr = 0.;
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 7; i++)
             {
                 Corr += music->music41_pos_a[i] * power;
                 power *= music41_x_mean;
@@ -1573,7 +1573,7 @@ void FrsCal2Hit::ProcessMusic()
         if (b_music42de)
         {
             power = 1., Corr = 0.;
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 7; i++)
             {
                 Corr += music->music42_pos_a[i] * power;
                 power *= music42_x_mean;
@@ -1588,7 +1588,7 @@ void FrsCal2Hit::ProcessMusic()
         if (b_music43de)
         {
             power = 1., Corr = 0.;
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 7; i++)
             {
                 Corr += music->music43_pos_a[i] * power;
                 power *= music43_x_mean;
@@ -1776,7 +1776,7 @@ void FrsCal2Hit::ProcessIDs()
         {
             id_gamma_s2s4 = 1. / sqrt(1. - TMath::Power(id_beta_s2s4, 2));
             id_AoQ_s2s4 = id_brho[1] / id_beta_s2s4 / id_gamma_s2s4 / aoq_factor;
-            id_AoQ_corr_s2s4 = id_AoQ_s2s4 - id->a2AoQCorr * id_a2;
+            id_AoQ_corr_s2s4 = id_AoQ_s2s4 - id->a4AoQCorr * id_a4;
             
             id_b_AoQ_s2s4 = true;
         }
@@ -1788,7 +1788,7 @@ void FrsCal2Hit::ProcessIDs()
     // Calibration with MUSIC is done with 1/b2 - last update sept2024
     // S2 (MUSIC 1)
     // CEJ:: can be argued to check de_cor, merge removed it for now
-    if ((music21_de > 0.0) && (id_beta_s1s2 > 0.0) && (id_beta_s1s2 < 1.0))
+    if ((music21_de_cor > 0.0) && (id_beta_s1s2 > 0.0) && (id_beta_s1s2 < 1.0))
     {
         float power = 1.;
         float sum = 0.;
@@ -1802,7 +1802,7 @@ void FrsCal2Hit::ProcessIDs()
 
         if (id_music21_v_cor > 0.0)
         {
-            id_z21 = frs->primary_z * sqrt(music21_de / id_music21_v_cor) + id->offset_z21;
+            id_z21 = frs->primary_z * sqrt(music21_de_cor / id_music21_v_cor) + id->offset_z21;
         }
         if ((id_z21 > 0.0) && (id_z21 < 100.0))
         {   
@@ -1811,7 +1811,7 @@ void FrsCal2Hit::ProcessIDs()
     }
 
     // S2 (MUSIC 2)
-    if ((music22_de > 0.0) && (id_beta_s1s2 > 0.0) && (id_beta_s1s2 < 1.0))
+    if ((music22_de_cor > 0.0) && (id_beta_s1s2 > 0.0) && (id_beta_s1s2 < 1.0))
     {
         float power = 1.;
         float sum = 0.;
@@ -1825,7 +1825,7 @@ void FrsCal2Hit::ProcessIDs()
 
         if (id_music22_v_cor > 0.0)
         {
-            id_z22 = frs->primary_z * sqrt(music22_de / id_music22_v_cor) + id->offset_z22;
+            id_z22 = frs->primary_z * sqrt(music22_de_cor / id_music22_v_cor) + id->offset_z22;
         }
         if ((id_z22 > 0.0) && (id_z22 < 100.0))
         {   
@@ -1835,7 +1835,7 @@ void FrsCal2Hit::ProcessIDs()
 
 
     // S4 (MUSIC 1)
-    if ((music41_de > 0.0) && (id_beta_s2s4 > 0.0) && (id_beta_s2s4 < 1.0))
+    if ((music41_de_cor > 0.0) && (id_beta_s2s4 > 0.0) && (id_beta_s2s4 < 1.0))
     {
         float power = 1.;
         float sum = 0.;
@@ -1851,7 +1851,7 @@ void FrsCal2Hit::ProcessIDs()
 
         if (id_music41_v_cor > 0.0)
         {
-            id_z41 = frs->primary_z * sqrt(music41_de / id_music41_v_cor) + id->offset_z41;
+            id_z41 = frs->primary_z * sqrt(music41_de_cor / id_music41_v_cor) + id->offset_z41;
         }
 
         if ((id_z41 > 0.0) && (id_z41 < 100.0))
@@ -1863,7 +1863,7 @@ void FrsCal2Hit::ProcessIDs()
 
     // S4 (MUSIC 2)
     // CEJ::  potentially check de_cor here too
-    if ((music42_de > 0.0) && (id_beta_s2s4 > 0.0) && (id_beta_s2s4 < 1.0))
+    if ((music42_de_cor > 0.0) && (id_beta_s2s4 > 0.0) && (id_beta_s2s4 < 1.0))
     {
         float power = 1.;
         float sum = 0.;
@@ -1879,7 +1879,7 @@ void FrsCal2Hit::ProcessIDs()
         // GainShift removed, because we have DriftCorr?
         if (id_music42_v_cor > 0.0)
         {
-            id_z42 = frs->primary_z * sqrt(music42_de / id_music42_v_cor) + id->offset_z42;
+            id_z42 = frs->primary_z * sqrt(music42_de_cor / id_music42_v_cor) + id->offset_z42;
         }
         if ((id_z42 > 0.0) && (id_z42 < 100.0))
         {   
@@ -1890,7 +1890,7 @@ void FrsCal2Hit::ProcessIDs()
     }
 
     // S4 (MUSIC 3)
-    if ((music43_de > 0.0) && (id_beta_s2s4 > 0.0) && (id_beta_s2s4 < 1.0))
+    if ((music43_de_cor > 0.0) && (id_beta_s2s4 > 0.0) && (id_beta_s2s4 < 1.0))
     {
         float power = 1.;
         float sum = 0.;
@@ -1904,9 +1904,9 @@ void FrsCal2Hit::ProcessIDs()
 
         if (id_music43_v_cor > 0.0)
         {
-            id_z43 = frs->primary_z * sqrt(music43_de / id_music43_v_cor) + id->offset_z43;
+            id_z43 = frs->primary_z * sqrt(music43_de_cor / id_music43_v_cor) + id->offset_z43;
         }
-        if ((id_z43 > 0.0) && (id_z43 < 100.0))
+        if ((id_z43 > 0.0) && (id_z43 < 100.0)) // the island of stability will be discovered one day and you will be sorry - JB
         {   
             id_b_z43 = kTRUE;
         }
