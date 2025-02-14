@@ -148,13 +148,17 @@ class FrsHitItem : public TObject
         Float_t Get_music41_dE_cor() const { return fmusic41_dE_cor; }
         Float_t Get_music42_dE_cor() const { return fmusic42_dE_cor; }
         Float_t Get_music43_dE_cor() const { return fmusic43_dE_cor; }
+        Float_t Get_ID_x1() const { return fID_x1; }
         Float_t Get_ID_x2() const { return fID_x2; }
-        Float_t Get_ID_y2() const { return fID_y2; }
         Float_t Get_ID_x4() const { return fID_x4; }
+        Float_t Get_ID_y1() const { return fID_y1; }
+        Float_t Get_ID_y2() const { return fID_y2; }
         Float_t Get_ID_y4() const { return fID_y4; }
+        Float_t Get_ID_a1() const { return fID_a1; }
         Float_t Get_ID_a2() const { return fID_a2; }
-        Float_t Get_ID_b2() const { return fID_b2; }
         Float_t Get_ID_a4() const { return fID_a4; }
+        Float_t Get_ID_b1() const { return fID_b1; }
+        Float_t Get_ID_b2() const { return fID_b2; }
         Float_t Get_ID_b4() const { return fID_b4; }
         Float_t Get_ID_beta_s1s2() const { return fID_beta_s1s2; }
         Float_t Get_ID_AoQ_s1s2() const { return fID_AoQ_s1s2; }
