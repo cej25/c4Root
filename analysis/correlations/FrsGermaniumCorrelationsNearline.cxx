@@ -108,6 +108,8 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
         found_dir_corr = false;
     }
 
+    c4LOG(info, "Germanium gamma-gamma coincidence window: " + TString(std::to_string(germanium_coincidence_gate*2) + " ns"));
+
     TString dirname = "DEGAS - FRS Gated: " + frsgate->GetName();
     dir_germanium = dir_corr->mkdir(dirname);
 
@@ -243,10 +245,10 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
     double ID_x2 = frshit.Get_ID_x2();
     double ID_y2 = frshit.Get_ID_y2();
     double ID_x4 = frshit.Get_ID_x4();
-    double ID_AoQ = frshit.Get_ID_AoQ();
-    double ID_z = frshit.Get_ID_z();
-    double ID_z2 = frshit.Get_ID_z2();
-    double ID_dEdeg = frshit.Get_ID_dEdeg();
+    double ID_AoQ = frshit.Get_ID_AoQ_s2s4();
+    double ID_z = frshit.Get_ID_z41();
+    double ID_z2 = frshit.Get_ID_z42();
+    double ID_dEdeg = frshit.Get_ID_dEdeg_z41();
 
     // this must pass all gates given to FrsGate:
     positive_PID = frsgate->PassedGate(ID_z, ID_z2, ID_x2, ID_x4, ID_AoQ, ID_dEdeg);

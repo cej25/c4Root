@@ -24,6 +24,8 @@ TFRSParameter::TFRSParameter()
   dist_SC41 = 0;
   dist_SC42 = 0;
   dist_SC43 = 0;
+  dist_MUSIC21 = 0;
+  dist_MUSIC22 = 0;
   dist_MUSIC41 = 0;
   dist_MUSIC42 = 0;
   dist_MUSIC43 = 0;
@@ -1020,6 +1022,8 @@ TIDParameter::TIDParameter() {
   id_tofcorr4 = 0.;
   id_tofcorr5 = 0.;
   id_tofcorr6 = 0.;
+  id_path0 = 0.;
+  id_path1 = 0.;
   id_path2 = 0.;
   id_path3 = 0.;
   id_path4 = 0.;
@@ -1030,8 +1034,8 @@ TIDParameter::TIDParameter() {
   offset_z2 = 0.;
   offset_z3 = 0.;
   offset_z4 = 0.;
-  a2AoQCorr =0.;
-  a4AoQCorr =0.;
+  a2AoQCorr = 0.;
+  a4AoQCorr = 0.;
   
   for (int i=0;i<4;i++){
     vel_a[i] = 0.;
@@ -1065,7 +1069,13 @@ TIDParameter::TIDParameter() {
    }}}
 }
 
-TIDParameter::TIDParameter(const char* name) {
+TIDParameter::TIDParameter(const char* name) 
+{ 
+  // Default values to deal with old experiments 
+  x_s2_select = 1;
+  tof_s2_select = 1;
+  tof_s4_select = 1;
+  use_sc11x = 0; // sci11 position not used for x
 
   id_tofoff2 = 267690.0;    // Offset (ps), 22sep03
   id_path2 =   123000.0;    // Path/c (ps)

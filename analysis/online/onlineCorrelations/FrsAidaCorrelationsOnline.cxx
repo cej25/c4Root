@@ -181,7 +181,7 @@ void FrsAidaCorrelationsOnline::Exec(Option_t* option)
                 for (int gate = 0; gate < FrsGates.size(); gate++)
                 {
                     // hit pattern and energy
-                    if (FrsGates[gate]->Passed_ZvsAoQ(hitItemFrs.Get_ID_z(), hitItemFrs.Get_ID_AoQ()))
+                    if (FrsGates[gate]->Passed_ZvsAoQ(hitItemFrs.Get_ID_z41(), hitItemFrs.Get_ID_AoQ_s2s4()))
                     {
                         h2_AidaImplant_ZvsAoQGated_position[hit.DSSD-1][gate]->Fill(hit.PosX, hit.PosY);
                         h1_AidaImplant_ZvsAoQGated_energy[hit.DSSD-1][gate]->Fill(hit.Energy);
@@ -195,7 +195,7 @@ void FrsAidaCorrelationsOnline::Exec(Option_t* option)
                 {
                     for (int gate = 0; gate < FrsGates.size(); gate++)
                     {
-                        if (FrsGates[gate]->PassedGate(hitItemFrs.Get_ID_z(), hitItemFrs.Get_ID_z2(), hitItemFrs.Get_ID_x2(), hitItemFrs.Get_ID_x4(), hitItemFrs.Get_ID_AoQ(), hitItemFrs.Get_ID_dEdeg()))
+                        if (FrsGates[gate]->PassedGate(hitItemFrs.Get_ID_z41(), hitItemFrs.Get_ID_z42(), hitItemFrs.Get_ID_x2(), hitItemFrs.Get_ID_x4(), hitItemFrs.Get_ID_AoQ_s2s4(), hitItemFrs.Get_ID_dEdeg_z41()))
                         {
                             h1_stopped_implanted_passed_gate->Fill(gate * aida_config->DSSDs() + hit.DSSD - 1);
 
@@ -215,7 +215,7 @@ void FrsAidaCorrelationsOnline::Exec(Option_t* option)
                         }
 
                         // hit pattern and energy
-                        if (FrsGates[gate]->Passed_ZvsAoQ(hitItemFrs.Get_ID_z(), hitItemFrs.Get_ID_AoQ()))
+                        if (FrsGates[gate]->Passed_ZvsAoQ(hitItemFrs.Get_ID_z41(), hitItemFrs.Get_ID_AoQ_s2s4()))
                         {
                             h2_AidaImplant_ZvsAoQGated_position_stopped[hit.DSSD-1][gate]->Fill(hit.PosX, hit.PosY);
                             h1_AidaImplant_ZvsAoQGated_energy_stopped[hit.DSSD-1][gate]->Fill(hit.Energy);

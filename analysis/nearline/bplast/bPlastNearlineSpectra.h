@@ -7,6 +7,7 @@
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TbPlastConfiguration.h"
+#include "TExperimentConfiguration.h"
 #include <vector>
 
 class TClonesArray;
@@ -32,12 +33,13 @@ class bPlastNearlineSpectra : public FairTask
         virtual void FinishEvent();
 
         virtual void FinishTask();
-
     
     private:
         TClonesArray* fHitbPlastTwinpeaks;
 
         TbPlastConfiguration const* bplast_conf;
+        TExperimentConfiguration const * exp_conf;
+        
         std::map<std::pair<int, int>, std::pair<int, std::pair<char, char>>> bplast_map;
 
         EventHeader* header;
@@ -46,6 +48,7 @@ class bPlastNearlineSpectra : public FairTask
 
         int nDetectors;
         int nTamexBoards;
+        // int time_duration = 24;
 
         //Folders and files
         TDirectory* dir_bplast;
@@ -54,6 +57,7 @@ class bPlastNearlineSpectra : public FairTask
         TDirectory* dir_bplast_hitpattern;
         TDirectory* dir_bplast_fast_vs_slow;
         TDirectory* dir_bplast_time_spectra;
+        TDirectory* dir_bplast_rates;
 
         // Histograms
         std::vector<TH1*> h1_bplast_slowToT;
@@ -63,6 +67,7 @@ class bPlastNearlineSpectra : public FairTask
 
         std::vector<TH2*> h2_bplast_fastToT_vs_slowToT;
         std::vector<TH1*> h1_bplast_time_spectra;
+        std::vector<TH1*> h1_bplast_rates;
 
         // Scaler spectra TBA
 
@@ -70,6 +75,12 @@ class bPlastNearlineSpectra : public FairTask
         TH1* h1_bplast_multiplicity;
 
         int event_multiplicity;
+        int64_t wr_t = 0;
+        int64_t wr_prev = 0;
+        int64_t wr_prev1s = 0;
+        int* detector_counters;
+        int* detector_rates;
+        int rate_running_count = 0;
 
     public:
         ClassDef(bPlastNearlineSpectra, 1)

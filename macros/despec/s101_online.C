@@ -65,6 +65,8 @@ void s101_online()
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
     TString filename = "trans://x86l-86";
+   //  TString filename = "trans://lxg3107";
+    // TString filename = "/lustre/gamma/s101_files/dryrun_ts/*";
 //     TString filename = "trans://lxg1257"; // timesorter.
 //     TString filename = "trans://x86l-144"; // ??
     TString outputpath = "output";

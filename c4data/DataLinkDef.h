@@ -30,6 +30,9 @@
 #pragma link C++ class TimeMachineData+;
 #pragma link C++ class BB7V7x5Item+;
 #pragma link C++ class BB7V1290Item+;
+#pragma link C++ class BB7FebexItem+;
+#pragma link C++ class BB7FebexCalItem+;
+#pragma link C++ class BB7FebexHitItem+;
 #pragma link C++ class BB7VmeImplantItem+;
 #pragma link C++ class BB7VmeDecayItem+;
 #pragma link C++ class BB7VmeResidualItem+;
@@ -64,6 +67,7 @@
 #pragma link C++ class FrsMusicItem+;
 #pragma link C++ class FrsTpcItem+;
 #pragma link C++ class FrsCalSciItem+;
+#pragma link C++ class FrsCalMusicItem+;
 #pragma link C++ class FrsCalTpcItem+;
 #pragma link C++ class FrsHitItem+;
 #pragma link C++ class FrsMultiHitItem+;
@@ -96,6 +100,7 @@
 #pragma link C++ class TCorrelationsConfiguration+;
 #pragma link C++ class TExperimentConfiguration+;
 #pragma link C++ class TBB7VmeConfiguration+;
+#pragma link C++ class TBB7FebexConfiguration+;
 #pragma link C++ class TLisaConfiguration+;
 #pragma link C++ class TFimpConfiguration+;
 

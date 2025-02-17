@@ -34,7 +34,8 @@ EXPS=s452 \
 	jikken \
 	pareeksha \
 	shiyan \
-	onlyBGO 
+	onlyBGO \
+	febex
 ALL_EXPS = $(EXPS)
 
 #########################################################
