@@ -5,8 +5,9 @@
 // as long as we use the same one, all good right?
 extern "C"
 {
-    // #include "../../config/s101/frs/setup_160_049_2025_conv.C"
-    #include "../../config/s100/frs/setup_des_s100_030_2024_conv.C"
+    //#include "../../config/s101/frs/setup_160_049_2025_conv.C"
+    #include "../../config/s101/frs/setup_056_99Ag_2025_conv.C"
+    // #include "../../config/s100/frs/setup_des_s100_030_2024_conv.C"
     //#include "../../config/s100/frs/setup_des_s100_030_2024_conv_jel_conv.C"
 }
 
@@ -23,11 +24,11 @@ void run_frs_online()
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
 
     // Name your experiment. Make sure all relevant directories are named identically.
-    TString fExpName = "s100";
+    TString fExpName = "s101";
 
     // Define important paths.
     TString c4Root_path = "/u/cjones/c4Root";
-    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
+    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes";
     //TString ucesb_path = c4Root_path + "/unpack/exps/" + "s100" + "/" + "s100" + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
 
     ucesb_path.ReplaceAll("//","/");
@@ -51,7 +52,8 @@ void run_frs_online()
 
     // TString filename  = "~/lustre/gamma/stacktest2024_files/ts/aidabplas_OUT_130125_new_0182.lmd";
     //TString filename =  "~/lustre/gamma/s100_files/ts/162Eu_0075_0006.lmd";
-    TString filename = "~/lustre/gamma/s100_files/new_ts/162Eu/162Eu_new_0045_0098.lmd";
+    //TString filename = "~/lustre/gamma/s100_files/new_ts/162Eu/162Eu_new_0045_0098.lmd";
+    TString filename = "~/lustre/nustar/profi/sec_s160feb25/105Ag_withSC11_0119_0002.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
@@ -160,7 +162,7 @@ void run_frs_online()
 
     std::vector<FrsGate*> fgs = {}; // for now just because code cries without a vector
     
-    // // // For monitoring FRS on our side
+    // For monitoring FRS on our side
     FrsRawSpectra* frsrawspec = new FrsRawSpectra();
     FrsCalSpectra* frscalspec = new FrsCalSpectra();
     FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra(fgs);

@@ -267,7 +267,7 @@ InitStatus FrsOnlineSpectra::Init()
         h1_sci_e_42 = MakeTH1(dir_tac_1d, "F", "h1_sci_e_42", "SCI 42 E", 4000, 0.0, 4000.0, "SCI 42 E", kPink-3, kBlue+2);
         h1_sci_e_43 = MakeTH1(dir_tac_1d, "F", "h1_sci_e_43", "SCI 43 E", 4000, 0.0, 4000.0, "SCI 43 E", kPink-3, kBlue+2);
         h1_sci_e_81 = MakeTH1(dir_tac_1d, "F", "h1_sci_e_81", "SCI 81 E", 4000, 0.0, 4000.0, "SCI 81 E", kPink-3, kBlue+2);
-        h1_sci_x_11 = MakeTH1(dir_tac_1d, "F", "h1_sci_e_11", "SCI 11 PosX", 4000, 0.0, 4000.0, "SCI 11 X", kYellow-7, kBlack);
+        h1_sci_x_11 = MakeTH1(dir_tac_1d, "F", "h1_sci_x_11", "SCI 11 PosX", 4000, 0.0, 4000.0, "SCI 11 X", kYellow-7, kBlack);
         h1_sci_x_21 = MakeTH1(dir_tac_1d, "F", "h1_sci_x_21", "SCI 21 PosX", 4000, 0.0, 4000.0, "SCI 21 X", kYellow-7, kBlack);
         h1_sci_x_22 = MakeTH1(dir_tac_1d, "F", "h1_sci_x_22", "SCI 22 PosX", 4000, 0.0, 4000.0, "SCI 22 X", kYellow-7, kBlack);
         h1_sci_x_31 = MakeTH1(dir_tac_1d, "F", "h1_sci_x_31", "SCI 31 PosX", 4000, 0.0, 4000.0, "SCI 31 X", kYellow-7, kBlack);

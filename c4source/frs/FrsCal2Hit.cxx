@@ -806,6 +806,7 @@ void FrsCal2Hit::ProcessSci_TAC()
 
     if (sci_b_tofll_11_21 && sci_b_tofrr_11_21)
     {
+        std::cout << "is this our problem... ::: event ::: " << fNEvents << std::endl;
         sci_tof_11_21 = (sci->tof_bll1 * sci_tofrr_11_21 + sci->tof_a1 + sci->tof_brr1 * sci_tofrr_11_21) / 2.0;
         sci_tof_11_21_calib = -1.0 * sci_tof_11_21 + id->id_tofoff1[sci->sci11_select];
     }
