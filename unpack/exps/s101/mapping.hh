@@ -3,7 +3,8 @@ SIGNAL(SPILL_ON, frsmain.spill_on.spillon, DATA8);
 SIGNAL(SPILL_OFF, frsmain.spill_off.spilloff, DATA8);
 
 SIGNAL(ZERO_SUPPRESS: SCALERS2_32);
-SIGNAL(SCALERS1_1, frsmain.data.v830.data[0], SCALERS1_32, frsmain.data.v830.data[31], DATA32);
+//SIGNAL(SCALERS1_1, frsmain.data.v830.data[0], SCALERS1_32, frsmain.data.v830.data[31], DATA32);
+SIGNAL(SCALERS1_1, frsmain.data.v830.scalers[0], SCALERS1_32, frsmain.data.v830.scalers[31], DATA32);
 
 SIGNAL(ZERO_SUPPRESS: SCI_TAC_DE_18);
 SIGNAL(SCI_TAC_DE_1, frsmain.data.v792.data[0], SCI_TAC_DE_18, frsmain.data.v792.data[17], DATA24);
@@ -40,7 +41,8 @@ SIGNAL(TPC_TDC_LOT_1, frstpc.data.v1190.measurement.leadOrTrail[0], TPC_TDC_LOT_
 // :::::::::::::::::::::::::::::::::::::::
 
 // ::::::: User Crate ::::::::::::::::::::
-SIGNAL(SCALERS2_1, frsuser.data.v830.data[0], SCALERS2_32, frsuser.data.v830.data[31], DATA32);
+// SIGNAL(SCALERS2_1, frsuser.data.v830.data[0], SCALERS2_32, frsuser.data.v830.data[31], DATA32);
+SIGNAL(SCALERS2_1, frsuser.data.v830.scalers[0], SCALERS2_32, frsuser.data.v830.scalers[31], DATA32);
 
 SIGNAL(ZERO_SUPPRESS: SCI_TAC_DT_19); // 19 possible DT values? I guess we should check before committing..
 SIGNAL(SCI_TAC_DT_1, frsuser.data.v785[1].data[0], SCI_TAC_DT_16, frsuser.data.v785[1].data[15], DATA24);
