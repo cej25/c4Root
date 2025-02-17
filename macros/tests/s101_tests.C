@@ -5,7 +5,7 @@
 #define BPLAST_ON 0
 #define GERMANIUM_ON 0
 #define BGO_ON 0
-#define FRS_ON 0
+#define FRS_ON 1
 #define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 0
@@ -325,13 +325,15 @@ void s101_tests()
     
     TFrsConfiguration::Set_Z_range(50,100);
     TFrsConfiguration::Set_AoQ_range(2.3,2.7);
+
+    std::vector<FrsGate*> fgs = {}; // for now just because code cries without a vector
     
     if (FRS_ON)
     {
         // // For monitoring FRS on our side
         FrsRawSpectra* frsrawspec = new FrsRawSpectra();
         FrsCalSpectra* frscalspec = new FrsCalSpectra();
-        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
+        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra(fgs);
         
         run->AddTask(frsrawspec);
         run->AddTask(frscalspec);

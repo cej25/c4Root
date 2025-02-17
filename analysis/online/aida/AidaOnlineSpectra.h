@@ -54,8 +54,6 @@ class AidaOnlineSpectra : public FairTask
         // HTTP Commands
         virtual void Reset_Histo();
 
-        virtual void Snapshot_Histo();
-
         void Reset_Scalers();
 
         // range setters
@@ -77,11 +75,6 @@ class AidaOnlineSpectra : public FairTask
         EventHeader* header;
         Int_t fNEvents;
         int total_time_microsecs = 0;
-
-        // Canvas
-        TCanvas* c_aida_snapshots;
-
-        TString screenshot_path = "/u/despec/screenshots/";
 
         // Folders and Files
         TFolder* histograms;

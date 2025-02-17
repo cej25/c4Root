@@ -45,9 +45,6 @@ class TimeMachineOnline : public FairTask
         
         virtual void Reset_Histo();
 
-        virtual void Snapshot_Histo();
-
-
     
     private:
 
@@ -72,7 +69,6 @@ class TimeMachineOnline : public FairTask
         TCanvas* c_time_diff;
         TCanvas* c_time_corrs;
         TCanvas* c_whiterabbit_time_diff;
-        TCanvas* c_time_machine_time_snapshot;
 
         // Folders and Files
         TFolder* histograms;
@@ -81,7 +77,6 @@ class TimeMachineOnline : public FairTask
         TDirectory* dir_time_machine_delayed;
         TDirectory* dir_time_machine_diff;
         TDirectory* dir_time_machine_corrs;
-        TFile* file_time_machine_snapshot;
 
         // Histograms
         // would also be nice to set this up from the detector setup

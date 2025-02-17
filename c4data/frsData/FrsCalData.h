@@ -8,13 +8,16 @@
 typedef Float_t Float_t;
 typedef Int_t Int_t;
 typedef Bool_t Bool_t;
+typedef UInt_t UInt_t;
 
 class FrsCalSciItem : public TObject
 {
     public:
         FrsCalSciItem();
 
-        void SetAll(UInt_t de21l,
+        void SetAll(UInt_t de11l,
+                    UInt_t de11r,
+                    UInt_t de21l,
                     UInt_t de21r,
                     UInt_t de22l,
                     UInt_t de22r,
@@ -28,12 +31,15 @@ class FrsCalSciItem : public TObject
                     UInt_t de43r,
                     UInt_t de81l,
                     UInt_t de81r,
+                    UInt_t dt_11l_11r,
                     UInt_t dt21l_21r,
                     UInt_t dt22l_22r,
                     UInt_t dt41l_41r,
                     UInt_t dt42l_42r,
                     UInt_t dt43l_43r,
                     UInt_t dt81l_81r,
+                    UInt_t dt11l_21l,
+                    UInt_t dt11r_21r,
                     UInt_t dt21l_41l,
                     UInt_t dt21r_41r,
                     UInt_t dt42r_21r,
@@ -44,7 +50,14 @@ class FrsCalSciItem : public TObject
                     UInt_t dt22r_41r,
                     UInt_t dt22l_81l,
                     UInt_t dt22r_81r,
-                    std::vector<Int_t> sci11_hits,
+                    std::vector<Int_t> sci11la_hits,
+                    std::vector<Int_t> sci11lb_hits,
+                    std::vector<Int_t> sci11lc_hits,
+                    std::vector<Int_t> sci11ld_hits,
+                    std::vector<Int_t> sci11ra_hits,
+                    std::vector<Int_t> sci11rb_hits,
+                    std::vector<Int_t> sci11rc_hits,
+                    std::vector<Int_t> sci11rd_hits,
                     std::vector<Int_t> sci21l_hits,
                     std::vector<Int_t> sci21r_hits,
                     std::vector<Int_t> sci22l_hits,
@@ -61,6 +74,8 @@ class FrsCalSciItem : public TObject
                     std::vector<Int_t> sci81r_hits);
 
         // Getters
+        UInt_t Get_dE_11l() const { return de_11l; }
+        UInt_t Get_dE_11r() const { return de_11r; }
         UInt_t Get_dE_21l() const { return de_21l; }
         UInt_t Get_dE_21r() const { return de_21r; }
         UInt_t Get_dE_22l() const { return de_22l; }
@@ -76,12 +91,15 @@ class FrsCalSciItem : public TObject
         UInt_t Get_dE_81l() const { return de_81l; }
         UInt_t Get_dE_81r() const { return de_81r; }
 
+        UInt_t Get_dT_11l_11r() const { return dt_11l_11r; }
         UInt_t Get_dT_21l_21r() const { return dt_21l_21r; }
         UInt_t Get_dT_22l_22r() const { return dt_22l_22r; }
         UInt_t Get_dT_41l_41r() const { return dt_41l_41r; }
         UInt_t Get_dT_42l_42r() const { return dt_42l_42r; } 
         UInt_t Get_dT_43l_43r() const { return dt_43l_43r; }
         UInt_t Get_dT_81l_81r() const { return dt_81l_81r; }
+        UInt_t Get_dT_11l_21l() const { return dt_11l_21l; }
+        UInt_t Get_dT_11r_21r() const { return dt_11r_21r; }
         UInt_t Get_dT_21l_41l() const { return dt_21l_41l; }
         UInt_t Get_dT_21r_41r() const { return dt_21r_41r; }
         UInt_t Get_dT_42l_21l() const { return dt_42l_21l; }
@@ -93,7 +111,14 @@ class FrsCalSciItem : public TObject
         UInt_t Get_dT_22l_81l() const { return dt_22l_81l; }
         UInt_t Get_dT_22r_81r() const { return dt_22r_81r; }
 
-        std::vector<Int_t> Get_mhtdc_sci11_hits() const { return mhtdc_sci11_hits; }
+        std::vector<Int_t> Get_mhtdc_sci11la_hits() const { return mhtdc_sci11la_hits; }
+        std::vector<Int_t> Get_mhtdc_sci11lb_hits() const { return mhtdc_sci11lb_hits; }
+        std::vector<Int_t> Get_mhtdc_sci11lc_hits() const { return mhtdc_sci11lc_hits; }
+        std::vector<Int_t> Get_mhtdc_sci11ld_hits() const { return mhtdc_sci11ld_hits; }
+        std::vector<Int_t> Get_mhtdc_sci11ra_hits() const { return mhtdc_sci11ra_hits; }
+        std::vector<Int_t> Get_mhtdc_sci11rb_hits() const { return mhtdc_sci11rb_hits; }
+        std::vector<Int_t> Get_mhtdc_sci11rc_hits() const { return mhtdc_sci11rc_hits; }
+        std::vector<Int_t> Get_mhtdc_sci11rd_hits() const { return mhtdc_sci11rd_hits; }
         std::vector<Int_t> Get_mhtdc_sci21l_hits() const { return mhtdc_sci21l_hits; }
         std::vector<Int_t> Get_mhtdc_sci21r_hits() const { return mhtdc_sci21r_hits; }
         std::vector<Int_t> Get_mhtdc_sci22l_hits() const { return mhtdc_sci22l_hits; }
@@ -114,6 +139,8 @@ class FrsCalSciItem : public TObject
     private:
 
         // TAC dE
+        UInt_t de_11l;
+        UInt_t de_11r;
         UInt_t de_21l;
         UInt_t de_21r;
         UInt_t de_22l;
@@ -130,12 +157,15 @@ class FrsCalSciItem : public TObject
         UInt_t de_81r;
 
         // TAC dT
+        UInt_t dt_11l_11r;
         UInt_t dt_21l_21r;
         UInt_t dt_22l_22r;
         UInt_t dt_41l_41r;
         UInt_t dt_42l_42r;
         UInt_t dt_43l_43r;
         UInt_t dt_81l_81r;
+        UInt_t dt_11l_21l;
+        UInt_t dt_11r_21r;
         UInt_t dt_21l_41l;
         UInt_t dt_21r_41r;
         UInt_t dt_42l_21l;
@@ -148,7 +178,14 @@ class FrsCalSciItem : public TObject
         UInt_t dt_22r_81r;
 
         // MHTDC
-        std::vector<Int_t> mhtdc_sci11_hits;
+        std::vector<Int_t> mhtdc_sci11la_hits;
+        std::vector<Int_t> mhtdc_sci11lb_hits;
+        std::vector<Int_t> mhtdc_sci11lc_hits;
+        std::vector<Int_t> mhtdc_sci11ld_hits;
+        std::vector<Int_t> mhtdc_sci11ra_hits;
+        std::vector<Int_t> mhtdc_sci11rb_hits;
+        std::vector<Int_t> mhtdc_sci11rc_hits;
+        std::vector<Int_t> mhtdc_sci11rd_hits;
         std::vector<Int_t> mhtdc_sci21l_hits;
         std::vector<Int_t> mhtdc_sci21r_hits;
         std::vector<Int_t> mhtdc_sci22l_hits;
@@ -166,6 +203,34 @@ class FrsCalSciItem : public TObject
    
 };
 
+class FrsCalMusicItem : public TObject
+{
+    public:
+        FrsCalMusicItem();
+
+        void SetAll(UInt_t music21_e[8],
+                    UInt_t music22_e[8],
+                    UInt_t music41_e[8],
+                    UInt_t music42_e[8],
+                    UInt_t music43_e[8]);
+
+        const UInt_t (&Get_music21_e() const) [8] { return fmusic21_e; }
+        const UInt_t (&Get_music22_e() const) [8] { return fmusic22_e; }
+        const UInt_t (&Get_music41_e() const) [8] { return fmusic41_e; }
+        const UInt_t (&Get_music42_e() const) [8] { return fmusic42_e; }
+        const UInt_t (&Get_music43_e() const) [8] { return fmusic43_e; }
+
+        ClassDef(FrsCalMusicItem, 1);
+    
+    private:
+
+        UInt_t fmusic21_e[8];
+        UInt_t fmusic22_e[8];
+        UInt_t fmusic41_e[8];
+        UInt_t fmusic42_e[8];
+        UInt_t fmusic43_e[8];
+
+};
 
 class FrsCalTpcItem : public TObject
 {
@@ -202,6 +267,18 @@ class FrsCalTpcItem : public TObject
                     Float_t tpc_sc42_x,
                     Float_t tpc_sc42_y,
                     Float_t tpc_sc43_x,
+                    Float_t tpc21_22_music21_x,
+                    Float_t tpc21_22_music21_y,
+                    Float_t tpc21_22_music22_x,
+                    Float_t tpc21_22_music22_y,
+                    Float_t tpc23_24_music21_x,
+                    Float_t tpc23_24_music21_y,
+                    Float_t tpc23_24_music22_x,
+                    Float_t tpc23_24_music22_y,
+                    Float_t tpc22_24_music21_x,
+                    Float_t tpc22_24_music21_y,
+                    Float_t tpc22_24_music22_x,
+                    Float_t tpc22_24_music22_y,
                     Float_t tpc_music41_x,
                     Float_t tpc_music42_x,
                     Float_t tpc_music43_x);
@@ -237,8 +314,21 @@ class FrsCalTpcItem : public TObject
         Float_t Get_tpc23_24_sc21_x() const { return ftpc23_24_sc21_x; }
         Float_t Get_tpc21_22_sc22_x() const { return ftpc21_22_sc22_x; }
         Float_t Get_tpc23_24_sc22_x() const { return ftpc23_24_sc22_x; }
+        Float_t Get_tpc21_22_music21_x() const { return ftpc21_22_music21_x; }
+        Float_t Get_tpc21_22_music21_y() const { return ftpc21_22_music21_y; }
+        Float_t Get_tpc21_22_music22_x() const { return ftpc21_22_music22_x; }
+        Float_t Get_tpc21_22_music22_y() const { return ftpc21_22_music22_y; }
+        Float_t Get_tpc23_24_music21_x() const { return ftpc23_24_music21_x; }
+        Float_t Get_tpc23_24_music21_y() const { return ftpc23_24_music21_y; }
+        Float_t Get_tpc23_24_music22_x() const { return ftpc23_24_music22_x; }
+        Float_t Get_tpc23_24_music22_y() const { return ftpc23_24_music22_y; }
+        Float_t Get_tpc22_24_music21_x() const { return ftpc22_24_music21_x; }
+        Float_t Get_tpc22_24_music21_y() const { return ftpc22_24_music21_y; }
+        Float_t Get_tpc22_24_music22_x() const { return ftpc22_24_music22_x; }
+        Float_t Get_tpc22_24_music22_y() const { return ftpc22_24_music22_y; }
         Float_t Get_tpc_music41_x() const { return ftpc_music41_x; }
         Float_t Get_tpc_music42_x() const { return ftpc_music42_x; }
+        Float_t Get_tpc_music43_x() const { return ftpc_music43_x; }
 
 
         ClassDef(FrsCalTpcItem, 1);
@@ -277,6 +367,18 @@ class FrsCalTpcItem : public TObject
         Float_t ftpc_sc42_x;
         Float_t ftpc_sc42_y;
         Float_t ftpc_sc43_x;
+        Float_t ftpc21_22_music21_x;
+        Float_t ftpc21_22_music21_y;
+        Float_t ftpc21_22_music22_x;
+        Float_t ftpc21_22_music22_y;
+        Float_t ftpc23_24_music21_x;
+        Float_t ftpc23_24_music21_y;
+        Float_t ftpc23_24_music22_x;
+        Float_t ftpc23_24_music22_y;
+        Float_t ftpc22_24_music21_x;
+        Float_t ftpc22_24_music21_y;
+        Float_t ftpc22_24_music22_x;
+        Float_t ftpc22_24_music22_y;
         Float_t ftpc_music41_x;
         Float_t ftpc_music42_x;
         Float_t ftpc_music43_x;

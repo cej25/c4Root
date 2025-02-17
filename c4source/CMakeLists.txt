@@ -52,7 +52,7 @@ set(SRCS
 ./base/UnpackReader.cxx
 ./base/c4Reader.cxx
 ./base/CorrelationsMap.cxx
-#./base/GainShift.cxx
+./base/GainShift.cxx
 ./aida/AidaReader.cxx
 ./aida/AidaCal2Hit.cxx
 ./aida/AidaUnpack2Cal.cxx
@@ -77,7 +77,10 @@ set(SRCS
 ./fatima/FatimaVmeReader.cxx
 ./fatima/FatimaVmeRaw2Cal.cxx
 ./bb7/BB7Reader.cxx
+./bb7/BB7FebexReader.cxx
 ./bb7/BB7Raw2Cal.cxx
+./bb7/BB7FebexRaw2Cal.cxx
+./bb7/BB7FebexCal2Hit.cxx
 ./fimp/FimpReader.cxx
 ./fimp/FimpRaw2Cal.cxx
 
@@ -97,6 +100,7 @@ Set(STRUCT_HEADERS
 ./fatima/ext_h101_fatimavme.h
 ./bgo/ext_h101_bgo.h
 ./bb7/ext_h101_bb7vme.h
+./bb7/ext_h101_bb7febex.h
 ./fimp/ext_h101_fimp.h
 
 ./test/ext_h101_test.h
