@@ -241,7 +241,7 @@ void FrsReader::Reset()
     tpcArray->clear();
     memset(sciDE, 0, sizeof *sciDE);
     memset(sciDT, 0, sizeof *sciDT);
-    for (int i = 0; i < 16; i++) sciMHTDC[i].clear();
+    for (int i = 0; i < 32; i++) sciMHTDC[i].clear();
     memset(musicE, 0, sizeof *musicE);
     memset(musicT, 0, sizeof *musicT);
     memset(adcData, 0, sizeof *adcData);

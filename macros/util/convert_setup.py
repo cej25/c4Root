@@ -37,7 +37,31 @@ def convert_macro(input_file):
                     found_rho_line = True
                 
                 if found_rho_line:
-                    outfile.write(line)
+                    modified_line = line.replace("id->vel_a[", "id->vel_music41_a[")
+                    modified_line = modified_line.replace("id->vel_a2[", "id->vel_music42_a[")
+                    modified_line = modified_line.replace("id->vel_a3[", "id->vel_music43_a[")
+                    
+                    modified_line = modified_line.replace("music->exclude_de1_adc_channel", "music->exclude_music41_de_adc_channel")
+                    modified_line = modified_line.replace("music->exclude_de2_adc_channel", "music->exclude_music42_de_adc_channel")
+                    modified_line = modified_line.replace("music->exclude_de3_adc_channel", "music->exclude_music43_de_adc_channel")
+                    
+                    modified_line = modified_line.replace("music->e1_off", "music->music41_e_off")
+                    modified_line = modified_line.replace("music->e2_off", "music->music42_e_off")
+                    modified_line = modified_line.replace("music->e3_off", "music->music43_e_off")
+                    
+                    modified_line = modified_line.replace("music->e1_gain", "music->music41_e_gain")
+                    modified_line = modified_line.replace("music->e2_gain", "music->music42_e_gain")
+                    modified_line = modified_line.replace("music->e3_gain", "music->music43_e_gain")
+                    
+                    modified_line = modified_line.replace("music->pos_a1", "music->music41_pos_a")
+                    modified_line = modified_line.replace("music->pos_a2", "music->music42_pos_a")
+                    modified_line = modified_line.replace("music->pos_a3", "music->music43_pos_a")
+                    
+                    modified_line = modified_line.replace("id->offset_z ", "id->offset_z41 ")
+                    modified_line = modified_line.replace("id->offset_z2 ", "id->offset_z42 ")
+                    modified_line = modified_line.replace("id->offset_z3 ", "id->offset_z43 ")
+                    
+                    outfile.write(modified_line)
         
         print(f"Converted macro saved to {output_file}")
     except Exception as e:
