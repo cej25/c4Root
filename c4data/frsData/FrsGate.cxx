@@ -68,7 +68,7 @@ bool FrsGate::PassedGate(double Z, double Z2, double x2, double x4, double AoQ, 
         passed_gate_cut_Z_AoQ = true;
     }
     if (cut_Z_Z2 != nullptr) {
-        passed_gate_cut_Z_Z2 = cut_Z_Z2->IsInside(Z2,Z);
+        passed_gate_cut_Z_Z2 = cut_Z_Z2->IsInside(Z,Z2);
     }else{
         passed_gate_cut_Z_Z2 = true;
     }
@@ -83,7 +83,7 @@ bool FrsGate::PassedGate(double Z, double Z2, double x2, double x4, double AoQ, 
         passed_gate_cut_x4_AoQ = true;
     }
     if (cut_dEdeg_Z != nullptr) {
-        passed_gate_cut_dEdeg_Z = cut_dEdeg_Z->IsInside(Z,dEdeg);
+        passed_gate_cut_dEdeg_Z = cut_dEdeg_Z->IsInside(dEdeg,Z);
     }else{
         passed_gate_cut_dEdeg_Z = true;
     }

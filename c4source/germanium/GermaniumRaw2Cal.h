@@ -32,6 +32,7 @@ class GermaniumRaw2Cal : public FairTask
 
         virtual InitStatus Init();
         
+        void SetVetoPileupSCI41(bool v){VetoPileupSCI41 = v;}
 
     private:
         Bool_t fOnline;
@@ -41,6 +42,8 @@ class GermaniumRaw2Cal : public FairTask
         TClonesArray* ftime_machine_array;
         
         const TGermaniumConfiguration *  germanium_configuration;
+
+        bool VetoPileupSCI41 = true;
 
         GermaniumFebexData* funcal_hit;
         GermaniumCalData* fcal_hit;

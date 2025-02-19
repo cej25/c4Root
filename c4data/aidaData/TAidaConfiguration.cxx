@@ -477,6 +477,7 @@ void TAidaConfiguration::ReadConfiguration()
   if (clusterimplants && clusterdecays) anlopt << "ClusterImplantsDecays ";
   if (clusterimplants && !clusterdecays) anlopt << "ClusterImplants";
   if (!clusterimplants && clusterdecays) anlopt << "ClusterDecays ";
+  if(!clusterimplants && !clusterdecays) anlopt << "NoClustering ";
   if (calibrate && parallelcalibrate) anlopt << "ParallelCalibrate ";
   if (calibrate && !parallelcalibrate) anlopt << "Calibrate ";
   LOG(info) << "  Analysis Options: " << anlopt.str();

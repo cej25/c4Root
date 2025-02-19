@@ -1852,6 +1852,10 @@ void FrsCal2Hit::ProcessIDs()
         if (id_music41_v_cor > 0.0)
         {
             id_z41 = frs->primary_z * sqrt(music41_de_cor / id_music41_v_cor) + id->offset_z41;
+            
+            if (music41_tac_z_gain_shifts != nullptr){
+                id_z41 = id_z41 + music41_tac_z_gain_shifts->GetGain((uint64_t)wr_t);
+            }
         }
 
         if ((id_z41 > 0.0) && (id_z41 < 100.0))
@@ -1880,6 +1884,11 @@ void FrsCal2Hit::ProcessIDs()
         if (id_music42_v_cor > 0.0)
         {
             id_z42 = frs->primary_z * sqrt(music42_de_cor / id_music42_v_cor) + id->offset_z42;
+
+            if (music42_tac_z_gain_shifts != nullptr)
+            {
+                id_z42 = id_z42 + music42_tac_z_gain_shifts->GetGain((uint64_t)wr_t);
+            }
         }
         if ((id_z42 > 0.0) && (id_z42 < 100.0))
         {   

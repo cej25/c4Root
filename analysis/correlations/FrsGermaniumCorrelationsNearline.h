@@ -5,6 +5,7 @@
 
 #include "TGermaniumConfiguration.h"
 #include "TFrsConfiguration.h"
+#include "FairRunAna.h"
 #include "FrsHitData.h"
 #include "EventHeader.h"
 
@@ -38,9 +39,9 @@ class FrsGermaniumCorrelationsNearline : public FairTask
 
         virtual void FinishTask();
 
-        //virtual void Reset_Ge_Histo();
-
-        //virtual void Snapshot_Ge_Histo();
+        void SetAnlOrCalInput(TString AnlOrCal){
+            input_anl_or_cal = AnlOrCal;
+        }
 
         void AddGammaEnergyOfInterest(double energy, double gate_width){
             gamma_energies_of_interest.emplace_back(energy);
@@ -69,9 +70,12 @@ class FrsGermaniumCorrelationsNearline : public FairTask
             long_lifetime_binhigh = stop;
         }
         
-        void SetGermaniumCoincidenceWindow(int coinc_window){ // ns
+        void SetCoincidenceWindow(int coinc_window){ // ns
             germanium_coincidence_gate = coinc_window;
         }
+
+        void SetControlOutput(bool a){fControlOutput = a;} // writes the events that passes the fatima and frs gates to a tree
+        void SetWriteOutput(bool a){fWriteOutput = a;} // writes the events that passes the fatima and frs gates to a tree
         
     
     private:
@@ -79,6 +83,8 @@ class FrsGermaniumCorrelationsNearline : public FairTask
         TClonesArray* fHitFrs;
 
         std::vector<FrsHitItem> const* hitArrayFrs;
+        std::vector<FrsMultiHitItem> const* multihitArrayFrs;
+
 
         const TGermaniumConfiguration * germanium_configuration;
         const TFrsConfiguration * frs_configuration;
@@ -88,6 +94,12 @@ class FrsGermaniumCorrelationsNearline : public FairTask
         int64_t wr_t_last_frs_hit = 0;
         int64_t wr_t_first_frs_hit = 0;
         bool positive_PID = false;
+
+
+        bool fWriteOutput = true;
+        bool fControlOutput = false;
+        TString input_anl_or_cal = "Cal";
+        FairRunAna* run;
 
         
         int fenergy_nbins = 1500;
@@ -123,6 +135,14 @@ class FrsGermaniumCorrelationsNearline : public FairTask
         
         TCanvas * c_frs_x4_vs_AoQ_gated;
         TH2F * h2_frs_x4_vs_AoQ_gated;
+
+        TCanvas * c_frs_Z_vs_dEdeg_gated;
+        TH2F * h2_frs_Z_vs_dEdeg_gated;
+
+        TCanvas * c_frs_Z_vs_sci42E_gated;
+        TH2F * h2_frs_Z_vs_sci42E_gated;
+
+
         
         //Implant rate
         TCanvas * c_frs_rate;
