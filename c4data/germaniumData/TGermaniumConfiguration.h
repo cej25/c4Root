@@ -8,7 +8,6 @@
 #include <set>
 #include "TCutG.h"
 
-
 //structs
 
 class TGermaniumConfiguration
@@ -22,13 +21,14 @@ class TGermaniumConfiguration
         static void SetDetectorCoefficientFile(std::string fp) { calibration_file = fp; }
         static void SetDetectorTimeshiftsFile(std::string fp) { timeshift_calibration_file = fp; }
         static void SetPromptFlashCut(std::string fp) {promptflash_cut_file = fp; }
+        static void SetPromptFlashCutMulti(std::string fp) {promptflash_cut_file_multi = fp; }
 
 
 
         std::map<std::pair<int,int>,std::pair<int,int>> Mapping() const;
         bool MappingLoaded() const;
         bool CalibrationCoefficientsLoaded() const;
-        std::map<std::pair<int,int>,std::pair<double,double>> CalibrationCoefficients() const;
+        std::map<std::pair<int,int>,std::vector<double>> CalibrationCoefficients() const;
         bool TimeshiftCalibrationCoefficientsLoaded() const;
         std::map<std::pair<int,int>,double> TimeshiftCalibrationCoefficients() const;
         inline double GetTimeshiftCoefficient(int detector_id, int crystal_id) const;
@@ -40,6 +40,23 @@ class TGermaniumConfiguration
             }else{
                 return true;
             }
+        }
+
+        inline bool IsInsidePromptFlashCutMulti(double timediff, double energy, int id) const{
+            if ((prompt_flash_cut_multi.size() >= 1) && (prompt_flash_cut_multi.size() >= id)){
+                return prompt_flash_cut_multi.at(id)->IsInside(timediff,energy);
+            }else{
+                return IsInsidePromptFlashCut(timediff, energy);
+            }
+        }
+
+
+        const TCutG * GetPromptFlashCut() const {return prompt_flash_cut;}
+
+        const TCutG * GetPromptFlashCutMulti(int id) const {
+            // id = (detector_id - 1)*3 + crystal_id
+            if (id < NDetectors() || prompt_flash_cut_multi.size() < 1) return GetPromptFlashCut();
+            else return prompt_flash_cut_multi.at(id);
         }
 
         inline bool IsDetectorAuxilliary(int detector_id) const;
@@ -63,6 +80,7 @@ class TGermaniumConfiguration
         static std::string calibration_file;
         static std::string timeshift_calibration_file;
         static std::string promptflash_cut_file;
+        static std::string promptflash_cut_file_multi;
 
 
         TGermaniumConfiguration();
@@ -70,15 +88,18 @@ class TGermaniumConfiguration
         void ReadCalibrationCoefficients();
         void ReadTimeshiftCoefficients();
         void ReadPromptFlashCut();
+        void ReadPromptFlashCutMulti();
 
         static TGermaniumConfiguration* instance;
         
         std::map<std::pair<int,int>,std::pair<int,int>> detector_mapping;
-        std::map<std::pair<int,int>,std::pair<double,double>> calibration_coeffs;
+        std::map<std::pair<int,int>,std::vector<double>> calibration_coeffs;
         std::map<std::pair<int,int>,double> timeshift_calibration_coeffs;
         std::set<int> extra_signals;
 
         TCutG* prompt_flash_cut = nullptr;
+
+        std::vector<TCutG *> prompt_flash_cut_multi = {};
 
         int num_detectors;
         int num_crystals;
@@ -131,7 +152,7 @@ inline std::map<std::pair<int,int>,std::pair<int,int>> TGermaniumConfiguration::
     return detector_mapping;
 }
 
-inline std::map<std::pair<int,int>,std::pair<double,double>> TGermaniumConfiguration::CalibrationCoefficients() const
+inline std::map<std::pair<int,int>,std::vector<double>> TGermaniumConfiguration::CalibrationCoefficients() const
 {
     return calibration_coeffs;
 }
