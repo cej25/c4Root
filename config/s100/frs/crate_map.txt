@@ -17,7 +17,14 @@ dE_81L  6
 dE_81R  14
 
 #Scintillator MHTDC ts mapping -- MAIN CRATE
-mhtdc_11   12
+mhtdc_11LA 12
+mhtdc_11LB 16
+mhtdc_11LC 17
+mhtdc_11LD 18
+mhtdc_11RA 19
+mhtdc_11RB 20
+mhtdc_11RC 21
+mhtdc_11RD 22
 mhtdc_21L  2
 mhtdc_21R  3
 mhtdc_22L  13

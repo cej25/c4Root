@@ -17,6 +17,11 @@ public:
 
   // common FRS part
 
+  /*-----------------------*/
+  /*    distances  S1      */
+  /*-----------------------*/
+  Float_t       dist_focS1;      /*                       */
+  Float_t       dist_SC11;      /*                       */
 
   /*-----------------------*/
   /*    distances  S2      */
@@ -41,6 +46,8 @@ public:
   Float_t       dist_SC43;       /*        in mm          */
   Float_t       dist_TPC41;
   Float_t       dist_TPC42;
+  Float_t       dist_MUSIC21;
+  Float_t       dist_MUSIC22;
   Float_t       dist_MUSIC41;     /*  MUSIC1               */
   Float_t       dist_MUSIC42;     /*  MUSIC2               */
   Float_t       dist_MUSIC43;     /*  MUSIC3               */
@@ -143,6 +150,35 @@ public:
   virtual ~TMUSICParameter();
   virtual void Print(Option_t* t="") const;
 
+  Int_t         MUSIC21_num_an;       /* number of anodes              */
+	Int_t         MUSIC22_num_an;       /* number of anodes              */
+	Int_t         MUSIC41_num_an;       /* number of anodes              */
+	Int_t         MUSIC42_num_an;       /* number of anodes              */
+	Int_t         MUSIC43_num_an;       /* number of anodes              */
+	
+	Int_t         MUSIC21_elec;       /* used electronic              */
+	Int_t         MUSIC22_elec;       /* used electronic              */
+	Int_t         MUSIC41_elec;       /* used electronic              */
+	Int_t         MUSIC42_elec;       /* used electronic              */
+	Int_t         MUSIC43_elec;       /* used electronic              */
+
+  // New 2025..
+  Int_t         music21_e_off[8];       /* ADC offsets              */
+  Float_t       music21_e_gain[8];      /* ADC gains                */
+  Int_t         music22_e_off[8];       /* ADC offsets              */
+  Float_t       music22_e_gain[8];      /* ADC gains                */
+  Int_t         music41_e_off[8];       /* ADC offsets              */
+  Float_t       music41_e_gain[8];      /* ADC gains                */
+  Int_t         music42_e_off[8];       /* ADC offsets              */
+  Float_t       music42_e_gain[8];      /* ADC gains                */
+  Int_t         music43_e_off[8];       /* ADC offsets              */
+  Float_t       music43_e_gain[8];      /* ADC gains                */
+  Float_t       music21_pos_a[7];       /* pos. corr. de(i) ->  MUSIC21 */
+  Float_t       music22_pos_a[7];       /* pos. corr. de(i) ->  MUSIC22 */
+  Float_t       music41_pos_a[7];       /* pos. corr. de(i) ->  MUSIC41 */
+  Float_t       music42_pos_a[7];       /* pos. corr. de(i) ->  MUSIC42 */
+  Float_t       music43_pos_a[7];       /* pos. corr. de(i) ->  MUSIC43 */
+
   Float_t         e1_off[8];       /* ADC offsets              */
   Float_t       e1_gain[8];      /* ADC gains                */
   Float_t         e2_off[8];       /* ADC offsets              */
@@ -163,6 +199,17 @@ public:
 
 
   // MUSIC histogram setup
+  int max_adc_music21;
+  int max_adc_music22;
+  int max_adc_music41;
+  int max_adc_music42;
+  int max_adc_music43;
+  int max_tdc_music21;
+  int max_tdc_music22;
+  int max_tdc_music41;
+  int max_tdc_music42;
+  int max_tdc_music43;
+
   int max_adc_music1;
   int max_adc_music2;
   int max_adc_music3;
@@ -176,6 +223,13 @@ public:
   bool exclude_de2_adc_channel[8];
   bool exclude_de3_adc_channel[8];
   bool exclude_de4_adc_channel[8];
+
+  // New 2025..
+  bool exclude_music21_de_adc_channel[8];
+  bool exclude_music22_de_adc_channel[8];
+  bool exclude_music41_de_adc_channel[8];
+  bool exclude_music42_de_adc_channel[8]; 
+  bool exclude_music43_de_adc_channel[8];
   
   ClassDef(TMUSICParameter,1)
 };
@@ -239,6 +293,15 @@ public:
   Float_t       x_a[7][13];      /* pos. corr. de(i) ->  (1) */
   Float_t       y5_a[7];         /* pos. corr. de(i) ->  (1) */
 
+  Float_t       sc11_dE_X_factor[4]; /* pos corr for X from charge */
+  Float_t       sc11_dE_X_offset[4]; /* indices for choice of s1 scintillator plate */
+
+  Float_t       tof_bll0;        /* [ps/channel]             */
+  Float_t       tof_brr0;        /* [ps/channel]             */
+  Float_t       tof_a0;          /* shift [channels]         */
+  Float_t       tof_bll1;        /* [ps/channel]             */
+  Float_t       tof_brr1;        /* [ps/channel]             */
+  Float_t       tof_a1;          /* shift [channels]         */
   Float_t       tof_bll2;        /* [ps/channel]             */
   Float_t       tof_brr2;        /* [ps/channel]             */
   Float_t       tof_a2;          /* shift [channels]         */
@@ -277,6 +340,11 @@ public:
   
   //-----for multihit TDC analysis------
   float mhtdc_factor_ch_to_ns;
+
+  float mhtdc_offset_21_11[4];
+  float mhtdc_offset_22_11[4]; // no idea why these are arrays but whatever
+
+  float mhtdc_offset_11l_11r;  float mhtdc_factor_11l_11r ;
   float mhtdc_offset_21l_21r;  float mhtdc_factor_21l_21r ;
   float mhtdc_offset_41l_41r;  float mhtdc_factor_41l_41r ;
   float mhtdc_offset_42l_42r;  float mhtdc_factor_42l_42r ;
@@ -296,6 +364,8 @@ public:
   float mhtdc_offset_M01_21;
   float mhtdc_offset_M01_22;
 
+  Int_t sci11_select;
+
   ClassDef(TSCIParameter,1)
 };
 
@@ -309,27 +379,50 @@ public:
   virtual ~TIDParameter();
   virtual void Print(Option_t* t="") const;
 
-  Int_t         x_s2_select; //1=tpc,2=sc21,3=sc22
-  Int_t         tof_s4_select; //1=sc21-41, 2=sc21-42, 3=sc22-41
+  Int_t         x_s2_select = 1; //1=tpc,2=sc21,3=sc22
+  Int_t         tof_s2_select = 1; // 1=sc11-21, 2=sc11-22
+  Int_t         tof_s4_select = 1; //1=sc21-41, 2=sc21-42, 3=sc22-41
   Int_t         tof_s8_select; //1=sc21-81, 2=sc22-81
   Int_t         tof_HTM_select; //1=sc21-M01, 2=sc22-M01
   Int_t         Z_HTM_select; //1=sc21, 2=sc22, 3=scM01
 
+  Int_t         use_sc11x = 0; //1 = use x position from sc11lr, 0 = set s1 x position to 0
+  Int_t         brho_select_s1; // 0 = use brho ta-s2 for aoq, 1 = only use s1-s2 brho (D1) for aoq
+
+  Int_t         beta_z21;
+  Int_t         beta_z22;
+  Int_t         beta_z41;
+  Int_t         beta_z42;
+  Int_t         beta_z43;
+  
+  Float_t       id_tofoff0[4];      /* Tof offset S1-S2 [ps]    */
+  Float_t       id_tofoff1[4];      /* Tof offset S1-S2 [ps]    */
   Float_t       id_tofoff2;      /* Tof offset S2-S4 [ps]    */
   Float_t       id_tofoff3;      /* Tof offset S2-S4 [ps]    */ //2nd tof from S2 - S4
   Float_t       id_tofoff4;      /* Tof offset S2-S8 [ps]    */
   Float_t       id_tofoff5;      /* Tof offset S2-S4 [ps]    */ //Plastic22
   Float_t       id_tofoff6;      /* Tof offset S2-S8 [ps]    */ //Plastic22
+  Float_t       id_path0;        /* Flight path/c S1-S2 [ps] */
+  Float_t       id_path1;        /* Flight path/c S1-S2 [ps] */
   Float_t       id_path2;        /* Flight path/c S2-S4 [ps] */
   Float_t       id_path3;        /* Flight path/c S2-S4 [ps] */ //2nd tof from S2 - S4
   Float_t       id_path4;        /* Flight path/c S2-S8 [ps] */
   Float_t       id_path5;        /* Flight path/c S2-S4 [ps] */ //Plastic22
   Float_t       id_path6;        /* Flight path/c S2-S8 [ps] */ //Plastic22
+  Float_t       id_tofcorr0;     /*                          */
+  Float_t       id_tofcorr1;     /*                          */
   Float_t       id_tofcorr2;     /* Tof correction for x4    */
   Float_t       id_tofcorr3;     /* Tof correction for x4    */ //2nd tof from S2 - S4
   Float_t       id_tofcorr4;     /* Tof correction for x8    */
   Float_t       id_tofcorr5;     /* Tof correction for x4    */ //Plastic 22
   Float_t       id_tofcorr6;     /* Tof correction for x8    */ //Plastic 22
+
+  // New 2025 - something needs adjusting to allow for retroactive anl.. 
+  Float_t       offset_z21;
+  Float_t       offset_z22;
+  Float_t       offset_z41;
+  Float_t       offset_z42;
+  Float_t       offset_z43;
 
   Float_t       offset_z;
   Float_t       offset_z2;
@@ -338,8 +431,16 @@ public:
   Float_t       offset_z_sc81;
   Float_t       offset_z_s2tpc;
 
+  Float_t       a1AoQCorr;  /* Correction of AoQ based on S2 angle in x */
   Float_t       a2AoQCorr;  /* Correction of AoQ based on S2 angle in x */
   Float_t       a4AoQCorr;  /* Correction of AoQ based on S4 angle in x */
+
+  // New 2025, same as above..
+  Float_t       vel_music21_a[4];
+  Float_t       vel_music22_a[4];
+  Float_t       vel_music41_a[4];
+  Float_t       vel_music42_a[4];  
+  Float_t       vel_music43_a[4];
 
   Float_t       vel_a[4];
   Float_t       vel_a2[4];
@@ -370,12 +471,20 @@ public:
   Float_t       mhtdc_offset_z_s2tpc;
   Float_t       mhtdc_offset_z_sc81;
   Float_t       mhtdc_length_sc2141;
-  Float_t       mhtdc_length_sc2241;
   Float_t       mhtdc_length_sc2142;
+  Float_t       mhtdc_length_sc2241;
+  Float_t       mhtdc_length_sc1121;
+  Float_t       mhtdc_length_sc1122;
+  Float_t       mhtdc_vel_a_music21[4];
+  Float_t       mhtdc_vel_a_music22[4];
   Float_t       mhtdc_vel_a_music41[4];
   Float_t       mhtdc_vel_a_music42[4];
+  Float_t       mhtdc_vel_a_music43[4];
+  Float_t       mhtdc_offset_z_music21;
+  Float_t       mhtdc_offset_z_music22;
   Float_t       mhtdc_offset_z_music41;
   Float_t       mhtdc_offset_z_music42;
+  Float_t       mhtdc_offset_z_music43;
   Float_t       mhtdc_length_sc21HTM;
   Float_t       mhtdc_length_sc22HTM;
   Float_t       mhtdc_offset_z_scM01;
@@ -384,12 +493,22 @@ public:
   Float_t       mhtdc_vel_a_sc21[4];
   Float_t       mhtdc_offset_z_sc22;
   Float_t       mhtdc_vel_a_sc22[4];
+  Float_t       mhtdc_AoQ_offset_S1S2;
+  Float_t       mhtdc_AoQ_offset_S2S4;
+
 
   //---------Setup for histogram ranges------------
   float min_aoq_plot;
   float max_aoq_plot;
   float min_z_plot;
   float max_z_plot;
+
+  Int_t ID_Z21_AoverQ_num[5]; // 2025
+  Float_t ID_Z21_AoverQ [5][5][2];
+  Int_t ID_Z22_AoverQ_num[5];
+  Float_t ID_Z22_AoverQ [5][5][2];
+  Int_t ID_Z41_AoverQ_num[5];
+  Float_t ID_Z41_AoverQ [5][5][2];
 
   Int_t   ID_Z_AoverQ_num[5];
   Float_t ID_Z_AoverQ [5][5][2];

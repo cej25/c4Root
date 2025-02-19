@@ -182,8 +182,12 @@ class FrsNearlineSpectra : public FairTask
         TH1* h1_dEdegoQ;
         TH1* h1_rho[2];
         TH1* h1_brho[2];
-        TH1* h1_music_dE[2];
-        TH1* h1_music_dEcorr[2];
+        TH1* h1_music41_dE;
+        TH1* h1_music42_dE;
+        TH1* h1_music41_dE_cor;
+        TH1* h1_music42_dE_cor;
+        TH1* h1_sci_11l;
+        TH1* h1_sci_11r;
         TH1* h1_sci_21l;
         TH1* h1_sci_21r;
         TH1* h1_sci_22l;
@@ -198,6 +202,7 @@ class FrsNearlineSpectra : public FairTask
         TH1* h1_sci_43r;
         TH1* h1_sci_81l;
         TH1* h1_sci_81r;
+        TH1* h1_sci_e_11;
         TH1* h1_sci_e_21;
         TH1* h1_sci_e_22;
         TH1* h1_sci_e_31;
@@ -212,6 +217,8 @@ class FrsNearlineSpectra : public FairTask
         TH1* h1_sci_x_42;
         TH1* h1_sci_x_43;
         TH1* h1_sci_x_81;
+        TH1* h1_sci_tof_11_21;
+        TH1* h1_sci_tof_11_21_calib;
         TH1* h1_sci_tof_21_41;
         TH1* h1_sci_tof_21_41_calib;
         TH1* h1_sci_tof_21_42;
@@ -302,6 +309,7 @@ class FrsNearlineSpectra : public FairTask
         TH2* h2_AoQ_driftcorr_vs_T;
         TH2* h2_Z1_vs_T_mhtdc;
         TH2* h2_AoQ_vs_T_mhtdc;
+        TH2* h2_sci_tof_11_21_vs_T;
         TH2* h2_sci_tof_21_41_vs_T;
         TH2* h2_sci_tof_21_42_vs_T;
         TH2* h2_sci_tof_21_81_vs_T;
