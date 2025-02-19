@@ -37,7 +37,10 @@
 #pragma link C++ class FatimaVmeReader+;
 #pragma link C++ class FatimaVmeRaw2Cal+;
 #pragma link C++ class BB7Reader+;
+#pragma link C++ class BB7FebexReader+;
 #pragma link C++ class BB7Raw2Cal+;
+#pragma link C++ class BB7FebexRaw2Cal+;
+#pragma link C++ class BB7FebexCal2Hit+;
 #pragma link C++ class FimpReader+;
 #pragma link C++ class FimpRaw2Cal+;
 
@@ -53,6 +56,7 @@
 #pragma link C++ class EXT_STR_h101_bplast_onion_t;
 #pragma link C++ class EXT_STR_h101_beammonitor_onion_t;
 #pragma link C++ class EXT_STR_h101_bb7vme_onion_t;
+#pragma link C++ class EXT_STR_h101_bb7febex_onion_t;
 #pragma link C++ class EXT_STR_h101_fimp_onion_t;
 #pragma link C++ class EXT_STR_h101_frs_onion_t;
 

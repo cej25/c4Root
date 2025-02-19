@@ -223,19 +223,19 @@ void BetaIonCorrelations::Exec(Option_t* option)
         for (int gate = 0; gate < FrsGates.size(); gate++)
         {
             const auto & hitItemFrs = hitArrayFrs->at(0);
-            double z = hitItemFrs.Get_ID_z();
-            double z2 = hitItemFrs.Get_ID_z2();
-            double aoq = hitItemFrs.Get_ID_AoQ();
+            double z = hitItemFrs.Get_ID_z41();
+            double z2 = hitItemFrs.Get_ID_z42();
+            double aoq = hitItemFrs.Get_ID_AoQ_s2s4();
             double x2 = hitItemFrs.Get_ID_x2();
             double x4 = hitItemFrs.Get_ID_x4();
-            double dEdeg = hitItemFrs.Get_ID_dEdeg();
+            double dEdeg = hitItemFrs.Get_ID_dEdeg_z41();
 
-            h2_ZvsAoQ->Fill(hitItemFrs.Get_ID_AoQ(), hitItemFrs.Get_ID_z());
+            h2_ZvsAoQ->Fill(hitItemFrs.Get_ID_AoQ_s2s4(), hitItemFrs.Get_ID_z41());
 
             //if (FrsGates[gate]->PassedGate(z, z2, x2, x4, aoq, dEdeg))
             if (FrsGates[gate]->Passed_ZvsAoQ(z, aoq))
             {
-                h2_ZvsAoQ_inside_gate->Fill(hitItemFrs.Get_ID_AoQ(), hitItemFrs.Get_ID_z());
+                h2_ZvsAoQ_inside_gate->Fill(hitItemFrs.Get_ID_AoQ_s2s4(), hitItemFrs.Get_ID_z41());
 
                 int imp_mult = 0; int imp_stopped_mult = 0;
                 for (auto & i : *implantHitArray)

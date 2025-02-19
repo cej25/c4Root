@@ -103,6 +103,8 @@ void FrsTravMusCorrelations::Exec(Option_t* option)
     // reject events without both subsystems
     if (frsHitArray->size() <= 0 || travMusAnaArray->size() <= 0) return; // frs and travmus subevent exists
 
+    fNEvents++;
+
     const auto & frsHitItem = frsHitArray->at(0); // *should* only be 1 FRS subevent per event
     const auto & travMusicHitItem = travMusAnaArray->at(0); 
 
@@ -110,8 +112,8 @@ void FrsTravMusCorrelations::Exec(Option_t* option)
     int64_t wr_travMUSIC = travMusicHitItem.Get_wr_t();
 
     // Energy from frs
-    Float_t energy_MUSIC_1 = frsHitItem.Get_music_dE()[0]; 
-    Float_t energy_MUSIC_2 = frsHitItem.Get_music_dE()[1];
+    Float_t energy_MUSIC_1 = frsHitItem.Get_music21_dE(); 
+    Float_t energy_MUSIC_2 = frsHitItem.Get_music22_dE();
     double energy_travMUSIC = travMusicHitItem.Get_travmusic_dE();
     double energy_travMUSIC_driftcorr = travMusicHitItem.Get_travmusic_dE_driftcorr();
 
@@ -136,15 +138,20 @@ void FrsTravMusCorrelations::Exec(Option_t* option)
     }
 
 
-    for (auto const & multihitItem : *frsMultihitArray)
+    if (frsMultihitArray->size() <= 0) return;
+    auto const & multiHitItem = frsMultihitArray->at(0);
+    // you can change whether you want calcs from s1s2 or s2s4, maybe you want both etc.
+    std::vector<Float_t> AoQ_mhtdc = multiHitItem.Get_ID_AoQ_s2s4_mhtdc(); 
+    std::vector<Float_t> z41_mhtdc = multiHitItem.Get_ID_z41_mhtdc();
+
+    for (int i = 0; i < AoQ_mhtdc.size(); i++)
     {
         if(travMusicHitItem.Get_travmusic_dE() >= frs_config->fMin_dE_travMus_gate && travMusicHitItem.Get_travmusic_dE() <= frs_config->fMax_dE_travMus_gate)
         {
-            h2_Z_vs_AoQ_mhtdc_trav_gate->Fill(multihitItem.Get_ID_AoQ_mhtdc(), multihitItem.Get_ID_z_mhtdc());
+            h2_Z_vs_AoQ_mhtdc_trav_gate->Fill(AoQ_mhtdc.at(i), z41_mhtdc.at(i));
         }
     }
-
-    fNEvents++;
+    
 
 }
 

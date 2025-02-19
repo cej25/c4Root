@@ -28,6 +28,7 @@ class FrsRaw2Cal : public FairTask
         void Exec(Option_t* option);
 
         void ProcessScintillators();
+        void ProcessMusic();
         void ProcessTpcs();
 
         void FinishEvent();
@@ -48,12 +49,16 @@ class FrsRaw2Cal : public FairTask
         // Arrays
         std::vector<FrsTpatItem> const* tpatArray;
         std::vector<FrsSciItem> const* sciArray;
+        std::vector<FrsMusicItem> const* musicArray;
         std::vector<FrsTpcItem> const* tpcArray;
         std::vector<FrsCalSciItem>* calSciArray;
+        std::vector<FrsCalMusicItem>* calMusicArray;
         std::vector<FrsCalTpcItem>* calTpcArray;
 
         // TAC dE
-        const UInt_t* sciDE; //16
+        const UInt_t* sciDE; // up to 18 channnels
+        UInt_t de_11l;
+        UInt_t de_11r;
         UInt_t de_21l;
         UInt_t de_21r;
         UInt_t de_22l;
@@ -70,13 +75,16 @@ class FrsRaw2Cal : public FairTask
         UInt_t de_81r;
 
         // TAC dT
-        const UInt_t* sciDT; // 16
+        const UInt_t* sciDT; // was 16, 19+ with Sci11 2025
+        UInt_t dt_11l_11r;
         UInt_t dt_21l_21r;
         UInt_t dt_22l_22r;
         UInt_t dt_41l_41r;
         UInt_t dt_42l_42r;
         UInt_t dt_43l_43r;
         UInt_t dt_81l_81r;
+        UInt_t dt_11l_21l;
+        UInt_t dt_11r_21r;
         UInt_t dt_21l_41l;
         UInt_t dt_21r_41r;
         UInt_t dt_42r_21r;
@@ -89,8 +97,15 @@ class FrsRaw2Cal : public FairTask
         UInt_t dt_22r_81r;
 
         // MHTDC
-        const std::vector<Int_t>* sciMHTDC; // 16
-        std::vector<Int_t> sci11_hits;
+        const std::vector<Int_t>* sciMHTDC; // up to 24 channels
+        std::vector<Int_t> sci11la_hits;
+        std::vector<Int_t> sci11lb_hits;
+        std::vector<Int_t> sci11lc_hits;
+        std::vector<Int_t> sci11ld_hits;
+        std::vector<Int_t> sci11ra_hits;
+        std::vector<Int_t> sci11rb_hits;
+        std::vector<Int_t> sci11rc_hits;
+        std::vector<Int_t> sci11rd_hits;
         std::vector<Int_t> sci21l_hits;
         std::vector<Int_t> sci21r_hits;
         std::vector<Int_t> sci22l_hits;
@@ -105,6 +120,15 @@ class FrsRaw2Cal : public FairTask
         std::vector<Int_t> sci43r_hits;
         std::vector<Int_t> sci81l_hits;
         std::vector<Int_t> sci81r_hits;
+
+        // MUSIC
+        const UInt_t (*musicE)[8]; // 5, 8
+        UInt_t music21_e[8];
+        UInt_t music22_e[8];
+        UInt_t music41_e[8];
+        UInt_t music42_e[8];
+        UInt_t music43_e[8];
+
 
 
         // TPC
@@ -208,6 +232,19 @@ class FrsRaw2Cal : public FairTask
         Float_t tpc22_24_s2target_x = -999; /* S2TARGET x                    */
         Float_t tpc22_24_s2target_y = -999; /* S2TARGET y                    */
     
+        Float_t tpc21_22_music21_x = -999;
+        Float_t tpc21_22_music21_y = -999;
+        Float_t tpc21_22_music22_x = -999;
+        Float_t tpc21_22_music22_y = -999;
+        Float_t tpc23_24_music21_x = -999;
+        Float_t tpc23_24_music21_y = -999;
+        Float_t tpc23_24_music22_x = -999;
+        Float_t tpc23_24_music22_y = -999;
+        Float_t tpc22_24_music21_x = -999;
+        Float_t tpc22_24_music21_y = -999;
+        Float_t tpc22_24_music22_x = -999;
+        Float_t tpc22_24_music22_y = -999;
+
         //TPCs 3 & 4 @ S2 first Si tracking detector (exp s388)
         Float_t tpc_x_s2_target1 = -999;
         Float_t tpc_y_s2_target1 = -999;

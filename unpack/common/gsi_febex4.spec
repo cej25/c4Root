@@ -107,7 +107,7 @@ FEBEX_EVENT(card)
     }
 }
 
-TRACE()
+TRACE(board)
 {
     MEMBER(DATA16 traces[16][TRACE_SIZE] ZERO_SUPPRESS);
     MEMBER(DATA8 channel_id_traces[16] ZERO_SUPPRESS);
@@ -115,7 +115,8 @@ TRACE()
     UINT32 header NOENCODE
     {
         0_7: 0x34;
-        8_23: other;
+        8_15: other;
+        16_19: board = MATCH(board);
         24_31: ch_id;
         ENCODE(channel_id_traces[ch_id], (value = ch_id));
         //Info on channel ID from trace (in case no information from event header) -- Sept2024 EG
@@ -173,14 +174,13 @@ FEBEX_EVENT_TRACES(card)
     MEMBER(DATA16 hit_pattern);
     MEMBER(DATA32 num_channels_fired);
     MEMBER(DATA8 board_num);
-    //MEMBER(DATA8 Nboards);
 
 	MEMBER(DATA8 channel_id[16] ZERO_SUPPRESS);
 	MEMBER(DATA16 channel_trigger_time_hi[16] ZERO_SUPPRESS);
 	MEMBER(DATA32 channel_trigger_time_lo[16] ZERO_SUPPRESS);
 	
-    MEMBER(DATA8 pileup[16]);
-	MEMBER(DATA8 overflow[16]);
+    MEMBER(DATA8 pileup[16] ZERO_SUPPRESS);
+	MEMBER(DATA8 overflow[16] ZERO_SUPPRESS);
     MEMBER(DATA8 channel_cfd[16] ZERO_SUPPRESS);
 	MEMBER(DATA32 channel_energy[16] ZERO_SUPPRESS);
 
@@ -273,18 +273,28 @@ FEBEX_EVENT_TRACES(card)
             }
         }
 
-        select several
+
+        // can't do a list based on channel size, because sometimes there is no channel size
+        // can't do a list based on 16, because sometimes there is not 16.. but it tries..
+
+        list (0 <= index < 16)
+        //list (0 <= index < (((channel_size.size) / 4) - 1)) // i have no idea.
         {
-            trace = TRACE();
+            select optional
+            {
+                trace = TRACE(board=card);
+            }
         }
+
+        //select several
+        //{
+        //    trace = TRACE();
+        //}
 
     }
     else if (sumchannel.trigger_type == 3)
     {
-        select several
-        {
-            dummy = DUMMY();
-        }
+        several  UINT32 dummy NOENCODE;
     }
 
 }

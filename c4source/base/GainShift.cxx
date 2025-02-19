@@ -37,13 +37,13 @@ void GainShift::ReadGainShiftFile(){
     TFile * infile = new TFile(file_name,"READ");
 
     if (!infile->IsOpen()) {
-        c4LOG(fatal,Form("Reading file %s failed!",histogram_name,file_name));
+        c4LOG(fatal,"Reading file " + file_name + " failed!");
     }
 
     infile->GetObject(histogram_name,gain_shifts);
 
     if (gain_shifts == nullptr){
-        c4LOG(fatal,Form("Reading Histogram %s from file %s failed!",histogram_name,file_name));
+        c4LOG(fatal, "Reading Histogram " + histogram_name + " from file " + file_name + "  failed!");
     }
 
     TParameter<Long64_t> * experiment_start;
