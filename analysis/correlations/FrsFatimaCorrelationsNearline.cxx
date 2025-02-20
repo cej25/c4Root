@@ -103,7 +103,7 @@ InitStatus FrsFatimaCorrelationsNearline::Init()
         found_dir_corr = false;
     }
 
-    TString dirname = "FATIMA - FRS Gated: " + frsgate->GetName();
+    TString dirname = "FATIMA-FRS_gated-" + frsgate->GetName();
     dir_fatima = dir_corr->mkdir(dirname);
 
     dir_fatima->cd();
