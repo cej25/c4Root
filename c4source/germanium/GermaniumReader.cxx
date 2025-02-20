@@ -121,9 +121,11 @@ Bool_t GermaniumReader::Read()
 
 
             //collect the LSB and MSB into one variable for channel trigger time
-            channel_trigger_time_long = (double)(((uint64_t)(fData->germanium_data[it_board_number].channel_trigger_time_hiv[index]) << 32) + (fData->germanium_data[it_board_number].channel_trigger_time_lov[index]));
+            //((uint64_t)(fData->germanium_data[it_board_number].channel_trigger_time_hiv[index]) << 32)
+            //chop some more digits of it:
+            channel_trigger_time_long = (double)( (fData->germanium_data[it_board_number].channel_trigger_time_lov[index]) & 0x00FFFFFF );
             //add the CF from the constant fraction. It is denoted by 6 bits in the energy word of the FEBEX data format
-            channel_trigger_time_long = (((double)fData->germanium_data[it_board_number].channel_cfdv[index])/64.0 + channel_trigger_time_long)*10.0; // units of ns 
+            channel_trigger_time_long = (((double)(fData->germanium_data[it_board_number].channel_cfdv[index] & 0x3F))/64.0 + channel_trigger_time_long)*10.0; // units of ns 
 
 
             new ((*fArray)[fArray->GetEntriesFast()]) GermaniumFebexData(

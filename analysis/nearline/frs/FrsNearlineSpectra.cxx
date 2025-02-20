@@ -529,7 +529,7 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     {
 
         if (hitItem.Get_ID_AoQ_s2s4() > 0 && hitItem.Get_ID_z41() > 0) h2_Z41_vs_AoQs2s4->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_z41());
-        if (hitItem.Get_ID_AoQ_driftcorr() > 0 && hitItem.Get_ID_z_driftcorr() > 0) h2_Z41_vs_AoQs2s4_driftcorr->Fill(hitItem.Get_ID_AoQ_driftcorr(), hitItem.Get_ID_z_driftcorr());
+        if (hitItem.Get_ID_AoQs2s4_driftcorr() > 0 && hitItem.Get_ID_z41_driftcorr() > 0) h2_Z41_vs_AoQs2s4_driftcorr->Fill(hitItem.Get_ID_AoQs2s4_driftcorr(), hitItem.Get_ID_z41_driftcorr());
         
         if (hitItem.Get_ID_AoQ_corr_s2s4() > 0 && hitItem.Get_ID_z41() > 0) h2_Z41_vs_AoQs2s4_corr->Fill(hitItem.Get_ID_AoQ_corr_s2s4(), hitItem.Get_ID_z41());
         if (hitItem.Get_ID_z41() > 0 && hitItem.Get_ID_z42() > 0) h2_Z41_vs_Z42->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_z42());
@@ -569,7 +569,7 @@ void FrsNearlineSpectra::Exec(Option_t* option)
         {
             for (int gate = 0; gate < FrsGates.size(); gate++)
             {   
-                if (FrsGates[gate]->Passed_ZvsAoQ(hitItem.Get_ID_z41(), hitItem.Get_ID_AoQ_s2s4()))
+                if (FrsGates[gate]->Passed_Z41vsAoQs2s4(hitItem.Get_ID_z41(), hitItem.Get_ID_AoQ_s2s4()))
                 {
                     h2_Z41_vs_AoQs2s4_Z41AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_z41());
                     h2_Z41_vs_Z42_Z41AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_z42());
@@ -579,7 +579,7 @@ void FrsNearlineSpectra::Exec(Option_t* option)
                     h2_dEdegZ41_vs_Z41_Z41AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_dEdeg_z41());
                 }
             
-                if (FrsGates[gate]->Passed_ZvsZ2(hitItem.Get_ID_z41(), hitItem.Get_ID_z42()))
+                if (FrsGates[gate]->Passed_Z41vsZ42(hitItem.Get_ID_z41(), hitItem.Get_ID_z42()))
                 {
                     h2_dEdegoQ_vs_Z41_Zsame_gate[gate]->Fill(hitItem.Get_ID_z41(),hitItem.Get_ID_dEdegoQ());
                     h2_dEdegZ41_vs_Z41_Zsame_gate[gate]->Fill(hitItem.Get_ID_z41(),hitItem.Get_ID_dEdeg_z41());
@@ -590,12 +590,12 @@ void FrsNearlineSpectra::Exec(Option_t* option)
                     if(hitItem.Get_ID_AoQ_s2s4() > 1 && hitItem.Get_ID_AoQ_s2s4() < 3) h2_Z41_vs_AoQs2s4_Zsame_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_z41());
                 }
                 
-                if (FrsGates[gate]->Passed_x2vsAoQ(hitItem.Get_ID_x2(), hitItem.Get_ID_AoQ_s2s4()))
+                if (FrsGates[gate]->Passed_x2vsAoQs2s4(hitItem.Get_ID_x2(), hitItem.Get_ID_AoQ_s2s4()))
                 {
                     h2_x2_vs_AoQs2s4_x2AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x2());
                     h2_Z41_vs_Z42_x2AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_z42());
                     
-                    if (FrsGates[gate]->Passed_ZvsZ2(hitItem.Get_ID_z41(), hitItem.Get_ID_z42()))
+                    if (FrsGates[gate]->Passed_Z41vsZ42(hitItem.Get_ID_z41(), hitItem.Get_ID_z42()))
                     {
                         h2_x2_vs_AoQs2s4_Zsame_x2AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x2());
                         h2_x4_vs_AoQs2s4_Zsame_x2AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x4());
@@ -605,12 +605,12 @@ void FrsNearlineSpectra::Exec(Option_t* option)
                     }
                 }
 
-                if (FrsGates[gate]->Passed_x4vsAoQ(hitItem.Get_ID_x4(), hitItem.Get_ID_AoQ_s2s4()))
+                if (FrsGates[gate]->Passed_x4vsAoQs2s4(hitItem.Get_ID_x4(), hitItem.Get_ID_AoQ_s2s4()))
                 {
                     h2_x4_vs_AoQs2s4_x4AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x4());
                     h2_Z41_vs_Z42_x4AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_z42());
                     
-                    if (FrsGates[gate]->Passed_ZvsZ2(hitItem.Get_ID_z41(), hitItem.Get_ID_z42()))
+                    if (FrsGates[gate]->Passed_Z41vsZ42(hitItem.Get_ID_z41(), hitItem.Get_ID_z42()))
                     {
                         h2_x2_vs_AoQs2s4_Zsame_x4AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x2());
                         h2_x4_vs_AoQs2s4_Zsame_x4AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x4());
@@ -620,7 +620,7 @@ void FrsNearlineSpectra::Exec(Option_t* option)
                     }
                 }
                         
-                if (FrsGates[gate]->Passed_dEdegvsZ(hitItem.Get_ID_z41(), hitItem.Get_ID_dEdeg_z41()))
+                if (FrsGates[gate]->Passed_dEdegZ41vsZ41(hitItem.Get_ID_z41(), hitItem.Get_ID_dEdeg_z41()))
                 {
                     h2_Z41_vs_AoQs2s4_dEdegZ41_Z41_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_z41());
                     h2_Z41_vs_Z42_dEdegZ41_Z41_gate[gate]->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_z42());
@@ -639,12 +639,12 @@ void FrsNearlineSpectra::Exec(Option_t* option)
         if (hitItem.Get_ID_z21() > 0) h1_Z21->Fill(hitItem.Get_ID_z21());
         if (hitItem.Get_ID_z22() > 0) h1_Z22->Fill(hitItem.Get_ID_z22());
         if (hitItem.Get_ID_z41() > 0) h1_Z41->Fill(hitItem.Get_ID_z41());
-        if (hitItem.Get_ID_z_driftcorr() > 0) h1_Z41_driftcorr->Fill(hitItem.Get_ID_z_driftcorr());
+        if (hitItem.Get_ID_z41_driftcorr() > 0) h1_Z41_driftcorr->Fill(hitItem.Get_ID_z41_driftcorr());
         if (hitItem.Get_ID_z42() > 0) h1_Z42->Fill(hitItem.Get_ID_z42());
         if (hitItem.Get_ID_z43() > 0) h1_Z43->Fill(hitItem.Get_ID_z43());
         if (hitItem.Get_ID_AoQ_s1s2() > 0) h1_AoQs1s2->Fill(hitItem.Get_ID_AoQ_s1s2());
         if (hitItem.Get_ID_AoQ_s2s4() > 0) h1_AoQs2s4->Fill(hitItem.Get_ID_AoQ_s2s4());
-        if (hitItem.Get_ID_AoQ_driftcorr() > 0) h1_AoQs2s4_driftcorr->Fill(hitItem.Get_ID_AoQ_driftcorr());
+        if (hitItem.Get_ID_AoQs2s4_driftcorr() > 0) h1_AoQs2s4_driftcorr->Fill(hitItem.Get_ID_AoQs2s4_driftcorr());
         if (hitItem.Get_ID_AoQ_corr_s1s2() > 0) h1_AoQs1s2_corr->Fill(hitItem.Get_ID_AoQ_corr_s1s2());
         if (hitItem.Get_ID_AoQ_corr_s2s4() > 0) h1_AoQs2s4_corr->Fill(hitItem.Get_ID_AoQ_corr_s2s4());
         h1_x1->Fill(hitItem.Get_ID_x1());
@@ -760,7 +760,7 @@ void FrsNearlineSpectra::Exec(Option_t* option)
             {
                 for (int gate = 0; gate < FrsGates.size(); gate++)
                 {
-                    if (FrsGates[gate]->Passed_ZvsAoQ(z41_mhtdc.at(i), AoQ_s2s4_mhtdc.at(i)))
+                    if (FrsGates[gate]->Passed_Z41vsAoQs2s4(z41_mhtdc.at(i), AoQ_s2s4_mhtdc.at(i)))
                     {
                         h2_x2_vs_AoQs2s4_Z41AoQs2s4_gate_mhtdc[gate]->Fill(AoQ_s2s4_mhtdc.at(i), hitItem.Get_ID_x2());
                         h2_x4_vs_AoQs2s4_Z41AoQs2s4_gate_mhtdc[gate]->Fill(AoQ_s2s4_mhtdc.at(i), hitItem.Get_ID_x4());
@@ -770,7 +770,7 @@ void FrsNearlineSpectra::Exec(Option_t* option)
                         h2_dEdegZ41_vs_Z41_Z41AoQs2s4_gate_mhtdc[gate]->Fill(z41_mhtdc.at(i), dEdeg_z41_mhtdc.at(i));
                     }
                     
-                    if (FrsGates[gate]->Passed_ZvsZ2(z41_mhtdc.at(i), z42_mhtdc.at(i)))
+                    if (FrsGates[gate]->Passed_Z41vsZ42(z41_mhtdc.at(i), z42_mhtdc.at(i)))
                     {
                         h2_dEdegoQ_vs_Z41_Zsame_gate_mhtdc[gate]->Fill(z41_mhtdc.at(i), dEdegoQ_mhtdc.at(i));
                         h2_dEdegZ41_vs_Z41_Zsame_gate_mhtdc[gate]->Fill(z41_mhtdc.at(i), dEdeg_z41_mhtdc.at(i));
@@ -788,12 +788,12 @@ void FrsNearlineSpectra::Exec(Option_t* option)
                         }
                     }
                     
-                    if (FrsGates[gate]->Passed_x2vsAoQ(AoQ_s2s4_mhtdc.at(i), hitItem.Get_ID_x2()))
+                    if (FrsGates[gate]->Passed_x2vsAoQs2s4(AoQ_s2s4_mhtdc.at(i), hitItem.Get_ID_x2()))
                     {
                         h2_x2_vs_AoQs2s4_x2AoQs2s4_gate_mhtdc[gate]->Fill(AoQ_s2s4_mhtdc.at(i), hitItem.Get_ID_x2());
                         h2_Z41_vs_Z42_x2AoQs2s4_gate_mhtdc[gate]->Fill(z41_mhtdc.at(i), z42_mhtdc.at(i));
                         
-                        if (FrsGates[gate]->Passed_ZvsZ2(z41_mhtdc.at(i), z42_mhtdc.at(i)))
+                        if (FrsGates[gate]->Passed_Z41vsZ42(z41_mhtdc.at(i), z42_mhtdc.at(i)))
                         {      
                             h2_x2_vs_AoQs2s4_Zsame_x2AoQs2s4_gate_mhtdc[gate]->Fill(AoQ_s2s4_mhtdc.at(i), hitItem.Get_ID_x2());
                             h2_x4_vs_AoQs2s4_Zsame_x2AoQs2s4_gate_mhtdc[gate]->Fill(AoQ_s2s4_mhtdc.at(i), hitItem.Get_ID_x4());
@@ -803,12 +803,12 @@ void FrsNearlineSpectra::Exec(Option_t* option)
                         }
                     }
                         
-                    if (FrsGates[gate]->Passed_x4vsAoQ(AoQ_s2s4_mhtdc.at(i), hitItem.Get_ID_x4()))
+                    if (FrsGates[gate]->Passed_x4vsAoQs2s4(AoQ_s2s4_mhtdc.at(i), hitItem.Get_ID_x4()))
                     {
                         h2_x4_vs_AoQs2s4_x4AoQs2s4_gate_mhtdc[gate]->Fill(AoQ_s2s4_mhtdc.at(i), hitItem.Get_ID_x4());
                         h2_Z41_vs_Z42_x4AoQs2s4_gate_mhtdc[gate]->Fill(z41_mhtdc.at(i), z42_mhtdc.at(i));
                         
-                        if (FrsGates[gate]->Passed_ZvsZ2(z41_mhtdc.at(i), z42_mhtdc.at(i)))
+                        if (FrsGates[gate]->Passed_Z41vsZ42(z41_mhtdc.at(i), z42_mhtdc.at(i)))
                         {      
                             h2_x2_vs_AoQs2s4_Zsame_x4AoQs2s4_gate_mhtdc[gate]->Fill(AoQ_s2s4_mhtdc.at(i), hitItem.Get_ID_x2());
                             h2_x4_vs_AoQs2s4_Zsame_x4AoQs2s4_gate_mhtdc[gate]->Fill(AoQ_s2s4_mhtdc.at(i), hitItem.Get_ID_x4());
@@ -818,7 +818,7 @@ void FrsNearlineSpectra::Exec(Option_t* option)
                         }
                     }
                         
-                    if (FrsGates[gate]->Passed_dEdegvsZ(z41_mhtdc.at(i), hitItem.Get_ID_dEdeg_z41()))
+                    if (FrsGates[gate]->Passed_dEdegZ41vsZ41(z41_mhtdc.at(i), hitItem.Get_ID_dEdeg_z41()))
                     {
                         h2_Z41_vs_dEdegZ41_dEdegZ41_Z41_gate_mhtdc[gate]->Fill(z41_mhtdc.at(i), dEdeg_z41_mhtdc.at(i));
                         h2_Z41_vs_AoQs2s4_dEdegZ41_Z41_gate_mhtdc[gate]->Fill(AoQ_s2s4_mhtdc.at(i), z41_mhtdc.at(i));
@@ -900,9 +900,9 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     // ::::: Detector Drifts :::::: //
     // ---------------------------- //
     if (hitItem.Get_ID_z41() > 0 && FRS_time_mins > 0) h2_Z41_vs_T->Fill(FRS_time_mins, hitItem.Get_ID_z41());
-    if (hitItem.Get_ID_z_driftcorr() > 0 && FRS_time_mins > 0) h2_Z41_driftcorr_vs_T->Fill(FRS_time_mins, hitItem.Get_ID_z_driftcorr());
+    if (hitItem.Get_ID_z41_driftcorr() > 0 && FRS_time_mins > 0) h2_Z41_driftcorr_vs_T->Fill(FRS_time_mins, hitItem.Get_ID_z41_driftcorr());
     if (hitItem.Get_ID_AoQ_s2s4() > 0 && FRS_time_mins > 0) h2_AoQs2s4_vs_T->Fill(FRS_time_mins, hitItem.Get_ID_AoQ_s2s4());
-    if (hitItem.Get_ID_AoQ_driftcorr() > 0 && FRS_time_mins > 0) h2_AoQs2s4_driftcorr_vs_T->Fill(FRS_time_mins, hitItem.Get_ID_AoQ_driftcorr());
+    if (hitItem.Get_ID_AoQs2s4_driftcorr() > 0 && FRS_time_mins > 0) h2_AoQs2s4_driftcorr_vs_T->Fill(FRS_time_mins, hitItem.Get_ID_AoQs2s4_driftcorr());
     //if (z41_mhtdc.at(i) > 0 && FRS_time_mins > 0) h2_Z1_vs_T_mhtdc->Fill(FRS_time_mins, z41_mhtdc.at(i));
     //if (AoQ_s2s4_mhtdc.at(i) > 0 && FRS_time_mins > 0) h2_AoQ_vs_T_mhtdc->Fill(FRS_time_mins, AoQ_s2s4_mhtdc.at(i));
     h2_sci_tof_11_21_vs_T->Fill(FRS_time_mins, hitItem.Get_sci_tof_11_21()); // calib??

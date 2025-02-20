@@ -19,6 +19,7 @@
 #pragma link C++ class TravMusCal2Ana+;
 
 #pragma link C++ class GermaniumReader+;
+#pragma link C++ class GermaniumTraceReader+;
 #pragma link C++ class GermaniumRaw2Cal+;
 #pragma link C++ class GermaniumCal2Anl+;
 #pragma link C++ class AidaReader+;
@@ -49,6 +50,7 @@
 #pragma link C++ class EXT_STR_h101_frs_onion_t;
 #pragma link C++ class EXT_STR_h101_travmus_onion_t;
 #pragma link C++ class EXT_STR_h101_germanium_onion_t;
+#pragma link C++ class EXT_STR_h101_germanium_traces_onion_t;
 #pragma link C++ class EXT_STR_h101_fatima_onion_t;
 #pragma link C++ class EXT_STR_h101_fatimavme_onion_t;
 #pragma link C++ class EXT_STR_h101_bgo_onion_t;

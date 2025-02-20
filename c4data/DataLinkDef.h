@@ -7,6 +7,7 @@
 #pragma link off all functions;
 
 #pragma link C++ class GermaniumFebexData+;
+#pragma link C++ class GermaniumFebexTraceData+;
 #pragma link C++ class GermaniumCalData+;
 #pragma link C++ class BGOTwinpeaksData+;
 #pragma link C++ class BGOTwinpeaksCalData+;

@@ -63,6 +63,7 @@ set(SRCS
 ./travMus/TravMusRaw2Cal.cxx
 ./travMus/TravMusCal2Ana.cxx
 ./germanium/GermaniumReader.cxx
+./germanium/GermaniumTraceReader.cxx
 ./lisa/LisaReader.cxx
 ./lisa/LisaRaw2Cal.cxx
 #./lisa/LisaRaw2Ana.cxx
@@ -95,6 +96,7 @@ Set(STRUCT_HEADERS
 ./travMus/ext_h101_travmus.h
 ./lisa/ext_h101_lisa.h
 ./germanium/ext_h101_germanium.h
+./germanium/ext_h101_germanium_traces.h
 ./bplast/ext_h101_bplast.h
 ./beammonitor/ext_h101_beammonitor.h
 ./fatima/ext_h101_fatima.h

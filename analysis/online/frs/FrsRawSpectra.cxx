@@ -36,6 +36,7 @@
 #include <vector>
 
 FrsRawSpectra::FrsRawSpectra()
+    :   FrsRawSpectra("FrsRawSpectra", 1)
 {
 }
 

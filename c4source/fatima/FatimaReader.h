@@ -136,6 +136,9 @@ class FatimaReader : public c4Reader
         bool fine_time_calibration_read_from_file = false;
 
         double accepted_trigger_time = 0;
+        uint32_t accepted_lead_epoch_counter = 0;
+        uint32_t accepted_lead_coarse_T = 0;
+        double accepted_lead_fine_T = 0;
 
 
     public:

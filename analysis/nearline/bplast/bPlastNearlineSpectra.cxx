@@ -7,7 +7,6 @@
 
 // c4
 #include "bPlastNearlineSpectra.h"
-#include "TExperimentConfiguration.h"
 #include "EventHeader.h"
 #include "bPlastTwinpeaksCalData.h"
 #include "TbPlastConfiguration.h"

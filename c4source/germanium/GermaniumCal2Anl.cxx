@@ -215,6 +215,5 @@ void GermaniumCal2Anl::FinishEvent(){
     fanl_ge_data->Clear();
 };
 
-
-
 ClassImp(GermaniumCal2Anl)
+

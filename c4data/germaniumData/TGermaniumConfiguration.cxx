@@ -227,4 +227,3 @@ void TGermaniumConfiguration::ReadPromptFlashCutMulti()
 
     cutFile->Close();
 }
-

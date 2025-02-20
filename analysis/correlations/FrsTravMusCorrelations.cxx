@@ -129,12 +129,12 @@ void FrsTravMusCorrelations::Exec(Option_t* option)
 
     if(travMusicHitItem.Get_travmusic_dE() >= frs_config->fMin_dE_travMus_gate && travMusicHitItem.Get_travmusic_dE() <= frs_config->fMax_dE_travMus_gate)
     {
-        h2_Z_vs_AoQ_driftcorr_trav_gate->Fill(frsHitItem.Get_ID_AoQ_driftcorr(), frsHitItem.Get_ID_z_driftcorr());
+        h2_Z_vs_AoQ_driftcorr_trav_gate->Fill(frsHitItem.Get_ID_AoQs2s4_driftcorr(), frsHitItem.Get_ID_z41_driftcorr());
     }
 
     if(travMusicHitItem.Get_travmusic_dE_driftcorr() >= frs_config->fMin_dE_travMus_gate && travMusicHitItem.Get_travmusic_dE_driftcorr() <= frs_config->fMax_dE_travMus_gate)
     {
-        h2_Z_vs_AoQ_tac_trav_gate_driftcorr->Fill(frsHitItem.Get_ID_AoQ_driftcorr(), frsHitItem.Get_ID_z_driftcorr());
+        h2_Z_vs_AoQ_tac_trav_gate_driftcorr->Fill(frsHitItem.Get_ID_AoQs2s4_driftcorr(), frsHitItem.Get_ID_z41_driftcorr());
     }
 
 

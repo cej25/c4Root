@@ -42,7 +42,7 @@
 #include "TColor.h"
 #include "TStyle.h"
 
-FrsOnlineSpectra::FrsOnlineSpectra()
+FrsOnlineSpectra::FrsOnlineSpectra(): FrsOnlineSpectra("FrsOnlineSpectra")
 {
     
 }
@@ -530,7 +530,7 @@ void FrsOnlineSpectra::Exec(Option_t* option)
         {   
             for (int gate = 0; gate < FrsGates.size(); gate++)
             {
-                if (FrsGates[gate]->Passed_ZvsZ2(hitItem.Get_ID_z41(), hitItem.Get_ID_z42()))
+                if (FrsGates[gate]->Passed_Z41vsZ42(hitItem.Get_ID_z41(), hitItem.Get_ID_z42()))
                 {
                     h2_Z41_vs_AoQs2s4_Zsame_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_z41());
                     h2_Z41_vs_Z42_Zsame_gate[gate]->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_z42());
@@ -540,7 +540,7 @@ void FrsOnlineSpectra::Exec(Option_t* option)
                     h2_dEdegZ41_vs_Z41_Zsame_gate[gate]->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_dEdeg_z41());
 
 
-                    if (FrsGates[gate]->Passed_x2vsAoQ(hitItem.Get_ID_x2(), hitItem.Get_ID_AoQ_s2s4()))
+                    if (FrsGates[gate]->Passed_x2vsAoQs2s4(hitItem.Get_ID_x2(), hitItem.Get_ID_AoQ_s2s4()))
                     {
                         h2_x2_vs_AoQs2s4_Zsame_x2AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x2());
                         h2_x4_vs_AoQs2s4_Zsame_x2AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x4());
@@ -549,7 +549,7 @@ void FrsOnlineSpectra::Exec(Option_t* option)
                         h2_dEdegZ41_vs_Z41_Zsame_x2AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_dEdeg_z41());
                     }
 
-                    if (FrsGates[gate]->Passed_x4vsAoQ(hitItem.Get_ID_x4(), hitItem.Get_ID_AoQ_s2s4()))
+                    if (FrsGates[gate]->Passed_x4vsAoQs2s4(hitItem.Get_ID_x4(), hitItem.Get_ID_AoQ_s2s4()))
                     {
                         h2_x2_vs_AoQs2s4_Zsame_x4AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x2());
                         h2_x4_vs_AoQs2s4_Zsame_x4AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x4());

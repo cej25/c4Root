@@ -8,6 +8,8 @@
 #include "TH2F.h"
 #include "TbPlastConfiguration.h"
 #include "TExperimentConfiguration.h"
+#include "EventHeader.h"
+#include "bPlastTwinpeaksCalData.h"
 #include <vector>
 
 class TClonesArray;

@@ -346,6 +346,7 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
             double fast_ToT1 = hit->Get_fast_ToT();
             double energy1 = hit->Get_energy();
             double fast_lead1 = hit->Get_fast_lead_time();
+            int64_t fast_lead_epoch = hit->Get_fast_lead_epoch();
             
             int detector_id1 = hit->Get_detector_id();
             detector_counters[detector_id1]++; // CEJ: for rates
@@ -361,7 +362,7 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
             h1_fatima_energy[detector_index1]->Fill(energy1);
             h1_fatima_fastToT[detector_index1]->Fill(fast_ToT1);
             h2_fatima_fast_v_slow[detector_index1]->Fill(fast_ToT1, slow_ToT1);
-            h1_fatima_abs_time[detector_index1]->Fill(fast_lead1);
+            h1_fatima_abs_time[detector_index1]->Fill(fast_lead_epoch+fast_lead1);
             
             h2_fatima_energy_vs_detid->Fill(energy1, detector_id1);
             h2_fatima_energy_uncal_vs_detid->Fill(slow_ToT1, detector_id1);
@@ -381,26 +382,34 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
                     double fast_ToT2 = hit2->Get_fast_ToT();
                     double energy2 = hit2->Get_energy();
                     double fast_lead2 = hit2->Get_fast_lead_time();
+                    int64_t fast_lead_epoch2 = hit2->Get_fast_lead_epoch();
 
                         
                     for (int detector_index2 = 0; detector_index2<number_reference_detectors; detector_index2++){
                     
                     if (detector_id2 == dt_reference_detectors.at(detector_index2)) {
+                    
+                    double dt = fast_lead1 - fast_lead2 + (fast_lead_epoch - fast_lead_epoch2) - fatima_configuration->GetTimeshiftCoefficient(detector_id2,detector_id1); 
+                    //c4LOG(info,Form("det1 = %i, det2 = %i, shift = %f",detector_id1,detector_id2,fatima_configuration->GetTimeshiftCoefficient(detector_id2,detector_id1)));
+                    //c4LOG(info,Form("epoch1 = %i, epoch2 = %i, depoch = %i",fast_lead_epoch,fast_lead_epoch2,fast_lead_epoch-fast_lead_epoch2));
+                    //c4LOG(info,Form("time1 = %f, time2 = %f, dtime = %f",fast_lead1,fast_lead2,fast_lead1-fast_lead2));
+                    //c4LOG(info,Form("dt = %f",dt));
+                    
 
                     if (dt_reference_detectors_energy_gates.at(detector_index2).first != 0 && dt_reference_detectors_energy_gates.at(detector_index2).second != 0){
                         if ((TMath::Abs(energy2 - dt_reference_detectors_energy_gates.at(detector_index2).second) < energygate_width) && (TMath::Abs(energy1 - dt_reference_detectors_energy_gates.at(detector_index2).first) < energygate_width)){
-                            h1_fatima_time_differences[detector_index2][detector_index1]->Fill(fast_lead1 - fast_lead2);
-                            h2_fatima_time_differences_vs_energy[detector_index2][detector_index1]->Fill(energy1,fast_lead1-fast_lead2);
+                            h1_fatima_time_differences[detector_index2][detector_index1]->Fill(dt);
+                            h2_fatima_time_differences_vs_energy[detector_index2][detector_index1]->Fill(energy1,dt);
                         }
                     }else if(dt_reference_detectors_energy_gates.at(detector_index2).second != 0 && dt_reference_detectors_energy_gates.at(detector_index2).first == 0){
                         if ((TMath::Abs(energy2 - dt_reference_detectors_energy_gates.at(detector_index2).second) < energygate_width)){
-                            h1_fatima_time_differences[detector_index2][detector_index1]->Fill(fast_lead1 - fast_lead2);
-                            h2_fatima_time_differences_vs_energy[detector_index2][detector_index1]->Fill(energy1,fast_lead1-fast_lead2);
+                            h1_fatima_time_differences[detector_index2][detector_index1]->Fill(dt);
+                            h2_fatima_time_differences_vs_energy[detector_index2][detector_index1]->Fill(energy1,dt);
                         }
                     }
                     else{ // no gates
-                        h1_fatima_time_differences[detector_index2][detector_index1]->Fill(fast_lead1 - fast_lead2);
-                        h2_fatima_time_differences_vs_energy[detector_index2][detector_index1]->Fill(energy1,fast_lead1-fast_lead2);
+                        h1_fatima_time_differences[detector_index2][detector_index1]->Fill(dt);
+                        h2_fatima_time_differences_vs_energy[detector_index2][detector_index1]->Fill(energy1,dt);
                     }
                     }
                     
@@ -434,7 +443,7 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
 
                     if (fatima_configuration->IsDetectorAuxilliary(detector_id1)) continue;
 
-                    double timediff = time1 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(detector_id1);
+                    double timediff = time1 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(1,detector_id1);
                     
                     h2_fatima_energy_summed_vs_tsci41->Fill(timediff ,energy1);
 
@@ -449,7 +458,7 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
                         double time2 = hit3->Get_fast_lead_time();
 
                         if (fatima_configuration->IsDetectorAuxilliary(detector_id2)) continue;
-                        double timediff2 = time2 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(detector_id2);
+                        double timediff2 = time2 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(1,detector_id2);
 
                         if ((fatima_configuration->IsInsidePromptFlashCut(timediff2,energy2)==true)) continue;
                         
