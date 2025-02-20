@@ -360,7 +360,7 @@ void FatimaNearlineSpectra::Exec(Option_t* option)
 
                     if (fatima_configuration->IsDetectorAuxilliary(detector_id1)) continue;
 
-                    double timediff = time1 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(detector_id1);
+                    double timediff = time1 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(detector_id1,detector_id_sci41);
                     
                     h2_fatima_energy_summed_vs_tsci41->Fill(timediff ,energy1);
 
@@ -375,7 +375,7 @@ void FatimaNearlineSpectra::Exec(Option_t* option)
                         double time2 = hit3->Get_fast_lead_time();
 
                         if (fatima_configuration->IsDetectorAuxilliary(detector_id2)) continue;
-                        double timediff2 = time2 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(detector_id2);
+                        double timediff2 = time2 - time_sci41 - fatima_configuration->GetTimeshiftCoefficient(detector_id2,detector_id_sci41);
 
                         if ((fatima_configuration->IsInsidePromptFlashCut(timediff2,energy2)==true)) continue;
                         

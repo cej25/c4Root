@@ -1,5 +1,5 @@
 
-bool Gate_Z_AoQ(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_AoQ, bool  bool_x4_AoQ, bool bool_dEdeg_Z, bool bool_sci42E_Z){
+bool Gate_Z_AoQ(TChain * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_AoQ, bool  bool_x4_AoQ, bool bool_dEdeg_Z, bool bool_sci42E_Z){
     
     TString cuts;
 
@@ -22,7 +22,7 @@ bool Gate_Z_AoQ(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_AoQ
     gPad->WaitPrimitive("CUTG");
     TCutG * cut_Z_AoQ = (TCutG*)gROOT->FindObject("CUTG");
     if (cut_Z_AoQ == nullptr){
-        std::cout << "No gate given. Continuing." << std::endl;
+        std::cout << "No Z vs AoQ gate given. Continuing." << std::endl;
         return false;
     }else{
         cut_Z_AoQ = (TCutG*)cut_Z_AoQ->Clone("cut_Z_AoQ");
@@ -35,7 +35,7 @@ bool Gate_Z_AoQ(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_AoQ
     }
 };
 
-bool Gate_Z_Z2(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_AoQ, bool  bool_x4_AoQ, bool bool_dEdeg_Z, bool bool_sci42E_Z){
+bool Gate_Z_Z2(TChain * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_AoQ, bool  bool_x4_AoQ, bool bool_dEdeg_Z, bool bool_sci42E_Z){
     
     TString cuts;
 
@@ -72,7 +72,7 @@ bool Gate_Z_Z2(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_AoQ,
 }
 
 
-bool Gate_x2_AoQ(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_AoQ, bool  bool_x4_AoQ, bool bool_dEdeg_Z, bool bool_sci42E_Z){
+bool Gate_x2_AoQ(TChain * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_AoQ, bool  bool_x4_AoQ, bool bool_dEdeg_Z, bool bool_sci42E_Z){
     
     TString cuts;
 
@@ -108,7 +108,7 @@ bool Gate_x2_AoQ(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_Ao
     }
 }
 
-bool Gate_x4_AoQ(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_AoQ, bool  bool_x4_AoQ, bool bool_dEdeg_Z, bool bool_sci42E_Z){
+bool Gate_x4_AoQ(TChain * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_AoQ, bool  bool_x4_AoQ, bool bool_dEdeg_Z, bool bool_sci42E_Z){
     
     TString cuts;
 
@@ -144,7 +144,7 @@ bool Gate_x4_AoQ(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_Ao
     }
 }
 
-bool Gate_dEdeg_Z(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_AoQ, bool  bool_x4_AoQ, bool bool_dEdeg_Z, bool bool_sci42E_Z){
+bool Gate_dEdeg_Z(TChain * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_AoQ, bool  bool_x4_AoQ, bool bool_dEdeg_Z, bool bool_sci42E_Z){
     
     TString cuts;
 

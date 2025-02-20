@@ -31,6 +31,8 @@ class GermaniumRaw2Cal : public FairTask
         virtual void SetParContainers();
 
         virtual InitStatus Init();
+
+        void SetVetoPileupSCI41(bool v){VetoPileupSCI41 = v;}
         
 
     private:
@@ -49,6 +51,8 @@ class GermaniumRaw2Cal : public FairTask
         int crystal_id;
         double channel_energy_cal;
 
+        bool VetoPileupSCI41 = true;
+
 
         EventHeader * header;
         Int_t fNEvents = 0;
@@ -58,7 +62,7 @@ class GermaniumRaw2Cal : public FairTask
         Bool_t DetectorCal_loaded = 0;
         //maps:
         std::map<std::pair<int,int>,std::pair<int,int>> detector_mapping; // [board_id][channel_id] -> [detector_id][crystal_id]
-        std::map<std::pair<int,int>,std::pair<double,double>> calibration_coeffs; // key: [detector id][crystal id] -> [a0][a1]
+        std::map<std::pair<int,int>,std::vector<double>> calibration_coeffs; // key: [detector id][crystal id] -> [a0][a1]
 
     public:
         ClassDef(GermaniumRaw2Cal, 1);

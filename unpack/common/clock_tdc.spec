@@ -1,10 +1,3 @@
-BAD_EVENT()
-{
-	UINT32 be NOENCODE 
-	{
-		0_31: bad = MATCH(0xBAD00BAD);
-	};
-}
 
 PADDING()
 {

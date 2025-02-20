@@ -233,7 +233,7 @@ void BetaIonCorrelations::Exec(Option_t* option)
             h2_ZvsAoQ->Fill(hitItemFrs.Get_ID_AoQ_s2s4(), hitItemFrs.Get_ID_z41());
 
             //if (FrsGates[gate]->PassedGate(z, z2, x2, x4, aoq, dEdeg))
-            if (FrsGates[gate]->Passed_ZvsAoQ(z, aoq))
+            if (FrsGates[gate]->Passed_Z41vsAoQs2s4(z, aoq))
             {
                 h2_ZvsAoQ_inside_gate->Fill(hitItemFrs.Get_ID_AoQ_s2s4(), hitItemFrs.Get_ID_z41());
 

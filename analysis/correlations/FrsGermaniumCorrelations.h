@@ -24,7 +24,7 @@ class FrsGermaniumCorrelations : public FairTask
         FrsGermaniumCorrelations(FrsGate * frsgate);
         FrsGermaniumCorrelations(const TString& name, Int_t verbose = 1);
 
-
+        void SetMultiHit(bool v) {use_multi = v;};
 
         virtual ~FrsGermaniumCorrelations();
 
@@ -41,6 +41,11 @@ class FrsGermaniumCorrelations : public FairTask
         //virtual void Reset_Ge_Histo();
 
         //virtual void Snapshot_Ge_Histo();
+
+        void SetAnlOrCalInput(TString AnlOrCal){
+            input_anl_or_cal = AnlOrCal;
+        }
+
 
         void AddGammaEnergyOfInterest(double energy, double gate_width){
             gamma_energies_of_interest.emplace_back(energy);
@@ -74,13 +79,21 @@ class FrsGermaniumCorrelations : public FairTask
     private:
         TClonesArray* fHitGe;
         TClonesArray* fHitFrs;
+        TClonesArray* fMultiHitFrs;
 
         std::vector<FrsHitItem> const* hitArrayFrs;
+        std::vector<FrsMultiHitItem> const* multihitArrayFrs;
 
-        const TGermaniumConfiguration * germanium_configuration;
-        const TFrsConfiguration * frs_configuration;
+        TString input_anl_or_cal = "Cal";
+
+        const TGermaniumConfiguration* germanium_configuration;
+        const TFrsConfiguration* frs_configuration;
         
-        FrsGate * frsgate;
+        FrsGate* frsgate;
+
+        int64_t wr_t = 0;
+
+        bool use_multi = false;
 
         int64_t wr_t_last_frs_hit = 0;
         int64_t wr_t_first_frs_hit = 0;
@@ -120,6 +133,12 @@ class FrsGermaniumCorrelations : public FairTask
         
         TCanvas * c_frs_x4_vs_AoQ_gated;
         TH2F * h2_frs_x4_vs_AoQ_gated;
+
+        TCanvas * c_frs_Z_vs_dEdeg_gated;
+        TH2F * h2_frs_Z_vs_dEdeg_gated;
+        
+        TCanvas * c_frs_Z_vs_sci42E_gated;
+        TH2F * h2_frs_Z_vs_sci42E_gated;
         
         //Implant rate
         TCanvas * c_frs_rate;
@@ -187,6 +206,18 @@ class FrsGermaniumCorrelations : public FairTask
         // other
 
 
+        int sci41l_seen_in_febex_no_frs = 0;
+        int sci41r_seen_in_febex_no_frs = 0;
+
+        int sci41l_seen_in_frs_no_febex = 0;
+        int sci41r_seen_in_frs_no_febex = 0;
+
+        int sci41l_seen_in_febex = 0;
+        int sci41r_seen_in_febex = 0;
+
+        int sci41l_seen_in_frs = 0;
+        int sci41r_seen_in_frs = 0;
+        
 
 
     public:
