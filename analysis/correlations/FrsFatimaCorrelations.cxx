@@ -107,7 +107,7 @@ InitStatus FrsFatimaCorrelations::Init()
         histograms->Add(dir_corr);
     }
 
-    TString dirname = "FATIMA - FRS Gated: " + frsgate->GetName();
+    TString dirname = "FATIMA-FRS_gated-" + frsgate->GetName();
     dir_fatima = dir_corr->mkdir(dirname);
 
     dir_fatima->cd();

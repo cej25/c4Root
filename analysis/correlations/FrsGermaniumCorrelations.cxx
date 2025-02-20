@@ -134,7 +134,7 @@ InitStatus FrsGermaniumCorrelations::Init()
         }
     }
 
-    dir_frs_ge_gate = dir_frs_ge_corr->mkdir(TString("Gate: " + frsgate->GetName()));
+    dir_frs_ge_gate = dir_frs_ge_corr->mkdir(TString("Gate:" + frsgate->GetName()));
     dir_frs_ge_gate->cd();
 
     //Implant rate
