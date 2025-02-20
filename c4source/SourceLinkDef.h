@@ -21,7 +21,7 @@
 #pragma link C++ class GermaniumReader+;
 #pragma link C++ class GermaniumTraceReader+;
 #pragma link C++ class GermaniumRaw2Cal+;
-#pragma link C++ class GermaniumCal2Anl+;|
+#pragma link C++ class GermaniumCal2Anl+;
 #pragma link C++ class AidaReader+;
 #pragma link C++ class AidaUnpack2Cal+;
 #pragma link C++ class AidaCal2Hit+;

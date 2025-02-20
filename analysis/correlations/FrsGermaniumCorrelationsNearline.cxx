@@ -122,7 +122,11 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
         found_dir_corr = false;
     }
 
-    TString dirname = "DEGAS - FRS Gated: " + frsgate->GetName();
+
+    c4LOG(info, "Germanium gamma-gamma coincidence window: " + TString(std::to_string(germanium_coincidence_gate*2) + " ns"));
+
+    TString dirname = "DEGAS-FRS_gated" + frsgate->GetName();
+
     dir_germanium = dir_corr->mkdir(dirname);
 
     dir_germanium->cd();

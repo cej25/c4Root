@@ -69,4 +69,3 @@ class GermaniumRaw2Cal : public FairTask
 };
 
 #endif
-
