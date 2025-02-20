@@ -106,7 +106,7 @@ void FrsBplastCorrelations::Exec(Option_t* option)
         Int_t nHits = fHitFrs->GetEntriesFast();
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {   
-            FrsHitData* FrsHit = (FrsHitData*)fHitFrs->At(ihit);
+            FrsHitItem* FrsHit = (FrsHitItem*) fHitFrs->At(ihit);
             if (!FrsHit) continue;
 
             double z = FrsHit->Get_ID_z();

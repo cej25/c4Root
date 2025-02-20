@@ -15,6 +15,7 @@ std::string TGermaniumConfiguration::configuration_file = "blank";
 std::string TGermaniumConfiguration::calibration_file = "blank";
 std::string TGermaniumConfiguration::timeshift_calibration_file = "blank";
 std::string TGermaniumConfiguration::promptflash_cut_file = "blank";
+std::string TGermaniumConfiguration::promptflash_cut_file_multi = "blank";
 
 
 TGermaniumConfiguration::TGermaniumConfiguration()
@@ -28,6 +29,7 @@ TGermaniumConfiguration::TGermaniumConfiguration()
     if (calibration_file != "blank") ReadCalibrationCoefficients();
     if (timeshift_calibration_file != "blank") ReadTimeshiftCoefficients();
     if (promptflash_cut_file != "blank") ReadPromptFlashCut();
+    if (promptflash_cut_file_multi != "blank") ReadPromptFlashCutMulti();
  }
 
 
@@ -104,7 +106,9 @@ void TGermaniumConfiguration::ReadConfiguration()
 
 
 
-
+/*
+Takes second order polynomials
+*/
 void TGermaniumConfiguration::ReadCalibrationCoefficients()
 {
 
@@ -112,16 +116,16 @@ void TGermaniumConfiguration::ReadCalibrationCoefficients()
     if (cal_map_file.fail()) c4LOG(fatal, "Could not open Germanium calibration coefficients");    
 
     int rdetector_id,rcrystal_id; // temp read variables
-    double a0,a1;
+    double a0,a1,a2;
     
     //assumes the first line in the file is num-modules used
     while(!cal_map_file.eof()){
         if(cal_map_file.peek()=='#') cal_map_file.ignore(256,'\n');
         else{
-            cal_map_file >> rdetector_id >> rcrystal_id >> a1 >> a0;
+            cal_map_file >> rdetector_id >> rcrystal_id >> a0 >> a1 >> a2;
             std::pair<int,int> detector_crystal = {rdetector_id,rcrystal_id};
-            std::pair<double,double> cals = {a0,a1};
-            calibration_coeffs.insert(std::pair<std::pair<int,int>,std::pair<double,double>>{detector_crystal,cals});
+            std::vector<double> cals = {a0,a1,a2};
+            calibration_coeffs.insert(std::pair<std::pair<int,int>,std::vector<double>>{detector_crystal,cals});
             cal_map_file.ignore(256,'\n');
         }
     }
@@ -182,4 +186,46 @@ void TGermaniumConfiguration::ReadPromptFlashCut()
 
     cut->Close();
 }
+
+
+void TGermaniumConfiguration::ReadPromptFlashCutMulti()
+{
+    // Open the root file containing the cuts
+    c4LOG(info, TString("Opening prompt flash mutli: ") + promptflash_cut_file_multi);
+    TFile* cutFile = TFile::Open(TString(promptflash_cut_file_multi), "READ");
+
+    if (!cutFile || cutFile->IsZombie() || cutFile->TestBit(TFile::kRecovered))
+    {
+        c4LOG(warn, "Germanium prompt flash cut file provided (" << promptflash_cut_file_multi << ") failed to load!");
+        return;
+    }
+
+    int index = 0;  // Start index
+    while (true)
+    {
+        TString cutName = TString::Format("ge_prompt_flash_cut_%d", index);  // Construct cut name
+
+        TCutG* cut = (TCutG*)cutFile->Get(cutName);  // Try to retrieve the cut
+
+        if (cut) // If a cut is found, set it to prompt_flash_cut_multi and break
+        {
+            prompt_flash_cut_multi.push_back(cut);
+        }else{
+            break;
+        }
+        
+        ++index;  // Move to the next cut in sequence
+
+    }
+
+    c4LOG(info,Form("read %i prompt flash cuts",prompt_flash_cut_multi.size()));
+
+    if (prompt_flash_cut_multi.size() == 0) // Log warning if no cut found at all
+    {
+        c4LOG(warn, "No prompt flash cuts found in file: " << promptflash_cut_file_multi);
+    }
+
+    cutFile->Close();
+}
+
 

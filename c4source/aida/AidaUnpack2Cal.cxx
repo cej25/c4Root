@@ -197,7 +197,6 @@ void AidaUnpack2Cal::Exec(Option_t* option)
       cal.SetAll(unpack.SlowTime(), unpack.FastTime(), unpack.Fee(),
           unpack.Channel(), dssd, side, strip,
           range, intensity, energy);
-
     }
     else {
       double thrs = conf->GetDssdStripThreshold(dssd - 1, side == - 1 ? 0 : 1, strip);

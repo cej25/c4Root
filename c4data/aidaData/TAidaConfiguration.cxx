@@ -491,7 +491,6 @@ void TAidaConfiguration::DSSDtoFEE()
       c4LOG(fatal, "At least one DSSD was not mapped to any FEEs in AIDA configuration");
       continue;
     }
-
     if (d.Top > FEEs()) {
       c4LOG(fatal, "DSSD top maps to invalid FEE: " << d.Top << " (Max fees: " << FEEs() << ")");
     }

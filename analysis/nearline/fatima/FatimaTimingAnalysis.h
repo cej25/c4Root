@@ -3,6 +3,8 @@
 
 #include "FairTask.h"
 #include "FairRootManager.h"
+#include "TFatimaTwinpeaksConfiguration.h"
+
 
 class TClonesArray;
 class EventHeader;
@@ -32,15 +34,11 @@ class FatimaTimingAnalysis : public FairTask
             ffast_tot_nbins = nbins;
             ffast_tot_bin_low = binlow;
             ffast_tot_bin_high = binhigh;
-            
-            
         };
         void SetBinningSlowToT(int nbins, float binlow, float binhigh){
             fslow_tot_nbins = nbins;
             fslow_tot_bin_low = binlow;
             fslow_tot_bin_high = binhigh;
-            
-            
         };
         void SetBinningEnergy(int nbins, float binlow, float binhigh){
             fenergy_nbins = nbins;
@@ -72,9 +70,8 @@ class FatimaTimingAnalysis : public FairTask
 
     
     private:
-        TClonesArray* fHitFatimaTwinpeaks;
-
-        FairRootManager* mgr;
+        const TFatimaTwinpeaksConfiguration * fatima_configuration;
+        TClonesArray* fHitFatima;
 
         std::vector<int> * detector_id_analyze;
 
@@ -115,11 +112,9 @@ class FatimaTimingAnalysis : public FairTask
 
 
 
-        bool timeshifts_loaded = false;
-        std::map<std::pair<int,int>,double> timeshifts;
-
-        
-
+        // Folder and files
+        TFolder * histograms;
+        TDirectory* dir_fatima;
 
 
     public:
