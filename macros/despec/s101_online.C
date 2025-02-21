@@ -15,7 +15,7 @@
 // CEJ: not configured for s101 yet
 extern "C"
 {
-    #include "../../config/s101/frs/setup_302_008_2025_conv.C"
+    #include "../../config/s101/frs/setup_302_011_2025_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -28,7 +28,7 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_frs_onion_t frs;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
     EXT_STR_h101_bgo_onion_t bgo;
-    EXT_STR_h101_bb7vme_onion_t bb7vme;
+//     EXT_STR_h101_bbfebex_onion_t bbfebex;
 } EXT_STR_h101;
 
 
@@ -130,12 +130,12 @@ void s101_online()
     TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_jan22.txt");
     TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_cal_feb21_2025_new_cards.txt");
     //TGermaniumConfiguration::SetDetectorTimeshiftsFile(config_path + "/germanium/ge_timeshifts_apr20.txt");
-    //TGermaniumConfiguration::SetPromptFlashCut(config_path + "/germanium/ge_prompt_flash.root");
+    TGermaniumConfiguration::SetPromptFlashCut(config_path + "/germanium/ge_prompt_flash_2102_v2.root");
 
     TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
     
-    TBB7VmeConfiguration::SetDetectorConfigurationFile(config_path + "/bb7/BB7_Detector_Map_s181.txt");  
-    TBB7VmeConfiguration::SetResidualSignalsFile(config_path + "/bb7/BB7_Residuals_Map.txt");   
+    TBB7FebexConfiguration::SetMappingFile(config_path + "/bb7/BB7_Detector_Map_feb21.txt");  
+    //TBB7VmeConfiguration::SetResidualSignalsFile(config_path + "/bb7/BB7_Residuals_Map.txt");   
 
     // ------------------------------------------------------------------------------------- //
     // *** Read Subsystems - comment out unwanted systems ********************************** //
@@ -153,12 +153,12 @@ void s101_online()
         source->AddReader(unpackaida);
     }
 
-    if (BB7_ON)
-    {
-       BB7Reader* unpackbb7 = new BB7Reader((EXT_STR_h101_bb7vme_onion*)&ucesb_struct.bb7vme, offsetof(EXT_STR_h101, bb7vme));
-       unpackbb7->SetOnline(true);
-       source->AddReader(unpackbb7);
-    }
+//     if (BB7_ON)
+//     {
+//        BB7FebexReader* unpackbb7 = new BB7FebexReader((EXT_STR_h101_bbfebex_onion*)&ucesb_struct.bbfebex, offsetof(EXT_STR_h101, bbfebex));
+//        unpackbb7->SetOnline(true);
+//        source->AddReader(unpackbb7);
+//     }
 
     if (BPLAST_ON)
     {
@@ -220,8 +220,8 @@ void s101_online()
     
     if (BB7_ON)
     {
-        TBB7VmeConfiguration::SetImplantThreshold(1500);
-        BB7Raw2Cal* calbb7 = new BB7Raw2Cal();
+        //TBB7FebexConfiguration::SetImplantThreshold(1500);
+        BB7FebexRaw2Cal* calbb7 = new BB7FebexRaw2Cal();
         
         calbb7->SetOnline(true);
         run->AddTask(calbb7);
@@ -277,6 +277,14 @@ void s101_online()
         run->AddTask(aidaHitter);
     }
     
+    if (BB7_ON)
+    {
+        BB7FebexCal2Hit* hitbb7 = new BB7FebexCal2Hit();
+        
+        hitbb7->SetOnline(true); 
+        run->AddTask(hitbb7);
+    } 
+    
     if (FRS_ON)
     {
         FrsCal2Hit* hitfrs = new FrsCal2Hit();
@@ -302,7 +310,7 @@ void s101_online()
 
     if (BB7_ON)
     {
-        BB7OnlineSpectra* onlinebb7 = new BB7OnlineSpectra();
+        BB7FebexOnlineSpectra* onlinebb7 = new BB7FebexOnlineSpectra();
 
         run->AddTask(onlinebb7);
     }
@@ -339,8 +347,8 @@ void s101_online()
         
     }
     
-     TFrsConfiguration::Set_Z_range(30,70);
-     TFrsConfiguration::Set_AoQ_range(2.1,2.4);
+     TFrsConfiguration::Set_Z_range(30,50);
+     TFrsConfiguration::Set_AoQ_range(1.8,2.4);
      TFrsConfiguration::Set_x2_range(-120,120);
      TFrsConfiguration::Set_x4_range(-120,120);
 //     FrsGate* zHeavy = new FrsGate("zHeavy",config_path+"/frs/Gates/zHeavy.root");
@@ -379,15 +387,24 @@ void s101_online()
 //     }
     
     
-//     if (FRS_ON && GERMANIUM_ON)
-//     {
-//         FrsGermaniumCorrelations* zhv = new FrsGermaniumCorrelations(zHeavy);
-//         zhv->SetShortLifetimeCollectionWindow(20000);
-//         run->AddTask(zhv);
-//         FrsGermaniumCorrelations* zhv2 = new FrsGermaniumCorrelations(zHeavy2);
-//         zhv2->SetShortLifetimeCollectionWindow(20000);
-//         run->AddTask(zhv2);
-//     }
+     if (FRS_ON && GERMANIUM_ON)
+     {
+          FrsGate * zNb = new FrsGate("Nb",config_path + "/frs/84Nb.root");
+         FrsGermaniumCorrelations* zhv = new FrsGermaniumCorrelations(zNb);
+         zhv->SetShortLifetimeCollectionWindow(1000);
+         run->AddTask(zhv);
+         
+         FrsGate * Nblow = new FrsGate("Nblow",config_path + "/frs/Nblow.root");
+         FrsGermaniumCorrelations* ge_Nblow = new FrsGermaniumCorrelations(Nblow);
+         ge_Nblow->SetShortLifetimeCollectionWindow(1000);
+         run->AddTask(ge_Nblow);
+         
+         FrsGate * zbig = new FrsGate("big",config_path + "/frs/big.root");
+         FrsGermaniumCorrelations* ge_big = new FrsGermaniumCorrelations(zbig);
+         ge_big->SetShortLifetimeCollectionWindow(1000);
+         run->AddTask(ge_big);
+     }
+     
 
 
     TString b = "Aida";
