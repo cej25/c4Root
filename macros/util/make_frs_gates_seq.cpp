@@ -12,7 +12,7 @@ bool Gate_Z_AoQ(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_AoQ
     std::cout << "Drawing with the condition: " << cuts << std::endl;
     
 
-    evt->Draw("FrsHitData.fID_z41:FrsHitData.fID_AoQ_corr_s2s4>>h2_Z_vs_AoQ(2000,2.2,3.0,2000,58,68)",cuts);
+    evt->Draw("FrsHitData.fID_z41:FrsHitData.fID_AoQ_corr_s2s4>>h2_Z_vs_AoQ(2000,1.8,2.5,2000,35,50)",cuts);
     
     TH2F * h2_Z_vs_AoQ = (TH2F*)gROOT->FindObject("h2_Z_vs_AoQ");
     
@@ -48,7 +48,7 @@ bool Gate_Z_Z2(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_AoQ,
     std::cout << "Drawing with the condition: " << cuts << std::endl;
     
     
-    evt->Draw("FrsHitData.fID_z41:FrsHitData.fID_z42>>h2_Z_vs_Z2(1e3,58,70,1e3,58,68)",cuts);
+    evt->Draw("FrsHitData.fID_z41:FrsHitData.fID_z42>>h2_Z_vs_Z2(1e3,35,50,1e3,35,50)",cuts);
     
     TH2F * h2_Z_vs_Z2 = (TH2F*)gROOT->FindObject("h2_Z_vs_Z2");
     
@@ -154,7 +154,7 @@ bool Gate_dEdeg_Z(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_A
     std::cout << "Drawing with the condition: " << cuts << std::endl;
     
     
-    evt->Draw("FrsHitData.fID_dEdeg_z41:FrsHitData.fID_z41>>h2_dEdeg_vs_Z(1000,58,68,1000,0,100)",cuts);
+    evt->Draw("FrsHitData.fID_dEdeg_z41:FrsHitData.fID_z41>>h2_dEdeg_vs_Z(1000,35,50,1000,0,100)",cuts);
     
     TH2F * h2_dEdeg_vs_Z = (TH2F*)gROOT->FindObject("h2_dEdeg_vs_Z");
     
