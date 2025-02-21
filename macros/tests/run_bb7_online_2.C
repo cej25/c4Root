@@ -95,10 +95,10 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     std::cout << "hello5 " <<std::endl;
 
     //BB7Reader* unpackbb7 = new BB7Reader((EXT_STR_h101_bb7vme_onion*)&ucesb_struct.bb7vme, offsetof(EXT_STR_h101, bb7vme));
-    // BB7FebexReader* unpackbb7 = new BB7FebexReader((EXT_STR_h101_bb7febex_onion*)&ucesb_struct.bb7febex, offsetof(EXT_STR_h101, bb7febex));
+    BB7FebexReader* unpackbb7 = new BB7FebexReader((EXT_STR_h101_bb7febex_onion*)&ucesb_struct.bb7febex, offsetof(EXT_STR_h101, bb7febex));
 
-    // unpackbb7->SetOnline(false);
-    // source->AddReader(unpackbb7);
+    unpackbb7->SetOnline(false);
+    source->AddReader(unpackbb7);
 
     std::cout << "hello6 " <<std::endl;
     
