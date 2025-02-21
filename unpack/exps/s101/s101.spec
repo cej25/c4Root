@@ -375,7 +375,7 @@ EVENT
     frsuser = frs_user_subev(procid = 30);
     frstpat = frs_tpat_subev(procid = 15);
 
-    bb_first = bb_second_subev(procid = 35);
+    //bb_first = bb_first_subev(procid = 35);
     bb_second = bb_second_subev(procid = 36);
     
     beammonitor = bm_subev(procid = 1);
