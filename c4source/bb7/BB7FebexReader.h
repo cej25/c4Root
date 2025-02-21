@@ -48,6 +48,8 @@ class BB7FebexReader : public c4Reader
         const int NBoards = 8; // maximum (2 x BB7 boards which don't exist right now?)
 
         int32_t energy;
+        int64_t wr_t_first = 0;
+        int64_t wr_t_second = 0;
 
         std::vector<BB7FebexItem>* bb7array;
 
