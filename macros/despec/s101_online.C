@@ -5,7 +5,7 @@
 #define BPLAST_ON 1
 #define GERMANIUM_ON 1
 #define BGO_ON 0
-#define FRS_ON 0
+#define FRS_ON 1
 #define TIME_MACHINE_ON 1
 #define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 1
@@ -15,7 +15,7 @@
 // CEJ: not configured for s101 yet
 extern "C"
 {
-    #include "../../config/s101/frs/setup_s181_010_2024_conv.C"
+    #include "../../config/s101/frs/setup_302_start_2025_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -64,7 +64,7 @@ void s101_online()
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
-   // TString filename = "trans://x86l-143";
+//   TString filename = "stream://x86l-86";
      TString filename = "trans://lxg3107";
     // TString filename = "/lustre/gamma/s101_files/dryrun_ts/*";
 //     TString filename = "trans://lxg1257"; // timesorter.
@@ -89,7 +89,7 @@ void s101_online()
   
     // Create source using ucesb for input
     EXT_STR_h101 ucesb_struct;
-    TString ntuple_options = "UNPACK"; // Define which level of data to unpack - we don't use "RAW" or "CAL"
+    TString ntuple_options = "UNPACK,RAW"; // Define which level of data to unpack - we don't use "RAW" or "CAL"
     UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
     source->SetMaxEvents(nev);
     run->SetSource(source);
@@ -125,8 +125,10 @@ void s101_online()
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
     TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_mapping_220125.txt");
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
+    TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
+    
     TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_jan22.txt");
-    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_cal_feb19_linear.txt");
+    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_cal_feb21_2025.txt");
     //TGermaniumConfiguration::SetDetectorTimeshiftsFile(config_path + "/germanium/ge_timeshifts_apr20.txt");
     //TGermaniumConfiguration::SetPromptFlashCut(config_path + "/germanium/ge_prompt_flash.root");
 
@@ -239,7 +241,8 @@ void s101_online()
     {
         GermaniumRaw2Cal* calge = new GermaniumRaw2Cal();
         // calge->PrintDetectorMap();
-
+        
+        // calge->PrintDetectorCal();
         calge->SetOnline(true);
         run->AddTask(calge);
     }
@@ -336,24 +339,26 @@ void s101_online()
         
     }
     
-//     TFrsConfiguration::Set_Z_range(30,120);
-//     TFrsConfiguration::Set_AoQ_range(2.0,3.0);
+     TFrsConfiguration::Set_Z_range(30,50);
+     TFrsConfiguration::Set_AoQ_range(2.1,2.4);
+     TFrsConfiguration::Set_x2_range(-120,120);
+     TFrsConfiguration::Set_x4_range(-120,120);
 //     FrsGate* zHeavy = new FrsGate("zHeavy",config_path+"/frs/Gates/zHeavy.root");
 //     FrsGate* zHeavy2 = new FrsGate("zHeavy2",config_path+"/frs/Gates/zHeavy.root");
-//     std::vector<FrsGate*> frsgates{};
+     std::vector<FrsGate*> frsgates{};
 //     frsgates.emplace_back(zHeavy);
-// 
-//     if (FRS_ON)
-//     {
-//         FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra(frsgates);
+ 
+     if (FRS_ON)
+     {
+         FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra(frsgates);
 //         For monitoring FRS on our side
-//         FrsRawSpectra* frsrawspec = new FrsRawSpectra();
-//         FrsCalSpectra* frscalspec = new FrsCalSpectra();
+         FrsRawSpectra* frsrawspec = new FrsRawSpectra();
+         FrsCalSpectra* frscalspec = new FrsCalSpectra();
 //         
-//         run->AddTask(onlinefrs);
-//         run->AddTask(frsrawspec);
-//         run->AddTask(frscalspec);
-//     }
+         run->AddTask(onlinefrs);
+         run->AddTask(frsrawspec);
+         run->AddTask(frscalspec);
+     }
 //     
     if (BEAMMONITOR_ON)
     {
