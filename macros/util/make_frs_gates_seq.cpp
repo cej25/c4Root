@@ -185,7 +185,7 @@ bool Gate_sci42E_Z(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_
     TString cuts;
 
     if (bool_Z_AoQ) cuts = cuts + "cut_Z_AoQ && ";
-    if (bool_Z_Z2) cuts = cuts + "cut_Z_Z2 && ";
+    if (bool_Z_Z2) cuts = cuts + "cut_Z_Z2 && ";    
     if (bool_x2_AoQ) cuts = cuts + "cut_x2_AoQ && ";
     if (bool_x4_AoQ) cuts = cuts + "cut_x4_AoQ && ";
     if (bool_dEdeg_Z) cuts = cuts + "cut_dEdeg_Z && ";

@@ -115,7 +115,7 @@ class GermaniumLabTest : public FairTask
 
         int funcal_nbins = 2e4;
         int funcal_bin_low = 0;
-        int funcal_bin_high = 2e6;
+        int funcal_bin_high = 3e6;
 
         int trace_length_plot = 2000; //unit 10 ns
 

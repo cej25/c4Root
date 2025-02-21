@@ -182,9 +182,9 @@ InitStatus FrsCalSpectra::Init()
     int check_sums_max = 20000;
     h2_tpc_check_sums = MakeTH2(dir_cal_tpc, "D", "h2_tpc_check_sums","Check sums calculated for each anode (7 tpcs * 4 anodes)", number_of_anodes_per_tpc*number_of_tpcs,0,number_of_anodes_per_tpc*number_of_tpcs, check_sums_bins,0,check_sums_max);
 
-    int tpc_min_x = -100;
+    int tpc_min_x = -120;
     int tpc_min_y = -100;
-    int tpc_max_x = 100;
+    int tpc_max_x = 120;
     int tpc_max_y = 100;
     int tpc_min_angle = -3.14*100;
     int tpc_max_angle = 3.14*100;

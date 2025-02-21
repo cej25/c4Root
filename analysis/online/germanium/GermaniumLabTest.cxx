@@ -507,6 +507,7 @@ void GermaniumLabTest::FitPeak(int vector_index){
     fitfunc_1332.at(vector_index)->SetRange(fit_low_limit_1332.at(vector_index),fit_high_limit_1332.at(vector_index));
     
     TF1 * simple_gaus = new TF1("gaus","gaus",0,1);
+    //simple_gaus->SetParameter(1,fitfunc_1173.at(vector_index)->GetBinCenter(fitfunc_1173.at(vector_index)->GetMaximumBin()));
     simple_gaus->SetRange(fit_low_limit_1173.at(vector_index),fit_high_limit_1173.at(vector_index));
 
     h1_germanium_uncal[active_channels_indexes.at(vector_index)]->Fit(simple_gaus,"QRN");

@@ -1177,6 +1177,50 @@ void FrsCal2Hit::ProcessMusic()
         b_de[1] = kTRUE;
     }
     #endif
+    
+    auto const & calTpcItem = calTpcArray->at(0);
+    double music1_x_mean = calTpcItem.Get_tpc_music41_x();
+    double music2_x_mean = calTpcItem.Get_tpc_music42_x();
+
+    if (b_de[0])
+    {
+        int power = 1.;
+        double Corr = 0.;
+        for (int i = 0; i <= 6; i++)
+        {
+            Corr += music->pos_a1[i] * power;
+            power *= music1_x_mean;
+        }
+        if (Corr != 0)
+        {
+            Corr = music->pos_a1[0] / Corr;
+            de_cor[0] = de[0] * Corr;
+        }else{
+            de_cor[0] = de[0];
+        }
+    }
+
+
+    if (b_de[1])
+    {
+        int power = 1.;
+        double Corr = 0.;
+        for (int i = 0; i <= 6; i++)
+        {
+            Corr += music->pos_a2[i] * power;
+            power *= music2_x_mean;
+        }
+        if (Corr != 0)
+        {
+            Corr = music->pos_a2[0] / Corr;
+            de_cor[1] = de[1] * Corr;
+        }else{
+            de_cor[1] = de[1];
+        }
+    }
+
+
+
 }
 
 void FrsCal2Hit::ProcessIDs()
@@ -1251,8 +1295,8 @@ void FrsCal2Hit::ProcessIDs()
         id_b8 = 0.0;
     }
 
-    id_b_x2 = ((id_x2 > -200) && (id_x2 < 100));
-    id_b_x4 = ((id_x4 > -200) && (id_x4 < 100));
+    id_b_x2 = ((id_x2 > -200) && (id_x2 < 200));
+    id_b_x4 = ((id_x4 > -200) && (id_x4 < 200)); // why cut at 100? it is 120 wide no?
     
 
     /*----------------------------------------------------------*/
@@ -1319,9 +1363,10 @@ void FrsCal2Hit::ProcessIDs()
     /* Determination of Z                           */
     /*------------------------------------------------*/
     // Calibration with MUSIC is done with 1/b2 - last update sept2024
+    
 
     // S4 (MUSIC 1)
-    if ((de[0] > 0.0) && (id_beta > 0.0) && (id_beta < 1.0))
+    if ((de_cor[0] > 0.0) && (id_beta > 0.0) && (id_beta < 1.0))
     {
         float power = 1.;
         float sum = 0.;
@@ -1334,7 +1379,7 @@ void FrsCal2Hit::ProcessIDs()
         id_v_cor = sum;
         if (id_v_cor > 0.0)
         {
-            id_z = frs->primary_z * sqrt(de[0] / id_v_cor) + id->offset_z;
+            id_z = frs->primary_z * sqrt(de_cor[0] / id_v_cor) + id->offset_z;
 
             if (music41_tac_z_gain_shifts != nullptr){
                 id_z = id_z + music41_tac_z_gain_shifts->GetGain((uint64_t)wr_t);
@@ -1348,7 +1393,7 @@ void FrsCal2Hit::ProcessIDs()
     }
 
     // S4 (MUSIC 2)
-    if ((de[1] > 0.0) && (id_beta > 0.0) && (id_beta < 1.0))
+    if ((de_cor[1] > 0.0) && (id_beta > 0.0) && (id_beta < 1.0))
     {
         float power = 1.;
         float sum = 0.;
@@ -1362,7 +1407,7 @@ void FrsCal2Hit::ProcessIDs()
 
         if (id_v_cor2 > 0.0)
         {
-            id_z2 = frs->primary_z * sqrt(de[1] / id_v_cor2) + id->offset_z2;
+            id_z2 = frs->primary_z * sqrt(de_cor[1] / id_v_cor2) + id->offset_z2;
 
             if (music42_tac_z_gain_shifts != nullptr){
                 id_z2 = id_z2 + music42_tac_z_gain_shifts->GetGain((uint64_t)wr_t);
