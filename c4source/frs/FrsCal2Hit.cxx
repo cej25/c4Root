@@ -1844,8 +1844,8 @@ void FrsCal2Hit::ProcessIDs()
         {
             // sum += power * id->vel_a1[i];
             sum += power * id->vel_music41_a[i];
-            power *= id_beta_s2s4;
-            // power *= 1.0 / TMath::Power(id_beta_s2s4, 2);
+            // power *= id_beta_s2s4;
+            power *= 1.0 / TMath::Power(id_beta_s2s4, 2);
         }
         id_music41_v_cor = sum;
 
@@ -1872,8 +1872,8 @@ void FrsCal2Hit::ProcessIDs()
         {
             // sum += power * id->vel_a2[i];
             sum += power * id->vel_music42_a[i];
-            power *= id_beta_s2s4;
-            // power *= 1.0 / TMath::Power(id_beta_s2s4, 2);
+            // power *= id_beta_s2s4;
+            power *= 1.0 / TMath::Power(id_beta_s2s4, 2);
         }
         id_music42_v_cor = sum;
 
