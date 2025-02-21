@@ -7,7 +7,7 @@
 #define BGO_ON 0
 #define FRS_ON 1
 #define TIME_MACHINE_ON 1
-#define BEAMMONITOR_ON 0
+#define BEAMMONITOR_ON 1
 #define WHITE_RABBIT_CORS 1
 #define BB7_ON 0
 
@@ -15,7 +15,7 @@
 // CEJ: not configured for s101 yet
 extern "C"
 {
-    #include "../../config/s101/frs/setup_302_start_2025_conv.C"
+    #include "../../config/s101/frs/setup_302_008_2025_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -163,8 +163,8 @@ void s101_online()
     if (BPLAST_ON)
     {
         bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_bplast_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
-        //unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_s181_7June.root", 1000000);
-         unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_s181_7June.root");
+        //unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_G302_21FEB.root", 1000000);
+        unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_G302_21FEB.root");
         
         unpackbplast->SetOnline(true);
         source->AddReader(unpackbplast);
@@ -339,7 +339,7 @@ void s101_online()
         
     }
     
-     TFrsConfiguration::Set_Z_range(30,50);
+     TFrsConfiguration::Set_Z_range(30,70);
      TFrsConfiguration::Set_AoQ_range(2.1,2.4);
      TFrsConfiguration::Set_x2_range(-120,120);
      TFrsConfiguration::Set_x4_range(-120,120);
