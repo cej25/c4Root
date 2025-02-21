@@ -153,10 +153,16 @@ void AidaUnpack2Cal::Exec(Option_t* option)
     {
       // std::cout << "dssd3 ::::  " << unpack.Channel() << std::endl;
       side = (unpack.Channel() >= 0 && unpack.Channel() < 32) ? -1 : ((unpack.Channel() >= 32 && unpack.Channel() < 64) ? 1 : 0);
-      if (side == -1) strip = unpack.Channel();
+      if (side == -1) 
+      {
+        // strip = unpack.Channel();
+        if (unpack.Channel() >= 0 && unpack.Channel() < 16) strip = unpack.Channel() + 16;
+        else if (unpack.Channel() >= 16 && unpack.Channel() < 32) strip = unpack.Channel() - 16;
+      }
       else if (side == 1) 
       {
-        strip = unpack.Channel() - 32;
+        if (unpack.Channel() >= 32 && unpack.Channel() < 48) strip = unpack.Channel() + 16 - 32;
+        else if (unpack.Channel() >= 48 && unpack.Channel() < 64) strip = unpack.Channel() - 16 - 32;
         // std::cout << unpack.Channel() << std::endl;
       }
 
