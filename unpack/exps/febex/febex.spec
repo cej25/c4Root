@@ -22,10 +22,10 @@ SUBEVENT(bb_first_subev)
 	    data[1] = FEBEX_EVENT_TRACES(card=1);
         data[2] = FEBEX_EVENT_TRACES(card=2);
         data[3] = FEBEX_EVENT_TRACES(card=3);
-        data[4] = FEBEX_EVENT_TRACES(card=4);
-        data[5] = FEBEX_EVENT_TRACES(card=5);
-        data[6] = FEBEX_EVENT_TRACES(card=6);
-        data[7] = FEBEX_EVENT_TRACES(card=7);
+        // data[4] = FEBEX_EVENT_TRACES(card=4);
+        // data[5] = FEBEX_EVENT_TRACES(card=5);
+        // data[6] = FEBEX_EVENT_TRACES(card=6);
+        // data[7] = FEBEX_EVENT_TRACES(card=7);
     }
 	
 }
@@ -49,15 +49,17 @@ SUBEVENT(bb_second_subev)
         data[2] = FEBEX_EVENT_TRACES(card=2);
         data[3] = FEBEX_EVENT_TRACES(card=3);
         data[4] = FEBEX_EVENT_TRACES(card=4);
-        data[5] = FEBEX_EVENT_TRACES(card=5);
-        data[6] = FEBEX_EVENT_TRACES(card=6);
-        data[7] = FEBEX_EVENT_TRACES(card=7);
+        // data[5] = FEBEX_EVENT_TRACES(card=5);
+        // data[6] = FEBEX_EVENT_TRACES(card=6);
+        // data[7] = FEBEX_EVENT_TRACES(card=7);
     }
 	
 }
 
 EVENT
 {
-    bb_first = bb_first_subev(procid=35);
-    bb_second = bb_second_subev(procid=36);
+    bbfirst = bb_first_subev(procid=35, control=20);
+    bbsecond = bb_second_subev(procid=36);
+
+    ignore_unknown_subevent;
 }

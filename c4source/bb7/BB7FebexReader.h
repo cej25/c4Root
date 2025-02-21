@@ -9,20 +9,20 @@
 
 extern "C"
 {
-    #include "ext_h101_bb7febex.h"
+    #include "ext_h101_bbfebex.h"
 }
 
 class TClonesArray;
 
-struct EXT_STR_h101_bb7febex_t;
-typedef struct EXT_STR_h101_bb7febex_t EXT_STR_h101_bb7febex;
-typedef struct EXT_STR_h101_bb7febex_onion_t EXT_STR_h101_bb7febex_onion;
+struct EXT_STR_h101_bbfebex_t;
+typedef struct EXT_STR_h101_bbfebex_t EXT_STR_h101_bbfebex;
+typedef struct EXT_STR_h101_bbfebex_onion_t EXT_STR_h101_bbfebex_onion;
 class ext_data_struct_info;
 
 class BB7FebexReader : public c4Reader
 {
     public:
-        BB7FebexReader(EXT_STR_h101_bb7febex_onion*, size_t);
+        BB7FebexReader(EXT_STR_h101_bbfebex_onion*, size_t);
 
         virtual ~BB7FebexReader();
 
@@ -37,7 +37,7 @@ class BB7FebexReader : public c4Reader
     private:
         Int_t fNEvent;
 
-        EXT_STR_h101_bb7febex_onion* fData;
+        EXT_STR_h101_bbfebex_onion* fData;
 
         size_t fOffset;
 
@@ -45,7 +45,7 @@ class BB7FebexReader : public c4Reader
         
         TClonesArray* fArray;
 
-        const int NBoards = 8; // maximum (2 x BB7 boards which don't exist right now?)
+        const int NBoards = 5; // maximum (2 x BB7 boards which don't exist right now?)
 
         int32_t energy;
         int64_t wr_t_first = 0;

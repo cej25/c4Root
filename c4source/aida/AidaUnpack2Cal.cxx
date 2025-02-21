@@ -148,11 +148,18 @@ void AidaUnpack2Cal::Exec(Option_t* option)
 
     int side = 0;
     int strip = 0;
+
     if (feeConf.Type == 2)
     {
+      // std::cout << "dssd3 ::::  " << unpack.Channel() << std::endl;
       side = (unpack.Channel() >= 0 && unpack.Channel() < 32) ? -1 : ((unpack.Channel() >= 32 && unpack.Channel() < 64) ? 1 : 0);
       if (side == -1) strip = unpack.Channel();
-      else if (side == 1) strip = unpack.Channel() - 32;
+      else if (side == 1) 
+      {
+        strip = unpack.Channel() - 32;
+        // std::cout << unpack.Channel() << std::endl;
+      }
+
     }
     else
     {

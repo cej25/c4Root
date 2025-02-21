@@ -60,12 +60,12 @@ void BB7FebexRaw2Cal::Exec(Option_t* option)
     bb7calImplants->clear();
     bb7calDecays->clear();
 
-    std::cout << "EVENT :: " << std::endl;
+    // std::cout << "EVENT :: " << std::endl;
     for (auto const & bb7item : *bb7array)
     {
-        std::cout << "Crate :: " << bb7item.Get_crate_id() << std::endl;
-        std::cout << "Board :: " << bb7item.Get_board_id() << std::endl;
-        std::cout << "Channel :: " << bb7item.Get_channel_id_traces() << std::endl;
+        // std::cout << "Crate :: " << bb7item.Get_crate_id() << std::endl;
+        // std::cout << "Board :: " << bb7item.Get_board_id() << std::endl;
+        // std::cout << "Channel :: " << bb7item.Get_channel_id_traces() << std::endl;
         // channel id or channel id traces?
         std::pair<int, int> febex_mc = {bb7item.Get_board_id(), bb7item.Get_channel_id_traces()};
         std::pair<int, std::pair<int, int>> unmapped_channel = {bb7item.Get_crate_id(), febex_mc};
@@ -80,9 +80,9 @@ void BB7FebexRaw2Cal::Exec(Option_t* option)
                 int side = detector_mapping.at(unmapped_channel).second.first;
                 int strip = detector_mapping.at(unmapped_channel).second.second;
 
-                std::cout << "dssd:: " << dssd << std::endl;
-                std::cout << "side:: " << side << std::endl;
-                std::cout << "strip:: " << strip << std::endl;
+                // std::cout << "dssd:: " << dssd << std::endl;
+                // std::cout << "side:: " << side << std::endl;
+                // std::cout << "strip:: " << strip << std::endl;
 
                 uint32_t energy = bb7item.Get_channel_energy();
                 double energy_calib = energy;

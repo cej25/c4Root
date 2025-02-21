@@ -11,10 +11,10 @@
 extern "C"
 {
     #include "ext_data_client.h"
-    #include "ext_h101_bb7febex.h"
+    #include "ext_h101_bbfebex.h"
 }
 
-BB7FebexReader::BB7FebexReader(EXT_STR_h101_bb7febex_onion* data, size_t offset)
+BB7FebexReader::BB7FebexReader(EXT_STR_h101_bbfebex_onion* data, size_t offset)
     :   c4Reader("BB7FebexReader")
     ,   fNEvent(0)
     ,   fData(data)
@@ -35,7 +35,7 @@ Bool_t BB7FebexReader::Init(ext_data_struct_info* a_struct_info)
     Int_t ok;
     c4LOG(info, "");
 
-    EXT_STR_h101_bb7febex_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_bb7febex, 0);
+    EXT_STR_h101_bbfebex_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_bbfebex, 0);
 
     if (!ok)
     {
@@ -59,48 +59,48 @@ Bool_t BB7FebexReader::Read()
     wr_t_second = 0;
 
     //int64_t wr_t = (((uint64_t)fData->bbsfebex_ts_t[3]) << 48) + (((uint64_t)fData->bbsfebex_ts_t[2]) << 32) + (((uint64_t)fData->bbsfebex_ts_t[1]) << 16) + (uint64_t)(fData->bbsfebex_ts_t[0]);
-    wr_t_first = (((uint64_t)fData->bb_first_ts_t[3]) << 48) + (((uint64_t)fData->bb_first_ts_t[2]) << 32) + (((uint64_t)fData->bb_first_ts_t[1]) << 16) + (uint64_t)(fData->bb_first_ts_t[0]);
-    uint32_t wr_id_first = fData->bb_first_ts_subsystem_id;
+    wr_t_first = (((uint64_t)fData->bbfirst_ts_t[3]) << 48) + (((uint64_t)fData->bbfirst_ts_t[2]) << 32) + (((uint64_t)fData->bbfirst_ts_t[1]) << 16) + (uint64_t)(fData->bbfirst_ts_t[0]);
+    uint32_t wr_id_first = fData->bbfirst_ts_subsystem_id;
     
     if (wr_t_first != 0)
     {
-        for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
+        for (int it_board_number = 0; it_board_number < 4; it_board_number++)
         {
             //since the febex card has a 100MHz clock which timestamps events.
-            uint16_t trig = fData->bb_first_data[it_board_number].trig;
-            uint64_t event_trigger_time_long = (((uint64_t)(fData->bb_first_data[it_board_number].event_trigger_time_hi) << 32) + (fData->bb_first_data[it_board_number].event_trigger_time_lo))*10;
+            uint16_t trig = fData->bbfirst_data[it_board_number].trig;
+            uint64_t event_trigger_time_long = (((uint64_t)(fData->bbfirst_data[it_board_number].event_trigger_time_hi) << 32) + (fData->bbfirst_data[it_board_number].event_trigger_time_lo))*10;
             
             if (event_trigger_time_long <= 0) continue; // skip boards that don't fire, since NBoards is set to absolute maximum
     
-            uint32_t board_num = fData->bb_first_data[it_board_number].board_num;
+            uint32_t board_num = fData->bbfirst_data[it_board_number].board_num;
 
             //::::::::::::::Multiplicity: Called num_channels_fired from unpacker
-            uint32_t M = fData->bb_first_data[it_board_number].num_channels_fired;
+            uint32_t M = fData->bbfirst_data[it_board_number].num_channels_fired;
 
             for (int index = 0; index < M; index++) //GENERAL
             {
                 //::::::::::::::Channel ID
-                uint32_t channel_id = fData->bb_first_data[it_board_number].channel_idv[index];
+                uint32_t channel_id = fData->bbfirst_data[it_board_number].channel_idv[index];
 
                 //::::::::::::::Channel Trigger Time
-                uint64_t channel_trigger_time_long = (((uint64_t)(fData->bb_first_data[it_board_number].channel_trigger_time_hiv[index]) << 32) + 
-                (fData->bb_first_data[it_board_number].channel_trigger_time_lov[index]))*10;
+                uint64_t channel_trigger_time_long = (((uint64_t)(fData->bbfirst_data[it_board_number].channel_trigger_time_hiv[index]) << 32) + 
+                (fData->bbfirst_data[it_board_number].channel_trigger_time_lov[index]))*10;
 
                 //::::::::::::::Channel PileUp
-                bool pileup = fData->bb_first_data[it_board_number].pileupv[index] & 0x1;
+                bool pileup = fData->bbfirst_data[it_board_number].pileupv[index] & 0x1;
         
                 //::::::::::::::Channel OverFlow
-                bool overflow = fData->bb_first_data[it_board_number].overflowv[index] & 0x1;
+                bool overflow = fData->bbfirst_data[it_board_number].overflowv[index] & 0x1;
 
                 //::::::::::::::Channel Energy
                 //according to febex manual on gsi website, the 24th bit of the energy denotes the sign to indicate the polarity of the pulse
-                if (fData->bb_first_data[it_board_number].channel_energyv[index] & (1 << 23))
+                if (fData->bbfirst_data[it_board_number].channel_energyv[index] & (1 << 23))
                 {
-                    energy = -(int32_t)(fData->bb_first_data[it_board_number].channel_energyv[index] & 0x007FFFFF);
+                    energy = -(int32_t)(fData->bbfirst_data[it_board_number].channel_energyv[index] & 0x007FFFFF);
                 }
                 else
                 {
-                    energy = +(int32_t)(fData->bb_first_data[it_board_number].channel_energyv[index] & 0x007FFFFF);            
+                    energy = +(int32_t)(fData->bbfirst_data[it_board_number].channel_energyv[index] & 0x007FFFFF);            
                 }
 
                 std::vector<uint16_t> trace;
@@ -108,9 +108,9 @@ Bool_t BB7FebexReader::Read()
                 // this is changed from "index" to "channel_id" since sometimes we get less than 16 channels fired, but we always get 16 traces in order
 
                 //::::::::::::::Channel Traces with ID from channel header
-                for (int l = 0 ; l < fData->bb_first_data[it_board_number].trace_traces[channel_id]._ ; l++)
+                for (int l = 0; l < fData->bbfirst_data[it_board_number].trace_traces[channel_id]._ ; l++)
                 {
-                    trace.emplace_back(fData->bb_first_data[it_board_number].trace_traces[channel_id].v[l]);    
+                    trace.emplace_back(fData->bbfirst_data[it_board_number].trace_traces[channel_id].v[l]);    
                 }
 
                 auto & entry = bb7array->emplace_back();
@@ -136,48 +136,48 @@ Bool_t BB7FebexReader::Read()
     bb7array->clear();
 
     // second crate solution I guess
-    wr_t_second = (((uint64_t)fData->bb_second_ts_t[3]) << 48) + (((uint64_t)fData->bb_second_ts_t[2]) << 32) + (((uint64_t)fData->bb_second_ts_t[1]) << 16) + (uint64_t)(fData->bb_second_ts_t[0]);
-    uint32_t wr_id_second = fData->bb_second_ts_subsystem_id;
+    wr_t_second = (((uint64_t)fData->bbsecond_ts_t[3]) << 48) + (((uint64_t)fData->bbsecond_ts_t[2]) << 32) + (((uint64_t)fData->bbsecond_ts_t[1]) << 16) + (uint64_t)(fData->bbsecond_ts_t[0]);
+    uint32_t wr_id_second = fData->bbsecond_ts_subsystem_id;
 
     if (wr_t_second != 0)
     {
-        for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
+        for (int it_board_number = 0; it_board_number < 5; it_board_number++)
         {
             //since the febex card has a 100MHz clock which timestamps events.
-            uint16_t trig = fData->bb_second_data[it_board_number].trig;
-            uint64_t event_trigger_time_long = (((uint64_t)(fData->bb_second_data[it_board_number].event_trigger_time_hi) << 32) + (fData->bb_second_data[it_board_number].event_trigger_time_lo))*10;
+            uint16_t trig = fData->bbsecond_data[it_board_number].trig;
+            uint64_t event_trigger_time_long = (((uint64_t)(fData->bbsecond_data[it_board_number].event_trigger_time_hi) << 32) + (fData->bbsecond_data[it_board_number].event_trigger_time_lo))*10;
             
             if (event_trigger_time_long <= 0) continue; // skip boards that don't fire, since NBoards is set to absolute maximum
     
-            uint32_t board_num = fData->bb_second_data[it_board_number].board_num;
+            uint32_t board_num = fData->bbsecond_data[it_board_number].board_num;
 
             //::::::::::::::Multiplicity: Called num_channels_fired from unpacker
-            uint32_t M = fData->bb_second_data[it_board_number].num_channels_fired;
+            uint32_t M = fData->bbsecond_data[it_board_number].num_channels_fired;
 
             for (int index = 0; index < M; index++) //GENERAL
             {
                 //::::::::::::::Channel ID
-                uint32_t channel_id = fData->bb_second_data[it_board_number].channel_idv[index];
+                uint32_t channel_id = fData->bbsecond_data[it_board_number].channel_idv[index];
 
                 //::::::::::::::Channel Trigger Time
-                uint64_t channel_trigger_time_long = (((uint64_t)(fData->bb_second_data[it_board_number].channel_trigger_time_hiv[index]) << 32) + 
-                (fData->bb_second_data[it_board_number].channel_trigger_time_lov[index]))*10;
+                uint64_t channel_trigger_time_long = (((uint64_t)(fData->bbsecond_data[it_board_number].channel_trigger_time_hiv[index]) << 32) + 
+                (fData->bbsecond_data[it_board_number].channel_trigger_time_lov[index]))*10;
 
                 //::::::::::::::Channel PileUp
-                bool pileup = fData->bb_second_data[it_board_number].pileupv[index] & 0x1;
+                bool pileup = fData->bbsecond_data[it_board_number].pileupv[index] & 0x1;
         
                 //::::::::::::::Channel OverFlow
-                bool overflow = fData->bb_second_data[it_board_number].overflowv[index] & 0x1;
+                bool overflow = fData->bbsecond_data[it_board_number].overflowv[index] & 0x1;
 
                 //::::::::::::::Channel Energy
                 //according to febex manual on gsi website, the 24th bit of the energy denotes the sign to indicate the polarity of the pulse
-                if (fData->bb_second_data[it_board_number].channel_energyv[index] & (1 << 23))
+                if (fData->bbsecond_data[it_board_number].channel_energyv[index] & (1 << 23))
                 {
-                    energy = -(int32_t)(fData->bb_second_data[it_board_number].channel_energyv[index] & 0x007FFFFF);
+                    energy = -(int32_t)(fData->bbsecond_data[it_board_number].channel_energyv[index] & 0x007FFFFF);
                 }
                 else
                 {
-                    energy = +(int32_t)(fData->bb_second_data[it_board_number].channel_energyv[index] & 0x007FFFFF);            
+                    energy = +(int32_t)(fData->bbsecond_data[it_board_number].channel_energyv[index] & 0x007FFFFF);            
                 }
 
                 std::vector<uint16_t> trace;
@@ -186,9 +186,9 @@ Bool_t BB7FebexReader::Read()
                 // not really sure what the solution for LISA is 
 
                 //::::::::::::::Channel Traces with ID from channel header
-                for (int l = 0 ; l < fData->bb_second_data[it_board_number].trace_traces[channel_id]._ ; l++)
+                for (int l = 0 ; l < fData->bbsecond_data[it_board_number].trace_traces[channel_id]._ ; l++)
                 {
-                    trace.emplace_back(fData->bb_second_data[it_board_number].trace_traces[channel_id].v[l]);    
+                    trace.emplace_back(fData->bbsecond_data[it_board_number].trace_traces[channel_id].v[l]);    
                 }
 
                 auto & entry = bb7array->emplace_back();

@@ -4,8 +4,13 @@
 typedef struct EXT_STR_h101_t
 {   
     EXT_STR_h101_unpack_t eventheaders;
-    // EXT_STR_h101_bb7vme_onion_t bb7vme;
-    EXT_STR_h101_bb7febex_onion_t bb7febex;
+    // EXT_STR_h101_aida_onion_t aida;
+    // EXT_STR_h101_bplast_onion_t bplast;
+    // EXT_STR_h101_germanium_onion_t germanium;
+    // EXT_STR_h101_frs_onion_t frs;
+    // EXT_STR_h101_beammonitor_onion_t beammonitor;
+    // EXT_STR_h101_bgo_onion_t bgo;
+    EXT_STR_h101_bbfebex_onion_t bbfebex;
 } EXT_STR_h101;
 
 
@@ -14,7 +19,7 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     // Name your experiment. Make sure all relevant directories are named identically.
     // TString fExpName = "NovTest";
     //TString fExpName = "s100";
-    TString fExpName = "febex";
+    TString fExpName = "s101";
 
 
     // Define important paths.
@@ -38,7 +43,8 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     // TString filename = "~/lustre/despec/bb7_test_2025/Co_jun_ohm_0200.lmd";
-    TString filename = "~/lustre/despec/bb7_test_2025/exp_bkg_daq2_0001.lmd";
+    // TString filename = "~/lustre/despec/bb7_test_2025/exp_bkg_daq2_0001.lmd";
+    TString filename = "trans://lxg3107";
     //TString filename = "~/lustre/despec/bb7_test_2025/bkg_jun_ohm_full_0106.lmd";
     TString outputpath = "bb7_test_output";
     TString outputFileName = outputpath + ".root";
@@ -58,7 +64,7 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
 
     // Create source using ucesb for input
     EXT_STR_h101 ucesb_struct;
-    TString ntuple_options = "UNPACK"; // Define which level of data to unpack
+    TString ntuple_options = "UNPACK,RAW"; // Define which level of data to unpack
     UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
     source->SetMaxEvents(nev);
     run->SetSource(source);
@@ -88,7 +94,7 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     
 
     //BB7Reader* unpackbb7 = new BB7Reader((EXT_STR_h101_bb7vme_onion*)&ucesb_struct.bb7vme, offsetof(EXT_STR_h101, bb7vme));
-    BB7FebexReader* unpackbb7 = new BB7FebexReader((EXT_STR_h101_bb7febex_onion*)&ucesb_struct.bb7febex, offsetof(EXT_STR_h101, bb7febex));
+    BB7FebexReader* unpackbb7 = new BB7FebexReader((EXT_STR_h101_bbfebex_onion*)&ucesb_struct.bbfebex, offsetof(EXT_STR_h101, bbfebex));
 
     unpackbb7->SetOnline(false);
     source->AddReader(unpackbb7);
