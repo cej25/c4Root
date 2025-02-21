@@ -218,7 +218,7 @@ void TGermaniumConfiguration::ReadPromptFlashCutMulti()
 
     }
 
-    c4LOG(info,Form("read %i prompt flash cuts",prompt_flash_cut_multi.size()));
+    c4LOG(info,"Read " << prompt_flash_cut_multi.size() << " prompt flash cuts");
 
     if (prompt_flash_cut_multi.size() == 0) // Log warning if no cut found at all
     {
