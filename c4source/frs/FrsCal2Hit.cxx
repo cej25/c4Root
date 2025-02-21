@@ -2107,7 +2107,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
     // Calculate Z (MUSIC 21 / 22)
     for (int i = 0; i < hits_in_s1s2; i++)
     {
-        if (music21_de > 0.0 && id_mhtdc_beta_s1s2[i] > 0.0 && id_mhtdc_beta_s1s2[i] < 1.0)
+        if (music21_de_cor > 0.0 && id_mhtdc_beta_s1s2[i] > 0.0 && id_mhtdc_beta_s1s2[i] < 1.0)
         {
             Double_t power = 1., sum = 0.;
             for (int j = 0; j < 4; j++)
@@ -2124,7 +2124,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
             }
         }
 
-        if (music22_de > 0.0 && id_mhtdc_beta_s1s2[i] > 0.0 && id_mhtdc_beta_s1s2[i] < 1.0)
+        if (music22_de_cor > 0.0 && id_mhtdc_beta_s1s2[i] > 0.0 && id_mhtdc_beta_s1s2[i] < 1.0)
         {
             Double_t power = 1., sum = 0.;
             for (int j = 0; j < 4; j++)
@@ -2235,7 +2235,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
     // Calculate Z (MUSIC 41 / 42 / 43)
     for (int i = 0; i < hits_in_s2s4; i++)
     {
-        if (music41_de > 0.0 && id_mhtdc_beta_s2s4[i] > 0.0 && id_mhtdc_beta_s2s4[i] < 1.0)
+        if (music41_de_cor > 0.0 && id_mhtdc_beta_s2s4[i] > 0.0 && id_mhtdc_beta_s2s4[i] < 1.0)
         {
             Double_t power = 1., sum = 0.;
             for (int j = 0; j < 4; j++)
@@ -2251,9 +2251,20 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
                 id_mhtdc_z_music41[i] = frs->primary_z * sqrt(music41_de / id_mhtdc_v_cor_music41[i]);
                 id_mhtdc_z_shifted_music41[i] = id_mhtdc_z_music41[i] + id->mhtdc_offset_z_music41;
             }
+            else
+            {
+                id_mhtdc_z_music41[i] = -999.;
+                id_mhtdc_z_shifted_music41[i] = -999.;
+            }
         }
+        else
+        {
+            id_mhtdc_z_music41[i] = -999.;
+            id_mhtdc_z_shifted_music41[i] = -999.;
+        }
+        
 
-        if (music42_de > 0.0 && id_mhtdc_beta_s2s4[i] > 0.0 && id_mhtdc_beta_s2s4[i] < 1.0)
+        if (music42_de_cor > 0.0 && id_mhtdc_beta_s2s4[i] > 0.0 && id_mhtdc_beta_s2s4[i] < 1.0)
         {
             Double_t power = 1., sum = 0.;
             for (int j = 0; j < 4; j++)
@@ -2269,9 +2280,19 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
                 id_mhtdc_z_music42[i] = frs->primary_z * sqrt(music42_de / id_mhtdc_v_cor_music42[i]);
                 id_mhtdc_z_shifted_music42[i] = id_mhtdc_z_music42[i] + id->mhtdc_offset_z_music42;
             }
+            else
+            {
+                id_mhtdc_z_music42[i] = -999.;
+                id_mhtdc_z_shifted_music42[i] = -999.;
+            }
+        }
+        else
+        {
+            id_mhtdc_z_music42[i] = -999.;
+            id_mhtdc_z_shifted_music42[i] = -999.;
         }
 
-        if (music43_de > 0.0 && id_mhtdc_beta_s2s4[i] > 0.0 && id_mhtdc_beta_s2s4[i] < 1.0)
+        if (music43_de_cor > 0.0 && id_mhtdc_beta_s2s4[i] > 0.0 && id_mhtdc_beta_s2s4[i] < 1.0)
         {
             Double_t power = 1., sum = 0.;
             for (int j = 0; j < 4; j++)
@@ -2286,6 +2307,16 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
                 id_mhtdc_z_music43[i] = frs->primary_z * sqrt(music43_de / id_mhtdc_v_cor_music43[i]);
                 id_mhtdc_z_shifted_music43[i] = id_mhtdc_z_music43[i] + id->mhtdc_offset_z_music43;
             }
+            else
+            {
+                id_mhtdc_z_music43[i] = -999.;
+                id_mhtdc_z_shifted_music43[i] = -999.;
+            }
+        }
+        else
+        {
+            id_mhtdc_z_music43[i] = -999.;
+            id_mhtdc_z_shifted_music43[i] = -999.;
         }
     }
    

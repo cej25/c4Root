@@ -647,10 +647,10 @@ void FrsOnlineSpectra::Exec(Option_t* option)
     {
         if (frs_config->plot_mhtdc_2d)
         {   
-            if (z41_mhtdc.at(i) > 0 && AoQ_s2s4_mhtdc.at(i) > 0) h2_Z41_vs_AoQs2s4_mhtdc->Fill(z41_mhtdc.at(i), AoQ_s2s4_mhtdc.at(i));
-            if (z41_mhtdc.at(i) > 0 && AoQ_corr_s2s4_mhtdc.at(i) > 0) h2_Z41_vs_AoQs2s4_corr_mhtdc->Fill(z41_mhtdc.at(i), AoQ_corr_s2s4_mhtdc.at(i));
+            if (z41_mhtdc.at(i) > 0 && AoQ_s2s4_mhtdc.at(i) > 0) h2_Z41_vs_AoQs2s4_mhtdc->Fill(AoQ_s2s4_mhtdc.at(i), z41_mhtdc.at(i));
+            if (z41_mhtdc.at(i) > 0 && AoQ_corr_s2s4_mhtdc.at(i) > 0) h2_Z41_vs_AoQs2s4_corr_mhtdc->Fill(AoQ_corr_s2s4_mhtdc.at(i), z41_mhtdc.at(i));
             if (z41_mhtdc.at(i) > 0 && z42_mhtdc.at(i) > 0) h2_Z41_vs_Z42_mhtdc->Fill(z41_mhtdc.at(i), z42_mhtdc.at(i));
-            if (z41_mhtdc.at(i) > 0 && AoQ_s2s4_mhtdc.at(i) > 0 && TMath::Abs(z41_mhtdc.at(i) - z42_mhtdc.at(i)) < 0.4) h2_Z41_vs_AoQs2s4_Zsame_mhtdc->Fill(z41_mhtdc.at(i), AoQ_s2s4_mhtdc.at(i));
+            if (z41_mhtdc.at(i) > 0 && AoQ_s2s4_mhtdc.at(i) > 0 && TMath::Abs(z41_mhtdc.at(i) - z42_mhtdc.at(i)) < 0.4) h2_Z41_vs_AoQs2s4_Zsame_mhtdc->Fill(AoQ_s2s4_mhtdc.at(i), z41_mhtdc.at(i));
             if (AoQ_s2s4_mhtdc.at(i) > 0 && TMath::Abs(z41_mhtdc.at(i) - z42_mhtdc.at(i)) < 0.4) h2_x2_vs_AoQs2s4_Zsame_mhtdc->Fill(AoQ_s2s4_mhtdc.at(i), hitItem.Get_ID_x2());
             if (AoQ_s2s4_mhtdc.at(i) > 0 && TMath::Abs(z41_mhtdc.at(i) - z42_mhtdc.at(i)) < 0.4) h2_x4_vs_AoQs2s4_Zsame_mhtdc->Fill(AoQ_s2s4_mhtdc.at(i), hitItem.Get_ID_x4());
             if (AoQ_s2s4_mhtdc.at(i) > 0) h2_x2_vs_AoQs2s4_mhtdc->Fill(AoQ_s2s4_mhtdc.at(i), hitItem.Get_ID_x2());
