@@ -426,7 +426,7 @@ void s101_online()
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({b,c});
+        wronline->SetDetectorSystems({b,c,d,e});
         
         run->AddTask(wronline);
     }
