@@ -15,7 +15,7 @@
 // CEJ: not configured for s101 yet
 extern "C"
 {
-    #include "../../config/s101/frs/setup_302_011_2025_conv.C"
+    #include "../../config/s101/frs/setup_302_012_2025_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures
