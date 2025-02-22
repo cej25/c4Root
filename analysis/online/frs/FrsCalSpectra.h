@@ -3,6 +3,8 @@
 
 #include "FairTask.h"
 #include "FrsCalData.h"
+#include "TFRSParameter.h"
+#include "TFrsConfiguration.h"
 
 #include "TDirectory.h"
 #include "TFolder.h"
@@ -42,6 +44,8 @@ class FrsCalSpectra : public FairTask
 
 
     private:
+        TFrsConfiguration const* frs_config;
+        TSCIParameter* sci;
 
         std::vector<FrsCalSciItem> const* calSciArray;
         std::vector<FrsCalTpcItem> const* calTpcArray;
@@ -70,7 +74,9 @@ class FrsCalSpectra : public FairTask
  
         // Histograms
 
-        // TAC dE         
+        // TAC dE
+        TH1* h1_sci_tac_de_11l;
+        TH1* h1_sci_tac_de_11r;
         TH1* h1_sci_tac_de_21l;
         TH1* h1_sci_tac_de_21r;
         TH1* h1_sci_tac_de_22l;
@@ -86,12 +92,15 @@ class FrsCalSpectra : public FairTask
         TH1* h1_sci_tac_de_81l;
         TH1* h1_sci_tac_de_81r;
 
-        // TAC dT    
+        // TAC dT
+        TH1* h1_sci_tac_dt_11l_11r;
         TH1* h1_sci_tac_dt_21l_21r;
         TH1* h1_sci_tac_dt_41l_41r;
         TH1* h1_sci_tac_dt_42l_42r;
         TH1* h1_sci_tac_dt_43l_43r;
         TH1* h1_sci_tac_dt_81l_81r;
+        TH1* h1_sci_tac_dt_11l_21l;
+        TH1* h1_sci_tac_dt_11r_21r;
         TH1* h1_sci_tac_dt_21l_41l;
         TH1* h1_sci_tac_dt_21r_41r;
         TH1* h1_sci_tac_dt_42r_21r;
@@ -105,6 +114,8 @@ class FrsCalSpectra : public FairTask
         TH1* h1_sci_tac_dt_22r_81r;
         
         // MHTDC T
+        TH1* h1_sci_mhtdc_t_11l;
+        TH1* h1_sci_mhtdc_t_11r;
         TH1* h1_sci_mhtdc_t_21l;
         TH1* h1_sci_mhtdc_t_21r;
         TH1* h1_sci_mhtdc_t_22l;
@@ -119,10 +130,13 @@ class FrsCalSpectra : public FairTask
         TH1* h1_sci_mhtdc_t_81r;
 
         // MHTDC dT
+        TH1* h1_sci_mhtdc_dt_11l_11r;
         TH1* h1_sci_mhtdc_dt_21l_21r;
         TH1* h1_sci_mhtdc_dt_22l_22r;
         TH1* h1_sci_mhtdc_dt_41l_41r;
-        TH1* h1_sci_mhtdc_dt_42l_42r;    
+        TH1* h1_sci_mhtdc_dt_42l_42r;
+        TH1* h1_sci_mhtdc_dt_11l_21l;
+        TH1* h1_sci_mhtdc_dt_11r_21r;    
         TH1* h1_sci_mhtdc_dt_22l_21l;    
         TH1* h1_sci_mhtdc_dt_22r_21r;    
         TH1* h1_sci_mhtdc_dt_41l_21l;    

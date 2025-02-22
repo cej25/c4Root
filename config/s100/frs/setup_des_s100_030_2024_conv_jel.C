@@ -1,3 +1,5 @@
+// initially copied from setup_engrun_049_2024.C
+
 #include "Riostream.h"
 
 void setup(TFRSParameter* frs,
@@ -11,6 +13,7 @@ void setup(TFRSParameter* frs,
         TMRTOFMSParameter* mrtof,
         TRangeParameter* range)
 {
+  // because we get brho from control system.
   frs->rho0[0]   = 1.; //TA-S2
   frs->rho0[1]   = 1.; //S2-S4
   frs->rho0[2]   = 1.; //S4-S8
@@ -121,21 +124,36 @@ void setup(TFRSParameter* frs,
   id->mhtdc_vel_a_sc81[3] =  0.0;
   id->mhtdc_offset_z_sc81 =  0.0;
 
-  // MHTDCAnalysis S2-S4
-  id->mhtdc_length_sc2141 = 125.9*0.299792458;//125.207*0.299792458;//37.204244; // 36.68196; // SCI 21-41 s450
-  id->mhtdc_length_sc2241 = 122.5*0.299792458;//122.677*0.299792458;//36.850489; //35.227152; // SCI 22-41 s450 208Pb
-  //id->mhtdc_length_sc2142 = 128.2*0.299792458;	
-  id->mhtdc_vel_a_music41[0]= 57.677;//526.137;//6459.55; //s496 Xe 210512
-  id->mhtdc_vel_a_music41[1]= 945.562;//1241.28;//-11135.1;
-  id->mhtdc_vel_a_music41[2]= 588.022;//0.0;//5581.45;
-  id->mhtdc_vel_a_music41[3]=0.0;
-  id->mhtdc_vel_a_music42[0]= 133.472;//372.998;//7522.75; //s496 Xe 210512
-  id->mhtdc_vel_a_music42[1]= 712.020;//1329.1;//-13599.0;
-  id->mhtdc_vel_a_music42[2]= 706.110;//0.0;//7039.16;
-  id->mhtdc_vel_a_music42[3]=0.0;
-  id->mhtdc_offset_z_music41=0.0; //s526 107Ag ..earlier 10.7
+  // MHTDCAnalysis S2-S4 changed JEL 15.05
+  id->mhtdc_length_sc2141 = 121809.7e-3;// L/c
+  id->mhtdc_length_sc2241 = 120604.0e-3;// L/c
+  id->mhtdc_length_sc2142 = 124844.5e-3;// L/c	
+  
+  // CHANGED JEL 08.05.2024! FRS betas:
+  
+  /*
+  id->mhtdc_vel_a_music41[0]=   11402.83;//13427.0; //  MUSIC41 velocity corr. //
+  id->mhtdc_vel_a_music41[1]=   -18501.54;//-22587.0;   // 
+  id->mhtdc_vel_a_music41[2]=   8760.01;//11104.0; //
+  id->mhtdc_vel_a_music41[3]=   0.0;
+  id->mhtdc_vel_a_music42[0]=  12077.07;//14965.0; //
+  id->mhtdc_vel_a_music42[1]= -20304.94;//-26209.0; //
+  id->mhtdc_vel_a_music42[2]=  9864.92;//13201.0;//
+  id->mhtdc_vel_a_music42[3]=  0.0;
+  */
+  id->mhtdc_vel_a_music41[0]=   11464.4;
+  id->mhtdc_vel_a_music41[1]=   -18666.2;
+  id->mhtdc_vel_a_music41[2]=   8867.27;
+  id->mhtdc_vel_a_music41[3]=   0.0;
+  id->mhtdc_vel_a_music42[0]=  12092;
+  id->mhtdc_vel_a_music42[1]= -20342.1;
+  id->mhtdc_vel_a_music42[2]=  9887.57;
+  id->mhtdc_vel_a_music42[3]=  0.0;
+  
+  id->mhtdc_offset_z_music41=0.0;
   id->mhtdc_offset_z_music42=0.0;
-
+  
+  
   // MHTDCAnalysis S2-HTM
   id->mhtdc_length_sc21HTM = 161.384 - 34.937; // meter SCI 21-M01 update 07.05.21
   id->mhtdc_length_sc22HTM = 161.384 - 34.937 - 1.; // meter SCI 22-M01 update 07.05.21
@@ -157,7 +175,7 @@ void setup(TFRSParameter* frs,
   
   //not related for S8
   id->a2AoQCorr = 0.0012; //2020April12 JP
-  id->a4AoQCorr = 0.0;
+  id->a4AoQCorr = 0.000742469; // JEL 24.07.24
   
   //======
   //  MW
@@ -307,12 +325,12 @@ void setup(TFRSParameter* frs,
   //TRUE means exclude.
   //default is FALSE
   for(int ii=0; ii<8; ii++){
-    music->exclude_music41_de_adc_channel[ii] = kFALSE;
-    music->exclude_music42_de_adc_channel[ii] = kFALSE;
-    music->exclude_music43_de_adc_channel[ii] = kFALSE;
+    music->exclude_de1_adc_channel[ii] = kFALSE;
+    music->exclude_de2_adc_channel[ii] = kFALSE;
+    music->exclude_de3_adc_channel[ii] = kFALSE;
     music->exclude_de4_adc_channel[ii] = kFALSE;
   }
-  music->exclude_music41_de_adc_channel[5] = kTRUE; //added 01:50/May-12/2022 S450
+  music->exclude_de1_adc_channel[5] = kTRUE; //added 01:50/May-12/2022 S450
   music->exclude_de4_adc_channel[4] = kTRUE; //Prototype MUSIC used with only 4 anodes
   music->exclude_de4_adc_channel[5] = kTRUE;
   music->exclude_de4_adc_channel[6] = kTRUE;
@@ -325,61 +343,61 @@ void setup(TFRSParameter* frs,
   music->dist_MUSICa4 = 367.5; // do not change
 
   //MUSIC41
-  music->music41_e_off[0]   = 0.; //MUSIC41 offsets
-  music->music41_e_off[1]   = 0.;
-  music->music41_e_off[2]   = 0.;
-  music->music41_e_off[3]   = 0.;
-  music->music41_e_off[4]   = 0.;
-  music->music41_e_off[5]   = 0.;
-  music->music41_e_off[6]   = 0.;
-  music->music41_e_off[7]   = 0.;
+  music->e1_off[0]   = 0.; //MUSIC41 offsets
+  music->e1_off[1]   = 0.;
+  music->e1_off[2]   = 0.;
+  music->e1_off[3]   = 0.;
+  music->e1_off[4]   = 0.;
+  music->e1_off[5]   = 0.;
+  music->e1_off[6]   = 0.;
+  music->e1_off[7]   = 0.;
 
-  music->music41_e_gain[0]   = 1.; // MUSIC41 gains
-  music->music41_e_gain[1]   = 1.;
-  music->music41_e_gain[2]   = 1.;
-  music->music41_e_gain[3]   = 1.;
-  music->music41_e_gain[4]   = 1.;
-  music->music41_e_gain[5]   = 1.;
-  music->music41_e_gain[6]   = 1.;
-  music->music41_e_gain[7]   = 1.;
+  music->e1_gain[0]   = 1.; // MUSIC41 gains
+  music->e1_gain[1]   = 1.;
+  music->e1_gain[2]   = 1.;
+  music->e1_gain[3]   = 1.;
+  music->e1_gain[4]   = 1.;
+  music->e1_gain[5]   = 1.;
+  music->e1_gain[6]   = 1.;
+  music->e1_gain[7]   = 1.;
 
   //MUSIC42
-  music->music42_e_off[0]   = 0.; //MUSIC42 offsets
-  music->music42_e_off[1]   = 0.;
-  music->music42_e_off[2]   = 0.;
-  music->music42_e_off[3]   = 0.;
-  music->music42_e_off[4]   = 0.;
-  music->music42_e_off[5]   = 0.;
-  music->music42_e_off[6]   = 0.;
-  music->music42_e_off[7]   = 0.;
+  music->e2_off[0]   = 0.; //MUSIC42 offsets
+  music->e2_off[1]   = 0.;
+  music->e2_off[2]   = 0.;
+  music->e2_off[3]   = 0.;
+  music->e2_off[4]   = 0.;
+  music->e2_off[5]   = 0.;
+  music->e2_off[6]   = 0.;
+  music->e2_off[7]   = 0.;
 
-  music->music42_e_gain[0]   = 1.; //MUSIC42 gains
-  music->music42_e_gain[1]   = 1.;
-  music->music42_e_gain[2]   = 1.;
-  music->music42_e_gain[3]   = 1.;
-  music->music42_e_gain[4]   = 1.;
-  music->music42_e_gain[5]   = 1.;
-  music->music42_e_gain[6]   = 1.;
-  music->music42_e_gain[7]   = 1.;
+  music->e2_gain[0]   = 1.; //MUSIC42 gains
+  music->e2_gain[1]   = 1.;
+  music->e2_gain[2]   = 1.;
+  music->e2_gain[3]   = 1.;
+  music->e2_gain[4]   = 1.;
+  music->e2_gain[5]   = 1.;
+  music->e2_gain[6]   = 1.;
+  music->e2_gain[7]   = 1.;
 
   //MUSIC43
-  music->music43_e_off[0]   = 0.; //MUSIC3 offsets
-  music->music43_e_off[1]   = 0.;
-  music->music43_e_off[2]   = 0.;
-  music->music43_e_off[3]   = 0.;
-  music->music43_e_off[4]   = 0.;
-  music->music43_e_off[5]   = 0.;
-  music->music43_e_off[6]   = 0.;
-  music->music43_e_off[7]   = 0.;
+  music->e3_off[0]   = 0.; //MUSIC3 offsets
+  music->e3_off[1]   = 0.;
+  music->e3_off[2]   = 0.;
+  music->e3_off[3]   = 0.;
+  music->e3_off[4]   = 0.;
+  music->e3_off[5]   = 0.;
+  music->e3_off[6]   = 0.;
+  music->e3_off[7]   = 0.;
 
-  music->music43_e_gain[0]   = 1.; // MUSIC3 gains
-  music->music43_e_gain[1]   = 1.;
-  music->music43_e_gain[2]   = 1.;
-  music->music43_e_gain[3]   = 1.;
-  music->music43_e_gain[4]   = 1.;
-  music->music43_e_gain[5]   = 1.;
-  music->music43_e_gain[6]   = 1.;
-  music->music43_e_gain[7]   = 1.;
+  music->e3_gain[0]   = 1.; // MUSIC3 gains
+  music->e3_gain[1]   = 1.;
+  music->e3_gain[2]   = 1.;
+  music->e3_gain[3]   = 1.;
+  music->e3_gain[4]   = 1.;
+  music->e3_gain[5]   = 1.;
+  music->e3_gain[6]   = 1.;
+  music->e3_gain[7]   = 1.;
 
   //MUSIC44
   music->e4_off[0]   = 0.; //MUSIC4 offsets
@@ -400,67 +418,81 @@ void setup(TFRSParameter* frs,
   music->e4_gain[6]   = 1.;
   music->e4_gain[7]   = 1.;
 
-  music->music41_pos_a[0]   =  2540.78; //2540.27;     //0.998;   // C0...Cn position correction not used
-  music->music41_pos_a[1]   = 0.0745079; //-0.00853985;  //-1.991e-5;
-  music->music41_pos_a[2]   = 0.00154773;//-0.000832759; //1.969e-6;
-  music->music41_pos_a[3]   = -2.34361e-5; //2.90313e-6;   //1.114e-8;
-  music->music41_pos_a[4]   = -8.04959e-7;//-2.03174e-7; //-3.841e-10;
-  music->music41_pos_a[5]   =  2.65658e-9;         //-2.950e-13;
-  music->music41_pos_a[6]   =  1.73325e-11;
+  music->pos_a1[0]   =      2545.85; // 2540.78; //2540.27;     //0.998;   // C0...Cn position correction not used
+  music->pos_a1[1]   =    0.0351879; // 0.0745079; //-0.00853985;  //-1.991e-5;
+  music->pos_a1[2]   = -0.000556786; // 0.00154773;//-0.000832759; //1.969e-6;
+  music->pos_a1[3]   = -1.20745e-05; //-2.34361e-5; //2.90313e-6;   //1.114e-8;
+  music->pos_a1[4]   =  -8.1567e-08; //-8.04959e-7;//-2.03174e-7; //-3.841e-10;
+  music->pos_a1[5]   =    9.288e-10; // 2.65658e-9;         //-2.950e-13;
+  music->pos_a1[6]   = -2.38042e-11; // 1.73325e-11;
 
-  music->music42_pos_a[0]   = 2477.01; //2477.06;   //0.998;   // C0...Cn position correction not used
-  music->music42_pos_a[1]   = 0.0485704; //0.0222151; //-1.991e-5;
-  music->music42_pos_a[2]   = 0.000521307; //0.000331552; //1.969e-6;
-  music->music42_pos_a[3]   = -2.15519e-5; //-4.83731e-6; //1.114e-8;
-  music->music42_pos_a[4]   = -4.11621e-7; //-3.49479e-7; //-3.841e-10;
-  music->music42_pos_a[5]   = 1.9045e-9; //0.0;         //-2.950e-13;
-  music->music42_pos_a[6]   = 4.46969e-12; //0.0;
+  music->pos_a2[0]   =      2491.84; //2477.01; //2477.06;   //0.998;   // C0...Cn position correction not used
+  music->pos_a2[1]   =    0.0416205; //0.0485704; //0.0222151; //-1.991e-5;
+  music->pos_a2[2]   =  7.65082e-05; //0.000521307; //0.000331552; //1.969e-6;
+  music->pos_a2[3]   = -1.28572e-05; //-2.15519e-5; //-4.83731e-6; //1.114e-8;
+  music->pos_a2[4]   = -2.45176e-07; //-4.11621e-7; //-3.49479e-7; //-3.841e-10;
+  music->pos_a2[5]   =   1.0122e-09; //1.9045e-9; //0.0;         //-2.950e-13;
+  music->pos_a2[6]   = -1.24598e-11; //4.46969e-12; //0.0;
 
-  music->music43_pos_a[0]   = 0.998;   // C0...Cn position correction not used
-  music->music43_pos_a[1]   = -1.991e-5;
-  music->music43_pos_a[2]   = 1.969e-6;
-  music->music43_pos_a[3]   = 1.114e-8;
-  music->music43_pos_a[4]   = -3.841e-10;
-  music->music43_pos_a[5]   = -2.950e-13;
-  music->music43_pos_a[6]   = 0.0;
+  music->pos_a3[0]   = 0; //0.998;   // C0...Cn position correction not used
+  music->pos_a3[1]   = 1; //-1.991e-5;
+  music->pos_a3[2]   = 0; //1.969e-6;
+  music->pos_a3[3]   = 0; //1.114e-8;
+  music->pos_a3[4]   = 0; //-3.841e-10;
+  music->pos_a3[5]   = 0; //-2.950e-13;
+  music->pos_a3[6]   = 0; //0.0;
 
-  music->pos_a4[0]   = 0.998;   // C0...Cn position correction not used
-  music->pos_a4[1]   = -1.991e-5;
-  music->pos_a4[2]   = 1.969e-6;
-  music->pos_a4[3]   = 1.114e-8;
-  music->pos_a4[4]   = -3.841e-10;
-  music->pos_a4[5]   = -2.950e-13;
-  music->pos_a4[6]   = 0.0;
+  music->pos_a4[0]   = 0; //0.998;   // C0...Cn position correction not used
+  music->pos_a4[1]   = 1; //-1.991e-5;
+  music->pos_a4[2]   = 0; //1.969e-6;
+  music->pos_a4[3]   = 0; //1.114e-8;
+  music->pos_a4[4]   = 0; //-3.841e-10;
+  music->pos_a4[5]   = 0; //-2.950e-13;
+  music->pos_a4[6]   = 0; //0.0;
   
   //  MUSIC41 velocity 09.12.2023 238U //eng run
-  //id->vel_music41_a[0] =   10455.0; //  MUSIC41 velocity corr. //eng run
- // id->vel_music41_a[1] =   -14923.0;   // eng run
-  //id->vel_music41_a[2] =   6308.0; // eng run
-  //id->vel_music41_a[3] =   0.0;
+  //id->vel_a[0] =   10455.0; //  MUSIC41 velocity corr. //eng run
+ // id->vel_a[1] =   -14923.0;   // eng run
+  //id->vel_a[2] =   6308.0; // eng run
+  //id->vel_a[3] =   0.0;
 
 //  MUSIC41 velocity 22.03.2024 170Er //S100
-  id->vel_music41_a[0] =   11402.83;//13427.0; //  MUSIC41 velocity corr. //
-  id->vel_music41_a[1] =   -18501.54;//-22587.0;   // 
-  id->vel_music41_a[2] =   8760.01;//11104.0; //
-  id->vel_music41_a[3] =   0.0;
+  /*
+  id->vel_a[0] =   11402.83;//13427.0; //  MUSIC41 velocity corr. //
+  id->vel_a[1] =   -18501.54;//-22587.0;   // 
+  id->vel_a[2] =   8760.01;//11104.0; //
+  id->vel_a[3] =   0.0;
+  */
+
+  id->vel_a[0] = 11464.4;
+  id->vel_a[1] = -18666.2;
+  id->vel_a[2] = 8867.27;
+  id->vel_a[3] = 0.0;
+  id->vel_a2[0] = 12092;
+  id->vel_a2[1] = -20342.1;
+  id->vel_a2[2] = 9887.57;
+  id->vel_a2[3] = 0.0;
+  
 
   // MUSIC42 velocity 09.12.2023 238U //eng run
- // id->vel_music42_a[0] =  10570.0; //eng run
- // id->vel_music42_a[1] = -15105.0; //eng run
- // id->vel_music42_a[2] =  6366.0;//eng run
- // id->vel_music42_a[3] =  0.0;
+ // id->vel_a2[0] =  10570.0; //eng run
+ // id->vel_a2[1] = -15105.0; //eng run
+ // id->vel_a2[2] =  6366.0;//eng run
+ // id->vel_a2[3] =  0.0;
 
 // MUSIC42 velocity 22.03.2024 170Er //S100
-  id->vel_music42_a[0] =  12077.07;//14965.0; //
-  id->vel_music42_a[1] = -20304.94;//-26209.0; //
-  id->vel_music42_a[2] =  9864.92;//13201.0;//
-  id->vel_music42_a[3] =  0.0;
+  /*
+  id->vel_a2[0] =  12077.07;//14965.0; //
+  id->vel_a2[1] = -20304.94;//-26209.0; //
+  id->vel_a2[2] =  9864.92;//13201.0;//
+  id->vel_a2[3] =  0.0;
+  */
 
   //MUSIC43 velocity corr. (old)
-  id->vel_music43_a[0] =  4825.0; //13951.37; 
-  id->vel_music43_a[1] =  -4212.0;//-38369.9;
-  id->vel_music43_a[2] =  2046;//28396.46;
-  id->vel_music43_a[3] =  0.0;
+  id->vel_a3[0] =  4825.0; //13951.37; 
+  id->vel_a3[1] =  -4212.0;//-38369.9;
+  id->vel_a3[2] =  2046;//28396.46;
+  id->vel_a3[3] =  0.0;
 
   //MUSIC44 velocity corr. (not determined)
   id->vel_a4[0] =  11588.7; 
@@ -468,9 +500,9 @@ void setup(TFRSParameter* frs,
   id->vel_a4[2] =  8528.11;
   id->vel_a4[3] =  0.0; 
   
-  id->offset_z41   = 0.0;
-  id->offset_z42  = 0.0;
-  id->offset_z43  = 0.0;
+  id->offset_z   = 0.0;
+  id->offset_z2  = 0.0;
+  id->offset_z3  = 0.0;
   id->offset_z4  = 0.0;
   
   //========= 
@@ -748,23 +780,24 @@ void setup(TFRSParameter* frs,
   // Plastics
   //===========
   //TOF_SC41_SC21_TAC 09.12.23 U engrun, beta 0.800 to 0.866, 3 points 
- // id->id_tofoff2 =  199353; //197454.8;  // offset (ps)
- // id->id_path2   =  122663; //122486.0;  // path/c (ps)
+  // id->id_tofoff2 =  199353; //197454.8;  // offset (ps)
+  // id->id_path2   =  122663; //122486.0;  // path/c (ps)
 
-//TOF_SC41_SC21_TAC 21.03.24 Au engrun,  
-  id->id_tofoff2 =  194600.0;//206389; //197454.8;  // offset (ps)
-  id->id_path2   =  121809.7;//121371; //122486.0;  // path/c (ps)
+  //TOF_SC41_SC21_TAC 21.03.24 Au engrun,  
+
+  id->id_tofoff2  = 194591 ; //SC41-SC21 ps 
+  id->id_path2   =  121809.7;//121371; //122486.0;  // path/c (ps) L/ms -> s 
   
   //TOF_SC42_SC21_TAC 21.03.24 Au engrun //09.12.23 U engrun
-  id->id_tofoff3  = 197250.2;//157092; //201945; // 196914.0;   // offset (ps)
+  id->id_tofoff3  = 197247 ; //SC41-SC21 ps 
   id->id_path3    = 124844.5;//84169; // 123401; // 125574.9;   // path/c [ps
   
   // TOF calibration SC21-SC81 (TAC)
-  id->id_tofoff4  = 326337.1;   //SC21-81 [ps]          // quickly done from run156 and 166 (2019/Nov, YT)
+  id->id_tofoff4  = 326337.1;   //SC21-81 [ps]    // quickly done from run156 and 166 (2019/Nov, YT)
   id->id_path4    = 246983.1;   //SC21-81  path/c [ps]  // quickly done from run156 and 166 (2019/Nov, YT)
 
   //TOF_SC41_SC22_TAC 21.03.24 Au engrun //09.12.23 U engrun
-  id->id_tofoff5 =  190750.8;//254767; //178527; // 187952.5;  // offset (ps) 
+  id->id_tofoff5  = 190731 ; //SC41-SC22 ps 
   id->id_path5   =  120604.0;//160518; //121304; //117471.1;  // path/c (ps)
   
   // TOF calibration SC21-SC81 (TAC)
@@ -772,24 +805,28 @@ void setup(TFRSParameter* frs,
   id->id_path6    = 278586.5;   //SC22-81  path/c [ps]  // 21feb2020 DK, YT
   
 
-  //index 2 for Sc21
-  sci->x_a[0][2] =    543.599;  // quickly done for s526 on 02.06.2021 (from online)
-  sci->x_a[1][2] =   -0.2957;  // quickly done for s526 on 02.06.2021 (from online)
-  sci->x_a[2][2] =  0.000000;  //
-  sci->x_a[3][2] =  0.000000;  //
-  sci->x_a[4][2] =  0.000000;  //
-  sci->x_a[5][2] =  0.000000;  //
+  //index 2 for Sc21 JEL 17.06
+  sci->x_a[0][2] =  1404.67;  // quickly done for s526 on 02.06.2021 (from online)
+  sci->x_a[1][2] =  0.851259;  // quickly done for s526 on 02.06.2021 (from online)
+  sci->x_a[2][2] =  -0.00439086;  //
+  sci->x_a[3][2] =  3.87343e-06;  //
+  sci->x_a[4][2] =  -1.40732e-09;  //
+  sci->x_a[5][2] =  1.86964e-13;  //
   sci->x_a[6][2] =  0.000000;  //
   sci->le_a[0][2] = 0.0;
   sci->re_a[0][2] = 0.0;
+
   
-  //index 3 for Sc22
-  sci->x_a[0][3] =  405.789;  // quickly done for s526 on 02.06.2021 (from online)
-  sci->x_a[1][3] =  -0.254;  //quickly done for s526 on 02.06.2021 (from online)
-  sci->x_a[2][3] =  0.000000;  // quickly done for s526 on 02.06.2021 (from online)
-  sci->x_a[3][3] =  0.000000;  // quickly done for s526 on 02.06.2021 (from online)
-  sci->x_a[4][3] =  0.000000;  //
-  sci->x_a[5][3] =  0.000000;  //
+  
+
+
+  //index 3 for Sc22 JEL 31.07.24
+  sci->x_a[0][3] = 628328; // 
+  sci->x_a[1][3] = -1570.6;//
+  sci->x_a[2][3] = 1.56976;  // 
+  sci->x_a[3][3] = -0.000783874;  // 
+  sci->x_a[4][3] = 1.95545e-07;  //
+  sci->x_a[5][3] = -1.9496e-11;  //
   sci->x_a[6][3] =  0.000000;  //
   sci->le_a[0][3] = 0.0;
   sci->re_a[0][3] = 0.0;
@@ -885,13 +922,14 @@ void setup(TFRSParameter* frs,
   sci->tac_factor[14] = 20.0000; //SC81L-SC22L [ps/ch] >> ch14
   sci->tac_factor[15] = 20.0000; //SC81R-SC22R [ps/ch] >> ch15
 
-    //s450, tac range 85ns 06.May.2022 
-  sci->tac_factor[2]  = 18.829; //SC41L-SC21L [ps/ch] >> ch5 of ADC   
-  sci->tac_factor[3]  = 18.529; //SC41R-SC21R [ps/ch] >> ch6 of ADC
-  sci->tac_factor[12] = 17.170; //SC41L-SC22L [ps/ch] >> ch12
-  sci->tac_factor[13] = 18.176; //SC41R-SC22R [ps/ch] >> ch13
-  sci->tac_factor[5]  = 18.294; //SC42L-SC21L [ps/ch] >> ch8 of ADC
-  sci->tac_factor[6]  = 18.083; //SC42R-SC21R [ps/ch] >> ch7 of ADC
+    // jel 17.06
+  sci->tac_factor[2]  = 18.7481 ; //SC41L-SC21L [ps/ch] 
+  sci->tac_factor[3]  = 18.621 ; //SC41r-SC21r [ps/ch] 
+  sci->tac_factor[12]  = 17.367 ; //SC41L-SC22L [ps/ch] 
+  sci->tac_factor[13]  = 18.3119 ; //SC41R-SC22R [ps/ch] 
+  sci->tac_factor[5]  = 17.74 ; //SC42L-SC21L [ps/ch] 
+  sci->tac_factor[6]  = 17.7484 ; //SC42R-SC21R [ps/ch] 
+
 
   //S455 15.03.21
   sci->tac_factor[8]  = 10.51; //SC81L-R [ps/ch]     >> ch4 of ADC
@@ -919,22 +957,32 @@ void setup(TFRSParameter* frs,
   
   // for multihitTDC
   sci->mhtdc_factor_ch_to_ns =  0.025;// tp be set in parameter...
-  sci->mhtdc_offset_21l_21r  =  -39.6625+20.0 -48.0; //-48 is added for 2021JuneBARB file 230
-  sci->mhtdc_factor_21l_21r = 62.5341;  // pos = offset + factor*dt
-  sci->mhtdc_offset_41l_41r  =  584.927;          sci->mhtdc_factor_41l_41r = 69.4128; // pos = offset + factor*dt
-  sci->mhtdc_offset_42l_42r  =  0.0;              sci->mhtdc_factor_42l_42r = 60.0; // pos = offset + factor*dt
+
+  sci->mhtdc_offset_21l_21r  =  -80.0024; //-48 is added for 2021JuneBARB file 230
+  sci->mhtdc_factor_21l_21r =    52.978;  // pos = offset + factor*dt
+  sci->mhtdc_offset_22l_22r  =  -387.117;    
+  sci->mhtdc_factor_22l_22r =    52.2902;  // pos = offset + factor*dt
+
+  //JEL 16.05.2023
+  sci->mhtdc_offset_41l_41r  =  546.893;          sci->mhtdc_factor_41l_41r = 70.1643; // pos = offset + factor*dt
+  sci->mhtdc_offset_42l_42r  =  -710.439;              sci->mhtdc_factor_42l_42r = 66.9697; // pos = offset + factor*dt
+  
   sci->mhtdc_offset_43l_43r  =  0.0;              sci->mhtdc_factor_43l_43r = 60.0; // pos = offset + factor*dt
   sci->mhtdc_offset_31l_31r  =  910.7 + 17.9;             sci->mhtdc_factor_31l_31r = 60.0; // pos = offset + factor*dt
   sci->mhtdc_offset_81l_81r  =  -410.411;         sci->mhtdc_factor_81l_81r = 43.691; // pos = offset + factor*dt
-  sci->mhtdc_offset_22l_22r  =  -39.6625+20.0;    sci->mhtdc_factor_22l_22r = 62.5341;  // pos = offset + factor*dt
   sci->mhtdc_offset_M01l_M01r  =  338.677 + 650 + 14.0;    sci->mhtdc_factor_M01l_M01r = 52.6692; //rough guess with scattered particles
-  sci->mhtdc_offset_41_21  =  19.2661-9.95+171.4 +0.7 ; //ns //s450 208Pb
-  sci->mhtdc_offset_42_21  =  171.5+13.1; //ns // to be checked
+  
+  //JEL here we go:
+
+
+  sci->mhtdc_offset_41_21  =  +176.29; 
+  sci->mhtdc_offset_42_21  =  +180.418;
+  sci->mhtdc_offset_41_22  =  +252.722;
+  
   sci->mhtdc_offset_43_21  =  0.0; //ns
   sci->mhtdc_offset_31_21  =  85.0; //ns
-  sci->mhtdc_offset_31_22  =  85.0+50.0; //ns
+  //sci->mhtdc_offset_31_22  =  85.0+50.0; //ns
   sci->mhtdc_offset_81_21  =  -400.0 + 165.214; //ns
-  sci->mhtdc_offset_41_22  =  -44.91+203.3+96.7; //ns //s526 107Ag it was 253.3ns
   sci->mhtdc_offset_M01_21  =  -543.38095 + (681.88795 - 628.5) - 7.552; //ns 08.09.2021
   sci->mhtdc_offset_M01_22  =  0.0; //ns
 
@@ -1060,6 +1108,7 @@ void setup(TFRSParameter* frs,
      {    0., 4000.},
      {40000., 4000.},
      {40000.,    0.}};
+  //an->SetupPolyCond("cID_dEToF", 4, my_cID_dEToF_points);
 
   //======
   //LaBr

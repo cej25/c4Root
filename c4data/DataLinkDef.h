@@ -61,6 +61,7 @@
 #pragma link C++ class FrsMusicItem+;
 #pragma link C++ class FrsTpcItem+;
 #pragma link C++ class FrsCalSciItem+;
+#pragma link C++ class FrsCalMusicItem+;
 #pragma link C++ class FrsCalTpcItem+;
 #pragma link C++ class FrsHitItem+;
 #pragma link C++ class FrsMultiHitItem+;

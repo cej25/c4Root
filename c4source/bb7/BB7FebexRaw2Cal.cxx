@@ -94,9 +94,6 @@ void BB7FebexRaw2Cal::Exec(Option_t* option)
 
                 int64_t absolute_time = bb7item.Get_wr_t() + bb7item.Get_channel_time() - bb7item.Get_board_event_time();
 
-                std::cout << "Board:: " << bb7item.Get_board_id() << std::endl;
-                std::cout << "Channel::" << bb7item.Get_channel_id() << std::endl;
-
                 if (energy > implantThreshold)
                 {
                     // implant 
@@ -118,7 +115,6 @@ void BB7FebexRaw2Cal::Exec(Option_t* option)
                 }
                 else if (energy > decayThreshold)
                 {
-                    std::cout << "we have to be doing this right" << std::endl;
                     // decay
                     auto & entry = bb7calDecays->emplace_back();
                     entry.SetAll(

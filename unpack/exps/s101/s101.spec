@@ -119,6 +119,11 @@ SUBEVENT(frs_main_subev)
         spill_off = SPILL_OFF();
     };
 
+    UINT32 sevens NOENCODE
+    {
+        0_31: 0x77777777;
+    }
+
     select optional
     {
         data = MAIN_CRATE_DATA();
@@ -166,6 +171,11 @@ SUBEVENT(frs_user_subev)
     {
         spill_off = SPILL_OFF();
     };
+
+    UINT32 sevens NOENCODE
+    {
+        0_31: 0x77777777;
+    }
 
     // same as above
     select optional
