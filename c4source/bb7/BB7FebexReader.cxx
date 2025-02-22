@@ -113,6 +113,8 @@ Bool_t BB7FebexReader::Read()
                     trace.emplace_back(fData->bbfirst_data[it_board_number].trace_traces[channel_id].v[l]);    
                 }
 
+                std::cout << "are we writing stuff here? " << std::endl;
+
                 auto & entry = bb7array->emplace_back();
                 entry.SetAll(
                     wr_t_first,
@@ -133,7 +135,7 @@ Bool_t BB7FebexReader::Read()
         }
     } // check first wr to loop
 
-    bb7array->clear();
+    // bb7array->clear();
 
     // second crate solution I guess
     wr_t_second = (((uint64_t)fData->bbsecond_ts_t[3]) << 48) + (((uint64_t)fData->bbsecond_ts_t[2]) << 32) + (((uint64_t)fData->bbsecond_ts_t[1]) << 16) + (uint64_t)(fData->bbsecond_ts_t[0]);
