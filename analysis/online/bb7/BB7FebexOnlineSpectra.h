@@ -70,10 +70,9 @@ class BB7FebexOnlineSpectra : public FairTask
         // Folders and Files
         TFolder* histograms;
         TDirectory* dir_bb7;
-        TDirectory* dir_cal;
-        TDirectory* dir_hit;
-        TDirectory* dir_hit_implant;
-        TDirectory* dir_hit_decay;
+        TDirectory* dir_stats;
+        TDirectory* dir_implants;
+        TDirectory* dir_decays;
 
         // Histograms
         TH2* h2_implant_strip_xy;
@@ -81,13 +80,19 @@ class BB7FebexOnlineSpectra : public FairTask
         TH2* h2_implant_e_xy;
         TH2* h2_implant_strip_1d_e;
 
+        TH1* h1_side_x_mult;
+        TH1* h1_side_y_mult;
+        TH2* h2_strip_mult; 
+        TH1* h1_side_x_hitpattern;
+        TH1* h1_side_y_hitpattern;
         TH2* h2_decay_strip_xy;
         TH1* h1_decay_e;
         TH2* h2_decay_e_xy;
         TH2* h2_decay_strip_1d_e; 
-      
 
-
+        std::set<int> strips_fired[2];
+        int side_x_mult[32];
+        int side_y_mult[32];
 
     public:
         ClassDef(BB7FebexOnlineSpectra, 1)

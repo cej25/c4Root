@@ -38,7 +38,7 @@
 #include "TRandom.h"
 #include "TDirectory.h"
 
-FrsCalSpectra::FrsCalSpectra()
+FrsCalSpectra::FrsCalSpectra() : FrsCalSpectra("FrsCalSpectra")
 {
 }
 
@@ -49,6 +49,8 @@ FrsCalSpectra::FrsCalSpectra(const TString& name, Int_t iVerbose)
     ,   calSciArray(nullptr)
     ,   calTpcArray(nullptr)
 {
+    frs_config = TFrsConfiguration::GetInstance();
+    sci = frs_config->SCI();
 }
 
 FrsCalSpectra::~FrsCalSpectra()
@@ -105,6 +107,8 @@ InitStatus FrsCalSpectra::Init()
     int sc_xx_max_e= 4096; //12 bit adc
 
     // TAC dE
+    h1_sci_tac_de_11l = MakeTH1(dir_sci_tac_de, "D", "h1_sci_tac_de_11l", "SCI 11L dE", sc_xx_bins, 0, sc_xx_max_e);
+    h1_sci_tac_de_11r = MakeTH1(dir_sci_tac_de, "D", "h1_sci_tac_de_11r", "SCI 11R dE", sc_xx_bins, 0, sc_xx_max_e);
     h1_sci_tac_de_21l = MakeTH1(dir_sci_tac_de, "D", "h1_sci_tac_de_21l", "SCI 21L dE", sc_xx_bins, 0, sc_xx_max_e);
     h1_sci_tac_de_21r = MakeTH1(dir_sci_tac_de, "D", "h1_sci_tac_de_21r", "SCI 21R dE", sc_xx_bins, 0, sc_xx_max_e);
     h1_sci_tac_de_22l = MakeTH1(dir_sci_tac_de, "D", "h1_sci_tac_de_22l", "SCI 22L dE", sc_xx_bins, 0, sc_xx_max_e);
@@ -122,11 +126,14 @@ InitStatus FrsCalSpectra::Init()
 
     int tac_bins = 1000;
     int max_tac_value = 5000;
+    h1_sci_tac_dt_11l_11r = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_11l_11r", "SCI 11L - 11R dT (TAC)", tac_bins, 0, max_tac_value);
     h1_sci_tac_dt_21l_21r = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_21l_21r", "SCI 21L - 21R dT (TAC)", tac_bins, 0, max_tac_value);
     h1_sci_tac_dt_41l_41r = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_41l_41r", "SCI 41L - 41R dT (TAC)", tac_bins, 0, max_tac_value);
     h1_sci_tac_dt_42l_42r = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_42l_42r", "SCI 42L - 42R dT (TAC)", tac_bins, 0, max_tac_value);
     h1_sci_tac_dt_43l_43r = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_43l_43r", "SCI 43L - 43R dT (TAC)", tac_bins, 0, max_tac_value);
     h1_sci_tac_dt_81l_81r = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_81l_81r", "SCI 81L - 81R dT (TAC)", tac_bins, 0, max_tac_value);
+    h1_sci_tac_dt_11l_21l = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_11l_21l", "SCI 11L - 21L dT (TAC)", tac_bins, 0, max_tac_value);
+    h1_sci_tac_dt_11r_21r = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_11r_21r", "SCI 11R - 21R dT (TAC)", tac_bins, 0, max_tac_value);
     h1_sci_tac_dt_21l_41l = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_21l_41l", "SCI 21L - 41L dT (TAC)", tac_bins, 0, max_tac_value);
     h1_sci_tac_dt_21r_41r = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_21r_41r", "SCI 21R - 41R dT (TAC)", tac_bins, 0, max_tac_value);
     h1_sci_tac_dt_42r_21r = MakeTH1(dir_sci_tac_dt, "D", "h1_sci_tac_dt_42r_21r", "SCI 42R - 21R dT (TAC)", tac_bins, 0, max_tac_value);
@@ -143,6 +150,8 @@ InitStatus FrsCalSpectra::Init()
     // ::: MHTDC T
     int sc_xx_bins_t = 1000;
     double sc_xx_max_t = 1048576; // 2^20 bits in v1290 data word
+    h1_sci_mhtdc_t_11l = MakeTH1(dir_sci_mhtdc_t, "D", "h1_sci_mhtdc_t_11l", "SCI 11l T (MHTDC)", sc_xx_bins_t, 0, sc_xx_max_t);
+    h1_sci_mhtdc_t_11r = MakeTH1(dir_sci_mhtdc_t, "D", "h1_sci_mhtdc_t_11r", "SCI 11r T (MHTDC)", sc_xx_bins_t, 0, sc_xx_max_t);
     h1_sci_mhtdc_t_21l = MakeTH1(dir_sci_mhtdc_t, "D", "h1_sci_mhtdc_t_21l", "SCI 21l T (MHTDC)", sc_xx_bins_t, 0, sc_xx_max_t);
     h1_sci_mhtdc_t_21r = MakeTH1(dir_sci_mhtdc_t, "D", "h1_sci_mhtdc_t_21r", "SCI 21r T (MHTDC)", sc_xx_bins_t, 0, sc_xx_max_t);
     h1_sci_mhtdc_t_22l = MakeTH1(dir_sci_mhtdc_t, "D", "h1_sci_mhtdc_t_22l", "SCI 22l T (MHTDC)", sc_xx_bins_t, 0, sc_xx_max_t);
@@ -158,10 +167,13 @@ InitStatus FrsCalSpectra::Init()
 
     // ::: MHTDC dT 
     int sc_xx_bins_dt = 2000;
+    h1_sci_mhtdc_dt_11l_11r = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_11l_11r", "SCI 11L - 11R dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
     h1_sci_mhtdc_dt_21l_21r = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_21l_21r", "SCI 21L - 21R dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
     h1_sci_mhtdc_dt_22l_22r = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_22l_22r", "SCI 22L - 22R dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
     h1_sci_mhtdc_dt_41l_41r = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_41l_41r", "SCI 41L - 41R dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
     h1_sci_mhtdc_dt_42l_42r = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_42l_42r", "SCI 42L - 42R dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
+    h1_sci_mhtdc_dt_11l_21l = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_11l_21l", "SCI 11L - 21L dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
+    h1_sci_mhtdc_dt_11r_21r = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_11r_21r", "SCI 11R - 21R dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
     h1_sci_mhtdc_dt_22l_21l = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_22l_21l", "SCI 22L - 21L dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
     h1_sci_mhtdc_dt_22r_21r = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_22r_21r", "SCI 22R - 21R dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
     h1_sci_mhtdc_dt_41l_21l = MakeTH1(dir_sci_mhtdc_dt, "D", "h1_sci_mhtdc_dt_41l_21l", "SCI 41L - 21L dT (MHTDC)", sc_xx_bins_dt, -10000, 10000);
@@ -236,6 +248,8 @@ void FrsCalSpectra::Exec(Option_t* option)
     if (calSciArray->size() == 0 || calTpcArray->size() == 0) return;
     
     auto const & calSciItem = calSciArray->at(0);
+    UInt_t de_11l = calSciItem.Get_dE_11l();
+    UInt_t de_11r = calSciItem.Get_dE_11r();
     UInt_t de_21l = calSciItem.Get_dE_21l();
     UInt_t de_21r = calSciItem.Get_dE_21r();
     UInt_t de_22l = calSciItem.Get_dE_22l();
@@ -251,6 +265,8 @@ void FrsCalSpectra::Exec(Option_t* option)
     UInt_t de_81l = calSciItem.Get_dE_81l();
     UInt_t de_81r = calSciItem.Get_dE_81r();
 
+    h1_sci_tac_de_11l->Fill(de_11l);
+    h1_sci_tac_de_11r->Fill(de_11r);
     h1_sci_tac_de_21l->Fill(de_21l);
     h1_sci_tac_de_21r->Fill(de_21r);
     h1_sci_tac_de_22l->Fill(de_22l);
@@ -266,6 +282,8 @@ void FrsCalSpectra::Exec(Option_t* option)
     h1_sci_tac_de_81l->Fill(de_81l);
     h1_sci_tac_de_81r->Fill(de_81r);
 
+    UInt_t dt_11l_11r = calSciItem.Get_dT_11l_11r();
+    h1_sci_tac_dt_11l_11r->Fill(dt_11l_11r);
     UInt_t dt_21l_21r = calSciItem.Get_dT_21l_21r();
     h1_sci_tac_dt_21l_21r->Fill(dt_21l_21r);
     UInt_t dt_22l_22r = calSciItem.Get_dT_22l_22r();
@@ -278,6 +296,10 @@ void FrsCalSpectra::Exec(Option_t* option)
     h1_sci_tac_dt_43l_43r->Fill(dt_43l_43r);
     UInt_t dt_81l_81r = calSciItem.Get_dT_81l_81r();
     h1_sci_tac_dt_81l_81r->Fill(dt_81l_81r);
+    UInt_t dt_11l_21l = calSciItem.Get_dT_11l_21l();
+    h1_sci_tac_dt_11l_21l->Fill(dt_11l_21l);
+    UInt_t dt_11r_21r = calSciItem.Get_dT_11r_21r();
+    h1_sci_tac_dt_11r_21r->Fill(dt_11r_21r);
     UInt_t dt_21l_41l = calSciItem.Get_dT_21l_41l();
     h1_sci_tac_dt_21l_41l->Fill(dt_21l_41l);
     UInt_t dt_21r_41r = calSciItem.Get_dT_21r_41r();
@@ -300,6 +322,29 @@ void FrsCalSpectra::Exec(Option_t* option)
     h1_sci_tac_dt_22r_81r->Fill(dt_22r_81r);
 
     // getting the first hit only: mapping to int32 signed is okay since the max value is 2^20:
+
+    std::vector<Int_t> sci11l_times;
+    std::vector<Int_t> sci11r_times;
+    if (sci->sci11_select == 1)
+    {
+        sci11l_times = calSciItem.Get_mhtdc_sci11la_hits();
+        sci11r_times = calSciItem.Get_mhtdc_sci11ra_hits();
+    }
+    else if (sci->sci11_select == 2)
+    {
+        sci11l_times = calSciItem.Get_mhtdc_sci11lb_hits();
+        sci11r_times = calSciItem.Get_mhtdc_sci11rb_hits();
+    }
+    else if (sci->sci11_select == 3)
+    {
+        sci11l_times = calSciItem.Get_mhtdc_sci11lc_hits();
+        sci11r_times = calSciItem.Get_mhtdc_sci11rc_hits();
+    }
+    else if (sci->sci11_select == 4)
+    {
+        sci11l_times = calSciItem.Get_mhtdc_sci11ld_hits();
+        sci11r_times = calSciItem.Get_mhtdc_sci11rd_hits();
+    }
     std::vector<Int_t> sci21l_times = calSciItem.Get_mhtdc_sci21l_hits();
     std::vector<Int_t> sci21r_times = calSciItem.Get_mhtdc_sci21r_hits();
     std::vector<Int_t> sci22l_times = calSciItem.Get_mhtdc_sci22l_hits();
@@ -313,6 +358,8 @@ void FrsCalSpectra::Exec(Option_t* option)
     std::vector<Int_t> sci81l_times = calSciItem.Get_mhtdc_sci81l_hits();
     std::vector<Int_t> sci81r_times = calSciItem.Get_mhtdc_sci81r_hits();
 
+    if (sci11l_times.size() > 0) h1_sci_mhtdc_t_11l->Fill(sci11l_times.at(0));
+    if (sci11r_times.size() > 0) h1_sci_mhtdc_t_11r->Fill(sci11r_times.at(0));
     if (sci21l_times.size() > 0) h1_sci_mhtdc_t_21l->Fill(sci21l_times.at(0));
     if (sci21r_times.size() > 0) h1_sci_mhtdc_t_21r->Fill(sci21r_times.at(0));    
     if (sci22l_times.size() > 0) h1_sci_mhtdc_t_22l->Fill(sci22l_times.at(0));
@@ -325,11 +372,14 @@ void FrsCalSpectra::Exec(Option_t* option)
     if (sci43r_times.size() > 0) h1_sci_mhtdc_t_43r->Fill(sci43r_times.at(0));
     if (sci81l_times.size() > 0) h1_sci_mhtdc_t_81l->Fill(sci81l_times.at(0));
     if (sci81r_times.size() > 0) h1_sci_mhtdc_t_81r->Fill(sci81r_times.at(0));
-
+    
+    if (sci11l_times.size() > 0 && sci11r_times.size() > 0) h1_sci_mhtdc_dt_11l_11r->Fill(sci11l_times.at(0) - sci11r_times.at(0));
     if (sci21l_times.size() > 0 && sci21r_times.size() > 0) h1_sci_mhtdc_dt_21l_21r->Fill(sci21l_times.at(0) - sci21r_times.at(0));
     if (sci22l_times.size() > 0 && sci22r_times.size() > 0) h1_sci_mhtdc_dt_22l_22r->Fill(sci22l_times.at(0) - sci22r_times.at(0));
     if (sci41l_times.size() > 0 && sci41r_times.size() > 0) h1_sci_mhtdc_dt_41l_41r->Fill(sci41l_times.at(0) - sci41r_times.at(0));
     if (sci42l_times.size() > 0 && sci42r_times.size() > 0) h1_sci_mhtdc_dt_42l_42r->Fill(sci42l_times.at(0) - sci42r_times.at(0));
+    if (sci11l_times.size() > 0 && sci21l_times.size() > 0) h1_sci_mhtdc_dt_11l_21l->Fill(sci21l_times.at(0) - sci11l_times.at(0));
+    if (sci11r_times.size() > 0 && sci21r_times.size() > 0) h1_sci_mhtdc_dt_11r_21r->Fill(sci21r_times.at(0) - sci11r_times.at(0));
     if (sci22l_times.size() > 0 && sci21l_times.size() > 0) h1_sci_mhtdc_dt_22l_21l->Fill(sci22l_times.at(0) - sci21l_times.at(0));
     if (sci22r_times.size() > 0 && sci21r_times.size() > 0) h1_sci_mhtdc_dt_22r_21r->Fill(sci22r_times.at(0) - sci21r_times.at(0));
     if (sci41l_times.size() > 0 && sci21l_times.size() > 0) h1_sci_mhtdc_dt_41l_21l->Fill(sci41l_times.at(0) - sci21l_times.at(0));

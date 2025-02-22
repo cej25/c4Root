@@ -235,6 +235,8 @@ void TFrsConfiguration::ReadCrateMapFile()
             
             if (signal == "MUSIC_E_GEO") music_e_geo = channel; // remove
             else if (signal == "DE_GEO") sci_dE_geo = channel; // remove
+            else if (signal == "dE_11L") de_11l_ch = channel;
+            else if (signal == "dE_11R") de_11r_ch = channel;
             else if (signal == "dE_21L") de_21l_ch = channel;
             else if (signal == "dE_21R") de_21r_ch = channel;
             else if (signal == "dE_22L") de_22l_ch = channel;
@@ -250,11 +252,14 @@ void TFrsConfiguration::ReadCrateMapFile()
             else if (signal == "dE_81L") de_81l_ch = channel;
             else if (signal == "dE_81R") de_81r_ch = channel;
             else if (signal == "DT_GEO") sci_dT_geo = channel; // remove
+            else if (signal == "dT_11L_11R") dt_11l_11r_ch = channel;
             else if (signal == "dT_21L_21R") dt_21l_21r_ch = channel;
             else if (signal == "dT_41L_41R") dt_41l_41r_ch = channel;
             else if (signal == "dT_42L_42R") dt_42l_42r_ch = channel;
             else if (signal == "dT_43L_43R") dt_43l_43r_ch = channel;
             else if (signal == "dT_81L_81R") dt_81l_81r_ch = channel;
+            else if (signal == "dT_11L_21L") dt_11l_21l_ch = channel;
+            else if (signal == "dT_11R_21R") dt_11r_21r_ch = channel;
             else if (signal == "dT_21L_41L") dt_21l_41l_ch = channel;
             else if (signal == "dT_21R_41R") dt_21r_41r_ch = channel;
             else if (signal == "dT_42R_21R") dt_42r_21r_ch = channel;
@@ -267,7 +272,14 @@ void TFrsConfiguration::ReadCrateMapFile()
             else if (signal == "dT_22L_81L") dt_22l_81l_ch = channel;
             else if (signal == "dT_22R_81R") dt_22r_81r_ch = channel;
             else if (signal == "dT_41L_41R") dt_41l_41r_ch = channel;
-            else if (signal == "mhtdc_11") mhtdc_11_ch = channel;
+            else if (signal == "mhtdc_11LA") mhtdc_11LA_ch = channel;
+            else if (signal == "mhtdc_11LB") mhtdc_11LB_ch = channel;
+            else if (signal == "mhtdc_11LC") mhtdc_11LC_ch = channel;
+            else if (signal == "mhtdc_11LD") mhtdc_11LD_ch = channel;
+            else if (signal == "mhtdc_11RA") mhtdc_11RA_ch = channel;
+            else if (signal == "mhtdc_11RB") mhtdc_11RB_ch = channel;
+            else if (signal == "mhtdc_11RC") mhtdc_11RC_ch = channel;
+            else if (signal == "mhtdc_11RD") mhtdc_11RD_ch = channel;
             else if (signal == "mhtdc_21L") mhtdc_21L_ch = channel;
             else if (signal == "mhtdc_21R") mhtdc_21R_ch = channel;
             else if (signal == "mhtdc_22L") mhtdc_22L_ch = channel;

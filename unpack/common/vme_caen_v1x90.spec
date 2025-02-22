@@ -153,6 +153,7 @@ VME_CAEN_V1190_N()
         27_31: 0b10001;
     };
 
+    // do I need to match this? 
     UINT32 trailer NOENCODE // type = 16
     {
         0_4: geom;
@@ -161,7 +162,7 @@ VME_CAEN_V1190_N()
         24: tdc_error;
         25: overflow;
         26: trigger_lost;
-        27_31: 0b10000;
+        27_31: whatever; //0b10000;
     };
 
     optional UINT32 eob NOENCODE; // type = 24

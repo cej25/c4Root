@@ -61,12 +61,13 @@ class FrsReader : public c4Reader
         // Dummies
         bool spill_flag;
 
-        uint32_t sciDE[32];
-        uint32_t sciDT[16];
-        std::vector<int32_t> sciMHTDC[16];
+        // should probably just make all of these 32
+        uint32_t sciDE[32]; // ~18 -> 2025
+        uint32_t sciDT[32]; // ~19 -> 2025
+        std::vector<int32_t> sciMHTDC[32]; // ~24 -> 2025
 
-        uint32_t musicE[2][8];
-        uint32_t musicT[2][8];
+        uint32_t musicE[5][8]; // 5 as of 2025
+        uint32_t musicT[5][8];
 
         uint32_t adcData[7][8];
         std::vector<uint32_t> tdcData[128];

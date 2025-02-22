@@ -22,8 +22,10 @@ FrsRaw2Cal::FrsRaw2Cal()
     ,   fOnline(kFALSE)
     ,   tpatArray(nullptr)
     ,   sciArray(nullptr)
+    ,   musicArray(nullptr)
     ,   tpcArray(nullptr)
     ,   calSciArray(new std::vector<FrsCalSciItem>)
+    ,   calMusicArray(new std::vector<FrsCalMusicItem>)
     ,   calTpcArray(new std::vector<FrsCalTpcItem>)
 {
     frs_config = TFrsConfiguration::GetInstance();
@@ -38,8 +40,10 @@ FrsRaw2Cal::FrsRaw2Cal(const TString& name, Int_t verbose)
     ,   fOnline(kFALSE)
     ,   tpatArray(nullptr)
     ,   sciArray(nullptr)
+    ,   musicArray(nullptr)
     ,   tpcArray(nullptr)
     ,   calSciArray(new std::vector<FrsCalSciItem>)
+    ,   calMusicArray(new std::vector<FrsCalMusicItem>)
     ,   calTpcArray(new std::vector<FrsCalTpcItem>)
 {
     frs_config = TFrsConfiguration::GetInstance();
@@ -166,11 +170,16 @@ InitStatus FrsRaw2Cal::Init()
     tpcArray = mgr->InitObjectAs<decltype(tpcArray)>("FrsTpcData");
     c4LOG_IF(fatal, !tpcArray, "Branch FrsTpcData not found!");
 
+    musicArray = mgr->InitObjectAs<decltype(musicArray)>("FrsMusicData");
+    c4LOG_IF(fatal, !musicArray, "Branch FrsMusicData not found!");
+
     mgr->RegisterAny("FrsCalSciData", calSciArray, !fOnline);
     mgr->RegisterAny("FrsCalTpcData", calTpcArray, !fOnline);
+    mgr->RegisterAny("FrsCalMusicData", calMusicArray, !fOnline);
 
     calSciArray->clear();
     calTpcArray->clear();
+    calMusicArray->clear();
 
     SetParameters();
 
@@ -183,6 +192,7 @@ void FrsRaw2Cal::Exec(Option_t* option)
     
     /*if (frs_config->AnlSci)*/ ProcessScintillators();
     /*if (frs_config->AnlTpc)*/ ProcessTpcs();
+    ProcessMusic();
 
     fNEvents++;
 
@@ -194,6 +204,8 @@ void FrsRaw2Cal::ProcessScintillators()
 
     // TAC DE
     sciDE = sciItem.Get_de_array();
+    de_11l = sciDE[frs_config->Get_dE_11l_chan()];
+    de_11r = sciDE[frs_config->Get_dE_11r_chan()];
     de_21l = sciDE[frs_config->Get_dE_21l_chan()];
     de_21r = sciDE[frs_config->Get_dE_21r_chan()];
     de_22l = sciDE[frs_config->Get_dE_22l_chan()];
@@ -211,12 +223,15 @@ void FrsRaw2Cal::ProcessScintillators()
 
     // TAC DT
     sciDT = sciItem.Get_dt_array();
+    dt_11l_11r = sciDT[frs_config->Get_dT_11l_11r_chan()];
     dt_21l_21r = sciDT[frs_config->Get_dT_21l_21r_chan()];
     dt_22l_22r = sciDT[frs_config->Get_dT_22l_22r_chan()];
     dt_41l_41r = sciDT[frs_config->Get_dT_41l_41r_chan()];
     dt_42l_42r = sciDT[frs_config->Get_dT_42l_42r_chan()];
     dt_43l_43r = sciDT[frs_config->Get_dT_43l_43r_chan()];
     dt_81l_81r = sciDT[frs_config->Get_dT_81l_81r_chan()];
+    dt_11l_21l = sciDT[frs_config->Get_dT_11l_21l_chan()];
+    dt_11r_21r = sciDT[frs_config->Get_dT_11r_21r_chan()];
     dt_21l_41l = sciDT[frs_config->Get_dT_21l_41l_chan()];
     dt_21r_41r = sciDT[frs_config->Get_dT_21r_41r_chan()];
     dt_42r_21r = sciDT[frs_config->Get_dT_42l_21l_chan()];
@@ -230,7 +245,14 @@ void FrsRaw2Cal::ProcessScintillators()
 
     // MHTDC T
     sciMHTDC = sciItem.Get_mhtdc_array();
-    sci11_hits = sciMHTDC[frs_config->Get_mhtdc_11_chan()];
+    sci11la_hits = sciMHTDC[frs_config->Get_mhtdc_11LA_chan()];
+    sci11lb_hits = sciMHTDC[frs_config->Get_mhtdc_11LB_chan()];
+    sci11lc_hits = sciMHTDC[frs_config->Get_mhtdc_11LC_chan()];
+    sci11ld_hits = sciMHTDC[frs_config->Get_mhtdc_11LD_chan()];
+    sci11ra_hits = sciMHTDC[frs_config->Get_mhtdc_11RA_chan()];
+    sci11rb_hits = sciMHTDC[frs_config->Get_mhtdc_11RB_chan()];
+    sci11rc_hits = sciMHTDC[frs_config->Get_mhtdc_11RC_chan()];
+    sci11rd_hits = sciMHTDC[frs_config->Get_mhtdc_11RD_chan()];
     sci21l_hits = sciMHTDC[frs_config->Get_mhtdc_21L_chan()];
     sci21r_hits = sciMHTDC[frs_config->Get_mhtdc_21R_chan()];
     sci22l_hits = sciMHTDC[frs_config->Get_mhtdc_22L_chan()];
@@ -247,7 +269,9 @@ void FrsRaw2Cal::ProcessScintillators()
     sci81r_hits = sciMHTDC[frs_config->Get_mhtdc_81R_chan()];
 
     auto & entry = calSciArray->emplace_back();
-    entry.SetAll(de_21l,
+    entry.SetAll(de_11l,
+                de_11r,
+                de_21l,
                 de_21r,
                 de_22l,
                 de_22r,
@@ -261,12 +285,15 @@ void FrsRaw2Cal::ProcessScintillators()
                 de_43r,
                 de_81l,
                 de_81r,
+                dt_11l_11r,
                 dt_21l_21r,
                 dt_22l_22r,
                 dt_41l_41r,
                 dt_42l_42r,
                 dt_43l_43r,
                 dt_81l_81r,
+                dt_11l_21l,
+                dt_11r_21r,
                 dt_21l_41l,
                 dt_21r_41r,
                 dt_42r_21r,
@@ -277,7 +304,14 @@ void FrsRaw2Cal::ProcessScintillators()
                 dt_22r_41r,
                 dt_22l_81l,
                 dt_22r_81r,
-                sci11_hits,
+                sci11la_hits,
+                sci11lb_hits,
+                sci11lc_hits,
+                sci11ld_hits,
+                sci11ra_hits,
+                sci11rb_hits,
+                sci11rc_hits,
+                sci11rd_hits,
                 sci21l_hits,
                 sci21r_hits,
                 sci22l_hits,
@@ -605,6 +639,13 @@ void FrsRaw2Cal::ProcessTpcs()
         Float_t dist_S2target_focS2 = frs->dist_S2target - frs->dist_focS2;
         tpc21_22_s2target_x = (tpc_angle_x_s2_foc_21_22/1000.*dist_S2target_focS2)+tpc_x_s2_foc_21_22;
         tpc21_22_s2target_y = (tpc_angle_y_s2_foc_21_22/1000.*dist_S2target_focS2)+tpc_y_s2_foc_21_22;
+
+        Float_t dist_MUSIC21_focS2 = frs->dist_MUSIC21 - frs->dist_focS2;
+        tpc21_22_music21_x = (tpc_angle_x_s2_foc_21_22/1000.*dist_MUSIC21_focS2)+tpc_x_s2_foc_21_22;
+        tpc21_22_music21_y = (tpc_angle_y_s2_foc_21_22/1000.*dist_MUSIC21_focS2)+tpc_y_s2_foc_21_22;
+        Float_t dist_MUSIC22_focS2 = frs->dist_MUSIC22 - frs->dist_focS2;
+        tpc21_22_music22_x = (tpc_angle_x_s2_foc_21_22/1000.*dist_MUSIC22_focS2)+tpc_x_s2_foc_21_22;
+        tpc21_22_music22_y = (tpc_angle_y_s2_foc_21_22/1000.*dist_MUSIC22_focS2)+tpc_y_s2_foc_21_22;
     }
 
     //=================================
@@ -632,6 +673,13 @@ void FrsRaw2Cal::ProcessTpcs()
         Float_t dist_S2target_focS2 = frs->dist_S2target - frs->dist_focS2;
         tpc23_24_s2target_x = (tpc_angle_x_s2_foc_23_24/1000.*dist_S2target_focS2)+tpc_x_s2_foc_23_24;
         tpc23_24_s2target_y = (tpc_angle_y_s2_foc_23_24/1000.*dist_S2target_focS2)+tpc_y_s2_foc_23_24;
+
+        Float_t dist_MUSIC21_focS2 = frs->dist_MUSIC21 - frs->dist_focS2;
+        tpc23_24_music21_x = (tpc_angle_x_s2_foc_23_24/1000.*dist_MUSIC21_focS2)+tpc_x_s2_foc_23_24;
+        tpc23_24_music21_y = (tpc_angle_y_s2_foc_23_24/1000.*dist_MUSIC21_focS2)+tpc_y_s2_foc_23_24;
+        Float_t dist_MUSIC22_focS2 = frs->dist_MUSIC22 - frs->dist_focS2;
+        tpc23_24_music22_x = (tpc_angle_x_s2_foc_23_24/1000.*dist_MUSIC22_focS2)+tpc_x_s2_foc_23_24;
+        tpc23_24_music22_y = (tpc_angle_y_s2_foc_23_24/1000.*dist_MUSIC22_focS2)+tpc_y_s2_foc_23_24;
     }
     else  
     {
@@ -664,6 +712,13 @@ void FrsRaw2Cal::ProcessTpcs()
         Float_t dist_S2target_focS2 = frs->dist_S2target - frs->dist_focS2;
         tpc22_24_s2target_x = (tpc_angle_x_s2_foc_22_24/1000.*dist_S2target_focS2)+tpc_x_s2_foc_22_24;
         tpc22_24_s2target_y = (tpc_angle_y_s2_foc_22_24/1000.*dist_S2target_focS2)+tpc_y_s2_foc_22_24;
+
+        Float_t dist_MUSIC21_focS2 = frs->dist_MUSIC21 - frs->dist_focS2;
+        tpc22_24_music21_x = (tpc_angle_x_s2_foc_22_24/1000.*dist_MUSIC21_focS2)+tpc_x_s2_foc_22_24;
+        tpc22_24_music21_y = (tpc_angle_y_s2_foc_22_24/1000.*dist_MUSIC21_focS2)+tpc_y_s2_foc_22_24;
+        Float_t dist_MUSIC22_focS2 = frs->dist_MUSIC22 - frs->dist_focS2;
+        tpc22_24_music22_x = (tpc_angle_x_s2_foc_22_24/1000.*dist_MUSIC22_focS2)+tpc_x_s2_foc_22_24;
+        tpc22_24_music22_y = (tpc_angle_y_s2_foc_22_24/1000.*dist_MUSIC22_focS2)+tpc_y_s2_foc_22_24;
 
     }
     else 
@@ -757,16 +812,52 @@ void FrsRaw2Cal::ProcessTpcs()
         tpc_sc42_x,
         tpc_sc42_y,
         tpc_sc43_x,
+        tpc21_22_music21_x,
+        tpc21_22_music21_y,
+        tpc21_22_music22_x,
+        tpc21_22_music22_y,
+        tpc23_24_music21_x,
+        tpc23_24_music21_y,
+        tpc23_24_music22_x,
+        tpc23_24_music22_y,
+        tpc22_24_music21_x,
+        tpc22_24_music21_y,
+        tpc22_24_music22_x,
+        tpc22_24_music22_y,
         tpc_music41_x,
         tpc_music42_x,
         tpc_music43_x);
 
 }
 
+void FrsRaw2Cal::ProcessMusic()
+{
+    auto const & musicItem = musicArray->at(0);
+
+    musicE = musicItem.Get_music_e();
+
+    for (int i = 0; i < 8; i++)
+    {
+        music21_e[i] = musicE[2][i];
+        music22_e[i] = musicE[3][i];
+        music41_e[i] = musicE[0][i]; // JUST FOR TESTING
+        music42_e[i] = musicE[1][i];
+        music43_e[i] = musicE[4][i];
+    }
+
+    auto & musicEntry = calMusicArray->emplace_back();
+    musicEntry.SetAll(music21_e,
+                    music22_e,
+                    music41_e,
+                    music42_e,
+                    music43_e);
+}
+
 
 void FrsRaw2Cal::FinishEvent()
 {   
     calSciArray->clear();
+    calMusicArray->clear();
     calTpcArray->clear();
     for (int i = 0; i < 7; i++)
     {
