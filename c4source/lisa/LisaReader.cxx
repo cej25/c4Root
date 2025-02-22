@@ -3,8 +3,14 @@
 
 #include "LisaReader.h"
 #include "c4Logger.h"
+#include "TVector.h"
 
 #include "ext_data_struct_info.hh"
+
+// This is the adjustment to use TVectors instead of std::vector
+//This was to try to read vectors of vectors form external macro without sourcing c4. It does not work.
+//template <typename T>
+//using StdVector = std::vector<T>;
 
 extern "C"
 {
@@ -92,7 +98,7 @@ Bool_t LisaReader::Read()
         for (int index = 0; index < M; index++) //GENERAL
         {
             //::::::::::::::Channel ID
-            uint8_t channel_id = fData->lisa_data[it_board_number].channel_idv[index];
+            int channel_id = fData->lisa_data[it_board_number].channel_idv[index];
             //std::cout << "Channel ID from header : " << static_cast<int>(channel_id) << std::endl;
 
             //::::::::::::::Channel Trigger Time
@@ -126,7 +132,7 @@ Bool_t LisaReader::Read()
 
             std::vector<int16_t> trace;
             std::vector<int16_t> trace_x;
-            uint8_t channel_id_trace = fData->lisa_data[it_board_number].trace_channel_id_tracesv[index];
+            int channel_id_trace = fData->lisa_data[it_board_number].trace_channel_id_tracesv[index];
 
             //::::::::::::::Channel Traces with ID from channel header
             for (int l = 0 ; l < fData->lisa_data[it_board_number].trace_traces[channel_id_trace]._ ; l++)

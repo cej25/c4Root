@@ -16,6 +16,12 @@
 
 #include "LisaCalData.h"
 #include "TString.h"
+#include "TVector.h"
+
+// This is the adjustment to use TVectors instead of std::vector
+//This was to try to read vectors of vectors form external macro without sourcing c4. It does not work.
+//template <typename T>
+//using StdVector = std::vector<T>;
 
 //Debugging. Replaced std::string with TString nov24
 
@@ -29,7 +35,7 @@ LisaCalItem::LisaCalItem()
 
 void LisaCalItem::SetAll(uint64_t wr,
                         uint16_t w_id,
-                        uint8_t b_id,
+                        int b_id,
                         int layer,
                         TString c,
                         int xpos,
