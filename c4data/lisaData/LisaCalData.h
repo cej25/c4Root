@@ -20,6 +20,12 @@
 #include "TObject.h"
 #include <vector>
 #include "TString.h"
+#include "TVector.h"
+
+// This is the adjustment to use TVectors instead of std::vector
+//This was to try to read vectors of vectors form external macro without sourcing c4. It does not work.
+//template <typename T>
+//using StdVector = std::vector<T>;
 
 //Debugging. Replaced std::string with TString 8nov24
 
@@ -30,7 +36,7 @@ class LisaCalItem : public TObject
 
         void SetAll(uint64_t wr,
                     uint16_t w_id,
-                    uint8_t b_id,
+                    int b_id,
                     int layer,
                     TString c,
                     int xpos,
@@ -54,7 +60,7 @@ class LisaCalItem : public TObject
 
         uint64_t Get_wr_t() const;
         uint16_t Get_wr_id() const;
-        uint8_t Get_board_id() const;
+        int Get_board_id() const;
         int Get_layer_id() const;
         TString Get_city() const;
         int Get_xposition() const;
@@ -80,7 +86,7 @@ class LisaCalItem : public TObject
     private:
         uint64_t wr_t;
         uint16_t wr_id;
-        uint8_t board_id;
+        int board_id;
         int layer_id;
         TString city; // name
         int xposition;
@@ -113,7 +119,7 @@ inline uint16_t LisaCalItem::Get_wr_id() const
     return wr_id;
 }
 
-inline uint8_t LisaCalItem::Get_board_id() const
+inline int LisaCalItem::Get_board_id() const
 {
     return board_id;
 }

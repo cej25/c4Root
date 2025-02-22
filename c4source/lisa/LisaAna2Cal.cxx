@@ -16,6 +16,7 @@
 
 #include <vector>
 #include <numeric>
+#include "TVector.h"
 
 LisaAna2Cal::LisaAna2Cal()
     :   FairTask()

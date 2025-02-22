@@ -5,7 +5,7 @@
 
 //Select the data level you want to visualize
 #define LISA_RAW 0
-//#define LISA_MDW 0
+#define LISA_ANA 0
 #define LISA_CAL 1
 
 typedef struct EXT_STR_h101_t
@@ -100,6 +100,7 @@ void lisa_make_trees()
         LisaReader* unpacklisa = new LisaReader((EXT_STR_h101_lisa_onion*)&ucesb_struct.lisa, offsetof(EXT_STR_h101, lisa));
         //unpacklisa->DoFineTimeCalOnline("....root", 100000);
         //unpacklisa->SetInputFileFineTimeHistos(config_path + "....root");
+        LisaRaw2Ana* lisaraw2ana = new LisaRaw2Ana();
 
         if (LISA_RAW)
         {
@@ -110,7 +111,19 @@ void lisa_make_trees()
         }
         //unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
         
+        if (LISA_ANA)
+        {
+            lisaraw2ana->SetOnline(false); //false= write to a tree; true=doesn't write to tree
+        } else 
+        {
+            lisaraw2ana->SetOnline(true); //false= write to a tree; true=doesn't write to tree
+        }
+        //unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
+        
         source->AddReader(unpacklisa);
+        lisaraw2ana->SetOnline(true);
+        run->AddTask(lisaraw2ana);
+    
     }
 
 
@@ -118,10 +131,10 @@ void lisa_make_trees()
 
     if (LISA_CAL)
     {
-        LisaRaw2Cal* lisaraw2cal = new LisaRaw2Cal();
+        LisaAna2Cal* lisaana2cal = new LisaAna2Cal();
 
-        lisaraw2cal->SetOnline(false);
-        run->AddTask(lisaraw2cal);  
+        lisaana2cal->SetOnline(false);
+        run->AddTask(lisaana2cal);  
     }
 
     // if (LISA_ON)

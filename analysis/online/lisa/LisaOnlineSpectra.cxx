@@ -36,6 +36,7 @@
 #include "TMath.h"
 #include "TRandom.h"
 #include <string>
+#include "TVector.h"
 
 LisaOnlineSpectra::LisaOnlineSpectra()  :   LisaOnlineSpectra("LisaOnlineSpectra")
 {

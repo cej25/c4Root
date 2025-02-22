@@ -15,6 +15,10 @@
  ******************************************************************************/
 #include "LisaData.h"
 
+// This is the adjustment to use TVectors instead of std::vector
+//This was to try to read vectors of vectors form external macro without sourcing c4. It does not work.
+//template <typename T>
+//using StdVector = std::vector<T>;
 
 LisaItem::LisaItem()
 {
@@ -23,14 +27,14 @@ LisaItem::LisaItem()
 
 void LisaItem::SetAll(uint64_t wr,
                     uint16_t id,
-                    uint8_t b_id,
+                    int b_id,
                     uint64_t ev_time,
-                    uint8_t ch_id,
+                    int ch_id,
                     uint64_t ch_time,
                     bool p,
                     bool o,
                     uint32_t ch_energy,
-                    uint8_t ch_id_tr,
+                    int ch_id_tr,
                     std::vector<int16_t> tr,
                     std::vector<int16_t> tr_x
                     )
