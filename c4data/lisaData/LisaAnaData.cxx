@@ -39,12 +39,9 @@ void LisaAnaItem::SetAll(uint64_t wr,
                     uint32_t ch_energy,
                     uint32_t ch_energy_MWD,
                     uint8_t ch_id_tr,
-                    // std::vector<int16_t> tr,
-                    // std::vector<int16_t> tr_MWD,
-                    // std::vector<int16_t> tr_x
-                    ROOT::VecOps::RVec<int> tr,
-                    ROOT::VecOps::RVec<int> tr_MWD,
-                    ROOT::VecOps::RVec<int> tr_x
+                    std::vector<int16_t> tr,
+                    std::vector<int16_t> tr_MWD,
+                    std::vector<int16_t> tr_x
                     )
 {   
     wr_t = wr;

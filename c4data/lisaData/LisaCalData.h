@@ -21,6 +21,7 @@
 #include <vector>
 #include "TString.h"
 #include <ROOT/RVec.hxx>
+#include "TVector.h"
 
 //Debugging. Replaced std::string with TString 8nov24
 
@@ -38,12 +39,9 @@ class LisaCalItem : public TObject
                     int ypos,
                     double e, // uint32_t e?
                     double e_MWD,
-                    // std::vector<int16_t> tr,
-                    // std::vector<int16_t> tr_MWD,
-                    // std::vector<int16_t> tr_x,
-                    ROOT::VecOps::RVec<int> tr,
-                    ROOT::VecOps::RVec<int> tr_MWD,
-                    ROOT::VecOps::RVec<int> tr_x,
+                    std::vector<int16_t> tr,
+                    std::vector<int16_t> tr_MWD,
+                    std::vector<int16_t> tr_x,
                     double e_GM,
                     double e_MWD_GM,
                     uint64_t evt_t,
@@ -65,12 +63,9 @@ class LisaCalItem : public TObject
         int Get_yposition() const;
         double Get_energy() const;
         double Get_energy_MWD() const;
-        // std::vector<int16_t> Get_trace_febex() const;
-        // std::vector<int16_t> Get_trace_MWD() const;
-        // std::vector<int16_t> Get_trace_x() const;
-        ROOT::VecOps::RVec<int> Get_trace_febex() const;
-        ROOT::VecOps::RVec<int> Get_trace_MWD() const;
-        ROOT::VecOps::RVec<int> Get_trace_x() const;
+        std::vector<int16_t> Get_trace_febex() const;
+        std::vector<int16_t> Get_trace_MWD() const;
+        std::vector<int16_t> Get_trace_x() const;
         double Get_energy_GM() const;
         double Get_energy_MWD_GM() const;
         uint64_t Get_board_event_time() const;
@@ -94,12 +89,9 @@ class LisaCalItem : public TObject
         int yposition;
         double energy; // double? int?
         double energy_MWD; // double? int?
-        // std::vector<int16_t> trace_febex;
-        // std::vector<int16_t> trace_MWD;
-        // std::vector<int16_t> trace_x;
-        ROOT::VecOps::RVec<int> trace_febex;
-        ROOT::VecOps::RVec<int> trace_MWD;
-        ROOT::VecOps::RVec<int> trace_x;
+        std::vector<int16_t> trace_febex;
+        std::vector<int16_t> trace_MWD;
+        std::vector<int16_t> trace_x;
         double energy_GM;
         double energy_MWD_GM;
         uint64_t board_event_time;
@@ -158,20 +150,17 @@ inline double LisaCalItem::Get_energy_MWD() const
     return energy_MWD;
 }
 
-// inline std::vector<int16_t> LisaCalItem::Get_trace_febex() const
-inline ROOT::VecOps::RVec<int> LisaCalItem::Get_trace_febex() const
+inline std::vector<int16_t> LisaCalItem::Get_trace_febex() const
 {
     return trace_febex;
 }
 
-// inline std::vector<int16_t> LisaCalItem::Get_trace_MWD() const
-inline ROOT::VecOps::RVec<int> LisaCalItem::Get_trace_MWD() const
+inline std::vector<int16_t> LisaCalItem::Get_trace_MWD() const
 {
     return trace_MWD;
 }
 
-// inline std::vector<int16_t> LisaCalItem::Get_trace_x() const
-inline ROOT::VecOps::RVec<int> LisaCalItem::Get_trace_x() const
+inline std::vector<int16_t> LisaCalItem::Get_trace_x() const
 {
     return trace_x;
 }

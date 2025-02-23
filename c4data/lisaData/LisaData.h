@@ -17,7 +17,6 @@
 #define LisaData_H
 #include "TObject.h"
 #include <vector>
-#include <ROOT/RVec.hxx>
 
 class LisaItem : public TObject
 {
@@ -34,8 +33,9 @@ class LisaItem : public TObject
                     bool o,
                     uint32_t ch_energy,
                     uint8_t ch_id_traces,
-                    ROOT::VecOps::RVec<int> tr,
-                    ROOT::VecOps::RVec<int> tr_x);
+                    std::vector<int16_t> tr,
+                    std::vector<int16_t> tr_x);
+
         void Reset();
 
         uint64_t Get_wr_t() const;
@@ -48,10 +48,8 @@ class LisaItem : public TObject
         bool Get_overflow() const;
         uint32_t Get_channel_energy() const;
         uint8_t Get_channel_id_traces() const;
-        // std::vector<int16_t> Get_trace() const;
-        // std::vector<int16_t> Get_trace_x() const;
-        ROOT::VecOps::RVec<int> Get_trace() const;
-        ROOT::VecOps::RVec<int> Get_trace_x() const;
+        std::vector<int16_t> Get_trace() const;
+        std::vector<int16_t> Get_trace_x() const;
 
         // Getters
         ClassDefNV(LisaItem, 2);
@@ -67,10 +65,8 @@ class LisaItem : public TObject
         bool overflow;
         uint32_t channel_energy;
         uint8_t channel_id_traces;
-        // std::vector<int16_t> trace; 
-        // std::vector<int16_t> trace_x; 
-        ROOT::VecOps::RVec<int> trace;
-        ROOT::VecOps::RVec<int> trace_x;
+        std::vector<int16_t> trace; 
+        std::vector<int16_t> trace_x; 
 
 };
 
@@ -124,14 +120,12 @@ inline uint8_t LisaItem::Get_channel_id_traces() const
     return channel_id_traces;
 }
 
-// inline std::vector<int16_t> LisaItem::Get_trace() const
-inline ROOT::VecOps::RVec<int> LisaItem::Get_trace() const
+inline std::vector<int16_t> LisaItem::Get_trace() const
 {
     return trace;
 }
 
-// inline std::vector<int16_t> LisaItem::Get_trace_x() const
-inline ROOT::VecOps::RVec<int> LisaItem::Get_trace_x() const                  
+inline std::vector<int16_t> LisaItem::Get_trace_x() const
 {
     return trace_x;
 }
