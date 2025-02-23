@@ -129,8 +129,8 @@ void s101_online()
     
     TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_jan22.txt");
     TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_cal_feb21_2025_new_cards.txt");
-    //TGermaniumConfiguration::SetDetectorTimeshiftsFile(config_path + "/germanium/ge_timeshifts_apr20.txt");
-    TGermaniumConfiguration::SetPromptFlashCut(config_path + "/germanium/ge_prompt_flash_2102_v2.root");
+    TGermaniumConfiguration::SetDetectorTimeshiftsFile(config_path + "/germanium/ge_timeshifts_2202.txt");
+    TGermaniumConfiguration::SetPromptFlashCut(config_path + "/germanium/promptflash_new.root");
 
     TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
     
@@ -403,6 +403,35 @@ void s101_online()
          FrsGermaniumCorrelations* ge_big = new FrsGermaniumCorrelations(zbig);
          ge_big->SetShortLifetimeCollectionWindow(1000);
          run->AddTask(ge_big);
+
+         FrsGate * z84Nb = new FrsGate("84Nb",config_path + "/frs/84Nb_nice.root");
+         FrsGermaniumCorrelations* ge_84Nb = new FrsGermaniumCorrelations(z84Nb);
+         ge_84Nb->SetShortLifetimeCollectionWindow(1000);
+         run->AddTask(ge_84Nb);
+
+         FrsGate * z82Nb = new FrsGate("82Nb",config_path + "/frs/82Nb_nice.root");
+         FrsGermaniumCorrelations* ge_82Nb = new FrsGermaniumCorrelations(z82Nb);
+         ge_82Nb->SetShortLifetimeCollectionWindow(1000);
+         run->AddTask(ge_82Nb);
+        
+         FrsGate * z82Nb_shift = new FrsGate("82Nb_new",config_path + "/frs/new82Nb.root");
+         FrsGermaniumCorrelations* ge_82Nb_new = new FrsGermaniumCorrelations(z82Nb_shift);
+         ge_82Nb_new->SetShortLifetimeCollectionWindow(1000);
+         run->AddTask(ge_82Nb_new);
+         
+         FrsGate * z82Nb2_shift = new FrsGate("82Nb2_new",config_path + "/frs/new82Nb2.root");
+         FrsGermaniumCorrelations* ge_82Nb2_new = new FrsGermaniumCorrelations(z82Nb2_shift);
+         ge_82Nb2_new->SetShortLifetimeCollectionWindow(1000);
+         run->AddTask(ge_82Nb2_new);
+
+
+
+         
+
+         FrsGate * rightBlob = new FrsGate("rightBlob",config_path + "/frs/rightblob.root");
+         FrsGermaniumCorrelations* ge_rightblob = new FrsGermaniumCorrelations(rightBlob);
+         ge_rightblob->SetShortLifetimeCollectionWindow(1000);
+         run->AddTask(ge_rightblob);
      }
      
 
