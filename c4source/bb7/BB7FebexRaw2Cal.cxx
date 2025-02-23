@@ -63,11 +63,6 @@ void BB7FebexRaw2Cal::Exec(Option_t* option)
     // std::cout << "EVENT :: " << std::endl;
     for (auto const & bb7item : *bb7array)
     {
-        if (bb7item.Get_crate_id() == 0)
-        {
-            std::cout << "board:: " << bb7item.Get_board_id() << std::endl;
-            std::cout << "channel:: " << bb7item.Get_channel_id_traces() << std::endl;
-        }
         // std::cout << "Crate :: " << bb7item.Get_crate_id() << std::endl;
         // std::cout << "Board :: " << bb7item.Get_board_id() << std::endl;
         // std::cout << "Channel :: " << bb7item.Get_channel_id_traces() << std::endl;

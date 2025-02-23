@@ -113,7 +113,6 @@ Bool_t BB7FebexReader::Read()
                     trace.emplace_back(fData->bbfirst_data[it_board_number].trace_traces[channel_id].v[l]);    
                 }
 
-                std::cout << "are we writing stuff here? " << std::endl;
 
                 auto & entry = bb7array->emplace_back();
                 entry.SetAll(
