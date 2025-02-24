@@ -187,6 +187,8 @@ void BB7FebexOnlineSpectra::Exec(Option_t* option)
 {
     auto start = std::chrono::high_resolution_clock::now();
 
+    if (implantHitArray->size() == 0 && decayHitArray->size() == 0) return;
+
     for (auto const & i : *implantHitArray)
     {
         implant_strips_fired[i.DSSD][0].insert(i.StripX);
@@ -199,6 +201,10 @@ void BB7FebexOnlineSpectra::Exec(Option_t* option)
         h1_implant_side_y_hitpattern[i.DSSD]->Fill(i.StripY);
 
         h1_implant_e[i.DSSD]->Fill(i.Energy);
+
+        h2_implant_e_xy[i.DSSD]->Fill(i.EnergyX, i.EnergyY);
+        h2_implant_strip_1d_e[i.DSSD]->Fill(i.StripX, i.EnergyX);
+        h2_implant_strip_1d_e[i.DSSD]->Fill(i.StripY + 32, i.EnergyY);
 
     }
 
@@ -225,6 +231,9 @@ void BB7FebexOnlineSpectra::Exec(Option_t* option)
         h1_decay_side_y_hitpattern[d.DSSD]->Fill(d.StripY);
 
         h1_decay_e[d.DSSD]->Fill(d.Energy);
+        h2_decay_e_xy[d.DSSD]->Fill(d.EnergyX, d.EnergyY);
+        h2_decay_strip_1d_e[d.DSSD]->Fill(d.StripX, d.EnergyX);
+        h2_decay_strip_1d_e[d.DSSD]->Fill(d.StripY + 32, d.EnergyY);
     }
 
     for (int i = 0; i < nDets; i++)
