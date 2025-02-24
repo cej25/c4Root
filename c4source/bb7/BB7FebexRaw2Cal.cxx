@@ -104,7 +104,7 @@ void BB7FebexRaw2Cal::Exec(Option_t* option)
 
                 int64_t absolute_time = bb7item.Get_wr_t() + bb7item.Get_channel_time() - bb7item.Get_board_event_time();
 
-                if (energy > implantThreshold)
+                if (bb7item.Get_overflow() == 1 || energy > implantThreshold || energy < 0)
                 {
                     // implant 
                     auto & entry = bb7calImplants->emplace_back();

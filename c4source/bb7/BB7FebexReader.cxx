@@ -92,6 +92,8 @@ Bool_t BB7FebexReader::Read()
                 //::::::::::::::Channel OverFlow
                 bool overflow = fData->bbfirst_data[it_board_number].overflowv[index] & 0x1;
 
+
+
                 //::::::::::::::Channel Energy
                 //according to febex manual on gsi website, the 24th bit of the energy denotes the sign to indicate the polarity of the pulse
                 if (fData->bbfirst_data[it_board_number].channel_energyv[index] & (1 << 23))
@@ -105,6 +107,7 @@ Bool_t BB7FebexReader::Read()
 
                 std::vector<uint16_t> trace;
 
+
                 // this is changed from "index" to "channel_id" since sometimes we get less than 16 channels fired, but we always get 16 traces in order
 
                 //::::::::::::::Channel Traces with ID from channel header
@@ -112,6 +115,15 @@ Bool_t BB7FebexReader::Read()
                 {
                     trace.emplace_back(fData->bbfirst_data[it_board_number].trace_traces[channel_id].v[l]);    
                 }
+
+                // if (energy < 0)
+                // {
+                //     std::cout << "trace size w neg energy: " << trace.size() << std::endl;
+                // } 
+                // else
+                // {
+                //     if (trace.size() > 0) std::cout << "yay?" << std::endl;
+                // }
 
 
                 auto & entry = bb7array->emplace_back();
@@ -172,7 +184,8 @@ Bool_t BB7FebexReader::Read()
 
                 //::::::::::::::Channel Energy
                 //according to febex manual on gsi website, the 24th bit of the energy denotes the sign to indicate the polarity of the pulse
-                if (fData->bbsecond_data[it_board_number].channel_energyv[index] & (1 << 23))
+                bool check_polarity = fData->bbsecond_data[it_board_number].channel_energyv[index] & (1 << 23);
+                if (check_polarity)
                 {
                     energy = -(int32_t)(fData->bbsecond_data[it_board_number].channel_energyv[index] & 0x007FFFFF);
                 }
@@ -183,6 +196,11 @@ Bool_t BB7FebexReader::Read()
 
                 std::vector<uint16_t> trace;
 
+                // if (energy < 0) 
+                // {
+                //     std::cout << std::hex << energy << std::dec << std::endl;
+                // }
+
                 // this is changed from "index" to "channel_id" since sometimes we get less than 16 channels fired, but we always get 16 traces in order
                 // not really sure what the solution for LISA is 
 
@@ -190,7 +208,18 @@ Bool_t BB7FebexReader::Read()
                 for (int l = 0 ; l < fData->bbsecond_data[it_board_number].trace_traces[channel_id]._ ; l++)
                 {
                     trace.emplace_back(fData->bbsecond_data[it_board_number].trace_traces[channel_id].v[l]);    
+                    // if (energy > 0) std::cout << trace.at(l) << std::endl;
                 }
+
+                // if (energy < 0)
+                // {
+                //     std::cout << "trace size w neg energy: " << trace.size() << std::endl;
+                //     std::cout << "energy:: " << energy << std::endl;
+                // } 
+                // else
+                // {
+                //     if (trace.size() > 0) std::cout << "yay?" << std::endl;
+                // }
 
                 auto & entry = bb7array->emplace_back();
                 entry.SetAll(
@@ -220,7 +249,7 @@ Bool_t BB7FebexReader::Read()
 
 void BB7FebexReader::Reset()
 {
-
+    energy = 0;
 }
 
 ClassImp(BB7FebexReader)

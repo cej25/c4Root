@@ -109,7 +109,7 @@ void BB7FebexCal2Hit::Exec(Option_t* option)
                 // Must be same DSSD and Y side
                 if (j.DSSD != i.DSSD || j.Side != 1) continue;
                 // Check gates from config
-                if (std::abs(i.Energy - j.Energy) < 1000 // frontbackenergyL
+                if (std::abs(i.Energy - j.Energy) < 3500000000 // frontbackenergyL
                         && i.IsGoodTime(j, 4400))
                 {
                     hits.push_back({i, j});
@@ -186,7 +186,7 @@ void BB7FebexCal2Hit::Exec(Option_t* option)
                 // Must be same DSSD and Y side
                 if (j.DSSD != i.DSSD || j.Side != 1) continue;
                 // Check gates from config
-                if (std::abs(i.Energy - j.Energy) < 350000 // frontbackenergyL - set high for now
+                if (std::abs(i.Energy - j.Energy) < 350000000000 // frontbackenergyL - set high for now
                         && i.IsGoodTime(j, 4400))
                 {
                     bb7_coord_t x{i.DSSD, i.Side, i.Strip};
