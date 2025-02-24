@@ -24,7 +24,7 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
 
     // Define important paths.
     TString c4Root_path = "/u/despec/s101_online/c4Root";
-    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes";
+    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --input-buffer=200Mi --event-sizes";
     ucesb_path.ReplaceAll("//","/");
 
     // std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
@@ -45,6 +45,7 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     // TString filename = "~/lustre/despec/bb7_test_2025/Co_jun_ohm_0200.lmd";
     // TString filename = "~/lustre/despec/bb7_test_2025/exp_bkg_daq2_0001.lmd";
     TString filename = "trans://lxg3107";
+    //TString filename = "~/lustre/despec/s302/107Ag_primary_beam/107Ag_0061_0001.lmd";
     //TString filename = "~/lustre/despec/bb7_test_2025/bkg_jun_ohm_full_0106.lmd";
     TString outputpath = "bb7_test_output";
     TString outputFileName = outputpath + ".root";

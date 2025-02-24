@@ -71,20 +71,22 @@ Bool_t FrsReader::Read()
 {
     if (!fData) return kTRUE;
     if (fData == nullptr) return kFALSE;
+    
+    
+    int spill_on = fData->SPILL_ON;
+    int spill_off = fData->SPILL_OFF;
+    if (spill_on == 1) spill_flag = true;
+    if (spill_off == 1) spill_flag = false;
+    header->SetSpillFlag(spill_flag);
 
     int64_t wr_t = (((int64_t)fData->WR_T[3]) << 48) + (((int64_t)fData->WR_T[2]) << 32) + (((int64_t)fData->WR_T[1]) << 16) + (int64_t)(fData->WR_T[0]);
-    if (wr_t == 0) return kTRUE; // CEJ: does this screw things up for spillflag? untested
+    if (wr_t == 0) return kTRUE; // CEJ: does this screw things up for spillflag? untested, yes most likely
 
     int16_t tpat = fData->TPAT;
 
     auto & entry = tpatArray->emplace_back();
     entry.SetAll(wr_t, tpat);
 
-    int spill_on = fData->SPILL_ON;
-    int spill_off = fData->SPILL_OFF;
-    if (spill_on == 1) spill_flag = true;
-    if (spill_off == 1) spill_flag = false;
-    header->SetSpillFlag(spill_flag);
 
     ScalerReader();
     ScintillatorReader();
