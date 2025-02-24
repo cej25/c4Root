@@ -98,6 +98,12 @@ class BB7FebexOnlineSpectra : public FairTask
         std::vector<TH2*> h2_decay_e_xy;
         std::vector<TH2*> h2_decay_strip_1d_e; 
 
+        // Raw histograms
+        std::vector<TH1*> h1_febex_card_hitpattern;
+        // std::vector<TH1*> 
+
+
+
         // Counters
         std::set<int>** implant_strips_fired;
         int** implant_side_x_mult;
