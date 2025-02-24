@@ -389,30 +389,30 @@ void s101_online()
     
      if (FRS_ON && GERMANIUM_ON)
      {
-          FrsGate * zNb = new FrsGate("Nb",config_path + "/frs/84Nb.root");
-         FrsGermaniumCorrelations* zhv = new FrsGermaniumCorrelations(zNb);
-         zhv->SetShortLifetimeCollectionWindow(1000);
-         run->AddTask(zhv);
+         // FrsGate * zNb = new FrsGate("Nb",config_path + "/frs/84Nb.root");
+         //FrsGermaniumCorrelations* zhv = new FrsGermaniumCorrelations(zNb);
+         //zhv->SetShortLifetimeCollectionWindow(1000);
+         //run->AddTask(zhv);
          
-         FrsGate * Nblow = new FrsGate("Nblow",config_path + "/frs/Nblow.root");
-         FrsGermaniumCorrelations* ge_Nblow = new FrsGermaniumCorrelations(Nblow);
-         ge_Nblow->SetShortLifetimeCollectionWindow(1000);
-         run->AddTask(ge_Nblow);
+         //FrsGate * Nblow = new FrsGate("Nblow",config_path + "/frs/Nblow.root");
+         //FrsGermaniumCorrelations* ge_Nblow = new FrsGermaniumCorrelations(Nblow);
+         ///ge_Nblow->SetShortLifetimeCollectionWindow(1000);
+         //run->AddTask(ge_Nblow);
          
-         FrsGate * zbig = new FrsGate("big",config_path + "/frs/big.root");
-         FrsGermaniumCorrelations* ge_big = new FrsGermaniumCorrelations(zbig);
-         ge_big->SetShortLifetimeCollectionWindow(1000);
-         run->AddTask(ge_big);
+         //FrsGate * zbig = new FrsGate("big",config_path + "/frs/big.root");
+         //FrsGermaniumCorrelations* ge_big = new FrsGermaniumCorrelations(zbig);
+         //ge_big->SetShortLifetimeCollectionWindow(1000);
+         //run->AddTask(ge_big);
 
-         FrsGate * z84Nb = new FrsGate("84Nb",config_path + "/frs/84Nb_nice.root");
-         FrsGermaniumCorrelations* ge_84Nb = new FrsGermaniumCorrelations(z84Nb);
-         ge_84Nb->SetShortLifetimeCollectionWindow(1000);
-         run->AddTask(ge_84Nb);
+         //FrsGate * z84Nb = new FrsGate("84Nb",config_path + "/frs/84Nb_nice.root");
+         //FrsGermaniumCorrelations* ge_84Nb = new FrsGermaniumCorrelations(z84Nb);
+         //ge_84Nb->SetShortLifetimeCollectionWindow(1000);
+         //run->AddTask(ge_84Nb);
 
-         FrsGate * z82Nb = new FrsGate("82Nb",config_path + "/frs/82Nb_nice.root");
-         FrsGermaniumCorrelations* ge_82Nb = new FrsGermaniumCorrelations(z82Nb);
-         ge_82Nb->SetShortLifetimeCollectionWindow(1000);
-         run->AddTask(ge_82Nb);
+         //FrsGate * z82Nb = new FrsGate("82Nb",config_path + "/frs/82Nb_nice.root");
+         //FrsGermaniumCorrelations* ge_82Nb = new FrsGermaniumCorrelations(z82Nb);
+         //ge_82Nb->SetShortLifetimeCollectionWindow(1000);
+         //run->AddTask(ge_82Nb);
         
          FrsGate * z82Nb_shift = new FrsGate("82Nb_new",config_path + "/frs/new82Nb.root");
          FrsGermaniumCorrelations* ge_82Nb_new = new FrsGermaniumCorrelations(z82Nb_shift);
