@@ -10,14 +10,16 @@ WIP
 #include <TTreeReader.h>
 #include <TTreeReaderValue.h>
 #include <iostream>
+#include "LisaCalData.h"
 
 void read_trace() 
 {
     TFile *file = TFile::Open("./run_0075_test-merge.root"); 
     
     TTreeReader reader("evt", file);
-    TTreeReaderArray<std::vector<int16_t>> LisaItem(reader, "LisaCalData.trace_febex");
-    TTreeReaderArray<Int_t[2000]> Test(reader, "LisaCalData.test[2000]");
+    TTreeReaderArray<std::vector<short>> trace(reader, "LisaCalData.trace_febex");
+    TTreeReaderArray<LisaCalItem> lItem(reader, "LisaCalData");
+    // TTreeReaderArray<Int_t[2000]> Test(reader, "LisaCalData.test[2000]");
     // TTreeReaderValue<EventveHeader> Header(reader, "EventHeader.");
     int k = 0;
 
@@ -26,17 +28,23 @@ void read_trace()
         k++;
         // uint evtno = Header->GetEventno();
 
-        // std::cout << "Size 1 :: " << LisaItem.GetSize() << std::endl;
-        std::cout << "size test:: " << Test.GetSize() << std::endl;
+       // std::cout << "Size 1 :: " << trace.GetSize() << std::endl;
+        // std::cout << "size test:: " << Test.GetSize() << std::endl;
 
-        for (int i = 0; i < Test.GetSize(); i++)
+        for (auto const & item : lItem)
         {
-            int* x = Test[i];
+           ///std::cout << "Size 2 :: " << item.size() << std::endl;
+           std::vector<short> tr_x = item.Get_trace_x(); // << std::endl;
+	   std::cout << tr_x.size() << std::endl;
+	   for (int i = 0; i < tr_x.size(); i++)
+           {
+		   std::cout << tr_x[i] << "  --  ";
+	   }
 
         }
-
+/*
         for (auto const & t : Test)
-        {
+      {
             // std::cout << "hello, reading test?" << std::endl;
             // std::cout << t[1] << std::endl;
             for (int j = 0; j < 2000; j++)
@@ -48,7 +56,7 @@ void read_trace()
             // std::cout << l.size() << std::endl;
 
             // std::cout 
-        }
+        }*/
 
         // for (auto const&Item : LisaItem)
         // {
