@@ -49,3 +49,19 @@ void BB7FebexItem::Reset()
 }
 
 ClassImp(BB7FebexItem)
+
+
+BB7EmptyItem::BB7EmptyItem() {}
+
+void BB7EmptyItem::SetAll(int64_t wr,
+                    uint16_t id,
+                    int cr_id,
+                    uint32_t b_id,
+                    uint64_t ev_time)
+{
+    wr_t = wr;
+    wr_id = id;
+    crate_id = cr_id;
+    board_id = b_id;
+    board_event_time = ev_time;
+}

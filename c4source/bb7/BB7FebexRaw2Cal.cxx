@@ -60,6 +60,8 @@ void BB7FebexRaw2Cal::Exec(Option_t* option)
     bb7calImplants->clear();
     bb7calDecays->clear();
 
+    if (bb7array->size() > 0) nTotalBB7++;
+
     // std::cout << "EVENT :: " << std::endl;
     for (auto const & bb7item : *bb7array)
     {
@@ -142,6 +144,22 @@ void BB7FebexRaw2Cal::Exec(Option_t* option)
                         bb7item.Get_overflow()
                     );
                 }
+                else
+                {
+                    if (count_in_event == 0)
+                    {
+                        nNothings++;
+                        count_in_event++;
+                    }
+                }
+            }
+            else
+            {
+                if (count_in_event == 0)
+                {
+                    nUnmapped++;
+                    count_in_event++;
+                }
             }
             // else c4LOG(warn, "Unmapped data? Board: "  << unmapped_channel.second.first << " Channel: " << unmapped_channel.second.second);
 
@@ -153,9 +171,11 @@ void BB7FebexRaw2Cal::Exec(Option_t* option)
 
 void BB7FebexRaw2Cal::FinishEvent()
 {
-
+    count_in_event = 0;
 }
 
 void BB7FebexRaw2Cal::FinishTask()
 {
+    c4LOG(info, Form("Unmapped item:: %i", nUnmapped));
+    c4LOG(info, Form("Nothing items:: %i", nNothings));
 }

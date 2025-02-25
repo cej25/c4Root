@@ -99,6 +99,7 @@ set(SRCS
 ./correlations/AidaGermaniumCorrelations.cxx
 ./correlations/bPlastGermaniumCorrelations.cxx
 ./online/onlineCorrelations/bPlastGermaniumCorrelationsOnline.cxx
+./online/onlineCorrelations/BB7GermaniumCorrelationsOnline.cxx
 #./correlations/FrsBplastCorrelations.cxx
 ./correlations/triplePlusCorrs/BetaIonCorrelations.cxx
 
