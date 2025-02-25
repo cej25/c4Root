@@ -1796,8 +1796,8 @@ void FrsCal2Hit::ProcessIDs()
         for (int i = 0; i < 4; i++)
         {
             sum += power * id->vel_music21_a[i];
-            // power *= id_beta;
-            power *= 1.0 / TMath::Power(id_beta_s1s2, 2);
+            if (frs_config->old_beta_cal) power *= id_beta_s1s2;
+            else { power *= 1.0 / TMath::Power(id_beta_s1s2, 2); }
         }
         id_music21_v_cor = sum;
 
@@ -1819,8 +1819,8 @@ void FrsCal2Hit::ProcessIDs()
         for (int i = 0; i < 4; i++)
         {
             sum += power * id->vel_music22_a[i];
-            // power *= id_beta;
-            power *= 1.0 / TMath::Power(id_beta_s1s2, 2);
+            if (frs_config->old_beta_cal) power *= id_beta_s1s2;
+            else { power *= 1.0 / TMath::Power(id_beta_s1s2, 2); }
         }
         id_music22_v_cor = sum;
 
@@ -1844,8 +1844,8 @@ void FrsCal2Hit::ProcessIDs()
         {
             // sum += power * id->vel_a1[i];
             sum += power * id->vel_music41_a[i];
-            // power *= id_beta_s2s4;
-            power *= 1.0 / TMath::Power(id_beta_s2s4, 2);
+            if (frs_config->old_beta_cal) power *= id_beta_s2s4;
+            else { power *= 1.0 / TMath::Power(id_beta_s2s4, 2); }
         }
         id_music41_v_cor = sum;
 
@@ -1872,8 +1872,8 @@ void FrsCal2Hit::ProcessIDs()
         {
             // sum += power * id->vel_a2[i];
             sum += power * id->vel_music42_a[i];
-            // power *= id_beta_s2s4;
-            power *= 1.0 / TMath::Power(id_beta_s2s4, 2);
+            if (frs_config->old_beta_cal) power *= id_beta_s2s4;
+            else { power *= 1.0 / TMath::Power(id_beta_s2s4, 2); }
         }
         id_music42_v_cor = sum;
 
@@ -1898,8 +1898,8 @@ void FrsCal2Hit::ProcessIDs()
         for (int i = 0; i < 4; i++)
         {
             sum += power * id->vel_music43_a[i];
-            // power *= id_beta_s2s4;
-            power *= 1.0 / TMath::Power(id_beta_s2s4, 2);
+            if (frs_config->old_beta_cal) power *= id_beta_s2s4;
+            else { power *= 1.0 / TMath::Power(id_beta_s2s4, 2); }
         }
         id_music43_v_cor = sum;
 
@@ -2113,7 +2113,8 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->mhtdc_vel_a_music21[j];
-                power *= 1.0 / TMath::Power(id_mhtdc_beta_s1s2[i], 2);
+                if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s1s2[i];
+                else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s1s2[i], 2); }
             }
 
             id_mhtdc_v_cor_music21[i] = sum;
@@ -2130,7 +2131,8 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->mhtdc_vel_a_music22[i];
-                power *= 1.0 / TMath::Power(id_mhtdc_beta_s1s2[i], 2);
+                if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s1s2[i];
+                else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s1s2[i], 2); }
             }
 
             id_mhtdc_v_cor_music22[i] = sum;
@@ -2241,8 +2243,8 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->mhtdc_vel_a_music41[j];
-                power *= 1.0 / TMath::Power(id_mhtdc_beta_s2s4[i], 2);
-                //power *= id_mhtdc_beta_s2s4[i];
+                if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s2s4[i];
+                else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s2s4[i], 2); }
             }
 
             id_mhtdc_v_cor_music41[i] = sum;
@@ -2270,8 +2272,8 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->mhtdc_vel_a_music42[j];
-                power *= 1.0 / TMath::Power(id_mhtdc_beta_s2s4[i], 2);
-                //power *= id_mhtdc_beta_s2s4[i];
+                if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s2s4[i];
+                else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s2s4[i], 2); }
             }
 
             id_mhtdc_v_cor_music42[i] = sum;
@@ -2298,7 +2300,8 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->mhtdc_vel_a_music43[j];
-                power *= 1.0 / TMath::Power(id_mhtdc_beta_s2s4[i], 2);
+                if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s2s4[i];
+                else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s2s4[i], 2); }
             }
 
             id_mhtdc_v_cor_music43[i] = sum;

@@ -4,12 +4,14 @@
 #include "c4Reader.h"
 #include <Rtypes.h>
 #include "EventHeader.h"
+#include "TExperimentConfiguration.h"
 
 struct EXT_STR_h101_unpack_t;
 typedef struct EXT_STR_h101_unpack_t EXT_STR_h101_unpack;
 
 class ext_data_struct_info;
 
+class TExperimentConfiguration;
 
 class UnpackReader : public c4Reader
 {
@@ -43,6 +45,8 @@ class UnpackReader : public c4Reader
     Bool_t spill_flag = false;
 
     Bool_t fOnline;
+
+    TExperimentConfiguration const* exp_config;
 
   public:
     ClassDefOverride(UnpackReader, 0);
