@@ -47,6 +47,13 @@ class BB7FebexRaw2Cal : public FairTask
         uint32_t implantThreshold = 10000;
         uint32_t decayThreshold = 100;
 
+        Int_t nUnmapped = 0;
+        Int_t nNothings = 0;
+        Int_t nTotalBB7 = 0;
+
+
+        Int_t count_in_event = 0;
+
         std::map<std::pair<int, std::pair<int, int>>, std::pair<int, std::pair<int,int>>> detector_mapping;
 
         

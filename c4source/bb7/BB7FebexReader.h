@@ -52,6 +52,11 @@ class BB7FebexReader : public c4Reader
         int64_t wr_t_second = 0;
 
         std::vector<BB7FebexItem>* bb7array;
+        std::vector<BB7EmptyItem>* bb7empty;
+
+        Int_t nReads = 0;
+        Int_t n_zero_f0_0 = 0;
+        Int_t n_zero_f0_1 = 0;
 
     
     public:
