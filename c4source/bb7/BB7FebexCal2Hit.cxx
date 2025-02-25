@@ -77,10 +77,14 @@ void BB7FebexCal2Hit::Exec(Option_t* option)
     implantHitArray->clear();
     decayHitArray->clear();
 
+    if (bb7calImplants->size() > 0) ncalImplantEvents++;
+    if (bb7calDecays->size() > 0) ncalDecayEvents++;
+
     // Process implants if there are any
     // Decays should be 0, but we skip them anyway
     if (bb7calImplants->size() > 0)
-    {
+    { 
+
         // Cluster events from adjacent strips
         auto clusters = ItemsToClusters(*bb7calImplants);
         // List of front-back matched clusters for a physical hit

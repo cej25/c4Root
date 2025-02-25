@@ -69,6 +69,8 @@
 
 #pragma link C++ class BetaIonCorrelations+;
 
+#pragma link C++ class BB7GermaniumCorrelationsOnline+;
+
 // #pragma link C++ class MHTDCSpectra+;
 // #pragma link C++ class TPCCorrections+;
 

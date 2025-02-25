@@ -346,6 +346,84 @@ typedef struct EXT_STR_h101_bbfebex_t
   uint32_t bbfirst_data4trace_channel_id_traces /* [0,16] */;
   uint32_t bbfirst_data4trace_channel_id_tracesI[16 EXT_STRUCT_CTRL(bbfirst_data4trace_channel_id_traces)] /* [1,16] */;
   uint32_t bbfirst_data4trace_channel_id_tracesv[16 EXT_STRUCT_CTRL(bbfirst_data4trace_channel_id_traces)] /* [0,255] */;
+  uint32_t bbfirst_data5trig /* [0,255] */;
+  uint32_t bbfirst_data5event_trigger_time_hi /* [-1,-1] */;
+  uint32_t bbfirst_data5event_trigger_time_lo /* [-1,-1] */;
+  uint32_t bbfirst_data5hit_pattern /* [0,65535] */;
+  uint32_t bbfirst_data5num_channels_fired /* [-1,-1] */;
+  uint32_t bbfirst_data5board_num /* [0,255] */;
+  uint32_t bbfirst_data5channel_id /* [0,16] */;
+  uint32_t bbfirst_data5channel_idI[16 EXT_STRUCT_CTRL(bbfirst_data5channel_id)] /* [1,16] */;
+  uint32_t bbfirst_data5channel_idv[16 EXT_STRUCT_CTRL(bbfirst_data5channel_id)] /* [0,255] */;
+  uint32_t bbfirst_data5channel_trigger_time_hi /* [0,16] */;
+  uint32_t bbfirst_data5channel_trigger_time_hiI[16 EXT_STRUCT_CTRL(bbfirst_data5channel_trigger_time_hi)] /* [1,16] */;
+  uint32_t bbfirst_data5channel_trigger_time_hiv[16 EXT_STRUCT_CTRL(bbfirst_data5channel_trigger_time_hi)] /* [0,65535] */;
+  uint32_t bbfirst_data5channel_trigger_time_lo /* [0,16] */;
+  uint32_t bbfirst_data5channel_trigger_time_loI[16 EXT_STRUCT_CTRL(bbfirst_data5channel_trigger_time_lo)] /* [1,16] */;
+  uint32_t bbfirst_data5channel_trigger_time_lov[16 EXT_STRUCT_CTRL(bbfirst_data5channel_trigger_time_lo)] /* [-1,-1] */;
+  uint32_t bbfirst_data5pileup /* [0,16] */;
+  uint32_t bbfirst_data5pileupI[16 EXT_STRUCT_CTRL(bbfirst_data5pileup)] /* [1,16] */;
+  uint32_t bbfirst_data5pileupv[16 EXT_STRUCT_CTRL(bbfirst_data5pileup)] /* [0,255] */;
+  uint32_t bbfirst_data5overflow /* [0,16] */;
+  uint32_t bbfirst_data5overflowI[16 EXT_STRUCT_CTRL(bbfirst_data5overflow)] /* [1,16] */;
+  uint32_t bbfirst_data5overflowv[16 EXT_STRUCT_CTRL(bbfirst_data5overflow)] /* [0,255] */;
+  uint32_t bbfirst_data5channel_cfd /* [0,16] */;
+  uint32_t bbfirst_data5channel_cfdI[16 EXT_STRUCT_CTRL(bbfirst_data5channel_cfd)] /* [1,16] */;
+  uint32_t bbfirst_data5channel_cfdv[16 EXT_STRUCT_CTRL(bbfirst_data5channel_cfd)] /* [0,255] */;
+  uint32_t bbfirst_data5channel_energy /* [0,16] */;
+  uint32_t bbfirst_data5channel_energyI[16 EXT_STRUCT_CTRL(bbfirst_data5channel_energy)] /* [1,16] */;
+  uint32_t bbfirst_data5channel_energyv[16 EXT_STRUCT_CTRL(bbfirst_data5channel_energy)] /* [-1,-1] */;
+  uint32_t bbfirst_data5trace_traces1 /* [0,4000] */;
+  uint32_t bbfirst_data5trace_traces1I[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces1)] /* [1,4000] */;
+  uint32_t bbfirst_data5trace_traces1v[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces1)] /* [0,65535] */;
+  uint32_t bbfirst_data5trace_traces2 /* [0,4000] */;
+  uint32_t bbfirst_data5trace_traces2I[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces2)] /* [1,4000] */;
+  uint32_t bbfirst_data5trace_traces2v[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces2)] /* [0,65535] */;
+  uint32_t bbfirst_data5trace_traces3 /* [0,4000] */;
+  uint32_t bbfirst_data5trace_traces3I[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces3)] /* [1,4000] */;
+  uint32_t bbfirst_data5trace_traces3v[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces3)] /* [0,65535] */;
+  uint32_t bbfirst_data5trace_traces4 /* [0,4000] */;
+  uint32_t bbfirst_data5trace_traces4I[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces4)] /* [1,4000] */;
+  uint32_t bbfirst_data5trace_traces4v[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces4)] /* [0,65535] */;
+  uint32_t bbfirst_data5trace_traces5 /* [0,4000] */;
+  uint32_t bbfirst_data5trace_traces5I[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces5)] /* [1,4000] */;
+  uint32_t bbfirst_data5trace_traces5v[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces5)] /* [0,65535] */;
+  uint32_t bbfirst_data5trace_traces6 /* [0,4000] */;
+  uint32_t bbfirst_data5trace_traces6I[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces6)] /* [1,4000] */;
+  uint32_t bbfirst_data5trace_traces6v[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces6)] /* [0,65535] */;
+  uint32_t bbfirst_data5trace_traces7 /* [0,4000] */;
+  uint32_t bbfirst_data5trace_traces7I[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces7)] /* [1,4000] */;
+  uint32_t bbfirst_data5trace_traces7v[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces7)] /* [0,65535] */;
+  uint32_t bbfirst_data5trace_traces8 /* [0,4000] */;
+  uint32_t bbfirst_data5trace_traces8I[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces8)] /* [1,4000] */;
+  uint32_t bbfirst_data5trace_traces8v[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces8)] /* [0,65535] */;
+  uint32_t bbfirst_data5trace_traces9 /* [0,4000] */;
+  uint32_t bbfirst_data5trace_traces9I[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces9)] /* [1,4000] */;
+  uint32_t bbfirst_data5trace_traces9v[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces9)] /* [0,65535] */;
+  uint32_t bbfirst_data5trace_traces10 /* [0,4000] */;
+  uint32_t bbfirst_data5trace_traces10I[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces10)] /* [1,4000] */;
+  uint32_t bbfirst_data5trace_traces10v[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces10)] /* [0,65535] */;
+  uint32_t bbfirst_data5trace_traces11 /* [0,4000] */;
+  uint32_t bbfirst_data5trace_traces11I[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces11)] /* [1,4000] */;
+  uint32_t bbfirst_data5trace_traces11v[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces11)] /* [0,65535] */;
+  uint32_t bbfirst_data5trace_traces12 /* [0,4000] */;
+  uint32_t bbfirst_data5trace_traces12I[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces12)] /* [1,4000] */;
+  uint32_t bbfirst_data5trace_traces12v[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces12)] /* [0,65535] */;
+  uint32_t bbfirst_data5trace_traces13 /* [0,4000] */;
+  uint32_t bbfirst_data5trace_traces13I[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces13)] /* [1,4000] */;
+  uint32_t bbfirst_data5trace_traces13v[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces13)] /* [0,65535] */;
+  uint32_t bbfirst_data5trace_traces14 /* [0,4000] */;
+  uint32_t bbfirst_data5trace_traces14I[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces14)] /* [1,4000] */;
+  uint32_t bbfirst_data5trace_traces14v[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces14)] /* [0,65535] */;
+  uint32_t bbfirst_data5trace_traces15 /* [0,4000] */;
+  uint32_t bbfirst_data5trace_traces15I[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces15)] /* [1,4000] */;
+  uint32_t bbfirst_data5trace_traces15v[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces15)] /* [0,65535] */;
+  uint32_t bbfirst_data5trace_traces16 /* [0,4000] */;
+  uint32_t bbfirst_data5trace_traces16I[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces16)] /* [1,4000] */;
+  uint32_t bbfirst_data5trace_traces16v[4000 EXT_STRUCT_CTRL(bbfirst_data5trace_traces16)] /* [0,65535] */;
+  uint32_t bbfirst_data5trace_channel_id_traces /* [0,16] */;
+  uint32_t bbfirst_data5trace_channel_id_tracesI[16 EXT_STRUCT_CTRL(bbfirst_data5trace_channel_id_traces)] /* [1,16] */;
+  uint32_t bbfirst_data5trace_channel_id_tracesv[16 EXT_STRUCT_CTRL(bbfirst_data5trace_channel_id_traces)] /* [0,255] */;
   uint32_t bbsecond_ts_subsystem_id /* [0,65535] */;
   uint32_t bbsecond_ts_t1 /* [0,65535] */;
   uint32_t bbsecond_ts_t2 /* [0,65535] */;
@@ -663,84 +741,6 @@ typedef struct EXT_STR_h101_bbfebex_t
   uint32_t bbsecond_data4trace_channel_id_traces /* [0,16] */;
   uint32_t bbsecond_data4trace_channel_id_tracesI[16 EXT_STRUCT_CTRL(bbsecond_data4trace_channel_id_traces)] /* [1,16] */;
   uint32_t bbsecond_data4trace_channel_id_tracesv[16 EXT_STRUCT_CTRL(bbsecond_data4trace_channel_id_traces)] /* [0,255] */;
-  uint32_t bbsecond_data5trig /* [0,255] */;
-  uint32_t bbsecond_data5event_trigger_time_hi /* [-1,-1] */;
-  uint32_t bbsecond_data5event_trigger_time_lo /* [-1,-1] */;
-  uint32_t bbsecond_data5hit_pattern /* [0,65535] */;
-  uint32_t bbsecond_data5num_channels_fired /* [-1,-1] */;
-  uint32_t bbsecond_data5board_num /* [0,255] */;
-  uint32_t bbsecond_data5channel_id /* [0,16] */;
-  uint32_t bbsecond_data5channel_idI[16 EXT_STRUCT_CTRL(bbsecond_data5channel_id)] /* [1,16] */;
-  uint32_t bbsecond_data5channel_idv[16 EXT_STRUCT_CTRL(bbsecond_data5channel_id)] /* [0,255] */;
-  uint32_t bbsecond_data5channel_trigger_time_hi /* [0,16] */;
-  uint32_t bbsecond_data5channel_trigger_time_hiI[16 EXT_STRUCT_CTRL(bbsecond_data5channel_trigger_time_hi)] /* [1,16] */;
-  uint32_t bbsecond_data5channel_trigger_time_hiv[16 EXT_STRUCT_CTRL(bbsecond_data5channel_trigger_time_hi)] /* [0,65535] */;
-  uint32_t bbsecond_data5channel_trigger_time_lo /* [0,16] */;
-  uint32_t bbsecond_data5channel_trigger_time_loI[16 EXT_STRUCT_CTRL(bbsecond_data5channel_trigger_time_lo)] /* [1,16] */;
-  uint32_t bbsecond_data5channel_trigger_time_lov[16 EXT_STRUCT_CTRL(bbsecond_data5channel_trigger_time_lo)] /* [-1,-1] */;
-  uint32_t bbsecond_data5pileup /* [0,16] */;
-  uint32_t bbsecond_data5pileupI[16 EXT_STRUCT_CTRL(bbsecond_data5pileup)] /* [1,16] */;
-  uint32_t bbsecond_data5pileupv[16 EXT_STRUCT_CTRL(bbsecond_data5pileup)] /* [0,255] */;
-  uint32_t bbsecond_data5overflow /* [0,16] */;
-  uint32_t bbsecond_data5overflowI[16 EXT_STRUCT_CTRL(bbsecond_data5overflow)] /* [1,16] */;
-  uint32_t bbsecond_data5overflowv[16 EXT_STRUCT_CTRL(bbsecond_data5overflow)] /* [0,255] */;
-  uint32_t bbsecond_data5channel_cfd /* [0,16] */;
-  uint32_t bbsecond_data5channel_cfdI[16 EXT_STRUCT_CTRL(bbsecond_data5channel_cfd)] /* [1,16] */;
-  uint32_t bbsecond_data5channel_cfdv[16 EXT_STRUCT_CTRL(bbsecond_data5channel_cfd)] /* [0,255] */;
-  uint32_t bbsecond_data5channel_energy /* [0,16] */;
-  uint32_t bbsecond_data5channel_energyI[16 EXT_STRUCT_CTRL(bbsecond_data5channel_energy)] /* [1,16] */;
-  uint32_t bbsecond_data5channel_energyv[16 EXT_STRUCT_CTRL(bbsecond_data5channel_energy)] /* [-1,-1] */;
-  uint32_t bbsecond_data5trace_traces1 /* [0,4000] */;
-  uint32_t bbsecond_data5trace_traces1I[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces1)] /* [1,4000] */;
-  uint32_t bbsecond_data5trace_traces1v[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces1)] /* [0,65535] */;
-  uint32_t bbsecond_data5trace_traces2 /* [0,4000] */;
-  uint32_t bbsecond_data5trace_traces2I[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces2)] /* [1,4000] */;
-  uint32_t bbsecond_data5trace_traces2v[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces2)] /* [0,65535] */;
-  uint32_t bbsecond_data5trace_traces3 /* [0,4000] */;
-  uint32_t bbsecond_data5trace_traces3I[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces3)] /* [1,4000] */;
-  uint32_t bbsecond_data5trace_traces3v[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces3)] /* [0,65535] */;
-  uint32_t bbsecond_data5trace_traces4 /* [0,4000] */;
-  uint32_t bbsecond_data5trace_traces4I[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces4)] /* [1,4000] */;
-  uint32_t bbsecond_data5trace_traces4v[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces4)] /* [0,65535] */;
-  uint32_t bbsecond_data5trace_traces5 /* [0,4000] */;
-  uint32_t bbsecond_data5trace_traces5I[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces5)] /* [1,4000] */;
-  uint32_t bbsecond_data5trace_traces5v[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces5)] /* [0,65535] */;
-  uint32_t bbsecond_data5trace_traces6 /* [0,4000] */;
-  uint32_t bbsecond_data5trace_traces6I[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces6)] /* [1,4000] */;
-  uint32_t bbsecond_data5trace_traces6v[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces6)] /* [0,65535] */;
-  uint32_t bbsecond_data5trace_traces7 /* [0,4000] */;
-  uint32_t bbsecond_data5trace_traces7I[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces7)] /* [1,4000] */;
-  uint32_t bbsecond_data5trace_traces7v[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces7)] /* [0,65535] */;
-  uint32_t bbsecond_data5trace_traces8 /* [0,4000] */;
-  uint32_t bbsecond_data5trace_traces8I[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces8)] /* [1,4000] */;
-  uint32_t bbsecond_data5trace_traces8v[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces8)] /* [0,65535] */;
-  uint32_t bbsecond_data5trace_traces9 /* [0,4000] */;
-  uint32_t bbsecond_data5trace_traces9I[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces9)] /* [1,4000] */;
-  uint32_t bbsecond_data5trace_traces9v[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces9)] /* [0,65535] */;
-  uint32_t bbsecond_data5trace_traces10 /* [0,4000] */;
-  uint32_t bbsecond_data5trace_traces10I[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces10)] /* [1,4000] */;
-  uint32_t bbsecond_data5trace_traces10v[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces10)] /* [0,65535] */;
-  uint32_t bbsecond_data5trace_traces11 /* [0,4000] */;
-  uint32_t bbsecond_data5trace_traces11I[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces11)] /* [1,4000] */;
-  uint32_t bbsecond_data5trace_traces11v[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces11)] /* [0,65535] */;
-  uint32_t bbsecond_data5trace_traces12 /* [0,4000] */;
-  uint32_t bbsecond_data5trace_traces12I[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces12)] /* [1,4000] */;
-  uint32_t bbsecond_data5trace_traces12v[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces12)] /* [0,65535] */;
-  uint32_t bbsecond_data5trace_traces13 /* [0,4000] */;
-  uint32_t bbsecond_data5trace_traces13I[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces13)] /* [1,4000] */;
-  uint32_t bbsecond_data5trace_traces13v[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces13)] /* [0,65535] */;
-  uint32_t bbsecond_data5trace_traces14 /* [0,4000] */;
-  uint32_t bbsecond_data5trace_traces14I[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces14)] /* [1,4000] */;
-  uint32_t bbsecond_data5trace_traces14v[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces14)] /* [0,65535] */;
-  uint32_t bbsecond_data5trace_traces15 /* [0,4000] */;
-  uint32_t bbsecond_data5trace_traces15I[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces15)] /* [1,4000] */;
-  uint32_t bbsecond_data5trace_traces15v[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces15)] /* [0,65535] */;
-  uint32_t bbsecond_data5trace_traces16 /* [0,4000] */;
-  uint32_t bbsecond_data5trace_traces16I[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces16)] /* [1,4000] */;
-  uint32_t bbsecond_data5trace_traces16v[4000 EXT_STRUCT_CTRL(bbsecond_data5trace_traces16)] /* [0,65535] */;
-  uint32_t bbsecond_data5trace_channel_id_traces /* [0,16] */;
-  uint32_t bbsecond_data5trace_channel_id_tracesI[16 EXT_STRUCT_CTRL(bbsecond_data5trace_channel_id_traces)] /* [1,16] */;
-  uint32_t bbsecond_data5trace_channel_id_tracesv[16 EXT_STRUCT_CTRL(bbsecond_data5trace_channel_id_traces)] /* [0,255] */;
 
 } EXT_STR_h101_bbfebex;
 
@@ -791,7 +791,7 @@ typedef struct EXT_STR_h101_bbfebex_onion_t
     uint32_t trace_channel_id_traces;
     uint32_t trace_channel_id_tracesI[16 /* trace_channel_id_traces */];
     uint32_t trace_channel_id_tracesv[16 /* trace_channel_id_traces */];
-  } bbfirst_data[4];
+  } bbfirst_data[5];
   uint32_t bbsecond_ts_subsystem_id;
   uint32_t bbsecond_ts_t[4];
   struct {
@@ -830,7 +830,7 @@ typedef struct EXT_STR_h101_bbfebex_onion_t
     uint32_t trace_channel_id_traces;
     uint32_t trace_channel_id_tracesI[16 /* trace_channel_id_traces */];
     uint32_t trace_channel_id_tracesv[16 /* trace_channel_id_traces */];
-  } bbsecond_data[5];
+  } bbsecond_data[4];
 
 } EXT_STR_h101_bbfebex_onion;
 
@@ -1791,6 +1791,240 @@ typedef struct EXT_STR_h101_bbfebex_onion_t
                      bbfirst_data4trace_channel_id_tracesv,UINT32,\
                     "bbfirst_data4trace_channel_id_tracesv","bbfirst_data4trace_channel_id_traces",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trig,               UINT32,\
+                    "bbfirst_data5trig",255,0/*flags*/); \
+  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5event_trigger_time_hi,UINT32,\
+                    "bbfirst_data5event_trigger_time_hi",0/*flags*/); \
+  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5event_trigger_time_lo,UINT32,\
+                    "bbfirst_data5event_trigger_time_lo",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5hit_pattern,        UINT32,\
+                    "bbfirst_data5hit_pattern",65535,0/*flags*/); \
+  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5num_channels_fired, UINT32,\
+                    "bbfirst_data5num_channels_fired",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5board_num,          UINT32,\
+                    "bbfirst_data5board_num",255,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5channel_id,         UINT32,\
+                    "bbfirst_data5channel_id",16,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5channel_idI,        UINT32,\
+                    "bbfirst_data5channel_idI",        "bbfirst_data5channel_id",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5channel_idv,        UINT32,\
+                    "bbfirst_data5channel_idv",        "bbfirst_data5channel_id",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5channel_trigger_time_hi,UINT32,\
+                    "bbfirst_data5channel_trigger_time_hi",16,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5channel_trigger_time_hiI,UINT32,\
+                    "bbfirst_data5channel_trigger_time_hiI","bbfirst_data5channel_trigger_time_hi",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5channel_trigger_time_hiv,UINT32,\
+                    "bbfirst_data5channel_trigger_time_hiv","bbfirst_data5channel_trigger_time_hi",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5channel_trigger_time_lo,UINT32,\
+                    "bbfirst_data5channel_trigger_time_lo",16,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5channel_trigger_time_loI,UINT32,\
+                    "bbfirst_data5channel_trigger_time_loI","bbfirst_data5channel_trigger_time_lo",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5channel_trigger_time_lov,UINT32,\
+                    "bbfirst_data5channel_trigger_time_lov","bbfirst_data5channel_trigger_time_lo",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5pileup,             UINT32,\
+                    "bbfirst_data5pileup",16,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5pileupI,            UINT32,\
+                    "bbfirst_data5pileupI",            "bbfirst_data5pileup",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5pileupv,            UINT32,\
+                    "bbfirst_data5pileupv",            "bbfirst_data5pileup",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5overflow,           UINT32,\
+                    "bbfirst_data5overflow",16,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5overflowI,          UINT32,\
+                    "bbfirst_data5overflowI",          "bbfirst_data5overflow",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5overflowv,          UINT32,\
+                    "bbfirst_data5overflowv",          "bbfirst_data5overflow",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5channel_cfd,        UINT32,\
+                    "bbfirst_data5channel_cfd",16,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5channel_cfdI,       UINT32,\
+                    "bbfirst_data5channel_cfdI",       "bbfirst_data5channel_cfd",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5channel_cfdv,       UINT32,\
+                    "bbfirst_data5channel_cfdv",       "bbfirst_data5channel_cfd",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5channel_energy,     UINT32,\
+                    "bbfirst_data5channel_energy",16,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5channel_energyI,    UINT32,\
+                    "bbfirst_data5channel_energyI",    "bbfirst_data5channel_energy",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5channel_energyv,    UINT32,\
+                    "bbfirst_data5channel_energyv",    "bbfirst_data5channel_energy",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces1,      UINT32,\
+                    "bbfirst_data5trace_traces1",4000,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces1I,     UINT32,\
+                    "bbfirst_data5trace_traces1I",     "bbfirst_data5trace_traces1",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces1v,     UINT32,\
+                    "bbfirst_data5trace_traces1v",     "bbfirst_data5trace_traces1",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces2,      UINT32,\
+                    "bbfirst_data5trace_traces2",4000,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces2I,     UINT32,\
+                    "bbfirst_data5trace_traces2I",     "bbfirst_data5trace_traces2",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces2v,     UINT32,\
+                    "bbfirst_data5trace_traces2v",     "bbfirst_data5trace_traces2",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces3,      UINT32,\
+                    "bbfirst_data5trace_traces3",4000,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces3I,     UINT32,\
+                    "bbfirst_data5trace_traces3I",     "bbfirst_data5trace_traces3",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces3v,     UINT32,\
+                    "bbfirst_data5trace_traces3v",     "bbfirst_data5trace_traces3",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces4,      UINT32,\
+                    "bbfirst_data5trace_traces4",4000,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces4I,     UINT32,\
+                    "bbfirst_data5trace_traces4I",     "bbfirst_data5trace_traces4",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces4v,     UINT32,\
+                    "bbfirst_data5trace_traces4v",     "bbfirst_data5trace_traces4",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces5,      UINT32,\
+                    "bbfirst_data5trace_traces5",4000,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces5I,     UINT32,\
+                    "bbfirst_data5trace_traces5I",     "bbfirst_data5trace_traces5",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces5v,     UINT32,\
+                    "bbfirst_data5trace_traces5v",     "bbfirst_data5trace_traces5",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces6,      UINT32,\
+                    "bbfirst_data5trace_traces6",4000,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces6I,     UINT32,\
+                    "bbfirst_data5trace_traces6I",     "bbfirst_data5trace_traces6",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces6v,     UINT32,\
+                    "bbfirst_data5trace_traces6v",     "bbfirst_data5trace_traces6",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces7,      UINT32,\
+                    "bbfirst_data5trace_traces7",4000,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces7I,     UINT32,\
+                    "bbfirst_data5trace_traces7I",     "bbfirst_data5trace_traces7",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces7v,     UINT32,\
+                    "bbfirst_data5trace_traces7v",     "bbfirst_data5trace_traces7",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces8,      UINT32,\
+                    "bbfirst_data5trace_traces8",4000,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces8I,     UINT32,\
+                    "bbfirst_data5trace_traces8I",     "bbfirst_data5trace_traces8",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces8v,     UINT32,\
+                    "bbfirst_data5trace_traces8v",     "bbfirst_data5trace_traces8",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces9,      UINT32,\
+                    "bbfirst_data5trace_traces9",4000,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces9I,     UINT32,\
+                    "bbfirst_data5trace_traces9I",     "bbfirst_data5trace_traces9",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces9v,     UINT32,\
+                    "bbfirst_data5trace_traces9v",     "bbfirst_data5trace_traces9",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces10,     UINT32,\
+                    "bbfirst_data5trace_traces10",4000,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces10I,    UINT32,\
+                    "bbfirst_data5trace_traces10I",    "bbfirst_data5trace_traces10",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces10v,    UINT32,\
+                    "bbfirst_data5trace_traces10v",    "bbfirst_data5trace_traces10",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces11,     UINT32,\
+                    "bbfirst_data5trace_traces11",4000,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces11I,    UINT32,\
+                    "bbfirst_data5trace_traces11I",    "bbfirst_data5trace_traces11",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces11v,    UINT32,\
+                    "bbfirst_data5trace_traces11v",    "bbfirst_data5trace_traces11",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces12,     UINT32,\
+                    "bbfirst_data5trace_traces12",4000,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces12I,    UINT32,\
+                    "bbfirst_data5trace_traces12I",    "bbfirst_data5trace_traces12",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces12v,    UINT32,\
+                    "bbfirst_data5trace_traces12v",    "bbfirst_data5trace_traces12",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces13,     UINT32,\
+                    "bbfirst_data5trace_traces13",4000,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces13I,    UINT32,\
+                    "bbfirst_data5trace_traces13I",    "bbfirst_data5trace_traces13",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces13v,    UINT32,\
+                    "bbfirst_data5trace_traces13v",    "bbfirst_data5trace_traces13",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces14,     UINT32,\
+                    "bbfirst_data5trace_traces14",4000,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces14I,    UINT32,\
+                    "bbfirst_data5trace_traces14I",    "bbfirst_data5trace_traces14",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces14v,    UINT32,\
+                    "bbfirst_data5trace_traces14v",    "bbfirst_data5trace_traces14",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces15,     UINT32,\
+                    "bbfirst_data5trace_traces15",4000,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces15I,    UINT32,\
+                    "bbfirst_data5trace_traces15I",    "bbfirst_data5trace_traces15",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces15v,    UINT32,\
+                    "bbfirst_data5trace_traces15v",    "bbfirst_data5trace_traces15",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces16,     UINT32,\
+                    "bbfirst_data5trace_traces16",4000,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces16I,    UINT32,\
+                    "bbfirst_data5trace_traces16I",    "bbfirst_data5trace_traces16",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_traces16v,    UINT32,\
+                    "bbfirst_data5trace_traces16v",    "bbfirst_data5trace_traces16",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_channel_id_traces,UINT32,\
+                    "bbfirst_data5trace_channel_id_traces",16,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_channel_id_tracesI,UINT32,\
+                    "bbfirst_data5trace_channel_id_tracesI","bbfirst_data5trace_channel_id_traces",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     bbfirst_data5trace_channel_id_tracesv,UINT32,\
+                    "bbfirst_data5trace_channel_id_tracesv","bbfirst_data5trace_channel_id_traces",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      bbsecond_ts_subsystem_id,        UINT32,\
                     "bbsecond_ts_subsystem_id",65535,0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
@@ -2741,240 +2975,6 @@ typedef struct EXT_STR_h101_bbfebex_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      bbsecond_data4trace_channel_id_tracesv,UINT32,\
                     "bbsecond_data4trace_channel_id_tracesv","bbsecond_data4trace_channel_id_traces",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trig,              UINT32,\
-                    "bbsecond_data5trig",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5event_trigger_time_hi,UINT32,\
-                    "bbsecond_data5event_trigger_time_hi",0/*flags*/); \
-  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5event_trigger_time_lo,UINT32,\
-                    "bbsecond_data5event_trigger_time_lo",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5hit_pattern,       UINT32,\
-                    "bbsecond_data5hit_pattern",65535,0/*flags*/); \
-  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5num_channels_fired,UINT32,\
-                    "bbsecond_data5num_channels_fired",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5board_num,         UINT32,\
-                    "bbsecond_data5board_num",255,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5channel_id,        UINT32,\
-                    "bbsecond_data5channel_id",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5channel_idI,       UINT32,\
-                    "bbsecond_data5channel_idI",       "bbsecond_data5channel_id",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5channel_idv,       UINT32,\
-                    "bbsecond_data5channel_idv",       "bbsecond_data5channel_id",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5channel_trigger_time_hi,UINT32,\
-                    "bbsecond_data5channel_trigger_time_hi",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5channel_trigger_time_hiI,UINT32,\
-                    "bbsecond_data5channel_trigger_time_hiI","bbsecond_data5channel_trigger_time_hi",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5channel_trigger_time_hiv,UINT32,\
-                    "bbsecond_data5channel_trigger_time_hiv","bbsecond_data5channel_trigger_time_hi",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5channel_trigger_time_lo,UINT32,\
-                    "bbsecond_data5channel_trigger_time_lo",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5channel_trigger_time_loI,UINT32,\
-                    "bbsecond_data5channel_trigger_time_loI","bbsecond_data5channel_trigger_time_lo",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5channel_trigger_time_lov,UINT32,\
-                    "bbsecond_data5channel_trigger_time_lov","bbsecond_data5channel_trigger_time_lo",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5pileup,            UINT32,\
-                    "bbsecond_data5pileup",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5pileupI,           UINT32,\
-                    "bbsecond_data5pileupI",           "bbsecond_data5pileup",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5pileupv,           UINT32,\
-                    "bbsecond_data5pileupv",           "bbsecond_data5pileup",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5overflow,          UINT32,\
-                    "bbsecond_data5overflow",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5overflowI,         UINT32,\
-                    "bbsecond_data5overflowI",         "bbsecond_data5overflow",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5overflowv,         UINT32,\
-                    "bbsecond_data5overflowv",         "bbsecond_data5overflow",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5channel_cfd,       UINT32,\
-                    "bbsecond_data5channel_cfd",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5channel_cfdI,      UINT32,\
-                    "bbsecond_data5channel_cfdI",      "bbsecond_data5channel_cfd",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5channel_cfdv,      UINT32,\
-                    "bbsecond_data5channel_cfdv",      "bbsecond_data5channel_cfd",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5channel_energy,    UINT32,\
-                    "bbsecond_data5channel_energy",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5channel_energyI,   UINT32,\
-                    "bbsecond_data5channel_energyI",   "bbsecond_data5channel_energy",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5channel_energyv,   UINT32,\
-                    "bbsecond_data5channel_energyv",   "bbsecond_data5channel_energy",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces1,     UINT32,\
-                    "bbsecond_data5trace_traces1",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces1I,    UINT32,\
-                    "bbsecond_data5trace_traces1I",    "bbsecond_data5trace_traces1",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces1v,    UINT32,\
-                    "bbsecond_data5trace_traces1v",    "bbsecond_data5trace_traces1",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces2,     UINT32,\
-                    "bbsecond_data5trace_traces2",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces2I,    UINT32,\
-                    "bbsecond_data5trace_traces2I",    "bbsecond_data5trace_traces2",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces2v,    UINT32,\
-                    "bbsecond_data5trace_traces2v",    "bbsecond_data5trace_traces2",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces3,     UINT32,\
-                    "bbsecond_data5trace_traces3",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces3I,    UINT32,\
-                    "bbsecond_data5trace_traces3I",    "bbsecond_data5trace_traces3",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces3v,    UINT32,\
-                    "bbsecond_data5trace_traces3v",    "bbsecond_data5trace_traces3",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces4,     UINT32,\
-                    "bbsecond_data5trace_traces4",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces4I,    UINT32,\
-                    "bbsecond_data5trace_traces4I",    "bbsecond_data5trace_traces4",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces4v,    UINT32,\
-                    "bbsecond_data5trace_traces4v",    "bbsecond_data5trace_traces4",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces5,     UINT32,\
-                    "bbsecond_data5trace_traces5",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces5I,    UINT32,\
-                    "bbsecond_data5trace_traces5I",    "bbsecond_data5trace_traces5",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces5v,    UINT32,\
-                    "bbsecond_data5trace_traces5v",    "bbsecond_data5trace_traces5",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces6,     UINT32,\
-                    "bbsecond_data5trace_traces6",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces6I,    UINT32,\
-                    "bbsecond_data5trace_traces6I",    "bbsecond_data5trace_traces6",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces6v,    UINT32,\
-                    "bbsecond_data5trace_traces6v",    "bbsecond_data5trace_traces6",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces7,     UINT32,\
-                    "bbsecond_data5trace_traces7",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces7I,    UINT32,\
-                    "bbsecond_data5trace_traces7I",    "bbsecond_data5trace_traces7",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces7v,    UINT32,\
-                    "bbsecond_data5trace_traces7v",    "bbsecond_data5trace_traces7",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces8,     UINT32,\
-                    "bbsecond_data5trace_traces8",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces8I,    UINT32,\
-                    "bbsecond_data5trace_traces8I",    "bbsecond_data5trace_traces8",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces8v,    UINT32,\
-                    "bbsecond_data5trace_traces8v",    "bbsecond_data5trace_traces8",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces9,     UINT32,\
-                    "bbsecond_data5trace_traces9",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces9I,    UINT32,\
-                    "bbsecond_data5trace_traces9I",    "bbsecond_data5trace_traces9",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces9v,    UINT32,\
-                    "bbsecond_data5trace_traces9v",    "bbsecond_data5trace_traces9",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces10,    UINT32,\
-                    "bbsecond_data5trace_traces10",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces10I,   UINT32,\
-                    "bbsecond_data5trace_traces10I",   "bbsecond_data5trace_traces10",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces10v,   UINT32,\
-                    "bbsecond_data5trace_traces10v",   "bbsecond_data5trace_traces10",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces11,    UINT32,\
-                    "bbsecond_data5trace_traces11",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces11I,   UINT32,\
-                    "bbsecond_data5trace_traces11I",   "bbsecond_data5trace_traces11",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces11v,   UINT32,\
-                    "bbsecond_data5trace_traces11v",   "bbsecond_data5trace_traces11",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces12,    UINT32,\
-                    "bbsecond_data5trace_traces12",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces12I,   UINT32,\
-                    "bbsecond_data5trace_traces12I",   "bbsecond_data5trace_traces12",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces12v,   UINT32,\
-                    "bbsecond_data5trace_traces12v",   "bbsecond_data5trace_traces12",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces13,    UINT32,\
-                    "bbsecond_data5trace_traces13",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces13I,   UINT32,\
-                    "bbsecond_data5trace_traces13I",   "bbsecond_data5trace_traces13",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces13v,   UINT32,\
-                    "bbsecond_data5trace_traces13v",   "bbsecond_data5trace_traces13",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces14,    UINT32,\
-                    "bbsecond_data5trace_traces14",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces14I,   UINT32,\
-                    "bbsecond_data5trace_traces14I",   "bbsecond_data5trace_traces14",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces14v,   UINT32,\
-                    "bbsecond_data5trace_traces14v",   "bbsecond_data5trace_traces14",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces15,    UINT32,\
-                    "bbsecond_data5trace_traces15",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces15I,   UINT32,\
-                    "bbsecond_data5trace_traces15I",   "bbsecond_data5trace_traces15",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces15v,   UINT32,\
-                    "bbsecond_data5trace_traces15v",   "bbsecond_data5trace_traces15",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces16,    UINT32,\
-                    "bbsecond_data5trace_traces16",4000,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces16I,   UINT32,\
-                    "bbsecond_data5trace_traces16I",   "bbsecond_data5trace_traces16",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_traces16v,   UINT32,\
-                    "bbsecond_data5trace_traces16v",   "bbsecond_data5trace_traces16",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_channel_id_traces,UINT32,\
-                    "bbsecond_data5trace_channel_id_traces",16,0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_channel_id_tracesI,UINT32,\
-                    "bbsecond_data5trace_channel_id_tracesI","bbsecond_data5trace_channel_id_traces",0/*flags*/); \
-  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
-                     bbsecond_data5trace_channel_id_tracesv,UINT32,\
-                    "bbsecond_data5trace_channel_id_tracesv","bbsecond_data5trace_channel_id_traces",0/*flags*/); \
   \
 } while (0);
 
