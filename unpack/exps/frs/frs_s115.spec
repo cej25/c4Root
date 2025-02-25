@@ -94,6 +94,13 @@ TPAT_CRATE_DATA()
                 0_31: something;
             }
         }
+
+        UINT32 dead NOENCODE
+        {
+            0_31: 0xDEADDEAD;
+        }
+
+        several UINT32 eob NOENCODE;
     }
     else
     {
@@ -104,14 +111,41 @@ TPAT_CRATE_DATA()
     
 }
 
+MVLC_SCALER(geo)
+{
+    MEMBER(DATA32 scalers[32] ZERO_SUPPRESS);
+
+    UINT32 header NOENCODE
+    {
+        0_15: whatever;
+        16: 0;
+        18_23: nlw;
+        24_26: type;
+        27_31: geom = MATCH(geo);
+    };
+
+    list (0 <= i < header.nlw) 
+    {
+        UINT32 scaler NOENCODE 
+        {
+            0_31: value;
+            ENCODE(scalers[i], (value=value));
+        }
+    }
+
+    UINT32 trailer NOENCODE;
+
+}
+
 // procID = 10
 MAIN_CRATE_DATA()
 {
     
     barrier0 = BARRIER();
-    v830 = VME_CAEN_V830(geom=8);
+    //v830 = VME_CAEN_V830(geom=8);
+    v830 = MVLC_SCALER(geo=8); // geom = 8?
     
-    filler0 = ZERO_FILLER();
+   // filler0 = ZERO_FILLER();
 
     barrier1 = BARRIER();
     v792 = VME_CAEN_V792(geom=14);
@@ -140,23 +174,31 @@ TPC_CRATE_DATA()
 
     barrier1 = BARRIER();
     v1190 = VME_CAEN_V1190_N();
+
+    // unknown data at the end of some events.. asklater
+    select several
+    {
+        dummy = DUMMY();
+    }
 }
 
 // procID = 30
 USER_CRATE_DATA()
 {
     barrier0 = BARRIER();
-    v830 = VME_CAEN_V830(geom=6);
+    // v830 = VME_CAEN_V830(geom=6);
 
-    filler0 = ZERO_FILLER();
+    v830 = MVLC_SCALER(geo=8); // geom = 6? // 6 doesn't work..
+
+    // filler0 = ZERO_FILLER();
 
     select several
     {
         barrier1 = BARRIER();
-        v775[0] = VME_CAEN_V775(geom=8);
-        v775[1] = VME_CAEN_V775(geom=9);
-        v785[0] = VME_CAEN_V785(geom=31);
-        v785[1] = VME_CAEN_V785(geom=12); 
+        v775[0] = VME_CAEN_V775(geom=8); // 8
+        v775[1] = VME_CAEN_V775(geom=9); // 9
+        v785[0] = VME_CAEN_V785(geom=10); // 31
+        v785[1] = VME_CAEN_V785(geom=12); // 12
     }
 
     UINT32 aaahhh NOENCODE { 0_31: 0xaaaa1290; };
