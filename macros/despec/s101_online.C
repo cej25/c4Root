@@ -326,9 +326,7 @@ void s101_online()
     if (GERMANIUM_ON)
     {
         GermaniumOnlineSpectra* onlinege = new GermaniumOnlineSpectra();
-        onlinege->SetBinningEnergy(12000,0,3e3);
-        onlinege->AddReferenceDetector(15,0);
-        onlinege->AddReferenceDetector(16,0);
+        onlinege->SetBinningEnergy(6e3,0,3e3);
         onlinege->AddReferenceDetector(1,0);
         onlinege->AddReferenceDetectorWithEnergyGates(1,0,1332);
         onlinege->AddReferenceDetectorWithEnergyGates(1,0,1173,1332);
