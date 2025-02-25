@@ -10,7 +10,6 @@
 
 class TClonesArray;
 class EventHeader;
-class EventData;
 class TCanvas;
 class TH1F;
 class TH2F;
