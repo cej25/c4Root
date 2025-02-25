@@ -1,15 +1,15 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define AIDA_ON 1
-#define BPLAST_ON 1
-#define GERMANIUM_ON 1
+#define AIDA_ON 0
+#define BPLAST_ON 0
+#define GERMANIUM_ON 0
 #define BGO_ON 0
 #define FRS_ON 1
 #define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 0
-#define BB7_ON 1
+#define BB7_ON 0
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 // CEJ: not configured for s101 yet
@@ -41,7 +41,7 @@ void s101_tests()
 
     // Define important paths.
     TString c4Root_path = "/u/cjones/c4Root";
-    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes";
+    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --input-buffer=200Mi --event-sizes";
     ucesb_path.ReplaceAll("//","/");
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
@@ -65,7 +65,8 @@ void s101_tests()
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
 //   TString filename = "stream://x86l-86";
-     TString filename = "trans://lxg3107";
+    //  TString filename = "trans://lxg3107";
+     TString filename = "/u/cjones/lustre/gamma/s101_files/ts/107Ag_0108_0008.lmd";
     // TString filename = "/lustre/gamma/s101_files/dryrun_ts/*";770707070
 //     TString filename = "trans://lxg1257"; // timesorter.
 //     TString filename = "trans://x86l-144"; // ??

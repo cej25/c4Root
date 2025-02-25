@@ -39,6 +39,8 @@ class UnpackReader : public c4Reader
     size_t fOffset;
     // A pointer to the EventHeader structure
     EventHeader* fHeader;
+    //
+    Bool_t spill_flag = false;
 
     Bool_t fOnline;
 
