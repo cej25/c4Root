@@ -21,6 +21,7 @@ BB7FebexReader::BB7FebexReader(EXT_STR_h101_bbfebex_onion* data, size_t offset)
     ,   fOffset(offset)
     ,   fOnline(kFALSE)
     ,   bb7array(new std::vector<BB7FebexItem>)
+    ,   bb7empty(new std::vector<BB7EmptyItem>)
 {
 
 }
@@ -28,6 +29,7 @@ BB7FebexReader::BB7FebexReader(EXT_STR_h101_bbfebex_onion* data, size_t offset)
 BB7FebexReader::~BB7FebexReader()
 {
     delete bb7array;
+    delete bb7empty;
 }
 
 Bool_t BB7FebexReader::Init(ext_data_struct_info* a_struct_info)
@@ -44,7 +46,9 @@ Bool_t BB7FebexReader::Init(ext_data_struct_info* a_struct_info)
     }
 
     FairRootManager::Instance()->RegisterAny("BB7FebexData", bb7array, !fOnline);
+    FairRootManager::Instance()->RegisterAny("BB7EmptyData", bb7empty, !fOnline);
     bb7array->clear();
+    bb7empty->clear();
 
     memset(fData, 0, sizeof *fData);
 
@@ -55,6 +59,7 @@ Bool_t BB7FebexReader::Read()
 {
     if (!fData) return kTRUE;
     bb7array->clear();
+    bb7empty->clear();
     wr_t_first = 0;
     wr_t_second = 0;
 
@@ -64,7 +69,8 @@ Bool_t BB7FebexReader::Read()
     
     if (wr_t_first != 0)
     {
-        for (int it_board_number = 0; it_board_number < 4; it_board_number++)
+        nReads++;
+        for (int it_board_number = 0; it_board_number < 5; it_board_number++)
         {
             //since the febex card has a 100MHz clock which timestamps events.
             uint16_t trig = fData->bbfirst_data[it_board_number].trig;
@@ -76,6 +82,19 @@ Bool_t BB7FebexReader::Read()
 
             //::::::::::::::Multiplicity: Called num_channels_fired from unpacker
             uint32_t M = fData->bbfirst_data[it_board_number].num_channels_fired;
+
+            if (M == 0 && n_zero_f0_0 == 0)
+            {
+                auto & entry = bb7empty->emplace_back();
+                entry.SetAll(
+                    wr_t_first,
+                    wr_id_first,
+                    0, // crate
+                    board_num,
+                    event_trigger_time_long
+                );
+                n_zero_f0_0++;
+            }
 
             for (int index = 0; index < M; index++) //GENERAL
             {
@@ -154,7 +173,8 @@ Bool_t BB7FebexReader::Read()
 
     if (wr_t_second != 0)
     {
-        for (int it_board_number = 0; it_board_number < 5; it_board_number++)
+        nReads++;
+        for (int it_board_number = 0; it_board_number < 4; it_board_number++)
         {
             //since the febex card has a 100MHz clock which timestamps events.
             uint16_t trig = fData->bbsecond_data[it_board_number].trig;
@@ -166,6 +186,19 @@ Bool_t BB7FebexReader::Read()
 
             //::::::::::::::Multiplicity: Called num_channels_fired from unpacker
             uint32_t M = fData->bbsecond_data[it_board_number].num_channels_fired;
+
+            if (M == 0 && n_zero_f0_1 == 0)
+            {
+                auto & entry = bb7empty->emplace_back();
+                entry.SetAll(
+                    wr_t_second,
+                    wr_id_second,
+                    1, // crate
+                    board_num,
+                    event_trigger_time_long
+                );
+                n_zero_f0_1++;
+            }
 
             for (int index = 0; index < M; index++) //GENERAL
             {
@@ -241,7 +274,6 @@ Bool_t BB7FebexReader::Read()
         }
     }
 
-
     fNEvent += 1;
     return kTRUE;
 
@@ -250,6 +282,8 @@ Bool_t BB7FebexReader::Read()
 void BB7FebexReader::Reset()
 {
     energy = 0;
+    n_zero_f0_0 = 0;
+    n_zero_f0_1 = 0;
 }
 
 ClassImp(BB7FebexReader)
