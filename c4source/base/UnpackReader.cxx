@@ -18,7 +18,9 @@ UnpackReader::UnpackReader(EXT_STR_h101_unpack* data, size_t offset)
     , fOffset(offset)
     , fHeader(NULL)
     , fOnline(kFALSE)
-{}
+{
+    exp_config = TExperimentConfiguration::GetInstance();
+}
 
 UnpackReader::~UnpackReader()
 {
@@ -76,8 +78,8 @@ Bool_t UnpackReader::Read()
     {
         fHeader->SetTrigger(fData->TRIGGER);
         fHeader->SetEventno(fData->EVENTNO); //We seemingly skip eventnos - is this due to timestichting?
-        if (fData->TRIGGER == 12) spill_flag = true;
-        if (fData->TRIGGER == 13) spill_flag = false;
+        if (fData->TRIGGER == exp_config->bos_trig) spill_flag = true;
+        if (fData->TRIGGER == exp_config->eos_trig) spill_flag = false;
         fHeader->SetSpillFlag(spill_flag);
         fNEvent++;
     }
