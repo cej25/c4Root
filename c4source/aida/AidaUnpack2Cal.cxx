@@ -137,6 +137,7 @@ void AidaUnpack2Cal::Exec(Option_t* option)
 
 
     auto feeConf = conf->FEE(unpack.Fee() - 1);
+    //std::cout << "fee:: " << unpack.Fee() << std::endl;
     if (feeConf.DSSD <= 0)
     {
       c4LOG(error, "Invalid DSSD Mapping for AIDA fee " << unpack.Fee() << ", ignoring event");
