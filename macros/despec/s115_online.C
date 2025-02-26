@@ -56,7 +56,8 @@ void s115_online()
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
-     TString filename = "trans://lxg3107";
+//     TString filename = "trans://3107";
+     TString filename = "stream://lxsecana01:6002";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
