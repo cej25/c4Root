@@ -5,14 +5,14 @@
 #define BPLAST_ON 1
 #define GERMANIUM_ON 1
 #define FRS_ON 1
-#define TIME_MACHINE_ON 1
-#define WHITE_RABBIT_CORS 1
+#define TIME_MACHINE_ON 0
+#define WHITE_RABBIT_CORS 1 
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 // CEJ: not configured for s101 yet
 extern "C"
 {
-    #include "../../config/s115/frs/setup_302_012_2025_conv.C"
+    #include "../../config/s115/frs/setup_115_005_2025_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -56,7 +56,8 @@ void s115_online()
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
-     TString filename = "trans://lxg3107";
+    TString filename = "trans://lxg3107";
+    // TString filename = "stream://lxsecana01:6002";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
