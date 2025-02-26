@@ -6,7 +6,7 @@
 #---------------------------
 # 3 DSSDs includes BB7
 FEEs: 16
-DSSDs: 3
+DSSDs: 2
 Wide: true
 
 #---------------------------
@@ -58,20 +58,16 @@ DSSD: 1
 - MEC: false
 DSSD: 2
 - Top: 6
-- Bottom: 8
-- LeftLeft: 11
-- LeftRight: 11
-- CentreLeft: 7
-- CentreRight: 14
-- RightLeft: 16
-- RightRight: 13
+- Bottom: 7
+- LeftLeft: 8
+- LeftRight: 10
+- CentreLeft: 11
+- CentreRight: 13
+- RightLeft: 14
+- RightRight: 16
 - X: Junction
 - Y: Ohmic
 - MEC: false
-DSSD: 3
-- Full: 10
-- X: Junction
-- Y: Ohmic
 
 #---------------------------
 # Scaler Mapping
