@@ -1,7 +1,7 @@
 #!/bin/bash
 
 while true; do
-        root -b -q s115_online.C
+        root -l -b s115_online.C
 
         if [ $? -ne 0 ]; then
                 echo "s115_online macro crashed or quit unexpectedly. Restarting..."
