@@ -12,7 +12,7 @@ bool Gate_Z_AoQ(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_AoQ
     std::cout << "Drawing with the condition: " << cuts << std::endl;
     
 
-    evt->Draw("FrsMultiHitData.fID_z41_mhtdc:FrsMultiHitData.fID_AoQ_s2s4_mhtdc>>h2_Z_vs_AoQ(2000,1.8,2.5,2000,35,50)",cuts);
+    evt->Draw("FrsMultiHitData.fID_z41_mhtdc:FrsMultiHitData.fID_AoQ_s2s4_mhtdc>>h2_Z_vs_AoQ(2000,1.8,2.5,2000,30,50)",cuts);
     
     TH2F * h2_Z_vs_AoQ = (TH2F*)gROOT->FindObject("h2_Z_vs_AoQ");
     
