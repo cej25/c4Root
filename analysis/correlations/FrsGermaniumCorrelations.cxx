@@ -64,6 +64,7 @@ FrsGermaniumCorrelations::FrsGermaniumCorrelations(const TString& name, Int_t ve
     : FairTask(name, verbose)
     , fHitGe(NULL)
     , hitArrayFrs(nullptr)
+    , multihitArray(nullptr)
     , fNEvents(0)
     , header(nullptr)
 {    
@@ -93,6 +94,8 @@ InitStatus FrsGermaniumCorrelations::Init()
     c4LOG_IF(fatal, !fHitGe, "Branch GermaniumCalData not found!");
     hitArrayFrs = mgr->InitObjectAs<decltype(hitArrayFrs)>("FrsHitData");
     c4LOG_IF(fatal, !hitArrayFrs, "Branch FrsHitData not found!");
+    multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
+    c4LOG_IF(fatal, !multihitArray, "Branch FrsMultiHitData not found!");
     histograms = (TFolder*)mgr->GetObject("Histograms");
 
     TDirectory::TContext ctx(nullptr);
@@ -200,6 +203,13 @@ InitStatus FrsGermaniumCorrelations::Init()
     c_germanium_energy_promptflash_cut->cd(0);
     // folder_germanium->Add(c_germanium_energy_promptflash_cut);
     // folder_germanium->Add(h1_germanium_energy_promptflash_cut);
+
+    // mhtdc version of above
+    c_germanium_energy_promptflash_cut_mhtdc_gated = new TCanvas(TString("c_germanium_energy_promptflash_cut_mhtdc_gated_"+frsgate->GetName()),TString("Germanium energy, prompt flash cut out, short lifetime, MHTDC gated FRS on "+frsgate->GetName()),650,350);
+    h1_germanium_energy_promptflash_cut_mhtdc_gated = new TH1F(TString("h1_germanium_energy_promptflash_cut_mhtdc_gated_"+frsgate->GetName()),TString("Germanium energy, prompt flash cut out, short lifetime, MHTDC gated FRS on "+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h1_germanium_energy_promptflash_cut_mhtdc_gated->GetXaxis()->SetTitle("Energy [keV]");
+    h1_germanium_energy_promptflash_cut_mhtdc_gated->Draw("COLZ");
+    c_germanium_energy_promptflash_cut_mhtdc_gated->cd(0);
 
 
     
@@ -323,13 +333,14 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
 {
     if (hitArrayFrs->size() == 0) return;
     positive_PID = false;
+    positive_PID_mhtdc = false;
     auto const & frshit = hitArrayFrs->at(0);
 
     int64_t wr_t = frshit.Get_wr_t();
     if(wr_t_first_frs_hit == 0) wr_t_first_frs_hit = wr_t;
-    double ID_x2 = frshit.Get_ID_x2();
-    double ID_y2 = frshit.Get_ID_y2();
-    double ID_x4 = frshit.Get_ID_x4();
+    ID_x2 = frshit.Get_ID_x2();
+    ID_y2 = frshit.Get_ID_y2();
+    ID_x4 = frshit.Get_ID_x4();
     double ID_AoQ = frshit.Get_ID_AoQ_s2s4();
     double ID_z = frshit.Get_ID_z41();
     double ID_z2 = frshit.Get_ID_z42();
@@ -357,6 +368,28 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
         }
     }else{
         wr_t_last_frs_hit = 0;
+    }
+
+    if (multihitArray->size() > 0)
+    {
+        auto const & multihitItem = multihitArray->at(0);
+
+        // just take first hit
+        std::vector<Float_t> AoQ_s2s4_mhtdc = multihitItem.Get_ID_AoQ_s2s4_mhtdc();
+        std::vector<Float_t> z41_mhtdc = multihitItem.Get_ID_z41_mhtdc();
+        std::vector<Float_t> z42_mhtdc = multihitItem.Get_ID_z42_mhtdc();
+        std::vector<Float_t> dEdeg_z41_mhtdc = multihitItem.Get_ID_dEdeg_z41_mhtdc();
+        if (AoQ_s2s4_mhtdc.size() > 0)
+        {
+            ID_AoQ_mhtdc = AoQ_s2s4_mhtdc.at(0);
+            ID_z41_mhtdc = z41_mhtdc.at(0);
+            ID_z42_mhtdc = z42_mhtdc.at(0);
+            ID_dEdegZ41_mhtdc = dEdeg_z41_mhtdc.at(0);
+
+            positive_PID_mhtdc = frsgate->Passed_ZvsAoQ(ID_z41_mhtdc,ID_AoQ_mhtdc);
+            if (positive_PID_mhtdc) std::cout << "pased" << std::endl;
+
+        }
     }
     
 
@@ -419,11 +452,14 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
                 
                 h2_germanium_energy_vs_tsci41->Fill(timediff1 ,energy1);
 
+                if (positive_PID_mhtdc) h1_germanium_energy_promptflash_cut_mhtdc_gated->Fill(energy1); // ignore short collection time
+
                 //after this test, the prompt flash is cut out.
                 if ((germanium_configuration->IsInsidePromptFlashCut(timediff1 ,energy1)==true) ) continue;
                 if ((timediff1 < -400 || timediff1 > stop_short_lifetime_collection)) continue;
                 
                 h1_germanium_energy_promptflash_cut->Fill(energy1);
+                // if (positive_PID_mhtdc) h1_germanium_energy_promptflash_cut_mhtdc_gated->Fill(energy1);
 
                 for (int idx_gamma_gate = 0; idx_gamma_gate < gamma_energies_of_interest.size(); idx_gamma_gate++){
                     if (!(TMath::Abs(energy1 - gamma_energies_of_interest.at(idx_gamma_gate))<gate_width_gamma_energies_of_interest.at(idx_gamma_gate))) continue;
@@ -469,7 +505,27 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
                 }
             }
         }
+        
+        //mhtdc v of above
+        if (nHits >= 2 && sci41_seen && positive_PID_mhtdc){
+            for (int ihit2 = 0; ihit2 < nHits; ihit2 ++){
+                if (ihit2 == sci41_hit_idx) continue;
+                GermaniumCalData* hit2 = (GermaniumCalData*)fHitGe->At(ihit2);
+                if (!hit2) continue;
+                int detector_id1 = hit2->Get_detector_id();
+                int crystal_id1 = hit2->Get_crystal_id();
+                double energy1 = hit2->Get_channel_energy();
+                double time1 = hit2->Get_channel_trigger_time();
 
+                if (germanium_configuration->IsDetectorAuxilliary(detector_id1)) continue;
+
+                
+
+                if (positive_PID_mhtdc) h1_germanium_energy_promptflash_cut_mhtdc_gated->Fill(energy1); // ignore short collection time
+
+         
+            }
+        }
         
 
         if (nHits >= 1 && wr_t_last_frs_hit != 0){
@@ -553,6 +609,14 @@ void FrsGermaniumCorrelations::FinishEvent()
     {
         fHitGe->Clear();
     }
+
+    ID_x2 = 0.;
+    ID_y2 = 0.;
+    ID_x4 = 0.;
+    ID_AoQ_mhtdc = 0.;
+    ID_z41_mhtdc = 0.;
+    ID_z42_mhtdc = 0.;
+    ID_dEdegZ41_mhtdc = 0.;
 }
 
 void FrsGermaniumCorrelations::FinishTask()

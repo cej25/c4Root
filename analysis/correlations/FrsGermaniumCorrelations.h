@@ -16,6 +16,8 @@ class TH2F;
 class TFile;
 class TFolder;
 class FrsGate;
+class FrsHitItem;
+class FrsMultiHitItem;
 
 class FrsGermaniumCorrelations : public FairTask
 {
@@ -76,6 +78,7 @@ class FrsGermaniumCorrelations : public FairTask
         TClonesArray* fHitFrs;
 
         std::vector<FrsHitItem> const* hitArrayFrs;
+        std::vector<FrsMultiHitItem> const* multihitArray;
 
         const TGermaniumConfiguration * germanium_configuration;
         const TFrsConfiguration * frs_configuration;
@@ -85,6 +88,15 @@ class FrsGermaniumCorrelations : public FairTask
         int64_t wr_t_last_frs_hit = 0;
         int64_t wr_t_first_frs_hit = 0;
         bool positive_PID = false;
+        bool positive_PID_mhtdc = false;
+
+        Double_t ID_x2 = 0.;
+        Double_t ID_y2 = 0.;
+        Double_t ID_x4 = 0.;
+        Double_t ID_AoQ_mhtdc = 0.;
+        Double_t ID_z41_mhtdc = 0.;
+        Double_t ID_z42_mhtdc = 0.;
+        Double_t ID_dEdegZ41_mhtdc = 0.;
 
         
         int fenergy_nbins = 1500;
@@ -136,7 +148,9 @@ class FrsGermaniumCorrelations : public FairTask
         TH2F * h2_germanium_energy_vs_tsci41;
 
         TCanvas * c_germanium_energy_promptflash_cut;
+        TCanvas* c_germanium_energy_promptflash_cut_mhtdc_gated;
         TH1F * h1_germanium_energy_promptflash_cut;
+        TH1F* h1_germanium_energy_promptflash_cut_mhtdc_gated;
 
         TCanvas * c_germanium_energy_energy_promptflash_cut;
         TH2F * h2_germanium_energy_energy_promptflash_cut;
