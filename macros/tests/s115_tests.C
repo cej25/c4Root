@@ -6,7 +6,7 @@
 #define GERMANIUM_ON 1
 #define FRS_ON 1
 #define TIME_MACHINE_ON 0
-#define WHITE_RABBIT_CORS 1
+#define WHITE_RABBIT_CORS 0
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
@@ -34,7 +34,7 @@ void s115_tests()
 
     // Define important paths.
     TString c4Root_path = "/u/cjones/c4Root";
-    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes";
+    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
@@ -61,7 +61,7 @@ void s115_tests()
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 5000; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 6060; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -280,16 +280,20 @@ void s115_tests()
 //         run->AddTask(frsaida);
 //     }
     
-     /*
+     
      if (FRS_ON && GERMANIUM_ON)
      {
-         FrsGate* rightBlob = new FrsGate("rightBlob",config_path + "/frs/rightblob.root");
-         FrsGermaniumCorrelations* ge_rightblob = new FrsGermaniumCorrelations(rightBlob);
-         ge_rightblob->SetShortLifetimeCollectionWindow(1000);
-         run->AddTask(ge_rightblob);
+         FrsGate* Br70 = new FrsGate("70Br",config_path + "/frs/70Br.root");
+         FrsGermaniumCorrelations* ge_70Br = new FrsGermaniumCorrelations(Br70);
+         ge_70Br->SetShortLifetimeCollectionWindow(1000);
+         run->AddTask(ge_70Br);
      }
-     */
-
+     
+    if (AIDA_ON && GERMANIUM_ON)
+    {
+        AidaGermaniumCorrelations* ag = new AidaGermaniumCorrelations();
+        run->AddTask(ag);
+    }
      
 
 
