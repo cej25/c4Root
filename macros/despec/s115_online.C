@@ -6,13 +6,13 @@
 #define GERMANIUM_ON 1
 #define FRS_ON 1
 #define TIME_MACHINE_ON 0
-#define WHITE_RABBIT_CORS 1 
+#define WHITE_RABBIT_CORS 0
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 // CEJ: not configured for s101 yet
 extern "C"
 {
-    #include "../../config/s115/frs/setup_115_008_2025_new_conv.C"
+    #include "../../config/s115/frs/setup_115_022_2025_s1calib_conv_correct_brho.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -35,7 +35,7 @@ void s115_online()
 
     // Define important paths.
     TString c4Root_path = "/u/despec/s115_online/c4Root";
-    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes";
+    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
@@ -56,8 +56,8 @@ void s115_online()
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
-    TString filename = "trans://lxg3107";
-    // TString filename = "stream://lxsecana01:6002";
+    //TString filename = "stream://x86l-143";
+    TString filename = "stream://lxsecana01:6002";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
@@ -255,7 +255,7 @@ void s115_online()
     }
 
      TFrsConfiguration::Set_Z_range(30,50);
-     TFrsConfiguration::Set_AoQ_range(1.8,2.4);
+     TFrsConfiguration::Set_AoQ_range(1.8,3.4);
      TFrsConfiguration::Set_x2_range(-120,120);
      TFrsConfiguration::Set_x4_range(-120,120);
      std::vector<FrsGate*> frsgates{};
@@ -282,15 +282,20 @@ void s115_online()
 //         run->AddTask(frsaida);
 //     }
     
-     /*
+     
      if (FRS_ON && GERMANIUM_ON)
      {
-         FrsGate* rightBlob = new FrsGate("rightBlob",config_path + "/frs/rightblob.root");
-         FrsGermaniumCorrelations* ge_rightblob = new FrsGermaniumCorrelations(rightBlob);
-         ge_rightblob->SetShortLifetimeCollectionWindow(1000);
-         run->AddTask(ge_rightblob);
+         FrsGate* Br70 = new FrsGate("70Br",config_path + "/frs/70Br.root");
+         FrsGermaniumCorrelations* ge_70Br = new FrsGermaniumCorrelations(Br70);
+         ge_70Br->SetShortLifetimeCollectionWindow(1000);
+         run->AddTask(ge_70Br);
+
+         FrsGate* Se69 = new FrsGate("69Se",config_path + "/frs/69Se.root");
+         FrsGermaniumCorrelations* ge_69Se = new FrsGermaniumCorrelations(Se69);
+         ge_69Se->SetShortLifetimeCollectionWindow(3000);
+         run->AddTask(ge_69Se);
      }
-     */
+     
 
      
 
