@@ -15,6 +15,8 @@ class FrsCalSciItem : public TObject
     public:
         FrsCalSciItem();
 
+        void SetMetaData(int64_t wr, TString setup);
+
         void SetAll(UInt_t de11l,
                     UInt_t de11r,
                     UInt_t de21l,
@@ -73,7 +75,11 @@ class FrsCalSciItem : public TObject
                     std::vector<Int_t> sci81l_hits,
                     std::vector<Int_t> sci81r_hits);
 
+
         // Getters
+        int64_t Get_wr_t() const { return fwr_t; }
+        TString Get_setup_file() const { return setup_file; }
+
         UInt_t Get_dE_11l() const { return de_11l; }
         UInt_t Get_dE_11r() const { return de_11r; }
         UInt_t Get_dE_21l() const { return de_21l; }
@@ -137,6 +143,10 @@ class FrsCalSciItem : public TObject
         ClassDef(FrsCalSciItem, 1);
 
     private:
+
+        // Meta
+        int64_t fwr_t;
+        TString setup_file;
 
         // TAC dE
         UInt_t de_11l;
@@ -208,11 +218,16 @@ class FrsCalMusicItem : public TObject
     public:
         FrsCalMusicItem();
 
+        void SetMetaData(int64_t wr, TString setup);
+
         void SetAll(UInt_t music21_e[8],
                     UInt_t music22_e[8],
                     UInt_t music41_e[8],
                     UInt_t music42_e[8],
                     UInt_t music43_e[8]);
+
+        int64_t Get_wr_t() const { return fwr_t; }
+        TString Get_setup_file() const { return setup_file; }
 
         const UInt_t (&Get_music21_e() const) [8] { return fmusic21_e; }
         const UInt_t (&Get_music22_e() const) [8] { return fmusic22_e; }
@@ -224,6 +239,11 @@ class FrsCalMusicItem : public TObject
     
     private:
 
+        // Meta
+        int64_t fwr_t;
+        TString setup_file;
+
+        // MUSIC
         UInt_t fmusic21_e[8];
         UInt_t fmusic22_e[8];
         UInt_t fmusic41_e[8];
@@ -236,6 +256,8 @@ class FrsCalTpcItem : public TObject
 {
     public:
         FrsCalTpcItem();
+
+        void SetMetaData(int64_t wr, TString setup);
 
         void SetAll(Float_t tpc_x[7],
                     Bool_t b_tpc_xy[7],
@@ -284,6 +306,9 @@ class FrsCalTpcItem : public TObject
                     Float_t tpc_music43_x);
 
         // Getters..
+        int64_t Get_wr_t() const { return fwr_t; }
+        TString Get_setup_file() const { return setup_file; }
+        
         const Float_t (&Get_tpc_x() const) [7] { return ftpc_x; }
         const Bool_t (&Get_b_tpc_xy() const) [7] { return fb_tpc_xy; }
         const Int_t (&Get_tpc_csum() const) [7][4] { return ftpc_csum; }
@@ -335,6 +360,11 @@ class FrsCalTpcItem : public TObject
 
     private:
 
+        // Meta
+        int64_t fwr_t;
+        TString setup_file;
+
+        // TPC
         Bool_t fb_tpc_de[7]; // not used yet, tpc_de not even passed along
         Float_t ftpc_x[7]; // [7]; // used by frs for plotting and sc31
         Float_t ftpc_y[7]; // used by frs for plotting and sc31

@@ -28,6 +28,7 @@ class TFrsConfiguration
                         TSIParameter*,
                         TMRTOFMSParameter*,
                         TRangeParameter*);
+        static void SetParameterFilename(TString fn) { setup_file = fn; }
         static void SetConfigPath(std::string cp) { config_path = cp; }
         static void SetTravMusDriftFile(std::string fp) { tm_drift_coeff_file = fp; }
         static void SetAoQDriftFile(std::string fp) { aoq_drift_coeff_file = fp; }
@@ -47,6 +48,7 @@ class TFrsConfiguration
         std::string GetConfigPath() const;
         std::string ScalerName(int index) const;
         std::string SciName(int index) const;
+
 
         // Unpacking / Sorting
         // These should be set after reading some mapping, change later.
@@ -215,6 +217,8 @@ class TFrsConfiguration
         static TSIParameter* fsi;
         static TMRTOFMSParameter* fmrtof;
         static TRangeParameter* frange;
+
+        static TString setup_file;
 
         // Gates
 

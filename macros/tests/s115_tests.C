@@ -11,7 +11,7 @@
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
 {
-    #include "../../config/s115/frs/setup_115_008_2025_new_conv.C"
+    #include "../../config/s115/frs/setup_115_022_2025_s1calib_conv_correct_brho.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -55,7 +55,8 @@ void s115_tests()
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
-     TString filename = "trans://lxg3107";
+    // TString filename = "trans://lxg3107";
+     TString filename  = "stream://lxsecana01:6002";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
@@ -96,6 +97,7 @@ void s115_tests()
     TRangeParameter* range = new TRangeParameter();
     setup(frs,mw,tpc,music,labr,sci,id,si,mrtof,range); // Function defined in frs setup.C macro
     TFrsConfiguration::SetParameters(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
+    //TFrsConfiguration::SetParameterFilename();
     
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Gates *************************************************************** //
@@ -283,10 +285,15 @@ void s115_tests()
      
      if (FRS_ON && GERMANIUM_ON)
      {
-         FrsGate* Br70 = new FrsGate("70Br",config_path + "/frs/70Br.root");
-         FrsGermaniumCorrelations* ge_70Br = new FrsGermaniumCorrelations(Br70);
-         ge_70Br->SetShortLifetimeCollectionWindow(1000);
-         run->AddTask(ge_70Br);
+         FrsGate* Se69 = new FrsGate("Se69",config_path + "/frs/Se69gate.root");
+         FrsGermaniumCorrelations* ge_Se69 = new FrsGermaniumCorrelations(Se69);
+         ge_Se69->SetShortLifetimeCollectionWindow(3000);
+         run->AddTask(ge_Se69);
+
+         FrsGate* Br71 = new FrsGate("Br71",config_path + "/frs/71Br.root");
+         FrsGermaniumCorrelations* ge_Br71 = new FrsGermaniumCorrelations(Br71);
+         ge_Br71->SetShortLifetimeCollectionWindow(3000);
+         run->AddTask(ge_Br71);
      }
      
     if (AIDA_ON && GERMANIUM_ON)

@@ -2,6 +2,12 @@
 
 FrsCalSciItem::FrsCalSciItem() {}
 
+void FrsCalSciItem::SetMetaData(int64_t wr, TString setup)
+{
+    fwr_t = wr;
+    setup_file = setup;
+}
+
 void FrsCalSciItem::SetAll(UInt_t de11l,
                         UInt_t de11r,
                         UInt_t de21l,
@@ -123,6 +129,12 @@ ClassImp(FrsCalSciItem)
 
 FrsCalMusicItem::FrsCalMusicItem() {}
 
+void FrsCalMusicItem::SetMetaData(int64_t wr, TString setup)
+{
+    fwr_t = wr;
+    setup_file = setup;
+}
+
 void FrsCalMusicItem::SetAll(UInt_t music21_e[8],
                             UInt_t music22_e[8],
                             UInt_t music41_e[8],
@@ -141,6 +153,12 @@ void FrsCalMusicItem::SetAll(UInt_t music21_e[8],
 
 
 FrsCalTpcItem::FrsCalTpcItem() {}
+
+void FrsCalTpcItem::SetMetaData(int64_t wr, TString setup)
+{
+    fwr_t = wr;
+    setup_file = setup;
+}
 
 void FrsCalTpcItem::SetAll(Float_t tpc_x[7],
                     Bool_t b_tpc_xy[7],

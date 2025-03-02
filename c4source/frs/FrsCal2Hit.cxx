@@ -118,7 +118,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     tpat = tpatItem.Get_tpat();
 
     auto & anaEntry = hitArray->emplace_back();
-    anaEntry.SetMetaData(wr_t, tpat);
+    anaEntry.SetMetaData(wr_t, tpat, "");
 
     ProcessScalers();
     anaEntry.SetScalerData(time_in_ms,

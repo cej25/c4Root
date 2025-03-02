@@ -3,11 +3,13 @@
 
 FrsHitItem::FrsHitItem() {}
 
-void FrsHitItem::SetMetaData(Long64_t wr_t, Short_t tpat)
+void FrsHitItem::SetMetaData(Long64_t wr_t, Short_t tpat, TString setup)
 {
     fwr_t = wr_t;
     ftpat = tpat;
+    setup_file = setup;
 }
+
 
 void FrsHitItem::SetScalerData(Double_t time_in_ms,
                 Double_t time_in_us,
