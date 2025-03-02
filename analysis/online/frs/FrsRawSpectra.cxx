@@ -137,7 +137,7 @@ InitStatus FrsRawSpectra::Init()
     dir_music_e = dir_music->mkdir("E");
     dir_music_t = dir_music->mkdir("T");
 
-    for (int j = 0; j < 2; j++)
+    for (int j = 0; j < 5; j++)
     {
         dir_music_n_e[j] = dir_music_e->mkdir(Form("MUSIC %i", j));
 
