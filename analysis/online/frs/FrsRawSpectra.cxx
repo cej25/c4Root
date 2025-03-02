@@ -216,7 +216,7 @@ void FrsRawSpectra::Exec(Option_t* option)
     sciDT = sciItem.Get_dt_array();
     sciMHTDC = sciItem.Get_mhtdc_array();
 
-    for (int i = 0; i < 16; i++)
+    for (int i = 0; i < 32; i++)
     {
         h1_sci_de[i]->Fill(sciDE[i]);
         h1_sci_dt[i]->Fill(sciDT[i]);
@@ -227,7 +227,7 @@ void FrsRawSpectra::Exec(Option_t* option)
     musicE = musicItem.Get_music_e();
     musicT = musicItem.Get_music_t();
 
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < 5; i++)
     {
         for (int j = 0; j < 8; j++)
         {
