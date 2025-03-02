@@ -277,7 +277,7 @@ void s115_online()
      }
 //     
      FrsGate* Br70 = new FrsGate("70Br",config_path + "/frs/70Br.root");
-     FrsGate* Se69 = new FrsGate("69Se",config_path + "/frs/Se69gate.root");
+     FrsGate* Se69 = new FrsGate("69Se",config_path + "/frs/69Se_Mar2.root");
   
      std::vector<FrsGate*> frsgates{Br70, Se69};
     
