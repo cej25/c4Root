@@ -365,7 +365,7 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
         std::vector<Float_t> dEdeg_z41_mhtdc = multihitItem.Get_ID_dEdeg_z41_mhtdc();
 
         // For now we just take first hit, not really sure how to check PID with multihits honestly
-        if (ID_AoQ_s2s4->size() > 0)
+        if (AoQ_s2s4_mhtdc->size() > 0)
         {
             ID_AoQ_s2s4 = AoQ_s2s4_mhtdc.at(0);
             ID_z41 = z41_mhtdc.at(0);
