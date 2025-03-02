@@ -63,9 +63,9 @@ class FrsRawSpectra : public FairTask
         TDirectory* dir_sci_dt;
         TDirectory* dir_sci_mhtdc;
         TDirectory* dir_music_e;
-        TDirectory* dir_music_n_e[2];
+        TDirectory* dir_music_n_e[5];
         TDirectory* dir_music_t;
-        TDirectory* dir_music_n_t[2];
+        TDirectory* dir_music_n_t[5];
         TDirectory* dir_tpc_adc;
         TDirectory* dir_tpc_n_adc[7];
         TDirectory* dir_tpc_tdc;
