@@ -12,7 +12,7 @@
 // CEJ: not configured for s101 yet
 extern "C"
 {
-    #include "../../config/s115/frs/setup_115_022_2025_s1calib_conv_correct_brho.C"
+    #include "../../config/s115/frs/setup_115_022_2025_s1calib_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -258,11 +258,15 @@ void s115_online()
      TFrsConfiguration::Set_AoQ_range(1.8,3.4);
      TFrsConfiguration::Set_x2_range(-120,120);
      TFrsConfiguration::Set_x4_range(-120,120);
-     std::vector<FrsGate*> frsgates{};
- 
+
+    /* FrsGate* Br70 = new FrsGate("70Br",config_path + "/frs/70Br.root");
+     FrsGate* Se69 = new FrsGate("69Se",config_path + "/frs/69Se.root");
+  
+     std::vector<FrsGate*> frsgates{Br70, Se69};*/
+     std::vector<FrsGate*> nogates = {};
      if (FRS_ON)
      {
-         FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra(frsgates);
+         FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra(nogates);
 //         For monitoring FRS on our side
          FrsRawSpectra* frsrawspec = new FrsRawSpectra();
          FrsCalSpectra* frscalspec = new FrsCalSpectra();
@@ -272,25 +276,28 @@ void s115_online()
          run->AddTask(frscalspec);
      }
 //     
-
+     FrsGate* Br70 = new FrsGate("70Br",config_path + "/frs/70Br.root");
+     FrsGate* Se69 = new FrsGate("69Se",config_path + "/frs/Se69gate.root");
+  
+     std::vector<FrsGate*> frsgates{Br70, Se69};
     
-//     if (AIDA_ON && FRS_ON)
-//     {
-//         
-//         FrsAidaCorrelationsOnline* frsaida = new FrsAidaCorrelationsOnline(frsgates);
-//         
-//         run->AddTask(frsaida);
-//     }
+     if (AIDA_ON && FRS_ON)
+     {
+         
+         FrsAidaCorrelationsOnline* frsaida = new FrsAidaCorrelationsOnline(frsgates);
+         
+        // run->AddTask(frsaida);
+     }
     
      
      if (FRS_ON && GERMANIUM_ON)
      {
-         FrsGate* Br70 = new FrsGate("70Br",config_path + "/frs/70Br.root");
+         //FrsGate* Br70 = new FrsGate("70Br",config_path + "/frs/70Br.root");
          FrsGermaniumCorrelations* ge_70Br = new FrsGermaniumCorrelations(Br70);
          ge_70Br->SetShortLifetimeCollectionWindow(1000);
          run->AddTask(ge_70Br);
 
-         FrsGate* Se69 = new FrsGate("69Se",config_path + "/frs/69Se.root");
+         //FrsGate* Se69 = new FrsGate("69Se",config_path + "/frs/69Se.root");
          FrsGermaniumCorrelations* ge_69Se = new FrsGermaniumCorrelations(Se69);
          ge_69Se->SetShortLifetimeCollectionWindow(3000);
          run->AddTask(ge_69Se);
