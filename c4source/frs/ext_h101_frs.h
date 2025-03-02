@@ -37,22 +37,22 @@ typedef struct EXT_STR_h101_frs_t
   uint32_t SCALERS2 /* [0,32] */;
   uint32_t SCALERS2I[32 EXT_STRUCT_CTRL(SCALERS2)] /* [1,32] */;
   uint32_t SCALERS2v[32 EXT_STRUCT_CTRL(SCALERS2)] /* [-1,-1] */;
-  uint32_t SCI_TAC_DE /* [0,18] */;
-  uint32_t SCI_TAC_DEI[18 EXT_STRUCT_CTRL(SCI_TAC_DE)] /* [1,18] */;
-  uint32_t SCI_TAC_DEv[18 EXT_STRUCT_CTRL(SCI_TAC_DE)] /* [0,16777215] */;
-  uint32_t SCI_TAC_DT /* [0,19] */;
-  uint32_t SCI_TAC_DTI[19 EXT_STRUCT_CTRL(SCI_TAC_DT)] /* [1,19] */;
-  uint32_t SCI_TAC_DTv[19 EXT_STRUCT_CTRL(SCI_TAC_DT)] /* [0,16777215] */;
-  uint32_t SCI_MHTDC_TM /* [1,24] */;
-  uint32_t SCI_MHTDC_TMI[24 EXT_STRUCT_CTRL(SCI_MHTDC_TM)] /* [1,24] */;
-  uint32_t SCI_MHTDC_TME[24 EXT_STRUCT_CTRL(SCI_MHTDC_TM)] /* [1,3072] */;
-  uint32_t SCI_MHTDC_T /* [0,3072] */;
-  uint32_t SCI_MHTDC_Tv[3072 EXT_STRUCT_CTRL(SCI_MHTDC_T)] /* [0,16777215] */;
-  uint32_t SCI_MHTDC_LOTM /* [1,24] */;
-  uint32_t SCI_MHTDC_LOTMI[24 EXT_STRUCT_CTRL(SCI_MHTDC_LOTM)] /* [1,24] */;
-  uint32_t SCI_MHTDC_LOTME[24 EXT_STRUCT_CTRL(SCI_MHTDC_LOTM)] /* [1,3072] */;
-  uint32_t SCI_MHTDC_LOT /* [0,3072] */;
-  uint32_t SCI_MHTDC_LOTv[3072 EXT_STRUCT_CTRL(SCI_MHTDC_LOT)] /* [0,255] */;
+  uint32_t SCI_TAC_DE /* [0,32] */;
+  uint32_t SCI_TAC_DEI[32 EXT_STRUCT_CTRL(SCI_TAC_DE)] /* [1,32] */;
+  uint32_t SCI_TAC_DEv[32 EXT_STRUCT_CTRL(SCI_TAC_DE)] /* [0,16777215] */;
+  uint32_t SCI_TAC_DT /* [0,32] */;
+  uint32_t SCI_TAC_DTI[32 EXT_STRUCT_CTRL(SCI_TAC_DT)] /* [1,32] */;
+  uint32_t SCI_TAC_DTv[32 EXT_STRUCT_CTRL(SCI_TAC_DT)] /* [0,16777215] */;
+  uint32_t SCI_MHTDC_TM /* [1,32] */;
+  uint32_t SCI_MHTDC_TMI[32 EXT_STRUCT_CTRL(SCI_MHTDC_TM)] /* [1,32] */;
+  uint32_t SCI_MHTDC_TME[32 EXT_STRUCT_CTRL(SCI_MHTDC_TM)] /* [1,4096] */;
+  uint32_t SCI_MHTDC_T /* [0,4096] */;
+  uint32_t SCI_MHTDC_Tv[4096 EXT_STRUCT_CTRL(SCI_MHTDC_T)] /* [0,16777215] */;
+  uint32_t SCI_MHTDC_LOTM /* [1,32] */;
+  uint32_t SCI_MHTDC_LOTMI[32 EXT_STRUCT_CTRL(SCI_MHTDC_LOTM)] /* [1,32] */;
+  uint32_t SCI_MHTDC_LOTME[32 EXT_STRUCT_CTRL(SCI_MHTDC_LOTM)] /* [1,4096] */;
+  uint32_t SCI_MHTDC_LOT /* [0,4096] */;
+  uint32_t SCI_MHTDC_LOTv[4096 EXT_STRUCT_CTRL(SCI_MHTDC_LOT)] /* [0,255] */;
   uint32_t TPC_ADC1 /* [0,32] */;
   uint32_t TPC_ADC1I[32 EXT_STRUCT_CTRL(TPC_ADC1)] /* [1,32] */;
   uint32_t TPC_ADC1v[32 EXT_STRUCT_CTRL(TPC_ADC1)] /* [0,16777215] */;
@@ -136,21 +136,21 @@ typedef struct EXT_STR_h101_frs_onion_t
     uint32_t v[32 /*  */];
   } SCALERS[2];
   uint32_t SCI_TAC_DE;
-  uint32_t SCI_TAC_DEI[18 /* SCI_TAC_DE */];
-  uint32_t SCI_TAC_DEv[18 /* SCI_TAC_DE */];
+  uint32_t SCI_TAC_DEI[32 /* SCI_TAC_DE */];
+  uint32_t SCI_TAC_DEv[32 /* SCI_TAC_DE */];
   uint32_t SCI_TAC_DT;
-  uint32_t SCI_TAC_DTI[19 /* SCI_TAC_DT */];
-  uint32_t SCI_TAC_DTv[19 /* SCI_TAC_DT */];
+  uint32_t SCI_TAC_DTI[32 /* SCI_TAC_DT */];
+  uint32_t SCI_TAC_DTv[32 /* SCI_TAC_DT */];
   uint32_t SCI_MHTDC_TM;
-  uint32_t SCI_MHTDC_TMI[24 /* SCI_MHTDC_TM */];
-  uint32_t SCI_MHTDC_TME[24 /* SCI_MHTDC_TM */];
+  uint32_t SCI_MHTDC_TMI[32 /* SCI_MHTDC_TM */];
+  uint32_t SCI_MHTDC_TME[32 /* SCI_MHTDC_TM */];
   uint32_t SCI_MHTDC_T;
-  uint32_t SCI_MHTDC_Tv[3072 /* SCI_MHTDC_T */];
+  uint32_t SCI_MHTDC_Tv[4096 /* SCI_MHTDC_T */];
   uint32_t SCI_MHTDC_LOTM;
-  uint32_t SCI_MHTDC_LOTMI[24 /* SCI_MHTDC_LOTM */];
-  uint32_t SCI_MHTDC_LOTME[24 /* SCI_MHTDC_LOTM */];
+  uint32_t SCI_MHTDC_LOTMI[32 /* SCI_MHTDC_LOTM */];
+  uint32_t SCI_MHTDC_LOTME[32 /* SCI_MHTDC_LOTM */];
   uint32_t SCI_MHTDC_LOT;
-  uint32_t SCI_MHTDC_LOTv[3072 /* SCI_MHTDC_LOT */];
+  uint32_t SCI_MHTDC_LOTv[4096 /* SCI_MHTDC_LOT */];
   struct {
     uint32_t _;
     uint32_t I[32 /*  */];
@@ -218,7 +218,7 @@ typedef struct EXT_STR_h101_frs_onion_t
                     "SCALERS2v",                       "SCALERS2",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      SCI_TAC_DE,                      UINT32,\
-                    "SCI_TAC_DE",18,0/*flags*/); \
+                    "SCI_TAC_DE",32,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      SCI_TAC_DEI,                     UINT32,\
                     "SCI_TAC_DEI",                     "SCI_TAC_DE",0/*flags*/); \
@@ -227,7 +227,7 @@ typedef struct EXT_STR_h101_frs_onion_t
                     "SCI_TAC_DEv",                     "SCI_TAC_DE",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      SCI_TAC_DT,                      UINT32,\
-                    "SCI_TAC_DT",19,0/*flags*/); \
+                    "SCI_TAC_DT",32,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      SCI_TAC_DTI,                     UINT32,\
                     "SCI_TAC_DTI",                     "SCI_TAC_DT",0/*flags*/); \
@@ -236,7 +236,7 @@ typedef struct EXT_STR_h101_frs_onion_t
                     "SCI_TAC_DTv",                     "SCI_TAC_DT",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      SCI_MHTDC_TM,                    UINT32,\
-                    "SCI_MHTDC_TM",24,0/*flags*/); \
+                    "SCI_MHTDC_TM",32,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      SCI_MHTDC_TMI,                   UINT32,\
                     "SCI_MHTDC_TMI",                   "SCI_MHTDC_TM",0/*flags*/); \
@@ -245,13 +245,13 @@ typedef struct EXT_STR_h101_frs_onion_t
                     "SCI_MHTDC_TME",                   "SCI_MHTDC_TM",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      SCI_MHTDC_T,                     UINT32,\
-                    "SCI_MHTDC_T",3072,0/*flags*/); \
+                    "SCI_MHTDC_T",4096,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      SCI_MHTDC_Tv,                    UINT32,\
                     "SCI_MHTDC_Tv",                    "SCI_MHTDC_T",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      SCI_MHTDC_LOTM,                  UINT32,\
-                    "SCI_MHTDC_LOTM",24,0/*flags*/); \
+                    "SCI_MHTDC_LOTM",32,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      SCI_MHTDC_LOTMI,                 UINT32,\
                     "SCI_MHTDC_LOTMI",                 "SCI_MHTDC_LOTM",0/*flags*/); \
@@ -260,7 +260,7 @@ typedef struct EXT_STR_h101_frs_onion_t
                     "SCI_MHTDC_LOTME",                 "SCI_MHTDC_LOTM",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      SCI_MHTDC_LOT,                   UINT32,\
-                    "SCI_MHTDC_LOT",3072,0/*flags*/); \
+                    "SCI_MHTDC_LOT",4096,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      SCI_MHTDC_LOTv,                  UINT32,\
                     "SCI_MHTDC_LOTv",                  "SCI_MHTDC_LOT",0/*flags*/); \
