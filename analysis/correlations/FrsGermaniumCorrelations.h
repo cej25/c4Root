@@ -71,6 +71,7 @@ class FrsGermaniumCorrelations : public FairTask
             long_lifetime_binhigh = stop;
         }
         
+        void SetFrsGateType(int type) { gate_type = type; }
         
     
     private:
@@ -84,6 +85,8 @@ class FrsGermaniumCorrelations : public FairTask
         const TFrsConfiguration * frs_configuration;
         
         FrsGate * frsgate;
+
+        int gate_type = 0;
 
         int64_t wr_t_last_frs_hit = 0;
         int64_t wr_t_first_frs_hit = 0;

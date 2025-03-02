@@ -21,6 +21,7 @@ TIDParameter* TFrsConfiguration::fid;
 TSIParameter* TFrsConfiguration::fsi;
 TMRTOFMSParameter* TFrsConfiguration::fmrtof;
 TRangeParameter* TFrsConfiguration::frange;
+TString TFrsConfiguration::setup_file = "";
 
 Bool_t TFrsConfiguration::old_beta_cal = false;
 

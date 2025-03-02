@@ -347,28 +347,28 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
     double ID_dEdeg = frshit.Get_ID_dEdeg_z41();
 
     // this must pass all gates given to FrsGate:
-    positive_PID = frsgate->PassedGate(ID_z, ID_z2, ID_x2, ID_x4, ID_AoQ, ID_dEdeg);
-    if (positive_PID)
-    {
-        wr_t_last_frs_hit = wr_t;
-        frs_rate_implanted ++;
-        frs_total_implanted ++;
+    // positive_PID = frsgate->PassedGate(ID_z, ID_z2, ID_x2, ID_x4, ID_AoQ, ID_dEdeg);
+    // if (positive_PID)
+    // {
+        // wr_t_last_frs_hit = wr_t;
+        // frs_rate_implanted ++;
+        // frs_total_implanted ++;
 
-        h2_frs_Z_vs_AoQ_gated->Fill(ID_AoQ,ID_z);
-        h2_frs_Z_vs_Z2_gated->Fill(ID_z,ID_z2);
-        h2_frs_x2_vs_AoQ_gated->Fill(ID_AoQ,ID_x2);
-        h2_frs_x4_vs_AoQ_gated->Fill(ID_AoQ,ID_x4);
+        // h2_frs_Z_vs_AoQ_gated->Fill(ID_AoQ,ID_z);
+        // h2_frs_Z_vs_Z2_gated->Fill(ID_z,ID_z2);
+        // h2_frs_x2_vs_AoQ_gated->Fill(ID_AoQ,ID_x2);
+        // h2_frs_x4_vs_AoQ_gated->Fill(ID_AoQ,ID_x4);
 
-        if (wr_t_last_frs_hit - frs_rate_time > 60e9)
-        {
-            g_frs_rate->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_rate_implanted/60.0);
-            g_frs_total->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_total_implanted);
-            frs_rate_time = wr_t_last_frs_hit;
-            frs_rate_implanted = 0;
-        }
-    }else{
-        wr_t_last_frs_hit = 0;
-    }
+        // if (wr_t_last_frs_hit - frs_rate_time > 60e9)
+        // {
+        //     g_frs_rate->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_rate_implanted/60.0);
+        //     g_frs_total->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_total_implanted);
+        //     frs_rate_time = wr_t_last_frs_hit;
+        //     frs_rate_implanted = 0;
+        // }
+    // }else{
+    //     wr_t_last_frs_hit = 0;
+    // }
 
     if (multihitArray->size() > 0)
     {
@@ -387,7 +387,29 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
             ID_dEdegZ41_mhtdc = dEdeg_z41_mhtdc.at(0);
 
             positive_PID_mhtdc = frsgate->Passed_ZvsAoQ(ID_z41_mhtdc,ID_AoQ_mhtdc);
-            if (positive_PID_mhtdc) std::cout << "pased" << std::endl;
+
+            if (positive_PID_mhtdc)
+            {
+                wr_t_last_frs_hit = wr_t;
+                frs_rate_implanted++;
+                frs_total_implanted++;
+                h2_frs_Z_vs_AoQ_gated->Fill(ID_AoQ_mhtdc,ID_z41_mhtdc);
+                h2_frs_Z_vs_Z2_gated->Fill(ID_z41_mhtdc,ID_z42_mhtdc);
+                h2_frs_x2_vs_AoQ_gated->Fill(ID_AoQ_mhtdc,ID_x2);
+                h2_frs_x4_vs_AoQ_gated->Fill(ID_AoQ_mhtdc,ID_x4);
+
+                if (wr_t_last_frs_hit - frs_rate_time > 60e9)
+                {
+                    g_frs_rate->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_rate_implanted/60.0);
+                    g_frs_total->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_total_implanted);
+                    frs_rate_time = wr_t_last_frs_hit;
+                    frs_rate_implanted = 0;
+                }
+            }
+            else
+            {
+                wr_t_last_frs_hit = 0;
+            }
 
         }
     }
@@ -436,7 +458,8 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
         }
 
         // Spectra with respect to SCI41 - 'short' isomers
-        if (nHits >= 2 && sci41_seen && positive_PID){
+        
+        if (nHits >= 2 && sci41_seen && positive_PID_mhtdc){
             for (int ihit2 = 0; ihit2 < nHits; ihit2 ++){
                 if (ihit2 == sci41_hit_idx) continue;
                 GermaniumCalData* hit2 = (GermaniumCalData*)fHitGe->At(ihit2);
@@ -452,7 +475,7 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
                 
                 h2_germanium_energy_vs_tsci41->Fill(timediff1 ,energy1);
 
-                if (positive_PID_mhtdc) h1_germanium_energy_promptflash_cut_mhtdc_gated->Fill(energy1); // ignore short collection time
+                // if (positive_PID_mhtdc) h1_germanium_energy_promptflash_cut_mhtdc_gated->Fill(energy1); // ignore short collection time
 
                 //after this test, the prompt flash is cut out.
                 if ((germanium_configuration->IsInsidePromptFlashCut(timediff1 ,energy1)==true) ) continue;
@@ -506,26 +529,26 @@ void FrsGermaniumCorrelations::Exec(Option_t* option)
             }
         }
         
-        //mhtdc v of above
-        if (nHits >= 2 && sci41_seen && positive_PID_mhtdc){
-            for (int ihit2 = 0; ihit2 < nHits; ihit2 ++){
-                if (ihit2 == sci41_hit_idx) continue;
-                GermaniumCalData* hit2 = (GermaniumCalData*)fHitGe->At(ihit2);
-                if (!hit2) continue;
-                int detector_id1 = hit2->Get_detector_id();
-                int crystal_id1 = hit2->Get_crystal_id();
-                double energy1 = hit2->Get_channel_energy();
-                double time1 = hit2->Get_channel_trigger_time();
+        // //mhtdc v of above
+        // if (nHits >= 2 && sci41_seen && positive_PID_mhtdc){
+        //     for (int ihit2 = 0; ihit2 < nHits; ihit2 ++){
+        //         if (ihit2 == sci41_hit_idx) continue;
+        //         GermaniumCalData* hit2 = (GermaniumCalData*)fHitGe->At(ihit2);
+        //         if (!hit2) continue;
+        //         int detector_id1 = hit2->Get_detector_id();
+        //         int crystal_id1 = hit2->Get_crystal_id();
+        //         double energy1 = hit2->Get_channel_energy();
+        //         double time1 = hit2->Get_channel_trigger_time();
 
-                if (germanium_configuration->IsDetectorAuxilliary(detector_id1)) continue;
+        //         if (germanium_configuration->IsDetectorAuxilliary(detector_id1)) continue;
 
                 
 
-                if (positive_PID_mhtdc) h1_germanium_energy_promptflash_cut_mhtdc_gated->Fill(energy1); // ignore short collection time
+        //         if (positive_PID_mhtdc) h1_germanium_energy_promptflash_cut_mhtdc_gated->Fill(energy1); // ignore short collection time
 
          
-            }
-        }
+        //     }
+        // }
         
 
         if (nHits >= 1 && wr_t_last_frs_hit != 0){

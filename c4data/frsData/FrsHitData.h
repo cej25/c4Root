@@ -14,7 +14,7 @@ class FrsHitItem : public TObject
     public:
         FrsHitItem();
 
-        void SetMetaData(Long64_t wr_t, Short_t tpat);
+        void SetMetaData(Long64_t wr_t, Short_t tpat, TString setup);
 
         void SetScalerData(Double_t time_in_ms,
                         Double_t time_in_us,
@@ -101,6 +101,7 @@ class FrsHitItem : public TObject
 
         Long64_t Get_wr_t() const { return fwr_t; }
         Short_t Get_tpat() const { return ftpat; }
+        TString Get_setup_file() const { return setup_file; }
         Double_t Get_time_in_ms() const { return ftime_in_ms; }
         Double_t Get_time_in_us() const { return ftime_in_us; }
         Int_t Get_ibin_for_s() const { return fibin_for_s; }
@@ -187,6 +188,7 @@ class FrsHitItem : public TObject
         // Meta
         Long64_t fwr_t;
         Short_t ftpat;
+        TString setup_file;
 
         // Scaler
         Double_t ftime_in_ms;
