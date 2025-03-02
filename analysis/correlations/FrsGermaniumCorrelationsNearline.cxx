@@ -10,7 +10,7 @@
  * granted to it by virtue of its status as an Intergovernmental Organization *
  * or submit itself to any jurisdiction.                                      *
  ******************************************************************************
- *                             J.E.L. Larsson                                 *
+ *                        J.E.L. Larsson, C.E. Jones                          *
  *                               17.12.24                                     *
  ******************************************************************************/
 

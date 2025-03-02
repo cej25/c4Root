@@ -71,8 +71,6 @@ class FrsGermaniumCorrelations : public FairTask
             long_lifetime_binhigh = stop;
         }
         
-        void SetFrsGateType(int type) { gate_type = type; }
-        
     
     private:
         TClonesArray* fHitGe;
@@ -86,20 +84,21 @@ class FrsGermaniumCorrelations : public FairTask
         
         FrsGate * frsgate;
 
-        int gate_type = 0;
+        // hardwire for now
+        bool use_tac = false;
+        bool use_mhtdc = true; 
 
         int64_t wr_t_last_frs_hit = 0;
         int64_t wr_t_first_frs_hit = 0;
         bool positive_PID = false;
-        bool positive_PID_mhtdc = false;
 
         Double_t ID_x2 = 0.;
         Double_t ID_y2 = 0.;
         Double_t ID_x4 = 0.;
-        Double_t ID_AoQ_mhtdc = 0.;
-        Double_t ID_z41_mhtdc = 0.;
-        Double_t ID_z42_mhtdc = 0.;
-        Double_t ID_dEdegZ41_mhtdc = 0.;
+        Double_t ID_AoQ_s2s4 = 0.;
+        Double_t ID_z41 = 0.;
+        Double_t ID_z42 = 0.;
+        Double_t ID_dEdegZ41 = 0.;
 
         
         int fenergy_nbins = 1500;
