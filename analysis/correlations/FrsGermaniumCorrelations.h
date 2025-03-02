@@ -79,10 +79,10 @@ class FrsGermaniumCorrelations : public FairTask
         std::vector<FrsHitItem> const* hitArrayFrs;
         std::vector<FrsMultiHitItem> const* multihitArray;
 
-        const TGermaniumConfiguration * germanium_configuration;
-        const TFrsConfiguration * frs_configuration;
+        const TGermaniumConfiguration* germanium_configuration;
+        const TFrsConfiguration* frs_configuration;
         
-        FrsGate * frsgate;
+        FrsGate* frsgate;
 
         // hardwire for now
         bool use_tac = false;
@@ -195,7 +195,7 @@ class FrsGermaniumCorrelations : public FairTask
         // Folder and files
         TFolder* histograms;
         TFolder* folder_germanium;
-        TFolder ** folder_energy_gated;
+        TFolder** folder_energy_gated;
 
         TDirectory* dir_frs;
         TDirectory* dir_frs_ge_corr;
