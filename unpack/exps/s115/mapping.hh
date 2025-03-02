@@ -6,13 +6,13 @@ SIGNAL(ZERO_SUPPRESS: SCALERS2_32);
 //SIGNAL(SCALERS1_1, frsmain.data.v830.data[0], SCALERS1_32, frsmain.data.v830.data[31], DATA32);
 SIGNAL(SCALERS1_1, frsmain.data.v830.scalers[0], SCALERS1_32, frsmain.data.v830.scalers[31], DATA32);
 
-SIGNAL(ZERO_SUPPRESS: SCI_TAC_DE_18);
-SIGNAL(SCI_TAC_DE_1, frsmain.data.v792.data[0], SCI_TAC_DE_18, frsmain.data.v792.data[17], DATA24);
+SIGNAL(ZERO_SUPPRESS: SCI_TAC_DE_32);
+SIGNAL(SCI_TAC_DE_1, frsmain.data.v792.data[0], SCI_TAC_DE_32, frsmain.data.v792.data[31], DATA24);
 
-SIGNAL(ZERO_SUPPRESS_MULTI(128): SCI_MHTDC_T_24);
-SIGNAL(SCI_MHTDC_T_1, frsmain.data.v1290.measurement.data[0], SCI_MHTDC_T_24, frsmain.data.v1290.measurement.data[23], DATA24);
-SIGNAL(ZERO_SUPPRESS_MULTI(128): SCI_MHTDC_LOT_24);
-SIGNAL(SCI_MHTDC_LOT_1, frsmain.data.v1290.measurement.leadOrTrail[0], SCI_MHTDC_LOT_24, frsmain.data.v1290.measurement.leadOrTrail[23], DATA8);
+SIGNAL(ZERO_SUPPRESS_MULTI(128): SCI_MHTDC_T_32);
+SIGNAL(SCI_MHTDC_T_1, frsmain.data.v1290.measurement.data[0], SCI_MHTDC_T_32, frsmain.data.v1290.measurement.data[31], DATA24);
+SIGNAL(ZERO_SUPPRESS_MULTI(128): SCI_MHTDC_LOT_32);
+SIGNAL(SCI_MHTDC_LOT_1, frsmain.data.v1290.measurement.leadOrTrail[0], SCI_MHTDC_LOT_32, frsmain.data.v1290.measurement.leadOrTrail[31], DATA8);
 
 
 // MUSIC TIME MOVED FROM MAIN TO USER 2025
@@ -44,8 +44,8 @@ SIGNAL(TPC_TDC_LOT_1, frstpc.data.v1190.measurement.leadOrTrail[0], TPC_TDC_LOT_
 // SIGNAL(SCALERS2_1, frsuser.data.v830.data[0], SCALERS2_32, frsuser.data.v830.data[31], DATA32);
 SIGNAL(SCALERS2_1, frsuser.data.v830.scalers[0], SCALERS2_32, frsuser.data.v830.scalers[31], DATA32);
 
-SIGNAL(ZERO_SUPPRESS: SCI_TAC_DT_19); // 19 possible DT values? I guess we should check before committing..
-SIGNAL(SCI_TAC_DT_1, frsuser.data.v785[1].data[0], SCI_TAC_DT_16, frsuser.data.v785[1].data[15], DATA24);
+SIGNAL(ZERO_SUPPRESS: SCI_TAC_DT_32); // 19 possible DT values? I guess we should check before committing..
+SIGNAL(SCI_TAC_DT_1, frsuser.data.v785[1].data[0], SCI_TAC_DT_32, frsuser.data.v785[1].data[31], DATA24);
 
 SIGNAL(ZERO_SUPPRESS: MUSIC2_E_8);
 SIGNAL(MUSIC1_E_1, frsuser.data.v785[0].data[0], MUSIC1_E_8, frsuser.data.v785[0].data[7], DATA24);
