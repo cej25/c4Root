@@ -98,8 +98,8 @@ InitStatus FrsRawSpectra::Init()
     
     // TAC dE
     c_sci_de = new TCanvas("c_sci_de", "Scintillator dE spectra", 650, 350);
-    c_sci_de->Divide(4, 4);
-    for (int ihist = 0; ihist < 16; ihist++)
+    c_sci_de->Divide(4, 8);
+    for (int ihist = 0; ihist < 32; ihist++)
     {
         c_sci_de->cd(ihist+1);
         h1_sci_de[ihist] = MakeTH1(dir_sci_de, "F", Form("h1_sci_de_%i", ihist), Form("Scintillator dE Channel %i", ihist), 4096, 0, 4096);
@@ -110,8 +110,8 @@ InitStatus FrsRawSpectra::Init()
 
     // TAC dT
     c_sci_dt = new TCanvas("c_sci_dt", "Scintillator dT spectra", 650, 350);
-    c_sci_dt->Divide(4, 4);
-    for (int ihist = 0; ihist < 16; ihist++)
+    c_sci_dt->Divide(4, 8);
+    for (int ihist = 0; ihist < 32; ihist++)
     {
         c_sci_dt->cd(ihist+1);
         h1_sci_dt[ihist] = MakeTH1(dir_sci_dt, "F", Form("h1_sci_dt_%i", ihist), Form("Scintillator dT Channel %i", ihist), 4096, 0, 4096); // need to figure out ranges
@@ -122,8 +122,8 @@ InitStatus FrsRawSpectra::Init()
 
     // MHTDC T
     c_sci_mhtdc = new TCanvas("c_sci_mhtdc", "Scintillator MHTDC T spectra", 650, 350);
-    c_sci_mhtdc->Divide(4, 4);
-    for (int ihist = 0; ihist < 16; ihist++)
+    c_sci_mhtdc->Divide(4, 8);
+    for (int ihist = 0; ihist < 32; ihist++)
     {
         c_sci_mhtdc->cd(ihist+1);
         h1_sci_mhtdc[ihist] = MakeTH1(dir_sci_mhtdc, "F", Form("h1_sci_mhtdc_%i", ihist), Form("Scintillator MHTDC T Channel %i", ihist), 4000, 0, 100000); // need to figure out ranges
