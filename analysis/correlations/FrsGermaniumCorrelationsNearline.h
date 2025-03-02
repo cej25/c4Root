@@ -16,6 +16,8 @@ class TH2F;
 class TFile;
 class TFolder;
 class FrsGate;
+class FrsHitItem;
+class FrsMultiHitItem;
 
 class FrsGermaniumCorrelationsNearline : public FairTask
 {
@@ -79,15 +81,28 @@ class FrsGermaniumCorrelationsNearline : public FairTask
         TClonesArray* fHitFrs;
 
         std::vector<FrsHitItem> const* hitArrayFrs;
+        std::vector<FrsMultiHitItem> const* multihitArray;
 
-        const TGermaniumConfiguration * germanium_configuration;
-        const TFrsConfiguration * frs_configuration;
+        const TGermaniumConfiguration* germanium_configuration;
+        const TFrsConfiguration* frs_configuration;
         
-        FrsGate * frsgate;
+        FrsGate* frsgate;
+
+        // hardwire for now
+        bool use_tac = false;
+        bool use_mhtdc = true; 
 
         int64_t wr_t_last_frs_hit = 0;
         int64_t wr_t_first_frs_hit = 0;
         bool positive_PID = false;
+
+        Double_t ID_x2 = 0.;
+        Double_t ID_y2 = 0.;
+        Double_t ID_x4 = 0.;
+        Double_t ID_AoQ_s2s4 = 0.;
+        Double_t ID_z41 = 0.;
+        Double_t ID_z42 = 0.;
+        Double_t ID_dEdegZ41 = 0.;
 
         
         int fenergy_nbins = 1500;
