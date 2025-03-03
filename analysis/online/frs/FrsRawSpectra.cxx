@@ -146,7 +146,7 @@ InitStatus FrsRawSpectra::Init()
         for (int ihist = 0; ihist < 8; ihist++)
         {
             c_music_n_e[j]->cd(ihist+1);
-            h1_music_anode_e[j][ihist] = MakeTH1(dir_music_n_e[j], "F", Form("h1_music_%i_e_anode_%i", j, ihist), Form("MUSIC %i Anode %i", j, ihist), 4096, 0, 4096); // need to figure out ranges
+            h1_music_anode_e[j][ihist] = MakeTH1(dir_music_n_e[j], "F", Form("h1_music_%i_e_anode_%i", j, ihist), Form("MUSIC %i Anode %i", j, ihist), 12000, 0, 32768); // need to figure out ranges
             h1_music_anode_e[j][ihist]->Draw();
         }
         c_music_n_e[j]->cd(0);
