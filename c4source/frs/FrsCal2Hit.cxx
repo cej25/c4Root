@@ -1934,6 +1934,8 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
         for (int i = 0; i < hits_in_11lr; i++) temp_s1x_mhtdc[i] = mhtdc_sc11lr_x[i];
         hits_in_s1x = hits_in_11lr;
         temp_a1 = 0;
+        
+        
     }
     else
     {
@@ -2068,7 +2070,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
         }
     }
     else c4LOG(fatal, "Bad S2 TOF selection. Check FRS setup file!");
-
+    
     // Calculate Gamma
     for (int i = 0; i < hits_in_s1s2; i++) id_mhtdc_gamma_s1s2[i] = 1. / sqrt(1. - TMath::Power(id_mhtdc_beta_s1s2[i], 2));
 

@@ -216,6 +216,9 @@ class FrsOnlineSpectra : public FairTask
         TH2* h2_Z41_vs_AoQs2s4_mhtdc;
         TH2* h2_Z41_vs_AoQs2s4_corr_mhtdc;
         TH2* h2_Z41_vs_Z42_mhtdc;
+        TH2* h2_Z21_vs_AoQs1s2_mhtdc;
+        TH2* h2_Z21_vs_AoQs1s2_corr_mhtdc;
+        TH2* h2_Z21_vs_Z22_mhtdc;
         TH2* h2_travmus_vs_Z41_mhtdc;
         TH2* h2_Z41_vs_AoQs2s4_Zsame_mhtdc;
         TH2* h2_x2_vs_AoQs2s4_Zsame_mhtdc;
