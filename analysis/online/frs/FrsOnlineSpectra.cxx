@@ -680,7 +680,7 @@ void FrsOnlineSpectra::Exec(Option_t* option)
             if (beta_s1s2_mhtdc.at(i) > 0.2) h1_beta_s1s2_mhtdc->Fill(beta_s1s2_mhtdc.at(i)); // 0.2 for now
             if (AoQ_s1s2_mhtdc.at(i) > 0) h1_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i));
             if (AoQ_corr_s1s2_mhtdc.at(i) > 0) h1_AoQs1s2_corr_mhtdc->Fill(AoQ_corr_s1s2_mhtdc.at(i));
-            if (z21_mhtdc.at(i) > 0) h1_Z21_mhtdc->Fill(z21_mhtdc.at(i));
+            if (z21_mhtdc.at(i) > 10) h1_Z21_mhtdc->Fill(z21_mhtdc.at(i));
             if (z22_mhtdc.at(i) > 0) h1_Z22_mhtdc->Fill(z22_mhtdc.at(i));
 
         }

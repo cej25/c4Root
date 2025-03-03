@@ -1309,6 +1309,7 @@ void FrsCal2Hit::ProcessMusic()
     }
     #endif
 
+
     #ifdef MUSIC_ANA_NEW
     if (music21_anodes_cnt >= music->MUSIC21_num_an / 2)
     {
@@ -2106,15 +2107,16 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
         }
     }
 
+
     // Calculate Z (MUSIC 21 / 22)
     for (int i = 0; i < hits_in_s1s2; i++)
     {
-        if (music21_de_cor > 0.0 && id_mhtdc_beta_s1s2[i] > 0.0 && id_mhtdc_beta_s1s2[i] < 1.0)
+        if (music21_de_cor > 0.0 && id_mhtdc_beta_s1s2[i] > 0.6 && id_mhtdc_beta_s1s2[i] < 0.9)
         {
             Double_t power = 1., sum = 0.;
             for (int j = 0; j < 4; j++)
             {
-                sum += power * id->mhtdc_vel_a_music21[j];
+                sum += power * id->mhtdc_vel_a_music21_s1s2[j];
                 if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s1s2[i];
                 else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s1s2[i], 2); }
             }
@@ -2122,12 +2124,22 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
             id_mhtdc_v_cor_music21[i] = sum;
             if (id_mhtdc_v_cor_music21[i] > 0.0)
             {
-                id_mhtdc_z_music21[i] = frs->primary_z * sqrt(music21_de / id_mhtdc_v_cor_music21[i]);
+                id_mhtdc_z_music21[i] = frs->primary_z * sqrt(music21_de_cor / id_mhtdc_v_cor_music21[i]);
                 id_mhtdc_z_shifted_music21[i] = id_mhtdc_z_music21[i] + id->mhtdc_offset_z_music21;
             }
+            else
+            {
+                id_mhtdc_z_music21[i] = -999.;
+                id_mhtdc_z_shifted_music21[i] = -999.;
+            }
+        }
+        else
+        {
+            id_mhtdc_z_music21[i] = -999.;
+            id_mhtdc_z_shifted_music21[i] = -999.;
         }
 
-        if (music22_de_cor > 0.0 && id_mhtdc_beta_s1s2[i] > 0.0 && id_mhtdc_beta_s1s2[i] < 1.0)
+        if (music22_de_cor > 0.0 && id_mhtdc_beta_s1s2[i] > 0.5 && id_mhtdc_beta_s1s2[i] < 1.0)
         {
             Double_t power = 1., sum = 0.;
             for (int j = 0; j < 4; j++)
@@ -2140,7 +2152,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
             id_mhtdc_v_cor_music22[i] = sum;
             if (id_mhtdc_v_cor_music22[i] > 0.0)
             {
-                id_mhtdc_z_music22[i] = frs->primary_z * sqrt(music22_de / id_mhtdc_v_cor_music22[i]);
+                id_mhtdc_z_music22[i] = frs->primary_z * sqrt(music22_de_cor / id_mhtdc_v_cor_music22[i]);
                 id_mhtdc_z_shifted_music22[i] = id_mhtdc_z_music22[i] + id->mhtdc_offset_z_music22;
             }
         }

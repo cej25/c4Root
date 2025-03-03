@@ -276,10 +276,11 @@ void s115_online()
          run->AddTask(frscalspec);
      }
 //     
-     FrsGate* Br70 = new FrsGate("70Br",config_path + "/frs/70Br.root");
+     FrsGate* Br71 = new FrsGate("71Br",config_path + "/frs/71Br_Mar3.root");
      FrsGate* Se69 = new FrsGate("69Se",config_path + "/frs/69Se_Mar2.root");
+     FrsGate* Se70 = new FrsGate("70Se",config_path + "/frs/70Se_Mar3.root");
   
-     std::vector<FrsGate*> frsgates{Br70, Se69};
+     std::vector<FrsGate*> frsgates{Br71, Se69};
     
      if (AIDA_ON && FRS_ON)
      {
@@ -292,10 +293,14 @@ void s115_online()
      
      if (FRS_ON && GERMANIUM_ON)
      {
-         //FrsGate* Br70 = new FrsGate("70Br",config_path + "/frs/70Br.root");
-         FrsGermaniumCorrelations* ge_70Br = new FrsGermaniumCorrelations(Br70);
-         ge_70Br->SetShortLifetimeCollectionWindow(1000);
-         run->AddTask(ge_70Br);
+         //FrsGate* Br71 = new FrsGate("71Br",config_path + "/frs/71Br_Mar3.root");
+         FrsGermaniumCorrelations* ge_71Br = new FrsGermaniumCorrelations(Br71);
+         ge_71Br->SetShortLifetimeCollectionWindow(3000);
+         run->AddTask(ge_71Br);
+
+         FrsGermaniumCorrelations* ge_70Se = new FrsGermaniumCorrelations(Se70);
+         ge_70Se->SetShortLifetimeCollectionWindow(3000);
+         run->AddTask(ge_70Se);
 
          //FrsGate* Se69 = new FrsGate("69Se",config_path + "/frs/69Se.root");
          FrsGermaniumCorrelations* ge_69Se = new FrsGermaniumCorrelations(Se69);
