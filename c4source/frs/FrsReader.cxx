@@ -164,7 +164,7 @@ void FrsReader::ScintillatorReader()
 void FrsReader::MusicReader()
 {
 
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < 5; i++)
     {   
         // MUSIC E
         for (int j = 0; j < fData->MUSIC[i].E; j++)
@@ -176,6 +176,7 @@ void FrsReader::MusicReader()
         }
 
         // MUSIC T
+        if (i > 1) continue; // for now.... 
         int hit_index = 0;
         for (int channel_index = 0; channel_index < fData->MUSIC[i].TM; channel_index++)
         {

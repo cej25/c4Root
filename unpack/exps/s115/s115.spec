@@ -3,6 +3,7 @@
 #include "../../common/whiterabbit.spec"
 #include "../../common/gsi_febex4.spec"
 #include "../../common/gsi_tamex4.spec"
+#include "../../common/vme_mesytec_mdpp16.spec"
 #include "../frs/frs_s115.spec"
 #include "../../common/general.spec"
 
@@ -173,6 +174,25 @@ SUBEVENT(frs_tpat_subev)
     }
 }
 
+SUBEVENT(frs_travmus_subev)
+{
+    select optional 
+    {
+        wr = TIMESTAMP_WHITERABBIT(id=0x200);
+    };
+
+    select optional
+    {
+        stuff = VULOM_TPAT();
+    }
+
+    select optional
+    {
+        data = TRAVMUS_CRATE_DATA();
+    };
+}
+ 
+
 EVENT
 {
     revisit aida = aida_subev(type = 10, subtype = 1, procid = 90, control = 37);
@@ -183,6 +203,8 @@ EVENT
     frstpc = frs_tpc_subev(procid = 20);
     frsuser = frs_user_subev(procid = 30);
     frstpat = frs_tpat_subev(procid = 15);
+
+    frstravmus = frs_travmus_subev(procid = 35, ctrl = 30);
 
     ignore_unknown_subevent;
 };
