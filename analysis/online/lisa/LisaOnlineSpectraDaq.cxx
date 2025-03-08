@@ -154,22 +154,22 @@ InitStatus LisaOnlineSpectraDaq::Init()
     //:::::::::::H I T  P A T T E R N - by grid ::::::::::::::::::
     dir_stats->cd();
     c_hitpattern_grid = new TCanvas("c_hitpattern_grid", "Hit Pattern Grid", 650, 350);
-    c_hitpattern_grid->Divide(ceil((layer_number-1)/2),2, 0.05, 0.05);
-    h2_hitpattern_grid.resize(layer_number-1);
+    c_hitpattern_grid->Divide(ceil((layer_number)/2),2, 0.05, 0.05);
+    h2_hitpattern_grid.resize(layer_number);
     c_hitpattern_grid->SetLogz();
     c4LOG(info, " before hit pattern layer : " << layer_number );
 
 
-    for (int i = 0; i < layer_number-1; i++)
+    for (int i = 0; i < layer_number; i++)
     {   
 
         c_hitpattern_grid->cd(i+1);
         gPad->SetLeftMargin(0.15);
         gPad->SetRightMargin(0.15);
-        h2_hitpattern_grid[i] = new TH2F(Form("h2_hitpattern_grid_layer_%i", i), Form("Hit Pattern Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
+        h2_hitpattern_grid[i] = new TH2F(Form("h2_hitpattern_grid_layer_%i", i), Form("Hit Pattern Grid - Layer %i", i), xmax, 0, xmax, ymax, 0, ymax);
         h2_hitpattern_grid[i]->SetStats(0);
         h2_hitpattern_grid[i]->Draw("colz");
-        h2_hitpattern_grid[i]->GetXaxis()->SetTitle(Form("Hit Pattern Layer %i",i+1));
+        h2_hitpattern_grid[i]->GetXaxis()->SetTitle(Form("Hit Pattern Layer %i",i));
         h2_hitpattern_grid[i]->GetXaxis()->SetLabelSize(0);
         h2_hitpattern_grid[i]->GetXaxis()->SetTickLength(0);
         h2_hitpattern_grid[i]->GetYaxis()->SetLabelSize(0);
@@ -187,20 +187,20 @@ InitStatus LisaOnlineSpectraDaq::Init()
     //:::::::::::P I L E   U P::::::::::::
     dir_stats->cd();
     c_pileup_grid = new TCanvas("c_pileup_grid", "Pileup Grid", 650, 350);
-    c_pileup_grid->Divide(ceil((layer_number-1)/2), 2, 0.05, 0.05);
-    h2_pileup_grid.resize(layer_number-1);
+    c_pileup_grid->Divide(ceil((layer_number)/2), 2, 0.05, 0.05);
+    h2_pileup_grid.resize(layer_number);
     //c_hitpattern_grid->SetLogz();
 
-    for (int i = 0; i < layer_number-1; i++)
+    for (int i = 0; i < layer_number; i++)
     {   
 
         c_pileup_grid->cd(i+1);
         gPad->SetLeftMargin(0.15);
         gPad->SetRightMargin(0.15);
-        h2_pileup_grid[i] = new TH2F(Form("h2_pileup_grid_layer_%i", i), Form("Pile Up Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
+        h2_pileup_grid[i] = new TH2F(Form("h2_pileup_grid_layer_%i", i), Form("Pile Up Grid - Layer %i", i), xmax, 0, xmax, ymax, 0, ymax);
         h2_pileup_grid[i]->SetStats(0);
         h2_pileup_grid[i]->Draw("COLZ");
-        h2_pileup_grid[i]->GetXaxis()->SetTitle(Form("Pile Up Layer %i",i+1));
+        h2_pileup_grid[i]->GetXaxis()->SetTitle(Form("Pile Up Layer %i",i));
         h2_pileup_grid[i]->GetXaxis()->SetLabelSize(0);
         h2_pileup_grid[i]->GetXaxis()->SetTickLength(0);
         h2_pileup_grid[i]->GetYaxis()->SetLabelSize(0);
@@ -218,19 +218,19 @@ InitStatus LisaOnlineSpectraDaq::Init()
     //:::::::::::O V E R   F L O W:::::::::::
     dir_stats->cd();
     c_overflow_grid = new TCanvas("c_overflow_grid", "Over Flow Grid", 650, 350);
-    c_overflow_grid->Divide(ceil((layer_number-1)/2), 2, 0.05, 0.05);
-    h2_overflow_grid.resize(layer_number-1);
+    c_overflow_grid->Divide(ceil((layer_number)/2), 2, 0.05, 0.05);
+    h2_overflow_grid.resize(layer_number);
 
-    for (int i = 0; i < layer_number-1; i++)
+    for (int i = 0; i < layer_number; i++)
     {   
 
         c_overflow_grid->cd(i+1);
         gPad->SetLeftMargin(0.15);
         gPad->SetRightMargin(0.15);
-        h2_overflow_grid[i] = new TH2F(Form("h2_overflow_grid_layer_%i", i), Form("Over Flow Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
+        h2_overflow_grid[i] = new TH2F(Form("h2_overflow_grid_layer_%i", i), Form("Over Flow Grid - Layer %i", i), xmax, 0, xmax, ymax, 0, ymax);
         h2_overflow_grid[i]->SetStats(0);
         h2_overflow_grid[i]->Draw("COLZ");
-        h2_overflow_grid[i]->GetXaxis()->SetTitle(Form("Over Flow Layer %i",i+1));
+        h2_overflow_grid[i]->GetXaxis()->SetTitle(Form("Over Flow Layer %i",i));
         h2_overflow_grid[i]->GetXaxis()->SetLabelSize(0);
         h2_overflow_grid[i]->GetXaxis()->SetTickLength(0);
         h2_overflow_grid[i]->GetYaxis()->SetLabelSize(0);

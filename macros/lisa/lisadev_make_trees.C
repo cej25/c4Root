@@ -2,8 +2,8 @@
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define LISA_ON 1
-#define FRS_ON 0
-#define TRAV_MUSIC_ON 0
+#define FRS_ON 1
+#define TRAV_MUSIC_ON 1
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
 
 //Select the data level you want to visualize

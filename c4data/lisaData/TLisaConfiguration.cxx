@@ -83,6 +83,10 @@ int TLisaConfiguration::frun_num = 0;
 int TLisaConfiguration:: board_num = 0;     // number of boards for the file
 int TLisaConfiguration:: event_ana = 0;     // event to analyze for MWD trace
 
+// ::: EVTno for En vs Evtno when WR is not availabòe
+int TLisaConfiguration:: start_evtno = 0;
+int TLisaConfiguration:: stop_evtno = 0;
+
 
 TLisaConfiguration::TLisaConfiguration()
     :   num_layers(0)

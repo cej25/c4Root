@@ -2,8 +2,8 @@
 //............
 // Switch all tasks related to LISA :::  on (1)/off (0) :::
 #define LISA_ON 1       //always on
-#define LISA_DAQ 1      //diplay all the channels from the boards (mapped up to 3 boards)
-#define LISA_2x2 0      //display with pareesksha 2x2 mapping system
+#define LISA_DAQ 0      //diplay all the channels from the boards (mapped up to 3 boards)
+#define LISA_2x2 1      //display with pareesksha 2x2 mapping system
 // WR syncronization
 #define WR_ENABLED 0
 
@@ -59,8 +59,8 @@ void lisa_online_general()
     //TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
 
     //___O F F L I N E
-    TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/x7_241Am/multiple_cards_test/cards_A_B_C_D_E_F_G_0306.lmd"; 
-    //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/run_0072_0001.lmd";  //data with only lisa
+    //TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/x7_241Am/multiple_cards_test/cards_A_B_C_D_E_F_G_0306.lmd"; 
+    TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/run_0072_0001.lmd";  //data with only lisa
 
     //___O U T P U T - only used if switched on 
     TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/";
