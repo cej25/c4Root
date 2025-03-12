@@ -1,12 +1,7 @@
-if(CMAKE_BINARY_DIR STREQUAL CMAKE_SOURCE_DIR)
-
-    message(FATAL_ERROR "In-source builds are not supported, please, create a folder build.")
-
-endif()
-
+#hello world
 cmake_minimum_required(VERSION 3.11.0 FATAL_ERROR)
 
-cmake_policy(VERSION 3.11...3.31)
+cmake_policy(VERSION 3.11...3.20)
 
 project(C4ROOT LANGUAGES C CXX)
 
@@ -17,32 +12,15 @@ if(NOT EXISTS "${PROJECT_SOURCE_DIR}/macros")
 endif(NOT EXISTS "${PROJECT_SOURCE_DIR}/macros")
 
 # Check for needed environment variables
-if(NOT DEFINED ENV{SIMPATH})
+IF(NOT DEFINED ENV{SIMPATH})
+  MESSAGE(FATAL_ERROR "You did not define the environment variable SIMPATH which is nedded to find the external packages. Please set this variable and execute cmake again.")
+ENDIF(NOT DEFINED ENV{SIMPATH})
+SET(SIMPATH $ENV{SIMPATH})
 
-    message(
-
-        FATAL_ERROR
-
-            "You did not define the environment variable SIMPATH which is nedded to find the external packages. Please set this variable and execute cmake again."
-
-    )
-
-endif(NOT DEFINED ENV{SIMPATH})
-
-if(NOT DEFINED ENV{FAIRROOTPATH})
-
-    message(
-
-        FATAL_ERROR
-
-            "You did not define the environment variable FAIRROOTPATH which is needed to find FairRoot. Please set this variable and execute cmake again."
-
-    )
-
-endif()
-
-set(SIMPATH $ENV{SIMPATH})
-set(FAIRROOTPATH $ENV{FAIRROOTPATH})
+IF(NOT DEFINED ENV{FAIRROOTPATH})
+  MESSAGE(FATAL_ERROR "You did not define the environment variable FAIRROOTPATH which is needed to find FairRoot. Please set this variable and execute cmake again.")
+ENDIF(NOT DEFINED ENV{FAIRROOTPATH})
+SET(FAIRROOTPATH $ENV{FAIRROOTPATH})
 
 STRING(REGEX MATCHALL "[^:]+" PATH $ENV{PATH})
 
@@ -102,7 +80,7 @@ include(Dart)
 include(CheckCompiler)
 include(ROOTMacros) # This is from FR, see https://github.com/FairRootGroup/FairRoot/issues/1221
 
-find_package2(PUBLIC FairLogger  VERSION 1.2.0 REQUIRED) # maybe 1.6 now
+find_package2(PUBLIC FairLogger  VERSION 1.2.0 REQUIRED)
 
 foreach(dep IN LISTS FairLogger_PACKAGE_DEPENDENCIES)
   if(NOT dep STREQUAL "Boost")
@@ -183,24 +161,24 @@ if (COMMAND check_external_package_install_dir)
   check_external_package_install_dir()
 endif()
 
-# set(Boost_NO_SYSTEM_PATHS TRUE)
-# set(Boost_NO_BOOST_CMAKE TRUE)
+set(Boost_NO_SYSTEM_PATHS TRUE)
+set(Boost_NO_BOOST_CMAKE TRUE)
 
-# If(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
-#   set(BOOST_ROOT ${SIMPATH})
-#   set(GSL_DIR ${SIMPATH})
-# Else(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
-#   set(BOOST_ROOT ${SIMPATH}/basics/boost)
-#   set(GSL_DIR ${SIMPATH}/basics/gsl)
-# EndIf(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
+If(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
+  set(BOOST_ROOT ${SIMPATH})
+  set(GSL_DIR ${SIMPATH})
+Else(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
+  set(BOOST_ROOT ${SIMPATH}/basics/boost)
+  set(GSL_DIR ${SIMPATH}/basics/gsl)
+EndIf(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
 
-# unset(Boost_INCLUDE_DIR CACHE)
-# unset(Boost_LIBRARY_DIRS CACHE)
-# find_package2(PUBLIC Boost
-#   VERSION 1.67 ${FairMQ_Boost_VERSION}
-#   COMPONENTS thread system timer program_options random filesystem chrono exception iostreams regex serialization log log_setup atomic date_time ${FairMQ_Boost_COMPONENTS}
-#   REQUIRED
-# )
+unset(Boost_INCLUDE_DIR CACHE)
+unset(Boost_LIBRARY_DIRS CACHE)
+find_package2(PUBLIC Boost
+  VERSION 1.67 ${FairMQ_Boost_VERSION}
+  COMPONENTS thread system timer program_options random filesystem chrono exception iostreams regex serialization log log_setup atomic date_time ${FairMQ_Boost_COMPONENTS}
+  REQUIRED
+)
 if(Boost_FOUND)
   set(Boost_Avail 1)
 else(Boost_FOUND)
