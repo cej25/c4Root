@@ -51,13 +51,16 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
 Set(CheckSrcDir "${FAIRROOTPATH}/share/fairbase/cmake/checks")
 
-find_package(FairCMakeModules 0.1 QUIET)
-if(FairCMakeModules_FOUND)
-  include(FairFindPackage2)
-else()
-  message(STATUS "Could not find FairCMakeModules. "
-          "It is recommended to install https://github.com/FairRootGroup/FairCMakeModules")
-endif()
+# find_package(FairCMakeModules 0.1 QUIET)
+# if(FairCMakeModules_FOUND)
+#   include(FairFindPackage2)
+# else()
+#   message(STATUS "Could not find FairCMakeModules. "
+#           "It is recommended to install https://github.com/FairRootGroup/FairCMakeModules")
+# endif()
+
+find_package(FairCMakeModules 1.0 REQUIRED)
+include(FairFindPackage2)
 
 if(COMMAND find_package2)
   find_package2(PUBLIC FairRoot)
