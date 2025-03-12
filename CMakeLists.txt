@@ -108,17 +108,130 @@ include(ROOTMacros) # This is from FR, see https://github.com/FairRootGroup/Fair
 find_package2(PUBLIC FairLogger  VERSION 1.2.0 REQUIRED) # maybe 1.6 now
 
 foreach(dep IN LISTS FairLogger_PACKAGE_DEPENDENCIES)
-  if(NOT dep STREQUAL "Boost")
-    find_package2(PUBLIC ${dep} REQUIRED VERSION ${FairLogger_${dep}_VERSION})
-  endif()
+    if(NOT dep STREQUAL "Boost")
+        find_package2(
+            PUBLIC
+            ${dep}
+            REQUIRED
+            VERSION
+            ${FairLogger_${dep}_VERSION})
+    endif()
 endforeach()
 
-if( "${FairRoot_VERSION}"  VERSION_GREATER 18.6.4 )
-  add_definitions(-DACTIVATEOVERRIDE)
+# if( "${FairRoot_VERSION}"  VERSION_GREATER 18.6.4 )
+#   add_definitions(-DACTIVATEOVERRIDE)
 
-  find_package2(PUBLIC DDS)
+#   find_package2(PUBLIC DDS)
 
-Endif()
+# Endif()
+
+
+if("${FairRoot_VERSION}" VERSION_GREATER 18.6.4)
+
+    find_package2(
+        PUBLIC
+        FairMQ
+        VERSION
+        1.4.0
+        REQUIRED)
+    find_package2(PUBLIC DDS)
+
+    if(FAIRSOFT_EXTERN)
+        set(Boost_ROOT ${SIMPATH})
+        set(GSL_DIR ${SIMPATH})
+    else(FAIRSOFT_EXTERN)
+        set(Boost_ROOT ${SIMPATH}/basics/boost)
+        set(GSL_DIR ${SIMPATH}/basics/gsl)
+    endif(FAIRSOFT_EXTERN)
+
+    if(NOT DEFINED Boost_NO_SYSTEM_PATHS)
+        set(Boost_NO_SYSTEM_PATHS TRUE)
+    endif()
+    if(NOT DEFINED Boost_NO_BOOST_CMAKE AND CMAKE_VERSION VERSION_LESS 3.15)
+        set(Boost_NO_BOOST_CMAKE TRUE)
+    endif()
+    if(Boost_NO_BOOST_CMAKE)
+        # If an older version of boost is found both of the variables below are
+        # cached and in a second cmake run, a good boost version is found even
+        # if the version is to old.
+        # To overcome this problem both variables are cleared before checking
+        # for boost.
+        unset(Boost_INCLUDE_DIR CACHE)
+        unset(Boost_LIBRARY_DIRS CACHE)
+    endif()
+
+    list(
+        APPEND
+        boost_dependencies
+        thread
+        system
+        timer
+        program_options
+        random
+        filesystem
+        chrono
+        exception
+        iostreams
+        regex
+        serialization
+        log
+        atomic)
+
+    find_package2(
+        PUBLIC
+        Boost
+        VERSION
+        1.67
+        COMPONENTS
+        ${boost_dependencies}
+        ADD_REQUIREMENTS_OF
+        FairMQ)
+    #  If (FairMQ_FOUND AND Boost_FOUND)
+    #    add_subdirectory(base/MQ)
+    #    add_subdirectory(parmq)
+    #  Else ()
+    #    Message(STATUS "base/MQ and parmq will not be built, because FairMQ and/or Boost was not found.")
+    #  EndIf ()
+else()
+    set(Boost_NO_SYSTEM_PATHS TRUE)
+    set(Boost_NO_BOOST_CMAKE TRUE)
+
+    if(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
+        set(Boost_ROOT ${SIMPATH})
+        set(GSL_DIR ${SIMPATH})
+    else(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
+        set(Boost_ROOT ${SIMPATH}/basics/boost)
+        set(GSL_DIR ${SIMPATH}/basics/gsl)
+    endif(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
+
+    unset(Boost_INCLUDE_DIR CACHE)
+    unset(Boost_LIBRARY_DIRS CACHE)
+    find_package2(
+        PUBLIC
+        Boost
+        VERSION
+        1.67
+        ${FairMQ_Boost_VERSION}
+        COMPONENTS
+        thread
+        system
+        timer
+        program_options
+        random
+        filesystem
+        chrono
+        exception
+        iostreams
+        regex
+        serialization
+        log
+        log_setup
+        atomic
+        date_time
+        ${FairMQ_Boost_COMPONENTS}
+        REQUIRED)
+endif() #end of r3b fairroot version if statement
+
 
 find_package2(PUBLIC Pythia6)
 find_package2(PUBLIC Pythia8)
