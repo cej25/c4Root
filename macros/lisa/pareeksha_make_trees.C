@@ -119,6 +119,9 @@ void pareeksha_make_trees(int fileNumber)
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
     // ::: Exp config
     TExperimentConfiguration::SetExperimentStart(1715734200000000000);//Start of pareeksha with primary beam: 15 May 00:50
+    // for S100, 3 and 4. for 2025+ 12 and 13.
+    TExperimentConfiguration::SetBOSTrig(3);
+    TExperimentConfiguration::SetEOSTrig(4);
     
     // ::: FRS config
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");

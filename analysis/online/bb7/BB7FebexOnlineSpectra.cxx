@@ -35,6 +35,7 @@ BB7FebexOnlineSpectra::BB7FebexOnlineSpectra(const TString& name, Int_t verbose)
     ,   header(nullptr)
     ,   fNEvents(0)
 {
+    bb7_config = TBB7FebexConfiguration::GetInstance();
 
 }
 
@@ -71,36 +72,96 @@ InitStatus BB7FebexOnlineSpectra::Init()
     dir_bb7 = new TDirectory("BB7", "BB7", "", 0);
     histograms->Add(dir_bb7);
 
-    dir_stats = dir_bb7->mkdir("Stats"); // not sure where to put this frankly
-    dir_implants = dir_bb7->mkdir("Implants");
-    dir_decays = dir_bb7->mkdir("Decays");
+    nDets = bb7_config->DSSDs();
+    std::cout << nDets << std::endl;
 
-    // CEJ: All of these should be by detector (eventually?)
-    // just decays , testing
-    h1_side_x_mult = MakeTH1(dir_stats, "I", "h1_side_x_mult", "Side X Multiplicity", 33, 0, 33, "X Strips Fired", kRed-3, kBlack); // number of x strips fired
-    h1_side_y_mult = MakeTH1(dir_stats, "I", "h1_side_y_mult", "Side Y Multiplicity", 33, 0, 33, "Y Strips Fired", kRed-3, kBlack); // number of y strips fired
-    // maybe this one is meaningless with FEBEX? can you have multiple hits per event in same channel?
-    h2_strip_mult = MakeTH2(dir_stats, "I", "h2_strip_mult", "Strip vs Strip Multiplicity", 65, 0, 65, 10, 0, 10, "Strip (X then Y)", "Strip Multiplicity"); // strip (x then y) vs # of times fired
-    h1_side_x_hitpattern = MakeTH1(dir_stats, "I", "h1_side_x_hitpattern", "Side X Hit Pattern", 32, 0, 32, "X Strip", kRed-3, kBlack);
-    h1_side_y_hitpattern = MakeTH1(dir_stats, "I", "h1_side_y_hitpattern", "Side Y Hit Pattern", 32, 0, 32, "Y Strip", kRed-3, kBlack);
+    dir_dssd.resize(nDets);
+    dir_implants.resize(nDets);
+    dir_decays.resize(nDets);
+    dir_stats.resize(nDets);
 
-    // Concept of "Stopped" is irrelevant right now
-    h2_implant_strip_xy = MakeTH2(dir_implants, "I", "h2_implant_strip_xy", "Implant Pattern (Strips)", 32, 0, 32, 32, 0, 32);
-    h1_implant_e = MakeTH1(dir_implants, "F", "h1_implant_e", "Implant Energy", 1000, 0, 200000);
-    h2_implant_e_xy = MakeTH2(dir_implants, "F", "h2_implant_e_xy", "Implant Energy (X vs Y)", 1000, 0, 200000, 1000, 0, 200000);
-    h2_implant_strip_1d_e = MakeTH2(dir_implants, "F", "h2_implant_strip_1d_e", "Implant Energy (X then Y strips)", 64, 0, 64, 1000, 0, 200000);
+    h1_implant_side_x_mult.resize(nDets);
+    h1_implant_side_y_mult.resize(nDets);
+    h2_implant_strip_mult.resize(nDets);
+    h1_implant_side_x_hitpattern.resize(nDets);
+    h1_implant_side_y_hitpattern.resize(nDets);
+    h2_implant_strip_xy.resize(nDets);
+    h1_implant_e.resize(nDets);
+    h2_implant_e_xy.resize(nDets);
+    h2_implant_strip_1d_e.resize(nDets);
 
-    h2_decay_strip_xy = MakeTH2(dir_decays, "I", "h2_decay_strip_xy", "Decay Hit Pattern", 32, 0, 32, 32, 0, 32);
-    h1_decay_e = MakeTH1(dir_decays, "F", "h1_decay_e", "Decay Energy", 1000, 0, 200000);
-    h2_decay_e_xy = MakeTH2(dir_decays, "F", "h2_decay_e_xy", "Decay Energy (X vs Y)", 1000, 0, 200000, 1000, 0, 200000);
-    h2_decay_strip_1d_e = MakeTH2(dir_decays, "F", "h2_decay_strip_1d_e", "Decay Energy (X then Y strips)", 64, 0, 64, 1000, 0, 200000);
+    h1_decay_side_x_mult.resize(nDets);
+    h1_decay_side_y_mult.resize(nDets);
+    h2_decay_strip_mult.resize(nDets);
+    h1_decay_side_x_hitpattern.resize(nDets);
+    h1_decay_side_y_hitpattern.resize(nDets);
+    h2_decay_strip_xy.resize(nDets);
+    h1_decay_e.resize(nDets);
+    h2_decay_e_xy.resize(nDets);
+    h2_decay_strip_1d_e.resize(nDets);
 
-    for (int i = 0; i < 32; i++)
+    // Counters
+    implant_strips_fired = new std::set<int>*[nDets];
+    implant_side_x_mult = new int*[nDets];
+    implant_side_y_mult = new int*[nDets];
+    
+    decay_strips_fired = new std::set<int>*[nDets];
+    decay_side_x_mult = new int*[nDets];
+    decay_side_y_mult = new int*[nDets];
+
+
+    for (int i = 0; i < nDets; i++)
     {
-        side_x_mult[i] = 0;
-        side_y_mult[i] = 0;
+        dir_dssd[i] = dir_bb7->mkdir(Form("DSSD%i",i));
+        dir_implants[i] = dir_dssd[i]->mkdir("Implants");
+        dir_decays[i] = dir_dssd[i]->mkdir("Decays");
+        dir_stats[i] = dir_dssd[i]->mkdir("Stats");
+
+        // CEJ: All of these should be by detector (eventually?)
+        // just decays , testing
+        h1_decay_side_x_mult[i] = MakeTH1(dir_stats[i], "I", Form("h1_decay_side_x_mult_dssd%i", i), "Side X Multiplicity", 33, 0, 33, "X Strips Fired", kRed-3, kBlack); // number of x strips fired
+        h1_decay_side_y_mult[i] = MakeTH1(dir_stats[i], "I", Form("h1_decay_side_y_mult_dssd%i", i), "Side Y Multiplicity", 33, 0, 33, "Y Strips Fired", kRed-3, kBlack); // number of y strips fired
+        // maybe this one is meaningless with FEBEX? can you have multiple hits per event in same channel?
+        h2_decay_strip_mult[i] = MakeTH2(dir_stats[i], "I", Form("h2_decay_strip_mult_dssd%i", i), "Strip vs Strip Multiplicity", 65, 0, 65, 10, 0, 10, "Strip (X then Y)", "Strip Multiplicity"); // strip (x then y) vs # of times fired
+        h1_decay_side_x_hitpattern[i] = MakeTH1(dir_stats[i], "I", Form("h1_decay_side_x_hitpattern_dssd%i", i), "Side X Hit Pattern", 32, 0, 32, "X Strip", kRed-3, kBlack);
+        h1_decay_side_y_hitpattern[i] = MakeTH1(dir_stats[i], "I", Form("h1_decay_side_y_hitpattern_dssd%i", i), "Side Y Hit Pattern", 32, 0, 32, "Y Strip", kRed-3, kBlack);
+
+        h1_implant_side_x_mult[i] = MakeTH1(dir_stats[i], "I", Form("h1_implant_side_x_mult_dssd%i", i), "Side X Multiplicity", 33, 0, 33, "X Strips Fired", kRed-3, kBlack); // number of x strips fired
+        h1_implant_side_y_mult[i] = MakeTH1(dir_stats[i], "I", Form("h1_implant_side_y_mult_dssd%i", i), "Side Y Multiplicity", 33, 0, 33, "Y Strips Fired", kRed-3, kBlack); // number of y strips fired
+        // maybe this one is meaningless with FEBEX? can you have multiple hits per event in same channel?
+        h2_implant_strip_mult[i] = MakeTH2(dir_stats[i], "I", Form("h2_implant_strip_mult_dssd%i", i), "Strip vs Strip Multiplicity", 65, 0, 65, 10, 0, 10, "Strip (X then Y)", "Strip Multiplicity"); // strip (x then y) vs # of times fired
+        h1_implant_side_x_hitpattern[i] = MakeTH1(dir_stats[i], "I", Form("h1_implant_side_x_hitpattern_dssd%i", i), "Side X Hit Pattern", 32, 0, 32, "X Strip", kRed-3, kBlack);
+        h1_implant_side_y_hitpattern[i] = MakeTH1(dir_stats[i], "I", Form("h1_implant_side_y_hitpattern_dssd%i", i), "Side Y Hit Pattern", 32, 0, 32, "Y Strip", kRed-3, kBlack);
+
+        h2_decay_strip_xy[i] = MakeTH2(dir_decays[i], "I", Form("h2_decay_strip_xy_dssd%i", i), "Decay Hit Pattern", 32, 0, 32, 32, 0, 32);
+        h1_decay_e[i] = MakeTH1(dir_decays[i], "F", Form("h1_decay_e_dssd%i", i), "Decay Energy", 1000, 0, 200000);
+        h2_decay_e_xy[i] = MakeTH2(dir_decays[i], "F", Form("h2_decay_e_xy_dssd%i", i), "Decay Energy (X vs Y)", 1000, 0, 200000, 1000, 0, 200000);
+        h2_decay_strip_1d_e[i] = MakeTH2(dir_decays[i], "F", Form("h2_decay_strip_1d_e_dssd%i",i), "Decay Energy (X then Y strips)", 64, 0, 64, 1000, 0, 200000);
+
+        h2_implant_strip_xy[i] = MakeTH2(dir_implants[i], "I", Form("h2_implant_strip_xy_dssd%i", i), "Implant Pattern (Strips)", 32, 0, 32, 32, 0, 32);
+        h1_implant_e[i] = MakeTH1(dir_implants[i], "F", Form("h1_implant_e_dssd%i", i), "Implant Energy", 1000, 0, 200000);
+        h2_implant_e_xy[i] = MakeTH2(dir_implants[i], "F", Form("h2_implant_e_xy_dssd%i", i), "Implant Energy (X vs Y)", 1000, 0, 200000, 1000, 0, 200000);
+        h2_implant_strip_1d_e[i] = MakeTH2(dir_implants[i], "F", Form("h2_implant_strip_1d_e_dssd%i", i), "Implant Energy (X then Y strips)", 64, 0, 64, 1000, 0, 200000);
+
+        implant_strips_fired[i] = new std::set<int>[2];
+        implant_side_x_mult[i] = new int[32];
+        implant_side_y_mult[i] = new int[32];
+        
+        decay_strips_fired[i] = new std::set<int>[2];
+        decay_side_x_mult[i] = new int[32];
+        decay_side_y_mult[i] = new int[32];
+
+        for (int j = 0; j < 32; j++)
+        {
+            implant_side_x_mult[i][j] = 0;
+            implant_side_y_mult[i][j] = 0;
+            decay_side_x_mult[i][j] = 0;
+            decay_side_y_mult[i][j] = 0;
+        }
+        decay_strips_fired[i][0].clear(); decay_strips_fired[i][1].clear();
+        implant_strips_fired[i][0].clear(); implant_strips_fired[i][1].clear();
+
     }
-    strips_fired[0].clear(); strips_fired[1].clear();
 
     return kSUCCESS;
 
@@ -126,31 +187,65 @@ void BB7FebexOnlineSpectra::Exec(Option_t* option)
 {
     auto start = std::chrono::high_resolution_clock::now();
 
+    if (implantHitArray->size() == 0 && decayHitArray->size() == 0) return;
+
     for (auto const & i : *implantHitArray)
     {
-        h2_implant_strip_xy->Fill(i.StripX, i.StripY);
+        implant_strips_fired[i.DSSD][0].insert(i.StripX);
+        implant_strips_fired[i.DSSD][1].insert(i.StripY);
+        implant_side_x_mult[i.DSSD][int(i.StripX)]++;
+        implant_side_y_mult[i.DSSD][int(i.StripY)]++;
+
+        h2_implant_strip_xy[i.DSSD]->Fill(i.StripX, i.StripY);
+        h1_implant_side_x_hitpattern[i.DSSD]->Fill(i.StripX);
+        h1_implant_side_y_hitpattern[i.DSSD]->Fill(i.StripY);
+
+        h1_implant_e[i.DSSD]->Fill(i.Energy);
+
+        h2_implant_e_xy[i.DSSD]->Fill(i.EnergyX, i.EnergyY);
+        h2_implant_strip_1d_e[i.DSSD]->Fill(i.StripX, i.EnergyX);
+        h2_implant_strip_1d_e[i.DSSD]->Fill(i.StripY + 32, i.EnergyY);
+
+    }
+
+    for (int i = 0; i < nDets; i++)
+    {
+        h1_implant_side_x_mult[i]->Fill(implant_strips_fired[i][0].size());
+        h1_implant_side_y_mult[i]->Fill(implant_strips_fired[i][1].size());
+        for (int j = 0; j < 32; j++)
+        {
+            h2_implant_strip_mult[i]->Fill(j, implant_side_x_mult[i][j]);
+            h2_implant_strip_mult[i]->Fill(j+32, implant_side_y_mult[i][j]);
+        }
     }
 
     for (auto const & d : *decayHitArray)
     {
-        strips_fired[0].insert(d.StripX);
-        strips_fired[1].insert(d.StripY);
-        side_x_mult[int(d.StripX)]++;
-        side_y_mult[int(d.StripY)]++;
+        decay_strips_fired[d.DSSD][0].insert(d.StripX);
+        decay_strips_fired[d.DSSD][1].insert(d.StripY);
+        decay_side_x_mult[d.DSSD][int(d.StripX)]++;
+        decay_side_y_mult[d.DSSD][int(d.StripY)]++;
 
-        h2_decay_strip_xy->Fill(d.StripX, d.StripY);
-        h1_side_x_hitpattern->Fill(d.StripX);
-        h1_side_y_hitpattern->Fill(d.StripY);
+        h2_decay_strip_xy[d.DSSD]->Fill(d.StripX, d.StripY);
+        h1_decay_side_x_hitpattern[d.DSSD]->Fill(d.StripX);
+        h1_decay_side_y_hitpattern[d.DSSD]->Fill(d.StripY);
+
+        h1_decay_e[d.DSSD]->Fill(d.Energy);
+        h2_decay_e_xy[d.DSSD]->Fill(d.EnergyX, d.EnergyY);
+        h2_decay_strip_1d_e[d.DSSD]->Fill(d.StripX, d.EnergyX);
+        h2_decay_strip_1d_e[d.DSSD]->Fill(d.StripY + 32, d.EnergyY);
     }
 
-    h1_side_x_mult->Fill(strips_fired[0].size());
-    h1_side_y_mult->Fill(strips_fired[1].size());
-    for (int i = 0; i < 32; i++)
+    for (int i = 0; i < nDets; i++)
     {
-        h2_strip_mult->Fill(i, side_x_mult[i]);
-        h2_strip_mult->Fill(i+32, side_y_mult[i]);
+        h1_decay_side_x_mult[i]->Fill(decay_strips_fired[i][0].size());
+        h1_decay_side_y_mult[i]->Fill(decay_strips_fired[i][1].size());
+        for (int j = 0; j < 32; j++)
+        {
+            h2_decay_strip_mult[i]->Fill(j, decay_side_x_mult[i][j]);
+            h2_decay_strip_mult[i]->Fill(j+32, decay_side_y_mult[i][j]);
+        }
     }
-    // reset
 
     fNEvents++;
     auto end = std::chrono::high_resolution_clock::now();
@@ -160,12 +255,20 @@ void BB7FebexOnlineSpectra::Exec(Option_t* option)
 
 void BB7FebexOnlineSpectra::FinishEvent()
 {
-    for (int i = 0; i < 32; i++)
+    for (int i = 0; i < nDets; i++)
     {
-        side_x_mult[i] = 0;
-        side_y_mult[i] = 0;
+        for (int j = 0; j < 32; j++)
+        {
+            implant_side_x_mult[i][j] = 0;
+            implant_side_y_mult[i][j] = 0;
+            decay_side_x_mult[i][j] = 0;
+            decay_side_y_mult[i][j] = 0;
+        }
+        decay_strips_fired[i][0].clear(); decay_strips_fired[i][1].clear();
+        implant_strips_fired[i][0].clear(); implant_strips_fired[i][1].clear();
     }
-    strips_fired[0].clear(); strips_fired[1].clear();
+    
+   
 }
 
 void BB7FebexOnlineSpectra::FinishTask()

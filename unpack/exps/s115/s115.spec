@@ -3,42 +3,14 @@
 #include "../../common/whiterabbit.spec"
 #include "../../common/gsi_febex4.spec"
 #include "../../common/gsi_tamex4.spec"
+#include "../../common/vme_mesytec_mdpp16.spec"
 #include "../frs/frs_s115.spec"
 #include "../../common/general.spec"
 
-#define BM_MAX_HITS 100000
-
-// making a change
 
 external EXT_AIDA();
 
 
-SUBEVENT(bgo_tamex_subevent)
-{
-    select optional
-    {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1900);
-    };
-
-    optional UINT32 be { 0_31: b = MATCH(0xbad00bad);}
-
-    select optional
-    {
-        trigger_window = TAMEX4_HEADER();
-    };
-
-    select several 
-    {
-        padding = TAMEX4_PADDING();
-    };
-
-    select several
-    {
-        tamex[0] = TAMEX4_SFP(sfp=1,card=0);
-        tamex[1] = TAMEX4_SFP(sfp=1,card=1);
-        tamex[2] = TAMEX4_SFP(sfp=1,card=2);
-    }  
-}
 
 SUBEVENT(aida_subev)
 {
@@ -65,6 +37,8 @@ SUBEVENT(febex_subev)
         data[1] = FEBEX_EVENT(card = 1);
         data[2] = FEBEX_EVENT(card = 2);
         data[3] = FEBEX_EVENT(card = 3);
+        data[4] = FEBEX_EVENT(card = 4);
+        data[5] = FEBEX_EVENT(card = 5); // max 6 boards ever
     };
 }
 
@@ -117,6 +91,11 @@ SUBEVENT(frs_main_subev)
         spill_off = SPILL_OFF();
     };
 
+    UINT32 sevens NOENCODE
+    {
+        0_31: 0x77777777;
+    }
+
     select optional
     {
         data = MAIN_CRATE_DATA();
@@ -164,6 +143,11 @@ SUBEVENT(frs_user_subev)
     {
         spill_off = SPILL_OFF();
     };
+    
+    UINT32 sevens NOENCODE
+    {
+        0_31: 0x77777777;
+    };
 
     // same as above
     select optional
@@ -190,71 +174,37 @@ SUBEVENT(frs_tpat_subev)
     }
 }
 
-SUBEVENT(bm_subev)
+SUBEVENT(frs_travmus_subev)
 {
-
-    MEMBER(DATA32 dataS2[BM_MAX_HITS] NO_INDEX_LIST);// ZERO_SUPPRESS);
-    MEMBER(DATA32 dataS4[BM_MAX_HITS] NO_INDEX_LIST);// ZERO_SUPPRESS);
+    select optional 
+    {
+        wr = TIMESTAMP_WHITERABBIT(id=0x200);
+    };
 
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1700);
+        stuff = VULOM_TPAT();
     }
 
-    // CEJ: wrap in select several later to catch bad events
-    UINT32 headS2 NOENCODE
+    select optional
     {
-        0_12: l_hit_ct;
-        13_15: reserved;
-        16_31: l_id = MATCH(0xAAAA);
+        data = TRAVMUS_CRATE_DATA();
     };
-
-    list (0 <= l_i < headS2.l_hit_ct)
-    {
-        UINT32 hit NOENCODE
-        {
-            0_31: data;
-            ENCODE(dataS2 APPEND_LIST, (value = data));
-        };
-
-    }
-
-    UINT32 headS4 NOENCODE
-    {
-        0_12: l_hit_ct;
-        13_15: reserved;
-        16_31: l_id = MATCH(0xBBBB);
-    }
-
-    list (0 <= l_i < headS4.l_hit_ct)
-    {
-        UINT32 hit NOENCODE
-        {
-            0_31: data;
-            ENCODE(dataS4 APPEND_LIST, (value = data));
-        }
-    }
-
-    UINT32 trailer NOENCODE
-    {
-        0_15: reserved;
-        16_31: l_id = MATCH(0xCCCC);
-    }
 }
+ 
 
 EVENT
 {
     revisit aida = aida_subev(type = 10, subtype = 1, procid = 90, control = 37);
     germanium = febex_subev(type = 10, subtype = 1, procid = 60, control = 20);
     bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20);
-    bgo = bgo_tamex_subevent(procid = 100);
 
     frsmain = frs_main_subev(procid = 10);
     frstpc = frs_tpc_subev(procid = 20);
     frsuser = frs_user_subev(procid = 30);
     frstpat = frs_tpat_subev(procid = 15);
-    
-    beammonitor = bm_subev(procid = 1);
+
+    frstravmus = frs_travmus_subev(procid = 35, control = 30);
 
     ignore_unknown_subevent;
 };

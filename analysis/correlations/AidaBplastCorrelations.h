@@ -10,7 +10,6 @@
 
 class TClonesArray;
 class EventHeader;
-class EventData;
 class TCanvas;
 class TH1F;
 class TH2F;
@@ -45,7 +44,6 @@ class AidaBplastCorrelations : public FairTask
         //Double_t
 
         EventHeader* fEventHeader;
-        // EventData* fEventData;
         Int_t fNEvents;
 
         // TDirectories

@@ -1,2 +1,0 @@
-/lustre/gamma/dryrunmarch24/ts/Au_beam_0012_0001.lmd
-/lustre/gamma/dryrunmarch24/ts/Au_beam_0012_0002.lmd

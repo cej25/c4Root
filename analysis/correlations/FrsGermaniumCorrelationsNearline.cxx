@@ -10,7 +10,7 @@
  * granted to it by virtue of its status as an Intergovernmental Organization *
  * or submit itself to any jurisdiction.                                      *
  ******************************************************************************
- *                             J.E.L. Larsson                                 *
+ *                        J.E.L. Larsson, C.E. Jones                          *
  *                               17.12.24                                     *
  ******************************************************************************/
 
@@ -87,28 +87,27 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-    run = FairRunAna::Instance();
+    FairRunAna* run = FairRunAna::Instance();
 
 
     header = mgr->InitObjectAs<decltype(header)>("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found!");
 
 
-    TString data_item = TString("Germanium") + input_anl_or_cal + TString("Data");
-    fHitGe = (TClonesArray*)mgr->GetObject(data_item);
-    c4LOG_IF(fatal, !fHitGe, "Branch " + data_item + "  not found!");
+    // TString data_item = TString("Germanium") + input_anl_or_cal + TString("Data");
+    fHitGe = (TClonesArray*)mgr->GetObject("GermaniumCalData"); // data item etc..
+    c4LOG_IF(fatal, !fHitGe, "Branch GermaniumCalData not found!"); // fix later...
     hitArrayFrs = mgr->InitObjectAs<decltype(hitArrayFrs)>("FrsHitData");
     c4LOG_IF(fatal, !hitArrayFrs, "Branch FrsHitData not found!");
+    multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
+    c4LOG_IF(fatal, !multihitArray, "Branch FrsMultiHitData not found!");
 
-    multihitArrayFrs = mgr->InitObjectAs<decltype(multihitArrayFrs)>("FrsMultiHitData");
-    c4LOG_IF(fatal, !multihitArrayFrs, "Branch FrsHitData not found!");
+    // if (fWriteOutput){
+    //     FairRootManager::Instance()->Register(data_item, "Germanium Cal Data", fHitGe, fWriteOutput);
+    //     FairRootManager::Instance()->RegisterAny("FrsHitData", hitArrayFrs, fWriteOutput);
+    //     FairRootManager::Instance()->RegisterAny("FrsMultiHitData", multihitArrayFrs, fWriteOutput);
 
-    if (fWriteOutput){
-        FairRootManager::Instance()->Register(data_item, "Germanium Cal Data", fHitGe, fWriteOutput);
-        FairRootManager::Instance()->RegisterAny("FrsHitData", hitArrayFrs, fWriteOutput);
-        FairRootManager::Instance()->RegisterAny("FrsMultiHitData", multihitArrayFrs, fWriteOutput);
-
-    }
+    // }
     
 
 
@@ -307,123 +306,77 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
 
 void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
 {
+    // 2025:
+    // For 2025, we will use MHTDC, since TAC has fallen completely out of favour
+    // We will update for retroactive to use a switch to decide either TAC, MHTDC or both
+    // But this will come later...
+    if (hitArrayFrs->size() == 0) return; // Avoid processing for nothing
+    auto const & frshit = hitArrayFrs->at(0);
     
-    if (fControlOutput){
-        if (!run){
-            run = FairRunAna::Instance();
-        }
+    positive_PID = false;
 
-        run->MarkFill(false);
-    }
+    wr_t = frshit.Get_wr_t(); // Until next update, wr_t not set in MHTDC vector
+    if(wr_t_first_frs_hit == 0) wr_t_first_frs_hit = wr_t;
+    
+    ID_x2 = frshit.Get_ID_x2(); // positions are not MH (well, only since we "always use TPC", but actually we could use SC)
+    ID_y2 = frshit.Get_ID_y2();
+    ID_x4 = frshit.Get_ID_x4();
 
-    double ID_x2 = -999;
-    double ID_y2 = -999;
-    double ID_x4 = -999;
-    double ID_AoQs2s4 = -999;
-    double ID_z41 = -999;
-    double ID_z42 = -999;
-    double ID_dEdegZ41 = -999;
-    double ID_sci42E = -999;
-
-    if (!use_multi)
+    if (use_tac)
     {
-        if (hitArrayFrs->size() == 0 || hitArrayFrs->size() > 1) return;
-        positive_PID = false;
-        auto const & frshit = hitArrayFrs->at(0);
-
-        wr_t = frshit.Get_wr_t();
-        if(wr_t_first_frs_hit == 0) wr_t_first_frs_hit = wr_t;
-        ID_x2 = frshit.Get_ID_x2();
-        ID_y2 = frshit.Get_ID_y2();
-        ID_x4 = frshit.Get_ID_x4();
-        ID_AoQs2s4 = frshit.Get_ID_AoQ_corr_s2s4();
+        ID_AoQ_s2s4 = frshit.Get_ID_AoQ_s2s4();
         ID_z41 = frshit.Get_ID_z41();
         ID_z42 = frshit.Get_ID_z42();
         ID_dEdegZ41 = frshit.Get_ID_dEdeg_z41();
-        ID_sci42E = frshit.Get_sci_e_42();
-
-        // this must pass all gates given to FrsGate:
-        positive_PID = frsgate->PassedGate(ID_z41, ID_z42, ID_x2, ID_x4, ID_AoQs2s4, ID_dEdegZ41, ID_sci42E);
-
-
-        if (positive_PID)
-        {
-            wr_t_last_frs_hit = wr_t;
-            frs_rate_implanted++;
-            frs_total_implanted++;
-
-            h2_frs_Z_vs_AoQ_gated->Fill(ID_AoQs2s4,ID_z41);
-            h2_frs_Z_vs_Z2_gated->Fill(ID_z41,ID_z42);
-            h2_frs_x2_vs_AoQ_gated->Fill(ID_AoQs2s4,ID_x2);
-            h2_frs_x4_vs_AoQ_gated->Fill(ID_AoQs2s4,ID_x4);
-            h2_frs_Z_vs_dEdeg_gated->Fill(ID_dEdegZ41,ID_z41);
-            h2_frs_Z_vs_sci42E_gated->Fill(ID_sci42E,ID_z41);
-
-            if (wr_t_last_frs_hit - frs_rate_time > 60e9)
-            {
-                g_frs_rate->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_rate_implanted/60.0);
-                g_frs_total->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_total_implanted);
-                frs_rate_time = wr_t_last_frs_hit;
-                frs_rate_implanted = 0;
-            }
-        }
-        else ; //wr_t_last_frs_hit = 0;
 
     }
-    else
+    else if (!use_tac || use_mhtdc) // change later
+    {   
+        if (multihitArray->size() == 0) return; // both are empty, nothing to process
+        auto const & multihitItem = multihitArray->at(0);
+        std::vector<Float_t> AoQ_s2s4_mhtdc = multihitItem.Get_ID_AoQ_s2s4_mhtdc();
+        std::vector<Float_t> z41_mhtdc = multihitItem.Get_ID_z41_mhtdc();
+        std::vector<Float_t> z42_mhtdc = multihitItem.Get_ID_z42_mhtdc();
+        std::vector<Float_t> dEdeg_z41_mhtdc = multihitItem.Get_ID_dEdeg_z41_mhtdc();
+
+        // For now we just take first hit, not really sure how to check PID with multihits honestly
+        if (AoQ_s2s4_mhtdc.size() > 0)
+        {
+            ID_AoQ_s2s4 = AoQ_s2s4_mhtdc.at(0);
+            ID_z41 = z41_mhtdc.at(0);
+            ID_z42 = z42_mhtdc.at(0);
+            ID_dEdegZ41 = dEdeg_z41_mhtdc.at(0);
+        }
+    }
+
+    // Well we can do something more strict but for now ZvsAoQ is fine
+    positive_PID = frsgate->Passed_Z41vsAoQs2s4(ID_z41,ID_AoQ_s2s4);
+    // positive_PID = frsgate->PassedGate(ID_z, ID_z2, ID_x2, ID_x4, ID_AoQ, ID_dEdeg);
+
+    if (positive_PID)
     {
+        wr_t_last_frs_hit = wr_t;
+        frs_rate_implanted++;
+        frs_total_implanted++;
 
-        if (multihitArrayFrs->size() == 0) return;
+        h2_frs_Z_vs_AoQ_gated->Fill(ID_AoQ_s2s4,ID_z41);
+        h2_frs_Z_vs_Z2_gated->Fill(ID_z41,ID_z42);
+        h2_frs_x2_vs_AoQ_gated->Fill(ID_AoQ_s2s4,ID_x2);
+        h2_frs_x4_vs_AoQ_gated->Fill(ID_AoQ_s2s4,ID_x4);
 
-
-        positive_PID = false;
-        auto const & multiHitItem = multihitArrayFrs->at(0);
-
-        std::vector<Float_t> x2_mhtdc = multiHitItem.Get_ID_s2x_s2s4_mhtdc();
-        std::vector<Float_t> x4_mhtdc = multiHitItem.Get_ID_s4x_mhtdc();
-        std::vector<Float_t> AoQ_corr_s2s4_mhtdc = multiHitItem.Get_ID_AoQ_corr_s2s4_mhtdc();
-        std::vector<Float_t> z41_mhtdc = multiHitItem.Get_ID_z41_mhtdc();
-        std::vector<Float_t> z42_mhtdc = multiHitItem.Get_ID_z42_mhtdc();
-        std::vector<Float_t> dEdeg_z41_mhtdc = multiHitItem.Get_ID_dEdeg_z41_mhtdc();
-        // take only first hit
-        ID_x2 = x2_mhtdc.at(0);
-        ID_x4 = x4_mhtdc.at(0);
-        ID_AoQs2s4 = AoQ_corr_s2s4_mhtdc.at(0);
-        ID_z41 = z41_mhtdc.at(0);
-        ID_z42 = z42_mhtdc.at(0);
-        ID_dEdegZ41 = dEdeg_z41_mhtdc.at(0);
-
-        // this must pass all gates given to FrsGate:
-        positive_PID = frsgate->PassedGate(ID_z41, ID_z42, ID_x2, ID_x4, ID_AoQs2s4, ID_dEdegZ41, ID_sci42E); // no sci42 e yet
-
-
-        if (positive_PID)
+        if (wr_t_last_frs_hit - frs_rate_time > 60e9)
         {
-            wr_t_last_frs_hit = wr_t;
-            frs_rate_implanted ++;
-            frs_total_implanted ++;
-
-            h2_frs_Z_vs_AoQ_gated->Fill(ID_AoQs2s4,ID_z41);
-            h2_frs_Z_vs_Z2_gated->Fill(ID_z41,ID_z42);
-            h2_frs_x2_vs_AoQ_gated->Fill(ID_AoQs2s4,ID_x2);
-            h2_frs_x4_vs_AoQ_gated->Fill(ID_AoQs2s4,ID_x4);
-            h2_frs_Z_vs_dEdeg_gated->Fill(ID_dEdegZ41,ID_z41);
-            h2_frs_Z_vs_sci42E_gated->Fill(ID_sci42E,ID_z41);
-
-            if (wr_t_last_frs_hit - frs_rate_time > 60e9)
-            {
-                g_frs_rate->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_rate_implanted/60.0);
-                g_frs_total->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_total_implanted);
-                frs_rate_time = wr_t_last_frs_hit;
-                frs_rate_implanted = 0;
-            }
+            g_frs_rate->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_rate_implanted  /60.0);
+            g_frs_total->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_total_implanted);
+            frs_rate_time = wr_t_last_frs_hit;
+            frs_rate_implanted = 0;
         }
-        else wr_t_last_frs_hit = 0;
-        
-
     }
-    
-    if (fControlOutput && positive_PID) run->MarkFill(true);
+    else wr_t_last_frs_hit = 0;
+
+
+    // CEJ its a nice method, i will re-add it when i can formalise    
+    // if (fControlOutput && positive_PID) run->MarkFill(true);
 
     if (fHitGe && fHitGe->GetEntriesFast() > 0)
     {
@@ -492,10 +445,10 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
                     
                     //now energy1 fulfills the energy requirement and is outside prompt flash
                     h1_germanium_tsci41_energy_gated[idx_gamma_gate]->Fill(timediff1);
-                    h2_frs_Z_vs_AoQ_reverse_gated[idx_gamma_gate]->Fill(ID_AoQs2s4,ID_z41);
+                    h2_frs_Z_vs_AoQ_reverse_gated[idx_gamma_gate]->Fill(ID_AoQ_s2s4,ID_z41);
                     h2_frs_Z_vs_Z2_reverse_gated[idx_gamma_gate]->Fill(ID_z41,ID_z42);
-                    h2_frs_x2_vs_AoQ_reverse_gated[idx_gamma_gate]->Fill(ID_AoQs2s4,ID_x2);
-                    h2_frs_x4_vs_AoQ_reverse_gated[idx_gamma_gate]->Fill(ID_AoQs2s4,ID_x4);
+                    h2_frs_x2_vs_AoQ_reverse_gated[idx_gamma_gate]->Fill(ID_AoQ_s2s4,ID_x2);
+                    h2_frs_x4_vs_AoQ_reverse_gated[idx_gamma_gate]->Fill(ID_AoQ_s2s4,ID_x4);
                 }
         
                 
@@ -565,10 +518,10 @@ void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
                 if (!(TMath::Abs(energy_long - gamma_energies_of_interest.at(idx_gamma_gate))<gate_width_gamma_energies_of_interest.at(idx_gamma_gate))) continue;
                     //now energy1 fulfills the energy requirement and is outside prompt flash
                     h1_germanium_twr_sci41_energy_gated[idx_gamma_gate]->Fill(ge_wr_long-wr_t_last_frs_hit);
-                    h2_frs_Z_vs_AoQ_reverse_wr_gated[idx_gamma_gate]->Fill(ID_AoQs2s4,ID_z41);
+                    h2_frs_Z_vs_AoQ_reverse_wr_gated[idx_gamma_gate]->Fill(ID_AoQ_s2s4,ID_z41);
                     h2_frs_Z_vs_Z2_reverse_wr_gated[idx_gamma_gate]->Fill(ID_z41,ID_z42);
-                    h2_frs_x2_vs_AoQ_reverse_wr_gated[idx_gamma_gate]->Fill(ID_AoQs2s4,ID_x2);
-                    h2_frs_x4_vs_AoQ_reverse_wr_gated[idx_gamma_gate]->Fill(ID_AoQs2s4,ID_x4);
+                    h2_frs_x2_vs_AoQ_reverse_wr_gated[idx_gamma_gate]->Fill(ID_AoQ_s2s4,ID_x2);
+                    h2_frs_x4_vs_AoQ_reverse_wr_gated[idx_gamma_gate]->Fill(ID_AoQ_s2s4,ID_x4);
             }
 
             
@@ -636,6 +589,15 @@ void FrsGermaniumCorrelationsNearline::FinishEvent()
     {
         fHitGe->Clear();
     }
+
+    ID_x2 = -999;
+    ID_y2 = -999;
+    ID_x4 = -999;
+    ID_AoQ_s2s4 = 0.;
+    ID_z41 = 0.;
+    ID_z42 = 0.;
+    ID_dEdegZ41 = 0.;
+    ID_sci42E = 0.;
 }
 
 void FrsGermaniumCorrelationsNearline::FinishTask()

@@ -10,6 +10,7 @@ class BB7FebexItem : public TObject
 
         void SetAll(int64_t wr,
                     uint16_t id,
+                    int cr_id,
                     uint32_t b_id,
                     uint64_t ev_time,
                     uint32_t ch_id,
@@ -23,6 +24,7 @@ class BB7FebexItem : public TObject
 
         int64_t Get_wr_t() const;
         uint16_t Get_wr_id() const;
+        int Get_crate_id() const;
         uint32_t Get_board_id() const;
         uint64_t Get_board_event_time() const;
         uint32_t Get_channel_id() const;
@@ -39,6 +41,7 @@ class BB7FebexItem : public TObject
     
         int64_t wr_t;
         uint16_t wr_id;
+        int crate_id;
         uint32_t board_id;
         uint64_t board_event_time;
         uint32_t channel_id;
@@ -51,6 +54,35 @@ class BB7FebexItem : public TObject
 
 };
 
+class BB7EmptyItem : public TObject
+{
+    public:
+        BB7EmptyItem();
+
+        void SetAll(int64_t wr,
+                    uint16_t id,
+                    int cr_id,
+                    uint32_t b_id,
+                    uint64_t ev_time);
+
+        int64_t Get_wr_t() const { return wr_t; }
+        uint16_t Get_wr_id() const { return wr_id; }
+        int Get_crate_id() const{ return crate_id; } 
+        uint32_t Get_board_id() const { return board_id; }
+        uint64_t Get_board_event_time() const { return board_event_time; }
+
+        // Getters
+        ClassDefNV(BB7EmptyItem, 1);
+    private:
+    
+        int64_t wr_t;
+        uint16_t wr_id;
+        int crate_id;
+        uint32_t board_id;
+        uint64_t board_event_time;
+
+};
+
 inline int64_t BB7FebexItem::Get_wr_t() const
 {
     return wr_t;
@@ -59,6 +91,11 @@ inline int64_t BB7FebexItem::Get_wr_t() const
 inline uint16_t BB7FebexItem::Get_wr_id() const
 {
     return wr_id;
+}
+
+inline int BB7FebexItem::Get_crate_id() const
+{
+    return crate_id;
 }
 
 inline uint32_t BB7FebexItem::Get_board_id() const
