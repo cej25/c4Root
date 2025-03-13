@@ -2,6 +2,9 @@
 
 #define LISA_ON 1
 
+#define LISA_DAQ 1
+#define LISA_2x2 0
+
 
 typedef struct EXT_STR_h101_t
 {   
@@ -39,10 +42,14 @@ void lisa_histos()
 
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
-    TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/daq_test_c4tree/test_F_B_13nov.root";
+    //TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/daq_test_c4tree/test_F_B_13nov.root";
+    //TString filename = "/u/gandolfo/data/test_c4/run_0072_0001.root";
+    TString filename = "/u/gandolfo/data/test_c4/cards_A_B_C_D_E_F_G_0306.root";
+    
     
     //___O U T P U T
-    TString outputfile = "/u/gandolfo/data/lustre/gamma/LISA/data/daq_test_c4histo/test_F_B_13nov_histo.root";
+    //TString outputfile = "/u/gandolfo/data/test_c4/run_0072_0001_histos.root";
+    TString outputfile = "/u/gandolfo/data/test_c4/cards_A_B_C_D_E_F_G_0306_histos.root";
 
 
     FairRunAna* run = new FairRunAna();
@@ -64,6 +71,7 @@ void lisa_histos()
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
     TLisaConfiguration::SetMappingFile(config_path + "/Lisa_All_Boards.txt");
     TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
+    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters.txt");
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::   
     // =========== **** SPECTRA ***** ========================================================= //
@@ -89,15 +97,24 @@ void lisa_histos()
     //:::: FRS Z and AoQ
     TFrsConfiguration::Set_Z_range(20,60);
     TFrsConfiguration::Set_AoQ_range(1,3);
+
+    //:::: Drifts
+    TLisaConfiguration::SetEventNO(39000,65000);
     
 
     if (LISA_ON)
     {
-        // Add analysis task here at some point
-        LisaNearlineSpectraDaq* nearlinelisadaq = new LisaNearlineSpectraDaq();
+        if (LISA_DAQ)
+        {
+            LisaNearlineSpectraDaq* nearlinelisadaq = new LisaNearlineSpectraDaq();
+            run->AddTask(nearlinelisadaq);
+        }
 
-        run->AddTask(nearlinelisadaq);
+        if (LISA_2x2)
+        {
 
+        }
+        
     }
 
 

@@ -8,7 +8,6 @@
 typedef Int_t Int_t;
 typedef Float_t Float_t;
 
-// to be renamed as FrsHitItem
 class FrsHitItem : public TObject
 {
     public:

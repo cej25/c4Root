@@ -44,14 +44,14 @@ class bPlastOnlineSpectra : public FairTask
 
     
     private:
-        TClonesArray* fHitbPlastTwinpeaks;
-
-        TbPlastConfiguration const* bplast_conf;
         std::map<std::pair<int, int>, std::pair<int, std::pair<char, char>>> bplast_map;
 
         EventHeader* header;
         Int_t fNEvents;
         int total_time_microsecs = 0;
+
+        TClonesArray* fHitbPlastTwinpeaks;
+        TbPlastConfiguration const* bplast_conf;
 
         int nDetectors;
         int nTamexBoards;

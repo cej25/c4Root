@@ -89,7 +89,6 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
 
     FairRunAna* run = FairRunAna::Instance();
 
-
     header = mgr->InitObjectAs<decltype(header)>("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found!");
 

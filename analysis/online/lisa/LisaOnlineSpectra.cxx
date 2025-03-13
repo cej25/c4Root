@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                        E.M.Gandolfo, C.E.Jones                             *
+ *                               17.12.24                                     *
+ ******************************************************************************/
+
 // FairRoot
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -20,6 +36,7 @@
 #include "TMath.h"
 #include "TRandom.h"
 #include <string>
+#include "TVector.h"
 
 LisaOnlineSpectra::LisaOnlineSpectra()  :   LisaOnlineSpectra("LisaOnlineSpectra")
 {
@@ -267,8 +284,8 @@ InitStatus LisaOnlineSpectra::Init()
     h1_energy_layer_ch[0][0].resize(1);
     h1_energy_layer_ch[0][0][0] = new TH1F("tokyo", "Tokyo", lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
     h1_energy_layer_ch[0][0][0]->GetXaxis()->SetTitle("E(LISA) [a.u.]");
-    //h1_energy_layer_ch[0][0][0]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
-    //h1_energy_layer_ch[0][0][0]->SetMaximum(lisa_config->AmplitudeMax);
+    //h1_energy_layer_ch[0][0][0]->SetMinimum(lisa_config->amplitude_min); // set in macro
+    //h1_energy_layer_ch[0][0][0]->SetMaximum(lisa_config->amplitude_max);
     //h1_energy_layer_ch[0][0][0]->SetStats(0);
     h1_energy_layer_ch[0][0][0]->SetLineColor(kBlue+1);
     h1_energy_layer_ch[0][0][0]->SetFillColor(kOrange-3);
@@ -304,8 +321,8 @@ InitStatus LisaOnlineSpectra::Init()
 
                 h1_energy_layer_ch[i][j][k] = new TH1F(Form("energy_%s_%i_%i_%i", city.Data(), i, j, k), city.Data(), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
                 h1_energy_layer_ch[i][j][k]->GetXaxis()->SetTitle("E(LISA) [a.u.]");
-                //h1_energy_layer_ch[i][j][k]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
-                //h1_energy_layer_ch[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
+                //h1_energy_layer_ch[i][j][k]->SetMinimum(lisa_config->amplitude_min); // set in macro
+                //h1_energy_layer_ch[i][j][k]->SetMaximum(lisa_config->amplitude_max);
                 //h1_energy_layer_ch[i][j][k]->SetStats(0);
                 h1_energy_layer_ch[i][j][k]->SetLineColor(kBlue+1);
                 h1_energy_layer_ch[i][j][k]->SetFillColor(kOrange-3);
@@ -445,8 +462,8 @@ InitStatus LisaOnlineSpectra::Init()
     h1_traces_layer_ch[0][0].resize(1);
     h1_traces_layer_ch[0][0][0] = new TH1F("tokyo", "Tokyo", lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces); // microseconds
     h1_traces_layer_ch[0][0][0]->GetXaxis()->SetTitle("Time [us]");
-    h1_traces_layer_ch[0][0][0]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
-    h1_traces_layer_ch[0][0][0]->SetMaximum(lisa_config->AmplitudeMax);
+    h1_traces_layer_ch[0][0][0]->SetMinimum(lisa_config->amplitude_min); // set in macro
+    h1_traces_layer_ch[0][0][0]->SetMaximum(lisa_config->amplitude_max);
     h1_traces_layer_ch[0][0][0]->SetStats(0);
     h1_traces_layer_ch[0][0][0]->SetLineColor(kBlue+1);
     h1_traces_layer_ch[0][0][0]->SetFillColor(kOrange-3);
@@ -480,8 +497,8 @@ InitStatus LisaOnlineSpectra::Init()
 
                 h1_traces_layer_ch[i][j][k] = new TH1F(Form("traces_%s_%i_%i_%i", city.Data(), i, j, k), city.Data(), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces); //2000,0,20
                 h1_traces_layer_ch[i][j][k]->GetXaxis()->SetTitle("Time [us]");
-                h1_traces_layer_ch[i][j][k]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
-                h1_traces_layer_ch[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
+                h1_traces_layer_ch[i][j][k]->SetMinimum(lisa_config->amplitude_min); // set in macro
+                h1_traces_layer_ch[i][j][k]->SetMaximum(lisa_config->amplitude_max);
                 h1_traces_layer_ch[i][j][k]->SetStats(0);
                 h1_traces_layer_ch[i][j][k]->SetLineColor(kBlue+1);
                 h1_traces_layer_ch[i][j][k]->SetFillColor(kOrange-3);
@@ -490,45 +507,6 @@ InitStatus LisaOnlineSpectra::Init()
         }
         c_traces_layer_ch[i]->cd(0);
         dir_traces->Append(c_traces_layer_ch[i]);
-
-    }
-
-    //:::::::::::Traces for layer 1 and 2    - ALL
-    c_traces_layer_ch_stat.resize(layer_number);
-    h2_traces_layer_ch_stat.resize(layer_number);
-    for (int i = 1; i < layer_number; i++) //create a canvas for each layer
-    {
-        c_traces_layer_ch_stat[i] = new TCanvas(Form("c_traces_layer_stat_%d",i),Form("c_traces_layer_stat_%d",i), 650,350);
-        c_traces_layer_ch_stat[i]->SetTitle(Form("Layer %d - Traces_stat",i));
-        c_traces_layer_ch_stat[i]->Divide(xmax,ymax); 
-        h2_traces_layer_ch_stat[i].resize(xmax);
-        for (int j = 0; j < xmax; j++)
-        {
-            h2_traces_layer_ch_stat[i][j].resize(ymax);
-            for (int k = 0; k < ymax; k++)
-            {   
-                // general formula to place correctly on canvas for x,y coordinates
-                c_traces_layer_ch_stat[i]->cd((ymax-(k+1))*xmax + j + 1);
-                
-                city = "";
-                for (auto & detector : detector_mapping)
-                {
-                    if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
-                    {
-                        city = detector.second.first.second;
-                        break;
-                    }
-                }
-
-                h2_traces_layer_ch_stat[i][j][k] = new TH2F(Form("traces_stat_%s_%i_%i_%i", city.Data(), i, j, k), city.Data(), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces, 500,0,10000); //2000,0,20
-                h2_traces_layer_ch_stat[i][j][k]->GetXaxis()->SetTitle("Time [us]");
-                h2_traces_layer_ch_stat[i][j][k]->SetMinimum(lisa_config->AmplitudeMin); // set in macro
-                h2_traces_layer_ch_stat[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
-                h2_traces_layer_ch_stat[i][j][k]->Draw("colz");
-            }
-        }
-        c_traces_layer_ch_stat[i]->cd(0);
-        dir_traces->Append(c_traces_layer_ch_stat[i]);
 
     }
 
@@ -595,7 +573,7 @@ void LisaOnlineSpectra::Exec(Option_t* option)
         //c4LOG(info, ":::::::beginning loop inside exec :::::::: ");
         wr_time = lisaCalItem.Get_wr_t();
 
-        if (lisa_config->wr_enable == true)
+        if (lisa_config->wr_enable == true) 
         {
             if (wr_time == 0)return; 
         }
@@ -608,7 +586,7 @@ void LisaOnlineSpectra::Exec(Option_t* option)
         int xpos = lisaCalItem.Get_xposition();
         int ypos = lisaCalItem.Get_yposition();
         uint32_t energy = lisaCalItem.Get_energy();
-        trace = lisaCalItem.Get_trace();
+        trace = lisaCalItem.Get_trace_febex();
         int pileup = lisaCalItem.Get_pileup();
         int overflow = lisaCalItem.Get_overflow();
         uint64_t evtno = header->GetEventno();
@@ -680,15 +658,7 @@ void LisaOnlineSpectra::Exec(Option_t* option)
 
 
     //c4LOG(info, "::::::::::END LOOP::::::::::::" << " Layer number :" << layer_number);
-/*
-    //::::::::: Fill Traces ALL ::::::::::::::
-    for (int i = 0; i < trace.size(); i++)
-    {
-        h2_traces_layer_ch_stat[layer][xp][yp]->Fill(i*0.01,trace[i]);
-        //c4LOG(info, "layer: " << layer << " x max: " << xmax << " ymax: " << ymax);
 
-    }
-*/
     //c4LOG(info, " layer : "<<layer << " multiplicity layer : "<<multiplicity[layer]);
     if ( wr_time == 0 ) return;
 

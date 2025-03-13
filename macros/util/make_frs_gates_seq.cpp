@@ -28,8 +28,9 @@ bool Gate_Z_AoQ(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_AoQ
         cut_Z_AoQ = (TCutG*)cut_Z_AoQ->Clone("cut_Z_AoQ");
         gROOT->FindObject("CUTG")->Delete();
 
-        cut_Z_AoQ->SetVarY("FrsHitData.fID_z");
-        cut_Z_AoQ->SetVarX("FrsHitData.fID_AoQ_corr");
+        cut_Z_AoQ->SetVarY("FrsHitData.fID_z41");
+        cut_Z_AoQ->SetVarX("FrsHitData.FrsHitData.fID_AoQ_corr_s2s4");
+        return true;
         std::cout << "Created gate: " << cut_Z_AoQ->GetName() << std::endl;
         return true;
     }
@@ -64,8 +65,8 @@ bool Gate_Z_Z2(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_AoQ,
     }else{
         cut_Z_Z2 = (TCutG*)cut_Z_Z2->Clone("cut_Z_Z2");
         gROOT->FindObject("CUTG")->Delete();
-        cut_Z_Z2->SetVarY("FrsHitData.fID_z");
-        cut_Z_Z2->SetVarX("FrsHitData.fID_z2");
+        cut_Z_Z2->SetVarX("FrsHitData.fID_z41");
+        cut_Z_Z2->SetVarY("FrsHitData.fID_z42");
         std::cout << "Created gate: " << cut_Z_Z2->GetName() << std::endl;
         return true;
     }
@@ -87,7 +88,7 @@ bool Gate_x2_AoQ(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_Ao
     std::cout << "Drawing with the condition: " << cuts << std::endl;
     
     
-    evt->Draw("FrsHitData.fID_x2:FrsHitData.fID_AoQ_corr>>h2_x2_vs_AoQ(1000,2.3,2.8,1000,-100,100)",cuts);
+    evt->Draw("FrsHitData.fID_x2:FrsHitData.fID_AoQ_corr_s2s4>>h2_x2_vs_AoQ(1000,2.0,3.0,1000,-100,100)",cuts);
     
     TH2F * h2_x2_vs_AoQ = (TH2F*)gROOT->FindObject("h2_x2_vs_AoQ");
     
@@ -101,7 +102,7 @@ bool Gate_x2_AoQ(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_Ao
     }else{
         cut_x2_AoQ = (TCutG*)cut_x2_AoQ->Clone("cut_x2_AoQ");
         gROOT->FindObject("CUTG")->Delete();
-        cut_x2_AoQ->SetVarX("FrsHitData.fID_AoQ_corr");
+        cut_x2_AoQ->SetVarX("FrsHitData.fID_AoQ_corr_s2s4");
         cut_x2_AoQ->SetVarY("FrsHitData.fID_x2");
         std::cout << "Created gate: " << cut_x2_AoQ->GetName() << std::endl;
         return true;
@@ -123,7 +124,7 @@ bool Gate_x4_AoQ(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_Ao
     std::cout << "Drawing with the condition: " << cuts << std::endl;
     
     
-    evt->Draw("FrsHitData.fID_x4:FrsHitData.fID_AoQ_corr>>h2_x4_vs_AoQ(1000,2.3,2.8,1000,-100,100)",cuts);
+    evt->Draw("FrsHitData.fID_x4:FrsHitData.fID_AoQ_corr_s2s4>>h2_x4_vs_AoQ(1000,2.0,3.0,1000,-100,100)",cuts);
     
     TH2F * h2_x4_vs_AoQ = (TH2F*)gROOT->FindObject("h2_x4_vs_AoQ");
     
@@ -137,7 +138,7 @@ bool Gate_x4_AoQ(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_Ao
     }else{
         cut_x4_AoQ = (TCutG*)cut_x4_AoQ->Clone("cut_x4_AoQ");
         gROOT->FindObject("CUTG")->Delete();
-        cut_x4_AoQ->SetVarX("FrsHitData.fID_AoQ_corr");
+        cut_x4_AoQ->SetVarX("FrsHitData.fID_AoQ_corr_s2s4");
         cut_x4_AoQ->SetVarY("FrsHitData.fID_x4");
         std::cout << "Created gate: " << cut_x4_AoQ->GetName() << std::endl;
         return true;
@@ -173,8 +174,8 @@ bool Gate_dEdeg_Z(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_A
     }else{
         cut_dEdeg_Z = (TCutG*)cut_dEdeg_Z->Clone("cut_dEdeg_Z");
         gROOT->FindObject("CUTG")->Delete();
-        cut_dEdeg_Z->SetVarY("FrsHitData.fID_z");
-        cut_dEdeg_Z->SetVarX("FrsHitData.fID_dEdeg");
+        cut_dEdeg_Z->SetVarX("FrsHitData.fID_z41");
+        cut_dEdeg_Z->SetVarY("FrsHitData.fID_dEdeg_z41");
         std::cout << "Created gate: " << cut_dEdeg_Z->GetName() << std::endl;
         return true;
     }

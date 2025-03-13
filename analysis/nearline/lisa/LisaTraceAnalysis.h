@@ -4,7 +4,7 @@
 #include "FairTask.h"
 #include "TLisaConfiguration.h"
 #include "LisaData.h" // do we need raw?
-#include "LisaCalData.h"
+#include "LisaAnaData.h"
 #include <vector>
 #include <memory>
 #include "TDirectory.h"
@@ -12,10 +12,17 @@
 #include "TPad.h"
 #include "TH2I.h"
 #include "TGraph.h"
+#include "TString.h"
+#include "TExperimentConfiguration.h"
 
 
-class LisaCalItem;
+//Debugging. Replaced std::string with TString 8nov24
+
+
+
+class LisaAnaItem;
 class TLisaConfiguration;
+class TExperimentConfiguration;
 class EventHeader;
 class TCanvas;
 class TH1F;
@@ -24,6 +31,7 @@ class TH1I;
 class TH2I;
 class TFolder;
 class TDirectory;
+class TH2;
 
 
 class LisaTraceAnalysis : public FairTask
@@ -49,35 +57,40 @@ class LisaTraceAnalysis : public FairTask
     
     private:
         TLisaConfiguration const* lisa_config;
+        TExperimentConfiguration const* exp_config;
+
         // TClonesArray* fHitLisa;
 
-        std::vector<LisaCalItem> const* lisaCalArray;
-
-        // common variables
-        int layer_number;
-        int det_number;
-        int xmax;
-        int ymax;
-        std::string city = "";
+        std::vector<LisaAnaItem> const* lisaAnaArray;
         
-
-        EventHeader* header;
+        EventHeader const* header;
         Int_t fNEvents;
 
+        // ::: Directories
         TDirectory* dir_lisa;
-        TDirectory* dir_crosstalk;
-        std::vector<TCanvas*> c_energies;
-        std::vector<TCanvas*> c_traces_cross;
-        std::vector<TH2F*> h2_traces_hit;
-        std::vector<TH1F*> h1_energies_hit;
-        std::vector< std::vector<TH2F*> > h2_traces_nothit;
+        TDirectory* dir_energy;
+        TDirectory* dir_traces;
+        TDirectory* dir_energy_MWD;
+        TDirectory* dir_traces_MWD;
 
-        Int_t layer;
-        uint64_t wr_time;
-        TH2F* h2_traces_Ams;
-  std::vector<std::vector<std::vector<TH2F*> > > h2_maxmax;
-  std::vector<std::vector<std::vector<TH2F*> > > h2_maxmin;
-  std::vector<std::vector<std::vector<TH2F*> > > h2_minmin;
+
+        int64_t prev_wr = 0;
+        int64_t wr_diff;
+    
+        // ::: Histograms
+        std::vector<TH1F*> h1_energy;
+        std::vector<TH1F*> h1_energy_MWD;
+        std::vector<TH2*> h2_traces;
+        std::vector<TH2*> h2_traces_MWD;
+
+        // ::: Canvases
+        TCanvas* c_trace; 
+
+        // ::: Temporary mapping for histo displaying and filling
+        //int ch_number = 16;
+        int mapping[16];
+        
+        
 
     public:
         ClassDef(LisaTraceAnalysis, 1)
