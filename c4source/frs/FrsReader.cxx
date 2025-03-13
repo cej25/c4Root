@@ -76,8 +76,14 @@ Bool_t FrsReader::Read()
     // 2024 and before?
     int spill_on = fData->SPILL_ON;
     int spill_off = fData->SPILL_OFF;
-    if (spill_on == 1) spill_flag = true;
-    if (spill_off == 1) spill_flag = false;
+    if (spill_on == 1) 
+    {
+        spill_flag = true;
+    }
+    if (spill_off == 1) 
+    {
+        spill_flag = false;
+    }
 
     // after 2025 -- need a switch?
     // if (header->GetTrigger() == 12) spill_flag = true;
