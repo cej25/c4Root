@@ -36,6 +36,7 @@
 #include "TMath.h"
 #include "TRandom.h"
 #include <string>
+#include "TVector.h"
 
 LisaOnlineSpectra::LisaOnlineSpectra()  :   LisaOnlineSpectra("LisaOnlineSpectra")
 {
@@ -509,45 +510,6 @@ InitStatus LisaOnlineSpectra::Init()
 
     }
 
-    //:::::::::::Traces for layer 1 and 2    - ALL
-    c_traces_layer_ch_stat.resize(layer_number);
-    h2_traces_layer_ch_stat.resize(layer_number);
-    for (int i = 1; i < layer_number; i++) //create a canvas for each layer
-    {
-        c_traces_layer_ch_stat[i] = new TCanvas(Form("c_traces_layer_stat_%d",i),Form("c_traces_layer_stat_%d",i), 650,350);
-        c_traces_layer_ch_stat[i]->SetTitle(Form("Layer %d - Traces_stat",i));
-        c_traces_layer_ch_stat[i]->Divide(xmax,ymax); 
-        h2_traces_layer_ch_stat[i].resize(xmax);
-        for (int j = 0; j < xmax; j++)
-        {
-            h2_traces_layer_ch_stat[i][j].resize(ymax);
-            for (int k = 0; k < ymax; k++)
-            {   
-                // general formula to place correctly on canvas for x,y coordinates
-                c_traces_layer_ch_stat[i]->cd((ymax-(k+1))*xmax + j + 1);
-                
-                city = "";
-                for (auto & detector : detector_mapping)
-                {
-                    if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
-                    {
-                        city = detector.second.first.second;
-                        break;
-                    }
-                }
-
-                h2_traces_layer_ch_stat[i][j][k] = new TH2F(Form("traces_stat_%s_%i_%i_%i", city.Data(), i, j, k), city.Data(), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces, 500,0,10000); //2000,0,20
-                h2_traces_layer_ch_stat[i][j][k]->GetXaxis()->SetTitle("Time [us]");
-                h2_traces_layer_ch_stat[i][j][k]->SetMinimum(lisa_config->amplitude_min); // set in macro
-                h2_traces_layer_ch_stat[i][j][k]->SetMaximum(lisa_config->amplitude_max);
-                h2_traces_layer_ch_stat[i][j][k]->Draw("colz");
-            }
-        }
-        c_traces_layer_ch_stat[i]->cd(0);
-        dir_traces->Append(c_traces_layer_ch_stat[i]);
-
-    }
-
     run->GetHttpServer()->RegisterCommand("Reset_Lisa_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
     //run->GetHttpServer()->RegisterCommand("Reset_Lisa_Hist", "/Objects/->Reset_Histo()");
     c4LOG(info,"Get Name: " << GetName() );
@@ -611,7 +573,7 @@ void LisaOnlineSpectra::Exec(Option_t* option)
         //c4LOG(info, ":::::::beginning loop inside exec :::::::: ");
         wr_time = lisaCalItem.Get_wr_t();
 
-        if (lisa_config->wr_enable == true)
+        if (lisa_config->wr_enable == true) 
         {
             if (wr_time == 0)return; 
         }
@@ -696,15 +658,7 @@ void LisaOnlineSpectra::Exec(Option_t* option)
 
 
     //c4LOG(info, "::::::::::END LOOP::::::::::::" << " Layer number :" << layer_number);
-/*
-    //::::::::: Fill Traces ALL ::::::::::::::
-    for (int i = 0; i < trace.size(); i++)
-    {
-        h2_traces_layer_ch_stat[layer][xp][yp]->Fill(i*0.01,trace[i]);
-        //c4LOG(info, "layer: " << layer << " x max: " << xmax << " ymax: " << ymax);
 
-    }
-*/
     //c4LOG(info, " layer : "<<layer << " multiplicity layer : "<<multiplicity[layer]);
     if ( wr_time == 0 ) return;
 

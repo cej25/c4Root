@@ -111,6 +111,7 @@ class TLisaConfiguration
 
         static void SetEventToAnalyze(int evt_num) { event_ana = evt_num; }
 
+        static void SetEventNO(int start_evt, int stop_evt) {start_evtno = start_evt; stop_evtno = stop_evt;}
 
 
 
@@ -145,6 +146,8 @@ class TLisaConfiguration
         static int frun_num;
         static int board_num;
         static int event_ana;
+        static int start_evtno;
+        static int stop_evtno;
 
         static bool wr_enable;
 

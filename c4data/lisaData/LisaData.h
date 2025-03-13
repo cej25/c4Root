@@ -17,6 +17,12 @@
 #define LisaData_H
 #include "TObject.h"
 #include <vector>
+#include "TVector.h"
+
+// This is the adjustment to use TVectors instead of std::vector
+//This was to try to read vectors of vectors form external macro without sourcing c4. It does not work.
+//template <typename T>
+//using StdVector = std::vector<T>;
 
 class LisaItem : public TObject
 {
@@ -25,14 +31,14 @@ class LisaItem : public TObject
 
         void SetAll(uint64_t wr,
                     uint16_t id,
-                    uint8_t b_id,
+                    int b_id,
                     uint64_t ev_time,
-                    uint8_t ch_id,
+                    int ch_id,
                     uint64_t ch_time,
                     bool p,
                     bool o,
                     uint32_t ch_energy,
-                    uint8_t ch_id_traces,
+                    int ch_id_traces,
                     std::vector<int16_t> tr,
                     std::vector<int16_t> tr_x);
 
@@ -40,14 +46,14 @@ class LisaItem : public TObject
 
         uint64_t Get_wr_t() const;
         uint16_t Get_wr_id() const;
-        uint8_t Get_board_id() const;
+        int Get_board_id() const;
         uint64_t Get_board_event_time() const;
-        uint8_t Get_channel_id() const;
+        int Get_channel_id() const;
         uint64_t Get_channel_time() const;
         bool Get_pileup() const;
         bool Get_overflow() const;
         uint32_t Get_channel_energy() const;
-        uint8_t Get_channel_id_traces() const;
+        int Get_channel_id_traces() const;
         std::vector<int16_t> Get_trace() const;
         std::vector<int16_t> Get_trace_x() const;
 
@@ -57,14 +63,14 @@ class LisaItem : public TObject
     
         uint64_t wr_t;
         uint16_t wr_id;
-        uint8_t board_id;
+        int board_id;
         uint64_t board_event_time;
-        uint8_t channel_id;
+        int channel_id;
         uint64_t channel_time;
         bool pileup;
         bool overflow;
         uint32_t channel_energy;
-        uint8_t channel_id_traces;
+        int channel_id_traces;
         std::vector<int16_t> trace; 
         std::vector<int16_t> trace_x; 
 
@@ -80,7 +86,7 @@ inline uint16_t LisaItem::Get_wr_id() const
     return wr_id;
 }
 
-inline uint8_t LisaItem::Get_board_id() const
+inline int LisaItem::Get_board_id() const
 {
     return board_id;
 }
@@ -90,7 +96,7 @@ inline uint64_t LisaItem::Get_board_event_time() const
     return board_event_time;
 }
 
-inline uint8_t LisaItem::Get_channel_id() const
+inline int LisaItem::Get_channel_id() const
 {
     return channel_id;
 }
@@ -115,7 +121,7 @@ inline uint32_t LisaItem::Get_channel_energy() const
     return channel_energy;
 }
 
-inline uint8_t LisaItem::Get_channel_id_traces() const
+inline int LisaItem::Get_channel_id_traces() const
 {
     return channel_id_traces;
 }
