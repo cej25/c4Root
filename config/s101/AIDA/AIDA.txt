@@ -60,7 +60,7 @@ DSSD: 2
 - Top: 6
 - Bottom: 8
 - LeftLeft: 11
-- LeftRight: 9
+- LeftRight: 11
 - CentreLeft: 7
 - CentreRight: 14
 - RightLeft: 16

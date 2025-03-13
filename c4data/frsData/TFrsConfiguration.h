@@ -17,7 +17,7 @@ class TFrsConfiguration
         static TFrsConfiguration const* GetInstance();
         static void Create();
         static void SetScalerMappingPath(std::string fp) { scaler_mapping_file = fp; }
-        //static void SetExpStartTime();
+        
         static void SetParameters(TFRSParameter*,
                         TMWParameter*,
                         TTPCParameter*,
@@ -28,6 +28,7 @@ class TFrsConfiguration
                         TSIParameter*,
                         TMRTOFMSParameter*,
                         TRangeParameter*);
+        static void SetParameterFilename(TString fn) { setup_file = fn; }
         static void SetConfigPath(std::string cp) { config_path = cp; }
         static void SetTravMusDriftFile(std::string fp) { tm_drift_coeff_file = fp; }
         static void SetAoQDriftFile(std::string fp) { aoq_drift_coeff_file = fp; }
@@ -47,6 +48,7 @@ class TFrsConfiguration
         std::string GetConfigPath() const;
         std::string ScalerName(int index) const;
         std::string SciName(int index) const;
+
 
         // Unpacking / Sorting
         // These should be set after reading some mapping, change later.
@@ -73,6 +75,10 @@ class TFrsConfiguration
         static Double_t fMin_dE_travMus_gate, fMax_dE_travMus_gate;
         static int frun_num;
 
+        static void SetOldBetaCal(Bool_t option) { old_beta_cal = option; }
+
+        // pre 2025. Calibrated to beta, instead of 1/beta^2
+        static Bool_t old_beta_cal;
 
         static void Set_Z_range(Double_t, Double_t);
         static void Set_AoQ_range(Double_t, Double_t);
@@ -98,13 +104,12 @@ class TFrsConfiguration
         void Plot_MHTDC_1D(bool option) { plot_mhtdc_1d = option; }
         void Plot_MHTDC_2D(bool option) { plot_mhtdc_1d = option; }
 
-        static void SetRunNumber(int run_num) { frun_num = run_num; }
-
         Bool_t plot_tac_1d = true;
         Bool_t plot_tac_2d = true;
         Bool_t plot_mhtdc_1d = true;
         Bool_t plot_mhtdc_2d = true;
 
+        static void SetRunNumber(int run_num) { frun_num = run_num; }
 
         //:::: Drift for TravMus
         std::map<int, std::pair<double,double>> TravMusDriftCoefficients() const;
@@ -212,6 +217,8 @@ class TFrsConfiguration
         static TSIParameter* fsi;
         static TMRTOFMSParameter* fmrtof;
         static TRangeParameter* frange;
+
+        static TString setup_file;
 
         // Gates
 

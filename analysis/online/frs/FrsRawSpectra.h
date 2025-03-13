@@ -63,19 +63,19 @@ class FrsRawSpectra : public FairTask
         TDirectory* dir_sci_dt;
         TDirectory* dir_sci_mhtdc;
         TDirectory* dir_music_e;
-        TDirectory* dir_music_n_e[2];
+        TDirectory* dir_music_n_e[5];
         TDirectory* dir_music_t;
-        TDirectory* dir_music_n_t[2];
+        TDirectory* dir_music_n_t[5];
         TDirectory* dir_tpc_adc;
         TDirectory* dir_tpc_n_adc[7];
         TDirectory* dir_tpc_tdc;
         
         // Histograms
-        TH1* h1_sci_de[16];
-        TH1* h1_sci_dt[16];
-        TH1* h1_sci_mhtdc[16];
-        TH1* h1_music_anode_e[2][8];
-        TH1* h1_music_anode_t[2][8];
+        TH1* h1_sci_de[32];
+        TH1* h1_sci_dt[32];
+        TH1* h1_sci_mhtdc[32];
+        TH1* h1_music_anode_e[5][8];
+        TH1* h1_music_anode_t[5][8];
         TH1* h1_tpc_adc[7][8];
         TH1* h1_tpc_tdc[128];
        
@@ -84,19 +84,19 @@ class FrsRawSpectra : public FairTask
         TCanvas* c_sci_de;
         TCanvas* c_sci_dt;
         TCanvas* c_sci_mhtdc;
-        TCanvas* c_music_n_e[2];
-        TCanvas* c_music_n_t[2];
+        TCanvas* c_music_n_e[5];
+        TCanvas* c_music_n_t[5];
         TCanvas* c_tpc_n_adc[7];
         TCanvas* c_tpc_tdc;
 
 
         // Variables
-        const UInt_t* sciDE; //16
-        const UInt_t* sciDT; //16
-        const std::vector<Int_t>* sciMHTDC; // 16
+        const UInt_t* sciDE; //16 --> 32
+        const UInt_t* sciDT; //16 --> 32
+        const std::vector<Int_t>* sciMHTDC; // 16 --> 32
 
-        const UInt_t (*musicE)[8]; // 2, 8
-        const UInt_t (*musicT)[8]; // 2, 8
+        const UInt_t (*musicE)[8]; // 2, 8 --> 5,8
+        const UInt_t (*musicT)[8]; // 2, 8 --> 5,8
 
         const UInt_t (*adcData)[8]; // 7, 8
         const std::vector<UInt_t>* tdcData;

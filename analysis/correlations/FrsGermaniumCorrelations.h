@@ -16,6 +16,8 @@ class TH2F;
 class TFile;
 class TFolder;
 class FrsGate;
+class FrsHitItem;
+class FrsMultiHitItem;
 
 class FrsGermaniumCorrelations : public FairTask
 {
@@ -23,8 +25,6 @@ class FrsGermaniumCorrelations : public FairTask
         FrsGermaniumCorrelations();
         FrsGermaniumCorrelations(FrsGate * frsgate);
         FrsGermaniumCorrelations(const TString& name, Int_t verbose = 1);
-
-        void SetMultiHit(bool v) {use_multi = v;};
 
         virtual ~FrsGermaniumCorrelations();
 
@@ -40,11 +40,9 @@ class FrsGermaniumCorrelations : public FairTask
 
         //virtual void Reset_Ge_Histo();
 
-        //virtual void Snapshot_Ge_Histo();
-
-        void SetAnlOrCalInput(TString AnlOrCal){
-            input_anl_or_cal = AnlOrCal;
-        }
+        // void SetAnlOrCalInput(TString AnlOrCal){
+        //     input_anl_or_cal = AnlOrCal;
+        // }
 
 
         void AddGammaEnergyOfInterest(double energy, double gate_width){
@@ -74,7 +72,6 @@ class FrsGermaniumCorrelations : public FairTask
             long_lifetime_binhigh = stop;
         }
         
-        
     
     private:
         TClonesArray* fHitGe;
@@ -82,22 +79,30 @@ class FrsGermaniumCorrelations : public FairTask
         TClonesArray* fMultiHitFrs;
 
         std::vector<FrsHitItem> const* hitArrayFrs;
-        std::vector<FrsMultiHitItem> const* multihitArrayFrs;
-
-        TString input_anl_or_cal = "Cal";
+        std::vector<FrsMultiHitItem> const* multihitArray;
 
         const TGermaniumConfiguration* germanium_configuration;
         const TFrsConfiguration* frs_configuration;
         
         FrsGate* frsgate;
 
-        int64_t wr_t = 0;
+        // hardwire for now
+        bool use_tac = false;
+        bool use_mhtdc = true;
 
-        bool use_multi = false;
+        int64_t wr_t = 0.;
 
         int64_t wr_t_last_frs_hit = 0;
         int64_t wr_t_first_frs_hit = 0;
         bool positive_PID = false;
+
+        Double_t ID_x2 = -999;
+        Double_t ID_y2 = -999;
+        Double_t ID_x4 = -999;
+        Double_t ID_AoQ_s2s4 = 0.;
+        Double_t ID_z41 = 0.;
+        Double_t ID_z42 = 0.;
+        Double_t ID_dEdegZ41 = 0.;
 
         
         int fenergy_nbins = 1500;
@@ -155,7 +160,9 @@ class FrsGermaniumCorrelations : public FairTask
         TH2F * h2_germanium_energy_vs_tsci41;
 
         TCanvas * c_germanium_energy_promptflash_cut;
+        TCanvas* c_germanium_energy_promptflash_cut_mhtdc_gated;
         TH1F * h1_germanium_energy_promptflash_cut;
+        TH1F* h1_germanium_energy_promptflash_cut_mhtdc_gated;
 
         TCanvas * c_germanium_energy_energy_promptflash_cut;
         TH2F * h2_germanium_energy_energy_promptflash_cut;
@@ -198,7 +205,7 @@ class FrsGermaniumCorrelations : public FairTask
         // Folder and files
         TFolder* histograms;
         TFolder* folder_germanium;
-        TFolder ** folder_energy_gated;
+        TFolder** folder_energy_gated;
 
         TDirectory* dir_frs;
         TDirectory* dir_frs_ge_corr;

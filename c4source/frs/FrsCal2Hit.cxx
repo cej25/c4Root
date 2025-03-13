@@ -118,7 +118,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     tpat = tpatItem.Get_tpat();
 
     auto & anaEntry = hitArray->emplace_back();
-    anaEntry.SetMetaData(wr_t, tpat);
+    anaEntry.SetMetaData(wr_t, tpat, "");
 
     ProcessScalers();
     anaEntry.SetScalerData(time_in_ms,
@@ -806,7 +806,7 @@ void FrsCal2Hit::ProcessSci_TAC()
 
     if (sci_b_tofll_11_21 && sci_b_tofrr_11_21)
     {
-        std::cout << "is this our problem... ::: event ::: " << fNEvents << std::endl;
+        //std::cout << "is this our problem... ::: event ::: " << fNEvents << std::endl;
         sci_tof_11_21 = (sci->tof_bll1 * sci_tofrr_11_21 + sci->tof_a1 + sci->tof_brr1 * sci_tofrr_11_21) / 2.0;
         sci_tof_11_21_calib = -1.0 * sci_tof_11_21 + id->id_tofoff1[sci->sci11_select];
     }
@@ -1309,6 +1309,7 @@ void FrsCal2Hit::ProcessMusic()
     }
     #endif
 
+
     #ifdef MUSIC_ANA_NEW
     if (music21_anodes_cnt >= music->MUSIC21_num_an / 2)
     {
@@ -1796,8 +1797,8 @@ void FrsCal2Hit::ProcessIDs()
         for (int i = 0; i < 4; i++)
         {
             sum += power * id->vel_music21_a[i];
-            // power *= id_beta;
-            power *= 1.0 / TMath::Power(id_beta_s1s2, 2);
+            if (frs_config->old_beta_cal) power *= id_beta_s1s2;
+            else { power *= 1.0 / TMath::Power(id_beta_s1s2, 2); }
         }
         id_music21_v_cor = sum;
 
@@ -1819,8 +1820,8 @@ void FrsCal2Hit::ProcessIDs()
         for (int i = 0; i < 4; i++)
         {
             sum += power * id->vel_music22_a[i];
-            // power *= id_beta;
-            power *= 1.0 / TMath::Power(id_beta_s1s2, 2);
+            if (frs_config->old_beta_cal) power *= id_beta_s1s2;
+            else { power *= 1.0 / TMath::Power(id_beta_s1s2, 2); }
         }
         id_music22_v_cor = sum;
 
@@ -1844,8 +1845,8 @@ void FrsCal2Hit::ProcessIDs()
         {
             // sum += power * id->vel_a1[i];
             sum += power * id->vel_music41_a[i];
-            power *= id_beta_s2s4;
-            // power *= 1.0 / TMath::Power(id_beta_s2s4, 2);
+            if (frs_config->old_beta_cal) power *= id_beta_s2s4;
+            else { power *= 1.0 / TMath::Power(id_beta_s2s4, 2); }
         }
         id_music41_v_cor = sum;
 
@@ -1872,8 +1873,8 @@ void FrsCal2Hit::ProcessIDs()
         {
             // sum += power * id->vel_a2[i];
             sum += power * id->vel_music42_a[i];
-            power *= id_beta_s2s4;
-            // power *= 1.0 / TMath::Power(id_beta_s2s4, 2);
+            if (frs_config->old_beta_cal) power *= id_beta_s2s4;
+            else { power *= 1.0 / TMath::Power(id_beta_s2s4, 2); }
         }
         id_music42_v_cor = sum;
 
@@ -1898,8 +1899,8 @@ void FrsCal2Hit::ProcessIDs()
         for (int i = 0; i < 4; i++)
         {
             sum += power * id->vel_music43_a[i];
-            // power *= id_beta_s2s4;
-            power *= 1.0 / TMath::Power(id_beta_s2s4, 2);
+            if (frs_config->old_beta_cal) power *= id_beta_s2s4;
+            else { power *= 1.0 / TMath::Power(id_beta_s2s4, 2); }
         }
         id_music43_v_cor = sum;
 
@@ -1934,6 +1935,8 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
         for (int i = 0; i < hits_in_11lr; i++) temp_s1x_mhtdc[i] = mhtdc_sc11lr_x[i];
         hits_in_s1x = hits_in_11lr;
         temp_a1 = 0;
+        
+        
     }
     else
     {
@@ -2068,7 +2071,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
         }
     }
     else c4LOG(fatal, "Bad S2 TOF selection. Check FRS setup file!");
-
+    
     // Calculate Gamma
     for (int i = 0; i < hits_in_s1s2; i++) id_mhtdc_gamma_s1s2[i] = 1. / sqrt(1. - TMath::Power(id_mhtdc_beta_s1s2[i], 2));
 
@@ -2104,39 +2107,52 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
         }
     }
 
+
     // Calculate Z (MUSIC 21 / 22)
     for (int i = 0; i < hits_in_s1s2; i++)
     {
-        if (music21_de > 0.0 && id_mhtdc_beta_s1s2[i] > 0.0 && id_mhtdc_beta_s1s2[i] < 1.0)
+        if (music21_de_cor > 0.0 && id_mhtdc_beta_s1s2[i] > 0.6 && id_mhtdc_beta_s1s2[i] < 0.9)
         {
             Double_t power = 1., sum = 0.;
             for (int j = 0; j < 4; j++)
             {
-                sum += power * id->mhtdc_vel_a_music21[j];
-                power *= 1.0 / TMath::Power(id_mhtdc_beta_s1s2[i], 2);
+                sum += power * id->mhtdc_vel_a_music21_s1s2[j];
+                if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s1s2[i];
+                else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s1s2[i], 2); }
             }
 
             id_mhtdc_v_cor_music21[i] = sum;
             if (id_mhtdc_v_cor_music21[i] > 0.0)
             {
-                id_mhtdc_z_music21[i] = frs->primary_z * sqrt(music21_de / id_mhtdc_v_cor_music21[i]);
+                id_mhtdc_z_music21[i] = frs->primary_z * sqrt(music21_de_cor / id_mhtdc_v_cor_music21[i]);
                 id_mhtdc_z_shifted_music21[i] = id_mhtdc_z_music21[i] + id->mhtdc_offset_z_music21;
             }
+            else
+            {
+                id_mhtdc_z_music21[i] = -999.;
+                id_mhtdc_z_shifted_music21[i] = -999.;
+            }
+        }
+        else
+        {
+            id_mhtdc_z_music21[i] = -999.;
+            id_mhtdc_z_shifted_music21[i] = -999.;
         }
 
-        if (music22_de > 0.0 && id_mhtdc_beta_s1s2[i] > 0.0 && id_mhtdc_beta_s1s2[i] < 1.0)
+        if (music22_de_cor > 0.0 && id_mhtdc_beta_s1s2[i] > 0.5 && id_mhtdc_beta_s1s2[i] < 1.0)
         {
             Double_t power = 1., sum = 0.;
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->mhtdc_vel_a_music22[i];
-                power *= 1.0 / TMath::Power(id_mhtdc_beta_s1s2[i], 2);
+                if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s1s2[i];
+                else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s1s2[i], 2); }
             }
 
             id_mhtdc_v_cor_music22[i] = sum;
             if (id_mhtdc_v_cor_music22[i] > 0.0)
             {
-                id_mhtdc_z_music22[i] = frs->primary_z * sqrt(music22_de / id_mhtdc_v_cor_music22[i]);
+                id_mhtdc_z_music22[i] = frs->primary_z * sqrt(music22_de_cor / id_mhtdc_v_cor_music22[i]);
                 id_mhtdc_z_shifted_music22[i] = id_mhtdc_z_music22[i] + id->mhtdc_offset_z_music22;
             }
         }
@@ -2235,14 +2251,14 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
     // Calculate Z (MUSIC 41 / 42 / 43)
     for (int i = 0; i < hits_in_s2s4; i++)
     {
-        if (music41_de > 0.0 && id_mhtdc_beta_s2s4[i] > 0.0 && id_mhtdc_beta_s2s4[i] < 1.0)
+        if (music41_de_cor > 0.0 && id_mhtdc_beta_s2s4[i] > 0.0 && id_mhtdc_beta_s2s4[i] < 1.0)
         {
             Double_t power = 1., sum = 0.;
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->mhtdc_vel_a_music41[j];
-                power *= 1.0 / TMath::Power(id_mhtdc_beta_s2s4[i], 2);
-                //power *= id_mhtdc_beta_s2s4[i];
+                if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s2s4[i];
+                else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s2s4[i], 2); }
             }
 
             id_mhtdc_v_cor_music41[i] = sum;
@@ -2251,16 +2267,27 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
                 id_mhtdc_z_music41[i] = frs->primary_z * sqrt(music41_de / id_mhtdc_v_cor_music41[i]);
                 id_mhtdc_z_shifted_music41[i] = id_mhtdc_z_music41[i] + id->mhtdc_offset_z_music41;
             }
+            else
+            {
+                id_mhtdc_z_music41[i] = -999.;
+                id_mhtdc_z_shifted_music41[i] = -999.;
+            }
         }
+        else
+        {
+            id_mhtdc_z_music41[i] = -999.;
+            id_mhtdc_z_shifted_music41[i] = -999.;
+        }
+        
 
-        if (music42_de > 0.0 && id_mhtdc_beta_s2s4[i] > 0.0 && id_mhtdc_beta_s2s4[i] < 1.0)
+        if (music42_de_cor > 0.0 && id_mhtdc_beta_s2s4[i] > 0.0 && id_mhtdc_beta_s2s4[i] < 1.0)
         {
             Double_t power = 1., sum = 0.;
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->mhtdc_vel_a_music42[j];
-                power *= 1.0 / TMath::Power(id_mhtdc_beta_s2s4[i], 2);
-                //power *= id_mhtdc_beta_s2s4[i];
+                if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s2s4[i];
+                else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s2s4[i], 2); }
             }
 
             id_mhtdc_v_cor_music42[i] = sum;
@@ -2269,15 +2296,26 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
                 id_mhtdc_z_music42[i] = frs->primary_z * sqrt(music42_de / id_mhtdc_v_cor_music42[i]);
                 id_mhtdc_z_shifted_music42[i] = id_mhtdc_z_music42[i] + id->mhtdc_offset_z_music42;
             }
+            else
+            {
+                id_mhtdc_z_music42[i] = -999.;
+                id_mhtdc_z_shifted_music42[i] = -999.;
+            }
+        }
+        else
+        {
+            id_mhtdc_z_music42[i] = -999.;
+            id_mhtdc_z_shifted_music42[i] = -999.;
         }
 
-        if (music43_de > 0.0 && id_mhtdc_beta_s2s4[i] > 0.0 && id_mhtdc_beta_s2s4[i] < 1.0)
+        if (music43_de_cor > 0.0 && id_mhtdc_beta_s2s4[i] > 0.0 && id_mhtdc_beta_s2s4[i] < 1.0)
         {
             Double_t power = 1., sum = 0.;
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->mhtdc_vel_a_music43[j];
-                power *= 1.0 / TMath::Power(id_mhtdc_beta_s2s4[i], 2);
+                if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s2s4[i];
+                else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s2s4[i], 2); }
             }
 
             id_mhtdc_v_cor_music43[i] = sum;
@@ -2286,6 +2324,16 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
                 id_mhtdc_z_music43[i] = frs->primary_z * sqrt(music43_de / id_mhtdc_v_cor_music43[i]);
                 id_mhtdc_z_shifted_music43[i] = id_mhtdc_z_music43[i] + id->mhtdc_offset_z_music43;
             }
+            else
+            {
+                id_mhtdc_z_music43[i] = -999.;
+                id_mhtdc_z_shifted_music43[i] = -999.;
+            }
+        }
+        else
+        {
+            id_mhtdc_z_music43[i] = -999.;
+            id_mhtdc_z_shifted_music43[i] = -999.;
         }
     }
    

@@ -179,6 +179,7 @@ void GermaniumRaw2Cal::Exec(Option_t* option)
                 }
             }
 
+            // std::cout << "wr germanium: " << funcal_hit->Get_wr_t() << std::endl;
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) GermaniumCalData(
                 funcal_hit->Get_trigger(),
                 funcal_hit->Get_event_trigger_time(),

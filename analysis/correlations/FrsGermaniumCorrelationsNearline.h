@@ -16,6 +16,8 @@ class TH2F;
 class TFile;
 class TFolder;
 class FrsGate;
+class FrsHitItem;
+class FrsMultiHitItem;
 
 class FrsGermaniumCorrelationsNearline : public FairTask
 {
@@ -39,13 +41,9 @@ class FrsGermaniumCorrelationsNearline : public FairTask
 
         virtual void FinishTask();
 
-        //virtual void Reset_Ge_Histo();
-
-        //virtual void Snapshot_Ge_Histo();
-
-        void SetAnlOrCalInput(TString AnlOrCal){
-            input_anl_or_cal = AnlOrCal;
-        }
+        // void SetAnlOrCalInput(TString AnlOrCal){
+        //     input_anl_or_cal = AnlOrCal;
+        // }
 
         void AddGammaEnergyOfInterest(double energy, double gate_width){
             gamma_energies_of_interest.emplace_back(energy);
@@ -74,8 +72,8 @@ class FrsGermaniumCorrelationsNearline : public FairTask
             long_lifetime_binhigh = stop;
         }
         
-        void SetControlOutput(bool a){fControlOutput = a;} // writes the events that passes the fatima and frs gates to a tree
-        void SetWriteOutput(bool a){fWriteOutput = a;} // writes the events that passes the fatima and frs gates to a tree
+        // void SetControlOutput(bool a){fControlOutput = a;} // writes the events that passes the fatima and frs gates to a tree
+        // void SetWriteOutput(bool a){fWriteOutput = a;} // writes the events that passes the fatima and frs gates to a tree
     
     private:
         TClonesArray* fHitGe;
@@ -83,21 +81,16 @@ class FrsGermaniumCorrelationsNearline : public FairTask
         TClonesArray* fMultiHitFrs;
 
         std::vector<FrsHitItem> const* hitArrayFrs;
-        std::vector<FrsMultiHitItem> const* multihitArrayFrs;
+        std::vector<FrsMultiHitItem> const* multihitArray;
 
-
-
-        bool fWriteOutput = true;
-        bool fControlOutput = false;
-        TString input_anl_or_cal = "Cal";
-        FairRunAna * run;
-
+        const TGermaniumConfiguration* germanium_configuration;
+        const TFrsConfiguration* frs_configuration;
         
+        FrsGate* frsgate;
 
-        const TGermaniumConfiguration * germanium_configuration;
-        const TFrsConfiguration * frs_configuration;
-        
-        FrsGate * frsgate;
+        // hardwire for now
+        bool use_tac = false;
+        bool use_mhtdc = true; 
 
         int64_t wr_t = 0;
 
@@ -107,6 +100,15 @@ class FrsGermaniumCorrelationsNearline : public FairTask
         int64_t wr_t_last_frs_hit = 0;
         int64_t wr_t_first_frs_hit = 0;
         bool positive_PID = false;
+
+        Double_t ID_x2 = 0.;
+        Double_t ID_y2 = 0.;
+        Double_t ID_x4 = 0.;
+        Double_t ID_AoQ_s2s4 = 0.;
+        Double_t ID_z41 = 0.;
+        Double_t ID_z42 = 0.;
+        Double_t ID_dEdegZ41 = 0.;
+        Double_t ID_sci42E = 0.;
 
         
         int fenergy_nbins = 3000;

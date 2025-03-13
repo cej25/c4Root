@@ -21,6 +21,9 @@ TIDParameter* TFrsConfiguration::fid;
 TSIParameter* TFrsConfiguration::fsi;
 TMRTOFMSParameter* TFrsConfiguration::fmrtof;
 TRangeParameter* TFrsConfiguration::frange;
+TString TFrsConfiguration::setup_file = "";
+
+Bool_t TFrsConfiguration::old_beta_cal = false;
 
 Double_t TFrsConfiguration::fMin_Z = 0., TFrsConfiguration::fMax_Z = 100.;
 Double_t TFrsConfiguration::fMin_AoQ = 2., TFrsConfiguration::fMax_AoQ = 3.;

@@ -169,6 +169,7 @@ void TGermaniumConfiguration::ReadPromptFlashCut()
     // must be named "ge_prompt_flash_cut" precisely 
     TFile* cut = TFile::Open(TString(promptflash_cut_file),"READ");
     
+    
     if (!cut || cut->IsZombie() || cut->TestBit(TFile::kRecovered))
     {
         c4LOG(warn, "Germanium prompt flash cut file provided (" << promptflash_cut_file << ") failed to load!.");
@@ -183,6 +184,9 @@ void TGermaniumConfiguration::ReadPromptFlashCut()
     {
         c4LOG(warn, "Germanium prompt flash cut does not exist in file: " << promptflash_cut_file);
     }
+    
+        c4LOG(info, "Germanium prompt flash cut file provided (" << promptflash_cut_file << ") loaded.");
+
 
     cut->Close();
 }
@@ -218,7 +222,7 @@ void TGermaniumConfiguration::ReadPromptFlashCutMulti()
 
     }
 
-    c4LOG(info,Form("read %i prompt flash cuts",prompt_flash_cut_multi.size()));
+    c4LOG(info,"Read " << prompt_flash_cut_multi.size() << " prompt flash cuts");
 
     if (prompt_flash_cut_multi.size() == 0) // Log warning if no cut found at all
     {
