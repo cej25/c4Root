@@ -1,3 +1,4 @@
+
 #ifndef LisaNearlineSpectra_H
 #define LisaNearlineSpectra_H
 
@@ -86,34 +87,35 @@ class LisaNearlineSpectra : public FairTask
         uint32_t en;
 
         TDirectory* dir_lisa;
-        TDirectory* dir_energy;
-        TDirectory* dir_traces;
+
         TDirectory* dir_stats;
+
+        TDirectory* dir_energy_febex;
+        TDirectory* dir_energy_febex_ch;
+        TDirectory* dir_energy_MWD;
+        TDirectory* dir_energy_MWD_ch;
+
+        TDirectory* dir_traces;
+        TDirectory* dir_traces_tokyo;
+        
+        TDirectory* dir_drift;
+        TDirectory* dir_drift_ch;
+        TDirectory* dir_drift_tokyo;
+
         TDirectory* dir_music;
         TDirectory* dir_correlations;
-        TDirectory* dir_drift;
+
+        TDirectory* dir_tokyo;
+        
 
         int64_t prev_wr = 0;
         int64_t wr_diff;
-
-        // ::: Canvas
-        TCanvas* c_hitpattern_layer;
-        TCanvas* c_multiplicity_layer;
-        TCanvas* c_hitpattern_grid;
-        TCanvas* c_pileup_grid;
-        TCanvas* c_overflow_grid;
-        TCanvas* c_energy_layer1_vs_layer2;
-        TCanvas* c_energy_layer1_vs_layer2_GM;
-        TCanvas* c_energy_layer_vs_time;
-        std::vector<TCanvas*> c_energy_layer_ch;
-        std::vector<TCanvas*> c_energy_ch_vs_time;
-        std::vector<TCanvas*> c_traces_layer_ch;
-        std::vector<TCanvas*> c_traces_layer_ch_stat;
     
         // ::: Histograms
-        // stats
+        // ::: Stats
         TH1I* h1_hitpattern_total;
         TH1I* h1_wr_diff;
+        TH1I* h1_wr_rate;
         std::vector<TH1I*> h1_hitpattern_layer;
         std::vector<TH2F*> h2_hitpattern_grid;
         std::vector<TH2F*> h2_pileup_grid;
@@ -124,20 +126,31 @@ class LisaNearlineSpectra : public FairTask
         //TH2F* h2_hitpattern_grid;
         //TH1F* h1_energy_layer0;
 
-        // energy
-        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch;
-        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch_GM;
-        std::vector<TH1F*> h1_energy_layer_GM;
+        // ::: Energy febex and MWD
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_febex_ch;
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_MWD_ch;
+
+        // Energy GM for febex and MWD
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_febex_ch_GM;
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_MWD_ch_GM;
+        std::vector<TH1F*> h1_energy_febex_layer_GM;
+        std::vector<TH1F*> h1_energy_MWD_layer_GM;
+
+        // Energy of layers summed or vs
         TH1F* h1_energy_all_layers_GM;
         TH2F* h2_sum_energy_layer1_vs_layer2;
         TH2F* h2_sum_energy_layer1_vs_layer2_GM;
         TH2F* h2_energy_layer1_vs_layer2_GM;
-        std::vector<std::vector<std::vector<TH1F*>>> h1_traces_layer_ch;
-        std::vector<std::vector<std::vector<TH2F*>>> h2_traces_layer_ch_stat;
+        TH2F* h2_energy_MWD_layer1_vs_layer2_GM;
+
+        // ::: Traces
+        std::vector<std::vector<std::vector<TH2F*>>> h2_traces_ch_stat;
 
         // ::: Drifts
         std::vector<TH2*> h2_energy_layer_vs_time;
+        std::vector<TH2*> h2_energy_MWD_layer_vs_time;
         std::vector<std::vector<std::vector<TH2*>>> h2_energy_ch_vs_time;
+        std::vector<std::vector<std::vector<TH2*>>> h2_energy_MWD_ch_vs_time;
 
         
 

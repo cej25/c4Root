@@ -1,30 +1,60 @@
-#::::: To be soon.... MDW parameters :::::
+# Please check the guide on how to define parameters.
+# Drive file: https://docs.google.com/document/d/1QcsofkBeTyn8o35NqX-fcrZcRKeC2uTcuMZcQ--xS5A/edit?usp=sharing
+# Wiki page: https://wiki.gsi.de/LISA/LISADATAandANA - How to choose MWD parameters
 
-#::::::::::::::::::::::::LISA Mapping - 3 layers in one board::::::::::::::::::::::::
-#-----------------------------------------------------------------------------------#
-#           FEBEXID  FEBEXCHA  LayerID(z)  DiamondID(x) DiamondID(y)    Name
-#-----------------------------------------------------------------------------------#
+#k0     k0+M-L            k0+2M     kend 
+#|---------|                |--------|
+#           *              *              
+#            *            *
+#             *          *
+#              *|======|*
+#            k0+M     k0+2M-L
 
-#Front side (xy)
-#::: 01 :: 11 :::
-#::: 00 :: 10 :::
+# ( k0, kend ) = (Trapez_sample_window_0, Trapez_sample_window_1)
+# M = Trapez_moving_window_length
+# L = Smoothing_L
 
-#:::::::::::::::     T O K Y O     :::::::::::::::#
-#::::::::::::::: Layer 0 - Extra  :::::::::::::::#
-              0       0         0     0     0   Tokyo  
-              
-#:::::::::::::::      E R I S      :::::::::::::::#
-#:::::::::::::::Layer 1 - Upstream :::::::::::::::#
-              0       1         1     0     1   Quito    
-              0       2         1     1     1   Caracas
-              0       5         1     0     0   Reykjavik
-              0       6         1     1     0   Amsterdam
-              
-#:::::::::::::::   S P A R R O W   :::::::::::::::#
-#::::::::::::::Layer 2 - Downstream ::::::::::::::#
-              0       9         2     0     1   Novi_Sad
-              0       10        2     1     1   Havana
-              0       13        2     0     0   Dublin 
-              0       14        2     1     0   Sucre
-#::::::::::::::::::::::::::::::::::::::::::::::::::#
+# :::::  M W D  P A R A M E T E R S  ::::
+#     All parameters must be positive
 
+
+# ::: M W D   T R A C E  calculation :::
+
+# ::: Smoothing Parameter L - (Rising Time in anatraces) 
+# ::: Conditions: L < M ; M + L < (Trapez_sample_window_1 (kend) - Trapez_sample_window_0(k0))
+Smoothing_L[ns]                    400
+
+# ::: Lenght of the moving window M
+# ::: Conditions: M > L (Smoothing_L); M + L < (Trapez_sample_window_1 (kend) - Trapez_sample_window_0 (k0))
+Trapez_moving_window_length[ns]    1200
+
+# ::: Decay Time of the signal tau (depending on the preamp - wip to be for each channel)
+# ::: Conditions: It has to fit the decay time of the trace. This flattens the trapezoid top
+Decaytime_ch0[ns]                  30500
+Decaytime_ch1[ns]                  30500
+
+# ::: Start and stop of the MWD trace (k0,kend)
+# ::: Conditions:  k0 >= 0 && k0 < kend && k0 < trace_febex.size(); kend > k0
+Trapez_sample_window_0[ns]         1800  
+Trapez_sample_window_1[ns]         4500 
+
+# ::: Sampling from Febex (=10 ns)
+# ::: This depends on Febex clock (100 MHz) - DO NOT CHANGE
+Sampling[ns]                       10
+
+
+# ::: M W D   E N E R G Y calculation :::
+
+# ::: Start and stop of the trapezoid flat top where the energy is computed
+# ::: Conditions: Trapez_amp_calc_window_0 > k0 + M; Trapez_amp_calc_window_1 < k0 + 2 * M - L
+Trapez_amp_calc_window_0[ns]       3100
+Trapez_amp_calc_window_1[ns]       3300
+
+# ::: Range for the baseline calculation of the MWD trace
+# ::: Conditions: Trapez_baseline_window_0 > k0; Trapez_baseline_window_1 < k0 + M - L
+Trapez_baseline_window_0[ns]       1800             
+Trapez_baseline_window_1[ns]       2500
+
+
+#To implement
+#Threshold_ch_1                     9

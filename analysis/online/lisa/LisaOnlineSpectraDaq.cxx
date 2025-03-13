@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                             E.M.Gandolfo                                   *
+ *                               17.12.24                                     *
+ ******************************************************************************/
+
 // FairRoot
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -20,6 +36,7 @@
 #include "TMath.h"
 #include "TRandom.h"
 #include <string>
+#include <cmath>
 
 LisaOnlineSpectraDaq::LisaOnlineSpectraDaq()  :   LisaOnlineSpectraDaq("LisaOnlineSpectraDaq")
 {
@@ -137,7 +154,7 @@ InitStatus LisaOnlineSpectraDaq::Init()
     //:::::::::::H I T  P A T T E R N - by grid ::::::::::::::::::
     dir_stats->cd();
     c_hitpattern_grid = new TCanvas("c_hitpattern_grid", "Hit Pattern Grid", 650, 350);
-    c_hitpattern_grid->Divide(layer_number, 1, 0.05, 0.05);
+    c_hitpattern_grid->Divide(ceil((layer_number)/2),2, 0.05, 0.05);
     h2_hitpattern_grid.resize(layer_number);
     c_hitpattern_grid->SetLogz();
     c4LOG(info, " before hit pattern layer : " << layer_number );
@@ -149,17 +166,17 @@ InitStatus LisaOnlineSpectraDaq::Init()
         c_hitpattern_grid->cd(i+1);
         gPad->SetLeftMargin(0.15);
         gPad->SetRightMargin(0.15);
-        h2_hitpattern_grid[i] = new TH2F(Form("h2_hitpattern_grid_layer_%i", i), Form("Hit Pattern Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
+        h2_hitpattern_grid[i] = new TH2F(Form("h2_hitpattern_grid_layer_%i", i), Form("Hit Pattern Grid - Layer %i", i), xmax, 0, xmax, ymax, 0, ymax);
         h2_hitpattern_grid[i]->SetStats(0);
         h2_hitpattern_grid[i]->Draw("colz");
-        h2_hitpattern_grid[i]->GetXaxis()->SetTitle(Form("Hit Pattern Layer %i",i+1));
+        h2_hitpattern_grid[i]->GetXaxis()->SetTitle(Form("Hit Pattern Layer %i",i));
         h2_hitpattern_grid[i]->GetXaxis()->SetLabelSize(0);
         h2_hitpattern_grid[i]->GetXaxis()->SetTickLength(0);
         h2_hitpattern_grid[i]->GetYaxis()->SetLabelSize(0);
         h2_hitpattern_grid[i]->GetYaxis()->SetTickLength(0);
         h2_hitpattern_grid[i]->SetMinimum(1);
         h2_hitpattern_grid[i]->SetContour(100);
-        //gPad->SetLogz();
+        gPad->SetLogz();
         
     }
     
@@ -170,7 +187,7 @@ InitStatus LisaOnlineSpectraDaq::Init()
     //:::::::::::P I L E   U P::::::::::::
     dir_stats->cd();
     c_pileup_grid = new TCanvas("c_pileup_grid", "Pileup Grid", 650, 350);
-    c_pileup_grid->Divide(layer_number, 1, 0.05, 0.05);
+    c_pileup_grid->Divide(ceil((layer_number)/2), 2, 0.05, 0.05);
     h2_pileup_grid.resize(layer_number);
     //c_hitpattern_grid->SetLogz();
 
@@ -180,17 +197,17 @@ InitStatus LisaOnlineSpectraDaq::Init()
         c_pileup_grid->cd(i+1);
         gPad->SetLeftMargin(0.15);
         gPad->SetRightMargin(0.15);
-        h2_pileup_grid[i] = new TH2F(Form("h2_pileup_grid_layer_%i", i), Form("Pile Up Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
+        h2_pileup_grid[i] = new TH2F(Form("h2_pileup_grid_layer_%i", i), Form("Pile Up Grid - Layer %i", i), xmax, 0, xmax, ymax, 0, ymax);
         h2_pileup_grid[i]->SetStats(0);
         h2_pileup_grid[i]->Draw("COLZ");
-        h2_pileup_grid[i]->GetXaxis()->SetTitle(Form("Pile Up Layer %i",i+1));
+        h2_pileup_grid[i]->GetXaxis()->SetTitle(Form("Pile Up Layer %i",i));
         h2_pileup_grid[i]->GetXaxis()->SetLabelSize(0);
         h2_pileup_grid[i]->GetXaxis()->SetTickLength(0);
         h2_pileup_grid[i]->GetYaxis()->SetLabelSize(0);
         h2_pileup_grid[i]->GetYaxis()->SetTickLength(0);
         h2_pileup_grid[i]->SetMinimum(1);
         //h2_pileup_grid[i]->SetContour(100);
-        //gPad->SetLogz();
+        gPad->SetLogz();
         
     }
     
@@ -201,7 +218,7 @@ InitStatus LisaOnlineSpectraDaq::Init()
     //:::::::::::O V E R   F L O W:::::::::::
     dir_stats->cd();
     c_overflow_grid = new TCanvas("c_overflow_grid", "Over Flow Grid", 650, 350);
-    c_overflow_grid->Divide(layer_number, 1, 0.05, 0.05);
+    c_overflow_grid->Divide(ceil((layer_number)/2), 2, 0.05, 0.05);
     h2_overflow_grid.resize(layer_number);
 
     for (int i = 0; i < layer_number; i++)
@@ -210,10 +227,10 @@ InitStatus LisaOnlineSpectraDaq::Init()
         c_overflow_grid->cd(i+1);
         gPad->SetLeftMargin(0.15);
         gPad->SetRightMargin(0.15);
-        h2_overflow_grid[i] = new TH2F(Form("h2_overflow_grid_layer_%i", i), Form("Over Flow Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
+        h2_overflow_grid[i] = new TH2F(Form("h2_overflow_grid_layer_%i", i), Form("Over Flow Grid - Layer %i", i), xmax, 0, xmax, ymax, 0, ymax);
         h2_overflow_grid[i]->SetStats(0);
         h2_overflow_grid[i]->Draw("COLZ");
-        h2_overflow_grid[i]->GetXaxis()->SetTitle(Form("Over Flow Layer %i",i+1));
+        h2_overflow_grid[i]->GetXaxis()->SetTitle(Form("Over Flow Layer %i",i));
         h2_overflow_grid[i]->GetXaxis()->SetLabelSize(0);
         h2_overflow_grid[i]->GetXaxis()->SetTickLength(0);
         h2_overflow_grid[i]->GetYaxis()->SetLabelSize(0);
@@ -329,9 +346,9 @@ InitStatus LisaOnlineSpectraDaq::Init()
 
                 h1_traces_layer_ch[i][j][k] = new TH1F(Form("traces_%i_%i_%i_%s", i, j, k, city.Data()), city.Data(), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces); //2000,0,20
                 h1_traces_layer_ch[i][j][k]->GetXaxis()->SetTitle("Time [us]");
-                h1_traces_layer_ch[i][j][k]->SetMinimum(lisa_config->AmplitudeMin);
-                h1_traces_layer_ch[i][j][k]->SetMaximum(lisa_config->AmplitudeMax);
-                h1_traces_layer_ch[i][j][k]->SetStats(0);
+                h1_traces_layer_ch[i][j][k]->SetMinimum(lisa_config->amplitude_min);
+                h1_traces_layer_ch[i][j][k]->SetMaximum(lisa_config->amplitude_max);
+                //h1_traces_layer_ch[i][j][k]->SetStats(0);
                 h1_traces_layer_ch[i][j][k]->SetLineColor(kBlue+1);
                 h1_traces_layer_ch[i][j][k]->SetFillColor(kOrange-3);
                 h1_traces_layer_ch[i][j][k]->Draw();
@@ -382,9 +399,15 @@ void LisaOnlineSpectraDaq::Reset_Histo()
     //::: Reset grids for pileup, overflow, hitpattern
     for (int i = 0; i < layer_number; i++)
     {
+        h1_hitpattern_layer[i]->Reset();
+    }
+
+    for (int i = 0; i < layer_number-1; i++)
+    {
         h2_hitpattern_grid[i]->Reset();
         h2_overflow_grid[i]->Reset();
         h2_pileup_grid[i]->Reset();
+
     }
 
 
@@ -434,7 +457,9 @@ void LisaOnlineSpectraDaq::Exec(Option_t* option)
         int xpos = lisaCalItem.Get_xposition();
         int ypos = lisaCalItem.Get_yposition();
         uint32_t energy = lisaCalItem.Get_energy();
-        trace = lisaCalItem.Get_trace();
+        uint32_t energy_MWD = lisaCalItem.Get_energy_MWD();
+        trace = lisaCalItem.Get_trace_febex();
+        trace_MWD = lisaCalItem.Get_trace_MWD();
         int pileup = lisaCalItem.Get_pileup();
         int overflow = lisaCalItem.Get_overflow();
         uint64_t evtno = header->GetEventno();
@@ -492,8 +517,8 @@ void LisaOnlineSpectraDaq::Exec(Option_t* option)
         for (int i = 0; i < trace.size(); i++)
         {
             h1_traces_layer_ch[layer][xpos][ypos]->SetBinContent(i, trace[i]);
+            //c4LOG(info, " Trace Febex : " << trace.size());
             //c4LOG(info, "layer: " << layer << " x max: " << xmax << " ymax: " << ymax);
-
         }
 
     }

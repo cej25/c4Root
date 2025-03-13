@@ -1,30 +1,37 @@
-#::::: To be soon.... MDW parameters :::::
+# The following parameters are interconnected.
+# Please check the guide on how to define parameters.
 
-#::::::::::::::::::::::::LISA Mapping - 3 layers in one board::::::::::::::::::::::::
-#-----------------------------------------------------------------------------------#
-#           FEBEXID  FEBEXCHA  LayerID(z)  DiamondID(x) DiamondID(y)    Name
-#-----------------------------------------------------------------------------------#
+# :::::  M W D  P A R A M E T E R S  ::::
 
-#Front side (xy)
-#::: 01 :: 11 :::
-#::: 00 :: 10 :::
+# ::: M W D   T R A C E  calculation :::
+# :::Smoothing Parameter - This corresponds to Rising Time in anatraces
+Smoothing_L[ns]                    400
 
-#:::::::::::::::     T O K Y O     :::::::::::::::#
-#::::::::::::::: Layer 0 - Extra  :::::::::::::::#
-              0       0         0     0     0   Tokyo  
-              
-#:::::::::::::::      E R I S      :::::::::::::::#
-#:::::::::::::::Layer 1 - Upstream :::::::::::::::#
-              0       1         1     0     1   Quito    
-              0       2         1     1     1   Caracas
-              0       5         1     0     0   Reykjavik
-              0       6         1     1     0   Amsterdam
-              
-#:::::::::::::::   S P A R R O W   :::::::::::::::#
-#::::::::::::::Layer 2 - Downstream ::::::::::::::#
-              0       9         2     0     1   Novi_Sad
-              0       10        2     1     1   Havana
-              0       13        2     0     0   Dublin 
-              0       14        2     1     0   Sucre
-#::::::::::::::::::::::::::::::::::::::::::::::::::#
+# :::Lenght of the moving window for calculation
+Trapez_moving_window_length[ns]    1200
 
+# :::Decay Time of the signal (depending on the preamp)
+# !!! Decay time to be put in a separate file....WIP for the multichannel mode !!!
+# !!! At the moment only Decaytime_ch0 is used for all the channels !!!
+Decaytime_ch0[ns]                  30500
+Decaytime_ch1[ns]                  30500
+
+# :::Start and stop of the entire MWD trace
+Trapez_sample_window_0[ns]         1800  
+Trapez_sample_window_1[ns]         4500 
+
+# :::Sampling from Febex (=10 ns)
+Sampling[ns]                       10
+
+# ::: M W D   E N E R G Y calculation :::
+# :::Start and stop of the trapezoid flat top where the energy is computed
+Trapez_amp_calc_window_0[ns]       3100
+Trapez_amp_calc_window_1[ns]       3300
+
+# ::: Range for the baseline calculation of the MWD trace
+Trapez_baseline_window_0[ns]       1900             
+Trapez_baseline_window_1[ns]       2500
+
+
+#To implement
+#Threshold_ch_1                     9

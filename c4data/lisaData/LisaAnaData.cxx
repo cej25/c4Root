@@ -1,9 +1,31 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                       E.M. Gandolfo, C.E. Jones                            *
+ *                               25.11.24                                    *
+ ******************************************************************************/
+
 #include "LisaAnaData.h"
+#include "TVector.h"
 
-LisaAnaData::LisaAnaData()
-{
+// This is the adjustment to use TVectors instead of std::vector
+//This was to try to read vectors of vectors form external macro without sourcing c4. It does not work.
+//template <typename T>
+//using StdVector = std::vector<T>;
 
-}
+// LisaAnaData::LisaAnaData()
+// {
+
+// }
 
 LisaAnaItem::LisaAnaItem()
 {
@@ -12,16 +34,20 @@ LisaAnaItem::LisaAnaItem()
 
 void LisaAnaItem::SetAll(uint64_t wr,
                     uint16_t id,
-                    uint8_t b_id,
+                    int b_id,
                     uint64_t ev_time,
-                    uint8_t ch_id,
+                    int ch_id,
                     uint64_t ch_time,
-                    bool p,
-                    bool o,
+                    int p,
+                    //int p_MWD,
+                    int o,
+                    //int o_MWD,
                     uint32_t ch_energy,
-                    uint32_t ch_energy_ana,
-                    uint8_t ch_id_tr,
-                    std::vector<uint16_t> tr
+                    uint32_t ch_energy_MWD,
+                    int ch_id_tr,
+                    std::vector<int16_t> tr,
+                    std::vector<int16_t> tr_MWD,
+                    std::vector<int16_t> tr_x
                     )
 {   
     wr_t = wr;
@@ -31,11 +57,15 @@ void LisaAnaItem::SetAll(uint64_t wr,
     channel_id = ch_id;
     channel_time = ch_time;
     pileup = p;
+    //pileup_MWD = p_MWD;
     overflow = o;
+    //overflow_MWD = o_MWD;
     channel_energy = ch_energy;
-    channel_energy_ana = ch_energy_ana;
+    channel_energy_MWD = ch_energy_MWD;
     channel_id_traces = ch_id_tr;
-    trace = tr;
+    trace_febex = tr;
+    trace_MWD = tr_MWD;
+    trace_x = tr_x;
 }
 
 
@@ -49,12 +79,16 @@ void LisaAnaItem::Reset()
     channel_id = 0;
     channel_time = 0;
     pileup = 0;
+    //pileup_MWD = 0;
     overflow = 0;
+    //overflow_MWD = 0;
     channel_energy = 0;
-    channel_energy_ana = 0;
+    channel_energy_MWD = 0;
     channel_id = 0;
-    trace = {};
+    trace_febex = {};
+    trace_MWD = {};
+    trace_x = {};
 
 }
 
-ClassImp(LisaAnaData)
+ClassImp(LisaAnaItem)

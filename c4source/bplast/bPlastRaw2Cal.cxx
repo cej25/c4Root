@@ -10,7 +10,7 @@
  * granted to it by virtue of its status as an Intergovernmental Organization *
  * or submit itself to any jurisdiction.                                      *
  ******************************************************************************
- *                            J.P. Bormans                                    *
+ *                       J.P. Bormans, C.E. Jones                             *
  *                              17.12.24                                      *
  ******************************************************************************/
 
@@ -381,12 +381,12 @@ void bPlastRaw2Cal::Exec(Option_t* option)
                 new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData((detector_id == bplast_config->TM_Undelayed()) ? (fast_lead_time) : (0), (detector_id == bplast_config->TM_Undelayed()) ? (0) : (fast_lead_time), funcal_hit->Get_wr_subsystem_id(), funcal_hit->Get_wr_t() );
             }
 
-            uint16_t trig = funcal_hit->Get_trigger();
+            trig = funcal_hit->Get_trigger();
             // std::cout << "trig:: "<< trig << std::endl;
             if (trig == 3) std::cout << "trig in raw2cal: " << trig << std::endl;
 
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) bPlastTwinpeaksCalData(
-                funcal_hit->Get_trigger(),
+                trig,
                 funcal_hit->Get_board_id(),
                 (int)((funcal_hit->Get_ch_ID()+1)/2),
                 detector_id,

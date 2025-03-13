@@ -1,8 +1,24 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                       E.M. Gandolfo, C.E. Jones                            *
+ *                               25.11.24                                     *
+ ******************************************************************************/
 #include "LisaData.h"
 
-LisaData::LisaData()
-{
-}
+// This is the adjustment to use TVectors instead of std::vector
+//This was to try to read vectors of vectors form external macro without sourcing c4. It does not work.
+//template <typename T>
+//using StdVector = std::vector<T>;
 
 LisaItem::LisaItem()
 {
@@ -11,15 +27,16 @@ LisaItem::LisaItem()
 
 void LisaItem::SetAll(uint64_t wr,
                     uint16_t id,
-                    uint8_t b_id,
+                    int b_id,
                     uint64_t ev_time,
-                    uint8_t ch_id,
+                    int ch_id,
                     uint64_t ch_time,
                     bool p,
                     bool o,
                     uint32_t ch_energy,
-                    uint8_t ch_id_tr,
-                    std::vector<uint16_t> tr
+                    int ch_id_tr,
+                    std::vector<int16_t> tr,
+                    std::vector<int16_t> tr_x
                     )
 {
     wr_t = wr;
@@ -33,6 +50,7 @@ void LisaItem::SetAll(uint64_t wr,
     channel_energy = ch_energy;
     channel_id_traces = ch_id_tr;
     trace = tr;
+    trace_x = tr_x;
 }
 
 void LisaItem::Reset()
@@ -48,6 +66,7 @@ void LisaItem::Reset()
     channel_energy = 0;
     channel_id = 0;
     trace = {};
+    trace_x = {};
 }
 
-ClassImp(LisaData)
+ClassImp(LisaItem)

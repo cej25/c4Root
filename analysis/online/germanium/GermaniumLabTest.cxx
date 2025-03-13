@@ -306,6 +306,7 @@ TF1 * GermaniumLabTest::MakeFitFunc(TString function, int index){
     }
 
     c4LOG(fatal,"Not implemented function");
+    func = new TF1(); return func; // avoid dumb warning
 
 }
 

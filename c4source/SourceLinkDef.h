@@ -28,8 +28,8 @@
 #pragma link C++ class bPlastReader+;
 #pragma link C++ class bPlastRaw2Cal+;
 #pragma link C++ class LisaReader+;
-#pragma link C++ class LisaRaw2Cal+;
-//#pragma link C++ class LisaRaw2Ana+;
+#pragma link C++ class LisaAna2Cal+;
+#pragma link C++ class LisaRaw2Ana+;
 #pragma link C++ class UnpackReader+;
 #pragma link C++ class BeamMonitorReader+;
 #pragma link C++ class FatimaReader+;
@@ -61,7 +61,6 @@
 // #pragma link C++ class EXT_STR_h101_bb7vme_onion_t;
 #pragma link C++ class EXT_STR_h101_bbfebex_onion_t;
 #pragma link C++ class EXT_STR_h101_fimp_onion_t;
-#pragma link C++ class EXT_STR_h101_frs_onion_t;
 
 
 #pragma link C++ class TestReader+;

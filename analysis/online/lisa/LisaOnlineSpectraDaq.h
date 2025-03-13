@@ -82,12 +82,15 @@ class LisaOnlineSpectraDaq : public FairTask
         Int_t xp;
         Int_t yp;
         uint32_t en;
-        std::vector<uint16_t> trace;
+        std::vector<int16_t> trace;
+        std::vector<int16_t> trace_MWD;
 
         TFolder* histograms;
         TDirectory* dir_lisa;
         TDirectory* dir_energy;
+        TDirectory* dir_energy_MWD;
         TDirectory* dir_traces;
+        TDirectory* dir_traces_MWD;
         TDirectory* dir_stats;
         TDirectory* dir_music;
         TDirectory* dir_correlations;
@@ -104,8 +107,10 @@ class LisaOnlineSpectraDaq : public FairTask
         TCanvas* c_energy_layer1_vs_layer2;
         TCanvas* c_energy_layer_vs_time;
         std::vector<TCanvas*> c_energy_layer_ch;
+        std::vector<TCanvas*> c_energy_MWD_layer_ch;
         std::vector<TCanvas*> c_energy_layer_ch_vs_time;
         std::vector<TCanvas*> c_traces_layer_ch;
+        std::vector<TCanvas*> c_traces_MWD_layer_ch;
         std::vector<TCanvas*> c_traces_layer_ch_stat;
 
     
@@ -122,8 +127,10 @@ class LisaOnlineSpectraDaq : public FairTask
         //TH2F* h2_hitpattern_grid;
         //TH1F* h1_energy_layer0;
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch;
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_MWD_layer_ch;
         TH2F* h2_energy_layer1_vs_layer2;
         std::vector<std::vector<std::vector<TH1F*>>> h1_traces_layer_ch;
+        std::vector<std::vector<std::vector<TH1F*>>> h1_traces_MWD_layer_ch;
         std::vector<std::vector<std::vector<TH2F*>>> h2_traces_layer_ch_stat;
 
 

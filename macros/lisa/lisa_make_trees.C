@@ -5,7 +5,7 @@
 
 //Select the data level you want to visualize
 #define LISA_RAW 0
-//#define LISA_MDW 0
+#define LISA_ANA 0
 #define LISA_CAL 1
 
 typedef struct EXT_STR_h101_t
@@ -44,16 +44,16 @@ void lisa_make_trees()
 
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
-    //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0169_*.lmd";  //data with only lisa
-    //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/daqtest/daqtest_0001_0001.lmd"; //data from ts folder
-    TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/daq_test/test_H_B_I_G_13nov.lmd";
+    //TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0075_0001.lmd";
+    //TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/x7_241Am/multiple_cards_test/cards_A_B_C_D_E_F_G_0306.lmd"; 
+    TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/run_0072_0001.lmd";  //data with only lisa
 
     //___O U T P U T
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/elisa/";
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/daq_test_c4tree/";    
+    TString outputpath = "/u/gandolfo/data/test_c4/";    
         
 
-    TString outputFilename = outputpath + "test_H_B_I_G_13nov.root";
+    TString outputFilename = outputpath + "run_0072_0001.root";
 
     //:::::::Create online run
     Int_t refresh = 10; // not needed
@@ -81,13 +81,15 @@ void lisa_make_trees()
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
-    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_All_Boards.txt");
+    //TLisaConfiguration::SetMappingFile(config_path + "/Lisa_All_Boards.txt");
     TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
-    //TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters.txt");
+    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters.txt");
+
+    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Detector_Map_names.txt");
 
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    // S U B S Y S T E M S
+    // S U B S Y S T E M Si
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
    
     // ::::::: READ Subsystem  ::::::::
@@ -100,6 +102,7 @@ void lisa_make_trees()
         LisaReader* unpacklisa = new LisaReader((EXT_STR_h101_lisa_onion*)&ucesb_struct.lisa, offsetof(EXT_STR_h101, lisa));
         //unpacklisa->DoFineTimeCalOnline("....root", 100000);
         //unpacklisa->SetInputFileFineTimeHistos(config_path + "....root");
+        LisaRaw2Ana* lisaraw2ana = new LisaRaw2Ana();
 
         if (LISA_RAW)
         {
@@ -110,7 +113,19 @@ void lisa_make_trees()
         }
         //unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
         
+        if (LISA_ANA)
+        {
+            lisaraw2ana->SetOnline(false); //false= write to a tree; true=doesn't write to tree
+        } else 
+        {
+            lisaraw2ana->SetOnline(true); //false= write to a tree; true=doesn't write to tree
+        }
+        //unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
+        
         source->AddReader(unpacklisa);
+        lisaraw2ana->SetOnline(true);
+        run->AddTask(lisaraw2ana);
+    
     }
 
 
@@ -118,19 +133,11 @@ void lisa_make_trees()
 
     if (LISA_CAL)
     {
-        LisaRaw2Cal* lisaraw2cal = new LisaRaw2Cal();
+        LisaAna2Cal* lisaana2cal = new LisaAna2Cal();
 
-        lisaraw2cal->SetOnline(false);
-        run->AddTask(lisaraw2cal);  
+        lisaana2cal->SetOnline(false);
+        run->AddTask(lisaana2cal);  
     }
-
-    // if (LISA_ON)
-    // {
-    //     LisaRaw2Cal* lisaraw2cal = new LisaRaw2Cal();
-
-    //     lisaraw2cal->SetOnline(false);
-    //     run->AddTask(lisaraw2cal);
-    // }
 
 
     // Initialise

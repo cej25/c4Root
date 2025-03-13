@@ -78,22 +78,16 @@ InitStatus TravMusNearlineSpectra::Init()
     dir_travmus = gDirectory->mkdir("Travel MUSIC");
     //mgr->Register("Travel MUSIC", "Travel MUSIC", dir_travmus, false); // allow other tasks to find this
     
-    dir_raw_adc = dir_travmus->mkdir("Raw ADC");
+    dir_raw_adc = dir_travmus->mkdir("Raw_ADC");
     dir_drifts = dir_travmus->mkdir("Drifts");
     dir_raw_adc->cd();
 
     //:::::::::: Raw ADC ::::::::::::::::
-    c_raw_adc = new TCanvas("c_raw_adc", "Travel MUSIC Raw ADC", 650, 350);
-    c_raw_adc->Divide(4, 2);
     for (int i = 0; i < 8; i++)
     {
-        c_raw_adc->cd(i+1);
-        h1_travmus_raw_adc[i] = MakeTH1(dir_raw_adc, "I", Form("h1_travmus_raw_adc_anode_%i", i), Form("Raw ADC - Travel MUSIC Anode %i", i), 10500, 100, 12500, "ADC Channel", kPink-3, kBlue+2);
+        h1_travmus_raw_adc[i] = MakeTH1(dir_raw_adc, "I", Form("h1_travmus_raw_adc_anode_%i", i), Form("Raw ADC - Travel MUSIC Anode %i", i), 1050, 100, 12500, "ADC Channel", kPink-3, kBlue+2);
         h1_travmus_raw_adc[i]->Draw();
     }
-    c_raw_adc->cd(0);
-    dir_raw_adc->Append(c_raw_adc);
-
 
     dir_travmus->cd();
 
@@ -176,6 +170,7 @@ void TravMusNearlineSpectra::Exec(Option_t* option)
     const auto & travMusicHitItem = travMusAnaArray->at(0); 
 
     if (travMusicHitItem.Get_wr_t() > 0 && travMusicHitItem.Get_travmusic_dE() > 0) h1_travmus_dE->Fill(travMusicHitItem.Get_travmusic_dE());
+    if (travMusicHitItem.Get_wr_t() > 0 && travMusicHitItem.Get_travmusic_dE_driftcorr() > 0) h1_travmus_dE_driftcorr->Fill(travMusicHitItem.Get_travmusic_dE_driftcorr());
 
     int TM_time_mins = 0;
     if (travMusicHitItem.Get_wr_t() > 0) TM_time_mins = (travMusicHitItem.Get_wr_t() - exp_config->exp_start_time)/ 60E9;
