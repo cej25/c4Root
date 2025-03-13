@@ -106,7 +106,7 @@ void GermaniumRaw2Cal::PrintDetectorCal(){
     if (germanium_configuration->CalibrationCoefficientsLoaded()){
         for (const auto& entry : germanium_configuration->CalibrationCoefficients()){
             std::cout << "DETECTORID: " << entry.first.first << " CRYSTALID: " << entry.first.second;
-            std::cout << " a0: " << entry.second.first << " a1: " << entry.second.second << "\n";
+            std::cout << " a0: " << entry.second.at(0) << " a1: " << entry.second.at(1) << " a2:" << entry.second.at(2) << "\n";
         }
     }
     else{
@@ -148,14 +148,12 @@ void GermaniumRaw2Cal::Exec(Option_t* option)
                 if (germanium_configuration->CalibrationCoefficientsLoaded())
                 {
                     std::pair<int,int> calibdet {detector_id, crystal_id};
-                    if (germanium_configuration->CalibrationCoefficients().count(calibdet) > 0)
-                    {
-                        double a0 = germanium_configuration->CalibrationCoefficients().at(calibdet).first; //.find returns an iterator over the pairs matching key.
-                        double a1 = germanium_configuration->CalibrationCoefficients().at(calibdet).second;
-                        channel_energy_cal = a0 + a1*(double) funcal_hit->Get_channel_energy();
-                    }
-                    else
-                    {
+                    if (germanium_configuration->CalibrationCoefficients().count(calibdet) > 0){
+                    double a0 = germanium_configuration->CalibrationCoefficients().at(calibdet).at(0); //.find returns an iterator over the pairs matching key.
+                    double a1 = germanium_configuration->CalibrationCoefficients().at(calibdet).at(1);
+                    double a2 = germanium_configuration->CalibrationCoefficients().at(calibdet).at(2);
+                    channel_energy_cal = a0 + a1*(double) funcal_hit->Get_channel_energy() + a2*(double) funcal_hit->Get_channel_energy()*(double) funcal_hit->Get_channel_energy();
+                    }else{
                         //c4LOG(fatal, "Detector Calibrations not set - please set this using SetCalibrationMap to use the Cal Task.");
                         channel_energy_cal = funcal_hit->Get_channel_energy();
                         //continue;
@@ -174,6 +172,14 @@ void GermaniumRaw2Cal::Exec(Option_t* option)
                 //continue;
             }
 
+            //allow pileups of sci41
+            if (funcal_hit->Get_pileup() == true){
+                if (germanium_configuration->IsDetectorAuxilliary(detector_id) == false || VetoPileupSCI41 == true){
+                    continue;
+                }
+            }
+
+            // std::cout << "wr germanium: " << funcal_hit->Get_wr_t() << std::endl;
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) GermaniumCalData(
                 funcal_hit->Get_trigger(),
                 funcal_hit->Get_event_trigger_time(),

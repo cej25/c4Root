@@ -1,7 +1,7 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define AIDA_ON 1
+#define AIDA_ON 0
 #define BPLAST_ON 0
 #define GERMANIUM_ON 0
 #define BGO_ON 0
@@ -9,13 +9,13 @@
 #define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 0
+#define BB7_ON 0
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
-
-// as long as we use the same one, all good right?
+// CEJ: not configured for s101 yet
 extern "C"
 {
-    #include "../../config/s100/frs/setup_des_s100_029_2024_conv.C"
+    #include "../../config/s101/frs/setup_302_008_2025_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -28,7 +28,7 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_frs_onion_t frs;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
     EXT_STR_h101_bgo_onion_t bgo;
-    // EXT_STR_h101_bb7febex_onion_t bb7febex;
+    EXT_STR_h101_bbfebex_onion_t bbfebex;
 } EXT_STR_h101;
 
 
@@ -37,19 +37,16 @@ void s101_tests()
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
 
     // Name your experiment. Make sure all relevant directories are named identically.
-    // TString fExpName = "NovTest";
     TString fExpName = "s101";
-    //TString fExpName = "beammonitor";
 
     // Define important paths.
-    //TString c4Root_path = "/u/jbormans/c4Root";
     TString c4Root_path = "/u/cjones/c4Root";
-    //TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
-    TString ucesb_path = c4Root_path + "/unpack/exps/" + "s100" + "/" + "s100" + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
-
+    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --input-buffer=200Mi --event-sizes";
     ucesb_path.ReplaceAll("//","/");
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
+    
+    std::cout << config_path << std::endl;
 
     // Macro timing
     TString cRunId = Form("%04d", fRunId);
@@ -66,12 +63,13 @@ void s101_tests()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    //TString filename = "stream://x86l-182"; // BGO
     // DO NOT CHANGE THIS DURING A RUN!!!!!!!
-    // TString filename =  "~/lustre/gamma/s100_files/ts/162Eu_0075_0006.lmd";
-    //TString filename = "~/lustre/gamma/nhubbard/162Eu_0052_TEST_0001.lmd";
-
-    TString filename  = "~/lustre/gamma/stacktest2024_files/ts/aidabplas_OUT_130125_new_0182.lmd";
+//   TString filename = "stream://x86l-86";
+    //  TString filename = "trans://lxg3107";
+     TString filename = "/u/cjones/lustre/gamma/s101_files/ts/107Ag_0108_0008.lmd";
+    // TString filename = "/lustre/gamma/s101_files/dryrun_ts/*";770707070
+//     TString filename = "trans://lxg1257"; // timesorter.
+//     TString filename = "trans://x86l-144"; // ??
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
@@ -79,9 +77,10 @@ void s101_tests()
     Int_t refresh = 1; // Refresh rate for online histograms
     Int_t port = 7070; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
 
+    std::cout << "hello 1" << std::endl;
+
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
-    //EvtHead->Register(false);
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
     run->SetSink(new FairRootFileSink(outputFileName));
@@ -90,11 +89,10 @@ void s101_tests()
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
     run->AddObject(histograms);
 
+  
     // Create source using ucesb for input
     EXT_STR_h101 ucesb_struct;
-    
-    TString ntuple_options = "UNPACK,RAW"; // Define which level of data to unpack - we don't use "CAL"
-    
+    TString ntuple_options = "UNPACK,RAW";
     UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
     source->SetMaxEvents(nev);
     run->SetSource(source);
@@ -118,30 +116,28 @@ void s101_tests()
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Gates *************************************************************** //
     
-
-    /*std::string germanium_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/germanium/Gates/";
-    std::vector<std::string> GePromptCuts = {"GePromptCut1"};
-    TCutGGates* GePrompt = new TCutGGates("GeEdT", GePromptCuts, germanium_gate_path);*/
-    //TGermaniumConfiguration::SetPromptFlashCut(germanium_gate_path + "/GePromptCut1");
     
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Correlations ******************************************************** //
     
     TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations.dat");
 
-
+    
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
-    TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc.txt");
+    TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_mapping_220125.txt");
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
-    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_apr15.txt");
-    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_uncal_apr15.txt");
-    TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
-    
-    
     TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
     
+    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_jan22.txt");
+    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_cal_feb21_2025.txt");
+    //TGermaniumConfiguration::SetDetectorTimeshiftsFile(config_path + "/germanium/ge_timeshifts_apr20.txt");
+    //TGermaniumConfiguration::SetPromptFlashCut(config_path + "/germanium/ge_prompt_flash.root");
+
+    TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
+    
+    TBB7FebexConfiguration::SetMappingFile(config_path + "/bb7/BB7_Detector_Map_feb21.txt");  
 
     // ------------------------------------------------------------------------------------- //
     // *** Read Subsystems - comment out unwanted systems ********************************** //
@@ -151,9 +147,6 @@ void s101_tests()
     
     source->AddReader(unpackheader);
     
-  
-
-    
     if (AIDA_ON)
     {
         AidaReader* unpackaida = new AidaReader((EXT_STR_h101_aida_onion*)&ucesb_struct.aida, offsetof(EXT_STR_h101, aida));
@@ -162,11 +155,18 @@ void s101_tests()
         source->AddReader(unpackaida);
     }
 
+    if (BB7_ON)
+    {
+       BB7FebexReader* unpackbb7 = new BB7FebexReader((EXT_STR_h101_bbfebex_onion*)&ucesb_struct.bbfebex, offsetof(EXT_STR_h101, bbfebex));
+       unpackbb7->SetOnline(true);
+       source->AddReader(unpackbb7);
+    }
+
     if (BPLAST_ON)
     {
         bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_bplast_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
-        //unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_4apr_test.root", 1000000);
-        unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_4apr_test.root");
+        //unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_G302_21FEB.root", 1000000);
+        unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_G302_21FEB.root");
         
         unpackbplast->SetOnline(true);
         source->AddReader(unpackbplast);
@@ -183,8 +183,8 @@ void s101_tests()
     if (BGO_ON)
     {
         BGOReader* unpackbgo = new BGOReader((EXT_STR_h101_bgo_onion*)&ucesb_struct.bgo, offsetof(EXT_STR_h101, bgo));
-        //unpackbgo->DoFineTimeCalOnline(config_path + "/bgo/fine_time_histos_17apr.root", 1000000);
-        unpackbgo->SetInputFileFineTimeHistos(config_path + "/bgo/fine_time_histos_17apr.root");
+        // unpackbgo->DoFineTimeCalOnline(config_path + "/bgo/fine_time_histos_s181_8June.root", 1000000);
+        unpackbgo->SetInputFileFineTimeHistos(config_path + "/bgo/fine_time_histos_s181_8June.root");
         
         unpackbgo->SetOnline(true);
         source->AddReader(unpackbgo);
@@ -194,9 +194,10 @@ void s101_tests()
     if (FRS_ON)
     {
         FrsReader* unpackfrs = new FrsReader((EXT_STR_h101_frs_onion*)&ucesb_struct.frs, offsetof(EXT_STR_h101, frs));
-        unpackfrs->SetOnline(false);
+        
+        unpackfrs->SetOnline(true);
+        
         source->AddReader(unpackfrs);
-
     }
     
     if (BEAMMONITOR_ON)
@@ -209,8 +210,7 @@ void s101_tests()
 
    
     // ---------------------------------------------------------------------------------------- //
-    // *** Calibrate Subsystems - comment out unwanted systems ******************************** //
-
+    // *** Calibrate Subsystems - comment out unwanted systems ******************************** //    
     if (AIDA_ON)
     {
         AidaUnpack2Cal* aidaCalibrator = new AidaUnpack2Cal();
@@ -218,6 +218,14 @@ void s101_tests()
         aidaCalibrator->SetOnline(true);
         run->AddTask(aidaCalibrator);
         
+    }
+    
+    if (BB7_ON)
+    {
+        BB7FebexRaw2Cal* calbb7 = new BB7FebexRaw2Cal();
+        
+        calbb7->SetOnline(true);
+        run->AddTask(calbb7);
     }
     
     if (BPLAST_ON)
@@ -234,7 +242,8 @@ void s101_tests()
     {
         GermaniumRaw2Cal* calge = new GermaniumRaw2Cal();
         // calge->PrintDetectorMap();
-
+        
+        // calge->PrintDetectorCal();
         calge->SetOnline(true);
         run->AddTask(calge);
     }
@@ -252,14 +261,14 @@ void s101_tests()
     if (FRS_ON)
     {
         FrsRaw2Cal* calfrs = new FrsRaw2Cal();
-        calfrs->SetOnline(false);
+        
+        calfrs->SetOnline(true);
         run->AddTask(calfrs);
     }
 
 
     // ---------------------------------------------------------------------------------------- //
     // *** Analyse Subsystem Hits ************************************************************* //
-    
     
     if (AIDA_ON)
     {        
@@ -268,11 +277,20 @@ void s101_tests()
         aidaHitter->SetOnline(true);
         run->AddTask(aidaHitter);
     }
+
+    if (BB7_ON)
+    {
+        BB7FebexCal2Hit* hitbb7 = new BB7FebexCal2Hit();
+        
+        hitbb7->SetOnline(true); 
+        run->AddTask(hitbb7);
+    } 
     
     if (FRS_ON)
     {
         FrsCal2Hit* hitfrs = new FrsCal2Hit();
-        hitfrs->SetOnline(false);
+        
+        hitfrs->SetOnline(true); 
         run->AddTask(hitfrs);
     } 
 
@@ -283,13 +301,19 @@ void s101_tests()
     // ======================================================================================== //
     
     // ---------------------------------------------------------------------------------------- //
-    // *** Online Spectra ********************************************************************* //
-    
+    // *** Online Spectra ********************************************************************* //    
     if (AIDA_ON)
     {
         AidaOnlineSpectra* aidaOnline = new AidaOnlineSpectra();
         
         run->AddTask(aidaOnline);
+    }
+
+    if (BB7_ON)
+    {
+        BB7FebexOnlineSpectra* onlinebb7 = new BB7FebexOnlineSpectra();
+
+        run->AddTask(onlinebb7);
     }
     
     if (BPLAST_ON)
@@ -303,60 +327,89 @@ void s101_tests()
     if (GERMANIUM_ON)
     {
         GermaniumOnlineSpectra* onlinege = new GermaniumOnlineSpectra();
-        onlinege->SetBinningEnergy(3000,0,3e3);
+        onlinege->SetBinningEnergy(12000,0,3e3);
         onlinege->AddReferenceDetector(15,0);
+        onlinege->AddReferenceDetector(16,0);
         onlinege->AddReferenceDetector(1,0);
         onlinege->AddReferenceDetectorWithEnergyGates(1,0,1332);
+        onlinege->AddReferenceDetectorWithEnergyGates(1,0,1173,1332);
+        onlinege->SetEnergyGateWidth(10);
         run->AddTask(onlinege);
     }
-    
-    TBGOTwinpeaksConfiguration::SetCoincidenceWindow(5000); 
-    TBGOTwinpeaksConfiguration::SetCoincidenceOffset(0);
+
+    TBGOTwinpeaksConfiguration::SetCoincidenceWindow(1000);
+    TBGOTwinpeaksConfiguration::SetCoincidenceOffset(500);
     if (BGO_ON)
     {
         BGOOnlineSpectra* onlinebgo = new BGOOnlineSpectra();
-        onlinebgo->SetBinningEnergy(1500,0.1,1500.1);
-        //onlinebgo->SetCoincidenceWindow(5000);
+        onlinebgo->SetBinningEnergy(3000,0.1,3000.1);
 
-        
         run->AddTask(onlinebgo);
         
     }
     
-    TFrsConfiguration::Set_Z_range(50,100);
-    TFrsConfiguration::Set_AoQ_range(2.3,2.7);
-
-    std::vector<FrsGate*> fgs = {}; // for now just because code cries without a vector
-    
-    if (FRS_ON)
-    {
-        // // For monitoring FRS on our side
-        FrsRawSpectra* frsrawspec = new FrsRawSpectra();
-        FrsCalSpectra* frscalspec = new FrsCalSpectra();
-        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra(fgs);
-        
-        run->AddTask(frsrawspec);
-        run->AddTask(frscalspec);
-        run->AddTask(onlinefrs);
-
-    }
-    
+     TFrsConfiguration::Set_Z_range(30,70);
+     TFrsConfiguration::Set_AoQ_range(2.1,2.4);
+     TFrsConfiguration::Set_x2_range(-120,120);
+     TFrsConfiguration::Set_x4_range(-120,120);
+//     FrsGate* zHeavy = new FrsGate("zHeavy",config_path+"/frs/Gates/zHeavy.root");
+//     FrsGate* zHeavy2 = new FrsGate("zHeavy2",config_path+"/frs/Gates/zHeavy.root");
+     std::vector<FrsGate*> frsgates{};
+//     frsgates.emplace_back(zHeavy);
+ 
+     if (FRS_ON)
+     {
+         FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra(frsgates);
+//         For monitoring FRS on our side
+         FrsRawSpectra* frsrawspec = new FrsRawSpectra();
+         FrsCalSpectra* frscalspec = new FrsCalSpectra();
+//         
+         run->AddTask(onlinefrs);
+         run->AddTask(frsrawspec);
+         run->AddTask(frscalspec);
+     }
+//     
     if (BEAMMONITOR_ON)
     {
         BeamMonitorOnlineSpectra* onlinebm = new BeamMonitorOnlineSpectra();
         
         run->AddTask(onlinebm);
     }
+    
+    //FRS GATES::
+
+    
+//     if (AIDA_ON && FRS_ON)
+//     {
+//         
+//         FrsAidaCorrelationsOnline* frsaida = new FrsAidaCorrelationsOnline(frsgates);
+//         
+//         run->AddTask(frsaida);
+//     }
+    
+    
+//     if (FRS_ON && GERMANIUM_ON)
+//     {
+//         FrsGermaniumCorrelations* zhv = new FrsGermaniumCorrelations(zHeavy);
+//         zhv->SetShortLifetimeCollectionWindow(20000);
+//         run->AddTask(zhv);
+//         FrsGermaniumCorrelations* zhv2 = new FrsGermaniumCorrelations(zHeavy2);
+//         zhv2->SetShortLifetimeCollectionWindow(20000);
+//         run->AddTask(zhv2);
+//     }
+
 
     TString b = "Aida";
     TString c = "bPlast";
     TString d = "Germanium";
     TString e = "Frs";
+    //TString f = "BB7";
+    TString g = "BGO";
 
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
     {
         TimeMachineOnline* tms = new TimeMachineOnline();
-        std::vector a {b, c, d, e};
+        std::vector a {b, d, c};
         tms->SetDetectorSystems(a);
         
         run->AddTask(tms);
@@ -365,31 +418,9 @@ void s101_tests()
     if (WHITE_RABBIT_CORS)
     {
         WhiterabbitCorrelationOnline* wronline = new WhiterabbitCorrelationOnline();
-        wronline->SetDetectorSystems({b, c, d, e});
-    
+        wronline->SetDetectorSystems({b,c});
+        
         run->AddTask(wronline);
-    }
-
-    if (FRS_ON && AIDA_ON)
-    {
-        //FrsAidaCorrelationsOnline* frsaidaonline = new FrsAidaCorrelationsOnline(fgs);
-        //FrsAidaCorrelations* frsaidaonline = new FrsAidaCorrelations(fgs);
-
-        //run->AddTask(frsaidaonline);
-    }
-
-    if (BPLAST_ON && GERMANIUM_ON)
-    {
-        bPlastGermaniumCorrelationsOnline* bplastgecorr = new bPlastGermaniumCorrelationsOnline();
-        // set bplast multiplicity
-        // ???
-        run->AddTask(bplastgecorr);
-    }
-
-    if (BPLAST_ON && FRS_ON)
-    {
-	    //FrsBplastCorrelations* frsbplast = new FrsBplastCorrelations();
-	    //run->AddTask(frsbplast);
     }
 
     // Initialise
@@ -403,12 +434,16 @@ void s101_tests()
     cout << "Online port server: " << port << endl;
     cout << "\n\n" << endl;
 
+    // create sink object before run starts    
+    FairSink* sf = FairRunOnline::Instance()->GetSink();
+
     // Run
     run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev); 
 
-
     // ---------------------------------------------------------------------------------------- //
     // *** Finish Macro *********************************************************************** //
+    
+
 
     timer.Stop();
     Double_t rtime = timer.RealTime();
@@ -417,9 +452,7 @@ void s101_tests()
     cout << "CPU used: " << cpuUsage << endl;
     std::cout << std::endl << std::endl;
     std::cout << "Macro finished successfully." << std::endl;
-    std::cout << "Output file is " << outputFileName << std::endl;
     std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl << std::endl;
-   // gApplication->Terminate(0);
    
    // ----------------------------------------------------------------------------------------- //
 

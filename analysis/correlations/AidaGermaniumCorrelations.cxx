@@ -128,11 +128,14 @@ void AidaGermaniumCorrelations::Exec(Option_t* option)
             double time1 = hit->Get_channel_trigger_time();
             uint64_t ge_time = hit->Get_wr_t();
 
-            if (TMath::Abs((int64_t)ge_time - (int64_t)aida_hit_time) < 100e3 && detector_id1 <= 12){
-                h1_aida_germanium_energy_time->Fill((int64_t)ge_time-(int64_t)aida_hit_time,energy1);
-                if ((int64_t)ge_time - (int64_t)aida_hit_time > -8e3) h1_aida_germanium_energy->Fill(energy1);
-                //c4LOG(info,Form("ge_time = %li, aida_time = %li, diff = %li, energy = %f",ge_time,aida_hit_time, (int64_t)ge_time-(int64_t)aida_hit_time,energy1));
-            }
+            // if (TMath::Abs((int64_t)ge_time - (int64_t)aida_hit_time) < 100e3 && detector_id1 <= 12){
+            //     h1_aida_germanium_energy_time->Fill((int64_t)ge_time-(int64_t)aida_hit_time,energy1);
+            //     if ((int64_t)ge_time - (int64_t)aida_hit_time > -8e3) h1_aida_germanium_energy->Fill(energy1);
+            //     //c4LOG(info,Form("ge_time = %li, aida_time = %li, diff = %li, energy = %f",ge_time,aida_hit_time, (int64_t)ge_time-(int64_t)aida_hit_time,energy1));
+            // }
+
+            // 2025, testing
+            if (!header->GetSpillFlag()) h1_aida_germanium_energy->Fill(energy1);
         }
     }
 

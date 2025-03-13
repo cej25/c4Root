@@ -10,7 +10,7 @@
  * granted to it by virtue of its status as an Intergovernmental Organization *
  * or submit itself to any jurisdiction.                                      *
  ******************************************************************************
- *                             J.E.L. Larsson                                 *
+ *                        J.E.L. Larsson, C.E. Jones                          *
  *                               17.12.24                                     *
  ******************************************************************************/
 
@@ -96,6 +96,8 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
     c4LOG_IF(fatal, !fHitGe, "Branch GermaniumCalData not found!");
     hitArrayFrs = mgr->InitObjectAs<decltype(hitArrayFrs)>("FrsHitData");
     c4LOG_IF(fatal, !hitArrayFrs, "Branch FrsHitData not found!");
+    multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
+    c4LOG_IF(fatal, !multihitArray, "Branch FrsMultiHitData not found!");
 
 
     dir_corr = (TDirectory*)mgr->GetObject("Correlations");
@@ -110,7 +112,7 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
 
     c4LOG(info, "Germanium gamma-gamma coincidence window: " + TString(std::to_string(germanium_coincidence_gate*2) + " ns"));
 
-    TString dirname = "DEGAS - FRS Gated: " + frsgate->GetName();
+    TString dirname = "DEGAS-FRS_gated" + frsgate->GetName();
     dir_germanium = dir_corr->mkdir(dirname);
 
     dir_germanium->cd();
@@ -235,44 +237,73 @@ InitStatus FrsGermaniumCorrelationsNearline::Init()
 
 void FrsGermaniumCorrelationsNearline::Exec(Option_t* option)
 {
-    if (hitArrayFrs->size() == 0) return;
-
+    // 2025:
+    // For 2025, we will use MHTDC, since TAC has fallen completely out of favour
+    // We will update for retroactive to use a switch to decide either TAC, MHTDC or both
+    // But this will come later...
+    if (hitArrayFrs->size() == 0) return; // Avoid processing for nothing
+    auto const & frshit = hitArrayFrs->at(0);
+    
     positive_PID = false;
-    auto const & frshit = hitArrayFrs->at(0);   
 
-    int64_t wr_t = frshit.Get_wr_t();
+    int64_t wr_t = frshit.Get_wr_t(); // Until next update, wr_t not set in MHTDC vector
     if(wr_t_first_frs_hit == 0) wr_t_first_frs_hit = wr_t;
-    double ID_x2 = frshit.Get_ID_x2();
-    double ID_y2 = frshit.Get_ID_y2();
-    double ID_x4 = frshit.Get_ID_x4();
-    double ID_AoQ = frshit.Get_ID_AoQ_s2s4();
-    double ID_z = frshit.Get_ID_z41();
-    double ID_z2 = frshit.Get_ID_z42();
-    double ID_dEdeg = frshit.Get_ID_dEdeg_z41();
+    
+    ID_x2 = frshit.Get_ID_x2(); // positions are not MH (well, only since we "always use TPC", but actually we could use SC)
+    ID_y2 = frshit.Get_ID_y2();
+    ID_x4 = frshit.Get_ID_x4();
 
-    // this must pass all gates given to FrsGate:
-    positive_PID = frsgate->PassedGate(ID_z, ID_z2, ID_x2, ID_x4, ID_AoQ, ID_dEdeg);
+    if (use_tac)
+    {
+        ID_AoQ_s2s4 = frshit.Get_ID_AoQ_s2s4();
+        ID_z41 = frshit.Get_ID_z41();
+        ID_z42 = frshit.Get_ID_z42();
+        ID_dEdegZ41 = frshit.Get_ID_dEdeg_z41();
+
+    }
+    else if (!use_tac || use_mhtdc) // change later
+    {   
+        if (multihitArray->size() == 0) return; // both are empty, nothing to process
+        auto const & multihitItem = multihitArray->at(0);
+        std::vector<Float_t> AoQ_s2s4_mhtdc = multihitItem.Get_ID_AoQ_s2s4_mhtdc();
+        std::vector<Float_t> z41_mhtdc = multihitItem.Get_ID_z41_mhtdc();
+        std::vector<Float_t> z42_mhtdc = multihitItem.Get_ID_z42_mhtdc();
+        std::vector<Float_t> dEdeg_z41_mhtdc = multihitItem.Get_ID_dEdeg_z41_mhtdc();
+
+        // For now we just take first hit, not really sure how to check PID with multihits honestly
+        if (AoQ_s2s4_mhtdc.size() > 0)
+        {
+            ID_AoQ_s2s4 = AoQ_s2s4_mhtdc.at(0);
+            ID_z41 = z41_mhtdc.at(0);
+            ID_z42 = z42_mhtdc.at(0);
+            ID_dEdegZ41 = dEdeg_z41_mhtdc.at(0);
+        }
+    }
+
+    // Well we can do something more strict but for now ZvsAoQ is fine
+    positive_PID = frsgate->Passed_ZvsAoQ(ID_z41,ID_AoQ_s2s4);
+    // positive_PID = frsgate->PassedGate(ID_z, ID_z2, ID_x2, ID_x4, ID_AoQ, ID_dEdeg);
+
     if (positive_PID)
     {
         wr_t_last_frs_hit = wr_t;
-        frs_rate_implanted ++;
-        frs_total_implanted ++;
+        frs_rate_implanted++;
+        frs_total_implanted++;
 
-        h2_frs_Z_vs_AoQ_gated->Fill(ID_AoQ,ID_z);
-        h2_frs_Z_vs_Z2_gated->Fill(ID_z,ID_z2);
-        h2_frs_x2_vs_AoQ_gated->Fill(ID_AoQ,ID_x2);
-        h2_frs_x4_vs_AoQ_gated->Fill(ID_AoQ,ID_x4);
+        h2_frs_Z_vs_AoQ_gated->Fill(ID_AoQ_s2s4,ID_z41);
+        h2_frs_Z_vs_Z2_gated->Fill(ID_z41,ID_z42);
+        h2_frs_x2_vs_AoQ_gated->Fill(ID_AoQ_s2s4,ID_x2);
+        h2_frs_x4_vs_AoQ_gated->Fill(ID_AoQ_s2s4,ID_x4);
 
         if (wr_t_last_frs_hit - frs_rate_time > 60e9)
         {
-            g_frs_rate->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_rate_implanted/60.0);
+            g_frs_rate->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_rate_implanted  /60.0);
             g_frs_total->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_total_implanted);
             frs_rate_time = wr_t_last_frs_hit;
             frs_rate_implanted = 0;
         }
-    }else{
-        wr_t_last_frs_hit = 0;
     }
+    else wr_t_last_frs_hit = 0;
 
     if (fHitGe && fHitGe->GetEntriesFast() > 0)
     {

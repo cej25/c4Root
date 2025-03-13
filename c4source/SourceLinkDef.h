@@ -20,6 +20,7 @@
 
 #pragma link C++ class GermaniumReader+;
 #pragma link C++ class GermaniumRaw2Cal+;
+#pragma link C++ class GermaniumCal2Anl+;
 #pragma link C++ class AidaReader+;
 #pragma link C++ class AidaUnpack2Cal+;
 #pragma link C++ class AidaCal2Hit+;
@@ -55,8 +56,8 @@
 #pragma link C++ class EXT_STR_h101_aida_onion_t;
 #pragma link C++ class EXT_STR_h101_bplast_onion_t;
 #pragma link C++ class EXT_STR_h101_beammonitor_onion_t;
-#pragma link C++ class EXT_STR_h101_bb7vme_onion_t;
-#pragma link C++ class EXT_STR_h101_bb7febex_onion_t;
+// #pragma link C++ class EXT_STR_h101_bb7vme_onion_t;
+#pragma link C++ class EXT_STR_h101_bbfebex_onion_t;
 #pragma link C++ class EXT_STR_h101_fimp_onion_t;
 
 
