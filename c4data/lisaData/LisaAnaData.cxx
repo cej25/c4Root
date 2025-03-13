@@ -15,6 +15,12 @@
  ******************************************************************************/
 
 #include "LisaAnaData.h"
+#include "TVector.h"
+
+// This is the adjustment to use TVectors instead of std::vector
+//This was to try to read vectors of vectors form external macro without sourcing c4. It does not work.
+//template <typename T>
+//using StdVector = std::vector<T>;
 
 // LisaAnaData::LisaAnaData()
 // {
@@ -28,9 +34,9 @@ LisaAnaItem::LisaAnaItem()
 
 void LisaAnaItem::SetAll(uint64_t wr,
                     uint16_t id,
-                    uint8_t b_id,
+                    int b_id,
                     uint64_t ev_time,
-                    uint8_t ch_id,
+                    int ch_id,
                     uint64_t ch_time,
                     int p,
                     //int p_MWD,
@@ -38,7 +44,7 @@ void LisaAnaItem::SetAll(uint64_t wr,
                     //int o_MWD,
                     uint32_t ch_energy,
                     uint32_t ch_energy_MWD,
-                    uint8_t ch_id_tr,
+                    int ch_id_tr,
                     std::vector<int16_t> tr,
                     std::vector<int16_t> tr_MWD,
                     std::vector<int16_t> tr_x

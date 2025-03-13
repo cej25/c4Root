@@ -66,7 +66,7 @@ class LisaNearlineSpectraDaq : public FairTask
         std::string city = "";
         
 
-        EventHeader* header;
+        EventHeader const* header;
         Int_t fNEvents;
 
         Int_t en_count1 = 0;
@@ -85,6 +85,7 @@ class LisaNearlineSpectraDaq : public FairTask
         TDirectory* dir_stats;
         TDirectory* dir_music;
         TDirectory* dir_correlations;
+        TDirectory* dir_drift;
 
         int64_t prev_wr = 0;
         int64_t wr_diff;
@@ -119,6 +120,9 @@ class LisaNearlineSpectraDaq : public FairTask
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch;
         std::vector<std::vector<std::vector<TH1F*>>> h1_traces_layer_ch;
         std::vector<std::vector<std::vector<TH2F*>>> h2_traces_layer_ch_stat;
+        std::vector<std::vector<std::vector<TH2*>>> h2_energy_ch_vs_evtno;
+
+        std::vector<std::vector<std::vector<TH2*>>> h2_energy_MWD_ch_vs_evtno;
         std::vector<TH2F*> h2_energy_layer_vs_evtno;
         
         

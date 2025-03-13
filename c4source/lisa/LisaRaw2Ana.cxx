@@ -43,6 +43,12 @@
 
 #include <vector>
 #include <numeric>
+#include "TVector.h"
+
+// This is the adjustment to use TVectors instead of std::vector
+//This was to try to read vectors of vectors form external macro without sourcing c4. It does not work.
+//template <typename T>
+//using StdVector = std::vector<T>;
 
 LisaRaw2Ana::LisaRaw2Ana()
     :   FairTask()
@@ -149,19 +155,19 @@ void LisaRaw2Ana::Exec(Option_t* option)
             int k0 = static_cast<int>(MWD_trace_start / sampling);               // Start of MWD in samples
             int kend = static_cast<int>(MWD_trace_stop / sampling);              // Stop of MWD in samples
             
-            //Ensure that the trace limit is not greater then febex trace, and if so replace it with febex trace limit
-            if (kend > trace_febex.size()) 
-            {
-                kend = trace_febex.size();            // If kend out of bound, replace it with trace_febex limit
-                c4LOG(info, "MWD_trace_stop is out of trace range. It has been replaced with febex trace limit");
-            }
 
             //Check Trace size - this solves problems with events with empty trace
-        
             if (trace_febex.size() == 0) 
             {
                 c4LOG(info, "Empty Trace - Skipping event");
                 continue;
+            }
+
+            //Ensure that the trace limit is not greater then febex trace, and if so replace it with febex trace limit
+            if (kend > trace_febex.size()) 
+            {
+                kend = trace_febex.size();            // If kend out of bound, replace it with trace_febex limit
+                c4LOG(info, "[MWD info] Trapez_sample_window_1 " << MWD_trace_stop << " is greater than febex trace size " << trace_febex.size() << ". It has been replaced with febex trace limit");
             }
 
             // ::: Checks on the MWD parameters called so far :::

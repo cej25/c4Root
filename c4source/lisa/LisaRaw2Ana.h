@@ -25,6 +25,11 @@
 #include <map>
 #include <vector>
 
+// This is the adjustment to use TVectors instead of std::vector
+//This was to try to read vectors of vectors form external macro without sourcing c4. It does not work.
+//template <typename T>
+//using StdVector = std::vector<T>;
+
 class EventHeader;
 class LisaItem;
 class LisaAnaItem;
