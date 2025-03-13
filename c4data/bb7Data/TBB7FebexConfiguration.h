@@ -16,7 +16,7 @@ class TBB7FebexConfiguration
         static void SetImplantThreshold(uint32_t th) { implantThreshold = th; }
         static void SetDecayThreshold(uint32_t th) { decayThreshold = th; }
 
-        std::map<std::pair<int,int>, std::pair<int, std::pair<int, int>>> Mapping() const;
+        std::map<std::pair<int, std::pair<int, int>>, std::pair<int, std::pair<int,int>>> Mapping() const;
         bool MappingLoaded() const;
         bool CalibrationLoaded() const;
         int DSSDs() const;
@@ -40,7 +40,8 @@ class TBB7FebexConfiguration
         static TBB7FebexConfiguration* instance;
 
         // febid,febch --> detector, side,strip
-        std::map<std::pair<int,int>, std::pair<int, std::pair<int, int>>> detector_mapping;
+        // std::map<std::pair<int,int>, std::pair<int, std::pair<int, int>>> detector_mapping;
+        std::map<std::pair<int, std::pair<int, int>>, std::pair<int, std::pair<int,int>>> detector_mapping;
 
         int num_dssds;
         int tm_undelayed;
@@ -67,7 +68,7 @@ inline void TBB7FebexConfiguration::Create()
     instance = new TBB7FebexConfiguration();
 }
 
-inline std::map<std::pair<int,int>, std::pair<int, std::pair<int, int>>> TBB7FebexConfiguration::Mapping() const
+inline std::map<std::pair<int, std::pair<int, int>>, std::pair<int, std::pair<int,int>>> TBB7FebexConfiguration::Mapping() const
 {
   return detector_mapping;
 }

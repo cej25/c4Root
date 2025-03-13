@@ -133,3 +133,12 @@ USER_CRATE_DATA()
         v785[1] = VME_CAEN_V785(geom=12); // sci tac dt
     }
 }
+
+// procID = 35
+TRAVMUS_CRATE_DATA()
+{
+    select several
+    {
+        mdpp = VME_MESYTEC_MDPP16(geom=8);
+    };
+}

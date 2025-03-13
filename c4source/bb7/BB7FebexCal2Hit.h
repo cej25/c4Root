@@ -37,6 +37,9 @@ class BB7FebexCal2Hit : public FairTask
         Bool_t fOnline;
         int total_time_microsecs = 0;
 
+        Int_t ncalImplantEvents = 0;
+        Int_t ncalDecayEvents = 0;
+
         std::vector<BB7Cluster> ItemsToClusters(std::vector<BB7FebexCalItem> const& );
         BB7FebexHitItem ClusterPairToHit(std::pair<BB7Cluster, BB7Cluster> const&);
 

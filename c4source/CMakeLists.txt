@@ -70,6 +70,7 @@ set(SRCS
 ./bplast/bPlastRaw2Cal.cxx
 ./beammonitor/BeamMonitorReader.cxx
 ./germanium/GermaniumRaw2Cal.cxx
+./germanium/GermaniumCal2Anl.cxx
 ./fatima/FatimaReader.cxx
 ./fatima/FatimaRaw2Cal.cxx
 ./bgo/BGOReader.cxx
@@ -99,8 +100,8 @@ Set(STRUCT_HEADERS
 ./fatima/ext_h101_fatima.h
 ./fatima/ext_h101_fatimavme.h
 ./bgo/ext_h101_bgo.h
-./bb7/ext_h101_bb7vme.h
-./bb7/ext_h101_bb7febex.h
+# ./bb7/ext_h101_bb7vme.h
+./bb7/ext_h101_bbfebex.h
 ./fimp/ext_h101_fimp.h
 
 ./test/ext_h101_test.h

@@ -1,4 +1,5 @@
 // ::::::: Main Crate :::::::::::::::::::
+// not needed
 SIGNAL(SPILL_ON, frsmain.spill_on.spillon, DATA8);
 SIGNAL(SPILL_OFF, frsmain.spill_off.spilloff, DATA8);
 
@@ -50,7 +51,7 @@ SIGNAL(SCALERS2_1, frsuser.data.v830.data[0], SCALERS2_32, frsuser.data.v830.dat
 SIGNAL(ZERO_SUPPRESS: SCI_TAC_DT_16);
 SIGNAL(SCI_TAC_DT_1, frsuser.data.v785[1].data[0], SCI_TAC_DT_16, frsuser.data.v785[1].data[15], DATA24);
 
-SIGNAL(ZERO_SUPPRESS: MUSIC2_E_8);
+SIGNAL(ZERO_SUPPRESS: MUSIC5_E_8);
 SIGNAL(MUSIC1_E_1, frsuser.data.v785[0].data[0], MUSIC1_E_8, frsuser.data.v785[0].data[7], DATA24);
 SIGNAL(MUSIC2_E_1, frsuser.data.v785[0].data[8], MUSIC2_E_8, frsuser.data.v785[0].data[15], DATA24);
 // :::::::::::::::::::::::::::::::::::::::
@@ -62,3 +63,9 @@ SIGNAL(WR_T2, frstpat.wr.t2, DATA16);
 SIGNAL(WR_T3, frstpat.wr.t3, DATA16);
 SIGNAL(WR_T4, frstpat.wr.t4, DATA16);
 SIGNAL(TPAT, frstpat.data.tpat, DATA16);
+
+
+// ::::::: TRAVMUS Crate ::::::::::::::::::
+// 4 = 21, 5 = 22 -- fixed
+SIGNAL(MUSIC4_E_1, travmus.data.mdpp.adc[0], MUSIC4_E_8, travmus.data.mdpp.adc[7], DATA24);
+SIGNAL(MUSIC5_E_1, travmus.data.mdpp.adc[8], MUSIC5_E_8, travmus.data.mdpp.adc[15], DATA24);

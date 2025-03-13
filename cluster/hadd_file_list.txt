@@ -1,2 +1,0 @@
-/lustre/gamma/s100_nearline/histograms/Au_beam_0012_0001_tree_histograms.root
-/lustre/gamma/s100_nearline/histograms/Au_beam_0012_0002_tree_histograms.root

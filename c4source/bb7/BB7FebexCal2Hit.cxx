@@ -77,10 +77,14 @@ void BB7FebexCal2Hit::Exec(Option_t* option)
     implantHitArray->clear();
     decayHitArray->clear();
 
+    if (bb7calImplants->size() > 0) ncalImplantEvents++;
+    if (bb7calDecays->size() > 0) ncalDecayEvents++;
+
     // Process implants if there are any
     // Decays should be 0, but we skip them anyway
     if (bb7calImplants->size() > 0)
-    {
+    { 
+
         // Cluster events from adjacent strips
         auto clusters = ItemsToClusters(*bb7calImplants);
         // List of front-back matched clusters for a physical hit
@@ -109,7 +113,7 @@ void BB7FebexCal2Hit::Exec(Option_t* option)
                 // Must be same DSSD and Y side
                 if (j.DSSD != i.DSSD || j.Side != 1) continue;
                 // Check gates from config
-                if (std::abs(i.Energy - j.Energy) < 1000 // frontbackenergyL
+                if (std::abs(i.Energy - j.Energy) < 3500000000 // frontbackenergyL
                         && i.IsGoodTime(j, 4400))
                 {
                     hits.push_back({i, j});
@@ -186,7 +190,7 @@ void BB7FebexCal2Hit::Exec(Option_t* option)
                 // Must be same DSSD and Y side
                 if (j.DSSD != i.DSSD || j.Side != 1) continue;
                 // Check gates from config
-                if (std::abs(i.Energy - j.Energy) < 350000 // frontbackenergyL - set high for now
+                if (std::abs(i.Energy - j.Energy) < 350000000000 // frontbackenergyL - set high for now
                         && i.IsGoodTime(j, 4400))
                 {
                     bb7_coord_t x{i.DSSD, i.Side, i.Strip};
