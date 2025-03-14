@@ -155,6 +155,10 @@ typedef struct EXT_STR_h101_frs_t
   uint32_t WR_T3 /* [0,65535] */;
   uint32_t WR_T4 /* [0,65535] */;
   uint32_t TPAT /* [0,65535] */;
+  uint32_t TM_WR_T1 /* [0,65535] */;
+  uint32_t TM_WR_T2 /* [0,65535] */;
+  uint32_t TM_WR_T3 /* [0,65535] */;
+  uint32_t TM_WR_T4 /* [0,65535] */;
 
 } EXT_STR_h101_frs;
 
@@ -223,6 +227,7 @@ typedef struct EXT_STR_h101_frs_onion_t
   uint32_t WR_ID;
   uint32_t WR_T[4];
   uint32_t TPAT;
+  uint32_t TM_WR_T[4];
 
 } EXT_STR_h101_frs_onion;
 
@@ -609,6 +614,18 @@ typedef struct EXT_STR_h101_frs_onion_t
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      TPAT,                            UINT32,\
                     "TPAT",65535,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     TM_WR_T1,                        UINT32,\
+                    "TM_WR_T1",65535,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     TM_WR_T2,                        UINT32,\
+                    "TM_WR_T2",65535,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     TM_WR_T3,                        UINT32,\
+                    "TM_WR_T3",65535,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     TM_WR_T4,                        UINT32,\
+                    "TM_WR_T4",65535,0/*flags*/); \
   \
 } while (0);
 

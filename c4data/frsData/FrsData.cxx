@@ -3,16 +3,18 @@
 
 FrsTpatItem::FrsTpatItem() {}
 
-void FrsTpatItem::SetAll(Long64_t wr, Short_t tp)
+void FrsTpatItem::SetAll(Long64_t wr, Short_t tp, Long64_t tmwr)
 {
     wr_t = wr;
     tpat = tp;
+    travmus_wr_t = tmwr;
 }
 
 void FrsTpatItem::Reset()
 {
     wr_t = 0;
     tpat = 0;
+    travmus_wr_t = 0;
 }
 
 ClassImp(FrsTpatItem)

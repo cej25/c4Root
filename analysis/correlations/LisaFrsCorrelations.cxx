@@ -79,12 +79,13 @@ InitStatus LisaFrsCorrelations::Init()
     multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
     c4LOG_IF(fatal, !multihitArray, "Branch FrsMultiHitData not found!");
 
-    travMusCalArray = mgr->InitObjectAs<decltype(travMusCalArray)>("TravMusCalData");
-    c4LOG_IF(fatal, !travMusCalArray, "Branch TravMusCalData not found!");
+    // CEJ shoudn't need this stuff any more
+    // travMusCalArray = mgr->InitObjectAs<decltype(travMusCalArray)>("TravMusCalData");
+    // c4LOG_IF(fatal, !travMusCalArray, "Branch TravMusCalData not found!");
 
-    // needed?
-    travMusAnaArray = mgr->InitObjectAs<decltype(travMusAnaArray)>("TravMusAnaData");
-    c4LOG_IF(fatal, !travMusAnaArray, "Branch TravMusAnaData not found!");
+    // // needed?
+    // travMusAnaArray = mgr->InitObjectAs<decltype(travMusAnaArray)>("TravMusAnaData");
+    // c4LOG_IF(fatal, !travMusAnaArray, "Branch TravMusAnaData not found!");
 
 
     layer_number = lisa_config->NLayers();

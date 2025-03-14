@@ -13,7 +13,7 @@ class FrsHitItem : public TObject
     public:
         FrsHitItem();
 
-        void SetMetaData(Long64_t wr_t, Short_t tpat, TString setup);
+        void SetMetaData(Long64_t wr_t, Short_t tpat, TString setup, Long64_t travmus_wr_t);
 
         void SetScalerData(Double_t time_in_ms,
                         Double_t time_in_us,
@@ -93,14 +93,20 @@ class FrsHitItem : public TObject
                     Float_t rho[4],
                     Float_t brho[4]);
 
-        void SetDriftCorrections(Float_t FRS_time, 
-                                Float_t AoQs2s4_driftcorr, 
-                                Float_t z41_driftcorr);
+        void SetDriftCorrections(Float_t FRS_time,
+                                Float_t AoQs1s2_driftcorr,
+                                Float_t AoQs2s4_driftcorr,
+                                Float_t z21_driftcorr,
+                                Float_t z22_driftcorr,
+                                Float_t z41_driftcorr,
+                                Float_t z42_driftcorr,
+                                Float_t z43_driftcorr);
 
 
         Long64_t Get_wr_t() const { return fwr_t; }
         Short_t Get_tpat() const { return ftpat; }
         TString Get_setup_file() const { return setup_file; }
+        Long64_t Get_travmus_wr_t() const { return ftravmus_wr_t; }
         Double_t Get_time_in_ms() const { return ftime_in_ms; }
         Double_t Get_time_in_us() const { return ftime_in_us; }
         Int_t Get_ibin_for_s() const { return fibin_for_s; }
@@ -176,8 +182,13 @@ class FrsHitItem : public TObject
         const Float_t (&Get_ID_rho() const) [4] { return fID_rho; }
         const Float_t (&Get_ID_brho() const) [4] { return fID_brho; }
         Float_t Get_FRS_time_mins() const { return FRS_time_mins; }
+        Float_t Get_ID_AoQs1s2_driftcorr() const { return fID_AoQs1s2_driftcorr; } // should change
         Float_t Get_ID_AoQs2s4_driftcorr() const { return fID_AoQs2s4_driftcorr; } // should change
+        Float_t Get_ID_z21_driftcorr() const { return fID_z21_driftcorr; }
+        Float_t Get_ID_z22_driftcorr() const { return fID_z22_driftcorr; }
         Float_t Get_ID_z41_driftcorr() const { return fID_z41_driftcorr; }
+        Float_t Get_ID_z42_driftcorr() const { return fID_z42_driftcorr; }
+        Float_t Get_ID_z43_driftcorr() const { return fID_z43_driftcorr; }
 
 
         ClassDef(FrsHitItem, 1);
@@ -188,6 +199,7 @@ class FrsHitItem : public TObject
         Long64_t fwr_t;
         Short_t ftpat;
         TString setup_file;
+        Long64_t ftravmus_wr_t;
 
         // Scaler
         Double_t ftime_in_ms;
@@ -273,9 +285,13 @@ class FrsHitItem : public TObject
 
         // DriftCorrs
         Float_t FRS_time_mins;
+        Float_t fID_AoQs1s2_driftcorr;
         Float_t fID_AoQs2s4_driftcorr;
+        Float_t fID_z21_driftcorr;
+        Float_t fID_z22_driftcorr;
         Float_t fID_z41_driftcorr;
-        // others?
+        Float_t fID_z42_driftcorr;
+        Float_t fID_z43_driftcorr;
 
 };
 

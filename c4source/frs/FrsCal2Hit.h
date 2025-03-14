@@ -98,6 +98,7 @@ class FrsCal2Hit : public FairTask
         Float_t FRS_time_mins = 0;
         Long64_t wr_t = 0;
         Short_t tpat = 0;
+        Long64_t travmus_wr_t = 0;
 
         // Dummy variables and arrays
         // ::: Scalers ::::: //
@@ -472,8 +473,13 @@ class FrsCal2Hit : public FairTask
         std::vector<Float_t> dEdeg_z41_mhtdc;
 
         // :: DriftCorr :: //
-        Float_t id_AoQ_driftcorr;
-        Float_t id_z_driftcorr;
+        Float_t id_AoQs1s2_driftcorr;
+        Float_t id_AoQs2s4_driftcorr;
+        Float_t id_z21_driftcorr;
+        Float_t id_z22_driftcorr;
+        Float_t id_z41_driftcorr;
+        Float_t id_z42_driftcorr;
+        Float_t id_z43_driftcorr;
 
 
         // Misc
