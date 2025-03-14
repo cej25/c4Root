@@ -11,7 +11,7 @@
  * or submit itself to any jurisdiction.                                      *
  ******************************************************************************
  *                       E.M. Gandolfo, C.E. Jones                            *
- *                               25..11.24                                    *
+ *                               25.11.24                                     *
  ******************************************************************************/
 
 // ::: Note::: No canvases in Nearline Tasks please :::
@@ -537,7 +537,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
             for (int gate = 0; gate < FrsGates.size(); gate++)
             {  
                 //::: Gate on PID
-                if (FrsGates[gate]->Passed_ZvsAoQ(frsHitItem.Get_ID_z41(), frsHitItem.Get_ID_AoQ_s2s4()))
+                if (FrsGates[gate]->Passed_Z41vsAoQs2s4(frsHitItem.Get_ID_z41(), frsHitItem.Get_ID_AoQ_s2s4()))
                 {
                     h1_energy_ch_GM_PIDgated[gate][layer][xpos][ypos]->Fill(energy_LISA_GM);
 
@@ -564,7 +564,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
             for (int gate = 0; gate < FrsGates.size(); gate++)
             {  
                 //::: Gate on PID
-                if (FrsGates[gate]->Passed_ZvsAoQ_driftcorr(frsHitItem.Get_ID_z_driftcorr(), frsHitItem.Get_ID_AoQ_driftcorr()))
+                if (FrsGates[gate]->Passed_Z41vsAoQs2s4_driftcorr(frsHitItem.Get_ID_z41_driftcorr(), frsHitItem.Get_ID_AoQs2s4_driftcorr()))
                 {
 
                     h1_energy_layer_GM_PID_driftcorr[gate][layer]->Fill(energy_LISA_GM);

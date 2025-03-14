@@ -13,6 +13,7 @@ std::string TFatimaTwinpeaksConfiguration::configuration_file = "blank";
 std::string TFatimaTwinpeaksConfiguration::calibration_file = "blank";
 std::string TFatimaTwinpeaksConfiguration::timeshift_calibration_file = "blank";
 std::string TFatimaTwinpeaksConfiguration::promptflash_cut_file = "blank";
+std::string TFatimaTwinpeaksConfiguration::gain_shifts_file = "blank";
 
 
 TFatimaTwinpeaksConfiguration::TFatimaTwinpeaksConfiguration()
@@ -24,6 +25,7 @@ TFatimaTwinpeaksConfiguration::TFatimaTwinpeaksConfiguration()
     if (calibration_file != "blank") ReadCalibrationCoefficients();
     if (timeshift_calibration_file != "blank") ReadTimeshiftCoefficients();
     if (promptflash_cut_file != "blank") ReadPromptFlashCut();
+    if (gain_shifts_file != "blank") ReadGainShifts();
 }
 
 void TFatimaTwinpeaksConfiguration::ReadConfiguration()
@@ -124,28 +126,29 @@ void TFatimaTwinpeaksConfiguration::ReadCalibrationCoefficients(){
 
 void TFatimaTwinpeaksConfiguration::ReadTimeshiftCoefficients()
 {
+    c4LOG(info, "Reading Timeshift coefficients.");
+    c4LOG(info, "File reading");
+    c4LOG(info, timeshift_calibration_file);
+
     std::ifstream timeshift_file (timeshift_calibration_file);
 
-
-    if (timeshift_file.fail()) c4LOG(fatal, "Could not open FatimaTwinpeaks timeshifts");    
-    int rdetector_id; // temp read variables
-    double t0;
+    int rdetector_id1, rdetector_id2; // temp read variables
+    double timeshift;
     
     //assumes the first line in the file is num-modules used
     while(!timeshift_file.eof()){
         if(timeshift_file.peek()=='#') timeshift_file.ignore(256,'\n');
         else{
-            timeshift_file >> rdetector_id >> t0;
-            c4LOG(info,Form("det = %i , t = %f ns",rdetector_id,t0));
-            timeshift_calibration_coeffs.insert(std::pair<int,double>{rdetector_id,t0});
+            timeshift_file >> rdetector_id1 >> rdetector_id2 >> timeshift;
+
+            timeshift_calibration_coeffs.insert(std::pair<std::pair<int,int>,double>{std::pair<int,int>(rdetector_id1,rdetector_id2),timeshift});
             timeshift_file.ignore(256,'\n');
         }
     }
     timeshift_calibration_coeffs_loaded = 1;
-
     timeshift_file.close();
+    return; 
 
-    LOG(info) << "FatimaTwinpeaks Timeshift File: " + timeshift_calibration_file;
 };
 
 
@@ -173,5 +176,20 @@ void TFatimaTwinpeaksConfiguration::ReadPromptFlashCut()
     }
 
     cut->Close();
+}
+
+
+void TFatimaTwinpeaksConfiguration::ReadGainShifts()
+{
+    // must be a root file (not always the case from saving TCuts)
+    // must be named "fatima_prompt_flash_cut"!
+
+    for (int i = 1; i<=NDetectors(); i++){
+        if (IsDetectorAuxilliary(i)) continue;
+        c4LOG(info, TString("Creating GainShifts for ") + TString(Form("fatima_gain_shift_det_%i",i)) + TString(" at ") + TString(gain_shifts_file));
+        GainShift * g = new GainShift(TString(Form("fatima_gain_shift_det_%i",i)),TString(gain_shifts_file));
+        gain_shifts.push_back(g);
+    }
+    gain_shifts_loaded = 1;
 }
 

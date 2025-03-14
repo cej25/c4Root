@@ -16,6 +16,8 @@ class TH2F;
 class TFile;
 class TFolder;
 class FrsGate;
+class FrsHitItem;
+class FrsMultiHitItem;
 
 class FrsGermaniumCorrelationsNearline : public FairTask
 {
@@ -24,6 +26,7 @@ class FrsGermaniumCorrelationsNearline : public FairTask
         FrsGermaniumCorrelationsNearline(FrsGate * frsgate);
         FrsGermaniumCorrelationsNearline(const TString& name, Int_t verbose = 1);
 
+        void SetMultiHit(bool v) {use_multi = v;};
 
 
         virtual ~FrsGermaniumCorrelationsNearline();
@@ -38,9 +41,9 @@ class FrsGermaniumCorrelationsNearline : public FairTask
 
         virtual void FinishTask();
 
-        //virtual void Reset_Ge_Histo();
-
-        //virtual void Snapshot_Ge_Histo();
+        // void SetAnlOrCalInput(TString AnlOrCal){
+        //     input_anl_or_cal = AnlOrCal;
+        // }
 
         void AddGammaEnergyOfInterest(double energy, double gate_width){
             gamma_energies_of_interest.emplace_back(energy);
@@ -69,28 +72,46 @@ class FrsGermaniumCorrelationsNearline : public FairTask
             long_lifetime_binhigh = stop;
         }
         
-        void SetGermaniumCoincidenceWindow(int coinc_window){ // ns
-            germanium_coincidence_gate = coinc_window;
-        }
-        
+        // void SetControlOutput(bool a){fControlOutput = a;} // writes the events that passes the fatima and frs gates to a tree
+        // void SetWriteOutput(bool a){fWriteOutput = a;} // writes the events that passes the fatima and frs gates to a tree
     
     private:
         TClonesArray* fHitGe;
         TClonesArray* fHitFrs;
+        TClonesArray* fMultiHitFrs;
 
         std::vector<FrsHitItem> const* hitArrayFrs;
+        std::vector<FrsMultiHitItem> const* multihitArray;
 
-        const TGermaniumConfiguration * germanium_configuration;
-        const TFrsConfiguration * frs_configuration;
+        const TGermaniumConfiguration* germanium_configuration;
+        const TFrsConfiguration* frs_configuration;
         
-        FrsGate * frsgate;
+        FrsGate* frsgate;
+
+        // hardwire for now
+        bool use_tac = false;
+        bool use_mhtdc = true; 
+
+        int64_t wr_t = 0;
+
+        bool use_multi = false;
+
 
         int64_t wr_t_last_frs_hit = 0;
         int64_t wr_t_first_frs_hit = 0;
         bool positive_PID = false;
 
+        Double_t ID_x2 = 0.;
+        Double_t ID_y2 = 0.;
+        Double_t ID_x4 = 0.;
+        Double_t ID_AoQ_s2s4 = 0.;
+        Double_t ID_z41 = 0.;
+        Double_t ID_z42 = 0.;
+        Double_t ID_dEdegZ41 = 0.;
+        Double_t ID_sci42E = 0.;
+
         
-        int fenergy_nbins = 1500;
+        int fenergy_nbins = 3000;
         int fenergy_bin_low = 0;
         int fenergy_bin_high = 1500;
 
@@ -123,6 +144,38 @@ class FrsGermaniumCorrelationsNearline : public FairTask
         
         TCanvas * c_frs_x4_vs_AoQ_gated;
         TH2F * h2_frs_x4_vs_AoQ_gated;
+
+        TCanvas * c_frs_Z_vs_dEdeg_gated;
+        TH2F * h2_frs_Z_vs_dEdeg_gated;
+        
+        TCanvas * c_frs_Z_vs_sci42E_gated;
+        TH2F * h2_frs_Z_vs_sci42E_gated;
+        
+        //reverse energy-gated
+        TCanvas ** c_frs_Z_vs_AoQ_reverse_gated;
+        TH2F ** h2_frs_Z_vs_AoQ_reverse_gated;
+
+        TCanvas ** c_frs_Z_vs_Z2_reverse_gated;
+        TH2F ** h2_frs_Z_vs_Z2_reverse_gated;
+
+        TCanvas ** c_frs_x2_vs_AoQ_reverse_gated;
+        TH2F ** h2_frs_x2_vs_AoQ_reverse_gated;
+        
+        TCanvas ** c_frs_x4_vs_AoQ_reverse_gated;
+        TH2F ** h2_frs_x4_vs_AoQ_reverse_gated;
+        
+        //on wr:
+        TCanvas ** c_frs_Z_vs_AoQ_reverse_wr_gated;
+        TH2F ** h2_frs_Z_vs_AoQ_reverse_wr_gated;
+
+        TCanvas ** c_frs_Z_vs_Z2_reverse_wr_gated;
+        TH2F ** h2_frs_Z_vs_Z2_reverse_wr_gated;
+
+        TCanvas ** c_frs_x2_vs_AoQ_reverse_wr_gated;
+        TH2F ** h2_frs_x2_vs_AoQ_reverse_wr_gated;
+        
+        TCanvas ** c_frs_x4_vs_AoQ_reverse_wr_gated;
+        TH2F ** h2_frs_x4_vs_AoQ_reverse_wr_gated;
         
         //Implant rate
         TCanvas * c_frs_rate;
@@ -137,6 +190,9 @@ class FrsGermaniumCorrelationsNearline : public FairTask
         //short lifetimes:
         TCanvas * c_germanium_energy_vs_tsci41;
         TH2F * h2_germanium_energy_vs_tsci41;
+
+        TCanvas * c_germanium_energy_vs_log_tsci41;
+        TH2F * h2_germanium_energy_vs_log_tsci41;
 
         TCanvas * c_germanium_energy_promptflash_cut;
         TH1F * h1_germanium_energy_promptflash_cut;

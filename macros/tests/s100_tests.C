@@ -7,7 +7,7 @@
 #define BPLAST_ON 0
 #define GERMANIUM_ON 1
 #define BGO_ON 0
-#define FRS_ON 0
+#define FRS_ON 1
 #define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 0
@@ -27,10 +27,7 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_aida_onion_t aida;
     EXT_STR_h101_bplast_onion_t bplast;
     EXT_STR_h101_germanium_onion_t germanium;
-    EXT_STR_h101_frsmain_onion_t frsmain;
-    EXT_STR_h101_frstpc_onion_t frstpc;
-    EXT_STR_h101_frsuser_onion_t frsuser;
-    EXT_STR_h101_frstpat_onion_t frstpat;
+    EXT_STR_h101_frs_onion_t frs;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
     EXT_STR_h101_bgo_onion_t bgo;
     // EXT_STR_h101_bb7febex_onion_t bb7febex;
@@ -85,7 +82,7 @@ void s100_tests()
     //TString filename = "stream://x86l-87"; //bplast
     //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
     //TString filename = "~/Au_beam_0010_0001.lmd";
-    TString filename =  "~/lustre/gamma/s100_files/ts/162Eu_0075_0006.lmd";
+    TString filename =  "~/lustre/gamma/s100_files/ts/168Dy_new_0006_0104.lmd";
     //TString filename = "~/lustre/gamma/nhubbard/162Eu_0052_TEST_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
@@ -107,7 +104,7 @@ void s100_tests()
 
     // Create source using ucesb for input
     EXT_STR_h101 ucesb_struct;
-    TString ntuple_options = "UNPACK"; // Define which level of data to unpack - we don't use "RAW" or "CAL"
+    TString ntuple_options = "UNPACK,RAW"; // Define which level of data to unpack - we don't use "RAW" or "CAL"
     UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
     source->SetMaxEvents(nev);
     run->SetSource(source);
@@ -146,7 +143,9 @@ void s100_tests()
     // *** Initialise Correlations ******************************************************** //
     
     TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations.dat");
-
+    // for S100, 3 and 4. for 2025+ 12 and 13.
+    TExperimentConfiguration::SetBOSTrig(3);
+    TExperimentConfiguration::SetEOSTrig(4);
 
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
@@ -158,6 +157,7 @@ void s100_tests()
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");
     TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_mar20.txt");
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
+    TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
     TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_apr15.txt");
     TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_uncal_apr15.txt");
     TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
@@ -229,20 +229,11 @@ void s100_tests()
     
     if (FRS_ON)
     {
-        FrsMainReader* unpackfrsmain = new FrsMainReader((EXT_STR_h101_frsmain_onion*)&ucesb_struct.frsmain, offsetof(EXT_STR_h101, frsmain));
-        FrsTPCReader* unpackfrstpc = new FrsTPCReader((EXT_STR_h101_frstpc_onion*)&ucesb_struct.frstpc, offsetof(EXT_STR_h101, frstpc));
-        FrsUserReader* unpackfrsuser = new FrsUserReader((EXT_STR_h101_frsuser_onion*)&ucesb_struct.frsuser, offsetof(EXT_STR_h101, frsuser));
-        FrsTpatReader* unpackfrstpat = new FrsTpatReader((EXT_STR_h101_frstpat_onion*)&ucesb_struct.frstpat, offsetof(EXT_STR_h101, frstpat));
+        FrsReader* unpackfrs = new FrsReader((EXT_STR_h101_frs_onion*)&ucesb_struct.frs, offsetof(EXT_STR_h101, frs));
         
-        unpackfrsmain->SetOnline(true);
-        unpackfrstpc->SetOnline(true);
-        unpackfrsuser->SetOnline(true);
-        unpackfrstpat->SetOnline(true);
+        unpackfrs->SetOnline(true);
         
-        source->AddReader(unpackfrsmain);
-        source->AddReader(unpackfrstpc);
-        source->AddReader(unpackfrsuser);
-        source->AddReader(unpackfrstpat);
+        source->AddReader(unpackfrs);
     }
     
     if (BEAMMONITOR_ON)
@@ -316,16 +307,10 @@ void s100_tests()
     
     if (FRS_ON)
     {
-        FrsMainRaw2Cal* calfrsmain = new FrsMainRaw2Cal();
-        FrsTPCRaw2Cal* calfrstpc = new FrsTPCRaw2Cal();
-        FrsUserRaw2Cal* calfrsuser = new FrsUserRaw2Cal();
+        FrsRaw2Cal* calfrs = new FrsRaw2Cal();
         
-        calfrsmain->SetOnline(true);
-        calfrstpc->SetOnline(true);
-        calfrsuser->SetOnline(true);
-        run->AddTask(calfrsmain);
-        run->AddTask(calfrstpc);
-        run->AddTask(calfrsuser);
+        calfrs->SetOnline(true);
+        run->AddTask(calfrs);
     }
 
 

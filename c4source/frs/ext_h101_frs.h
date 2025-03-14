@@ -37,22 +37,22 @@ typedef struct EXT_STR_h101_frs_t
   uint32_t SCALERS2 /* [0,32] */;
   uint32_t SCALERS2I[32 EXT_STRUCT_CTRL(SCALERS2)] /* [1,32] */;
   uint32_t SCALERS2v[32 EXT_STRUCT_CTRL(SCALERS2)] /* [-1,-1] */;
-  uint32_t SCI_TAC_DE /* [0,18] */;
-  uint32_t SCI_TAC_DEI[18 EXT_STRUCT_CTRL(SCI_TAC_DE)] /* [1,18] */;
-  uint32_t SCI_TAC_DEv[18 EXT_STRUCT_CTRL(SCI_TAC_DE)] /* [0,16777215] */;
-  uint32_t SCI_TAC_DT /* [0,19] */;
-  uint32_t SCI_TAC_DTI[19 EXT_STRUCT_CTRL(SCI_TAC_DT)] /* [1,19] */;
-  uint32_t SCI_TAC_DTv[19 EXT_STRUCT_CTRL(SCI_TAC_DT)] /* [0,16777215] */;
-  uint32_t SCI_MHTDC_TM /* [1,24] */;
-  uint32_t SCI_MHTDC_TMI[24 EXT_STRUCT_CTRL(SCI_MHTDC_TM)] /* [1,24] */;
-  uint32_t SCI_MHTDC_TME[24 EXT_STRUCT_CTRL(SCI_MHTDC_TM)] /* [1,3072] */;
-  uint32_t SCI_MHTDC_T /* [0,3072] */;
-  uint32_t SCI_MHTDC_Tv[3072 EXT_STRUCT_CTRL(SCI_MHTDC_T)] /* [0,16777215] */;
-  uint32_t SCI_MHTDC_LOTM /* [1,24] */;
-  uint32_t SCI_MHTDC_LOTMI[24 EXT_STRUCT_CTRL(SCI_MHTDC_LOTM)] /* [1,24] */;
-  uint32_t SCI_MHTDC_LOTME[24 EXT_STRUCT_CTRL(SCI_MHTDC_LOTM)] /* [1,3072] */;
-  uint32_t SCI_MHTDC_LOT /* [0,3072] */;
-  uint32_t SCI_MHTDC_LOTv[3072 EXT_STRUCT_CTRL(SCI_MHTDC_LOT)] /* [0,255] */;
+  uint32_t SCI_TAC_DE /* [0,32] */;
+  uint32_t SCI_TAC_DEI[32 EXT_STRUCT_CTRL(SCI_TAC_DE)] /* [1,32] */;
+  uint32_t SCI_TAC_DEv[32 EXT_STRUCT_CTRL(SCI_TAC_DE)] /* [0,16777215] */;
+  uint32_t SCI_TAC_DT /* [0,32] */;
+  uint32_t SCI_TAC_DTI[32 EXT_STRUCT_CTRL(SCI_TAC_DT)] /* [1,32] */;
+  uint32_t SCI_TAC_DTv[32 EXT_STRUCT_CTRL(SCI_TAC_DT)] /* [0,16777215] */;
+  uint32_t SCI_MHTDC_TM /* [1,32] */;
+  uint32_t SCI_MHTDC_TMI[32 EXT_STRUCT_CTRL(SCI_MHTDC_TM)] /* [1,32] */;
+  uint32_t SCI_MHTDC_TME[32 EXT_STRUCT_CTRL(SCI_MHTDC_TM)] /* [1,4096] */;
+  uint32_t SCI_MHTDC_T /* [0,4096] */;
+  uint32_t SCI_MHTDC_Tv[4096 EXT_STRUCT_CTRL(SCI_MHTDC_T)] /* [0,16777215] */;
+  uint32_t SCI_MHTDC_LOTM /* [1,32] */;
+  uint32_t SCI_MHTDC_LOTMI[32 EXT_STRUCT_CTRL(SCI_MHTDC_LOTM)] /* [1,32] */;
+  uint32_t SCI_MHTDC_LOTME[32 EXT_STRUCT_CTRL(SCI_MHTDC_LOTM)] /* [1,4096] */;
+  uint32_t SCI_MHTDC_LOT /* [0,4096] */;
+  uint32_t SCI_MHTDC_LOTv[4096 EXT_STRUCT_CTRL(SCI_MHTDC_LOT)] /* [0,255] */;
   uint32_t TPC_ADC1 /* [0,32] */;
   uint32_t TPC_ADC1I[32 EXT_STRUCT_CTRL(TPC_ADC1)] /* [1,32] */;
   uint32_t TPC_ADC1v[32 EXT_STRUCT_CTRL(TPC_ADC1)] /* [0,16777215] */;
@@ -110,6 +110,45 @@ typedef struct EXT_STR_h101_frs_t
   uint32_t MUSIC2LOTME[8 EXT_STRUCT_CTRL(MUSIC2LOTM)] /* [1,1024] */;
   uint32_t MUSIC2LOT /* [0,1024] */;
   uint32_t MUSIC2LOTv[1024 EXT_STRUCT_CTRL(MUSIC2LOT)] /* [0,255] */;
+  uint32_t MUSIC3E /* [0,8] */;
+  uint32_t MUSIC3EI[8 EXT_STRUCT_CTRL(MUSIC3E)] /* [1,8] */;
+  uint32_t MUSIC3Ev[8 EXT_STRUCT_CTRL(MUSIC3E)] /* [0,16777215] */;
+  uint32_t MUSIC3TM /* [1,8] */;
+  uint32_t MUSIC3TMI[8 EXT_STRUCT_CTRL(MUSIC3TM)] /* [1,8] */;
+  uint32_t MUSIC3TME[8 EXT_STRUCT_CTRL(MUSIC3TM)] /* [1,1024] */;
+  uint32_t MUSIC3T /* [0,1024] */;
+  uint32_t MUSIC3Tv[1024 EXT_STRUCT_CTRL(MUSIC3T)] /* [0,16777215] */;
+  uint32_t MUSIC3LOTM /* [1,8] */;
+  uint32_t MUSIC3LOTMI[8 EXT_STRUCT_CTRL(MUSIC3LOTM)] /* [1,8] */;
+  uint32_t MUSIC3LOTME[8 EXT_STRUCT_CTRL(MUSIC3LOTM)] /* [1,1024] */;
+  uint32_t MUSIC3LOT /* [0,1024] */;
+  uint32_t MUSIC3LOTv[1024 EXT_STRUCT_CTRL(MUSIC3LOT)] /* [0,255] */;
+  uint32_t MUSIC4E /* [0,8] */;
+  uint32_t MUSIC4EI[8 EXT_STRUCT_CTRL(MUSIC4E)] /* [1,8] */;
+  uint32_t MUSIC4Ev[8 EXT_STRUCT_CTRL(MUSIC4E)] /* [0,16777215] */;
+  uint32_t MUSIC4TM /* [1,8] */;
+  uint32_t MUSIC4TMI[8 EXT_STRUCT_CTRL(MUSIC4TM)] /* [1,8] */;
+  uint32_t MUSIC4TME[8 EXT_STRUCT_CTRL(MUSIC4TM)] /* [1,1024] */;
+  uint32_t MUSIC4T /* [0,1024] */;
+  uint32_t MUSIC4Tv[1024 EXT_STRUCT_CTRL(MUSIC4T)] /* [0,16777215] */;
+  uint32_t MUSIC4LOTM /* [1,8] */;
+  uint32_t MUSIC4LOTMI[8 EXT_STRUCT_CTRL(MUSIC4LOTM)] /* [1,8] */;
+  uint32_t MUSIC4LOTME[8 EXT_STRUCT_CTRL(MUSIC4LOTM)] /* [1,1024] */;
+  uint32_t MUSIC4LOT /* [0,1024] */;
+  uint32_t MUSIC4LOTv[1024 EXT_STRUCT_CTRL(MUSIC4LOT)] /* [0,255] */;
+  uint32_t MUSIC5E /* [0,8] */;
+  uint32_t MUSIC5EI[8 EXT_STRUCT_CTRL(MUSIC5E)] /* [1,8] */;
+  uint32_t MUSIC5Ev[8 EXT_STRUCT_CTRL(MUSIC5E)] /* [0,16777215] */;
+  uint32_t MUSIC5TM /* [1,8] */;
+  uint32_t MUSIC5TMI[8 EXT_STRUCT_CTRL(MUSIC5TM)] /* [1,8] */;
+  uint32_t MUSIC5TME[8 EXT_STRUCT_CTRL(MUSIC5TM)] /* [1,1024] */;
+  uint32_t MUSIC5T /* [0,1024] */;
+  uint32_t MUSIC5Tv[1024 EXT_STRUCT_CTRL(MUSIC5T)] /* [0,16777215] */;
+  uint32_t MUSIC5LOTM /* [1,8] */;
+  uint32_t MUSIC5LOTMI[8 EXT_STRUCT_CTRL(MUSIC5LOTM)] /* [1,8] */;
+  uint32_t MUSIC5LOTME[8 EXT_STRUCT_CTRL(MUSIC5LOTM)] /* [1,1024] */;
+  uint32_t MUSIC5LOT /* [0,1024] */;
+  uint32_t MUSIC5LOTv[1024 EXT_STRUCT_CTRL(MUSIC5LOT)] /* [0,255] */;
   uint32_t WR_ID /* [0,65535] */;
   uint32_t WR_T1 /* [0,65535] */;
   uint32_t WR_T2 /* [0,65535] */;
@@ -136,21 +175,21 @@ typedef struct EXT_STR_h101_frs_onion_t
     uint32_t v[32 /*  */];
   } SCALERS[2];
   uint32_t SCI_TAC_DE;
-  uint32_t SCI_TAC_DEI[18 /* SCI_TAC_DE */];
-  uint32_t SCI_TAC_DEv[18 /* SCI_TAC_DE */];
+  uint32_t SCI_TAC_DEI[32 /* SCI_TAC_DE */];
+  uint32_t SCI_TAC_DEv[32 /* SCI_TAC_DE */];
   uint32_t SCI_TAC_DT;
-  uint32_t SCI_TAC_DTI[19 /* SCI_TAC_DT */];
-  uint32_t SCI_TAC_DTv[19 /* SCI_TAC_DT */];
+  uint32_t SCI_TAC_DTI[32 /* SCI_TAC_DT */];
+  uint32_t SCI_TAC_DTv[32 /* SCI_TAC_DT */];
   uint32_t SCI_MHTDC_TM;
-  uint32_t SCI_MHTDC_TMI[24 /* SCI_MHTDC_TM */];
-  uint32_t SCI_MHTDC_TME[24 /* SCI_MHTDC_TM */];
+  uint32_t SCI_MHTDC_TMI[32 /* SCI_MHTDC_TM */];
+  uint32_t SCI_MHTDC_TME[32 /* SCI_MHTDC_TM */];
   uint32_t SCI_MHTDC_T;
-  uint32_t SCI_MHTDC_Tv[3072 /* SCI_MHTDC_T */];
+  uint32_t SCI_MHTDC_Tv[4096 /* SCI_MHTDC_T */];
   uint32_t SCI_MHTDC_LOTM;
-  uint32_t SCI_MHTDC_LOTMI[24 /* SCI_MHTDC_LOTM */];
-  uint32_t SCI_MHTDC_LOTME[24 /* SCI_MHTDC_LOTM */];
+  uint32_t SCI_MHTDC_LOTMI[32 /* SCI_MHTDC_LOTM */];
+  uint32_t SCI_MHTDC_LOTME[32 /* SCI_MHTDC_LOTM */];
   uint32_t SCI_MHTDC_LOT;
-  uint32_t SCI_MHTDC_LOTv[3072 /* SCI_MHTDC_LOT */];
+  uint32_t SCI_MHTDC_LOTv[4096 /* SCI_MHTDC_LOT */];
   struct {
     uint32_t _;
     uint32_t I[32 /*  */];
@@ -180,7 +219,7 @@ typedef struct EXT_STR_h101_frs_onion_t
     uint32_t LOTME[8 /* LOTM */];
     uint32_t LOT;
     uint32_t LOTv[1024 /* LOT */];
-  } MUSIC[2];
+  } MUSIC[5];
   uint32_t WR_ID;
   uint32_t WR_T[4];
   uint32_t TPAT;
@@ -218,7 +257,7 @@ typedef struct EXT_STR_h101_frs_onion_t
                     "SCALERS2v",                       "SCALERS2",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      SCI_TAC_DE,                      UINT32,\
-                    "SCI_TAC_DE",18,0/*flags*/); \
+                    "SCI_TAC_DE",32,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      SCI_TAC_DEI,                     UINT32,\
                     "SCI_TAC_DEI",                     "SCI_TAC_DE",0/*flags*/); \
@@ -227,7 +266,7 @@ typedef struct EXT_STR_h101_frs_onion_t
                     "SCI_TAC_DEv",                     "SCI_TAC_DE",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      SCI_TAC_DT,                      UINT32,\
-                    "SCI_TAC_DT",19,0/*flags*/); \
+                    "SCI_TAC_DT",32,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      SCI_TAC_DTI,                     UINT32,\
                     "SCI_TAC_DTI",                     "SCI_TAC_DT",0/*flags*/); \
@@ -236,7 +275,7 @@ typedef struct EXT_STR_h101_frs_onion_t
                     "SCI_TAC_DTv",                     "SCI_TAC_DT",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      SCI_MHTDC_TM,                    UINT32,\
-                    "SCI_MHTDC_TM",24,0/*flags*/); \
+                    "SCI_MHTDC_TM",32,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      SCI_MHTDC_TMI,                   UINT32,\
                     "SCI_MHTDC_TMI",                   "SCI_MHTDC_TM",0/*flags*/); \
@@ -245,13 +284,13 @@ typedef struct EXT_STR_h101_frs_onion_t
                     "SCI_MHTDC_TME",                   "SCI_MHTDC_TM",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      SCI_MHTDC_T,                     UINT32,\
-                    "SCI_MHTDC_T",3072,0/*flags*/); \
+                    "SCI_MHTDC_T",4096,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      SCI_MHTDC_Tv,                    UINT32,\
                     "SCI_MHTDC_Tv",                    "SCI_MHTDC_T",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      SCI_MHTDC_LOTM,                  UINT32,\
-                    "SCI_MHTDC_LOTM",24,0/*flags*/); \
+                    "SCI_MHTDC_LOTM",32,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      SCI_MHTDC_LOTMI,                 UINT32,\
                     "SCI_MHTDC_LOTMI",                 "SCI_MHTDC_LOTM",0/*flags*/); \
@@ -260,7 +299,7 @@ typedef struct EXT_STR_h101_frs_onion_t
                     "SCI_MHTDC_LOTME",                 "SCI_MHTDC_LOTM",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      SCI_MHTDC_LOT,                   UINT32,\
-                    "SCI_MHTDC_LOT",3072,0/*flags*/); \
+                    "SCI_MHTDC_LOT",4096,0/*flags*/); \
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      SCI_MHTDC_LOTv,                  UINT32,\
                     "SCI_MHTDC_LOTv",                  "SCI_MHTDC_LOT",0/*flags*/); \
@@ -435,6 +474,123 @@ typedef struct EXT_STR_h101_frs_onion_t
   EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
                      MUSIC2LOTv,                      UINT32,\
                     "MUSIC2LOTv",                      "MUSIC2LOT",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     MUSIC3E,                         UINT32,\
+                    "MUSIC3E",8,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC3EI,                        UINT32,\
+                    "MUSIC3EI",                        "MUSIC3E",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC3Ev,                        UINT32,\
+                    "MUSIC3Ev",                        "MUSIC3E",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     MUSIC3TM,                        UINT32,\
+                    "MUSIC3TM",8,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC3TMI,                       UINT32,\
+                    "MUSIC3TMI",                       "MUSIC3TM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC3TME,                       UINT32,\
+                    "MUSIC3TME",                       "MUSIC3TM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     MUSIC3T,                         UINT32,\
+                    "MUSIC3T",1024,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC3Tv,                        UINT32,\
+                    "MUSIC3Tv",                        "MUSIC3T",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     MUSIC3LOTM,                      UINT32,\
+                    "MUSIC3LOTM",8,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC3LOTMI,                     UINT32,\
+                    "MUSIC3LOTMI",                     "MUSIC3LOTM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC3LOTME,                     UINT32,\
+                    "MUSIC3LOTME",                     "MUSIC3LOTM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     MUSIC3LOT,                       UINT32,\
+                    "MUSIC3LOT",1024,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC3LOTv,                      UINT32,\
+                    "MUSIC3LOTv",                      "MUSIC3LOT",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     MUSIC4E,                         UINT32,\
+                    "MUSIC4E",8,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC4EI,                        UINT32,\
+                    "MUSIC4EI",                        "MUSIC4E",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC4Ev,                        UINT32,\
+                    "MUSIC4Ev",                        "MUSIC4E",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     MUSIC4TM,                        UINT32,\
+                    "MUSIC4TM",8,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC4TMI,                       UINT32,\
+                    "MUSIC4TMI",                       "MUSIC4TM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC4TME,                       UINT32,\
+                    "MUSIC4TME",                       "MUSIC4TM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     MUSIC4T,                         UINT32,\
+                    "MUSIC4T",1024,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC4Tv,                        UINT32,\
+                    "MUSIC4Tv",                        "MUSIC4T",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     MUSIC4LOTM,                      UINT32,\
+                    "MUSIC4LOTM",8,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC4LOTMI,                     UINT32,\
+                    "MUSIC4LOTMI",                     "MUSIC4LOTM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC4LOTME,                     UINT32,\
+                    "MUSIC4LOTME",                     "MUSIC4LOTM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     MUSIC4LOT,                       UINT32,\
+                    "MUSIC4LOT",1024,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC4LOTv,                      UINT32,\
+                    "MUSIC4LOTv",                      "MUSIC4LOT",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     MUSIC5E,                         UINT32,\
+                    "MUSIC5E",8,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC5EI,                        UINT32,\
+                    "MUSIC5EI",                        "MUSIC5E",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC5Ev,                        UINT32,\
+                    "MUSIC5Ev",                        "MUSIC5E",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     MUSIC5TM,                        UINT32,\
+                    "MUSIC5TM",8,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC5TMI,                       UINT32,\
+                    "MUSIC5TMI",                       "MUSIC5TM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC5TME,                       UINT32,\
+                    "MUSIC5TME",                       "MUSIC5TM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     MUSIC5T,                         UINT32,\
+                    "MUSIC5T",1024,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC5Tv,                        UINT32,\
+                    "MUSIC5Tv",                        "MUSIC5T",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     MUSIC5LOTM,                      UINT32,\
+                    "MUSIC5LOTM",8,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC5LOTMI,                     UINT32,\
+                    "MUSIC5LOTMI",                     "MUSIC5LOTM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC5LOTME,                     UINT32,\
+                    "MUSIC5LOTME",                     "MUSIC5LOTM",0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     MUSIC5LOT,                       UINT32,\
+                    "MUSIC5LOT",1024,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_ZZP(ok,si,offset,struct_t,printerr,\
+                     MUSIC5LOTv,                      UINT32,\
+                    "MUSIC5LOTv",                      "MUSIC5LOT",0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      WR_ID,                           UINT32,\
                     "WR_ID",65535,0/*flags*/); \

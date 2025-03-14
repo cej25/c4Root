@@ -41,6 +41,7 @@ class LisaItem : public TObject
                     int ch_id_traces,
                     std::vector<int16_t> tr,
                     std::vector<int16_t> tr_x);
+
         void Reset();
 
         uint64_t Get_wr_t() const;

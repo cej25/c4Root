@@ -37,6 +37,9 @@ public:
   Float_t       dist_TPC24;
   Float_t       dist_S2target;
 
+  Float_t dist_SC31;
+  Float_t dist_focS3;
+
   /*-----------------------*/
   /*    distanes  S4      */
   /*-----------------------*/
@@ -470,16 +473,21 @@ public:
   Float_t       mhtdc_vel_a_s2tpc[4];
   Float_t       mhtdc_offset_z_s2tpc;
   Float_t       mhtdc_offset_z_sc81;
+  Float_t       mhtdc_length_sc2131;
   Float_t       mhtdc_length_sc2141;
   Float_t       mhtdc_length_sc2142;
   Float_t       mhtdc_length_sc2241;
   Float_t       mhtdc_length_sc1121;
   Float_t       mhtdc_length_sc1122;
+  Float_t       mhtdc_vel_a_music21_s1s2[4];
+  Float_t       mhtdc_vel_a_music21_s2s3[4];
   Float_t       mhtdc_vel_a_music21[4];
   Float_t       mhtdc_vel_a_music22[4];
   Float_t       mhtdc_vel_a_music41[4];
   Float_t       mhtdc_vel_a_music42[4];
   Float_t       mhtdc_vel_a_music43[4];
+  Float_t       mhtdc_offset_z_music21_s1s2;
+  Float_t       mhtdc_offset_z_music21_s2s3;
   Float_t       mhtdc_offset_z_music21;
   Float_t       mhtdc_offset_z_music22;
   Float_t       mhtdc_offset_z_music41;
@@ -494,6 +502,7 @@ public:
   Float_t       mhtdc_offset_z_sc22;
   Float_t       mhtdc_vel_a_sc22[4];
   Float_t       mhtdc_AoQ_offset_S1S2;
+  Float_t       mhtdc_AoQ_offset_S2S3;
   Float_t       mhtdc_AoQ_offset_S2S4;
 
 

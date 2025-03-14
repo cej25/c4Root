@@ -1,5 +1,9 @@
 // -*- C++ -*-
 
+#ifndef BAD_EVENT_H
+#define BAD_EVENT_H
+
+// Your BAD_EVENT structure definition
 
 BAD_EVENT()
 {
@@ -13,7 +17,16 @@ BAD_EVENT()
     ENCODE(bad, (value = 1));
 }
 
+#endif // BAD_EVENT_H
+
+#ifndef DUMMY_H
+#define DUMMY_H
+
+// Your DUMMY structure definition
+
 DUMMY()
 {
     UINT32 no NOENCODE;
 }
+
+#endif // DUMMY_H

@@ -838,11 +838,11 @@ void FrsRaw2Cal::ProcessMusic()
 
     for (int i = 0; i < 8; i++)
     {
-        music21_e[i] = musicE[2][i];
-        music22_e[i] = musicE[3][i];
+        music21_e[i] = musicE[3][i];
+        music22_e[i] = musicE[4][i];
         music41_e[i] = musicE[0][i]; // JUST FOR TESTING
         music42_e[i] = musicE[1][i];
-        music43_e[i] = musicE[4][i];
+        music43_e[i] = musicE[2][i];
     }
 
     auto & musicEntry = calMusicArray->emplace_back();

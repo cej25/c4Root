@@ -59,7 +59,7 @@ class FrsReader : public c4Reader
         std::vector<FrsTpcItem>* tpcArray;
         
         // Dummies
-        bool spill_flag;
+        bool spill_flag = false;
 
         // should probably just make all of these 32
         uint32_t sciDE[32]; // ~18 -> 2025

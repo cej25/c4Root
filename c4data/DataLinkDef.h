@@ -70,7 +70,7 @@
 #pragma link C++ class TravMusCalItem+;
 #pragma link C++ class TravMusAnaItem+;
 
-// FRS Parameter Classes
+// FRS parameter classes
 #pragma link C++ class TFRSParameter+;
 #pragma link C++ class TMWParameter+;
 #pragma link C++ class TTPCParameter+;

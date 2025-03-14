@@ -1,25 +1,3 @@
-<<<<<<< HEAD
-## CRATE || MODULE || GEO (?) || NAME/DESCRIP
-## IN READOUT ORDER (EXCEPT V7X5?)
-## ---------------------
-MAIN    V830    ??  SCALERS_MAIN
-MAIN    V792    14  SCI_DE
-MAIN    V1290   ??  SCI_MHTDC_T_AND_MUSIC_T
-## ---------------------
-TPC     V7X5    12  TPC_E
-TPC     V7X5    8   TPC_E # FRS code says 13 but actually 8?
-TPC     V1190   ??  TPC_TDC
-## ---------------------
-USER    V830    ??  SCALERS_USER
-USER    V7X5    8   MW_CATHODES
-USER    V7X5    9   MW_CATHODES
-USER    V7X5    10  MUSIC_E
-USER    V7X5    12  SCI_T
-## ---------------------
-VFTX    VFTX    ??  VFTX_MHTDC_T
-VFTX    MTDC    16  ??
-VFTX    MQDC    11  ??
-=======
 #FULL CRATE MAP S092 / Pareeksha
 
 #Scintillator dE mapping -- MAIN CRATE
@@ -72,4 +50,3 @@ dT_22L_41L  12
 dT_22R_41R  13
 dT_22L_81L  14
 dT_22R_81R  15
->>>>>>> main

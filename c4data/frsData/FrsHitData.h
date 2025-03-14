@@ -13,7 +13,7 @@ class FrsHitItem : public TObject
     public:
         FrsHitItem();
 
-        void SetMetaData(Long64_t wr_t, Short_t tpat);
+        void SetMetaData(Long64_t wr_t, Short_t tpat, TString setup);
 
         void SetScalerData(Double_t time_in_ms,
                         Double_t time_in_us,
@@ -94,12 +94,13 @@ class FrsHitItem : public TObject
                     Float_t brho[4]);
 
         void SetDriftCorrections(Float_t FRS_time, 
-                                Float_t AoQ_driftcorr, 
-                                Float_t z_driftcorr);
+                                Float_t AoQs2s4_driftcorr, 
+                                Float_t z41_driftcorr);
 
 
         Long64_t Get_wr_t() const { return fwr_t; }
         Short_t Get_tpat() const { return ftpat; }
+        TString Get_setup_file() const { return setup_file; }
         Double_t Get_time_in_ms() const { return ftime_in_ms; }
         Double_t Get_time_in_us() const { return ftime_in_us; }
         Int_t Get_ibin_for_s() const { return fibin_for_s; }
@@ -175,8 +176,8 @@ class FrsHitItem : public TObject
         const Float_t (&Get_ID_rho() const) [4] { return fID_rho; }
         const Float_t (&Get_ID_brho() const) [4] { return fID_brho; }
         Float_t Get_FRS_time_mins() const { return FRS_time_mins; }
-        Float_t Get_ID_AoQ_driftcorr() const { return fID_AoQ_driftcorr; } // should change
-        Float_t Get_ID_z_driftcorr() const { return fID_z_driftcorr; }
+        Float_t Get_ID_AoQs2s4_driftcorr() const { return fID_AoQs2s4_driftcorr; } // should change
+        Float_t Get_ID_z41_driftcorr() const { return fID_z41_driftcorr; }
 
 
         ClassDef(FrsHitItem, 1);
@@ -186,6 +187,7 @@ class FrsHitItem : public TObject
         // Meta
         Long64_t fwr_t;
         Short_t ftpat;
+        TString setup_file;
 
         // Scaler
         Double_t ftime_in_ms;
@@ -271,8 +273,9 @@ class FrsHitItem : public TObject
 
         // DriftCorrs
         Float_t FRS_time_mins;
-        Float_t fID_AoQ_driftcorr;
-        Float_t fID_z_driftcorr;
+        Float_t fID_AoQs2s4_driftcorr;
+        Float_t fID_z41_driftcorr;
+        // others?
 
 };
 

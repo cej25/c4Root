@@ -82,7 +82,7 @@ class LisaCalItem : public TObject
 
 
         // Getters
-        ClassDefNV(LisaCalItem, 2);
+        ClassDef(LisaCalItem, 1);
     private:
         uint64_t wr_t;
         uint16_t wr_id;

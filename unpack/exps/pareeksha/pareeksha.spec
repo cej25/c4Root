@@ -110,9 +110,9 @@ SUBEVENT(travmus_subev)
 
     };
 
-    select several
+    select optional
     {
-        data = VME_MESYTEC_MDPP16(geom=8);
+        data = TRAVMUS_CRATE_DATA();
     };
 }
 
