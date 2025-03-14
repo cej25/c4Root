@@ -17,10 +17,10 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_unpack_t eventheaders;
     EXT_STR_h101_lisa_onion_t lisa;
     EXT_STR_h101_travmus_onion_t travmus;
-    EXT_STR_h101_frsmain_onion_t frsmain;
-    EXT_STR_h101_frstpc_onion_t frstpc;
-    EXT_STR_h101_frsuser_onion_t frsuser;
-    EXT_STR_h101_frstpat_onion_t frstpat;
+    EXT_STR_h101_frs_onion_t frs;
+    EXT_STR_h101_frs_onion_t frs;
+    EXT_STR_h101_frs_onion_t frs;
+    EXT_STR_h101_frs_onion_t frs;
 
 
 } EXT_STR_h101;
