@@ -2,8 +2,8 @@
 //............
 // Switch all tasks related to LISA :::  on (1)/off (0) :::
 #define LISA_ON 1       //always on
-#define LISA_DAQ 0      //diplay all the channels from the boards (mapped up to 3 boards)
-#define LISA_2x2 1      //display with pareesksha 2x2 mapping system
+#define LISA_DAQ 1      //diplay all the channels from the boards (mapped up to 3 boards)
+#define LISA_2x2 0      //display with pareesksha 2x2 mapping system
 // WR syncronization
 #define WR_ENABLED 0
 
@@ -60,15 +60,16 @@ void lisa_online_general()
 
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/x7_241Am/multiple_cards_test/cards_A_B_C_D_E_F_G_0306.lmd"; 
-    TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/run_0072_0001.lmd";  //data with only lisa
+    //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/run_0072_0001.lmd";  //data with only lisa
+    TString filename = "/u/gandolfo/data/lustre/despec/lisa/3x3_board_1/run_0001_*.lmd";  //data with only lisa
 
     //___O U T P U T - only used if switched on 
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/";
+    TString outputpath = "/u/gandolfo/data/lustre/despec/lisa/3x3_board_1/";
     TString outputFilename = outputpath + "lisa_test.root";
 
     //:::::::Create online run
     Int_t refresh = 10; // Refresh rate for online histograms
-    Int_t port = 2020;
+    Int_t port = 6060;
      
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -100,9 +101,10 @@ void lisa_online_general()
 
     if (LISA_DAQ)
     {
-        TLisaConfiguration::SetMappingFile(config_path + "/Lisa_All_Boards.txt");
+        //TLisaConfiguration::SetMappingFile(config_path + "/Lisa_All_Boards.txt");
+        TLisaConfiguration::SetMappingFile(config_path + "/Lisa_3x3_test_board.txt");
         TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_3x3.txt");
 
     }
 
@@ -162,18 +164,21 @@ void lisa_online_general()
     // Set Ranges for online histos
 
     //::::  Channel Energy ::::: (h1_energy_layer_ch)
-    TLisaConfiguration::SetEnergyRange(0,5000000);
-    TLisaConfiguration::SetEnergyBin(10000);
+    TLisaConfiguration::SetEnergyRange(0,10000);
+    TLisaConfiguration::SetEnergyBin(1000);
+
+    TLisaConfiguration::SetEnergyRangeMWD(0,100);
+    TLisaConfiguration::SetEnergyBin(50);
 
     //:::: LISA WR Time Difference :::::: (h1_wr_diff)
     TLisaConfiguration::SetWrDiffRange(0,100000000);
     TLisaConfiguration::SetWrDiffBin(20000);
 
     //:::: LISA Traces Time and Amplitude Ranges :::::: (h1_traces_layer_ch)
-    TLisaConfiguration::SetTracesRange(0,30);
-    TLisaConfiguration::SetTracesBin(3000);
-    TLisaConfiguration::SetAmplitudeMin(-100);
-    TLisaConfiguration::SetAmplitudeMax(+100);
+    TLisaConfiguration::SetTracesRange(0,20);
+    TLisaConfiguration::SetTracesBin(2000);
+    TLisaConfiguration::SetAmplitudeMin(7900);
+    TLisaConfiguration::SetAmplitudeMax(8300);
     
 
     //::::::: Initialise
