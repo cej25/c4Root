@@ -128,13 +128,15 @@ void FrsCal2Hit::Exec(Option_t* option)
     fNEvents++;
 
     auto start = std::chrono::high_resolution_clock::now();
-
+    
+    // meta item/meta array better name? 
     auto const & tpatItem = tpatArray->at(0);
     wr_t = tpatItem.Get_wr_t();
     tpat = tpatItem.Get_tpat();
+    travmus_wr_t = tpatItem.Get_travmus_wr_t();
 
     auto & anaEntry = hitArray->emplace_back();
-    anaEntry.SetMetaData(wr_t, tpat, "");
+    anaEntry.SetMetaData(wr_t, tpat, "", travmus_wr_t);
 
     ProcessScalers();
     anaEntry.SetScalerData(time_in_ms,
@@ -221,7 +223,14 @@ void FrsCal2Hit::Exec(Option_t* option)
 
     FRS_time_mins = (wr_t - exp_config->exp_start_time) / 60E9;
     ProcessDriftCorrections();
-    anaEntry.SetDriftCorrections(FRS_time_mins, id_AoQ_driftcorr, id_z_driftcorr);
+    anaEntry.SetDriftCorrections(FRS_time_mins, 
+                                id_AoQs1s2_driftcorr,
+                                id_AoQs2s4_driftcorr,
+                                id_z21_driftcorr,
+                                id_z22_driftcorr,
+                                id_z41_driftcorr,
+                                id_z42_driftcorr,
+                                id_z43_driftcorr);
     
     ProcessSci_MHTDC();
     ProcessIDs_MHTDC();    
@@ -2381,64 +2390,64 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
 void FrsCal2Hit::ProcessDriftCorrections()
 {
     // CEJ: can be tidied/reconfigured some later
-    if (frs_config->AoQDriftLoaded())
+    if (frs_config->AoQDriftLoaded()) // AoQs2s4
     {
-        id_AoQ_driftcorr = 0.;
-        double drift_aoq = 0.0;
-        double drift_aoq_error = 0.0;
-        int nentry_aoq = 0;
-        int aoq_frs_wr_time_a = 0; 
-        int aoq_frs_wr_time_b = 0;
-        double aoq_reference_value = 2.39;   //!!!! read from exp configuration - expected value
+        id_AoQs2s4_driftcorr = 0.;
+        double drift_aoqs2s4 = 0.0;
+        double drift_aoqs2s4_error = 0.0;
+        int nentry_aoqs2s4 = 0;
+        int aoqs2s4_frs_wr_time_a = 0; 
+        int aoqs2s4_frs_wr_time_b = 0;
+        double aoqs2s4_reference_value = 2.39;   //!!!! read from exp configuration - expected value
         int bin = 20;  
         
-        std::map<int,std::pair<double,double>> aoq_drift = frs_config->AoQDriftCoefficients();
-        for (const auto& entry : aoq_drift)
+        std::map<int,std::pair<double,double>> aoqs2s4_drift = frs_config->AoQDriftCoefficients();
+        for (const auto& entry : aoqs2s4_drift)
         {   
-            int aoq_frs_wr_time = entry.first;
-            std::pair<double,double> aoq_coeffs = entry.second;
-            drift_aoq = aoq_coeffs.first;
-            drift_aoq_error = aoq_coeffs.second;
+            int aoqs2s4_frs_wr_time = entry.first;
+            std::pair<double,double> aoqs2s4_coeffs = entry.second;
+            drift_aoqs2s4 = aoqs2s4_coeffs.first;
+            drift_aoqs2s4_error = aoqs2s4_coeffs.second;
 
-            double aoq_shift = drift_aoq - aoq_reference_value;
+            double aoqs2s4_shift = drift_aoqs2s4 - aoqs2s4_reference_value;
             
-            if ((FRS_time_mins >= (aoq_frs_wr_time - bin/2)) && (FRS_time_mins < (aoq_frs_wr_time + bin/2)))
+            if ((FRS_time_mins >= (aoqs2s4_frs_wr_time - bin/2)) && (FRS_time_mins < (aoqs2s4_frs_wr_time + bin/2)))
             {
-                id_AoQ_driftcorr = id_AoQ_s2s4 - aoq_shift;
+                id_AoQs2s4_driftcorr = id_AoQ_s2s4 - aoqs2s4_shift;
             }
             
-            nentry_aoq++;
+            nentry_aoqs2s4++;
         }
 
     }
 
-    if (frs_config->Z1DriftLoaded())
+    if (frs_config->Z1DriftLoaded()) // Z41DriftLoaded Soon:tm
     {
-        id_z_driftcorr = 0.;
-        double drift_z1 = 0.0;
-        double drift_z1_error = 0.0;
-        int nentry_z1 = 0;
-        int z1_frs_wr_time_a = 0; 
-        int z1_frs_wr_time_b = 0;
-        double z1_reference_value = 41;     //!!!! read from exp configuration - expected value
+        id_z41_driftcorr = 0.;
+        double drift_z41 = 0.0;
+        double drift_z41_error = 0.0;
+        int nentry_z41 = 0;
+        int z41_frs_wr_time_a = 0; 
+        int z41_frs_wr_time_b = 0;
+        double z41_reference_value = 41;     //!!!! read from exp configuration - expected value
         int bin = 20;                       //!!!! read from drift file
 
-        std::map<int,std::pair<double,double>> z1_drift = frs_config->Z1DriftCoefficients();
-        for (const auto& entry : z1_drift)
+        std::map<int,std::pair<double,double>> z41_drift = frs_config->Z1DriftCoefficients();
+        for (const auto& entry : z41_drift)
         {  
-            int z1_frs_wr_time = entry.first;
-            std::pair<double,double> z1_coeffs = entry.second;
-            drift_z1 = z1_coeffs.first;
-            drift_z1_error = z1_coeffs.second;
+            int z41_frs_wr_time = entry.first;
+            std::pair<double,double> z41_coeffs = entry.second;
+            drift_z41 = z41_coeffs.first;
+            drift_z41_error = z41_coeffs.second;
 
-            double z1_shift = drift_z1 - z1_reference_value;
+            double z41_shift = drift_z41 - z41_reference_value;
 
-            if ((FRS_time_mins >= (z1_frs_wr_time - bin/2)) && (FRS_time_mins < (z1_frs_wr_time + bin/2)))
+            if ((FRS_time_mins >= (z41_frs_wr_time - bin/2)) && (FRS_time_mins < (z41_frs_wr_time + bin/2)))
             {
-                id_z_driftcorr = id_z41 - z1_shift;
+                id_z41_driftcorr = id_z41 - z41_shift;
             }
             
-            nentry_z1++;
+            nentry_z41++;
         }
 
     }
@@ -2616,8 +2625,13 @@ void FrsCal2Hit::FinishEvent()
     dEdegoQ_s2s4_mhtdc.clear();
     dEdeg_z41_mhtdc.clear();
 
-    id_AoQ_driftcorr = 0.;
-    id_z_driftcorr = 0.;
+    id_AoQs1s2_driftcorr = 0.;
+    id_AoQs2s4_driftcorr = 0.;
+    id_z21_driftcorr = 0.;
+    id_z22_driftcorr = 0.;
+    id_z41_driftcorr = 0.;
+    id_z42_driftcorr = 0.;
+    id_z43_driftcorr = 0.;
 
     
     

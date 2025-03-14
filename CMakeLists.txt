@@ -463,6 +463,28 @@ WRITE_CONFIG_FILE(config.csh_install)
 
 write_env_cache(env_cache.sh)
 
+
+# help
+file(APPEND ${CMAKE_BINARY_DIR}/config.sh "
+c4() {
+    if [ \"\$1\" = \"--help\" ]; then
+        echo \"Usage: c4 [options]\"
+        echo \"Options:\"
+        echo \"  --help        Show this help message\"
+        echo \"  --version     Show version information\"
+        if [ \"\$2\" = \"me\" ]; then
+          echo \"How may I help you, poor soul?\"
+        fi
+    elif [ \"\$1\" = \"--version\" ]; then
+        echo \"c4 Version: Hmm, no idea... 0.9 probably.\"
+    else
+        echo \"Unknown command: \$1\"
+        echo \"Try 'c4 --help' for usage information.\"
+    fi
+}
+")
+
+
 # Summary ######################################################################
 if(CMAKE_CXX_FLAGS)
   message(STATUS "  ")

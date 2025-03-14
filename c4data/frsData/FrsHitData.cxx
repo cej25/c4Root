@@ -3,11 +3,12 @@
 
 FrsHitItem::FrsHitItem() {}
 
-void FrsHitItem::SetMetaData(Long64_t wr_t, Short_t tpat, TString setup)
+void FrsHitItem::SetMetaData(Long64_t wr_t, Short_t tpat, TString setup, Long64_t travmus_wr_t)
 {
     fwr_t = wr_t;
     ftpat = tpat;
     setup_file = setup;
+    ftravmus_wr_t = travmus_wr_t;
 }
 
 
@@ -175,13 +176,23 @@ void FrsHitItem::SetIDs(Float_t x1,
     }    
 }
 
-void FrsHitItem::SetDriftCorrections(Float_t FRS_time, 
-                        Float_t AoQs2s4_driftcorr, 
-                        Float_t z41_driftcorr)
+void FrsHitItem::SetDriftCorrections(Float_t FRS_time,
+                        Float_t AoQs1s2_driftcorr,
+                        Float_t AoQs2s4_driftcorr,
+                        Float_t z21_driftcorr,
+                        Float_t z22_driftcorr,
+                        Float_t z41_driftcorr,
+                        Float_t z42_driftcorr,
+                        Float_t z43_driftcorr)
 {
     FRS_time_mins = FRS_time;
+    fID_AoQs1s2_driftcorr = AoQs1s2_driftcorr;
     fID_AoQs2s4_driftcorr = AoQs2s4_driftcorr;
+    fID_z21_driftcorr = z21_driftcorr;
+    fID_z22_driftcorr = z22_driftcorr;
     fID_z41_driftcorr = z41_driftcorr;
+    fID_z42_driftcorr = z42_driftcorr;
+    fID_z43_driftcorr = z43_driftcorr;
 }
 
 ClassImp(FrsHitItem)
