@@ -453,7 +453,8 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     // Energy from frs
     energy_MUSIC_1 = frsHitItem.Get_music41_dE(); 
     energy_MUSIC_2 = frsHitItem.Get_music42_dE();
-    energy_travMUSIC = travMusicHitItem.Get_travmusic_dE();
+    energy_travMUSIC = frsHitItem.Get_music21_dE();
+    //energy_travMUSIC = travMusicHitItem.Get_travmusic_dE();
     // CEJ needs adding
     energy_travMUSIC_driftcorr = travMusicHitItem.Get_travmusic_dE_driftcorr();
     //c4LOG(info, "travMUS en : " << energy_travMUSIC << " music 1 : " << energy_MUSIC_1 << " sum energy 1 : " << sum_energy_layer[1]);
@@ -542,7 +543,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                     h1_energy_ch_GM_PIDgated[gate][layer][xpos][ypos]->Fill(energy_LISA_GM);
 
                     //::: Gate on Trav Music
-                    if(travMusicHitItem.Get_travmusic_dE() >= frs_config->fMin_dE_travMus_gate && travMusicHitItem.Get_travmusic_dE() <= frs_config->fMax_dE_travMus_gate)
+                    if(energy_travMUSIC >= frs_config->fMin_dE_travMus_gate && energy_travMUSIC <= frs_config->fMax_dE_travMus_gate)
                     {   
                         h1_energy_ch_GM_PIDgated_Trav[gate][layer][xpos][ypos]->Fill(energy_LISA_GM);
                         h1_energy_layer_GM_PID_TM[gate][layer]->Fill(energy_LISA_GM);
@@ -569,7 +570,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
 
                     h1_energy_layer_GM_PID_driftcorr[gate][layer]->Fill(energy_LISA_GM);
                     //::: Gate on Trav Music Drift Corrected
-                    if(travMusicHitItem.Get_travmusic_dE_driftcorr() >= frs_config->fMin_dE_travMus_gate && travMusicHitItem.Get_travmusic_dE_driftcorr() <= frs_config->fMax_dE_travMus_gate)
+                    if(energy_travMUSIC_driftcorr >= frs_config->fMin_dE_travMus_gate && energy_travMUSIC_driftcorr <= frs_config->fMax_dE_travMus_gate)
                     {   
 
                         h1_energy_ch_GM_PID_TM_driftcorr[gate][layer][xpos][ypos]->Fill(energy_LISA_GM);
