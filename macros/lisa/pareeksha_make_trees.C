@@ -8,8 +8,9 @@
 
 //Select the data level you want to visualize
 #define LISA_RAW 0
-//#define LISA_MDW 0
+#define LISA_ANA 0
 #define LISA_CAL 1
+
 
 // Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/
 extern "C"
@@ -83,7 +84,7 @@ void pareeksha_make_trees(int fileNumber)
      
     //:::::::Take ucesb input and create source
     EXT_STR_h101 ucesb_struct;
-    TString ntuple_options = "UNPACK"; //level of unpacked data (UNPACK,RAW,CAL)
+    TString ntuple_options = "UNPACK,RAW"; //level of unpacked data (UNPACK,RAW,CAL)
     UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
     source->SetMaxEvents(nev);
     run->SetSource(source);
@@ -125,11 +126,12 @@ void pareeksha_make_trees(int fileNumber)
     TFrsConfiguration::SetTravMusDriftFile(config_path + "/frs/TM_Drift_fragments.txt");
     TFrsConfiguration::SetZ1DriftFile(config_path + "/frs/Z1_Drift_fragments.txt");
     TFrsConfiguration::SetAoQDriftFile(config_path + "/frs/AoQ_Drift_fragments.txt");
+    TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
 
     // ::: Lisa config
     TLisaConfiguration::SetMappingFile(config_path + "/lisa/Lisa_Detector_Map_names.txt");
     TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching.txt");
-    //TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
+    TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
 
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -144,8 +146,6 @@ void pareeksha_make_trees(int fileNumber)
     if (LISA_ON)
     {
         LisaReader* unpacklisa = new LisaReader((EXT_STR_h101_lisa_onion*)&ucesb_struct.lisa, offsetof(EXT_STR_h101, lisa));
-        //unpacklisa->DoFineTimeCalOnline("....root", 100000);
-        //unpacklisa->SetInputFileFineTimeHistos(config_path + "....root");
 
         if (LISA_RAW)
         {
@@ -154,7 +154,6 @@ void pareeksha_make_trees(int fileNumber)
         {
             unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
         }
-        //unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
         
         source->AddReader(unpacklisa);
     }
@@ -163,51 +162,43 @@ void pareeksha_make_trees(int fileNumber)
     {   
         if (TRAV_MUSIC_ON)
         {
-            FrsTravMusReader* unpacktravmus = new FrsTravMusReader((EXT_STR_h101_travmus_onion*)&ucesb_struct.travmus, offsetof(EXT_STR_h101, travmus));
+            TravMusReader* unpacktravmus = new TravMusReader((EXT_STR_h101_travmus_onion*)&ucesb_struct.travmus, offsetof(EXT_STR_h101, travmus));
     
             unpacktravmus->SetOnline(false);
             source->AddReader(unpacktravmus);
         }
 
         FrsReader* unpackfrs = new FrsReader((EXT_STR_h101_frs_onion*)&ucesb_struct.frs, offsetof(EXT_STR_h101, frs));
-        //FrsTPCReader* unpackfrstpc = new FrsTPCReader((EXT_STR_h101_frstpc_onion*)&ucesb_struct.frstpc, offsetof(EXT_STR_h101, frstpc));
-        //FrsUserReader* unpackfrsuser = new FrsUserReader((EXT_STR_h101_frsuser_onion*)&ucesb_struct.frsuser, offsetof(EXT_STR_h101, frsuser));
-        //FrsTpatReader* unpackfrstpat = new FrsTpatReader((EXT_STR_h101_frstpat_onion*)&ucesb_struct.frstpat, offsetof(EXT_STR_h101, frstpat));
-        
+
         unpackfrs->SetOnline(true);
-        //unpackfrstpc->SetOnline(true);
-        //unpackfrsuser->SetOnline(true);
-        //unpackfrstpat->SetOnline(true);
         source->AddReader(unpackfrs);
-        //source->AddReader(unpackfrstpc);
-        //source->AddReader(unpackfrsuser);
-        //source->AddReader(unpackfrstpat);
+
     }   
 
 
     // ::::::: CALIBRATE Subsystem  ::::::::
 
-    if (LISA_CAL)
+    if (LISA_ANA || LISA_CAL)
     {
-        LisaRaw2Cal* lisaraw2cal = new LisaRaw2Cal();
-
-        lisaraw2cal->SetOnline(false);
-        run->AddTask(lisaraw2cal);  
+        LisaRaw2Ana* lisaraw2ana = new LisaRaw2Ana();
+        lisaraw2ana->SetOnline(LISA_CAL);
+        run->AddTask(lisaraw2ana);
     }
 
-    // if (LISA_ON)
-    // {
-    //     LisaRaw2Cal* lisaraw2cal = new LisaRaw2Cal();
+    if (LISA_CAL)
+    {        
+        LisaAna2Cal* lisaana2cal = new LisaAna2Cal();
+        lisaana2cal->SetOnline(false);
+        run->AddTask(lisaana2cal);  
+    }
 
-    //     lisaraw2cal->SetOnline(false);
-    //     run->AddTask(lisaraw2cal);
-    // }
+
 
     if (FRS_ON)
     {
         if (TRAV_MUSIC_ON)
         {
-            FrsTravMusRaw2Cal* caltravmus = new FrsTravMusRaw2Cal();
+            TravMusRaw2Cal* caltravmus = new TravMusRaw2Cal();
 
             caltravmus->SetOnline(false);
             run->AddTask(caltravmus);
