@@ -94,7 +94,6 @@ InitStatus LisaOnlineSpectraDaq::Init()
     dir_lisa->cd();
     dir_stats = dir_lisa->mkdir("Stats");
     dir_energy = dir_lisa->mkdir("Energy");
-    //dir_energy = dir_lisa->mkdir("Energy_Ana");
     dir_traces = dir_lisa->mkdir("Traces");
   
     //:::::::::::White Rabbit:::::::::::::::
@@ -313,6 +312,51 @@ InitStatus LisaOnlineSpectraDaq::Init()
         dir_energy->Append(c_energy_layer_ch[i]);
 
     }
+
+    //:::::::::::::E N E R G Y     M W D:::::::::::::::::
+    dir_energy->cd();
+
+    c_energy_MWD_layer_ch.resize(layer_number);
+    h1_energy_MWD_layer_ch.resize(layer_number);
+ 
+    //:::::::::::Energy canvas for each layer
+    for (int i = 0; i < layer_number; i++) 
+    {
+        c_energy_MWD_layer_ch[i] = new TCanvas(Form("c_energy_MWD_layer_%d",i),Form("c_energy_MWD_layer_%d",i), 650,350);
+        c_energy_MWD_layer_ch[i]->SetTitle(Form("Layer %d - Energy MWD",i));
+        c_energy_MWD_layer_ch[i]->Divide(xmax,ymax); 
+        h1_energy_MWD_layer_ch[i].resize(xmax);
+        
+        for (int j = 0; j < xmax; j++)
+        {
+            h1_energy_MWD_layer_ch[i][j].resize(ymax);
+            for (int k = 0; k < ymax; k++)
+            {   
+                // general formula to place correctly on canvas for x,y coordinates
+                c_energy_MWD_layer_ch[i]->cd((ymax-(k+1))*xmax + j + 1);
+                
+                city = "";
+                for (auto & detector : detector_mapping)
+                {
+                    if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
+                    {
+                        city = detector.second.first.second;
+                        break;
+                    }
+                }
+
+                h1_energy_MWD_layer_ch[i][j][k] = new TH1F(Form("energy_MWD_%i_%i_%i_%s", i, j, k, city.Data()), city.Data(), lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
+                h1_energy_MWD_layer_ch[i][j][k]->GetXaxis()->SetTitle("E MWD(LISA) [a.u.]");
+                //h1_energy_MWD_layer_ch[i][j][k]->SetStats(0);
+                h1_energy_MWD_layer_ch[i][j][k]->SetLineColor(kBlue+1);
+                h1_energy_MWD_layer_ch[i][j][k]->SetFillColor(kOrange-3);
+                h1_energy_MWD_layer_ch[i][j][k]->Draw();
+            }
+        }
+        c_energy_MWD_layer_ch[i]->cd(0);
+        dir_energy->Append(c_energy_MWD_layer_ch[i]);
+
+    }
   
     //:::::::::::::T R A C E S:::::::::::::::::
     dir_traces->cd();
@@ -383,6 +427,7 @@ void LisaOnlineSpectraDaq::Reset_Histo()
             for (int z = 0; z < ymax; z++)
             {
                 h1_energy_layer_ch[i][j][z]->Reset();
+                h1_energy_MWD_layer_ch[i][j][z]->Reset();
             }
         }
     }
@@ -501,6 +546,7 @@ void LisaOnlineSpectraDaq::Exec(Option_t* option)
 
         //::::::::: E N E R G Y :::::::::::::::
         h1_energy_layer_ch[layer][xpos][ypos]->Fill(energy);
+        h1_energy_MWD_layer_ch[layer][xpos][ypos]->Fill(energy_MWD);
 
         //::::::::Sum Energy
         

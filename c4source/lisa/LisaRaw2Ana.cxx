@@ -198,10 +198,10 @@ void LisaRaw2Ana::Exec(Option_t* option)
             }
 
             // Trapez_sample_window_0
-            if (k0*sampling < 0 || k0*sampling >= kend*sampling || k0*sampling >= trace_febex.size()) 
+            if (k0*sampling < 0 || k0*sampling >= kend*sampling || k0*sampling >= trace_febex.size()*sampling) 
             {
                 c4LOG(fatal, "[MWD ERROR] Invalid Trapez_sample_window_0 (k0): " << k0*sampling <<
-                " -- must be >= 0; < Trapez_sample_window_1 ( " << kend*sampling << "); < febex_trace_size ( " << trace_febex.size() << ")\n");
+                " -- must be >= 0; < Trapez_sample_window_1 ( " << kend*sampling << "); < febex_trace_size ( " << trace_febex.size()*sampling << ")\n");
             }
             // Trapez_sample_window_0
             if (kend <= k0) 
@@ -229,8 +229,9 @@ void LisaRaw2Ana::Exec(Option_t* option)
 
             for( int i = 0; i < trace_febex.size(); i++)
             {
-                trace_febex.at(i) = (trace_febex.at(i) - average_baseline)/8;
-
+                trace_febex_0.push_back((trace_febex.at(i) - average_baseline) / 8);
+                //If I subtrace trace_febex directly, and then see this online, it is difficult to evaluate the noise of the baseline.
+                //trace_febex.at(i) = (trace_febex.at(i) - average_baseline)/8;
             }
 
             // 2. ::: Calculation of trapezoid :::
@@ -245,9 +246,9 @@ void LisaRaw2Ana::Exec(Option_t* option)
                     for (int i = j - MM; i <= j - 1; ++i) 
                     {
                         if (i < 0) continue;                // Skip if out-of-bounds
-                        sum0 += trace_febex.at(i);          // Sum over the moving window
+                        sum0 += trace_febex_0.at(i);          // Sum over the moving window
                     }
-                    DM += trace_febex.at(j) - trace_febex.at(j - MM) + sum0 / tau[1];
+                    DM += trace_febex_0.at(j) - trace_febex_0.at(j - MM) + sum0 / tau[1];
                 }
                 // Calculate MWD value and index
                 mwd_value = DM / LL;                 // Average over the rising time
@@ -377,6 +378,7 @@ void LisaRaw2Ana::Exec(Option_t* option)
                 energy_MWD,
                 lisaItem.Get_channel_id_traces(),
                 trace_febex,
+                trace_febex_0,
                 trace_MWD,
                 lisaItem.Get_trace_x()
                 //EVTno
@@ -384,6 +386,7 @@ void LisaRaw2Ana::Exec(Option_t* option)
             
             trace_MWD.clear();
             trace_febex.clear();
+            trace_febex_0.clear();
         }
 
 

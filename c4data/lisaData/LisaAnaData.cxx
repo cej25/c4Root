@@ -46,6 +46,7 @@ void LisaAnaItem::SetAll(uint64_t wr,
                     uint32_t ch_energy_MWD,
                     int ch_id_tr,
                     std::vector<int16_t> tr,
+                    std::vector<int16_t> tr_0,
                     std::vector<int16_t> tr_MWD,
                     std::vector<int16_t> tr_x
                     )
@@ -64,6 +65,7 @@ void LisaAnaItem::SetAll(uint64_t wr,
     channel_energy_MWD = ch_energy_MWD;
     channel_id_traces = ch_id_tr;
     trace_febex = tr;
+    trace_febex_0 = tr_0;
     trace_MWD = tr_MWD;
     trace_x = tr_x;
 }
@@ -86,6 +88,7 @@ void LisaAnaItem::Reset()
     channel_energy_MWD = 0;
     channel_id = 0;
     trace_febex = {};
+    trace_febex_0 = {};
     trace_MWD = {};
     trace_x = {};
 

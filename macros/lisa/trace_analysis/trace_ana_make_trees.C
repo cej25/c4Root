@@ -48,12 +48,14 @@ void trace_ana_make_trees(int fileNumber)
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0169_*.lmd";  //data with only lisa
-    TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";
+    //TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";
+    TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/3x3_board_1/";
+
     TString filename = Form(inputpath + "run_%04d_0001.lmd", fileNumber);
 
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/trees/"; 
-    TString outputFilename = Form(outputpath + "run_%04d_0001_test.root", fileNumber);
+    TString outputFilename = Form(outputpath + "run_%04d_0001_MWD_v2.root", fileNumber);
 
 
     //:::::::Create online run
@@ -82,7 +84,7 @@ void trace_ana_make_trees(int fileNumber)
     // ::: Lisa config
     TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Detector_Map_names.txt");
     TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
-    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters.txt");
+    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_3x3.txt");
    
     // ::::::: READ Subsystem  ::::::::
 
