@@ -13,11 +13,12 @@ class FrsTpatItem : public TObject
     public:
         FrsTpatItem();
         
-        void SetAll(Long64_t wr, Short_t tp);
+        void SetAll(Long64_t wr, Short_t tp, Long64_t tmwr);
         void Reset();
 
         Long64_t Get_wr_t() const { return wr_t; }
         Short_t Get_tpat() const { return tpat; }
+        Long64_t Get_travmus_wr_t() const { return travmus_wr_t; }
 
         ClassDef(FrsTpatItem, 1);
 
@@ -25,6 +26,7 @@ class FrsTpatItem : public TObject
 
         Long64_t wr_t;
         Short_t tpat;
+        Long64_t travmus_wr_t;
 };
 
 class FrsScalerItem : public TObject

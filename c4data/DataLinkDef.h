@@ -20,6 +20,7 @@
 
 // BB7
 #pragma link C++ class BB7FebexItem+;
+#pragma link C++ class BB7EmptyItem+;
 #pragma link C++ class BB7FebexCalItem+;
 #pragma link C++ class BB7FebexHitItem+;
 
@@ -86,6 +87,7 @@
 // Germanium
 #pragma link C++ class GermaniumFebexData+;
 #pragma link C++ class GermaniumCalData+;
+#pragma link C++ class GermaniumFebexTraceData+;
 
 // LISA
 #pragma link C++ class LisaItem+;
