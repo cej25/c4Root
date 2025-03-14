@@ -282,7 +282,7 @@ void LisaTraceCorrelation::Exec(Option_t* option){
     int xpos = lisaCalItem.Get_xposition();
     int ypos = lisaCalItem.Get_yposition();
     if(layer==0 && xpos == 1 && ypos == 0){
-      trace_Ams = lisaCalItem.Get_trace_febex();
+      // trace_Ams = lisaCalItem.Get_trace_febex();
       break;
     }
   }

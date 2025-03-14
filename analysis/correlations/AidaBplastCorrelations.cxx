@@ -8,7 +8,6 @@
 // c4
 #include "AidaBplastCorrelations.h"
 #include "EventHeader.h"
-#include "EventData.h"
 #include "bPlastTwinpeaksCalData.h"
 
 // other modules
@@ -65,9 +64,6 @@ InitStatus AidaBplastCorrelations::Init()
 
     fEventHeader = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !fEventHeader, "Branch EventHeader. not found");
-
-    // fEventData = (EventData*)mgr->GetObject("EventData.");
-    // c4LOG_IF(error, !fEventData, "Branch EventData. not found");
 
     // Hit data
     implantHitArray = mgr->InitObjectAs<decltype(implantHitArray)>("AidaImplantHits");

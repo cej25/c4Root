@@ -44,10 +44,10 @@
 
 VME_MESYTEC_MDPP16(geom)
 {
-  MEMBER(DATA16_OVERFLOW adc[16] ZERO_SUPPRESS_MULTI(20));
-  MEMBER(DATA16_OVERFLOW tdc[16] ZERO_SUPPRESS_MULTI(20));
-  MEMBER(DATA16_OVERFLOW trig_tdc[16] ZERO_SUPPRESS_MULTI(20));
-  MEMBER(DATA16_OVERFLOW adc_short[16] ZERO_SUPPRESS_MULTI(20));
+  MEMBER(DATA24 adc[16]); // ZERO_SUPPRESS_MULTI(20));
+  MEMBER(DATA24 tdc[16]); // ZERO_SUPPRESS_MULTI(20));
+  MEMBER(DATA24 trig_tdc[16]); // ZERO_SUPPRESS_MULTI(20));
+  MEMBER(DATA24 adc_short[16]); // ZERO_SUPPRESS_MULTI(20));
 
   MARK_COUNT(start);
   UINT32 header NOENCODE
@@ -72,19 +72,19 @@ VME_MESYTEC_MDPP16(geom)
 
     if (ch_kind == 0) {
       ENCODE(adc[channel],
-	     (value = value, overflow = overflow, pileup = pileup));
+	     (value = value)); //, overflow = overflow, pileup = pileup));
     }
     if (ch_kind == 1) {
       ENCODE(tdc[channel],
-	     (value = value, overflow = overflow, pileup = pileup));
+	     (value = value)); //, overflow = overflow, pileup = pileup));
     }
     if (ch_kind == 2) {
       ENCODE(trig_tdc[channel],
-	     (value = value, overflow = overflow, pileup = pileup));
+	     (value = value)); //, overflow = overflow, pileup = pileup));
     }
     if (ch_kind == 3) {
       ENCODE(adc_short[channel],
-	     (value = value, overflow = overflow, pileup = pileup));
+	     (value = value)); //, overflow = overflow, pileup = pileup));
     }
   }
 

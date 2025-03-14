@@ -1,7 +1,12 @@
-#hello world
+if(CMAKE_BINARY_DIR STREQUAL CMAKE_SOURCE_DIR)
+
+    message(FATAL_ERROR "In-source builds are not supported, please, create a folder build.")
+
+endif()
+
 cmake_minimum_required(VERSION 3.11.0 FATAL_ERROR)
 
-cmake_policy(VERSION 3.11...3.20)
+cmake_policy(VERSION 3.11...3.31)
 
 project(C4ROOT LANGUAGES C CXX)
 
@@ -12,15 +17,32 @@ if(NOT EXISTS "${PROJECT_SOURCE_DIR}/macros")
 endif(NOT EXISTS "${PROJECT_SOURCE_DIR}/macros")
 
 # Check for needed environment variables
-IF(NOT DEFINED ENV{SIMPATH})
-  MESSAGE(FATAL_ERROR "You did not define the environment variable SIMPATH which is nedded to find the external packages. Please set this variable and execute cmake again.")
-ENDIF(NOT DEFINED ENV{SIMPATH})
-SET(SIMPATH $ENV{SIMPATH})
+if(NOT DEFINED ENV{SIMPATH})
 
-IF(NOT DEFINED ENV{FAIRROOTPATH})
-  MESSAGE(FATAL_ERROR "You did not define the environment variable FAIRROOTPATH which is needed to find FairRoot. Please set this variable and execute cmake again.")
-ENDIF(NOT DEFINED ENV{FAIRROOTPATH})
-SET(FAIRROOTPATH $ENV{FAIRROOTPATH})
+    message(
+
+        FATAL_ERROR
+
+            "You did not define the environment variable SIMPATH which is nedded to find the external packages. Please set this variable and execute cmake again."
+
+    )
+
+endif(NOT DEFINED ENV{SIMPATH})
+
+if(NOT DEFINED ENV{FAIRROOTPATH})
+
+    message(
+
+        FATAL_ERROR
+
+            "You did not define the environment variable FAIRROOTPATH which is needed to find FairRoot. Please set this variable and execute cmake again."
+
+    )
+
+endif()
+
+set(SIMPATH $ENV{SIMPATH})
+set(FAIRROOTPATH $ENV{FAIRROOTPATH})
 
 STRING(REGEX MATCHALL "[^:]+" PATH $ENV{PATH})
 
@@ -29,13 +51,16 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
 Set(CheckSrcDir "${FAIRROOTPATH}/share/fairbase/cmake/checks")
 
-find_package(FairCMakeModules 0.1 QUIET)
-if(FairCMakeModules_FOUND)
-  include(FairFindPackage2)
-else()
-  message(STATUS "Could not find FairCMakeModules. "
-          "It is recommended to install https://github.com/FairRootGroup/FairCMakeModules")
-endif()
+# find_package(FairCMakeModules 0.1 QUIET)
+# if(FairCMakeModules_FOUND)
+#   include(FairFindPackage2)
+# else()
+#   message(STATUS "Could not find FairCMakeModules. "
+#           "It is recommended to install https://github.com/FairRootGroup/FairCMakeModules")
+# endif()
+
+find_package(FairCMakeModules 1.0 REQUIRED)
+include(FairFindPackage2)
 
 if(COMMAND find_package2)
   find_package2(PUBLIC FairRoot)
@@ -80,20 +105,133 @@ include(Dart)
 include(CheckCompiler)
 include(ROOTMacros) # This is from FR, see https://github.com/FairRootGroup/FairRoot/issues/1221
 
-find_package2(PUBLIC FairLogger  VERSION 1.2.0 REQUIRED)
+find_package2(PUBLIC FairLogger  VERSION 1.2.0 REQUIRED) # maybe 1.6 now
 
 foreach(dep IN LISTS FairLogger_PACKAGE_DEPENDENCIES)
-  if(NOT dep STREQUAL "Boost")
-    find_package2(PUBLIC ${dep} REQUIRED VERSION ${FairLogger_${dep}_VERSION})
-  endif()
+    if(NOT dep STREQUAL "Boost")
+        find_package2(
+            PUBLIC
+            ${dep}
+            REQUIRED
+            VERSION
+            ${FairLogger_${dep}_VERSION})
+    endif()
 endforeach()
 
-if( "${FairRoot_VERSION}"  VERSION_GREATER 18.6.4 )
-  add_definitions(-DACTIVATEOVERRIDE)
+# if( "${FairRoot_VERSION}"  VERSION_GREATER 18.6.4 )
+#   add_definitions(-DACTIVATEOVERRIDE)
 
-  find_package2(PUBLIC DDS)
+#   find_package2(PUBLIC DDS)
 
-Endif()
+# Endif()
+
+
+if("${FairRoot_VERSION}" VERSION_GREATER 18.6.4)
+
+    find_package2(
+        PUBLIC
+        FairMQ
+        VERSION
+        1.4.0
+        REQUIRED)
+    find_package2(PUBLIC DDS)
+
+    if(FAIRSOFT_EXTERN)
+        set(Boost_ROOT ${SIMPATH})
+        set(GSL_DIR ${SIMPATH})
+    else(FAIRSOFT_EXTERN)
+        set(Boost_ROOT ${SIMPATH}/basics/boost)
+        set(GSL_DIR ${SIMPATH}/basics/gsl)
+    endif(FAIRSOFT_EXTERN)
+
+    if(NOT DEFINED Boost_NO_SYSTEM_PATHS)
+        set(Boost_NO_SYSTEM_PATHS TRUE)
+    endif()
+    if(NOT DEFINED Boost_NO_BOOST_CMAKE AND CMAKE_VERSION VERSION_LESS 3.15)
+        set(Boost_NO_BOOST_CMAKE TRUE)
+    endif()
+    if(Boost_NO_BOOST_CMAKE)
+        # If an older version of boost is found both of the variables below are
+        # cached and in a second cmake run, a good boost version is found even
+        # if the version is to old.
+        # To overcome this problem both variables are cleared before checking
+        # for boost.
+        unset(Boost_INCLUDE_DIR CACHE)
+        unset(Boost_LIBRARY_DIRS CACHE)
+    endif()
+
+    list(
+        APPEND
+        boost_dependencies
+        thread
+        system
+        timer
+        program_options
+        random
+        filesystem
+        chrono
+        exception
+        iostreams
+        regex
+        serialization
+        log
+        atomic)
+
+    find_package2(
+        PUBLIC
+        Boost
+        VERSION
+        1.67
+        COMPONENTS
+        ${boost_dependencies}
+        ADD_REQUIREMENTS_OF
+        FairMQ)
+    #  If (FairMQ_FOUND AND Boost_FOUND)
+    #    add_subdirectory(base/MQ)
+    #    add_subdirectory(parmq)
+    #  Else ()
+    #    Message(STATUS "base/MQ and parmq will not be built, because FairMQ and/or Boost was not found.")
+    #  EndIf ()
+else()
+    set(Boost_NO_SYSTEM_PATHS TRUE)
+    set(Boost_NO_BOOST_CMAKE TRUE)
+
+    if(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
+        set(Boost_ROOT ${SIMPATH})
+        set(GSL_DIR ${SIMPATH})
+    else(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
+        set(Boost_ROOT ${SIMPATH}/basics/boost)
+        set(GSL_DIR ${SIMPATH}/basics/gsl)
+    endif(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
+
+    unset(Boost_INCLUDE_DIR CACHE)
+    unset(Boost_LIBRARY_DIRS CACHE)
+    find_package2(
+        PUBLIC
+        Boost
+        VERSION
+        1.67
+        ${FairMQ_Boost_VERSION}
+        COMPONENTS
+        thread
+        system
+        timer
+        program_options
+        random
+        filesystem
+        chrono
+        exception
+        iostreams
+        regex
+        serialization
+        log
+        log_setup
+        atomic
+        date_time
+        ${FairMQ_Boost_COMPONENTS}
+        REQUIRED)
+endif() #end of r3b fairroot version if statement
+
 
 find_package2(PUBLIC Pythia6)
 find_package2(PUBLIC Pythia8)
@@ -161,24 +299,24 @@ if (COMMAND check_external_package_install_dir)
   check_external_package_install_dir()
 endif()
 
-set(Boost_NO_SYSTEM_PATHS TRUE)
-set(Boost_NO_BOOST_CMAKE TRUE)
+# set(Boost_NO_SYSTEM_PATHS TRUE)
+# set(Boost_NO_BOOST_CMAKE TRUE)
 
-If(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
-  set(BOOST_ROOT ${SIMPATH})
-  set(GSL_DIR ${SIMPATH})
-Else(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
-  set(BOOST_ROOT ${SIMPATH}/basics/boost)
-  set(GSL_DIR ${SIMPATH}/basics/gsl)
-EndIf(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
+# If(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
+#   set(BOOST_ROOT ${SIMPATH})
+#   set(GSL_DIR ${SIMPATH})
+# Else(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
+#   set(BOOST_ROOT ${SIMPATH}/basics/boost)
+#   set(GSL_DIR ${SIMPATH}/basics/gsl)
+# EndIf(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
 
-unset(Boost_INCLUDE_DIR CACHE)
-unset(Boost_LIBRARY_DIRS CACHE)
-find_package2(PUBLIC Boost
-  VERSION 1.67 ${FairMQ_Boost_VERSION}
-  COMPONENTS thread system timer program_options random filesystem chrono exception iostreams regex serialization log log_setup atomic date_time ${FairMQ_Boost_COMPONENTS}
-  REQUIRED
-)
+# unset(Boost_INCLUDE_DIR CACHE)
+# unset(Boost_LIBRARY_DIRS CACHE)
+# find_package2(PUBLIC Boost
+#   VERSION 1.67 ${FairMQ_Boost_VERSION}
+#   COMPONENTS thread system timer program_options random filesystem chrono exception iostreams regex serialization log log_setup atomic date_time ${FairMQ_Boost_COMPONENTS}
+#   REQUIRED
+# )
 if(Boost_FOUND)
   set(Boost_Avail 1)
 else(Boost_FOUND)
@@ -337,11 +475,21 @@ if(CMAKE_CONFIGURATION_TYPES)
   foreach(type IN LISTS CMAKE_CONFIGURATION_TYPES)
    string(TOUPPER "${type}" type_upper)
    if(type_upper STREQUAL selected_type)
-     pad("${type}" 18 " " type_padded)
-     message(STATUS "${BGreen}* ${type_padded}${CMAKE_CXX_FLAGS_${type_upper}}${CR}")
-   else()
+    if( "${FairRoot_VERSION}" VERSION_LESS 19.0)
+      pad("${type}" 18 " " type_padded)
+      message(STATUS "${BGreen}* ${type_padded}${CMAKE_CXX_FLAGS_${type_upper}}${CR}")
+    else()
+      # fair_pad("${type}" 19 " " type_padded)
+      message(STATUS "${BGreen}* ${type_padded}${CMAKE_CXX_FLAGS_${type_upper}}${CR}")
+    endif()
+    else()
+    if( "${FairRoot_VERSION}" VERSION_LESS 19.0)
      pad("${type}" 18 " " type_padded)
      message(STATUS "  ${BWhite}${type_padded}${CR}${CMAKE_CXX_FLAGS_${type_upper}}")
+    else()
+      # fair_pad("${type}" 19 " " type_padded)
+      message(STATUS "  ${BWhite}${type_padded}${CR}${CMAKE_CXX_FLAGS_${type_upper}}")
+    endif()
    endif()
    unset(type_padded)
    unset(type_upper)
@@ -372,11 +520,20 @@ if(PROJECT_PACKAGE_DEPENDENCIES)
     if(PROJECT_${dep}_VERSION)
       set(version_req_str " (>= ${PROJECT_${dep}_VERSION})")
     endif()
-    pad(${dep} 20 " " dep_padded)
-    if(DISABLE_COLOR)
-      pad("${version_str}${version_req_str}" 25 " " version_padded)
+    if( "${FairRoot_VERSION}" VERSION_LESS 19.0)
+      pad(${dep} 20 " " dep_padded)
+      if(DISABLE_COLOR)
+        pad("${version_str}${version_req_str}" 25 " " version_padded)
+      else()
+        pad("${version_str}${version_req_str}" 25 " " version_padded COLOR 1)
+      endif()
     else()
-      pad("${version_str}${version_req_str}" 25 " " version_padded COLOR 1)
+      # fair_pad(${dep} 20 " " dep_padded)
+      if(DISABLE_COLOR)
+        # fair_pad("${version_str}${version_req_str}" 25 " " version_padded)
+      else()
+        # fair_pad("${version_str}${version_req_str}" 25 " " version_padded COLOR 1)
+      endif()
     endif()
     set(prefix ${${dep}_PREFIX})
     if(${dep} STREQUAL Boost)

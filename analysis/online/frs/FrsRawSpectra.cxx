@@ -99,8 +99,8 @@ InitStatus FrsRawSpectra::Init()
     
     // TAC dE
     c_sci_de = new TCanvas("c_sci_de", "Scintillator dE spectra", 650, 350);
-    c_sci_de->Divide(4, 4);
-    for (int ihist = 0; ihist < 16; ihist++)
+    c_sci_de->Divide(4, 8);
+    for (int ihist = 0; ihist < 32; ihist++)
     {
         c_sci_de->cd(ihist+1);
         h1_sci_de[ihist] = MakeTH1(dir_sci_de, "F", Form("h1_sci_de_%i", ihist), Form("Scintillator dE Channel %i", ihist), 4096, 0, 4096);
@@ -111,8 +111,8 @@ InitStatus FrsRawSpectra::Init()
 
     // TAC dT
     c_sci_dt = new TCanvas("c_sci_dt", "Scintillator dT spectra", 650, 350);
-    c_sci_dt->Divide(4, 4);
-    for (int ihist = 0; ihist < 16; ihist++)
+    c_sci_dt->Divide(4, 8);
+    for (int ihist = 0; ihist < 32; ihist++)
     {
         c_sci_dt->cd(ihist+1);
         h1_sci_dt[ihist] = MakeTH1(dir_sci_dt, "F", Form("h1_sci_dt_%i", ihist), Form("Scintillator dT Channel %i", ihist), 4096, 0, 4096); // need to figure out ranges
@@ -123,8 +123,8 @@ InitStatus FrsRawSpectra::Init()
 
     // MHTDC T
     c_sci_mhtdc = new TCanvas("c_sci_mhtdc", "Scintillator MHTDC T spectra", 650, 350);
-    c_sci_mhtdc->Divide(4, 4);
-    for (int ihist = 0; ihist < 16; ihist++)
+    c_sci_mhtdc->Divide(4, 8);
+    for (int ihist = 0; ihist < 32; ihist++)
     {
         c_sci_mhtdc->cd(ihist+1);
         h1_sci_mhtdc[ihist] = MakeTH1(dir_sci_mhtdc, "F", Form("h1_sci_mhtdc_%i", ihist), Form("Scintillator MHTDC T Channel %i", ihist), 4000, 0, 100000); // need to figure out ranges
@@ -138,7 +138,7 @@ InitStatus FrsRawSpectra::Init()
     dir_music_e = dir_music->mkdir("E");
     dir_music_t = dir_music->mkdir("T");
 
-    for (int j = 0; j < 2; j++)
+    for (int j = 0; j < 5; j++)
     {
         dir_music_n_e[j] = dir_music_e->mkdir(Form("MUSIC %i", j));
 
@@ -147,7 +147,7 @@ InitStatus FrsRawSpectra::Init()
         for (int ihist = 0; ihist < 8; ihist++)
         {
             c_music_n_e[j]->cd(ihist+1);
-            h1_music_anode_e[j][ihist] = MakeTH1(dir_music_n_e[j], "F", Form("h1_music_%i_e_anode_%i", j, ihist), Form("MUSIC %i Anode %i", j, ihist), 4096, 0, 4096); // need to figure out ranges
+            h1_music_anode_e[j][ihist] = MakeTH1(dir_music_n_e[j], "F", Form("h1_music_%i_e_anode_%i", j, ihist), Form("MUSIC %i Anode %i", j, ihist), 12000, 0, 32768); // need to figure out ranges
             h1_music_anode_e[j][ihist]->Draw();
         }
         c_music_n_e[j]->cd(0);
@@ -217,7 +217,7 @@ void FrsRawSpectra::Exec(Option_t* option)
     sciDT = sciItem.Get_dt_array();
     sciMHTDC = sciItem.Get_mhtdc_array();
 
-    for (int i = 0; i < 16; i++)
+    for (int i = 0; i < 32; i++)
     {
         h1_sci_de[i]->Fill(sciDE[i]);
         h1_sci_dt[i]->Fill(sciDT[i]);
@@ -228,7 +228,7 @@ void FrsRawSpectra::Exec(Option_t* option)
     musicE = musicItem.Get_music_e();
     musicT = musicItem.Get_music_t();
 
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < 5; i++)
     {
         for (int j = 0; j < 8; j++)
         {

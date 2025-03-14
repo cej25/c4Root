@@ -6,6 +6,7 @@ BB7FebexItem::BB7FebexItem()
 
 void BB7FebexItem::SetAll(int64_t wr,
                     uint16_t id,
+                    int cr_id,
                     uint32_t b_id,
                     uint64_t ev_time,
                     uint32_t ch_id,
@@ -19,6 +20,7 @@ void BB7FebexItem::SetAll(int64_t wr,
 {
     wr_t = wr;
     wr_id = id;
+    crate_id = cr_id;
     board_id = b_id;
     board_event_time = ev_time;
     channel_id = ch_id;
@@ -34,6 +36,7 @@ void BB7FebexItem::Reset()
 {
     wr_t = 0;
     wr_id = 0;
+    crate_id = 0; // -1?
     board_id = 0;
     board_event_time = 0;
     channel_id = 0;
@@ -46,3 +49,19 @@ void BB7FebexItem::Reset()
 }
 
 ClassImp(BB7FebexItem)
+
+
+BB7EmptyItem::BB7EmptyItem() {}
+
+void BB7EmptyItem::SetAll(int64_t wr,
+                    uint16_t id,
+                    int cr_id,
+                    uint32_t b_id,
+                    uint64_t ev_time)
+{
+    wr_t = wr;
+    wr_id = id;
+    crate_id = cr_id;
+    board_id = b_id;
+    board_event_time = ev_time;
+}

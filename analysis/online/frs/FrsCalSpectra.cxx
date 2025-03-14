@@ -325,26 +325,27 @@ void FrsCalSpectra::Exec(Option_t* option)
 
     std::vector<Int_t> sci11l_times;
     std::vector<Int_t> sci11r_times;
-    if (sci->sci11_select == 1)
+    if (sci->sci11_select == 0)
     {
         sci11l_times = calSciItem.Get_mhtdc_sci11la_hits();
         sci11r_times = calSciItem.Get_mhtdc_sci11ra_hits();
     }
-    else if (sci->sci11_select == 2)
+    else if (sci->sci11_select == 1)
     {
         sci11l_times = calSciItem.Get_mhtdc_sci11lb_hits();
         sci11r_times = calSciItem.Get_mhtdc_sci11rb_hits();
     }
-    else if (sci->sci11_select == 3)
+    else if (sci->sci11_select == 2)
     {
         sci11l_times = calSciItem.Get_mhtdc_sci11lc_hits();
         sci11r_times = calSciItem.Get_mhtdc_sci11rc_hits();
     }
-    else if (sci->sci11_select == 4)
+    else if (sci->sci11_select == 3)
     {
         sci11l_times = calSciItem.Get_mhtdc_sci11ld_hits();
         sci11r_times = calSciItem.Get_mhtdc_sci11rd_hits();
-    }
+    } 
+
     std::vector<Int_t> sci21l_times = calSciItem.Get_mhtdc_sci21l_hits();
     std::vector<Int_t> sci21r_times = calSciItem.Get_mhtdc_sci21r_hits();
     std::vector<Int_t> sci22l_times = calSciItem.Get_mhtdc_sci22l_hits();

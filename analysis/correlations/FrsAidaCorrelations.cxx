@@ -252,26 +252,26 @@ void FrsAidaCorrelations::Exec(Option_t* option)
             {
                 for (int gate = 0; gate < FrsGates.size(); gate++)
                 {
-                    if (FrsGates[gate]->Passed_ZvsAoQ(hitItemFrs.Get_ID_z41(), hitItemFrs.Get_ID_AoQ_s2s4()))
+                    if (FrsGates[gate]->Passed_Z41vsAoQs2s4(hitItemFrs.Get_ID_z41(), hitItemFrs.Get_ID_AoQ_s2s4()))
                     {
                         h2_AidaImplant_FRS_ZAoQgate_strip_xy[hit.DSSD-1][gate]->Fill(hit.StripX, hit.StripY);
                         h1_AidaImplant_FRS_ZAoQgate_e[hit.DSSD-1][gate]->Fill(hit.Energy);
                         h2_AidaImplant_FRS_ZAoQgate_position[hit.DSSD-1][gate]->Fill(hit.PosX, hit.PosY);
                     } // Z vs AoQ pass
 
-                    if (FrsGates[gate]->Passed_ZvsZ2(hitItemFrs.Get_ID_z41(), hitItemFrs.Get_ID_z42()))
+                    if (FrsGates[gate]->Passed_Z41vsZ42(hitItemFrs.Get_ID_z41(), hitItemFrs.Get_ID_z42()))
                     {
                         h2_AidaImplant_FRS_Z1Z2gate_strip_xy[hit.DSSD-1][gate]->Fill(hit.StripX, hit.StripY);
                         h2_AidaImplant_FRS_Z1Z2gate_position[hit.DSSD-1][gate]->Fill(hit.PosX, hit.PosY);
                         
-                        if (FrsGates[gate]->Passed_x2vsAoQ(hitItemFrs.Get_ID_x2(), hitItemFrs.Get_ID_AoQ_s2s4()))
+                        if (FrsGates[gate]->Passed_x2vsAoQs2s4(hitItemFrs.Get_ID_x2(), hitItemFrs.Get_ID_AoQ_s2s4()))
                         {
                             h2_AidaImplant_FRS_Z1Z2x2AoQgates_strip_xy[hit.DSSD-1][gate]->Fill(hit.StripX, hit.StripY);
                             h2_AidaImplant_FRS_Z1Z2x2AoQgates_position[hit.DSSD-1][gate]->Fill(hit.PosX, hit.PosY);
                             h1_AidaImplant_FRS_Z1Z2x2AoQgates_e[hit.DSSD-1][gate]->Fill(hit.Energy);
                         } // x2 vs AoQ pass
 
-                        if (FrsGates[gate]->Passed_x4vsAoQ(hitItemFrs.Get_ID_x4(), hitItemFrs.Get_ID_AoQ_s2s4()))
+                        if (FrsGates[gate]->Passed_x4vsAoQs2s4(hitItemFrs.Get_ID_x4(), hitItemFrs.Get_ID_AoQ_s2s4()))
                         {
                             h2_AidaImplant_FRS_Z1Z2x4AoQgates_strip_xy[hit.DSSD-1][gate]->Fill(hit.StripX, hit.StripY);
                             h2_AidaImplant_FRS_Z1Z2x4AoQgates_position[hit.DSSD-1][gate]->Fill(hit.PosX, hit.PosY);
@@ -287,26 +287,26 @@ void FrsAidaCorrelations::Exec(Option_t* option)
                 {
                     for (int gate = 0; gate < FrsGates.size(); gate++)
                     {
-                        if (FrsGates[gate]->Passed_ZvsAoQ(hitItemFrs.Get_ID_z41(), hitItemFrs.Get_ID_AoQ_s2s4()))
+                        if (FrsGates[gate]->Passed_Z41vsAoQs2s4(hitItemFrs.Get_ID_z41(), hitItemFrs.Get_ID_AoQ_s2s4()))
                         {
                             h2_AidaImplant_FRS_ZAoQgate_strip_xy_stopped[hit.DSSD-1][gate]->Fill(hit.StripX, hit.StripY);
                             h1_AidaImplant_FRS_ZAoQgate_e_stopped[hit.DSSD-1][gate]->Fill(hit.Energy);
                             h2_AidaImplant_FRS_ZAoQgate_position_stopped[hit.DSSD-1][gate]->Fill(hit.PosX, hit.PosY);
                         } // Z vs AoQ pass
 
-                        if (FrsGates[gate]->Passed_ZvsZ2(hitItemFrs.Get_ID_z41(), hitItemFrs.Get_ID_z42()))
+                        if (FrsGates[gate]->Passed_Z41vsZ42(hitItemFrs.Get_ID_z41(), hitItemFrs.Get_ID_z42()))
                         {
                             h2_AidaImplant_FRS_Z1Z2gate_strip_xy_stopped[hit.DSSD-1][gate]->Fill(hit.StripX, hit.StripY);
                             h2_AidaImplant_FRS_Z1Z2gate_position_stopped[hit.DSSD-1][gate]->Fill(hit.PosX, hit.PosY);
 
-                            if (FrsGates[gate]->Passed_x2vsAoQ(hitItemFrs.Get_ID_x2(), hitItemFrs.Get_ID_AoQ_s2s4()))
+                            if (FrsGates[gate]->Passed_x2vsAoQs2s4(hitItemFrs.Get_ID_x2(), hitItemFrs.Get_ID_AoQ_s2s4()))
                             {
                                 h2_AidaImplant_FRS_Z1Z2x2AoQgates_strip_xy_stopped[hit.DSSD-1][gate]->Fill(hit.StripX, hit.StripY);
                                 h1_AidaImplant_FRS_Z1Z2x2AoQgates_e_stopped[hit.DSSD-1][gate]->Fill(hit.Energy);
                                 h2_AidaImplant_FRS_Z1Z2x2AoQgates_position_stopped[hit.DSSD-1][gate]->Fill(hit.PosX, hit.PosY);
                             } // x2 vs AoQ pass
 
-                            if (FrsGates[gate]->Passed_x4vsAoQ(hitItemFrs.Get_ID_x4(), hitItemFrs.Get_ID_AoQ_s2s4()))
+                            if (FrsGates[gate]->Passed_x4vsAoQs2s4(hitItemFrs.Get_ID_x4(), hitItemFrs.Get_ID_AoQ_s2s4()))
                             {
                                 h2_AidaImplant_FRS_Z1Z2x4AoQgates_strip_xy_stopped[hit.DSSD-1][gate]->Fill(hit.StripX, hit.StripY);
                                 h1_AidaImplant_FRS_Z1Z2x4AoQgates_e_stopped[hit.DSSD-1][gate]->Fill(hit.Energy);

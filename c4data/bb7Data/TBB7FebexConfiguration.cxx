@@ -34,9 +34,10 @@ void TBB7FebexConfiguration::ReadConfiguration()
 
         std::istringstream iss(line);
         std::string signal;
-        int board = -1, channel = -1, dssd = -1, side = -1, strip = -1;
+        int crate = -1, board = -1, channel = -1, dssd = -1, side = -1, strip = -1;
 
         std::pair<int, int> febex_mc;
+        std::pair<int, std::pair<int, int>> febex_cmc;
         std::pair<int, int> bb7_ss;
         std::pair<int, std::pair<int, int>> bb7_dp;
 
@@ -44,11 +45,11 @@ void TBB7FebexConfiguration::ReadConfiguration()
 
         if (isdigit(signal[0])) // detector
         {
-            board = std::stoi(signal);
+            crate = std::stoi(signal);
 
-            iss >> channel >> dssd >> side >> strip;
+            iss >> board >> channel >> dssd >> side >> strip;
 
-            if (board < 0 || channel < 0 || dssd < 0 || side < 0 || strip < 0) continue;
+            if (crate < 0 || board < 0 || channel < 0 || dssd < 0 || side < 0 || strip < 0) continue;
             
             bb7_ss = {side, strip};
             bb7_dp = {dssd, bb7_ss};
@@ -62,8 +63,9 @@ void TBB7FebexConfiguration::ReadConfiguration()
         if (dssd > -1) dssds.insert(dssd);
 
         febex_mc = {board, channel};
+        febex_cmc = {crate, febex_mc};
 
-        detector_mapping.insert(std::pair<std::pair<int, int>, std::pair<int, std::pair<int,int>>> {febex_mc, bb7_dp});  
+        detector_mapping.insert(std::pair<std::pair<int, std::pair<int, int>>, std::pair<int, std::pair<int,int>>> {febex_cmc, bb7_dp});  
         
     }
 

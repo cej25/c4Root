@@ -27,12 +27,15 @@ class EventHeader : public FairEventHeader
     static void SetRegister(bool option) { fPersistance = option; }
     virtual void Register(Bool_t Persistance) override;
 
+    int test[2000];
+
   private:
     uint64_t fEventno;
     Int_t fTrigger;
     uint64_t fTimeStamp;
     bool fSpillFlag;
     static bool fPersistance;
+    // int test[2000];
 
   public:
     ClassDefOverride(EventHeader, 1)

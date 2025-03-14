@@ -63,6 +63,7 @@ set(SRCS
 ./travMus/TravMusRaw2Cal.cxx
 ./travMus/TravMusCal2Ana.cxx
 ./germanium/GermaniumReader.cxx
+./germanium/GermaniumTraceReader.cxx
 ./lisa/LisaReader.cxx
 ./lisa/LisaAna2Cal.cxx
 ./lisa/LisaRaw2Ana.cxx
@@ -70,6 +71,7 @@ set(SRCS
 ./bplast/bPlastRaw2Cal.cxx
 ./beammonitor/BeamMonitorReader.cxx
 ./germanium/GermaniumRaw2Cal.cxx
+./germanium/GermaniumCal2Anl.cxx
 ./fatima/FatimaReader.cxx
 ./fatima/FatimaRaw2Cal.cxx
 ./bgo/BGOReader.cxx
@@ -94,13 +96,14 @@ Set(STRUCT_HEADERS
 ./travMus/ext_h101_travmus.h
 ./lisa/ext_h101_lisa.h
 ./germanium/ext_h101_germanium.h
+./germanium/ext_h101_germanium_traces.h
 ./bplast/ext_h101_bplast.h
 ./beammonitor/ext_h101_beammonitor.h
 ./fatima/ext_h101_fatima.h
 ./fatima/ext_h101_fatimavme.h
 ./bgo/ext_h101_bgo.h
-./bb7/ext_h101_bb7vme.h
-./bb7/ext_h101_bb7febex.h
+# ./bb7/ext_h101_bb7vme.h
+./bb7/ext_h101_bbfebex.h
 ./fimp/ext_h101_fimp.h
 
 ./test/ext_h101_test.h

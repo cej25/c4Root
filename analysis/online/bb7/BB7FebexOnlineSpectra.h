@@ -67,32 +67,57 @@ class BB7FebexOnlineSpectra : public FairTask
         Int_t fNEvents;
         int total_time_microsecs = 0;
 
+        int nDets = 0;
+
         // Folders and Files
         TFolder* histograms;
         TDirectory* dir_bb7;
-        TDirectory* dir_stats;
-        TDirectory* dir_implants;
-        TDirectory* dir_decays;
+        std::vector<TDirectory*> dir_dssd;
+        std::vector<TDirectory*> dir_stats;
+        std::vector<TDirectory*> dir_implants;
+        std::vector<TDirectory*> dir_decays;
 
         // Histograms
-        TH2* h2_implant_strip_xy;
-        TH1* h1_implant_e;
-        TH2* h2_implant_e_xy;
-        TH2* h2_implant_strip_1d_e;
+        std::vector<TH1*> h1_implant_side_x_mult;
+        std::vector<TH1*> h1_implant_side_y_mult;
+        std::vector<TH2*> h2_implant_strip_mult; 
+        std::vector<TH1*> h1_implant_side_x_hitpattern;
+        std::vector<TH1*> h1_implant_side_y_hitpattern;
+        std::vector<TH2*> h2_implant_strip_xy;
+        std::vector<TH1*> h1_implant_e;
+        std::vector<TH2*> h2_implant_e_xy;
+        std::vector<TH2*> h2_implant_strip_1d_e;
 
-        TH1* h1_side_x_mult;
-        TH1* h1_side_y_mult;
-        TH2* h2_strip_mult; 
-        TH1* h1_side_x_hitpattern;
-        TH1* h1_side_y_hitpattern;
-        TH2* h2_decay_strip_xy;
-        TH1* h1_decay_e;
-        TH2* h2_decay_e_xy;
-        TH2* h2_decay_strip_1d_e; 
+        std::vector<TH1*> h1_decay_side_x_mult;
+        std::vector<TH1*> h1_decay_side_y_mult;
+        std::vector<TH2*> h2_decay_strip_mult; 
+        std::vector<TH1*> h1_decay_side_x_hitpattern;
+        std::vector<TH1*> h1_decay_side_y_hitpattern;
+        std::vector<TH2*> h2_decay_strip_xy;
+        std::vector<TH1*> h1_decay_e;
+        std::vector<TH2*> h2_decay_e_xy;
+        std::vector<TH2*> h2_decay_strip_1d_e; 
 
-        std::set<int> strips_fired[2];
-        int side_x_mult[32];
-        int side_y_mult[32];
+        // Raw histograms
+        std::vector<TH1*> h1_febex_card_hitpattern;
+        // std::vector<TH1*> 
+
+
+
+        // Counters
+        std::set<int>** implant_strips_fired;
+        int** implant_side_x_mult;
+        int** implant_side_y_mult;
+        std::set<int>** decay_strips_fired;
+        int** decay_side_x_mult;
+        int** decay_side_y_mult;
+
+        // std::vector<std::set<int>> implant_strips_fired[2];
+        // std::vector<int> implant_side_x_mult[32];
+        // std::vector<int> implant_side_y_mult[32];
+        // std::vector<std::set<int>> decay_strips_fired[2];
+        // std::vector<int> decay_side_x_mult[32];
+        // std::vector<int> decay_side_y_mult[32];
 
     public:
         ClassDef(BB7FebexOnlineSpectra, 1)

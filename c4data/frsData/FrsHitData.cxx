@@ -3,11 +3,13 @@
 
 FrsHitItem::FrsHitItem() {}
 
-void FrsHitItem::SetMetaData(Long64_t wr_t, Short_t tpat)
+void FrsHitItem::SetMetaData(Long64_t wr_t, Short_t tpat, TString setup)
 {
     fwr_t = wr_t;
     ftpat = tpat;
+    setup_file = setup;
 }
+
 
 void FrsHitItem::SetScalerData(Double_t time_in_ms,
                 Double_t time_in_us,
@@ -174,19 +176,18 @@ void FrsHitItem::SetIDs(Float_t x1,
 }
 
 void FrsHitItem::SetDriftCorrections(Float_t FRS_time, 
-                        Float_t AoQ_driftcorr, 
-                        Float_t z_driftcorr)
+                        Float_t AoQs2s4_driftcorr, 
+                        Float_t z41_driftcorr)
 {
     FRS_time_mins = FRS_time;
-    fID_AoQ_driftcorr = AoQ_driftcorr;
-    fID_z_driftcorr = z_driftcorr;
+    fID_AoQs2s4_driftcorr = AoQs2s4_driftcorr;
+    fID_z41_driftcorr = z41_driftcorr;
 }
 
 ClassImp(FrsHitItem)
 
 
 FrsMultiHitItem::FrsMultiHitItem() {}
-
 
 
 void FrsMultiHitItem::SetS1S2(std::vector<Float_t> s1x,
