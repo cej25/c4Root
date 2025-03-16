@@ -4,19 +4,18 @@ BB7FebexCalItem::BB7FebexCalItem()
 {
 }
 
-void BB7FebexCalItem::SetAll(int64_t wr,
-                        int d,
-                        int si,
-                        int st,
-                        int e,
-                        std::vector<uint16_t> tr,
-                        double e_cal,
-                        uint64_t evt_t,
-                        uint64_t ch_t,
-                        int64_t ab_t,
-                        int pu,
-                        int ov
-                        )
+void BB7FebexCalItem::SetAll(Long64_t wr,
+                            Int_t d,
+                            Int_t si,
+                            Int_t st,
+                            Int_t e,
+                            std::vector<UShort_t> tr,
+                            Double_t e_cal,
+                            ULong64_t evt_t,
+                            ULong64_t ch_t,
+                            Long64_t ab_t,
+                            Bool_t pu,
+                            Bool_t ov)
 {   
     wr_t = wr;
     DSSD = d;

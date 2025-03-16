@@ -8,49 +8,48 @@ class BB7FebexItem : public TObject
     public:
         BB7FebexItem();
 
-        void SetAll(int64_t wr,
-                    uint16_t id,
-                    int cr_id,
-                    uint32_t b_id,
-                    uint64_t ev_time,
-                    uint32_t ch_id,
-                    uint64_t ch_time,
-                    bool p,
-                    bool o,
-                    uint32_t ch_energy,
-                    uint32_t ch_id_traces,
-                    std::vector<uint16_t> tr);
+        void SetAll(Long64_t wr,
+                    UShort_t id,
+                    Int_t cr_id,
+                    UInt_t b_id,
+                    ULong64_t ev_time,
+                    UInt_t ch_id,
+                    ULong64_t ch_time,
+                    Bool_t p,
+                    Bool_t o,
+                    UInt_t ch_energy,
+                    UInt_t ch_id_traces,
+                    std::vector<UShort_t> tr);
         void Reset();
 
-        int64_t Get_wr_t() const;
-        uint16_t Get_wr_id() const;
-        int Get_crate_id() const;
-        uint32_t Get_board_id() const;
-        uint64_t Get_board_event_time() const;
-        uint32_t Get_channel_id() const;
-        uint64_t Get_channel_time() const;
-        bool Get_pileup() const;
-        bool Get_overflow() const;
-        uint32_t Get_channel_energy() const;
-        uint32_t Get_channel_id_traces() const;
-        std::vector<uint16_t> Get_trace() const;
+        ULong64_t Get_wr_t() const { return wr_t; }
+        UShort_t Get_wr_id() const { return wr_id; }
+        Int_t Get_crate_id() const { return crate_id; }
+        UInt_t Get_board_id() const { return board_id; }
+        ULong64_t Get_board_event_time() const { return board_event_time; }
+        UInt_t Get_channel_id() const { return channel_id; }
+        ULong64_t Get_channel_time() const { return channel_time; }
+        Bool_t Get_pileup() const { return pileup; }
+        Bool_t Get_overflow() const { return overflow; }
+        UInt_t Get_channel_energy() const { return channel_energy; }
+        UInt_t Get_channel_id_traces() const { return channel_id_traces; }
+        std::vector<UShort_t> Get_trace() const { return trace; }
 
-        // Getters
-        ClassDefNV(BB7FebexItem, 1);
-    private:
+        ClassDef(BB7FebexItem, 1);
     
-        int64_t wr_t;
-        uint16_t wr_id;
-        int crate_id;
-        uint32_t board_id;
-        uint64_t board_event_time;
-        uint32_t channel_id;
-        uint64_t channel_time;
-        bool pileup;
-        bool overflow;
-        uint32_t channel_energy;
-        uint32_t channel_id_traces;
-        std::vector<uint16_t> trace; 
+    private:
+        Long64_t wr_t;
+        UShort_t wr_id;
+        Int_t crate_id;
+        UInt_t board_id;
+        ULong64_t board_event_time;
+        UInt_t channel_id;
+        ULong64_t channel_time;
+        Bool_t pileup;
+        Bool_t overflow;
+        UInt_t channel_energy;
+        UInt_t channel_id_traces;
+        std::vector<UShort_t> trace; 
 
 };
 
@@ -59,88 +58,27 @@ class BB7EmptyItem : public TObject
     public:
         BB7EmptyItem();
 
-        void SetAll(int64_t wr,
-                    uint16_t id,
-                    int cr_id,
-                    uint32_t b_id,
-                    uint64_t ev_time);
+        void SetAll(Long64_t wr,
+                    UShort_t id,
+                    Int_t cr_id,
+                    UInt_t b_id,
+                    ULong64_t ev_time);
 
-        int64_t Get_wr_t() const { return wr_t; }
-        uint16_t Get_wr_id() const { return wr_id; }
-        int Get_crate_id() const{ return crate_id; } 
-        uint32_t Get_board_id() const { return board_id; }
-        uint64_t Get_board_event_time() const { return board_event_time; }
+        Long64_t Get_wr_t() const { return wr_t; }
+        UShort_t Get_wr_id() const { return wr_id; }
+        Int_t Get_crate_id() const{ return crate_id; } 
+        UInt_t Get_board_id() const { return board_id; }
+        ULong64_t Get_board_event_time() const { return board_event_time; }
 
-        // Getters
-        ClassDefNV(BB7EmptyItem, 1);
-    private:
+        ClassDef(BB7EmptyItem, 1);
     
-        int64_t wr_t;
-        uint16_t wr_id;
-        int crate_id;
-        uint32_t board_id;
-        uint64_t board_event_time;
+    private:
+        Long64_t wr_t;
+        UShort_t wr_id;
+        Int_t crate_id;
+        UInt_t board_id;
+        ULong64_t board_event_time;
 
 };
-
-inline int64_t BB7FebexItem::Get_wr_t() const
-{
-    return wr_t;
-}
-
-inline uint16_t BB7FebexItem::Get_wr_id() const
-{
-    return wr_id;
-}
-
-inline int BB7FebexItem::Get_crate_id() const
-{
-    return crate_id;
-}
-
-inline uint32_t BB7FebexItem::Get_board_id() const
-{
-    return board_id;
-}
-
-inline uint64_t BB7FebexItem::Get_board_event_time() const
-{
-    return board_event_time;
-}
-
-inline uint32_t BB7FebexItem::Get_channel_id() const
-{
-    return channel_id;
-}
-
-inline uint64_t BB7FebexItem::Get_channel_time() const
-{
-    return channel_time;
-}
-
-inline bool BB7FebexItem::Get_pileup() const
-{
-    return pileup;
-}
-
-inline bool BB7FebexItem::Get_overflow() const
-{
-    return overflow;
-}
-
-inline uint32_t BB7FebexItem::Get_channel_energy() const
-{
-    return channel_energy;
-}
-
-inline uint32_t BB7FebexItem::Get_channel_id_traces() const
-{
-    return channel_id_traces;
-}
-
-inline std::vector<uint16_t> BB7FebexItem::Get_trace() const
-{
-    return trace;
-}
 
 #endif
