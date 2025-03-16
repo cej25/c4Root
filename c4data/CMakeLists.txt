@@ -83,6 +83,8 @@ change_file_extension(*.cxx *.h HEADERS "${SRCS}")
 
 set(LINKDEF DataLinkDef.h)
 set(LIBRARY_NAME c4Data)
-set(DEPENDENCIES Base FairTools ${VMCLIB} FairLogger::FairLogger)
+#set(DEPENDENCIES Base FairTools ${VMCLIB} FairLogger::FairLogger)
+set(DEPENDENCIES Base FairTools FairLogger::FairLogger)
+
 
 generate_library()
