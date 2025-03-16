@@ -168,13 +168,13 @@ public:
   // New 2025..
   Int_t         music21_e_off[8];       /* ADC offsets              */
   Float_t       music21_e_gain[8];      /* ADC gains                */
-  Int_t         music22_e_off[8];       /* ADC offsets              */
+  Float_t       music22_e_off[8];       /* ADC offsets              */
   Float_t       music22_e_gain[8];      /* ADC gains                */
-  Int_t         music41_e_off[8];       /* ADC offsets              */
+  Float_t       music41_e_off[8];       /* ADC offsets              */
   Float_t       music41_e_gain[8];      /* ADC gains                */
-  Int_t         music42_e_off[8];       /* ADC offsets              */
+  Float_t       music42_e_off[8];       /* ADC offsets              */
   Float_t       music42_e_gain[8];      /* ADC gains                */
-  Int_t         music43_e_off[8];       /* ADC offsets              */
+  Float_t       music43_e_off[8];       /* ADC offsets              */
   Float_t       music43_e_gain[8];      /* ADC gains                */
   Float_t       music21_pos_a[7];       /* pos. corr. de(i) ->  MUSIC21 */
   Float_t       music22_pos_a[7];       /* pos. corr. de(i) ->  MUSIC22 */
@@ -182,13 +182,13 @@ public:
   Float_t       music42_pos_a[7];       /* pos. corr. de(i) ->  MUSIC42 */
   Float_t       music43_pos_a[7];       /* pos. corr. de(i) ->  MUSIC43 */
 
-  Float_t         e1_off[8];       /* ADC offsets              */
+  Float_t       e1_off[8];       /* ADC offsets              */
   Float_t       e1_gain[8];      /* ADC gains                */
-  Float_t         e2_off[8];       /* ADC offsets              */
+  Float_t       e2_off[8];       /* ADC offsets              */
   Float_t       e2_gain[8];      /* ADC gains                */
-  Float_t         e3_off[8];       /* ADC offsets              */
+  Float_t       e3_off[8];       /* ADC offsets              */
   Float_t       e3_gain[8];      /* ADC gains                */
-  Float_t         e4_off[8];       /* ADC offsets              */
+  Float_t       e4_off[8];       /* ADC offsets              */
   Float_t       e4_gain[8];      /* ADC gains                */
   Bool_t        b_selfcorr1;     /* 1 => Music1 x correction */
   Float_t       pos_a1[7];       /* pos. corr. de(i) ->  MUSIC41 */
