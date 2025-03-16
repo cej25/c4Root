@@ -12,7 +12,7 @@ void AidaCalAdcItem::Reset()
     intensity = energy = 0.;
 }
 
-void AidaCalAdcItem::SetAll(uint64_t st, uint64_t ft, int f, int c, int d, int si, int str, bool r, double i, double e)
+void AidaCalAdcItem::SetAll(ULong64_t st, ULong64_t ft, Int_t f, Int_t c, Int_t d, Int_t si, Int_t str, Bool_t r, Double_t i, Double_t e)
 {
     slowTime = st;
     fastTime = ft;
