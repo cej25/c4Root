@@ -12,7 +12,7 @@ void AidaUnpackAdcItem::Reset()
     value = 0;
 }
 
-void AidaUnpackAdcItem::SetAll(uint64_t rt, uint64_t st, uint64_t ft, int f, int c, bool r, uint16_t v)
+void AidaUnpackAdcItem::SetAll(ULong64_t rt, ULong64_t st, ULong64_t ft, Int_t f, Int_t c, Bool_t r, UShort_t v)
 {
     rawTime = rt;
     slowTime = st;
@@ -33,7 +33,7 @@ void AidaUnpackScalerItem::Reset()
     fee = 0;
 }
 
-void AidaUnpackScalerItem::SetAll(uint64_t t, uint64_t v, int f)
+void AidaUnpackScalerItem::SetAll(ULong64_t t, ULong64_t v, Int_t f)
 {
     time = t;
     value = v;
@@ -51,7 +51,7 @@ void AidaUnpackFlowItem::Reset()
     pause = false;
 }
 
-void AidaUnpackFlowItem::SetAll(uint64_t t, int f, bool p)
+void AidaUnpackFlowItem::SetAll(ULong64_t t, Int_t f, Bool_t p)
 {
     time = t;
     fee = f;
