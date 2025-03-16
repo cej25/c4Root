@@ -23,7 +23,6 @@
 
 #include "LisaFrsCorrelations.h"
 #include "FrsHitData.h"
-#include "TravMusCalData.h"
 #include "LisaCalData.h"
 #include "TLisaConfiguration.h"     // not here
 #include "c4Logger.h"
@@ -47,8 +46,6 @@ LisaFrsCorrelations::LisaFrsCorrelations(const TString& name, Int_t verbose)
     :   FairTask(name, verbose)
     ,   header(nullptr)
     ,   lisaCalArray(nullptr)
-    ,   travMusCalArray(nullptr)
-    ,   travMusAnaArray(nullptr)
     ,   frsHitArray(nullptr)
     ,   fNEvents(0)
     ,   multihitArray(nullptr)
@@ -78,15 +75,6 @@ InitStatus LisaFrsCorrelations::Init()
 
     multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
     c4LOG_IF(fatal, !multihitArray, "Branch FrsMultiHitData not found!");
-
-    // CEJ shoudn't need this stuff any more
-    // travMusCalArray = mgr->InitObjectAs<decltype(travMusCalArray)>("TravMusCalData");
-    // c4LOG_IF(fatal, !travMusCalArray, "Branch TravMusCalData not found!");
-
-    // // needed?
-    // travMusAnaArray = mgr->InitObjectAs<decltype(travMusAnaArray)>("TravMusAnaData");
-    // c4LOG_IF(fatal, !travMusAnaArray, "Branch TravMusAnaData not found!");
-
 
     layer_number = lisa_config->NLayers();
     xmax = lisa_config->XMax();
@@ -418,10 +406,9 @@ InitStatus LisaFrsCorrelations::Init()
 void LisaFrsCorrelations::Exec(Option_t* option)
 {   
     // reject events without both subsystems
-    if (frsHitArray->size() <= 0 || travMusAnaArray->size() <= 0 || lisaCalArray->size() <= 0) return; // frs, lisa and travmus subevent exists
+    if (frsHitArray->size() <= 0 || lisaCalArray->size() <= 0) return; // frs, lisa and travmus subevent exists
 
     const auto & frsHitItem = frsHitArray->at(0); // *should* only be 1 FRS subevent per event
-    const auto & travMusicHitItem = travMusAnaArray->at(0);  
     
     //const auto & multihitItem = multihitArray->at(0);                 // *should* only be 1 FRS subevent per event
 
@@ -429,9 +416,8 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     // FRS WR
     Int_t count_wr = 0;
 
-    //wr_travMUSIC = frsHitItem.Get_wr_travmus();
     wr_FRS = frsHitItem.Get_wr_t();
-    wr_travMUSIC = travMusicHitItem.Get_wr_t();
+    wr_travMUSIC = frsHitItem.Get_travmus_wr_t();
 
     //S2 Position x-y
     s2_x = frsHitItem.Get_ID_x2();
@@ -457,9 +443,9 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     energy_travMUSIC = frsHitItem.Get_music21_dE();
     //energy_travMUSIC = travMusicHitItem.Get_travmusic_dE();
     // CEJ needs adding
-    energy_travMUSIC_driftcorr = travMusicHitItem.Get_travmusic_dE_driftcorr();
-    //c4LOG(info, "travMUS en : " << energy_travMUSIC << " music 1 : " << energy_MUSIC_1 << " sum energy 1 : " << sum_energy_layer[1]);
-
+    // energy_travMUSIC_driftcorr = travMusicHitItem.Get_travmusic_dE_driftcorr();
+    energy_travMUSIC_driftcorr = 0; //
+    // double z21_driftcorr = frsHitItem.Get_ID_z21_driftcorr();
 
     // correlation with main FRS (10, 20, 30, 15)
     for (const auto & lisaCalItem : *lisaCalArray)

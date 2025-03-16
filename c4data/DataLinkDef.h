@@ -66,10 +66,6 @@
 #pragma link C++ class FrsCalTpcItem+;
 #pragma link C++ class FrsHitItem+;
 #pragma link C++ class FrsMultiHitItem+;
-#pragma link C++ class TravMusAdcItem+;
-#pragma link C++ class TravMusTdcItem+;
-#pragma link C++ class TravMusCalItem+;
-#pragma link C++ class TravMusAnaItem+;
 
 // FRS parameter classes
 #pragma link C++ class TFRSParameter+;

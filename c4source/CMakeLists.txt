@@ -33,7 +33,6 @@ ${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
 ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
 ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 ${C4ROOT_SOURCE_DIR}/c4data/fimpData
-${C4ROOT_SOURCE_DIR}/c4data/travMusData
 ${C4ROOT_SOURCE_DIR}/c4data/baseData
 )
 
@@ -59,9 +58,6 @@ set(SRCS
 ./frs/FrsReader.cxx
 ./frs/FrsRaw2Cal.cxx
 ./frs/FrsCal2Hit.cxx
-./travMus/TravMusReader.cxx
-./travMus/TravMusRaw2Cal.cxx
-./travMus/TravMusCal2Ana.cxx
 ./germanium/GermaniumReader.cxx
 ./germanium/GermaniumTraceReader.cxx
 ./lisa/LisaReader.cxx
@@ -93,7 +89,6 @@ Set(STRUCT_HEADERS
 ./base/ext_h101_unpack.h
 ./aida/ext_h101_aida.h
 ./frs/ext_h101_frs.h
-./travMus/ext_h101_travmus.h
 ./lisa/ext_h101_lisa.h
 ./germanium/ext_h101_germanium.h
 ./germanium/ext_h101_germanium_traces.h

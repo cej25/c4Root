@@ -20,7 +20,6 @@ ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
 ${C4ROOT_SOURCE_DIR}/c4data/baseData
 ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 ${C4ROOT_SOURCE_DIR}/c4data/fimpData
-${C4ROOT_SOURCE_DIR}/c4data/travMusData
 ${C4ROOT_SOURCE_DIR}/analysis
 ${C4ROOT_SOURCE_DIR}/analysis/frs
 ${C4ROOT_SOURCE_DIR}/analysis/pars
@@ -59,7 +58,6 @@ set(SRCS
 ./online/frs/FrsOnlineSpectra.cxx
 ./online/frs/FrsRawSpectra.cxx
 ./online/frs/FrsCalSpectra.cxx
-./online/travMus/TravMusOnlineSpectra.cxx
 ./online/bgo/BGOOnlineSpectra.cxx
 ./online/timemachine/TimeMachineOnline.cxx
 ./online/wr/WhiterabbitCorrelationOnline.cxx
@@ -74,7 +72,6 @@ set(SRCS
 ./nearline/aida/AidaNearlineSpectra.cxx
 ./nearline/frs/FrsNearlineSpectra.cxx
 ./nearline/frs/FrsRawNearlineSpectra.cxx
-./nearline/travMus/TravMusNearlineSpectra.cxx
 ./nearline/germanium/GermaniumNearlineSpectra.cxx
 ./nearline/bgo/BGONearlineSpectra.cxx
 ./nearline/wr/WhiterabbitCorrelationNearline.cxx
@@ -109,12 +106,9 @@ set(SRCS
 ./correlations/triplePlusCorrs/BetaIonCorrelations.cxx
 
 
-#./frs/MHTDCSpectra.cxx
-#./frs/TPCCorrections.cxx
 #./correlations/FrsBplastCorrelations.cxx
 ./online/onlineCorrelations/LisaFrsCorrelationsOnline.cxx
 ./correlations/LisaFrsCorrelations.cxx
-./correlations/FrsTravMusCorrelations.cxx
 
 )
 
