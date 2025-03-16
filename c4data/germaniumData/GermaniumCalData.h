@@ -14,7 +14,7 @@ class GermaniumCalData : public TObject
                              uint64_t event_trigger_time, // ns
                               //uint16_t hit_pattern, 
                               //uint8_t board_id, 
-                              uint8_t pileup, 
+                              bool pileup, 
                               uint8_t overflow,
                               //uint8_t channel_id,
                               double channel_trigger_time, // ns
@@ -36,7 +36,7 @@ class GermaniumCalData : public TObject
         inline const uint64_t Get_event_trigger_time() const { return fevent_trigger_time; }
         //inline const uint16_t Get_hit_pattern() const { return fhit_pattern; }
         //inline const uint8_t Get_board_id() const { return fboard_id; }
-        inline const uint8_t Get_pileup() const { return fpileup; }
+        inline const bool Get_pileup() const { return fpileup; }
         inline const uint8_t Get_overflow() const { return foverflow; }
         //inline const uint8_t Get_channel_id() const { return fchannel_id; }
         inline const double Get_channel_trigger_time() const { return fchannel_trigger_time; }
@@ -55,7 +55,7 @@ class GermaniumCalData : public TObject
         void Set_event_trigger_time(uint64_t v) { fevent_trigger_time = v; }
         //void Set_hit_pattern(uint16_t v) { fhit_pattern = v; }
         //void Set_board_id(uint8_t v) { fboard_id = v; }
-        void Set_pileup(uint8_t v) { fpileup = v; }
+        void Set_pileup(bool v) { fpileup = v; }
         void Set_overflow(uint8_t v) { foverflow = v; }
         //void Set_channel_id(uint8_t v) { fchannel_id = v; }
         void Set_channel_trigger_time(double v) { fchannel_trigger_time = v; }
@@ -74,7 +74,7 @@ class GermaniumCalData : public TObject
         uint64_t fevent_trigger_time;
         //uint16_t fhit_pattern;
         //uint8_t fboard_id;
-        uint8_t fpileup;
+        bool fpileup;
         uint8_t foverflow;
         //uint8_t fchannel_id;
         double fchannel_trigger_time;
