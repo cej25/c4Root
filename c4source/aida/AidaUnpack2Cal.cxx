@@ -95,49 +95,7 @@ void AidaUnpack2Cal::Exec(Option_t* option)
       return;
     }
 
-
-    // if (conf->BB7()) if (unpack.Fee() == conf->BB7_FEE())
-    // {
-    //   // process BB7 events separately.
-    //   // this is pretty hacky and dumb now, needs to be sorted out
-
-    //   int dssd = conf->DSSDs(); // set to final DSSD..
-    //   int side = (unpack.Channel() >= 0 && unpack.Channel() < 32) ? 0 : ((unpack.Channel() >= 32 && unpack.Channel() < 64) ? 1 : -1);
-    //   int strip = unpack.Channel() - 32 * side;
-
-    //   double intensity = (unpack.Value() - 32768); // * side ?
-    //   bool range = unpack.Range();
-    //   double energy = intensity * 0.7; // energy in MeV for AIDA at least.. 
-
-    //   std::cout << "bb7 event -- " << std::endl;
-    //   std::cout << "strip:: " << strip << std::endl;
-    //   std::cout << "side:: " << side << std::endl;
-
-
-    //   if (range) 
-    //   {
-    //       auto& cal = implantCalArray->emplace_back();
-    //       cal.SetAll(unpack.SlowTime(), unpack.FastTime(), unpack.Fee(),
-    //                 unpack.Channel(), dssd, side, strip,
-    //                 range, intensity, energy);
-    //   }
-    //   else 
-    //   {
-    //       auto& cal = decayCalArray->emplace_back();
-    //       cal.SetAll(unpack.SlowTime(), unpack.FastTime(), unpack.Fee(),
-    //                 unpack.Channel(), dssd, side, strip,
-    //                 range, intensity, energy);
-    //   }
-
-    //   continue;
-  
-    // }
-
-
-
-
     auto feeConf = conf->FEE(unpack.Fee() - 1);
-    //std::cout << "fee:: " << unpack.Fee() << std::endl;
     if (feeConf.DSSD <= 0)
     {
       c4LOG(error, "Invalid DSSD Mapping for AIDA fee " << unpack.Fee() << ", ignoring event");
@@ -152,24 +110,17 @@ void AidaUnpack2Cal::Exec(Option_t* option)
 
     if (feeConf.Type == 2)
     {
-      // std::cout << "dssd3 ::::  " << unpack.Channel() << std::endl;
       side = (unpack.Channel() >= 0 && unpack.Channel() < 32) ? -1 : ((unpack.Channel() >= 32 && unpack.Channel() < 64) ? 1 : 0);
       if (side == -1) 
       {
-        // strip = unpack.Channel();
-        //if (unpack.Channel() >= 0 && unpack.Channel() < 16) strip = unpack.Channel() + 16;
-        //else if (unpack.Channel() >= 16 && unpack.Channel() < 32) strip = unpack.Channel() - 16;
         if (unpack.Channel() >= 0 && unpack.Channel() < 16) strip = unpack.Channel();
         else if (unpack.Channel() >= 16 && unpack.Channel() < 32) strip = 47 - unpack.Channel();
         
       }
       else if (side == 1) 
       {
-       // if (unpack.Channel() >= 32 && unpack.Channel() < 48) strip = unpack.Channel() + 16 - 32;
-       // else if (unpack.Channel() >= 48 && unpack.Channel() < 64) strip = unpack.Channel() - 16 - 32;
         if (unpack.Channel() >= 32 && unpack.Channel() < 48) strip = unpack.Channel() - 32;
         else if (unpack.Channel() >= 48 && unpack.Channel() < 64) strip = 47 - (unpack.Channel() - 32);
-        // std::cout << unpack.Channel() << std::endl;
       }
 
     }
