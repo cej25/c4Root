@@ -447,7 +447,6 @@ InitStatus FrsOnlineSpectra::Init()
 
     // Here we can draw any canvases we need, but we don't need to make histos //
 
-    // ::::: Travel MUSIC - treated separately until FRS sorts themselves out ::::: 
     h1_wr_frs_travmus = MakeTH1(dir_travmus, "I", "h1_wr_frs_travmus", "White Rabbit dT FRS - Travel MUSIC", 500, -3000, -1000);
 
     c_z_compare = new TCanvas("c_z_compare", "Z from 3 x MUSIC", 650, 350);
@@ -514,7 +513,7 @@ void FrsOnlineSpectra::Reset_Histo() {
 
 void FrsOnlineSpectra::Exec(Option_t* option)
 {   
-    int64_t frs_wr = 0; int64_t trav_mus_wr = 0;
+    Long64_t frs_wr = 0; Long64_t trav_mus_wr = 0;
     
     // current_spill_flag = header->GetSpillFlag();
     // if (previous_spill_flag == true && current_spill_flag == false)
@@ -542,6 +541,9 @@ void FrsOnlineSpectra::Exec(Option_t* option)
     if (hitArray->size() <= 0) return;
     auto const & hitItem  = hitArray->at(0); // should only ever be 1 frs item per event, so take first
     frs_wr = hitItem.Get_wr_t();
+    trav_mus_wr = hitItem.Get_travmus_wr_t();
+
+    h1_wr_frs_travmus->Fill(frs_wr - trav_mus_wr);
 
     // :::::::::: TAC ::::::::::::: //
     // ---------------------------- //
