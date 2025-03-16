@@ -14,7 +14,7 @@
 // Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/
 extern "C"
 {
-    #include "../../config/pareeksha/frs/setup_Fragment_conv.C"
+    #include "../../config/pareeksha/frs/setup_Fragment_conv_updated.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -64,7 +64,7 @@ void lisadev_make_trees(int fileNumber)
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/test_c4/"; //testing
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/fragments_EG_test/";    
-    TString outputFilename = Form(outputpath + "run_%04d_test-merge.root", fileNumber);
+    TString outputFilename = Form(outputpath + "run_%04d_v2.root", fileNumber);
 
 
     //:::::::Create online run
@@ -83,7 +83,7 @@ void lisadev_make_trees(int fileNumber)
      
     //:::::::Take ucesb input and create source
     EXT_STR_h101 ucesb_struct;
-    TString ntuple_options = "UNPACK"; //level of unpacked data (UNPACK,RAW,CAL)
+    TString ntuple_options = "UNPACK,RAW"; //level of unpacked data (UNPACK,RAW,CAL)
     UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
     source->SetMaxEvents(nev);
     run->SetSource(source);
@@ -116,6 +116,9 @@ void lisadev_make_trees(int fileNumber)
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
     // ::: Exp config
     TExperimentConfiguration::SetExperimentStart(1715734200000000000);//Start of pareeksha with primary beam: 15 May 00:50
+    // for S100, 3 and 4. for 2025+ 12 and 13.
+    TExperimentConfiguration::SetBOSTrig(3);
+    TExperimentConfiguration::SetEOSTrig(4);
     
     // ::: FRS config
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
