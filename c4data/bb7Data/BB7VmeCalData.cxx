@@ -5,7 +5,7 @@ BB7VmeImplantItem::BB7VmeImplantItem()
 
 }
 
-void BB7VmeImplantItem::SetAll(uint64_t wr, int det, int si, int st, uint32_t adc)
+void BB7VmeImplantItem::SetAll(Long64_t wr, Int_t det, Int_t si, Int_t st, UInt_t adc)
 {
     wr_t = wr;
     detector = det;
@@ -31,7 +31,7 @@ BB7VmeDecayItem::BB7VmeDecayItem()
 
 }
 
-void BB7VmeDecayItem::SetAll(uint64_t wr, int det, int si, int st, uint32_t adc)
+void BB7VmeDecayItem::SetAll(Long64_t wr, Int_t det, Int_t si, Int_t st, UInt_t adc)
 {
     wr_t = wr;
     detector = det;
@@ -54,7 +54,7 @@ BB7VmeResidualItem::BB7VmeResidualItem()
 
 }
 
-void BB7VmeResidualItem::SetAll(uint32_t left, uint32_t right, uint32_t del, uint32_t un)
+void BB7VmeResidualItem::SetAll(UInt_t left, UInt_t right, UInt_t del, UInt_t un)
 {
     sc41l = left;
     sc41r = right;
