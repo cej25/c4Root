@@ -6,7 +6,7 @@ BB7V7x5Item::BB7V7x5Item()
 
 }
 
-void BB7V7x5Item::SetAll(uint64_t wr, uint32_t g, uint32_t data, uint32_t ch)
+void BB7V7x5Item::SetAll(Long64_t wr, UInt_t g, UInt_t data, UInt_t ch)
 {   
     wr_t = wr;
     geo = g;
@@ -29,7 +29,7 @@ BB7V1290Item::BB7V1290Item()
 
 }
 
-void BB7V1290Item::SetAll(uint32_t ch, uint32_t data, uint32_t lot)
+void BB7V1290Item::SetAll(UInt_t ch, UInt_t data, UInt_t lot)
 {
     channel = ch;
     v1290_data = data;
