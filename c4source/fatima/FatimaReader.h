@@ -23,7 +23,8 @@ typedef struct EXT_STR_h101_fatima_onion_t EXT_STR_h101_fatima_onion;
 class ext_data_struct_info;
 
 
-struct fatima_last_lead_hit_struct{
+struct fatima_last_lead_hit_struct
+{
     bool hit = false;
     //uint16_t board_id; index using these:
     //uint32_t ch_ID;

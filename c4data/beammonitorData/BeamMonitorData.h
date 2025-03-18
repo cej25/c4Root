@@ -6,7 +6,7 @@
 
 
 // we create an item because perhaps other members are needed, later
-// for now it is literally just a time delta, uint32_t
+// for now it is literally just a time delta, UInt_t
 class BeamMonitorItem : public TObject
 {
     public:
