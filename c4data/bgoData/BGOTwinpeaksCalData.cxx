@@ -9,14 +9,14 @@ BGOTwinpeaksCalData::BGOTwinpeaksCalData()
     fdetector_id(0),
     fcrystal_id(0),
     
-fslow_lead_epoch(0),
+    fslow_lead_epoch(0),
     fslow_lead_time(0),
-fslow_trail_epoch(0),
+    fslow_trail_epoch(0),
     fslow_trail_time(0),
 
-ffast_lead_epoch(0),
+    ffast_lead_epoch(0),
     ffast_lead_time(0),
-ffast_trail_epoch(0),
+    ffast_trail_epoch(0),
     ffast_trail_time(0),
 
     ffast_ToT(0),
@@ -31,31 +31,31 @@ ffast_trail_epoch(0),
 }
 
 BGOTwinpeaksCalData::BGOTwinpeaksCalData(
-        uint16_t trig,
-        uint16_t board_id,
-        uint16_t ch_ID,
+        UShort_t trig,
+        UShort_t board_id,
+        UShort_t ch_ID,
         
-        int detector_id,
-        int crystal_id,
+        Int_t detector_id,
+        Int_t crystal_id,
         
-int64_t slow_lead_epoch,
-        double slow_lead_time,
-int64_t slow_trail_epoch,
-        double slow_trail_time,
+        Long64_t slow_lead_epoch,
+        Double_t slow_lead_time,
+        Long64_t slow_trail_epoch,
+        Double_t slow_trail_time,
 
-int64_t fast_lead_epoch,
-        double fast_lead_time,
-int64_t fast_trail_epoch,
-        double fast_trail_time,
+        Long64_t fast_lead_epoch,
+        Double_t fast_lead_time,
+        Long64_t fast_trail_epoch,
+        Double_t fast_trail_time,
 
-        double fast_ToT,
-        double slow_ToT,
+        Double_t fast_ToT,
+        Double_t slow_ToT,
 
-        double energy,
+        Double_t energy,
         
-        uint16_t wr_subsystem_id,
-        uint64_t wr_t,
-        uint64_t absolute_event_time)
+        UShort_t wr_subsystem_id,
+        Long64_t wr_t,
+        Long64_t absolute_event_time)
     : 
         ftrig(trig),
         fboard_id(board_id),
