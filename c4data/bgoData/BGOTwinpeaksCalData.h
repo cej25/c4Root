@@ -16,7 +16,7 @@ class BGOTwinpeaksCalData : public TObject
         int detector_id,
         int crystal_id,
         
-int64_t slow_lead_epoch,
+        int64_t slow_lead_epoch,
         double slow_lead_time,
 
         int64_t slow_trail_epoch,
