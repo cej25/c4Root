@@ -21,7 +21,7 @@ class ext_data_struct_info;
 
 struct bgo_last_lead_hit_struct
 {
-    Bool_t hit = false;
+    bool hit = false;
     UInt_t lead_epoch_counter = 0;
     UInt_t lead_coarse_T = 0;
     Double_t lead_fine_T = 0;
