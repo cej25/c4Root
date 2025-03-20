@@ -504,7 +504,6 @@ void LisaOnlineSpectraDaq::Exec(Option_t* option)
         uint32_t energy = lisaCalItem.Get_energy();
         uint32_t energy_MWD = lisaCalItem.Get_energy_MWD();
         trace = lisaCalItem.Get_trace_febex();
-        trace_MWD = lisaCalItem.Get_trace_MWD();
         int pileup = lisaCalItem.Get_pileup();
         int overflow = lisaCalItem.Get_overflow();
         uint64_t evtno = header->GetEventno();

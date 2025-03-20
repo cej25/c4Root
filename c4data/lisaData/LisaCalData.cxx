@@ -43,8 +43,8 @@ void LisaCalItem::SetAll(uint64_t wr,
                         double e,
                         double e_MWD,
                         std::vector<int16_t> tr,
-                        std::vector<int16_t> tr_MWD,
-                        std::vector<int16_t> tr_x,
+                        //std::vector<int16_t> tr_MWD,
+                        //std::vector<int16_t> tr_x,
                         double e_GM,
                         double e_MWD_GM,
                         uint64_t evt_t,
@@ -66,8 +66,8 @@ void LisaCalItem::SetAll(uint64_t wr,
     energy = e;
     energy_MWD = e_MWD;
     trace_febex = tr;
-    trace_MWD = tr_MWD;
-    trace_x = tr_x;
+    //trace_MWD = tr_MWD;
+    //trace_x = tr_x;
     energy_GM = e_GM;
     energy_MWD_GM = e_MWD_GM;
     board_event_time = evt_t;
@@ -93,8 +93,8 @@ void LisaCalItem::Reset()
     energy = 0;
     energy_MWD = 0;
     trace_febex = {};
-    trace_MWD = {};
-    trace_x = {};
+    //trace_MWD = {};
+    //trace_x = {};
     event_no = 0;
     energy_GM = 0;
     energy_MWD_GM = 0;

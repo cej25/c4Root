@@ -12,7 +12,7 @@
 //template <typename T>
 //using StdVector = std::vector<T>;
 
-#define TRACE_SIZE 2000 // used for the trace_x vector
+#define TRACE_SIZE 3000 // used for the trace_x vector
 
 extern "C"
 {
