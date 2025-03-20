@@ -59,7 +59,7 @@ class LisaAnaItem : public TObject
                     int o,
                     //int o_MWD,
                     uint32_t ch_energy,
-                    uint32_t ch_energy_MWD,
+                    double ch_energy_MWD,
                     int ch_id_traces,
                     std::vector<int16_t> tr,
                     std::vector<int16_t> tr_0,
@@ -78,7 +78,7 @@ class LisaAnaItem : public TObject
         int Get_overflow() const;
         //int Get_overflow_MWD() const;
         uint32_t Get_channel_energy() const;
-        uint32_t Get_channel_energy_MWD() const;
+        double Get_channel_energy_MWD() const;
         int Get_channel_id_traces() const;
         std::vector<int16_t> Get_trace_febex() const;
         std::vector<int16_t> Get_trace_febex_0() const;
@@ -100,7 +100,7 @@ class LisaAnaItem : public TObject
         int overflow;
         //int overflow_MWD;
         uint32_t channel_energy;
-        uint32_t channel_energy_MWD;
+        double channel_energy_MWD;
         int channel_id_traces;
         std::vector<int16_t> trace_febex;
         std::vector<int16_t> trace_febex_0;
@@ -164,7 +164,7 @@ inline uint32_t LisaAnaItem::Get_channel_energy() const
     return channel_energy;
 }
 
-inline uint32_t LisaAnaItem::Get_channel_energy_MWD() const
+inline double LisaAnaItem::Get_channel_energy_MWD() const
 {
     return channel_energy_MWD;
 }

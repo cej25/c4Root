@@ -54,8 +54,8 @@ void trace_ana_make_trees(int fileNumber)
     TString filename = Form(inputpath + "run_%04d_0001.lmd", fileNumber);
 
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/trees/"; 
-    TString outputFilename = Form(outputpath + "run_%04d_0001_MWD_v2.root", fileNumber);
+    TString outputpath = "/u/gandolfo/data/"; 
+    TString outputFilename = Form(outputpath + "run_%04d_0001_MWD_fast_v2.root", fileNumber);
 
 
     //:::::::Create online run
@@ -82,7 +82,7 @@ void trace_ana_make_trees(int fileNumber)
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
     // ::: Lisa config
-    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Detector_Map_names.txt");
+    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_3x3_1.txt");
     TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
     TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_3x3.txt");
    

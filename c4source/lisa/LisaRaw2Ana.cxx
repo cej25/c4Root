@@ -215,7 +215,7 @@ void LisaRaw2Ana::Exec(Option_t* option)
             // 1. ::: Baseline correction of febex trace :::
             //        This corresponds to anaTraces function calcCorrectTrace
             // ::: Evaluate average from points 20 to 100
-            for( int i = 20; i < 100; i++)
+            for( int i = 20; i < 1000; i++) //100 v1
             {
                 sum += trace_febex.at(i);
                 count++;
@@ -234,30 +234,69 @@ void LisaRaw2Ana::Exec(Option_t* option)
                 //trace_febex.at(i) = (trace_febex.at(i) - average_baseline)/8;
             }
 
-            // 2. ::: Calculation of trapezoid :::
-            //        This corresponds to anaTraces function calcMWDTrace
+            //2. ::: Calculation of trapezoid :::
+
+            // ::: Slow calculation - gives the same results as the faster calculation below
+            //       This corresponds to anaTraces function calcMWDTrace
+            // for (int kk = k0; kk < kend; ++kk) 
+            // {
+            //     DM = 0.0;
+            //     for (int j = kk - LL; j <= kk - 1; ++j) 
+            //     {
+            //         if (j < 1) continue;                    // Skip if out-of-bounds
+            //         sum0 = 0.0;                      // Initialize sum for baseline subtraction
+            //         for (int i = j - MM; i <= j - 1; ++i) 
+            //         {
+            //             if (i < 0) continue;                // Skip if out-of-bounds
+            //             sum0 += trace_febex_0.at(i);          // Sum over the moving window
+            //         }
+            //         DM += trace_febex_0.at(j) - trace_febex_0.at(j - MM) + sum0 / tau[1];
+            //     }
+            //     // Calculate MWD value and index
+            //     mwd_value = DM / LL;                 // Average over the rising time
+            //     //double mwd_index = static_cast<double>(kk) / sample_rate; // Convert sample index to time in ns
+
+            //     //std::cout<<" ::: mwd values : " << mwd_value << "\n";
+            //     trace_MWD.push_back(mwd_value);
+            // }
+
+            // ::: Faster calculation
             for (int kk = k0; kk < kend; ++kk) 
             {
                 DM = 0.0;
-                for (int j = kk - LL; j <= kk - 1; ++j) 
-                {
-                    if (j < 1) continue;                    // Skip if out-of-bounds
-                    sum0 = 0.0;                      // Initialize sum for baseline subtraction
-                    for (int i = j - MM; i <= j - 1; ++i) 
-                    {
-                        if (i < 0) continue;                // Skip if out-of-bounds
-                        sum0 += trace_febex_0.at(i);          // Sum over the moving window
-                    }
-                    DM += trace_febex_0.at(j) - trace_febex_0.at(j - MM) + sum0 / tau[1];
-                }
-                // Calculate MWD value and index
-                mwd_value = DM / LL;                 // Average over the rising time
-                //double mwd_index = static_cast<double>(kk) / sample_rate; // Convert sample index to time in ns
+                sum0 = 0.0;
+                bool sum0_initialized = false;
 
-                //std::cout<<" ::: mwd values : " << mwd_value << "\n";
+                for (int j = kk - LL; j <= kk - 1; ++j) {
+                    if (j < 1) continue;  // Skip out-of-bounds
+
+                    if (!sum0_initialized) {
+                        // Initialize sum0 completely in the first valid iteration
+                        for (int i = j - MM; i <= j - 1; ++i) {
+                            if (i < 0) continue;  // Skip out-of-bounds
+                            sum0 += trace_febex_0.at(i);
+                        }
+                        sum0_initialized = true;
+                    } else {
+                        // Rolling update: remove the oldest element and add the newest
+                        if (j - MM - 1 >= 0) sum0 -= trace_febex_0.at(j - MM - 1);
+                        sum0 += trace_febex_0.at(j - 1);
+                    }
+
+                    DM += trace_febex_0.at(j) - trace_febex_0.at(j - MM) + sum0 / tau[1];
+
+                    // std::cout << "j=" << j 
+                    // << " DM=" << DM 
+                    // << " sum0=" << sum0 
+                    // << " trace_febex_0[j]=" << trace_febex_0.at(j) 
+                    // << " trace_febex_0[j-MM]=" << ((j - MM >= 0) ? trace_febex_0.at(j - MM) : 0)
+                    // << "\n";
+                }
+
+                // Compute MWD value
+                mwd_value = DM / LL;
                 trace_MWD.push_back(mwd_value);
             }
-
 
             // :::  M D W   E N E R G Y  ::: (energy_MWD) 
             //      Steps below correspond to anaTraces function calcEnergy
