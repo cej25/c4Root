@@ -69,14 +69,14 @@ void lisadev_make_trees(int fileNumber)
 
     //:::::::Create online run
     Int_t refresh = 10; // not needed
-    Int_t port = 5000; // not needed
+    //Int_t port = 5000; // not needed
      
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
     run->SetSink(new FairRootFileSink(outputFilename)); // don't write after termintion
-    run->ActivateHttpServer(refresh, port);
+    //run->ActivateHttpServer(refresh, port);
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
     run->AddObject(histograms);
@@ -244,7 +244,7 @@ void lisadev_make_trees(int fileNumber)
     // Information about portnumber and main data stream
     cout << "\n\n" << endl;
     cout << "Data stream is: " << filename << endl;
-    cout << "LISA online port server: " << port << endl;
+    //cout << "LISA online port server: " << port << endl;
     cout << "\n\n" << endl;
 
     // Run

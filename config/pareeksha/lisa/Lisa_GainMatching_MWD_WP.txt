@@ -1,0 +1,17 @@
+#:::::::  Gain Matching parameters MWD LISA - Pareeksha :::::::
+#:::::::  ATTENZIONE : these coeff are GM and cal together :::::
+#:::::::    | Layer | x | y | slope | intercept |   :::::::
+#
+#:::: Layer 1 - Eris :::::
+
+1   0   0   3.424    63.27
+1   1   0   3.514     62.73
+1   0   1   3.377     63.67
+1   1   1   3.627     65.58
+
+#:::: Layer 2  - Sparrow ::::::
+
+2   0   0   3.765    56.10
+2   1   0   3.528    59.19
+2   0   1   3.452    62.80
+2   1   1   3.420    59.80
