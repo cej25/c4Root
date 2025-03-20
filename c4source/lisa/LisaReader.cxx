@@ -12,6 +12,8 @@
 //template <typename T>
 //using StdVector = std::vector<T>;
 
+#define TRACE_SIZE 2000 // used for the trace_x vector
+
 extern "C"
 {
     #include "ext_data_client.h"
@@ -70,6 +72,13 @@ Bool_t LisaReader::Read()
     //WR ID. It is 700 for lisa (= 1792 in decimal). From May 13 WR = 1200 for LISA
     uint32_t wr_id = fData->lisa_ts_subsystem_id;
     //::::::::::::::::::::::::::::::::::::::::
+
+    const int trace_size = TRACE_SIZE;
+
+    std::vector<int16_t> trace_x(trace_size);
+    for (int i = 0; i < trace_size; i++) {
+        trace_x[i] = i;
+    }
     
     //Loop over board number (NBoards hardcoded as 8 temp)
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
@@ -91,8 +100,6 @@ Bool_t LisaReader::Read()
 
         //::::::::::::::Multiplicity: Called num_channels_fired from unpacker
         uint32_t M = fData->lisa_data[it_board_number].num_channels_fired; //This is not for cases when header is missing
-
-
 
         //for (int index = 0; index < 8; index++) //ONLY FOR JIKKEN -- All mode
         for (int index = 0; index < M; index++) //GENERAL
@@ -131,7 +138,7 @@ Bool_t LisaReader::Read()
             uint32_t ch_energy = energy;
 
             std::vector<int16_t> trace;
-            std::vector<int16_t> trace_x;
+            //std::vector<int16_t> trace_x;
             int channel_id_trace = fData->lisa_data[it_board_number].trace_channel_id_tracesv[index];
 
             //::::::::::::::Channel Traces with ID from channel header
@@ -141,11 +148,11 @@ Bool_t LisaReader::Read()
             }
             
             //::::::::::::::Traces Dimension (This is fixed from Febex (2000) but added for easier displaying)
-            for (int l = 0 ; l < fData->lisa_data[it_board_number].trace_traces[channel_id_trace]._ ; l++)
-            {
-                trace_x.emplace_back(fData->lisa_data[it_board_number].trace_traces[channel_id_trace].I[l]);    
-            }
-            //std::cout<< "Size of trace? : " << sizeof(fData->lisa_data[it_board_number].traces) <<std::endl;
+            // for (int l = 0 ; l < fData->lisa_data[it_board_number].trace_traces[channel_id_trace]._ ; l++)
+            // {
+            //     trace_x.emplace_back(fData->lisa_data[it_board_number].trace_traces[channel_id_trace].I[l]);    
+            // }
+
             //std::cout << "Channel ID from trace : " << static_cast<int>(channel_id_trace) << std::endl;
 
             // //::::::::::::::Channel Traces with ID from event header
