@@ -81,9 +81,9 @@ class LisaOnlineSpectraDaq : public FairTask
         Int_t lay;
         Int_t xp;
         Int_t yp;
-        uint32_t en;
-        std::vector<int16_t> trace;
-        std::vector<int16_t> trace_MWD;
+        float en;
+        std::vector<float> trace;
+        std::vector<float> trace_MWD;
 
         TFolder* histograms;
         TDirectory* dir_lisa;

@@ -435,10 +435,10 @@ void LisaNearlineSpectraDaq::Exec(Option_t* option)
         city = lisaCalItem.Get_city();
         int xpos = lisaCalItem.Get_xposition();
         int ypos = lisaCalItem.Get_yposition();
-        uint32_t energy = lisaCalItem.Get_energy();
-        uint32_t energy_MWD = lisaCalItem.Get_energy_MWD();
-        std::vector<int16_t> trace = lisaCalItem.Get_trace_febex();
-        double energy_GM = lisaCalItem.Get_energy_GM();
+        float energy = lisaCalItem.Get_energy();
+        float energy_MWD = lisaCalItem.Get_energy_MWD();
+        std::vector<float> trace = lisaCalItem.Get_trace_febex();
+        float energy_GM = lisaCalItem.Get_energy_GM();
         int pileup = lisaCalItem.Get_pileup();
         int overflow = lisaCalItem.Get_overflow();
         uint64_t evtno = header->GetEventno();

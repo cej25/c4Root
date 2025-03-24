@@ -533,20 +533,20 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     int multiplicity[layer_number] = {0};
     int total_multiplicity = 0;
 
-    std::vector<uint32_t> sum_energy_layer;
+    std::vector<float> sum_energy_layer;
     sum_energy_layer.resize(layer_number);
 
-    double energy_ch[layer_number][xmax][ymax] = {0.0, 0.0, 0.0};
-    double energy_ch_GM[layer_number][xmax][ymax] = {0.0 ,0.0 ,0.0};
-    double energy_ch_MWD_GM[layer_number][xmax][ymax] = {0.0 ,0.0 ,0.0};
+    float energy_ch[layer_number][xmax][ymax] = {0.0, 0.0, 0.0};
+    float energy_ch_GM[layer_number][xmax][ymax] = {0.0 ,0.0 ,0.0};
+    float energy_ch_MWD_GM[layer_number][xmax][ymax] = {0.0 ,0.0 ,0.0};
 
-    std::vector<double> sum_energy_layer_GM;
+    std::vector<float> sum_energy_layer_GM;
     sum_energy_layer_GM.resize(layer_number);
 
-    std::vector<double> energy_layer_GM;
+    std::vector<float> energy_layer_GM;
     energy_layer_GM.resize(layer_number);
 
-    std::vector<double> energy_layer_MWD_GM;
+    std::vector<float> energy_layer_MWD_GM;
     energy_layer_MWD_GM.resize(layer_number);
 
     Long64_t LISA_time_mins = 0;
@@ -567,11 +567,11 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         city = lisaCalItem.Get_city();
         int xpos = lisaCalItem.Get_xposition();
         int ypos = lisaCalItem.Get_yposition();
-        double energy = lisaCalItem.Get_energy();
-        double energy_MWD = lisaCalItem.Get_energy_MWD();
-        std::vector<int16_t> trace = lisaCalItem.Get_trace_febex();
-        double energy_GM = lisaCalItem.Get_energy_GM();
-        double energy_MWD_GM = lisaCalItem.Get_energy_MWD_GM();
+        float energy = lisaCalItem.Get_energy();
+        float energy_MWD = lisaCalItem.Get_energy_MWD();
+        std::vector<float> trace = lisaCalItem.Get_trace_febex();
+        float energy_GM = lisaCalItem.Get_energy_GM();
+        float energy_MWD_GM = lisaCalItem.Get_energy_MWD_GM();
         int pileup = lisaCalItem.Get_pileup();
         int overflow = lisaCalItem.Get_overflow();
         uint64_t evtno = header->GetEventno();

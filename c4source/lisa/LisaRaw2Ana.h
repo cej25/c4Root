@@ -60,9 +60,9 @@ class LisaRaw2Ana : public FairTask
         Int_t fNEvents;
 
         //::: Variable calculated with MWD algorithm
-        double energy_MWD;
-        std::vector<int16_t> trace_febex_0;
-        std::vector<int16_t> trace_MWD;
+        float energy_MWD;
+        std::vector<float> trace_febex_0;
+        std::vector<float> trace_MWD;
         //bool pileup_MWD;
         //bool overflow_MWD;
 

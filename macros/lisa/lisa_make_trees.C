@@ -53,7 +53,7 @@ void lisa_make_trees()
     TString outputpath = "/u/gandolfo/data/";    
         
 
-    TString outputFilename = outputpath + "run_0002_0001_fast_v2.root";
+    TString outputFilename = outputpath + "run_0002_0001_allfloat.root";
 
     //:::::::Create online run
     Int_t refresh = 10; // not needed

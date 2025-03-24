@@ -41,13 +41,13 @@ class LisaCalItem : public TObject
                     TString c,
                     int xpos,
                     int ypos,
-                    double e, // uint32_t e?
-                    double e_MWD,
-                    std::vector<int16_t> tr,
+                    float e, 
+                    float e_MWD,
+                    std::vector<float> tr,
                     //std::vector<int16_t> tr_MWD,
                     //std::vector<int16_t> tr_x,
-                    double e_GM,
-                    double e_MWD_GM,
+                    float e_GM,
+                    float e_MWD_GM,
                     uint64_t evt_t,
                     uint64_t ch_t,
                     uint64_t evtno,
@@ -65,13 +65,13 @@ class LisaCalItem : public TObject
         TString Get_city() const;
         int Get_xposition() const;
         int Get_yposition() const;
-        double Get_energy() const;
-        double Get_energy_MWD() const;
-        std::vector<int16_t> Get_trace_febex() const;
+        float Get_energy() const;
+        float Get_energy_MWD() const;
+        std::vector<float> Get_trace_febex() const;
         //std::vector<int16_t> Get_trace_MWD() const;
         //std::vector<int16_t> Get_trace_x() const;
-        double Get_energy_GM() const;
-        double Get_energy_MWD_GM() const;
+        float Get_energy_GM() const;
+        float Get_energy_MWD_GM() const;
         uint64_t Get_board_event_time() const;
         uint64_t Get_channel_event_time() const;
         uint64_t Get_evtno();
@@ -91,13 +91,13 @@ class LisaCalItem : public TObject
         TString city; // name
         int xposition;
         int yposition;
-        double energy; // double? int?
-        double energy_MWD; // double? int?
-        std::vector<int16_t> trace_febex;
+        float energy; // double? int?
+        float energy_MWD; // double? int?
+        std::vector<float> trace_febex;
         //std::vector<int16_t> trace_MWD;
         //std::vector<int16_t> trace_x;
-        double energy_GM;
-        double energy_MWD_GM;
+        float energy_GM;
+        float energy_MWD_GM;
         uint64_t board_event_time;
         uint64_t ch_event_time;
         uint64_t event_no;
@@ -144,17 +144,17 @@ inline int LisaCalItem::Get_yposition() const
     return yposition;
 }
 
-inline double LisaCalItem::Get_energy() const
+inline float LisaCalItem::Get_energy() const
 {
     return energy;
 }
 
-inline double LisaCalItem::Get_energy_MWD() const
+inline float LisaCalItem::Get_energy_MWD() const
 {
     return energy_MWD;
 }
 
-inline std::vector<int16_t> LisaCalItem::Get_trace_febex() const
+inline std::vector<float> LisaCalItem::Get_trace_febex() const
 {
     return trace_febex;
 }
@@ -169,12 +169,12 @@ inline std::vector<int16_t> LisaCalItem::Get_trace_febex() const
 //     return trace_x;
 // }
 
-inline double LisaCalItem::Get_energy_GM() const
+inline float LisaCalItem::Get_energy_GM() const
 {
     return energy_GM;
 }
 
-inline double LisaCalItem::Get_energy_MWD_GM() const
+inline float LisaCalItem::Get_energy_MWD_GM() const
 {
     return energy_MWD_GM;
 }
