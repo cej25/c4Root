@@ -131,13 +131,13 @@ Bool_t LisaReader::Read()
             //::::::::::::::Channel Energy
             //according to febex manual on gsi website, the 24th bit of the energy denotes the sign to indicate the polarity of the pulse
             if (fData->lisa_data[it_board_number].channel_energyv[index] & (1 << 23)){
-                energy = -(int32_t)(fData->lisa_data[it_board_number].channel_energyv[index] & 0x007FFFFF);
+                energy = -(float)(fData->lisa_data[it_board_number].channel_energyv[index] & 0x007FFFFF);
             }else{
-                energy = +(int32_t)(fData->lisa_data[it_board_number].channel_energyv[index] & 0x007FFFFF);            
+                energy = +(float)(fData->lisa_data[it_board_number].channel_energyv[index] & 0x007FFFFF);            
             }
-            uint32_t ch_energy = energy;
+            float ch_energy = energy;
 
-            std::vector<int16_t> trace;
+            std::vector<float> trace;
             //std::vector<int16_t> trace_x;
             int channel_id_trace = fData->lisa_data[it_board_number].trace_channel_id_tracesv[index];
 

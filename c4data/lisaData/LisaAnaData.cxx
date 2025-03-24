@@ -42,12 +42,12 @@ void LisaAnaItem::SetAll(uint64_t wr,
                     //int p_MWD,
                     int o,
                     //int o_MWD,
-                    uint32_t ch_energy,
-                    double ch_energy_MWD,
+                    float ch_energy,
+                    float ch_energy_MWD,
                     int ch_id_tr,
-                    std::vector<int16_t> tr,
-                    std::vector<int16_t> tr_0,
-                    std::vector<int16_t> tr_MWD,
+                    std::vector<float> tr,
+                    std::vector<float> tr_0,
+                    std::vector<float> tr_MWD,
                     std::vector<int16_t> tr_x
                     )
 {   

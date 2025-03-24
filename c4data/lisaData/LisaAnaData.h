@@ -58,12 +58,12 @@ class LisaAnaItem : public TObject
                     //int p_MWD,
                     int o,
                     //int o_MWD,
-                    uint32_t ch_energy,
-                    double ch_energy_MWD,
+                    float ch_energy,
+                    float ch_energy_MWD,
                     int ch_id_traces,
-                    std::vector<int16_t> tr,
-                    std::vector<int16_t> tr_0,
-                    std::vector<int16_t> tr_MWD,
+                    std::vector<float> tr,
+                    std::vector<float> tr_0,
+                    std::vector<float> tr_MWD,
                     std::vector<int16_t> tr_x);
         void Reset();
 
@@ -77,12 +77,12 @@ class LisaAnaItem : public TObject
         //int Get_pileup_MWD() const;
         int Get_overflow() const;
         //int Get_overflow_MWD() const;
-        uint32_t Get_channel_energy() const;
-        double Get_channel_energy_MWD() const;
+        float Get_channel_energy() const;
+        float Get_channel_energy_MWD() const;
         int Get_channel_id_traces() const;
-        std::vector<int16_t> Get_trace_febex() const;
-        std::vector<int16_t> Get_trace_febex_0() const;
-        std::vector<int16_t> Get_trace_MWD() const;
+        std::vector<float> Get_trace_febex() const;
+        std::vector<float> Get_trace_febex_0() const;
+        std::vector<float> Get_trace_MWD() const;
         std::vector<int16_t> Get_trace_x() const;
 
         // Getters
@@ -99,12 +99,12 @@ class LisaAnaItem : public TObject
         //int pileup_MWD;
         int overflow;
         //int overflow_MWD;
-        uint32_t channel_energy;
-        double channel_energy_MWD;
+        float channel_energy;
+        float channel_energy_MWD;
         int channel_id_traces;
-        std::vector<int16_t> trace_febex;
-        std::vector<int16_t> trace_febex_0;
-        std::vector<int16_t> trace_MWD;
+        std::vector<float> trace_febex;
+        std::vector<float> trace_febex_0;
+        std::vector<float> trace_MWD;
         std::vector<int16_t> trace_x;
 
 };
@@ -159,12 +159,12 @@ inline int LisaAnaItem::Get_overflow() const
 //     return overflow_MWD;
 // }
 
-inline uint32_t LisaAnaItem::Get_channel_energy() const
+inline float LisaAnaItem::Get_channel_energy() const
 {
     return channel_energy;
 }
 
-inline double LisaAnaItem::Get_channel_energy_MWD() const
+inline float LisaAnaItem::Get_channel_energy_MWD() const
 {
     return channel_energy_MWD;
 }
@@ -174,17 +174,17 @@ inline int LisaAnaItem::Get_channel_id_traces() const
     return channel_id_traces;
 }
 
-inline std::vector<int16_t> LisaAnaItem::Get_trace_febex() const
+inline std::vector<float> LisaAnaItem::Get_trace_febex() const
 {
     return trace_febex;
 }
 
-inline std::vector<int16_t> LisaAnaItem::Get_trace_febex_0() const
+inline std::vector<float> LisaAnaItem::Get_trace_febex_0() const
 {
     return trace_febex_0;
 }
 
-inline std::vector<int16_t> LisaAnaItem::Get_trace_MWD() const
+inline std::vector<float> LisaAnaItem::Get_trace_MWD() const
 {
     return trace_MWD;
 }

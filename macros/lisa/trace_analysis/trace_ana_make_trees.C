@@ -55,7 +55,7 @@ void trace_ana_make_trees(int fileNumber)
 
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/"; 
-    TString outputFilename = Form(outputpath + "run_%04d_0001_MWD_fast_v2.root", fileNumber);
+    TString outputFilename = Form(outputpath + "run_%04d_0001_MWD_allfloat.root", fileNumber);
 
 
     //:::::::Create online run

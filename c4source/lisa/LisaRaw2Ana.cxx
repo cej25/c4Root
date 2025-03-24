@@ -139,7 +139,7 @@ void LisaRaw2Ana::Exec(Option_t* option)
 
             // 0. ::: Get trace and parameters :::
             //    ::: For MWD calculation
-            std::vector<int16_t> trace_febex = lisaItem.Get_trace();            //vector with amplitude points of trace
+            std::vector<float> trace_febex = lisaItem.Get_trace();            //vector with amplitude points of trace
             float smoothing_L = lisa_config->Get_Smoothing_L();                 //Smoothing_L. L parameters in MWD formula. This corresponds to RisingTime in anatrace. !!IT IS NOT THE TRACE RISING TIME!!
             float MWD_length = lisa_config->Get_MWD_Length();                   //Trapez_moving_window_length. Length of MWD computation
             const float* decay_time = lisa_config->Get_Decay_Time();            //Decay_time. decay time of the trace

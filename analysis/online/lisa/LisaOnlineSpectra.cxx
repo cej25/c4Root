@@ -585,7 +585,7 @@ void LisaOnlineSpectra::Exec(Option_t* option)
         city = lisaCalItem.Get_city();
         int xpos = lisaCalItem.Get_xposition();
         int ypos = lisaCalItem.Get_yposition();
-        uint32_t energy = lisaCalItem.Get_energy();
+        float energy = lisaCalItem.Get_energy();
         trace = lisaCalItem.Get_trace_febex();
         int pileup = lisaCalItem.Get_pileup();
         int overflow = lisaCalItem.Get_overflow();
