@@ -291,6 +291,47 @@ InitStatus LisaNearlineSpectraDaq::Init()
         dir_energy->Append(c_energy_layer_ch[i]);
 
     }
+
+    // :::  M W D   E N E R G Y
+    c_energy_MWD_layer_ch.resize(layer_number);
+    h1_energy_MWD_layer_ch.resize(layer_number);
+    //:::::::::::Energy canvas for all layers
+    for (int i = 0; i < layer_number; i++) //create a canvas for each layer
+    {
+        c_energy_MWD_layer_ch[i] = new TCanvas(Form("c_energy_MWD_layer_%d",i),Form("c_energy_MWD_layer_%d",i), 650,350);
+        c_energy_MWD_layer_ch[i]->SetTitle(Form("Layer %d - Energy MWD",i));
+        c_energy_MWD_layer_ch[i]->Divide(xmax,ymax);
+        h1_energy_MWD_layer_ch[i].resize(xmax);
+        
+        for (int j = 0; j < xmax; j++)
+        {
+            h1_energy_MWD_layer_ch[i][j].resize(ymax);
+            for (int k = 0; k < ymax; k++)
+            {   
+                //general formula to place correctly on canvas for x,y coordinates
+                c_energy_MWD_layer_ch[i]->cd((ymax-(k+1))*xmax + j + 1);
+                
+               city = "";
+               for (auto & detector : detector_mapping)
+               {
+                   if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
+                   {
+                       city = detector.second.first.second;
+                       break;
+                   }
+               }
+
+                h1_energy_MWD_layer_ch[i][j][k] = new TH1F(Form("energy_MWD_%s_%i_%i_%i", city.c_str(), i, j, k), city.c_str(), lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
+                h1_energy_MWD_layer_ch[i][j][k]->GetXaxis()->SetTitle("Charge [mV]");
+                h1_energy_MWD_layer_ch[i][j][k]->SetLineColor(kBlue+1);
+                h1_energy_MWD_layer_ch[i][j][k]->SetFillColor(kOrange-3);
+                h1_energy_MWD_layer_ch[i][j][k]->Draw();
+            }
+        }
+        c_energy_MWD_layer_ch[i]->cd(0);
+        dir_energy->Append(c_energy_MWD_layer_ch[i]);
+
+    }
       
     c4LOG(info, " before drift folder " );
     //::::::::::: E N E R G Y  VS  E V T N O ::::::::::::
@@ -323,13 +364,13 @@ InitStatus LisaNearlineSpectraDaq::Init()
                 }
                 
                 h2_energy_ch_vs_evtno[i][j][k] = MakeTH2(dir_drift, "F", Form("h2_energy_ch_%d%d%d_vs_evtno",i,j,k), Form("E %d%d%d vs EVTno ",i,j,k), 1000, lisa_config->start_evtno, lisa_config->stop_evtno, lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
-                h2_energy_ch_vs_evtno[i][j][k]->SetTitle(Form("E(%d%d%d) vs WR",i,j,k));
+                h2_energy_ch_vs_evtno[i][j][k]->SetTitle(Form("E(%d%d%d) vs EVTno",i,j,k));
                 h2_energy_ch_vs_evtno[i][j][k]->GetYaxis()->SetTitle(Form("Energy %d%d%d",i,j,k));
                 h2_energy_ch_vs_evtno[i][j][k]->GetXaxis()->SetTitle("EVTno");
                 h2_energy_ch_vs_evtno[i][j][k]->Draw();
 
                 h2_energy_MWD_ch_vs_evtno[i][j][k] = MakeTH2(dir_drift, "F", Form("h2_energyMWD_ch_%d%d%d_vs_evtno",i,j,k), Form("E_MWD_GM ch %d%d%d vs EVTno ",i,j,k), 1000, lisa_config->start_evtno, lisa_config->stop_evtno, lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
-                h2_energy_MWD_ch_vs_evtno[i][j][k]->SetTitle(Form("E_MWD(%d%d%d) vs WR",i,j,k));
+                h2_energy_MWD_ch_vs_evtno[i][j][k]->SetTitle(Form("E_MWD(%d%d%d) vs EVTno",i,j,k));
                 h2_energy_MWD_ch_vs_evtno[i][j][k]->GetYaxis()->SetTitle(Form("Energy MWD %d%d%d",i,j,k));
                 h2_energy_MWD_ch_vs_evtno[i][j][k]->GetXaxis()->SetTitle("EVtno");
                 h2_energy_MWD_ch_vs_evtno[i][j][k]->Draw();
@@ -356,6 +397,7 @@ InitStatus LisaNearlineSpectraDaq::Init()
     // c_energy_layer_vs_evtno->cd(0);
     // dir_energy->Append(c_energy_layer_vs_evtno);
     
+    dir_traces->cd();
     c_traces_layer_ch_stat.resize(layer_number);
     h2_traces_layer_ch_stat.resize(layer_number);
 
@@ -476,6 +518,7 @@ void LisaNearlineSpectraDaq::Exec(Option_t* option)
 
         //::::Fill Energy Raw
         h1_energy_layer_ch[layer][xpos][ypos]->Fill(energy);
+        h1_energy_MWD_layer_ch[layer][xpos][ypos]->Fill(energy_MWD);
 
         //::::::::Define Sum Energy GM
         //energy_ch_GM[layer][xpos][ypos] = energy_GM;
