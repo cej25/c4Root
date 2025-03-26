@@ -44,12 +44,12 @@ void lisa_histos()
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/daq_test_c4tree/test_F_B_13nov.root";
     //TString filename = "/u/gandolfo/data/test_c4/run_0072_0001.root";
-    TString filename = "/u/gandolfo/data/run_0002_0001_allfloat.root";
+    TString filename = "/u/gandolfo/data/run_0003_0046.root";
     
     
     //___O U T P U T
     //TString outputfile = "/u/gandolfo/data/test_c4/run_0072_0001_histos.root";
-    TString outputfile = "/u/gandolfo/data/run_0002_0001_allfloat_histos.root";
+    TString outputfile = "/u/gandolfo/data/run_0003_0046_histos.root";
 
 
     FairRunAna* run = new FairRunAna();
@@ -102,7 +102,7 @@ void lisa_histos()
     TFrsConfiguration::Set_AoQ_range(1,3);
 
     //:::: Drifts
-    TLisaConfiguration::SetEventNO(100000,600000);
+    TLisaConfiguration::SetEventNO(100000,30000000);
     
 
     if (LISA_ON)
