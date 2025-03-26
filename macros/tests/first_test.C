@@ -12,7 +12,7 @@ void first_test()
     const Int_t nev = -1;
 
     // Define important paths.
-    TString c4Root_path = "/u/cjones/c4Root";
+    TString c4Root_path = "$C4ROOT_DIR";
     TString ucesb_path = "$UCESB_DIR/empty/empty --input-buffer=200Mi --event-sizes --allow-errors";
     gSystem->ExpandPathName(ucesb_path);
 
