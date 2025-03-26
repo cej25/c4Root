@@ -29,7 +29,6 @@ SUBEVENT(mcp_tamex_event)
     };
 }
 
-// this must change to be more general, or name should change from febex_subev
 SUBEVENT(dssd_febex_event)
 {
     select optional
@@ -48,8 +47,6 @@ SUBEVENT(dssd_febex_event)
         data[1] = FEBEX_EVENT(card = 1);
         data[2] = FEBEX_EVENT(card = 2);
         data[3] = FEBEX_EVENT(card = 3);
-        data[4] = FEBEX_EVENT(card = 4);
-        data[5] = FEBEX_EVENT(card = 5);
     };
 }
 
