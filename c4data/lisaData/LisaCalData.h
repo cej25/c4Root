@@ -45,7 +45,7 @@ class LisaCalItem : public TObject
                     float e_MWD,
                     std::vector<float> tr,
                     //std::vector<int16_t> tr_MWD,
-                    //std::vector<int16_t> tr_x,
+                    std::vector<int16_t> tr_x,
                     float e_GM,
                     float e_MWD_GM,
                     uint64_t evt_t,
@@ -69,7 +69,7 @@ class LisaCalItem : public TObject
         float Get_energy_MWD() const;
         std::vector<float> Get_trace_febex() const;
         //std::vector<int16_t> Get_trace_MWD() const;
-        //std::vector<int16_t> Get_trace_x() const;
+        std::vector<int16_t> Get_trace_x() const;
         float Get_energy_GM() const;
         float Get_energy_MWD_GM() const;
         uint64_t Get_board_event_time() const;
@@ -95,7 +95,7 @@ class LisaCalItem : public TObject
         float energy_MWD; // double? int?
         std::vector<float> trace_febex;
         //std::vector<int16_t> trace_MWD;
-        //std::vector<int16_t> trace_x;
+        std::vector<int16_t> trace_x;
         float energy_GM;
         float energy_MWD_GM;
         uint64_t board_event_time;
@@ -164,10 +164,10 @@ inline std::vector<float> LisaCalItem::Get_trace_febex() const
 //     return trace_MWD;
 // }
 
-// inline std::vector<int16_t> LisaCalItem::Get_trace_x() const
-// {
-//     return trace_x;
-// }
+inline std::vector<int16_t> LisaCalItem::Get_trace_x() const
+{
+    return trace_x;
+}
 
 inline float LisaCalItem::Get_energy_GM() const
 {
