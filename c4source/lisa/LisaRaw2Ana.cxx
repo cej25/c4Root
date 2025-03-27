@@ -331,10 +331,10 @@ void LisaRaw2Ana::Exec(Option_t* option)
             }
 
 
-            if (baseline_start_idx < k0 || baseline_start_idx >= baseline_stop_idx || baseline_start_idx >= (k0 + MM - LL)) 
+            if (baseline_start_idx < 2 || baseline_start_idx >= baseline_stop_idx || baseline_start_idx >= (k0 + MM - LL)) 
             {
                 c4LOG(fatal, "[ MWD ERROR] Invalid Trapez_baseline_window_0: " << baseline_start_idx*sampling <<
-                " -- must be within (k0, k0 + M -L) = ( " << MWD_trace_start << ", " << MWD_trace_start + MWD_length - smoothing_L << " ) \n" );
+                " -- must be within (2, k0 + M -L) = ( " << MWD_trace_start << ", " << MWD_trace_start + MWD_length - smoothing_L << " ) \n" );
             }
             if (baseline_stop_idx <= baseline_start_idx || baseline_stop_idx > kend || baseline_stop_idx > (k0 + MM - LL)) 
             {
@@ -359,12 +359,16 @@ void LisaRaw2Ana::Exec(Option_t* option)
             energy_avg = energy_sum / amp_count;
 
             //4. ::: Integration of baseline 
-            baseline_start_idx = baseline_start_idx - k0;
-            baseline_stop_idx = baseline_stop_idx - k0;
+            // Baseline starts at the beginning of the trace_febex
+            // This is to reduce the possibility to calculate the baseline from a previous trace (for pileup)
+
+            baseline_start_idx = baseline_start_idx;
+            baseline_stop_idx = baseline_stop_idx;
 
             for (int i = baseline_start_idx; i < baseline_stop_idx; ++i) 
             {
-                baseline_sum += trace_MWD.at(i);
+                //baseline_sum += trace_MWD.at(i);
+                baseline_sum += trace_febex_0.at(i);
                 baseline_count++;
             }
     
