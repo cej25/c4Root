@@ -52,8 +52,8 @@ Trapez_amp_calc_window_1[ns]       17200
 
 # ::: Range for the baseline calculation of the MWD trace
 # ::: Conditions: Trapez_baseline_window_0 > k0; Trapez_baseline_window_1 < k0 + M - L
-Trapez_baseline_window_0[ns]       14100             
-Trapez_baseline_window_1[ns]       14900
+Trapez_baseline_window_0[ns]       100             
+Trapez_baseline_window_1[ns]       14100
 
 
 #To implement
