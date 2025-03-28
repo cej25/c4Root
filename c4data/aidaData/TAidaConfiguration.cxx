@@ -15,7 +15,7 @@ TAidaConfiguration* TAidaConfiguration::instance = nullptr;
 std::string TAidaConfiguration::base_path = "Configuration_Files/AIDA";
 
 TAidaConfiguration::TAidaConfiguration() :
-    fees(0), dssds(0), wide(false), bb7(false), bb7_fee(-1), adjustadc(false), useucesb(false),
+    fees(0), dssds(0), wide(false), adjustadc(false), useucesb(false),
     ignorembsts(false), stats(false), ucesbshift(0), eventwindow(2000),
     tm_undelayed(-1), tm_delayed(-1), sc41l_d(-1), sc41r_d(-1)
 {
@@ -96,15 +96,6 @@ void TAidaConfiguration::ReadConfiguration()
     {
       line >> std::boolalpha >> wide;
     }
-    // else if (option == "bb7")
-    // {
-    //   line >> std::boolalpha >> bb7;
-    //   dssd[dssds-1].DSSD = dssds;
-    // }
-    // else if (option == "bb7_fee")
-    // {
-    //   line >> bb7_fee;
-    // }
     else if (option == "ignorembsts")
     {
       line >> std::boolalpha >> ignorembsts;

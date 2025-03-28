@@ -22,6 +22,14 @@ Requirements:
 
 The latest prod version of both FairSoft and FairRoot can be found on the lx-pool GSI computers.
 
+Before compiling, please make the empty UCESB unpacker! I.e.:
+
+```
+> cd ucesb
+> make empty -j
+> cd ..
+```
+
 To compile:
 ```
 > export SIMPATH=/path/to/fairsoft
@@ -35,8 +43,17 @@ To compile:
 > make -j
 ```
 
+To test c4Root has been installed and configured successfully:
+
 ```
-> cd ../c4Root/unpack/exps/
+> cd c4Root/macros/tests
+> root -l -b first_tests.C
+```
+
+You should see some event processing, and then a summary of subevents. After this, you can try a real experimental code!
+
+```
+> cd c4Root/unpack/exps/
 > make s100 -j
 > cd ../../macros/despec/
 > root -l -b s100_online.C

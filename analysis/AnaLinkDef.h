@@ -13,7 +13,6 @@
 #pragma link C++ class FrsOnlineSpectra+;
 #pragma link C++ class FrsRawSpectra+;
 #pragma link C++ class FrsCalSpectra+;
-#pragma link C++ class TravMusOnlineSpectra+;
 #pragma link C++ class GermaniumOnlineSpectra+;
 #pragma link C++ class GermaniumLabTest+;
 #pragma link C++ class GermaniumResolution+;
@@ -47,7 +46,6 @@
 #pragma link C++ class LisaTraceAnalysis+;
 #pragma link C++ class BB7NearlineSpectra+;
 #pragma link C++ class FimpNearlineSpectra+;
-#pragma link C++ class TravMusNearlineSpectra+;
 
 #pragma link C++ class FrsAidaCorrelations+;
 #pragma link C++ class FrsAidaCorrelationsOnline+;
@@ -63,7 +61,6 @@
 // #pragma link C++ class FrsBplastCorrelations+;
 #pragma link C++ class LisaFrsCorrelations+;
 #pragma link C++ class LisaFrsCorrelationsOnline+;
-#pragma link C++ class FrsTravMusCorrelations+;
 
 #pragma link C++ class FatimaTimingAnalysis+;
 #pragma link C++ class FatimaTimingAnalysisSummed+;
@@ -76,8 +73,6 @@
 
 #pragma link C++ class BB7GermaniumCorrelationsOnline+;
 
-// #pragma link C++ class MHTDCSpectra+;
-// #pragma link C++ class TPCCorrections+;
 
 
 #endif

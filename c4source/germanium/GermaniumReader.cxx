@@ -126,7 +126,8 @@ Bool_t GermaniumReader::Read()
             channel_trigger_time_long = (double)( (fData->germanium_data[it_board_number].channel_trigger_time_lov[index]) & 0x00FFFFFF );
             //add the CF from the constant fraction. It is denoted by 6 bits in the energy word of the FEBEX data format
             channel_trigger_time_long = (((double)(fData->germanium_data[it_board_number].channel_cfdv[index] & 0x3F))/64.0 + channel_trigger_time_long)*10.0; // units of ns 
-
+            
+            // if (fData->germanium_data[it_board_number].pileupv[index] == 1) std::cout << "pileup!! " << fData->germanium_data[it_board_number].pileupv[index] << std::endl; 
 
             new ((*fArray)[fArray->GetEntriesFast()]) GermaniumFebexData(
                 trig,

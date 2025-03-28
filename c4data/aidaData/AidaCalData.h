@@ -5,86 +5,37 @@
 
 class AidaCalAdcItem : public TObject
 {
-public:
-    AidaCalAdcItem();
+    public:
+        AidaCalAdcItem();
 
-    void Reset();
-    void SetAll(uint64_t st, uint64_t ft, int f, int c, int d, int si, int str, bool r, double i, double e);
-    uint64_t SlowTime() const;
-    uint64_t FastTime() const;
-    int Fee() const;
-    int Channel() const;
-    int DSSD() const;
-    int Side() const;
-    int Strip() const;
-    bool Range() const;
-    double Intensity() const;
-    double Energy() const;
+        void Reset();
+        void SetAll(ULong64_t st, ULong64_t ft, Int_t f, Int_t c, Int_t d, Int_t si, Int_t str, Bool_t r, Double_t i, Double_t e);
+    
+        ULong64_t SlowTime() const { return slowTime; }
+        ULong64_t FastTime() const { return fastTime; }
+        Int_t Fee() const { return fee; }
+        Int_t Channel() const { return channel; }
+        Int_t DSSD() const { return dssd; }
+        Int_t Side() const { return side; }
+        Int_t Strip() const { return strip; }
+        Bool_t Range() const { return range; }
+        Double_t Intensity() const { return intensity; }
+        Double_t Energy() const { return energy; }
 
-    ClassDefNV(AidaCalAdcItem, 2)
+        ClassDefNV(AidaCalAdcItem, 2)
 
-private:
-    uint64_t slowTime;
-    uint64_t fastTime;
-    int fee;
-    int channel;
-    int dssd;
-    int side;
-    int strip;
-    bool range;
-    double intensity; // only for gain matching code?
-    double energy;
+    private:
+        ULong64_t slowTime;
+        ULong64_t fastTime;
+        Int_t fee;
+        Int_t channel;
+        Int_t dssd;
+        Int_t side;
+        Int_t strip;
+        Bool_t range;
+        Double_t intensity; // only for gain matching code?
+        Double_t energy;
 };
-
-inline uint64_t AidaCalAdcItem::SlowTime() const
-{
-    return slowTime;
-}
-
-inline uint64_t AidaCalAdcItem::FastTime() const
-{
-    return fastTime;
-}
-
-inline int AidaCalAdcItem::Fee() const
-{
-    return fee;
-}
-
-inline int AidaCalAdcItem::Channel() const
-{
-    return channel;
-}
-
-inline int AidaCalAdcItem::DSSD() const
-{
-    return dssd;
-}
-
-inline int AidaCalAdcItem::Side() const
-{
-    return side;
-}
-
-inline int AidaCalAdcItem::Strip() const
-{
-    return strip;
-}
-
-inline bool AidaCalAdcItem::Range() const
-{
-    return range;
-}
-
-inline double AidaCalAdcItem::Intensity() const
-{
-    return intensity;
-}
-
-inline double AidaCalAdcItem::Energy() const
-{
-    return energy;
-}
 
 #endif /* AidaCalData_H */
 
