@@ -85,11 +85,19 @@
 #pragma link C++ class GermaniumCalData+;
 #pragma link C++ class GermaniumFebexTraceData+;
 
+// HISPEC10 MCP
+#pragma link C++ class H10MCPTwinpeaksData+;
+#pragma link C++ class H10MCPTwinpeaksCalData+;
+
 // LISA
 #pragma link C++ class LisaItem+;
 #pragma link C++ class LisaCalItem+;
 #pragma link C++ class LisaAnaItem+;
 #pragma link C++ class LisaTraceData+;
+
+// STEFAN
+#pragma link C++ class StefanFebexItem+;
+#pragma link C++ class StefanCalItem+;
 
 // TimeMachine
 #pragma link C++ class TimeMachineData+;
@@ -108,6 +116,8 @@
 #pragma link C++ class TBB7FebexConfiguration+;
 #pragma link C++ class TLisaConfiguration+;
 #pragma link C++ class TFimpConfiguration+;
+#pragma link C++ class TH10MCPConfiguration+;
+#pragma link C++ class TStefanConfiguration+;
 
 
 #endif

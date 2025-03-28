@@ -15,6 +15,8 @@ ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
 ${C4ROOT_SOURCE_DIR}/c4data/baseData
 ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 ${C4ROOT_SOURCE_DIR}/c4data/fimpData
+${C4ROOT_SOURCE_DIR}/c4data/mcpData
+${C4ROOT_SOURCE_DIR}/c4data/stefanData
 ${C4ROOT_SOURCE_DIR}/c4source
 ${C4ROOT_SOURCE_DIR}/c4source/base
 ${C4ROOT_SOURCE_DIR}/c4source/frs
@@ -66,6 +68,12 @@ bb7Data/TBB7FebexConfiguration.cxx
 fimpData/FimpData.cxx
 fimpData/FimpCalData.cxx
 fimpData/TFimpConfiguration.cxx
+mcpData/H10MCPTwinpeaksData.cxx
+mcpData/H10MCPTwinpeaksCalData.cxx
+mcpData/TH10MCPConfiguration.cxx
+stefanData/StefanFebexData.cxx
+stefanData/StefanCalData.cxx
+stefanData/TStefanConfiguration.cxx
 frsData/TFRSParameter.cxx
 frsData/TFrsConfiguration.cxx
 frsData/FrsGate.cxx

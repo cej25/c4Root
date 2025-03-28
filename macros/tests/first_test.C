@@ -44,7 +44,7 @@ void first_test()
     // Run
     run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev); 
 
-    std::cout << "Macro finished successfully." << std::endl;   
+    std::cout << "Macro finished successfully. Test complete." << std::endl;   
 
 }
 

@@ -1,35 +1,31 @@
 #ifndef H10MCPReader_H
 #define H10MCPReader_H
 
+#include "H10MCPTwinpeaksData.h"
 #include "c4Reader.h"
 
-// why is there a TH1 here
 #include "TH1.h"
-
-
 
 #include <Rtypes.h>
 
 extern "C"
 {
-    #include "ext_h101_fatima.h"
+    #include "ext_h101_mcp.h"
 }
 
 class TClonesArray;
 
-struct EXT_STR_h101_fatima_t;
-typedef struct EXT_STR_h101_fatima_t EXT_STR_h101_fatima;
-typedef struct EXT_STR_h101_fatima_onion_t EXT_STR_h101_fatima_onion;
+struct EXT_STR_h101_mcp_t;
+typedef struct EXT_STR_h101_mcp_t EXT_STR_h101_mcp;
+typedef struct EXT_STR_h101_mcp_onion_t EXT_STR_h101_mcp_onion;
 class ext_data_struct_info;
 
 
-struct fatima_last_lead_hit_struct
+struct mcp_last_lead_hit_struct
 {
     bool hit = false;
-    //uint16_t board_id; index using these:
-    //uint32_t ch_ID;
-    uint32_t lead_epoch_counter = 0;
-    uint32_t lead_coarse_T = 0;
+    UInt_t lead_epoch_counter = 0;
+    UInt_t lead_coarse_T = 0;
     double lead_fine_T = 0;
 };
 
@@ -37,7 +33,7 @@ struct fatima_last_lead_hit_struct
 class H10MCPReader : public c4Reader
 {
     public:
-        H10MCPReader(EXT_STR_h101_fatima_onion*, size_t);
+        H10MCPReader(EXT_STR_h101_mcp_onion*, size_t);
 
         virtual ~H10MCPReader();
 
@@ -85,7 +81,7 @@ class H10MCPReader : public c4Reader
         int total_time_microsecs = 0;
         
 
-        EXT_STR_h101_fatima_onion* fData;
+        EXT_STR_h101_mcp_onion* fData;
 
         size_t fOffset;
 
@@ -95,31 +91,29 @@ class H10MCPReader : public c4Reader
 
         TClonesArray* fArray;
 
-        uint64_t wr_t;
+        Long64_t wr_t;
 
 
-        static const int NBoards = sizeof(fData->fatima_tamex) / sizeof(fData->fatima_tamex[0]);
+        static const int NBoards = sizeof(fData->mcp_tamex) / sizeof(fData->mcp_tamex[0]);
         static const int NChannels = 33; //slow + fast per board + trigger channel 0.
 
 
         //global
-        uint64_t fNepochwordsread = 0;
-        uint64_t fNevents_skipped = 0; //because the size of the array does not match internally (UCESB/c4 error likely)
+        ULong64_t fNepochwordsread = 0;
+        ULong64_t fNevents_skipped = 0; //because the size of the array does not match internally (UCESB/c4 error likely)
         
         // per channel/board    
-        uint64_t fNtrails_read[NBoards][NChannels];
-        uint64_t fNleads_read[NBoards][NChannels];
-        uint64_t fNmatched[NBoards][NChannels]; //successfully matched lead/trail combinations.
+        ULong64_t fNtrails_read[NBoards][NChannels];
+        ULong64_t fNleads_read[NBoards][NChannels];
+        ULong64_t fNmatched[NBoards][NChannels]; //successfully matched lead/trail combinations.
 
-        uint64_t fNevents_lacking_epoch[NBoards][NChannels]; //events where there is a time data word in a new channel without having seen an epoch word for this channel before.
-        uint64_t fNevents_TAMEX_fail[NBoards][NChannels]; //number of 0x3FF data words indicating TAMEX failure of the fast filter.
-        uint64_t fNevents_second_lead_seen[NBoards][NChannels]; // number of times a second lead is seen (i.e. a lead-lead in the channel) keeping only the last lead.
-        uint64_t fNevents_trail_seen_no_lead[NBoards][NChannels]; // number of times a trail is seen without a preceeding lead - skipping this event.
-
+        ULong64_t fNevents_lacking_epoch[NBoards][NChannels]; //events where there is a time data word in a new channel without having seen an epoch word for this channel before.
+        ULong64_t fNevents_TAMEX_fail[NBoards][NChannels]; //number of 0x3FF data words indicating TAMEX failure of the fast filter.
+        ULong64_t fNevents_second_lead_seen[NBoards][NChannels]; // number of times a second lead is seen (i.e. a lead-lead in the channel) keeping only the last lead.
+        ULong64_t fNevents_trail_seen_no_lead[NBoards][NChannels]; // number of times a trail is seen without a preceeding lead - skipping this event.
 
         int last_channel_read = 0;
         bool last_word_read_was_epoch = false;
-
 
         TString fine_time_histo_outfile;
         TString fine_time_histo_infile;
@@ -130,16 +124,16 @@ class H10MCPReader : public c4Reader
         double *** fine_time_calibration_coeffs; //[NBoards][NChannels+1][1024] last index is bin nr. - this is the lookup table
         
         int fine_time_calibration_after = 10000000;
-        double TAMEX_fine_time_clock = 5.0; // ns in one fine time cycle.
+        Double_t TAMEX_fine_time_clock = 5.0; // ns in one fine time cycle.
         //need some status flags:
         bool fine_time_calibration_set = false;
         bool fine_time_calibration_save = false;
         bool fine_time_calibration_read_from_file = false;
 
-        double accepted_trigger_time = 0;
-        uint32_t accepted_lead_epoch_counter = 0;
-        uint32_t accepted_lead_coarse_T = 0;
-        double accepted_lead_fine_T = 0;
+        Double_t accepted_trigger_time = 0;
+        UInt_t accepted_lead_epoch_counter = 0;
+        UInt_t accepted_lead_coarse_T = 0;
+        Double_t accepted_lead_fine_T = 0;
 
 
     public:

@@ -42,6 +42,10 @@
 #pragma link C++ class BB7FebexCal2Hit+;
 #pragma link C++ class FimpReader+;
 #pragma link C++ class FimpRaw2Cal+;
+#pragma link C++ class H10MCPReader+;
+#pragma link C++ class H10MCPRaw2Cal+;
+#pragma link C++ class StefanReader+;
+#pragma link C++ class StefanRaw2Cal+;
 
 #pragma link C++ class EXT_STR_h101_unpack_t;
 #pragma link C++ class EXT_STR_h101_frs_onion_t;
@@ -57,6 +61,8 @@
 // #pragma link C++ class EXT_STR_h101_bb7vme_onion_t;
 #pragma link C++ class EXT_STR_h101_bbfebex_onion_t;
 #pragma link C++ class EXT_STR_h101_fimp_onion_t;
+#pragma link C++ class EXT_STR_h101_mcp_onion_t;
+#pragma link C++ class EXT_STR_h101_stefan_onion_t;
 
 
 #pragma link C++ class TestReader+;
