@@ -5,132 +5,69 @@
 
 class AidaUnpackAdcItem : public TObject
 {
-public:
-    AidaUnpackAdcItem();
+    public:
+        AidaUnpackAdcItem();
 
-    void Reset();
-    void SetAll(uint64_t rt, uint64_t st, uint64_t ft, int f, int c, bool r, uint16_t v);
-    uint64_t RawTime() const;
-    uint64_t SlowTime() const;
-    uint64_t FastTime() const;
-    int Fee() const;
-    int Channel() const;
-    bool Range() const;
-    uint16_t Value() const;
+        void Reset();
+        void SetAll(ULong64_t rt, ULong64_t st, ULong64_t ft, Int_t f, Int_t c, Bool_t r, UShort_t v);
+        
+        ULong64_t RawTime() const { return rawTime; }
+        ULong64_t SlowTime() const { return slowTime; }
+        ULong64_t FastTime() const { return fastTime; }
+        Int_t Fee() const { return fee; }
+        Int_t Channel() const { return channel; }
+        Bool_t Range() const { return range; }
+        UShort_t Value() const { return value; }
 
-    ClassDefNV(AidaUnpackAdcItem, 2)
-private:
+        ClassDefNV(AidaUnpackAdcItem, 2)
+    
+    private:
 
-    uint64_t rawTime;
-    uint64_t slowTime;
-    uint64_t fastTime;
-    int fee;
-    int channel;
-    bool range;
-    uint16_t value;
+        ULong64_t rawTime;
+        ULong64_t slowTime;
+        ULong64_t fastTime;
+        Int_t fee;
+        Int_t channel;
+        Bool_t range;
+        UShort_t value;
 };
 
 class AidaUnpackScalerItem : public TObject
 {
-public:
-    AidaUnpackScalerItem();
+    public:
+        AidaUnpackScalerItem();
 
-    void Reset();
-    void SetAll(uint64_t time, uint64_t value, int fee);
-    uint64_t Time() const;
-    int Fee() const;
-    uint64_t Value() const;
+        void Reset();
+        void SetAll(ULong64_t time, ULong64_t value, Int_t fee);
+        ULong64_t Time() const { return time; }
+        Int_t Fee() const { return fee; }
+        ULong64_t Value() const { return value; }
 
-    ClassDefNV(AidaUnpackScalerItem, 2)
-private:
-    uint64_t time;
-    uint64_t value;
-    int fee;
+        ClassDefNV(AidaUnpackScalerItem, 2)
+    
+    private:
+        ULong64_t time;
+        Int_t fee;
+        ULong64_t value;
 };
 
 class AidaUnpackFlowItem : public TObject
 {
-public:
-    AidaUnpackFlowItem();
+    public:
+        AidaUnpackFlowItem();
 
-    void Reset();
-    void SetAll(uint64_t time, int fee, bool pause);
-    uint64_t Time() const;
-    int Fee() const;
-    bool Paused() const;
+        void Reset();
+        void SetAll(ULong64_t time, Int_t fee, Bool_t pause);
+        ULong64_t Time() const { return time; }
+        Int_t Fee() const { return fee; }
+        Bool_t Paused() const { return pause; }
 
-    ClassDefNV(AidaUnpackFlowItem, 2)
-private:
-    uint64_t time;
-    int fee;
-    bool pause;
+        ClassDefNV(AidaUnpackFlowItem, 2)
+
+    private:
+        ULong64_t time;
+        Int_t fee;
+        Bool_t pause;
 };
-
-inline uint64_t AidaUnpackAdcItem::RawTime() const
-{
-    return rawTime;
-}
-
-inline uint64_t AidaUnpackAdcItem::SlowTime() const
-{
-    return slowTime;
-}
-
-inline uint64_t AidaUnpackAdcItem::FastTime() const
-{
-    return fastTime;
-}
-
-inline int AidaUnpackAdcItem::Fee() const
-{
-    return fee;
-}
-
-inline int AidaUnpackAdcItem::Channel() const
-{
-    return channel;
-}
-
-inline bool AidaUnpackAdcItem::Range() const
-{
-    return range;
-}
-
-inline uint16_t AidaUnpackAdcItem::Value() const
-{
-    return value;
-}
-
-inline uint64_t AidaUnpackScalerItem::Time() const
-{
-    return time;
-}
-
-inline int AidaUnpackScalerItem::Fee() const
-{
-    return fee;
-}
-
-inline uint64_t AidaUnpackScalerItem::Value() const
-{
-    return value;
-}
-
-inline uint64_t AidaUnpackFlowItem::Time() const
-{
-    return time;
-}
-
-inline int AidaUnpackFlowItem::Fee() const
-{
-    return fee;
-}
-
-inline bool AidaUnpackFlowItem::Paused() const
-{
-    return pause;
-}
-
-
 
 #endif /* AidaData_H */

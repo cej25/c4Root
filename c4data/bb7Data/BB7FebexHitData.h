@@ -10,18 +10,18 @@ class BB7FebexHitItem : public TObject
 
         void Reset();
 
-        int DSSD;
-        double StripX, StripY;
-        double PosX, PosY;
+        Int_t DSSD;
+        Double_t StripX, StripY;
+        Double_t PosX, PosY;
 
-        double Energy, EnergyX, EnergyY;
+        Double_t Energy, EnergyX, EnergyY;
 
-        int StripXMin, StripXMax, StripYMin, StripYMax;
-        int ClusterSizeX, ClusterSizeY;
+        Int_t StripXMin, StripXMax, StripYMin, StripYMax;
+        Int_t ClusterSizeX, ClusterSizeY;
 
-        int64_t Time, TimeX, TimeY;
+        Long64_t Time, TimeX, TimeY;
 
-        bool Stopped;
+        Bool_t Stopped;
 
         ClassDefNV(BB7FebexHitItem, 1)
 

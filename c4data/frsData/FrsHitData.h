@@ -328,32 +328,6 @@ class FrsMultiHitItem : public TObject
                     std::vector<Float_t> dEdegoQ,
                     std::vector<Float_t> dEdeg_z41);
 
-        // void SetAll(Float_t s2x,
-        //             Float_t s2a,
-        //             Float_t s4x,
-        //             Float_t s4a,
-        //             Float_t tof,
-        //             Float_t beta, 
-        //             Float_t AoQ, 
-        //             Float_t AoQ_corr, 
-        //             Float_t z,
-        //             Float_t z2,
-        //             Float_t dEdeg,
-        //             Float_t dEdegoQ);
-
-        // Float_t Get_ID_s2x_mhtdc() const { return fID_s2x_mhtdc; }
-        // Float_t Get_ID_s4x_mhtdc() const { return fID_s4x_mhtdc; }
-        // Float_t Get_ID_s2a_mhtdc() const { return fID_s2a_mhtdc; }
-        // Float_t Get_ID_s4a_mhtdc() const { return fID_s4a_mhtdc; }
-        // Float_t Get_ID_tof_mhtdc() const { return fID_tof_mhtdc; }
-        // Float_t Get_ID_beta_mhtdc() const { return fID_beta_mhtdc; }
-        // Float_t Get_ID_AoQ_mhtdc() const { return fID_AoQ_mhtdc; }
-        // Float_t Get_ID_AoQ_corr_mhtdc() const { return fID_AoQ_corr_mhtdc; }
-        // Float_t Get_ID_z_mhtdc() const { return fID_z_mhtdc; }
-        // Float_t Get_ID_z2_mhtdc() const { return fID_z2_mhtdc; }
-        // Float_t Get_ID_dEdeg_mhtdc() const { return fID_dEdeg_mhtdc; }
-        // Float_t Get_ID_dEdegoQ_mhtdc() const { return fID_dEdegoQ_mhtdc; }
-
         std::vector<Float_t> Get_ID_s1x_mhtdc() const { return fID_s1x_mhtdc; }
         std::vector<Float_t> Get_ID_s1a_mhtdc() const { return fID_s1a_mhtdc; }
         std::vector<Float_t> Get_ID_s2x_s1s2_mhtdc() const { return fID_s2x_s1s2_mhtdc; }
@@ -380,11 +354,9 @@ class FrsMultiHitItem : public TObject
         std::vector<Float_t> Get_ID_dEdegoQ_mhtdc() const { return fID_dEdegoQ_mhtdc; }
         std::vector<Float_t> Get_ID_dEdeg_z41_mhtdc() const { return fID_dEdeg_z41_mhtdc; }
       
-
         ClassDef(FrsMultiHitItem, 1);
 
     private:
-
 
         // S1S2
         std::vector<Float_t> fID_s1x_mhtdc;
@@ -412,19 +384,6 @@ class FrsMultiHitItem : public TObject
         std::vector<Float_t> fID_z43_mhtdc;
         std::vector<Float_t> fID_dEdegoQ_mhtdc;
         std::vector<Float_t> fID_dEdeg_z41_mhtdc;
-
-        // Float_t fID_s2x_mhtdc;
-        // Float_t fID_s4x_mhtdc;
-        // Float_t fID_s2a_mhtdc;
-        // Float_t fID_s4a_mhtdc;
-        // Float_t fID_tof_mhtdc;
-        // Float_t fID_beta_mhtdc;
-        // Float_t fID_AoQ_mhtdc;
-        // Float_t fID_AoQ_corr_mhtdc;
-        // Float_t fID_z_mhtdc;
-        // Float_t fID_z2_mhtdc;
-        // Float_t fID_dEdeg_mhtdc;
-        // Float_t fID_dEdegoQ_mhtdc;
 
 };
 
