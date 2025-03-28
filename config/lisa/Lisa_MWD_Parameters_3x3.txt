@@ -50,8 +50,9 @@ Sampling[ns]                       10
 Trapez_amp_calc_window_0[ns]       17000
 Trapez_amp_calc_window_1[ns]       17200
 
-# ::: Range for the baseline calculation of the MWD trace
-# ::: Conditions: Trapez_baseline_window_0 > k0; Trapez_baseline_window_1 < k0 + M - L
+# ::: Range for the baseline calculation
+# ::: This refer to the total febex trace (to minimize the pileup effect in the nea proximity of the MWD) 
+# ::: Conditions: Trapez_baseline_window_0 > 20; Trapez_baseline_window_1 < k0 + M - L
 Trapez_baseline_window_0[ns]       100             
 Trapez_baseline_window_1[ns]       14100
 
