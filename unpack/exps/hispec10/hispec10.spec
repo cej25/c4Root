@@ -29,7 +29,7 @@ SUBEVENT(mcp_tamex_event)
     };
 }
 
-SUBEVENT(dssd_febex_event)
+SUBEVENT(stefan_febex_event)
 {
     select optional
     {
@@ -55,7 +55,7 @@ EVENT
 {
     mcp = mcp_tamex_event(procid = 10);
 
-    dssd = dssd_febex_event(procid = 20);
+    stefan = stefan_febex_event(procid = 20);
 
     ignore_unknown_subevent;
 }

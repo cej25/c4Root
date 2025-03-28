@@ -8,7 +8,6 @@
 #include <iomanip>
 
 // c4
-#include "FatimaTwinpeaksData.h"
 #include "H10MCPReader.h"
 #include "c4Logger.h"
 
@@ -19,25 +18,25 @@
 extern "C"
 {
     #include "ext_data_client.h"
-    #include "ext_h101_fatima.h"
+    #include "ext_h101_mcp.h"
 }
 
 /*
 Constructor. Needs the input data structure obtained from ucesb with the following args:
- --ntuple=UNPACK:fatima,STRUCT_HH,ext_h101_fatima.h (add NOEVENTHEAD also). 
+ --ntuple=UNPACK:mcp,NOTRIGVENTNO,STRUCT_HH,ext_h101_mcp.h
 
  SEE SCRIPTS in unpack/scripts to generate automatically.
 
 The resulting file must be in the same folder as this file.
 
 */
-H10MCPReader::H10MCPReader(EXT_STR_h101_fatima_onion* data, size_t offset)
+H10MCPReader::H10MCPReader(EXT_STR_h101_mcp_onion* data, size_t offset)
     : c4Reader("H10MCPReader")
     , fNEvent(0)
     , fData(data)
     , fOffset(offset)
     , fOnline(kFALSE)
-    , fArray(new TClonesArray("FatimaTwinpeaksData"))
+    , fArray(new TClonesArray("H10MCPTwinpeaksData"))
 {
 }
 
@@ -100,7 +99,7 @@ Bool_t H10MCPReader::Init(ext_data_struct_info* a_struct_info)
 {
     Int_t ok;
 
-    EXT_STR_h101_fatima_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_fatima, 0);
+    EXT_STR_h101_mcp_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_mcp, 0);
 
     if (!ok)
     {
@@ -146,7 +145,7 @@ Bool_t H10MCPReader::Init(ext_data_struct_info* a_struct_info)
     }
 
     // Register output array in a tree
-    FairRootManager::Instance()->Register("FatimaTwinpeaksData", "FatimaTwinpeaksDataFolder", fArray, !fOnline);
+    FairRootManager::Instance()->Register("H10MCPTwinpeaksData", "H10MCPTwinpeaksDataFolder", fArray, !fOnline);
     fArray->Clear();
 
     memset(fData, 0, sizeof *fData);
@@ -235,7 +234,7 @@ void H10MCPReader::WriteFineTimeHistosToFile()
             }
         }
     }
-    LOG(info) << Form("Fatima fine time calibrations (i.e. raw fine time histograms) written to  %s",fine_time_histo_outfile.Data());
+    LOG(info) << Form("MCP fine time calibrations (i.e. raw fine time histograms) written to  %s",fine_time_histo_outfile.Data());
 
     outputfile->Close();
 
@@ -283,7 +282,7 @@ void H10MCPReader::ReadFineTimeHistosFromFile()
     }
 
     inputfile->Close();
-    LOG(info) << Form("Fatima fine time calibration read from file: %s", fine_time_histo_infile.Data());
+    LOG(info) << Form("MCP fine time calibration read from file: %s", fine_time_histo_infile.Data());
 }
 
 /*
@@ -310,20 +309,20 @@ Bool_t H10MCPReader::Read() //do fine time here:
     }
     
     //whiterabbit timestamp:
-    wr_t = (((uint64_t)fData->fatima_ts_t[3]) << 48) + (((uint64_t)fData->fatima_ts_t[2]) << 32) + (((uint64_t)fData->fatima_ts_t[1]) << 16) + (uint64_t)(fData->fatima_ts_t[0]);
+    wr_t = (((Long64_t)fData->mcp_ts_t[3]) << 48) + (((Long64_t)fData->mcp_ts_t[2]) << 32) + (((Long64_t)fData->mcp_ts_t[1]) << 16) + (Long64_t)(fData->mcp_ts_t[0]);
     
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
     { //per board:
 
-        uint16_t trig =  fData->fatima_tamex[it_board_number].trig;       
-        if (fData->fatima_tamex[it_board_number].event_size == 0) continue; // empty event skip
+        UShort_t trig =  fData->mcp_tamex[it_board_number].trig;       
+        if (fData->mcp_tamex[it_board_number].event_size == 0) continue; // empty event skip
         
         last_word_read_was_epoch = false;
         last_channel_read = 0;
 
-        uint32_t previous_epoch_word = 0; // last seen epoch word
+        UInt_t previous_epoch_word = 0; // last seen epoch word
 
-        fatima_last_lead_hit_struct last_tdc_hit; // initialized and reset - this keeps the information of the last lead that was seen
+        mcp_last_lead_hit_struct last_tdc_hit; // initialized and reset - this keeps the information of the last lead that was seen
         last_tdc_hit.hit=false;
         last_tdc_hit.lead_epoch_counter = 0;
         last_tdc_hit.lead_coarse_T = 0;
@@ -333,16 +332,8 @@ Bool_t H10MCPReader::Read() //do fine time here:
         accepted_lead_epoch_counter = 0;
         accepted_lead_coarse_T = 0;
         accepted_lead_fine_T = 0;
-                
 
-
-        //c4LOG(info,"\n\n\n\n New event:");
-        //c4LOG(info,Form("Board_id = %i",it_board_number));
-        //c4LOG(info,Form("event size: %i",fData->fatima_tamex[it_board_number].event_size));
-        //c4LOG(info,Form("time_epoch =  %i, time_coarse = %i, time_fine = %i, time_edge = %i, time_channel = %i",fData->fatima_tamex[it_board_number].time_epoch,fData->fatima_tamex[it_board_number].time_coarse,fData->fatima_tamex[it_board_number].time_fine,fData->fatima_tamex[it_board_number].time_edge,fData->fatima_tamex[it_board_number].time_channel));
-        //c4LOG(info,"Here comes data:");
-
-        for (int it_hits = 0; it_hits < fData->fatima_tamex[it_board_number].event_size/4 - 3 ; it_hits++)
+        for (int it_hits = 0; it_hits < fData->mcp_tamex[it_board_number].event_size/4 - 3 ; it_hits++)
         {
             // now operating under the assumption 16.01.2024:
             /*
@@ -352,17 +343,16 @@ Bool_t H10MCPReader::Read() //do fine time here:
             */
 
             // check if arrays are overflowing. These could be placed outside this inner loop, but now it sums up the number of lost events in case they are not equal. This indicates an error in UCESB/MBS i believe if this fails.
-            if (fData->fatima_tamex[it_board_number].time_epoch <= it_hits) {fNevents_skipped++; continue;}
-            if (fData->fatima_tamex[it_board_number].time_fine <= it_hits) {fNevents_skipped++; continue;}
-            if (fData->fatima_tamex[it_board_number].time_coarse <= it_hits) {fNevents_skipped++; continue;}
+            if (fData->mcp_tamex[it_board_number].time_epoch <= it_hits) { fNevents_skipped++; continue; }
+            if (fData->mcp_tamex[it_board_number].time_fine <= it_hits) { fNevents_skipped++; continue; }
+            if (fData->mcp_tamex[it_board_number].time_coarse <= it_hits) { fNevents_skipped++; continue; }
             //the length of the arrays should be equal. 
-            if (!(fData->fatima_tamex[it_board_number].time_coarse == fData->fatima_tamex[it_board_number].time_fine && fData->fatima_tamex[it_board_number].time_coarse == fData->fatima_tamex[it_board_number].time_epoch)) {fNevents_skipped++; continue;}
+            if (!(fData->mcp_tamex[it_board_number].time_coarse == fData->mcp_tamex[it_board_number].time_fine && fData->mcp_tamex[it_board_number].time_coarse == fData->mcp_tamex[it_board_number].time_epoch)) { fNevents_skipped++; continue; }
 
             //any time you see an epoch - this epoch will apply to the next time data words until a new epoch word is written. If the following data in the buffer is another channel then it must be preceeded with another epoch. 
-            if (fData->fatima_tamex[it_board_number].time_epochv[it_hits] != 0)
+            if (fData->mcp_tamex[it_board_number].time_epochv[it_hits] != 0)
             {
-                    previous_epoch_word = fData->fatima_tamex[it_board_number].time_epochv[it_hits] & 0xFFFFFFF;
-                    //if (it_board_number == 1) c4LOG(info,Form("Found epoch for ch = %i, e = %i",next_channel,fData->fatima_tamex[it_board_number].time_epochv[it_hits] & 0xFFFFFFF));
+                    previous_epoch_word = fData->mcp_tamex[it_board_number].time_epochv[it_hits] & 0xFFFFFFF;
                     fNepochwordsread++;
                     last_word_read_was_epoch = true;
                     continue;
@@ -371,46 +361,41 @@ Bool_t H10MCPReader::Read() //do fine time here:
 
             //from this point we should have seen an epoch for channel id.
 
-            uint32_t channelid = fData->fatima_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // 0-32
-            //if (it_board_number == 1) c4LOG(info,Form("ch = %i, coarse = %i, edge = %i", channelid, fData->fatima_tamex[it_board_number].time_coarsev[it_hits], fData->fatima_tamex[it_board_number].time_edgev[it_hits]));
+            uint32_t channelid = fData->mcp_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // 0-32
 
-            if (fData->fatima_tamex[it_board_number].time_finev[it_hits] == 0x3FF) {fNevents_TAMEX_fail[it_board_number][channelid]++; continue;} // this happens if TAMEX loses the fine time - skip it
+            if (fData->mcp_tamex[it_board_number].time_finev[it_hits] == 0x3FF) { fNevents_TAMEX_fail[it_board_number][channelid]++; continue; } // this happens if TAMEX loses the fine time - skip it
 
-            if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch){fNevents_lacking_epoch[it_board_number][channelid]++; c4LOG(debug2, "Event lacking epoch.");} // if the channel has changed but no epoch word was seen in between, channel 0 is always the first one so dont check if that s the case.
+            if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch){ fNevents_lacking_epoch[it_board_number][channelid]++; c4LOG(debug2, "Event lacking epoch."); } // if the channel has changed but no epoch word was seen in between, channel 0 is always the first one so dont check if that s the case.
 
-            if (!(channelid >= last_channel_read)) {c4LOG(fatal, Form("Data format is inconcistent with assumption: Channels are not read out in increasing order. This channel = %i, last channel = %i",channelid,last_channel_read));}
+            if (!(channelid >= last_channel_read)) { c4LOG(fatal, Form("Data format is inconcistent with assumption: Channels are not read out in increasing order. This channel = %i, last channel = %i",channelid,last_channel_read)); }
 
         
             last_word_read_was_epoch = false;
             last_channel_read = channelid;
 
-            bool is_leading = fData->fatima_tamex[it_board_number].time_edgev[it_hits] & 0x1;
+            bool is_leading = fData->mcp_tamex[it_board_number].time_edgev[it_hits] & 0x1;
             
             //Fill fine times and skip.
             if (!fine_time_calibration_set && is_leading)
             {
-                fine_time_hits[it_board_number][channelid]->Fill(fData->fatima_tamex[it_board_number].time_finev[it_hits]);
+                fine_time_hits[it_board_number][channelid]->Fill(fData->mcp_tamex[it_board_number].time_finev[it_hits]);
                 continue;
             }
 
-
-            uint32_t coarse_T = fData->fatima_tamex[it_board_number].time_coarsev[it_hits] & 0x7FF;
-            double fine_T = GetFineTime(fData->fatima_tamex[it_board_number].time_finev[it_hits],it_board_number,channelid);
+            UInt_t coarse_T = fData->mcp_tamex[it_board_number].time_coarsev[it_hits] & 0x7FF;
+            Double_t fine_T = GetFineTime(fData->mcp_tamex[it_board_number].time_finev[it_hits],it_board_number,channelid);
 
             if (channelid == 0) 
             {
-                accepted_trigger_time = ((double)previous_epoch_word)*10.24e3 + ((double)coarse_T)*5.0 - (double)fine_T; // round it off to ns resolution
+                accepted_trigger_time = ((Double_t)previous_epoch_word) * 10.24e3 + ((Double_t)coarse_T) * 5.0 - (Double_t)fine_T; // round it off to ns resolution
                 accepted_lead_epoch_counter = previous_epoch_word;
                 accepted_lead_coarse_T = coarse_T;
                 accepted_lead_fine_T = fine_T;
                 continue;
             } // skip channel 0 for now. This is the trigger information. The trigger time is kept, the wr timestamp is corrected by the difference of the hit and the acc trigger time.
 
-            //if(it_board_number == 1) c4LOG(info,fData->fatima_tamex[it_board_number].time_edgev[it_hits]);
-
             if (is_leading)
             { // rise signal:
-                //if (it_board_number == 1) c4LOG(info,Form("Found rise: ch = %i, le = %i, lc = %i, lf = %f", channelid, previous_epoch_word,coarse_T,fine_T));
                 
                 //count number of double leads
                 if (last_tdc_hit.hit) {fNevents_second_lead_seen[it_board_number][channelid]++;}
@@ -428,7 +413,7 @@ Bool_t H10MCPReader::Read() //do fine time here:
                 //trail and rise are matched
                 //if (it_board_number == 1) c4LOG(info,Form("Writing: ch = %i, le = %i lc = %i, lf = %f, te = %i tc = %i, tf = %f ",channelid,last_tdc_hit.lead_epoch_counter, last_tdc_hit.lead_coarse_T, last_tdc_hit.lead_fine_T,last_tdc_hit.lead_epoch_counter,coarse_T,fine_T));
 
-                new ((*fArray)[fArray->GetEntriesFast()]) FatimaTwinpeaksData(
+                new ((*fArray)[fArray->GetEntriesFast()]) H10MCPTwinpeaksData(
                     trig,
                     it_board_number,
                     channelid,
@@ -445,8 +430,8 @@ Bool_t H10MCPReader::Read() //do fine time here:
                     coarse_T,
                     fine_T,
                     
-                    fData->fatima_ts_subsystem_id,
-                    wr_t //+ 0*( (((int64_t)previous_epoch_word)*10.24e3 + ((int64_t)coarse_T)*5.0 - (int64_t)fine_T) - accepted_trigger_time) // corrected by the time difference to the acc trigger time
+                    fData->mcp_ts_subsystem_id,
+                    wr_t
                 );
 
                 
@@ -481,155 +466,6 @@ Bool_t H10MCPReader::Read() //do fine time here:
     return kTRUE;
 }
 
-
-#define ANSI_COLOR_RESET "\033[0m"
-#define ANSI_COLOR_BLUE "\033[44m"
-#define ANSI_COLOR_RED     "\033[41m"
-#define ANSI_COLOR_GREEN   "\033[42m"
-
-
-/*
-Playing with colors :D
-*/
-void H10MCPReader::PrintStatistics()
-{
-    std::ostringstream oss;
-    // Print column labels
-    oss << "\n";
-    oss << ANSI_COLOR_GREEN << "FATIMA TAMEX4 STATISTICS - boards from 0-N. TDC channels are numbered from 1-32 fast(odd)-slow(even)" << ANSI_COLOR_RESET;
-    oss << "\n";
-    oss << "Number of epoch words read in total: " << fNepochwordsread << "\n";
-    oss << "Number of events skipped due to c4/mbs inconsitency of array size: " << fNevents_skipped << "\n";
-    oss << ANSI_COLOR_RED << "Number of trails read per channel." << ANSI_COLOR_RESET;
-    oss << std::setw(12)  << ANSI_COLOR_BLUE << "\n      Channel "; // Empty space for the top-left cell
-    for (int j = 0; j < NChannels; ++j) {
-        oss << std::setw(12) << j + 1; // Assuming channels are 1-indexed
-    }
-    oss << ANSI_COLOR_RESET <<  '\n';
-
-    // Print array values with row labels
-    for (int i = 0; i < NBoards; ++i) {
-        oss << std::setw(12) << ANSI_COLOR_BLUE << "Board " << i << ANSI_COLOR_RESET; // Assuming boards are 1-indexed
-        for (int j = 0; j < NChannels; ++j) {
-            oss << std::setw(12) << fNtrails_read[i][j];
-        }
-        oss << '\n';
-    }
-    oss << "\n\n";
-
-    oss << ANSI_COLOR_RED << "Number of leads read per channel." << ANSI_COLOR_RESET;
-    oss << std::setw(12)  << ANSI_COLOR_BLUE << "\n      Channel "; // Empty space for the top-left cell
-    for (int j = 0; j < NChannels; ++j) {
-        oss << std::setw(12) << j + 1; // Assuming channels are 1-indexed
-    }
-    oss << ANSI_COLOR_RESET <<  '\n';
-
-    // Print array values with row labels
-    for (int i = 0; i < NBoards; ++i) {
-        oss << std::setw(12) << ANSI_COLOR_BLUE << "Board " << i << ANSI_COLOR_RESET; // Assuming boards are 1-indexed
-        for (int j = 0; j < NChannels; ++j) {
-            oss << std::setw(12) << fNleads_read[i][j];
-        }
-        oss << '\n';
-    }
-    oss << "\n";
-
-    oss << ANSI_COLOR_RED << "Number of matched lead-trail read per channel." << ANSI_COLOR_RESET;
-    oss << std::setw(12)  << ANSI_COLOR_BLUE << "\n      Channel "; // Empty space for the top-left cell
-    for (int j = 0; j < NChannels; ++j) {
-        oss << std::setw(12) << j + 1; // Assuming channels are 1-indexed
-    }
-    oss << ANSI_COLOR_RESET <<  '\n';
-
-    // Print array values with row labels
-    for (int i = 0; i < NBoards; ++i) {
-        oss << std::setw(12) << ANSI_COLOR_BLUE << "Board " << i << ANSI_COLOR_RESET; // Assuming boards are 1-indexed
-        for (int j = 0; j < NChannels; ++j) {
-            oss << std::setw(12) << fNmatched[i][j];
-        }
-        oss << '\n';
-    }
-    oss << "\n";
-
-    oss << ANSI_COLOR_RED << "Number of events lacking epoch." << ANSI_COLOR_RESET;
-    oss << std::setw(12)  << ANSI_COLOR_BLUE << "\n      Channel "; // Empty space for the top-left cell
-    for (int j = 0; j < NChannels; ++j) {
-        oss << std::setw(12) << j + 1; // Assuming channels are 1-indexed
-    }
-    oss << ANSI_COLOR_RESET <<  '\n';
-
-    // Print array values with row labels
-    for (int i = 0; i < NBoards; ++i) {
-        oss << std::setw(12) << ANSI_COLOR_BLUE << "Board " << i << ANSI_COLOR_RESET; // Assuming boards are 1-indexed
-        for (int j = 0; j < NChannels; ++j) {
-            oss << std::setw(12) << fNevents_lacking_epoch[i][j];
-        }
-        oss << '\n';
-    }
-    oss << "\n";
-
-
-    oss << ANSI_COLOR_RED << "Number of TAMEX fails where the error 0x3FF is set." << ANSI_COLOR_RESET;
-    oss << std::setw(12)  << ANSI_COLOR_BLUE << "\n      Channel "; // Empty space for the top-left cell
-    for (int j = 0; j < NChannels; ++j) {
-        oss << std::setw(12) << j + 1; // Assuming channels are 1-indexed
-    }
-    oss << ANSI_COLOR_RESET <<  '\n';
-
-    // Print array values with row labels
-    for (int i = 0; i < NBoards; ++i) {
-        oss << std::setw(12) << ANSI_COLOR_BLUE << "Board " << i << ANSI_COLOR_RESET; // Assuming boards are 1-indexed
-        for (int j = 0; j < NChannels; ++j) {
-            oss << std::setw(12) << fNevents_TAMEX_fail[i][j];
-        }
-        oss << '\n';
-    }
-    oss << "\n";
-
-
-    oss << ANSI_COLOR_RED << "Number of times a second lead is seen (i.e. a lead-lead in the channel) keeping only the last lead.." << ANSI_COLOR_RESET;
-    oss << std::setw(12)  << ANSI_COLOR_BLUE << "\n      Channel "; // Empty space for the top-left cell
-    for (int j = 0; j < NChannels; ++j) {
-        oss << std::setw(12) << j + 1; // Assuming channels are 1-indexed
-    }
-    oss << ANSI_COLOR_RESET <<  '\n';
-
-    // Print array values with row labels
-    for (int i = 0; i < NBoards; ++i) {
-        oss << std::setw(12) << ANSI_COLOR_BLUE << "Board " << i << ANSI_COLOR_RESET; // Assuming boards are 1-indexed
-        for (int j = 0; j < NChannels; ++j) {
-            oss << std::setw(12) << fNevents_second_lead_seen[i][j];
-        }
-        oss << '\n';
-    }
-    oss << "\n";
-
-    oss << ANSI_COLOR_RED << "Nnumber of times a trail is seen without a preceeding lead - skipping this event." << ANSI_COLOR_RESET;
-    oss << std::setw(12)  << ANSI_COLOR_BLUE << "\n      Channel "; // Empty space for the top-left cell
-    for (int j = 0; j < NChannels; ++j) {
-        oss << std::setw(12) << j + 1; // Assuming channels are 1-indexed
-    }
-    oss << ANSI_COLOR_RESET <<  '\n';
-
-    // Print array values with row labels
-    for (int i = 0; i < NBoards; ++i) {
-        oss << std::setw(12) << ANSI_COLOR_BLUE << "Board " << i << ANSI_COLOR_RESET; // Assuming boards are 1-indexed
-        for (int j = 0; j < NChannels; ++j) {
-            oss << std::setw(12) << fNevents_trail_seen_no_lead[i][j];
-        }
-        oss << '\n';
-    }
-    oss << "\n";
-
-    
-    // Get the formatted string
-    TString formattedString = oss.str();
-    
-    c4LOG(info, formattedString);
-}
-
-
-
 /*
 Memory management. Do not touch.
 */
@@ -637,7 +473,6 @@ void H10MCPReader::Reset()
 {
     // reset output array
     fArray->Clear();
-       
 }
 
 ClassImp(H10MCPReader)

@@ -20,6 +20,8 @@ ${C4ROOT_SOURCE_DIR}/c4source/bgo
 ${C4ROOT_SOURCE_DIR}/c4source/beammonitor
 ${C4ROOT_SOURCE_DIR}/c4source/bb7
 ${C4ROOT_SOURCE_DIR}/c4source/fimp
+${C4ROOT_SOURCE_DIR}/c4source/mcp
+${C4ROOT_SOURCE_DIR}/c4source/stefan
 ${C4ROOT_SOURCE_DIR}/c4data
 ${C4ROOT_SOURCE_DIR}/c4data/frsData
 ${C4ROOT_SOURCE_DIR}/c4data/lisaData
@@ -33,6 +35,8 @@ ${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
 ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
 ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 ${C4ROOT_SOURCE_DIR}/c4data/fimpData
+${C4ROOT_SOURCE_DIR}/c4data/mcpData
+${C4ROOT_SOURCE_DIR}/c4data/stefanData
 ${C4ROOT_SOURCE_DIR}/c4data/baseData
 )
 
@@ -81,6 +85,10 @@ set(SRCS
 ./bb7/BB7FebexCal2Hit.cxx
 ./fimp/FimpReader.cxx
 ./fimp/FimpRaw2Cal.cxx
+./mcp/H10MCPReader.cxx
+./mcp/H10MCPRaw2Cal.cxx
+./stefan/StefanReader.cxx
+./stefan/StefanRaw2Cal.cxx
 
 ./test/TestReader.cxx
 )
@@ -100,6 +108,8 @@ Set(STRUCT_HEADERS
 # ./bb7/ext_h101_bb7vme.h
 ./bb7/ext_h101_bbfebex.h
 ./fimp/ext_h101_fimp.h
+./mcp/ext_h101_mcp.h
+./stefan/ext_h101_stefan.h
 
 ./test/ext_h101_test.h
 )
