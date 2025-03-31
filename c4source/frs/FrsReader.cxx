@@ -55,12 +55,12 @@ Bool_t FrsReader::Init(ext_data_struct_info* a_struct_info)
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    mgr->RegisterAny("FrsTpatData", tpatArray, !fOnline);
+    // mgr->RegisterAny("FrsTpatData", tpatArray, !fOnline);
+    mgr->RegisterAny("FrsTpatData", tpatItem, !fOnline);
     mgr->RegisterAny("FrsScalerData", scalerArray, !fOnline);
     mgr->RegisterAny("FrsSciData", sciArray, !fOnline);
     mgr->RegisterAny("FrsMusicData", musicArray, !fOnline);
     mgr->RegisterAny("FrsTpcData", tpcArray, !fOnline);
-
 
     memset(fData, 0, sizeof *fData);
 
@@ -82,6 +82,7 @@ Bool_t FrsReader::Read()
     auto & entry = tpatArray->emplace_back();
     entry.SetAll(wr_t, tpat, travmus_wr_t);
 
+    tpatItem->SetAll(wr_t, tpat, travmus_wr_t);
 
     ScalerReader();
     ScintillatorReader();
@@ -232,6 +233,7 @@ void FrsReader::TpcReader()
 
 void FrsReader::Reset()
 {
+    tpatItem->Reset();
     tpatArray->clear();
     scalerArray->clear();
     sciArray->clear();

@@ -53,10 +53,15 @@ class FrsReader : public c4Reader
 
         // Arrays
         std::vector<FrsTpatItem>* tpatArray;
+        FrsTpatItem* tpatItem;
         std::vector<FrsScalerItem>* scalerArray;
+        FrsScalerItem* scalerItem;
         std::vector<FrsSciItem>* sciArray;
+        FrsSciItem* sciItem;
         std::vector<FrsMusicItem>* musicArray;
+        FrsMusicItem* musicItem;
         std::vector<FrsTpcItem>* tpcArray;
+        FrsTpcItem* tpcItem;
         
         // Dummies
         bool spill_flag = false;
