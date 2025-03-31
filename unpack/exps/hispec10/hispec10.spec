@@ -24,7 +24,7 @@ SUBEVENT(mcp_tamex_event)
 
     select several
     {
-        tamex[0] = TAMEX4_SFP(sfp = 0, card = 0);
+        //tamex[0] = TAMEX4_SFP(sfp = 0, card = 0);
         tamex[1] = TAMEX4_SFP(sfp = 0, card = 1);
     };
 }
