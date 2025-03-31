@@ -53,7 +53,7 @@ SUBEVENT(stefan_febex_event)
 
 EVENT
 {
-    mcp = mcp_tamex_event(procid = 10);
+    mcp = mcp_tamex_event(procid = 100);
 
     stefan = stefan_febex_event(procid = 20);
 
