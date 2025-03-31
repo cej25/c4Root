@@ -27,6 +27,8 @@
 #pragma link C++ class BB7OnlineSpectra+;
 #pragma link C++ class BB7FebexOnlineSpectra+;
 #pragma link C++ class FimpOnlineSpectra+;
+#pragma link C++ class H10MCPOnlineSpectra+;
+#pragma link C++ class StefanOnlineSpectra+;
 
 // nearline/correlations
 #pragma link C++ class bPlastNearlineSpectra+;
