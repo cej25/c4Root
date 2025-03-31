@@ -47,6 +47,8 @@ SUBEVENT(stefan_febex_event)
         data[1] = FEBEX_EVENT(card = 1);
         data[2] = FEBEX_EVENT(card = 2);
         data[3] = FEBEX_EVENT(card = 3);
+
+        // orrrr traces.. 
     };
 }
 
@@ -55,7 +57,7 @@ EVENT
 {
     mcp = mcp_tamex_event(procid = 100);
 
-    stefan = stefan_febex_event(procid = 20);
+    stefan = stefan_febex_event(procid = 60);
 
     ignore_unknown_subevent;
 }
