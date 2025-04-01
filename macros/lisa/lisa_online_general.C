@@ -56,12 +56,12 @@ void lisa_online_general()
 
     //::::::::::P A T H   O F   F I L E  to read
     //___O N L I N E
-    //TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
+    TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
 
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/x7_241Am/multiple_cards_test/cards_A_B_C_D_E_F_G_0306.lmd"; 
     //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/run_0072_0001.lmd";  //data with only lisa
-    TString filename = "/u/gandolfo/data/lustre/despec/lisa/3x3_board_1/run_0002_*.lmd";  //data with only lisa
+    //TString filename = "/u/gandolfo/data/lustre/despec/lisa/3x3_board_1/run_0002_*.lmd";  //data with only lisa
 
     //___O U T P U T - only used if switched on 
     TString outputpath = "/u/gandolfo/data/lustre/despec/lisa/3x3_board_1/";
@@ -101,10 +101,10 @@ void lisa_online_general()
 
     if (LISA_DAQ)
     {
-        //TLisaConfiguration::SetMappingFile(config_path + "/Lisa_All_Boards.txt");
-        TLisaConfiguration::SetMappingFile(config_path + "/Lisa_3x3_test_board.txt");
+        TLisaConfiguration::SetMappingFile(config_path + "/Lisa_All_Boards.txt");
+        //TLisaConfiguration::SetMappingFile(config_path + "/Lisa_3x3_test_board.txt");
         TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_3x3.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters.txt");
 
     }
 
@@ -164,21 +164,21 @@ void lisa_online_general()
     // Set Ranges for online histos
 
     //::::  Channel Energy ::::: (h1_energy_layer_ch)
-    TLisaConfiguration::SetEnergyRange(0,200000);
-    TLisaConfiguration::SetEnergyBin(5000);
+    TLisaConfiguration::SetEnergyRange(0,10000000);
+    TLisaConfiguration::SetEnergyBin(10000);
 
-    TLisaConfiguration::SetEnergyRangeMWD(0,100);
-    TLisaConfiguration::SetEnergyBin(50);
+    TLisaConfiguration::SetEnergyRangeMWD(0,1000);
+    TLisaConfiguration::SetEnergyBinMWD(2000);
 
     //:::: LISA WR Time Difference :::::: (h1_wr_diff)
     TLisaConfiguration::SetWrDiffRange(0,100000000);
     TLisaConfiguration::SetWrDiffBin(20000);
 
     //:::: LISA Traces Time and Amplitude Ranges :::::: (h1_traces_layer_ch)
-    TLisaConfiguration::SetTracesRange(0,30);
-    TLisaConfiguration::SetTracesBin(3000);
-    TLisaConfiguration::SetAmplitudeMin(7800);
-    TLisaConfiguration::SetAmplitudeMax(8500);
+    TLisaConfiguration::SetTracesRange(0,20);
+    TLisaConfiguration::SetTracesBin(2000);
+    TLisaConfiguration::SetAmplitudeMin(2000);
+    TLisaConfiguration::SetAmplitudeMax(16000);
     
 
     //::::::: Initialise

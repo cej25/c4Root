@@ -121,7 +121,7 @@ InitStatus LisaOnlineSpectraDaq::Init()
 
     //:::::::::Layer
     c_hitpattern_layer = new TCanvas("c_hitpattern_layer", "Hit Pattern by Layer", 650, 350);
-    c_hitpattern_layer->Divide(layer_number,1);
+    c_hitpattern_layer->Divide(ceil((layer_number)/2),2, 0.01, 0.01);
     h1_hitpattern_layer.resize(layer_number);
     for (int i = 0; i < layer_number; i++)
     {   
@@ -153,7 +153,7 @@ InitStatus LisaOnlineSpectraDaq::Init()
     //:::::::::::H I T  P A T T E R N - by grid ::::::::::::::::::
     dir_stats->cd();
     c_hitpattern_grid = new TCanvas("c_hitpattern_grid", "Hit Pattern Grid", 650, 350);
-    c_hitpattern_grid->Divide(ceil((layer_number)/2),2, 0.05, 0.05);
+    c_hitpattern_grid->Divide(ceil((layer_number)/2),2, 0.01, 0.01);
     h2_hitpattern_grid.resize(layer_number);
     c_hitpattern_grid->SetLogz();
     c4LOG(info, " before hit pattern layer : " << layer_number );
@@ -186,7 +186,7 @@ InitStatus LisaOnlineSpectraDaq::Init()
     //:::::::::::P I L E   U P::::::::::::
     dir_stats->cd();
     c_pileup_grid = new TCanvas("c_pileup_grid", "Pileup Grid", 650, 350);
-    c_pileup_grid->Divide(ceil((layer_number)/2), 2, 0.05, 0.05);
+    c_pileup_grid->Divide(ceil((layer_number)/2), 2, 0.01, 0.01);
     h2_pileup_grid.resize(layer_number);
     //c_hitpattern_grid->SetLogz();
 
@@ -217,7 +217,7 @@ InitStatus LisaOnlineSpectraDaq::Init()
     //:::::::::::O V E R   F L O W:::::::::::
     dir_stats->cd();
     c_overflow_grid = new TCanvas("c_overflow_grid", "Over Flow Grid", 650, 350);
-    c_overflow_grid->Divide(ceil((layer_number)/2), 2, 0.05, 0.05);
+    c_overflow_grid->Divide(ceil((layer_number)/2), 2, 0.01, 0.01);
     h2_overflow_grid.resize(layer_number);
 
     for (int i = 0; i < layer_number; i++)
