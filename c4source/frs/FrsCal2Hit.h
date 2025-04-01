@@ -74,11 +74,11 @@ class FrsCal2Hit : public FairTask
         std::string pathToConfigFiles;
 
 
-        GainShift * music41_tac_z_gain_shifts = nullptr;
-        GainShift * music42_tac_z_gain_shifts = nullptr;
+        GainShift* music41_tac_z_gain_shifts = nullptr;
+        GainShift* music42_tac_z_gain_shifts = nullptr;
 
-        GainShift * music41_mhtdc_z_gain_shifts = nullptr;
-        GainShift * music42_mhtdc_z_gain_shifts = nullptr;
+        GainShift* music41_mhtdc_z_gain_shifts = nullptr;
+        GainShift* music42_mhtdc_z_gain_shifts = nullptr;
 
         Bool_t fOnline;
         Int_t fNEvents;

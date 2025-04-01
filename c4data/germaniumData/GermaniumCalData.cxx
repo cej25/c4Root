@@ -19,7 +19,7 @@ GermaniumCalData::GermaniumCalData()
 GermaniumCalData::GermaniumCalData(
         uint16_t trig,
         uint64_t event_trigger_time,
-        uint8_t pileup,
+        bool pileup,
         uint8_t overflow,
         double channel_trigger_time,
         double channel_energy, // calibrated in energy of keVs

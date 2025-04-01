@@ -173,11 +173,11 @@ void GermaniumRaw2Cal::Exec(Option_t* option)
             }
 
             //allow pileups of sci41
-            if (funcal_hit->Get_pileup() == true){
-                if (germanium_configuration->IsDetectorAuxilliary(detector_id) == false || VetoPileupSCI41 == true){
-                    continue;
-                }
-            }
+            // if (funcal_hit->Get_pileup() == true){
+                // if (germanium_configuration->IsDetectorAuxilliary(detector_id) == false || VetoPileupSCI41 == true){
+                //     continue;
+                // }
+            // }
 
             // std::cout << "wr germanium: " << funcal_hit->Get_wr_t() << std::endl;
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) GermaniumCalData(

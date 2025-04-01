@@ -15,7 +15,7 @@ extern "C"
     #include "../../config/s115/frs/setup_115_022_2025_s1calib_conv.C"
 }
 
-// Struct should containt all subsystem h101 structures
+// Struct should contain all subsystem h101 structures
 typedef struct EXT_STR_h101_t
 {   
     EXT_STR_h101_unpack_t eventheaders;
@@ -63,7 +63,7 @@ void s115_online()
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 5000; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 5000; // Port number for online visualisation - use 5000 during experiments as it has firewall access.
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();

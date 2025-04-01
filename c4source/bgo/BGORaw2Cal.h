@@ -44,35 +44,33 @@ class BGORaw2Cal : public FairTask
         TClonesArray* funcal_data;
         TClonesArray* ftime_machine_array;
 
-
         BGOTwinpeaksData* funcal_hit;
-                
         BGOTwinpeaksData* funcal_hit_next;
         BGOTwinpeaksCalData* fcal_hit;
 
-        int detector_id;
-        int crystal_id;
+        Int_t detector_id;
+        Int_t crystal_id;
         
-        int64_t slow_lead_epoch;
-        double slow_lead_time;
-        int64_t slow_trail_epoch;
-        double slow_trail_time;
+        Long64_t slow_lead_epoch;
+        Double_t slow_lead_time;
+        Long64_t slow_trail_epoch;
+        Double_t slow_trail_time;
 
-        int64_t fast_lead_epoch;
-        double fast_lead_time;
-        int64_t fast_trail_epoch;
-        double fast_trail_time;
+        Long64_t fast_lead_epoch;
+        Double_t fast_lead_time;
+        Long64_t fast_trail_epoch;
+        Double_t fast_trail_time;
 
-        double fast_ToT;
-        double slow_ToT;
+        Double_t fast_ToT;
+        Double_t slow_ToT;
 
-        uint64_t absolute_event_time;
+        Long64_t absolute_event_time;
 
-        double energy;
+        Double_t energy;
 
         int fNunmatched = 0;
 
-        EventHeader * header;
+        EventHeader* header;
         Int_t fNEvents = 0;
         Int_t fExecs = 0;
         int total_time_microsecs = 0;

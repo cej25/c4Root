@@ -20,6 +20,8 @@ ${C4ROOT_SOURCE_DIR}/c4source/bgo
 ${C4ROOT_SOURCE_DIR}/c4source/beammonitor
 ${C4ROOT_SOURCE_DIR}/c4source/bb7
 ${C4ROOT_SOURCE_DIR}/c4source/fimp
+${C4ROOT_SOURCE_DIR}/c4source/mcp
+${C4ROOT_SOURCE_DIR}/c4source/stefan
 ${C4ROOT_SOURCE_DIR}/c4data
 ${C4ROOT_SOURCE_DIR}/c4data/frsData
 ${C4ROOT_SOURCE_DIR}/c4data/lisaData
@@ -33,7 +35,8 @@ ${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
 ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
 ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 ${C4ROOT_SOURCE_DIR}/c4data/fimpData
-${C4ROOT_SOURCE_DIR}/c4data/travMusData
+${C4ROOT_SOURCE_DIR}/c4data/mcpData
+${C4ROOT_SOURCE_DIR}/c4data/stefanData
 ${C4ROOT_SOURCE_DIR}/c4data/baseData
 )
 
@@ -59,9 +62,6 @@ set(SRCS
 ./frs/FrsReader.cxx
 ./frs/FrsRaw2Cal.cxx
 ./frs/FrsCal2Hit.cxx
-./travMus/TravMusReader.cxx
-./travMus/TravMusRaw2Cal.cxx
-./travMus/TravMusCal2Ana.cxx
 ./germanium/GermaniumReader.cxx
 ./germanium/GermaniumTraceReader.cxx
 ./lisa/LisaReader.cxx
@@ -85,6 +85,10 @@ set(SRCS
 ./bb7/BB7FebexCal2Hit.cxx
 ./fimp/FimpReader.cxx
 ./fimp/FimpRaw2Cal.cxx
+./mcp/H10MCPReader.cxx
+./mcp/H10MCPRaw2Cal.cxx
+./stefan/StefanReader.cxx
+./stefan/StefanRaw2Cal.cxx
 
 ./test/TestReader.cxx
 )
@@ -93,7 +97,6 @@ Set(STRUCT_HEADERS
 ./base/ext_h101_unpack.h
 ./aida/ext_h101_aida.h
 ./frs/ext_h101_frs.h
-./travMus/ext_h101_travmus.h
 ./lisa/ext_h101_lisa.h
 ./germanium/ext_h101_germanium.h
 ./germanium/ext_h101_germanium_traces.h
@@ -105,6 +108,8 @@ Set(STRUCT_HEADERS
 # ./bb7/ext_h101_bb7vme.h
 ./bb7/ext_h101_bbfebex.h
 ./fimp/ext_h101_fimp.h
+./mcp/ext_h101_mcp.h
+./stefan/ext_h101_stefan.h
 
 ./test/ext_h101_test.h
 )

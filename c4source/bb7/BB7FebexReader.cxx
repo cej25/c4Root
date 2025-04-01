@@ -124,7 +124,7 @@ Bool_t BB7FebexReader::Read()
                     energy = +(int32_t)(fData->bbfirst_data[it_board_number].channel_energyv[index] & 0x007FFFFF);            
                 }
 
-                std::vector<uint16_t> trace;
+                std::vector<UShort_t> trace;
 
 
                 // this is changed from "index" to "channel_id" since sometimes we get less than 16 channels fired, but we always get 16 traces in order

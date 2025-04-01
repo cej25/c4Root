@@ -36,6 +36,7 @@
 #include "TH1D.h"
 #include "TH2F.h"
 #include "THttpServer.h"
+#include "TParameter.h"
 #include "TMath.h"
 #include "TRandom.h"
 #include "TFile.h"
@@ -422,13 +423,30 @@ InitStatus FrsOnlineSpectra::Init()
     h1_tpc41_rate = MakeTH1(dir_rates, "I", "h1_tpc41_rate", "TPC 41 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
     h1_tpc42_rate = MakeTH1(dir_rates, "I", "h1_tpc42_rate", "TPC 42 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
 
-
+    // TCanvas* c_spill_tracker = new TCanvas("c_spill_tracker", "Spill Tracker", 800, 600);
+    // hG_spill_tracker = new TGraph(1);
+    // hG_spill_tracker->SetName("hG_spill_tracker");
+    // hG_spill_tracker->SetTitle("Spill Tracker");
+    // hG_spill_tracker->GetXaxis()->SetTimeDisplay(1);
+    // hG_spill_tracker->GetXaxis()->SetTimeFormat("%Y-%m-%d %H:%M");
+    // hG_spill_tracker->GetXaxis()->SetTimeOffset(0, "local");
+    // hG_spill_tracker->GetYaxis()->SetTitle("Spill On/Off");
+    // hG_spill_tracker->GetXaxis()->SetTitle("Time [Y-M-D H:M]");
+    // hG_spill_tracker->SetMarkerColor(kBlack);
+    // hG_spill_tracker->SetMarkerStyle(20);
+    // hG_spill_tracker->SetLineColor(kBlue);
+    // hG_spill_tracker->SetLineWidth(2);
+    // hG_spill_tracker->SetFillColor(kBlue); // Set fill color
+    // hG_spill_tracker->SetFillStyle(1001);  // Solid fill
+    // hG_spill_tracker->Draw("ALF");
+    // hG_spill_tracker->GetXaxis()->SetNdivisions(-4);
+    // c_spill_tracker->Update();
+    //dir_frs->Append(hG_spill_tracker);
 
 
 
     // Here we can draw any canvases we need, but we don't need to make histos //
 
-    // ::::: Travel MUSIC - treated separately until FRS sorts themselves out ::::: 
     h1_wr_frs_travmus = MakeTH1(dir_travmus, "I", "h1_wr_frs_travmus", "White Rabbit dT FRS - Travel MUSIC", 500, -3000, -1000);
 
     c_z_compare = new TCanvas("c_z_compare", "Z from 3 x MUSIC", 650, 350);
@@ -468,6 +486,14 @@ InitStatus FrsOnlineSpectra::Init()
     // Register command to reset histograms
     run->GetHttpServer()->RegisterCommand("Reset_FRS_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
 
+    // Create a counter for completed spills
+    static TParameter<int>* spillCounter = new TParameter<int>("CompletedSpills", 0);
+    run->GetHttpServer()->Register("/stats", spillCounter);
+
+    // Create a text-based summary using TNamed
+    static TNamed* spillInfo = new TNamed("SpillSummary", "Completed Spills: 0");
+    run->GetHttpServer()->Register("/stats", spillInfo);
+
     return kSUCCESS;
 
 }
@@ -487,10 +513,37 @@ void FrsOnlineSpectra::Reset_Histo() {
 
 void FrsOnlineSpectra::Exec(Option_t* option)
 {   
-    int64_t frs_wr = 0; int64_t trav_mus_wr = 0;
+    Long64_t frs_wr = 0; Long64_t trav_mus_wr = 0;
+    
+    // current_spill_flag = header->GetSpillFlag();
+    // if (previous_spill_flag == true && current_spill_flag == false)
+    // {
+    //     hG_spill_tracker->SetPoint(spill_flag_counter, dummy_time_counter, 1);
+    //     spill_flag_counter++;
+    //     hG_spill_tracker->SetPoint(spill_flag_counter, dummy_time_counter, 0);
+    //     spill_flag_counter++;
+    //     dummy_time_counter += 90;
+    // }
+
+    // if (previous_spill_flag == false && current_spill_flag == true)
+    // {
+    //     hG_spill_tracker->SetPoint(spill_flag_counter, dummy_time_counter, 0);
+    //     spill_flag_counter++;
+    //     hG_spill_tracker->SetPoint(spill_flag_counter, dummy_time_counter, 1);
+    //     spill_flag_counter++;
+    //     spill_counter++;
+    //     dummy_time_counter += 30;
+    // }
+
+
+    previous_spill_flag = current_spill_flag;
+
     if (hitArray->size() <= 0) return;
     auto const & hitItem  = hitArray->at(0); // should only ever be 1 frs item per event, so take first
     frs_wr = hitItem.Get_wr_t();
+    trav_mus_wr = hitItem.Get_travmus_wr_t();
+
+    h1_wr_frs_travmus->Fill(frs_wr - trav_mus_wr);
 
     // :::::::::: TAC ::::::::::::: //
     // ---------------------------- //

@@ -9,6 +9,7 @@
 #include "EventHeader.h"
 
 #include "FairTask.h"
+#include "TGraph.h"
 #include "TH2.h"
 #include "TCutG.h"
 #include "TDirectory.h"
@@ -274,6 +275,13 @@ class FrsOnlineSpectra : public FairTask
 
         // travel music specific
         TH1* h1_wr_frs_travmus;
+
+        TGraph* hG_spill_tracker;
+        bool previous_spill_flag = false;
+        bool current_spill_flag = false;
+        int spill_flag_counter = 0;
+        int spill_counter = 0;
+        int dummy_time_counter = 1;
 
         // Scalers
         char scaler_name[66][256]; // don't need perhaps

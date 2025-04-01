@@ -15,7 +15,8 @@ ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
 ${C4ROOT_SOURCE_DIR}/c4data/baseData
 ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 ${C4ROOT_SOURCE_DIR}/c4data/fimpData
-${C4ROOT_SOURCE_DIR}/c4data/travMusData
+${C4ROOT_SOURCE_DIR}/c4data/mcpData
+${C4ROOT_SOURCE_DIR}/c4data/stefanData
 ${C4ROOT_SOURCE_DIR}/c4source
 ${C4ROOT_SOURCE_DIR}/c4source/base
 ${C4ROOT_SOURCE_DIR}/c4source/frs
@@ -32,9 +33,6 @@ set(SRCS
 frsData/FrsData.cxx
 frsData/FrsCalData.cxx
 frsData/FrsHitData.cxx
-travMusData/TravMusData.cxx
-travMusData/TravMusCalData.cxx
-travMusData/TravMusAnaData.cxx
 lisaData/LisaData.cxx
 lisaData/LisaCalData.cxx
 lisaData/LisaAnaData.cxx
@@ -70,6 +68,12 @@ bb7Data/TBB7FebexConfiguration.cxx
 fimpData/FimpData.cxx
 fimpData/FimpCalData.cxx
 fimpData/TFimpConfiguration.cxx
+mcpData/H10MCPTwinpeaksData.cxx
+mcpData/H10MCPTwinpeaksCalData.cxx
+mcpData/TH10MCPConfiguration.cxx
+stefanData/StefanFebexData.cxx
+stefanData/StefanCalData.cxx
+stefanData/TStefanConfiguration.cxx
 frsData/TFRSParameter.cxx
 frsData/TFrsConfiguration.cxx
 frsData/FrsGate.cxx
@@ -83,6 +87,8 @@ change_file_extension(*.cxx *.h HEADERS "${SRCS}")
 
 set(LINKDEF DataLinkDef.h)
 set(LIBRARY_NAME c4Data)
-set(DEPENDENCIES Base FairTools ${VMCLIB} FairLogger::FairLogger)
+#set(DEPENDENCIES Base FairTools ${VMCLIB} FairLogger::FairLogger)
+set(DEPENDENCIES Base FairTools FairLogger::FairLogger)
+
 
 generate_library()

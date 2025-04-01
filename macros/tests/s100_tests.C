@@ -159,7 +159,7 @@ void s100_tests()
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
     TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_apr15.txt");
-    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_uncal_apr15.txt");
+    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_calib_0904.txt");
     TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
     
     
@@ -384,7 +384,7 @@ void s100_tests()
     if (GERMANIUM_ON)
     {
         GermaniumOnlineSpectra* onlinege = new GermaniumOnlineSpectra();
-        onlinege->SetBinningEnergy(3000,0,3e3);
+        onlinege->SetBinningEnergy(6e3,0,3e3);
         onlinege->AddReferenceDetector(15,0);
         onlinege->AddReferenceDetector(1,0);
         onlinege->AddReferenceDetectorWithEnergyGates(1,0,1332);
