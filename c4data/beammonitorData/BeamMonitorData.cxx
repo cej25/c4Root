@@ -5,7 +5,7 @@ BeamMonitorItem::BeamMonitorItem()
 
 }
 
-void BeamMonitorItem::SetAll(uint32_t dt)
+void BeamMonitorItem::SetAll(UInt_t dt)
 {
     tdelta = dt;
 }

@@ -5,28 +5,28 @@
 
 class AidaHit : public TObject
 {
-public:
-    AidaHit() { Reset(); }
+    public:
+        AidaHit() { Reset(); }
 
-    void Reset();
+        void Reset();
 
-    int DSSD;
-    double StripX, StripY;
-    double PosX, PosY;
+        Int_t DSSD;
+        Double_t StripX, StripY;
+        Double_t PosX, PosY;
 
-    double Energy, EnergyX, EnergyY;
+        Double_t Energy, EnergyX, EnergyY;
 
-    int StripXMin, StripXMax, StripYMin, StripYMax;
-    int ClusterSizeX, ClusterSizeY;
+        Int_t StripXMin, StripXMax, StripYMin, StripYMax;
+        Int_t ClusterSizeX, ClusterSizeY;
 
-    int64_t Time, TimeX, TimeY;
-    int64_t FastTime, FastTimeX, FastTimeY;
+        Long64_t Time, TimeX, TimeY;
+        Long64_t FastTime, FastTimeX, FastTimeY;
 
-    bool Stopped;
+        Bool_t Stopped;
 
-    ClassDefNV(AidaHit, 2)
+        ClassDefNV(AidaHit, 2)
 
-private:
+    private:
 };
 
 

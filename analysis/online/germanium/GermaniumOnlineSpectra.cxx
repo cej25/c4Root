@@ -83,7 +83,7 @@ InitStatus GermaniumOnlineSpectra::Init()
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
     fHitGe = (TClonesArray*)mgr->GetObject("GermaniumCalData");
-    c4LOG_IF(fatal, !fHitGe, "Branch GermaniumCalData not found!");
+    c4LOG_IF(fatal, !fHitGe, "Branch GermaniumCalData not found!"); // ??? 
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
 
@@ -378,6 +378,7 @@ InitStatus GermaniumOnlineSpectra::Init()
     c_resolutions_gratio->cd(0);
     dir_germanium_resolution->Append(c_resolutions_gratio);
 
+
     return kSUCCESS;
 }
 
@@ -416,8 +417,7 @@ void GermaniumOnlineSpectra::Exec(Option_t* option)
             int detector_id1 = hit1->Get_detector_id();
             int crystal_id1 = hit1->Get_crystal_id();
             double energy1 = hit1->Get_channel_energy();
-            double time1 = hit1->Get_channel_trigger_time();
-            
+            double time1 = hit1->Get_channel_trigger_time();    
 
             
             if (!(germanium_configuration->IsDetectorAuxilliary(detector_id1))) event_multiplicity ++; // count only physical events in germaniums
@@ -441,6 +441,7 @@ void GermaniumOnlineSpectra::Exec(Option_t* option)
             h1_germanium_time[crystal_index1]->Fill(time1);
             h1_germanium_hitpattern->Fill(Form("%d%c",crystals_to_plot.at(crystal_index1).first,(char)(crystals_to_plot.at(crystal_index1).second+65)),1);
             if (!(germanium_configuration->IsDetectorAuxilliary(detector_id1))) h1_germanium_energy_summed->Fill(energy1);
+            
 
 
             if (nHits >= 2 && dt_reference_detectors.size()>=0){ // reference detector id loop.

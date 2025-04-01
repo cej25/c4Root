@@ -21,24 +21,24 @@ BGOTwinpeaksData::BGOTwinpeaksData()
 }
 
 BGOTwinpeaksData::BGOTwinpeaksData(
-        uint16_t trig,
-        uint16_t board_id,
-        uint32_t ch_ID,
+        UShort_t trig,
+        UShort_t board_id,
+        UInt_t ch_ID,
 
-        int64_t accepted_trigger_time,
-        uint32_t accepted_lead_epoch_counter,
-        uint32_t accepted_lead_coarse_T,
-        double accepted_lead_fine_T,
+        Long64_t accepted_trigger_time,
+        UInt_t accepted_lead_epoch_counter,
+        UInt_t accepted_lead_coarse_T,
+        Double_t accepted_lead_fine_T,
 
-        uint32_t lead_epoch_counter,
-        uint32_t lead_coarse_T,
-        double lead_fine_T,
+        UInt_t lead_epoch_counter,
+        UInt_t lead_coarse_T,
+        Double_t lead_fine_T,
 
-        uint32_t trail_epoch_counter,
-        uint32_t trail_coarse_T,
-        double trail_fine_T,
-        uint16_t wr_subsystem_id,
-        uint64_t wr_t)
+        UInt_t trail_epoch_counter,
+        UInt_t trail_coarse_T,
+        Double_t trail_fine_T,
+        UShort_t wr_subsystem_id,
+        Long64_t wr_t)
     : 
     ftrig(trig),
     fboard_id(board_id),
