@@ -113,8 +113,8 @@ void chap_histograms()
     
     if (STEFAN_ON)
     {
-        StefanNearlineSpectra* nearlinestefan = new StefanNearlineSpectra();
-        run->AddTask(nearlinestefan);
+        // StefanNearlineSpectra* nearlinestefan = new StefanNearlineSpectra();
+        // run->AddTask(nearlinestefan);
     }
 
     TFrsConfiguration::Set_Z_range(30,50);
