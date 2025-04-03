@@ -137,10 +137,8 @@ void chap_histograms()
     
     FairLogger::GetLogger()->SetLogScreenLevel("info");
 
-    // Information about portnumber and main data stream
     cout << "\n\n" << endl;
     cout << "Data stream is: " << filename << endl;
-    cout << "Online port server: " << port << endl;
     cout << "\n\n" << endl;
 
     // Run
