@@ -21,7 +21,7 @@ typedef struct EXT_STR_h101_t
 } EXT_STR_h101;
 
 
-void hispec10()
+void chap_hispec10()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
 
