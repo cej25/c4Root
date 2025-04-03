@@ -103,10 +103,9 @@ void chap_histograms()
     // ======================================================================================== //
     
     // ---------------------------------------------------------------------------------------- //
-    // *** Online Spectra ********************************************************************* //   
     if (MCP_ON)
     {
-        H10MCPNearlineSpectra* nearlinemcp = new H10MCPOnlineSpectra();
+        H10MCPNearlineSpectra* nearlinemcp = new H10MCPNearlineSpectra();
         
         run->AddTask(nearlinemcp);
         
