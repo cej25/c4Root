@@ -86,14 +86,10 @@ class H10MCPNearlineSpectra : public FairTask
             dt_reference_detectors_energy_gates.emplace_back(std::pair<double,double>(0.0, energy_in_ref_det));
         }
 
-
         
         void SetEnergyGateWidth(double width){
             energygate_width = width;
         }
-        
-
-        virtual void Reset_Histo();
 
         // range setters
 
