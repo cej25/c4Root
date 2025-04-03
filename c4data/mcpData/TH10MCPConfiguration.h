@@ -7,7 +7,6 @@
 #include <vector>
 #include <set>
 #include "TCutG.h"
-#include "GainShift.h"
 
 
 //structs
@@ -20,11 +19,9 @@ class TH10MCPConfiguration
         static void SetDetectorConfigurationFile(std::string fp) { configuration_file = fp; }
         static void SetDetectorCoefficientFile(std::string fp) { calibration_file = fp; }
         static void SetDetectorTimeshiftsFile(std::string fp) { timeshift_calibration_file = fp; }
-        static void SetPromptFlashCutFile(std::string fp) {promptflash_cut_file = fp; }
-        static void SetGainShiftFile(std::string fp) {gain_shifts_file = fp; }
 
 
-        std::map<std::pair<int,int>,int> Mapping() const;
+        std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> Mapping() const;
         bool MappingLoaded() const;
         
         bool CalibrationCoefficientsLoaded() const;
@@ -34,22 +31,7 @@ class TH10MCPConfiguration
         std::map<std::pair<int,int>,double> TimeshiftCalibrationCoefficients() const;
         inline double GetTimeshiftCoefficient(int detector_id1, int detector_id2) const;
 
-        bool GainShiftsLoaded() const;
-        inline double GetGainShift(int detector_id1, uint64_t wr_t) const;
-
-
         inline bool IsDetectorAuxilliary(int detector_id) const;
-
-
-
-        inline bool IsInsidePromptFlashCut(double timediff, double energy) const{
-            if (prompt_flash_cut != nullptr){
-                return prompt_flash_cut->IsInside(timediff,energy);
-            }else{
-                return false;
-            }
-        }
-
 
 
         int NDetectors() const;
@@ -59,52 +41,49 @@ class TH10MCPConfiguration
         int SC41L() const;
         int SC41R() const;
         int FRS_accept() const;
-        int bPlast_accept() const;
-        int bPlast_free() const;
         std::set<int> ExtraSignals() const;
+
 
     private:
 
         static std::string configuration_file;
         static std::string calibration_file;
         static std::string timeshift_calibration_file;
-        static std::string promptflash_cut_file;
-        static std::string gain_shifts_file;
 
 
         TH10MCPConfiguration();
         void ReadConfiguration();
         void ReadCalibrationCoefficients();
         void ReadTimeshiftCoefficients();
-        void ReadPromptFlashCut();
-        void ReadGainShifts();
 
         static TH10MCPConfiguration* instance;
         
-        std::map<std::pair<int,int>,int> detector_mapping; // [board_id][channel_id] -> [detector_id]
+
+        // mapping as follows
+        // {tamex boad, tamex channel} --> {mcp, type, number}
+        // mcp 0 = 1, mcp 1 = 2
+        // type 0 = T, type 1 = X, type 2 = Y
+        // number 0 = 1, number 1 = 2
+        std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> detector_mapping;
+
+
+        // std::map<std::pair<int,int>,int> detector_mapping; // [board_id][channel_id] -> [detector_id]
         std::map<int,std::vector<double>> calibration_coeffs; // key: [detector id] -> vector[a0 - a3] index is coefficient number 0 = offset +++ expects quadratic.
         std::map<std::pair<int,int>,double> timeshift_calibration_coeffs;
 
         std::set<int> extra_signals;
 
-
         TCutG* prompt_flash_cut = nullptr;
 
-        std::vector<GainShift*> gain_shifts;
+        int num_mcps = 0;
+        int num_tamex_boards = 0;
+        int num_tamex_channels = 0;
 
-
-        int num_detectors;
-        int num_tamex_boards;
-        int num_tamex_channels;
-
-        int tm_undelayed;
-        int tm_delayed;
-        int sc41l_d;
-        int sc41r_d;
-
-        int frs_accept;
-        int bplast_accept;
-        int bplast_free;
+        int tm_undelayed = -1;
+        int tm_delayed = -1;
+        int sc41l_d = -1;
+        int sc41r_d = -1;
+        int frs_accept = -1;
 
         bool detector_map_loaded = 0;
         bool detector_calibrations_loaded = 0;
@@ -132,11 +111,6 @@ inline std::map<int,std::vector<double>> TH10MCPConfiguration::CalibrationCoeffi
 inline bool TH10MCPConfiguration::CalibrationCoefficientsLoaded() const {
     return detector_calibrations_loaded;
 }
-
-inline bool TH10MCPConfiguration::GainShiftsLoaded() const {
-    return gain_shifts_loaded;
-}
-
 
 inline std::map<std::pair<int,int>,double> TH10MCPConfiguration::TimeshiftCalibrationCoefficients() const
 {
@@ -170,11 +144,6 @@ inline double TH10MCPConfiguration::GetTimeshiftCoefficient(int detector_id1, in
      
 }
 
-inline double TH10MCPConfiguration::GetGainShift(int detector_id1, uint64_t wr_t) const
-{
-    if (IsDetectorAuxilliary(detector_id1)) return 1;
-    return gain_shifts.at(detector_id1-1)->GetGain(wr_t);     
-}
 
 inline TH10MCPConfiguration const* TH10MCPConfiguration::GetInstance()
 {
@@ -198,7 +167,7 @@ inline bool TH10MCPConfiguration::TimeshiftCalibrationCoefficientsLoaded() const
 }
 
 
-inline std::map<std::pair<int,int>,int> TH10MCPConfiguration::Mapping() const
+inline std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> TH10MCPConfiguration::Mapping() const
 {
   return detector_mapping;
 }
@@ -210,7 +179,7 @@ inline bool TH10MCPConfiguration::MappingLoaded() const
 
 inline int TH10MCPConfiguration::NDetectors() const
 {
-    return num_detectors;
+    return num_mcps;
 }
 
 inline int TH10MCPConfiguration::NTamexBoards() const
@@ -241,16 +210,6 @@ inline int TH10MCPConfiguration::SC41R() const
 inline int TH10MCPConfiguration::FRS_accept() const
 {
     return frs_accept;
-}
-
-inline int TH10MCPConfiguration::bPlast_accept() const
-{
-    return bplast_accept;
-}
-
-inline int TH10MCPConfiguration::bPlast_free() const
-{
-    return bplast_free;
 }
 
 inline std::set<int> TH10MCPConfiguration::ExtraSignals() const

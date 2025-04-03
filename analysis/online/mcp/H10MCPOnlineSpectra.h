@@ -4,6 +4,7 @@
 #include "FairTask.h"
 #include "TDirectory.h"
 #include "TH10MCPConfiguration.h"
+#include "H10MCPTwinpeaksCalData.h"
 #include "TFolder.h"
 #include "TH1F.h"
 #include "TH2F.h"
@@ -100,7 +101,7 @@ class H10MCPOnlineSpectra : public FairTask
     private:
         const TH10MCPConfiguration* mcp_config;
 
-        // mcp hit array or whatever
+        TClonesArray* fHitsMCP;
 
 
         // ranges
@@ -192,6 +193,8 @@ class H10MCPOnlineSpectra : public FairTask
         int* detector_counters;
         int* detector_rates;
         int rate_running_count = 0;
+
+        Long64_t mcp_wr = 0;
 
     public:
         ClassDef(H10MCPOnlineSpectra, 1)

@@ -44,13 +44,8 @@ H10MCPReader::H10MCPReader(EXT_STR_h101_mcp_onion* data, size_t offset)
 Deletes the arrays allocated.
 And prints some statistics for the run.
 */
-H10MCPReader::~H10MCPReader() { 
-
-    if (fPrintStatistics == true)
-    {
-        PrintStatistics();    
-    }
-
+H10MCPReader::~H10MCPReader() 
+{
     for (int i = 0; i < NBoards; i++) {
         for (int j = 0; j < NChannels; j++) {
             if (fine_time_calibration_coeffs[i][j] != nullptr) {
@@ -410,8 +405,6 @@ Bool_t H10MCPReader::Read() //do fine time here:
             }
             else if (!is_leading && last_tdc_hit.hit)
             { 
-                //trail and rise are matched
-                //if (it_board_number == 1) c4LOG(info,Form("Writing: ch = %i, le = %i lc = %i, lf = %f, te = %i tc = %i, tf = %f ",channelid,last_tdc_hit.lead_epoch_counter, last_tdc_hit.lead_coarse_T, last_tdc_hit.lead_fine_T,last_tdc_hit.lead_epoch_counter,coarse_T,fine_T));
 
                 new ((*fArray)[fArray->GetEntriesFast()]) H10MCPTwinpeaksData(
                     trig,
