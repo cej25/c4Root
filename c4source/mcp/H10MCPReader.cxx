@@ -374,7 +374,6 @@ Bool_t H10MCPReader::Read() //do fine time here:
             if (!fine_time_calibration_set && is_leading)
             {
                 fine_time_hits[it_board_number][channelid]->Fill(fData->mcp_tamex[it_board_number].time_finev[it_hits]);
-                std::cout << "f me are we just doing this instead" << std::endl;
                 std::cout << "disabling fine time skip, for now" << std::endl;
                 // continue;
             }
@@ -407,8 +406,6 @@ Bool_t H10MCPReader::Read() //do fine time here:
             }
             else if (!is_leading && last_tdc_hit.hit)
             { 
-                
-                std::cout << "so, we're never doing this then" << std::endl;
                 new ((*fArray)[fArray->GetEntriesFast()]) H10MCPTwinpeaksData(
                     trig,
                     it_board_number,
