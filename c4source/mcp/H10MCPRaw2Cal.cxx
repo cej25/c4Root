@@ -99,7 +99,6 @@ void H10MCPRaw2Cal::Exec(Option_t* option)
         {
 
             H10MCPTwinpeaksData* first_hit_in_fast_channel = (H10MCPTwinpeaksData*)funcal_data->At(ihit);
-            std::cout << "are we here or does it fail before us" << std::endl;
              
             // under the assumption fast-slow always follows:
             //assume that only matched lead-trail hits are written.
