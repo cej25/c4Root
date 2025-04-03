@@ -310,7 +310,6 @@ Bool_t H10MCPReader::Read() //do fine time here:
     { //per board:
 
         UShort_t trig =  fData->mcp_tamex[it_board_number].trig;       
-        std::cout << "trig? " << trig << std::endl;
         if (fData->mcp_tamex[it_board_number].event_size == 0) continue; // empty event skip
         
         last_word_read_was_epoch = false;
@@ -359,6 +358,8 @@ Bool_t H10MCPReader::Read() //do fine time here:
 
             uint32_t channelid = fData->mcp_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // 0-32
 
+            std::cout << "are we in here? if so, channel:: " << channelid << std::endl;
+ 
             if (fData->mcp_tamex[it_board_number].time_finev[it_hits] == 0x3FF) { fNevents_TAMEX_fail[it_board_number][channelid]++; continue; } // this happens if TAMEX loses the fine time - skip it
 
             if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch){ fNevents_lacking_epoch[it_board_number][channelid]++; c4LOG(debug2, "Event lacking epoch."); } // if the channel has changed but no epoch word was seen in between, channel 0 is always the first one so dont check if that s the case.
