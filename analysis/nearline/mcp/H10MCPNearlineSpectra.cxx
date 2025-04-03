@@ -2,11 +2,11 @@
 #include "FairLogger.h"
 #include "FairRootManager.h"
 #include "FairRunAna.h"
-#include "FairRunOnline.h"
+#include "FairRun.h"
 #include "FairRuntimeDb.h"
 
 // c4
-#include "H10MCPOnlineSpectra.h"
+#include "H10MCPNearlineSpectra.h"
 #include "EventHeader.h"
 
 #include "c4Logger.h"
@@ -21,12 +21,12 @@
 #include <chrono>
 #include <sstream>
 
-H10MCPOnlineSpectra::H10MCPOnlineSpectra() : H10MCPOnlineSpectra("H10MCPOnlineSpectra")
+H10MCPNearlineSpectra::H10MCPNearlineSpectra() : H10MCPNearlineSpectra("H10MCPNearlineSpectra")
 {
     mcp_config = TH10MCPConfiguration::GetInstance();
 }
 
-H10MCPOnlineSpectra::H10MCPOnlineSpectra(const TString& name, Int_t verbose)
+H10MCPNearlineSpectra::H10MCPNearlineSpectra(const TString& name, Int_t verbose)
     : FairTask(name, verbose)
     , fNEvents(0)
     , header(nullptr)
@@ -35,19 +35,19 @@ H10MCPOnlineSpectra::H10MCPOnlineSpectra(const TString& name, Int_t verbose)
     mcp_config = TH10MCPConfiguration::GetInstance();
 }
 
-H10MCPOnlineSpectra::~H10MCPOnlineSpectra()
+H10MCPNearlineSpectra::~H10MCPNearlineSpectra()
 {
     // delete
 }
 
 
-InitStatus H10MCPOnlineSpectra::Init()
+InitStatus H10MCPNearlineSpectra::Init()
 {
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-    FairRunOnline * run = FairRunOnline::Instance();
-    run->GetHttpServer()->Register("", this);
+    // FairRunAna * run = FairRunAna::Instance();
+    // run->GetHttpServer()->Register("", this);
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
@@ -62,18 +62,13 @@ InitStatus H10MCPOnlineSpectra::Init()
     dir_mcp = new TDirectory("MCPs", "MCPs", "", 0);
     histograms->Add(dir_mcp);
 
- 
-    // copy back anything from fatima
-
-    run->GetHttpServer()->RegisterCommand("Reset_MCP_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
-
 
 
     return kSUCCESS;
     
 }
 
-void H10MCPOnlineSpectra::Reset_Histo() 
+void H10MCPNearlineSpectra::Reset_Histo() 
 {
     c4LOG(info, "Resetting MCP histograms.");
 
@@ -87,7 +82,7 @@ void H10MCPOnlineSpectra::Reset_Histo()
 }
 
 
-void H10MCPOnlineSpectra::Exec(Option_t* option)
+void H10MCPNearlineSpectra::Exec(Option_t* option)
 {   
     
     auto start = std::chrono::high_resolution_clock::now();
@@ -127,16 +122,16 @@ void H10MCPOnlineSpectra::Exec(Option_t* option)
 
 
 
-void H10MCPOnlineSpectra::FinishEvent()
+void H10MCPNearlineSpectra::FinishEvent()
 {
     // resets and whatever
 }
 
-void H10MCPOnlineSpectra::FinishTask()
+void H10MCPNearlineSpectra::FinishTask()
 {
    
     c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvents << " microseconds.");
     
 }
 
-ClassImp(H10MCPOnlineSpectra)
+ClassImp(H10MCPNearlineSpectra)
