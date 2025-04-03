@@ -405,7 +405,8 @@ Bool_t H10MCPReader::Read() //do fine time here:
             }
             else if (!is_leading && last_tdc_hit.hit)
             { 
-
+                
+                std::cout << "so, we're never doing this then" << std::endl;
                 new ((*fArray)[fArray->GetEntriesFast()]) H10MCPTwinpeaksData(
                     trig,
                     it_board_number,
