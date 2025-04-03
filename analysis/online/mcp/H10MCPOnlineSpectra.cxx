@@ -71,7 +71,8 @@ InitStatus H10MCPOnlineSpectra::Init()
     
 }
 
-void H10MCPOnlineSpectra::Reset_Histo() {
+void H10MCPOnlineSpectra::Reset_Histo() 
+{
     c4LOG(info, "Resetting MCP histograms.");
 
     // Assuming dir is a TDirectory pointer containing histograms
