@@ -167,6 +167,12 @@ void H10MCPRaw2Cal::Exec(Option_t* option)
                         number = -1;
                     }
                 }
+                else
+                {
+                    mcp_id = -1;
+                    type = -1;
+                    number = -1;
+                }
                 
                 if (funcal_hit_next->Get_trail_epoch_counter() == 0 || funcal_hit_next->Get_lead_epoch_counter() == 0) continue; // missing trail in either
                 if (funcal_hit->Get_trail_epoch_counter() == 0 || funcal_hit->Get_lead_epoch_counter() == 0) continue; // missing trail in either
