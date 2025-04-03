@@ -375,7 +375,8 @@ Bool_t H10MCPReader::Read() //do fine time here:
             {
                 fine_time_hits[it_board_number][channelid]->Fill(fData->mcp_tamex[it_board_number].time_finev[it_hits]);
                 std::cout << "f me are we just doing this instead" << std::endl;
-                continue;
+                std::cout << "disabling fine time skip, for now" << std::endl;
+                // continue;
             }
 
             UInt_t coarse_T = fData->mcp_tamex[it_board_number].time_coarsev[it_hits] & 0x7FF;
