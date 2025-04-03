@@ -59,7 +59,8 @@ void chap_histograms()
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
     run->SetSink(new FairRootFileSink(outputFileName));
-
+    FairSource* fs = new FairFileSource(filename);
+    run->SetSource(fs);
 
   
   

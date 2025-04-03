@@ -30,7 +30,7 @@ H10MCPNearlineSpectra::H10MCPNearlineSpectra(const TString& name, Int_t verbose)
     : FairTask(name, verbose)
     , fNEvents(0)
     , header(nullptr)
-    , fHitsMCP(NULL)
+    , fHitsMCP(new TC)
 {    
     mcp_config = TH10MCPConfiguration::GetInstance();
 }
@@ -46,7 +46,7 @@ InitStatus H10MCPNearlineSpectra::Init()
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-    // FairRunAna * run = FairRunAna::Instance();
+    // FairRunAna* run = FairRunAna::Instance();
     // run->GetHttpServer()->Register("", this);
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
@@ -55,30 +55,16 @@ InitStatus H10MCPNearlineSpectra::Init()
     fHitsMCP = (TClonesArray*)mgr->GetObject("H10MCPTwinpeaksCalData");
     c4LOG_IF(fatal, !fHitsMCP, "Branch H10MCPTwinpeaksCalData not found!");
     
-
-    TDirectory::TContext ctx(nullptr);
-
-    dir_mcp = new TDirectory("MCPs", "MCPs", "", 0);
+    TDirectory* tmp = gDirectory;
+    FairRootManager::Instance()->GetOutFile()->cd();
+    dir_mcp = gDirectory->mkdir("MCPs");
+    gDirectory->cd("MCPs");
 
     h1_test_histogram = MakeTH1(dir_mcp, "F", "h1_test_histogram", "TEST HIST", 100, 0, 100);
 
     return kSUCCESS;
     
 }
-
-void H10MCPNearlineSpectra::Reset_Histo() 
-{
-    c4LOG(info, "Resetting MCP histograms.");
-
-    // Assuming dir is a TDirectory pointer containing histograms
-    if (dir_mcp) {
-        AnalysisTools_H::ResetHistogramsInDirectory(dir_mcp);
-        c4LOG(info, "MCP histograms reset.");
-    } else {
-        c4LOG(error, "Failed to get list of histograms from directory.");
-    }
-}
-
 
 void H10MCPNearlineSpectra::Exec(Option_t* option)
 {   
