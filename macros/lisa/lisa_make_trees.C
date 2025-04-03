@@ -46,14 +46,14 @@ void lisa_make_trees()
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0075_0001.lmd";
     //TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/x7_241Am/multiple_cards_test/cards_A_B_C_D_E_F_G_0306.lmd"; 
-    TString filename = "/u/gandolfo/data/lustre/despec/lisa/3x3_board_1/run_0002_0050.lmd"; 
+    TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_10boards_0001_0001.lmd"; 
     
     //___O U T P U T
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/elisa/";
     TString outputpath = "/u/gandolfo/data/";    
         
 
-    TString outputFilename = outputpath + "run_0002_0050_v2.root";
+    TString outputFilename = outputpath + "daq_10boards_0001_0001.root";
 
     //:::::::Create online run
     Int_t refresh = 10; // not needed
@@ -83,9 +83,9 @@ void lisa_make_trees()
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
     //TLisaConfiguration::SetMappingFile(config_path + "/Lisa_All_Boards.txt");
     TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
-    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_3x3.txt");
+    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters.txt");
 
-    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_3x3_0.txt");
+    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_DAQ_7cards.txt");
 
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

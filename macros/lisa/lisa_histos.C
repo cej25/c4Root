@@ -44,12 +44,12 @@ void lisa_histos()
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/daq_test_c4tree/test_F_B_13nov.root";
     //TString filename = "/u/gandolfo/data/test_c4/run_0072_0001.root";
-    TString filename = "/u/gandolfo/data/run_0003_0046.root";
+    TString filename = "/u/gandolfo/data/daq_10boards_0001_0001.root";
     
     
     //___O U T P U T
     //TString outputfile = "/u/gandolfo/data/test_c4/run_0072_0001_histos.root";
-    TString outputfile = "/u/gandolfo/data/run_0003_0046_histos.root";
+    TString outputfile = "/u/gandolfo/data/daq_10boards_0001_0001_histos.root";
 
 
     FairRunAna* run = new FairRunAna();
@@ -69,9 +69,9 @@ void lisa_histos()
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
-    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_3x3_1.txt");
+    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_DAQ_7cards.txt");
     TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
-    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_3x3.txt");
+    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters.txt");
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::   
     // =========== **** SPECTRA ***** ========================================================= //
@@ -83,26 +83,22 @@ void lisa_histos()
 
     //::::::::: Set ranges for histos :::::::::::::::
     //::::  Channel Energy ::::: (h1_energy_layer_ch)
-    TLisaConfiguration::SetEnergyRange(0,300000);
+    TLisaConfiguration::SetEnergyRange(3000000,3500000);
     TLisaConfiguration::SetEnergyBin(1000);
 
-    TLisaConfiguration::SetEnergyRangeMWD(0,50);
+    TLisaConfiguration::SetEnergyRangeMWD(300,380);
     TLisaConfiguration::SetEnergyBinMWD(1000);
 
     //::::  Channel Energy GM ::::: (h1_energy_layer_ch)
-    TLisaConfiguration::SetEnergyRangeGM(0,100);
-    TLisaConfiguration::SetEnergyBinGM(100);
+    TLisaConfiguration::SetEnergyRangeGM(0,1000);
+    TLisaConfiguration::SetEnergyBinGM(500);
 
     //:::: LISA WR Time Difference :::::: (h1_wr_diff)
     TLisaConfiguration::SetWrDiffRange(0,100000000);
     TLisaConfiguration::SetWrDiffBin(20000);
 
-    //:::: FRS Z and AoQ
-    TFrsConfiguration::Set_Z_range(20,60);
-    TFrsConfiguration::Set_AoQ_range(1,3);
-
     //:::: Drifts
-    TLisaConfiguration::SetEventNO(100000,30000000);
+    TLisaConfiguration::SetEventNO(1000,22000);
     
 
     if (LISA_ON)
