@@ -271,6 +271,7 @@ void H10MCPRaw2Cal::Exec(Option_t* option)
 void H10MCPRaw2Cal::FinishEvent()
 {
     // reset output array
+    fcal_data->Clear();
 };
 
 /*
