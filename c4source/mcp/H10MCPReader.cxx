@@ -357,8 +357,6 @@ Bool_t H10MCPReader::Read() //do fine time here:
             //from this point we should have seen an epoch for channel id.
 
             uint32_t channelid = fData->mcp_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // 0-32
-
-            std::cout << "are we in here? if so, channel:: " << channelid << std::endl;
  
             if (fData->mcp_tamex[it_board_number].time_finev[it_hits] == 0x3FF) { fNevents_TAMEX_fail[it_board_number][channelid]++; continue; } // this happens if TAMEX loses the fine time - skip it
 
