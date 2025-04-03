@@ -51,6 +51,8 @@ void chap_hispec10()
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     TString filename = "/LynxOS/mbsusr/mbsdaq/78puliser.lmd";
+    TString outputpath = "output";
+    TString outputFileName = outputpath + ".root";
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
@@ -61,6 +63,7 @@ void chap_hispec10()
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
     run->ActivateHttpServer(refresh, port);
+    run->SetSink(new FairRootFileSink(outputFileName));
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
     run->AddObject(histograms);
