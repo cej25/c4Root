@@ -54,15 +54,10 @@ void chap_histograms()
     TString outputpath = "mcp_histogram_";
     TString outputFileName = outputpath + ".root";
 
-    // Create Online run
-    Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 6060; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
-
     FairRunAna* run = new FairRunAna();
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
-    run->ActivateHttpServer(refresh, port);
     run->SetSink(new FairRootFileSink(outputFileName));
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
