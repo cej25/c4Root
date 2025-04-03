@@ -311,7 +311,7 @@ Bool_t H10MCPReader::Read() //do fine time here:
 
         UShort_t trig =  fData->mcp_tamex[it_board_number].trig;       
         if (fData->mcp_tamex[it_board_number].event_size == 0) continue; // empty event skip
-        
+
         last_word_read_was_epoch = false;
         last_channel_read = 0;
 
@@ -370,6 +370,8 @@ Bool_t H10MCPReader::Read() //do fine time here:
 
             bool is_leading = fData->mcp_tamex[it_board_number].time_edgev[it_hits] & 0x1;
             
+            std::cout << " ok, are we always leading? print is_leading:: "<<std::endl;
+
             //Fill fine times and skip.
             if (!fine_time_calibration_set && is_leading)
             {
