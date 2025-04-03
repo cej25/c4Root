@@ -105,6 +105,7 @@ void chap_hispec10()
     
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
+    TH10MCPConfiguration::SetDetectorConfigurationFile(config_path + "/mcp/mcp_mapping.txt");
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
  
