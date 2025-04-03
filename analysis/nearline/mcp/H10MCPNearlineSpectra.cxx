@@ -30,7 +30,7 @@ H10MCPNearlineSpectra::H10MCPNearlineSpectra(const TString& name, Int_t verbose)
     : FairTask(name, verbose)
     , fNEvents(0)
     , header(nullptr)
-    , fHitsMCP(new TC)
+    , fHitsMCP(NULL)
 {    
     mcp_config = TH10MCPConfiguration::GetInstance();
 }
