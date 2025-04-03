@@ -28,9 +28,9 @@ H10MCPOnlineSpectra::H10MCPOnlineSpectra() : H10MCPOnlineSpectra("H10MCPOnlineSp
 
 H10MCPOnlineSpectra::H10MCPOnlineSpectra(const TString& name, Int_t verbose)
     : FairTask(name, verbose)
-    // 
     , fNEvents(0)
     , header(nullptr)
+    , fHitsMCP(NULL)
 {    
     mcp_config = TH10MCPConfiguration::GetInstance();
 }
@@ -52,7 +52,8 @@ InitStatus H10MCPOnlineSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    // load mcp stuff
+    fHitsMCP = (TClonesArray*)mgr->GetObject("H10MCPTwinpeaksCalData");
+    c4LOG_IF(fatal, !fHitsMCP, "Branch H10MCPTwinpeaksCalData not found!");
     
     histograms = (TFolder*)mgr->GetObject("Histograms");
 
@@ -88,6 +89,28 @@ void H10MCPOnlineSpectra::Exec(Option_t* option)
     
     auto start = std::chrono::high_resolution_clock::now();
     
+    if (fHitsMCP && fHitsMCP->GetEntriesFast() > 0)
+    {   
+        Long64_t mpc_wr = 0;
+        Int_t nHits = fHitsMCP->GetEntriesFast();
+        for (Int_t ihit = 0; ihit < nHits; ihit++)
+        {   
+            H10MCPTwinpeaksCalData* hit = (H10MCPTwinpeaksCalData*)fHitsMCP->At(ihit);
+            if (!hit) continue;
+            mcp_wr = hit->Get_wr_t();
+
+            Int_t mcp_id = hit->Get_mcp_id();
+            Int_t type = hit->Get_type();
+            Int_t number = hit->Get_number();
+
+            std::cout << "NEW HIT :: " << std::endl;
+            std::cout << "MPC :: " << mcp_id << std::endl;
+            std::cout << "Type :: " << type << std::endl;
+            std::cout << "Number :: " << number << std::endl;
+
+        }
+
+    }
     
 
 

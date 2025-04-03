@@ -12,21 +12,18 @@ TH10MCPConfiguration* TH10MCPConfiguration::instance = nullptr;
 std::string TH10MCPConfiguration::configuration_file = "blank";
 std::string TH10MCPConfiguration::calibration_file = "blank";
 std::string TH10MCPConfiguration::timeshift_calibration_file = "blank";
-std::string TH10MCPConfiguration::promptflash_cut_file = "blank";
-std::string TH10MCPConfiguration::gain_shifts_file = "blank";
 
 
 TH10MCPConfiguration::TH10MCPConfiguration()
-    :   num_detectors(0)
+    :   num_mcps(0)
     ,   num_tamex_boards(0)
     ,   num_tamex_channels(0)
 {
     if (configuration_file != "blank") ReadConfiguration();
     if (calibration_file != "blank") ReadCalibrationCoefficients();
     if (timeshift_calibration_file != "blank") ReadTimeshiftCoefficients();
-    if (promptflash_cut_file != "blank") ReadPromptFlashCut();
-    if (gain_shifts_file != "blank") ReadGainShifts();
 }
+
 
 void TH10MCPConfiguration::ReadConfiguration()
 {
@@ -34,10 +31,10 @@ void TH10MCPConfiguration::ReadConfiguration()
     std::ifstream detector_map_file(configuration_file);
     std::string line;
     std::set<int> tamex_boards;
-    std::set<int> detectors;
+    std::set<int> mcps;
     int tamex_channels = 0;
 
-    if (detector_map_file.fail()) c4LOG(fatal, "Could not open Fatima Twinpeaks allocation file");
+    if (detector_map_file.fail()) c4LOG(fatal, "Could not open H10MCP Twinpeaks allocation file");
 
     while (std::getline(detector_map_file, line))
     {
@@ -45,7 +42,7 @@ void TH10MCPConfiguration::ReadConfiguration()
 
         std::istringstream iss(line);
         std::string signal;
-        int tamex_board, tamex_channel, detector;
+        int tamex_board, tamex_channel, mcp, type, number;
 
         iss >> signal;
 
@@ -53,41 +50,42 @@ void TH10MCPConfiguration::ReadConfiguration()
         {
             tamex_board = std::stoi(signal);
 
-            iss >> tamex_channel >> detector;
+            iss >> tamex_channel >> mcp >> type >> number;
 
         }
         else // some additional signal
         {
-            iss >> tamex_board >> tamex_channel >> detector;
+            iss >> tamex_board >> tamex_channel >> mcp >> type >> number;
 
-            if (signal == "TimeMachineU") tm_undelayed = detector;
-            else if (signal == "TimeMachineD") tm_delayed = detector;
-            else if (signal == "SC41L_D") sc41l_d = detector;
-            else if (signal == "SC41R_D") sc41r_d = detector;
-            else if (signal == "FRS_ACCEPT") frs_accept = detector;
-            else if (signal == "BPLAST_ACCEPT") bplast_accept = detector;
-            else if (signal == "BPLAST_FREE") bplast_free = detector;
+            // CEJ deal with this if we come to it.. 
+            if (signal == "TimeMachineU") tm_undelayed = mcp;
+            else if (signal == "TimeMachineD") tm_delayed = mcp;
+            else if (signal == "SC41L_D") sc41l_d = mcp;
+            else if (signal == "SC41R_D") sc41r_d = mcp;
+            else if (signal == "FRS_ACCEPT") frs_accept = mcp;
 
-            extra_signals.insert(detector);
+            extra_signals.insert(mcp);
         }
 
         if (tamex_board > -1) tamex_boards.insert(tamex_board);
-        if (detector > -1) detectors.insert(detector);
+        if (mcp > -1) mcps.insert(mcp);
         tamex_channels++;
 
         std::pair<int, int> tamex_mc = {tamex_board, tamex_channel};
+        std::pair<int, std::pair<int, int>> mcp_output = {mcp, std::make_pair(type, number)};
+        std::pair<std::pair<int, int>, std::pair<int, std::pair<int, int>>> mapped = {tamex_mc, mcp_output};
 
-        detector_mapping.insert(std::pair<std::pair<int, int>, int> {tamex_mc, detector});  
+        detector_mapping.insert(mapped);
         
     }
 
     num_tamex_boards = tamex_boards.size();
-    num_detectors = detectors.size();
+    num_mcps = mcps.size();
     num_tamex_channels = tamex_channels;
 
     detector_map_loaded = 1;
     detector_map_file.close();
-    LOG(info) << "FatimaTwinpeaks Allocation coefficients File: " + configuration_file;
+    LOG(info) << "H10MCPTwinpeaks Allocation coefficients file: " + configuration_file;
     return;
 }
 
@@ -95,7 +93,7 @@ void TH10MCPConfiguration::ReadCalibrationCoefficients(){
 
     std::ifstream calibration_coeff_file (calibration_file);
 
-    if (calibration_coeff_file.fail()) c4LOG(fatal, "Could not open Fatima calibration coefficients file.");
+    if (calibration_coeff_file.fail()) c4LOG(fatal, "Could not open H10MCP calibration coefficients file.");
 
 
     int rdetector_id; // temp read variables
@@ -115,7 +113,7 @@ void TH10MCPConfiguration::ReadCalibrationCoefficients(){
     detector_calibrations_loaded = 1;
     calibration_coeff_file.close();
 
-    LOG(info) << "FatimaTwinpeaks Calibration coefficients File: " + calibration_file;
+    LOG(info) << "H10MCPTwinpeaks Calibration coefficients File: " + calibration_file;
     return; 
 }
 
@@ -150,46 +148,4 @@ void TH10MCPConfiguration::ReadTimeshiftCoefficients()
     return; 
 
 };
-
-
-void TH10MCPConfiguration::ReadPromptFlashCut()
-{
-    // must be a root file (not always the case from saving TCuts)
-    // must be named "fatima_prompt_flash_cut"!
-    TFile* cut = TFile::Open(TString(promptflash_cut_file),"READ");
-    
-    if (!cut || cut->IsZombie() || cut->TestBit(TFile::kRecovered))
-    {
-        c4LOG(warn, "FatimaTwinpeaks prompt flash cut file provided (" << promptflash_cut_file << ") is not a ROOT file.");
-        return;
-    }
-    
-    if (cut->Get("fatima_prompt_flash_cut"))
-    {
-        
-        prompt_flash_cut = (TCutG*)cut->Get("fatima_prompt_flash_cut");
-        LOG(info) << "FatimaTwinpeaks Prompt flash cut File: " + promptflash_cut_file;
-    }
-    else
-    {
-        c4LOG(warn, "FatimaTwinpeaks prompt flash cut does not exist in file: " << promptflash_cut_file);
-    }
-
-    cut->Close();
-}
-
-
-void TH10MCPConfiguration::ReadGainShifts()
-{
-    // must be a root file (not always the case from saving TCuts)
-    // must be named "fatima_prompt_flash_cut"!
-
-    for (int i = 1; i<=NDetectors(); i++){
-        if (IsDetectorAuxilliary(i)) continue;
-        c4LOG(info, TString("Creating GainShifts for ") + TString(Form("fatima_gain_shift_det_%i",i)) + TString(" at ") + TString(gain_shifts_file));
-        GainShift * g = new GainShift(TString(Form("fatima_gain_shift_det_%i",i)),TString(gain_shifts_file));
-        gain_shifts.push_back(g);
-    }
-    gain_shifts_loaded = 1;
-}
 

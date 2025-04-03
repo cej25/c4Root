@@ -2,7 +2,10 @@
 #define H10MCPRaw2Cal_H
 
 #include "FairTask.h"
+#include "H10MCPTwinpeaksData.h"
+#include "H10MCPTwinpeaksCalData.h"
 #include "TH10MCPConfiguration.h"
+#include "TimeMachineData.h"
 #include "TClonesArray.h"
 
 class TClonesArray;
@@ -32,9 +35,20 @@ class H10MCPRaw2Cal : public FairTask
 
         TH10MCPConfiguration const* mcp_config;
 
+        H10MCPTwinpeaksData* funcal_hit;
+                
+        H10MCPTwinpeaksData* funcal_hit_next;
+
+        TClonesArray* fcal_data;
+        TClonesArray* funcal_data;
+        TClonesArray* ftime_machine_array;
+
         Bool_t fOnline;
 
         uint16_t detector_id;
+        Int_t mcp_id;
+        Int_t type;
+        Int_t number;
         
         int64_t slow_lead_epoch;
         double slow_lead_time;
