@@ -310,6 +310,7 @@ Bool_t H10MCPReader::Read() //do fine time here:
     { //per board:
 
         UShort_t trig =  fData->mcp_tamex[it_board_number].trig;       
+        std::cout << "trig? " << trig << std::endl;
         if (fData->mcp_tamex[it_board_number].event_size == 0) continue; // empty event skip
         
         last_word_read_was_epoch = false;
