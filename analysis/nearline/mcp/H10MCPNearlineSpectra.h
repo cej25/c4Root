@@ -125,7 +125,6 @@ class H10MCPNearlineSpectra : public FairTask
     
 
         //Folders and files
-        TFolder* histograms;
         TDirectory* dir_mcp;
         TDirectory* dir_fatima_slowToT;
         TDirectory* dir_fatima_fastToT;
@@ -146,6 +145,9 @@ class H10MCPNearlineSpectra : public FairTask
         int number_reference_detectors = 0;
         
         // Histograms 
+        TH1* h1_test_histogram;
+
+
         std::vector<TH1*> h1_fatima_slowToT;
         std::vector<TH1*> h1_fatima_fastToT;
         std::vector<TH1*> h1_fatima_energy;
