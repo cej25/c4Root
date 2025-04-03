@@ -55,14 +55,12 @@ InitStatus H10MCPNearlineSpectra::Init()
     fHitsMCP = (TClonesArray*)mgr->GetObject("H10MCPTwinpeaksCalData");
     c4LOG_IF(fatal, !fHitsMCP, "Branch H10MCPTwinpeaksCalData not found!");
     
-    histograms = (TFolder*)mgr->GetObject("Histograms");
 
     TDirectory::TContext ctx(nullptr);
 
     dir_mcp = new TDirectory("MCPs", "MCPs", "", 0);
-    histograms->Add(dir_mcp);
 
-
+    h1_test_histogram = MakeTH1(dir_mcp, "F", "h1_test_histogram", "TEST HIST", 100, 0, 100);
 
     return kSUCCESS;
     
@@ -129,7 +127,10 @@ void H10MCPNearlineSpectra::FinishEvent()
 
 void H10MCPNearlineSpectra::FinishTask()
 {
-   
+    TDirectory* tmp = gDirectory;
+    FairRootManager::Instance()->GetOutFile()->cd();
+    dir_mcp->Write();
+    gDirectory = tmp;
     c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvents << " microseconds.");
     
 }
