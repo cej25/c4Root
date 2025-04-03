@@ -59,9 +59,7 @@ void chap_histograms()
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
     run->SetSink(new FairRootFileSink(outputFileName));
-    TFolder* histograms = new TFolder("Histograms", "Histograms");
-    FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
-    run->AddObject(histograms);
+
 
   
   
