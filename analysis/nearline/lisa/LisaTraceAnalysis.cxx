@@ -207,7 +207,7 @@ void LisaTraceAnalysis::Exec(Option_t* option)
         //std::cout << " Event no : " << Eventno << "\n";
         if (Eventno == event_to_analyze)
         {
-            std::cout<<" Size of MWD trace = " << trace_MWD.size() << "\n";
+            //std::cout<<" Size of MWD trace = " << trace_MWD.size() << "\n";
             //std::cout<< " Event Number : " << Eventno << ", event to analyze : " << event_to_analyze << "\n";
             for (int i = 0; i < trace_febex_0.size(); i++)
             {            

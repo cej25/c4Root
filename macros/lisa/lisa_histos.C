@@ -44,12 +44,12 @@ void lisa_histos()
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/daq_test_c4tree/test_F_B_13nov.root";
     //TString filename = "/u/gandolfo/data/test_c4/run_0072_0001.root";
-    TString filename = "/u/gandolfo/data/daq_10boards_0001_0001.root";
+    TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/daq_test_c4tree/daq_10boards_0001.root";
     
     
     //___O U T P U T
     //TString outputfile = "/u/gandolfo/data/test_c4/run_0072_0001_histos.root";
-    TString outputfile = "/u/gandolfo/data/daq_10boards_0001_0001_histos.root";
+    TString outputfile = "/u/gandolfo/data/lustre/gamma/LISA/data/daq_test_c4histo/daq_10boards_0001_0001_histos.root";
 
 
     FairRunAna* run = new FairRunAna();
@@ -71,7 +71,7 @@ void lisa_histos()
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
     TLisaConfiguration::SetMappingFile(config_path + "/Lisa_DAQ_7cards.txt");
     TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
-    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters.txt");
+    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_DAQtest.txt");
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::   
     // =========== **** SPECTRA ***** ========================================================= //
@@ -86,7 +86,7 @@ void lisa_histos()
     TLisaConfiguration::SetEnergyRange(3000000,3500000);
     TLisaConfiguration::SetEnergyBin(1000);
 
-    TLisaConfiguration::SetEnergyRangeMWD(300,380);
+    TLisaConfiguration::SetEnergyRangeMWD(600,800);
     TLisaConfiguration::SetEnergyBinMWD(1000);
 
     //::::  Channel Energy GM ::::: (h1_energy_layer_ch)

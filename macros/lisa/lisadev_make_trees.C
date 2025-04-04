@@ -3,7 +3,6 @@
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define LISA_ON 1
 #define FRS_ON 1
-#define TRAV_MUSIC_ON 1
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
 
 //Select the data level you want to visualize
@@ -21,7 +20,6 @@ typedef struct EXT_STR_h101_t
 {   
     EXT_STR_h101_unpack_t eventheaders;
     EXT_STR_h101_lisa_onion_t lisa;
-    EXT_STR_h101_travmus_onion_t travmus;
     EXT_STR_h101_frs_onion_t frs;
 
 } EXT_STR_h101;
@@ -163,13 +161,6 @@ void lisadev_make_trees(int fileNumber)
 
     if (FRS_ON)
     {   
-        if (TRAV_MUSIC_ON)
-        {
-            TravMusReader* unpacktravmus = new TravMusReader((EXT_STR_h101_travmus_onion*)&ucesb_struct.travmus, offsetof(EXT_STR_h101, travmus));
-    
-            unpacktravmus->SetOnline(false);
-            source->AddReader(unpacktravmus);
-        }
 
         FrsReader* unpackfrs = new FrsReader((EXT_STR_h101_frs_onion*)&ucesb_struct.frs, offsetof(EXT_STR_h101, frs)); 
         unpackfrs->SetOnline(true);
@@ -207,16 +198,6 @@ void lisadev_make_trees(int fileNumber)
 
     if (FRS_ON)
     {
-        if (TRAV_MUSIC_ON)
-        {
-            TravMusRaw2Cal* caltravmus = new TravMusRaw2Cal();
-            TravMusCal2Ana* anatravmus = new TravMusCal2Ana();
-
-            caltravmus->SetOnline(false);
-            run->AddTask(caltravmus);
-            anatravmus->SetOnline(false);
-            run->AddTask(anatravmus);
-        }
 
         FrsRaw2Cal* calfrs = new FrsRaw2Cal();
         
