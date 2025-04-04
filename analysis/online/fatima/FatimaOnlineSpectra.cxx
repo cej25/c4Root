@@ -56,7 +56,7 @@ InitStatus FatimaOnlineSpectra::Init()
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-    FairRunOnline * run = FairRunOnline::Instance();
+    FairRunOnline* run = FairRunOnline::Instance();
     run->GetHttpServer()->Register("", this);
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");

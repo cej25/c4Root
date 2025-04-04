@@ -121,10 +121,11 @@ Set(HEADERS ${STRUCT_HEADERS} ${HEADERS})
 
 set(LINKDEF SourceLinkDef.h)
 set(DEPENDENCIES
-    GeoBase ParBase MbsAPI Base FairTools
+    GeoBase ParBase Base FairTools
     c4Base c4Data Core Geom GenVector
     Physics Matrix MathCore
     ${ucesb_LIBRARY_SHARED})
+#MbsAPI
 set(LIBRARY_NAME c4source)
 
 GENERATE_LIBRARY()

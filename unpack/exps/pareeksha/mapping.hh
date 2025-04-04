@@ -67,5 +67,9 @@ SIGNAL(TPAT, frstpat.data.tpat, DATA16);
 
 // ::::::: TRAVMUS Crate ::::::::::::::::::
 // 4 = 21, 5 = 22 -- fixed
+SIGNAL(TM_WR_T1, travmus.ts.t1, DATA16);
+SIGNAL(TM_WR_T2, travmus.ts.t2, DATA16);
+SIGNAL(TM_WR_T3, travmus.ts.t3, DATA16);
+SIGNAL(TM_WR_T4, travmus.ts.t4, DATA16);
 SIGNAL(MUSIC4_E_1, travmus.data.mdpp.adc[0], MUSIC4_E_8, travmus.data.mdpp.adc[7], DATA24);
 SIGNAL(MUSIC5_E_1, travmus.data.mdpp.adc[8], MUSIC5_E_8, travmus.data.mdpp.adc[15], DATA24);
