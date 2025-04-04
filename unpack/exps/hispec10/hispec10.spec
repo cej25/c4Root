@@ -24,8 +24,8 @@ SUBEVENT(mcp_tamex_event)
 
     select several
     {
-        tamex[0] = TAMEX4_SFP(sfp = 0, card = 0);
-        tamex[1] = TAMEX4_SFP(sfp = 0, card = 1);
+        tamex[0] = TAMEX4_SFP(sfp = 1, card = 0);
+        tamex[1] = TAMEX4_SFP(sfp = 1, card = 1);
     };
 }
 
@@ -47,15 +47,17 @@ SUBEVENT(stefan_febex_event)
         data[1] = FEBEX_EVENT(card = 1);
         data[2] = FEBEX_EVENT(card = 2);
         data[3] = FEBEX_EVENT(card = 3);
+
+        // orrrr traces.. 
     };
 }
 
 
 EVENT
 {
-    mcp = mcp_tamex_event(procid = 10);
+    mcp = mcp_tamex_event(procid = 100);
 
-    stefan = stefan_febex_event(procid = 20);
+    stefan = stefan_febex_event(procid = 60);
 
     ignore_unknown_subevent;
 }
