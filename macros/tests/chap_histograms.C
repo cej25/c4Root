@@ -50,9 +50,9 @@ void chap_histograms()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    TString filename = "78puliser.root";
+    TString filename = "78puliser1.root";
     TString outputpath = "mcp_histogram_";
-    TString outputFileName = outputpath + ".root";
+    TString outputFileName =  filename + outputpath + "1.root";
 
     FairRunAna* run = new FairRunAna();
     EventHeader* EvtHead = new EventHeader();
@@ -143,8 +143,8 @@ void chap_histograms()
     cout << "\n\n" << endl;
 
     // Run
-    run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev); 
-
+   // run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev); 
+run->Run(1000000000); 
     // ---------------------------------------------------------------------------------------- //
     // *** Finish Macro *********************************************************************** //
 
