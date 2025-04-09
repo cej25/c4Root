@@ -51,11 +51,14 @@ void chap_make_trees()
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     //TString filename = "/LynxOS/mbsusr/mbsdaq/78puliser.lmd";
-    TString filename = "/LynxOS/mbsusr/mbsdaq/mcpfirstrun.lmd";
+   // TString filename = "/LynxOS/mbsusr/mbsdaq/mcpfirstrun.lmd";
+   TString filename = "/mnt/data/mbsboot/LynxOS/mbsusr/mbsdaq/mbsrun/x86_timesorter/onlyLIPC1_20250409-1505.lmd";
 //    TString filename = "/LynxOS/mbsusr/mbsdaq/mbsrun/HISPEC10_test/testrun.lmd"; // pulser file for finetime
   // TString filename ="/LynxOS/mbsusr/mbsdaq/mbsrun/HISPEC10_test/mcpfirstrun.lmd";
-    TString outputpath = "78puliser";
-    TString outputFileName = outputpath + "1.root";
+    TString outputpath = "onlyLIPC1_20250409-1505";
+//	TString outputpath = "calum_test";
+    
+TString outputFileName = outputpath + "sorted.root";
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms

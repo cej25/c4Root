@@ -87,9 +87,11 @@ void StefanOnlineSpectra::Reset_Histo()
 void StefanOnlineSpectra::Exec(Option_t* option)
 {
     auto start = std::chrono::high_resolution_clock::now();
-
-    
-
+/*
+    Int_t nHits = fHitsStefany->GetEntriesFast();
+    for (Int_t ihit = 0; ihit < nHits; ihit++)
+        { 
+*/
     fNEvents++;
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);

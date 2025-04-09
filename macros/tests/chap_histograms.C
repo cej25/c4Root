@@ -50,9 +50,9 @@ void chap_histograms()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    TString filename = "78puliser1.root";
-    TString outputpath = "mcp_histogram_";
-    TString outputFileName =  filename + outputpath + "1.root";
+    TString filename = "onlyLIPC1_20250409-1505sorted.root";
+    TString outputpath = "onlyLIPC1_20250409-1505_";
+    TString outputFileName =  outputpath + "histograms.root";
 
     FairRunAna* run = new FairRunAna();
     EventHeader* EvtHead = new EventHeader();
