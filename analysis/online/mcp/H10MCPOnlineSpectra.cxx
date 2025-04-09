@@ -91,7 +91,18 @@ void H10MCPOnlineSpectra::Exec(Option_t* option)
 {   
     
     auto start = std::chrono::high_resolution_clock::now();
-    
+    double T01=0;
+  double T02=0;
+  double E1=0;
+  double X01=0;
+  double X02=0;
+  double Y01=0;
+  double Y02=0;
+  double X11=0;
+  double X12=0;
+  double Y11=0;
+  double Y12=0;
+	  
     if (fHitsMCP && fHitsMCP->GetEntriesFast() > 0)
     {   
         Long64_t mpc_wr = 0;
@@ -106,15 +117,31 @@ void H10MCPOnlineSpectra::Exec(Option_t* option)
             Int_t type = hit->Get_type();
             Int_t number = hit->Get_number();
 
-            std::cout << "NEW HIT :: " << std::endl;
-            std::cout << "MPC :: " << mcp_id << std::endl;
-            std::cout << "Type :: " << type << std::endl;
-            std::cout << "Number :: " << number << std::endl;
-
+           // std::cout << "NEW HIT :: " << std::endl;
+          //  std::cout << "MPC :: " << mcp_id << std::endl;
+          //  std::cout << "Type :: " << type << std::endl;
+           // std::cout << "Number :: " << number << std::endl;
+			if (mcp_id==0 && type==0 && number== 0 ) T01 = hit->Get_fast_lead_time();
+			if (mcp_id==1 && type==0 && number== 0 ) T02 = hit->Get_fast_lead_time();
+			if (mcp_id==0 && type==1 && number== 0 ) X01 = hit->Get_fast_lead_time();
+			if (mcp_id==0 && type==1 && number== 1 ) X02 = hit->Get_fast_lead_time();
+			if (mcp_id==0 && type==2 && number== 0 ) Y01 = hit->Get_fast_lead_time();
+			if (mcp_id==0 && type==2 && number== 1 ) Y02 = hit->Get_fast_lead_time();
+			if (mcp_id==1 && type==1 && number== 0 ) X11 = hit->Get_fast_lead_time();
+			if (mcp_id==1 && type==1 && number== 1 ) X12 = hit->Get_fast_lead_time();
+			if (mcp_id==1 && type==2 && number== 0 ) Y11 = hit->Get_fast_lead_time();
+			if (mcp_id==1 && type==2 && number== 1 ) Y12 = hit->Get_fast_lead_time();
         }
+	h1_test_histogram1->Fill(T02 - T01);
+	histogram3->Fill(X02-X01, T02-T01);
+	MCP1Heatmap1->Fill(X02-X01, Y02-Y01);
+	MCP2Heatmap1->Fill(X12-X11, Y12-Y11);
+        
+        
 
     }
-    
+     
+
 
 
     fNEvents++;

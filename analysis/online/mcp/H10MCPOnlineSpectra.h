@@ -145,7 +145,16 @@ class H10MCPOnlineSpectra : public FairTask
         std::vector<std::pair<double,double>> dt_reference_detectors_energy_gates = {};
         int number_reference_detectors = 0;
         
+        // Histograms  
         // Histograms 
+        TH1* h1_test_histogram1;
+        TH2* histogram3;
+       
+        //TH1* MCP1Energy;
+        //TH1* MCP2Energy;
+        TH2* MCP1Heatmap1;
+        TH2* MCP2Heatmap1;
+        
         std::vector<TH1*> h1_fatima_slowToT;
         std::vector<TH1*> h1_fatima_fastToT;
         std::vector<TH1*> h1_fatima_energy;

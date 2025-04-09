@@ -143,10 +143,13 @@ class H10MCPNearlineSpectra : public FairTask
         // Histograms 
         TH1* h1_test_histogram;
         TH1* h1_time;
+        TH2* h2_MCP1;
+        TH2* h1_MCP2;
+        TH2* histogram2;
         //TH1* MCP1Energy;
         //TH1* MCP2Energy;
-        //TH2* MCP1Heatmap;
-        //TH2* MCP2Heatmap;
+        TH2* MCP1Heatmap;
+        TH2* MCP2Heatmap;
         //TH2* MCP1Heatmapgated1;
         //TH2* MCP2Heatmapgated1;
         //TH2* MCP1Heatmapgated2;
