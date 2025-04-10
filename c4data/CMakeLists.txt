@@ -70,6 +70,7 @@ fimpData/FimpCalData.cxx
 fimpData/TFimpConfiguration.cxx
 mcpData/H10MCPTwinpeaksData.cxx
 mcpData/H10MCPTwinpeaksCalData.cxx
+mcpData/H10MCPTwinpeaksAnaData.cxx
 mcpData/TH10MCPConfiguration.cxx
 stefanData/StefanFebexData.cxx
 stefanData/StefanCalData.cxx

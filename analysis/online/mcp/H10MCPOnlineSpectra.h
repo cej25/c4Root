@@ -5,6 +5,7 @@
 #include "TDirectory.h"
 #include "TH10MCPConfiguration.h"
 #include "H10MCPTwinpeaksCalData.h"
+#include "H10MCPTwinpeaksAnaData.h"
 #include "TFolder.h"
 #include "TH1F.h"
 #include "TH2F.h"
@@ -147,8 +148,8 @@ class H10MCPOnlineSpectra : public FairTask
         
         // Histograms  
         // Histograms 
-        TH1* h1_test_histogram1;
-        TH2* histogram3;
+        TH1* h1_test_histogram;
+        TH2* histogram2;
        
         //TH1* MCP1Energy;
         //TH1* MCP2Energy;

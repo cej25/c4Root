@@ -87,6 +87,7 @@ set(SRCS
 ./fimp/FimpRaw2Cal.cxx
 ./mcp/H10MCPReader.cxx
 ./mcp/H10MCPRaw2Cal.cxx
+./mcp/H10MCPCal2Ana.cxx
 ./stefan/StefanReader.cxx
 ./stefan/StefanRaw2Cal.cxx
 
