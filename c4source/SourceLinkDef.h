@@ -44,6 +44,7 @@
 #pragma link C++ class FimpRaw2Cal+;
 #pragma link C++ class H10MCPReader+;
 #pragma link C++ class H10MCPRaw2Cal+;
+#pragma link C++ class H10MCPCal2Ana+;
 #pragma link C++ class StefanReader+;
 #pragma link C++ class StefanRaw2Cal+;
 

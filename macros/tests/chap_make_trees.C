@@ -50,9 +50,15 @@ void chap_make_trees()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    TString filename = "/LynxOS/mbsusr/mbsdaq/78puliser.lmd";
-    TString outputpath = "78puliser";
-    TString outputFileName = outputpath + ".root";
+    //TString filename = "/LynxOS/mbsusr/mbsdaq/78puliser.lmd";
+   // TString filename = "/LynxOS/mbsusr/mbsdaq/mcpfirstrun.lmd";
+   TString filename = "/mnt/data/mbsboot/LynxOS/mbsusr/mbsdaq/mbsrun/x86_timesorter/onlyLIPC1_20250409-1505.lmd";
+//    TString filename = "/LynxOS/mbsusr/mbsdaq/mbsrun/HISPEC10_test/testrun.lmd"; // pulser file for finetime
+  // TString filename ="/LynxOS/mbsusr/mbsdaq/mbsrun/HISPEC10_test/mcpfirstrun.lmd";
+    TString outputpath = "onlyLIPC1_20250409-1505";
+//	TString outputpath = "calum_test";
+    
+TString outputFileName = outputpath + "sorted.root";
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
@@ -62,11 +68,11 @@ void chap_make_trees()
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
-    run->ActivateHttpServer(refresh, port);
+    //run->ActivateHttpServer(refresh, port);
     run->SetSink(new FairRootFileSink(outputFileName));
-    TFolder* histograms = new TFolder("Histograms", "Histograms");
-    FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
-    run->AddObject(histograms);
+    //TFolder* histograms = new TFolder("Histograms", "Histograms");
+    //FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
+    //run->AddObject(histograms);
 
   
     // Create source using ucesb for input
@@ -122,8 +128,8 @@ void chap_make_trees()
     if (MCP_ON)
     {
         H10MCPReader* unpackmcp = new H10MCPReader((EXT_STR_h101_mcp_onion*)&ucesb_struct.mcp, offsetof(EXT_STR_h101, mcp));
-        //unpackmcp->DoFineTimeCalOnline(config_path + "/bplast/fine_time_G302_21FEB.root", 1000000);
-        // unpackmcp->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_G302_21FEB.root");
+        //unpackmcp->DoFineTimeCalOnline(config_path + "/mcp/mcp_fine_time_0804.root", 200000);
+        unpackmcp->SetInputFileFineTimeHistos(config_path + "/mcp/mcp_fine_time_0804.root");
 
         unpackmcp->SetOnline(false);
         source->AddReader(unpackmcp);
@@ -199,8 +205,8 @@ void chap_make_trees()
     cout << "\n\n" << endl;
 
     // Run
-    run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev); 
-
+   run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev); 
+//un->Run(10000000); 
     // ---------------------------------------------------------------------------------------- //
     // *** Finish Macro *********************************************************************** //
 

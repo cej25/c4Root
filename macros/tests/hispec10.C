@@ -2,7 +2,7 @@
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define MCP_ON 1
-#define STEFAN_ON 1
+#define STEFAN_ON 0
 #define FRS_ON 0
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
@@ -50,8 +50,10 @@ void hispec10()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    TString filename = "~/3alfa_20250329-0831.lmd";
-    TString outputpath = "output";
+    //TString filename = "/u/cjones/onlymcp09041755.lmd";
+    TString filename = "/u/cjones/onlymcponlyleadingedgetrigger2.lmd";
+    //TString filename = "/u/cjones/finalfinalpulserrunfin.lmd";
+    TString outputpath = "htest";
     TString outputFileName = outputpath + ".root";
 
     // Create Online run
@@ -122,9 +124,9 @@ void hispec10()
     if (MCP_ON)
     {
         H10MCPReader* unpackmcp = new H10MCPReader((EXT_STR_h101_mcp_onion*)&ucesb_struct.mcp, offsetof(EXT_STR_h101, mcp));
-        //unpackmcp->DoFineTimeCalOnline(config_path + "/bplast/fine_time_G302_21FEB.root", 1000000);
-        // unpackmcp->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_G302_21FEB.root");
-
+        //unpackmcp->DoFineTimeCalOnline(config_path + "/mcp/mcp_fine_time_1004.root", 20000);
+        unpackmcp->SetInputFileFineTimeHistos(config_path + "/mcp/mcp_fine_time_1004.root");
+        
         unpackmcp->SetOnline(true);
         source->AddReader(unpackmcp);
     }
@@ -177,6 +179,13 @@ void hispec10()
     // *** Analyse Subsystem Hits ************************************************************* //
     
     // Stefan MCP etc..
+    if (MCP_ON)
+    {
+        H10MCPCal2Ana* anamcp = new H10MCPCal2Ana();
+        
+        anamcp->SetOnline(true);
+        run->AddTask(anamcp);
+    }
     
     if (FRS_ON)
     {

@@ -52,8 +52,11 @@ InitStatus H10MCPOnlineSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fHitsMCP = (TClonesArray*)mgr->GetObject("H10MCPTwinpeaksCalData");
-    c4LOG_IF(fatal, !fHitsMCP, "Branch H10MCPTwinpeaksCalData not found!");
+    // fHitsMCP = (TClonesArray*)mgr->GetObject("H10MCPTwinpeaksCalData");
+    // c4LOG_IF(fatal, !fHitsMCP, "Branch H10MCPTwinpeaksCalData not found!");
+
+    fHitsMCP = (TClonesArray*)mgr->GetObject("H10MCPTwinpeaksAnaData");
+    c4LOG_IF(fatal, !fHitsMCP, "Branch H10MCPTwinpeaksAnaData not found!");
     
     histograms = (TFolder*)mgr->GetObject("Histograms");
 
@@ -63,7 +66,10 @@ InitStatus H10MCPOnlineSpectra::Init()
     histograms->Add(dir_mcp);
 
  
-    // copy back anything from fatima
+    h1_test_histogram = MakeTH1(dir_mcp, "F", "h1_test_histogram", "TEST HIST", 10000, -100, 100);  
+	histogram2 = MakeTH2(dir_mcp,"b", "aaa", "test hist" , 100, -250, 250, 100, -100, 100);
+	MCP1Heatmap1 = MakeTH2(dir_mcp,"b", "MCP1Heatmap1", "MCP1 Heatmap 1" , 100, -250, 250, 100, -250, 250);
+	MCP2Heatmap1 = MakeTH2(dir_mcp,"b", "MCP2Heatmap1", "MCP2 Heatmap 1" , 100, -250, 250, 100, -250, 250);
 
     run->GetHttpServer()->RegisterCommand("Reset_MCP_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
 
@@ -91,31 +97,78 @@ void H10MCPOnlineSpectra::Exec(Option_t* option)
 {   
     
     auto start = std::chrono::high_resolution_clock::now();
-    
+    // double T01=0;
+    // double T02=0;
+    double E1=0;
+    // double X01=0;
+    // double X02=0;
+    // double Y01=0;
+    // double Y02=0;
+    double T1 = 0;
+    double X11 = 0;
+    double X12 = 0;
+    double Y11 = 0;
+    double Y12 = 0;
+    double T2 = 0;
+    double X21 = 0;
+    double X22 = 0;
+    double Y21 = 0;
+    double Y22 = 0;
+	  
     if (fHitsMCP && fHitsMCP->GetEntriesFast() > 0)
     {   
         Long64_t mpc_wr = 0;
-        Int_t nHits = fHitsMCP->GetEntriesFast();
-        for (Int_t ihit = 0; ihit < nHits; ihit++)
-        {   
-            H10MCPTwinpeaksCalData* hit = (H10MCPTwinpeaksCalData*)fHitsMCP->At(ihit);
-            if (!hit) continue;
-            mcp_wr = hit->Get_wr_t();
+        H10MCPTwinpeaksAnaData* hit = (H10MCPTwinpeaksAnaData*)fHitsMCP->At(0);
+        if (!hit) return;
+        mcp_wr = hit->wr_t;
 
-            Int_t mcp_id = hit->Get_mcp_id();
-            Int_t type = hit->Get_type();
-            Int_t number = hit->Get_number();
 
-            std::cout << "NEW HIT :: " << std::endl;
-            std::cout << "MPC :: " << mcp_id << std::endl;
-            std::cout << "Type :: " << type << std::endl;
-            std::cout << "Number :: " << number << std::endl;
+        // for (Int_t ihit = 0; ihit < nHits; ihit++)
+        // {   
+            // H10MCPTwinpeaksCalData* hit = (H10MCPTwinpeaksCalData*)fHitsMCP->At(ihit);
+            
 
-        }
+            // Int_t mcp_id = hit->Get_mcp_id();
+            // Int_t type = hit->Get_type();
+            // Int_t number = hit->Get_number();
+
+			// if (mcp_id==0 && type==0 && number== 0 ) T01 = hit->Get_fast_lead_time();
+			// if (mcp_id==1 && type==0 && number== 0 ) T02 = hit->Get_fast_lead_time();
+			// if (mcp_id==0 && type==1 && number== 0 ) X01 = hit->Get_fast_lead_time();
+			// if (mcp_id==0 && type==1 && number== 1 ) X02 = hit->Get_fast_lead_time();
+			// if (mcp_id==0 && type==2 && number== 0 ) Y01 = hit->Get_fast_lead_time();
+			// if (mcp_id==0 && type==2 && number== 1 ) Y02 = hit->Get_fast_lead_time();
+			// if (mcp_id==1 && type==1 && number== 0 ) X11 = hit->Get_fast_lead_time();
+			// if (mcp_id==1 && type==1 && number== 1 ) X12 = hit->Get_fast_lead_time();
+			// if (mcp_id==1 && type==2 && number== 0 ) Y11 = hit->Get_fast_lead_time();
+			// if (mcp_id==1 && type==2 && number== 1 ) Y12 = hit->Get_fast_lead_time();
+
+        // }
+        
+        // h1_test_histogram->Fill(T02 - T01);
+        // histogram2->Fill(X02-X01, T02-T01);
+        // MCP1Heatmap1->Fill(X02-X01, Y02-Y01);
+        // MCP2Heatmap1->Fill(X12-X11, Y12-Y11);
+
+        if (!hit->full_event) return;
+
+        T1 = hit->T1;
+        X11 = hit->X11;
+        X12 = hit->X12;
+        Y11 = hit->Y11;
+        Y12 = hit->Y12;
+        T2 = hit->T2;
+        X21 = hit->X21;
+        X22 = hit->X22;
+        Y21 = hit->Y21;
+        Y22 = hit->Y22;
+
+        h1_test_histogram->Fill(T2 - T1);
+        histogram2->Fill(X12-X11, T2-T1);
+        MCP1Heatmap1->Fill(X12-X11, Y12-Y11);
+        MCP2Heatmap1->Fill(X22-X21, Y22-Y21);
 
     }
-    
-
 
     fNEvents++;
     

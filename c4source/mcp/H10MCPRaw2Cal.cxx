@@ -91,11 +91,10 @@ Writes the times in ns!
 void H10MCPRaw2Cal::Exec(Option_t* option)
 {
     auto start = std::chrono::high_resolution_clock::now();
-    
     if (funcal_data && funcal_data->GetEntriesFast() > 1)
     { // only get events with two hits or more
         Int_t event_multiplicity = funcal_data->GetEntriesFast();
-        for (Int_t ihit = 0; ihit < event_multiplicity; ihit++)
+ 	    for (Int_t ihit = 0; ihit < event_multiplicity; ihit++)
         {
 
             H10MCPTwinpeaksData* first_hit_in_fast_channel = (H10MCPTwinpeaksData*)funcal_data->At(ihit);
@@ -241,7 +240,7 @@ void H10MCPRaw2Cal::Exec(Option_t* option)
                 }
                 
             
-                new ((*fcal_data)[fcal_data->GetEntriesFast()]) H10MCPTwinpeaksCalData(
+    new ((*fcal_data)[fcal_data->GetEntriesFast()]) H10MCPTwinpeaksCalData(
                     funcal_hit->Get_trigger(),
                     funcal_hit->Get_board_id(),
                     (int)((funcal_hit->Get_ch_ID()+1)/2),

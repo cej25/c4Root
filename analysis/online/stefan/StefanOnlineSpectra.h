@@ -96,6 +96,7 @@ class StefanOnlineSpectra : public FairTask
         // Raw histograms
         std::vector<TH1*> h1_febex_card_hitpattern;
         // std::vector<TH1*> 
+        TH1** h1_germanium_energy;
 
 
         // Counters

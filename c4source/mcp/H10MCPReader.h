@@ -135,6 +135,8 @@ class H10MCPReader : public c4Reader
         UInt_t accepted_lead_coarse_T = 0;
         Double_t accepted_lead_fine_T = 0;
 
+        int hits[21] = {0};
+
 
     public:
         ClassDefOverride(H10MCPReader, 0);

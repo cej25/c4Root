@@ -142,6 +142,42 @@ class H10MCPNearlineSpectra : public FairTask
         
         // Histograms 
         TH1* h1_test_histogram;
+        TH1* h1_time;
+        TH2* h2_MCP1;
+        TH2* h1_MCP2;
+        TH2* histogram2;
+        //TH1* MCP1Energy;
+        //TH1* MCP2Energy;
+        TH2* MCP1Heatmap;
+        TH2* MCP2Heatmap;
+        //TH2* MCP1Heatmapgated1;
+        //TH2* MCP2Heatmapgated1;
+        //TH2* MCP1Heatmapgated2;
+        //TH2* MCP2Heatmapgated2;
+        
+        //customsvectors
+      //  int eventcounter = 0;
+      //  int c1counter;
+     //   int c2counter;
+      //  int c3counter;
+     //   int c4counter;
+     //   int c6counter;
+     //   int c7counter;
+     //   int c8counter;
+     //   int c9counter;
+      //  int c10counter;
+     //   std::vector<TH1*> MCP1T;
+     //   std::vector<TH1*> MCP2T;
+       // std::vector<TH1*> MCP1X1;
+   //     std::vector<TH1*> MCP2X1;
+    //    std::vector<TH1*> MCP1X2;
+     //   std::vector<TH1*> MCP2X2;
+     //   std::vector<TH1*> MCP1Y1;
+     //   std::vector<TH1*> MCP2Y1;
+      //  std::vector<TH1*> MCP1Y2;
+     //   std::vector<TH1*> MCP2Y2;
+               
+        
 
 
         std::vector<TH1*> h1_fatima_slowToT;
