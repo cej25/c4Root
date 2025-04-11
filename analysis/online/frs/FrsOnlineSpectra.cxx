@@ -255,11 +255,14 @@ InitStatus FrsOnlineSpectra::Init()
         h1_dEdegZ41 = MakeTH1(dir_tac_1d, "D", "h1_dEdegZ41", "dE in S2 degrader", 1000, 0.0, 1000., "dE", kPink-3, kBlue+2);
         for (int i = 0; i < 2; i++) h1_rho[i] = MakeTH1(dir_tac_1d, "D", Form("h1_rho_%i", i), Form("rho %i", i), 100, 0.0, 1.0, Form("rho %i", i), kPink-3, kBlue+2); 
         for (int i = 0; i < 2; i++) h1_brho[i] = MakeTH1(dir_tac_1d, "D", Form("h1_brho_%i", i), Form("brho %i", i), 100, 10.0, 20., Form("brho %i", i), kPink-3, kBlue+2);
+        h1_music21_dE = MakeTH1(dir_tac_1d, "D", "h1_music21_dE", "Energy loss in MUSIC 21", 1000, 0.0, 4000.0, "dE MUSIC 21", kPink-3, kBlue+2);
+        h1_music22_dE = MakeTH1(dir_tac_1d, "D", "h1_music22_dE", "Energy loss in MUSIC 22", 1000, 0.0, 4000.0, "dE MUSIC 22", kPink-3, kBlue+2);
+        h1_music21_dE_cor = MakeTH1(dir_tac_1d, "D", "h1_music21_dE_cor", "Energy loss (cor) in MUSIC 21", 4000, 0.0, 4000.0, "dE (cor) MUSIC 21", kPink-3, kBlue+2);
+        h1_music22_dE_cor = MakeTH1(dir_tac_1d, "D", "h1_music22_dE_cor", "Energy loss (cor) in MUSIC 22", 4000, 0.0, 4000.0, "dE (cor) MUSIC 22", kPink-3, kBlue+2);
         h1_music41_dE = MakeTH1(dir_tac_1d, "D", "h1_music41_dE", "Energy loss in MUSIC 41", 1000, 0.0, 4000.0, "dE MUSIC 41", kPink-3, kBlue+2);
         h1_music42_dE = MakeTH1(dir_tac_1d, "D", "h1_music42_dE", "Energy loss in MUSIC 42", 1000, 0.0, 4000.0, "dE MUSIC 42", kPink-3, kBlue+2);
         h1_music41_dE_cor = MakeTH1(dir_tac_1d, "D", "h1_music41_dE_cor", "Energy loss (cor) in MUSIC 41", 4000, 0.0, 4000.0, "dE (cor) MUSIC 41", kPink-3, kBlue+2);
         h1_music42_dE_cor = MakeTH1(dir_tac_1d, "D", "h1_music42_dE_cor", "Energy loss (cor) in MUSIC 42", 4000, 0.0, 4000.0, "dE (cor) MUSIC 42", kPink-3, kBlue+2);
-        h1_travmus_dE = MakeTH1(dir_tac_1d, "D", "h1_travmus_dE", "dE (Travel MUSIC)", 1000, 0, 4000., "dE (Travel MUSIC)", kPink-3, kBlue+2);
         h1_sci_e_11 = MakeTH1(dir_tac_1d, "F", "h1_sci_e_11", "SCI 11 E", 4000, 0.0, 4000.0, "SCI 11 E", kPink-3, kBlue+2);
         h1_sci_e_21 = MakeTH1(dir_tac_1d, "F", "h1_sci_e_21", "SCI 21 E", 4000, 0.0, 4000.0, "SCI 21 E", kPink-3, kBlue+2);
         h1_sci_e_22 = MakeTH1(dir_tac_1d, "F", "h1_sci_e_22", "SCI 22 E", 4000, 0.0, 4000.0, "SCI 22 E", kPink-3, kBlue+2);
@@ -394,7 +397,6 @@ InitStatus FrsOnlineSpectra::Init()
         h1_Z41_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_Z41_mhtdc", "Z (MUSIC 41) (MHTDC)", 1000, 0, 100, "Z (MUSIC 41)", kPink-3, kBlue+2);
         h1_Z42_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_Z42_mhtdc", "Z (MUSIC 42) (MHTDC)", 1000, 0, 100, "Z (MUSIC 42)", kPink-3, kBlue+2);
         h1_Z43_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_Z43_mhtdc", "Z (MUSIC 43) (MHTDC)", 1000, 0, 100, "Z (MUSIC 43)", kPink-3, kBlue+2);
-        h1_Z_travmus_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_Z_travmus_mhtdc", "Z (Travel MUSIC) (MHTDC)", 1000, 0, 100, "Z (Travel MUSIC)", kPink-3, kBlue+2);
         h1_dEdegoQ_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_dEdegoQ_mhtdc", "dE in S2 degrader / Q (MHTDC)", 1000, 0.0, 2.0, "dE / Q", kPink-3, kBlue+2);
         h1_dEdegZ41_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_dEdegZ41_mhtdc", "dE in S2 degrader (MHTDC)", 1000, 0, 100, "dE", kPink-3, kBlue+2);
 
@@ -445,8 +447,6 @@ InitStatus FrsOnlineSpectra::Init()
 
 
 
-    // Here we can draw any canvases we need, but we don't need to make histos //
-
     h1_wr_frs_travmus = MakeTH1(dir_travmus, "I", "h1_wr_frs_travmus", "White Rabbit dT FRS - Travel MUSIC", 500, -3000, -1000);
 
     c_z_compare = new TCanvas("c_z_compare", "Z from 3 x MUSIC", 650, 350);
@@ -460,10 +460,12 @@ InitStatus FrsOnlineSpectra::Init()
     c_z_compare->cd(0);
     dir_travmus_tac->Append(c_z_compare);
 
+
+    // CEJ: comparison, written for (E)LISA
     c_dE_compare = new TCanvas("c_dE_compare", "dE from 3 x MUSIC", 650, 350);
     c_dE_compare->Divide(1, 3);
     c_dE_compare->cd(1);
-    h1_travmus_dE->Draw();
+    h1_music21_dE->Draw();
     c_dE_compare->cd(2);
     h1_music41_dE->Draw();
     c_dE_compare->cd(3);
@@ -474,7 +476,7 @@ InitStatus FrsOnlineSpectra::Init()
     c_z_compare_mhtdc = new TCanvas("c_z_compare_mhtdc", "Z from 3 x MUSIC MHTDC", 650, 350);
     c_z_compare_mhtdc->Divide(1, 3);
     c_z_compare_mhtdc->cd(1);
-    h1_Z_travmus_mhtdc->Draw();
+    h1_Z21_mhtdc->Draw();
     c_z_compare_mhtdc->cd(2);
     h1_Z41_mhtdc->Draw();
     c_z_compare_mhtdc->cd(3);
@@ -649,6 +651,10 @@ void FrsOnlineSpectra::Exec(Option_t* option)
         if (hitItem.Get_ID_dEdeg_z41() > 0) h1_dEdegZ41->Fill(hitItem.Get_ID_dEdeg_z41());
         for (int i = 0; i < 2; i++) if (hitItem.Get_ID_rho()[i] > 0) h1_rho[i]->Fill(hitItem.Get_ID_rho()[i]);
         for (int i = 0; i < 2; i++) if (hitItem.Get_ID_brho()[i] > 0) h1_brho[i]->Fill(hitItem.Get_ID_brho()[i]);
+        if (hitItem.Get_music21_dE() > 0) h1_music21_dE->Fill(hitItem.Get_music21_dE());
+        if (hitItem.Get_music22_dE() > 0) h1_music22_dE->Fill(hitItem.Get_music22_dE());
+        if (hitItem.Get_music21_dE_cor() > 0) h1_music21_dE_cor->Fill(hitItem.Get_music21_dE_cor());
+        if (hitItem.Get_music22_dE_cor() > 0) h1_music22_dE_cor->Fill(hitItem.Get_music22_dE_cor());
         if (hitItem.Get_music41_dE() > 0) h1_music41_dE->Fill(hitItem.Get_music41_dE());
         if (hitItem.Get_music42_dE() > 0) h1_music42_dE->Fill(hitItem.Get_music42_dE());
         if (hitItem.Get_music41_dE_cor() > 0) h1_music41_dE_cor->Fill(hitItem.Get_music41_dE_cor());
@@ -709,6 +715,7 @@ void FrsOnlineSpectra::Exec(Option_t* option)
             if (z21_mhtdc.at(i) > 0 && AoQ_s1s2_mhtdc.at(i) > 0) h2_Z21_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), z21_mhtdc.at(i));
             if (z21_mhtdc.at(i) > 0 && AoQ_corr_s1s2_mhtdc.at(i) > 0) h2_Z21_vs_AoQs1s2_corr_mhtdc->Fill(AoQ_corr_s1s2_mhtdc.at(i), z21_mhtdc.at(i));
             if (z21_mhtdc.at(i) > 0 && z22_mhtdc.at(i) > 0) h2_Z21_vs_Z22_mhtdc->Fill(z21_mhtdc.at(i), z22_mhtdc.at(i));
+            // CEJ below to be adjusted and added at request
             //if (z21_mhtdc.at(i) > 0 && AoQ_s1s2_mhtdc.at(i) > 0 && TMath::Abs(z21_mhtdc.at(i) - z22_mhtdc.at(i)) < 0.4) h2_Z21_vs_AoQs1s2_Zsame_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), z21_mhtdc.at(i));
             //if (AoQ_s1s2_mhtdc.at(i) > 0 && TMath::Abs(z21_mhtdc.at(i) - z22_mhtdc.at(i)) < 0.4) h2_x2_vs_AoQs1s2_Zsame_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_x2());
             //if (AoQ_s1s2_mhtdc.at(i) > 0 && TMath::Abs(z21_mhtdc.at(i) - z22_mhtdc.at(i)) < 0.4) h2_x4_vs_AoQs1s2_Zsame_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_x4());
