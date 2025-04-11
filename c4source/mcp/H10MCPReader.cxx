@@ -77,6 +77,7 @@ H10MCPReader::~H10MCPReader()
 
     if (fArray != nullptr) delete fArray;
 
+    for (int i = 0; i < 21; i++) c4LOG(info, hits[i] << " hits in channel " << i << " (" + hits[i]/fNEvent << ")");
     c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvent << " microseconds.");
     c4LOG(info, "Events: " << fNEvent);
     c4LOG(info, "Destroyed H10MCPReader properly.");
@@ -306,6 +307,7 @@ Bool_t H10MCPReader::Read() //do fine time here:
     //whiterabbit timestamp:
     wr_t = (((Long64_t)fData->mcp_ts_t[3]) << 48) + (((Long64_t)fData->mcp_ts_t[2]) << 32) + (((Long64_t)fData->mcp_ts_t[1]) << 16) + (Long64_t)(fData->mcp_ts_t[0]);
     
+
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
     { //per board:
 
@@ -374,12 +376,16 @@ Bool_t H10MCPReader::Read() //do fine time here:
             if (!fine_time_calibration_set && is_leading)
             {
                 fine_time_hits[it_board_number][channelid]->Fill(fData->mcp_tamex[it_board_number].time_finev[it_hits]);
-                std::cout << "disabling fine time skip, for now" << std::endl;
-                // continue;
+                continue;
             }
 
             UInt_t coarse_T = fData->mcp_tamex[it_board_number].time_coarsev[it_hits] & 0x7FF;
             Double_t fine_T = GetFineTime(fData->mcp_tamex[it_board_number].time_finev[it_hits],it_board_number,channelid);
+
+            if (is_leading)
+            {
+                hits[channelid]++;
+            }
 
             if (channelid == 0) 
             {
