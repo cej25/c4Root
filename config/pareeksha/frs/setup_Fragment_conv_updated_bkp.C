@@ -310,7 +310,7 @@ void setup(TFRSParameter* frs,
   for(int ii=0; ii<8; ii++){
     music->exclude_music41_de_adc_channel[ii] = kFALSE;
     music->exclude_music42_de_adc_channel[ii] = kFALSE;
-    music->exclude_music21_de_adc_channel[ii] = kFALSE;
+    music->exclude_music43_de_adc_channel[ii] = kFALSE;
     music->exclude_de4_adc_channel[ii] = kFALSE;
   }
   music->exclude_music41_de_adc_channel[5] = kTRUE; //added 01:50/May-12/2022 S450
@@ -320,14 +320,14 @@ void setup(TFRSParameter* frs,
   music->exclude_de4_adc_channel[7] = kTRUE;
 
   //EG: Excluded anodes with res > 10% for main peak in raw ADC. From fragments runs 72-157.
-  music->exclude_music21_de_adc_channel[0] = kTRUE;
-  //music->exclude_music21_de_adc_channel[1] = kTRUE;
-  //music->exclude_music21_de_adc_channel[5] = kTRUE;
+  music->exclude_music43_de_adc_channel[0] = kTRUE;
+  //music->exclude_music43_de_adc_channel[1] = kTRUE;
+  //music->exclude_music43_de_adc_channel[5] = kTRUE;
 
   //TravMusic exclusions. 
-  //music->exclude_music21_de_adc_channel[5] = kTRUE;
-  //music->exclude_music21_de_adc_channel[6] = kTRUE;
-  //music->exclude_music21_de_adc_channel[7] = kTRUE;
+  //music->exclude_music43_de_adc_channel[5] = kTRUE;
+  //music->exclude_music43_de_adc_channel[6] = kTRUE;
+  //music->exclude_music43_de_adc_channel[7] = kTRUE;
 
   //  
   music->dist_MUSICa1 = 52.5;  // do not change
@@ -374,23 +374,23 @@ void setup(TFRSParameter* frs,
   music->music42_e_gain[7]   = 1.1054247;
 
   //MUSIC43
-  music->music21_e_off[0]   = -242.73933; //MUSIC3 offsets
-  music->music21_e_off[1]   = -26.4569;
-  music->music21_e_off[2]   = 61.9039;
-  music->music21_e_off[3]   = 87.16018;
-  music->music21_e_off[4]   = 100.4523;
-  music->music21_e_off[5]   = -50.995244;
-  music->music21_e_off[6]   = 57.414142;
-  music->music21_e_off[7]   = 0.;
+  music->music43_e_off[0]   = -242.73933; //MUSIC3 offsets
+  music->music43_e_off[1]   = -26.4569;
+  music->music43_e_off[2]   = 61.9039;
+  music->music43_e_off[3]   = 87.16018;
+  music->music43_e_off[4]   = 100.4523;
+  music->music43_e_off[5]   = -50.995244;
+  music->music43_e_off[6]   = 57.414142;
+  music->music43_e_off[7]   = 0.;
 
-  music->music21_e_gain[0]   = 1.143714; // MUSIC3 gains
-  music->music21_e_gain[1]   = 1.00470;
-  music->music21_e_gain[2]   = 0.958337;
-  music->music21_e_gain[3]   = 0.946279;
-  music->music21_e_gain[4]   = 0.946859;
-  music->music21_e_gain[5]   = 1.041653;
-  music->music21_e_gain[6]   = 0.97033;
-  music->music21_e_gain[7]   = 0.0;
+  music->music43_e_gain[0]   = 1.143714; // MUSIC3 gains
+  music->music43_e_gain[1]   = 1.00470;
+  music->music43_e_gain[2]   = 0.958337;
+  music->music43_e_gain[3]   = 0.946279;
+  music->music43_e_gain[4]   = 0.946859;
+  music->music43_e_gain[5]   = 1.041653;
+  music->music43_e_gain[6]   = 0.97033;
+  music->music43_e_gain[7]   = 0.0;
 
   //MUSIC44
   music->e4_off[0]   = 0.; //MUSIC4 offsets
@@ -427,13 +427,13 @@ void setup(TFRSParameter* frs,
   music->music42_pos_a[5]   = 1.9045e-9; //0.0;         //-2.950e-13;
   music->music42_pos_a[6]   = 4.46969e-12; //0.0;
 
-  music->music21_pos_a[0]   = 0.998;   // C0...Cn position correction not used
-  music->music21_pos_a[1]   = -1.991e-5;
-  music->music21_pos_a[2]   = 1.969e-6;
-  music->music21_pos_a[3]   = 1.114e-8;
-  music->music21_pos_a[4]   = -3.841e-10;
-  music->music21_pos_a[5]   = -2.950e-13;
-  music->music21_pos_a[6]   = 0.0;
+  music->music43_pos_a[0]   = 0.998;   // C0...Cn position correction not used
+  music->music43_pos_a[1]   = -1.991e-5;
+  music->music43_pos_a[2]   = 1.969e-6;
+  music->music43_pos_a[3]   = 1.114e-8;
+  music->music43_pos_a[4]   = -3.841e-10;
+  music->music43_pos_a[5]   = -2.950e-13;
+  music->music43_pos_a[6]   = 0.0;
 
   music->pos_a4[0]   = 0.998;   // C0...Cn position correction not used
   music->pos_a4[1]   = -1.991e-5;
@@ -468,10 +468,10 @@ void setup(TFRSParameter* frs,
   id->vel_music42_a[3] =  0.0;
 
   //MUSIC43 velocity corr. (old)
-  id->vel_music21_a[0] =  580;//162;//-174.653;//29030.0; //13951.37; 
-  id->vel_music21_a[1] =  456;//702;//725.1889;//-19790.0;//-38369.9;
-  id->vel_music21_a[2] =  0.0; //3635.0;//28396.46;
-  id->vel_music21_a[3] =  0.0;
+  id->vel_music43_a[0] =  580;//162;//-174.653;//29030.0; //13951.37; 
+  id->vel_music43_a[1] =  456;//702;//725.1889;//-19790.0;//-38369.9;
+  id->vel_music43_a[2] =  0.0; //3635.0;//28396.46;
+  id->vel_music43_a[3] =  0.0;
 
   //MUSIC44 velocity corr. (not determined)
   id->vel_a4[0] =  11588.7; 
@@ -481,7 +481,7 @@ void setup(TFRSParameter* frs,
   
   id->offset_z41   = 0.0;
   id->offset_z42  = 0.0;
-  id->offset_z21  = 0.0;
+  id->offset_z43  = 0.0;
   id->offset_z4  = 0.0;
   
   //========= 
