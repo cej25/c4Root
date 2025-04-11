@@ -178,11 +178,14 @@ class FrsOnlineSpectra : public FairTask
         TH1* h1_dEdegZ41;
         TH1* h1_rho[2];
         TH1* h1_brho[2];
+        TH1* h1_music21_dE;
+        TH1* h1_music22_dE;
+        TH1* h1_music21_dE_cor;
+        TH1* h1_music22_dE_cor;
         TH1* h1_music41_dE;
         TH1* h1_music42_dE;
         TH1* h1_music41_dE_cor;
         TH1* h1_music42_dE_cor;
-        TH1* h1_travmus_dE;
         TH1* h1_sci_e_11;
         TH1* h1_sci_e_21;
         TH1* h1_sci_e_22;
@@ -269,7 +272,6 @@ class FrsOnlineSpectra : public FairTask
         TH1* h1_Z41_mhtdc;
         TH1* h1_Z42_mhtdc;
         TH1* h1_Z43_mhtdc;
-        TH1* h1_Z_travmus_mhtdc;
         TH1* h1_dEdegoQ_mhtdc;
         TH1* h1_dEdegZ41_mhtdc;
 
