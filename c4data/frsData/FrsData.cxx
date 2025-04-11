@@ -47,16 +47,32 @@ void FrsSciItem::SetAll(UInt_t de[32], UInt_t dt[32], std::vector<Int_t> mhtdc[3
 
 }
 
+void FrsSciItem::Reset()
+{
+    for (int i = 0; i < 32; i++) sciDE[i] = 0;
+    for (int i = 0; i < 32; i++) sciDT[i] = 0;
+    for (int i = 0; i < 32; i++) sciMHTDC[i] = {};
+}
+
 ClassImp(FrsSciItem)
 
 FrsMusicItem::FrsMusicItem() {}
 
-void FrsMusicItem::SetAll(uint32_t e[5][8], uint32_t t[5][8])
+void FrsMusicItem::SetAll(UInt_t e[5][8], UInt_t t[5][8])
 {
     for (int i = 0; i < 5; i++)
     {
         for (int j = 0; j < 8; j++) musicE[i][j] = e[i][j];
         for (int j = 0; j < 8; j++) musicT[i][j] = t[i][j];
+    }
+}
+
+void FrsMusicItem::Reset()
+{
+    for (int i = 0; i < 5; i++)
+    {
+        for (int j = 0; j < 8; j++) musicE[i][j] = 0;
+        for (int j = 0; j < 8; j++) musicT[i][j] = 0;
     }
 }
 
@@ -69,6 +85,12 @@ void FrsTpcItem::SetAll(UInt_t adc[7][8], std::vector<UInt_t> tdc[128])
 {
     for (int i = 0; i < 7; i++) for (int j = 0; j < 8; j++) adcData[i][j] = adc[i][j];
     for (int i = 0; i < 128; i++) tdcData[i] = tdc[i];
+}
+
+void FrsTpcItem::Reset()
+{
+    for (int i = 0; i < 7; i++) for (int j = 0; j < 8; j++) adcData[i][j] = 0;
+    for (int i = 0; i < 128; i++) tdcData[i] = {};
 }
 
 ClassImp(FrsTpcItem)

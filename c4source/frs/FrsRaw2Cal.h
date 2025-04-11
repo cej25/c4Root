@@ -47,6 +47,11 @@ class FrsRaw2Cal : public FairTask
         TTPCParameter* tpc;
 
         // Arrays
+        FrsTpatItem const* tpatItem;
+        FrsSciItem const* sciItem;
+        FrsMusicItem const* musicItem;
+        FrsTpcItem const* tpcItem;
+
         std::vector<FrsTpatItem> const* tpatArray;
         std::vector<FrsSciItem> const* sciArray;
         std::vector<FrsMusicItem> const* musicArray;

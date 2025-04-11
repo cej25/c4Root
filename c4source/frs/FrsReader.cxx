@@ -57,10 +57,14 @@ Bool_t FrsReader::Init(ext_data_struct_info* a_struct_info)
 
     // mgr->RegisterAny("FrsTpatData", tpatArray, !fOnline);
     mgr->RegisterAny("FrsTpatData", tpatItem, !fOnline);
-    mgr->RegisterAny("FrsScalerData", scalerArray, !fOnline);
-    mgr->RegisterAny("FrsSciData", sciArray, !fOnline);
-    mgr->RegisterAny("FrsMusicData", musicArray, !fOnline);
-    mgr->RegisterAny("FrsTpcData", tpcArray, !fOnline);
+    // mgr->RegisterAny("FrsScalerData", scalerArray, !fOnline);
+    mgr->RegisterAny("FrsScalerData", scalerItem, !fOnline);
+    // mgr->RegisterAny("FrsSciData", sciArray, !fOnline);
+    mgr->RegisterAny("FrsSciData", sciItem, !fOnline);
+    // mgr->RegisterAny("FrsMusicData", musicArray, !fOnline);
+    mgr->RegisterAny("FrsMusicData", musicItem, !fOnline);
+    // mgr->RegisterAny("FrsTpcData", tpcArray, !fOnline);
+    mgr->RegisterAny("FrsTpcData", tpcItem, !fOnline);
 
     memset(fData, 0, sizeof *fData);
 
@@ -72,15 +76,15 @@ Bool_t FrsReader::Read()
     if (!fData) return kTRUE;
     if (fData == nullptr) return kFALSE;
 
-    int64_t wr_t = (((int64_t)fData->WR_T[3]) << 48) + (((int64_t)fData->WR_T[2]) << 32) + (((int64_t)fData->WR_T[1]) << 16) + (int64_t)(fData->WR_T[0]);
-    if (wr_t == 0) return kTRUE; // CEJ: does this screw things up for spillflag? untested, yes most likely
+    Long64_t wr_t = (((Long64_t)fData->WR_T[3]) << 48) + (((Long64_t)fData->WR_T[2]) << 32) + (((Long64_t)fData->WR_T[1]) << 16) + (Long64_t)(fData->WR_T[0]);
+    if (wr_t == 0) return kTRUE;
 
-    int16_t tpat = fData->TPAT;
+    Short_t tpat = fData->TPAT;
 
     Long64_t travmus_wr_t = (((Long64_t)fData->TM_WR_T[3]) << 48) + (((Long64_t)fData->TM_WR_T[2]) << 32) + (((Long64_t)fData->TM_WR_T[1]) << 16) + (Long64_t)(fData->TM_WR_T[0]);
 
-    auto & entry = tpatArray->emplace_back();
-    entry.SetAll(wr_t, tpat, travmus_wr_t);
+    // auto & entry = tpatArray->emplace_back();
+    // entry.SetAll(wr_t, tpat, travmus_wr_t);
 
     tpatItem->SetAll(wr_t, tpat, travmus_wr_t);
 
@@ -101,8 +105,10 @@ void FrsReader::ScalerReader()
         {
             uint32_t index = fData->SCALERS[i].I[j] + i * 32; // 2 sets of scalers
             uint32_t scaler = fData->SCALERS[i].v[j];
-            auto & entry = scalerArray->emplace_back();
-            entry.SetAll(index, scaler);
+            // auto & entry = scalerArray->emplace_back();
+            // entry.SetAll(index, scaler);
+
+            scalerItem->SetAll(index, scaler);// CEJ:  ok scalers need fixing 10/04/25
         }
     }
 }
@@ -147,8 +153,10 @@ void FrsReader::ScintillatorReader()
         hit_index = next_channel_start;
     }
 
-    auto & entry = sciArray->emplace_back();
-    entry.SetAll(sciDE, sciDT, sciMHTDC);
+    // auto & entry = sciArray->emplace_back();
+    // entry.SetAll(sciDE, sciDT, sciMHTDC);
+
+    sciItem->SetAll(sciDE, sciDT, sciMHTDC);
 }
 
 void FrsReader::MusicReader()
@@ -187,8 +195,10 @@ void FrsReader::MusicReader()
         }
     }
 
-    auto & entry = musicArray->emplace_back();
-    entry.SetAll(musicE, musicT);
+    // auto & entry = musicArray->emplace_back();
+    // entry.SetAll(musicE, musicT);
+
+    musicItem->SetAll(musicE, musicT);
 }
 
 void FrsReader::TpcReader()
@@ -224,8 +234,10 @@ void FrsReader::TpcReader()
         hit_index = next_channel_start;
     }
 
-    auto & entry = tpcArray->emplace_back();
-    entry.SetAll(adcData, tdcData);
+    // auto & entry = tpcArray->emplace_back();
+    // entry.SetAll(adcData, tdcData);
+
+    tpcItem->SetAll(adcData, tdcData);
 }
 
 
@@ -235,9 +247,13 @@ void FrsReader::Reset()
 {
     tpatItem->Reset();
     tpatArray->clear();
+    scalerItem->Reset();
     scalerArray->clear();
+    sciItem->Reset();
     sciArray->clear();
+    musicItem->Reset();
     musicArray->clear();
+    tpcItem->Reset();
     tpcArray->clear();
     memset(sciDE, 0, sizeof *sciDE);
     memset(sciDT, 0, sizeof *sciDT);

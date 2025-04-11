@@ -55,6 +55,7 @@ class FrsSciItem : public TObject
         FrsSciItem();
 
         void SetAll(UInt_t de[18], UInt_t dt[19], std::vector<Int_t> mhtdc[24]);
+        void Reset();
 
         // Getters
         const UInt_t (&Get_de_array() const) [32] { return sciDE; }
@@ -79,6 +80,7 @@ class FrsMusicItem : public TObject
         FrsMusicItem();
 
         void SetAll(UInt_t e[5][8], UInt_t t[5][8]);
+        void Reset();
 
         const UInt_t (&Get_music_e() const) [5][8] { return musicE; }
         const UInt_t (&Get_music_t() const) [5][8] { return musicT; }
@@ -99,6 +101,7 @@ class FrsTpcItem : public TObject
         FrsTpcItem();
 
         void SetAll(UInt_t adc[7][8], std::vector<UInt_t> tdc[128]);
+        void Reset();
 
         const UInt_t (&Get_adc_data() const) [7][8] { return adcData; }
         const std::vector<UInt_t> (&Get_tdc_data() const) [128] { return tdcData; }
