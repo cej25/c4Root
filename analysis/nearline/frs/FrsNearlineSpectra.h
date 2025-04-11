@@ -193,6 +193,10 @@ class FrsNearlineSpectra : public FairTask
         TH1* h1_dEdegZ41;
         TH1* h1_rho[2];
         TH1* h1_brho[2];
+        TH1* h1_music21_dE;
+        TH1* h1_music22_dE;
+        TH1* h1_music21_dE_cor;
+        TH1* h1_music22_dE_cor;
         TH1* h1_music41_dE;
         TH1* h1_music42_dE;
         TH1* h1_music41_dE_cor;
