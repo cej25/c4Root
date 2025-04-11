@@ -55,14 +55,14 @@ void lisadev_histos(int fileNumber)
     //___O F F L I N E
     //TString inputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/fragments_EG_test/";
     TString inputpath = "/u/gandolfo/data/test_c4/";
-    TString filename = Form(inputpath + "run_%04d_tree.root", fileNumber);  
+    TString filename = Form(inputpath + "run_%04d_tree_v2.root", fileNumber);  
     
     //___O U T P U T
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/fragments_EG_101gate/"; //test output
     TString outputpath = "/u/gandolfo/data/test_c4/"; //test output
 
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/fragments_noGate/";
-    TString outputFilename = Form(outputpath + "run_%04d_histos.root", fileNumber);
+    TString outputFilename = Form(outputpath + "run_%04d_histos_v2.root", fileNumber);
 
 
     FairRunAna* run = new FairRunAna();

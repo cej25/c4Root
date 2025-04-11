@@ -166,7 +166,7 @@ public:
 	Int_t         MUSIC43_elec;       /* used electronic              */
 
   // New 2025..
-  Int_t         music21_e_off[8];       /* ADC offsets              */
+  Float_t       music21_e_off[8];       /* ADC offsets              */
   Float_t       music21_e_gain[8];      /* ADC gains                */
   Float_t       music22_e_off[8];       /* ADC offsets              */
   Float_t       music22_e_gain[8];      /* ADC gains                */
