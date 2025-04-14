@@ -8,6 +8,8 @@
 #define LISA_CAL 1
 
 #define FRS_ON 1
+#define FRS_LISA_CORRELATIONS 1
+
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
 
 // Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/
@@ -55,14 +57,14 @@ void lisadev_histos(int fileNumber)
     //___O F F L I N E
     //TString inputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/fragments_EG_test/";
     TString inputpath = "/u/gandolfo/data/test_c4/";
-    TString filename = Form(inputpath + "run_%04d_tree_v2.root", fileNumber);  
+    TString filename = Form(inputpath + "run_%04d_tree.root", fileNumber);  
     
     //___O U T P U T
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/fragments_EG_101gate/"; //test output
     TString outputpath = "/u/gandolfo/data/test_c4/"; //test output
 
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_histos/fragments_noGate/";
-    TString outputFilename = Form(outputpath + "run_%04d_histos_v2.root", fileNumber);
+    TString outputFilename = Form(outputpath + "run_%04d_histos_corr.root", fileNumber);
 
 
     FairRunAna* run = new FairRunAna();
@@ -191,11 +193,14 @@ void lisadev_histos(int fileNumber)
         run->AddTask(nearlinefrs);
     }
 
-    // if(LISA_ON && FRS_ON)
-    // {
-    //     LisaFrsCorrelations* LISA_FRS_corr = new LisaFrsCorrelations(fg);
-    //     run->AddTask(LISA_FRS_corr);
-    // }
+    if(LISA_ON && FRS_ON)
+    {
+        if(FRS_LISA_CORRELATIONS)
+        {
+            LisaFrsCorrelations* LISA_FRS_corr = new LisaFrsCorrelations(fg);
+            run->AddTask(LISA_FRS_corr);
+        }
+    }
 
     TString c = "Lisa";
     TString d = "Frs";
