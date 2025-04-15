@@ -147,7 +147,19 @@ InitStatus LisaNearlineSpectra::Init()
                 h1_lisa_rate[i][j][k]->SetFillColor(kRed-3);
             }
         }
+    }
 
+    // init rate counters
+    for (int i = 0; i < layer_number; i++)
+    {
+        for (int j = 0; j < xmax; j++)
+        {
+            for (int k = 0; k < ymax; k++)
+            {
+                detector_counter[i][j][k] = 0;
+                detector_rate[i][j][k] = 0;
+            }
+        }
     }
 
     //:::::::::::H I T  P A T T E R N S:::::::::::::::
@@ -515,7 +527,6 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     //c4LOG(info, "Comment to slow down program for testing");
     for (auto const & lisaCalItem : *lisaCalArray)
     {
-
         wr_time = lisaCalItem.Get_wr_t();
         if (wr_time == 0)return;
         if(wr_time > 0) LISA_time_mins = (wr_time - exp_config->exp_start_time)/ 60E9;
@@ -540,7 +551,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         //::::::::F I L L   H I S T O S:::::::
 
         //:::::::: R A T E S :::::::::::
-        detector_counter[layer][xpos][ypos]++;
+        detector_counter[layer-1][xpos][ypos]++;
 
         //:::::::: H I T  P A T T E R N ::::::::::
         //:::::::::Layer
@@ -627,24 +638,40 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     //c4LOG(info,"wr time: " << wr_time << "   prev wr: " << prev_wr << " wr diff: " << wr_diff);
 
     //:::: Rates
-    int64_t wr_dt = (wr_time - prev_wr)/ 1e9;
-    if (wr_dt > 1) 
+    Long64_t rate_wr_dt = (wr_time - saved_wr)/ 1e9; // maybe should be a double dunno
+    double rate_wr_dt_db = (wr_time - saved_wr) / 1e9;
+
+    if (rate_wr_dt_db > 1) 
     {
-        if (prev_wr != 0)
+        if (saved_wr != 0)
         {
+            // std::cout << "int:: " << rate_wr_dt << std::endl;
+            // std::cout << "double:: " << rate_wr_dt_db << std::endl;
             for (int i = 0; i < layer; i++)
             {
                 for (int j = 0; j < xmax; j++)
                 {
                     for (int k = 0; k < ymax; k++)
                     {
-                        detector_rate[i][j][k] = detector_counter[i][j][k] / wr_dt;
+                        detector_rate[i][j][k] = detector_counter[i][j][k] / rate_wr_dt_db;
                         h1_lisa_rate[i][j][k]->SetBinContent(rate_running_count, detector_rate[i][j][k]);
                     }
                 }
             }
         }
+        saved_wr = wr_time;
         rate_running_count++;
+
+        for (int i = 0; i < layer; i++)
+        {
+            for (int j = 0; j < xmax; j++)
+            {
+                for (int k = 0; k < ymax; k++)
+                {
+                    detector_counter[i][j][k] = 0;
+                }
+            }
+        }
     }
 
     //::::::: Fill Multiplicity ::::::::::

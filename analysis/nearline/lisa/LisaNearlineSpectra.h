@@ -113,9 +113,11 @@ class LisaNearlineSpectra : public FairTask
         TDirectory* dir_tokyo;
         
 
-        int64_t prev_wr = 0;
-        int64_t wr_diff;
-        int64_t wr_rate;
+        Long64_t prev_wr = 0;
+        Long64_t wr_diff;
+        Long64_t wr_rate;
+
+        Long64_t saved_wr =  0;
     
         // ::: Histograms
 
