@@ -53,12 +53,19 @@ class FrsRaw2Cal : public FairTask
         FrsTpcItem const* tpcItem;
 
         std::vector<FrsTpatItem> const* tpatArray;
+        FrsTpatItem const* tpatItem;
         std::vector<FrsSciItem> const* sciArray;
+        FrsSciItem const* sciItem;
         std::vector<FrsMusicItem> const* musicArray;
+        FrsMusicItem const* musicItem;
         std::vector<FrsTpcItem> const* tpcArray;
+        FrsTpcItem const* tpcItem;
         std::vector<FrsCalSciItem>* calSciArray;
+        FrsCalSciItem calSciItem;
         std::vector<FrsCalMusicItem>* calMusicArray;
+        FrsCalMusicItem calMusicItem;
         std::vector<FrsCalTpcItem>* calTpcArray;
+        FrsCalTpcItem calTpcItem;
 
         // TAC dE
         const UInt_t* sciDE; // up to 18 channnels
