@@ -643,10 +643,8 @@ void LisaNearlineSpectra::Exec(Option_t* option)
 
     if (rate_wr_dt_db > 1) 
     {
-        if (saved_wr != 0)
+        if (saved_wr != 0 && rate_wr_dt_db < 2)
         {
-            // std::cout << "int:: " << rate_wr_dt << std::endl;
-            // std::cout << "double:: " << rate_wr_dt_db << std::endl;
             for (int i = 0; i < layer; i++)
             {
                 for (int j = 0; j < xmax; j++)
