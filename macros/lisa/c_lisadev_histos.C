@@ -7,8 +7,8 @@
 #define LISA_ANA 0
 #define LISA_CAL 1
 
-#define FRS_ON 0
-#define FRS_LISA_CORRELATIONS 0
+#define FRS_ON 1
+#define FRS_LISA_CORRELATIONS 1
 
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
 
@@ -30,10 +30,10 @@ void c_lisadev_histos()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
-    TString fExpName = "pareeskha";
+    TString fExpName = "pareeksha";
 
     //:::::::::Here you define commonly used path
-    TString c4Root_path = "$C4ROOT_PATH";
+    TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -121,8 +121,8 @@ void c_lisadev_histos()
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: FRS config
-    // TFrsConfiguration::SetConfigPath(config_path + "/frs/");
-    // TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
+    TFrsConfiguration::SetConfigPath(config_path + "/frs/");
+    TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
     // TFrsConfiguration::SetTravMusDriftFile(config_path + "/frs/TM_Drift_fragments.txt");
     // TFrsConfiguration::SetZ1DriftFile(config_path + "/frs/Z1_Drift_fragments.txt");
     // TFrsConfiguration::SetAoQDriftFile(config_path + "/frs/AoQ_Drift_fragments.txt");
