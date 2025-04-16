@@ -164,8 +164,8 @@ void lisadev_histos()
     TLisaConfiguration::SetWrDiffRange(0,100000000);
     TLisaConfiguration::SetWrDiffBin(50000);
 
-    TLisaConfiguration::SetWrRateRange(0,50000);
-    TLisaConfiguration::SetWrRateBin(50000000);
+    TLisaConfiguration::SetWrRateRange(0,3600);
+    TLisaConfiguration::SetWrRateBin(3600);
 
     // FRS
     TFrsConfiguration::Set_Z_range(20,60);

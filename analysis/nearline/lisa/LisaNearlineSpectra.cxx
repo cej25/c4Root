@@ -93,6 +93,7 @@ InitStatus LisaNearlineSpectra::Init()
     xmax = lisa_config->XMax();
     ymax = lisa_config->YMax();
 
+    // ::: Directories :::
     dir_lisa->cd();
     dir_stats = dir_lisa->mkdir("Stats");
     dir_rates = dir_stats->mkdir("Rates");
@@ -110,17 +111,19 @@ InitStatus LisaNearlineSpectra::Init()
 
     c4LOG(info, "INIT Layer number" << layer_number);
     c4LOG(info, "det_number :" << det_number << " layer number : " << layer_number);
+    //....................................
   
-    // :::: S T A T S ::::
+    // ::: S T A T S :::
 
-    //:::::::::::White Rabbit:::::::::::::::
+    //::: White Rabbit :::
     dir_stats->cd();
     h1_wr_diff = new TH1I("h1_wr_diff", "WR Difference", lisa_config->bin_wr_diff, lisa_config->min_wr_diff, lisa_config->max_wr_diff);
     h1_wr_diff->GetXaxis()->SetTitle("LISA WR Difference [ns]");
     h1_wr_diff->SetLineColor(kBlack);
     h1_wr_diff->SetFillColor(kRed-3);
+    //....................................
 
-    //:::::::::: Rates :::::::::::::::::::
+    //::: Rates :::
     dir_rates->cd();
 
     detector_counter.resize(layer_number);
@@ -142,13 +145,13 @@ InitStatus LisaNearlineSpectra::Init()
             for (int k = 0; k < ymax; k++)
             {
                 h1_lisa_rate[i][j][k] = new TH1I(Form("h1_lisa_rate_%i%i%i",i,j,k), Form("LISA Rate %i%i%i",i,j,k), lisa_config->bin_wr_rate, lisa_config->min_wr_rate, lisa_config->max_wr_rate);
-                h1_lisa_rate[i][j][k]->GetXaxis()->SetTitle(Form("LISA %i%i%i Rate [Hz]", i,j,k));
+                h1_lisa_rate[i][j][k]->GetXaxis()->SetTitle("Time [s]");
+                h1_lisa_rate[i][j][k]->GetYaxis()->SetTitle(Form("LISA %i%i%i Rate [Hz]", i,j,k));
                 h1_lisa_rate[i][j][k]->SetLineColor(kBlack);
                 h1_lisa_rate[i][j][k]->SetFillColor(kRed-3);
             }
         }
     }
-
     // init rate counters
     for (int i = 0; i < layer_number; i++)
     {
@@ -161,6 +164,7 @@ InitStatus LisaNearlineSpectra::Init()
             }
         }
     }
+    //....................................
 
     //:::::::::::H I T  P A T T E R N S:::::::::::::::
     dir_stats->cd();
@@ -502,16 +506,20 @@ InitStatus LisaNearlineSpectra::Init()
 
 void LisaNearlineSpectra::Exec(Option_t* option)
 {   
+    // ::: For WR histos and experiment start
     wr_time = 0;
-    int multiplicity[layer_number] = {0};
-    int total_multiplicity = 0;
+    Long64_t LISA_time_mins = 0;
+    // .........................
+
+    //int multiplicity[layer_number] = {0};
+    //int total_multiplicity = 0;
 
     //std::vector<float> sum_energy_layer;
     //sum_energy_layer.resize(layer_number);
 
-    float energy_ch[layer_number][xmax][ymax] = {0.0, 0.0, 0.0};
-    float energy_ch_GM[layer_number][xmax][ymax] = {0.0 ,0.0 ,0.0};
-    float energy_ch_MWD_GM[layer_number][xmax][ymax] = {0.0 ,0.0 ,0.0};
+    //float energy_ch[layer_number][xmax][ymax] = {0.0, 0.0, 0.0};
+    //float energy_ch_GM[layer_number][xmax][ymax] = {0.0 ,0.0 ,0.0};
+    //float energy_ch_MWD_GM[layer_number][xmax][ymax] = {0.0 ,0.0 ,0.0};
 
     //std::vector<float> sum_energy_layer_GM;
     //sum_energy_layer_GM.resize(layer_number);
@@ -522,37 +530,35 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     //std::vector<float> energy_layer_MWD_GM;
     //energy_layer_MWD_GM.resize(layer_number);
 
-    Long64_t LISA_time_mins = 0;
+    
 
     //c4LOG(info, "Comment to slow down program for testing");
     for (auto const & lisaCalItem : *lisaCalArray)
     {
+        // For WR histos and experiment start
         wr_time = lisaCalItem.Get_wr_t();
         if (wr_time == 0)return;
         if(wr_time > 0) LISA_time_mins = (wr_time - exp_config->exp_start_time)/ 60E9;
-
         //c4LOG(info, "LISA_time_mins: " << LISA_time_mins << " wr time: "<< std::fixed << std::setprecision(10)<< wr_time);
 
-
-        //::::::: Retrieve Data ::::::::::::::
+        //::: Retrieve Data :::
         layer = lisaCalItem.Get_layer_id();
         city = lisaCalItem.Get_city();
         int xpos = lisaCalItem.Get_xposition();
         int ypos = lisaCalItem.Get_yposition();
-        float energy = lisaCalItem.Get_energy();
-        float energy_MWD = lisaCalItem.Get_energy_MWD();
-        std::vector<float> trace = lisaCalItem.Get_trace_febex();
-        float energy_GM = lisaCalItem.Get_energy_GM();
-        float energy_MWD_GM = lisaCalItem.Get_energy_MWD_GM();
-        int pileup = lisaCalItem.Get_pileup();
-        int overflow = lisaCalItem.Get_overflow();
-        uint64_t evtno = header->GetEventno();
+        //float energy = lisaCalItem.Get_energy();
+        //float energy_MWD = lisaCalItem.Get_energy_MWD();
+        //std::vector<float> trace = lisaCalItem.Get_trace_febex();
+        //float energy_GM = lisaCalItem.Get_energy_GM();
+        //float energy_MWD_GM = lisaCalItem.Get_energy_MWD_GM();
+        //int pileup = lisaCalItem.Get_pileup();
+        //int overflow = lisaCalItem.Get_overflow();
+        //uint64_t evtno = header->GetEventno();
         
-        //::::::::F I L L   H I S T O S:::::::
+        // ::: For R A T E S :::
+        detector_counter[layer-1][xpos][ypos]++;    //layers start from 1
 
-        //:::::::: R A T E S :::::::::::
-        detector_counter[layer-1][xpos][ypos]++;
-
+        //::: F I L L   H I S T O S :::
         //:::::::: H I T  P A T T E R N ::::::::::
         //:::::::::Layer
         //int hp_bin = (ymax-(ypos+1))*xmax + xpos; // -1 compared to canvas position
@@ -575,21 +581,21 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         //if (overflow != 0) if (layer != 0) h2_overflow_grid[layer-1]->Fill(xpos,ypos);
         
         //:::::::: Count Multiplicity ::::::::
-        multiplicity[layer]++;
-        total_multiplicity++;
+        //multiplicity[layer]++;
+        //total_multiplicity++;
 
         //::::::::: E N E R G Y :::::::::::::::
         
         //::::::::Define Sum Energy
         //sum_energy_layer[layer] += energy;
-        energy_ch[layer][xpos][ypos] = energy;
+        //energy_ch[layer][xpos][ypos] = energy;
 
         //::::::::Define Sum Energy GM
         //sum_energy_layer_GM[layer] += energy_GM;
-        energy_ch_GM[layer][xpos][ypos] = energy_GM;
+        //energy_ch_GM[layer][xpos][ypos] = energy_GM;
         //energy_layer_GM[layer] = energy_GM;
 
-        energy_ch_MWD_GM[layer][xpos][ypos] = energy_MWD_GM;
+        //energy_ch_MWD_GM[layer][xpos][ypos] = energy_MWD_GM;
         //energy_layer_MWD_GM[layer] = energy_MWD_GM;
         
         //:::Fill Energy Gain Matched
@@ -600,45 +606,41 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         //h1_energy_MWD_layer[layer]->Fill(energy_MWD_GM);	        
         
         //:::::::Energy vs Time
-        if (energy_GM > 0 && LISA_time_mins > 0)
-        {
+        //if (energy_GM > 0 && LISA_time_mins > 0)
+        //{
             //c4LOG(info, "conditions on LISA time: " << LISA_time_mins << "and energy: " << energy_GM );
             //h2_energy_layer_vs_time[layer]->Fill(LISA_time_mins, energy_GM);
             //h2_energy_ch_vs_time[layer][xpos][ypos]->Fill(LISA_time_mins, energy_GM); 
-        }
+        //}
 
         //:::::::Energy MWD vs Time
-        if (energy_MWD_GM > 0 && LISA_time_mins > 0)
-        {
+        //if (energy_MWD_GM > 0 && LISA_time_mins > 0)
+        //{
             //c4LOG(info, "conditions on LISA time: " << LISA_time_mins << "and energy: " << energy_GM );
             //h2_energy_MWD_layer_vs_time[layer]->Fill(LISA_time_mins, energy_MWD_GM);
             //h2_energy_MWD_ch_vs_time[layer][xpos][ypos]->Fill(LISA_time_mins, energy_MWD_GM); 
-        }
+        //}
             
         // :::: Fill traces stats :::
-        for (int i = 0; i < trace.size(); i++)
-        {   
+        //for (int i = 0; i < trace.size(); i++)
+        //{   
 	        //h2_traces_ch_stat[layer][xpos][ypos]->Fill(i*0.01,trace[i]);
-        }
+        //}
     
     }
-    //c4LOG(info, "::::::::::END LOOP::::::::::::" << " Layer number :" << layer_number);
-
     //c4LOG(info, "LISA_time_mins: " << LISA_time_mins << " wr time: "<< std::fixed << std::setprecision(10)<< wr_time);
-
+    
+    // ::: WR Time Difference
     if ( wr_time == 0 ) return;
-
-    //:::::: WR Time Difference
     if( prev_wr > 0 )
     {
-        wr_diff = wr_time - prev_wr; //to express wr difference in us
+        wr_diff = wr_time - prev_wr;
         h1_wr_diff->Fill(wr_diff);
     }
     prev_wr = wr_time;
-    //c4LOG(info,"wr time: " << wr_time << "   prev wr: " << prev_wr << " wr diff: " << wr_diff);
+    //....................................
 
-    //:::: Rates
-    Long64_t rate_wr_dt = (wr_time - saved_wr)/ 1e9; // maybe should be a double dunno
+    // ::: RATES
     double rate_wr_dt_db = (wr_time - saved_wr) / 1e9;
 
     if (rate_wr_dt_db > 1) 
@@ -671,6 +673,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
             }
         }
     }
+    //....................................
 
     //::::::: Fill Multiplicity ::::::::::
     //for (int i = 0; i < layer_number; i++) h1_multiplicity_layer[i]->Fill(multiplicity[i]);
