@@ -33,6 +33,7 @@ class TH2I;
 class TFolder;
 class TDirectory;
 class TH2;
+class TH1;
 
 
 class LisaNearlineSpectra : public FairTask
@@ -72,6 +73,9 @@ class LisaNearlineSpectra : public FairTask
         int num_layers;
         TString city = "";
         
+        std::vector<std::vector<std::vector<int>>> detector_counter;  //ok
+        std::vector<std::vector<std::vector<int>>> detector_rate;     //ok
+        int rate_running_count = 0; //ok
 
         EventHeader* header;
         Int_t fNEvents;
@@ -89,6 +93,7 @@ class LisaNearlineSpectra : public FairTask
         TDirectory* dir_lisa;
 
         TDirectory* dir_stats;
+        TDirectory* dir_rates;
 
         TDirectory* dir_energy_febex;
         TDirectory* dir_energy_febex_ch;
@@ -108,39 +113,41 @@ class LisaNearlineSpectra : public FairTask
         TDirectory* dir_tokyo;
         
 
-        int64_t prev_wr = 0;
-        int64_t wr_diff;
+        Long64_t prev_wr = 0;
+        Long64_t wr_diff;
+        Long64_t wr_rate;
+
+        Long64_t saved_wr =  0;
     
         // ::: Histograms
+
         // ::: Stats
         TH1I* h1_hitpattern_total;
-        TH1I* h1_wr_diff;
-        TH1I* h1_wr_rate;
+        TH1I* h1_wr_diff; //ok
+        std::vector<std::vector<std::vector<TH1I*>>> h1_lisa_rate; //ok
+
+ 
         std::vector<TH1I*> h1_hitpattern_layer;
         std::vector<TH2F*> h2_hitpattern_grid;
         std::vector<TH2F*> h2_pileup_grid;
         std::vector<TH2F*> h2_overflow_grid;
-        TH1I* h1_multiplicity;
+        TH1I* h1_evt_multiplicity;
         std::vector<TH1I*> h1_multiplicity_layer; ;
-        TH1I* h1_layer_multiplicity;
+        TH1I* h1_layers_multiplicity;
         //TH2F* h2_hitpattern_grid;
         //TH1F* h1_energy_layer0;
 
-        // ::: Energy febex and MWD
-        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_febex_ch;
-        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_MWD_ch;
-
-        // Energy GM for febex and MWD
-        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_febex_ch_GM;
-        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_MWD_ch_GM;
-        std::vector<TH1F*> h1_energy_febex_layer_GM;
-        std::vector<TH1F*> h1_energy_MWD_layer_GM;
+        // Energy for febex and MWD
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_febex;
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_MWD;
+        std::vector<TH1F*> h1_energy_febex_layer;
+        std::vector<TH1F*> h1_energy_MWD_layer;
 
         // Energy of layers summed or vs
         TH1F* h1_energy_all_layers_GM;
         TH2F* h2_sum_energy_layer1_vs_layer2;
         TH2F* h2_sum_energy_layer1_vs_layer2_GM;
-        TH2F* h2_energy_layer1_vs_layer2_GM;
+        TH2F* h2_energy_layer1_vs_layer2;
         TH2F* h2_energy_MWD_layer1_vs_layer2_GM;
 
         // ::: Traces

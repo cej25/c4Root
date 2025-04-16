@@ -62,8 +62,8 @@ int TLisaConfiguration::bin_energy_MWD_GM = 500;
 
 
 // ::: WR
-int TLisaConfiguration::min_wr_diff = 0;
-int TLisaConfiguration::max_wr_diff = 200;
+long TLisaConfiguration::min_wr_diff = 0;
+long TLisaConfiguration::max_wr_diff = 200;
 int TLisaConfiguration::bin_wr_diff = 50;
 int TLisaConfiguration::min_wr_rate = 0;
 int TLisaConfiguration::max_wr_rate = 200;
@@ -231,12 +231,12 @@ void TLisaConfiguration::ReadMappingFile()
     ymax = y_positions.size();
     num_detectors = detectors;
     num_febex_boards = febex_boards.size();
-    //std::cout<<"num layers:"<<num_layers<<std::endl;
+    std::cout<<"num layers:"<<num_layers<<std::endl;
     
     detector_mapping_loaded = 1;
     detector_map_file.close();
 
-    c4LOG(info, "Lisa Configuration File: " + mapping_file);
+    //c4LOG(info, "Lisa Configuration File: " + mapping_file);
     return;
 
 }
@@ -274,13 +274,13 @@ void TLisaConfiguration::ReadGMFile()
 
         gain_matching_coeffs.insert(std::make_pair(layer_xy, gm_coeff));
 
-        std::cout << " Febex GM -> lxy : "<< layer_id << x_pos << y_pos << " slope " << slope << " intercept " << intercept << "\n";
+        //std::cout << " Febex GM -> lxy : "<< layer_id << x_pos << y_pos << " slope " << slope << " intercept " << intercept << "\n";
     }
     
     gain_matching_loaded = 1;
     gain_matching_coeff_file.close();
 
-    c4LOG(info, "Lisa Gain Matching File: " + gain_matching_file);
+    //c4LOG(info, "Lisa Gain Matching File: " + gain_matching_file);
     return;
 
 }
@@ -317,13 +317,13 @@ void TLisaConfiguration::ReadGMFileMWD()
 
         gain_matching_MWD_coeffs.insert(std::make_pair(layer_xy, gm_MWD_coeff));
 
-        std::cout << " MWD GM -> lxy : "<< layer_id << x_pos << y_pos << " slope " << slope_MWD << " intercept " << intercept_MWD << "\n";
+        //std::cout << " MWD GM -> lxy : "<< layer_id << x_pos << y_pos << " slope " << slope_MWD << " intercept " << intercept_MWD << "\n";
     }
     
     gain_matching_MWD_loaded = 1;
     gain_matching_coeff_file_MWD.close();
 
-    c4LOG(info, "Lisa Gain Matching MWD File: " + gain_matching_file_MWD);
+    //c4LOG(info, "Lisa Gain Matching MWD File: " + gain_matching_file_MWD);
     return;
 
 }

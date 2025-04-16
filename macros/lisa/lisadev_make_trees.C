@@ -24,7 +24,7 @@ typedef struct EXT_STR_h101_t
 
 } EXT_STR_h101;
 
-void lisadev_make_trees(int fileNumber)
+void lisadev_make_trees()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
@@ -54,15 +54,15 @@ void lisadev_make_trees(int fileNumber)
 
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
-    //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0169_*.lmd";  //data with only lisa
-    //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/daqtest/daqtest_0001_0001.lmd"; //data from ts folder
+    //TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/LISAmp_test/";
     TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";
-    TString filename = Form(inputpath + "run_%04d_0001.lmd", fileNumber);
+ 
+    //TString filename = inputpath + "LISAmp_2layers_0006_0001.lmd";
+    TString filename = inputpath + "run_0075_0001.lmd";
 
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/test_c4/"; //testing
-    //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/fragments_EG_test/";    
-    TString outputFilename = Form(outputpath + "run_%04d_tree_v2.root", fileNumber);
+    TString outputFilename = outputpath + "run_0075_0001_tree.root";
 
 
     //:::::::Create online run
@@ -119,17 +119,19 @@ void lisadev_make_trees(int fileNumber)
     TExperimentConfiguration::SetEOSTrig(4);
     
     // ::: FRS config
-    TFrsConfiguration::SetConfigPath(config_path + "/frs/");
-    TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
-    TFrsConfiguration::SetTravMusDriftFile(config_path + "/frs/TM_Drift_fragments.txt");
-    TFrsConfiguration::SetZ1DriftFile(config_path + "/frs/Z1_Drift_fragments.txt");
-    TFrsConfiguration::SetAoQDriftFile(config_path + "/frs/AoQ_Drift_fragments.txt");
+    TFrsConfiguration::SetConfigPath(config_path + "/pareeksha/frs/");
+    TFrsConfiguration::SetCrateMapFile(config_path + "/../pareeksha/frs/crate_map.txt");
+    TFrsConfiguration::SetTravMusDriftFile(config_path + "/../pareeksha/frs/TM_Drift_fragments.txt");
+    TFrsConfiguration::SetZ1DriftFile(config_path + "/../pareeksha/frs/Z1_Drift_fragments.txt");
+    TFrsConfiguration::SetAoQDriftFile(config_path + "/../pareeksha/frs/AoQ_Drift_fragments.txt");
 
     // ::: Lisa config
-    TLisaConfiguration::SetMappingFile(config_path + "/lisa/Lisa_Detector_Map_names.txt");
-    TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching.txt");
-    TLisaConfiguration::SetGMFileMWD(config_path + "/lisa/Lisa_GainMatching_MWD.txt");
-    TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
+    //TLisaConfiguration::SetMappingFile(config_path + "/Lisa_5x5_shiyan.txt");
+    TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map_names.txt");
+
+    TLisaConfiguration::SetGMFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_pareeksha.txt");
+    TLisaConfiguration::SetGMFileMWD("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_pareeksha.txt");
+    TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_DAQtest.txt");
 
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -144,8 +146,6 @@ void lisadev_make_trees(int fileNumber)
     if (LISA_ON)
     {
         LisaReader* unpacklisa = new LisaReader((EXT_STR_h101_lisa_onion*)&ucesb_struct.lisa, offsetof(EXT_STR_h101, lisa));
-        //unpacklisa->DoFineTimeCalOnline("....root", 100000);
-        //unpacklisa->SetInputFileFineTimeHistos(config_path + "....root");
 
         if (LISA_RAW)
         {
@@ -153,9 +153,7 @@ void lisadev_make_trees(int fileNumber)
         } else 
         {
             unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
-        }
-        //unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
-        
+        }        
         source->AddReader(unpacklisa);
     }
 
