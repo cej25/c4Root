@@ -71,25 +71,28 @@ class LisaNearlineSpectra : public FairTask
         int xmax;
         int ymax;
         int num_layers;
-        TString city = "";
-        
-        std::vector<std::vector<std::vector<int>>> detector_counter;  //ok
-        std::vector<std::vector<std::vector<int>>> detector_rate;     //ok
-        int rate_running_count = 0; //ok
-
-        EventHeader* header;
-        Int_t fNEvents;
-
-        Int_t en_count1 = 0;
-        Int_t en_count2 = 0;
-        Int_t counter = 0;
         uint64_t wr_time;
         Int_t layer;
-        Int_t lay;
-        Int_t xp;
-        Int_t yp;
-        uint32_t en;
+        TString city = "";
+        EventHeader* header;
+        Int_t fNEvents;
+        
+        // counters
+        std::vector<std::vector<std::vector<int>>> detector_counter; 
+        std::vector<std::vector<std::vector<int>>> detector_rate;    
+        int rate_running_count = 0; 
 
+        // Int_t en_count1 = 0;
+        // Int_t en_count2 = 0;
+        //Int_t counter = 0;
+
+        // Rates
+        Long64_t prev_wr = 0;
+        Long64_t wr_diff; 
+        Long64_t wr_rate; 
+        Long64_t saved_wr =  0; 
+
+        // Directories
         TDirectory* dir_lisa;
 
         TDirectory* dir_stats;
@@ -101,63 +104,51 @@ class LisaNearlineSpectra : public FairTask
         TDirectory* dir_energy_MWD_ch;
 
         TDirectory* dir_traces;
-        TDirectory* dir_traces_tokyo;
         
         TDirectory* dir_drift;
         TDirectory* dir_drift_ch;
-        TDirectory* dir_drift_tokyo;
 
         TDirectory* dir_music;
         TDirectory* dir_correlations;
-
-        TDirectory* dir_tokyo;
-        
-
-        Long64_t prev_wr = 0;
-        Long64_t wr_diff;
-        Long64_t wr_rate;
-
-        Long64_t saved_wr =  0;
     
         // ::: Histograms
 
-        // ::: Stats
-        TH1I* h1_hitpattern_total;
-        TH1I* h1_wr_diff; //ok
-        std::vector<std::vector<std::vector<TH1I*>>> h1_lisa_rate; //ok
+        //     Stats
+        TH1I* h1_wr_diff; 
+        std::vector<std::vector<std::vector<TH1I*>>> h1_lisa_rate; 
 
  
-        std::vector<TH1I*> h1_hitpattern_layer;
-        std::vector<TH2F*> h2_hitpattern_grid;
-        std::vector<TH2F*> h2_pileup_grid;
-        std::vector<TH2F*> h2_overflow_grid;
-        TH1I* h1_evt_multiplicity;
-        std::vector<TH1I*> h1_multiplicity_layer; ;
-        TH1I* h1_layers_multiplicity;
+        // std::vector<TH1I*> h1_hitpattern_layer;
+        // std::vector<TH2F*> h2_hitpattern_grid;
+        // std::vector<TH2F*> h2_pileup_grid;
+        // std::vector<TH2F*> h2_overflow_grid;
+        // TH1I* h1_evt_multiplicity;
+        // std::vector<TH1I*> h1_multiplicity_layer; ;
+        // TH1I* h1_layers_multiplicity;
         //TH2F* h2_hitpattern_grid;
         //TH1F* h1_energy_layer0;
 
         // Energy for febex and MWD
-        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_febex;
-        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_MWD;
-        std::vector<TH1F*> h1_energy_febex_layer;
-        std::vector<TH1F*> h1_energy_MWD_layer;
+        // std::vector<std::vector<std::vector<TH1F*>>> h1_energy_febex;
+        // std::vector<std::vector<std::vector<TH1F*>>> h1_energy_MWD;
+        // std::vector<TH1F*> h1_energy_febex_layer;
+        // std::vector<TH1F*> h1_energy_MWD_layer;
 
         // Energy of layers summed or vs
-        TH1F* h1_energy_all_layers_GM;
-        TH2F* h2_sum_energy_layer1_vs_layer2;
-        TH2F* h2_sum_energy_layer1_vs_layer2_GM;
-        TH2F* h2_energy_layer1_vs_layer2;
-        TH2F* h2_energy_MWD_layer1_vs_layer2_GM;
+        // TH1F* h1_energy_all_layers_GM;
+        // TH2F* h2_sum_energy_layer1_vs_layer2;
+        // TH2F* h2_sum_energy_layer1_vs_layer2_GM;
+        // TH2F* h2_energy_layer1_vs_layer2;
+        // TH2F* h2_energy_MWD_layer1_vs_layer2_GM;
 
         // ::: Traces
-        std::vector<std::vector<std::vector<TH2F*>>> h2_traces_ch_stat;
+        //std::vector<std::vector<std::vector<TH2F*>>> h2_traces_ch_stat;
 
         // ::: Drifts
-        std::vector<TH2*> h2_energy_layer_vs_time;
-        std::vector<TH2*> h2_energy_MWD_layer_vs_time;
-        std::vector<std::vector<std::vector<TH2*>>> h2_energy_ch_vs_time;
-        std::vector<std::vector<std::vector<TH2*>>> h2_energy_MWD_ch_vs_time;
+        // std::vector<TH2*> h2_energy_layer_vs_time;
+        // std::vector<TH2*> h2_energy_MWD_layer_vs_time;
+        // std::vector<std::vector<std::vector<TH2*>>> h2_energy_ch_vs_time;
+        // std::vector<std::vector<std::vector<TH2*>>> h2_energy_MWD_ch_vs_time;
 
         
 
