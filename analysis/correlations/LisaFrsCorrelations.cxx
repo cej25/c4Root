@@ -53,6 +53,7 @@ LisaFrsCorrelations::LisaFrsCorrelations(const TString& name, Int_t verbose)
 {
     lisa_config = TLisaConfiguration::GetInstance();
     frs_config = TFrsConfiguration::GetInstance();
+    frs = frs_config->FRS();
 }
 
 LisaFrsCorrelations::~LisaFrsCorrelations()
@@ -202,26 +203,26 @@ InitStatus LisaFrsCorrelations::Init()
         for (int gate = 0; gate < FrsGates.size(); gate++)
         {
             
-            //::: Energy spectra Gated with FRS for Layer 0 (Tokyo)
+            // //::: Energy spectra Gated with FRS for Layer 0 (Tokyo)
             h1_energy_ch_GM_PIDgated[gate].resize(layer_number);
-            h1_energy_ch_GM_PIDgated[gate][0].resize(1);
-            h1_energy_ch_GM_PIDgated[gate][0][0].resize(1);
-            h1_energy_ch_GM_PIDgated[gate][0][0][0] = new TH1F(Form("h1_energy_000_GM_PIDgated_%i",gate), "Tokyo", lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
+            // h1_energy_ch_GM_PIDgated[gate][0].resize(1);
+            // h1_energy_ch_GM_PIDgated[gate][0][0].resize(1);
+            // h1_energy_ch_GM_PIDgated[gate][0][0][0] = new TH1F(Form("h1_energy_000_GM_PIDgated_%i",gate), "Tokyo", lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
 
             h1_energy_ch_GM_PIDgated_Trav[gate].resize(layer_number);
-            h1_energy_ch_GM_PIDgated_Trav[gate][0].resize(1);
-            h1_energy_ch_GM_PIDgated_Trav[gate][0][0].resize(1);
-            h1_energy_ch_GM_PIDgated_Trav[gate][0][0][0] = new TH1F(Form("h1_energy_000_GM_PIDgated%i_T",gate), "Tokyo T", lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
+            // h1_energy_ch_GM_PIDgated_Trav[gate][0].resize(1);
+            // h1_energy_ch_GM_PIDgated_Trav[gate][0][0].resize(1);
+            // h1_energy_ch_GM_PIDgated_Trav[gate][0][0][0] = new TH1F(Form("h1_energy_000_GM_PIDgated%i_T",gate), "Tokyo T", lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
 
             h1_energy_layer_GM_PID_TM[gate].resize(layer_number);
-            h1_energy_layer_GM_PID_TM[gate][0] = new TH1F(Form("h1_energy_Layer0_GM_PIDgated%i_Trav",gate), "Tokyo T", lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
+            // h1_energy_layer_GM_PID_TM[gate][0] = new TH1F(Form("h1_energy_Layer0_GM_PIDgated%i_Trav",gate), "Tokyo T", lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
 
             h1_energy_layer2_GM_PID_TM_LISA1[gate].resize(layer_number);
-            h1_energy_layer2_GM_PID_TM_LISA1[gate][0] = new TH1F(Form("h1_energy_Layer0_GM_PIDgated%i_TM_LISA1",gate), "Tokyo T+PID+LISA", lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
-            //c4LOG(info," after 000 ");
+            // h1_energy_layer2_GM_PID_TM_LISA1[gate][0] = new TH1F(Form("h1_energy_Layer0_GM_PIDgated%i_TM_LISA1",gate), "Tokyo T+PID+LISA", lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM);
+            // //c4LOG(info," after 000 ");
 
             //::: Energy spectra Gated with FRS for Layer 1 and 2
-            for (int i = 1; i < layer_number; i++) 
+            for (int i = 0; i < layer_number; i++) 
             {
                 //:::For each layer
                 //Energy GM gated on PID, for all detectors
@@ -412,7 +413,6 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     
     //const auto & multihitItem = multihitArray->at(0);                 // *should* only be 1 FRS subevent per event
 
-
     // FRS WR
     Int_t count_wr = 0;
 
@@ -436,7 +436,6 @@ void LisaFrsCorrelations::Exec(Option_t* option)
 
     uint32_t energy_ch_GM[layer_number][xmax][ymax] = {0,0,0};
 
-
     // Energy from frs
     energy_MUSIC_1 = frsHitItem.Get_music41_dE(); 
     energy_MUSIC_2 = frsHitItem.Get_music42_dE();
@@ -446,6 +445,8 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     // energy_travMUSIC_driftcorr = travMusicHitItem.Get_travmusic_dE_driftcorr();
     energy_travMUSIC_driftcorr = 0; //
     // double z21_driftcorr = frsHitItem.Get_ID_z21_driftcorr();
+
+
 
     // correlation with main FRS (10, 20, 30, 15)
     for (const auto & lisaCalItem : *lisaCalArray)
@@ -484,11 +485,10 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         uint32_t energy_LISA_GM = lisaCalItem.Get_energy_GM();
 
         layer = lisaCalItem.Get_layer_id();
-        energy_layer_GM[layer] = energy_LISA_GM;
-        sum_energy_layer[layer] += energy_LISA;
-        sum_energy_layer_GM[layer] += energy_LISA_GM;
-        energy_ch_GM[layer][xpos][ypos] = energy_LISA_GM;
-
+        energy_layer_GM[layer-1] = energy_LISA_GM;
+        sum_energy_layer[layer-1] += energy_LISA;
+        sum_energy_layer_GM[layer-1] += energy_LISA_GM;
+        energy_ch_GM[layer-1][xpos][ypos] = energy_LISA_GM;
 
         // //::::::::: E N E R G Y GATED MULTI HIT:::::::::::::::
         // int mh_counter = 0;
@@ -527,24 +527,24 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                 //::: Gate on PID
                 if (FrsGates[gate]->Passed_Z41vsAoQs2s4(frsHitItem.Get_ID_z41(), frsHitItem.Get_ID_AoQ_s2s4()))
                 {
-                    h1_energy_ch_GM_PIDgated[gate][layer][xpos][ypos]->Fill(energy_LISA_GM);
+                    h1_energy_ch_GM_PIDgated[gate][layer-1][xpos][ypos]->Fill(energy_LISA_GM);
 
                     //::: Gate on Trav Music
                     if(energy_travMUSIC >= frs_config->fMin_dE_travMus_gate && energy_travMUSIC <= frs_config->fMax_dE_travMus_gate)
                     {   
-                        h1_energy_ch_GM_PIDgated_Trav[gate][layer][xpos][ypos]->Fill(energy_LISA_GM);
-                        h1_energy_layer_GM_PID_TM[gate][layer]->Fill(energy_LISA_GM);
+                        h1_energy_ch_GM_PIDgated_Trav[gate][layer-1][xpos][ypos]->Fill(energy_LISA_GM);
+                        h1_energy_layer_GM_PID_TM[gate][layer-1]->Fill(energy_LISA_GM);
 
                         //gate on 98Nb in LISA1 for LISA2. On LISA1, 98Nb is at 1090 (+-20)
                         if(energy_layer_GM[1] >= lisa_config->fMin_dE_LISA1_gate && energy_layer_GM[1] <= lisa_config->fMax_dE_LISA1_gate)
                         {
-                            h1_energy_layer2_GM_PID_TM_LISA1[gate][layer]->Fill(energy_LISA_GM);
+                            h1_energy_layer2_GM_PID_TM_LISA1[gate][layer-1]->Fill(energy_LISA_GM);
                         }
                         
                     }
                 }
             }
-        } 
+        }
 
         //::::::::: E N E R G Y GATED TAC DriftCorrected:::::::::::::::
         if (!FrsGates.empty())
@@ -555,23 +555,23 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                 if (FrsGates[gate]->Passed_Z41vsAoQs2s4_driftcorr(frsHitItem.Get_ID_z41_driftcorr(), frsHitItem.Get_ID_AoQs2s4_driftcorr()))
                 {
 
-                    h1_energy_layer_GM_PID_driftcorr[gate][layer]->Fill(energy_LISA_GM);
+                    h1_energy_layer_GM_PID_driftcorr[gate][layer-1]->Fill(energy_LISA_GM);
                     //::: Gate on Trav Music Drift Corrected
                     if(energy_travMUSIC_driftcorr >= frs_config->fMin_dE_travMus_gate && energy_travMUSIC_driftcorr <= frs_config->fMax_dE_travMus_gate)
                     {   
 
-                        h1_energy_ch_GM_PID_TM_driftcorr[gate][layer][xpos][ypos]->Fill(energy_LISA_GM);
-                        h1_energy_layer_GM_PID_TM_driftcorr[gate][layer]->Fill(energy_LISA_GM);
+                        h1_energy_ch_GM_PID_TM_driftcorr[gate][layer-1][xpos][ypos]->Fill(energy_LISA_GM);
+                        h1_energy_layer_GM_PID_TM_driftcorr[gate][layer-1]->Fill(energy_LISA_GM);
 
                         //gate on 98Nb in LISA1 for LISA2. On LISA1, 98Nb is at 1090 (+-20)
                         if(energy_layer_GM[1] >= lisa_config->fMin_dE_LISA1_gate && energy_layer_GM[1] <= lisa_config->fMax_dE_LISA1_gate)
                         {
-                            h1_energy_layer2_GM_PID_TM_driftcorr_LISA1[gate][layer]->Fill(energy_LISA_GM);
+                            h1_energy_layer2_GM_PID_TM_driftcorr_LISA1[gate][layer-1]->Fill(energy_LISA_GM);
                         }
 
                         if(energy_ch_GM[1][0][1] >= lisa_config->fMin_dE_LISA1_gate && energy_ch_GM[1][0][1] <= lisa_config->fMax_dE_LISA1_gate)
                         {
-                            h1_energy_ch201_GM_PID_TM_driftcorr_ch101[gate][layer][xpos][ypos]->Fill(energy_LISA_GM);
+                            h1_energy_ch201_GM_PID_TM_driftcorr_ch101[gate][layer-1][xpos][ypos]->Fill(energy_LISA_GM);
                         }
 
                         
@@ -579,7 +579,6 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                 }
             }
         } 
-        
     }
     
     //:::::::::::::: WR Time differences ::::::::::::::::::::::::::
