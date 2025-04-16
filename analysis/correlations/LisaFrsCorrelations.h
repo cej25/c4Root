@@ -53,10 +53,9 @@ class LisaFrsCorrelations : public FairTask
 
     private:
 
-        
-
         TLisaConfiguration const* lisa_config;
         TFrsConfiguration const* frs_config;
+        TFRSParameter* frs;
         TCorrelationsConfiguration const* correl_config;
         std::map<std::string, std::vector<int>> Correl;
 
