@@ -26,14 +26,14 @@ typedef struct EXT_STR_h101_t
 
 } EXT_STR_h101;
 
-void lisadev_histos()
+void c_lisadev_histos()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
     TString fExpName = "pareeskha";
 
     //:::::::::Here you define commonly used path
-    TString c4Root_path = "/u/gandolfo/c4/c4Root";
+    TString c4Root_path = "$C4ROOT_PATH";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -59,7 +59,7 @@ void lisadev_histos()
     TString filename = inputpath + "run_0075_0001_tree.root";  
     
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/test_c4/"; //test output
+    TString outputpath = ""; //test output
     TString outputFilename = outputpath + "run_0075_0001_histo.root";
 
 
@@ -164,8 +164,8 @@ void lisadev_histos()
     TLisaConfiguration::SetWrDiffRange(0,100000000);
     TLisaConfiguration::SetWrDiffBin(50000);
 
-    TLisaConfiguration::SetWrRateRange(0,50000);
-    TLisaConfiguration::SetWrRateBin(50000000);
+    TLisaConfiguration::SetWrRateRange(0,3600);
+    TLisaConfiguration::SetWrRateBin(3600);
 
     // FRS
     TFrsConfiguration::Set_Z_range(20,60);

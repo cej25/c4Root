@@ -91,6 +91,9 @@ class LisaCalItem : public TObject
         TString city; // name
         int xposition;
         int yposition;
+        double xposition_mm;
+        double yposition_mm;
+        double zposition_mm;
         float energy; // double? int?
         float energy_MWD; // double? int?
         std::vector<float> trace_febex;

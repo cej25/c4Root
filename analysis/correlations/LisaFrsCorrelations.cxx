@@ -136,7 +136,7 @@ InitStatus LisaFrsCorrelations::Init()
     }
    
     dir_energy->cd();
-    //MUSIC1 - LISA GM
+    //MUSIC 1 - LISA GM
     //:::::::::::::::::::::::::::::::
     h2_MUSIC_1_layer_GM.resize(layer_number);
     for (int i = 0; i < layer_number; i++)
@@ -147,7 +147,7 @@ InitStatus LisaFrsCorrelations::Init()
         h2_MUSIC_1_layer_GM[i]->SetOption("colz");
     }
 
-    //MUSIC 2 VS LISA
+    //MUSIC 2 VS LISA GM
     //:::::::::::::::::::::::::::::::
     h2_MUSIC_2_layer_GM.resize(layer_number);
     for (int i = 0; i < layer_number; i++)
