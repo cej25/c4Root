@@ -1,7 +1,7 @@
 #########################################################
 # Specify the name of the target executable
 
-TARGETS:=test
+TARGETS:=template
 
 #########################################################
 # Include common Makefile
