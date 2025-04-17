@@ -56,20 +56,20 @@ void lisa_online_general()
 
     //::::::::::P A T H   O F   F I L E  to read
     //___O N L I N E
-    TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
+    //TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
 
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/x7_241Am/multiple_cards_test/cards_A_B_C_D_E_F_G_0306.lmd"; 
     //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/run_0072_0001.lmd";  //data with only lisa
-    //TString filename = "/u/gandolfo/data/lustre/despec/lisa/3x3_board_1/run_0002_*.lmd";  //data with only lisa
+    TString filename = "/u/gandolfo/data/lustre/despec/lisa/LISAmp_10layers_0002_*.lmd";  //data with only lisa
 
     //___O U T P U T - only used if switched on 
-    TString outputpath = "/u/gandolfo/data/lustre/despec/lisa/3x3_board_1/";
+    TString outputpath = "/u/gandolfo/data/lustre/despec/lisa/";
     TString outputFilename = outputpath + "lisa_test.root";
 
     //:::::::Create online run
     Int_t refresh = 10; // Refresh rate for online histograms
-    Int_t port = 6060;
+    Int_t port = 4040;
      
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();

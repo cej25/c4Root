@@ -154,19 +154,29 @@ void LisaRaw2Ana::Exec(Option_t* option)
             tau[1] = decay_time[1] / sampling;                                   // Decay constant in samples
             int k0 = static_cast<int>(MWD_trace_start / sampling);               // Start of MWD in samples
             int kend = static_cast<int>(MWD_trace_stop / sampling);              // Stop of MWD in samples
+
+            //c4LOG(info, "Febex length  : " << trace_febex.size());
+
+            //c4LOG(info, "MWD lenght  : " << MWD_length);
+            //c4LOG(info, "MM  : " << MM);
+
+            //c4LOG(info, "Trapez_sample_window_1 : " << MWD_trace_stop << " Trapez_sample_window_0 : " << MWD_trace_start); 
+            //c4LOG(info, "kend  : " << kend << " k0 : " << k0 );
+            
+            
             
 
             //Check Trace size - this solves problems with events with empty trace
             if (trace_febex.size() == 0) 
             {
-                c4LOG(info, "Empty Trace - Skipping event");
+                //c4LOG(info, "Empty Trace - Skipping event");
                 continue;
             }
 
             //Ensure that the trace limit is not greater then febex trace, and if so replace it with febex trace limit
             if (kend > trace_febex.size()) 
             {
-                kend = trace_febex.size();            // If kend out of bound, replace it with trace_febex limit
+                //kend = trace_febex.size();            // If kend out of bound, replace it with trace_febex limit
                 c4LOG(info, "[MWD info] Trapez_sample_window_1 " << MWD_trace_stop << " is greater than febex trace size " << trace_febex.size() << ". It has been replaced with febex trace limit");
             }
 
@@ -214,8 +224,9 @@ void LisaRaw2Ana::Exec(Option_t* option)
             //std::cout << "k0 : " << k0 << " kend : " << kend << "\n";
             // 1. ::: Baseline correction of febex trace :::
             //        This corresponds to anaTraces function calcCorrectTrace
-            // ::: Evaluate average from points 20 to 100
-            for( int i = 20; i < 1000; i++) //100 v1
+            // ::: Evaluate average from points 20 to ---
+            //c4LOG(info, "average baseline" );
+            for( int i = 20; i < 50; i++) //100 v1
             {
                 sum += trace_febex.at(i);
                 count++;
@@ -227,13 +238,14 @@ void LisaRaw2Ana::Exec(Option_t* option)
             // ::: Calibration coefficent is 1/8 (8000 from febex corresponds to 1000 mV)
             // ::: Ref to the elog:  https://elog.gsi.de/LISA/X7+Lab/50
 
+            //c4LOG(info, "trace febex" );
             for( int i = 0; i < trace_febex.size(); i++)
             {
                 trace_febex_0.push_back((trace_febex.at(i) - average_baseline) / 8);
                 //If I subtrace trace_febex directly, and then see this online, it is difficult to evaluate the noise of the baseline.
                 //trace_febex.at(i) = (trace_febex.at(i) - average_baseline)/8;
             }
-
+            //c4LOG(info, "Febex 0 length  : " << trace_febex_0.size());
             //2. ::: Calculation of trapezoid :::
 
             // ::: Slow calculation - gives the same results as the faster calculation below
@@ -261,15 +273,25 @@ void LisaRaw2Ana::Exec(Option_t* option)
             // }
 
             // ::: Faster calculation
+            //c4LOG(info, "MWD calculation" );
             for (int kk = k0; kk < kend; ++kk) 
             {
+                //c4LOG(info, "kk - LL : " << kk-LL << " kk : " << kk << " LL :" << LL );
                 DM = 0.0;
                 sum0 = 0.0;
                 bool sum0_initialized = false;
-
+                //c4LOG(info, "MWD end calculation 1" );
                 for (int j = kk - LL; j <= kk - 1; ++j) {
-                    if (j < 1) continue;  // Skip out-of-bounds
+                    if (
+                        j < 1 ||
+                        j >= trace_febex_0.size() ||
+                        j - 1 < 0 || j - 1 >= trace_febex_0.size() ||
+                        j - MM < 0 || j - MM >= trace_febex_0.size() ||
+                        j - MM - 1 < 0 || j - MM - 1 >= trace_febex_0.size()
+                    ) continue;
 
+                    //if (j < 1) continue;  // Skip out-of-bounds - not complete check
+                    //c4LOG(info, "MWD end calculation 2" );
                     if (!sum0_initialized) {
                         // Initialize sum0 completely in the first valid iteration
                         for (int i = j - MM; i <= j - 1; ++i) {
@@ -282,7 +304,9 @@ void LisaRaw2Ana::Exec(Option_t* option)
                         if (j - MM - 1 >= 0) sum0 -= trace_febex_0.at(j - MM - 1);
                         sum0 += trace_febex_0.at(j - 1);
                     }
-
+                    //c4LOG(info, "kk - LL : " << kk-LL << " kk : " << kk << " LL :" << LL << " MM : " << MM);
+                    //c4LOG(info, "MWD end calculation 3" );
+                    
                     DM += trace_febex_0.at(j) - trace_febex_0.at(j - MM) + sum0 / tau[1];
 
                     // std::cout << "j=" << j 
@@ -292,12 +316,12 @@ void LisaRaw2Ana::Exec(Option_t* option)
                     // << " trace_febex_0[j-MM]=" << ((j - MM >= 0) ? trace_febex_0.at(j - MM) : 0)
                     // << "\n";
                 }
-
+                //c4LOG(info, "MWD end calculation 4" );
                 // Compute MWD value
                 mwd_value = DM / LL;
                 trace_MWD.push_back(mwd_value);
             }
-
+            //c4LOG(info, "MWD end calculation" );
             // :::  M D W   E N E R G Y  ::: (energy_MWD) 
             //      Steps below correspond to anaTraces function calcEnergy
 
@@ -331,7 +355,7 @@ void LisaRaw2Ana::Exec(Option_t* option)
             }
 
 
-            if (baseline_start_idx < 10 || baseline_start_idx >= baseline_stop_idx || baseline_start_idx >= (k0 + MM - LL)) 
+            if (baseline_start_idx < k0 || baseline_start_idx >= baseline_stop_idx || baseline_start_idx >= (k0 + MM - LL)) 
             {
                 c4LOG(fatal, "[ MWD ERROR] Invalid Trapez_baseline_window_0: " << baseline_start_idx*sampling <<
                 " -- must be within (k0, k0 + M -L) = ( " << MWD_trace_start << ", " << MWD_trace_start + MWD_length - smoothing_L << " ) \n" );
@@ -362,17 +386,17 @@ void LisaRaw2Ana::Exec(Option_t* option)
             // Baseline starts at the beginning of the trace_febex
             // This is to reduce the possibility to calculate the baseline from a previous trace (for pileup)
 
-            baseline_start_idx = baseline_start_idx;
-            baseline_stop_idx = baseline_stop_idx;
+            //baseline_start_idx = baseline_start_idx;
+            //baseline_stop_idx = baseline_stop_idx;
 
             // For baseline included in MWD
-            //baseline_start_idx = baseline_start_idx - k0;
-            //baseline_stop_idx = baseline_stop_idx - k0;
+            baseline_start_idx = baseline_start_idx - k0;
+            baseline_stop_idx = baseline_stop_idx - k0;
 
             for (int i = baseline_start_idx; i < baseline_stop_idx; ++i) 
             {
-                //baseline_sum += trace_MWD.at(i);
-                baseline_sum += trace_febex_0.at(i);
+                baseline_sum += trace_MWD.at(i);
+                //baseline_sum += trace_febex_0.at(i);
                 baseline_count++;
             }
     
