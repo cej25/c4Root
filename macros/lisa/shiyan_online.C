@@ -218,12 +218,12 @@ void shiyan_online()
     {
         FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
         //For monitoring FRS on our side
-        FrsRawSpectra* frsrawspec = new FrsRawSpectra();
-        FrsCalSpectra* frscalspec = new FrsCalSpectra();
+        //FrsRawSpectra* frsrawspec = new FrsRawSpectra();
+        //FrsCalSpectra* frscalspec = new FrsCalSpectra();
 
         run->AddTask(onlinefrs);
-        run->AddTask(frsrawspec);
-        run->AddTask(frscalspec);
+        //run->AddTask(frsrawspec);
+        //run->AddTask(frscalspec);
     }
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

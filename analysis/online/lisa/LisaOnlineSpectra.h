@@ -119,7 +119,7 @@ class LisaOnlineSpectra : public FairTask
 
     
         // Histograms
-        // TH1I* h1_hitpattern_total;
+        TH1I* h1_hitpattern_total;
         TH1I* h1_wr_diff;
         std::vector<std::vector<std::vector<TH1I*>>> h1_rate;
         // std::vector<TH1I*> h1_hitpattern_layer;
