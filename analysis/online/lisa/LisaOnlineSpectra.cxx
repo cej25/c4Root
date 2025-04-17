@@ -98,7 +98,7 @@ InitStatus LisaOnlineSpectra::Init()
     //dir_energy = dir_lisa->mkdir("Energy");
     //dir_traces = dir_lisa->mkdir("Traces");
 
-    // ::: STATS :::
+    // ::: S T A T S :::
 
     //::: White Rabbit :::
     dir_stats->cd();
@@ -106,6 +106,7 @@ InitStatus LisaOnlineSpectra::Init()
     h1_wr_diff->GetXaxis()->SetTitle("LISA WR Difference [ns]");
     h1_wr_diff->SetLineColor(kBlack);
     h1_wr_diff->SetFillColor(kRed-3);
+    //...................
 
     //::: Rates :::
     dir_rates->cd();
@@ -117,7 +118,7 @@ InitStatus LisaOnlineSpectra::Init()
 
     for (int i = 0; i < layer_number; i++)
     {
-        c_layer_rates[i] = new TCanvas(Form("c_layer_%d",i),Form("Layer %d Rates",i), 650,350);
+        c_layer_rates[i] = new TCanvas(Form("c_LISA_layer_%d",i),Form("Layer %d Rates",i), 650,350);
         c_layer_rates[i]->SetTitle(Form("Layer %d - Rates",i));
         c_layer_rates[i]->Divide(xmax,ymax); 
 
@@ -159,23 +160,24 @@ InitStatus LisaOnlineSpectra::Init()
             }
         }
     }
+    //...................
 
-    //:::::::::::H I T  P A T T E R N S:::::::::::::::
-    //:::::::::::Total
-//     dir_stats->cd();
-
-//     h1_hitpattern_total = new TH1I("h1_hitpattern_total", "Hit Pattern", det_number, 0, det_number);
-//     for (auto & detector : detector_mapping)
-//     {
-//         int l = detector.second.first.first;
-//         city = detector.second.first.second;
-//         int x = detector.second.second.first; 
-//         int y = detector.second.second.second;
+    // ::: Hit Pattern :::
+    dir_stats->cd();
+    //     Total
+    h1_hitpattern_total = new TH1I("h1_hitpattern_total", "Hit Pattern", det_number, 0, det_number);
+    for (auto & detector : detector_mapping)
+    {
+        int l = detector.second.first.first;
+        city = detector.second.first.second;
+        int x = detector.second.second.first; 
+        int y = detector.second.second.second;
+        int h_bin = (ymax - (y + 1)) * xmax + x;
+        int h_total_bin = (l - 1) * xmax * ymax + h_bin;
         
-//         // special case for weird layer
-//         if (l != 0) h1_hitpattern_total->GetXaxis()->SetBinLabel(l * xmax * ymax + (ymax-(y+1))*xmax + x + 1 - 3, city.Data());
-//         else h1_hitpattern_total->GetXaxis()->SetBinLabel(1, city.Data());
-//     }
+        h1_hitpattern_total->GetXaxis()->SetBinLabel(h_total_bin + 1 , city.Data());
+    }
+    //....................................
 
 //     //:::::::::Layer
 //     c_hitpattern_layer = new TCanvas("c_hitpattern_layer", "Hit Pattern by Layer", 650, 350);
@@ -564,22 +566,37 @@ InitStatus LisaOnlineSpectra::Init()
 
 //     }
 
-//     run->GetHttpServer()->RegisterCommand("Reset_Lisa_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
-//     //run->GetHttpServer()->RegisterCommand("Reset_Lisa_Hist", "/Objects/->Reset_Histo()");
-//     c4LOG(info,"Get Name: " << GetName() );
+    run->GetHttpServer()->RegisterCommand("Reset_Lisa_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
+    c4LOG(info,"Get Name: " << GetName() );
 
     return kSUCCESS;
 }
 
 void LisaOnlineSpectra::Reset_Histo()
 {
-//     time_t now = time(0);
-//     tm *ltm = localtime(&now);
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
+    c4LOG(info,"::: LISA Histos Reset on day " <<  ltm->tm_mday << "th," << " at " << ltm->tm_hour << ":" << ltm->tm_min << ":" << ltm->tm_sec );
 
-//     c4LOG(info,"::: Energy and Multiplicity Histos Reset on day " <<  ltm->tm_mday << "th," << " at " << ltm->tm_hour << ":" << ltm->tm_min << ":" << ltm->tm_sec );
-//     //Reset Energy histos
+    //Reset WR diff
+    h1_wr_diff->Reset();
+    // Reset Scalers
+        for (int i = 0; i < layer_number; i++)
+    {
+        for (int j = 0; j < xmax; j++)
+        {
+            for (int k = 0; k < ymax; k++)
+            {
+                h1_rate[i][j][k]->Reset();
+            }
+        }
+
+    }
+    // Reset hit grid
+    h1_hitpattern_total->Reset();
     
-//     h1_energy_layer_ch[0][0][0]->Reset();
+    //Reset Energy histos
+    
 
 //     for (int i = 1; i < layer_number; i++) 
 //     {
@@ -599,7 +616,7 @@ void LisaOnlineSpectra::Reset_Histo()
 //         h1_multiplicity_layer[i]->Reset();
 //     }
     
-//     //Reset hit grid
+
 //     for (int i = 0; i < layer_number-1; i++)
 //     {
 //         h2_hitpattern_grid[i]->Reset();
@@ -607,7 +624,6 @@ void LisaOnlineSpectra::Reset_Histo()
 //     h1_multiplicity->Reset();
 //     h1_layer_multiplicity->Reset();
 
-//     //Reset hit patter, multiplicity, position with frs
 }
 
 void LisaOnlineSpectra::Exec(Option_t* option)
@@ -647,18 +663,22 @@ void LisaOnlineSpectra::Exec(Option_t* option)
 
         // ::: For R A T E S :::
         detector_counter[layer-1][xpos][ypos]++;  //layer - 1 cause the layer numbers are 1,2,3,4,5
-        
-        
-        //::::::::F I L L   H I S T O S:::::::
-        //:::::::: H I T  P A T T E R N ::::::::::
+        // ::: For Hit Patterns and multiplicity
+        int hp_bin = (ymax-(ypos+1))*xmax + xpos; // -1 compared to canvas position
+        int hp_total_bin = (layer - 1) * xmax * ymax + hp_bin;
+        //....................
+
+        //::: F I L L   H I S T O S  :::
+
+        // ::: Hit Pattern Total
+        h1_hitpattern_total->Fill(hp_total_bin);
+        //....................
+
         //:::::::::Layer
-        // int hp_bin = (ymax-(ypos+1))*xmax + xpos; // -1 compared to canvas position
+        
         // h1_hitpattern_layer[layer]->Fill(hp_bin);
-        // //:::::::::Total
-        // int hp_total_bin;
-        // if (layer != 0) hp_total_bin = layer * xmax * ymax + hp_bin - 3; // -3 is a fudge for uneven layers, temporary
-        // else hp_total_bin = 0;
-        // h1_hitpattern_total->Fill(hp_total_bin);
+
+
         // //::::::::::By grid
         // if (layer != 0) h2_hitpattern_grid[layer-1]->Fill(xpos,ypos);
 

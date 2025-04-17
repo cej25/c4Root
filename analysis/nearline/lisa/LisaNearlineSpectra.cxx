@@ -166,8 +166,23 @@ InitStatus LisaNearlineSpectra::Init()
     }
     //....................................
 
-    //:::::::::::H I T  P A T T E R N S:::::::::::::::
+    //::: Hit Patterns :::
     dir_stats->cd();
+    //     Total
+    h1_hitpattern_total = new TH1I("h1_hitpattern_total", "Hit Pattern", det_number, 0, det_number);
+    for (auto & detector : detector_mapping)
+    {
+        int l = detector.second.first.first;
+        city = detector.second.first.second;
+        int x = detector.second.second.first; 
+        int y = detector.second.second.second;
+        int h_bin = (ymax - (y + 1)) * xmax + x;
+        int h_total_bin = (l - 1) * xmax * ymax + h_bin;
+        
+        h1_hitpattern_total->GetXaxis()->SetBinLabel(h_total_bin + 1 , city.Data());
+    }  
+    //....................................
+
     //:::::::: Layer
     // h1_hitpattern_layer.resize(layer_number);
     // for (int i = 0; i < layer_number; i++)
@@ -557,6 +572,16 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         
         // ::: For R A T E S :::
         detector_counter[layer-1][xpos][ypos]++;    //layers start from 1
+        // ::: For Hit Patterns and multiplicity
+        int hp_bin = (ymax-(ypos+1))*xmax + xpos; // -1 compared to canvas position
+        int hp_total_bin = (layer - 1) * xmax * ymax + hp_bin;
+        //....................
+
+        //::: F I L L   H I S T O S  :::
+
+        // ::: Hit Pattern Total
+        h1_hitpattern_total->Fill(hp_total_bin);
+        //....................
 
         //::: F I L L   H I S T O S :::
         //:::::::: H I T  P A T T E R N ::::::::::

@@ -116,7 +116,7 @@ class LisaNearlineSpectra : public FairTask
         //     Stats
         TH1I* h1_wr_diff; 
         std::vector<std::vector<std::vector<TH1I*>>> h1_lisa_rate; 
-
+        TH1I* h1_hitpattern_total;
  
         // std::vector<TH1I*> h1_hitpattern_layer;
         // std::vector<TH2F*> h2_hitpattern_grid;
