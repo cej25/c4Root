@@ -218,6 +218,7 @@ void TFrsConfiguration::ReadCrateMapFile()
     std::ifstream file (crate_map_file);
     std::string line;
 
+    c4LOG(info, "FRS Crate Map Path: " + crate_map_file);
     if (file.fail()) c4LOG(fatal, "Could not open FRS Crate Mapping mapping file.");
 
     while (std::getline(file, line))

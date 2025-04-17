@@ -87,6 +87,7 @@ set(SRCS
 ./fimp/FimpRaw2Cal.cxx
 ./mcp/H10MCPReader.cxx
 ./mcp/H10MCPRaw2Cal.cxx
+./mcp/H10MCPCal2Ana.cxx
 ./stefan/StefanReader.cxx
 ./stefan/StefanRaw2Cal.cxx
 
@@ -121,10 +122,11 @@ Set(HEADERS ${STRUCT_HEADERS} ${HEADERS})
 
 set(LINKDEF SourceLinkDef.h)
 set(DEPENDENCIES
-    GeoBase ParBase MbsAPI Base FairTools
+    GeoBase ParBase Base FairTools
     c4Base c4Data Core Geom GenVector
     Physics Matrix MathCore
     ${ucesb_LIBRARY_SHARED})
+#MbsAPI
 set(LIBRARY_NAME c4source)
 
 GENERATE_LIBRARY()

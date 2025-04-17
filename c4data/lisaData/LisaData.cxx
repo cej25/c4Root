@@ -33,9 +33,9 @@ void LisaItem::SetAll(uint64_t wr,
                     uint64_t ch_time,
                     bool p,
                     bool o,
-                    uint32_t ch_energy,
+                    float ch_energy,
                     int ch_id_tr,
-                    std::vector<int16_t> tr,
+                    std::vector<float> tr,
                     std::vector<int16_t> tr_x
                     )
 {

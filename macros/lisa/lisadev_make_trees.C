@@ -3,7 +3,6 @@
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define LISA_ON 1
 #define FRS_ON 1
-#define TRAV_MUSIC_ON 1
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
 
 //Select the data level you want to visualize
@@ -14,19 +13,18 @@
 // Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/
 extern "C"
 {
-    #include "../../config/pareeksha/frs/setup_Fragment_conv.C"
+    #include "../../config/pareeksha/frs/setup_Fragment_conv_updated.C"
 }
 
 typedef struct EXT_STR_h101_t
 {   
     EXT_STR_h101_unpack_t eventheaders;
     EXT_STR_h101_lisa_onion_t lisa;
-    EXT_STR_h101_travmus_onion_t travmus;
     EXT_STR_h101_frs_onion_t frs;
 
 } EXT_STR_h101;
 
-void lisadev_make_trees(int fileNumber)
+void lisadev_make_trees()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
@@ -56,34 +54,34 @@ void lisadev_make_trees(int fileNumber)
 
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
-    //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0169_*.lmd";  //data with only lisa
-    //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/daqtest/daqtest_0001_0001.lmd"; //data from ts folder
+    //TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/LISAmp_test/";
     TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";
-    TString filename = Form(inputpath + "run_%04d_0001.lmd", fileNumber);
+ 
+    //TString filename = inputpath + "LISAmp_2layers_0006_0001.lmd";
+    TString filename = inputpath + "run_0075_0001.lmd";
 
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/test_c4/"; //testing
-    //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/fragments_EG_test/";    
-    TString outputFilename = Form(outputpath + "run_%04d_test-merge.root", fileNumber);
+    TString outputFilename = outputpath + "run_0075_0001_tree.root";
 
 
     //:::::::Create online run
     Int_t refresh = 10; // not needed
-    Int_t port = 5000; // not needed
+    //Int_t port = 5000; // not needed
      
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
     run->SetSink(new FairRootFileSink(outputFilename)); // don't write after termintion
-    run->ActivateHttpServer(refresh, port);
+    //run->ActivateHttpServer(refresh, port);
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
     run->AddObject(histograms);
      
     //:::::::Take ucesb input and create source
     EXT_STR_h101 ucesb_struct;
-    TString ntuple_options = "UNPACK"; //level of unpacked data (UNPACK,RAW,CAL)
+    TString ntuple_options = "UNPACK,RAW"; //level of unpacked data (UNPACK,RAW,CAL)
     UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
     source->SetMaxEvents(nev);
     run->SetSource(source);
@@ -116,19 +114,24 @@ void lisadev_make_trees(int fileNumber)
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
     // ::: Exp config
     TExperimentConfiguration::SetExperimentStart(1715734200000000000);//Start of pareeksha with primary beam: 15 May 00:50
+    // for S100, 3 and 4. for 2025+ 12 and 13.
+    TExperimentConfiguration::SetBOSTrig(3);
+    TExperimentConfiguration::SetEOSTrig(4);
     
     // ::: FRS config
-    TFrsConfiguration::SetConfigPath(config_path + "/frs/");
-    TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
-    TFrsConfiguration::SetTravMusDriftFile(config_path + "/frs/TM_Drift_fragments.txt");
-    TFrsConfiguration::SetZ1DriftFile(config_path + "/frs/Z1_Drift_fragments.txt");
-    TFrsConfiguration::SetAoQDriftFile(config_path + "/frs/AoQ_Drift_fragments.txt");
+    TFrsConfiguration::SetConfigPath(config_path + "/pareeksha/frs/");
+    TFrsConfiguration::SetCrateMapFile(config_path + "/../pareeksha/frs/crate_map.txt");
+    TFrsConfiguration::SetTravMusDriftFile(config_path + "/../pareeksha/frs/TM_Drift_fragments.txt");
+    TFrsConfiguration::SetZ1DriftFile(config_path + "/../pareeksha/frs/Z1_Drift_fragments.txt");
+    TFrsConfiguration::SetAoQDriftFile(config_path + "/../pareeksha/frs/AoQ_Drift_fragments.txt");
 
     // ::: Lisa config
-    TLisaConfiguration::SetMappingFile(config_path + "/lisa/Lisa_Detector_Map_names.txt");
-    TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching.txt");
-    TLisaConfiguration::SetGMFileMWD(config_path + "/lisa/Lisa_GainMatching_MWD.txt");
-    TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
+    //TLisaConfiguration::SetMappingFile(config_path + "/Lisa_5x5_shiyan.txt");
+    TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map_names.txt");
+
+    TLisaConfiguration::SetGMFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_pareeksha.txt");
+    TLisaConfiguration::SetGMFileMWD("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_pareeksha.txt");
+    TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_DAQtest.txt");
 
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -143,8 +146,6 @@ void lisadev_make_trees(int fileNumber)
     if (LISA_ON)
     {
         LisaReader* unpacklisa = new LisaReader((EXT_STR_h101_lisa_onion*)&ucesb_struct.lisa, offsetof(EXT_STR_h101, lisa));
-        //unpacklisa->DoFineTimeCalOnline("....root", 100000);
-        //unpacklisa->SetInputFileFineTimeHistos(config_path + "....root");
 
         if (LISA_RAW)
         {
@@ -152,21 +153,12 @@ void lisadev_make_trees(int fileNumber)
         } else 
         {
             unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
-        }
-        //unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
-        
+        }        
         source->AddReader(unpacklisa);
     }
 
     if (FRS_ON)
     {   
-        if (TRAV_MUSIC_ON)
-        {
-            TravMusReader* unpacktravmus = new TravMusReader((EXT_STR_h101_travmus_onion*)&ucesb_struct.travmus, offsetof(EXT_STR_h101, travmus));
-    
-            unpacktravmus->SetOnline(false);
-            source->AddReader(unpacktravmus);
-        }
 
         FrsReader* unpackfrs = new FrsReader((EXT_STR_h101_frs_onion*)&ucesb_struct.frs, offsetof(EXT_STR_h101, frs)); 
         unpackfrs->SetOnline(true);
@@ -204,16 +196,6 @@ void lisadev_make_trees(int fileNumber)
 
     if (FRS_ON)
     {
-        if (TRAV_MUSIC_ON)
-        {
-            TravMusRaw2Cal* caltravmus = new TravMusRaw2Cal();
-            TravMusCal2Ana* anatravmus = new TravMusCal2Ana();
-
-            caltravmus->SetOnline(false);
-            run->AddTask(caltravmus);
-            anatravmus->SetOnline(false);
-            run->AddTask(anatravmus);
-        }
 
         FrsRaw2Cal* calfrs = new FrsRaw2Cal();
         
@@ -241,7 +223,7 @@ void lisadev_make_trees(int fileNumber)
     // Information about portnumber and main data stream
     cout << "\n\n" << endl;
     cout << "Data stream is: " << filename << endl;
-    cout << "LISA online port server: " << port << endl;
+    //cout << "LISA online port server: " << port << endl;
     cout << "\n\n" << endl;
 
     // Run

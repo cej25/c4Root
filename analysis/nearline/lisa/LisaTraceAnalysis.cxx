@@ -176,11 +176,11 @@ void LisaTraceAnalysis::Exec(Option_t* option)
 
         // ::::: Retrieve Data :::::
         int ch_ID = lisaAnaItem.Get_channel_id_traces();
-        double energy_febex = lisaAnaItem.Get_channel_energy();
-        double energy_MWD = lisaAnaItem.Get_channel_energy_MWD();
-        std::vector<int16_t> trace_febex = lisaAnaItem.Get_trace_febex();
-        std::vector<int16_t> trace_febex_0 = lisaAnaItem.Get_trace_febex_0();
-        std::vector<int16_t> trace_MWD = lisaAnaItem.Get_trace_MWD();
+        float energy_febex = lisaAnaItem.Get_channel_energy();
+        float energy_MWD = lisaAnaItem.Get_channel_energy_MWD();
+        std::vector<float> trace_febex = lisaAnaItem.Get_trace_febex();
+        std::vector<float> trace_febex_0 = lisaAnaItem.Get_trace_febex_0();
+        std::vector<float> trace_MWD = lisaAnaItem.Get_trace_MWD();
 
         
         // ::::: F I L L   H I S T O S :::::
@@ -207,7 +207,7 @@ void LisaTraceAnalysis::Exec(Option_t* option)
         //std::cout << " Event no : " << Eventno << "\n";
         if (Eventno == event_to_analyze)
         {
-            std::cout<<" Size of MWD trace = " << trace_MWD.size() << "\n";
+            //std::cout<<" Size of MWD trace = " << trace_MWD.size() << "\n";
             //std::cout<< " Event Number : " << Eventno << ", event to analyze : " << event_to_analyze << "\n";
             for (int i = 0; i < trace_febex_0.size(); i++)
             {            

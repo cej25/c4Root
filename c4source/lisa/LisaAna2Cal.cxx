@@ -179,7 +179,7 @@ void LisaAna2Cal::Exec(Option_t* option)
                     lisaAnaItem.Get_channel_energy(),
                     lisaAnaItem.Get_channel_energy_MWD(),
                     lisaAnaItem.Get_trace_febex(),
-                    lisaAnaItem.Get_trace_MWD(),
+                    //lisaAnaItem.Get_trace_MWD(),
                     lisaAnaItem.Get_trace_x(),
                     energy_GM,
                     energy_MWD_GM,

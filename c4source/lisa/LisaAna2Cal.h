@@ -74,10 +74,10 @@ class LisaAna2Cal : public FairTask
 
         double slope;
         double intercept;
-        double energy_GM;
+        float energy_GM;
         double slope_MWD;
         double intercept_MWD;
-        double energy_MWD_GM;
+        float energy_MWD_GM;
 
 
     public:

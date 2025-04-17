@@ -2,13 +2,14 @@
 #define H10MCPRaw2Cal_H
 
 #include "FairTask.h"
-#include "TFatimaTwinpeaksConfiguration.h"
+#include "H10MCPTwinpeaksData.h"
+#include "H10MCPTwinpeaksCalData.h"
+#include "TH10MCPConfiguration.h"
+#include "TimeMachineData.h"
 #include "TClonesArray.h"
 
 class TClonesArray;
 class EventHeader;
-class FatimaTwinpeaksData;
-class FatimaTwinpeaksCalData;
 class TimeMachineData;
 
 class H10MCPRaw2Cal : public FairTask
@@ -20,9 +21,6 @@ class H10MCPRaw2Cal : public FairTask
 
         ~H10MCPRaw2Cal();
 
-        void PrintDetectorMap();
-        void PrintDetectorCal();
-
         void Exec(Option_t* option);
 
         void FinishEvent();
@@ -30,32 +28,27 @@ class H10MCPRaw2Cal : public FairTask
 
         void SetOnline(Bool_t set_online){fOnline = set_online;}
 
-        virtual void SetParContainers();
-
         virtual InitStatus Init();
-
-        void SetMultiplicityFilter(bool v, int s){ApplyMultiplicityCondition = v; MultiplicityGate = s;}
-
-        int CountMultiplicity(TClonesArray *);
 
 
     private:
 
-        TFatimaTwinpeaksConfiguration const* fatima_configuration;
+        TH10MCPConfiguration const* mcp_config;
 
-        Bool_t fOnline;
+        H10MCPTwinpeaksData* funcal_hit;
+                
+        H10MCPTwinpeaksData* funcal_hit_next;
 
         TClonesArray* fcal_data;
         TClonesArray* funcal_data;
         TClonesArray* ftime_machine_array;
 
-
-        FatimaTwinpeaksData* funcal_hit;
-                
-        FatimaTwinpeaksData* funcal_hit_next;
-        FatimaTwinpeaksCalData* fcal_hit;
+        Bool_t fOnline;
 
         uint16_t detector_id;
+        Int_t mcp_id;
+        Int_t type;
+        Int_t number;
         
         int64_t slow_lead_epoch;
         double slow_lead_time;

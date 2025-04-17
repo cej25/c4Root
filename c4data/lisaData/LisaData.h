@@ -37,9 +37,9 @@ class LisaItem : public TObject
                     uint64_t ch_time,
                     bool p,
                     bool o,
-                    uint32_t ch_energy,
+                    float ch_energy,
                     int ch_id_traces,
-                    std::vector<int16_t> tr,
+                    std::vector<float> tr,
                     std::vector<int16_t> tr_x);
 
         void Reset();
@@ -52,9 +52,9 @@ class LisaItem : public TObject
         uint64_t Get_channel_time() const;
         bool Get_pileup() const;
         bool Get_overflow() const;
-        uint32_t Get_channel_energy() const;
+        float Get_channel_energy() const;
         int Get_channel_id_traces() const;
-        std::vector<int16_t> Get_trace() const;
+        std::vector<float> Get_trace() const;
         std::vector<int16_t> Get_trace_x() const;
 
         // Getters
@@ -69,9 +69,9 @@ class LisaItem : public TObject
         uint64_t channel_time;
         bool pileup;
         bool overflow;
-        uint32_t channel_energy;
+        float channel_energy;
         int channel_id_traces;
-        std::vector<int16_t> trace; 
+        std::vector<float> trace; 
         std::vector<int16_t> trace_x; 
 
 };
@@ -116,7 +116,7 @@ inline bool LisaItem::Get_overflow() const
     return overflow;
 }
 
-inline uint32_t LisaItem::Get_channel_energy() const
+inline float LisaItem::Get_channel_energy() const
 {
     return channel_energy;
 }
@@ -126,7 +126,7 @@ inline int LisaItem::Get_channel_id_traces() const
     return channel_id_traces;
 }
 
-inline std::vector<int16_t> LisaItem::Get_trace() const
+inline std::vector<float> LisaItem::Get_trace() const
 {
     return trace;
 }

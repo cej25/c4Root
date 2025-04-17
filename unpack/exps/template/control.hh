@@ -21,6 +21,7 @@
 #ifndef __CONTROL_HH__
 #define __CONTROL_HH__
 
+#define USER_EXTERNAL_UNPACK_STRUCT_FILE "ext_unpacking.hh"
 
 
 #endif

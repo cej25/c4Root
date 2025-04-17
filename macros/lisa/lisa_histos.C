@@ -44,13 +44,11 @@ void lisa_histos()
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/daq_test_c4tree/test_F_B_13nov.root";
     //TString filename = "/u/gandolfo/data/test_c4/run_0072_0001.root";
-    TString filename = "/u/gandolfo/data/test_c4/cards_A_B_C_D_E_F_G_0306.root";
-    
-    
+    TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/x7_241Am/3x3_4_trees/run_0006_0003_trees.root";
+       
     //___O U T P U T
     //TString outputfile = "/u/gandolfo/data/test_c4/run_0072_0001_histos.root";
-    TString outputfile = "/u/gandolfo/data/test_c4/cards_A_B_C_D_E_F_G_0306_histos.root";
-
+    TString outputfile = "/u/gandolfo/data/lustre/gamma/LISA/data/x7_241Am/3x3_4_histos/run_0006_0003_histo.root";
 
     FairRunAna* run = new FairRunAna();
     EventHeader* EvtHead = new EventHeader();
@@ -69,9 +67,9 @@ void lisa_histos()
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
-    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_All_Boards.txt");
+    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_3x3_4.txt");
     TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
-    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters.txt");
+    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_3x3.txt");
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::   
     // =========== **** SPECTRA ***** ========================================================= //
@@ -83,23 +81,22 @@ void lisa_histos()
 
     //::::::::: Set ranges for histos :::::::::::::::
     //::::  Channel Energy ::::: (h1_energy_layer_ch)
-    TLisaConfiguration::SetEnergyRange(00000,3000000);
-    TLisaConfiguration::SetEnergyBin(900);
+    TLisaConfiguration::SetEnergyRange(0,200000);
+    TLisaConfiguration::SetEnergyBin(1000);
+
+    TLisaConfiguration::SetEnergyRangeMWD(0,50);
+    TLisaConfiguration::SetEnergyBinMWD(1000);
 
     //::::  Channel Energy GM ::::: (h1_energy_layer_ch)
-    TLisaConfiguration::SetEnergyRangeGM(300,1500);
+    TLisaConfiguration::SetEnergyRangeGM(0,1000);
     TLisaConfiguration::SetEnergyBinGM(500);
 
     //:::: LISA WR Time Difference :::::: (h1_wr_diff)
     TLisaConfiguration::SetWrDiffRange(0,100000000);
     TLisaConfiguration::SetWrDiffBin(20000);
 
-    //:::: FRS Z and AoQ
-    TFrsConfiguration::Set_Z_range(20,60);
-    TFrsConfiguration::Set_AoQ_range(1,3);
-
     //:::: Drifts
-    TLisaConfiguration::SetEventNO(39000,65000);
+    TLisaConfiguration::SetEventNO(50000,1600000);
     
 
     if (LISA_ON)
