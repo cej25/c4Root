@@ -56,11 +56,11 @@ void lisadev_histos()
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
     TString inputpath = "/u/gandolfo/data/test_c4/";
-    TString filename = inputpath + "run_0075_0001_tree.root";  
+    TString filename = inputpath + "run_0075_0001_tree_updatedMWD.root";  
     
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/test_c4/"; //test output
-    TString outputFilename = outputpath + "run_0075_0001_histo.root";
+    TString outputFilename = outputpath + "run_0075_0001_histo_updateMWD.root";
 
 
     FairRunAna* run = new FairRunAna();
