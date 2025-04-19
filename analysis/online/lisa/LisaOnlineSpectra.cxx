@@ -766,10 +766,13 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     h1_multiplicity->Fill(total_multiplicity);
     for (int i = 0; i < layer_number; i++) h1_multiplicity_per_layer[i]->Fill(multiplicity[i]);
 
+    int layers_fired = 0;
     for (int i = 0; i < layer_number; i++)
     {
-        if(multiplicity[i] != 0) h1_layer_multiplicity->Fill(i);
+        if(multiplicity[i] != 0) layers_fired++;
     }
+
+    h1_layer_multiplicity->Fill(layers_fired);
 
     // for(int i = 1; i <= layer_number; i++)
     // {
