@@ -103,13 +103,13 @@ class LisaOnlineSpectra : public FairTask
         // TDirectory* dir_traces_MWD;
     
 
-        // Canvas
+        // ::: Canvas
         std::vector<TCanvas*> c_layer_rates;
-        // TCanvas* c_hitpattern_layer;
-        // TCanvas* c_multiplicity_layer;
-        // TCanvas* c_hitpattern_grid;
-        // TCanvas* c_pileup_grid;
-        // TCanvas* c_overflow_grid;
+        TCanvas* c_hitpattern_layer;
+        TCanvas* c_hitpattern_grid;
+        TCanvas* c_pileup_grid;
+        TCanvas* c_overflow_grid;
+        TCanvas* c_multiplicity_per_layer;
         // TCanvas* c_energy_layer1_vs_layer2;
         // TCanvas* c_energy_layer_vs_time;
         // std::vector<TCanvas*> c_energy_layer_ch;
@@ -118,18 +118,19 @@ class LisaOnlineSpectra : public FairTask
         // std::vector<TCanvas*> c_traces_layer_ch_stat;
 
     
-        // Histograms
+        // ::: Histograms
+        //     Stats
         TH1I* h1_hitpattern_total;
         TH1I* h1_wr_diff;
         std::vector<std::vector<std::vector<TH1I*>>> h1_rate;
-        // std::vector<TH1I*> h1_hitpattern_layer;
-        // std::vector<TH2F*> h2_hitpattern_grid;
-        // std::vector<TH2F*> h2_pileup_grid;
-        // std::vector<TH2F*> h2_overflow_grid;
-        // TH1I* h1_multiplicity;
-        // std::vector<TH1I*> h1_multiplicity_layer; ;
-        // TH1I* h1_layer_multiplicity;
-        // //TH2F* h2_hitpattern_grid;
+        std::vector<TH1I*> h1_hitpattern_layer;
+        std::vector<TH2F*> h2_hitpattern_grid;
+        std::vector<TH2F*> h2_pileup_grid;
+        std::vector<TH2F*> h2_overflow_grid;
+        TH1I* h1_multiplicity;
+        std::vector<TH1I*> h1_multiplicity_per_layer; ;
+        TH1I* h1_layer_multiplicity;
+
         // //TH1F* h1_energy_layer0;
         // std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch;
         // TH2F* h2_energy_layer1_vs_layer2;

@@ -118,8 +118,8 @@ InitStatus LisaOnlineSpectra::Init()
 
     for (int i = 0; i < layer_number; i++)
     {
-        c_layer_rates[i] = new TCanvas(Form("c_LISA_layer_%d",i),Form("Layer %d Rates",i), 650,350);
-        c_layer_rates[i]->SetTitle(Form("Layer %d - Rates",i));
+        c_layer_rates[i] = new TCanvas(Form("c_LISA_layer_%d",i+1),Form("Layer %d Rates",i+1), 650,350);
+        c_layer_rates[i]->SetTitle(Form("Layer %d - Rates",i+1));
         c_layer_rates[i]->Divide(xmax,ymax); 
 
         detector_counter[i].resize(xmax);
@@ -136,9 +136,9 @@ InitStatus LisaOnlineSpectra::Init()
             {
                 c_layer_rates[i]->cd((ymax-(k+1))*xmax + j + 1);
 
-                h1_rate[i][j][k] = new TH1I(Form("h1_rate_%i%i%i",i,j,k), Form("Rate %i%i%i",i,j,k), lisa_config->bin_wr_rate, lisa_config->min_wr_rate, lisa_config->max_wr_rate);
+                h1_rate[i][j][k] = new TH1I(Form("h1_rate_%i%i%i",i+1,j,k), Form("Rate %i%i%i",i+1,j,k), lisa_config->bin_wr_rate, lisa_config->min_wr_rate, lisa_config->max_wr_rate);
                 h1_rate[i][j][k]->GetXaxis()->SetTitle("Time [s]");
-                h1_rate[i][j][k]->GetYaxis()->SetTitle(Form("LISA %i%i%i Rate [Hz]", i,j,k));
+                h1_rate[i][j][k]->GetYaxis()->SetTitle(Form("LISA %i%i%i Rate [Hz]", i+1,j,k));
                 h1_rate[i][j][k]->SetLineColor(kBlack);
                 h1_rate[i][j][k]->SetFillColor(kGreen+1);
 
@@ -179,154 +179,141 @@ InitStatus LisaOnlineSpectra::Init()
     }
     //....................................
 
-//     //:::::::::Layer
-//     c_hitpattern_layer = new TCanvas("c_hitpattern_layer", "Hit Pattern by Layer", 650, 350);
-//     c_hitpattern_layer->Divide(2, (layer_number+1)/2);
-//     h1_hitpattern_layer.resize(layer_number);
-//     for (int i = 0; i < layer_number; i++)
-//     {   
-//         c_hitpattern_layer->cd(i+1);
-//         h1_hitpattern_layer[i] = new TH1I(Form("h1_hitpattern_layer_%i", i), Form("Hit Pattern - Layer: %i", i), xmax * ymax, 0, xmax * ymax);
-//         h1_hitpattern_layer[i]->SetStats(0);
-//         h1_hitpattern_layer[i]->Draw();
+    //      Layer
+    c_hitpattern_layer = new TCanvas("c_hitpattern_layer", "Hit Pattern by Layer", 650, 350);
+    c_hitpattern_layer->Divide(2, (layer_number+1)/2);
+    h1_hitpattern_layer.resize(layer_number+1);
+    for (int i = 1; i <= layer_number; i++)
+    {   
+        c_hitpattern_layer->cd(i);
+        h1_hitpattern_layer[i] = new TH1I(Form("h1_hitpattern_layer_%i", i), Form("Hit Pattern - Layer: %i", i), xmax * ymax, 0, xmax * ymax);
+        h1_hitpattern_layer[i]->SetStats(0);
+        h1_hitpattern_layer[i]->Draw();
 
-//         for (int j = 0; j < xmax * ymax; j++)
-//         {
-//             city = "";
-//             for (auto & detector : detector_mapping)
-//             {
-//                 int x = detector.second.second.first; 
-//                 int y = detector.second.second.second;
-//                 if (detector.second.first.first == i && ((ymax-(y+1))*xmax + x) == j)
-//                 {
-//                     city = detector.second.first.second;
-//                     break;
-//                 }
-//             }
-//             h1_hitpattern_layer[i]->GetXaxis()->SetBinLabel(j+1, city.Data());
-//         }
+        for (int j = 0; j < xmax * ymax; j++)
+        {
+            city = "";
+            for (auto & detector : detector_mapping)
+            {
+                int x = detector.second.second.first; 
+                int y = detector.second.second.second;
+                if (detector.second.first.first == i && ((ymax-(y+1))*xmax + x) == j)
+                {
+                    city = detector.second.first.second;
+                    break;
+                }
+            }
+            h1_hitpattern_layer[i]->GetXaxis()->SetBinLabel(j+1, city.Data());
+        }
        
-//     }
-//     c_hitpattern_layer->cd();
-//     dir_stats->Append(c_hitpattern_layer);
+    }
+    c_hitpattern_layer->cd();
+    dir_stats->Append(c_hitpattern_layer);
+    //....................................
+    //      Grid
+    c_hitpattern_grid = new TCanvas("c_hitpattern_grid", "Hit Pattern Grid", 650, 350);
+    c_hitpattern_grid->Divide(2, (layer_number+1)/2, 0.05, 0.05);
+    h2_hitpattern_grid.resize(layer_number);
+    c_hitpattern_grid->SetLogz();
 
+    for (int i = 0; i < layer_number; i++)
+    {   
 
-
-//     //:::::::::::H I T  P A T T E R N - by grid ::::::::::::::::::
-//     dir_stats->cd();
-//     c_hitpattern_grid = new TCanvas("c_hitpattern_grid", "Hit Pattern Grid", 650, 350);
-//     c_hitpattern_grid->Divide(layer_number-1, 1, 0.05, 0.05);
-//     h2_hitpattern_grid.resize(layer_number-1);
-//     c_hitpattern_grid->SetLogz();
-
-//     for (int i = 0; i < layer_number-1; i++)
-//     {   
-
-//         c_hitpattern_grid->cd(i+1);
-//         gPad->SetLeftMargin(0.15);
-//         gPad->SetRightMargin(0.15);
-//         h2_hitpattern_grid[i] = new TH2F(Form("h2_hitpattern_grid_layer_%i", i), Form("Hit Pattern Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
-//         h2_hitpattern_grid[i]->SetStats(0);
-//         h2_hitpattern_grid[i]->Draw("colz");
-//         h2_hitpattern_grid[i]->GetXaxis()->SetTitle(Form("Hit Pattern Layer %i",i+1));
-//         h2_hitpattern_grid[i]->GetXaxis()->SetLabelSize(0);
-//         h2_hitpattern_grid[i]->GetXaxis()->SetTickLength(0);
-//         h2_hitpattern_grid[i]->GetYaxis()->SetLabelSize(0);
-//         h2_hitpattern_grid[i]->GetYaxis()->SetTickLength(0);
-//         h2_hitpattern_grid[i]->SetMinimum(1);
-//         h2_hitpattern_grid[i]->SetContour(100);
-//         //gPad->SetLogz();
+        c_hitpattern_grid->cd(i+1);
+        gPad->SetLeftMargin(0.15);
+        gPad->SetRightMargin(0.15);
+        h2_hitpattern_grid[i] = new TH2F(Form("h2_hitpattern_grid_layer_%i", i+1), Form("Hit Pattern Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
+        h2_hitpattern_grid[i]->SetStats(0);
+        h2_hitpattern_grid[i]->Draw("colz");
+        h2_hitpattern_grid[i]->GetXaxis()->SetTitle(Form("Hit Pattern Layer %i",i+1));
+        h2_hitpattern_grid[i]->GetXaxis()->SetLabelSize(0);
+        h2_hitpattern_grid[i]->GetXaxis()->SetTickLength(0);
+        h2_hitpattern_grid[i]->GetYaxis()->SetLabelSize(0);
+        h2_hitpattern_grid[i]->GetYaxis()->SetTickLength(0);
+        h2_hitpattern_grid[i]->SetMinimum(1);
+        h2_hitpattern_grid[i]->SetContour(100);
         
-//     }
-    
-//     c_hitpattern_grid->cd();
-//     dir_stats->Append(c_hitpattern_grid);
+    }   
+    c_hitpattern_grid->cd();
+    dir_stats->Append(c_hitpattern_grid);
+    //....................................
+    //  ::: Pile up
+    c_pileup_grid = new TCanvas("c_pileup_grid", "Pile Up Grid", 650, 350);
+    c_pileup_grid->Divide(2, (layer_number+1)/2, 0.05, 0.05);
+    h2_pileup_grid.resize(layer_number);
+    c_pileup_grid->SetLogz();
 
+    for (int i = 0; i < layer_number; i++)
+    {   
 
-//     //:::::::::::P I L E   U P::::::::::::
-//     dir_stats->cd();
-//     c_pileup_grid = new TCanvas("c_pileup_grid", "Pileup Grid", 650, 350);
-//     c_pileup_grid->Divide(layer_number-1, 1, 0.05, 0.05);
-//     h2_pileup_grid.resize(layer_number-1);
-//     //c_hitpattern_grid->SetLogz();
-
-//     for (int i = 0; i < layer_number-1; i++)
-//     {   
-
-//         c_pileup_grid->cd(i+1);
-//         gPad->SetLeftMargin(0.15);
-//         gPad->SetRightMargin(0.15);
-//         h2_pileup_grid[i] = new TH2F(Form("h2_pileup_grid_layer_%i", i), Form("Pile Up Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
-//         h2_pileup_grid[i]->SetStats(0);
-//         h2_pileup_grid[i]->Draw("COLZ");
-//         h2_pileup_grid[i]->GetXaxis()->SetTitle(Form("Pile Up Layer %i",i+1));
-//         h2_pileup_grid[i]->GetXaxis()->SetLabelSize(0);
-//         h2_pileup_grid[i]->GetXaxis()->SetTickLength(0);
-//         h2_pileup_grid[i]->GetYaxis()->SetLabelSize(0);
-//         h2_pileup_grid[i]->GetYaxis()->SetTickLength(0);
-//         h2_pileup_grid[i]->SetMinimum(1);
-//         //h2_pileup_grid[i]->SetContour(100);
-//         //gPad->SetLogz();
+        c_pileup_grid->cd(i+1);
+        gPad->SetLeftMargin(0.15);
+        gPad->SetRightMargin(0.15);
+        h2_pileup_grid[i] = new TH2F(Form("h2_pileup_grid_layer_%i", i+1), Form("Pile Up Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
+        h2_pileup_grid[i]->SetStats(0);
+        h2_pileup_grid[i]->Draw("colz");
+        h2_pileup_grid[i]->GetXaxis()->SetTitle(Form("Pile Up Layer %i",i+1));
+        h2_pileup_grid[i]->GetXaxis()->SetLabelSize(0);
+        h2_pileup_grid[i]->GetXaxis()->SetTickLength(0);
+        h2_pileup_grid[i]->GetYaxis()->SetLabelSize(0);
+        h2_pileup_grid[i]->GetYaxis()->SetTickLength(0);
+        h2_pileup_grid[i]->SetMinimum(1);
+        h2_pileup_grid[i]->SetContour(100);
         
-//     }
-    
-//     c_pileup_grid->cd();
-//     dir_stats->Append(c_pileup_grid);
-    
+    }    
+    c_pileup_grid->cd();
+    dir_stats->Append(c_pileup_grid);
+    //....................................
+    //  ::: Overflow
+    c_overflow_grid = new TCanvas("c_overflow_grid", "Overflow Grid", 650, 350);
+    c_overflow_grid->Divide(2, (layer_number+1)/2, 0.05, 0.05);
+    h2_overflow_grid.resize(layer_number);
+    c_overflow_grid->SetLogz();
 
-//     //:::::::::::O V E R   F L O W:::::::::::
-//     dir_stats->cd();
-//     c_overflow_grid = new TCanvas("c_overflow_grid", "Over Flow Grid", 650, 350);
-//     c_overflow_grid->Divide(layer_number-1, 1, 0.05, 0.05);
-//     h2_overflow_grid.resize(layer_number-1);
+    for (int i = 0; i < layer_number; i++)
+    {   
 
-//     for (int i = 0; i < layer_number-1; i++)
-//     {   
-
-//         c_overflow_grid->cd(i+1);
-//         gPad->SetLeftMargin(0.15);
-//         gPad->SetRightMargin(0.15);
-//         h2_overflow_grid[i] = new TH2F(Form("h2_overflow_grid_layer_%i", i), Form("Over Flow Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
-//         h2_overflow_grid[i]->SetStats(0);
-//         h2_overflow_grid[i]->Draw("COLZ");
-//         h2_overflow_grid[i]->GetXaxis()->SetTitle(Form("Over Flow Layer %i",i+1));
-//         h2_overflow_grid[i]->GetXaxis()->SetLabelSize(0);
-//         h2_overflow_grid[i]->GetXaxis()->SetTickLength(0);
-//         h2_overflow_grid[i]->GetYaxis()->SetLabelSize(0);
-//         h2_overflow_grid[i]->GetYaxis()->SetTickLength(0);
-//         h2_overflow_grid[i]->SetMinimum(1);
-//         //h2_pileup_grid[i]->SetContour(100);
-//         //gPad->SetLogz();
+        c_overflow_grid->cd(i+1);
+        gPad->SetLeftMargin(0.15);
+        gPad->SetRightMargin(0.15);
+        h2_overflow_grid[i] = new TH2F(Form("h2_overflow_grid_layer_%i", i+1), Form("Overflow Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
+        h2_overflow_grid[i]->SetStats(0);
+        h2_overflow_grid[i]->Draw("colz");
+        h2_overflow_grid[i]->GetXaxis()->SetTitle(Form("Overflow Layer %i",i+1));
+        h2_overflow_grid[i]->GetXaxis()->SetLabelSize(0);
+        h2_overflow_grid[i]->GetXaxis()->SetTickLength(0);
+        h2_overflow_grid[i]->GetYaxis()->SetLabelSize(0);
+        h2_overflow_grid[i]->GetYaxis()->SetTickLength(0);
+        h2_overflow_grid[i]->SetMinimum(1);
+        h2_overflow_grid[i]->SetContour(100);
         
-//     }
-    
-//     c_overflow_grid->cd();
-//     dir_stats->Append(c_overflow_grid);
-
-
-//     //:::::::::::M U L T I P L I C I T Y:::::::::::::::
-
-//     //:::::::::::Total Multiplicity
-//     h1_multiplicity = new TH1I("h1_multiplicity", "Total Multiplicity", det_number, 0, det_number+1);
-//     h1_multiplicity->SetStats(0);
-    
-//     //:::::::::::Multiplicity per layer
-//     c_multiplicity_layer = new TCanvas("c_multiplicity_layer", "Multiplicty by Layer", 650, 350);
-//     c_multiplicity_layer->Divide(2, (layer_number + 1)/2);
-//     h1_multiplicity_layer.resize(layer_number);
-//     for (int i = 0; i < layer_number; i++)
-//     {
-//         c_multiplicity_layer->cd(i+1);
-//         h1_multiplicity_layer[i] = new TH1I(Form("Multiplicity Layer %i",i), Form("Multiplicity Layer %i",i), xmax * ymax+1, 0, xmax * ymax+1);
-//         h1_multiplicity_layer[i]->SetStats(0);
-//         h1_multiplicity_layer[i]->Draw();
-//     }
-//     c_multiplicity_layer->cd(0);
-//     dir_stats->Append(c_multiplicity_layer);
-
-//     //:::::::::::Layer Multiplicity
-//     h1_layer_multiplicity = new TH1I("h1_layer_multiplicity", "Layer Multiplicity", layer_number, 0, layer_number);
-//     h1_layer_multiplicity->SetStats(0);
+    }
+    c_overflow_grid->cd();
+    dir_stats->Append(c_overflow_grid);
+    //....................................
+    // ::: Multiplicity 
+    //      Total
+    h1_multiplicity = new TH1I("h1_multiplicity", "Total Multiplicity", det_number, 0, det_number+1);
+    h1_multiplicity->SetStats(0);
+    //....................................
+    //      Multiplicity per layer
+    c_multiplicity_per_layer = new TCanvas("c_multiplicity_per_layer", "Multiplicty Per Layer", 650, 350);
+    c_multiplicity_per_layer->Divide(2, (layer_number + 1)/2);
+    h1_multiplicity_per_layer.resize(layer_number + 1);
+    for (int i = 1; i <= layer_number; i++)
+    {
+        c_multiplicity_per_layer->cd(i);
+        h1_multiplicity_per_layer[i] = new TH1I(Form("h1_multiplicity_layer_%i",i), Form("Multiplicity Layer %i",i), xmax * ymax+1, 0, xmax * ymax+1);
+        h1_multiplicity_per_layer[i]->SetStats(0);
+        h1_multiplicity_per_layer[i]->Draw();
+    }
+    c_multiplicity_per_layer->cd();
+    dir_stats->Append(c_multiplicity_per_layer);
+    //....................................
+    //      Layer Multiplicity
+    h1_layer_multiplicity = new TH1I("h1_layer_multiplicity", "Layer Multiplicity", layer_number, 0, layer_number);
+    h1_layer_multiplicity->SetStats(0);
+    //....................................
 
 //     //:::::::::::::E N E R G Y:::::::::::::::::
 //     dir_energy->cd();
@@ -578,11 +565,15 @@ void LisaOnlineSpectra::Reset_Histo()
     tm *ltm = localtime(&now);
     c4LOG(info,"::: LISA Histos Reset on day " <<  ltm->tm_mday << "th," << " at " << ltm->tm_hour << ":" << ltm->tm_min << ":" << ltm->tm_sec );
 
+    // ::: S T A T S
     //Reset WR diff
     h1_wr_diff->Reset();
-    // Reset Scalers
-        for (int i = 0; i < layer_number; i++)
+    // Reset Scalers and grid 
+    for (int i = 0; i < layer_number; i++)
     {
+        h2_hitpattern_grid[i]->Reset();
+        h2_pileup_grid[i]->Reset();
+        h2_overflow_grid[i]->Reset();
         for (int j = 0; j < xmax; j++)
         {
             for (int k = 0; k < ymax; k++)
@@ -590,11 +581,24 @@ void LisaOnlineSpectra::Reset_Histo()
                 h1_rate[i][j][k]->Reset();
             }
         }
-
     }
     // Reset hit grid
     h1_hitpattern_total->Reset();
-    
+    // Reset hit patter by layer
+    for (int i = 1; i <= layer_number; i++)
+    {
+        h1_hitpattern_layer[i]->Reset();
+    } 
+
+    // Reset multiplicity
+    h1_multiplicity->Reset();
+    for (int i = 1; i <= layer_number; i++)
+    {
+        h1_multiplicity_per_layer[i]->Reset();
+    }
+    h1_layer_multiplicity->Reset();
+    //...................
+
     //Reset Energy histos
     
 
@@ -610,28 +614,20 @@ void LisaOnlineSpectra::Reset_Histo()
 //     }
 //     h2_energy_layer1_vs_layer2->Reset();
 
-//     //Reset multiplicity
-//     for (int i = 0; i < layer_number; i++)
-//     {
-//         h1_multiplicity_layer[i]->Reset();
-//     }
+
     
 
-//     for (int i = 0; i < layer_number-1; i++)
-//     {
-//         h2_hitpattern_grid[i]->Reset();
-//     }
-//     h1_multiplicity->Reset();
-//     h1_layer_multiplicity->Reset();
+
+    
+
 
 }
 
 void LisaOnlineSpectra::Exec(Option_t* option)
 {   
-    //c4LOG(info, ":::::::beginning exec :::::::: ");
     wr_time = 0;
-    //int multiplicity[layer_number] = {0};
-    //int total_multiplicity = 0;
+    int total_multiplicity = 0;
+    int multiplicity[layer_number] = {0};
     //std::vector<uint32_t> sum_energy_layer;
     //sum_energy_layer.resize(layer_number);
     //int energy_ch[layer_number][xmax][ymax] = {0,0,0};
@@ -640,7 +636,6 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     for (auto const & lisaCalItem : *lisaCalArray)
     {
         
-        //c4LOG(info, ":::::::beginning loop inside exec :::::::: ");
         wr_time = lisaCalItem.Get_wr_t();
 
         if (lisa_config->wr_enable == true) 
@@ -648,63 +643,43 @@ void LisaOnlineSpectra::Exec(Option_t* option)
             if (wr_time == 0)return; 
         }
 
-        //c4LOG(info, ":::::::beginning loop after return :::::::: ");
-
         //::::::: Retrieve Data ::::::::::::::
         layer = lisaCalItem.Get_layer_id();
         city = lisaCalItem.Get_city();
         int xpos = lisaCalItem.Get_xposition();
         int ypos = lisaCalItem.Get_yposition();
-        float energy = lisaCalItem.Get_energy();
-        trace = lisaCalItem.Get_trace_febex();
         int pileup = lisaCalItem.Get_pileup();
         int overflow = lisaCalItem.Get_overflow();
-        uint64_t evtno = header->GetEventno();
+        //float energy = lisaCalItem.Get_energy();
+        //trace = lisaCalItem.Get_trace_febex();
+        //uint64_t evtno = header->GetEventno();
 
-        // ::: For R A T E S :::
+        // ::: FOR    R A T E S :::
         detector_counter[layer-1][xpos][ypos]++;  //layer - 1 cause the layer numbers are 1,2,3,4,5
         // ::: For Hit Patterns and multiplicity
-        int hp_bin = (ymax-(ypos+1))*xmax + xpos; // -1 compared to canvas position
+        int hp_bin = (ymax-(ypos+1))*xmax + xpos; 
         int hp_total_bin = (layer - 1) * xmax * ymax + hp_bin;
         //....................
 
-        //::: F I L L   H I S T O S  :::
+        // ::: FOR    M U L T I P L I C I T Y :::
+        total_multiplicity++;
+        multiplicity[layer]++;
+        
 
+        //counter++;
+
+        //::: F I L L   H I S T O S  :::
         // ::: Hit Pattern Total
         h1_hitpattern_total->Fill(hp_total_bin);
         //....................
-
-        //:::::::::Layer
+        // ::: Layer
+        h1_hitpattern_layer[layer]->Fill(hp_bin);
+        //....................
+        // ::: Grids (hit pattern, pile up and overflow)
+        h2_hitpattern_grid[layer-1]->Fill(xpos,ypos);
+        if (pileup != 0) h2_pileup_grid[layer-1]->Fill(xpos,ypos);
+        if (overflow != 0) h2_overflow_grid[layer-1]->Fill(xpos,ypos);
         
-        // h1_hitpattern_layer[layer]->Fill(hp_bin);
-
-
-        // //::::::::::By grid
-        // if (layer != 0) h2_hitpattern_grid[layer-1]->Fill(xpos,ypos);
-
-
-        // //:::::::::P I L E   UP:::::::::::::
-        // //::::::::::By grid
-        // if (pileup != 0) if (layer != 0) h2_pileup_grid[layer-1]->Fill(xpos,ypos);
-
-        // //:::::::::O V E R  F L O W:::::::::::::
-        // //::::::::::By grid
-        // if (overflow != 0) if (layer != 0) h2_overflow_grid[layer-1]->Fill(xpos,ypos);
-        
-        // //:::::::: Count Multiplicity ::::::::
-        // multiplicity[layer]++;
-        // total_multiplicity++;
-
-        //::::::::::counter for time display of energy point
-        
-        xp = lisaCalItem.Get_xposition();
-        yp = lisaCalItem.Get_yposition();
-        //lay = lisaCalItem.Get_layer_id();
-        //en = lisaCalItem.Get_energy();
-        //counter++;
-        //c4LOG(info, "counter : "<< counter);
-        //c4LOG(info, "pileup : "<< pileup<< "overflow : " << overflow );
-
         //::::::::: E N E R G Y :::::::::::::::
         // h1_energy_layer_ch[layer][xpos][ypos]->Fill(energy);
 
@@ -734,7 +709,7 @@ void LisaOnlineSpectra::Exec(Option_t* option)
 
     //c4LOG(info, "::::::::::END LOOP::::::::::::" << " Layer number :" << layer_number);
 
-    //c4LOG(info, " layer : "<<layer << " multiplicity layer : "<<multiplicity[layer]);
+    c4LOG(info, " layer : "<<layer << " multiplicity layer : "<<multiplicity[layer]);
     if ( wr_time == 0 ) return;
 
     //:::::: WR Time Difference
@@ -784,18 +759,16 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     //....................................
 
 
-    //::::::: Fill Multiplicity ::::::::::
-    // for (int i = 0; i < layer_number; i++) h1_multiplicity_layer[i]->Fill(multiplicity[i]);
-    // h1_multiplicity->Fill(total_multiplicity);
+    // ::: Fill Multiplicity 
+    h1_multiplicity->Fill(total_multiplicity);
+    for (int i = 1; i <= layer_number; i++) h1_multiplicity_per_layer[i]->Fill(multiplicity[i]);
 
-    // for (int i = 0; i < layer_number; i++)
-    // {
-    //     if(multiplicity[i] != 0) h1_layer_multiplicity->Fill(i);
-    //     //c4LOG(info," layer number : " << layer_number << " layer : " << layer << " multiplicity [layer] : " << multiplicity[layer] << " multiplicity [i] : " << multiplicity[i]);
-    // }
+    for (int i = 0; i < layer_number; i++)
+    {
+        if(multiplicity[i] != 0) h1_layer_multiplicity->Fill(i);
+    }
 
-
-    for(int i = 0; i < layer_number; i++)
+    for(int i = 0; i <= layer_number; i++)
     {
         //c4LOG(info,"multiplicity : "<< multiplicity[i] << " i : " << i );
     }

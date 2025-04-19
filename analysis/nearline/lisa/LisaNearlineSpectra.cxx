@@ -121,7 +121,6 @@ InitStatus LisaNearlineSpectra::Init()
     h1_wr_diff->GetXaxis()->SetTitle("LISA WR Difference [ns]");
     h1_wr_diff->SetLineColor(kBlack);
     h1_wr_diff->SetFillColor(kRed-3);
-    //....................................
 
     //::: Rates :::
     dir_rates->cd();
@@ -164,11 +163,10 @@ InitStatus LisaNearlineSpectra::Init()
             }
         }
     }
-    //....................................
 
     //::: Hit Patterns :::
     dir_stats->cd();
-    //     Total
+    //      Total
     h1_hitpattern_total = new TH1I("h1_hitpattern_total", "Hit Pattern", det_number, 0, det_number);
     for (auto & detector : detector_mapping)
     {
@@ -181,96 +179,96 @@ InitStatus LisaNearlineSpectra::Init()
         
         h1_hitpattern_total->GetXaxis()->SetBinLabel(h_total_bin + 1 , city.Data());
     }  
-    //....................................
 
-    //:::::::: Layer
-    // h1_hitpattern_layer.resize(layer_number);
-    // for (int i = 0; i < layer_number; i++)
-    // {   
-    //     h1_hitpattern_layer[i] = new TH1I(Form("h1_hitpattern_layer_%i", i), Form("Hit Pattern - Layer: %i", i), xmax * ymax, 0, xmax * ymax);
-    //     h1_hitpattern_layer[i]->SetStats(0);
-    //     h1_hitpattern_layer[i]->Draw();
+    //      Layer
+    h1_hitpattern_layer.resize(layer_number+1);
+    for (int i = 1; i <= layer_number; i++)
+    {   
+        h1_hitpattern_layer[i] = new TH1I(Form("h1_hitpattern_layer_%i", i), Form("Hit Pattern - Layer: %i", i), xmax * ymax, 0, xmax * ymax);
+        h1_hitpattern_layer[i]->SetStats(0);
+        h1_hitpattern_layer[i]->Draw();
 
-    //     for (int j = 0; j < xmax * ymax; j++)
-    //     {
-    //         city = "";
-    //         for (auto & detector : detector_mapping)
-    //         {
-    //             int x = detector.second.second.first; 
-    //             int y = detector.second.second.second;
-    //             if (detector.second.first.first == i && ((ymax-(y+1))*xmax + x) == j)
-    //             {
-    //                 city = detector.second.first.second;
-    //                 break;
-    //             }
-    //         }
-    //         h1_hitpattern_layer[i]->GetXaxis()->SetBinLabel(j+1, city.Data());
-    //     }
+        for (int j = 0; j < xmax * ymax; j++)
+        {
+            city = "";
+            for (auto & detector : detector_mapping)
+            {
+                int x = detector.second.second.first; 
+                int y = detector.second.second.second;
+                if (detector.second.first.first == i && ((ymax-(y+1))*xmax + x) == j)
+                {
+                    city = detector.second.first.second;
+                    break;
+                }
+            }
+            h1_hitpattern_layer[i]->GetXaxis()->SetBinLabel(j+1, city.Data());
+        }
        
-    // }
+    }
 
-    //:::::::::::H I T  P A T T E R N - by grid ::::::::::::::::::
-    dir_stats->cd();
-    // h2_hitpattern_grid.resize(layer_number-1);
+    //      Grid
+    h2_hitpattern_grid.resize(layer_number);
 
-    // for (int i = 0; i < layer_number-1; i++)
-    // {   
-
-    //     h2_hitpattern_grid[i] = new TH2F(Form("h2_hitpattern_grid_%i", i+1), Form("Hit Pattern Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
-    //     h2_hitpattern_grid[i]->SetStats(0);
-    //     h2_hitpattern_grid[i]->SetOption("colz");
-    //     h2_hitpattern_grid[i]->GetXaxis()->SetTitle(Form("Hit Pattern Layer %i",i+1));
-    //     h2_hitpattern_grid[i]->GetXaxis()->SetLabelSize(0);
-    //     h2_hitpattern_grid[i]->GetXaxis()->SetTickLength(0);
-    //     h2_hitpattern_grid[i]->GetYaxis()->SetLabelSize(0);
-    //     h2_hitpattern_grid[i]->GetYaxis()->SetTickLength(0);
-    //     h2_hitpattern_grid[i]->SetMinimum(1);
-    //     h2_hitpattern_grid[i]->SetContour(100);
+    for (int i = 0; i < layer_number; i++)
+    {   
+        gPad->SetLeftMargin(0.15);
+        gPad->SetRightMargin(0.15);
+        h2_hitpattern_grid[i] = new TH2F(Form("h2_hitpattern_grid_layer_%i", i+1), Form("Hit Pattern Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
+        h2_hitpattern_grid[i]->SetStats(0);
+        h2_hitpattern_grid[i]->Draw("colz");
+        h2_hitpattern_grid[i]->GetXaxis()->SetTitle(Form("Hit Pattern Layer %i",i+1));
+        h2_hitpattern_grid[i]->GetXaxis()->SetLabelSize(0);
+        h2_hitpattern_grid[i]->GetXaxis()->SetTickLength(0);
+        h2_hitpattern_grid[i]->GetYaxis()->SetLabelSize(0);
+        h2_hitpattern_grid[i]->GetYaxis()->SetTickLength(0);
+        h2_hitpattern_grid[i]->SetMinimum(1);
+        h2_hitpattern_grid[i]->SetContour(100);
         
-    // }
+    }   
 
+    //  ::: Pile up
+    h2_pileup_grid.resize(layer_number);
+    for (int i = 0; i < layer_number; i++)
+    {   
 
-    //:::::::::::P I L E   U P::::::::::::
-    dir_stats->cd();
-    // h2_pileup_grid.resize(layer_number);
-
-    // for (int i = 0; i < layer_number; i++)
-    // {   
-    //     h2_pileup_grid[i] = new TH2F(Form("h2_pileup_grid_%i", i+1), Form("Pile Up Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
-    //     h2_pileup_grid[i]->SetStats(0);
-    //     h2_pileup_grid[i]->SetOption("COLZ");
-    //     h2_pileup_grid[i]->GetXaxis()->SetTitle(Form("Pile Up Layer %i",i+1));
-    //     h2_pileup_grid[i]->GetXaxis()->SetLabelSize(0);
-    //     h2_pileup_grid[i]->GetXaxis()->SetTickLength(0);
-    //     h2_pileup_grid[i]->GetYaxis()->SetLabelSize(0);
-    //     h2_pileup_grid[i]->GetYaxis()->SetTickLength(0);
-    //     h2_pileup_grid[i]->SetMinimum(1);
+        gPad->SetLeftMargin(0.15);
+        gPad->SetRightMargin(0.15);
+        h2_pileup_grid[i] = new TH2F(Form("h2_pileup_grid_layer_%i", i+1), Form("Pile Up Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
+        h2_pileup_grid[i]->SetStats(0);
+        h2_pileup_grid[i]->Draw("colz");
+        h2_pileup_grid[i]->GetXaxis()->SetTitle(Form("Pile Up Layer %i",i+1));
+        h2_pileup_grid[i]->GetXaxis()->SetLabelSize(0);
+        h2_pileup_grid[i]->GetXaxis()->SetTickLength(0);
+        h2_pileup_grid[i]->GetYaxis()->SetLabelSize(0);
+        h2_pileup_grid[i]->GetYaxis()->SetTickLength(0);
+        h2_pileup_grid[i]->SetMinimum(1);
+        h2_pileup_grid[i]->SetContour(100);
         
-    // }
+    }    
 
-    //:::::::::::O V E R   F L O W:::::::::::
-    dir_stats->cd();
-    // h2_overflow_grid.resize(layer_number);
-
-    // for (int i = 0; i < layer_number; i++)
-    // {   
-    //     h2_overflow_grid[i] = new TH2F(Form("h2_overflow_grid_%i", i+1), Form("Over Flow Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
-    //     h2_overflow_grid[i]->SetStats(0);
-    //     h2_overflow_grid[i]->SetOption("COLZ");
-    //     h2_overflow_grid[i]->GetXaxis()->SetTitle(Form("Over Flow Layer %i",i+1));
-    //     h2_overflow_grid[i]->GetXaxis()->SetLabelSize(0);
-    //     h2_overflow_grid[i]->GetXaxis()->SetTickLength(0);
-    //     h2_overflow_grid[i]->GetYaxis()->SetLabelSize(0);
-    //     h2_overflow_grid[i]->GetYaxis()->SetTickLength(0);
-    //     h2_overflow_grid[i]->SetMinimum(1);
+    //  ::: Overflow
+    h2_overflow_grid.resize(layer_number);
+    for (int i = 0; i < layer_number; i++)
+    {   
+        gPad->SetLeftMargin(0.15);
+        gPad->SetRightMargin(0.15);
+        h2_overflow_grid[i] = new TH2F(Form("h2_overflow_grid_layer_%i", i+1), Form("Overflow Grid - Layer %i", i+1), xmax, 0, xmax, ymax, 0, ymax);
+        h2_overflow_grid[i]->SetStats(0);
+        h2_overflow_grid[i]->Draw("colz");
+        h2_overflow_grid[i]->GetXaxis()->SetTitle(Form("Overflow Layer %i",i+1));
+        h2_overflow_grid[i]->GetXaxis()->SetLabelSize(0);
+        h2_overflow_grid[i]->GetXaxis()->SetTickLength(0);
+        h2_overflow_grid[i]->GetYaxis()->SetLabelSize(0);
+        h2_overflow_grid[i]->GetYaxis()->SetTickLength(0);
+        h2_overflow_grid[i]->SetMinimum(1);
+        h2_overflow_grid[i]->SetContour(100);
         
-    // }
+    }
     
-    //:::::::::::M U L T I P L I C I T Y:::::::::::::::
-
-    //:::::::::::Total Multiplicity of events
-    // h1_evt_multiplicity = new TH1I("h1_evt_multiplicity", "Total Multiplicity", det_number, 0, det_number+1);
-    // h1_evt_multiplicity->SetStats(0);
+    // ::: Multiplicity
+    //     Total
+    h1_multiplicity = new TH1I("h1_multiplicity", "Total Multiplicity", det_number, 0, det_number+1);
+    h1_multiplicity->SetStats(0);
     
     // //:::::::::::Multiplicity of each layer
     // h1_multiplicity_layer.resize(layer_number);
@@ -285,7 +283,8 @@ InitStatus LisaNearlineSpectra::Init()
     // h1_layers_multiplicity = new TH1I("h1_layers_multiplicity", "Layers Multiplicity", layer_number, 0, layer_number);
     // h1_layers_multiplicity->SetStats(0);
 
-     
+    //.................................... 
+
     //::: E N E R G Y::::
 
     //:::::::: Gain Matched + Calibrated Energies 
@@ -527,7 +526,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     // .........................
 
     //int multiplicity[layer_number] = {0};
-    //int total_multiplicity = 0;
+    int total_multiplicity = 0;
 
     //std::vector<float> sum_energy_layer;
     //sum_energy_layer.resize(layer_number);
@@ -561,53 +560,38 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         city = lisaCalItem.Get_city();
         int xpos = lisaCalItem.Get_xposition();
         int ypos = lisaCalItem.Get_yposition();
+        int pileup = lisaCalItem.Get_pileup();
+        int overflow = lisaCalItem.Get_overflow();
         //float energy = lisaCalItem.Get_energy();
         //float energy_MWD = lisaCalItem.Get_energy_MWD();
         //std::vector<float> trace = lisaCalItem.Get_trace_febex();
         //float energy_GM = lisaCalItem.Get_energy_GM();
         //float energy_MWD_GM = lisaCalItem.Get_energy_MWD_GM();
-        //int pileup = lisaCalItem.Get_pileup();
-        //int overflow = lisaCalItem.Get_overflow();
+
         //uint64_t evtno = header->GetEventno();
         
-        // ::: For R A T E S :::
+        // ::: FOR   R A T E S 
         detector_counter[layer-1][xpos][ypos]++;    //layers start from 1
         // ::: For Hit Patterns and multiplicity
         int hp_bin = (ymax-(ypos+1))*xmax + xpos; // -1 compared to canvas position
         int hp_total_bin = (layer - 1) * xmax * ymax + hp_bin;
         //....................
+        // ::: FOR     M U L T I P L I C I T Y  
+        total_multiplicity++;
+        //multiplicity[layer]++;
 
         //::: F I L L   H I S T O S  :::
 
         // ::: Hit Pattern Total
         h1_hitpattern_total->Fill(hp_total_bin);
         //....................
-
-        //::: F I L L   H I S T O S :::
-        //:::::::: H I T  P A T T E R N ::::::::::
-        //:::::::::Layer
-        //int hp_bin = (ymax-(ypos+1))*xmax + xpos; // -1 compared to canvas position
-        //h1_hitpattern_layer[layer]->Fill(hp_bin);
-        //:::::::::Total
-        //int hp_total_bin;
-        //if (layer != 0) hp_total_bin = layer * xmax * ymax + hp_bin - 3; // -3 is a fudge for uneven layers, temporary
-        //else hp_total_bin = 0;
-        //h1_hitpattern_total->Fill(hp_total_bin);
-        //::::::::::By grid
-        //if (layer != 0) h2_hitpattern_grid[layer-1]->Fill(xpos,ypos);
-
-
-        //:::::::::P I L E   UP:::::::::::::
-        //::::::::::By grid
-        //if (pileup != 0) if (layer != 0) h2_pileup_grid[layer-1]->Fill(xpos,ypos);
-
-        //:::::::::O V E R  F L O W:::::::::::::
-        //::::::::::By grid
-        //if (overflow != 0) if (layer != 0) h2_overflow_grid[layer-1]->Fill(xpos,ypos);
-        
-        //:::::::: Count Multiplicity ::::::::
-        //multiplicity[layer]++;
-        //total_multiplicity++;
+        // ::: Hit Pattern by layer
+        h1_hitpattern_layer[layer]->Fill(hp_bin);
+        //....................
+        // ::: Grids (hit pattern, pile up and overflow)
+        h2_hitpattern_grid[layer-1]->Fill(xpos,ypos);
+        if (pileup != 0) h2_pileup_grid[layer-1]->Fill(xpos,ypos);
+        if (overflow != 0) h2_overflow_grid[layer-1]->Fill(xpos,ypos);        
 
         //::::::::: E N E R G Y :::::::::::::::
         
@@ -700,9 +684,10 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     }
     //....................................
 
-    //::::::: Fill Multiplicity ::::::::::
+    // ::: Multiplicity
+    h1_multiplicity->Fill(total_multiplicity);
     //for (int i = 0; i < layer_number; i++) h1_multiplicity_layer[i]->Fill(multiplicity[i]);
-    //h1_evt_multiplicity->Fill(total_multiplicity);
+    
 
     for (int i = 0; i < layer_number; i++)
     {
