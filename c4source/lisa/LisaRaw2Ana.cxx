@@ -159,7 +159,7 @@ void LisaRaw2Ana::Exec(Option_t* option)
             //Check Trace size - this solves problems with events with empty trace
             if (trace_febex.size() == 0) 
             {
-                c4LOG(info, "Empty Trace - Skipping event");
+                //c4LOG(info, "Empty Trace - Skipping event");
                 continue;
             }
 
@@ -268,7 +268,14 @@ void LisaRaw2Ana::Exec(Option_t* option)
                 bool sum0_initialized = false;
 
                 for (int j = kk - LL; j <= kk - 1; ++j) {
-                    if (j < 1) continue;  // Skip out-of-bounds
+                    //if (j < 1) continue;  // Skip out-of-bounds
+                    if (
+                        j < 1 ||
+                        j >= trace_febex_0.size() ||
+                        j - 1 < 0 || j - 1 >= trace_febex_0.size() ||
+                        j - MM < 0 || j - MM >= trace_febex_0.size() ||
+                        j - MM - 1 < 0 || j - MM - 1 >= trace_febex_0.size()
+                    ) continue;
 
                     if (!sum0_initialized) {
                         // Initialize sum0 completely in the first valid iteration
