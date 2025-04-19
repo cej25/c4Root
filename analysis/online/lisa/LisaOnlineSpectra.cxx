@@ -312,7 +312,7 @@ InitStatus LisaOnlineSpectra::Init()
     dir_stats->Append(c_multiplicity_per_layer);
     //....................................
     //      Layer Multiplicity
-    h1_layer_multiplicity = new TH1I("h1_layer_multiplicity", "Layer Multiplicity", layer_number, 0, layer_number);
+    h1_layer_multiplicity = new TH1I("h1_layer_multiplicity", "Layer Multiplicity", layer_number+1, -0.5, layer_number+0.5);
     h1_layer_multiplicity->SetStats(0);
     //....................................
 
@@ -766,10 +766,10 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     h1_multiplicity->Fill(total_multiplicity);
     for (int i = 0; i < layer_number; i++) h1_multiplicity_per_layer[i]->Fill(multiplicity[i]);
 
-    // for (int i = 0; i < layer_number; i++)
-    // {
-    //     if(multiplicity[i] != 0) h1_layer_multiplicity->Fill(i);
-    // }
+    for (int i = 0; i < layer_number; i++)
+    {
+        if(multiplicity[i] != 0) h1_layer_multiplicity->Fill(i);
+    }
 
     // for(int i = 1; i <= layer_number; i++)
     // {
