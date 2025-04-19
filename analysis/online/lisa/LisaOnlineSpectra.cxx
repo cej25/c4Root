@@ -299,11 +299,11 @@ InitStatus LisaOnlineSpectra::Init()
     //      Multiplicity per layer
     c_multiplicity_per_layer = new TCanvas("c_multiplicity_per_layer", "Multiplicty Per Layer", 650, 350);
     c_multiplicity_per_layer->Divide(2, (layer_number + 1)/2);
-    h1_multiplicity_per_layer.resize(layer_number + 1);
-    for (int i = 1; i <= layer_number; i++)
+    h1_multiplicity_per_layer.resize(layer_number);
+    for (int i = 0; i < layer_number; i++)
     {
         c_multiplicity_per_layer->cd(i);
-        h1_multiplicity_per_layer[i] = new TH1I(Form("h1_multiplicity_layer_%i",i), Form("Multiplicity Layer %i",i), xmax * ymax+1, 0, xmax * ymax+1);
+        h1_multiplicity_per_layer[i] = new TH1I(Form("h1_multiplicity_layer_%i",i+1), Form("Multiplicity Layer %i",i+1), xmax * ymax+1, 0, xmax * ymax+1);
         h1_multiplicity_per_layer[i]->SetStats(0);
         h1_multiplicity_per_layer[i]->Draw();
     }
@@ -592,11 +592,12 @@ void LisaOnlineSpectra::Reset_Histo()
 
     // Reset multiplicity
     h1_multiplicity->Reset();
-    for (int i = 1; i <= layer_number; i++)
+    for (int i = 0; i < layer_number; i++)
     {
         h1_multiplicity_per_layer[i]->Reset();
     }
     h1_layer_multiplicity->Reset();
+    
     //...................
 
     //Reset Energy histos
@@ -709,7 +710,6 @@ void LisaOnlineSpectra::Exec(Option_t* option)
 
     //c4LOG(info, "::::::::::END LOOP::::::::::::" << " Layer number :" << layer_number);
 
-    c4LOG(info, " layer : "<<layer << " multiplicity layer : "<<multiplicity[layer]);
     if ( wr_time == 0 ) return;
 
     //:::::: WR Time Difference
@@ -761,17 +761,17 @@ void LisaOnlineSpectra::Exec(Option_t* option)
 
     // ::: Fill Multiplicity 
     h1_multiplicity->Fill(total_multiplicity);
-    for (int i = 1; i <= layer_number; i++) h1_multiplicity_per_layer[i]->Fill(multiplicity[i]);
+    for (int i = 0; i < layer_number; i++) h1_multiplicity_per_layer[i]->Fill(multiplicity[i-1]);
 
-    for (int i = 0; i < layer_number; i++)
+    for (int i = 1; i <= layer_number; i++)
     {
         if(multiplicity[i] != 0) h1_layer_multiplicity->Fill(i);
     }
 
-    for(int i = 0; i <= layer_number; i++)
-    {
-        //c4LOG(info,"multiplicity : "<< multiplicity[i] << " i : " << i );
-    }
+    // for(int i = 1; i <= layer_number; i++)
+    // {
+    //     c4LOG(info,"multiplicity : "<< multiplicity[i-1] << " i : " << i );
+    // }
 
     //:::::::Fill Sum Energy::::::::::
     //h2_energy_layer1_vs_layer2->Fill(sum_energy_layer[2],sum_energy_layer[1]);
