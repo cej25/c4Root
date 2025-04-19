@@ -182,11 +182,11 @@ InitStatus LisaOnlineSpectra::Init()
     //      Layer
     c_hitpattern_layer = new TCanvas("c_hitpattern_layer", "Hit Pattern by Layer", 650, 350);
     c_hitpattern_layer->Divide(2, (layer_number+1)/2);
-    h1_hitpattern_layer.resize(layer_number+1);
-    for (int i = 1; i <= layer_number; i++)
+    h1_hitpattern_layer.resize(layer_number);
+    for (int i = 0; i < layer_number; i++)
     {   
         c_hitpattern_layer->cd(i);
-        h1_hitpattern_layer[i] = new TH1I(Form("h1_hitpattern_layer_%i", i), Form("Hit Pattern - Layer: %i", i), xmax * ymax, 0, xmax * ymax);
+        h1_hitpattern_layer[i] = new TH1I(Form("h1_hitpattern_layer_%i", i+1), Form("Hit Pattern - Layer: %i", i+1), xmax * ymax, 0, xmax * ymax);
         h1_hitpattern_layer[i]->SetStats(0);
         h1_hitpattern_layer[i]->Draw();
 
@@ -293,17 +293,17 @@ InitStatus LisaOnlineSpectra::Init()
     //....................................
     // ::: Multiplicity 
     //      Total
-    h1_multiplicity = new TH1I("h1_multiplicity", "Total Multiplicity", det_number, 0, det_number+1);
+    h1_multiplicity = new TH1I("h1_multiplicity", "Total Multiplicity", det_number+1, -0.5, det_number+0.5);
     h1_multiplicity->SetStats(0);
     //....................................
     //      Multiplicity per layer
     c_multiplicity_per_layer = new TCanvas("c_multiplicity_per_layer", "Multiplicty Per Layer", 650, 350);
-    c_multiplicity_per_layer->Divide(2, (layer_number + 1)/2);
+    c_multiplicity_per_layer->Divide(2, (layer_number)/2); // was +1 dunno if matters
     h1_multiplicity_per_layer.resize(layer_number);
     for (int i = 0; i < layer_number; i++)
     {
-        c_multiplicity_per_layer->cd(i);
-        h1_multiplicity_per_layer[i] = new TH1I(Form("h1_multiplicity_layer_%i",i+1), Form("Multiplicity Layer %i",i+1), xmax * ymax+1, 0, xmax * ymax+1);
+        c_multiplicity_per_layer->cd(i+1);
+        h1_multiplicity_per_layer[i] = new TH1I(Form("h1_multiplicity_layer_%i",i+1), Form("Multiplicity Layer %i",i+1), xmax * ymax+1, -0.5, xmax * ymax+0.5);
         h1_multiplicity_per_layer[i]->SetStats(0);
         h1_multiplicity_per_layer[i]->Draw();
     }
@@ -664,7 +664,7 @@ void LisaOnlineSpectra::Exec(Option_t* option)
 
         // ::: FOR    M U L T I P L I C I T Y :::
         total_multiplicity++;
-        multiplicity[layer]++;
+        multiplicity[layer-1]++;
         
 
         //counter++;
@@ -674,7 +674,7 @@ void LisaOnlineSpectra::Exec(Option_t* option)
         h1_hitpattern_total->Fill(hp_total_bin);
         //....................
         // ::: Layer
-        h1_hitpattern_layer[layer]->Fill(hp_bin);
+        h1_hitpattern_layer[layer-1]->Fill(hp_bin);
         //....................
         // ::: Grids (hit pattern, pile up and overflow)
         h2_hitpattern_grid[layer-1]->Fill(xpos,ypos);
@@ -758,15 +758,17 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     }
     //....................................
 
+    
+    if (multiplicity[0] + multiplicity[1] == 0) std::cout << "zero multi, wr??:: " << wr_time << std::endl;
 
     // ::: Fill Multiplicity 
     h1_multiplicity->Fill(total_multiplicity);
-    for (int i = 0; i < layer_number; i++) h1_multiplicity_per_layer[i]->Fill(multiplicity[i-1]);
+    for (int i = 0; i < layer_number; i++) h1_multiplicity_per_layer[i]->Fill(multiplicity[i]);
 
-    for (int i = 1; i <= layer_number; i++)
-    {
-        if(multiplicity[i] != 0) h1_layer_multiplicity->Fill(i);
-    }
+    // for (int i = 0; i < layer_number; i++)
+    // {
+    //     if(multiplicity[i] != 0) h1_layer_multiplicity->Fill(i);
+    // }
 
     // for(int i = 1; i <= layer_number; i++)
     // {
