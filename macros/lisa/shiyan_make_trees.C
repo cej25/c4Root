@@ -28,7 +28,7 @@ void lisadev_make_trees()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
-    TString fExpName = "pareeksha";
+    TString fExpName = "shiyan";
 
     //:::::::::Here you define commonly used path
     TString c4Root_path = "/u/gandolfo/c4/c4Root";
@@ -62,6 +62,7 @@ void lisadev_make_trees()
 
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/test_c4/"; //testing
+    TString outputFilename = outputpath + "run_0075_0001_tree.root";
     TString outputFilename = outputpath + "run_0075_0001_tree.root";
 
 
@@ -119,19 +120,19 @@ void lisadev_make_trees()
     TExperimentConfiguration::SetEOSTrig(4);
     
     // ::: FRS config
-    TFrsConfiguration::SetConfigPath(config_path + "/pareeksha/frs/");
-    TFrsConfiguration::SetCrateMapFile(config_path + "/../pareeksha/frs/crate_map.txt");
-    TFrsConfiguration::SetTravMusDriftFile(config_path + "/../pareeksha/frs/TM_Drift_fragments.txt");
-    TFrsConfiguration::SetZ1DriftFile(config_path + "/../pareeksha/frs/Z1_Drift_fragments.txt");
-    TFrsConfiguration::SetAoQDriftFile(config_path + "/../pareeksha/frs/AoQ_Drift_fragments.txt");
+    TFrsConfiguration::SetConfigPath(config_path + fExpName + "/frs/");
+    TFrsConfiguration::SetCrateMapFile(config_path + fExpName + "/frs/crate_map.txt");
+    TFrsConfiguration::SetTravMusDriftFile(config_path + fExpName + "/frs/TM_Drift_fragments.txt");
+    TFrsConfiguration::SetZ1DriftFile(config_path + fExpName + "/frs/Z1_Drift_fragments.txt");
+    TFrsConfiguration::SetAoQDriftFile(config_path + fExpName + "/frs/AoQ_Drift_fragments.txt");
 
     // ::: Lisa config
     //TLisaConfiguration::SetMappingFile(config_path + "/Lisa_5x5_shiyan.txt");
-    TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map_names.txt");
+    TLisaConfiguration::SetMappingFile(config_path + fExpName + "/lisa/Lisa_Detector_Map_names.txt");
 
-    TLisaConfiguration::SetGMFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_pareeksha.txt");
-    TLisaConfiguration::SetGMFileMWD("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_pareeksha.txt");
-    TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_DAQtest.txt");
+    TLisaConfiguration::SetGMFile(config_path + fExpName + "/lisa/Lisa_GainMatching_pareeksha.txt");
+    TLisaConfiguration::SetGMFileMWD(config_path + fExpName + "/lisa/Lisa_GainMatching_pareeksha.txt");
+    TLisaConfiguration::SetMWDParametersFile(config_path + fExpName + "/lisa/Lisa_MWD_Parameters_DAQtest.txt");
 
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
