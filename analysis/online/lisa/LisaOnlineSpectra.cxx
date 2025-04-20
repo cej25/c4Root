@@ -306,6 +306,7 @@ InitStatus LisaOnlineSpectra::Init()
         c_multiplicity_per_layer->cd(i+1);
         h1_multiplicity_per_layer[i] = new TH1I(Form("h1_multiplicity_layer_%i",i+1), Form("Multiplicity Layer %i",i+1), xmax * ymax+1, -0.5, xmax * ymax+0.5);
         h1_multiplicity_per_layer[i]->SetStats(0);
+        h1_multiplicity_per_layer[i]->GetXaxis()->SetNdivisions(xmax * ymax+1, kTRUE);
         h1_multiplicity_per_layer[i]->Draw();
     }
     c_multiplicity_per_layer->cd();
@@ -740,7 +741,10 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     //....................................
 
     
+
     //if (multiplicity[0] + multiplicity[1] == 0) std::cout << "zero multi, wr??:: " << wr_time << std::endl;
+
+    if (multiplicity[0] == 0 && multiplicity[1] > 0) std::cout << "layer 2 fired not layer 1, wr??:: " << wr_time << std::endl;
 
     // ::: Fill Multiplicity 
     h1_multiplicity->Fill(total_multiplicity);
@@ -753,7 +757,12 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     }
     h1_layer_multiplicity->Fill(layers_fired);
 
+    h1_layer_multiplicity->Fill(layers_fired);
 
+    // for(int i = 1; i <= layer_number; i++)
+    // {
+    //     c4LOG(info,"multiplicity : "<< multiplicity[i-1] << " i : " << i );
+    // }
 
     //:::::::Fill Sum Energy::::::::::
     //h2_energy_layer1_vs_layer2->Fill(sum_energy_layer[2],sum_energy_layer[1]);

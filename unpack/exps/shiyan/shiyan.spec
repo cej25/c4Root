@@ -23,6 +23,11 @@ SUBEVENT(frs_main_subev)
         spill_off = SPILL_OFF();
     };
 
+    UINT32 sevens NOENCODE
+    {
+        0_31: 0x77777777;
+    }
+
     select optional
     {
         data = MAIN_CRATE_DATA();
@@ -70,6 +75,11 @@ SUBEVENT(frs_user_subev)
     {
         spill_off = SPILL_OFF();
     };
+    
+    UINT32 sevens NOENCODE
+    {
+        0_31: 0x77777777;
+    };
 
     // same as above
     select optional
@@ -96,23 +106,21 @@ SUBEVENT(frs_tpat_subev)
     }
 }
 
-SUBEVENT(travmus_subev)
+SUBEVENT(frs_travmus_subev)
 {
+    select optional 
+    {
+        wr = TIMESTAMP_WHITERABBIT(id=0x200);
+    };
+
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT(id=0x200);
-    };
+        stuff = VULOM_TPAT();
+    }
 
-    UINT32 barrier NOENCODE
+    select optional
     {
-        0_15: counter;
-        16_31: bar = MATCH(0xF520);
-
-    };
-
-    select several
-    {
-        data = VME_MESYTEC_MDPP16(geom=8);
+        data = TRAVMUS_CRATE_DATA();
     };
 }
 
@@ -157,7 +165,7 @@ EVENT
     frsuser = frs_user_subev(procid = 30);
     frstpat = frs_tpat_subev(procid = 15);
 
-    travmus = travmus_subev(procid=35);
+    frstravmus = frs_travmus_subev(procid = 35, control = 30);
 
     lisa = febex_subev_traces(procid = 60);
 
