@@ -13,7 +13,7 @@
 // Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/
 extern "C"
 {
-    #include "../../config/pareeksha/frs/setup_Fragment_conv_updated.C"
+    #include "../../config/shiyan/frs/setup_115_023_2025_s1calib_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
