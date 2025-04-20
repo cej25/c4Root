@@ -737,6 +737,7 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     // S1-S2 plotting
     for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
     {
+        if ( i > 0 ) continue;
         if (frs_config->plot_mhtdc_2d)
         {   
             if (z21_mhtdc.at(i) > 0 && AoQ_s1s2_mhtdc.at(i) > 0) h2_Z21_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), z21_mhtdc.at(i));
