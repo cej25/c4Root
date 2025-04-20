@@ -62,7 +62,7 @@ void lisadev_make_trees()
 
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/test_c4/"; //testing
-    TString outputFilename = outputpath + "run_0075_0001_tree.root";
+    TString outputFilename = outputpath + "run_0075_0001.root";
 
 
     //:::::::Create online run

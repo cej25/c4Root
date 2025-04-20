@@ -97,19 +97,23 @@ class LisaOnlineSpectra : public FairTask
         TDirectory* dir_lisa;
         TDirectory* dir_stats;
         TDirectory* dir_rates;
-        // TDirectory* dir_energy;
+        TDirectory* dir_energy;
+        TDirectory* dir_febex;
         // TDirectory* dir_energy_MWD;
         // TDirectory* dir_traces;
         // TDirectory* dir_traces_MWD;
     
 
         // ::: Canvas
+        //     Stats
         std::vector<TCanvas*> c_layer_rates;
         TCanvas* c_hitpattern_layer;
         TCanvas* c_hitpattern_grid;
         TCanvas* c_pileup_grid;
         TCanvas* c_overflow_grid;
         TCanvas* c_multiplicity_per_layer;
+        //      Energy
+        std::vector<TCanvas*> c_energy_ch;
         // TCanvas* c_energy_layer1_vs_layer2;
         // TCanvas* c_energy_layer_vs_time;
         // std::vector<TCanvas*> c_energy_layer_ch;
@@ -130,7 +134,8 @@ class LisaOnlineSpectra : public FairTask
         TH1I* h1_multiplicity;
         std::vector<TH1I*> h1_multiplicity_per_layer; ;
         TH1I* h1_layer_multiplicity;
-
+        //      Energy 
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_ch;
         // //TH1F* h1_energy_layer0;
         // std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch;
         // TH2F* h2_energy_layer1_vs_layer2;

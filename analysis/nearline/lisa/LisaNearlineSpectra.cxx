@@ -264,26 +264,25 @@ InitStatus LisaNearlineSpectra::Init()
         h2_overflow_grid[i]->SetContour(100);
         
     }
-    
-    // ::: Multiplicity
-    //     Total
-    h1_multiplicity = new TH1I("h1_multiplicity", "Total Multiplicity", det_number, 0, det_number+1);
+
+    // ::: Multiplicity 
+    //      Total
+    h1_multiplicity = new TH1I("h1_multiplicity", "Detector Multiplicity", det_number+1, -0.5, det_number+0.5);
     h1_multiplicity->SetStats(0);
-    
-    // //:::::::::::Multiplicity of each layer
-    // h1_multiplicity_layer.resize(layer_number);
-    // for (int i = 0; i < layer_number; i++)
-    // {
-    //     h1_multiplicity_layer[i] = new TH1I(Form("h1_multiplicity_layer_%i",i), Form("Multiplicity of Layer %i",i), xmax * ymax+1, 0, xmax * ymax+1);
-    //     h1_multiplicity_layer[i]->SetStats(0);
-    //     h1_multiplicity_layer[i]->Draw();
-    // }
 
-    // //:::::::::::Layers Multiplicity
-    // h1_layers_multiplicity = new TH1I("h1_layers_multiplicity", "Layers Multiplicity", layer_number, 0, layer_number);
-    // h1_layers_multiplicity->SetStats(0);
+    //      Multiplicity per layer
+    h1_multiplicity_per_layer.resize(layer_number);
+    for (int i = 0; i < layer_number; i++)
+    {
+        h1_multiplicity_per_layer[i] = new TH1I(Form("h1_multiplicity_layer_%i",i+1), Form("Multiplicity Layer %i",i+1), xmax * ymax+1, -0.5, xmax * ymax+0.5);
+        h1_multiplicity_per_layer[i]->SetStats(0);
+        h1_multiplicity_per_layer[i]->Draw();
+    }
 
-    //.................................... 
+    //      Layer Multiplicity
+    h1_layer_multiplicity = new TH1I("h1_layer_multiplicity", "Layer Multiplicity", layer_number+1, -0.5, layer_number+0.5);
+    h1_layer_multiplicity->SetStats(0);
+    //....................................   
 
     //::: E N E R G Y::::
 
@@ -524,9 +523,8 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     wr_time = 0;
     Long64_t LISA_time_mins = 0;
     // .........................
-
-    //int multiplicity[layer_number] = {0};
     int total_multiplicity = 0;
+    int multiplicity[layer_number] = {0};
 
     //std::vector<float> sum_energy_layer;
     //sum_energy_layer.resize(layer_number);
@@ -578,7 +576,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         //....................
         // ::: FOR     M U L T I P L I C I T Y  
         total_multiplicity++;
-        //multiplicity[layer]++;
+        multiplicity[layer-1]++;
 
         //::: F I L L   H I S T O S  :::
 
@@ -686,14 +684,15 @@ void LisaNearlineSpectra::Exec(Option_t* option)
 
     // ::: Multiplicity
     h1_multiplicity->Fill(total_multiplicity);
-    //for (int i = 0; i < layer_number; i++) h1_multiplicity_layer[i]->Fill(multiplicity[i]);
-    
+    for (int i = 0; i < layer_number; i++) h1_multiplicity_per_layer[i]->Fill(multiplicity[i]);
 
+    int layers_fired = 0;
     for (int i = 0; i < layer_number; i++)
     {
-        //if(multiplicity[i] != 0) h1_layers_multiplicity->Fill(i);
-        //c4LOG(info," layer number : " << layer_number << " layer : " << layer << " multiplicity [layer] : " << multiplicity[layer] << " multiplicity [i] : " << multiplicity[i]);
+        if(multiplicity[i] != 0) layers_fired++;
     }
+    h1_layer_multiplicity->Fill(layers_fired);
+    //....................................
 
     //:::::::Fill Sum Energy::::::::::
     //h2_sum_energy_layer1_vs_layer2->Fill(sum_energy_layer[2],sum_energy_layer[1]);

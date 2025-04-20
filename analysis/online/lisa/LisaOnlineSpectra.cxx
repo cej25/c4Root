@@ -95,7 +95,8 @@ InitStatus LisaOnlineSpectra::Init()
     dir_lisa->cd();
     dir_stats = dir_lisa->mkdir("Stats");
     dir_rates = dir_stats->mkdir("Rates");
-    //dir_energy = dir_lisa->mkdir("Energy");
+    dir_energy = dir_lisa->mkdir("Energy");
+    dir_febex = dir_energy->mkdir("Febex");
     //dir_traces = dir_lisa->mkdir("Traces");
 
     // ::: S T A T S :::
@@ -293,7 +294,7 @@ InitStatus LisaOnlineSpectra::Init()
     //....................................
     // ::: Multiplicity 
     //      Total
-    h1_multiplicity = new TH1I("h1_multiplicity", "Total Multiplicity", det_number+1, -0.5, det_number+0.5);
+    h1_multiplicity = new TH1I("h1_multiplicity", "Detector Multiplicity", det_number+1, -0.5, det_number+0.5);
     h1_multiplicity->SetStats(0);
     //....................................
     //      Multiplicity per layer
@@ -315,67 +316,46 @@ InitStatus LisaOnlineSpectra::Init()
     h1_layer_multiplicity->SetStats(0);
     //....................................
 
-//     //:::::::::::::E N E R G Y:::::::::::::::::
-//     dir_energy->cd();
-
-//     c_energy_layer_ch.resize(layer_number);
-//     h1_energy_layer_ch.resize(layer_number);
-
-//     //::::::::::Energy for now special case layer 0
-//     c_energy_layer_ch[0] = new TCanvas("c_energy_layer_ch0", "Tokyo layer", 650, 350);
-//     h1_energy_layer_ch[0].resize(1);
-//     h1_energy_layer_ch[0][0].resize(1);
-//     h1_energy_layer_ch[0][0][0] = new TH1F("tokyo", "Tokyo", lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
-//     h1_energy_layer_ch[0][0][0]->GetXaxis()->SetTitle("E(LISA) [a.u.]");
-//     //h1_energy_layer_ch[0][0][0]->SetMinimum(lisa_config->amplitude_min); // set in macro
-//     //h1_energy_layer_ch[0][0][0]->SetMaximum(lisa_config->amplitude_max);
-//     //h1_energy_layer_ch[0][0][0]->SetStats(0);
-//     h1_energy_layer_ch[0][0][0]->SetLineColor(kBlue+1);
-//     h1_energy_layer_ch[0][0][0]->SetFillColor(kOrange-3);
-//     h1_energy_layer_ch[0][0][0]->Draw();
-//     dir_energy->Append(c_energy_layer_ch[0]);
-
- 
-//     //:::::::::::Energy canvas for layer 1 and 2
-//     for (int i = 1; i < layer_number; i++) //create a canvas for each layer
-//     {
-//         c_energy_layer_ch[i] = new TCanvas(Form("c_energy_layer_%d",i),Form("c_energy_layer_%d",i), 650,350);
-//         c_energy_layer_ch[i]->SetTitle(Form("Layer %d - Energy",i));
-//         c_energy_layer_ch[i]->Divide(xmax,ymax); 
-//         h1_energy_layer_ch[i].resize(xmax);
+    // ::: E N E R G Y :::
+    dir_energy->cd();
+    //      Febex per channel
+    dir_febex->cd();
+    c_energy_ch.resize(layer_number);
+    h1_energy_ch.resize(layer_number);
+    for (int i = 0; i < layer_number; i++)
+    {
+        c_energy_ch[i] = new TCanvas(Form("c_energy_layer_%d_channels",i),Form("c_energy_layer_%d_channels",i), 650,350);
+        c_energy_ch[i]->SetTitle(Form("Layer %d - Energies",i));
+        c_energy_ch[i]->Divide(xmax,ymax); 
+        h1_energy_ch[i].resize(xmax);
         
-//         for (int j = 0; j < xmax; j++)
-//         {
-//             h1_energy_layer_ch[i][j].resize(ymax);
-//             for (int k = 0; k < ymax; k++)
-//             {   
-//                 // general formula to place correctly on canvas for x,y coordinates
-//                 c_energy_layer_ch[i]->cd((ymax-(k+1))*xmax + j + 1);
-                
-//                 city = "";
-//                 for (auto & detector : detector_mapping)
-//                 {
-//                     if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
-//                     {
-//                         city = detector.second.first.second;
-//                         break;
-//                     }
-//                 }
+        for (int j = 0; j < xmax; j++)
+        {
+            h1_energy_ch[i][j].resize(ymax);
+            for (int k = 0; k < ymax; k++)
+            {   
+                c_energy_ch[i]->cd((ymax-(k+1))*xmax + j + 1);
+                city = "";
+                for (auto & detector : detector_mapping)
+                {
+                    if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
+                    {
+                        city = detector.second.first.second;
+                        break;
+                    }
+                }
 
-//                 h1_energy_layer_ch[i][j][k] = new TH1F(Form("energy_%s_%i_%i_%i", city.Data(), i, j, k), city.Data(), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
-//                 h1_energy_layer_ch[i][j][k]->GetXaxis()->SetTitle("E(LISA) [a.u.]");
-//                 //h1_energy_layer_ch[i][j][k]->SetMinimum(lisa_config->amplitude_min); // set in macro
-//                 //h1_energy_layer_ch[i][j][k]->SetMaximum(lisa_config->amplitude_max);
-//                 //h1_energy_layer_ch[i][j][k]->SetStats(0);
-//                 h1_energy_layer_ch[i][j][k]->SetLineColor(kBlue+1);
-//                 h1_energy_layer_ch[i][j][k]->SetFillColor(kOrange-3);
-//                 h1_energy_layer_ch[i][j][k]->Draw();
-//             }
-//         }
-//         c_energy_layer_ch[i]->cd(0);
-//         dir_energy->Append(c_energy_layer_ch[i]);
+                h1_energy_ch[i][j][k] = new TH1F(Form("energy_%s_%i_%i_%i", city.Data(), i, j, k), Form("Energy Febex %s",city.Data()), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+                h1_energy_ch[i][j][k]->GetXaxis()->SetTitle("E(LISA) [a.u.]");
+                h1_energy_ch[i][j][k]->SetLineColor(kBlue+1);
+                h1_energy_ch[i][j][k]->SetFillColor(kOrange-3);
+                h1_energy_ch[i][j][k]->Draw();
+            }
+        }
+        c_energy_ch[i]->cd();
+        dir_febex->Append(c_energy_ch[i]);
 
-//     }
+    }
     
 //     //::::::::::: Sum Energy Layer 1 vs Sum Energy Layer 2
 //     dir_energy->cd();
@@ -585,18 +565,19 @@ void LisaOnlineSpectra::Reset_Histo()
     // Reset hit grid
     h1_hitpattern_total->Reset();
     // Reset hit patter by layer
-    for (int i = 1; i <= layer_number; i++)
+    for (int i = 0; i < layer_number; i++)
     {
         h1_hitpattern_layer[i]->Reset();
     } 
 
     // Reset multiplicity
+    h1_layer_multiplicity->Reset();
     h1_multiplicity->Reset();
     for (int i = 0; i < layer_number; i++)
     {
         h1_multiplicity_per_layer[i]->Reset();
     }
-    h1_layer_multiplicity->Reset();
+    
     
     //...................
 
@@ -759,21 +740,20 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     //....................................
 
     
-    if (multiplicity[0] + multiplicity[1] == 0) std::cout << "zero multi, wr??:: " << wr_time << std::endl;
+    //if (multiplicity[0] + multiplicity[1] == 0) std::cout << "zero multi, wr??:: " << wr_time << std::endl;
 
     // ::: Fill Multiplicity 
     h1_multiplicity->Fill(total_multiplicity);
     for (int i = 0; i < layer_number; i++) h1_multiplicity_per_layer[i]->Fill(multiplicity[i]);
 
+    int layers_fired = 0;
     for (int i = 0; i < layer_number; i++)
     {
-        if(multiplicity[i] != 0) h1_layer_multiplicity->Fill(i);
+        if(multiplicity[i] != 0) layers_fired++;
     }
+    h1_layer_multiplicity->Fill(layers_fired);
 
-    // for(int i = 1; i <= layer_number; i++)
-    // {
-    //     c4LOG(info,"multiplicity : "<< multiplicity[i-1] << " i : " << i );
-    // }
+
 
     //:::::::Fill Sum Energy::::::::::
     //h2_energy_layer1_vs_layer2->Fill(sum_energy_layer[2],sum_energy_layer[1]);
