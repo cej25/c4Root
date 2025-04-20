@@ -60,7 +60,7 @@ void lisadev_histos()
     
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/test_c4/"; //test output
-    TString outputFilename = outputpath + "run_0075_0001_histo.root";
+    TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";
 
 
     FairRunAna* run = new FairRunAna();
@@ -168,8 +168,8 @@ void lisadev_histos()
     TLisaConfiguration::SetWrRateBin(3600);
 
     // FRS
-    TFrsConfiguration::Set_Z_range(20,60);
-    TFrsConfiguration::Set_AoQ_range(1,3);
+    TFrsConfiguration::Set_Z_range(0,80);
+    TFrsConfiguration::Set_AoQ_range(1,10);
 
     // :::: ENABLE SYSTEMS  ::::::::::::::::::::::::::::::::::::::::
     if (LISA_ON)
