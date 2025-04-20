@@ -122,10 +122,8 @@ class LisaNearlineSpectra : public FairTask
         std::vector<TH2F*> h2_pileup_grid;
         std::vector<TH2F*> h2_overflow_grid;
         TH1I* h1_multiplicity;
-        
-        // std::vector<TH1I*> h1_multiplicity_layer; ;
-        // TH1I* h1_layers_multiplicity;
-        //TH2F* h2_hitpattern_grid;
+        std::vector<TH1I*> h1_multiplicity_per_layer; ;
+        TH1I* h1_layer_multiplicity;
         //TH1F* h1_energy_layer0;
 
         // Energy for febex and MWD

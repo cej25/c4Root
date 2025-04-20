@@ -24,7 +24,7 @@ typedef struct EXT_STR_h101_t
 
 } EXT_STR_h101;
 
-void lisadev_make_trees()
+void shiyan_make_trees()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
@@ -55,15 +55,14 @@ void lisadev_make_trees()
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
     //TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/LISAmp_test/";
-    TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";
+    TString inputpath = "/u/gandolfo/data/lustre/nustar/profi/sec_s160feb25/stitched/";
  
     //TString filename = inputpath + "LISAmp_2layers_0006_0001.lmd";
-    TString filename = inputpath + "run_0075_0001.lmd";
+    TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
 
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/test_c4/"; //testing
-    TString outputFilename = outputpath + "run_0075_0001_tree.root";
-    TString outputFilename = outputpath + "run_0075_0001_tree.root";
+    TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.root";
 
 
     //:::::::Create online run
@@ -120,19 +119,19 @@ void lisadev_make_trees()
     TExperimentConfiguration::SetEOSTrig(4);
     
     // ::: FRS config
-    TFrsConfiguration::SetConfigPath(config_path + fExpName + "/frs/");
-    TFrsConfiguration::SetCrateMapFile(config_path + fExpName + "/frs/crate_map.txt");
-    TFrsConfiguration::SetTravMusDriftFile(config_path + fExpName + "/frs/TM_Drift_fragments.txt");
-    TFrsConfiguration::SetZ1DriftFile(config_path + fExpName + "/frs/Z1_Drift_fragments.txt");
-    TFrsConfiguration::SetAoQDriftFile(config_path + fExpName + "/frs/AoQ_Drift_fragments.txt");
+    TFrsConfiguration::SetConfigPath(config_path +  "/frs/");
+    TFrsConfiguration::SetCrateMapFile(config_path +  "/frs/crate_map.txt");
+    TFrsConfiguration::SetTravMusDriftFile(config_path +  "/frs/TM_Drift_fragments.txt");
+    TFrsConfiguration::SetZ1DriftFile(config_path +  "/frs/Z1_Drift_fragments.txt");
+    TFrsConfiguration::SetAoQDriftFile(config_path +  "/frs/AoQ_Drift_fragments.txt");
 
     // ::: Lisa config
     //TLisaConfiguration::SetMappingFile(config_path + "/Lisa_5x5_shiyan.txt");
-    TLisaConfiguration::SetMappingFile(config_path + fExpName + "/lisa/Lisa_Detector_Map_names.txt");
+    TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_5x5_shiyan.txt");
 
-    TLisaConfiguration::SetGMFile(config_path + fExpName + "/lisa/Lisa_GainMatching_pareeksha.txt");
-    TLisaConfiguration::SetGMFileMWD(config_path + fExpName + "/lisa/Lisa_GainMatching_pareeksha.txt");
-    TLisaConfiguration::SetMWDParametersFile(config_path + fExpName + "/lisa/Lisa_MWD_Parameters_DAQtest.txt");
+    TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching.txt");
+    TLisaConfiguration::SetGMFileMWD(config_path +"/lisa/Lisa_GainMatching_MWD.txt");
+    TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
 
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
