@@ -570,7 +570,6 @@ void LisaOnlineSpectra::Reset_Histo()
     {
         h1_hitpattern_layer[i]->Reset();
     } 
-
     // Reset multiplicity
     h1_layer_multiplicity->Reset();
     h1_multiplicity->Reset();
@@ -743,8 +742,6 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     
 
     //if (multiplicity[0] + multiplicity[1] == 0) std::cout << "zero multi, wr??:: " << wr_time << std::endl;
-
-    if (multiplicity[0] == 0 && multiplicity[1] > 0) std::cout << "layer 2 fired not layer 1, wr??:: " << wr_time << std::endl;
 
     // ::: Fill Multiplicity 
     h1_multiplicity->Fill(total_multiplicity);
