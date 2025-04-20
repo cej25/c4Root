@@ -204,6 +204,8 @@ void FrsRaw2Cal::ProcessScintillators()
 
     // TAC DE
     sciDE = sciItem.Get_de_array();
+
+
     de_11l = sciDE[frs_config->Get_dE_11l_chan()];
     de_11r = sciDE[frs_config->Get_dE_11r_chan()];
     de_21l = sciDE[frs_config->Get_dE_21l_chan()];
