@@ -2,7 +2,7 @@
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define LISA_ON 1
-#define FRS_ON 1
+#define FRS_ON 0
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
 
 //Select the data level you want to visualize
@@ -55,14 +55,15 @@ void lisadev_make_trees()
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
     //TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/LISAmp_test/";
-    TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";
- 
+    //TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";
+    TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/";
     //TString filename = inputpath + "LISAmp_2layers_0006_0001.lmd";
-    TString filename = inputpath + "run_0075_0001.lmd";
+    TString filename = inputpath + "LISAmp_10layers_0012_0001.lmd";
+    //TString filename = inputpath + "run_0075_0001.lmd";
 
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/test_c4/"; //testing
-    TString outputFilename = outputpath + "run_0075_0001.root";
+    TString outputFilename = outputpath + "LISAmp_10layers_0012_0001_trees.root";
 
 
     //:::::::Create online run
@@ -126,12 +127,11 @@ void lisadev_make_trees()
     TFrsConfiguration::SetAoQDriftFile(config_path + "/../pareeksha/frs/AoQ_Drift_fragments.txt");
 
     // ::: Lisa config
-    //TLisaConfiguration::SetMappingFile(config_path + "/Lisa_5x5_shiyan.txt");
-    TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map_names.txt");
-
-    TLisaConfiguration::SetGMFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_pareeksha.txt");
-    TLisaConfiguration::SetGMFileMWD("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_pareeksha.txt");
-    TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_DAQtest.txt");
+    TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_All_Boards.txt");
+    //TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map_names.txt");
+    TLisaConfiguration::SetGMFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching.txt");
+    TLisaConfiguration::SetGMFileMWD("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching.txt");
+    TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
 
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

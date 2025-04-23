@@ -101,54 +101,146 @@ InitStatus LisaTraceAnalysis::Init()
 
     dir_energy->cd();
     // :::::  E N E R G Y :::::
+    h1_energy.resize(board_number);     
+    h1_energy_MWD.resize(board_number); 
 
     // ::: Energy for all channels
-    h1_energy.resize(histo_number);
-    for (int i = 0; i < histo_number; i++) 
-    {  
-        
-        h1_energy[i] = new TH1F(Form("energy_%i", i), Form("Energy_%i",i), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
-        h1_energy[i]->GetXaxis()->SetTitle("E(febex) [a.u.]");
-        h1_energy[i]->SetLineColor(kBlack);
+    for (int b = 0; b < board_number; ++b) // loop over boards
+    {    
+        h1_energy[b].resize(16);
+        for (int ch = 0; ch < 16; ++ch) // loop over channels
+        {
+            h1_energy[b][ch] = new TH1F(
+                Form("energy_b%d_ch%d", b, ch),
+                Form("Energy Board %d Channel %d", b, ch),
+                lisa_config->bin_energy,
+                lisa_config->min_energy,
+                lisa_config->max_energy
+            );
+            h1_energy[b][ch]->GetXaxis()->SetTitle("E(febex) [a.u.]");
+            h1_energy[b][ch]->SetLineColor(kBlack);
+        }
     }
+
+    // h1_energy.resize(histo_number);
+    // for (int i = 0; i < histo_number; i++) 
+    // {  
+        
+    //     h1_energy[i] = new TH1F(Form("energy_%i", i), Form("Energy_%i",i), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+    //     h1_energy[i]->GetXaxis()->SetTitle("E(febex) [a.u.]");
+    //     h1_energy[i]->SetLineColor(kBlack);
+    // }
     
     dir_energy_MWD->cd();
     // ::: Energy MWD
-    h1_energy_MWD.resize(histo_number);
-    for (int i = 0; i < histo_number; i++) 
-    {  
-        h1_energy_MWD[i] = new TH1F(Form("energy_MWD_%i", i), Form("Energy_MWD_%i",i), lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
-        h1_energy_MWD[i]->GetXaxis()->SetTitle("E(MWD) [mV]");
-        h1_energy_MWD[i]->SetLineColor(kRed+1);
+    for (int b = 0; b < board_number; ++b) // loop over boards
+    {    
+        h1_energy_MWD[b].resize(16);
+        for (int ch = 0; ch < 16; ++ch) // loop over channels
+        {
+            h1_energy_MWD[b][ch] = new TH1F(
+                Form("energy_MWD_b%d_ch%d", b, ch),
+                Form("Energy MWD Board %d Channel %d", b, ch),
+                lisa_config->bin_energy_MWD,
+                lisa_config->min_energy_MWD,
+                lisa_config->max_energy_MWD
+            );
+            h1_energy_MWD[b][ch]->GetXaxis()->SetTitle("E(MWD) [mV]");
+            h1_energy_MWD[b][ch]->SetLineColor(kBlack);
+        }
     }
+    // h1_energy_MWD.resize(histo_number);
+    // for (int i = 0; i < histo_number; i++) 
+    // {  
+    //     h1_energy_MWD[i] = new TH1F(Form("energy_MWD_%i", i), Form("Energy_MWD_%i",i), lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
+    //     h1_energy_MWD[i]->GetXaxis()->SetTitle("E(MWD) [mV]");
+    //     h1_energy_MWD[i]->SetLineColor(kRed+1);
+    // }
     
 
     // ::::: T R A C E S ::::
     //::::::::::::Traces from Febex
-    h2_traces.resize(histo_number);
-    h2_traces_MWD.resize(histo_number);
-    c_trace = new TCanvas("c_trace_ch_compare","c_trace_ch_compare", 800, 600);
-    c_trace->Divide(4,4);
-    for (int i = 0; i < histo_number; i++) 
-    {
-        c_trace->cd(i+1);
-        h2_traces[i] = MakeTH2(dir_traces,"F",Form("h2_traces_%i", i), Form("Traces_%i",i), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces,lisa_config->amplitude_bin,lisa_config->amplitude_min,lisa_config->amplitude_max); //200,0,20,2000,-5000,5000
-        h2_traces[i]->GetXaxis()->SetTitle("Time [us]");
-        h2_traces[i]->GetYaxis()->SetTitle("Amplitude [mV]");
-        h2_traces[i]->SetMarkerColor(kBlack);
-        h2_traces[i]->SetMarkerStyle(5);
-        h2_traces[i]->SetOption("SCAT");
-        h2_traces[i]->Draw("SCAT");
+    // h2_traces.resize(histo_number);
+    // h2_traces_MWD.resize(histo_number);
+    // c_trace = new TCanvas("c_trace_ch_compare","c_trace_ch_compare", 800, 600);
+    // c_trace->Divide(4,4);
+    // for (int i = 0; i < histo_number; i++) 
+    // {
+    //     c_trace->cd(i+1);
+    //     h2_traces[i] = MakeTH2(dir_traces,"F",Form("h2_traces_%i", i), Form("Traces_%i",i), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces,lisa_config->amplitude_bin,lisa_config->amplitude_min,lisa_config->amplitude_max); //200,0,20,2000,-5000,5000
+    //     h2_traces[i]->GetXaxis()->SetTitle("Time [us]");
+    //     h2_traces[i]->GetYaxis()->SetTitle("Amplitude [mV]");
+    //     h2_traces[i]->SetMarkerColor(kBlack);
+    //     h2_traces[i]->SetMarkerStyle(5);
+    //     h2_traces[i]->SetOption("P");
+    //     h2_traces[i]->Draw("P");
 
-        h2_traces_MWD[i] = MakeTH2(dir_traces_MWD,"F",Form("h2_traces_MWD_%i", i), Form("Traces_MWD_%i",i), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces,lisa_config->amplitude_bin,lisa_config->amplitude_min,lisa_config->amplitude_max);
-        h2_traces_MWD[i]->GetXaxis()->SetTitle("Time [us]");
-        h2_traces_MWD[i]->GetYaxis()->SetTitle("Amplitude [mV]");
-        h2_traces_MWD[i]->SetMarkerColor(kRed+1);
-        h2_traces_MWD[i]->SetMarkerStyle(5);
-        h2_traces_MWD[i]->SetOption("SCAT");
-        h2_traces_MWD[i]->Draw("SCAT,SAME");
+    //     h2_traces_MWD[i] = MakeTH2(dir_traces_MWD,"F",Form("h2_traces_MWD_%i", i), Form("Traces_MWD_%i",i), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces,lisa_config->amplitude_bin,lisa_config->amplitude_min,lisa_config->amplitude_max);
+    //     h2_traces_MWD[i]->GetXaxis()->SetTitle("Time [us]");
+    //     h2_traces_MWD[i]->GetYaxis()->SetTitle("Amplitude [mV]");
+    //     h2_traces_MWD[i]->SetMarkerColor(kRed+1);
+    //     h2_traces_MWD[i]->SetMarkerStyle(5);
+    //     h2_traces_MWD[i]->SetOption("P");
+    //     h2_traces_MWD[i]->Draw("P,SAME");
+    // }
+    // dir_traces->Append(c_trace);
+
+    h2_traces.resize(board_number);
+    h2_traces_MWD.resize(board_number);
+
+    // Create the canvas and divide it
+
+    int pad_counter = 1; // because canvas pads are numbered from 1
+
+    for (int b = 0; b < board_number; ++b)
+    {
+        h2_traces[b].resize(16);
+        h2_traces_MWD[b].resize(16);
+
+        for (int ch = 0; ch < 16; ++ch)
+        {
+
+            h2_traces[b][ch] = MakeTH2(
+                dir_traces,
+                "F",
+                Form("h2_traces_b%d_ch%d", b, ch),
+                Form("Traces Board %d Channel %d", b, ch),
+                lisa_config->bin_traces,
+                lisa_config->min_traces,
+                lisa_config->max_traces,
+                lisa_config->amplitude_bin,
+                lisa_config->amplitude_min,
+                lisa_config->amplitude_max
+            );
+            h2_traces[b][ch]->GetXaxis()->SetTitle("Time [us]");
+            h2_traces[b][ch]->GetYaxis()->SetTitle("Amplitude [mV]");
+            h2_traces[b][ch]->SetMarkerColor(kBlack);
+            h2_traces[b][ch]->SetMarkerStyle(5);
+            h2_traces[b][ch]->SetOption("SCAT");
+            h2_traces[b][ch]->Draw("SCAT");
+
+            h2_traces_MWD[b][ch] = MakeTH2(
+                dir_traces_MWD,
+                "F",
+                Form("h2_traces_MWD_b%d_ch%d", b, ch),
+                Form("Traces_MWD Board %d Channel %d", b, ch),
+                lisa_config->bin_traces,
+                lisa_config->min_traces,
+                lisa_config->max_traces,
+                lisa_config->amplitude_bin,
+                lisa_config->amplitude_min,
+                lisa_config->amplitude_max
+            );
+            h2_traces_MWD[b][ch]->GetXaxis()->SetTitle("Time [us]");
+            h2_traces_MWD[b][ch]->GetYaxis()->SetTitle("Amplitude [mV]");
+            h2_traces_MWD[b][ch]->SetMarkerColor(kRed + 1);
+            h2_traces_MWD[b][ch]->SetMarkerStyle(5);
+            h2_traces_MWD[b][ch]->SetOption("SCAT");
+            h2_traces_MWD[b][ch]->Draw("SCAT SAME");
+
+        }
     }
-    dir_traces->Append(c_trace);
+
 
     // ::: mapping for histo filling
     // mapping[1] = 0;
@@ -181,15 +273,17 @@ void LisaTraceAnalysis::Exec(Option_t* option)
         std::vector<float> trace_febex = lisaAnaItem.Get_trace_febex();
         std::vector<float> trace_febex_0 = lisaAnaItem.Get_trace_febex_0();
         std::vector<float> trace_MWD = lisaAnaItem.Get_trace_MWD();
+        int b_ID = lisaAnaItem.Get_board_id();
 
         
         // ::::: F I L L   H I S T O S :::::
 
         // ::::: E N E R G Y :::::
         //std::cout << " energy from plotting task : " << energy_MWD << "\n";
-
-        h1_energy[ch_ID]->Fill(energy_febex);
-        h1_energy_MWD[ch_ID]->Fill(energy_MWD);
+        h1_energy[b_ID][ch_ID]->Fill(energy_febex);
+        h1_energy_MWD[b_ID][ch_ID]->Fill(energy_MWD);
+        //h1_energy[ch_ID]->Fill(energy_febex);
+        //h1_energy_MWD[ch_ID]->Fill(energy_MWD);
 
         //h1_energy[mapping[ch_ID]]->Fill(energy_febex);
         //h1_energy_MWD[mapping[ch_ID]]->Fill(energy_MWD);			     
@@ -211,12 +305,14 @@ void LisaTraceAnalysis::Exec(Option_t* option)
             //std::cout<< " Event Number : " << Eventno << ", event to analyze : " << event_to_analyze << "\n";
             for (int i = 0; i < trace_febex_0.size(); i++)
             {            
-                h2_traces[ch_ID]->Fill(i*0.01,trace_febex_0[i]);
+                h2_traces[b_ID][ch_ID]->Fill(i*0.01,trace_febex_0[i]);
+                //h2_traces[ch_ID]->Fill(i*0.01,trace_febex_0[i]);
             }
 
             for (int i = 0; i < trace_MWD.size(); i++)
             {            
-                h2_traces_MWD[ch_ID]->Fill((i + start_MWD_plot)*0.01,trace_MWD[i]);
+                h2_traces_MWD[b_ID][ch_ID]->Fill((i + start_MWD_plot)*0.01,trace_MWD[i]);
+                //h2_traces_MWD[ch_ID]->Fill((i + start_MWD_plot)*0.01,trace_MWD[i]);
             }
         }
     

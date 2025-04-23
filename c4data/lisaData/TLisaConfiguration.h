@@ -113,7 +113,7 @@ class TLisaConfiguration
 
         static void SetEventNO(int start_evt, int stop_evt) {start_evtno = start_evt; stop_evtno = stop_evt;}
 
-
+        static void SetTrace(int tr_on) { trace_on = tr_on; }
 
         //int AmplitudeMax = 10500;
         //int AmplitudeMin = 7500;
@@ -148,6 +148,7 @@ class TLisaConfiguration
         static int event_ana;
         static int start_evtno;
         static int stop_evtno;
+        static int trace_on;
 
         static bool wr_enable;
 
@@ -164,13 +165,7 @@ class TLisaConfiguration
         float Get_MWD_Baseline_Start() const { return MWD_baseline_start; }
         float Get_MWD_Baseline_Stop() const { return MWD_baseline_stop; }
 
-
-
-
         //:::::::
-
-
-
 
     private:
 
