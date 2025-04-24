@@ -440,30 +440,29 @@ InitStatus LisaOnlineSpectra::Init()
     h2_energy_vs_layer->Draw("COLZ");
     dir_febex->Append(c_energy_vs_layer);
     //....................................
-    // Febex energy Layer(i) vs Layer(i+1) 
-    /*
+    // Febex energy Layer vs Layer
     dir_febex->cd();
-    c_energy_layer_vs_layer = new TCanvas("c_energy_layer_vs_layer ", "Energy Layer vs Layer", 650, 350);
-    c_energy_layer_vs_layer->Divide(2, (layer_number)/2 + layer_number % 2);  
+    c_energy_layer_vs_layer = new TCanvas("c_energy_layer_vs_layer", "Energy Layer vs Layer", 650, 350);
+    c_energy_layer_vs_layer->Divide(2, (layer_number - 1)/2 + (layer_number - 1)%2);  
     h2_energy_layer_vs_layer.resize(layer_number - 1);
 
-    for (int i = 0; i < layer_number-1; i++)
+    for (int i = 0; i < layer_number - 1; i++)
     {
         c_energy_layer_vs_layer->cd(i + 1);
 
-        h2_energy_layer_vs_layer[i] = new TH2F(Form("h2_energy_layer_%i_vs_layer_%i", i + 1, i + 2),
-                                        Form("E(Layer %i) vs E(Layer %i)", i + 1, i + 2),
-                                        lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy,
-                                        lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+        h2_energy_layer_vs_layer[i] = new TH2F(Form("h2_energy_layer_%i_vs_layer_%i", i + 2, i + 1),
+                                            Form("E(Layer %i) vs E(Layer %i)", i + 2, i + 1),
+                                            lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy,
+                                            lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
 
-        h2_energy_layer_vs_layer[i]->SetStats(0);
-        h2_energy_layer_vs_layer[i]->GetXaxis()->SetTitle(Form("E(Layer %i) [a.u.]", i + 2));
-        h2_energy_layer_vs_layer[i]->GetYaxis()->SetTitle(Form("E(Layer %i) [a.u.]", i + 1));
+        h2_energy_layer_vs_layer[i]->GetXaxis()->SetTitle(Form("E(Layer %i) [a.u.]", i + 1));  
+        h2_energy_layer_vs_layer[i]->GetYaxis()->SetTitle(Form("E(Layer %i) [a.u.]", i + 2));  
         h2_energy_layer_vs_layer[i]->Draw("COLZ");
     }
     c_energy_layer_vs_layer->cd();
     dir_febex->Append(c_energy_layer_vs_layer);
-    */
+
+    
 
     // ::: E N E R G Y     M W D:::
     //      MWD per channel - energy gain matched and/or calibrated
@@ -704,6 +703,8 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     wr_time = 0;
     int total_multiplicity = 0;
     int multiplicity[layer_number] = {0};
+    std::vector<float> energy_layer;
+    energy_layer.resize(layer_number);
     // std::vector<float> energy_layer;
     // energy_layer.resize(layer);
     //float energy_layer[layer] = {0};
@@ -749,7 +750,7 @@ void LisaOnlineSpectra::Exec(Option_t* option)
         //counter++;
 
         // ::: FOR Energy
-        //energy_layer[layer] = energy_GM;  
+        energy_layer[layer] = energy_GM;  
         //energy_MWD_energy[layer] = energy_MWD_GM;      
         // sum_energy_layer[layer] += energy;
         // energy_ch[layer][xpos][ypos] = energy;
@@ -779,7 +780,10 @@ void LisaOnlineSpectra::Exec(Option_t* option)
         // ::: Layer Energy vs ID
         h2_energy_vs_layer->Fill(layer,energy_GM);
         // ::: Energy Layer vs Layer
-        //h2_energy_layer_vs_layer[layer-1]->Fill(energy_layer[layer-1], energy_layer[layer]);
+        c4LOG(info,"histo index : " << layer-1 << " energy layer-1 " << layer-1 << " : " << energy_layer[layer-1]);
+        c4LOG(info,"histo index : " << layer-1 << " energy layer " << layer  << " : " << energy_layer[layer]);
+
+        h2_energy_layer_vs_layer[layer-1]->Fill(energy_layer[5], energy_layer[6]);
         
         //
         //     MWD
@@ -794,8 +798,8 @@ void LisaOnlineSpectra::Exec(Option_t* option)
         // ::: Layer Energy MWD  vs ID
         h2_energy_MWD_vs_layer->Fill(layer,energy_MWD_GM);            
         
-        c4LOG(info, "sum_energy layer 1: "<< energy);
-        c4LOG(info, "sum_energy layer 2: "<< energy);
+        //c4LOG(info, "sum_energy layer 1: "<< energy);
+        //c4LOG(info, "sum_energy layer 2: "<< energy);
     
         //::: Traces
         h1_traces_ch[layer-1][xpos][ypos]->Reset();
