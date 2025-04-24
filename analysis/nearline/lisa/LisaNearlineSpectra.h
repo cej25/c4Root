@@ -100,11 +100,14 @@ class LisaNearlineSpectra : public FairTask
 
         TDirectory* dir_energy;
         TDirectory* dir_febex;
-
-        TDirectory* dir_energy_febex;
-        TDirectory* dir_energy_febex_ch;
         TDirectory* dir_energy_MWD;
-        TDirectory* dir_energy_MWD_ch;
+        TDirectory* dir_febex_channel;
+        TDirectory* dir_MWD_channel;
+
+        //TDirectory* dir_energy_febex;
+        //TDirectory* dir_energy_febex_ch;
+        
+        //TDirectory* dir_energy_MWD_ch;
 
         TDirectory* dir_traces;
         
@@ -131,9 +134,16 @@ class LisaNearlineSpectra : public FairTask
         //      Energy
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_ch;
         std::vector<TH1F*> h1_energy_layer;
-        std::vector<TH2F*> h2_energy_vs_ID_layer;
+        std::vector<TH2F*> h2_energy_vs_ID;
         TH2F* h2_energy_vs_ID_total;
+        TH2F* h2_energy_vs_layer;
+
         //TH1F* h1_energy_layer0;
+
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_MWD_ch;
+        std::vector<TH1F*> h1_energy_MWD_layer;
+        std::vector<TH2F*> h2_energy_MWD_vs_ID_layer;
+        TH2F* h2_energy_MWD_vs_layer;
 
         // Energy for febex and MWD
         // std::vector<std::vector<std::vector<TH1F*>>> h1_energy_febex;

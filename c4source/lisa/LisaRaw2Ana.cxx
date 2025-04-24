@@ -214,7 +214,7 @@ void LisaRaw2Ana::Exec(Option_t* option)
             // 1. ::: Baseline correction of febex trace :::
             //        This corresponds to anaTraces function calcCorrectTrace
             // ::: Evaluate average from points 20 to 100
-            for( int i = 20; i < 100; i++) //100 v1
+            for( int i = 20; i < 150; i++) //100 v1
             {
                 sum += trace_febex.at(i);
                 count++;
@@ -326,14 +326,14 @@ void LisaRaw2Ana::Exec(Option_t* option)
             
             // Trapez_amp_calc_window_0 and Trapez_amp_calc_window_1
             // Check if amp_start and amp_stop fall inside the flat-top region
-            if (!(flat_top_start <= amp_start_idx && amp_start_idx < amp_stop_idx && amp_stop_idx <= flat_top_stop)) 
-            {
-                c4LOG(fatal, "[MWD ERROR] Trapez_amp_calc_window_0 (" << amp_start_idx * sampling 
-                        << ") and/or Trapez_amp_calc_window_1 (" << amp_stop_idx * sampling 
-                        << ") are outside the valid flat-top range ("
-                        << flat_top_start * sampling << " - " 
-                        << flat_top_stop * sampling << ").\n" );
-            }
+            // if (!(flat_top_start <= amp_start_idx && amp_start_idx < amp_stop_idx && amp_stop_idx <= flat_top_stop)) 
+            // {
+            //     c4LOG(fatal, "[MWD ERROR] Trapez_amp_calc_window_0 (" << amp_start_idx * sampling 
+            //             << ") and/or Trapez_amp_calc_window_1 (" << amp_stop_idx * sampling 
+            //             << ") are outside the valid flat-top range ("
+            //             << flat_top_start * sampling << " - " 
+            //             << flat_top_stop * sampling << ").\n" );
+            // }
 
 
             if (baseline_start_idx < 10 || baseline_start_idx >= baseline_stop_idx || baseline_start_idx >= (k0 + MM - LL)) 
