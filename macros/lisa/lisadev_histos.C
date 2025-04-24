@@ -7,9 +7,13 @@
 #define LISA_ANA 0
 #define LISA_CAL 1
 
+// If you want to have trace histos
+#define TRACE_ON 1
+
 #define FRS_ON 0
 #define FRS_LISA_CORRELATIONS 0
 
+#define WR_ENABLED 0
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
 
 // Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/
@@ -55,12 +59,12 @@ void lisadev_histos()
 
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
-    TString inputpath = "/u/gandolfo/data/test_c4/";
-    TString filename = inputpath + "run_0075_0001_tree.root";  
+    TString inputpath = "/u/gandolfo/data/test_c4/layer_alpha/";
+    TString filename = inputpath + "LISAmp_10layers_0018_trees.root";  
     
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/test_c4/"; //test output
-    TString outputFilename = outputpath + "run_0075_0001_histo.root";
+    TString outputpath = "/u/gandolfo/data/test_c4/layer_alpha/"; //test output
+    TString outputFilename = outputpath + "LISAmp_10layers_0018_histos.root";
 
 
     FairRunAna* run = new FairRunAna();
@@ -128,11 +132,16 @@ void lisadev_histos()
     // TFrsConfiguration::SetAoQDriftFile(config_path + "/frs/AoQ_Drift_fragments.txt");
 
     // ::: LISA config
-    TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map_names.txt");
-    TLisaConfiguration::SetGMFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_pareeksha.txt");
-    TLisaConfiguration::SetGMFileMWD("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_pareeksha.txt");
-    TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_DAQtest.txt");
-    
+    // TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map_names.txt");
+    // TLisaConfiguration::SetGMFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_fake.txt");
+    // TLisaConfiguration::SetGMFileMWD("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_fake.txt");
+    // TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_DAQtest.txt");
+
+    TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_All_Boards.txt");
+    //TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map_names.txt");
+    TLisaConfiguration::SetGMFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_cards.txt");
+    TLisaConfiguration::SetGMFileMWD("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_cards.txt");
+    TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_LISAmp_highgain.txt");
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
     // ::: Nearline Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     
@@ -144,21 +153,24 @@ void lisadev_histos()
     TExperimentConfiguration::SetExperimentStart(1715734200000000000);
     
     //::::::::: Set ranges for histos :::::::::::::::
-    // LISA
+    // ::: LISA
 
-    //::::  Channel Energy ::::: (h1_energy_)
-    TLisaConfiguration::SetEnergyRange(0,10000000);
-    TLisaConfiguration::SetEnergyBin(450);
+    //  Channel Energy ::::: (h1_energy_)
+    TLisaConfiguration::SetEnergyRange(0,100000);
+    TLisaConfiguration::SetEnergyBin(1000);
 
-    TLisaConfiguration::SetEnergyRangeGM(0,4000);
-    TLisaConfiguration::SetEnergyBinGM(450);
-
-    //:::: MWD histos
-    TLisaConfiguration::SetEnergyRangeMWD(0,1000);
-    TLisaConfiguration::SetEnergyBinMWD(450);
+    //  MWD histos
+    TLisaConfiguration::SetEnergyRangeMWD(0,100);
+    TLisaConfiguration::SetEnergyBinMWD(500);
 
     TLisaConfiguration::SetEnergyRangeMWDGM(0,1000);
     TLisaConfiguration::SetEnergyBinMWDGM(450);
+
+    //  Traces Time and Amplitude Ranges 
+    TLisaConfiguration::SetTracesRange(0,20);
+    TLisaConfiguration::SetTracesBin(2000);
+    TLisaConfiguration::SetAmplitudeMin(7700);
+    TLisaConfiguration::SetAmplitudeMax(8300);
 
     // White Rabbit
     TLisaConfiguration::SetWrDiffRange(0,100000000);
@@ -167,11 +179,19 @@ void lisadev_histos()
     TLisaConfiguration::SetWrRateRange(0,3600);
     TLisaConfiguration::SetWrRateBin(3600);
 
-    // FRS
-    TFrsConfiguration::Set_Z_range(20,60);
-    TFrsConfiguration::Set_AoQ_range(1,3);
+    // ::: FRS
+    TFrsConfiguration::Set_Z_range(0,80);
+    TFrsConfiguration::Set_AoQ_range(1,10);
 
     // :::: ENABLE SYSTEMS  ::::::::::::::::::::::::::::::::::::::::
+    if(TRACE_ON)
+    {
+        TLisaConfiguration::SetTrace(1);
+    }else
+    {
+        TLisaConfiguration::SetTrace(0);
+    }
+
     if (LISA_ON)
     {
         if(LISA_ANA)
@@ -203,10 +223,7 @@ void lisadev_histos()
         }
     }
 
-    TString c = "Lisa";
-    TString d = "Frs";
-    TString e = "TravMus";
-    
+
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: Correlation Spectra :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 

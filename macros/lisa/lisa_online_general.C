@@ -60,8 +60,8 @@ void lisa_online_general()
 
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/x7_241Am/multiple_cards_test/cards_A_B_C_D_E_F_G_0306.lmd"; 
-    TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/run_0075_0001.lmd";  //data with only lisa
-    //TString filename = "/u/gandolfo/data/lustre/despec/lisa/3x3_board_1/run_0002_*.lmd";  //data with only lisa
+    //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/run_0075_0001.lmd";  //data with only lisa
+    TString filename = "/u/gandolfo/data/lustre/despec/lisa/LISAmp_10layers_0018_*.lmd";  //data with only lisa
 
     //___O U T P U T - only used if switched on 
     //TString outputpath = "/u/gandolfo/data/lustre/despec/lisa/3x3_board_1/";
@@ -70,7 +70,7 @@ void lisa_online_general()
 
     //:::::::Create online run
     Int_t refresh = 10; // Refresh rate for online histograms
-    Int_t port = 6060;
+    Int_t port = 1111;
      
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -93,10 +93,12 @@ void lisa_online_general()
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
     if (LISA_2x2)
     {
-        TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Detector_Map_names.txt");
-        TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching_pareeksha.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_DAQtest.txt");
-        TLisaConfiguration::SetGMFileMWD(config_path + "/Lisa_GainMatching_pareeksha.txt");
+        TLisaConfiguration::SetMappingFile(config_path + "/Lisa_All_Boards.txt");
+        //TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Detector_Map_names.txt");
+        TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching_cards.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_LISAmp_highgain.txt");
+        //TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_DAQtest.txt");
+        TLisaConfiguration::SetGMFileMWD(config_path + "/Lisa_GainMatching_cards.txt");
 
     }
 
@@ -104,8 +106,8 @@ void lisa_online_general()
     {
         TLisaConfiguration::SetMappingFile(config_path + "/Lisa_All_Boards.txt");
         //TLisaConfiguration::SetMappingFile(config_path + "/Lisa_3x3_test_board.txt");
-        TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters.txt");
+        TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching_fake.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_DAQtest.txt");
 
     }
 
@@ -165,21 +167,22 @@ void lisa_online_general()
     // Set Ranges for online histos
 
     //::::  Channel Energy ::::: (h1_energy_layer_ch)
-    TLisaConfiguration::SetEnergyRange(0,10000000);
-    TLisaConfiguration::SetEnergyBin(10000);
+    TLisaConfiguration::SetEnergyRange(0,100000);
+    TLisaConfiguration::SetEnergyBin(1000);
 
-    TLisaConfiguration::SetEnergyRangeMWD(0,1000);
-    TLisaConfiguration::SetEnergyBinMWD(2000);
+    //  MWD histos
+    TLisaConfiguration::SetEnergyRangeMWD(1,100);
+    TLisaConfiguration::SetEnergyBinMWD(500);
 
     //:::: LISA WR Time Difference :::::: (h1_wr_diff)
     TLisaConfiguration::SetWrDiffRange(0,100000000);
     TLisaConfiguration::SetWrDiffBin(20000);
 
     //:::: LISA Traces Time and Amplitude Ranges :::::: (h1_traces_layer_ch)
-    TLisaConfiguration::SetTracesRange(0,20);
-    TLisaConfiguration::SetTracesBin(2000);
-    TLisaConfiguration::SetAmplitudeMin(2000);
-    TLisaConfiguration::SetAmplitudeMax(16000);
+    TLisaConfiguration::SetTracesRange(0,8);
+    TLisaConfiguration::SetTracesBin(800);
+    TLisaConfiguration::SetAmplitudeMin(7500);
+    TLisaConfiguration::SetAmplitudeMax(8400);
     
 
     //::::::: Initialise
