@@ -703,8 +703,8 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     wr_time = 0;
     int total_multiplicity = 0;
     int multiplicity[layer_number] = {0};
-    std::vector<float> energy_layer;
-    energy_layer.resize(layer_number);
+    std::vector<float> energy_layer[layer_number];
+    //energy_layer.resize(layer_number);
     // std::vector<float> energy_layer;
     // energy_layer.resize(layer);
     //float energy_layer[layer] = {0};
@@ -750,7 +750,7 @@ void LisaOnlineSpectra::Exec(Option_t* option)
         //counter++;
 
         // ::: FOR Energy
-        energy_layer[layer] = energy_GM;  
+        energy_layer[layer-1].emplace_back(energy_GM);  
         //energy_MWD_energy[layer] = energy_MWD_GM;      
         // sum_energy_layer[layer] += energy;
         // energy_ch[layer][xpos][ypos] = energy;
@@ -778,13 +778,7 @@ void LisaOnlineSpectra::Exec(Option_t* option)
         h2_energy_vs_ID[layer-1]->Fill(hp_bin, energy_GM);
         //h2_energy_vs_ID_total->Fill(hp_total_bin, energy_GM);
         // ::: Layer Energy vs ID
-        h2_energy_vs_layer->Fill(layer,energy_GM);
-        // ::: Energy Layer vs Layer
-        c4LOG(info,"histo index : " << layer-1 << " energy layer-1 " << layer-1 << " : " << energy_layer[layer-1]);
-        c4LOG(info,"histo index : " << layer-1 << " energy layer " << layer  << " : " << energy_layer[layer]);
-
-        h2_energy_layer_vs_layer[layer-1]->Fill(energy_layer[5], energy_layer[6]);
-        
+        h2_energy_vs_layer->Fill(layer,energy_GM);        
         //
         //     MWD
         // ::: Energy MWD per channel
@@ -798,8 +792,6 @@ void LisaOnlineSpectra::Exec(Option_t* option)
         // ::: Layer Energy MWD  vs ID
         h2_energy_MWD_vs_layer->Fill(layer,energy_MWD_GM);            
         
-        //c4LOG(info, "sum_energy layer 1: "<< energy);
-        //c4LOG(info, "sum_energy layer 2: "<< energy);
     
         //::: Traces
         h1_traces_ch[layer-1][xpos][ypos]->Reset();
@@ -881,7 +873,17 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     }
     h1_layer_multiplicity->Fill(layers_fired);
 
-
+    // ::: Energy Layer vs Layer
+    for ( int i = 0; i < layer_number-1; i++)
+    {
+        for( int j = 0; j < energy_layer[i].size(); j++)
+        {
+            for ( int k = 0 ; k < energy_layer[i+1].size(); j++)
+            {
+                h2_energy_layer_vs_layer[i]->Fill(energy_layer[i][j], energy_layer[i+1][k]);
+            }
+        }    
+    }
 
     //:::::::Fill Sum Energy::::::::::
     //h2_energy_layer1_vs_layer2->Fill(sum_energy_layer[2],sum_energy_layer[1]);
