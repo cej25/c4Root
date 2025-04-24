@@ -301,7 +301,7 @@ InitStatus FrsOnlineSpectra::Init()
         h2_Z41_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_Z41_vs_AoQs2s4_mhtdc", "Z41 vs. A/Q (S2-S4) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S2-S4)", "Z (MUSIC 41)");
         h2_Z41_vs_AoQs2s4_corr_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_Z41_vs_AoQs2s4_corr_mhtdc", "Z41 vs. A/Q corr (S2-S4) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z,"A/Q (S2-S4)", "Z (MUSIC 41)");
         h2_Z41_vs_Z42_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_Z41_vs_Z42_mhtdc", "Z41 vs. Z42 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z (MUSIC 41)", "Z (MUSIC 42)");
-        
+
         h2_Z21_vs_AoQs1s2_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_Z21_vs_AoQs1s2_mhtdc", "Z21 vs. A/Q (S1-S2) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S1-S2)", "Z (MUSIC 21)");
         h2_Z21_vs_AoQs1s2_corr_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_Z21_vs_AoQs1s2_corr_mhtdc", "Z21 vs. A/Q corr (S1-S2) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z,"A/Q (S1-S2)", "Z (MUSIC 21)");
         h2_Z21_vs_Z22_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_Z21_vs_Z22_mhtdc", "Z21 vs. Z22 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z (MUSIC 21)", "Z (MUSIC 22)");
