@@ -51,11 +51,11 @@ void trace_ana_make_trees(int fileNumber)
     //TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";
     TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/";
 
-    TString filename = Form(inputpath + "daq_10boards_%04d_0001.lmd", fileNumber);
+    TString filename = Form(inputpath + "LISAmp_10layers_%04d_*.lmd", fileNumber);
 
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/"; 
-    TString outputFilename = Form(outputpath + "daq_10boards_%04d_0001_MWD.root", fileNumber);
+    TString outputpath = "/u/gandolfo/data/test_c4/trace_ana/"; 
+    TString outputFilename = Form(outputpath + "LISAmp_10layers_%04d_MWDtree.root", fileNumber);
 
 
     //:::::::Create online run
@@ -82,9 +82,9 @@ void trace_ana_make_trees(int fileNumber)
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
     // ::: Lisa config
-    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_DAQ_7cards.txt");
-    TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
-    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_DAQtest.txt");
+    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_All_Boards.txt");
+    TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching_cards.txt");
+    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_LISAmp_highgain.txt");
    
     // ::::::: READ Subsystem  ::::::::
 

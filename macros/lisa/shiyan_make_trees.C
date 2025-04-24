@@ -62,7 +62,7 @@ void shiyan_make_trees()
 
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/test_c4/"; //testing
-    TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.root";
+    TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";
 
 
     //:::::::Create online run

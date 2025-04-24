@@ -1,21 +1,20 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define LISA_ON 1
+#define LISA_ON 0
         //LISA_ANA displays only energy and traces; LISA_CAL displays stats,energy,traces. Choose one.
         //Note that if FRS 1, LISA_CAL is needed. 
 #define LISA_ANA 0
-#define LISA_CAL 1
+#define LISA_CAL 0
 
-#define FRS_ON 0
+#define FRS_ON 1
 #define FRS_LISA_CORRELATIONS 0
 
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
 
-// Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/
 extern "C"
 {
-    #include "../../config/pareeksha/frs/setup_Fragment_conv_updated.C"
+    #include "../../config/shiyan/frs/setup_115_023_2025_s1calib_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -26,11 +25,11 @@ typedef struct EXT_STR_h101_t
 
 } EXT_STR_h101;
 
-void lisadev_histos()
+void shiyan_histos()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
-    TString fExpName = "pareeskha";
+    TString fExpName = "shiyan";
 
     //:::::::::Here you define commonly used path
     TString c4Root_path = "/u/gandolfo/c4/c4Root";
@@ -56,11 +55,11 @@ void lisadev_histos()
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
     TString inputpath = "/u/gandolfo/data/test_c4/";
-    TString filename = inputpath + "run_0075_0001_tree.root";  
+    TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  
     
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/test_c4/"; //test output
-    TString outputFilename = outputpath + "run_0075_0001_histo.root";
+    TString outputFilename = outputpath + "frs_test_histos.root";
 
 
     FairRunAna* run = new FairRunAna();
@@ -121,18 +120,19 @@ void lisadev_histos()
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: FRS config
-    // TFrsConfiguration::SetConfigPath(config_path + "/frs/");
-    // TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
-    // TFrsConfiguration::SetTravMusDriftFile(config_path + "/frs/TM_Drift_fragments.txt");
-    // TFrsConfiguration::SetZ1DriftFile(config_path + "/frs/Z1_Drift_fragments.txt");
-    // TFrsConfiguration::SetAoQDriftFile(config_path + "/frs/AoQ_Drift_fragments.txt");
+    TFrsConfiguration::SetConfigPath(config_path +  "/frs/");
+    TFrsConfiguration::SetCrateMapFile(config_path +  "/frs/crate_map.txt");
+    TFrsConfiguration::SetTravMusDriftFile(config_path +  "/frs/TM_Drift_fragments.txt");
+    TFrsConfiguration::SetZ1DriftFile(config_path +  "/frs/Z1_Drift_fragments.txt");
+    TFrsConfiguration::SetAoQDriftFile(config_path +  "/frs/AoQ_Drift_fragments.txt");
 
-    // ::: LISA config
-    TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map_names.txt");
-    TLisaConfiguration::SetGMFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_pareeksha.txt");
-    TLisaConfiguration::SetGMFileMWD("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_pareeksha.txt");
-    TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_DAQtest.txt");
-    
+    // ::: Lisa config
+    //TLisaConfiguration::SetMappingFile(config_path + "/Lisa_5x5_shiyan.txt");
+    TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_5x5_shiyan.txt");
+
+    TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching.txt");
+    TLisaConfiguration::SetGMFileMWD(config_path +"/lisa/Lisa_GainMatching_MWD.txt");
+    TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");    
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
     // ::: Nearline Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     
@@ -168,7 +168,7 @@ void lisadev_histos()
     TLisaConfiguration::SetWrRateBin(3600);
 
     // FRS
-    TFrsConfiguration::Set_Z_range(20,60);
+    TFrsConfiguration::Set_Z_range(0,60);
     TFrsConfiguration::Set_AoQ_range(1,3);
 
     // :::: ENABLE SYSTEMS  ::::::::::::::::::::::::::::::::::::::::
