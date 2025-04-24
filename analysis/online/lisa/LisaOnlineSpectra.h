@@ -99,7 +99,10 @@ class LisaOnlineSpectra : public FairTask
         TDirectory* dir_rates;
         TDirectory* dir_energy;
         TDirectory* dir_febex;
-        // TDirectory* dir_energy_MWD;
+        TDirectory* dir_energy_MWD;
+        TDirectory* dir_febex_channel;
+        TDirectory* dir_MWD_channel;
+
         TDirectory* dir_traces;
         // TDirectory* dir_traces_MWD;
     
@@ -115,8 +118,15 @@ class LisaOnlineSpectra : public FairTask
         //      Energy
         std::vector<TCanvas*> c_energy_ch;
         TCanvas* c_energy_layer;
-        TCanvas* c_energy_vs_ID_layer;
+        TCanvas* c_energy_vs_ID;
         TCanvas* c_energy_vs_ID_total;
+        TCanvas* c_energy_vs_layer;
+        TCanvas* c_energy_layer_vs_layer;
+
+        std::vector<TCanvas*> c_energy_MWD_ch;
+        TCanvas* c_energy_MWD_layer;
+        TCanvas* c_energy_MWD_vs_ID;
+        TCanvas* c_energy_MWD_vs_layer;
         // TCanvas* c_energy_layer1_vs_layer2;
         // TCanvas* c_energy_layer_vs_time;
         // std::vector<TCanvas*> c_energy_layer_ch;
@@ -137,11 +147,19 @@ class LisaOnlineSpectra : public FairTask
         TH1I* h1_multiplicity;
         std::vector<TH1I*> h1_multiplicity_per_layer; ;
         TH1I* h1_layer_multiplicity;
-        //      Energy 
+        // ::: Energy
+        //      Febex 
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_ch;
         std::vector<TH1F*> h1_energy_layer;
-        std::vector<TH2F*> h2_energy_vs_ID_layer;
+        std::vector<TH2F*> h2_energy_vs_ID;
         TH2F* h2_energy_vs_ID_total;
+        TH2F* h2_energy_vs_layer;
+        std::vector<TH2F*> h2_energy_layer_vs_layer;
+        //      MWD  
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_MWD_ch;
+        std::vector<TH1F*> h1_energy_MWD_layer;
+        std::vector<TH2F*> h2_energy_MWD_vs_ID;
+        TH2F* h2_energy_MWD_vs_layer;
 
         // //TH1F* h1_energy_layer0;
         // std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch;

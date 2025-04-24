@@ -58,12 +58,12 @@ void lisadev_make_trees()
     //TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";
     TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/";
     //TString filename = inputpath + "LISAmp_2layers_0006_0001.lmd";
-    TString filename = inputpath + "LISAmp_10layers_0012_0001.lmd";
+    TString filename = inputpath + "LISAmp_10layers_0018_*.lmd";
     //TString filename = inputpath + "run_0075_0001.lmd";
 
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/test_c4/"; //testing
-    TString outputFilename = outputpath + "LISAmp_10layers_0012_0001_trees.root";
+    TString outputpath = "/u/gandolfo/data/test_c4/layer_alpha/"; //testing
+    TString outputFilename = outputpath + "LISAmp_10layers_0018_trees.root";
 
 
     //:::::::Create online run
@@ -129,9 +129,9 @@ void lisadev_make_trees()
     // ::: Lisa config
     TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_All_Boards.txt");
     //TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map_names.txt");
-    TLisaConfiguration::SetGMFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching.txt");
-    TLisaConfiguration::SetGMFileMWD("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching.txt");
-    TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
+    TLisaConfiguration::SetGMFile("/u/gandolfo/c4/c4Root/config/lisa/ema");
+    TLisaConfiguration::SetGMFileMWD("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_cards.txt");
+    TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_LISAmp_highgain.txt");
 
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

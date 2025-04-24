@@ -59,12 +59,12 @@ void lisadev_histos()
 
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
-    TString inputpath = "/u/gandolfo/data/test_c4/";
-    TString filename = inputpath + "LISAmp_10layers_0012_0001.root";  
+    TString inputpath = "/u/gandolfo/data/test_c4/layer_alpha/";
+    TString filename = inputpath + "LISAmp_10layers_0018_trees.root";  
     
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/test_c4/"; //test output
-    TString outputFilename = outputpath + "LISAmp_10layers_0012_0001_histos.root";
+    TString outputpath = "/u/gandolfo/data/test_c4/layer_alpha/"; //test output
+    TString outputFilename = outputpath + "LISAmp_10layers_0018_histos.root";
 
 
     FairRunAna* run = new FairRunAna();
@@ -139,9 +139,9 @@ void lisadev_histos()
 
     TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_All_Boards.txt");
     //TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map_names.txt");
-    TLisaConfiguration::SetGMFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching.txt");
-    TLisaConfiguration::SetGMFileMWD("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching.txt");
-    TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
+    TLisaConfiguration::SetGMFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_cards.txt");
+    TLisaConfiguration::SetGMFileMWD("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_cards.txt");
+    TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_LISAmp_highgain.txt");
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
     // ::: Nearline Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     
@@ -169,8 +169,8 @@ void lisadev_histos()
     //  Traces Time and Amplitude Ranges 
     TLisaConfiguration::SetTracesRange(0,20);
     TLisaConfiguration::SetTracesBin(2000);
-    TLisaConfiguration::SetAmplitudeMin(7000);
-    TLisaConfiguration::SetAmplitudeMax(9000);
+    TLisaConfiguration::SetAmplitudeMin(7700);
+    TLisaConfiguration::SetAmplitudeMax(8300);
 
     // White Rabbit
     TLisaConfiguration::SetWrDiffRange(0,100000000);

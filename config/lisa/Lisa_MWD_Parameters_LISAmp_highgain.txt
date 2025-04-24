@@ -1,0 +1,60 @@
+# Please check the guide on how to define parameters.
+# Drive file: https://docs.google.com/document/d/1QcsofkBeTyn8o35NqX-fcrZcRKeC2uTcuMZcQ--xS5A/edit?usp=sharing
+# Wiki page: https://wiki.gsi.de/LISA/LISADATAandANA - How to choose MWD parameters
+
+#k0     k0+M-L            k0+2M     kend 
+#|---------|                |--------|
+#           *              *              
+#            *            *
+#             *          *
+#              *|======|*
+#            k0+M     k0+2M-L
+
+# ( k0, kend ) = (Trapez_sample_window_0, Trapez_sample_window_1)
+# M = Trapez_moving_window_length
+# L = Smoothing_L
+
+# :::::  M W D  P A R A M E T E R S  ::::
+#     All parameters must be positive
+
+
+# ::: M W D   T R A C E  calculation :::
+
+# ::: Smoothing Parameter L - (Rising Time in anatraces) 
+# ::: Conditions: L < M ; M + L < (Trapez_sample_window_1 (kend) - Trapez_sample_window_0(k0))
+Smoothing_L[ns]                    500
+
+# ::: Lenght of the moving window M
+# ::: Conditions: M > L (Smoothing_L); M + L < (Trapez_sample_window_1 (kend) - Trapez_sample_window_0 (k0))
+Trapez_moving_window_length[ns]    800
+
+# ::: Decay Time of the signal tau (depending on the preamp - wip to be for each channel)
+# ::: Conditions: It has to fit the decay time of the trace. This flattens the trapezoid top
+Decaytime_ch0[ns]                  11000
+Decaytime_ch1[ns]                  11000
+
+# ::: Start and stop of the MWD trace (k0,kend)
+# ::: Conditions:  k0 >= 0 && k0 < kend && k0 < trace_febex.size(); kend > k0
+Trapez_sample_window_0[ns]         3000  
+Trapez_sample_window_1[ns]         5000 
+
+# ::: Sampling from Febex (=10 ns)
+# ::: This depends on Febex clock (100 MHz) - DO NOT CHANGE
+Sampling[ns]                       10
+
+
+# ::: M W D   E N E R G Y calculation :::
+
+# ::: Start and stop of the trapezoid flat top where the energy is computed
+# ::: Conditions: Trapez_amp_calc_window_0 > k0 + M; Trapez_amp_calc_window_1 < k0 + 2 * M - L
+Trapez_amp_calc_window_0[ns]       4100
+Trapez_amp_calc_window_1[ns]       4200
+
+# ::: Range for the baseline calculation of the MWD trace
+# ::: Conditions: Trapez_baseline_window_0 > k0; Trapez_baseline_window_1 < k0 + M - L
+Trapez_baseline_window_0[ns]       3000             
+Trapez_baseline_window_1[ns]       3300
+
+
+#To implement
+#Threshold_ch_0                     7

@@ -94,7 +94,7 @@ InitStatus LisaNearlineSpectra::Init()
     ymax = lisa_config->YMax();
     int traces_max = lisa_config->amplitude_max;
     int traces_min = lisa_config->amplitude_min;
-    int traces_bin = traces_max - traces_min;
+    int traces_bin = (traces_max - traces_min)/2;
 
     // ::: Directories :::
     dir_lisa->cd();
@@ -103,11 +103,14 @@ InitStatus LisaNearlineSpectra::Init()
     
     dir_energy = dir_lisa->mkdir("Energy");
     dir_febex = dir_energy->mkdir("Febex");
+    dir_febex_channel = dir_febex->mkdir("Channels");
+    dir_energy_MWD = dir_energy->mkdir("MWD");
+    dir_MWD_channel = dir_energy_MWD->mkdir("Channels");
 
     //dir_energy_febex = dir_lisa->mkdir("Energy_Febex");
     //dir_energy_febex_ch = dir_energy_febex->mkdir("Energy_Febex_Channels");
 
-    //dir_energy_MWD = dir_lisa->mkdir("Energy_MWD");
+    
     //dir_energy_MWD_ch = dir_energy_MWD->mkdir("Energy_MWD_Channels");
 
     dir_traces = dir_lisa->mkdir("Traces");
@@ -172,19 +175,19 @@ InitStatus LisaNearlineSpectra::Init()
 
     //::: Hit Patterns :::
     dir_stats->cd();
-    //      Total
-    h1_hitpattern_total = new TH1I("h1_hitpattern_total", "Hit Pattern", det_number, 0, det_number);
-    for (auto & detector : detector_mapping)
-    {
-        int l = detector.second.first.first;
-        city = detector.second.first.second;
-        int x = detector.second.second.first; 
-        int y = detector.second.second.second;
-        int h_bin = (ymax - (y + 1)) * xmax + x;
-        int h_total_bin = (l - 1) * xmax * ymax + h_bin;
+    //      Total  - this is too messy with too many detectors
+    // h1_hitpattern_total = new TH1I("h1_hitpattern_total", "Hit Pattern", det_number, 0, det_number);
+    // for (auto & detector : detector_mapping)
+    // {
+    //     int l = detector.second.first.first;
+    //     city = detector.second.first.second;
+    //     int x = detector.second.second.first; 
+    //     int y = detector.second.second.second;
+    //     int h_bin = (ymax - (y + 1)) * xmax + x;
+    //     int h_total_bin = (l - 1) * xmax * ymax + h_bin;
         
-        h1_hitpattern_total->GetXaxis()->SetBinLabel(h_total_bin + 1 , city.Data());
-    }  
+    //     h1_hitpattern_total->GetXaxis()->SetBinLabel(h_total_bin + 1 , city.Data());
+    // }  
 
     //      Layer
     h1_hitpattern_layer.resize(layer_number+1);
@@ -292,7 +295,7 @@ InitStatus LisaNearlineSpectra::Init()
     // ::: E N E R G Y :::
     dir_energy->cd();
     //      Febex per channel
-    dir_febex->cd();
+    dir_febex_channel->cd();
     h1_energy_ch.resize(layer_number);
     for (int i = 0; i < layer_number; i++)
     {
@@ -333,14 +336,15 @@ InitStatus LisaNearlineSpectra::Init()
     }
     //....................................
     //      Febex energy vs channel ID per Layer
-    h2_energy_vs_ID_layer.resize(layer_number);
+    dir_febex->cd();
+    h2_energy_vs_ID.resize(layer_number);
     for (int i = 0; i < layer_number; i++)
     {   
-        h2_energy_vs_ID_layer[i] = new TH2F(Form("h2_energy_vs_ID_layer_%i", i+1), Form("Energy vs ID - Layer %i", i+1), xmax * ymax, 0, xmax * ymax, lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
-        h2_energy_vs_ID_layer[i]->SetStats(0);
-        h2_energy_vs_ID_layer[i]->Draw("COLZ");
+        h2_energy_vs_ID[i] = new TH2F(Form("h2_energy_vs_ID_%i", i+1), Form("Energy vs ID - Layer %i", i+1), xmax * ymax, 0, xmax * ymax, lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+        h2_energy_vs_ID[i]->SetStats(0);
+        h2_energy_vs_ID[i]->Draw("COLZ");
         gPad->Update();
-        h2_energy_vs_ID_layer[i]->GetZaxis()->SetLabelSize(0.005); 
+        h2_energy_vs_ID[i]->GetZaxis()->SetLabelSize(0.005); 
         
         for (int j = 0; j < xmax * ymax; j++)
         {
@@ -355,25 +359,113 @@ InitStatus LisaNearlineSpectra::Init()
                     break;
                 }
             }
-            h2_energy_vs_ID_layer[i]->GetXaxis()->SetBinLabel(j+1, city.Data());
+            h2_energy_vs_ID[i]->GetXaxis()->SetBinLabel(j+1, city.Data());
         }
        
     }
     //....................................
-    //     Febex energy vs channel ID ALL Channels
-    h2_energy_vs_ID_total = new TH2F("h2_energy_vs_ID_total", "Energy vs ID", det_number, 0, det_number, lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
-    h2_energy_vs_ID_total->SetOption("colz");
-    for (auto & detector : detector_mapping)
-    {
-        int l = detector.second.first.first;
-        city = detector.second.first.second;
-        int x = detector.second.second.first; 
-        int y = detector.second.second.second;
-        int h_bin = (ymax - (y + 1)) * xmax + x;
-        int h_total_bin = (l - 1) * xmax * ymax + h_bin;
+    //     Febex energy vs channel ID ALL Channels - this is too messy with too many detectors
+    // h2_energy_vs_ID_total = new TH2F("h2_energy_vs_ID_total", "Energy vs ID", det_number, 0, det_number, lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+    // h2_energy_vs_ID_total->SetOption("colz");
+    // for (auto & detector : detector_mapping)
+    // {
+    //     int l = detector.second.first.first;
+    //     city = detector.second.first.second;
+    //     int x = detector.second.second.first; 
+    //     int y = detector.second.second.second;
+    //     int h_bin = (ymax - (y + 1)) * xmax + x;
+    //     int h_total_bin = (l - 1) * xmax * ymax + h_bin;
         
-        h2_energy_vs_ID_total->GetXaxis()->SetBinLabel(h_total_bin + 1 , city.Data());
+    //     h2_energy_vs_ID_total->GetXaxis()->SetBinLabel(h_total_bin + 1 , city.Data());
+    // }
+
+    //....................................
+    //      Febex energy vs layer ID
+    dir_febex->cd();
+    h2_energy_vs_layer = new TH2F("h2_energy_vs_layer", "Energy vs Layer ID",layer_number, 0.5, layer_number + 0.5,lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+    h2_energy_vs_layer->SetStats(0);
+    h2_energy_vs_layer->GetXaxis()->SetTitle("Layer ID");
+    h2_energy_vs_layer->GetYaxis()->SetTitle("Energy [a.u.]");
+    h2_energy_vs_layer->Draw("COLZ");
+
+    // ::: E N E R G Y    M W D :::
+    dir_MWD_channel->cd();
+    //      MWD per channel
+    h1_energy_MWD_ch.resize(layer_number);
+    for (int i = 0; i < layer_number; i++)
+    {
+        h1_energy_MWD_ch[i].resize(xmax);
+        for (int j = 0; j < xmax; j++)
+        {
+            h1_energy_MWD_ch[i][j].resize(ymax);
+            for (int k = 0; k < ymax; k++)
+            {   
+                city = "";
+                for (auto & detector : detector_mapping)
+                {
+                    if (detector.second.first.first == i+1 && detector.second.second.first == j && detector.second.second.second == k)
+                    {
+                        city = detector.second.first.second;
+                        break;
+                    }
+                }
+                h1_energy_MWD_ch[i][j][k] = new TH1F(Form("energy_MWD_%s_%i%i%i", city.Data(), i+1, j, k), Form("Energy MWD %s",city.Data()), lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
+                h1_energy_MWD_ch[i][j][k]->GetXaxis()->SetTitle("E_MWD (LISA) [a.u.]");
+                h1_energy_MWD_ch[i][j][k]->SetLineColor(kBlue+1);
+                h1_energy_MWD_ch[i][j][k]->SetFillColor(kOrange-3);
+                h1_energy_MWD_ch[i][j][k]->Draw();
+            }
+        }
     }
+    //      MWD energy by layer
+    dir_energy_MWD->cd();
+    h1_energy_MWD_layer.resize(layer_number);
+    for (int i = 0; i < layer_number; i++)
+    {   
+        h1_energy_MWD_layer[i] = new TH1F(Form("h1_energy_MWD_layer_%i", i+1), Form("Energy MWD - Layer %i", i+1), lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
+        h1_energy_MWD_layer[i]->SetStats(0);
+        h1_energy_MWD_layer[i]->GetXaxis()->SetTitle(Form("E(LISA %i) [a.u.]", i+1));
+        h1_energy_MWD_layer[i]->SetLineColor(kBlue+1);
+        h1_energy_MWD_layer[i]->SetFillColor(kRed-3);
+        h1_energy_MWD_layer[i]->Draw();       
+    }
+    //....................................
+    //      MWD energy vs channel ID per Layer
+    h2_energy_MWD_vs_ID_layer.resize(layer_number);
+    for (int i = 0; i < layer_number; i++)
+    {   
+        h2_energy_MWD_vs_ID_layer[i] = new TH2F(Form("h2_energy_MWD_vs_ID_layer_%i", i+1), Form("Energy MWD vs ID - Layer %i", i+1), xmax * ymax, 0, xmax * ymax, lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
+        h2_energy_MWD_vs_ID_layer[i]->SetStats(0);
+        h2_energy_MWD_vs_ID_layer[i]->Draw("COLZ");
+        gPad->Update();
+        h2_energy_MWD_vs_ID_layer[i]->GetZaxis()->SetLabelSize(0.005); 
+        
+        for (int j = 0; j < xmax * ymax; j++)
+        {
+            city = "";
+            for (auto & detector : detector_mapping)
+            {
+                int x = detector.second.second.first; 
+                int y = detector.second.second.second;
+                if (detector.second.first.first == i+1 && ((ymax-(y+1))*xmax + x) == j)
+                {
+                    city = detector.second.first.second;
+                    break;
+                }
+            }
+            h2_energy_MWD_vs_ID_layer[i]->GetXaxis()->SetBinLabel(j+1, city.Data());
+        }
+       
+    }
+    //....................................
+    //      MWD energy vs layer ID
+    dir_energy_MWD->cd();
+    h2_energy_MWD_vs_layer = new TH2F("h2_energy_MWD_vs_layer", "Energy MWD vs Layer ID",layer_number, 0.5, layer_number + 0.5,lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
+    h2_energy_MWD_vs_layer->SetStats(0);
+    h2_energy_MWD_vs_layer->GetXaxis()->SetTitle("Layer ID");
+    h2_energy_MWD_vs_layer->GetYaxis()->SetTitle("Energy MWD [a.u.]");
+    h2_energy_MWD_vs_layer->Draw("COLZ");
+
     //....................................
     //:::::::: Gain Matched + Calibrated Energies 
     //h1_energy_febex.resize(layer_number);
@@ -633,11 +725,13 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     for (auto const & lisaCalItem : *lisaCalArray)
     {
         // For WR histos and experiment start
-        wr_time = lisaCalItem.Get_wr_t();
-        if (lisa_config->wr_enable == true) 
-        {
-            if (wr_time == 0)return; 
-        }
+
+        // wr_time = lisaCalItem.Get_wr_t();
+        // if (lisa_config->wr_enable == true) 
+        // {
+        //     if (wr_time == 0)return; 
+        // }
+
         //if (wr_time == 0)return;
         if(wr_time > 0) LISA_time_mins = (wr_time - exp_config->exp_start_time)/ 60E9;
         //c4LOG(info, "LISA_time_mins: " << LISA_time_mins << " wr time: "<< std::fixed << std::setprecision(10)<< wr_time);
@@ -652,8 +746,8 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         float energy = lisaCalItem.Get_energy();
         float energy_GM = lisaCalItem.Get_energy_GM();
     
-        //float energy_MWD = lisaCalItem.Get_energy_MWD();
-        //float energy_MWD_GM = lisaCalItem.Get_energy_MWD_GM();
+        float energy_MWD = lisaCalItem.Get_energy_MWD();
+        float energy_MWD_GM = lisaCalItem.Get_energy_MWD_GM();
 
         std::vector<float> trace = lisaCalItem.Get_trace_febex();
         
@@ -676,7 +770,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         //::: F I L L   H I S T O S  :::
 
         // ::: Hit Pattern Total
-        h1_hitpattern_total->Fill(hp_total_bin);
+        //h1_hitpattern_total->Fill(hp_total_bin);
         //....................
         // ::: Hit Pattern by layer
         h1_hitpattern_layer[layer]->Fill(hp_bin);
@@ -692,9 +786,24 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         // ::: Energy Febex per layer
         h1_energy_layer[layer-1]->Fill(energy_GM);
         //....................
-        // ::: Energy vs ID
-        h2_energy_vs_ID_layer[layer-1]->Fill(hp_bin, energy_GM);
-        h2_energy_vs_ID_total->Fill(hp_total_bin, energy_GM);
+        // ::: Energy Febex vs ID
+        h2_energy_vs_ID[layer-1]->Fill(hp_bin, energy_GM);
+        //h2_energy_vs_ID_total->Fill(hp_total_bin, energy_GM);
+        // ::: Layer Energy vs ID
+        h2_energy_vs_layer->Fill(layer,energy_GM);
+
+        // ::: Energy MWD per channel
+        h1_energy_MWD_ch[layer-1][xpos][ypos]->Fill(energy_MWD_GM);
+        //....................
+        // ::: Energy MWD per layer
+        h1_energy_MWD_layer[layer-1]->Fill(energy_MWD_GM);
+        //....................
+        // ::: Energy MWD vs ID
+        h2_energy_MWD_vs_ID_layer[layer-1]->Fill(hp_bin, energy_MWD_GM);
+        //h2_energy_vs_ID_total->Fill(hp_total_bin, energy_GM);
+        // ::: Layer Energy MWD  vs ID
+        h2_energy_MWD_vs_layer->Fill(layer,energy_MWD_GM);
+
 
         //::::::::Define Sum Energy
         //sum_energy_layer[layer] += energy;
@@ -745,10 +854,11 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     //c4LOG(info, "LISA_time_mins: " << LISA_time_mins << " wr time: "<< std::fixed << std::setprecision(10)<< wr_time);
     
     // ::: WR Time Difference
-    if (lisa_config->wr_enable == true) 
-    {
-        if (wr_time == 0)return; 
-    }
+
+    // if (lisa_config->wr_enable == true) 
+    // {
+    //     if (wr_time == 0)return; 
+    // }
     //if ( wr_time == 0 ) return;
     if( prev_wr > 0 )
     {
