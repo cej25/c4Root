@@ -80,11 +80,6 @@ class LisaOnlineSpectra : public FairTask
         std::vector<std::vector<std::vector<int>>> detector_counter; 
         std::vector<std::vector<std::vector<int>>> detector_rate;    
         int rate_running_count = 0;
-        // Int_t en_count1 = 0;
-        // Int_t en_count2 = 0;
-        // Int_t en_count3 = 0;
-        // Int_t en_count4 = 0;
-        // Int_t counter = 0;
 
         // Rate
         Long64_t prev_wr = 0;
@@ -103,9 +98,7 @@ class LisaOnlineSpectra : public FairTask
         TDirectory* dir_febex_channel;
         TDirectory* dir_MWD_channel;
 
-        TDirectory* dir_traces;
-        // TDirectory* dir_traces_MWD;
-    
+        TDirectory* dir_traces;    
 
         // ::: Canvas
         //     Stats
@@ -122,18 +115,15 @@ class LisaOnlineSpectra : public FairTask
         TCanvas* c_energy_vs_ID_total;
         TCanvas* c_energy_vs_layer;
         TCanvas* c_energy_layer_vs_layer;
+        TCanvas* c_energy_first_vs_last;
 
         std::vector<TCanvas*> c_energy_MWD_ch;
         TCanvas* c_energy_MWD_layer;
         TCanvas* c_energy_MWD_vs_ID;
         TCanvas* c_energy_MWD_vs_layer;
-        // TCanvas* c_energy_layer1_vs_layer2;
-        // TCanvas* c_energy_layer_vs_time;
-        // std::vector<TCanvas*> c_energy_layer_ch;
-        // std::vector<TCanvas*> c_energy_layer_ch_vs_time;
         std::vector<TCanvas*> c_traces_ch;
-        // std::vector<TCanvas*> c_traces_layer_ch_stat;
-
+        TCanvas* c_energy_MWD_layer_vs_layer;
+        TCanvas* c_energy_MWD_first_vs_last;
     
         // ::: Histograms
         //     Stats
@@ -152,28 +142,20 @@ class LisaOnlineSpectra : public FairTask
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_ch;
         std::vector<TH1F*> h1_energy_layer;
         std::vector<TH2F*> h2_energy_vs_ID;
-        TH2F* h2_energy_vs_ID_total;
+        //TH2F* h2_energy_vs_ID_total;
         TH2F* h2_energy_vs_layer;
         std::vector<TH2F*> h2_energy_layer_vs_layer;
+        TH2F* h2_energy_first_vs_last;
         //      MWD  
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_MWD_ch;
         std::vector<TH1F*> h1_energy_MWD_layer;
         std::vector<TH2F*> h2_energy_MWD_vs_ID;
         TH2F* h2_energy_MWD_vs_layer;
+        std::vector<TH2F*> h2_energy_MWD_layer_vs_layer;
+        TH2F* h2_energy_MWD_first_vs_last;
 
-        // //TH1F* h1_energy_layer0;
-        // std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch;
-        // TH2F* h2_energy_layer1_vs_layer2;
-        //      Traces
-        std::vector<std::vector<std::vector<TH1F*>>> h1_traces_ch;
-        // std::vector<std::vector<std::vector<TH2F*>>> h2_traces_layer_ch_stat;
-
-
-        //TGraph
-        // std::vector<TGraph*> hG_energy_layer_vs_time;
-        // std::vector<std::vector<std::vector<TGraph*>>> hG_energy_layer_ch_vs_time;
-
-        
+        // ::: Traces
+        std::vector<std::vector<std::vector<TH1F*>>> h1_traces_ch;        
 
     public:
         ClassDef(LisaOnlineSpectra, 1)

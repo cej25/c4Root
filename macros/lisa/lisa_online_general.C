@@ -61,16 +61,16 @@ void lisa_online_general()
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/x7_241Am/multiple_cards_test/cards_A_B_C_D_E_F_G_0306.lmd"; 
     //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/run_0075_0001.lmd";  //data with only lisa
-    TString filename = "/u/gandolfo/data/lustre/despec/lisa/LISAmp_10layers_0018_*.lmd";  //data with only lisa
+    TString filename = "/u/gandolfo/data/lustre/despec/lisa/LISAmp_10layers_0006_*.lmd";  //data with only lisa
 
     //___O U T P U T - only used if switched on 
     //TString outputpath = "/u/gandolfo/data/lustre/despec/lisa/3x3_board_1/";
     TString outputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";
-    TString outputFilename = outputpath + "run_0075_0001.lmd";
+    TString outputFilename = outputpath + "run_0006_0001.lmd";
 
     //:::::::Create online run
     Int_t refresh = 10; // Refresh rate for online histograms
-    Int_t port = 1111;
+    Int_t port = 4444;
      
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -96,7 +96,7 @@ void lisa_online_general()
         TLisaConfiguration::SetMappingFile(config_path + "/Lisa_All_Boards.txt");
         //TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Detector_Map_names.txt");
         TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching_cards.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_LISAmp_highgain.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
         //TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_DAQtest.txt");
         TLisaConfiguration::SetGMFileMWD(config_path + "/Lisa_GainMatching_cards.txt");
 
@@ -165,14 +165,13 @@ void lisa_online_general()
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     
     // Set Ranges for online histos
-
-    //::::  Channel Energy ::::: (h1_energy_layer_ch)
-    TLisaConfiguration::SetEnergyRange(0,100000);
+    //  Channel Energy ::::: (h1_energy_)
+    TLisaConfiguration::SetEnergyRange(0,5000);
     TLisaConfiguration::SetEnergyBin(1000);
 
     //  MWD histos
-    TLisaConfiguration::SetEnergyRangeMWD(1,100);
-    TLisaConfiguration::SetEnergyBinMWD(500);
+    TLisaConfiguration::SetEnergyRangeMWD(0,20);
+    TLisaConfiguration::SetEnergyBinMWD(1000);
 
     //:::: LISA WR Time Difference :::::: (h1_wr_diff)
     TLisaConfiguration::SetWrDiffRange(0,100000000);
