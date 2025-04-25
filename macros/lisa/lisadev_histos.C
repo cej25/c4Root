@@ -60,11 +60,11 @@ void lisadev_histos()
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
     TString inputpath = "/u/gandolfo/data/test_c4/layer_alpha/";
-    TString filename = inputpath + "LISAmp_10layers_0018_trees.root";  
+    TString filename = inputpath + "LISAmp_10layers_0006_0001_trees.root";  
     
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/test_c4/layer_alpha/"; //test output
-    TString outputFilename = outputpath + "LISAmp_10layers_0018_histos.root";
+    TString outputFilename = outputpath + "LISAmp_10layers_0006_0001_histos.root";
 
 
     FairRunAna* run = new FairRunAna();
@@ -141,7 +141,7 @@ void lisadev_histos()
     //TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map_names.txt");
     TLisaConfiguration::SetGMFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_cards.txt");
     TLisaConfiguration::SetGMFileMWD("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_cards.txt");
-    TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_LISAmp_highgain.txt");
+    TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
     // ::: Nearline Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     
@@ -156,15 +156,15 @@ void lisadev_histos()
     // ::: LISA
 
     //  Channel Energy ::::: (h1_energy_)
-    TLisaConfiguration::SetEnergyRange(0,100000);
+    TLisaConfiguration::SetEnergyRange(0,5000);
     TLisaConfiguration::SetEnergyBin(1000);
 
     //  MWD histos
-    TLisaConfiguration::SetEnergyRangeMWD(0,100);
-    TLisaConfiguration::SetEnergyBinMWD(500);
+    TLisaConfiguration::SetEnergyRangeMWD(0,20);
+    TLisaConfiguration::SetEnergyBinMWD(1000);
 
-    TLisaConfiguration::SetEnergyRangeMWDGM(0,1000);
-    TLisaConfiguration::SetEnergyBinMWDGM(450);
+    TLisaConfiguration::SetEnergyRangeMWDGM(0,20);
+    TLisaConfiguration::SetEnergyBinMWDGM(400);
 
     //  Traces Time and Amplitude Ranges 
     TLisaConfiguration::SetTracesRange(0,20);

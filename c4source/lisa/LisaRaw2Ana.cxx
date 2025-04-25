@@ -155,6 +155,7 @@ void LisaRaw2Ana::Exec(Option_t* option)
             int k0 = static_cast<int>(MWD_trace_start / sampling);               // Start of MWD in samples
             int kend = static_cast<int>(MWD_trace_stop / sampling);              // Stop of MWD in samples
             
+            //c4LOG(info, "k0 : " << k0 << " kend: " << kend << " kend-k0 " << kend-k0);
 
             //Check Trace size - this solves problems with events with empty trace
             if (trace_febex.size() == 0) 
@@ -167,7 +168,7 @@ void LisaRaw2Ana::Exec(Option_t* option)
             if (kend > trace_febex.size()) 
             {
                 kend = trace_febex.size();            // If kend out of bound, replace it with trace_febex limit
-                c4LOG(info, "[MWD info] Trapez_sample_window_1 " << MWD_trace_stop << " is greater than febex trace size " << trace_febex.size() << ". It has been replaced with febex trace limit");
+                c4LOG(info, "[MWD info] Trapez_sample_window_1 " << MWD_trace_stop << "ns is greater than febex trace size " << trace_febex.size()*sampling << " ns. It has been replaced with febex trace limit");
             }
 
             // ::: Checks on the MWD parameters called so far :::
