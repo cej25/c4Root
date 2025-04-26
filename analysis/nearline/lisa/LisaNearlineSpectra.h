@@ -8,6 +8,8 @@
 #include "LisaCalData.h"
 #include <vector>
 #include <memory>
+#include <sstream>
+#include <string>
 #include "TDirectory.h"
 #include "TFolder.h"
 #include "TPad.h"
@@ -76,7 +78,8 @@ class LisaNearlineSpectra : public FairTask
         float*** e_xy_gate_high;
         float*** e_xy_MWD_gate_low;
         float*** e_xy_MWD_gate_high;
-        
+        std::map<int,std::pair<double,double>> gates_LISA_febex;
+        std::map<int,std::pair<double,double>> gates_LISA_MWD;
 
         // common variables
         int layer_number;

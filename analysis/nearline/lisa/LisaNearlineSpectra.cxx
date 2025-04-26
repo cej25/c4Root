@@ -92,9 +92,9 @@ InitStatus LisaNearlineSpectra::Init()
     det_number = lisa_config->NDetectors();
     auto const & detector_mapping = lisa_config->Mapping();
 
-    auto const & gates_febex = lisa_config->GatesLISAFebex();
-    auto const & gates_MWD = lisa_config->GatesLISAMWD();
-    
+    gates_LISA_febex = lisa_config->GatesLISAFebex();
+    gates_LISA_MWD = lisa_config->GatesLISAMWD();
+
     xmax = lisa_config->XMax();
     ymax = lisa_config->YMax();
     int traces_max = lisa_config->amplitude_max;
@@ -764,6 +764,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     std::vector<float> energy_xy_gated[layer_number][xmax][ymax];
     std::vector<float> energy_MWD_xy_gated[layer_number][xmax][ymax];
 
+
     //c4LOG(info, "Comment to slow down program for testing");
     for (auto const & lisaCalItem : *lisaCalArray)
     {
@@ -806,7 +807,14 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         // ::: FOR     E N E R G Y
         energy_layer[layer-1].emplace_back(energy_GM);
         energy_MWD_layer[layer-1].emplace_back(energy_MWD_GM);
+        if (auto gate_febex = gates_LISA_febex.find(layer); gate_febex != gates_LISA_febex.end() )
+        {
+            double gate_febex_low = gate_febex.first;
+            double gate_febex_high = gate_febex.second;
+        }
+
         //     Gated energy - Layer
+        //if (energy_GM > e_gate_low[layer-1] && energy_GM < e_gate_high[layer-1]) energy_layer_gated[layer-1].emplace_back(energy_GM);
         if (energy_GM > e_gate_low[layer-1] && energy_GM < e_gate_high[layer-1]) energy_layer_gated[layer-1].emplace_back(energy_GM);
         if (energy_MWD_GM > e_MWD_gate_low[layer-1] && energy_MWD_GM < e_MWD_gate_high[layer-1]) energy_MWD_layer_gated[layer-1].emplace_back(energy_MWD_GM);
         //     Gated energy - Channel
