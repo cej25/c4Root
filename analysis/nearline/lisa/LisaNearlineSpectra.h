@@ -66,10 +66,17 @@ class LisaNearlineSpectra : public FairTask
         std::vector<LisaCalItem> const* lisaCalArray;
 
         // Variables for Gates
+        // Layer
         float* e_gate_low;
         float* e_gate_high;
         float* e_MWD_gate_low;
         float* e_MWD_gate_high;
+        // Channels
+        float*** e_xy_gate_low;
+        float*** e_xy_gate_high;
+        float*** e_xy_MWD_gate_low;
+        float*** e_xy_MWD_gate_high;
+        
 
         // common variables
         int layer_number;
