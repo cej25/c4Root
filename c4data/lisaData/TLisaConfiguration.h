@@ -124,6 +124,8 @@ class TLisaConfiguration
 
         static void SetTrace(int tr_on) { trace_on = tr_on; }
 
+        static void SetXYDetectorGate(int x_gate, int y_gate) { xpos_gate = x_gate; ypos_gate = y_gate; }
+
         //int AmplitudeMax = 10500;
         //int AmplitudeMin = 7500;
         static int amplitude_bin; // = 10500;
@@ -158,6 +160,8 @@ class TLisaConfiguration
         static int start_evtno;
         static int stop_evtno;
         static int trace_on;
+        static int xpos_gate;
+        static int ypos_gate;
 
         static bool wr_enable;
 

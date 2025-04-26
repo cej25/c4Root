@@ -120,6 +120,8 @@ void lisadev_histos()
     //:::: GATES config for histos ::::::::
     TFrsConfiguration::Set_dE_travMusic_gate(1940,2000);
     TLisaConfiguration::SetLISAGate(1070,1110); //Gate on LISA 1 for histo of LISA 2 energy (mean +- 3sigma)
+    TLisaConfiguration::SetXYDetectorGate(2,2);  //XY position of the detector you want to see the gate on
+
     //98Nb -> 1090 (6.6)
     //96Zr -> 1044 (8)
     //95Zr -> 1027 (5)

@@ -82,14 +82,21 @@ int TLisaConfiguration::fMin_dE_LISA1_gate = 1070, TLisaConfiguration::fMax_dE_L
 int TLisaConfiguration::frun_num = 0;
 
 // ::: Board number !!only for TraceAnalysis!!
-int TLisaConfiguration:: board_num = 0;     // number of boards for the file
-int TLisaConfiguration:: event_ana = 0;     // event to analyze for MWD trace
+int TLisaConfiguration::board_num = 0;     // number of boards for the file
+int TLisaConfiguration::event_ana = 0;     // event to analyze for MWD trace
 
 // ::: EVTno for En vs Evtno when WR is not availabòe
-int TLisaConfiguration:: start_evtno = 0;
-int TLisaConfiguration:: stop_evtno = 0;
+int TLisaConfiguration::start_evtno = 0;
+int TLisaConfiguration::stop_evtno = 0;
 
-int TLisaConfiguration:: trace_on = 1;
+// ::: Enable trace writing in histos
+int TLisaConfiguration::trace_on = 1;
+
+// ::: Set detector to analyze for gates
+int TLisaConfiguration::xpos_gate = 0;
+int TLisaConfiguration::ypos_gate = 0;
+
+
 
 
 TLisaConfiguration::TLisaConfiguration()
