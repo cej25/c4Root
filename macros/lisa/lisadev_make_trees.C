@@ -28,7 +28,9 @@ void lisadev_make_trees()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
-    TString fExpName = "pareeksha";
+    TString fExpName = "shiyan";
+    //WR pareeksha = 1200
+    //WR shiyan = 400
 
     //:::::::::Here you define commonly used path
     TString c4Root_path = "/u/gandolfo/c4/c4Root";
@@ -56,14 +58,14 @@ void lisadev_make_trees()
     //___O F F L I N E
     //TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/LISAmp_test/";
     //TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";
-    TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/";
+    TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/S092_shiyan/";
     //TString filename = inputpath + "LISAmp_2layers_0006_0001.lmd";
-    TString filename = inputpath + "LISAmp_10layers_0006_0001.lmd";
+    TString filename = inputpath + "test_0003_0001.lmd";
     //TString filename = inputpath + "run_0075_0001.lmd";
 
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/test_c4/layer_alpha/"; //testing
-    TString outputFilename = outputpath + "LISAmp_10layers_0006_0001_trees.root";
+    TString outputpath = "/u/gandolfo/data/test_c4/shiyan_test/"; //testing
+    TString outputFilename = outputpath + "test_0003_0001_trees.root";
 
 
     //:::::::Create online run

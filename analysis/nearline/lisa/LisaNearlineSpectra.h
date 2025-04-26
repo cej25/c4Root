@@ -65,6 +65,12 @@ class LisaNearlineSpectra : public FairTask
 
         std::vector<LisaCalItem> const* lisaCalArray;
 
+        // Variables for Gates
+        float* e_gate_low;
+        float* e_gate_high;
+        float* e_MWD_gate_low;
+        float* e_MWD_gate_high;
+
         // common variables
         int layer_number;
         int det_number;
@@ -137,7 +143,7 @@ class LisaNearlineSpectra : public FairTask
         TH2F* h2_energy_first_vs_last;
         //      - Gated
         std::vector<TH1F*> h1_energy_layer_gated;
-        std::vector<TH1F*> h1_energy_z22_gated;
+        std::vector<TH1F*> h1_energy_22_gated;
         //      MWD
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_MWD_ch;
         std::vector<TH1F*> h1_energy_MWD_layer;
@@ -147,7 +153,7 @@ class LisaNearlineSpectra : public FairTask
         TH2F* h2_energy_MWD_first_vs_last;
         //      - Gated
         std::vector<TH1F*> h1_energy_MWD_layer_gated;
-        std::vector<TH1F*> h1_energy_MWD_z22_gated;
+        std::vector<TH1F*> h1_energy_MWD_22_gated;
 
         // ::: Traces
         std::vector<std::vector<std::vector<TH2F*>>> h2_traces_ch;

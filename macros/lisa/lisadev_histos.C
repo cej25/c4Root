@@ -34,7 +34,7 @@ void lisadev_histos()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
-    TString fExpName = "pareeskha";
+    TString fExpName = "shiyan";
 
     //:::::::::Here you define commonly used path
     TString c4Root_path = "/u/gandolfo/c4/c4Root";
@@ -59,12 +59,14 @@ void lisadev_histos()
 
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
-    TString inputpath = "/u/gandolfo/data/test_c4/layer_alpha/";
-    TString filename = inputpath + "LISAmp_10layers_0006_0001_trees.root";  
+    //TString inputpath = "/u/gandolfo/data/test_c4/layer_alpha/";
+    TString inputpath = "/u/gandolfo/data/test_c4/shiyan_test/";
+    TString filename = inputpath + "test_0003_0001_trees.root";  
     
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/test_c4/layer_alpha/"; //test output
-    TString outputFilename = outputpath + "LISAmp_10layers_0006_0001_histos.root";
+    //TString outputpath = "/u/gandolfo/data/test_c4/layer_alpha/"; //test output
+    TString outputpath = "/u/gandolfo/data/test_c4/shiyan_test/";
+    TString outputFilename = outputpath + "test_0003_0001_histos.root";
 
 
     FairRunAna* run = new FairRunAna();
@@ -150,21 +152,19 @@ void lisadev_histos()
     //std::cout << "Run number: " << fileNumber << std::endl;
 
     //::::::::: Set experiment configurations
-    TExperimentConfiguration::SetExperimentStart(1715734200000000000);
+    TExperimentConfiguration::SetExperimentStart(1745599200000000000);
+        //1715734200000000000);
     
     //::::::::: Set ranges for histos :::::::::::::::
     // ::: LISA
 
     //  Channel Energy ::::: (h1_energy_)
-    TLisaConfiguration::SetEnergyRange(0,5000);
+    TLisaConfiguration::SetEnergyRange(30000,50000);
     TLisaConfiguration::SetEnergyBin(1000);
 
     //  MWD histos
-    TLisaConfiguration::SetEnergyRangeMWD(0,20);
+    TLisaConfiguration::SetEnergyRangeMWD(0,100);
     TLisaConfiguration::SetEnergyBinMWD(1000);
-
-    TLisaConfiguration::SetEnergyRangeMWDGM(0,20);
-    TLisaConfiguration::SetEnergyBinMWDGM(400);
 
     //  Traces Time and Amplitude Ranges 
     TLisaConfiguration::SetTracesRange(0,20);

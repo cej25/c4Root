@@ -196,7 +196,6 @@ InitStatus LisaNearlineSpectra::Init()
     for (int i = 1; i <= layer_number; i++)
     {   
         h1_hitpattern_layer[i] = new TH1I(Form("h1_hitpattern_layer_%i", i), Form("Hit Pattern - Layer: %i", i), xmax * ymax, 0, xmax * ymax);
-        h1_hitpattern_layer[i]->SetStats(0);
         h1_hitpattern_layer[i]->Draw();
 
         for (int j = 0; j < xmax * ymax; j++)
@@ -278,20 +277,17 @@ InitStatus LisaNearlineSpectra::Init()
     // ::: Multiplicity 
     //      Total
     h1_multiplicity = new TH1I("h1_multiplicity", "Detector Multiplicity", det_number+1, -0.5, det_number+0.5);
-    h1_multiplicity->SetStats(0);
 
     //      Multiplicity per layer
     h1_multiplicity_per_layer.resize(layer_number);
     for (int i = 0; i < layer_number; i++)
     {
         h1_multiplicity_per_layer[i] = new TH1I(Form("h1_multiplicity_layer_%i",i+1), Form("Multiplicity Layer %i",i+1), xmax * ymax+1, -0.5, xmax * ymax+0.5);
-        h1_multiplicity_per_layer[i]->SetStats(0);
         h1_multiplicity_per_layer[i]->Draw();
     }
 
     //      Layer Multiplicity
     h1_layer_multiplicity = new TH1I("h1_layer_multiplicity", "Layer Multiplicity", layer_number+1, -0.5, layer_number+0.5);
-    h1_layer_multiplicity->SetStats(0);
     //...................................END OF STATS   
 
     // ::: E N E R G Y :::
@@ -330,7 +326,6 @@ InitStatus LisaNearlineSpectra::Init()
     for (int i = 0; i < layer_number; i++)
     {   
         h1_energy_layer[i] = new TH1F(Form("h1_energy_layer_%i", i+1), Form("Energy - Layer %i", i+1), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
-        h1_energy_layer[i]->SetStats(0);
         h1_energy_layer[i]->GetXaxis()->SetTitle(Form("E(LISA %i) [a.u.]", i+1));
         h1_energy_layer[i]->SetLineColor(kBlue+1);
         h1_energy_layer[i]->SetFillColor(kRed-3);
@@ -343,7 +338,6 @@ InitStatus LisaNearlineSpectra::Init()
     for (int i = 0; i < layer_number; i++)
     {   
         h2_energy_vs_ID[i] = new TH2F(Form("h2_energy_vs_ID_%i", i+1), Form("Energy vs ID - Layer %i", i+1), xmax * ymax, 0, xmax * ymax, lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
-        h2_energy_vs_ID[i]->SetStats(0);
         h2_energy_vs_ID[i]->Draw("COLZ");
         
         for (int j = 0; j < xmax * ymax; j++)
@@ -384,7 +378,6 @@ InitStatus LisaNearlineSpectra::Init()
     //      Febex energy vs layer ID
     dir_febex->cd();
     h2_energy_vs_layer = new TH2F("h2_energy_vs_layer", "Energy vs Layer ID",layer_number, 0.5, layer_number + 0.5,lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
-    h2_energy_vs_layer->SetStats(0);
     h2_energy_vs_layer->GetXaxis()->SetTitle("Layer ID");
     h2_energy_vs_layer->GetYaxis()->SetTitle("Energy [a.u.]");
     h2_energy_vs_layer->Draw("COLZ");
@@ -452,7 +445,6 @@ InitStatus LisaNearlineSpectra::Init()
     for (int i = 0; i < layer_number; i++)
     {   
         h1_energy_MWD_layer[i] = new TH1F(Form("h1_energy_MWD_layer_%i", i+1), Form("Energy MWD - Layer %i", i+1), lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
-        h1_energy_MWD_layer[i]->SetStats(0);
         h1_energy_MWD_layer[i]->GetXaxis()->SetTitle(Form("E(LISA %i) [a.u.]", i+1));
         h1_energy_MWD_layer[i]->SetLineColor(kBlue+1);
         h1_energy_MWD_layer[i]->SetFillColor(kViolet+10);
@@ -464,7 +456,7 @@ InitStatus LisaNearlineSpectra::Init()
     for (int i = 0; i < layer_number; i++)
     {   
         h2_energy_MWD_vs_ID_layer[i] = new TH2F(Form("h2_energy_MWD_vs_ID_layer_%i", i+1), Form("Energy MWD vs ID - Layer %i", i+1), xmax * ymax, 0, xmax * ymax, lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
-        h2_energy_MWD_vs_ID_layer[i]->SetStats(0);
+
         h2_energy_MWD_vs_ID_layer[i]->Draw("COLZ");
         gPad->Update();
         h2_energy_MWD_vs_ID_layer[i]->GetZaxis()->SetLabelSize(0.005); 
@@ -490,7 +482,6 @@ InitStatus LisaNearlineSpectra::Init()
     //      MWD energy vs layer ID
     dir_energy_MWD->cd();
     h2_energy_MWD_vs_layer = new TH2F("h2_energy_MWD_vs_layer", "Energy MWD vs Layer ID",layer_number, 0.5, layer_number + 0.5,lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
-    h2_energy_MWD_vs_layer->SetStats(0);
     h2_energy_MWD_vs_layer->GetXaxis()->SetTitle("Layer ID");
     h2_energy_MWD_vs_layer->GetYaxis()->SetTitle("Energy MWD [a.u.]");
     h2_energy_MWD_vs_layer->Draw("COLZ");
@@ -562,7 +553,7 @@ InitStatus LisaNearlineSpectra::Init()
     // ::: Febex layer vs Time (WR)
     h2_energy_layer_vs_time.resize(layer_number);
     dir_febex_drift->cd();
-    for (int i = 0; i < layer_number - 1 ; i++)
+    for (int i = 0; i < layer_number; i++)
     { 
         h2_energy_layer_vs_time[i] = MakeTH2(dir_febex_drift, "F", Form("h2_energy_layer_%i_vs_time",i), Form("E (Layer %i) vs WR [min]",i), 500, 0, 10000, lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
         h2_energy_layer_vs_time[i]->SetTitle(Form("E (Layer %i) vs WR",i));
@@ -574,7 +565,7 @@ InitStatus LisaNearlineSpectra::Init()
     //::: Febex channel vs WR Time
     h2_energy_ch_vs_time.resize(layer_number);
     dir_febex_ch_drift->cd();
-    for (int i = 0 ; i < layer_number - 1; i++)
+    for (int i = 0 ; i < layer_number; i++)
     {
         h2_energy_ch_vs_time[i].resize(xmax);
         for (int j = 0; j < xmax; j++)
@@ -603,7 +594,7 @@ InitStatus LisaNearlineSpectra::Init()
     // ::: MWD layer vs time (WR)
     h2_energy_MWD_layer_vs_time.resize(layer_number);
     dir_MWD_drift->cd();
-    for (int i = 0; i < layer_number - 1 ; i++)
+    for (int i = 0; i < layer_number; i++)
     {     
         h2_energy_MWD_layer_vs_time[i] = MakeTH2(dir_MWD_drift, "F", Form("h2_energy_MWD_layer_%i_vs_time",i), Form("E_MWD (Layer %i) vs WR [min]",i), 500, 0, 10000, lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
         h2_energy_MWD_layer_vs_time[i]->SetTitle(Form("E_MWD (Layer %i) vs WR",i));
@@ -615,7 +606,7 @@ InitStatus LisaNearlineSpectra::Init()
     //::: MWD channel vs WR Time
     h2_energy_MWD_ch_vs_time.resize(layer_number);
     dir_febex_ch_drift->cd();
-    for (int i = 0 ; i < layer_number - 1; i++)
+    for (int i = 0 ; i < layer_number; i++)
     {
         h2_energy_MWD_ch_vs_time[i].resize(xmax);
         for (int j = 0; j < xmax; j++)
@@ -668,29 +659,45 @@ InitStatus LisaNearlineSpectra::Init()
     //....................................
     // ::: Febex - Sequential gates on diamond 22 (LISA only)
     dir_febex_gates->cd();
-    h1_energy_z22_gated.resize(layer_number);
+    h1_energy_22_gated.resize(layer_number);
     for (int i = 0; i < layer_number; i++)
     {   
-        h1_energy_z22_gated[i] = new TH1F(Form("h1_energy_%i22_gated", i+1), Form("LISA-Gated Energy - %i22", i+1), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
-        h1_energy_z22_gated[i]->GetXaxis()->SetTitle(Form("E(LISA %i22) [a.u.]", i+1));
-        h1_energy_z22_gated[i]->SetLineColor(kBlue+1);
-        h1_energy_z22_gated[i]->SetFillColor(kOrange-3);
-        h1_energy_z22_gated[i]->Draw();       
+        h1_energy_22_gated[i] = new TH1F(Form("h1_energy_%i22_gated", i+1), Form("LISA-Gated Energy - %i22", i+1), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+        h1_energy_22_gated[i]->GetXaxis()->SetTitle(Form("E(LISA %i22) [a.u.]", i+1));
+        h1_energy_22_gated[i]->SetLineColor(kBlue+1);
+        h1_energy_22_gated[i]->SetFillColor(kOrange-3);
+        h1_energy_22_gated[i]->Draw();       
     }
     //....................................
     // ::: MWD - Sequential gates on Layers (LISA only)
     dir_MWD_gates->cd();
-    h1_energy_MWD_z22_gated.resize(layer_number);
+    h1_energy_MWD_22_gated.resize(layer_number);
     for (int i = 0; i < layer_number; i++)
     {   
-        h1_energy_MWD_z22_gated[i] = new TH1F(Form("h1_energy_MWD_%i22_gated", i+1), Form("LISA-Gated Energy MWD - %i22", i+1), lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
-        h1_energy_MWD_z22_gated[i]->GetXaxis()->SetTitle(Form("E MWD (LISA %i22) [a.u.]", i+1));
-        h1_energy_MWD_z22_gated[i]->SetLineColor(kBlue+1);
-        h1_energy_MWD_z22_gated[i]->SetFillColor(kViolet-1);
-        h1_energy_MWD_z22_gated[i]->Draw();       
+        h1_energy_MWD_22_gated[i] = new TH1F(Form("h1_energy_MWD_%i22_gated", i+1), Form("LISA-Gated Energy MWD - %i22", i+1), lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
+        h1_energy_MWD_22_gated[i]->GetXaxis()->SetTitle(Form("E MWD (LISA %i22) [a.u.]", i+1));
+        h1_energy_MWD_22_gated[i]->SetLineColor(kBlue+1);
+        h1_energy_MWD_22_gated[i]->SetFillColor(kViolet-1);
+        h1_energy_MWD_22_gated[i]->Draw();       
     }
     //....................................END OF GATES (LISA ONLY)
 
+    // Temp
+    e_gate_low = new float[layer_number];
+    e_gate_high = new float[layer_number];
+    e_MWD_gate_low = new float[layer_number];
+    e_MWD_gate_high = new float[layer_number];
+
+    for ( int i = 0; i < layer_number; i++)
+    {
+        e_gate_low[i] = 40000;
+        e_gate_high[i] = 43000;
+        e_MWD_gate_low[i] = 10;
+        e_MWD_gate_high[i] = 12;
+    }
+    // Temp
+    
+    
     return kSUCCESS;
 }
 
@@ -710,17 +717,20 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     std::vector<std::vector<float>> energy_MWD_layer(layer_number);
     energy_MWD_layer.resize(layer_number);    
 
+    // ::: Energy gated
+    std::vector<float> energy_layer_gated[layer_number];
+    std::vector<float> energy_MWD_layer_gated[layer_number];
+
     //c4LOG(info, "Comment to slow down program for testing");
     for (auto const & lisaCalItem : *lisaCalArray)
     {
         // For WR histos and experiment start
         wr_time = lisaCalItem.Get_wr_t();
-        // if (lisa_config->wr_enable == true) 
-        // {
-        //     if (wr_time == 0)return; 
-        // }
-
-        //if (wr_time == 0)return;
+        if (lisa_config->wr_enable == true) 
+        {
+            if (wr_time == 0)return; 
+        }
+        if (wr_time == 0)return;
         if(wr_time > 0) LISA_time_mins = (wr_time - exp_config->exp_start_time)/ 60E9;
         //c4LOG(info, "LISA_time_mins: " << LISA_time_mins << " wr time: "<< std::fixed << std::setprecision(10)<< wr_time);
 
@@ -753,6 +763,9 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         // ::: FOR     E N E R G Y
         energy_layer[layer-1].emplace_back(energy_GM);
         energy_MWD_layer[layer-1].emplace_back(energy_MWD_GM);
+        //     Gated energy
+        if (energy_GM > e_gate_low[layer-1] && energy_GM < e_gate_high[layer-1]) energy_layer_gated[layer-1].emplace_back(energy_GM);
+        if (energy_MWD_GM > e_MWD_gate_low[layer-1] && energy_MWD_GM < e_MWD_gate_high[layer-1]) energy_MWD_layer_gated[layer-1].emplace_back(energy_MWD_GM);
 
         //::: F I L L   H I S T O S  :::
 
@@ -806,40 +819,32 @@ void LisaNearlineSpectra::Exec(Option_t* option)
             }
         }
 
+        //c4LOG(info, "layer -1 " << layer-1 << " LISA_time_mins: " << LISA_time_mins << " energy : "<<  energy_GM);
         // ::: Drifts ::::
-        //     Febex energy vs Time
+        //    Febex energy vs Time
         if (energy_GM > 0 && LISA_time_mins > 0)
         {
-            //c4LOG(info, "conditions on LISA time: " << LISA_time_mins << "and energy: " << energy_GM );
+            //c4LOG(info, "conditions on LISA time: " << LISA_time_mins << " and energy: " << energy_GM );
             h2_energy_layer_vs_time[layer-1]->Fill(LISA_time_mins, energy_GM);
             h2_energy_ch_vs_time[layer-1][xpos][ypos]->Fill(LISA_time_mins, energy_GM); 
         }
-        //     MWD Energy vs Time
+        // //     MWD Energy vs Time
         if (energy_MWD_GM > 0 && LISA_time_mins > 0)
         {
             h2_energy_MWD_layer_vs_time[layer-1]->Fill(LISA_time_mins, energy_MWD_GM);
             h2_energy_MWD_ch_vs_time[layer-1][xpos][ypos]->Fill(LISA_time_mins, energy_MWD_GM); 
         }
-
-        // ::: LISA Gated on LISA-only
-        // if (!LisaGates.empty())
-        // {
-        //     for (int gate = 0; gate < LisaGates.size(); gate++)
-        //     {  
-
-        //     }
-        // }
     
     }
     //c4LOG(info, "LISA_time_mins: " << LISA_time_mins << " wr time: "<< std::fixed << std::setprecision(10)<< wr_time);
     
     // ::: WR Time Difference
 
-    // if (lisa_config->wr_enable == true) 
-    // {
-    //     if (wr_time == 0)return; 
-    // }
-    //if ( wr_time == 0 ) return;
+    if (lisa_config->wr_enable == true) 
+    {
+        if (wr_time == 0)return; 
+    }
+    if ( wr_time == 0 ) return;
     if( prev_wr > 0 )
     {
         wr_diff = wr_time - prev_wr;
@@ -944,9 +949,30 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     {
         for (int j = 0; j < energy_MWD_layer[layer_number-1].size(); ++j)
         {
-            h2_energy_MWD_first_vs_last->Fill( energy_MWD_layer[layer_number-1][j], energy_MWD_layer[0][i]);
+            h2_energy_MWD_first_vs_last->Fill(energy_MWD_layer[layer_number-1][j], energy_MWD_layer[0][i]);
         }
     }
+    //....................................
+    //::: LISA Gated on LISA-only
+    for (int l = 0; l < layer_number; l++)
+    {
+        if (energy_layer_gated[l].size() == 0) break;
+        for ( int i = 0; i < energy_layer_gated[l].size(); i++)
+        {
+            h1_energy_layer_gated[l]->Fill(energy_layer_gated[l].at(i));
+        }
+    }
+
+    for (int l = 0; l < layer_number; l++)
+    {
+        if (energy_MWD_layer_gated[l].size() == 0) break;
+        for ( int i = 0; i < energy_MWD_layer_gated[l].size(); i++)
+        {
+            h1_energy_MWD_layer_gated[l]->Fill(energy_MWD_layer_gated[l].at(i));
+        }
+    }
+
+
         
     fNEvents += 1;
 }
