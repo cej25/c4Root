@@ -7,8 +7,8 @@
 #define LISA_ANA 0
 #define LISA_CAL 1
 
-#define FRS_ON 1
-#define FRS_LISA_CORRELATIONS 1
+#define FRS_ON 0
+#define FRS_LISA_CORRELATIONS 0
 
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
 
@@ -30,7 +30,7 @@ void c_lisadev_histos()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
-    TString fExpName = "pareeksha";
+    TString fExpName = "shiyan";
 
     //:::::::::Here you define commonly used path
     TString c4Root_path = "/u/cjones/c4Root";
@@ -55,12 +55,12 @@ void c_lisadev_histos()
 
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
-    TString inputpath = "/u/gandolfo/data/test_c4/";
-    TString filename = inputpath + "run_0075_0001_tree.root";  
+    TString inputpath = "/u/gandolfo/data/test_c4/shiyan_test/";
+    TString filename = inputpath + "test_0003_0001_trees.root";  
     
     //___O U T P U T
-    TString outputpath = ""; //test output
-    TString outputFilename = outputpath + "run_0075_0001_histo.root";
+    TString outputpath = "./"; //test output
+    TString outputFilename = outputpath + "test_0003_0001_trees_HISTOGRAMS.root";
 
 
     FairRunAna* run = new FairRunAna();
@@ -128,10 +128,10 @@ void c_lisadev_histos()
     // TFrsConfiguration::SetAoQDriftFile(config_path + "/frs/AoQ_Drift_fragments.txt");
 
     // ::: LISA config
-    TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map_names.txt");
+    TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_All_Boards.txt");
     TLisaConfiguration::SetGMFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_pareeksha.txt");
     TLisaConfiguration::SetGMFileMWD("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_pareeksha.txt");
-    TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_DAQtest.txt");
+    TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
     
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
     // ::: Nearline Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -141,7 +141,7 @@ void c_lisadev_histos()
     //std::cout << "Run number: " << fileNumber << std::endl;
 
     //::::::::: Set experiment configurations
-    TExperimentConfiguration::SetExperimentStart(1715734200000000000);
+    TExperimentConfiguration::SetExperimentStart(1745599200000000000);
     
     //::::::::: Set ranges for histos :::::::::::::::
     // LISA
