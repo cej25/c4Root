@@ -34,6 +34,8 @@ std::string TLisaConfiguration::mapping_file = "blank";
 std::string TLisaConfiguration::gain_matching_file = "blank";
 std::string TLisaConfiguration::gain_matching_file_MWD = "blank";
 std::string TLisaConfiguration::calibration_file = "blank";
+std::string TLisaConfiguration::gate_ranges_file = "blank";
+std::string TLisaConfiguration::gate_ranges_MWD_file = "blank";
 
 //WR enable setting - X7 data = 0, S2 data = 1
 bool TLisaConfiguration::wr_enable = 1;
@@ -99,6 +101,8 @@ TLisaConfiguration::TLisaConfiguration()
     ReadMappingFile();
     ReadGMFile();
     ReadGMFileMWD();
+    ReadLISAGateFebexFile();
+    ReadLISAGateMWDFile();
     //ReadCalibrationCoefficients();
 
 }
@@ -323,6 +327,70 @@ void TLisaConfiguration::ReadGMFileMWD()
     c4LOG(info, "Lisa Gain Matching MWD File: " + gain_matching_file_MWD);
     return;
 
+}
+
+void TLisaConfiguration::ReadLISAGateFebexFile()
+{       
+    std::ifstream gate_ranges(gate_ranges_file);
+    std::string line;
+
+    if (gate_ranges.fail()) c4LOG(warn, "Could not open LISA Febex Gates file");
+
+    while (std::getline(gate_ranges, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+
+        std::istringstream iss(line);
+        int layer_id;
+        double gate_min, gate_max;
+        std::pair<double, double> gate_min_max;
+
+        iss >> layer_id >> gate_min >> gate_max;
+
+        gate_min_max = std::make_pair(gate_min, gate_max);
+
+        gate_LISA_febex.insert(std::make_pair(layer_id, gate_min_max));
+
+        std::cout << " Layer ID : "<< layer_id << " Gate Min : " << gate_min << " Gate Max : " << gate_max << "\n";
+    }
+    
+    gates_febex_loaded = 1;
+    gate_ranges.close();
+
+    c4LOG(info, "Lisa Febex Gates: " + gate_ranges_file);
+    return;
+}
+
+void TLisaConfiguration::ReadLISAGateMWDFile()
+{       
+    std::ifstream gate_ranges_MWD(gate_ranges_MWD_file);
+    std::string line;
+
+    if (gate_ranges_MWD.fail()) c4LOG(warn, "Could not open LISA MWD Gates file");
+
+    while (std::getline(gate_ranges_MWD, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+
+        std::istringstream iss(line);
+        int layer_id;
+        double gate_MWD_min, gate_MWD_max;
+        std::pair<double, double> gate_MWD_min_max;
+
+        iss >> layer_id >> gate_MWD_min >> gate_MWD_max;
+
+        gate_MWD_min_max = std::make_pair(gate_MWD_min, gate_MWD_max);
+
+        gate_LISA_MWD.insert(std::make_pair(layer_id, gate_MWD_min_max));
+
+        std::cout << " Layer ID : "<< layer_id << " Gate MWD Min : " << gate_MWD_min << " Gate MWD Max : " << gate_MWD_max << "\n";
+    }
+    
+    gates_MWD_loaded = 1;
+    gate_ranges_MWD.close();
+
+    c4LOG(info, "Lisa MWD Gates: " + gate_ranges_MWD_file);
+    return;
 }
 
 
