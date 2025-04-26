@@ -144,6 +144,8 @@ void lisadev_histos()
     TLisaConfiguration::SetGMFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_cards.txt");
     TLisaConfiguration::SetGMFileMWD("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_cards.txt");
     TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
+    TLisaConfiguration::SetLISAGateFebex("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Febex_Gates.txt");
+    TLisaConfiguration::SetLISAGateMWD("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Gates.txt");
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
     // ::: Nearline Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     

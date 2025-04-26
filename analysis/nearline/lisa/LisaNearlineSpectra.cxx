@@ -687,19 +687,6 @@ InitStatus LisaNearlineSpectra::Init()
     //....................................END OF GATES (LISA ONLY)
 
     // Temp
-    // Layer
-    e_gate_low = new float[layer_number];
-    e_gate_high = new float[layer_number];
-    e_MWD_gate_low = new float[layer_number];
-    e_MWD_gate_high = new float[layer_number];
-
-    for ( int i = 0; i < layer_number; i++)
-    {
-        e_gate_low[i] = 40000;
-        e_gate_high[i] = 43000;
-        e_MWD_gate_low[i] = 20;
-        e_MWD_gate_high[i] = 22;
-    }
     // Channels
     e_xy_gate_low = new float**[layer_number];
     e_xy_gate_high = new float**[layer_number];
@@ -809,17 +796,24 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         energy_MWD_layer[layer-1].emplace_back(energy_MWD_GM);
         if (auto gate_febex = gates_LISA_febex.find(layer); gate_febex != gates_LISA_febex.end() )
         {
-            double gate_febex_low = gate_febex.first;
-            double gate_febex_high = gate_febex.second;
-        }
+            double gate_febex_low = gate_febex->second.first;
+            double gate_febex_high = gate_febex->second.second;
+            if (energy_GM > gate_febex_low && energy_GM < gate_febex_high) energy_layer_gated[layer-1].emplace_back(energy_GM);
 
-        //     Gated energy - Layer
-        //if (energy_GM > e_gate_low[layer-1] && energy_GM < e_gate_high[layer-1]) energy_layer_gated[layer-1].emplace_back(energy_GM);
-        if (energy_GM > e_gate_low[layer-1] && energy_GM < e_gate_high[layer-1]) energy_layer_gated[layer-1].emplace_back(energy_GM);
-        if (energy_MWD_GM > e_MWD_gate_low[layer-1] && energy_MWD_GM < e_MWD_gate_high[layer-1]) energy_MWD_layer_gated[layer-1].emplace_back(energy_MWD_GM);
+        }
+        if (auto gate_MWD = gates_LISA_MWD.find(layer); gate_MWD != gates_LISA_MWD.end() )
+        {
+            double gate_MWD_low = gate_MWD->second.first;
+            double gate_MWD_high = gate_MWD->second.second;
+            if (energy_MWD_GM > gate_MWD_low && energy_MWD_GM < gate_MWD_high) energy_MWD_layer_gated[layer-1].emplace_back(energy_MWD_GM);
+
+            
+        }
         //     Gated energy - Channel
-        if (energy_GM > e_xy_gate_low[layer-1][xpos][ypos] && energy_GM < e_xy_gate_high[layer-1][xpos][ypos]) energy_xy_gated[layer-1][xpos][ypos].emplace_back(energy_GM);
-        if (energy_MWD_GM > e_xy_MWD_gate_low[layer-1][xpos][ypos] && energy_MWD_GM < e_xy_MWD_gate_high[layer-1][xpos][ypos]) energy_MWD_xy_gated[layer-1][xpos][ypos].emplace_back(energy_MWD_GM);
+        //if (energy_GM > e_xy_gate_low[layer-1][xpos][ypos] && energy_GM < e_xy_gate_high[layer-1][xpos][ypos]) energy_xy_gated[layer-1][xpos][ypos].emplace_back(energy_GM);
+        //if (energy_MWD_GM > e_xy_MWD_gate_low[layer-1][xpos][ypos] && energy_MWD_GM < e_xy_MWD_gate_high[layer-1][xpos][ypos]) energy_MWD_xy_gated[layer-1][xpos][ypos].emplace_back(energy_MWD_GM);
+        //if (energy_GM > e_xy_gate_low[layer-1][xpos][ypos] && energy_GM < e_xy_gate_high[layer-1][xpos][ypos]) energy_xy_gated[layer-1][xpos][ypos].emplace_back(energy_GM);
+        //if (energy_MWD_GM > e_xy_MWD_gate_low[layer-1][xpos][ypos] && energy_MWD_GM < e_xy_MWD_gate_high[layer-1][xpos][ypos]) energy_MWD_xy_gated[layer-1][xpos][ypos].emplace_back(energy_MWD_GM);
 
         //::: F I L L   H I S T O S  :::
 
