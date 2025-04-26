@@ -13,6 +13,7 @@
  *                       E.M. Gandolfo, C.E. Jones                            *
  *                               25.11.24                                    *
  ******************************************************************************/
+
 // ::: Note::: No canvases in Nearline Tasks please :::
 
 #include <sstream>
@@ -363,7 +364,8 @@ InitStatus LisaNearlineSpectra::Init()
        
     }
     //....................................
-    //     Febex energy vs channel ID ALL Channels - this is too messy with too many detectors
+    // This is too messy with too many channels
+    //     Febex energy vs channel ID ALL Channels 
     // h2_energy_vs_ID_total = new TH2F("h2_energy_vs_ID_total", "Energy vs ID", det_number, 0, det_number, lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
     // h2_energy_vs_ID_total->SetOption("colz");
     // for (auto & detector : detector_mapping)
@@ -687,7 +689,7 @@ InitStatus LisaNearlineSpectra::Init()
         h1_energy_MWD_z22_gated[i]->SetFillColor(kViolet-1);
         h1_energy_MWD_z22_gated[i]->Draw();       
     }
-    //....................................
+    //....................................END OF GATES (LISA ONLY)
 
     return kSUCCESS;
 }
@@ -706,12 +708,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     std::vector<std::vector<float>> energy_layer(layer_number);
     energy_layer.resize(layer_number);
     std::vector<std::vector<float>> energy_MWD_layer(layer_number);
-    energy_MWD_layer.resize(layer_number);
-
-
-    //std::vector<float> sum_energy_layer_GM;
-    //sum_energy_layer_GM.resize(layer_number);
-    
+    energy_MWD_layer.resize(layer_number);    
 
     //c4LOG(info, "Comment to slow down program for testing");
     for (auto const & lisaCalItem : *lisaCalArray)
@@ -795,33 +792,10 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         h2_energy_MWD_vs_layer->Fill(layer,energy_MWD_GM);
 
 
-        //::::::::Define Sum Energy
-        //sum_energy_layer[layer] += energy;
-        //energy_ch[layer][xpos][ypos] = energy;
-
-        //::::::::Define Sum Energy GM
-        //sum_energy_layer_GM[layer] += energy_GM;
         //energy_ch_GM[layer][xpos][ypos] = energy_GM;
         //energy_layer_GM[layer] = energy_GM;
-
         //energy_ch_MWD_GM[layer][xpos][ypos] = energy_MWD_GM;
         //energy_layer_MWD_GM[layer] = energy_MWD_GM;
-        	        
-        
-        // ::: Energy vs Time
-        if (energy_GM > 0 && LISA_time_mins > 0)
-        {
-            //c4LOG(info, "conditions on LISA time: " << LISA_time_mins << "and energy: " << energy_GM );
-            h2_energy_layer_vs_time[layer-1]->Fill(LISA_time_mins, energy_GM);
-            h2_energy_ch_vs_time[layer-1][xpos][ypos]->Fill(LISA_time_mins, energy_GM); 
-        }
-        // ::: Energy MWD vs Time
-        if (energy_MWD_GM > 0 && LISA_time_mins > 0)
-        {
-            //c4LOG(info, "conditions on LISA time: " << LISA_time_mins << "and energy: " << energy_GM );
-            h2_energy_MWD_layer_vs_time[layer-1]->Fill(LISA_time_mins, energy_MWD_GM);
-            h2_energy_MWD_ch_vs_time[layer-1][xpos][ypos]->Fill(LISA_time_mins, energy_MWD_GM); 
-        }
             
         // :::: Fill traces febex
         if(lisa_config->trace_on)
@@ -832,6 +806,29 @@ void LisaNearlineSpectra::Exec(Option_t* option)
             }
         }
 
+        // ::: Drifts ::::
+        //     Febex energy vs Time
+        if (energy_GM > 0 && LISA_time_mins > 0)
+        {
+            //c4LOG(info, "conditions on LISA time: " << LISA_time_mins << "and energy: " << energy_GM );
+            h2_energy_layer_vs_time[layer-1]->Fill(LISA_time_mins, energy_GM);
+            h2_energy_ch_vs_time[layer-1][xpos][ypos]->Fill(LISA_time_mins, energy_GM); 
+        }
+        //     MWD Energy vs Time
+        if (energy_MWD_GM > 0 && LISA_time_mins > 0)
+        {
+            h2_energy_MWD_layer_vs_time[layer-1]->Fill(LISA_time_mins, energy_MWD_GM);
+            h2_energy_MWD_ch_vs_time[layer-1][xpos][ypos]->Fill(LISA_time_mins, energy_MWD_GM); 
+        }
+
+        // ::: LISA Gated on LISA-only
+        // if (!LisaGates.empty())
+        // {
+        //     for (int gate = 0; gate < LisaGates.size(); gate++)
+        //     {  
+
+        //     }
+        // }
     
     }
     //c4LOG(info, "LISA_time_mins: " << LISA_time_mins << " wr time: "<< std::fixed << std::setprecision(10)<< wr_time);
@@ -950,20 +947,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
             h2_energy_MWD_first_vs_last->Fill( energy_MWD_layer[layer_number-1][j], energy_MWD_layer[0][i]);
         }
     }
-
-    //:::::::Fill Sum Energy::::::::::
-    //h2_sum_energy_layer1_vs_layer2->Fill(sum_energy_layer[2],sum_energy_layer[1]);
         
-    //:::::::Fill Sum Energy GM::::::::::
-    //h2_sum_energy_layer1_vs_layer2_GM->Fill(sum_energy_layer_GM[2],sum_energy_layer_GM[1]);
-
-    //:::::: Fill Energy GM for layers 1 and 2 ::::::::::
-    //h2_energy_layer1_vs_layer2->Fill(energy_layer_GM[2],energy_layer_GM[1]);
-
-    //:::::: Fill Energy MWD GM for layers 1 and 2 ::::::::::
-    //h2_energy_MWD_layer1_vs_layer2_GM->Fill(energy_layer_MWD_GM[2],energy_layer_MWD_GM[1]);
-        
-
     fNEvents += 1;
 }
 

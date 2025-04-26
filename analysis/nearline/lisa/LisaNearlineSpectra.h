@@ -88,26 +88,27 @@ class LisaNearlineSpectra : public FairTask
         Long64_t wr_rate; 
         Long64_t saved_wr =  0; 
 
-        // Directories
+        // ::: Directories
         TDirectory* dir_lisa;
 
+        //  Stats
         TDirectory* dir_stats;
         TDirectory* dir_rates;
-
+        //  Energy
         TDirectory* dir_energy;
         TDirectory* dir_febex;
         TDirectory* dir_energy_MWD;
         TDirectory* dir_febex_channel;
         TDirectory* dir_MWD_channel;
-
+        //  Traces
         TDirectory* dir_traces;
-
+        //  Drift
         TDirectory* dir_drift;
         TDirectory* dir_febex_drift;
         TDirectory* dir_febex_ch_drift;
         TDirectory* dir_MWD_drift;
         TDirectory* dir_MWD_ch_drift;
-
+        //  Gates LISA only
         TDirectory* dir_gates;
         TDirectory* dir_febex_gates;
         TDirectory* dir_MWD_gates;
