@@ -5,7 +5,7 @@
 #define LISA_DAQ 0      //diplay all the channels from the boards (mapped up to 3 boards)
 #define LISA_2x2 1      //display with pareesksha 2x2 mapping system
 // WR syncronization
-#define WR_ENABLED 0
+#define WR_ENABLED 1
 
 extern "C"
 {
@@ -31,7 +31,7 @@ void lisa_online_general()
 
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
-    TString fExpName = "lisa";
+    TString fExpName = "shiyan";
 
     //:::::::::Here you define commonly used path
     TString c4Root_path = "/u/gandolfo/c4/c4Root";
@@ -59,14 +59,14 @@ void lisa_online_general()
     //TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
 
     //___O F F L I N E
-    //TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/x7_241Am/multiple_cards_test/cards_A_B_C_D_E_F_G_0306.lmd"; 
     //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/run_0075_0001.lmd";  //data with only lisa
-    TString filename = "/u/gandolfo/data/lustre/despec/lisa/LISAmp_10layers_0006_*.lmd";  //data with only lisa
+    TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/S092_shiyan/";
+    TString filename = inputpath + "test_0003_*.lmd";  //data with only lisa
 
     //___O U T P U T - only used if switched on 
     //TString outputpath = "/u/gandolfo/data/lustre/despec/lisa/3x3_board_1/";
     TString outputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";
-    TString outputFilename = outputpath + "run_0006_0001.lmd";
+    TString outputFilename = outputpath + "run_0003_0001.lmd";
 
     //:::::::Create online run
     Int_t refresh = 10; // Refresh rate for online histograms
@@ -93,13 +93,11 @@ void lisa_online_general()
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
     if (LISA_2x2)
     {
-        TLisaConfiguration::SetMappingFile(config_path + "/Lisa_All_Boards.txt");
-        //TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Detector_Map_names.txt");
-        TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching_cards.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
-        //TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_DAQtest.txt");
-        TLisaConfiguration::SetGMFileMWD(config_path + "/Lisa_GainMatching_cards.txt");
-
+        TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_All_Boards.txt");
+        //TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map_names.txt");
+        TLisaConfiguration::SetGMFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_cards.txt");
+        TLisaConfiguration::SetGMFileMWD("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_cards.txt");
+        TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
     }
 
     if (LISA_DAQ)
@@ -166,11 +164,11 @@ void lisa_online_general()
     
     // Set Ranges for online histos
     //  Channel Energy ::::: (h1_energy_)
-    TLisaConfiguration::SetEnergyRange(0,5000);
+    TLisaConfiguration::SetEnergyRange(30000,50000);
     TLisaConfiguration::SetEnergyBin(1000);
 
     //  MWD histos
-    TLisaConfiguration::SetEnergyRangeMWD(0,20);
+    TLisaConfiguration::SetEnergyRangeMWD(0,100);
     TLisaConfiguration::SetEnergyBinMWD(1000);
 
     //:::: LISA WR Time Difference :::::: (h1_wr_diff)
@@ -178,10 +176,10 @@ void lisa_online_general()
     TLisaConfiguration::SetWrDiffBin(20000);
 
     //:::: LISA Traces Time and Amplitude Ranges :::::: (h1_traces_layer_ch)
-    TLisaConfiguration::SetTracesRange(0,8);
-    TLisaConfiguration::SetTracesBin(800);
-    TLisaConfiguration::SetAmplitudeMin(7500);
-    TLisaConfiguration::SetAmplitudeMax(8400);
+    TLisaConfiguration::SetTracesRange(0,4.9);
+    TLisaConfiguration::SetTracesBin(390);
+    //TLisaConfiguration::SetAmplitudeMin(7500);
+    //TLisaConfiguration::SetAmplitudeMax(8400);
     
 
     //::::::: Initialise
