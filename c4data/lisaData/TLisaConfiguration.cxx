@@ -62,7 +62,6 @@ int TLisaConfiguration::min_energy_MWD_GM = 0;
 int TLisaConfiguration::max_energy_MWD_GM = 10000;
 int TLisaConfiguration::bin_energy_MWD_GM = 500;
 
-
 // ::: WR
 long TLisaConfiguration::min_wr_diff = 0;
 long TLisaConfiguration::max_wr_diff = 200;
@@ -95,6 +94,10 @@ int TLisaConfiguration::trace_on = 1;
 // ::: Set detector to analyze for gates
 int TLisaConfiguration::xpos_gate = 0;
 int TLisaConfiguration::ypos_gate = 0;
+
+// ::: Set time ranges fro drift
+int TLisaConfiguration::drift_min = 0;
+int TLisaConfiguration::drift_max = 10;
 
 
 
