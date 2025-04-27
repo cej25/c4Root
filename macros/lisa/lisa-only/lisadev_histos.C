@@ -157,11 +157,10 @@ void lisadev_histos()
 
     //::::::::: Set experiment configurations
     TExperimentConfiguration::SetExperimentStart(1745599200000000000);
-        //1715734200000000000);
+    //1715734200000000000);
     
     //::::::::: Set ranges for histos :::::::::::::::
     // ::: LISA
-
     //  Channel Energy ::::: (h1_energy_)
     TLisaConfiguration::SetEnergyRange(30000,50000);
     TLisaConfiguration::SetEnergyBin(1000);
@@ -182,6 +181,9 @@ void lisadev_histos()
 
     TLisaConfiguration::SetWrRateRange(0,3600);
     TLisaConfiguration::SetWrRateBin(3600);
+
+    // Drift
+    TLisaConfiguration::SetDriftRange(0,100);
 
     // ::: FRS
     TFrsConfiguration::Set_Z_range(0,80);
@@ -218,6 +220,8 @@ void lisadev_histos()
         run->AddTask(nearlinefrs);
     }
 
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    // ::: Correlation Spectra :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     if(LISA_ON && FRS_ON)
     {
         if(FRS_LISA_CORRELATIONS)
@@ -226,12 +230,6 @@ void lisadev_histos()
             run->AddTask(LISA_FRS_corr);
         }
     }
-
-
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    // ::: Correlation Spectra :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-    // FrsLisa
 
     // Initialise
     run->Init();

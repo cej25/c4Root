@@ -2,10 +2,14 @@
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define LISA_ON 1
-#define FRS_ON 1
-#define WR_ENABLED 0
+#define FRS_ON 0
+#define WR_ENABLED 1
 
-// Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/
+// Define for online if testing or during experient
+#define TEST 1
+#define EXP 0
+
+// Define FRS setup.C file - FRS should provide; place in /config/shiyan/frs/
 extern "C"
 {
     #include "../../config/pareeksha/frs/setup_Fragment_conv_updated.C"
@@ -16,7 +20,6 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_unpack_t eventheaders;
     EXT_STR_h101_lisa_onion_t lisa;
     EXT_STR_h101_frs_onion_t frs;
-
 
 } EXT_STR_h101;
 
@@ -30,17 +33,18 @@ void shiyan_online()
     } 
 
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
-    //:::::::::Experiment name
-    TString fExpName = "pareeksha";
+    
+    // ::: Experiment name - this set the path for all the config
+    TString fExpName = "shiyan";
 
-    //:::::::::Here you define commonly used path
+    // ::: Here you define commonly used path
     TString c4Root_path = "/u/gandolfo/c4/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
 
-    //:::::::::Macro timing
+    // ::: Macro timing
     TString cRunId = Form("%04d", fRunId);
     TString cExpId = Form("%03d", fExpId);
     TStopwatch timer;
@@ -50,24 +54,29 @@ void shiyan_online()
     oss << std::put_time(&tm, "%Y%m%d_%H%M%S");
     timer.Start();
     
-    //:::::::::::Debug info - set level
+    // ::: Debug info - set level
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
 
-    //::::::::::P A T H   O F   F I L E  to read
-    //___O N L I N E
-    //TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
-    //TString filename = "trans://lxg1257:6000"; // time stitched
+    // ::: P A T H   O F   F I L E  to read
+    
+    // ::: ONLINE READING
+    TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
+    //TString filename = "trans://lxg1257:6000"; Set to stiched data
+    
+    // ::: OFFLINE READING - For testing
+    //TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/S092_shiyan/";                   // Data from LISA
+    //TString inputpath = "/u/gandolfo/data/lustre/nustar/profi/sec_s160feb25/stitched/";     // Data from FRS
+    //TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0075_0001.lmd"; 
 
-    //___O F F L I N E
-    TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0075_0001.lmd"; 
+    //TString filename = inputpath + "test_0003_*.lmd";
+    //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
 
-    //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/";
-    TString outputFileName = outputpath + "pareeksha_test.root";
-
-
-    //:::::::Create online run
+    // ::: OUTPUT - does not write a tree if it is not set layer
+    TString outputpath = "/u/gandolfo/data/test_c4/"; //testing
+    TString outputFileName = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";
+    
+    // ::: Create online run
     Int_t refresh = 10; // Refresh rate for online histograms
     Int_t port = 2020;
      
@@ -75,13 +84,13 @@ void shiyan_online()
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
-    run->SetSink(new FairRootFileSink(outputFileName)); 
+    run->SetSink(new FairRootFileSink(outputFileName));   // if commented - don't write after termintion
     run->ActivateHttpServer(refresh, port);
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
     run->AddObject(histograms);
      
-    //:::::::Take ucesb input and create source
+    // ::: Take ucesb input and create source
     EXT_STR_h101 ucesb_struct;
     TString ntuple_options = "UNPACK,RAW"; //level of unpacked data (UNPACK,RAW,CAL)
     UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
@@ -89,7 +98,7 @@ void shiyan_online()
     run->SetSource(source);
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    //::::: F R S parameter - Initialise
+    // ::: F R S parameter - Initialise
 
     TFRSParameter* frs = new TFRSParameter();
     TMWParameter* mw = new TMWParameter();
@@ -105,50 +114,49 @@ void shiyan_online()
     TFrsConfiguration::SetParameters(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    //:::: G A T E S - Initialise 
-
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    //:::: C O R R E L A T I O N S - Initialise 
+    // ::: C O R R E L A T I O N S - Initialise 
   
     TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations_tight.dat");
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    //:::::: C O N F I G    F O R   D E T E C T O R - Load
+    // ::: C O N F I G    F O R   S Y S T E M S   - Load
+    
     // ::: Exp config
-    TExperimentConfiguration::SetExperimentStart(1715734200000000000);//Start of pareeksha with primary beam: 15 May 00:50
+    TExperimentConfiguration::SetExperimentStart(1745599200000000000); // Start of test for shiyan 25/04 at 18:40
     // for S100, 3 and 4. for 2025+ 12 and 13.
     TExperimentConfiguration::SetBOSTrig(3);
     TExperimentConfiguration::SetEOSTrig(4);
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
 
     // ::: FRS config
-    TFrsConfiguration::SetConfigPath(config_path + "/pareeksha/frs/");
-    TFrsConfiguration::SetCrateMapFile(config_path + "/../pareeksha/frs/crate_map.txt");
-    TFrsConfiguration::SetTravMusDriftFile(config_path + "/../pareeksha/frs/TM_Drift_fragments.txt");
-    TFrsConfiguration::SetZ1DriftFile(config_path + "/../pareeksha/frs/Z1_Drift_fragments.txt");
-    TFrsConfiguration::SetAoQDriftFile(config_path + "/../pareeksha/frs/AoQ_Drift_fragments.txt");
+    TFrsConfiguration::SetConfigPath(config_path + "/frs/");
+    TFrsConfiguration::SetCrateMapFile(config_path +  "/frs/crate_map.txt");
+    TFrsConfiguration::SetTravMusDriftFile(config_path +  "/frs/TM_Drift_fragments.txt");
+    TFrsConfiguration::SetZ1DriftFile(config_path + "/frs/Z1_Drift_fragments.txt");
+    TFrsConfiguration::SetAoQDriftFile(config_path +  "/frs/AoQ_Drift_fragments.txt");
 
     // ::: Lisa config
-    //TLisaConfiguration::SetMappingFile(config_path + "/Lisa_5x5_shiyan.txt");
-    TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map_names.txt");
+    if ( TEST )
+    {
+        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_All_Boards.txt");
+        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_cards.txt");
+        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
+    }
+    if ( EXP )
+    {
+        TLisaConfiguration::SetMappingFile(config_path + "/Lisa_5x5_shiyan.txt");
+        TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching_shiyan.txt");
+        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_shiyan.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path +  "/lisa/Lisa_MWD_Parameters_shiyan.txt");
+    }
 
-    TLisaConfiguration::SetGMFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_pareeksha.txt");
-    TLisaConfiguration::SetGMFileMWD("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_pareeksha.txt");
-    TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_DAQtest.txt");
 
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    //:::::: C O N F I G    F O R  H I S T O S
-    // White Rabbit
-    TLisaConfiguration::SetWrDiffRange(0,100000000);
-    TLisaConfiguration::SetWrDiffBin(50000);
-    TLisaConfiguration::SetWrRateRange(0,900);
-    TLisaConfiguration::SetWrRateBin(900);
-    
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // S U B S Y S T E M S
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
    
-    // ::::::: READ Subsystem  ::::::::
+    // ::: READ Subsystem :::
 
     UnpackReader* unpackheader = new UnpackReader((EXT_STR_h101_unpack*)&ucesb_struct.eventheaders, offsetof(EXT_STR_h101, eventheaders));
     source->AddReader(unpackheader);
@@ -156,6 +164,7 @@ void shiyan_online()
     if (LISA_ON)
     {
         LisaReader* unpacklisa = new LisaReader((EXT_STR_h101_lisa_onion*)&ucesb_struct.lisa, offsetof(EXT_STR_h101, lisa));
+
         unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
         source->AddReader(unpacklisa);
     }
@@ -168,9 +177,9 @@ void shiyan_online()
     }   
 
 
-    // ::::::: CALIBRATE Subsystem  ::::::::
+    // ::: CALIBRATE Subsystem  :::
 
-    if (LISA_ON) //this is analysis and calibration together
+    if (LISA_ON)    //this is analysis and calibration together
     {
         LisaRaw2Ana* lisaraw2ana = new LisaRaw2Ana();
         lisaraw2ana->SetOnline(true);
@@ -188,9 +197,7 @@ void shiyan_online()
         run->AddTask(calfrs);
     }
 
-
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
-    // ::::::: ANALYSE FRS  ::::::::
+    // ::: ANALYSE FRS  :::
 
     if (FRS_ON)
     {
@@ -208,11 +215,7 @@ void shiyan_online()
     {
         LisaOnlineSpectra* onlinelisa = new LisaOnlineSpectra();
         run->AddTask(onlinelisa);
-
     }
-
-    TFrsConfiguration::Set_Z_range(50,75);
-    TFrsConfiguration::Set_AoQ_range(2.3,3.0);
     
     if (FRS_ON)
     {
@@ -226,10 +229,7 @@ void shiyan_online()
         //run->AddTask(frscalspec);
     }
 
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: Correlation Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-    // FrsLisa
 
     // if (LISA_ON && FRS_ON)
     // {
@@ -237,6 +237,32 @@ void shiyan_online()
     //     run->AddTask(lisafrscorr);
     // }
 
+    // ::: CONFIGURATIONS FOR ONLINE HISTOS :::
+    // ::: FRS
+    TFrsConfiguration::Set_Z_range(50,75);
+    TFrsConfiguration::Set_AoQ_range(2.3,3.0);
+
+    // ::: LISA
+    //      Channel Energy 
+    TLisaConfiguration::SetEnergyRange(30000,50000);
+    TLisaConfiguration::SetEnergyBin(1000);
+
+    //      MWD histos
+    TLisaConfiguration::SetEnergyRangeMWD(0,100);
+    TLisaConfiguration::SetEnergyBinMWD(1000);
+
+    //      LISA WR Time Difference 
+    TLisaConfiguration::SetWrDiffRange(0,100000000);
+    TLisaConfiguration::SetWrDiffBin(20000);
+    TLisaConfiguration::SetWrRateRange(0,900);
+    TLisaConfiguration::SetWrRateBin(900);
+
+    //      LISA Traces Ranges 
+    TLisaConfiguration::SetTracesRange(0,4.9);
+    TLisaConfiguration::SetTracesBin(390);
+    //TLisaConfiguration::SetAmplitudeMin(7500);
+    //TLisaConfiguration::SetAmplitudeMax(8400);
+   
     // Initialise
     run->Init();
 
@@ -247,7 +273,7 @@ void shiyan_online()
     cout << "\n\n" << endl;
     
     // create sink object before run starts    
-    FairSink* sf = FairRunOnline::Instance()->GetSink();
+    //FairSink* sf = FairRunOnline::Instance()->GetSink();
 
     // Run
     run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev);
@@ -260,7 +286,6 @@ void shiyan_online()
     cout << "CPU used: " << cpuUsage << endl;
     std::cout << std::endl << std::endl;
     std::cout << "Macro finished successfully." << std::endl;
-    //std::cout << "Output file is " << outputFilename << std::endl;
+    //std::cout << "Output file is " << outputFileName << std::endl;
     std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl << std::endl;
-   // gApplication->Terminate(0);
 }
