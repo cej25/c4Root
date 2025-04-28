@@ -107,7 +107,7 @@ class TLisaConfiguration
         static void SetWrRateRange(int min_wr_r, int max_wr_r) { min_wr_rate = min_wr_r; max_wr_rate = max_wr_r; }
         static void SetWrRateBin(int bin_wr_r) { bin_wr_rate = bin_wr_r; }
 
-        static void SetTracesRange(int min_tr, int max_tr) { min_traces = min_tr; max_traces = max_tr; }
+        static void SetTracesRange(double min_tr, double max_tr) { min_traces = min_tr; max_traces = max_tr; }
         static void SetTracesBin(int bin_tr) { bin_traces = bin_tr; }
         
         static void SetWREnable(bool wr_en) { wr_enable = wr_en; }
@@ -152,8 +152,8 @@ class TLisaConfiguration
         static int min_wr_rate;
         static int max_wr_rate;
         static int bin_wr_rate;
-        static int min_traces;
-        static int max_traces;
+        static double min_traces;
+        static double max_traces;
         static int bin_traces;
         static int fMin_dE_LISA1_gate;
         static int fMax_dE_LISA1_gate;

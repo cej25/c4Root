@@ -1,8 +1,8 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define LISA_ON 1
-#define FRS_ON 0
+#define LISA_ON 0
+#define FRS_ON 1
 #define WR_ENABLED 1
 
 // Define for online if testing or during experient
@@ -12,7 +12,7 @@
 // Define FRS setup.C file - FRS should provide; place in /config/shiyan/frs/
 extern "C"
 {
-    #include "../../config/pareeksha/frs/setup_Fragment_conv_updated.C"
+    #include "../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -61,16 +61,16 @@ void shiyan_online()
     // ::: P A T H   O F   F I L E  to read
     
     // ::: ONLINE READING
-    TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
+    //TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
     //TString filename = "trans://lxg1257:6000"; Set to stiched data
     
     // ::: OFFLINE READING - For testing
     //TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/S092_shiyan/";                   // Data from LISA
-    //TString inputpath = "/u/gandolfo/data/lustre/nustar/profi/sec_s160feb25/stitched/";     // Data from FRS
+    TString inputpath = "/u/gandolfo/data/lustre/nustar/profi/sec_s160feb25/stitched/";     // Data from FRS
     //TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0075_0001.lmd"; 
 
     //TString filename = inputpath + "test_0003_*.lmd";
-    //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
+    TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
 
     // ::: OUTPUT - does not write a tree if it is not set layer
     TString outputpath = "/u/gandolfo/data/test_c4/"; //testing
