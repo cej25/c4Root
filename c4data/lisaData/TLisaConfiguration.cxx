@@ -71,8 +71,8 @@ int TLisaConfiguration::max_wr_rate = 200;
 int TLisaConfiguration::bin_wr_rate = 50;
 
 // ::: Traces time 
-int TLisaConfiguration::min_traces = 0;
-int TLisaConfiguration::max_traces = 2000;
+double TLisaConfiguration::min_traces = 0;
+double TLisaConfiguration::max_traces = 2000.0;
 int TLisaConfiguration::bin_traces = 2000;
 
 // ::: Gates

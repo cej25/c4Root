@@ -14,15 +14,16 @@
 // If you want to have trace histos
 #define TRACE_ON 1
 
-#define FRS_ON 0
+#define FRS_ON 1
 #define FRS_LISA_CORRELATIONS 0
 
 #define WR_ENABLED 1
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
 
+// :::  Define FRS setup.C file - FRS should provide; place in /config/shiyan/frs/setup/
 extern "C"
 {
-    #include "../../config/shiyan/frs/setup_115_023_2025_s1calib_conv.C"
+    #include "../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -62,12 +63,13 @@ void shiyan_histos()
 
     // ::: P A T H   O F   F I L E  to read
     TString inputpath = "/u/gandolfo/data/test_c4/shiyan_test/";
-    TString filename = inputpath + "test_0003_tree.root";  
-    //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  
+    //TString filename = inputpath + "test_0003_tree.root";  
+    TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  
     
     // ::: O U T P U T
     TString outputpath = "/u/gandolfo/data/test_c4/shiyan_test/"; //test output
-    TString outputFilename = outputpath + "test_0003_histo_shiyan.root";
+    //TString outputFilename = outputpath + "test_0003_histo_shiyan.root";
+    TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_histo.root";
 
 
     FairRunAna* run = new FairRunAna();
