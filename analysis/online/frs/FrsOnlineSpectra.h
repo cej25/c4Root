@@ -76,6 +76,9 @@ class FrsOnlineSpectra : public FairTask
         TCanvas* c_z_compare;
         TCanvas* c_z_compare_mhtdc;
         TCanvas* c_dE_compare;
+        TCanvas* c_beta_compare_mhtdc;
+        TCanvas* c_AoQ_compare_mhtdc;
+        TCanvas* c_PID_compare_mhtdc;
 
         // TDirectory structure
         TFolder* histograms;
@@ -237,6 +240,7 @@ class FrsOnlineSpectra : public FairTask
         TH2* h2_Z21_vs_AoQs1s2_corr_mhtdc;
         TH2* h2_Z21_vs_Z22_mhtdc;
         TH2* h2_Z21_vs_Z41_mhtdc;
+        TH2* h2_Z21_vs_dE21_mhtdc;
         TH2* h2_Z41_vs_AoQs2s4_Zsame_mhtdc;
         TH2* h2_x2_vs_AoQs2s4_Zsame_mhtdc;
         TH2* h2_x4_vs_AoQs2s4_Zsame_mhtdc;
