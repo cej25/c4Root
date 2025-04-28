@@ -240,10 +240,12 @@ class FrsOnlineSpectra : public FairTask
         TH2* h2_Z41_vs_AoQs2s4_Zsame_mhtdc;
         TH2* h2_x2_vs_AoQs2s4_Zsame_mhtdc;
         TH2* h2_x4_vs_AoQs2s4_Zsame_mhtdc;
+        TH2* h2_x2_vs_AoQs1s2_mhtdc;
         TH2* h2_x2_vs_AoQs2s4_mhtdc;
         TH2* h2_x4_vs_AoQs2s4_mhtdc;
         TH2* h2_dEdegoQ_vs_Z41_mhtdc;
         TH2* h2_dEdegZ41_vs_Z41_mhtdc;
+        TH2* h2_a2_vs_AoQs1s2_mhtdc;
         TH2* h2_a2_vs_AoQs2s4_mhtdc;
         TH2* h2_a4_vs_AoQs2s4_mhtdc;
         TH2* h2_Z41_vs_dE42_mhtdc;
@@ -251,10 +253,12 @@ class FrsOnlineSpectra : public FairTask
         TH2* h2_SC42dE_vs_AoQs2s4_mhtdc; // !! not added yet !!
         TH2* h2_SC41dE_vs_Z41_mhtdc; // !! not added yet !! 
         TH2* h2_SC42dE_vs_Z41_mhtdc; // !! not added yet !!
+        TH2* h2_x2_vs_Z21_mhtdc;
         TH2* h2_x2_vs_Z41_mhtdc;
         TH2* h2_x4_vs_Z41_mhtdc;
         TH2* h2_dE41_vs_x2_mhtdc; // !! not added yet !!
         TH2* h2_dE41_vs_x4_mhtdc; // !! not added yet !!
+        TH2* h2_Z21_vs_Sc21E_mhtdc;
         TH2* h2_Z41_vs_Sc21E_mhtdc;
         std::vector<TH2*> h2_Z41_vs_AoQs2s4_Zsame_gate_mhtdc;
         std::vector<TH2*> h2_Z41_vs_Z42_Zsame_gate_mhtdc;
