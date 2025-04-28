@@ -117,7 +117,7 @@ InitStatus FrsOnlineSpectra::Init()
         mgr->Register("FRS", "FRS Online Directory", dir_frs, false); // allow other tasks to find this
         //mgr->Register("Travel MUSIC", "Travel MUSIC Directory", dir_travmus, false);
         histograms->Add(dir_frs);
-    } else //dir_travmus = dir_frs->mkdir("Travel MUSIC");
+    }// else dir_travmus = dir_frs->mkdir("Travel MUSIC");
 
     // TUM
     //dir_travmus_tac = dir_travmus->mkdir("TAC"); // travel music is "special" for now..
@@ -340,6 +340,7 @@ InitStatus FrsOnlineSpectra::Init()
         h2_a2_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_a2_vs_AoQs2s4_mhtdc", "A/Q (S2-S4) vs. AngleX (S2) (MHTDC)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a2, frs_config->fMax_a2, "A/Q (S2-S4)", "AngleX (S2)");
         h2_a4_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_a4_vs_AoQs2s4_mhtdc", "A/Q (S2-S4) vs. AngleX (S4) (MHTDC)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a4, frs_config->fMax_a4, "A/Q (S2-S4)", "AngleX (S4)");
         h2_Z41_vs_dE42_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_Z41_vs_dE2_mhtdc", "Z41 vs. dE in MUSIC 42 (MHTDC)", 400, frs_config->fMin_Z, frs_config->fMax_Z, 250, frs_config->fMin_dE_Music2, frs_config->fMax_dE_Music2, "Z (MUSIC 41)", "dE in MUSIC 42");
+        h2_Z21_vs_dE21_mhtdc = MakeTH2(dir_mhtdc_2d_S1S2, "D", "h2_Z21_vs_dE21_mhtdc", "Z21 vs. dE in MUSIC 21 (MHTDC)", 400, frs_config->fMin_Z, frs_config->fMax_Z, 250, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "Z (MUSIC 21)", "dE in MUSIC 21");
         h2_SC41dE_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_SC41dE_vs_AoQ_mhtdc", "A/Q (S2-S4) vs. dE in SC41 (MHTDC)", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000., "A/Q (S2-S4)", "dE in SC41");
         h2_SC42dE_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_SC42dE_vs_AoQ_mhtdc", "A/Q (S2-S4) vs. dE in SC42 (MHTDC)", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000., "A/Q (S2-S4)", "dE in SC42");
         h2_SC41dE_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_SC41dE_vs_Z41_mhtdc", "Z41 vs. dE in SC41 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, 0., 4000., "Z41", "dE in SC41");
@@ -472,7 +473,7 @@ InitStatus FrsOnlineSpectra::Init()
 
 
 
-    h1_wr_frs_travmus = MakeTH1(dir_frs, "I", "h1_wr_frs_travmus", "White Rabbit dT FRS - Travel MUSIC", 500, -3000, -1000);
+    h1_wr_frs_travmus = MakeTH1(dir_scalers, "I", "h1_wr_frs_travmus", "White Rabbit dT FRS - Travel MUSIC", 500, -3000, -1000);
 
     c_z_compare = new TCanvas("c_z_compare", "Z from 3 x MUSIC", 650, 350);
     c_z_compare->Divide(1, 3);
@@ -509,6 +510,34 @@ InitStatus FrsOnlineSpectra::Init()
     h1_Z42_mhtdc->Draw();
     c_z_compare_mhtdc->cd(0);
     dir_mhtdc->Append(c_z_compare_mhtdc);
+
+    // LISA : compare beta s1s2 and s2s4
+    c_beta_compare_mhtdc = new TCanvas("c_beta_compare_mhtdc", " Beta S1S2 and S2S4", 650, 350);
+    c_beta_compare_mhtdc->Divide(1,2);
+    c_beta_compare_mhtdc->cd(1);
+    h1_beta_s1s2_mhtdc->Draw();
+    c_beta_compare_mhtdc->cd(2);
+    h1_beta_s2s4_mhtdc->Draw();
+    dir_mhtdc->Append(c_beta_compare_mhtdc);
+
+    // LISA : compare beta AoQ s1s2 and s2s4
+    c_AoQ_compare_mhtdc = new TCanvas("c_AoQ_compare_mhtdc", " AoQ S1S2 and S2S4", 650, 350);
+    c_AoQ_compare_mhtdc->Divide(1,2);
+    c_AoQ_compare_mhtdc->cd(1);
+    h1_AoQs1s2_mhtdc->Draw();
+    c_AoQ_compare_mhtdc->cd(2);
+    h1_AoQs2s4_mhtdc->Draw();
+    dir_mhtdc->Append(c_AoQ_compare_mhtdc);
+
+    // LISA : compare beta PID s1s2 and s2s4
+    c_PID_compare_mhtdc = new TCanvas("c_PID_compare_mhtdc", " PID S1S2 and S2S4", 650, 350);
+    c_PID_compare_mhtdc->Divide(1,2);
+    c_PID_compare_mhtdc->cd(1);
+    h2_Z21_vs_AoQs1s2_corr_mhtdc->Draw();
+    c_PID_compare_mhtdc->cd(2);
+    h2_Z41_vs_AoQs2s4_corr_mhtdc->Draw();
+    dir_mhtdc->Append(c_PID_compare_mhtdc);
+    
     // :::::::::::::::::::: //
 
     // Register command to reset histograms
@@ -745,20 +774,22 @@ void FrsOnlineSpectra::Exec(Option_t* option)
             //if (z21_mhtdc.at(i) > 0 && AoQ_s1s2_mhtdc.at(i) > 0 && TMath::Abs(z21_mhtdc.at(i) - z22_mhtdc.at(i)) < 0.4) h2_Z21_vs_AoQs1s2_Zsame_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), z21_mhtdc.at(i));
             //if (AoQ_s1s2_mhtdc.at(i) > 0 && TMath::Abs(z21_mhtdc.at(i) - z22_mhtdc.at(i)) < 0.4) h2_x2_vs_AoQs1s2_Zsame_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_x2());
             //if (AoQ_s1s2_mhtdc.at(i) > 0 && TMath::Abs(z21_mhtdc.at(i) - z22_mhtdc.at(i)) < 0.4) h2_x4_vs_AoQs1s2_Zsame_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_x4());
-            if (AoQ_s1s2_mhtdc.at(i) > 0) h2_x2_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_x2());
+            if (AoQ_s1s2_mhtdc.at(i) > 0) h2_x2_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_x2()); //LISA
             //if (AoQ_s1s2_mhtdc.at(i) > 0) h2_x4_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_x4());
             //if (z21_mhtdc.at(i) > 0 && dEdegoQ_mhtdc.at(i) > 0) h2_dEdegoQ_vs_Z21_mhtdc->Fill(z21_mhtdc.at(i), dEdegoQ_mhtdc.at(i));
             //if (z21_mhtdc.at(i) > 0 && dEdeg_z41_mhtdc.at(i) > 0) h2_dEdegZ21_vs_Z21_mhtdc->Fill(z21_mhtdc.at(i), dEdeg_z21_mhtdc.at(i));
-            if (AoQ_s1s2_mhtdc.at(i) > 0) h2_a2_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_a2());
+            if (AoQ_s1s2_mhtdc.at(i) > 0) h2_a2_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_a2()); //LISA
             //if (AoQ_s1s2_mhtdc.at(i) > 0) h2_a4_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_a4());
             //if (z21_mhtdc.at(i) > 0 && hitItem.Get_music42_dE() > 0) h2_Z21_vs_dE42_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_music42_dE());
             //if (AoQ_s1s2_mhtdc.at(i) != 0 && hitItem.Get_sci_e_41() != 0) h2_SC41dE_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_sci_e_41());
             //if (AoQ_s1s2_mhtdc.at(i) != 0 && hitItem.Get_sci_e_42() != 0) h2_SC42dE_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_sci_e_42());
             //if (z21_mhtdc.at(i) != 0 && hitItem.Get_sci_e_41() != 0) h2_SC41dE_vs_Z21_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_sci_e_41());
             //if (z21_mhtdc.at(i) != 0 && hitItem.Get_sci_e_42() != 0) h2_SC42dE_vs_Z21_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_sci_e_42()); 
-            if (z21_mhtdc.at(i) > 0) h2_x2_vs_Z21_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_ID_x2());
+            if (z21_mhtdc.at(i) > 0) h2_x2_vs_Z21_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_ID_x2()); //LISA
             // if (z21_mhtdc.at(i) > 0) h2_x4_vs_Z21_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_ID_x4());
-            if (z21_mhtdc.at(i) > 0 && hitItem.Get_sci_e_21()) h2_Z21_vs_Sc21E_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_sci_e_21());
+            if (z21_mhtdc.at(i) > 0 && hitItem.Get_sci_e_21()) h2_Z21_vs_Sc21E_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_sci_e_21()); //LISA
+            if (z21_mhtdc.at(i) > 0 && hitItem.Get_music21_dE() > 0) h2_Z21_vs_dE21_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_music21_dE());
+
         }
 
         if (frs_config->plot_mhtdc_1d)
@@ -775,11 +806,13 @@ void FrsOnlineSpectra::Exec(Option_t* option)
     // S2-S4 plotting
     for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
     {
+        
+
         if (frs_config->plot_mhtdc_2d)
         {   
             if (z41_mhtdc.at(i) > 0 && AoQ_s2s4_mhtdc.at(i) > 0) h2_Z41_vs_AoQs2s4_mhtdc->Fill(AoQ_s2s4_mhtdc.at(i), z41_mhtdc.at(i));
             if (z41_mhtdc.at(i) > 0 && AoQ_corr_s2s4_mhtdc.at(i) > 0) h2_Z41_vs_AoQs2s4_corr_mhtdc->Fill(AoQ_corr_s2s4_mhtdc.at(i), z41_mhtdc.at(i));
-            if (z41_mhtdc.at(i) > 0 && z42_mhtdc.at(i) > 0) h2_Z41_vs_Z42_mhtdc->Fill(z41_mhtdc.at(i), z42_mhtdc.at(i));
+            if (z41_mhtdc.at(i) > 0 && z42_mhtdc.at(i) > 0) h2_Z41_vs_Z42_mhtdc->Fill(z41_mhtdc.at(i), z42_mhtdc.at(i));              
             if (z41_mhtdc.at(i) > 0 && AoQ_s2s4_mhtdc.at(i) > 0 && TMath::Abs(z41_mhtdc.at(i) - z42_mhtdc.at(i)) < 0.4) h2_Z41_vs_AoQs2s4_Zsame_mhtdc->Fill(AoQ_s2s4_mhtdc.at(i), z41_mhtdc.at(i));
             if (AoQ_s2s4_mhtdc.at(i) > 0 && TMath::Abs(z41_mhtdc.at(i) - z42_mhtdc.at(i)) < 0.4) h2_x2_vs_AoQs2s4_Zsame_mhtdc->Fill(AoQ_s2s4_mhtdc.at(i), hitItem.Get_ID_x2());
             if (AoQ_s2s4_mhtdc.at(i) > 0 && TMath::Abs(z41_mhtdc.at(i) - z42_mhtdc.at(i)) < 0.4) h2_x4_vs_AoQs2s4_Zsame_mhtdc->Fill(AoQ_s2s4_mhtdc.at(i), hitItem.Get_ID_x4());
@@ -797,6 +830,11 @@ void FrsOnlineSpectra::Exec(Option_t* option)
             if (z41_mhtdc.at(i) > 0) h2_x2_vs_Z41_mhtdc->Fill(z41_mhtdc.at(i), hitItem.Get_ID_x2());
             if (z41_mhtdc.at(i) > 0) h2_x4_vs_Z41_mhtdc->Fill(z41_mhtdc.at(i), hitItem.Get_ID_x4());
             if (z41_mhtdc.at(i) > 0 && hitItem.Get_sci_e_21()) h2_Z41_vs_Sc21E_mhtdc->Fill(z41_mhtdc.at(i), hitItem.Get_sci_e_21());
+            for (int j = 0; j < AoQ_s1s2_mhtdc.size(); j++)
+            {
+                if (z21_mhtdc.at(j) > 0 && z41_mhtdc.at(i) > 0) h2_Z21_vs_Z41_mhtdc->Fill(z21_mhtdc.at(j), z41_mhtdc.at(i)); 
+            }
+        
         }
 
         if (frs_config->plot_mhtdc_1d)
@@ -831,6 +869,7 @@ void FrsOnlineSpectra::Exec(Option_t* option)
                 h1_b4->Fill(hitItem.Get_ID_b4());
             }
         }
+
     }
     
 

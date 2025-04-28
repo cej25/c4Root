@@ -239,8 +239,9 @@ void shiyan_online()
 
     // ::: CONFIGURATIONS FOR ONLINE HISTOS :::
     // ::: FRS
-    TFrsConfiguration::Set_Z_range(50,75);
-    TFrsConfiguration::Set_AoQ_range(2.3,3.0);
+    TFrsConfiguration::Set_Z_range(10,60);
+    TFrsConfiguration::Set_AoQ_range(1.8,3.5);
+    TFrsConfiguration::Set_dE_Music1_range(0,64000);
 
     // ::: LISA
     //      Channel Energy 
