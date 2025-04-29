@@ -78,6 +78,12 @@ class FrsNearlineSpectra : public FairTask
         TDirectory* dir_rates;
         TDirectory* dir_drifts;
         TDirectory* dir_tac_1d;
+        TDirectory* dir_tac_S1S2;
+        TDirectory* dir_tac_1d_S1S2;
+        TDirectory* dir_tac_2d_S1S2;
+        TDirectory* dir_tac_S2S4;
+        TDirectory* dir_tac_1d_S2S4;
+        TDirectory* dir_tac_2d_S2S4;
         TDirectory* dir_tac_2d;
         TDirectory* dir_gated_tac;
         TDirectory* dir_Z41vsAoQs2s4_tac;
@@ -87,6 +93,12 @@ class FrsNearlineSpectra : public FairTask
         TDirectory* dir_dEdegZ41vsZ41_tac;
         TDirectory* dir_mhtdc_1d;
         TDirectory* dir_mhtdc_2d;
+        TDirectory* dir_mhtdc_S1S2; 
+        TDirectory* dir_mhtdc_1d_S1S2;
+        TDirectory* dir_mhtdc_2d_S1S2;
+        TDirectory* dir_mhtdc_S2S4;
+        TDirectory* dir_mhtdc_1d_S2S4;
+        TDirectory* dir_mhtdc_2d_S2S4;
         TDirectory* dir_gated_mhtdc;
         TDirectory* dir_Z41vsAoQs2s4_mhtdc;
         TDirectory* dir_Z41vsZ42_mhtdc;
@@ -253,25 +265,31 @@ class FrsNearlineSpectra : public FairTask
         TH2* h2_Z21_vs_AoQs1s2_mhtdc;
         TH2* h2_Z21_vs_AoQs1s2_corr_mhtdc;
         TH2* h2_Z21_vs_Z22_mhtdc;
+        TH2* h2_Z21_vs_Z41_mhtdc;
         TH2* h2_Z41_vs_AoQs2s4_Zsame_mhtdc;
         TH2* h2_x4_vs_AoQs2s4_Zsame_mhtdc;
         TH2* h2_x2_vs_AoQs2s4_Zsame_mhtdc;
         TH2* h2_x2_vs_AoQs2s4_mhtdc;
+        TH2* h2_x2_vs_AoQs1s2_mhtdc;
         TH2* h2_x4_vs_AoQs2s4_mhtdc;
         TH2* h2_dEdegoQ_vs_Z41_mhtdc;
         TH2* h2_dEdegZ41_vs_Z41_mhtdc;
+        TH2* h2_a2_vs_AoQs1s2_mhtdc;
         TH2* h2_a2_vs_AoQs2s4_mhtdc;
         TH2* h2_a4_vs_AoQs2s4_mhtdc;
         TH2* h2_Z41_vs_dE42_mhtdc;
+        TH2* h2_Z21_vs_dE21_mhtdc;
         TH2* h2_x2_vs_x4_mhtdc;
         TH2* h2_SC41dE_vs_AoQs2s4_mhtdc;
         TH2* h2_SC42dE_vs_AoQs2s4_mhtdc; // !! not added yet !!
         TH2* h2_SC41dE_vs_Z41_mhtdc; // !! not added yet !! 
         TH2* h2_SC42dE_vs_Z41_mhtdc; // !! not added yet !!
         TH2* h2_dE41_vs_ToF_mhtdc;
+        TH2* h2_x2_vs_Z21_mhtdc;
         TH2* h2_x2_vs_Z41_mhtdc;
         TH2* h2_x4_vs_Z41_mhtdc;
         TH2* h2_Z41_vs_Sc21E_mhtdc;
+        TH2* h2_Z21_vs_Sc21E_mhtdc;
         std::vector<TH2*> h2_Z41_vs_AoQs2s4_Z41AoQs2s4_gate_mhtdc;
         std::vector<TH2*> h2_Z41_vs_Z42_Z41AoQs2s4_gate_mhtdc;
         std::vector<TH2*> h2_x2_vs_AoQs2s4_Z41AoQs2s4_gate_mhtdc;

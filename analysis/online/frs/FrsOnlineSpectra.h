@@ -79,6 +79,7 @@ class FrsOnlineSpectra : public FairTask
         TCanvas* c_beta_compare_mhtdc;
         TCanvas* c_AoQ_compare_mhtdc;
         TCanvas* c_PID_compare_mhtdc;
+        
 
         // TDirectory structure
         TFolder* histograms;

@@ -74,7 +74,7 @@ void shiyan_online()
 
     // ::: OUTPUT - does not write a tree if it is not set layer
     TString outputpath = "/u/gandolfo/data/test_c4/"; //testing
-    TString outputFileName = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";
+    TString outputFileName = outputpath + "output_online.root";
     
     // ::: Create online run
     Int_t refresh = 10; // Refresh rate for online histograms
@@ -260,7 +260,7 @@ void shiyan_online()
 
     //      LISA Traces Ranges 
     TLisaConfiguration::SetTracesRange(0,4.9);
-    TLisaConfiguration::SetTracesBin(390);
+    TLisaConfiguration::SetTracesBin(490);
     //TLisaConfiguration::SetAmplitudeMin(7500);
     //TLisaConfiguration::SetAmplitudeMax(8400);
    

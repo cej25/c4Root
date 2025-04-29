@@ -1,7 +1,7 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define LISA_ON 1
+#define LISA_ON 0
         //LISA_ANA displays only energy and traces; LISA_CAL displays stats,energy,traces. Choose one.
         //Note that if FRS 1, LISA_CAL is needed. 
 #define LISA_ANA 0
@@ -163,6 +163,10 @@ void shiyan_histos()
 
     //::::::::: Set experiment configurations
     TExperimentConfiguration::SetExperimentStart(1745599200000000000);
+    // ::: FRS
+    TFrsConfiguration::Set_Z_range(10,60);
+    TFrsConfiguration::Set_AoQ_range(1.8,3.5);
+    TFrsConfiguration::Set_dE_Music1_range(0,64000);
     
     //::::::::: Set ranges for histos :::::::::::::::
     // ::: LISA
@@ -175,8 +179,8 @@ void shiyan_histos()
     TLisaConfiguration::SetEnergyBinMWD(1000);
 
     //  Traces Time and Amplitude Ranges 
-    TLisaConfiguration::SetTracesRange(0,4);
-    TLisaConfiguration::SetTracesBin(400);
+    TLisaConfiguration::SetTracesRange(0,5);
+    TLisaConfiguration::SetTracesBin(500);
     TLisaConfiguration::SetAmplitudeMin(7900);
     TLisaConfiguration::SetAmplitudeMax(8700);
 
@@ -189,10 +193,6 @@ void shiyan_histos()
 
     // Drift
     TLisaConfiguration::SetDriftRange(0,100);
-
-    // ::: FRS
-    TFrsConfiguration::Set_Z_range(0,80);
-    TFrsConfiguration::Set_AoQ_range(1,10);
 
     // :::: ENABLE SYSTEMS  ::::::::::::::::::::::::::::::::::::::::
     if(TRACE_ON)
