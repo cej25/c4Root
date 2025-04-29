@@ -106,12 +106,23 @@ InitStatus FrsNearlineSpectra::Init()
         found_dir_frs = false;
     }
 
-    if (frs_config->plot_tac_1d || frs_config->plot_tac_2d) dir_tac = dir_frs->mkdir("TAC");
-    if (frs_config->plot_mhtdc_1d || frs_config->plot_mhtdc_2d) dir_mhtdc = dir_frs->mkdir("MHTDC");
+    if (frs_config->plot_tac_1d || frs_config->plot_tac_2d)
+    {
+        dir_tac = dir_frs->mkdir("TAC");
+        dir_tac_S1S2 = dir_tac->mkdir("S1S2");
+        dir_tac_S2S4 = dir_tac->mkdir("S2S4");
+
+    } 
+    if (frs_config->plot_mhtdc_1d || frs_config->plot_mhtdc_2d)
+    {
+        dir_mhtdc = dir_frs->mkdir("MHTDC");
+        dir_mhtdc_S1S2 = dir_mhtdc->mkdir("S1S2");
+        dir_mhtdc_S2S4 = dir_mhtdc->mkdir("S2S4");
+    } 
     
     dir_scalers = dir_frs->mkdir("Scalers");
-    dir_rates = dir_frs->mkdir("Rate Monitors");
-    dir_drifts = dir_frs->mkdir("Drift Monitors");
+    dir_rates = dir_frs->mkdir("Rate_Monitors");
+    dir_drifts = dir_frs->mkdir("Drift_Monitors");
 
     // ::::: Scalers :::::::: // on/off with switch?
     h1_tpat = MakeTH1(dir_scalers, "I", "h1_tpat", "Trigger Pattern", 20, 0, 20, "Trigger Pattern", kRed-3, kBlack);
@@ -121,38 +132,40 @@ InitStatus FrsNearlineSpectra::Init()
 
     if (frs_config->plot_tac_2d)
     {
-        dir_tac_2d = dir_tac->mkdir("2D PIDs");
+        //dir_tac_2d = dir_tac->mkdir("2D_PIDs");
+        dir_tac_2d_S1S2 = dir_tac_S1S2->mkdir("2D_PIDs");
+        dir_tac_2d_S2S4 = dir_tac_S2S4->mkdir("2D_PIDs");
 
         // directory, type, name, title, xbins, xmin, xmax, ybins, ymin, ymax, xtitle, ytitle
-        h2_Z41_vs_AoQs2s4 = MakeTH2(dir_tac_2d, "D", "h2_Z41_vs_AoQs2s4", "Z41 vs. A/Q (S2-S4)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S2-S4)", "Z41");
-        h2_Z41_vs_AoQs2s4_driftcorr = MakeTH2(dir_tac_2d, "D", "h2_Z41_vs_Ao4s2s4_driftcorr", "Z41 vs. A/Q (S2-S4) DriftCorr", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q DriftCorr", "Z DriftCorr(MUSIC 1)");
-        h2_Z41_vs_AoQs2s4_corr = MakeTH2(dir_tac_2d, "D", "h2_Z_vs_AoQs2s4_corr", "Z41 vs. A/Q corr (S2-S4)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z,"A/Q (S2-S4)", "Z41");
-        h2_Z41_vs_Z42 = MakeTH2(dir_tac_2d, "D", "h2_Z41_vs_Z42", "Z41 vs. Z42", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z41", "Z42");
-        h2_Z41_vs_AoQs2s4_Zsame = MakeTH2(dir_tac_2d, "D", "h2_Z41_vs_AoQs2s4_Zsame", "Z41 vs. A/Q (S2-S4) [ABS (Z41 - Z42) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S2-S4)", "Z41");
-        h2_x2_vs_AoQs2s4_Zsame = MakeTH2(dir_tac_2d, "D", "h2_x2_vs_AoQs2s4_Zsame", "x2 vs A/Q (S2-S4) - [ABS(Z41 - Z42) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q (S2-S4)", "S2 x-position");
-        h2_x4_vs_AoQs2s4_Zsame = MakeTH2(dir_tac_2d, "D", "h2_x4_vs_AoQs2s4_Zsame", "x4 vs A/Q (S2-S4) - [ABS(Z41 - Z42) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q (S2-S4)", "S4 x-position");
-        h2_x2_vs_AoQs2s4 = MakeTH2(dir_tac_2d, "D", "h2_x2_vs_AoQs2s4", "x2 vs. A/Q (S2-S4)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q (S2-S4)", "S2 x-position");
-        h2_x4_vs_AoQs2s4 = MakeTH2(dir_tac_2d, "D", "h2_x4_vs_AoQs2s4", "x4 vs. A/Q (S2-S4)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q (S2-S4)", "S4 x-position");
-        h2_dEdegoQ_vs_Z41 = MakeTH2(dir_tac_2d, "D", "h2_dEdegoQ_vs_Z41", "dE in S2 degrader / Q vs. Z41", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ, "dE in S2 degrader / Q", "Z41");
-        h2_dEdegZ41_vs_Z41 = MakeTH2(dir_tac_2d, "D", "h2_dEdegZ41_vs_Z41", "dE in S2 degrader vs. Z41", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, frs_config->fMin_dE, frs_config->fMax_dE, "dE in S2 degrader", "Z41");
-        h2_a2_vs_AoQs2s4 = MakeTH2(dir_tac_2d, "D", "h2_a2_vs_AoQs2s4", "A/Q (S2-S4) vs. AngleX (S2)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a2, frs_config->fMax_a2, "A/Q (S2-S4)", "AngleX (S2)");
-        h2_a4_vs_AoQs2s4 = MakeTH2(dir_tac_2d, "D", "h2_a4_vs_AoQs2s4", "A/Q (S2-S4) vs. AngleX (S4)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a4, frs_config->fMax_a4, "A/Q (S2-S4)", "AngleX (S4)");
-        h2_Z41_vs_dE42 = MakeTH2(dir_tac_2d, "D", "h2_Z41_vs_dE42", "Z41 vs. dE in MUSIC 42", 400, frs_config->fMin_Z, frs_config->fMax_Z, 250, frs_config->fMin_dE_Music2, frs_config->fMax_dE_Music2, "Z41", "dE in MUSIC 42");
-        h2_x2_vs_x4 = MakeTH2(dir_tac_2d, "D", "h2_x2_vs_x4", "x2 vs. x4", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_x4, frs_config->fMax_x4, "S2 x-position", "S4 x-position");
-        h2_SC41dE_vs_AoQs2s4 = MakeTH2(dir_tac_2d, "D", "h2_SC41dE_vs_AoQs2s4", "A/Q (S2-S4) vs. dE in SC41", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000., "A/Q (S2-S4)", "dE in SC41");
-        h2_SC42dE_vs_AoQs2s4 = MakeTH2(dir_tac_2d, "D", "h2_SC42dE_vs_AoQs2s4", "A/Q (S2-S4) vs. dE in SC42", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000., "A/Q (S2-S4)", "dE in SC42");
-        h2_SC41dE_vs_Z41 = MakeTH2(dir_tac_2d, "D", "h2_SC41dE_vs_Z41", "Z41 vs. dE in SC41", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, 0., 4000., "Z41", "dE in SC41");
-        h2_SC42dE_vs_Z41 = MakeTH2(dir_tac_2d, "D", "h2_SC42dE_vs_Z41", "Z41 vs. dE in SC42", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, 0., 4000., "Z41", "dE in SC42");
-        h2_dE41_vs_ToF_21_41 = MakeTH2(dir_tac_2d, "D", "h2_dE41_vs_ToF_21_41", "ToF 21 - 41 vs. dE in MUSIC 41", 2000, 0., 70000., 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "Time of Flight (21 - 41)", "dE in MUSIC 41");
-        h2_x2_vs_Z41 = MakeTH2(dir_tac_2d, "D", "h2_x2_vs_Z41", "x2 vs. Z41", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x2, frs_config->fMax_x2, "Z41", "S2 x-position");
-        h2_x4_vs_Z41 = MakeTH2(dir_tac_2d, "D", "h2_x4_vs_Z41", "x4 vs. Z41", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x4, frs_config->fMax_x4, "Z41", "S4 x-position");
-        h2_dE41_vs_x2 = MakeTH2(dir_tac_2d, "D", "h2_dE41_vs_x2", "x2 vs. dE in MUSIC 41", 200, frs_config->fMin_x2, frs_config->fMax_x2, 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "S2 x-position", "dE in MUSIC 41");
-        h2_dE41_vs_x4 = MakeTH2(dir_tac_2d, "D", "h2_dE41_vs_x4", "x4 vs. dE in MUSIC 41", 200, frs_config->fMin_x4, frs_config->fMax_x4, 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "S4 x-position", "dE in MUSIC 41");
-        h2_x2_vs_a2 = MakeTH2(dir_tac_2d, "D", "h2_x2_vs_a2", "x2 vs. AngleX (S2)", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_a2, frs_config->fMax_a2, "S2 x-position", "AngleX (S2)");
-        h2_y2_vs_b2 = MakeTH2(dir_tac_2d, "D", "h2_y2_vs_b2", "y2 vs. AngleY (S2)", 200, frs_config->fMin_y2, frs_config->fMax_y2, 200, frs_config->fMin_b2, frs_config->fMax_b2, "S2 y-position", "AngleY (S2)");
-        h2_x4_vs_a4 = MakeTH2(dir_tac_2d, "D", "h2_x4_vs_a4", "x4 vs. AngleX (S4)", 200, frs_config->fMin_x4, frs_config->fMax_x4, 200, frs_config->fMin_a4, frs_config->fMax_a4, "S4 x-position", "AngleX (S4)");
-        h2_y4_vs_b4 = MakeTH2(dir_tac_2d, "D", "h2_y4_vs_b4", "y4 vs. AngleY (S4)", 200, frs_config->fMin_y4, frs_config->fMax_y4, 200, frs_config->fMin_b4, frs_config->fMax_b4, "S4 y-position", "AngleY (S4)");
-        h2_Z41_vs_Sc21E = MakeTH2(dir_tac_2d, "D", "h2_Z41_vs_Sc21E", "Z41 vs. SQRT(Sc21_L * Sc21_R)", 300, frs_config->fMin_Z, frs_config->fMax_Z, 400, 0., 4000., "Z41", "Sc21 E");
+        h2_Z41_vs_AoQs2s4 = MakeTH2(dir_tac_2d_S2S4, "D", "h2_Z41_vs_AoQs2s4", "Z41 vs. A/Q (S2-S4)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S2-S4)", "Z41");
+        h2_Z41_vs_AoQs2s4_driftcorr = MakeTH2(dir_tac_2d_S2S4, "D", "h2_Z41_vs_Ao4s2s4_driftcorr", "Z41 vs. A/Q (S2-S4) DriftCorr", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q DriftCorr", "Z DriftCorr(MUSIC 1)");
+        h2_Z41_vs_AoQs2s4_corr = MakeTH2(dir_tac_2d_S2S4, "D", "h2_Z_vs_AoQs2s4_corr", "Z41 vs. A/Q corr (S2-S4)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z,"A/Q (S2-S4)", "Z41");
+        h2_Z41_vs_Z42 = MakeTH2(dir_tac_2d_S2S4, "D", "h2_Z41_vs_Z42", "Z41 vs. Z42", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z41", "Z42");
+        h2_Z41_vs_AoQs2s4_Zsame = MakeTH2(dir_tac_2d_S2S4, "D", "h2_Z41_vs_AoQs2s4_Zsame", "Z41 vs. A/Q (S2-S4) [ABS (Z41 - Z42) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S2-S4)", "Z41");
+        h2_x2_vs_AoQs2s4_Zsame = MakeTH2(dir_tac_2d_S2S4, "D", "h2_x2_vs_AoQs2s4_Zsame", "x2 vs A/Q (S2-S4) - [ABS(Z41 - Z42) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q (S2-S4)", "S2 x-position");
+        h2_x4_vs_AoQs2s4_Zsame = MakeTH2(dir_tac_2d_S2S4, "D", "h2_x4_vs_AoQs2s4_Zsame", "x4 vs A/Q (S2-S4) - [ABS(Z41 - Z42) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q (S2-S4)", "S4 x-position");
+        h2_x2_vs_AoQs2s4 = MakeTH2(dir_tac_2d_S2S4, "D", "h2_x2_vs_AoQs2s4", "x2 vs. A/Q (S2-S4)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q (S2-S4)", "S2 x-position");
+        h2_x4_vs_AoQs2s4 = MakeTH2(dir_tac_2d_S2S4, "D", "h2_x4_vs_AoQs2s4", "x4 vs. A/Q (S2-S4)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q (S2-S4)", "S4 x-position");
+        h2_dEdegoQ_vs_Z41 = MakeTH2(dir_tac_2d_S2S4, "D", "h2_dEdegoQ_vs_Z41", "dE in S2 degrader / Q vs. Z41", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ, "dE in S2 degrader / Q", "Z41");
+        h2_dEdegZ41_vs_Z41 = MakeTH2(dir_tac_2d_S2S4, "D", "h2_dEdegZ41_vs_Z41", "dE in S2 degrader vs. Z41", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, frs_config->fMin_dE, frs_config->fMax_dE, "dE in S2 degrader", "Z41");
+        h2_a2_vs_AoQs2s4 = MakeTH2(dir_tac_2d_S2S4, "D", "h2_a2_vs_AoQs2s4", "A/Q (S2-S4) vs. AngleX (S2)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a2, frs_config->fMax_a2, "A/Q (S2-S4)", "AngleX (S2)");
+        h2_a4_vs_AoQs2s4 = MakeTH2(dir_tac_2d_S2S4, "D", "h2_a4_vs_AoQs2s4", "A/Q (S2-S4) vs. AngleX (S4)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a4, frs_config->fMax_a4, "A/Q (S2-S4)", "AngleX (S4)");
+        h2_Z41_vs_dE42 = MakeTH2(dir_tac_2d_S2S4, "D", "h2_Z41_vs_dE42", "Z41 vs. dE in MUSIC 42", 400, frs_config->fMin_Z, frs_config->fMax_Z, 250, frs_config->fMin_dE_Music2, frs_config->fMax_dE_Music2, "Z41", "dE in MUSIC 42");
+        h2_x2_vs_x4 = MakeTH2(dir_tac_2d_S2S4, "D", "h2_x2_vs_x4", "x2 vs. x4", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_x4, frs_config->fMax_x4, "S2 x-position", "S4 x-position");
+        h2_SC41dE_vs_AoQs2s4 = MakeTH2(dir_tac_2d_S2S4, "D", "h2_SC41dE_vs_AoQs2s4", "A/Q (S2-S4) vs. dE in SC41", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000., "A/Q (S2-S4)", "dE in SC41");
+        h2_SC42dE_vs_AoQs2s4 = MakeTH2(dir_tac_2d_S2S4, "D", "h2_SC42dE_vs_AoQs2s4", "A/Q (S2-S4) vs. dE in SC42", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000., "A/Q (S2-S4)", "dE in SC42");
+        h2_SC41dE_vs_Z41 = MakeTH2(dir_tac_2d_S2S4, "D", "h2_SC41dE_vs_Z41", "Z41 vs. dE in SC41", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, 0., 4000., "Z41", "dE in SC41");
+        h2_SC42dE_vs_Z41 = MakeTH2(dir_tac_2d_S2S4, "D", "h2_SC42dE_vs_Z41", "Z41 vs. dE in SC42", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, 0., 4000., "Z41", "dE in SC42");
+        h2_dE41_vs_ToF_21_41 = MakeTH2(dir_tac_2d_S2S4, "D", "h2_dE41_vs_ToF_21_41", "ToF 21 - 41 vs. dE in MUSIC 41", 2000, 0., 70000., 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "Time of Flight (21 - 41)", "dE in MUSIC 41");
+        h2_x2_vs_Z41 = MakeTH2(dir_tac_2d_S2S4, "D", "h2_x2_vs_Z41", "x2 vs. Z41", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x2, frs_config->fMax_x2, "Z41", "S2 x-position");
+        h2_x4_vs_Z41 = MakeTH2(dir_tac_2d_S2S4, "D", "h2_x4_vs_Z41", "x4 vs. Z41", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x4, frs_config->fMax_x4, "Z41", "S4 x-position");
+        h2_dE41_vs_x2 = MakeTH2(dir_tac_2d_S2S4, "D", "h2_dE41_vs_x2", "x2 vs. dE in MUSIC 41", 200, frs_config->fMin_x2, frs_config->fMax_x2, 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "S2 x-position", "dE in MUSIC 41");
+        h2_dE41_vs_x4 = MakeTH2(dir_tac_2d_S2S4, "D", "h2_dE41_vs_x4", "x4 vs. dE in MUSIC 41", 200, frs_config->fMin_x4, frs_config->fMax_x4, 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "S4 x-position", "dE in MUSIC 41");
+        h2_x2_vs_a2 = MakeTH2(dir_tac_2d_S1S2, "D", "h2_x2_vs_a2", "x2 vs. AngleX (S2)", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_a2, frs_config->fMax_a2, "S2 x-position", "AngleX (S2)");
+        h2_y2_vs_b2 = MakeTH2(dir_tac_2d_S1S2, "D", "h2_y2_vs_b2", "y2 vs. AngleY (S2)", 200, frs_config->fMin_y2, frs_config->fMax_y2, 200, frs_config->fMin_b2, frs_config->fMax_b2, "S2 y-position", "AngleY (S2)");
+        h2_x4_vs_a4 = MakeTH2(dir_tac_2d_S2S4, "D", "h2_x4_vs_a4", "x4 vs. AngleX (S4)", 200, frs_config->fMin_x4, frs_config->fMax_x4, 200, frs_config->fMin_a4, frs_config->fMax_a4, "S4 x-position", "AngleX (S4)");
+        h2_y4_vs_b4 = MakeTH2(dir_tac_2d_S2S4, "D", "h2_y4_vs_b4", "y4 vs. AngleY (S4)", 200, frs_config->fMin_y4, frs_config->fMax_y4, 200, frs_config->fMin_b4, frs_config->fMax_b4, "S4 y-position", "AngleY (S4)");
+        h2_Z41_vs_Sc21E = MakeTH2(dir_tac_2d_S2S4, "D", "h2_Z41_vs_Sc21E", "Z41 vs. SQRT(Sc21_L * Sc21_R)", 300, frs_config->fMin_Z, frs_config->fMax_Z, 400, 0., 4000., "Z41", "Sc21 E");
 
         // Gated
         if (!FrsGates.empty())
@@ -243,122 +256,132 @@ InitStatus FrsNearlineSpectra::Init()
 
     if (frs_config->plot_tac_1d)
     {   
-        dir_tac_1d = dir_tac->mkdir("1D Spectra");
+        dir_tac_1d_S1S2 = dir_tac_S1S2->mkdir("1D_Spectra");
+        dir_tac_1d_S2S4 = dir_tac_S2S4->mkdir("1D_Spectra");
 
         // preset wide ranges to "always" see peak, in case there's something funky with the FRS
-        h1_Z21 = MakeTH1(dir_tac_1d, "D", "h1_Z21", "Z21", 500, 10, 100, "Z21", kPink-3, kBlue+2);
-        h1_Z22 = MakeTH1(dir_tac_1d, "D", "h1_Z22", "Z22", 500, 10, 100, "Z22", kPink-3, kBlue+2);
-        h1_Z41 = MakeTH1(dir_tac_1d, "D", "h1_Z41", "Z41", 500, 10, 100, "Z41", kPink-3, kBlue+2);
+        h1_Z21 = MakeTH1(dir_tac_1d_S1S2, "D", "h1_Z21", "Z21", 500, 10, 100, "Z21", kPink-3, kBlue+2);
+        h1_Z22 = MakeTH1(dir_tac_1d_S1S2, "D", "h1_Z22", "Z22", 500, 10, 100, "Z22", kPink-3, kBlue+2);
+        h1_Z41 = MakeTH1(dir_tac_1d_S2S4, "D", "h1_Z41", "Z41", 500, 10, 100, "Z41", kPink-3, kBlue+2);
         // other drifts soon^tm?
-        h1_Z41_driftcorr = MakeTH1(dir_tac_1d, "D", "h1_Z_driftcorr", "Z41 DriftCorr", 500, 10, 100, "Z41", kPink-3, kBlue+2);
-        h1_Z42 = MakeTH1(dir_tac_1d, "D", "h1_Z42", "Z42", 500, 10, 100, "Z42", kPink-3, kBlue+2);
-        h1_Z43 = MakeTH1(dir_tac_1d, "D", "h1_Z43", "Z43", 500, 10, 100, "Z43", kPink-3, kBlue+2);
-        h1_AoQs1s2 = MakeTH1(dir_tac_1d, "D", "h1_AoQs1s2", "A/Q (S1-S2)", 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2); 
-        h1_AoQs2s4 = MakeTH1(dir_tac_1d, "D", "h1_AoQs2s4", "A/Q (S2-S4)", 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2); 
-        h1_AoQs2s4_driftcorr = MakeTH1(dir_tac_1d, "D", "h1_AoQs2s4_driftcorr", "A/Q (S2-S4) DriftCorr", 500, 1, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2); 
-        h1_AoQs1s2_corr = MakeTH1(dir_tac_1d, "D", "h1_AoQs1s2_corr", "A/Q corr (S1-S2)", 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2);
-        h1_AoQs2s4_corr = MakeTH1(dir_tac_1d, "D", "h1_AoQs2s4_corr", "A/Q corr (S2-S4)", 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2);
-        h1_x1 = MakeTH1(dir_tac_1d, "D", "h1_x1", "S1 x-position", 200, -100, 100, "S1 x-position", kYellow-7, kBlack);
-        h1_x2 = MakeTH1(dir_tac_1d, "D", "h1_x2", "S2 x-position", 200, -100, 100, "S2 x-position", kYellow-7, kBlack);
-        h1_x4 = MakeTH1(dir_tac_1d, "D", "h1_x4", "S4 x-position", 200, -100, 100, "S4 x-position",kYellow-7, kBlack);
-        h1_a1 = MakeTH1(dir_tac_1d, "D", "h1_a1", "AngleX S1", 200, -100, 100, "AngleX S1", kYellow-7, kBlack);
-        h1_a2 = MakeTH1(dir_tac_1d, "D", "h1_a2", "AngleX S2", 200, -100, 100, "AngleX S2", kYellow-7, kBlack);
-        h1_a4 = MakeTH1(dir_tac_1d, "D", "h1_a4", "AngleX S4", 200, -100, 100, "AngleX S4", kYellow-7, kBlack);
-        h1_y1 = MakeTH1(dir_tac_1d, "D", "h1_y1", "S1 y-position", 200, -100, 100, "S1 y-position", kYellow-7, kBlack);
-        h1_y2 = MakeTH1(dir_tac_1d, "D", "h1_y2", "S2 y-position", 200, -100, 100, "S2 y-position", kYellow-7, kBlack);
-        h1_y4 = MakeTH1(dir_tac_1d, "D", "h1_y4", "S4 y-position", 200, -100, 100, "S4 y-position", kYellow-7, kBlack);
-        h1_b1 = MakeTH1(dir_tac_1d, "D", "h1_b1", "AngleY S1", 200, -100, 100, "AngleY S1", kYellow-7, kBlack);
-        h1_b2 = MakeTH1(dir_tac_1d, "D", "h1_b2", "AngleY S2", 200, -100, 100, "AngleY S2", kYellow-7, kBlack);
-        h1_b4 = MakeTH1(dir_tac_1d, "D", "h1_b4", "AngleY S4", 200, -100, 100, "AngleY S4", kYellow-7, kBlack);
-        h1_beta_s1s2 = MakeTH1(dir_tac_1d, "D", "h1_beta_s1s2", "Beta (S1-S2)", 500, 0.0, 1.0, "Beta (S1-S2)", kPink-3, kBlue+2);
-        h1_beta_s2s4 = MakeTH1(dir_tac_1d, "D", "h1_beta_s2s4", "Beta (S2-S4)", 500, 0.0, 1.0, "Beta (S2-S4)", kPink-3, kBlue+2);
-        h1_dEdegoQ = MakeTH1(dir_tac_1d, "D", "h1_dEdegoQ", "dE in S2 degrader / Q", 1000, 0.0, 10.0, "dE / Q", kPink-3, kBlue+2);
-        h1_dEdegZ41 = MakeTH1(dir_tac_1d, "D", "h1_dEdegZ41", "dE in S2 degrader", 1000, 0.0, 1000., "dEdegZ41", kPink-3, kBlue+2);
-        for (int i = 0; i < 2; i++) h1_rho[i] = MakeTH1(dir_tac_1d, "D", Form("h1_rho_%i", i), Form("rho %i", i), 100, 0.0, 1.0, Form("rho %i", i), kPink-3, kBlue+2); 
-        for (int i = 0; i < 2; i++) h1_brho[i] = MakeTH1(dir_tac_1d, "D", Form("h1_brho_%i", i), Form("brho %i", i), 100, 0.0, 1.0, Form("brho %i", i), kPink-3, kBlue+2);
-        h1_music21_dE = MakeTH1(dir_tac_1d, "D", "h1_music21_dE", "Energy loss in MUSIC 21", 1000, 0.0, 4000.0, "dE MUSIC 21", kPink-3, kBlue+2);
-        h1_music22_dE = MakeTH1(dir_tac_1d, "D", "h1_music22_dE", "Energy loss in MUSIC 22", 1000, 0.0, 4000.0, "dE MUSIC 22", kPink-3, kBlue+2);
-        h1_music21_dE_cor = MakeTH1(dir_tac_1d, "D", "h1_music21_dE_cor", "Energy loss (cor) in MUSIC 21", 4000, 0.0, 4000.0, "dE (cor) MUSIC 21", kPink-3, kBlue+2);
-        h1_music22_dE_cor = MakeTH1(dir_tac_1d, "D", "h1_music22_dE_cor", "Energy loss (cor) in MUSIC 22", 4000, 0.0, 4000.0, "dE (cor) MUSIC 22", kPink-3, kBlue+2);
-        h1_music41_dE = MakeTH1(dir_tac_1d, "D", "h1_music41_dE", "Energy loss in MUSIC 41", 1000, 0.0, 4000.0, "dE MUSIC 41", kPink-3, kBlue+2);
-        h1_music42_dE = MakeTH1(dir_tac_1d, "D", "h1_music42_dE", "Energy loss in MUSIC 42", 1000, 0.0, 4000.0, "dE MUSIC 42", kPink-3, kBlue+2);
-        h1_music41_dE_cor = MakeTH1(dir_tac_1d, "D", "h1_music41_dE_cor", "Energy loss (cor) in MUSIC 41", 4000, 0.0, 4000.0, "dE (cor) MUSIC 41", kPink-3, kBlue+2);
-        h1_music42_dE_cor = MakeTH1(dir_tac_1d, "D", "h1_music42_dE_cor", "Energy loss (cor) in MUSIC 42", 4000, 0.0, 4000.0, "dE (cor) MUSIC 42", kPink-3, kBlue+2);
+        h1_Z41_driftcorr = MakeTH1(dir_tac_1d_S2S4, "D", "h1_Z_driftcorr", "Z41 DriftCorr", 500, 10, 100, "Z41", kPink-3, kBlue+2);
+        h1_Z42 = MakeTH1(dir_tac_1d_S2S4, "D", "h1_Z42", "Z42", 500, 10, 100, "Z42", kPink-3, kBlue+2);
+        h1_Z43 = MakeTH1(dir_tac_1d_S2S4, "D", "h1_Z43", "Z43", 500, 10, 100, "Z43", kPink-3, kBlue+2);
+        h1_AoQs1s2 = MakeTH1(dir_tac_1d_S1S2, "D", "h1_AoQs1s2", "A/Q (S1-S2)", 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2); 
+        h1_AoQs2s4 = MakeTH1(dir_tac_1d_S2S4, "D", "h1_AoQs2s4", "A/Q (S2-S4)", 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2); 
+        h1_AoQs2s4_driftcorr = MakeTH1(dir_tac_1d_S2S4, "D", "h1_AoQs2s4_driftcorr", "A/Q (S2-S4) DriftCorr", 500, 1, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2); 
+        h1_AoQs1s2_corr = MakeTH1(dir_tac_1d_S1S2, "D", "h1_AoQs1s2_corr", "A/Q corr (S1-S2)", 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2);
+        h1_AoQs2s4_corr = MakeTH1(dir_tac_1d_S1S2, "D", "h1_AoQs2s4_corr", "A/Q corr (S2-S4)", 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2);
+        h1_x1 = MakeTH1(dir_tac_1d_S1S2, "D", "h1_x1", "S1 x-position", 200, -100, 100, "S1 x-position", kYellow-7, kBlack);
+        h1_x2 = MakeTH1(dir_tac_1d_S1S2, "D", "h1_x2", "S2 x-position", 200, -100, 100, "S2 x-position", kYellow-7, kBlack);
+        h1_x4 = MakeTH1(dir_tac_1d_S2S4, "D", "h1_x4", "S4 x-position", 200, -100, 100, "S4 x-position",kYellow-7, kBlack);
+        h1_a1 = MakeTH1(dir_tac_1d_S1S2, "D", "h1_a1", "AngleX S1", 200, -100, 100, "AngleX S1", kYellow-7, kBlack);
+        h1_a2 = MakeTH1(dir_tac_1d_S1S2, "D", "h1_a2", "AngleX S2", 200, -100, 100, "AngleX S2", kYellow-7, kBlack);
+        h1_a4 = MakeTH1(dir_tac_1d_S2S4, "D", "h1_a4", "AngleX S4", 200, -100, 100, "AngleX S4", kYellow-7, kBlack);
+        h1_y1 = MakeTH1(dir_tac_1d_S1S2, "D", "h1_y1", "S1 y-position", 200, -100, 100, "S1 y-position", kYellow-7, kBlack);
+        h1_y2 = MakeTH1(dir_tac_1d_S1S2, "D", "h1_y2", "S2 y-position", 200, -100, 100, "S2 y-position", kYellow-7, kBlack);
+        h1_y4 = MakeTH1(dir_tac_1d_S2S4, "D", "h1_y4", "S4 y-position", 200, -100, 100, "S4 y-position", kYellow-7, kBlack);
+        h1_b1 = MakeTH1(dir_tac_1d_S1S2, "D", "h1_b1", "AngleY S1", 200, -100, 100, "AngleY S1", kYellow-7, kBlack);
+        h1_b2 = MakeTH1(dir_tac_1d_S1S2, "D", "h1_b2", "AngleY S2", 200, -100, 100, "AngleY S2", kYellow-7, kBlack);
+        h1_b4 = MakeTH1(dir_tac_1d_S2S4, "D", "h1_b4", "AngleY S4", 200, -100, 100, "AngleY S4", kYellow-7, kBlack);
+        h1_beta_s1s2 = MakeTH1(dir_tac_1d_S1S2, "D", "h1_beta_s1s2", "Beta (S1-S2)", 500, 0.0, 1.0, "Beta (S1-S2)", kPink-3, kBlue+2);
+        h1_beta_s2s4 = MakeTH1(dir_tac_1d_S2S4, "D", "h1_beta_s2s4", "Beta (S2-S4)", 500, 0.0, 1.0, "Beta (S2-S4)", kPink-3, kBlue+2);
+        h1_dEdegoQ = MakeTH1(dir_tac_1d_S2S4, "D", "h1_dEdegoQ", "dE in S2 degrader / Q", 1000, 0.0, 10.0, "dE / Q", kPink-3, kBlue+2);
+        h1_dEdegZ41 = MakeTH1(dir_tac_1d_S2S4, "D", "h1_dEdegZ41", "dE in S2 degrader", 1000, 0.0, 1000., "dEdegZ41", kPink-3, kBlue+2);
+        for (int i = 0; i < 2; i++) h1_rho[i] = MakeTH1(dir_tac_1d_S2S4, "D", Form("h1_rho_%i", i), Form("rho %i", i), 100, 0.0, 1.0, Form("rho %i", i), kPink-3, kBlue+2); 
+        for (int i = 0; i < 2; i++) h1_brho[i] = MakeTH1(dir_tac_1d_S2S4, "D", Form("h1_brho_%i", i), Form("brho %i", i), 100, 0.0, 1.0, Form("brho %i", i), kPink-3, kBlue+2);
+        h1_music21_dE = MakeTH1(dir_tac_1d_S1S2, "D", "h1_music21_dE", "Energy loss in MUSIC 21", 1000, 0.0, 4000.0, "dE MUSIC 21", kPink-3, kBlue+2);
+        h1_music22_dE = MakeTH1(dir_tac_1d_S1S2, "D", "h1_music22_dE", "Energy loss in MUSIC 22", 1000, 0.0, 4000.0, "dE MUSIC 22", kPink-3, kBlue+2);
+        h1_music21_dE_cor = MakeTH1(dir_tac_1d_S1S2, "D", "h1_music21_dE_cor", "Energy loss (cor) in MUSIC 21", 4000, 0.0, 4000.0, "dE (cor) MUSIC 21", kPink-3, kBlue+2);
+        h1_music22_dE_cor = MakeTH1(dir_tac_1d_S1S2, "D", "h1_music22_dE_cor", "Energy loss (cor) in MUSIC 22", 4000, 0.0, 4000.0, "dE (cor) MUSIC 22", kPink-3, kBlue+2);
+        h1_music41_dE = MakeTH1(dir_tac_1d_S2S4, "D", "h1_music41_dE", "Energy loss in MUSIC 41", 1000, 0.0, 4000.0, "dE MUSIC 41", kPink-3, kBlue+2);
+        h1_music42_dE = MakeTH1(dir_tac_1d_S2S4, "D", "h1_music42_dE", "Energy loss in MUSIC 42", 1000, 0.0, 4000.0, "dE MUSIC 42", kPink-3, kBlue+2);
+        h1_music41_dE_cor = MakeTH1(dir_tac_1d_S2S4, "D", "h1_music41_dE_cor", "Energy loss (cor) in MUSIC 41", 4000, 0.0, 4000.0, "dE (cor) MUSIC 41", kPink-3, kBlue+2);
+        h1_music42_dE_cor = MakeTH1(dir_tac_1d_S2S4, "D", "h1_music42_dE_cor", "Energy loss (cor) in MUSIC 42", 4000, 0.0, 4000.0, "dE (cor) MUSIC 42", kPink-3, kBlue+2);
         
-        h1_sci_e_11 = MakeTH1(dir_tac_1d, "F", "h1_sci_e_11", "SCI 11 E", 4000, 0.0, 4000.0, "SCI 11 E", kPink-3, kBlue+2);
-        h1_sci_e_21 = MakeTH1(dir_tac_1d, "F", "h1_sci_e_21", "SCI 21 E", 4000, 0.0, 4000.0, "SCI 21 E", kPink-3, kBlue+2);
-        h1_sci_e_22 = MakeTH1(dir_tac_1d, "F", "h1_sci_e_22", "SCI 22 E", 4000, 0.0, 4000.0, "SCI 22 E", kPink-3, kBlue+2);
-        h1_sci_e_31 = MakeTH1(dir_tac_1d, "F", "h1_sci_e_31", "SCI 31 E", 4000, 0.0, 4000.0, "SCI 31 E", kPink-3, kBlue+2);
-        h1_sci_e_41 = MakeTH1(dir_tac_1d, "F", "h1_sci_e_41", "SCI 41 E", 4000, 0.0, 4000.0, "SCI 41 E", kPink-3, kBlue+2);
-        h1_sci_e_42 = MakeTH1(dir_tac_1d, "F", "h1_sci_e_42", "SCI 42 E", 4000, 0.0, 4000.0, "SCI 42 E", kPink-3, kBlue+2);
-        h1_sci_e_43 = MakeTH1(dir_tac_1d, "F", "h1_sci_e_43", "SCI 43 E", 4000, 0.0, 4000.0, "SCI 43 E", kPink-3, kBlue+2);
-        h1_sci_e_81 = MakeTH1(dir_tac_1d, "F", "h1_sci_e_81", "SCI 81 E", 4000, 0.0, 4000.0, "SCI 81 E", kPink-3, kBlue+2);
-        h1_sci_x_11 = MakeTH1(dir_tac_1d, "F", "h1_sci_x_11", "SCI 11 PosX", 4000, 0.0, 4000.0, "SCI 11 X", kYellow-7, kBlack);
-        h1_sci_x_21 = MakeTH1(dir_tac_1d, "F", "h1_sci_x_21", "SCI 21 PosX", 4000, 0.0, 4000.0, "SCI 21 X", kYellow-7, kBlack);
-        h1_sci_x_22 = MakeTH1(dir_tac_1d, "F", "h1_sci_x_22", "SCI 22 PosX", 4000, 0.0, 4000.0, "SCI 22 X", kYellow-7, kBlack);
-        h1_sci_x_31 = MakeTH1(dir_tac_1d, "F", "h1_sci_x_31", "SCI 31 PosX", 4000, 0.0, 4000.0, "SCI 31 X", kYellow-7, kBlack);
-        h1_sci_x_41 = MakeTH1(dir_tac_1d, "F", "h1_sci_x_41", "SCI 41 PosX", 4000, 0.0, 4000.0, "SCI 41 X", kYellow-7, kBlack);
-        h1_sci_x_42 = MakeTH1(dir_tac_1d, "F", "h1_sci_x_42", "SCI 42 PosX", 4000, 0.0, 4000.0, "SCI 42 X", kYellow-7, kBlack);
-        h1_sci_x_43 = MakeTH1(dir_tac_1d, "F", "h1_sci_x_43", "SCI 43 PosX", 4000, 0.0, 4000.0, "SCI 43 X", kYellow-7, kBlack);
-        h1_sci_x_81 = MakeTH1(dir_tac_1d, "F", "h1_sci_x_81", "SCI 81 PosX", 4000, 0.0, 4000.0, "SCI 81 X", kYellow-7, kBlack);
-        h1_sci_tof_11_21 = MakeTH1(dir_tac_1d, "F", "h1_sci_tof_11_21", "SCI TOF 11 - 21", 4000, 0.0, 200000.0, "SCI TOF 11 - 21", kPink-3, kBlue+2);
-        h1_sci_tof_11_21_calib = MakeTH1(dir_tac_1d, "F", "h1_sci_tof_11_21_calib", "SCI TOF 11 - 21 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 11 - 21 (Calib)", kPink-3, kBlue+2);
-        h1_sci_tof_21_41 = MakeTH1(dir_tac_1d, "F", "h1_sci_tof_21_41", "SCI TOF 21 - 41", 4000, 0.0, 200000.0, "SCI TOF 21 - 41", kPink-3, kBlue+2);
-        h1_sci_tof_21_41_calib = MakeTH1(dir_tac_1d, "F", "h1_sci_tof_21_41_calib", "SCI TOF 21 - 41 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 21 - 41 (Calib)", kPink-3, kBlue+2);
-        h1_sci_tof_21_42 = MakeTH1(dir_tac_1d, "F", "h1_sci_tof_21_42", "SCI TOF 21 - 42", 4000, 0.0, 200000.0, "SCI TOF 21 - 42", kPink-3, kBlue+2);
-        h1_sci_tof_21_42_calib = MakeTH1(dir_tac_1d, "F", "h1_sci_tof_21_42_calib", "SCI TOF 21 - 42 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 21 - 42 (Calib)", kPink-3, kBlue+2);
-        h1_sci_tof_21_81 = MakeTH1(dir_tac_1d, "F", "h1_sci_tof_21_81", "SCI TOF 21 - 81", 4000, 0.0, 200000.0, "SCI TOF 21 - 81", kPink-3, kBlue+2);
-        h1_sci_tof_21_81_calib = MakeTH1(dir_tac_1d, "F", "h1_sci_tof_21_81_calib", "SCI TOF 21 - 81 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 21 - 81 (Calib)", kPink-3, kBlue+2);
-        h1_sci_tof_22_41 = MakeTH1(dir_tac_1d, "F", "h1_sci_tof_22_41", "SCI TOF 22 - 41", 4000, 0.0, 200000.0, "SCI TOF 22 - 41", kPink-3, kBlue+2);
-        h1_sci_tof_22_41_calib = MakeTH1(dir_tac_1d, "F", "h1_sci_tof_22_41_calib", "SCI TOF 22 - 41 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 22 - 41 (Calib)", kPink-3, kBlue+2);
-        h1_sci_tof_22_81 = MakeTH1(dir_tac_1d, "F", "h1_sci_tof_22_81", "SCI TOF 22 - 81", 4000, 0.0, 200000.0, "SCI TOF 22 - 81", kPink-3, kBlue+2);
-        h1_sci_tof_22_81_calib = MakeTH1(dir_tac_1d, "F", "h1_sci_tof_22_81_calib", "SCI TOF 22 - 81 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 22 - 81 (Calib)", kPink-3, kBlue+2);
+        h1_sci_e_11 = MakeTH1(dir_tac_1d_S1S2, "F", "h1_sci_e_11", "SCI 11 E", 4000, 0.0, 4000.0, "SCI 11 E", kPink-3, kBlue+2);
+        h1_sci_e_21 = MakeTH1(dir_tac_1d_S1S2, "F", "h1_sci_e_21", "SCI 21 E", 4000, 0.0, 4000.0, "SCI 21 E", kPink-3, kBlue+2);
+        h1_sci_e_22 = MakeTH1(dir_tac_1d_S1S2, "F", "h1_sci_e_22", "SCI 22 E", 4000, 0.0, 4000.0, "SCI 22 E", kPink-3, kBlue+2);
+        h1_sci_e_31 = MakeTH1(dir_tac_1d_S1S2, "F", "h1_sci_e_31", "SCI 31 E", 4000, 0.0, 4000.0, "SCI 31 E", kPink-3, kBlue+2);
+        h1_sci_e_41 = MakeTH1(dir_tac_1d_S2S4, "F", "h1_sci_e_41", "SCI 41 E", 4000, 0.0, 4000.0, "SCI 41 E", kPink-3, kBlue+2);
+        h1_sci_e_42 = MakeTH1(dir_tac_1d_S2S4, "F", "h1_sci_e_42", "SCI 42 E", 4000, 0.0, 4000.0, "SCI 42 E", kPink-3, kBlue+2);
+        h1_sci_e_43 = MakeTH1(dir_tac_1d_S2S4, "F", "h1_sci_e_43", "SCI 43 E", 4000, 0.0, 4000.0, "SCI 43 E", kPink-3, kBlue+2);
+        h1_sci_e_81 = MakeTH1(dir_tac_1d_S2S4, "F", "h1_sci_e_81", "SCI 81 E", 4000, 0.0, 4000.0, "SCI 81 E", kPink-3, kBlue+2);
+        h1_sci_x_11 = MakeTH1(dir_tac_1d_S1S2, "F", "h1_sci_x_11", "SCI 11 PosX", 4000, 0.0, 4000.0, "SCI 11 X", kYellow-7, kBlack);
+        h1_sci_x_21 = MakeTH1(dir_tac_1d_S1S2, "F", "h1_sci_x_21", "SCI 21 PosX", 4000, 0.0, 4000.0, "SCI 21 X", kYellow-7, kBlack);
+        h1_sci_x_22 = MakeTH1(dir_tac_1d_S1S2, "F", "h1_sci_x_22", "SCI 22 PosX", 4000, 0.0, 4000.0, "SCI 22 X", kYellow-7, kBlack);
+        h1_sci_x_31 = MakeTH1(dir_tac_1d_S1S2, "F", "h1_sci_x_31", "SCI 31 PosX", 4000, 0.0, 4000.0, "SCI 31 X", kYellow-7, kBlack);
+        h1_sci_x_41 = MakeTH1(dir_tac_1d_S2S4, "F", "h1_sci_x_41", "SCI 41 PosX", 4000, 0.0, 4000.0, "SCI 41 X", kYellow-7, kBlack);
+        h1_sci_x_42 = MakeTH1(dir_tac_1d_S2S4, "F", "h1_sci_x_42", "SCI 42 PosX", 4000, 0.0, 4000.0, "SCI 42 X", kYellow-7, kBlack);
+        h1_sci_x_43 = MakeTH1(dir_tac_1d_S2S4, "F", "h1_sci_x_43", "SCI 43 PosX", 4000, 0.0, 4000.0, "SCI 43 X", kYellow-7, kBlack);
+        h1_sci_x_81 = MakeTH1(dir_tac_1d_S2S4, "F", "h1_sci_x_81", "SCI 81 PosX", 4000, 0.0, 4000.0, "SCI 81 X", kYellow-7, kBlack);
+        h1_sci_tof_11_21 = MakeTH1(dir_tac_1d_S1S2, "F", "h1_sci_tof_11_21", "SCI TOF 11 - 21", 4000, 0.0, 200000.0, "SCI TOF 11 - 21", kPink-3, kBlue+2);
+        h1_sci_tof_11_21_calib = MakeTH1(dir_tac_1d_S1S2, "F", "h1_sci_tof_11_21_calib", "SCI TOF 11 - 21 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 11 - 21 (Calib)", kPink-3, kBlue+2);
+        h1_sci_tof_21_41 = MakeTH1(dir_tac_1d_S2S4, "F", "h1_sci_tof_21_41", "SCI TOF 21 - 41", 4000, 0.0, 200000.0, "SCI TOF 21 - 41", kPink-3, kBlue+2);
+        h1_sci_tof_21_41_calib = MakeTH1(dir_tac_1d_S2S4, "F", "h1_sci_tof_21_41_calib", "SCI TOF 21 - 41 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 21 - 41 (Calib)", kPink-3, kBlue+2);
+        h1_sci_tof_21_42 = MakeTH1(dir_tac_1d_S2S4, "F", "h1_sci_tof_21_42", "SCI TOF 21 - 42", 4000, 0.0, 200000.0, "SCI TOF 21 - 42", kPink-3, kBlue+2);
+        h1_sci_tof_21_42_calib = MakeTH1(dir_tac_1d_S2S4, "F", "h1_sci_tof_21_42_calib", "SCI TOF 21 - 42 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 21 - 42 (Calib)", kPink-3, kBlue+2);
+        h1_sci_tof_21_81 = MakeTH1(dir_tac_1d_S2S4, "F", "h1_sci_tof_21_81", "SCI TOF 21 - 81", 4000, 0.0, 200000.0, "SCI TOF 21 - 81", kPink-3, kBlue+2);
+        h1_sci_tof_21_81_calib = MakeTH1(dir_tac_1d_S2S4, "F", "h1_sci_tof_21_81_calib", "SCI TOF 21 - 81 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 21 - 81 (Calib)", kPink-3, kBlue+2);
+        h1_sci_tof_22_41 = MakeTH1(dir_tac_1d_S2S4, "F", "h1_sci_tof_22_41", "SCI TOF 22 - 41", 4000, 0.0, 200000.0, "SCI TOF 22 - 41", kPink-3, kBlue+2);
+        h1_sci_tof_22_41_calib = MakeTH1(dir_tac_1d_S2S4, "F", "h1_sci_tof_22_41_calib", "SCI TOF 22 - 41 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 22 - 41 (Calib)", kPink-3, kBlue+2);
+        h1_sci_tof_22_81 = MakeTH1(dir_tac_1d_S2S4, "F", "h1_sci_tof_22_81", "SCI TOF 22 - 81", 4000, 0.0, 200000.0, "SCI TOF 22 - 81", kPink-3, kBlue+2);
+        h1_sci_tof_22_81_calib = MakeTH1(dir_tac_1d_S2S4, "F", "h1_sci_tof_22_81_calib", "SCI TOF 22 - 81 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 22 - 81 (Calib)", kPink-3, kBlue+2);
 
         // Are Gated 1D desired?
     }
 
     if (frs_config->plot_mhtdc_2d)
     {
-        dir_mhtdc_2d = dir_mhtdc->mkdir("2D PIDs");
+        //dir_mhtdc_2d = dir_mhtdc->mkdir("2D PIDs");
+        dir_mhtdc_2d_S1S2 = dir_mhtdc_S1S2->mkdir("2D_PIDs");
+        dir_mhtdc_2d_S2S4 = dir_mhtdc_S2S4->mkdir("2D_PIDs");
+
 
         // directory, type, name, title, xbins, xmin, xmax, ybins, ymin, ymax, xtitle, ytitle
-        h2_Z41_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_Z41_vs_AoQs2s4_mhtdc", "Z41 vs. A/Q (S2-S4) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S2-S4)", "Z41");
-        h2_Z41_vs_AoQs2s4_corr_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_Z41_vs_AoQs2s4_corr_mhtdc", "Z41 vs. A/Q corr (S2-S4) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z,"A/Q (S2-S4)", "Z41");
-        h2_Z41_vs_Z42_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_Z41_vs_Z42_mhtdc", "Z41 vs. Z42 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z41", "Z42");
+        h2_Z41_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_Z41_vs_AoQs2s4_mhtdc", "Z41 vs. A/Q (S2-S4) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S2-S4)", "Z41");
+        h2_Z41_vs_AoQs2s4_corr_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_Z41_vs_AoQs2s4_corr_mhtdc", "Z41 vs. A/Q corr (S2-S4) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z,"A/Q (S2-S4)", "Z41");
+        h2_Z41_vs_Z42_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_Z41_vs_Z42_mhtdc", "Z41 vs. Z42 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z41", "Z42");
         
-        h2_Z21_vs_AoQs1s2_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_Z21_vs_AoQs1s2_mhtdc", "Z21 vs. A/Q (S1-S2) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S1-S2)", "Z (MUSIC 21)");
-        h2_Z21_vs_AoQs1s2_corr_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_Z21_vs_AoQs1s2_corr_mhtdc", "Z21 vs. A/Q corr (S1-S2) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z,"A/Q (S1-S2)", "Z (MUSIC 21)");
-        h2_Z21_vs_Z22_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_Z21_vs_Z22_mhtdc", "Z21 vs. Z22 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z (MUSIC 21)", "Z (MUSIC 22)");
+        h2_Z21_vs_AoQs1s2_mhtdc = MakeTH2(dir_mhtdc_2d_S1S2, "D", "h2_Z21_vs_AoQs1s2_mhtdc", "Z21 vs. A/Q (S1-S2) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S1-S2)", "Z (MUSIC 21)");
+        h2_Z21_vs_AoQs1s2_corr_mhtdc = MakeTH2(dir_mhtdc_2d_S1S2, "D", "h2_Z21_vs_AoQs1s2_corr_mhtdc", "Z21 vs. A/Q corr (S1-S2) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z,"A/Q (S1-S2)", "Z (MUSIC 21)");
+        h2_Z21_vs_Z22_mhtdc = MakeTH2(dir_mhtdc_2d_S1S2, "D", "h2_Z21_vs_Z22_mhtdc", "Z21 vs. Z22 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z (MUSIC 21)", "Z (MUSIC 22)");
         
-        h2_Z41_vs_AoQs2s4_Zsame_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_Z41_vs_AoQs2s4_Zsame_mhtdc", "Z41 vs. A/Q (S2-S4) [ABS (Z41 - Z42) < 0.4] (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S2-S4)", "Z41");
-        h2_x2_vs_AoQs2s4_Zsame_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_x2_vs_AoQs2s4_Zsame_mhtdc", "x2 vs A/Q (S2-S4) - [ABS(Z41 - Z42) < 0.4] (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q (S2-S4)", "S2 x-position");
-        h2_x4_vs_AoQs2s4_Zsame_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_x4_vs_AoQs2s4_Zsame_mhtdc", "x4 vs A/Q (S2-S4) - [ABS(Z41 - Z42) < 0.4] (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q (S2-S4)", "S4 x-position");
-        h2_x2_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_x2_vs_AoQs2s4_mhtdc", "x2 vs. A/Q (S2-S4) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q (S2-S4)", "S2 x-position");
-        h2_x4_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_x4_vs_AoQs2s4_mhtdc", "x4 vs. A/Q (S2-S4) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q (S2-S4)", "S4 x-position");
-        h2_dEdegoQ_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_dEdegoQ_vs_Z41_mhtdc", "dE in S2 degrader / Q vs. Z41 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ, "dE in S2 degrader / Q", "Z41");
-        h2_dEdegZ41_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_dEdegZ41_vs_Z41_mhtdc", "dE in S2 degrader vs. Z41 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, frs_config->fMin_dE, frs_config->fMax_dE, "dE in S2 degrader", "Z41");
-        h2_a2_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_a2_vs_AoQs2s4_mhtdc", "A/Q (S2-S4) vs. AngleX (S2) (MHTDC)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a2, frs_config->fMax_a2, "A/Q (S2-S4)", "AngleX (S2)");
-        h2_a4_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_a4_vs_AoQs2s4_mhtdc", "A/Q (S2-S4) vs. AngleX (S4) (MHTDC)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a4, frs_config->fMax_a4, "A/Q (S2-S4)", "AngleX (S4)");
-        h2_Z41_vs_dE42_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_Z41_vs_dE42_mhtdc", "Z41 vs. dE in MUSIC 42 (MHTDC)", 400, frs_config->fMin_Z, frs_config->fMax_Z, 250, frs_config->fMin_dE_Music2, frs_config->fMax_dE_Music2, "Z41", "dE in MUSIC 2");
-        h2_SC41dE_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_SC41dE_vs_AoQs2s4_mhtdc", "A/Q (S2-S4) vs. dE in SC41 (MHTDC)", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000., "A/Q (S2-S4)", "dE in SC41");
-        h2_SC42dE_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_SC42dE_vs_AoQs2s4_mhtdc", "A/Q (S2-S4) vs. dE in SC42 (MHTDC)", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000., "A/Q (S2-S4)", "dE in SC42");
-        h2_SC41dE_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_SC41dE_vs_Z41_mhtdc", "Z41 vs. dE in SC41 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, 0., 4000., "Z41", "dE in SC41");
-        h2_SC42dE_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_SC42dE_vs_Z41_mhtdc", "Z41 vs. dE in SC42 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, 0., 4000., "Z41", "dE in SC42");
-        h2_x2_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_x2_vs_Z41_mhtdc", "x2 vs. Z41 (MHTDC)", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x2, frs_config->fMax_x2, "Z41", "S2 x-position");
-        h2_x4_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_x4_vs_Z41_mhtdc", "x4 vs. Z41 (MHTDC)", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x4, frs_config->fMax_x4, "Z41", "S4 x-position");
-        h2_Z41_vs_Sc21E_mhtdc = MakeTH2(dir_mhtdc_2d, "D", "h2_Z41_vs_Sc21E_mhtdc", "Z41 vs. SQRT(Sc21_L * Sc21_R) (MHTDC)", 300, frs_config->fMin_Z, frs_config->fMax_Z, 400, 0., 4000., "Z41)", "Sc21 E");
+        h2_Z21_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_Z21_vs_Z41_mhtdc", "Z21 (MHTDC) vs. Z41 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z (MUSIC 21)", "Z (MUSIC 41)");
+        h2_Z41_vs_AoQs2s4_Zsame_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_Z41_vs_AoQs2s4_Zsame_mhtdc", "Z41 vs. A/Q (S2-S4) [ABS (Z41 - Z42) < 0.4] (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S2-S4)", "Z41");
+        h2_x2_vs_AoQs2s4_Zsame_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_x2_vs_AoQs2s4_Zsame_mhtdc", "x2 vs A/Q (S2-S4) - [ABS(Z41 - Z42) < 0.4] (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q (S2-S4)", "S2 x-position");
+        h2_x4_vs_AoQs2s4_Zsame_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_x4_vs_AoQs2s4_Zsame_mhtdc", "x4 vs A/Q (S2-S4) - [ABS(Z41 - Z42) < 0.4] (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q (S2-S4)", "S4 x-position");
+        h2_x2_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_x2_vs_AoQs2s4_mhtdc", "x2 vs. A/Q (S2-S4) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q (S2-S4)", "S2 x-position");
+        h2_x2_vs_AoQs1s2_mhtdc = MakeTH2(dir_mhtdc_2d_S1S2, "D", "h2_x2_vs_AoQs1s2_mhtdc", "x2 vs. A/Q (S1-S2) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q (S1-S2)", "S2 x-position");
+        h2_x4_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_x4_vs_AoQs2s4_mhtdc", "x4 vs. A/Q (S2-S4) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q (S2-S4)", "S4 x-position");
+        h2_dEdegoQ_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_dEdegoQ_vs_Z41_mhtdc", "dE in S2 degrader / Q vs. Z41 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ, "dE in S2 degrader / Q", "Z41");
+        h2_dEdegZ41_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_dEdegZ41_vs_Z41_mhtdc", "dE in S2 degrader vs. Z41 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, frs_config->fMin_dE, frs_config->fMax_dE, "dE in S2 degrader", "Z41");
+        h2_a2_vs_AoQs1s2_mhtdc = MakeTH2(dir_mhtdc_2d_S1S2, "D", "h2_a2_vs_AoQs1s2_mhtdc", "A/Q (S1-S2) vs. AngleX (S2) (MHTDC)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a2, frs_config->fMax_a2, "A/Q (S1-S2)", "AngleX (S2)");
+        h2_a2_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_a2_vs_AoQs2s4_mhtdc", "A/Q (S2-S4) vs. AngleX (S2) (MHTDC)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a2, frs_config->fMax_a2, "A/Q (S2-S4)", "AngleX (S2)");
+        h2_a4_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_a4_vs_AoQs2s4_mhtdc", "A/Q (S2-S4) vs. AngleX (S4) (MHTDC)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a4, frs_config->fMax_a4, "A/Q (S2-S4)", "AngleX (S4)");
+        h2_Z41_vs_dE42_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_Z41_vs_dE42_mhtdc", "Z41 vs. dE in MUSIC 42 (MHTDC)", 400, frs_config->fMin_Z, frs_config->fMax_Z, 250, frs_config->fMin_dE_Music2, frs_config->fMax_dE_Music2, "Z41", "dE in MUSIC 2");
+        h2_Z21_vs_dE21_mhtdc = MakeTH2(dir_mhtdc_2d_S1S2, "D", "h2_Z21_vs_dE21_mhtdc", "Z21 vs. dE in MUSIC 21 (MHTDC)", 400, frs_config->fMin_Z, frs_config->fMax_Z, 250, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "Z (MUSIC 21)", "dE in MUSIC 21");
+        h2_SC41dE_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_SC41dE_vs_AoQs2s4_mhtdc", "A/Q (S2-S4) vs. dE in SC41 (MHTDC)", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000., "A/Q (S2-S4)", "dE in SC41");
+        h2_SC42dE_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_SC42dE_vs_AoQs2s4_mhtdc", "A/Q (S2-S4) vs. dE in SC42 (MHTDC)", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000., "A/Q (S2-S4)", "dE in SC42");
+        h2_SC41dE_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_SC41dE_vs_Z41_mhtdc", "Z41 vs. dE in SC41 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, 0., 4000., "Z41", "dE in SC41");
+        h2_SC42dE_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_SC42dE_vs_Z41_mhtdc", "Z41 vs. dE in SC42 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, 0., 4000., "Z41", "dE in SC42");
+        h2_x2_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_x2_vs_Z41_mhtdc", "x2 vs. Z41 (MHTDC)", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x2, frs_config->fMax_x2, "Z41", "S2 x-position");
+        h2_x2_vs_Z21_mhtdc = MakeTH2(dir_mhtdc_2d_S1S2, "D", "h2_x2_vs_Z21_mhtdc", "x2 vs. Z21 (MHTDC)", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x2, frs_config->fMax_x2, "Z (MUSIC 21)", "S2 x-position");
+        h2_x4_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_x4_vs_Z41_mhtdc", "x4 vs. Z41 (MHTDC)", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x4, frs_config->fMax_x4, "Z41", "S4 x-position");
+        h2_Z41_vs_Sc21E_mhtdc = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_Z41_vs_Sc21E_mhtdc", "Z41 vs. SQRT(Sc21_L * Sc21_R) (MHTDC)", 300, frs_config->fMin_Z, frs_config->fMax_Z, 400, 0., 4000., "Z41)", "Sc21 E");
+        h2_Z21_vs_Sc21E_mhtdc = MakeTH2(dir_mhtdc_2d_S1S2, "D", "h2_Z21_vs_Sc21E_mhtdc", "Z21 vs. SCI 21 E (MHTDC)", 300, frs_config->fMin_Z, frs_config->fMax_Z, 400, 0., 4000., "Z (MUSIC 21)", "SCI 21 E");
 
         // neither TAC nor MHTDC, don't plot twice..
         if (!frs_config->plot_tac_2d)
         {
-            h2_x2_vs_x4 = MakeTH2(dir_mhtdc_2d, "D", "h2_x2_vs_x4", "x2 vs. x4", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_x4, frs_config->fMax_x4, "S2 x-position", "S4 x-position");
-            h2_dE41_vs_ToF_21_41 = MakeTH2(dir_mhtdc_2d, "D", "h2_dE41_vs_ToF_21_41", "ToF 21 - 41 vs. dE in MUSIC 41", 2000, 0., 70000., 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "Time of Flight (21 - 41)", "dE in MUSIC 41");
-            h2_dE41_vs_x2 = MakeTH2(dir_mhtdc_2d, "D", "h2_dE41_vs_x2", "x2 vs. dE in MUSIC 41", 200, frs_config->fMin_x2, frs_config->fMax_x2, 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "S2 x-position", "dE in MUSIC 41");
-            h2_dE41_vs_x4 = MakeTH2(dir_mhtdc_2d, "D", "h2_dE41_vs_x4", "x4 vs. dE in MUSIC 41", 200, frs_config->fMin_x4, frs_config->fMax_x4, 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "S4 x-position", "dE in MUSIC 41");
-            h2_x2_vs_a2 = MakeTH2(dir_mhtdc_2d, "D", "h2_x2_vs_a2", "x2 vs. AngleX (S2)", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_a2, frs_config->fMax_a2, "S2 x-position", "AngleX (S2)");
-            h2_y2_vs_b2 = MakeTH2(dir_mhtdc_2d, "D", "h2_y2_vs_b2", "y2 vs. AngleY (S2)", 200, frs_config->fMin_y2, frs_config->fMax_y2, 200, frs_config->fMin_b2, frs_config->fMax_b2, "S2 y-position", "AngleY (S2)");
-            h2_x4_vs_a4 = MakeTH2(dir_mhtdc_2d, "D", "h2_x4_vs_a4", "x4 vs. AngleX (S4)", 200, frs_config->fMin_x4, frs_config->fMax_x4, 200, frs_config->fMin_a4, frs_config->fMax_a4, "S4 x-position", "AngleX (S4)");
-            h2_y4_vs_b4 = MakeTH2(dir_mhtdc_2d, "D", "h2_y4_vs_b4", "y4 vs. AngleY (S4)", 200, frs_config->fMin_y4, frs_config->fMax_y4, 200, frs_config->fMin_b4, frs_config->fMax_b4, "S4 y-position", "AngleY (S4)");
+            h2_x2_vs_x4 = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_x2_vs_x4", "x2 vs. x4", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_x4, frs_config->fMax_x4, "S2 x-position", "S4 x-position");
+            h2_dE41_vs_ToF_21_41 = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_dE41_vs_ToF_21_41", "ToF 21 - 41 vs. dE in MUSIC 41", 2000, 0., 70000., 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "Time of Flight (21 - 41)", "dE in MUSIC 41");
+            h2_dE41_vs_x2 = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_dE41_vs_x2", "x2 vs. dE in MUSIC 41", 200, frs_config->fMin_x2, frs_config->fMax_x2, 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "S2 x-position", "dE in MUSIC 41");
+            h2_dE41_vs_x4 = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_dE41_vs_x4", "x4 vs. dE in MUSIC 41", 200, frs_config->fMin_x4, frs_config->fMax_x4, 400, frs_config->fMin_dE_Music1, frs_config->fMax_dE_Music1, "S4 x-position", "dE in MUSIC 41");
+            h2_x2_vs_a2 = MakeTH2(dir_mhtdc_2d_S1S2, "D", "h2_x2_vs_a2", "x2 vs. AngleX (S2)", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_a2, frs_config->fMax_a2, "S2 x-position", "AngleX (S2)");
+            h2_y2_vs_b2 = MakeTH2(dir_mhtdc_2d_S1S2, "D", "h2_y2_vs_b2", "y2 vs. AngleY (S2)", 200, frs_config->fMin_y2, frs_config->fMax_y2, 200, frs_config->fMin_b2, frs_config->fMax_b2, "S2 y-position", "AngleY (S2)");
+            h2_x4_vs_a4 = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_x4_vs_a4", "x4 vs. AngleX (S4)", 200, frs_config->fMin_x4, frs_config->fMax_x4, 200, frs_config->fMin_a4, frs_config->fMax_a4, "S4 x-position", "AngleX (S4)");
+            h2_y4_vs_b4 = MakeTH2(dir_mhtdc_2d_S2S4, "D", "h2_y4_vs_b4", "y4 vs. AngleY (S4)", 200, frs_config->fMin_y4, frs_config->fMax_y4, 200, frs_config->fMin_b4, frs_config->fMax_b4, "S4 y-position", "AngleY (S4)");
         }
 
         // Gated
@@ -451,36 +474,37 @@ InitStatus FrsNearlineSpectra::Init()
 
     if (frs_config->plot_mhtdc_1d)
     {
-        dir_mhtdc_1d = dir_mhtdc->mkdir("1D Spectra");
+        dir_mhtdc_1d_S1S2 = dir_mhtdc_S1S2->mkdir("1D_Spectra");
+        dir_mhtdc_1d_S2S4 = dir_mhtdc_S2S4->mkdir("1D_Spectra");
 
-        h1_beta_s1s2_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_beta_s1s2_mhtdc", "Beta (S1-S2) (MHTDC)", 500, 0.0, 1.0, "Beta (S1-S2)", kPink-3, kBlue+2);
-        h1_beta_s2s4_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_beta_s2s4_mhtdc", "Beta (S2-S4) (MHTDC)", 500, 0.0, 1.0, "Beta (S2-S4)", kPink-3, kBlue+2);
-        h1_AoQs1s2_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_AoQs1s2_mhtdc", "A/Q (S1-S2) (MHTDC)", 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2);
-        h1_AoQs2s4_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_AoQs2s4_mhtdc", "A/Q (S2-S4) (MHTDC)", 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2);
-        h1_AoQs1s2_corr_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_AoQs1s2_corr_mhtdc", "A/Q corr (S1-S2) (MHTDC)", 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2);
-        h1_AoQs2s4_corr_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_AoQs2s4_corr_mhtdc", "A/Q corr (S2-S4) (MHTDC)", 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2);
-        h1_Z21_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_Z21_mhtdc", "Z21 (MHTDC)", 1000, 0, 100, "Z21", kPink-3, kBlue+2);
-        h1_Z22_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_Z22_mhtdc", "Z22 (MHTDC)", 1000, 0, 100, "Z22", kPink-3, kBlue+2);
-        h1_Z41_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_Z41_mhtdc", "Z41 (MHTDC)", 1000, 0, 100, "Z41", kPink-3, kBlue+2);
-        h1_Z42_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_Z42_mhtdc", "Z42 (MHTDC)", 1000, 0, 100, "Z42", kPink-3, kBlue+2);
-        h1_Z43_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_Z43_mhtdc", "Z43 (MHTDC)", 1000, 0, 100, "Z43", kPink-3, kBlue+2);
-        h1_dEdegoQ_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_dEdegoQ_mhtdc", "dE in S2 degrader / Q (MHTDC)", 1000, 0.0, 2.0, "dE / Q", kPink-3, kBlue+2);
-        h1_dEdegZ41_mhtdc = MakeTH1(dir_mhtdc_1d, "D", "h1_dEdegZ41_mhtdc", "dEZ41 in S2 degrader (MHTDC)", 1000, 0, 100, "dEZ41", kPink-3, kBlue+2);
+        h1_beta_s1s2_mhtdc = MakeTH1(dir_mhtdc_1d_S1S2, "D", "h1_beta_s1s2_mhtdc", "Beta (S1-S2) (MHTDC)", 500, 0.0, 1.0, "Beta (S1-S2)", kPink-3, kBlue+2);
+        h1_beta_s2s4_mhtdc = MakeTH1(dir_mhtdc_1d_S2S4, "D", "h1_beta_s2s4_mhtdc", "Beta (S2-S4) (MHTDC)", 500, 0.0, 1.0, "Beta (S2-S4)", kPink-3, kBlue+2);
+        h1_AoQs1s2_mhtdc = MakeTH1(dir_mhtdc_1d_S1S2, "D", "h1_AoQs1s2_mhtdc", "A/Q (S1-S2) (MHTDC)", 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2);
+        h1_AoQs2s4_mhtdc = MakeTH1(dir_mhtdc_1d_S2S4, "D", "h1_AoQs2s4_mhtdc", "A/Q (S2-S4) (MHTDC)", 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2);
+        h1_AoQs1s2_corr_mhtdc = MakeTH1(dir_mhtdc_1d_S1S2, "D", "h1_AoQs1s2_corr_mhtdc", "A/Q corr (S1-S2) (MHTDC)", 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2);
+        h1_AoQs2s4_corr_mhtdc = MakeTH1(dir_mhtdc_1d_S2S4, "D", "h1_AoQs2s4_corr_mhtdc", "A/Q corr (S2-S4) (MHTDC)", 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2);
+        h1_Z21_mhtdc = MakeTH1(dir_mhtdc_1d_S1S2, "D", "h1_Z21_mhtdc", "Z21 (MHTDC)", 1000, 0, 100, "Z21", kPink-3, kBlue+2);
+        h1_Z22_mhtdc = MakeTH1(dir_mhtdc_1d_S1S2, "D", "h1_Z22_mhtdc", "Z22 (MHTDC)", 1000, 0, 100, "Z22", kPink-3, kBlue+2);
+        h1_Z41_mhtdc = MakeTH1(dir_mhtdc_1d_S2S4, "D", "h1_Z41_mhtdc", "Z41 (MHTDC)", 1000, 0, 100, "Z41", kPink-3, kBlue+2);
+        h1_Z42_mhtdc = MakeTH1(dir_mhtdc_1d_S2S4, "D", "h1_Z42_mhtdc", "Z42 (MHTDC)", 1000, 0, 100, "Z42", kPink-3, kBlue+2);
+        h1_Z43_mhtdc = MakeTH1(dir_mhtdc_1d_S2S4, "D", "h1_Z43_mhtdc", "Z43 (MHTDC)", 1000, 0, 100, "Z43", kPink-3, kBlue+2);
+        h1_dEdegoQ_mhtdc = MakeTH1(dir_mhtdc_1d_S2S4, "D", "h1_dEdegoQ_mhtdc", "dE in S2 degrader / Q (MHTDC)", 1000, 0.0, 2.0, "dE / Q", kPink-3, kBlue+2);
+        h1_dEdegZ41_mhtdc = MakeTH1(dir_mhtdc_1d_S2S4, "D", "h1_dEdegZ41_mhtdc", "dEZ41 in S2 degrader (MHTDC)", 1000, 0, 100, "dEZ41", kPink-3, kBlue+2);
 
         if (!frs_config->plot_tac_1d)
         {
-            h1_x1 = MakeTH1(dir_tac_1d, "D", "h1_x1", "S1 x-position", 200, -100, 100, "x1", kYellow-7, kBlack);
-            h1_x2 = MakeTH1(dir_tac_1d, "D", "h1_x2", "S2 x-position", 200, -100, 100, "x2", kYellow-7, kBlack);
-            h1_x4 = MakeTH1(dir_tac_1d, "D", "h1_x4", "S4 x-position", 200, -100, 100, "x4", kYellow-7, kBlack);
-            h1_a1 = MakeTH1(dir_tac_1d, "D", "h1_a1", "AngleX S1", 200, -100, 100, "a1", kYellow-7, kBlack);
-            h1_a2 = MakeTH1(dir_tac_1d, "D", "h1_a2", "AngleX S2", 200, -100, 100, "a2", kYellow-7, kBlack);
-            h1_a4 = MakeTH1(dir_tac_1d, "D", "h1_a4", "AngleX S4", 200, -100, 100, "a4", kYellow-7, kBlack);
-            h1_y1 = MakeTH1(dir_tac_1d, "D", "h1_y1", "S1 y-position", 200, -100, 100, "y1", kYellow-7, kBlack);
-            h1_y2 = MakeTH1(dir_tac_1d, "D", "h1_y2", "S2 y-position", 200, -100, 100, "y2", kYellow-7, kBlack);
-            h1_y4 = MakeTH1(dir_tac_1d, "D", "h1_y4", "S4 y-position", 200, -100, 100, "y4", kYellow-7, kBlack);
-            h1_b1 = MakeTH1(dir_tac_1d, "D", "h1_b1", "AngleY S1", 200, -100, 100, "b1", kYellow-7, kBlack);
-            h1_b2 = MakeTH1(dir_tac_1d, "D", "h1_b2", "AngleY S2", 200, -100, 100, "b2", kYellow-7, kBlack);
-            h1_b4 = MakeTH1(dir_tac_1d, "D", "h1_b4", "AngleY S4", 200, -100, 100, "b4", kYellow-7, kBlack);
+            h1_x1 = MakeTH1(dir_tac_1d_S1S2, "D", "h1_x1", "S1 x-position", 200, -100, 100, "x1", kYellow-7, kBlack);
+            h1_x2 = MakeTH1(dir_tac_1d_S1S2, "D", "h1_x2", "S2 x-position", 200, -100, 100, "x2", kYellow-7, kBlack);
+            h1_x4 = MakeTH1(dir_tac_1d_S2S4, "D", "h1_x4", "S4 x-position", 200, -100, 100, "x4", kYellow-7, kBlack);
+            h1_a1 = MakeTH1(dir_tac_1d_S1S2, "D", "h1_a1", "AngleX S1", 200, -100, 100, "a1", kYellow-7, kBlack);
+            h1_a2 = MakeTH1(dir_tac_1d_S1S2, "D", "h1_a2", "AngleX S2", 200, -100, 100, "a2", kYellow-7, kBlack);
+            h1_a4 = MakeTH1(dir_tac_1d_S2S4, "D", "h1_a4", "AngleX S4", 200, -100, 100, "a4", kYellow-7, kBlack);
+            h1_y1 = MakeTH1(dir_tac_1d_S1S2, "D", "h1_y1", "S1 y-position", 200, -100, 100, "y1", kYellow-7, kBlack);
+            h1_y2 = MakeTH1(dir_tac_1d_S1S2, "D", "h1_y2", "S2 y-position", 200, -100, 100, "y2", kYellow-7, kBlack);
+            h1_y4 = MakeTH1(dir_tac_1d_S2S4, "D", "h1_y4", "S4 y-position", 200, -100, 100, "y4", kYellow-7, kBlack);
+            h1_b1 = MakeTH1(dir_tac_1d_S1S2, "D", "h1_b1", "AngleY S1", 200, -100, 100, "b1", kYellow-7, kBlack);
+            h1_b2 = MakeTH1(dir_tac_1d_S1S2, "D", "h1_b2", "AngleY S2", 200, -100, 100, "b2", kYellow-7, kBlack);
+            h1_b4 = MakeTH1(dir_tac_1d_S2S4, "D", "h1_b4", "AngleY S4", 200, -100, 100, "b4", kYellow-7, kBlack);
         }
     }
 
@@ -747,20 +771,23 @@ void FrsNearlineSpectra::Exec(Option_t* option)
             //if (z21_mhtdc.at(i) > 0 && AoQ_s1s2_mhtdc.at(i) > 0 && TMath::Abs(z21_mhtdc.at(i) - z22_mhtdc.at(i)) < 0.4) h2_Z21_vs_AoQs1s2_Zsame_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), z21_mhtdc.at(i));
             //if (AoQ_s1s2_mhtdc.at(i) > 0 && TMath::Abs(z21_mhtdc.at(i) - z22_mhtdc.at(i)) < 0.4) h2_x2_vs_AoQs1s2_Zsame_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_x2());
             //if (AoQ_s1s2_mhtdc.at(i) > 0 && TMath::Abs(z21_mhtdc.at(i) - z22_mhtdc.at(i)) < 0.4) h2_x4_vs_AoQs1s2_Zsame_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_x4());
-            //if (AoQ_s1s2_mhtdc.at(i) > 0) h2_x2_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_x2());
+            if (AoQ_s1s2_mhtdc.at(i) > 0) h2_x2_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_x2());
             //if (AoQ_s1s2_mhtdc.at(i) > 0) h2_x4_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_x4());
             //if (z21_mhtdc.at(i) > 0 && dEdegoQ_mhtdc.at(i) > 0) h2_dEdegoQ_vs_Z21_mhtdc->Fill(z21_mhtdc.at(i), dEdegoQ_mhtdc.at(i));
             //if (z21_mhtdc.at(i) > 0 && dEdeg_z41_mhtdc.at(i) > 0) h2_dEdegZ21_vs_Z21_mhtdc->Fill(z21_mhtdc.at(i), dEdeg_z21_mhtdc.at(i));
-            //if (AoQ_s1s2_mhtdc.at(i) > 0) h2_a2_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_a2());
+            if (AoQ_s1s2_mhtdc.at(i) > 0) h2_a2_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_a2());
             //if (AoQ_s1s2_mhtdc.at(i) > 0) h2_a4_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_a4());
             //if (z21_mhtdc.at(i) > 0 && hitItem.Get_music42_dE() > 0) h2_Z21_vs_dE42_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_music42_dE());
             //if (AoQ_s1s2_mhtdc.at(i) != 0 && hitItem.Get_sci_e_41() != 0) h2_SC41dE_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_sci_e_41());
             //if (AoQ_s1s2_mhtdc.at(i) != 0 && hitItem.Get_sci_e_42() != 0) h2_SC42dE_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_sci_e_42());
             //if (z21_mhtdc.at(i) != 0 && hitItem.Get_sci_e_41() != 0) h2_SC41dE_vs_Z21_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_sci_e_41());
             //if (z21_mhtdc.at(i) != 0 && hitItem.Get_sci_e_42() != 0) h2_SC42dE_vs_Z21_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_sci_e_42()); 
-            // if (z21_mhtdc.at(i) > 0) h2_x2_vs_Z21_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_ID_x2());
+            if (z21_mhtdc.at(i) > 0) h2_x2_vs_Z21_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_ID_x2());
             // if (z21_mhtdc.at(i) > 0) h2_x4_vs_Z21_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_ID_x4());
-           // if (z21_mhtdc.at(i) > 0 && hitItem.Get_sci_e_21()) h2_Z21_vs_Sc21E_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_sci_e_21());
+            if (z21_mhtdc.at(i) > 0 && hitItem.Get_sci_e_21()) h2_Z21_vs_Sc21E_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_sci_e_21());
+            if (z21_mhtdc.at(i) > 0 && hitItem.Get_music21_dE() > 0) h2_Z21_vs_dE21_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_music21_dE());
+
+
         }
 
         if (frs_config->plot_mhtdc_1d)
@@ -807,6 +834,10 @@ void FrsNearlineSpectra::Exec(Option_t* option)
             if (AoQ_s2s4_mhtdc.at(i) != 0 && hitItem.Get_sci_e_42() != 0) h2_SC42dE_vs_AoQs2s4_mhtdc->Fill(AoQ_s2s4_mhtdc.at(i), hitItem.Get_sci_e_42());
             if (z41_mhtdc.at(i) != 0 && hitItem.Get_sci_e_41() != 0) h2_SC41dE_vs_Z41_mhtdc->Fill(z41_mhtdc.at(i), hitItem.Get_sci_e_41());
             if (z41_mhtdc.at(i) != 0 && hitItem.Get_sci_e_42() != 0) h2_SC42dE_vs_Z41_mhtdc->Fill(z41_mhtdc.at(i), hitItem.Get_sci_e_42()); 
+            for (int j = 0; j < AoQ_s1s2_mhtdc.size(); j++)
+            {
+                if (z21_mhtdc.at(j) > 0 && z41_mhtdc.at(i) > 0) h2_Z21_vs_Z41_mhtdc->Fill(z21_mhtdc.at(j), z41_mhtdc.at(i)); 
+            }
 
             // Gated PIDs
             if (!FrsGates.empty())
