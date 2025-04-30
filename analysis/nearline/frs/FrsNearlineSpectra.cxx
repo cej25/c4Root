@@ -809,6 +809,16 @@ void FrsNearlineSpectra::Exec(Option_t* option)
         //for (int j = 0; j < AoQ_s1s2_mhtdc.size(); j++)
         //{
         //      all the stuff below
+                // And for LISA
+                // Z vs AoQ s1s2 gated 
+                // Z vs AoQ s2s4 gated
+                // Z21, z41, z42 gated (in 1D)
+                // Beta s1s2, beta s2s4 gated (in 1D)
+                // Z21 vs Z41 gated
+                // dEdegZ41_vs_Z41 gated
+                // x2 vs AoQ s1s2
+                // x4 vs AoQ s2s4
+                // x2 vs AoQ s1s2 
         //}
         if (frs_config->plot_mhtdc_2d)
         {
