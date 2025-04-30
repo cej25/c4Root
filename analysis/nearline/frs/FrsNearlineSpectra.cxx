@@ -805,6 +805,11 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     // CEJ need a separate loop for S1-S2 analysis
     for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
     {
+        // EG here should loop also over AoQ_s1s2_mhtdc.size() because the gates can be sequential S1S2-S2S4?
+        //for (int j = 0; j < AoQ_s1s2_mhtdc.size(); j++)
+        //{
+        //      all the stuff below
+        //}
         if (frs_config->plot_mhtdc_2d)
         {
             if (a == 0) multihit_counter++;
@@ -914,6 +919,19 @@ void FrsNearlineSpectra::Exec(Option_t* option)
                     }
                 }
             }
+
+            // for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
+            // {
+            //     // Gated PIDs between S1-S2 and S2S4
+            //     if (!FrsGates.empty())
+            //     {
+            //         for (int gate = 0; gate < FrsGates.size(); gate++)
+            //         {
+                    
+
+            //         }
+            //     }
+            // }
         }
 
         if (frs_config->plot_mhtdc_1d)
