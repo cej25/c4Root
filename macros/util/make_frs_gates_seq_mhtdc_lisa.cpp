@@ -1,3 +1,10 @@
+TCutG* cut_Z21_AoQs1s2 = nullptr;
+TCutG* cut_Z41_AoQs2s4 = nullptr;
+TCutG* cut_Z21_Z41 = nullptr;
+TCutG* cut_x2_AoQs2s4 = nullptr;
+TCutG* cut_x4_AoQs2s4 = nullptr;
+TCutG* cut_dEdeg_Z = nullptr;
+TCutG* cut_sci42E_Z = nullptr;
 
 bool Gate_Z21_AoQs1s2(TTree * evt,  bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, bool  bool_Z21_Z41,  bool  bool_x2_AoQs2s4, bool  bool_x4_AoQs2s4,  bool bool_dEdeg_Z, bool bool_sci42E_Z){
     
@@ -14,7 +21,7 @@ bool Gate_Z21_AoQs1s2(TTree * evt,  bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4
     if (cuts.EndsWith(" && ")) cuts = cuts(0,cuts.Length()-4);
     std::cout << "Drawing with the condition: " << cuts << std::endl;
 
-    evt->Draw("FrsMultiHitData.fID_z21_mhtdc:FrsMultiHitData.fID_AoQ_corr_s1s2_mhtdc>>h2_Z21_vs_AoQs1s2(2000,1.3,3.5,2000,10,60)", cuts);
+    evt->Draw("FrsMultiHitData.fID_z21_mhtdc:FrsMultiHitData.fID_AoQ_corr_s1s2_mhtdc>>h2_Z21_vs_AoQs1s2(2000,1,4,2000,0,70)", cuts);
 
     TH2F * h2_Z21_vs_AoQs1s2 = (TH2F*)gROOT->FindObject("h2_Z21_vs_AoQs1s2");
 
@@ -27,6 +34,7 @@ bool Gate_Z21_AoQs1s2(TTree * evt,  bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4
         return false;
     }else{
         cut_Z21_AoQs1s2 = (TCutG*)cut_Z21_AoQs1s2->Clone("cut_Z21_AoQs1s2");
+        gROOT->GetListOfSpecials()->Add(cut_Z21_AoQs1s2);
         gROOT->FindObject("CUTG")->Delete();
 
         cut_Z21_AoQs1s2->SetVarY("FrsMultiHitData.fID_z21_mhtdc");
@@ -52,7 +60,7 @@ bool Gate_Z41_AoQs2s4(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4,
     std::cout << "Drawing with the condition: " << cuts << std::endl;
     
 
-    evt->Draw("FrsMultiHitData.fID_z41_mhtdc:FrsMultiHitData.fID_AoQ_corr_s2s4_mhtdc>>h2_Z41_vs_AoQs2s4(2000,1.3,3.5,2000,10,60)",cuts);
+    evt->Draw("FrsMultiHitData.fID_z41_mhtdc:FrsMultiHitData.fID_AoQ_corr_s2s4_mhtdc>>h2_Z41_vs_AoQs2s4(2000,1,4,2000,0,70)",cuts);
     
     TH2F * h2_Z41_vs_AoQs2s4 = (TH2F*)gROOT->FindObject("h2_Z41_vs_AoQs2s4");
     
@@ -65,6 +73,7 @@ bool Gate_Z41_AoQs2s4(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4,
         return false;
     }else{
         cut_Z41_AoQs2s4 = (TCutG*)cut_Z41_AoQs2s4->Clone("cut_Z41_AoQs2s4");
+        gROOT->GetListOfSpecials()->Add(cut_Z41_AoQs2s4);
         gROOT->FindObject("CUTG")->Delete();
 
         cut_Z41_AoQs2s4->SetVarY("FrsMultiHitData.fID_z41_mhtdc");
@@ -105,6 +114,7 @@ bool Gate_Z21_Z41(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, boo
         return false;
     }else{
         cut_Z21_Z41 = (TCutG*)cut_Z21_Z41->Clone("cut_Z21_Z41");
+        gROOT->GetListOfSpecials()->Add(cut_Z21_Z41);
         gROOT->FindObject("CUTG")->Delete();
         cut_Z21_Z41->SetVarX("FrsMultiHitData.fID_z21_mhtdc");
         cut_Z21_Z41->SetVarY("FrsMultiHitData.fID_z41_mhtdc");
@@ -144,6 +154,7 @@ bool Gate_x2_AoQs2s4(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, 
         return false;
     }else{
         cut_x2_AoQs2s4 = (TCutG*)cut_x2_AoQs2s4->Clone("cut_x2_AoQs2s4");
+        gROOT->GetListOfSpecials()->Add(cut_x2_AoQs2s4);
         gROOT->FindObject("CUTG")->Delete();
         cut_x2_AoQs2s4->SetVarX("FrsMultiHitData.fID_AoQ_corr_s2s4_mhtdc");
         cut_x2_AoQs2s4->SetVarY("FrsHitData.fID_x2");
@@ -182,8 +193,9 @@ bool Gate_x4_AoQs2s4(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, 
         return false;
     }else{
         cut_x4_AoQs2s4 = (TCutG*)cut_x4_AoQs2s4->Clone("cut_x4_AoQs2s4");
+        gROOT->GetListOfSpecials()->Add(cut_x4_AoQs2s4);
         gROOT->FindObject("CUTG")->Delete();
-        cut_x4_AoQs2s4->SetVarX("FrsMultiHitData.fID_AoQ_corr_s2s4");
+        cut_x4_AoQs2s4->SetVarX("FrsMultiHitData.fID_AoQ_corr_mhtdc");
         cut_x4_AoQs2s4->SetVarY("FrsHitData.fID_x4");
         std::cout << "Created gate: " << cut_x4_AoQs2s4->GetName() << std::endl;
         return true;
@@ -220,6 +232,7 @@ bool Gate_dEdeg_Z(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, boo
         return false;
     }else{
         cut_dEdeg_Z = (TCutG*)cut_dEdeg_Z->Clone("cut_dEdeg_Z");
+        gROOT->GetListOfSpecials()->Add(cut_dEdeg_Z);
         gROOT->FindObject("CUTG")->Delete();
         cut_dEdeg_Z->SetVarX("FrsMultiHitData.fID_z41_mhtdc");
         cut_dEdeg_Z->SetVarY("FrsMultiHitData.fID_dEdeg_z41_mhtdc");
@@ -258,6 +271,7 @@ bool Gate_sci42E_Z(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, bo
         return false;
     }else{
         cut_sci42E_Z = (TCutG*)cut_sci42E_Z->Clone("cut_sci42E_Z");
+        gROOT->GetListOfSpecials()->Add(cut_sci42E_Z);
         gROOT->FindObject("CUTG")->Delete();
         cut_sci42E_Z->SetVarY("FrsMultiHitData.fID_z42");
         cut_sci42E_Z->SetVarX("FrsHitData.fsci_e_42");
@@ -267,7 +281,7 @@ bool Gate_sci42E_Z(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, bo
 }
 
 
-void make_frs_gates_seq(TString infilename){
+void make_frs_gates_seq_mhtdc_lisa(TString infilename){
 
     TFile * infile = TFile::Open(infilename,"READ");
 
