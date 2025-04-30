@@ -64,7 +64,6 @@ class FrsNearlineSpectra : public FairTask
 
         Int_t fNEvents;
         EventHeader const* header;
-        int multihit_counter = 0;
         
         std::vector<FrsHitItem> const* hitArray;
         std::vector<FrsMultiHitItem> const* multihitArray;
@@ -99,7 +98,10 @@ class FrsNearlineSpectra : public FairTask
         TDirectory* dir_mhtdc_S2S4;
         TDirectory* dir_mhtdc_1d_S2S4;
         TDirectory* dir_mhtdc_2d_S2S4;
-        TDirectory* dir_gated_mhtdc;
+        TDirectory* dir_gated_mhtdc_2d_S1S2;
+        TDirectory* dir_gated_mhtdc_2d_S2S4;
+        TDirectory* dir_Z21vsAoQs1s2_mhtdc;
+        TDirectory* dir_Z21vsAoQs1s2_mhtdc_1d;
         TDirectory* dir_Z41vsAoQs2s4_mhtdc;
         TDirectory* dir_Z41vsZ42_mhtdc;
         TDirectory* dir_x2vsAoQs2s4_mhtdc; 
@@ -329,6 +331,13 @@ class FrsNearlineSpectra : public FairTask
         TH2* h2_Z41_vs_AoQs2s4_tac_trav_gate_driftcorr;
         TH2* h2_Z41_vs_AoQs2s4_driftcorr_trav_gate;
 
+        // -- Gated on S1S2
+        std::vector<TH2*> h2_x2_vs_AoQs1s2_Z21vsAoQs1s2_gate;
+        std::vector<TH2*> h2_x1_vs_AoQs1s2_Z21vsAoQs1s2_gate;
+        std::vector<TH2*> h2_Z41_vs_AoQs2s4_Z21vsAoQs1s2_gate_mhtdc;
+        std::vector<TH2*> h2_x4_vs_AoQs2s4_Z21vsAoQs1s2_gate_mhtdc;
+        std::vector<TH2*> h2_Z21_vs_Z41_mhtdc_Z21vsAoQs1s2_gate_mhtdc;
+
 
         // MHTDC 1D
         TH1* h1_beta_s1s2_mhtdc;
@@ -344,6 +353,13 @@ class FrsNearlineSpectra : public FairTask
         TH1* h1_Z43_mhtdc;
         TH1* h1_dEdegoQ_mhtdc;
         TH1* h1_dEdegZ41_mhtdc;
+
+        // --  Gated on S1S2
+        std::vector<TH1*> h1_beta_s2s4_mhtdc_Z21vsAoQs1s2_gate;
+        std::vector<TH1*> h1_AoQs2s4_mhtdc_Z21vsAoQs1s2_gate;
+        std::vector<TH1*> h1_Z41_mhtdc_Z21vsAoQs1s2_gate;
+        std::vector<TH1*> h1_Z42_mhtdc_Z21vsAoQs1s2_gate;
+
 
         // Drifts
         TH2* h2_Z41_vs_T;
@@ -396,6 +412,11 @@ class FrsNearlineSpectra : public FairTask
         int tpc_running_count = 0;
         int64_t saved_frs_wr = 0;
 
+        // Trackers
+        int multihit_counter = 0;
+        std::vector<bool> passed_Z21vsAoQs1s2;
+        std::vector<int> count_passed_Z41vsAoQs2s4;
+        std::vector<int> count_passed_Z41vsZ42;
 
 
     public:
