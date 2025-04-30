@@ -13,9 +13,9 @@ class FrsGate
         std::string GetName();
         bool PassedGate(/*double Z21,*/ double Z42, double Z41, double x2, double x4, double AoQs2s4,/*double AoQs1s2,*/ double dEdegZ41, double sci42E);
         bool Passed_Z21vsAoQs1s2(double Z21, double AoQs1s2);
-        bool Passed_Z41vsAoQs2s4(double Z41, double AoQs2s4);
+        bool Passed_Z41vsAoQs2s4(double Z41, double AoQs2s4); //
         bool Passed_Z21vsZ41(double Z21, double Z41);
-        bool Passed_Z41vsZ42(double Z41, double Z42);
+        bool Passed_Z41vsZ42(double Z41, double Z42); //
         bool Passed_x2vsAoQs2s4(double x2, double AoQs2s4);
         bool Passed_x4vsAoQs2s4(double x4, double AoQs2s4);
         bool Passed_x2vsAoQs1s2(double x2, double AoQs1s2);
