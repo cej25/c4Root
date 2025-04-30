@@ -387,13 +387,16 @@ InitStatus FrsNearlineSpectra::Init()
         // Gated
         if (!FrsGates.empty())
         {  
-            dir_gated_mhtdc = dir_mhtdc->mkdir("Gated 2D");
-            dir_Z41vsAoQs2s4_mhtdc = dir_gated_mhtdc->mkdir("Z41vsAoQs2s4 Gated");
-            dir_Z41vsZ42_mhtdc = dir_gated_mhtdc->mkdir("Z41vsZ42 Gated");
-            dir_x2vsAoQs2s4_mhtdc = dir_gated_mhtdc->mkdir("x2vsAoQs2s4 Gated");
-            dir_x4vsAoQs2s4_mhtdc = dir_gated_mhtdc->mkdir("x4vsAoQs2s4 Gated");
-            dir_dEdegZ41vsZ41_mhtdc =  dir_gated_mhtdc->mkdir("dEdegZ41vsZ41 Gated");
+            dir_gated_mhtdc_2d_S1S2 = dir_mhtdc_2d_S1S2->mkdir("Gated-2D");
+            dir_Z21vsAoQs1s2_mhtdc = dir_gated_mhtdc_2d_S1S2->mkdir("Z21vsAoQs1s2-Gated");
 
+            dir_gated_mhtdc_2d_S2S4 = dir_mhtdc_2d_S2S4->mkdir("Gated-2D");
+            dir_Z41vsAoQs2s4_mhtdc = dir_gated_mhtdc_2d_S2S4->mkdir("Z41vsAoQs2s4-Gated");
+            dir_Z41vsZ42_mhtdc = dir_gated_mhtdc_2d_S2S4->mkdir("Z41vsZ42-Gated");
+            dir_x2vsAoQs2s4_mhtdc = dir_gated_mhtdc_2d_S2S4->mkdir("x2vsAoQs2s4-Gated");
+            dir_x4vsAoQs2s4_mhtdc = dir_gated_mhtdc_2d_S2S4->mkdir("x4vsAoQs2s4-Gated");
+            dir_dEdegZ41vsZ41_mhtdc =  dir_gated_mhtdc_2d_S2S4->mkdir("dEdegZ41vsZ41-Gated");
+        
             h2_x2_vs_AoQs2s4_Z41AoQs2s4_gate_mhtdc.resize(FrsGates.size());
             h2_x4_vs_AoQs2s4_Z41AoQs2s4_gate_mhtdc.resize(FrsGates.size());
             h2_Z41_vs_AoQs2s4_Z41AoQs2s4_gate_mhtdc.resize(FrsGates.size());
@@ -428,6 +431,11 @@ InitStatus FrsNearlineSpectra::Init()
             h2_x2_vs_AoQs2s4_dEdegZ41_Z41_gate_mhtdc.resize(FrsGates.size());
             h2_x4_vs_AoQs2s4_dEdegZ41_Z41_gate_mhtdc.resize(FrsGates.size());
             h2_Z41_vs_AoQs2s4_Zsame_dEdegZ41_Z41_gate_mhtdc.resize(FrsGates.size());
+            h2_x2_vs_AoQs1s2_Z21vsAoQs1s2_gate.resize(FrsGates.size());
+            h2_x1_vs_AoQs1s2_Z21vsAoQs1s2_gate.resize(FrsGates.size());
+            h2_Z41_vs_AoQs2s4_Z21vsAoQs1s2_gate_mhtdc.resize(FrsGates.size());
+            h2_x4_vs_AoQs2s4_Z21vsAoQs1s2_gate_mhtdc.resize(FrsGates.size());
+            h2_Z21_vs_Z41_mhtdc_Z21vsAoQs1s2_gate_mhtdc.resize(FrsGates.size());
 
             for (int gate = 0; gate < FrsGates.size(); gate++)
             {
@@ -468,6 +476,14 @@ InitStatus FrsNearlineSpectra::Init()
                 h2_x2_vs_AoQs2s4_dEdegZ41_Z41_gate_mhtdc[gate] = MakeTH2(dir_dEdegZ41vsZ41_mhtdc, "I", Form("h2_x2_vs_AoQs2s4_dEdegZ41_Z41_gate%d_mhtdc", gate), Form("x2 vs. A/Q (S2-S4) - dEdegZ41 Z41 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);     
                 h2_x4_vs_AoQs2s4_dEdegZ41_Z41_gate_mhtdc[gate] = MakeTH2(dir_dEdegZ41vsZ41_mhtdc, "I", Form("h2_x4_vs_AoQs2s4_dEdegZ41_Z41_gate%d_mhtdc", gate), Form("x4 vs. A/Q (S2-S4) - dEdegZ41 Z41 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);   
                 h2_Z41_vs_AoQs2s4_Zsame_dEdegZ41_Z41_gate_mhtdc[gate] = MakeTH2(dir_dEdegZ41vsZ41_mhtdc, "I", Form("h2_Z41_vs_AoQs2s4_Zsame_dEdegZ41_Z41_gate%d_mhtdc", gate), Form("Z41 vs. A/Q (S2-S4) [ABS(Z1 - Z2) < 0.4] - dEdegZ41 Z41 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
+            
+                // ::: Gated on S1S2 ::::::::::: 
+                h2_x2_vs_AoQs1s2_Z21vsAoQs1s2_gate[gate] = MakeTH2(dir_Z21vsAoQs1s2_mhtdc, "I", Form("h2_x2_vs_AoQs1s2_Z21vsAoQs1s2_gate%d_mhtdc", gate), Form("x2 vs. A/Q (S1-S2) - Z21AoQs1s2 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
+                h2_x1_vs_AoQs1s2_Z21vsAoQs1s2_gate[gate] = MakeTH2(dir_Z21vsAoQs1s2_mhtdc, "I", Form("h2_x1_vs_AoQs1s2_Z21vsAoQs1s2_gate%d_mhtdc", gate), Form("x1 vs. A/Q (S1-S2) - Z21AoQs1s2 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
+                h2_Z41_vs_AoQs2s4_Z21vsAoQs1s2_gate_mhtdc[gate] = MakeTH2(dir_Z21vsAoQs1s2_mhtdc, "I", Form("h2_Z41_vs_AoQs2s4_Z21vsAoQs1s2_gate%d_mhtdc",gate), Form("Z41 vs. A/Q (S2-S4) - Z21AoQs1s2 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
+                h2_x4_vs_AoQs2s4_Z21vsAoQs1s2_gate_mhtdc[gate] = MakeTH2(dir_Z21vsAoQs1s2_mhtdc, "I", Form("h2_x4_vs_AoQs2s4_Z21vsAoQs1s2_gate%d_mhtdc", gate), Form("x4 vs. A/Q (S2-S4) - Z21AoQs1s2 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
+                h2_Z21_vs_Z41_mhtdc_Z21vsAoQs1s2_gate_mhtdc[gate] = MakeTH2(dir_Z21vsAoQs1s2_mhtdc, "I", Form("h2_Z21_vs_Z41_mhtdc_Z21vsAoQs1s2_gate%d_mhtdc", gate), Form("Z21 vs. Z41 - Z21AoQs1s2 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);
+
             }
         }
     }
@@ -475,6 +491,8 @@ InitStatus FrsNearlineSpectra::Init()
     if (frs_config->plot_mhtdc_1d)
     {
         dir_mhtdc_1d_S1S2 = dir_mhtdc_S1S2->mkdir("1D_Spectra");
+        dir_Z21vsAoQs1s2_mhtdc_1d = dir_mhtdc_1d_S1S2->mkdir("Z21vsAoQs1s2-Gated");
+
         dir_mhtdc_1d_S2S4 = dir_mhtdc_S2S4->mkdir("1D_Spectra");
 
         h1_beta_s1s2_mhtdc = MakeTH1(dir_mhtdc_1d_S1S2, "D", "h1_beta_s1s2_mhtdc", "Beta (S1-S2) (MHTDC)", 500, 0.0, 1.0, "Beta (S1-S2)", kPink-3, kBlue+2);
@@ -490,6 +508,23 @@ InitStatus FrsNearlineSpectra::Init()
         h1_Z43_mhtdc = MakeTH1(dir_mhtdc_1d_S2S4, "D", "h1_Z43_mhtdc", "Z43 (MHTDC)", 1000, 0, 100, "Z43", kPink-3, kBlue+2);
         h1_dEdegoQ_mhtdc = MakeTH1(dir_mhtdc_1d_S2S4, "D", "h1_dEdegoQ_mhtdc", "dE in S2 degrader / Q (MHTDC)", 1000, 0.0, 2.0, "dE / Q", kPink-3, kBlue+2);
         h1_dEdegZ41_mhtdc = MakeTH1(dir_mhtdc_1d_S2S4, "D", "h1_dEdegZ41_mhtdc", "dEZ41 in S2 degrader (MHTDC)", 1000, 0, 100, "dEZ41", kPink-3, kBlue+2);
+
+        // CEJ: directory layout for these is probably borked af
+        if (!FrsGates.empty())
+        {  
+            h1_beta_s2s4_mhtdc_Z21vsAoQs1s2_gate.resize(FrsGates.size());
+            h1_AoQs2s4_mhtdc_Z21vsAoQs1s2_gate.resize(FrsGates.size());
+            h1_Z41_mhtdc_Z21vsAoQs1s2_gate.resize(FrsGates.size());
+            h1_Z42_mhtdc_Z21vsAoQs1s2_gate.resize(FrsGates.size());
+
+            for (int gate = 0; gate < FrsGates.size(); gate++)
+            {
+                h1_beta_s2s4_mhtdc_Z21vsAoQs1s2_gate[gate] = MakeTH1(dir_Z21vsAoQs1s2_mhtdc_1d, "D", Form("h1_beta_s2s4_mhtdc_Z21vsAoQs1s2_gate%d", gate), Form("Beta (S2-S4) (MHTDC) - Z21vsAoQs1s2 Gate: %d", gate), 500, 0.0, 1.0, "Beta (S1-S2)", kPink-3, kBlue+2);
+                h1_AoQs2s4_mhtdc_Z21vsAoQs1s2_gate[gate] = MakeTH1(dir_Z21vsAoQs1s2_mhtdc_1d, "D", Form("h1_AoQs2s4_mhtdc_Z21vsAoQs1s2_gate%d", gate), Form("AoQ (S2-S4) (MHTDC) - Z21vsAoQs1s2 Gate: %d", gate), 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2);
+                h1_Z41_mhtdc_Z21vsAoQs1s2_gate[gate] = MakeTH1(dir_Z21vsAoQs1s2_mhtdc_1d, "D", Form("h1_Z41_mhtdc_Z21vsAoQs1s2_gate%d", gate), Form("Z41 (MHTDC) - Z21vsAoQs1s2 Gate: %d", gate), 1000, 0, 100, "Z41", kPink-3, kBlue+2);
+                h1_Z42_mhtdc_Z21vsAoQs1s2_gate[gate] = MakeTH1(dir_Z21vsAoQs1s2_mhtdc_1d, "D", Form("h1_Z42_mhtdc_Z21vsAoQs1s2_gate%d", gate), Form("Z42 (MHTDC) - Z21vsAoQs1s2 Gate: %d", gate), 1000, 0, 100, "Z42", kPink-3, kBlue+2);
+            }
+        }
 
         if (!frs_config->plot_tac_1d)
         {
@@ -532,6 +567,13 @@ InitStatus FrsNearlineSpectra::Init()
     h2_sci_tof_22_81_vs_T = MakeTH2(dir_drifts, "F", "h2_sci_tof_22_81_vs_T", "TOF 22 - 81 vs. Time [mins]", 500, 0, 10000, 4000, 0.0, 200000.0);
     for (int i = 0; i < 6; i++) h2_tpc_vs_T[i] = MakeTH2(dir_drifts, "D", Form("h2_tpc_vs_T_%i", i), Form("TPC %i X vs. T", i), 500,0, 10000, 200, -100, 100);
     
+
+    passed_Z21vsAoQs1s2.resize(FrsGates.size());
+    std::fill(passed_Z21vsAoQs1s2.begin(), passed_Z21vsAoQs1s2.end(), false);
+    count_passed_Z41vsAoQs2s4.resize(FrsGates.size());
+    std::fill(count_passed_Z41vsAoQs2s4.begin(), count_passed_Z41vsAoQs2s4.end(), 0);
+    count_passed_Z41vsZ42.resize(FrsGates.size());
+    std::fill(count_passed_Z41vsZ42.begin(), count_passed_Z41vsZ42.end(), 0);
 
     return kSUCCESS;
 
@@ -761,7 +803,6 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     // S1-S2 plotting
     for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
     {
-        if ( i > 0 ) continue;
         if (frs_config->plot_mhtdc_2d)
         {   
             if (z21_mhtdc.at(i) > 0 && AoQ_s1s2_mhtdc.at(i) > 0) h2_Z21_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), z21_mhtdc.at(i));
@@ -788,6 +829,26 @@ void FrsNearlineSpectra::Exec(Option_t* option)
             if (z21_mhtdc.at(i) > 0 && hitItem.Get_music21_dE() > 0) h2_Z21_vs_dE21_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_music21_dE());
 
 
+
+            if (!FrsGates.empty())
+            {
+                for (int gate = 0; gate < FrsGates.size(); gate++)
+                {
+                    if (FrsGates[gate]->Passed_Z21vsAoQs1s2(z21_mhtdc.at(i), AoQ_s1s2_mhtdc.at(i)))
+                    {
+                        // fill stuff
+                        if (AoQ_s1s2_mhtdc.at(i) > 0 && hitItem.Get_ID_x2() > -100 && hitItem.Get_ID_x2() < 100) h2_x2_vs_AoQs1s2_Z21vsAoQs1s2_gate[gate]->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_x2());
+                        if (AoQ_s1s2_mhtdc.at(i) > 0 && hitItem.Get_ID_x1() > -100 && hitItem.Get_ID_x1() < 100) h2_x1_vs_AoQs1s2_Z21vsAoQs1s2_gate[gate]->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_x1());
+
+                        if (!passed_Z21vsAoQs1s2[gate])
+                        {
+                            passed_Z21vsAoQs1s2[gate] = true;
+                            count_passed_Z41vsAoQs2s4[gate]++; // only count one per mhtdc event?
+                        }
+                    }
+                }
+            }
+
         }
 
         if (frs_config->plot_mhtdc_1d)
@@ -802,7 +863,6 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     }
 
 
-    // CEJ need a separate loop for S1-S2 analysis
     for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
     {
         // EG here should loop also over AoQ_s1s2_mhtdc.size() because the gates can be sequential S1S2-S2S4?
@@ -814,11 +874,11 @@ void FrsNearlineSpectra::Exec(Option_t* option)
                 // Z vs AoQ s2s4 gated
                 // Z21, z41, z42 gated (in 1D)
                 // Beta s1s2, beta s2s4 gated (in 1D)
-                // Z21 vs Z41 gated
+                // Z21 vs Z41 gated // CEJ logic needs thinking thru
                 // dEdegZ41_vs_Z41 gated
                 // x2 vs AoQ s1s2
                 // x4 vs AoQ s2s4
-                // x2 vs AoQ s1s2 
+                // x2 vs AoQ s1s2 // CEJ dupe?
         //}
         if (frs_config->plot_mhtdc_2d)
         {
@@ -854,11 +914,24 @@ void FrsNearlineSpectra::Exec(Option_t* option)
                 if (z21_mhtdc.at(j) > 0 && z41_mhtdc.at(i) > 0) h2_Z21_vs_Z41_mhtdc->Fill(z21_mhtdc.at(j), z41_mhtdc.at(i)); 
             }
 
+    
             // Gated PIDs
             if (!FrsGates.empty())
             {
                 for (int gate = 0; gate < FrsGates.size(); gate++)
                 {
+                    // ::: Gated on S1S2 :::::::::
+                    if (passed_Z21vsAoQs1s2[gate])
+                    {
+                        // CEJ: should these be AoQ_corr?
+                        if (AoQ_s2s4_mhtdc.at(i) > 0 && z41_mhtdc.at(i) > 0) h2_Z41_vs_AoQs2s4_Z21vsAoQs1s2_gate_mhtdc[gate]->Fill(AoQ_s2s4_mhtdc.at(i), z41_mhtdc.at(i));
+                        if (AoQ_s2s4_mhtdc.at(i) > 0 && hitItem.Get_ID_x4() > -100 && hitItem.Get_ID_x4() < 100) h2_x4_vs_AoQs2s4_Z21vsAoQs1s2_gate_mhtdc[gate]->Fill(AoQ_s2s4_mhtdc.at(i), hitItem.Get_ID_x4());
+
+                        for (int j = 0; j < z21_mhtdc.size(); j++) h2_Z21_vs_Z41_mhtdc_Z21vsAoQs1s2_gate_mhtdc[gate]->Fill(z21_mhtdc.at(j), z41_mhtdc.at(i));
+
+                    }
+
+
                     if (FrsGates[gate]->Passed_Z41vsAoQs2s4(z41_mhtdc.at(i), AoQ_s2s4_mhtdc.at(i)))
                     {
                         h2_x2_vs_AoQs2s4_Z41AoQs2s4_gate_mhtdc[gate]->Fill(AoQ_s2s4_mhtdc.at(i), hitItem.Get_ID_x2());
@@ -867,6 +940,9 @@ void FrsNearlineSpectra::Exec(Option_t* option)
                         h2_Z41_vs_Z42_Z41AoQs2s4_gate_mhtdc[gate]->Fill(z41_mhtdc.at(i), z42_mhtdc.at(i));
                         h2_dedegoQ_vs_Z41_Z41AoQs2s4_gate_mhtdc[gate]->Fill(z41_mhtdc.at(i), dEdegoQ_mhtdc.at(i));
                         h2_dEdegZ41_vs_Z41_Z41AoQs2s4_gate_mhtdc[gate]->Fill(z41_mhtdc.at(i), dEdeg_z41_mhtdc.at(i));
+
+                        count_passed_Z41vsAoQs2s4[gate]++;
+
                     }
                     
                     if (FrsGates[gate]->Passed_Z41vsZ42(z41_mhtdc.at(i), z42_mhtdc.at(i)))
@@ -885,6 +961,8 @@ void FrsNearlineSpectra::Exec(Option_t* option)
                             h2_x4_vs_AoQs2s4_Zsame_gate_mhtdc[gate]->Fill(AoQ_s2s4_mhtdc.at(i), hitItem.Get_ID_x4());
                             if(AoQ_s2s4_mhtdc.at(i) != 0 && z41_mhtdc.at(i) != 0) h2_Z41_vs_AoQs2s4_Zsame_gate_mhtdc[gate]->Fill(AoQ_s2s4_mhtdc.at(i), z41_mhtdc.at(i));
                         }
+
+                        count_passed_Z41vsZ42[gate]++;
                     }
                     
                     if (FrsGates[gate]->Passed_x2vsAoQs2s4(AoQ_s2s4_mhtdc.at(i), hitItem.Get_ID_x2()))
@@ -930,18 +1008,6 @@ void FrsNearlineSpectra::Exec(Option_t* option)
                 }
             }
 
-            // for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
-            // {
-            //     // Gated PIDs between S1-S2 and S2S4
-            //     if (!FrsGates.empty())
-            //     {
-            //         for (int gate = 0; gate < FrsGates.size(); gate++)
-            //         {
-                    
-
-            //         }
-            //     }
-            // }
         }
 
         if (frs_config->plot_mhtdc_1d)
@@ -953,7 +1019,7 @@ void FrsNearlineSpectra::Exec(Option_t* option)
             if (z42_mhtdc.at(i) > 0) h1_Z42_mhtdc->Fill(z42_mhtdc.at(i));
             if (z43_mhtdc.at(i) > 0) h1_Z43_mhtdc->Fill(z43_mhtdc.at(i));
             if (dEdegoQ_mhtdc.at(i) > 0) h1_dEdegoQ_mhtdc->Fill(dEdegoQ_mhtdc.at(i));
-            if (dEdeg_z41_mhtdc.at(i) > 0) h1_dEdegZ41_mhtdc->Fill(dEdeg_z41_mhtdc.at(i));  
+            if (dEdeg_z41_mhtdc.at(i) > 0) h1_dEdegZ41_mhtdc->Fill(dEdeg_z41_mhtdc.at(i));
 
             // CEJ:: I think this condition needs to check a counter to avoid overfilling
             if (!frs_config->plot_tac_1d)
@@ -970,6 +1036,25 @@ void FrsNearlineSpectra::Exec(Option_t* option)
                 h1_b1->Fill(hitItem.Get_ID_b1());
                 h1_b2->Fill(hitItem.Get_ID_b2());
                 h1_b4->Fill(hitItem.Get_ID_b4());
+            }
+
+
+            // ::: Gated on S1S2 :::::::::
+            if (!FrsGates.empty())
+            {
+                for (int gate = 0; gate < FrsGates.size(); gate++)
+                {
+                    if (passed_Z21vsAoQs1s2[gate])
+                    {
+                        if (beta_s2s4_mhtdc.at(i) > 0) h1_beta_s2s4_mhtdc_Z21vsAoQs1s2_gate[gate]->Fill(beta_s2s4_mhtdc.at(i));
+                        if (AoQ_s2s4_mhtdc.at(i) > 0) h1_AoQs2s4_mhtdc_Z21vsAoQs1s2_gate[gate]->Fill(AoQ_s2s4_mhtdc.at(i));
+                        if (z41_mhtdc.at(i) > 0) h1_Z41_mhtdc_Z21vsAoQs1s2_gate[gate]->Fill(z41_mhtdc.at(i));
+                        if (z42_mhtdc.at(i) > 0) h1_Z42_mhtdc_Z21vsAoQs1s2_gate[gate]->Fill(z42_mhtdc.at(i));
+
+                        // more? 
+                        
+                    }
+                }
             }
         }
     
@@ -1025,6 +1110,8 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     h2_sci_tof_22_81_vs_T->Fill(FRS_time_mins, hitItem.Get_sci_tof_22_81()); // calib??
 
     
+    // CEJ:: Gate integrals/ratios... 
+
 
     // :::::::: TPC Rates ::::::::: //
     // ---------------------------- //
@@ -1070,7 +1157,9 @@ void FrsNearlineSpectra::Exec(Option_t* option)
 
 void FrsNearlineSpectra::FinishEvent()
 {
-    
+    std::fill(passed_Z21vsAoQs1s2.begin(), passed_Z21vsAoQs1s2.end(), 0);
+    for (auto& val : count_passed_Z41vsAoQs2s4) val = 0;
+    for (auto& val : count_passed_Z41vsZ42) val = 0;
 }
 
 void FrsNearlineSpectra::FinishTask()
