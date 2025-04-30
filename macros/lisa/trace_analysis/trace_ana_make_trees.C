@@ -22,7 +22,7 @@ void trace_ana_make_trees(int fileNumber)
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
-    TString fExpName = "lisa";
+    TString fExpName = "shiyan";
 
     //:::::::::Here you define commonly used path
     TString c4Root_path = "/u/gandolfo/c4/c4Root";
@@ -49,13 +49,13 @@ void trace_ana_make_trees(int fileNumber)
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_test_0169_*.lmd";  //data with only lisa
     //TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";
-    TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/";
+    TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/S092_shiyan/";
 
-    TString filename = Form(inputpath + "LISAmp_10layers_%04d_*.lmd", fileNumber);
+    TString filename = Form(inputpath + "test_%04d_*.lmd", fileNumber);
 
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/test_c4/trace_ana/"; 
-    TString outputFilename = Form(outputpath + "LISAmp_10layers_%04d_MWDtree.root", fileNumber);
+    TString outputFilename = Form(outputpath + "test_%04d_MWDtree.root", fileNumber);
 
 
     //:::::::Create online run
@@ -82,9 +82,9 @@ void trace_ana_make_trees(int fileNumber)
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
     // ::: Lisa config
-    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_All_Boards.txt");
-    TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching_cards.txt");
-    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_LISAmp_highgain.txt");
+    TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_All_Boards.txt");
+    TLisaConfiguration::SetGMFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_cards.txt");
+    TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
    
     // ::::::: READ Subsystem  ::::::::
 
