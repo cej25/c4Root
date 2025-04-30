@@ -26,7 +26,7 @@ bool Gate_Z21_AoQs1s2(TTree * evt,  bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4
         std::cout << "No Z(21) vs AoQ(S1S2) gate given. Continuing." << std::endl;
         return false;
     }else{
-        cut_Z21_AoQs1s2 = (TCutG*)cut_Z21_AoQs1s2->Clone("cut_Z21_AoQ");
+        cut_Z21_AoQs1s2 = (TCutG*)cut_Z21_AoQs1s2->Clone("cut_Z21_AoQs1s2");
         gROOT->FindObject("CUTG")->Delete();
 
         cut_Z21_AoQs1s2->SetVarY("FrsMultiHitData.fID_z21_mhtdc");
@@ -101,7 +101,7 @@ bool Gate_Z21_Z41(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, boo
     gPad->WaitPrimitive("CUTG");
     TCutG * cut_Z21_Z41 = (TCutG*)gROOT->FindObject("CUTG");
     if (cut_Z21_Z41 == nullptr){
-        std::cout << "No Z vs AoQ gate given. Continuing." << std::endl;
+        std::cout << "No Z21 vs Z41 gate given. Continuing." << std::endl;
         return false;
     }else{
         cut_Z21_Z41 = (TCutG*)cut_Z21_Z41->Clone("cut_Z21_Z41");
@@ -140,7 +140,7 @@ bool Gate_x2_AoQs2s4(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, 
     gPad->WaitPrimitive("CUTG");
     TCutG * cut_x2_AoQs2s4 = (TCutG*)gROOT->FindObject("CUTG");
     if (cut_x2_AoQs2s4 == nullptr){
-        std::cout << "No Z vs AoQ gate given. Continuing." << std::endl;
+        std::cout << "No x2 vs AoQS2S4 gate given. Continuing." << std::endl;
         return false;
     }else{
         cut_x2_AoQs2s4 = (TCutG*)cut_x2_AoQs2s4->Clone("cut_x2_AoQs2s4");
@@ -178,7 +178,7 @@ bool Gate_x4_AoQs2s4(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, 
     gPad->WaitPrimitive("CUTG");
     TCutG * cut_x4_AoQs2s4 = (TCutG*)gROOT->FindObject("CUTG");
     if (cut_x4_AoQs2s4 == nullptr){
-        std::cout << "No Z vs AoQ gate given. Continuing." << std::endl;
+        std::cout << "No x4 vs AoQs2s4 gate given. Continuing." << std::endl;
         return false;
     }else{
         cut_x4_AoQs2s4 = (TCutG*)cut_x4_AoQs2s4->Clone("cut_x4_AoQs2s4");
@@ -216,7 +216,7 @@ bool Gate_dEdeg_Z(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, boo
     gPad->WaitPrimitive("CUTG");
     TCutG * cut_dEdeg_Z = (TCutG*)gROOT->FindObject("CUTG");
     if (cut_dEdeg_Z == nullptr){
-        std::cout << "No Z vs AoQ gate given. Continuing." << std::endl;
+        std::cout << "No dEdeg vs Z41 gate given. Continuing." << std::endl;
         return false;
     }else{
         cut_dEdeg_Z = (TCutG*)cut_dEdeg_Z->Clone("cut_dEdeg_Z");
@@ -254,7 +254,7 @@ bool Gate_sci42E_Z(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, bo
     gPad->WaitPrimitive("CUTG");
     TCutG * cut_sci42E_Z = (TCutG*)gROOT->FindObject("CUTG");
     if (cut_sci42E_Z == nullptr){
-        std::cout << "No Z vs AoQ gate given. Continuing." << std::endl;
+        std::cout << "No Sci42E vs Z42 gate given. Continuing." << std::endl;
         return false;
     }else{
         cut_sci42E_Z = (TCutG*)cut_sci42E_Z->Clone("cut_sci42E_Z");
