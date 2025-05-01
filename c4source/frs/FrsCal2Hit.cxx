@@ -1788,7 +1788,8 @@ void FrsCal2Hit::ProcessIDs()
         if (id_beta_s1s2 > 0. && id_beta_s1s2 < 1.)
         {
             id_gamma_s1s2 = 1. / sqrt(1. - TMath::Power(id_beta_s1s2, 2));
-            id_AoQ_s1s2 = id_brho[0] / id_beta_s1s2 / id_gamma_s1s2 / aoq_factor;
+            // CEJ:: deprecating "AoQ_corr" - imo is pointless and confusing when wishing to apply further corrections.
+            id_AoQ_s1s2 = id_brho[0] / id_beta_s1s2 / id_gamma_s1s2 / aoq_factor - id->a1AoQCorr * id_a2;
             id_AoQ_corr_s1s2 = id_AoQ_s1s2 - id->a1AoQCorr * id_a2;
 
             id_b_AoQ_s1s2 = true;
