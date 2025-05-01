@@ -40,6 +40,13 @@ class FrsNearlineSpectra : public FairTask
 
         virtual void Exec(Option_t* option);
 
+        /*
+        void Process_TAC();
+        void Process_MHTDC();
+        void Process_Monitors();
+        */
+        
+
         virtual void FinishEvent();
 
         virtual void FinishTask();
@@ -73,33 +80,42 @@ class FrsNearlineSpectra : public FairTask
         TDirectory* dir_frs; // for now fine, maybe needs to be...overarching branch? dunno
         TDirectory* dir_tac;
         TDirectory* dir_mhtdc;
+        TDirectory* dir_monitors;
         TDirectory* dir_scalers;
         TDirectory* dir_rates;
         TDirectory* dir_drifts;
-        TDirectory* dir_tac_1d;
+        // TDirectory* dir_tac_1d;
         TDirectory* dir_tac_S1S2;
-        TDirectory* dir_tac_1d_S1S2;
-        TDirectory* dir_tac_2d_S1S2;
+        TDirectory* dir_tac_S1S2_1d;
+        TDirectory* dir_tac_S1S2_2d;
+        TDirectory* dir_tac_S1S2_gated;
+        TDirectory** dir_tac_S1S2_gate;
         TDirectory* dir_tac_S2S4;
-        TDirectory* dir_tac_1d_S2S4;
-        TDirectory* dir_tac_2d_S2S4;
-        TDirectory* dir_tac_2d;
-        TDirectory* dir_gated_tac;
+        TDirectory* dir_tac_S2S4_1d;
+        TDirectory* dir_tac_S2S4_2d;
+        TDirectory* dir_tac_S2S4_gated;
+        TDirectory** dir_tac_S2S4_gate;
+        // TDirectory* dir_tac_2d;
+        // TDirectory* dir_gated_tac;
         TDirectory* dir_Z41vsAoQs2s4_tac;
         TDirectory* dir_Z41vsZ42_tac;
         TDirectory* dir_x2vsAoQs2s4_tac;
         TDirectory* dir_x4vsAoQs2s4_tac;
         TDirectory* dir_dEdegZ41vsZ41_tac;
-        TDirectory* dir_mhtdc_1d;
-        TDirectory* dir_mhtdc_2d;
+        // TDirectory* dir_mhtdc_1d;
+        // TDirectory* dir_mhtdc_2d;
         TDirectory* dir_mhtdc_S1S2; 
-        TDirectory* dir_mhtdc_1d_S1S2;
-        TDirectory* dir_mhtdc_2d_S1S2;
+        TDirectory* dir_mhtdc_S1S2_1d;
+        TDirectory* dir_mhtdc_S1S2_2d;
+        TDirectory* dir_mhtdc_S1S2_gated;
+        TDirectory** dir_mhtdc_S1S2_gate;
         TDirectory* dir_mhtdc_S2S4;
-        TDirectory* dir_mhtdc_1d_S2S4;
-        TDirectory* dir_mhtdc_2d_S2S4;
-        TDirectory* dir_gated_mhtdc_2d_S1S2;
-        TDirectory* dir_gated_mhtdc_2d_S2S4;
+        TDirectory* dir_mhtdc_S2S4_1d;
+        TDirectory* dir_mhtdc_S2S4_2d;
+        TDirectory* dir_mhtdc_S2S4_gated;
+        TDirectory** dir_mhtdc_S2S4_gate;
+        // TDirectory* dir_gated_mhtdc_2d_S1S2;
+        // TDirectory* dir_gated_mhtdc_2d_S2S4;
         TDirectory* dir_Z21vsAoQs1s2_mhtdc;
         TDirectory* dir_Z21vsAoQs1s2_mhtdc_1d;
         TDirectory* dir_Z41vsAoQs2s4_mhtdc;
@@ -332,6 +348,8 @@ class FrsNearlineSpectra : public FairTask
         TH2* h2_Z41_vs_AoQs2s4_driftcorr_trav_gate;
 
         // -- Gated on S1S2
+        std::vector<TH2*> h2_Z21_vs_AoQs1s2_Z21vsAoQs1s2_gate_mhtdc;
+
         std::vector<TH2*> h2_x2_vs_AoQs1s2_Z21vsAoQs1s2_gate;
         std::vector<TH2*> h2_x1_vs_AoQs1s2_Z21vsAoQs1s2_gate;
         std::vector<TH2*> h2_Z41_vs_AoQs2s4_Z21vsAoQs1s2_gate_mhtdc;
@@ -355,10 +373,32 @@ class FrsNearlineSpectra : public FairTask
         TH1* h1_dEdegZ41_mhtdc;
 
         // --  Gated on S1S2
-        std::vector<TH1*> h1_beta_s2s4_mhtdc_Z21vsAoQs1s2_gate;
-        std::vector<TH1*> h1_AoQs2s4_mhtdc_Z21vsAoQs1s2_gate;
-        std::vector<TH1*> h1_Z41_mhtdc_Z21vsAoQs1s2_gate;
-        std::vector<TH1*> h1_Z42_mhtdc_Z21vsAoQs1s2_gate;
+        std::vector<TH1*> h1_beta_s1s2_Z21vsAoQs1s2_gate_mhtdc;
+        std::vector<TH1*> h1_beta_s2s4_Z21vsAoQs1s2_gate_mhtdc;
+        std::vector<TH1*> h1_AoQs1s2_Z21vsAoQs1s2_gate_mhtdc;
+        std::vector<TH1*> h1_AoQs2s4_Z21vsAoQs1s2_gate_mhtdc;
+        std::vector<TH1*> h1_Z21_Z21vsAoQs1s2_gate_mhtdc;
+        std::vector<TH1*> h1_Z41_Z21vsAoQs1s2_gate_mhtdc;
+        std::vector<TH1*> h1_Z42_Z21vsAoQs1s2_gate_mhtdc;
+        std::vector<TH1*> h1_x2_Z21vsAoQs1s2_gate_mhtdc;
+
+        std::vector<TH1*> h1_beta_s1s2_Z41vsAoQs2s4_gate_mhtdc;
+        std::vector<TH1*> h1_beta_s2s4_Z41vsAoQs2s4_gate_mhtdc;
+        std::vector<TH1*> h1_AoQs1s2_Z41vsAoQs2s4_gate_mhtdc;
+        std::vector<TH1*> h1_AoQs2s4_Z41vsAoQs2s4_gate_mhtdc;
+        std::vector<TH1*> h1_Z21_Z41vsAoQs2s4_gate_mhtdc;
+        std::vector<TH1*> h1_Z41_Z41vsAoQs2s4_gate_mhtdc;
+        std::vector<TH1*> h1_Z42_Z41vsAoQs2s4_gate_mhtdc;
+        std::vector<TH1*> h1_x2_Z41vsAoQs2s4_gate_mhtdc;
+
+        std::vector<TH1*> h1_beta_s1s2_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc;
+        std::vector<TH1*> h1_beta_s2s4_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc;
+        std::vector<TH1*> h1_AoQs1s2_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc;
+        std::vector<TH1*> h1_AoQs2s4_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc;
+        std::vector<TH1*> h1_Z21_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc;
+        std::vector<TH1*> h1_Z41_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc;
+        std::vector<TH1*> h1_Z42_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc;
+        std::vector<TH1*> h1_x2_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc;
 
 
         // Drifts

@@ -93,11 +93,15 @@ InitStatus LisaNearlineSpectra::Init()
     det_number = lisa_config->NDetectors();
     auto const & detector_mapping = lisa_config->Mapping();
 
+    std::cout << "hello1" << std::endl;
+
     gates_LISA_febex = lisa_config->GatesLISAFebex();
     gates_LISA_MWD = lisa_config->GatesLISAMWD();
 
-    int gate_number = gates_LISA_febex.size();  
-    int mwd_gate_number = gates_LISA_MWD.size();  
+    std::cout << "hello2" << std::endl;
+
+    int gate_number = gates_LISA_febex.begin()->second.size();  
+    int mwd_gate_number = gates_LISA_MWD.begin()->second.size();  
 
 
     xmax = lisa_config->XMax();
@@ -135,8 +139,11 @@ InitStatus LisaNearlineSpectra::Init()
     std::vector<std::string> gate_filenames;
     
 
+    int kk = 0;
     for (const auto& [layer_g, gate_vec] : gates_LISA_febex)
     {
+        kk++;
+        std::cout << "hello " << 2 + kk <<  std::endl;
         for (const auto& [path, low, high] : gate_vec)
         {
             if (processed_files.count(path)) continue;
@@ -177,6 +184,8 @@ InitStatus LisaNearlineSpectra::Init()
   
     // ::: S T A T S :::
 
+    std::cout << "hello13" << std::endl;
+
     //::: White Rabbit :::
     dir_stats->cd();
     h1_wr_diff = new TH1I("h1_wr_diff", "WR Difference", lisa_config->bin_wr_diff, lisa_config->min_wr_diff, lisa_config->max_wr_diff);
@@ -213,6 +222,8 @@ InitStatus LisaNearlineSpectra::Init()
             }
         }
     }
+
+    std::cout << "hello14" << std::endl;
     // init rate counters
     for (int i = 0; i < layer_number; i++)
     {
@@ -686,15 +697,20 @@ InitStatus LisaNearlineSpectra::Init()
     //....................................END OF DRIFTS 
 
     // ::: Febex Gated
+
+    std::cout << "hello15" << std::endl;
     for (int g = 0; g < gate_number; ++g)  
     {
+        std::cout << "hello16!!" << std::endl;
         auto gate_name = std::next(dirs_gate_febex.begin(), g)->first;  
         TDirectory* dir_febex_g = dirs_gate_febex[gate_name]; 
         
         dir_febex_g->cd();
         if (g >= h1_energy_layer_gated.size()) h1_energy_layer_gated.resize(g + 1);
     
+        std::cout << "hello16b" << std::endl;
         h1_energy_layer_gated[g].resize(layer_number); 
+        std::cout << "hello16c" << std::endl;
         for (int i = 0; i < layer_number; ++i)
         {
             h1_energy_layer_gated[g][i] = new TH1F(
@@ -726,6 +742,8 @@ InitStatus LisaNearlineSpectra::Init()
             h1_energy_xy_gated[g][i]->Draw();
         }
     }
+
+    std::cout << "hello17" << std::endl;
     //....................................
     // ::: MWD Gated :::
     for (int g = 0; g < mwd_gate_number; ++g)  
@@ -768,6 +786,8 @@ InitStatus LisaNearlineSpectra::Init()
         }
     }
     //....................................
+
+    c4LOG(info, "Successful");
         
     return kSUCCESS;
 }
