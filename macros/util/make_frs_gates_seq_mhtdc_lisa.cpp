@@ -335,7 +335,7 @@ void make_frs_gates_seq_mhtdc_lisa(TString infilename){
     bool making_gates = true;
     while (making_gates){
         int gate;
-        std::cout << "Please choose parameters to gate - (1) Z(11) vs AoQ(S1S2), (2) Z(41) vs AoQ(S2S4), (3) Z21 vs Z41, (4) x2 vs AoQs2s4, (5) x4 vs AoQs2s4, (6) x2 vs AoQs1s2 ,(7) dEdeg vs Z41 :" << std::endl;
+        std::cout << "Please choose parameters to gate - (1) Z(21) vs AoQ(S1S2), (2) Z(41) vs AoQ(S2S4), (3) Z21 vs Z41, (4) x2 vs AoQs2s4, (5) x4 vs AoQs2s4, (6) x2 vs AoQs1s2 ,(7) dEdeg vs Z41 :" << std::endl;
 
         std::cin >> gate;
 
