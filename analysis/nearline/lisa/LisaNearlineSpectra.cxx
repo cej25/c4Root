@@ -778,10 +778,23 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         //      Gated - layer
         if (auto gate_febex = gates_LISA_febex.find(layer); gate_febex != gates_LISA_febex.end() )
         {
-            double gate_febex_low = gate_febex->second.first;
-            double gate_febex_high = gate_febex->second.second;
-            if (energy_GM > gate_febex_low && energy_GM < gate_febex_high) energy_layer_gated[layer-1].emplace_back(energy_GM);
+            for (const auto& [filename, gate_min, gate_max] : gate_febex->second)
+            {
+                double gate_febex_low = gate_min;
+                double gate_febex_high = gate_max;
+
+                if (energy_GM > gate_febex_low && energy_GM < gate_febex_high) 
+                {
+                    energy_layer_gated[layer - 1].emplace_back(energy_GM);
+                }
+            } 
         }
+        // if (auto gate_febex = gates_LISA_febex.find(layer); gate_febex != gates_LISA_febex.end() )
+        // {
+        //     double gate_febex_low = gate_febex->second.first;
+        //     double gate_febex_high = gate_febex->second.second;
+        //     if (energy_GM > gate_febex_low && energy_GM < gate_febex_high) energy_layer_gated[layer-1].emplace_back(energy_GM);
+        // }
         if (auto gate_MWD = gates_LISA_MWD.find(layer); gate_MWD != gates_LISA_MWD.end() )
         {
             double gate_MWD_low = gate_MWD->second.first;
@@ -789,12 +802,31 @@ void LisaNearlineSpectra::Exec(Option_t* option)
             if (energy_MWD_GM > gate_MWD_low && energy_MWD_GM < gate_MWD_high) energy_MWD_layer_gated[layer-1].emplace_back(energy_MWD_GM);     
         }
         //      Gated - Channels
-        if (auto gate_febex = gates_LISA_febex.find(layer); gate_febex != gates_LISA_febex.end() )
+        if (auto gate_febex = gates_LISA_febex.find(layer); gate_febex != gates_LISA_febex.end()) 
         {
-            double gate_febex_low = gate_febex->second.first;
-            double gate_febex_high = gate_febex->second.second;
-            if (energy_GM > gate_febex_low && energy_GM < gate_febex_high) energy_xy_gated[layer-1][xpos][ypos].emplace_back(energy_GM);
+            for (const auto& [filename, gate_min, gate_max] : gate_febex->second) 
+            {
+                double gate_febex_low = gate_min;
+                double gate_febex_high = gate_max;
+
+                if (energy_GM > gate_febex_low && energy_GM < gate_febex_high) 
+                {
+                    energy_xy_gated[layer - 1][xpos][ypos].emplace_back(energy_GM);
+                }
+
+                // std::cout << "File: " << filename
+                //         << " | Layer: " << layer
+                //         << " | Gate Min: " << gate_febex_low
+                //         << " | Gate Max: " << gate_febex_high << "\n";
+            }
         }
+
+        // if (auto gate_febex = gates_LISA_febex.find(layer); gate_febex != gates_LISA_febex.end() )
+        // {
+        //     double gate_febex_low = gate_febex->second.first;
+        //     double gate_febex_high = gate_febex->second.second;
+        //     if (energy_GM > gate_febex_low && energy_GM < gate_febex_high) energy_xy_gated[layer-1][xpos][ypos].emplace_back(energy_GM);
+        // }
         if (auto gate_MWD = gates_LISA_MWD.find(layer); gate_MWD != gates_LISA_MWD.end() )
         {
             double gate_MWD_low = gate_MWD->second.first;
