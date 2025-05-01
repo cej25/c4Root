@@ -225,7 +225,7 @@ InitStatus FrsNearlineSpectra::Init()
                 h2_x4_vs_AoQs2s4_Zsame_gate[gate] = MakeTH2(dir_Z41vsAoQs2s4_tac, "I", Form("h2_x4_vs_AoQs2s4_Zsame_gate%d", gate), Form("x4 vs. A/Q (S2-S4) - Z41-Z42 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);            
                 h2_Z41_vs_AoQs2s4_Zsame_gate[gate] = MakeTH2(dir_Z41vsAoQs2s4_tac, "I", Form("h2_Z41_vs_AoQs2s4_Zsame_gate%d", gate), Form("Z41 vs. A/Q (S2-S4) - Z41-Z42 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
 
-                h2_x2_vs_AoQs2s4_Zsame_x2AoQs2s4_gate[gate] = MakeTH2(dir_x2vsAoQs2s4_tac, "I", Form("h2_x2_vs_AoQs2s4_Zsame_x2AoQs2s4_gate%d", gate), Form("x2 vs. A/Q (S2-S4) - x2AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
+                h2_x2_vs_AoQs2s4_x2AoQs2s4_gate[gate] = MakeTH2(dir_x2vsAoQs2s4_tac, "I", Form("h2_x2_vs_AoQs2s4_x2AoQs2s4_gate%d", gate), Form("x2 vs. A/Q (S2-S4) - x2AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
                 h2_Z41_vs_Z42_x2AoQs2s4_gate[gate] = MakeTH2(dir_x2vsAoQs2s4_tac, "I", Form("h2_Z41_vs_Z42_x2AoQs2s4_gate%d", gate), Form("Z41 vs. Z42 - x2AoQs2s4 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);
                 // these have additional gate
                 h2_x2_vs_AoQs2s4_Zsame_x2AoQs2s4_gate[gate] = MakeTH2(dir_x2vsAoQs2s4_tac, "I", Form("h2_x2_vs_AoQs2s4_Zsame_x2AoQs2s4_gate%d", gate), Form("x2 vs. A/Q (S2-S4) - Z41-Z42 Gate 0, x2AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);                
@@ -602,7 +602,6 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     // ---------------------------- //
     if (frs_config->plot_tac_2d)
     {
-
         if (hitItem.Get_ID_AoQ_s2s4() > 0 && hitItem.Get_ID_z41() > 0) h2_Z41_vs_AoQs2s4->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_z41());
         if (hitItem.Get_ID_AoQs2s4_driftcorr() > 0 && hitItem.Get_ID_z41_driftcorr() > 0) h2_Z41_vs_AoQs2s4_driftcorr->Fill(hitItem.Get_ID_AoQs2s4_driftcorr(), hitItem.Get_ID_z41_driftcorr());
         
@@ -694,7 +693,7 @@ void FrsNearlineSpectra::Exec(Option_t* option)
                         h2_dEdegZ41_vs_Z41_Zsame_x4AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_dEdeg_z41());
                     }
                 }
-                        
+                
                 if (FrsGates[gate]->Passed_dEdegZ41vsZ41(hitItem.Get_ID_z41(), hitItem.Get_ID_dEdeg_z41()))
                 {
                     h2_Z41_vs_AoQs2s4_dEdegZ41_Z41_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_z41());
@@ -781,6 +780,7 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     
 
     int a = 0;
+
 
     // :::::: Multi-hit TDC ::::::: //
     // ---------------------------- //
