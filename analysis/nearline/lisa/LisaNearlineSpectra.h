@@ -69,8 +69,7 @@ class LisaNearlineSpectra : public FairTask
 
         // Variables for Gates
         std::map<int, std::vector<std::tuple<std::string, double, double>>> gates_LISA_febex;
-        //std::map<int,std::pair<double,double>> gates_LISA_febex;
-        std::map<int,std::pair<double,double>> gates_LISA_MWD;
+        std::map<int, std::vector<std::tuple<std::string, double, double>>> gates_LISA_MWD;
 
         // common variables
         int layer_number;
@@ -117,6 +116,12 @@ class LisaNearlineSpectra : public FairTask
         TDirectory* dir_MWD_ch_drift;
         //  Gates LISA only
         TDirectory* dir_gates;
+
+        std::map<std::string, TDirectory*> dirs_gate_file;
+        std::map<std::string, TDirectory*> dirs_gate_febex;
+        std::map<std::string, TDirectory*> dirs_gate_mwd;
+        std::map<std::string, TDirectory*> dirs_gate_febex_channel;
+        std::map<std::string, TDirectory*> dirs_gate_mwd_channel;
         TDirectory* dir_febex_gates;
         TDirectory* dir_MWD_gates;
         TDirectory* dir_febex_gates_channel;
@@ -145,8 +150,11 @@ class LisaNearlineSpectra : public FairTask
         std::vector<TH2F*> h2_energy_layer_vs_layer;
         TH2F* h2_energy_first_vs_last;
         //      - Gated
-        std::vector<TH1F*> h1_energy_layer_gated;
-        std::vector<TH1F*> h1_energy_xy_gated;
+        std::vector<std::vector<TH1F*>> h1_energy_layer_gated; 
+        std::vector<std::vector<TH1F*>> h1_energy_xy_gated;
+        //std::vector<TH1F*> h1_energy_layer_gated;
+        //std::vector<TH1F*> h1_energy_xy_gated;
+        
         //      MWD
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_MWD_ch;
         std::vector<TH1F*> h1_energy_MWD_layer;
@@ -155,8 +163,10 @@ class LisaNearlineSpectra : public FairTask
         std::vector<TH2F*> h2_energy_MWD_layer_vs_layer;
         TH2F* h2_energy_MWD_first_vs_last;
         //      - Gated
-        std::vector<TH1F*> h1_energy_MWD_layer_gated;
-        std::vector<TH1F*> h1_energy_MWD_xy_gated;
+        std::vector<std::vector<TH1F*>> h1_energy_MWD_layer_gated;
+        std::vector<std::vector<TH1F*>> h1_energy_MWD_xy_gated;
+        //std::vector<TH1F*> h1_energy_MWD_layer_gated;
+        //std::vector<TH1F*> h1_energy_MWD_xy_gated;
 
         // ::: Traces
         std::vector<std::vector<std::vector<TH2F*>>> h2_traces_ch;

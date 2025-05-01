@@ -141,8 +141,11 @@ void shiyan_histos()
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
         TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
         
-        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Lisa_Febex_Gates.txt");
-        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/Lisa_MWD_Gates.txt");
+        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Febex_Gate1.txt");
+        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Febex_Gate2.txt");
+
+        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/MWD_Gate1.txt");
+        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/MWD_Gate2.txt");
 
     }
     if ( EXP )
