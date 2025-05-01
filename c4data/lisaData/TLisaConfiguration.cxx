@@ -34,7 +34,8 @@ std::string TLisaConfiguration::mapping_file = "blank";
 std::string TLisaConfiguration::gain_matching_file = "blank";
 std::string TLisaConfiguration::gain_matching_file_MWD = "blank";
 std::string TLisaConfiguration::calibration_file = "blank";
-std::string TLisaConfiguration::gate_ranges_file = "blank";
+std::vector<std::string> TLisaConfiguration::gate_ranges_files = {"blank"};
+//std::string TLisaConfiguration::gate_ranges_files = "blank";
 std::string TLisaConfiguration::gate_ranges_MWD_file = "blank";
 
 //WR enable setting - X7 data = 0, S2 data = 1
@@ -341,33 +342,69 @@ void TLisaConfiguration::ReadGMFileMWD()
 
 void TLisaConfiguration::ReadLISAGateFebexFile()
 {       
-    std::ifstream gate_ranges(gate_ranges_file);
-    std::string line;
+    gate_LISA_febex.clear(); 
 
-    if (gate_ranges.fail()) c4LOG(warn, "Could not open LISA Febex Gates file");
-
-    while (std::getline(gate_ranges, line))
+    for (const auto& gate_file : gate_ranges_files)
     {
-        if (line.empty() || line[0] == '#') continue;
+        std::ifstream gate_ranges(gate_file);
+        std::string line;
+        if (gate_ranges.fail()) 
+        {
+            c4LOG(warn, "Could not open LISA Febex Gates file: " + gate_file);
+            continue;
+        }
+        while (std::getline(gate_ranges, line))
+        {
+            if (line.empty() || line[0] == '#') continue;
 
-        std::istringstream iss(line);
-        int layer_id;
-        double gate_min, gate_max;
-        std::pair<double, double> gate_min_max;
+            std::istringstream iss(line);
+            int layer_id;
+            double gate_min, gate_max;
 
-        iss >> layer_id >> gate_min >> gate_max;
+            iss >> layer_id >> gate_min >> gate_max;
 
-        gate_min_max = std::make_pair(gate_min, gate_max);
+            gate_LISA_febex[layer_id].emplace_back(gate_file, gate_min, gate_max);
 
-        gate_LISA_febex.insert(std::make_pair(layer_id, gate_min_max));
-
-        std::cout << " Layer ID : "<< layer_id << " Gate Min : " << gate_min << " Gate Max : " << gate_max << "\n";
+            std::cout << "File: " << gate_file
+                      << " | Layer ID: " << layer_id 
+                      << " | Gate Min: " << gate_min 
+                      << " | Gate Max: " << gate_max << "\n";
+        }
+        gate_ranges.close();
+        c4LOG(info, "Loaded LISA Febex Gates from file: " + gate_file);  
     }
-    
     gates_febex_loaded = 1;
-    gate_ranges.close();
+    
+    //std::ifstream gate_ranges(gate_ranges_file);
+    //std::string line;
 
-    c4LOG(info, "Lisa Febex Gates: " + gate_ranges_file);
+    //if (gate_ranges.fail()) c4LOG(warn, "Could not open LISA Febex Gates file");
+
+    // while (std::getline(gate_ranges, line))
+    // {
+    //     if (line.empty() || line[0] == '#') continue;
+
+    //     std::istringstream iss(line);
+    //     int layer_id;
+    //     double gate_min, gate_max;
+    //     std::pair<double, double> gate_min_max;
+
+    //     iss >> layer_id >> gate_min >> gate_max;
+
+    //     gate_min_max = std::make_pair(gate_min, gate_max);
+
+    //     gate_LISA_febex.insert(std::make_pair(layer_id, gate_min_max));
+
+    //     //emplace gate_LISA_febex for containing multiple files.
+    //     //retrieve the vector 
+    //     //extract the map for each gate
+    //     std::cout << " Layer ID : "<< layer_id << " Gate Min : " << gate_min << " Gate Max : " << gate_max << "\n";
+    // }
+    
+    // gates_febex_loaded = 1;
+    // gate_ranges.close();
+
+    // c4LOG(info, "Lisa Febex Gates: " + gate_ranges_file);
     return;
 }
 

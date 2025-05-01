@@ -68,7 +68,8 @@ class LisaNearlineSpectra : public FairTask
         std::vector<LisaCalItem> const* lisaCalArray;
 
         // Variables for Gates
-        std::map<int,std::pair<double,double>> gates_LISA_febex;
+        std::map<int, std::vector<std::tuple<std::string, double, double>>> gates_LISA_febex;
+        //std::map<int,std::pair<double,double>> gates_LISA_febex;
         std::map<int,std::pair<double,double>> gates_LISA_MWD;
 
         // common variables

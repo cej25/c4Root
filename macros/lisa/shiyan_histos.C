@@ -1,7 +1,7 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define LISA_ON 0
+#define LISA_ON 1
         //LISA_ANA displays only energy and traces; LISA_CAL displays stats,energy,traces. Choose one.
         //Note that if FRS 1, LISA_CAL is needed. 
 #define LISA_ANA 0
@@ -14,7 +14,7 @@
 // If you want to have trace histos
 #define TRACE_ON 1
 
-#define FRS_ON 1
+#define FRS_ON 0
 #define FRS_LISA_CORRELATIONS 0
 
 #define WR_ENABLED 1
@@ -63,13 +63,13 @@ void shiyan_histos()
 
     // ::: P A T H   O F   F I L E  to read
     TString inputpath = "/u/gandolfo/data/test_c4/shiyan_test/";
-    //TString filename = inputpath + "test_0003_tree.root";  
-    TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  
+    TString filename = inputpath + "test_0003_tree.root";  
+    //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  
     
     // ::: O U T P U T
     TString outputpath = "/u/gandolfo/data/test_c4/shiyan_test/"; //test output
-    //TString outputFilename = outputpath + "test_0003_histo_shiyan.root";
-    TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_histo.root";
+    TString outputFilename = outputpath + "test_gates.root";
+    //TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_histo.root";
 
 
     FairRunAna* run = new FairRunAna();
@@ -140,8 +140,9 @@ void shiyan_histos()
         TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_cards.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
         TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
-        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Lisa_Febex_Gates.txt");
-        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Lisa_MWD_Gates.txt");
+        
+        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Lisa_Febex_Gates.txt");
+        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/Lisa_MWD_Gates.txt");
 
     }
     if ( EXP )
@@ -150,8 +151,8 @@ void shiyan_histos()
         TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching_shiyan.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_shiyan.txt");
         TLisaConfiguration::SetMWDParametersFile(config_path +  "/lisa/Lisa_MWD_Parameters_shiyan.txt");
-        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Lisa_Febex_Gates_shiyan.txt");
-        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Lisa_MWD_Gates_shiyan.txt");
+        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Lisa_Febex_Gates_shiyan.txt");
+        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/Lisa_MWD_Gates_shiyan.txt");
     }
   
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
