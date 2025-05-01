@@ -18,6 +18,7 @@
 
 #include <sstream>
 #include <iomanip>
+#include <filesystem>
 // FairRoot
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -95,6 +96,10 @@ InitStatus LisaNearlineSpectra::Init()
     gates_LISA_febex = lisa_config->GatesLISAFebex();
     gates_LISA_MWD = lisa_config->GatesLISAMWD();
 
+    int gate_number = gates_LISA_febex.size();  
+    int mwd_gate_number = gates_LISA_MWD.size();  
+
+
     xmax = lisa_config->XMax();
     ymax = lisa_config->YMax();
     int traces_max = lisa_config->amplitude_max;
@@ -124,7 +129,43 @@ InitStatus LisaNearlineSpectra::Init()
     dir_MWD_drift = dir_drift->mkdir("MWD_Drift");
     dir_MWD_ch_drift = dir_MWD_drift->mkdir("Channels");
 
-    dir_gates = dir_lisa->mkdir("Gates-LISA-only");
+    dir_gates = dir_lisa->mkdir("Gates-LISA");
+    namespace fs = std::filesystem;
+    std::set<std::string> processed_files;  
+    std::vector<std::string> gate_filenames;
+    
+
+    for (const auto& [layer_g, gate_vec] : gates_LISA_febex)
+    {
+        for (const auto& [path, low, high] : gate_vec)
+        {
+            if (processed_files.count(path)) continue;
+            processed_files.insert(path);
+
+            std::string full_stem = fs::path(path).stem().string();
+            std::string filename = full_stem.substr(full_stem.find('_') + 1);
+            gate_filenames.push_back(filename);
+
+            std::ifstream infile(path);
+            if (!infile.good()) continue;
+
+            TDirectory* dir_gate_file = dir_gates->mkdir(filename.c_str());
+            dirs_gate_file[filename] = dir_gate_file;
+
+            TDirectory* dir_febex_g = dir_gate_file->mkdir("Febex");
+            dirs_gate_febex[filename] = dir_febex_g;
+
+            TDirectory* dir_mwd_g = dir_gate_file->mkdir("MWD");
+            dirs_gate_mwd[filename] = dir_mwd_g;
+
+            TDirectory* dir_febex_ch_g = dir_febex_g->mkdir("Channel");
+            dirs_gate_febex_channel[filename] = dir_febex_ch_g;
+
+            TDirectory* dir_mwd_ch_g = dir_mwd_g->mkdir("Channel");
+            dirs_gate_mwd_channel[filename] = dir_mwd_ch_g;
+        }
+    }
+
     dir_febex_gates = dir_gates->mkdir("Febex");
     dir_febex_gates_channel = dir_febex_gates->mkdir("Channel");
     dir_MWD_gates = dir_gates->mkdir("MWD");
@@ -643,58 +684,90 @@ InitStatus LisaNearlineSpectra::Init()
         }
     } 
     //....................................END OF DRIFTS 
-    // ::: Febex - Sequential gates on Layers (LISA only)
-    dir_febex_gates->cd();
-    h1_energy_layer_gated.resize(layer_number);
-    for (int i = 0; i < layer_number; i++)
-    {   
-        h1_energy_layer_gated[i] = new TH1F(Form("h1_energy_layer_%i_gated", i+1), Form("LISA-Gated Energy - Layer %i", i+1), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
-        h1_energy_layer_gated[i]->GetXaxis()->SetTitle(Form("E(LISA %i) [a.u.]", i+1));
-        h1_energy_layer_gated[i]->SetLineColor(kBlue+1);
-        h1_energy_layer_gated[i]->SetFillColor(kRed-3);
-        h1_energy_layer_gated[i]->Draw();       
+
+    // ::: Febex Gated
+    for (int g = 0; g < gate_number; ++g)  
+    {
+        auto gate_name = std::next(dirs_gate_febex.begin(), g)->first;  
+        TDirectory* dir_febex_g = dirs_gate_febex[gate_name]; 
+        
+        dir_febex_g->cd();
+        if (g >= h1_energy_layer_gated.size()) h1_energy_layer_gated.resize(g + 1);
+    
+        h1_energy_layer_gated[g].resize(layer_number); 
+        for (int i = 0; i < layer_number; ++i)
+        {
+            h1_energy_layer_gated[g][i] = new TH1F(
+                Form("h1_energy_layer_%i_gated", i+1),
+                Form("LISA-Gated Energy - Layer %i", i+1),
+                lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy
+            );
+            h1_energy_layer_gated[g][i]->GetXaxis()->SetTitle(Form("E(LISA %i) [a.u.]", i+1));
+            h1_energy_layer_gated[g][i]->SetLineColor(kBlue+1);
+            h1_energy_layer_gated[g][i]->SetFillColor(kRed-3);
+            h1_energy_layer_gated[g][i]->Draw();
+        }
+
+        //      Febex Channel Gated
+        TDirectory* dir_ch = dirs_gate_febex_channel[gate_name];  
+        dir_ch->cd();
+        if (g >= h1_energy_xy_gated.size()) h1_energy_xy_gated.resize(g + 1);
+        h1_energy_xy_gated[g].resize(layer_number);
+        for (int i = 0; i < layer_number; ++i)
+        {
+            h1_energy_xy_gated[g][i] = new TH1F(
+                Form("h1_energy_%i%i%i_gated", i+1, lisa_config->xpos_gate, lisa_config->ypos_gate),
+                Form("LISA-Gated Energy - %i%i%i", i+1, lisa_config->xpos_gate, lisa_config->ypos_gate),
+                lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy
+            );
+            h1_energy_xy_gated[g][i]->GetXaxis()->SetTitle(Form("E(LISA %i%i%i) [a.u.]", i+1, lisa_config->xpos_gate, lisa_config->ypos_gate));
+            h1_energy_xy_gated[g][i]->SetLineColor(kBlue+1);
+            h1_energy_xy_gated[g][i]->SetFillColor(kOrange-3);
+            h1_energy_xy_gated[g][i]->Draw();
+        }
     }
     //....................................
-    // ::: MWD - Sequential gates on Layers (LISA only)
-    dir_MWD_gates->cd();
-    h1_energy_MWD_layer_gated.resize(layer_number);
-    for (int i = 0; i < layer_number; i++)
-    {   
-        h1_energy_MWD_layer_gated[i] = new TH1F(Form("h1_energy_MWD_layer_%i_gated", i+1), Form("LISA-Gated Energy MWD - Layer %i", i+1), lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
-        h1_energy_MWD_layer_gated[i]->GetXaxis()->SetTitle(Form("E MWD (LISA %i) [a.u.]", i+1));
-        h1_energy_MWD_layer_gated[i]->SetLineColor(kBlue+1);
-        h1_energy_MWD_layer_gated[i]->SetFillColor(kViolet+10);
-        h1_energy_MWD_layer_gated[i]->Draw();       
+    // ::: MWD Gated :::
+    for (int g = 0; g < mwd_gate_number; ++g)  
+    {
+        auto gate_name = std::next(dirs_gate_mwd.begin(), g)->first;  
+        TDirectory* dir_mwd_g = dirs_gate_mwd[gate_name]; 
+        
+        dir_mwd_g->cd();
+        if (g >= h1_energy_MWD_layer_gated.size()) h1_energy_MWD_layer_gated.resize(g + 1);
+        h1_energy_MWD_layer_gated[g].resize(layer_number); 
+        for (int i = 0; i < layer_number; ++i)
+        {
+            h1_energy_MWD_layer_gated[g][i] = new TH1F(
+                Form("h1_energy_MWD_layer_%i_gated", i+1),
+                Form("LISA-Gated Energy MWD - Layer %i", i+1),
+                lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD
+            );
+            h1_energy_MWD_layer_gated[g][i]->GetXaxis()->SetTitle(Form("E MWD (LISA %i) [a.u.]", i+1));
+            h1_energy_MWD_layer_gated[g][i]->SetLineColor(kBlue+1);
+            h1_energy_MWD_layer_gated[g][i]->SetFillColor(kViolet+10);
+            h1_energy_MWD_layer_gated[g][i]->Draw();
+        }
+
+        //      MWD Channel Gated
+        TDirectory* dir_ch = dirs_gate_mwd_channel[gate_name]; 
+        dir_ch->cd();
+        if (g >= h1_energy_MWD_xy_gated.size()) h1_energy_MWD_xy_gated.resize(g + 1);
+        h1_energy_MWD_xy_gated[g].resize(layer_number);
+        for (int i = 0; i < layer_number; ++i)
+        {
+            h1_energy_MWD_xy_gated[g][i] = new TH1F(
+                Form("h1_energy_MWD_%i%i%i_gated", i+1, lisa_config->xpos_gate, lisa_config->ypos_gate),
+                Form("LISA-Gated Energy MWD - %i%i%i", i+1, lisa_config->xpos_gate, lisa_config->ypos_gate),
+                lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD
+            );
+            h1_energy_MWD_xy_gated[g][i]->GetXaxis()->SetTitle(Form("E MWD (LISA %i%i%i) [a.u.]", i+1, lisa_config->xpos_gate, lisa_config->ypos_gate));
+            h1_energy_MWD_xy_gated[g][i]->SetLineColor(kBlue+1);
+            h1_energy_MWD_xy_gated[g][i]->SetFillColor(kViolet-1);
+            h1_energy_MWD_xy_gated[g][i]->Draw();
+        }
     }
     //....................................
-    // ::: Febex - Sequential gates on diamond xy (LISA only)
-    dir_febex_gates_channel->cd();
-    h1_energy_xy_gated.resize(layer_number);
-    for (int i = 0; i < layer_number; i++)
-    {   
-        h1_energy_xy_gated[i] = new TH1F(Form("h1_energy_%i%i%i_gated", i+1, lisa_config->xpos_gate, lisa_config->ypos_gate), 
-                                        Form("LISA-Gated Energy - %i%i%i", i+1,lisa_config->xpos_gate, lisa_config->ypos_gate), 
-                                        lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
-        h1_energy_xy_gated[i]->GetXaxis()->SetTitle(Form("E(LISA %i%i%i) [a.u.]", i+1, lisa_config->xpos_gate, lisa_config->ypos_gate));
-        h1_energy_xy_gated[i]->SetLineColor(kBlue+1);
-        h1_energy_xy_gated[i]->SetFillColor(kOrange-3);
-        h1_energy_xy_gated[i]->Draw();       
-    }
-    //....................................
-    // ::: MWD - Sequential gates on diamond xy (LISA only)
-    dir_MWD_gates_channel->cd();
-    h1_energy_MWD_xy_gated.resize(layer_number);
-    for (int i = 0; i < layer_number; i++)
-    {   
-        h1_energy_MWD_xy_gated[i] = new TH1F(Form("h1_energy_MWD_%i%i%i_gated", i+1, lisa_config->xpos_gate, lisa_config->ypos_gate), 
-                                            Form("LISA-Gated Energy MWD - %i%i%i", i+1,lisa_config->xpos_gate, lisa_config->ypos_gate), 
-                                            lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
-        h1_energy_MWD_xy_gated[i]->GetXaxis()->SetTitle(Form("E MWD (LISA %i%i%i) [a.u.]", i+1, lisa_config->xpos_gate, lisa_config->ypos_gate));
-        h1_energy_MWD_xy_gated[i]->SetLineColor(kBlue+1);
-        h1_energy_MWD_xy_gated[i]->SetFillColor(kViolet-1);
-        h1_energy_MWD_xy_gated[i]->Draw();       
-    }
-    //....................................END OF GATES (LISA ONLY)
         
     return kSUCCESS;
 }
@@ -718,16 +791,30 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     std::vector<std::vector<float>> energy_MWD_layer(layer_number);
     energy_MWD_layer.resize(layer_number);  
 
+    // Define energy arrays for each gate (Febex and MWD) and layer
+    std::set<std::string> p_files;
+    std::vector<std::string> g_filenames;
+    namespace f = std::filesystem;
+    for (const auto& [layer_g, gate_vec] : gates_LISA_febex)
+    {
+        for (const auto& [path, low, high] : gate_vec)
+        {
+            if (p_files.count(path)) continue;
+            p_files.insert(path);
+
+            std::string full_stem = f::path(path).stem().string();
+            g_filenames.push_back(full_stem);
+        }
+    }
+    int gate_number = g_filenames.size(); 
     // ::: Energy gated - Layer
-    std::vector<float> energy_layer_gated[layer_number];
-    std::vector<float> energy_MWD_layer_gated[layer_number];
+    std::vector<float> energy_layer_gated[gate_number][layer_number];
+    std::vector<float> energy_MWD_layer_gated[gate_number][layer_number];
 
     // ::: Energy gated - Channel
-    std::vector<float> energy_xy_gated[layer_number][xmax][ymax];
-    std::vector<float> energy_MWD_xy_gated[layer_number][xmax][ymax];
-
-
-
+    std::vector<float> energy_xy_gated[gate_number][layer_number][xmax][ymax];
+    std::vector<float> energy_MWD_xy_gated[gate_number][layer_number][xmax][ymax];
+    
 
     for (auto const & lisaCalItem : *lisaCalArray)
     {
@@ -775,65 +862,64 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         energy_layer[layer-1].emplace_back(energy_GM);
         energy_MWD_layer[layer-1].emplace_back(energy_MWD_GM);
 
-        //      Gated - layer
-        if (auto gate_febex = gates_LISA_febex.find(layer); gate_febex != gates_LISA_febex.end() )
+        // Loop over gates for LISA FEBEX
+        if (auto gate_febex = gates_LISA_febex.find(layer); gate_febex != gates_LISA_febex.end())
         {
-            for (const auto& [filename, gate_min, gate_max] : gate_febex->second)
+            for (size_t i = 0; i < gate_febex->second.size(); ++i)
             {
-                double gate_febex_low = gate_min;
-                double gate_febex_high = gate_max;
+                const auto& [filename, gate_min, gate_max] = gate_febex->second[i];
 
-                if (energy_GM > gate_febex_low && energy_GM < gate_febex_high) 
+                if (energy_GM > gate_min && energy_GM < gate_max)
                 {
-                    energy_layer_gated[layer - 1].emplace_back(energy_GM);
+                    energy_layer_gated[i][layer - 1].push_back(energy_GM);
+                    energy_xy_gated[i][layer - 1][xpos][ypos].push_back(energy_GM);
                 }
-            } 
-        }
-        // if (auto gate_febex = gates_LISA_febex.find(layer); gate_febex != gates_LISA_febex.end() )
-        // {
-        //     double gate_febex_low = gate_febex->second.first;
-        //     double gate_febex_high = gate_febex->second.second;
-        //     if (energy_GM > gate_febex_low && energy_GM < gate_febex_high) energy_layer_gated[layer-1].emplace_back(energy_GM);
-        // }
-        if (auto gate_MWD = gates_LISA_MWD.find(layer); gate_MWD != gates_LISA_MWD.end() )
-        {
-            double gate_MWD_low = gate_MWD->second.first;
-            double gate_MWD_high = gate_MWD->second.second;
-            if (energy_MWD_GM > gate_MWD_low && energy_MWD_GM < gate_MWD_high) energy_MWD_layer_gated[layer-1].emplace_back(energy_MWD_GM);     
-        }
-        //      Gated - Channels
-        if (auto gate_febex = gates_LISA_febex.find(layer); gate_febex != gates_LISA_febex.end()) 
-        {
-            for (const auto& [filename, gate_min, gate_max] : gate_febex->second) 
-            {
-                double gate_febex_low = gate_min;
-                double gate_febex_high = gate_max;
-
-                if (energy_GM > gate_febex_low && energy_GM < gate_febex_high) 
-                {
-                    energy_xy_gated[layer - 1][xpos][ypos].emplace_back(energy_GM);
-                }
-
-                // std::cout << "File: " << filename
-                //         << " | Layer: " << layer
-                //         << " | Gate Min: " << gate_febex_low
-                //         << " | Gate Max: " << gate_febex_high << "\n";
             }
         }
 
-        // if (auto gate_febex = gates_LISA_febex.find(layer); gate_febex != gates_LISA_febex.end() )
-        // {
-        //     double gate_febex_low = gate_febex->second.first;
-        //     double gate_febex_high = gate_febex->second.second;
-        //     if (energy_GM > gate_febex_low && energy_GM < gate_febex_high) energy_xy_gated[layer-1][xpos][ypos].emplace_back(energy_GM);
-        // }
-        if (auto gate_MWD = gates_LISA_MWD.find(layer); gate_MWD != gates_LISA_MWD.end() )
+        // Loop over gates for MWD
+        if (auto gate_MWD = gates_LISA_MWD.find(layer); gate_MWD != gates_LISA_MWD.end())
         {
-            double gate_MWD_low = gate_MWD->second.first;
-            double gate_MWD_high = gate_MWD->second.second;
-            if (energy_MWD_GM > gate_MWD_low && energy_MWD_GM < gate_MWD_high) energy_MWD_xy_gated[layer-1][xpos][ypos].emplace_back(energy_MWD_GM);     
+            for (size_t i = 0; i < gate_MWD->second.size(); ++i)
+            {
+                const auto& [filename, gate_min, gate_max] = gate_MWD->second[i];
+
+                if (energy_MWD_GM > gate_min && energy_MWD_GM < gate_max)
+                {
+                    energy_MWD_layer_gated[i][layer - 1].push_back(energy_MWD_GM);
+                    energy_MWD_xy_gated[i][layer - 1][xpos][ypos].push_back(energy_MWD_GM);
+                }
+            }
         }
-    
+
+        // Loop over gates for FEBEX Channel
+        if (auto gate_febex = gates_LISA_febex.find(layer); gate_febex != gates_LISA_febex.end())
+        {
+            for (size_t i = 0; i < gate_febex->second.size(); ++i)
+            {
+                const auto& [filename, gate_min, gate_max] = gate_febex->second[i];
+
+                if (energy_GM > gate_min && energy_GM < gate_max)
+                {
+                    energy_xy_gated[i][layer - 1][xpos][ypos].push_back(energy_GM);
+                }
+            }
+        }
+
+        // Loop over gates for MWD Channel
+        if (auto gate_MWD = gates_LISA_MWD.find(layer); gate_MWD != gates_LISA_MWD.end())
+        {
+            for (size_t i = 0; i < gate_MWD->second.size(); ++i)
+            {
+                const auto& [filename, gate_min, gate_max] = gate_MWD->second[i];
+
+                if (energy_MWD_GM > gate_min && energy_MWD_GM < gate_max)
+                {
+                    energy_MWD_xy_gated[i][layer - 1][xpos][ypos].push_back(energy_MWD_GM);
+                }
+            }
+        }
+
         //::: F I L L   H I S T O S  :::
 
         // ::: Hit Pattern Total
@@ -870,12 +956,6 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         //h2_energy_vs_ID_total->Fill(hp_total_bin, energy_GM);
         // ::: Layer Energy MWD  vs ID
         h2_energy_MWD_vs_layer->Fill(layer,energy_MWD_GM);
-
-
-        //energy_ch_GM[layer][xpos][ypos] = energy_GM;
-        //energy_layer_GM[layer] = energy_GM;
-        //energy_ch_MWD_GM[layer][xpos][ypos] = energy_MWD_GM;
-        //energy_layer_MWD_GM[layer] = energy_MWD_GM;
             
         // :::: Fill traces febex
         if(lisa_config->trace_on)
@@ -1021,45 +1101,60 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         }
     }
     //....................................
+
     // ::: LISA Febex Gated on LISA-only
     // ::: Layer
-    for (int l = 0; l < layer_number; l++)
+    for (int g = 0; g < gate_number; ++g)  
     {
-        if (energy_layer_gated[l].size() == 0) break;
-        for ( int i = 0; i < energy_layer_gated[l].size(); i++)
+        for (int l = 0; l < layer_number; ++l) 
         {
-            h1_energy_layer_gated[l]->Fill(energy_layer_gated[l].at(i));
+            if (energy_layer_gated[g][l].empty()) continue;  
+
+            for (int i = 0; i < energy_layer_gated[g][l].size(); ++i)
+            {
+                h1_energy_layer_gated[g][l]->Fill(energy_layer_gated[g][l].at(i));
+            }
         }
     }
     // ::: Channel
-    for (int l = 0; l < layer_number; l++)
+    for (int g = 0; g < gate_number; ++g)  
     {
-        if (energy_xy_gated[l][xpos_gate][ypos_gate].size() == 0) break;
-        for ( int i = 0; i < energy_xy_gated[l][xpos_gate][ypos_gate].size(); i++)
+        for (int l = 0; l < layer_number; l++)
         {
-            h1_energy_xy_gated[l]->Fill(energy_xy_gated[l][xpos_gate][ypos_gate].at(i));
+            if (energy_xy_gated[g][l][xpos_gate][ypos_gate].size() == 0) break;
+            for ( int i = 0; i < energy_xy_gated[g][l][xpos_gate][ypos_gate].size(); i++)
+            {
+                h1_energy_xy_gated[g][l]->Fill(energy_xy_gated[g][l][xpos_gate][ypos_gate].at(i));
+            }
         }
     }
     //....................................
     // ::: LISA MWD Gated on LISA-only 
     // ::: Layer
-    for (int l = 0; l < layer_number; l++)
+    for (int g = 0; g < gate_number; g++)
     {
-        if (energy_MWD_layer_gated[l].size() == 0) break;
-        for ( int i = 0; i < energy_MWD_layer_gated[l].size(); i++)
+        for (int l = 0; l < layer_number; l++)
         {
-            h1_energy_MWD_layer_gated[l]->Fill(energy_MWD_layer_gated[l].at(i));
+            if (energy_MWD_layer_gated[g][l].size() == 0) break;
+            for ( int i = 0; i < energy_MWD_layer_gated[g][l].size(); i++)
+            {
+                h1_energy_MWD_layer_gated[g][l]->Fill(energy_MWD_layer_gated[g][l].at(i));
+            }
         }
     }
     // ::: Channel
-    for (int l = 0; l < layer_number; l++)
+    for (int g = 0; g < gate_number; g++)
     {
-        if (energy_MWD_xy_gated[l][xpos_gate][ypos_gate].size() == 0) break;
-        for ( int i = 0; i < energy_MWD_xy_gated[l][xpos_gate][ypos_gate].size(); i++)
+        for (int l = 0; l < layer_number; l++)
         {
-            h1_energy_MWD_xy_gated[l]->Fill(energy_MWD_xy_gated[l][xpos_gate][ypos_gate].at(i));
+            if (energy_MWD_xy_gated[g][l][xpos_gate][ypos_gate].size() == 0) break;
+            for ( int i = 0; i < energy_MWD_xy_gated[g][l][xpos_gate][ypos_gate].size(); i++)
+            {
+                h1_energy_MWD_xy_gated[g][l]->Fill(energy_MWD_xy_gated[g][l][xpos_gate][ypos_gate].at(i));
+            }
         }
     }
+
     //....................................
 
         
