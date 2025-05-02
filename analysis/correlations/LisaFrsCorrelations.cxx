@@ -104,6 +104,9 @@ InitStatus LisaFrsCorrelations::Init()
     ymax = lisa_config->YMax();
     auto const & detector_mapping = lisa_config->Mapping();
 
+    gate_number = febex_gates.size();
+    mwd_gate_number = mwd_gates.size();
+
     FairRootManager::Instance()->GetOutFile()->cd();
     dir_corr = gDirectory->mkdir("LISA-FRS_Correlations");
     dir_time = dir_corr->mkdir("Time");

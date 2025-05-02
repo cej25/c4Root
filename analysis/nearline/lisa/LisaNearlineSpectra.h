@@ -70,8 +70,8 @@ class LisaNearlineSpectra : public FairTask
         std::vector<LisaGate*> febex_gates;
         std::vector<LisaGate*> mwd_gates;
 
-        int gate_number;
-        int mwd_gate_number;
+        int gate_number = 0;
+        int mwd_gate_number = 0;
 
         // TClonesArray* fHitLisa;
 
