@@ -70,6 +70,9 @@ class LisaNearlineSpectra : public FairTask
         std::vector<LisaGate*> febex_gates;
         std::vector<LisaGate*> mwd_gates;
 
+        int gate_number;
+        int mwd_gate_number;
+
         // TClonesArray* fHitLisa;
 
         std::vector<LisaCalItem> const* lisaCalArray;
@@ -110,6 +113,7 @@ class LisaNearlineSpectra : public FairTask
         //  Energy
         TDirectory* dir_energy;
         TDirectory* dir_febex;
+        TDirectory* dir_febex_exclude;
         TDirectory* dir_energy_MWD;
         TDirectory* dir_febex_channel;
         TDirectory* dir_MWD_channel;
@@ -156,7 +160,8 @@ class LisaNearlineSpectra : public FairTask
         //  ::: Energy
         //      Febex
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_ch;
-        std::vector<TH1F*> h1_energy_layer;
+        std::vector<TH1*> h1_energy_layer;
+        std::vector<TH1*> h1_energy_layer_exclude_channels;
         std::vector<TH2F*> h2_energy_vs_ID;
         TH2F* h2_energy_vs_ID_total;
         TH2F* h2_energy_vs_layer;
@@ -189,6 +194,9 @@ class LisaNearlineSpectra : public FairTask
         std::vector<TH2*> h2_energy_MWD_layer_vs_time;
         std::vector<std::vector<std::vector<TH2*>>> h2_energy_ch_vs_time;
         std::vector<std::vector<std::vector<TH2*>>> h2_energy_MWD_ch_vs_time;
+
+
+        std::set<std::tuple<int, int, int>> excluded;
 
         
 

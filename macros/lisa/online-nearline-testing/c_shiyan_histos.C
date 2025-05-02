@@ -1,11 +1,11 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define LISA_ON 0
+#define LISA_ON 1
         //LISA_ANA displays only energy and traces; LISA_CAL displays stats,energy,traces. Choose one.
         //Note that if FRS 1, LISA_CAL is needed. 
 #define LISA_ANA 0
-#define LISA_CAL 0
+#define LISA_CAL 1
 
 // Test or experiment settings
 #define TEST 1
@@ -62,12 +62,12 @@ void c_shiyan_histos()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // ::: P A T H   O F   F I L E  to read
-    TString inputpath = "./";
-    //TString filename = inputpath + "test_0003_tree.root";  
-    TString filename = inputpath + "c_test_Ag_with_whatever.root";  
+    // TString inputpath = "./";
+    // //TString filename = inputpath + "test_0003_tree.root";  
+    // TString filename = inputpath + "c_test_Ag_with_whatever.root";  
 
-    // TString inputpath = "/u/gandolfo/data/test_c4/shiyan_test/";
-    // TString filename = inputpath + "test_0003_tree.root"; 
+    TString inputpath = "/u/gandolfo/data/test_c4/shiyan_test/";
+    TString filename = inputpath + "test_0003_tree.root"; 
     
     // ::: O U T P U T
     TString outputpath = "./"; //test output
@@ -152,13 +152,12 @@ void c_shiyan_histos()
         lgs.emplace_back(FebGate1);
         lgs.emplace_back(MWD_Gate1);
         lgs.emplace_back(MWD_Gate2);
-        
-        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Febex_Gate1.txt");
-        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Febex_Gate2.txt");
 
-        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/MWD_Gate1.txt");
-        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/MWD_Gate2.txt");
-
+        TLisaConfiguration::SetExcludedChannels({
+            std::make_tuple(1,2,2),
+            std::make_tuple(2,1,1)
+        });
+    
     }
     if ( EXP )
     {
