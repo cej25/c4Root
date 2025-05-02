@@ -149,42 +149,7 @@ InitStatus LisaNearlineSpectra::Init()
     dir_MWD_ch_drift = dir_MWD_drift->mkdir("Channels");
 
     dir_lisa_gates = dir_lisa->mkdir("Gates-LISA");
-    namespace fs = std::filesystem;
-    std::set<std::string> processed_files;  
-    std::vector<std::string> gate_filenames;
-    
-    int kk = 0;
-    for (const auto& [layer_g, gate_vec] : gates_LISA_febex)
-    {
-        kk++;
-        for (const auto& [path, low, high] : gate_vec)
-        {
-            if (processed_files.count(path)) continue;
-            processed_files.insert(path);
 
-            std::string full_stem = fs::path(path).stem().string();
-            std::string filename = full_stem.substr(full_stem.find('_') + 1);
-            gate_filenames.push_back(filename);
-
-            std::ifstream infile(path);
-            if (!infile.good()) continue;
-
-            TDirectory* dir_gate_file = dir_gates->mkdir(filename.c_str());
-            dirs_gate_file[filename] = dir_gate_file;
-
-            TDirectory* dir_febex_g = dir_gate_file->mkdir("Febex");
-            dirs_gate_febex[filename] = dir_febex_g;
-
-            TDirectory* dir_mwd_g = dir_gate_file->mkdir("MWD");
-            dirs_gate_mwd[filename] = dir_mwd_g;
-
-            TDirectory* dir_febex_ch_g = dir_febex_g->mkdir("Channel");
-            dirs_gate_febex_channel[filename] = dir_febex_ch_g;
-
-            TDirectory* dir_mwd_ch_g = dir_mwd_g->mkdir("Channel");
-            dirs_gate_mwd_channel[filename] = dir_mwd_ch_g;
-        }
-    }
     
     
     //c4LOG(info, "INIT Layer number" << layer_number);
@@ -710,16 +675,8 @@ InitStatus LisaNearlineSpectra::Init()
     {   
         dir_febex_gates[gate] = dir_gated_febex->mkdir(TString(febex_gates.at(gate)->GetName()));
         h1_energy_layer_gated[gate].resize(layer_number);
-    }
-    for (int g = 0; g < gate_number; ++g)  
-    {
-        auto gate_name = std::next(dirs_gate_febex.begin(), g)->first;  
-        TDirectory* dir_febex_g = dirs_gate_febex[gate_name]; 
-        
-        dir_febex_g->cd();
-        if (g >= h1_energy_layer_gated.size()) h1_energy_layer_gated.resize(g + 1);
-    
-        h1_energy_layer_gated[g].resize(layer_number); 
+
+        h1_energy_layer_gated[gate].resize(layer_number); 
         for (int i = 0; i < layer_number; ++i)
         {
             h1_energy_layer_gated[gate][i] = MakeTH1(dir_febex_gates[gate], "F",
