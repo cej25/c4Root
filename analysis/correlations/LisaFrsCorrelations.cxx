@@ -42,6 +42,28 @@ LisaFrsCorrelations::LisaFrsCorrelations(std::vector<FrsGate*> fg)
     FrsGates = fg;
 }
 
+LisaFrsCorrelations::LisaFrsCorrelations(std::vector<LisaGate*> lg)
+    : LisaFrsCorrelations("LisaFrsCorrelations")
+{
+    for (auto & gate : lg) 
+    {
+        if (gate->GetType() == "energy") febex_gates.emplace_back(gate); 
+        else if (gate->GetType() == "energy_mwd") mwd_gates.emplace_back(gate);
+    }
+}
+
+LisaFrsCorrelations::LisaFrsCorrelations(std::vector<FrsGate*> fg, std::vector<LisaGate*> lg)
+    : LisaFrsCorrelations("LisaFrsCorrelations")
+{
+    FrsGates = fg;
+    for (auto & gate : lg) 
+    {
+        if (gate->GetType() == "energy") febex_gates.emplace_back(gate); 
+        else if (gate->GetType() == "energy_mwd") mwd_gates.emplace_back(gate);
+    }
+}
+
+
 LisaFrsCorrelations::LisaFrsCorrelations(const TString& name, Int_t verbose)
     :   FairTask(name, verbose)
     ,   header(nullptr)

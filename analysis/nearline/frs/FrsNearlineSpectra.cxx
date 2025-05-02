@@ -645,7 +645,7 @@ InitStatus FrsNearlineSpectra::Init()
                 h1_Z41_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc[gate] = MakeTH1(dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc_1d[gate], "D", Form("h1_Z41_Z21vsAoQs1s2_Z41vsAoQs2s4_gate%d_mhtdc", gate), Form("Z41 (MHTDC) - Z21vsAoQs1s2 / Z41vsAoQs2s4 Gates: %d", gate), 1000, 0, 100, "Z41", kPink-3, kBlue+2);
                 h1_Z42_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc[gate] = MakeTH1(dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc_1d[gate], "D", Form("h1_Z42_Z21vsAoQs1s2_Z41vsAoQs2s4_gate%d_mhtdc", gate), Form("Z42 (MHTDC) - Z21vsAoQs1s2 / Z41vsAoQs2s4 Gates: %d", gate), 1000, 0, 100, "Z42", kPink-3, kBlue+2);
             
-                h1_ratio_S2_S4_gates[gate] = MakeTH1(dir_ratio_S2_S4, "F", Form("h1_ratio_S2_S4_gate%d", gate), Form("Ratio of counts passing S2 : S4 PID - Gate: %d", gate), 1801, 0, 1800, "Time [s]", kRed-3, kBlack);
+                h1_ratio_S2_S4_gates[gate] = MakeTH1(dir_ratio_S2_S4, "D", Form("h1_ratio_S2_S4_gate%d", gate), Form("Ratio of counts passing S2 : S4 PID - Gate: %d", gate), 1801, 0, 1800, "Time [s]", kRed-3, kBlack);
             }
         }
 
@@ -1323,7 +1323,7 @@ void FrsNearlineSpectra::Exec(Option_t* option)
             for (int gate = 0; gate < FrsGates.size(); gate++)
             {
                 if (count_passed_Z41vsAoQs2s4[gate] == 0) continue;
-                double pid_ratio = count_passed_Z21vsAoQs1s2[gate] / count_passed_Z41vsAoQs2s4[gate];
+                double pid_ratio = 1000 * count_passed_Z21vsAoQs1s2[gate] / count_passed_Z41vsAoQs2s4[gate];
                 h1_ratio_S2_S4_gates[gate]->SetBinContent(ratio_running_count, pid_ratio);
             }
         }
