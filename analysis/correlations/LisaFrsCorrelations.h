@@ -69,19 +69,27 @@ class LisaFrsCorrelations : public FairTask
         Int_t fNEvents;
         EventHeader const* header;
 
+        // ::: Directories
         TDirectory* dir_corr;
         TDirectory* dir_lisa_frs;
-        TDirectory* dir_corr_driftcorr;
-        TDirectory* dir_position;
-        TDirectory* dir_energy;
+
         TDirectory* dir_time;
-        TDirectory* dir_energy_ch;
-        TDirectory* dir_energy_ch_driftcorr;
-        TDirectory* dir_tokyo;
+        // TDirectory* dir_position;
+
+        // TDirectory* dir_energy;
+        // TDirectory* dir_energy_MWD;
+        // TDirectory* dir_energy_ch;
+        // TDirectory* dir_energy_MWD_ch;
+
+        // TDirectory* dir_corr_driftcorr;
+        // TDirectory* dir_energy_ch_driftcorr;
+        // TDirectory* dir_energy_MWD_ch_driftcorr;
         
-        //common var
+        // ::: common var
         int layer_number;
-        int multi_evt = 0;
+        int xmax;
+        int ymax;
+        //int multi_evt = 0;
 
         int64_t wr_LISA;
         int64_t wr_FRS;
@@ -89,42 +97,41 @@ class LisaFrsCorrelations : public FairTask
         int64_t wr_LISA_FRS;
         int64_t wr_LISA_travMUSIC;
         int64_t wr_travMUSIC_FRS;
-        Float_t s2_x;
-        Float_t s2_y;
-        Float_t energy_MUSIC_1;
-        Float_t energy_MUSIC_2;
-        Float_t energy_travMUSIC;
-        Float_t energy_travMUSIC_driftcorr;
-        int xmax;
-        int ymax;
+        // Float_t s2_x;
+        // Float_t s2_y;
+        // Float_t energy_MUSIC_1;
+        // Float_t energy_MUSIC_2;
+        // Float_t energy_travMUSIC;
+        // Float_t energy_travMUSIC_driftcorr;
+
         TString city = "";
 
         Int_t layer;
 
-        //Histograms
+        // ::: Histograms
         std::vector<TH1I*> h1_wr_diff;
-        std::vector<TH2F*> h2_MUSIC_1_layer_GM;
-        std::vector<TH2F*> h2_MUSIC_2_layer_GM;
-        std::vector<TH2F*> h2_travMUSIC_layer_GM;
-        std::vector<TH2F*> h2_travMUSIC_driftcorr_layer_GM;
-        std::vector<TH2F*> h2_xy_pos_layer1;
-        std::vector<TH2F*> h2_xy_pos_layer2;
-        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch_GM;
-        std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_ch_GM_PIDgated;
-        std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_ch_GM_PIDgated_Trav;
+        // std::vector<TH2F*> h2_MUSIC_1_layer_GM;
+        // std::vector<TH2F*> h2_MUSIC_2_layer_GM;
+        // std::vector<TH2F*> h2_travMUSIC_layer_GM;
+        // std::vector<TH2F*> h2_travMUSIC_driftcorr_layer_GM;
+        // std::vector<TH2F*> h2_xy_pos_layer1;
+        // std::vector<TH2F*> h2_xy_pos_layer2;
+        // std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch_GM;
+        // std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_ch_GM_PIDgated;
+        // std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_ch_GM_PIDgated_Trav;
         
-        std::vector<std::vector<TH1F*>> h1_energy_layer_GM_PID_TM;
-        std::vector<std::vector<TH1F*>> h1_energy_layer2_GM_PID_TM_LISA1;
+        // std::vector<std::vector<TH1F*>> h1_energy_layer_GM_PID_TM;
+        // std::vector<std::vector<TH1F*>> h1_energy_layer2_GM_PID_TM_LISA1;
 
 
-        //Histo for drift corrected FRS
-        std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_ch_GM_PID_driftcorr;
-        std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_ch_GM_PID_TM_driftcorr;
-        std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_ch201_GM_PID_TM_driftcorr_ch101;
+        // ::: Histo for drift corrected FRS
+        // std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_ch_GM_PID_driftcorr;
+        // std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_ch_GM_PID_TM_driftcorr;
+        // std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_ch201_GM_PID_TM_driftcorr_ch101;
 
-        std::vector<std::vector<TH1F*>> h1_energy_layer_GM_PID_driftcorr;
-        std::vector<std::vector<TH1F*>> h1_energy_layer_GM_PID_TM_driftcorr;
-        std::vector<std::vector<TH1F*>> h1_energy_layer2_GM_PID_TM_driftcorr_LISA1;
+        // std::vector<std::vector<TH1F*>> h1_energy_layer_GM_PID_driftcorr;
+        // std::vector<std::vector<TH1F*>> h1_energy_layer_GM_PID_TM_driftcorr;
+        // std::vector<std::vector<TH1F*>> h1_energy_layer2_GM_PID_TM_driftcorr_LISA1;
 
     public:
         ClassDef(LisaFrsCorrelations, 1)
