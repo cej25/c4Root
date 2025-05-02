@@ -27,7 +27,7 @@ class TStefanConfiguration
 
         std::map<std::pair<int,int>,std::pair<int,int>> Mapping() const;
         bool MappingLoaded() const;
-        bool CalibrationCoefficientsLoaded() const;
+        bool CalibrationLoaded() const;
         std::map<std::pair<int,int>,std::vector<double>> CalibrationCoefficients() const;
         bool TimeshiftCalibrationCoefficientsLoaded() const;
         std::map<std::pair<int,int>,double> TimeshiftCalibrationCoefficients() const;
@@ -206,7 +206,7 @@ inline bool TStefanConfiguration::MappingLoaded() const
     return detector_mapping_loaded;
 }
 
-inline bool TStefanConfiguration::CalibrationCoefficientsLoaded() const
+inline bool TStefanConfiguration::CalibrationLoaded() const
 {
     return detector_calibrations_loaded;
 }

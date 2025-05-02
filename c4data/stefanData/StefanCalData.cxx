@@ -9,7 +9,6 @@ void StefanCalItem::SetAll(Long64_t wr,
                             Int_t si,
                             Int_t st,
                             Int_t e,
-                            std::vector<UShort_t> tr,
                             Double_t e_cal,
                             ULong64_t evt_t,
                             ULong64_t ch_t,
@@ -22,7 +21,6 @@ void StefanCalItem::SetAll(Long64_t wr,
     Side = si;
     Strip = st;
     Energy = e;
-    Trace = tr;
     EnergyCal = e_cal;
     EventTime = evt_t;
     ChannelTime = ch_t;
