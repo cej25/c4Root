@@ -2,9 +2,12 @@
 #define StefanRaw2Cal_H
 
 #include "FairTask.h"
+#include "StefanFebexData.h"
+#include "StefanCalData.h"
 #include "TStefanConfiguration.h"
 
 class TClonesArray;
+class StefanFebexItem;
 class EventHeader;
 
 class StefanRaw2Cal : public FairTask
@@ -16,32 +19,40 @@ class StefanRaw2Cal : public FairTask
 
         virtual ~StefanRaw2Cal();
         
-        void SetOnline(Bool_t set_online){fOnline = set_online;}
+        void SetOnline(Bool_t set_online){ fOnline = set_online; }
 
         virtual void Exec(Option_t* option);
 
         virtual void FinishEvent();
 
-        virtual void SetParContainers();
-
         virtual InitStatus Init();
 
-        void SetVetoPileupSCI41(bool v){VetoPileupSCI41 = v;}
+        void SetVetoPileupSCI41(bool v){ VetoPileupSCI41 = v; }
         
 
     private:
-        Bool_t fOnline;
         
         const TStefanConfiguration*  stefan_config;
-
+	
+	    std::vector<StefanFebexItem> const* StefanArray;
+        std::vector<StefanCalItem>* StefanHit;
         int detector_id;
-        int crystal_id;
-        double channel_energy_cal;
-
-        bool VetoPileupSCI41 = true;
+        int strip_id;
 
         EventHeader * header;
+        Bool_t fOnline;
         Int_t fNEvents = 0;
+	    int64_t wr_t;
+
+        bool VetoPileupSCI41 = false;
+
+        Int_t nUnmapped = 0;
+        Int_t nNothings = 0;
+        Int_t nTotalStefan = 0;
+
+        Int_t count_in_event = 0;
+
+        std::map<std::pair<int, std::pair<int, int>>, std::pair<int, std::pair<int,int>>> detector_mapping;
 
         //internal status flags for detector map and calibration map:
         Bool_t DetectorMap_loaded = 0;

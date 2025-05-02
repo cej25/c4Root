@@ -50,13 +50,6 @@ StefanRaw2Cal::~StefanRaw2Cal()
 }
 
 
-
-void StefanRaw2Cal::SetParContainers()
-{
-    FairRuntimeDb *rtdb = FairRuntimeDb::instance();
-    c4LOG_IF(fatal, NULL == rtdb, "FairRuntimeDb not found.");
-}
-
 /*
 Init - register data to output tree and gets input data.
 */
@@ -67,8 +60,13 @@ InitStatus StefanRaw2Cal::Init()
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
-
- 
+    
+    
+    StefanArray = mgr->InitObjectAs<decltype(StefanArray)>("StefanFebexData");
+    c4LOG_IF(fatal, !StefanArray, "Branch StefanFebexData not found!");
+ 	
+ 	
+    mgr->RegisterAny("StefanHit", StefanHit, !fOnline);
     // needs to have the name of the detector subsystem here:
     // register stefan etc
     // FairRootManager::Instance()->Register("StefanTimeMachineData", "Time Machine Data", ftime_machine_array, !fOnline);
@@ -90,7 +88,84 @@ Picks out the TimeMachine.
 void StefanRaw2Cal::Exec(Option_t* option)
 {
     // process stuff, we can re-steal from germ or bb7 but...better to leave blank rn
+
+
+    if (StefanArray->size() > 0) nTotalStefan++;
+
+    // std::cout << "EVENT :: " << std::endl;
+    for (auto const & StefanItem : *StefanArray)
+    {
+        // std::cout << "Crate :: " << bb7item.Get_crate_id() << std::endl;
+        // std::cout << "Board :: " << bb7item.Get_board_id() << std::endl;
+        // std::cout << "Channel :: " << bb7item.Get_channel_id_traces() << std::endl;
+        // channel id or channel id traces?
+        std::pair<int, int> febex_mc = {StefanItem.Get_board_id(), StefanItem.Get_channel_id()};
+        std::pair<int, std::pair<int, int>> unmapped_channel = {0, febex_mc};
+        //Get_channel_id_traces() when taking the id information from the trace header
+        //Get_channel_id() when taking the id information from the header
+
+        if (stefan_config->MappingLoaded())
+        {
+            if (detector_mapping.count(unmapped_channel) > 0)
+            {
+                int dssd = detector_mapping.at(unmapped_channel).first;
+                int side = detector_mapping.at(unmapped_channel).second.first;
+                int strip = detector_mapping.at(unmapped_channel).second.second;
+
+                // std::cout << "dssd:: " << dssd << std::endl;
+                // std::cout << "side:: " << side << std::endl;
+                // std::cout << "strip:: " << strip << std::endl;
+
+                uint32_t energy = StefanItem.Get_channel_energy();
+                double energy_calib = energy;
+
+                if (stefan_config->CalibrationLoaded())
+                {
+                    // do calibration, calculation, whatever
+                    // energy_calib = ... 
+                }
+
+                if (energy > 400000000)
+                {
+                    // std::cout << "weird energy, I guess:: " << std::endl;
+                     std::cout << "Channel:: " << StefanItem.Get_channel_id() << std::endl;
+                    // std::cout << "Time:: " << bb7item.Get_channel_time() << std::endl;
+
+                    continue;
+                }
+
+                int64_t absolute_time = StefanItem.Get_wr_t() + StefanItem.Get_channel_time() - StefanItem.Get_board_event_time();
+
+
+                
+                    // implant 
+                    auto & entry = StefanHit->emplace_back();
+                    entry.SetAll(
+                        StefanItem.Get_wr_t(),
+                        dssd,
+                        side,
+                        strip,
+                        StefanItem.Get_channel_energy(),
+                        //StefanItem.Get_trace(),
+                        energy_calib,
+                        StefanItem.Get_board_event_time(),
+                        StefanItem.Get_channel_time(),
+                        absolute_time,
+                        StefanItem.Get_pileup(),
+                        StefanItem.Get_overflow()
+                    );
+                
+                
+            }
+            
+            // else c4LOG(warn, "Unmapped data? Board: "  << unmapped_channel.second.first << " Channel: " << unmapped_channel.second.second);
+
+            // possibly stuff with residuals
+
+        }
+    }
 }
+
 
 /*
 Very important function - all TClonesArray must be cleared after each event.
@@ -98,8 +173,8 @@ Very important function - all TClonesArray must be cleared after each event.
 void StefanRaw2Cal::FinishEvent()
 {
     // clear
+     count_in_event = 0;
 };
-
 
 
 ClassImp(StefanRaw2Cal)
