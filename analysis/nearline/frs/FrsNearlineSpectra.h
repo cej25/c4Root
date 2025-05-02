@@ -40,11 +40,11 @@ class FrsNearlineSpectra : public FairTask
 
         virtual void Exec(Option_t* option);
 
-        /*
+        
         void Process_TAC();
         void Process_MHTDC();
         void Process_Monitors();
-        */
+        
         
 
         virtual void FinishEvent();
@@ -116,13 +116,16 @@ class FrsNearlineSpectra : public FairTask
         TDirectory** dir_mhtdc_S2S4_gate;
         // TDirectory* dir_gated_mhtdc_2d_S1S2;
         // TDirectory* dir_gated_mhtdc_2d_S2S4;
-        TDirectory* dir_Z21vsAoQs1s2_mhtdc;
-        TDirectory* dir_Z21vsAoQs1s2_mhtdc_1d;
-        TDirectory* dir_Z41vsAoQs2s4_mhtdc;
-        TDirectory* dir_Z41vsZ42_mhtdc;
-        TDirectory* dir_x2vsAoQs2s4_mhtdc; 
-        TDirectory* dir_x4vsAoQs2s4_mhtdc;
-        TDirectory* dir_dEdegZ41vsZ41_mhtdc;
+        TDirectory** dir_Z21vsAoQs1s2_mhtdc;
+        TDirectory** dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc;
+        TDirectory** dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc_1d;
+        TDirectory** dir_Z21vsAoQs1s2_mhtdc_1d;
+        TDirectory** dir_Z41vsAoQs2s4_mhtdc;
+        TDirectory** dir_Z41vsAoQs2s4_mhtdc_1d;
+        TDirectory** dir_Z41vsZ42_mhtdc;
+        TDirectory** dir_x2vsAoQs2s4_mhtdc; 
+        TDirectory** dir_x4vsAoQs2s4_mhtdc;
+        TDirectory** dir_dEdegZ41vsZ41_mhtdc;
 
         //canvases
         TCanvas* c_TravMus_drift;
@@ -349,12 +352,19 @@ class FrsNearlineSpectra : public FairTask
 
         // -- Gated on S1S2
         std::vector<TH2*> h2_Z21_vs_AoQs1s2_Z21vsAoQs1s2_gate_mhtdc;
-
-        std::vector<TH2*> h2_x2_vs_AoQs1s2_Z21vsAoQs1s2_gate;
-        std::vector<TH2*> h2_x1_vs_AoQs1s2_Z21vsAoQs1s2_gate;
+        std::vector<TH2*> h2_x2_vs_AoQs1s2_Z21vsAoQs1s2_gate_mhtdc;
+        std::vector<TH2*> h2_x1_vs_AoQs1s2_Z21vsAoQs1s2_gate_mhtdc;
         std::vector<TH2*> h2_Z41_vs_AoQs2s4_Z21vsAoQs1s2_gate_mhtdc;
+        std::vector<TH2*> h2_x2_vs_AoQs2s4_Z21vsAoQs1s2_gate_mhtdc;
         std::vector<TH2*> h2_x4_vs_AoQs2s4_Z21vsAoQs1s2_gate_mhtdc;
         std::vector<TH2*> h2_Z21_vs_Z41_mhtdc_Z21vsAoQs1s2_gate_mhtdc;
+        std::vector<TH2*> h2_dEdegZ41_vs_Z41_Z21vsAoQs1s2_gate_mhtdc;
+        std::vector<TH2*> h2_Z21_vs_AoQs1s2_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc;
+        std::vector<TH2*> h2_x2_vs_Z21_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc;
+        std::vector<TH2*> h2_Z41_vs_AoQs2s4_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc;
+        std::vector<TH2*> h2_dEdegZ41_vs_Z41_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc;
+        std::vector<TH2*> h2_x2_vs_AoQs2s4_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc;
+        std::vector<TH2*> h2_x4_vs_AoQs2s4_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc;
 
 
         // MHTDC 1D
@@ -455,6 +465,8 @@ class FrsNearlineSpectra : public FairTask
         // Trackers
         int multihit_counter = 0;
         std::vector<bool> passed_Z21vsAoQs1s2;
+        std::vector<bool> passed_Z41vsAoQs2s4;
+        std::vector<int> count_passed_Z21vsAoQs1s2;
         std::vector<int> count_passed_Z41vsAoQs2s4;
         std::vector<int> count_passed_Z41vsZ42;
 
