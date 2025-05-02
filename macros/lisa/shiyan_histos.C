@@ -62,13 +62,13 @@ void shiyan_histos()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // ::: P A T H   O F   F I L E  to read
-    TString inputpath = "/u/gandolfo/data/test_c4/shiyan_test/";
-    TString filename = inputpath + "test_0003_tree.root";  
+    TString inputpath = "/u/gandolfo/data/test_c4/layer_alpha/";
+    TString filename = inputpath + "test_0013_tree.root";  
     //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  
     
     // ::: O U T P U T
-    TString outputpath = "/u/gandolfo/data/test_c4/shiyan_test/"; //test output
-    TString outputFilename = outputpath + "test_gates.root";
+    TString outputpath = "/u/gandolfo/data/test_c4/layer_alpha/"; //test output
+    TString outputFilename = outputpath + "test_0013_histo.root";
     //TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_histo.root";
 
 
@@ -139,7 +139,7 @@ void shiyan_histos()
         TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_All_Boards.txt");
         TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_cards.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_highgain.txt");
         
         TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Febex_Gate1.txt");
         TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Febex_Gate2.txt");
@@ -166,7 +166,7 @@ void shiyan_histos()
     //std::cout << "Run number: " << fileNumber << std::endl;
 
     //::::::::: Set experiment configurations
-    TExperimentConfiguration::SetExperimentStart(1745599200000000000);
+    TExperimentConfiguration::SetExperimentStart(1745820000000000000);
     // ::: FRS
     TFrsConfiguration::Set_Z_range(10,60);
     TFrsConfiguration::Set_AoQ_range(1.8,3.5);
@@ -175,8 +175,8 @@ void shiyan_histos()
     //::::::::: Set ranges for histos :::::::::::::::
     // ::: LISA
     //  Channel Energy ::::: (h1_energy_)
-    TLisaConfiguration::SetEnergyRange(30000,50000);
-    TLisaConfiguration::SetEnergyBin(1000);
+    TLisaConfiguration::SetEnergyRange(10000,50000);
+    TLisaConfiguration::SetEnergyBin(2000);
 
     //  MWD histos
     TLisaConfiguration::SetEnergyRangeMWD(0,100);
@@ -196,7 +196,7 @@ void shiyan_histos()
     TLisaConfiguration::SetWrRateBin(3600);
 
     // Drift
-    TLisaConfiguration::SetDriftRange(0,100);
+    TLisaConfiguration::SetDriftRange(0,6000);
 
     // :::: ENABLE SYSTEMS  ::::::::::::::::::::::::::::::::::::::::
     if(TRACE_ON)

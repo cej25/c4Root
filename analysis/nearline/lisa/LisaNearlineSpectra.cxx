@@ -96,8 +96,8 @@ InitStatus LisaNearlineSpectra::Init()
     gates_LISA_febex = lisa_config->GatesLISAFebex();
     gates_LISA_MWD = lisa_config->GatesLISAMWD();
 
-    int gate_number = gates_LISA_febex.size();  
-    int mwd_gate_number = gates_LISA_MWD.size();  
+    int gate_number = gates_LISA_febex.begin()->second.size();  
+    int mwd_gate_number = gates_LISA_MWD.begin()->second.size();  
 
 
     xmax = lisa_config->XMax();
@@ -165,11 +165,6 @@ InitStatus LisaNearlineSpectra::Init()
             dirs_gate_mwd_channel[filename] = dir_mwd_ch_g;
         }
     }
-
-    dir_febex_gates = dir_gates->mkdir("Febex");
-    dir_febex_gates_channel = dir_febex_gates->mkdir("Channel");
-    dir_MWD_gates = dir_gates->mkdir("MWD");
-    dir_MWD_gates_channel = dir_MWD_gates->mkdir("Channel");
     
     //c4LOG(info, "INIT Layer number" << layer_number);
     //c4LOG(info, "det_number :" << det_number << " layer number : " << layer_number);
