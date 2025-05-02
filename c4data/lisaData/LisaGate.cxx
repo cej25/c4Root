@@ -4,9 +4,10 @@
 #include "TCutG.h"
 #include "c4Logger.h"
 
-LisaGate::LisaGate(std::string name, std::string file)
+LisaGate::LisaGate(std::string name, std::string type, std::string file)
 {
     gate_name = name;
+    gate_type = type;
 
     std::ifstream gate_file(file);
     std::string line;
