@@ -95,15 +95,12 @@ class FrsNearlineSpectra : public FairTask
         TDirectory* dir_tac_S2S4_2d;
         TDirectory* dir_tac_S2S4_gated;
         TDirectory** dir_tac_S2S4_gate;
-        // TDirectory* dir_tac_2d;
-        // TDirectory* dir_gated_tac;
         TDirectory* dir_Z41vsAoQs2s4_tac;
         TDirectory* dir_Z41vsZ42_tac;
         TDirectory* dir_x2vsAoQs2s4_tac;
         TDirectory* dir_x4vsAoQs2s4_tac;
         TDirectory* dir_dEdegZ41vsZ41_tac;
-        // TDirectory* dir_mhtdc_1d;
-        // TDirectory* dir_mhtdc_2d;
+     
         TDirectory* dir_mhtdc_S1S2; 
         TDirectory* dir_mhtdc_S1S2_1d;
         TDirectory* dir_mhtdc_S1S2_2d;
@@ -114,8 +111,6 @@ class FrsNearlineSpectra : public FairTask
         TDirectory* dir_mhtdc_S2S4_2d;
         TDirectory* dir_mhtdc_S2S4_gated;
         TDirectory** dir_mhtdc_S2S4_gate;
-        // TDirectory* dir_gated_mhtdc_2d_S1S2;
-        // TDirectory* dir_gated_mhtdc_2d_S2S4;
         TDirectory** dir_Z21vsAoQs1s2_mhtdc;
         TDirectory** dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc;
         TDirectory** dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc_1d;
@@ -126,6 +121,7 @@ class FrsNearlineSpectra : public FairTask
         TDirectory** dir_x2vsAoQs2s4_mhtdc; 
         TDirectory** dir_x4vsAoQs2s4_mhtdc;
         TDirectory** dir_dEdegZ41vsZ41_mhtdc;
+        TDirectory* dir_ratio_S2_S4;
 
         //canvases
         TCanvas* c_TravMus_drift;
@@ -425,8 +421,9 @@ class FrsNearlineSpectra : public FairTask
         TH2* h2_sci_tof_22_41_vs_T;
         TH2* h2_sci_tof_22_81_vs_T;
         TH2* h2_tpc_vs_T[6];
-        TH2D* h2_TravMus_vs_T;
-        TH2D* h2_TravMus_driftcorr_vs_T;
+
+        std::vector<TH1*> h1_ratio_S2_S4_gates;
+
 
         // Lines and Text
         TLine* hline;
@@ -460,7 +457,8 @@ class FrsNearlineSpectra : public FairTask
         Float_t tpc_21_counter = 0;
         Float_t tpc_21_rate = 0;
         int tpc_running_count = 0;
-        int64_t saved_frs_wr = 0;
+        int ratio_running_count = 0;
+        Long64_t saved_wr_frs = 0;
 
         // Trackers
         int multihit_counter = 0;

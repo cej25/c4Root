@@ -142,6 +142,7 @@ InitStatus FrsNearlineSpectra::Init()
         dir_mhtdc_S2S4_1d = dir_mhtdc_S2S4->mkdir("1D_Spectra");
         dir_mhtdc_S2S4_2d = dir_mhtdc_S2S4->mkdir("2D_PIDs");
         if (!FrsGates.empty()) dir_mhtdc_S2S4_gated = dir_mhtdc_S2S4->mkdir("Gated");
+        dir_ratio_S2_S4 = dir_mhtdc->mkdir("Ratio_S2_S4");
     }
     
     if (frs_config->plot_monitors) // CEJ: do we need better switches here? i.e. plot_scalers, plot_rates, plot_drifts?
@@ -610,10 +611,14 @@ InitStatus FrsNearlineSpectra::Init()
             h1_Z41_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc.resize(FrsGates.size());
             h1_Z42_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc.resize(FrsGates.size());
 
+            // Assumes every gate contains S2 and S4 PID selection
+            h1_ratio_S2_S4_gates.resize(FrsGates.size());
+
             for (int gate = 0; gate < FrsGates.size(); gate++)
             {
                 dir_Z21vsAoQs1s2_mhtdc_1d[gate] = dir_mhtdc_S1S2_1d->mkdir("Z21vsAoQs1s2_Gated");
                 dir_Z41vsAoQs2s4_mhtdc_1d[gate] = dir_mhtdc_S2S4_1d->mkdir("Z41vsAoQs2s4_Gated");
+
                 dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc_1d[gate] = dir_Z21vsAoQs1s2_mhtdc_1d[gate]->mkdir("Z21vsAoQs1s2_Z41vsAoQs2s4_Gated");
 
                 h1_beta_s1s2_Z21vsAoQs1s2_gate_mhtdc[gate] = MakeTH1(dir_Z21vsAoQs1s2_mhtdc_1d[gate], "D", Form("h1_beta_s1s2_Z21vsAoQs1s2_gate%d_mhtdc", gate), Form("Beta (S1-S2) (MHTDC) - Z21vsAoQs1s2 Gate: %d", gate), 500, 0.0, 1.0, "Beta (S1-S2)", kPink-3, kBlue+2);
@@ -639,6 +644,8 @@ InitStatus FrsNearlineSpectra::Init()
                 h1_AoQs2s4_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc[gate] = MakeTH1(dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc_1d[gate], "D", Form("h1_AoQs2s4_Z21vsAoQs1s2_Z41vsAoQs2s4_gate%d_mhtdc", gate), Form("AoQ (S2-S4) (MHTDC) - Z21vsAoQs1s2 / Z41vsAoQs2s4 Gates: %d", gate), 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2);
                 h1_Z41_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc[gate] = MakeTH1(dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc_1d[gate], "D", Form("h1_Z41_Z21vsAoQs1s2_Z41vsAoQs2s4_gate%d_mhtdc", gate), Form("Z41 (MHTDC) - Z21vsAoQs1s2 / Z41vsAoQs2s4 Gates: %d", gate), 1000, 0, 100, "Z41", kPink-3, kBlue+2);
                 h1_Z42_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc[gate] = MakeTH1(dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc_1d[gate], "D", Form("h1_Z42_Z21vsAoQs1s2_Z41vsAoQs2s4_gate%d_mhtdc", gate), Form("Z42 (MHTDC) - Z21vsAoQs1s2 / Z41vsAoQs2s4 Gates: %d", gate), 1000, 0, 100, "Z42", kPink-3, kBlue+2);
+            
+                h1_ratio_S2_S4_gates[gate] = MakeTH1(dir_ratio_S2_S4, "F", Form("h1_ratio_S2_S4_gate%d", gate), Form("Ratio of counts passing S2 : S4 PID - Gate: %d", gate), 1801, 0, 1800, "Time [s]", kRed-3, kBlack);
             }
         }
 
@@ -678,14 +685,15 @@ InitStatus FrsNearlineSpectra::Init()
 
 void FrsNearlineSpectra::Exec(Option_t* option)
 {   
-    int64_t frs_wr = 0; int64_t trav_mus_wr = 0;
+    Long64_t wr_frs = 0; Long64_t trav_mus_wr = 0;
     if (hitArray->size() <= 0) return;
 
     fNEvents++;
     
     Long64_t FRS_time_mins = 0;
     auto const & hitItem = hitArray->at(0); // should only be size=1! check
-    if(hitItem.Get_wr_t() > 0) FRS_time_mins = (hitItem.Get_wr_t() - exp_config->exp_start_time)/ 60E9;
+    wr_frs = hitItem.Get_wr_t();
+    if(wr_frs > 0) FRS_time_mins = (wr_frs - exp_config->exp_start_time)/ 60E9;
 
     // Get the minimum and maximum FRS_time_mins
     if (FRS_time_mins > 0) 
@@ -1306,8 +1314,32 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     //     }
     // }
 
-    
+    double wr_diff_s = (wr_frs - saved_wr_frs) / 1e9;
 
+    if (wr_diff_s > 1) 
+    {
+        if (saved_wr_frs != 0 && wr_diff_s < 2)
+        {
+            for (int gate = 0; gate < FrsGates.size(); gate++)
+            {
+                if (count_passed_Z41vsAoQs2s4[gate] == 0) continue;
+                double pid_ratio = count_passed_Z21vsAoQs1s2[gate] / count_passed_Z41vsAoQs2s4[gate];
+                h1_ratio_S2_S4_gates[gate]->SetBinContent(ratio_running_count, pid_ratio);
+            }
+        }
+
+    
+        saved_wr_frs = wr_frs;
+        ratio_running_count++;
+
+        for (int gate = 0; gate < FrsGates.size(); gate++)
+        {
+            count_passed_Z21vsAoQs1s2[gate] = 0;
+            count_passed_Z41vsAoQs2s4[gate] = 0;
+        }
+           
+    }
+    
 }
 
 
@@ -1332,9 +1364,9 @@ void FrsNearlineSpectra::FinishEvent()
     
     std::fill(passed_Z21vsAoQs1s2.begin(), passed_Z21vsAoQs1s2.end(), 0);
     std::fill(passed_Z41vsAoQs2s4.begin(), passed_Z41vsAoQs2s4.end(), 0);
-    for (auto& val : count_passed_Z21vsAoQs1s2) val = 0;
-    for (auto& val : count_passed_Z41vsAoQs2s4) val = 0;
-    for (auto& val : count_passed_Z41vsZ42) val = 0;
+    // for (auto& val : count_passed_Z21vsAoQs1s2) val = 0;
+    // for (auto& val : count_passed_Z41vsAoQs2s4) val = 0;
+    // for (auto& val : count_passed_Z41vsZ42) val = 0;
     
 }
 
