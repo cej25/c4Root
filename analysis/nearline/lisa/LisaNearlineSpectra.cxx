@@ -127,7 +127,7 @@ InitStatus LisaNearlineSpectra::Init()
 
     int drift_max = lisa_config->drift_max;
     int drift_min = lisa_config->drift_min;
-    int drift_bin = (drift_max - drift_min);
+    int drift_bin = (drift_max - drift_min); //1 bin per min
     
     // ::: Directories :::
     dir_lisa->cd();
@@ -153,7 +153,6 @@ InitStatus LisaNearlineSpectra::Init()
     std::set<std::string> processed_files;  
     std::vector<std::string> gate_filenames;
     
-    /*
     int kk = 0;
     for (const auto& [layer_g, gate_vec] : gates_LISA_febex)
     {
@@ -186,7 +185,7 @@ InitStatus LisaNearlineSpectra::Init()
             dirs_gate_mwd_channel[filename] = dir_mwd_ch_g;
         }
     }
-    */
+    
     
     //c4LOG(info, "INIT Layer number" << layer_number);
     //c4LOG(info, "det_number :" << det_number << " layer number : " << layer_number);
@@ -711,7 +710,16 @@ InitStatus LisaNearlineSpectra::Init()
     {   
         dir_febex_gates[gate] = dir_gated_febex->mkdir(TString(febex_gates.at(gate)->GetName()));
         h1_energy_layer_gated[gate].resize(layer_number);
-
+    }
+    for (int g = 0; g < gate_number; ++g)  
+    {
+        auto gate_name = std::next(dirs_gate_febex.begin(), g)->first;  
+        TDirectory* dir_febex_g = dirs_gate_febex[gate_name]; 
+        
+        dir_febex_g->cd();
+        if (g >= h1_energy_layer_gated.size()) h1_energy_layer_gated.resize(g + 1);
+    
+        h1_energy_layer_gated[g].resize(layer_number); 
         for (int i = 0; i < layer_number; ++i)
         {
             h1_energy_layer_gated[gate][i] = MakeTH1(dir_febex_gates[gate], "F",
@@ -763,7 +771,8 @@ InitStatus LisaNearlineSpectra::Init()
             );
         }
     }
- 
+    //....................................
+
 
     c4LOG(info, "Successful");
         
@@ -793,6 +802,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     std::set<std::string> p_files;
     std::vector<std::string> g_filenames;
     namespace f = std::filesystem;
+    //std::cout<< " Debugging 3 " << std::endl;
     for (const auto& [layer_g, gate_vec] : gates_LISA_febex)
     {
         for (const auto& [path, low, high] : gate_vec)

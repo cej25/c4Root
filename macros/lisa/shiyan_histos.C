@@ -14,8 +14,8 @@
 // If you want to have trace histos
 #define TRACE_ON 1
 
-#define FRS_ON 0
-#define FRS_LISA_CORRELATIONS 0
+#define FRS_ON 1
+#define FRS_LISA_CORRELATIONS 1
 
 #define WR_ENABLED 1
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
@@ -23,7 +23,8 @@
 // :::  Define FRS setup.C file - FRS should provide; place in /config/shiyan/frs/setup/
 extern "C"
 {
-    #include "../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
+    #include "../../config/pareeksha/frs/setup_Fragment_conv_updated.C" //pareeksha data
+    //#include "../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -38,7 +39,7 @@ void shiyan_histos()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     // ::: Experiment name
-    TString fExpName = "shiyan";
+    TString fExpName = "pareeksha";
 
     // ::: Here you define commonly used path
     TString c4Root_path = "/u/gandolfo/c4/c4Root";
@@ -62,14 +63,18 @@ void shiyan_histos()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // ::: P A T H   O F   F I L E  to read
-    TString inputpath = "/u/gandolfo/data/test_c4/layer_alpha/";
-    TString filename = inputpath + "test_0013_tree.root";  
-    //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  
+    //TString inputpath = "/u/gandolfo/data/test_c4/layer_alpha/";
+    TString inputpath = "/u/gandolfo/data/test_c4/shiyan_test/";
+
+    TString filename = inputpath + "test_run_0075.root";  
+    //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  //FRS data with S2 PID
     
     // ::: O U T P U T
-    TString outputpath = "/u/gandolfo/data/test_c4/layer_alpha/"; //test output
-    TString outputFilename = outputpath + "test_0013_histo.root";
-    //TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_histo.root";
+    TString outputpath = "/u/gandolfo/data/test_c4/shiyan_test/";   //testing
+    //TString outputpath = "/u/gandolfo/data/test_c4/layer_alpha/";   //energy resolution output
+    
+    TString outputFilename = outputpath + "test_run_0075_histo.root";
+    //TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_histo.root";     //FRS data with S2 PID
 
 
     FairRunAna* run = new FairRunAna();
@@ -123,7 +128,7 @@ void shiyan_histos()
     // ::: GATES config for histos ::::::::
     TFrsConfiguration::Set_dE_travMusic_gate(1940,2000);
     //TLisaConfiguration::SetLISAGate(1070,1110); //Gate on LISA 1 for histo of LISA 2 energy (mean +- 3sigma)
-    TLisaConfiguration::SetXYDetectorGate(2,2);  //XY position of the detector you want to see the gate on
+    TLisaConfiguration::SetXYDetectorGate(1,1);  //XY position of the detector you want to see the gate on
 
     // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: FRS config
@@ -136,6 +141,7 @@ void shiyan_histos()
     // ::: Lisa config
     if ( TEST )
     {
+        /*
         TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_All_Boards.txt");
         TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_cards.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
@@ -146,16 +152,36 @@ void shiyan_histos()
 
         TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/MWD_Gate1.txt");
         TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/MWD_Gate2.txt");
+        */
+
+        //for testing with pareeksha data 
+        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_Detector_Map_names.txt");
+        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching.txt");
+        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
+        
+        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Febex_Gate1.txt");
+        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Febex_Gate2.txt");
+
+        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/MWD_Gate1.txt");
+        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/MWD_Gate2.txt");
 
     }
     if ( EXP )
     {
+        /*
         TLisaConfiguration::SetMappingFile(config_path + "/Lisa_5x5_shiyan.txt");
         TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching_shiyan.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_shiyan.txt");
         TLisaConfiguration::SetMWDParametersFile(config_path +  "/lisa/Lisa_MWD_Parameters_shiyan.txt");
         TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Lisa_Febex_Gates_shiyan.txt");
         TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/Lisa_MWD_Gates_shiyan.txt");
+        */
+        // for testing with pareeksha data
+        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_Detector_Map_names.txt");
+        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching.txt");
+        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
     }
   
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
@@ -166,7 +192,7 @@ void shiyan_histos()
     //std::cout << "Run number: " << fileNumber << std::endl;
 
     //::::::::: Set experiment configurations
-    TExperimentConfiguration::SetExperimentStart(1745820000000000000);
+    TExperimentConfiguration::SetExperimentStart(1715727045000000000); //Start of pareeksha with primary beam: 15 May 00:50
     // ::: FRS
     TFrsConfiguration::Set_Z_range(10,60);
     TFrsConfiguration::Set_AoQ_range(1.8,3.5);
@@ -175,16 +201,16 @@ void shiyan_histos()
     //::::::::: Set ranges for histos :::::::::::::::
     // ::: LISA
     //  Channel Energy ::::: (h1_energy_)
-    TLisaConfiguration::SetEnergyRange(10000,50000);
-    TLisaConfiguration::SetEnergyBin(2000);
+    TLisaConfiguration::SetEnergyRange(0,10000);
+    TLisaConfiguration::SetEnergyBin(5000);
 
     //  MWD histos
-    TLisaConfiguration::SetEnergyRangeMWD(0,100);
-    TLisaConfiguration::SetEnergyBinMWD(1000);
+    TLisaConfiguration::SetEnergyRangeMWD(0,1000);
+    TLisaConfiguration::SetEnergyBinMWD(2000);
 
     //  Traces Time and Amplitude Ranges 
-    TLisaConfiguration::SetTracesRange(0,5);
-    TLisaConfiguration::SetTracesBin(500);
+    TLisaConfiguration::SetTracesRange(0,10);
+    TLisaConfiguration::SetTracesBin(1000);
     TLisaConfiguration::SetAmplitudeMin(7900);
     TLisaConfiguration::SetAmplitudeMax(8700);
 
@@ -196,7 +222,7 @@ void shiyan_histos()
     TLisaConfiguration::SetWrRateBin(3600);
 
     // Drift
-    TLisaConfiguration::SetDriftRange(0,6000);
+    TLisaConfiguration::SetDriftRange(0,1000);
 
     // :::: ENABLE SYSTEMS  ::::::::::::::::::::::::::::::::::::::::
     if(TRACE_ON)
