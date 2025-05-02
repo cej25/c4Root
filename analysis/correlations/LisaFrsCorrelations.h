@@ -5,6 +5,7 @@
 #include "TFrsConfiguration.h"
 #include "TCorrelationsConfiguration.h"
 #include "LisaCalData.h"
+#include "LisaGate.h"
 #include "FrsGate.h"
 #include "FrsHitData.h"
 
@@ -32,6 +33,7 @@ class TCorrelationsConfiguration;
 class TFolder;
 class TDirectory;
 class FrsGate;
+class LisaGate;
 class TGraph;
 class TCanvas;
 
@@ -40,6 +42,8 @@ class LisaFrsCorrelations : public FairTask
     public:
         LisaFrsCorrelations();
         LisaFrsCorrelations(std::vector<FrsGate*> fg);
+        LisaFrsCorrelations(std::vector<LisaGate*> lg);
+        LisaFrsCorrelations(std::vector<FrsGate*> fg, std::vector<LisaGate*> lg);
         LisaFrsCorrelations(const TString& name, Int_t verbose = 1);
 
         virtual ~LisaFrsCorrelations();
@@ -60,6 +64,8 @@ class LisaFrsCorrelations : public FairTask
         std::map<std::string, std::vector<int>> Correl;
 
         std::vector<FrsGate*> FrsGates;
+        std::vector<LisaGate*> febex_gates;
+        std::vector<LisaGate*> mwd_gates;
 
         std::vector<LisaCalItem> const* lisaCalArray;
         std::vector<FrsHitItem> const* frsHitArray;
