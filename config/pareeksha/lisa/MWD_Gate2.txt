@@ -1,0 +1,11 @@
+# :::     G A T E S    :::
+# :::        MWD       :::
+# ::: Lisa layer gates :::
+
+# Layer ID | min gate | max gate|
+
+1      280       300
+2      290       310
+
+
+
