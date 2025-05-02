@@ -65,6 +65,9 @@ void c_shiyan_histos()
     TString inputpath = "./";
     //TString filename = inputpath + "test_0003_tree.root";  
     TString filename = inputpath + "c_test_Ag_with_whatever.root";  
+
+    // TString inputpath = "/u/gandolfo/data/test_c4/shiyan_test/";
+    // TString filename = inputpath + "test_0003_tree.root"; 
     
     // ::: O U T P U T
     TString outputpath = "./"; //test output
@@ -133,15 +136,18 @@ void c_shiyan_histos()
     TFrsConfiguration::SetZ1DriftFile(config_path +  "/frs/Z1_Drift_fragments.txt");
     TFrsConfiguration::SetAoQDriftFile(config_path +  "/frs/AoQ_Drift_fragments.txt");
 
-    // ::: Lisa config
-    if ( TEST )
+   if ( TEST )
     {
         TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_All_Boards.txt");
         TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_cards.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
         TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
-        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Lisa_Febex_Gates.txt");
-        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Lisa_MWD_Gates.txt");
+        
+        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Febex_Gate1.txt");
+        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Febex_Gate2.txt");
+
+        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/MWD_Gate1.txt");
+        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/MWD_Gate2.txt");
 
     }
     if ( EXP )
@@ -150,8 +156,8 @@ void c_shiyan_histos()
         TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching_shiyan.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_shiyan.txt");
         TLisaConfiguration::SetMWDParametersFile(config_path +  "/lisa/Lisa_MWD_Parameters_shiyan.txt");
-        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Lisa_Febex_Gates_shiyan.txt");
-        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Lisa_MWD_Gates_shiyan.txt");
+        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Lisa_Febex_Gates_shiyan.txt");
+        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/Lisa_MWD_Gates_shiyan.txt");
     }
   
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
@@ -218,8 +224,11 @@ void c_shiyan_histos()
         }
 
     }
+    
+    // TFrsConfiguration::Plot_TAC_1D(false);
+    // TFrsConfiguration::Plot_TAC_2D(false);
 
-    FrsGate* test = new FrsGate("Tester","/u/cjones/c4Root/config/shiyan/frs/Gates/frs_PID_gate_lisa.root");
+    FrsGate* test = new FrsGate("Tester","/u/cjones/c4Root/config/shiyan/frs/Gates/frs_real_gate_lisa.root");
     std::vector<FrsGate*> fgs = {};
     fgs.emplace_back(test);
 
