@@ -112,12 +112,10 @@ InitStatus LisaNearlineSpectra::Init()
     det_number = lisa_config->NDetectors();
     auto const & detector_mapping = lisa_config->Mapping();
 
-    gates_LISA_febex = lisa_config->GatesLISAFebex();
-    gates_LISA_MWD = lisa_config->GatesLISAMWD();
+    excluded = lisa_config->GetExcludedChannels();
 
-    int gate_number = febex_gates.size();
-    int mwd_gate_number = mwd_gates.size(); 
-
+    gate_number = febex_gates.size();
+    mwd_gate_number = mwd_gates.size();
 
     xmax = lisa_config->XMax();
     ymax = lisa_config->YMax();
@@ -351,15 +349,22 @@ InitStatus LisaNearlineSpectra::Init()
             }
         }
     }
+
     //      Febex energy by layer
-    dir_febex->cd();
+    dir_febex_exclude = dir_febex->mkdir("Exclude Channels");
     h1_energy_layer.resize(layer_number);
+    h1_energy_layer_exclude_channels.resize(layer_number);
     for (int i = 0; i < layer_number; i++)
     {   
-        h1_energy_layer[i] = new TH1F(Form("h1_energy_layer_%i", i+1), Form("Energy - Layer %i", i+1), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
-        h1_energy_layer[i]->GetXaxis()->SetTitle(Form("E(LISA %i) [a.u.]", i+1));
-        h1_energy_layer[i]->SetLineColor(kBlue+1);
-        h1_energy_layer[i]->SetFillColor(kRed-3);       
+        h1_energy_layer[i] = MakeTH1(dir_febex, "F",
+            Form("h1_energy_layer_%i", i+1), Form("Energy - Layer %i", i+1), 
+            lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy,
+            Form("E(LISA %i) [a.u.]", i+1), kRed-3, kBlue+1);
+
+        h1_energy_layer_exclude_channels[i] = MakeTH1(dir_febex_exclude, "F",
+            Form("h1_energy_layer%i_exclude_channels", i+1), Form("Energy (Channels Excluded) - Layer %i", i+1), 
+            lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy,
+            Form("E(LISA %i) [a.u.]", i+1), kRed-3, kBlue+1);
     }
     //....................................
     //      Febex energy vs channel ID per Layer
@@ -756,29 +761,31 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     energy_MWD_layer.resize(layer_number);  
 
     // Define energy arrays for each gate (Febex and MWD) and layer
-    std::set<std::string> p_files;
-    std::vector<std::string> g_filenames;
-    namespace f = std::filesystem;
-    //std::cout<< " Debugging 3 " << std::endl;
-    for (const auto& [layer_g, gate_vec] : gates_LISA_febex)
-    {
-        for (const auto& [path, low, high] : gate_vec)
-        {
-            if (p_files.count(path)) continue;
-            p_files.insert(path);
+    // CEJ wth is all this stuff?
+    // std::set<std::string> p_files;
+    // std::vector<std::string> g_filenames;
+    // namespace f = std::filesystem;
+    // //std::cout<< " Debugging 3 " << std::endl;
+    // for (const auto& [layer_g, gate_vec] : gates_LISA_febex)
+    // {
+    //     for (const auto& [path, low, high] : gate_vec)
+    //     {
+    //         if (p_files.count(path)) continue;
+    //         p_files.insert(path);
 
-            std::string full_stem = f::path(path).stem().string();
-            g_filenames.push_back(full_stem);
-        }
-    }
-    int gate_number = g_filenames.size(); 
+    //         std::string full_stem = f::path(path).stem().string();
+    //         g_filenames.push_back(full_stem);
+    //     }
+    // }
+    // int gate_number = g_filenames.size(); 
     // ::: Energy gated - Layer
+
     std::vector<float> energy_layer_gated[gate_number][layer_number];
-    std::vector<float> energy_MWD_layer_gated[gate_number][layer_number];
+    std::vector<float> energy_MWD_layer_gated[mwd_gate_number][layer_number];
 
     // ::: Energy gated - Channel
     std::vector<float> energy_xy_gated[gate_number][layer_number][xmax][ymax];
-    std::vector<float> energy_MWD_xy_gated[gate_number][layer_number][xmax][ymax];
+    std::vector<float> energy_MWD_xy_gated[mwd_gate_number][layer_number][xmax][ymax];
     
 
     for (auto const & lisaCalItem : *lisaCalArray)
@@ -871,6 +878,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         //....................
         // ::: Energy Febex per layer
         h1_energy_layer[layer-1]->Fill(energy_GM);
+        if (excluded.count(std::make_tuple(layer, xpos, ypos)) == 0) h1_energy_layer_exclude_channels[layer-1]->Fill(energy_GM);
         //....................
         // ::: Energy Febex vs ID
         h2_energy_vs_ID[layer-1]->Fill(hp_bin, energy_GM);

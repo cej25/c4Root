@@ -102,6 +102,7 @@ int TLisaConfiguration::ypos_gate = 0;
 int TLisaConfiguration::drift_min = 0;
 int TLisaConfiguration::drift_max = 10;
 
+std::set<std::tuple<int, int, int>> TLisaConfiguration::excluded = {};
 
 
 

@@ -42,6 +42,7 @@ class TLisaConfiguration
         static void SetLISAGateMWD(const std::string& file) { gate_ranges_MWD_files.emplace_back(file); }
         //static void SetLISAGateFebex(std::string fp) { gate_ranges_file = fp; }
         //static void SetLISAGateMWD(std::string fp) { gate_ranges_MWD_file = fp; }
+        static void SetExcludedChannels(std::set<std::tuple<int, int, int>> ex) { excluded = ex; }
 
         //::: MWD Parameters
         bool MWDParametersLoaded() const;
@@ -70,6 +71,8 @@ class TLisaConfiguration
 
         void SetTraceLength(int length) { trace_length = length; }
         int GetTraceLength() { return trace_length; }
+
+        std::set<std::tuple<int,int,int>>  GetExcludedChannels() const { return excluded; }
 
         //std::map<std::pair<int,int>,std::pair<double,double>> CalibrationCoefficients() const;
         //:::: Calibration
@@ -131,6 +134,7 @@ class TLisaConfiguration
         static void SetXYDetectorGate(int x_gate, int y_gate) { xpos_gate = x_gate; ypos_gate = y_gate; }
     
         static void SetDriftRange(int d_min, int d_max) { drift_min = d_min; drift_max = d_max; }
+
 
 
         //int AmplitudeMax = 10500;
@@ -260,6 +264,9 @@ class TLisaConfiguration
         float MWD_trace_stop = 0.1;
         float MWD_baseline_start = 0.1;
         float MWD_baseline_stop = 0.1;
+
+        static std::set<std::tuple<int, int, int>> excluded;
+
 
         //:: test for decay time
 
