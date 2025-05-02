@@ -145,11 +145,13 @@ void c_shiyan_histos()
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
         TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
 
-        LisaGate* FebGate1 = new LisaGate("Febex_Gate1",config_path + "/lisa/Gates/Febex_Gate1.txt");
-        LisaGate* FebGate2 = new LisaGate("Febex_Gate2",config_path + "/lisa/Gates/Febex_Gate1.txt");
+        LisaGate* FebGate1 = new LisaGate("Febex_Gate1", "energy", config_path + "/lisa/Gates/Febex_Gate1.txt");
+        LisaGate* MWD_Gate1 = new LisaGate("MWD_Gate1", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate1.txt");
+        LisaGate* MWD_Gate2 = new LisaGate("MWD_Gate2", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate2.txt");
 
         lgs.emplace_back(FebGate1);
-        lgs.emplace_back(FebGate2);
+        lgs.emplace_back(MWD_Gate1);
+        lgs.emplace_back(MWD_Gate2);
         
         TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Febex_Gate1.txt");
         TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Febex_Gate2.txt");
