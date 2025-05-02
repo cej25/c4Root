@@ -6,6 +6,7 @@
 #include "TLisaConfiguration.h"
 #include "LisaData.h" // do we need raw?
 #include "LisaCalData.h"
+#include "LisaGate.h"
 #include <vector>
 #include <memory>
 #include <sstream>
@@ -26,6 +27,7 @@
 class LisaCalItem;
 class TLisaConfiguration;
 class TExperimentConfiguration;
+class LisaGate;
 class EventHeader;
 class TCanvas;
 class TH1F;
@@ -42,6 +44,7 @@ class LisaNearlineSpectra : public FairTask
 {
     public:
         LisaNearlineSpectra();
+        LisaNearlineSpectra(std::vector<LisaGate*> lg);
         LisaNearlineSpectra(const TString& name, Int_t verbose = 1);
 
         virtual ~LisaNearlineSpectra();
@@ -62,6 +65,8 @@ class LisaNearlineSpectra : public FairTask
     private:
         TLisaConfiguration const* lisa_config;
         TExperimentConfiguration const* exp_config;
+
+        std::vector<LisaGate*> LisaGates;
 
         // TClonesArray* fHitLisa;
 

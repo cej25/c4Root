@@ -1,11 +1,11 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define LISA_ON 0
+#define LISA_ON 1
         //LISA_ANA displays only energy and traces; LISA_CAL displays stats,energy,traces. Choose one.
         //Note that if FRS 1, LISA_CAL is needed. 
 #define LISA_ANA 0
-#define LISA_CAL 0
+#define LISA_CAL 1
 
 // Test or experiment settings
 #define TEST 1
@@ -62,12 +62,12 @@ void c_shiyan_histos()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // ::: P A T H   O F   F I L E  to read
-    TString inputpath = "./";
-    //TString filename = inputpath + "test_0003_tree.root";  
-    TString filename = inputpath + "c_test_Ag_with_whatever.root";  
+    // TString inputpath = "./";
+    // //TString filename = inputpath + "test_0003_tree.root";  
+    // TString filename = inputpath + "c_test_Ag_with_whatever.root";  
 
-    // TString inputpath = "/u/gandolfo/data/test_c4/shiyan_test/";
-    // TString filename = inputpath + "test_0003_tree.root"; 
+    TString inputpath = "/u/gandolfo/data/test_c4/shiyan_test/";
+    TString filename = inputpath + "test_0003_tree.root"; 
     
     // ::: O U T P U T
     TString outputpath = "./"; //test output
@@ -136,12 +136,20 @@ void c_shiyan_histos()
     TFrsConfiguration::SetZ1DriftFile(config_path +  "/frs/Z1_Drift_fragments.txt");
     TFrsConfiguration::SetAoQDriftFile(config_path +  "/frs/AoQ_Drift_fragments.txt");
 
-   if ( TEST )
+    std::vector<LisaGate*> lgs = {};
+
+    if ( TEST )
     {
         TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_All_Boards.txt");
         TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_cards.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
         TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
+
+        LisaGate* FebGate1 = new LisaGate("Febex_Gate1",config_path + "/lisa/Gates/Febex_Gate1.txt");
+        LisaGate* FebGate2 = new LisaGate("Febex_Gate2",config_path + "/lisa/Gates/Febex_Gate1.txt");
+
+        lgs.emplace_back(FebGate1);
+        lgs.emplace_back(FebGate2);
         
         TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Febex_Gate1.txt");
         TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Febex_Gate2.txt");
@@ -219,7 +227,7 @@ void c_shiyan_histos()
 
         if(LISA_CAL)
         {
-            LisaNearlineSpectra* nearlinelisa = new LisaNearlineSpectra();
+            LisaNearlineSpectra* nearlinelisa = new LisaNearlineSpectra(lgs);
             run->AddTask(nearlinelisa);
         }
 
