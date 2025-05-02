@@ -6,6 +6,7 @@
 #include "TLisaConfiguration.h"
 #include "LisaData.h" // do we need raw?
 #include "LisaCalData.h"
+#include "LisaGate.h"
 #include <vector>
 #include <memory>
 #include <sstream>
@@ -26,6 +27,7 @@
 class LisaCalItem;
 class TLisaConfiguration;
 class TExperimentConfiguration;
+class LisaGate;
 class EventHeader;
 class TCanvas;
 class TH1F;
@@ -42,6 +44,7 @@ class LisaNearlineSpectra : public FairTask
 {
     public:
         LisaNearlineSpectra();
+        LisaNearlineSpectra(std::vector<LisaGate*> lg);
         LisaNearlineSpectra(const TString& name, Int_t verbose = 1);
 
         virtual ~LisaNearlineSpectra();
@@ -62,6 +65,10 @@ class LisaNearlineSpectra : public FairTask
     private:
         TLisaConfiguration const* lisa_config;
         TExperimentConfiguration const* exp_config;
+
+
+        std::vector<LisaGate*> febex_gates;
+        std::vector<LisaGate*> mwd_gates;
 
         // TClonesArray* fHitLisa;
 
@@ -115,17 +122,23 @@ class LisaNearlineSpectra : public FairTask
         TDirectory* dir_MWD_drift;
         TDirectory* dir_MWD_ch_drift;
         //  Gates LISA only
-        TDirectory* dir_gates;
-
-        std::map<std::string, TDirectory*> dirs_gate_file;
-        std::map<std::string, TDirectory*> dirs_gate_febex;
-        std::map<std::string, TDirectory*> dirs_gate_mwd;
-        std::map<std::string, TDirectory*> dirs_gate_febex_channel;
-        std::map<std::string, TDirectory*> dirs_gate_mwd_channel;
-        TDirectory* dir_febex_gates;
-        TDirectory* dir_MWD_gates;
-        TDirectory* dir_febex_gates_channel;
-        TDirectory* dir_MWD_gates_channel;
+        TDirectory* dir_lisa_gates;
+        TDirectory* dir_gated_febex;
+        TDirectory** dir_febex_gates;
+        TDirectory** dir_febex_gates_channel;
+        TDirectory* dir_gated_mwd;
+        TDirectory** dir_mwd_gates;
+        TDirectory** dir_mwd_gates_channel;
+     
+        // std::map<std::string, TDirectory*> dirs_gate_file;
+        // std::map<std::string, TDirectory*> dirs_gate_febex;
+        // std::map<std::string, TDirectory*> dirs_gate_mwd;
+        // std::map<std::string, TDirectory*> dirs_gate_febex_channel;
+        // std::map<std::string, TDirectory*> dirs_gate_mwd_channel;
+        // TDirectory* dir_febex_gates;
+        // TDirectory* dir_MWD_gates;
+        // TDirectory* dir_febex_gates_channel;
+        // TDirectory* dir_MWD_gates_channel;
 
         // ::: Histograms :::
         // ::: Stats
@@ -150,8 +163,8 @@ class LisaNearlineSpectra : public FairTask
         std::vector<TH2F*> h2_energy_layer_vs_layer;
         TH2F* h2_energy_first_vs_last;
         //      - Gated
-        std::vector<std::vector<TH1F*>> h1_energy_layer_gated; 
-        std::vector<std::vector<TH1F*>> h1_energy_xy_gated;
+        std::vector<std::vector<TH1*>> h1_energy_layer_gated; 
+        std::vector<std::vector<TH1*>> h1_energy_xy_gated;
         //std::vector<TH1F*> h1_energy_layer_gated;
         //std::vector<TH1F*> h1_energy_xy_gated;
         
@@ -163,8 +176,8 @@ class LisaNearlineSpectra : public FairTask
         std::vector<TH2F*> h2_energy_MWD_layer_vs_layer;
         TH2F* h2_energy_MWD_first_vs_last;
         //      - Gated
-        std::vector<std::vector<TH1F*>> h1_energy_MWD_layer_gated;
-        std::vector<std::vector<TH1F*>> h1_energy_MWD_xy_gated;
+        std::vector<std::vector<TH1*>> h1_energy_MWD_layer_gated;
+        std::vector<std::vector<TH1*>> h1_energy_MWD_xy_gated;
         //std::vector<TH1F*> h1_energy_MWD_layer_gated;
         //std::vector<TH1F*> h1_energy_MWD_xy_gated;
 
