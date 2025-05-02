@@ -12,61 +12,61 @@
 
 #:::::::::::::::   B O A R D  0   :::::::::::::::#
 #:::::::::::::::     America      :::::::::::::::#
-        0       0         1     0     0   ch0_0
-        0       1         1     1     0   ch0_1 
-        0       2         1     2     0   ch0_2 
-        0       3         1     3     0   ch0_3 
-        0       4         1     0     1   ch0_4 
-        0       5         1     1     1   ch0_5   
-        0       6         1     2     1   ch0_6 
-        0       7         1     3     1   ch0_7 
-        0       8         1     0     2   ch0_8 
-        0       9         1     1     2   ch0_9 
-        0      10         1     2     2   ch0_10
-        0      11         1     3     2   ch0_11
-        0      12         1     0     3   ch0_12
-        0      13         1     1     3   ch0_13
-        0      14         1     2     3   ch0_14
-        0      15         1     3     3   ch0_15
+        0       0         1     0     0   Quito 
+        0       1         1     1     0   Lima  
+        0       2         1     2     0   Caracas 
+        0       3         1     3     0   Sucre  
+        0       4         1     0     1   Belmopan 
+        0       5         1     1     1   San_Salvador  
+        0       6         1     2     1   Tecugigalpa 
+        0       7         1     3     1   Managua 
+        0       8         1     0     2   Sacramento 
+        0       9         1     1     2   Denver  
+        0      10         1     2     2   Topeka 
+        0      11         1     3     2   Atlanta  
+        0      12         1     0     3   Olympia 
+        0      13         1     1     3   Helena  
+        0      14         1     2     3   Bismark 
+        0      15         1     3     3   St_Paul 
 
 
 #:::::::::::::::   B O A R D  1   :::::::::::::::#
 #:::::::::::::::     Africa      :::::::::::::::#
-        1       0         2     0     0   ch1_0
-        1       1         2     1     0   ch1_1  
-        1       2         2     2     0   ch1_2 
-        1       3         2     3     0   ch1_3 
-        1       4         2     0     1   ch1_4 
-        1       5         2     1     1   ch1_5 
-        1       6         2     2     1   ch1_6 
-        1       7         2     3     1   ch1_7 
-        1       8         2     0     2   ch1_8 
-        1       9         2     1     2   ch1_9 
-        1      10         2     2     2   ch1_10
-        1      11         2     3     2   ch1_11
-        1      12         2     0     3   ch1_12
-        1      13         2     1     3   ch1_13
-        1      14         2     2     3   ch1_14
-        1      15         2     3     3   ch1_15
+        1       0         2     0     0   Luanda 
+        1       1         2     1     0   Brazzville  
+        1       2         2     2     0   Lusaka 
+        1       3         2     3     0   Pretoria  
+        1       4         2     0     1   Accra 
+        1       5         2     1     1   Lome  
+        1       6         2     2     1   Malabo 
+        1       7         2     3     1   Kampala 
+        1       8         2     0     2   Bissau 
+        1       9         2     1     2   Monrovia
+        1      10         2     2     2   Abuja 
+        1      11         2     3     2   Bangui  
+        1      12         2     0     3   Praia 
+        1      13         2     1     3   Dakar  
+        1      14         2     2     3   Bamako 
+        1      15         2     3     3   Khartoum 
 
 #:::::::::::::::   B O A R D  2   :::::::::::::::#
 #:::::::::::::::      Europa      :::::::::::::::#
-        2       0         3     0     0   ch2_0
-        2       1         3     1     0   ch2_1  
-        2       2         3     2     0   ch2_2 
-        2       3         3     3     0   ch2_3 
-        2       4         3     0     1   ch2_4 
-        2       5         3     1     1   ch2_5  
-        2       6         3     2     1   ch2_6 
-        2       7         3     3     1   ch2_7 
-        2       8         3     0     2   ch2_8 
-        2       9         3     1     2   ch2_9 
-        2      10         3     2     2   ch2_10
-        2      11         3     3     2   ch2_11
-        2      12         3     0     3   ch2_12
-        2      13         3     1     3   ch2_13
-        2      14         3     2     3   ch2_14
-        2      15         3     3     3   ch2_15
+        2       0         3     0     0   Luanda 
+        2       1         3     1     0   Madrid  
+        2       2         3     2     0   Napoli 
+        2       3         3     3     0   Skopja  
+        2       4         3     0     1   Andorra 
+        2       5         3     1     1   San_Marino  
+        2       6         3     2     1   Ljubljana 
+        2       7         3     3     1   Novi_Sad 
+        2       8         3     0     2   Bern 
+        2       9         3     1     2   Munich  
+        2      10         3     2     2   Vienna 
+        2      11         3     3     2   Budapest  
+        2      12         3     0     3   Paris 
+        2      13         3     1     3   Luxemburg  
+        2      14         3     2     3   Prague 
+        2      15         3     3     3   Warsaw 
 
 #:::::::::::::::   B O A R D  3   :::::::::::::::#
 #:::::::::::::::       Asia       :::::::::::::::#

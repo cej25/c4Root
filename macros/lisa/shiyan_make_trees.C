@@ -2,7 +2,7 @@
 
 // !!! Switch all tasks related to {subsystem} on (1)/off (0)
 #define LISA_ON 1
-#define FRS_ON 1
+#define FRS_ON 0
 
 // !!! Select the data level you want to visualize
 #define LISA_RAW 0
@@ -56,16 +56,16 @@ void shiyan_make_trees()
 
     
     // ::: FILE  PATH
-    //TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/S092_shiyan/";               // Data from LISA
-    TString inputpath = "/u/gandolfo/data/lustre/nustar/profi/sec_s160feb25/stitched/";     // Data from FRS
+    TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/S092_shiyan/";               // Data from LISA
+    //TString inputpath = "/u/gandolfo/data/lustre/nustar/profi/sec_s160feb25/stitched/";     // Data from FRS
  
-    //TString filename = inputpath + "test_0003_0001.lmd";
-    TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
+    TString filename = inputpath + "test_0013_0001.lmd";
+    //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
 
     // ::: OUTPUT 
-    TString outputpath = "/u/gandolfo/data/test_c4/shiyan_test/"; //testing
-    //TString outputFilename = outputpath + "test_0003_tree.root"; 
-    TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";
+    TString outputpath = "/u/gandolfo/data/test_c4/layer_alpha/"; //testing
+    TString outputFilename = outputpath + "test_0013_tree.root"; 
+    //TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";
 
 
     // ::: Create online run
@@ -129,7 +129,7 @@ void shiyan_make_trees()
         TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_All_Boards.txt");
         TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_cards.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_highgain.txt");
     }
     if ( EXP )
     {
