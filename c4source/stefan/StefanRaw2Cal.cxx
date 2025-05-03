@@ -24,6 +24,7 @@ StefanRaw2Cal::StefanRaw2Cal()
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
+    ,   StefanHit(new std::vector<StefanCalItem>)
     // OTHER STUFF 
     // ,   ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
@@ -38,6 +39,7 @@ StefanRaw2Cal::StefanRaw2Cal(const TString& name, Int_t verbose)
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
+    ,   StefanHit(new std::vector<StefanCalItem>)
     // OTHER STUFF 
     // ,   ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
@@ -67,6 +69,8 @@ InitStatus StefanRaw2Cal::Init()
  	
  	
     mgr->RegisterAny("StefanHit", StefanHit, !fOnline);
+
+    detector_mapping = stefan_config->Mapping();
     // needs to have the name of the detector subsystem here:
     // register stefan etc
     // FairRootManager::Instance()->Register("StefanTimeMachineData", "Time Machine Data", ftime_machine_array, !fOnline);
@@ -95,19 +99,14 @@ void StefanRaw2Cal::Exec(Option_t* option)
     // std::cout << "EVENT :: " << std::endl;
     for (auto const & StefanItem : *StefanArray)
     {
-        // std::cout << "Crate :: " << bb7item.Get_crate_id() << std::endl;
-        // std::cout << "Board :: " << bb7item.Get_board_id() << std::endl;
-        // std::cout << "Channel :: " << bb7item.Get_channel_id_traces() << std::endl;
-        // channel id or channel id traces?
-        std::pair<int, int> febex_mc = {StefanItem.Get_board_id(), StefanItem.Get_channel_id()};
-        std::pair<int, std::pair<int, int>> unmapped_channel = {0, febex_mc};
+        std::pair<int, int> unmapped_channel = {StefanItem.Get_board_id(), StefanItem.Get_channel_id()};
         //Get_channel_id_traces() when taking the id information from the trace header
         //Get_channel_id() when taking the id information from the header
 
         if (stefan_config->MappingLoaded())
         {
             if (detector_mapping.count(unmapped_channel) > 0)
-            {
+            {   
                 int dssd = detector_mapping.at(unmapped_channel).first;
                 int side = detector_mapping.at(unmapped_channel).second.first;
                 int strip = detector_mapping.at(unmapped_channel).second.second;
@@ -125,36 +124,28 @@ void StefanRaw2Cal::Exec(Option_t* option)
                     // energy_calib = ... 
                 }
 
-                if (energy > 400000000)
-                {
-                    // std::cout << "weird energy, I guess:: " << std::endl;
-                     std::cout << "Channel:: " << StefanItem.Get_channel_id() << std::endl;
-                    // std::cout << "Time:: " << bb7item.Get_channel_time() << std::endl;
-
-                    continue;
-                }
-
-                int64_t absolute_time = StefanItem.Get_wr_t() + StefanItem.Get_channel_time() - StefanItem.Get_board_event_time();
+               
+                Long64_t absolute_time = StefanItem.Get_wr_t() + StefanItem.Get_channel_time() - StefanItem.Get_board_event_time();
 
 
-                
-                    // implant 
-                    auto & entry = StefanHit->emplace_back();
-                    entry.SetAll(
-                        StefanItem.Get_wr_t(),
-                        dssd,
-                        side,
-                        strip,
-                        StefanItem.Get_channel_energy(),
-                        //StefanItem.Get_trace(),
-                        energy_calib,
-                        StefanItem.Get_board_event_time(),
-                        StefanItem.Get_channel_time(),
-                        absolute_time,
-                        StefanItem.Get_pileup(),
-                        StefanItem.Get_overflow()
-                    );
-                
+                std::cout << "hello" << std::endl;
+                // implant 
+                auto & entry = StefanHit->emplace_back();
+                entry.SetAll(
+                    StefanItem.Get_wr_t(),
+                    dssd,
+                    side,
+                    strip,
+                    StefanItem.Get_channel_energy(),
+                    //StefanItem.Get_trace(),
+                    energy_calib,
+                    StefanItem.Get_board_event_time(),
+                    StefanItem.Get_channel_time(),
+                    absolute_time,
+                    StefanItem.Get_pileup(),
+                    StefanItem.Get_overflow()
+                );
+            
                 
             }
             
@@ -173,7 +164,8 @@ Very important function - all TClonesArray must be cleared after each event.
 void StefanRaw2Cal::FinishEvent()
 {
     // clear
-     count_in_event = 0;
+    count_in_event = 0;
+    StefanHit->clear();
 };
 
 
