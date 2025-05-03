@@ -351,18 +351,11 @@ InitStatus LisaNearlineSpectra::Init()
     }
 
     //      Febex energy by layer
-    dir_febex_exclude = dir_febex->mkdir("Exclude Channels");
     h1_energy_layer.resize(layer_number);
-    h1_energy_layer_exclude_channels.resize(layer_number);
     for (int i = 0; i < layer_number; i++)
     {   
         h1_energy_layer[i] = MakeTH1(dir_febex, "F",
             Form("h1_energy_layer_%i", i+1), Form("Energy - Layer %i", i+1), 
-            lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy,
-            Form("E(LISA %i) [a.u.]", i+1), kRed-3, kBlue+1);
-
-        h1_energy_layer_exclude_channels[i] = MakeTH1(dir_febex_exclude, "F",
-            Form("h1_energy_layer%i_exclude_channels", i+1), Form("Energy (Channels Excluded) - Layer %i", i+1), 
             lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy,
             Form("E(LISA %i) [a.u.]", i+1), kRed-3, kBlue+1);
     }
@@ -760,24 +753,6 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     std::vector<std::vector<float>> energy_MWD_layer(layer_number);
     energy_MWD_layer.resize(layer_number);  
 
-    // Define energy arrays for each gate (Febex and MWD) and layer
-    // CEJ wth is all this stuff?
-    // std::set<std::string> p_files;
-    // std::vector<std::string> g_filenames;
-    // namespace f = std::filesystem;
-    // //std::cout<< " Debugging 3 " << std::endl;
-    // for (const auto& [layer_g, gate_vec] : gates_LISA_febex)
-    // {
-    //     for (const auto& [path, low, high] : gate_vec)
-    //     {
-    //         if (p_files.count(path)) continue;
-    //         p_files.insert(path);
-
-    //         std::string full_stem = f::path(path).stem().string();
-    //         g_filenames.push_back(full_stem);
-    //     }
-    // }
-    // int gate_number = g_filenames.size(); 
     // ::: Energy gated - Layer
 
     std::vector<float> energy_layer_gated[gate_number][layer_number];
@@ -826,6 +801,32 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         // ::: FOR     M U L T I P L I C I T Y  
         total_multiplicity++;
         multiplicity[layer-1]++;
+        //....................
+
+        // ::: Fill Stats Histo :::
+        //h1_hitpattern_total->Fill(hp_total_bin);
+        //....................
+        // ::: Hit Pattern by layer
+        h1_hitpattern_layer[layer]->Fill(hp_bin);
+        //....................
+        // ::: Grids (hit pattern, pile up and overflow)
+        h2_hitpattern_grid[layer-1]->Fill(xpos,ypos);
+        if (pileup != 0) h2_pileup_grid[layer-1]->Fill(xpos,ypos);
+        if (overflow != 0) h2_overflow_grid[layer-1]->Fill(xpos,ypos);
+        //....................  
+        // :::: Fill traces histos febex
+        if(lisa_config->trace_on)
+        {
+            for (int i = 0; i < trace.size(); i++)
+            {   
+                h2_traces_ch[layer-1][xpos][ypos]->Fill(i*0.01,trace[i]);
+            }
+        }
+        //....................
+
+        // ::: Exclude channels but keep multiplicity :::
+        if (excluded.count(std::make_tuple(layer, xpos, ypos)) != 0) continue;
+
         // ::: FOR     E N E R G Y
         int xp_gate = lisa_config->xpos_gate;
         int yp_gate = lisa_config->ypos_gate;
@@ -858,27 +859,25 @@ void LisaNearlineSpectra::Exec(Option_t* option)
             g++;
         }
 
+        //::: F I L L   E N E R G Y   H I S T O S  :::
 
-
-        //::: F I L L   H I S T O S  :::
-
-        // ::: Hit Pattern Total
-        //h1_hitpattern_total->Fill(hp_total_bin);
-        //....................
-        // ::: Hit Pattern by layer
-        h1_hitpattern_layer[layer]->Fill(hp_bin);
-        //....................
-        // ::: Grids (hit pattern, pile up and overflow)
-        h2_hitpattern_grid[layer-1]->Fill(xpos,ypos);
-        if (pileup != 0) h2_pileup_grid[layer-1]->Fill(xpos,ypos);
-        if (overflow != 0) h2_overflow_grid[layer-1]->Fill(xpos,ypos);        
+        // // ::: Hit Pattern Total
+        // //h1_hitpattern_total->Fill(hp_total_bin);
+        // //....................
+        // // ::: Hit Pattern by layer
+        // h1_hitpattern_layer[layer]->Fill(hp_bin);
+        // //....................
+        // // ::: Grids (hit pattern, pile up and overflow)
+        // h2_hitpattern_grid[layer-1]->Fill(xpos,ypos);
+        // if (pileup != 0) h2_pileup_grid[layer-1]->Fill(xpos,ypos);
+        // if (overflow != 0) h2_overflow_grid[layer-1]->Fill(xpos,ypos);        
         //....................
         // ::: Energy Febex per channel
         h1_energy_ch[layer-1][xpos][ypos]->Fill(energy_GM);
         //....................
         // ::: Energy Febex per layer
         h1_energy_layer[layer-1]->Fill(energy_GM);
-        if (excluded.count(std::make_tuple(layer, xpos, ypos)) == 0) h1_energy_layer_exclude_channels[layer-1]->Fill(energy_GM);
+        
         //....................
         // ::: Energy Febex vs ID
         h2_energy_vs_ID[layer-1]->Fill(hp_bin, energy_GM);
@@ -898,14 +897,14 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         // ::: Layer Energy MWD  vs ID
         h2_energy_MWD_vs_layer->Fill(layer,energy_MWD_GM);
             
-        // :::: Fill traces febex
-        if(lisa_config->trace_on)
-        {
-            for (int i = 0; i < trace.size(); i++)
-            {   
-                h2_traces_ch[layer-1][xpos][ypos]->Fill(i*0.01,trace[i]);
-            }
-        }
+        // // :::: Fill traces febex
+        // if(lisa_config->trace_on)
+        // {
+        //     for (int i = 0; i < trace.size(); i++)
+        //     {   
+        //         h2_traces_ch[layer-1][xpos][ypos]->Fill(i*0.01,trace[i]);
+        //     }
+        // }
 
         //c4LOG(info, "layer -1 " << layer-1 << " LISA_time_mins: " << LISA_time_mins << " energy : "<<  energy_GM);
         // ::: Drifts ::::
@@ -987,6 +986,8 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         if(multiplicity[i] != 0) layers_fired++;
     }
     h1_layer_multiplicity->Fill(layers_fired);
+
+
     //....................................
     // ::: Energy Layer vs Layer
     for ( int i = 0; i < layer_number-1; i++)
@@ -1072,7 +1073,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     //....................................
     // ::: LISA MWD Gated on LISA-only 
     // ::: Layer
-    for (int g = 0; g < gate_number; g++)
+    for (int g = 0; g < mwd_gate_number; g++)
     {
         for (int l = 0; l < layer_number; l++)
         {
@@ -1084,7 +1085,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         }
     }
     // ::: Channel
-    for (int g = 0; g < gate_number; g++)
+    for (int g = 0; g < mwd_gate_number; g++)
     {
         for (int l = 0; l < layer_number; l++)
         {

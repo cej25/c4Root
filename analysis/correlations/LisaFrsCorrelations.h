@@ -83,7 +83,27 @@ class LisaFrsCorrelations : public FairTask
         TDirectory* dir_lisa_frs;
 
         TDirectory* dir_time;
-        // TDirectory* dir_position;
+        
+        TDirectory* dir_position;
+
+        TDirectory* dir_energy;
+        TDirectory* dir_febex;
+        TDirectory* dir_mwd;
+
+        TDirectory* dir_gates;
+        TDirectory* dir_febex_gates;
+        TDirectory* dir_febex_LISA;
+        TDirectory* dir_febex_FRS;
+        TDirectory* dir_febex_FRS_xy;
+        TDirectory* dir_febex_LISA_FRS;
+        TDirectory* dir_febex_LISA_FRS_xy;
+
+        TDirectory* dir_mwd_gates;
+        TDirectory* dir_mwd_LISA;
+        TDirectory* dir_mwd_FRS;
+        TDirectory* dir_mwd_FRS_xy;
+        TDirectory* dir_mwd_LISA_FRS;
+        TDirectory* dir_mwd_LISA_FRS_xy;
 
         // TDirectory* dir_energy;
         // TDirectory* dir_energy_MWD;
@@ -108,8 +128,9 @@ class LisaFrsCorrelations : public FairTask
         int64_t wr_travMUSIC_FRS;
         // Float_t s2_x;
         // Float_t s2_y;
-        // Float_t energy_MUSIC_1;
-        // Float_t energy_MUSIC_2;
+        Float_t energy_MUSIC_21;
+        Float_t energy_MUSIC_41;
+        Float_t energy_MUSIC_42;
         // Float_t energy_travMUSIC;
         // Float_t energy_travMUSIC_driftcorr;
 
@@ -118,7 +139,18 @@ class LisaFrsCorrelations : public FairTask
         Int_t layer;
 
         // ::: Histograms
+        // Time
         std::vector<TH1I*> h1_wr_diff;
+
+        // Position
+
+        // Energy - LISA-MUSICs
+        std::vector<TH2F*> h2_MUSIC21_vs_LISA_febex;
+        std::vector<TH2F*> h2_MUSIC41_vs_LISA_febex;
+
+        std::vector<TH2F*> h2_MUSIC21_vs_LISA_MWD;
+        std::vector<TH2F*> h2_MUSIC41_vs_LISA_MWD;
+
         // std::vector<TH2F*> h2_MUSIC_1_layer_GM;
         // std::vector<TH2F*> h2_MUSIC_2_layer_GM;
         // std::vector<TH2F*> h2_travMUSIC_layer_GM;
@@ -141,6 +173,8 @@ class LisaFrsCorrelations : public FairTask
         // std::vector<std::vector<TH1F*>> h1_energy_layer_GM_PID_driftcorr;
         // std::vector<std::vector<TH1F*>> h1_energy_layer_GM_PID_TM_driftcorr;
         // std::vector<std::vector<TH1F*>> h1_energy_layer2_GM_PID_TM_driftcorr_LISA1;
+
+        std::set<std::tuple<int, int, int>> excluded;
 
     public:
         ClassDef(LisaFrsCorrelations, 1)

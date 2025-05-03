@@ -161,7 +161,6 @@ class LisaNearlineSpectra : public FairTask
         //      Febex
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_ch;
         std::vector<TH1*> h1_energy_layer;
-        std::vector<TH1*> h1_energy_layer_exclude_channels;
         std::vector<TH2F*> h2_energy_vs_ID;
         TH2F* h2_energy_vs_ID_total;
         TH2F* h2_energy_vs_layer;
