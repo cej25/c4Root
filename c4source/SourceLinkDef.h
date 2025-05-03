@@ -47,6 +47,7 @@
 #pragma link C++ class H10MCPCal2Ana+;
 #pragma link C++ class StefanReader+;
 #pragma link C++ class StefanRaw2Cal+;
+#pragma link C++ class StefanCal2Hit+;
 
 #pragma link C++ class EXT_STR_h101_unpack_t;
 #pragma link C++ class EXT_STR_h101_frs_onion_t;

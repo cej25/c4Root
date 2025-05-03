@@ -19,6 +19,7 @@ class StefanCal2Hit : public FairTask
         virtual InitStatus Init();
         void SetOnline(Bool_t option) { fOnline = option; }
 
+        virtual void FinishEvent();
         virtual void FinishTask();
 
     private:
@@ -37,8 +38,7 @@ class StefanCal2Hit : public FairTask
         Bool_t fOnline;
         int total_time_microsecs = 0;
 
-        Int_t ncalImplantEvents = 0;
-        Int_t ncalDecayEvents = 0;
+        Int_t calEvents = 0;
 
         std::vector<StefanCluster> ItemsToClusters(std::vector<StefanCalItem> const& );
         StefanHitItem ClusterPairToHit(std::pair<StefanCluster, StefanCluster> const&);

@@ -112,6 +112,7 @@ void c_hispec10_online()
     TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
  
     TStefanConfiguration::SetDetectorConfigurationFile(config_path + "/stefan/stefan_mapping.txt");
+    TStefanConfiguration::SetDetectorCoefficientFile(config_path + "/stefan/stefan_cal.txt");
     // MCP STEFAN..
 
     // ------------------------------------------------------------------------------------- //
@@ -186,6 +187,14 @@ void c_hispec10_online()
         
         anamcp->SetOnline(true);
         run->AddTask(anamcp);
+    }
+
+    if (STEFAN_ON)
+    {
+        StefanCal2Hit* hitstefan = new StefanCal2Hit();
+        
+        hitstefan->SetOnline(true);
+        run->AddTask(hitstefan);
     }
     
     if (FRS_ON)

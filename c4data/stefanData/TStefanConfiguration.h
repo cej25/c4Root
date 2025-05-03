@@ -23,7 +23,7 @@ class TStefanConfiguration
         std::map<std::pair<int, int>, std::pair<int, std::pair<int,int>>> Mapping() const;
         bool MappingLoaded() const;
         bool CalibrationLoaded() const;
-        std::map<std::pair<int,int>,std::vector<double>> CalibrationCoefficients() const;
+        std::map<std::pair<int, std::pair<int, int>>, int> CalibrationCoefficients() const;
 
 
         inline bool IsInsidePromptFlashCut(double timediff, double energy) const{
@@ -73,8 +73,7 @@ class TStefanConfiguration
         static TStefanConfiguration* instance;
         
         std::map<std::pair<int, int>, std::pair<int, std::pair<int,int>>> detector_mapping;
-        std::map<std::pair<int,int>,std::vector<double>> calibration_coeffs;
-        std::map<std::pair<int,int>,double> timeshift_calibration_coeffs;
+        std::map<std::pair<int, std::pair<int, int>>, int>  calibration_coeffs;
         std::set<int> extra_signals;
 
         TCutG* prompt_flash_cut = nullptr;
@@ -131,7 +130,7 @@ inline std::map<std::pair<int, int>, std::pair<int, std::pair<int,int>>>TStefanC
     return detector_mapping;
 }
 
-inline std::map<std::pair<int,int>,std::vector<double>> TStefanConfiguration::CalibrationCoefficients() const
+inline std::map<std::pair<int, std::pair<int, int>>, int> TStefanConfiguration::CalibrationCoefficients() const
 {
     return calibration_coeffs;
 }

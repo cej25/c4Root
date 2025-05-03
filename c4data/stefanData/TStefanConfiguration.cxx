@@ -89,22 +89,28 @@ void TStefanConfiguration::ReadCalibrationCoefficients()
     std::ifstream cal_map_file (calibration_file);
     if (cal_map_file.fail()) c4LOG(fatal, "Could not open Germanium calibration coefficients");    
 
-    int rdetector_id,rcrystal_id; // temp read variables
-    double a0,a1,a2;
+    int dssd, side, strip; // temp read variables
+    double a1; // no a0, a2 for now
     
-    //assumes the first line in the file is num-modules used
-    while(!cal_map_file.eof()){
-        if(cal_map_file.peek()=='#') cal_map_file.ignore(256,'\n');
-        else{
-            cal_map_file >> rdetector_id >> rcrystal_id >> a0 >> a1 >> a2;
-            std::pair<int,int> detector_crystal = {rdetector_id,rcrystal_id};
-            std::vector<double> cals = {a0,a1,a2};
-            calibration_coeffs.insert(std::pair<std::pair<int,int>,std::vector<double>>{detector_crystal,cals});
+    while(!cal_map_file.eof())
+    {
+        if (cal_map_file.peek() == '#') cal_map_file.ignore(256,'\n');
+        else
+        {
+            cal_map_file >> dssd >> side >> side >> a1;
+
+            std::pair<int, int> ss = {side, strip};
+            std::pair<int, std::pair<int, int>> ds = {dssd, ss};
+
+            // std::vector<double> cals = {a0,a1,a2};
+
+            calibration_coeffs.insert(std::pair<std::pair<int, std::pair<int, int>>, int> {ds, a1});
+            // calibration_coeffs.insert(std::pair<std::pair<int,int>,std::vector<double>>{detector_crystal,cals});
             cal_map_file.ignore(256,'\n');
         }
     }
     detector_calibrations_loaded = 1;
     cal_map_file.close();
 
-    LOG(info) << "Germanium Calibration File: " + calibration_file;
+    c4LOG(info, "Stefan Calibration File: " + calibration_file);
 };

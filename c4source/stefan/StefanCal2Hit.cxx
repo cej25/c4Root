@@ -40,7 +40,7 @@ StefanCal2Hit::StefanCal2Hit() :
     fOnline(false),
     header(nullptr)
 {
-    stefan_config = TBB7FebexConfiguration::GetInstance();
+    stefan_config = TStefanConfiguration::GetInstance();
 }
 
 StefanCal2Hit::~StefanCal2Hit()
@@ -68,9 +68,6 @@ InitStatus StefanCal2Hit::Init()
 void StefanCal2Hit::Exec(Option_t* option)
 {
     auto start = std::chrono::high_resolution_clock::now();
-
-    implantHitArray->clear();
-    decayHitArray->clear();
 
     if (calArray->size() > 0) calEvents++;
 
@@ -118,7 +115,7 @@ void StefanCal2Hit::Exec(Option_t* option)
         // Produce hits
         for (auto& i : hits)
         {
-            BB7FebexHitItem hit = ClusterPairToHit(i);
+            StefanHitItem hit = ClusterPairToHit(i);
             hit.Stopped = (hit.DSSD == max_dssd);
             // Check every DSSD before has at least one implant event
             for (int j = hit.DSSD; j > -1; j--) // dssd-1,>0
@@ -126,7 +123,7 @@ void StefanCal2Hit::Exec(Option_t* option)
                 if (counts[j] == 0) hit.Stopped = false; // j-1
             }
 
-            implantHitArray->push_back(hit);
+            hitArray->push_back(hit);
         }
     }
     
@@ -137,18 +134,23 @@ void StefanCal2Hit::Exec(Option_t* option)
     total_time_microsecs += duration.count();
 }
 
+void StefanCal2Hit::FinishEvent()
+{
+    hitArray->clear();
+}
+
 void StefanCal2Hit::FinishTask()
 {
     c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fExecs << " microseconds.");
 }
 
 // Perform clustering: adjacent strips firing simultaenously are summed into one cluster
-std::vector<StefanCluster> StefanCal2Hit::ItemsToClusters(std::vector<BB7FebexCalItem> const& items)
+std::vector<StefanCluster> StefanCal2Hit::ItemsToClusters(std::vector<StefanCalItem> const& items)
 {
     // Track strip multiplicity to reject rapid-fire strips
     static std::unordered_map<stefan_coord_t, int, stefan_coord_hash> stripm;
 
-    static std::vector<BB7Cluster> clusters;
+    static std::vector<StefanCluster> clusters;
 
     stripm.clear();
     clusters.clear();
@@ -156,14 +158,14 @@ std::vector<StefanCluster> StefanCal2Hit::ItemsToClusters(std::vector<BB7FebexCa
     {
         if (i.DSSD == -1) continue;
 
-        bb7_coord_t coord{i.DSSD, i.Side, i.Strip};
+        stefan_coord_t coord{i.DSSD, i.Side, i.Strip};
         // If strip fired more than once ignore it
         // false for now
-        // if (bb7_config->ReduceNoise() && ++stripm[coord] > 1)
+        // if (stefan_config->ReduceNoise() && ++stripm[coord] > 1)
         //     continue;
 
         bool added = false;
-        BB7Cluster* cluster = nullptr;
+        StefanCluster* cluster = nullptr;
         // Try to add the adc item to an existing cluster
         // Weird loop (not for) because we can combine clusters
         auto it = std::begin(clusters);
@@ -198,7 +200,7 @@ std::vector<StefanCluster> StefanCal2Hit::ItemsToClusters(std::vector<BB7FebexCa
         // If not added already, make a new cluster
         if (!added)
         {
-            BB7Cluster c_new;
+            StefanCluster c_new;
             c_new.AddItem(i);
             clusters.push_back(c_new);
         }
@@ -206,7 +208,7 @@ std::vector<StefanCluster> StefanCal2Hit::ItemsToClusters(std::vector<BB7FebexCa
 
     // re-check multiplicty and destroy clusters with multiple same-strip
     // false for now
-    // if (bb7_config->ReduceNoise())
+    // if (stefan_config->ReduceNoise())
     // {
     //     auto it = std::begin(clusters);
     //     while (it != std::end(clusters))
@@ -215,7 +217,7 @@ std::vector<StefanCluster> StefanCal2Hit::ItemsToClusters(std::vector<BB7FebexCa
     //         bool destroy = false;
     //         for (int s = j.StripMin; s <= j.StripMax; s++)
     //         {
-    //             bb7_coord_t coord{j.DSSD, j.Side, s};
+    //             stefan_coord_t coord{j.DSSD, j.Side, s};
     //             if (stripm[coord] > 1) {
     //                 destroy = true;
     //             }
@@ -231,10 +233,10 @@ std::vector<StefanCluster> StefanCal2Hit::ItemsToClusters(std::vector<BB7FebexCa
     return clusters;
 }
 
-BB7FebexHitItem StefanCal2Hit::ClusterPairToHit(std::pair<BB7Cluster, BB7Cluster> const& i)
+StefanHitItem StefanCal2Hit::ClusterPairToHit(std::pair<StefanCluster, StefanCluster> const& i)
 {
 
-    BB7FebexHitItem hit;
+    StefanHitItem hit;
     hit.DSSD = i.first.DSSD;
 
     hit.StripX = i.first.Strip;
@@ -277,7 +279,7 @@ BB7FebexHitItem StefanCal2Hit::ClusterPairToHit(std::pair<BB7Cluster, BB7Cluster
 
 ClassImp(StefanCal2Hit)
 
-void BB7Cluster::Zero()
+void StefanCluster::Zero()
 {
   DSSD = -1;
   Side = 0;
@@ -293,13 +295,13 @@ void BB7Cluster::Zero()
   N = 0;
 }
 
-void BB7Cluster::AddItem(BB7FebexCalItem const& item)
+void StefanCluster::AddItem(StefanCalItem const& item)
 {
   if (DSSD == -1)
   {
     DSSD = item.DSSD;
     Side = item.Side;
-    HighEnergy = item.Energy > 10000000; //bb7_config->ImplantTreshold();
+    HighEnergy = item.Energy > 10000000; //stefan_config->ImplantTreshold();
     StripMin = item.Strip;
     StripMax = item.Strip;
     TimeMin = item.AbsoluteTime;
@@ -315,7 +317,7 @@ void BB7Cluster::AddItem(BB7FebexCalItem const& item)
   Time = TimeMin;
 }
 
-void BB7Cluster::AddCluster(BB7Cluster const& cluster)
+void StefanCluster::AddCluster(StefanCluster const& cluster)
 {
   if (DSSD == -1)
   {
@@ -334,7 +336,7 @@ void BB7Cluster::AddCluster(BB7Cluster const& cluster)
   Time = TimeMin;
 }
 
-bool BB7Cluster::IsAdjacent(BB7FebexCalItem const& item) const
+bool StefanCluster::IsAdjacent(StefanCalItem const& item) const
 {
   if (DSSD == -1) return true;
   if (item.DSSD != DSSD || item.Side != Side) return false;
@@ -342,7 +344,7 @@ bool BB7Cluster::IsAdjacent(BB7FebexCalItem const& item) const
   return false;
 }
 
-bool BB7Cluster::IsGoodTime(BB7FebexCalItem const& item, int window) const
+bool StefanCluster::IsGoodTime(StefanCalItem const& item, int window) const
 {
   if (DSSD == -1) return true;
 
@@ -350,7 +352,7 @@ bool BB7Cluster::IsGoodTime(BB7FebexCalItem const& item, int window) const
   return false;
 }
 
-bool BB7Cluster::IsGoodTime(BB7Cluster const& event, int window) const
+bool StefanCluster::IsGoodTime(StefanCluster const& event, int window) const
 {
   if (DSSD == -1) return true;
 

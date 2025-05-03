@@ -68,9 +68,10 @@ InitStatus StefanRaw2Cal::Init()
     c4LOG_IF(fatal, !StefanArray, "Branch StefanFebexData not found!");
  	
  	
-    mgr->RegisterAny("StefanHit", StefanHit, !fOnline);
+    mgr->RegisterAny("StefanCalData", StefanHit, !fOnline);
 
     detector_mapping = stefan_config->Mapping();
+    calibration_coeffs = stefan_config->CalibrationCoefficients();
     // needs to have the name of the detector subsystem here:
     // register stefan etc
     // FairRootManager::Instance()->Register("StefanTimeMachineData", "Time Machine Data", ftime_machine_array, !fOnline);
@@ -120,15 +121,17 @@ void StefanRaw2Cal::Exec(Option_t* option)
 
                 if (stefan_config->CalibrationLoaded())
                 {
-                    // do calibration, calculation, whatever
-                    // energy_calib = ... 
+                    std::pair<int, std::pair<int, int>> mapped_det = std::make_pair(dssd, std::make_pair(side, strip));
+                    if (calibration_coeffs.count(mapped_det) > 0)
+                    {   
+                        energy_calib = energy * calibration_coeffs.at(mapped_det);
+                    }
                 }
 
                
                 Long64_t absolute_time = StefanItem.Get_wr_t() + StefanItem.Get_channel_time() - StefanItem.Get_board_event_time();
 
 
-                std::cout << "hello" << std::endl;
                 // implant 
                 auto & entry = StefanHit->emplace_back();
                 entry.SetAll(
