@@ -217,7 +217,7 @@ void shiyan_histos()
     TFrsConfiguration::Set_Z_range(10,60);
     TFrsConfiguration::Set_AoQ_range(1.8,3.5);
     TFrsConfiguration::Set_dE_Music1_range(0,64000);
-    TFrsConfiguration::Set_dE_travMusic_range(0,4000);
+    //TFrsConfiguration::Set_dE_travMusic_range(0,4000);
     
     //::::::::: Set ranges for histos :::::::::::::::
     // ::: LISA
@@ -282,7 +282,7 @@ void shiyan_histos()
     {
         if(FRS_LISA_CORRELATIONS)
         {
-            LisaFrsCorrelations* LISA_FRS_corr = new LisaFrsCorrelations(fgs);
+            LisaFrsCorrelations* LISA_FRS_corr = new LisaFrsCorrelations(fgs,lgs);
             run->AddTask(LISA_FRS_corr);
         }
     }
