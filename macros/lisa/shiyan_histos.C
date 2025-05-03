@@ -109,21 +109,20 @@ void shiyan_histos()
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: G A T E S - Initialise 
 
-    std::vector<FrsGate*> fg;
     FrsGate* cut_0 = new FrsGate("cut", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/all_z_1.root"); 
-    FrsGate* cut_1 = new FrsGate("0", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/1p1n.root"); 
-    FrsGate* cut_2 = new FrsGate("1", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/1p2n.root"); 
-    FrsGate* cut_3 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/all_z_2.root"); 
-    FrsGate* cut_4 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/2p3n.root"); 
-    FrsGate* cut_5 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/2p4n.root"); 
-
+    //FrsGate* cut_1 = new FrsGate("0", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/1p1n.root"); 
+    // FrsGate* cut_2 = new FrsGate("1", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/1p2n.root"); 
+    // FrsGate* cut_3 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/all_z_2.root"); 
+    // FrsGate* cut_4 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/2p3n.root"); 
+    // FrsGate* cut_5 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/2p4n.root"); 
+    std::vector<FrsGate*> fgs = {};
     
-    fg.emplace_back(cut_0);
-    fg.emplace_back(cut_1);
-    fg.emplace_back(cut_2);
-    fg.emplace_back(cut_3);
-    fg.emplace_back(cut_4);
-    fg.emplace_back(cut_5);
+    fgs.emplace_back(cut_0);
+    //fgs.emplace_back(cut_1);
+    // fgs.emplace_back(cut_2);
+    // fgs.emplace_back(cut_3);
+    // fgs.emplace_back(cut_4);
+    // fgs.emplace_back(cut_5);
 
     // ::: GATES config for histos ::::::::
     TFrsConfiguration::Set_dE_travMusic_gate(1940,2000);
@@ -138,6 +137,9 @@ void shiyan_histos()
     TFrsConfiguration::SetZ1DriftFile(config_path +  "/frs/Z1_Drift_fragments.txt");
     TFrsConfiguration::SetAoQDriftFile(config_path +  "/frs/AoQ_Drift_fragments.txt");
 
+    // ...........................................
+
+    std::vector<LisaGate*> lgs = {};
     // ::: Lisa config
     if ( TEST )
     {
@@ -160,11 +162,29 @@ void shiyan_histos()
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD.txt");
         TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
         
-        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Febex_Gate1.txt");
-        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Febex_Gate2.txt");
+        //TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Febex_Gate1.txt");
+        //TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Febex_Gate2.txt");
 
-        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/MWD_Gate1.txt");
-        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/MWD_Gate2.txt");
+        //TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/MWD_Gate1.txt");
+        //TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/MWD_Gate2.txt");
+
+        LisaGate* FebGate1 = new LisaGate("Febex_Gate1", "energy", config_path + "/lisa/Febex_Gate1.txt");
+        LisaGate* FebGate2 = new LisaGate("Febex_Gate2", "energy", config_path + "/lisa/Febex_Gate2.txt");
+        LisaGate* MWD_Gate1 = new LisaGate("MWD_Gate1", "energy_mwd", config_path + "/lisa/MWD_Gate1.txt");
+        LisaGate* MWD_Gate2 = new LisaGate("MWD_Gate2", "energy_mwd", config_path + "/lisa/MWD_Gate2.txt");
+        LisaGate* MWD_Gate3 = new LisaGate("MWD_Gate3", "energy_mwd", config_path + "/lisa/MWD_Gate3.txt");
+
+
+        lgs.emplace_back(FebGate1);
+        lgs.emplace_back(FebGate2);
+        lgs.emplace_back(MWD_Gate1);
+        lgs.emplace_back(MWD_Gate2);
+        lgs.emplace_back(MWD_Gate3);
+
+        TLisaConfiguration::SetExcludedChannels({
+        std::make_tuple(1,0,0),
+        std::make_tuple(2,0,0)
+        });
 
     }
     if ( EXP )
@@ -197,6 +217,7 @@ void shiyan_histos()
     TFrsConfiguration::Set_Z_range(10,60);
     TFrsConfiguration::Set_AoQ_range(1.8,3.5);
     TFrsConfiguration::Set_dE_Music1_range(0,64000);
+    TFrsConfiguration::Set_dE_travMusic_range(0,4000);
     
     //::::::::: Set ranges for histos :::::::::::::::
     // ::: LISA
@@ -243,7 +264,7 @@ void shiyan_histos()
 
         if(LISA_CAL)
         {
-            LisaNearlineSpectra* nearlinelisa = new LisaNearlineSpectra();
+            LisaNearlineSpectra* nearlinelisa = new LisaNearlineSpectra(lgs);
             run->AddTask(nearlinelisa);
         }
 
@@ -251,7 +272,7 @@ void shiyan_histos()
 
     if (FRS_ON)
     {
-        FrsNearlineSpectra* nearlinefrs = new FrsNearlineSpectra();
+        FrsNearlineSpectra* nearlinefrs = new FrsNearlineSpectra(fgs);
         run->AddTask(nearlinefrs);
     }
     
@@ -261,7 +282,7 @@ void shiyan_histos()
     {
         if(FRS_LISA_CORRELATIONS)
         {
-            LisaFrsCorrelations* LISA_FRS_corr = new LisaFrsCorrelations(fg);
+            LisaFrsCorrelations* LISA_FRS_corr = new LisaFrsCorrelations(fgs);
             run->AddTask(LISA_FRS_corr);
         }
     }

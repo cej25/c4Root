@@ -107,20 +107,49 @@ InitStatus LisaFrsCorrelations::Init()
     gate_number = febex_gates.size();
     mwd_gate_number = mwd_gates.size();
 
+    // Ranges from MUSICs
+    int min_21 = frs_config->fMin_dE_travMusic;
+    int max_21 = frs_config->fMax_dE_travMusic;
+    int bin_21 = (max_21 - min_21)/10;
+    int min_41 = frs_config->fMin_dE_Music1;
+    int max_41 = frs_config->fMax_dE_Music1;
+    int bin_41 = (max_41 - min_41)/10;
+    //.............
+
     FairRootManager::Instance()->GetOutFile()->cd();
-    dir_corr = gDirectory->mkdir("LISA-FRS_Correlations");
+
+    excluded = lisa_config->GetExcludedChannels();
+
+    dir_corr = gDirectory->mkdir("Correlations");
     dir_time = dir_corr->mkdir("Time");
-    // dir_position = dir_corr->mkdir("Position");
-    // dir_energy = dir_corr->mkdir("Energy");
-    // dir_energy_ch = dir_energy->mkdir("Channels");
-    // dir_energy_MWD = dir_corr->mkdir("Energy_MWD");
-    // dir_energy_MWD_ch = dir_energy_MWD->mkdir("Channels");
+
+    dir_position = dir_corr->mkdir("Position");
+
+    dir_energy = dir_corr->mkdir("Energy");
+    dir_febex = dir_energy->mkdir("Febex");
+    dir_mwd = dir_energy->mkdir("MWD");
+
+    dir_gates = dir_corr->mkdir("Gates");
+
+    dir_febex_gates = dir_gates->mkdir("Gates_Febex");
+    dir_febex_LISA = dir_febex_gates->mkdir("LISA_Gated");
+    dir_febex_FRS = dir_febex_gates->mkdir("FRS_Gated");
+    dir_febex_FRS_xy = dir_febex_FRS->mkdir("XY");
+    dir_febex_LISA_FRS = dir_febex_gates->mkdir("FRS_LISA_Gated");
+    dir_febex_LISA_FRS_xy = dir_febex_LISA_FRS->mkdir("XY");
+
+    dir_mwd_gates = dir_gates->mkdir("Gates_MWD");
+    dir_mwd_LISA = dir_mwd_gates->mkdir("LISA_Gated");
+    dir_mwd_FRS = dir_mwd_gates->mkdir("FRS_Gated");
+    dir_mwd_FRS_xy = dir_mwd_FRS->mkdir("XY");
+    dir_mwd_LISA_FRS = dir_mwd_gates->mkdir("FRS_LISA_Gated");
+    dir_mwd_LISA_FRS_xy = dir_mwd_LISA_FRS->mkdir("XY");
+
     //dir_corr_driftcorr = dir_corr->mkdir("DriftCorrected");
     //dir_energy_ch_driftcorr = dir_corr_driftcorr->mkdir("Energy_Channel_DriftCorr");
  
+    // ::: TIME CORRELATIONS :::
     dir_time->cd();
-    //:::::::::::::::::::::::::::::::::::::::::::::::::::::
-    //:::::::::: WR Time differences ::::::::::::::::::::::
     h1_wr_diff.resize(3);
 
     h1_wr_diff[0] = new TH1I("h1_WR_Difference_LISA-FRS", " WR Difference LISA - FRS ", 6000, -3000, 3000);
@@ -134,7 +163,7 @@ InitStatus LisaFrsCorrelations::Init()
     h1_wr_diff[2] = new TH1I("h1_WR_Difference_TravMUSIC-FRS", " WR Difference TravMUSIC - FRS ", 6000, -3000, 3000);
     h1_wr_diff[2]->GetXaxis()->SetTitle("WR (travMUSIC) - WR (FRS)");
     h1_wr_diff[2]->SetFillColor(kRed-3);
-
+    //...........................................
 
     //dir_position->cd();
     //FRS position vs LISA position
@@ -161,39 +190,53 @@ InitStatus LisaFrsCorrelations::Init()
     //     //h2_xy_position[i]->SetStats(0);
     //     h2_xy_pos_layer2[i]->SetOption("colz");
     // }
-   
-    //dir_energy->cd();
-    //MUSIC 1 - LISA GM
-    //:::::::::::::::::::::::::::::::
-    // h2_MUSIC_1_layer_GM.resize(layer_number);
-    // for (int i = 0; i < layer_number; i++)
-    // {
-    //     h2_MUSIC_1_layer_GM[i] = new TH2F(Form("h2_MUSIC(1)_vs_E(LISA)_GM_Layer_%i",i), Form("MUSIC(1) vs E(LISA) GM Layer %i",i), lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM, 400,0,4096);
-    //     h2_MUSIC_1_layer_GM[i]->GetXaxis()->SetTitle(Form("E(LISA) [MeV] - Layer %i",i));
-    //     h2_MUSIC_1_layer_GM[i]->GetYaxis()->SetTitle("dE MUSIC(1)");
-    //     h2_MUSIC_1_layer_GM[i]->SetOption("colz");
-    // }
 
-    // //MUSIC 2 VS LISA GM
-    // //:::::::::::::::::::::::::::::::
-    // h2_MUSIC_2_layer_GM.resize(layer_number);
-    // for (int i = 0; i < layer_number; i++)
-    // {
-    //     h2_MUSIC_2_layer_GM[i] = new TH2F(Form("h2_MUSIC(2)_vs_E(LISA)_GM_Layer_%i",i), Form("MUSIC(2) vs E(LISA) GM Layer %i",i), lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM, 400,0,4096);
-    //     h2_MUSIC_2_layer_GM[i]->GetXaxis()->SetTitle(Form("E(LISA) [MeV] - Layer %i",i));
-    //     h2_MUSIC_2_layer_GM[i]->GetYaxis()->SetTitle("dE MUSIC(2)");
-    //     h2_MUSIC_2_layer_GM[i]->SetOption("colz");
-    // }
+    // :::   E N E R G Y    C O R R E L A T I O N S   :::
+    // ::: Febex
+    dir_febex->cd();
+    //      MUSIC 21 - LISA Febex
+    h2_MUSIC21_vs_LISA_febex.resize(layer_number);
+    for (int i = 0; i < layer_number; i++)
+    {
+        h2_MUSIC21_vs_LISA_febex[i] = new TH2F(Form("h2_MUSIC(21)_vs_LISA_%i_febex",i), Form("dE MUSIC(21) vs dE(LISA) %i Febex",i), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy, bin_21, min_21, max_21);
+        h2_MUSIC21_vs_LISA_febex[i]->GetXaxis()->SetTitle(Form("dE(LISA) Febex - Layer %i",i));
+        h2_MUSIC21_vs_LISA_febex[i]->GetYaxis()->SetTitle("dE MUSIC(21)");
+        h2_MUSIC21_vs_LISA_febex[i]->SetOption("COLZ");
+    }
+    //.......................
+    //      MUSIC 41 - LISA Febex
+    h2_MUSIC41_vs_LISA_febex.resize(layer_number);
+    for (int i = 0; i < layer_number; i++)
+    {
+        h2_MUSIC41_vs_LISA_febex[i] = new TH2F(Form("h2_MUSIC(41)_vs_LISA_%i_febex",i), Form("dE MUSIC(41) vs dE(LISA) %i Febex",i), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy, bin_41, min_41, max_41);
+        h2_MUSIC41_vs_LISA_febex[i]->GetXaxis()->SetTitle(Form("dE(LISA) Febex - Layer %i",i));
+        h2_MUSIC41_vs_LISA_febex[i]->GetYaxis()->SetTitle("dE MUSIC(41)");
+        h2_MUSIC41_vs_LISA_febex[i]->SetOption("COLZ");
+    }
+    //.......................
+    // ::: MWD
+    dir_mwd->cd();
+    //      MUSIC 21 - LISA MWD
+    h2_MUSIC21_vs_LISA_MWD.resize(layer_number);
+    for (int i = 0; i < layer_number; i++)
+    {
+        h2_MUSIC21_vs_LISA_MWD[i] = new TH2F(Form("h2_MUSIC(21)_vs_LISA_%i_MWD",i), Form("dE MUSIC(21) vs dE(LISA) %i MWD",i), lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD, bin_21, min_21, max_21);
+        h2_MUSIC21_vs_LISA_MWD[i]->GetXaxis()->SetTitle(Form("dE(LISA) MWD - Layer %i",i));
+        h2_MUSIC21_vs_LISA_MWD[i]->GetYaxis()->SetTitle("dE MUSIC(21)");
+        h2_MUSIC21_vs_LISA_MWD[i]->SetOption("COLZ");
+    }
+    //.......................
+    //      MUSIC 41 - LISA MWD
+    h2_MUSIC41_vs_LISA_MWD.resize(layer_number);
+    for (int i = 0; i < layer_number; i++)
+    {
+        h2_MUSIC41_vs_LISA_MWD[i] = new TH2F(Form("h2_MUSIC(41)_vs_LISA_%i_MWD",i), Form("dE MUSIC(41) vs dE(LISA) %i MWD",i), lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD, bin_41, min_41, max_41);
+        h2_MUSIC41_vs_LISA_MWD[i]->GetXaxis()->SetTitle(Form("dE(LISA) MWD - Layer %i",i));
+        h2_MUSIC41_vs_LISA_MWD[i]->GetYaxis()->SetTitle("dE MUSIC(41)");
+        h2_MUSIC41_vs_LISA_MWD[i]->SetOption("COLZ");
+    }
+    //.......................
 
-    // //travMUSIC VS LISA
-    // h2_travMUSIC_layer_GM.resize(layer_number);
-    // for (int i = 0; i < layer_number; i++)
-    // {
-    //     h2_travMUSIC_layer_GM[i] = new TH2F(Form("h2_travMUSIC_vs_E(LISA)_GM_Layer_%i",i), Form("travMUSIC vs E(LISA) GM Layer %i",i), lisa_config->bin_energy_GM, lisa_config->min_energy_GM, lisa_config->max_energy_GM, 1000,0,4096);
-    //     h2_travMUSIC_layer_GM[i]->GetXaxis()->SetTitle(Form("E(LISA) [MeV] - Layer %i",i));
-    //     h2_travMUSIC_layer_GM[i]->GetYaxis()->SetTitle("dE travMUSIC");
-    //     h2_travMUSIC_layer_GM[i]->SetOption("colz");
-    // }
 
     //travMUSIC drift corrected VS LISA
     // dir_corr_driftcorr->cd();
@@ -450,6 +493,19 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     // s2_y = frsHitItem.Get_ID_y2();
     // //c4LOG(info, "s2 x : " << s2_x << "s2 y : " << s2_y);
 
+    // ::: LISA energy
+    std::vector<std::vector<float>> energy_layer(layer_number);
+    energy_layer.resize(layer_number);
+
+    std::vector<std::vector<float>> energy_MWD_layer(layer_number);
+    energy_MWD_layer.resize(layer_number);
+
+    // ::: MUSIC energies
+    energy_MUSIC_21 = frsHitItem.Get_music21_dE();
+    energy_MUSIC_41 = frsHitItem.Get_music41_dE(); 
+    energy_MUSIC_42 = frsHitItem.Get_music42_dE();
+    
+
     // std::vector<uint32_t> sum_energy_layer;
     // sum_energy_layer.resize(layer_number);
 
@@ -463,11 +519,6 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     // uint32_t energy_ch_GM[layer_number][xmax][ymax] = {0,0,0};
 
     // // Energy from frs
-    // energy_MUSIC_1 = frsHitItem.Get_music41_dE(); 
-    // energy_MUSIC_2 = frsHitItem.Get_music42_dE();
-    // energy_travMUSIC = frsHitItem.Get_music21_dE();
-    // //energy_travMUSIC = travMusicHitItem.Get_travmusic_dE();
-    // // CEJ needs adding
     // // energy_travMUSIC_driftcorr = travMusicHitItem.Get_travmusic_dE_driftcorr();
     // energy_travMUSIC_driftcorr = 0; //
     // // double z21_driftcorr = frsHitItem.Get_ID_z21_driftcorr();
@@ -486,9 +537,19 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         count_wr++;
         if (wr_LISA == 0)return;
 
-        //::::Position
-        //int xpos = lisaCalItem.Get_xposition();
-        //int ypos = lisaCalItem.Get_yposition();
+        // ::: Data
+        layer = lisaCalItem.Get_layer_id();
+        city = lisaCalItem.Get_city();
+        int xpos = lisaCalItem.Get_xposition();
+        int ypos = lisaCalItem.Get_yposition();
+
+        float energy_LISA_febex = lisaCalItem.Get_energy_GM();
+        float energy_LISA_MWD = lisaCalItem.Get_energy_MWD_GM();
+
+        if (excluded.count(std::make_tuple(layer, xpos, ypos)) != 0) continue;
+
+        energy_layer[layer-1].emplace_back(energy_LISA_febex);
+        energy_MWD_layer[layer-1].emplace_back(energy_LISA_MWD);
 
         //:::::::::::::: FRS - LISA position ::::::::::::::::::::::::::
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::   
@@ -505,12 +566,8 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         //     h2_xy_pos_layer2[1]->Fill(ypos,s2_y);
         // }
         
-        //:::: Energy and SumEnergy for LISA
-        // uint32_t energy_LISA = lisaCalItem.Get_energy();
-        // uint32_t energy_LISA_GM = lisaCalItem.Get_energy_GM();
-
-        // layer = lisaCalItem.Get_layer_id();
-        // energy_layer_GM[layer-1] = energy_LISA_GM;
+        // ::: Energy and SumEnergy for LISA
+        
         // sum_energy_layer[layer-1] += energy_LISA;
         // sum_energy_layer_GM[layer-1] += energy_LISA_GM;
         // energy_ch_GM[layer-1][xpos][ypos] = energy_LISA_GM;
@@ -606,8 +663,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     //     } 
     }
     
-    //:::::::::::::: WR Time differences ::::::::::::::::::::::::::
-    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    // ::: T I M E - WR differences
     wr_LISA_FRS = wr_LISA - wr_FRS;
     wr_LISA_travMUSIC = wr_LISA - wr_travMUSIC;
     wr_travMUSIC_FRS = wr_travMUSIC - wr_FRS;
@@ -619,22 +675,29 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     h1_wr_diff[1]->Fill(wr_LISA_travMUSIC);
 
     if (wr_FRS != 0 && wr_LISA != 0) h1_wr_diff[0]->Fill(wr_LISA_FRS);
+    //............................
+    // ::: E N E R G Y  - LISA vs MUSICs
+    for (int i = 0; i < layer_number; i++)
+    {
+        for (int j = 0; j < energy_layer[i].size(); j++)
+        {
+            // MUSIC 21
+            h2_MUSIC21_vs_LISA_febex[i]->Fill(energy_layer[i][j],energy_MUSIC_21);
+            // MUSIC 41
+            h2_MUSIC41_vs_LISA_febex[i]->Fill(energy_layer[i][j],energy_MUSIC_41);
+        }
 
+        for (int j = 0; j < energy_MWD_layer[i].size(); j++)
+        {
+            // MUSIC 21
+            h2_MUSIC21_vs_LISA_MWD[i]->Fill(energy_MWD_layer[i][j],energy_MUSIC_21);
+            // MUSIC 41
+            h2_MUSIC41_vs_LISA_MWD[i]->Fill(energy_MWD_layer[i][j],energy_MUSIC_41);
+        }
 
-    //:::::::::::::: ENERGY correlation ::::::::::::::::::::::::::
-    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    // for (int i = 0; i < layer_number; i++)
-    // {
-    //     //MUSIC 1
-    //     h2_MUSIC_1_layer_GM[i]->Fill(sum_energy_layer_GM[i],energy_MUSIC_1);
-    //     //MUSIC 2
-    //     h2_MUSIC_2_layer_GM[i]->Fill(sum_energy_layer_GM[i],energy_MUSIC_2);
-    //     //travMUSIC
-    //     h2_travMUSIC_layer_GM[i]->Fill(sum_energy_layer_GM[i],energy_travMUSIC);
-    //     h2_travMUSIC_driftcorr_layer_GM[i]->Fill(sum_energy_layer_GM[i],energy_travMUSIC_driftcorr);
-
-        
-    // }
+        //h2_travMUSIC_driftcorr_layer_GM[i]->Fill(sum_energy_layer_GM[i],energy_travMUSIC_driftcorr);
+    }
+    //............................
 
 
     fNEvents++;
