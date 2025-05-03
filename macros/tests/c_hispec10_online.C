@@ -159,6 +159,9 @@ void c_hispec10_online()
         calmcp->SetOnline(true);
         run->AddTask(calmcp);
     }
+
+    TStefanConfiguration::SetFrontBackEnergy(10000000);
+    TStefanConfiguration::SetFrontBackTime(4000);
     
     if (STEFAN_ON)
     {

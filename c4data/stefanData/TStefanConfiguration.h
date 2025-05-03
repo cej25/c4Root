@@ -55,7 +55,12 @@ class TStefanConfiguration
         int FRS_accept() const;
         int bPlast_accept() const;
         int bPlast_free() const;
-        std::set<int> ExtraSignals() const;
+        std::set<int> ExtraSignals() const; 
+
+        static void SetFrontBackTime(Double_t tdiff) { fbt = tdiff; }
+        static void SetFrontBackEnergy(Double_t ediff) { fbe = ediff; }
+        static Double_t fbt;
+        static Double_t fbe;
 
     private:
 
