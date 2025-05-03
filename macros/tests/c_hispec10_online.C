@@ -113,7 +113,6 @@ void c_hispec10_online()
  
     TStefanConfiguration::SetDetectorConfigurationFile(config_path + "/stefan/stefan_mapping.txt");
     TStefanConfiguration::SetDetectorCoefficientFile(config_path + "/stefan/stefan_cal.txt");
-    // MCP STEFAN..
 
     // ------------------------------------------------------------------------------------- //
     // *** Read Subsystems - comment out unwanted systems ********************************** //
