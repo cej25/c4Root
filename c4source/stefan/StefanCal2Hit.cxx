@@ -104,8 +104,8 @@ void StefanCal2Hit::Exec(Option_t* option)
                 // Must be same DSSD and Y side
                 if (j.DSSD != i.DSSD || j.Side != 1) continue;
                 // Check gates from config
-                if (std::abs(i.Energy - j.Energy) < 3500000000 // frontbackenergyL
-                        && i.IsGoodTime(j, 4400))
+                if (std::abs(i.Energy - j.Energy) < stefan_config->fbe
+                        && i.IsGoodTime(j, stefan_config->fbt))
                 {
                     hits.push_back({i, j});
                 }

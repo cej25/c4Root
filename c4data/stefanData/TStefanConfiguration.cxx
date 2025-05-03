@@ -14,6 +14,9 @@ TStefanConfiguration* TStefanConfiguration::instance = nullptr;
 std::string TStefanConfiguration::mapping_file = "blank";
 std::string TStefanConfiguration::calibration_file = "blank";
 
+Double_t TStefanConfiguration::fbt = 4400; // just over 2 coarse clocks (for AIDA at least)
+Double_t TStefanConfiguration::fbe = 3500000000; // (huge default until decided)
+
 
 TStefanConfiguration::TStefanConfiguration()
 {
@@ -97,7 +100,7 @@ void TStefanConfiguration::ReadCalibrationCoefficients()
         if (cal_map_file.peek() == '#') cal_map_file.ignore(256,'\n');
         else
         {
-            cal_map_file >> dssd >> side >> side >> a1;
+            cal_map_file >> dssd >> side >> strip >> a1;
 
             std::pair<int, int> ss = {side, strip};
             std::pair<int, std::pair<int, int>> ds = {dssd, ss};
