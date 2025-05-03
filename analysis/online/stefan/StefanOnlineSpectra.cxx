@@ -54,8 +54,8 @@ InitStatus StefanOnlineSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found!");
 
-    StefanHit = mgr->InitObjectAs<decltype(StefanHit)>("StefanHit");
-    c4LOG_IF(fatal, !StefanHit, "Branch StefanHit not found!");
+    StefanHit = mgr->InitObjectAs<decltype(StefanHit)>("StefanHitData");
+    c4LOG_IF(fatal, !StefanHit, "Branch StefanHitData not found!");
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
 
@@ -63,7 +63,22 @@ InitStatus StefanOnlineSpectra::Init()
     dir_stefan = new TDirectory("Stefan", "Stefan", "", 0);
     histograms->Add(dir_stefan);
 
-    // copy over stuf 
+    int num_dssds = stefan_config->DSSDs();
+
+    dir_dssd = new TDirectory*[num_dssds];
+    dir_stats = new TDirectory*[num_dssds];
+    dir_hits = new TDirectory*[num_dssds];
+
+    h2_hit_strip_xy.resize(num_dssds);
+    for (int i = 0; i < num_dssds; i++)
+    {
+        dir_dssd[i] = dir_stefan->mkdir(Form("DSSD%i",i));
+        dir_hits[i] = dir_dssd[i]->mkdir("Hits");
+        h2_hit_strip_xy[i] = MakeTH2(dir_hits[i], "I", Form("h2_hit_strip_xy_dssd%d", i) , Form("XY Hit Pattern DSSD %d", i), 16, 0, 16, 16, 0, 16);
+    }
+    // dir_implants;
+    // dir_decays;
+
    
 
     return kSUCCESS;
@@ -95,7 +110,11 @@ void StefanOnlineSpectra::Exec(Option_t* option)
     for (auto const & hit : *StefanHit)
     {
         // lets do some analysis.....
+        // std::cout << "StripX: " << hit.StripX << " - StripY: " << hit.StripY << std::endl;
+        // if (hit.ClusterSizeX > 1) std::cout << "ClusterSizeX > 1! :: Size =  " << hit.ClusterSizeX << std::endl;
+        // if (hit.ClusterSizeY > 1) std::cout << "ClusterSizeY > 1! :: Size =  " << hit.ClusterSizeY << std::endl;
 
+        h2_hit_strip_xy[hit.DSSD]->Fill(hit.StripX, hit.StripY);
         
     }
 

@@ -5,7 +5,7 @@
 #include "FairTask.h"
 
 // c4
-#include "StefanCalData.h"
+#include "StefanHitData.h"
 #include "TStefanConfiguration.h"
 
 // ROOT
@@ -30,7 +30,7 @@ class TGraph;
 class TCanvas;
 class TH1F;
 class TH2F;
-class StefanCalItem;
+class StefanHitItem;
 class TStefanConfiguration;
 
 class StefanOnlineSpectra : public FairTask
@@ -59,7 +59,7 @@ class StefanOnlineSpectra : public FairTask
 
         TStefanConfiguration const* stefan_config;
 
-        std::vector<StefanCalItem> const* StefanHit; // implants/decays??
+        std::vector<StefanHitItem> const* StefanHit; // implants/decays??
 
         EventHeader* header;
         Int_t fNEvents;
@@ -70,10 +70,11 @@ class StefanOnlineSpectra : public FairTask
         // Folders and Files
         TFolder* histograms;
         TDirectory* dir_stefan;
-        std::vector<TDirectory*> dir_dssd;
-        std::vector<TDirectory*> dir_stats;
-        std::vector<TDirectory*> dir_implants;
-        std::vector<TDirectory*> dir_decays;
+        TDirectory** dir_dssd;
+        TDirectory** dir_stats;
+        TDirectory** dir_hits;
+        TDirectory** dir_implants; //?
+        TDirectory** dir_decays; //?
 
         // Histograms
         std::vector<TH1*> h1_implant_side_x_mult;
@@ -91,7 +92,7 @@ class StefanOnlineSpectra : public FairTask
         std::vector<TH2*> h2_decay_strip_mult; 
         std::vector<TH1*> h1_decay_side_x_hitpattern;
         std::vector<TH1*> h1_decay_side_y_hitpattern;
-        std::vector<TH2*> h2_decay_strip_xy;
+        std::vector<TH2*> h2_hit_strip_xy;
         std::vector<TH1*> h1_decay_e;
         std::vector<TH2*> h2_decay_e_xy;
         std::vector<TH2*> h2_decay_strip_1d_e; 
