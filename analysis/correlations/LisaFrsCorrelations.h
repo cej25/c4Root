@@ -91,19 +91,31 @@ class LisaFrsCorrelations : public FairTask
         TDirectory* dir_mwd;
 
         TDirectory* dir_gates;
-        TDirectory* dir_febex_gates;
-        TDirectory* dir_febex_LISA;
-        TDirectory* dir_febex_FRS;
-        TDirectory* dir_febex_FRS_xy;
-        TDirectory* dir_febex_LISA_FRS;
-        TDirectory* dir_febex_LISA_FRS_xy;
 
-        TDirectory* dir_mwd_gates;
-        TDirectory* dir_mwd_LISA;
-        TDirectory* dir_mwd_FRS;
-        TDirectory* dir_mwd_FRS_xy;
-        TDirectory* dir_mwd_LISA_FRS;
-        TDirectory* dir_mwd_LISA_FRS_xy;
+        TDirectory* dir_gate_LISA;
+        TDirectory* dir_gate_LISA_febex;
+        TDirectory** dir_LISA_febex_gates;
+        TDirectory** dir_LISA_febex_gates_channel;
+        TDirectory* dir_gate_LISA_mwd;
+        TDirectory** dir_LISA_mwd_gates;
+        TDirectory** dir_LISA_mwd_gates_channel;
+
+        TDirectory* dir_gate_FRS;
+        TDirectory* dir_gate_FRS_febex;
+        TDirectory** dir_FRS_febex_gates;
+        TDirectory** dir_FRS_febex_gates_channel;
+        TDirectory* dir_gate_FRS_mwd;
+        TDirectory** dir_FRS_mwd_gates;
+        TDirectory** dir_FRS_mwd_gates_channel;
+
+        TDirectory* dir_gate_LISA_FRS;
+        TDirectory* dir_gate_LISA_FRS_febex;
+        TDirectory** dir_LISA_FRS_febex_gates;
+        TDirectory** dir_LISA_FRS_febex_gates_channel;
+        TDirectory* dir_gate_LISA_FRS_mwd;
+        TDirectory** dir_LISA_FRS_mwd_gates;
+        TDirectory** dir_LISA_FRS_mwd_gates_channel;
+
 
         // TDirectory* dir_energy;
         // TDirectory* dir_energy_MWD;
@@ -143,6 +155,8 @@ class LisaFrsCorrelations : public FairTask
         std::vector<TH1I*> h1_wr_diff;
 
         // Position
+        std::vector<TH2F*> h2_FRS_vs_LISA_x;
+        std::vector<TH2F*> h2_FRS_vs_LISA_y;
 
         // Energy - LISA-MUSICs
         std::vector<TH2F*> h2_MUSIC21_vs_LISA_febex;
@@ -150,6 +164,24 @@ class LisaFrsCorrelations : public FairTask
 
         std::vector<TH2F*> h2_MUSIC21_vs_LISA_MWD;
         std::vector<TH2F*> h2_MUSIC41_vs_LISA_MWD;
+
+        // Gated - FRS applied on LISA
+        std::vector<TH2F*> h2_LISA_energy_vs_layer_FRS_gated;
+        std::vector<TH2F*> h2_LISA_energy_xy_vs_layer_FRS_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_FRS_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_xy_FRS_gated;
+
+        std::vector<TH2F*> h2_LISA_energy_MWD_vs_layer_FRS_gated;
+        std::vector<TH2F*> h2_LISA_energy_MWD_xy_vs_layer_FRS_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_FRS_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_xy_FRS_gated;
+
+        // Gated - LISA applied on FRS
+        std::vector<std::vector<TH2F*>> h2_Z21_vs_AoQs1s2_LISA_gated;
+        std::vector<std::vector<TH2F*>> h2_Z41_vs_AoQs2s4_LISA_gated;
+
+        std::vector<std::vector<TH2F*>> h2_Z21_vs_AoQs1s2_LISA_MWD_gated;
+        std::vector<std::vector<TH2F*>> h2_Z41_vs_AoQs2s4_LISA_MWD_gated;
 
         // std::vector<TH2F*> h2_MUSIC_1_layer_GM;
         // std::vector<TH2F*> h2_MUSIC_2_layer_GM;

@@ -134,16 +134,6 @@ class LisaNearlineSpectra : public FairTask
         TDirectory** dir_mwd_gates;
         TDirectory** dir_mwd_gates_channel;
      
-        // std::map<std::string, TDirectory*> dirs_gate_file;
-        // std::map<std::string, TDirectory*> dirs_gate_febex;
-        // std::map<std::string, TDirectory*> dirs_gate_mwd;
-        // std::map<std::string, TDirectory*> dirs_gate_febex_channel;
-        // std::map<std::string, TDirectory*> dirs_gate_mwd_channel;
-        // TDirectory* dir_febex_gates;
-        // TDirectory* dir_MWD_gates;
-        // TDirectory* dir_febex_gates_channel;
-        // TDirectory* dir_MWD_gates_channel;
-
         // ::: Histograms :::
         // ::: Stats
         TH1I* h1_wr_diff; 
