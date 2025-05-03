@@ -16,22 +16,14 @@ class TStefanConfiguration
         static TStefanConfiguration const* GetInstance();
         static void Create();
 
-
-        static void SetDetectorConfigurationFile(std::string fp) { configuration_file = fp; }
+        static void SetDetectorConfigurationFile(std::string fp) { mapping_file = fp; }
         static void SetDetectorCoefficientFile(std::string fp) { calibration_file = fp; }
-        static void SetDetectorTimeshiftsFile(std::string fp) { timeshift_calibration_file = fp; }
-        static void SetPromptFlashCut(std::string fp) {promptflash_cut_file = fp; }
-        static void SetPromptFlashCutMulti(std::string fp) {promptflash_cut_file_multi = fp; }
 
 
-
-        std::map<std::pair<int,int>,std::pair<int,int>> Mapping() const;
+        std::map<std::pair<int, int>, std::pair<int, std::pair<int,int>>> Mapping() const;
         bool MappingLoaded() const;
         bool CalibrationLoaded() const;
         std::map<std::pair<int,int>,std::vector<double>> CalibrationCoefficients() const;
-        bool TimeshiftCalibrationCoefficientsLoaded() const;
-        std::map<std::pair<int,int>,double> TimeshiftCalibrationCoefficients() const;
-        inline double GetTimeshiftCoefficient(int detector_id, int crystal_id) const;
 
 
         inline bool IsInsidePromptFlashCut(double timediff, double energy) const{
@@ -50,18 +42,9 @@ class TStefanConfiguration
             }
         }
 
-
-        const TCutG * GetPromptFlashCut() const {return prompt_flash_cut;}
-
-        const TCutG * GetPromptFlashCutMulti(int id) const {
-            // id = (detector_id - 1)*3 + crystal_id
-            if (id < NDetectors() || prompt_flash_cut_multi.size() < 1) return GetPromptFlashCut();
-            else return prompt_flash_cut_multi.at(id);
-        }
-
         inline bool IsDetectorAuxilliary(int detector_id) const;
 
-        int NDetectors() const;
+        int DSSDs() const;
         int NCrystals() const;
         int CrystalsPerDetector(int detector_id) const;
         int NFebexBoards() const;
@@ -76,11 +59,8 @@ class TStefanConfiguration
 
     private:
 
-        static std::string configuration_file;
         static std::string calibration_file;
-        static std::string timeshift_calibration_file;
-        static std::string promptflash_cut_file;
-        static std::string promptflash_cut_file_multi;
+        static std::string mapping_file;
 
 
         TStefanConfiguration();
@@ -92,7 +72,7 @@ class TStefanConfiguration
 
         static TStefanConfiguration* instance;
         
-        std::map<std::pair<int,int>,std::pair<int,int>> detector_mapping;
+        std::map<std::pair<int, int>, std::pair<int, std::pair<int,int>>> detector_mapping;
         std::map<std::pair<int,int>,std::vector<double>> calibration_coeffs;
         std::map<std::pair<int,int>,double> timeshift_calibration_coeffs;
         std::set<int> extra_signals;
@@ -101,8 +81,7 @@ class TStefanConfiguration
 
         std::vector<TCutG *> prompt_flash_cut_multi = {};
 
-        int num_detectors;
-        int num_crystals;
+        int num_dssds;
         std::map<int,int> crystals_per_detector;
         int num_febex_boards;
 
@@ -147,7 +126,7 @@ inline void TStefanConfiguration::Create()
     instance = new TStefanConfiguration();
 }
 
-inline std::map<std::pair<int,int>,std::pair<int,int>> TStefanConfiguration::Mapping() const
+inline std::map<std::pair<int, int>, std::pair<int, std::pair<int,int>>>TStefanConfiguration::Mapping() const
 {
     return detector_mapping;
 }
@@ -157,43 +136,9 @@ inline std::map<std::pair<int,int>,std::vector<double>> TStefanConfiguration::Ca
     return calibration_coeffs;
 }
 
-inline std::map<std::pair<int,int>,double> TStefanConfiguration::TimeshiftCalibrationCoefficients() const
+inline int TStefanConfiguration::DSSDs() const
 {
-    return timeshift_calibration_coeffs;
-}
-
-inline double TStefanConfiguration::GetTimeshiftCoefficient(int detector_id, int crystal_id) const
-{
-    if (!timeshift_calibration_coeffs_loaded){
-        return 0;
-    }else{
-        if (timeshift_calibration_coeffs.count(std::pair<int,int>(detector_id,crystal_id)) > 0){
-            return timeshift_calibration_coeffs.at(std::pair<int,int>(detector_id,crystal_id));
-        }else{
-            return 0;
-        }
-    }
-}
-
-inline int TStefanConfiguration::NDetectors() const
-{
-    return num_detectors;
-}
-
-inline int TStefanConfiguration::NCrystals() const
-{
-    return num_crystals;
-}
-
-
-//return the number of crystals per detector.
-inline int TStefanConfiguration::CrystalsPerDetector(int detector_id) const
-{
-    if (auto result_crystals_per_detector = crystals_per_detector.find(detector_id); result_crystals_per_detector != crystals_per_detector.end()){
-        return crystals_per_detector.at(detector_id);
-    }else{
-        return 0;
-    }
+    return num_dssds;
 }
 
 inline int TStefanConfiguration::NFebexBoards() const
@@ -211,10 +156,6 @@ inline bool TStefanConfiguration::CalibrationLoaded() const
     return detector_calibrations_loaded;
 }
 
-inline bool TStefanConfiguration::TimeshiftCalibrationCoefficientsLoaded() const
-{
-    return timeshift_calibration_coeffs_loaded;
-}
 
 inline int TStefanConfiguration::TM_Undelayed() const
 {

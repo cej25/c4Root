@@ -30,6 +30,8 @@ class TGraph;
 class TCanvas;
 class TH1F;
 class TH2F;
+class StefanCalItem;
+class TStefanConfiguration;
 
 class StefanOnlineSpectra : public FairTask
 {
@@ -54,9 +56,10 @@ class StefanOnlineSpectra : public FairTask
 
 
     private:
-        // calItems
 
         TStefanConfiguration const* stefan_config;
+
+        std::vector<StefanCalItem> const* StefanHit; // implants/decays??
 
         EventHeader* header;
         Int_t fNEvents;

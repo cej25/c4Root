@@ -33,7 +33,7 @@ SUBEVENT(stefan_febex_event)
 {
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT(id = 0x400);
+        ts = TIMESTAMP_WHITERABBIT(id = 0x200);
     };
 
     select several
@@ -57,7 +57,7 @@ EVENT
 {
     mcp = mcp_tamex_event(procid = 248); // 248 for real data, 100 during pulser test for finetime
 
-    stefan = stefan_febex_event(procid = 60);
+    stefan = stefan_febex_event(procid = 27);
 
     ignore_unknown_subevent;
 }

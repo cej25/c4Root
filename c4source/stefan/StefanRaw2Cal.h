@@ -52,7 +52,7 @@ class StefanRaw2Cal : public FairTask
 
         Int_t count_in_event = 0;
 
-        std::map<std::pair<int, std::pair<int, int>>, std::pair<int, std::pair<int,int>>> detector_mapping;
+        std::map<std::pair<int, int>, std::pair<int, std::pair<int,int>>> detector_mapping;
 
         //internal status flags for detector map and calibration map:
         Bool_t DetectorMap_loaded = 0;
