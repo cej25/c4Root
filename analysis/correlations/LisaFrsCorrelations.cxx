@@ -127,11 +127,11 @@ InitStatus LisaFrsCorrelations::Init()
     mwd_gate_number = mwd_gates.size();
 
     // Ranges from MUSICs
-    int min_21 = frs_config->fMin_dE_travMusic;
-    int max_21 = frs_config->fMax_dE_travMusic;
+    int min_21 = frs_config->fMin_dE_music21;
+    int max_21 = frs_config->fMax_dE_music21;
     int bin_21 = (max_21 - min_21)/10;
-    int min_41 = frs_config->fMin_dE_Music1;
-    int max_41 = frs_config->fMax_dE_Music1;
+    int min_41 = frs_config->fMin_dE_music41;
+    int max_41 = frs_config->fMax_dE_music41;
     int bin_41 = (max_41 - min_41)/10;
     //.............
 
