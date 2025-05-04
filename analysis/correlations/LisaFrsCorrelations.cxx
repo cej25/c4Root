@@ -333,13 +333,13 @@ InitStatus LisaFrsCorrelations::Init()
                     Form("h1_LISA_%i_energy_s1s2s4_gated_%i", i+1, gate_frs),
                     Form("LISA %i Energy - s1s2s4 Gate %i", i+1, gate_frs),
                     lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy, 
-                    Form("E(LISA %i) [a.u.]", i+1), kRed-3, kBlue+1);
+                    Form("E(LISA %i) [a.u.]", i+1), kYellow+3, kBlue+1);
 
                 h1_LISA_energy_s1s2_gated[gate_frs][i] = MakeTH1(dir_FRS_febex_gates[gate_frs], "F",
                     Form("h1_LISA_%i_energy_s1s2_gated_%i", i+1, gate_frs),
                     Form("LISA %i Energy - s1s2 Gate %i", i+1, gate_frs),
                     lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy, 
-                    Form("E(LISA %i) [a.u.]", i+1), kRed-3, kBlue+1);
+                    Form("E(LISA %i) [a.u.]", i+1), kYellow+3, kBlue+1);
             }
 
             // Febex - Channel
@@ -372,13 +372,13 @@ InitStatus LisaFrsCorrelations::Init()
                     Form("LISA %i%i%i Energy - s1s2s4 Gate %i", i+1,lisa_config->xpos_gate, lisa_config->ypos_gate, gate_frs),
                     lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy, 
                     Form("E(LISA %i%i%i) [a.u.]", i+1, lisa_config->xpos_gate, lisa_config->ypos_gate),
-                    kRed-3, kBlue+1);
+                    kYellow-3, kBlue+1);
                 h1_LISA_energy_xy_s1s2_gated[gate_frs][i] = MakeTH1(dir_FRS_febex_gates_channel[gate_frs], "F",
                     Form("h1_LISA_%i%i%i_energy_s1s2_gated_%i", i+1,lisa_config->xpos_gate, lisa_config->ypos_gate, gate_frs),
                     Form("LISA %i%i%i Energy - s1s2 Gate %i", i+1,lisa_config->xpos_gate, lisa_config->ypos_gate, gate_frs),
                     lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy, 
                     Form("E(LISA %i%i%i) [a.u.]", i+1, lisa_config->xpos_gate, lisa_config->ypos_gate),
-                    kRed-3, kBlue+1);
+                    kYellow-3, kBlue+1);
             }
 
             //..........................
@@ -411,13 +411,13 @@ InitStatus LisaFrsCorrelations::Init()
                 Form("h1_LISA_%i_energy_MWD_s1s2s4_gate_%i", i+1, gate_frs),
                 Form("LISA %i Energy MWD - s1s2s4 Gate %i", i+1, gate_frs),
                 lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD, 
-                Form("E MWD(LISA %i) [a.u.]", i+1), kRed-3, kBlue+1);
+                Form("E MWD(LISA %i) [a.u.]", i+1), kGreen+3, kBlue+1);
 
                 h1_LISA_energy_MWD_s1s2_gated[gate_frs][i] = MakeTH1(dir_FRS_mwd_gates[gate_frs], "F",
                 Form("h1_LISA_%i_energy_MWD_s1s2_gate_%i", i+1, gate_frs),
                 Form("LISA %i Energy MWD - s1s2 Gate %i", i+1, gate_frs),
                 lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD, 
-                Form("E MWD(LISA %i) [a.u.]", i+1), kRed-3, kBlue+1);
+                Form("E MWD(LISA %i) [a.u.]", i+1), kGreen+3, kBlue+1);
             }
         
             // MWD - Channel
@@ -450,14 +450,14 @@ InitStatus LisaFrsCorrelations::Init()
                 Form("LISA %i%i%i Energy MWD - s1s2s4 Gate %i", i+1,lisa_config->xpos_gate, lisa_config->ypos_gate, gate_frs),
                 lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD, 
                 Form("E MWD(LISA %i%i%i) [a.u.]", i+1, lisa_config->xpos_gate, lisa_config->ypos_gate),
-                kRed-3, kBlue+1);
+                kGreen-3, kBlue+1);
 
                 h1_LISA_energy_MWD_xy_s1s2_gated[gate_frs][i] = MakeTH1(dir_FRS_mwd_gates_channel[gate_frs], "F",
                 Form("h1_LISA_%i%i%i_energy_MWD_s1s2_gate_%i", i+1,lisa_config->xpos_gate, lisa_config->ypos_gate, gate_frs),
                 Form("LISA %i%i%i Energy MWD - s1s2 Gate %i", i+1,lisa_config->xpos_gate, lisa_config->ypos_gate, gate_frs),
                 lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD, 
                 Form("E MWD(LISA %i%i%i) [a.u.]", i+1, lisa_config->xpos_gate, lisa_config->ypos_gate),
-                kRed-3, kBlue+1);
+                kGreen-3, kBlue+1);
                 
             }
         }
@@ -575,7 +575,7 @@ InitStatus LisaFrsCorrelations::Init()
                     Form("h1_LISA_%i_energy_LISA_FRS_gated_%i", l+1, i),
                     Form("LISA %i Energy - LISA-FRS Gate %i", l+1, i),
                     lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy, 
-                    Form("E(LISA %i) [a.u.]", l+1), kRed-3, kBlue+1);
+                    Form("E(LISA %i) [a.u.]", l+1), kYellow+3, kBlue+1);
             }           
             
             dir_LISA_FRS_febex_gates_channel[i] = dir_LISA_FRS_febex_gates[i]->mkdir("Channel");
@@ -597,7 +597,7 @@ InitStatus LisaFrsCorrelations::Init()
                     Form("LISA %i%i%i Energy - LISA_FRS Gate %i", l+1,lisa_config->xpos_gate, lisa_config->ypos_gate, i),
                     lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy, 
                     Form("E(LISA %i%i%i) [a.u.]", l+1, lisa_config->xpos_gate, lisa_config->ypos_gate),
-                    kRed-3, kBlue+1);
+                    kYellow-3, kBlue+1);
             }
         }
     }
@@ -632,7 +632,7 @@ InitStatus LisaFrsCorrelations::Init()
                     Form("h1_LISA_%i_energy_MWD_LISA_FRS_gated_%i", l+1, i),
                     Form("LISA %i Energy MWD - LISA-FRS Gate %i", l+1, i),
                     lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD, 
-                    Form("E MWD(LISA %i) [a.u.]", l+1), kRed-3, kBlue+1);
+                    Form("E MWD(LISA %i) [a.u.]", l+1), kGreen+3, kBlue+1);
             }               
             
             dir_LISA_FRS_mwd_gates_channel[i] = dir_LISA_FRS_mwd_gates[i]->mkdir("Channel");
@@ -654,7 +654,7 @@ InitStatus LisaFrsCorrelations::Init()
                     Form("LISA %i%i%i Energy MWD - LISA_FRS Gate %i", l+1,lisa_config->xpos_gate, lisa_config->ypos_gate, i),
                     lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD, 
                     Form("E MWD(LISA %i%i%i) [a.u.]", l+1, lisa_config->xpos_gate, lisa_config->ypos_gate),
-                    kRed-3, kBlue+1);
+                    kGreen-3, kBlue+1);
             }
         }
     }
@@ -673,8 +673,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     if (frsHitArray->size() <= 0 || lisaCalArray->size() <= 0) return;  // frs, lisa and travmus subevent exists
 
     const auto & frsHitItem = frsHitArray->at(0);                       // *should* only be 1 FRS subevent per event
-    
-    //const auto & multihitItem = multihitArray->at(0);                 // *should* only be 1 FRS subevent per event
+    const auto & multihitItem = multihitArray->at(0);                 // *should* only be 1 FRS subevent per event
 
     // ::: FRS WR
     Int_t count_wr = 0;
@@ -698,6 +697,17 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     energy_MUSIC_21 = frsHitItem.Get_music21_dE();
     energy_MUSIC_41 = frsHitItem.Get_music41_dE(); 
     energy_MUSIC_42 = frsHitItem.Get_music42_dE();
+    // ::: FRS data
+    std::vector<Float_t> z21_mhtdc = multihitItem.Get_ID_z21_mhtdc();
+    std::vector<Float_t> z41_mhtdc = multihitItem.Get_ID_z41_mhtdc();
+    std::vector<Float_t> z42_mhtdc = multihitItem.Get_ID_z42_mhtdc();
+    std::vector<Float_t> AoQ_s1s2_mhtdc = multihitItem.Get_ID_AoQ_corr_s1s2_mhtdc();
+    std::vector<Float_t> AoQ_s2s4_mhtdc = multihitItem.Get_ID_AoQ_corr_s2s4_mhtdc();
+    std::vector<Float_t> dEdeg_z41_mhtdc = multihitItem.Get_ID_dEdeg_z41_mhtdc();
+    Float_t x2_position = frsHitItem.Get_ID_x2();
+    Float_t x4_position = frsHitItem.Get_ID_x4();
+    Float_t sci42e = frsHitItem.Get_sci_e_42();
+
     
 
     // //c4LOG(info, "s2 x : " << s2_x << "s2 y : " << s2_y);
@@ -756,49 +766,72 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         //..........................
 
         // ::: Energy for Gate FRS applied on LISA
-        int mh_counter = 0;
-        for ( auto const & multihitItem : *multihitArray )
-        {    
-            std::vector<Float_t> z21_mhtdc = multihitItem.Get_ID_z21_mhtdc();
-            std::vector<Float_t> z41_mhtdc = multihitItem.Get_ID_z41_mhtdc();
-            std::vector<Float_t> z42_mhtdc = multihitItem.Get_ID_z42_mhtdc();
-            std::vector<Float_t> AoQ_s1s2_mhtdc = multihitItem.Get_ID_AoQ_corr_s1s2_mhtdc();
-            std::vector<Float_t> x2_position = multihitItem.Get_ID_s2x_s1s2_mhtdc();
-
-            if (mh_counter > 0) break;
-            // Loop for S1S2
-            for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
-            {
-                if (!FrsGates.empty())
+        int mh_counter_passed_s1s2[FrsGates.size()] = {0};
+        int mh_counter_passed_s2s4[FrsGates.size()] = {0};
+        if (!FrsGates.empty())
+        {
+            for (int gate = 0; gate < FrsGates.size(); gate++)
+            {    
+                // Loop for S1S2
+                for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
                 {
-                    for (int gate = 0; gate < FrsGates.size(); gate++)
-                    {  
-                        // ::: Pass S1S2 only Gates
-                        if (FrsGates[gate]->PassedS1S2(z21_mhtdc.at(i), x2_position.at(i), AoQ_s1s2_mhtdc.at(i)))
-                        {
-                            //Febex
-                            h2_LISA_energy_vs_layer_s1s2_gated[gate]->Fill(layer, energy_LISA_febex);
-                            h1_LISA_energy_s1s2_gated[gate][layer-1]->Fill(energy_LISA_febex);
-                            //MWD
-                            h2_LISA_energy_MWD_vs_layer_s1s2_gated[gate]->Fill(layer, energy_LISA_MWD);
-                            h1_LISA_energy_MWD_s1s2_gated[gate][layer-1]->Fill(energy_LISA_MWD);
-                            
-                            //Febex XY channel
-                            //h2_LISA_energy_xy_vs_layer_s1s2_gated[gate]->Fill(layer, )
-
-                            //MWD XY channel
+                    if (mh_counter_passed_s1s2[gate] > 0) break;
+                    if (FrsGates[gate]->PassedS1S2(z21_mhtdc.at(i), x2_position, AoQ_s1s2_mhtdc.at(i)))
+                    {
+                        // Febex
+                        h2_LISA_energy_vs_layer_s1s2_gated[gate]->Fill(layer, energy_LISA_febex);
+                        h1_LISA_energy_s1s2_gated[gate][layer-1]->Fill(energy_LISA_febex);
+                        // MWD
+                        h2_LISA_energy_MWD_vs_layer_s1s2_gated[gate]->Fill(layer, energy_LISA_MWD);
+                        h1_LISA_energy_MWD_s1s2_gated[gate][layer-1]->Fill(energy_LISA_MWD);
                         
+                        //Febex and MWD XY channel
+                        if ( xpos == lisa_config->xpos_gate && ypos == lisa_config->ypos_gate)
+                        {
+                            h2_LISA_energy_xy_vs_layer_s1s2_gated[gate]->Fill(layer, energy_LISA_febex);
+                            h2_LISA_energy_MWD_xy_vs_layer_s1s2_gated[gate]->Fill(layer, energy_LISA_MWD);
+                            
+                            h1_LISA_energy_xy_s1s2_gated[gate][layer-1]->Fill(energy_LISA_febex);
+                            h1_LISA_energy_MWD_xy_s1s2_gated[gate][layer-1]->Fill(energy_LISA_MWD);
+                        } 
+                        mh_counter_passed_s1s2[gate]++;
+                    }                   
+                }
+                // Full sequential gate loop
+                for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
+                {
+                    if (mh_counter_passed_s2s4[gate] > 0) break;
+                    if (FrsGates[gate]->PassedS2S4(z41_mhtdc.at(i), z42_mhtdc.at(i), x2_position, x4_position, AoQ_s2s4_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), sci42e))
+                    {
+                        //if (mh_counter_passed_s1s2[gate] > 0)
+                        if (1) //just for testing when we don't have S1S2 data
+                        {
+                            // Febex
+                            h2_LISA_energy_vs_layer_s1s2s4_gated[gate]->Fill(layer, energy_LISA_febex);
+                            h1_LISA_energy_s1s2s4_gated[gate][layer-1]->Fill(energy_LISA_febex);
+                            // MWD
+                            h2_LISA_energy_MWD_vs_layer_s1s2s4_gated[gate]->Fill(layer, energy_LISA_MWD);
+                            h1_LISA_energy_MWD_s1s2s4_gated[gate][layer-1]->Fill(energy_LISA_MWD);
+                            
+                            //Febex and MWD XY channel
+                            if ( xpos == lisa_config->xpos_gate && ypos == lisa_config->ypos_gate)
+                            {
+                                h2_LISA_energy_xy_vs_layer_s1s2s4_gated[gate]->Fill(layer, energy_LISA_febex);
+                                h2_LISA_energy_MWD_xy_vs_layer_s1s2s4_gated[gate]->Fill(layer, energy_LISA_MWD);
+                                
+                                h1_LISA_energy_xy_s1s2s4_gated[gate][layer-1]->Fill(energy_LISA_febex);
+                                h1_LISA_energy_MWD_xy_s1s2s4_gated[gate][layer-1]->Fill(energy_LISA_MWD);
+                            } 
                         }
-                    }
-                } 
-            }
-
-            // Pass S1S2S4 gate...
-
-        
-            mh_counter++;
-            multi_evt++;
+                        
+                        mh_counter_passed_s2s4[gate]++;
+                    }                   
+                }
+            }            
         }
+            
+        multi_evt++;
+        
 
         // ::: Energy for Gate LISA-FRS applied on LISA
         // int mh_counter = 0;
