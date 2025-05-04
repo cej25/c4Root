@@ -11,7 +11,7 @@
  * or submit itself to any jurisdiction.                                      *
  ******************************************************************************
  *                        E.M.Gandolfo, C.E.Jones                             *
- *                               17.12.24                                     *
+ *                               04.05.25                                     *
  ******************************************************************************/
 
 // FairRoot
@@ -85,6 +85,9 @@ InitStatus LisaOnlineSpectra::Init()
     ymax = lisa_config->YMax();
     num_layers = lisa_config->NLayers();
 
+    excluded = lisa_config->GetExcludedChannels();
+
+
     histograms = (TFolder*)mgr->GetObject("Histograms");
     TDirectory::TContext ctx(nullptr);
 
@@ -118,13 +121,24 @@ InitStatus LisaOnlineSpectra::Init()
     detector_counter.resize(layer_number);
     detector_rate.resize(layer_number);
     h1_rate.resize(layer_number);
-    c_layer_rates.resize(layer_number);
+    c_channel_rates.resize(layer_number);
+
+    layer_counter.resize(layer_number);
+    layer_rate.resize(layer_number);
+    h1_layer_rate.resize(layer_number);
 
     for (int i = 0; i < layer_number; i++)
     {
-        c_layer_rates[i] = new TCanvas(Form("c_LISA_rate_layer_%d",i+1),Form("Layer %d Rates",i+1), 650,350);
-        c_layer_rates[i]->SetTitle(Form("Layer %d - Rates",i+1));
-        c_layer_rates[i]->Divide(xmax,ymax); 
+        
+        h1_layer_rate[i] = new TH1I(Form("h1_layer_%i_rate",i), Form("LISA Rate %i",i), lisa_config->bin_wr_rate, lisa_config->min_wr_rate, lisa_config->max_wr_rate);
+        h1_layer_rate[i]->GetXaxis()->SetTitle("Time [s]");
+        h1_layer_rate[i]->GetYaxis()->SetTitle(Form("LISA %i Rate [Hz]", i));
+        h1_layer_rate[i]->SetLineColor(kBlack);
+        h1_layer_rate[i]->SetFillColor(kRed-3);
+        
+        c_channel_rates[i] = new TCanvas(Form("c_LISA_ch_rate_layer_%d",i+1),Form("Layer %d Rates",i+1), 650,350);
+        c_channel_rates[i]->SetTitle(Form("Layer %d - Rates",i+1));
+        c_channel_rates[i]->Divide(xmax,ymax); 
 
         detector_counter[i].resize(xmax);
         detector_rate[i].resize(xmax);
@@ -138,23 +152,26 @@ InitStatus LisaOnlineSpectra::Init()
 
             for (int k = 0; k < ymax; k++)
             {
-                c_layer_rates[i]->cd((ymax-(k+1))*xmax + j + 1);
+                c_channel_rates[i]->cd((ymax-(k+1))*xmax + j + 1);
 
                 h1_rate[i][j][k] = new TH1I(Form("h1_rate_%i%i%i",i+1,j,k), Form("Rate %i%i%i",i+1,j,k), lisa_config->bin_wr_rate, lisa_config->min_wr_rate, lisa_config->max_wr_rate);
                 h1_rate[i][j][k]->GetXaxis()->SetTitle("Time [s]");
                 h1_rate[i][j][k]->GetYaxis()->SetTitle(Form("LISA %i%i%i Rate [Hz]", i+1,j,k));
                 h1_rate[i][j][k]->SetLineColor(kBlack);
-                h1_rate[i][j][k]->SetFillColor(kGreen+1);
+                h1_rate[i][j][k]->SetFillColor(kOrange-3);
 
                 h1_rate[i][j][k]->Draw();
             }
         }
-        c_layer_rates[i]->cd(0);
-        dir_rates->Append(c_layer_rates[i]);
+        c_channel_rates[i]->cd(0);
+        dir_rates->Append(c_channel_rates[i]);
     }
     // init rate counters
     for (int i = 0; i < layer_number; i++)
     {
+
+        layer_counter[i] = 0;
+        layer_rate[i] = 0; 
         for (int j = 0; j < xmax; j++)
         {
             for (int k = 0; k < ymax; k++)
@@ -680,6 +697,7 @@ void LisaOnlineSpectra::Reset_Histo()
         h2_overflow_grid[i]->Reset();
         for (int j = 0; j < xmax; j++)
         {
+            h1_layer_rate[i]->Reset();
             for (int k = 0; k < ymax; k++)
             {
                 h1_rate[i][j][k]->Reset();
@@ -781,6 +799,7 @@ void LisaOnlineSpectra::Exec(Option_t* option)
         //uint64_t evtno = header->GetEventno();
 
         // ::: FOR    R A T E S :::
+        layer_counter[layer-1]++;
         detector_counter[layer-1][xpos][ypos]++;  //layer - 1 cause the layer numbers are 1,2,3,4,5
         // ::: For Hit Patterns and multiplicity
         int hp_bin = (ymax-(ypos+1))*xmax + xpos;   // Note that hp_bin is actually not the bin number but the x-axis value mapped into the bin
@@ -791,14 +810,7 @@ void LisaOnlineSpectra::Exec(Option_t* option)
         multiplicity[layer-1]++;
         //counter++;
 
-        // ::: FOR     E N E R G Y :::
-        energy_layer[layer-1].emplace_back(energy_GM);
-        energy_MWD_layer[layer-1].emplace_back(energy_MWD_GM);
-
-        // sum_energy_layer[layer] += energy;
-        // energy_ch[layer][xpos][ypos] = energy;
-
-        //::: F I L L   H I S T O S  :::
+        // Fill Stats histos
         // ::: Hit Pattern Total
         //h1_hitpattern_total->Fill(hp_total_bin);
         //....................
@@ -810,39 +822,46 @@ void LisaOnlineSpectra::Exec(Option_t* option)
         if (pileup != 0) h2_pileup_grid[layer-1]->Fill(xpos,ypos);
         if (overflow != 0) h2_overflow_grid[layer-1]->Fill(xpos,ypos);
         //....................
-        //     Febex
-        // ::: Energy Febex per channel
-        h1_energy_ch[layer-1][xpos][ypos]->Fill(energy_GM);
-        //....................
-        // ::: Energy Febex per layer
-        h1_energy_layer[layer-1]->Fill(energy_GM);
-        //....................
-        // ::: Energy vs ID
-        h2_energy_vs_ID[layer-1]->Fill(hp_bin, energy_GM);
-        //h2_energy_vs_ID_total->Fill(hp_total_bin, energy_GM);
-        // ::: Layer Energy vs ID
-        h2_energy_vs_layer->Fill(layer,energy_GM);        
-        //
-        //     MWD
-        // ::: Energy MWD per channel
-        h1_energy_MWD_ch[layer-1][xpos][ypos]->Fill(energy_MWD_GM);
-        //....................
-        // ::: Energy MWD per layer
-        h1_energy_MWD_layer[layer-1]->Fill(energy_MWD_GM);
-        //....................
-        // ::: Energy MWD vs ID
-        h2_energy_MWD_vs_ID[layer-1]->Fill(hp_bin, energy_MWD_GM);
-        // ::: Layer Energy MWD  vs ID
-        h2_energy_MWD_vs_layer->Fill(layer,energy_MWD_GM);            
-        
-    
-        //::: Traces
+        //::: Fill traces histos Traces
         h1_traces_ch[layer-1][xpos][ypos]->Reset();
         for (int i = 0; i < trace.size(); i++)
         {
             h1_traces_ch[layer-1][xpos][ypos]->SetBinContent(i, trace[i]);
             //c4LOG(info, "layer -1: " << layer-1 << " x max: " << xmax << " ymax: " << ymax);
         }
+
+        // ::: Fill energy channels :::
+        //     Febex
+        // ::: Energy Febex per channel
+        h1_energy_ch[layer-1][xpos][ypos]->Fill(energy_GM);
+        //     MWD
+        // ::: Energy MWD per channel
+        h1_energy_MWD_ch[layer-1][xpos][ypos]->Fill(energy_MWD_GM);
+        // ::: Energy vs ID
+        h2_energy_vs_ID[layer-1]->Fill(hp_bin, energy_GM);
+        // ::: Energy MWD vs ID
+        h2_energy_MWD_vs_ID[layer-1]->Fill(hp_bin, energy_MWD_GM);
+
+        // ::: Exclude channels but keep multiplicity :::
+        if (excluded.count(std::make_tuple(layer, xpos, ypos)) != 0) continue;
+
+        // ::: FOR     E N E R G Y :::
+        energy_layer[layer-1].emplace_back(energy_GM);
+        energy_MWD_layer[layer-1].emplace_back(energy_MWD_GM);
+
+        //::: Fill energy Layer - without excluded channels  :::
+        //     Febex
+        // ::: Energy Febex per layer
+        h1_energy_layer[layer-1]->Fill(energy_GM);
+        // ::: Layer Energy vs ID
+        h2_energy_vs_layer->Fill(layer,energy_GM);        
+        //     MWD
+        // ::: Energy MWD per layer
+        h1_energy_MWD_layer[layer-1]->Fill(energy_MWD_GM);
+        //....................
+        // ::: Layer Energy MWD  vs ID
+        h2_energy_MWD_vs_layer->Fill(layer,energy_MWD_GM);            
+        
 
     }
     //....................................
@@ -872,6 +891,9 @@ void LisaOnlineSpectra::Exec(Option_t* option)
         {
             for (int i = 0; i < layer; i++)
             {
+                layer_rate[i] = layer_counter[i] / rate_wr_dt_db;
+                h1_layer_rate[i]->SetBinContent(rate_running_count, layer_rate[i]);
+
                 for (int j = 0; j < xmax; j++)
                 {
                     for (int k = 0; k < ymax; k++)
@@ -887,6 +909,7 @@ void LisaOnlineSpectra::Exec(Option_t* option)
 
         for (int i = 0; i < layer; i++)
         {
+            layer_counter[i] = 0;
             for (int j = 0; j < xmax; j++)
             {
                 for (int k = 0; k < ymax; k++)

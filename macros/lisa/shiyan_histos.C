@@ -216,14 +216,14 @@ void shiyan_histos()
     // ::: FRS
     TFrsConfiguration::Set_Z_range(10,60);
     TFrsConfiguration::Set_AoQ_range(1.8,3.5);
-    TFrsConfiguration::Set_dE_Music1_range(0,64000);
-    //TFrsConfiguration::Set_dE_travMusic_range(0,4000);
+    TFrsConfiguration::Set_dE_music41_range(0,4000);
+    TFrsConfiguration::Set_dE_music21_range(0,4000);
     
     //::::::::: Set ranges for histos :::::::::::::::
     // ::: LISA
     //  Channel Energy ::::: (h1_energy_)
-    TLisaConfiguration::SetEnergyRange(0,10000);
-    TLisaConfiguration::SetEnergyBin(5000);
+    TLisaConfiguration::SetEnergyRange(0,5000);
+    TLisaConfiguration::SetEnergyBin(1000);
 
     //  MWD histos
     TLisaConfiguration::SetEnergyRangeMWD(0,1000);

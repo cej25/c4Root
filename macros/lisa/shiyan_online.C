@@ -1,7 +1,7 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define LISA_ON 0
+#define LISA_ON 1
 #define FRS_ON 1
 #define WR_ENABLED 1
 
@@ -12,7 +12,8 @@
 // Define FRS setup.C file - FRS should provide; place in /config/shiyan/frs/
 extern "C"
 {
-    #include "../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
+    #include "../../config/pareeksha/frs/setup_Fragment_conv_updated.C" //pareeksha data
+    //#include "../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -35,7 +36,7 @@ void shiyan_online()
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     
     // ::: Experiment name - this set the path for all the config
-    TString fExpName = "shiyan";
+    TString fExpName = "pareeksha";
 
     // ::: Here you define commonly used path
     TString c4Root_path = "/u/gandolfo/c4/c4Root";
@@ -66,11 +67,11 @@ void shiyan_online()
     
     // ::: OFFLINE READING - For testing
     //TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/S092_shiyan/";                   // Data from LISA
-    TString inputpath = "/u/gandolfo/data/lustre/nustar/profi/sec_s160feb25/stitched/";     // Data from FRS
-    //TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0075_0001.lmd"; 
+    //TString inputpath = "/u/gandolfo/data/lustre/nustar/profi/sec_s160feb25/stitched/";     // Data from FRS
+    TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0075_0001.lmd"; 
 
     //TString filename = inputpath + "test_0003_*.lmd";
-    TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
+    //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
 
     // ::: OUTPUT - does not write a tree if it is not set layer
     TString outputpath = "/u/gandolfo/data/test_c4/"; //testing
@@ -138,10 +139,21 @@ void shiyan_online()
     // ::: Lisa config
     if ( TEST )
     {
+        /*
         TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_All_Boards.txt");
         TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_cards.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
         TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
+        */
+        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_Detector_Map_names.txt");
+        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching.txt");
+        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
+        
+        TLisaConfiguration::SetExcludedChannels({
+        std::make_tuple(1,0,0),
+        }); 
+
     }
     if ( EXP )
     {
@@ -241,16 +253,17 @@ void shiyan_online()
     // ::: FRS
     TFrsConfiguration::Set_Z_range(10,60);
     TFrsConfiguration::Set_AoQ_range(1.8,3.5);
-    TFrsConfiguration::Set_dE_Music1_range(0,64000);
+    TFrsConfiguration::Set_dE_music41_range(0,4000);
+    TFrsConfiguration::Set_dE_music21_range(0,4000);
 
     // ::: LISA
     //      Channel Energy 
-    TLisaConfiguration::SetEnergyRange(30000,50000);
+    TLisaConfiguration::SetEnergyRange(0,5000);
     TLisaConfiguration::SetEnergyBin(1000);
 
     //      MWD histos
-    TLisaConfiguration::SetEnergyRangeMWD(0,100);
-    TLisaConfiguration::SetEnergyBinMWD(1000);
+    TLisaConfiguration::SetEnergyRangeMWD(0,1000);
+    TLisaConfiguration::SetEnergyBinMWD(2000);
 
     //      LISA WR Time Difference 
     TLisaConfiguration::SetWrDiffRange(0,100000000);

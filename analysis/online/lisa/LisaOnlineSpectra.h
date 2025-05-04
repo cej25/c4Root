@@ -78,7 +78,10 @@ class LisaOnlineSpectra : public FairTask
 
         // ::: Counter
         std::vector<std::vector<std::vector<int>>> detector_counter; 
-        std::vector<std::vector<std::vector<int>>> detector_rate;    
+        std::vector<std::vector<std::vector<int>>> detector_rate;
+        std::vector<int> layer_counter; 
+        std::vector<int> layer_rate; 
+
         int rate_running_count = 0;
 
         // Rate
@@ -102,7 +105,7 @@ class LisaOnlineSpectra : public FairTask
 
         // ::: Canvas
         //     Stats
-        std::vector<TCanvas*> c_layer_rates;
+        std::vector<TCanvas*> c_channel_rates;
         TCanvas* c_hitpattern_layer;
         TCanvas* c_hitpattern_grid;
         TCanvas* c_pileup_grid;
@@ -129,6 +132,7 @@ class LisaOnlineSpectra : public FairTask
         //     Stats
         TH1I* h1_hitpattern_total;
         TH1I* h1_wr_diff;
+        std::vector<TH1I*> h1_layer_rate;
         std::vector<std::vector<std::vector<TH1I*>>> h1_rate;
         std::vector<TH1I*> h1_hitpattern_layer;
         std::vector<TH2F*> h2_hitpattern_grid;
@@ -155,7 +159,10 @@ class LisaOnlineSpectra : public FairTask
         TH2F* h2_energy_MWD_first_vs_last;
 
         // ::: Traces
-        std::vector<std::vector<std::vector<TH1F*>>> h1_traces_ch;        
+        std::vector<std::vector<std::vector<TH1F*>>> h1_traces_ch; 
+
+        std::set<std::tuple<int, int, int>> excluded;
+       
 
     public:
         ClassDef(LisaOnlineSpectra, 1)

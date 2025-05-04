@@ -184,27 +184,27 @@ InitStatus LisaFrsCorrelations::Init()
     //...........................................
 
     // ::: POSITION CORRELATIONS :::
-    // FRS Position on TPC in S2 vs LISA extrapolated position
+    // FRS Position on TPC interpolated on LISA vs LISA
     dir_position->cd();
 
-    h2_FRS_vs_LISA_x.resize(layer_number);
+    h2_TPC_vs_LISA_x.resize(layer_number);
     for (int i = 0; i < layer_number; i++)
     {
-        h2_FRS_vs_LISA_x[i] = new TH2F(Form("h2_FRS_vs_LISA_x_Layer_%i",i+1), Form("FRS vs LISA X - Layer %i",i+1), xmax, 0, xmax, 400,-50,50);
-        h2_FRS_vs_LISA_x[i]->GetXaxis()->SetTitle(Form("LISA - X position Layer %i",i+1));
-        h2_FRS_vs_LISA_x[i]->GetYaxis()->SetTitle("FRS Position");
-        h2_FRS_vs_LISA_x[i]->SetStats(0);
-        h2_FRS_vs_LISA_x[i]->SetOption("colz");        
+        h2_TPC_vs_LISA_x[i] = new TH2F(Form("h2_TPC_vs_LISA_x_Layer_%i",i+1), Form("TPC vs LISA X - Layer %i",i+1), xmax, 0, xmax, 400,-100,100);
+        h2_TPC_vs_LISA_x[i]->GetXaxis()->SetTitle(Form("LISA - X position Layer %i",i+1));
+        h2_TPC_vs_LISA_x[i]->GetYaxis()->SetTitle("TPC Position");
+        h2_TPC_vs_LISA_x[i]->SetStats(0);
+        h2_TPC_vs_LISA_x[i]->SetOption("colz");        
     }
 
-    h2_FRS_vs_LISA_y.resize(layer_number);
+    h2_TPC_vs_LISA_y.resize(layer_number);
     for (int i = 0; i < layer_number; i++)
     {
-        h2_FRS_vs_LISA_y[i] = new TH2F(Form("h2_FRS_vs_LISA_y_Layer_%i",i+1), Form("FRS vs LISA Y - Layer %i",i+1), ymax, 0, ymax, 400,-50,50);
-        h2_FRS_vs_LISA_y[i]->GetXaxis()->SetTitle(Form("LISA - Y position Layer %i",i+1));
-        h2_FRS_vs_LISA_y[i]->GetYaxis()->SetTitle("FRS Position");
-        h2_FRS_vs_LISA_y[i]->SetStats(0);
-        h2_FRS_vs_LISA_y[i]->SetOption("colz");        
+        h2_TPC_vs_LISA_y[i] = new TH2F(Form("h2_TPC_vs_LISA_y_Layer_%i",i+1), Form("TPC vs LISA Y - Layer %i",i+1), ymax, 0, ymax, 400,-100,100);
+        h2_TPC_vs_LISA_y[i]->GetXaxis()->SetTitle(Form("LISA - Y position Layer %i",i+1));
+        h2_TPC_vs_LISA_y[i]->GetYaxis()->SetTitle("TPC Position");
+        h2_TPC_vs_LISA_y[i]->SetStats(0);
+        h2_TPC_vs_LISA_y[i]->SetOption("colz");        
     }
     //.......................
 
