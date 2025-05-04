@@ -14,8 +14,8 @@
 // If you want to have trace histos
 #define TRACE_ON 1
 
-#define FRS_ON 1
-#define FRS_LISA_CORRELATIONS 1
+#define FRS_ON 0
+#define FRS_LISA_CORRELATIONS 0
 
 #define WR_ENABLED 1
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
@@ -39,7 +39,7 @@ void shiyan_histos()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     // ::: Experiment name
-    TString fExpName = "pareeksha";
+    TString fExpName = "shiyan";
 
     // ::: Here you define commonly used path
     TString c4Root_path = "/u/gandolfo/c4/c4Root";
@@ -63,17 +63,19 @@ void shiyan_histos()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // ::: P A T H   O F   F I L E  to read
-    //TString inputpath = "/u/gandolfo/data/test_c4/layer_alpha/";
-    TString inputpath = "/u/gandolfo/data/test_c4/shiyan_test/";
+    TString inputpath = "/u/gandolfo/data/test_c4/layer_alpha/";
+    //TString inputpath = "/u/gandolfo/data/test_c4/shiyan_test/";
 
-    TString filename = inputpath + "test_run_0075.root";  
+    TString filename = inputpath + "test_0016_tree.root";
+    //TString filename = inputpath + "test_run_0075.root";  
     //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  //FRS data with S2 PID
     
     // ::: O U T P U T
-    TString outputpath = "/u/gandolfo/data/test_c4/shiyan_test/";   //testing
-    //TString outputpath = "/u/gandolfo/data/test_c4/layer_alpha/";   //energy resolution output
+    //TString outputpath = "/u/gandolfo/data/test_c4/shiyan_test/";   //testing
+    TString outputpath = "/u/gandolfo/data/test_c4/layer_alpha/";   //energy resolution output
     
-    TString outputFilename = outputpath + "test_run_0075_histo.root";
+    TString outputFilename = outputpath + "test_0016_histo.root";
+    //TString outputFilename = outputpath + "test_run_0075_histo.root";
     //TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_histo.root";     //FRS data with S2 PID
 
 
@@ -143,19 +145,19 @@ void shiyan_histos()
     // ::: Lisa config
     if ( TEST )
     {
-        /*
+        
         TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_All_Boards.txt");
         TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_cards.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
         TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_highgain.txt");
         
-        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Febex_Gate1.txt");
-        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Febex_Gate2.txt");
+        //TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Febex_Gate1.txt");
+        //TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Febex_Gate2.txt");
 
-        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/MWD_Gate1.txt");
-        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/MWD_Gate2.txt");
-        */
-
+        //TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/MWD_Gate1.txt");
+        //TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/MWD_Gate2.txt");
+        
+        /*
         //for testing with pareeksha data 
         TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_Detector_Map_names.txt");
         TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching.txt");
@@ -174,7 +176,6 @@ void shiyan_histos()
         LisaGate* MWD_Gate2 = new LisaGate("MWD_Gate2", "energy_mwd", config_path + "/lisa/MWD_Gate2.txt");
         LisaGate* MWD_Gate3 = new LisaGate("MWD_Gate3", "energy_mwd", config_path + "/lisa/MWD_Gate3.txt");
 
-
         lgs.emplace_back(FebGate1);
         lgs.emplace_back(FebGate2);
         lgs.emplace_back(MWD_Gate1);
@@ -185,6 +186,7 @@ void shiyan_histos()
         std::make_tuple(1,0,0),
         std::make_tuple(2,0,0)
         });
+        */
 
     }
     if ( EXP )
@@ -212,7 +214,9 @@ void shiyan_histos()
     //std::cout << "Run number: " << fileNumber << std::endl;
 
     //::::::::: Set experiment configurations
-    TExperimentConfiguration::SetExperimentStart(1715727045000000000); //Start of pareeksha with primary beam: 15 May 00:50
+    //TExperimentConfiguration::SetExperimentStart(1715727045000000000); //Start of pareeksha with primary beam: 15 May 00:50
+    TExperimentConfiguration::SetExperimentStart(1746172830000000000);
+
     // ::: FRS
     TFrsConfiguration::Set_Z_range(10,60);
     TFrsConfiguration::Set_AoQ_range(1.8,3.5);
@@ -264,7 +268,7 @@ void shiyan_histos()
 
         if(LISA_CAL)
         {
-            LisaNearlineSpectra* nearlinelisa = new LisaNearlineSpectra(lgs);
+            LisaNearlineSpectra* nearlinelisa = new LisaNearlineSpectra();
             run->AddTask(nearlinelisa);
         }
 
@@ -272,7 +276,7 @@ void shiyan_histos()
 
     if (FRS_ON)
     {
-        FrsNearlineSpectra* nearlinefrs = new FrsNearlineSpectra(fgs);
+        FrsNearlineSpectra* nearlinefrs = new FrsNearlineSpectra();
         run->AddTask(nearlinefrs);
     }
     
@@ -282,7 +286,7 @@ void shiyan_histos()
     {
         if(FRS_LISA_CORRELATIONS)
         {
-            LisaFrsCorrelations* LISA_FRS_corr = new LisaFrsCorrelations(fgs,lgs);
+            LisaFrsCorrelations* LISA_FRS_corr = new LisaFrsCorrelations();
             run->AddTask(LISA_FRS_corr);
         }
     }
