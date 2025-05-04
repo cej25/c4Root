@@ -176,25 +176,37 @@ class LisaFrsCorrelations : public FairTask
         std::vector<TH2F*> h2_LISA_energy_MWD_xy_vs_layer_s1s2_gated;
         std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_s1s2_gated;
         std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_xy_s1s2_gated;
-
+        //..............................
         // ::: Gated - LISA applied on FRS
         std::vector<std::vector<TH2F*>> h2_Z21_vs_AoQs1s2_LISA_gated;
         std::vector<std::vector<TH2F*>> h2_Z41_vs_AoQs2s4_LISA_gated;
 
         std::vector<std::vector<TH2F*>> h2_Z21_vs_AoQs1s2_LISA_MWD_gated;
         std::vector<std::vector<TH2F*>> h2_Z41_vs_AoQs2s4_LISA_MWD_gated;
-
+        //..............................
         // ::: Gated - LISA and FRS applied on LISA
-        std::vector<TH2F*> h2_LISA_energy_vs_layer_LISA_FRS_gated;
-        std::vector<TH2F*> h2_LISA_energy_xy_vs_layer_LISA_FRS_gated;
-        std::vector<std::vector<TH1*>> h1_LISA_energy_LISA_FRS_gated;
-        std::vector<std::vector<TH1*>> h1_LISA_energy_xy_LISA_FRS_gated;
+        // Full sequential gate
+        std::vector<TH2F*> h2_LISA_energy_vs_layer_LISA_s1s2s4_gated;
+        std::vector<TH2F*> h2_LISA_energy_xy_vs_layer_LISA_s1s2s4_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_LISA_s1s2s4_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_xy_LISA_s1s2s4_gated;
 
-        std::vector<TH2F*> h2_LISA_energy_MWD_vs_layer_LISA_FRS_gated;
-        std::vector<TH2F*> h2_LISA_energy_MWD_xy_vs_layer_LISA_FRS_gated;
-        std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_LISA_FRS_gated;
-        std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_xy_LISA_FRS_gated;
+        std::vector<TH2F*> h2_LISA_energy_MWD_vs_layer_LISA_s1s2s4_gated;
+        std::vector<TH2F*> h2_LISA_energy_MWD_xy_vs_layer_LISA_s1s2s4_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_LISA_s1s2s4_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_xy_LISA_s1s2s4_gated;
 
+        //only s1s2
+        std::vector<TH2F*> h2_LISA_energy_vs_layer_LISA_s1s2_gated;
+        std::vector<TH2F*> h2_LISA_energy_xy_vs_layer_LISA_s1s2_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_LISA_s1s2_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_xy_LISA_s1s2_gated;
+
+        std::vector<TH2F*> h2_LISA_energy_MWD_vs_layer_LISA_s1s2_gated;
+        std::vector<TH2F*> h2_LISA_energy_MWD_xy_vs_layer_LISA_s1s2_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_LISA_s1s2_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_xy_LISA_s1s2_gated;
+        //..............................
         std::set<std::tuple<int, int, int>> excluded;
 
     public:
