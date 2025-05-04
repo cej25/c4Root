@@ -95,7 +95,10 @@ class LisaNearlineSpectra : public FairTask
         
         // counters
         std::vector<std::vector<std::vector<int>>> detector_counter; 
-        std::vector<std::vector<std::vector<int>>> detector_rate;    
+        std::vector<std::vector<std::vector<int>>> detector_rate; 
+        std::vector<int> layer_counter; 
+        std::vector<int> layer_rate; 
+
         int rate_running_count = 0; 
 
         // Rates
@@ -137,6 +140,7 @@ class LisaNearlineSpectra : public FairTask
         // ::: Histograms :::
         // ::: Stats
         TH1I* h1_wr_diff; 
+        std::vector<TH1I*> h1_lisa_layer_rate;
         std::vector<std::vector<std::vector<TH1I*>>> h1_lisa_rate; 
         TH1I* h1_hitpattern_total;
         std::vector<TH1I*> h1_hitpattern_layer;

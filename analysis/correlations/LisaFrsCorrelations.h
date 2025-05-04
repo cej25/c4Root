@@ -143,8 +143,8 @@ class LisaFrsCorrelations : public FairTask
         std::vector<TH1I*> h1_wr_diff;
 
         // ::: Position
-        std::vector<TH2F*> h2_FRS_vs_LISA_x;
-        std::vector<TH2F*> h2_FRS_vs_LISA_y;
+        std::vector<TH2F*> h2_TPC_vs_LISA_x;
+        std::vector<TH2F*> h2_TPC_vs_LISA_y;
 
         // ::: Energy - LISA-MUSICs
         std::vector<TH2F*> h2_MUSIC21_vs_LISA_febex;

@@ -11,7 +11,7 @@
  * or submit itself to any jurisdiction.                                      *
  ******************************************************************************
  *                       E.M. Gandolfo, C.E. Jones                            *
- *                               25.11.24                                    *
+ *                               04.05.25                                    *
  ******************************************************************************/
 
 // ::: Note::: No canvases in Nearline Tasks please :::
@@ -171,12 +171,22 @@ InitStatus LisaNearlineSpectra::Init()
     detector_rate.resize(layer_number);
     h1_lisa_rate.resize(layer_number);
 
+    layer_counter.resize(layer_number);
+    layer_rate.resize(layer_number);
+    h1_lisa_layer_rate.resize(layer_number);
+
     for (int i = 0; i < layer_number; i++)
     {
+        
+        h1_lisa_layer_rate[i] = new TH1I(Form("h1_lisa_layer_%i_rate",i), Form("LISA Rate %i",i), lisa_config->bin_wr_rate, lisa_config->min_wr_rate, lisa_config->max_wr_rate);
+        h1_lisa_layer_rate[i]->GetXaxis()->SetTitle("Time [s]");
+        h1_lisa_layer_rate[i]->GetYaxis()->SetTitle(Form("LISA %i Rate [Hz]", i));
+        h1_lisa_layer_rate[i]->SetLineColor(kBlack);
+        h1_lisa_layer_rate[i]->SetFillColor(kRed-3);
+        
         detector_counter[i].resize(xmax);
         detector_rate[i].resize(xmax);
         h1_lisa_rate[i].resize(xmax);
-
         for (int j = 0; j < xmax; j++)
         {
             detector_counter[i][j].resize(ymax);
@@ -189,7 +199,7 @@ InitStatus LisaNearlineSpectra::Init()
                 h1_lisa_rate[i][j][k]->GetXaxis()->SetTitle("Time [s]");
                 h1_lisa_rate[i][j][k]->GetYaxis()->SetTitle(Form("LISA %i%i%i Rate [Hz]", i,j,k));
                 h1_lisa_rate[i][j][k]->SetLineColor(kBlack);
-                h1_lisa_rate[i][j][k]->SetFillColor(kRed-3);
+                h1_lisa_rate[i][j][k]->SetFillColor(kOrange-3);
             }
         }
     }
@@ -197,6 +207,8 @@ InitStatus LisaNearlineSpectra::Init()
     // init rate counters
     for (int i = 0; i < layer_number; i++)
     {
+        layer_counter[i] = 0;
+        layer_rate[i] = 0;        
         for (int j = 0; j < xmax; j++)
         {
             for (int k = 0; k < ymax; k++)
@@ -793,6 +805,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         //uint64_t evtno = header->GetEventno();
 
         // ::: FOR   R A T E S 
+        layer_counter[layer-1]++;
         detector_counter[layer-1][xpos][ypos]++;    //layers start from 1
         // ::: For Hit Patterns, multiplicity and energy vs ID
         int hp_bin = (ymax-(ypos+1))*xmax + xpos; // -1 compared to canvas position
@@ -823,6 +836,19 @@ void LisaNearlineSpectra::Exec(Option_t* option)
             }
         }
         //....................
+
+        // ::: Fill energy channels :::
+        //     Febex
+        // ::: Energy Febex per channel
+        h1_energy_ch[layer-1][xpos][ypos]->Fill(energy_GM);
+        //     MWD
+        // ::: Energy MWD per channel
+        h1_energy_MWD_ch[layer-1][xpos][ypos]->Fill(energy_MWD_GM);
+        // ::: Energy vs ID
+        h2_energy_vs_ID[layer-1]->Fill(hp_bin, energy_GM);
+        // ::: Energy MWD vs ID
+        h2_energy_MWD_vs_ID_layer[layer-1]->Fill(hp_bin, energy_MWD_GM);
+
 
         // ::: Exclude channels but keep multiplicity :::
         if (excluded.count(std::make_tuple(layer, xpos, ypos)) != 0) continue;
@@ -859,52 +885,20 @@ void LisaNearlineSpectra::Exec(Option_t* option)
             g++;
         }
 
-        //::: F I L L   E N E R G Y   H I S T O S  :::
-
-        // // ::: Hit Pattern Total
-        // //h1_hitpattern_total->Fill(hp_total_bin);
-        // //....................
-        // // ::: Hit Pattern by layer
-        // h1_hitpattern_layer[layer]->Fill(hp_bin);
-        // //....................
-        // // ::: Grids (hit pattern, pile up and overflow)
-        // h2_hitpattern_grid[layer-1]->Fill(xpos,ypos);
-        // if (pileup != 0) h2_pileup_grid[layer-1]->Fill(xpos,ypos);
-        // if (overflow != 0) h2_overflow_grid[layer-1]->Fill(xpos,ypos);        
-        //....................
-        // ::: Energy Febex per channel
-        h1_energy_ch[layer-1][xpos][ypos]->Fill(energy_GM);
-        //....................
+        //::: F I L L   E N E R G Y   H I S T O S  :::        
+        //::: Fill energy Layer - without excluded channels  :::
+        //     Febex
         // ::: Energy Febex per layer
         h1_energy_layer[layer-1]->Fill(energy_GM);
-        
-        //....................
-        // ::: Energy Febex vs ID
-        h2_energy_vs_ID[layer-1]->Fill(hp_bin, energy_GM);
-        //h2_energy_vs_ID_total->Fill(hp_total_bin, energy_GM);
         // ::: Layer Energy vs ID
-        h2_energy_vs_layer->Fill(layer,energy_GM);
-
-        // ::: Energy MWD per channel
-        h1_energy_MWD_ch[layer-1][xpos][ypos]->Fill(energy_MWD_GM);
-        //....................
+        h2_energy_vs_layer->Fill(layer,energy_GM);        
+        //     MWD
         // ::: Energy MWD per layer
         h1_energy_MWD_layer[layer-1]->Fill(energy_MWD_GM);
         //....................
-        // ::: Energy MWD vs ID
-        h2_energy_MWD_vs_ID_layer[layer-1]->Fill(hp_bin, energy_MWD_GM);
-        //h2_energy_vs_ID_total->Fill(hp_total_bin, energy_GM);
         // ::: Layer Energy MWD  vs ID
-        h2_energy_MWD_vs_layer->Fill(layer,energy_MWD_GM);
+        h2_energy_MWD_vs_layer->Fill(layer,energy_MWD_GM); 
             
-        // // :::: Fill traces febex
-        // if(lisa_config->trace_on)
-        // {
-        //     for (int i = 0; i < trace.size(); i++)
-        //     {   
-        //         h2_traces_ch[layer-1][xpos][ypos]->Fill(i*0.01,trace[i]);
-        //     }
-        // }
 
         //c4LOG(info, "layer -1 " << layer-1 << " LISA_time_mins: " << LISA_time_mins << " energy : "<<  energy_GM);
         // ::: Drifts ::::
@@ -950,6 +944,10 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         {
             for (int i = 0; i < layer; i++)
             {
+                //c4LOG(info, " Layer : " << i << " Layer rate : " << layer_rate[i] << " Layer counter : " << layer_counter[i] << " rate_wr_dt_db : " << rate_wr_dt_db);
+                layer_rate[i] = layer_counter[i] / rate_wr_dt_db;
+                h1_lisa_layer_rate[i]->SetBinContent(rate_running_count, layer_rate[i]);
+                
                 for (int j = 0; j < xmax; j++)
                 {
                     for (int k = 0; k < ymax; k++)
@@ -965,6 +963,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
 
         for (int i = 0; i < layer; i++)
         {
+            layer_counter[i] = 0;
             for (int j = 0; j < xmax; j++)
             {
                 for (int k = 0; k < ymax; k++)
