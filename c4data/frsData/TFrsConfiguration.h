@@ -104,7 +104,7 @@ class TFrsConfiguration
         void Plot_TAC(bool option) { plot_tac = option; }
         void Plot_MHTDC_1D(bool option) { plot_mhtdc_1d = option; }
         void Plot_MHTDC_2D(bool option) { plot_mhtdc_2d = option; }
-        void Plot_MHTDC(bool option) { plot_mhtdc = option}
+        void Plot_MHTDC(bool option) { plot_mhtdc = option; }
         void Plot_Monitors(bool option) { plot_monitors = option; }
 
         Bool_t plot_tac_1d = true;

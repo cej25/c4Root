@@ -123,7 +123,7 @@ bool FrsGate::PassedAllGates(double Z21, double AoQs1s2, double x2, double Z41, 
 }
 
 
-bool FrsGate::PassedGate(/*double Z21,*/ double Z42, double Z41, double x2, double x4, double AoQs2s4, /*double AoQs1s2,*/ double dEdegZ41, double sci42E)
+bool FrsGate::PassedGate(/*double Z21,*/ double Z41, double Z42, double x2, double x4, double AoQs2s4, /*double AoQs1s2,*/ double dEdegZ41, double sci42E)
 {
     //bool passed_gate_cut_Z21_AoQs1s2 = false;
     bool passed_gate_cut_Z41_AoQs2s4 = false;

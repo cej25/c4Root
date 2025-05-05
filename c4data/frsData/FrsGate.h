@@ -12,7 +12,7 @@ class FrsGate
 
         std::string GetName();
     
-        bool PassedGate(/*double Z21,*/ double Z42, double Z41, double x2, double x4, double AoQs2s4,/*double AoQs1s2,*/ double dEdegZ41, double sci42E);
+        bool PassedGate(/*double Z21,*/ double Z41, double Z42, double x2, double x4, double AoQs2s4,/*double AoQs1s2,*/ double dEdegZ41, double sci42E);
         // what happened here.. lol
 
 
