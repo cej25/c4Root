@@ -107,52 +107,456 @@ InitStatus FrsNearlineSpectra::Init()
         found_dir_frs = false;
     }
 
+    num_frs_gates = FrsGates.size();
+
+    // What does have a distinction...
+    // everything beta related
+    // beta --> AoQ and Z
+    // Z --> dEdeg
+    // that's it
+    // ID
+
+    // ID - always contains x position, etc
+        // S1S2 -- contains TAC related stuff if switched on
+            // -- 1D
+            // -- 2D
+            // -- Gated
+                // -- Each gate
+
+        // S2S4 -- contains TAC related stuff if switched on
+            // -- 1D
+            // -- 2D
+            // -- Gated
+                // -- Each gate
+        // Sequential
+            // -- Each gate
+    // ID_MHTDC -- exists only if switched on
+        // S1S2 -- contains MHTDC related stuff if switched on
+        // S2S4 -- contains MHTDC related stuff if switched on
+        // Sequential
+    // SCI
+        // E, dE -- always contains
+    // TPC
+        // whatever relevant stuff -- always contains
+    // TOF
+        // 11-21, 21-42 etc -- always contains
+    // MUSIC
+        // E -- always contains
+
+
+    // :::: ID ::::
+    dir_id = dir_frs->mkdir("ID");
+    dir_id_s1s2 = dir_id->mkdir("S1S2");
+    dir_id_s1s2_1d = dir_id_s1s2->mkdir("1D");
+    dir_id_s1s2_2d = dir_id_s1s2->mkdir("2D");
+    dir_id_s2s4 = dir_id->mkdir("S2S4");
+    dir_id_s2s4_1d = dir_id_s2s4->mkdir("1D");
+    dir_id_s2s4_2d = dir_id_s2s4->mkdir("2D");
     
+    h1_x1 = MakeTH1(dir_id_s1s2_1d, "D", "h1_x1", "S1 x-position", 200, -100, 100, "x1", kYellow-7, kBlack);
+    h1_a1 = MakeTH1(dir_id_s1s2_1d, "D", "h1_a1", "AngleX S1", 200, -100, 100, "a1", kYellow-7, kBlack);
+    h1_y1 = MakeTH1(dir_id_s1s2_1d, "D", "h1_y1", "S1 y-position", 200, -100, 100, "y1", kYellow-7, kBlack);
+    h1_b1 = MakeTH1(dir_id_s1s2_1d, "D", "h1_b1", "AngleY S1", 200, -100, 100, "b1", kYellow-7, kBlack);
+    h1_x2 = MakeTH1(dir_id_s2s4_1d, "D", "h1_x2", "S2 x-position", 200, -100, 100, "x2", kYellow-7, kBlack);
+    h1_a2 = MakeTH1(dir_id_s2s4_1d, "D", "h1_a2", "AngleX S2", 200, -100, 100, "a2", kYellow-7, kBlack);
+    h1_y2 = MakeTH1(dir_id_s2s4_1d, "D", "h1_y2", "S2 y-position", 200, -100, 100, "y2", kYellow-7, kBlack);
+    h1_b2 = MakeTH1(dir_id_s2s4_1d, "D", "h1_b2", "AngleY S2", 200, -100, 100, "b2", kYellow-7, kBlack);
+    h1_x4 = MakeTH1(dir_id_s2s4_1d, "D", "h1_x4", "S4 x-position", 200, -100, 100, "x4", kYellow-7, kBlack);
+    h1_a4 = MakeTH1(dir_id_s2s4_1d, "D", "h1_a4", "AngleX S4", 200, -100, 100, "a4", kYellow-7, kBlack);
+    h1_y4 = MakeTH1(dir_id_s2s4_1d, "D", "h1_y4", "S4 y-position", 200, -100, 100, "y4", kYellow-7, kBlack);    
+    h1_b4 = MakeTH1(dir_id_s2s4_1d, "D", "h1_b4", "AngleY S4", 200, -100, 100, "b4", kYellow-7, kBlack);
+    h1_dEdegoQ = MakeTH1(dir_tac_S2S4_1d, "D", "h1_dEdegoQ", "dE in S2 degrader / Q", 1000, 0.0, 10.0, "dE / Q", kPink-3, kBlue+2);
+    for (int i = 0; i < 2; i++) h1_rho[i] = MakeTH1(dir_id_s2s4_1d, "D", Form("h1_rho_%i", i), Form("rho %i", i), 100, 0.0, 1.0, Form("rho %i", i), kPink-3, kBlue+2); 
+    for (int i = 0; i < 2; i++) h1_brho[i] = MakeTH1(dir_id_s2s4_1d, "D", Form("h1_brho_%i", i), Form("brho %i", i), 100, 0.0, 1.0, Form("brho %i", i), kPink-3, kBlue+2);
+
+    h2_x2_vs_x4 = MakeTH2(dir_id_s2s4_2d, "D", "h2_x2_vs_x4", "x2 vs. x4", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_x4, frs_config->fMax_x4, "S2 x-position", "S4 x-position");
+    h2_x2_vs_a2 = MakeTH2(dir_id_s2s4_2d, "D", "h2_x2_vs_a2", "x2 vs. AngleX (S2)", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_a2, frs_config->fMax_a2, "S2 x-position", "AngleX (S2)");
+    h2_y2_vs_b2 = MakeTH2(dir_id_s2s4_2d, "D", "h2_y2_vs_b2", "y2 vs. AngleY (S2)", 200, frs_config->fMin_y2, frs_config->fMax_y2, 200, frs_config->fMin_b2, frs_config->fMax_b2, "S2 y-position", "AngleY (S2)");
+    h2_x4_vs_a4 = MakeTH2(dir_id_s2s4_2d, "D", "h2_x4_vs_a4", "x4 vs. AngleX (S4)", 200, frs_config->fMin_x4, frs_config->fMax_x4, 200, frs_config->fMin_a4, frs_config->fMax_a4, "S4 x-position", "AngleX (S4)");
+    h2_y4_vs_b4 = MakeTH2(dir_id_s2s4_2d, "D", "h2_y4_vs_b4", "y4 vs. AngleY (S4)", 200, frs_config->fMin_y4, frs_config->fMax_y4, 200, frs_config->fMin_b4, frs_config->fMax_b4, "S4 y-position", "AngleY (S4)");
+    h2_dE41_vs_ToF_21_41 = MakeTH2(dir_id_s2s4_2d, "D", "h2_dE41_vs_ToF_21_41", "ToF 21 - 41 vs. dE in MUSIC 41", 2000, 0., 70000., 400, frs_config->fMin_dE_music41, frs_config->fMax_dE_music41, "Time of Flight (21 - 41)", "dE in MUSIC 41");
+    h2_dE41_vs_x2 = MakeTH2(dir_id_s2s4_2d, "D", "h2_dE41_vs_x2", "x2 vs. dE in MUSIC 41", 200, frs_config->fMin_x2, frs_config->fMax_x2, 400, frs_config->fMin_dE_music41, frs_config->fMax_dE_music41, "S2 x-position", "dE in MUSIC 41");
+    h2_dE41_vs_x4 = MakeTH2(dir_id_s2s4_2d, "D", "h2_dE41_vs_x4", "x4 vs. dE in MUSIC 41", 200, frs_config->fMin_x4, frs_config->fMax_x4, 400, frs_config->fMin_dE_music41, frs_config->fMax_dE_music41, "S4 x-position", "dE in MUSIC 41");
+
+    if (frs_config->plot_tac)
+    {
+        // ::::: 2D :::::
+        // S1S2
+
+        // S2S4
+        h2_Z41_vs_AoQs2s4 = MakeTH2(dir_id_s2s4_2d, "D", "h2_Z41_vs_AoQs2s4", "Z41 vs. A/Q (S2-S4)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S2-S4)", "Z41");
+        h2_Z41_vs_AoQs2s4_driftcorr = MakeTH2(dir_id_s2s4_2d, "D", "h2_Z41_vs_Ao4s2s4_driftcorr", "Z41 vs. A/Q (S2-S4) DriftCorr", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q DriftCorr", "Z DriftCorr(MUSIC 1)");
+        h2_Z41_vs_AoQs2s4_corr = MakeTH2(dir_id_s2s4_2d, "D", "h2_Z_vs_AoQs2s4_corr", "Z41 vs. A/Q corr (S2-S4)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z,"A/Q (S2-S4)", "Z41");
+        h2_Z41_vs_Z42 = MakeTH2(dir_id_s2s4_2d, "D", "h2_Z41_vs_Z42", "Z41 vs. Z42", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z41", "Z42");
+        h2_Z41_vs_AoQs2s4_Zsame = MakeTH2(dir_id_s2s4_2d, "D", "h2_Z41_vs_AoQs2s4_Zsame", "Z41 vs. A/Q (S2-S4) [ABS (Z41 - Z42) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S2-S4)", "Z41");
+        h2_x2_vs_AoQs2s4_Zsame = MakeTH2(dir_id_s2s4_2d, "D", "h2_x2_vs_AoQs2s4_Zsame", "x2 vs A/Q (S2-S4) - [ABS(Z41 - Z42) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q (S2-S4)", "S2 x-position");
+        h2_x4_vs_AoQs2s4_Zsame = MakeTH2(dir_id_s2s4_2d, "D", "h2_x4_vs_AoQs2s4_Zsame", "x4 vs A/Q (S2-S4) - [ABS(Z41 - Z42) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q (S2-S4)", "S4 x-position");
+        h2_x2_vs_AoQs2s4 = MakeTH2(dir_id_s2s4_2d, "D", "h2_x2_vs_AoQs2s4", "x2 vs. A/Q (S2-S4)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q (S2-S4)", "S2 x-position");
+        h2_x4_vs_AoQs2s4 = MakeTH2(dir_id_s2s4_2d, "D", "h2_x4_vs_AoQs2s4", "x4 vs. A/Q (S2-S4)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q (S2-S4)", "S4 x-position");
+        h2_dEdegoQ_vs_Z41 = MakeTH2(dir_id_s2s4_2d, "D", "h2_dEdegoQ_vs_Z41", "dE in S2 degrader / Q vs. Z41", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ, "dE in S2 degrader / Q", "Z41");
+        h2_dEdegZ41_vs_Z41 = MakeTH2(dir_id_s2s4_2d, "D", "h2_dEdegZ41_vs_Z41", "dE in S2 degrader vs. Z41", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, frs_config->fMin_dE, frs_config->fMax_dE, "dE in S2 degrader", "Z41");
+        h2_a2_vs_AoQs2s4 = MakeTH2(dir_id_s2s4_2d, "D", "h2_a2_vs_AoQs2s4", "A/Q (S2-S4) vs. AngleX (S2)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a2, frs_config->fMax_a2, "A/Q (S2-S4)", "AngleX (S2)");
+        h2_a4_vs_AoQs2s4 = MakeTH2(dir_id_s2s4_2d, "D", "h2_a4_vs_AoQs2s4", "A/Q (S2-S4) vs. AngleX (S4)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a4, frs_config->fMax_a4, "A/Q (S2-S4)", "AngleX (S4)");
+        h2_Z41_vs_dE42 = MakeTH2(dir_id_s2s4_2d, "D", "h2_Z41_vs_dE42", "Z41 vs. dE in MUSIC 42", 400, frs_config->fMin_Z, frs_config->fMax_Z, 250, frs_config->fMin_dE_music42, frs_config->fMax_dE_music42, "Z41", "dE in MUSIC 42");
+        h2_x2_vs_x4 = MakeTH2(dir_id_s2s4_2d, "D", "h2_x2_vs_x4", "x2 vs. x4", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_x4, frs_config->fMax_x4, "S2 x-position", "S4 x-position");
+        h2_SC41dE_vs_AoQs2s4 = MakeTH2(dir_id_s2s4_2d, "D", "h2_SC41dE_vs_AoQs2s4", "A/Q (S2-S4) vs. dE in SC41", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000., "A/Q (S2-S4)", "dE in SC41");
+        h2_SC42dE_vs_AoQs2s4 = MakeTH2(dir_id_s2s4_2d, "D", "h2_SC42dE_vs_AoQs2s4", "A/Q (S2-S4) vs. dE in SC42", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000., "A/Q (S2-S4)", "dE in SC42");
+        h2_SC41dE_vs_Z41 = MakeTH2(dir_id_s2s4_2d, "D", "h2_SC41dE_vs_Z41", "Z41 vs. dE in SC41", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, 0., 4000., "Z41", "dE in SC41");
+        h2_SC42dE_vs_Z41 = MakeTH2(dir_id_s2s4_2d, "D", "h2_SC42dE_vs_Z41", "Z41 vs. dE in SC42", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, 0., 4000., "Z41", "dE in SC42");
+        h2_x2_vs_Z41 = MakeTH2(dir_id_s2s4_2d, "D", "h2_x2_vs_Z41", "x2 vs. Z41", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x2, frs_config->fMax_x2, "Z41", "S2 x-position");
+        h2_x4_vs_Z41 = MakeTH2(dir_id_s2s4_2d, "D", "h2_x4_vs_Z41", "x4 vs. Z41", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x4, frs_config->fMax_x4, "Z41", "S4 x-position");
+        h2_Z41_vs_Sc21E = MakeTH2(dir_id_s2s4_2d, "D", "h2_Z41_vs_Sc21E", "Z41 vs. SQRT(Sc21_L * Sc21_R)", 300, frs_config->fMin_Z, frs_config->fMax_Z, 400, 0., 4000., "Z41", "Sc21 E");
+
+        // ::::::  1D ::::::::
+        // S1S2
+        h1_beta_s1s2 = MakeTH1(dir_id_s1s2_1d, "D", "h1_beta_s1s2", "Beta (S1-S2)", 500, 0.0, 1.0, "Beta (S1-S2)", kPink-3, kBlue+2);
+        h1_AoQs1s2 = MakeTH1(dir_id_s1s2_1d, "D", "h1_AoQs1s2", "A/Q (S1-S2)", 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2); 
+        h1_AoQs1s2_corr = MakeTH1(dir_id_s1s2_1d, "D", "h1_AoQs1s2_corr", "A/Q corr (S1-S2)", 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2);
+        h1_Z21 = MakeTH1(dir_id_s1s2_1d, "D", "h1_Z21", "Z21", 500, 10, 100, "Z21", kPink-3, kBlue+2);
+        h1_Z22 = MakeTH1(dir_id_s1s2_1d, "D", "h1_Z22", "Z22", 500, 10, 100, "Z22", kPink-3, kBlue+2);
+
+        // S2S4
+        h1_beta_s2s4 = MakeTH1(dir_id_s2s4_1d, "D", "h1_beta_s2s4", "Beta (S2-S4)", 500, 0.0, 1.0, "Beta (S2-S4)", kPink-3, kBlue+2);
+        h1_AoQs2s4 = MakeTH1(dir_id_s2s4_1d, "D", "h1_AoQs2s4", "A/Q (S2-S4)", 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2); 
+        h1_AoQs2s4_driftcorr = MakeTH1(dir_id_s2s4_1d, "D", "h1_AoQs2s4_driftcorr", "A/Q (S2-S4) DriftCorr", 500, 1, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2); 
+        h1_AoQs2s4_corr = MakeTH1(dir_id_s2s4_1d, "D", "h1_AoQs2s4_corr", "A/Q corr (S2-S4)", 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2);
+        h1_Z41 = MakeTH1(dir_id_s2s4_1d, "D", "h1_Z41", "Z41", 500, 10, 100, "Z41", kPink-3, kBlue+2);
+        h1_Z41_driftcorr = MakeTH1(dir_id_s2s4_1d, "D", "h1_Z_driftcorr", "Z41 DriftCorr", 500, 10, 100, "Z41", kPink-3, kBlue+2);
+        h1_Z42 = MakeTH1(dir_id_s2s4_1d, "D", "h1_Z42", "Z42", 500, 10, 100, "Z42", kPink-3, kBlue+2);
+        h1_Z43 = MakeTH1(dir_id_s2s4_1d, "D", "h1_Z43", "Z43", 500, 10, 100, "Z43", kPink-3, kBlue+2);
+        h1_dEdegZ41 = MakeTH1(dir_id_s2s4_1d, "D", "h1_dEdegZ41", "dE in S2 degrader", 1000, 0.0, 1000., "dEdegZ41", kPink-3, kBlue+2);
+
+        // Gated
+        if (num_frs_gates > 0)
+        {
+            dir_id_s1s2_gated = dir_id_s1s2->mkdir("Gated");
+            dir_id_s1s2_gates = new TDirectory*[num_frs_gates];
+            dir_id_s2s4_gated = dir_id_s2s4->mkdir("Gated");
+            dir_id_s2s4_gates = new TDirectory*[num_frs_gates];
+            dir_id_sequential = dir_id->mkdir("Sequential");
+            dir_id_sequential_gates = new TDirectory*[num_frs_gates];
+
+            // **** CEJ: Currently don't actually have any S1S2/TAC combo, add histos in future when desired ****
+
+            // ---- 2D ------
+            // S1S2
+       
+            // S2S4
+            h2_Z41_vs_AoQs2s4_S2S4Gated.resize(num_frs_gates);
+            h2_Z41_vs_Z42_S2S4Gated.resize(num_frs_gates);
+            h2_x2_vs_AoQs2s4_S2S4Gated.resize(num_frs_gates);
+            h2_x4_vs_AoQs2s4_S2S4Gated.resize(num_frs_gates);
+            h2_dEdegoQ_vs_Z41_S2S4Gated.resize(num_frs_gates);
+            h2_dEdegZ41_vs_Z41_S2S4Gated.resize(num_frs_gates);
+
+            // Sequential
+
+
+            // ------ 1D --------
+            // S2S4
+            h1_beta_s2s4_S2S4Gated.resize(num_frs_gates);
+            h1_AoQs2s4_S2S4Gated.resize(num_frs_gates);
+            h1_Z41_S2S4Gated.resize(num_frs_gates);
+            h1_Z42_S2S4Gated.resize(num_frs_gates);
+     
+
+            for (int gate = 0; gate < num_frs_gates; gate++)
+            {
+                // ----- 2D -----
+                // S2S4
+                h2_Z41_vs_AoQs2s4_S2S4Gated[gate] =  MakeTH2(dir_id_s2s4_gates[gate], "I", Form("h2_Z41_vs_AoQs2s4_S2S4Gated_%s", gname), Form("Z41 vs AoQs2s4 - S2S4 Gate: %s", gname), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
+                h2_Z41_vs_Z42_S2S4Gated[gate] = MakeTH2(dir_id_s2s4_gates[gate], "I", Form("h2_Z41_vs_Z42_S2S4Gated_%s", gname), Form("Z41 vs Z42 - S2S4 Gate: %s", gname), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);
+                h2_x2_vs_AoQs2s4_S2S4Gated[gate] = MakeTH2(dir_id_s2s4_gates[gate], "I", Form("h2_x2_vs_AoQs2s4_S2S4Gated_%s", gname), Form("X2 vs AoQs2s4 - S2S4 Gate: %s", gname), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
+                h2_x4_vs_AoQs2s4_S2S4Gated[gate] = MakeTH2(dir_id_s2s4_gates[gate], "I", Form("h2_x4_vs_AoQs2s4_S2S4Gated_%s", gname), Form("X4 vs AoQs2s4 - S2S4 Gate: %s", gname), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
+                h2_dEdegoQ_vs_Z41_S2S4Gated[gate] = MakeTH2(dir_id_s2s4_gates[gate], "I", Form("h2_dEdegoQ_vs_Z41_S2S4Gated_%s", gname), Form("Z41 vs. dE in S2 degrader / Q - S2S4 Gate: %s", gname), 750, id->min_z_plot, id->max_z_plot, 750, 10., 50.);
+                h2_dEdegZ41_vs_Z41_S2S4Gated[gate] = MakeTH2(dir_id_s2s4_gates[gate], "I", Form("h2_dEdegZ41_vs_Z41_S2S4Gated_%s", gname), Form("Z41 vs. dE in S2 degrader - S2S4 Gate: %s", gname), 750, id->min_z_plot, id->max_z_plot, 750, 10., 50.);
+
+                // ---- 1D ----
+                // S2S4
+                h1_beta_s2s4_S2S4Gated[gate] = MakeTH1(dir_id_s2s4_gates[gate], "D", Form("h1_beta_s2s4_S2S4Gated_%s", gname), Form("Beta (S2-S4) - S2S4 Gate: %s", gname), 500, 0.0, 1.0, "Beta (S2-S4)", kPink-3, kBlue+2);
+                h1_AoQs2s4_S2S4Gated[gate] = MakeTH1(dir_id_s2s4_gates[gate], "D", Form("h1_AoQs2s4_S2S4Gated_%s", gname), Form("A/Q (S2-S4) - S2S4 Gate: %s", gname), 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2);
+                h1_Z41_S2S4Gated[gate] = MakeTH1(dir_id_s2s4_gates[gate], "D", Form("h1_Z41_S2S4Gated_%s", gname), Form("Z41 - S2S4 Gate: %s", gname), 1000, 0, 100, "Z41", kPink-3, kBlue+2);
+                h1_Z42_S2S4Gated[gate] = MakeTH1(dir_id_s2s4_gates[gate], "D", Form("h1_Z42_S2S4Gated_%s", gname), Form("Z42 - S2S4 Gate: %s", gname), 1000, 0, 100, "Z42", kPink-3, kBlue+2);
+
+            }
+        }
+    }
+
     
+    // :::: ID_MHTDC ::::
+    if (frs_config->plot_mhtdc)
+    {
+        dir_mhtdc = dir_frs->mkdir("ID_MHTDC");
+        dir_mhtdc_s1s2 = dir_mhtdc->mkdir("S1S2");
+        dir_mhtdc_s1s2_1d = dir_mhtdc_s1s2->mkdir("1D");
+        dir_mhtdc_s1s2_2d = dir_mhtdc_s1s2->mkdir("2D");
+        dir_mhtdc_s2s4 = dir_mhtdc->mkdir("S2S4");
+        dir_mhtdc_s2s4_1d = dir_mhtdc_s2s4->mkdir("1D");
+        dir_mhtdc_s2s4_2d = dir_mhtdc_s2s4->mkdir("2D");
+
+        // ------ 2D ------ 
+        // S1S2
+        h2_Z21_vs_AoQs1s2_mhtdc = MakeTH2(dir_mhtdc_s1s2_2d, "D", "h2_Z21_vs_AoQs1s2_mhtdc", "Z21 vs. A/Q (S1-S2) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S1-S2)", "Z (MUSIC 21)");
+        h2_Z21_vs_AoQs1s2_corr_mhtdc = MakeTH2(dir_mhtdc_s1s2_2d, "D", "h2_Z21_vs_AoQs1s2_corr_mhtdc", "Z21 vs. A/Q corr (S1-S2) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z,"A/Q (S1-S2)", "Z (MUSIC 21)");
+        h2_Z21_vs_Z22_mhtdc = MakeTH2(dir_mhtdc_s1s2_2d, "D", "h2_Z21_vs_Z22_mhtdc", "Z21 vs. Z22 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z (MUSIC 21)", "Z (MUSIC 22)");
+        h2_x2_vs_AoQs1s2_mhtdc = MakeTH2(dir_mhtdc_s1s2_2d, "D", "h2_x2_vs_AoQs1s2_mhtdc", "x2 vs. A/Q (S1-S2) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q (S1-S2)", "S2 x-position");
+        h2_a2_vs_AoQs1s2_mhtdc = MakeTH2(dir_mhtdc_s1s2_2d, "D", "h2_a2_vs_AoQs1s2_mhtdc", "A/Q (S1-S2) vs. AngleX (S2) (MHTDC)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a2, frs_config->fMax_a2, "A/Q (S1-S2)", "AngleX (S2)");
+        h2_Z21_vs_dE21_mhtdc = MakeTH2(dir_mhtdc_s1s2_2d, "D", "h2_Z21_vs_dE21_mhtdc", "Z21 vs. dE in MUSIC 21 (MHTDC)", 400, frs_config->fMin_Z, frs_config->fMax_Z, 250, frs_config->fMin_dE_music41, frs_config->fMax_dE_music41, "Z (MUSIC 21)", "dE in MUSIC 21");
+        h2_x2_vs_Z21_mhtdc = MakeTH2(dir_mhtdc_s1s2_2d, "D", "h2_x2_vs_Z21_mhtdc", "x2 vs. Z21 (MHTDC)", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x2, frs_config->fMax_x2, "Z (MUSIC 21)", "S2 x-position");
+        h2_Z21_vs_Sc21E_mhtdc = MakeTH2(dir_mhtdc_s1s2_2d, "D", "h2_Z21_vs_Sc21E_mhtdc", "Z21 vs. SCI 21 E (MHTDC)", 300, frs_config->fMin_Z, frs_config->fMax_Z, 400, 0., 4000., "Z (MUSIC 21)", "SCI 21 E");
+
+        // S2S4
+        h2_Z41_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_Z41_vs_AoQs2s4_mhtdc", "Z41 vs. A/Q (S2-S4) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S2-S4)", "Z41");
+        h2_Z41_vs_AoQs2s4_corr_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_Z41_vs_AoQs2s4_corr_mhtdc", "Z41 vs. A/Q corr (S2-S4) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z,"A/Q (S2-S4)", "Z41");
+        h2_Z41_vs_Z42_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_Z41_vs_Z42_mhtdc", "Z41 vs. Z42 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z41", "Z42");        
+        h2_Z21_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_Z21_vs_Z41_mhtdc", "Z21 (MHTDC) vs. Z41 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z (MUSIC 21)", "Z (MUSIC 41)");
+        h2_Z41_vs_AoQs2s4_Zsame_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_Z41_vs_AoQs2s4_Zsame_mhtdc", "Z41 vs. A/Q (S2-S4) [ABS (Z41 - Z42) < 0.4] (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S2-S4)", "Z41");
+        h2_x2_vs_AoQs2s4_Zsame_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_x2_vs_AoQs2s4_Zsame_mhtdc", "x2 vs A/Q (S2-S4) - [ABS(Z41 - Z42) < 0.4] (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q (S2-S4)", "S2 x-position");
+        h2_x4_vs_AoQs2s4_Zsame_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_x4_vs_AoQs2s4_Zsame_mhtdc", "x4 vs A/Q (S2-S4) - [ABS(Z41 - Z42) < 0.4] (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q (S2-S4)", "S4 x-position");
+        h2_x2_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_x2_vs_AoQs2s4_mhtdc", "x2 vs. A/Q (S2-S4) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q (S2-S4)", "S2 x-position");
+        h2_x4_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_x4_vs_AoQs2s4_mhtdc", "x4 vs. A/Q (S2-S4) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q (S2-S4)", "S4 x-position");
+        h2_dEdegoQ_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_dEdegoQ_vs_Z41_mhtdc", "dE in S2 degrader / Q vs. Z41 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ, "dE in S2 degrader / Q", "Z41");
+        h2_dEdegZ41_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_dEdegZ41_vs_Z41_mhtdc", "dE in S2 degrader vs. Z41 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, frs_config->fMin_dE, frs_config->fMax_dE, "dE in S2 degrader", "Z41");
+        h2_a2_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_a2_vs_AoQs2s4_mhtdc", "A/Q (S2-S4) vs. AngleX (S2) (MHTDC)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a2, frs_config->fMax_a2, "A/Q (S2-S4)", "AngleX (S2)");
+        h2_a4_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_a4_vs_AoQs2s4_mhtdc", "A/Q (S2-S4) vs. AngleX (S4) (MHTDC)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a4, frs_config->fMax_a4, "A/Q (S2-S4)", "AngleX (S4)");
+        h2_Z41_vs_dE42_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_Z41_vs_dE42_mhtdc", "Z41 vs. dE in MUSIC 42 (MHTDC)", 400, frs_config->fMin_Z, frs_config->fMax_Z, 250, frs_config->fMin_dE_music42, frs_config->fMax_dE_music42, "Z41", "dE in MUSIC 2");
+        h2_SC41dE_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_SC41dE_vs_AoQs2s4_mhtdc", "A/Q (S2-S4) vs. dE in SC41 (MHTDC)", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000., "A/Q (S2-S4)", "dE in SC41");
+        h2_SC42dE_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_SC42dE_vs_AoQs2s4_mhtdc", "A/Q (S2-S4) vs. dE in SC42 (MHTDC)", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000., "A/Q (S2-S4)", "dE in SC42");
+        h2_SC41dE_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_SC41dE_vs_Z41_mhtdc", "Z41 vs. dE in SC41 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, 0., 4000., "Z41", "dE in SC41");
+        h2_SC42dE_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_SC42dE_vs_Z41_mhtdc", "Z41 vs. dE in SC42 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, 0., 4000., "Z41", "dE in SC42");
+        h2_x2_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_x2_vs_Z41_mhtdc", "x2 vs. Z41 (MHTDC)", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x2, frs_config->fMax_x2, "Z41", "S2 x-position");
+        h2_x4_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_x4_vs_Z41_mhtdc", "x4 vs. Z41 (MHTDC)", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x4, frs_config->fMax_x4, "Z41", "S4 x-position");
+        h2_Z41_vs_Sc21E_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_Z41_vs_Sc21E_mhtdc", "Z41 vs. SQRT(Sc21_L * Sc21_R) (MHTDC)", 300, frs_config->fMin_Z, frs_config->fMax_Z, 400, 0., 4000., "Z41)", "Sc21 E");
+
+        // ----- 1D ------ 
+        h1_beta_s1s2_mhtdc = MakeTH1(dir_mhtdc_s1s2_1d, "D", "h1_beta_s1s2_mhtdc", "Beta (S1-S2) (MHTDC)", 500, 0.0, 1.0, "Beta (S1-S2)", kPink-3, kBlue+2);
+        h1_AoQs1s2_mhtdc = MakeTH1(dir_mhtdc_s1s2_1d, "D", "h1_AoQs1s2_mhtdc", "A/Q (S1-S2) (MHTDC)", 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2);
+        h1_AoQs1s2_corr_mhtdc = MakeTH1(dir_mhtdc_s1s2_1d, "D", "h1_AoQs1s2_corr_mhtdc", "A/Q corr (S1-S2) (MHTDC)", 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2);
+        h1_Z21_mhtdc = MakeTH1(dir_mhtdc_s1s2_1d, "D", "h1_Z21_mhtdc", "Z21 (MHTDC)", 1000, 0, 100, "Z21", kPink-3, kBlue+2);
+        h1_Z22_mhtdc = MakeTH1(dir_mhtdc_s1s2_1d, "D", "h1_Z22_mhtdc", "Z22 (MHTDC)", 1000, 0, 100, "Z22", kPink-3, kBlue+2);
+
+        h1_beta_s2s4_mhtdc = MakeTH1(dir_mhtdc_s2s4_1d, "D", "h1_beta_s2s4_mhtdc", "Beta (S2-S4) (MHTDC)", 500, 0.0, 1.0, "Beta (S2-S4)", kPink-3, kBlue+2);
+        h1_AoQs2s4_mhtdc = MakeTH1(dir_mhtdc_s2s4_1d, "D", "h1_AoQs2s4_mhtdc", "A/Q (S2-S4) (MHTDC)", 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2);
+        h1_AoQs2s4_corr_mhtdc = MakeTH1(dir_mhtdc_s2s4_1d, "D", "h1_AoQs2s4_corr_mhtdc", "A/Q corr (S2-S4) (MHTDC)", 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2);
+        h1_Z41_mhtdc = MakeTH1(dir_mhtdc_s2s4_1d, "D", "h1_Z41_mhtdc", "Z41 (MHTDC)", 1000, 0, 100, "Z41", kPink-3, kBlue+2);
+        h1_Z42_mhtdc = MakeTH1(dir_mhtdc_s2s4_1d, "D", "h1_Z42_mhtdc", "Z42 (MHTDC)", 1000, 0, 100, "Z42", kPink-3, kBlue+2);
+        h1_Z43_mhtdc = MakeTH1(dir_mhtdc_s2s4_1d, "D", "h1_Z43_mhtdc", "Z43 (MHTDC)", 1000, 0, 100, "Z43", kPink-3, kBlue+2);
+        h1_dEdegZ41_mhtdc = MakeTH1(dir_mhtdc_s2s4_1d, "D", "h1_dEdegZ41_mhtdc", "dEZ41 in S2 degrader (MHTDC)", 1000, 0, 100, "dEZ41", kPink-3, kBlue+2);
+
+        // Gated
+        if (num_frs_gates)
+        {
+            dir_mhtdc_s1s2_gated = dir_mhtdc_s1s2->mkdir("Gated");
+            dir_mhtdc_s1s2_gates = new TDirectory*[num_frs_gates];
+            dir_mhtdc_s2s4_gated = dir_mhtdc_s2s4->mkdir("Gated");
+            dir_mhtdc_s2s4_gates = new TDirectory*[num_frs_gates];
+            dir_mhtdc_sequential = dir_mhtdc->mkdir("Sequential");
+            dir_mhtdc_sequential_gates = new TDirectory*[num_frs_gates];
+
+            // S1S2
+            h2_Z21_vs_AoQs1s2_S1S2Gated_mhtdc.resize(num_frs_gates);
+            h2_x1_vs_AoQs1s2_S1S2Gated_mhtdc.resize(num_frs_gates);
+            h2_x2_vs_AoQs1s2_S1S2Gated_mhtdc.resize(num_frs_gates);
+            h2_Z41_vs_AoQs2s4_S1S2Gated_mhtdc.resize(num_frs_gates);
+            h2_Z41_vs_Z42_S1S2Gated_mhtdc.resize(num_frs_gates);
+            h2_x2_vs_AoQs2s4_S1S2Gated_mhtdc.resize(num_frs_gates);
+            h2_x4_vs_AoQs2s4_S1S2Gated_mhtdc.resize(num_frs_gates);
+            h2_dedegoQ_vs_Z41_S1S2Gated_mhtdc.resize(num_frs_gates);
+            h2_dEdegZ41_vs_Z41_S1S2Gated_mhtdc.resize(num_frs_gates);
+
+            // S2S4
+            h2_Z21_vs_AoQs1s2_S2S4Gated_mhtdc.resize(num_frs_gates);
+            h2_x1_vs_AoQs1s2_S2S4Gated_mhtdc.resize(num_frs_gates);
+            h2_x2_vs_AoQs1s2_S2S4Gated_mhtdc.resize(num_frs_gates);
+            h2_Z41_vs_AoQs2s4_S2S4Gated_mhtdc.resize(num_frs_gates);
+            h2_Z41_vs_Z42_S2S4Gated_mhtdc.resize(num_frs_gates);
+            h2_x2_vs_AoQs2s4_S2S4Gated_mhtdc.resize(num_frs_gates);
+            h2_x4_vs_AoQs2s4_S2S4Gated_mhtdc.resize(num_frs_gates);
+            h2_dEdegoQ_vs_Z41_S2S4Gated_mhtdc.resize(num_frs_gates);
+            h2_dEdegZ41_vs_Z41_S2S4Gated_mhtdc.resize(num_frs_gates);
+
+            // Sequential
+            h2_Z21_Z41_S1S2S4Gated_mhtdc.resize(num_frs_gates);
+            h2_Z21_vs_AoQs1s2_S1S2S4Gated_mhtdc.resize(num_frs_gates);
+            h2_x1_vs_AoQs1s2_S1S2S4Gated_mhtdc.resize(num_frs_gates);
+            h2_x2_vs_AoQs1s2_S1S2S4Gated_mhtdc.resize(num_frs_gates);
+            h2_Z41_vs_AoQs2s4_S1S2S4Gated_mhtdc.resize(num_frs_gates);
+            h2_Z41_vs_Z42_S1S2S4Gated_mhtdc.resize(num_frs_gates);
+            h2_x2_vs_AoQs2s4_S1S2S4Gated_mhtdc.resize(num_frs_gates);
+            h2_x4_vs_AoQs2s4_S1S2S4Gated_mhtdc.resize(num_frs_gates);
+            h2_dEdegoQ_vs_Z41_S1S2S4Gated_mhtdc.resize(num_frs_gates);
+            h2_dEdegZ41_vs_Z41_S1S2S4Gated_mhtdc.resize(num_frs_gates);
+
+            // --- 1D ---- 
+            h1_beta_s1s2_S1S2Gated_mhtdc.resize(num_frs_gates);
+            h1_AoQs1s2_S1S2Gated_mhtdc.resize(num_frs_gates);
+            h1_Z21_S1S2Gated_mhtdc.resize(num_frs_gates);
+            h1_beta_s2s4_S1S2Gated_mhtdc.resize(num_frs_gates);
+            h1_AoQs2s4_S1S2Gated_mhtdc.resize(num_frs_gates);
+            h1_Z41_S1S2Gated_mhtdc.resize(num_frs_gates);
+            h1_Z42_S1S2Gated_mhtdc.resize(num_frs_gates);
+
+            h1_beta_s1s2_S2S4Gated_mhtdc.resize(num_frs_gates);
+            h1_AoQs1s2_S2S4Gated_mhtdc.resize(num_frs_gates);
+            h1_Z21_S2S4Gated_mhtdc.resize(num_frs_gates);
+            h1_beta_s2s4_S2S4Gated_mhtdc.resize(num_frs_gates);
+            h1_AoQs2s4_S2S4Gated_mhtdc.resize(num_frs_gates);
+            h1_Z41_S2S4Gated_mhtdc.resize(num_frs_gates);
+            h1_Z42_S2S4Gated_mhtdc.resize(num_frs_gates);
+
+            h1_beta_s1s2_S1S2S4Gated_mhtdc.resize(num_frs_gates);
+            h1_AoQs1s2_S1S2S4Gated_mhtdc.resize(num_frs_gates);
+            h1_Z21_S1S2S4Gated_mhtdc.resize(num_frs_gates);
+            h1_beta_s2s4_S1S2S4Gated_mhtdc.resize(num_frs_gates);
+            h1_AoQs2s4_S1S2S4Gated_mhtdc.resize(num_frs_gates);
+            h1_Z41_S1S2S4Gated_mhtdc.resize(num_frs_gates);
+            h1_Z42_S1S2S4Gated_mhtdc.resize(num_frs_gates);
+
+            // --- Rates/Ratio ---- 
+            h1_ratio_S2_S4_Gates_mhtdc.resize(num_frs_gates);
+            h1_integral_S2_Gates_mhtdc.resize(num_frs_gates);
+            h1_integral_S4_Gates_mhtdc.resize(num_frs_gates);
+
+        
+            for (int gate = 0; gate < num_frs_gates; gate++)
+            {
+                TString gname = "" + FrsGates.at(gate)->GetName();
+                dir_mhtdc_s1s2_gates[gate] = dir_mhtdc_s1s2_gated->mkdir(gname);
+                dir_mhtdc_s2s4_gates[gate] = dir_mhtdc_s2s4_gated->mkdir(gname);
+                dir_mhtdc_sequential_gate[gate] = dir_mhtdc_sequential->mkdir(gname);
+                dir_mhtdc_sequential_rates[gate] = dir_mhtdc_sequential_gates[gate]->mkdir("Rates");
+                
+                // ----- 2D ------
+                // S1S2
+                h2_Z21_vs_AoQs1s2_S1S2Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s1s2_gates[gate], "I", Form("h2_Z21_vs_AoQs1s2_S1S2Gated_mhtdc_%s", gname), Form("Z21 vs AoQs1s2 - S1S2 Gate: %s", gname), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
+                h2_x1_vs_AoQs1s2_S1S2Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s1s2_gates[gate], "I", Form("h2_x1_vs_AoQs1s2_S1S2Gated_mhtdc_%s", gname), Form("X1 vs AoQs1s2 - S1S2 Gate: %s", gname), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
+                h2_x2_vs_AoQs1s2_S1S2Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s1s2_gates[gate], "I", Form("h2_x2_vs_AoQs1s2_S1S2Gated_mhtdc_%s", gname), Form("X2 vs AoQs1s2 - S1S2 Gate: %s", gname), 50, id->min_aoq_plot, 3.0, 200, -100., 100.);
+                h2_Z41_vs_AoQs2s4_S1S2Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s1s2_gates[gate], "I", Form("h2_Z41_vs_AoQs2s4_S1S2Gated_mhtdc_%s", gname), Form("Z41 vs AoQs2s4 - S1S2 Gate: %s", gname), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
+                h2_Z41_vs_Z42_S1S2Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s1s2_gates[gate], "I", Form("h2_Z41_vs_Z42_S1S2Gated_mhtdc_%s", gname), Form("Z41 vs Z42 - S1S2 Gate: %s", gname), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);
+                h2_x2_vs_AoQs2s4_S1S2Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s1s2_gates[gate], "I", Form("h2_x2_vs_AoQs2s4_S1S2Gated_mhtdc_%s", gname), Form("X2 vs AoQs2s4 - S1S2 Gate: %s", gname), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
+                h2_x4_vs_AoQs2s4_S1S2Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s1s2_gates[gate], "I", Form("h2_x4_vs_AoQs2s4_S1S2Gated_mhtdc_%s", gname), Form("X4 vs AoQs2s4 - S1S2 Gate: %s", gname), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
+                h2_dEdegoQ_vs_Z41_S1S2Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s1s2_gates[gate], "I", Form("h2_dEdegoQ_vs_Z41_S1S2Gated_mhtdc_%s", gname), Form("Z41 vs. dE in S2 degrader / Q - S1S2 Gate: %s", gname), 750, id->min_z_plot, id->max_z_plot, 750, 10., 50.);
+                h2_dEdegZ41_vs_Z41_S1S2Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s1s2_gates[gate], "I", Form("h2_dEdegZ41_vs_Z41_S1S2Gated_mhtdc_%s", gname), Form("Z41 vs. dE in S2 degrader - S1S2 Gate: %s", gname), 750, id->min_z_plot, id->max_z_plot, 750, 10., 50.);
+
+                // S2S4
+                h2_Z21_vs_AoQs1s2_S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s2s4_gates[gate], "I", Form("h2_Z21_vs_AoQs1s2_S2S4Gated_mhtdc_%s", gname), Form("Z21 vs AoQs1s2 - S2S4 Gate: %s", gname), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
+                h2_x1_vs_AoQs1s2_S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s2s4_gates[gate], "I", Form("h2_x1_vs_AoQs1s2_S2S4Gated_mhtdc_%s", gname), Form("X1 vs AoQs1s2 - S2S4 Gate: %s", gname), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
+                h2_x2_vs_AoQs1s2_S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s2s4_gates[gate], "I", Form("h2_x2_vs_AoQs1s2_S2S4Gated_mhtdc_%s", gname), Form("X2 vs AoQs1s2 - S2S4 Gate: %s", gname), 50, id->min_aoq_plot, 3.0, 200, -100., 100.);
+                h2_Z41_vs_AoQs2s4_S2S4Gated_mhtdc[gate] =  MakeTH2(dir_mhtdc_s2s4_gates[gate], "I", Form("h2_Z41_vs_AoQs2s4_S2S4Gated_mhtdc_%s", gname), Form("Z41 vs AoQs2s4 - S2S4 Gate: %s", gname), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
+                h2_Z41_vs_Z42_S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s2s4_gates[gate], "I", Form("h2_Z41_vs_Z42_S2S4Gated_mhtdc_%s", gname), Form("Z41 vs Z42 - S2S4 Gate: %s", gname), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);
+                h2_x2_vs_AoQs2s4_S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s2s4_gates[gate], "I", Form("h2_x2_vs_AoQs2s4_S2S4Gated_mhtdc_%s", gname), Form("X2 vs AoQs2s4 - S2S4 Gate: %s", gname), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
+                h2_x4_vs_AoQs2s4_S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s2s4_gates[gate], "I", Form("h2_x4_vs_AoQs2s4_S2S4Gated_mhtdc_%s", gname), Form("X4 vs AoQs2s4 - S2S4 Gate: %s", gname), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
+                h2_dEdegoQ_vs_Z41_S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s2s4_gates[gate], "I", Form("h2_dEdegoQ_vs_Z41_S2S4Gated_mhtdc_%s", gname), Form("Z41 vs. dE in S2 degrader / Q - S2S4 Gate: %s", gname), 750, id->min_z_plot, id->max_z_plot, 750, 10., 50.);
+                h2_dEdegZ41_vs_Z41_S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s2s4_gates[gate], "I", Form("h2_dEdegZ41_vs_Z41_S2S4Gated_mhtdc_%s", gname), Form("Z41 vs. dE in S2 degrader - S2S4 Gate: %s", gname), 750, id->min_z_plot, id->max_z_plot, 750, 10., 50.);
+
+                // Sequential
+                h2_Z21_Z41_S1S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_Z21_Z41_S1S2S4Gated_mhtdc_%s", gname), Form("Z21 vs Z41 - S1-S2-S4 Gate: %s", gname), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);
+                h2_Z21_vs_AoQs1s2_S1S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_Z21_vs_AoQs1s2_S1S2S4Gated_mhtdc_%s", gname), Form("Z21 vs AoQs1s2 - S1-S2-S4 Gate: %s", gname), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
+                h2_x1_vs_AoQs1s2_S1S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_x1_vs_AoQs1s2_S1S2S4Gated_mhtdc_%s", gname), Form("X1 vs AoQs1s2 - S1-S2-S4 Gate: %s", gname), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
+                h2_x2_vs_AoQs1s2_S1S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_x2_vs_AoQs1s2_S1S2S4Gated_mhtdc_%s", gname), Form("X2 vs AoQs1s2 - S1-S2-S4 Gate: %s", gname), 50, id->min_aoq_plot, 3.0, 200, -100., 100.);
+                h2_Z41_vs_AoQs2s4_S1S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_Z41_vs_AoQs2s4_S1S2S4Gated_mhtdc_%s", gname), Form("Z41 vs AoQs2s4 - S1-S2-S4 Gate: %s", gname), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
+                h2_Z41_vs_Z42_S1S2S4Gated_mhtdc[gate] =  MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_Z41_vs_Z42_S1S2S4Gated_mhtdc_%s", gname), Form("Z41 vs Z42 - S1-S2-S4 Gate: %s", gname), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);
+                h2_x2_vs_AoQs2s4_S1S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_x2_vs_AoQs2s4_S1S2S4Gated_mhtdc_%s", gname), Form("X2 vs AoQs2s4 - S1-S2-S4 Gate: %s", gname), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
+                h2_x4_vs_AoQs2s4_S1S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_x4_vs_AoQs2s4_S1S2S4Gated_mhtdc_%s", gname), Form("X4 vs AoQs2s4 - S1-S2-S4 Gate: %s", gname), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
+                h2_dEdegoQ_vs_Z41_S1S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_dEdegoQ_vs_Z41_S1S2S4Gated_mhtdc_%s", gname), Form("Z41 vs. dE in S2 degrader / Q - S1-S2-S4 Gate: %s", gname), 750, id->min_z_plot, id->max_z_plot, 750, 10., 50.);
+                h2_dEdegZ41_vs_Z41_S1S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_dEdegZ41_vs_Z41_S1S2S4Gated_mhtdc_%s", gname), Form("Z41 vs. dE in S2 degrader - S1-S2-S4 Gate: %s", gname), 750, id->min_z_plot, id->max_z_plot, 750, 10., 50.);
+
+                // ----- 1D ------ 
+                h1_beta_s1s2_S1S2Gated_mhtdc[gate] = MakeTH1(dir_mhtdc_s1s2_gates[gate], "D", Form("h1_beta_s1s2_S1S2Gated_mhtdc_%s",gname), Form("Beta (S1-S2) (MHTDC) - S1S2 Gate: %s", gname), 500, 0.0, 1.0, "Beta (S1-S2)", kPink-3, kBlue+2);
+                h1_AoQs1s2_S1S2Gated_mhtdc[gate] = MakeTH1(dir_mhtdc_s1s2_gates[gate], "D", Form("h1_AoQs1s2_S1S2Gated_mhtdc_%s", gname), Form("A/Q (S1-S2) (MHTDC) - S1S2 Gate: %s", gname), 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2);
+                h1_Z21_S1S2Gated_mhtdc[gate] = MakeTH1(dir_mhtdc_s1s2_gates[gate], "D", Form("h1_Z21_S1S2Gated_mhtdc_%s", gname), Form("Z21 (MHTDC) - S1S2 Gate: %s", gname), 1000, 0, 100, "Z21", kPink-3, kBlue+2);
+                h1_beta_s2s4_S1S2Gated_mhtdc[gate] = MakeTH1(dir_mhtdc_s1s2_gates[gate], "D", Form("h1_beta_s2s4_S1S2Gated_mhtdc_%s", gname), Form("Beta (S2-S4) (MHTDC) - S1S2 Gate: %s", gname), 500, 0.0, 1.0, "Beta (S2-S4)", kPink-3, kBlue+2);
+                h1_AoQs2s4_S1S2Gated_mhtdc[gate] =  MakeTH1(dir_mhtdc_s1s2_gates[gate], "D", Form("h1_AoQs2s4_S1S2Gated_mhtdc_%s", gname), Form("A/Q (S2-S4) (MHTDC) - S1S2 Gate: %s", gname), 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2);
+                h1_Z41_S1S2Gated_mhtdc[gate] = MakeTH1(dir_mhtdc_s1s2_gates[gate], "D", Form("h1_Z41_S1S2Gated_mhtdc_%s", gname), Form("Z41 (MHTDC) - S1S2 Gate: %s", gname), 1000, 0, 100, "Z41", kPink-3, kBlue+2);
+                h1_Z42_S1S2Gated_mhtdc[gate] = MakeTH1(dir_mhtdc_s1s2_gates[gate], "D", Form("h1_Z42_S1S2Gated_mhtdc_%s", gname), Form("Z42 (MHTDC) - S1S2 Gate: %s", gname), 1000, 0, 100, "Z42", kPink-3, kBlue+2);
+
+                h1_beta_s1s2_S2S4Gated_mhtdc[gate] = MakeTH1(dir_mhtdc_s2s4_gates[gate], "D", Form("h1_beta_s1s2_S2S4Gated_mhtdc_%s",gname), Form("Beta (S1-S2) (MHTDC) - S2S4 Gate: %s", gname), 500, 0.0, 1.0, "Beta (S1-S2)", kPink-3, kBlue+2);
+                h1_AoQs1s2_S2S4Gated_mhtdc[gate] = MakeTH1(dir_mhtdc_s2s4_gates[gate], "D", Form("h1_AoQs1s2_S2S4Gated_mhtdc_%s", gname), Form("A/Q (S1-S2) (MHTDC) - S2S4 Gate: %s", gname), 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2);
+                h1_Z21_S2S4Gated_mhtdc[gate] = MakeTH1(dir_mhtdc_s2s4_gates[gate], "D", Form("h1_Z21_S2S4Gated_mhtdc_%s", gname), Form("Z21 (MHTDC) - S2S4 Gate: %s", gname), 1000, 0, 100, "Z21", kPink-3, kBlue+2);
+                h1_beta_s2s4_S2S4Gated_mhtdc[gate] = MakeTH1(dir_mhtdc_s2s4_gates[gate], "D", Form("h1_beta_s2s4_S2S4Gated_mhtdc_%s", gname), Form("Beta (S2-S4) (MHTDC) - S2S4 Gate: %s", gname), 500, 0.0, 1.0, "Beta (S2-S4)", kPink-3, kBlue+2);
+                h1_AoQs2s4_S2S4Gated_mhtdc[gate] = MakeTH1(dir_mhtdc_s2s4_gates[gate], "D", Form("h1_AoQs2s4_S2S4Gated_mhtdc_%s", gname), Form("A/Q (S2-S4) (MHTDC) - S2S4 Gate: %s", gname), 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2);
+                h1_Z41_S2S4Gated_mhtdc[gate] = MakeTH1(dir_mhtdc_s2s4_gates[gate], "D", Form("h1_Z41_S2S4Gated_mhtdc_%s", gname), Form("Z41 (MHTDC) - S2S4 Gate: %s", gname), 1000, 0, 100, "Z41", kPink-3, kBlue+2);
+                h1_Z42_S2S4Gated_mhtdc[gate] = MakeTH1(dir_mhtdc_s2s4_gates[gate], "D", Form("h1_Z42_S2S4Gated_mhtdc_%s", gname), Form("Z42 (MHTDC) - S2S4 Gate: %s", gname), 1000, 0, 100, "Z42", kPink-3, kBlue+2);
+
+                h1_beta_s1s2_S1S2S4Gated_mhtdc[gate] =  MakeTH1(dir_mhtdc_sequential_gates[gate], "D", Form("h1_beta_s1s2_S1S2S4Gated_mhtdc_%s",gname), Form("Beta (S1-S2) (MHTDC) - S1-S2-S4 Gate: %s", gname), 500, 0.0, 1.0, "Beta (S1-S2)", kPink-3, kBlue+2);
+                h1_AoQs1s2_S1S2S4Gated_mhtdc[gate] = MakeTH1(dir_mhtdc_sequential_gates[gate], "D", Form("h1_AoQs1s2_S1S2S4Gated_mhtdc_%s", gname), Form("A/Q (S1-S2) (MHTDC) - S1-S2-S4 Gate: %s", gname), 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2);
+                h1_Z21_S1S2S4Gated_mhtdc[gate] = MakeTH1(dir_mhtdc_sequential_gates[gate], "D", Form("h1_Z21_S1S2S4Gated_mhtdc_%s", gname), Form("Z21 (MHTDC) - S1-S2-S4 Gate: %s", gname), 1000, 0, 100, "Z21", kPink-3, kBlue+2);
+                h1_beta_s2s4_S1S2S4Gated_mhtdc[gate] = MakeTH1(dir_mhtdc_sequential_gates[gate], "D", Form("h1_beta_s2s4_S1S2S4Gated_mhtdc_%s", gname), Form("Beta (S2-S4) (MHTDC) - S1-S2-S4 Gate: %s", gname), 500, 0.0, 1.0, "Beta (S2-S4)", kPink-3, kBlue+2);
+                h1_AoQs2s4_S1S2S4Gated_mhtdc[gate] = MakeTH1(dir_mhtdc_sequential_gates[gate], "D", Form("h1_AoQs2s4_S1S2S4Gated_mhtdc_%s", gname), Form("A/Q (S2-S4) (MHTDC) - S1-S2-S4 Gate: %s", gname), 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2);
+                h1_Z41_S1S2S4Gated_mhtdc = MakeTH1(dir_mhtdc_sequential_gates[gate], "D", Form("h1_Z41_S1S2S4Gated_mhtdc_%s", gname), Form("Z41 (MHTDC) - S1-S2-S4 Gate: %s", gname), 1000, 0, 100, "Z41", kPink-3, kBlue+2);
+                h1_Z42_S1S2S4Gated_mhtdc = MakeTH1(dir_mhtdc_sequential_gates[gate], "D", Form("h1_Z42_S1S2S4Gated_mhtdc_%s", gname), Form("Z42 (MHTDC) - S1-S2-S4 Gate: %s", gname), 1000, 0, 100, "Z42", kPink-3, kBlue+2);
+
+                // --- Rates/Ratio ---- 
+                h1_ratio_S2_S4_Gates_mhtdc[gate] = MakeTH1(dir_mhtdc_sequential_rates[gate], "I", Form("h1_ratio_S2_S4_Gates_mhtdc_%s", gname), Form("Ratio S2 / S4 (*1000) - S1-S2-S4 Gate: %s", gname), 1801, 0, 1800, "Time [s]", kRed-3, kBlack);
+                h1_integral_S2_Gates_mhtdc[gate] = MakeTH1(dir_mhtdc_sequential_rates[gate], "I", Form("h1_integral_S2_Gates_mhtdc_%s", gname), Form("S1S2 PID Integral - S1S2 Gate: %s", gname), 1801, 0, 1800, "Time [s]", kRed-3, kBlack);
+                h1_integral_S4_Gates_mhtdc[gate] = MakeTH1(dir_mhtdc_sequential_rates[gate], "I", Form("h1_integral_S4_Gates_mhtdc_%s", gname), Form("S2S4 PID Integral - S2S4 Gate: %s", gname), 1801, 0, 1800, "Time [s]", kRed-3, kBlack);
+
+            }
+        }
+    }
+
+    // :::: SCI :::::: 
+    dir_sci = dir_frs->mkdir("SCI");
+    dir_sci_e = dir_sci->mkdir("E");
+    dir_sci_x = dir_sci->mkdir("X");
+    dir_sci_tof = dir_sci->mkdir("TOF");
+    h1_sci_e_11 = MakeTH1(dir_sci_e, "F", "h1_sci_e_11", "SCI 11 E", 4000, 0.0, 4000.0, "SCI 11 E", kPink-3, kBlue+2);
+    h1_sci_e_21 = MakeTH1(dir_sci_e, "F", "h1_sci_e_21", "SCI 21 E", 4000, 0.0, 4000.0, "SCI 21 E", kPink-3, kBlue+2);
+    h1_sci_e_22 = MakeTH1(dir_sci_e, "F", "h1_sci_e_22", "SCI 22 E", 4000, 0.0, 4000.0, "SCI 22 E", kPink-3, kBlue+2);
+    h1_sci_e_31 = MakeTH1(dir_sci_e, "F", "h1_sci_e_31", "SCI 31 E", 4000, 0.0, 4000.0, "SCI 31 E", kPink-3, kBlue+2);
+    h1_sci_e_41 = MakeTH1(dir_sci_e, "F", "h1_sci_e_41", "SCI 41 E", 4000, 0.0, 4000.0, "SCI 41 E", kPink-3, kBlue+2);
+    h1_sci_e_42 = MakeTH1(dir_sci_e, "F", "h1_sci_e_42", "SCI 42 E", 4000, 0.0, 4000.0, "SCI 42 E", kPink-3, kBlue+2);
+    h1_sci_e_43 = MakeTH1(dir_sci_e, "F", "h1_sci_e_43", "SCI 43 E", 4000, 0.0, 4000.0, "SCI 43 E", kPink-3, kBlue+2);
+    h1_sci_e_81 = MakeTH1(dir_sci_e, "F", "h1_sci_e_81", "SCI 81 E", 4000, 0.0, 4000.0, "SCI 81 E", kPink-3, kBlue+2);
+    h1_sci_x_11 = MakeTH1(dir_sci_x, "F", "h1_sci_x_11", "SCI 11 PosX", 4000, 0.0, 4000.0, "SCI 11 X", kYellow-7, kBlack);
+    h1_sci_x_21 = MakeTH1(dir_sci_x, "F", "h1_sci_x_21", "SCI 21 PosX", 4000, 0.0, 4000.0, "SCI 21 X", kYellow-7, kBlack);
+    h1_sci_x_22 = MakeTH1(dir_sci_x, "F", "h1_sci_x_22", "SCI 22 PosX", 4000, 0.0, 4000.0, "SCI 22 X", kYellow-7, kBlack);
+    h1_sci_x_31 = MakeTH1(dir_sci_x, "F", "h1_sci_x_31", "SCI 31 PosX", 4000, 0.0, 4000.0, "SCI 31 X", kYellow-7, kBlack);
+    h1_sci_x_41 = MakeTH1(dir_sci_x, "F", "h1_sci_x_41", "SCI 41 PosX", 4000, 0.0, 4000.0, "SCI 41 X", kYellow-7, kBlack);
+    h1_sci_x_42 = MakeTH1(dir_sci_x, "F", "h1_sci_x_42", "SCI 42 PosX", 4000, 0.0, 4000.0, "SCI 42 X", kYellow-7, kBlack);
+    h1_sci_x_43 = MakeTH1(dir_sci_x, "F", "h1_sci_x_43", "SCI 43 PosX", 4000, 0.0, 4000.0, "SCI 43 X", kYellow-7, kBlack);
+    h1_sci_x_81 = MakeTH1(dir_sci_x, "F", "h1_sci_x_81", "SCI 81 PosX", 4000, 0.0, 4000.0, "SCI 81 X", kYellow-7, kBlack);
+    h1_sci_tof_11_21 = MakeTH1(dir_sci_tof, "F", "h1_sci_tof_11_21", "SCI TOF 11 - 21", 4000, 0.0, 200000.0, "SCI TOF 11 - 21", kPink-3, kBlue+2);
+    h1_sci_tof_11_21_calib = MakeTH1(dir_sci_tof, "F", "h1_sci_tof_11_21_calib", "SCI TOF 11 - 21 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 11 - 21 (Calib)", kPink-3, kBlue+2);
+    h1_sci_tof_21_41 = MakeTH1(dir_sci_tof, "F", "h1_sci_tof_21_41", "SCI TOF 21 - 41", 4000, 0.0, 200000.0, "SCI TOF 21 - 41", kPink-3, kBlue+2);
+    h1_sci_tof_21_41_calib = MakeTH1(dir_sci_tof, "F", "h1_sci_tof_21_41_calib", "SCI TOF 21 - 41 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 21 - 41 (Calib)", kPink-3, kBlue+2);
+    h1_sci_tof_21_42 = MakeTH1(dir_sci_tof, "F", "h1_sci_tof_21_42", "SCI TOF 21 - 42", 4000, 0.0, 200000.0, "SCI TOF 21 - 42", kPink-3, kBlue+2);
+    h1_sci_tof_21_42_calib = MakeTH1(dir_sci_tof, "F", "h1_sci_tof_21_42_calib", "SCI TOF 21 - 42 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 21 - 42 (Calib)", kPink-3, kBlue+2);
+    h1_sci_tof_21_81 = MakeTH1(dir_sci_tof, "F", "h1_sci_tof_21_81", "SCI TOF 21 - 81", 4000, 0.0, 200000.0, "SCI TOF 21 - 81", kPink-3, kBlue+2);
+    h1_sci_tof_21_81_calib = MakeTH1(dir_sci_tof, "F", "h1_sci_tof_21_81_calib", "SCI TOF 21 - 81 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 21 - 81 (Calib)", kPink-3, kBlue+2);
+    h1_sci_tof_22_41 = MakeTH1(dir_sci_tof, "F", "h1_sci_tof_22_41", "SCI TOF 22 - 41", 4000, 0.0, 200000.0, "SCI TOF 22 - 41", kPink-3, kBlue+2);
+    h1_sci_tof_22_41_calib = MakeTH1(dir_sci_tof, "F", "h1_sci_tof_22_41_calib", "SCI TOF 22 - 41 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 22 - 41 (Calib)", kPink-3, kBlue+2);
+    h1_sci_tof_22_81 = MakeTH1(dir_sci_tof, "F", "h1_sci_tof_22_81", "SCI TOF 22 - 81", 4000, 0.0, 200000.0, "SCI TOF 22 - 81", kPink-3, kBlue+2);
+    h1_sci_tof_22_81_calib = MakeTH1(dir_sci_tof, "F", "h1_sci_tof_22_81_calib", "SCI TOF 22 - 81 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 22 - 81 (Calib)", kPink-3, kBlue+2);
+
+    // :::: MUSIC :::: 
+    dir_music = dir_frs->mkdir("MUSIC");
+    dir_music_e = dir_music->mkdir("E");
+    h1_music21_dE = MakeTH1(dir_music_e, "D", "h1_music21_dE", "Energy loss in MUSIC 21", 1000, 0.0, 4000.0, "dE MUSIC 21", kPink-3, kBlue+2);
+    h1_music22_dE = MakeTH1(dir_music_e, "D", "h1_music22_dE", "Energy loss in MUSIC 22", 1000, 0.0, 4000.0, "dE MUSIC 22", kPink-3, kBlue+2);
+    h1_music21_dE_cor = MakeTH1(dir_music_e, "D", "h1_music21_dE_cor", "Energy loss (cor) in MUSIC 21", 4000, 0.0, 4000.0, "dE (cor) MUSIC 21", kPink-3, kBlue+2);
+    h1_music22_dE_cor = MakeTH1(dir_music_e, "D", "h1_music22_dE_cor", "Energy loss (cor) in MUSIC 22", 4000, 0.0, 4000.0, "dE (cor) MUSIC 22", kPink-3, kBlue+2);
+    h1_music41_dE = MakeTH1(dir_music_e, "D", "h1_music41_dE", "Energy loss in MUSIC 41", 1000, 0.0, 4000.0, "dE MUSIC 41", kPink-3, kBlue+2);
+    h1_music42_dE = MakeTH1(dir_music_e, "D", "h1_music42_dE", "Energy loss in MUSIC 42", 1000, 0.0, 4000.0, "dE MUSIC 42", kPink-3, kBlue+2);
+    h1_music41_dE_cor = MakeTH1(dir_music_e, "D", "h1_music41_dE_cor", "Energy loss (cor) in MUSIC 41", 4000, 0.0, 4000.0, "dE (cor) MUSIC 41", kPink-3, kBlue+2);
+    h1_music42_dE_cor = MakeTH1(dir_music_e, "D", "h1_music42_dE_cor", "Energy loss (cor) in MUSIC 42", 4000, 0.0, 4000.0, "dE (cor) MUSIC 42", kPink-3, kBlue+2);
+
+
+    // ::: Monitors :::::
     if (frs_config->plot_monitors)
     {
         dir_monitors = dir_frs->mkdir("Monitors");
         dir_scalers = dir_monitors->mkdir("Scalers");
         dir_rates = dir_monitors->mkdir("Monitors");
-        dir_drifts = dir_monitors->mkdir("Drifts"); 
-    }
+        dir_drifts = dir_monitors->mkdir("Drifts");
 
-    if (frs_config->plot_tac_1d || frs_config->plot_tac_2d)
-    {
-        dir_tac = dir_frs->mkdir("TAC");
-        dir_tac_S1S2 = dir_tac->mkdir("S1S2");
-        dir_tac_S1S2_1d = dir_tac_S1S2->mkdir("1D_Spectra");
-        dir_tac_S1S2_2d = dir_tac_S1S2->mkdir("2D_PIDs");
-        if (!FrsGates.empty()) dir_tac_S1S2_gated = dir_tac_S1S2->mkdir("Gated");
-        dir_tac_S2S4 = dir_tac->mkdir("S2S4");
-        dir_tac_S2S4_1d = dir_tac_S2S4->mkdir("1D_Spectra");
-        dir_tac_S2S4_2d = dir_tac_S2S4->mkdir("2D_PIDs");
-        if (!FrsGates.empty()) dir_tac_S2S4_gated = dir_tac_S2S4->mkdir("Gated");
-
-    } 
-
-    if (frs_config->plot_mhtdc_1d || frs_config->plot_mhtdc_2d)
-    {
-        dir_mhtdc = dir_frs->mkdir("MHTDC");
-        dir_mhtdc_S1S2 = dir_mhtdc->mkdir("S1S2");
-        dir_mhtdc_S1S2_1d = dir_mhtdc_S1S2->mkdir("1D_Spectra");
-        dir_mhtdc_S1S2_2d = dir_mhtdc_S1S2->mkdir("2D_PIDs");
-        if (!FrsGates.empty()) dir_mhtdc_S1S2_gated = dir_mhtdc_S1S2->mkdir("Gated");
-        dir_mhtdc_S2S4 = dir_mhtdc->mkdir("S2S4");
-        dir_mhtdc_S2S4_1d = dir_mhtdc_S2S4->mkdir("1D_Spectra");
-        dir_mhtdc_S2S4_2d = dir_mhtdc_S2S4->mkdir("2D_PIDs");
-        if (!FrsGates.empty()) dir_mhtdc_S2S4_gated = dir_mhtdc_S2S4->mkdir("Gated");
-        dir_ratio_S2_S4 = dir_mhtdc->mkdir("Ratio_S2_S4");
-    }
-    
-    if (frs_config->plot_monitors) // CEJ: do we need better switches here? i.e. plot_scalers, plot_rates, plot_drifts?
-    {
+        // :::::: Scalers ::::::
         h1_tpat = MakeTH1(dir_scalers, "I", "h1_tpat", "Trigger Pattern", 20, 0, 20, "Trigger Pattern", kRed-3, kBlack);
         for (int i = 0; i < 66; i++) hScaler_per_s[i] = MakeTH1(dir_scalers, "D", Form("hScaler_per_s_%s", frs_config->ScalerName(i).c_str()), Form("Scaler %s per 1s ", frs_config->ScalerName(i).c_str()), 1000, 0., 1000., "Time [s]", kCyan, kViolet);
         for (int i = 0; i < 66; i++) hScaler_per_100ms[i] = MakeTH1(dir_scalers, "D", Form("hScaler_per_100ms_%s", frs_config->ScalerName(i).c_str()), Form("Scaler %s per 0.1s", frs_config->ScalerName(i).c_str()), 4000, 0, 400, "Time [100 ms]", kCyan, kViolet);
         for (int i = 0; i < 66; i++) hScaler_per_spill[i] = MakeTH1(dir_scalers, "D", Form("hScaler_per_spill_%s", frs_config->ScalerName(i).c_str()), Form("Scaler %s per spill ", frs_config->ScalerName(i).c_str()), 1000, 0, 1000, "Spill", kCyan, kViolet);
 
-        // :::::: Rates ::::::: //
+        // :::::: Rates :::::::
         h1_tpc21_rate = MakeTH1(dir_rates, "I", "h1_tpc21_rate", "TPC 21 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
         h1_tpc22_rate = MakeTH1(dir_rates, "I", "h1_tpc22_rate", "TPC 22 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
         h1_tpc23_rate = MakeTH1(dir_rates, "I", "h1_tpc23_rate", "TPC 23 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
@@ -160,7 +564,7 @@ InitStatus FrsNearlineSpectra::Init()
         h1_tpc41_rate = MakeTH1(dir_rates, "I", "h1_tpc41_rate", "TPC 41 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
         h1_tpc42_rate = MakeTH1(dir_rates, "I", "h1_tpc42_rate", "TPC 42 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
 
-        // Drifts
+        // ::::: Drifts :::::::
         h2_Z41_vs_T = MakeTH2(dir_drifts, "D", "h2_Z41_vs_T", "Z41 vs. Time [mins]", 500, 0, 10000, 1500, frs_config->fMin_Z, frs_config->fMax_Z);
         h2_Z41_driftcorr_vs_T = MakeTH2(dir_drifts, "D", "h2_Z41_driftcorr_vs_T", "Z41 DriftCorr vs. Time [mins]", 500, 0, 10000, 1500, frs_config->fMin_Z, frs_config->fMax_Z);
         h2_AoQs2s4_vs_T = MakeTH2(dir_drifts, "D", "h2_AoQs2s4_vs_T", "A/Q (S2-S4) vs. Time [mins]", 500, 0, 10000, 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ);
@@ -176,506 +580,16 @@ InitStatus FrsNearlineSpectra::Init()
         for (int i = 0; i < 6; i++) h2_tpc_vs_T[i] = MakeTH2(dir_drifts, "D", Form("h2_tpc_vs_T_%i", i), Form("TPC %i X vs. T", i), 500,0, 10000, 200, -100, 100);
 
     }
-
-    if (frs_config->plot_tac_2d)
-    {
-        // S1S2
-        h2_x2_vs_a2 = MakeTH2(dir_tac_S1S2_2d, "D", "h2_x2_vs_a2", "x2 vs. AngleX (S2)", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_a2, frs_config->fMax_a2, "S2 x-position", "AngleX (S2)");
-        h2_y2_vs_b2 = MakeTH2(dir_tac_S1S2_2d, "D", "h2_y2_vs_b2", "y2 vs. AngleY (S2)", 200, frs_config->fMin_y2, frs_config->fMax_y2, 200, frs_config->fMin_b2, frs_config->fMax_b2, "S2 y-position", "AngleY (S2)");
-
-        // S2S4
-        h2_Z41_vs_AoQs2s4 = MakeTH2(dir_tac_S2S4_2d, "D", "h2_Z41_vs_AoQs2s4", "Z41 vs. A/Q (S2-S4)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S2-S4)", "Z41");
-        h2_Z41_vs_AoQs2s4_driftcorr = MakeTH2(dir_tac_S2S4_2d, "D", "h2_Z41_vs_Ao4s2s4_driftcorr", "Z41 vs. A/Q (S2-S4) DriftCorr", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q DriftCorr", "Z DriftCorr(MUSIC 1)");
-        h2_Z41_vs_AoQs2s4_corr = MakeTH2(dir_tac_S2S4_2d, "D", "h2_Z_vs_AoQs2s4_corr", "Z41 vs. A/Q corr (S2-S4)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z,"A/Q (S2-S4)", "Z41");
-        h2_Z41_vs_Z42 = MakeTH2(dir_tac_S2S4_2d, "D", "h2_Z41_vs_Z42", "Z41 vs. Z42", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z41", "Z42");
-        h2_Z41_vs_AoQs2s4_Zsame = MakeTH2(dir_tac_S2S4_2d, "D", "h2_Z41_vs_AoQs2s4_Zsame", "Z41 vs. A/Q (S2-S4) [ABS (Z41 - Z42) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S2-S4)", "Z41");
-        h2_x2_vs_AoQs2s4_Zsame = MakeTH2(dir_tac_S2S4_2d, "D", "h2_x2_vs_AoQs2s4_Zsame", "x2 vs A/Q (S2-S4) - [ABS(Z41 - Z42) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q (S2-S4)", "S2 x-position");
-        h2_x4_vs_AoQs2s4_Zsame = MakeTH2(dir_tac_S2S4_2d, "D", "h2_x4_vs_AoQs2s4_Zsame", "x4 vs A/Q (S2-S4) - [ABS(Z41 - Z42) < 0.4]", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q (S2-S4)", "S4 x-position");
-        h2_x2_vs_AoQs2s4 = MakeTH2(dir_tac_S2S4_2d, "D", "h2_x2_vs_AoQs2s4", "x2 vs. A/Q (S2-S4)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q (S2-S4)", "S2 x-position");
-        h2_x4_vs_AoQs2s4 = MakeTH2(dir_tac_S2S4_2d, "D", "h2_x4_vs_AoQs2s4", "x4 vs. A/Q (S2-S4)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q (S2-S4)", "S4 x-position");
-        h2_dEdegoQ_vs_Z41 = MakeTH2(dir_tac_S2S4_2d, "D", "h2_dEdegoQ_vs_Z41", "dE in S2 degrader / Q vs. Z41", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ, "dE in S2 degrader / Q", "Z41");
-        h2_dEdegZ41_vs_Z41 = MakeTH2(dir_tac_S2S4_2d, "D", "h2_dEdegZ41_vs_Z41", "dE in S2 degrader vs. Z41", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, frs_config->fMin_dE, frs_config->fMax_dE, "dE in S2 degrader", "Z41");
-        h2_a2_vs_AoQs2s4 = MakeTH2(dir_tac_S2S4_2d, "D", "h2_a2_vs_AoQs2s4", "A/Q (S2-S4) vs. AngleX (S2)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a2, frs_config->fMax_a2, "A/Q (S2-S4)", "AngleX (S2)");
-        h2_a4_vs_AoQs2s4 = MakeTH2(dir_tac_S2S4_2d, "D", "h2_a4_vs_AoQs2s4", "A/Q (S2-S4) vs. AngleX (S4)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a4, frs_config->fMax_a4, "A/Q (S2-S4)", "AngleX (S4)");
-        h2_Z41_vs_dE42 = MakeTH2(dir_tac_S2S4_2d, "D", "h2_Z41_vs_dE42", "Z41 vs. dE in MUSIC 42", 400, frs_config->fMin_Z, frs_config->fMax_Z, 250, frs_config->fMin_dE_music42, frs_config->fMax_dE_music42, "Z41", "dE in MUSIC 42");
-        h2_x2_vs_x4 = MakeTH2(dir_tac_S2S4_2d, "D", "h2_x2_vs_x4", "x2 vs. x4", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_x4, frs_config->fMax_x4, "S2 x-position", "S4 x-position");
-        h2_SC41dE_vs_AoQs2s4 = MakeTH2(dir_tac_S2S4_2d, "D", "h2_SC41dE_vs_AoQs2s4", "A/Q (S2-S4) vs. dE in SC41", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000., "A/Q (S2-S4)", "dE in SC41");
-        h2_SC42dE_vs_AoQs2s4 = MakeTH2(dir_tac_S2S4_2d, "D", "h2_SC42dE_vs_AoQs2s4", "A/Q (S2-S4) vs. dE in SC42", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000., "A/Q (S2-S4)", "dE in SC42");
-        h2_SC41dE_vs_Z41 = MakeTH2(dir_tac_S2S4_2d, "D", "h2_SC41dE_vs_Z41", "Z41 vs. dE in SC41", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, 0., 4000., "Z41", "dE in SC41");
-        h2_SC42dE_vs_Z41 = MakeTH2(dir_tac_S2S4_2d, "D", "h2_SC42dE_vs_Z41", "Z41 vs. dE in SC42", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, 0., 4000., "Z41", "dE in SC42");
-        h2_dE41_vs_ToF_21_41 = MakeTH2(dir_tac_S2S4_2d, "D", "h2_dE41_vs_ToF_21_41", "ToF 21 - 41 vs. dE in MUSIC 41", 2000, 0., 70000., 400, frs_config->fMin_dE_music41, frs_config->fMax_dE_music41, "Time of Flight (21 - 41)", "dE in MUSIC 41");
-        h2_x2_vs_Z41 = MakeTH2(dir_tac_S2S4_2d, "D", "h2_x2_vs_Z41", "x2 vs. Z41", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x2, frs_config->fMax_x2, "Z41", "S2 x-position");
-        h2_x4_vs_Z41 = MakeTH2(dir_tac_S2S4_2d, "D", "h2_x4_vs_Z41", "x4 vs. Z41", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x4, frs_config->fMax_x4, "Z41", "S4 x-position");
-        h2_dE41_vs_x2 = MakeTH2(dir_tac_S2S4_2d, "D", "h2_dE41_vs_x2", "x2 vs. dE in MUSIC 41", 200, frs_config->fMin_x2, frs_config->fMax_x2, 400, frs_config->fMin_dE_music41, frs_config->fMax_dE_music41, "S2 x-position", "dE in MUSIC 41");
-        h2_dE41_vs_x4 = MakeTH2(dir_tac_S2S4_2d, "D", "h2_dE41_vs_x4", "x4 vs. dE in MUSIC 41", 200, frs_config->fMin_x4, frs_config->fMax_x4, 400, frs_config->fMin_dE_music41, frs_config->fMax_dE_music41, "S4 x-position", "dE in MUSIC 41");
-        h2_x4_vs_a4 = MakeTH2(dir_tac_S2S4_2d, "D", "h2_x4_vs_a4", "x4 vs. AngleX (S4)", 200, frs_config->fMin_x4, frs_config->fMax_x4, 200, frs_config->fMin_a4, frs_config->fMax_a4, "S4 x-position", "AngleX (S4)");
-        h2_y4_vs_b4 = MakeTH2(dir_tac_S2S4_2d, "D", "h2_y4_vs_b4", "y4 vs. AngleY (S4)", 200, frs_config->fMin_y4, frs_config->fMax_y4, 200, frs_config->fMin_b4, frs_config->fMax_b4, "S4 y-position", "AngleY (S4)");
-        h2_Z41_vs_Sc21E = MakeTH2(dir_tac_S2S4_2d, "D", "h2_Z41_vs_Sc21E", "Z41 vs. SQRT(Sc21_L * Sc21_R)", 300, frs_config->fMin_Z, frs_config->fMax_Z, 400, 0., 4000., "Z41", "Sc21 E");
-
-        // Gated
-        if (!FrsGates.empty())
-        {   
-            // S1S2
-            // CEJ if we ever have a TAC/S1 scintillator combo.. 
-            
-            // S2S4
-            dir_tac_S1S2_gate = new TDirectory*[FrsGates.size()];
-            dir_Z41vsAoQs2s4_tac = dir_tac_S2S4_gated->mkdir("Z41vsAoQs2s4_Gated");
-            dir_Z41vsZ42_tac = dir_tac_S2S4_gated->mkdir("Z41vsZ42_Gated");
-            dir_x2vsAoQs2s4_tac = dir_tac_S2S4_gated->mkdir("x2vsAoQs2s4_Gated");
-            dir_x4vsAoQs2s4_tac = dir_tac_S2S4_gated->mkdir("x4vsAoQs2s4_Gated");
-            dir_dEdegZ41vsZ41_tac =  dir_tac_S2S4_gated->mkdir("dEdegZ41vsZ41_Gated");
-
-            h2_Z41_vs_AoQs2s4_Z41AoQs2s4_gate.resize(FrsGates.size());
-            h2_Z41_vs_Z42_Z41AoQs2s4_gate.resize(FrsGates.size());
-            h2_x2_vs_AoQs2s4_Z41AoQs2s4_gate.resize(FrsGates.size());
-            h2_x4_vs_AoQs2s4_Z41AoQs2s4_gate.resize(FrsGates.size());
-            h2_dedegoQ_vs_Z41_Z41AoQs2s4_gate.resize(FrsGates.size());
-            h2_dEdegZ41_vs_Z41_Z41AoQs2s4_gate.resize(FrsGates.size());
-            h2_dEdegoQ_vs_Z41_Zsame_gate.resize(FrsGates.size());
-            h2_dEdegZ41_vs_Z41_Zsame_gate.resize(FrsGates.size());
-            h2_Z41_vs_Z42_Zsame_gate.resize(FrsGates.size());
-            h2_x2_vs_AoQs2s4_Zsame_gate.resize(FrsGates.size());
-            h2_x4_vs_AoQs2s4_Zsame_gate.resize(FrsGates.size());
-            h2_Z41_vs_AoQs2s4_Zsame_gate.resize(FrsGates.size());
-            h2_x2_vs_AoQs2s4_x2AoQs2s4_gate.resize(FrsGates.size());
-            h2_Z41_vs_Z42_x2AoQs2s4_gate.resize(FrsGates.size());
-            h2_x2_vs_AoQs2s4_Zsame_x2AoQs2s4_gate.resize(FrsGates.size());
-            h2_x4_vs_AoQs2s4_Zsame_x2AoQs2s4_gate.resize(FrsGates.size());
-            h2_Z41_vs_AoQs2s4_Zsame_x2AoQs2s4_gate.resize(FrsGates.size());
-            h2_dEdegoQ_vs_Z41_Zsame_x2AoQs2s4_gate.resize(FrsGates.size());
-            h2_dEdegZ41_vs_Z41_Zsame_x2AoQs2s4_gate.resize(FrsGates.size());
-            h2_x4_vs_AoQs2s4_x4AoQs2s4_gate.resize(FrsGates.size());
-            h2_Z41_vs_Z42_x4AoQs2s4_gate.resize(FrsGates.size());
-            h2_x2_vs_AoQs2s4_Zsame_x4AoQs2s4_gate.resize(FrsGates.size());
-            h2_x4_vs_AoQs2s4_Zsame_x4AoQs2s4_gate.resize(FrsGates.size());
-            h2_Z41_vs_AoQs2s4_Zsame_x4AoQs2s4_gate.resize(FrsGates.size());
-            h2_dEdegoQ_vs_Z41_Zsame_x4AoQs2s4_gate.resize(FrsGates.size());
-            h2_dEdegZ41_vs_Z41_Zsame_x4AoQs2s4_gate.resize(FrsGates.size());
-            h2_Z41_vs_AoQs2s4_dEdegZ41_Z41_gate.resize(FrsGates.size());
-            h2_Z41_vs_Z42_dEdegZ41_Z41_gate.resize(FrsGates.size());
-            h2_x2_vs_AoQs2s4_dEdegZ41_Z41_gate.resize(FrsGates.size());
-            h2_x4_vs_AoQs2s4_dEdegZ41_Z41_gate.resize(FrsGates.size());
-            h2_Z41_vs_AoQs2s4_Zsame_dEdegZ41_Z41_gate.resize(FrsGates.size());
-
-            for (int gate = 0; gate < FrsGates.size(); gate++)
-            {
-                h2_Z41_vs_AoQs2s4_Z41AoQs2s4_gate[gate] = MakeTH2(dir_Z41vsAoQs2s4_tac, "I", Form("h2_Z41_vs_AoQs2s4_Z41AoQs2s4_gate%d",gate), Form("Z41 vs. A/Q (S2-S4) - Z41 AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
-                h2_Z41_vs_Z42_Z41AoQs2s4_gate[gate] = MakeTH2(dir_Z41vsAoQs2s4_tac, "I", Form("h2_Z41_vs_Z42_Z41AoQs2s4_gate%d", gate), Form("Z41 vs. Z42 - Z41 AoQs2s4 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);
-                h2_x2_vs_AoQs2s4_Z41AoQs2s4_gate[gate] = MakeTH2(dir_Z41vsAoQs2s4_tac, "I", Form("h2_x2_vs_AoQs2s4_Z41AoQs2s4_gate%d", gate), Form("x2 vs. A/Q (S2-S4) - Z41 AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
-                h2_x4_vs_AoQs2s4_Z41AoQs2s4_gate[gate] = MakeTH2(dir_Z41vsAoQs2s4_tac, "I", Form("h2_x4_vs_AoQs2s4_Z41AoQs2s4_gate%d", gate), Form("x4 vs. A/Q (S2-S4) - Z41 AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
-                h2_dedegoQ_vs_Z41_Z41AoQs2s4_gate[gate] = MakeTH2(dir_Z41vsAoQs2s4_tac, "I", Form("h2_dedegoQ_vs_Z41_Z41AoQs2s4_gate%d", gate), Form("Z41 vs. dE in S2 degrader - Z41 AoQs2s4 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, 10., 50.);
-                h2_dEdegZ41_vs_Z41_Z41AoQs2s4_gate[gate] = MakeTH2(dir_Z41vsAoQs2s4_tac, "I", Form("h2_dEdegZ41_vs_Z41_Z41AoQs2s4_gate%d", gate), Form("Z41 vs. dE in S2 degrader - Z41 AoQs2s4 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, 10., 50.);
-                
-                h2_dEdegoQ_vs_Z41_Zsame_gate[gate] = MakeTH2(dir_Z41vsAoQs2s4_tac, "I", Form("h2_dEdegoQ_vs_Z41_Zsame_gate%d", gate), Form("dE in S2 degrader / Q vs. Z41 - Z41-Z42 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, 10., 100.);            
-                h2_dEdegZ41_vs_Z41_Zsame_gate[gate] = MakeTH2(dir_Z41vsAoQs2s4_tac, "I", Form("h2_dEdegZ41_vs_Z41_Zsame_gate%d", gate), Form("dE in S2 degrader vs. Z41 - Z41-Z42 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, 10., 100.);
-                h2_Z41_vs_Z42_Zsame_gate[gate] = MakeTH2(dir_Z41vsAoQs2s4_tac, "I", Form("h2_Z41_vs_Z42_Zsame_gate%d", gate), Form("Z41 vs. Z42 - Z41-Z42 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);            
-                h2_x2_vs_AoQs2s4_Zsame_gate[gate] = MakeTH2(dir_Z41vsAoQs2s4_tac, "I", Form("h2_x2_vs_AoQs2s4_Zsame_gate%d", gate), Form("x2 vs. A/Q (S2-S4) - Z41-Z42 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);            
-                h2_x4_vs_AoQs2s4_Zsame_gate[gate] = MakeTH2(dir_Z41vsAoQs2s4_tac, "I", Form("h2_x4_vs_AoQs2s4_Zsame_gate%d", gate), Form("x4 vs. A/Q (S2-S4) - Z41-Z42 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);            
-                h2_Z41_vs_AoQs2s4_Zsame_gate[gate] = MakeTH2(dir_Z41vsAoQs2s4_tac, "I", Form("h2_Z41_vs_AoQs2s4_Zsame_gate%d", gate), Form("Z41 vs. A/Q (S2-S4) - Z41-Z42 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
-
-                h2_x2_vs_AoQs2s4_x2AoQs2s4_gate[gate] = MakeTH2(dir_x2vsAoQs2s4_tac, "I", Form("h2_x2_vs_AoQs2s4_x2AoQs2s4_gate%d", gate), Form("x2 vs. A/Q (S2-S4) - x2AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
-                h2_Z41_vs_Z42_x2AoQs2s4_gate[gate] = MakeTH2(dir_x2vsAoQs2s4_tac, "I", Form("h2_Z41_vs_Z42_x2AoQs2s4_gate%d", gate), Form("Z41 vs. Z42 - x2AoQs2s4 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);
-                // these have additional gate
-                h2_x2_vs_AoQs2s4_Zsame_x2AoQs2s4_gate[gate] = MakeTH2(dir_x2vsAoQs2s4_tac, "I", Form("h2_x2_vs_AoQs2s4_Zsame_x2AoQs2s4_gate%d", gate), Form("x2 vs. A/Q (S2-S4) - Z41-Z42 Gate 0, x2AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);                
-                h2_x4_vs_AoQs2s4_Zsame_x2AoQs2s4_gate[gate] = MakeTH2(dir_x2vsAoQs2s4_tac, "I", Form("h2_x4_vs_AoQs2s4_Zsame_x2AoQs2s4_gate%d", gate), Form("x4 vs. A/Q (S2-S4) - Z41-Z42 Gate 0, x2AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);                
-                h2_Z41_vs_AoQs2s4_Zsame_x2AoQs2s4_gate[gate] = MakeTH2(dir_x2vsAoQs2s4_tac, "I", Form("h2_Z41_vs_AoQs2s4_Zsame_x2AoQs2s4_gate%d", gate), Form("Z41 vs. A/Q (S2-S4) - Z41-Z42 Gate 0, x2AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
-                h2_dEdegoQ_vs_Z41_Zsame_x2AoQs2s4_gate[gate] = MakeTH2(dir_x2vsAoQs2s4_tac, "I", Form("h2_dEdegoQ_vs_Z41_Zsame_x2AoQs2s4_gate%d", gate), Form("dE in S2 degrader / Q vs. Z41 - Z41-Z42 Gate 0, x2AoQs2s4 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, 10., 100.);            
-                h2_dEdegZ41_vs_Z41_Zsame_x2AoQs2s4_gate[gate] =MakeTH2(dir_x2vsAoQs2s4_tac, "I", Form("h2_dEdegZ41_vs_Z41_Zsame_x2AoQs2s4_gate%d", gate), Form("dE in S2 degrader vs. Z41 - Z41-Z42 Gate 0, x2AoQs2s4 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, 10., 100.);
-
-                h2_x4_vs_AoQs2s4_x4AoQs2s4_gate[gate] = MakeTH2(dir_x4vsAoQs2s4_tac, "I", Form("h2_x4_vs_AoQs2s4_x4AoQs2s4_gate%d", gate), Form("x4 vs. A/Q (S2-S4) - x4AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);            
-                h2_Z41_vs_Z42_x4AoQs2s4_gate[gate] = MakeTH2(dir_x4vsAoQs2s4_tac, "I", Form("h2_Z41_vs_Z42_x4AoQs2s4_gate%d", gate), Form("Z41 vs. Z42 - x4AoQs2s4 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);
-                // as above
-                h2_x2_vs_AoQs2s4_Zsame_x4AoQs2s4_gate[gate] = MakeTH2(dir_x4vsAoQs2s4_tac, "I", Form("h2_x2_vs_AoQs2s4_Zsame_x4AoQs2s4_gate%d", gate), Form("x2 vs. A/Q (S2-S4) - Z41-Z42 Gate 0, x4AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);        
-                h2_x4_vs_AoQs2s4_Zsame_x4AoQs2s4_gate[gate] = MakeTH2(dir_x4vsAoQs2s4_tac, "I", Form("h2_x4_vs_AoQs2s4_Zsame_x4AoQs2s4_gate%d", gate), Form("x4 vs. A/Q (S2-S4) - Z41-Z42 Gate 0, x4AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);      
-                h2_Z41_vs_AoQs2s4_Zsame_x4AoQs2s4_gate[gate] = MakeTH2(dir_x4vsAoQs2s4_tac, "I", Form("h2_Z41_vs_AoQs2s4_Zsame_x4AoQs2s4_gate%d", gate), Form("Z41 vs. A/Q (S2-S4) - Z41-Z42 Gate 0, x4AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
-                h2_dEdegoQ_vs_Z41_Zsame_x4AoQs2s4_gate[gate] = MakeTH2(dir_x4vsAoQs2s4_tac, "I", Form("h2_dEdegoQ_vs_Z41_Zsame_x4AoQs2s4_gate%d", gate), Form("dE in S2 degrader / Q vs. Z41 - Z41-Z42 Gate 0, x4AoQs2s4 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, 10., 100.);     
-                h2_dEdegZ41_vs_Z41_Zsame_x4AoQs2s4_gate[gate] = MakeTH2(dir_x4vsAoQs2s4_tac, "I", Form("h2_dEdegZ41_vs_Z41_Zsame_x4AoQs2s4_gate%d", gate), Form("dE in S2 degrader vs. Z41 - Z41-Z42 Gate 0, x4AoQs2s4 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, 10., 100.);
-
-                h2_Z41_vs_AoQs2s4_dEdegZ41_Z41_gate[gate] = MakeTH2(dir_dEdegZ41vsZ41_tac, "I", Form("h2_Z41_vs_AoQs2s4_dEdegZ41_Z41_gate%d", gate), Form("Z41 vs. A/Q (S2-S4) - dEdegZ41 Z41 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);            
-                h2_Z41_vs_Z42_dEdegZ41_Z41_gate[gate] = MakeTH2(dir_dEdegZ41vsZ41_tac, "I", Form("h2_Z41_vs_Z42_dEdegZ41_Z41_gate%d", gate), Form("Z41 vs. Z42 - dEdegZ41 Z41 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);            
-                h2_x2_vs_AoQs2s4_dEdegZ41_Z41_gate[gate] = MakeTH2(dir_dEdegZ41vsZ41_tac, "I", Form("h2_x2_vs_AoQs2s4_dEdegZ41_Z41_gate%d", gate), Form("x2 vs. A/Q (S2-S4) - dEdegZ41 Z41 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);   
-                h2_x4_vs_AoQs2s4_dEdegZ41_Z41_gate[gate] = MakeTH2(dir_dEdegZ41vsZ41_tac, "I", Form("h2_x4_vs_AoQs2s4_dEdegZ41_Z41_gate%d", gate), Form("x4 vs. A/Q (S2-S4) - dEdegZ41 Z41 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
-                h2_Z41_vs_AoQs2s4_Zsame_dEdegZ41_Z41_gate[gate] = MakeTH2(dir_dEdegZ41vsZ41_tac, "I", Form("h2_Z41_vs_AoQs2s4_Zsame_dEdegZ41_Z41_gate%d", gate), Form("Z41 vs. A/Q (S2-S4) [ABS(Z41 - Z42) < 0.4] - dEdegZ41 Z41 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
-
-            }
-
-        }
-    }
-
-    // preset wide ranges to "always" see peak, in case there's something funky with the FRS
-    if (frs_config->plot_tac_1d)
-    {
-        // S1S2
-        h1_Z21 = MakeTH1(dir_tac_S1S2_1d, "D", "h1_Z21", "Z21", 500, 10, 100, "Z21", kPink-3, kBlue+2);
-        h1_Z22 = MakeTH1(dir_tac_S1S2_1d, "D", "h1_Z22", "Z22", 500, 10, 100, "Z22", kPink-3, kBlue+2);
-
-        // S2S4
-        h1_Z41 = MakeTH1(dir_tac_S2S4_1d, "D", "h1_Z41", "Z41", 500, 10, 100, "Z41", kPink-3, kBlue+2);
-        // other drifts soon^tm?
-        h1_Z41_driftcorr = MakeTH1(dir_tac_S2S4_1d, "D", "h1_Z_driftcorr", "Z41 DriftCorr", 500, 10, 100, "Z41", kPink-3, kBlue+2);
-        h1_Z42 = MakeTH1(dir_tac_S2S4_1d, "D", "h1_Z42", "Z42", 500, 10, 100, "Z42", kPink-3, kBlue+2);
-        h1_Z43 = MakeTH1(dir_tac_S2S4_1d, "D", "h1_Z43", "Z43", 500, 10, 100, "Z43", kPink-3, kBlue+2);
-        h1_AoQs1s2 = MakeTH1(dir_tac_S1S2_1d, "D", "h1_AoQs1s2", "A/Q (S1-S2)", 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2); 
-        h1_AoQs2s4 = MakeTH1(dir_tac_S2S4_1d, "D", "h1_AoQs2s4", "A/Q (S2-S4)", 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2); 
-        h1_AoQs2s4_driftcorr = MakeTH1(dir_tac_S2S4_1d, "D", "h1_AoQs2s4_driftcorr", "A/Q (S2-S4) DriftCorr", 500, 1, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2); 
-        h1_AoQs1s2_corr = MakeTH1(dir_tac_S1S2_1d, "D", "h1_AoQs1s2_corr", "A/Q corr (S1-S2)", 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2);
-        h1_AoQs2s4_corr = MakeTH1(dir_tac_S1S2_1d, "D", "h1_AoQs2s4_corr", "A/Q corr (S2-S4)", 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2);
-        h1_x1 = MakeTH1(dir_tac_S1S2_1d, "D", "h1_x1", "S1 x-position", 200, -100, 100, "S1 x-position", kYellow-7, kBlack);
-        h1_x2 = MakeTH1(dir_tac_S1S2_1d, "D", "h1_x2", "S2 x-position", 200, -100, 100, "S2 x-position", kYellow-7, kBlack);
-        h1_x4 = MakeTH1(dir_tac_S2S4_1d, "D", "h1_x4", "S4 x-position", 200, -100, 100, "S4 x-position",kYellow-7, kBlack);
-        h1_a1 = MakeTH1(dir_tac_S1S2_1d, "D", "h1_a1", "AngleX S1", 200, -100, 100, "AngleX S1", kYellow-7, kBlack);
-        h1_a2 = MakeTH1(dir_tac_S1S2_1d, "D", "h1_a2", "AngleX S2", 200, -100, 100, "AngleX S2", kYellow-7, kBlack);
-        h1_a4 = MakeTH1(dir_tac_S2S4_1d, "D", "h1_a4", "AngleX S4", 200, -100, 100, "AngleX S4", kYellow-7, kBlack);
-        h1_y1 = MakeTH1(dir_tac_S1S2_1d, "D", "h1_y1", "S1 y-position", 200, -100, 100, "S1 y-position", kYellow-7, kBlack);
-        h1_y2 = MakeTH1(dir_tac_S1S2_1d, "D", "h1_y2", "S2 y-position", 200, -100, 100, "S2 y-position", kYellow-7, kBlack);
-        h1_y4 = MakeTH1(dir_tac_S2S4_1d, "D", "h1_y4", "S4 y-position", 200, -100, 100, "S4 y-position", kYellow-7, kBlack);
-        h1_b1 = MakeTH1(dir_tac_S1S2_1d, "D", "h1_b1", "AngleY S1", 200, -100, 100, "AngleY S1", kYellow-7, kBlack);
-        h1_b2 = MakeTH1(dir_tac_S1S2_1d, "D", "h1_b2", "AngleY S2", 200, -100, 100, "AngleY S2", kYellow-7, kBlack);
-        h1_b4 = MakeTH1(dir_tac_S2S4_1d, "D", "h1_b4", "AngleY S4", 200, -100, 100, "AngleY S4", kYellow-7, kBlack);
-        h1_beta_s1s2 = MakeTH1(dir_tac_S1S2_1d, "D", "h1_beta_s1s2", "Beta (S1-S2)", 500, 0.0, 1.0, "Beta (S1-S2)", kPink-3, kBlue+2);
-        h1_beta_s2s4 = MakeTH1(dir_tac_S2S4_1d, "D", "h1_beta_s2s4", "Beta (S2-S4)", 500, 0.0, 1.0, "Beta (S2-S4)", kPink-3, kBlue+2);
-        h1_dEdegoQ = MakeTH1(dir_tac_S2S4_1d, "D", "h1_dEdegoQ", "dE in S2 degrader / Q", 1000, 0.0, 10.0, "dE / Q", kPink-3, kBlue+2);
-        h1_dEdegZ41 = MakeTH1(dir_tac_S2S4_1d, "D", "h1_dEdegZ41", "dE in S2 degrader", 1000, 0.0, 1000., "dEdegZ41", kPink-3, kBlue+2);
-        for (int i = 0; i < 2; i++) h1_rho[i] = MakeTH1(dir_tac_S2S4_1d, "D", Form("h1_rho_%i", i), Form("rho %i", i), 100, 0.0, 1.0, Form("rho %i", i), kPink-3, kBlue+2); 
-        for (int i = 0; i < 2; i++) h1_brho[i] = MakeTH1(dir_tac_S2S4_1d, "D", Form("h1_brho_%i", i), Form("brho %i", i), 100, 0.0, 1.0, Form("brho %i", i), kPink-3, kBlue+2);
-        h1_music21_dE = MakeTH1(dir_tac_S1S2_1d, "D", "h1_music21_dE", "Energy loss in MUSIC 21", 1000, 0.0, 4000.0, "dE MUSIC 21", kPink-3, kBlue+2);
-        h1_music22_dE = MakeTH1(dir_tac_S1S2_1d, "D", "h1_music22_dE", "Energy loss in MUSIC 22", 1000, 0.0, 4000.0, "dE MUSIC 22", kPink-3, kBlue+2);
-        h1_music21_dE_cor = MakeTH1(dir_tac_S1S2_1d, "D", "h1_music21_dE_cor", "Energy loss (cor) in MUSIC 21", 4000, 0.0, 4000.0, "dE (cor) MUSIC 21", kPink-3, kBlue+2);
-        h1_music22_dE_cor = MakeTH1(dir_tac_S1S2_1d, "D", "h1_music22_dE_cor", "Energy loss (cor) in MUSIC 22", 4000, 0.0, 4000.0, "dE (cor) MUSIC 22", kPink-3, kBlue+2);
-        h1_music41_dE = MakeTH1(dir_tac_S2S4_1d, "D", "h1_music41_dE", "Energy loss in MUSIC 41", 1000, 0.0, 4000.0, "dE MUSIC 41", kPink-3, kBlue+2);
-        h1_music42_dE = MakeTH1(dir_tac_S2S4_1d, "D", "h1_music42_dE", "Energy loss in MUSIC 42", 1000, 0.0, 4000.0, "dE MUSIC 42", kPink-3, kBlue+2);
-        h1_music41_dE_cor = MakeTH1(dir_tac_S2S4_1d, "D", "h1_music41_dE_cor", "Energy loss (cor) in MUSIC 41", 4000, 0.0, 4000.0, "dE (cor) MUSIC 41", kPink-3, kBlue+2);
-        h1_music42_dE_cor = MakeTH1(dir_tac_S2S4_1d, "D", "h1_music42_dE_cor", "Energy loss (cor) in MUSIC 42", 4000, 0.0, 4000.0, "dE (cor) MUSIC 42", kPink-3, kBlue+2);
-        
-        h1_sci_e_11 = MakeTH1(dir_tac_S1S2_1d, "F", "h1_sci_e_11", "SCI 11 E", 4000, 0.0, 4000.0, "SCI 11 E", kPink-3, kBlue+2);
-        h1_sci_e_21 = MakeTH1(dir_tac_S1S2_1d, "F", "h1_sci_e_21", "SCI 21 E", 4000, 0.0, 4000.0, "SCI 21 E", kPink-3, kBlue+2);
-        h1_sci_e_22 = MakeTH1(dir_tac_S1S2_1d, "F", "h1_sci_e_22", "SCI 22 E", 4000, 0.0, 4000.0, "SCI 22 E", kPink-3, kBlue+2);
-        h1_sci_e_31 = MakeTH1(dir_tac_S1S2_1d, "F", "h1_sci_e_31", "SCI 31 E", 4000, 0.0, 4000.0, "SCI 31 E", kPink-3, kBlue+2);
-        h1_sci_e_41 = MakeTH1(dir_tac_S2S4_1d, "F", "h1_sci_e_41", "SCI 41 E", 4000, 0.0, 4000.0, "SCI 41 E", kPink-3, kBlue+2);
-        h1_sci_e_42 = MakeTH1(dir_tac_S2S4_1d, "F", "h1_sci_e_42", "SCI 42 E", 4000, 0.0, 4000.0, "SCI 42 E", kPink-3, kBlue+2);
-        h1_sci_e_43 = MakeTH1(dir_tac_S2S4_1d, "F", "h1_sci_e_43", "SCI 43 E", 4000, 0.0, 4000.0, "SCI 43 E", kPink-3, kBlue+2);
-        h1_sci_e_81 = MakeTH1(dir_tac_S2S4_1d, "F", "h1_sci_e_81", "SCI 81 E", 4000, 0.0, 4000.0, "SCI 81 E", kPink-3, kBlue+2);
-        h1_sci_x_11 = MakeTH1(dir_tac_S1S2_1d, "F", "h1_sci_x_11", "SCI 11 PosX", 4000, 0.0, 4000.0, "SCI 11 X", kYellow-7, kBlack);
-        h1_sci_x_21 = MakeTH1(dir_tac_S1S2_1d, "F", "h1_sci_x_21", "SCI 21 PosX", 4000, 0.0, 4000.0, "SCI 21 X", kYellow-7, kBlack);
-        h1_sci_x_22 = MakeTH1(dir_tac_S1S2_1d, "F", "h1_sci_x_22", "SCI 22 PosX", 4000, 0.0, 4000.0, "SCI 22 X", kYellow-7, kBlack);
-        h1_sci_x_31 = MakeTH1(dir_tac_S1S2_1d, "F", "h1_sci_x_31", "SCI 31 PosX", 4000, 0.0, 4000.0, "SCI 31 X", kYellow-7, kBlack);
-        h1_sci_x_41 = MakeTH1(dir_tac_S2S4_1d, "F", "h1_sci_x_41", "SCI 41 PosX", 4000, 0.0, 4000.0, "SCI 41 X", kYellow-7, kBlack);
-        h1_sci_x_42 = MakeTH1(dir_tac_S2S4_1d, "F", "h1_sci_x_42", "SCI 42 PosX", 4000, 0.0, 4000.0, "SCI 42 X", kYellow-7, kBlack);
-        h1_sci_x_43 = MakeTH1(dir_tac_S2S4_1d, "F", "h1_sci_x_43", "SCI 43 PosX", 4000, 0.0, 4000.0, "SCI 43 X", kYellow-7, kBlack);
-        h1_sci_x_81 = MakeTH1(dir_tac_S2S4_1d, "F", "h1_sci_x_81", "SCI 81 PosX", 4000, 0.0, 4000.0, "SCI 81 X", kYellow-7, kBlack);
-        h1_sci_tof_11_21 = MakeTH1(dir_tac_S1S2_1d, "F", "h1_sci_tof_11_21", "SCI TOF 11 - 21", 4000, 0.0, 200000.0, "SCI TOF 11 - 21", kPink-3, kBlue+2);
-        h1_sci_tof_11_21_calib = MakeTH1(dir_tac_S1S2_1d, "F", "h1_sci_tof_11_21_calib", "SCI TOF 11 - 21 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 11 - 21 (Calib)", kPink-3, kBlue+2);
-        h1_sci_tof_21_41 = MakeTH1(dir_tac_S2S4_1d, "F", "h1_sci_tof_21_41", "SCI TOF 21 - 41", 4000, 0.0, 200000.0, "SCI TOF 21 - 41", kPink-3, kBlue+2);
-        h1_sci_tof_21_41_calib = MakeTH1(dir_tac_S2S4_1d, "F", "h1_sci_tof_21_41_calib", "SCI TOF 21 - 41 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 21 - 41 (Calib)", kPink-3, kBlue+2);
-        h1_sci_tof_21_42 = MakeTH1(dir_tac_S2S4_1d, "F", "h1_sci_tof_21_42", "SCI TOF 21 - 42", 4000, 0.0, 200000.0, "SCI TOF 21 - 42", kPink-3, kBlue+2);
-        h1_sci_tof_21_42_calib = MakeTH1(dir_tac_S2S4_1d, "F", "h1_sci_tof_21_42_calib", "SCI TOF 21 - 42 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 21 - 42 (Calib)", kPink-3, kBlue+2);
-        h1_sci_tof_21_81 = MakeTH1(dir_tac_S2S4_1d, "F", "h1_sci_tof_21_81", "SCI TOF 21 - 81", 4000, 0.0, 200000.0, "SCI TOF 21 - 81", kPink-3, kBlue+2);
-        h1_sci_tof_21_81_calib = MakeTH1(dir_tac_S2S4_1d, "F", "h1_sci_tof_21_81_calib", "SCI TOF 21 - 81 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 21 - 81 (Calib)", kPink-3, kBlue+2);
-        h1_sci_tof_22_41 = MakeTH1(dir_tac_S2S4_1d, "F", "h1_sci_tof_22_41", "SCI TOF 22 - 41", 4000, 0.0, 200000.0, "SCI TOF 22 - 41", kPink-3, kBlue+2);
-        h1_sci_tof_22_41_calib = MakeTH1(dir_tac_S2S4_1d, "F", "h1_sci_tof_22_41_calib", "SCI TOF 22 - 41 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 22 - 41 (Calib)", kPink-3, kBlue+2);
-        h1_sci_tof_22_81 = MakeTH1(dir_tac_S2S4_1d, "F", "h1_sci_tof_22_81", "SCI TOF 22 - 81", 4000, 0.0, 200000.0, "SCI TOF 22 - 81", kPink-3, kBlue+2);
-        h1_sci_tof_22_81_calib = MakeTH1(dir_tac_S2S4_1d, "F", "h1_sci_tof_22_81_calib", "SCI TOF 22 - 81 (Calib)", 4000, 0.0, 200000.0, "SCI TOF 22 - 81 (Calib)", kPink-3, kBlue+2);
-
-        // Are Gated 1D desired?
-    }
-
-    if (frs_config->plot_mhtdc_2d)
-    {
-        // directory, type, name, title, xbins, xmin, xmax, ybins, ymin, ymax, xtitle, ytitle
-        h2_Z41_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_Z41_vs_AoQs2s4_mhtdc", "Z41 vs. A/Q (S2-S4) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S2-S4)", "Z41");
-        h2_Z41_vs_AoQs2s4_corr_mhtdc = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_Z41_vs_AoQs2s4_corr_mhtdc", "Z41 vs. A/Q corr (S2-S4) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z,"A/Q (S2-S4)", "Z41");
-        h2_Z41_vs_Z42_mhtdc = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_Z41_vs_Z42_mhtdc", "Z41 vs. Z42 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z41", "Z42");
-        
-        h2_Z21_vs_AoQs1s2_mhtdc = MakeTH2(dir_mhtdc_S1S2_2d, "D", "h2_Z21_vs_AoQs1s2_mhtdc", "Z21 vs. A/Q (S1-S2) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S1-S2)", "Z (MUSIC 21)");
-        h2_Z21_vs_AoQs1s2_corr_mhtdc = MakeTH2(dir_mhtdc_S1S2_2d, "D", "h2_Z21_vs_AoQs1s2_corr_mhtdc", "Z21 vs. A/Q corr (S1-S2) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z,"A/Q (S1-S2)", "Z (MUSIC 21)");
-        h2_Z21_vs_Z22_mhtdc = MakeTH2(dir_mhtdc_S1S2_2d, "D", "h2_Z21_vs_Z22_mhtdc", "Z21 vs. Z22 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z (MUSIC 21)", "Z (MUSIC 22)");
-        
-        h2_Z21_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_Z21_vs_Z41_mhtdc", "Z21 (MHTDC) vs. Z41 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z (MUSIC 21)", "Z (MUSIC 41)");
-        h2_Z41_vs_AoQs2s4_Zsame_mhtdc = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_Z41_vs_AoQs2s4_Zsame_mhtdc", "Z41 vs. A/Q (S2-S4) [ABS (Z41 - Z42) < 0.4] (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S2-S4)", "Z41");
-        h2_x2_vs_AoQs2s4_Zsame_mhtdc = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_x2_vs_AoQs2s4_Zsame_mhtdc", "x2 vs A/Q (S2-S4) - [ABS(Z41 - Z42) < 0.4] (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q (S2-S4)", "S2 x-position");
-        h2_x4_vs_AoQs2s4_Zsame_mhtdc = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_x4_vs_AoQs2s4_Zsame_mhtdc", "x4 vs A/Q (S2-S4) - [ABS(Z41 - Z42) < 0.4] (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q (S2-S4)", "S4 x-position");
-        h2_x2_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_x2_vs_AoQs2s4_mhtdc", "x2 vs. A/Q (S2-S4) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q (S2-S4)", "S2 x-position");
-        h2_x2_vs_AoQs1s2_mhtdc = MakeTH2(dir_mhtdc_S1S2_2d, "D", "h2_x2_vs_AoQs1s2_mhtdc", "x2 vs. A/Q (S1-S2) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x2, frs_config->fMax_x2, "A/Q (S1-S2)", "S2 x-position");
-        h2_x4_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_x4_vs_AoQs2s4_mhtdc", "x4 vs. A/Q (S2-S4) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 200, frs_config->fMin_x4, frs_config->fMax_x4, "A/Q (S2-S4)", "S4 x-position");
-        h2_dEdegoQ_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_dEdegoQ_vs_Z41_mhtdc", "dE in S2 degrader / Q vs. Z41 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, frs_config->fMin_dEoQ, frs_config->fMax_dEoQ, "dE in S2 degrader / Q", "Z41");
-        h2_dEdegZ41_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_dEdegZ41_vs_Z41_mhtdc", "dE in S2 degrader vs. Z41 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, frs_config->fMin_dE, frs_config->fMax_dE, "dE in S2 degrader", "Z41");
-        h2_a2_vs_AoQs1s2_mhtdc = MakeTH2(dir_mhtdc_S1S2_2d, "D", "h2_a2_vs_AoQs1s2_mhtdc", "A/Q (S1-S2) vs. AngleX (S2) (MHTDC)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a2, frs_config->fMax_a2, "A/Q (S1-S2)", "AngleX (S2)");
-        h2_a2_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_a2_vs_AoQs2s4_mhtdc", "A/Q (S2-S4) vs. AngleX (S2) (MHTDC)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a2, frs_config->fMax_a2, "A/Q (S2-S4)", "AngleX (S2)");
-        h2_a4_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_a4_vs_AoQs2s4_mhtdc", "A/Q (S2-S4) vs. AngleX (S4) (MHTDC)", 500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 500, frs_config->fMin_a4, frs_config->fMax_a4, "A/Q (S2-S4)", "AngleX (S4)");
-        h2_Z41_vs_dE42_mhtdc = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_Z41_vs_dE42_mhtdc", "Z41 vs. dE in MUSIC 42 (MHTDC)", 400, frs_config->fMin_Z, frs_config->fMax_Z, 250, frs_config->fMin_dE_music42, frs_config->fMax_dE_music42, "Z41", "dE in MUSIC 2");
-        h2_Z21_vs_dE21_mhtdc = MakeTH2(dir_mhtdc_S1S2_2d, "D", "h2_Z21_vs_dE21_mhtdc", "Z21 vs. dE in MUSIC 21 (MHTDC)", 400, frs_config->fMin_Z, frs_config->fMax_Z, 250, frs_config->fMin_dE_music41, frs_config->fMax_dE_music41, "Z (MUSIC 21)", "dE in MUSIC 21");
-        h2_SC41dE_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_SC41dE_vs_AoQs2s4_mhtdc", "A/Q (S2-S4) vs. dE in SC41 (MHTDC)", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000., "A/Q (S2-S4)", "dE in SC41");
-        h2_SC42dE_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_SC42dE_vs_AoQs2s4_mhtdc", "A/Q (S2-S4) vs. dE in SC42 (MHTDC)", 1000, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, 0., 4000., "A/Q (S2-S4)", "dE in SC42");
-        h2_SC41dE_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_SC41dE_vs_Z41_mhtdc", "Z41 vs. dE in SC41 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, 0., 4000., "Z41", "dE in SC41");
-        h2_SC42dE_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_SC42dE_vs_Z41_mhtdc", "Z41 vs. dE in SC42 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 1000, 0., 4000., "Z41", "dE in SC42");
-        h2_x2_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_x2_vs_Z41_mhtdc", "x2 vs. Z41 (MHTDC)", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x2, frs_config->fMax_x2, "Z41", "S2 x-position");
-        h2_x2_vs_Z21_mhtdc = MakeTH2(dir_mhtdc_S1S2_2d, "D", "h2_x2_vs_Z21_mhtdc", "x2 vs. Z21 (MHTDC)", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x2, frs_config->fMax_x2, "Z (MUSIC 21)", "S2 x-position");
-        h2_x4_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_x4_vs_Z41_mhtdc", "x4 vs. Z41 (MHTDC)", 400, frs_config->fMin_Z, frs_config->fMax_Z, 200, frs_config->fMin_x4, frs_config->fMax_x4, "Z41", "S4 x-position");
-        h2_Z41_vs_Sc21E_mhtdc = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_Z41_vs_Sc21E_mhtdc", "Z41 vs. SQRT(Sc21_L * Sc21_R) (MHTDC)", 300, frs_config->fMin_Z, frs_config->fMax_Z, 400, 0., 4000., "Z41)", "Sc21 E");
-        h2_Z21_vs_Sc21E_mhtdc = MakeTH2(dir_mhtdc_S1S2_2d, "D", "h2_Z21_vs_Sc21E_mhtdc", "Z21 vs. SCI 21 E (MHTDC)", 300, frs_config->fMin_Z, frs_config->fMax_Z, 400, 0., 4000., "Z (MUSIC 21)", "SCI 21 E");
-
-        // neither TAC nor MHTDC, don't plot twice..
-        if (!frs_config->plot_tac_2d)
-        {
-            h2_x2_vs_x4 = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_x2_vs_x4", "x2 vs. x4", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_x4, frs_config->fMax_x4, "S2 x-position", "S4 x-position");
-            h2_dE41_vs_ToF_21_41 = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_dE41_vs_ToF_21_41", "ToF 21 - 41 vs. dE in MUSIC 41", 2000, 0., 70000., 400, frs_config->fMin_dE_music41, frs_config->fMax_dE_music41, "Time of Flight (21 - 41)", "dE in MUSIC 41");
-            h2_dE41_vs_x2 = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_dE41_vs_x2", "x2 vs. dE in MUSIC 41", 200, frs_config->fMin_x2, frs_config->fMax_x2, 400, frs_config->fMin_dE_music41, frs_config->fMax_dE_music41, "S2 x-position", "dE in MUSIC 41");
-            h2_dE41_vs_x4 = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_dE41_vs_x4", "x4 vs. dE in MUSIC 41", 200, frs_config->fMin_x4, frs_config->fMax_x4, 400, frs_config->fMin_dE_music41, frs_config->fMax_dE_music41, "S4 x-position", "dE in MUSIC 41");
-            h2_x2_vs_a2 = MakeTH2(dir_mhtdc_S1S2_2d, "D", "h2_x2_vs_a2", "x2 vs. AngleX (S2)", 200, frs_config->fMin_x2, frs_config->fMax_x2, 200, frs_config->fMin_a2, frs_config->fMax_a2, "S2 x-position", "AngleX (S2)");
-            h2_y2_vs_b2 = MakeTH2(dir_mhtdc_S1S2_2d, "D", "h2_y2_vs_b2", "y2 vs. AngleY (S2)", 200, frs_config->fMin_y2, frs_config->fMax_y2, 200, frs_config->fMin_b2, frs_config->fMax_b2, "S2 y-position", "AngleY (S2)");
-            h2_x4_vs_a4 = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_x4_vs_a4", "x4 vs. AngleX (S4)", 200, frs_config->fMin_x4, frs_config->fMax_x4, 200, frs_config->fMin_a4, frs_config->fMax_a4, "S4 x-position", "AngleX (S4)");
-            h2_y4_vs_b4 = MakeTH2(dir_mhtdc_S2S4_2d, "D", "h2_y4_vs_b4", "y4 vs. AngleY (S4)", 200, frs_config->fMin_y4, frs_config->fMax_y4, 200, frs_config->fMin_b4, frs_config->fMax_b4, "S4 y-position", "AngleY (S4)");
-        }
-
-        // Gated
-        if (!FrsGates.empty())
-        {  
-            // now we have to resize, add in the gate names etc, and then for each one we need different gates
-            dir_mhtdc_S1S2_gate = new TDirectory*[FrsGates.size()];
-            dir_mhtdc_S2S4_gate = new TDirectory*[FrsGates.size()];
-            dir_Z21vsAoQs1s2_mhtdc  = new TDirectory*[FrsGates.size()];
-            dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc = new TDirectory*[FrsGates.size()];
-            dir_Z41vsAoQs2s4_mhtdc = new TDirectory*[FrsGates.size()];
-            dir_Z41vsZ42_mhtdc = new TDirectory*[FrsGates.size()];
-            dir_x2vsAoQs2s4_mhtdc = new TDirectory*[FrsGates.size()];
-            dir_x4vsAoQs2s4_mhtdc = new TDirectory*[FrsGates.size()];
-            dir_dEdegZ41vsZ41_mhtdc = new TDirectory*[FrsGates.size()];
-        
-            h2_x2_vs_AoQs2s4_Z41AoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_x4_vs_AoQs2s4_Z41AoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_Z41_vs_AoQs2s4_Z41AoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_Z41_vs_Z42_Z41AoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_dedegoQ_vs_Z41_Z41AoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_dEdegZ41_vs_Z41_Z41AoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_dEdegoQ_vs_Z41_Zsame_gate_mhtdc.resize(FrsGates.size());
-            h2_dEdegZ41_vs_Z41_Zsame_gate_mhtdc.resize(FrsGates.size());
-            h2_Z41_vs_Z42_Zsame_gate_mhtdc.resize(FrsGates.size());
-            h2_x2_vs_AoQs2s4_Zsame_gate_mhtdc.resize(FrsGates.size());
-            h2_x4_vs_AoQs2s4_Zsame_gate_mhtdc.resize(FrsGates.size());
-            h2_Z41_vs_AoQs2s4_Zsame_gate_mhtdc.resize(FrsGates.size());
-            h2_x2_vs_AoQs2s4_x2AoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_Z41_vs_Z42_x2AoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_x2_vs_AoQs2s4_Zsame_x2AoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_x4_vs_AoQs2s4_Zsame_x2AoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_Z41_vs_AoQs2s4_Zsame_x2AoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_Z41_vs_Z42_Zsame_x2AoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_dEdegoQ_vs_Z41_Zsame_x2AoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_dEdegZ41_vs_Z41_Zsame_x2AoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_x4_vs_AoQs2s4_x4AoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_Z41_vs_Z42_x4AoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_x2_vs_AoQs2s4_Zsame_x4AoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_x4_vs_AoQs2s4_Zsame_x4AoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_Z41_vs_AoQs2s4_Zsame_x4AoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_Z41_vs_Z42_Zsame_x4AoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_dEdegoQ_vs_Z41_Zsame_x4AoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_dEdegZ41_vs_Z41_Zsame_x4AoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_Z41_vs_dEdegZ41_dEdegZ41_Z41_gate_mhtdc.resize(FrsGates.size());
-            h2_Z41_vs_AoQs2s4_dEdegZ41_Z41_gate_mhtdc.resize(FrsGates.size());
-            h2_Z41_vs_Z42_dEdegZ41_Z41_gate_mhtdc.resize(FrsGates.size());
-            h2_x2_vs_AoQs2s4_dEdegZ41_Z41_gate_mhtdc.resize(FrsGates.size());
-            h2_x4_vs_AoQs2s4_dEdegZ41_Z41_gate_mhtdc.resize(FrsGates.size());
-            h2_Z41_vs_AoQs2s4_Zsame_dEdegZ41_Z41_gate_mhtdc.resize(FrsGates.size());
-            h2_Z21_vs_AoQs1s2_Z21vsAoQs1s2_gate_mhtdc.resize(FrsGates.size());
-            h2_x2_vs_AoQs1s2_Z21vsAoQs1s2_gate_mhtdc.resize(FrsGates.size());
-            h2_x1_vs_AoQs1s2_Z21vsAoQs1s2_gate_mhtdc.resize(FrsGates.size());
-            h2_Z41_vs_AoQs2s4_Z21vsAoQs1s2_gate_mhtdc.resize(FrsGates.size());
-            h2_x2_vs_AoQs2s4_Z21vsAoQs1s2_gate_mhtdc.resize(FrsGates.size());
-            h2_x4_vs_AoQs2s4_Z21vsAoQs1s2_gate_mhtdc.resize(FrsGates.size());
-            h2_Z21_vs_Z41_mhtdc_Z21vsAoQs1s2_gate_mhtdc.resize(FrsGates.size());
-            h2_dEdegZ41_vs_Z41_Z21vsAoQs1s2_gate_mhtdc.resize(FrsGates.size());
-            h2_Z21_vs_AoQs1s2_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_x2_vs_Z21_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_Z41_vs_AoQs2s4_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_dEdegZ41_vs_Z41_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_x2_vs_AoQs2s4_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h2_x4_vs_AoQs2s4_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc.resize(FrsGates.size());
-
-            for (int gate = 0; gate < FrsGates.size(); gate++)
-            {
-                TString gname = "" + FrsGates.at(gate)->GetName();
-                dir_mhtdc_S1S2_gate[gate] = dir_mhtdc_S1S2_gated->mkdir(gname);
-                dir_Z21vsAoQs1s2_mhtdc[gate] = dir_mhtdc_S1S2_gate[gate]->mkdir("Z21vsAoQs1s2_Gated");
-                dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc[gate] = dir_Z21vsAoQs1s2_mhtdc[gate]->mkdir("Z21vsAoQs1s2_Z41vsAoQs2s4_Gated");
-
-                dir_mhtdc_S2S4_gate[gate] = dir_mhtdc_S2S4_gated->mkdir(gname);
-                dir_Z41vsAoQs2s4_mhtdc[gate] = dir_mhtdc_S2S4_gate[gate]->mkdir("Z41vsAoQs2s4_Gated");
-                dir_Z41vsZ42_mhtdc[gate] = dir_mhtdc_S2S4_gate[gate]->mkdir("Z41vsZ42_Gated");
-                dir_x2vsAoQs2s4_mhtdc[gate] = dir_mhtdc_S2S4_gate[gate]->mkdir("x2vsAoQs2s4_Gated");
-                dir_x4vsAoQs2s4_mhtdc[gate] = dir_mhtdc_S2S4_gate[gate]->mkdir("x4vsAoQs2s4_Gated");
-                dir_dEdegZ41vsZ41_mhtdc[gate] =  dir_mhtdc_S2S4_gate[gate]->mkdir("dEdegZ41vsZ41_Gated");
-
-                // ::: Gated on S1S2 ::::::::::: 
-                h2_Z21_vs_AoQs1s2_Z21vsAoQs1s2_gate_mhtdc[gate] = MakeTH2(dir_Z21vsAoQs1s2_mhtdc[gate], "I", Form("h2_Z21_vs_AoQs1s2_Z21vsAoQs1s2_gate%d_mhtdc", gate), Form("Z21 vs. A/Q (S1-S2) - Z21AoQs1s2 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
-                h2_x2_vs_AoQs1s2_Z21vsAoQs1s2_gate_mhtdc[gate] = MakeTH2(dir_Z21vsAoQs1s2_mhtdc[gate], "I", Form("h2_x2_vs_AoQs1s2_Z21vsAoQs1s2_gate%d_mhtdc", gate), Form("x2 vs. A/Q (S1-S2) - Z21AoQs1s2 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
-                h2_x1_vs_AoQs1s2_Z21vsAoQs1s2_gate_mhtdc[gate] = MakeTH2(dir_Z21vsAoQs1s2_mhtdc[gate], "I", Form("h2_x1_vs_AoQs1s2_Z21vsAoQs1s2_gate%d_mhtdc", gate), Form("x1 vs. A/Q (S1-S2) - Z21AoQs1s2 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
-                h2_Z41_vs_AoQs2s4_Z21vsAoQs1s2_gate_mhtdc[gate] = MakeTH2(dir_Z21vsAoQs1s2_mhtdc[gate], "I", Form("h2_Z41_vs_AoQs2s4_Z21vsAoQs1s2_gate%d_mhtdc",gate), Form("Z41 vs. A/Q (S2-S4) - Z21AoQs1s2 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
-                h2_x2_vs_AoQs2s4_Z21vsAoQs1s2_gate_mhtdc[gate] = MakeTH2(dir_Z21vsAoQs1s2_mhtdc[gate], "I", Form("h2_x2_vs_AoQs2s4_Z21vsAoQs1s2_gate%d_mhtdc", gate), Form("x2 vs. A/Q (S2-S4) - Z21AoQs1s2 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
-                h2_x4_vs_AoQs2s4_Z21vsAoQs1s2_gate_mhtdc[gate] = MakeTH2(dir_Z21vsAoQs1s2_mhtdc[gate], "I", Form("h2_x4_vs_AoQs2s4_Z21vsAoQs1s2_gate%d_mhtdc", gate), Form("x4 vs. A/Q (S2-S4) - Z21AoQs1s2 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
-                h2_Z21_vs_Z41_mhtdc_Z21vsAoQs1s2_gate_mhtdc[gate] = MakeTH2(dir_Z21vsAoQs1s2_mhtdc[gate], "I", Form("h2_Z21_vs_Z41_mhtdc_Z21vsAoQs1s2_gate%d_mhtdc", gate), Form("Z21 vs. Z41 - Z21AoQs1s2 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);
-                h2_dEdegZ41_vs_Z41_Z21vsAoQs1s2_gate_mhtdc[gate] = MakeTH2(dir_Z21vsAoQs1s2_mhtdc[gate], "I", Form("h2_dEdegZ41_vs_Z41_Z21vsAoQs1s2_gate%d_mhtdc", gate), Form("Z41 vs. dE in S2 degrader - Z21AoQs1s2 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, 10., 50.);          
-                h2_Z21_vs_AoQs1s2_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc[gate], "I",Form("h2_Z21_vs_AoQs1s2_Z21vsAoQs1s2_Z41vsAoQs2s4_gate%d_mhtdc",gate), Form("Z21 vs. A/Q (S1-S2) - Z21AoQs1s2 / Z41AoQs2s4 Gates: %d", gate), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
-                h2_x2_vs_Z21_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc[gate], "I", Form("h2_x2_vs_Z21_Z21vsAoQs1s2_Z41vsAoQs2s4_gate%d_mhtdc",gate), Form("Z21 vs x2 -  Z21AoQs1s2 / Z41AoQs2s4 Gates: %d", gate), 750, id->min_z_plot, id->max_z_plot, 200, -100., 100.);
-                h2_Z41_vs_AoQs2s4_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc[gate], "I", Form("h2_Z41_vs_AoQs2s4_Z21vsAoQs1s2_Z41vsAoQs2s4_gate%d_mhtdc",gate), Form("Z41 vs. A/Q (S2-S4) -  Z21AoQs1s2 / Z41AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
-                h2_dEdegZ41_vs_Z41_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc[gate], "I", Form("h2_dEdegZ41_vs_Z41_Z21vsAoQs1s2_Z41vsAoQs2s4_gate%d_mhtdc", gate), Form("Z41 vs. dE in S2 degrader - Z21AoQs1s2 / Z41AoQs2s4 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, 10., 50.);
-                h2_x2_vs_AoQs2s4_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc[gate], "I", Form("h2_x2_vs_AoQs2s4_Z21vsAoQs1s2_Z41vsAoQs2s4_gate%d_mhtdc", gate), Form("x2 vs. A/Q (S2-S4) - Z21AoQs1s2 / Z41AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
-                h2_x4_vs_AoQs2s4_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc[gate], "I", Form("h2_x4_vs_AoQs2s4_Z21vsAoQs1s2_Z41vsAoQs2s4_gate%d_mhtdc", gate), Form("x4 vs. A/Q (S2-S4) - Z21AoQs1s2 / Z41AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
-
-                h2_x2_vs_AoQs2s4_Z41AoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_Z41vsAoQs2s4_mhtdc[gate], "I", Form("h2_x2_vs_AoQs2s4_Z41AoQs2s4_gate%d_mhtdc", gate), Form("x2 vs. A/Q (S2-S4) - Z41AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);    
-                h2_x4_vs_AoQs2s4_Z41AoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_Z41vsAoQs2s4_mhtdc[gate], "I", Form("h2_x4_vs_AoQs2s4_Z41AoQs2s4_gate%d_mhtdc", gate), Form("x4 vs. A/Q (S2-S4) - Z41AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
-                h2_Z41_vs_AoQs2s4_Z41AoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_Z41vsAoQs2s4_mhtdc[gate], "I", Form("h2_Z41_vs_AoQs2s4_Z41AoQs2s4_gate%d_mhtdc",gate), Form("Z41 vs. A/Q (S2-S4) - Z41AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
-                h2_Z41_vs_Z42_Z41AoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_Z41vsAoQs2s4_mhtdc[gate], "I", Form("h2_Z41_vs_Z42_Z41AoQs2s4_gate%d_mhtdc", gate), Form("Z41 vs. Z42 - Z41AoQs2s4 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);            
-                h2_dedegoQ_vs_Z41_Z41AoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_Z41vsAoQs2s4_mhtdc[gate], "I", Form("h2_dedegoQ_vs_Z41_Z41AoQs2s4_gate%d_mhtdc", gate), Form("Z41 vs. dE in S2 degrader - Z41AoQs2s4 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, 10., 50.);            
-                h2_dEdegZ41_vs_Z41_Z41AoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_Z41vsAoQs2s4_mhtdc[gate], "I", Form("h2_dEdegZ41_vs_Z41_Z41AoQs2s4_gate%d_mhtdc", gate), Form("Z41 vs. dE in S2 degrader - Z41AoQs2s4 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, 10., 50.);          
-
-                h2_dEdegoQ_vs_Z41_Zsame_gate_mhtdc[gate] = MakeTH2(dir_Z41vsZ42_mhtdc[gate], "I", Form("h2_dEdegoQ_vs_Z41_Zsame_gate%d_mhtdc", gate), Form("dE in S2 degrader / Q vs. Z41 - Z41-Z42 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, 10., 100.);
-                h2_dEdegZ41_vs_Z41_Zsame_gate_mhtdc[gate] = MakeTH2(dir_Z41vsZ42_mhtdc[gate], "I", Form("h2_dEdegZ41_vs_Z41_Zsame_gate%d_mhtdc", gate), Form("dE in S2 degrader vs. Z41 - Z41-Z42 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, 10., 100.);
-                h2_Z41_vs_Z42_Zsame_gate_mhtdc[gate] = MakeTH2(dir_Z41vsZ42_mhtdc[gate], "I", Form("h2_Z41_vs_Z42_Zsame_gate%d_mhtdc", gate), Form("Z41 vs. Z42 - Z41-Z42 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);            
-                h2_x2_vs_AoQs2s4_Zsame_gate_mhtdc[gate] = MakeTH2(dir_Z41vsZ42_mhtdc[gate], "I", Form("h2_x2_vs_AoQs2s4_Zsame_gate%d_mhtdc", gate), Form("x2 vs. A/Q (S2-S4) - Z41-Z42 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);            
-                h2_x4_vs_AoQs2s4_Zsame_gate_mhtdc[gate] = MakeTH2(dir_Z41vsZ42_mhtdc[gate], "I", Form("h2_x4_vs_AoQs2s4_Zsame_gate%d_mhtdc", gate), Form("x4 vs. A/Q (S2-S4) - Z41-Z42 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);            
-                h2_Z41_vs_AoQs2s4_Zsame_gate_mhtdc[gate] = MakeTH2(dir_Z41vsZ42_mhtdc[gate], "I", Form("h2_Z41_vs_AoQs2s4_Zsame_gate%d_mhtdc", gate), Form("Z41 vs. A/Q (S2-S4) - Z41-Z42 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
-
-                h2_x2_vs_AoQs2s4_x2AoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_x2vsAoQs2s4_mhtdc[gate], "I", Form("h2_x2_vs_AoQs2s4_x2AoQs2s4_gate%d_mhtdc", gate), Form("x2 vs. A/Q (S2-S4) - x2AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
-                h2_Z41_vs_Z42_x2AoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_x2vsAoQs2s4_mhtdc[gate], "I", Form("h2_Z41_vs_Z42_x2AoQs2s4_gate%d_mhtdc", gate), Form("Z41 vs. Z42 - x2AoQs2s4 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);
-                h2_x2_vs_AoQs2s4_Zsame_x2AoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_x2vsAoQs2s4_mhtdc[gate], "I", Form("h2_x2_vs_AoQs2s4_Zsame_x2AoQs2s4_gate%d_mhtdc", gate), Form("x2 vs. A/Q (S2-S4) - Z41-Z42 Gate 0, x2AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);                
-                h2_x4_vs_AoQs2s4_Zsame_x2AoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_x2vsAoQs2s4_mhtdc[gate], "I", Form("h2_x4_vs_AoQs2s4_Zsame_x2AoQs2s4_gate%d_mhtdc", gate), Form("x4 vs. A/Q (S2-S4) - Z41-Z42 Gate 0, x2AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);                
-                h2_Z41_vs_AoQs2s4_Zsame_x2AoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_x2vsAoQs2s4_mhtdc[gate], "I", Form("h2_Z41_vs_AoQs2s4_Zsame_x2AoQs2s4_gate%d_mhtdc", gate), Form("Z1 vs. A/Q (S2-S4) - Z41-Z42 Gate 0, x2AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);              
-                h2_Z41_vs_Z42_Zsame_x2AoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_x2vsAoQs2s4_mhtdc[gate], "I", Form("h2_Z41_vs_Z42_Zsame_x2AoQs2s4_gate%d_mhtdc", gate), Form("Z1 vs. Z2 - Z41-Z42 Gate 0, x2AoQs2s4 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);                
-                h2_dEdegoQ_vs_Z41_Zsame_x2AoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_x2vsAoQs2s4_mhtdc[gate], "I", Form("h2_dEdegoQ_vs_Z41_Zsame_x2AoQs2s4_gate%d_mhtdc", gate), Form("dE in S2 degrader / Q vs. Z41 - Z41-Z42 Gate 0, x2AoQs2s4 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, 10., 100.);
-                h2_dEdegZ41_vs_Z41_Zsame_x2AoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_x2vsAoQs2s4_mhtdc[gate], "I", Form("h2_dEdegZ41_vs_Z41_Zsame_x2AoQs2s4_gate%d_mhtdc", gate), Form("dE in S2 degrader vs. Z41 - Z41-Z42 Gate 0, x2AoQs2s4 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, 10., 100.);
-
-                h2_x4_vs_AoQs2s4_x4AoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_x4vsAoQs2s4_mhtdc[gate], "I", Form("h2_x4_vs_AoQs2s4_x4AoQs2s4_gate%d_mhtdc", gate), Form("x4 vs. A/Q (S2-S4) - x4AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);            
-                h2_Z41_vs_Z42_x4AoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_x4vsAoQs2s4_mhtdc[gate], "I", Form("h2_Z41_vs_Z42_x4AoQs2s4_gate%d_mhtdc", gate), Form("Z41 vs. Z42 (S2-S4) - x4AoQs2s4 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);
-                h2_x2_vs_AoQs2s4_Zsame_x4AoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_x4vsAoQs2s4_mhtdc[gate], "I", Form("h2_x2_vs_AoQs2s4_Zsame_x4AoQs2s4_gate%d_mhtdc", gate), Form("x2 vs. A/Q (S2-S4) - Z41-Z42 Gate 0, x4AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);                
-                h2_x4_vs_AoQs2s4_Zsame_x4AoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_x4vsAoQs2s4_mhtdc[gate], "I", Form("h2_x4_vs_AoQs2s4_Zsame_x4AoQs2s4_gate%d_mhtdc", gate), Form("x4 vs. A/Q (S2-S4) - Z41-Z42 Gate 0, x4AoQs2s4 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);               
-                h2_Z41_vs_Z42_Zsame_x4AoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_x4vsAoQs2s4_mhtdc[gate], "I", Form("h2_Z41_vs_Z42_Zsame_x4AoQs2s4_gate%d_mhtdc", gate), Form("Z41 vs. Z42 - Z41-Z42 Gate 0, x4AoQs2s4 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);
-                h2_dEdegoQ_vs_Z41_Zsame_x4AoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_x4vsAoQs2s4_mhtdc[gate], "I", Form("h2_dEdegoQ_vs_Z41_Zsame_x4AoQs2s4_gate%d_mhtdc", gate), Form("dE in S2 degrader / Q vs. Z41 - Z41-Z42 Gate 0, x4AoQs2s4 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, 10., 100.);
-                h2_dEdegZ41_vs_Z41_Zsame_x4AoQs2s4_gate_mhtdc[gate] = MakeTH2(dir_x4vsAoQs2s4_mhtdc[gate], "I", Form("h2_dEdegZ41_vs_Z41_Zsame_x4AoQs2s4_gate%d_mhtdc", gate), Form("dE in S2 degrader vs. Z41 - Z41-Z42 Gate 0, x4AoQs2s4 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, 10., 100.);
-
-                h2_Z41_vs_dEdegZ41_dEdegZ41_Z41_gate_mhtdc[gate] = MakeTH2(dir_dEdegZ41vsZ41_mhtdc[gate], "I", Form("h2_Z41_vs_dEdegZ41_dEdegZ41_Z41_gate%d_mhtdc", gate), Form("Z41 vs. dE in S2 degrader - dEdegZ41 Z41 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, 10., 100.);            
-                h2_Z41_vs_AoQs2s4_dEdegZ41_Z41_gate_mhtdc[gate] = MakeTH2(dir_dEdegZ41vsZ41_mhtdc[gate], "I", Form("h2_Z41_vs_AoQs2s4_dEdegZ41_Z41_gate%d_mhtdc", gate), Form("Z41 vs. A/Q (S2-S4) - dEdegZ41 Z41 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);       
-                h2_Z41_vs_Z42_dEdegZ41_Z41_gate_mhtdc[gate] = MakeTH2(dir_dEdegZ41vsZ41_mhtdc[gate], "I", Form("h2_Z41_vs_Z42_dEdegZ41_Z41_gate%d_mhtdc", gate), Form("Z41 vs. Z42 - dEdegZ41 Z41 Gate: %d", gate), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);            
-                h2_x2_vs_AoQs2s4_dEdegZ41_Z41_gate_mhtdc[gate] = MakeTH2(dir_dEdegZ41vsZ41_mhtdc[gate], "I", Form("h2_x2_vs_AoQs2s4_dEdegZ41_Z41_gate%d_mhtdc", gate), Form("x2 vs. A/Q (S2-S4) - dEdegZ41 Z41 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);     
-                h2_x4_vs_AoQs2s4_dEdegZ41_Z41_gate_mhtdc[gate] = MakeTH2(dir_dEdegZ41vsZ41_mhtdc[gate], "I", Form("h2_x4_vs_AoQs2s4_dEdegZ41_Z41_gate%d_mhtdc", gate), Form("x4 vs. A/Q (S2-S4) - dEdegZ41 Z41 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);   
-                h2_Z41_vs_AoQs2s4_Zsame_dEdegZ41_Z41_gate_mhtdc[gate] = MakeTH2(dir_dEdegZ41vsZ41_mhtdc[gate], "I", Form("h2_Z41_vs_AoQs2s4_Zsame_dEdegZ41_Z41_gate%d_mhtdc", gate), Form("Z41 vs. A/Q (S2-S4) [ABS(Z1 - Z2) < 0.4] - dEdegZ41 Z41 Gate: %d", gate), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
-
-            }
-        }
-    }
-
-    if (frs_config->plot_mhtdc_1d)
-    {
-        h1_beta_s1s2_mhtdc = MakeTH1(dir_mhtdc_S1S2_1d, "D", "h1_beta_s1s2_mhtdc", "Beta (S1-S2) (MHTDC)", 500, 0.0, 1.0, "Beta (S1-S2)", kPink-3, kBlue+2);
-        h1_AoQs1s2_mhtdc = MakeTH1(dir_mhtdc_S1S2_1d, "D", "h1_AoQs1s2_mhtdc", "A/Q (S1-S2) (MHTDC)", 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2);
-        h1_AoQs1s2_corr_mhtdc = MakeTH1(dir_mhtdc_S1S2_1d, "D", "h1_AoQs1s2_corr_mhtdc", "A/Q corr (S1-S2) (MHTDC)", 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2);
-        h1_Z21_mhtdc = MakeTH1(dir_mhtdc_S1S2_1d, "D", "h1_Z21_mhtdc", "Z21 (MHTDC)", 1000, 0, 100, "Z21", kPink-3, kBlue+2);
-        h1_Z22_mhtdc = MakeTH1(dir_mhtdc_S1S2_1d, "D", "h1_Z22_mhtdc", "Z22 (MHTDC)", 1000, 0, 100, "Z22", kPink-3, kBlue+2);
-
-        h1_beta_s2s4_mhtdc = MakeTH1(dir_mhtdc_S2S4_1d, "D", "h1_beta_s2s4_mhtdc", "Beta (S2-S4) (MHTDC)", 500, 0.0, 1.0, "Beta (S2-S4)", kPink-3, kBlue+2);
-        h1_AoQs2s4_mhtdc = MakeTH1(dir_mhtdc_S2S4_1d, "D", "h1_AoQs2s4_mhtdc", "A/Q (S2-S4) (MHTDC)", 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2);
-        h1_AoQs2s4_corr_mhtdc = MakeTH1(dir_mhtdc_S2S4_1d, "D", "h1_AoQs2s4_corr_mhtdc", "A/Q corr (S2-S4) (MHTDC)", 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2);
-        h1_Z41_mhtdc = MakeTH1(dir_mhtdc_S2S4_1d, "D", "h1_Z41_mhtdc", "Z41 (MHTDC)", 1000, 0, 100, "Z41", kPink-3, kBlue+2);
-        h1_Z42_mhtdc = MakeTH1(dir_mhtdc_S2S4_1d, "D", "h1_Z42_mhtdc", "Z42 (MHTDC)", 1000, 0, 100, "Z42", kPink-3, kBlue+2);
-        h1_Z43_mhtdc = MakeTH1(dir_mhtdc_S2S4_1d, "D", "h1_Z43_mhtdc", "Z43 (MHTDC)", 1000, 0, 100, "Z43", kPink-3, kBlue+2);
-        h1_dEdegoQ_mhtdc = MakeTH1(dir_mhtdc_S2S4_1d, "D", "h1_dEdegoQ_mhtdc", "dE in S2 degrader / Q (MHTDC)", 1000, 0.0, 2.0, "dE / Q", kPink-3, kBlue+2);
-        h1_dEdegZ41_mhtdc = MakeTH1(dir_mhtdc_S2S4_1d, "D", "h1_dEdegZ41_mhtdc", "dEZ41 in S2 degrader (MHTDC)", 1000, 0, 100, "dEZ41", kPink-3, kBlue+2);
-
-        // CEJ: directory layout for these is probably borked af
-        if (!FrsGates.empty())
-        {  
-            dir_Z21vsAoQs1s2_mhtdc_1d = new TDirectory*[FrsGates.size()];
-            dir_Z41vsAoQs2s4_mhtdc_1d = new TDirectory*[FrsGates.size()];
-            dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc_1d = new TDirectory*[FrsGates.size()];
-
-            h1_beta_s2s4_Z21vsAoQs1s2_gate_mhtdc.resize(FrsGates.size());
-            h1_AoQs2s4_Z21vsAoQs1s2_gate_mhtdc.resize(FrsGates.size());
-            h1_Z41_Z21vsAoQs1s2_gate_mhtdc.resize(FrsGates.size());
-            h1_Z42_Z21vsAoQs1s2_gate_mhtdc.resize(FrsGates.size());
-            h1_beta_s1s2_Z21vsAoQs1s2_gate_mhtdc.resize(FrsGates.size());
-            h1_AoQs1s2_Z21vsAoQs1s2_gate_mhtdc.resize(FrsGates.size());
-            h1_Z21_Z21vsAoQs1s2_gate_mhtdc.resize(FrsGates.size());
-
-            h1_beta_s1s2_Z41vsAoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h1_AoQs1s2_Z41vsAoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h1_Z21_Z41vsAoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h1_beta_s2s4_Z41vsAoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h1_AoQs2s4_Z41vsAoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h1_Z41_Z41vsAoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h1_Z42_Z41vsAoQs2s4_gate_mhtdc.resize(FrsGates.size());
-
-            h1_beta_s1s2_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h1_AoQs1s2_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h1_Z21_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h1_beta_s2s4_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h1_AoQs2s4_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h1_Z41_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc.resize(FrsGates.size());
-            h1_Z42_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc.resize(FrsGates.size());
-
-            // Assumes every gate contains S2 and S4 PID selection
-            h1_ratio_S2_S4_gates.resize(FrsGates.size());
-
-            for (int gate = 0; gate < FrsGates.size(); gate++)
-            {
-                dir_Z21vsAoQs1s2_mhtdc_1d[gate] = dir_mhtdc_S1S2_1d->mkdir("Z21vsAoQs1s2_Gated");
-                dir_Z41vsAoQs2s4_mhtdc_1d[gate] = dir_mhtdc_S2S4_1d->mkdir("Z41vsAoQs2s4_Gated");
-
-                dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc_1d[gate] = dir_Z21vsAoQs1s2_mhtdc_1d[gate]->mkdir("Z21vsAoQs1s2_Z41vsAoQs2s4_Gated");
-
-                h1_beta_s1s2_Z21vsAoQs1s2_gate_mhtdc[gate] = MakeTH1(dir_Z21vsAoQs1s2_mhtdc_1d[gate], "D", Form("h1_beta_s1s2_Z21vsAoQs1s2_gate%d_mhtdc", gate), Form("Beta (S1-S2) (MHTDC) - Z21vsAoQs1s2 Gate: %d", gate), 500, 0.0, 1.0, "Beta (S1-S2)", kPink-3, kBlue+2);
-                h1_AoQs1s2_Z21vsAoQs1s2_gate_mhtdc[gate] = MakeTH1(dir_Z21vsAoQs1s2_mhtdc_1d[gate], "D", Form("h1_AoQs1s2_Z21vsAoQs1s2_gate%d_mhtdc", gate), Form("AoQ (S1-S2) (MHTDC) - Z21vsAoQs1s2 Gate: %d", gate), 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2);
-                h1_Z21_Z21vsAoQs1s2_gate_mhtdc[gate] = MakeTH1(dir_Z21vsAoQs1s2_mhtdc_1d[gate], "D", Form("h1_Z21_Z21vsAoQs1s2_gate%d_mhtdc", gate), Form("Z21 (MHTDC) - Z21vsAoQs1s2 Gate: %d", gate), 1000, 0, 100, "Z21", kPink-3, kBlue+2);
-                h1_beta_s2s4_Z21vsAoQs1s2_gate_mhtdc[gate] = MakeTH1(dir_Z21vsAoQs1s2_mhtdc_1d[gate], "D", Form("h1_beta_s2s4_Z21vsAoQs1s2_gate%d_mhtdc", gate), Form("Beta (S2-S4) (MHTDC) - Z21vsAoQs1s2 Gate: %d", gate), 500, 0.0, 1.0, "Beta (S2-S4)", kPink-3, kBlue+2);
-                h1_AoQs2s4_Z21vsAoQs1s2_gate_mhtdc[gate] = MakeTH1(dir_Z21vsAoQs1s2_mhtdc_1d[gate], "D", Form("h1_AoQs2s4_Z21vsAoQs1s2_gate%d_mhtdc", gate), Form("AoQ (S2-S4) (MHTDC) - Z21vsAoQs1s2 Gate: %d", gate), 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2);
-                h1_Z41_Z21vsAoQs1s2_gate_mhtdc[gate] = MakeTH1(dir_Z21vsAoQs1s2_mhtdc_1d[gate], "D", Form("h1_Z41_Z21vsAoQs1s2_gate%d_mhtdc", gate), Form("Z41 (MHTDC) - Z21vsAoQs1s2 Gate: %d", gate), 1000, 0, 100, "Z41", kPink-3, kBlue+2);
-                h1_Z42_Z21vsAoQs1s2_gate_mhtdc[gate] = MakeTH1(dir_Z21vsAoQs1s2_mhtdc_1d[gate], "D", Form("h1_Z42_Z21vsAoQs1s2_gate%d_mhtdc", gate), Form("Z42 (MHTDC) - Z21vsAoQs1s2 Gate: %d", gate), 1000, 0, 100, "Z42", kPink-3, kBlue+2);
-
-                h1_beta_s1s2_Z41vsAoQs2s4_gate_mhtdc[gate] = MakeTH1(dir_Z41vsAoQs2s4_mhtdc_1d[gate], "D", Form("h1_beta_s1s2_Z41vsAoQs2s4_gate%d_mhtdc", gate), Form("Beta (S1-S2) (MHTDC) - Z41vsAoQs2s4 Gate: %d", gate), 500, 0.0, 1.0, "Beta (S1-S2)", kPink-3, kBlue+2);
-                h1_AoQs1s2_Z41vsAoQs2s4_gate_mhtdc[gate] = MakeTH1(dir_Z41vsAoQs2s4_mhtdc_1d[gate], "D", Form("h1_AoQs1s2_Z41vsAoQs2s4_gate%d_mhtdc", gate), Form("AoQ (S1-S2) (MHTDC) - Z41vsAoQs2s4 Gate: %d", gate), 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2);
-                h1_Z21_Z41vsAoQs2s4_gate_mhtdc[gate] = MakeTH1(dir_Z41vsAoQs2s4_mhtdc_1d[gate], "D", Form("h1_Z21_Z41vsAoQs2s4_gate%d_mhtdc", gate), Form("Z21 (MHTDC) - Z41vsAoQs2s4 Gate: %d", gate), 1000, 0, 100, "Z21", kPink-3, kBlue+2);
-                h1_beta_s2s4_Z41vsAoQs2s4_gate_mhtdc[gate] = MakeTH1(dir_Z41vsAoQs2s4_mhtdc_1d[gate], "D", Form("h1_beta_s2s4_Z41vsAoQs2s4_gate%d_mhtdc", gate), Form("Beta (S2-S4) (MHTDC) - Z41vsAoQs2s4 Gate: %d", gate), 500, 0.0, 1.0, "Beta (S2-S4)", kPink-3, kBlue+2);
-                h1_AoQs2s4_Z41vsAoQs2s4_gate_mhtdc[gate] = MakeTH1(dir_Z41vsAoQs2s4_mhtdc_1d[gate], "D", Form("h1_AoQs2s4_Z41vsAoQs2s4_gate%d_mhtdc", gate), Form("AoQ (S2-S4) (MHTDC) - Z41vsAoQs2s4 Gate: %d", gate), 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2);
-                h1_Z41_Z41vsAoQs2s4_gate_mhtdc[gate] = MakeTH1(dir_Z21vsAoQs1s2_mhtdc_1d[gate], "D", Form("h1_Z41_Z41vsAoQs2s4_gate%d_mhtdc", gate), Form("Z41 (MHTDC) - Z41vsAoQs2s4 Gate: %d", gate), 1000, 0, 100, "Z41", kPink-3, kBlue+2);
-                h1_Z42_Z41vsAoQs2s4_gate_mhtdc[gate] = MakeTH1(dir_Z21vsAoQs1s2_mhtdc_1d[gate], "D", Form("h1_Z42_Z41vsAoQs2s4_gate%d_mhtdc", gate), Form("Z42 (MHTDC) - Z41vsAoQs2s4 Gate: %d", gate), 1000, 0, 100, "Z42", kPink-3, kBlue+2);
-
-                h1_beta_s1s2_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc[gate] =  MakeTH1(dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc_1d[gate], "D", Form("h1_beta_s1s2_Z21vsAoQs1s2_Z41vsAoQs2s4_gate%d_mhtdc", gate), Form("Beta (S1-S2) (MHTDC) - Z21vsAoQs1s2 / Z41vsAoQs2s4 Gates: %d", gate), 500, 0.0, 1.0, "Beta (S1-S2)", kPink-3, kBlue+2);
-                h1_AoQs1s2_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc[gate] =  MakeTH1(dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc_1d[gate], "D", Form("h1_AoQs1s2_Z21vsAoQs1s2_Z41vsAoQs2s4_gate%d_mhtdc", gate), Form("AoQ (S1-S2) (MHTDC) - Z21vsAoQs1s2 / Z41vsAoQs2s4 Gates: %d", gate), 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2);
-                h1_Z21_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc[gate] =  MakeTH1(dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc_1d[gate], "D", Form("h1_Z21_Z21vsAoQs1s2_Z41vsAoQs2s4_gate%d_mhtdc", gate), Form("Z21 (MHTDC) - Z21vsAoQs1s2 / Z41vsAoQs2s4 Gates: %d", gate), 1000, 0, 100, "Z21", kPink-3, kBlue+2);
-                h1_beta_s2s4_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc[gate] = MakeTH1(dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc_1d[gate], "D", Form("h1_beta_s2s4_Z21vsAoQs1s2_Z41vsAoQs2s4_gate%d_mhtdc", gate), Form("Beta (S2-S4) (MHTDC) - Z21vsAoQs1s2 / Z41vsAoQs2s4 Gates: %d", gate), 500, 0.0, 1.0, "Beta (S2-S4)", kPink-3, kBlue+2);
-                h1_AoQs2s4_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc[gate] = MakeTH1(dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc_1d[gate], "D", Form("h1_AoQs2s4_Z21vsAoQs1s2_Z41vsAoQs2s4_gate%d_mhtdc", gate), Form("AoQ (S2-S4) (MHTDC) - Z21vsAoQs1s2 / Z41vsAoQs2s4 Gates: %d", gate), 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2);
-                h1_Z41_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc[gate] = MakeTH1(dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc_1d[gate], "D", Form("h1_Z41_Z21vsAoQs1s2_Z41vsAoQs2s4_gate%d_mhtdc", gate), Form("Z41 (MHTDC) - Z21vsAoQs1s2 / Z41vsAoQs2s4 Gates: %d", gate), 1000, 0, 100, "Z41", kPink-3, kBlue+2);
-                h1_Z42_Z21vsAoQs1s2_Z41vsAoQs2s4_gate_mhtdc[gate] = MakeTH1(dir_Z21vsAoQs1s2_Z41vsAoQs2s4_mhtdc_1d[gate], "D", Form("h1_Z42_Z21vsAoQs1s2_Z41vsAoQs2s4_gate%d_mhtdc", gate), Form("Z42 (MHTDC) - Z21vsAoQs1s2 / Z41vsAoQs2s4 Gates: %d", gate), 1000, 0, 100, "Z42", kPink-3, kBlue+2);
-            
-                h1_ratio_S2_S4_gates[gate] = MakeTH1(dir_ratio_S2_S4, "D", Form("h1_ratio_S2_S4_gate%d", gate), Form("Ratio of counts passing S2 : S4 PID - Gate: %d", gate), 1801, 0, 1800, "Time [s]", kRed-3, kBlack);
-            }
-        }
-
-        if (!frs_config->plot_tac_1d)
-        {
-            h1_x1 = MakeTH1(dir_tac_S1S2_1d, "D", "h1_x1", "S1 x-position", 200, -100, 100, "x1", kYellow-7, kBlack);
-            h1_x2 = MakeTH1(dir_tac_S1S2_1d, "D", "h1_x2", "S2 x-position", 200, -100, 100, "x2", kYellow-7, kBlack);
-            h1_x4 = MakeTH1(dir_tac_S2S4_1d, "D", "h1_x4", "S4 x-position", 200, -100, 100, "x4", kYellow-7, kBlack);
-            h1_a1 = MakeTH1(dir_tac_S1S2_1d, "D", "h1_a1", "AngleX S1", 200, -100, 100, "a1", kYellow-7, kBlack);
-            h1_a2 = MakeTH1(dir_tac_S1S2_1d, "D", "h1_a2", "AngleX S2", 200, -100, 100, "a2", kYellow-7, kBlack);
-            h1_a4 = MakeTH1(dir_tac_S2S4_1d, "D", "h1_a4", "AngleX S4", 200, -100, 100, "a4", kYellow-7, kBlack);
-            h1_y1 = MakeTH1(dir_tac_S1S2_1d, "D", "h1_y1", "S1 y-position", 200, -100, 100, "y1", kYellow-7, kBlack);
-            h1_y2 = MakeTH1(dir_tac_S1S2_1d, "D", "h1_y2", "S2 y-position", 200, -100, 100, "y2", kYellow-7, kBlack);
-            h1_y4 = MakeTH1(dir_tac_S2S4_1d, "D", "h1_y4", "S4 y-position", 200, -100, 100, "y4", kYellow-7, kBlack);
-            h1_b1 = MakeTH1(dir_tac_S1S2_1d, "D", "h1_b1", "AngleY S1", 200, -100, 100, "b1", kYellow-7, kBlack);
-            h1_b2 = MakeTH1(dir_tac_S1S2_1d, "D", "h1_b2", "AngleY S2", 200, -100, 100, "b2", kYellow-7, kBlack);
-            h1_b4 = MakeTH1(dir_tac_S2S4_1d, "D", "h1_b4", "AngleY S4", 200, -100, 100, "b4", kYellow-7, kBlack);
-        }
-    }
-
     
-    passed_Z21vsAoQs1s2.resize(FrsGates.size());
+    passed_Z21vsAoQs1s2.resize(num_frs_gates);
     std::fill(passed_Z21vsAoQs1s2.begin(), passed_Z21vsAoQs1s2.end(), false);
-    passed_Z41vsAoQs2s4.resize(FrsGates.size());
+    passed_Z41vsAoQs2s4.resize(num_frs_gates);
     std::fill(passed_Z41vsAoQs2s4.begin(), passed_Z41vsAoQs2s4.end(), false);
-    count_passed_Z21vsAoQs1s2.resize(FrsGates.size());
+    count_passed_Z21vsAoQs1s2.resize(num_frs_gates);
     std::fill(count_passed_Z21vsAoQs1s2.begin(), count_passed_Z21vsAoQs1s2.end(), 0);
-    count_passed_Z41vsAoQs2s4.resize(FrsGates.size());
+    count_passed_Z41vsAoQs2s4.resize(num_frs_gates);
     std::fill(count_passed_Z41vsAoQs2s4.begin(), count_passed_Z41vsAoQs2s4.end(), 0);
-    count_passed_Z41vsZ42.resize(FrsGates.size());
+    count_passed_Z41vsZ42.resize(num_frs_gates);
     std::fill(count_passed_Z41vsZ42.begin(), count_passed_Z41vsZ42.end(), 0);
     
     return kSUCCESS;
@@ -685,13 +599,13 @@ InitStatus FrsNearlineSpectra::Init()
 
 void FrsNearlineSpectra::Exec(Option_t* option)
 {   
-    Long64_t wr_frs = 0; Long64_t trav_mus_wr = 0;
+    wr_frs = 0; trav_mus_wr = 0;
     if (hitArray->size() <= 0) return;
 
     fNEvents++;
     
-    Long64_t FRS_time_mins = 0;
-    auto const & hitItem = hitArray->at(0); // should only be size=1! check
+    FRS_time_mins = 0;
+    hitItem = hitArray->at(0); // should only be size=1! check
     wr_frs = hitItem.Get_wr_t();
     if(wr_frs > 0) FRS_time_mins = (wr_frs - exp_config->exp_start_time)/ 60E9;
 
@@ -702,194 +616,166 @@ void FrsNearlineSpectra::Exec(Option_t* option)
         frs_time_max = std::max(frs_time_max, static_cast<double>(FRS_time_mins));
     }
 
+    // :::::: No TAC/MHTDC distinction :::::: 
+    // ----- 2D ----- 
+    if (hitItem.Get_ID_x2() != 0 && hitItem.Get_music41_dE() != 0) h2_dE41_vs_x2->Fill(hitItem.Get_ID_x2(), hitItem.Get_music41_dE());
+    if (hitItem.Get_ID_x4() != 0 && hitItem.Get_music41_dE() != 0) h2_dE41_vs_x4->Fill(hitItem.Get_ID_x4(), hitItem.Get_music41_dE());
+    if (hitItem.Get_ID_x2() != 0 && hitItem.Get_ID_a2() != 0) h2_x2_vs_a2->Fill(hitItem.Get_ID_x2(), hitItem.Get_ID_a2());
+    if (hitItem.Get_ID_y2() != 0 && hitItem.Get_ID_b2() != 0) h2_y2_vs_b2->Fill(hitItem.Get_ID_y2(), hitItem.Get_ID_b2());
+    if (hitItem.Get_ID_x4() != 0 && hitItem.Get_ID_a4() != 0) h2_x4_vs_a4->Fill(hitItem.Get_ID_x4(), hitItem.Get_ID_a4());
+    if (hitItem.Get_ID_y4() != 0 && hitItem.Get_ID_b4() != 0) h2_y4_vs_b4->Fill(hitItem.Get_ID_y4(), hitItem.Get_ID_b4());
+    if (hitItem.Get_ID_x2() != 0 && hitItem.Get_ID_x4() != 0) h2_x2_vs_x4->Fill(hitItem.Get_ID_x2(), hitItem.Get_ID_x4());
+    if (hitItem.Get_sci_tof_21_41() != 0 && hitItem.Get_music41_dE() != 0) h2_dE41_vs_ToF_21_41->Fill(hitItem.Get_sci_tof_21_41(), hitItem.Get_music41_dE());
 
-    // :::::::::: TAC ::::::::::::: //
-    // ---------------------------- //
-    if (frs_config->plot_tac_2d)
-    {
-        if (hitItem.Get_ID_AoQ_s2s4() > 0 && hitItem.Get_ID_z41() > 0) h2_Z41_vs_AoQs2s4->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_z41());
-        if (hitItem.Get_ID_AoQs2s4_driftcorr() > 0 && hitItem.Get_ID_z41_driftcorr() > 0) h2_Z41_vs_AoQs2s4_driftcorr->Fill(hitItem.Get_ID_AoQs2s4_driftcorr(), hitItem.Get_ID_z41_driftcorr());
+    // --- 1D ---
+    h1_x1->Fill(hitItem.Get_ID_x1());
+    h1_x2->Fill(hitItem.Get_ID_x2());
+    h1_x4->Fill(hitItem.Get_ID_x4());
+    h1_a1->Fill(hitItem.Get_ID_a1());
+    h1_a2->Fill(hitItem.Get_ID_a2());
+    h1_a4->Fill(hitItem.Get_ID_a4());
+    h1_y1->Fill(hitItem.Get_ID_y1());
+    h1_y2->Fill(hitItem.Get_ID_y2());
+    h1_y4->Fill(hitItem.Get_ID_y4());
+    h1_b1->Fill(hitItem.Get_ID_b1());
+    h1_b2->Fill(hitItem.Get_ID_b2());
+    h1_b4->Fill(hitItem.Get_ID_b4());
+    if (hitItem.Get_ID_dEdegoQ() > 0) h1_dEdegoQ->Fill(hitItem.Get_ID_dEdegoQ());
+    for (int i = 0; i < 2; i++) if (hitItem.Get_ID_rho()[i] > 0) h1_rho[i]->Fill(hitItem.Get_ID_rho()[i]);
+    for (int i = 0; i < 2; i++) if (hitItem.Get_ID_brho()[i] > 0) h1_brho[i]->Fill(hitItem.Get_ID_brho()[i]);
+    if (hitItem.Get_sci_e_11() > 0) h1_sci_e_11->Fill(hitItem.Get_sci_e_11());
+    if (hitItem.Get_sci_e_21() > 0) h1_sci_e_21->Fill(hitItem.Get_sci_e_21());
+    if (hitItem.Get_sci_e_22() > 0) h1_sci_e_22->Fill(hitItem.Get_sci_e_22());
+    if (hitItem.Get_sci_e_41() > 0) h1_sci_e_41->Fill(hitItem.Get_sci_e_41());
+    if (hitItem.Get_sci_e_42() > 0) h1_sci_e_42->Fill(hitItem.Get_sci_e_42());
+    if (hitItem.Get_sci_e_43() > 0) h1_sci_e_43->Fill(hitItem.Get_sci_e_43());
+    if (hitItem.Get_sci_e_81() > 0) h1_sci_e_81->Fill(hitItem.Get_sci_e_81());
+    if (hitItem.Get_sci_x_11() > 0) h1_sci_x_11->Fill(hitItem.Get_sci_x_11());
+    if (hitItem.Get_sci_x_21() > 0) h1_sci_x_21->Fill(hitItem.Get_sci_x_21());
+    if (hitItem.Get_sci_x_22() > 0) h1_sci_x_22->Fill(hitItem.Get_sci_x_22());
+    if (hitItem.Get_sci_x_41() > 0) h1_sci_x_41->Fill(hitItem.Get_sci_x_41());
+    if (hitItem.Get_sci_x_42() > 0) h1_sci_x_42->Fill(hitItem.Get_sci_x_42());
+    if (hitItem.Get_sci_x_43() > 0) h1_sci_x_43->Fill(hitItem.Get_sci_x_43());
+    if (hitItem.Get_sci_x_81() > 0) h1_sci_x_81->Fill(hitItem.Get_sci_x_81());
+    if (hitItem.Get_sci_tof_11_21() > 0) h1_sci_tof_11_21->Fill(hitItem.Get_sci_tof_11_21());
+    if (hitItem.Get_sci_tof_11_21_calib() > 0) h1_sci_tof_11_21_calib->Fill(hitItem.Get_sci_tof_11_21_calib());
+    if (hitItem.Get_sci_tof_21_41() > 0) h1_sci_tof_21_41->Fill(hitItem.Get_sci_tof_21_41());
+    if (hitItem.Get_sci_tof_21_41_calib() > 0) h1_sci_tof_21_41_calib->Fill(hitItem.Get_sci_tof_21_41_calib());
+    if (hitItem.Get_sci_tof_21_42() > 0) h1_sci_tof_21_42->Fill(hitItem.Get_sci_tof_21_42());
+    if (hitItem.Get_sci_tof_21_42_calib() > 0) h1_sci_tof_21_42_calib->Fill(hitItem.Get_sci_tof_21_42_calib());
+    if (hitItem.Get_sci_tof_21_81() > 0) h1_sci_tof_21_81->Fill(hitItem.Get_sci_tof_21_81());
+    if (hitItem.Get_sci_tof_21_81_calib() > 0) h1_sci_tof_21_81_calib->Fill(hitItem.Get_sci_tof_21_81_calib());
+    if (hitItem.Get_sci_tof_22_41() > 0) h1_sci_tof_22_41->Fill(hitItem.Get_sci_tof_22_41());
+    if (hitItem.Get_sci_tof_22_41_calib() > 0) h1_sci_tof_22_41_calib->Fill(hitItem.Get_sci_tof_22_41_calib());
+    if (hitItem.Get_sci_tof_22_81() > 0) h1_sci_tof_22_81->Fill(hitItem.Get_sci_tof_22_81());
+    if (hitItem.Get_sci_tof_22_81_calib() > 0) h1_sci_tof_22_81_calib->Fill(hitItem.Get_sci_tof_22_81_calib());
+    if (hitItem.Get_music21_dE() > 0) h1_music21_dE->Fill(hitItem.Get_music21_dE());
+    if (hitItem.Get_music22_dE() > 0) h1_music22_dE->Fill(hitItem.Get_music22_dE());
+    if (hitItem.Get_music21_dE_cor() > 0) h1_music21_dE_cor->Fill(hitItem.Get_music21_dE_cor());
+    if (hitItem.Get_music22_dE_cor() > 0) h1_music22_dE_cor->Fill(hitItem.Get_music22_dE_cor());
+    if (hitItem.Get_music41_dE() > 0) h1_music41_dE->Fill(hitItem.Get_music41_dE());
+    if (hitItem.Get_music42_dE() > 0) h1_music42_dE->Fill(hitItem.Get_music42_dE());
+    if (hitItem.Get_music41_dE_cor() > 0) h1_music41_dE_cor->Fill(hitItem.Get_music41_dE_cor());
+    if (hitItem.Get_music42_dE_cor() > 0) h1_music42_dE_cor->Fill(hitItem.Get_music42_dE_cor());
+
+
+
+    // ::::: TAC specific :::::::
+    if (frs_config->plot_tac) Process_TAC();
+
+    if (multihitArray->size() <= 0) return;
+    multiHitItem = multihitArray->at(0);
+
+    // :::::: MHTDC specific ::::::
+    if (frs_config->plot_mhtdc) Process_MHTDC();
+
+    // :::::: Plot monitors ::::::
+    if (frs_config->plot_monitors) Process_Monitors();
         
-        if (hitItem.Get_ID_AoQ_corr_s2s4() > 0 && hitItem.Get_ID_z41() > 0) h2_Z41_vs_AoQs2s4_corr->Fill(hitItem.Get_ID_AoQ_corr_s2s4(), hitItem.Get_ID_z41());
-        if (hitItem.Get_ID_z41() > 0 && hitItem.Get_ID_z42() > 0) h2_Z41_vs_Z42->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_z42());
-        if (TMath::Abs(hitItem.Get_ID_z41() - hitItem.Get_ID_z42()) < 0.4) // CEJ: should we .config this condition?
-        {
-            h2_Z41_vs_AoQs2s4_Zsame->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_z41());
-            h2_x4_vs_AoQs2s4_Zsame->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x4());
-            h2_x2_vs_AoQs2s4_Zsame->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x2());
-        }
-
-        if (hitItem.Get_ID_AoQ_s2s4() > 0 && hitItem.Get_ID_x2() > -100 && hitItem.Get_ID_x2() < 100) h2_x2_vs_AoQs2s4->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x2());
-        if (hitItem.Get_ID_AoQ_s2s4() > 0 && hitItem.Get_ID_x4() > -100 && hitItem.Get_ID_x4() < 100) h2_x4_vs_AoQs2s4->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x4());
-        if (hitItem.Get_ID_z41() > 0 && hitItem.Get_ID_dEdegoQ() != 0) h2_dEdegoQ_vs_Z41->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_dEdegoQ());
-        if (hitItem.Get_ID_z41() > 0 && hitItem.Get_ID_dEdeg_z41() != 0) h2_dEdegZ41_vs_Z41->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_dEdeg_z41());
-        if (hitItem.Get_ID_AoQ_s2s4() != 0 && hitItem.Get_ID_a2() != 0) h2_a2_vs_AoQs2s4->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_a2());
-        if (hitItem.Get_ID_AoQ_s2s4() != 0 && hitItem.Get_ID_a4() != 0) h2_a4_vs_AoQs2s4->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_a4());
-        if (hitItem.Get_ID_z41() != 0 && hitItem.Get_music42_dE() != 0) h2_Z41_vs_dE42->Fill(hitItem.Get_ID_z41(), hitItem.Get_music42_dE());
-        if (hitItem.Get_ID_x2() != 0 && hitItem.Get_ID_x4() != 0) h2_x2_vs_x4->Fill(hitItem.Get_ID_x2(), hitItem.Get_ID_x4());
+}
 
 
-        if (hitItem.Get_ID_AoQ_s2s4() != 0 && hitItem.Get_sci_e_41() != 0) h2_SC41dE_vs_AoQs2s4->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_sci_e_41());
-        if (hitItem.Get_ID_AoQ_s2s4() != 0 && hitItem.Get_sci_e_42() != 0) h2_SC42dE_vs_AoQs2s4->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_sci_e_42());
-        if (hitItem.Get_ID_z41() != 0 && hitItem.Get_sci_e_41() != 0) h2_SC41dE_vs_Z41->Fill(hitItem.Get_ID_z41(), hitItem.Get_sci_e_41());
-        if (hitItem.Get_ID_z41() != 0 && hitItem.Get_sci_e_42() != 0) h2_SC42dE_vs_Z41->Fill(hitItem.Get_ID_z41(), hitItem.Get_sci_e_42());
-        if (hitItem.Get_sci_tof_21_41() != 0 && hitItem.Get_music41_dE() != 0) h2_dE41_vs_ToF_21_41->Fill(hitItem.Get_sci_tof_21_41(), hitItem.Get_music41_dE());
-        if (hitItem.Get_ID_z41() != 0 && hitItem.Get_ID_x2() != 0) h2_x2_vs_Z41->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_x2());
-        if (hitItem.Get_ID_z41() != 0 && hitItem.Get_ID_x4() != 0) h2_x4_vs_Z41->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_x4());
-        if (hitItem.Get_ID_x2() != 0 && hitItem.Get_music41_dE() != 0) h2_dE41_vs_x2->Fill(hitItem.Get_ID_x2(), hitItem.Get_music41_dE());
-        if (hitItem.Get_ID_x4() != 0 && hitItem.Get_music41_dE() != 0) h2_dE41_vs_x4->Fill(hitItem.Get_ID_x4(), hitItem.Get_music41_dE());
-        if (hitItem.Get_ID_x2() != 0 && hitItem.Get_ID_a2() != 0) h2_x2_vs_a2->Fill(hitItem.Get_ID_x2(), hitItem.Get_ID_a2());
-        if (hitItem.Get_ID_y2() != 0 && hitItem.Get_ID_b2() != 0) h2_y2_vs_b2->Fill(hitItem.Get_ID_y2(), hitItem.Get_ID_b2());
-        if (hitItem.Get_ID_x4() != 0 && hitItem.Get_ID_a4() != 0) h2_x4_vs_a4->Fill(hitItem.Get_ID_x4(), hitItem.Get_ID_a4());
-        if (hitItem.Get_ID_y4() != 0 && hitItem.Get_ID_b4() != 0) h2_y4_vs_b4->Fill(hitItem.Get_ID_y4(), hitItem.Get_ID_b4());
-        if (hitItem.Get_ID_z41() != 0 && hitItem.Get_sci_e_21() != 0) h2_Z41_vs_Sc21E->Fill(hitItem.Get_ID_z41(), hitItem.Get_sci_e_21());
+void FrsNearlineSpectra::Process_TAC()
+{
+    // S1S4
+    // ----- 2D -----
 
-        if (!FrsGates.empty())
-        {
-            for (int gate = 0; gate < FrsGates.size(); gate++)
-            {   
-                if (FrsGates[gate]->Passed_Z41vsAoQs2s4(hitItem.Get_ID_z41(), hitItem.Get_ID_AoQ_s2s4()))
-                {
-                    h2_Z41_vs_AoQs2s4_Z41AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_z41());
-                    h2_Z41_vs_Z42_Z41AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_z42());
-                    h2_x2_vs_AoQs2s4_Z41AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x2());
-                    h2_x4_vs_AoQs2s4_Z41AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x4());
-                    h2_dedegoQ_vs_Z41_Z41AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_dEdegoQ());
-                    h2_dEdegZ41_vs_Z41_Z41AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_dEdeg_z41());
-                }
-            
-                if (FrsGates[gate]->Passed_Z41vsZ42(hitItem.Get_ID_z41(), hitItem.Get_ID_z42()))
-                {
-                    h2_dEdegoQ_vs_Z41_Zsame_gate[gate]->Fill(hitItem.Get_ID_z41(),hitItem.Get_ID_dEdegoQ());
-                    h2_dEdegZ41_vs_Z41_Zsame_gate[gate]->Fill(hitItem.Get_ID_z41(),hitItem.Get_ID_dEdeg_z41());
-                    h2_Z41_vs_Z42_Zsame_gate[gate]->Fill(hitItem.Get_ID_z41(),hitItem.Get_ID_z42());
 
-                    if(hitItem.Get_ID_AoQ_s2s4() > 1 && hitItem.Get_ID_AoQ_s2s4() < 3 && hitItem.Get_ID_x2() > -100 && hitItem.Get_ID_x2() < 100) h2_x2_vs_AoQs2s4_Zsame_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x2());
-                    if(hitItem.Get_ID_AoQ_s2s4() > 1 && hitItem.Get_ID_AoQ_s2s4() < 3 && hitItem.Get_ID_x4() > -100 && hitItem.Get_ID_x4() < 100) h2_x4_vs_AoQs2s4_Zsame_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x4());
-                    if(hitItem.Get_ID_AoQ_s2s4() > 1 && hitItem.Get_ID_AoQ_s2s4() < 3) h2_Z41_vs_AoQs2s4_Zsame_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_z41());
-                }
-                
-                if (FrsGates[gate]->Passed_x2vsAoQs2s4(hitItem.Get_ID_x2(), hitItem.Get_ID_AoQ_s2s4()))
-                {
-                    h2_x2_vs_AoQs2s4_x2AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x2());
-                    h2_Z41_vs_Z42_x2AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_z42());
-                    
-                    if (FrsGates[gate]->Passed_Z41vsZ42(hitItem.Get_ID_z41(), hitItem.Get_ID_z42()))
-                    {
-                        h2_x2_vs_AoQs2s4_Zsame_x2AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x2());
-                        h2_x4_vs_AoQs2s4_Zsame_x2AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x4());
-                        h2_Z41_vs_AoQs2s4_Zsame_x2AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_z41());
-                        h2_dEdegoQ_vs_Z41_Zsame_x2AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_dEdegoQ());
-                        h2_dEdegZ41_vs_Z41_Zsame_x2AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_dEdeg_z41());
-                    }
-                }
+    // ----- 1D -----
+    if (hitItem.Get_ID_beta_s1s2() > 0) h1_beta_s1s2->Fill(hitItem.Get_ID_beta_s1s2()); 
+    if (hitItem.Get_ID_AoQ_corr_s1s2() > 0) h1_AoQs1s2_corr->Fill(hitItem.Get_ID_AoQ_corr_s1s2());
+    if (hitItem.Get_ID_AoQ_s1s2() > 0) h1_AoQs1s2->Fill(hitItem.Get_ID_AoQ_s1s2());
+    if (hitItem.Get_ID_z21() > 0) h1_Z21->Fill(hitItem.Get_ID_z21());
+    if (hitItem.Get_ID_z22() > 0) h1_Z22->Fill(hitItem.Get_ID_z22());
 
-                if (FrsGates[gate]->Passed_x4vsAoQs2s4(hitItem.Get_ID_x4(), hitItem.Get_ID_AoQ_s2s4()))
-                {
-                    h2_x4_vs_AoQs2s4_x4AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x4());
-                    h2_Z41_vs_Z42_x4AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_z42());
-                    
-                    if (FrsGates[gate]->Passed_Z41vsZ42(hitItem.Get_ID_z41(), hitItem.Get_ID_z42()))
-                    {
-                        h2_x2_vs_AoQs2s4_Zsame_x4AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x2());
-                        h2_x4_vs_AoQs2s4_Zsame_x4AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x4());
-                        h2_Z41_vs_AoQs2s4_Zsame_x4AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_z41());
-                        h2_dEdegoQ_vs_Z41_Zsame_x4AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_dEdegoQ());
-                        h2_dEdegZ41_vs_Z41_Zsame_x4AoQs2s4_gate[gate]->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_dEdeg_z41());
-                    }
-                }
-                
-                if (FrsGates[gate]->Passed_dEdegZ41vsZ41(hitItem.Get_ID_z41(), hitItem.Get_ID_dEdeg_z41()))
-                {
-                    h2_Z41_vs_AoQs2s4_dEdegZ41_Z41_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_z41());
-                    h2_Z41_vs_Z42_dEdegZ41_Z41_gate[gate]->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_z42());
-                    h2_x2_vs_AoQs2s4_dEdegZ41_Z41_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x2());
-                    h2_x4_vs_AoQs2s4_dEdegZ41_Z41_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x4());
-                
-                    if(fabs(hitItem.Get_ID_z42() - hitItem.Get_ID_z41()) < 0.4) h2_Z41_vs_AoQs2s4_Zsame_dEdegZ41_Z41_gate[gate]->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_z41());
-                }
+    // S2S4
+    // ----- 2D -----
+    if (hitItem.Get_ID_AoQ_s2s4() > 0 && hitItem.Get_ID_z41() > 0) h2_Z41_vs_AoQs2s4->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_z41());
+    if (hitItem.Get_ID_AoQs2s4_driftcorr() > 0 && hitItem.Get_ID_z41_driftcorr() > 0) h2_Z41_vs_AoQs2s4_driftcorr->Fill(hitItem.Get_ID_AoQs2s4_driftcorr(), hitItem.Get_ID_z41_driftcorr());
+    if (hitItem.Get_ID_AoQ_corr_s2s4() > 0 && hitItem.Get_ID_z41() > 0) h2_Z41_vs_AoQs2s4_corr->Fill(hitItem.Get_ID_AoQ_corr_s2s4(), hitItem.Get_ID_z41());
+    if (hitItem.Get_ID_z41() > 0 && hitItem.Get_ID_z42() > 0) h2_Z41_vs_Z42->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_z42());
+    if (TMath::Abs(hitItem.Get_ID_z41() - hitItem.Get_ID_z42()) < 0.4)
+    {
+        h2_Z41_vs_AoQs2s4_Zsame->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_z41());
+        h2_x4_vs_AoQs2s4_Zsame->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x4());
+        h2_x2_vs_AoQs2s4_Zsame->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x2());
+    }
+    if (hitItem.Get_ID_AoQ_s2s4() > 0 && hitItem.Get_ID_x2() > -100 && hitItem.Get_ID_x2() < 100) h2_x2_vs_AoQs2s4->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x2());
+    if (hitItem.Get_ID_AoQ_s2s4() > 0 && hitItem.Get_ID_x4() > -100 && hitItem.Get_ID_x4() < 100) h2_x4_vs_AoQs2s4->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_x4());
+    if (hitItem.Get_ID_z41() > 0 && hitItem.Get_ID_dEdegoQ() != 0) h2_dEdegoQ_vs_Z41->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_dEdegoQ());
+    if (hitItem.Get_ID_z41() > 0 && hitItem.Get_ID_dEdeg_z41() != 0) h2_dEdegZ41_vs_Z41->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_dEdeg_z41());
+    if (hitItem.Get_ID_AoQ_s2s4() != 0 && hitItem.Get_ID_a2() != 0) h2_a2_vs_AoQs2s4->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_a2());
+    if (hitItem.Get_ID_AoQ_s2s4() != 0 && hitItem.Get_ID_a4() != 0) h2_a4_vs_AoQs2s4->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_ID_a4());
+    if (hitItem.Get_ID_z41() != 0 && hitItem.Get_music42_dE() != 0) h2_Z41_vs_dE42->Fill(hitItem.Get_ID_z41(), hitItem.Get_music42_dE());
+    if (hitItem.Get_ID_AoQ_s2s4() != 0 && hitItem.Get_sci_e_41() != 0) h2_SC41dE_vs_AoQs2s4->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_sci_e_41());
+    if (hitItem.Get_ID_AoQ_s2s4() != 0 && hitItem.Get_sci_e_42() != 0) h2_SC42dE_vs_AoQs2s4->Fill(hitItem.Get_ID_AoQ_s2s4(), hitItem.Get_sci_e_42());
+    if (hitItem.Get_ID_z41() != 0 && hitItem.Get_sci_e_41() != 0) h2_SC41dE_vs_Z41->Fill(hitItem.Get_ID_z41(), hitItem.Get_sci_e_41());
+    if (hitItem.Get_ID_z41() != 0 && hitItem.Get_sci_e_42() != 0) h2_SC42dE_vs_Z41->Fill(hitItem.Get_ID_z41(), hitItem.Get_sci_e_42());
+    if (hitItem.Get_ID_z41() != 0 && hitItem.Get_ID_x2() != 0) h2_x2_vs_Z41->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_x2());
+    if (hitItem.Get_ID_z41() != 0 && hitItem.Get_ID_x4() != 0) h2_x4_vs_Z41->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_x4());
+    if (hitItem.Get_ID_z41() != 0 && hitItem.Get_sci_e_21() != 0) h2_Z41_vs_Sc21E->Fill(hitItem.Get_ID_z41(), hitItem.Get_sci_e_21());
+
+    // ----- 1D -----
+    if (hitItem.Get_ID_z41() > 0) h1_Z41->Fill(hitItem.Get_ID_z41());
+    if (hitItem.Get_ID_z41_driftcorr() > 0) h1_Z41_driftcorr->Fill(hitItem.Get_ID_z41_driftcorr());
+    if (hitItem.Get_ID_z42() > 0) h1_Z42->Fill(hitItem.Get_ID_z42());
+    if (hitItem.Get_ID_z43() > 0) h1_Z43->Fill(hitItem.Get_ID_z43());
+    if (hitItem.Get_ID_AoQ_s2s4() > 0) h1_AoQs2s4->Fill(hitItem.Get_ID_AoQ_s2s4());
+    if (hitItem.Get_ID_AoQs2s4_driftcorr() > 0) h1_AoQs2s4_driftcorr->Fill(hitItem.Get_ID_AoQs2s4_driftcorr());
+    if (hitItem.Get_ID_AoQ_corr_s2s4() > 0) h1_AoQs2s4_corr->Fill(hitItem.Get_ID_AoQ_corr_s2s4());
+    if (hitItem.Get_ID_beta_s2s4() > 0) h1_beta_s2s4->Fill(hitItem.Get_ID_beta_s2s4()); 
+    if (hitItem.Get_ID_dEdeg_z41() > 0) h1_dEdegZ41->Fill(hitItem.Get_ID_dEdeg_z41());
+
+    if (num_frs_gates > 0)
+    {
+        for (int gate = 0; gate < num_frs_gates; gate++)
+        {   
+            // S2S4
+            if (FrsGates[gate]->PassedS2S4(/* all that jazz*/))
+            {
+                // ----- 2D -----
+                h2_Z41_vs_AoQs2s4_S2S4Gated[gate]->Fill(hitItem.Get_ID_AoQ_corr_s2s4(), hitItem.Get_ID_z41());
+                h2_Z41_vs_Z42_S2S4Gated[gate]->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_z42());
+                h2_x2_vs_AoQs2s4_S2S4Gated[gate]->Fill(hitItem.Get_ID_AoQ_corr_s2s4(), hitItem.Get_ID_x2());
+                h2_x4_vs_AoQs2s4_S2S4Gated[gate]->Fill(hitItem.Get_ID_AoQ_corr_s2s4(), hitItem.Get_ID_x4());
+                h2_dEdegoQ_vs_Z41_S2S4Gated[gate]->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_dEdegoQ());
+                h2_dEdegZ41_vs_Z41_S2S4Gated[gate]->Fill(hitItem.Get_ID_z41(), hitItem.Get_ID_dEdeg_z41());
+
+                // ----- 1D------
+                h1_beta_s2s4_S2S4Gated[gate]->Fill(hitItem.Get_ID_beta_s2s4());
+                h1_AoQs2s4_S2S4Gated[gate]->Fill(hitItem.Get_ID_AoQ_corr_s2s4());
+                h1_Z41_S2S4Gated[gate]->Fill(hitItem.Get_ID_z41());
+                h1_Z42_S2S4Gated[gate]->Fill(hitItem.Get_ID_z42_mhtdc());
             }
         }
-
     }
+}
 
-    if (frs_config->plot_tac_1d)
-    {
-        if (hitItem.Get_ID_z21() > 0) h1_Z21->Fill(hitItem.Get_ID_z21());
-        if (hitItem.Get_ID_z22() > 0) h1_Z22->Fill(hitItem.Get_ID_z22());
-        if (hitItem.Get_ID_z41() > 0) h1_Z41->Fill(hitItem.Get_ID_z41());
-        if (hitItem.Get_ID_z41_driftcorr() > 0) h1_Z41_driftcorr->Fill(hitItem.Get_ID_z41_driftcorr());
-        if (hitItem.Get_ID_z42() > 0) h1_Z42->Fill(hitItem.Get_ID_z42());
-        if (hitItem.Get_ID_z43() > 0) h1_Z43->Fill(hitItem.Get_ID_z43());
-        if (hitItem.Get_ID_AoQ_s1s2() > 0) h1_AoQs1s2->Fill(hitItem.Get_ID_AoQ_s1s2());
-        if (hitItem.Get_ID_AoQ_s2s4() > 0) h1_AoQs2s4->Fill(hitItem.Get_ID_AoQ_s2s4());
-        if (hitItem.Get_ID_AoQs2s4_driftcorr() > 0) h1_AoQs2s4_driftcorr->Fill(hitItem.Get_ID_AoQs2s4_driftcorr());
-        if (hitItem.Get_ID_AoQ_corr_s1s2() > 0) h1_AoQs1s2_corr->Fill(hitItem.Get_ID_AoQ_corr_s1s2());
-        if (hitItem.Get_ID_AoQ_corr_s2s4() > 0) h1_AoQs2s4_corr->Fill(hitItem.Get_ID_AoQ_corr_s2s4());
-        h1_x1->Fill(hitItem.Get_ID_x1());
-        h1_x2->Fill(hitItem.Get_ID_x2());
-        h1_x4->Fill(hitItem.Get_ID_x4());
-        h1_a1->Fill(hitItem.Get_ID_a1());
-        h1_a2->Fill(hitItem.Get_ID_a2());
-        h1_a4->Fill(hitItem.Get_ID_a4());
-        h1_y1->Fill(hitItem.Get_ID_y1());
-        h1_y2->Fill(hitItem.Get_ID_y2());
-        h1_y4->Fill(hitItem.Get_ID_y4());
-        h1_b1->Fill(hitItem.Get_ID_b1());
-        h1_b2->Fill(hitItem.Get_ID_b2());
-        h1_b4->Fill(hitItem.Get_ID_b4());
-        if (hitItem.Get_ID_beta_s1s2() > 0) h1_beta_s1s2->Fill(hitItem.Get_ID_beta_s1s2()); 
-        if (hitItem.Get_ID_beta_s2s4() > 0) h1_beta_s2s4->Fill(hitItem.Get_ID_beta_s2s4()); 
-        if (hitItem.Get_ID_dEdegoQ() > 0) h1_dEdegoQ->Fill(hitItem.Get_ID_dEdegoQ());
-        if (hitItem.Get_ID_dEdeg_z41() > 0) h1_dEdegZ41->Fill(hitItem.Get_ID_dEdeg_z41());
-        for (int i = 0; i < 2; i++) if (hitItem.Get_ID_rho()[i] > 0) h1_rho[i]->Fill(hitItem.Get_ID_rho()[i]);
-        for (int i = 0; i < 2; i++) if (hitItem.Get_ID_brho()[i] > 0) h1_brho[i]->Fill(hitItem.Get_ID_brho()[i]);
-        if (hitItem.Get_music21_dE() > 0) h1_music21_dE->Fill(hitItem.Get_music21_dE());
-        if (hitItem.Get_music22_dE() > 0) h1_music22_dE->Fill(hitItem.Get_music22_dE());
-        if (hitItem.Get_music21_dE_cor() > 0) h1_music21_dE_cor->Fill(hitItem.Get_music21_dE_cor());
-        if (hitItem.Get_music22_dE_cor() > 0) h1_music22_dE_cor->Fill(hitItem.Get_music22_dE_cor());
-        if (hitItem.Get_music41_dE() > 0) h1_music41_dE->Fill(hitItem.Get_music41_dE());
-        if (hitItem.Get_music42_dE() > 0) h1_music42_dE->Fill(hitItem.Get_music42_dE());
-        if (hitItem.Get_music41_dE_cor() > 0) h1_music41_dE_cor->Fill(hitItem.Get_music41_dE_cor());
-        if (hitItem.Get_music42_dE_cor() > 0) h1_music42_dE_cor->Fill(hitItem.Get_music42_dE_cor());
 
-        if (hitItem.Get_sci_e_11() > 0) h1_sci_e_11->Fill(hitItem.Get_sci_e_11());
-        if (hitItem.Get_sci_e_21() > 0) h1_sci_e_21->Fill(hitItem.Get_sci_e_21());
-        if (hitItem.Get_sci_e_22() > 0) h1_sci_e_22->Fill(hitItem.Get_sci_e_22());
-        if (hitItem.Get_sci_e_41() > 0) h1_sci_e_41->Fill(hitItem.Get_sci_e_41());
-        if (hitItem.Get_sci_e_42() > 0) h1_sci_e_42->Fill(hitItem.Get_sci_e_42());
-        if (hitItem.Get_sci_e_43() > 0) h1_sci_e_43->Fill(hitItem.Get_sci_e_43());
-        if (hitItem.Get_sci_e_81() > 0) h1_sci_e_81->Fill(hitItem.Get_sci_e_81());
-        if (hitItem.Get_sci_x_11() > 0) h1_sci_x_11->Fill(hitItem.Get_sci_x_11());
-        if (hitItem.Get_sci_x_21() > 0) h1_sci_x_21->Fill(hitItem.Get_sci_x_21());
-        if (hitItem.Get_sci_x_22() > 0) h1_sci_x_22->Fill(hitItem.Get_sci_x_22());
-        if (hitItem.Get_sci_x_41() > 0) h1_sci_x_41->Fill(hitItem.Get_sci_x_41());
-        if (hitItem.Get_sci_x_42() > 0) h1_sci_x_42->Fill(hitItem.Get_sci_x_42());
-        if (hitItem.Get_sci_x_43() > 0) h1_sci_x_43->Fill(hitItem.Get_sci_x_43());
-        if (hitItem.Get_sci_x_81() > 0) h1_sci_x_81->Fill(hitItem.Get_sci_x_81());
-        if (hitItem.Get_sci_tof_11_21() > 0) h1_sci_tof_11_21->Fill(hitItem.Get_sci_tof_11_21());
-        if (hitItem.Get_sci_tof_11_21_calib() > 0) h1_sci_tof_11_21_calib->Fill(hitItem.Get_sci_tof_11_21_calib());
-        if (hitItem.Get_sci_tof_21_41() > 0) h1_sci_tof_21_41->Fill(hitItem.Get_sci_tof_21_41());
-        if (hitItem.Get_sci_tof_21_41_calib() > 0) h1_sci_tof_21_41_calib->Fill(hitItem.Get_sci_tof_21_41_calib());
-        if (hitItem.Get_sci_tof_21_42() > 0) h1_sci_tof_21_42->Fill(hitItem.Get_sci_tof_21_42());
-        if (hitItem.Get_sci_tof_21_42_calib() > 0) h1_sci_tof_21_42_calib->Fill(hitItem.Get_sci_tof_21_42_calib());
-        if (hitItem.Get_sci_tof_21_81() > 0) h1_sci_tof_21_81->Fill(hitItem.Get_sci_tof_21_81());
-        if (hitItem.Get_sci_tof_21_81_calib() > 0) h1_sci_tof_21_81_calib->Fill(hitItem.Get_sci_tof_21_81_calib());
-        if (hitItem.Get_sci_tof_22_41() > 0) h1_sci_tof_22_41->Fill(hitItem.Get_sci_tof_22_41());
-        if (hitItem.Get_sci_tof_22_41_calib() > 0) h1_sci_tof_22_41_calib->Fill(hitItem.Get_sci_tof_22_41_calib());
-        if (hitItem.Get_sci_tof_22_81() > 0) h1_sci_tof_22_81->Fill(hitItem.Get_sci_tof_22_81());
-        if (hitItem.Get_sci_tof_22_81_calib() > 0) h1_sci_tof_22_81_calib->Fill(hitItem.Get_sci_tof_22_81_calib());
-
-        // 1D Gated?
-    }
-    
-
+void FrsNearlineSpectra::Process_MHTDC()
+{
     int a = 0;
-    
-    // :::::: Multi-hit TDC ::::::: //
-    // ---------------------------- //
-    if (multihitArray->size() <= 0) return;
-    auto const & multiHitItem = multihitArray->at(0);
+
     std::vector<Float_t> beta_s1s2_mhtdc = multiHitItem.Get_ID_beta_s1s2_mhtdc();
     std::vector<Float_t> beta_s2s4_mhtdc = multiHitItem.Get_ID_beta_s2s4_mhtdc();
     std::vector<Float_t> AoQ_s1s2_mhtdc = multiHitItem.Get_ID_AoQ_s1s2_mhtdc();
@@ -912,29 +798,15 @@ void FrsNearlineSpectra::Exec(Option_t* option)
             if (z21_mhtdc.at(i) > 0 && AoQ_s1s2_mhtdc.at(i) > 0) h2_Z21_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), z21_mhtdc.at(i));
             if (z21_mhtdc.at(i) > 0 && AoQ_corr_s1s2_mhtdc.at(i) > 0) h2_Z21_vs_AoQs1s2_corr_mhtdc->Fill(AoQ_corr_s1s2_mhtdc.at(i), z21_mhtdc.at(i));
             if (z21_mhtdc.at(i) > 0 && z22_mhtdc.at(i) > 0) h2_Z21_vs_Z22_mhtdc->Fill(z21_mhtdc.at(i), z22_mhtdc.at(i));
-            // CEJ below to be adjusted and added at request
-            //if (z21_mhtdc.at(i) > 0 && AoQ_s1s2_mhtdc.at(i) > 0 && TMath::Abs(z21_mhtdc.at(i) - z22_mhtdc.at(i)) < 0.4) h2_Z21_vs_AoQs1s2_Zsame_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), z21_mhtdc.at(i));
-            //if (AoQ_s1s2_mhtdc.at(i) > 0 && TMath::Abs(z21_mhtdc.at(i) - z22_mhtdc.at(i)) < 0.4) h2_x2_vs_AoQs1s2_Zsame_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_x2());
-            //if (AoQ_s1s2_mhtdc.at(i) > 0 && TMath::Abs(z21_mhtdc.at(i) - z22_mhtdc.at(i)) < 0.4) h2_x4_vs_AoQs1s2_Zsame_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_x4());
             if (AoQ_s1s2_mhtdc.at(i) > 0) h2_x2_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_x2());
-            //if (AoQ_s1s2_mhtdc.at(i) > 0) h2_x4_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_x4());
-            //if (z21_mhtdc.at(i) > 0 && dEdegoQ_mhtdc.at(i) > 0) h2_dEdegoQ_vs_Z21_mhtdc->Fill(z21_mhtdc.at(i), dEdegoQ_mhtdc.at(i));
-            //if (z21_mhtdc.at(i) > 0 && dEdeg_z41_mhtdc.at(i) > 0) h2_dEdegZ21_vs_Z21_mhtdc->Fill(z21_mhtdc.at(i), dEdeg_z21_mhtdc.at(i));
             if (AoQ_s1s2_mhtdc.at(i) > 0) h2_a2_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_a2());
-            //if (AoQ_s1s2_mhtdc.at(i) > 0) h2_a4_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_ID_a4());
-            //if (z21_mhtdc.at(i) > 0 && hitItem.Get_music42_dE() > 0) h2_Z21_vs_dE42_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_music42_dE());
-            //if (AoQ_s1s2_mhtdc.at(i) != 0 && hitItem.Get_sci_e_41() != 0) h2_SC41dE_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_sci_e_41());
-            //if (AoQ_s1s2_mhtdc.at(i) != 0 && hitItem.Get_sci_e_42() != 0) h2_SC42dE_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), hitItem.Get_sci_e_42());
-            //if (z21_mhtdc.at(i) != 0 && hitItem.Get_sci_e_41() != 0) h2_SC41dE_vs_Z21_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_sci_e_41());
-            //if (z21_mhtdc.at(i) != 0 && hitItem.Get_sci_e_42() != 0) h2_SC42dE_vs_Z21_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_sci_e_42()); 
             if (z21_mhtdc.at(i) > 0) h2_x2_vs_Z21_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_ID_x2());
-            // if (z21_mhtdc.at(i) > 0) h2_x4_vs_Z21_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_ID_x4());
             if (z21_mhtdc.at(i) > 0 && hitItem.Get_sci_e_21()) h2_Z21_vs_Sc21E_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_sci_e_21());
             if (z21_mhtdc.at(i) > 0 && hitItem.Get_music21_dE() > 0) h2_Z21_vs_dE21_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_music21_dE());
     
-            if (!FrsGates.empty())
+            if (num_frs_gates > 0)
             {
-                for (int gate = 0; gate < FrsGates.size(); gate++)
+                for (int gate = 0; gate < num_frs_gates; gate++)
                 {    
                     if (FrsGates[gate]->Passed_Z21vsAoQs1s2(z21_mhtdc.at(i), AoQ_s1s2_mhtdc.at(i)))
                     {
@@ -955,7 +827,7 @@ void FrsNearlineSpectra::Exec(Option_t* option)
 
         }
 
-        if (frs_config->plot_mhtdc_1d)
+        if (frs_config->plot_mhtdc)
         {
             if (beta_s1s2_mhtdc.at(i) > 0.2) h1_beta_s1s2_mhtdc->Fill(beta_s1s2_mhtdc.at(i)); // 0.2 for now
             if (AoQ_s1s2_mhtdc.at(i) > 0) h1_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i));
@@ -1005,9 +877,9 @@ void FrsNearlineSpectra::Exec(Option_t* option)
             }
     
             // Gated PIDs
-            if (!FrsGates.empty())
+            if (num_frs_gates > 0)
             {
-                for (int gate = 0; gate < FrsGates.size(); gate++)
+                for (int gate = 0; gate < num_frs_gates; gate++)
                 {
                     if (passed_Z21vsAoQs1s2[gate])
                     {
@@ -1022,8 +894,6 @@ void FrsNearlineSpectra::Exec(Option_t* option)
                             h2_Z21_vs_Z41_mhtdc_Z21vsAoQs1s2_gate_mhtdc[gate]->Fill(z21_mhtdc.at(j), z41_mhtdc.at(i));
                         }
                     }
-
-
 
                     
                     if (FrsGates[gate]->Passed_Z41vsAoQs2s4(z41_mhtdc.at(i), AoQ_s2s4_mhtdc.at(i)))
@@ -1161,9 +1031,9 @@ void FrsNearlineSpectra::Exec(Option_t* option)
                 h1_b4->Fill(hitItem.Get_ID_b4());
             }
 
-            if (!FrsGates.empty())
+            if (num_frs_gates > 0)
             {
-                for (int gate = 0; gate < FrsGates.size(); gate++)
+                for (int gate = 0; gate < num_frs_gates; gate++)
                 {
                     // Pass S1S2
                     if (passed_Z21vsAoQs1s2[gate])
@@ -1220,10 +1090,10 @@ void FrsNearlineSpectra::Exec(Option_t* option)
             }
         }
     }
-    
+}
 
-    // :::::::: Scalers ::::::::::: //
-    // ---------------------------- //
+void FrsNearlineSpectra::Process_Monitors()
+{
     h1_tpat->Fill(hitItem.Get_tpat());
 
     // CEJ:: SCALER analysis to be updated...
@@ -1320,7 +1190,7 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     {
         if (saved_wr_frs != 0 && wr_diff_s < 2)
         {
-            for (int gate = 0; gate < FrsGates.size(); gate++)
+            for (int gate = 0; gate < num_frs_gates; gate++)
             {
                 if (count_passed_Z41vsAoQs2s4[gate] == 0) continue;
                 double pid_ratio = 1000 * count_passed_Z21vsAoQs1s2[gate] / count_passed_Z41vsAoQs2s4[gate];
@@ -1332,42 +1202,20 @@ void FrsNearlineSpectra::Exec(Option_t* option)
         saved_wr_frs = wr_frs;
         ratio_running_count++;
 
-        for (int gate = 0; gate < FrsGates.size(); gate++)
+        for (int gate = 0; gate < num_frs_gates; gate++)
         {
             count_passed_Z21vsAoQs1s2[gate] = 0;
             count_passed_Z41vsAoQs2s4[gate] = 0;
         }
            
     }
-    
-}
-
-
-void FrsNearlineSpectra::Process_TAC()
-{
-    // do nothin cause f _ - ! k tac
-}
-
-void FrsNearlineSpectra::Process_MHTDC()
-{
-    // lets gooooo
-}
-
-void FrsNearlineSpectra::Process_Monitors()
-{
-    // absolutely do fuck all
 }
 
 
 void FrsNearlineSpectra::FinishEvent()
 {
-    
     std::fill(passed_Z21vsAoQs1s2.begin(), passed_Z21vsAoQs1s2.end(), 0);
-    std::fill(passed_Z41vsAoQs2s4.begin(), passed_Z41vsAoQs2s4.end(), 0);
-    // for (auto& val : count_passed_Z21vsAoQs1s2) val = 0;
-    // for (auto& val : count_passed_Z41vsAoQs2s4) val = 0;
-    // for (auto& val : count_passed_Z41vsZ42) val = 0;
-    
+    std::fill(passed_Z41vsAoQs2s4.begin(), passed_Z41vsAoQs2s4.end(), 0);    
 }
 
 void FrsNearlineSpectra::FinishTask()
