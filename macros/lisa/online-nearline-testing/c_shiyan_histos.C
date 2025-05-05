@@ -1,11 +1,11 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define LISA_ON 1
+#define LISA_ON 0
         //LISA_ANA displays only energy and traces; LISA_CAL displays stats,energy,traces. Choose one.
         //Note that if FRS 1, LISA_CAL is needed. 
 #define LISA_ANA 0
-#define LISA_CAL 1
+#define LISA_CAL 0
 
 // Test or experiment settings
 #define TEST 1
@@ -62,12 +62,12 @@ void c_shiyan_histos()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // ::: P A T H   O F   F I L E  to read
-    // TString inputpath = "./";
-    // //TString filename = inputpath + "test_0003_tree.root";  
-    // TString filename = inputpath + "c_test_Ag_with_whatever.root";  
+    TString inputpath = "./";
+    //TString filename = inputpath + "test_0003_tree.root";  
+    TString filename = inputpath + "c_test_Ag_with_whatever.root";  
 
-    TString inputpath = "/u/gandolfo/data/test_c4/shiyan_test/";
-    TString filename = inputpath + "test_0003_tree.root"; 
+    // TString inputpath = "/u/gandolfo/data/test_c4/shiyan_test/";
+    // TString filename = inputpath + "test_0003_tree.root"; 
     
     // ::: O U T P U T
     TString outputpath = "./"; //test output
@@ -181,7 +181,7 @@ void c_shiyan_histos()
     // ::: FRS
     TFrsConfiguration::Set_Z_range(10,60);
     TFrsConfiguration::Set_AoQ_range(1.8,3.5);
-    TFrsConfiguration::Set_dE_Music1_range(0,64000);
+    TFrsConfiguration::Set_dE_music41_range(0,64000);
     
     //::::::::: Set ranges for histos :::::::::::::::
     // ::: LISA
