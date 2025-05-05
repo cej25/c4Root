@@ -109,40 +109,6 @@ InitStatus FrsNearlineSpectra::Init()
 
     num_frs_gates = FrsGates.size();
 
-    // What does have a distinction...
-    // everything beta related
-    // beta --> AoQ and Z
-    // Z --> dEdeg
-    // that's it
-    // ID
-
-    // ID - always contains x position, etc
-        // S1S2 -- contains TAC related stuff if switched on
-            // -- 1D
-            // -- 2D
-            // -- Gated
-                // -- Each gate
-
-        // S2S4 -- contains TAC related stuff if switched on
-            // -- 1D
-            // -- 2D
-            // -- Gated
-                // -- Each gate
-        // Sequential
-            // -- Each gate
-    // ID_MHTDC -- exists only if switched on
-        // S1S2 -- contains MHTDC related stuff if switched on
-        // S2S4 -- contains MHTDC related stuff if switched on
-        // Sequential
-    // SCI
-        // E, dE -- always contains
-    // TPC
-        // whatever relevant stuff -- always contains
-    // TOF
-        // 11-21, 21-42 etc -- always contains
-    // MUSIC
-        // E -- always contains
-
 
     // :::: ID ::::
     dir_id = dir_frs->mkdir("ID");
@@ -591,7 +557,7 @@ InitStatus FrsNearlineSpectra::Init()
     std::fill(count_passed_s1s2.begin(), count_passed_s1s2.end(), 0);
     count_passed_s2s4 = new int[num_frs_gates];
     for (int i = 0; i < num_frs_gates; i++) count_passed_s2s4[i] = 0;
-    // std::fill(count_passed_s2s4.begin(), count_passed_s2s4.end(), 0);
+
     
     return kSUCCESS;
 
