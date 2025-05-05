@@ -831,7 +831,7 @@ void FrsCal2Hit::ProcessSci_TAC()
 
     if (sci_b_tofll_11_21 && sci_b_tofrr_11_21)
     {
-        //std::cout << "is this our problem... ::: event ::: " << fNEvents << std::endl;
+        // CEJ: seems to break using pareeksha setup file, may need to add to convert_setup.py script
         sci_tof_11_21 = (sci->tof_bll1 * sci_tofrr_11_21 + sci->tof_a1 + sci->tof_brr1 * sci_tofrr_11_21) / 2.0;
         sci_tof_11_21_calib = -1.0 * sci_tof_11_21 + id->id_tofoff1[sci->sci11_select];
     }
@@ -2222,6 +2222,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
             id_mhtdc_tof_s2s4[i] = mhtdc_tof4121[i];
             if (id_mhtdc_tof_s2s4[i] > 0.0) id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2141 / id_mhtdc_tof_s2s4[i]) / speed_light;
             else id_mhtdc_beta_s2s4[i] = 0.;
+            if (id_mhtdc_beta_s2s4[i] < 0.5 || id_mhtdc_beta_s2s4[i] > 0.7) id_mhtdc_beta_s2s4[i] = 0.;
         }
     }
     else if (id->tof_s4_select == 2) // 21 -> 42

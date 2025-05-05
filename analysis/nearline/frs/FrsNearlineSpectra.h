@@ -39,13 +39,10 @@ class FrsNearlineSpectra : public FairTask
         virtual InitStatus Init();
 
         virtual void Exec(Option_t* option);
-
         
         void Process_TAC();
         void Process_MHTDC();
         void Process_Monitors();
-        
-        
 
         virtual void FinishEvent();
 
@@ -123,20 +120,12 @@ class FrsNearlineSpectra : public FairTask
         TDirectory* dir_drifts;
      
 
-    
-        // Histograms
-        // :::: ID ::::
-        // --- Non TAC/MHTDC --- 
-        // move stuff...
-
-
-
-        // ------ TAC 2D -------
+        // ::::: TAC :::::::::
+        // ------ 2D -------
         TH2* h2_Z41_vs_AoQs2s4;
         TH2* h2_Z41_vs_AoQs2s4_driftcorr;
         TH2* h2_Z41_vs_AoQs2s4_corr;
         TH2* h2_Z41_vs_Z42;
-        TH2* h2_travmus_vs_Z41;
         TH2* h2_Z41_vs_AoQs2s4_Zsame;
         TH2* h2_x2_vs_AoQs2s4_Zsame;
         TH2* h2_x4_vs_AoQs2s4_Zsame;
@@ -400,8 +389,6 @@ class FrsNearlineSpectra : public FairTask
         TH2* h2_sci_tof_22_41_vs_T;
         TH2* h2_sci_tof_22_81_vs_T;
         TH2* h2_tpc_vs_T[6];
-
-        std::vector<TH1*> h1_ratio_S2_S4_gates;
 
 
         // Lines and Text
