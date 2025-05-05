@@ -1049,7 +1049,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     {
         for (int l = 0; l < layer_number; ++l) 
         {
-            if (energy_layer_gated[g][l].empty()) continue;  
+            if (energy_layer_gated[g][l].size() == 0) break;  
 
             for (int i = 0; i < energy_layer_gated[g][l].size(); ++i)
             {

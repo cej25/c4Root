@@ -62,7 +62,7 @@ void shiyan_make_trees()
     //TString inputpath = "/u/gandolfo/data/lustre/nustar/profi/sec_s160feb25/stitched/";           // Data from FRS with S2 PID
  
     TString filename = inputpath + "run_0075_0001.lmd";
-    //TString filename = inputpath + "test_0013_0001.lmd";
+    //TString filename = inputpath + "test_0016_0001.lmd";
     //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
 
     // ::: OUTPUT 
@@ -70,7 +70,7 @@ void shiyan_make_trees()
     //TString outputpath = "/u/gandolfo/data/test_c4/layer_alpha/";   //energy resolution data
     
     TString outputFilename = outputpath + "test_run_0075.root";
-    //TString outputFilename = outputpath + "test_0013_tree.root"; 
+    //TString outputFilename = outputpath + "test_0016_tree.root"; 
     //TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  // Data from FRS with S2 PID
 
 
@@ -118,6 +118,7 @@ void shiyan_make_trees()
     // ::: C O N F I G    F O R   D E T E C T O R - Load
     // ::: Exp config
     TExperimentConfiguration::SetExperimentStart(1715727045000000000);//Start of pareeksha with primary beam: 15 May 00:50
+    //TExperimentConfiguration::SetExperimentStart(1746172830000000000);
     // for S100, 3 and 4. for 2025+ 12 and 13.
     TExperimentConfiguration::SetBOSTrig(3);
     TExperimentConfiguration::SetEOSTrig(4);
@@ -139,7 +140,7 @@ void shiyan_make_trees()
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
         TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_highgain.txt");
         */
-
+        
         //for testing with pareeksha data 
         TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_Detector_Map_names.txt");
         TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching.txt");
