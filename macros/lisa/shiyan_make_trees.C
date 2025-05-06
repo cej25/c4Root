@@ -2,12 +2,12 @@
 
 // !!! Switch all tasks related to {subsystem} on (1)/off (0)
 #define LISA_ON 1
-#define FRS_ON 1
+#define FRS_ON 0
 
 // !!! Select the data level you want to visualize
 #define LISA_RAW 0
-#define LISA_ANA 0
-#define LISA_CAL 1
+#define LISA_ANA 1
+#define LISA_CAL 0
 
 // Define for online if testing or during experient
 #define TEST 1
@@ -32,7 +32,7 @@ void shiyan_make_trees()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     // ::: Experiment name
-    TString fExpName = "pareeksha";
+    TString fExpName = "shiyan";
 
     // ::: Here you define commonly used path
     TString c4Root_path = "/u/gandolfo/c4/c4Root";
@@ -57,20 +57,20 @@ void shiyan_make_trees()
 
     
     // ::: FILE  PATH
-    TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";       // Data from pareeksha fro LISA-FRS corr testing
-    //TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/S092_shiyan/";                       // Data from LISA
+    //TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";       // Data from pareeksha fro LISA-FRS corr testing
+    TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/S092_shiyan/";                       // Data from LISA
     //TString inputpath = "/u/gandolfo/data/lustre/nustar/profi/sec_s160feb25/stitched/";           // Data from FRS with S2 PID
  
-    TString filename = inputpath + "run_0075_0001.lmd";
-    //TString filename = inputpath + "test_0016_0001.lmd";
+    //TString filename = inputpath + "run_0075_0001.lmd";
+    TString filename = inputpath + "test_0003_0001.lmd";
     //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
 
     // ::: OUTPUT 
-    TString outputpath = "/u/gandolfo/data/test_c4/shiyan_test/";   //testing
-    //TString outputpath = "/u/gandolfo/data/test_c4/layer_alpha/";   //energy resolution data
+    //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/noise_test_may25/";   //testing
+    TString outputpath = "/u/gandolfo/data/test_c4/shiyan_test/";   //energy resolution data
     
-    TString outputFilename = outputpath + "test_run_0075.root";
-    //TString outputFilename = outputpath + "test_0016_tree.root"; 
+    //TString outputFilename = outputpath + "test_run_0075.root";
+    TString outputFilename = outputpath + "test_0003_tree_debug_ana.root"; 
     //TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  // Data from FRS with S2 PID
 
 
@@ -134,19 +134,19 @@ void shiyan_make_trees()
     if ( TEST )
     {
         // shiyan 
-        /*
+        
         TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_All_Boards.txt");
         TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_cards.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_highgain.txt");
-        */
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
         
+        /*
         //for testing with pareeksha data 
         TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_Detector_Map_names.txt");
         TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD.txt");
         TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
-        
+        */
     }
     if ( EXP )
     {

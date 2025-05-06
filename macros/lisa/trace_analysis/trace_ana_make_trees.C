@@ -84,7 +84,7 @@ void trace_ana_make_trees(int fileNumber)
     // ::: Lisa config
     TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_All_Boards.txt");
     TLisaConfiguration::SetGMFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_cards.txt");
-    TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
+    TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/shiyan/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
    
     // ::::::: READ Subsystem  ::::::::
 
