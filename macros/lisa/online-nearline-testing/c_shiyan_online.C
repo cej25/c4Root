@@ -239,6 +239,8 @@ void c_shiyan_online()
     FrsGate* test = new FrsGate("Tester",config_path + "/frs/Gates/frs_real_gate_lisa.root");
     std::vector<FrsGate*> fgs = {};
     fgs.emplace_back(test);
+
+    // TFrsConfiguration::Set_TOF_gate(200, 240);
     
     if (FRS_ON)
     {
