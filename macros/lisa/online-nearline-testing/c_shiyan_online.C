@@ -235,10 +235,14 @@ void c_shiyan_online()
         LisaOnlineSpectra* onlinelisa = new LisaOnlineSpectra();
         run->AddTask(onlinelisa);
     }
+
+    FrsGate* test = new FrsGate("Tester",config_path + "/frs/Gates/frs_real_gate_lisa.root");
+    std::vector<FrsGate*> fgs = {};
+    fgs.emplace_back(test);
     
     if (FRS_ON)
     {
-        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
+        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra(fgs);
         //For monitoring FRS on our side
         // FrsRawSpectra* frsrawspec = new FrsRawSpectra();
         // FrsCalSpectra* frscalspec = new FrsCalSpectra();
