@@ -909,6 +909,7 @@ void LisaOnlineSpectra::Exec(Option_t* option)
 
         for (int i = 0; i < layer; i++)
         {
+            if (rate_running_count == 900) h1_layer_rate[i]->Reset();
             layer_counter[i] = 0;
             for (int j = 0; j < xmax; j++)
             {
