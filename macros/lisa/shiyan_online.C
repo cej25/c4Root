@@ -12,8 +12,7 @@
 // Define FRS setup.C file - FRS should provide; place in /config/shiyan/frs/
 extern "C"
 {
-    #include "../../config/pareeksha/frs/setup_Fragment_conv_updated.C" //pareeksha data
-    //#include "../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
+    #include "../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -39,7 +38,7 @@ void shiyan_online()
     TString fExpName = "shiyan";
 
     // ::: Here you define commonly used path
-    TString c4Root_path = "/u/gandolfo/c4/c4Root";
+    TString c4Root_path = "/u/lisa/c4/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -65,21 +64,13 @@ void shiyan_online()
     //TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
     TString filename = "trans://lxg3107:6000"; //Set to stiched data
     
-    // ::: OFFLINE READING - For testing
-    //TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/S092_shiyan/";                   // Data from LISA
-    //TString inputpath = "/u/gandolfo/data/lustre/nustar/profi/sec_s160feb25/stitched/";     // Data from FRS
-    //TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0075_0001.lmd"; 
-
-    //TString filename = inputpath + "test_0003_*.lmd";
-    //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
-
     // ::: OUTPUT - does not write a tree if it is not set layer
-    TString outputpath = "/u/gandolfo/data/test_c4/"; //testing
+    TString outputpath = "/u/lisa/data/test_c4/"; //testing
     TString outputFileName = outputpath + "output_online.root";
     
     // ::: Create online run
     Int_t refresh = 10; // Refresh rate for online histograms
-    Int_t port = 2020;
+    Int_t port = 2222;
      
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -145,12 +136,6 @@ void shiyan_online()
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
         TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_DAQtest.txt");
         
-        /*
-        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_Detector_Map_names.txt");
-        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching.txt");
-        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
-        */
         TLisaConfiguration::SetExcludedChannels({
         std::make_tuple(1,0,0),
         }); 
