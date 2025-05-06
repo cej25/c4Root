@@ -215,7 +215,7 @@ void LisaRaw2Ana::Exec(Option_t* option)
             // 1. ::: Baseline correction of febex trace :::
             //        This corresponds to anaTraces function calcCorrectTrace
             // ::: Evaluate average from points 20 to 100
-            for( int i = 20; i < 150; i++) //100 v1
+            for( int i = 20; i < 100; i++) //100 v1
             {
                 sum += trace_febex.at(i);
                 count++;
