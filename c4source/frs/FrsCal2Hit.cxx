@@ -1091,6 +1091,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
         }
     }
 
+
     // TOF:
     // 11 -> 21
     hits_in_tof2111 = hits_in_21lr * hits_in_11lr;
@@ -1128,9 +1129,11 @@ void FrsCal2Hit::ProcessSci_MHTDC()
             {
                 for (int l = 0; l < hits_in_21r; l++)
                 {
+                    int count = i * hits_in_41r * hits_in_21l * hits_in_21r + j * hits_in_21l * hits_in_21r + k * hits_in_21r + l;
                     if ((sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci41l_hits[i] - sci41r_hits[j]) < 200) && (sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci21l_hits[k] - sci21r_hits[l]) < 200))
                     {
-                        mhtdc_tof4121[i * hits_in_41r * hits_in_21l * hits_in_21r + j * hits_in_21l * hits_in_21r + k * hits_in_21r + l] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci41l_hits[i] + sci41r_hits[j]) - 0.5 * (sci21l_hits[k] + sci21r_hits[l])) + sci->mhtdc_offset_41_21;
+                        mhtdc_tof4121[count] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci41l_hits[i] + sci41r_hits[j]) - 0.5 * (sci21l_hits[k] + sci21r_hits[l])) + sci->mhtdc_offset_41_21;
+                        if (mhtdc_tof4121[count] < frs_config->tof_gate_low || mhtdc_tof4121[count] > frs_config->tof_gate_high) mhtdc_tof4121[count] = -999.;
                     }
                     else
                     {
@@ -2222,7 +2225,6 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
             id_mhtdc_tof_s2s4[i] = mhtdc_tof4121[i];
             if (id_mhtdc_tof_s2s4[i] > 0.0) id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2141 / id_mhtdc_tof_s2s4[i]) / speed_light;
             else id_mhtdc_beta_s2s4[i] = 0.;
-            if (id_mhtdc_beta_s2s4[i] < 0.5 || id_mhtdc_beta_s2s4[i] > 0.7) id_mhtdc_beta_s2s4[i] = 0.;
         }
     }
     else if (id->tof_s4_select == 2) // 21 -> 42

@@ -398,7 +398,7 @@ InitStatus FrsNearlineSpectra::Init()
                 // S1S2
                 h2_Z21_vs_AoQs1s2_S1S2Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s1s2_gates[gate], "I", Form("h2_Z21_vs_AoQs1s2_S1S2Gated_mhtdc_%s", gname.c_str()), Form("Z21 vs AoQs1s2 - S1S2 Gate: %s", gname.c_str()), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
                 h2_x1_vs_AoQs1s2_S1S2Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s1s2_gates[gate], "I", Form("h2_x1_vs_AoQs1s2_S1S2Gated_mhtdc_%s", gname.c_str()), Form("X1 vs AoQs1s2 - S1S2 Gate: %s", gname.c_str()), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
-                h2_x2_vs_AoQs1s2_S1S2Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s1s2_gates[gate], "I", Form("h2_x2_vs_AoQs1s2_S1S2Gated_mhtdc_%s", gname.c_str()), Form("X2 vs AoQs1s2 - S1S2 Gate: %s", gname.c_str()), 50, id->min_aoq_plot, 3.0, 200, -100., 100.);
+                h2_x2_vs_AoQs1s2_S1S2Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s1s2_gates[gate], "I", Form("h2_x2_vs_AoQs1s2_S1S2Gated_mhtdc_%s", gname.c_str()), Form("X2 vs AoQs1s2 - S1S2 Gate: %s", gname.c_str()), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
                 h2_Z41_vs_AoQs2s4_S1S2Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s1s2_gates[gate], "I", Form("h2_Z41_vs_AoQs2s4_S1S2Gated_mhtdc_%s", gname.c_str()), Form("Z41 vs AoQs2s4 - S1S2 Gate: %s", gname.c_str()), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
                 h2_Z41_vs_Z42_S1S2Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s1s2_gates[gate], "I", Form("h2_Z41_vs_Z42_S1S2Gated_mhtdc_%s", gname.c_str()), Form("Z41 vs Z42 - S1S2 Gate: %s", gname.c_str()), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);
                 h2_x2_vs_AoQs2s4_S1S2Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s1s2_gates[gate], "I", Form("h2_x2_vs_AoQs2s4_S1S2Gated_mhtdc_%s", gname.c_str()), Form("X2 vs AoQs2s4 - S1S2 Gate: %s", gname.c_str()), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
@@ -409,7 +409,7 @@ InitStatus FrsNearlineSpectra::Init()
                 // S2S4
                 h2_Z21_vs_AoQs1s2_S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s2s4_gates[gate], "I", Form("h2_Z21_vs_AoQs1s2_S2S4Gated_mhtdc_%s", gname.c_str()), Form("Z21 vs AoQs1s2 - S2S4 Gate: %s", gname.c_str()), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
                 h2_x1_vs_AoQs1s2_S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s2s4_gates[gate], "I", Form("h2_x1_vs_AoQs1s2_S2S4Gated_mhtdc_%s", gname.c_str()), Form("X1 vs AoQs1s2 - S2S4 Gate: %s", gname.c_str()), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
-                h2_x2_vs_AoQs1s2_S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s2s4_gates[gate], "I", Form("h2_x2_vs_AoQs1s2_S2S4Gated_mhtdc_%s", gname.c_str()), Form("X2 vs AoQs1s2 - S2S4 Gate: %s", gname.c_str()), 50, id->min_aoq_plot, 3.0, 200, -100., 100.);
+                h2_x2_vs_AoQs1s2_S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s2s4_gates[gate], "I", Form("h2_x2_vs_AoQs1s2_S2S4Gated_mhtdc_%s", gname.c_str()), Form("X2 vs AoQs1s2 - S2S4 Gate: %s", gname.c_str()), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
                 h2_Z41_vs_AoQs2s4_S2S4Gated_mhtdc[gate] =  MakeTH2(dir_mhtdc_s2s4_gates[gate], "I", Form("h2_Z41_vs_AoQs2s4_S2S4Gated_mhtdc_%s", gname.c_str()), Form("Z41 vs AoQs2s4 - S2S4 Gate: %s", gname.c_str()), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
                 h2_Z41_vs_Z42_S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s2s4_gates[gate], "I", Form("h2_Z41_vs_Z42_S2S4Gated_mhtdc_%s", gname.c_str()), Form("Z41 vs Z42 - S2S4 Gate: %s", gname.c_str()), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);
                 h2_x2_vs_AoQs2s4_S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s2s4_gates[gate], "I", Form("h2_x2_vs_AoQs2s4_S2S4Gated_mhtdc_%s", gname.c_str()), Form("X2 vs AoQs2s4 - S2S4 Gate: %s", gname.c_str()), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
@@ -421,7 +421,7 @@ InitStatus FrsNearlineSpectra::Init()
                 h2_Z21_Z41_S1S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_Z21_Z41_S1S2S4Gated_mhtdc_%s", gname.c_str()), Form("Z21 vs Z41 - S1-S2-S4 Gate: %s", gname.c_str()), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);
                 h2_Z21_vs_AoQs1s2_S1S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_Z21_vs_AoQs1s2_S1S2S4Gated_mhtdc_%s", gname.c_str()), Form("Z21 vs AoQs1s2 - S1-S2-S4 Gate: %s", gname.c_str()), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
                 h2_x1_vs_AoQs1s2_S1S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_x1_vs_AoQs1s2_S1S2S4Gated_mhtdc_%s", gname.c_str()), Form("X1 vs AoQs1s2 - S1-S2-S4 Gate: %s", gname.c_str()), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
-                h2_x2_vs_AoQs1s2_S1S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_x2_vs_AoQs1s2_S1S2S4Gated_mhtdc_%s", gname.c_str()), Form("X2 vs AoQs1s2 - S1-S2-S4 Gate: %s", gname.c_str()), 50, id->min_aoq_plot, 3.0, 200, -100., 100.);
+                h2_x2_vs_AoQs1s2_S1S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_x2_vs_AoQs1s2_S1S2S4Gated_mhtdc_%s", gname.c_str()), Form("X2 vs AoQs1s2 - S1-S2-S4 Gate: %s", gname.c_str()), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
                 h2_Z41_vs_AoQs2s4_S1S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_Z41_vs_AoQs2s4_S1S2S4Gated_mhtdc_%s", gname.c_str()), Form("Z41 vs AoQs2s4 - S1-S2-S4 Gate: %s", gname.c_str()), 750, id->min_aoq_plot, 3.0, 750, id->min_z_plot, id->max_z_plot);
                 h2_Z41_vs_Z42_S1S2S4Gated_mhtdc[gate] =  MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_Z41_vs_Z42_S1S2S4Gated_mhtdc_%s", gname.c_str()), Form("Z41 vs Z42 - S1-S2-S4 Gate: %s", gname.c_str()), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);
                 h2_x2_vs_AoQs2s4_S1S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_x2_vs_AoQs2s4_S1S2S4Gated_mhtdc_%s", gname.c_str()), Form("X2 vs AoQs2s4 - S1-S2-S4 Gate: %s", gname.c_str()), 750, id->min_aoq_plot, 3.0, 200, -100., 100.);
@@ -553,10 +553,14 @@ InitStatus FrsNearlineSpectra::Init()
     std::fill(passed_s1s2.begin(), passed_s1s2.end(), false);
     passed_s2s4.resize(num_frs_gates);
     std::fill(passed_s2s4.begin(), passed_s2s4.end(), false);
+    passed_s1s2s4.resize(num_frs_gates);
+    std::fill(passed_s1s2s4.begin(), passed_s1s2s4.end(), false);
     count_passed_s1s2.resize(num_frs_gates);
     std::fill(count_passed_s1s2.begin(), count_passed_s1s2.end(), 0);
     count_passed_s2s4 = new int[num_frs_gates];
     for (int i = 0; i < num_frs_gates; i++) count_passed_s2s4[i] = 0;
+    count_passed_s1s2s4 = new int[num_frs_gates];
+    for (int i = 0; i < num_frs_gates; i++) count_passed_s1s2s4[i] = 0;
 
     
     return kSUCCESS;
@@ -908,7 +912,10 @@ void FrsNearlineSpectra::Process_MHTDC()
                                 if (AoQ_corr_s1s2_mhtdc.at(j) > 0) h1_AoQs1s2_S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(j));
                                 if (z21_mhtdc.at(j) > 0) h1_Z21_S2S4Gated_mhtdc[gate]->Fill(z21_mhtdc.at(j));
                             }
-                       }
+                            
+                            passed_s1s2s4[gate] = true;
+                            count_passed_s1s2s4[gate]++;
+                        }
                         
 
                         passed_s2s4[gate] = true;
@@ -1068,9 +1075,12 @@ void FrsNearlineSpectra::Process_Monitors()
             for (int gate = 0; gate < num_frs_gates; gate++)
             {
                 h1_integral_S2_Gates_mhtdc[gate]->SetBinContent(ratio_running_count, count_passed_s1s2[gate]);
-                h1_integral_S4_Gates_mhtdc[gate]->SetBinContent(ratio_running_count, count_passed_s2s4[gate]);
-                if (count_passed_s2s4[gate] == 0) continue;
-                double pid_ratio = 1000 * count_passed_s1s2[gate] / count_passed_s2s4[gate];
+                h1_integral_S4_Gates_mhtdc[gate]->SetBinContent(ratio_running_count, count_passed_s1s2s4[gate]);
+                // h1_integral_S4_Gates_mhtdc[gate]->SetBinContent(ratio_running_count, count_passed_s2s4[gate]);
+                if (count_passed_s1s2s4[gate] == 0) continue;
+                // if (count_passed_s2s4[gate] == 0) continue;
+                double pid_ratio = 1000 * count_passed_s1s2[gate] / count_passed_s1s2s4[gate];
+                // double pid_ratio = 1000 * count_passed_s1s2[gate] / count_passed_s2s4[gate];
                 h1_ratio_S2_S4_Gates_mhtdc[gate]->SetBinContent(ratio_running_count, pid_ratio);
             }
         }
@@ -1082,7 +1092,8 @@ void FrsNearlineSpectra::Process_Monitors()
         for (int gate = 0; gate < num_frs_gates; gate++)
         {
             count_passed_s1s2[gate] = 0;
-            count_passed_s2s4[gate] = 0;
+            count_passed_s1s2s4[gate] = 0;
+            // count_passed_s2s4[gate] = 0;
         }
            
     }
@@ -1092,6 +1103,7 @@ void FrsNearlineSpectra::Process_Monitors()
 void FrsNearlineSpectra::FinishEvent()
 {
     std::fill(passed_s1s2.begin(), passed_s1s2.end(), 0);
+    std::fill(passed_s1s2s4.begin(), passed_s1s2s4.end(), 0);
     std::fill(passed_s2s4.begin(), passed_s2s4.end(), 0);    
 }
 
@@ -1110,4 +1122,4 @@ void FrsNearlineSpectra::FinishTask()
     
 }
 
-ClassImp(FrsNearlineSpectra)
+ClassImp(FrsNearlineSpectra

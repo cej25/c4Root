@@ -430,8 +430,10 @@ class FrsNearlineSpectra : public FairTask
         int multihit_counter = 0;
         std::vector<bool> passed_s1s2;
         std::vector<bool> passed_s2s4;
+        std::vector<bool> passed_s1s2s4;
         std::vector<int> count_passed_s1s2;
         int* count_passed_s2s4;
+        int* count_passed_s1s2s4;
 
 
     public:
