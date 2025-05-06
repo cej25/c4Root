@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                              C.E. Jones                                    *
+ *                               06.05.25                                     *
+ ******************************************************************************/
+
 #include "TStefanConfiguration.h"
 
 #include "c4Logger.h"
@@ -83,14 +99,12 @@ void TStefanConfiguration::ReadConfiguration()
 }
 
 
-/*
-Takes second order polynomials
-*/
+
 void TStefanConfiguration::ReadCalibrationCoefficients()
 {
 
     std::ifstream cal_map_file (calibration_file);
-    if (cal_map_file.fail()) c4LOG(fatal, "Could not open Germanium calibration coefficients");    
+    if (cal_map_file.fail()) c4LOG(fatal, "Could not open Stefan calibration coefficients");    
 
     int dssd, side, strip; // temp read variables
     double a1; // no a0, a2 for now
