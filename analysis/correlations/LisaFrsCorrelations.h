@@ -5,6 +5,7 @@
 #include "TFrsConfiguration.h"
 #include "TCorrelationsConfiguration.h"
 #include "LisaCalData.h"
+#include "LisaGate.h"
 #include "FrsGate.h"
 #include "FrsHitData.h"
 
@@ -32,6 +33,7 @@ class TCorrelationsConfiguration;
 class TFolder;
 class TDirectory;
 class FrsGate;
+class LisaGate;
 class TGraph;
 class TCanvas;
 
@@ -40,6 +42,8 @@ class LisaFrsCorrelations : public FairTask
     public:
         LisaFrsCorrelations();
         LisaFrsCorrelations(std::vector<FrsGate*> fg);
+        LisaFrsCorrelations(std::vector<LisaGate*> lg);
+        LisaFrsCorrelations(std::vector<FrsGate*> fg, std::vector<LisaGate*> lg);
         LisaFrsCorrelations(const TString& name, Int_t verbose = 1);
 
         virtual ~LisaFrsCorrelations();
@@ -53,14 +57,18 @@ class LisaFrsCorrelations : public FairTask
 
     private:
 
-        
-
         TLisaConfiguration const* lisa_config;
         TFrsConfiguration const* frs_config;
+        TFRSParameter* frs;
         TCorrelationsConfiguration const* correl_config;
         std::map<std::string, std::vector<int>> Correl;
 
         std::vector<FrsGate*> FrsGates;
+        std::vector<LisaGate*> febex_gates;
+        std::vector<LisaGate*> mwd_gates;
+
+        int gate_number = 0;
+        int mwd_gate_number = 0;
 
         std::vector<LisaCalItem> const* lisaCalArray;
         std::vector<FrsHitItem> const* frsHitArray;
@@ -70,18 +78,48 @@ class LisaFrsCorrelations : public FairTask
         Int_t fNEvents;
         EventHeader const* header;
 
+        // ::: Directories
         TDirectory* dir_corr;
         TDirectory* dir_lisa_frs;
-        TDirectory* dir_corr_driftcorr;
-        TDirectory* dir_position;
-        TDirectory* dir_energy;
+
         TDirectory* dir_time;
-        TDirectory* dir_energy_ch;
-        TDirectory* dir_energy_ch_driftcorr;
-        TDirectory* dir_tokyo;
         
-        //common var
+        TDirectory* dir_position;
+
+        TDirectory* dir_energy;
+        TDirectory* dir_febex;
+        TDirectory* dir_mwd;
+
+        TDirectory* dir_gates;
+
+        TDirectory* dir_gate_LISA;
+        TDirectory* dir_gate_LISA_febex;
+        TDirectory** dir_LISA_febex_gates;
+        TDirectory** dir_LISA_febex_gates_channel;
+        TDirectory* dir_gate_LISA_mwd;
+        TDirectory** dir_LISA_mwd_gates;
+        TDirectory** dir_LISA_mwd_gates_channel;
+
+        TDirectory* dir_gate_FRS;
+        TDirectory* dir_gate_FRS_febex;
+        TDirectory** dir_FRS_febex_gates;
+        TDirectory** dir_FRS_febex_gates_channel;
+        TDirectory* dir_gate_FRS_mwd;
+        TDirectory** dir_FRS_mwd_gates;
+        TDirectory** dir_FRS_mwd_gates_channel;
+
+        TDirectory* dir_gate_LISA_FRS;
+        TDirectory* dir_gate_LISA_FRS_febex;
+        TDirectory** dir_LISA_FRS_febex_gates;
+        TDirectory** dir_LISA_FRS_febex_gates_channel;
+        TDirectory* dir_gate_LISA_FRS_mwd;
+        TDirectory** dir_LISA_FRS_mwd_gates;
+        TDirectory** dir_LISA_FRS_mwd_gates_channel;
+        
+        // ::: common var
         int layer_number;
+        int xmax;
+        int ymax;
         int multi_evt = 0;
 
         int64_t wr_LISA;
@@ -90,42 +128,86 @@ class LisaFrsCorrelations : public FairTask
         int64_t wr_LISA_FRS;
         int64_t wr_LISA_travMUSIC;
         int64_t wr_travMUSIC_FRS;
-        Float_t s2_x;
-        Float_t s2_y;
-        Float_t energy_MUSIC_1;
-        Float_t energy_MUSIC_2;
-        Float_t energy_travMUSIC;
-        Float_t energy_travMUSIC_driftcorr;
-        int xmax;
-        int ymax;
+        // Float_t s2_x;
+        // Float_t s2_y;
+        Float_t energy_MUSIC_21;
+        Float_t energy_MUSIC_41;
+        Float_t energy_MUSIC_42;
+
         TString city = "";
 
         Int_t layer;
 
-        //Histograms
+        // ::: Histograms
+        // ::: Time
         std::vector<TH1I*> h1_wr_diff;
-        std::vector<TH2F*> h2_MUSIC_1_layer_GM;
-        std::vector<TH2F*> h2_MUSIC_2_layer_GM;
-        std::vector<TH2F*> h2_travMUSIC_layer_GM;
-        std::vector<TH2F*> h2_travMUSIC_driftcorr_layer_GM;
-        std::vector<TH2F*> h2_xy_pos_layer1;
-        std::vector<TH2F*> h2_xy_pos_layer2;
-        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch_GM;
-        std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_ch_GM_PIDgated;
-        std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_ch_GM_PIDgated_Trav;
+
+        // ::: Position
+        std::vector<TH2F*> h2_TPC_vs_LISA_x;
+        std::vector<TH2F*> h2_TPC_vs_LISA_y;
+
+        // ::: Energy - LISA-MUSICs
+        std::vector<TH2F*> h2_MUSIC21_vs_LISA_febex;
+        std::vector<TH2F*> h2_MUSIC41_vs_LISA_febex;
+
+        std::vector<TH2F*> h2_MUSIC21_vs_LISA_MWD;
+        std::vector<TH2F*> h2_MUSIC41_vs_LISA_MWD;
+
+        // ::: Gates
+        // ::: Gated - FRS applied on LISA
+        // Full sequential gate
+        std::vector<TH2F*> h2_LISA_energy_vs_layer_s1s2s4_gated;
+        std::vector<TH2F*> h2_LISA_energy_xy_vs_layer_s1s2s4_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_s1s2s4_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_xy_s1s2s4_gated;
+
+        std::vector<TH2F*> h2_LISA_energy_MWD_vs_layer_s1s2s4_gated;
+        std::vector<TH2F*> h2_LISA_energy_MWD_xy_vs_layer_s1s2s4_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_s1s2s4_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_xy_s1s2s4_gated;
         
-        std::vector<std::vector<TH1F*>> h1_energy_layer_GM_PID_TM;
-        std::vector<std::vector<TH1F*>> h1_energy_layer2_GM_PID_TM_LISA1;
+        // only s1s2 gate
+        std::vector<TH2F*> h2_LISA_energy_vs_layer_s1s2_gated;
+        std::vector<TH2F*> h2_LISA_energy_xy_vs_layer_s1s2_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_s1s2_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_xy_s1s2_gated;
 
+        std::vector<TH2F*> h2_LISA_energy_MWD_vs_layer_s1s2_gated;
+        std::vector<TH2F*> h2_LISA_energy_MWD_xy_vs_layer_s1s2_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_s1s2_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_xy_s1s2_gated;
+        //..............................
+        // ::: Gated - LISA applied on FRS
+        std::vector<std::vector<TH2F*>> h2_Z21_vs_AoQs1s2_LISA_gated;
+        std::vector<std::vector<TH2F*>> h2_Z41_vs_AoQs2s4_LISA_gated;
 
-        //Histo for drift corrected FRS
-        std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_ch_GM_PID_driftcorr;
-        std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_ch_GM_PID_TM_driftcorr;
-        std::vector<std::vector<std::vector<std::vector<TH1F*>>>> h1_energy_ch201_GM_PID_TM_driftcorr_ch101;
+        std::vector<std::vector<TH2F*>> h2_Z21_vs_AoQs1s2_LISA_MWD_gated;
+        std::vector<std::vector<TH2F*>> h2_Z41_vs_AoQs2s4_LISA_MWD_gated;
+        //..............................
+        // ::: Gated - LISA and FRS applied on LISA
+        // Full sequential gate
+        std::vector<TH2F*> h2_LISA_energy_vs_layer_LISA_s1s2s4_gated;
+        std::vector<TH2F*> h2_LISA_energy_xy_vs_layer_LISA_s1s2s4_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_LISA_s1s2s4_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_xy_LISA_s1s2s4_gated;
 
-        std::vector<std::vector<TH1F*>> h1_energy_layer_GM_PID_driftcorr;
-        std::vector<std::vector<TH1F*>> h1_energy_layer_GM_PID_TM_driftcorr;
-        std::vector<std::vector<TH1F*>> h1_energy_layer2_GM_PID_TM_driftcorr_LISA1;
+        std::vector<TH2F*> h2_LISA_energy_MWD_vs_layer_LISA_s1s2s4_gated;
+        std::vector<TH2F*> h2_LISA_energy_MWD_xy_vs_layer_LISA_s1s2s4_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_LISA_s1s2s4_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_xy_LISA_s1s2s4_gated;
+
+        //only s1s2
+        std::vector<TH2F*> h2_LISA_energy_vs_layer_LISA_s1s2_gated;
+        std::vector<TH2F*> h2_LISA_energy_xy_vs_layer_LISA_s1s2_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_LISA_s1s2_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_xy_LISA_s1s2_gated;
+
+        std::vector<TH2F*> h2_LISA_energy_MWD_vs_layer_LISA_s1s2_gated;
+        std::vector<TH2F*> h2_LISA_energy_MWD_xy_vs_layer_LISA_s1s2_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_LISA_s1s2_gated;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_xy_LISA_s1s2_gated;
+        //..............................
+        std::set<std::tuple<int, int, int>> excluded;
 
     public:
         ClassDef(LisaFrsCorrelations, 1)

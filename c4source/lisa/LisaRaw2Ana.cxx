@@ -155,11 +155,12 @@ void LisaRaw2Ana::Exec(Option_t* option)
             int k0 = static_cast<int>(MWD_trace_start / sampling);               // Start of MWD in samples
             int kend = static_cast<int>(MWD_trace_stop / sampling);              // Stop of MWD in samples
             
+            //c4LOG(info, "k0 : " << k0 << " kend: " << kend << " kend-k0 " << kend-k0);
 
             //Check Trace size - this solves problems with events with empty trace
             if (trace_febex.size() == 0) 
             {
-                c4LOG(info, "Empty Trace - Skipping event");
+                //c4LOG(info, "Empty Trace - Skipping event");
                 continue;
             }
 
@@ -167,7 +168,7 @@ void LisaRaw2Ana::Exec(Option_t* option)
             if (kend > trace_febex.size()) 
             {
                 kend = trace_febex.size();            // If kend out of bound, replace it with trace_febex limit
-                c4LOG(info, "[MWD info] Trapez_sample_window_1 " << MWD_trace_stop << " is greater than febex trace size " << trace_febex.size() << ". It has been replaced with febex trace limit");
+                c4LOG(info, "[MWD info] Trapez_sample_window_1 " << MWD_trace_stop << "ns is greater than febex trace size " << trace_febex.size()*sampling << " ns. It has been replaced with febex trace limit");
             }
 
             // ::: Checks on the MWD parameters called so far :::
@@ -210,12 +211,11 @@ void LisaRaw2Ana::Exec(Option_t* option)
                 " -- must be > Trapez_sample_window_1 ( = " << kend*sampling << ") \n" );
             }
 
-
             //std::cout << "k0 : " << k0 << " kend : " << kend << "\n";
             // 1. ::: Baseline correction of febex trace :::
             //        This corresponds to anaTraces function calcCorrectTrace
             // ::: Evaluate average from points 20 to 100
-            for( int i = 20; i < 1000; i++) //100 v1
+            for( int i = 20; i < 150; i++) //100 v1
             {
                 sum += trace_febex.at(i);
                 count++;
@@ -259,21 +259,27 @@ void LisaRaw2Ana::Exec(Option_t* option)
             //     //std::cout<<" ::: mwd values : " << mwd_value << "\n";
             //     trace_MWD.push_back(mwd_value);
             // }
-
             // ::: Faster calculation
             for (int kk = k0; kk < kend; ++kk) 
             {
                 DM = 0.0;
                 sum0 = 0.0;
                 bool sum0_initialized = false;
-
+                //c4LOG(info, "....1....");
                 for (int j = kk - LL; j <= kk - 1; ++j) {
-                    if (j < 1) continue;  // Skip out-of-bounds
-
+                    //if (j < 1) continue;  // Skip out-of-bounds
+                    if (
+                        j < 1 ||
+                        j >= trace_febex_0.size() ||
+                        j - 1 < 0 || j - 1 >= trace_febex_0.size() ||
+                        j - MM < 0 || j - MM >= trace_febex_0.size() ||
+                        j - MM - 1 < 0 || j - MM - 1 >= trace_febex_0.size()
+                    ) continue;
+                    //c4LOG(info, "....2....");
                     if (!sum0_initialized) {
                         // Initialize sum0 completely in the first valid iteration
                         for (int i = j - MM; i <= j - 1; ++i) {
-                            if (i < 0) continue;  // Skip out-of-bounds
+                            if (i < 0 || i >= trace_febex_0.size()) continue;  // Skip out-of-bounds
                             sum0 += trace_febex_0.at(i);
                         }
                         sum0_initialized = true;
@@ -282,9 +288,9 @@ void LisaRaw2Ana::Exec(Option_t* option)
                         if (j - MM - 1 >= 0) sum0 -= trace_febex_0.at(j - MM - 1);
                         sum0 += trace_febex_0.at(j - 1);
                     }
-
+                    //c4LOG(info, "bedore DM");
                     DM += trace_febex_0.at(j) - trace_febex_0.at(j - MM) + sum0 / tau[1];
-
+                    //c4LOG(info, "afterDM");       
                     // std::cout << "j=" << j 
                     // << " DM=" << DM 
                     // << " sum0=" << sum0 
@@ -321,17 +327,17 @@ void LisaRaw2Ana::Exec(Option_t* option)
             
             // Trapez_amp_calc_window_0 and Trapez_amp_calc_window_1
             // Check if amp_start and amp_stop fall inside the flat-top region
-            if (!(flat_top_start <= amp_start_idx && amp_start_idx < amp_stop_idx && amp_stop_idx <= flat_top_stop)) 
-            {
-                c4LOG(fatal, "[MWD ERROR] Trapez_amp_calc_window_0 (" << amp_start_idx * sampling 
-                        << ") and/or Trapez_amp_calc_window_1 (" << amp_stop_idx * sampling 
-                        << ") are outside the valid flat-top range ("
-                        << flat_top_start * sampling << " - " 
-                        << flat_top_stop * sampling << ").\n" );
-            }
+            // if (!(flat_top_start <= amp_start_idx && amp_start_idx < amp_stop_idx && amp_stop_idx <= flat_top_stop)) 
+            // {
+            //     c4LOG(fatal, "[MWD ERROR] Trapez_amp_calc_window_0 (" << amp_start_idx * sampling 
+            //             << ") and/or Trapez_amp_calc_window_1 (" << amp_stop_idx * sampling 
+            //             << ") are outside the valid flat-top range ("
+            //             << flat_top_start * sampling << " - " 
+            //             << flat_top_stop * sampling << ").\n" );
+            // }
 
 
-            if (baseline_start_idx < 10 || baseline_start_idx >= baseline_stop_idx || baseline_start_idx >= (k0 + MM - LL)) 
+            if (baseline_start_idx < k0 || baseline_start_idx >= baseline_stop_idx || baseline_start_idx >= (k0 + MM - LL)) 
             {
                 c4LOG(fatal, "[ MWD ERROR] Invalid Trapez_baseline_window_0: " << baseline_start_idx*sampling <<
                 " -- must be within (k0, k0 + M -L) = ( " << MWD_trace_start << ", " << MWD_trace_start + MWD_length - smoothing_L << " ) \n" );
@@ -362,17 +368,17 @@ void LisaRaw2Ana::Exec(Option_t* option)
             // Baseline starts at the beginning of the trace_febex
             // This is to reduce the possibility to calculate the baseline from a previous trace (for pileup)
 
-            baseline_start_idx = baseline_start_idx;
-            baseline_stop_idx = baseline_stop_idx;
+            //baseline_start_idx = baseline_start_idx;
+            //baseline_stop_idx = baseline_stop_idx;
 
             // For baseline included in MWD
-            //baseline_start_idx = baseline_start_idx - k0;
-            //baseline_stop_idx = baseline_stop_idx - k0;
+            baseline_start_idx = baseline_start_idx - k0;
+            baseline_stop_idx = baseline_stop_idx - k0;
 
             for (int i = baseline_start_idx; i < baseline_stop_idx; ++i) 
             {
-                //baseline_sum += trace_MWD.at(i);
-                baseline_sum += trace_febex_0.at(i);
+                baseline_sum += trace_MWD.at(i);
+                //baseline_sum += trace_febex_0.at(i);
                 baseline_count++;
             }
     

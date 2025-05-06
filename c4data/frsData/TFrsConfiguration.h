@@ -70,8 +70,9 @@ class TFrsConfiguration
         static Double_t fMin_b4, fMax_b4;
         static Double_t fMin_dE, fMax_dE;
         static Double_t fMin_dEoQ, fMax_dEoQ;
-        static Double_t fMin_dE_Music1, fMax_dE_Music1;
-        static Double_t fMin_dE_Music2, fMax_dE_Music2;
+        static Double_t fMin_dE_music21, fMax_dE_music21;
+        static Double_t fMin_dE_music41, fMax_dE_music41;
+        static Double_t fMin_dE_music42, fMax_dE_music42;
         static Double_t fMin_dE_travMus_gate, fMax_dE_travMus_gate;
         static int frun_num;
 
@@ -92,22 +93,27 @@ class TFrsConfiguration
         static void Set_b4_range(Double_t, Double_t);
         static void Set_dEdeg_range(Double_t, Double_t);
         static void Set_dEdegoQ_range(Double_t, Double_t);
-        static void Set_dE_Music1_range(Double_t, Double_t);
-        static void Set_dE_Music2_range(Double_t, Double_t);
-        static void Set_dE_travMusic_gate(Double_t, Double_t);
+        static void Set_dE_music21_range(Double_t min, Double_t max);
+        static void Set_dE_music41_range(Double_t min, Double_t max);
+        static void Set_dE_music42_range(Double_t min, Double_t max);
 
-        static Double_t fMin_dE_travMusic, fMax_dE_travMusic;
-        static void Set_dE_travMusic_range(Double_t, Double_t);
+        static void Set_dE_travMusic_gate(Double_t, Double_t);
 
         void Plot_TAC_1D(bool option) { plot_tac_1d = option; }
         void Plot_TAC_2D(bool option) { plot_tac_2d = option; }
+        void Plot_TAC(bool option) { plot_tac = option; }
         void Plot_MHTDC_1D(bool option) { plot_mhtdc_1d = option; }
-        void Plot_MHTDC_2D(bool option) { plot_mhtdc_1d = option; }
+        void Plot_MHTDC_2D(bool option) { plot_mhtdc_2d = option; }
+        void Plot_MHTDC(bool option) { plot_mhtdc = option; }
+        void Plot_Monitors(bool option) { plot_monitors = option; }
 
         Bool_t plot_tac_1d = true;
         Bool_t plot_tac_2d = true;
+        Bool_t plot_tac = true;
         Bool_t plot_mhtdc_1d = true;
         Bool_t plot_mhtdc_2d = true;
+        Bool_t plot_mhtdc = true;
+        Bool_t plot_monitors = true;
 
         static void SetRunNumber(int run_num) { frun_num = run_num; }
 

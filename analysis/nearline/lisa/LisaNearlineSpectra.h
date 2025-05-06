@@ -6,8 +6,11 @@
 #include "TLisaConfiguration.h"
 #include "LisaData.h" // do we need raw?
 #include "LisaCalData.h"
+#include "LisaGate.h"
 #include <vector>
 #include <memory>
+#include <sstream>
+#include <string>
 #include "TDirectory.h"
 #include "TFolder.h"
 #include "TPad.h"
@@ -24,6 +27,7 @@
 class LisaCalItem;
 class TLisaConfiguration;
 class TExperimentConfiguration;
+class LisaGate;
 class EventHeader;
 class TCanvas;
 class TH1F;
@@ -40,6 +44,7 @@ class LisaNearlineSpectra : public FairTask
 {
     public:
         LisaNearlineSpectra();
+        LisaNearlineSpectra(std::vector<LisaGate*> lg);
         LisaNearlineSpectra(const TString& name, Int_t verbose = 1);
 
         virtual ~LisaNearlineSpectra();
@@ -61,9 +66,20 @@ class LisaNearlineSpectra : public FairTask
         TLisaConfiguration const* lisa_config;
         TExperimentConfiguration const* exp_config;
 
+
+        std::vector<LisaGate*> febex_gates;
+        std::vector<LisaGate*> mwd_gates;
+
+        int gate_number = 0;
+        int mwd_gate_number = 0;
+
         // TClonesArray* fHitLisa;
 
         std::vector<LisaCalItem> const* lisaCalArray;
+
+        // Variables for Gates
+        std::map<int, std::vector<std::tuple<std::string, double, double>>> gates_LISA_febex;
+        std::map<int, std::vector<std::tuple<std::string, double, double>>> gates_LISA_MWD;
 
         // common variables
         int layer_number;
@@ -71,93 +87,109 @@ class LisaNearlineSpectra : public FairTask
         int xmax;
         int ymax;
         int num_layers;
-        TString city = "";
-        
-        std::vector<std::vector<std::vector<int>>> detector_counter;  //ok
-        std::vector<std::vector<std::vector<int>>> detector_rate;     //ok
-        int rate_running_count = 0; //ok
-
-        EventHeader* header;
-        Int_t fNEvents;
-
-        Int_t en_count1 = 0;
-        Int_t en_count2 = 0;
-        Int_t counter = 0;
         uint64_t wr_time;
         Int_t layer;
-        Int_t lay;
-        Int_t xp;
-        Int_t yp;
-        uint32_t en;
+        TString city = "";
+        EventHeader* header;
+        Int_t fNEvents;
+        
+        // counters
+        std::vector<std::vector<std::vector<int>>> detector_counter; 
+        std::vector<std::vector<std::vector<int>>> detector_rate; 
+        std::vector<int> layer_counter; 
+        std::vector<int> layer_rate; 
 
+        int rate_running_count = 0; 
+
+        // Rates
+        Long64_t prev_wr = 0;
+        Long64_t wr_diff; 
+        Long64_t wr_rate; 
+        Long64_t saved_wr =  0; 
+
+        // ::: Directories
         TDirectory* dir_lisa;
 
+        //  Stats
         TDirectory* dir_stats;
         TDirectory* dir_rates;
-
-        TDirectory* dir_energy_febex;
-        TDirectory* dir_energy_febex_ch;
+        //  Energy
+        TDirectory* dir_energy;
+        TDirectory* dir_febex;
+        TDirectory* dir_febex_exclude;
         TDirectory* dir_energy_MWD;
-        TDirectory* dir_energy_MWD_ch;
-
+        TDirectory* dir_febex_channel;
+        TDirectory* dir_MWD_channel;
+        //  Traces
         TDirectory* dir_traces;
-        TDirectory* dir_traces_tokyo;
-        
+        //  Drift
         TDirectory* dir_drift;
-        TDirectory* dir_drift_ch;
-        TDirectory* dir_drift_tokyo;
-
-        TDirectory* dir_music;
-        TDirectory* dir_correlations;
-
-        TDirectory* dir_tokyo;
-        
-
-        Long64_t prev_wr = 0;
-        Long64_t wr_diff;
-        Long64_t wr_rate;
-
-        Long64_t saved_wr =  0;
-    
-        // ::: Histograms
-
+        TDirectory* dir_febex_drift;
+        TDirectory* dir_febex_ch_drift;
+        TDirectory* dir_MWD_drift;
+        TDirectory* dir_MWD_ch_drift;
+        //  Gates LISA only
+        TDirectory* dir_lisa_gates;
+        TDirectory* dir_gated_febex;
+        TDirectory** dir_febex_gates;
+        TDirectory** dir_febex_gates_channel;
+        TDirectory* dir_gated_mwd;
+        TDirectory** dir_mwd_gates;
+        TDirectory** dir_mwd_gates_channel;
+     
+        // ::: Histograms :::
         // ::: Stats
+        TH1I* h1_wr_diff; 
+        std::vector<TH1I*> h1_lisa_layer_rate;
+        std::vector<std::vector<std::vector<TH1I*>>> h1_lisa_rate; 
         TH1I* h1_hitpattern_total;
-        TH1I* h1_wr_diff; //ok
-        std::vector<std::vector<std::vector<TH1I*>>> h1_lisa_rate; //ok
-
- 
         std::vector<TH1I*> h1_hitpattern_layer;
         std::vector<TH2F*> h2_hitpattern_grid;
         std::vector<TH2F*> h2_pileup_grid;
         std::vector<TH2F*> h2_overflow_grid;
-        TH1I* h1_evt_multiplicity;
-        std::vector<TH1I*> h1_multiplicity_layer; ;
-        TH1I* h1_layers_multiplicity;
-        //TH2F* h2_hitpattern_grid;
-        //TH1F* h1_energy_layer0;
+        TH1I* h1_multiplicity;
+        std::vector<TH1I*> h1_multiplicity_per_layer; ;
+        TH1I* h1_layer_multiplicity;
 
-        // Energy for febex and MWD
-        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_febex;
-        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_MWD;
-        std::vector<TH1F*> h1_energy_febex_layer;
+        //  ::: Energy
+        //      Febex
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_ch;
+        std::vector<TH1*> h1_energy_layer;
+        std::vector<TH2F*> h2_energy_vs_ID;
+        TH2F* h2_energy_vs_ID_total;
+        TH2F* h2_energy_vs_layer;
+        std::vector<TH2F*> h2_energy_layer_vs_layer;
+        TH2F* h2_energy_first_vs_last;
+        //      - Gated
+        std::vector<std::vector<TH1*>> h1_energy_layer_gated; 
+        std::vector<std::vector<TH1*>> h1_energy_xy_gated;
+        //std::vector<TH1F*> h1_energy_layer_gated;
+        //std::vector<TH1F*> h1_energy_xy_gated;
+        
+        //      MWD
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_MWD_ch;
         std::vector<TH1F*> h1_energy_MWD_layer;
-
-        // Energy of layers summed or vs
-        TH1F* h1_energy_all_layers_GM;
-        TH2F* h2_sum_energy_layer1_vs_layer2;
-        TH2F* h2_sum_energy_layer1_vs_layer2_GM;
-        TH2F* h2_energy_layer1_vs_layer2;
-        TH2F* h2_energy_MWD_layer1_vs_layer2_GM;
+        std::vector<TH2F*> h2_energy_MWD_vs_ID_layer;
+        TH2F* h2_energy_MWD_vs_layer;
+        std::vector<TH2F*> h2_energy_MWD_layer_vs_layer;
+        TH2F* h2_energy_MWD_first_vs_last;
+        //      - Gated
+        std::vector<std::vector<TH1*>> h1_energy_MWD_layer_gated;
+        std::vector<std::vector<TH1*>> h1_energy_MWD_xy_gated;
+        //std::vector<TH1F*> h1_energy_MWD_layer_gated;
+        //std::vector<TH1F*> h1_energy_MWD_xy_gated;
 
         // ::: Traces
-        std::vector<std::vector<std::vector<TH2F*>>> h2_traces_ch_stat;
+        std::vector<std::vector<std::vector<TH2F*>>> h2_traces_ch;
 
         // ::: Drifts
         std::vector<TH2*> h2_energy_layer_vs_time;
         std::vector<TH2*> h2_energy_MWD_layer_vs_time;
         std::vector<std::vector<std::vector<TH2*>>> h2_energy_ch_vs_time;
         std::vector<std::vector<std::vector<TH2*>>> h2_energy_MWD_ch_vs_time;
+
+
+        std::set<std::tuple<int, int, int>> excluded;
 
         
 
