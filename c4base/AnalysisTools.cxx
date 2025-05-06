@@ -16,6 +16,7 @@
 
 #include "AnalysisTools.h"
 #include "c4Logger.h"
+#include "TStyle.h"
 
 // basic TH1
 TH1* MakeTH1(TDirectory* dir, const char* type, const char* name, 
@@ -78,6 +79,7 @@ TH2* MakeTH2(TDirectory* dir, const char* type, const char* name, const char* ti
             int xbins, double xmin, double xmax, int ybins, int ymin, int ymax)
 {
     dir->cd();
+    gStyle->SetPalette(kDarkBodyRadiator);
 
     TH2* h2;
     
@@ -85,7 +87,7 @@ TH2* MakeTH2(TDirectory* dir, const char* type, const char* name, const char* ti
     else if (*type == 'F') h2 = new TH2F(name, title, xbins, xmin, xmax, ybins, ymin, ymax);
     else if (*type == 'D') h2 = new TH2D(name, title, xbins, xmin, xmax, ybins, ymin, ymax);
     else h2 = new TH2I(name, title, xbins, xmin, xmax, ybins, ymin, ymax);
-    
+
     h2->SetOption("COLZ"); // default for now.
 
     return h2;
@@ -97,6 +99,7 @@ TH2* MakeTH2(TDirectory* dir, const char* type, const char* name, const char* ti
             const char* xtitle, const char* ytitle)
 {
     dir->cd();
+    gStyle->SetPalette(kDarkBodyRadiator);
 
     TH2* h2;
     
@@ -107,7 +110,6 @@ TH2* MakeTH2(TDirectory* dir, const char* type, const char* name, const char* ti
 
     h2->GetXaxis()->SetTitle(xtitle);
     h2->GetYaxis()->SetTitle(ytitle);
-
     h2->SetOption("COLZ"); // default for now.
     
     return h2;

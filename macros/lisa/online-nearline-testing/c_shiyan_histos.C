@@ -1,21 +1,29 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define LISA_ON 1
+#define LISA_ON 0
         //LISA_ANA displays only energy and traces; LISA_CAL displays stats,energy,traces. Choose one.
         //Note that if FRS 1, LISA_CAL is needed. 
 #define LISA_ANA 0
-#define LISA_CAL 1
+#define LISA_CAL 0
 
-#define FRS_ON 0
+// Test or experiment settings
+#define TEST 1
+#define EXP 0
+
+// If you want to have trace histos
+#define TRACE_ON 1
+
+#define FRS_ON 1
 #define FRS_LISA_CORRELATIONS 0
 
+#define WR_ENABLED 1
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
 
-// Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/
+// :::  Define FRS setup.C file - FRS should provide; place in /config/shiyan/frs/setup/
 extern "C"
 {
-    #include "../../config/pareeksha/frs/setup_Fragment_conv_updated.C"
+    #include "../../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -26,20 +34,20 @@ typedef struct EXT_STR_h101_t
 
 } EXT_STR_h101;
 
-void lisadev_histos()
+void c_shiyan_histos()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
-    //:::::::::Experiment name
-    TString fExpName = "pareeskha";
+    // ::: Experiment name
+    TString fExpName = "shiyan";
 
-    //:::::::::Here you define commonly used path
+    // ::: Here you define commonly used path
     TString c4Root_path = "/u/gandolfo/c4/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
 
-    //:::::::::Macro timing
+    // ::: Macro timing
     TString cRunId = Form("%04d", fRunId);
     TString cExpId = Form("%03d", fExpId);
     TStopwatch timer;
@@ -49,18 +57,22 @@ void lisadev_histos()
     oss << std::put_time(&tm, "%Y%m%d_%H%M%S");
     timer.Start();
     
-    //:::::::::::Debug info - set level
+    // ::: Debug info - set level
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
 
-    //::::::::::P A T H   O F   F I L E  to read
-    //___O F F L I N E
-    TString inputpath = "/u/gandolfo/data/test_c4/";
-    TString filename = inputpath + "run_0075_0001_tree.root";  
+    // ::: P A T H   O F   F I L E  to read
+    TString inputpath = "./";
+    //TString filename = inputpath + "test_0003_tree.root";  
+    TString filename = inputpath + "c_test_Ag_with_whatever.root";  
+
+    // TString inputpath = "/u/gandolfo/data/test_c4/shiyan_test/";
+    // TString filename = inputpath + "test_0003_tree.root"; 
     
-    //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/test_c4/"; //test output
-    TString outputFilename = outputpath + "run_0075_0001_histo.root";
+    // ::: O U T P U T
+    TString outputpath = "./"; //test output
+    //TString outputFilename = outputpath + "test_0003_histo_shiyan.root";
+    TString outputFilename = outputpath + "c_test_Ag_histos_whatever.root";
 
 
     FairRunAna* run = new FairRunAna();
@@ -77,7 +89,7 @@ void lisadev_histos()
     Int_t totEvt = eventTree->GetEntries();
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    //::::: F R S parameter - Initialise
+    // ::: F R S parameter - Initialise
 
     TFRSParameter* frs = new TFRSParameter();
     TMWParameter* mw = new TMWParameter();
@@ -93,7 +105,7 @@ void lisadev_histos()
     TFrsConfiguration::SetParameters(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    //:::: G A T E S - Initialise 
+    // ::: G A T E S - Initialise 
 
     std::vector<FrsGate*> fg;
     FrsGate* cut_0 = new FrsGate("cut", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/all_z_1.root"); 
@@ -111,28 +123,52 @@ void lisadev_histos()
     fg.emplace_back(cut_4);
     fg.emplace_back(cut_5);
 
-    //:::: GATES config for histos ::::::::
+    // ::: GATES config for histos ::::::::
     TFrsConfiguration::Set_dE_travMusic_gate(1940,2000);
-    TLisaConfiguration::SetLISAGate(1070,1110); //Gate on LISA 1 for histo of LISA 2 energy (mean +- 3sigma)
-    //98Nb -> 1090 (6.6)
-    //96Zr -> 1044 (8)
-    //95Zr -> 1027 (5)
-    //after98Nb -> 1171 (9)
+    //TLisaConfiguration::SetLISAGate(1070,1110); //Gate on LISA 1 for histo of LISA 2 energy (mean +- 3sigma)
+    TLisaConfiguration::SetXYDetectorGate(2,2);  //XY position of the detector you want to see the gate on
 
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: FRS config
-    // TFrsConfiguration::SetConfigPath(config_path + "/frs/");
-    // TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
-    // TFrsConfiguration::SetTravMusDriftFile(config_path + "/frs/TM_Drift_fragments.txt");
-    // TFrsConfiguration::SetZ1DriftFile(config_path + "/frs/Z1_Drift_fragments.txt");
-    // TFrsConfiguration::SetAoQDriftFile(config_path + "/frs/AoQ_Drift_fragments.txt");
+    TFrsConfiguration::SetConfigPath(config_path +  "/frs/");
+    TFrsConfiguration::SetCrateMapFile(config_path +  "/frs/crate_map.txt");
+    TFrsConfiguration::SetTravMusDriftFile(config_path +  "/frs/TM_Drift_fragments.txt");
+    TFrsConfiguration::SetZ1DriftFile(config_path +  "/frs/Z1_Drift_fragments.txt");
+    TFrsConfiguration::SetAoQDriftFile(config_path +  "/frs/AoQ_Drift_fragments.txt");
 
-    // ::: LISA config
-    TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map_names.txt");
-    TLisaConfiguration::SetGMFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_pareeksha.txt");
-    TLisaConfiguration::SetGMFileMWD("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_pareeksha.txt");
-    TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_DAQtest.txt");
+    std::vector<LisaGate*> lgs = {};
+
+    if ( TEST )
+    {
+        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_All_Boards.txt");
+        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_cards.txt");
+        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
+
+        LisaGate* FebGate1 = new LisaGate("Febex_Gate1", "energy", config_path + "/lisa/Gates/Febex_Gate1.txt");
+        LisaGate* MWD_Gate1 = new LisaGate("MWD_Gate1", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate1.txt");
+        LisaGate* MWD_Gate2 = new LisaGate("MWD_Gate2", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate2.txt");
+
+        lgs.emplace_back(FebGate1);
+        lgs.emplace_back(MWD_Gate1);
+        lgs.emplace_back(MWD_Gate2);
+
+        TLisaConfiguration::SetExcludedChannels({
+            std::make_tuple(1,2,2),
+            std::make_tuple(2,1,1)
+        });
     
+    }
+    if ( EXP )
+    {
+        TLisaConfiguration::SetMappingFile(config_path + "/Lisa_5x5_shiyan.txt");
+        TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching_shiyan.txt");
+        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_shiyan.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path +  "/lisa/Lisa_MWD_Parameters_shiyan.txt");
+        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Lisa_Febex_Gates_shiyan.txt");
+        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/Lisa_MWD_Gates_shiyan.txt");
+    }
+  
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
     // ::: Nearline Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     
@@ -141,37 +177,47 @@ void lisadev_histos()
     //std::cout << "Run number: " << fileNumber << std::endl;
 
     //::::::::: Set experiment configurations
-    TExperimentConfiguration::SetExperimentStart(1715734200000000000);
+    TExperimentConfiguration::SetExperimentStart(1745599200000000000);
+    // ::: FRS
+    TFrsConfiguration::Set_Z_range(10,60);
+    TFrsConfiguration::Set_AoQ_range(1.8,3.5);
+    TFrsConfiguration::Set_dE_music41_range(0,64000);
     
     //::::::::: Set ranges for histos :::::::::::::::
-    // LISA
+    // ::: LISA
+    //  Channel Energy ::::: (h1_energy_)
+    TLisaConfiguration::SetEnergyRange(30000,50000);
+    TLisaConfiguration::SetEnergyBin(1000);
 
-    //::::  Channel Energy ::::: (h1_energy_)
-    TLisaConfiguration::SetEnergyRange(0,10000000);
-    TLisaConfiguration::SetEnergyBin(450);
+    //  MWD histos
+    TLisaConfiguration::SetEnergyRangeMWD(0,100);
+    TLisaConfiguration::SetEnergyBinMWD(1000);
 
-    TLisaConfiguration::SetEnergyRangeGM(0,4000);
-    TLisaConfiguration::SetEnergyBinGM(450);
-
-    //:::: MWD histos
-    TLisaConfiguration::SetEnergyRangeMWD(0,1000);
-    TLisaConfiguration::SetEnergyBinMWD(450);
-
-    TLisaConfiguration::SetEnergyRangeMWDGM(0,1000);
-    TLisaConfiguration::SetEnergyBinMWDGM(450);
+    //  Traces Time and Amplitude Ranges 
+    TLisaConfiguration::SetTracesRange(0,5);
+    TLisaConfiguration::SetTracesBin(500);
+    TLisaConfiguration::SetAmplitudeMin(7900);
+    TLisaConfiguration::SetAmplitudeMax(8700);
 
     // White Rabbit
     TLisaConfiguration::SetWrDiffRange(0,100000000);
     TLisaConfiguration::SetWrDiffBin(50000);
 
-    TLisaConfiguration::SetWrRateRange(0,50000);
-    TLisaConfiguration::SetWrRateBin(50000000);
+    TLisaConfiguration::SetWrRateRange(0,3600);
+    TLisaConfiguration::SetWrRateBin(3600);
 
-    // FRS
-    TFrsConfiguration::Set_Z_range(20,60);
-    TFrsConfiguration::Set_AoQ_range(1,3);
+    // Drift
+    TLisaConfiguration::SetDriftRange(0,100);
 
     // :::: ENABLE SYSTEMS  ::::::::::::::::::::::::::::::::::::::::
+    if(TRACE_ON)
+    {
+        TLisaConfiguration::SetTrace(1);
+    }else
+    {
+        TLisaConfiguration::SetTrace(0);
+    }
+
     if (LISA_ON)
     {
         if(LISA_ANA)
@@ -182,18 +228,27 @@ void lisadev_histos()
 
         if(LISA_CAL)
         {
-            LisaNearlineSpectra* nearlinelisa = new LisaNearlineSpectra();
+            LisaNearlineSpectra* nearlinelisa = new LisaNearlineSpectra(lgs);
             run->AddTask(nearlinelisa);
         }
 
     }
+    
+    // TFrsConfiguration::Plot_TAC_1D(false);
+    // TFrsConfiguration::Plot_TAC_2D(false);
+
+    FrsGate* test = new FrsGate("Tester","/u/cjones/c4Root/config/shiyan/frs/Gates/frs_real_gate_lisa.root");
+    std::vector<FrsGate*> fgs = {};
+    fgs.emplace_back(test);
 
     if (FRS_ON)
     {
-        FrsNearlineSpectra* nearlinefrs = new FrsNearlineSpectra();
+        FrsNearlineSpectra* nearlinefrs = new FrsNearlineSpectra(fgs);
         run->AddTask(nearlinefrs);
     }
-
+    
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    // ::: Correlation Spectra :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     if(LISA_ON && FRS_ON)
     {
         if(FRS_LISA_CORRELATIONS)
@@ -202,15 +257,6 @@ void lisadev_histos()
             run->AddTask(LISA_FRS_corr);
         }
     }
-
-    TString c = "Lisa";
-    TString d = "Frs";
-    TString e = "TravMus";
-    
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    // ::: Correlation Spectra :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-    // FrsLisa
 
     // Initialise
     run->Init();

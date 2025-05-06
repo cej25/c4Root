@@ -245,10 +245,10 @@ void FrsCal2Hit::Exec(Option_t* option)
             s1a_mhtdc.emplace_back(temp_a1);
             s2x_s1s2_mhtdc.emplace_back(temp_s2x_mhtdc[i]);
             s2a_s1s2_mhtdc.emplace_back(temp_a2);
-            tof_s1s2_mhtdc.emplace_back(id_mhtdc_tof_s2s4[count]);
-            beta_s1s2_mhtdc.emplace_back(id_mhtdc_beta_s2s4[count]);
-            aoq_s1s2_mhtdc.emplace_back(id_mhtdc_aoq_s2s4[count]);
-            aoq_corr_s1s2_mhtdc.emplace_back(id_mhtdc_aoq_corr_s2s4[count]);
+            tof_s1s2_mhtdc.emplace_back(id_mhtdc_tof_s1s2[count]);
+            beta_s1s2_mhtdc.emplace_back(id_mhtdc_beta_s1s2[count]);
+            aoq_s1s2_mhtdc.emplace_back(id_mhtdc_aoq_s1s2[count]);
+            aoq_corr_s1s2_mhtdc.emplace_back(id_mhtdc_aoq_corr_s1s2[count]);
             z_music21_mhtdc.emplace_back(id_mhtdc_z_music21[count]);
             z_music22_mhtdc.emplace_back(id_mhtdc_z_music22[count]);
         }
@@ -831,7 +831,7 @@ void FrsCal2Hit::ProcessSci_TAC()
 
     if (sci_b_tofll_11_21 && sci_b_tofrr_11_21)
     {
-        //std::cout << "is this our problem... ::: event ::: " << fNEvents << std::endl;
+        // CEJ: seems to break using pareeksha setup file, may need to add to convert_setup.py script
         sci_tof_11_21 = (sci->tof_bll1 * sci_tofrr_11_21 + sci->tof_a1 + sci->tof_brr1 * sci_tofrr_11_21) / 2.0;
         sci_tof_11_21_calib = -1.0 * sci_tof_11_21 + id->id_tofoff1[sci->sci11_select];
     }
@@ -1091,6 +1091,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
         }
     }
 
+
     // TOF:
     // 11 -> 21
     hits_in_tof2111 = hits_in_21lr * hits_in_11lr;
@@ -1264,7 +1265,7 @@ void FrsCal2Hit::ProcessMusic()
         if (music21_e[i] > 4)
         {
             if (music->exclude_music21_de_adc_channel[i] == kTRUE) music21_b_e[i] = false;
-            else music21_b_e[i] = ((music21_e[i] > 100) && (music21_e[i] < 4086));
+            else music21_b_e[i] = ((music21_e[i] > 10) && (music21_e[i] < 65536)); // from go4
 
             if (music21_b_e[i]) music21_anodes_cnt++;
         }
@@ -1317,6 +1318,8 @@ void FrsCal2Hit::ProcessMusic()
 
     }
 
+    // std::cout << "anodes count 21:: " << music21_anodes_cnt << std::endl;
+
     #ifndef MUSIC_ANA_NEW
     if (music21_anodes_count == music->MUSIC21_num_an)
     {
@@ -1333,7 +1336,6 @@ void FrsCal2Hit::ProcessMusic()
         }
     }
     #endif
-
 
     #ifdef MUSIC_ANA_NEW
     if (music21_anodes_cnt >= music->MUSIC21_num_an / 2)
@@ -1787,7 +1789,8 @@ void FrsCal2Hit::ProcessIDs()
         if (id_beta_s1s2 > 0. && id_beta_s1s2 < 1.)
         {
             id_gamma_s1s2 = 1. / sqrt(1. - TMath::Power(id_beta_s1s2, 2));
-            id_AoQ_s1s2 = id_brho[0] / id_beta_s1s2 / id_gamma_s1s2 / aoq_factor;
+            // CEJ:: deprecating "AoQ_corr" - imo is pointless and confusing when wishing to apply further corrections.
+            id_AoQ_s1s2 = id_brho[0] / id_beta_s1s2 / id_gamma_s1s2 / aoq_factor - id->a1AoQCorr * id_a2;
             id_AoQ_corr_s1s2 = id_AoQ_s1s2 - id->a1AoQCorr * id_a2;
 
             id_b_AoQ_s1s2 = true;
@@ -2134,14 +2137,16 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
 
 
     // Calculate Z (MUSIC 21 / 22)
-    for (int i = 0; i < hits_in_s1s2; i++)
+    // cej - z roughly same as go4 but not quite..but why is plotting so weirdly different? 
+    for (int i = 0; i < hits_in_s1s2;  i++)
     {
-        if (music21_de_cor > 0.0 && id_mhtdc_beta_s1s2[i] > 0.6 && id_mhtdc_beta_s1s2[i] < 0.9)
+        if (music21_de_cor > 0.0 && id_mhtdc_beta_s1s2[i] > 0.0 && id_mhtdc_beta_s1s2[i] < 1.0)
         {
+            //std::cout << "we are using beta == " << id_mhtdc_beta_s1s2[i] << std::endl;
             Double_t power = 1., sum = 0.;
             for (int j = 0; j < 4; j++)
             {
-                sum += power * id->mhtdc_vel_a_music21_s1s2[j];
+                sum += power * id->mhtdc_vel_a_music21[j];
                 if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s1s2[i];
                 else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s1s2[i], 2); }
             }
@@ -2163,6 +2168,8 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
             id_mhtdc_z_music21[i] = -999.;
             id_mhtdc_z_shifted_music21[i] = -999.;
         }
+
+        //std::cout << "i:: " << i <<"zmusic21 :: " << id_mhtdc_z_music21[i] << std::endl;
 
         if (music22_de_cor > 0.0 && id_mhtdc_beta_s1s2[i] > 0.5 && id_mhtdc_beta_s1s2[i] < 1.0)
         {
@@ -2216,6 +2223,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
             id_mhtdc_tof_s2s4[i] = mhtdc_tof4121[i];
             if (id_mhtdc_tof_s2s4[i] > 0.0) id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2141 / id_mhtdc_tof_s2s4[i]) / speed_light;
             else id_mhtdc_beta_s2s4[i] = 0.;
+            if (id_mhtdc_beta_s2s4[i] < 0.5 || id_mhtdc_beta_s2s4[i] > 0.7) id_mhtdc_beta_s2s4[i] = 0.;
         }
     }
     else if (id->tof_s4_select == 2) // 21 -> 42

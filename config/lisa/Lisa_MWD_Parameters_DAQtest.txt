@@ -22,21 +22,21 @@
 
 # ::: Smoothing Parameter L - (Rising Time in anatraces) 
 # ::: Conditions: L < M ; M + L < (Trapez_sample_window_1 (kend) - Trapez_sample_window_0(k0))
-Smoothing_L[ns]                    200
+Smoothing_L[ns]                    50
 
 # ::: Lenght of the moving window M
 # ::: Conditions: M > L (Smoothing_L); M + L < (Trapez_sample_window_1 (kend) - Trapez_sample_window_0 (k0))
-Trapez_moving_window_length[ns]    1000
+Trapez_moving_window_length[ns]    120
 
 # ::: Decay Time of the signal tau (depending on the preamp - wip to be for each channel)
 # ::: Conditions: It has to fit the decay time of the trace. This flattens the trapezoid top
-Decaytime_ch0[ns]                  11000
-Decaytime_ch1[ns]                  11000
+Decaytime_ch0[ns]                  2500
+Decaytime_ch1[ns]                  2500
 
 # ::: Start and stop of the MWD trace (k0,kend)
 # ::: Conditions:  k0 >= 0 && k0 < kend && k0 < trace_febex.size(); kend > k0
-Trapez_sample_window_0[ns]         2800  
-Trapez_sample_window_1[ns]         5800 
+Trapez_sample_window_0[ns]         200  
+Trapez_sample_window_1[ns]         400 
 
 # ::: Sampling from Febex (=10 ns)
 # ::: This depends on Febex clock (100 MHz) - DO NOT CHANGE
@@ -47,14 +47,14 @@ Sampling[ns]                       10
 
 # ::: Start and stop of the trapezoid flat top where the energy is computed
 # ::: Conditions: Trapez_amp_calc_window_0 > k0 + M; Trapez_amp_calc_window_1 < k0 + 2 * M - L
-Trapez_amp_calc_window_0[ns]       4000
-Trapez_amp_calc_window_1[ns]       4400
+Trapez_amp_calc_window_0[ns]       330
+Trapez_amp_calc_window_1[ns]       350
 
 # ::: Range for the baseline calculation of the MWD trace
 # ::: Conditions: Trapez_baseline_window_0 > k0; Trapez_baseline_window_1 < k0 + M - L
-Trapez_baseline_window_0[ns]       2810             
-Trapez_baseline_window_1[ns]       3000
+Trapez_baseline_window_0[ns]       210             
+Trapez_baseline_window_1[ns]       250
 
 
 #To implement
-#Threshold_ch_1                     9
+#Threshold_ch_0                     7

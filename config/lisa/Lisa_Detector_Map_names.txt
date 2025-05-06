@@ -13,16 +13,16 @@
               
 #:::::::::::::::      E R I S      :::::::::::::::#
 #:::::::::::::::Layer 1 - Upstream :::::::::::::::#
-              0       1         1     0     1   Quito    
-              0       2         1     1     1   Caracas
-              0       5         1     0     0   Reykjavik
-              0       6         1     1     0   Amsterdam
+              0       1         1     0     1   101_Quito    
+              0       2         1     1     1   111_Caracas
+              0       5         1     0     0   100_Reykjavik
+              0       6         1     1     0   110_Amsterdam
               
 #:::::::::::::::   S P A R R O W   :::::::::::::::#
 #::::::::::::::Layer 2 - Downstream ::::::::::::::#
-              0       9         2     0     1   Novi_Sad
-              0       10        2     1     1   Havana
-              0       13        2     0     0   Dublin 
-              0       14        2     1     0   Sucre
+              0       9         2     0     1   201_Novi_Sad
+              0       10        2     1     1   211_Havana
+              0       13        2     0     0   200_Dublin 
+              0       14        2     1     0   210_Sucre
 #::::::::::::::::::::::::::::::::::::::::::::::::::#
 

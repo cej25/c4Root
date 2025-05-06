@@ -78,10 +78,15 @@ class LisaTraceAnalysis : public FairTask
         int64_t wr_diff;
     
         // ::: Histograms
-        std::vector<TH1F*> h1_energy;
-        std::vector<TH1F*> h1_energy_MWD;
-        std::vector<TH2*> h2_traces;
-        std::vector<TH2*> h2_traces_MWD;
+        std::vector<std::vector<TH1F*>> h1_energy;
+        std::vector<std::vector<TH1F*>> h1_energy_MWD;
+
+        //std::vector<TH1F*> h1_energy;
+        //std::vector<TH1F*> h1_energy_MWD;
+        std::vector<std::vector<TH2*>> h2_traces;
+        std::vector<std::vector<TH2*>> h2_traces_MWD;
+        //std::vector<TH2*> h2_traces;
+        //std::vector<TH2*> h2_traces_MWD;
 
         // ::: Canvases
         TCanvas* c_trace; 
