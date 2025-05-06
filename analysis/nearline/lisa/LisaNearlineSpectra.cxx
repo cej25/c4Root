@@ -592,9 +592,9 @@ InitStatus LisaNearlineSpectra::Init()
     dir_febex_drift->cd();
     for (int i = 0; i < layer_number; i++)
     { 
-        h2_energy_layer_vs_time[i] = MakeTH2(dir_febex_drift, "F", Form("h2_energy_layer_%i_vs_time",i), Form("E (Layer %i) vs WR [min]",i), drift_bin, drift_min, drift_max, lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
-        h2_energy_layer_vs_time[i]->SetTitle(Form("E (Layer %i) vs WR",i));
-        h2_energy_layer_vs_time[i]->GetYaxis()->SetTitle(Form("Energy Layer %i",i));
+        h2_energy_layer_vs_time[i] = MakeTH2(dir_febex_drift, "F", Form("h2_energy_layer_%i_vs_time",i+1), Form("E (Layer %i) vs WR [min]",i), drift_bin, drift_min, drift_max, lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+        h2_energy_layer_vs_time[i]->SetTitle(Form("E (Layer %i) vs WR",i+1));
+        h2_energy_layer_vs_time[i]->GetYaxis()->SetTitle(Form("Energy Layer %i",i+1));
         h2_energy_layer_vs_time[i]->GetXaxis()->SetTitle("WR Time [min]");  
     }
     //....................................
@@ -618,9 +618,9 @@ InitStatus LisaNearlineSpectra::Init()
                         break;
                     }
                 }  
-                h2_energy_ch_vs_time[i][j][k] = MakeTH2(dir_febex_ch_drift, "F", Form("h2_energy_%d%d%d_vs_time",i,j,k), Form("E %d%d%d vs WR [min]",i,j,k), drift_bin, drift_min, drift_max, lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
-                h2_energy_ch_vs_time[i][j][k]->SetTitle(Form("E (%d%d%d) vs WR",i,j,k));
-                h2_energy_ch_vs_time[i][j][k]->GetYaxis()->SetTitle(Form("Energy %d%d%d",i,j,k));
+                h2_energy_ch_vs_time[i][j][k] = MakeTH2(dir_febex_ch_drift, "F", Form("h2_energy_%d%d%d_vs_time",i+1,j,k), Form("E %d%d%d vs WR [min]",i+1,j,k), drift_bin, drift_min, drift_max, lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+                h2_energy_ch_vs_time[i][j][k]->SetTitle(Form("E (%d%d%d) vs WR",i+1,j,k));
+                h2_energy_ch_vs_time[i][j][k]->GetYaxis()->SetTitle(Form("Energy %d%d%d",i+1,j,k));
                 h2_energy_ch_vs_time[i][j][k]->GetXaxis()->SetTitle("WR Time [min]");
             }
         }
@@ -631,9 +631,9 @@ InitStatus LisaNearlineSpectra::Init()
     dir_MWD_drift->cd();
     for (int i = 0; i < layer_number; i++)
     {     
-        h2_energy_MWD_layer_vs_time[i] = MakeTH2(dir_MWD_drift, "F", Form("h2_energy_MWD_layer_%i_vs_time",i), Form("E_MWD (Layer %i) vs WR [min]",i), drift_bin, drift_min, drift_max, lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
-        h2_energy_MWD_layer_vs_time[i]->SetTitle(Form("E_MWD (Layer %i) vs WR",i));
-        h2_energy_MWD_layer_vs_time[i]->GetYaxis()->SetTitle(Form("Energy MWD Layer %i",i));
+        h2_energy_MWD_layer_vs_time[i] = MakeTH2(dir_MWD_drift, "F", Form("h2_energy_MWD_layer_%i_vs_time",i+1), Form("E_MWD (Layer %i) vs WR [min]",i+1), drift_bin, drift_min, drift_max, lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
+        h2_energy_MWD_layer_vs_time[i]->SetTitle(Form("E_MWD (Layer %i) vs WR",i+1));
+        h2_energy_MWD_layer_vs_time[i]->GetYaxis()->SetTitle(Form("Energy MWD Layer %i",i+1));
         h2_energy_MWD_layer_vs_time[i]->GetXaxis()->SetTitle("WR Time [min]");
     }
     //....................................
@@ -658,9 +658,9 @@ InitStatus LisaNearlineSpectra::Init()
                     }
                 }
                 
-                h2_energy_MWD_ch_vs_time[i][j][k] = MakeTH2(dir_MWD_ch_drift, "F", Form("h2_energy_MWD_%d%d%d_vs_time",i,j,k), Form("E_MWD %d%d%d vs WR [min]",i,j,k), drift_bin, drift_min, drift_max, lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
-                h2_energy_MWD_ch_vs_time[i][j][k]->SetTitle(Form("E_MWD (%d%d%d) vs WR",i,j,k));
-                h2_energy_MWD_ch_vs_time[i][j][k]->GetYaxis()->SetTitle(Form("Energy MWD %d%d%d",i,j,k));
+                h2_energy_MWD_ch_vs_time[i][j][k] = MakeTH2(dir_MWD_ch_drift, "F", Form("h2_energy_MWD_%d%d%d_vs_time",i+1,j,k), Form("E_MWD %d%d%d vs WR [min]",i+1,j,k), drift_bin, drift_min, drift_max, lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
+                h2_energy_MWD_ch_vs_time[i][j][k]->SetTitle(Form("E_MWD (%d%d%d) vs WR",i+1,j,k));
+                h2_energy_MWD_ch_vs_time[i][j][k]->GetYaxis()->SetTitle(Form("Energy MWD %d%d%d",i+1,j,k));
                 h2_energy_MWD_ch_vs_time[i][j][k]->GetXaxis()->SetTitle("WR Time [min]");
             }
         }
