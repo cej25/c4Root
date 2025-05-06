@@ -178,9 +178,9 @@ InitStatus LisaNearlineSpectra::Init()
     for (int i = 0; i < layer_number; i++)
     {
         
-        h1_lisa_layer_rate[i] = new TH1I(Form("h1_lisa_layer_%i_rate",i), Form("LISA Rate %i",i), lisa_config->bin_wr_rate, lisa_config->min_wr_rate, lisa_config->max_wr_rate);
+        h1_lisa_layer_rate[i] = new TH1I(Form("h1_lisa_layer_%i_rate",i+1), Form("LISA Rate %i",i+1), lisa_config->bin_wr_rate, lisa_config->min_wr_rate, lisa_config->max_wr_rate);
         h1_lisa_layer_rate[i]->GetXaxis()->SetTitle("Time [s]");
-        h1_lisa_layer_rate[i]->GetYaxis()->SetTitle(Form("LISA %i Rate [Hz]", i));
+        h1_lisa_layer_rate[i]->GetYaxis()->SetTitle(Form("LISA %i Rate [Hz]", i+1));
         h1_lisa_layer_rate[i]->SetLineColor(kBlack);
         h1_lisa_layer_rate[i]->SetFillColor(kRed-3);
         
@@ -195,9 +195,9 @@ InitStatus LisaNearlineSpectra::Init()
 
             for (int k = 0; k < ymax; k++)
             {
-                h1_lisa_rate[i][j][k] = new TH1I(Form("h1_lisa_rate_%i%i%i",i,j,k), Form("LISA Rate %i%i%i",i,j,k), lisa_config->bin_wr_rate, lisa_config->min_wr_rate, lisa_config->max_wr_rate);
+                h1_lisa_rate[i][j][k] = new TH1I(Form("h1_lisa_rate_%i%i%i",i+1,j,k), Form("LISA Rate %i%i%i",i+1,j,k), lisa_config->bin_wr_rate, lisa_config->min_wr_rate, lisa_config->max_wr_rate);
                 h1_lisa_rate[i][j][k]->GetXaxis()->SetTitle("Time [s]");
-                h1_lisa_rate[i][j][k]->GetYaxis()->SetTitle(Form("LISA %i%i%i Rate [Hz]", i,j,k));
+                h1_lisa_rate[i][j][k]->GetYaxis()->SetTitle(Form("LISA %i%i%i Rate [Hz]", i+1,j,k));
                 h1_lisa_rate[i][j][k]->SetLineColor(kBlack);
                 h1_lisa_rate[i][j][k]->SetFillColor(kOrange-3);
             }
