@@ -28,7 +28,7 @@ typedef struct EXT_STR_h101_t
 
 } EXT_STR_h101;
 
-void shiyan_make_trees()
+void e_shiyan_make_trees()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     // ::: Experiment name

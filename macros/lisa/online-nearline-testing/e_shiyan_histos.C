@@ -1,7 +1,7 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define LISA_ON 0
+#define LISA_ON 1
         //LISA_ANA displays only energy and traces; LISA_CAL displays stats,energy,traces. Choose one.
         //Note that if FRS 1, LISA_CAL is needed. 
 #define LISA_ANA 0
@@ -15,7 +15,7 @@
 #define TRACE_ON 0
 
 #define FRS_ON 1
-#define FRS_LISA_CORRELATIONS 0
+#define FRS_LISA_CORRELATIONS 1
 
 #define WR_ENABLED 1
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
@@ -24,7 +24,7 @@
 extern "C"
 {
     //#include "../../config/pareeksha/frs/setup_Fragment_conv_updated.C" //pareeksha data
-    #include "../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
+    #include "../../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -35,11 +35,11 @@ typedef struct EXT_STR_h101_t
 
 } EXT_STR_h101;
 
-void shiyan_histos()
+void e_shiyan_histos()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     // ::: Experiment name
-    TString fExpName = "shiyan";
+    TString fExpName = "pareeksha";
 
     // ::: Here you define commonly used path
     TString c4Root_path = "/u/gandolfo/c4/c4Root";
@@ -67,16 +67,16 @@ void shiyan_histos()
     TString inputpath = "/u/gandolfo/data/test_c4/shiyan_test/";
 
     //TString filename = inputpath + "test_0003_tree.root";
-    //TString filename = inputpath + "test_run_0075.root";  
-    TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  //FRS data with S2 PID
+    TString filename = inputpath + "test_run_0075.root";  
+    //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  //FRS data with S2 PID
     
     // ::: O U T P U T
     TString outputpath = "/u/gandolfo/data/test_c4/shiyan_test/";   //testing
     //TString outputpath = "/u/gandolfo/data/test_c4/layer_alpha/";   //energy resolution output
     
     //TString outputFilename = outputpath + "test_0003_histo.root";
-    //TString outputFilename = outputpath + "test_run_0075_histo_6May.root";
-    TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_histo_6May.root";     //FRS data with S2 PID
+    TString outputFilename = outputpath + "test_run_0075_histo_v2.root";
+    //TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_histo_6May.root";     //FRS data with S2 PID
 
 
     FairRunAna* run = new FairRunAna();
@@ -111,24 +111,24 @@ void shiyan_histos()
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: G A T E S - Initialise 
 
-    //FrsGate* cut_0 = new FrsGate("cut", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/all_z_1.root"); 
+    FrsGate* cut_0 = new FrsGate("cut", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/all_z_1.root"); 
     //FrsGate* cut_1 = new FrsGate("0", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/1p1n.root"); 
     // FrsGate* cut_2 = new FrsGate("1", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/1p2n.root"); 
     // FrsGate* cut_3 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/all_z_2.root"); 
     // FrsGate* cut_4 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/2p3n.root"); 
     // FrsGate* cut_5 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/2p4n.root"); 
-    //std::vector<FrsGate*> fgs = {};
+    std::vector<FrsGate*> fgs = {};
     
-    //fgs.emplace_back(cut_0);
+    fgs.emplace_back(cut_0);
     //fgs.emplace_back(cut_1);
     // fgs.emplace_back(cut_2);
     // fgs.emplace_back(cut_3);
     // fgs.emplace_back(cut_4);
     // fgs.emplace_back(cut_5);
 
-    FrsGate* test = new FrsGate("Tester",config_path + "/frs/Gates/frs_real_gate_lisa.root");
-    std::vector<FrsGate*> fgs = {};
-    fgs.emplace_back(test);
+    //FrsGate* test = new FrsGate("Tester",config_path + "/frs/Gates/frs_real_gate_lisa.root");
+    //std::vector<FrsGate*> fgs = {};
+    //fgs.emplace_back(test);
 
     // ::: GATES config for histos ::::::::
     //TFrsConfiguration::Set_dE_travMusic_gate(1940,2000);
@@ -148,19 +148,20 @@ void shiyan_histos()
     if ( TEST )
     {
         
+        /*
         // testing with shiyan/frs data
         TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_All_Boards.txt");
         TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_cards.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
         TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
+        */
         
-        /*
         //for testing with pareeksha data 
         TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_Detector_Map_names.txt");
         TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD.txt");
         TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
-        */
+    
 
         LisaGate* FebGate1 = new LisaGate("Febex_Gate1", "energy", config_path + "/lisa/Gates/Febex_Gate1.txt");
         LisaGate* FebGate2 = new LisaGate("Febex_Gate2", "energy", config_path + "/lisa/Gates/Febex_Gate2.txt");

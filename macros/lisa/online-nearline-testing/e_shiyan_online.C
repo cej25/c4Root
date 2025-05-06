@@ -24,7 +24,7 @@ typedef struct EXT_STR_h101_t
 
 } EXT_STR_h101;
 
-void shiyan_online()
+void e_shiyan_online()
 {   
     if (WR_ENABLED)
     {
