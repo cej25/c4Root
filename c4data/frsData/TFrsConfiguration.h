@@ -101,14 +101,18 @@ class TFrsConfiguration
 
         void Plot_TAC_1D(bool option) { plot_tac_1d = option; }
         void Plot_TAC_2D(bool option) { plot_tac_2d = option; }
+        void Plot_TAC(bool option) { plot_tac = option; }
         void Plot_MHTDC_1D(bool option) { plot_mhtdc_1d = option; }
-        void Plot_MHTDC_2D(bool option) { plot_mhtdc_1d = option; }
+        void Plot_MHTDC_2D(bool option) { plot_mhtdc_2d = option; }
+        void Plot_MHTDC(bool option) { plot_mhtdc = option; }
         void Plot_Monitors(bool option) { plot_monitors = option; }
 
         Bool_t plot_tac_1d = true;
         Bool_t plot_tac_2d = true;
+        Bool_t plot_tac = true;
         Bool_t plot_mhtdc_1d = true;
         Bool_t plot_mhtdc_2d = true;
+        Bool_t plot_mhtdc = true;
         Bool_t plot_monitors = true;
 
         static void SetRunNumber(int run_num) { frun_num = run_num; }
