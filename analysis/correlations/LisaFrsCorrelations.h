@@ -70,6 +70,9 @@ class LisaFrsCorrelations : public FairTask
         int gate_number = 0;
         int mwd_gate_number = 0;
 
+        int pair_count = 0;
+        int pair_count_MWD = 0;
+
         std::vector<LisaCalItem> const* lisaCalArray;
         std::vector<FrsHitItem> const* frsHitArray;
         std::vector<FrsMultiHitItem> const* multihitArray;
