@@ -383,17 +383,19 @@ InitStatus LisaNearlineSpectra::Init()
         for (int j = 0; j < xmax * ymax; j++)
         {
             city = "";
+            int x = -9;
+            int y = -9;
             for (auto & detector : detector_mapping)
             {
-                int x = detector.second.second.first; 
-                int y = detector.second.second.second;
+                x = detector.second.second.first; 
+                y = detector.second.second.second;
                 if (detector.second.first.first == i+1 && ((ymax-(y+1))*xmax + x) == j)
                 {
                     city = detector.second.first.second;
                     break;
                 }
             }
-            h2_energy_vs_ID[i]->GetXaxis()->SetBinLabel(j+1, city.Data());
+            h2_energy_vs_ID[i]->GetXaxis()->SetBinLabel(j+1, Form("%i%i",x,y));
         }
        
     }
@@ -500,18 +502,20 @@ InitStatus LisaNearlineSpectra::Init()
         
         for (int j = 0; j < xmax * ymax; j++)
         {
+            int x = -9;
+            int y = -9;
             city = "";
             for (auto & detector : detector_mapping)
             {
-                int x = detector.second.second.first; 
-                int y = detector.second.second.second;
+                x = detector.second.second.first; 
+                y = detector.second.second.second;
                 if (detector.second.first.first == i+1 && ((ymax-(y+1))*xmax + x) == j)
                 {
                     city = detector.second.first.second;
                     break;
                 }
             }
-            h2_energy_MWD_vs_ID_layer[i]->GetXaxis()->SetBinLabel(j+1, city.Data());
+            h2_energy_MWD_vs_ID_layer[i]->GetXaxis()->SetBinLabel(j+1, Form("%i%i",x,y));
         }
        
     }

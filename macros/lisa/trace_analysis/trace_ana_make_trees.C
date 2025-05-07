@@ -51,11 +51,11 @@ void trace_ana_make_trees(int fileNumber)
     //TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";
     TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/S092_shiyan/";
 
-    TString filename = Form(inputpath + "test_%04d_*.lmd", fileNumber);
+    TString filename = Form(inputpath + "test_%04d_0001.lmd", fileNumber);
 
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/test_c4/trace_ana/"; 
-    TString outputFilename = Form(outputpath + "test_%04d_MWDtree.root", fileNumber);
+    TString outputFilename = Form(outputpath + "test_%04d_MWD_optimization_v3.root", fileNumber);
 
 
     //:::::::Create online run
