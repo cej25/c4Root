@@ -26,6 +26,7 @@
 #include "TFile.h"
 #include "THttpServer.h"
 #include "TCanvas.h"
+#include "AnalysisTools.h"
 
 LisaFrsCorrelationsOnline::LisaFrsCorrelationsOnline() 
     : LisaFrsCorrelationsOnline("LisaFrsCorrelationsOnline")
@@ -48,6 +49,7 @@ LisaFrsCorrelationsOnline::LisaFrsCorrelationsOnline(const TString& name, Int_t 
 {
     lisa_config = TLisaConfiguration::GetInstance();
     frs_config = TFrsConfiguration::GetInstance();
+    frs = frs_config->FRS();
 }
 
 LisaFrsCorrelationsOnline::~LisaFrsCorrelationsOnline()
@@ -86,6 +88,8 @@ InitStatus LisaFrsCorrelationsOnline::Init()
         mgr->Register("Correlations", "Correlations Directory", dir_corr, false); // allow other tasks to find this
         histograms->Add(dir_corr);
     }
+
+    dir_lisa_frs = dir_corr->mkdir("LISA-FRS");
 
     layer_number = lisa_config->NLayers();
     xmax = lisa_config->XMax();
@@ -215,8 +219,8 @@ InitStatus LisaFrsCorrelationsOnline::Init()
         h2_MUSIC41_vs_LISA_febex[i]->GetYaxis()->SetTitle("dE MUSIC(41)");
         h2_MUSIC41_vs_LISA_febex[i]->Draw("COLZ");
     }
-    c_MUSIC_41_layer_MWD->cd(0);
-    dir_lisa_frs->Append(c_MUSIC_41_layer_MWD);
+    c_MUSIC_41_layer->cd(0);
+    dir_lisa_frs->Append(c_MUSIC_41_layer);
 
     // MWD
     c_MUSIC_41_layer_MWD = new TCanvas("c_MUSIC_41_layer_MWD", "MUSIC(41) vs E(LISA) MWD per Layer", 650, 350);
@@ -232,7 +236,38 @@ InitStatus LisaFrsCorrelationsOnline::Init()
     }
     c_MUSIC_41_layer_MWD->cd(0);
     dir_lisa_frs->Append(c_MUSIC_41_layer_MWD);
- 
+
+    // Extrapolated TPC positon at LISA
+    h1_tpc_lisa_x = new TH1*[layer_number];
+    h1_tpc_lisa_y = new TH1*[layer_number];
+    h2_tpc_x_lisa_x = new TH2*[layer_number];
+    h2_tpc_y_lisa_y = new TH2*[layer_number];
+    h2_tpc_xy_LISA = new TH2*[layer_number];
+    for (int i = 0; i < layer_number; i++)
+    {
+        h1_tpc_lisa_x[i] = MakeTH1(dir_position, "F", Form("h1_tpc_lisa_x_%i", i), Form("LISA X (FROM TPC) Layer %i", i), 400, -40., 40., "X", kYellow, kBlack);
+        h1_tpc_lisa_y[i] = MakeTH1(dir_position, "F", Form("h1_tpc_lisa_y_%i", i), Form("LISA Y (FROM TPC) Layer %i", i), 400, -40., 40., "Y", kYellow, kBlack);
+        h2_tpc_x_lisa_x[i] = MakeTH2(dir_position, "F", Form("h2_tpc_x_lisa_x_%i", i),Form("TPC X vs LISA X Layer %i", i), 2, 0, 2, 400, -40., 40.);
+        h2_tpc_y_lisa_y[i] = MakeTH2(dir_position, "F", Form("h2_tpc_y_lisa_y_%i", i),Form("TPC Y vs LISA Y Layer %i", i), 2, 0, 2, 400, -40., 40.);
+        h2_tpc_xy_LISA[i] = MakeTH2(dir_position, "F", Form("h2_tpc_xy_LISA_%i", i), Form("TPC XY at LISA - Layer %i", i), 400, -40., 40., 400, -40., 40.);
+    }
+
+    TCanvas* c_tpc_xy = new TCanvas("c_tpc_xy", "TPC POS XY AT LISA", 650, 350);
+    c_tpc_xy->Divide(2,2);
+    c_tpc_xy->cd(1);
+    h2_tpc_xy_LISA_001 = MakeTH2(dir_position, "F", "h2_tpc_xy_LISA_001", "TPC XY at LISA 001", 100, -8., 10., 100, -25., -4.);
+    h2_tpc_xy_LISA_001->Draw();
+    c_tpc_xy->cd(2);
+    h2_tpc_xy_LISA_011 = MakeTH2(dir_position, "F", "h2_tpc_xy_LISA_011", "TPC XY at LISA 011", 100, -8., 10., 100, -25., -4.);
+    h2_tpc_xy_LISA_011->Draw();
+    c_tpc_xy->cd(3);
+    h2_tpc_xy_LISA_000 = MakeTH2(dir_position, "F", "h2_tpc_xy_LISA_000", "TPC XY at LISA 000", 100, -8., 10., 100, -25., -4.);
+    h2_tpc_xy_LISA_000->Draw();
+    c_tpc_xy->cd(4);
+    h2_tpc_xy_LISA_010 = MakeTH2(dir_position, "F", "h2_tpc_xy_LISA_010", "TPC XY at LISA 010", 100, -8., 10., 100, -25., -4.);
+    h2_tpc_xy_LISA_010->Draw();
+    dir_position->Append(c_tpc_xy);
+
     run->GetHttpServer()->RegisterCommand("Reset_LisaFRS_Hist", Form("/Objects/%s/->Reset_Histo()", GetName()));
     return kSUCCESS;
 
@@ -298,6 +333,30 @@ void LisaFrsCorrelationsOnline::Exec(Option_t* option)
         city = lisaCalItem.Get_city();
         int xpos = lisaCalItem.Get_xposition();
         int ypos = lisaCalItem.Get_yposition();
+
+        Float_t a_focs2 = frsHitItem.Get_tpc_angle_x_s2_foc_22_23();
+        Float_t b_focs2 = frsHitItem.Get_tpc_angle_y_s2_foc_22_23();
+        Float_t x_focs2 = frsHitItem.Get_tpc_x_s2_foc_22_23();
+        Float_t y_focs2 = frsHitItem.Get_tpc_y_s2_foc_22_23();
+
+        Float_t dist_focS2_TPC22 = frs->dist_focS2 - frs->dist_TPC22;
+        Float_t dist_LISA_focS2 = 1930 + 153 + (layer-1) * 4.8 + dist_focS2_TPC22;
+
+        Float_t x_lisa_tpc22_23 = (a_focs2 / 1000. * dist_LISA_focS2) + x_focs2;
+        Float_t y_lisa_tpc22_23 = (b_focs2 / 1000. * dist_LISA_focS2) + y_focs2;
+
+        h1_tpc_lisa_x[layer-1]->Fill(x_lisa_tpc22_23);
+        h1_tpc_lisa_y[layer-1]->Fill(y_lisa_tpc22_23);
+
+        h2_tpc_x_lisa_x[layer-1]->Fill(xpos, x_lisa_tpc22_23);
+        h2_tpc_y_lisa_y[layer-1]->Fill(ypos, y_lisa_tpc22_23);
+        h2_tpc_xy_LISA[layer-1]->Fill(x_lisa_tpc22_23, y_lisa_tpc22_23);
+
+        if (layer == 1 && xpos == 0 && ypos == 1) h2_tpc_xy_LISA_001->Fill(x_lisa_tpc22_23, y_lisa_tpc22_23);
+        if (layer == 1 && xpos == 1 && ypos == 1) h2_tpc_xy_LISA_011->Fill(x_lisa_tpc22_23, y_lisa_tpc22_23);
+        if (layer == 1 && xpos == 0 && ypos == 0) h2_tpc_xy_LISA_000->Fill(x_lisa_tpc22_23, y_lisa_tpc22_23);
+        if (layer == 1 && xpos == 1 && ypos == 0) h2_tpc_xy_LISA_010->Fill(x_lisa_tpc22_23, y_lisa_tpc22_23);
+
         float energy_LISA_febex = lisaCalItem.Get_energy_GM();
         float energy_LISA_MWD = lisaCalItem.Get_energy_MWD_GM();
 

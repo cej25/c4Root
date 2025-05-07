@@ -56,6 +56,7 @@ class LisaFrsCorrelationsOnline : public FairTask
 
         TLisaConfiguration const* lisa_config;
         TFrsConfiguration const* frs_config;
+        TFRSParameter* frs;
         TCorrelationsConfiguration const* correl_config;
         std::map<std::string, std::vector<int>> Correl;
 
@@ -126,6 +127,16 @@ class LisaFrsCorrelationsOnline : public FairTask
         std::vector<TH2F*> h2_travMUSIC_layer;
         std::vector<TH2F*> h2_xy_pos_layer1;
         std::vector<TH2F*> h2_xy_pos_layer2;
+
+        TH1** h1_tpc_lisa_x;
+        TH1** h1_tpc_lisa_y;
+        TH2** h2_tpc_x_lisa_x;
+        TH2** h2_tpc_y_lisa_y;
+        TH2** h2_tpc_xy_LISA;
+        TH2* h2_tpc_xy_LISA_001;
+        TH2* h2_tpc_xy_LISA_011;
+        TH2* h2_tpc_xy_LISA_000;
+        TH2* h2_tpc_xy_LISA_010;
 
         std::set<std::tuple<int, int, int>> excluded;
 

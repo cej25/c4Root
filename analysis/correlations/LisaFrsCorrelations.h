@@ -7,6 +7,7 @@
 #include "LisaCalData.h"
 #include "LisaGate.h"
 #include "FrsGate.h"
+#include "FrsCalData.h"
 #include "FrsHitData.h"
 
 #include "TH1.h"
@@ -26,6 +27,7 @@ class TH2I;
 class TH2F;
 class TH2D;
 class LisaCalItem;
+class FrsCalTpcItem;
 class FrsHitData;
 class TLisaConfiguration;
 class TFrsConfiguration;
@@ -76,6 +78,7 @@ class LisaFrsCorrelations : public FairTask
         std::vector<LisaCalItem> const* lisaCalArray;
         std::vector<FrsHitItem> const* frsHitArray;
         std::vector<FrsMultiHitItem> const* multihitArray;
+        std::vector<FrsCalTpcItem> const* calTpcArray;
 
 
         Int_t fNEvents;
@@ -209,6 +212,17 @@ class LisaFrsCorrelations : public FairTask
         std::vector<TH2F*> h2_LISA_energy_MWD_xy_vs_layer_LISA_s1s2_gated;
         std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_LISA_s1s2_gated;
         std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_xy_LISA_s1s2_gated;
+
+        TH1** h1_tpc_lisa_x;
+        TH1** h1_tpc_lisa_y;
+        TH2** h2_tpc_x_lisa_x;
+        TH2** h2_tpc_y_lisa_y;
+        TH2** h2_tpc_xy_LISA;
+        TH2* h2_tpc_xy_LISA_001;
+        TH2* h2_tpc_xy_LISA_011;
+        TH2* h2_tpc_xy_LISA_000;
+        TH2* h2_tpc_xy_LISA_010;
+
         //..............................
         std::set<std::tuple<int, int, int>> excluded;
 

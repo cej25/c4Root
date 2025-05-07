@@ -95,7 +95,6 @@ InitStatus FrsNearlineSpectra::Init()
     c4LOG_IF(fatal, !hitArray, "Branch FrsHitData not found!");
     multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
     c4LOG_IF(fatal, !multihitArray, "Branch FrsMultiHitData not found!");
-
     
     dir_frs = (TDirectory*)mgr->GetObject("FRS");
     if (dir_frs == nullptr) 
@@ -143,6 +142,18 @@ InitStatus FrsNearlineSpectra::Init()
     h2_dE41_vs_ToF_21_41 = MakeTH2(dir_id_s2s4_2d, "D", "h2_dE41_vs_ToF_21_41", "ToF 21 - 41 vs. dE in MUSIC 41", 2000, 0., 70000., 400, frs_config->fMin_dE_music41, frs_config->fMax_dE_music41, "Time of Flight (21 - 41)", "dE in MUSIC 41");
     h2_dE41_vs_x2 = MakeTH2(dir_id_s2s4_2d, "D", "h2_dE41_vs_x2", "x2 vs. dE in MUSIC 41", 200, frs_config->fMin_x2, frs_config->fMax_x2, 400, frs_config->fMin_dE_music41, frs_config->fMax_dE_music41, "S2 x-position", "dE in MUSIC 41");
     h2_dE41_vs_x4 = MakeTH2(dir_id_s2s4_2d, "D", "h2_dE41_vs_x4", "x4 vs. dE in MUSIC 41", 200, frs_config->fMin_x4, frs_config->fMax_x4, 400, frs_config->fMin_dE_music41, frs_config->fMax_dE_music41, "S4 x-position", "dE in MUSIC 41");
+
+    dir_lisa_pos_1d = dir_id_s1s2_1d->mkdir("Pos_at_LISA");
+    dir_lisa_pos_2d = dir_id_s1s2_2d->mkdir("Pos_at_LISA");
+    h1_tpc_x_at_LISA = new TH1*[5];
+    h1_tpc_y_at_LISA = new TH1*[5];
+    h2_tpc_xy_at_LISA = new TH2*[5];
+    for (int i = 0; i < 5; i++)
+    {
+        h1_tpc_x_at_LISA[i] = MakeTH1(dir_lisa_pos_1d, "F", Form("h1_tpc_x_at_LISA_%i", i), Form("TPC X at LISA - Layer %i", i), 400, -40., 40., "X", kYellow, kBlack);
+        h1_tpc_y_at_LISA[i] = MakeTH1(dir_lisa_pos_1d, "F", Form("h1_tpc_y_at_LISA_%i", i), Form("TPC Y at LISA - Layer %i", i), 400, -40., 40., "Y", kYellow, kBlack);
+        h2_tpc_xy_at_LISA[i] = MakeTH2(dir_lisa_pos_2d, "F", Form("h2_tpc_xy_at_LISA_%i", i), Form("TPC XY at LISA - Layer %i", i), 400, -40., 40., 400, -40., 40.);
+    }
 
     if (frs_config->plot_tac)
     {
@@ -561,8 +572,7 @@ InitStatus FrsNearlineSpectra::Init()
     for (int i = 0; i < num_frs_gates; i++) count_passed_s2s4[i] = 0;
     count_passed_s1s2s4 = new int[num_frs_gates];
     for (int i = 0; i < num_frs_gates; i++) count_passed_s1s2s4[i] = 0;
-
-    
+ 
     return kSUCCESS;
 
 }
@@ -648,7 +658,25 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     if (hitItem.Get_music42_dE() > 0) h1_music42_dE->Fill(hitItem.Get_music42_dE());
     if (hitItem.Get_music41_dE_cor() > 0) h1_music41_dE_cor->Fill(hitItem.Get_music41_dE_cor());
     if (hitItem.Get_music42_dE_cor() > 0) h1_music42_dE_cor->Fill(hitItem.Get_music42_dE_cor());
+    
+    // Extrapolated position at LISA from TPC, possibly move to LISA Task
+    Float_t a_focs2 = hitItem.Get_tpc_angle_x_s2_foc_22_23();
+    Float_t b_focs2 = hitItem.Get_tpc_angle_y_s2_foc_22_23();
+    Float_t x_focs2 = hitItem.Get_tpc_x_s2_foc_22_23();
+    Float_t y_focs2 = hitItem.Get_tpc_y_s2_foc_22_23();
+    Float_t dist_focS2_TPC22 = frs->dist_focS2 - frs->dist_TPC22;
+    for (int i = 0; i < 5; i++)
+    {
+        Float_t dist_LISA_focS2 = 1930 + 153 + i * 4.8 + dist_focS2_TPC22; // + for real distance because negatively defined
 
+        Float_t x_lisa_tpc22_23 = (a_focs2 / 1000. * dist_LISA_focS2) + x_focs2;
+        Float_t y_lisa_tpc22_23 = (b_focs2 / 1000. * dist_LISA_focS2) + y_focs2;
+
+        h1_tpc_x_at_LISA[i]->Fill(x_lisa_tpc22_23);
+        h1_tpc_y_at_LISA[i]->Fill(y_lisa_tpc22_23);
+
+        h2_tpc_xy_at_LISA[i]->Fill(x_lisa_tpc22_23, y_lisa_tpc22_23);
+    }
 
 
     // ::::: TAC specific :::::::
