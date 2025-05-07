@@ -240,8 +240,10 @@ void c_shiyan_histos()
     // TFrsConfiguration::Plot_TAC_2D(false);
 
     FrsGate* test = new FrsGate("Tester","/u/cjones/c4Root/config/shiyan/frs/Gates/frs_real_gate_lisa.root");
+    // FrsGate* cut_0 = new FrsGate("full", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/pareeksha_test.root"); 
     std::vector<FrsGate*> fgs = {};
     fgs.emplace_back(test);
+    fgs.emplace_back(cut_0);
 
     if (FRS_ON)
     {
