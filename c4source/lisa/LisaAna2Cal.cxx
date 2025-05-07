@@ -165,7 +165,10 @@ void LisaAna2Cal::Exec(Option_t* option)
                     }
                     
                 }
-                        
+
+                // std::cout << "LAYER :: " << layer_id << std::endl;
+                // std::cout << "LISA X pos :: " << xpos << std::endl;
+                // std::cout << "LISA Y pos :: " << ypos << std::endl;
                 auto & entry = lisaCalArray->emplace_back();
 
                 entry.SetAll(
