@@ -192,6 +192,12 @@ void FrsCal2Hit::Exec(Option_t* option)
                         music42_de_cor,
                         music43_de_cor);
 
+    auto const & calTpcItem = calTpcArray->at(0);
+    anaEntry.SetTPCData(calTpcItem.Get_tpc_angle_x_s2_foc_22_23(),
+        calTpcItem.Get_tpc_angle_y_s2_foc_22_23(),
+        calTpcItem.Get_tpc_x_s2_foc_22_23(),
+        calTpcItem.Get_tpc_y_s2_foc_22_23());
+
     ProcessIDs();
     anaEntry.SetIDs(id_x1,
                     id_y1,

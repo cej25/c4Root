@@ -1,13 +1,13 @@
 #include <TROOT.h>
 
 // !!! Switch all tasks related to {subsystem} on (1)/off (0)
-#define LISA_ON 0
+#define LISA_ON 1
 #define FRS_ON 1
 
 // !!! Select the data level you want to visualize
 #define LISA_RAW 0
 #define LISA_ANA 0
-#define LISA_CAL 0
+#define LISA_CAL 1
 
 // Define for online if testing or during experient
 #define TEST 1
@@ -31,7 +31,8 @@ void c_shiyan_make_trees()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     // ::: Experiment name
-    TString fExpName = "shiyan";
+    // TString fExpName = "shiyan";
+    TString fExpName = "pareeksha";
 
     // ::: Here you define commonly used path
     TString c4Root_path = "/u/cjones/c4Root";
@@ -60,12 +61,14 @@ void c_shiyan_make_trees()
     TString inputpath = "$LUSTRE_DIR/nustar/profi/sec_s160feb25/stitched/";     // Data from FRS
  
     //TString filename = inputpath + "test_0003_0001.lmd";
-    TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
+    // TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
+
+    TString filename = "$LUSTRE_DIR/gamma/s092_s143_files/ts/run_0075_0001.lmd";
 
     // ::: OUTPUT 
     TString outputpath = "./"; //testing
     //TString outputFilename = outputpath + "test_0003_tree.root"; 
-    TString outputFilename = outputpath + "c_test_Ag_with_whatever.root";
+    TString outputFilename = outputpath + "tpc_X_testing.root";
 
 
     // ::: Create online run
@@ -131,11 +134,17 @@ void c_shiyan_make_trees()
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
         TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
         
-        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Febex_Gate1.txt");
-        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Febex_Gate2.txt");
+        // TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Febex_Gate1.txt");
+        // TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Febex_Gate2.txt");
 
-        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/MWD_Gate1.txt");
-        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/MWD_Gate2.txt");
+        // TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/MWD_Gate1.txt");
+        // TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/MWD_Gate2.txt");
+
+        // pareeksha testing
+        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_Detector_Map_names.txt");
+        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching.txt");
+        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
 
     }
     if ( EXP )
@@ -212,7 +221,7 @@ void c_shiyan_make_trees()
 
         FrsRaw2Cal* calfrs = new FrsRaw2Cal();
         
-        calfrs->SetOnline(true);
+        calfrs->SetOnline(false);
         run->AddTask(calfrs);
 
     }

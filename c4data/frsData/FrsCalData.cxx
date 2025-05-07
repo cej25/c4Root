@@ -206,7 +206,9 @@ void FrsCalTpcItem::SetAll(Float_t tpc_x[7],
                     Float_t tpc_music42_x,
                     Float_t tpc_music43_x,
                     Float_t tpc_angle_x_s2_foc_22_23,
-                    Float_t tpc_angle_y_s2_foc_22_23)
+                    Float_t tpc_angle_y_s2_foc_22_23,
+                    Float_t tpc_x_s2_foc_22_23,
+                    Float_t tpc_y_s2_foc_22_23)
 {
     for (int i = 0; i < 7; i++) ftpc_x[i] = tpc_x[i];
     for (int i = 0; i < 7; i++) fb_tpc_xy[i] = b_tpc_xy[i];
@@ -255,6 +257,8 @@ void FrsCalTpcItem::SetAll(Float_t tpc_x[7],
     ftpc_music43_x = tpc_music43_x;
     ftpc_angle_x_s2_foc_22_23 = tpc_angle_x_s2_foc_22_23;
     ftpc_angle_y_s2_foc_22_23 = tpc_angle_y_s2_foc_22_23;
+    ftpc_x_s2_foc_22_23 = tpc_x_s2_foc_22_23;
+    ftpc_y_s2_foc_22_23 = tpc_y_s2_foc_22_23;
 }
 
 ClassImp(FrsCalTpcItem)

@@ -115,6 +115,17 @@ void FrsHitItem::SetMusicData(Float_t music21_dE,
     fmusic43_dE_cor =  music43_dE_cor;
 }
 
+void FrsHitItem::SetTPCData(Float_t tpc_angle_x_s2_foc_22_23,
+                            Float_t tpc_angle_y_s2_foc_22_23,
+                            Float_t tpc_x_s2_foc_22_23,
+                            Float_t tpc_y_s2_foc_22_23)
+{
+    ftpc_angle_x_s2_foc_22_23 = tpc_angle_x_s2_foc_22_23;
+    ftpc_angle_y_s2_foc_22_23 = tpc_angle_y_s2_foc_22_23;
+    ftpc_x_s2_foc_22_23 = tpc_x_s2_foc_22_23;
+    ftpc_y_s2_foc_22_23 = tpc_y_s2_foc_22_23;
+}
+
         
 void FrsHitItem::SetIDs(Float_t x1,
                         Float_t y1,
