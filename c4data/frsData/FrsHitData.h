@@ -64,6 +64,11 @@ class FrsHitItem : public TObject
                         Float_t music41_dE_cor,
                         Float_t music42_dE_cor,
                         Float_t music43_dE_cor);
+
+        void SetTPCData(Float_t tpc_angle_x_s2_foc_22_23,
+                        Float_t tpc_angle_y_s2_foc_22_23,
+                        Float_t tpc_x_s2_foc_22_23,
+                        Float_t tpc_y_s2_foc_22_23);
         
         void SetIDs(Float_t x1,
                     Float_t y1,
@@ -154,6 +159,10 @@ class FrsHitItem : public TObject
         Float_t Get_music41_dE_cor() const { return fmusic41_dE_cor; }
         Float_t Get_music42_dE_cor() const { return fmusic42_dE_cor; }
         Float_t Get_music43_dE_cor() const { return fmusic43_dE_cor; }
+        Float_t Get_tpc_angle_x_s2_foc_22_23() const { return ftpc_angle_x_s2_foc_22_23; }
+        Float_t Get_tpc_angle_y_s2_foc_22_23() const { return ftpc_angle_y_s2_foc_22_23; }
+        Float_t Get_tpc_x_s2_foc_22_23() const { return ftpc_x_s2_foc_22_23; }
+        Float_t Get_tpc_y_s2_foc_22_23() const { return ftpc_y_s2_foc_22_23; }
         Float_t Get_ID_x1() const { return fID_x1; }
         Float_t Get_ID_x2() const { return fID_x2; }
         Float_t Get_ID_x4() const { return fID_x4; }
@@ -253,6 +262,12 @@ class FrsHitItem : public TObject
         Float_t fmusic41_dE_cor;
         Float_t fmusic42_dE_cor;
         Float_t fmusic43_dE_cor;
+
+        // TPC
+        Float_t ftpc_angle_x_s2_foc_22_23;
+        Float_t ftpc_angle_y_s2_foc_22_23;
+        Float_t ftpc_x_s2_foc_22_23;
+        Float_t ftpc_y_s2_foc_22_23;
 
         // IDs
         Float_t fID_x1;

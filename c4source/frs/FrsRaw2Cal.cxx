@@ -622,7 +622,7 @@ void FrsRaw2Cal::ProcessTpcs()
     Float_t dist_TPC23_focS2 = frs->dist_TPC23 - frs->dist_focS2;
     Float_t dist_TPC41_TPC42 = frs->dist_TPC42 - frs->dist_TPC41;
     Float_t dist_TPC42_focS4 = frs->dist_focS4 - frs->dist_TPC42;
-    Float_t dist_TPC22_TPC23 = frs->dist_TPC23 - frs->dist_TPC23;
+    Float_t dist_TPC22_TPC23 = frs->dist_TPC23 - frs->dist_TPC22;
     
     //=================================
     // Tracking with TPC 21 and TPC 22
@@ -746,17 +746,33 @@ void FrsRaw2Cal::ProcessTpcs()
         // Angle Y at S2 focus
         tpc_angle_y_s2_foc_22_23 = (tpc_y[2] - tpc_y[1])/dist_TPC22_TPC23*1000.;
 
-        // don't "need" but use for later.
         // X position at S2 focus
-        // tpc_x_s2_foc_22_23 = -tpc_angle_x_s2_foc_22_23 * dist_TPC22_focS2/1000. + tpc_x[1];
+        tpc_x_s2_foc_22_23 = -tpc_angle_x_s2_foc_22_23 * dist_TPC22_focS2/1000. + tpc_x[1];
         // Y position at S2 focus
-        // tpc_y_s2_foc_22_23 = -tpc_angle_y_s2_foc_22_23 * dist_TPC22_focS2/1000. + tpc_y[1];
+        tpc_y_s2_foc_22_23 = -tpc_angle_y_s2_foc_22_23 * dist_TPC22_focS2/1000. + tpc_y[1];
+
+        Float_t dist_LISA_focS2 = 1930 + 153 + dist_TPC22_focS2;
+
+        Float_t x_lisa_tpc22_23 = (tpc_angle_x_s2_foc_22_23 / 1000. * dist_LISA_focS2) + tpc_x_s2_foc_22_23;
+        Float_t y_lisa_tpc22_23 = (tpc_angle_y_s2_foc_22_23 / 1000. * dist_LISA_focS2) + tpc_y_s2_foc_22_23;
+
+        // std::cout << "dist_TPC22_focS2:: " << dist_TPC22_focS2 << std::endl;
+        // std::cout << "dist_TPC22_TPC23:: " << dist_TPC22_TPC23 << std::endl;
+        // std::cout << "angle x:: " << tpc_angle_x_s2_foc_22_23 << std::endl;
+        // std::cout << "angle y:: " << tpc_angle_y_s2_foc_22_23 << std::endl;
+        // std::cout << "focus x :: " << tpc_x_s2_foc_22_23 << std::endl;
+        // std::cout << "focus y :: " << tpc_y_s2_foc_22_23 << std::endl;
+        // std::cout << "x at lisa0 supposedly: " << x_lisa_tpc22_23 << std::endl;
+        // std::cout << "y at lisa0 supposedly: " << y_lisa_tpc22_23 << std::endl;
+
 
     }
     else  
     {
         tpc_angle_x_s2_foc_22_23 = -999;
         tpc_angle_y_s2_foc_22_23 = -999;
+        tpc_x_s2_foc_22_23 = -999;
+        tpc_y_s2_foc_22_23 = -999;
     }
 
     //=====================================================
@@ -854,7 +870,9 @@ void FrsRaw2Cal::ProcessTpcs()
         tpc_music42_x,
         tpc_music43_x,
         tpc_angle_x_s2_foc_22_23,
-        tpc_angle_y_s2_foc_22_23);
+        tpc_angle_y_s2_foc_22_23,
+        tpc_x_s2_foc_22_23,
+        tpc_y_s2_foc_22_23);
 
 }
 
@@ -972,6 +990,8 @@ void FrsRaw2Cal::FinishEvent()
     music2_x = -999;
     tpc_angle_x_s2_foc_22_23 = -999;
     tpc_angle_y_s2_foc_22_23 = -999;
+    tpc_x_s2_foc_22_23 = -999;
+    tpc_y_s2_foc_22_23 = -999;
     memset(tpc_a, 0, sizeof(tpc_a));
     memset(tpc_l, 0, sizeof(tpc_l));
     memset(tpc_r, 0, sizeof(tpc_r));
