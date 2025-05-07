@@ -12,8 +12,8 @@
 // Define FRS setup.C file - FRS should provide; place in /config/shiyan/frs/
 extern "C"
 {
-    #include "../../config/pareeksha/frs/setup_Fragment_conv_updated.C" //pareeksha data
-    //#include "../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
+    //#include "../../config/pareeksha/frs/setup_Fragment_conv_updated.C" //pareeksha data
+    #include "../../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
 }
 
 typedef struct EXT_STR_h101_t

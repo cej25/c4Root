@@ -2,12 +2,12 @@
 
 // !!! Switch all tasks related to {subsystem} on (1)/off (0)
 #define LISA_ON 1
-#define FRS_ON 0
+#define FRS_ON 1
 
 // !!! Select the data level you want to visualize
 #define LISA_RAW 0
-#define LISA_ANA 1
-#define LISA_CAL 0
+#define LISA_ANA 0
+#define LISA_CAL 1
 
 // Define for online if testing or during experient
 #define TEST 1
@@ -34,7 +34,7 @@ void shiyan_make_trees()
     TString fExpName = "shiyan";
 
     // ::: Here you define commonly used path
-    TString c4Root_path = "/u/gandolfo/c4/c4Root";
+    TString c4Root_path = "/u/lisa/c4/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -111,7 +111,7 @@ void shiyan_make_trees()
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: C O N F I G    F O R   D E T E C T O R - Load
     // ::: Exp config
-    TExperimentConfiguration::SetExperimentStart(1746524668000000000);//Start at 6thMay 13:45
+    TExperimentConfiguration::SetExperimentStart(1746599400000000000);//1746599400000000000 is May 7th, at 8h30 a.m., start of run0001
     // for S100, 3 and 4. for 2025+ 12 and 13.
     TExperimentConfiguration::SetBOSTrig(3);
     TExperimentConfiguration::SetEOSTrig(4);
@@ -127,7 +127,6 @@ void shiyan_make_trees()
     if ( TEST )
     {
         // shiyan 
-        
         TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_All_Boards.txt");
         TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_cards.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
