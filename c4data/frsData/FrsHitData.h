@@ -65,10 +65,55 @@ class FrsHitItem : public TObject
                         Float_t music42_dE_cor,
                         Float_t music43_dE_cor);
 
-        void SetTPCData(Float_t tpc_angle_x_s2_foc_22_23,
-                        Float_t tpc_angle_y_s2_foc_22_23,
-                        Float_t tpc_x_s2_foc_22_23,
-                        Float_t tpc_y_s2_foc_22_23);
+        void SetTPCData(Float_t tpc_x[7],
+                    Bool_t b_tpc_xy[7],
+                    Int_t tpc_csum[7][4], // [7][4]
+                    Float_t tpc_angle_x_s2_foc_21_22,
+                    Float_t tpc_angle_y_s2_foc_21_22,
+                    Float_t tpc_x_s2_foc_21_22,
+                    Float_t tpc_y_s2_foc_21_22,
+                    Float_t tpc21_22_sc21_x,
+                    Float_t tpc21_22_sc22_x,
+                    Float_t tpc_angle_x_s2_foc_23_24,
+                    Float_t tpc_angle_y_s2_foc_23_24,
+                    Float_t tpc_x_s2_foc_23_24,
+                    Float_t tpc_y_s2_foc_23_24,
+                    Float_t tpc23_24_sc21_x,
+                    Float_t tpc23_24_sc21_y,
+                    Float_t tpc23_24_sc22_x,
+                    Float_t tpc23_24_sc22_y,
+                    Float_t tpc_angle_x_s2_foc_22_24,
+                    Float_t tpc_angle_y_s2_foc_22_24,
+                    Float_t tpc_x_s2_foc_22_24,
+                    Float_t tpc_y_s2_foc_22_24,
+                    Float_t tpc_angle_x_s4,
+                    Float_t tpc_angle_y_s4,
+                    Float_t tpc_x_s4,
+                    Float_t tpc_y_s4,
+                    Float_t tpc_sc41_x,
+                    Float_t tpc_sc41_y,
+                    Float_t tpc_sc42_x,
+                    Float_t tpc_sc42_y,
+                    Float_t tpc_sc43_x,
+                    Float_t tpc21_22_music21_x,
+                    Float_t tpc21_22_music21_y,
+                    Float_t tpc21_22_music22_x,
+                    Float_t tpc21_22_music22_y,
+                    Float_t tpc23_24_music21_x,
+                    Float_t tpc23_24_music21_y,
+                    Float_t tpc23_24_music22_x,
+                    Float_t tpc23_24_music22_y,
+                    Float_t tpc22_24_music21_x,
+                    Float_t tpc22_24_music21_y,
+                    Float_t tpc22_24_music22_x,
+                    Float_t tpc22_24_music22_y,
+                    Float_t tpc_music41_x,
+                    Float_t tpc_music42_x,
+                    Float_t tpc_music43_x,
+                    Float_t tpc_angle_x_s2_foc_22_23,
+                    Float_t tpc_angle_y_s2_foc_22_23,
+                    Float_t tpc_x_s2_foc_22_23,
+                    Float_t tpc_y_s2_foc_22_23);
         
         void SetIDs(Float_t x1,
                     Float_t y1,
@@ -159,6 +204,51 @@ class FrsHitItem : public TObject
         Float_t Get_music41_dE_cor() const { return fmusic41_dE_cor; }
         Float_t Get_music42_dE_cor() const { return fmusic42_dE_cor; }
         Float_t Get_music43_dE_cor() const { return fmusic43_dE_cor; }
+        const Float_t (&Get_tpc_x() const) [7] { return ftpc_x; }
+        const Bool_t (&Get_b_tpc_xy() const) [7] { return fb_tpc_xy; }
+        const Int_t (&Get_tpc_csum() const) [7][4] { return ftpc_csum; }
+        Float_t Get_tpc_x_s2_foc_21_22() const { return ftpc_x_s2_foc_21_22; }
+        Float_t Get_tpc_y_s2_foc_21_22() const { return ftpc_y_s2_foc_21_22; }
+        Float_t Get_tpc_angle_x_s2_foc_21_22() const { return ftpc_angle_x_s2_foc_21_22; }
+        Float_t Get_tpc_angle_y_s2_foc_21_22() const { return ftpc_angle_y_s2_foc_21_22; }
+        Float_t Get_tpc_x_s2_foc_22_24() const { return ftpc_x_s2_foc_22_24; }
+        Float_t Get_tpc_y_s2_foc_22_24() const { return ftpc_y_s2_foc_22_24; }
+        Float_t Get_tpc_angle_x_s2_foc_22_24() const { return ftpc_angle_x_s2_foc_22_24; }
+        Float_t Get_tpc_angle_y_s2_foc_22_24() const { return ftpc_angle_y_s2_foc_22_24; }
+        Float_t Get_tpc_x_s2_foc_23_24() const { return ftpc_x_s2_foc_23_24; }
+        Float_t Get_tpc_y_s2_foc_23_24() const { return ftpc_y_s2_foc_23_24; }
+        Float_t Get_tpc_angle_x_s2_foc_23_24() const { return ftpc_angle_x_s2_foc_23_24; }
+        Float_t Get_tpc_angle_y_s2_foc_23_24() const { return ftpc_angle_y_s2_foc_23_24; }
+        Float_t Get_tpc_angle_x_s4() const { return ftpc_angle_x_s4; }
+        Float_t Get_tpc_angle_y_s4() const { return ftpc_angle_y_s4; }
+        Float_t Get_tpc_x_s4() const { return ftpc_x_s4; }
+        Float_t Get_tpc_y_s4() const { return ftpc_y_s4; }
+        Float_t Get_tpc23_24_sc21_y() const { return ftpc23_24_sc21_y; }
+        Float_t Get_tpc23_24_sc22_y() const { return ftpc23_24_sc22_y; }
+        Float_t Get_tpc_sc41_x() const { return ftpc_sc41_x; }
+        Float_t Get_tpc_sc41_y() const { return ftpc_sc41_y; }
+        Float_t Get_tpc_sc42_x() const { return ftpc_sc42_x; }
+        Float_t Get_tpc_sc42_y() const { return ftpc_sc42_y; }
+        Float_t Get_tpc_sc43_x() const { return ftpc_sc43_x; }
+        Float_t Get_tpc21_22_sc21_x() const { return ftpc21_22_sc21_x; }
+        Float_t Get_tpc23_24_sc21_x() const { return ftpc23_24_sc21_x; }
+        Float_t Get_tpc21_22_sc22_x() const { return ftpc21_22_sc22_x; }
+        Float_t Get_tpc23_24_sc22_x() const { return ftpc23_24_sc22_x; }
+        Float_t Get_tpc21_22_music21_x() const { return ftpc21_22_music21_x; }
+        Float_t Get_tpc21_22_music21_y() const { return ftpc21_22_music21_y; }
+        Float_t Get_tpc21_22_music22_x() const { return ftpc21_22_music22_x; }
+        Float_t Get_tpc21_22_music22_y() const { return ftpc21_22_music22_y; }
+        Float_t Get_tpc23_24_music21_x() const { return ftpc23_24_music21_x; }
+        Float_t Get_tpc23_24_music21_y() const { return ftpc23_24_music21_y; }
+        Float_t Get_tpc23_24_music22_x() const { return ftpc23_24_music22_x; }
+        Float_t Get_tpc23_24_music22_y() const { return ftpc23_24_music22_y; }
+        Float_t Get_tpc22_24_music21_x() const { return ftpc22_24_music21_x; }
+        Float_t Get_tpc22_24_music21_y() const { return ftpc22_24_music21_y; }
+        Float_t Get_tpc22_24_music22_x() const { return ftpc22_24_music22_x; }
+        Float_t Get_tpc22_24_music22_y() const { return ftpc22_24_music22_y; }
+        Float_t Get_tpc_music41_x() const { return ftpc_music41_x; }
+        Float_t Get_tpc_music42_x() const { return ftpc_music42_x; }
+        Float_t Get_tpc_music43_x() const { return ftpc_music43_x; }
         Float_t Get_tpc_angle_x_s2_foc_22_23() const { return ftpc_angle_x_s2_foc_22_23; }
         Float_t Get_tpc_angle_y_s2_foc_22_23() const { return ftpc_angle_y_s2_foc_22_23; }
         Float_t Get_tpc_x_s2_foc_22_23() const { return ftpc_x_s2_foc_22_23; }
@@ -264,6 +354,53 @@ class FrsHitItem : public TObject
         Float_t fmusic43_dE_cor;
 
         // TPC
+        Bool_t fb_tpc_de[7]; // not used yet, tpc_de not even passed along
+        Float_t ftpc_x[7]; // [7]; // used by frs for plotting and sc31
+        Float_t ftpc_y[7]; // used by frs for plotting and sc31
+        Bool_t fb_tpc_xy[7]; // [7]
+        Int_t ftpc_csum[7][4]; //[7][4]
+        Float_t ftpc_angle_x_s2_foc_21_22;
+        Float_t ftpc_angle_y_s2_foc_21_22;
+        Float_t ftpc_x_s2_foc_21_22;
+        Float_t ftpc_y_s2_foc_21_22;
+        Float_t ftpc21_22_sc21_x;
+        Float_t ftpc21_22_sc22_x;
+        Float_t ftpc_angle_x_s2_foc_23_24;
+        Float_t ftpc_angle_y_s2_foc_23_24;
+        Float_t ftpc_x_s2_foc_23_24;
+        Float_t ftpc_y_s2_foc_23_24;
+        Float_t ftpc23_24_sc21_x;
+        Float_t ftpc23_24_sc21_y;
+        Float_t ftpc23_24_sc22_x;
+        Float_t ftpc23_24_sc22_y;
+        Float_t ftpc_angle_x_s2_foc_22_24;
+        Float_t ftpc_angle_y_s2_foc_22_24;
+        Float_t ftpc_x_s2_foc_22_24;
+        Float_t ftpc_y_s2_foc_22_24;
+        Float_t ftpc_angle_x_s4;
+        Float_t ftpc_angle_y_s4;
+        Float_t ftpc_x_s4;
+        Float_t ftpc_y_s4;
+        Float_t ftpc_sc41_x;
+        Float_t ftpc_sc41_y;
+        Float_t ftpc_sc42_x;
+        Float_t ftpc_sc42_y;
+        Float_t ftpc_sc43_x;
+        Float_t ftpc21_22_music21_x;
+        Float_t ftpc21_22_music21_y;
+        Float_t ftpc21_22_music22_x;
+        Float_t ftpc21_22_music22_y;
+        Float_t ftpc23_24_music21_x;
+        Float_t ftpc23_24_music21_y;
+        Float_t ftpc23_24_music22_x;
+        Float_t ftpc23_24_music22_y;
+        Float_t ftpc22_24_music21_x;
+        Float_t ftpc22_24_music21_y;
+        Float_t ftpc22_24_music22_x;
+        Float_t ftpc22_24_music22_y;
+        Float_t ftpc_music41_x;
+        Float_t ftpc_music42_x;
+        Float_t ftpc_music43_x;
         Float_t ftpc_angle_x_s2_foc_22_23;
         Float_t ftpc_angle_y_s2_foc_22_23;
         Float_t ftpc_x_s2_foc_22_23;
