@@ -1,9 +1,10 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define LISA_ON 0
+#define LISA_ON 1
 #define FRS_ON 1
 #define WR_ENABLED 1
+#define FRS_LISA_CORRELATIONS 1
 
 // Define for online if testing or during experient
 #define TEST 1
@@ -36,7 +37,8 @@ void c_shiyan_online()
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     
     // ::: Experiment name - this set the path for all the config
-    TString fExpName = "shiyan";
+    // TString fExpName = "shiyan";
+    TString fExpName = "pareeksha";
 
     // ::: Here you define commonly used path
     TString c4Root_path = "/u/cjones/c4Root";
@@ -75,7 +77,8 @@ void c_shiyan_online()
     TString inputpath = "$LUSTRE_DIR/nustar/profi/sec_s160feb25/stitched/";     // Data from FRS
  
     //TString filename = inputpath + "test_0003_0001.lmd";
-    TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
+    // TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
+    TString filename = "$LUSTRE_DIR/gamma/s092_s143_files/ts/run_0075_0001.lmd";
 
     //TString filename = inputpath + "test_0003_*.lmd";
     //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
@@ -152,6 +155,12 @@ void c_shiyan_online()
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
         TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
         */
+        // TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_Detector_Map_names.txt");
+        // TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching.txt");
+        // TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD.txt");
+        // TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
+
+        // pareeksha testing
         TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_Detector_Map_names.txt");
         TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD.txt");
@@ -236,15 +245,15 @@ void c_shiyan_online()
         run->AddTask(onlinelisa);
     }
 
-    FrsGate* test = new FrsGate("Tester",config_path + "/frs/Gates/frs_real_gate_lisa.root");
-    std::vector<FrsGate*> fgs = {};
-    fgs.emplace_back(test);
+    // FrsGate* test = new FrsGate("Tester",config_path + "/frs/Gates/frs_real_gate_lisa.root");
+    // std::vector<FrsGate*> fgs = {};
+    // fgs.emplace_back(test);
 
     // TFrsConfiguration::Set_TOF_gate(200, 240);
     
     if (FRS_ON)
     {
-        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra(fgs);
+        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
         //For monitoring FRS on our side
         // FrsRawSpectra* frsrawspec = new FrsRawSpectra();
         // FrsCalSpectra* frscalspec = new FrsCalSpectra();
@@ -256,11 +265,16 @@ void c_shiyan_online()
 
     // ::: Correlation Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-    // if (LISA_ON && FRS_ON)
-    // {
-    //     LisaFrsCorrelations* lisafrscorr = new LisaFrsCorrelations();
-    //     run->AddTask(lisafrscorr);
-    // }
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    // ::: Correlation Spectra :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    if(LISA_ON && FRS_ON)
+    {
+        if(FRS_LISA_CORRELATIONS)
+        {
+            LisaFrsCorrelationsOnline* LISA_FRS_corr = new LisaFrsCorrelationsOnline();
+            run->AddTask(LISA_FRS_corr);
+        }
+    }
 
     // ::: CONFIGURATIONS FOR ONLINE HISTOS :::
     // ::: FRS
