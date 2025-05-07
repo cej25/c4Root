@@ -1122,4 +1122,4 @@ void FrsNearlineSpectra::FinishTask()
     
 }
 
-ClassImp(FrsNearlineSpectra
+ClassImp(FrsNearlineSpectra)

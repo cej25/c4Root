@@ -201,6 +201,9 @@ class FrsRaw2Cal : public FairTask
         Float_t tpc_angle_x_s2_foc = -999;
         Float_t tpc_angle_y_s2_foc = -999;
 
+        Float_t tpc_angle_x_s2_foc_22_23 = -999;
+        Float_t tpc_angle_y_s2_foc_22_23 = -999;
+
         //TPCs 41 & 42 @ s4 focus
         Float_t tpc_x_s4 = -999;
         Float_t tpc_y_s4 = -999;
