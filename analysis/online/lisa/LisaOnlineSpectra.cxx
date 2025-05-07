@@ -909,18 +909,18 @@ void LisaOnlineSpectra::Exec(Option_t* option)
 
         for (int i = 0; i < layer; i++)
         {
-            if (rate_running_count == 900) h1_layer_rate[i]->Reset();
+            if (rate_running_count == lisa_config->max_wr_rate) h1_layer_rate[i]->Reset();
             layer_counter[i] = 0;
             for (int j = 0; j < xmax; j++)
             {
                 for (int k = 0; k < ymax; k++)
                 {
-                    if (rate_running_count == 900) h1_rate[i][j][k]->Reset();
+                    if (rate_running_count == lisa_config->max_wr_rate) h1_rate[i][j][k]->Reset();
                     detector_counter[i][j][k] = 0;
                 }
             }
         }
-        if (rate_running_count == 900) rate_running_count = 0;
+        if (rate_running_count == lisa_config->max_wr_rate) rate_running_count = 0;
     }
     //....................................
 
