@@ -6,8 +6,8 @@
 
 // !!! Select the data level you want to visualize
 #define LISA_RAW 0
-#define LISA_ANA 1
-#define LISA_CAL 0
+#define LISA_ANA 0
+#define LISA_CAL 1
 
 // Define for online if testing or during experient
 #define TEST 1
@@ -16,8 +16,8 @@
 // :::  Define FRS setup.C file - FRS should provide; place in /config/shiyan/frs/setup/
 extern "C"
 {
-    #include "../../config/pareeksha/frs/setup_Fragment_conv_updated.C" //pareeksha data
-    //#include "../../config/shiyan/frs/setup/setup_160_49_2025_conv.C" //shiyan
+    //#include "../../config/pareeksha/frs/setup_Fragment_conv_updated.C" //pareeksha data
+    #include "../../../config/shiyan/frs/setup/setup_160_49_2025_conv.C" //shiyan
 }
 
 typedef struct EXT_STR_h101_t
@@ -58,11 +58,11 @@ void e_shiyan_make_trees()
     
     // ::: FILE  PATH
     //TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";       // Data from pareeksha fro LISA-FRS corr testing
-    TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/S092_shiyan/";                       // Data from LISA
+    TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s103_files/ts/";                       // Data from LISA
     //TString inputpath = "/u/gandolfo/data/lustre/nustar/profi/sec_s160feb25/stitched/";           // Data from FRS with S2 PID
  
-    //TString filename = inputpath + "run_0075_0001.lmd";
-    TString filename = inputpath + "test_0003_0001.lmd";
+    TString filename = inputpath + "run_0001_0001.lmd";
+    //TString filename = inputpath + "test_0003_0001.lmd";
     //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
 
     // ::: OUTPUT 
@@ -70,7 +70,7 @@ void e_shiyan_make_trees()
     TString outputpath = "/u/gandolfo/data/test_c4/shiyan_test/";   //energy resolution data
     
     //TString outputFilename = outputpath + "test_run_0075.root";
-    TString outputFilename = outputpath + "test_0003_tree_debug_ana.root"; 
+    TString outputFilename = outputpath + "run_0001_0001.root"; 
     //TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  // Data from FRS with S2 PID
 
 
