@@ -622,6 +622,7 @@ void FrsRaw2Cal::ProcessTpcs()
     Float_t dist_TPC23_focS2 = frs->dist_TPC23 - frs->dist_focS2;
     Float_t dist_TPC41_TPC42 = frs->dist_TPC42 - frs->dist_TPC41;
     Float_t dist_TPC42_focS4 = frs->dist_focS4 - frs->dist_TPC42;
+    Float_t dist_TPC22_TPC23 = frs->dist_TPC23 - frs->dist_TPC23;
     
     //=================================
     // Tracking with TPC 21 and TPC 22
@@ -735,6 +736,29 @@ void FrsRaw2Cal::ProcessTpcs()
         tpc22_24_sc22_y =-999;
     }
 
+    //=================================
+    // Tracking with TPC 22 and TPC 23 -- For LISA
+    //=================================
+    if (b_tpc_xy[1] && b_tpc_xy[2])
+    {
+        // Angle X at S2 focus
+        tpc_angle_x_s2_foc_22_23 = (tpc_x[2] - tpc_x[1])/dist_TPC22_TPC23*1000.;
+        // Angle Y at S2 focus
+        tpc_angle_y_s2_foc_22_23 = (tpc_y[2] - tpc_y[1])/dist_TPC22_TPC23*1000.;
+
+        // don't "need" but use for later.
+        // X position at S2 focus
+        // tpc_x_s2_foc_22_23 = -tpc_angle_x_s2_foc_22_23 * dist_TPC22_focS2/1000. + tpc_x[1];
+        // Y position at S2 focus
+        // tpc_y_s2_foc_22_23 = -tpc_angle_y_s2_foc_22_23 * dist_TPC22_focS2/1000. + tpc_y[1];
+
+    }
+    else  
+    {
+        tpc_angle_x_s2_foc_22_23 = -999;
+        tpc_angle_y_s2_foc_22_23 = -999;
+    }
+
     //=====================================================
     // Tracking with TPC 41 and TPC 42 (TPC 5 and 6) at S4
     //=====================================================
@@ -828,7 +852,9 @@ void FrsRaw2Cal::ProcessTpcs()
         tpc22_24_music22_y,
         tpc_music41_x,
         tpc_music42_x,
-        tpc_music43_x);
+        tpc_music43_x,
+        tpc_angle_x_s2_foc_22_23,
+        tpc_angle_y_s2_foc_22_23);
 
 }
 
@@ -944,6 +970,8 @@ void FrsRaw2Cal::FinishEvent()
     music1_y3 = -999;
     music1_y4 = -999;
     music2_x = -999;
+    tpc_angle_x_s2_foc_22_23 = -999;
+    tpc_angle_y_s2_foc_22_23 = -999;
     memset(tpc_a, 0, sizeof(tpc_a));
     memset(tpc_l, 0, sizeof(tpc_l));
     memset(tpc_r, 0, sizeof(tpc_r));
