@@ -755,16 +755,16 @@ InitStatus LisaFrsCorrelations::Init()
     // TCanvas* c_test = new TCanvas("c_test", "TPC POS XY AT LISA", 650, 350);
     // c_test->Divide(2,2);
     // c_test->cd(1);
-    h2_tpc_xy_LISA_001 = MakeTH2(dir_position, "F", "h2_tpc_xy_LISA_001", "TPC XY at LISA 001", 100, -8., 10., 100, -25., -4.);
+    h2_tpc_xy_LISA_001 = MakeTH2(dir_position, "F", "h2_tpc_xy_LISA_001", "TPC XY at LISA 001", 40, -8., 10., 40, -25., -4.);
     // h2_tpc_xy_LISA_001->Draw();
     // c_test->cd(2);
-    h2_tpc_xy_LISA_011 = MakeTH2(dir_position, "F", "h2_tpc_xy_LISA_011", "TPC XY at LISA 011", 100, -8., 10., 100, -25., -4.);
+    h2_tpc_xy_LISA_011 = MakeTH2(dir_position, "F", "h2_tpc_xy_LISA_011", "TPC XY at LISA 011", 40, -8., 10., 40, -25., -4.);
     // h2_tpc_xy_LISA_011->Draw();
     // c_test->cd(3);
-    h2_tpc_xy_LISA_000 = MakeTH2(dir_position, "F", "h2_tpc_xy_LISA_000", "TPC XY at LISA 000", 100, -8., 10., 100, -25., -4.);
+    h2_tpc_xy_LISA_000 = MakeTH2(dir_position, "F", "h2_tpc_xy_LISA_000", "TPC XY at LISA 000", 40, -8., 10., 40, -25., -4.);
     // h2_tpc_xy_LISA_000->Draw();
     // c_test->cd(4);
-    h2_tpc_xy_LISA_010 = MakeTH2(dir_position, "F", "h2_tpc_xy_LISA_010", "TPC XY at LISA 010", 100, -8., 10., 100, -25., -4.);
+    h2_tpc_xy_LISA_010 = MakeTH2(dir_position, "F", "h2_tpc_xy_LISA_010", "TPC XY at LISA 010", 40, -8., 10., 40, -25., -4.);
     // h2_tpc_xy_LISA_010->Draw();
     // dir_position->Append(c_test);
     //..........................
