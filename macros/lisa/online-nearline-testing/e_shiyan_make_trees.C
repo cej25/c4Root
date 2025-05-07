@@ -57,20 +57,20 @@ void e_shiyan_make_trees()
 
     
     // ::: FILE  PATH
-    //TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";       // Data from pareeksha fro LISA-FRS corr testing
+    //TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/S092_shiyan/";
     TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s103_files/ts/";                       // Data from LISA
     //TString inputpath = "/u/gandolfo/data/lustre/nustar/profi/sec_s160feb25/stitched/";           // Data from FRS with S2 PID
  
-    TString filename = inputpath + "run_0001_0001.lmd";
+    TString filename = inputpath + "run_0003_0001.lmd";
     //TString filename = inputpath + "test_0003_0001.lmd";
     //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
 
     // ::: OUTPUT 
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/noise_test_may25/";   //testing
-    TString outputpath = "/u/gandolfo/data/test_c4/shiyan_test/";   //energy resolution data
+    TString outputpath = "/u/gandolfo/data/test_c4/trace_ana/";   //energy resolution data
     
     //TString outputFilename = outputpath + "test_run_0075.root";
-    TString outputFilename = outputpath + "run_0001_0001.root"; 
+    TString outputFilename = outputpath + "run_0003_0001_tree_v2.root"; 
     //TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  // Data from FRS with S2 PID
 
 
@@ -117,7 +117,8 @@ void e_shiyan_make_trees()
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: C O N F I G    F O R   D E T E C T O R - Load
     // ::: Exp config
-    TExperimentConfiguration::SetExperimentStart(1715727045000000000);//Start of pareeksha with primary beam: 15 May 00:50
+    TExperimentConfiguration::SetExperimentStart(1746597600000000000); // Start for Shiyan data: May 7th, 8a.m. //including testing
+    //TExperimentConfiguration::SetExperimentStart(1715727045000000000);//Start of pareeksha with primary beam: 15 May 00:50
     //TExperimentConfiguration::SetExperimentStart(1746172830000000000);
     // for S100, 3 and 4. for 2025+ 12 and 13.
     TExperimentConfiguration::SetBOSTrig(3);
@@ -135,10 +136,10 @@ void e_shiyan_make_trees()
     {
         // shiyan 
         
-        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_All_Boards.txt");
-        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_cards.txt");
-        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
+        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_4x4_shiyan.txt");
+        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_shiyan.txt");
+        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_shiyan.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_shiyan_v0.txt");
         
         /*
         //for testing with pareeksha data 

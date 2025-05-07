@@ -215,17 +215,19 @@ InitStatus LisaOnlineSpectra::Init()
         for (int j = 0; j < xmax * ymax; j++)
         {
             city = "";
+            int x = -9;
+            int y = -9;
             for (auto & detector : detector_mapping)
             {
-                int x = detector.second.second.first; 
-                int y = detector.second.second.second;
+                x = detector.second.second.first; 
+                y = detector.second.second.second;
                 if (detector.second.first.first == i+1 && ((ymax-(y+1))*xmax + x) == j)
                 {
                     city = detector.second.first.second;
                     break;
                 }
             }
-            h1_hitpattern_layer[i]->GetXaxis()->SetBinLabel(j+1, city.Data());
+            h1_hitpattern_layer[i]->GetXaxis()->SetBinLabel(j+1, Form("%i%i",x,y));
         }
        
     }
@@ -409,17 +411,19 @@ InitStatus LisaOnlineSpectra::Init()
         for (int j = 0; j < xmax * ymax; j++)
         {
             city = "";
+            int x = -9;
+            int y = -9;
             for (auto & detector : detector_mapping)
             {
-                int x = detector.second.second.first; 
-                int y = detector.second.second.second;
+                x = detector.second.second.first; 
+                y = detector.second.second.second;
                 if (detector.second.first.first == i+1 && ((ymax-(y+1))*xmax + x) == j)
                 {
                     city = detector.second.first.second;
                     break;
                 }
             }
-            h2_energy_vs_ID[i]->GetXaxis()->SetBinLabel(j+1, city.Data());
+            h2_energy_vs_ID[i]->GetXaxis()->SetBinLabel(j+1, Form("%i%i",x,y));
         }
        
     }
@@ -567,17 +571,19 @@ InitStatus LisaOnlineSpectra::Init()
         for (int j = 0; j < xmax * ymax; j++)
         {
             city = "";
+            int x = -9;
+            int y = -9;
             for (auto & detector : detector_mapping)
             {
-                int x = detector.second.second.first; 
-                int y = detector.second.second.second;
+                x = detector.second.second.first; 
+                y = detector.second.second.second;
                 if (detector.second.first.first == i+1 && ((ymax-(y+1))*xmax + x) == j)
                 {
                     city = detector.second.first.second;
                     break;
                 }
             }
-            h2_energy_MWD_vs_ID[i]->GetXaxis()->SetBinLabel(j+1, city.Data());
+            h2_energy_MWD_vs_ID[i]->GetXaxis()->SetBinLabel(j+1, Form("%i%i",x,y));
         }
        
     }
