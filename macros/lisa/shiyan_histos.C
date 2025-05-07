@@ -12,10 +12,10 @@
 #define EXP 0
 
 // If you want to have trace histos
-#define TRACE_ON 0
+#define TRACE_ON 1
 
 #define FRS_ON 1
-#define FRS_LISA_CORRELATIONS 0
+#define FRS_LISA_CORRELATIONS 1
 
 #define WR_ENABLED 1
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
@@ -104,12 +104,14 @@ void shiyan_histos()
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: G A T E S - Initialise 
 
+    // FRS
     FrsGate* test = new FrsGate("Tester",config_path + "/frs/Gates/frs_real_gate_lisa.root");
     std::vector<FrsGate*> fgs = {};
     fgs.emplace_back(test);
 
-    // ::: GATES config for histos ::::::::
-    //TFrsConfiguration::Set_dE_travMusic_gate(1940,2000);
+    // LISA
+    std::vector<LisaGate*> lgs = {};
+    // continue in if condition
 
     // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: FRS config
@@ -121,7 +123,7 @@ void shiyan_histos()
 
     // ...........................................
 
-    std::vector<LisaGate*> lgs = {};
+    
     // ::: Lisa config
     if ( TEST )
     {
@@ -173,7 +175,7 @@ void shiyan_histos()
     //std::cout << "Run number: " << fileNumber << std::endl;
 
     //::::::::: Set experiment configurations
-    TExperimentConfiguration::SetExperimentStart(1746524668000000000); // Set at May 6th at 13:40
+    TExperimentConfiguration::SetExperimentStart(1746599400000000000); ////1746599400000000000 is May 7th, at 8h30 a.m., start of run0001
 
     // ::: FRS
     TFrsConfiguration::Set_Z_range(10,60);
