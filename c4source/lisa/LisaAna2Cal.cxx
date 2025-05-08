@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                       E.M. Gandolfo, C.E. Jones                            *
+ *                               25.11.24                                     *
+ ******************************************************************************/
+
 //WIP
 // FairRoot
 #include "FairTask.h"
@@ -179,7 +195,7 @@ void LisaAna2Cal::Exec(Option_t* option)
                     lisaAnaItem.Get_channel_energy(),
                     lisaAnaItem.Get_channel_energy_MWD(),
                     lisaAnaItem.Get_trace_febex(),
-                    lisaAnaItem.Get_trace_MWD(),
+                    //lisaAnaItem.Get_trace_MWD(),
                     lisaAnaItem.Get_trace_x(),
                     energy_GM,
                     energy_MWD_GM,

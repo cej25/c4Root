@@ -48,12 +48,12 @@ void trace_ana_histos(int fileNumber)
 
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
-    TString inputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/trees/";
-    TString filename = Form(inputpath + "run_%04d_0001_MWD_v2.root", fileNumber);  
+    TString inputpath = "/u/gandolfo/data/";
+    TString filename = Form(inputpath + "daq_10boards_%04d_0001_MWD.root", fileNumber);  
     
     //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/c4data/histos/"; 
-    TString outputFilename = Form(outputpath + "run_%04d_0001_MWD_histos_v2.root", fileNumber);
+    TString outputpath = "/u/gandolfo/data/"; 
+    TString outputFilename = Form(outputpath + "daq_10boards_%04d_0001_MWD_histos.root", fileNumber);
 
 
     FairRunAna* run = new FairRunAna();
@@ -71,7 +71,7 @@ void trace_ana_histos(int fileNumber)
      
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: LISA config
-    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_3x3.txt");
+    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_DAQtest.txt");
 
     // ::: Get run number :::
     TFrsConfiguration::SetRunNumber(fileNumber);
@@ -80,25 +80,27 @@ void trace_ana_histos(int fileNumber)
     // ::: Set Board number :::
     //     Since at this stage the mapping is not included, board number is hardcoded.
     TLisaConfiguration::SetBoardNumber(1);
-    TLisaConfiguration::SetEventToAnalyze(97000); //for run 0075_0001 good evt is 600004, for run0001 (3x3) evt = 97000 (ID=6)
-    
+    TLisaConfiguration::SetEventToAnalyze(10000); 
+    //for run 0075_0001 good evt is 600004, for run0001 (3x3) evt = 97000 (ID=6)
+    // for run_0002_0001 good evt for ch2 is 208250
+
     //::::::::: Set ranges for histos :::::::::::::::
     //::::  Channel Energy ::::: (h1_energy_)
     TLisaConfiguration::SetEnergyRange(0,2500000);
     TLisaConfiguration::SetEnergyBin(500);
 
-    TLisaConfiguration::SetEnergyRangeMWD(0,4000);
-    TLisaConfiguration::SetEnergyBinMWD(500);
+    TLisaConfiguration::SetEnergyRangeMWD(0,100);
+    TLisaConfiguration::SetEnergyBinMWD(100);
 
     //::::::::: Set ranges for traces for 2D histos :::::::::::::::
     // ::: Trace time (x axis)
-    TLisaConfiguration::SetTracesBin(500);
+    TLisaConfiguration::SetTracesBin(2000); //500
     TLisaConfiguration::SetTracesRange(1,20);
 
     // ::: Trace amplitude (y axis) :::    TLisaConfiguration::SetTracesBin(1000);
     TLisaConfiguration::SetAmplitudeBin(500);
     TLisaConfiguration::SetAmplitudeMin(-400);
-    TLisaConfiguration::SetAmplitudeMax(100);
+    TLisaConfiguration::SetAmplitudeMax(1000);
 
 
     // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

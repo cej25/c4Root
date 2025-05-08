@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                              C.E. Jones                                    *
+ *                               06.05.25                                     *
+ ******************************************************************************/
+
 // FairRoot
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -44,13 +60,8 @@ H10MCPReader::H10MCPReader(EXT_STR_h101_mcp_onion* data, size_t offset)
 Deletes the arrays allocated.
 And prints some statistics for the run.
 */
-H10MCPReader::~H10MCPReader() { 
-
-    if (fPrintStatistics == true)
-    {
-        PrintStatistics();    
-    }
-
+H10MCPReader::~H10MCPReader() 
+{
     for (int i = 0; i < NBoards; i++) {
         for (int j = 0; j < NChannels; j++) {
             if (fine_time_calibration_coeffs[i][j] != nullptr) {
@@ -82,6 +93,7 @@ H10MCPReader::~H10MCPReader() {
 
     if (fArray != nullptr) delete fArray;
 
+    for (int i = 0; i < 21; i++) c4LOG(info, hits[i] << " hits in channel " << i << " (" + hits[i]/fNEvent << ")");
     c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvent << " microseconds.");
     c4LOG(info, "Events: " << fNEvent);
     c4LOG(info, "Destroyed H10MCPReader properly.");
@@ -311,12 +323,13 @@ Bool_t H10MCPReader::Read() //do fine time here:
     //whiterabbit timestamp:
     wr_t = (((Long64_t)fData->mcp_ts_t[3]) << 48) + (((Long64_t)fData->mcp_ts_t[2]) << 32) + (((Long64_t)fData->mcp_ts_t[1]) << 16) + (Long64_t)(fData->mcp_ts_t[0]);
     
+
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
     { //per board:
 
         UShort_t trig =  fData->mcp_tamex[it_board_number].trig;       
         if (fData->mcp_tamex[it_board_number].event_size == 0) continue; // empty event skip
-        
+
         last_word_read_was_epoch = false;
         last_channel_read = 0;
 
@@ -362,7 +375,7 @@ Bool_t H10MCPReader::Read() //do fine time here:
             //from this point we should have seen an epoch for channel id.
 
             uint32_t channelid = fData->mcp_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // 0-32
-
+ 
             if (fData->mcp_tamex[it_board_number].time_finev[it_hits] == 0x3FF) { fNevents_TAMEX_fail[it_board_number][channelid]++; continue; } // this happens if TAMEX loses the fine time - skip it
 
             if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch){ fNevents_lacking_epoch[it_board_number][channelid]++; c4LOG(debug2, "Event lacking epoch."); } // if the channel has changed but no epoch word was seen in between, channel 0 is always the first one so dont check if that s the case.
@@ -384,6 +397,11 @@ Bool_t H10MCPReader::Read() //do fine time here:
 
             UInt_t coarse_T = fData->mcp_tamex[it_board_number].time_coarsev[it_hits] & 0x7FF;
             Double_t fine_T = GetFineTime(fData->mcp_tamex[it_board_number].time_finev[it_hits],it_board_number,channelid);
+
+            if (is_leading)
+            {
+                hits[channelid]++;
+            }
 
             if (channelid == 0) 
             {
@@ -410,9 +428,6 @@ Bool_t H10MCPReader::Read() //do fine time here:
             }
             else if (!is_leading && last_tdc_hit.hit)
             { 
-                //trail and rise are matched
-                //if (it_board_number == 1) c4LOG(info,Form("Writing: ch = %i, le = %i lc = %i, lf = %f, te = %i tc = %i, tf = %f ",channelid,last_tdc_hit.lead_epoch_counter, last_tdc_hit.lead_coarse_T, last_tdc_hit.lead_fine_T,last_tdc_hit.lead_epoch_counter,coarse_T,fine_T));
-
                 new ((*fArray)[fArray->GetEntriesFast()]) H10MCPTwinpeaksData(
                     trig,
                     it_board_number,

@@ -88,6 +88,7 @@
 // HISPEC10 MCP
 #pragma link C++ class H10MCPTwinpeaksData+;
 #pragma link C++ class H10MCPTwinpeaksCalData+;
+#pragma link C++ class H10MCPTwinpeaksAnaData+;
 
 // LISA
 #pragma link C++ class LisaItem+;
@@ -98,6 +99,7 @@
 // STEFAN
 #pragma link C++ class StefanFebexItem+;
 #pragma link C++ class StefanCalItem+;
+#pragma link C++ class StefanHitItem+;
 
 // TimeMachine
 #pragma link C++ class TimeMachineData+;

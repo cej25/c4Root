@@ -20,6 +20,8 @@ ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
 ${C4ROOT_SOURCE_DIR}/c4data/baseData
 ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 ${C4ROOT_SOURCE_DIR}/c4data/fimpData
+${C4ROOT_SOURCE_DIR}/c4data/mcpData
+${C4ROOT_SOURCE_DIR}/c4data/stefanData
 ${C4ROOT_SOURCE_DIR}/analysis
 ${C4ROOT_SOURCE_DIR}/analysis/frs
 ${C4ROOT_SOURCE_DIR}/analysis/pars
@@ -35,6 +37,8 @@ ${C4ROOT_SOURCE_DIR}/c4source/base
 ${C4ROOT_SOURCE_DIR}/c4source/bplast
 ${C4ROOT_SOURCE_DIR}/c4source/bb7
 ${C4ROOT_SOURCE_DIR}/c4source/fimp
+${C4ROOT_SOURCE_DIR}/c4source/mcp
+${C4ROOT_SOURCE_DIR}/c4source/stefan
 )
 
 include_directories( ${INCLUDE_DIRECTORIES})
@@ -64,6 +68,8 @@ set(SRCS
 ./online/bb7/BB7OnlineSpectra.cxx
 ./online/bb7/BB7FebexOnlineSpectra.cxx
 ./online/fimp/FimpOnlineSpectra.cxx
+./online/mcp/H10MCPOnlineSpectra.cxx
+./online/stefan/StefanOnlineSpectra.cxx
 
 # nearline/offline
 ./nearline/bplast/bPlastNearlineSpectra.cxx
@@ -84,6 +90,7 @@ set(SRCS
 ./nearline/fimp/FimpNearlineSpectra.cxx
 ./nearline/bb7/BB7NearlineSpectra.cxx
 ./nearline/lisa/LisaNearlineSpectra.cxx
+./nearline/mcp/H10MCPNearlineSpectra.cxx
 
 ## correlations ##
 ./correlations/FrsAidaCorrelations.cxx

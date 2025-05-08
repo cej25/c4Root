@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                         C.E. Jones, G. Kosir                               *
+ *                               06.05.25                                     *
+ ******************************************************************************/
+
 // FairRoot
 #include "FairTask.h"
 #include "FairLogger.h"
@@ -20,46 +36,37 @@
 Empty constructor for FairRoot.
 */
 StefanRaw2Cal::StefanRaw2Cal()
-: FairTask(), 
-fNEvents(0),
-header(nullptr),
-fOnline(kFALSE),
-funcal_data(new TClonesArray("GermaniumFebexData")),
-fcal_data(new TClonesArray("GermaniumCalData")),
-ftime_machine_array(new TClonesArray("TimeMachineData"))
+    :   FairTask() 
+    ,   fNEvents(0)
+    ,   header(nullptr)
+    ,   fOnline(kFALSE)
+    ,   StefanHit(new std::vector<StefanCalItem>)
+    // OTHER STUFF 
+    // ,   ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
-    germanium_configuration = TGermaniumConfiguration::GetInstance();
+    stefan_config = TStefanConfiguration::GetInstance();
 }
 
 /*
 Named constructor with verbosity level.
 */
 StefanRaw2Cal::StefanRaw2Cal(const TString& name, Int_t verbose) 
-    : FairTask(name, verbose),
-    fNEvents(0),
-    header(nullptr),
-    fOnline(kFALSE),
-    funcal_data(new TClonesArray("GermaniumFebexData")),
-    fcal_data(new TClonesArray("GermaniumCalData")),
-    ftime_machine_array(new TClonesArray("TimeMachineData"))
+    :   FairTask() 
+    ,   fNEvents(0)
+    ,   header(nullptr)
+    ,   fOnline(kFALSE)
+    ,   StefanHit(new std::vector<StefanCalItem>)
+    // OTHER STUFF 
+    // ,   ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
-    germanium_configuration = TGermaniumConfiguration::GetInstance();
+    stefan_config = TStefanConfiguration::GetInstance();
 }
 
-StefanRaw2Cal::~StefanRaw2Cal(){
+StefanRaw2Cal::~StefanRaw2Cal()
+{
     c4LOG(info, "Deleting StefanRaw2Cal task");
-    if (funcal_data) delete funcal_data;
-    if (fcal_data) delete fcal_data;
-    if (ftime_machine_array) delete ftime_machine_array;
 }
 
-
-
-void StefanRaw2Cal::SetParContainers()
-{
-    FairRuntimeDb *rtdb = FairRuntimeDb::instance();
-    c4LOG_IF(fatal, NULL == rtdb, "FairRuntimeDb not found.");
-}
 
 /*
 Init - register data to output tree and gets input data.
@@ -71,48 +78,27 @@ InitStatus StefanRaw2Cal::Init()
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
-
-    funcal_data = (TClonesArray*)mgr->GetObject("GermaniumFebexData");
-    c4LOG_IF(fatal, !funcal_data, "Germanium branch of GermaniumFebexData not found.");
- 
-    // needs to have the name of the detector subsystem here:
-    FairRootManager::Instance()->Register("GermaniumCalData", "Germanium Cal Data", fcal_data, !fOnline);
-    FairRootManager::Instance()->Register("GermaniumTimeMachineData", "Time Machine Data", ftime_machine_array, !fOnline);
     
-    fcal_data->Clear();
+    
+    StefanArray = mgr->InitObjectAs<decltype(StefanArray)>("StefanFebexData");
+    c4LOG_IF(fatal, !StefanArray, "Branch StefanFebexData not found!");
+ 	
+ 	
+    mgr->RegisterAny("StefanCalData", StefanHit, !fOnline);
+
+    detector_mapping = stefan_config->Mapping();
+    calibration_coeffs = stefan_config->CalibrationCoefficients();
+    // needs to have the name of the detector subsystem here:
+    // register stefan etc
+    // FairRootManager::Instance()->Register("StefanTimeMachineData", "Time Machine Data", ftime_machine_array, !fOnline);
+
+    // do we need TM for stefan lol
+    
+    // fcal_data->Clear();
 
     return kSUCCESS;
 }
 
-/*
-Prints detector map to console.
-*/
-void StefanRaw2Cal::PrintDetectorMap(){
-    if (germanium_configuration->MappingLoaded()){
-        for (const auto& entry : germanium_configuration->Mapping()){
-            std::cout << "FEBEXMODULE: " << entry.first.first << " FEBEXCHANNEL " << entry.first.second;
-            std::cout << " DETECTORID: " << entry.second.first << " CRYSTALID: " << entry.second.second << " OF N = " << germanium_configuration->CrystalsPerDetector(entry.second.first) << "CRYSTALS" << "\n";
-        }
-    }
-    else{
-        c4LOG(info, "Detector map is not load. Cannot print.");
-    }
-}
-
-/*
-Prints calibration coeffs to console.
-*/
-void StefanRaw2Cal::PrintDetectorCal(){
-    if (germanium_configuration->CalibrationCoefficientsLoaded()){
-        for (const auto& entry : germanium_configuration->CalibrationCoefficients()){
-            std::cout << "DETECTORID: " << entry.first.first << " CRYSTALID: " << entry.first.second;
-            std::cout << " a0: " << entry.second.at(0) << " a1: " << entry.second.at(1) << " a2:" << entry.second.at(2) << "\n";
-        }
-    }
-    else{
-        c4LOG(info, "Cal map is not load. Cannot print.");
-    }
-}        
 
 /*
 Analysis event loop. 
@@ -122,92 +108,84 @@ Picks out the TimeMachine.
 */
 void StefanRaw2Cal::Exec(Option_t* option)
 {
-    if (funcal_data && funcal_data->GetEntriesFast() > 0)
+    // process stuff, we can re-steal from germ or bb7 but...better to leave blank rn
+
+
+    if (StefanArray->size() > 0) nTotalStefan++;
+
+    // std::cout << "EVENT :: " << std::endl;
+    for (auto const & StefanItem : *StefanArray)
     {
-        Int_t event_multiplicity = funcal_data->GetEntriesFast();
-        for (Int_t ihit = 0; ihit < event_multiplicity; ihit++)
+        std::pair<int, int> unmapped_channel = {StefanItem.Get_board_id(), StefanItem.Get_channel_id()};
+        //Get_channel_id_traces() when taking the id information from the trace header
+        //Get_channel_id() when taking the id information from the header
+
+        if (stefan_config->MappingLoaded())
         {
-            funcal_hit = (GermaniumFebexData*)funcal_data->At(ihit);
-            
-            //do the detector mapping here:
-            if (germanium_configuration->MappingLoaded())
-            {
-                std::pair<int,int> unmapped_det {funcal_hit->Get_board_id(), funcal_hit->Get_channel_id()};
-                
-                if (germanium_configuration->Mapping().count(unmapped_det) > 0)
+            if (detector_mapping.count(unmapped_channel) > 0)
+            {   
+                int dssd = detector_mapping.at(unmapped_channel).first;
+                int side = detector_mapping.at(unmapped_channel).second.first;
+                int strip = detector_mapping.at(unmapped_channel).second.second;
+
+                // std::cout << "dssd:: " << dssd << std::endl;
+                // std::cout << "side:: " << side << std::endl;
+                // std::cout << "strip:: " << strip << std::endl;
+
+                uint32_t energy = StefanItem.Get_channel_energy();
+                double energy_calib = energy;
+
+                if (stefan_config->CalibrationLoaded())
                 {
-                    detector_id = germanium_configuration->Mapping().at(unmapped_det).first; //.find returns an iterator over the pairs matching key.
-                    crystal_id = germanium_configuration->Mapping().at(unmapped_det).second;
-
-                    if (detector_id == -1 || crystal_id == -1) continue; //skip
-
-                }
-                else continue;// simply ignore unmapped items.
-
-                //only do calibrations if mapping is functional:
-                if (germanium_configuration->CalibrationCoefficientsLoaded())
-                {
-                    std::pair<int,int> calibdet {detector_id, crystal_id};
-                    if (germanium_configuration->CalibrationCoefficients().count(calibdet) > 0){
-                    double a0 = germanium_configuration->CalibrationCoefficients().at(calibdet).at(0); //.find returns an iterator over the pairs matching key.
-                    double a1 = germanium_configuration->CalibrationCoefficients().at(calibdet).at(1);
-                    double a2 = germanium_configuration->CalibrationCoefficients().at(calibdet).at(2);
-                    channel_energy_cal = a0 + a1*(double) funcal_hit->Get_channel_energy() + a2*(double) funcal_hit->Get_channel_energy()*(double) funcal_hit->Get_channel_energy();
-                    }else{
-                        //c4LOG(fatal, "Detector Calibrations not set - please set this using SetCalibrationMap to use the Cal Task.");
-                        channel_energy_cal = funcal_hit->Get_channel_energy();
-                        //continue;
+                    std::pair<int, std::pair<int, int>> mapped_det = std::make_pair(dssd, std::make_pair(side, strip));
+                    if (calibration_coeffs.count(mapped_det) > 0)
+                    {   
+                        energy_calib = energy * calibration_coeffs.at(mapped_det);
                     }
                 }
-            }
-            else c4LOG(fatal, "Detector Mapping not set - please set this."); //no map and cal: ->
+
+               
+                Long64_t absolute_time = StefanItem.Get_wr_t() + StefanItem.Get_channel_time() - StefanItem.Get_board_event_time();
 
 
-            if (detector_id == germanium_configuration->TM_Delayed()){
-                new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData(0,funcal_hit->Get_channel_trigger_time(),funcal_hit->Get_wr_subsystem_id(),funcal_hit->Get_wr_t());
-                //continue;
-            }
-            else if (detector_id == germanium_configuration->TM_Undelayed()){
-                new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData(funcal_hit->Get_channel_trigger_time(),0,funcal_hit->Get_wr_subsystem_id(),funcal_hit->Get_wr_t());
-                //continue;
-            }
-
-            //allow pileups of sci41
-            // if (funcal_hit->Get_pileup() == true){
-                // if (germanium_configuration->IsDetectorAuxilliary(detector_id) == false || VetoPileupSCI41 == true){
-                //     continue;
-                // }
-            // }
-
-            // std::cout << "wr germanium: " << funcal_hit->Get_wr_t() << std::endl;
-            new ((*fcal_data)[fcal_data->GetEntriesFast()]) GermaniumCalData(
-                funcal_hit->Get_trigger(),
-                funcal_hit->Get_event_trigger_time(),
-                funcal_hit->Get_pileup(),
-                funcal_hit->Get_overflow(),
-                funcal_hit->Get_channel_trigger_time(),
-                channel_energy_cal,
-                crystal_id,
-                detector_id,
-                funcal_hit->Get_wr_subsystem_id(),
-                funcal_hit->Get_wr_t(),
-                ((int64_t)funcal_hit->Get_wr_t() + ((int64_t)funcal_hit->Get_channel_trigger_time() - (int64_t)funcal_hit->Get_event_trigger_time()))
+                // implant 
+                auto & entry = StefanHit->emplace_back();
+                entry.SetAll(
+                    StefanItem.Get_wr_t(),
+                    dssd,
+                    side,
+                    strip,
+                    StefanItem.Get_channel_energy(),
+                    //StefanItem.Get_trace(),
+                    energy_calib,
+                    StefanItem.Get_board_event_time(),
+                    StefanItem.Get_channel_time(),
+                    absolute_time,
+                    StefanItem.Get_pileup(),
+                    StefanItem.Get_overflow()
                 );
             
-            fNEvents++;
+                
+            }
+            
+            // else c4LOG(warn, "Unmapped data? Board: "  << unmapped_channel.second.first << " Channel: " << unmapped_channel.second.second);
+
+            // possibly stuff with residuals
+
         }
     }
 }
 
+
 /*
 Very important function - all TClonesArray must be cleared after each event.
 */
-void StefanRaw2Cal::FinishEvent(){
-    funcal_data->Clear();
-    fcal_data->Clear();
-    ftime_machine_array->Clear();
+void StefanRaw2Cal::FinishEvent()
+{
+    // clear
+    count_in_event = 0;
+    StefanHit->clear();
 };
-
 
 
 ClassImp(StefanRaw2Cal)
