@@ -114,7 +114,7 @@ void shiyan_online()
     // ::: C O N F I G    F O R   S Y S T E M S   - Load
     
     // ::: Exp config
-    TExperimentConfiguration::SetExperimentStart(1745599200000000000); // Start of test for shiyan 25/04 at 18:40
+    TExperimentConfiguration::SetExperimentStart(1746597600000000000);// Start for Shiyan data: May 7th, 8a.m. //including testing
     // for S100, 3 and 4. for 2025+ 12 and 13.
     TExperimentConfiguration::SetBOSTrig(3);
     TExperimentConfiguration::SetEOSTrig(4);
@@ -143,10 +143,14 @@ void shiyan_online()
     }
     if ( EXP )
     {
-        TLisaConfiguration::SetMappingFile(config_path + "/Lisa_5x5_shiyan.txt");
-        TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching_shiyan.txt");
+        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_4x4_shiyan.txt");
+        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_shiyan.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_shiyan.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path +  "/lisa/Lisa_MWD_Parameters_shiyan.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_shiyan_v0.txt");
+
+        // TLisaConfiguration::SetExcludedChannels({
+        // std::make_tuple(1,0,0),
+        // });        
     }
 
 
@@ -184,7 +188,7 @@ void shiyan_online()
         run->AddTask(lisaraw2ana); 
         
         LisaAna2Cal* lisaana2cal = new LisaAna2Cal();
-        lisaana2cal->SetOnline(false);
+        lisaana2cal->SetOnline(true);
         run->AddTask(lisaana2cal);
     }
 

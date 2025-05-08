@@ -57,15 +57,15 @@ void shiyan_make_trees()
     
     // ::: FILE  PATH
     //TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";       // Data from pareeksha fro LISA-FRS corr testing
-    TString inputpath = "/u/lisa/data/lustre/despec/lisa/S092_shiyan/";                       // Data from LISA
+    TString inputpath = "/u/lisa/data/lustre/gamma/lisa_s092/trees/";                       // Data from LISA
  
-    TString filename = inputpath + "test_0003_0001.lmd";
+    TString filename = inputpath + "run_0003_0001.lmd";
 
     // ::: OUTPUT 
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/noise_test_may25/";   //testing
     TString outputpath = "/u/lisa/data/test_c4/shiyan_test/";   //energy resolution data
     
-    TString outputFilename = outputpath + "test_0003_tree_debug_ana.root"; 
+    TString outputFilename = outputpath + "run_0003_tree.root"; 
 
 
     // ::: Create online run
@@ -111,7 +111,7 @@ void shiyan_make_trees()
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: C O N F I G    F O R   D E T E C T O R - Load
     // ::: Exp config
-    TExperimentConfiguration::SetExperimentStart(1746599400000000000);//1746599400000000000 is May 7th, at 8h30 a.m., start of run0001
+    TExperimentConfiguration::SetExperimentStart(1746599400000000000);//1746599400000000000 is May 7th, at 8h30 a.m., start of run0001 (testing)
     // for S100, 3 and 4. for 2025+ 12 and 13.
     TExperimentConfiguration::SetBOSTrig(3);
     TExperimentConfiguration::SetEOSTrig(4);
@@ -127,19 +127,19 @@ void shiyan_make_trees()
     if ( TEST )
     {
         // shiyan 
-        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_All_Boards.txt");
-        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_cards.txt");
-        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
-        
+        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_4x4_shiyan.txt");
+        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_shiyan.txt");
+        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_shiyan.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_shiyan_v0.txt");
+         
     }
     if ( EXP )
     {
-        TLisaConfiguration::SetMappingFile(config_path + "/Lisa_5x5_shiyan.txt");
-        TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching_shiyan.txt");
+        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_4x4_shiyan.txt");
+        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_shiyan.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_shiyan.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path +  "/lisa/Lisa_MWD_Parameters_shiyan.txt");
-    
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_shiyan_v0.txt");
+       
     }
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
