@@ -1224,6 +1224,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                 if (FrsGates[pair]->PassedS2S4(z41_mhtdc.at(i), z42_mhtdc.at(i), x2_position, x4_position, AoQ_s2s4_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), sci42e))
                 {
                     //if (mh_counter_passed_s1s2_seq_mwd[pair] > 0)
+                    if (pair == 0) nmultihit_gated[l]++;
                     if (1)   
                     {
                         for ( int j = 0; j < energy_MWD_layer_gated[pair][l].size(); j++)
@@ -1273,6 +1274,8 @@ void LisaFrsCorrelations::FinishTask()
     c4LOG(info, "breaks:: " << nbreak);
     c4LOG(info, "nmultihit frs gate 0 layer 1:: " << nmultihit[0]);
     c4LOG(info, "nmultihit frs gate 0 layer 2:: " << nmultihit[1]);
+    c4LOG(info, "nmultihit_GATED frs gate 0 layer 1:: " << nmultihit_gated[0]);
+    c4LOG(info, "nmultihit_GATED frs gate 0 layer 2:: " << nmultihit_gated[1]);
     c4LOG(info, "nnobreak frs gate 0 layer 1:: " << nnobreak[0]);
     c4LOG(info, "nnobreak frs gate 0 layer 2:: " << nnobreak[1]);
     c4LOG(info, "aoq:: " << aoq);
