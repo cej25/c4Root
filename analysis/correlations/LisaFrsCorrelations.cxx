@@ -777,6 +777,8 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     // -> Reject events without both subsystems <-
     if (frsHitArray->size() <= 0 || lisaCalArray->size() <= 0) return;  // frs, lisa and travmus subevent exists
 
+    ncorr++;
+
     const auto & frsHitItem = frsHitArray->at(0);                       // *should* only be 1 FRS subevent per event
     const auto & multihitItem = multihitArray->at(0);                 // *should* only be 1 FRS subevent per event
 
@@ -1172,7 +1174,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
             // Loop for sequential gate S1S2S4
             for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
             {
-                if (mh_counter_passed_s2s4_seq[pair] > 0) break;
+                if (mh_counter_passed_s2s4_seq_mwd[pair] > 0) break;
                 if (FrsGates[pair]->PassedS2S4(z41_mhtdc.at(i), z42_mhtdc.at(i), x2_position, x4_position, AoQ_s2s4_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), sci42e))
                 {
                     //if (mh_counter_passed_s1s2_seq_mwd[pair] > 0)
@@ -1218,6 +1220,7 @@ void LisaFrsCorrelations::FinishTask()
     c4LOG(info, "Written LISA analysis histograms to file.");
     //c4LOG(info, "Multi hit events when LISA is in the event (correlated) : " <<  multi_evt++ << " LISA-FRS events : " << fNEvents);
 
+    c4LOG(info, "Correlatated events:: " + ncorr);
 
 }
 
