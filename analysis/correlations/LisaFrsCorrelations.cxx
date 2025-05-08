@@ -845,7 +845,8 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     // energy_travMUSIC_driftcorr = 0; //
     // // double z21_driftcorr = frsHitItem.Get_ID_z21_driftcorr();
 
-
+    layer1seen = false;
+    layer2seen = false;
 
     // correlation with main FRS (10, 20, 30, 15)
     for (const auto & lisaCalItem : *lisaCalArray)
@@ -861,6 +862,9 @@ void LisaFrsCorrelations::Exec(Option_t* option)
 
         // ::: Data
         layer = lisaCalItem.Get_layer_id();
+        if (layer == 1) layer1seen = true;
+        else if (layer == 2) layer2seen = true;
+
         city = lisaCalItem.Get_city();
         int xpos = lisaCalItem.Get_xposition();
         int ypos = lisaCalItem.Get_yposition();
@@ -1037,6 +1041,9 @@ void LisaFrsCorrelations::Exec(Option_t* option)
 
     }
     //............................
+    if (layer1seen) layer1count++;
+    if (layer2seen) layer2count++;
+    if (layer1seen && layer2seen) bothlayerseen++;
 
     // ::: LISA gates applied on FRS (LISA_ON_FRS Directory)
     // ::: FRS histos gated on LISA layers - Febex
@@ -1095,7 +1102,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
             if (energy_layer_gated[pair][l].size() == 0) break;  
             for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
             {
-                if (mh_counter_passed_s1s2_seq[pair] > 0) break;
+                if (mh_counter_passed_s1s2_seq[pair][l] > 0) break;
                 if (FrsGates[pair]->PassedS1S2(z21_mhtdc.at(i), x2_position, AoQ_s1s2_mhtdc.at(i)))
                 {
                     for ( int j = 0; j < energy_layer_gated[pair][l].size(); j++)
@@ -1159,7 +1166,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
             // Loop for S1S2
             for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
             {
-                if (mh_counter_passed_s1s2_seq_mwd[pair] > 0) break;
+                if (mh_counter_passed_s1s2_seq_mwd[pair][l] > 0) break;
                 if (FrsGates[pair]->PassedS1S2(z21_mhtdc.at(i), x2_position, AoQ_s1s2_mhtdc.at(i)))
                 {
                     for ( int j = 0; j < energy_MWD_layer_gated[pair][l].size(); j++)
@@ -1236,6 +1243,9 @@ void LisaFrsCorrelations::FinishTask()
     c4LOG(info, "nmultihit:: " << nmultihit);
     c4LOG(info, "nnobreak:: " << nnobreak);
     c4LOG(info, "aoq:: " << aoq);
+    c4LOG(info, "layer1 count:: " << layer1count);
+    c4LOG(info, "layer2 count:: " << layer2count);
+    c4LOG(info, "both layer count:: " << bothlayerseen);
 
 }
 
