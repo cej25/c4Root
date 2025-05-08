@@ -80,6 +80,9 @@ class LisaFrsCorrelations : public FairTask
         int bothlayerseen = 0;
         bool layer1seen = false;
         bool layer2seen = false;
+        int gate1 = 0;
+        int gate2 = 0;
+        int bothgate = 0;
 
         int gate_number = 0;
         int mwd_gate_number = 0;
