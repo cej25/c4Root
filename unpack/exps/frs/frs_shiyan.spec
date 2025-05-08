@@ -131,7 +131,7 @@ TPC_CRATE_DATA()
     select several
     {
         barrier0 = BARRIER();
-        v785 = VME_CAEN_V785(geom=8);
+        v785 = VME_CAEN_V785(geom=31); // was 8 for silver data in feb
         v775 = VME_CAEN_V775(geom=12);
     }
     
