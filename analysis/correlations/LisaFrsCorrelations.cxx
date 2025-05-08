@@ -913,7 +913,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         energy_MWD_layer[layer-1].emplace_back(energy_LISA_MWD);
 
         // Loop over gates for LISA FEBEX
-        for (int g = 0; g < febex_gates.size(); i++)
+        for (int g = 0; g < febex_gates.size(); g++)
         {
             if (febex_gates.at(i)->PassedGate(layer, energy_LISA_febex))
             {
