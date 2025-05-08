@@ -820,6 +820,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     std::vector<Float_t> z42_mhtdc = multihitItem.Get_ID_z42_mhtdc();
     std::vector<Float_t> AoQ_s1s2_mhtdc = multihitItem.Get_ID_AoQ_corr_s1s2_mhtdc();
     std::vector<Float_t> AoQ_s2s4_mhtdc = multihitItem.Get_ID_AoQ_corr_s2s4_mhtdc();
+    if (AoQ_s2s4_mhtdc.size() > 0) aoq++;
     std::vector<Float_t> dEdeg_z41_mhtdc = multihitItem.Get_ID_dEdeg_z41_mhtdc();
     Float_t x2_position = frsHitItem.Get_ID_x2();
     Float_t x4_position = frsHitItem.Get_ID_x4();
@@ -1173,7 +1174,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                 }                   
             }
             // Loop for sequential gate S1S2S4
-            if (AoQ_s2s4_mhtdc.size() > 0) aoq++;
+            
             for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
             {
                 if (mh_counter_passed_s2s4_seq_mwd[pair][l] > 0) break;
