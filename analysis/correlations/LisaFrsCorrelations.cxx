@@ -1220,7 +1220,7 @@ void LisaFrsCorrelations::FinishTask()
     c4LOG(info, "Written LISA analysis histograms to file.");
     //c4LOG(info, "Multi hit events when LISA is in the event (correlated) : " <<  multi_evt++ << " LISA-FRS events : " << fNEvents);
 
-    c4LOG(info, "Correlatated events:: " + ncorr);
+    c4LOG(info, "Correlatated events:: " << ncorr);
 
 }
 
