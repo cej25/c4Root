@@ -1158,6 +1158,9 @@ void LisaFrsCorrelations::Exec(Option_t* option)
 
     for (int pair = 0; pair < pair_count_MWD; pair++)  
     {
+        std::cout << "gate: " << pair << std::endl;
+        std::cout << "stuff in layer 1: " << energy_MWD_layer_gated[pair][0].size() << std::endl;
+        std::cout << "stuff in layer 2: " << energy_MWD_layer_gated[pair][1].size() << std::endl;
         for (int l = 0; l < layer_number; l++) 
         {
             // Check condition on Febex Gate
