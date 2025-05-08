@@ -1156,6 +1156,11 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     int mh_counter_passed_s1s2_seq_mwd[pair_count_MWD][layer_number] = {0};
     int mh_counter_passed_s2s4_seq_mwd[pair_count_MWD][layer_number] = {0};
 
+
+    if (energy_MWD_layer_gated[pair][0].size() > 0) gate1++;
+    if (energy_MWD_layer_gated[pair][1].size() > 0) gate2++;
+    if (energy_MWD_layer_gated[pair][0].size() > 0 && energy_MWD_layer_gated[pair][1].size() > 0) bothgate++;
+
     for (int pair = 0; pair < pair_count_MWD; pair++)  
     {
         std::cout << "gate: " << pair << std::endl;
@@ -1249,6 +1254,9 @@ void LisaFrsCorrelations::FinishTask()
     c4LOG(info, "layer1 count:: " << layer1count);
     c4LOG(info, "layer2 count:: " << layer2count);
     c4LOG(info, "both layer count:: " << bothlayerseen);
+    c4LOG(info, "gate1 count:: " << gate1);
+    c4LOG(info, "gate2 count:: " << gate2);
+    c4LOG(info, "both gate count:: " << bothgate);
 
 }
 
