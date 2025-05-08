@@ -342,6 +342,8 @@ void FrsCal2Hit::Exec(Option_t* option)
         }
     }
 
+    if (hits_in_s4x * hits_in_s2x > 0) aoqfrscal++;
+
     multihitEntry.SetS2S4(s2x_s2s4_mhtdc,
                         s2a_s2s4_mhtdc,
                         s4x_mhtdc,
@@ -2705,6 +2707,7 @@ void FrsCal2Hit::FinishTask()
 {
     c4LOG(info, Form("Wrote %i events. ", fNEvents));
     c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvents);
+    c4LOG(info, "aoqfrscal:: " << aoqfrscal);
 }
 
 ClassImp(FrsCal2Hit)
