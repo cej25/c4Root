@@ -72,7 +72,7 @@ class LisaFrsCorrelations : public FairTask
         int ncorr = 0;
         int tot_pass_s2s4[2] = {0};
         int nbreak = 0;
-        int nmultihit = 0;
+        int nmultihit[2] = {0};
         int nnobreak[2] = {0};
         int aoq = 0;
         int layer1count = 0;
