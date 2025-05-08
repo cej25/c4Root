@@ -118,10 +118,6 @@ InitStatus LisaFrsCorrelations::Init()
     multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
     c4LOG_IF(fatal, !multihitArray, "Branch FrsMultiHitData not found!");
 
-    // CEJ:: temporary until I can push tpc info through to hitData
-    calTpcArray = mgr->InitObjectAs<decltype(calTpcArray)>("FrsCalTpcData");
-    c4LOG_IF(fatal, !calTpcArray, "Branch FrsCalTpcData not found!");
-
     layer_number = lisa_config->NLayers();
     xmax = lisa_config->XMax();
     ymax = lisa_config->YMax();
