@@ -1219,6 +1219,9 @@ void LisaFrsCorrelations::Exec(Option_t* option)
             
             for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
             {
+                if (l == 1 && i == 0) sanity_check++;
+
+
                 if (mh_counter_passed_s2s4_seq_mwd[pair][l] > 0) break;
                 if (pair == 0 && i == 0) nmultihit[l]++;
                 if (FrsGates[pair]->PassedS2S4(z41_mhtdc.at(i), z42_mhtdc.at(i), x2_position, x4_position, AoQ_s2s4_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), sci42e))
@@ -1286,6 +1289,8 @@ void LisaFrsCorrelations::FinishTask()
     c4LOG(info, "LISA gate1 count:: " << gate1);
     c4LOG(info, "LISA gate2 count:: " << gate2);
     c4LOG(info, "both LISA gate count:: " << bothgate);
+    c4LOG(info, "SANITY CHECK: " << sanity_check);
+
 
 }
 
