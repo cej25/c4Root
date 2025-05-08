@@ -1084,8 +1084,8 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     // ::: LISA-FRS gates applied on LISA (LISA_FRS Directory)
     // ::: Febex
     //pair_count = std::min(febex_gates.size(), FrsGates.size());
-    int mh_counter_passed_s1s2_seq[pair_count] = {0};
-    int mh_counter_passed_s2s4_seq[pair_count] = {0};
+    int mh_counter_passed_s1s2_seq[pair_count][layer_number] = {0};
+    int mh_counter_passed_s2s4_seq[pair_count][layer_number] = {0};
 
     for (int pair = 0; pair < pair_count; pair++)  
     {
@@ -1112,13 +1112,13 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                         h1_LISA_energy_xy_s1s2_gated[pair][l]->Fill(energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
                     }
 
-                    mh_counter_passed_s1s2_seq[pair]++;
+                    mh_counter_passed_s1s2_seq[pair][l]++;
                 }                   
             }
             // Loop for sequential gate S1S2S4
             for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
             {
-                if (mh_counter_passed_s2s4_seq[pair] > 0) break;
+                if (mh_counter_passed_s2s4_seq[pair][l] > 0) break;
                 if (FrsGates[pair]->PassedS2S4(z41_mhtdc.at(i), z42_mhtdc.at(i), x2_position, x4_position, AoQ_s2s4_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), sci42e))
                 {
                     //if (mh_counter_passed_s1s2_seq[pair] > 0)
@@ -1138,7 +1138,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                             h1_LISA_energy_xy_s1s2s4_gated[pair][l]->Fill(energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
                         }
                     }
-                    mh_counter_passed_s2s4_seq[pair]++;
+                    mh_counter_passed_s2s4_seq[pair][l]++;
                 }                   
             }
                 
@@ -1146,7 +1146,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     }
     // ::: MWD 
     //int pair_count_MWD = std::min(mwd_gates.size(), FrsGates.size());
-    int mh_counter_passed_s1s2_seq_mwd[pair_count_MWD] = {0};
+    int mh_counter_passed_s1s2_seq_mwd[pair_count_MWD][layer_number] = {0};
     int mh_counter_passed_s2s4_seq_mwd[pair_count_MWD][layer_number] = {0};
 
     for (int pair = 0; pair < pair_count_MWD; pair++)  
@@ -1175,7 +1175,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                         h2_LISA_energy_MWD_xy_vs_layer_s1s2_gated[pair]->Fill(layer, energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
                         h1_LISA_energy_MWD_xy_s1s2_gated[pair][l]->Fill(energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
                     }
-                    mh_counter_passed_s1s2_seq_mwd[pair]++;
+                    mh_counter_passed_s1s2_seq_mwd[pair][l]++;
                 }                   
             }
             // Loop for sequential gate S1S2S4
