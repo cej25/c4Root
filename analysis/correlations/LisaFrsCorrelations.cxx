@@ -1174,7 +1174,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
             // Loop for sequential gate S1S2S4
             for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
             {
-                if (mh_counter_passed_s2s4_seq[pair] > 0) break;
+                if (mh_counter_passed_s2s4_seq_mwd[pair] > 0) break;
                 if (FrsGates[pair]->PassedS2S4(z41_mhtdc.at(i), z42_mhtdc.at(i), x2_position, x4_position, AoQ_s2s4_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), sci42e))
                 {
                     if (mh_counter_passed_s1s2_seq_mwd[pair] > 0)
