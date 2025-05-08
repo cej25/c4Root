@@ -322,7 +322,7 @@ InitStatus LisaOnlineSpectra::Init()
     //....................................
     //      Multiplicity per layer
     c_multiplicity_per_layer = new TCanvas("c_multiplicity_per_layer", "Multiplicty Per Layer", 650, 350);
-    c_multiplicity_per_layer->Divide(2, (layer_number)/2); // was +1 dunno if matters
+    c_multiplicity_per_layer->Divide(2, (layer_number+1)/2); // was +1 dunno if matters
     h1_multiplicity_per_layer.resize(layer_number);
     for (int i = 0; i < layer_number; i++)
     {
