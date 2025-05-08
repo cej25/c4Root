@@ -1100,28 +1100,28 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         {
             // Check condition on Febex Gate
             if (energy_layer_gated[pair][l].size() == 0) break;  
-            for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
-            {
-                if (mh_counter_passed_s1s2_seq[pair][l] > 0) break;
-                if (FrsGates[pair]->PassedS1S2(z21_mhtdc.at(i), x2_position, AoQ_s1s2_mhtdc.at(i)))
-                {
-                    for ( int j = 0; j < energy_layer_gated[pair][l].size(); j++)
-                    {
-                        // Febex
-                        h2_LISA_energy_vs_layer_LISA_s1s2_gated[pair]->Fill(layer, energy_layer_gated[pair][l].at(j));
-                        h1_LISA_energy_LISA_s1s2_gated[pair][l]->Fill(energy_layer_gated[pair][l].at(j));   
-                    }
+            // for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
+            // {
+            //     if (mh_counter_passed_s1s2_seq[pair][l] > 0) break;
+            //     if (FrsGates[pair]->PassedS1S2(z21_mhtdc.at(i), x2_position, AoQ_s1s2_mhtdc.at(i)))
+            //     {
+            //         for ( int j = 0; j < energy_layer_gated[pair][l].size(); j++)
+            //         {
+            //             // Febex
+            //             h2_LISA_energy_vs_layer_LISA_s1s2_gated[pair]->Fill(layer, energy_layer_gated[pair][l].at(j));
+            //             h1_LISA_energy_LISA_s1s2_gated[pair][l]->Fill(energy_layer_gated[pair][l].at(j));   
+            //         }
 
-                    for ( int k = 0; k < energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].size(); k++ )
-                    {
-                        // Febex XY
-                        h2_LISA_energy_xy_vs_layer_s1s2_gated[pair]->Fill(layer, energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
-                        h1_LISA_energy_xy_s1s2_gated[pair][l]->Fill(energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
-                    }
+            //         for ( int k = 0; k < energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].size(); k++ )
+            //         {
+            //             // Febex XY
+            //             h2_LISA_energy_xy_vs_layer_s1s2_gated[pair]->Fill(layer, energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+            //             h1_LISA_energy_xy_s1s2_gated[pair][l]->Fill(energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+            //         }
 
-                    mh_counter_passed_s1s2_seq[pair][l]++;
-                }                   
-            }
+            //         mh_counter_passed_s1s2_seq[pair][l]++;
+            //     }                   
+            // }
             // Loop for sequential gate S1S2S4
             for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
             {
@@ -1172,27 +1172,27 @@ void LisaFrsCorrelations::Exec(Option_t* option)
             if (energy_MWD_layer_gated[pair][l].size() == 0) { nbreak++; break; }  
             nnobreak++;
             // Loop for S1S2
-            for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
-            {
-                if (mh_counter_passed_s1s2_seq_mwd[pair][l] > 0) break;
-                if (FrsGates[pair]->PassedS1S2(z21_mhtdc.at(i), x2_position, AoQ_s1s2_mhtdc.at(i)))
-                {
-                    for ( int j = 0; j < energy_MWD_layer_gated[pair][l].size(); j++)
-                    {
-                        // Febex
-                        h2_LISA_energy_MWD_vs_layer_LISA_s1s2_gated[pair]->Fill(layer, energy_MWD_layer_gated[pair][l].at(j));
-                        h1_LISA_energy_MWD_LISA_s1s2_gated[pair][l]->Fill(energy_MWD_layer_gated[pair][l].at(j));   
-                    }
+            // for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
+            // {
+            //     if (mh_counter_passed_s1s2_seq_mwd[pair][l] > 0) break;
+            //     if (FrsGates[pair]->PassedS1S2(z21_mhtdc.at(i), x2_position, AoQ_s1s2_mhtdc.at(i)))
+            //     {
+            //         for ( int j = 0; j < energy_MWD_layer_gated[pair][l].size(); j++)
+            //         {
+            //             // Febex
+            //             h2_LISA_energy_MWD_vs_layer_LISA_s1s2_gated[pair]->Fill(layer, energy_MWD_layer_gated[pair][l].at(j));
+            //             h1_LISA_energy_MWD_LISA_s1s2_gated[pair][l]->Fill(energy_MWD_layer_gated[pair][l].at(j));   
+            //         }
 
-                    for ( int k = 0; k < energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].size(); k++ )
-                    {
-                        // Febex XY
-                        h2_LISA_energy_MWD_xy_vs_layer_s1s2_gated[pair]->Fill(layer, energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
-                        h1_LISA_energy_MWD_xy_s1s2_gated[pair][l]->Fill(energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
-                    }
-                    mh_counter_passed_s1s2_seq_mwd[pair][l]++;
-                }                   
-            }
+            //         for ( int k = 0; k < energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].size(); k++ )
+            //         {
+            //             // Febex XY
+            //             h2_LISA_energy_MWD_xy_vs_layer_s1s2_gated[pair]->Fill(layer, energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+            //             h1_LISA_energy_MWD_xy_s1s2_gated[pair][l]->Fill(energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+            //         }
+            //         mh_counter_passed_s1s2_seq_mwd[pair][l]++;
+            //     }                   
+            // }
             // Loop for sequential gate S1S2S4
             
             for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
@@ -1219,7 +1219,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                         }
                     }
                     mh_counter_passed_s2s4_seq_mwd[pair][l]++;
-                    tot_pass_s2s4++;
+                    // tot_pass_s2s4++;
                 }                   
             }
                 
