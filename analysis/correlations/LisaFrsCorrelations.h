@@ -74,6 +74,7 @@ class LisaFrsCorrelations : public FairTask
         int nbreak = 0;
         int nmultihit = 0;
         int nnobreak = 0;
+        int aoq = 0;
 
         int gate_number = 0;
         int mwd_gate_number = 0;

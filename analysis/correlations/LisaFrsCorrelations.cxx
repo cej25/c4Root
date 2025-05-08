@@ -1173,7 +1173,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                 }                   
             }
             // Loop for sequential gate S1S2S4
-            std::cout << "AoQ_s2s4_mhtdc.size()::  " << AoQ_s2s4_mhtdc.size() << std::endl;
+            if (oQ_s2s4_mhtdc.size() > 0) aoq++;
             for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
             {
                 if (mh_counter_passed_s2s4_seq_mwd[pair][l] > 0) break;
@@ -1229,7 +1229,7 @@ void LisaFrsCorrelations::FinishTask()
     c4LOG(info, "breaks:: " << nbreak);
     c4LOG(info, "nmultihit:: " << nmultihit);
     c4LOG(info, "nnobreak:: " << nnobreak);
-
+    c4LOG(info, "aoq:: " << aoq);
 
 }
 
