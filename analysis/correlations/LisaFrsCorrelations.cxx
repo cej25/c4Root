@@ -1150,6 +1150,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         {
             // Check condition on Febex Gate
             if (energy_MWD_layer_gated[pair][l].size() == 0) { nbreak++; break; }  
+            nnobreak++;
             // Loop for S1S2
             for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
             {
@@ -1176,6 +1177,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
             for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
             {
                 if (mh_counter_passed_s2s4_seq_mwd[pair] > 0) break;
+                nmultihit++;
                 if (FrsGates[pair]->PassedS2S4(z41_mhtdc.at(i), z42_mhtdc.at(i), x2_position, x4_position, AoQ_s2s4_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), sci42e))
                 {
                     //if (mh_counter_passed_s1s2_seq_mwd[pair] > 0)
@@ -1223,8 +1225,10 @@ void LisaFrsCorrelations::FinishTask()
     c4LOG(info, "Multi hit events when LISA is in the event (correlated) : " <<  multi_evt++ << " LISA-FRS events : " << fNEvents);
 
     c4LOG(info, "Correlatated events:: " << ncorr);
-    c4LOG(info,  "tot_pass_s2s4:: " << tot_pass_s2s4);
-    c4LOG(info,  "breaks:: " << nbreak);
+    c4LOG(info, "tot_pass_s2s4:: " << tot_pass_s2s4);
+    c4LOG(info, "breaks:: " << nbreak);
+    c4LOG(info, "nmultihit:: " << nmultihit);
+    c4LOG(info, "nnobreak:: " << nnobreak);
 
 
 }
