@@ -553,7 +553,7 @@ InitStatus LisaFrsCorrelations::Init()
     if (!febex_gates.empty() && !FrsGates.empty())
     {
         pair_count = std::min(febex_gates.size(), FrsGates.size());
-        std::cout << "pair_count" << pair_cout << std::endl;
+        std::cout << "pair_count" << pair_count << std::endl;
         
         h2_LISA_energy_vs_layer_LISA_s1s2_gated.resize(pair_count);
         h2_LISA_energy_xy_vs_layer_LISA_s1s2_gated.resize(pair_count);
