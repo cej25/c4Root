@@ -138,9 +138,9 @@ InitStatus LisaFrsCorrelations::Init()
     gate_number = febex_gates.size();
     mwd_gate_number = mwd_gates.size();
 
-    std::cout << "gate number:: " << gate_number << std::endl;
-    std::cout << "mwd gate number:: " << mwd_gate_number << std::endl;
-    std::cout << "frs gate number:: " << FrsGates.size() << std::endl;
+    // std::cout << "gate number:: " << gate_number << std::endl;
+    // std::cout << "mwd gate number:: " << mwd_gate_number << std::endl;
+    // std::cout << "frs gate number:: " << FrsGates.size() << std::endl;
 
     // Ranges from MUSICs
     int min_21 = frs_config->fMin_dE_music21;
@@ -565,7 +565,7 @@ InitStatus LisaFrsCorrelations::Init()
     if (!febex_gates.empty() && !FrsGates.empty())
     {
         pair_count = std::min(febex_gates.size(), FrsGates.size());
-        std::cout << "pair_count" << pair_count << std::endl;
+        // std::cout << "pair_count" << pair_count << std::endl;
         
         h2_LISA_energy_vs_layer_LISA_s1s2_gated.resize(pair_count);
         h2_LISA_energy_xy_vs_layer_LISA_s1s2_gated.resize(pair_count);
@@ -1175,9 +1175,9 @@ void LisaFrsCorrelations::Exec(Option_t* option)
 
     for (int pair = 0; pair < pair_count_MWD; pair++)  
     {
-        std::cout << "gate: " << pair << std::endl;
-        std::cout << "stuff in layer 1: " << energy_MWD_layer_gated[pair][0].size() << std::endl;
-        std::cout << "stuff in layer 2: " << energy_MWD_layer_gated[pair][1].size() << std::endl;
+        // std::cout << "gate: " << pair << std::endl;
+        // std::cout << "stuff in layer 1: " << energy_MWD_layer_gated[pair][0].size() << std::endl;
+        // std::cout << "stuff in layer 2: " << energy_MWD_layer_gated[pair][1].size() << std::endl;
         for (int l = 0; l < layer_number; l++) 
         {
             // Check condition on Febex Gate
