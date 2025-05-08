@@ -1157,9 +1157,9 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     int mh_counter_passed_s2s4_seq_mwd[pair_count_MWD][layer_number] = {0};
 
 
-    if (energy_MWD_layer_gated[pair][0].size() > 0) gate1++;
-    if (energy_MWD_layer_gated[pair][1].size() > 0) gate2++;
-    if (energy_MWD_layer_gated[pair][0].size() > 0 && energy_MWD_layer_gated[pair][1].size() > 0) bothgate++;
+    if (energy_MWD_layer_gated[0][0].size() > 0) gate1++;
+    if (energy_MWD_layer_gated[0][1].size() > 0) gate2++;
+    if (energy_MWD_layer_gated[0][0].size() > 0 && energy_MWD_layer_gated[0][1].size() > 0) bothgate++;
 
     for (int pair = 0; pair < pair_count_MWD; pair++)  
     {
