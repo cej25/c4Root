@@ -1157,8 +1157,8 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     int mh_counter_passed_s2s4_seq_mwd[pair_count_MWD][layer_number] = {0};
 
 
-    if (energy_MWD_layer_gated[0][0].size() > 0) gate1++;
-    if (energy_MWD_layer_gated[0][1].size() > 0) gate2++;
+    if (energy_MWD_layer_gated[0][0].size() > 0 && AoQ_s2s4_mhtdc.size() > 0) gate1++;
+    if (energy_MWD_layer_gated[0][1].size() > 0 && AoQ_s2s4_mhtdc.size() > 0) gate2++;
     if (energy_MWD_layer_gated[0][0].size() > 0 && energy_MWD_layer_gated[0][1].size() > 0) bothgate++;
 
     for (int pair = 0; pair < pair_count_MWD; pair++)  
@@ -1246,8 +1246,8 @@ void LisaFrsCorrelations::FinishTask()
     c4LOG(info, "Multi hit events when LISA is in the event (correlated) : " <<  multi_evt++ << " LISA-FRS events : " << fNEvents);
 
     c4LOG(info, "Correlatated events:: " << ncorr);
-    c4LOG(info, "tot_pass_s2s4 gate 0 layer 2:: " << tot_pass_s2s4[0]);
-    c4LOG(info, "tot_pass_s2s4 gate 1 layer 2:: " << tot_pass_s2s4[1]);
+    c4LOG(info, "tot_pass_s2s4 FRS gate 0 LISA layer 2:: " << tot_pass_s2s4[0]);
+    c4LOG(info, "tot_pass_s2s4 FRS gate 1 LISA layer 2:: " << tot_pass_s2s4[1]);
     c4LOG(info, "breaks:: " << nbreak);
     c4LOG(info, "nmultihit:: " << nmultihit);
     c4LOG(info, "nnobreak:: " << nnobreak);
@@ -1255,9 +1255,10 @@ void LisaFrsCorrelations::FinishTask()
     c4LOG(info, "layer1 count:: " << layer1count);
     c4LOG(info, "layer2 count:: " << layer2count);
     c4LOG(info, "both layer count:: " << bothlayerseen);
-    c4LOG(info, "gate1 count:: " << gate1);
-    c4LOG(info, "gate2 count:: " << gate2);
-    c4LOG(info, "both gate count:: " << bothgate);
+    c4LOG(info, "special case - below is when aoq size > 0");
+    c4LOG(info, "LISA gate1 count:: " << gate1);
+    c4LOG(info, "LISA gate2 count:: " << gate2);
+    c4LOG(info, "both LISA gate count:: " << bothgate);
 
 }
 
