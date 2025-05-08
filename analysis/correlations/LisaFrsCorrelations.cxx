@@ -1148,7 +1148,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         for (int l = 0; l < layer_number; l++) 
         {
             // Check condition on Febex Gate
-            if (energy_MWD_layer_gated[pair][l].size() == 0) break;  
+            if (energy_MWD_layer_gated[pair][l].size() == 0) { std::cout << " hello " << std::endl; break; }  
             // Loop for S1S2
             for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
             {
@@ -1223,7 +1223,7 @@ void LisaFrsCorrelations::FinishTask()
 
     c4LOG(info, "Correlatated events:: " << ncorr);
     c4LOG(info,  "tot_pass_s2s4:: " << tot_pass_s2s4);
-    
+
 
 }
 
