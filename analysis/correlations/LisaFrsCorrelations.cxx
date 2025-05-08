@@ -1175,14 +1175,14 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     }
     // ::: MWD 
     //int pair_count_MWD = std::min(mwd_gates.size(), FrsGates.size());
-    int mh_counter_passed_s1s2_seq_mwd[pair_count_MWD][layer_number] = {0};
-    int mh_counter_passed_s2s4_seq_mwd[pair_count_MWD][layer_number] = {0};
+    int mh_counter_passed_s1s2_seq_mwd[pair_count_MWD][layer_number];
+    int mh_counter_passed_s2s4_seq_mwd[pair_count_MWD][layer_number];
     for (int i = 0; i < layer_number; i++)
     {
-        int mh_counter_passed_s1s2_seq_mwd[0][i] = 0;
-        int mh_counter_passed_s2s4_seq_mwd[0][i] = 0;
-        int mh_counter_passed_s1s2_seq_mwd[1][i] = 0;
-        int mh_counter_passed_s2s4_seq_mwd[1][i] = 0;
+        mh_counter_passed_s1s2_seq_mwd[0][i] = 0;
+        mh_counter_passed_s2s4_seq_mwd[0][i] = 0;
+        mh_counter_passed_s1s2_seq_mwd[1][i] = 0;
+        mh_counter_passed_s2s4_seq_mwd[1][i] = 0;
     }
 
 
