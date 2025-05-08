@@ -1219,7 +1219,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
             
             for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
             {
-                if (l == 1 && i == 0) sanity_check++;
+                if (pair == 0 && l == 1 && i == 0) sanity_check++;
 
 
                 if (mh_counter_passed_s2s4_seq_mwd[pair][l] > 0) break;
