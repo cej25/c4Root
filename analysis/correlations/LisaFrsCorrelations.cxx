@@ -913,16 +913,26 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         energy_MWD_layer[layer-1].emplace_back(energy_LISA_MWD);
 
         // Loop over gates for LISA FEBEX
-        int g = 0;
-        for (auto & gate : febex_gates)
+        for (int g = 0; g < febex_gates.size(); i++)
         {
-            if (gate->PassedGate(layer, energy_LISA_febex))
+            if (febex_gates.at(i)->PassedGate(layer, energy_LISA_febex))
             {
                 energy_layer_gated[g][layer-1].push_back( energy_LISA_febex);
                 energy_xy_gated[g][layer-1][xpos][ypos].push_back( energy_LISA_febex);
             }
-            g++;
         }
+
+
+        int g = 0;
+        // for (auto & gate : febex_gates)
+        // {
+        //     if (gate->PassedGate(layer, energy_LISA_febex))
+        //     {
+        //         energy_layer_gated[g][layer-1].push_back( energy_LISA_febex);
+        //         energy_xy_gated[g][layer-1][xpos][ypos].push_back( energy_LISA_febex);
+        //     }
+        //     g++;
+        // }
         // Loop over gates for LISA MWD
         g = 0;
         for (auto & gate : mwd_gates)
@@ -1182,7 +1192,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         {
             // Check condition on Febex Gate
             if (energy_MWD_layer_gated[pair][l].size() == 0) { nbreak++; break; }  
-            nnobreak++;
+            if (pair == 0) nnobreak[l]++;
             // Loop for S1S2
             // for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
             // {
@@ -1262,7 +1272,8 @@ void LisaFrsCorrelations::FinishTask()
     c4LOG(info, "tot_pass_s2s4 FRS gate 1 LISA layer 2:: " << tot_pass_s2s4[1]);
     c4LOG(info, "breaks:: " << nbreak);
     c4LOG(info, "nmultihit:: " << nmultihit);
-    c4LOG(info, "nnobreak:: " << nnobreak);
+    c4LOG(info, "nnobreak frs gate 0 layer 1:: " << nnobreak[0]);
+    c4LOG(info, "nnobreak frs gate 0 layer 2:: " << nnobreak[1]);
     c4LOG(info, "aoq:: " << aoq);
     c4LOG(info, "layer1 count:: " << layer1count);
     c4LOG(info, "layer2 count:: " << layer2count);
