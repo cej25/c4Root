@@ -69,6 +69,8 @@ class LisaFrsCorrelations : public FairTask
         std::vector<LisaGate*> febex_gates;
         std::vector<LisaGate*> mwd_gates;
 
+        int ncorr = 0;
+
         int gate_number = 0;
         int mwd_gate_number = 0;
 

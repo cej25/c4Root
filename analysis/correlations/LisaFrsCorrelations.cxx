@@ -777,6 +777,8 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     // -> Reject events without both subsystems <-
     if (frsHitArray->size() <= 0 || lisaCalArray->size() <= 0) return;  // frs, lisa and travmus subevent exists
 
+    ncorr++;
+
     const auto & frsHitItem = frsHitArray->at(0);                       // *should* only be 1 FRS subevent per event
     const auto & multihitItem = multihitArray->at(0);                 // *should* only be 1 FRS subevent per event
 
@@ -1218,6 +1220,7 @@ void LisaFrsCorrelations::FinishTask()
     c4LOG(info, "Written LISA analysis histograms to file.");
     //c4LOG(info, "Multi hit events when LISA is in the event (correlated) : " <<  multi_evt++ << " LISA-FRS events : " << fNEvents);
 
+    c4LOG(info, "Correlatated events:: " + ncorr);
 
 }
 
