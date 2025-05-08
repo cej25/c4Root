@@ -111,7 +111,7 @@ void e_shiyan_histos()
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: G A T E S - Initialise 
 
-    //FrsGate* cut_0 = new FrsGate("wide", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/wide.root"); 
+    FrsGate* cut_0 = new FrsGate("wide", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/wide.root"); 
     FrsGate* cut_1 = new FrsGate("narrow", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/narrow.root"); 
     // FrsGate* cut_2 = new FrsGate("1", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/1p2n.root"); 
     // FrsGate* cut_3 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/all_z_2.root"); 
@@ -119,7 +119,7 @@ void e_shiyan_histos()
     // FrsGate* cut_5 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/2p4n.root"); 
     std::vector<FrsGate*> fgs = {};
     
-    //fgs.emplace_back(cut_0);
+    fgs.emplace_back(cut_0);
     fgs.emplace_back(cut_1);
     // fgs.emplace_back(cut_2);
     // fgs.emplace_back(cut_3);
