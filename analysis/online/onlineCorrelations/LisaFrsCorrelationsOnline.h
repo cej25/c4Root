@@ -115,8 +115,12 @@ class LisaFrsCorrelationsOnline : public FairTask
         TCanvas* c_xy_pos_layer1;
         TCanvas* c_xy_pos_layer2;
 
+        TCanvas* c_tpc_x_lisa_x;
+        TCanvas* c_tpc_y_lisa_y;
+        TCanvas* c_tpc_xy_at_LISA;
+
         //Histograms
-        std::vector<TH1I*> h1_wr_diff;
+        TH1I* h1_wr_diff;
 
         std::vector<TH2F*> h2_MUSIC21_vs_LISA_febex;
         std::vector<TH2F*> h2_MUSIC41_vs_LISA_febex;
