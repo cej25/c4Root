@@ -739,6 +739,7 @@ void LisaOnlineSpectra::Reset_Histo()
         {
             for (int z = 0; z < ymax; z++)
             {
+                h1_energy_ch[i][j][z]->Reset();
                 h1_energy_MWD_ch[i][j][z]->Reset();
             }
         }

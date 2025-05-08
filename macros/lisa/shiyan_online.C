@@ -233,11 +233,11 @@ void shiyan_online()
 
     // ::: Correlation Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-    // if (LISA_ON && FRS_ON)
-    // {
-    //     LisaFrsCorrelations* lisafrscorr = new LisaFrsCorrelations();
-    //     run->AddTask(lisafrscorr);
-    // }
+    if (LISA_ON && FRS_ON)
+    {
+        LisaFrsCorrelationsOnline* lisafrscorr = new LisaFrsCorrelationsOnline();
+        run->AddTask(lisafrscorr);
+    }
 
     // ::: CONFIGURATIONS FOR ONLINE HISTOS :::
     // ::: FRS
@@ -252,8 +252,8 @@ void shiyan_online()
     TLisaConfiguration::SetEnergyBin(1000);
 
     //      MWD histos
-    TLisaConfiguration::SetEnergyRangeMWD(0,1000);
-    TLisaConfiguration::SetEnergyBinMWD(2000);
+    TLisaConfiguration::SetEnergyRangeMWD(0,500);
+    TLisaConfiguration::SetEnergyBinMWD(1000);
 
     //      LISA WR Time Difference 
     TLisaConfiguration::SetWrDiffRange(0,100000000);
