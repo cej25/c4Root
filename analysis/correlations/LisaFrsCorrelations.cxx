@@ -75,6 +75,18 @@ LisaFrsCorrelations::LisaFrsCorrelations(std::vector<FrsGate*> fg, std::vector<L
     : LisaFrsCorrelations("LisaFrsCorrelations")
 {
     FrsGates = fg;
+    std::cout << "SIZE OF FRS GATES: " << FrsGates.size() << std::endl;
+    for (int i = 0; i < FrsGates.size(); i++)
+    {
+        std::cout << FrsGates.at(i)->GetName() << std::endl;
+    }
+    
+    std::cout << "SIZE OF LISA FEBEX+MWD GATES: " << lg.size() << std::endl;
+    for (int i = 0; i < lg.size(); i++)
+    {
+        std::cout << lg.at(i)->GetName() << std::endl;
+    }
+
     for (auto & gate : lg) 
     {
         if (gate->GetType() == "energy") febex_gates.emplace_back(gate); 
