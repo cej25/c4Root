@@ -75,7 +75,7 @@ void e_shiyan_histos()
     //TString outputpath = "/u/gandolfo/data/test_c4/layer_alpha/";   //energy resolution output
     
     //TString outputFilename = outputpath + "run_0003_0001_histo_v2.root";
-    TString outputFilename = outputpath + "test_run_0075_histo_GATE_narrow_v.root";
+    TString outputFilename = outputpath + "test_run_0075_histo_GATE_narrow_v3.root";
     //TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_histo_6May.root";     //FRS data with S2 PID
 
 
@@ -113,7 +113,7 @@ void e_shiyan_histos()
 
     FrsGate* cut_0 = new FrsGate("wide", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/wide.root"); 
     FrsGate* cut_1 = new FrsGate("narrow", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/narrow.root"); 
-    // FrsGate* cut_2 = new FrsGate("1", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/1p2n.root"); 
+    FrsGate* cut_2 = new FrsGate("medium", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/medium.root"); 
     // FrsGate* cut_3 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/all_z_2.root"); 
     // FrsGate* cut_4 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/2p3n.root"); 
     // FrsGate* cut_5 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/2p4n.root"); 
@@ -121,7 +121,7 @@ void e_shiyan_histos()
     
     fgs.emplace_back(cut_0);
     fgs.emplace_back(cut_1);
-    // fgs.emplace_back(cut_2);
+    fgs.emplace_back(cut_2);
     // fgs.emplace_back(cut_3);
     // fgs.emplace_back(cut_4);
     // fgs.emplace_back(cut_5);
@@ -165,15 +165,21 @@ void e_shiyan_histos()
 
         LisaGate* FebGate1 = new LisaGate("Febex_Gate1", "energy", config_path + "/lisa/Febex_Gate1.txt");
         LisaGate* FebGate2 = new LisaGate("Febex_Gate2", "energy", config_path + "/lisa/Febex_Gate1.txt");
+        LisaGate* FebGate3 = new LisaGate("Febex_Gate3", "energy", config_path + "/lisa/Febex_Gate1.txt");
+
         LisaGate* MWD_Gate1 = new LisaGate("MWD_Gate1", "energy_mwd", config_path + "/lisa/MWD_Gate1.txt");
         LisaGate* MWD_Gate2 = new LisaGate("MWD_Gate2", "energy_mwd", config_path + "/lisa/MWD_Gate1.txt");
+        LisaGate* MWD_Gate3 = new LisaGate("MWD_Gate3", "energy_mwd", config_path + "/lisa/MWD_Gate1.txt");
+
         // LisaGate* MWD_Gate3 = new LisaGate("MWD_Gate3", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate3.txt");
 
         lgs.emplace_back(FebGate1);
         lgs.emplace_back(FebGate2);
+        lgs.emplace_back(FebGate3);
+
         lgs.emplace_back(MWD_Gate1);
         lgs.emplace_back(MWD_Gate2);
-        //lgs.emplace_back(MWD_Gate3);
+        lgs.emplace_back(MWD_Gate3);
 
         // TLisaConfiguration::SetExcludedChannels({
         // std::make_tuple(1,0,0),
