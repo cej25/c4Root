@@ -1219,7 +1219,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                         }
                     }
                     mh_counter_passed_s2s4_seq_mwd[pair][l]++;
-                    // tot_pass_s2s4++;
+                    if (l == 1) tot_pass_s2s4[gate]++;
                 }                   
             }
                 
@@ -1246,7 +1246,8 @@ void LisaFrsCorrelations::FinishTask()
     c4LOG(info, "Multi hit events when LISA is in the event (correlated) : " <<  multi_evt++ << " LISA-FRS events : " << fNEvents);
 
     c4LOG(info, "Correlatated events:: " << ncorr);
-    c4LOG(info, "tot_pass_s2s4:: " << tot_pass_s2s4);
+    c4LOG(info, "tot_pass_s2s4 gate 0 layer 2:: " << tot_pass_s2s4[0]);
+    c4LOG(info, "tot_pass_s2s4 gate 1 layer 2:: " << tot_pass_s2s4[1]);
     c4LOG(info, "breaks:: " << nbreak);
     c4LOG(info, "nmultihit:: " << nmultihit);
     c4LOG(info, "nnobreak:: " << nnobreak);
