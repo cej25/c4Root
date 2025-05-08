@@ -1219,7 +1219,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                         }
                     }
                     mh_counter_passed_s2s4_seq_mwd[pair][l]++;
-                    if (l == 1) tot_pass_s2s4[gate]++;
+                    if (l == 1) tot_pass_s2s4[pair]++;
                 }                   
             }
                 
