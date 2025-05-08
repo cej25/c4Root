@@ -126,6 +126,10 @@ InitStatus LisaFrsCorrelations::Init()
     gate_number = febex_gates.size();
     mwd_gate_number = mwd_gates.size();
 
+    std::cout << "gate number:: " << gate_number << std::endl;
+    std::cout << "mwd gate number:: " << mwd_gate_number << std::endl;
+    std::cout << "frs gate number:: " << FrsGates.size() << std::endl;
+
     // Ranges from MUSICs
     int min_21 = frs_config->fMin_dE_music21;
     int max_21 = frs_config->fMax_dE_music21;
@@ -549,6 +553,7 @@ InitStatus LisaFrsCorrelations::Init()
     if (!febex_gates.empty() && !FrsGates.empty())
     {
         pair_count = std::min(febex_gates.size(), FrsGates.size());
+        std::cout << "pair_count" << 
         
         h2_LISA_energy_vs_layer_LISA_s1s2_gated.resize(pair_count);
         h2_LISA_energy_xy_vs_layer_LISA_s1s2_gated.resize(pair_count);
