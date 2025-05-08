@@ -884,8 +884,6 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         if (layer == 1 && xpos == 0 && ypos == 0) h2_tpc_xy_LISA_000->Fill(x_lisa_tpc22_23, y_lisa_tpc22_23);
         if (layer == 1 && xpos == 1 && ypos == 0) h2_tpc_xy_LISA_010->Fill(x_lisa_tpc22_23, y_lisa_tpc22_23);
     
-
-
         float energy_LISA_febex = lisaCalItem.Get_energy_GM();
         float energy_LISA_MWD = lisaCalItem.Get_energy_MWD_GM();
 
@@ -970,8 +968,8 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                     if (mh_counter_passed_s2s4[gate] > 0) break;
                     if (FrsGates[gate]->PassedS2S4(z41_mhtdc.at(i), z42_mhtdc.at(i), x2_position, x4_position, AoQ_s2s4_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), sci42e))
                     {
-                        //if (mh_counter_passed_s1s2[gate] > 0)
-                        if (1) //just for testing when we don't have S1S2 data
+                        if (mh_counter_passed_s1s2[gate] > 0)
+                        //if (1) //just for testing when we don't have S1S2 data
                         {
                             // Febex
                             h2_LISA_energy_vs_layer_s1s2s4_gated[gate]->Fill(layer, energy_LISA_febex);
@@ -1119,8 +1117,8 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                 if (mh_counter_passed_s2s4_seq[pair] > 0) break;
                 if (FrsGates[pair]->PassedS2S4(z41_mhtdc.at(i), z42_mhtdc.at(i), x2_position, x4_position, AoQ_s2s4_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), sci42e))
                 {
-                    //if (mh_counter_passed_s1s2_seq[pair] > 0)
-                    if (1)
+                    if (mh_counter_passed_s1s2_seq[pair] > 0)
+                    //if (1)
                     {
                         for ( int j = 0; j < energy_layer_gated[pair][l].size(); j++)
                         {
@@ -1181,8 +1179,8 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                 if (mh_counter_passed_s2s4_seq[pair] > 0) break;
                 if (FrsGates[pair]->PassedS2S4(z41_mhtdc.at(i), z42_mhtdc.at(i), x2_position, x4_position, AoQ_s2s4_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), sci42e))
                 {
-                    //if (mh_counter_passed_s1s2_seq_mwd[pair] > 0)
-                    if (1)   
+                    if (mh_counter_passed_s1s2_seq_mwd[pair] > 0)
+                    //if (1)   
                     {
                         for ( int j = 0; j < energy_MWD_layer_gated[pair][l].size(); j++)
                         {
