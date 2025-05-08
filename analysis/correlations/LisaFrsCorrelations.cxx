@@ -1195,6 +1195,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                         }
                     }
                     mh_counter_passed_s2s4_seq_mwd[pair]++;
+                    tot_pass_s2s4++;
                 }                   
             }
                 
@@ -1221,6 +1222,8 @@ void LisaFrsCorrelations::FinishTask()
     //c4LOG(info, "Multi hit events when LISA is in the event (correlated) : " <<  multi_evt++ << " LISA-FRS events : " << fNEvents);
 
     c4LOG(info, "Correlatated events:: " << ncorr);
+    c4LOG(info,  "tot_pass_s2s4:: " << tot_pass_s2s4);
+    
 
 }
 
