@@ -909,7 +909,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
             {
                 energy_MWD_layer_gated[g][layer-1].push_back(energy_LISA_MWD);
                 energy_MWD_xy_gated[g][layer-1][xpos][ypos].push_back(energy_LISA_MWD);
-            }
+            } else std::cout << "layer :: " << layer << " energy:: " << energy_LISA_MWD << std::endl;
             g++;
         }
 
