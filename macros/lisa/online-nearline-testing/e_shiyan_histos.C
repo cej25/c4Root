@@ -170,9 +170,9 @@ void e_shiyan_histos()
         // LisaGate* MWD_Gate3 = new LisaGate("MWD_Gate3", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate3.txt");
 
         lgs.emplace_back(FebGate1);
-        // lgs.emplace_back(FebGate2);
+        lgs.emplace_back(FebGate2);
         lgs.emplace_back(MWD_Gate1);
-        // lgs.emplace_back(MWD_Gate2);
+        lgs.emplace_back(MWD_Gate2);
         //lgs.emplace_back(MWD_Gate3);
 
         // TLisaConfiguration::SetExcludedChannels({
