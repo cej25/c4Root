@@ -103,7 +103,7 @@
         9       2         5     1     0     Melbourne
         9       4         5     0     0     Adelaide
         9       7         5     0     1     Alice
-        9       9         5     1     1     Cranberra
+        9       9         5     1     1     Canberra
         9      11         5     0     2     Broome
         9      13         5     0     3     PortMoresby
 
