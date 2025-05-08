@@ -59,8 +59,8 @@ class StefanOnlineSpectra : public FairTask
 
         TStefanConfiguration const* stefan_config;
 
-        std::vector<StefanHitItem> const* StefanHit; // implants/decays??
-
+        std::vector<StefanHitItem> const* StefanHit; 
+        
         EventHeader* header;
         Int_t fNEvents;
         int total_time_microsecs = 0;
@@ -71,11 +71,13 @@ class StefanOnlineSpectra : public FairTask
         TFolder* histograms;
         TDirectory* dir_stefan;
         TDirectory** dir_dssd;
-        TDirectory** dir_stats;
         TDirectory** dir_hits;
-        TDirectory** dir_implants; //?
-        TDirectory** dir_decays; //?
-
+        std::vector<std::vector<TDirectory*>> dir_raw;
+        std::vector<TDirectory*> dir_pixel;
+	
+	
+        TDirectory** dir_stats;
+        
         // Histograms
         std::vector<TH1*> h1_implant_side_x_mult;
         std::vector<TH1*> h1_implant_side_y_mult;
@@ -86,21 +88,13 @@ class StefanOnlineSpectra : public FairTask
         std::vector<TH1*> h1_implant_e;
         std::vector<TH2*> h2_implant_e_xy;
         std::vector<TH2*> h2_implant_strip_1d_e;
+	
+	
+	
+        std::vector<TH2*> h2_hit_strip_xy; // Hit pattern
+        std::vector< std::vector<std::vector<TH1*>>> h1_raw_energy; // raw energy spectra
+        std::vector< std::vector<std::vector<TH1*>>> h1_pixel_energy; // energy per pixel spectra
 
-        std::vector<TH1*> h1_decay_side_x_mult;
-        std::vector<TH1*> h1_decay_side_y_mult;
-        std::vector<TH2*> h2_decay_strip_mult; 
-        std::vector<TH1*> h1_decay_side_x_hitpattern;
-        std::vector<TH1*> h1_decay_side_y_hitpattern;
-        std::vector<TH2*> h2_hit_strip_xy;
-        std::vector<TH1*> h1_decay_e;
-        std::vector<TH2*> h2_decay_e_xy;
-        std::vector<TH2*> h2_decay_strip_1d_e; 
-
-        // Raw histograms
-        std::vector<TH1*> h1_febex_card_hitpattern;
-        // std::vector<TH1*> 
-        TH1** h1_germanium_energy;
 
 
         // Counters
