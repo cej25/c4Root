@@ -909,7 +909,8 @@ void LisaFrsCorrelations::Exec(Option_t* option)
             {
                 energy_MWD_layer_gated[g][layer-1].push_back(energy_LISA_MWD);
                 energy_MWD_xy_gated[g][layer-1][xpos][ypos].push_back(energy_LISA_MWD);
-            } else std::cout << "layer :: " << layer << " energy:: " << energy_LISA_MWD << std::endl;
+                else std::cout << "IN!!! layer :: " << layer << " energy:: " << energy_LISA_MWD << std::endl;
+            } else std::cout << "OUT!! layer :: " << layer << " energy:: " << energy_LISA_MWD << std::endl;
             g++;
         }
 
@@ -1148,7 +1149,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         for (int l = 0; l < layer_number; l++) 
         {
             // Check condition on Febex Gate
-            if (energy_MWD_layer_gated[pair][l].size() == 0) { std::cout << " hello " << std::endl; break; }  
+            if (energy_MWD_layer_gated[pair][l].size() == 0) break;
             // Loop for S1S2
             for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
             {
