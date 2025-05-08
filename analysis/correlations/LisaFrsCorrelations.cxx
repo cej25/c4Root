@@ -909,8 +909,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
             {
                 energy_MWD_layer_gated[g][layer-1].push_back(energy_LISA_MWD);
                 energy_MWD_xy_gated[g][layer-1][xpos][ypos].push_back(energy_LISA_MWD);
-                std::cout << "IN!!! layer :: " << layer << " energy:: " << energy_LISA_MWD << std::endl;
-            } else std::cout << "OUT!! layer :: " << layer << " energy:: " << energy_LISA_MWD << std::endl;
+            }
             g++;
         }
 
@@ -1174,6 +1173,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                 }                   
             }
             // Loop for sequential gate S1S2S4
+            std::cout << "AoQ_s2s4_mhtdc.size()::  " << AoQ_s2s4_mhtdc.size() << std::endl;
             for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
             {
                 if (mh_counter_passed_s2s4_seq_mwd[pair][l] > 0) break;
