@@ -915,7 +915,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         // Loop over gates for LISA FEBEX
         for (int g = 0; g < febex_gates.size(); g++)
         {
-            if (febex_gates.at(i)->PassedGate(layer, energy_LISA_febex))
+            if (febex_gates.at(g)->PassedGate(layer, energy_LISA_febex))
             {
                 energy_layer_gated[g][layer-1].push_back( energy_LISA_febex);
                 energy_xy_gated[g][layer-1][xpos][ypos].push_back( energy_LISA_febex);
