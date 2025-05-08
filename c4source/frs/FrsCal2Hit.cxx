@@ -1188,7 +1188,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
                     if ((sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci41l_hits[i] - sci41r_hits[j]) < 200) && (sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci21l_hits[k] - sci21r_hits[l]) < 200))
                     {
                         mhtdc_tof4121[count] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci41l_hits[i] + sci41r_hits[j]) - 0.5 * (sci21l_hits[k] + sci21r_hits[l])) + sci->mhtdc_offset_41_21;
-                        if (mhtdc_tof4121[count] < frs_config->tof_gate_low || mhtdc_tof4121[count] > frs_config->tof_gate_high) mhtdc_tof4121[count] = -999.;
+                        // if (mhtdc_tof4121[count] < frs_config->tof_gate_low || mhtdc_tof4121[count] > frs_config->tof_gate_high) mhtdc_tof4121[count] = -999.;
                     }
                     else
                     {
