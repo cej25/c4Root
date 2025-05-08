@@ -70,7 +70,7 @@ class LisaFrsCorrelations : public FairTask
         std::vector<LisaGate*> mwd_gates;
 
         int ncorr = 0;
-        int tot_pass_s2s4 = 0;
+        int tot_pass_s2s4[2] = {0};
         int nbreak = 0;
         int nmultihit = 0;
         int nnobreak = 0;
