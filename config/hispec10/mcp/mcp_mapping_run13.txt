@@ -1,0 +1,40 @@
+# MCP
+# TYPE 0 = T, 1 = X, 2 = Y
+# TAMEXID     TAMEXCHAN       MCP     TYPE        NUMBER
+    0           7               0       0           0
+    0           9              1       0           0
+    1           1               0       5           0
+    1           2               1       1           0
+    1           3               0       1           1
+    1           4               1       1           1
+    1           5               0       2           0
+    1           6               1       2           0
+    1           7               0       2           1
+    1           8               1       2           1
+    0	      1		0	3	    0
+    0	      2		0	3	    1
+    0	      3		0         4	    0
+    0           4		0	4	    1	
+    0           5		0	1	    0	
+#Time machines:
+#SCI41L
+#SCI41R
+#FRS accepted trigger
+#empyt
+# Int_t mcp_id = hit->Get_mcp_id();
+ #           Int_t type = hit->Get_type();
+  #          Int_t number = hit->Get_number();
+  
+  
+  
+# if get
+#if (mcp_id==0 && type==0 && number= 0 && T1 >= innertimeloop)//  					T1 Ch0
+#if (mcp_id==0 && type==1 && number= 0 && T1 >= innertimeloop && ch1counter == 0)//  X1 CH1
+#if (mcp_id==0 && type==1 && number= 1 && T1 >= innertimeloop && ch2counter == 0)//  X2 CH2
+#if (mcp_id==0 && type==2 && number= 0 && T1 >= innertimeloop && ch3counter == 0)//  Y1 CH3
+#if (mcp_id==0 && type==2 && number= 1 && T1 >= innertimeloop && ch4counter == 0)//  Y2 CH4
+#if (mcp_id==1 && type==0 && number= 0 && T1 >= innertimeloop && ch5counter == 0)//  T2
+#if (mcp_id==1 && type==1 && number= 0 && T1 >= innertimeloop && ch6counter == 0)//  X1
+#if (mcp_id==1 && type==1 && number= 1 && T1 >= innertimeloop && ch7counter == 0)//  X2
+#if (mcp_id==1 && type==2 && number= 0 && T1 >= innertimeloop && ch8counter == 0)//  Y1
+#if (mcp_id==1 && type==2 && number= 1 && T1 >= innertimeloop && ch9counter == 0)//  Y2
