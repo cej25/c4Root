@@ -2201,11 +2201,10 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
     {
         if (music21_de_cor > 0.0 && id_mhtdc_beta_s1s2[i] > 0.0 && id_mhtdc_beta_s1s2[i] < 1.0)
         {
-            //std::cout << "we are using beta == " << id_mhtdc_beta_s1s2[i] << std::endl;
             Double_t power = 1., sum = 0.;
             for (int j = 0; j < 4; j++)
             {
-                sum += power * id->mhtdc_vel_a_music21[j];
+                sum += power * id->mhtdc_vel_a_music21_s1s2[j];
                 if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s1s2[i];
                 else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s1s2[i], 2); }
             }
@@ -2215,7 +2214,6 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
             {
                 id_mhtdc_z_music21[i] = frs->primary_z * sqrt(music21_de_cor / id_mhtdc_v_cor_music21[i]);
                 id_mhtdc_z_shifted_music21[i] = id_mhtdc_z_music21[i] + id->mhtdc_offset_z_music21;
-                std::cout << "z21:: " << id_mhtdc_z_music21[i] << std::endl;
             }
             else
             {
@@ -2228,8 +2226,6 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
             id_mhtdc_z_music21[i] = -999.;
             id_mhtdc_z_shifted_music21[i] = -999.;
         }
-
-        //std::cout << "i:: " << i <<"zmusic21 :: " << id_mhtdc_z_music21[i] << std::endl;
 
         if (music22_de_cor > 0.0 && id_mhtdc_beta_s1s2[i] > 0.5 && id_mhtdc_beta_s1s2[i] < 1.0)
         {

@@ -40,6 +40,8 @@ def convert_macro(input_file):
                     modified_line = line.replace("id->vel_a[", "id->vel_music41_a[")
                     modified_line = modified_line.replace("id->vel_a2[", "id->vel_music42_a[")
                     modified_line = modified_line.replace("id->vel_a3[", "id->vel_music43_a[")
+
+                    modified_line = modified_line.replace("id->mhtdc_vel_a_music21[", "id->mhtdc_vel_a_music21_s1s2[")
                     
                     modified_line = modified_line.replace("music->exclude_de1_adc_channel", "music->exclude_music41_de_adc_channel")
                     modified_line = modified_line.replace("music->exclude_de2_adc_channel", "music->exclude_music42_de_adc_channel")
