@@ -1090,9 +1090,6 @@ void LisaFrsCorrelations::Exec(Option_t* option)
 
     }
     //............................
-    if (layer1seen) layer1count++;
-    if (layer2seen) layer2count++;
-    if (layer1seen && layer2seen) bothlayerseen++;
 
     // ::: LISA gates applied on FRS (LISA_ON_FRS Directory)
     // ::: FRS histos gated on LISA layers - Febex
@@ -1147,28 +1144,29 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         {
             // Check condition on Febex Gate
             if (energy_layer_gated[pair][l].size() == 0) break;  
-            // for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
-            // {
-            //     if (mh_counter_passed_s1s2_seq[pair][l] > 0) break;
-            //     if (FrsGates[pair]->PassedS1S2(z21_mhtdc.at(i), x2_position, AoQ_s1s2_mhtdc.at(i)))
-            //     {
-            //         for ( int j = 0; j < energy_layer_gated[pair][l].size(); j++)
-            //         {
-            //             // Febex
-            //             h2_LISA_energy_vs_layer_LISA_s1s2_gated[pair]->Fill(layer, energy_layer_gated[pair][l].at(j));
-            //             h1_LISA_energy_LISA_s1s2_gated[pair][l]->Fill(energy_layer_gated[pair][l].at(j));   
-            //         }
+            for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
+            {
+                if (mh_counter_passed_s1s2_seq[pair][l] > 0) break;
+                if (FrsGates[pair]->PassedS1S2(z21_mhtdc.at(i), x2_position, AoQ_s1s2_mhtdc.at(i)))
+                {
+                    for ( int j = 0; j < energy_layer_gated[pair][l].size(); j++)
+                    {
+                        // Febex
+                        h2_LISA_energy_vs_layer_LISA_s1s2_gated[pair]->Fill(layer, energy_layer_gated[pair][l].at(j));
+                        h1_LISA_energy_LISA_s1s2_gated[pair][l]->Fill(energy_layer_gated[pair][l].at(j));   
+                    }
 
-            //         for ( int k = 0; k < energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].size(); k++ )
-            //         {
-            //             // Febex XY
-            //             h2_LISA_energy_xy_vs_layer_s1s2_gated[pair]->Fill(layer, energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
-            //             h1_LISA_energy_xy_s1s2_gated[pair][l]->Fill(energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
-            //         }
+                    for ( int k = 0; k < energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].size(); k++ )
+                    {
+                        // Febex XY
+                        h2_LISA_energy_xy_vs_layer_s1s2_gated[pair]->Fill(layer, energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+                        h1_LISA_energy_xy_s1s2_gated[pair][l]->Fill(energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+                    }
 
-            //         mh_counter_passed_s1s2_seq[pair][l]++;
-            //     }                   
-            // }
+                    mh_counter_passed_s1s2_seq[pair][l]++;
+                }                   
+            }
+
             // Loop for sequential gate S1S2S4
             for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
             {
@@ -1201,56 +1199,43 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     // ::: MWD 
     //int pair_count_MWD = std::min(mwd_gates.size(), FrsGates.size());
     
-    if (energy_MWD_layer_gated[0][0].size() > 0 && AoQ_s2s4_mhtdc.size() > 0) gate1++;
-    if (energy_MWD_layer_gated[0][1].size() > 0 && AoQ_s2s4_mhtdc.size() > 0) gate2++;
-    if (energy_MWD_layer_gated[0][0].size() > 0 && energy_MWD_layer_gated[0][1].size() > 0) bothgate++;
-
     for (int pair = 0; pair < pair_count_MWD; pair++)  
     {
-        // std::cout << "gate: " << pair << std::endl;
-        // std::cout << "stuff in layer 1: " << energy_MWD_layer_gated[pair][0].size() << std::endl;
-        // std::cout << "stuff in layer 2: " << energy_MWD_layer_gated[pair][1].size() << std::endl;
         for (int l = 0; l < layer_number; l++) 
         {
-            if (l == 1) std::cout << "pair = " << pair << " - BEGIN LAYER LOOP:: CHECK(should be 0) = " << mh_counter_passed_s2s4_seq_mwd[pair][l] << std::endl;
             // Check condition on Febex Gate
-            if (energy_MWD_layer_gated[pair][l].size() == 0) { nbreak++; break; }  
-            if (pair == 0) nnobreak[l]++;
-            // Loop for S1S2
-            // for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
-            // {
-            //     if (mh_counter_passed_s1s2_seq_mwd[pair][l] > 0) break;
-            //     if (FrsGates[pair]->PassedS1S2(z21_mhtdc.at(i), x2_position, AoQ_s1s2_mhtdc.at(i)))
-            //     {
-            //         for ( int j = 0; j < energy_MWD_layer_gated[pair][l].size(); j++)
-            //         {
-            //             // Febex
-            //             h2_LISA_energy_MWD_vs_layer_LISA_s1s2_gated[pair]->Fill(layer, energy_MWD_layer_gated[pair][l].at(j));
-            //             h1_LISA_energy_MWD_LISA_s1s2_gated[pair][l]->Fill(energy_MWD_layer_gated[pair][l].at(j));   
-            //         }
+            if (energy_MWD_layer_gated[pair][l].size() == 0) break;
 
-            //         for ( int k = 0; k < energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].size(); k++ )
-            //         {
-            //             // Febex XY
-            //             h2_LISA_energy_MWD_xy_vs_layer_s1s2_gated[pair]->Fill(layer, energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
-            //             h1_LISA_energy_MWD_xy_s1s2_gated[pair][l]->Fill(energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
-            //         }
-            //         mh_counter_passed_s1s2_seq_mwd[pair][l]++;
-            //     }                   
-            // }
+            // Loop for S1S2
+            for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
+            {
+                if (mh_counter_passed_s1s2_seq_mwd[pair][l] > 0) break;
+                if (FrsGates[pair]->PassedS1S2(z21_mhtdc.at(i), x2_position, AoQ_s1s2_mhtdc.at(i)))
+                {
+                    for ( int j = 0; j < energy_MWD_layer_gated[pair][l].size(); j++)
+                    {
+                        // Febex
+                        h2_LISA_energy_MWD_vs_layer_LISA_s1s2_gated[pair]->Fill(layer, energy_MWD_layer_gated[pair][l].at(j));
+                        h1_LISA_energy_MWD_LISA_s1s2_gated[pair][l]->Fill(energy_MWD_layer_gated[pair][l].at(j));   
+                    }
+
+                    for ( int k = 0; k < energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].size(); k++ )
+                    {
+                        // Febex XY
+                        h2_LISA_energy_MWD_xy_vs_layer_s1s2_gated[pair]->Fill(layer, energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+                        h1_LISA_energy_MWD_xy_s1s2_gated[pair][l]->Fill(energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+                    }
+                    mh_counter_passed_s1s2_seq_mwd[pair][l]++;
+                }                   
+            }
+
             // Loop for sequential gate S1S2S4
-            
             for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
             {
-                if (pair == 0 && l == 1 && i == 0) sanity_check++;
-
-
                 if (mh_counter_passed_s2s4_seq_mwd[pair][l] > 0) break;
-                if (pair == 0 && i == 0) nmultihit[l]++;
                 if (FrsGates[pair]->PassedS2S4(z41_mhtdc.at(i), z42_mhtdc.at(i), x2_position, x4_position, AoQ_s2s4_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), sci42e))
                 {
                     //if (mh_counter_passed_s1s2_seq_mwd[pair] > 0)
-                    if (pair == 0) nmultihit_gated[l]++;
                     if (1)   
                     {
                         for ( int j = 0; j < energy_MWD_layer_gated[pair][l].size(); j++)
@@ -1268,10 +1253,8 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                         }
                     }
                     mh_counter_passed_s2s4_seq_mwd[pair][l]++;
-                    if (l == 1) tot_pass_s2s4[pair]++;
                 }                   
             }
-                
         }
     } 
     //............................
@@ -1308,26 +1291,6 @@ void LisaFrsCorrelations::FinishTask()
     //dir_corr_driftcorr->Write();
     c4LOG(info, "Written LISA analysis histograms to file.");
     c4LOG(info, "Multi hit events when LISA is in the event (correlated) : " <<  multi_evt++ << " LISA-FRS events : " << fNEvents);
-
-    c4LOG(info, "Correlatated events:: " << ncorr);
-    c4LOG(info, "tot_pass_s2s4 FRS gate 0 LISA layer 2:: " << tot_pass_s2s4[0]);
-    c4LOG(info, "tot_pass_s2s4 FRS gate 1 LISA layer 2:: " << tot_pass_s2s4[1]);
-    c4LOG(info, "breaks:: " << nbreak);
-    c4LOG(info, "nmultihit frs gate 0 layer 1:: " << nmultihit[0]);
-    c4LOG(info, "nmultihit frs gate 0 layer 2:: " << nmultihit[1]);
-    c4LOG(info, "nmultihit_GATED frs gate 0 layer 1:: " << nmultihit_gated[0]);
-    c4LOG(info, "nmultihit_GATED frs gate 0 layer 2:: " << nmultihit_gated[1]);
-    c4LOG(info, "nnobreak frs gate 0 layer 1:: " << nnobreak[0]);
-    c4LOG(info, "nnobreak frs gate 0 layer 2:: " << nnobreak[1]);
-    c4LOG(info, "aoq:: " << aoq);
-    c4LOG(info, "layer1 count:: " << layer1count);
-    c4LOG(info, "layer2 count:: " << layer2count);
-    c4LOG(info, "both layer count:: " << bothlayerseen);
-    c4LOG(info, "special case - below is when aoq size > 0");
-    c4LOG(info, "LISA gate1 count:: " << gate1);
-    c4LOG(info, "LISA gate2 count:: " << gate2);
-    c4LOG(info, "both LISA gate count:: " << bothgate);
-    c4LOG(info, "SANITY CHECK: " << sanity_check);
 
 
 }
