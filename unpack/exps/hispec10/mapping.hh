@@ -62,3 +62,14 @@ SIGNAL(WR_T2, frstpat.wr.t2, DATA16);
 SIGNAL(WR_T3, frstpat.wr.t3, DATA16);
 SIGNAL(WR_T4, frstpat.wr.t4, DATA16);
 SIGNAL(TPAT, frstpat.data.tpat, DATA16);
+// :::::::::::::::::::::::::::::::::::::::
+
+
+// ::::::: TRAVMUS Crate ::::::::::::::::::::
+// 4 = 21, 5 = 22 -- fixed
+SIGNAL(TM_WR_T1, frstravmus.wr.t1, DATA16);
+SIGNAL(TM_WR_T2, frstravmus.wr.t2, DATA16);
+SIGNAL(TM_WR_T3, frstravmus.wr.t3, DATA16);
+SIGNAL(TM_WR_T4, frstravmus.wr.t4, DATA16);
+SIGNAL(MUSIC4_E_1, frstravmus.data.mdpp.adc[0], MUSIC4_E_8, frstravmus.data.mdpp.adc[7], DATA24);
+SIGNAL(MUSIC5_E_1, frstravmus.data.mdpp.adc[8], MUSIC5_E_8, frstravmus.data.mdpp.adc[15], DATA24);
