@@ -735,7 +735,7 @@ void FrsOnlineSpectra::Exec(Option_t* option)
 
 void FrsOnlineSpectra::Process_TAC()
 {
-    // S1S4
+    // S1S2
     // ----- 2D -----
 
 
