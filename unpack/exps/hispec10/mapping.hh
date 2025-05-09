@@ -3,25 +3,21 @@ SIGNAL(SPILL_ON, frsmain.spill_on.spillon, DATA8);
 SIGNAL(SPILL_OFF, frsmain.spill_off.spilloff, DATA8);
 
 SIGNAL(ZERO_SUPPRESS: SCALERS2_32);
-SIGNAL(SCALERS1_1, frsmain.data.v830.data[0], SCALERS1_32, frsmain.data.v830.data[31], DATA32);
+//SIGNAL(SCALERS1_1, frsmain.data.v830.data[0], SCALERS1_32, frsmain.data.v830.data[31], DATA32);
+SIGNAL(SCALERS1_1, frsmain.data.v830.scalers[0], SCALERS1_32, frsmain.data.v830.scalers[31], DATA32);
 
-SIGNAL(ZERO_SUPPRESS: SCI_TAC_DE_16);
-SIGNAL(SCI_TAC_DE_1, frsmain.data.v792.data[0], SCI_TAC_DE_16, frsmain.data.v792.data[15], DATA24);
+SIGNAL(ZERO_SUPPRESS: SCI_TAC_DE_32);
+SIGNAL(SCI_TAC_DE_1, frsmain.data.v792.data[0], SCI_TAC_DE_32, frsmain.data.v792.data[31], DATA24);
 
-SIGNAL(ZERO_SUPPRESS_MULTI(128): SCI_MHTDC_T_16);
-SIGNAL(SCI_MHTDC_T_1, frsmain.data.v1290.measurement.data[0], SCI_MHTDC_T_16, frsmain.data.v1290.measurement.data[15], DATA24);
-SIGNAL(ZERO_SUPPRESS_MULTI(128): SCI_MHTDC_LOT_16);
-SIGNAL(SCI_MHTDC_LOT_1, frsmain.data.v1290.measurement.leadOrTrail[0], SCI_MHTDC_LOT_16, frsmain.data.v1290.measurement.leadOrTrail[15], DATA8);
+SIGNAL(ZERO_SUPPRESS_MULTI(128): SCI_MHTDC_T_32);
+SIGNAL(SCI_MHTDC_T_1, frsmain.data.v1290.measurement.data[0], SCI_MHTDC_T_32, frsmain.data.v1290.measurement.data[31], DATA24);
+SIGNAL(ZERO_SUPPRESS_MULTI(128): SCI_MHTDC_LOT_32);
+SIGNAL(SCI_MHTDC_LOT_1, frsmain.data.v1290.measurement.leadOrTrail[0], SCI_MHTDC_LOT_32, frsmain.data.v1290.measurement.leadOrTrail[31], DATA8);
 
-SIGNAL(ZERO_SUPPRESS_MULTI(128): MUSIC1_T_8);
-SIGNAL(MUSIC1_T_1, frsmain.data.v1290.measurement.data[16], MUSIC1_T_8, frsmain.data.v1290.measurement.data[23], DATA24);
-SIGNAL(ZERO_SUPPRESS_MULTI(128): MUSIC1_LOT_8);
-SIGNAL(MUSIC1_LOT_1, frsmain.data.v1290.measurement.leadOrTrail[16], MUSIC1_LOT_8, frsmain.data.v1290.measurement.leadOrTrail[23], DATA8);
 
-SIGNAL(ZERO_SUPPRESS_MULTI(128): MUSIC2_T_8);
-SIGNAL(MUSIC2_T_1, frsmain.data.v1290.measurement.data[24], MUSIC2_T_8, frsmain.data.v1290.measurement.data[31], DATA24);
-SIGNAL(ZERO_SUPPRESS_MULTI(128): MUSIC2_LOT_8);
-SIGNAL(MUSIC2_LOT_1, frsmain.data.v1290.measurement.leadOrTrail[24], MUSIC2_LOT_8, frsmain.data.v1290.measurement.leadOrTrail[31], DATA8);
+// MUSIC TIME MOVED FROM MAIN TO USER 2025
+
+
 // :::::::::::::::::::::::::::::::::::::::
 
 // ::::::: TPC Crate :::::::::::::::::::::
@@ -45,14 +41,26 @@ SIGNAL(TPC_TDC_LOT_1, frstpc.data.v1190.measurement.leadOrTrail[0], TPC_TDC_LOT_
 // :::::::::::::::::::::::::::::::::::::::
 
 // ::::::: User Crate ::::::::::::::::::::
-SIGNAL(SCALERS2_1, frsuser.data.v830.data[0], SCALERS2_32, frsuser.data.v830.data[31], DATA32);
+// SIGNAL(SCALERS2_1, frsuser.data.v830.data[0], SCALERS2_32, frsuser.data.v830.data[31], DATA32);
+SIGNAL(SCALERS2_1, frsuser.data.v830.scalers[0], SCALERS2_32, frsuser.data.v830.scalers[31], DATA32);
 
-SIGNAL(ZERO_SUPPRESS: SCI_TAC_DT_16);
-SIGNAL(SCI_TAC_DT_1, frsuser.data.v785[1].data[0], SCI_TAC_DT_16, frsuser.data.v785[1].data[15], DATA24);
+SIGNAL(ZERO_SUPPRESS: SCI_TAC_DT_32); // 19 possible DT values? I guess we should check before committing..
+SIGNAL(SCI_TAC_DT_1, frsuser.data.v785[1].data[0], SCI_TAC_DT_32, frsuser.data.v785[1].data[31], DATA24);
 
-SIGNAL(ZERO_SUPPRESS: MUSIC2_E_8);
+SIGNAL(ZERO_SUPPRESS: MUSIC5_E_8);
 SIGNAL(MUSIC1_E_1, frsuser.data.v785[0].data[0], MUSIC1_E_8, frsuser.data.v785[0].data[7], DATA24);
 SIGNAL(MUSIC2_E_1, frsuser.data.v785[0].data[8], MUSIC2_E_8, frsuser.data.v785[0].data[15], DATA24);
+
+SIGNAL(ZERO_SUPPRESS_MULTI(128): MUSIC1_T_8);
+SIGNAL(MUSIC1_T_1, frsuser.data.v1290.measurement.data[16], MUSIC1_T_8, frsuser.data.v1290.measurement.data[23], DATA24);
+SIGNAL(ZERO_SUPPRESS_MULTI(128): MUSIC1_LOT_8);
+SIGNAL(MUSIC1_LOT_1, frsuser.data.v1290.measurement.leadOrTrail[16], MUSIC1_LOT_8, frsuser.data.v1290.measurement.leadOrTrail[23], DATA8);
+
+SIGNAL(ZERO_SUPPRESS_MULTI(128): MUSIC2_T_8);
+SIGNAL(MUSIC2_T_1, frsuser.data.v1290.measurement.data[24], MUSIC2_T_8, frsuser.data.v1290.measurement.data[31], DATA24);
+SIGNAL(ZERO_SUPPRESS_MULTI(128): MUSIC2_LOT_8);
+SIGNAL(MUSIC2_LOT_1, frsuser.data.v1290.measurement.leadOrTrail[24], MUSIC2_LOT_8, frsuser.data.v1290.measurement.leadOrTrail[31], DATA8);
+
 // :::::::::::::::::::::::::::::::::::::::
 
 // ::::::: TPAT Crate ::::::::::::::::::::
