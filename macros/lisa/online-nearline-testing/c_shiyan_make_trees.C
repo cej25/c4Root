@@ -1,13 +1,13 @@
 #include <TROOT.h>
 
 // !!! Switch all tasks related to {subsystem} on (1)/off (0)
-#define LISA_ON 1
+#define LISA_ON 0
 #define FRS_ON 1
 
 // !!! Select the data level you want to visualize
 #define LISA_RAW 0
 #define LISA_ANA 0
-#define LISA_CAL 1
+#define LISA_CAL 0
 
 // Define for online if testing or during experient
 #define TEST 1
@@ -31,8 +31,8 @@ void c_shiyan_make_trees()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     // ::: Experiment name
-    // TString fExpName = "shiyan";
-    TString fExpName = "pareeksha";
+     TString fExpName = "shiyan";
+    //TString fExpName = "pareeksha";
 
     // ::: Here you define commonly used path
     TString c4Root_path = "/u/cjones/c4Root";
@@ -59,11 +59,13 @@ void c_shiyan_make_trees()
     // ::: FILE  PATH
     //TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/S092_shiyan/";               // Data from LISA
     TString inputpath = "$LUSTRE_DIR/nustar/profi/sec_s160feb25/stitched/";     // Data from FRS
+
  
     //TString filename = inputpath + "test_0003_0001.lmd";
     // TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
 
-    TString filename = "$LUSTRE_DIR/gamma/s092_s143_files/ts/run_0075_0001.lmd";
+    //TString filename = "$LUSTRE_DIR/gamma/s092_s143_files/ts/run_0075_0001.lmd";
+    TString filename = "$LUSTRE_DIR/despec/s092_s103/run_0004_0001.lmd";
 
     // ::: OUTPUT 
     TString outputpath = "./"; //testing
