@@ -16,7 +16,8 @@
 // :::  Define FRS setup.C file - FRS should provide; place in /config/shiyan/frs/setup/
 extern "C"
 {
-    #include "../../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
+    // #include "../../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
+    #include "../../../config/shiyan/frs/setup/setup_103_002_2025_conv.C" //shiyan
 }
 
 typedef struct EXT_STR_h101_t
