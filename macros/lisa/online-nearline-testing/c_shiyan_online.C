@@ -7,8 +7,8 @@
 #define FRS_LISA_CORRELATIONS 1
 
 // Define for online if testing or during experient
-#define TEST 1
-#define EXP 0
+#define TEST 0
+#define EXP 1
 
 // Define FRS setup.C file - FRS should provide; place in /config/shiyan/frs/
 extern "C"
@@ -37,8 +37,8 @@ void c_shiyan_online()
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     
     // ::: Experiment name - this set the path for all the config
-    // TString fExpName = "shiyan";
-    TString fExpName = "pareeksha";
+    TString fExpName = "shiyan";
+    // TString fExpName = "pareeksha";
 
     // ::: Here you define commonly used path
     TString c4Root_path = "/u/cjones/c4Root";
@@ -74,12 +74,15 @@ void c_shiyan_online()
 
     // ::: FILE  PATH FOR CALUM
     //TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/S092_shiyan/";               // Data from LISA
-    TString inputpath = "$LUSTRE_DIR/nustar/profi/sec_s160feb25/stitched/";     // Data from FRS
- 
+    // TString inputpath = "$LUSTRE_DIR/nustar/profi/sec_s160feb25/stitched/";     // Data from FRS
+    
+
     //TString filename = inputpath + "test_0003_0001.lmd";
     // TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
-    TString filename = "$LUSTRE_DIR/gamma/s092_s143_files/ts/run_0075_0001.lmd";
-
+    // TString filename = "$LUSTRE_DIR/gamma/s092_s143_files/ts/run_0075_0001.lmd";
+    // TString filename = "trans://lxg3107:6000";
+    TString filename = "$LUSTRE_DIR/gamma/s092_s103_files/ts/run_0006_0001.lmd";
+// 
     //TString filename = inputpath + "test_0003_*.lmd";
     //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
 
@@ -173,10 +176,10 @@ void c_shiyan_online()
     }
     if ( EXP )
     {
-        TLisaConfiguration::SetMappingFile(config_path + "/Lisa_5x5_shiyan.txt");
-        TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching_shiyan.txt");
+        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_4x4_shiyan.txt");
+        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_shiyan.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_shiyan.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path +  "/lisa/Lisa_MWD_Parameters_shiyan.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_shiyan_v0.txt");
     }
 
 

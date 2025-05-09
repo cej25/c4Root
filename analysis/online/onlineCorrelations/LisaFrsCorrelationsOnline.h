@@ -7,6 +7,7 @@
 #include "LisaCalData.h"
 #include "FrsGate.h"
 #include "FrsHitData.h"
+#include "EventHeader.h"
 
 #include "TH1.h"
 #include "TH2.h"
@@ -121,6 +122,8 @@ class LisaFrsCorrelationsOnline : public FairTask
 
         //Histograms
         TH1I* h1_wr_diff;
+        TH1I* h1_wr_diff_tpat2;
+        TH1I* h1_wr_diff_tpat6;
 
         std::vector<TH2F*> h2_MUSIC21_vs_LISA_febex;
         std::vector<TH2F*> h2_MUSIC41_vs_LISA_febex;
