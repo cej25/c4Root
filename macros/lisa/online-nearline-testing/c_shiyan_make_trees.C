@@ -65,7 +65,7 @@ void c_shiyan_make_trees()
     // TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
 
     //TString filename = "$LUSTRE_DIR/gamma/s092_s143_files/ts/run_0075_0001.lmd";
-    TString filename = "$LUSTRE_DIR/despec/s092_s103/run_0004_0001.lmd";
+    TString filename = "$LUSTRE_DIR/gamma/s092_s103_files/ts/run_0006_0001.lmd";
 
     // ::: OUTPUT 
     TString outputpath = "./"; //testing
