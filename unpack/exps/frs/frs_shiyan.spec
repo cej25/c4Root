@@ -73,7 +73,8 @@ TPAT_CRATE_DATA()
     
     UINT32 trigger_pattern 
     {
-        0_15: pattern;
+        0_14: pattern;
+        15: test;
         16_31: nothing; // trigger type?
         ENCODE(tpat, (value = pattern));
     }
@@ -100,6 +101,7 @@ TPAT_CRATE_DATA()
         // bad event?
         several UINT32 filler NOENCODE;
     }
+
 
     
 }
