@@ -8,8 +8,8 @@
 #define LISA_CAL 1
 
 // Test or experiment settings
-#define TEST 1
-#define EXP 0
+#define TEST 0
+#define EXP 1
 
 // If you want to have trace histos
 #define TRACE_ON 1
@@ -23,8 +23,8 @@
 // :::  Define FRS setup.C file - FRS should provide; place in /config/shiyan/frs/setup/
 extern "C"
 {
-    #include "../../../config/pareeksha/frs/setup_Fragment_conv_updated.C" //pareeksha data
-    //#include "../../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
+    //#include "../../../config/pareeksha/frs/setup_Fragment_conv_updated.C" //pareeksha data
+    #include "../../../config/shiyan/frs/setup/setup_103_002_2025_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -39,7 +39,7 @@ void e_shiyan_histos()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     // ::: Experiment name
-    TString fExpName = "pareeksha";
+    TString fExpName = "shiyan";
 
     // ::: Here you define commonly used path
     TString c4Root_path = "/u/gandolfo/c4/c4Root";
@@ -64,18 +64,18 @@ void e_shiyan_histos()
 
     // ::: P A T H   O F   F I L E  to read
     //TString inputpath = "/u/gandolfo/data/test_c4/layer_alpha/";
-    TString inputpath = "/u/gandolfo/data/test_c4/shiyan_test/";
+    TString inputpath = "/u/gandolfo/data/shiyan_1st_day/";
 
     //TString filename = inputpath + "run_0003_0001_tree_v2.root";
-    TString filename = inputpath + "test_run_0075.root";  
+    TString filename = inputpath + "run_0006_0001_tree_conv.root";  
     //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  //FRS data with S2 PID
     
     // ::: O U T P U T
-    TString outputpath = "/u/gandolfo/data/test_c4/shiyan_test/";   //testing
+    TString outputpath = "/u/gandolfo/data/shiyan_1st_day/";   //testing
     //TString outputpath = "/u/gandolfo/data/test_c4/layer_alpha/";   //energy resolution output
     
     //TString outputFilename = outputpath + "run_0003_0001_histo_v2.root";
-    TString outputFilename = outputpath + "test_run_0075_histo_v4.root";
+    TString outputFilename = outputpath + "run_0006_0001_histo_conv_v1.root";
     //TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_histo_6May.root";     //FRS data with S2 PID
 
 
@@ -111,16 +111,16 @@ void e_shiyan_histos()
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: G A T E S - Initialise 
 
-    FrsGate* cut_0 = new FrsGate("wide", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/wide.root"); 
-    FrsGate* cut_1 = new FrsGate("narrow", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/narrow.root"); 
+    //FrsGate* cut_0 = new FrsGate("wide", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/wide.root"); 
+    //FrsGate* cut_1 = new FrsGate("narrow", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/narrow.root"); 
     //FrsGate* cut_2 = new FrsGate("medium", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/medium.root"); 
     // FrsGate* cut_3 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/all_z_2.root"); 
     // FrsGate* cut_4 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/2p3n.root"); 
     // FrsGate* cut_5 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/2p4n.root"); 
     std::vector<FrsGate*> fgs = {};
     
-    fgs.emplace_back(cut_0);
-    fgs.emplace_back(cut_1);
+    //fgs.emplace_back(cut_0);
+    //fgs.emplace_back(cut_1);
     //fgs.emplace_back(cut_2);
     // fgs.emplace_back(cut_3);
     // fgs.emplace_back(cut_4);
@@ -190,19 +190,18 @@ void e_shiyan_histos()
     }
     if ( EXP )
     {
-        /*
-        TLisaConfiguration::SetMappingFile(config_path + "/Lisa_5x5_shiyan.txt");
-        TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching_shiyan.txt");
+        
+        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_4x4_shiyan.txt");
+        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_shiyan.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_shiyan.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path +  "/lisa/Lisa_MWD_Parameters_shiyan.txt");
-        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Lisa_Febex_Gates_shiyan.txt");
-        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/Lisa_MWD_Gates_shiyan.txt");
-        */
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_shiyan_v0.txt");
+        /*
         // for testing with pareeksha data
         TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_Detector_Map_names.txt");
         TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD.txt");
         TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
+        */
     }
   
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
@@ -221,24 +220,24 @@ void e_shiyan_histos()
     // ::: FRS
     TFrsConfiguration::Set_Z_range(10,60);
     TFrsConfiguration::Set_AoQ_range(1.8,3.5);
-    TFrsConfiguration::Set_dE_music41_range(0,4000); 
-    TFrsConfiguration::Set_dE_music21_range(0,4000);
+    TFrsConfiguration::Set_dE_music41_range(0,40000); 
+    TFrsConfiguration::Set_dE_music21_range(0,40000);
     
     //::::::::: Set ranges for histos :::::::::::::::
     // ::: LISA
     //  Channel Energy ::::: (h1_energy_)
-    TLisaConfiguration::SetEnergyRange(0,2000); //(0,50000) shiyan
-    TLisaConfiguration::SetEnergyBin(2000);
+    TLisaConfiguration::SetEnergyRange(0,100000); //(0,50000) shiyan
+    TLisaConfiguration::SetEnergyBin(10000);
 
     //  MWD histos
     TLisaConfiguration::SetEnergyRangeMWD(0,500); //0,100 shiyan
     TLisaConfiguration::SetEnergyBinMWD(1000);
 
     //  Traces Time and Amplitude Ranges 
-    TLisaConfiguration::SetTracesRange(0,10);
-    TLisaConfiguration::SetTracesBin(1000);
-    TLisaConfiguration::SetAmplitudeMin(7900);
-    TLisaConfiguration::SetAmplitudeMax(8700);
+    TLisaConfiguration::SetTracesRange(0,4);
+    TLisaConfiguration::SetTracesBin(400);
+    TLisaConfiguration::SetAmplitudeMin(7000);
+    TLisaConfiguration::SetAmplitudeMax(8200);
 
     // White Rabbit
     TLisaConfiguration::SetWrDiffRange(0,100000000);
@@ -248,7 +247,7 @@ void e_shiyan_histos()
     TLisaConfiguration::SetWrRateBin(3600);
 
     // Drift
-    TLisaConfiguration::SetDriftRange(0,1000);
+    TLisaConfiguration::SetDriftRange(0,5000);
 
     // :::: ENABLE SYSTEMS  ::::::::::::::::::::::::::::::::::::::::
     if(TRACE_ON)
@@ -279,6 +278,8 @@ void e_shiyan_histos()
     {
         FrsNearlineSpectra* nearlinefrs = new FrsNearlineSpectra(fgs);
         run->AddTask(nearlinefrs);
+        FrsRawNearlineSpectra* rawnearlinefrs = new FrsRawNearlineSpectra();
+        run->AddTask(rawnearlinefrs);
     }
     
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
