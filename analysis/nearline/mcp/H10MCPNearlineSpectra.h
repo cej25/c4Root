@@ -206,6 +206,12 @@ class H10MCPNearlineSpectra : public FairTask
 	  double MCP1Ydiff;
 	  double MCP2Xdiff;
 	  double MCP2Ydiff;
+
+      int SC41L=0;
+   int SC41R=0;
+   int SC42L=0;
+   int SC42R=0;
+  int DSSDAccept = 0;
 		// GATES
 		
 		
