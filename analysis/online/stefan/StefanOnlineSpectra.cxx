@@ -98,20 +98,20 @@ InitStatus StefanOnlineSpectra::Init()
 	dir_raw[i][0] = dir_dssd[i]->mkdir("Raw_energy_vertical");
 	
         for(int j=0; j<16; ++j) { //vertical strips or stripY
-        	h1_raw_energy[i][0][j] = MakeTH1(dir_raw[i][0], "I", Form("h1_raw_energy_det%i_vertical_strip%i", i, j), Form("Raw Energy - Det %i Vertical side - Strip %i", i, j), 10000, 0, 1000000, "E []", kCyan, kBlack);
+        	h1_raw_energy[i][0][j] = MakeTH1(dir_raw[i][0], "I", Form("h1_raw_energy_det%i_vertical_strip%i", i, j), Form("Raw Energy - Det %i Vertical side - Strip %i", i, j), 10000, 0, pow(10,7), "E []", kCyan, kBlack);
         	}
         
 	dir_raw[i][1] = dir_dssd[i]->mkdir("Raw_energy_horizontal");
         for(int j=0; j<16; ++j) {//horizontal strips or stripX
-        	h1_raw_energy[i][1][j] = MakeTH1(dir_raw[i][1], "I", Form("h1_raw_energy_det%i_horizontal_strip%i", i, j), Form("Raw Energy - Det %i Horizontal side - Strip %i", i, j), 10000, 0, 1000000, "E []", kSpring, kBlack);
+        	h1_raw_energy[i][1][j] = MakeTH1(dir_raw[i][1], "I", Form("h1_raw_energy_det%i_horizontal_strip%i", i, j), Form("Raw Energy - Det %i Horizontal side - Strip %i", i, j), 10000, 0, pow(10,7), "E []", kSpring, kBlack);
         	}
         
         dir_pixel[i] = dir_dssd[i]->mkdir("Pixels_energy");
         h1_pixel_energy[i].resize(256);
         
- //      for(int j=0; j<256; ++j) { // pixel = stripX+16*stripY
- //       	h1_pixel_energy[i][j] = MakeTH1(dir_raw[i][1], "I", Form("h1_energy_pixel%i", j), Form("Energy - Det %i Pixel %i", i, j), 10000, 0, 1000000, "E []", kOrange, kBlack);
-   //     	}
+       for(int j=0; j<256; ++j) { // pixel = stripX+16*stripY
+        	h1_pixel_energy[i][j] = MakeTH1(dir_pixel[i], "I", Form("h1_energy_pixel%i", j), Form("Energy - Det %i Pixel %i", i, j), 10000, 0, pow(10,7), "E []", kOrange, kBlack);
+        	}
         	
         	
         	
@@ -155,7 +155,7 @@ void StefanOnlineSpectra::Exec(Option_t* option)
         h2_hit_strip_xy[hit.DSSD]->Fill(hit.StripX, hit.StripY);
         h1_raw_energy[hit.DSSD][0][hit.StripY]->Fill(hit.Energy);
         h1_raw_energy[hit.DSSD][1][hit.StripX]->Fill(hit.Energy);
-      //  h1_pixel_energy[hit.DSSD][hit.StripX+ 16*hit.StripY]->Fill(hit.Energy);
+        h1_pixel_energy[hit.DSSD][hit.StripX+ 16*hit.StripY]->Fill(hit.Energy);
     }
 
     fNEvents++;

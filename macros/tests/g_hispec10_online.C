@@ -3,7 +3,7 @@
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define MCP_ON 1
 #define STEFAN_ON 1
-#define FRS_ON 0
+#define FRS_ON 1
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
@@ -21,7 +21,7 @@ typedef struct EXT_STR_h101_t
 } EXT_STR_h101;
 
 
-void c_hispec10_online()
+void g_hispec10_online()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
 
@@ -29,7 +29,7 @@ void c_hispec10_online()
     TString fExpName = "hispec10";
 
     // Define important paths.
-    TString c4Root_path = "/u/gkosir/HISPEC-10/c4Root";
+    TString c4Root_path = "/u/despec/s103_online/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -51,14 +51,15 @@ void c_hispec10_online()
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     //TString filename = "/u/cjones/onlymcp09041755.lmd";
-    TString filename = "/u/gkosir/HISPEC-10/20250410-1505_0001.lmd"; 
-    //TString filename = "/u/cjones/finalfinalpulserrunfin.lmd";
-    TString outputpath = "htest";
+//    TString filename = "/data.local1/lustre/despec/s092_s103/run_0007_0001.lmd"; 
+//	TString filename ="stream://x86l-205";  
+  TString filename = "trans://lxg3107:6000";
+    TString outputpath = "htest_events";
     TString outputFileName = outputpath + ".root";
 
     // Create Online run
     Int_t refresh = 2; // Refresh rate for online histograms
-    Int_t port = 6969; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 2222; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -125,8 +126,8 @@ void c_hispec10_online()
     if (MCP_ON)
     {
         H10MCPReader* unpackmcp = new H10MCPReader((EXT_STR_h101_mcp_onion*)&ucesb_struct.mcp, offsetof(EXT_STR_h101, mcp));
-        //unpackmcp->DoFineTimeCalOnline(config_path + "/mcp/mcp_fine_time_1004.root", 20000);
-        unpackmcp->SetInputFileFineTimeHistos(config_path + "/mcp/mcp_fine_time_1004.root");
+        //unpackmcp->DoFineTimeCalOnline(config_path + "/mcp/mcp_fine_time_0905.root", 80000);
+        unpackmcp->SetInputFileFineTimeHistos(config_path + "/mcp/mcp_fine_time_0905.root");
         
         unpackmcp->SetOnline(true);
         source->AddReader(unpackmcp);
@@ -155,7 +156,7 @@ void c_hispec10_online()
     {
         H10MCPRaw2Cal* calmcp = new H10MCPRaw2Cal();
         
-        calmcp->SetOnline(true);
+        calmcp->SetOnline(false);
         run->AddTask(calmcp);
     }
 
@@ -187,7 +188,7 @@ void c_hispec10_online()
     {
         H10MCPCal2Ana* anamcp = new H10MCPCal2Ana();
         
-        anamcp->SetOnline(true);
+        anamcp->SetOnline(false);
         run->AddTask(anamcp);
     }
 

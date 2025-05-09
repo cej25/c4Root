@@ -93,7 +93,7 @@ class StefanOnlineSpectra : public FairTask
 	
         std::vector<TH2*> h2_hit_strip_xy; // Hit pattern
         std::vector< std::vector<std::vector<TH1*>>> h1_raw_energy; // raw energy spectra
-        std::vector< std::vector<std::vector<TH1*>>> h1_pixel_energy; // energy per pixel spectra
+        std::vector< std::vector<TH1*>> h1_pixel_energy; // energy per pixel spectra
 
 
 

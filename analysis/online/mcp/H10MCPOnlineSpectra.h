@@ -148,37 +148,21 @@ class H10MCPOnlineSpectra : public FairTask
         
         // Histograms  
         // Histograms 
-        TH1* h1_test_histogram;
-        TH2* histogram2;
+        TH1* h1_dT;
+        TH1* h1_T1_SC42L;
+        TH2* h2_dX1_dT;
+        TH2* h2_dY1_dT;
+        TH2* h2_dX2_dT;
+        TH2* h2_dY2_dT;
+
        
         //TH1* MCP1Energy;
         //TH1* MCP2Energy;
         TH2* MCP1Heatmap1;
         TH2* MCP2Heatmap1;
+       // TH2* h2_dt_vsSC41;
         
-        std::vector<TH1*> h1_fatima_slowToT;
-        std::vector<TH1*> h1_fatima_fastToT;
-        std::vector<TH1*> h1_fatima_energy;
-        std::vector<TH1*> h1_fatima_abs_time;
-        std::vector<TH2*> h2_fatima_fast_v_slow;
-
-        TH1 * h1_fatima_multiplicity;
-        TH2 * h2_fatima_energy_vs_detid;
-        TH2 * h2_fatima_energy_uncal_vs_detid;
-        TH1 * h1_fatima_hitpattern_slow;
-        TH1 * h1_fatima_hitpattern_fast;
-        std::vector<std::vector<TH1*>> h1_fatima_time_differences;
-        std::vector<std::vector<TH2*>> h2_fatima_time_differences_vs_energy;
-
-        //sci41 spectra:
-        TCanvas * c_fatima_energy_summed_vs_tsci41;
-        TH2 * h2_fatima_energy_summed_vs_tsci41;
-        TCanvas * c_fatima_energy_summed_vs_tsci41_cut;
-        TH1 * h1_fatima_energy_summed_vs_tsci41_cut;
-        TCanvas * c_fatima_energy_energy_sci41_cut;
-        TH2 * h2_fatima_energy_energy_sci41_cut;
-
-        TH1** h1_fatima_rates;
+        
         
         // Binnings:
         int ffast_tot_nbins = 500;
