@@ -17,7 +17,7 @@
 extern "C"
 {
     //#include "../../config/pareeksha/frs/setup_Fragment_conv_updated.C" //pareeksha data
-    #include "../../../config/shiyan/frs/setup/setup_160_49_2025_conv.C" //shiyan
+    #include "../../../config/shiyan/frs/setup/setup_103_002_2025_conv.C" //shiyan
 }
 
 typedef struct EXT_STR_h101_t
