@@ -782,6 +782,33 @@ InitStatus LisaFrsCorrelations::Init()
     // dir_position->Append(c_test);
     //..........................
 
+
+    mh_counter_passed_s1s2_seq = new int*[pair_count];
+    mh_counter_passed_s2s4_seq = new int*[pair_count];
+    for (int pair = 0; pair < pair_count; pair++)
+    {   
+        mh_counter_passed_s1s2_seq[pair] = new int[layer_number];
+        mh_counter_passed_s2s4_seq[pair] = new int[layer_number];
+        for (int i = 0; i < layer_number; i++)
+        {
+            mh_counter_passed_s1s2_seq[pair][i] = 0;
+            mh_counter_passed_s2s4_seq[pair][i] = 0;
+        }
+    }
+
+    mh_counter_passed_s1s2_seq_mwd = new int*[pair_count_MWD];
+    mh_counter_passed_s2s4_seq_mwd = new int*[pair_count_MWD];
+    for (int pair = 0; pair < pair_count; pair++)
+    {   
+        mh_counter_passed_s1s2_seq_mwd[pair] = new int[layer_number];
+        mh_counter_passed_s2s4_seq_mwd[pair] = new int[layer_number];
+        for (int i = 0; i < layer_number; i++)
+        {
+            mh_counter_passed_s1s2_seq_mwd[pair][i] = 0;
+            mh_counter_passed_s2s4_seq_mwd[pair][i] = 0;
+        }
+    }
+
  
     return kSUCCESS;
 
@@ -1113,8 +1140,6 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     // ::: LISA-FRS gates applied on LISA (LISA_FRS Directory)
     // ::: Febex
     //pair_count = std::min(febex_gates.size(), FrsGates.size());
-    int mh_counter_passed_s1s2_seq[pair_count][layer_number] = {0};
-    int mh_counter_passed_s2s4_seq[pair_count][layer_number] = {0};
 
     for (int pair = 0; pair < pair_count; pair++)  
     {
@@ -1175,17 +1200,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     }
     // ::: MWD 
     //int pair_count_MWD = std::min(mwd_gates.size(), FrsGates.size());
-    int mh_counter_passed_s1s2_seq_mwd[pair_count_MWD][layer_number];
-    int mh_counter_passed_s2s4_seq_mwd[pair_count_MWD][layer_number];
-    for (int i = 0; i < layer_number; i++)
-    {
-        mh_counter_passed_s1s2_seq_mwd[0][i] = 0;
-        mh_counter_passed_s2s4_seq_mwd[0][i] = 0;
-        mh_counter_passed_s1s2_seq_mwd[1][i] = 0;
-        mh_counter_passed_s2s4_seq_mwd[1][i] = 0;
-    }
-
-
+    
     if (energy_MWD_layer_gated[0][0].size() > 0 && AoQ_s2s4_mhtdc.size() > 0) gate1++;
     if (energy_MWD_layer_gated[0][1].size() > 0 && AoQ_s2s4_mhtdc.size() > 0) gate2++;
     if (energy_MWD_layer_gated[0][0].size() > 0 && energy_MWD_layer_gated[0][1].size() > 0) bothgate++;
@@ -1267,7 +1282,22 @@ void LisaFrsCorrelations::Exec(Option_t* option)
 
 void LisaFrsCorrelations::FinishEvent()
 {
-
+    for (int pair = 0; pair < pair_count; pair++)
+    {
+        for (int i = 0; i < layer_number; i++)
+        {
+            mh_counter_passed_s1s2_seq[pair][i] = 0;
+            mh_counter_passed_s2s4_seq[pair][i] = 0;
+        }
+    }
+    for (int pair = 0; pair < pair_count_MWD; pair++)
+    {
+        for (int i = 0; i < layer_number; i++)
+        {
+            mh_counter_passed_s1s2_seq_mwd[pair][i] = 0;
+            mh_counter_passed_s2s4_seq_mwd[pair][i] = 0;
+        }
+    }
 }
 
 void LisaFrsCorrelations::FinishTask()

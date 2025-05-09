@@ -92,6 +92,14 @@ class LisaFrsCorrelations : public FairTask
         int pair_count = 0;
         int pair_count_MWD = 0;
 
+
+        int** mh_counter_passed_s1s2_seq;
+        int** mh_counter_passed_s2s4_seq;
+        int** mh_counter_passed_s1s2_seq_mwd;
+        int** mh_counter_passed_s2s4_seq_mwd;
+
+    
+
         std::vector<LisaCalItem> const* lisaCalArray;
         std::vector<FrsHitItem> const* frsHitArray;
         std::vector<FrsMultiHitItem> const* multihitArray;
