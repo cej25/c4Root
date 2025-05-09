@@ -107,7 +107,7 @@ void s103_online()
     
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
-    TH10MCPConfiguration::SetDetectorConfigurationFile(config_path + "/mcp/mcp_mapping.txt");
+    TH10MCPConfiguration::SetDetectorConfigurationFile(config_path + "/mcp/mcp_mapping_run13.txt");
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
  
@@ -126,7 +126,7 @@ void s103_online()
     {
         H10MCPReader* unpackmcp = new H10MCPReader((EXT_STR_h101_mcp_onion*)&ucesb_struct.mcp, offsetof(EXT_STR_h101, mcp));
         //unpackmcp->DoFineTimeCalOnline(config_path + "/mcp/mcp_fine_time_0805.root", 1000000);
-        unpackmcp->SetInputFileFineTimeHistos(config_path + "/mcp/mcp_fine_time_0805.root");
+        unpackmcp->SetInputFileFineTimeHistos(config_path + "/mcp/mcp_fine_time_0905.root");
         
         unpackmcp->SetOnline(true);
         source->AddReader(unpackmcp);
