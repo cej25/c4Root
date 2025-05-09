@@ -6,8 +6,8 @@
 #define WR_ENABLED 1
 
 // Define for online if testing or during experient
-#define TEST 1
-#define EXP 0
+#define TEST 0
+#define EXP 1
 
 // Define FRS setup.C file - FRS should provide; place in /config/shiyan/frs/
 extern "C"
