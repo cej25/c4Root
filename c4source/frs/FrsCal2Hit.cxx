@@ -1335,7 +1335,7 @@ void FrsCal2Hit::ProcessMusic()
         if (music22_e[i] > 4)
         {
             if (music->exclude_music22_de_adc_channel[i] == kTRUE) music22_b_e[i] = false;
-            else music22_b_e[i] = ((music21_e[i] > 100) && (music21_e[i] < 4086));
+            else music22_b_e[i] = ((music22_e[i] > 100) && (music22_e[i] < 4086));
 
             if (music22_b_e[i]) music22_anodes_cnt++;
         }
@@ -2196,7 +2196,6 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
 
 
     // Calculate Z (MUSIC 21 / 22)
-    // cej - z roughly same as go4 but not quite..but why is plotting so weirdly different? 
     for (int i = 0; i < hits_in_s1s2;  i++)
     {
         if (music21_de_cor > 0.0 && id_mhtdc_beta_s1s2[i] > 0.0 && id_mhtdc_beta_s1s2[i] < 1.0)
