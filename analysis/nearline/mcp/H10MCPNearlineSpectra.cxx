@@ -137,8 +137,12 @@ void H10MCPNearlineSpectra::Exec(Option_t* option)
 	 X11=1000;
 	 X12=-5000;
 	 Y11=1000;
-	 Y12=-5000;  
-
+	 Y12=-5000;
+   SC41L=0;
+   SC41R=0;
+   SC42L=0;
+   SC42R=0;
+  DSSDAccept = 0;
 
 //	  double T01Epoch=0;
 //	  double T02Epoch=0;
@@ -231,6 +235,26 @@ void H10MCPNearlineSpectra::Exec(Option_t* option)
 			 Y12 = hit->Get_fast_lead_time();
 			// Y12Epoch=hit->Get_fast_lead_epoch();
 			}
+      if (mcp_id==0 && type==3 && number==0)
+      {
+        SC41L = hit->Get_fast_lead_time();
+      }
+      if (mcp_id==0 && type==3 && number==1)
+      {
+        SC41R = hit->Get_fast_lead_time();
+      }
+      if (mcp_id==0 && type==4 && number==0)
+      {
+        SC42L = hit->Get_fast_lead_time();
+      }
+      if (mcp_id==0 && type==4 && number==1)
+      {
+        SC42R = hit->Get_fast_lead_time();
+      }
+      if (mcp_id==0 && type==5 && number==0)
+      {
+        DSSDAccept = hit->Get_fast_lead_time();
+      }
 /*
           if (mcp_id==0 && type==0 && number== 0  && ch0counter == 0 )
           {
@@ -279,6 +303,9 @@ void H10MCPNearlineSpectra::Exec(Option_t* option)
 */
     
   }
+
+  // h1_sc41_vs_mcp->Fill();
+
 	h1_test_histogram->Fill(T01 - T02);
 	MCP1X1ddiff->Fill(X02-X01);
 	MCP1Y1ddiff->Fill(Y02-Y01);
