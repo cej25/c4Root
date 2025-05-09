@@ -199,31 +199,6 @@ InitStatus LisaFrsCorrelations::Init()
     h1_wr_diff[2]->SetFillColor(kRed-3);
     //...........................................
 
-    // ::: POSITION CORRELATIONS :::
-    // FRS Position on TPC interpolated on LISA vs LISA
-    /*dir_position->cd();
-
-    h2_TPC_vs_LISA_x.resize(layer_number);
-    for (int i = 0; i < layer_number; i++)
-    {
-        h2_TPC_vs_LISA_x[i] = new TH2F(Form("h2_TPC_vs_LISA_x_Layer_%i",i+1), Form("TPC vs LISA X - Layer %i",i+1), xmax, 0, xmax, 400,-100,100);
-        h2_TPC_vs_LISA_x[i]->GetXaxis()->SetTitle(Form("LISA - X position Layer %i",i+1));
-        h2_TPC_vs_LISA_x[i]->GetYaxis()->SetTitle("TPC Position");
-        h2_TPC_vs_LISA_x[i]->SetStats(0);
-        h2_TPC_vs_LISA_x[i]->SetOption("colz");        
-    }
-
-    h2_TPC_vs_LISA_y.resize(layer_number);
-    for (int i = 0; i < layer_number; i++)
-    {
-        h2_TPC_vs_LISA_y[i] = new TH2F(Form("h2_TPC_vs_LISA_y_Layer_%i",i+1), Form("TPC vs LISA Y - Layer %i",i+1), ymax, 0, ymax, 400,-100,100);
-        h2_TPC_vs_LISA_y[i]->GetXaxis()->SetTitle(Form("LISA - Y position Layer %i",i+1));
-        h2_TPC_vs_LISA_y[i]->GetYaxis()->SetTitle("TPC Position");
-        h2_TPC_vs_LISA_y[i]->SetStats(0);
-        h2_TPC_vs_LISA_y[i]->SetOption("colz");        
-    }*/
-    //.......................
-
     // :::   E N E R G Y    C O R R E L A T I O N S   :::
     // ::: Febex
     dir_febex->cd();
@@ -231,8 +206,8 @@ InitStatus LisaFrsCorrelations::Init()
     h2_MUSIC21_vs_LISA_febex.resize(layer_number);
     for (int i = 0; i < layer_number; i++)
     {
-        h2_MUSIC21_vs_LISA_febex[i] = new TH2F(Form("h2_MUSIC(21)_vs_LISA_%i_febex",i), Form("dE MUSIC(21) vs dE(LISA) %i Febex",i), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy, bin_21, min_21, max_21);
-        h2_MUSIC21_vs_LISA_febex[i]->GetXaxis()->SetTitle(Form("dE(LISA) Febex - Layer %i",i));
+        h2_MUSIC21_vs_LISA_febex[i] = new TH2F(Form("h2_MUSIC(21)_vs_LISA_%i_febex",i+1), Form("dE MUSIC(21) vs dE(LISA) %i Febex",i+1), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy, bin_21, min_21, max_21);
+        h2_MUSIC21_vs_LISA_febex[i]->GetXaxis()->SetTitle(Form("dE(LISA) Febex - Layer %i",i+1));
         h2_MUSIC21_vs_LISA_febex[i]->GetYaxis()->SetTitle("dE MUSIC(21)");
         h2_MUSIC21_vs_LISA_febex[i]->SetOption("COLZ");
     }
@@ -241,8 +216,8 @@ InitStatus LisaFrsCorrelations::Init()
     h2_MUSIC41_vs_LISA_febex.resize(layer_number);
     for (int i = 0; i < layer_number; i++)
     {
-        h2_MUSIC41_vs_LISA_febex[i] = new TH2F(Form("h2_MUSIC(41)_vs_LISA_%i_febex",i), Form("dE MUSIC(41) vs dE(LISA) %i Febex",i), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy, bin_41, min_41, max_41);
-        h2_MUSIC41_vs_LISA_febex[i]->GetXaxis()->SetTitle(Form("dE(LISA) Febex - Layer %i",i));
+        h2_MUSIC41_vs_LISA_febex[i] = new TH2F(Form("h2_MUSIC(41)_vs_LISA_%i_febex",i+1), Form("dE MUSIC(41) vs dE(LISA) %i Febex",i+1), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy, bin_41, min_41, max_41);
+        h2_MUSIC41_vs_LISA_febex[i]->GetXaxis()->SetTitle(Form("dE(LISA) Febex - Layer %i",i+1));
         h2_MUSIC41_vs_LISA_febex[i]->GetYaxis()->SetTitle("dE MUSIC(41)");
         h2_MUSIC41_vs_LISA_febex[i]->SetOption("COLZ");
     }
@@ -253,7 +228,7 @@ InitStatus LisaFrsCorrelations::Init()
     h2_MUSIC21_vs_LISA_MWD.resize(layer_number);
     for (int i = 0; i < layer_number; i++)
     {
-        h2_MUSIC21_vs_LISA_MWD[i] = new TH2F(Form("h2_MUSIC(21)_vs_LISA_%i_MWD",i), Form("dE MUSIC(21) vs dE(LISA) %i MWD",i), lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD, bin_21, min_21, max_21);
+        h2_MUSIC21_vs_LISA_MWD[i] = new TH2F(Form("h2_MUSIC(21)_vs_LISA_%i_MWD",i), Form("dE MUSIC(21) vs dE(LISA) %i MWD",i+1), lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD, bin_21, min_21, max_21);
         h2_MUSIC21_vs_LISA_MWD[i]->GetXaxis()->SetTitle(Form("dE(LISA) MWD - Layer %i",i));
         h2_MUSIC21_vs_LISA_MWD[i]->GetYaxis()->SetTitle("dE MUSIC(21)");
         h2_MUSIC21_vs_LISA_MWD[i]->SetOption("COLZ");
@@ -263,8 +238,8 @@ InitStatus LisaFrsCorrelations::Init()
     h2_MUSIC41_vs_LISA_MWD.resize(layer_number);
     for (int i = 0; i < layer_number; i++)
     {
-        h2_MUSIC41_vs_LISA_MWD[i] = new TH2F(Form("h2_MUSIC(41)_vs_LISA_%i_MWD",i), Form("dE MUSIC(41) vs dE(LISA) %i MWD",i), lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD, bin_41, min_41, max_41);
-        h2_MUSIC41_vs_LISA_MWD[i]->GetXaxis()->SetTitle(Form("dE(LISA) MWD - Layer %i",i));
+        h2_MUSIC41_vs_LISA_MWD[i] = new TH2F(Form("h2_MUSIC(41)_vs_LISA_%i_MWD",i+1), Form("dE MUSIC(41) vs dE(LISA) %i MWD",i+1), lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD, bin_41, min_41, max_41);
+        h2_MUSIC41_vs_LISA_MWD[i]->GetXaxis()->SetTitle(Form("dE(LISA) MWD - Layer %i",i+1));
         h2_MUSIC41_vs_LISA_MWD[i]->GetYaxis()->SetTitle("dE MUSIC(41)");
         h2_MUSIC41_vs_LISA_MWD[i]->SetOption("COLZ");
     }
@@ -758,28 +733,28 @@ InitStatus LisaFrsCorrelations::Init()
     h2_tpc_xy_LISA = new TH2*[layer_number];
     for (int i = 0; i < layer_number; i++)
     {
-        h1_tpc_lisa_x[i] = MakeTH1(dir_position, "F", Form("h1_tpc_lisa_x_%i", i), Form("LISA X (FROM TPC) Layer %i", i), 400, -40., 40., "X", kYellow, kBlack);
-        h1_tpc_lisa_y[i] = MakeTH1(dir_position, "F", Form("h1_tpc_lisa_y_%i", i), Form("LISA Y (FROM TPC) Layer %i", i), 400, -40., 40., "Y", kYellow, kBlack);
-        h2_tpc_x_lisa_x[i] = MakeTH2(dir_position, "F", Form("h2_tpc_x_lisa_x_%i", i),Form("TPC X vs LISA X Layer %i", i), 2, 0, 2, 400, -40., 40.);
-        h2_tpc_y_lisa_y[i] = MakeTH2(dir_position, "F", Form("h2_tpc_y_lisa_y_%i", i),Form("TPC Y vs LISA Y Layer %i", i), 2, 0, 2, 400, -40., 40.);
-        h2_tpc_xy_LISA[i] = MakeTH2(dir_position, "F", Form("h2_tpc_xy_LISA_%i", i), Form("TPC XY at LISA - Layer %i", i), 400, -40., 40., 400, -40., 40.);
+        h1_tpc_lisa_x[i] = MakeTH1(dir_position, "F", Form("h1_tpc_lisa_x_%i", i+1), Form("LISA X (FROM TPC) Layer %i", i+1), 1000, -100., 100., "X", kYellow, kBlack);
+        h1_tpc_lisa_y[i] = MakeTH1(dir_position, "F", Form("h1_tpc_lisa_y_%i", i+1), Form("LISA Y (FROM TPC) Layer %i", i+1), 1000, -100., 100., "Y", kYellow, kBlack);
+        h2_tpc_x_lisa_x[i] = MakeTH2(dir_position, "F", Form("h2_tpc_x_lisa_x_%i", i+1),Form("TPC X vs LISA X Layer %i", i+1), xmax, 0, xmax, 1000, -100., 100.);
+        h2_tpc_y_lisa_y[i] = MakeTH2(dir_position, "F", Form("h2_tpc_y_lisa_y_%i", i+1),Form("TPC Y vs LISA Y Layer %i", i+1), ymax, 0, ymax, 1000, -100., 100.);
+        h2_tpc_xy_LISA[i] = MakeTH2(dir_position, "F", Form("h2_tpc_xy_LISA_%i", i+1), Form("TPC XY at LISA - Layer %i", i+1), 1000, -100., 100., 1000, -100., 100.);
     }
 
     // TCanvas* c_test = new TCanvas("c_test", "TPC POS XY AT LISA", 650, 350);
     // c_test->Divide(2,2);
     // c_test->cd(1);
-    h2_tpc_xy_LISA_001 = MakeTH2(dir_position, "F", "h2_tpc_xy_LISA_001", "TPC XY at LISA 001", 40, -8., 10., 40, -25., -4.);
-    // h2_tpc_xy_LISA_001->Draw();
-    // c_test->cd(2);
-    h2_tpc_xy_LISA_011 = MakeTH2(dir_position, "F", "h2_tpc_xy_LISA_011", "TPC XY at LISA 011", 40, -8., 10., 40, -25., -4.);
-    // h2_tpc_xy_LISA_011->Draw();
-    // c_test->cd(3);
-    h2_tpc_xy_LISA_000 = MakeTH2(dir_position, "F", "h2_tpc_xy_LISA_000", "TPC XY at LISA 000", 40, -8., 10., 40, -25., -4.);
-    // h2_tpc_xy_LISA_000->Draw();
-    // c_test->cd(4);
-    h2_tpc_xy_LISA_010 = MakeTH2(dir_position, "F", "h2_tpc_xy_LISA_010", "TPC XY at LISA 010", 40, -8., 10., 40, -25., -4.);
-    // h2_tpc_xy_LISA_010->Draw();
-    // dir_position->Append(c_test);
+    // h2_tpc_xy_LISA_001 = MakeTH2(dir_position, "F", "h2_tpc_xy_LISA_001", "TPC XY at LISA 001", 40, -8., 10., 40, -25., -4.);
+    // // h2_tpc_xy_LISA_001->Draw();
+    // // c_test->cd(2);
+    // h2_tpc_xy_LISA_011 = MakeTH2(dir_position, "F", "h2_tpc_xy_LISA_011", "TPC XY at LISA 011", 40, -8., 10., 40, -25., -4.);
+    // // h2_tpc_xy_LISA_011->Draw();
+    // // c_test->cd(3);
+    // h2_tpc_xy_LISA_000 = MakeTH2(dir_position, "F", "h2_tpc_xy_LISA_000", "TPC XY at LISA 000", 40, -8., 10., 40, -25., -4.);
+    // // h2_tpc_xy_LISA_000->Draw();
+    // // c_test->cd(4);
+    // h2_tpc_xy_LISA_010 = MakeTH2(dir_position, "F", "h2_tpc_xy_LISA_010", "TPC XY at LISA 010", 40, -8., 10., 40, -25., -4.);
+    // // h2_tpc_xy_LISA_010->Draw();
+    // // dir_position->Append(c_test);
     //..........................
 
 
@@ -926,10 +901,10 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         h2_tpc_y_lisa_y[layer-1]->Fill(ypos, y_lisa_tpc22_23);
         h2_tpc_xy_LISA[layer-1]->Fill(x_lisa_tpc22_23, y_lisa_tpc22_23);
 
-        if (layer == 1 && xpos == 0 && ypos == 1) h2_tpc_xy_LISA_001->Fill(x_lisa_tpc22_23, y_lisa_tpc22_23);
-        if (layer == 1 && xpos == 1 && ypos == 1) h2_tpc_xy_LISA_011->Fill(x_lisa_tpc22_23, y_lisa_tpc22_23);
-        if (layer == 1 && xpos == 0 && ypos == 0) h2_tpc_xy_LISA_000->Fill(x_lisa_tpc22_23, y_lisa_tpc22_23);
-        if (layer == 1 && xpos == 1 && ypos == 0) h2_tpc_xy_LISA_010->Fill(x_lisa_tpc22_23, y_lisa_tpc22_23);
+        // if (layer == 1 && xpos == 0 && ypos == 1) h2_tpc_xy_LISA_001->Fill(x_lisa_tpc22_23, y_lisa_tpc22_23);
+        // if (layer == 1 && xpos == 1 && ypos == 1) h2_tpc_xy_LISA_011->Fill(x_lisa_tpc22_23, y_lisa_tpc22_23);
+        // if (layer == 1 && xpos == 0 && ypos == 0) h2_tpc_xy_LISA_000->Fill(x_lisa_tpc22_23, y_lisa_tpc22_23);
+        // if (layer == 1 && xpos == 1 && ypos == 0) h2_tpc_xy_LISA_010->Fill(x_lisa_tpc22_23, y_lisa_tpc22_23);
     
         float energy_LISA_febex = lisaCalItem.Get_energy_GM();
         float energy_LISA_MWD = lisaCalItem.Get_energy_MWD_GM();
@@ -1060,10 +1035,10 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     wr_LISA_travMUSIC = wr_LISA - wr_travMUSIC;
     wr_travMUSIC_FRS = wr_travMUSIC - wr_FRS;
     
-    if(wr_travMUSIC == 0) return;
+    //if(wr_travMUSIC == 0) return;
     h1_wr_diff[2]->Fill(wr_travMUSIC_FRS);
 
-    if(wr_travMUSIC == 0) return;
+    //if(wr_travMUSIC == 0) return;
     h1_wr_diff[1]->Fill(wr_LISA_travMUSIC);
 
     if (wr_FRS != 0 && wr_LISA != 0) h1_wr_diff[0]->Fill(wr_LISA_FRS);

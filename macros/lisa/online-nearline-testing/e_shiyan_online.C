@@ -85,7 +85,7 @@ void e_shiyan_online()
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
-    run->SetSink(new FairRootFileSink(outputFileName));   // if commented - don't write after termintion
+    //run->SetSink(new FairRootFileSink(outputFileName));   // if commented - don't write after termintion
     run->ActivateHttpServer(refresh, port);
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
