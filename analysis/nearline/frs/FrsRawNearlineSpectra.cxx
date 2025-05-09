@@ -18,7 +18,6 @@
 #include "FairLogger.h"
 #include "FairRootManager.h"
 #include "FairRunAna.h"
-#include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
 
 // c4
@@ -60,9 +59,6 @@ InitStatus FrsRawNearlineSpectra::Init()
 {
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
-
-    FairRunOnline* run = FairRunOnline::Instance();
-    run->GetHttpServer()->Register("", this);
 
     header = mgr->InitObjectAs<decltype(header)>("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found!");
