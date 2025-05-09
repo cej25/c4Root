@@ -70,7 +70,7 @@ void e_shiyan_make_trees()
     TString outputpath = "/u/gandolfo/data/shiyan_1st_day/";   //energy resolution data
     
     //TString outputFilename = outputpath + "test_run_0075.root";
-    TString outputFilename = outputpath + "run_0006_0001_tree_conv_v3.root"; 
+    TString outputFilename = outputpath + "run_0006_0001_tree_conv_v4.root"; 
     //TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  // Data from FRS with S2 PID
 
 

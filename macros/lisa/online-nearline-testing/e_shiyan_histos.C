@@ -67,7 +67,7 @@ void e_shiyan_histos()
     TString inputpath = "/u/gandolfo/data/shiyan_1st_day/";
 
     //TString filename = inputpath + "run_0003_0001_tree_v2.root";
-    TString filename = inputpath + "run_0006_0001_tree_conv_v3.root";  
+    TString filename = inputpath + "run_0006_0001_tree_conv_v4.root";  
     //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  //FRS data with S2 PID
     
     // ::: O U T P U T
@@ -75,7 +75,7 @@ void e_shiyan_histos()
     //TString outputpath = "/u/gandolfo/data/test_c4/layer_alpha/";   //energy resolution output
     
     //TString outputFilename = outputpath + "run_0003_0001_histo_v2.root";
-    TString outputFilename = outputpath + "run_0006_0001_histo_conv_v3.root";
+    TString outputFilename = outputpath + "run_0006_0001_histo_conv_v4.root";
     //TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_histo_6May.root";     //FRS data with S2 PID
 
 
@@ -220,7 +220,7 @@ void e_shiyan_histos()
     // ::: FRS
     TFrsConfiguration::Set_Z_range(10,60);
     TFrsConfiguration::Set_AoQ_range(1.8,3.5);
-    TFrsConfiguration::Set_dE_music41_range(0,40000); 
+    TFrsConfiguration::Set_dE_music41_range(0,5000); 
     TFrsConfiguration::Set_dE_music21_range(0,40000);
     
     //::::::::: Set ranges for histos :::::::::::::::

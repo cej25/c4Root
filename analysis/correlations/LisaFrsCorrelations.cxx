@@ -145,10 +145,10 @@ InitStatus LisaFrsCorrelations::Init()
     // Ranges from MUSICs
     int min_21 = frs_config->fMin_dE_music21;
     int max_21 = frs_config->fMax_dE_music21;
-    int bin_21 = (max_21 - min_21)/10;
+    int bin_21 = (max_21 - min_21)/40;
     int min_41 = frs_config->fMin_dE_music41;
     int max_41 = frs_config->fMax_dE_music41;
-    int bin_41 = (max_41 - min_41)/10;
+    int bin_41 = (max_41 - min_41)/40;
     //.............
 
     FairRootManager::Instance()->GetOutFile()->cd();
