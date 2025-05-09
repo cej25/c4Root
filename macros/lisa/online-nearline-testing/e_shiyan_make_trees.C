@@ -70,7 +70,7 @@ void e_shiyan_make_trees()
     TString outputpath = "/u/gandolfo/data/shiyan_1st_day/";   //energy resolution data
     
     //TString outputFilename = outputpath + "test_run_0075.root";
-    TString outputFilename = outputpath + "run_0006_0001_tree_conv.root"; 
+    TString outputFilename = outputpath + "run_0006_0001_tree_conv_v4.root"; 
     //TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  // Data from FRS with S2 PID
 
 
@@ -191,7 +191,7 @@ void e_shiyan_make_trees()
     {   
 
         FrsReader* unpackfrs = new FrsReader((EXT_STR_h101_frs_onion*)&ucesb_struct.frs, offsetof(EXT_STR_h101, frs)); 
-        unpackfrs->SetOnline(true);
+        unpackfrs->SetOnline(false);
         source->AddReader(unpackfrs);
 
     }   
@@ -229,7 +229,7 @@ void e_shiyan_make_trees()
 
         FrsRaw2Cal* calfrs = new FrsRaw2Cal();
         
-        calfrs->SetOnline(true);
+        calfrs->SetOnline(false);
         run->AddTask(calfrs);
 
     }
