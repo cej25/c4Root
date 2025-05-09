@@ -118,12 +118,23 @@ InitStatus LisaFrsCorrelationsOnline::Init()
     //:::::::::: WR Time differences ::::::::::::::::::::::
     c_wr_diff = new TCanvas("c_wr_diff", "WR Time Difference", 650, 350);
     //h1_wr_diff.resize(3);
+    c_wr_diff->Divide(1, 3);
 
     c_wr_diff->cd(1);
     h1_wr_diff = new TH1I("h1_WR_Difference_LISA-FRS", " WR Difference LISA - FRS ", 6000, -3000, 3000);
     h1_wr_diff->GetXaxis()->SetTitle("WR(LISA) - WR (FRS)");
     h1_wr_diff->SetFillColor(kRed-3);
     h1_wr_diff->Draw();
+    c_wr_diff->cd(2);
+    h1_wr_diff_tpat2 = new TH1I("h1_wr_diff_tpat2", " WR Difference LISA - FRS tpat 2", 6000, -3000, 3000);
+    h1_wr_diff_tpat2->GetXaxis()->SetTitle("WR(LISA) - WR (FRS)");
+    h1_wr_diff_tpat2->SetFillColor(kRed-3);
+    h1_wr_diff_tpat2->Draw();
+    c_wr_diff->cd(3);
+    h1_wr_diff_tpat6 = new TH1I("h1_wr_diff_tpat2", " WR Difference LISA - FRS tpat 6 ", 6000, -3000, 3000);
+    h1_wr_diff_tpat6->GetXaxis()->SetTitle("WR(LISA) - WR (FRS)");
+    h1_wr_diff_tpat6->SetFillColor(kRed-3);
+    h1_wr_diff_tpat6->Draw();
 
     // c_wr_diff->cd(2);
     // h1_wr_diff[1] = new TH1I("h1_WR_Difference_LISA-TravMUSIC", " WR Difference LISA - TravMUSIC ", 6000, -3000, 3000);
@@ -278,7 +289,7 @@ void LisaFrsCorrelationsOnline::Reset_Histo()
 void LisaFrsCorrelationsOnline::Exec(Option_t* option)
 {   
     // reject events without both subsystems
-    if (frsHitArray->size() <= 0) return; //frs is there
+    if (frsHitArray->size() <= 0 || lisaCalArray->size() <= 0) return; //frs is there
     //if (lisaCalArray->size() <= 0 ) return; //for when travmusic is there but not frs
 
     const auto & frsHitItem = frsHitArray->at(0); // *should* only be 1 FRS subevent per event
@@ -382,8 +393,11 @@ void LisaFrsCorrelationsOnline::Exec(Option_t* option)
     wr_LISA_FRS = wr_LISA - wr_FRS;
     wr_LISA_travMUSIC = wr_LISA - wr_travMUSIC;
     wr_travMUSIC_FRS = wr_travMUSIC - wr_FRS;
+
     
-    //c4LOG(info, " WR LISA : " << wr_LISA << " WR TravMus: " << wr_travMUSIC << " WR FRS : " << wr_FRS);
+    // if (frsHitItem.Get_tpat() & 0b100000) c4LOG(info, "TPAT 6:: WR LISA-FRS DIFF : " << wr_LISA_FRS);
+    // if (frsHitItem.Get_tpat() & 0b10) c4LOG(info, "TPAT 2:: WR LISA-FRS DIFF : " << wr_LISA_FRS);
+
 
     //if(wr_travMUSIC == 0) return;
     //h1_wr_diff[2]->Fill(wr_travMUSIC_FRS);
@@ -392,7 +406,9 @@ void LisaFrsCorrelationsOnline::Exec(Option_t* option)
     //h1_wr_diff[1]->Fill(wr_LISA_travMUSIC);
 
 
-    if (wr_FRS != 0 && wr_LISA != 0) h1_wr_diff->Fill(wr_LISA_FRS);
+    h1_wr_diff->Fill(wr_LISA_FRS);
+    if (frsHitItem.Get_tpat() & 0b100000) h1_wr_diff_tpat6->Fill(wr_LISA_FRS);
+    if (frsHitItem.Get_tpat() & 0b10) h1_wr_diff_tpat2->Fill(wr_LISA_FRS);
 
 
     // ::: E N E R G Y  - LISA vs MUSICs
