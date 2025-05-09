@@ -61,6 +61,21 @@ ZERO_FILLER()
     }
 }
 
+VULOM_TPAT()
+{
+    UINT32 vulom_head NOENCODE
+    {
+        0_15: counter;
+        16_31: head = MATCH(0xF500);
+    };
+
+    // loop through number of words
+    list (0 <= i < vulom_head.counter)
+    {
+        UINT32 tp NOENCODE;
+    };
+}
+
 // procID = 15
 TPAT_CRATE_DATA() 
 {
@@ -73,8 +88,7 @@ TPAT_CRATE_DATA()
     
     UINT32 trigger_pattern 
     {
-        0_14: pattern;
-        15: test;
+        0_15: pattern;
         16_31: nothing; // trigger type?
         ENCODE(tpat, (value = pattern));
     }
@@ -95,13 +109,19 @@ TPAT_CRATE_DATA()
                 0_31: something;
             }
         }
+
+        UINT32 dead NOENCODE
+        {
+            0_31: 0xDEADDEAD;
+        }
+
+        several UINT32 eob NOENCODE;
     }
     else
     {
         // bad event?
         several UINT32 filler NOENCODE;
     }
-
 
     
 }
@@ -166,4 +186,45 @@ USER_CRATE_DATA()
     barrier2 = BARRIER();
     v1290 = VME_CAEN_V1290_N();
     optional UINT32 eodb NOENCODE;
+}
+
+// procID = 35
+TRAVMUS_CRATE_DATA()
+{
+    UINT32 coffee NOENCODE
+    {
+        0_7: counter;
+        8_31: 0xC0FFEE;
+    }
+
+    if (coffee.counter == 0)
+    {
+        UINT32 dead NOENCODE
+        {
+            0_31: 0xDEADDEAD;
+        }
+
+        UINT32 vtime NOENCODE;
+        UINT32 dtime NOENCODE;
+
+        UINT32 barrier NOENCODE
+        {
+            0_15: counter;
+            16_31: bar = MATCH(0xF520);
+
+        };
+
+        select several
+        {
+            mdpp = VME_MESYTEC_MDPP16(geom=8);
+        };
+
+    }
+    else // not trigger 1
+    {
+        select several
+        {
+            dummy = DUMMY();
+        }
+    }
 }
