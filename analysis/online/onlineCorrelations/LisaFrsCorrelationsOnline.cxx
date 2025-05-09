@@ -131,7 +131,7 @@ InitStatus LisaFrsCorrelationsOnline::Init()
     h1_wr_diff_tpat2->SetFillColor(kRed-3);
     h1_wr_diff_tpat2->Draw();
     c_wr_diff->cd(3);
-    h1_wr_diff_tpat6 = new TH1I("h1_wr_diff_tpat2", " WR Difference LISA - FRS tpat 6 ", 6000, -3000, 3000);
+    h1_wr_diff_tpat6 = new TH1I("h1_wr_diff_tpat6", " WR Difference LISA - FRS tpat 6 ", 6000, -3000, 3000);
     h1_wr_diff_tpat6->GetXaxis()->SetTitle("WR(LISA) - WR (FRS)");
     h1_wr_diff_tpat6->SetFillColor(kRed-3);
     h1_wr_diff_tpat6->Draw();
