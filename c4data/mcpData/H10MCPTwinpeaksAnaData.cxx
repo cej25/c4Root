@@ -33,6 +33,9 @@ H10MCPTwinpeaksAnaData::H10MCPTwinpeaksAnaData()
     X22 = 0;
     Y21 = 0;
     Y22 = 0;
+    SC41 = 0;
+    SC42 = 0;
+    DSSDAccept = 0;
 }
 
 H10MCPTwinpeaksAnaData::H10MCPTwinpeaksAnaData(Long64_t abs_time,
@@ -49,7 +52,10 @@ H10MCPTwinpeaksAnaData::H10MCPTwinpeaksAnaData(Long64_t abs_time,
                                             Double_t x21,
                                             Double_t x22,
                                             Double_t y21,
-                                            Double_t y22)
+                                            Double_t y22,
+                                            Double_t sc41,
+                                            Double_t sc42,
+                                            Double_t dssdaccept)
 {
     absolute_event_time = abs_time;
     wr_t = wr;
@@ -66,6 +72,9 @@ H10MCPTwinpeaksAnaData::H10MCPTwinpeaksAnaData(Long64_t abs_time,
     X22 = x22;
     Y21 = y21;
     Y22 = y22;
+    SC41 = sc41;
+    SC42 = sc42;
+    DSSDAccept = dssdaccept;
 }
 
 ClassImp(H10MCPTwinpeaksAnaData)

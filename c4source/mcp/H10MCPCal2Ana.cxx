@@ -159,12 +159,40 @@ void H10MCPCal2Ana::Exec(Option_t* option)
                 if (y22_seen) { y22_discard++; continue; }
                 else { Y22 = hit->Get_fast_lead_time(); y22_seen = true; }
             }
+            if (mcp_id == 0 && type == 3 && number == 0)
+            {
+                if (sc41l_seen) { sc41l_discard++; continue; }
+                else { SC41L = hit->Get_fast_lead_time(); sc41l_seen = true; }
+            }
+            if (mcp_id == 0 && type == 3 && number == 1)
+            {
+                if (sc41r_seen) { sc41r_discard++; continue; }
+                else { SC41R = hit->Get_fast_lead_time(); sc41r_seen = true; }
+            }
+            if (mcp_id == 0 && type == 4 && number == 0)
+            {
+                if (sc42l_seen) { sc42l_discard++; continue; }
+                else { SC42L = hit->Get_fast_lead_time(); sc42l_seen = true; }
+            }
+            if (mcp_id == 0 && type == 4 && number == 1)
+            {
+                if (sc42r_seen) { sc42r_discard++; continue; }
+                else { SC42R = hit->Get_fast_lead_time(); sc42r_seen = true; }
+            }
+            if (mcp_id == 0 && type == 5 && number == 0)
+            {
+                if (dssdaccept_seen) { dssdaccept_discard++; continue; }
+                else { DSSDAccept = hit->Get_fast_lead_time(); dssdaccept_seen = true; }
+            }
         
         }
 
         if (t1_seen && x11_seen && x12_seen && y11_seen && y12_seen) mcp1_complete = true;
         if (t2_seen && x21_seen && x22_seen && y21_seen && y22_seen) mcp2_complete = true;
         if (mcp1_complete && mcp2_complete) { full_event = true; full_event_counter++; }
+
+        if (sc41l_seen && sc41r_seen) SC41 = (SC41L + SC41R) / 2;
+        if (sc42l_seen && sc42r_seen) SC42 = (SC42L + SC42R) / 2;
 
         new ((*fana_data)[fana_data->GetEntriesFast()]) H10MCPTwinpeaksAnaData(
                 absolute_event_time,
@@ -181,7 +209,10 @@ void H10MCPCal2Ana::Exec(Option_t* option)
                 X21,
                 X22,
                 Y21,
-                Y22);
+                Y22,
+                SC41,
+                SC42,
+                DSSDAccept);
     }
 
     fExecs++;
@@ -210,6 +241,11 @@ void H10MCPCal2Ana::FinishEvent()
     full_event = false;
     mcp1_complete = false;
     mcp2_complete = false;
+    sc41l_seen = false;
+    sc41r_seen = false;
+    sc42l_seen = false;
+    sc42r_seen = false;
+    dssdaccept_seen = false;
     T1 = 0;
     X11 = 0;
     X12 = 0;
@@ -220,6 +256,11 @@ void H10MCPCal2Ana::FinishEvent()
     X22 = 0;
     Y21 = 0;
     Y22 = 0;
+    SC41L = 0;
+    SC41R = 0;
+    SC42L = 0;
+    SC42R = 0;
+    DSSDAccept = 0;
 
 };
 

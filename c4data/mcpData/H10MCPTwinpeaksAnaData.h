@@ -23,7 +23,10 @@ class H10MCPTwinpeaksAnaData : public TObject
                             Double_t x21, // X1 MCP 2
                             Double_t x22, // X2 MCP 2
                             Double_t y21, // Y1 MCP 2
-                            Double_t y22); // Y2 MCP 2
+                            Double_t y22, // Y2 MCP 2
+                            Double_t sc41, // average of SC41 L/R
+                            Double_t sc42, // average of SC42 L/R
+                            Double_t dssdaccept);
             
 
         // Destructor
@@ -44,6 +47,9 @@ class H10MCPTwinpeaksAnaData : public TObject
         Double_t X22;
         Double_t Y21;
         Double_t Y22;
+        Double_t SC41;
+        Double_t SC42;
+        Double_t DSSDAccept;
        
         ClassDef(H10MCPTwinpeaksAnaData, 1);
 };

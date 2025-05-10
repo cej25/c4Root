@@ -115,6 +115,11 @@ InitStatus H10MCPNearlineSpectra::Init()
   //  h2_mcp1 = MakeTH1(dir_mcp, "F", "Heatmapmcp1", "TEST HIST", 1000, -1000000, 10000000,1000, -1000000, 10000000);
   //  h2_mcp2 = MakeTH1(dir_mcp, "F", "Heatmapmcp1", "TEST HIST", 1000, -1000000, 10000000,1000, -1000000, 10000000);
 
+  h1_sc41_mcp1 = MakeTH1(dir_mcp, "I", "h1_sc41_mcp1", "SC41-MCP1 Time Diff", 1000, -1000, 1000);
+  h1_sc41_mcp2 = MakeTH1(dir_mcp, "I", "h1_sc41_mcp2", "SC41-MCP2 Time Diff", 1000, -1000, 1000);
+  h1_sc42_mcp1 = MakeTH1(dir_mcp, "I", "h1_sc42_mcp1", "SC42-MCP1 Time Diff", 1000, -1000, 1000);
+  h1_sc42_mcp2 = MakeTH1(dir_mcp, "I", "h1_sc42_mcp2", "SC42-MCP2 Time Diff", 1000, -1000, 1000);
+
     return kSUCCESS;
     
 }
@@ -142,7 +147,7 @@ void H10MCPNearlineSpectra::Exec(Option_t* option)
    SC41R=0;
    SC42L=0;
    SC42R=0;
-  DSSDAccept = 0;
+    DSSDAccept = 0;
 
 //	  double T01Epoch=0;
 //	  double T02Epoch=0;
@@ -305,6 +310,13 @@ void H10MCPNearlineSpectra::Exec(Option_t* option)
   }
 
   // h1_sc41_vs_mcp->Fill();
+  double SC41 = (SC41L + SC41R) / 2;
+  double SC42 = (SC42L + SC42R) / 2;
+  h1_sc41_mcp1->Fill(SC41-T01);
+  h1_sc41_mcp2->Fill(SC41-T02);
+  h1_sc42_mcp1->Fill(SC42-T01);
+  h1_sc42_mcp2->Fill(SC42-T02);
+
 
 	h1_test_histogram->Fill(T01 - T02);
 	MCP1X1ddiff->Fill(X02-X01);
