@@ -121,6 +121,10 @@ class LisaFrsCorrelations : public FairTask
         TDirectory* dir_febex;
         TDirectory* dir_mwd;
 
+        TDirectory* dir_energy_LISA;
+        TDirectory* dir_LISA_FRS_febex;
+        TDirectory* dir_LISA_FRS_mwd;
+
         TDirectory* dir_gates;
 
         TDirectory* dir_gate_LISA;
@@ -171,11 +175,19 @@ class LisaFrsCorrelations : public FairTask
 
         // ::: Histograms
         // ::: Time
-        std::vector<TH1I*> h1_wr_diff;
+        TH1I* h1_wr_diff;
+        TH1I* h1_wr_diff_tpat2;
+        TH1I* h1_wr_diff_tpat6;
 
         // ::: Position
         std::vector<TH2F*> h2_TPC_vs_LISA_x;
         std::vector<TH2F*> h2_TPC_vs_LISA_y;
+
+        // ::: Energy LISA correlated with FRS :::
+        std::vector<TH1*> h1_energy_layer_corr_sci21;
+        std::vector<TH1*> h1_energy_layer_corr_sci41;
+        std::vector<TH1*> h1_energy_MWD_layer_corr_sci21;
+        std::vector<TH1*> h1_energy_MWD_layer_corr_sci41;
 
         // ::: Energy - LISA-MUSICs
         std::vector<TH2F*> h2_MUSIC21_vs_LISA_febex;
