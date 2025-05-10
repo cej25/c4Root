@@ -49,11 +49,11 @@ void trace_ana_histos(int fileNumber)
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
     TString inputpath = "/u/gandolfo/data/test_c4/trace_ana/";
-    TString filename = Form(inputpath + "LISAmp_10layers_%04d_MWDtree.root", fileNumber);  
+    TString filename = Form(inputpath + "test_%04d_MWD_optimization_v3.root", fileNumber);  
     
     //___O U T P U T
     TString outputpath = "/u/gandolfo/data/test_c4/trace_ana/"; 
-    TString outputFilename = Form(outputpath + "LISAmp_10layers_%04d_MWDhisto.root", fileNumber);
+    TString outputFilename = Form(outputpath + "test_%04d_MWD_optimization_histos_v3.root", fileNumber);
 
 
     FairRunAna* run = new FairRunAna();
@@ -71,8 +71,8 @@ void trace_ana_histos(int fileNumber)
      
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: LISA config
-    //TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
-    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_LISAmp_highgain.txt");
+    TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/shiyan/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
+    //TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_LISAmp_highgain.txt");
 
     // ::: Get run number :::
     TFrsConfiguration::SetRunNumber(fileNumber);
@@ -81,7 +81,8 @@ void trace_ana_histos(int fileNumber)
     // ::: Set Board number :::
     //     Since at this stage the mapping is not included, board number is hardcoded.
     TLisaConfiguration::SetBoardNumber(10);
-    TLisaConfiguration::SetEventToAnalyze(17045228); 
+    TLisaConfiguration::SetEventToAnalyze(419754); 
+    // for test_0003 event 419754 for card 0 , ch 4
     //for run 0075_0001 good evt is 600004, for run0001 (3x3) evt = 97000 (ID=6)
     // for run_0002_0001 good evt for ch2 is 208250
 

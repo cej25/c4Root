@@ -215,17 +215,19 @@ InitStatus LisaOnlineSpectra::Init()
         for (int j = 0; j < xmax * ymax; j++)
         {
             city = "";
+            int x = -9;
+            int y = -9;
             for (auto & detector : detector_mapping)
             {
-                int x = detector.second.second.first; 
-                int y = detector.second.second.second;
+                x = detector.second.second.first; 
+                y = detector.second.second.second;
                 if (detector.second.first.first == i+1 && ((ymax-(y+1))*xmax + x) == j)
                 {
                     city = detector.second.first.second;
                     break;
                 }
             }
-            h1_hitpattern_layer[i]->GetXaxis()->SetBinLabel(j+1, city.Data());
+            h1_hitpattern_layer[i]->GetXaxis()->SetBinLabel(j+1, Form("%i%i",x,y));
         }
        
     }
@@ -320,7 +322,7 @@ InitStatus LisaOnlineSpectra::Init()
     //....................................
     //      Multiplicity per layer
     c_multiplicity_per_layer = new TCanvas("c_multiplicity_per_layer", "Multiplicty Per Layer", 650, 350);
-    c_multiplicity_per_layer->Divide(2, (layer_number)/2); // was +1 dunno if matters
+    c_multiplicity_per_layer->Divide(2, (layer_number+1)/2); // was +1 dunno if matters
     h1_multiplicity_per_layer.resize(layer_number);
     for (int i = 0; i < layer_number; i++)
     {
@@ -409,17 +411,19 @@ InitStatus LisaOnlineSpectra::Init()
         for (int j = 0; j < xmax * ymax; j++)
         {
             city = "";
+            int x = -9;
+            int y = -9;
             for (auto & detector : detector_mapping)
             {
-                int x = detector.second.second.first; 
-                int y = detector.second.second.second;
+                x = detector.second.second.first; 
+                y = detector.second.second.second;
                 if (detector.second.first.first == i+1 && ((ymax-(y+1))*xmax + x) == j)
                 {
                     city = detector.second.first.second;
                     break;
                 }
             }
-            h2_energy_vs_ID[i]->GetXaxis()->SetBinLabel(j+1, city.Data());
+            h2_energy_vs_ID[i]->GetXaxis()->SetBinLabel(j+1, Form("%i%i",x,y));
         }
        
     }
@@ -567,17 +571,19 @@ InitStatus LisaOnlineSpectra::Init()
         for (int j = 0; j < xmax * ymax; j++)
         {
             city = "";
+            int x = -9;
+            int y = -9;
             for (auto & detector : detector_mapping)
             {
-                int x = detector.second.second.first; 
-                int y = detector.second.second.second;
+                x = detector.second.second.first; 
+                y = detector.second.second.second;
                 if (detector.second.first.first == i+1 && ((ymax-(y+1))*xmax + x) == j)
                 {
                     city = detector.second.first.second;
                     break;
                 }
             }
-            h2_energy_MWD_vs_ID[i]->GetXaxis()->SetBinLabel(j+1, city.Data());
+            h2_energy_MWD_vs_ID[i]->GetXaxis()->SetBinLabel(j+1, Form("%i%i",x,y));
         }
        
     }
@@ -733,6 +739,7 @@ void LisaOnlineSpectra::Reset_Histo()
         {
             for (int z = 0; z < ymax; z++)
             {
+                h1_energy_ch[i][j][z]->Reset();
                 h1_energy_MWD_ch[i][j][z]->Reset();
             }
         }
@@ -909,17 +916,18 @@ void LisaOnlineSpectra::Exec(Option_t* option)
 
         for (int i = 0; i < layer; i++)
         {
+            if (rate_running_count == lisa_config->max_wr_rate) h1_layer_rate[i]->Reset();
             layer_counter[i] = 0;
             for (int j = 0; j < xmax; j++)
             {
                 for (int k = 0; k < ymax; k++)
                 {
-                    if (rate_running_count == 900) h1_rate[i][j][k]->Reset();
+                    if (rate_running_count == lisa_config->max_wr_rate) h1_rate[i][j][k]->Reset();
                     detector_counter[i][j][k] = 0;
                 }
             }
         }
-        if (rate_running_count == 900) rate_running_count = 0;
+        if (rate_running_count == lisa_config->max_wr_rate) rate_running_count = 0;
     }
     //....................................
 

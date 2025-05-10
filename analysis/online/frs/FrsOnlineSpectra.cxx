@@ -509,14 +509,14 @@ InitStatus FrsOnlineSpectra::Init()
     // :::: MUSIC :::: 
     dir_music = dir_frs->mkdir("MUSIC");
     dir_music_e = dir_music->mkdir("E");
-    h1_music21_dE = MakeTH1(dir_music_e, "D", "h1_music21_dE", "Energy loss in MUSIC 21", 1000, 0.0, 4000.0, "dE MUSIC 21", kPink-3, kBlue+2);
-    h1_music22_dE = MakeTH1(dir_music_e, "D", "h1_music22_dE", "Energy loss in MUSIC 22", 1000, 0.0, 4000.0, "dE MUSIC 22", kPink-3, kBlue+2);
-    h1_music21_dE_cor = MakeTH1(dir_music_e, "D", "h1_music21_dE_cor", "Energy loss (cor) in MUSIC 21", 4000, 0.0, 4000.0, "dE (cor) MUSIC 21", kPink-3, kBlue+2);
-    h1_music22_dE_cor = MakeTH1(dir_music_e, "D", "h1_music22_dE_cor", "Energy loss (cor) in MUSIC 22", 4000, 0.0, 4000.0, "dE (cor) MUSIC 22", kPink-3, kBlue+2);
-    h1_music41_dE = MakeTH1(dir_music_e, "D", "h1_music41_dE", "Energy loss in MUSIC 41", 1000, 0.0, 4000.0, "dE MUSIC 41", kPink-3, kBlue+2);
-    h1_music42_dE = MakeTH1(dir_music_e, "D", "h1_music42_dE", "Energy loss in MUSIC 42", 1000, 0.0, 4000.0, "dE MUSIC 42", kPink-3, kBlue+2);
-    h1_music41_dE_cor = MakeTH1(dir_music_e, "D", "h1_music41_dE_cor", "Energy loss (cor) in MUSIC 41", 4000, 0.0, 4000.0, "dE (cor) MUSIC 41", kPink-3, kBlue+2);
-    h1_music42_dE_cor = MakeTH1(dir_music_e, "D", "h1_music42_dE_cor", "Energy loss (cor) in MUSIC 42", 4000, 0.0, 4000.0, "dE (cor) MUSIC 42", kPink-3, kBlue+2);
+    h1_music21_dE = MakeTH1(dir_music_e, "D", "h1_music21_dE", "Energy loss in MUSIC 21", 1000, 0.0, 64000.0, "dE MUSIC 21", kPink-3, kBlue+2);
+    h1_music22_dE = MakeTH1(dir_music_e, "D", "h1_music22_dE", "Energy loss in MUSIC 22", 1000, 0.0, 64000.0, "dE MUSIC 22", kPink-3, kBlue+2);
+    h1_music21_dE_cor = MakeTH1(dir_music_e, "D", "h1_music21_dE_cor", "Energy loss (cor) in MUSIC 21", 4000, 0.0, 64000.0, "dE (cor) MUSIC 21", kPink-3, kBlue+2);
+    h1_music22_dE_cor = MakeTH1(dir_music_e, "D", "h1_music22_dE_cor", "Energy loss (cor) in MUSIC 22", 4000, 0.0, 64000.0, "dE (cor) MUSIC 22", kPink-3, kBlue+2);
+    h1_music41_dE = MakeTH1(dir_music_e, "D", "h1_music41_dE", "Energy loss in MUSIC 41", 1000, 0.0, 10000.0, "dE MUSIC 41", kPink-3, kBlue+2);
+    h1_music42_dE = MakeTH1(dir_music_e, "D", "h1_music42_dE", "Energy loss in MUSIC 42", 1000, 0.0, 10000.0, "dE MUSIC 42", kPink-3, kBlue+2);
+    h1_music41_dE_cor = MakeTH1(dir_music_e, "D", "h1_music41_dE_cor", "Energy loss (cor) in MUSIC 41", 4000, 0.0, 10000.0, "dE (cor) MUSIC 41", kPink-3, kBlue+2);
+    h1_music42_dE_cor = MakeTH1(dir_music_e, "D", "h1_music42_dE_cor", "Energy loss (cor) in MUSIC 42", 4000, 0.0, 10000.0, "dE (cor) MUSIC 42", kPink-3, kBlue+2);
 
     // ::: Monitors :::::
     if (frs_config->plot_monitors)
@@ -735,7 +735,7 @@ void FrsOnlineSpectra::Exec(Option_t* option)
 
 void FrsOnlineSpectra::Process_TAC()
 {
-    // S1S4
+    // S1S2
     // ----- 2D -----
 
 

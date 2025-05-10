@@ -3,6 +3,7 @@
 
 #include "TFrsConfiguration.h"
 #include "TExperimentConfiguration.h"
+#include "FrsCalData.h"
 #include "FrsHitData.h"
 #include "FairTask.h"
 #include "TFRSParameter.h"
@@ -84,7 +85,9 @@ class FrsNearlineSpectra : public FairTask
         TDirectory* dir_id;
         TDirectory* dir_id_s1s2;
         TDirectory* dir_id_s1s2_1d;
+        TDirectory* dir_lisa_pos_1d;
         TDirectory* dir_id_s1s2_2d;
+        TDirectory* dir_lisa_pos_2d;
         TDirectory* dir_id_s1s2_gated;
         TDirectory** dir_id_s1s2_gates;
         TDirectory* dir_id_s2s4;
@@ -255,6 +258,11 @@ class FrsNearlineSpectra : public FairTask
         TH1* h1_sci_tof_22_41_calib;
         TH1* h1_sci_tof_22_81;
         TH1* h1_sci_tof_22_81_calib;
+        
+        // For LISA
+        TH1** h1_tpc_x_at_LISA;
+        TH1** h1_tpc_y_at_LISA;
+        TH2** h2_tpc_xy_at_LISA;
     
         // MHTDC 2D
         TH2* h2_Z41_vs_AoQs2s4_mhtdc;
@@ -430,9 +438,10 @@ class FrsNearlineSpectra : public FairTask
         int multihit_counter = 0;
         std::vector<bool> passed_s1s2;
         std::vector<bool> passed_s2s4;
+        std::vector<bool> passed_s1s2s4;
         std::vector<int> count_passed_s1s2;
         int* count_passed_s2s4;
-
+        int* count_passed_s1s2s4;
 
     public:
         ClassDef(FrsNearlineSpectra, 1);

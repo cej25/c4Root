@@ -192,6 +192,61 @@ void FrsCal2Hit::Exec(Option_t* option)
                         music42_de_cor,
                         music43_de_cor);
 
+    
+    auto const & calTpcItem = calTpcArray->at(0);
+    Float_t* tpc_x = const_cast<Float_t*>(calTpcItem.Get_tpc_x());
+    Bool_t* b_tpc_xy_cp = const_cast<Bool_t*>(calTpcItem.Get_b_tpc_xy());
+    Int_t (*tpc_csum)[4] = const_cast<Int_t (*)[4]>(calTpcItem.Get_tpc_csum());
+    anaEntry.SetTPCData(tpc_x,
+        b_tpc_xy_cp,
+        tpc_csum,
+        calTpcItem.Get_tpc_x_s2_foc_21_22(),
+        calTpcItem.Get_tpc_y_s2_foc_21_22(),
+        calTpcItem.Get_tpc_angle_x_s2_foc_21_22(),
+        calTpcItem.Get_tpc_angle_y_s2_foc_21_22(),
+        calTpcItem.Get_tpc_x_s2_foc_22_24(),
+        calTpcItem.Get_tpc_y_s2_foc_22_24(),
+        calTpcItem.Get_tpc_angle_x_s2_foc_22_24(),
+        calTpcItem.Get_tpc_angle_y_s2_foc_22_24(),
+        calTpcItem.Get_tpc_x_s2_foc_23_24(),
+        calTpcItem.Get_tpc_y_s2_foc_23_24(),
+        calTpcItem.Get_tpc_angle_x_s2_foc_23_24(),
+        calTpcItem.Get_tpc_angle_y_s2_foc_23_24(),
+        calTpcItem.Get_tpc_angle_x_s4(),
+        calTpcItem.Get_tpc_angle_y_s4(),
+        calTpcItem.Get_tpc_x_s4(),
+        calTpcItem.Get_tpc_y_s4(),
+        calTpcItem.Get_tpc23_24_sc21_y(),
+        calTpcItem.Get_tpc23_24_sc22_y(),
+        calTpcItem.Get_tpc_sc41_x(),
+        calTpcItem.Get_tpc_sc41_y(),
+        calTpcItem.Get_tpc_sc42_x(),
+        calTpcItem.Get_tpc_sc42_y(),
+        calTpcItem.Get_tpc_sc43_x(),
+        calTpcItem.Get_tpc21_22_sc21_x(),
+        calTpcItem.Get_tpc23_24_sc21_x(),
+        calTpcItem.Get_tpc21_22_sc22_x(),
+        calTpcItem.Get_tpc23_24_sc22_x(),
+        calTpcItem.Get_tpc21_22_music21_x(),
+        calTpcItem.Get_tpc21_22_music21_y(),
+        calTpcItem.Get_tpc21_22_music22_x(),
+        calTpcItem.Get_tpc21_22_music22_y(),
+        calTpcItem.Get_tpc23_24_music21_x(),
+        calTpcItem.Get_tpc23_24_music21_y(),
+        calTpcItem.Get_tpc23_24_music22_x(),
+        calTpcItem.Get_tpc23_24_music22_y(),
+        calTpcItem.Get_tpc22_24_music21_x(),
+        calTpcItem.Get_tpc22_24_music21_y(),
+        calTpcItem.Get_tpc22_24_music22_x(),
+        calTpcItem.Get_tpc22_24_music22_y(),
+        calTpcItem.Get_tpc_music41_x(),
+        calTpcItem.Get_tpc_music42_x(),
+        calTpcItem.Get_tpc_music43_x(),
+        calTpcItem.Get_tpc_angle_x_s2_foc_22_23(),
+        calTpcItem.Get_tpc_angle_y_s2_foc_22_23(),
+        calTpcItem.Get_tpc_x_s2_foc_22_23(),
+        calTpcItem.Get_tpc_y_s2_foc_22_23());
+
     ProcessIDs();
     anaEntry.SetIDs(id_x1,
                     id_y1,
@@ -251,6 +306,7 @@ void FrsCal2Hit::Exec(Option_t* option)
             aoq_corr_s1s2_mhtdc.emplace_back(id_mhtdc_aoq_corr_s1s2[count]);
             z_music21_mhtdc.emplace_back(id_mhtdc_z_music21[count]);
             z_music22_mhtdc.emplace_back(id_mhtdc_z_music22[count]);
+
         }
     }
 
@@ -286,6 +342,8 @@ void FrsCal2Hit::Exec(Option_t* option)
             dEdeg_z41_mhtdc.emplace_back(id_mhtdc_dEdeg_z41[count]);
         }
     }
+
+    if (hits_in_s4x * hits_in_s2x > 0) aoqfrscal++;
 
     multihitEntry.SetS2S4(s2x_s2s4_mhtdc,
                         s2a_s2s4_mhtdc,
@@ -1129,9 +1187,11 @@ void FrsCal2Hit::ProcessSci_MHTDC()
             {
                 for (int l = 0; l < hits_in_21r; l++)
                 {
+                    int count = i * hits_in_41r * hits_in_21l * hits_in_21r + j * hits_in_21l * hits_in_21r + k * hits_in_21r + l;
                     if ((sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci41l_hits[i] - sci41r_hits[j]) < 200) && (sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci21l_hits[k] - sci21r_hits[l]) < 200))
                     {
-                        mhtdc_tof4121[i * hits_in_41r * hits_in_21l * hits_in_21r + j * hits_in_21l * hits_in_21r + k * hits_in_21r + l] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci41l_hits[i] + sci41r_hits[j]) - 0.5 * (sci21l_hits[k] + sci21r_hits[l])) + sci->mhtdc_offset_41_21;
+                        mhtdc_tof4121[count] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci41l_hits[i] + sci41r_hits[j]) - 0.5 * (sci21l_hits[k] + sci21r_hits[l])) + sci->mhtdc_offset_41_21;
+                        // if (mhtdc_tof4121[count] < frs_config->tof_gate_low || mhtdc_tof4121[count] > frs_config->tof_gate_high) mhtdc_tof4121[count] = -999.;
                     }
                     else
                     {
@@ -1276,7 +1336,7 @@ void FrsCal2Hit::ProcessMusic()
         if (music22_e[i] > 4)
         {
             if (music->exclude_music22_de_adc_channel[i] == kTRUE) music22_b_e[i] = false;
-            else music22_b_e[i] = ((music21_e[i] > 100) && (music21_e[i] < 4086));
+            else music22_b_e[i] = ((music22_e[i] > 100) && (music22_e[i] < 4086));
 
             if (music22_b_e[i]) music22_anodes_cnt++;
         }
@@ -2137,16 +2197,14 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
 
 
     // Calculate Z (MUSIC 21 / 22)
-    // cej - z roughly same as go4 but not quite..but why is plotting so weirdly different? 
     for (int i = 0; i < hits_in_s1s2;  i++)
     {
         if (music21_de_cor > 0.0 && id_mhtdc_beta_s1s2[i] > 0.0 && id_mhtdc_beta_s1s2[i] < 1.0)
         {
-            //std::cout << "we are using beta == " << id_mhtdc_beta_s1s2[i] << std::endl;
             Double_t power = 1., sum = 0.;
             for (int j = 0; j < 4; j++)
             {
-                sum += power * id->mhtdc_vel_a_music21[j];
+                sum += power * id->mhtdc_vel_a_music21_s1s2[j];
                 if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s1s2[i];
                 else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s1s2[i], 2); }
             }
@@ -2169,8 +2227,6 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
             id_mhtdc_z_shifted_music21[i] = -999.;
         }
 
-        //std::cout << "i:: " << i <<"zmusic21 :: " << id_mhtdc_z_music21[i] << std::endl;
-
         if (music22_de_cor > 0.0 && id_mhtdc_beta_s1s2[i] > 0.5 && id_mhtdc_beta_s1s2[i] < 1.0)
         {
             Double_t power = 1., sum = 0.;
@@ -2187,6 +2243,16 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
                 id_mhtdc_z_music22[i] = frs->primary_z * sqrt(music22_de_cor / id_mhtdc_v_cor_music22[i]);
                 id_mhtdc_z_shifted_music22[i] = id_mhtdc_z_music22[i] + id->mhtdc_offset_z_music22;
             }
+            else
+            {
+                id_mhtdc_z_music22[i] = -999.;
+                id_mhtdc_z_shifted_music22[i] = -999.;
+            }
+        }
+        else
+        {
+            id_mhtdc_z_music22[i] = -999.;
+            id_mhtdc_z_shifted_music22[i] = -999.;
         }
     }
 
@@ -2223,7 +2289,6 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
             id_mhtdc_tof_s2s4[i] = mhtdc_tof4121[i];
             if (id_mhtdc_tof_s2s4[i] > 0.0) id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2141 / id_mhtdc_tof_s2s4[i]) / speed_light;
             else id_mhtdc_beta_s2s4[i] = 0.;
-            if (id_mhtdc_beta_s2s4[i] < 0.5 || id_mhtdc_beta_s2s4[i] > 0.7) id_mhtdc_beta_s2s4[i] = 0.;
         }
     }
     else if (id->tof_s4_select == 2) // 21 -> 42
@@ -2649,6 +2714,7 @@ void FrsCal2Hit::FinishTask()
 {
     c4LOG(info, Form("Wrote %i events. ", fNEvents));
     c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvents);
+    c4LOG(info, "aoqfrscal:: " << aoqfrscal);
 }
 
 ClassImp(FrsCal2Hit)

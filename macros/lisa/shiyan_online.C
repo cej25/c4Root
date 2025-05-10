@@ -6,14 +6,13 @@
 #define WR_ENABLED 1
 
 // Define for online if testing or during experient
-#define TEST 1
-#define EXP 0
+#define TEST 0
+#define EXP 1
 
 // Define FRS setup.C file - FRS should provide; place in /config/shiyan/frs/
 extern "C"
 {
-    #include "../../config/pareeksha/frs/setup_Fragment_conv_updated.C" //pareeksha data
-    //#include "../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
+    #include "../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -36,10 +35,10 @@ void shiyan_online()
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     
     // ::: Experiment name - this set the path for all the config
-    TString fExpName = "pareeksha";
+    TString fExpName = "shiyan";
 
     // ::: Here you define commonly used path
-    TString c4Root_path = "/u/gandolfo/c4/c4Root";
+    TString c4Root_path = "/u/lisa/c4/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -63,23 +62,15 @@ void shiyan_online()
     
     // ::: ONLINE READING
     //TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
-    //TString filename = "trans://lxg1257:6000"; Set to stiched data
+    TString filename = "trans://lxg3107:6000"; //Set to stiched data
     
-    // ::: OFFLINE READING - For testing
-    //TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/S092_shiyan/";                   // Data from LISA
-    //TString inputpath = "/u/gandolfo/data/lustre/nustar/profi/sec_s160feb25/stitched/";     // Data from FRS
-    TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0075_0001.lmd"; 
-
-    //TString filename = inputpath + "test_0003_*.lmd";
-    //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
-
     // ::: OUTPUT - does not write a tree if it is not set layer
-    TString outputpath = "/u/gandolfo/data/test_c4/"; //testing
+    TString outputpath = "/u/lisa/data/test_c4/"; //testing
     TString outputFileName = outputpath + "output_online.root";
     
     // ::: Create online run
     Int_t refresh = 10; // Refresh rate for online histograms
-    Int_t port = 2020;
+    Int_t port = 2222;
      
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -123,7 +114,7 @@ void shiyan_online()
     // ::: C O N F I G    F O R   S Y S T E M S   - Load
     
     // ::: Exp config
-    TExperimentConfiguration::SetExperimentStart(1745599200000000000); // Start of test for shiyan 25/04 at 18:40
+    TExperimentConfiguration::SetExperimentStart(1746597600000000000);// Start for Shiyan data: May 7th, 8a.m. //including testing
     // for S100, 3 and 4. for 2025+ 12 and 13.
     TExperimentConfiguration::SetBOSTrig(3);
     TExperimentConfiguration::SetEOSTrig(4);
@@ -139,16 +130,11 @@ void shiyan_online()
     // ::: Lisa config
     if ( TEST )
     {
-        /*
+        
         TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_All_Boards.txt");
         TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_cards.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
-        */
-        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_Detector_Map_names.txt");
-        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching.txt");
-        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_DAQtest.txt");
         
         TLisaConfiguration::SetExcludedChannels({
         std::make_tuple(1,0,0),
@@ -157,10 +143,14 @@ void shiyan_online()
     }
     if ( EXP )
     {
-        TLisaConfiguration::SetMappingFile(config_path + "/Lisa_5x5_shiyan.txt");
-        TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching_shiyan.txt");
+        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_4x4_shiyan.txt");
+        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_shiyan.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_shiyan.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path +  "/lisa/Lisa_MWD_Parameters_shiyan.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_shiyan_v0.txt");
+
+        // TLisaConfiguration::SetExcludedChannels({
+        // std::make_tuple(1,0,0),
+        // });        
     }
 
 
@@ -198,7 +188,7 @@ void shiyan_online()
         run->AddTask(lisaraw2ana); 
         
         LisaAna2Cal* lisaana2cal = new LisaAna2Cal();
-        lisaana2cal->SetOnline(false);
+        lisaana2cal->SetOnline(true);
         run->AddTask(lisaana2cal);
     }
 
@@ -243,11 +233,11 @@ void shiyan_online()
 
     // ::: Correlation Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-    // if (LISA_ON && FRS_ON)
-    // {
-    //     LisaFrsCorrelations* lisafrscorr = new LisaFrsCorrelations();
-    //     run->AddTask(lisafrscorr);
-    // }
+    if (LISA_ON && FRS_ON)
+    {
+        LisaFrsCorrelationsOnline* lisafrscorr = new LisaFrsCorrelationsOnline();
+        run->AddTask(lisafrscorr);
+    }
 
     // ::: CONFIGURATIONS FOR ONLINE HISTOS :::
     // ::: FRS
@@ -258,12 +248,12 @@ void shiyan_online()
 
     // ::: LISA
     //      Channel Energy 
-    TLisaConfiguration::SetEnergyRange(0,5000);
+    TLisaConfiguration::SetEnergyRange(0,100000);
     TLisaConfiguration::SetEnergyBin(1000);
 
     //      MWD histos
-    TLisaConfiguration::SetEnergyRangeMWD(0,1000);
-    TLisaConfiguration::SetEnergyBinMWD(2000);
+    TLisaConfiguration::SetEnergyRangeMWD(0,500);
+    TLisaConfiguration::SetEnergyBinMWD(1000);
 
     //      LISA WR Time Difference 
     TLisaConfiguration::SetWrDiffRange(0,100000000);
@@ -272,8 +262,8 @@ void shiyan_online()
     TLisaConfiguration::SetWrRateBin(900);
 
     //      LISA Traces Ranges 
-    TLisaConfiguration::SetTracesRange(0,4.9);
-    TLisaConfiguration::SetTracesBin(490);
+    TLisaConfiguration::SetTracesRange(0,3.9);
+    TLisaConfiguration::SetTracesBin(390);
     //TLisaConfiguration::SetAmplitudeMin(7500);
     //TLisaConfiguration::SetAmplitudeMax(8400);
    

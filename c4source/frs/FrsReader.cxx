@@ -89,14 +89,17 @@ Bool_t FrsReader::Read()
     if (fData == nullptr) return kFALSE;
 
     int64_t wr_t = (((int64_t)fData->WR_T[3]) << 48) + (((int64_t)fData->WR_T[2]) << 32) + (((int64_t)fData->WR_T[1]) << 16) + (int64_t)(fData->WR_T[0]);
-    if (wr_t == 0) return kTRUE; // CEJ: does this screw things up for spillflag? untested, yes most likely
+    // if (wr_t == 0) return kTRUE; // CEJ: does this screw things up for spillflag? untested, yes most likely
 
     int16_t tpat = fData->TPAT;
-
+    
+ 
     Long64_t travmus_wr_t = (((Long64_t)fData->TM_WR_T[3]) << 48) + (((Long64_t)fData->TM_WR_T[2]) << 32) + (((Long64_t)fData->TM_WR_T[1]) << 16) + (Long64_t)(fData->TM_WR_T[0]);
 
     auto & entry = tpatArray->emplace_back();
     entry.SetAll(wr_t, tpat, travmus_wr_t);
+
+    // std::cout << travmus_wr_t << std::endl;
 
 
     ScalerReader();
