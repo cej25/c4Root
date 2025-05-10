@@ -73,7 +73,7 @@ InitStatus StefanOnlineSpectra::Init()
     dir_raw.resize(num_dssds);
     dir_pixel.resize(num_dssds);
     
-    
+    double max_energy= pow(10,7);
     h2_hit_strip_xy.resize(num_dssds);
     h1_raw_energy.resize(num_dssds); // h1_raw_energy[dssd#][side#][ch#]
     h1_pixel_energy.resize(num_dssds); // h1_pixel_energy[dssd#][pixel#]
@@ -81,6 +81,7 @@ InitStatus StefanOnlineSpectra::Init()
     
     for (int i = 0; i < num_dssds; i++)
     {	
+	if(i==1) max_energy = pow(10,5);
     	dir_raw[i].resize(n_sides);
     	dir_raw[i][0] = new TDirectory;
     	dir_raw[i][1] = new TDirectory;
@@ -98,12 +99,12 @@ InitStatus StefanOnlineSpectra::Init()
 	dir_raw[i][0] = dir_dssd[i]->mkdir("Raw_energy_vertical");
 	
         for(int j=0; j<16; ++j) { //vertical strips or stripY
-        	h1_raw_energy[i][0][j] = MakeTH1(dir_raw[i][0], "I", Form("h1_raw_energy_det%i_vertical_strip%i", i, j), Form("Raw Energy - Det %i Vertical side - Strip %i", i, j), 10000, 0, pow(10,7), "E []", kCyan, kBlack);
+        	h1_raw_energy[i][0][j] = MakeTH1(dir_raw[i][0], "I", Form("h1_raw_energy_det%i_vertical_strip%i", i, j), Form("Raw Energy - Det %i Vertical side - Strip %i", i, j), 10000, 0, max_energy, "E []", kCyan, kBlack);
         	}
         
 	dir_raw[i][1] = dir_dssd[i]->mkdir("Raw_energy_horizontal");
         for(int j=0; j<16; ++j) {//horizontal strips or stripX
-        	h1_raw_energy[i][1][j] = MakeTH1(dir_raw[i][1], "I", Form("h1_raw_energy_det%i_horizontal_strip%i", i, j), Form("Raw Energy - Det %i Horizontal side - Strip %i", i, j), 10000, 0, pow(10,7), "E []", kSpring, kBlack);
+        	h1_raw_energy[i][1][j] = MakeTH1(dir_raw[i][1], "I", Form("h1_raw_energy_det%i_horizontal_strip%i", i, j), Form("Raw Energy - Det %i Horizontal side - Strip %i", i, j), 10000, 0, max_energy, "E []", kSpring, kBlack);
         	}
         
         dir_pixel[i] = dir_dssd[i]->mkdir("Pixels_energy");
