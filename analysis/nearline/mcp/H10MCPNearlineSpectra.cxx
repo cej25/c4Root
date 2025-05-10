@@ -312,10 +312,17 @@ void H10MCPNearlineSpectra::Exec(Option_t* option)
   // h1_sc41_vs_mcp->Fill();
   double SC41 = (SC41L + SC41R) / 2;
   double SC42 = (SC42L + SC42R) / 2;
-  h1_sc41_mcp1->Fill(SC41-T01);
-  h1_sc41_mcp2->Fill(SC41-T02);
-  h1_sc42_mcp1->Fill(SC42-T01);
-  h1_sc42_mcp2->Fill(SC42-T02);
+  if (SC41 > 0)
+  {
+    h1_sc41_mcp1->Fill(SC41-T01);
+    h1_sc41_mcp2->Fill(SC41-T02);
+  }
+  if (SC42 > 0)
+  {
+    h1_sc42_mcp1->Fill(SC42-T01);
+    h1_sc42_mcp2->Fill(SC42-T02);
+  }
+  
 
 
 	h1_test_histogram->Fill(T01 - T02);

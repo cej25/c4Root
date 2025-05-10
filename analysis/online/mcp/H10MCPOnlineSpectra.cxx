@@ -149,10 +149,16 @@ void H10MCPOnlineSpectra::Exec(Option_t* option)
         SC42 = hit->SC42;
         DSSDAccept = hit->DSSDAccept;
 
-        h1_sc41_mcp1->Fill(SC41-T1);
-        h1_sc41_mcp2->Fill(SC41-T2);
-        h1_sc42_mcp1->Fill(SC42-T1);
-        h1_sc42_mcp2->Fill(SC42-T2);    
+        if (SC41 > 0)
+        {
+            h1_sc41_mcp1->Fill(SC41-T1);
+            h1_sc41_mcp2->Fill(SC41-T2); 
+        }
+        if (SC42 > 0)
+        {
+            h1_sc42_mcp1->Fill(SC42-T1);
+            h1_sc42_mcp2->Fill(SC42-T2);  
+        }  
 	
         h1_dT->Fill(T2 - T1);
         h2_dX1_dT->Fill(X12-X11, T2-T1);
