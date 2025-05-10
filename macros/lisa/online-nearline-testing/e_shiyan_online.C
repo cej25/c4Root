@@ -13,7 +13,7 @@
 extern "C"
 {
     //#include "../../config/pareeksha/frs/setup_Fragment_conv_updated.C" //pareeksha data
-    #include "../../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
+    #include "../../../config/shiyan/frs/setup/setup_103_002_2025_setting10_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -70,7 +70,7 @@ void e_shiyan_online()
     //TString inputpath = "/u/gandolfo/data/lustre/nustar/profi/sec_s160feb25/stitched/";     // Data from FRS
     //TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0075_0001.lmd"; 
 
-    TString filename = inputpath + "run_0004_*.lmd";
+    TString filename = inputpath + "run_0018_*.lmd";
     //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
 
     // ::: OUTPUT - does not write a tree if it is not set layer
@@ -85,7 +85,7 @@ void e_shiyan_online()
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
-    //run->SetSink(new FairRootFileSink(outputFileName));   // if commented - don't write after termintion
+    run->SetSink(new FairRootFileSink(outputFileName));   // if commented - don't write after termintion
     run->ActivateHttpServer(refresh, port);
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
@@ -199,7 +199,7 @@ void e_shiyan_online()
         run->AddTask(lisaraw2ana); 
         
         LisaAna2Cal* lisaana2cal = new LisaAna2Cal();
-        lisaana2cal->SetOnline(false);
+        lisaana2cal->SetOnline(true);
         run->AddTask(lisaana2cal);
     }
 
