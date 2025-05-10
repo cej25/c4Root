@@ -161,6 +161,11 @@ class H10MCPOnlineSpectra : public FairTask
         TH2* MCP1Heatmap1;
         TH2* MCP2Heatmap1;
        // TH2* h2_dt_vsSC41;
+
+        TH1* h1_sc41_mcp1;
+        TH1* h1_sc41_mcp2;
+        TH1* h1_sc42_mcp1;
+        TH1* h1_sc42_mcp2;
         
         
         
