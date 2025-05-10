@@ -263,6 +263,15 @@ class LisaFrsCorrelations : public FairTask
         //..............................
         std::set<std::tuple<int, int, int>> excluded;
 
+
+        std::vector<std::vector<float>> energy_layer;
+        std::vector<std::vector<float>> energy_MWD_layer;
+
+        std::vector<std::vector<std::vector<float>>> energy_layer_gated;
+        std::vector<std::vector<std::vector<float>>> energy_MWD_layer_gated;
+        std::vector<std::vector<std::vector<std::vector<std::vector<float>>>>> energy_xy_gated;
+        std::vector<std::vector<std::vector<std::vector<std::vector<float>>>>> energy_MWD_xy_gated;
+
     public:
         ClassDef(LisaFrsCorrelations, 1)
 };

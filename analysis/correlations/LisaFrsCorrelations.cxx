@@ -839,6 +839,42 @@ InitStatus LisaFrsCorrelations::Init()
         }
     }
 
+   
+    energy_layer.resize(layer_number);
+    energy_MWD_layer.resize(layer_number);
+
+    energy_xy_gated.resize(gate_number);
+    energy_layer_gated.resize(gate_number);
+    for (int g = 0; g < gate_number; g++) 
+    {   
+        energy_layer_gated[g].resize(layer_number);
+        energy_xy_gated[g].resize(layer_number);
+        for (int l = 0; l < layer_number; l++) 
+        {
+            energy_xy_gated[g][l].resize(xmax);
+            for (int x = 0; x < xmax; x++) 
+            {
+                energy_xy_gated[g][l][x].resize(ymax);
+            }
+        }
+    }
+
+    energy_MWD_xy_gated.resize(mwd_gate_number);
+    energy_MWD_layer_gated.resize(mwd_gate_number);
+    for (int g = 0; g < mwd_gate_number; g++) 
+    {   
+        energy_layer_gated[g].resize(layer_number);
+        energy_MWD_xy_gated[g].resize(layer_number);
+        for (int l = 0; l < layer_number; l++) 
+        {
+            energy_MWD_xy_gated[g][l].resize(xmax);
+            for (int x = 0; x < xmax; x++) 
+            {
+                energy_MWD_xy_gated[g][l][x].resize(ymax);
+            }
+        }
+    }
+
  
     return kSUCCESS;
 
@@ -868,20 +904,20 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     // //c4LOG(info, "s2 x : " << s2_x << "s2 y : " << s2_y);
 
     // ::: LISA energy
-    std::vector<std::vector<float>> energy_layer(layer_number);
-    energy_layer.resize(layer_number);
+    // std::vector<std::vector<float>> energy_layer(layer_number);
+    // energy_layer.resize(layer_number);
 
-    std::vector<std::vector<float>> energy_MWD_layer(layer_number);
-    energy_MWD_layer.resize(layer_number);
+    // std::vector<std::vector<float>> energy_MWD_layer(layer_number);
+    // energy_MWD_layer.resize(layer_number);
 
     // ::: Energy gated - Layer
 
-    std::vector<float> energy_layer_gated[gate_number][layer_number];
-    std::vector<float> energy_MWD_layer_gated[mwd_gate_number][layer_number];
+    // std::vector<float> energy_layer_gated[gate_number][layer_number];
+    // std::vector<float> energy_MWD_layer_gated[mwd_gate_number][layer_number];
 
     // ::: Energy gated - Channel
-    std::vector<float> energy_xy_gated[gate_number][layer_number][xmax][ymax];
-    std::vector<float> energy_MWD_xy_gated[mwd_gate_number][layer_number][xmax][ymax];
+    // std::vector<float> energy_xy_gated[gate_number][layer_number][xmax][ymax];
+    // std::vector<float> energy_MWD_xy_gated[mwd_gate_number][layer_number][xmax][ymax];
     //................
 
     // ::: MUSIC energies
@@ -1341,6 +1377,29 @@ void LisaFrsCorrelations::FinishEvent()
         {
             mh_counter_passed_s1s2_seq_mwd[pair][i] = 0;
             mh_counter_passed_s2s4_seq_mwd[pair][i] = 0;
+        }
+    }
+
+    for (int l = 0; l < layer_number; l++)
+    {
+        energy_layer[l].clear();
+        energy_MWD_layer[l].clear();
+    }
+
+    for (int g = 0; g < gate_number; g++)
+    {
+        for (int l = 0; l < layer_number; l++)
+        {
+            energy_layer_gated[g][l].clear();
+            energy_MWD_layer_gated[g][l].clear();
+            for (int x = 0; x < xmax; x++)
+            {
+                for (int y = 0; y < ymax; y++)
+                {
+                    energy_xy_gated[g][l][x][y].clear();
+                    energy_MWD_xy_gated[g][l][x][y].clear();
+                }
+            }
         }
     }
 }
