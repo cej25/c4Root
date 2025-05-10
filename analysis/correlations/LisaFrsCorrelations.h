@@ -125,6 +125,7 @@ class LisaFrsCorrelations : public FairTask
         TDirectory* dir_LISA_FRS_febex;
         TDirectory* dir_LISA_FRS_mwd;
 
+
         TDirectory* dir_gates;
 
         TDirectory* dir_gate_LISA;
@@ -249,6 +250,29 @@ class LisaFrsCorrelations : public FairTask
         std::vector<TH2F*> h2_LISA_energy_MWD_xy_vs_layer_LISA_s1s2_gated;
         std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_LISA_s1s2_gated;
         std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_xy_LISA_s1s2_gated;
+
+        // Full sequential gate with multiplicity 5 condition
+        std::vector<TH2F*> h2_LISA_energy_vs_layer_LISA_s1s2s4_gated_M5;
+        std::vector<TH2F*> h2_LISA_energy_xy_vs_layer_LISA_s1s2s4_gated_M5;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_LISA_s1s2s4_gated_M5;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_xy_LISA_s1s2s4_gated_M5;
+
+        std::vector<TH2F*> h2_LISA_energy_MWD_vs_layer_LISA_s1s2s4_gated_M5;
+        std::vector<TH2F*> h2_LISA_energy_MWD_xy_vs_layer_LISA_s1s2s4_gated_M5;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_LISA_s1s2s4_gated_M5;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_xy_LISA_s1s2s4_gated_M5;
+
+        //only s1s2
+        std::vector<TH2F*> h2_LISA_energy_vs_layer_LISA_s1s2_gated_M5;
+        std::vector<TH2F*> h2_LISA_energy_xy_vs_layer_LISA_s1s2_gated_M5;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_LISA_s1s2_gated_M5;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_xy_LISA_s1s2_gated_M5;
+
+        std::vector<TH2F*> h2_LISA_energy_MWD_vs_layer_LISA_s1s2_gated_M5;
+        std::vector<TH2F*> h2_LISA_energy_MWD_xy_vs_layer_LISA_s1s2_gated_M5;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_LISA_s1s2_gated_M5;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_xy_LISA_s1s2_gated_M5;
+        //
 
         TH1** h1_tpc_lisa_x;
         TH1** h1_tpc_lisa_y;

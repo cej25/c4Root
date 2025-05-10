@@ -82,6 +82,8 @@ class LisaFrsCorrelationsOnline : public FairTask
         TDirectory* dir_energy;
         TDirectory* dir_febex;
         TDirectory* dir_mwd;
+        TDirectory* dir_energy_correlated;
+        TDirectory* dir_energy_MWD_correlated;
 
 
         // ::: common var
@@ -109,6 +111,8 @@ class LisaFrsCorrelationsOnline : public FairTask
 
         //Canvases
         TCanvas* c_wr_diff;
+        TCanvas* c_energy_correlated_sci41;
+        TCanvas* c_energy_MWD_correlated_sci41;
         TCanvas* c_MUSIC_21_layer;
         TCanvas* c_MUSIC_41_layer;
         TCanvas* c_MUSIC_21_layer_MWD;
@@ -124,6 +128,9 @@ class LisaFrsCorrelationsOnline : public FairTask
         TH1I* h1_wr_diff;
         TH1I* h1_wr_diff_tpat2;
         TH1I* h1_wr_diff_tpat6;
+
+        std::vector<TH1*> h1_energy_layer_corr_sci41;
+        std::vector<TH1*> h1_energy_MWD_layer_corr_sci41;
 
         std::vector<TH2F*> h2_MUSIC21_vs_LISA_febex;
         std::vector<TH2F*> h2_MUSIC41_vs_LISA_febex;

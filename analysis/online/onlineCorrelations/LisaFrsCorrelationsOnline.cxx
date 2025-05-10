@@ -113,6 +113,9 @@ InitStatus LisaFrsCorrelationsOnline::Init()
     dir_febex = dir_energy->mkdir("Febex");
     dir_mwd = dir_energy->mkdir("MWD");
 
+    dir_energy_correlated = dir_energy->mkdir("LISA_correlated_sci41");
+    dir_energy_MWD_correlated = dir_energy->mkdir("LISA_correlated_sci41_mwd");
+
     dir_time->cd();
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::::::::: WR Time differences ::::::::::::::::::::::
@@ -145,10 +148,44 @@ InitStatus LisaFrsCorrelationsOnline::Init()
     // h1_wr_diff[2] = new TH1I("h1_WR_Difference_TravMUSIC-FRS", " WR Difference TravMUSIC - FRS ", 6000, -3000, 3000);
     // h1_wr_diff[2]->GetXaxis()->SetTitle("WR (travMUSIC) - WR (FRS)");
     // h1_wr_diff[2]->SetFillColor(kRed-3);
-
     c_wr_diff->cd();
     dir_time->Append(c_wr_diff);
-  
+
+    // Energy
+    dir_energy_correlated->cd();
+    // Condiiton on scintillator 41 
+    // Febex
+    c_energy_correlated_sci41 = new TCanvas("c_energy_corr_sci41", "LISA energy correlated with SCI41", 650, 350);
+    c_energy_correlated_sci41->Divide(2, (layer_number+1)/2);
+    h1_energy_layer_corr_sci41.resize(layer_number);
+    for (int i = 0; i < layer_number; i++)
+    {   
+        c_energy_correlated_sci41->cd(i+1);
+        h1_energy_layer_corr_sci41[i] = MakeTH1(dir_energy_correlated, "F",
+            Form("h1_energy_layer_%i_corr_sci41", i+1), Form("Energy corr sci41- Layer %i", i+1), 
+            lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy,
+            Form("E(LISA %i) Corr sci41 [a.u.]", i+1), kRed-3, kBlue+1);
+        h1_energy_layer_corr_sci41[i]->Draw();
+    }
+    c_energy_correlated_sci41->cd();
+    dir_energy_correlated->Append(c_energy_correlated_sci41);
+
+    // MWD
+    c_energy_MWD_correlated_sci41 = new TCanvas("c_energy_MWD_corr_sci41", "LISA energy MWD correlated with SCI41", 650, 350);
+    c_energy_MWD_correlated_sci41->Divide(2, (layer_number+1)/2);
+    h1_energy_MWD_layer_corr_sci41.resize(layer_number);
+    for (int i = 0; i < layer_number; i++)
+    {   
+        c_energy_MWD_correlated_sci41->cd(i+1);
+        h1_energy_MWD_layer_corr_sci41[i] = MakeTH1(dir_energy_MWD_correlated, "F",
+            Form("h1_energy_MWD_layer_%i_corr_sci41", i+1), Form("Energy MWD corr sci41- Layer %i", i+1), 
+            lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy,
+            Form("E MWD(LISA %i) Corr sci41 [a.u.]", i+1), kViolet+10, kBlue+1);
+        h1_energy_MWD_layer_corr_sci41[i]->Draw();
+    }
+    c_energy_MWD_correlated_sci41->cd();
+    dir_energy_MWD_correlated->Append(c_energy_MWD_correlated_sci41);
+
     dir_febex->cd();
     //::: MUSIC21 - LISA
     //Febex
@@ -409,6 +446,24 @@ void LisaFrsCorrelationsOnline::Exec(Option_t* option)
     h1_wr_diff->Fill(wr_LISA_FRS);
     if (frsHitItem.Get_tpat() & 0b100000) h1_wr_diff_tpat6->Fill(wr_LISA_FRS);
     if (frsHitItem.Get_tpat() & 0b10) h1_wr_diff_tpat2->Fill(wr_LISA_FRS);
+
+    // ::: Energy correlations with SCI41 (TPAT 2)
+    if (frsHitItem.Get_tpat() & 0b10)
+    {
+        for (int i = 0; i < layer_number; i++)
+        {
+            for (int j = 0; j < energy_layer[i].size(); j++)
+            {
+                h1_energy_layer_corr_sci41[i]->Fill(energy_layer[i][j]);
+            }
+            for (int j = 0; j < energy_layer[i].size(); j++)
+            {
+                h1_energy_MWD_layer_corr_sci41[i]->Fill(energy_MWD_layer[i][j]);
+            }
+
+        }
+    }
+    //..........................
 
 
     // ::: E N E R G Y  - LISA vs MUSICs
