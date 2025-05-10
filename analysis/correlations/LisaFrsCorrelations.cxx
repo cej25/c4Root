@@ -187,6 +187,7 @@ InitStatus LisaFrsCorrelations::Init()
     //dir_energy_ch_driftcorr = dir_corr_driftcorr->mkdir("Energy_Channel_DriftCorr");
  
     // ::: TIME CORRELATIONS :::
+    //c4LOG(info, "::::::::::::::::::start of init");
     dir_time->cd();
     h1_wr_diff = new TH1I("h1_WR_Difference_LISA-FRS", " WR Difference LISA - FRS ", 6000, -3000, 3000);
     h1_wr_diff->GetXaxis()->SetTitle("WR(LISA) - WR (FRS)");
@@ -212,6 +213,7 @@ InitStatus LisaFrsCorrelations::Init()
     // h1_wr_diff[2]->GetXaxis()->SetTitle("WR (travMUSIC) - WR (FRS)");
     // h1_wr_diff[2]->SetFillColor(kRed-3);
     //...........................................
+    //c4LOG(info, "::::::::::::::::::end of time histos");
     // ::: Energy LISA correlated with FRS :::
     // Condition on scintillator 21
     // Febex
@@ -253,7 +255,7 @@ InitStatus LisaFrsCorrelations::Init()
             Form("E MWD(LISA %i) Corr sci41 [a.u.]", i+1), kViolet+10, kBlue+1);
     }
     //...........................................
-    
+    //c4LOG(info, "::::::::::::::::::end of sci histo");
     // :::   E N E R G Y  LISA vs MUSIC  C O R R E L A T I O N S   :::
     // ::: Febex
     dir_febex->cd();
@@ -299,6 +301,7 @@ InitStatus LisaFrsCorrelations::Init()
         h2_MUSIC41_vs_LISA_MWD[i]->SetOption("COLZ");
     }
     //.......................
+    //c4LOG(info, "::::::::::::::::::end of musci histo");
 
     //travMUSIC drift corrected VS LISA
     // dir_corr_driftcorr->cd();
@@ -322,7 +325,7 @@ InitStatus LisaFrsCorrelations::Init()
     dir_FRS_febex_gates_channel = new TDirectory*[FrsGates.size()];
     dir_FRS_mwd_gates = new TDirectory*[FrsGates.size()];
     dir_FRS_mwd_gates_channel = new TDirectory*[FrsGates.size()];
-
+    //c4LOG(info, ":::::::::::::::::: start of gate histos in init");   
     if (!FrsGates.empty())
     {
         //Full sequential gate of FRS
@@ -509,7 +512,7 @@ InitStatus LisaFrsCorrelations::Init()
         }
     }
     //..........................
-
+    //c4LOG(info, "::::::::::::::::::end of gate histos in init");
     // ::: Gates LISA applied ON FRS
     // ::: These are histos of FRS gated only with the conditions on LISA
     //      Febex gates
@@ -547,6 +550,7 @@ InitStatus LisaFrsCorrelations::Init()
             }        
         }
     }
+    
     //      MWD gates
     dir_LISA_mwd_gates = new TDirectory*[mwd_gate_number];
     dir_LISA_mwd_gates_channel = new TDirectory*[mwd_gate_number];
@@ -583,7 +587,7 @@ InitStatus LisaFrsCorrelations::Init()
         }
     }   
     //............................
-
+    //c4LOG(info, "::::::::::::::::::end of LISA applied on frs");
     // ::: Gates LISA - FRS
     // ::: These are histos of LISA gated with conditions on FRS and LISA
     dir_LISA_FRS_febex_gates = new TDirectory*[FrsGates.size()];
@@ -686,7 +690,7 @@ InitStatus LisaFrsCorrelations::Init()
             }
         }
     }
-
+    //c4LOG(info, "::::::::::::::::::end of LISA-FRS febex ");
     // MWD - FRS
     if (!mwd_gates.empty() && !FrsGates.empty())
     {
@@ -779,7 +783,7 @@ InitStatus LisaFrsCorrelations::Init()
             }
         }
     }
-    
+    //c4LOG(info, "::::::::::::::::::end of LISA-FRS mwd ");
     // Extrapolated TPC positon at LISA
     h1_tpc_lisa_x = new TH1*[layer_number];
     h1_tpc_lisa_y = new TH1*[layer_number];
@@ -811,7 +815,7 @@ InitStatus LisaFrsCorrelations::Init()
     // // h2_tpc_xy_LISA_010->Draw();
     // // dir_position->Append(c_test);
     //..........................
-
+    //c4LOG(info, "::::::::::::::::::end of position ");
 
     mh_counter_passed_s1s2_seq = new int*[pair_count];
     mh_counter_passed_s2s4_seq = new int*[pair_count];
@@ -838,7 +842,7 @@ InitStatus LisaFrsCorrelations::Init()
             mh_counter_passed_s2s4_seq_mwd[pair][i] = 0;
         }
     }
-
+    //c4LOG(info, "::::::::::::::::::end of counters ");
    
     energy_layer.resize(layer_number);
     energy_MWD_layer.resize(layer_number);
@@ -858,12 +862,13 @@ InitStatus LisaFrsCorrelations::Init()
             }
         }
     }
-
+    //c4LOG(info, "::::::::::::::::::end of energy gated febex ");
+   
     energy_MWD_xy_gated.resize(mwd_gate_number);
     energy_MWD_layer_gated.resize(mwd_gate_number);
     for (int g = 0; g < mwd_gate_number; g++) 
     {   
-        energy_layer_gated[g].resize(layer_number);
+        energy_MWD_layer_gated[g].resize(layer_number);
         energy_MWD_xy_gated[g].resize(layer_number);
         for (int l = 0; l < layer_number; l++) 
         {
@@ -875,8 +880,9 @@ InitStatus LisaFrsCorrelations::Init()
         }
     }
 
- 
+    //c4LOG(info, "::::::::::::::::::end of init");
     return kSUCCESS;
+    
 
 }
 
