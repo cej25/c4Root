@@ -612,11 +612,26 @@ InitStatus LisaFrsCorrelations::Init()
 
         h1_LISA_energy_LISA_s1s2s4_gated.resize(pair_count);
         h1_LISA_energy_xy_LISA_s1s2s4_gated.resize(pair_count);
+        //............
+        // Multiplicity 5 condition
+        h2_LISA_energy_vs_layer_LISA_s1s2_gated_M5.resize(pair_count);
+        h2_LISA_energy_xy_vs_layer_LISA_s1s2_gated_M5.resize(pair_count);
+
+        h1_LISA_energy_LISA_s1s2_gated_M5.resize(pair_count);
+        h1_LISA_energy_xy_LISA_s1s2_gated_M5.resize(pair_count);
+
+        h2_LISA_energy_vs_layer_LISA_s1s2s4_gated_M5.resize(pair_count);
+        h2_LISA_energy_xy_vs_layer_LISA_s1s2s4_gated_M5.resize(pair_count);
+
+        h1_LISA_energy_LISA_s1s2s4_gated_M5.resize(pair_count);
+        h1_LISA_energy_xy_LISA_s1s2s4_gated_M5.resize(pair_count);
+        //
         for (int i = 0; i < pair_count; ++i)
         {
             dir_LISA_FRS_febex_gates[i] = dir_gate_LISA_FRS_febex->mkdir(Form(TString(FrsGates.at(i)->GetName()) + "_" + TString(febex_gates.at(i)->GetName()) ));
 
             dir_LISA_FRS_febex_gates[i]->cd();
+
             h2_LISA_energy_vs_layer_LISA_s1s2_gated[i] = new TH2F(Form("h2_energy_vs_layer_LISA-s1s2_gate_%i",i),
                                                             Form("Energy vs Layer ID - LISA-s1s2 Gate %i",i), 
                                                             layer_number, 0.5, layer_number + 0.5, 
@@ -632,9 +647,29 @@ InitStatus LisaFrsCorrelations::Init()
             h2_LISA_energy_vs_layer_LISA_s1s2s4_gated[i]->GetXaxis()->SetTitle("Layer ID");
             h2_LISA_energy_vs_layer_LISA_s1s2s4_gated[i]->GetYaxis()->SetTitle("LISA Energy [a.u.]");
             h2_LISA_energy_vs_layer_LISA_s1s2s4_gated[i]->SetOption("COLZ");
-            
+
+            // Mulitplicity 5
+            h2_LISA_energy_vs_layer_LISA_s1s2_gated_M5[i] = new TH2F(Form("h2_energy_vs_layer_LISA-s1s2_gate_%i_M5",i),
+                                                            Form("Energy vs Layer ID - LISA-s1s2 Gate %i M5",i), 
+                                                            layer_number, 0.5, layer_number + 0.5, 
+                                                            lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+            h2_LISA_energy_vs_layer_LISA_s1s2_gated_M5[i]->GetXaxis()->SetTitle("Layer ID");
+            h2_LISA_energy_vs_layer_LISA_s1s2_gated_M5[i]->GetYaxis()->SetTitle("LISA Energy [a.u.]");
+            h2_LISA_energy_vs_layer_LISA_s1s2_gated_M5[i]->SetOption("COLZ");
+
+            h2_LISA_energy_vs_layer_LISA_s1s2s4_gated_M5[i] = new TH2F(Form("h2_energy_vs_layer_LISA-s1s2s4_gate_%i_M5",i),
+                                                            Form("Energy vs Layer ID - LISA-s1s2s4 Gate %i M5",i), 
+                                                            layer_number, 0.5, layer_number + 0.5, 
+                                                            lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+            h2_LISA_energy_vs_layer_LISA_s1s2s4_gated_M5[i]->GetXaxis()->SetTitle("Layer ID");
+            h2_LISA_energy_vs_layer_LISA_s1s2s4_gated_M5[i]->GetYaxis()->SetTitle("LISA Energy [a.u.]");
+            h2_LISA_energy_vs_layer_LISA_s1s2s4_gated_M5[i]->SetOption("COLZ");
+            //.....
             h1_LISA_energy_LISA_s1s2_gated[i].resize(layer_number);
             h1_LISA_energy_LISA_s1s2s4_gated[i].resize(layer_number);
+
+            h1_LISA_energy_LISA_s1s2_gated_M5[i].resize(layer_number);
+            h1_LISA_energy_LISA_s1s2s4_gated_M5[i].resize(layer_number);
 
             for (int l = 0; l < layer_number; l++) 
             {
@@ -649,6 +684,19 @@ InitStatus LisaFrsCorrelations::Init()
                     Form("LISA %i Energy - LISA-s1s2s4 Gate %i", l+1, i),
                     lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy, 
                     Form("E(LISA %i) [a.u.]", l+1), kYellow+3, kBlue+1);
+                // Multiplicity 5
+                h1_LISA_energy_LISA_s1s2_gated_M5[i][l] = MakeTH1(dir_LISA_FRS_febex_gates[i], "F",
+                    Form("h1_LISA_%i_energy_LISA_s1s2_gated_%i_M5", l+1, i),
+                    Form("LISA %i Energy - LISA-s1s2 Gate %i M5", l+1, i),
+                    lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy, 
+                    Form("E(LISA %i) [a.u.]", l+1), kYellow+3, kBlue+1);
+
+                h1_LISA_energy_LISA_s1s2s4_gated_M5[i][l] = MakeTH1(dir_LISA_FRS_febex_gates[i], "F",
+                    Form("h1_LISA_%i_energy_LISA_s1s2s4_gated_%i_M5", l+1, i),
+                    Form("LISA %i Energy - LISA-s1s2s4 Gate %i M5", l+1, i),
+                    lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy, 
+                    Form("E(LISA %i) [a.u.]", l+1), kYellow+3, kBlue+1);
+                //
             }           
             
             dir_LISA_FRS_febex_gates_channel[i] = dir_LISA_FRS_febex_gates[i]->mkdir("Channel");
@@ -669,9 +717,29 @@ InitStatus LisaFrsCorrelations::Init()
             h2_LISA_energy_xy_vs_layer_LISA_s1s2s4_gated[i]->GetXaxis()->SetTitle("Layer ID");
             h2_LISA_energy_xy_vs_layer_LISA_s1s2s4_gated[i]->GetYaxis()->SetTitle(Form("LISA %i%i Energy [a.u.]",lisa_config->xpos_gate, lisa_config->ypos_gate));
             h2_LISA_energy_xy_vs_layer_LISA_s1s2s4_gated[i]->SetOption("COLZ");
+            // Multiplicity 5
+            h2_LISA_energy_xy_vs_layer_LISA_s1s2_gated_M5[i] = new TH2F(Form("h2_LISA_energy_%i%i_vs_layer_LISA-s1s2_gate_%i_M5",lisa_config->xpos_gate, lisa_config->ypos_gate, i),
+                                                                Form("Energy %i%i vs Layer ID - LISA-s1s2 Gate %i M5",lisa_config->xpos_gate, lisa_config->ypos_gate, i),
+                                                                layer_number, 0.5, layer_number + 0.5,
+                                                                lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+            h2_LISA_energy_xy_vs_layer_LISA_s1s2_gated_M5[i]->GetXaxis()->SetTitle("Layer ID");
+            h2_LISA_energy_xy_vs_layer_LISA_s1s2_gated_M5[i]->GetYaxis()->SetTitle(Form("LISA %i%i Energy [a.u.]",lisa_config->xpos_gate, lisa_config->ypos_gate));
+            h2_LISA_energy_xy_vs_layer_LISA_s1s2_gated_M5[i]->SetOption("COLZ");
+
+            h2_LISA_energy_xy_vs_layer_LISA_s1s2s4_gated_M5[i] = new TH2F(Form("h2_LISA_energy_%i%i_vs_layer_LISA-s1s2s4_gate_%i_M5",lisa_config->xpos_gate, lisa_config->ypos_gate, i),
+                                                                Form("Energy %i%i vs Layer ID - LISA-s1s2s4 Gate %i M5",lisa_config->xpos_gate, lisa_config->ypos_gate, i),
+                                                                layer_number, 0.5, layer_number + 0.5,
+                                                                lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+            h2_LISA_energy_xy_vs_layer_LISA_s1s2s4_gated_M5[i]->GetXaxis()->SetTitle("Layer ID");
+            h2_LISA_energy_xy_vs_layer_LISA_s1s2s4_gated_M5[i]->GetYaxis()->SetTitle(Form("LISA %i%i Energy [a.u.]",lisa_config->xpos_gate, lisa_config->ypos_gate));
+            h2_LISA_energy_xy_vs_layer_LISA_s1s2s4_gated_M5[i]->SetOption("COLZ");
+            //
 
             h1_LISA_energy_xy_LISA_s1s2_gated[i].resize(layer_number);
             h1_LISA_energy_xy_LISA_s1s2s4_gated[i].resize(layer_number);
+
+            h1_LISA_energy_xy_LISA_s1s2_gated_M5[i].resize(layer_number);
+            h1_LISA_energy_xy_LISA_s1s2s4_gated_M5[i].resize(layer_number);
             for (int l = 0; l < layer_number; l++) 
             {
                 h1_LISA_energy_xy_LISA_s1s2_gated[i][l] = MakeTH1(dir_LISA_FRS_febex_gates_channel[i], "F",
@@ -687,6 +755,22 @@ InitStatus LisaFrsCorrelations::Init()
                     lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy, 
                     Form("E(LISA %i%i%i) [a.u.]", l+1, lisa_config->xpos_gate, lisa_config->ypos_gate),
                     kYellow-3, kBlue+1);
+                // Multiplicity 5
+                h1_LISA_energy_xy_LISA_s1s2_gated_M5[i][l] = MakeTH1(dir_LISA_FRS_febex_gates_channel[i], "F",
+                    Form("h1_LISA_%i%i%i_energy_LISA_s1s2_gated_%i_M5", l+1,lisa_config->xpos_gate, lisa_config->ypos_gate, i),
+                    Form("LISA %i%i%i Energy - LISA_s1s2 Gate %i M5", l+1,lisa_config->xpos_gate, lisa_config->ypos_gate, i),
+                    lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy, 
+                    Form("E(LISA %i%i%i) [a.u.]", l+1, lisa_config->xpos_gate, lisa_config->ypos_gate),
+                    kYellow-3, kBlue+1);
+
+                h1_LISA_energy_xy_LISA_s1s2s4_gated_M5[i][l] = MakeTH1(dir_LISA_FRS_febex_gates_channel[i], "F",
+                    Form("h1_LISA_%i%i%i_energy_LISA_s1s2s4_gated_%i_M5", l+1,lisa_config->xpos_gate, lisa_config->ypos_gate, i),
+                    Form("LISA %i%i%i Energy - LISA_s1s2s4 Gate %i M5", l+1,lisa_config->xpos_gate, lisa_config->ypos_gate, i),
+                    lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy, 
+                    Form("E(LISA %i%i%i) [a.u.]", l+1, lisa_config->xpos_gate, lisa_config->ypos_gate),
+                    kYellow-3, kBlue+1);
+                //
+                
             }
         }
     }
@@ -707,6 +791,19 @@ InitStatus LisaFrsCorrelations::Init()
 
         h1_LISA_energy_MWD_LISA_s1s2s4_gated.resize(pair_count_MWD);
         h1_LISA_energy_MWD_xy_LISA_s1s2s4_gated.resize(pair_count_MWD);
+        // Mulitplicity 5 condition
+        h2_LISA_energy_MWD_vs_layer_LISA_s1s2_gated_M5.resize(pair_count_MWD);
+        h2_LISA_energy_MWD_xy_vs_layer_LISA_s1s2_gated_M5.resize(pair_count_MWD);
+
+        h1_LISA_energy_MWD_LISA_s1s2_gated_M5.resize(pair_count_MWD);
+        h1_LISA_energy_MWD_xy_LISA_s1s2_gated_M5.resize(pair_count_MWD);
+
+        h2_LISA_energy_MWD_vs_layer_LISA_s1s2s4_gated_M5.resize(pair_count_MWD);
+        h2_LISA_energy_MWD_xy_vs_layer_LISA_s1s2s4_gated_M5.resize(pair_count_MWD);
+
+        h1_LISA_energy_MWD_LISA_s1s2s4_gated_M5.resize(pair_count_MWD);
+        h1_LISA_energy_MWD_xy_LISA_s1s2s4_gated_M5.resize(pair_count_MWD);
+        //........
 
         for (int i = 0; i < pair_count_MWD; ++i)
         {
@@ -731,6 +828,28 @@ InitStatus LisaFrsCorrelations::Init()
             
             h1_LISA_energy_MWD_LISA_s1s2_gated[i].resize(layer_number);
             h1_LISA_energy_MWD_LISA_s1s2s4_gated[i].resize(layer_number);
+
+            // Multiplicity 5
+            h2_LISA_energy_MWD_vs_layer_LISA_s1s2_gated_M5[i] = new TH2F(Form("h2_energy_MWD_vs_layer_LISA-s1s2_gate_%i_M5",i),
+                                                            Form("Energy MWD vs Layer ID - LISA-s1s2 Gate %i M5",i), 
+                                                            layer_number, 0.5, layer_number + 0.5, 
+                                                            lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
+            h2_LISA_energy_MWD_vs_layer_LISA_s1s2_gated_M5[i]->GetXaxis()->SetTitle("Layer ID");
+            h2_LISA_energy_MWD_vs_layer_LISA_s1s2_gated_M5[i]->GetYaxis()->SetTitle("LISA Energy MWD [a.u.]");
+            h2_LISA_energy_MWD_vs_layer_LISA_s1s2_gated_M5[i]->SetOption("COLZ");
+
+            h2_LISA_energy_MWD_vs_layer_LISA_s1s2s4_gated_M5[i] = new TH2F(Form("h2_energy_MWD_vs_layer_LISA-s1s2s4_gate_%i_M5",i),
+                                                            Form("Energy MWD vs Layer ID - LISA-s1s2s4 Gate %i M5",i), 
+                                                            layer_number, 0.5, layer_number + 0.5, 
+                                                            lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
+            h2_LISA_energy_MWD_vs_layer_LISA_s1s2s4_gated_M5[i]->GetXaxis()->SetTitle("Layer ID");
+            h2_LISA_energy_MWD_vs_layer_LISA_s1s2s4_gated_M5[i]->GetYaxis()->SetTitle("LISA Energy MWD [a.u.]");
+            h2_LISA_energy_MWD_vs_layer_LISA_s1s2s4_gated_M5[i]->SetOption("COLZ");
+            
+            h1_LISA_energy_MWD_LISA_s1s2_gated_M5[i].resize(layer_number);
+            h1_LISA_energy_MWD_LISA_s1s2s4_gated_M5[i].resize(layer_number);
+            //
+
             for (int l = 0; l < layer_number; l++) 
             {
                 h1_LISA_energy_MWD_LISA_s1s2_gated[i][l] = MakeTH1(dir_LISA_FRS_mwd_gates[i], "F",
@@ -743,6 +862,21 @@ InitStatus LisaFrsCorrelations::Init()
                     Form("LISA %i Energy MWD - LISA-s1s2s4 Gate %i", l+1, i),
                     lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD, 
                     Form("E MWD(LISA %i) [a.u.]", l+1), kGreen+3, kBlue+1);
+
+                //Multiplciity 5
+                h1_LISA_energy_MWD_LISA_s1s2_gated_M5[i][l] = MakeTH1(dir_LISA_FRS_mwd_gates[i], "F",
+                    Form("h1_LISA_%i_energy_MWD_LISA_s1s2_gated_%i_M5", l+1, i),
+                    Form("LISA %i Energy MWD - LISA-s1s2 Gate %i M5", l+1, i),
+                    lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD, 
+                    Form("E MWD(LISA %i) [a.u.]", l+1), kGreen+3, kBlue+1);
+                h1_LISA_energy_MWD_LISA_s1s2s4_gated_M5[i][l] = MakeTH1(dir_LISA_FRS_mwd_gates[i], "F",
+                    Form("h1_LISA_%i_energy_MWD_LISA_s1s2s4_gated_%i_M5", l+1, i),
+                    Form("LISA %i Energy MWD - LISA-s1s2s4 Gate %i M5", l+1, i),
+                    lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD, 
+                    Form("E MWD(LISA %i) [a.u.]", l+1), kGreen+3, kBlue+1);
+                //
+            
+            
             }               
             
             dir_LISA_FRS_mwd_gates_channel[i] = dir_LISA_FRS_mwd_gates[i]->mkdir("Channel");
@@ -766,6 +900,27 @@ InitStatus LisaFrsCorrelations::Init()
 
             h1_LISA_energy_MWD_xy_LISA_s1s2_gated[i].resize(layer_number);
             h1_LISA_energy_MWD_xy_LISA_s1s2s4_gated[i].resize(layer_number);
+
+            // Multiplciity 5
+            h2_LISA_energy_MWD_xy_vs_layer_LISA_s1s2_gated_M5[i] = new TH2F(Form("h2_LISA_energy_MWD_%i%i_vs_layer_LISA-s1s2_gate_%i_M5",lisa_config->xpos_gate, lisa_config->ypos_gate, i),
+                                                                Form("Energy %i%i vs Layer ID - LISA-s1s2 Gate %i M5",lisa_config->xpos_gate, lisa_config->ypos_gate, i),
+                                                                layer_number, 0.5, layer_number + 0.5,
+                                                                lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
+            h2_LISA_energy_MWD_xy_vs_layer_LISA_s1s2_gated_M5[i]->GetXaxis()->SetTitle("Layer ID");
+            h2_LISA_energy_MWD_xy_vs_layer_LISA_s1s2_gated_M5[i]->GetYaxis()->SetTitle(Form("LISA %i%i Energy MWD [a.u.]",lisa_config->xpos_gate, lisa_config->ypos_gate));
+            h2_LISA_energy_MWD_xy_vs_layer_LISA_s1s2_gated_M5[i]->SetOption("COLZ");
+
+            h2_LISA_energy_MWD_xy_vs_layer_LISA_s1s2s4_gated_M5[i] = new TH2F(Form("h2_LISA_energy_MWD_%i%i_vs_layer_LISA-s1s2s4_gate_%i_M5",lisa_config->xpos_gate, lisa_config->ypos_gate, i),
+                                                                Form("Energy %i%i vs Layer ID - LISA-s1s2s4 Gate %i M5",lisa_config->xpos_gate, lisa_config->ypos_gate, i),
+                                                                layer_number, 0.5, layer_number + 0.5,
+                                                                lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
+            h2_LISA_energy_MWD_xy_vs_layer_LISA_s1s2s4_gated_M5[i]->GetXaxis()->SetTitle("Layer ID");
+            h2_LISA_energy_MWD_xy_vs_layer_LISA_s1s2s4_gated_M5[i]->GetYaxis()->SetTitle(Form("LISA %i%i Energy MWD [a.u.]",lisa_config->xpos_gate, lisa_config->ypos_gate));
+            h2_LISA_energy_MWD_xy_vs_layer_LISA_s1s2s4_gated_M5[i]->SetOption("COLZ");
+
+            h1_LISA_energy_MWD_xy_LISA_s1s2_gated_M5[i].resize(layer_number);
+            h1_LISA_energy_MWD_xy_LISA_s1s2s4_gated_M5[i].resize(layer_number);
+            //
             for (int l = 0; l < layer_number; l++) 
             {
                 h1_LISA_energy_MWD_xy_LISA_s1s2_gated[i][l] = MakeTH1(dir_LISA_FRS_mwd_gates_channel[i], "F",
@@ -780,6 +935,21 @@ InitStatus LisaFrsCorrelations::Init()
                     lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD, 
                     Form("E MWD(LISA %i%i%i) [a.u.]", l+1, lisa_config->xpos_gate, lisa_config->ypos_gate),
                     kGreen-3, kBlue+1);
+                
+                // Multiplicity 5
+                h1_LISA_energy_MWD_xy_LISA_s1s2_gated_M5[i][l] = MakeTH1(dir_LISA_FRS_mwd_gates_channel[i], "F",
+                    Form("h1_LISA_%i%i%i_energy_MWD_LISA_s1s2_gated_%i_M5", l+1,lisa_config->xpos_gate, lisa_config->ypos_gate, i),
+                    Form("LISA %i%i%i Energy MWD - LISA_s1s2 Gate %i M5", l+1,lisa_config->xpos_gate, lisa_config->ypos_gate, i),
+                    lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD, 
+                    Form("E MWD(LISA %i%i%i) [a.u.]", l+1, lisa_config->xpos_gate, lisa_config->ypos_gate),
+                    kGreen-3, kBlue+1);
+                h1_LISA_energy_MWD_xy_LISA_s1s2s4_gated_M5[i][l] = MakeTH1(dir_LISA_FRS_mwd_gates_channel[i], "F",
+                    Form("h1_LISA_%i%i%i_energy_MWD_LISA_s1s2s4_gated_%i_M5", l+1,lisa_config->xpos_gate, lisa_config->ypos_gate, i),
+                    Form("LISA %i%i%i Energy MWD - LISA_s1s2s4 Gate %i M5", l+1,lisa_config->xpos_gate, lisa_config->ypos_gate, i),
+                    lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD, 
+                    Form("E MWD(LISA %i%i%i) [a.u.]", l+1, lisa_config->xpos_gate, lisa_config->ypos_gate),
+                    kGreen-3, kBlue+1);
+            
             }
         }
     }
@@ -903,6 +1073,9 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     wr_FRS = frsHitItem.Get_wr_t();
     wr_travMUSIC = frsHitItem.Get_travmus_wr_t();
 
+    // ::: Total multiplicity of lisa
+    int lisa_total_multiplicity = 0;
+
     // ::: Positions
     // //S2 Position x-y
     // s2_x = frsHitItem.Get_ID_x2();
@@ -971,7 +1144,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         count_wr++;
         if (wr_LISA == 0)return;
 
-        // ::: Data
+        // ::: Position data
         layer = lisaCalItem.Get_layer_id();
         if (layer == 1) layer1seen = true;
         else if (layer == 2) layer2seen = true;
@@ -1003,9 +1176,13 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         // if (layer == 1 && xpos == 0 && ypos == 0) h2_tpc_xy_LISA_000->Fill(x_lisa_tpc22_23, y_lisa_tpc22_23);
         // if (layer == 1 && xpos == 1 && ypos == 0) h2_tpc_xy_LISA_010->Fill(x_lisa_tpc22_23, y_lisa_tpc22_23);
     
+        // ::: Total multiplicity of lisa detector
+        lisa_total_multiplicity++;
+        // ::: Energy data
         float energy_LISA_febex = lisaCalItem.Get_energy_GM();
         float energy_LISA_MWD = lisaCalItem.Get_energy_MWD_GM();
 
+        // Exclude channel before filling layers
         if (excluded.count(std::make_tuple(layer, xpos, ypos)) != 0) continue;
 
         energy_layer[layer-1].emplace_back(energy_LISA_febex);
@@ -1113,6 +1290,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         
     }
     
+    c4LOG(info, " Total multiplicity of lisa: " << lisa_total_multiplicity);
     // ::: T I M E - WR differences
     wr_LISA_FRS = wr_LISA - wr_FRS;
     wr_LISA_travMUSIC = wr_LISA - wr_travMUSIC;
@@ -1240,6 +1418,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     //............................
 
     // ::: LISA-FRS gates applied on LISA (LISA_FRS Directory)
+    //     Histo with no condition on multiplicity and with condition of multiplicity 5
     // ::: Febex
     //pair_count = std::min(febex_gates.size(), FrsGates.size());
     for (int pair = 0; pair < pair_count; pair++)  
@@ -1257,14 +1436,22 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                     {
                         // Febex with condition of trigger on sci41 (TPAT 2)
                         if (frsHitItem.Get_tpat() & 0b10) h2_LISA_energy_vs_layer_LISA_s1s2_gated[pair]->Fill(l+1, energy_layer_gated[pair][l].at(j));
-                        if (frsHitItem.Get_tpat() & 0b10) h1_LISA_energy_LISA_s1s2_gated[pair][l]->Fill(energy_layer_gated[pair][l].at(j));   
+                        if (frsHitItem.Get_tpat() & 0b10) h1_LISA_energy_LISA_s1s2_gated[pair][l]->Fill(energy_layer_gated[pair][l].at(j)); 
+
+                        if ((frsHitItem.Get_tpat() & 0b10) && lisa_total_multiplicity == 5) h2_LISA_energy_vs_layer_LISA_s1s2_gated_M5[pair]->Fill(l+1, energy_layer_gated[pair][l].at(j));
+                        if ((frsHitItem.Get_tpat() & 0b10) && lisa_total_multiplicity == 5) h1_LISA_energy_LISA_s1s2_gated_M5[pair][l]->Fill(energy_layer_gated[pair][l].at(j)); 
+                    
                     }
 
                     for ( int k = 0; k < energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].size(); k++ )
                     {
                         // Febex XY with condition of trigger on sci41 (TPAT 2)
-                        if (frsHitItem.Get_tpat() & 0b10) h2_LISA_energy_xy_vs_layer_s1s2_gated[pair]->Fill(l+1, energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
-                        if (frsHitItem.Get_tpat() & 0b10) h1_LISA_energy_xy_s1s2_gated[pair][l]->Fill(energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+                        if (frsHitItem.Get_tpat() & 0b10) h2_LISA_energy_xy_vs_layer_LISA_s1s2_gated[pair]->Fill(l+1, energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+                        if (frsHitItem.Get_tpat() & 0b10) h1_LISA_energy_xy_LISA_s1s2_gated[pair][l]->Fill(energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+
+                        if ((frsHitItem.Get_tpat() & 0b10) && lisa_total_multiplicity == 5) h2_LISA_energy_xy_vs_layer_LISA_s1s2_gated_M5[pair]->Fill(l+1, energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+                        if ((frsHitItem.Get_tpat() & 0b10) && lisa_total_multiplicity == 5) h1_LISA_energy_xy_LISA_s1s2_gated_M5[pair][l]->Fill(energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+ 
                     }
 
                     mh_counter_passed_s1s2_seq[pair][l]++;
@@ -1285,13 +1472,22 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                             // Febex with condition of trigger on sci41 (TPAT 2)
                             if (frsHitItem.Get_tpat() & 0b10) h2_LISA_energy_vs_layer_LISA_s1s2s4_gated[pair]->Fill(l+1, energy_layer_gated[pair][l].at(j));
                             if (frsHitItem.Get_tpat() & 0b10) h1_LISA_energy_LISA_s1s2s4_gated[pair][l]->Fill(energy_layer_gated[pair][l].at(j));   
+
+                            if ((frsHitItem.Get_tpat() & 0b10) && lisa_total_multiplicity == 5) h2_LISA_energy_vs_layer_LISA_s1s2s4_gated_M5[pair]->Fill(l+1, energy_layer_gated[pair][l].at(j));
+                            if ((frsHitItem.Get_tpat() & 0b10) && lisa_total_multiplicity == 5) h1_LISA_energy_LISA_s1s2s4_gated_M5[pair][l]->Fill(energy_layer_gated[pair][l].at(j));   
+                                               
+                        
                         }
 
                         for ( int k = 0; k < energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].size(); k++ )
                         {
                             // Febex XY with condition of trigger on sci41 (TPAT 2)
-                            if (frsHitItem.Get_tpat() & 0b10) h2_LISA_energy_xy_vs_layer_s1s2s4_gated[pair]->Fill(l+1, energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
-                            if (frsHitItem.Get_tpat() & 0b10) h1_LISA_energy_xy_s1s2s4_gated[pair][l]->Fill(energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+                            if (frsHitItem.Get_tpat() & 0b10) h2_LISA_energy_xy_vs_layer_LISA_s1s2s4_gated[pair]->Fill(l+1, energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+                            if (frsHitItem.Get_tpat() & 0b10) h1_LISA_energy_xy_LISA_s1s2s4_gated[pair][l]->Fill(energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+
+                            if ((frsHitItem.Get_tpat() & 0b10) && lisa_total_multiplicity == 5) h2_LISA_energy_xy_vs_layer_LISA_s1s2s4_gated_M5[pair]->Fill(l+1, energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+                            if ((frsHitItem.Get_tpat() & 0b10) && lisa_total_multiplicity == 5) h1_LISA_energy_xy_LISA_s1s2s4_gated_M5[pair][l]->Fill(energy_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));                       
+                        
                         }
                     }
                     mh_counter_passed_s2s4_seq[pair][l]++;
@@ -1321,13 +1517,21 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                         // MWD  with condition of trigger on sci41 (TPAT 2)
                         if (frsHitItem.Get_tpat() & 0b10) h2_LISA_energy_MWD_vs_layer_LISA_s1s2_gated[pair]->Fill(l+1, energy_MWD_layer_gated[pair][l].at(j));
                         if (frsHitItem.Get_tpat() & 0b10) h1_LISA_energy_MWD_LISA_s1s2_gated[pair][l]->Fill(energy_MWD_layer_gated[pair][l].at(j));   
+
+                        if ((frsHitItem.Get_tpat() & 0b10) && lisa_total_multiplicity == 5) h2_LISA_energy_MWD_vs_layer_LISA_s1s2_gated_M5[pair]->Fill(l+1, energy_MWD_layer_gated[pair][l].at(j));
+                        if ((frsHitItem.Get_tpat() & 0b10) && lisa_total_multiplicity == 5) h1_LISA_energy_MWD_LISA_s1s2_gated_M5[pair][l]->Fill(energy_MWD_layer_gated[pair][l].at(j));   
+                             
                     }
 
                     for ( int k = 0; k < energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].size(); k++ )
                     {
                         // MWD XY  with condition of trigger on sci41 (TPAT 2)
-                        if (frsHitItem.Get_tpat() & 0b10) h2_LISA_energy_MWD_xy_vs_layer_s1s2_gated[pair]->Fill(l+1, energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
-                        if (frsHitItem.Get_tpat() & 0b10) h1_LISA_energy_MWD_xy_s1s2_gated[pair][l]->Fill(energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+                        if (frsHitItem.Get_tpat() & 0b10) h2_LISA_energy_MWD_xy_vs_layer_LISA_s1s2_gated[pair]->Fill(l+1, energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+                        if (frsHitItem.Get_tpat() & 0b10) h1_LISA_energy_MWD_xy_LISA_s1s2_gated[pair][l]->Fill(energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+
+                        if ((frsHitItem.Get_tpat() & 0b10) && lisa_total_multiplicity == 5) h2_LISA_energy_MWD_xy_vs_layer_LISA_s1s2_gated_M5[pair]->Fill(l+1, energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+                        if ((frsHitItem.Get_tpat() & 0b10) && lisa_total_multiplicity == 5) h1_LISA_energy_MWD_xy_LISA_s1s2_gated_M5[pair][l]->Fill(energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+                                        
                     }
                     mh_counter_passed_s1s2_seq_mwd[pair][l]++;
                 }                   
@@ -1347,13 +1551,23 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                             // MWD with condition of trigger on sci41 (TPAT 2)
                             if (frsHitItem.Get_tpat() & 0b10) h2_LISA_energy_MWD_vs_layer_LISA_s1s2s4_gated[pair]->Fill(l+1, energy_MWD_layer_gated[pair][l].at(j));
                             if (frsHitItem.Get_tpat() & 0b10) h1_LISA_energy_MWD_LISA_s1s2s4_gated[pair][l]->Fill(energy_MWD_layer_gated[pair][l].at(j));   
+
+                            if ((frsHitItem.Get_tpat() & 0b10) && lisa_total_multiplicity == 5) h2_LISA_energy_MWD_vs_layer_LISA_s1s2s4_gated_M5[pair]->Fill(l+1, energy_MWD_layer_gated[pair][l].at(j));
+                            if ((frsHitItem.Get_tpat() & 0b10) && lisa_total_multiplicity == 5) h1_LISA_energy_MWD_LISA_s1s2s4_gated_M5[pair][l]->Fill(energy_MWD_layer_gated[pair][l].at(j));   
+                                                
+                        
                         }
 
                         for ( int k = 0; k < energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].size(); k++ )
                         {
                             // MWD XY with condition of trigger on sci41 (TPAT 2)
-                            if (frsHitItem.Get_tpat() & 0b10) h2_LISA_energy_MWD_xy_vs_layer_s1s2s4_gated[pair]->Fill(l+1, energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
-                            if (frsHitItem.Get_tpat() & 0b10) h1_LISA_energy_MWD_xy_s1s2s4_gated[pair][l]->Fill(energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+                            if (frsHitItem.Get_tpat() & 0b10) h2_LISA_energy_MWD_xy_vs_layer_LISA_s1s2s4_gated[pair]->Fill(l+1, energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+                            if (frsHitItem.Get_tpat() & 0b10) h1_LISA_energy_MWD_xy_LISA_s1s2s4_gated[pair][l]->Fill(energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+
+                            if ((frsHitItem.Get_tpat() & 0b10) && lisa_total_multiplicity == 5) h2_LISA_energy_MWD_xy_vs_layer_LISA_s1s2s4_gated_M5[pair]->Fill(l+1, energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+                            if ((frsHitItem.Get_tpat() & 0b10) && lisa_total_multiplicity == 5) h1_LISA_energy_MWD_xy_LISA_s1s2s4_gated_M5[pair][l]->Fill(energy_MWD_xy_gated[pair][l][lisa_config->xpos_gate][lisa_config->ypos_gate].at(k));
+                                                
+                        
                         }
                     }
                     mh_counter_passed_s2s4_seq_mwd[pair][l]++;
@@ -1362,6 +1576,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         }
     } 
     //............................
+
 
     fNEvents++;
 

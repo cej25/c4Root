@@ -197,7 +197,7 @@ void e_shiyan_histos()
   
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
     // ::: Nearline Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    //TLisaConfiguration::SetXYDetectorGate(1,1);  //XY position of the detector you want to see the gate on
+    TLisaConfiguration::SetXYDetectorGate(2,1);  //XY position of the detector you want to see the gate on
 
     // ::: Get run number :::
     //TFrsConfiguration::SetRunNumber(fileNumber);

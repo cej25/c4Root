@@ -13,7 +13,7 @@
 // Define FRS setup.C file - FRS should provide; place in /config/shiyan/frs/
 extern "C"
 {
-    #include "../../../config/shiyan/frs/setup/setup_103_002_2025_setting10_conv.C"
+    #include "../../../config/shiyan/frs/setup/setup_103_002_2025_conv.C"
     //#include "../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
 }
 

@@ -13,7 +13,7 @@
 extern "C"
 {
     //#include "../../config/pareeksha/frs/setup_Fragment_conv_updated.C" //pareeksha data
-    #include "../../../config/shiyan/frs/setup/setup_103_002_2025_setting10_conv.C"
+    #include "../../../config/shiyan/frs/setup/setup_103_002_2025_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -70,7 +70,7 @@ void e_shiyan_online()
     //TString inputpath = "/u/gandolfo/data/lustre/nustar/profi/sec_s160feb25/stitched/";     // Data from FRS
     //TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0075_0001.lmd"; 
 
-    TString filename = inputpath + "run_0018_*.lmd";
+    TString filename = inputpath + "run_0040_*.lmd";
     //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
 
     // ::: OUTPUT - does not write a tree if it is not set layer
@@ -159,8 +159,8 @@ void e_shiyan_online()
     if ( EXP )
     {
         TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_4x4_shiyan.txt");
-        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_shiyan.txt");
-        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_shiyan.txt");
+        TLisaConfiguration::SetGMFile(config_path +  "/lisa/GM_threepoint_clust_Febex.txt");
+        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/GM_threepoint_clust_MWD.txt");
         TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_shiyan_v0.txt");
     }
 
@@ -255,16 +255,16 @@ void e_shiyan_online()
     TFrsConfiguration::Set_Z_range(10,60);
     TFrsConfiguration::Set_AoQ_range(1.8,3.5);
     TFrsConfiguration::Set_dE_music41_range(0,4000);
-    TFrsConfiguration::Set_dE_music21_range(0,4000);
+    TFrsConfiguration::Set_dE_music21_range(0,40000);
 
     // ::: LISA
     //      Channel Energy 
-    TLisaConfiguration::SetEnergyRange(0,100000);
-    TLisaConfiguration::SetEnergyBin(1000);
+    TLisaConfiguration::SetEnergyRange(0,500);
+    TLisaConfiguration::SetEnergyBin(500);
 
     //      MWD histos
     TLisaConfiguration::SetEnergyRangeMWD(0,500);
-    TLisaConfiguration::SetEnergyBinMWD(1000);
+    TLisaConfiguration::SetEnergyBinMWD(500);
 
     //      LISA WR Time Difference 
     TLisaConfiguration::SetWrDiffRange(0,100000000);
