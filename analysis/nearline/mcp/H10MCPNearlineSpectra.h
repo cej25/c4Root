@@ -9,6 +9,7 @@
 #include "TH1F.h"
 #include "TH2F.h"
 #include <vector>
+#include "TBox.h"
 
 class TClonesArray;
 class EventHeader;
@@ -150,32 +151,88 @@ class H10MCPNearlineSpectra : public FairTask
         //TH1* MCP2Energy;
         TH2* MCP1Heatmap;
         TH2* MCP2Heatmap;
-        //TH2* MCP1Heatmapgated1;
-        //TH2* MCP2Heatmapgated1;
-        //TH2* MCP1Heatmapgated2;
-        //TH2* MCP2Heatmapgated2;
+        TH1* MCP1X1ddiff;
+        TH1* MCP1Y1ddiff;
         
-        //customsvectors
-      //  int eventcounter = 0;
-      //  int c1counter;
-     //   int c2counter;
-      //  int c3counter;
-     //   int c4counter;
-     //   int c6counter;
-     //   int c7counter;
-     //   int c8counter;
-     //   int c9counter;
-      //  int c10counter;
-     //   std::vector<TH1*> MCP1T;
-     //   std::vector<TH1*> MCP2T;
-       // std::vector<TH1*> MCP1X1;
-   //     std::vector<TH1*> MCP2X1;
-    //    std::vector<TH1*> MCP1X2;
-     //   std::vector<TH1*> MCP2X2;
-     //   std::vector<TH1*> MCP1Y1;
-     //   std::vector<TH1*> MCP2Y1;
-      //  std::vector<TH1*> MCP1Y2;
-     //   std::vector<TH1*> MCP2Y2;
+        
+        TH2* MCP2HeatmapgatedMCP1up;
+        TH2* MCP2HeatmapgatedMCP1middle;
+        TH2* MCP2HeatmapgatedMCP1bottom;
+        TH1* MCPtimegatedwith2positiongate;
+
+        TH1* h1_sc41_mcp1;
+        TH1* h1_sc41_mcp2;
+        TH1* h1_sc42_mcp1;
+        TH1* h1_sc42_mcp2;
+        
+       //notation What to see "MCP2Heatmap" Option "gatedMCP1" "postion= "O" at gsi leftright etc  up middle down is a shift to the gates middle is neutral  
+        TH2* MCP2HeatmapgatedMCP1Omiddle;
+        TH2* MCP2HeatmapgatedMCP1Oup;
+        TH2* MCP2HeatmapgatedMCP1Odown;
+
+        TH2* MCP2HeatmapgatedMCP1centermiddle;
+        TH2* MCP2HeatmapgatedMCP1centerup;
+        TH2* MCP2HeatmapgatedMCP1centerdown;
+       
+       
+       
+        ULong64_t entry2 = 0;
+        ULong64_t lastProcessedEntry = 0;
+        ULong64_t t2search;
+	    int ttrigger = 0;
+	    int maxFileCount = 0;
+        int ch0counter = 0;
+        int ch1counter = 0;
+        int ch2counter = 0;
+        int ch3counter = 0;
+        int ch4counter = 0;
+        int ch5counter = 0;
+        int eventcounter = 0;
+        int dataPointsCounter = 0;
+        int fileCount = 0;
+        bool foundMatchingFile = false;
+        int reruns = 0;
+        // zwischenspeicher fuereventbuilding
+	    ULong64_t ttrigger0; // T1 hat leider der CAEN stempel geklaut
+	    ULong64_t T1;
+        double T01=0;
+        double T02=0;
+        double E1=0;
+        double X01=0;
+        double X02=0;
+        double Y01=0;
+        double Y02=0;
+        double X11=0;
+        double X12=0;
+        double Y11=0;
+        double Y12=0;
+	  
+        double MCP1Xdiff;
+        double MCP1Ydiff;
+        double MCP2Xdiff;
+        double MCP2Ydiff;
+
+        double SC41L = 0;
+        double SC41R = 0;
+        double SC42L = 0;
+        double SC42R = 0;
+        double DSSDAccept = 0;
+		// GATES
+		
+		
+		
+
+int gatesmcp1T[4]={35,45,47,57};
+ int gatesmcp1center[4]={1,5,14,17};
+    
+    
+//int gatesmcp1T [] = {35,	45,	47,	57};
+//int gatesmcp1X [] = {-26000,	-22000,	-45000,	-41000};
+//int gatesmcp1T2[]= {-20000,-10000,15000,25000};
+TBox *gateBoxT = new TBox(gatesmcp1T[0], gatesmcp1T[1],
+                         gatesmcp1T[2], gatesmcp1T[3]);
+ TBox *gateBoxcenter = new TBox(gatesmcp1center[0], gatesmcp1center[1],
+                         gatesmcp1center[2], gatesmcp1center[3]);                        
                
         
 

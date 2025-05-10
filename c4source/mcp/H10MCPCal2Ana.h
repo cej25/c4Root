@@ -48,6 +48,11 @@ class H10MCPCal2Ana : public FairTask
         Int_t x22_discard = 0;
         Int_t y21_discard = 0;
         Int_t y22_discard = 0;
+        Int_t sc41l_discard = 0;
+        Int_t sc41r_discard = 0;
+        Int_t sc42l_discard = 0;
+        Int_t sc42r_discard = 0;
+        Int_t dssdaccept_discard = 0;
         Bool_t t1_seen = false;
         Bool_t x11_seen = false;
         Bool_t x12_seen = false;
@@ -61,6 +66,11 @@ class H10MCPCal2Ana : public FairTask
         Bool_t full_event = false;
         Bool_t mcp1_complete = false;
         Bool_t mcp2_complete = false;
+        Bool_t sc41l_seen = false;
+        Bool_t sc41r_seen = false;
+        Bool_t sc42l_seen = false;
+        Bool_t sc42r_seen = false;
+        Bool_t dssdaccept_seen = false;
         Double_t T1 = 0;
         Double_t X11 = 0;
         Double_t X12 = 0;
@@ -71,6 +81,13 @@ class H10MCPCal2Ana : public FairTask
         Double_t X22 = 0;
         Double_t Y21 = 0;
         Double_t Y22 = 0;
+        Double_t SC41L = 0;
+        Double_t SC42L = 0;
+        Double_t SC41R = 0;
+        Double_t SC42R = 0;
+        Double_t SC41 = 0;
+        Double_t SC42 = 0;
+        Double_t DSSDAccept = 0;
         Int_t full_event_counter = 0;
 
     

@@ -1,19 +1,3 @@
-/******************************************************************************
- *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
- *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
- *                                                                            *
- *             This software is distributed under the terms of the            *
- *                 GNU General Public Licence (GPL) version 3,                *
- *                    copied verbatim in the file "LICENSE".                  *
- *                                                                            *
- * In applying this license GSI does not waive the privileges and immunities  *
- * granted to it by virtue of its status as an Intergovernmental Organization *
- * or submit itself to any jurisdiction.                                      *
- ******************************************************************************
- *                        C.E. Jones, D. Bittner                              *
- *                               06.05.25                                     *
- ******************************************************************************/
-
 // FairRoot
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -82,8 +66,14 @@ InitStatus H10MCPOnlineSpectra::Init()
     histograms->Add(dir_mcp);
 
  
-    h1_test_histogram = MakeTH1(dir_mcp, "F", "h1_test_histogram", "TEST HIST", 10000, -100, 100);  
-	histogram2 = MakeTH2(dir_mcp,"b", "aaa", "test hist" , 100, -250, 250, 100, -100, 100);
+    	h1_dT = MakeTH1(dir_mcp, "F", "h1_dT", "Time Difference T2-T1", 10000, -100, 100);  
+    	h2_dX1_dT = MakeTH2(dir_mcp, "F", "h2_dX1_dT", "X12-X11 position vs Time Difference T2-T1", 100, -250, 250, 100, -100, 100); 
+    	h2_dY1_dT = MakeTH2(dir_mcp, "F", "h2_dY1_dT", "Y12-Y11 position vs Time Difference T2-T1", 100, -250, 250, 100, -100, 100); 
+    	h2_dX2_dT = MakeTH2(dir_mcp, "F", "h2_dX2_dT", "X22-X21 position vs Time Difference T2-T1", 100, -250, 250, 100, -100, 100); 
+    	h2_dY2_dT = MakeTH2(dir_mcp, "F", "h2_dY2_dT", "Y22-Y21 position vs Time Difference T2-T1", 100, -250, 250, 100, -100, 100); 
+    	
+    	h1_T1_SC42L = MakeTH1(dir_mcp, "F", "h1_T1_SC42", "Time Difference T1-SC42L", 1000, -1000, 1000); 
+    	
 	MCP1Heatmap1 = MakeTH2(dir_mcp,"b", "MCP1Heatmap1", "MCP1 Heatmap 1" , 100, -250, 250, 100, -250, 250);
 	MCP2Heatmap1 = MakeTH2(dir_mcp,"b", "MCP2Heatmap1", "MCP2 Heatmap 1" , 100, -250, 250, 100, -250, 250);
 
@@ -130,6 +120,11 @@ void H10MCPOnlineSpectra::Exec(Option_t* option)
     double X22 = 0;
     double Y21 = 0;
     double Y22 = 0;
+    double SC41 = 0;
+    double SC42 = 0;
+    double DSSDAccept = 0;
+
+
 	  
     if (fHitsMCP && fHitsMCP->GetEntriesFast() > 0)
     {   
@@ -138,36 +133,8 @@ void H10MCPOnlineSpectra::Exec(Option_t* option)
         if (!hit) return;
         mcp_wr = hit->wr_t;
 
-
-        // for (Int_t ihit = 0; ihit < nHits; ihit++)
-        // {   
-            // H10MCPTwinpeaksCalData* hit = (H10MCPTwinpeaksCalData*)fHitsMCP->At(ihit);
-            
-
-            // Int_t mcp_id = hit->Get_mcp_id();
-            // Int_t type = hit->Get_type();
-            // Int_t number = hit->Get_number();
-
-			// if (mcp_id==0 && type==0 && number== 0 ) T01 = hit->Get_fast_lead_time();
-			// if (mcp_id==1 && type==0 && number== 0 ) T02 = hit->Get_fast_lead_time();
-			// if (mcp_id==0 && type==1 && number== 0 ) X01 = hit->Get_fast_lead_time();
-			// if (mcp_id==0 && type==1 && number== 1 ) X02 = hit->Get_fast_lead_time();
-			// if (mcp_id==0 && type==2 && number== 0 ) Y01 = hit->Get_fast_lead_time();
-			// if (mcp_id==0 && type==2 && number== 1 ) Y02 = hit->Get_fast_lead_time();
-			// if (mcp_id==1 && type==1 && number== 0 ) X11 = hit->Get_fast_lead_time();
-			// if (mcp_id==1 && type==1 && number== 1 ) X12 = hit->Get_fast_lead_time();
-			// if (mcp_id==1 && type==2 && number== 0 ) Y11 = hit->Get_fast_lead_time();
-			// if (mcp_id==1 && type==2 && number== 1 ) Y12 = hit->Get_fast_lead_time();
-
-        // }
-        
-        // h1_test_histogram->Fill(T02 - T01);
-        // histogram2->Fill(X02-X01, T02-T01);
-        // MCP1Heatmap1->Fill(X02-X01, Y02-Y01);
-        // MCP2Heatmap1->Fill(X12-X11, Y12-Y11);
-
-        if (!hit->full_event) return;
-
+        if (!hit->full_event) return;        
+    
         T1 = hit->T1;
         X11 = hit->X11;
         X12 = hit->X12;
@@ -178,12 +145,29 @@ void H10MCPOnlineSpectra::Exec(Option_t* option)
         X22 = hit->X22;
         Y21 = hit->Y21;
         Y22 = hit->Y22;
+        SC41 = hit->SC41;
+        SC42 = hit->SC42;
+        DSSDAccept = hit->DSSDAccept;
 
-        h1_test_histogram->Fill(T2 - T1);
-        histogram2->Fill(X12-X11, T2-T1);
+        if (SC41 > 0)
+        {
+            h1_sc41_mcp1->Fill(SC41-T1);
+            h1_sc41_mcp2->Fill(SC41-T2); 
+        }
+        if (SC42 > 0)
+        {
+            h1_sc42_mcp1->Fill(SC42-T1);
+            h1_sc42_mcp2->Fill(SC42-T2);  
+        }  
+	
+        h1_dT->Fill(T2 - T1);
+        h2_dX1_dT->Fill(X12-X11, T2-T1);
+        h2_dY1_dT->Fill(Y12-Y11, T2-T1);
+        h2_dX1_dT->Fill(X22-X21, T2-T1);
+        h2_dY1_dT->Fill(Y22-Y21, T2-T1);
+        
         MCP1Heatmap1->Fill(X12-X11, Y12-Y11);
         MCP2Heatmap1->Fill(X22-X21, Y22-Y21);
-
     }
 
     fNEvents++;
