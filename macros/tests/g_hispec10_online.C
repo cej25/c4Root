@@ -52,7 +52,7 @@ void g_hispec10_online()
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     //TString filename = "/u/cjones/onlymcp09041755.lmd";
 //    TString filename = "/data.local1/lustre/despec/s092_s103/run_0007_0001.lmd"; 
-//	TString filename ="stream://x86l-205";  
+//	TString filename ="stream://x86l-168";  
   TString filename = "trans://lxg3107:6000";
     TString outputpath = "htest_events";
     TString outputFileName = outputpath + ".root";
