@@ -22,20 +22,20 @@
 
 # ::: Smoothing Parameter L - (Rising Time in anatraces) 
 # ::: Conditions: L < M ; M + L < (Trapez_sample_window_1 (kend) - Trapez_sample_window_0(k0))
-Smoothing_L[ns]                    200
+Smoothing_L[ns]                    100
 
 # ::: Lenght of the moving window M
 # ::: Conditions: M > L (Smoothing_L); M + L < (Trapez_sample_window_1 (kend) - Trapez_sample_window_0 (k0))
-Trapez_moving_window_length[ns]    400
+Trapez_moving_window_length[ns]    500
 
 # ::: Decay Time of the signal tau (depending on the preamp - wip to be for each channel)
 # ::: Conditions: It has to fit the decay time of the trace. This flattens the trapezoid top
-Decaytime_ch0[ns]                  2300
-Decaytime_ch1[ns]                  2300
+Decaytime_ch0[ns]                  2186
+Decaytime_ch1[ns]                  2000
 
 # ::: Start and stop of the MWD trace (k0,kend)
 # ::: Conditions:  k0 >= 0 && k0 < kend && k0 < trace_febex.size(); kend > k0
-Trapez_sample_window_0[ns]         500  
+Trapez_sample_window_0[ns]         1100  
 Trapez_sample_window_1[ns]         2000
 
 # ::: Sampling from Febex (=10 ns)
@@ -47,13 +47,13 @@ Sampling[ns]                       10
 
 # ::: Start and stop of the trapezoid flat top where the energy is computed
 # ::: Conditions: Trapez_amp_calc_window_0 > k0 + M; Trapez_amp_calc_window_1 < k0 + 2 * M - L
-Trapez_amp_calc_window_0[ns]       1350
-Trapez_amp_calc_window_1[ns]       1400
+Trapez_amp_calc_window_0[ns]       1700
+Trapez_amp_calc_window_1[ns]       1900
 
 # ::: Range for the baseline calculation of the MWD trace
 # ::: Conditions: Trapez_baseline_window_0 > k0; Trapez_baseline_window_1 < k0 + M - L
-Trapez_baseline_window_0[ns]       500             
-Trapez_baseline_window_1[ns]       650
+Trapez_baseline_window_0[ns]       1200             
+Trapez_baseline_window_1[ns]       1400
 
 
 #To implement

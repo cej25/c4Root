@@ -74,6 +74,7 @@ class TFrsConfiguration
         static Double_t fMin_dE_music41, fMax_dE_music41;
         static Double_t fMin_dE_music42, fMax_dE_music42;
         static Double_t fMin_dE_travMus_gate, fMax_dE_travMus_gate;
+        static Double_t tof_gate_low, tof_gate_high;
         static int frun_num;
 
         static void SetOldBetaCal(Bool_t option) { old_beta_cal = option; }
@@ -96,6 +97,8 @@ class TFrsConfiguration
         static void Set_dE_music21_range(Double_t min, Double_t max);
         static void Set_dE_music41_range(Double_t min, Double_t max);
         static void Set_dE_music42_range(Double_t min, Double_t max);
+
+        static void Set_TOF_gate(Double_t min, Double_t max);
 
         static void Set_dE_travMusic_gate(Double_t, Double_t);
 

@@ -18,7 +18,6 @@
 #include "FairLogger.h"
 #include "FairRootManager.h"
 #include "FairRunAna.h"
-#include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
 
 // c4
@@ -61,9 +60,6 @@ InitStatus FrsRawNearlineSpectra::Init()
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
-    FairRunOnline* run = FairRunOnline::Instance();
-    run->GetHttpServer()->Register("", this);
-
     header = mgr->InitObjectAs<decltype(header)>("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found!");
 
@@ -98,40 +94,40 @@ InitStatus FrsRawNearlineSpectra::Init()
     dir_sci_mhtdc = dir_sci->mkdir("MHTDC T");
     
     // TAC dE
-    c_sci_de = new TCanvas("c_sci_de", "Scintillator dE spectra", 650, 350);
-    c_sci_de->Divide(4, 8);
+    // c_sci_de = new TCanvas("c_sci_de", "Scintillator dE spectra", 650, 350);
+    // c_sci_de->Divide(4, 8);
     for (int ihist = 0; ihist < 32; ihist++)
     {
-        c_sci_de->cd(ihist+1);
+        // c_sci_de->cd(ihist+1);
         h1_sci_de[ihist] = MakeTH1(dir_sci_de, "F", Form("h1_sci_de_%i", ihist), Form("Scintillator dE Channel %i", ihist), 4096, 0, 4096);
-        h1_sci_de[ihist]->Draw();
+        // h1_sci_de[ihist]->Draw();
     }
-    c_sci_de->cd(0);
-    dir_sci_de->Append(c_sci_de);
+    // c_sci_de->cd(0);
+    // dir_sci_de->Append(c_sci_de);
 
     // TAC dT
-    c_sci_dt = new TCanvas("c_sci_dt", "Scintillator dT spectra", 650, 350);
-    c_sci_dt->Divide(4, 8);
+    // c_sci_dt = new TCanvas("c_sci_dt", "Scintillator dT spectra", 650, 350);
+    // c_sci_dt->Divide(4, 8);
     for (int ihist = 0; ihist < 32; ihist++)
     {
-        c_sci_dt->cd(ihist+1);
+        // c_sci_dt->cd(ihist+1);
         h1_sci_dt[ihist] = MakeTH1(dir_sci_dt, "F", Form("h1_sci_dt_%i", ihist), Form("Scintillator dT Channel %i", ihist), 4096, 0, 4096); // need to figure out ranges
-        h1_sci_dt[ihist]->Draw();
+        // h1_sci_dt[ihist]->Draw();
     }
-    c_sci_dt->cd(0);
-    dir_sci_dt->Append(c_sci_dt);
+    // c_sci_dt->cd(0);
+    // dir_sci_dt->Append(c_sci_dt);
 
     // MHTDC T
-    c_sci_mhtdc = new TCanvas("c_sci_mhtdc", "Scintillator MHTDC T spectra", 650, 350);
-    c_sci_mhtdc->Divide(4, 8);
+    // c_sci_mhtdc = new TCanvas("c_sci_mhtdc", "Scintillator MHTDC T spectra", 650, 350);
+    // c_sci_mhtdc->Divide(4, 8);
     for (int ihist = 0; ihist < 32; ihist++)
     {
-        c_sci_mhtdc->cd(ihist+1);
+        // c_sci_mhtdc->cd(ihist+1);
         h1_sci_mhtdc[ihist] = MakeTH1(dir_sci_mhtdc, "F", Form("h1_sci_mhtdc_%i", ihist), Form("Scintillator MHTDC T Channel %i", ihist), 4000, 0, 100000); // need to figure out ranges
-        h1_sci_mhtdc[ihist]->Draw();
+        // h1_sci_mhtdc[ihist]->Draw();
     }
-    c_sci_mhtdc->cd(0);
-    dir_sci_mhtdc->Append(c_sci_mhtdc);
+    // c_sci_mhtdc->cd(0);
+    // dir_sci_mhtdc->Append(c_sci_mhtdc);
 
     
     // ::: MUSIC :::::: 
@@ -142,29 +138,29 @@ InitStatus FrsRawNearlineSpectra::Init()
     {
         dir_music_n_e[j] = dir_music_e->mkdir(Form("MUSIC %i", j));
 
-        c_music_n_e[j] = new TCanvas(Form("c_music_%i_e", j), Form("MUSIC %i Anode E spectra", j), 650, 350);
-        c_music_n_e[j]->Divide(5, 4);
+        // c_music_n_e[j] = new TCanvas(Form("c_music_%i_e", j), Form("MUSIC %i Anode E spectra", j), 650, 350);
+        // c_music_n_e[j]->Divide(5, 4);
         for (int ihist = 0; ihist < 8; ihist++)
         {
-            c_music_n_e[j]->cd(ihist+1);
+            // c_music_n_e[j]->cd(ihist+1);
             h1_music_anode_e[j][ihist] = MakeTH1(dir_music_n_e[j], "F", Form("h1_music_%i_e_anode_%i", j, ihist), Form("MUSIC %i Anode %i", j, ihist), 4096, 0, 4096); // need to figure out ranges
-            h1_music_anode_e[j][ihist]->Draw();
+            // h1_music_anode_e[j][ihist]->Draw();
         }
-        c_music_n_e[j]->cd(0);
-        dir_music_n_e[j]->Append(c_music_n_e[j]);
+        // c_music_n_e[j]->cd(0);
+        // dir_music_n_e[j]->Append(c_music_n_e[j]);
 
         dir_music_n_t[j] = dir_music_t->mkdir(Form("MUSIC %i", j));
 
-        c_music_n_t[j] = new TCanvas(Form("c_music_%i_t", j), Form("MUSIC %i Anode T spectra", j), 650, 350);
-        c_music_n_t[j]->Divide(5, 4);
+        // c_music_n_t[j] = new TCanvas(Form("c_music_%i_t", j), Form("MUSIC %i Anode T spectra", j), 650, 350);
+        // c_music_n_t[j]->Divide(5, 4);
         for (int ihist = 0; ihist < 8; ihist++)
         {
-            c_music_n_t[j]->cd(ihist+1);
+            // c_music_n_t[j]->cd(ihist+1);
             h1_music_anode_t[j][ihist] = MakeTH1(dir_music_n_t[j], "F", Form("h1_music_%i_t_anode_%i", j, ihist), Form("MUSIC %i Anode %i", j, ihist), 4000, 0, 100000); // need to figure out ranges
-            h1_music_anode_t[j][ihist]->Draw();
+            // h1_music_anode_t[j][ihist]->Draw();
         }
-        c_music_n_t[j]->cd(0);
-        dir_music_n_t[j]->Append(c_music_n_t[j]);
+        // c_music_n_t[j]->cd(0);
+        // dir_music_n_t[j]->Append(c_music_n_t[j]);
     }
 
     
@@ -176,28 +172,28 @@ InitStatus FrsRawNearlineSpectra::Init()
     {
         dir_tpc_n_adc[j] = dir_tpc_adc->mkdir(Form("TPC %i ADCs", j));
 
-        c_tpc_n_adc[j] = new TCanvas(Form("c_tpc_%i_adc", j), Form("TPC %i ADC Spectra", j) , 650, 350);
-        c_tpc_n_adc[j]->Divide(2, 4);
+        // c_tpc_n_adc[j] = new TCanvas(Form("c_tpc_%i_adc", j), Form("TPC %i ADC Spectra", j) , 650, 350);
+        // c_tpc_n_adc[j]->Divide(2, 4);
         for (int ihist = 0; ihist < 8; ihist++)
         {
-            c_tpc_n_adc[j]->cd(ihist+1);
+            // c_tpc_n_adc[j]->cd(ihist+1);
             h1_tpc_adc[j][ihist] = MakeTH1(dir_tpc_n_adc[j], "F", Form("dir_tpc_%i_adc_%i", j, ihist), Form("TPC %i ADC Channel %i", j, ihist), 2000, 0, 2000);
             h1_tpc_adc[j][ihist]->Draw();
         }
-        c_tpc_n_adc[j]->cd(0);
-        dir_tpc_n_adc[j]->Append(c_tpc_n_adc[j]);
+        // c_tpc_n_adc[j]->cd(0);
+        // dir_tpc_n_adc[j]->Append(c_tpc_n_adc[j]);
     }
 
-    c_tpc_tdc = new TCanvas("c_tpc_tdc", "TPC TDC Spectra", 650, 350);
-    c_tpc_tdc->Divide(8, 16); // this will obviously look insane
+    // c_tpc_tdc = new TCanvas("c_tpc_tdc", "TPC TDC Spectra", 650, 350);
+    // c_tpc_tdc->Divide(8, 16); // this will obviously look insane
     for (int ihist = 0; ihist < 128; ihist++)
     {
-        c_tpc_tdc->cd(ihist+1);
+        // c_tpc_tdc->cd(ihist+1);
         h1_tpc_tdc[ihist] = MakeTH1(dir_tpc_tdc, "F", Form("h1_tpc_tdc_%i", ihist), Form("TPC TDC Channel %i", ihist), 2000, 0, 2000);
         h1_tpc_tdc[ihist]->Draw();
     }
-    c_tpc_tdc->cd(0);
-    dir_tpc_tdc->Append(c_tpc_tdc);
+    // c_tpc_tdc->cd(0);
+    // dir_tpc_tdc->Append(c_tpc_tdc);
 
 
 

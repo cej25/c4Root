@@ -165,7 +165,7 @@ EVENT
     frsuser = frs_user_subev(procid = 30);
     frstpat = frs_tpat_subev(procid = 15);
 
-    frstravmus = frs_travmus_subev(procid = 35, control = 30);
+    frstravmus = frs_travmus_subev(procid = 35, control = 35);
 
     lisa = febex_subev_traces(procid = 60);
 

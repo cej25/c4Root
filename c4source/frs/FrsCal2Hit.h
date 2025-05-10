@@ -84,6 +84,7 @@ class FrsCal2Hit : public FairTask
         Int_t fNEvents;
         EventHeader* header;
         int total_time_microsecs = 0;
+        int aoqfrscal = 0;
 
         bool conditions_files_read = false;
 
