@@ -79,9 +79,9 @@ InitStatus H10MCPNearlineSpectra::Init()
     dir_mcp = gDirectory->mkdir("MCPs");
     gDirectory->cd("MCPs");
 
-    h1_test_histogram = MakeTH1(dir_mcp, "F", "h1_test_histogram", "TEST HIST", 4000, -500, 100);  
+    h1_test_histogram = MakeTH1(dir_mcp, "F", "h1_test_histogram", "TEST HIST", 4000, -500, 100000);  
 	  histogram2 = MakeTH2(dir_mcp,"b", "aaa", "test hist" , 100, -250, 250, 100, -100, 100);
-	  MCP1Heatmap = MakeTH2(dir_mcp,"b", "MCP1Heatmap", "MCP1Heatmap" , 500, -2500000, 2500000, 500, -2500000, 2500000);
+	  MCP1Heatmap = MakeTH2(dir_mcp,"b", "MCP1Heatmap", "MCP1Heatmap" , 500, -250, 250, 500, -250, 250);
 	  MCP2Heatmap = MakeTH2(dir_mcp,"b", "MCP2Heatmap", "MCP2Heatmap" , 500, -250, 250, 500, -250, 250);
 	
 
