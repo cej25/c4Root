@@ -1115,6 +1115,38 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     Float_t x4_position = frsHitItem.Get_ID_x4();
     Float_t sci42e = frsHitItem.Get_sci_e_42();
 
+    std::vector<Float_t> z21_passed;
+    std::vector<Float_t> AoQ_s1s2_passed;
+    std::vector<Float_t> z41_passed;
+    std::vector<Float_t> z42_passed;
+    std::vector<Float_t> AoQ_s2s4_passed;
+    std::vector<Float_t> dEdeg_z41_passed;
+
+    // CEJ :: Process FRS Gate info here first.
+    for (int gate = 0; gate < FrsGates.size(); gate++)
+    {
+        for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
+        {
+            if (FrsGates[gate]->PassedS1S2(z21_mhtdc.at(i), x2_position, AoQ_s1s2_mhtdc.at(i)))
+            {
+                z21_passed.emplace_back(z21_mhtdc.at(i));
+                AoQ_s1s2_passed.emplace_back(AoQ_s1s2_mhtdc.at(i));
+            }
+        }
+
+        for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
+        {
+            if (FrsGates[gate]->PassedS2S4(z41_mhtdc.at(i), z42_mhtdc.at(i), x2_position, x4_position, AoQ_s2s4_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), sci42e))
+            {
+                z41_passed.emplace_back(z41_mhtdc.at(i));
+                z42_passed.emplace_back(z42_mhtdc.at(i));
+                AoQ_s2s4_passed.emplace_back(AoQ_s2s4_mhtdc.at(i));
+                dEdeg_z41_passed.emplace_back(dEdeg_z41_mhtdc.at(i));
+            }
+        }
+    }
+
+
     
 
     // //c4LOG(info, "s2 x : " << s2_x << "s2 y : " << s2_y);
