@@ -1,3 +1,4 @@
+#RUNS from 10/05 evening
 # MCP
 # TYPE 0 = T, 1 = X, 2 = Y
 # TAMEXID     TAMEXCHAN       MCP     TYPE        NUMBER
@@ -11,11 +12,11 @@
     1           6               1       2           0
     1           7               0       2           1
     1           8               1       2           1
-    0	          1		            0	      3	          0
-    0	          3		            0	      3	          1
-    0	          5		            0       4	          0
-    0           7		            0	      4	          1	
-    0           16		            0	      5	          0	
+    0	        1		        0	    3	        0
+    0	        3		        0	    3	        1
+    0	        5		        0       4	        0
+    0           7		        0	    4	        1	
+    0           16		        0	    5	        0	
 #Time machines:
 #SCI41L
 #SCI41R

@@ -80,21 +80,17 @@ InitStatus H10MCPNearlineSpectra::Init()
     gDirectory->cd("MCPs");
 
     h1_test_histogram = MakeTH1(dir_mcp, "F", "h1_test_histogram", "TEST HIST", 4000, -500, 100);  
-	histogram2 = MakeTH2(dir_mcp,"b", "aaa", "test hist" , 100, -250, 250, 100, -100, 100);
-	MCP1Heatmap = MakeTH2(dir_mcp,"b", "MCP1Heatmap", "MCP1Heatmap" , 500, -2500000, 2500000, 500, -2500000, 2500000);
-	MCP2Heatmap = MakeTH2(dir_mcp,"b", "MCP2Heatmap", "MCP2Heatmap" , 500, -250, 250, 500, -250, 250);
+	  histogram2 = MakeTH2(dir_mcp,"b", "aaa", "test hist" , 100, -250, 250, 100, -100, 100);
+	  MCP1Heatmap = MakeTH2(dir_mcp,"b", "MCP1Heatmap", "MCP1Heatmap" , 500, -2500000, 2500000, 500, -2500000, 2500000);
+	  MCP2Heatmap = MakeTH2(dir_mcp,"b", "MCP2Heatmap", "MCP2Heatmap" , 500, -250, 250, 500, -250, 250);
 	
-	
-	
-	
-	    MCP1X1ddiff = MakeTH1(dir_mcp, "F", "MCP1X1ddiff", "MCP1X1ddiff", 4000, -7000, 2000);  
-	    MCP1Y1ddiff = MakeTH1(dir_mcp, "F", "MCP1Y1ddiff", "MCP1Y1ddiff", 4000, -7000, 2000);  
 
+    MCP1X1ddiff = MakeTH1(dir_mcp, "F", "MCP1X1ddiff", "MCP1X1ddiff", 4000, -7000, 2000);  
+    MCP1Y1ddiff = MakeTH1(dir_mcp, "F", "MCP1Y1ddiff", "MCP1Y1ddiff", 4000, -7000, 2000);  
 
-	
 		MCP2HeatmapgatedMCP1Omiddle = MakeTH2(dir_mcp,"b", "MCP2HeatmapT1", "MCP2HeatmapT2" , 500, -250, 250, 500, -250, 250);
 		MCP2HeatmapgatedMCP1Oup = MakeTH2(dir_mcp,"b", "MCP2HeatmapT1up", "MCP2HeatmapT2" , 500, -250, 250, 500, -250, 250);
-				MCP2HeatmapgatedMCP1Odown = MakeTH2(dir_mcp,"b", "MCP2HeatmapT1down", "MCP2HeatmapT2" , 500, -250, 250, 500, -250, 250);
+    MCP2HeatmapgatedMCP1Odown = MakeTH2(dir_mcp,"b", "MCP2HeatmapT1down", "MCP2HeatmapT2" , 500, -250, 250, 500, -250, 250);
 
 				
     MCP2HeatmapgatedMCP1centermiddle = MakeTH2(dir_mcp,"b", "MCP2HeatmapT1centermiddle", "MCP2HeatmapT2" , 500, -250, 250, 500, -250, 250);
@@ -105,13 +101,13 @@ InitStatus H10MCPNearlineSpectra::Init()
     //MCP2Heatmap = MakeTH2(dir_mcp,"b", "MCP2Heatmap", "MCP2Heatmap" , 500, -250, 250, 500, -250, 250);
 
     // gates
-    //gatesmcp1T [] = {35,	45,	47,	57};
+    // gatesmcp1T [] = {35,	45,	47,	57};
 
     // histogram = MakeTH1(dir_mcp,"a", "TDiff Distribution", 1000, -200000, -150000);
 
-  //   h1_time = MakeTH1(dir_mcp, "F", "MCPtimediff", "TEST HIST2", 1000, -1000000, 100000);
-    //  h2_mcp1 = MakeTH1(dir_mcp, "F", "Heatmapmcp1", "TEST HIST", 1000, -1000000, 10000000,1000, -1000000, 10000000);
-    //  h2_mcp2 = MakeTH1(dir_mcp, "F", "Heatmapmcp1", "TEST HIST", 1000, -1000000, 10000000,1000, -1000000, 10000000);
+    // h1_time = MakeTH1(dir_mcp, "F", "MCPtimediff", "TEST HIST2", 1000, -1000000, 100000);
+    // h2_mcp1 = MakeTH1(dir_mcp, "F", "Heatmapmcp1", "TEST HIST", 1000, -1000000, 10000000,1000, -1000000, 10000000);
+    // h2_mcp2 = MakeTH1(dir_mcp, "F", "Heatmapmcp1", "TEST HIST", 1000, -1000000, 10000000,1000, -1000000, 10000000);
 
     h1_sc41_mcp1 = MakeTH1(dir_mcp, "I", "h1_sc41_mcp1", "SC41-MCP1 Time Diff", 1000, -1000, 1000);
     h1_sc41_mcp2 = MakeTH1(dir_mcp, "I", "h1_sc41_mcp2", "SC41-MCP2 Time Diff", 1000, -1000, 1000);
