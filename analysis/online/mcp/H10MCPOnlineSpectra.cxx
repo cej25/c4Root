@@ -138,7 +138,7 @@ void H10MCPOnlineSpectra::Exec(Option_t* option)
         if (!hit) return;
         mcp_wr = hit->wr_t;
 
-        if (!hit->full_event) return;        
+        // if (!hit->full_event) return;        
     
         T1 = hit->T1;
         std::cout << "T1:: " << T1 << std::endl;

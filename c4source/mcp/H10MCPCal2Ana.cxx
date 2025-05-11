@@ -114,8 +114,6 @@ void H10MCPCal2Ana::Exec(Option_t* option)
             { 
                 if (t1_seen) { t1_discard++; continue; }
                 else { T1 = hit->Get_fast_lead_time(); t1_seen = true; }
-
-                std::cout << "T1 is seen" << std::endl;
             }
             if (mcp_id == 0 && type == 1 && number == 0) 
             { 
