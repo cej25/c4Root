@@ -245,10 +245,10 @@ void FrsCal2Hit::Exec(Option_t* option)
             s1a_mhtdc.emplace_back(temp_a1);
             s2x_s1s2_mhtdc.emplace_back(temp_s2x_mhtdc[i]);
             s2a_s1s2_mhtdc.emplace_back(temp_a2);
-            tof_s1s2_mhtdc.emplace_back(id_mhtdc_tof_s2s4[count]);
-            beta_s1s2_mhtdc.emplace_back(id_mhtdc_beta_s2s4[count]);
-            aoq_s1s2_mhtdc.emplace_back(id_mhtdc_aoq_s2s4[count]);
-            aoq_corr_s1s2_mhtdc.emplace_back(id_mhtdc_aoq_corr_s2s4[count]);
+            tof_s1s2_mhtdc.emplace_back(id_mhtdc_tof_s1s2[count]);
+            beta_s1s2_mhtdc.emplace_back(id_mhtdc_beta_s1s2[count]);
+            aoq_s1s2_mhtdc.emplace_back(id_mhtdc_aoq_s1s2[count]);
+            aoq_corr_s1s2_mhtdc.emplace_back(id_mhtdc_aoq_corr_s1s2[count]);
             z_music21_mhtdc.emplace_back(id_mhtdc_z_music21[count]);
             z_music22_mhtdc.emplace_back(id_mhtdc_z_music22[count]);
         }
