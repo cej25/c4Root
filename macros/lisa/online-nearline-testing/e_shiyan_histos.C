@@ -71,11 +71,11 @@ void e_shiyan_histos()
     //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  //FRS data with S2 PID
     
     // ::: O U T P U T
-    TString outputpath = "/u/gandolfo/data/shiyan_1st_day/";   //testing
+    TString outputpath = "/u/gandolfo/data/shiyan_debug/";   //testing
     //TString outputpath = "/u/gandolfo/data/test_c4/layer_alpha/";   //energy resolution output
     
     //TString outputFilename = outputpath + "run_0003_0001_histo_v2.root";
-    TString outputFilename = outputpath + "run_0040_0001_tree_histo_gate_test2.root";
+    TString outputFilename = outputpath + "run_0040_0001_tree_histo_debug_v2.root";
     //TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_histo_6May.root";     //FRS data with S2 PID
 
 
