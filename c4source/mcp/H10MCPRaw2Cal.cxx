@@ -108,7 +108,7 @@ void H10MCPRaw2Cal::Exec(Option_t* option)
 {
  
 
-    //std::cout << "EVENT :: " << std::endl;
+    std::cout << "EVENT :: " << std::endl;
     auto start = std::chrono::high_resolution_clock::now();
     if (funcal_data && funcal_data->GetEntriesFast() > 1)
     { // only get events with two hits or more
@@ -169,14 +169,14 @@ void H10MCPRaw2Cal::Exec(Option_t* option)
                     std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> fmap;
                     fmap = mcp_config->Mapping();
                     std::pair<int, int> unmapped_det { funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2};
-                    //std::cout << "board:: " << funcal_hit->Get_board_id() << " ::  channel::  " << (funcal_hit->Get_ch_ID()+1)/2 << std::endl;
+                    std::cout << "board:: " << funcal_hit->Get_board_id() << " ::  channel::  " << (funcal_hit->Get_ch_ID()+1)/2 << std::endl;
                     if (auto result_find = fmap.find(unmapped_det); result_find != fmap.end())
                     {
                         mcp_id = result_find->second.first; // 0/1 [1/2]
                         type = result_find->second.second.first; // 0/1/2 [T/X/Y]
                         number = result_find->second.second.second; // 0/1 [1/2]
                                 
-                        //std::cout << "MCP: " <<mcp_id << " - TYPE :: " << type << " - NUMBER:: " << number << std::endl;
+                        // std::cout << "MCP: " <<mcp_id << " - TYPE :: " << type << " - NUMBER:: " << number << std::endl;
 
                         if (mcp_id == -1) { fNunmatched++; continue; }
                     }
