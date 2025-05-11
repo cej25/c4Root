@@ -1031,10 +1031,10 @@ void FrsNearlineSpectra::Process_MHTDC()
                     
                 }
 
-                for (int i = 0; i < std::min(z21_passed.size(), z41_mhtdc.size()); i++)
-                {
-                    if (z21_mhtdc.at(i) > 0 && z41_mhtdc.at(i) > 0) h2_Z21_Z41_S1S2S4Gated_mhtdc[gate]->Fill(z21_mhtdc.at(i) > 0, z41_mhtdc.at(i) > 0);
-                }
+                // for (int i = 0; i < std::min(z21_passed.size(), z41_mhtdc.size()); i++)
+                // {
+                //     if (z21_mhtdc.at(i) > 0 && z41_mhtdc.at(i) > 0) h2_Z21_Z41_S1S2S4Gated_mhtdc[gate]->Fill(z21_mhtdc.at(i) > 0, z41_mhtdc.at(i) > 0);
+                // }
             }
         }
     }
