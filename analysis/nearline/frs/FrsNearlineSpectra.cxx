@@ -999,7 +999,7 @@ void FrsNearlineSpectra::Process_MHTDC()
         {
             if (z21_passed.size() > 0 && z41_passed.size() > 0)
             {
-                for (int i = 0; i < std::min(z21_passed.size(), z41_mhtdc.size()); i++)
+                for (int i = 0; i < z21_mhtdc.size(); i++)
                 {
                     // ---- 2D -----
                     if (z21_mhtdc.at(i) > 0 && AoQ_corr_s1s2_mhtdc.at(i) > 0) h2_Z21_vs_AoQs1s2_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(i), z21_mhtdc.at(i));
@@ -1011,6 +1011,10 @@ void FrsNearlineSpectra::Process_MHTDC()
                     if (AoQ_corr_s1s2_mhtdc.at(i) > 0) h1_AoQs1s2_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(i));
                     if (z21_mhtdc.at(i) > 0) h1_Z21_S1S2S4Gated_mhtdc[gate]->Fill(z21_mhtdc.at(i));
 
+                }
+
+                for (int i = 0; i < z41_passed.size(); i++)
+                {
                     // ----- 2D -----
                     if (AoQ_corr_s2s4_mhtdc.at(i) > 0 && z41_mhtdc.at(i) > 0) h2_Z41_vs_AoQs2s4_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i), z41_mhtdc.at(i));
                     if (z41_mhtdc.at(i) > 0 && z41_mhtdc.at(i) > 0) h2_Z41_vs_Z42_S1S2S4Gated_mhtdc[gate]->Fill(z41_mhtdc.at(i), z42_mhtdc.at(i));
@@ -1024,8 +1028,12 @@ void FrsNearlineSpectra::Process_MHTDC()
                     if (z41_mhtdc.at(i) > 0) h1_Z41_S1S2S4Gated_mhtdc[gate]->Fill(z41_mhtdc.at(i));
                     if (z42_mhtdc.at(i) > 0) h1_Z42_S1S2S4Gated_mhtdc[gate]->Fill(z42_mhtdc.at(i));
 
-                    if (z21_mhtdc.at(i) > 0 && z41_mhtdc.at(i) > 0) h2_Z21_Z41_S1S2S4Gated_mhtdc[gate]->Fill(z21_mhtdc.at(i) > 0, z41_mhtdc.at(i) > 0);
+                    
+                }
 
+                for (int i = 0; i < std::min(z21_passed.size(), z41_mhtdc.size()); i++)
+                {
+                    if (z21_mhtdc.at(i) > 0 && z41_mhtdc.at(i) > 0) h2_Z21_Z41_S1S2S4Gated_mhtdc[gate]->Fill(z21_mhtdc.at(i) > 0, z41_mhtdc.at(i) > 0);
                 }
             }
         }
