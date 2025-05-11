@@ -429,6 +429,27 @@ Bool_t H10MCPReader::Read() //do fine time here:
 
                 fNleads_read[it_board_number][channelid]++;
 
+                new ((*fArray)[fArray->GetEntriesFast()]) H10MCPTwinpeaksData(
+                    trig,
+                    it_board_number,
+                    channelid,
+                    accepted_trigger_time,
+                    accepted_lead_epoch_counter,
+                    accepted_lead_coarse_T,
+                    accepted_lead_fine_T,
+
+                    last_tdc_hit.lead_epoch_counter,
+                    last_tdc_hit.lead_coarse_T,
+                    last_tdc_hit.lead_fine_T,
+
+                    previous_epoch_word,
+                    coarse_T,
+                    fine_T,
+                    
+                    fData->mcp_ts_subsystem_id,
+                    wr_t
+                );
+
             
                 continue;
             }
