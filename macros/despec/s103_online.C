@@ -51,14 +51,15 @@ void s103_online()
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     //TString filename = "/u/cjones/HISPEC-10/20250410-1505_0001.lmd";
-    TString filename = "~/lustre/despec/hispec10/finetime_0002_000*.lmd";
+   // TString filename = "~/lustre/despec/hispec10/finetime_0002_000*.lmd";
+    TString filename = "~/lustre/despec/s092_s103_files/ts/run_0062_0004.lmd";
     //TString filename = "/u/cjones/finalfinalpulserrunfin.lmd";
     TString outputpath = "htest";
     TString outputFileName = outputpath + ".root";
 
     // Create Online run
     Int_t refresh = 2; // Refresh rate for online histograms
-    Int_t port = 6969; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 8000; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
