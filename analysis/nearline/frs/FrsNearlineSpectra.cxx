@@ -573,6 +573,14 @@ InitStatus FrsNearlineSpectra::Init()
     count_passed_s1s2s4 = new int[num_frs_gates];
     for (int i = 0; i < num_frs_gates; i++) count_passed_s1s2s4[i] = 0;
  
+    z21_passed.resize(num_frs_gates);
+    AoQ_s1s2_passed.resize(num_frs_gates);
+    z41_passed.resize(num_frs_gates);
+    z42_passed.resize(num_frs_gates);
+    AoQ_s2s4_passed.resize(num_frs_gates);
+    dEdeg_z41_passed.resize(num_frs_gates);
+    // now it should be a sized vector of vectors?
+
     return kSUCCESS;
 
 }
@@ -775,6 +783,9 @@ void FrsNearlineSpectra::Process_MHTDC()
 {
     int a = 0;
 
+    Float_t x2_position = hitItem.Get_ID_x2();
+    Float_t x4_position = hitItem.Get_ID_x4();
+    Float_t sci42e = hitItem.Get_sci_e_42();
     std::vector<Float_t> beta_s1s2_mhtdc = multiHitItem.Get_ID_beta_s1s2_mhtdc();
     std::vector<Float_t> beta_s2s4_mhtdc = multiHitItem.Get_ID_beta_s2s4_mhtdc();
     std::vector<Float_t> AoQ_s1s2_mhtdc = multiHitItem.Get_ID_AoQ_s1s2_mhtdc();
@@ -788,6 +799,30 @@ void FrsNearlineSpectra::Process_MHTDC()
     std::vector<Float_t> z43_mhtdc = multiHitItem.Get_ID_z43_mhtdc();
     std::vector<Float_t> dEdegoQ_mhtdc = multiHitItem.Get_ID_dEdegoQ_mhtdc();
     std::vector<Float_t> dEdeg_z41_mhtdc = multiHitItem.Get_ID_dEdeg_z41_mhtdc();
+
+    // CEJ :: Process FRS Gate info here first.
+    for (int gate = 0; gate < FrsGates.size(); gate++)
+    {
+        for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
+        {
+            if (FrsGates[gate]->PassedS1S2(z21_mhtdc.at(i), x2_position, AoQ_s1s2_mhtdc.at(i)))
+            {
+                z21_passed[gate].emplace_back(z21_mhtdc.at(i));
+                AoQ_s1s2_passed[gate].emplace_back(AoQ_s1s2_mhtdc.at(i));
+            }
+        }
+
+        for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
+        {
+            if (FrsGates[gate]->PassedS2S4(z41_mhtdc.at(i), z42_mhtdc.at(i), x2_position, x4_position, AoQ_s2s4_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), sci42e))
+            {
+                z41_passed[gate].emplace_back(z41_mhtdc.at(i));
+                z42_passed[gate].emplace_back(z42_mhtdc.at(i));
+                AoQ_s2s4_passed[gate].emplace_back(AoQ_s2s4_mhtdc.at(i));
+                dEdeg_z41_passed[gate].emplace_back(dEdeg_z41_mhtdc.at(i));
+            }
+        }
+    }
 
     // ::::: S1S2 Loop ::::: 
     for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
@@ -958,8 +993,49 @@ void FrsNearlineSpectra::Process_MHTDC()
         
     } // S2S4 Loop
 
+    if (num_frs_gates > 0)
+    {
+        for (int gate = 0; gate < num_frs_gates; gate++)
+        {
+            if (z21_passed.size() > 0 && z41_passed.size() > 0)
+            {
+                for (int i = 0; i < std::min(z21_passed.size(), z41_mhtdc.size()); i++)
+                {
+                    // ---- 2D -----
+                    if (z21_mhtdc.at(i) > 0 && AoQ_corr_s1s2_mhtdc.at(i) > 0) h2_Z21_vs_AoQs1s2_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(i), z21_mhtdc.at(i));
+                    if (AoQ_corr_s1s2_mhtdc.at(i) > 0) h2_x1_vs_AoQs1s2_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(i), hitItem.Get_ID_x1());
+                    if (AoQ_corr_s1s2_mhtdc.at(i) > 0) h2_x2_vs_AoQs1s2_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(i), hitItem.Get_ID_x2());
+
+                    // ---- 1D -----
+                    if (beta_s1s2_mhtdc.at(i) > 0) h1_beta_s1s2_S1S2S4Gated_mhtdc[gate]->Fill(beta_s1s2_mhtdc.at(i));
+                    if (AoQ_corr_s1s2_mhtdc.at(i) > 0) h1_AoQs1s2_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(i));
+                    if (z21_mhtdc.at(i) > 0) h1_Z21_S1S2S4Gated_mhtdc[gate]->Fill(z21_mhtdc.at(i));
+
+                    // ----- 2D -----
+                    if (AoQ_corr_s2s4_mhtdc.at(i) > 0 && z41_mhtdc.at(i) > 0) h2_Z41_vs_AoQs2s4_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i), z41_mhtdc.at(i));
+                    if (z41_mhtdc.at(i) > 0 && z41_mhtdc.at(i) > 0) h2_Z41_vs_Z42_S1S2S4Gated_mhtdc[gate]->Fill(z41_mhtdc.at(i), z42_mhtdc.at(i));
+                    if (AoQ_corr_s2s4_mhtdc.at(i) > 0) h2_x2_vs_AoQs2s4_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i), hitItem.Get_ID_x2());
+                    if (AoQ_corr_s2s4_mhtdc.at(i) > 0) h2_x4_vs_AoQs2s4_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i), hitItem.Get_ID_x4());
+                    if (z41_mhtdc.at(i) > 0 && dEdeg_z41_mhtdc.at(i) > 0) h2_dEdegZ41_vs_Z41_S1S2S4Gated_mhtdc[gate]->Fill(z41_mhtdc.at(i), dEdeg_z41_mhtdc.at(i));
+
+                    // ---- 1D -----
+                    if (beta_s2s4_mhtdc.at(i) > 0.2) h1_beta_s2s4_S1S2S4Gated_mhtdc[gate]->Fill(beta_s2s4_mhtdc.at(i));
+                    if (AoQ_corr_s2s4_mhtdc.at(i) > 0) h1_AoQs2s4_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i));
+                    if (z41_mhtdc.at(i) > 0) h1_Z41_S1S2S4Gated_mhtdc[gate]->Fill(z41_mhtdc.at(i));
+                    if (z42_mhtdc.at(i) > 0) h1_Z42_S1S2S4Gated_mhtdc[gate]->Fill(z42_mhtdc.at(i));
+
+                    if (z21_mhtdc.at(i) > 0 && z41_mhtdc.at(i) > 0) h2_Z21_Z41_S1S2S4Gated_mhtdc[gate]->Fill(z21_mhtdc.at(i) > 0, z41_mhtdc.at(i) > 0);
+
+                }
+            }
+        }
+    }
+
+
+
 
     // Anything require full sequence
+    /*
     if (num_frs_gates > 0)
     {
         for (int gate = 0; gate < num_frs_gates; gate++)
@@ -1002,6 +1078,7 @@ void FrsNearlineSpectra::Process_MHTDC()
             }
         }
     }
+    */
 }
 
 
@@ -1135,7 +1212,18 @@ void FrsNearlineSpectra::FinishEvent()
 {
     std::fill(passed_s1s2.begin(), passed_s1s2.end(), 0);
     std::fill(passed_s1s2s4.begin(), passed_s1s2s4.end(), 0);
-    std::fill(passed_s2s4.begin(), passed_s2s4.end(), 0);    
+    std::fill(passed_s2s4.begin(), passed_s2s4.end(), 0);
+
+    for (int gate = 0; gate < num_frs_gates; gate++)
+    {
+        z21_passed[gate].clear();
+        AoQ_s1s2_passed[gate].clear();
+        z41_passed[gate].clear();
+        z42_passed[gate].clear();
+        AoQ_s2s4_passed[gate].clear();
+        dEdeg_z41_passed[gate].clear(); 
+    }
+   
 }
 
 void FrsNearlineSpectra::FinishTask()
