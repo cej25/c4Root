@@ -143,7 +143,7 @@ void H10MCPRaw2Cal::Exec(Option_t* option)
             {
                 //break condition - cant recover.
                 ihit = hits_in_fast_channel + hits_in_slow_channel + ihit - 1; // -1 cus it adds one when restarting the for-loop
-                std::cout << "hits in fast does not equal hits in slow channel" << std::endl; 
+                std::cout << "hits in fast does not equal hits in slow channel:: " << first_hit_in_fast_channel->Get_ch_ID() << std::endl; 
                 continue;
             }
 
