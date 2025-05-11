@@ -315,6 +315,8 @@ Bool_t H10MCPReader::Read() //do fine time here:
 
     if (!fData) return kTRUE;
 
+    std::cout << "new event:::: " << std::endl;
+
     if ((fNEvent==fine_time_calibration_after)  & (!fine_time_calibration_set)){
         DoFineTimeCalibration();
         if (fine_time_calibration_save) WriteFineTimeHistosToFile();
@@ -375,6 +377,8 @@ Bool_t H10MCPReader::Read() //do fine time here:
             //from this point we should have seen an epoch for channel id.
 
             uint32_t channelid = fData->mcp_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // 0-32
+
+            std::cout << "channel id:: " << channelid << " - board:: " << it_board_number << std::endl;
  
             if (fData->mcp_tamex[it_board_number].time_finev[it_hits] == 0x3FF) { fNevents_TAMEX_fail[it_board_number][channelid]++; continue; } // this happens if TAMEX loses the fine time - skip it
 
