@@ -3,7 +3,7 @@
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define MCP_ON 1
 #define STEFAN_ON 1
-#define FRS_ON 1 
+#define FRS_ON 0
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
@@ -21,7 +21,7 @@ typedef struct EXT_STR_h101_t
 } EXT_STR_h101;
 
 
-void g_hispec10_online()
+void g_hispec10_online_no_FRS()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
 
@@ -59,7 +59,7 @@ void g_hispec10_online()
 
     // Create Online run
     Int_t refresh = 2; // Refresh rate for online histograms
-    Int_t port = 2222; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 3333; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -141,14 +141,14 @@ void g_hispec10_online()
         source->AddReader(unpackstefan);
     }
     
-    if (FRS_ON)
-    {
-        FrsReader* unpackfrs = new FrsReader((EXT_STR_h101_frs_onion*)&ucesb_struct.frs, offsetof(EXT_STR_h101, frs));
+    //if (FRS_ON)
+    //{
+    //    FrsReader* unpackfrs = new FrsReader((EXT_STR_h101_frs_onion*)&ucesb_struct.frs, offsetof(EXT_STR_h101, frs));
         
-        unpackfrs->SetOnline(true);
+    //    unpackfrs->SetOnline(true);
         
-        source->AddReader(unpackfrs);
-    }
+    //    source->AddReader(unpackfrs);
+    //}
     
     // ---------------------------------------------------------------------------------------- //
     // *** Calibrate Subsystems - comment out unwanted systems ******************************** //
@@ -171,13 +171,13 @@ void g_hispec10_online()
         run->AddTask(calstefan);
     }
     
-    if (FRS_ON)
-    {
-        FrsRaw2Cal* calfrs = new FrsRaw2Cal();
+    //if (FRS_ON)
+    //{
+    //    FrsRaw2Cal* calfrs = new FrsRaw2Cal();
         
-        calfrs->SetOnline(true);
-        run->AddTask(calfrs);
-    }
+    //    calfrs->SetOnline(true);
+    //    run->AddTask(calfrs);
+    //}
 
 
     // ---------------------------------------------------------------------------------------- //
@@ -200,13 +200,13 @@ void g_hispec10_online()
         run->AddTask(hitstefan);
     }
     
-    if (FRS_ON)
-    {
-        FrsCal2Hit* hitfrs = new FrsCal2Hit();
+    //if (FRS_ON)
+    //{
+    //    FrsCal2Hit* hitfrs = new FrsCal2Hit();
         
-        hitfrs->SetOnline(true); 
-        run->AddTask(hitfrs);
-    } 
+    //    hitfrs->SetOnline(true); 
+    //    run->AddTask(hitfrs);
+    //} 
 
 
     // ======================================================================================== //
@@ -230,23 +230,23 @@ void g_hispec10_online()
         run->AddTask(onlinestefan);
     }
 
-    TFrsConfiguration::Set_Z_range(30,50);
-    TFrsConfiguration::Set_AoQ_range(1.8,2.4);
-    TFrsConfiguration::Set_x2_range(-120,120);
-    TFrsConfiguration::Set_x4_range(-120,120);
-    std::vector<FrsGate*> frsgates{};
+    //TFrsConfiguration::Set_Z_range(30,50);
+    //TFrsConfiguration::Set_AoQ_range(1.8,2.4);
+    //TFrsConfiguration::Set_x2_range(-120,120);
+    //TFrsConfiguration::Set_x4_range(-120,120);
+    //std::vector<FrsGate*> frsgates{};
  
-    if (FRS_ON)
-    {
-        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra(frsgates);
+    //if (FRS_ON)
+    //{
+    //    FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra(frsgates);
         // For monitoring FRS on our side
-        FrsRawSpectra* frsrawspec = new FrsRawSpectra();
-        FrsCalSpectra* frscalspec = new FrsCalSpectra();
+    //    FrsRawSpectra* frsrawspec = new FrsRawSpectra();
+    //    FrsCalSpectra* frscalspec = new FrsCalSpectra();
     
-        run->AddTask(onlinefrs);
-        run->AddTask(frsrawspec);
-        run->AddTask(frscalspec);
-    }
+    //    run->AddTask(onlinefrs);
+    //    run->AddTask(frsrawspec);
+    //    run->AddTask(frscalspec);
+    //}
    
   
     // Initialise
