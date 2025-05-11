@@ -173,7 +173,6 @@ void H10MCPRaw2Cal::Exec(Option_t* option)
                         std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> fmap;
                         fmap = mcp_config->Mapping();
                         std::pair<int, int> unmapped_det { funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2};
-                        std::cout << "board:: " << funcal_hit->Get_board_id() << " ::  channel::  " << (funcal_hit->Get_ch_ID()+1)/2 << std::endl;
                         if (auto result_find = fmap.find(unmapped_det); result_find != fmap.end())
                         {
                             mcp_id = result_find->second.first; // 0/1 [1/2]
@@ -307,7 +306,6 @@ void H10MCPRaw2Cal::Exec(Option_t* option)
                         std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> fmap;
                         fmap = mcp_config->Mapping();
                         std::pair<int, int> unmapped_det { funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2};
-                        std::cout << "board:: " << funcal_hit->Get_board_id() << " ::  channel::  " << (funcal_hit->Get_ch_ID()+1)/2 << std::endl;
                         if (auto result_find = fmap.find(unmapped_det); result_find != fmap.end())
                         {
                             mcp_id = result_find->second.first; // 0/1 [1/2]
