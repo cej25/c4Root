@@ -166,7 +166,7 @@ void H10MCPOnlineSpectra::Exec(Option_t* option)
         }  
 	
         h1_dT->Fill(T2 - T1);
-        std::cout << "T2-T1:: " << T2-T1 << std::endl;
+        if (T1 > 0 && T2 > 0) std::cout << "T2-T1:: " << T2-T1 << std::endl;
         h2_dX1_dT->Fill(X12-X11, T2-T1);
         h2_dY1_dT->Fill(Y12-Y11, T2-T1);
         h2_dX1_dT->Fill(X22-X21, T2-T1);
