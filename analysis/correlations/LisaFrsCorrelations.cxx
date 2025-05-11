@@ -1050,6 +1050,14 @@ InitStatus LisaFrsCorrelations::Init()
         }
     }
 
+    z21_passed.resize(FrsGates.size());
+    AoQ_s1s2_passed.resize(FrsGates.size());
+    z41_passed.resize(FrsGates.size());
+    z42_passed.resize(FrsGates.size());
+    AoQ_s2s4_passed.resize(FrsGates.size());
+    dEdeg_z41_passed.resize(FrsGates.size());
+    // now it should be a sized vector of vectors?
+
     //c4LOG(info, "::::::::::::::::::end of init");
     return kSUCCESS;
     
@@ -1115,12 +1123,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     Float_t x4_position = frsHitItem.Get_ID_x4();
     Float_t sci42e = frsHitItem.Get_sci_e_42();
 
-    std::vector<Float_t> z21_passed;
-    std::vector<Float_t> AoQ_s1s2_passed;
-    std::vector<Float_t> z41_passed;
-    std::vector<Float_t> z42_passed;
-    std::vector<Float_t> AoQ_s2s4_passed;
-    std::vector<Float_t> dEdeg_z41_passed;
+ 
 
     // CEJ :: Process FRS Gate info here first.
     for (int gate = 0; gate < FrsGates.size(); gate++)
@@ -1129,8 +1132,8 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         {
             if (FrsGates[gate]->PassedS1S2(z21_mhtdc.at(i), x2_position, AoQ_s1s2_mhtdc.at(i)))
             {
-                z21_passed.emplace_back(z21_mhtdc.at(i));
-                AoQ_s1s2_passed.emplace_back(AoQ_s1s2_mhtdc.at(i));
+                z21_passed[gate].emplace_back(z21_mhtdc.at(i));
+                AoQ_s1s2_passed[gate].emplace_back(AoQ_s1s2_mhtdc.at(i));
             }
         }
 
@@ -1138,10 +1141,10 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         {
             if (FrsGates[gate]->PassedS2S4(z41_mhtdc.at(i), z42_mhtdc.at(i), x2_position, x4_position, AoQ_s2s4_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), sci42e))
             {
-                z41_passed.emplace_back(z41_mhtdc.at(i));
-                z42_passed.emplace_back(z42_mhtdc.at(i));
-                AoQ_s2s4_passed.emplace_back(AoQ_s2s4_mhtdc.at(i));
-                dEdeg_z41_passed.emplace_back(dEdeg_z41_mhtdc.at(i));
+                z41_passed[gate].emplace_back(z41_mhtdc.at(i));
+                z42_passed[gate].emplace_back(z42_mhtdc.at(i));
+                AoQ_s2s4_passed[gate].emplace_back(AoQ_s2s4_mhtdc.at(i));
+                dEdeg_z41_passed[gate].emplace_back(dEdeg_z41_mhtdc.at(i));
             }
         }
     }
@@ -1654,6 +1657,16 @@ void LisaFrsCorrelations::FinishEvent()
                 }
             }
         }
+    }
+
+    for (int gate = 0; gate < FrsGates.size(); gate++)
+    {
+        z21_passed[gate].clear();
+        AoQ_s1s2_passed[gate].clear();
+        z41_passed[gate].clear();
+        z42_passed[gate].clear();
+        AoQ_s2s4_passed[gate].clear();
+        dEdeg_z41_passed[gate].clear(); 
     }
 }
 

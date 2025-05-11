@@ -296,6 +296,13 @@ class LisaFrsCorrelations : public FairTask
         std::vector<std::vector<std::vector<std::vector<std::vector<float>>>>> energy_xy_gated;
         std::vector<std::vector<std::vector<std::vector<std::vector<float>>>>> energy_MWD_xy_gated;
 
+        std::vector<std::vector<Float_t>> z21_passed;
+        std::vector<std::vector<Float_t>> AoQ_s1s2_passed;
+        std::vector<std::vector<Float_t>> z41_passed;
+        std::vector<std::vector<Float_t>> z42_passed;
+        std::vector<std::vector<Float_t>> AoQ_s2s4_passed;
+        std::vector<std::vector<Float_t>> dEdeg_z41_passed;
+
     public:
         ClassDef(LisaFrsCorrelations, 1)
 };
