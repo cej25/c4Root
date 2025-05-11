@@ -106,6 +106,9 @@ Writes the times in ns!
 */
 void H10MCPRaw2Cal::Exec(Option_t* option)
 {
+ 
+
+    //std::cout << "EVENT :: " << std::endl;
     auto start = std::chrono::high_resolution_clock::now();
     if (funcal_data && funcal_data->GetEntriesFast() > 1)
     { // only get events with two hits or more
@@ -166,11 +169,14 @@ void H10MCPRaw2Cal::Exec(Option_t* option)
                     std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> fmap;
                     fmap = mcp_config->Mapping();
                     std::pair<int, int> unmapped_det { funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2};
+                    //std::cout << "board:: " << funcal_hit->Get_board_id() << " ::  channel::  " << (funcal_hit->Get_ch_ID()+1)/2 << std::endl;
                     if (auto result_find = fmap.find(unmapped_det); result_find != fmap.end())
                     {
                         mcp_id = result_find->second.first; // 0/1 [1/2]
                         type = result_find->second.second.first; // 0/1/2 [T/X/Y]
                         number = result_find->second.second.second; // 0/1 [1/2]
+                                
+                        //std::cout << "MCP: " <<mcp_id << " - TYPE :: " << type << " - NUMBER:: " << number << std::endl;
 
                         if (mcp_id == -1) { fNunmatched++; continue; }
                     }
@@ -255,7 +261,8 @@ void H10MCPRaw2Cal::Exec(Option_t* option)
                     new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData((detector_id == mcp_config->TM_Undelayed()) ? (fast_lead_time) : (0), (detector_id == mcp_config->TM_Undelayed()) ? (0) : (fast_lead_time), funcal_hit->Get_wr_subsystem_id(), funcal_hit->Get_wr_t());
                 }
                 
-            
+    //std::cout << "setting event.. ??" << std::endl;
+
     new ((*fcal_data)[fcal_data->GetEntriesFast()]) H10MCPTwinpeaksCalData(
                     funcal_hit->Get_trigger(),
                     funcal_hit->Get_board_id(),

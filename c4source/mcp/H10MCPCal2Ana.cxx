@@ -108,10 +108,14 @@ void H10MCPCal2Ana::Exec(Option_t* option)
             Int_t type = hit->Get_type();
             Int_t number = hit->Get_number();
 
+            //std::cout << "reading event in cal2ana::  " << " mpc:: " << mcp_id << " type :: " << type << " number:: " << number << std::endl;
+
             if (mcp_id == 0 && type == 0 && number == 0) 
             { 
                 if (t1_seen) { t1_discard++; continue; }
                 else { T1 = hit->Get_fast_lead_time(); t1_seen = true; }
+
+                std::cout << "T1 is seen" << std::endl;
             }
             if (mcp_id == 0 && type == 1 && number == 0) 
             { 
