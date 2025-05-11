@@ -572,7 +572,9 @@ InitStatus FrsNearlineSpectra::Init()
     for (int i = 0; i < num_frs_gates; i++) count_passed_s2s4[i] = 0;
     count_passed_s1s2s4 = new int[num_frs_gates];
     for (int i = 0; i < num_frs_gates; i++) count_passed_s1s2s4[i] = 0;
- 
+    
+    beta_s1s2_passed.resize(num_frs_gates);
+    beta_s2s4_passed.resize(num_frs_gates);
     z21_passed.resize(num_frs_gates);
     AoQ_s1s2_passed.resize(num_frs_gates);
     z41_passed.resize(num_frs_gates);
@@ -807,6 +809,7 @@ void FrsNearlineSpectra::Process_MHTDC()
         {
             if (FrsGates[gate]->PassedS1S2(z21_mhtdc.at(i), x2_position, AoQ_s1s2_mhtdc.at(i)))
             {
+                beta_s1s2_passed[gate].emplace_back(beta_s1s2_mhtdc.at(i));
                 z21_passed[gate].emplace_back(z21_mhtdc.at(i));
                 AoQ_s1s2_passed[gate].emplace_back(AoQ_s1s2_mhtdc.at(i));
             }
@@ -816,6 +819,7 @@ void FrsNearlineSpectra::Process_MHTDC()
         {
             if (FrsGates[gate]->PassedS2S4(z41_mhtdc.at(i), z42_mhtdc.at(i), x2_position, x4_position, AoQ_s2s4_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), sci42e))
             {
+                beta_s2s4_passed[gate].emplace_back(beta_s2s4_mhtdc.at(i));
                 z41_passed[gate].emplace_back(z41_mhtdc.at(i));
                 z42_passed[gate].emplace_back(z42_mhtdc.at(i));
                 AoQ_s2s4_passed[gate].emplace_back(AoQ_s2s4_mhtdc.at(i));
@@ -993,51 +997,51 @@ void FrsNearlineSpectra::Process_MHTDC()
         
     } // S2S4 Loop
 
-    // if (num_frs_gates > 0)
-    // {
-    //     for (int gate = 0; gate < num_frs_gates; gate++)
-    //     {
-    //         if (z21_passed.size() > 0 && z41_passed.size() > 0)
-    //         {
-    //             for (int i = 0; i < z21_mhtdc.size(); i++)
-    //             {
-    //                 // ---- 2D -----
-    //                 if (z21_mhtdc.at(i) > 0 && AoQ_corr_s1s2_mhtdc.at(i) > 0) h2_Z21_vs_AoQs1s2_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(i), z21_mhtdc.at(i));
-    //                 if (AoQ_corr_s1s2_mhtdc.at(i) > 0) h2_x1_vs_AoQs1s2_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(i), hitItem.Get_ID_x1());
-    //                 if (AoQ_corr_s1s2_mhtdc.at(i) > 0) h2_x2_vs_AoQs1s2_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(i), hitItem.Get_ID_x2());
+    if (num_frs_gates > 0)
+    {
+        for (int gate = 0; gate < num_frs_gates; gate++)
+        {
+            if (z21_passed[gate].size() > 0 && z41_passed[gate].size() > 0)
+            {
+                for (int i = 0; i < z21_passed[gate].size(); i++)
+                {
+                    // ---- 2D -----
+                    if (z21_passed[gate].at(i) > 0 && AoQ_corr_s1s2_mhtdc.at(i) > 0) h2_Z21_vs_AoQs1s2_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_s1s2_passed[gate].at(i), z21_passed[gate].at(i));
+                    if (AoQ_s1s2_passed[gate].at(i) > 0) h2_x1_vs_AoQs1s2_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_s1s2_passed[gate].at(i), hitItem.Get_ID_x1());
+                    if (AoQ_s1s2_passed[gate].at(i) > 0) h2_x2_vs_AoQs1s2_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_s1s2_passed[gate].at(i), hitItem.Get_ID_x2());
 
-    //                 // ---- 1D -----
-    //                 if (beta_s1s2_mhtdc.at(i) > 0) h1_beta_s1s2_S1S2S4Gated_mhtdc[gate]->Fill(beta_s1s2_mhtdc.at(i));
-    //                 if (AoQ_corr_s1s2_mhtdc.at(i) > 0) h1_AoQs1s2_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(i));
-    //                 if (z21_mhtdc.at(i) > 0) h1_Z21_S1S2S4Gated_mhtdc[gate]->Fill(z21_mhtdc.at(i));
+                    // ---- 1D -----
+                    if (beta_s1s2_passed[gate].at(i) > 0) h1_beta_s1s2_S1S2S4Gated_mhtdc[gate]->Fill(beta_s1s2_passed[gate].at(i));
+                    if (AoQ_s1s2_passed[gate].at(i) > 0) h1_AoQs1s2_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_s1s2_passed[gate].at(i));
+                    if (z21_passed[gate].at(i) > 0) h1_Z21_S1S2S4Gated_mhtdc[gate]->Fill(z21_passed[gate].at(i));
 
-    //             }
+                }
 
-    //             for (int i = 0; i < z41_passed.size(); i++)
-    //             {
-    //                 // ----- 2D -----
-    //                 if (AoQ_corr_s2s4_mhtdc.at(i) > 0 && z41_mhtdc.at(i) > 0) h2_Z41_vs_AoQs2s4_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i), z41_mhtdc.at(i));
-    //                 if (z41_mhtdc.at(i) > 0 && z41_mhtdc.at(i) > 0) h2_Z41_vs_Z42_S1S2S4Gated_mhtdc[gate]->Fill(z41_mhtdc.at(i), z42_mhtdc.at(i));
-    //                 if (AoQ_corr_s2s4_mhtdc.at(i) > 0) h2_x2_vs_AoQs2s4_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i), hitItem.Get_ID_x2());
-    //                 if (AoQ_corr_s2s4_mhtdc.at(i) > 0) h2_x4_vs_AoQs2s4_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i), hitItem.Get_ID_x4());
-    //                 if (z41_mhtdc.at(i) > 0 && dEdeg_z41_mhtdc.at(i) > 0) h2_dEdegZ41_vs_Z41_S1S2S4Gated_mhtdc[gate]->Fill(z41_mhtdc.at(i), dEdeg_z41_mhtdc.at(i));
+                for (int i = 0; i < z41_passed[gate].size(); i++)
+                {
+                    // ----- 2D -----
+                    if (AoQ_s2s4_passed[gate].at(i) > 0 && z41_passed[gate].at(i) > 0) h2_Z41_vs_AoQs2s4_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_s2s4_passed[gate].at(i), z41_passed[gate].at(i));
+                    if (z41_passed[gate].at(i) > 0 && z42_passed[gate].at(i) > 0) h2_Z41_vs_Z42_S1S2S4Gated_mhtdc[gate]->Fill(z41_passed[gate].at(i), z42_passed[gate].at(i));
+                    if (AoQ_s2s4_passed[gate].at(i) > 0) h2_x2_vs_AoQs2s4_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_s2s4_passed[gate].at(i), hitItem.Get_ID_x2());
+                    if (AoQ_s2s4_passed[gate].at(i) > 0) h2_x4_vs_AoQs2s4_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_s2s4_passed[gate].at(i), hitItem.Get_ID_x4());
+                    if (z41_passed[gate].at(i) > 0 && dEdeg_z41_passed[gate].at(i) > 0) h2_dEdegZ41_vs_Z41_S1S2S4Gated_mhtdc[gate]->Fill(z41_passed[gate].at(i), dEdeg_z41_passed[gate].at(i));
 
-    //                 // ---- 1D -----
-    //                 if (beta_s2s4_mhtdc.at(i) > 0.2) h1_beta_s2s4_S1S2S4Gated_mhtdc[gate]->Fill(beta_s2s4_mhtdc.at(i));
-    //                 if (AoQ_corr_s2s4_mhtdc.at(i) > 0) h1_AoQs2s4_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i));
-    //                 if (z41_mhtdc.at(i) > 0) h1_Z41_S1S2S4Gated_mhtdc[gate]->Fill(z41_mhtdc.at(i));
-    //                 if (z42_mhtdc.at(i) > 0) h1_Z42_S1S2S4Gated_mhtdc[gate]->Fill(z42_mhtdc.at(i));
+                    // ---- 1D -----
+                    if (beta_s2s4_passed[gate].at(i) > 0.2) h1_beta_s2s4_S1S2S4Gated_mhtdc[gate]->Fill(beta_s2s4_passed[gate].at(i));
+                    if (AoQ_s2s4_passed[gate].at(i) > 0) h1_AoQs2s4_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_s2s4_passed[gate].at(i));
+                    if (z41_passed[gate].at(i) > 0) h1_Z41_S1S2S4Gated_mhtdc[gate]->Fill(z41_passed[gate].at(i));
+                    if (z42_passed[gate].at(i) > 0) h1_Z42_S1S2S4Gated_mhtdc[gate]->Fill(z42_passed[gate].at(i));
 
                     
-    //             }
+                }
 
-    //             // for (int i = 0; i < std::min(z21_passed.size(), z41_mhtdc.size()); i++)
-    //             // {
-    //             //     if (z21_mhtdc.at(i) > 0 && z41_mhtdc.at(i) > 0) h2_Z21_Z41_S1S2S4Gated_mhtdc[gate]->Fill(z21_mhtdc.at(i) > 0, z41_mhtdc.at(i) > 0);
-    //             // }
-    //         }
-    //     }
-    // }
+                for (int i = 0; i < std::min(z21_passed[gate].size(), z41_passed[gate].size()); i++)
+                {
+                    if (z21_passed[gate].at(i) > 0 && z41_passed[gate].at(i) > 0) h2_Z21_Z41_S1S2S4Gated_mhtdc[gate]->Fill(z21_passed[gate].at(i) > 0, z41_passed[gate].at(i) > 0);
+                }
+            }
+        }
+    }
 
 
 
@@ -1223,7 +1227,9 @@ void FrsNearlineSpectra::FinishEvent()
     std::fill(passed_s2s4.begin(), passed_s2s4.end(), 0);
 
     for (int gate = 0; gate < num_frs_gates; gate++)
-    {
+    {   
+        beta_s1s2_passed[gate].clear();
+        beta_s2s4_passed[gate].clear();
         z21_passed[gate].clear();
         AoQ_s1s2_passed[gate].clear();
         z41_passed[gate].clear();

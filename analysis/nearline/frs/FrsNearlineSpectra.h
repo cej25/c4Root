@@ -443,10 +443,12 @@ class FrsNearlineSpectra : public FairTask
         int* count_passed_s2s4;
         int* count_passed_s1s2s4;
 
+        std::vector<std::vector<Float_t>> beta_s1s2_passed;
         std::vector<std::vector<Float_t>> z21_passed;
         std::vector<std::vector<Float_t>> AoQ_s1s2_passed;
         std::vector<std::vector<Float_t>> z41_passed;
         std::vector<std::vector<Float_t>> z42_passed;
+        std::vector<std::vector<Float_t>> beta_s2s4_passed;
         std::vector<std::vector<Float_t>> AoQ_s2s4_passed;
         std::vector<std::vector<Float_t>> dEdeg_z41_passed;
 
