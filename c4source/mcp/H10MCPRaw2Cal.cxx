@@ -108,7 +108,7 @@ void H10MCPRaw2Cal::Exec(Option_t* option)
 {
  
 
-    std::cout << "EVENT :: " << std::endl;
+    // std::cout << "EVENT :: " << std::endl;
     auto start = std::chrono::high_resolution_clock::now();
     if (funcal_data && funcal_data->GetEntriesFast() > 1)
     { // only get events with two hits or more
