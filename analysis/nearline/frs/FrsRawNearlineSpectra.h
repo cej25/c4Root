@@ -71,11 +71,11 @@ class FrsRawNearlineSpectra : public FairTask
         TDirectory* dir_tpc_tdc;
         
         // Histograms
-        TH1* h1_sci_de[16];
-        TH1* h1_sci_dt[16];
-        TH1* h1_sci_mhtdc[16];
-        TH1* h1_music_anode_e[2][8];
-        TH1* h1_music_anode_t[2][8];
+        TH1* h1_sci_de[32];
+        TH1* h1_sci_dt[32];
+        TH1* h1_sci_mhtdc[32];
+        TH1* h1_music_anode_e[5][8];
+        TH1* h1_music_anode_t[5][8];
         TH1* h1_tpc_adc[7][8];
         TH1* h1_tpc_tdc[128];
        
@@ -91,12 +91,12 @@ class FrsRawNearlineSpectra : public FairTask
 
 
         // Variables
-        const UInt_t* sciDE; //16
-        const UInt_t* sciDT; //16
-        const std::vector<Int_t>* sciMHTDC; // 16
+        const UInt_t* sciDE; //32
+        const UInt_t* sciDT; //32
+        const std::vector<Int_t>* sciMHTDC; // 32
 
-        const UInt_t (*musicE)[8]; // 2, 8
-        const UInt_t (*musicT)[8]; // 2, 8
+        const UInt_t (*musicE)[8]; // 5, 8
+        const UInt_t (*musicT)[8]; // 5, 8
 
         const UInt_t (*adcData)[8]; // 7, 8
         const std::vector<UInt_t>* tdcData;

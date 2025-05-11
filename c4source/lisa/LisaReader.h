@@ -52,7 +52,7 @@ class LisaReader : public c4Reader
         // 125 diamonds in 5x5 layers. 2 Boards per each layer (+ spare channels). Total of 10 boards.
 
         
-        int32_t energy;
+        float energy;
 
         std::vector<LisaItem>* lisaArray;
 

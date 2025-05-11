@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                             E.M. Gandolfo                                  *
+ *                               25.11.24                                     *
+ ******************************************************************************/
+
 // FairRoot
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -200,8 +216,8 @@ void LisaTraceCorrelation::Exec(Option_t* option){
     city = lisaCalItem.Get_city();
     int xpos = lisaCalItem.Get_xposition();
     int ypos = lisaCalItem.Get_yposition();
-    uint32_t energy = lisaCalItem.Get_energy();
-    std::vector<int16_t> trace = lisaCalItem.Get_trace_febex();
+    float energy = lisaCalItem.Get_energy();
+    std::vector<float> trace = lisaCalItem.Get_trace_febex();
     int pileup = lisaCalItem.Get_pileup();
     int overflow = lisaCalItem.Get_overflow();
     uint64_t evtno = header->GetEventno();
@@ -266,7 +282,7 @@ void LisaTraceCorrelation::Exec(Option_t* option){
       continue;
     //c4LOG(info,"not hit in x = " << xpos << ", y = " << ypos << ", z = " << layer);
     //c4LOG(info,"filling h2_traces_nothit[layer*(xmax*ymax)+ymax*xpos+ypos][ymax*xpos+ypos] " << layer*(xmax*ymax)+ymax*xpos+ypos << " " << ymax*xpos+ypos);
-    std::vector<int16_t> trace = lisaCalItem.Get_trace_febex();
+    std::vector<float> trace = lisaCalItem.Get_trace_febex();
     for (int t = 0; t < trace.size(); t++)
       h2_traces_nothit[layer*(xmax*ymax)+ymax*xhit+yhit][ymax*xpos+ypos]->Fill(t,trace[t]);
   }
@@ -297,7 +313,7 @@ void LisaTraceCorrelation::Exec(Option_t* option){
     int xpos = lisaCalItem.Get_xposition();
     int ypos = lisaCalItem.Get_yposition();
     if(layer==0 && xpos == 1 && ypos == 1){
-      std::vector<int16_t> trace = lisaCalItem.Get_trace_febex();
+      std::vector<float> trace = lisaCalItem.Get_trace_febex();
       for (int t = 0; t < trace.size(); t++)
 	h2_traces_Ams->Fill(trace[t],trace_Ams[t]);
     }

@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                         J.E.L. Larsson, C.E. Jones                         *
+ *                                 17.12.24                                   *
+ ******************************************************************************/
+
 // FairRoot
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -403,6 +419,12 @@ Bool_t FatimaReader::Read() //do fine time here:
                 accepted_lead_epoch_counter = previous_epoch_word;
                 accepted_lead_coarse_T = coarse_T;
                 accepted_lead_fine_T = fine_T;
+
+                // std::cout << std::fixed << std::setprecision(0) << num << std::endl;
+                // std::cout << "time:: " << std::fixed << std::setprecision(9) << accepted_trigger_time << std::endl;
+                // std::cout << "epoch:: " << accepted_lead_epoch_counter << std::endl;
+                // std::cout << "coarse:: " << accepted_lead_coarse_T << std::endl;
+                // std::cout << "fine: " << accepted_lead_fine_T << std::endl;
                 continue;
             } // skip channel 0 for now. This is the trigger information. The trigger time is kept, the wr timestamp is corrected by the difference of the hit and the acc trigger time.
 

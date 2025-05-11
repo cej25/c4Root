@@ -75,9 +75,9 @@ class LisaTraceCorrelation : public FairTask
         Int_t layer;
         uint64_t wr_time;
         TH2F* h2_traces_Ams;
-  std::vector<std::vector<std::vector<TH2F*> > > h2_maxmax;
-  std::vector<std::vector<std::vector<TH2F*> > > h2_maxmin;
-  std::vector<std::vector<std::vector<TH2F*> > > h2_minmin;
+        std::vector<std::vector<std::vector<TH2F*> > > h2_maxmax;
+        std::vector<std::vector<std::vector<TH2F*> > > h2_maxmin;
+        std::vector<std::vector<std::vector<TH2F*> > > h2_minmin;
 
     public:
         ClassDef(LisaTraceCorrelation, 1)

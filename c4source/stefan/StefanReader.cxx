@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                         C.E. Jones, G. Kosir                               *
+ *                               06.05.25                                     *
+ ******************************************************************************/
+
 // FairRoot
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -69,25 +85,25 @@ Bool_t StefanReader::Read()
         UShort_t trig = fData->stefan_data[it_board_number].trig;
         event_trigger_time_long = (((Long64_t)(fData->stefan_data[it_board_number].event_trigger_time_hi) << 32) + (fData->stefan_data[it_board_number].event_trigger_time_lo))*10;
     
-        if (event_trigger_time_long == 0) continue; // skip boards that don't fire, since NBoards is set to absolute maximum
+        if (event_trigger_time_long <= 0) continue; // skip boards that don't fire, since NBoards is set to absolute maximum
  
-        //the fData->germ.channel_energy/channel_cfd/etc contain the length of their individual arrays, and the channel_energyI arrays are the indices that they were written with in ucesb, which in our case is the channel id. Lastly the channel_energyv is the value.
-        if (fData->stefan_data[it_board_number].channel_energy != fData->stefan_data[it_board_number].channel_cfd) c4LOG(warning,"Inconsistent size of arrays");
+        if (fData->stefan_data[it_board_number].channel_energy != fData->stefan_data[it_board_number].channel_cfd)
+        {
+                c4LOG(warning,"Inconsistent size of arrays");
+                std::cout << "c energy size " << fData->stefan_data[it_board_number].channel_energy << " and cfd size :: " <<  fData->stefan_data[it_board_number].channel_cfd << std::endl;
+                std::cout << "event time:: " << event_trigger_time_long << std::endl;
+                }
+        
 
         for (int index = 0; index < fData->stefan_data[it_board_number].channel_energy; index++)
         {   
+
             
-            //c4LOG(info,Form("channel_energy = %i, channel_energyI[%i] = %d, channel_energyv[%i] = %d;",fData->stefan_data[it_board_number].channel_energy,index,fData->stefan_data[it_board_number].channel_energyI[index],index,fData->stefan_data[it_board_number].channel_energyv[index]));
-            //c4LOG(info,Form("channel_id = %i, channel_idI[%i] = %d, channel_idv[%i] = %d;",fData->stefan_data[it_board_number].channel_id,index,fData->stefan_data[it_board_number].channel_idI[index],index,fData->stefan_data[it_board_number].channel_idv[index]));
-            if (fData->stefan_data[it_board_number].channel_trigger_time_hiI[index] != fData->stefan_data[it_board_number].channel_trigger_time_loI[index]) c4LOG(fatal, "Wrong in array fillings. channel_trigger_time_loI != channel_trigger_time_hiI "); 
+            /*if (fData->stefan_data[it_board_number].channel_trigger_time_hiI[index] != fData->stefan_data[it_board_number].channel_trigger_time_loI[index]) c4LOG(fatal, "Wrong in array fillings. channel_trigger_time_loI != channel_trigger_time_hiI "); 
             if (fData->stefan_data[it_board_number].channel_trigger_time_hiI[index] != fData->stefan_data[it_board_number].pileupI[index]) c4LOG(fatal, "Wrong in array fillings. pileupI != channel_trigger_time_hiI ");
             if (fData->stefan_data[it_board_number].channel_trigger_time_hiI[index] != fData->stefan_data[it_board_number].overflowI[index]) c4LOG(fatal, "Wrong in array fillings. overflowI != channel_trigger_time_hiI ");
             if (fData->stefan_data[it_board_number].channel_trigger_time_hiI[index] != fData->stefan_data[it_board_number].channel_cfdI[index]) c4LOG(fatal, "Wrong in array fillings. channel_cfdI != channel_trigger_time_hiI ");
-            if (fData->stefan_data[it_board_number].channel_trigger_time_hiI[index] != fData->stefan_data[it_board_number].channel_energyI[index]) c4LOG(fatal, "Wrong in array fillings. channel_energyI != channel_trigger_time_hiI ");
-            
-            
-            
-            
+            if (fData->stefan_data[it_board_number].channel_trigger_time_hiI[index] != fData->stefan_data[it_board_number].channel_energyI[index]) c4LOG(fatal, "Wrong in array fillings. channel_energyI != channel_trigger_time_hiI ");*/
             
 
             if (VetoOverflow && fData->stefan_data[it_board_number].overflowv[index]) continue;
