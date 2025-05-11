@@ -141,7 +141,6 @@ void H10MCPOnlineSpectra::Exec(Option_t* option)
         // if (!hit->full_event) return;        
     
         T1 = hit->T1;
-        std::cout << "T1:: " << T1 << std::endl;
         X11 = hit->X11;
         X12 = hit->X12;
         Y11 = hit->Y11;
@@ -167,6 +166,7 @@ void H10MCPOnlineSpectra::Exec(Option_t* option)
         }  
 	
         h1_dT->Fill(T2 - T1);
+        std::cout << "T2-T1:: " << T2-T1 << std::endl;
         h2_dX1_dT->Fill(X12-X11, T2-T1);
         h2_dY1_dT->Fill(Y12-Y11, T2-T1);
         h2_dX1_dT->Fill(X22-X21, T2-T1);
