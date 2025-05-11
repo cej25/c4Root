@@ -143,8 +143,8 @@ void H10MCPRaw2Cal::Exec(Option_t* option)
             {
                 //break condition - cant recover.
                 ihit = hits_in_fast_channel + hits_in_slow_channel + ihit - 1; // -1 cus it adds one when restarting the for-loop
-                std::cout << "hits in fast does not equal hits in slow channel:: " << first_hit_in_fast_channel->Get_ch_ID() << std::endl; 
-                continue;
+                //std::cout << "hits in fast does not equal hits in slow channel:: " << first_hit_in_fast_channel->Get_ch_ID() << std::endl; 
+                //continue;
             }
 
 
@@ -170,7 +170,7 @@ void H10MCPRaw2Cal::Exec(Option_t* option)
                     std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> fmap;
                     fmap = mcp_config->Mapping();
                     std::pair<int, int> unmapped_det { funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2};
-                    // std::cout << "board:: " << funcal_hit->Get_board_id() << " ::  channel::  " << (funcal_hit->Get_ch_ID()+1)/2 << std::endl;
+                    std::cout << "board:: " << funcal_hit->Get_board_id() << " ::  channel::  " << (funcal_hit->Get_ch_ID()+1)/2 << std::endl;
                     if (auto result_find = fmap.find(unmapped_det); result_find != fmap.end())
                     {
                         mcp_id = result_find->second.first; // 0/1 [1/2]
