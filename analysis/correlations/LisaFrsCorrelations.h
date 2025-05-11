@@ -128,6 +128,9 @@ class LisaFrsCorrelations : public FairTask
 
         TDirectory* dir_gates;
 
+        TDirectory* dir_gate_FRS_FRS;
+        TDirectory** dir_FRS_gates_correlated;
+
         TDirectory* dir_gate_LISA;
         TDirectory* dir_gate_LISA_febex;
         TDirectory** dir_LISA_febex_gates;
@@ -198,6 +201,11 @@ class LisaFrsCorrelations : public FairTask
         std::vector<TH2F*> h2_MUSIC41_vs_LISA_MWD;
 
         // ::: Gates
+        // ::: Frs applied on Frs
+        std::vector<TH2F*> h2_Z21_vs_AoQs1s2_s1s2_correlated;
+        std::vector<TH2F*> h2_Z21_vs_AoQs1s2_s1s2s4_correlated;
+        std::vector<TH2F*> h2_Z41_vs_AoQs2s4_s1s2s4_correlated;
+        
         // ::: Gated - FRS applied on LISA
         // Full sequential gate
         std::vector<TH2F*> h2_LISA_energy_vs_layer_s1s2s4_gated;
