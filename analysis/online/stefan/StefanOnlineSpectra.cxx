@@ -113,8 +113,16 @@ InitStatus StefanOnlineSpectra::Init()
        for(int j=0; j<256; ++j) { // pixel = stripX+16*stripY
         	h1_pixel_energy[i][j] = MakeTH1(dir_pixel[i], "I", Form("h1_energy_pixel%i", j), Form("Energy - Det %i Pixel %i", i, j), 10000, 0, pow(10,7), "E []", kOrange, kBlack);
         	}
-        	
-        	
+        	strips4_stefan = new TCanvas("strips4_stefan","4 stefan strips",650,350);
+        	strips4_stefan->Divide(2,2);
+        	strips4_stefan->cd(1);
+        	h1_raw_energy[0][0][12]->Draw();
+        	strips4_stefan->cd(2);
+        	h1_raw_energy[0][0][15]->Draw();
+        	strips4_stefan->cd(3);
+        	h1_raw_energy[0][1][2]->Draw();
+        	strips4_stefan->cd(4);
+        	h1_raw_energy[0][1][12]->Draw();
         	
     }
 

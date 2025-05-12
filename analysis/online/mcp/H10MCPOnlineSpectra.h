@@ -111,18 +111,7 @@ class H10MCPOnlineSpectra : public FairTask
         int total_time_microsecs = 0;
 
         // Canvas
-        TCanvas* c_fatima_slowToT;
-        TCanvas* c_fatima_fastToT;
-        TCanvas* c_fatima_fast_v_slow;
-        TCanvas* c_fatima_time_spectra_divided;
-        TCanvas* c_fatima_hitpatterns;
-        TCanvas* c_fatima_energy;
-        TCanvas* c_fatima_energy_vs_detid;
-        TCanvas* c_fatima_energies;
-        TCanvas* c_fatima_energy_uncal;
-        TCanvas* c_fatima_time_differences;
-        TCanvas* c_fatima_time_differences_vs_energy;
-        TCanvas* c_fatima_event_multiplicity;
+        TCanvas* mcp_hists;
     
 
         //Folders and files
