@@ -254,30 +254,30 @@ void c_shiyan_online()
 
     // TFrsConfiguration::Set_TOF_gate(200, 240);
     
-    if (FRS_ON)
-    {
-        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
-        //For monitoring FRS on our side
-        // FrsRawSpectra* frsrawspec = new FrsRawSpectra();
-        // FrsCalSpectra* frscalspec = new FrsCalSpectra();
+    // if (FRS_ON)
+    // {
+    //     FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
+    //     //For monitoring FRS on our side
+    //     // FrsRawSpectra* frsrawspec = new FrsRawSpectra();
+    //     // FrsCalSpectra* frscalspec = new FrsCalSpectra();
 
-        run->AddTask(onlinefrs);
-        // run->AddTask(frsrawspec);
-        // run->AddTask(frscalspec);
-    }
+    //     run->AddTask(onlinefrs);
+    //     // run->AddTask(frsrawspec);
+    //     // run->AddTask(frscalspec);
+    // }
 
     // ::: Correlation Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: Correlation Spectra :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    if(LISA_ON && FRS_ON)
-    {
-        if(FRS_LISA_CORRELATIONS)
-        {
-            LisaFrsCorrelationsOnline* LISA_FRS_corr = new LisaFrsCorrelationsOnline();
-            run->AddTask(LISA_FRS_corr);
-        }
-    }
+    // if(LISA_ON && FRS_ON)
+    // {
+    //     if(FRS_LISA_CORRELATIONS)
+    //     {
+    //         LisaFrsCorrelationsOnline* LISA_FRS_corr = new LisaFrsCorrelationsOnline();
+    //         run->AddTask(LISA_FRS_corr);
+    //     }
+    // }
 
     // ::: CONFIGURATIONS FOR ONLINE HISTOS :::
     // ::: FRS
