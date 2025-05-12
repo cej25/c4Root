@@ -2186,20 +2186,23 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
     // for (int i = 0; i < hits_in_s1s2; i++) id_mhtdc_gamma_s1s2[i] = 1. / sqrt(1. - TMath::Power(id_mhtdc_beta_s1s2[i], 2));
     for (int i = 0; i < hits_in_s1s2; i++) id_mhtdc_gamma_s1s2[i] = (1. / sqrt(1. - TMath::Power(temp_id_mhtdc_beta_s1s2[i], 2)));
 
-    std::cout << "hits in s1s2:: " << hits_in_s1s2 << std::endl;
-    std::cout << "hits in s2:: " << hits_
+    // std::cout << "hits in s1s2:: " << hits_in_s1s2 << std::endl;
+    // std::cout << "hits in s2:: " << hits_in_s2x << std::endl;
+    // std::cout << "hits in s1:: " << hits_in_s1x << std::endl;
     // Calculate Delta, AoQ
     for (int i = 0; i < hits_in_s2x; i++)
     {
         for (int j = 0; j < hits_in_s1x; j++)
         {
             int count = i * hits_in_s1x + j;
-            std::cout << "COUNT 1:: " << count << std::endl;
+            // std::cout << "COUNT 1:: " << count << std::endl;
             if (temp_s2x_mhtdc[i] > -200 && temp_s2x_mhtdc[i] < 200 && temp_s1x_mhtdc[j] > -120 && temp_s1x_mhtdc[j] < 120)
             {
                 if (id->use_sc11x == 0) id_mhtdc_delta_s1s2[count] = temp_s2x_mhtdc[i] / (-1.0 * frs->dispersion[0] * 1000.0); //1000 is dispertsion from meter to mm. -1.0 is sign definition.
                 else if (id->use_sc11x == 1) id_mhtdc_delta_s1s2[count] = (temp_s2x_mhtdc[i]  - (temp_s1x_mhtdc[j] * frs->magnification[5])) / (-1.0 * frs->dispersion[5] * 1000.0); //1000 is dispertsion from meter to mm. -1.0 is sign definition.
                 else c4LOG(fatal, "Invalid Sc11 use selection. Check FRS setup file!");
+
+                // std::cout << "COUNT 1.5:: " << count << std::endl;
 
                 // if (id_mhtdc_beta_s1s2[count] > 0.0 && id_mhtdc_beta_s1s2[count] < 1.0)
                 if (temp_id_mhtdc_beta_s1s2[count] > 0.0 && temp_id_mhtdc_beta_s1s2[count] < 1.0 && temp_id_mhtdc_tof_s1s2[count] > 0.0)
@@ -2213,10 +2216,10 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
                     id_mhtdc_tof_s1s2.emplace_back(temp_id_mhtdc_tof_s1s2[count]);
                     id_mhtdc_beta_s1s2.emplace_back(temp_id_mhtdc_beta_s1s2[count]);
                     id_mhtdc_aoq_s1s2.emplace_back(mean_brho_s1s2 * (1. + id_mhtdc_delta_s1s2[count]) * temp_tm_to_MeV / (temp_mu * temp_id_mhtdc_beta_s1s2[count] * id_mhtdc_gamma_s1s2[count]));
-                    id_mhtdc_aoq_corr_s1s2.emplace_back(id_mhtdc_aoq_s1s2.at(count) - id->a1AoQCorr * id_a2);
+                    id_mhtdc_aoq_corr_s1s2.emplace_back(id_mhtdc_aoq_s1s2.back() - id->a1AoQCorr * id_a2);
                     
-                    std::cout << "COUNT 2:: " << count << std::endl;
-                    std::cout << "aoq:: " << id_mhtdc_aoq_s1s2.at(count) << std::endl;
+                    // std::cout << "COUNT 2:: " << count << std::endl;
+                    // std::cout << "aoq:: " << id_mhtdc_aoq_s1s2.back() << std::endl;
                 }
                 // else
                 // {
@@ -2259,7 +2262,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
                 id_mhtdc_z_music21.emplace_back(frs->primary_z * sqrt(music21_de_cor / sum));
                 id_mhtdc_z_shifted_music21.emplace_back(id_mhtdc_z_music21.at(i) + id->mhtdc_offset_z_music21); // we don't even use this ? 
 
-                std::cout << "Z GOOD:: " << id_mhtdc_z_music21.at(i) << std::endl;
+                // std::cout << "Z GOOD:: " << id_mhtdc_z_music21.at(i) << std::endl;
             }
             else
             {
@@ -2267,7 +2270,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
                 // id_mhtdc_z_shifted_music21[i] = -999.;
                 id_mhtdc_z_music21.emplace_back(-999.);
                 id_mhtdc_z_shifted_music21.emplace_back(-999.);
-                std::cout << "Z BAAAAD 1:: " << id_mhtdc_z_music21.at(i) << std::endl;
+                // std::cout << "Z BAAAAD 1:: " << id_mhtdc_z_music21.at(i) << std::endl;
             }
         }
         else
@@ -2276,7 +2279,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
         //     id_mhtdc_z_shifted_music21[i] = -999.;
                 id_mhtdc_z_music21.emplace_back(-999.);
                 id_mhtdc_z_shifted_music21.emplace_back(-999.);
-                std::cout << "Z BAAAAD 2:: " << id_mhtdc_z_music21.at(i) << std::endl;
+                // std::cout << "Z BAAAAD 2:: " << id_mhtdc_z_music21.at(i) << std::endl;
         }
 
         // if (music22_de_cor > 0.0 && id_mhtdc_beta_s1s2[i] > 0.5 && id_mhtdc_beta_s1s2[i] < 1.0)
