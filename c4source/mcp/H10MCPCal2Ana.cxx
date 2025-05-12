@@ -193,8 +193,8 @@ void H10MCPCal2Ana::Exec(Option_t* option)
         if (t2_seen && x21_seen && x22_seen && y21_seen && y22_seen) mcp2_complete = true;
         if (mcp1_complete && mcp2_complete) { full_event = true; full_event_counter++; }
 
-        if (sc41l_seen && sc41r_seen) SC41 = (SC41L + SC41R) / 2;
-        if (sc42l_seen && sc42r_seen) SC42 = (SC42L + SC42R) / 2;
+        if (sc41l_seen && sc41r_seen) SC41 = (SC41L+SC41R)*0.5;
+        if (sc42l_seen && sc42r_seen) SC42 = (SC42L+SC42R)*0.5;
 
         new ((*fana_data)[fana_data->GetEntriesFast()]) H10MCPTwinpeaksAnaData(
                 absolute_event_time,
