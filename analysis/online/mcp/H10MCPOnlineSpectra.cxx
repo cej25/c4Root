@@ -87,7 +87,20 @@ InitStatus H10MCPOnlineSpectra::Init()
     h1_stefan_sc42 = MakeTH1(dir_mcp, "I", "h1_stefan_sc42", "STEFAN-SC42 Time", 4000, 0, 1000,"dt [ns]", kOrange, kBlack);
 	//gStyle->SetPalette(kBlueRedYellow);
     run->GetHttpServer()->RegisterCommand("Reset_MCP_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
-
+	
+	mcp_hists = new TCanvas("mcp_hists","MCP histos",650,350);
+        	mcp_hists->Divide(2,2);
+        	mcp_hists->cd(1);
+        	MCP1Heatmap1->Draw();
+        	mcp_hists->cd(2);
+        	MCP2Heatmap1->Draw();
+        	mcp_hists->cd(3);
+        	h1_dT->Draw();
+        	mcp_hists->cd(4);
+        	h1_stefan_mcp1->Draw();
+	
+	
+	
 
 
     return kSUCCESS;

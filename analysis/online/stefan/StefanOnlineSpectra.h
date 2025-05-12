@@ -78,7 +78,7 @@ class StefanOnlineSpectra : public FairTask
 	
         TDirectory** dir_stats;
         
-        
+        TCanvas* strips4_stefan;
 	
 	
 	
