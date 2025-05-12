@@ -7,6 +7,11 @@
 // c4
 #include "StefanHitData.h"
 #include "TStefanConfiguration.h"
+#include "H10MCPTwinpeaksAnaData.h"
+#include "FrsHitData.h"
+#include "TFRSParameter.h"
+#include "TH10MCPConfiguration.h"
+#include "TFrsConfiguration.h"
 
 // ROOT
 #include "TDirectory.h"
@@ -32,6 +37,8 @@ class TH1F;
 class TH2F;
 class StefanHitItem;
 class TStefanConfiguration;
+class TH10MCPConfiguration;
+class TFrsConfiguration;
 
 class StefanOnlineSpectra : public FairTask
 {
@@ -58,9 +65,14 @@ class StefanOnlineSpectra : public FairTask
     private:
 
         TStefanConfiguration const* stefan_config;
+        const TH10MCPConfiguration* mcp_config;
+        TFrsConfiguration const* frs_config;
 
         std::vector<StefanHitItem> const* StefanHit; 
-        
+        TClonesArray* fHitsMCP;
+        std::vector<FrsHitItem> const* hitArray;
+        std::vector<FrsMultiHitItem> const* multihitArray;
+
         EventHeader* header;
         Int_t fNEvents;
         int total_time_microsecs = 0;
@@ -72,6 +84,18 @@ class StefanOnlineSpectra : public FairTask
         TDirectory* dir_stefan;
         TDirectory** dir_dssd;
         TDirectory** dir_hits;
+        TDirectory* dir_corr;
+        TDirectory* dir_mcp_stefan;
+        TDirectory** dir_mcp_stefan_dssds;
+        TDirectory** dir_mcp_stefan_dssds_strips;
+        TDirectory* dir_frs_stefan;
+        TDirectory* dir_frs_tof_stefan;
+        TDirectory* dir_frs_z_stefan;
+        TDirectory** dir_frs_tof_stefan_dssds;
+        TDirectory** dir_frs_tof_stefan_dssds_strips;
+        TDirectory** dir_frs_z_stefan_dssds;
+        TDirectory** dir_frs_z_stefan_dssds_strips;
+        TDirectory* dir_frs_mcp;
         std::vector<std::vector<TDirectory*>> dir_raw;
         std::vector<TDirectory*> dir_pixel;
 	
@@ -86,6 +110,23 @@ class StefanOnlineSpectra : public FairTask
         std::vector< std::vector<std::vector<TH1*>>> h1_raw_energy; // raw energy spectra
         std::vector< std::vector<TH1*>> h1_pixel_energy; // energy per pixel spectra
 
+        std::vector<TH2*> h2_mcp_tof_vs_e_dssd;
+        std::vector<std::vector<TH2*>> h2_mcp_tof_vs_e_vertical_strip;
+        std::vector<std::vector<TH2*>> h2_mcp_tof_vs_e_horizontal_strip;
+
+        std::vector<TH2*> h2_s2s4_tof_vs_e_dssd;
+        std::vector<std::vector<TH2*>> h2_s2s4_tof_vs_e_vertical_strip;
+        std::vector<std::vector<TH2*>> h2_s2s4_tof_vs_e_horizontal_strip;
+        std::vector<TH2*> h2_z41_vs_e_dssd;
+        std::vector<std::vector<TH2*>> h2_z41_vs_e_vertical_strip;
+        std::vector<std::vector<TH2*>> h2_z41_vs_e_horizontal_strip;
+        std::vector<TH2*> h2_z42_vs_e_dssd;
+        std::vector<std::vector<TH2*>> h2_z42_vs_e_vertical_strip;
+        std::vector<std::vector<TH2*>> h2_z42_vs_e_horizontal_strip;
+
+        TH2* h2_s2s4_tof_vs_mcp_tof;
+        TH2* h2_z41_vs_mcp_tof;
+        TH2* h2_z42_vs_mcp_tof;
 
 
         // Counters
