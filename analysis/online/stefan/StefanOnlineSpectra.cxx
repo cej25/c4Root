@@ -54,8 +54,18 @@ InitStatus StefanOnlineSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found!");
 
+    // stefan failure is fatal foe now, altough we could turn this into a complete "HISPEC10" task, and just make it a warning
     StefanHit = mgr->InitObjectAs<decltype(StefanHit)>("StefanHitData");
-    c4LOG_IF(fatal, !StefanHit, "Branch StefanHitData not found!");
+    c4LOG_IF(fatal, !StefanHit, "Branch StefanHitData not found - no correlations with Stefan possible!");
+
+    // correlations
+    fHitsMCP = (TClonesArray*)mgr->GetObject("H10MCPTwinpeaksAnaData");
+    c4LOG_IF(warn, !fHitsMCP, "Branch H10MCPTwinpeaksAnaData not found - no correlations with MCPs possible!");
+    hitArray = mgr->InitObjectAs<decltype(hitArray)>("FrsHitData");
+    c4LOG_IF(warn, !hitArray, "Branch FrsHitData not found - no correlations with FRS (TAC) possible!");
+    multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
+    c4LOG_IF(warn, !multihitArray, "Branch FrsMultiHitData not found - no correlations with FRS (MHTDC) possible!");
+
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
 
@@ -116,6 +126,114 @@ InitStatus StefanOnlineSpectra::Init()
         	
         	
         	
+    }
+
+    // corr
+        // mcp vs stefan
+            // dssd breakdown
+                // 2d hists
+                // strip breakdown
+                    // 2d hists
+
+    dir_corr = dir_stefan->mkdir("Correlations");
+    
+
+    
+    if (fHitsMCP)
+    {
+        dir_mcp_stefan = dir_corr->mkdir("MCP_vs_STEFAN");
+        dir_mcp_stefan_dssds = new TDirectory*[num_dssds];
+        dir_mcp_stefan_dssds_strips = new TDirectory*[num_dssds];
+        for (int i = 0; i < num_dssds; i++)
+        {
+            dir_mcp_stefan_dssds[i] = dir_mcp_stefan->mkdir(Form("DSSD%i", i));
+            dir_mcp_stefan_dssds_strips[i] = dir_mcp_stefan_dssds[i]->mkdir("Strips");
+        }
+
+        h2_mcp_tof_vs_e_dssd.resize(num_dssds);
+        h2_mcp_tof_vs_e_vertical_strip.resize(num_dssds);
+        h2_mcp_tof_vs_e_horizontal_strip.resize(num_dssds);
+
+        for (int i = 0; i < num_dssds; i++)
+        {
+            h2_mcp_tof_vs_e_dssd[i] = MakeTH2(dir_mcp_stefan_dssds[i], "D", Form("h2_mcp_tof_vs_e_dssd_%i", i), Form("MCP TOF vs DSSD %i E", i), 1000, -100, 100, 10000, 0, max_energy);
+
+            h2_mcp_tof_vs_e_vertical_strip[i].resize(16);
+            h2_mcp_tof_vs_e_horizontal_strip[i].resize(16);
+            for (int j = 0; j < 16; j++)
+            {
+                h2_mcp_tof_vs_e_vertical_strip[i][j] = MakeTH2(dir_mcp_stefan_dssds_strips[i], "D", Form("h2_mcp_tof_vs_e_dssd_%i_vertical_strip_%i", i, j), Form("MCP TOF vs DSSD %i Veritcal Strip %i E", i, j), 1000, -100, 100, 10000, 0, max_energy);
+                h2_mcp_tof_vs_e_horizontal_strip[i][j] = MakeTH2(dir_mcp_stefan_dssds_strips[i], "D", Form("h2_mcp_tof_vs_e_dssd_%i_horizontal_strip_%i", i, j), Form("MCP TOF vs DSSD %i Horizontal Strip %i E", i, j), 1000, -100, 100, 10000, 0, max_energy);
+            }
+        }
+    }
+
+
+    if (multihitArray)
+    {
+        dir_frs_stefan = dir_corr->mkdir("FRS_vs_STEFAN");
+        dir_frs_tof_stefan = dir_frs_stefan->mkdir("TOF");
+        dir_frs_z_stefan = dir_frs_stefan->mkdir("Z");
+        dir_frs_tof_stefan_dssds = new TDirectory*[num_dssds];
+        dir_frs_tof_stefan_dssds_strips = new TDirectory*[num_dssds];
+        dir_frs_z_stefan_dssds = new TDirectory*[num_dssds];
+        dir_frs_z_stefan_dssds_strips = new TDirectory*[num_dssds];
+
+        for (int i = 0; i < num_dssds; i++)
+        {
+            dir_frs_tof_stefan_dssds[i] = dir_frs_tof_stefan->mkdir(Form("DSSD%i", i));
+            dir_frs_tof_stefan_dssds_strips[i] = dir_frs_tof_stefan_dssds[i]->mkdir("Strips");
+            dir_frs_z_stefan_dssds[i] = dir_frs_z_stefan->mkdir(Form("DSSD%i", i));
+            dir_frs_z_stefan_dssds_strips[i] = dir_frs_z_stefan_dssds[i]->mkdir("Strips");
+        }
+
+        h2_s2s4_tof_vs_e_dssd.resize(num_dssds);
+        h2_s2s4_tof_vs_e_vertical_strip.resize(num_dssds);
+        h2_s2s4_tof_vs_e_horizontal_strip.resize(num_dssds);
+        h2_z41_vs_e_dssd.resize(num_dssds);
+        h2_z41_vs_e_vertical_strip.resize(num_dssds);
+        h2_z41_vs_e_horizontal_strip.resize(num_dssds);
+        h2_z42_vs_e_dssd.resize(num_dssds);
+        h2_z42_vs_e_vertical_strip.resize(num_dssds);
+        h2_z42_vs_e_horizontal_strip.resize(num_dssds);
+        
+        for (int i = 0; i < num_dssds; i++)
+        {
+            h2_s2s4_tof_vs_e_dssd[i] = MakeTH2(dir_frs_tof_stefan_dssds[i], "F", Form("h2_s2s4_tof_vs_e_dssd_%i", i), Form("S2S4 TOF vs DSSD %i E", i), 10000, 0, max_energy, 1000, 0, 400);
+            h2_z41_vs_e_dssd[i] = MakeTH2(dir_frs_z_stefan_dssds[i], "F", Form("h2_z41_vs_e_dssd_%i", i), Form("Z41 vs DSSD %i E", i), 10000, 0, max_energy, 400, 10, 40);
+            h2_z42_vs_e_dssd[i] = MakeTH2(dir_frs_z_stefan_dssds[i], "F", Form("h2_z42_vs_e_dssd_%i", i), Form("Z42 vs DSSD %i E", i), 10000, 0, max_energy, 400, 10, 40);
+
+            h2_s2s4_tof_vs_e_vertical_strip[i].resize(16);
+            h2_s2s4_tof_vs_e_horizontal_strip[i].resize(16);
+            h2_z41_vs_e_vertical_strip[i].resize(16);
+            h2_z41_vs_e_horizontal_strip[i].resize(16);
+            h2_z42_vs_e_vertical_strip[i].resize(16);
+            h2_z42_vs_e_horizontal_strip[i].resize(16);
+
+            for (int j = 0; j < 16; j++)
+            {
+                h2_s2s4_tof_vs_e_vertical_strip[i][j] = MakeTH2(dir_frs_tof_stefan_dssds_strips[i], "D", Form("h2_s2s4_tof_vs_e_dssd_%i_vertical_strip_%i", i, j), Form("S2S4 TOF vs DSSD %i Vertical Strip %i E", i, j), 10000, 0, max_energy, 1000, 0, 400);
+                h2_s2s4_tof_vs_e_horizontal_strip[i][j] = MakeTH2(dir_frs_tof_stefan_dssds_strips[i], "D", Form("h2_s2s4_tof_vs_e_dssd_%i_horizontal_strip_%i", i, j), Form("S2S4 TOF vs DSSD %i Horizontal Strip %i E", i, j), 10000, 0, max_energy, 1000, 0, 400);
+                h2_z41_vs_e_vertical_strip[i][j] = MakeTH2(dir_frs_z_stefan_dssds_strips[i], "F", Form("h2_z41_vs_e_dssd_%i_vertical_strip_%i", i, j), Form("Z41 vs DSSD %i Vertical Strip %i E", i, j), 10000, 0, max_energy, 400, 10, 40);
+                h2_z41_vs_e_horizontal_strip[i][j] = MakeTH2(dir_frs_z_stefan_dssds_strips[i], "F", Form("h2_z41_vs_e_dssd_%i_horizontal_strip_%i", i, j),  Form("Z41 vs DSSD %i Horizontal Strip %i E", i, j), 10000, 0, max_energy, 400, 10, 40);
+                h2_z42_vs_e_vertical_strip[i][j] = MakeTH2(dir_frs_z_stefan_dssds_strips[i], "F", Form("h2_z42_vs_e_dssd_%i_vertical_strip_%i", i, j),  Form("Z42 vs DSSD %i Vertical Strip %i E", i, j), 10000, 0, max_energy, 400, 10, 40);
+                h2_z42_vs_e_horizontal_strip[i][j] = MakeTH2(dir_frs_z_stefan_dssds_strips[i], "F", Form("h2_z42_vs_e_dssd_%i_horizontal_strip_%i", i, j),  Form("Z42 vs DSSD %i Horizontal Strip %i E", i, j), 10000, 0, max_energy, 400, 10, 40);
+            }
+        }
+
+   
+
+        if (fHitsMCP)
+        {
+            dir_frs_mcp = dir_corr->mkdir("FRS_vs_MCP");
+
+            h2_s2s4_tof_vs_mcp_tof = MakeTH2(dir_frs_mcp, "D", "h2_s2s4_tof_vs_mcp_tof", "S2S4 TOF vs MCP TOF", 1000, -100, 100, 1000, 0, 400);
+            h2_z41_vs_mcp_tof = MakeTH2(dir_frs_mcp, "D", "h2_z41_vs_mcp_tof", "Z41 vs MCP TOF", 1000, -100, 100, 400, 10, 40);
+            h2_z42_vs_mcp_tof = MakeTH2(dir_frs_mcp, "D", "h2_z42_vs_mcp_tof", "Z42 vs MCP TOF", 1000, -100, 100, 400, 10, 40);
+
+        }
+        
+
     }
 
    
