@@ -1436,6 +1436,34 @@ void LisaFrsCorrelations::Exec(Option_t* option)
                 
             }            
         } 
+
+
+        if (!FrsGates.empty())
+        {
+            if (gate == 0)
+            {    
+                // S1S2 gated
+                if ( z21_passed[gate].size() > 0 )
+                {
+                    c4LOG(info, "::: Passed in S1S2");
+                    c4LOG(info, " z21 passed: " << z21_passed[gate] << " AoQ s1s2 passed : " << AoQ_s1s2_passed[gate]);
+                }
+                // S2S4
+                if ( z41_passed[gate].size() > 0) 
+                {
+                    c4LOG(info, "::: Passed in S2S4");
+                    c4LOG(info, " z41 passed: " << z41_passed[gate] << " AoQ s2s4 passed : " << AoQ_s2s4_passed[gate]);
+                }
+                // Sequential
+                if ( z21_passed[gate].size() > 0 && z41_passed[gate].size() > 0) 
+                {
+                    c4LOG(info," ::: Passed in SEQUENTIAL");
+                    c4LOG(info, " z21 passed: " << z21_passed[gate] << " AoQ s1s2 passed : " << AoQ_s1s2_passed[gate] <<" z41 passed: " << z41_passed[gate] << " AoQ s2s4 passed : " << AoQ_s2s4_passed[gate]);
+
+                }
+                c4LOG(info," :::::::::::::::: ");
+            }            
+        }
         multi_evt++;
         //..........................
         
