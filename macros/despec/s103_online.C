@@ -52,7 +52,8 @@ void s103_online()
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     //TString filename = "/u/cjones/HISPEC-10/20250410-1505_0001.lmd";
    // TString filename = "~/lustre/despec/hispec10/finetime_0002_000*.lmd";
-    TString filename = "~/lustre/despec/s092_s103/run_0064_0004.lmd";
+   TString filename = "~/lustre/gamma/s092_s103_files/ts/run_0064_0004.lmd";
+    //TString filename = "~/lustre/despec/s092_s103/run_0064_0004.lmd";
     //TString filename = "/u/cjones/finalfinalpulserrunfin.lmd";
     TString outputpath = "htest";
     TString outputFileName = outputpath + ".root";

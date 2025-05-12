@@ -166,7 +166,11 @@ class H10MCPOnlineSpectra : public FairTask
         TH1* h1_sc41_mcp2;
         TH1* h1_sc42_mcp1;
         TH1* h1_sc42_mcp2;
-        
+        TH1* h1_stefan_mcp1;
+        TH1* h1_stefan_mcp2;
+        TH1* h1_sc41_sc42;
+        TH1* h1_stefan_sc41;
+        TH1* h1_stefan_sc42;
         
         
         // Binnings:

@@ -78,16 +78,7 @@ class StefanOnlineSpectra : public FairTask
 	
         TDirectory** dir_stats;
         
-        // Histograms
-        std::vector<TH1*> h1_implant_side_x_mult;
-        std::vector<TH1*> h1_implant_side_y_mult;
-        std::vector<TH2*> h2_implant_strip_mult; 
-        std::vector<TH1*> h1_implant_side_x_hitpattern;
-        std::vector<TH1*> h1_implant_side_y_hitpattern;
-        std::vector<TH2*> h2_implant_strip_xy;
-        std::vector<TH1*> h1_implant_e;
-        std::vector<TH2*> h2_implant_e_xy;
-        std::vector<TH2*> h2_implant_strip_1d_e;
+        
 	
 	
 	
