@@ -654,12 +654,14 @@ InitStatus LisaFrsCorrelations::Init()
     {
         h2_Z21_vs_AoQs1s2_LISA_MWD_gated.resize(mwd_gate_number);
         h2_Z41_vs_AoQs2s4_LISA_MWD_gated.resize(mwd_gate_number);
+        h2_Z42_vs_AoQs2s4_LISA_MWD_gated.resize(mwd_gate_number);
         for (int gate_lisa = 0; gate_lisa < mwd_gates.size(); gate_lisa++)
         {       
             dir_LISA_mwd_gates[gate_lisa] = dir_gate_LISA_mwd->mkdir(TString(mwd_gates.at(gate_lisa)->GetName()));
             
             h2_Z21_vs_AoQs1s2_LISA_MWD_gated[gate_lisa].resize(layer_number);
             h2_Z41_vs_AoQs2s4_LISA_MWD_gated[gate_lisa].resize(layer_number);
+            h2_Z42_vs_AoQs2s4_LISA_MWD_gated[gate_lisa].resize(layer_number);
             dir_LISA_mwd_gates[gate_lisa]->cd();
             for ( int i = 0; i < layer_number; i++)
             {
@@ -677,7 +679,15 @@ InitStatus LisaFrsCorrelations::Init()
                                                         1000, frs_config->fMin_Z, frs_config->fMax_Z);
                 h2_Z41_vs_AoQs2s4_LISA_MWD_gated[gate_lisa][i]->GetXaxis()->SetTitle("AoQ - S2S4");
                 h2_Z41_vs_AoQs2s4_LISA_MWD_gated[gate_lisa][i]->GetYaxis()->SetTitle("Z(41)");
-                h2_Z41_vs_AoQs2s4_LISA_MWD_gated[gate_lisa][i]->SetOption("COLZ");   
+                h2_Z41_vs_AoQs2s4_LISA_MWD_gated[gate_lisa][i]->SetOption("COLZ");
+
+                h2_Z42_vs_AoQs2s4_LISA_MWD_gated[gate_lisa][i] = new TH2F(Form("h2_Z42_vs_AoQs2s4_LISA_MWD_%i_gate_%i", i+1, gate_lisa), 
+                                                        Form("Z42 vs AoQ S4 - LISA_MWD %i - Gate %i",i+1, gate_lisa),  
+                                                        1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 
+                                                        1000, frs_config->fMin_Z, frs_config->fMax_Z);
+                h2_Z42_vs_AoQs2s4_LISA_MWD_gated[gate_lisa][i]->GetXaxis()->SetTitle("AoQ - S2S4");
+                h2_Z42_vs_AoQs2s4_LISA_MWD_gated[gate_lisa][i]->GetYaxis()->SetTitle("Z(42)");
+                h2_Z42_vs_AoQs2s4_LISA_MWD_gated[gate_lisa][i]->SetOption("COLZ");  
             } 
 
         }
@@ -1591,7 +1601,8 @@ void LisaFrsCorrelations::Exec(Option_t* option)
             // S2S4
             for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
             {
-                h2_Z41_vs_AoQs2s4_LISA_MWD_gated[g][l]->Fill(AoQ_s2s4_mhtdc.at(i),z41_mhtdc.at(i));
+                // h2_Z41_vs_AoQs2s4_LISA_MWD_gated[g][l]->Fill(AoQ_s2s4_mhtdc.at(i),z41_mhtdc.at(i));
+                h2_Z42_vs_AoQs2s4_LISA_MWD_gated[g][l]->Fill(AoQ_s2s4_mhtdc.at(i),z42_mhtdc.at(i));
             }            
         }
     }
