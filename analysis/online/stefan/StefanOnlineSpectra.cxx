@@ -134,6 +134,19 @@ InitStatus StefanOnlineSpectra::Init()
                 // 2d hists
                 // strip breakdown
                     // 2d hists
+        // frs vs stefan
+            // tof 
+                // dssd breakdown
+                    // 2d hist
+                    // strip breakdown
+                        // 2d hist
+            // z
+                // dssd breakdown
+                    // 2d hist
+                    // strip breakdown
+                        // 2d hist
+        // frs vs mcp
+            // 2d hist
 
     dir_corr = dir_stefan->mkdir("Correlations");
     
@@ -156,14 +169,14 @@ InitStatus StefanOnlineSpectra::Init()
 
         for (int i = 0; i < num_dssds; i++)
         {
-            h2_mcp_tof_vs_e_dssd[i] = MakeTH2(dir_mcp_stefan_dssds[i], "D", Form("h2_mcp_tof_vs_e_dssd_%i", i), Form("MCP TOF vs DSSD %i E", i), 1000, -100, 100, 10000, 0, max_energy);
+            h2_mcp_tof_vs_e_dssd[i] = MakeTH2(dir_mcp_stefan_dssds[i], "D", Form("h2_mcp_tof_vs_e_dssd_%i", i), Form("MCP TOF vs DSSD %i E", i), 1000, -100, 100, 750, 0, 5000000);
 
             h2_mcp_tof_vs_e_vertical_strip[i].resize(16);
             h2_mcp_tof_vs_e_horizontal_strip[i].resize(16);
             for (int j = 0; j < 16; j++)
             {
-                h2_mcp_tof_vs_e_vertical_strip[i][j] = MakeTH2(dir_mcp_stefan_dssds_strips[i], "D", Form("h2_mcp_tof_vs_e_dssd_%i_vertical_strip_%i", i, j), Form("MCP TOF vs DSSD %i Veritcal Strip %i E", i, j), 1000, -100, 100, 10000, 0, max_energy);
-                h2_mcp_tof_vs_e_horizontal_strip[i][j] = MakeTH2(dir_mcp_stefan_dssds_strips[i], "D", Form("h2_mcp_tof_vs_e_dssd_%i_horizontal_strip_%i", i, j), Form("MCP TOF vs DSSD %i Horizontal Strip %i E", i, j), 1000, -100, 100, 10000, 0, max_energy);
+                h2_mcp_tof_vs_e_vertical_strip[i][j] = MakeTH2(dir_mcp_stefan_dssds_strips[i], "D", Form("h2_mcp_tof_vs_e_dssd_%i_vertical_strip_%i", i, j), Form("MCP TOF vs DSSD %i Veritcal Strip %i E", i, j), 1000, -100, 100, 750, 0, 5000000);
+                h2_mcp_tof_vs_e_horizontal_strip[i][j] = MakeTH2(dir_mcp_stefan_dssds_strips[i], "D", Form("h2_mcp_tof_vs_e_dssd_%i_horizontal_strip_%i", i, j), Form("MCP TOF vs DSSD %i Horizontal Strip %i E", i, j), 1000, -100, 100, 750, 0, 5000000);
             }
         }
     }
@@ -199,10 +212,10 @@ InitStatus StefanOnlineSpectra::Init()
         
         for (int i = 0; i < num_dssds; i++)
         {
-            h2_s2s4_tof_vs_e_dssd[i] = MakeTH2(dir_frs_tof_stefan_dssds[i], "F", Form("h2_s2s4_tof_vs_e_dssd_%i", i), Form("S2S4 TOF vs DSSD %i E", i), 10000, 0, max_energy, 1000, 0, 400);
-            h2_z41_vs_e_dssd[i] = MakeTH2(dir_frs_z_stefan_dssds[i], "F", Form("h2_z41_vs_e_dssd_%i", i), Form("Z41 vs DSSD %i E", i), 10000, 0, max_energy, 400, 10, 40);
-            h2_z42_vs_e_dssd[i] = MakeTH2(dir_frs_z_stefan_dssds[i], "F", Form("h2_z42_vs_e_dssd_%i", i), Form("Z42 vs DSSD %i E", i), 10000, 0, max_energy, 400, 10, 40);
-
+            h2_s2s4_tof_vs_e_dssd[i] = MakeTH2(dir_frs_tof_stefan_dssds[i], "F", Form("h2_s2s4_tof_vs_e_dssd_%i", i), Form("S2S4 TOF vs DSSD %i E", i), 750, 0, 5000000, 500, 150, 250);
+            h2_z41_vs_e_dssd[i] = MakeTH2(dir_frs_z_stefan_dssds[i], "F", Form("h2_z41_vs_e_dssd_%i", i), Form("Z41 vs DSSD %i E", i), 750, 0, 5000000, 200, 0, 40);
+            h2_z42_vs_e_dssd[i] = MakeTH2(dir_frs_z_stefan_dssds[i], "F", Form("h2_z42_vs_e_dssd_%i", i), Form("Z42 vs DSSD %i E", i), 750, 0, 5000000, 200, 0, 40); // max_energy
+ 
             h2_s2s4_tof_vs_e_vertical_strip[i].resize(16);
             h2_s2s4_tof_vs_e_horizontal_strip[i].resize(16);
             h2_z41_vs_e_vertical_strip[i].resize(16);
@@ -212,12 +225,12 @@ InitStatus StefanOnlineSpectra::Init()
 
             for (int j = 0; j < 16; j++)
             {
-                h2_s2s4_tof_vs_e_vertical_strip[i][j] = MakeTH2(dir_frs_tof_stefan_dssds_strips[i], "D", Form("h2_s2s4_tof_vs_e_dssd_%i_vertical_strip_%i", i, j), Form("S2S4 TOF vs DSSD %i Vertical Strip %i E", i, j), 10000, 0, max_energy, 1000, 0, 400);
-                h2_s2s4_tof_vs_e_horizontal_strip[i][j] = MakeTH2(dir_frs_tof_stefan_dssds_strips[i], "D", Form("h2_s2s4_tof_vs_e_dssd_%i_horizontal_strip_%i", i, j), Form("S2S4 TOF vs DSSD %i Horizontal Strip %i E", i, j), 10000, 0, max_energy, 1000, 0, 400);
-                h2_z41_vs_e_vertical_strip[i][j] = MakeTH2(dir_frs_z_stefan_dssds_strips[i], "F", Form("h2_z41_vs_e_dssd_%i_vertical_strip_%i", i, j), Form("Z41 vs DSSD %i Vertical Strip %i E", i, j), 10000, 0, max_energy, 400, 10, 40);
-                h2_z41_vs_e_horizontal_strip[i][j] = MakeTH2(dir_frs_z_stefan_dssds_strips[i], "F", Form("h2_z41_vs_e_dssd_%i_horizontal_strip_%i", i, j),  Form("Z41 vs DSSD %i Horizontal Strip %i E", i, j), 10000, 0, max_energy, 400, 10, 40);
-                h2_z42_vs_e_vertical_strip[i][j] = MakeTH2(dir_frs_z_stefan_dssds_strips[i], "F", Form("h2_z42_vs_e_dssd_%i_vertical_strip_%i", i, j),  Form("Z42 vs DSSD %i Vertical Strip %i E", i, j), 10000, 0, max_energy, 400, 10, 40);
-                h2_z42_vs_e_horizontal_strip[i][j] = MakeTH2(dir_frs_z_stefan_dssds_strips[i], "F", Form("h2_z42_vs_e_dssd_%i_horizontal_strip_%i", i, j),  Form("Z42 vs DSSD %i Horizontal Strip %i E", i, j), 10000, 0, max_energy, 400, 10, 40);
+                h2_s2s4_tof_vs_e_vertical_strip[i][j] = MakeTH2(dir_frs_tof_stefan_dssds_strips[i], "D", Form("h2_s2s4_tof_vs_e_dssd_%i_vertical_strip_%i", i, j), Form("S2S4 TOF vs DSSD %i Vertical Strip %i E", i, j), 750, 0, 5000000, 500, 150, 250);
+                h2_s2s4_tof_vs_e_horizontal_strip[i][j] = MakeTH2(dir_frs_tof_stefan_dssds_strips[i], "D", Form("h2_s2s4_tof_vs_e_dssd_%i_horizontal_strip_%i", i, j), Form("S2S4 TOF vs DSSD %i Horizontal Strip %i E", i, j), 750, 0, 5000000, 500, 150, 250);
+                h2_z41_vs_e_vertical_strip[i][j] = MakeTH2(dir_frs_z_stefan_dssds_strips[i], "F", Form("h2_z41_vs_e_dssd_%i_vertical_strip_%i", i, j), Form("Z41 vs DSSD %i Vertical Strip %i E", i, j), 750, 0, 5000000, 200, 0, 40);
+                h2_z41_vs_e_horizontal_strip[i][j] = MakeTH2(dir_frs_z_stefan_dssds_strips[i], "F", Form("h2_z41_vs_e_dssd_%i_horizontal_strip_%i", i, j),  Form("Z41 vs DSSD %i Horizontal Strip %i E", i, j), 750, 0, 5000000, 200, 0, 40);
+                h2_z42_vs_e_vertical_strip[i][j] = MakeTH2(dir_frs_z_stefan_dssds_strips[i], "F", Form("h2_z42_vs_e_dssd_%i_vertical_strip_%i", i, j),  Form("Z42 vs DSSD %i Vertical Strip %i E", i, j), 750, 0, 5000000, 200, 0, 40);
+                h2_z42_vs_e_horizontal_strip[i][j] = MakeTH2(dir_frs_z_stefan_dssds_strips[i], "F", Form("h2_z42_vs_e_dssd_%i_horizontal_strip_%i", i, j),  Form("Z42 vs DSSD %i Horizontal Strip %i E", i, j), 750, 0, 5000000, 200, 0, 40);
             }
         }
 
@@ -227,9 +240,9 @@ InitStatus StefanOnlineSpectra::Init()
         {
             dir_frs_mcp = dir_corr->mkdir("FRS_vs_MCP");
 
-            h2_s2s4_tof_vs_mcp_tof = MakeTH2(dir_frs_mcp, "D", "h2_s2s4_tof_vs_mcp_tof", "S2S4 TOF vs MCP TOF", 1000, -100, 100, 1000, 0, 400);
-            h2_z41_vs_mcp_tof = MakeTH2(dir_frs_mcp, "D", "h2_z41_vs_mcp_tof", "Z41 vs MCP TOF", 1000, -100, 100, 400, 10, 40);
-            h2_z42_vs_mcp_tof = MakeTH2(dir_frs_mcp, "D", "h2_z42_vs_mcp_tof", "Z42 vs MCP TOF", 1000, -100, 100, 400, 10, 40);
+            h2_s2s4_tof_vs_mcp_tof = MakeTH2(dir_frs_mcp, "D", "h2_s2s4_tof_vs_mcp_tof", "S2S4 TOF vs MCP TOF", 1000, -100, 100, 500, 150, 250);
+            h2_z41_vs_mcp_tof = MakeTH2(dir_frs_mcp, "D", "h2_z41_vs_mcp_tof", "Z41 vs MCP TOF", 1000, -100, 100, 200, 0, 40);
+            h2_z42_vs_mcp_tof = MakeTH2(dir_frs_mcp, "D", "h2_z42_vs_mcp_tof", "Z42 vs MCP TOF", 1000, -100, 100, 200, 0, 40);
 
         }
         
@@ -262,7 +275,7 @@ void StefanOnlineSpectra::Exec(Option_t* option)
 {
     auto start = std::chrono::high_resolution_clock::now();
 
-    if (StefanHit->size() == 0) return;
+    if (StefanHit->size() == 0) return; // for now
 
     for (auto const & hit : *StefanHit)
     {
@@ -275,7 +288,77 @@ void StefanOnlineSpectra::Exec(Option_t* option)
         h1_raw_energy[hit.DSSD][0][hit.StripY]->Fill(hit.Energy);
         h1_raw_energy[hit.DSSD][1][hit.StripX]->Fill(hit.Energy);
         h1_pixel_energy[hit.DSSD][hit.StripX+ 16*hit.StripY]->Fill(hit.Energy);
+
+        // Stefan vs FRS
+        if (multihitArray)
+        {
+            if (multihitArray->size() > 0)
+            {
+                auto const & multiHitItem = multihitArray->at(0);
+                std::vector<Float_t> tof_s2s4_mhtdc = multiHitItem.Get_ID_tof_s2s4_mhtdc();
+                std::vector<Float_t> z41_mhtdc = multiHitItem.Get_ID_z41_mhtdc();
+                std::vector<Float_t> z42_mhtdc = multiHitItem.Get_ID_z42_mhtdc();
+
+                for (int i = 0; i < z41_mhtdc.size(); i++)
+                {
+                    h2_s2s4_tof_vs_e_dssd[hit.DSSD]->Fill(hit.Energy, tof_s2s4_mhtdc.at(i));
+                    h2_z41_vs_e_dssd[hit.DSSD]->Fill(hit.Energy, z41_mhtdc.at(i));
+                    h2_z42_vs_e_dssd[hit.DSSD]->Fill(hit.Energy, z42_mhtdc.at(i));
+
+                    h2_s2s4_tof_vs_e_vertical_strip[hit.DSSD][hit.StripY]->Fill(hit.Energy, tof_s2s4_mhtdc.at(i));
+                    h2_s2s4_tof_vs_e_horizontal_strip[hit.DSSD][hit.StripX]->Fill(hit.Energy, tof_s2s4_mhtdc.at(i));
+                   
+                    h2_z41_vs_e_vertical_strip[hit.DSSD][hit.StripY]->Fill(hit.Energy, z41_mhtdc.at(i));
+                    h2_z41_vs_e_horizontal_strip[hit.DSSD][hit.StripX]->Fill(hit.Energy, z41_mhtdc.at(i));
+
+                    h2_z42_vs_e_vertical_strip[hit.DSSD][hit.StripY]->Fill(hit.Energy, z42_mhtdc.at(i));
+                    h2_z42_vs_e_horizontal_strip[hit.DSSD][hit.StripX]->Fill(hit.Energy, z42_mhtdc.at(i));
+                }
+
+            }
+        }
+
+        // Stefan vs MCP
+        for (int ihit = 0; ihit < fHitsMCP->GetEntriesFast(); ihit++) 
+        {
+            H10MCPTwinpeaksAnaData* mcphit = (H10MCPTwinpeaksAnaData*)fHitsMCP->At(ihit);
+            if (!mcphit) return;
+            
+            h2_mcp_tof_vs_e_dssd[hit.DSSD]->Fill(mcphit->T2-mcphit->T1, hit.Energy);
+            h2_mcp_tof_vs_e_vertical_strip[hit.DSSD][hit.StripY]->Fill(mcphit->T2-mcphit->T1, hit.Energy);
+            h2_mcp_tof_vs_e_horizontal_strip[hit.DSSD][hit.StripX]->Fill(mcphit->T2-mcphit->T1, hit.Energy);
+
+        }
     }
+
+
+
+    // MCP vs FRS
+    if (multihitArray && fHitsMCP)
+    {
+        if (multihitArray->size() > 0 && fHitsMCP->GetEntriesFast() > 0)
+        {
+            auto const & multiHitItem = multihitArray->at(0);
+            std::vector<Float_t> tof_s2s4_mhtdc = multiHitItem.Get_ID_tof_s2s4_mhtdc();
+            std::vector<Float_t> z41_mhtdc = multiHitItem.Get_ID_z41_mhtdc();
+            std::vector<Float_t> z42_mhtdc = multiHitItem.Get_ID_z42_mhtdc();
+
+            for (int i = 0; i < z41_mhtdc.size(); i++)
+            {
+                for (int ihit = 0; ihit < fHitsMCP->GetEntriesFast(); ihit++) 
+                {
+                    H10MCPTwinpeaksAnaData* hit = (H10MCPTwinpeaksAnaData*)fHitsMCP->At(ihit);
+                    if (!hit) return;
+                    
+                    h2_s2s4_tof_vs_mcp_tof->Fill(hit->T2-hit->T1, tof_s2s4_mhtdc.at(i));
+                    h2_z41_vs_mcp_tof->Fill(hit->T2-hit->T1, z41_mhtdc.at(i));
+                    h2_z42_vs_mcp_tof->Fill(hit->T2-hit->T1, z42_mhtdc.at(i));
+
+                }
+            }
+        }
+    }
+
 
     fNEvents++;
     auto end = std::chrono::high_resolution_clock::now();
