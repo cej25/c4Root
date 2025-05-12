@@ -415,15 +415,17 @@ class FrsCal2Hit : public FairTask
         Bool_t id_b_z42;
         Bool_t id_b_z43;
 
-        Float_t* id_mhtdc_tof_s1s2 = nullptr;
-        Float_t* id_mhtdc_beta_s1s2 = nullptr;
+        // Float_t* id_mhtdc_tof_s1s2 = nullptr;
+        // Float_t* id_mhtdc_beta_s1s2 = nullptr;
+        Float_t* temp_id_mhtdc_beta_s1s2 = nullptr;
+        Float_t* temp_id_mhtdc_tof_s1s2 = nullptr;
         Float_t* id_mhtdc_gamma_s1s2 = nullptr;
         Float_t* id_mhtdc_delta_s1s2 = nullptr;
-        Float_t* id_mhtdc_aoq_s1s2 = nullptr;
-        Float_t* id_mhtdc_aoq_corr_s1s2 = nullptr;
+        // Float_t* id_mhtdc_aoq_s1s2 = nullptr;
+        // Float_t* id_mhtdc_aoq_corr_s1s2 = nullptr;
         Float_t* id_mhtdc_v_cor_music21 = nullptr;
-        Float_t* id_mhtdc_z_music21 = nullptr;
-        Float_t* id_mhtdc_z_shifted_music21 = nullptr;
+        // Float_t* id_mhtdc_z_music21 = nullptr;
+        // Float_t* id_mhtdc_z_shifted_music21 = nullptr;
         Float_t* id_mhtdc_v_cor_music22 = nullptr;
         Float_t* id_mhtdc_z_music22 = nullptr;
         Float_t* id_mhtdc_z_shifted_music22 = nullptr;
@@ -474,18 +476,24 @@ class FrsCal2Hit : public FairTask
         std::vector<Float_t> dEdegoQ_s2s4_mhtdc;
         std::vector<Float_t> dEdeg_z41_mhtdc;
 
-        // std::vector<Float_t> id_mhtdc_beta_s1s2;
-        // std::vector<Float_t> id_mhtdc_tof_s1s2;
+        // std::vector<Float_t> temp_id_mhtdc_beta_s1s2;
+        // std::vector<Float_t> temp_id_mhtdc_tof_s1s2;
+        std::vector<Float_t> id_mhtdc_beta_s1s2;
+        std::vector<Float_t> id_mhtdc_tof_s1s2;
         // std::vector<Float_t> id_mhtdc_gamma_s1s2;
         // std::vector<Float_t> id_mhtdc_delta_s1s2;
-        // std::vector<Float_t> id_mhtdc_aoq_s1s2;
-        // std::vector<Float_t> id_mhtdc_aoq_corr_s1s2;
+        std::vector<Float_t> id_mhtdc_aoq_s1s2;
+        std::vector<Float_t> id_mhtdc_aoq_corr_s1s2;
         // std::vector<Float_t> id_mhtdc_v_cor_music21;
-        // std::vector<Float_t> id_mhtdc_z_music21;
-        // std::vector<Float_t> id_mhtdc_z_shifted_music21;
+        std::vector<Float_t> id_mhtdc_z_music21;
+        std::vector<Float_t> id_mhtdc_z_shifted_music21;
         // std::vector<Float_t> id_mhtdc_v_cor_music22;
         // std::vector<Float_t> id_mhtdc_z_music22;
         // std::vector<Float_t> id_mhtdc_z_shifted_music22;
+        // std::vector<Float_t> s1x_mhtdc;
+        // std::vector<Float_t> s2x_s1s2_mhtdc;
+        // std::vector<Float_t> s2x_s2s4_mhtdc;
+        // std::vector<Float_t> s4x_mhtdc;
 
         // :: DriftCorr :: //
         Float_t id_AoQs1s2_driftcorr;

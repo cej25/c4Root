@@ -291,36 +291,48 @@ void FrsCal2Hit::Exec(Option_t* option)
     ProcessIDs_MHTDC();    
         
     
-    for (int i = 0; i < hits_in_s2x; i++)
-    {
-        for (int j = 0; j < hits_in_s1x; j++)
-        {
-            int count = i * hits_in_s1x + j;
-            s1x_mhtdc.emplace_back(temp_s1x_mhtdc[j]);
-            s1a_mhtdc.emplace_back(temp_a1);
-            s2x_s1s2_mhtdc.emplace_back(temp_s2x_mhtdc[i]);
-            s2a_s1s2_mhtdc.emplace_back(temp_a2);
-            tof_s1s2_mhtdc.emplace_back(id_mhtdc_tof_s1s2[count]);
-            beta_s1s2_mhtdc.emplace_back(id_mhtdc_beta_s1s2[count]);
-            aoq_s1s2_mhtdc.emplace_back(id_mhtdc_aoq_s1s2[count]);
-            aoq_corr_s1s2_mhtdc.emplace_back(id_mhtdc_aoq_corr_s1s2[count]);
-            z_music21_mhtdc.emplace_back(id_mhtdc_z_music21[count]);
-            z_music22_mhtdc.emplace_back(id_mhtdc_z_music22[count]);
+    // for (int i = 0; i < hits_in_s2x; i++)
+    // {
+    //     for (int j = 0; j < hits_in_s1x; j++)
+    //     {
+    //         int count = i * hits_in_s1x + j;
+    //         s1x_mhtdc.emplace_back(temp_s1x_mhtdc[j]);
+    //         s1a_mhtdc.emplace_back(temp_a1);
+    //         s2x_s1s2_mhtdc.emplace_back(temp_s2x_mhtdc[i]);
+    //         s2a_s1s2_mhtdc.emplace_back(temp_a2);
+    //         tof_s1s2_mhtdc.emplace_back(id_mhtdc_tof_s1s2[count]);
+    //         beta_s1s2_mhtdc.emplace_back(id_mhtdc_beta_s1s2[count]);
+    //         aoq_s1s2_mhtdc.emplace_back(id_mhtdc_aoq_s1s2[count]);
+    //         aoq_corr_s1s2_mhtdc.emplace_back(id_mhtdc_aoq_corr_s1s2[count]);
+    //         z_music21_mhtdc.emplace_back(id_mhtdc_z_music21[count]);
+    //         z_music22_mhtdc.emplace_back(id_mhtdc_z_music22[count]);
 
-        }
-    }
+    //     }
+    // }
 
     auto & multihitEntry = multihitArray->emplace_back();
     multihitEntry.SetS1S2(s1x_mhtdc,
                         s1a_mhtdc,
                         s2x_s1s2_mhtdc,
                         s2a_s1s2_mhtdc,
-                        tof_s1s2_mhtdc,
-                        beta_s1s2_mhtdc,
-                        aoq_s1s2_mhtdc,
-                        aoq_corr_s1s2_mhtdc,
-                        z_music21_mhtdc,
-                        z_music22_mhtdc);
+                        id_mhtdc_tof_s1s2,
+                        id_mhtdc_beta_s1s2,
+                        id_mhtdc_aoq_s1s2,
+                        id_mhtdc_aoq_corr_s1s2,
+                        id_mhtdc_z_music21,
+                        {}); // FIX
+
+    // auto & multihitEntry = multihitArray->emplace_back();
+    // multihitEntry.SetS1S2(s1x_mhtdc,
+    //                     s1a_mhtdc,
+    //                     s2x_s1s2_mhtdc,
+    //                     s2a_s1s2_mhtdc,
+    //                     tof_s1s2_mhtdc,
+    //                     beta_s1s2_mhtdc,
+    //                     aoq_s1s2_mhtdc,
+    //                     aoq_corr_s1s2_mhtdc,
+    //                     z_music21_mhtdc,
+    //                     z_music22_mhtdc);
 
     for (int i = 0; i < hits_in_s4x; i++)
     {
@@ -1169,6 +1181,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
                     {
                         float tof = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci21l_hits[i] + sci21r_hits[j]) - 0.5 * (sci11l_hits[k] + sci11r_hits[l])) + sci->mhtdc_offset_21_11[sci->sci11_select];
                         if (tof > 0 && tof < 400) mhtdc_tof2111[count] = tof; // random gate
+                        // if (tof > 0 && tof < 400) mhtdc_tof2111.emplace_back(tof); // random gate
                     }
                     else
                     {
@@ -2130,135 +2143,169 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
     // matches hits_in_tof2111 if 11 -> 21 selected, or hits_in_tof2211 if 11 -> 22 selected
     hits_in_s1s2 = hits_in_s2x * hits_in_s1x;
 
-    id_mhtdc_beta_s1s2 = new Float_t[hits_in_s1s2];
-    id_mhtdc_tof_s1s2 = new Float_t[hits_in_s1s2];
+    // id_mhtdc_beta_s1s2 = new Float_t[hits_in_s1s2];
+    temp_id_mhtdc_beta_s1s2 = new Float_t[hits_in_s1s2];
+    temp_id_mhtdc_tof_s1s2 = new Float_t[hits_in_s1s2];
+    // id_mhtdc_tof_s1s2 = new Float_t[hits_in_s1s2];
     id_mhtdc_gamma_s1s2 = new Float_t[hits_in_s1s2];
     id_mhtdc_delta_s1s2 = new Float_t[hits_in_s1s2];
-    id_mhtdc_aoq_s1s2 = new Float_t[hits_in_s1s2];
-    id_mhtdc_aoq_corr_s1s2 = new Float_t[hits_in_s1s2];
-    id_mhtdc_v_cor_music21 = new Float_t[hits_in_s1s2];
-    id_mhtdc_z_music21 = new Float_t[hits_in_s1s2];
-    id_mhtdc_z_shifted_music21 = new Float_t[hits_in_s1s2];
-    id_mhtdc_v_cor_music22 = new Float_t[hits_in_s1s2];
-    id_mhtdc_z_music22 = new Float_t[hits_in_s1s2];
-    id_mhtdc_z_shifted_music22 = new Float_t[hits_in_s1s2];
+    // id_mhtdc_aoq_s1s2 = new Float_t[hits_in_s1s2];
+    // id_mhtdc_aoq_corr_s1s2 = new Float_t[hits_in_s1s2];
+    // id_mhtdc_v_cor_music21 = new Float_t[hits_in_s1s2];
+    // id_mhtdc_z_music21 = new Float_t[hits_in_s1s2];
+    // id_mhtdc_z_shifted_music21 = new Float_t[hits_in_s1s2];
+    // id_mhtdc_v_cor_music22 = new Float_t[hits_in_s1s2];
+    // id_mhtdc_z_music22 = new Float_t[hits_in_s1s2];
+    // id_mhtdc_z_shifted_music22 = new Float_t[hits_in_s1s2];
 
     // Calculate TOF, Beta
     if (id->tof_s2_select == 1) 
     {
         for (int i = 0; i < hits_in_s1s2; i++) 
         {
-            id_mhtdc_tof_s1s2[i] = mhtdc_tof2111[i];
-            id_mhtdc_beta_s1s2[i] = (id->mhtdc_length_sc1121 / id_mhtdc_tof_s1s2[i]) / speed_light;
+            // id_mhtdc_tof_s1s2[i] = mhtdc_tof2111[i];
+            temp_id_mhtdc_tof_s1s2[i] = mhtdc_tof2111[i];
+            // id_mhtdc_beta_s1s2[i] = (id->mhtdc_length_sc1121 / id_mhtdc_tof_s1s2[i]) / speed_light;
+            temp_id_mhtdc_beta_s1s2[i] = (id->mhtdc_length_sc1121 / temp_id_mhtdc_tof_s1s2[i]) / speed_light; // can never be outside 0 and 1
             // else id_mhtdc_beta_s1s2[i] = 0.;
         }
     }
-    else if (id->tof_s2_select == 2) 
-    {
-        for (int i = 0; i < hits_in_s1s2; i++) 
-        {
-            id_mhtdc_tof_s1s2[i] = mhtdc_tof2211[i];
-            if (id_mhtdc_tof_s1s2[i] > 0.0) id_mhtdc_beta_s1s2[i] = (id->mhtdc_length_sc1122 / id_mhtdc_tof_s1s2[i]) / speed_light;
-            else id_mhtdc_beta_s1s2[i] = 0.;
-        }
-    }
+    // CEJ :: removed for testing
+    // else if (id->tof_s2_select == 2) 
+    // {
+    //     for (int i = 0; i < hits_in_s1s2; i++) 
+    //     {
+    //         id_mhtdc_tof_s1s2[i] = mhtdc_tof2211[i];
+    //         if (id_mhtdc_tof_s1s2[i] > 0.0) id_mhtdc_beta_s1s2[i] = (id->mhtdc_length_sc1122 / id_mhtdc_tof_s1s2[i]) / speed_light;
+    //         else id_mhtdc_beta_s1s2[i] = 0.;
+    //     }
+    // }
     else c4LOG(fatal, "Bad S2 TOF selection. Check FRS setup file!");
     
     // Calculate Gamma
-    for (int i = 0; i < hits_in_s1s2; i++) id_mhtdc_gamma_s1s2[i] = 1. / sqrt(1. - TMath::Power(id_mhtdc_beta_s1s2[i], 2));
-    // for (int i = 0; i < id_mhtdc_beta_s1s2.size(); i++) id_mhtdc_gamma_s1s2.emplace_back(1. / sqrt(1. - TMath::Power(id_mhtdc_beta_s1s2[i], 2)));
+    // for (int i = 0; i < hits_in_s1s2; i++) id_mhtdc_gamma_s1s2[i] = 1. / sqrt(1. - TMath::Power(id_mhtdc_beta_s1s2[i], 2));
+    for (int i = 0; i < hits_in_s1s2; i++) id_mhtdc_gamma_s1s2[i] = (1. / sqrt(1. - TMath::Power(temp_id_mhtdc_beta_s1s2[i], 2)));
 
+    std::cout << "hits in s1s2:: " << hits_in_s1s2 << std::endl;
+    std::cout << "hits in s2:: " << hits_
     // Calculate Delta, AoQ
     for (int i = 0; i < hits_in_s2x; i++)
     {
         for (int j = 0; j < hits_in_s1x; j++)
         {
             int count = i * hits_in_s1x + j;
-
+            std::cout << "COUNT 1:: " << count << std::endl;
             if (temp_s2x_mhtdc[i] > -200 && temp_s2x_mhtdc[i] < 200 && temp_s1x_mhtdc[j] > -120 && temp_s1x_mhtdc[j] < 120)
             {
                 if (id->use_sc11x == 0) id_mhtdc_delta_s1s2[count] = temp_s2x_mhtdc[i] / (-1.0 * frs->dispersion[0] * 1000.0); //1000 is dispertsion from meter to mm. -1.0 is sign definition.
                 else if (id->use_sc11x == 1) id_mhtdc_delta_s1s2[count] = (temp_s2x_mhtdc[i]  - (temp_s1x_mhtdc[j] * frs->magnification[5])) / (-1.0 * frs->dispersion[5] * 1000.0); //1000 is dispertsion from meter to mm. -1.0 is sign definition.
                 else c4LOG(fatal, "Invalid Sc11 use selection. Check FRS setup file!");
 
-                if (id_mhtdc_beta_s1s2[count] > 0.0 && id_mhtdc_beta_s1s2[count] < 1.0)
+                // if (id_mhtdc_beta_s1s2[count] > 0.0 && id_mhtdc_beta_s1s2[count] < 1.0)
+                if (temp_id_mhtdc_beta_s1s2[count] > 0.0 && temp_id_mhtdc_beta_s1s2[count] < 1.0 && temp_id_mhtdc_tof_s1s2[count] > 0.0)
                 {
-                    id_mhtdc_aoq_s1s2[count] = mean_brho_s1s2 * (1. + id_mhtdc_delta_s1s2[count]) * temp_tm_to_MeV / (temp_mu * id_mhtdc_beta_s1s2[count] * id_mhtdc_gamma_s1s2[count]);
-                    id_mhtdc_aoq_corr_s1s2[count] = id_mhtdc_aoq_s1s2[count] - id->a1AoQCorr * id_a2;
+                    // id_mhtdc_aoq_s1s2[count] = mean_brho_s1s2 * (1. + id_mhtdc_delta_s1s2[count]) * temp_tm_to_MeV / (temp_mu * id_mhtdc_beta_s1s2[count] * id_mhtdc_gamma_s1s2[count]);
+                    // id_mhtdc_aoq_corr_s1s2[count] = id_mhtdc_aoq_s1s2[count] - id->a1AoQCorr * id_a2;
+                    s1x_mhtdc.emplace_back(temp_s1x_mhtdc[j]);
+                    s1a_mhtdc.emplace_back(temp_a1);
+                    s2x_s1s2_mhtdc.emplace_back(temp_s2x_mhtdc[i]);
+                    s2a_s1s2_mhtdc.emplace_back(temp_a2);
+                    id_mhtdc_tof_s1s2.emplace_back(temp_id_mhtdc_tof_s1s2[count]);
+                    id_mhtdc_beta_s1s2.emplace_back(temp_id_mhtdc_beta_s1s2[count]);
+                    id_mhtdc_aoq_s1s2.emplace_back(mean_brho_s1s2 * (1. + id_mhtdc_delta_s1s2[count]) * temp_tm_to_MeV / (temp_mu * temp_id_mhtdc_beta_s1s2[count] * id_mhtdc_gamma_s1s2[count]));
+                    id_mhtdc_aoq_corr_s1s2.emplace_back(id_mhtdc_aoq_s1s2.at(count) - id->a1AoQCorr * id_a2);
+                    
+                    std::cout << "COUNT 2:: " << count << std::endl;
+                    std::cout << "aoq:: " << id_mhtdc_aoq_s1s2.at(count) << std::endl;
                 }
-                else
-                {
-                    id_mhtdc_aoq_s1s2[count] = -999;
-                    id_mhtdc_aoq_corr_s1s2[count] = -999;
-                }
+                // else
+                // {
+                //     id_mhtdc_aoq_s1s2[count] = -999;
+                //     id_mhtdc_aoq_corr_s1s2[count] = -999;
+                // }
             }
-            else
-            {
-                id_mhtdc_aoq_s1s2[count] = -999;
-                id_mhtdc_aoq_corr_s1s2[count] = -999;
-            }
+            // else
+            // {
+            //     id_mhtdc_aoq_s1s2[count] = -999;
+            //     id_mhtdc_aoq_corr_s1s2[count] = -999;
+            // }
         }
     }
 
 
     // Calculate Z (MUSIC 21 / 22)
-    for (int i = 0; i < hits_in_s1s2;  i++)
+    // for (int i = 0; i < hits_in_s1s2;  i++)
+    for (int i = 0; i < id_mhtdc_beta_s1s2.size();  i++)
     {
-        if (music21_de_cor > 0.0 && id_mhtdc_beta_s1s2[i] > 0.0 && id_mhtdc_beta_s1s2[i] < 1.0)
+        // if (music21_de_cor > 0.0 && id_mhtdc_beta_s1s2[i] > 0.0 && id_mhtdc_beta_s1s2[i] < 1.0)
+        if (music21_de_cor > 0.0)
         {
             Double_t power = 1., sum = 0.;
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->mhtdc_vel_a_music21_s1s2[j];
-                if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s1s2[i];
-                else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s1s2[i], 2); }
+                // if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s1s2[i];
+                if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s1s2.at(i);
+                // else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s1s2[i], 2); }
+                else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s1s2.at(i), 2); }
             }
 
-            id_mhtdc_v_cor_music21[i] = sum;
-            if (id_mhtdc_v_cor_music21[i] > 0.0)
+            // id_mhtdc_v_cor_music21[i] = sum;
+            // if (id_mhtdc_v_cor_music21[i] > 0.0)
+            if (sum > 0) // why are we creating some new array for this unless we're going to plot it.. 
             {
-                id_mhtdc_z_music21[i] = frs->primary_z * sqrt(music21_de_cor / id_mhtdc_v_cor_music21[i]);
-                id_mhtdc_z_shifted_music21[i] = id_mhtdc_z_music21[i] + id->mhtdc_offset_z_music21;
+                // id_mhtdc_z_music21[i] = frs->primary_z * sqrt(music21_de_cor / id_mhtdc_v_cor_music21[i]);
+                // id_mhtdc_z_shifted_music21[i] = id_mhtdc_z_music21[i] + id->mhtdc_offset_z_music21;
+                id_mhtdc_z_music21.emplace_back(frs->primary_z * sqrt(music21_de_cor / sum));
+                id_mhtdc_z_shifted_music21.emplace_back(id_mhtdc_z_music21.at(i) + id->mhtdc_offset_z_music21); // we don't even use this ? 
+
+                std::cout << "Z GOOD:: " << id_mhtdc_z_music21.at(i) << std::endl;
             }
             else
             {
-                id_mhtdc_z_music21[i] = -999.;
-                id_mhtdc_z_shifted_music21[i] = -999.;
+                // id_mhtdc_z_music21[i] = -999.;
+                // id_mhtdc_z_shifted_music21[i] = -999.;
+                id_mhtdc_z_music21.emplace_back(-999.);
+                id_mhtdc_z_shifted_music21.emplace_back(-999.);
+                std::cout << "Z BAAAAD 1:: " << id_mhtdc_z_music21.at(i) << std::endl;
             }
         }
         else
         {
-            id_mhtdc_z_music21[i] = -999.;
-            id_mhtdc_z_shifted_music21[i] = -999.;
+        //     id_mhtdc_z_music21[i] = -999.;
+        //     id_mhtdc_z_shifted_music21[i] = -999.;
+                id_mhtdc_z_music21.emplace_back(-999.);
+                id_mhtdc_z_shifted_music21.emplace_back(-999.);
+                std::cout << "Z BAAAAD 2:: " << id_mhtdc_z_music21.at(i) << std::endl;
         }
 
-        if (music22_de_cor > 0.0 && id_mhtdc_beta_s1s2[i] > 0.5 && id_mhtdc_beta_s1s2[i] < 1.0)
-        {
-            Double_t power = 1., sum = 0.;
-            for (int j = 0; j < 4; j++)
-            {
-                sum += power * id->mhtdc_vel_a_music22[i];
-                if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s1s2[i];
-                else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s1s2[i], 2); }
-            }
+        // if (music22_de_cor > 0.0 && id_mhtdc_beta_s1s2[i] > 0.5 && id_mhtdc_beta_s1s2[i] < 1.0)
+        // {
+        //     Double_t power = 1., sum = 0.;
+        //     for (int j = 0; j < 4; j++)
+        //     {
+        //         sum += power * id->mhtdc_vel_a_music22[i];
+        //         if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s1s2[i];
+        //         else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s1s2[i], 2); }
+        //     }
 
-            id_mhtdc_v_cor_music22[i] = sum;
-            if (id_mhtdc_v_cor_music22[i] > 0.0)
-            {
-                id_mhtdc_z_music22[i] = frs->primary_z * sqrt(music22_de_cor / id_mhtdc_v_cor_music22[i]);
-                id_mhtdc_z_shifted_music22[i] = id_mhtdc_z_music22[i] + id->mhtdc_offset_z_music22;
-            }
-            else
-            {
-                id_mhtdc_z_music22[i] = -999.;
-                id_mhtdc_z_shifted_music22[i] = -999.;
-            }
-        }
-        else
-        {
-            id_mhtdc_z_music22[i] = -999.;
-            id_mhtdc_z_shifted_music22[i] = -999.;
-        }
+        //     id_mhtdc_v_cor_music22[i] = sum;
+        //     if (id_mhtdc_v_cor_music22[i] > 0.0)
+        //     {
+        //         id_mhtdc_z_music22[i] = frs->primary_z * sqrt(music22_de_cor / id_mhtdc_v_cor_music22[i]);
+        //         id_mhtdc_z_shifted_music22[i] = id_mhtdc_z_music22[i] + id->mhtdc_offset_z_music22;
+        //     }
+        //     else
+        //     {
+        //         id_mhtdc_z_music22[i] = -999.;
+        //         id_mhtdc_z_shifted_music22[i] = -999.;
+        //     }
+        // }
+        // else
+        // {
+        //     id_mhtdc_z_music22[i] = -999.;
+        //     id_mhtdc_z_shifted_music22[i] = -999.;
+        // }
     }
 
 
@@ -2580,17 +2627,18 @@ void FrsCal2Hit::FinishEvent()
     if (mhtdc_tof4321 != nullptr) { delete[] mhtdc_tof4321; mhtdc_tof4321 = nullptr; }
     if (mhtdc_tof8121 != nullptr) { delete[] mhtdc_tof8121; mhtdc_tof8121 = nullptr; }
     if (mhtdc_tof3121 != nullptr) { delete[] mhtdc_tof3121; mhtdc_tof3121 = nullptr; }
+    if (mhtdc_tof2111 != nullptr) { delete[] mhtdc_tof2111; mhtdc_tof2111 = nullptr; }
     // mhtdc_tof2111.clear();
 
-    if (id_mhtdc_tof_s1s2 != nullptr) { delete[] id_mhtdc_tof_s1s2; id_mhtdc_tof_s1s2 = nullptr; }
-    if (id_mhtdc_beta_s1s2 != nullptr) { delete[] id_mhtdc_beta_s1s2; id_mhtdc_beta_s1s2 = nullptr; }
+    // if (id_mhtdc_tof_s1s2 != nullptr) { delete[] id_mhtdc_tof_s1s2; id_mhtdc_tof_s1s2 = nullptr; }
+    // if (id_mhtdc_beta_s1s2 != nullptr) { delete[] id_mhtdc_beta_s1s2; id_mhtdc_beta_s1s2 = nullptr; }
     if (id_mhtdc_gamma_s1s2 != nullptr) { delete[] id_mhtdc_gamma_s1s2; id_mhtdc_gamma_s1s2 = nullptr; }
     if (id_mhtdc_delta_s1s2 != nullptr) { delete[] id_mhtdc_delta_s1s2; id_mhtdc_delta_s1s2 = nullptr; }
-    if (id_mhtdc_aoq_s1s2 != nullptr) { delete[] id_mhtdc_aoq_s1s2; id_mhtdc_aoq_s1s2 = nullptr; }
-    if (id_mhtdc_aoq_corr_s1s2 != nullptr) { delete[] id_mhtdc_aoq_corr_s1s2; id_mhtdc_aoq_corr_s1s2 = nullptr; }
+    // if (id_mhtdc_aoq_s1s2 != nullptr) { delete[] id_mhtdc_aoq_s1s2; id_mhtdc_aoq_s1s2 = nullptr; }
+    // if (id_mhtdc_aoq_corr_s1s2 != nullptr) { delete[] id_mhtdc_aoq_corr_s1s2; id_mhtdc_aoq_corr_s1s2 = nullptr; }
     if (id_mhtdc_v_cor_music21 != nullptr) { delete[] id_mhtdc_v_cor_music21; id_mhtdc_v_cor_music21 = nullptr; }
-    if (id_mhtdc_z_music21 != nullptr) { delete[] id_mhtdc_z_music21; id_mhtdc_z_music21 = nullptr; }
-    if (id_mhtdc_z_shifted_music21 != nullptr) { delete[] id_mhtdc_z_shifted_music21; id_mhtdc_z_shifted_music21 = nullptr; }
+    // if (id_mhtdc_z_music21 != nullptr) { delete[] id_mhtdc_z_music21; id_mhtdc_z_music21 = nullptr; }
+    // if (id_mhtdc_z_shifted_music21 != nullptr) { delete[] id_mhtdc_z_shifted_music21; id_mhtdc_z_shifted_music21 = nullptr; }
     if (id_mhtdc_v_cor_music22 != nullptr) { delete[] id_mhtdc_v_cor_music22; id_mhtdc_v_cor_music22 = nullptr; }
     if (id_mhtdc_z_music22 != nullptr) { delete[] id_mhtdc_z_music22; id_mhtdc_z_music22 = nullptr; }
     if (id_mhtdc_z_shifted_music22 != nullptr) { delete[] id_mhtdc_z_shifted_music22; id_mhtdc_z_shifted_music22 = nullptr; }
@@ -2714,18 +2762,24 @@ void FrsCal2Hit::FinishEvent()
     id_z42_driftcorr = 0.;
     id_z43_driftcorr = 0.;
 
-    // id_mhtdc_beta_s1s2.clear();
-    // id_mhtdc_tof_s1s2.clear();
+    // temp_id_mhtdc_beta_s1s2.clear();
+    // temp_id_mhtdc_tof_s1s2.clear()
+    id_mhtdc_beta_s1s2.clear();
+    id_mhtdc_tof_s1s2.clear();
     // id_mhtdc_gamma_s1s2.clear();
     // id_mhtdc_delta_s1s2.clear();
-    // id_mhtdc_aoq_s1s2.clear();
-    // id_mhtdc_aoq_corr_s1s2.clear();
+    id_mhtdc_aoq_s1s2.clear();
+    id_mhtdc_aoq_corr_s1s2.clear();
     // id_mhtdc_v_cor_music21.clear();
-    // id_mhtdc_z_music21.clear();
-    // id_mhtdc_z_shifted_music21.clear();
+    id_mhtdc_z_music21.clear();
+    id_mhtdc_z_shifted_music21.clear();
     // id_mhtdc_v_cor_music22.clear();
     // id_mhtdc_z_music22.clear();
     // id_mhtdc_z_shifted_music22.clear();
+    s1x_mhtdc.clear();
+    s2x_s1s2_mhtdc.clear();
+    s2x_s2s4_mhtdc.clear();
+    s4x_mhtdc.clear();
 
     
     
