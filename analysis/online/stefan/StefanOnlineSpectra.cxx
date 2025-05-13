@@ -22,9 +22,14 @@
 
 StefanOnlineSpectra::StefanOnlineSpectra() : StefanOnlineSpectra("StefanOnlineSpectra")
 {
-
+    stefan_config = TStefanConfiguration::GetInstance();
 }
 
+StefanOnlineSpectra::StefanOnlineSpectra(std::vector<FrsGate*> fg) : StefanOnlineSpectra("StefanOnlineSpectra")
+{
+    stefan_config = TStefanConfiguration::GetInstance();
+    FrsGates = fg;
+}
 
 StefanOnlineSpectra::StefanOnlineSpectra(const TString& name, Int_t verbose)
     :   FairTask(name, verbose)
@@ -66,12 +71,13 @@ InitStatus StefanOnlineSpectra::Init()
     multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
     c4LOG_IF(warn, !multihitArray, "Branch FrsMultiHitData not found - no correlations with FRS (MHTDC) possible!");
 
-
     histograms = (TFolder*)mgr->GetObject("Histograms");
 
     TDirectory::TContext ctx(nullptr);
     dir_stefan = new TDirectory("Stefan", "Stefan", "", 0);
     histograms->Add(dir_stefan);
+
+    int num_frs_gates = FrsGates.size();
 
     int num_dssds = stefan_config->DSSDs();
     int n_sides = 2;
@@ -257,7 +263,12 @@ InitStatus StefanOnlineSpectra::Init()
 
     }
 
-   
+    // correlate with specific ions
+    if (num_frs_gates > 0)
+    {
+        dir_frs_gated = dir_corr->mkdir("FRS_Gated");
+        
+    }
 
     return kSUCCESS;
 
