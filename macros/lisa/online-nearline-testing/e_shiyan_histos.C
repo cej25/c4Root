@@ -15,7 +15,7 @@
 #define TRACE_ON 1
 
 #define FRS_ON 1
-#define FRS_LISA_CORRELATIONS 0
+#define FRS_LISA_CORRELATIONS 1
 
 #define WR_ENABLED 1
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
@@ -24,7 +24,7 @@
 extern "C"
 {
     //#include "../../../config/pareeksha/frs/setup_Fragment_conv_updated.C" //pareeksha data
-    #include "../../../config/shiyan/frs/setup/setup_103_002_2025_conv.C"
+    #include "../../../config/shiyan/frs/setup/setup_103_019_2025_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -63,8 +63,8 @@ void e_shiyan_histos()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // ::: P A T H   O F   F I L E  to read
-    TString inputpath = "/u/gandolfo/data/lustre/gamma/lisa_s092/trees/";
-    //TString inputpath = "/u/gandolfo/data/shiyan_1st_day/";
+    //TString inputpath = "/u/gandolfo/data/lustre/gamma/lisa_s092/trees/";
+    TString inputpath = "/u/gandolfo/data/shiyan_debug/";
 
     //TString filename = inputpath + "run_0003_0001_tree_v2.root";
     TString filename = inputpath + "run_0122_0001_tree.root";  
