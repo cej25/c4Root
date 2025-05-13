@@ -110,7 +110,7 @@ bool FrsGate::PassedS2S4(double Z41, double Z42, double x2, double x4, double Ao
     if (cut_sci42E_Z41 != nullptr) passed_gate_cut_sci42E_Z41 = cut_sci42E_Z41->IsInside(sci42E,Z41);
     else passed_gate_cut_sci42E_Z41 = true;
     
-    return (passed_gate_cut_Z41_AoQs2s4 && passed_gate_cut_Z41_Z42 && passed_gate_cut_x2_AoQs2s4 && passed_gate_cut_x4_AoQs2s4 && passed_gate_cut_dEdegZ41_Z41 && passed_gate_cut_sci42E_Z41);
+    return (passed_gate_cut_Z41_AoQs2s4 && passed_gate_cut_Z42_AoQs2s4 && passed_gate_cut_Z41_Z42 && passed_gate_cut_x2_AoQs2s4 && passed_gate_cut_x4_AoQs2s4 && passed_gate_cut_dEdegZ41_Z41 && passed_gate_cut_sci42E_Z41);
 
 }
 
@@ -152,12 +152,6 @@ bool FrsGate::PassedGate(/*double Z21,*/ double Z41, double Z42, double x2, doub
         passed_gate_cut_Z41_AoQs2s4 = cut_Z41_AoQs2s4->IsInside(AoQs2s4,Z41);
     }else{
         passed_gate_cut_Z41_AoQs2s4 = true;
-    }
-
-    if (cut_Z42_AoQs2s4 != nullptr) {
-        passed_gate_cut_Z42_AoQs2s4 = cut_Z42_AoQs2s4->IsInside(AoQs2s4,Z4);
-    }else{
-        passed_gate_cut_Z42_AoQs2s4 = true;
     }
 
     // if (cut_Z21_Z41 != nullptr) {

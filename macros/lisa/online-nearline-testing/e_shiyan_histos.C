@@ -149,31 +149,7 @@ void e_shiyan_histos()
         TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching.txt");
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD.txt");
         TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
-        
-
-        LisaGate* FebGate1 = new LisaGate("Febex_Gate1", "energy", config_path + "/lisa/Gates/Febex_Gate1shiyan.txt");
-        //LisaGate* FebGate2 = new LisaGate("Febex_Gate2", "energy", config_path + "/lisa/Febex_Gate1.txt");
-        //LisaGate* FebGate3 = new LisaGate("Febex_Gate3", "energy", config_path + "/lisa/Febex_Gate1.txt");
-
-        LisaGate* MWD_Gate1 = new LisaGate("MWD_Gate1", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate1shiyan.txt");
-        //LisaGate* MWD_Gate2 = new LisaGate("MWD_Gate2", "energy_mwd", config_path + "/lisa/MWD_Gate1.txt");
-        //LisaGate* MWD_Gate3 = new LisaGate("MWD_Gate3", "energy_mwd", config_path + "/lisa/MWD_Gate1.txt");
-
-        // LisaGate* MWD_Gate3 = new LisaGate("MWD_Gate3", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate3.txt");
-
-        lgs.emplace_back(FebGate1);
-        //lgs.emplace_back(FebGate2);
-        //lgs.emplace_back(FebGate3);
-
-        lgs.emplace_back(MWD_Gate1);
-        //lgs.emplace_back(MWD_Gate2);
-        //lgs.emplace_back(MWD_Gate3);
-
-        // TLisaConfiguration::SetExcludedChannels({
-        // std::make_tuple(1,0,0),
-        // std::make_tuple(2,0,0)
-        // });
-        
+                
 
     }
     if ( EXP )
@@ -184,10 +160,17 @@ void e_shiyan_histos()
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_threepoint_clust_MWD.txt");
         TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_shiyan_v0.txt");
 
-        LisaGate* Wide_F = new LisaGate("wide_feb", "energy", config_path + "/lisa/Gates/Febex_Gate1shiyan.txt");
-        LisaGate* Wide_M = new LisaGate("wide_mwd", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate1shiyan.txt");
-        lgs.emplace_back(Wide_F);
-        lgs.emplace_back(Wide_M);
+        LisaGate* Wide_F1 = new LisaGate("wide_feb_1", "energy", config_path + "/lisa/Gates/Febex_Gate1shiyan.txt");
+        LisaGate* Wide_M1 = new LisaGate("wide_mwd_1", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate1shiyan.txt");
+
+        LisaGate* Wide_F2 = new LisaGate("wide_feb_2", "energy", config_path + "/lisa/Gates/Febex_Gate1shiyan.txt");
+        LisaGate* Wide_M2 = new LisaGate("wide_mwd_2", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate1shiyan.txt");
+        lgs.emplace_back(Wide_F1);
+        lgs.emplace_back(Wide_F2);
+
+        lgs.emplace_back(Wide_M1);
+        lgs.emplace_back(Wide_M2);
+
 
         /*
         // for testing with pareeksha data
@@ -207,7 +190,8 @@ void e_shiyan_histos()
     //std::cout << "Run number: " << fileNumber << std::endl;
 
     //::::::::: Set experiment configurations
-    TExperimentConfiguration::SetExperimentStart(1746597600000000000); // Start for Shiyan data: May 7th, 8a.m. //including testing
+    TExperimentConfiguration::SetExperimentStart(1746684000000000000);
+    //TExperimentConfiguration::SetExperimentStart(1746597600000000000); // Start for Shiyan data: May 7th, 8a.m. //including testing
     //TExperimentConfiguration::SetExperimentStart(1715727045000000000); //Start of pareeksha with primary beam: 15 May 00:50
     //TExperimentConfiguration::SetExperimentStart(1746172830000000000);
 
@@ -221,11 +205,11 @@ void e_shiyan_histos()
     // ::: LISA
     //  Channel Energy ::::: (h1_energy_)
     TLisaConfiguration::SetEnergyRange(0,500); //(0,50000) shiyan
-    TLisaConfiguration::SetEnergyBin(200);
+    TLisaConfiguration::SetEnergyBin(500);
 
     //  MWD histos
     TLisaConfiguration::SetEnergyRangeMWD(0,500); //0,100 shiyan
-    TLisaConfiguration::SetEnergyBinMWD(200);
+    TLisaConfiguration::SetEnergyBinMWD(500);
 
     //  Traces Time and Amplitude Ranges 
     TLisaConfiguration::SetTracesRange(0,4);
@@ -241,7 +225,7 @@ void e_shiyan_histos()
     TLisaConfiguration::SetWrRateBin(3600);
 
     // Drift
-    TLisaConfiguration::SetDriftRange(0,5000);
+    TLisaConfiguration::SetDriftRange(0,10100);
 
     // :::: ENABLE SYSTEMS  ::::::::::::::::::::::::::::::::::::::::
     if(TRACE_ON)
