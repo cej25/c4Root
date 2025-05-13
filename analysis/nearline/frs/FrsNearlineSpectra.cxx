@@ -798,11 +798,14 @@ void FrsNearlineSpectra::Process_MHTDC()
     std::vector<Float_t> z43_mhtdc = multiHitItem.Get_ID_z43_mhtdc();
     std::vector<Float_t> dEdegoQ_mhtdc = multiHitItem.Get_ID_dEdegoQ_mhtdc();
     std::vector<Float_t> dEdeg_z41_mhtdc = multiHitItem.Get_ID_dEdeg_z41_mhtdc();
-    c4LOG(info, " cej");
+    
+    if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 ) return;
+
+
     // CEJ :: Process FRS Gate info here first.
     for (int gate = 0; gate < FrsGates.size(); gate++)
     {
-        if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 )break;
+        // if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 )break;
 
         for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
         {

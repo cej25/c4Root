@@ -320,7 +320,7 @@ void FrsCal2Hit::Exec(Option_t* option)
                         id_mhtdc_aoq_s1s2,
                         id_mhtdc_aoq_corr_s1s2,
                         id_mhtdc_z_music21,
-                        {}); // FIX
+                        id_mhtdc_z_music21); // CEJ  FIX
 
     // auto & multihitEntry = multihitArray->emplace_back();
     // multihitEntry.SetS1S2(s1x_mhtdc,
