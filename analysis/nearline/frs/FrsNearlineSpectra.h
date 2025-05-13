@@ -266,7 +266,9 @@ class FrsNearlineSpectra : public FairTask
     
         // MHTDC 2D
         TH2* h2_Z41_vs_AoQs2s4_mhtdc;
+        TH2* h2_Z42_vs_AoQs2s4_mhtdc;
         TH2* h2_Z41_vs_AoQs2s4_corr_mhtdc;
+        TH2* h2_Z42_vs_AoQs2s4_corr_mhtdc;
         TH2* h2_Z41_vs_Z42_mhtdc;
         TH2* h2_Z21_vs_AoQs1s2_mhtdc;
         TH2* h2_Z21_vs_AoQs1s2_corr_mhtdc;
@@ -319,6 +321,7 @@ class FrsNearlineSpectra : public FairTask
         std::vector<TH2*> h2_x1_vs_AoQs1s2_S1S2Gated_mhtdc;
         std::vector<TH2*> h2_x2_vs_AoQs1s2_S1S2Gated_mhtdc;
         std::vector<TH2*> h2_Z41_vs_AoQs2s4_S1S2Gated_mhtdc;
+        std::vector<TH2*> h2_Z42_vs_AoQs2s4_S1S2Gated_mhtdc;
         std::vector<TH2*> h2_Z41_vs_Z42_S1S2Gated_mhtdc;
         std::vector<TH2*> h2_x2_vs_AoQs2s4_S1S2Gated_mhtdc;
         std::vector<TH2*> h2_x4_vs_AoQs2s4_S1S2Gated_mhtdc;
@@ -330,6 +333,7 @@ class FrsNearlineSpectra : public FairTask
         std::vector<TH2*> h2_x1_vs_AoQs1s2_S2S4Gated_mhtdc;
         std::vector<TH2*> h2_x2_vs_AoQs1s2_S2S4Gated_mhtdc;
         std::vector<TH2*> h2_Z41_vs_AoQs2s4_S2S4Gated_mhtdc;
+        std::vector<TH2*> h2_Z42_vs_AoQs2s4_S2S4Gated_mhtdc;
         std::vector<TH2*> h2_Z41_vs_Z42_S2S4Gated_mhtdc;
         std::vector<TH2*> h2_x2_vs_AoQs2s4_S2S4Gated_mhtdc;
         std::vector<TH2*> h2_x4_vs_AoQs2s4_S2S4Gated_mhtdc;
@@ -342,6 +346,7 @@ class FrsNearlineSpectra : public FairTask
         std::vector<TH2*> h2_x1_vs_AoQs1s2_S1S2S4Gated_mhtdc;
         std::vector<TH2*> h2_x2_vs_AoQs1s2_S1S2S4Gated_mhtdc;
         std::vector<TH2*> h2_Z41_vs_AoQs2s4_S1S2S4Gated_mhtdc;
+        std::vector<TH2*> h2_Z42_vs_AoQs2s4_S1S2S4Gated_mhtdc;
         std::vector<TH2*> h2_Z41_vs_Z42_S1S2S4Gated_mhtdc;
         std::vector<TH2*> h2_x2_vs_AoQs2s4_S1S2S4Gated_mhtdc;
         std::vector<TH2*> h2_x4_vs_AoQs2s4_S1S2S4Gated_mhtdc;
