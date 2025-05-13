@@ -156,7 +156,7 @@ void g_hispec10_online()
     {
         H10MCPRaw2Cal* calmcp = new H10MCPRaw2Cal();
         
-        calmcp->SetOnline(false);
+        calmcp->SetOnline(true);
         run->AddTask(calmcp);
     }
 
@@ -188,7 +188,7 @@ void g_hispec10_online()
     {
         H10MCPCal2Ana* anamcp = new H10MCPCal2Ana();
         
-        anamcp->SetOnline(false);
+        anamcp->SetOnline(true);
         run->AddTask(anamcp);
     }
 

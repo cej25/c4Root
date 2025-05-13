@@ -6,6 +6,7 @@
 
 // c4
 #include "StefanHitData.h"
+#include "StefanCalData.h"
 #include "TStefanConfiguration.h"
 #include "H10MCPTwinpeaksAnaData.h"
 #include "FrsHitData.h"
@@ -69,6 +70,7 @@ class StefanOnlineSpectra : public FairTask
         TFrsConfiguration const* frs_config;
 
         std::vector<StefanHitItem> const* StefanHit; 
+        std::vector<StefanCalItem> const* calArray;
         TClonesArray* fHitsMCP;
         std::vector<FrsHitItem> const* hitArray;
         std::vector<FrsMultiHitItem> const* multihitArray;
@@ -97,6 +99,7 @@ class StefanOnlineSpectra : public FairTask
         TDirectory** dir_frs_z_stefan_dssds_strips;
         TDirectory* dir_frs_mcp;
         std::vector<std::vector<TDirectory*>> dir_raw;
+        std::vector<std::vector<TDirectory*>> dir_clusters;
         std::vector<TDirectory*> dir_pixel;
 	
 	
@@ -104,10 +107,13 @@ class StefanOnlineSpectra : public FairTask
         
         TCanvas* strips4_stefan;
 	
+	TH1* h1_test; // test histogram
+	std::vector<TH1*> h1_DSSSD_energy;
 	
 	
         std::vector<TH2*> h2_hit_strip_xy; // Hit pattern
         std::vector< std::vector<std::vector<TH1*>>> h1_raw_energy; // raw energy spectra
+        std::vector< std::vector<std::vector<TH1*>>> h1_energy_clusters; // raw energy spectra
         std::vector< std::vector<TH1*>> h1_pixel_energy; // energy per pixel spectra
 
         std::vector<TH2*> h2_mcp_tof_vs_e_dssd;
