@@ -1211,8 +1211,8 @@ void LisaFrsCorrelations::Exec(Option_t* option)
 {   
     // -> Reject events without both subsystems <-
     if (frsHitArray->size() <= 0 || lisaCalArray->size() <= 0) return;  // frs, lisa and travmus subevent exists
-
-    ncorr++;
+    
+    
 
     const auto & frsHitItem = frsHitArray->at(0);                       // *should* only be 1 FRS subevent per event
     const auto & multihitItem = multihitArray->at(0);                 // *should* only be 1 FRS subevent per event
@@ -1225,27 +1225,6 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     // ::: Total multiplicity of lisa
     int lisa_total_multiplicity = 0;
 
-    // ::: Positions
-    // //S2 Position x-y
-    // s2_x = frsHitItem.Get_ID_x2();
-    // s2_y = frsHitItem.Get_ID_y2();
-    // //c4LOG(info, "s2 x : " << s2_x << "s2 y : " << s2_y);
-
-    // ::: LISA energy
-    // std::vector<std::vector<float>> energy_layer(layer_number);
-    // energy_layer.resize(layer_number);
-
-    // std::vector<std::vector<float>> energy_MWD_layer(layer_number);
-    // energy_MWD_layer.resize(layer_number);
-
-    // ::: Energy gated - Layer
-
-    // std::vector<float> energy_layer_gated[gate_number][layer_number];
-    // std::vector<float> energy_MWD_layer_gated[mwd_gate_number][layer_number];
-
-    // ::: Energy gated - Channel
-    // std::vector<float> energy_xy_gated[gate_number][layer_number][xmax][ymax];
-    // std::vector<float> energy_MWD_xy_gated[mwd_gate_number][layer_number][xmax][ymax];
     //................
 
     // ::: MUSIC energies
@@ -1264,12 +1243,13 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     Float_t x4_position = frsHitItem.Get_ID_x4();
     Float_t sci42e = frsHitItem.Get_sci_e_42();
 
- 
-
+    if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 ) return;   // this is a quick fix to avoid getting any event with multihits (just pick 1)
+    ncorr++;
+    
     // CEJ :: Process FRS Gate info here first.
     for (int gate = 0; gate < FrsGates.size(); gate++)
     {
-        if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 )break;
+        if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 )break; // this is a quick fix to reject all the events with multihits
         for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
         {
             
