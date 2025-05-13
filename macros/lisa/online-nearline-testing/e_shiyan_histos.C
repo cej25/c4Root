@@ -24,7 +24,7 @@
 extern "C"
 {
     //#include "../../../config/pareeksha/frs/setup_Fragment_conv_updated.C" //pareeksha data
-    #include "../../../config/shiyan/frs/setup/setup_103_019_2025_conv.C"
+    #include "../../../config/shiyan/frs/setup/setup_103_016_2025_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -63,11 +63,11 @@ void e_shiyan_histos()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // ::: P A T H   O F   F I L E  to read
-    //TString inputpath = "/u/gandolfo/data/lustre/gamma/lisa_s092/trees/";
-    TString inputpath = "/u/gandolfo/data/shiyan_debug/";
+    TString inputpath = "/u/gandolfo/data/lustre/gamma/lisa_s092/trees/";
+    //TString inputpath = "/u/gandolfo/data/shiyan_debug/";
 
     //TString filename = inputpath + "run_0003_0001_tree_v2.root";
-    TString filename = inputpath + "run_0122_0001_tree.root";  
+    TString filename = inputpath + "run_0109_0001_tree.root";  
     //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  //FRS data with S2 PID
     
     // ::: O U T P U T
@@ -75,7 +75,7 @@ void e_shiyan_histos()
     //TString outputpath = "/u/gandolfo/data/test_c4/layer_alpha/";   //energy resolution output
     
     //TString outputFilename = outputpath + "run_0003_0001_histo_v2.root";
-    TString outputFilename = outputpath + "run_0122_0001_tree_histo_debug.root";
+    TString outputFilename = outputpath + "run_0109_0001_tree_histo_debug.root";
     //TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_histo_6May.root";     //FRS data with S2 PID
 
 
@@ -111,9 +111,12 @@ void e_shiyan_histos()
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: G A T E S - Initialise 
 
-    FrsGate* test = new FrsGate("AoQ2",config_path + "/frs/Gates/AoQ2.root");
+    FrsGate* Cr_1p = new FrsGate("Cr_1p",config_path + "/frs/Gates/Cr_1p_Z42.root");
+    FrsGate* Cr_1p1n = new FrsGate("Cr_1p1n",config_path + "/frs/Gates/Cr_1p1n_Z42.root");
+
     std::vector<FrsGate*> fgs = {};
-    fgs.emplace_back(test);
+    fgs.emplace_back(Cr_1p);
+    fgs.emplace_back(Cr_1p1n);
 
     // ::: GATES config for histos ::::::::
     //TFrsConfiguration::Set_dE_travMusic_gate(1940,2000);
@@ -181,10 +184,10 @@ void e_shiyan_histos()
         TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_threepoint_clust_MWD.txt");
         TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_shiyan_v0.txt");
 
-        LisaGate* FebGate1 = new LisaGate("Febex_Gate1", "energy", config_path + "/lisa/Gates/Febex_Gate1shiyan.txt");
-        LisaGate* MWD_Gate1 = new LisaGate("MWD_Gate1", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate1shiyan.txt");
-        lgs.emplace_back(FebGate1);
-        lgs.emplace_back(MWD_Gate1);
+        LisaGate* Wide_F = new LisaGate("wide_feb", "energy", config_path + "/lisa/Gates/Febex_Gate1shiyan.txt");
+        LisaGate* Wide_M = new LisaGate("wide_mwd", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate1shiyan.txt");
+        lgs.emplace_back(Wide_F);
+        lgs.emplace_back(Wide_M);
 
         /*
         // for testing with pareeksha data
