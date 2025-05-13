@@ -37,6 +37,7 @@ StefanOnlineSpectra::StefanOnlineSpectra(const TString& name, Int_t verbose)
     ,   header(nullptr)
     ,   fNEvents(0)
     ,   StefanHit(nullptr)
+    ,   calArray(nullptr)
 {
     stefan_config = TStefanConfiguration::GetInstance();
 
@@ -62,7 +63,10 @@ InitStatus StefanOnlineSpectra::Init()
     // stefan failure is fatal foe now, altough we could turn this into a complete "HISPEC10" task, and just make it a warning
     StefanHit = mgr->InitObjectAs<decltype(StefanHit)>("StefanHitData");
     c4LOG_IF(fatal, !StefanHit, "Branch StefanHitData not found - no correlations with Stefan possible!");
-
+	
+    calArray = mgr->InitObjectAs<decltype(calArray)>("StefanCalData");
+    c4LOG_IF(warn, !calArray, "Branch StefanCalData not found!");
+    
     // correlations
     fHitsMCP = (TClonesArray*)mgr->GetObject("H10MCPTwinpeaksAnaData");
     c4LOG_IF(warn, !fHitsMCP, "Branch H10MCPTwinpeaksAnaData not found - no correlations with MCPs possible!");
@@ -92,15 +96,18 @@ InitStatus StefanOnlineSpectra::Init()
     double max_energy= pow(10,7);
     h2_hit_strip_xy.resize(num_dssds);
     h1_raw_energy.resize(num_dssds); // h1_raw_energy[dssd#][side#][ch#]
+    h1_energy_clusters.resize(num_dssds); //[dssd#][side#][ch#]
     h1_pixel_energy.resize(num_dssds); // h1_pixel_energy[dssd#][pixel#]
     
-    
+    h1_test = MakeTH1(dir_stefan, "I", "h1_test", "h1_test", 10000, 0, max_energy, "E []", kSpring, kBlack);
     for (int i = 0; i < num_dssds; i++)
     {	
-	if(i==1) max_energy = pow(10,5);
-    	dir_raw[i].resize(n_sides);
+	//if(i==1) max_energy = pow(10,5);
+    	dir_raw[i].resize(n_sides*2);
     	dir_raw[i][0] = new TDirectory;
     	dir_raw[i][1] = new TDirectory;
+    	dir_raw[i][2] = new TDirectory;
+    	dir_raw[i][3] = new TDirectory;
     	
     	dir_pixel[i] = new TDirectory;
     	
@@ -108,19 +115,34 @@ InitStatus StefanOnlineSpectra::Init()
     	h1_raw_energy[i][0].resize(16);
     	h1_raw_energy[i][1].resize(16);
     	
+    	h1_energy_clusters[i].resize(2); //two sides
+    	h1_energy_clusters[i][0].resize(16);
+    	h1_energy_clusters[i][1].resize(16);
+    	
         dir_dssd[i] = dir_stefan->mkdir(Form("DSSD%i",i));
         dir_hits[i] = dir_dssd[i]->mkdir("Hits");
         h2_hit_strip_xy[i] = MakeTH2(dir_hits[i], "I", Form("h2_hit_strip_xy_dssd%d", i) , Form("XY Hit Pattern DSSD %d", i), 16, 0, 16, 16, 0, 16);
         
-	dir_raw[i][0] = dir_dssd[i]->mkdir("Raw_energy_vertical");
+        dir_raw[i][0] = dir_dssd[i]->mkdir("Raw_energy_vertical");
 	
         for(int j=0; j<16; ++j) { //vertical strips or stripY
         	h1_raw_energy[i][0][j] = MakeTH1(dir_raw[i][0], "I", Form("h1_raw_energy_det%i_vertical_strip%i", i, j), Form("Raw Energy - Det %i Vertical side - Strip %i", i, j), 10000, 0, max_energy, "E []", kCyan, kBlack);
         	}
-        
-	dir_raw[i][1] = dir_dssd[i]->mkdir("Raw_energy_horizontal");
+        	
+	dir_raw[i][1] = dir_dssd[i]->mkdir("Cluster_energy_vertical");
+	
+        for(int j=0; j<16; ++j) { //vertical strips or stripY
+        	h1_energy_clusters[i][0][j] = MakeTH1(dir_raw[i][1], "I", Form("h1_energy_clusters_det%i_vertical_strip%i", i, j), Form("Cluster Energy - Det %i Vertical side - Strip %i", i, j), 10000, 0, max_energy, "E []", kCyan, kBlack);
+        	}
+        	
+        dir_raw[i][2] = dir_dssd[i]->mkdir("Raw_energy_horizontal");
         for(int j=0; j<16; ++j) {//horizontal strips or stripX
-        	h1_raw_energy[i][1][j] = MakeTH1(dir_raw[i][1], "I", Form("h1_raw_energy_det%i_horizontal_strip%i", i, j), Form("Raw Energy - Det %i Horizontal side - Strip %i", i, j), 10000, 0, max_energy, "E []", kSpring, kBlack);
+        	h1_raw_energy[i][1][j] = MakeTH1(dir_raw[i][2], "I", Form("h1_raw_energy_det%i_horizontal_strip%i", i, j), Form("Raw Energy - Det %i Horizontal side - Strip %i", i, j), 10000, 0, max_energy, "E []", kSpring, kBlack);
+        	}
+        	
+	dir_raw[i][3] = dir_dssd[i]->mkdir("Cluster_energy_horizontal");
+        for(int j=0; j<16; ++j) {//horizontal strips or stripX
+        	h1_energy_clusters[i][1][j] = MakeTH1(dir_raw[i][3], "I", Form("h1_energy_clusters_det%i_horizontal_strip%i", i, j), Form("Cluster Energy - Det %i Horizontal side - Strip %i", i, j), 10000, 0, max_energy, "E []", kSpring, kBlack);
         	}
         
         dir_pixel[i] = dir_dssd[i]->mkdir("Pixels_energy");
@@ -194,7 +216,6 @@ InitStatus StefanOnlineSpectra::Init()
             }
         }
     }
-
 
     if (multihitArray)
     {
@@ -304,8 +325,8 @@ void StefanOnlineSpectra::Exec(Option_t* option)
         // if (hit.ClusterSizeY > 1) std::cout << "ClusterSizeY > 1! :: Size =  " << hit.ClusterSizeY << std::endl;
 
         h2_hit_strip_xy[hit.DSSD]->Fill(hit.StripX, hit.StripY);
-        h1_raw_energy[hit.DSSD][0][hit.StripY]->Fill(hit.Energy);
-        h1_raw_energy[hit.DSSD][1][hit.StripX]->Fill(hit.Energy);
+        h1_energy_clusters[hit.DSSD][0][hit.StripY]->Fill(hit.Energy);
+        h1_energy_clusters[hit.DSSD][1][hit.StripX]->Fill(hit.Energy);
         h1_pixel_energy[hit.DSSD][hit.StripX+ 16*hit.StripY]->Fill(hit.Energy);
 
         // Stefan vs FRS
@@ -338,19 +359,41 @@ void StefanOnlineSpectra::Exec(Option_t* option)
         }
 
         // Stefan vs MCP
-        for (int ihit = 0; ihit < fHitsMCP->GetEntriesFast(); ihit++) 
+   /*     for (int ihit = 0; ihit < fHitsMCP->GetEntriesFast(); ihit++) 
         {
             H10MCPTwinpeaksAnaData* mcphit = (H10MCPTwinpeaksAnaData*)fHitsMCP->At(ihit);
-            if (!mcphit) return;
+            if (!mcphit) break;
             
             h2_mcp_tof_vs_e_dssd[hit.DSSD]->Fill(mcphit->T2-mcphit->T1, hit.Energy);
             h2_mcp_tof_vs_e_vertical_strip[hit.DSSD][hit.StripY]->Fill(mcphit->T2-mcphit->T1, hit.Energy);
             h2_mcp_tof_vs_e_horizontal_strip[hit.DSSD][hit.StripX]->Fill(mcphit->T2-mcphit->T1, hit.Energy);
 
-        }
+        }*/
     }
 
-
+	// STEFAN data before clustering
+   if (calArray->size() > 0) { 
+    
+    	for (auto const & cHit : *calArray) {
+ 	   	if (cHit.DSSD == -1 || cHit.Side==-1 || cHit.Strip==-1) continue;
+ 	   	
+ 	   	//h1_test->Fill(cHit.Energy);
+ 	   	//std::cout << cHit.DSSD << "\t" << cHit.Side << "\t" << cHit.Strip << "\t" << cHit.Energy << std::endl;
+ 	   	h1_raw_energy[cHit.DSSD][cHit.Side][cHit.Strip]->Fill(cHit.Energy);
+ 		
+    		
+	    	// Stefan vs MCP
+		for (int ihit = 0; ihit < fHitsMCP->GetEntriesFast(); ihit++) 
+			{
+			    H10MCPTwinpeaksAnaData* mcphit = (H10MCPTwinpeaksAnaData*)fHitsMCP->At(ihit);
+			    if (!mcphit) break;
+			    
+			    h2_mcp_tof_vs_e_dssd[cHit.DSSD]->Fill(mcphit->T2-mcphit->T1, cHit.Energy);
+			    if(cHit.Side==0) h2_mcp_tof_vs_e_vertical_strip[cHit.DSSD][cHit.Strip]->Fill(mcphit->T2-mcphit->T1, cHit.Energy);
+			    if(cHit.Side==1) h2_mcp_tof_vs_e_horizontal_strip[cHit.DSSD][cHit.Strip]->Fill(mcphit->T2-mcphit->T1, cHit.Energy);
+			}
+		}
+    	}
 
     // MCP vs FRS
     if (multihitArray && fHitsMCP)
@@ -377,7 +420,12 @@ void StefanOnlineSpectra::Exec(Option_t* option)
             }
         }
     }
+	
+	
+	
 
+    
+    
 
     fNEvents++;
     auto end = std::chrono::high_resolution_clock::now();
