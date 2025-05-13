@@ -15,7 +15,7 @@
 #define TRACE_ON 1
 
 #define FRS_ON 1
-#define FRS_LISA_CORRELATIONS 1
+#define FRS_LISA_CORRELATIONS 0
 
 #define WR_ENABLED 1
 #define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
@@ -67,7 +67,7 @@ void e_shiyan_histos()
     //TString inputpath = "/u/gandolfo/data/shiyan_1st_day/";
 
     //TString filename = inputpath + "run_0003_0001_tree_v2.root";
-    TString filename = inputpath + "run_0040_0001_tree.root";  
+    TString filename = inputpath + "run_0122_0001_tree.root";  
     //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  //FRS data with S2 PID
     
     // ::: O U T P U T
@@ -75,7 +75,7 @@ void e_shiyan_histos()
     //TString outputpath = "/u/gandolfo/data/test_c4/layer_alpha/";   //energy resolution output
     
     //TString outputFilename = outputpath + "run_0003_0001_histo_v2.root";
-    TString outputFilename = outputpath + "run_0040_0001_tree_histo_debug_v5.root";
+    TString outputFilename = outputpath + "run_0122_0001_tree_histo_debug.root";
     //TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_histo_6May.root";     //FRS data with S2 PID
 
 
