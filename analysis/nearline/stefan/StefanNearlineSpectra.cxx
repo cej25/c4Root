@@ -62,8 +62,10 @@ InitStatus StefanNearlineSpectra::Init()
     c4LOG_IF(warn, !multihitArray, "Branch FrsMultiHitData not found - no correlations with FRS (MHTDC) possible!");
 
 
-    TDirectory::TContext ctx(nullptr);
-    dir_stefan = new TDirectory("Stefan", "Stefan", "", 0);
+    TDirectory* tmp = gDirectory;
+    FairRootManager::Instance()->GetOutFile()->cd();
+    dir_stefan = gDirectory->mkdir("Stefan");
+    gDirectory->cd("Stefan");
 
 
     int num_dssds = stefan_config->DSSDs();

@@ -25,11 +25,11 @@ StefanOnlineSpectra::StefanOnlineSpectra() : StefanOnlineSpectra("StefanOnlineSp
     stefan_config = TStefanConfiguration::GetInstance();
 }
 
-// StefanOnlineSpectra::StefanOnlineSpectra(std::vector<FrsGate*> fg) : StefanOnlineSpectra("StefanOnlineSpectra")
-// {
-//     stefan_config = TStefanConfiguration::GetInstance();
-//     FrsGates = fg;
-// }
+StefanOnlineSpectra::StefanOnlineSpectra(std::vector<FrsGate*> fg) : StefanOnlineSpectra("StefanOnlineSpectra")
+{
+    stefan_config = TStefanConfiguration::GetInstance();
+    FrsGates = fg;
+}
 
 StefanOnlineSpectra::StefanOnlineSpectra(const TString& name, Int_t verbose)
     :   FairTask(name, verbose)
@@ -81,7 +81,7 @@ InitStatus StefanOnlineSpectra::Init()
     dir_stefan = new TDirectory("Stefan", "Stefan", "", 0);
     histograms->Add(dir_stefan);
 
-    // int num_frs_gates = FrsGates.size();
+    num_frs_gates = FrsGates.size();
 
     int num_dssds = stefan_config->DSSDs();
     int n_sides = 2;
@@ -215,6 +215,53 @@ InitStatus StefanOnlineSpectra::Init()
                 h2_mcp_tof_vs_e_horizontal_strip[i][j] = MakeTH2(dir_mcp_stefan_dssds_strips[i], "D", Form("h2_mcp_tof_vs_e_dssd_%i_horizontal_strip_%i", i, j), Form("MCP TOF vs DSSD %i Horizontal Strip %i E", i, j), 1000, -100, 100, 750, 0, 5000000);
             }
         }
+
+        // Same as above gated on FRS
+        // if (num_frs_gates > 0)
+        // {
+        //     dir_frs_gated = dir_mcp_stefan->mkdir("FRS_Gated");
+        //     dir_frs_gates = new TDirectory*[num_frs_gates];
+        //     dir_frs_gated_dssds = new TDirectory**[num_frs_gates];
+        //     dir_frs_gated_dssds_strips = new TDirectory**[num_frs_gates];
+
+        //     h2_mcp_tof_vs_e_dssd_gated.resize(num_frs_gates);
+        //     h2_mcp_tof_vs_e_vertical_strip_gated.resize(num_frs_gates);
+        //     h2_mcp_tof_vs_e_horizontal_strip_gated.resize(num_frs_gates);
+
+
+        //     for (int gate = 0; gate < num_frs_gates; gate++)
+        //     {
+        //         std::string gname = "" + FrsGates.at(gate)->GetName();
+        //         dir_frs_gates[gate] = dir_frs_gated->mkdir(gname.c_str());
+        //         dir_frs_gated_dssds[gate] = new TDirectory*[num_dssds];
+        //         dir_frs_gated_dssds_strips[gate] = new TDirectory*[num_dssds];
+
+        //         h2_mcp_tof_vs_e_dssd_gated[gate].resize(num_dssds);
+        //         h2_mcp_tof_vs_e_vertical_strip_gated[gate].resize(num_dssds);
+        //         h2_mcp_tof_vs_e_horizontal_strip_gated[gate].resize(num_dssds);
+
+        //         for (int d = 0; d < num_dssds; d++)
+        //         {
+        //             dir_frs_gated_dssds[gate][d] = dir_frs_gated_dssds[gate]->mkdir(Form("DSSD%i", d));
+        //             dir_frs_gated_dssds_strips[gate][d] = dir_frs_gated_dssds_strips[gate]->mkdir("Strips");
+
+        //             h2_mcp_tof_vs_e_dssd_gated[gate][d] = MakeTH2(dir_frs_gated_dssds[gate][d], "F", Form("h2_mcp_tof_vs_e_dssd_%i_gated_%s", d, gname.c_str()), Form("MCP TOF vs DSSD %i E - S2S4 Gate: %s", d, gname.c_str()), );
+
+        //             h2_mcp_tof_vs_e_vertical_strip_gated[gate][d].resize(16);
+        //             h2_mcp_tof_vs_e_horizontal_strip_gated[gate][d].resize(16);
+        //             for (int s = 0; s < 16; s++)
+        //             {
+        //                 h2_mcp_tof_vs_e_vertical_strip_gated[gate][d][s] = MakeTH2(dir_frs_gated_dssds_strips[gate][d], "F", Form(), Form(), );
+        //                 h2_mcp_tof_vs_e_horizontal_strip_gated[gate][d][s] = MakeTH2(dir_frs_gated_dssds_strips[gate][d], "F", Form(), Form(), );
+        //             }
+                  
+        //         }
+
+                
+        //     }
+
+        // }
+
     }
 
     if (multihitArray)
@@ -283,13 +330,6 @@ InitStatus StefanOnlineSpectra::Init()
         
 
     }
-
-    // correlate with specific ions
-    // if (num_frs_gates > 0)
-    // {
-    //     dir_frs_gated = dir_corr->mkdir("FRS_Gated");
-
-    // }
 
     return kSUCCESS;
 
