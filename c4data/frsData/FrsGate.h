@@ -22,6 +22,7 @@ class FrsGate
 
         bool PassedS2S4(double Z41, double Z42, double x2, double x4, double AoQs2S4, double dEdegZ41, double sci42E);
         bool Passed_Z41vsAoQs2s4(double Z41, double AoQs2s4); //
+        bool Passed_Z42vsAoQs2s4(double Z42, double AoQs2s4); //
         bool Passed_x2vsAoQs2s4(double x2, double AoQs2s4);
         bool Passed_x4vsAoQs2s4(double x4, double AoQs2s4);
         bool Passed_dEdegZ41vsZ41(double Z41, double dEdegZ41);
@@ -36,6 +37,8 @@ class FrsGate
         bool cut_x2vsAoQs1s2_exists() {  return cut_x2_AoQs1s2 != nullptr; } 
 
         bool cut_Z41vsAoQs2s4_exists() {  return cut_Z41_AoQs2s4 != nullptr; } 
+        bool cut_Z42vsAoQs2s4_exists() {  return cut_Z42_AoQs2s4 != nullptr; } 
+
         bool cut_Z41vsZ42_exists() {  return cut_Z41_Z42 != nullptr; }
         bool cut_x2vsAoQs2s4_exists() {  return cut_x2_AoQs2s4 != nullptr; } 
         bool cut_x4vsAoQs2s4_exists() {  return cut_x4_AoQs2s4 != nullptr; } 
@@ -52,6 +55,7 @@ class FrsGate
         TCutG* cut_x2_AoQs1s2;
 
         TCutG* cut_Z41_AoQs2s4; 
+        TCutG* cut_Z42_AoQs2s4;
         TCutG* cut_Z41_Z42;
         TCutG* cut_x2_AoQs2s4;
         TCutG* cut_x4_AoQs2s4;

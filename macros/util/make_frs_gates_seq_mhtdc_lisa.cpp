@@ -1,10 +1,11 @@
 
-bool Gate_Z21_AoQs1s2(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, bool  bool_Z21_Z41, bool  bool_x2_AoQs2s4, bool  bool_x4_AoQs2s4, bool  bool_x2_AoQs1s2, bool bool_dEdeg_Z){
+bool Gate_Z21_AoQs1s2(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4,bool bool_Z42_AoQs2s4, bool  bool_Z21_Z41, bool  bool_x2_AoQs2s4, bool  bool_x4_AoQs2s4, bool  bool_x2_AoQs1s2, bool bool_dEdeg_Z){
     
     TString cuts;
 
     if (bool_Z21_AoQs1s2) cuts = cuts + "cut_Z21_AoQs1s2 && ";
     if (bool_Z41_AoQs2s4) cuts = cuts + "cut_Z41_AoQs2s4 && ";
+    if (bool_Z42_AoQs2s4) cuts = cuts + "cut_Z42_AoQs2s4 && ";
     if (bool_Z21_Z41) cuts = cuts + "cut_Z21_Z41 && ";
     if (bool_x2_AoQs2s4) cuts = cuts + "cut_x2_AoQs2s4 && ";
     if (bool_x4_AoQs2s4) cuts = cuts + "cut_x4_AoQs2s4 && ";
@@ -36,12 +37,13 @@ bool Gate_Z21_AoQs1s2(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4,
     }
 }
 
-bool Gate_Z41_AoQs2s4(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, bool  bool_Z21_Z41, bool  bool_x2_AoQs2s4, bool  bool_x4_AoQs2s4, bool  bool_x2_AoQs1s2, bool bool_dEdeg_Z){
+bool Gate_Z41_AoQs2s4(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4,bool bool_Z42_AoQs2s4, bool  bool_Z21_Z41, bool  bool_x2_AoQs2s4, bool  bool_x4_AoQs2s4, bool  bool_x2_AoQs1s2, bool bool_dEdeg_Z){
     
     TString cuts;
 
     if (bool_Z21_AoQs1s2) cuts = cuts + "cut_Z21_AoQs1s2 && ";
     if (bool_Z41_AoQs2s4) cuts = cuts + "cut_Z41_AoQs2s4 && ";
+    if (bool_Z42_AoQs2s4) cuts = cuts + "cut_Z42_AoQs2s4 && ";
     if (bool_Z21_Z41) cuts = cuts + "cut_Z21_Z41 && ";
     if (bool_x2_AoQs2s4) cuts = cuts + "cut_x2_AoQs2s4 && ";
     if (bool_x4_AoQs2s4) cuts = cuts + "cut_x4_AoQs2s4 && ";
@@ -75,12 +77,53 @@ bool Gate_Z41_AoQs2s4(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4,
     }
 };
 
-bool Gate_Z21_Z41(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, bool  bool_Z21_Z41, bool  bool_x2_AoQs2s4, bool  bool_x4_AoQs2s4, bool  bool_x2_AoQs1s2, bool bool_dEdeg_Z){
+bool Gate_Z42_AoQs2s4(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4,bool bool_Z42_AoQs2s4, bool  bool_Z21_Z41, bool  bool_x2_AoQs2s4, bool  bool_x4_AoQs2s4, bool  bool_x2_AoQs1s2, bool bool_dEdeg_Z){
     
     TString cuts;
 
     if (bool_Z21_AoQs1s2) cuts = cuts + "cut_Z21_AoQs1s2 && ";
     if (bool_Z41_AoQs2s4) cuts = cuts + "cut_Z41_AoQs2s4 && ";
+    if (bool_Z42_AoQs2s4) cuts = cuts + "cut_Z42_AoQs2s4 && ";
+    if (bool_Z21_Z41) cuts = cuts + "cut_Z21_Z41 && ";
+    if (bool_x2_AoQs2s4) cuts = cuts + "cut_x2_AoQs2s4 && ";
+    if (bool_x4_AoQs2s4) cuts = cuts + "cut_x4_AoQs2s4 && ";
+    if (bool_x2_AoQs1s2) cuts = cuts + "cut_x2_AoQs1s2 && ";
+    if (bool_dEdeg_Z) cuts = cuts + "cut_dEdeg_Z && ";
+
+    if (cuts.EndsWith(" && ")) cuts = cuts(0,cuts.Length()-4);
+    std::cout << "Drawing with the condition: " << cuts << std::endl;
+    
+
+    evt->Draw("FrsMultiHitData.fID_z42_mhtdc:FrsMultiHitData.fID_AoQ_corr_s2s4_mhtdc>>h2_Z42_vs_AoQs2s4(2000,1,4,2000,0,70)",cuts);
+    
+    TH2F * h2_Z42_vs_AoQs2s4 = (TH2F*)gROOT->FindObject("h2_Z42_vs_AoQs2s4");
+    
+    h2_Z42_vs_AoQs2s4->SetTitle("Draw Z(42) vs. AoQ(S2S4) MHTDC gate.");
+    h2_Z42_vs_AoQs2s4->Draw("COLZ");
+    gPad->WaitPrimitive("CUTG");
+    TCutG * cut_Z42_AoQs2s4 = (TCutG*)gROOT->FindObject("CUTG");
+    if (cut_Z42_AoQs2s4 == nullptr){
+        std::cout << "No Z(42) vs AoQ(S2S4) gate given. Continuing." << std::endl;
+        return false;
+    }else{
+        cut_Z42_AoQs2s4 = (TCutG*)cut_Z42_AoQs2s4->Clone("cut_Z42_AoQs2s4");
+        gROOT->FindObject("CUTG")->Delete();
+
+        cut_Z42_AoQs2s4->SetVarY("FrsMultiHitData.fID_z42_mhtdc");
+        cut_Z42_AoQs2s4->SetVarX("FrsMultiHitData.fID_AoQ_corr_s2s4_mhtdc");
+        //return true;
+        std::cout << "Created gate: " << cut_Z42_AoQs2s4->GetName() << std::endl;
+        return true;
+    }
+};
+
+bool Gate_Z21_Z41(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4,bool bool_Z42_AoQs2s4, bool  bool_Z21_Z41, bool  bool_x2_AoQs2s4, bool  bool_x4_AoQs2s4, bool  bool_x2_AoQs1s2, bool bool_dEdeg_Z){
+    
+    TString cuts;
+
+    if (bool_Z21_AoQs1s2) cuts = cuts + "cut_Z21_AoQs1s2 && ";
+    if (bool_Z41_AoQs2s4) cuts = cuts + "cut_Z41_AoQs2s4 && ";
+    if (bool_Z42_AoQs2s4) cuts = cuts + "cut_Z42_AoQs2s4 && ";
     if (bool_Z21_Z41) cuts = cuts + "cut_Z21_Z41 && ";
     if (bool_x2_AoQs2s4) cuts = cuts + "cut_x2_AoQs2s4 && ";
     if (bool_x4_AoQs2s4) cuts = cuts + "cut_x4_AoQs2s4 && ";
@@ -114,12 +157,13 @@ bool Gate_Z21_Z41(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, boo
 }
 
 
-bool Gate_x2_AoQs2s4(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, bool  bool_Z21_Z41, bool  bool_x2_AoQs2s4, bool  bool_x4_AoQs2s4, bool  bool_x2_AoQs1s2, bool bool_dEdeg_Z){
+bool Gate_x2_AoQs2s4(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4,bool bool_Z42_AoQs2s4, bool  bool_Z21_Z41, bool  bool_x2_AoQs2s4, bool  bool_x4_AoQs2s4, bool  bool_x2_AoQs1s2, bool bool_dEdeg_Z){
     
     TString cuts;
 
     if (bool_Z21_AoQs1s2) cuts = cuts + "cut_Z21_AoQs1s2 && ";
     if (bool_Z41_AoQs2s4) cuts = cuts + "cut_Z41_AoQs2s4 && ";
+    if (bool_Z42_AoQs2s4) cuts = cuts + "cut_Z42_AoQs2s4 && ";
     if (bool_Z21_Z41) cuts = cuts + "cut_Z21_Z41 && ";
     if (bool_x2_AoQs2s4) cuts = cuts + "cut_x2_AoQs2s4 && ";
     if (bool_x4_AoQs2s4) cuts = cuts + "cut_x4_AoQs2s4 && ";
@@ -152,12 +196,13 @@ bool Gate_x2_AoQs2s4(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, 
     }
 }
 
-bool Gate_x4_AoQs2s4(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, bool  bool_Z21_Z41, bool  bool_x2_AoQs2s4, bool  bool_x4_AoQs2s4, bool  bool_x2_AoQs1s2, bool bool_dEdeg_Z){
+bool Gate_x4_AoQs2s4(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4,bool bool_Z42_AoQs2s4, bool  bool_Z21_Z41, bool  bool_x2_AoQs2s4, bool  bool_x4_AoQs2s4, bool  bool_x2_AoQs1s2, bool bool_dEdeg_Z){
     
     TString cuts;
 
     if (bool_Z21_AoQs1s2) cuts = cuts + "cut_Z21_AoQs1s2 && ";
     if (bool_Z41_AoQs2s4) cuts = cuts + "cut_Z41_AoQs2s4 && ";
+    if (bool_Z42_AoQs2s4) cuts = cuts + "cut_Z42_AoQs2s4 && ";
     if (bool_Z21_Z41) cuts = cuts + "cut_Z21_Z41 && ";
     if (bool_x2_AoQs2s4) cuts = cuts + "cut_x2_AoQs2s4 && ";
     if (bool_x4_AoQs2s4) cuts = cuts + "cut_x4_AoQs2s4 && ";
@@ -190,12 +235,13 @@ bool Gate_x4_AoQs2s4(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, 
     }
 }
 
-bool Gate_x2_AoQs1s2(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, bool  bool_Z21_Z41, bool  bool_x2_AoQs2s4, bool  bool_x4_AoQs2s4, bool  bool_x2_AoQs1s2, bool bool_dEdeg_Z){
+bool Gate_x2_AoQs1s2(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4,bool bool_Z42_AoQs2s4, bool  bool_Z21_Z41, bool  bool_x2_AoQs2s4, bool  bool_x4_AoQs2s4, bool  bool_x2_AoQs1s2, bool bool_dEdeg_Z){
     
     TString cuts;
 
     if (bool_Z21_AoQs1s2) cuts = cuts + "cut_Z21_AoQs1s2 && ";
     if (bool_Z41_AoQs2s4) cuts = cuts + "cut_Z41_AoQs2s4 && ";
+    if (bool_Z42_AoQs2s4) cuts = cuts + "cut_Z42_AoQs2s4 && ";
     if (bool_Z21_Z41) cuts = cuts + "cut_Z21_Z41 && ";
     if (bool_x2_AoQs2s4) cuts = cuts + "cut_x2_AoQs2s4 && ";
     if (bool_x4_AoQs2s4) cuts = cuts + "cut_x4_AoQs2s4 && ";
@@ -228,12 +274,13 @@ bool Gate_x2_AoQs1s2(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, 
     }
 }
 
-bool Gate_x4_AoQs1s2(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, bool  bool_Z21_Z41, bool  bool_x2_AoQs2s4, bool  bool_x4_AoQs2s4, bool  bool_x2_AoQs1s2, bool bool_dEdeg_Z){
+bool Gate_x4_AoQs1s2(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4,bool bool_Z42_AoQs2s4, bool  bool_Z21_Z41, bool  bool_x2_AoQs2s4, bool  bool_x4_AoQs2s4, bool  bool_x2_AoQs1s2, bool bool_dEdeg_Z){
     
     TString cuts;
 
     if (bool_Z21_AoQs1s2) cuts = cuts + "cut_Z21_AoQs1s2 && ";
     if (bool_Z41_AoQs2s4) cuts = cuts + "cut_Z41_AoQs2s4 && ";
+    if (bool_Z42_AoQs2s4) cuts = cuts + "cut_Z42_AoQs2s4 && ";
     if (bool_Z21_Z41) cuts = cuts + "cut_Z21_Z41 && ";
     if (bool_x2_AoQs2s4) cuts = cuts + "cut_x2_AoQs2s4 && ";
     if (bool_x4_AoQs2s4) cuts = cuts + "cut_x4_AoQs2s4 && ";
@@ -266,12 +313,13 @@ bool Gate_x4_AoQs1s2(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, 
     }
 }
 
-bool Gate_dEdeg_Z(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4, bool  bool_Z21_Z41, bool  bool_x2_AoQs2s4, bool  bool_x4_AoQs2s4, bool  bool_x2_AoQs1s2, bool bool_dEdeg_Z){
+bool Gate_dEdeg_Z(TTree * evt, bool bool_Z21_AoQs1s2, bool bool_Z41_AoQs2s4,bool bool_Z42_AoQs2s4, bool  bool_Z21_Z41, bool  bool_x2_AoQs2s4, bool  bool_x4_AoQs2s4, bool  bool_x2_AoQs1s2, bool bool_dEdeg_Z){
     
     TString cuts;
 
     if (bool_Z21_AoQs1s2) cuts = cuts + "cut_Z21_AoQs1s2 && ";
     if (bool_Z41_AoQs2s4) cuts = cuts + "cut_Z41_AoQs2s4 && ";
+    if (bool_Z42_AoQs2s4) cuts = cuts + "cut_Z42_AoQs2s4 && ";
     if (bool_Z21_Z41) cuts = cuts + "cut_Z21_Z41 && ";
     if (bool_x2_AoQs2s4) cuts = cuts + "cut_x2_AoQs2s4 && ";
     if (bool_x4_AoQs2s4) cuts = cuts + "cut_x4_AoQs2s4 && ";
@@ -321,6 +369,7 @@ void make_frs_gates_seq_mhtdc_lisa(TString infilename){
 
     bool bool_Z21_AoQs1s2 = false;
     bool bool_Z41_AoQs2s4 = false;
+    bool bool_Z42_AoQs2s4 = false;
     bool bool_Z21_Z41 = false;
     bool bool_x2_AoQs2s4 = false;
     bool bool_x4_AoQs2s4 = false;
@@ -335,31 +384,34 @@ void make_frs_gates_seq_mhtdc_lisa(TString infilename){
     bool making_gates = true;
     while (making_gates){
         int gate;
-        std::cout << "Please choose parameters to gate - (1) Z(21) vs AoQ(S1S2), (2) Z(41) vs AoQ(S2S4), (3) Z21 vs Z41, (4) x2 vs AoQs2s4, (5) x4 vs AoQs2s4, (6) x2 vs AoQs1s2 ,(7) dEdeg vs Z41 :" << std::endl;
+        std::cout << "Please choose parameters to gate - (1) Z(21) vs AoQ(S1S2), (2) Z(41) vs AoQ(S2S4), (3) Z(42) vs AoQ(S2S4), (4) Z21 vs Z41, (5) x2 vs AoQs2s4, (6) x4 vs AoQs2s4, (7) x2 vs AoQs1s2 ,(8) dEdeg vs Z41 :" << std::endl;
 
         std::cin >> gate;
 
         switch (gate){
             case 1:
-                bool_Z21_AoQs1s2 = Gate_Z21_AoQs1s2(evt, bool_Z21_AoQs1s2, bool_Z41_AoQs2s4, bool_Z21_Z41, bool_x2_AoQs2s4, bool_x4_AoQs2s4,  bool_x2_AoQs1s2, bool_dEdeg_Z);
+                bool_Z21_AoQs1s2 = Gate_Z21_AoQs1s2(evt, bool_Z21_AoQs1s2, bool_Z41_AoQs2s4, bool_Z42_AoQs2s4, bool_Z21_Z41, bool_x2_AoQs2s4, bool_x4_AoQs2s4,  bool_x2_AoQs1s2, bool_dEdeg_Z);
             break;
             case 2:
-                bool_Z41_AoQs2s4 = Gate_Z41_AoQs2s4(evt, bool_Z21_AoQs1s2, bool_Z41_AoQs2s4, bool_Z21_Z41, bool_x2_AoQs2s4, bool_x4_AoQs2s4,  bool_x2_AoQs1s2, bool_dEdeg_Z);
+                bool_Z41_AoQs2s4 = Gate_Z41_AoQs2s4(evt, bool_Z21_AoQs1s2, bool_Z41_AoQs2s4, bool_Z42_AoQs2s4, bool_Z21_Z41, bool_x2_AoQs2s4, bool_x4_AoQs2s4,  bool_x2_AoQs1s2, bool_dEdeg_Z);
             break;
             case 3:
-                bool_Z21_Z41 = Gate_Z21_Z41(evt, bool_Z21_AoQs1s2, bool_Z41_AoQs2s4, bool_Z21_Z41, bool_x2_AoQs2s4, bool_x4_AoQs2s4,  bool_x2_AoQs1s2, bool_dEdeg_Z);
+                bool_Z42_AoQs2s4 = Gate_Z42_AoQs2s4(evt, bool_Z21_AoQs1s2, bool_Z41_AoQs2s4, bool_Z42_AoQs2s4, bool_Z21_Z41, bool_x2_AoQs2s4, bool_x4_AoQs2s4,  bool_x2_AoQs1s2, bool_dEdeg_Z);
             break;
             case 4:
-                bool_x2_AoQs2s4 = Gate_x2_AoQs2s4(evt, bool_Z21_AoQs1s2, bool_Z41_AoQs2s4, bool_Z21_Z41, bool_x2_AoQs2s4, bool_x4_AoQs2s4,  bool_x2_AoQs1s2, bool_dEdeg_Z);
+                bool_Z21_Z41 = Gate_Z21_Z41(evt, bool_Z21_AoQs1s2, bool_Z41_AoQs2s4, bool_Z42_AoQs2s4, bool_Z21_Z41, bool_x2_AoQs2s4, bool_x4_AoQs2s4,  bool_x2_AoQs1s2, bool_dEdeg_Z);
             break;
             case 5:
-                bool_x4_AoQs2s4 = Gate_x4_AoQs2s4(evt, bool_Z21_AoQs1s2, bool_Z41_AoQs2s4, bool_Z21_Z41, bool_x2_AoQs2s4, bool_x4_AoQs2s4,  bool_x2_AoQs1s2, bool_dEdeg_Z);
+                bool_x2_AoQs2s4 = Gate_x2_AoQs2s4(evt, bool_Z21_AoQs1s2, bool_Z41_AoQs2s4, bool_Z42_AoQs2s4, bool_Z21_Z41, bool_x2_AoQs2s4, bool_x4_AoQs2s4,  bool_x2_AoQs1s2, bool_dEdeg_Z);
             break;
             case 6:
-                bool_x2_AoQs1s2 = Gate_x2_AoQs1s2(evt, bool_Z21_AoQs1s2, bool_Z41_AoQs2s4, bool_Z21_Z41, bool_x2_AoQs2s4, bool_x4_AoQs2s4,  bool_x2_AoQs1s2, bool_dEdeg_Z);
+                bool_x4_AoQs2s4 = Gate_x4_AoQs2s4(evt, bool_Z21_AoQs1s2, bool_Z41_AoQs2s4, bool_Z42_AoQs2s4, bool_Z21_Z41, bool_x2_AoQs2s4, bool_x4_AoQs2s4,  bool_x2_AoQs1s2, bool_dEdeg_Z);
             break;
             case 7:
-                bool_dEdeg_Z  = Gate_dEdeg_Z(evt, bool_Z21_AoQs1s2, bool_Z41_AoQs2s4, bool_Z21_Z41, bool_x2_AoQs2s4, bool_x4_AoQs2s4,  bool_x2_AoQs1s2, bool_dEdeg_Z );
+                bool_x2_AoQs1s2 = Gate_x2_AoQs1s2(evt, bool_Z21_AoQs1s2, bool_Z41_AoQs2s4, bool_Z42_AoQs2s4, bool_Z21_Z41, bool_x2_AoQs2s4, bool_x4_AoQs2s4,  bool_x2_AoQs1s2, bool_dEdeg_Z);
+            break;
+            case 8:
+                bool_dEdeg_Z  = Gate_dEdeg_Z(evt, bool_Z21_AoQs1s2, bool_Z41_AoQs2s4, bool_Z42_AoQs2s4, bool_Z21_Z41, bool_x2_AoQs2s4, bool_x4_AoQs2s4,  bool_x2_AoQs1s2, bool_dEdeg_Z );
             break;
 
 
@@ -376,6 +428,7 @@ void make_frs_gates_seq_mhtdc_lisa(TString infilename){
 
     if (bool_Z21_AoQs1s2) gROOT->FindObject("cut_Z21_AoQs1s2")->Write();
     if (bool_Z41_AoQs2s4) gROOT->FindObject("cut_Z41_AoQs2s4")->Write();
+    if (bool_Z42_AoQs2s4) gROOT->FindObject("cut_Z42_AoQs2s4")->Write();
     if (bool_Z21_Z41) gROOT->FindObject("cut_Z21_Z41")->Write();
     if (bool_x2_AoQs2s4) gROOT->FindObject("cut_x2_AoQs2s4")->Write();
     if (bool_x4_AoQs2s4) gROOT->FindObject("cut_x4_AoQs2s4")->Write();

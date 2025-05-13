@@ -208,6 +208,7 @@ class LisaFrsCorrelations : public FairTask
         std::vector<TH2F*> h2_Z21_vs_AoQs1s2_s1s2_correlated;
         std::vector<TH2F*> h2_Z21_vs_AoQs1s2_s1s2s4_correlated;
         std::vector<TH2F*> h2_Z41_vs_AoQs2s4_s1s2s4_correlated;
+        std::vector<TH2F*> h2_Z42_vs_AoQs2s4_s1s2s4_correlated;
         
         // ::: Gated - FRS applied on LISA
         // Full sequential gate - Z41
@@ -246,6 +247,8 @@ class LisaFrsCorrelations : public FairTask
         // ::: Gated - LISA applied on FRS
         std::vector<std::vector<TH2F*>> h2_Z21_vs_AoQs1s2_LISA_gated;
         std::vector<std::vector<TH2F*>> h2_Z41_vs_AoQs2s4_LISA_gated;
+        std::vector<std::vector<TH2F*>> h2_Z42_vs_AoQs2s4_LISA_gated;
+
 
         std::vector<std::vector<TH2F*>> h2_Z21_vs_AoQs1s2_LISA_MWD_gated;
         std::vector<std::vector<TH2F*>> h2_Z41_vs_AoQs2s4_LISA_MWD_gated;

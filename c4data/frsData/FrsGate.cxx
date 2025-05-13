@@ -17,6 +17,7 @@ FrsGate::FrsGate(std::string gn, std::string file_name)
 
     // S2-S4
     cut_Z41_AoQs2s4 = (TCutG*)infile->Get("cut_Z41_AoQs2s4");
+    cut_Z42_AoQs2s4 = (TCutG*)infile->Get("cut_Z42_AoQs2s4");
     cut_x2_AoQs2s4 = (TCutG*)infile->Get("cut_x2_AoQs2s4");
     cut_x4_AoQs2s4 = (TCutG*)infile->Get("cut_x4_AoQs2s4");
     cut_Z41_Z42 = (TCutG*)infile->Get("cut_Z41_Z4");
@@ -27,10 +28,11 @@ FrsGate::FrsGate(std::string gn, std::string file_name)
     cut_Z21_Z41 = (TCutG*)infile->Get("cut_Z21_Z41");
 
     // I think this can be handled better.
-    c4LOG(info, Form("PID gate %s loaded with cuts on Z21/AoQs1s2 = %i, Z41/AoQs2s4 = %i, Z21/Z41 = %i, Z41/Z42 = %i, x2/AoQs2s4 = %i, x4/AoQs2s4 = %i, x2/AoQs1s2 = %i, dEdegZ41/Z41 = %i, sci42E/Z41 = %i",
+    c4LOG(info, Form("PID gate %s loaded with cuts on Z21/AoQs1s2 = %i, Z41/AoQs2s4 = %i, Z42/AoQs2s4 = %i, Z21/Z41 = %i, Z41/Z42 = %i, x2/AoQs2s4 = %i, x4/AoQs2s4 = %i, x2/AoQs1s2 = %i, dEdegZ41/Z41 = %i, sci42E/Z41 = %i",
     gate_name.c_str(),
     cut_Z21_AoQs1s2!=nullptr,
     cut_Z41_AoQs2s4!=nullptr,
+    cut_Z42_AoQs2s4!=nullptr,
     cut_Z21_Z41!=nullptr,
     cut_Z41_Z42!=nullptr,
     cut_x2_AoQs2s4!=nullptr,
@@ -80,6 +82,7 @@ bool FrsGate::PassedS1S2(double Z21, double x2, double AoQs1s2)
 bool FrsGate::PassedS2S4(double Z41, double Z42, double x2, double x4, double AoQs2s4, double dEdegZ41, double sci42E)
 {
     bool passed_gate_cut_Z41_AoQs2s4 = false;
+    bool passed_gate_cut_Z42_AoQs2s4 = false;
     bool passed_gate_cut_Z41_Z42 = false;
     bool passed_gate_cut_x2_AoQs2s4 = false;
     bool passed_gate_cut_x4_AoQs2s4 = false;
@@ -88,6 +91,9 @@ bool FrsGate::PassedS2S4(double Z41, double Z42, double x2, double x4, double Ao
 
     if (cut_Z41_AoQs2s4 != nullptr) passed_gate_cut_Z41_AoQs2s4 = cut_Z41_AoQs2s4->IsInside(AoQs2s4,Z41);
     else passed_gate_cut_Z41_AoQs2s4 = true;
+
+    if (cut_Z42_AoQs2s4 != nullptr) passed_gate_cut_Z42_AoQs2s4 = cut_Z42_AoQs2s4->IsInside(AoQs2s4,Z42);
+    else passed_gate_cut_Z42_AoQs2s4 = true;
 
     if (cut_Z41_Z42 != nullptr) passed_gate_cut_Z41_Z42 = cut_Z41_Z42->IsInside(Z42,Z41);
     else passed_gate_cut_Z41_Z42 = true;
@@ -104,7 +110,7 @@ bool FrsGate::PassedS2S4(double Z41, double Z42, double x2, double x4, double Ao
     if (cut_sci42E_Z41 != nullptr) passed_gate_cut_sci42E_Z41 = cut_sci42E_Z41->IsInside(sci42E,Z41);
     else passed_gate_cut_sci42E_Z41 = true;
     
-    return (passed_gate_cut_Z41_AoQs2s4 && passed_gate_cut_Z41_Z42 && passed_gate_cut_x2_AoQs2s4 && passed_gate_cut_x4_AoQs2s4 && passed_gate_cut_dEdegZ41_Z41 && passed_gate_cut_sci42E_Z41);
+    return (passed_gate_cut_Z41_AoQs2s4 && passed_gate_cut_Z42_AoQs2s4 && passed_gate_cut_Z41_Z42 && passed_gate_cut_x2_AoQs2s4 && passed_gate_cut_x4_AoQs2s4 && passed_gate_cut_dEdegZ41_Z41 && passed_gate_cut_sci42E_Z41);
 
 }
 
@@ -210,6 +216,15 @@ bool FrsGate::Passed_Z41vsAoQs2s4(double Z41, double AoQs2s4)
     else passed_gate_cut_Z41_AoQs2s4 = true;
     
     return passed_gate_cut_Z41_AoQs2s4;
+}
+
+bool FrsGate::Passed_Z42vsAoQs2s4(double Z42, double AoQs2s4)
+{
+    bool passed_gate_cut_Z42_AoQs2s4 = false;
+    if (cut_Z42_AoQs2s4 != nullptr) passed_gate_cut_Z42_AoQs2s4 = cut_Z42_AoQs2s4->IsInside(AoQs2s4, Z42);
+    else passed_gate_cut_Z42_AoQs2s4 = true;
+    
+    return passed_gate_cut_Z42_AoQs2s4;
 }
 
 bool FrsGate::Passed_Z21vsZ41(double Z21, double Z41)
