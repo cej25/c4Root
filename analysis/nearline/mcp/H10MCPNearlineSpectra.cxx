@@ -71,54 +71,47 @@ InitStatus H10MCPNearlineSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fHitsMCP = (TClonesArray*)mgr->GetObject("H10MCPTwinpeaksCalData");
-    c4LOG_IF(fatal, !fHitsMCP, "Branch H10MCPTwinpeaksCalData not found!");
+    fHitsMCP = (TClonesArray*)mgr->GetObject("H10MCPTwinpeaksAnaData");
+    c4LOG_IF(fatal, !fHitsMCP, "Branch H10MCPTwinpeaksAnaData not found!");
     
     TDirectory* tmp = gDirectory;
     FairRootManager::Instance()->GetOutFile()->cd();
     dir_mcp = gDirectory->mkdir("MCPs");
     gDirectory->cd("MCPs");
 
-    h1_test_histogram = MakeTH1(dir_mcp, "F", "h1_test_histogram", "TEST HIST", 4000, -500, 100);  
-	histogram2 = MakeTH2(dir_mcp,"b", "aaa", "test hist" , 100, -250, 250, 100, -100, 100);
-	MCP1Heatmap = MakeTH2(dir_mcp,"b", "MCP1Heatmap", "MCP1Heatmap" , 500, -2500000, 2500000, 500, -2500000, 2500000);
-	MCP2Heatmap = MakeTH2(dir_mcp,"b", "MCP2Heatmap", "MCP2Heatmap" , 500, -250, 250, 500, -250, 250);
-	
-	
-	
-	
-	    MCP1X1ddiff = MakeTH1(dir_mcp, "F", "MCP1X1ddiff", "MCP1X1ddiff", 4000, -7000, 2000);  
-	    MCP1Y1ddiff = MakeTH1(dir_mcp, "F", "MCP1Y1ddiff", "MCP1Y1ddiff", 4000, -7000, 2000);  
+    h1_dT = MakeTH1(dir_mcp, "F", "h1_dT", "Time Difference T2-T1", 10000, -100, 100,"dt [ns]", kPink, kBlack);  
+    h2_dX1_dT = MakeTH2(dir_mcp, "F", "h2_dX1_dT", "X12-X11 position vs Time Difference T2-T1", 100, -250, 250, 100, -100, 100);
+    h2_dY1_dT = MakeTH2(dir_mcp, "F", "h2_dY1_dT", "Y12-Y11 position vs Time Difference T2-T1", 100, -250, 250, 100, -100, 100); 
+    h2_dX2_dT = MakeTH2(dir_mcp, "F", "h2_dX2_dT", "X22-X21 position vs Time Difference T2-T1", 100, -250, 250, 100, -100, 100); 
+    h2_dY2_dT = MakeTH2(dir_mcp, "F", "h2_dY2_dT", "Y22-Y21 position vs Time Difference T2-T1", 100, -250, 250, 100, -100, 100); 
 
 
+	  MCP1Heatmap1 = MakeTH2(dir_mcp,"b", "MCP1Heatmap1", "MCP1 Heatmap 1" , 100, -250, 250, 100, -250, 250); 
+	  MCP2Heatmap1 = MakeTH2(dir_mcp,"b", "MCP2Heatmap1", "MCP2 Heatmap 1" , 100, -250, 250, 100, -250, 250); 
+
+    h1_sc41_mcp1 = MakeTH1(dir_mcp, "I", "h1_sc41_mcp1", "SC41-MCP1 Time", 4000, 0, 1000,"dt [ns]", kSpring, kBlack);
+    h1_sc41_mcp2 = MakeTH1(dir_mcp, "I", "h1_sc41_mcp2", "SC41-MCP2 Time", 4000, 0, 1000,"dt [ns]", kSpring, kBlack);
+    h1_sc42_mcp1 = MakeTH1(dir_mcp, "I", "h1_sc42_mcp1", "SC42-MCP1 Time", 4000, 0, 1000,"dt [ns]", kSpring, kBlack);
+    h1_sc42_mcp2 = MakeTH1(dir_mcp, "I", "h1_sc42_mcp2", "SC42-MCP2 Time", 4000, 0, 1000,"dt [ns]", kSpring, kBlack);
+    h1_sc41_sc42 = MakeTH1(dir_mcp, "I", "h1_sc41_sc42", "SC41-SC42 Time", 1000, -10, 10,"dt [ns]", kCyan, kBlack);
+    h1_stefan_mcp1 = MakeTH1(dir_mcp, "I", "h1_stefan_mcp1", "STEFAN-MCP1 Time", 4000,0, 1000,"dt [ns]", kOrange, kBlack);
+    h1_stefan_mcp2 = MakeTH1(dir_mcp, "I", "h1_stefan_mcp2", "STEFAN-MCP2 Time", 4000, 0, 1000,"dt [ns]", kOrange, kBlack);
+    h1_stefan_sc41 = MakeTH1(dir_mcp, "I", "h1_stefan_sc41", "STEFAN-SC41 Time", 4000,0, 1000,"dt [ns]", kOrange, kBlack);
+    h1_stefan_sc42 = MakeTH1(dir_mcp, "I", "h1_stefan_sc42", "STEFAN-SC42 Time", 4000, 0, 1000,"dt [ns]", kOrange, kBlack);
+
 	
-		MCP2HeatmapgatedMCP1Omiddle = MakeTH2(dir_mcp,"b", "MCP2HeatmapT1", "MCP2HeatmapT2" , 500, -250, 250, 500, -250, 250);
-		MCP2HeatmapgatedMCP1Oup = MakeTH2(dir_mcp,"b", "MCP2HeatmapT1up", "MCP2HeatmapT2" , 500, -250, 250, 500, -250, 250);
-				MCP2HeatmapgatedMCP1Odown = MakeTH2(dir_mcp,"b", "MCP2HeatmapT1down", "MCP2HeatmapT2" , 500, -250, 250, 500, -250, 250);
+    // CEJ - Dennis, this is stuff from the nearline I didn't want to delete
+    // MCP1X1ddiff = MakeTH1(dir_mcp, "F", "MCP1X1ddiff", "MCP1X1ddiff", 4000, -7000, 2000);  
+    // MCP1Y1ddiff = MakeTH1(dir_mcp, "F", "MCP1Y1ddiff", "MCP1Y1ddiff", 4000, -7000, 2000);  
+
+		// MCP2HeatmapgatedMCP1Omiddle = MakeTH2(dir_mcp,"b", "MCP2HeatmapT1", "MCP2HeatmapT2" , 500, -250, 250, 500, -250, 250);
+		// MCP2HeatmapgatedMCP1Oup = MakeTH2(dir_mcp,"b", "MCP2HeatmapT1up", "MCP2HeatmapT2" , 500, -250, 250, 500, -250, 250);
+    // MCP2HeatmapgatedMCP1Odown = MakeTH2(dir_mcp,"b", "MCP2HeatmapT1down", "MCP2HeatmapT2" , 500, -250, 250, 500, -250, 250);
 
 				
-				
-				
-				MCP2HeatmapgatedMCP1centermiddle = MakeTH2(dir_mcp,"b", "MCP2HeatmapT1centermiddle", "MCP2HeatmapT2" , 500, -250, 250, 500, -250, 250);
-		MCP2HeatmapgatedMCP1centerup = MakeTH2(dir_mcp,"b", "MCP2HeatmapTcenter1up", "MCP2HeatmapT2" , 500, -250, 250, 500, -250, 250);
-				MCP2HeatmapgatedMCP1centerdown = MakeTH2(dir_mcp,"b", "MCP2HeatmapT1centerdown", "MCP2HeatmapT2" , 500, -250, 250, 500, -250, 250);		
-
-	//MCP2Heatmap = MakeTH2(dir_mcp,"b", "MCP2Heatmap", "MCP2Heatmap" , 500, -250, 250, 500, -250, 250);
-	//MCP2Heatmap = MakeTH2(dir_mcp,"b", "MCP2Heatmap", "MCP2Heatmap" , 500, -250, 250, 500, -250, 250);
-
-	// gates
-	//gatesmcp1T [] = {35,	45,	47,	57};
-
-  // histogram = MakeTH1(dir_mcp,"a", "TDiff Distribution", 1000, -200000, -150000);
-
- //   h1_time = MakeTH1(dir_mcp, "F", "MCPtimediff", "TEST HIST2", 1000, -1000000, 100000);
-  //  h2_mcp1 = MakeTH1(dir_mcp, "F", "Heatmapmcp1", "TEST HIST", 1000, -1000000, 10000000,1000, -1000000, 10000000);
-  //  h2_mcp2 = MakeTH1(dir_mcp, "F", "Heatmapmcp1", "TEST HIST", 1000, -1000000, 10000000,1000, -1000000, 10000000);
-
-  h1_sc41_mcp1 = MakeTH1(dir_mcp, "I", "h1_sc41_mcp1", "SC41-MCP1 Time Diff", 1000, -1000, 1000);
-  h1_sc41_mcp2 = MakeTH1(dir_mcp, "I", "h1_sc41_mcp2", "SC41-MCP2 Time Diff", 1000, -1000, 1000);
-  h1_sc42_mcp1 = MakeTH1(dir_mcp, "I", "h1_sc42_mcp1", "SC42-MCP1 Time Diff", 1000, -1000, 1000);
-  h1_sc42_mcp2 = MakeTH1(dir_mcp, "I", "h1_sc42_mcp2", "SC42-MCP2 Time Diff", 1000, -1000, 1000);
+    // MCP2HeatmapgatedMCP1centermiddle = MakeTH2(dir_mcp,"b", "MCP2HeatmapT1centermiddle", "MCP2HeatmapT2" , 500, -250, 250, 500, -250, 250);
+		// MCP2HeatmapgatedMCP1centerup = MakeTH2(dir_mcp,"b", "MCP2HeatmapTcenter1up", "MCP2HeatmapT2" , 500, -250, 250, 500, -250, 250);
+    // MCP2HeatmapgatedMCP1centerdown = MakeTH2(dir_mcp,"b", "MCP2HeatmapT1centerdown", "MCP2HeatmapT2" , 500, -250, 250, 500, -250, 250);		
 
     return kSUCCESS;
     
@@ -128,329 +121,78 @@ InitStatus H10MCPNearlineSpectra::Init()
 
 void H10MCPNearlineSpectra::Exec(Option_t* option)
 { 
-	
-	
-	
-		   // zwischenspeicher fuereventbuilding
-	 T01=1000;
-	 T02=-5000;
-	 E1=0;
-	 X01=1000;
-	 X02=-5000;
-	 Y01=1000;
-	 Y02=-5000;
-	 X11=1000;
-	 X12=-5000;
-	 Y11=1000;
-	 Y12=-5000;
-   SC41L=0;
-   SC41R=0;
-   SC42L=0;
-   SC42R=0;
-    DSSDAccept = 0;
-
-//	  double T01Epoch=0;
-//	  double T02Epoch=0;
-//	  double X01Epoch=0;
-//	  double X02Epoch=0;
-//	  double Y01Epoch=0;
-//	  double Y02Epoch=0;
-//	  double X11Epoch=0;
-//	  double X12Epoch=0;
-//	  double Y11Epoch=0;
-//	  double Y12Epoch=0;
-	  
-	  // fertige events speichern
-//	  std::vector<Long64_t> TDiff;
-//	  std::vector<Long64_t> XDiff;
-//	  std::vector<Long64_t> YDiff;
-	  // variables vor code
-
-	  
     auto start = std::chrono::high_resolution_clock::now();
-       // std::cout << fHitsMCP->GetEntriesFast() << std::endl;
+
+    double E1 = 0;
+    double T1 = 0;
+    double X11 = 0;
+    double X12 = 0;
+    double Y11 = 0;
+    double Y12 = 0;
+    double T2 = 0;
+    double X21 = 0;
+    double X22 = 0;
+    double Y21 = 0;
+    double Y22 = 0;
+    double SC41 = 0;
+    double SC42 = 0;
+    double DSSDAccept = 0;
+
 
     if (fHitsMCP && fHitsMCP->GetEntriesFast() > 0)
     {   
+    
+        for(int ihit=0; ihit < fHitsMCP->GetEntriesFast(); ++ihit) 
+        {
+            Long64_t mpc_wr = 0;
+            H10MCPTwinpeaksAnaData* hit = (H10MCPTwinpeaksAnaData*)fHitsMCP->At(ihit);
+            if (!hit) return;
+            mcp_wr = hit->wr_t;
 
-        Long64_t mpc_wr = 0;
-        Int_t nHits = fHitsMCP->GetEntriesFast();
-      //  std::cout << "nHits in event: " << nHits  << std::endl;
+            // if (!hit->full_event) return;        
+        
+            T1 = hit->T1;
+            X11 = hit->X11;
+            X12 = hit->X12;
+            Y11 = hit->Y11;
+            Y12 = hit->Y12;
+            T2 = hit->T2;
+            X21 = hit->X21;
+            X22 = hit->X22;
+            Y21 = hit->Y21;
+            Y22 = hit->Y22;
+            SC41 = hit->SC41;
+            SC42 = hit->SC42;
+            DSSDAccept = hit->DSSDAccept;
 
-        for (Int_t ihit = 0; ihit < nHits; ihit++) {
-            H10MCPTwinpeaksCalData* hit = (H10MCPTwinpeaksCalData*)fHitsMCP->At(ihit);
-            if (!hit) continue;
-            mcp_wr = hit->Get_wr_t();
+            //if (SC41 > 0)
+        // {
+            if(SC41!=0 && T1!=0) h1_sc41_mcp1->Fill(SC41-T1);
+            if(SC41!=0 && T2!=0) h1_sc41_mcp2->Fill(SC41-T2); 
+            //}
+            //if (SC42 > 0)
+        // {
+            if(SC42!=0 && T1!=0) h1_sc42_mcp1->Fill(SC42-T1);
+            if(SC42!=0 && T2!=0) h1_sc42_mcp2->Fill(SC42-T2);  
+        // }
+            if(SC42!=0 && SC41!=0) h1_sc41_sc42->Fill(SC41-SC42);
+            h1_dT->Fill(T2 - T1);
+        
+            if(X12!=0 && X11!=0) h2_dX1_dT->Fill(X12-X11, T2-T1);
+            if(Y12!=0 && Y11!=0) h2_dY1_dT->Fill(Y12-Y11, T2-T1);
+            if(X22!=0 && X21!=0) h2_dX2_dT->Fill(X22-X21, T2-T1);
+            if(Y22!=0 && Y21!=0) h2_dY2_dT->Fill(Y22-Y21, T2-T1);
             
-                   
+            if(T1!=0 && DSSDAccept!=0) h1_stefan_mcp1->Fill(DSSDAccept-T1);
+            if(T2!=0 && DSSDAccept!=0) h1_stefan_mcp2->Fill(DSSDAccept-T2);
             
-            Int_t mcp_id = hit->Get_mcp_id();
-            Int_t type = hit->Get_type();
-            Int_t number = hit->Get_number();
-            //std::cout << "ihit :: "<< ihit << std::endl;
-		//	std::cout <<< "HIT" << ihit << ": " << "\t" <<  mcp_id << "\t" << type << "\t" << number << std::endl;
+            if(SC41!=0 && DSSDAccept!=0) h1_stefan_sc41->Fill(DSSDAccept-T1);
+            if(SC42!=0 && DSSDAccept!=0) h1_stefan_sc42->Fill(DSSDAccept-T2);
             
-
-			if (mcp_id==0 && type==0 && number== 0 ){
-			 T01 = hit->Get_fast_lead_time();
-		//	 T01Epoch=hit->Get_fast_lead_epoch();
-		}
-			if (mcp_id==1 && type==0 && number== 0 )
-			{
-			 T02 = hit->Get_fast_lead_time();
-		//	 T02Epoch=hit->Get_fast_lead_epoch();
-		}
-			if (mcp_id==0 && type==1 && number== 0 )
-			{
-			 X01 = hit->Get_fast_lead_time();
-		//	 X01Epoch=hit->Get_fast_lead_epoch();
-		}
-			if (mcp_id==0 && type==1 && number== 1 )
-			{
-			 X02 = hit->Get_fast_lead_time();
-		//	 X02Epoch=hit->Get_fast_lead_epoch();
-		}
-			if (mcp_id==0 && type==2 && number== 0 )
-			{
-			 Y01 = hit->Get_fast_lead_time(); 
-		//	Y01Epoch=hit->Get_fast_lead_epoch();
-		}
-			if (mcp_id==0 && type==2 && number== 1 )
-			{
-			 Y02 = hit->Get_fast_lead_time();
-		//	 Y02Epoch=hit->Get_fast_lead_epoch();
-		}
-			if (mcp_id==1 && type==1 && number== 0 )
-			{
-			 X11 = hit->Get_fast_lead_time(); 
-		//	X11Epoch=hit->Get_fast_lead_epoch();
-		}
-			if (mcp_id==1 && type==1 && number== 1 )
-			{
-			X12 = hit->Get_fast_lead_time(); 
-		//	X12Epoch=hit->Get_fast_lead_epoch();
-		}
-			if (mcp_id==1 && type==2 && number== 0 )
-			{
-			 Y11 = hit->Get_fast_lead_time();
-		//	 Y11Epoch=hit->Get_fast_lead_epoch();
-		}
-			if (mcp_id==1 && type==2 && number== 1 )
-			{
-			 Y12 = hit->Get_fast_lead_time();
-			// Y12Epoch=hit->Get_fast_lead_epoch();
-			}
-      if (mcp_id==0 && type==3 && number==0)
-      {
-        SC41L = hit->Get_fast_lead_time();
-      }
-      if (mcp_id==0 && type==3 && number==1)
-      {
-        SC41R = hit->Get_fast_lead_time();
-      }
-      if (mcp_id==0 && type==4 && number==0)
-      {
-        SC42L = hit->Get_fast_lead_time();
-      }
-      if (mcp_id==0 && type==4 && number==1)
-      {
-        SC42R = hit->Get_fast_lead_time();
-      }
-      if (mcp_id==0 && type==5 && number==0)
-      {
-        DSSDAccept = hit->Get_fast_lead_time();
-      }
-/*
-          if (mcp_id==0 && type==0 && number== 0  && ch0counter == 0 )
-          {
-            T2 = hit->Get_fast_lead_time(); 
-            ch0counter++;
-            eventcounter++;
-            E1 = hit->Get_slow_ToT();
-            // 	std::cout << "ch0counter: " << ch0counter << std::endl;
-          } 
-          if (mcp_id==0 && type==1 && number== 0 && ch1counter == 0 && ch0counter == 1)
-          {
-            X1 = hit->Get_fast_lead_time(); 
-            ch1counter++;
-            eventcounter++;
-             //	std::cout << "ch1counter: " << ch1counter << std::endl;
-          }  
-          if (mcp_id==0 && type==1 && number== 0 &&  ch2counter == 0 && ch0counter == 1)
-          {
-            X2 = hit->Get_fast_lead_time(); 
-            ch2counter++;
-            eventcounter++;
-             //	std::cout << "ch2counter: " << ch2counter << std::endl;
-          }
-          if (mcp_id==0 && type==2 && number== 0&&  ch3counter == 0 && ch0counter == 1) 
-          {
-            Y1 = hit->Get_fast_lead_time(); 
-            ch3counter++;
-            eventcounter++;
-             	//std::cout << "ch3counter: " << ch3counter << std::endl;
-          }
-          if (mcp_id==0 && type==2 && number== 1  && ch4counter == 0 && ch0counter == 1)
-          {
-            Y2 = hit->Get_fast_lead_time(); 
-            ch4counter++;
-            eventcounter++;
-             //	std::cout << "ch4counter: " << ch4counter << std::endl;
-          }
-          if (mcp_id==1 && type==0 && number== 0 && ch5counter == 0 && ch0counter == 1)
-          {
-            T3 = hit->Get_fast_lead_time(); 
-            ch5counter++;
-            eventcounter++;
-            //std::cout << "T3eventc: " << eventcounter << std::endl;//
-            // 	std::cout << "ch1counter: " << ch1counter << std::endl;
-          } 
-*/
-    
-  }
-
-  // h1_sc41_vs_mcp->Fill();
-  double SC41 = (SC41L + SC41R) / 2;
-  double SC42 = (SC42L + SC42R) / 2;
-  if (SC41 > 0)
-  {
-    h1_sc41_mcp1->Fill(SC41-T01);
-    h1_sc41_mcp2->Fill(SC41-T02);
-  }
-  if (SC42 > 0)
-  {
-    h1_sc42_mcp1->Fill(SC42-T01);
-    h1_sc42_mcp2->Fill(SC42-T02);
-  }
-  
-
-
-	h1_test_histogram->Fill(T01 - T02);
-	MCP1X1ddiff->Fill(X02-X01);
-	MCP1Y1ddiff->Fill(Y02-Y01);
-	histogram2->Fill(X02-X01, T02-T01);
-	MCP1Heatmap->Fill(X02-X01, Y02-Y01);
-	MCP2Heatmap->Fill(X12-X11, Y12-Y11);
-  
-			//GATED
-      if (gateBoxT->IsInside(X02-X01, Y02-Y01)) {
-	    MCP2HeatmapgatedMCP1Omiddle->Fill(X12-X11,Y12-Y11   );}                                         
-      if (gateBoxT->IsInside(X02-X01+10, Y02-Y01+10)) {
-		            //  	std::cout << "ch1counter: " << ch1counter << std::endl;
-	    MCP2HeatmapgatedMCP1Oup->Fill(X12-X11,Y12-Y11   );}  
-	  if (gateBoxT->IsInside(X02-X01-10, Y02-Y01-10)) {
-	    MCP2HeatmapgatedMCP1Odown->Fill(X12-X11,Y12-Y11   );}    
-	    
-	     if (gateBoxcenter->IsInside(X02-X01, Y02-Y01)) {
-	    MCP2HeatmapgatedMCP1centermiddle->Fill(X12-X11,Y12-Y11   );}       
-	                                  
-  	}
-
-	
-  //std::cout << "start plotting: " << dataPointsCounter << std::endl;
-
-  
-  
-  //  histogram2->Fill(XDiff[i], YDiff[i]);
-    
-   //    std::cout << "fill: " << dataPointsCounter << std::endl;
-
-
-//  std::cout << "plotfin: " << std::endl;
-
-  // canvas->cd(2); // Select the first part of the canvas
- // for (int i = 0; i < dataPointsCounter; i++)
-//  {
-  //  histogram2->Fill(XDiff[i], YDiff[i]);
- //   if (XDiff[i] > gates[0] && XDiff[i] < gates[1] && YDiff[i] > gates[2] && YDiff[i] < gates[3])
- //   {
- //     histogramxgated->Fill(XDiff[i]);
- //   }
- //   if (XDiff[i] > gates[6] && XDiff[i] < gates[7] && YDiff[i] > gates[4] && YDiff[i] < gates[5])
- //   {
- //     histogramygated->Fill(YDiff[i]);
- //   }
-//d::cout << "plot2fin: " << std::endl;
-  //canvas->cd(1);
-  // Select the first part of the canvas
-  //histogramxgated->Draw(); // Draw the first histogram
-                           // Select the second part of the canvas
-  // col2 for fast
- // canvas->cd(2);
-////chatgpt
-
-
-// Update the canvas
-//canvas->Update();
-
-//TPaveStats *stats = (TPaveStats*)histogram2->FindObject("stats"); not working
-
-//if (stats) {
- //   stats->SetX1NDC(0.4); // Set the left edge position in NDC (normalized device coordinates)
-  //  stats->SetY1NDC(0.4); // Set the bottom edge position in NDC
- //   stats->SetX2NDC(0.4); // Set the right edge position in NDC
- //   stats->SetY2NDC(0.4); // Set the top edge position in NDC
-//}
-///endechatgpt
-
-// Redraw the histogram with updated axis labels
-//histogram2->Draw("colz");
-
-  //histogramygated->Draw();
-  //canvas->Update();
-
- // canvas2d->cd();
- // histogram2->Draw("colz");
-  //gPad->SetLogz(); // logcolorbar
-  //canvas2d->Update();
-
- // std::cout << "kein neuer file gefunden" << std::endl;
- // std::string rootRunname = Runname + ".root";
- // const char *CRunname = rootRunname.c_str(); // umwandlung von string to c_string (vill)
-
-  //TFile *file = new TFile(CRunname, "RECREATE");
- // canvas->cd();
- // canvas->Write();
- // canvas2d->cd();
-
- // canvas2d->Write();
-   // h1_test_histogram->Write();
-  // histogram2->Write();
- // std::cout << "finite: " << std::endl;
-
- // file->Close();
-
-  // Clean up
- // delete canvas;
-  // delete histogram;
-//  delete histogram2;
- // delete file;
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //    }
-
-    
-    
-
+            if(X12!=0 && X11!=0 && Y12!=0 && Y11!=0) MCP1Heatmap1->Fill(X12-X11, Y12-Y11);
+            if(X22!=0 && X21!=0 && Y22!=0 && Y21!=0) MCP2Heatmap1->Fill(X22-X21, Y22-Y21);
+        }
+    }
 
     fNEvents++;
     

@@ -49,6 +49,7 @@
 #pragma link C++ class BB7NearlineSpectra+;
 #pragma link C++ class FimpNearlineSpectra+;
 #pragma link C++ class H10MCPNearlineSpectra+;
+#pragma link C++ class StefanNearlineSpectra+;
 
 #pragma link C++ class FrsAidaCorrelations+;
 #pragma link C++ class FrsAidaCorrelationsOnline+;

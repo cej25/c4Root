@@ -1,19 +1,17 @@
-#ifndef StefanOnlineSpectra_H
-#define StefanOnlineSpectra_H
+#ifndef StefanNearlineSpectra_H
+#define StefanNearlineSpectra_H
 
 // FairRoot
 #include "FairTask.h"
 
 // c4
 #include "StefanHitData.h"
-#include "StefanCalData.h"
 #include "TStefanConfiguration.h"
 #include "H10MCPTwinpeaksAnaData.h"
 #include "FrsHitData.h"
 #include "TFRSParameter.h"
 #include "TH10MCPConfiguration.h"
 #include "TFrsConfiguration.h"
-#include "FrsGate.h"
 
 // ROOT
 #include "TDirectory.h"
@@ -42,14 +40,13 @@ class TStefanConfiguration;
 class TH10MCPConfiguration;
 class TFrsConfiguration;
 
-class StefanOnlineSpectra : public FairTask
+class StefanNearlineSpectra : public FairTask
 {
     public:
-        StefanOnlineSpectra();
-        StefanOnlineSpectra(std::vector<FrsGate*> fg);
-        StefanOnlineSpectra(const TString& name, Int_t verbose = 1);
+        StefanNearlineSpectra();
+        StefanNearlineSpectra(const TString& name, Int_t verbose = 1);
 
-        virtual ~StefanOnlineSpectra();
+        virtual ~StefanNearlineSpectra();
 
         virtual InitStatus Init();
 
@@ -71,10 +68,7 @@ class StefanOnlineSpectra : public FairTask
         const TH10MCPConfiguration* mcp_config;
         TFrsConfiguration const* frs_config;
 
-        std::vector<FrsGate*> FrsGates;
-
         std::vector<StefanHitItem> const* StefanHit; 
-        std::vector<StefanCalItem> const* calArray;
         TClonesArray* fHitsMCP;
         std::vector<FrsHitItem> const* hitArray;
         std::vector<FrsMultiHitItem> const* multihitArray;
@@ -84,10 +78,8 @@ class StefanOnlineSpectra : public FairTask
         int total_time_microsecs = 0;
 
         int nDets = 0;
-        int num_frs_gates = 0;
 
         // Folders and Files
-        TFolder* histograms;
         TDirectory* dir_stefan;
         TDirectory** dir_dssd;
         TDirectory** dir_hits;
@@ -103,10 +95,7 @@ class StefanOnlineSpectra : public FairTask
         TDirectory** dir_frs_z_stefan_dssds;
         TDirectory** dir_frs_z_stefan_dssds_strips;
         TDirectory* dir_frs_mcp;
-        TDirectory* dir_frs_gated;
-        TDirectory** dir_frs_gates;
         std::vector<std::vector<TDirectory*>> dir_raw;
-        std::vector<std::vector<TDirectory*>> dir_clusters;
         std::vector<TDirectory*> dir_pixel;
 	
 	
@@ -114,13 +103,10 @@ class StefanOnlineSpectra : public FairTask
         
         TCanvas* strips4_stefan;
 	
-	TH1* h1_test; // test histogram
-	std::vector<TH1*> h1_DSSSD_energy;
 	
 	
         std::vector<TH2*> h2_hit_strip_xy; // Hit pattern
         std::vector< std::vector<std::vector<TH1*>>> h1_raw_energy; // raw energy spectra
-        std::vector< std::vector<std::vector<TH1*>>> h1_energy_clusters; // raw energy spectra
         std::vector< std::vector<TH1*>> h1_pixel_energy; // energy per pixel spectra
 
         std::vector<TH2*> h2_mcp_tof_vs_e_dssd;
@@ -152,7 +138,7 @@ class StefanOnlineSpectra : public FairTask
 
 
     public:
-        ClassDef(StefanOnlineSpectra, 1)
+        ClassDef(StefanNearlineSpectra, 1)
 };
 
 #endif
