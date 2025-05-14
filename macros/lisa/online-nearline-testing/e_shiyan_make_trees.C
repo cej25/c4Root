@@ -17,7 +17,7 @@
 extern "C"
 {
     //#include "../../config/pareeksha/frs/setup_Fragment_conv_updated.C" //pareeksha data
-    #include "../../../config/shiyan/frs/setup/setup_103_002_2025_conv.C" //shiyan
+    #include "../../../config/shiyan/frs/setup/setup_103_016_2025_conv.C" //shiyan
 }
 
 typedef struct EXT_STR_h101_t
@@ -61,16 +61,16 @@ void e_shiyan_make_trees()
     TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s103_files/ts/";                       // Data from LISA
     //TString inputpath = "/u/gandolfo/data/lustre/nustar/profi/sec_s160feb25/stitched/";           // Data from FRS with S2 PID
  
-    TString filename = inputpath + "run_0019_0001.lmd";
+    TString filename = inputpath + "run_0109_0001.lmd";
     //TString filename = inputpath + "test_0003_0001.lmd";
     //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
 
     // ::: OUTPUT 
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/noise_test_may25/";   //testing
-    TString outputpath = "/u/gandolfo/data/shiyan_1st_day/";   //energy resolution data
+    TString outputpath = "/u/gandolfo/data/shiyan_debug/";   //energy resolution data
     
     //TString outputFilename = outputpath + "test_run_0075.root";
-    TString outputFilename = outputpath + "run_0019_0001_tree.root"; 
+    TString outputFilename = outputpath + "run_0109_0001_tree.root"; 
     //TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  // Data from FRS with S2 PID
 
 

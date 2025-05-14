@@ -13,7 +13,7 @@
 // Define FRS setup.C file - FRS should provide; place in /config/shiyan/frs/
 extern "C"
 {
-    #include "../../../config/shiyan/frs/setup/setup_103_002_2025_conv.C"
+    #include "../../../config/shiyan/frs/setup/setup_103_020_2025_conv.C"
     //#include "../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
 }
 
@@ -81,7 +81,8 @@ void c_shiyan_online()
     // TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
     // TString filename = "$LUSTRE_DIR/gamma/s092_s143_files/ts/run_0075_0001.lmd";
     // TString filename = "trans://lxg3107:6000";
-    TString filename = "$LUSTRE_DIR/gamma/s092_s103_files/ts/run_0006_0001.lmd";
+    // TString filename = "$LUSTRE_DIR/gamma/s092_s103_files/ts/run_0006_0001.lmd";
+    TString filename = "trans://lxg3107:6000";
 // 
     //TString filename = inputpath + "test_0003_*.lmd";
     //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
@@ -254,30 +255,30 @@ void c_shiyan_online()
 
     // TFrsConfiguration::Set_TOF_gate(200, 240);
     
-    if (FRS_ON)
-    {
-        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
-        //For monitoring FRS on our side
-        // FrsRawSpectra* frsrawspec = new FrsRawSpectra();
-        // FrsCalSpectra* frscalspec = new FrsCalSpectra();
+     if (FRS_ON)
+     {
+         FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
+         //For monitoring FRS on our side
+         // FrsRawSpectra* frsrawspec = new FrsRawSpectra();
+       // FrsCalSpectra* frscalspec = new FrsCalSpectra();
 
-        run->AddTask(onlinefrs);
-        // run->AddTask(frsrawspec);
-        // run->AddTask(frscalspec);
-    }
+         run->AddTask(onlinefrs);
+         // run->AddTask(frsrawspec);
+         // run->AddTask(frscalspec);
+     }
 
     // ::: Correlation Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: Correlation Spectra :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    if(LISA_ON && FRS_ON)
-    {
-        if(FRS_LISA_CORRELATIONS)
-        {
-            LisaFrsCorrelationsOnline* LISA_FRS_corr = new LisaFrsCorrelationsOnline();
-            run->AddTask(LISA_FRS_corr);
-        }
-    }
+    // if(LISA_ON && FRS_ON)
+    // {
+    //     if(FRS_LISA_CORRELATIONS)
+    //     {
+    //         LisaFrsCorrelationsOnline* LISA_FRS_corr = new LisaFrsCorrelationsOnline();
+    //         run->AddTask(LISA_FRS_corr);
+    //     }
+    // }
 
     // ::: CONFIGURATIONS FOR ONLINE HISTOS :::
     // ::: FRS

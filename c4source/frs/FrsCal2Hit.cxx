@@ -291,57 +291,69 @@ void FrsCal2Hit::Exec(Option_t* option)
     ProcessIDs_MHTDC();    
         
     
-    for (int i = 0; i < hits_in_s2x; i++)
-    {
-        for (int j = 0; j < hits_in_s1x; j++)
-        {
-            int count = i * hits_in_s1x + j;
-            s1x_mhtdc.emplace_back(temp_s1x_mhtdc[j]);
-            s1a_mhtdc.emplace_back(temp_a1);
-            s2x_s1s2_mhtdc.emplace_back(temp_s2x_mhtdc[i]);
-            s2a_s1s2_mhtdc.emplace_back(temp_a2);
-            tof_s1s2_mhtdc.emplace_back(id_mhtdc_tof_s1s2[count]);
-            beta_s1s2_mhtdc.emplace_back(id_mhtdc_beta_s1s2[count]);
-            aoq_s1s2_mhtdc.emplace_back(id_mhtdc_aoq_s1s2[count]);
-            aoq_corr_s1s2_mhtdc.emplace_back(id_mhtdc_aoq_corr_s1s2[count]);
-            z_music21_mhtdc.emplace_back(id_mhtdc_z_music21[count]);
-            z_music22_mhtdc.emplace_back(id_mhtdc_z_music22[count]);
+    // for (int i = 0; i < hits_in_s2x; i++)
+    // {
+    //     for (int j = 0; j < hits_in_s1x; j++)
+    //     {
+    //         int count = i * hits_in_s1x + j;
+    //         s1x_mhtdc.emplace_back(temp_s1x_mhtdc[j]);
+    //         s1a_mhtdc.emplace_back(temp_a1);
+    //         s2x_s1s2_mhtdc.emplace_back(temp_s2x_mhtdc[i]);
+    //         s2a_s1s2_mhtdc.emplace_back(temp_a2);
+    //         tof_s1s2_mhtdc.emplace_back(id_mhtdc_tof_s1s2[count]);
+    //         beta_s1s2_mhtdc.emplace_back(id_mhtdc_beta_s1s2[count]);
+    //         aoq_s1s2_mhtdc.emplace_back(id_mhtdc_aoq_s1s2[count]);
+    //         aoq_corr_s1s2_mhtdc.emplace_back(id_mhtdc_aoq_corr_s1s2[count]);
+    //         z_music21_mhtdc.emplace_back(id_mhtdc_z_music21[count]);
+    //         z_music22_mhtdc.emplace_back(id_mhtdc_z_music22[count]);
 
-        }
-    }
+    //     }
+    // }
 
     auto & multihitEntry = multihitArray->emplace_back();
     multihitEntry.SetS1S2(s1x_mhtdc,
                         s1a_mhtdc,
                         s2x_s1s2_mhtdc,
                         s2a_s1s2_mhtdc,
-                        tof_s1s2_mhtdc,
-                        beta_s1s2_mhtdc,
-                        aoq_s1s2_mhtdc,
-                        aoq_corr_s1s2_mhtdc,
-                        z_music21_mhtdc,
-                        z_music22_mhtdc);
+                        id_mhtdc_tof_s1s2,
+                        id_mhtdc_beta_s1s2,
+                        id_mhtdc_aoq_s1s2,
+                        id_mhtdc_aoq_corr_s1s2,
+                        id_mhtdc_z_music21,
+                        id_mhtdc_z_music22); // CEJ  FIX
 
-    for (int i = 0; i < hits_in_s4x; i++)
-    {
-        for (int j = 0; j < hits_in_s2x; j++)
-        {
-            int count = i * hits_in_s2x + j;
-            s2x_s2s4_mhtdc.emplace_back(temp_s2x_mhtdc[j]);
-            s2a_s2s4_mhtdc.emplace_back(temp_a2);
-            s4x_mhtdc.emplace_back(temp_s4x_mhtdc[i]);
-            s4a_mhtdc.emplace_back(temp_a4);
-            tof_s2s4_mhtdc.emplace_back(id_mhtdc_tof_s2s4[count]);
-            beta_s2s4_mhtdc.emplace_back(id_mhtdc_beta_s2s4[count]);
-            aoq_s2s4_mhtdc.emplace_back(id_mhtdc_aoq_s2s4[count]);
-            aoq_corr_s2s4_mhtdc.emplace_back(id_mhtdc_aoq_corr_s2s4[count]);
-            z_music41_mhtdc.emplace_back(id_mhtdc_z_music41[count]);
-            z_music42_mhtdc.emplace_back(id_mhtdc_z_music42[count]);
-            z_music43_mhtdc.emplace_back(id_mhtdc_z_music43[count]);
-            dEdegoQ_s2s4_mhtdc.emplace_back(id_mhtdc_dEdegoQ_s2s4[count]);
-            dEdeg_z41_mhtdc.emplace_back(id_mhtdc_dEdeg_z41[count]);
-        }
-    }
+    // auto & multihitEntry = multihitArray->emplace_back();
+    // multihitEntry.SetS1S2(s1x_mhtdc,
+    //                     s1a_mhtdc,
+    //                     s2x_s1s2_mhtdc,
+    //                     s2a_s1s2_mhtdc,
+    //                     tof_s1s2_mhtdc,
+    //                     beta_s1s2_mhtdc,
+    //                     aoq_s1s2_mhtdc,
+    //                     aoq_corr_s1s2_mhtdc,
+    //                     z_music21_mhtdc,
+    //                     z_music22_mhtdc);
+
+    // for (int i = 0; i < hits_in_s4x; i++)
+    // {
+    //     for (int j = 0; j < hits_in_s2x; j++)
+    //     {
+    //         int count = i * hits_in_s2x + j;
+    //         s2x_s2s4_mhtdc.emplace_back(temp_s2x_mhtdc[j]);
+    //         s2a_s2s4_mhtdc.emplace_back(temp_a2);
+    //         s4x_mhtdc.emplace_back(temp_s4x_mhtdc[i]);
+    //         s4a_mhtdc.emplace_back(temp_a4);
+    //         tof_s2s4_mhtdc.emplace_back(id_mhtdc_tof_s2s4[count]);
+    //         beta_s2s4_mhtdc.emplace_back(id_mhtdc_beta_s2s4[count]);
+    //         aoq_s2s4_mhtdc.emplace_back(id_mhtdc_aoq_s2s4[count]);
+    //         aoq_corr_s2s4_mhtdc.emplace_back(id_mhtdc_aoq_corr_s2s4[count]);
+    //         z_music41_mhtdc.emplace_back(id_mhtdc_z_music41[count]);
+    //         z_music42_mhtdc.emplace_back(id_mhtdc_z_music42[count]);
+    //         z_music43_mhtdc.emplace_back(id_mhtdc_z_music43[count]);
+    //         dEdegoQ_s2s4_mhtdc.emplace_back(id_mhtdc_dEdegoQ_s2s4[count]);
+    //         dEdeg_z41_mhtdc.emplace_back(id_mhtdc_dEdeg_z41[count]);
+    //     }
+    // }
 
     if (hits_in_s4x * hits_in_s2x > 0) aoqfrscal++;
 
@@ -349,15 +361,29 @@ void FrsCal2Hit::Exec(Option_t* option)
                         s2a_s2s4_mhtdc,
                         s4x_mhtdc,
                         s4a_mhtdc,
-                        tof_s2s4_mhtdc,
-                        beta_s2s4_mhtdc,
-                        aoq_s2s4_mhtdc,
-                        aoq_corr_s2s4_mhtdc,
-                        z_music41_mhtdc,
-                        z_music42_mhtdc,
-                        z_music43_mhtdc,
-                        dEdegoQ_s2s4_mhtdc,
-                        dEdeg_z41_mhtdc);
+                        id_mhtdc_tof_s2s4,
+                        id_mhtdc_beta_s2s4,
+                        id_mhtdc_aoq_s2s4,
+                        id_mhtdc_aoq_corr_s2s4,
+                        id_mhtdc_z_music41,
+                        id_mhtdc_z_music42,
+                        id_mhtdc_z_music43,
+                        id_mhtdc_dEdegoQ_s2s4,
+                        id_mhtdc_dEdeg_z41);
+
+    // multihitEntry.SetS2S4(s2x_s2s4_mhtdc,
+    //                     s2a_s2s4_mhtdc,
+    //                     s4x_mhtdc,
+    //                     s4a_mhtdc,
+    //                     tof_s2s4_mhtdc,
+    //                     beta_s2s4_mhtdc,
+    //                     aoq_s2s4_mhtdc,
+    //                     aoq_corr_s2s4_mhtdc,
+    //                     z_music41_mhtdc,
+    //                     z_music42_mhtdc,
+    //                     z_music43_mhtdc,
+    //                     dEdegoQ_s2s4_mhtdc,
+    //                     dEdeg_z41_mhtdc);
 
  
     auto end = std::chrono::high_resolution_clock::now();
@@ -1152,8 +1178,10 @@ void FrsCal2Hit::ProcessSci_MHTDC()
 
     // TOF:
     // 11 -> 21
+    // std::cout << "event " << std::endl;
     hits_in_tof2111 = hits_in_21lr * hits_in_11lr;
     mhtdc_tof2111 = new Float_t[hits_in_tof2111];
+    int count = 0;
     for (int i = 0; i < hits_in_21l; i++)
     {
         for (int j = 0; j < hits_in_21r; j++)
@@ -1162,13 +1190,16 @@ void FrsCal2Hit::ProcessSci_MHTDC()
             {
                 for (int l = 0; l < hits_in_11r; l++)
                 {
+                    count = i * hits_in_21r * hits_in_11l * hits_in_11r + j * hits_in_11l * hits_in_11r + k * hits_in_11r + l;
                     if ((sci->mhtdc_factor_ch_to_ns * TMath::Abs(sci21l_hits[i] - sci21r_hits[j]) < 40) && (sci->mhtdc_factor_ch_to_ns * TMath::Abs(sci11l_hits[k] - sci11r_hits[l]) < 40))
                     {
-                        mhtdc_tof2111[i * hits_in_21r * hits_in_11l * hits_in_11r + j * hits_in_11l * hits_in_11r + k * hits_in_11r + l] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci21l_hits[i] + sci21r_hits[j]) - 0.5 * (sci11l_hits[k] + sci11r_hits[l])) + sci->mhtdc_offset_21_11[sci->sci11_select];
+                        float tof = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci21l_hits[i] + sci21r_hits[j]) - 0.5 * (sci11l_hits[k] + sci11r_hits[l])) + sci->mhtdc_offset_21_11[sci->sci11_select];
+                        if (tof > 0 && tof < 400) mhtdc_tof2111[count] = tof; // fairly lax gate
+                        else mhtdc_tof2111[count] = -999;
                     }
                     else
                     {
-                        mhtdc_tof2111[i * hits_in_21r * hits_in_11l * hits_in_11r + j * hits_in_11l * hits_in_11r + k * hits_in_11r + l] = -999;
+                        mhtdc_tof2111[count] = -999;
                     }
                 }
             }
@@ -1179,6 +1210,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     // 21 -> 41
     hits_in_tof4121 = hits_in_41lr * hits_in_21lr;
     mhtdc_tof4121 = new Float_t[hits_in_tof4121];
+    count = 0;
     for (int i = 0; i < hits_in_41l; i++)
     {
         for (int j = 0; j < hits_in_41r; j++)
@@ -1187,15 +1219,16 @@ void FrsCal2Hit::ProcessSci_MHTDC()
             {
                 for (int l = 0; l < hits_in_21r; l++)
                 {
-                    int count = i * hits_in_41r * hits_in_21l * hits_in_21r + j * hits_in_21l * hits_in_21r + k * hits_in_21r + l;
+                    count = i * hits_in_41r * hits_in_21l * hits_in_21r + j * hits_in_21l * hits_in_21r + k * hits_in_21r + l;
                     if ((sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci41l_hits[i] - sci41r_hits[j]) < 200) && (sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci21l_hits[k] - sci21r_hits[l]) < 200))
                     {
-                        mhtdc_tof4121[count] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci41l_hits[i] + sci41r_hits[j]) - 0.5 * (sci21l_hits[k] + sci21r_hits[l])) + sci->mhtdc_offset_41_21;
-                        // if (mhtdc_tof4121[count] < frs_config->tof_gate_low || mhtdc_tof4121[count] > frs_config->tof_gate_high) mhtdc_tof4121[count] = -999.;
+                        float tof = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci41l_hits[i] + sci41r_hits[j]) - 0.5 * (sci21l_hits[k] + sci21r_hits[l])) + sci->mhtdc_offset_41_21;
+                        if (tof > 0 && tof < 400) mhtdc_tof4121[count] = tof;
+                        else mhtdc_tof4121[count] = -999;
                     }
                     else
                     {
-                        mhtdc_tof4121[i * hits_in_41r * hits_in_21l * hits_in_21r + j * hits_in_21l * hits_in_21r + k * hits_in_21r + l] = -999;
+                        mhtdc_tof4121[count] = -999;
                     }
                 }
             }
@@ -1205,6 +1238,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     // 22 -> 41
     hits_in_tof4122 = hits_in_41lr * hits_in_22lr;
     mhtdc_tof4122 = new Float_t[hits_in_tof4122];
+    count = 0;
     for (int i = 0; i < hits_in_41l; i++) 
     {
         for (int j = 0; j<hits_in_41r; j++)
@@ -1213,13 +1247,16 @@ void FrsCal2Hit::ProcessSci_MHTDC()
             {
                 for (int l = 0; l<hits_in_22r; l++)
                 {
+                    count = i * hits_in_41r * hits_in_22l*hits_in_22r + j * hits_in_22l * hits_in_22r + k * hits_in_22r + l;
                     if ((sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci41l_hits[i] - sci41r_hits[j]) < 40) && (sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci22l_hits[k] - sci22r_hits[l]) < 40))
                     {
-                        mhtdc_tof4122[i * hits_in_41r * hits_in_22l*hits_in_22r + j * hits_in_22l * hits_in_22r + k * hits_in_22r + l] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci41l_hits[i] + sci41r_hits[j]) - 0.5 * (sci22l_hits[k] + sci22r_hits[l])) + sci->mhtdc_offset_41_22;
+                        float tof = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci41l_hits[i] + sci41r_hits[j]) - 0.5 * (sci22l_hits[k] + sci22r_hits[l])) + sci->mhtdc_offset_41_22;
+                        if (tof > 0 && tof < 400) mhtdc_tof4122[count] = tof; 
+                        else mhtdc_tof4122[count] = -999;
                     }
                     else
                     {
-                        mhtdc_tof4122[i * hits_in_41r * hits_in_22l*hits_in_22r + j * hits_in_22l * hits_in_22r + k * hits_in_22r + l] = -999;
+                        mhtdc_tof4122[count] = -999;
                     }
                 }
             }
@@ -1229,6 +1266,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     // 21 -> 42
     hits_in_tof4221 = hits_in_42lr * hits_in_21lr;
     mhtdc_tof4221 = new Float_t[hits_in_tof4221];
+    count = 0;
     for (int i = 0; i < hits_in_42l; i++) 
     {
         for (int j = 0; j < hits_in_42r; j++)
@@ -1237,13 +1275,16 @@ void FrsCal2Hit::ProcessSci_MHTDC()
             {
                 for (int l = 0; l < hits_in_21r; l++)
                 {
+                    count = i * hits_in_42r * hits_in_21l * hits_in_21r + j * hits_in_21l * hits_in_21r + k * hits_in_21r + l;
                     if ((sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci42l_hits[i] - sci42r_hits[j]) < 40) && (sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci21l_hits[k] - sci21r_hits[l]) < 40))
                     {
-                        mhtdc_tof4221[i * hits_in_42r * hits_in_21l * hits_in_21r + j * hits_in_21l * hits_in_21r + k * hits_in_21r + l] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci42l_hits[i] + sci42r_hits[j]) - 0.5 * (sci21l_hits[k] + sci21r_hits[l])) + sci->mhtdc_offset_42_21;
+                        float tof = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci42l_hits[i] + sci42r_hits[j]) - 0.5 * (sci21l_hits[k] + sci21r_hits[l])) + sci->mhtdc_offset_42_21;
+                        if (tof > 0 && tof < 400) mhtdc_tof4221[count] = tof;
+                        else mhtdc_tof4221[count] = -999;
                     }
                     else
                     {
-                        mhtdc_tof4221[i * hits_in_42r * hits_in_21l * hits_in_21r + j * hits_in_21l * hits_in_21r + k * hits_in_21r + l] = -999;
+                        mhtdc_tof4221[count] = -999;
                     }
                 }
             }
@@ -1254,6 +1295,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     // 21 -> 43
     int hits_in_tof4321 = hits_in_43lr * hits_in_21lr;
     mhtdc_tof4321 = new Float_t[hits_in_tof4321];
+    count = 0;
     for (int i = 0; i < hits_in_43l; i++) 
     {
         for (int j = 0; j < hits_in_43r; j++)
@@ -1262,7 +1304,10 @@ void FrsCal2Hit::ProcessSci_MHTDC()
             {
                 for (int l = 0; l < hits_in_21r; l++)
                 {
-                    mhtdc_tof4321[i * hits_in_43r * hits_in_21l * hits_in_21r + j * hits_in_21l*hits_in_21r + k*hits_in_21r + l] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci43l_hits[i] + sci43r_hits[j]) - 0.5 * (sci21l_hits[k] + sci21r_hits[l])) + sci->mhtdc_offset_43_21;
+                    count = i * hits_in_43r * hits_in_21l * hits_in_21r + j * hits_in_21l*hits_in_21r + k*hits_in_21r + l;
+                    float tof = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci43l_hits[i] + sci43r_hits[j]) - 0.5 * (sci21l_hits[k] + sci21r_hits[l])) + sci->mhtdc_offset_43_21;
+                    if (tof > 0 && tof < 500) mhtdc_tof4321[count] = tof;
+                    else mhtdc_tof4321[count] = -999;
                 }
             }
         }
@@ -1271,6 +1316,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     // 21 -> 31
     int hits_in_tof3121 = hits_in_31lr * hits_in_21lr;
     mhtdc_tof3121 = new Float_t[hits_in_tof3121];
+    count = 0;
     for (int i = 0; i < hits_in_31l; i++) 
     {
         for (int j = 0; j < hits_in_31r; j++)
@@ -1279,7 +1325,10 @@ void FrsCal2Hit::ProcessSci_MHTDC()
             {
                 for (int l = 0; l < hits_in_21r; l++)
                 {
-                    mhtdc_tof3121[i * hits_in_31r * hits_in_21l * hits_in_21r + j * hits_in_21l * hits_in_21r + k * hits_in_21r + l] = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci31l_hits[i] + sci31r_hits[j]) - 0.5 * (sci21l_hits[k] + sci21r_hits[l])) + sci->mhtdc_offset_31_21;
+                    count = i * hits_in_31r * hits_in_21l * hits_in_21r + j * hits_in_21l * hits_in_21r + k * hits_in_21r + l;
+                    float tof = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci31l_hits[i] + sci31r_hits[j]) - 0.5 * (sci21l_hits[k] + sci21r_hits[l])) + sci->mhtdc_offset_31_21;
+                    if (tof > 0 && tof < 400) mhtdc_tof3121[count] = tof;
+                    else mhtdc_tof3121[count] = -999;
                 }
             }
         }
@@ -2126,42 +2175,43 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
     // matches hits_in_tof2111 if 11 -> 21 selected, or hits_in_tof2211 if 11 -> 22 selected
     hits_in_s1s2 = hits_in_s2x * hits_in_s1x;
 
-    id_mhtdc_beta_s1s2 = new Float_t[hits_in_s1s2];
-    id_mhtdc_tof_s1s2 = new Float_t[hits_in_s1s2];
+    // id_mhtdc_beta_s1s2 = new Float_t[hits_in_s1s2];
+    temp_id_mhtdc_beta_s1s2 = new Float_t[hits_in_s1s2];
+    temp_id_mhtdc_tof_s1s2 = new Float_t[hits_in_s1s2];
+    // id_mhtdc_tof_s1s2 = new Float_t[hits_in_s1s2];
     id_mhtdc_gamma_s1s2 = new Float_t[hits_in_s1s2];
     id_mhtdc_delta_s1s2 = new Float_t[hits_in_s1s2];
-    id_mhtdc_aoq_s1s2 = new Float_t[hits_in_s1s2];
-    id_mhtdc_aoq_corr_s1s2 = new Float_t[hits_in_s1s2];
-    id_mhtdc_v_cor_music21 = new Float_t[hits_in_s1s2];
-    id_mhtdc_z_music21 = new Float_t[hits_in_s1s2];
-    id_mhtdc_z_shifted_music21 = new Float_t[hits_in_s1s2];
-    id_mhtdc_v_cor_music22 = new Float_t[hits_in_s1s2];
-    id_mhtdc_z_music22 = new Float_t[hits_in_s1s2];
-    id_mhtdc_z_shifted_music22 = new Float_t[hits_in_s1s2];
+    // id_mhtdc_aoq_s1s2 = new Float_t[hits_in_s1s2];
+    // id_mhtdc_aoq_corr_s1s2 = new Float_t[hits_in_s1s2];
+    // id_mhtdc_v_cor_music21 = new Float_t[hits_in_s1s2];
+    // id_mhtdc_z_music21 = new Float_t[hits_in_s1s2];
+    // id_mhtdc_z_shifted_music21 = new Float_t[hits_in_s1s2];
+    // id_mhtdc_v_cor_music22 = new Float_t[hits_in_s1s2];
+    // id_mhtdc_z_music22 = new Float_t[hits_in_s1s2];
+    // id_mhtdc_z_shifted_music22 = new Float_t[hits_in_s1s2];
 
     // Calculate TOF, Beta
     if (id->tof_s2_select == 1) 
     {
         for (int i = 0; i < hits_in_s1s2; i++) 
         {
-            id_mhtdc_tof_s1s2[i] = mhtdc_tof2111[i];
-            if (id_mhtdc_tof_s1s2[i] > 0.0) id_mhtdc_beta_s1s2[i] = (id->mhtdc_length_sc1121 / id_mhtdc_tof_s1s2[i]) / speed_light;
-            else id_mhtdc_beta_s1s2[i] = 0.;
+            temp_id_mhtdc_tof_s1s2[i] = mhtdc_tof2111[i];
+            temp_id_mhtdc_beta_s1s2[i] = (id->mhtdc_length_sc1121 / temp_id_mhtdc_tof_s1s2[i]) / speed_light; // can never be outside 0 and 1
         }
     }
+    // CEJ :: removed for testing
     else if (id->tof_s2_select == 2) 
     {
         for (int i = 0; i < hits_in_s1s2; i++) 
         {
-            id_mhtdc_tof_s1s2[i] = mhtdc_tof2211[i];
-            if (id_mhtdc_tof_s1s2[i] > 0.0) id_mhtdc_beta_s1s2[i] = (id->mhtdc_length_sc1122 / id_mhtdc_tof_s1s2[i]) / speed_light;
-            else id_mhtdc_beta_s1s2[i] = 0.;
+            temp_id_mhtdc_tof_s1s2[i] = mhtdc_tof2211[i];
+            temp_id_mhtdc_beta_s1s2[i] = (id->mhtdc_length_sc1122 / temp_id_mhtdc_tof_s1s2[i]) / speed_light;
         }
     }
     else c4LOG(fatal, "Bad S2 TOF selection. Check FRS setup file!");
     
     // Calculate Gamma
-    for (int i = 0; i < hits_in_s1s2; i++) id_mhtdc_gamma_s1s2[i] = 1. / sqrt(1. - TMath::Power(id_mhtdc_beta_s1s2[i], 2));
+    for (int i = 0; i < hits_in_s1s2; i++) id_mhtdc_gamma_s1s2[i] = (1. / sqrt(1. - TMath::Power(temp_id_mhtdc_beta_s1s2[i], 2)));
 
     // Calculate Delta, AoQ
     for (int i = 0; i < hits_in_s2x; i++)
@@ -2176,87 +2226,80 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
                 else if (id->use_sc11x == 1) id_mhtdc_delta_s1s2[count] = (temp_s2x_mhtdc[i]  - (temp_s1x_mhtdc[j] * frs->magnification[5])) / (-1.0 * frs->dispersion[5] * 1000.0); //1000 is dispertsion from meter to mm. -1.0 is sign definition.
                 else c4LOG(fatal, "Invalid Sc11 use selection. Check FRS setup file!");
 
-                if (id_mhtdc_beta_s1s2[count] > 0.0 && id_mhtdc_beta_s1s2[count] < 1.0)
+                if (temp_id_mhtdc_beta_s1s2[count] > 0.0 && temp_id_mhtdc_beta_s1s2[count] < 1.0 && temp_id_mhtdc_tof_s1s2[count] > 0.0)
                 {
-                    id_mhtdc_aoq_s1s2[count] = mean_brho_s1s2 * (1. + id_mhtdc_delta_s1s2[count]) * temp_tm_to_MeV / (temp_mu * id_mhtdc_beta_s1s2[count] * id_mhtdc_gamma_s1s2[count]);
-                    id_mhtdc_aoq_corr_s1s2[count] = id_mhtdc_aoq_s1s2[count] - id->a1AoQCorr * id_a2;
+                    s1x_mhtdc.emplace_back(temp_s1x_mhtdc[j]);
+                    s1a_mhtdc.emplace_back(temp_a1);
+                    s2x_s1s2_mhtdc.emplace_back(temp_s2x_mhtdc[i]);
+                    s2a_s1s2_mhtdc.emplace_back(temp_a2);
+                    id_mhtdc_tof_s1s2.emplace_back(temp_id_mhtdc_tof_s1s2[count]);
+                    id_mhtdc_beta_s1s2.emplace_back(temp_id_mhtdc_beta_s1s2[count]);
+                    id_mhtdc_aoq_s1s2.emplace_back(mean_brho_s1s2 * (1. + id_mhtdc_delta_s1s2[count]) * temp_tm_to_MeV / (temp_mu * temp_id_mhtdc_beta_s1s2[count] * id_mhtdc_gamma_s1s2[count]));
+                    id_mhtdc_aoq_corr_s1s2.emplace_back(id_mhtdc_aoq_s1s2.back() - id->a1AoQCorr * id_a2);
+                    
                 }
-                else
-                {
-                    id_mhtdc_aoq_s1s2[count] = -999;
-                    id_mhtdc_aoq_corr_s1s2[count] = -999;
-                }
-            }
-            else
-            {
-                id_mhtdc_aoq_s1s2[count] = -999;
-                id_mhtdc_aoq_corr_s1s2[count] = -999;
             }
         }
     }
 
 
     // Calculate Z (MUSIC 21 / 22)
-    for (int i = 0; i < hits_in_s1s2;  i++)
+    for (int i = 0; i < id_mhtdc_beta_s1s2.size();  i++)
     {
-        if (music21_de_cor > 0.0 && id_mhtdc_beta_s1s2[i] > 0.0 && id_mhtdc_beta_s1s2[i] < 1.0)
+        if (music21_de_cor > 0.0) //  beta should be >0 <1 by default
         {
             Double_t power = 1., sum = 0.;
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->mhtdc_vel_a_music21_s1s2[j];
-                if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s1s2[i];
-                else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s1s2[i], 2); }
+                if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s1s2.at(i);
+                else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s1s2.at(i), 2); }
             }
 
-            id_mhtdc_v_cor_music21[i] = sum;
-            if (id_mhtdc_v_cor_music21[i] > 0.0)
+            if (sum > 0) // why are we creating some new array for this unless we're going to plot it.. 
             {
-                id_mhtdc_z_music21[i] = frs->primary_z * sqrt(music21_de_cor / id_mhtdc_v_cor_music21[i]);
-                id_mhtdc_z_shifted_music21[i] = id_mhtdc_z_music21[i] + id->mhtdc_offset_z_music21;
+                id_mhtdc_z_music21.emplace_back(frs->primary_z * sqrt(music21_de_cor / sum));
+                id_mhtdc_z_shifted_music21.emplace_back(id_mhtdc_z_music21.at(i) + id->mhtdc_offset_z_music21); // we don't even use this ?
             }
             else
             {
-                id_mhtdc_z_music21[i] = -999.;
-                id_mhtdc_z_shifted_music21[i] = -999.;
+                id_mhtdc_z_music21.emplace_back(-999.);
+                id_mhtdc_z_shifted_music21.emplace_back(-999.);
             }
         }
         else
         {
-            id_mhtdc_z_music21[i] = -999.;
-            id_mhtdc_z_shifted_music21[i] = -999.;
+            id_mhtdc_z_music21.emplace_back(-999.);
+            id_mhtdc_z_shifted_music21.emplace_back(-999.);
         }
 
-        if (music22_de_cor > 0.0 && id_mhtdc_beta_s1s2[i] > 0.5 && id_mhtdc_beta_s1s2[i] < 1.0)
+        if (music22_de_cor > 0.0)
         {
             Double_t power = 1., sum = 0.;
             for (int j = 0; j < 4; j++)
             {
-                sum += power * id->mhtdc_vel_a_music22[i];
-                if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s1s2[i];
-                else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s1s2[i], 2); }
+                sum += power * id->mhtdc_vel_a_music22[j];
+                if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s1s2.at(i);
+                else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s1s2.at(i), 2); }
             }
 
-            id_mhtdc_v_cor_music22[i] = sum;
-            if (id_mhtdc_v_cor_music22[i] > 0.0)
+            if (sum > 0)
             {
-                id_mhtdc_z_music22[i] = frs->primary_z * sqrt(music22_de_cor / id_mhtdc_v_cor_music22[i]);
-                id_mhtdc_z_shifted_music22[i] = id_mhtdc_z_music22[i] + id->mhtdc_offset_z_music22;
+                id_mhtdc_z_music22.emplace_back(frs->primary_z * sqrt(music22_de_cor / sum));
+                id_mhtdc_z_shifted_music22.emplace_back(id_mhtdc_z_music22.at(i) + id->mhtdc_offset_z_music22);
             }
             else
             {
-                id_mhtdc_z_music22[i] = -999.;
-                id_mhtdc_z_shifted_music22[i] = -999.;
+                id_mhtdc_z_music22.emplace_back(-999.);
+                id_mhtdc_z_shifted_music22.emplace_back(-999.);
             }
         }
         else
         {
-            id_mhtdc_z_music22[i] = -999.;
-            id_mhtdc_z_shifted_music22[i] = -999.;
+            id_mhtdc_z_music22.emplace_back(-999.);
+            id_mhtdc_z_shifted_music22.emplace_back(-999.);
         }
     }
-
-
 
     // ::::::::::::::::::::::::::::::::::::
     //   S2S4 MultihitTDC ID analysis
@@ -2265,54 +2308,53 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
     // matches hits_in_tof4121 if 21 -> 41, etc.
     hits_in_s2s4 = hits_in_s4x * hits_in_s2x;
 
-    id_mhtdc_beta_s2s4 = new Float_t[hits_in_s2s4];
-    id_mhtdc_tof_s2s4 = new Float_t[hits_in_s2s4];
-    id_mhtdc_gamma_s2s4 = new Float_t[hits_in_s2s4];
+    temp_id_mhtdc_beta_s2s4 = new Float_t[hits_in_s2s4];
+    temp_id_mhtdc_tof_s2s4 = new Float_t[hits_in_s2s4];
+    temp_id_mhtdc_gamma_s2s4 = new Float_t[hits_in_s2s4];
+    // id_mhtdc_beta_s2s4 = new Float_t[hits_in_s2s4];
+    // id_mhtdc_tof_s2s4 = new Float_t[hits_in_s2s4];
     id_mhtdc_delta_s2s4 = new Float_t[hits_in_s2s4];
-    id_mhtdc_aoq_s2s4 = new Float_t[hits_in_s2s4];
-    id_mhtdc_aoq_corr_s2s4 = new Float_t[hits_in_s2s4];
-    id_mhtdc_v_cor_music41 = new Float_t[hits_in_s2s4];
-    id_mhtdc_z_music41 = new Float_t[hits_in_s2s4];
-    id_mhtdc_z_shifted_music41 = new Float_t[hits_in_s2s4];
-    id_mhtdc_v_cor_music42 = new Float_t[hits_in_s2s4];
-    id_mhtdc_z_music42 = new Float_t[hits_in_s2s4];
-    id_mhtdc_z_shifted_music42 = new Float_t[hits_in_s2s4];
-    id_mhtdc_v_cor_music43 = new Float_t[hits_in_s2s4];
-    id_mhtdc_z_music43 = new Float_t[hits_in_s2s4];
-    id_mhtdc_z_shifted_music43 = new Float_t[hits_in_s2s4];
+    // id_mhtdc_aoq_s2s4 = new Float_t[hits_in_s2s4];
+    // id_mhtdc_aoq_corr_s2s4 = new Float_t[hits_in_s2s4];
+    // id_mhtdc_v_cor_music41 = new Float_t[hits_in_s2s4];
+    // id_mhtdc_z_music41 = new Float_t[hits_in_s2s4];
+    // id_mhtdc_z_shifted_music41 = new Float_t[hits_in_s2s4];
+    // id_mhtdc_v_cor_music42 = new Float_t[hits_in_s2s4];
+    // id_mhtdc_z_music42 = new Float_t[hits_in_s2s4];
+    // id_mhtdc_z_shifted_music42 = new Float_t[hits_in_s2s4];
+    // id_mhtdc_v_cor_music43 = new Float_t[hits_in_s2s4];
+    // id_mhtdc_z_music43 = new Float_t[hits_in_s2s4];
+    // id_mhtdc_z_shifted_music43 = new Float_t[hits_in_s2s4];
 
     // Calculate TOF, Beta
     if (id->tof_s4_select == 1) // 21 -> 41
     {
         for (int i = 0; i < hits_in_s2s4; i++) 
         {
-            id_mhtdc_tof_s2s4[i] = mhtdc_tof4121[i];
-            if (id_mhtdc_tof_s2s4[i] > 0.0) id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2141 / id_mhtdc_tof_s2s4[i]) / speed_light;
-            else id_mhtdc_beta_s2s4[i] = 0.;
+            temp_id_mhtdc_tof_s2s4[i] = mhtdc_tof4121[i];
+            temp_id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2141 / temp_id_mhtdc_tof_s2s4[i]) / speed_light;
         }
     }
     else if (id->tof_s4_select == 2) // 21 -> 42
     {
         for (int i = 0; i < hits_in_s2s4; i++) 
         {
-            id_mhtdc_tof_s2s4[i] = mhtdc_tof4221[i];
-            if (id_mhtdc_tof_s2s4[i] > 0.0) id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2142 / id_mhtdc_tof_s2s4[i]) / speed_light;
-            else id_mhtdc_beta_s2s4[i] = 0.;
+            temp_id_mhtdc_tof_s2s4[i] = mhtdc_tof4221[i];
+            temp_id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2142 / temp_id_mhtdc_tof_s2s4[i]) / speed_light;
         }
     }
     else if (id->tof_s4_select == 3) // 22 -> 41
     {
         for (int i = 0; i < hits_in_s2s4; i++) 
         {
-            id_mhtdc_tof_s2s4[i] = mhtdc_tof4122[i];
-            if (id_mhtdc_tof_s2s4[i] > 0.0) id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2241 / id_mhtdc_tof_s2s4[i]) / speed_light;
-            else id_mhtdc_beta_s2s4[i] = 0.;
+            temp_id_mhtdc_tof_s2s4[i] = mhtdc_tof4122[i];
+            temp_id_mhtdc_beta_s2s4[i] = (id->mhtdc_length_sc2241 / temp_id_mhtdc_tof_s2s4[i]) / speed_light;
         }
     }
     else c4LOG(fatal, "Invalid S4 TOF selection. Check FRS setup!");
 
     // Calculate Gamma
-    for (int i = 0; i < hits_in_s2s4; i++) id_mhtdc_gamma_s2s4[i] = 1. / sqrt(1. - TMath::Power(id_mhtdc_beta_s2s4[i], 2));
+    for (int i = 0; i < hits_in_s2s4; i++) temp_id_mhtdc_gamma_s2s4[i] = (1. / sqrt(1. - TMath::Power(temp_id_mhtdc_beta_s2s4[i], 2)));
 
     // Calculate Delta (momentum deviation), AoQ
     for (int i = 0; i < hits_in_s4x; i++)
@@ -2325,136 +2367,127 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
             {
                 id_mhtdc_delta_s2s4[count] = (temp_s4x_mhtdc[i]  - (temp_s2x_mhtdc[j] * frs->magnification[1])) / (-1.0 * frs->dispersion[1] * 1000.0); //1000 is dispertsion from meter to mm. -1.0 is sign definition. 
 
-                // Should this be restricted to 0.5 < Beta < 1.0?
-                if (id_mhtdc_beta_s2s4[count] > 0.0 && id_mhtdc_beta_s2s4[count] < 1.0)
+                if (temp_id_mhtdc_beta_s2s4[count] > 0.0 && temp_id_mhtdc_beta_s2s4[count] < 1.0)
                 {
-                    id_mhtdc_aoq_s2s4[count] = mean_brho_s2s4 * (1. + id_mhtdc_delta_s2s4[count]) * temp_tm_to_MeV / (temp_mu * id_mhtdc_beta_s2s4[count] * id_mhtdc_gamma_s2s4[count]);
-                    id_mhtdc_aoq_corr_s2s4[count] = id_mhtdc_aoq_s2s4[count] - id->a2AoQCorr * id_a2;
+                    s2x_s2s4_mhtdc.emplace_back(temp_s2x_mhtdc[j]);
+                    s2a_s2s4_mhtdc.emplace_back(temp_a2);
+                    s4x_mhtdc.emplace_back(temp_s4x_mhtdc[i]);
+                    s4a_mhtdc.emplace_back(temp_a4);
+                    id_mhtdc_tof_s2s4.emplace_back(temp_id_mhtdc_tof_s2s4[count]);
+                    id_mhtdc_beta_s2s4.emplace_back(temp_id_mhtdc_beta_s2s4[count]);
+                    id_mhtdc_gamma_s2s4.emplace_back(temp_id_mhtdc_gamma_s2s4[count]);
+                    id_mhtdc_aoq_s2s4.emplace_back(mean_brho_s2s4 * (1. + id_mhtdc_delta_s2s4[count]) * temp_tm_to_MeV / (temp_mu * temp_id_mhtdc_beta_s2s4[count] * temp_id_mhtdc_gamma_s2s4[count]));
+                    id_mhtdc_aoq_corr_s2s4.emplace_back(id_mhtdc_aoq_s2s4.back() - id->a2AoQCorr * id_a2);
                 }
-                else
-                {
-                    id_mhtdc_aoq_s2s4[count] = -999;
-                    id_mhtdc_aoq_corr_s2s4[count] = -999;
-                }
-            }
-            else
-            {
-                id_mhtdc_aoq_s2s4[count] = -999;
-                id_mhtdc_aoq_corr_s2s4[count] = -999;
-            }
-            
+            }  
         }
     }
 
     // Calculate Z (MUSIC 41 / 42 / 43)
-    for (int i = 0; i < hits_in_s2s4; i++)
+    for (int i = 0; i < id_mhtdc_beta_s2s4.size(); i++)
     {
-        if (music41_de_cor > 0.0 && id_mhtdc_beta_s2s4[i] > 0.0 && id_mhtdc_beta_s2s4[i] < 1.0)
+        if (music41_de_cor > 0.0)
         {
             Double_t power = 1., sum = 0.;
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->mhtdc_vel_a_music41[j];
-                if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s2s4[i];
-                else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s2s4[i], 2); }
+                if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s2s4.at(i);
+                else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s2s4.at(i), 2); }
             }
 
-            id_mhtdc_v_cor_music41[i] = sum;
-            if (id_mhtdc_v_cor_music41[i] > 0.0)
+            // CEJ:: v_cor went here, but we (despec) don't care right now
+            if (sum > 0.0)
             {
-                id_mhtdc_z_music41[i] = frs->primary_z * sqrt(music41_de / id_mhtdc_v_cor_music41[i]);
-                id_mhtdc_z_shifted_music41[i] = id_mhtdc_z_music41[i] + id->mhtdc_offset_z_music41;
+                id_mhtdc_z_music41.emplace_back(frs->primary_z * sqrt(music41_de / sum));
+                id_mhtdc_z_shifted_music41.emplace_back(id_mhtdc_z_music41.back() + id->mhtdc_offset_z_music41);
             }
             else
             {
-                id_mhtdc_z_music41[i] = -999.;
-                id_mhtdc_z_shifted_music41[i] = -999.;
+                id_mhtdc_z_music41.emplace_back(-999.);
+                id_mhtdc_z_shifted_music41.emplace_back(-999.);
             }
         }
         else
         {
-            id_mhtdc_z_music41[i] = -999.;
-            id_mhtdc_z_shifted_music41[i] = -999.;
+            id_mhtdc_z_music41.emplace_back(-999.);
+            id_mhtdc_z_shifted_music41.emplace_back(-999.);
         }
         
 
-        if (music42_de_cor > 0.0 && id_mhtdc_beta_s2s4[i] > 0.0 && id_mhtdc_beta_s2s4[i] < 1.0)
+        if (music42_de_cor > 0.0)
         {
             Double_t power = 1., sum = 0.;
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->mhtdc_vel_a_music42[j];
-                if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s2s4[i];
-                else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s2s4[i], 2); }
+                if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s2s4.at(i);
+                else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s2s4.at(i), 2); }
             }
 
-            id_mhtdc_v_cor_music42[i] = sum;
-            if (id_mhtdc_v_cor_music42[i] > 0.0)
+            if (sum > 0.0)
             {
-                id_mhtdc_z_music42[i] = frs->primary_z * sqrt(music42_de / id_mhtdc_v_cor_music42[i]);
-                id_mhtdc_z_shifted_music42[i] = id_mhtdc_z_music42[i] + id->mhtdc_offset_z_music42;
+                id_mhtdc_z_music42.emplace_back(frs->primary_z * sqrt(music42_de / sum));
+                id_mhtdc_z_shifted_music42.emplace_back(id_mhtdc_z_music42.back() + id->mhtdc_offset_z_music42);
             }
             else
             {
-                id_mhtdc_z_music42[i] = -999.;
-                id_mhtdc_z_shifted_music42[i] = -999.;
+                id_mhtdc_z_music42.emplace_back(-999.);
+                id_mhtdc_z_shifted_music42.emplace_back(-999.);
             }
         }
         else
         {
-            id_mhtdc_z_music42[i] = -999.;
-            id_mhtdc_z_shifted_music42[i] = -999.;
+            id_mhtdc_z_music42.emplace_back(-999.);
+            id_mhtdc_z_shifted_music42.emplace_back(-999.);
         }
 
-        if (music43_de_cor > 0.0 && id_mhtdc_beta_s2s4[i] > 0.0 && id_mhtdc_beta_s2s4[i] < 1.0)
+        if (music43_de_cor > 0.0)
         {
             Double_t power = 1., sum = 0.;
             for (int j = 0; j < 4; j++)
             {
                 sum += power * id->mhtdc_vel_a_music43[j];
-                if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s2s4[i];
-                else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s2s4[i], 2); }
+                if (frs_config->old_beta_cal) power *= id_mhtdc_beta_s2s4.at(i);
+                else { power *= 1.0 / TMath::Power(id_mhtdc_beta_s2s4.at(i), 2); }
             }
 
-            id_mhtdc_v_cor_music43[i] = sum;
-            if (id_mhtdc_v_cor_music43[i] > 0.0)
+            if (sum > 0.0)
             {
-                id_mhtdc_z_music43[i] = frs->primary_z * sqrt(music43_de / id_mhtdc_v_cor_music43[i]);
-                id_mhtdc_z_shifted_music43[i] = id_mhtdc_z_music43[i] + id->mhtdc_offset_z_music43;
+                id_mhtdc_z_music43.emplace_back(frs->primary_z * sqrt(music43_de / sum));
+                id_mhtdc_z_shifted_music43.emplace_back(id_mhtdc_z_music43.back() + id->mhtdc_offset_z_music43);
             }
             else
             {
-                id_mhtdc_z_music43[i] = -999.;
-                id_mhtdc_z_shifted_music43[i] = -999.;
+                id_mhtdc_z_music43.emplace_back(-999.);
+                id_mhtdc_z_shifted_music43.emplace_back(-999.);
             }
         }
         else
         {
-            id_mhtdc_z_music43[i] = -999.;
-            id_mhtdc_z_shifted_music43[i] = -999.;
+            id_mhtdc_z_music43.emplace_back(-999.);
+            id_mhtdc_z_shifted_music43.emplace_back(-999.);
         }
     }
    
     // Calculate dEdeg for charge states
-    mhtdc_gamma1square_s2s4 = new Float_t[hits_in_s2s4];
-    id_mhtdc_gamma_ta_s2s4 = new Float_t[hits_in_s2s4];
-    id_mhtdc_dEdegoQ_s2s4 = new Float_t[hits_in_s2s4];
-    id_mhtdc_dEdeg_z41 = new Float_t[hits_in_s2s4];
-    
-    for (int i = 0; i < hits_in_s2s4; i++)
+    Float_t mhtdc_gamma1square_s2s4 = 0;
+    Float_t id_mhtdc_gamma_ta_s2s4 = 0;
+  
+    for (int i = 0; i < id_mhtdc_beta_s2s4.size(); i++)
     {
-        if (id_mhtdc_aoq_s2s4[i] > 0 && id_mhtdc_z_music41[i] > 0)
+        if (id_mhtdc_aoq_s2s4.at(i) > 0 && id_mhtdc_z_music41.at(i) > 0)
         {
-            mhtdc_gamma1square_s2s4[i] = 1.0 + TMath::Power(((1.0 / aoq_factor) * (id_brho[0] / id_mhtdc_aoq_s2s4[i])), 2);
-            id_mhtdc_gamma_ta_s2s4[i] = TMath::Sqrt(mhtdc_gamma1square_s2s4[i]);
-            id_mhtdc_dEdegoQ_s2s4[i] = (id_mhtdc_gamma_ta_s2s4[i] - id_mhtdc_gamma_s2s4[i]) * id_mhtdc_aoq_s2s4[i];
-            id_mhtdc_dEdeg_z41[i] = id_mhtdc_dEdegoQ_s2s4[i] * id_mhtdc_z_music41[i];
+            mhtdc_gamma1square_s2s4 = 1.0 + TMath::Power(((1.0 / aoq_factor) * (id_brho[0] / id_mhtdc_aoq_s2s4.at(i))), 2);
+            id_mhtdc_gamma_ta_s2s4 = TMath::Sqrt(mhtdc_gamma1square_s2s4);
+            id_mhtdc_dEdegoQ_s2s4.emplace_back((id_mhtdc_gamma_ta_s2s4 - id_mhtdc_gamma_s2s4.at(i)) * id_mhtdc_aoq_s2s4.at(i));
+            id_mhtdc_dEdeg_z41.emplace_back(id_mhtdc_dEdegoQ_s2s4.back() * id_mhtdc_z_music41.at(i));
             // 42, 43?
         }
         else
         {
-            id_mhtdc_dEdegoQ_s2s4[i] = -999;
-            id_mhtdc_dEdeg_z41[i] = -999;
+            id_mhtdc_dEdegoQ_s2s4.emplace_back(-999);
+            id_mhtdc_dEdeg_z41.emplace_back(-999);
             // 42, 43?
         }
     }
@@ -2575,37 +2608,40 @@ void FrsCal2Hit::FinishEvent()
     if (mhtdc_tof4321 != nullptr) { delete[] mhtdc_tof4321; mhtdc_tof4321 = nullptr; }
     if (mhtdc_tof8121 != nullptr) { delete[] mhtdc_tof8121; mhtdc_tof8121 = nullptr; }
     if (mhtdc_tof3121 != nullptr) { delete[] mhtdc_tof3121; mhtdc_tof3121 = nullptr; }
-    if (id_mhtdc_tof_s1s2 != nullptr) { delete[] id_mhtdc_tof_s1s2; id_mhtdc_tof_s1s2 = nullptr; }
-    if (id_mhtdc_beta_s1s2 != nullptr) { delete[] id_mhtdc_beta_s1s2; id_mhtdc_beta_s1s2 = nullptr; }
+    if (mhtdc_tof2111 != nullptr) { delete[] mhtdc_tof2111; mhtdc_tof2111 = nullptr; }
+
+    if (temp_id_mhtdc_tof_s1s2 != nullptr) { delete[] temp_id_mhtdc_tof_s1s2; temp_id_mhtdc_tof_s1s2 = nullptr; }
+    if (temp_id_mhtdc_beta_s1s2 != nullptr) { delete[] temp_id_mhtdc_beta_s1s2; temp_id_mhtdc_beta_s1s2 = nullptr; }
     if (id_mhtdc_gamma_s1s2 != nullptr) { delete[] id_mhtdc_gamma_s1s2; id_mhtdc_gamma_s1s2 = nullptr; }
     if (id_mhtdc_delta_s1s2 != nullptr) { delete[] id_mhtdc_delta_s1s2; id_mhtdc_delta_s1s2 = nullptr; }
-    if (id_mhtdc_aoq_s1s2 != nullptr) { delete[] id_mhtdc_aoq_s1s2; id_mhtdc_aoq_s1s2 = nullptr; }
-    if (id_mhtdc_aoq_corr_s1s2 != nullptr) { delete[] id_mhtdc_aoq_corr_s1s2; id_mhtdc_aoq_corr_s1s2 = nullptr; }
-    if (id_mhtdc_v_cor_music21 != nullptr) { delete[] id_mhtdc_v_cor_music21; id_mhtdc_v_cor_music21 = nullptr; }
-    if (id_mhtdc_z_music21 != nullptr) { delete[] id_mhtdc_z_music21; id_mhtdc_z_music21 = nullptr; }
-    if (id_mhtdc_z_shifted_music21 != nullptr) { delete[] id_mhtdc_z_shifted_music21; id_mhtdc_z_shifted_music21 = nullptr; }
-    if (id_mhtdc_v_cor_music22 != nullptr) { delete[] id_mhtdc_v_cor_music22; id_mhtdc_v_cor_music22 = nullptr; }
-    if (id_mhtdc_z_music22 != nullptr) { delete[] id_mhtdc_z_music22; id_mhtdc_z_music22 = nullptr; }
-    if (id_mhtdc_z_shifted_music22 != nullptr) { delete[] id_mhtdc_z_shifted_music22; id_mhtdc_z_shifted_music22 = nullptr; }
-    if (id_mhtdc_tof_s2s4 != nullptr) { delete[] id_mhtdc_tof_s2s4; id_mhtdc_tof_s2s4 = nullptr; }
-    if (id_mhtdc_beta_s2s4 != nullptr) { delete[] id_mhtdc_beta_s2s4; id_mhtdc_beta_s2s4 = nullptr; }
-    if (id_mhtdc_gamma_s2s4 != nullptr) { delete[] id_mhtdc_gamma_s2s4; id_mhtdc_gamma_s2s4 = nullptr; }
+    // if (id_mhtdc_aoq_s1s2 != nullptr) { delete[] id_mhtdc_aoq_s1s2; id_mhtdc_aoq_s1s2 = nullptr; }
+    // if (id_mhtdc_aoq_corr_s1s2 != nullptr) { delete[] id_mhtdc_aoq_corr_s1s2; id_mhtdc_aoq_corr_s1s2 = nullptr; }
+    // if (id_mhtdc_v_cor_music21 != nullptr) { delete[] id_mhtdc_v_cor_music21; id_mhtdc_v_cor_music21 = nullptr; }
+    // if (id_mhtdc_z_music21 != nullptr) { delete[] id_mhtdc_z_music21; id_mhtdc_z_music21 = nullptr; }
+    // if (id_mhtdc_z_shifted_music21 != nullptr) { delete[] id_mhtdc_z_shifted_music21; id_mhtdc_z_shifted_music21 = nullptr; }
+    // if (id_mhtdc_v_cor_music22 != nullptr) { delete[] id_mhtdc_v_cor_music22; id_mhtdc_v_cor_music22 = nullptr; }
+    // if (id_mhtdc_z_music22 != nullptr) { delete[] id_mhtdc_z_music22; id_mhtdc_z_music22 = nullptr; }
+    // if (id_mhtdc_z_shifted_music22 != nullptr) { delete[] id_mhtdc_z_shifted_music22; id_mhtdc_z_shifted_music22 = nullptr; }
+
+    if (temp_id_mhtdc_tof_s2s4 != nullptr) { delete[] temp_id_mhtdc_tof_s2s4; temp_id_mhtdc_tof_s2s4 = nullptr; }
+    if (temp_id_mhtdc_beta_s2s4 != nullptr) { delete[] temp_id_mhtdc_beta_s2s4; temp_id_mhtdc_beta_s2s4 = nullptr; }
+    if (temp_id_mhtdc_gamma_s2s4 != nullptr) { delete[] temp_id_mhtdc_gamma_s2s4; temp_id_mhtdc_gamma_s2s4 = nullptr; }
     if (id_mhtdc_delta_s2s4 != nullptr) { delete[] id_mhtdc_delta_s2s4; id_mhtdc_delta_s2s4 = nullptr; }
-    if (id_mhtdc_aoq_s2s4 != nullptr) { delete[] id_mhtdc_aoq_s2s4; id_mhtdc_aoq_s2s4 = nullptr; }
-    if (id_mhtdc_aoq_corr_s2s4 != nullptr) { delete[] id_mhtdc_aoq_corr_s2s4; id_mhtdc_aoq_corr_s2s4 = nullptr; }
-    if (id_mhtdc_v_cor_music41 != nullptr) { delete[] id_mhtdc_v_cor_music41; id_mhtdc_v_cor_music41 = nullptr; }
-    if (id_mhtdc_z_music41 != nullptr) { delete[] id_mhtdc_z_music41; id_mhtdc_z_music41 = nullptr; }
-    if (id_mhtdc_z_shifted_music41 != nullptr) { delete[] id_mhtdc_z_shifted_music41; id_mhtdc_z_shifted_music41 = nullptr; }
-    if (id_mhtdc_v_cor_music42 != nullptr) { delete[] id_mhtdc_v_cor_music42; id_mhtdc_v_cor_music42 = nullptr; }
-    if (id_mhtdc_z_music42 != nullptr) { delete[] id_mhtdc_z_music42; id_mhtdc_z_music42 = nullptr; }
-    if (id_mhtdc_z_shifted_music42 != nullptr) { delete[] id_mhtdc_z_shifted_music42; id_mhtdc_z_shifted_music42 = nullptr; }
-    if (id_mhtdc_v_cor_music43 != nullptr) { delete[] id_mhtdc_v_cor_music43; id_mhtdc_v_cor_music43 = nullptr; }
-    if (id_mhtdc_z_music43 != nullptr) { delete[] id_mhtdc_z_music43; id_mhtdc_z_music43 = nullptr; }
-    if (id_mhtdc_z_shifted_music43 != nullptr) { delete[] id_mhtdc_z_shifted_music43; id_mhtdc_z_shifted_music43 = nullptr; }
-    if (mhtdc_gamma1square_s2s4 != nullptr) { delete[] mhtdc_gamma1square_s2s4; mhtdc_gamma1square_s2s4 = nullptr; }
-    if (id_mhtdc_gamma_ta_s2s4 != nullptr) { delete[] id_mhtdc_gamma_ta_s2s4; id_mhtdc_gamma_ta_s2s4 = nullptr; }
-    if (id_mhtdc_dEdegoQ_s2s4 != nullptr) { delete[] id_mhtdc_dEdegoQ_s2s4; id_mhtdc_dEdegoQ_s2s4 = nullptr; }
-    if (id_mhtdc_dEdeg_z41 != nullptr) { delete[] id_mhtdc_dEdeg_z41; id_mhtdc_dEdeg_z41 = nullptr; }
+    // if (id_mhtdc_aoq_s2s4 != nullptr) { delete[] id_mhtdc_aoq_s2s4; id_mhtdc_aoq_s2s4 = nullptr; }
+    // if (id_mhtdc_aoq_corr_s2s4 != nullptr) { delete[] id_mhtdc_aoq_corr_s2s4; id_mhtdc_aoq_corr_s2s4 = nullptr; }
+    // if (id_mhtdc_v_cor_music41 != nullptr) { delete[] id_mhtdc_v_cor_music41; id_mhtdc_v_cor_music41 = nullptr; }
+    // if (id_mhtdc_z_music41 != nullptr) { delete[] id_mhtdc_z_music41; id_mhtdc_z_music41 = nullptr; }
+    // if (id_mhtdc_z_shifted_music41 != nullptr) { delete[] id_mhtdc_z_shifted_music41; id_mhtdc_z_shifted_music41 = nullptr; }
+    // if (id_mhtdc_v_cor_music42 != nullptr) { delete[] id_mhtdc_v_cor_music42; id_mhtdc_v_cor_music42 = nullptr; }
+    // if (id_mhtdc_z_music42 != nullptr) { delete[] id_mhtdc_z_music42; id_mhtdc_z_music42 = nullptr; }
+    // if (id_mhtdc_z_shifted_music42 != nullptr) { delete[] id_mhtdc_z_shifted_music42; id_mhtdc_z_shifted_music42 = nullptr; }
+    // if (id_mhtdc_v_cor_music43 != nullptr) { delete[] id_mhtdc_v_cor_music43; id_mhtdc_v_cor_music43 = nullptr; }
+    // if (id_mhtdc_z_music43 != nullptr) { delete[] id_mhtdc_z_music43; id_mhtdc_z_music43 = nullptr; }
+    // if (id_mhtdc_z_shifted_music43 != nullptr) { delete[] id_mhtdc_z_shifted_music43; id_mhtdc_z_shifted_music43 = nullptr; }
+    // if (mhtdc_gamma1square_s2s4 != nullptr) { delete[] mhtdc_gamma1square_s2s4; mhtdc_gamma1square_s2s4 = nullptr; }
+    // if (id_mhtdc_gamma_ta_s2s4 != nullptr) { delete[] id_mhtdc_gamma_ta_s2s4; id_mhtdc_gamma_ta_s2s4 = nullptr; }
+    // if (id_mhtdc_dEdegoQ_s2s4 != nullptr) { delete[] id_mhtdc_dEdegoQ_s2s4; id_mhtdc_dEdegoQ_s2s4 = nullptr; }
+    // if (id_mhtdc_dEdeg_z41 != nullptr) { delete[] id_mhtdc_dEdeg_z41; id_mhtdc_dEdeg_z41 = nullptr; }
     if (temp_s1x_mhtdc != nullptr) { delete[] temp_s1x_mhtdc; temp_s1x_mhtdc = nullptr; }
     if (temp_s2x_mhtdc != nullptr) { delete[] temp_s2x_mhtdc; temp_s2x_mhtdc = nullptr; }
     if (temp_s4x_mhtdc != nullptr) { delete[] temp_s4x_mhtdc; temp_s4x_mhtdc = nullptr; }
@@ -2706,7 +2742,31 @@ void FrsCal2Hit::FinishEvent()
     id_z42_driftcorr = 0.;
     id_z43_driftcorr = 0.;
 
-    
+    id_mhtdc_beta_s1s2.clear();
+    id_mhtdc_tof_s1s2.clear();
+    id_mhtdc_aoq_s1s2.clear();
+    id_mhtdc_aoq_corr_s1s2.clear();
+    id_mhtdc_z_music21.clear();
+    id_mhtdc_z_shifted_music21.clear();
+    id_mhtdc_z_music22.clear();
+    id_mhtdc_z_shifted_music22.clear();
+    s1x_mhtdc.clear();
+    s2x_s1s2_mhtdc.clear();
+    s2x_s2s4_mhtdc.clear();
+    s4x_mhtdc.clear();
+    id_mhtdc_beta_s2s4.clear();
+    id_mhtdc_tof_s2s4.clear();
+    id_mhtdc_aoq_s2s4.clear();
+    id_mhtdc_aoq_corr_s2s4.clear();
+    id_mhtdc_z_music41.clear();
+    id_mhtdc_z_shifted_music41.clear();
+    id_mhtdc_z_music42.clear();
+    id_mhtdc_z_shifted_music42.clear();
+    id_mhtdc_z_music43.clear();
+    id_mhtdc_z_shifted_music43.clear();
+    id_mhtdc_dEdegoQ_s2s4.clear();
+    id_mhtdc_dEdeg_z41.clear();
+
     
 }
 

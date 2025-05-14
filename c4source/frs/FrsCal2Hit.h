@@ -300,6 +300,7 @@ class FrsCal2Hit : public FairTask
         Float_t* mhtdc_sc42lr_x = nullptr;
         Float_t* mhtdc_sc43lr_x = nullptr;
         Float_t* mhtdc_tof2111 = nullptr;
+        // std::vector<Float_t> mhtdc_tof2111;
         Float_t* mhtdc_tof2211 = nullptr;
         Float_t* mhtdc_tof4121 = nullptr;
         Float_t* mhtdc_tof4122 = nullptr;
@@ -414,39 +415,41 @@ class FrsCal2Hit : public FairTask
         Bool_t id_b_z42;
         Bool_t id_b_z43;
 
-        Float_t* id_mhtdc_tof_s1s2 = nullptr;
-        Float_t* id_mhtdc_beta_s1s2 = nullptr;
+        // Float_t* id_mhtdc_tof_s1s2 = nullptr;
+        // Float_t* id_mhtdc_beta_s1s2 = nullptr;
+        Float_t* temp_id_mhtdc_beta_s1s2 = nullptr;
+        Float_t* temp_id_mhtdc_tof_s1s2 = nullptr;
         Float_t* id_mhtdc_gamma_s1s2 = nullptr;
         Float_t* id_mhtdc_delta_s1s2 = nullptr;
-        Float_t* id_mhtdc_aoq_s1s2 = nullptr;
-        Float_t* id_mhtdc_aoq_corr_s1s2 = nullptr;
-        Float_t* id_mhtdc_v_cor_music21 = nullptr;
-        Float_t* id_mhtdc_z_music21 = nullptr;
-        Float_t* id_mhtdc_z_shifted_music21 = nullptr;
-        Float_t* id_mhtdc_v_cor_music22 = nullptr;
-        Float_t* id_mhtdc_z_music22 = nullptr;
-        Float_t* id_mhtdc_z_shifted_music22 = nullptr;
+        // Float_t* id_mhtdc_aoq_s1s2 = nullptr;
+        // Float_t* id_mhtdc_aoq_corr_s1s2 = nullptr;
+        // Float_t* id_mhtdc_v_cor_music21 = nullptr;
+        // Float_t* id_mhtdc_z_music21 = nullptr;
+        // Float_t* id_mhtdc_z_shifted_music21 = nullptr;
+        // Float_t* id_mhtdc_v_cor_music22 = nullptr;
+        // Float_t* id_mhtdc_z_music22 = nullptr;
+        // Float_t* id_mhtdc_z_shifted_music22 = nullptr;
 
-        Float_t* id_mhtdc_tof_s2s4 = nullptr;
-        Float_t* id_mhtdc_beta_s2s4 = nullptr;
-        Float_t* id_mhtdc_gamma_s2s4 = nullptr;
+        Float_t* temp_id_mhtdc_tof_s2s4 = nullptr;
+        Float_t* temp_id_mhtdc_beta_s2s4 = nullptr;
+        Float_t* temp_id_mhtdc_gamma_s2s4 = nullptr;
         Float_t* id_mhtdc_delta_s2s4 = nullptr;
-        Float_t* id_mhtdc_aoq_s2s4 = nullptr;
-        Float_t* id_mhtdc_aoq_corr_s2s4 = nullptr;
-        Float_t* id_mhtdc_v_cor_music41 = nullptr;
-        Float_t* id_mhtdc_z_music41 = nullptr;
-        Float_t* id_mhtdc_z_shifted_music41 = nullptr;
-        Float_t* id_mhtdc_v_cor_music42 = nullptr;
-        Float_t* id_mhtdc_z_music42 = nullptr;
-        Float_t* id_mhtdc_z_shifted_music42 = nullptr;
-        Float_t* id_mhtdc_v_cor_music43 = nullptr;
-        Float_t* id_mhtdc_z_music43 = nullptr;
-        Float_t* id_mhtdc_z_shifted_music43 = nullptr;
+        // Float_t* id_mhtdc_aoq_s2s4 = nullptr;
+        // Float_t* id_mhtdc_aoq_corr_s2s4 = nullptr;
+        // Float_t* id_mhtdc_v_cor_music41 = nullptr;
+        // Float_t* id_mhtdc_z_music41 = nullptr;
+        // Float_t* id_mhtdc_z_shifted_music41 = nullptr;
+        // Float_t* id_mhtdc_v_cor_music42 = nullptr;
+        // Float_t* id_mhtdc_z_music42 = nullptr;
+        // Float_t* id_mhtdc_z_shifted_music42 = nullptr;
+        // Float_t* id_mhtdc_v_cor_music43 = nullptr;
+        // Float_t* id_mhtdc_z_music43 = nullptr;
+        // Float_t* id_mhtdc_z_shifted_music43 = nullptr;
 
-        Float_t* mhtdc_gamma1square_s2s4 = nullptr;
-        Float_t* id_mhtdc_gamma_ta_s2s4 = nullptr;
-        Float_t* id_mhtdc_dEdegoQ_s2s4 = nullptr;
-        Float_t* id_mhtdc_dEdeg_z41 = nullptr;
+        // Float_t* mhtdc_gamma1square_s2s4 = nullptr;
+        // Float_t* id_mhtdc_gamma_ta_s2s4 = nullptr;
+        // Float_t* id_mhtdc_dEdegoQ_s2s4 = nullptr;
+        // Float_t* id_mhtdc_dEdeg_z41 = nullptr;
 
         std::vector<Float_t> s1x_mhtdc;
         std::vector<Float_t> s1a_mhtdc;
@@ -472,6 +475,39 @@ class FrsCal2Hit : public FairTask
         std::vector<Float_t> z_music43_mhtdc;
         std::vector<Float_t> dEdegoQ_s2s4_mhtdc;
         std::vector<Float_t> dEdeg_z41_mhtdc;
+
+        // std::vector<Float_t> temp_id_mhtdc_beta_s1s2;
+        // std::vector<Float_t> temp_id_mhtdc_tof_s1s2;
+        std::vector<Float_t> id_mhtdc_beta_s1s2;
+        std::vector<Float_t> id_mhtdc_tof_s1s2;
+        // std::vector<Float_t> id_mhtdc_gamma_s1s2;
+        // std::vector<Float_t> id_mhtdc_delta_s1s2;
+        std::vector<Float_t> id_mhtdc_aoq_s1s2;
+        std::vector<Float_t> id_mhtdc_aoq_corr_s1s2;
+        // std::vector<Float_t> id_mhtdc_v_cor_music21;
+        std::vector<Float_t> id_mhtdc_z_music21;
+        std::vector<Float_t> id_mhtdc_z_shifted_music21;
+        // std::vector<Float_t> id_mhtdc_v_cor_music22;
+        std::vector<Float_t> id_mhtdc_z_music22;
+        std::vector<Float_t> id_mhtdc_z_shifted_music22;
+        // std::vector<Float_t> s1x_mhtdc;
+        // std::vector<Float_t> s2x_s1s2_mhtdc;
+        // std::vector<Float_t> s2x_s2s4_mhtdc;
+        // std::vector<Float_t> s4x_mhtdc;
+
+        std::vector<Float_t> id_mhtdc_beta_s2s4;
+        std::vector<Float_t> id_mhtdc_gamma_s2s4;
+        std::vector<Float_t> id_mhtdc_tof_s2s4;
+        std::vector<Float_t> id_mhtdc_aoq_s2s4;
+        std::vector<Float_t> id_mhtdc_aoq_corr_s2s4;
+        std::vector<Float_t> id_mhtdc_z_music41;
+        std::vector<Float_t> id_mhtdc_z_shifted_music41;
+        std::vector<Float_t> id_mhtdc_z_music42;
+        std::vector<Float_t> id_mhtdc_z_shifted_music42;
+        std::vector<Float_t> id_mhtdc_z_music43;
+        std::vector<Float_t> id_mhtdc_z_shifted_music43;
+        std::vector<Float_t> id_mhtdc_dEdegoQ_s2s4;
+        std::vector<Float_t> id_mhtdc_dEdeg_z41;
 
         // :: DriftCorr :: //
         Float_t id_AoQs1s2_driftcorr;

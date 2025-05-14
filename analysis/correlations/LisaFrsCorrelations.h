@@ -128,6 +128,9 @@ class LisaFrsCorrelations : public FairTask
 
         TDirectory* dir_gates;
 
+        TDirectory* dir_gate_FRS_FRS;
+        TDirectory** dir_FRS_gates_correlated;
+
         TDirectory* dir_gate_LISA;
         TDirectory* dir_gate_LISA_febex;
         TDirectory** dir_LISA_febex_gates;
@@ -193,13 +196,22 @@ class LisaFrsCorrelations : public FairTask
         // ::: Energy - LISA-MUSICs
         std::vector<TH2F*> h2_MUSIC21_vs_LISA_febex;
         std::vector<TH2F*> h2_MUSIC41_vs_LISA_febex;
+        std::vector<TH2F*> h2_MUSIC42_vs_LISA_febex;
+
 
         std::vector<TH2F*> h2_MUSIC21_vs_LISA_MWD;
         std::vector<TH2F*> h2_MUSIC41_vs_LISA_MWD;
+        std::vector<TH2F*> h2_MUSIC42_vs_LISA_MWD;
 
         // ::: Gates
+        // ::: Frs applied on Frs
+        std::vector<TH2F*> h2_Z21_vs_AoQs1s2_s1s2_correlated;
+        std::vector<TH2F*> h2_Z21_vs_AoQs1s2_s1s2s4_correlated;
+        std::vector<TH2F*> h2_Z41_vs_AoQs2s4_s1s2s4_correlated;
+        std::vector<TH2F*> h2_Z42_vs_AoQs2s4_s1s2s4_correlated;
+        
         // ::: Gated - FRS applied on LISA
-        // Full sequential gate
+        // Full sequential gate - Z41
         std::vector<TH2F*> h2_LISA_energy_vs_layer_s1s2s4_gated;
         std::vector<TH2F*> h2_LISA_energy_xy_vs_layer_s1s2s4_gated;
         std::vector<std::vector<TH1*>> h1_LISA_energy_s1s2s4_gated;
@@ -209,6 +221,17 @@ class LisaFrsCorrelations : public FairTask
         std::vector<TH2F*> h2_LISA_energy_MWD_xy_vs_layer_s1s2s4_gated;
         std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_s1s2s4_gated;
         std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_xy_s1s2s4_gated;
+    
+        // Full sequential gate - Z42
+        std::vector<TH2F*> h2_LISA_energy_vs_layer_s1s2s4_gated_Z42;
+        std::vector<TH2F*> h2_LISA_energy_xy_vs_layer_s1s2s4_gated_Z42;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_s1s2s4_gated_Z42;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_xy_s1s2s4_gated_Z42;
+
+        std::vector<TH2F*> h2_LISA_energy_MWD_vs_layer_s1s2s4_gated_Z42;
+        std::vector<TH2F*> h2_LISA_energy_MWD_xy_vs_layer_s1s2s4_gated_Z42;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_s1s2s4_gated_Z42;
+        std::vector<std::vector<TH1*>> h1_LISA_energy_MWD_xy_s1s2s4_gated_Z42;
         
         // only s1s2 gate
         std::vector<TH2F*> h2_LISA_energy_vs_layer_s1s2_gated;
@@ -224,9 +247,12 @@ class LisaFrsCorrelations : public FairTask
         // ::: Gated - LISA applied on FRS
         std::vector<std::vector<TH2F*>> h2_Z21_vs_AoQs1s2_LISA_gated;
         std::vector<std::vector<TH2F*>> h2_Z41_vs_AoQs2s4_LISA_gated;
+        std::vector<std::vector<TH2F*>> h2_Z42_vs_AoQs2s4_LISA_gated;
+
 
         std::vector<std::vector<TH2F*>> h2_Z21_vs_AoQs1s2_LISA_MWD_gated;
         std::vector<std::vector<TH2F*>> h2_Z41_vs_AoQs2s4_LISA_MWD_gated;
+        std::vector<std::vector<TH2F*>> h2_Z42_vs_AoQs2s4_LISA_MWD_gated;
         //..............................
         // ::: Gated - LISA and FRS applied on LISA
         // Full sequential gate
@@ -295,6 +321,13 @@ class LisaFrsCorrelations : public FairTask
         std::vector<std::vector<std::vector<float>>> energy_MWD_layer_gated;
         std::vector<std::vector<std::vector<std::vector<std::vector<float>>>>> energy_xy_gated;
         std::vector<std::vector<std::vector<std::vector<std::vector<float>>>>> energy_MWD_xy_gated;
+
+        std::vector<std::vector<Float_t>> z21_passed;
+        std::vector<std::vector<Float_t>> AoQ_s1s2_passed;
+        std::vector<std::vector<Float_t>> z41_passed;
+        std::vector<std::vector<Float_t>> z42_passed;
+        std::vector<std::vector<Float_t>> AoQ_s2s4_passed;
+        std::vector<std::vector<Float_t>> dEdeg_z41_passed;
 
     public:
         ClassDef(LisaFrsCorrelations, 1)
