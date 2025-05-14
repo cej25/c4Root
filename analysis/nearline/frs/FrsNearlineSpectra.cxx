@@ -285,7 +285,9 @@ InitStatus FrsNearlineSpectra::Init()
 
         // S2S4
         h2_Z41_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_Z41_vs_AoQs2s4_mhtdc", "Z41 vs. A/Q (S2-S4) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S2-S4)", "Z41");
+        h2_Z42_vs_AoQs2s4_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_Z42_vs_AoQs2s4_mhtdc", "Z42 vs. A/Q (S2-S4) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S2-S4)", "Z42");
         h2_Z41_vs_AoQs2s4_corr_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_Z41_vs_AoQs2s4_corr_mhtdc", "Z41 vs. A/Q corr (S2-S4) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z,"A/Q (S2-S4)", "Z41");
+        h2_Z42_vs_AoQs2s4_corr_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_Z42_vs_AoQs2s4_corr_mhtdc", "Z42 vs. A/Q corr (S2-S4) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z,"A/Q (S2-S4)", "Z42");
         h2_Z41_vs_Z42_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_Z41_vs_Z42_mhtdc", "Z41 vs. Z42 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z41", "Z42");        
         h2_Z21_vs_Z41_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_Z21_vs_Z41_mhtdc", "Z21 (MHTDC) vs. Z41 (MHTDC)", 1000, frs_config->fMin_Z, frs_config->fMax_Z, 400, frs_config->fMin_Z, frs_config->fMax_Z, "Z (MUSIC 21)", "Z (MUSIC 41)");
         h2_Z41_vs_AoQs2s4_Zsame_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_Z41_vs_AoQs2s4_Zsame_mhtdc", "Z41 vs. A/Q (S2-S4) [ABS (Z41 - Z42) < 0.4] (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S2-S4)", "Z41");
@@ -337,6 +339,7 @@ InitStatus FrsNearlineSpectra::Init()
             h2_x1_vs_AoQs1s2_S1S2Gated_mhtdc.resize(num_frs_gates);
             h2_x2_vs_AoQs1s2_S1S2Gated_mhtdc.resize(num_frs_gates);
             h2_Z41_vs_AoQs2s4_S1S2Gated_mhtdc.resize(num_frs_gates);
+            h2_Z42_vs_AoQs2s4_S1S2Gated_mhtdc.resize(num_frs_gates);
             h2_Z41_vs_Z42_S1S2Gated_mhtdc.resize(num_frs_gates);
             h2_x2_vs_AoQs2s4_S1S2Gated_mhtdc.resize(num_frs_gates);
             h2_x4_vs_AoQs2s4_S1S2Gated_mhtdc.resize(num_frs_gates);
@@ -348,6 +351,7 @@ InitStatus FrsNearlineSpectra::Init()
             h2_x1_vs_AoQs1s2_S2S4Gated_mhtdc.resize(num_frs_gates);
             h2_x2_vs_AoQs1s2_S2S4Gated_mhtdc.resize(num_frs_gates);
             h2_Z41_vs_AoQs2s4_S2S4Gated_mhtdc.resize(num_frs_gates);
+            h2_Z42_vs_AoQs2s4_S2S4Gated_mhtdc.resize(num_frs_gates);
             h2_Z41_vs_Z42_S2S4Gated_mhtdc.resize(num_frs_gates);
             h2_x2_vs_AoQs2s4_S2S4Gated_mhtdc.resize(num_frs_gates);
             h2_x4_vs_AoQs2s4_S2S4Gated_mhtdc.resize(num_frs_gates);
@@ -360,6 +364,7 @@ InitStatus FrsNearlineSpectra::Init()
             h2_x1_vs_AoQs1s2_S1S2S4Gated_mhtdc.resize(num_frs_gates);
             h2_x2_vs_AoQs1s2_S1S2S4Gated_mhtdc.resize(num_frs_gates);
             h2_Z41_vs_AoQs2s4_S1S2S4Gated_mhtdc.resize(num_frs_gates);
+            h2_Z42_vs_AoQs2s4_S1S2S4Gated_mhtdc.resize(num_frs_gates);
             h2_Z41_vs_Z42_S1S2S4Gated_mhtdc.resize(num_frs_gates);
             h2_x2_vs_AoQs2s4_S1S2S4Gated_mhtdc.resize(num_frs_gates);
             h2_x4_vs_AoQs2s4_S1S2S4Gated_mhtdc.resize(num_frs_gates);
@@ -411,6 +416,7 @@ InitStatus FrsNearlineSpectra::Init()
                 h2_x1_vs_AoQs1s2_S1S2Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s1s2_gates[gate], "I", Form("h2_x1_vs_AoQs1s2_S1S2Gated_mhtdc_%s", gname.c_str()), Form("X1 vs AoQs1s2 - S1S2 Gate: %s", gname.c_str()), 750, 1, 3.0, 200, -100., 100.);
                 h2_x2_vs_AoQs1s2_S1S2Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s1s2_gates[gate], "I", Form("h2_x2_vs_AoQs1s2_S1S2Gated_mhtdc_%s", gname.c_str()), Form("X2 vs AoQs1s2 - S1S2 Gate: %s", gname.c_str()), 750, 1, 3.0, 200, -100., 100.);
                 h2_Z41_vs_AoQs2s4_S1S2Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s1s2_gates[gate], "I", Form("h2_Z41_vs_AoQs2s4_S1S2Gated_mhtdc_%s", gname.c_str()), Form("Z41 vs AoQs2s4 - S1S2 Gate: %s", gname.c_str()), 750, 1, 3.0, 750, id->min_z_plot, id->max_z_plot);
+                h2_Z42_vs_AoQs2s4_S1S2Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s1s2_gates[gate], "I", Form("h2_Z42_vs_AoQs2s4_S1S2Gated_mhtdc_%s", gname.c_str()), Form("Z42 vs AoQs2s4 - S1S2 Gate: %s", gname.c_str()), 750, 1, 3.0, 750, id->min_z_plot, id->max_z_plot);
                 h2_Z41_vs_Z42_S1S2Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s1s2_gates[gate], "I", Form("h2_Z41_vs_Z42_S1S2Gated_mhtdc_%s", gname.c_str()), Form("Z41 vs Z42 - S1S2 Gate: %s", gname.c_str()), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);
                 h2_x2_vs_AoQs2s4_S1S2Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s1s2_gates[gate], "I", Form("h2_x2_vs_AoQs2s4_S1S2Gated_mhtdc_%s", gname.c_str()), Form("X2 vs AoQs2s4 - S1S2 Gate: %s", gname.c_str()), 750, 1, 3.0, 200, -100., 100.);
                 h2_x4_vs_AoQs2s4_S1S2Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s1s2_gates[gate], "I", Form("h2_x4_vs_AoQs2s4_S1S2Gated_mhtdc_%s", gname.c_str()), Form("X4 vs AoQs2s4 - S1S2 Gate: %s", gname.c_str()), 750, 1, 3.0, 200, -100., 100.);
@@ -422,6 +428,7 @@ InitStatus FrsNearlineSpectra::Init()
                 h2_x1_vs_AoQs1s2_S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s2s4_gates[gate], "I", Form("h2_x1_vs_AoQs1s2_S2S4Gated_mhtdc_%s", gname.c_str()), Form("X1 vs AoQs1s2 - S2S4 Gate: %s", gname.c_str()), 750, 1, 3.0, 200, -100., 100.);
                 h2_x2_vs_AoQs1s2_S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s2s4_gates[gate], "I", Form("h2_x2_vs_AoQs1s2_S2S4Gated_mhtdc_%s", gname.c_str()), Form("X2 vs AoQs1s2 - S2S4 Gate: %s", gname.c_str()), 750, 1, 3.0, 200, -100., 100.);
                 h2_Z41_vs_AoQs2s4_S2S4Gated_mhtdc[gate] =  MakeTH2(dir_mhtdc_s2s4_gates[gate], "I", Form("h2_Z41_vs_AoQs2s4_S2S4Gated_mhtdc_%s", gname.c_str()), Form("Z41 vs AoQs2s4 - S2S4 Gate: %s", gname.c_str()), 750, 1, 3.0, 750, id->min_z_plot, id->max_z_plot);
+                h2_Z42_vs_AoQs2s4_S2S4Gated_mhtdc[gate] =  MakeTH2(dir_mhtdc_s2s4_gates[gate], "I", Form("h2_Z42_vs_AoQs2s4_S2S4Gated_mhtdc_%s", gname.c_str()), Form("Z42 vs AoQs2s4 - S2S4 Gate: %s", gname.c_str()), 750, 1, 3.0, 750, id->min_z_plot, id->max_z_plot);
                 h2_Z41_vs_Z42_S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s2s4_gates[gate], "I", Form("h2_Z41_vs_Z42_S2S4Gated_mhtdc_%s", gname.c_str()), Form("Z41 vs Z42 - S2S4 Gate: %s", gname.c_str()), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);
                 h2_x2_vs_AoQs2s4_S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s2s4_gates[gate], "I", Form("h2_x2_vs_AoQs2s4_S2S4Gated_mhtdc_%s", gname.c_str()), Form("X2 vs AoQs2s4 - S2S4 Gate: %s", gname.c_str()), 750, 1, 3.0, 200, -100., 100.);
                 h2_x4_vs_AoQs2s4_S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_s2s4_gates[gate], "I", Form("h2_x4_vs_AoQs2s4_S2S4Gated_mhtdc_%s", gname.c_str()), Form("X4 vs AoQs2s4 - S2S4 Gate: %s", gname.c_str()), 750, 1, 3.0, 200, -100., 100.);
@@ -434,6 +441,7 @@ InitStatus FrsNearlineSpectra::Init()
                 h2_x1_vs_AoQs1s2_S1S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_x1_vs_AoQs1s2_S1S2S4Gated_mhtdc_%s", gname.c_str()), Form("X1 vs AoQs1s2 - S1-S2-S4 Gate: %s", gname.c_str()), 750, 1, 3.0, 200, -100., 100.);
                 h2_x2_vs_AoQs1s2_S1S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_x2_vs_AoQs1s2_S1S2S4Gated_mhtdc_%s", gname.c_str()), Form("X2 vs AoQs1s2 - S1-S2-S4 Gate: %s", gname.c_str()), 750, 1, 3.0, 200, -100., 100.);
                 h2_Z41_vs_AoQs2s4_S1S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_Z41_vs_AoQs2s4_S1S2S4Gated_mhtdc_%s", gname.c_str()), Form("Z41 vs AoQs2s4 - S1-S2-S4 Gate: %s", gname.c_str()), 750, 1, 3.0, 750, id->min_z_plot, id->max_z_plot);
+                h2_Z42_vs_AoQs2s4_S1S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_Z42_vs_AoQs2s4_S1S2S4Gated_mhtdc_%s", gname.c_str()), Form("Z42 vs AoQs2s4 - S1-S2-S4 Gate: %s", gname.c_str()), 750, 1, 3.0, 750, id->min_z_plot, id->max_z_plot);
                 h2_Z41_vs_Z42_S1S2S4Gated_mhtdc[gate] =  MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_Z41_vs_Z42_S1S2S4Gated_mhtdc_%s", gname.c_str()), Form("Z41 vs Z42 - S1-S2-S4 Gate: %s", gname.c_str()), 750, id->min_z_plot, id->max_z_plot, 750, id->min_z_plot, id->max_z_plot);
                 h2_x2_vs_AoQs2s4_S1S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_x2_vs_AoQs2s4_S1S2S4Gated_mhtdc_%s", gname.c_str()), Form("X2 vs AoQs2s4 - S1-S2-S4 Gate: %s", gname.c_str()), 750, 1, 3.0, 200, -100., 100.);
                 h2_x4_vs_AoQs2s4_S1S2S4Gated_mhtdc[gate] = MakeTH2(dir_mhtdc_sequential_gates[gate], "I", Form("h2_x4_vs_AoQs2s4_S1S2S4Gated_mhtdc_%s", gname.c_str()), Form("X4 vs AoQs2s4 - S1-S2-S4 Gate: %s", gname.c_str()), 750, 1, 3.0, 200, -100., 100.);
@@ -572,7 +580,17 @@ InitStatus FrsNearlineSpectra::Init()
     for (int i = 0; i < num_frs_gates; i++) count_passed_s2s4[i] = 0;
     count_passed_s1s2s4 = new int[num_frs_gates];
     for (int i = 0; i < num_frs_gates; i++) count_passed_s1s2s4[i] = 0;
- 
+    
+    beta_s1s2_passed.resize(num_frs_gates);
+    beta_s2s4_passed.resize(num_frs_gates);
+    z21_passed.resize(num_frs_gates);
+    AoQ_s1s2_passed.resize(num_frs_gates);
+    z41_passed.resize(num_frs_gates);
+    z42_passed.resize(num_frs_gates);
+    AoQ_s2s4_passed.resize(num_frs_gates);
+    dEdeg_z41_passed.resize(num_frs_gates);
+    // now it should be a sized vector of vectors?
+
     return kSUCCESS;
 
 }
@@ -596,7 +614,6 @@ void FrsNearlineSpectra::Exec(Option_t* option)
         frs_time_min = std::min(frs_time_min, static_cast<double>(FRS_time_mins));
         frs_time_max = std::max(frs_time_max, static_cast<double>(FRS_time_mins));
     }
-
     // :::::: No TAC/MHTDC distinction :::::: 
     // ----- 2D ----- 
     if (hitItem.Get_ID_x2() != 0 && hitItem.Get_music41_dE() != 0) h2_dE41_vs_x2->Fill(hitItem.Get_ID_x2(), hitItem.Get_music41_dE());
@@ -699,7 +716,6 @@ void FrsNearlineSpectra::Process_TAC()
     // S1S4
     // ----- 2D -----
 
-
     // ----- 1D -----
     if (hitItem.Get_ID_beta_s1s2() > 0) h1_beta_s1s2->Fill(hitItem.Get_ID_beta_s1s2()); 
     if (hitItem.Get_ID_AoQ_corr_s1s2() > 0) h1_AoQs1s2_corr->Fill(hitItem.Get_ID_AoQ_corr_s1s2());
@@ -774,7 +790,9 @@ void FrsNearlineSpectra::Process_TAC()
 void FrsNearlineSpectra::Process_MHTDC()
 {
     int a = 0;
-
+    Float_t x2_position = hitItem.Get_ID_x2();
+    Float_t x4_position = hitItem.Get_ID_x4();
+    Float_t sci42e = hitItem.Get_sci_e_42();
     std::vector<Float_t> beta_s1s2_mhtdc = multiHitItem.Get_ID_beta_s1s2_mhtdc();
     std::vector<Float_t> beta_s2s4_mhtdc = multiHitItem.Get_ID_beta_s2s4_mhtdc();
     std::vector<Float_t> AoQ_s1s2_mhtdc = multiHitItem.Get_ID_AoQ_s1s2_mhtdc();
@@ -788,14 +806,46 @@ void FrsNearlineSpectra::Process_MHTDC()
     std::vector<Float_t> z43_mhtdc = multiHitItem.Get_ID_z43_mhtdc();
     std::vector<Float_t> dEdegoQ_mhtdc = multiHitItem.Get_ID_dEdegoQ_mhtdc();
     std::vector<Float_t> dEdeg_z41_mhtdc = multiHitItem.Get_ID_dEdeg_z41_mhtdc();
+    
+    if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 ) return;
+
+
+    // CEJ :: Process FRS Gate info here first.
+    for (int gate = 0; gate < FrsGates.size(); gate++)
+    {
+        // if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 )break;
+
+        for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
+        {
+            if (FrsGates[gate]->PassedS1S2(z21_mhtdc.at(i), x2_position, AoQ_s1s2_mhtdc.at(i)))
+            {
+                beta_s1s2_passed[gate].emplace_back(beta_s1s2_mhtdc.at(i));
+                z21_passed[gate].emplace_back(z21_mhtdc.at(i));
+                AoQ_s1s2_passed[gate].emplace_back(AoQ_s1s2_mhtdc.at(i));
+            }
+        }
+
+        for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
+        {
+            if (FrsGates[gate]->PassedS2S4(z41_mhtdc.at(i), z42_mhtdc.at(i), x2_position, x4_position, AoQ_s2s4_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), sci42e))
+            {
+                beta_s2s4_passed[gate].emplace_back(beta_s2s4_mhtdc.at(i));
+                z41_passed[gate].emplace_back(z41_mhtdc.at(i));
+                z42_passed[gate].emplace_back(z42_mhtdc.at(i));
+                AoQ_s2s4_passed[gate].emplace_back(AoQ_s2s4_mhtdc.at(i));
+                dEdeg_z41_passed[gate].emplace_back(dEdeg_z41_mhtdc.at(i));
+            }
+        }
+    }
 
     // ::::: S1S2 Loop ::::: 
     for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
     {   
+        //c4LOG(info, " size of z21: " << z21_mhtdc.size() << " size of AoQ: " << AoQ_s1s2_mhtdc.size() << " size of AoQ corr: " << AoQ_corr_s1s2_mhtdc.size() );
         // ---- 2D ------
         if (z21_mhtdc.at(i) > 0 && AoQ_s1s2_mhtdc.at(i) > 0) h2_Z21_vs_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i), z21_mhtdc.at(i));
         if (z21_mhtdc.at(i) > 0 && AoQ_corr_s1s2_mhtdc.at(i) > 0) h2_Z21_vs_AoQs1s2_corr_mhtdc->Fill(AoQ_corr_s1s2_mhtdc.at(i), z21_mhtdc.at(i));
-        if (z21_mhtdc.at(i) > 0 && z22_mhtdc.at(i) > 0) h2_Z21_vs_Z22_mhtdc->Fill(z21_mhtdc.at(i), z22_mhtdc.at(i));
+        //if (z21_mhtdc.at(i) > 0 && z22_mhtdc.at(i) > 0) h2_Z21_vs_Z22_mhtdc->Fill(z21_mhtdc.at(i), z22_mhtdc.at(i));
         if (AoQ_corr_s1s2_mhtdc.at(i) > 0) h2_x2_vs_AoQs1s2_mhtdc->Fill(AoQ_corr_s1s2_mhtdc.at(i), hitItem.Get_ID_x2());
         if (AoQ_corr_s1s2_mhtdc.at(i) > 0) h2_a2_vs_AoQs1s2_mhtdc->Fill(AoQ_corr_s1s2_mhtdc.at(i), hitItem.Get_ID_a2());
         if (z21_mhtdc.at(i) > 0) h2_x2_vs_Z21_mhtdc->Fill(z21_mhtdc.at(i), hitItem.Get_ID_x2());
@@ -807,12 +857,11 @@ void FrsNearlineSpectra::Process_MHTDC()
         if (AoQ_s1s2_mhtdc.at(i) > 0) h1_AoQs1s2_mhtdc->Fill(AoQ_s1s2_mhtdc.at(i));
         if (AoQ_corr_s1s2_mhtdc.at(i) > 0) h1_AoQs1s2_corr_mhtdc->Fill(AoQ_corr_s1s2_mhtdc.at(i));
         if (z21_mhtdc.at(i) > 0) h1_Z21_mhtdc->Fill(z21_mhtdc.at(i));
-        if (z22_mhtdc.at(i) > 0) 
-        {
-            std::cout << "FILLING STUPID THINGS"  << std::endl;
-            h1_Z22_mhtdc->Fill(z22_mhtdc.at(i));
-        }
-
+        // if (z22_mhtdc.at(i) > 0) 
+        // {
+        //     std::cout << "FILLING STUPID THINGS"  << std::endl;
+        //     h1_Z22_mhtdc->Fill(z22_mhtdc.at(i));
+        // }
 
         if (num_frs_gates > 0)
         {
@@ -827,15 +876,15 @@ void FrsNearlineSpectra::Process_MHTDC()
                     }
 
                     // S1S2 Histograms where S1S2 Gates are passed
-                    // ---- 2D -----
-                    if (z21_mhtdc.at(i) > 0 && AoQ_corr_s1s2_mhtdc.at(i) > 0) h2_Z21_vs_AoQs1s2_S1S2Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(i), z21_mhtdc.at(i));
-                    if (AoQ_corr_s1s2_mhtdc.at(i) > 0) h2_x1_vs_AoQs1s2_S1S2Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(i), hitItem.Get_ID_x1());
-                    if (AoQ_corr_s1s2_mhtdc.at(i) > 0) h2_x2_vs_AoQs1s2_S1S2Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(i), hitItem.Get_ID_x2());
+                    // // ---- 2D -----
+                    // if (z21_mhtdc.at(i) > 0 && AoQ_corr_s1s2_mhtdc.at(i) > 0) h2_Z21_vs_AoQs1s2_S1S2Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(i), z21_mhtdc.at(i));
+                    // if (AoQ_corr_s1s2_mhtdc.at(i) > 0) h2_x1_vs_AoQs1s2_S1S2Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(i), hitItem.Get_ID_x1());
+                    // if (AoQ_corr_s1s2_mhtdc.at(i) > 0) h2_x2_vs_AoQs1s2_S1S2Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(i), hitItem.Get_ID_x2());
 
-                    // ---- 1D -----
-                    if (beta_s1s2_mhtdc.at(i) > 0) h1_beta_s1s2_S1S2Gated_mhtdc[gate]->Fill(beta_s1s2_mhtdc.at(i));
-                    if (AoQ_corr_s1s2_mhtdc.at(i) > 0) h1_AoQs1s2_S1S2Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(i));
-                    if (z21_mhtdc.at(i) > 0) h1_Z21_S1S2Gated_mhtdc[gate]->Fill(z21_mhtdc.at(i));
+                    // // ---- 1D -----
+                    // if (beta_s1s2_mhtdc.at(i) > 0) h1_beta_s1s2_S1S2Gated_mhtdc[gate]->Fill(beta_s1s2_mhtdc.at(i));
+                    // if (AoQ_corr_s1s2_mhtdc.at(i) > 0) h1_AoQs1s2_S1S2Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(i));
+                    // if (z21_mhtdc.at(i) > 0) h1_Z21_S1S2Gated_mhtdc[gate]->Fill(z21_mhtdc.at(i));
                 }
             }
         }
@@ -846,10 +895,11 @@ void FrsNearlineSpectra::Process_MHTDC()
     for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
     {
         if (a == 0) multihit_counter++;
-        
         // ---- 2D ------
         if(AoQ_s2s4_mhtdc.at(i) > 0 && z41_mhtdc.at(i) > 0) h2_Z41_vs_AoQs2s4_mhtdc->Fill(AoQ_s2s4_mhtdc.at(i), z41_mhtdc.at(i));
+        if(AoQ_s2s4_mhtdc.at(i) > 0 && z42_mhtdc.at(i) > 0) h2_Z42_vs_AoQs2s4_mhtdc->Fill(AoQ_s2s4_mhtdc.at(i), z42_mhtdc.at(i));
         if(AoQ_corr_s2s4_mhtdc.at(i) > 0 && z41_mhtdc.at(i) > 0) h2_Z41_vs_AoQs2s4_corr_mhtdc->Fill(AoQ_corr_s2s4_mhtdc.at(i), z41_mhtdc.at(i));
+        if(AoQ_corr_s2s4_mhtdc.at(i) > 0 && z42_mhtdc.at(i) > 0) h2_Z42_vs_AoQs2s4_corr_mhtdc->Fill(AoQ_corr_s2s4_mhtdc.at(i), z42_mhtdc.at(i));
         if(z41_mhtdc.at(i) > 0 && z42_mhtdc.at(i) > 0) h2_Z41_vs_Z42_mhtdc->Fill(z41_mhtdc.at(i), z42_mhtdc.at(i));
         if(TMath::Abs(z41_mhtdc.at(i) - z42_mhtdc.at(i)) < 0.4)
         {
@@ -892,38 +942,38 @@ void FrsNearlineSpectra::Process_MHTDC()
         {
             for (int gate = 0; gate < num_frs_gates; gate++)
             {
-                if (passed_s1s2[gate])
-                {
-                    // S2S4 Histograms where S1S2 Gates are passed
-                    // ---- 2D ----
-                    h2_Z41_vs_AoQs2s4_S1S2Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i), z41_mhtdc.at(i));
-                    h2_Z41_vs_Z42_S1S2Gated_mhtdc[gate]->Fill(z41_mhtdc.at(i), z42_mhtdc.at(i));
-                    h2_x2_vs_AoQs2s4_S1S2Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i), hitItem.Get_ID_x2());
-                    h2_x4_vs_AoQs2s4_S1S2Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i), hitItem.Get_ID_x4());
-                    h2_dEdegZ41_vs_Z41_S1S2Gated_mhtdc[gate]->Fill(z41_mhtdc.at(i), dEdeg_z41_mhtdc.at(i));
+                // if (passed_s1s2[gate])
+                // {
+                //     // S2S4 Histograms where S1S2 Gates are passed
+                //     // ---- 2D ----
+                //     h2_Z41_vs_AoQs2s4_S1S2Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i), z41_mhtdc.at(i));
+                //     h2_Z41_vs_Z42_S1S2Gated_mhtdc[gate]->Fill(z41_mhtdc.at(i), z42_mhtdc.at(i));
+                //     h2_x2_vs_AoQs2s4_S1S2Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i), hitItem.Get_ID_x2());
+                //     h2_x4_vs_AoQs2s4_S1S2Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i), hitItem.Get_ID_x4());
+                //     h2_dEdegZ41_vs_Z41_S1S2Gated_mhtdc[gate]->Fill(z41_mhtdc.at(i), dEdeg_z41_mhtdc.at(i));
                     
-                    // ---- 1D -----
-                    if (beta_s2s4_mhtdc.at(i) > 0.2) h1_beta_s2s4_S1S2Gated_mhtdc[gate]->Fill(beta_s2s4_mhtdc.at(i));
-                    if (AoQ_corr_s2s4_mhtdc.at(i) > 0) h1_AoQs2s4_S1S2Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i));
-                    if (z41_mhtdc.at(i) > 0) h1_Z41_S1S2Gated_mhtdc[gate]->Fill(z41_mhtdc.at(i));
-                    if (z42_mhtdc.at(i) > 0) h1_Z42_S1S2Gated_mhtdc[gate]->Fill(z42_mhtdc.at(i));
-                }
+                //     // ---- 1D -----
+                //     if (beta_s2s4_mhtdc.at(i) > 0.2) h1_beta_s2s4_S1S2Gated_mhtdc[gate]->Fill(beta_s2s4_mhtdc.at(i));
+                //     if (AoQ_corr_s2s4_mhtdc.at(i) > 0) h1_AoQs2s4_S1S2Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i));
+                //     if (z41_mhtdc.at(i) > 0) h1_Z41_S1S2Gated_mhtdc[gate]->Fill(z41_mhtdc.at(i));
+                //     if (z42_mhtdc.at(i) > 0) h1_Z42_S1S2Gated_mhtdc[gate]->Fill(z42_mhtdc.at(i));
+                // }
         
                 if (FrsGates[gate]->PassedS2S4(z41_mhtdc.at(i), z42_mhtdc.at(i), hitItem.Get_ID_x2(), hitItem.Get_ID_x4(), AoQ_corr_s2s4_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), hitItem.Get_sci_e_42()))
                 {
                     // S2S4 Histograms where S2S4 Gates are passed
-                    // ---- 2D -----
-                    if (AoQ_corr_s2s4_mhtdc.at(i) > 0 && z41_mhtdc.at(i) > 0) h2_Z41_vs_AoQs2s4_S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i), z41_mhtdc.at(i));
-                    if (z41_mhtdc.at(i) > 0 && z42_mhtdc.at(i) > 0) h2_Z41_vs_Z42_S2S4Gated_mhtdc[gate]->Fill(z41_mhtdc.at(i), z42_mhtdc.at(i));
-                    if (AoQ_corr_s2s4_mhtdc.at(i) > 0) h2_x2_vs_AoQs2s4_S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i), hitItem.Get_ID_x2());
-                    if (AoQ_corr_s2s4_mhtdc.at(i) > 0) h2_x4_vs_AoQs2s4_S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i), hitItem.Get_ID_x4());
-                    if (z41_mhtdc.at(i) > 0 && dEdeg_z41_mhtdc.at(i) > 0) h2_dEdegZ41_vs_Z41_S2S4Gated_mhtdc[gate]->Fill(z41_mhtdc.at(i), dEdeg_z41_mhtdc.at(i));
+                    // // ---- 2D -----
+                    // if (AoQ_corr_s2s4_mhtdc.at(i) > 0 && z41_mhtdc.at(i) > 0) h2_Z41_vs_AoQs2s4_S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i), z41_mhtdc.at(i));
+                    // if (z41_mhtdc.at(i) > 0 && z42_mhtdc.at(i) > 0) h2_Z41_vs_Z42_S2S4Gated_mhtdc[gate]->Fill(z41_mhtdc.at(i), z42_mhtdc.at(i));
+                    // if (AoQ_corr_s2s4_mhtdc.at(i) > 0) h2_x2_vs_AoQs2s4_S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i), hitItem.Get_ID_x2());
+                    // if (AoQ_corr_s2s4_mhtdc.at(i) > 0) h2_x4_vs_AoQs2s4_S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i), hitItem.Get_ID_x4());
+                    // if (z41_mhtdc.at(i) > 0 && dEdeg_z41_mhtdc.at(i) > 0) h2_dEdegZ41_vs_Z41_S2S4Gated_mhtdc[gate]->Fill(z41_mhtdc.at(i), dEdeg_z41_mhtdc.at(i));
 
-                    // ---- 1D -----
-                    if (beta_s2s4_mhtdc.at(i) > 0.2) h1_beta_s2s4_S2S4Gated_mhtdc[gate]->Fill(beta_s2s4_mhtdc.at(i));
-                    if (AoQ_corr_s2s4_mhtdc.at(i) > 0) h1_AoQs2s4_S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i));
-                    if (z41_mhtdc.at(i) > 0) h1_Z41_S2S4Gated_mhtdc[gate]->Fill(z41_mhtdc.at(i));
-                    if (z42_mhtdc.at(i) > 0) h1_Z42_S2S4Gated_mhtdc[gate]->Fill(z42_mhtdc.at(i));
+                    // // ---- 1D -----
+                    // if (beta_s2s4_mhtdc.at(i) > 0.2) h1_beta_s2s4_S2S4Gated_mhtdc[gate]->Fill(beta_s2s4_mhtdc.at(i));
+                    // if (AoQ_corr_s2s4_mhtdc.at(i) > 0) h1_AoQs2s4_S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s2s4_mhtdc.at(i));
+                    // if (z41_mhtdc.at(i) > 0) h1_Z41_S2S4Gated_mhtdc[gate]->Fill(z41_mhtdc.at(i));
+                    // if (z42_mhtdc.at(i) > 0) h1_Z42_S2S4Gated_mhtdc[gate]->Fill(z42_mhtdc.at(i));
 
                     
                     if (!passed_s2s4[gate])
@@ -931,15 +981,15 @@ void FrsNearlineSpectra::Process_MHTDC()
                         // S1S2 Histograms where S2S4 Gates are passed
                         for (int j = 0; j < AoQ_corr_s1s2_mhtdc.size(); j++)
                         {
-                            // ---- 2D -----
-                            if (z21_mhtdc.at(j) > 0 && AoQ_corr_s1s2_mhtdc.at(j) > 0) h2_Z21_vs_AoQs1s2_S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(j), z21_mhtdc.at(j));
-                            if (AoQ_corr_s1s2_mhtdc.at(j) > 0) h2_x1_vs_AoQs1s2_S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(j), hitItem.Get_ID_x1());
-                            if (AoQ_corr_s1s2_mhtdc.at(j) > 0) h2_x2_vs_AoQs1s2_S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(j), hitItem.Get_ID_x2());
+                            // // ---- 2D -----
+                            // if (z21_mhtdc.at(j) > 0 && AoQ_corr_s1s2_mhtdc.at(j) > 0) h2_Z21_vs_AoQs1s2_S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(j), z21_mhtdc.at(j));
+                            // if (AoQ_corr_s1s2_mhtdc.at(j) > 0) h2_x1_vs_AoQs1s2_S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(j), hitItem.Get_ID_x1());
+                            // if (AoQ_corr_s1s2_mhtdc.at(j) > 0) h2_x2_vs_AoQs1s2_S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(j), hitItem.Get_ID_x2());
 
-                            // ---- 1D -----
-                            if (beta_s1s2_mhtdc.at(j) > 0) h1_beta_s1s2_S2S4Gated_mhtdc[gate]->Fill(beta_s1s2_mhtdc.at(j));
-                            if (AoQ_corr_s1s2_mhtdc.at(j) > 0) h1_AoQs1s2_S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(j));
-                            if (z21_mhtdc.at(j) > 0) h1_Z21_S2S4Gated_mhtdc[gate]->Fill(z21_mhtdc.at(j));
+                            // // ---- 1D -----
+                            // if (beta_s1s2_mhtdc.at(j) > 0) h1_beta_s1s2_S2S4Gated_mhtdc[gate]->Fill(beta_s1s2_mhtdc.at(j));
+                            // if (AoQ_corr_s1s2_mhtdc.at(j) > 0) h1_AoQs1s2_S2S4Gated_mhtdc[gate]->Fill(AoQ_corr_s1s2_mhtdc.at(j));
+                            // if (z21_mhtdc.at(j) > 0) h1_Z21_S2S4Gated_mhtdc[gate]->Fill(z21_mhtdc.at(j));
                         }
 
                         // for ratio plotting
@@ -959,7 +1009,131 @@ void FrsNearlineSpectra::Process_MHTDC()
     } // S2S4 Loop
 
 
+    // :::: Gated ::::
+    if (num_frs_gates > 0)
+    {
+        for (int gate = 0; gate < num_frs_gates; gate++)
+        {
+            if (z21_passed[gate].size() > 0)
+            {
+                for (int i = 0; i < z21_passed[gate].size(); i++)
+                {
+                    // S1S2 Histograms where S1S2 Gates are passed
+                    // ---- 2D -----
+                    if (z21_passed[gate].at(i) > 0 && AoQ_s1s2_passed[gate].at(i) > 0) h2_Z21_vs_AoQs1s2_S1S2Gated_mhtdc[gate]->Fill(AoQ_s1s2_passed[gate].at(i), z21_passed[gate].at(i));
+                    if (AoQ_s1s2_passed[gate].at(i) > 0) h2_x1_vs_AoQs1s2_S1S2Gated_mhtdc[gate]->Fill(AoQ_s1s2_passed[gate].at(i), hitItem.Get_ID_x1());
+                    if (AoQ_s1s2_passed[gate].at(i) > 0) h2_x2_vs_AoQs1s2_S1S2Gated_mhtdc[gate]->Fill(AoQ_s1s2_passed[gate].at(i), hitItem.Get_ID_x2());
+
+                    // ---- 1D -----
+                    if (beta_s1s2_passed[gate].at(i) > 0) h1_beta_s1s2_S1S2Gated_mhtdc[gate]->Fill(beta_s1s2_passed[gate].at(i));
+                    if (AoQ_s1s2_passed[gate].at(i) > 0) h1_AoQs1s2_S1S2Gated_mhtdc[gate]->Fill(AoQ_s1s2_passed[gate].at(i));
+                    if (z21_passed[gate].at(i) > 0) h1_Z21_S1S2Gated_mhtdc[gate]->Fill(z21_passed[gate].at(i));
+                }
+
+                for (int i = 0; i < z41_passed[gate].size(); i++)
+                {
+                    // S2S4 Histograms where S1S2 Gates are passed
+                    // ---- 2D ----
+                    h2_Z41_vs_AoQs2s4_S1S2Gated_mhtdc[gate]->Fill(AoQ_s2s4_passed[gate].at(i), z41_passed[gate].at(i));
+                    h2_Z42_vs_AoQs2s4_S1S2Gated_mhtdc[gate]->Fill(AoQ_s2s4_passed[gate].at(i), z42_passed[gate].at(i));
+                    h2_Z41_vs_Z42_S1S2Gated_mhtdc[gate]->Fill(z41_passed[gate].at(i), z42_passed[gate].at(i));
+                    h2_x2_vs_AoQs2s4_S1S2Gated_mhtdc[gate]->Fill(AoQ_s2s4_passed[gate].at(i), hitItem.Get_ID_x2());
+                    h2_x4_vs_AoQs2s4_S1S2Gated_mhtdc[gate]->Fill(AoQ_s2s4_passed[gate].at(i), hitItem.Get_ID_x4());
+                    h2_dEdegZ41_vs_Z41_S1S2Gated_mhtdc[gate]->Fill(z41_passed[gate].at(i), dEdeg_z41_passed[gate].at(i));
+                    
+                    // ---- 1D -----
+                    if (beta_s2s4_passed[gate].at(i) > 0.2) h1_beta_s2s4_S1S2Gated_mhtdc[gate]->Fill(beta_s2s4_passed[gate].at(i));
+                    if (AoQ_s2s4_passed[gate].at(i) > 0) h1_AoQs2s4_S1S2Gated_mhtdc[gate]->Fill(AoQ_s2s4_passed[gate].at(i));
+                    if (z41_passed[gate].at(i) > 0) h1_Z41_S1S2Gated_mhtdc[gate]->Fill(z41_passed[gate].at(i));
+                    if (z42_passed[gate].at(i) > 0) h1_Z42_S1S2Gated_mhtdc[gate]->Fill(z42_passed[gate].at(i));
+                }
+            }
+
+            if (z41_passed[gate].size() > 0)
+            {
+                for (int i = 0; i < z21_passed[gate].size(); i++)
+                {
+                    // ---- 2D -----
+                    if (z21_passed[gate].at(i) > 0 && AoQ_s1s2_passed[gate].at(i) > 0) h2_Z21_vs_AoQs1s2_S2S4Gated_mhtdc[gate]->Fill(AoQ_s1s2_passed[gate].at(i), z21_passed[gate].at(i));
+                    if (AoQ_s1s2_passed[gate].at(i) > 0) h2_x1_vs_AoQs1s2_S2S4Gated_mhtdc[gate]->Fill(AoQ_s1s2_passed[gate].at(i), hitItem.Get_ID_x1());
+                    if (AoQ_s1s2_passed[gate].at(i) > 0) h2_x2_vs_AoQs1s2_S2S4Gated_mhtdc[gate]->Fill(AoQ_s1s2_passed[gate].at(i), hitItem.Get_ID_x2());
+
+                    // ---- 1D -----
+                    if (beta_s1s2_passed[gate].at(i) > 0) h1_beta_s1s2_S2S4Gated_mhtdc[gate]->Fill(beta_s1s2_passed[gate].at(i));
+                    if (AoQ_s1s2_passed[gate].at(i) > 0) h1_AoQs1s2_S2S4Gated_mhtdc[gate]->Fill(AoQ_s1s2_passed[gate].at(i));
+                    if (z21_passed[gate].at(i) > 0) h1_Z21_S2S4Gated_mhtdc[gate]->Fill(z21_passed[gate].at(i));
+                }
+
+                for (int i = 0; i < z41_passed[gate].size(); i++)
+                {
+                    // S2S4 Histograms where S2S4 Gates are passed
+                    // ---- 2D -----
+                    if (AoQ_s2s4_passed[gate].at(i) > 0 && z41_passed[gate].at(i) > 0) h2_Z41_vs_AoQs2s4_S2S4Gated_mhtdc[gate]->Fill(AoQ_s2s4_passed[gate].at(i), z41_passed[gate].at(i));
+                    if (AoQ_s2s4_passed[gate].at(i) > 0 && z42_passed[gate].at(i) > 0) h2_Z42_vs_AoQs2s4_S2S4Gated_mhtdc[gate]->Fill(AoQ_s2s4_passed[gate].at(i), z42_passed[gate].at(i));
+                    if (z41_passed[gate].at(i) > 0 && z42_passed[gate].at(i) > 0) h2_Z41_vs_Z42_S2S4Gated_mhtdc[gate]->Fill(z41_passed[gate].at(i), z42_passed[gate].at(i));
+                    if (AoQ_s2s4_passed[gate].at(i) > 0) h2_x2_vs_AoQs2s4_S2S4Gated_mhtdc[gate]->Fill(AoQ_s2s4_passed[gate].at(i), hitItem.Get_ID_x2());
+                    if (AoQ_s2s4_passed[gate].at(i) > 0) h2_x4_vs_AoQs2s4_S2S4Gated_mhtdc[gate]->Fill(AoQ_s2s4_passed[gate].at(i), hitItem.Get_ID_x4());
+                    if (z41_passed[gate].at(i) > 0 && dEdeg_z41_passed[gate].at(i) > 0) h2_dEdegZ41_vs_Z41_S2S4Gated_mhtdc[gate]->Fill(z41_passed[gate].at(i), dEdeg_z41_passed[gate].at(i));
+
+                    // ---- 1D -----
+                    if (beta_s2s4_passed[gate].at(i) > 0.2) h1_beta_s2s4_S2S4Gated_mhtdc[gate]->Fill(beta_s2s4_passed[gate].at(i));
+                    if (AoQ_s2s4_passed[gate].at(i) > 0) h1_AoQs2s4_S2S4Gated_mhtdc[gate]->Fill(AoQ_s2s4_passed[gate].at(i));
+                    if (z41_passed[gate].at(i) > 0) h1_Z41_S2S4Gated_mhtdc[gate]->Fill(z41_passed[gate].at(i));
+                    if (z42_passed[gate].at(i) > 0) h1_Z42_S2S4Gated_mhtdc[gate]->Fill(z42_passed[gate].at(i));
+                }
+            }
+
+
+
+            // Sequential
+            if (z21_passed[gate].size() > 0 && z41_passed[gate].size() > 0)
+            {
+                for (int i = 0; i < z21_passed[gate].size(); i++)
+                {
+                    // ---- 2D -----
+                    if (z21_passed[gate].at(i) > 0 && AoQ_corr_s1s2_mhtdc.at(i) > 0) h2_Z21_vs_AoQs1s2_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_s1s2_passed[gate].at(i), z21_passed[gate].at(i));
+                    if (AoQ_s1s2_passed[gate].at(i) > 0) h2_x1_vs_AoQs1s2_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_s1s2_passed[gate].at(i), hitItem.Get_ID_x1());
+                    if (AoQ_s1s2_passed[gate].at(i) > 0) h2_x2_vs_AoQs1s2_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_s1s2_passed[gate].at(i), hitItem.Get_ID_x2());
+
+                    // ---- 1D -----
+                    if (beta_s1s2_passed[gate].at(i) > 0) h1_beta_s1s2_S1S2S4Gated_mhtdc[gate]->Fill(beta_s1s2_passed[gate].at(i));
+                    if (AoQ_s1s2_passed[gate].at(i) > 0) h1_AoQs1s2_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_s1s2_passed[gate].at(i));
+                    if (z21_passed[gate].at(i) > 0) h1_Z21_S1S2S4Gated_mhtdc[gate]->Fill(z21_passed[gate].at(i));
+
+                }
+
+                for (int i = 0; i < z41_passed[gate].size(); i++)
+                {
+                    // ----- 2D -----
+                    if (AoQ_s2s4_passed[gate].at(i) > 0 && z41_passed[gate].at(i) > 0) h2_Z41_vs_AoQs2s4_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_s2s4_passed[gate].at(i), z41_passed[gate].at(i));
+                    if (AoQ_s2s4_passed[gate].at(i) > 0 && z42_passed[gate].at(i) > 0) h2_Z42_vs_AoQs2s4_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_s2s4_passed[gate].at(i), z42_passed[gate].at(i));
+                    if (z41_passed[gate].at(i) > 0 && z42_passed[gate].at(i) > 0) h2_Z41_vs_Z42_S1S2S4Gated_mhtdc[gate]->Fill(z41_passed[gate].at(i), z42_passed[gate].at(i));
+                    if (AoQ_s2s4_passed[gate].at(i) > 0) h2_x2_vs_AoQs2s4_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_s2s4_passed[gate].at(i), hitItem.Get_ID_x2());
+                    if (AoQ_s2s4_passed[gate].at(i) > 0) h2_x4_vs_AoQs2s4_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_s2s4_passed[gate].at(i), hitItem.Get_ID_x4());
+                    if (z41_passed[gate].at(i) > 0 && dEdeg_z41_passed[gate].at(i) > 0) h2_dEdegZ41_vs_Z41_S1S2S4Gated_mhtdc[gate]->Fill(z41_passed[gate].at(i), dEdeg_z41_passed[gate].at(i));
+
+                    // ---- 1D -----
+                    if (beta_s2s4_passed[gate].at(i) > 0.2) h1_beta_s2s4_S1S2S4Gated_mhtdc[gate]->Fill(beta_s2s4_passed[gate].at(i));
+                    if (AoQ_s2s4_passed[gate].at(i) > 0) h1_AoQs2s4_S1S2S4Gated_mhtdc[gate]->Fill(AoQ_s2s4_passed[gate].at(i));
+                    if (z41_passed[gate].at(i) > 0) h1_Z41_S1S2S4Gated_mhtdc[gate]->Fill(z41_passed[gate].at(i));
+                    if (z42_passed[gate].at(i) > 0) h1_Z42_S1S2S4Gated_mhtdc[gate]->Fill(z42_passed[gate].at(i));
+
+                    
+                }
+
+                for (int i = 0; i < std::min(z21_passed[gate].size(), z41_passed[gate].size()); i++)
+                {
+                    if (z21_passed[gate].at(i) > 0 && z41_passed[gate].at(i) > 0) h2_Z21_Z41_S1S2S4Gated_mhtdc[gate]->Fill(z21_passed[gate].at(i), z41_passed[gate].at(i));
+                }
+            }
+        }
+    }
+
+
+
+
     // Anything require full sequence
+    /*
     if (num_frs_gates > 0)
     {
         for (int gate = 0; gate < num_frs_gates; gate++)
@@ -1002,6 +1176,7 @@ void FrsNearlineSpectra::Process_MHTDC()
             }
         }
     }
+    */
 }
 
 
@@ -1135,7 +1310,20 @@ void FrsNearlineSpectra::FinishEvent()
 {
     std::fill(passed_s1s2.begin(), passed_s1s2.end(), 0);
     std::fill(passed_s1s2s4.begin(), passed_s1s2s4.end(), 0);
-    std::fill(passed_s2s4.begin(), passed_s2s4.end(), 0);    
+    std::fill(passed_s2s4.begin(), passed_s2s4.end(), 0);
+
+    for (int gate = 0; gate < num_frs_gates; gate++)
+    {   
+        beta_s1s2_passed[gate].clear();
+        beta_s2s4_passed[gate].clear();
+        z21_passed[gate].clear();
+        AoQ_s1s2_passed[gate].clear();
+        z41_passed[gate].clear();
+        z42_passed[gate].clear();
+        AoQ_s2s4_passed[gate].clear();
+        dEdeg_z41_passed[gate].clear(); 
+    }
+   
 }
 
 void FrsNearlineSpectra::FinishTask()
