@@ -3,12 +3,12 @@
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define MCP_ON 1
 #define STEFAN_ON 1
-#define FRS_ON 0
+#define FRS_ON 1
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
 {
-    #include "../../config/s115/frs/setup_115_022_2025_s1calib_conv.C"
+    #include "../../config/hispec10/frs/setup_103_002_2025_setting14_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -51,7 +51,8 @@ void c_hispec10_online()
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     //TString filename = "/u/cjones/onlymcp09041755.lmd";
-    TString filename = "/u/cjones/20250410-1505_0001.lmd"; 
+    // TString filename = "$LUSTRE_DIR/gamma/s092_s103_files/ts/run_0062_000*.lmd";
+    TString filename = "trans://lxg3107";
     //TString filename = "/u/cjones/finalfinalpulserrunfin.lmd";
     TString outputpath = "htest";
     TString outputFileName = outputpath + ".root";
@@ -107,7 +108,7 @@ void c_hispec10_online()
     
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
-    TH10MCPConfiguration::SetDetectorConfigurationFile(config_path + "/mcp/mcp_mapping.txt");
+    TH10MCPConfiguration::SetDetectorConfigurationFile(config_path + "/mcp/mcp_mapping_1105.txt");
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
  

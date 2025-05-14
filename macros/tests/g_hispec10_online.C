@@ -3,7 +3,7 @@
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define MCP_ON 1
 #define STEFAN_ON 1
-#define FRS_ON 1
+#define FRS_ON 1 
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
@@ -59,7 +59,7 @@ void g_hispec10_online()
 
     // Create Online run
     Int_t refresh = 2; // Refresh rate for online histograms
-    Int_t port = 2222; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 3333; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -127,7 +127,7 @@ void g_hispec10_online()
     {
         H10MCPReader* unpackmcp = new H10MCPReader((EXT_STR_h101_mcp_onion*)&ucesb_struct.mcp, offsetof(EXT_STR_h101, mcp));
         //unpackmcp->DoFineTimeCalOnline(config_path + "/mcp/mcp_fine_time_0905.root", 80000);
-        unpackmcp->SetInputFileFineTimeHistos(config_path + "/mcp/mcp_fine_time_0905.root");
+        unpackmcp->SetInputFileFineTimeHistos(config_path + "/mcp/mcp_fine_time_1105.root");
         
         unpackmcp->SetOnline(true);
         source->AddReader(unpackmcp);
@@ -156,7 +156,7 @@ void g_hispec10_online()
     {
         H10MCPRaw2Cal* calmcp = new H10MCPRaw2Cal();
         
-        calmcp->SetOnline(false);
+        calmcp->SetOnline(true);
         run->AddTask(calmcp);
     }
 
@@ -188,7 +188,7 @@ void g_hispec10_online()
     {
         H10MCPCal2Ana* anamcp = new H10MCPCal2Ana();
         
-        anamcp->SetOnline(false);
+        anamcp->SetOnline(true);
         run->AddTask(anamcp);
     }
 
