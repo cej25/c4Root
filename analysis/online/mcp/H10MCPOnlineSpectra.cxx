@@ -95,6 +95,7 @@ InitStatus H10MCPOnlineSpectra::Init()
     h1_dT->Draw();
     mcp_hists->cd(4);
     h1_stefan_mcp1->Draw();
+    mcp_hists->SetLogy();
 	
 
     return kSUCCESS;
