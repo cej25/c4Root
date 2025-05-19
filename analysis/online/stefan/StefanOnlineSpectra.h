@@ -78,6 +78,7 @@ class StefanOnlineSpectra : public FairTask
         EventHeader* header;
         Int_t fNEvents;
         int total_time_microsecs = 0;
+	std::vector<double> max_energy;
 
         int nDets = 0;
 
@@ -109,7 +110,8 @@ class StefanOnlineSpectra : public FairTask
 	
 	TH1* h1_test; // test histogram
 	std::vector<TH1*> h1_DSSSD_energy;
-	
+	TH2* h2_dE_E;
+	TH2* h2_Z_M;
 	
         std::vector<TH2*> h2_hit_strip_xy; // Hit pattern
         std::vector< std::vector<std::vector<TH1*>>> h1_raw_energy; // raw energy spectra
