@@ -303,7 +303,11 @@ class FrsCalTpcItem : public TObject
                     Float_t tpc22_24_music22_y,
                     Float_t tpc_music41_x,
                     Float_t tpc_music42_x,
-                    Float_t tpc_music43_x);
+                    Float_t tpc_music43_x,
+                    Float_t tpc_angle_x_s2_foc_22_23,
+                    Float_t tpc_angle_y_s2_foc_22_23,
+                    Float_t tpc_x_s2_foc_22_23,
+                    Float_t tpc_y_s2_foc_22_23);
 
         // Getters..
         int64_t Get_wr_t() const { return fwr_t; }
@@ -354,6 +358,10 @@ class FrsCalTpcItem : public TObject
         Float_t Get_tpc_music41_x() const { return ftpc_music41_x; }
         Float_t Get_tpc_music42_x() const { return ftpc_music42_x; }
         Float_t Get_tpc_music43_x() const { return ftpc_music43_x; }
+        Float_t Get_tpc_angle_x_s2_foc_22_23() const { return ftpc_angle_x_s2_foc_22_23; }
+        Float_t Get_tpc_angle_y_s2_foc_22_23() const { return ftpc_angle_y_s2_foc_22_23; }
+        Float_t Get_tpc_x_s2_foc_22_23() const { return ftpc_x_s2_foc_22_23; }
+        Float_t Get_tpc_y_s2_foc_22_23() const { return ftpc_y_s2_foc_22_23; }
 
 
         ClassDef(FrsCalTpcItem, 1);
@@ -412,6 +420,10 @@ class FrsCalTpcItem : public TObject
         Float_t ftpc_music41_x;
         Float_t ftpc_music42_x;
         Float_t ftpc_music43_x;
+        Float_t ftpc_angle_x_s2_foc_22_23;
+        Float_t ftpc_angle_y_s2_foc_22_23;
+        Float_t ftpc_x_s2_foc_22_23;
+        Float_t ftpc_y_s2_foc_22_23;
 
 };
 

@@ -13,6 +13,7 @@
 #include "TFRSParameter.h"
 #include "TH10MCPConfiguration.h"
 #include "TFrsConfiguration.h"
+#include "FrsGate.h"
 
 // ROOT
 #include "TDirectory.h"
@@ -45,6 +46,7 @@ class StefanOnlineSpectra : public FairTask
 {
     public:
         StefanOnlineSpectra();
+        StefanOnlineSpectra(std::vector<FrsGate*> fg);
         StefanOnlineSpectra(const TString& name, Int_t verbose = 1);
 
         virtual ~StefanOnlineSpectra();
@@ -69,6 +71,8 @@ class StefanOnlineSpectra : public FairTask
         const TH10MCPConfiguration* mcp_config;
         TFrsConfiguration const* frs_config;
 
+        std::vector<FrsGate*> FrsGates;
+
         std::vector<StefanHitItem> const* StefanHit; 
         std::vector<StefanCalItem> const* calArray;
         TClonesArray* fHitsMCP;
@@ -81,6 +85,7 @@ class StefanOnlineSpectra : public FairTask
 	std::vector<double> max_energy;
 
         int nDets = 0;
+        int num_frs_gates = 0;
 
         // Folders and Files
         TFolder* histograms;
@@ -99,6 +104,8 @@ class StefanOnlineSpectra : public FairTask
         TDirectory** dir_frs_z_stefan_dssds;
         TDirectory** dir_frs_z_stefan_dssds_strips;
         TDirectory* dir_frs_mcp;
+        TDirectory* dir_frs_gated;
+        TDirectory** dir_frs_gates;
         std::vector<std::vector<TDirectory*>> dir_raw;
         std::vector<std::vector<TDirectory*>> dir_clusters;
         std::vector<TDirectory*> dir_pixel;

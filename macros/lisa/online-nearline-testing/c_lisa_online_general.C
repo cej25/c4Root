@@ -2,8 +2,8 @@
 //............
 // Switch all tasks related to LISA :::  on (1)/off (0) :::
 #define LISA_ON 1       //always on
-#define LISA_DAQ 1      //diplay all the channels from the boards (mapped up to 3 boards)
-#define LISA_2x2 0      //display with pareesksha 2x2 mapping system
+#define LISA_DAQ 0      //diplay all the channels from the boards (mapped up to 3 boards)
+#define LISA_2x2 1      //display with pareesksha 2x2 mapping system
 // WR syncronization
 #define WR_ENABLED 0
 
@@ -19,7 +19,7 @@ typedef struct EXT_STR_h101_t
 } EXT_STR_h101;
 
 
-void lisa_online_general()
+void c_lisa_online_general()
 {   
     if (WR_ENABLED)
     {
@@ -34,7 +34,7 @@ void lisa_online_general()
     TString fExpName = "lisa";
 
     //:::::::::Here you define commonly used path
-    TString c4Root_path = "/u/gandolfo/c4/c4Root";
+    TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -56,16 +56,17 @@ void lisa_online_general()
 
     //::::::::::P A T H   O F   F I L E  to read
     //___O N L I N E
-    TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
+    //TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
 
     //___O F F L I N E
     //TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/x7_241Am/multiple_cards_test/cards_A_B_C_D_E_F_G_0306.lmd"; 
-    //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/run_0072_0001.lmd";  //data with only lisa
+    TString filename = "$LUSTRE_DIR/despec/s092_s143/run_0075_0001.lmd";  //data with only lisa
     //TString filename = "/u/gandolfo/data/lustre/despec/lisa/3x3_board_1/run_0002_*.lmd";  //data with only lisa
 
     //___O U T P U T - only used if switched on 
-    TString outputpath = "/u/gandolfo/data/lustre/despec/lisa/3x3_board_1/";
-    TString outputFilename = outputpath + "lisa_test.root";
+    //TString outputpath = "/u/gandolfo/data/lustre/despec/lisa/3x3_board_1/";
+    TString outputpath = "./";
+    TString outputFilename = outputpath + "run_0075_0001.lmd";
 
     //:::::::Create online run
     Int_t refresh = 10; // Refresh rate for online histograms
@@ -93,9 +94,9 @@ void lisa_online_general()
     if (LISA_2x2)
     {
         TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Detector_Map_names.txt");
-        TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters.txt");
-
+        TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching_pareeksha.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_DAQtest.txt");
+        TLisaConfiguration::SetGMFileMWD(config_path + "/Lisa_GainMatching_pareeksha.txt");
 
     }
 

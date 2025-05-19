@@ -34,6 +34,11 @@ std::string TLisaConfiguration::mapping_file = "blank";
 std::string TLisaConfiguration::gain_matching_file = "blank";
 std::string TLisaConfiguration::gain_matching_file_MWD = "blank";
 std::string TLisaConfiguration::calibration_file = "blank";
+std::vector<std::string> TLisaConfiguration::gate_ranges_files = {"blank"};
+std::vector<std::string> TLisaConfiguration::gate_ranges_MWD_files = {"blank"};
+
+//std::string TLisaConfiguration::gate_ranges_files = "blank";
+//std::string TLisaConfiguration::gate_ranges_MWD_file = "blank";
 
 //WR enable setting - X7 data = 0, S2 data = 1
 bool TLisaConfiguration::wr_enable = 1;
@@ -60,7 +65,6 @@ int TLisaConfiguration::min_energy_MWD_GM = 0;
 int TLisaConfiguration::max_energy_MWD_GM = 10000;
 int TLisaConfiguration::bin_energy_MWD_GM = 500;
 
-
 // ::: WR
 long TLisaConfiguration::min_wr_diff = 0;
 long TLisaConfiguration::max_wr_diff = 200;
@@ -70,8 +74,8 @@ int TLisaConfiguration::max_wr_rate = 200;
 int TLisaConfiguration::bin_wr_rate = 50;
 
 // ::: Traces time 
-int TLisaConfiguration::min_traces = 0;
-int TLisaConfiguration::max_traces = 2000;
+double TLisaConfiguration::min_traces = 0;
+double TLisaConfiguration::max_traces = 2000.0;
 int TLisaConfiguration::bin_traces = 2000;
 
 // ::: Gates
@@ -80,12 +84,26 @@ int TLisaConfiguration::fMin_dE_LISA1_gate = 1070, TLisaConfiguration::fMax_dE_L
 int TLisaConfiguration::frun_num = 0;
 
 // ::: Board number !!only for TraceAnalysis!!
-int TLisaConfiguration:: board_num = 0;     // number of boards for the file
-int TLisaConfiguration:: event_ana = 0;     // event to analyze for MWD trace
+int TLisaConfiguration::board_num = 0;     // number of boards for the file
+int TLisaConfiguration::event_ana = 0;     // event to analyze for MWD trace
 
 // ::: EVTno for En vs Evtno when WR is not availabòe
-int TLisaConfiguration:: start_evtno = 0;
-int TLisaConfiguration:: stop_evtno = 0;
+int TLisaConfiguration::start_evtno = 0;
+int TLisaConfiguration::stop_evtno = 0;
+
+// ::: Enable trace writing in histos
+int TLisaConfiguration::trace_on = 1;
+
+// ::: Set detector to analyze for gates
+int TLisaConfiguration::xpos_gate = 0;
+int TLisaConfiguration::ypos_gate = 0;
+
+// ::: Set time ranges fro drift
+int TLisaConfiguration::drift_min = 0;
+int TLisaConfiguration::drift_max = 10;
+
+std::set<std::tuple<int, int, int>> TLisaConfiguration::excluded = {};
+
 
 
 TLisaConfiguration::TLisaConfiguration()
@@ -97,6 +115,8 @@ TLisaConfiguration::TLisaConfiguration()
     ReadMappingFile();
     ReadGMFile();
     ReadGMFileMWD();
+    ReadLISAGateFebexFile();
+    ReadLISAGateMWDFile();
     //ReadCalibrationCoefficients();
 
 }
@@ -243,12 +263,7 @@ void TLisaConfiguration::ReadMappingFile()
 
 
 void TLisaConfiguration::ReadGMFile()
-{   
-    //std::cout<<"due elefanti"<<std::endl;
-    //std::set<int> layers;
-    //std::set<int> x_positions;
-    //std::set<int> y_positions;
-    
+{       
     std::ifstream gain_matching_coeff_file (gain_matching_file);
     std::string line;
 
@@ -280,7 +295,7 @@ void TLisaConfiguration::ReadGMFile()
     gain_matching_loaded = 1;
     gain_matching_coeff_file.close();
 
-    //c4LOG(info, "Lisa Gain Matching File: " + gain_matching_file);
+    c4LOG(info, "Lisa Gain Matching File: " + gain_matching_file);
     return;
 
 }
@@ -323,11 +338,84 @@ void TLisaConfiguration::ReadGMFileMWD()
     gain_matching_MWD_loaded = 1;
     gain_matching_coeff_file_MWD.close();
 
-    //c4LOG(info, "Lisa Gain Matching MWD File: " + gain_matching_file_MWD);
+    c4LOG(info, "Lisa Gain Matching MWD File: " + gain_matching_file_MWD);
     return;
 
 }
 
+void TLisaConfiguration::ReadLISAGateFebexFile()
+{       
+    gate_LISA_febex.clear(); 
+
+    for (const auto& gate_file : gate_ranges_files)
+    {
+        std::ifstream gate_ranges(gate_file);
+        std::string line;
+        if (gate_ranges.fail()) 
+        {
+            c4LOG(warn, "Could not open LISA Febex Gates file: " + gate_file);
+            continue;
+        }
+        while (std::getline(gate_ranges, line))
+        {
+            if (line.empty() || line[0] == '#') continue;
+
+            std::istringstream iss(line);
+            int layer_id;
+            double gate_min, gate_max;
+
+            iss >> layer_id >> gate_min >> gate_max;
+
+            gate_LISA_febex[layer_id].emplace_back(gate_file, gate_min, gate_max);
+
+            std::cout << "File: " << gate_file
+                      << " | Layer ID: " << layer_id 
+                      << " | Gate Min: " << gate_min 
+                      << " | Gate Max: " << gate_max << "\n";
+        }
+        gate_ranges.close();
+        c4LOG(info, "Loaded LISA Febex Gates from file: " + gate_file);  
+    }
+    gates_febex_loaded = 1;
+    return;
+}
+
+void TLisaConfiguration::ReadLISAGateMWDFile()
+{       
+    gate_LISA_MWD.clear(); 
+
+    for (const auto& gate_file : gate_ranges_MWD_files)
+    {
+        std::ifstream gate_ranges(gate_file);
+        std::string line;
+        if (gate_ranges.fail()) 
+        {
+            c4LOG(warn, "Could not open LISA MWD Gates file: " + gate_file);
+            continue;
+        }
+        while (std::getline(gate_ranges, line))
+        {
+            if (line.empty() || line[0] == '#') continue;
+
+            std::istringstream iss(line);
+            int layer_id;
+            double gate_min, gate_max;
+
+            iss >> layer_id >> gate_min >> gate_max;
+
+            gate_LISA_MWD[layer_id].emplace_back(gate_file, gate_min, gate_max);
+
+            std::cout << "File MWD: " << gate_file
+                      << " | Layer ID: " << layer_id 
+                      << " | Gate MWD Min: " << gate_min 
+                      << " | Gate MWD Max: " << gate_max << "\n";
+        }
+        gate_ranges.close();
+        c4LOG(info, "Loaded LISA MWD Gates from file: " + gate_file);  
+    }
+    gates_MWD_loaded = 1;
+    return;
+}
 
 void TLisaConfiguration::ReadCalibrationCoefficients()
 {

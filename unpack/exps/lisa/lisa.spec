@@ -16,7 +16,7 @@ SUBEVENT(febex_subev_traces)
   
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1200);
+        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x0400);
     }
     
     select several

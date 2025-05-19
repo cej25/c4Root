@@ -388,11 +388,10 @@ InitStatus LisaOnlineSpectraDaq::Init()
                     }
                 }
 
-                h1_traces_layer_ch[i][j][k] = new TH1F(Form("traces_%i_%i_%i_%s", i, j, k, city.Data()), city.Data(), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces); //2000,0,20
+                h1_traces_layer_ch[i][j][k] = new TH1F(Form("traces_%i_%i_%i_%s", i, j, k, city.Data()), city.Data(), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces); 
                 h1_traces_layer_ch[i][j][k]->GetXaxis()->SetTitle("Time [us]");
                 h1_traces_layer_ch[i][j][k]->SetMinimum(lisa_config->amplitude_min);
                 h1_traces_layer_ch[i][j][k]->SetMaximum(lisa_config->amplitude_max);
-                //h1_traces_layer_ch[i][j][k]->SetStats(0);
                 h1_traces_layer_ch[i][j][k]->SetLineColor(kBlue+1);
                 h1_traces_layer_ch[i][j][k]->SetFillColor(kOrange-3);
                 h1_traces_layer_ch[i][j][k]->Draw();
