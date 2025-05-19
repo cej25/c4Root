@@ -38,6 +38,11 @@ class TLisaConfiguration
         static void SetGMFile(std::string fp) { gain_matching_file = fp; }
         static void SetGMFileMWD(std::string fp) { gain_matching_file_MWD = fp; }
         static void SetDetectorCoefficientFile(std::string fp) { calibration_file = fp; }
+        static void SetLISAGateFebex(const std::string& file) { gate_ranges_files.emplace_back(file); }
+        static void SetLISAGateMWD(const std::string& file) { gate_ranges_MWD_files.emplace_back(file); }
+        //static void SetLISAGateFebex(std::string fp) { gate_ranges_file = fp; }
+        //static void SetLISAGateMWD(std::string fp) { gate_ranges_MWD_file = fp; }
+        static void SetExcludedChannels(std::set<std::tuple<int, int, int>> ex) { excluded = ex; }
 
         //::: MWD Parameters
         bool MWDParametersLoaded() const;
@@ -55,8 +60,19 @@ class TLisaConfiguration
         std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> GainMatchingMWDCoefficients() const;
         bool GainMatchingMWDLoaded() const;
 
+        // ::: Gates for LISA  - Febex
+        const std::map<int, std::vector<std::tuple<std::string, double, double>>>& GatesLISAFebex() const;
+        //std::map<int, std::pair<double,double>> GatesLISAFebex() const;
+        bool GatesLISAFebexLoaded() const;  
+        // ::: Gates for LISA  - MWD
+        const std::map<int, std::vector<std::tuple<std::string, double, double>>>& GatesLISAMWD() const;
+        //std::map<int, std::pair<double,double>> GatesLISAMWD() const;
+        bool GatesLISAMWDLoaded() const;  
+
         void SetTraceLength(int length) { trace_length = length; }
         int GetTraceLength() { return trace_length; }
+
+        std::set<std::tuple<int,int,int>>  GetExcludedChannels() const { return excluded; }
 
         //std::map<std::pair<int,int>,std::pair<double,double>> CalibrationCoefficients() const;
         //:::: Calibration
@@ -98,7 +114,7 @@ class TLisaConfiguration
         static void SetWrRateRange(int min_wr_r, int max_wr_r) { min_wr_rate = min_wr_r; max_wr_rate = max_wr_r; }
         static void SetWrRateBin(int bin_wr_r) { bin_wr_rate = bin_wr_r; }
 
-        static void SetTracesRange(int min_tr, int max_tr) { min_traces = min_tr; max_traces = max_tr; }
+        static void SetTracesRange(double min_tr, double max_tr) { min_traces = min_tr; max_traces = max_tr; }
         static void SetTracesBin(int bin_tr) { bin_traces = bin_tr; }
         
         static void SetWREnable(bool wr_en) { wr_enable = wr_en; }
@@ -112,6 +128,12 @@ class TLisaConfiguration
         static void SetEventToAnalyze(int evt_num) { event_ana = evt_num; }
 
         static void SetEventNO(int start_evt, int stop_evt) {start_evtno = start_evt; stop_evtno = stop_evt;}
+
+        static void SetTrace(int tr_on) { trace_on = tr_on; }
+
+        static void SetXYDetectorGate(int x_gate, int y_gate) { xpos_gate = x_gate; ypos_gate = y_gate; }
+    
+        static void SetDriftRange(int d_min, int d_max) { drift_min = d_min; drift_max = d_max; }
 
 
 
@@ -138,8 +160,8 @@ class TLisaConfiguration
         static int min_wr_rate;
         static int max_wr_rate;
         static int bin_wr_rate;
-        static int min_traces;
-        static int max_traces;
+        static double min_traces;
+        static double max_traces;
         static int bin_traces;
         static int fMin_dE_LISA1_gate;
         static int fMax_dE_LISA1_gate;
@@ -148,6 +170,11 @@ class TLisaConfiguration
         static int event_ana;
         static int start_evtno;
         static int stop_evtno;
+        static int trace_on;
+        static int xpos_gate;
+        static int ypos_gate;
+        static int drift_min;
+        static int drift_max;
 
         static bool wr_enable;
 
@@ -164,13 +191,7 @@ class TLisaConfiguration
         float Get_MWD_Baseline_Start() const { return MWD_baseline_start; }
         float Get_MWD_Baseline_Stop() const { return MWD_baseline_stop; }
 
-
-
-
         //:::::::
-
-
-
 
     private:
 
@@ -180,6 +201,9 @@ class TLisaConfiguration
         static std::string gain_matching_file;
         static std::string gain_matching_file_MWD;
         static std::string calibration_file;
+        //static std::string gate_ranges_file;
+        static std::vector<std::string> gate_ranges_files;  // For handling different gate files
+        static std::vector<std::string> gate_ranges_MWD_files;
 
         TLisaConfiguration();
 
@@ -188,6 +212,8 @@ class TLisaConfiguration
         void ReadGMFile();
         void ReadGMFileMWD();
         void ReadCalibrationCoefficients();
+        void ReadLISAGateFebexFile();
+        void ReadLISAGateMWDFile();
 
         static TLisaConfiguration* instance;
 
@@ -197,6 +223,9 @@ class TLisaConfiguration
         std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> gain_matching_MWD_coeffs;
         //std::map<std::pair<int,std::pair<int,int>>, std::pair<int,int>> calibration_coeffs;
         std::set<int> extra_signals;
+        std::map<int, std::vector<std::tuple<std::string, double, double>>> gate_LISA_febex;
+        //std::map<int, std::vector<std::pair<double, double>>> gate_LISA_febex;
+        std::map<int, std::vector<std::tuple<std::string, double, double>>> gate_LISA_MWD;
 
         int num_layers;   
         int xmax;
@@ -217,6 +246,8 @@ class TLisaConfiguration
         bool gain_matching_MWD_loaded = 0;
         bool detector_calibrations_loaded = 0;
         bool timeshift_calibration_coeffs_loaded = 0;
+        bool gates_febex_loaded = 0;
+        bool gates_MWD_loaded = 0;
 
         int trace_length = 4000; // default 4k
 
@@ -233,6 +264,9 @@ class TLisaConfiguration
         float MWD_trace_stop = 0.1;
         float MWD_baseline_start = 0.1;
         float MWD_baseline_stop = 0.1;
+
+        static std::set<std::tuple<int, int, int>> excluded;
+
 
         //:: test for decay time
 
@@ -264,7 +298,6 @@ inline std::map<std::pair<int,int>, std::pair<std::pair<int,std::string>, std::p
     return detector_mapping;
 }
 
-
 //::: Gain Matching
 inline std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> TLisaConfiguration::GainMatchingCoefficients() const
 {
@@ -276,6 +309,26 @@ inline std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> TLi
 {
     return gain_matching_MWD_coeffs;
 }
+
+//::: Gates for Lisa - Febex
+inline const std::map<int, std::vector<std::tuple<std::string, double, double>>>& TLisaConfiguration::GatesLISAFebex() const
+{
+    return gate_LISA_febex;
+}
+//::: Gates fir Lisa - MWD
+inline const std::map<int, std::vector<std::tuple<std::string, double, double>>>& TLisaConfiguration::GatesLISAMWD() const
+{
+    return gate_LISA_MWD;
+}
+// inline std::map<int, std::pair<double,double>> TLisaConfiguration::GatesLISAFebex() const
+// {
+//     return gate_LISA_febex;
+// }
+//::: Gates for Lisa - MWD
+// inline std::map<int, std::pair<double,double>> TLisaConfiguration::GatesLISAMWD() const
+// {
+//     return gate_LISA_MWD;
+// }
 
 //::: Calibration
 /*
@@ -330,6 +383,15 @@ inline bool TLisaConfiguration::GainMatchingLoaded() const
 inline bool TLisaConfiguration::GainMatchingMWDLoaded() const
 {
     return gain_matching_MWD_loaded;
+}
+
+inline bool TLisaConfiguration::GatesLISAFebexLoaded() const
+{
+    return gates_febex_loaded;
+}
+inline bool TLisaConfiguration::GatesLISAMWDLoaded() const
+{
+    return gates_MWD_loaded;
 }
 
 /*

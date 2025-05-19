@@ -53,12 +53,12 @@ Double_t TFrsConfiguration::fMin_b2 = -100., TFrsConfiguration::fMax_b2 = 100.;
 Double_t TFrsConfiguration::fMin_b4 = -100., TFrsConfiguration::fMax_b4 = 100.;
 Double_t TFrsConfiguration::fMin_dE = 10., TFrsConfiguration::fMax_dE = 100.;
 Double_t TFrsConfiguration::fMin_dEoQ = 0.1, TFrsConfiguration::fMax_dEoQ = 0.8;
-Double_t TFrsConfiguration::fMin_dE_Music1 = 0., TFrsConfiguration::fMax_dE_Music1 = 4000.;
-Double_t TFrsConfiguration::fMin_dE_Music2 = 0., TFrsConfiguration::fMax_dE_Music2 = 4000.;
+Double_t TFrsConfiguration::fMin_dE_music21 = 0., TFrsConfiguration::fMax_dE_music21 = 4000.;
+Double_t TFrsConfiguration::fMin_dE_music41 = 0., TFrsConfiguration::fMax_dE_music41 = 4000.;
+Double_t TFrsConfiguration::fMin_dE_music42 = 0., TFrsConfiguration::fMax_dE_music42 = 4000.;
+Double_t TFrsConfiguration::tof_gate_low = 0., TFrsConfiguration::tof_gate_high = 40000000.; // no gate by default
 Double_t TFrsConfiguration::fMin_dE_travMus_gate = 0., TFrsConfiguration::fMax_dE_travMus_gate = 30000.;
 
-//travMUSIC
-Double_t TFrsConfiguration::fMin_dE_travMusic = 0., TFrsConfiguration::fMax_dE_travMusic = 60000.;
 int TFrsConfiguration::frun_num = 0;
 
 TFrsConfiguration::TFrsConfiguration()
@@ -399,15 +399,28 @@ void TFrsConfiguration::Set_dEdegoQ_range(Double_t min, Double_t max)
     fMax_dEoQ = max;
 }
 
-void TFrsConfiguration::Set_dE_Music1_range(Double_t min, Double_t max)
+void TFrsConfiguration::Set_dE_music21_range(Double_t min, Double_t max)
 {
-    fMin_dE_Music1 = min;
-    fMax_dE_Music1 = max;
+    fMin_dE_music21 = min;
+    fMax_dE_music21 = max;
 }
-void TFrsConfiguration::Set_dE_Music2_range(Double_t min, Double_t max)
+
+void TFrsConfiguration::Set_dE_music41_range(Double_t min, Double_t max)
 {
-    fMin_dE_Music2 = min;
-    fMax_dE_Music2 = max;
+    fMin_dE_music41 = min;
+    fMax_dE_music41 = max;
+}
+
+void TFrsConfiguration::Set_dE_music42_range(Double_t min, Double_t max)
+{
+    fMin_dE_music42 = min;
+    fMax_dE_music42 = max;
+}
+
+void TFrsConfiguration::Set_TOF_gate(Double_t min, Double_t max)
+{
+    tof_gate_low = min;
+    tof_gate_high = max;
 }
 
 void TFrsConfiguration::Set_dE_travMusic_gate(Double_t min, Double_t max)

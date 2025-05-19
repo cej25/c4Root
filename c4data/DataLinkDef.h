@@ -95,6 +95,7 @@
 #pragma link C++ class LisaCalItem+;
 #pragma link C++ class LisaAnaItem+;
 #pragma link C++ class LisaTraceData+;
+#pragma link C++ class LisaGate+;
 
 // STEFAN
 #pragma link C++ class StefanFebexItem+;

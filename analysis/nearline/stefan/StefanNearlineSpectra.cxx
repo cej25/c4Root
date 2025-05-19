@@ -2,7 +2,6 @@
 #include "FairLogger.h"
 #include "FairRootManager.h"
 #include "FairRunAna.h"
-#include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
 
 // c4
@@ -47,10 +46,6 @@ InitStatus StefanNearlineSpectra::Init()
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found!");
 
-    FairRunOnline* run = FairRunOnline::Instance();
-    run->GetHttpServer()->Register("", this);
-    run->GetHttpServer()->RegisterCommand("Reset_Stefan_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
-
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found!");
 
@@ -67,8 +62,10 @@ InitStatus StefanNearlineSpectra::Init()
     c4LOG_IF(warn, !multihitArray, "Branch FrsMultiHitData not found - no correlations with FRS (MHTDC) possible!");
 
 
-    TDirectory::TContext ctx(nullptr);
-    dir_stefan = new TDirectory("Stefan", "Stefan", "", 0);
+    TDirectory* tmp = gDirectory;
+    FairRootManager::Instance()->GetOutFile()->cd();
+    dir_stefan = gDirectory->mkdir("Stefan");
+    gDirectory->cd("Stefan");
 
 
     int num_dssds = stefan_config->DSSDs();

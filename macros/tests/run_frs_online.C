@@ -6,7 +6,8 @@
 extern "C"
 {
     //#include "../../config/s101/frs/setup_160_049_2025_conv.C"
-    #include "../../config/s101/frs/setup_056_99Ag_2025_conv.C"
+    //#include "../../config/s101/frs/setup_056_99Ag_2025_conv.C"
+    #include "../../config/s101/frs/setup_160_049_2025_conv.C" // same as s101 setup?
     // #include "../../config/s100/frs/setup_des_s100_030_2024_conv.C"
     //#include "../../config/s100/frs/setup_des_s100_030_2024_conv_jel_conv.C"
 }
@@ -24,7 +25,7 @@ void run_frs_online()
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
 
     // Name your experiment. Make sure all relevant directories are named identically.
-    TString fExpName = "s101";
+    TString fExpName = "s115"; // feb 2025, should be appropriate?
 
     // Define important paths.
     TString c4Root_path = "/u/cjones/c4Root";
@@ -53,7 +54,7 @@ void run_frs_online()
     // TString filename  = "~/lustre/gamma/stacktest2024_files/ts/aidabplas_OUT_130125_new_0182.lmd";
     //TString filename =  "~/lustre/gamma/s100_files/ts/162Eu_0075_0006.lmd";
     //TString filename = "~/lustre/gamma/s100_files/new_ts/162Eu/162Eu_new_0045_0098.lmd";
-    TString filename = "~/lustre/nustar/profi/sec_s160feb25/105Ag_withSC11_0119_0002.lmd";
+    TString filename = "$LUSTRE_DIR/nustar/profi/sec_s160feb25/stitched/Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
@@ -157,8 +158,8 @@ void run_frs_online()
     // *** Online Spectra ********************************************************************* //
     
   
-    TFrsConfiguration::Set_Z_range(50,100);
-    TFrsConfiguration::Set_AoQ_range(2.3,2.7);
+    TFrsConfiguration::Set_Z_range(0,100);
+    TFrsConfiguration::Set_AoQ_range(1,4);
 
     std::vector<FrsGate*> fgs = {}; // for now just because code cries without a vector
     

@@ -82,6 +82,7 @@ frsData/FrsGate.cxx
 baseData/TCorrelationsConfiguration.cxx
 baseData/TExperimentConfiguration.cxx
 lisaData/TLisaConfiguration.cxx
+lisaData/LisaGate.cxx
 )
 
 # fill list of header files from list of source files by exchanging the file extension

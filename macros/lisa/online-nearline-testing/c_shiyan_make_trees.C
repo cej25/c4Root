@@ -1,19 +1,23 @@
 #include <TROOT.h>
 
-// Switch all tasks related to {subsystem} on (1)/off (0)
-#define LISA_ON 1
+// !!! Switch all tasks related to {subsystem} on (1)/off (0)
+#define LISA_ON 0
 #define FRS_ON 1
-#define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
 
-//Select the data level you want to visualize
+// !!! Select the data level you want to visualize
 #define LISA_RAW 0
 #define LISA_ANA 0
-#define LISA_CAL 1
+#define LISA_CAL 0
 
-// Define FRS setup.C file - FRS should provide; place in /config/pareeksha/frs/
+// Define for online if testing or during experient
+#define TEST 0
+#define EXP 1
+
+// :::  Define FRS setup.C file - FRS should provide; place in /config/shiyan/frs/setup/
 extern "C"
 {
-    #include "../../config/pareeksha/frs/setup_Fragment_conv_updated.C"
+    // #include "../../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
+    #include "../../../config/shiyan/frs/setup/setup_103_002_2025_conv.C" //shiyan
 }
 
 typedef struct EXT_STR_h101_t
@@ -24,21 +28,21 @@ typedef struct EXT_STR_h101_t
 
 } EXT_STR_h101;
 
-void lisadev_make_trees()
+void c_shiyan_make_trees()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
-    //:::::::::Experiment name
-    TString fExpName = "pareeksha";
+    // ::: Experiment name
+     TString fExpName = "shiyan";
+    //TString fExpName = "pareeksha";
 
-    //:::::::::Here you define commonly used path
-    TString c4Root_path = "/u/gandolfo/c4/c4Root";
-    //TString c4Root_path = "~/c4Root";
+    // ::: Here you define commonly used path
+    TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
 
-    //:::::::::Macro timing
+    // ::: Macro timing
     TString cRunId = Form("%04d", fRunId);
     TString cExpId = Form("%03d", fExpId);
     TStopwatch timer;
@@ -48,26 +52,30 @@ void lisadev_make_trees()
     oss << std::put_time(&tm, "%Y%m%d_%H%M%S");
     timer.Start();
     
-    //:::::::::::Debug info - set level
+    // ::: Debug info - set level
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
 
-    //::::::::::P A T H   O F   F I L E  to read
-    //___O F F L I N E
-    //TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/LISAmp_test/";
-    TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";
+    
+    // ::: FILE  PATH
+    //TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/S092_shiyan/";               // Data from LISA
+    TString inputpath = "$LUSTRE_DIR/nustar/profi/sec_s160feb25/stitched/";     // Data from FRS
+
  
-    //TString filename = inputpath + "LISAmp_2layers_0006_0001.lmd";
-    TString filename = inputpath + "run_0075_0001.lmd";
+    //TString filename = inputpath + "test_0003_0001.lmd";
+    // TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
 
-    //___O U T P U T
-    TString outputpath = "/u/gandolfo/data/test_c4/"; //testing
-    TString outputFilename = outputpath + "run_0075_0001_tree.root";
+    //TString filename = "$LUSTRE_DIR/gamma/s092_s143_files/ts/run_0075_0001.lmd";
+    TString filename = "$LUSTRE_DIR/gamma/s092_s103_files/ts/run_0006_0001.lmd";
+
+    // ::: OUTPUT 
+    TString outputpath = "./"; //testing
+    //TString outputFilename = outputpath + "test_0003_tree.root"; 
+    TString outputFilename = outputpath + "tpc_X_testing.root";
 
 
-    //:::::::Create online run
+    // ::: Create online run
     Int_t refresh = 10; // not needed
-    //Int_t port = 5000; // not needed
      
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -79,7 +87,7 @@ void lisadev_make_trees()
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
     run->AddObject(histograms);
      
-    //:::::::Take ucesb input and create source
+    // ::: Take ucesb input and create source
     EXT_STR_h101 ucesb_struct;
     TString ntuple_options = "UNPACK,RAW"; //level of unpacked data (UNPACK,RAW,CAL)
     UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
@@ -87,7 +95,7 @@ void lisadev_make_trees()
     run->SetSource(source);
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    //::::: F R S parameter - Initialise
+    // ::: F R S parameter - Initialise
 
     TFRSParameter* frs = new TFRSParameter();
     TMWParameter* mw = new TMWParameter();
@@ -103,15 +111,11 @@ void lisadev_make_trees()
     TFrsConfiguration::SetParameters(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    //:::: G A T E S - Initialise 
-
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    //:::: C O R R E L A T I O N S - Initialise 
-  
+    // :::C O R R E L A T I O N S - Initialise 
     TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations_tight.dat");
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    //:::::: C O N F I G    F O R   D E T E C T O R - Load
+    // ::: C O N F I G    F O R   D E T E C T O R - Load
     // ::: Exp config
     TExperimentConfiguration::SetExperimentStart(1715734200000000000);//Start of pareeksha with primary beam: 15 May 00:50
     // for S100, 3 and 4. for 2025+ 12 and 13.
@@ -119,26 +123,47 @@ void lisadev_make_trees()
     TExperimentConfiguration::SetEOSTrig(4);
     
     // ::: FRS config
-    TFrsConfiguration::SetConfigPath(config_path + "/pareeksha/frs/");
-    TFrsConfiguration::SetCrateMapFile(config_path + "/../pareeksha/frs/crate_map.txt");
-    TFrsConfiguration::SetTravMusDriftFile(config_path + "/../pareeksha/frs/TM_Drift_fragments.txt");
-    TFrsConfiguration::SetZ1DriftFile(config_path + "/../pareeksha/frs/Z1_Drift_fragments.txt");
-    TFrsConfiguration::SetAoQDriftFile(config_path + "/../pareeksha/frs/AoQ_Drift_fragments.txt");
+    TFrsConfiguration::SetConfigPath(config_path +  "/frs/");
+    TFrsConfiguration::SetCrateMapFile(config_path +  "/frs/crate_map.txt");
+    TFrsConfiguration::SetTravMusDriftFile(config_path +  "/frs/TM_Drift_fragments.txt");
+    TFrsConfiguration::SetZ1DriftFile(config_path +  "/frs/Z1_Drift_fragments.txt");
+    TFrsConfiguration::SetAoQDriftFile(config_path +  "/frs/AoQ_Drift_fragments.txt");
 
     // ::: Lisa config
-    //TLisaConfiguration::SetMappingFile(config_path + "/Lisa_5x5_shiyan.txt");
-    TLisaConfiguration::SetMappingFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_Detector_Map_names.txt");
+    if ( TEST )
+    {
+        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_All_Boards.txt");
+        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_cards.txt");
+        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
+        
+        // TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Febex_Gate1.txt");
+        // TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Febex_Gate2.txt");
 
-    TLisaConfiguration::SetGMFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_pareeksha.txt");
-    TLisaConfiguration::SetGMFileMWD("/u/gandolfo/c4/c4Root/config/lisa/Lisa_GainMatching_pareeksha.txt");
-    TLisaConfiguration::SetMWDParametersFile("/u/gandolfo/c4/c4Root/config/lisa/Lisa_MWD_Parameters_DAQtest.txt");
+        // TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/MWD_Gate1.txt");
+        // TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/MWD_Gate2.txt");
 
+        // pareeksha testing
+        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_Detector_Map_names.txt");
+        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching.txt");
+        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
 
+    }
+    if ( EXP )
+    {
+        TLisaConfiguration::SetMappingFile(config_path + "/Lisa_5x5_shiyan.txt");
+        TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching_shiyan.txt");
+        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_shiyan.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path +  "/lisa/Lisa_MWD_Parameters_shiyan.txt");
+        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Lisa_Febex_Gates_shiyan.txt");
+        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/Lisa_MWD_Gates_shiyan.txt");
+    }
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // S U B S Y S T E M S
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
    
-    // ::::::: READ Subsystem  ::::::::
+    // ::: READ Subsystem  :::
 
     UnpackReader* unpackheader = new UnpackReader((EXT_STR_h101_unpack*)&ucesb_struct.eventheaders, offsetof(EXT_STR_h101, eventheaders));
     source->AddReader(unpackheader);
@@ -167,7 +192,7 @@ void lisadev_make_trees()
     }   
 
 
-    // ::::::: CALIBRATE Subsystem  ::::::::
+    // ::: CALIBRATE Subsystem  :::
 
     if (LISA_ANA && !LISA_CAL)
     {
@@ -199,14 +224,13 @@ void lisadev_make_trees()
 
         FrsRaw2Cal* calfrs = new FrsRaw2Cal();
         
-        calfrs->SetOnline(true);
+        calfrs->SetOnline(false);
         run->AddTask(calfrs);
 
     }
 
 
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
-    // ::::::: ANALYSE Subsystem  ::::::::
+    // ::: ANALYSE Subsystem  :::
 
     if (FRS_ON)
     {
