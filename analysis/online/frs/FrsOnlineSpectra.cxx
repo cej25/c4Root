@@ -309,6 +309,7 @@ InitStatus FrsOnlineSpectra::Init()
         h1_AoQs1s2_corr_mhtdc = MakeTH1(dir_mhtdc_s1s2_1d, "D", "h1_AoQs1s2_corr_mhtdc", "A/Q corr (S1-S2) (MHTDC)", 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2);
         h1_Z21_mhtdc = MakeTH1(dir_mhtdc_s1s2_1d, "D", "h1_Z21_mhtdc", "Z21 (MHTDC)", 1000, 0, 100, "Z21", kPink-3, kBlue+2);
         h1_Z22_mhtdc = MakeTH1(dir_mhtdc_s1s2_1d, "D", "h1_Z22_mhtdc", "Z22 (MHTDC)", 1000, 0, 100, "Z22", kPink-3, kBlue+2);
+        h1_sci_tof_11_21_mhtdc = MakeTH1(dir_mhtdc_s1s2_1d, "D", "h1_sci_tof_11_21_mhtdc", "SCI 11-21 TOF", 1000, 0, 400, "Time [ns]", kPink-3, kBlue+2);
 
         h1_beta_s2s4_mhtdc = MakeTH1(dir_mhtdc_s2s4_1d, "D", "h1_beta_s2s4_mhtdc", "Beta (S2-S4) (MHTDC)", 500, 0.0, 1.0, "Beta (S2-S4)", kPink-3, kBlue+2);
         h1_AoQs2s4_mhtdc = MakeTH1(dir_mhtdc_s2s4_1d, "D", "h1_AoQs2s4_mhtdc", "A/Q (S2-S4) (MHTDC)", 500, 1.0, 4.0, "A/Q (S2-S4)", kPink-3, kBlue+2);
@@ -539,6 +540,9 @@ InitStatus FrsOnlineSpectra::Init()
         h1_tpc41_rate = MakeTH1(dir_rates, "I", "h1_tpc41_rate", "TPC 41 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
         h1_tpc42_rate = MakeTH1(dir_rates, "I", "h1_tpc42_rate", "TPC 42 Rate", 1800, 0, 1800, "Time [2s]", kCyan, kBlue+2);
     }
+
+
+    h2_mhtdc_mult_s1s2s4 = MakeTH2(dir_monitors, "I", "h2_mhtdc_mult_s1s2s4", "Mult S1S2 vs S2S4", 11, 0, 11, 11, 0, 11);
     
     passed_s1s2.resize(num_frs_gates);
     std::fill(passed_s1s2.begin(), passed_s1s2.end(), false);
@@ -815,6 +819,10 @@ void FrsOnlineSpectra::Process_MHTDC()
 
     std::vector<Float_t> beta_s1s2_mhtdc = multiHitItem.Get_ID_beta_s1s2_mhtdc();
     std::vector<Float_t> beta_s2s4_mhtdc = multiHitItem.Get_ID_beta_s2s4_mhtdc();
+    std::vector<Float_t> s1x_mhtdc = multiHitItem.Get_ID_s1x_mhtdc();
+    std::vector<Float_t> s2x_s1s2_mhtdc = multiHitItem.Get_ID_s2x_s1s2_mhtdc();
+    std::vector<Float_t> s2x_s2s4_mhtdc = multiHitItem.Get_ID_s2x_s2s4_mhtdc();
+    std::vector<Float_t> s4x_mhtdc = multiHitItem.Get_ID_s4x_mhtdc();
     std::vector<Float_t> AoQ_s1s2_mhtdc = multiHitItem.Get_ID_AoQ_s1s2_mhtdc();
     std::vector<Float_t> AoQ_s2s4_mhtdc = multiHitItem.Get_ID_AoQ_s2s4_mhtdc();
     std::vector<Float_t> AoQ_corr_s1s2_mhtdc = multiHitItem.Get_ID_AoQ_corr_s1s2_mhtdc();
@@ -826,7 +834,31 @@ void FrsOnlineSpectra::Process_MHTDC()
     std::vector<Float_t> z43_mhtdc = multiHitItem.Get_ID_z43_mhtdc();
     std::vector<Float_t> dEdegoQ_mhtdc = multiHitItem.Get_ID_dEdegoQ_mhtdc();
     std::vector<Float_t> dEdeg_z41_mhtdc = multiHitItem.Get_ID_dEdeg_z41_mhtdc();
+    std::vector<Float_t> tof_sci11_21 = multiHitItem.Get_ID_tof_s1s2_mhtdc();
     std::vector<Float_t> tof_sci21_41 = multiHitItem.Get_ID_tof_s2s4_mhtdc();
+
+    h2_mhtdc_mult_s1s2s4->Fill(AoQ_s1s2_mhtdc.size(), AoQ_s2s4_mhtdc.size());
+    // if (AoQ_s1s2_mhtdc.size() == 2 && AoQ_s2s4_mhtdc.size() == 2)
+    // {
+    //     std::cout << "::::: Event with 2 && 2 :::::: " << std::endl;
+    //     std::cout << ":: S1S2 Data ::" << std::endl;
+    //     for (int i = 0; i < 2; i++)
+    //     {
+    //         std::cout << "s1x:: " << s1x_mhtdc.at(i) << std::endl;
+    //         std::cout << "s2x:: " << s2x_s1s2_mhtdc.at(i) << std::endl;
+    //     }
+    //     std::cout << ":: S2S4 Data ::" << std::endl;
+    //     for (int i = 0; i < 2; i++)
+    //     {
+    //         std::cout << "s2x:: " << s2x_s2s4_mhtdc.at(i) << std::endl;
+    //         std::cout << "s4x:: " << s4x_mhtdc.at(i) << std::endl;
+    //     }
+    // }
+
+
+    // CEJ testing...
+    if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 ) return;
+
 
     // ::::: S1S2 Loop ::::: 
     for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
@@ -847,6 +879,7 @@ void FrsOnlineSpectra::Process_MHTDC()
         if (AoQ_corr_s1s2_mhtdc.at(i) > 0) h1_AoQs1s2_corr_mhtdc->Fill(AoQ_corr_s1s2_mhtdc.at(i));
         if (z21_mhtdc.at(i) > 10) h1_Z21_mhtdc->Fill(z21_mhtdc.at(i));
         if (z22_mhtdc.at(i) > 0) h1_Z22_mhtdc->Fill(z22_mhtdc.at(i));
+        if (tof_sci11_21.at(i) > 0) h1_sci_tof_11_21_mhtdc->Fill(tof_sci11_21.at(i));
 
 
         if (num_frs_gates > 0)

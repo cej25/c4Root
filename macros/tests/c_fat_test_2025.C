@@ -34,7 +34,7 @@ typedef struct EXT_STR_h101_t
 } EXT_STR_h101;
 
 
-void s100_tests()
+void c_fat_test_2025()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
 

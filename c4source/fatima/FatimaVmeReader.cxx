@@ -99,7 +99,7 @@ Bool_t FatimaVmeReader::Read()
     
     //whiterabbit timestamp:
     wr_t = (((uint64_t)fData->fatimavme_ts_t[3]) << 48) + (((uint64_t)fData->fatimavme_ts_t[2]) << 32) + (((uint64_t)fData->fatimavme_ts_t[1]) << 16) + (uint64_t)(fData->fatimavme_ts_t[0]);
-    if (wr_t == 0) return kTRUE;
+    // if (wr_t == 0) return kTRUE;
 
     uint32_t wr_subsystem_id = fData->fatimavme_ts_subsystem_id;
 
