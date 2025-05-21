@@ -117,19 +117,19 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     for (int i = 0; i < nDetectors; i++)
     {
         c_FatVME_RawE->cd(i+1);
-        h1_FatVME_RawE[i] = MakeTH1(dir_raw_energy, "F", Form("h1_FatVme_RawE%i", i), Form("Fatima VME Raw Energy - Detector %i", i), 2e3, 0, 4e3, "Energy [a.u.]", kSpring, kBlue+2);
+        h1_FatVME_RawE[i] = MakeTH1(dir_raw_energy, "F", Form("h1_FatVme_RawE%i", i), Form("Fatima VME Raw Energy - Detector %i", i), 2e3, 0, 15e3, "Energy [a.u.]", kSpring, kBlue+2);
         h1_FatVME_RawE[i]->Draw();
     }
     c_FatVME_RawE->cd(0);
     dir_raw_energy->Append(c_FatVME_RawE);
 
-    dir_cal_energy->cd();
+    // dir_cal_energy->cd();
     c_FatVME_E = new TCanvas("c_FatVME_E", "Fatima VME Calibrated Energies", 650, 350);
     c_FatVME_E->Divide(4, nDetectors / 4);
     for (int i = 0; i < nDetectors; i++)
     {
         c_FatVME_E->cd(i+1);
-        h1_FatVME_E[i] = new TH1D(Form("h1_FatVME_E%i", i), Form("Fatima VME Energy - Detector %i", i), 4000, 0, 4000);
+        h1_FatVME_E[i] = MakeTH1(dir_cal_energy, "F", Form("h1_FatVME_E%i", i), Form("Fatima VME Energy - Detector %i", i), 4000, 0, 4000, "Energy [keV]", kViolet+1, kBlue+2);
         h1_FatVME_E[i]->Draw();
     }
     c_FatVME_E->cd(0);

@@ -81,7 +81,7 @@ class FatimaVmeOnlineSpectra : public FairTask
 
         std::vector<TH1*> h1_FatVME_RawE;
         std::vector<TH1D*> h1_FatVME_RawT;
-        std::vector<TH1D*> h1_FatVME_E;
+        std::vector<TH1*> h1_FatVME_E;
         std::vector<TH1D*> h1_FatVME_TDC_dt_refCh1;
         std::vector<TH1D*> h1_FatVME_TDC_dT_refSC41L;
         std::vector<TH2D*> h2_FatVME_EvsdTsc41;
