@@ -14,70 +14,92 @@
  *                               25.11.24                                     *
  ******************************************************************************/
 
-#include "LisaCalData.h"
+#include "LisaHitData.h"
 #include "TString.h"
+#include "TVector.h"
 
-//Debugging. Replaced std::string with TString nov24
 
 
-LisaCalData::LisaCalData()
+LisaHitItem::LisaHitItem()
 {
 
 }
 
-LisaCalItem::LisaCalItem()
-{
-
-}
-
-void LisaCalItem::SetAll(uint64_t wr,
+void LisaHitItem::SetAll(uint64_t wr,
+                        uint16_t w_id,
+                        int b_id,
                         int layer,
                         TString c,
                         int xpos,
                         int ypos,
-                        int e,
-                        std::vector<uint16_t> tr,
-                        double e_GM,
+                        float e,
+                        float e_MWD,
+                        std::vector<float> tr,
+                        //std::vector<int16_t> tr_MWD,
+                        std::vector<int16_t> tr_x,
+                        float e_GM,
+                        float e_MWD_GM,
+                        float z,
                         uint64_t evt_t,
                         uint64_t ch_t,
                         uint64_t evtno,
                         int pu,
+                        //int pu_MWD,
                         int ov
+                        //int ov_MWD
                         )
 {   
     wr_t = wr;
+    wr_id = w_id;
+    board_id = b_id;
     layer_id = layer;
     city = c;
     xposition = xpos;
     yposition = ypos;
     energy = e;
-    trace = tr;
+    energy_MWD = e_MWD;
+    trace_febex = tr;
+    //trace_MWD = tr_MWD;
+    trace_x = tr_x;
     energy_GM = e_GM;
+    energy_MWD_GM = e_MWD_GM;
+    z_lisa = z;
     board_event_time = evt_t;
     ch_event_time = ch_t;
     event_no = evtno;
     pileup = pu;
+    //pileup_MWD = pu;
     overflow = ov;
+    //overflow_MWD = ov_MWD;
 }
 
 
-void LisaCalItem::Reset()
+void LisaHitItem::Reset()
 {   
     // maybe reset stuff to -1 since 0 is used occasionally for positions
     wr_t = 0;
+    wr_id = 0;
+    board_id = 0; //reset to -1
     layer_id = 0;
     city = "";
     xposition = 0;
     yposition = 0;
     energy = 0;
-    trace = {};
+    energy_MWD = 0;
+    trace_febex = {};
+    //trace_MWD = {};
+    trace_x = {};
     event_no = 0;
     energy_GM = 0;
+    energy_MWD_GM = 0;
+    z_lisa = 0;
     board_event_time = 0;
     ch_event_time = 0;
     pileup = 0;
+    //pileup_MWD = 0; //-1
     overflow = 0;
+    //overflow_MWD = 0; //-1
 
 }
 
-ClassImp(LisaCalData)
+ClassImp(LisaHitItem)
