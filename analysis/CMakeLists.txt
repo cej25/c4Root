@@ -91,6 +91,7 @@ set(SRCS
 ./nearline/bb7/BB7NearlineSpectra.cxx
 ./nearline/lisa/LisaNearlineSpectra.cxx
 ./nearline/mcp/H10MCPNearlineSpectra.cxx
+./nearline/stefan/StefanNearlineSpectra.cxx
 
 ## correlations ##
 ./correlations/FrsAidaCorrelations.cxx

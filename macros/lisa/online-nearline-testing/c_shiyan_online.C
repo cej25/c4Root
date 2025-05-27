@@ -81,8 +81,9 @@ void c_shiyan_online()
     // TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
     // TString filename = "$LUSTRE_DIR/gamma/s092_s143_files/ts/run_0075_0001.lmd";
     // TString filename = "trans://lxg3107:6000";
-    // TString filename = "$LUSTRE_DIR/gamma/s092_s103_files/ts/run_0006_0001.lmd";
-    TString filename = "trans://lxg3107:6000";
+    TString filename = "$LUSTRE_DIR/gamma/s092_s103_files/ts/run_0189_00*.lmd";
+    //TString filename = "trans://lxg3107:6000";
+    // TString filename = "trans://lxg3154";
 // 
     //TString filename = inputpath + "test_0003_*.lmd";
     //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";

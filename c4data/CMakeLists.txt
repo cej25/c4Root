@@ -74,6 +74,7 @@ mcpData/H10MCPTwinpeaksAnaData.cxx
 mcpData/TH10MCPConfiguration.cxx
 stefanData/StefanFebexData.cxx
 stefanData/StefanCalData.cxx
+stefanData/StefanHitData.cxx
 stefanData/TStefanConfiguration.cxx
 frsData/TFRSParameter.cxx
 frsData/TFrsConfiguration.cxx

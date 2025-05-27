@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                              C.E. Jones                                    *
+ *                               06.05.25                                     *
+ ******************************************************************************/
+
 // FairRoot
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -299,6 +315,8 @@ Bool_t H10MCPReader::Read() //do fine time here:
 
     if (!fData) return kTRUE;
 
+    //std::cout << "new event:::: " << std::endl;
+
     if ((fNEvent==fine_time_calibration_after)  & (!fine_time_calibration_set)){
         DoFineTimeCalibration();
         if (fine_time_calibration_save) WriteFineTimeHistosToFile();
@@ -359,6 +377,8 @@ Bool_t H10MCPReader::Read() //do fine time here:
             //from this point we should have seen an epoch for channel id.
 
             uint32_t channelid = fData->mcp_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // 0-32
+
+            //std::cout << "channel id:: " << channelid << " - board:: " << it_board_number << std::endl;
  
             if (fData->mcp_tamex[it_board_number].time_finev[it_hits] == 0x3FF) { fNevents_TAMEX_fail[it_board_number][channelid]++; continue; } // this happens if TAMEX loses the fine time - skip it
 
@@ -408,6 +428,29 @@ Bool_t H10MCPReader::Read() //do fine time here:
                 last_tdc_hit.lead_fine_T = fine_T;
 
                 fNleads_read[it_board_number][channelid]++;
+
+                new ((*fArray)[fArray->GetEntriesFast()]) H10MCPTwinpeaksData(
+                    trig,
+                    it_board_number,
+                    channelid,
+                    accepted_trigger_time,
+                    accepted_lead_epoch_counter,
+                    accepted_lead_coarse_T,
+                    accepted_lead_fine_T,
+
+                    last_tdc_hit.lead_epoch_counter,
+                    last_tdc_hit.lead_coarse_T,
+                    last_tdc_hit.lead_fine_T,
+
+                    previous_epoch_word,
+                    coarse_T,
+                    fine_T,
+                    
+                    fData->mcp_ts_subsystem_id,
+                    wr_t
+                );
+
+            
                 continue;
             }
             else if (!is_leading && last_tdc_hit.hit)
