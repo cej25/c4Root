@@ -10,10 +10,11 @@ class FatimaVmeQDCCalItem : public TObject
         FatimaVmeQDCCalItem();
 
         void Reset();
-        void SetAll(uint64_t wr, int det, double ct, double ft, double ql, uint32_t qlr, uint32_t qsr);
+        void SetAll(uint64_t wr, int det, double ct, double ft, int fb, double ql, uint32_t qlr, uint32_t qsr);
         uint64_t Get_wr_t() const;
         double Get_coarse_time() const;
         double Get_fine_time() const;
+        int Get_fine_bin() const;
         double Get_qlong() const;
         uint32_t Get_qlong_raw() const;
         uint32_t Get_qshort_raw() const;
@@ -26,6 +27,7 @@ class FatimaVmeQDCCalItem : public TObject
         uint64_t wr_t;
         double coarse_time;
         double fine_time;
+        int fine_bin;
         uint32_t qlong; // calibrate e
         uint32_t qlong_raw;
         uint32_t qshort_raw;
@@ -118,6 +120,11 @@ inline double FatimaVmeQDCCalItem::Get_coarse_time() const
 inline double FatimaVmeQDCCalItem::Get_fine_time() const
 {
     return fine_time;
+}
+
+inline int FatimaVmeQDCCalItem::Get_fine_bin() const
+{
+    return fine_bin;
 }
 
 inline double FatimaVmeQDCCalItem::Get_qlong() const

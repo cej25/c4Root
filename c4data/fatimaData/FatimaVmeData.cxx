@@ -22,14 +22,16 @@ FatimaVmeQDCItem::FatimaVmeQDCItem()
 
 }
 
-void FatimaVmeQDCItem::SetAll(uint64_t wr, int det, uint32_t ct, uint64_t ft, uint32_t qlr, uint32_t qsr)
+void FatimaVmeQDCItem::SetAll(uint64_t wr, int det, uint32_t ct, double ft, int fb, uint32_t qlr, uint32_t qsr, std::vector<UInt_t> w1)
 {
     wr_t = wr;
     coarse_time = ct;
     fine_time = ft;
+    fine_bin = fb;
     qlong_raw = qlr;
     qshort_raw = qsr;
     detector = det;
+    waveform_one = w1;
 }
 
 void FatimaVmeQDCItem::Reset()
@@ -37,9 +39,11 @@ void FatimaVmeQDCItem::Reset()
     wr_t = 0;
     coarse_time = 0;
     fine_time = 0;
+    fine_bin = 0;
     qlong_raw = 0;
     qshort_raw = 0;
     detector = 0;
+    waveform_one = {};
 }
 
 ClassImp(FatimaVmeQDCItem)
