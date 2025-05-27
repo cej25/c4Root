@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                               C.E. Jones                                   *
+ *                                06.05.25                                    *
+ ******************************************************************************/
+
 #include "FatimaVmeData.h"
 
 
@@ -6,14 +22,16 @@ FatimaVmeQDCItem::FatimaVmeQDCItem()
 
 }
 
-void FatimaVmeQDCItem::SetAll(uint64_t wr, int det, uint32_t ct, uint64_t ft, uint32_t qlr, uint32_t qsr)
+void FatimaVmeQDCItem::SetAll(uint64_t wr, int det, uint32_t ct, double ft, int fb, uint32_t qlr, uint32_t qsr, std::vector<UInt_t> w1)
 {
     wr_t = wr;
     coarse_time = ct;
     fine_time = ft;
+    fine_bin = fb;
     qlong_raw = qlr;
     qshort_raw = qsr;
     detector = det;
+    waveform_one = w1;
 }
 
 void FatimaVmeQDCItem::Reset()
@@ -21,9 +39,11 @@ void FatimaVmeQDCItem::Reset()
     wr_t = 0;
     coarse_time = 0;
     fine_time = 0;
+    fine_bin = 0;
     qlong_raw = 0;
     qshort_raw = 0;
     detector = 0;
+    waveform_one = {};
 }
 
 ClassImp(FatimaVmeQDCItem)

@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                               C.E. Jones                                   *
+ *                                06.05.25                                    *
+ ******************************************************************************/
+
 // FairRoot
 #include "FairTask.h"
 #include "FairLogger.h"
@@ -276,15 +292,16 @@ void FatimaVmeRaw2Cal::Exec(Option_t* option)
         uint32_t qshort_raw = qdcItem.Get_qshort_raw();
         uint32_t coarse_time = qdcItem.Get_coarse_time();
         double cal_coarse_time = Calibrate_QDC_T(coarse_time, det);
-        uint64_t fine_time = qdcItem.Get_fine_time();
+        double fine_time = qdcItem.Get_fine_time();
         double cal_fine_time = Calibrate_QDC_T(fine_time, det);
         uint64_t wr_t = qdcItem.Get_wr_t();
+        int fine_bin = qdcItem.Get_fine_bin();
 
         if (det >= 0)
         {
             // and presumably create an entry for all of these
             auto & entry = qdcCalArray->emplace_back();
-            entry.SetAll(wr_t, det, cal_coarse_time, cal_fine_time, qlong, qlong_raw, qshort_raw);
+            entry.SetAll(wr_t, det, cal_coarse_time, cal_fine_time, fine_bin, qlong, qlong_raw, qshort_raw);
 
             if (qlong > 10. && qdc_multi_hit_exclude[det] == 0)
             {
@@ -601,7 +618,7 @@ double FatimaVmeRaw2Cal::Calibrate_TDC_T(unsigned long T, int det_id)
     return ((double) T) + calib_coeffs_TDC_T[det_id];
 }
 
-double FatimaVmeRaw2Cal::Calibrate_QDC_T(unsigned long T, int det_id)
+double FatimaVmeRaw2Cal::Calibrate_QDC_T(double T, int det_id)
 {
     return T + calib_coeffs_QDC_T[det_id];
 }

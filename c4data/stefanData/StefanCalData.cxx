@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                              C.E. Jones                                    *
+ *                               06.05.25                                     *
+ ******************************************************************************/
+
 #include "StefanCalData.h"
 
 StefanCalItem::StefanCalItem()
@@ -9,7 +25,6 @@ void StefanCalItem::SetAll(Long64_t wr,
                             Int_t si,
                             Int_t st,
                             Int_t e,
-                            std::vector<UShort_t> tr,
                             Double_t e_cal,
                             ULong64_t evt_t,
                             ULong64_t ch_t,
@@ -22,7 +37,6 @@ void StefanCalItem::SetAll(Long64_t wr,
     Side = si;
     Strip = st;
     Energy = e;
-    Trace = tr;
     EnergyCal = e_cal;
     EventTime = evt_t;
     ChannelTime = ch_t;

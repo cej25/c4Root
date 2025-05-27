@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                               C.E. Jones                                   *
+ *                                06.05.25                                    *
+ ******************************************************************************/
+
 // FairRoot
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -83,7 +99,7 @@ Bool_t FatimaVmeReader::Read()
     
     //whiterabbit timestamp:
     wr_t = (((uint64_t)fData->fatimavme_ts_t[3]) << 48) + (((uint64_t)fData->fatimavme_ts_t[2]) << 32) + (((uint64_t)fData->fatimavme_ts_t[1]) << 16) + (uint64_t)(fData->fatimavme_ts_t[0]);
-    if (wr_t == 0) return kTRUE;
+    // if (wr_t == 0) return kTRUE;
 
     uint32_t wr_subsystem_id = fData->fatimavme_ts_subsystem_id;
 
@@ -96,7 +112,7 @@ Bool_t FatimaVmeReader::Read()
         Int_t channel_mask = fData->fatimavme_qdc[qdc]._channels;
         std::vector<int> channels_fired = Get_Channels(channel_mask);
 
-        for (uint32_t channel = 0; channel < channels_fired.size(); channel++)
+        for (UInt_t channel = 0; channel < channels_fired.size(); channel++)
         {  
             auto & entry = qdcArray->emplace_back();
 
@@ -104,18 +120,47 @@ Bool_t FatimaVmeReader::Read()
             //qdc_detectors.emplace_back(current_detector);
             
             uint32_t ct = fData->fatimavme_qdc[qdc]._channel_timev[channel];
+            int fb = fData->fatimavme_qdc[qdc]._chan_fine_timev[channel];
             //QDC_time_coarse.emplace_back(fData->fatimavme_qdc[qdc]._channel_timev[channel]);
 
-            uint64_t ft = (uint64_t)fData->fatimavme_qdc[qdc]._channel_timev[channel] + ((uint64_t)(fData->fatimavme_qdc[qdc]._chan_ext_timev[channel]) << 32) + fData->fatimavme_qdc[qdc]._chan_fine_timev[channel] / 1024.;
+            // std::cout << "unpacked coarse time:: " << ct << std::endl;
+            // std::cout << "unpacked fine bin:: " << fb << std::endl;
+
+            double ft = (ULong64_t)fData->fatimavme_qdc[qdc]._channel_timev[channel] + ((ULong64_t)(fData->fatimavme_qdc[qdc]._chan_ext_timev[channel]) << 32) + (double)(fData->fatimavme_qdc[qdc]._chan_fine_timev[channel] / 1024.);
             //QDC_time_fine.emplace_back((uint64_t)fData->fatimavme_qdc[qdc]._channel_timev[channel] + ((uint64_t)(fData->fatimavme_qdc[qdc]._chan_ext_timev[channel]) << 32) + fData->fatimavme_qdc[qdc]._chan_fine_timev[channel] / 1024.);
+
+            // std::cout << "unpacked fine time:: " << ft << std::endl;
 
             uint32_t qlr = fData->fatimavme_qdc[qdc]._qlongv[channel];
             //QLong_raw.emplace_back(fData->fatimavme_qdc[qdc]._qlongv[channel]);
 
-            uint32_t qsr = fData->fatimavme_qdc[qdc]._qlongv[channel];
+            uint32_t qsr = fData->fatimavme_qdc[qdc]._qshortv[channel];
             //QShort_raw.emplace_back(fData->fatimavme_qdc[qdc]._qshortv[channel]);
 
-            entry.SetAll(wr_t, current_detector, ct, ft, qlr, qsr);
+            UInt_t sazc = fData->fatimavme_qdc[qdc]._chan_sazcv[channel];
+            UInt_t sbzc = fData->fatimavme_qdc[qdc]._chan_sbzcv[channel];
+            UInt_t midscale = fData->fatimavme_qdc[qdc]._chan_midscalev[channel];
+
+            // CEJ not configured
+            // if (qdc == 0)
+            // {
+            //     std::cout << "sazc:: " << sazc << std::endl;
+            //     std::cout << "sbzc:: " << sbzc << std::endl;
+            //     std::cout << "midscale:: " << midscale << std::endl;
+            // }
+
+            std::vector<UInt_t> waveform_one = {};
+            if (1) // trace_enabled_flag
+            {
+                for (int i = 0; i < 120; i++) 
+                {
+                    waveform_one.emplace_back(fData->fatimavme_qdc[qdc]._sample_one[channel].v[i]);
+                    waveform_one.emplace_back(fData->fatimavme_qdc[qdc]._sample_two[channel].v[i]);
+                    waveform_one.emplace_back(fData->fatimavme_qdc[qdc]._sample_three[channel].v[i]);
+                }
+            }
+
+            entry.SetAll(wr_t, current_detector, ct, ft, fb, qlr, qsr, waveform_one);
 
             qdcs_fired++;
         }

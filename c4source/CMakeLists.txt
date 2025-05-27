@@ -90,6 +90,7 @@ set(SRCS
 ./mcp/H10MCPCal2Ana.cxx
 ./stefan/StefanReader.cxx
 ./stefan/StefanRaw2Cal.cxx
+./stefan/StefanCal2Hit.cxx
 
 ./test/TestReader.cxx
 )
