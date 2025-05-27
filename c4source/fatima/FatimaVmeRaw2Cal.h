@@ -36,7 +36,7 @@ class FatimaVmeRaw2Cal : public FairTask
         void FinishTask();
 
         double Calibrate_QDC_E(double E, int det_id);
-        double Calibrate_QDC_T(unsigned long T, int det_id);
+        double Calibrate_QDC_T(double T, int det_id); // unsigned long T
         double Calibrate_TDC_T(unsigned long T, int det_id);
 
         void SetOnline(Bool_t option) { fOnline = option; }

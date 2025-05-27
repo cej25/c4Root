@@ -71,6 +71,8 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
+    qdcArray = mgr->InitObjectAs<decltype(qdcArray)>("FatimaVmeQDCData");
+    c4LOG_IF(warn, !qdcArray, "Branch qdcArray not found - no traces!!");
     qdcCalArray = mgr->InitObjectAs<decltype(qdcCalArray)>("FatimaVmeQDCCalData");
     c4LOG_IF(fatal, !qdcCalArray, "Branch qdcCalArray not found!");
     tdcCalArray = mgr->InitObjectAs<decltype(tdcCalArray)>("FatimaVmeTDCCalData");
@@ -96,11 +98,16 @@ InitStatus FatimaVmeOnlineSpectra::Init()
 
     // Setting histogram sizes
     h1_FatVME_RawE.resize(nDetectors);
+    h1_FatVME_RawE_short.resize(nDetectors);
     h1_FatVME_E.resize(nDetectors);
     h1_FatVME_RawT.resize(nDetectors);
+    h1_v1751_fine_time.resize(nDetectors);
+    h1_v1751_coarse_time.resize(nDetectors);
+    h1_v1751_fine_bin.resize(nDetectors);
     h1_FatVME_TDC_dt_refCh1.resize(nDetectors);
     h1_FatVME_TDC_dT_refSC41L.resize(nDetectors);
     h2_FatVME_EvsdTsc41.resize(nDetectors);
+    h1_raw_traces.resize(nDetectors);
 
     h1_FatVME_QDCMult = MakeTH1(dir_stats_vme, "I", "h1_FatVME_QDCMult", "Fatima VME QDC Multiplicity", nDetectors, 0, nDetectors, "Multiplicity", kRed-3, kBlack);
     h1_FatVME_TDCMult = MakeTH1(dir_stats_vme, "I", "h1_FatVME_TDCMult", "Fatime VME TDC Multiplicity", nDetectors, 0, nDetectors, "Multiplicity", kRed-3, kBlack);
@@ -108,8 +115,25 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     h1_FatVME_TDC_HitPattern = MakeTH1(dir_stats_vme, "I", "h1_FatVME_TDC_HitPattern", "Fatima VME TDC Hit Pattern", nDetectors, 0, nDetectors, "Detector", kRed-3, kBlack);
 
     dir_raw_energy = dir_raw_vme->mkdir("Raw Energy");
+    dir_raw_energy_short = dir_raw_vme->mkdir("Raw Energy Short");
     dir_cal_energy = dir_cal_vme->mkdir("Calibrated Energy");
     dir_raw_time = dir_raw_vme->mkdir("Raw Time");
+    dir_v1751_fine_time = dir_raw_vme->mkdir("Raw V1751 Fine Time");
+    dir_v1751_coarse_time = dir_raw_vme->mkdir("Raw V1751 Coarse Time");
+    dir_v1751_fine_bin = dir_raw_vme->mkdir("Raw V1751 Fine Bin");
+    dir_raw_traces = dir_raw_vme->mkdir("Traces");
+
+    for (int i = 0; i < nDetectors; i++)
+    {
+        h1_v1751_fine_time[i] = MakeTH1(dir_v1751_fine_time, "D", Form("h1_v1751_fine_time_%i", i), Form("'Fine' Time (+Coarse Time): %i", i), 1000, 0, 1e8);
+        h1_v1751_coarse_time[i] = MakeTH1(dir_v1751_coarse_time, "D", Form("h1_v1751_coarse_time_%i", i), Form("Coarse Time: %i", i), 1000, 0, 1e8);
+        h1_v1751_fine_bin[i] = MakeTH1(dir_v1751_fine_bin, "I", Form("h1_v1751_fine_bin_%i", i), Form("Fine Bin: %i", i), 1024, 0, 1024);
+    }
+
+    for (int i = 0; i < nDetectors; i++)
+    {
+        h1_raw_traces[i] = MakeTH1(dir_raw_traces, "I", Form("h1_raw_traces_%i", i), Form("Trace: %i", i), 1000, 0, 1000);
+    }
 
     dir_raw_energy->cd();
     c_FatVME_RawE = new TCanvas("c_FatVME_RawE","Fatima VME Raw Energies", 650, 350);
@@ -117,11 +141,23 @@ InitStatus FatimaVmeOnlineSpectra::Init()
     for (int i = 0; i < nDetectors; i++)
     {
         c_FatVME_RawE->cd(i+1);
-        h1_FatVME_RawE[i] = MakeTH1(dir_raw_energy, "F", Form("h1_FatVme_RawE%i", i), Form("Fatima VME Raw Energy - Detector %i", i), 2e3, 0, 15e3, "Energy [a.u.]", kSpring, kBlue+2);
+        h1_FatVME_RawE[i] = MakeTH1(dir_raw_energy, "F", Form("h1_FatVme_RawE%i", i), Form("Fatima VME Raw Energy - Detector %i", i), 3000, 0, 10e3, "Energy [a.u.]", kSpring, kBlue+2);
         h1_FatVME_RawE[i]->Draw();
     }
     c_FatVME_RawE->cd(0);
     dir_raw_energy->Append(c_FatVME_RawE);
+
+    dir_raw_energy_short->cd();
+    c_FatVME_RawE_short = new TCanvas("c_FatVME_RawE_short","Fatima VME Raw Energies Short", 650, 350);
+    c_FatVME_RawE_short->Divide(4, nDetectors / 4);
+    for (int i = 0; i < nDetectors; i++)
+    {
+        c_FatVME_RawE_short->cd(i+1);
+        h1_FatVME_RawE_short[i] = MakeTH1(dir_raw_energy_short, "F", Form("h1_FatVme_RawE_short%i", i), Form("Fatima VME Raw Energy Short - Detector %i", i), 3000, 0, 10e3, "Energy Short [a.u.]", kSpring, kBlue+2);
+        h1_FatVME_RawE_short[i]->Draw();
+    }
+    c_FatVME_RawE_short->cd(0);
+    dir_raw_energy_short->Append(c_FatVME_RawE_short);
 
     // dir_cal_energy->cd();
     c_FatVME_E = new TCanvas("c_FatVME_E", "Fatima VME Calibrated Energies", 650, 350);
@@ -197,6 +233,8 @@ InitStatus FatimaVmeOnlineSpectra::Init()
 
     dir_fatima_vme->cd();
 
+    h2_E1E2 = MakeTH2(dir_raw_energy, "F", "h2_E1E2", "Gamma Gamma I guess", 1e3, 0, 15e3, 1e3, 0, 15e3);
+
     run->GetHttpServer()->RegisterCommand("Reset_FATIMA_VME_Histo", Form("/Objects/%s/->Reset_Histo()", GetName()));
     
     return kSUCCESS;
@@ -219,22 +257,41 @@ void FatimaVmeOnlineSpectra::Reset_Histo() {
 void FatimaVmeOnlineSpectra::Exec(Option_t* option)
 {
     int qdc_mult = 0;
+    int e_raw_coinc[nDetectors];
+    double t_raw_coinc[nDetectors];
     for (auto const & qdcItem : *qdcCalArray)
     {   
         int det = qdcItem.Get_detector();
-        int energy = qdcItem.Get_qlong();
+        double energy = qdcItem.Get_qlong();
+        // double energy = qdcItem.Get_qshort();
         int energy_raw = qdcItem.Get_qlong_raw();
+        int energy_raw_short = qdcItem.Get_qshort_raw();
+        double coarse = qdcItem.Get_coarse_time();
+        double fine = qdcItem.Get_fine_time();
+        int fbin = qdcItem.Get_fine_bin();
+
+        // std::cout << "coarse:: " << coarse << std::endl;
+        // std::cout << "fine:: " << fine << std::endl;
 
         h1_FatVME_RawE[det]->Fill(energy_raw);
+        h1_FatVME_RawE_short[det]->Fill(energy_raw_short);
         h1_FatVME_E[det]->Fill(energy);
         h1_FatVME_QDC_HitPattern->Fill(det);
         h1_FatVME_E_Sum->Fill(energy);
-
+        h1_v1751_coarse_time[det]->Fill(coarse);
+        h1_v1751_fine_time[det]->Fill(fine);
+        h1_v1751_fine_bin[det]->Fill(fbin);
+        
+        // CEJ 2025:: raw for now
+        e_raw_coinc[det] = energy_raw;
+        t_raw_coinc[det] = fine; // time
         qdc_mult++;
 
     }
     // fill qdc_mult
     h1_FatVME_QDCMult->Fill(qdc_mult);
+    if (qdc_mult == 2) h2_E1E2->Fill(e_raw_coinc[0], e_raw_coinc[1]);
+    // plot time dt
 
     int tdc_mult = 0;
     for (auto const & tdcItem : *tdcCalArray)
@@ -249,6 +306,17 @@ void FatimaVmeOnlineSpectra::Exec(Option_t* option)
     }
     // fill tdc_mult
     h1_FatVME_TDCMult->Fill(tdc_mult);
+
+
+    if (qdcArray)
+    {
+        for (auto const & qdcItem : *qdcArray)
+        {   
+            int det = qdcItem.Get_detector();
+            std::vector<UInt_t> waveform_one = qdcItem.Get_waveform_one();
+            for (int i = 0; i < 120 * 3; i++) h1_raw_traces[det]->SetBinContent(i, waveform_one[i]);
+        }
+    }
 
     
     for (auto const & residualItem : *residualArray)

@@ -11,6 +11,7 @@
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TFatimaVmeConfiguration.h"
+#include "FatimaVmeData.h"
 #include "FatimaVmeCalData.h"
 
 class EventHeader;
@@ -44,10 +45,10 @@ class FatimaVmeOnlineSpectra : public FairTask
 
         TClonesArray* fHitFatimaVme;
 
+        std::vector<FatimaVmeQDCItem> const* qdcArray;
         std::vector<FatimaVmeQDCCalItem> const* qdcCalArray;
         std::vector<FatimaVmeTDCCalItem> const* tdcCalArray;
         std::vector<FatimaVmeResiduals> const* residualArray;
-        
 
         EventHeader* header;
         Int_t fNEvents;
@@ -61,6 +62,11 @@ class FatimaVmeOnlineSpectra : public FairTask
         TDirectory* dir_raw_vme;
         TDirectory* dir_cal_vme;
         TDirectory* dir_raw_energy;
+        TDirectory* dir_raw_energy_short;
+        TDirectory* dir_v1751_fine_time;
+        TDirectory* dir_v1751_coarse_time;
+        TDirectory* dir_v1751_fine_bin;
+        TDirectory* dir_raw_traces;
         TDirectory* dir_raw_time;
         TDirectory* dir_cal_energy;
         TDirectory* dir_residuals;
@@ -71,6 +77,7 @@ class FatimaVmeOnlineSpectra : public FairTask
         // Canvases
         TCanvas* c_FatVME_E;
         TCanvas* c_FatVME_RawE;
+        TCanvas* c_FatVME_RawE_short;
         TCanvas* c_FatVME_RawT;
         TCanvas* c_FatVME_T;
         TCanvas* c_FatVME_dTrefCh1;
@@ -80,7 +87,12 @@ class FatimaVmeOnlineSpectra : public FairTask
         // Histograms
 
         std::vector<TH1*> h1_FatVME_RawE;
+        std::vector<TH1*> h1_FatVME_RawE_short;
         std::vector<TH1D*> h1_FatVME_RawT;
+        std::vector<TH1*> h1_v1751_fine_time;
+        std::vector<TH1*> h1_v1751_coarse_time;
+        std::vector<TH1*> h1_v1751_fine_bin;
+        std::vector<TH1*> h1_raw_traces;
         std::vector<TH1*> h1_FatVME_E;
         std::vector<TH1D*> h1_FatVME_TDC_dt_refCh1;
         std::vector<TH1D*> h1_FatVME_TDC_dT_refSC41L;
@@ -97,6 +109,8 @@ class FatimaVmeOnlineSpectra : public FairTask
         
         TH1D* h1_FatVME_sc41l_time;
         TH1D* h1_FatVME_sc41r_time;
+
+        TH2* h2_E1E2;
 
     public:
         ClassDef(FatimaVmeOnlineSpectra, 1);
