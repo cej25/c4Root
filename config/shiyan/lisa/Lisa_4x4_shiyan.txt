@@ -1,7 +1,7 @@
-#:::::::::::::::::::::::::LISA Mapping - All boards channels::::::::::::::::::::::::
-#----------------------------------------------------------------------------------#
-#           FEBEXID  FEBEXCHA  LayerID(z)  DiamondID(x) DiamondID(y)    Name
-#-----------------------------------------------------------------------------------#
+#:::::::::::::::::::::::::::::     LISA Mapping - Shiyan      ::::::::::::::::::::::::::::::
+#------------------------------------------------------------------------------------------#
+#           FEBEXID  FEBEXCHA  LayerID(z)  DiamondID(x) DiamondID(y)    Thickness       Name    
+#------------------------------------------------------------------------------------------#
 
 #Front side (xy)
 
@@ -12,22 +12,22 @@
 
 #:::::::::::::::   L A Y E R  1   :::::::::::::::#
 #:::::::::::::::     America      :::::::::::::::#
-        0       2         1     1     3     Helena
-        0       3         1     2     3     Bismark
-        0       4         1     3     3     StPaul
-        0       5         1     2     2     Topeka
-        0       6         1     3     2     Atlanta
-        0       7         1     1     2     Denver
-        0       8         1     3     1     Managua
-        0       9         1     2     1     Tecugigalpa
-        0      11         1     3     0     Sucre
-        0      13         1     2     0     Caracas
-        1       2         1     1     0     Lima
-        1       4         1     0     0     Quito
-        1       7         1     0     1     Belmopan
-        1       9         1     1     1     SanSalvador
-        1      11         1     0     2     Sacramento
-        1      13         1     0     3     Olympia
+        0       2         1     1     3                  Helena
+        0       3         1     2     3         Bismark
+        0       4         1     3     3         StPaul
+        0       5         1     2     2         Topeka
+        0       6         1     3     2         Atlanta
+        0       7         1     1     2         Denver
+        0       8         1     3     1         Managua
+        0       9         1     2     1         Tecugigalpa
+        0      11         1     3     0         Sucre
+        0      13         1     2     0         Caracas
+        1       2         1     1     0         Lima
+        1       4         1     0     0         Quito
+        1       7         1     0     1         Belmopan
+        1       9         1     1     1         SanSalvador
+        1      11         1     0     2         Sacramento
+        1      13         1     0     3         Olympia
 
 #:::::::::::::::   L A Y E R  2   :::::::::::::::#
 #:::::::::::::::     Africa       :::::::::::::::#

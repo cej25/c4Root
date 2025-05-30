@@ -58,7 +58,9 @@ class LisaAna2Cal : public FairTask
         //int NBoards = 1; 
 
         //::: Mapping, GM, Calibration
-        std::map<std::pair<int, int>, std::pair<std::pair<int,std::string>, std::pair<int, int>>> detector_mapping; //Debugging.Raplace std:string-> TString ?
+        //std::map<std::pair<int, int>, std::pair<std::pair<int,std::string>, std::pair<int, int>>> detector_mapping; //Debugging.Raplace std:string-> TString ?
+        std::map<std::pair<int,int>, std::pair<std::pair<int, std::pair<int, int>>,std::pair<float,std::pair<std::string,std::string>>>> detector_mapping; //Debugging.Raplace std:string-> TString ?
+
         std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> detector_gain_matching;
         std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> detector_gain_matching_MWD;
 
@@ -75,6 +77,7 @@ class LisaAna2Cal : public FairTask
         double slope;
         double intercept;
         float energy_GM;
+        float de_dx;
         double slope_MWD;
         double intercept_MWD;
         float energy_MWD_GM;

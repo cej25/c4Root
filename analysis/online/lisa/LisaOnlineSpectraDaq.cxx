@@ -111,10 +111,11 @@ InitStatus LisaOnlineSpectraDaq::Init()
     h1_hitpattern_total = new TH1I("h1_hitpattern_total", "Hit Pattern", det_number, 0, det_number);
     for (auto & detector : detector_mapping)
     {
-        int l = detector.second.first.first;
-        city = detector.second.first.second;
-        int x = detector.second.second.first; 
-        int y = detector.second.second.second;
+        int x = detector.second.first.second.first;
+        int y = detector.second.first.second.second;
+        int l_id = detector.second.first.first;
+        std::string city = detector.second.second.second.first;
+
         
         //h1_hitpattern_total->GetXaxis()->SetBinLabel(l * xmax * ymax + (ymax-(y+1))*xmax + x + 1 - 3, city.Data());
     }
@@ -134,11 +135,12 @@ InitStatus LisaOnlineSpectraDaq::Init()
             city = "";
             for (auto & detector : detector_mapping)
             {
-                int x = detector.second.second.first; 
-                int y = detector.second.second.second;
-                if (detector.second.first.first == i && ((ymax-(y+1))*xmax + x) == j)
+                int x = detector.second.first.second.first;
+                int y = detector.second.first.second.second;
+                int l_id = detector.second.first.first;
+                if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
                 {
-                    city = detector.second.first.second;
+                    city = detector.second.second.second.first;
                     break;
                 }
             }
@@ -293,9 +295,12 @@ InitStatus LisaOnlineSpectraDaq::Init()
                 city = "";
                 for (auto & detector : detector_mapping)
                 {
-                    if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
+                    int x = detector.second.first.second.first;
+                    int y = detector.second.first.second.second;
+                    int l_id = detector.second.first.first;
+                    if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
                     {
-                        city = detector.second.first.second;
+                        city = detector.second.second.second.first;
                         break;
                     }
                 }
@@ -338,9 +343,12 @@ InitStatus LisaOnlineSpectraDaq::Init()
                 city = "";
                 for (auto & detector : detector_mapping)
                 {
-                    if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
+                    int x = detector.second.first.second.first;
+                    int y = detector.second.first.second.second;
+                    int l_id = detector.second.first.first;
+                    if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
                     {
-                        city = detector.second.first.second;
+                        city = detector.second.second.second.first;
                         break;
                     }
                 }
@@ -381,9 +389,12 @@ InitStatus LisaOnlineSpectraDaq::Init()
                 city = "";
                 for (auto & detector : detector_mapping)
                 {
-                    if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
+                    int x = detector.second.first.second.first;
+                    int y = detector.second.first.second.second;
+                    int l_id = detector.second.first.first;
+                    if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
                     {
-                        city = detector.second.first.second;
+                        city = detector.second.second.second.first;
                         break;
                     }
                 }

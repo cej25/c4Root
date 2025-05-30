@@ -47,6 +47,7 @@ void LisaCalItem::SetAll(uint64_t wr,
                         std::vector<int16_t> tr_x,
                         float e_GM,
                         float e_MWD_GM,
+                        float dedx,
                         uint64_t evt_t,
                         uint64_t ch_t,
                         uint64_t evtno,
@@ -70,6 +71,7 @@ void LisaCalItem::SetAll(uint64_t wr,
     trace_x = tr_x;
     energy_GM = e_GM;
     energy_MWD_GM = e_MWD_GM;
+    de_dx = dedx;
     board_event_time = evt_t;
     ch_event_time = ch_t;
     event_no = evtno;
@@ -98,6 +100,7 @@ void LisaCalItem::Reset()
     event_no = 0;
     energy_GM = 0;
     energy_MWD_GM = 0;
+    de_dx = 0;
     board_event_time = 0;
     ch_event_time = 0;
     pileup = 0;

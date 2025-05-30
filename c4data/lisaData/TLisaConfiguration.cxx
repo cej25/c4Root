@@ -178,6 +178,7 @@ void TLisaConfiguration::ReadMappingFile()
     std::set<int> x_positions;
     std::set<int> y_positions;
     std::set<std::string> det_names;
+    std::set<std::string> det_serial_number;
     int detectors = 0;
     
     std::ifstream detector_map_file(mapping_file);
@@ -191,13 +192,17 @@ void TLisaConfiguration::ReadMappingFile()
 
         std::istringstream iss(line);
         std::string signal;
-        std::string det_name;
+        std::string det_name, det_sn;
         int febex_board, febex_channel, layer_id, x_pos, y_pos;
+        float thickness;
         std::pair<int, int> xy;
         std::pair<int, std::pair<int, int>> layer_xy;
         std::pair<int, std::string> layer_det_name;
         std::pair<std::pair<int,std::string>, std::pair<int,int>> layer_det_name_xy; //include det names
         std::pair<int, int> febex_bc;
+        std::pair<std::string,std::string> det_name_sn;
+        std::pair<float,std::pair<std::string,std::string>> info;
+        std::pair<std::pair<int, std::pair<int, int>>,std::pair<float,std::pair<std::string,std::string>>> layer_xy_info;
 
         iss >> signal;
     
@@ -206,8 +211,8 @@ void TLisaConfiguration::ReadMappingFile()
         {
             febex_board = std::stoi(signal);
 
-            iss >> febex_channel >> layer_id >> x_pos >> y_pos >> det_name;
-            //std::cout << " Mapping : l "<< layer_id << " x " << x_pos << " y " << y_pos << "\n";
+            iss >> febex_channel >> layer_id >> x_pos >> y_pos >> thickness >> det_name >> det_sn;
+            //std::cout << " Mapping : l "<< layer_id << " x " << x_pos << " y " << y_pos << " thickness : " << thickness << " city: " << det_name << " serial number: " << det_sn << "\n";
 
 
             // count only real layers, detectors
@@ -219,7 +224,7 @@ void TLisaConfiguration::ReadMappingFile()
         }
         else
         {
-            iss >> febex_board >> febex_channel >> layer_id >> x_pos >> y_pos >>det_name;
+            iss >> febex_board >> febex_channel >> layer_id >> x_pos >> y_pos >> thickness >> det_name >> det_sn;
 
             if (signal == "TimeMachineU") tm_undelayed = layer_id;
             else if (signal == "TimeMachineD") tm_delayed = layer_id;
@@ -231,18 +236,24 @@ void TLisaConfiguration::ReadMappingFile()
             extra_signals.insert(layer_id);
         }
         
-        // count all febex boards, useful scaler monitor?
+        // count all febex boards
         febex_boards.insert(febex_board);
-
         febex_bc = std::make_pair(febex_board, febex_channel);
 
         xy = std::make_pair(x_pos, y_pos);
         layer_xy = std::make_pair(layer_id, xy);
+
+        det_name_sn = std::make_pair(det_name,det_sn);
+        info = std::make_pair(thickness,det_name_sn);
+
+        layer_xy_info = std::make_pair(layer_xy,info);
+
         layer_det_name = std::make_pair(layer_id,det_name);
         layer_det_name_xy = std::make_pair(layer_det_name, xy);
 
         //detector_mapping.insert(std::make_pair(febex_bc, layer_xy));
-        detector_mapping.insert(std::make_pair(febex_bc, layer_det_name_xy));
+        //detector_mapping.insert(std::make_pair(febex_bc, layer_det_name_xy));
+        detector_mapping.insert(std::make_pair(febex_bc, layer_xy_info));
 
     }
 

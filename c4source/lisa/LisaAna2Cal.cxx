@@ -109,14 +109,29 @@ void LisaAna2Cal::Exec(Option_t* option)
         {
             if (detector_mapping.count(unmapped_channel) > 0)
             {
+                /*
                 int layer_id = detector_mapping.at(unmapped_channel).first.first;
                 TString city = detector_mapping.at(unmapped_channel).first.second; //Debugging. std::string to Tstring 
                 int xpos = detector_mapping.at(unmapped_channel).second.first;
                 int ypos = detector_mapping.at(unmapped_channel).second.second;
+                */
+
+                int layer_id = detector_mapping.at(unmapped_channel).first.first;                        
+                int xpos     = detector_mapping.at(unmapped_channel).first.second.first;                 
+                int ypos     = detector_mapping.at(unmapped_channel).first.second.second;                
+                std::string city = detector_mapping.at(unmapped_channel).second.second.first;        
+                std::string det_sn   = detector_mapping.at(unmapped_channel).second.second.second;       
+                float thickness      = detector_mapping.at(unmapped_channel).second.first; 
+
                 uint64_t EVTno = header->GetEventno();
 
-                //std::cout << "Layer, x , y: (" << layer_id << ", (" << xpos << ", " << ypos << "))"<< std::endl;
-
+                // std::cout << "Event " << EVTno << ": Layer " << layer_id 
+                //         << ", x=" << xpos << ", y=" << ypos 
+                //         << ", Name=" << city << ", SN=" << det_sn 
+                //         << ", Thickness=" << thickness << std::endl;
+                
+                de_dx = 0;
+                de_dx = lisaAnaItem.Get_channel_energy_MWD()/thickness;
 
                 if (lisa_config->GainMatchingLoaded())
                 {
@@ -186,6 +201,7 @@ void LisaAna2Cal::Exec(Option_t* option)
                     lisaAnaItem.Get_trace_x(),
                     energy_GM,
                     energy_MWD_GM,
+                    de_dx,
                     lisaAnaItem.Get_board_event_time(),
                     lisaAnaItem.Get_channel_time(),
                     EVTno,

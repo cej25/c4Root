@@ -112,15 +112,35 @@ InitStatus LisaTraceCorrelation::Init()
 	      {
 		
 		city = "";
-		for (auto & detector : detector_mapping)
-		  {
-		    if (detector.second.first.first == i+1 && detector.second.second.first == j && detector.second.second.second == k)
-		      {
-			city = detector.second.first.second;
-			break;
-		      }
-		  }
-		c4LOG(info, "layer: " << i << " x max: " << xmax << " ymax: " << ymax << " j: " << j << " k: " << k<< " city: " << city<< " canvas " << i*(xmax*ymax)+ymax*j+k);
+    //EG : Mapping updated on May30. 
+    for (auto& detector : detector_mapping)
+    {
+        int layer_id = detector.second.first.first;
+        int x = detector.second.first.second.first;
+        int y = detector.second.first.second.second;
+
+        if (layer_id == i + 1 && x == j && y == k)
+        {
+            city = detector.second.second.second.first;  
+            break;
+        }
+    }
+
+    c4LOG(info, "layer: " << i 
+          << " x max: " << xmax 
+          << " ymax: " << ymax 
+          << " j: " << j << " k: " << k 
+          << " city: " << city 
+          << " canvas " << i * (xmax * ymax) + ymax * j + k);
+		// for (auto & detector : detector_mapping)
+		//   {
+		//     if (detector.second.first.first == i+1 && detector.second.second.first == j && detector.second.second.second == k)
+		//       {
+		// 	city = detector.second.first.second;
+		// 	break;
+		//       }
+		//   }
+		// c4LOG(info, "layer: " << i << " x max: " << xmax << " ymax: " << ymax << " j: " << j << " k: " << k<< " city: " << city<< " canvas " << i*(xmax*ymax)+ymax*j+k);
 		
 		
 		c_energies[i]->cd((ymax-(k+1))*xmax + j + 1);

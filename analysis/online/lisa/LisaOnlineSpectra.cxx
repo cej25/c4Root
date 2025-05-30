@@ -219,11 +219,12 @@ InitStatus LisaOnlineSpectra::Init()
             int y = -9;
             for (auto & detector : detector_mapping)
             {
-                x = detector.second.second.first; 
-                y = detector.second.second.second;
-                if (detector.second.first.first == i+1 && ((ymax-(y+1))*xmax + x) == j)
+                int x = detector.second.first.second.first;
+                int y = detector.second.first.second.second;
+                int l_id = detector.second.first.first;
+                if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
                 {
-                    city = detector.second.first.second;
+                    city = detector.second.second.second.first;
                     break;
                 }
             }
@@ -359,13 +360,17 @@ InitStatus LisaOnlineSpectra::Init()
             {   
                 c_energy_ch[i]->cd((ymax-(k+1))*xmax + j + 1);
                 city = "";
+                int x = -9;
+                int y = -9;
                 for (auto & detector : detector_mapping)
                 {
-                    if (detector.second.first.first == i+1 && detector.second.second.first == j && detector.second.second.second == k)
-                    {
-                        city = detector.second.first.second;
-                        break;
-                    }
+        
+                int l_id = detector.second.first.first;
+                if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
+                {
+                    city = detector.second.second.second.first;
+                    break;
+                }
                 }
                 h1_energy_ch[i][j][k] = new TH1F(Form("energy_%s_%i_%i_%i", city.Data(), i+1, j, k), Form("Energy Febex %s",city.Data()), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
                 h1_energy_ch[i][j][k]->GetXaxis()->SetTitle("E(LISA) [a.u.]");
@@ -415,11 +420,12 @@ InitStatus LisaOnlineSpectra::Init()
             int y = -9;
             for (auto & detector : detector_mapping)
             {
-                x = detector.second.second.first; 
-                y = detector.second.second.second;
-                if (detector.second.first.first == i+1 && ((ymax-(y+1))*xmax + x) == j)
+                int x = detector.second.first.second.first;
+                int y = detector.second.first.second.second;
+                int l_id = detector.second.first.first;
+                if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
                 {
-                    city = detector.second.first.second;
+                    city = detector.second.second.second.first;
                     break;
                 }
             }
@@ -521,9 +527,12 @@ InitStatus LisaOnlineSpectra::Init()
                 city = "";
                 for (auto & detector : detector_mapping)
                 {
-                    if (detector.second.first.first == i+1 && detector.second.second.first == j && detector.second.second.second == k)
+                    int x = detector.second.first.second.first;
+                    int y = detector.second.first.second.second;
+                    int l_id = detector.second.first.first;
+                    if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
                     {
-                        city = detector.second.first.second;
+                        city = detector.second.second.second.first;
                         break;
                     }
                 }
@@ -575,11 +584,12 @@ InitStatus LisaOnlineSpectra::Init()
             int y = -9;
             for (auto & detector : detector_mapping)
             {
-                x = detector.second.second.first; 
-                y = detector.second.second.second;
-                if (detector.second.first.first == i+1 && ((ymax-(y+1))*xmax + x) == j)
+                int x = detector.second.first.second.first;
+                int y = detector.second.first.second.second;
+                int l_id = detector.second.first.first;
+                if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
                 {
-                    city = detector.second.first.second;
+                    city = detector.second.second.second.first;
                     break;
                 }
             }
@@ -657,9 +667,12 @@ InitStatus LisaOnlineSpectra::Init()
                 city = "";
                 for (auto & detector : detector_mapping)
                 {
-                    if (detector.second.first.first == i+1 && detector.second.second.first == j && detector.second.second.second == k)
+                    int x = detector.second.first.second.first;
+                    int y = detector.second.first.second.second;
+                    int l_id = detector.second.first.first;
+                    if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
                     {
-                        city = detector.second.first.second;
+                        city = detector.second.second.second.first;
                         break;
                     }
                 }

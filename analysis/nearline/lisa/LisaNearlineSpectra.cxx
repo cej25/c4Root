@@ -246,11 +246,12 @@ InitStatus LisaNearlineSpectra::Init()
             city = "";
             for (auto & detector : detector_mapping)
             {
-                int x = detector.second.second.first; 
-                int y = detector.second.second.second;
-                if (detector.second.first.first == i && ((ymax-(y+1))*xmax + x) == j)
+                int x = detector.second.first.second.first;
+                int y = detector.second.first.second.second;
+                int l_id = detector.second.first.first;
+                if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
                 {
-                    city = detector.second.first.second;
+                    city = detector.second.second.second.first;
                     break;
                 }
             }
@@ -348,9 +349,12 @@ InitStatus LisaNearlineSpectra::Init()
                 city = "";
                 for (auto & detector : detector_mapping)
                 {
-                    if (detector.second.first.first == i+1 && detector.second.second.first == j && detector.second.second.second == k)
+                    int x = detector.second.first.second.first;
+                    int y = detector.second.first.second.second;
+                    int l_id = detector.second.first.first;
+                    if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
                     {
-                        city = detector.second.first.second;
+                        city = detector.second.second.second.first;
                         break;
                     }
                 }
@@ -387,11 +391,12 @@ InitStatus LisaNearlineSpectra::Init()
             int y = -9;
             for (auto & detector : detector_mapping)
             {
-                x = detector.second.second.first; 
-                y = detector.second.second.second;
-                if (detector.second.first.first == i+1 && ((ymax-(y+1))*xmax + x) == j)
+                int xp = detector.second.first.second.first;
+                int yp = detector.second.first.second.second;
+                int l_id = detector.second.first.first;
+                if (l_id == i + 1 && ((ymax - (yp + 1)) * xmax + xp) == j)
                 {
-                    city = detector.second.first.second;
+                    city = detector.second.second.second.first;
                     break;
                 }
             }
@@ -466,9 +471,12 @@ InitStatus LisaNearlineSpectra::Init()
                 city = "";
                 for (auto & detector : detector_mapping)
                 {
-                    if (detector.second.first.first == i+1 && detector.second.second.first == j && detector.second.second.second == k)
+                    int x = detector.second.first.second.first;
+                    int y = detector.second.first.second.second;
+                    int l_id = detector.second.first.first;
+                    if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
                     {
-                        city = detector.second.first.second;
+                        city = detector.second.second.second.first;
                         break;
                     }
                 }
@@ -507,11 +515,12 @@ InitStatus LisaNearlineSpectra::Init()
             city = "";
             for (auto & detector : detector_mapping)
             {
-                x = detector.second.second.first; 
-                y = detector.second.second.second;
-                if (detector.second.first.first == i+1 && ((ymax-(y+1))*xmax + x) == j)
+                int xp = detector.second.first.second.first;
+                int yp = detector.second.first.second.second;
+                int l_id = detector.second.first.first;
+                if (l_id == i + 1 && ((ymax - (yp + 1)) * xmax + xp) == j)
                 {
-                    city = detector.second.first.second;
+                    city = detector.second.second.second.first;
                     break;
                 }
             }
@@ -569,9 +578,12 @@ InitStatus LisaNearlineSpectra::Init()
                     city = "";
                     for (auto & detector : detector_mapping)
                     {
-                        if (detector.second.first.first == i+1 && detector.second.second.first == j && detector.second.second.second == k)
+                        int x = detector.second.first.second.first;
+                        int y = detector.second.first.second.second;
+                        int l_id = detector.second.first.first;
+                        if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
                         {
-                            city = detector.second.first.second;
+                            city = detector.second.second.second.first;
                             break;
                         }
                     }
@@ -616,9 +628,12 @@ InitStatus LisaNearlineSpectra::Init()
                 city = "";
                 for (auto & detector : detector_mapping)
                 {
-                    if (detector.second.first.first == i+1 && detector.second.second.first == j && detector.second.second.second == k)
+                    int x = detector.second.first.second.first;
+                    int y = detector.second.first.second.second;
+                    int l_id = detector.second.first.first;
+                    if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
                     {
-                        city = detector.second.first.second;
+                        city = detector.second.second.second.first;
                         break;
                     }
                 }  
@@ -655,11 +670,14 @@ InitStatus LisaNearlineSpectra::Init()
                 city = "";
                 for (auto & detector : detector_mapping)
                 {
-                    if (detector.second.first.first == i + 1 && detector.second.second.first == j && detector.second.second.second == k)
-                    {
-                        city = detector.second.first.second;
-                        break;
-                    }
+                int x = detector.second.first.second.first;
+                int y = detector.second.first.second.second;
+                int l_id = detector.second.first.first;
+                if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
+                {
+                    city = detector.second.second.second.first;
+                    break;
+                }
                 }
                 
                 h2_energy_MWD_ch_vs_time[i][j][k] = MakeTH2(dir_MWD_ch_drift, "F", Form("h2_energy_MWD_%d%d%d_vs_time",i+1,j,k), Form("E_MWD %d%d%d vs WR [min]",i+1,j,k), drift_bin, drift_min, drift_max, lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);

@@ -118,11 +118,13 @@ InitStatus LisaNearlineSpectraDaq::Init()
             city = "";
             for (auto & detector : detector_mapping)
             {
-                int x = detector.second.second.first; 
-                int y = detector.second.second.second;
-                if (detector.second.first.first == i && ((ymax-(y+1))*xmax + x) == j)
+                int x = detector.second.first.second.first;
+                int y = detector.second.first.second.second;
+                int layer_id = detector.second.first.first;
+
+                if (layer_id == i && ((ymax - (y + 1)) * xmax + x) == j)
                 {
-                    city = detector.second.first.second;
+                    city = detector.second.second.second.first; // det_name as city
                     break;
                 }
             }
@@ -273,11 +275,15 @@ InitStatus LisaNearlineSpectraDaq::Init()
                city = "";
                for (auto & detector : detector_mapping)
                {
-                   if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
-                   {
-                       city = detector.second.first.second;
-                       break;
-                   }
+                    int x = detector.second.first.second.first;
+                    int y = detector.second.first.second.second;
+                    int layer_id = detector.second.first.first;
+
+                    if (layer_id == i && ((ymax - (y + 1)) * xmax + x) == j)
+                    {
+                        city = detector.second.second.second.first; // det_name as city
+                        break;
+                    }
                }
 
                 h1_energy_layer_ch[i][j][k] = new TH1F(Form("energy_%s_%i_%i_%i", city.c_str(), i, j, k), city.c_str(), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
@@ -311,15 +317,19 @@ InitStatus LisaNearlineSpectraDaq::Init()
                 //general formula to place correctly on canvas for x,y coordinates
                 c_energy_MWD_layer_ch[i]->cd((ymax-(k+1))*xmax + j + 1);
                 
-               city = "";
-               for (auto & detector : detector_mapping)
-               {
-                   if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
-                   {
-                       city = detector.second.first.second;
-                       break;
-                   }
-               }
+                city = "";
+                for (auto & detector : detector_mapping)
+                {
+                        int x = detector.second.first.second.first;
+                        int y = detector.second.first.second.second;
+                        int layer_id = detector.second.first.first;
+
+                        if (layer_id == i && ((ymax - (y + 1)) * xmax + x) == j)
+                        {
+                            city = detector.second.second.second.first; // det_name as city
+                            break;
+                        }
+                }
 
                 h1_energy_MWD_layer_ch[i][j][k] = new TH1F(Form("energy_MWD_%s_%i_%i_%i", city.c_str(), i, j, k), city.c_str(), lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
                 h1_energy_MWD_layer_ch[i][j][k]->GetXaxis()->SetTitle("Charge [mV]");
@@ -353,14 +363,17 @@ InitStatus LisaNearlineSpectraDaq::Init()
             for (int k = 0; k < ymax; k++)
             {   
                 
-                city = "";
                 for (auto & detector : detector_mapping)
                 {
-                    if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
-                    {
-                        city = detector.second.first.second;
-                        break;
-                    }
+                        int x = detector.second.first.second.first;
+                        int y = detector.second.first.second.second;
+                        int layer_id = detector.second.first.first;
+
+                        if (layer_id == i && ((ymax - (y + 1)) * xmax + x) == j)
+                        {
+                            city = detector.second.second.second.first; // det_name as city
+                            break;
+                        }
                 }
                 
                 h2_energy_ch_vs_evtno[i][j][k] = MakeTH2(dir_drift, "F", Form("h2_energy_ch_%d%d%d_vs_evtno",i,j,k), Form("E %d%d%d vs EVTno ",i,j,k), 1000, lisa_config->start_evtno, lisa_config->stop_evtno, lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
@@ -418,11 +431,15 @@ InitStatus LisaNearlineSpectraDaq::Init()
                 city = "";
                 for (auto & detector : detector_mapping)
                 {
-                    if (detector.second.first.first == i && detector.second.second.first == j && detector.second.second.second == k)
-                    {
-                        city = detector.second.first.second;
-                        break;
-                    }
+                        int x = detector.second.first.second.first;
+                        int y = detector.second.first.second.second;
+                        int layer_id = detector.second.first.first;
+
+                        if (layer_id == i && ((ymax - (y + 1)) * xmax + x) == j)
+                        {
+                            city = detector.second.second.second.first; // det_name as city
+                            break;
+                        }
                 }
 
                 h2_traces_layer_ch_stat[i][j][k] = new TH2F(Form("traces_%s_%i_%i_%i_stat", city.c_str(), i, j, k), city.c_str(), 1000, 0, 20,5000,3000,20000);
