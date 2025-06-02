@@ -1,19 +1,3 @@
-/******************************************************************************
- *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
- *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
- *                                                                            *
- *             This software is distributed under the terms of the            *
- *                 GNU General Public Licence (GPL) version 3,                *
- *                    copied verbatim in the file "LICENSE".                  *
- *                                                                            *
- * In applying this license GSI does not waive the privileges and immunities  *
- * granted to it by virtue of its status as an Intergovernmental Organization *
- * or submit itself to any jurisdiction.                                      *
- ******************************************************************************
- *                               C.E. Jones                                   *
- *                                06.05.25                                    *
- ******************************************************************************/
-
 #include "TFimpConfiguration.h"
 
 #include "c4Logger.h"
@@ -43,9 +27,11 @@ TFimpConfiguration::TFimpConfiguration()
 
 void TFimpConfiguration::ReadMappingFile()
 {   
-    std::set<int> fimp_e_groups;
-    std::set<int> fimp_t_groups;
-    std::set<int> ctdc_channels;
+    std::set<int> fimp_T_group;
+    std::set<int> fimp_B_group;
+    std::set<int> fimp_L_group;
+    std::set<int> fimp_R_group;
+    std::set<int> channels;
     int detectors = 0;
 
     std::ifstream detector_map_file(mapping_file);
@@ -58,44 +44,31 @@ void TFimpConfiguration::ReadMappingFile()
         if (line.empty() || line[0] == '#') continue;
 
         std::istringstream iss(line);
-        std::string signal, e_or_t;
-        int ctdc_chan, group, fimp_chan;
+        std::string t_b_l_r;
+        int chan, ctdc_num, ctdc_chan, cable, fimp_chan;
 
-        iss >> signal;
+        iss >> chan >> ctdc_num >> ctdc_chan >> cable >> fimp_chan >> t_b_l_r;
 
-        if (isdigit(signal[0])) // detector
-        {
-            ctdc_chan = std::stoi(signal);
+        if (t_b_l_r == 'T') fimp_T_group.insert(fimp_chan);
+        if (t_b_l_r == 'B') fimp_B_group.insert(fimp_chan);
+        if (t_b_l_r == 'L') fimp_L_group.insert(fimp_chan);
+        if (t_b_l_r == 'R') fimp_R_group.insert(fimp_chan);
 
-            iss >> group >> fimp_chan >> e_or_t;
+        detectors++;
 
-            if (e_or_t == 'E') fimp_e_groups.insert(group);
-            else if (e_or_t == 'T') fimp_t_groups.insert(group);
+        channels.insert(chan);
 
-            detectors++;
-
-        }
-        else
-        {
-            iss >> ctdc_chan >> group >> fimp_chan >> e_or_t;
-
-            if (signal == "SC41L_D") sc41l_d = group;
-            else if (signal == "SC41R_D") sc41r_d = group;
-
-            extra_signals.insert(group);
-        }
-
-        ctdc_channels.insert(ctdc_chan);
-
-        std::pair<int, int> gc = std::make_pair(group, fimp_chan);
-        std::pair<std::pair<int,int>, std::string> gc_type = std::make_pair(gc, e_or_t);
-        detector_mapping.insert(std::make_pair(ctdc_chan, gc_type));
+        std::pair<int, int> cc = std::make_pair(cable, fimp_chan);
+        std::pair<std::pair<int,int>, std::string> location = std::make_pair(cc, t_b_l_r);
+        detector_mapping.insert(std::make_pair(chan, location));
     }
 
-    num_ctdc_channels = ctdc_channels.size();
+    num_channels = channels.size();
     num_detectors = detectors;
-    num_e_groups = fimp_e_groups.size();
-    num_t_groups = fimp_t_groups.size();
+    num_T_group = fimp_T_group.size();
+    num_B_group = fimp_B_group.size();
+    num_L_group = fimp_L_group.size();
+    num_R_group = fimp_R_group.size();
 
     detector_mapping_loaded = 1;
     detector_map_file.close();
