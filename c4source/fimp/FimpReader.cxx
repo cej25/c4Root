@@ -1,19 +1,3 @@
-/******************************************************************************
- *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
- *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
- *                                                                            *
- *             This software is distributed under the terms of the            *
- *                 GNU General Public Licence (GPL) version 3,                *
- *                    copied verbatim in the file "LICENSE".                  *
- *                                                                            *
- * In applying this license GSI does not waive the privileges and immunities  *
- * granted to it by virtue of its status as an Intergovernmental Organization *
- * or submit itself to any jurisdiction.                                      *
- ******************************************************************************
- *                               C.E. Jones                                   *
- *                                06.05.25                                    *
- ******************************************************************************/
-
 // FairROOT
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -239,12 +223,12 @@ Bool_t FimpReader::Read()
             double fine_time = GetFineTime(current_channel, raw_ft);
 
             int leadOrTrail = fData->fimp_data_lead_or_trailv[j] & 0x1;
-            channel = (current_channel - leadOrTrail)/2; // Get actual channel, 128 = trigger
+            channel = (current_channel - leadOrTrail)/2; // Get actual channel, 256 = trigger
 
             //std::cout << "lead or trail: " << leadOrTrail << " channel : " << channel << std::endl;
 
 
-            if (channel != prev_channel && channel < 128)
+            if (channel != prev_channel && channel < 256)
             {
                 // create an entry for anything that came before.
                 if (lead_coarse.size() > 0 && trail_coarse.size() > 0)
@@ -283,7 +267,7 @@ Bool_t FimpReader::Read()
                 }
 
             }
-            else if (channel == prev_channel && channel < 128)
+            else if (channel == prev_channel && channel < 256)
             {
                 if (!leadOrTrail && !prev_LoT && lead_coarse.size() < 3)
                 {
@@ -308,7 +292,7 @@ Bool_t FimpReader::Read()
                     trail_raw_ft.emplace_back(raw_ft);
                 }
             }
-            else if (channel == 128 && !leadOrTrail) // trigger stuff
+            else if (channel == 256 && !leadOrTrail) // trigger stuff
             {
                 lead_coarse.clear();
                 lead_fine.clear();
@@ -346,7 +330,7 @@ Bool_t FimpReader::Read()
 
 
             /*// trigger leading edge
-            if (channel == 128 && !leadOrTrail)
+            if (channel == 256 && !leadOrTrail)
             {
                 auto & entry = fimpArray->emplace_back();
                 entry.SetAll(wr_t, 
@@ -361,7 +345,7 @@ Bool_t FimpReader::Read()
                             0
                             );
             }
-            else if (channel < 128)
+            else if (channel < 256)
             {
                 // check == is_leading
                 if (!leadOrTrail)
