@@ -28,6 +28,7 @@ EXPS=template \
 	s101 \
 	s115 \
 	s143 \
+	s143y2025 \
 	s181 \
 	bb7 \
 	fimp \

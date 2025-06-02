@@ -1041,7 +1041,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     mhtdc_sc11lr_dt = new Float_t[hits_in_11lr];
     mhtdc_sc11lr_x = new Float_t[hits_in_11lr];
 
-    std::cout << "::: SC11 :::" << std::endl;
+    //std::cout << "::: SC11 :::" << std::endl;
     if (hits_in_11l == hits_in_11r)
     {
         for (int i = 0; i < hits_in_11l; i++)
@@ -1077,7 +1077,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
 
     mhtdc_sc21lr_dt = new Float_t[hits_in_21lr];
     mhtdc_sc21lr_x = new Float_t[hits_in_21lr];
-    std::cout << ":: SC21 :: " << std::endl;
+    //std::cout << ":: SC21 :: " << std::endl;
     if (hits_in_21lr == hits_in_11lr)
     {
         for (int i = 0; i < hits_in_21l; i++)

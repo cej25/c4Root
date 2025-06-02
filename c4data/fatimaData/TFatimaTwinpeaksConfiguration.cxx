@@ -53,7 +53,7 @@ void TFatimaTwinpeaksConfiguration::ReadConfiguration()
     std::set<int> detectors;
     int tamex_channels = 0;
 
-    if (detector_map_file.fail()) c4LOG(fatal, "Could not open Fatima Twinpeaks allocation file");
+    if (detector_map_file.fail()) c4LOG(fatal, "Could not open Fatima Twinpeaks allocation file: " + configuration_file);
 
     while (std::getline(detector_map_file, line))
     {

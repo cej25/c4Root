@@ -51,7 +51,7 @@ void TFimpConfiguration::ReadMappingFile()
     std::ifstream detector_map_file(mapping_file);
     std::string line;
 
-    if (detector_map_file.fail()) c4LOG(fatal, "Could not open FIMP mapping file!");
+    if (detector_map_file.fail()) c4LOG(fatal, "Could not open FIMP mapping file: " + mapping_file);
 
     while (std::getline(detector_map_file, line))
     {
