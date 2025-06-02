@@ -54,13 +54,13 @@ class TFimpConfiguration
         std::map<int, std::pair<std::pair<int, int>, std::string>> detector_mapping;
         std::set<int> extra_signals;
 
-        int num_ctdc_channels = 0;    
+        int num_channels = 0;    
         int num_detectors = 0;
-        int num_e_groups = 0;
-        int num_t_groups = 0;
+        int num_T_group = 0;
+        int num_B_group = 0;
+        int num_L_group = 0;
+        int num_R_group = 0;
 
-        int sc41l_d = 0;
-        int sc41r_d = 1;
 
         bool detector_mapping_loaded = 0;
         bool detector_calibrations_loaded = 0;
@@ -98,7 +98,7 @@ inline std::map<std::pair<int,int>,std::pair<double,double>> TFimpConfiguration:
 
 inline int TFimpConfiguration::NCTDCChannels() const
 {
-    return num_detectors;
+    return num_channels;
 }
 
 inline int TFimpConfiguration::NDetectors() const
@@ -106,14 +106,24 @@ inline int TFimpConfiguration::NDetectors() const
     return num_detectors;
 }
 
-inline int TFimpConfiguration::NEGroups() const
-{
-    return num_e_groups;
-}
-
 inline int TFimpConfiguration::NTGroups() const
 {
-    return num_t_groups;
+    return num_T_group;
+}
+
+inline int TFimpConfiguration::NBGroups() const
+{
+    return num_B_group;
+}
+
+inline int TFimpConfiguration::NRGroups() const
+{
+    return num_R_group;
+}
+
+inline int TFimpConfiguration::NLGroups() const
+{
+    return num_L_group;
 }
 
 inline bool TFimpConfiguration::MappingLoaded() const
