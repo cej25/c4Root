@@ -63,11 +63,15 @@ class FimpOnlineSpectra : public FairTask
         TDirectory* dir_coarse_clock_trail;
         TDirectory* dir_fine_trail;
         TDirectory* dir_sc41;
+        TDirectory* dir_hits;
 
         TH1* h1_fimp_whiterabbit;
         TH1* h1_fimp_wr_dt;
         TH1* h1_fimp_multiplicity;
         TH1* h1_fimp_hitpattern;
+        TH2* h2_fimp_hits_layer1;
+        TH2* h2_fimp_hits_layer2;
+        TH2* h2_fimp_hits_layer3;
         std::vector<TH1*> h1_fimp_tot;
         std::vector<TH1*> h1_fimp_lead_times;
         std::vector<TH1*> h1_fimp_trail_times;
