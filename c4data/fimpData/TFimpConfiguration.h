@@ -28,7 +28,10 @@ class TFimpConfiguration
 
         int NCTDCChannels() const;
         int NDetectors() const;
+        int NRGroups() const;
         int NEGroups() const;
+        int NBGroups() const;
+        int NLGroups() const;
         int NTGroups() const;
         int SC41L() const;
         int SC41R() const;
@@ -144,14 +147,14 @@ inline bool TFimpConfiguration::CalibrationCoefficientsLoaded() const
 }
 */
 
-inline int TFimpConfiguration::SC41L() const
-{
-    return sc41l_d;
-}
-
-inline int TFimpConfiguration::SC41R() const
-{
-    return sc41r_d;
-}
+//inline int TFimpConfiguration::SC41L() const
+//{
+//    return sc41l_d;
+//}
+//
+//inline int TFimpConfiguration::SC41R() const
+//{
+//    return sc41r_d;
+//}
 
 #endif
