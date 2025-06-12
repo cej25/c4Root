@@ -31,7 +31,7 @@
 #include <vector>
 #include <numeric>
 
-#define CYCLE_TIME 6667 // 16PH, find a way to work this out without compilation
+#define CYCLE_TIME 1.e4*2./3. // 16PH, find a way to work this out without compilation
 
 FimpRaw2Cal::FimpRaw2Cal()
     :   FairTask()
@@ -42,7 +42,7 @@ FimpRaw2Cal::FimpRaw2Cal()
     ,   fimpCalArray(new std::vector<FimpCalItem>)
 {
     fimp_config = TFimpConfiguration::GetInstance();
-    detector_mapping = fimp_config->Mapping();
+    //detector_mapping = fimp_config->Mapping();
 }
 
 FimpRaw2Cal::~FimpRaw2Cal()
@@ -82,7 +82,9 @@ void FimpRaw2Cal::Exec(Option_t* option)
         {
             double lead_time = (double)lead_coarse_time[i] * (double)CYCLE_TIME  - (double)lead_fine_time[i];
             double trail_time = (double)trail_coarse_time[i] * (double)CYCLE_TIME - (double)trail_fine_time[i];
-            double tot = trail_time - lead_time;
+            double tot = (trail_coarse_time[i] - lead_coarse_time[i]) * (double)CYCLE_TIME -
+                            (trail_fine_time[i] - lead_fine_time[i]);
+
 
             // if there is some mapping loaded, do mapping after FT CAL
             if (fimp_config->MappingLoaded())

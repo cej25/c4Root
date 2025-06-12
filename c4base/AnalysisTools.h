@@ -3,6 +3,7 @@
 
 #include "TH1.h"
 #include "TH2.h"
+#include "TH3.h"
 #include "TDirectory.h"
 #include "Rtypes.h"
 
@@ -30,6 +31,9 @@ TH2* MakeTH2(TDirectory* dir, const char* type, const char* name, const char* ti
 TH2* MakeTH2(TDirectory* dir, const char* type, const char* name, const char* title, 
             int xbins, double xmin, double xmax, int ybins, int ymin, int ymax,
             const char* xtitle, const char* ytitle);
+TH3* MakeTH3(TDirectory* dir, const char* type, const char* name, const char* title,
+            int xbins, double xmin, double xmax, int ybins, double ymin, double ymax,
+            int zbins, double zmin, double zmax);
 
 
 // not sure how these will work yet. 

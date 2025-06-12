@@ -76,7 +76,7 @@ TH1* MakeTH1(TDirectory* dir, const char* type, const char* name,
 
 // basic TH2
 TH2* MakeTH2(TDirectory* dir, const char* type, const char* name, const char* title, 
-            int xbins, double xmin, double xmax, int ybins, int ymin, int ymax)
+            int xbins, double xmin, double xmax, int ybins, double ymin, double ymax)
 {
     dir->cd();
     gStyle->SetPalette(kDarkBodyRadiator);
@@ -95,7 +95,7 @@ TH2* MakeTH2(TDirectory* dir, const char* type, const char* name, const char* ti
 
 // TH2 with axis titles
 TH2* MakeTH2(TDirectory* dir, const char* type, const char* name, const char* title, 
-            int xbins, double xmin, double xmax, int ybins, int ymin, int ymax,
+            int xbins, double xmin, double xmax, int ybins, double ymin, double ymax,
             const char* xtitle, const char* ytitle)
 {
     dir->cd();
@@ -114,6 +114,27 @@ TH2* MakeTH2(TDirectory* dir, const char* type, const char* name, const char* ti
     
     return h2;
 }
+
+TH3* MakeTH3(TDirectory* dir, const char* type, const char* name, const char* title, 
+            int xbins, double xmin, double xmax, int ybins, double ymin, double ymax, 
+            int zbins, double zmin, double zmax)
+{
+    dir->cd();
+    gStyle->SetPalette(kDarkBodyRadiator);
+
+    TH3* h3;
+    
+    if (*type == 'I') h3 = new TH3I(name, title, xbins, xmin, xmax, ybins, ymin, ymax, zbins, zmin, zmax);
+    else if (*type == 'F') h3 = new TH3F(name, title, xbins, xmin, xmax, ybins, ymin, ymax, zbins, zmin, zmax);
+    else if (*type == 'D') h3 = new TH3D(name, title, xbins, xmin, xmax, ybins, ymin, ymax, zbins, zmin, zmax);
+    else h3 = new TH3I(name, title, xbins, xmin, xmax, ybins, ymin, ymax, zbins, zmin, zmax);
+
+    h3->SetOption("COLZ"); // default for now.
+
+    return h3;
+}
+
+
 
 
 void ResetHistogramsInDirectory(TDirectory* dir) {

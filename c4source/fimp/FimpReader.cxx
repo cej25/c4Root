@@ -47,7 +47,7 @@ Bool_t FimpReader::Init(ext_data_struct_info* a_struct_info)
         return kFALSE;
     }
 
-    fine_time_calibration_coeffs = new double*[chans_per_tdc];
+    fine_time_calibration_coeffs = new double*[chans_per_tdc]; //TODO Daniele: this will probabily cause a memory leak, probabily it is not important
     for (int i = 0; i < chans_per_tdc; i++) 
     {
         fine_time_calibration_coeffs[i] = new double[max_fine_time_bins];
@@ -63,7 +63,7 @@ Bool_t FimpReader::Init(ext_data_struct_info* a_struct_info)
     }
     else
     {
-        fine_time_hits = new TH1I*[chans_per_tdc];
+        fine_time_hits = new TH1I*[chans_per_tdc];  //TODO Daniele: this might cause a memory leak, depending on ROOT if it is taking ownership of the TH1I
         for (int i = 0; i < chans_per_tdc; i++) fine_time_hits[i] = new TH1I(Form("fine_time_hits_channel_%i", i), Form("fine_time_hits_channel_%i", i), max_fine_time_bins, 0, max_fine_time_bins);
         fine_time_calibration_set = false;
     }
@@ -152,10 +152,10 @@ void FimpReader::ReadFineTimeHistosFromFile()
     TFile* inputfile = TFile::Open(fine_time_histo_infile, "READ");
     if (!inputfile || inputfile->IsZombie()) c4LOG(fatal, "Fine time calibration file could not be opened, aborting program.");
     
-    fine_time_hits = new TH1I*[chans_per_tdc];
-    for (int i = 0; i < chans_per_tdc; i++) fine_time_hits[i] = nullptr; //new TH1I[max_fine_time_bins];
+    fine_time_hits = new TH1I*[chans_per_tdc*2];
+    for (int i = 0; i < chans_per_tdc*2; i++) fine_time_hits[i] = nullptr; //new TH1I[max_fine_time_bins];
 
-    for (int i = 0; i < chans_per_tdc; i++)
+    for (int i = 0; i < chans_per_tdc*2; i++)
     {
         TH1I* a = nullptr;
         inputfile->GetObject(Form("fine_time_hits_channel_%i", i), a);
@@ -170,7 +170,7 @@ void FimpReader::ReadFineTimeHistosFromFile()
     }
 
     inputfile->Close();
-    LOG(info) << Form("Fatima fine time calibration read from file: %s", fine_time_histo_infile.Data());
+    LOG(info) << Form("Fimp fine time calibration read from file: %s", fine_time_histo_infile.Data());
 
 }
 
@@ -214,17 +214,17 @@ Bool_t FimpReader::Read()
               counter++;
               uint16_t raw_ft = fData->fimp_data[cTDC_index].time_finev[j];
               // fill ft calibration histo, or calibrate
+              int leadOrTrail = fData->fimp_data[cTDC_index].lead_or_trailv[j] & 0x1;
+              channel = cTDC_index*128+(current_channel - leadOrTrail)/2; // Get actual channel, 256 = trigger
               if (!fine_time_calibration_set)
               {
-                  fine_time_hits[current_channel]->Fill(raw_ft);
+                  fine_time_hits[channel]->Fill(raw_ft);
                   continue;
               }
 
               uint16_t coarse_time = fData->fimp_data[cTDC_index].time_coarsev[j];
-              double fine_time = GetFineTime(current_channel, raw_ft);
 
-              int leadOrTrail = fData->fimp_data[cTDC_index].lead_or_trailv[j] & 0x1;
-              channel = cTDC_index*128+(current_channel - leadOrTrail)/2; // Get actual channel, 256 = trigger
+              double fine_time = GetFineTime(channel, raw_ft);
 
               //std::cout << "lead or trail: " << leadOrTrail << " channel : " << channel << std::endl;
 

@@ -44,31 +44,25 @@ void TFimpConfiguration::ReadMappingFile()
         if (line.empty() || line[0] == '#') continue;
 
         std::istringstream iss(line);
-        std::string t_b_l_r;
-        int chan, ctdc_num, ctdc_chan, cable, fimp_chan;
+        Mapping_item item;
 
-        iss >> chan >> ctdc_num >> ctdc_chan >> cable >> fimp_chan >> t_b_l_r;
+        //iss >> chan >> ctdc_num >> ctdc_chan >> cable >> fimp_chan >> t_b_l_r;
+        iss >> item.chan >> item.ctdc_num >> item.ctdc_chan >> item.cable >> item.fimp_chan >> item.t_b_l_r;
 
-        if (t_b_l_r == 'T') fimp_T_group.insert(fimp_chan);
-        if (t_b_l_r == 'B') fimp_B_group.insert(fimp_chan);
-        if (t_b_l_r == 'L') fimp_L_group.insert(fimp_chan);
-        if (t_b_l_r == 'R') fimp_R_group.insert(fimp_chan);
+        if (iss.fail())
+        {
+            c4LOG(warn, "Failed to parse line: " + line);
+            continue;
+        }
 
         detectors++;
 
-        channels.insert(chan);
-
-        std::pair<int, int> cc = std::make_pair(cable, fimp_chan);
-        std::pair<std::pair<int,int>, std::string> location = std::make_pair(cc, t_b_l_r);
-        detector_mapping.insert(std::make_pair(chan, location));
+        channels.insert(item.chan);
+        detector_mapping.insert(std::make_pair(item.chan, item));
     }
 
     num_channels = channels.size();
     num_detectors = detectors;
-    num_T_group = fimp_T_group.size();
-    num_B_group = fimp_B_group.size();
-    num_L_group = fimp_L_group.size();
-    num_R_group = fimp_R_group.size();
 
     detector_mapping_loaded = 1;
     detector_map_file.close();

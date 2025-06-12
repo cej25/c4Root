@@ -56,7 +56,7 @@ InitStatus FimpOnlineSpectra::Init()
     fimpCalArray = mgr->InitObjectAs<decltype(fimpCalArray)>("FimpCalData");
     c4LOG_IF(fatal, !fimpCalArray, "Branch FimpCalData not found!");
 
-    detector_mapping = fimp_config->Mapping();
+    //detector_mapping = fimp_config->Mapping();
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
 

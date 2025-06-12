@@ -54,7 +54,7 @@ InitStatus FimpNearlineSpectra::Init()
     fimpCalArray = mgr->InitObjectAs<decltype(fimpCalArray)>("FimpCalData");
     c4LOG_IF(fatal, !fimpCalArray, "Branch FimpCalData not found!");
 
-    detector_mapping = fimp_config->Mapping();
+    //detector_mapping = fimp_config->Mapping();
 
     FairRootManager::Instance()->GetOutFile()->cd();
     dir_fimp = gDirectory->mkdir("FIMP");
@@ -73,6 +73,7 @@ InitStatus FimpNearlineSpectra::Init()
     dir_fine_trail = dir_trails->mkdir("Fine Times");
     dir_sc41 = dir_fimp->mkdir("SC41");
     dir_hits = dir_fimp->mkdir("Hit map");
+    dir_pos = dir_fimp->mkdir("Positions");
 
     // don't hardcode, change!
     h1_fimp_tot.resize(256);
@@ -133,6 +134,9 @@ InitStatus FimpNearlineSpectra::Init()
         h1_fimp_sc41l_dT[i] = MakeTH1(dir_sc41, "D", Form("h1_fimp_sc41l_dT_channel_%i", i), Form("dT SC41L - Channel %i", i), 1e3, 0, 2e3, "dT [ns]", kMagenta, kBlue+2);
         h1_fimp_sc41r_dT[i] = MakeTH1(dir_sc41, "D", Form("h1_fimp_sc41r_dT_channel_%i", i), Form("dT SC41R - Channel %i", i), 1e3, 0, 2e3, "dT [ns]", kMagenta, kBlue+2);
     }
+
+    //Position histograms
+    h3_position = MakeTH3(dir_pos, "D", "h3_fimp_position", "FIMP Position", 16, 0, 16, 16, 0, 16, 3, 0, 3);
 
     return kSUCCESS;
 }
@@ -232,7 +236,38 @@ void FimpNearlineSpectra::Exec(Option_t* option)
         }
         
     }
-    
+
+    //Reconstruct the position of the hit
+    std::vector<std::array<int, 3>> positions;
+    for(const auto& fimpCalItem : *fimpCalArray)
+    {
+        int channel = fimpCalItem.Get_channel();
+        positions.emplace_back(std::array<int, 3>{fimp_config->GetX(channel), fimp_config->GetY(channel), fimp_config->GetZ(channel)});
+    }
+
+
+    //Check for an x-y combination that has the same cordinate.
+    //Here we do not ask for the t-b and l-r coincidence. 
+    //Based on the data one can check if this is required or not
+    std::map<int, std::array<int, 3>> positions_filtered;
+    for (const auto& pos : positions)
+    {
+        auto& layer = positions_filtered[pos[2]];
+        if (pos[0] > 0)
+            layer[0] = pos[0];
+        if (pos[1] > 0)
+            layer[1] = pos[1];
+    }
+
+    for (const auto& pos : positions_filtered)
+    {
+        if (pos.second[0] > 0 && pos.second[1] > 0)
+        {
+            h3_position->Fill(pos.second[0], pos.second[1], pos.first);
+        }
+    }
+
+
     fNEvents += 1;
 }
 

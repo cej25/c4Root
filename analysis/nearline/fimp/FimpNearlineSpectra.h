@@ -10,6 +10,8 @@
 #include <memory>
 #include "TDirectory.h"
 #include "TFolder.h"
+#include "TH3.h"
+
 
 class FimpItem;
 class FimpCalItem;
@@ -62,6 +64,7 @@ class FimpNearlineSpectra : public FairTask
         TDirectory* dir_fine_trail;
         TDirectory* dir_sc41;
         TDirectory* dir_hits;
+        TDirectory* dir_pos;
 
         TH1* h1_fimp_whiterabbit;
         TH1* h1_fimp_wr_dt;
@@ -79,6 +82,8 @@ class FimpNearlineSpectra : public FairTask
         std::vector<TH1*> h1_fimp_coarse_clock_trail;
         std::vector<TH1*> h1_fimp_fine_bin_lead;
         std::vector<TH1*> h1_fimp_fine_bin_trail;
+
+        TH3* h3_position;
 
         int64_t wr_t = 0;
         int64_t prev_wr_t = 0;
