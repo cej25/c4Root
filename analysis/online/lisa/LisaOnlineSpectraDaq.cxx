@@ -114,7 +114,7 @@ InitStatus LisaOnlineSpectraDaq::Init()
         int x = detector.second.first.second.first;
         int y = detector.second.first.second.second;
         int l_id = detector.second.first.first;
-        std::string city = detector.second.second.second.first;
+        city = detector.second.second.second.first;
 
         
         //h1_hitpattern_total->GetXaxis()->SetBinLabel(l * xmax * ymax + (ymax-(y+1))*xmax + x + 1 - 3, city.Data());

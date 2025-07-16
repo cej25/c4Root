@@ -181,6 +181,11 @@ void LisaAna2Cal::Exec(Option_t* option)
                     
                 }
 
+                if (lisa_config->GainMatchingdEdXLoaded())
+                {
+                    //do stuff
+                }
+
                 // std::cout << "LAYER :: " << layer_id << std::endl;
                 // std::cout << "LISA X pos :: " << xpos << std::endl;
                 // std::cout << "LISA Y pos :: " << ypos << std::endl;

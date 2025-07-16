@@ -219,8 +219,8 @@ InitStatus LisaOnlineSpectra::Init()
             int y = -9;
             for (auto & detector : detector_mapping)
             {
-                int x = detector.second.first.second.first;
-                int y = detector.second.first.second.second;
+                x = detector.second.first.second.first;
+                y = detector.second.first.second.second;
                 int l_id = detector.second.first.first;
                 if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
                 {
@@ -420,8 +420,8 @@ InitStatus LisaOnlineSpectra::Init()
             int y = -9;
             for (auto & detector : detector_mapping)
             {
-                int x = detector.second.first.second.first;
-                int y = detector.second.first.second.second;
+                x = detector.second.first.second.first;
+                y = detector.second.first.second.second;
                 int l_id = detector.second.first.first;
                 if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
                 {
@@ -584,8 +584,8 @@ InitStatus LisaOnlineSpectra::Init()
             int y = -9;
             for (auto & detector : detector_mapping)
             {
-                int x = detector.second.first.second.first;
-                int y = detector.second.first.second.second;
+                x = detector.second.first.second.first;
+                y = detector.second.first.second.second;
                 int l_id = detector.second.first.first;
                 if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
                 {

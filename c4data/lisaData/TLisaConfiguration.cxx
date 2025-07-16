@@ -33,6 +33,7 @@ std::string TLisaConfiguration::MWD_file = "blank";
 std::string TLisaConfiguration::mapping_file = "blank";
 std::string TLisaConfiguration::gain_matching_file = "blank";
 std::string TLisaConfiguration::gain_matching_file_MWD = "blank";
+std::string TLisaConfiguration::gain_matching_file_dEdX = "blank";
 std::string TLisaConfiguration::calibration_file = "blank";
 std::vector<std::string> TLisaConfiguration::gate_ranges_files = {"blank"};
 std::vector<std::string> TLisaConfiguration::gate_ranges_MWD_files = {"blank"};
@@ -117,6 +118,7 @@ TLisaConfiguration::TLisaConfiguration()
     ReadGMFileMWD();
     ReadLISAGateFebexFile();
     ReadLISAGateMWDFile();
+    ReadGMFiledEdX();
     //ReadCalibrationCoefficients();
 
 }
@@ -350,6 +352,45 @@ void TLisaConfiguration::ReadGMFileMWD()
     gain_matching_coeff_file_MWD.close();
 
     c4LOG(info, "Lisa Gain Matching MWD File: " + gain_matching_file_MWD);
+    return;
+
+}
+
+void TLisaConfiguration::ReadGMFiledEdX()
+{   
+    
+    std::ifstream gain_matching_coeff_file_dEdX (gain_matching_file_dEdX);
+    std::string line;
+
+    if (gain_matching_coeff_file_dEdX.fail()) c4LOG(warn, "Could not open LISA dEdX GM - calibration coefficients file.");
+
+    while (std::getline(gain_matching_coeff_file_dEdX, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+
+        std::istringstream iss(line);
+        int layer_id, x_pos, y_pos;
+        double slope_dEdX, intercept_dEdX;
+        std::pair<int, int> xy;
+        std::pair<int, std::pair<int, int>> layer_xy;
+        std::pair<double, double> gm_dEdX_coeff;
+
+        iss >> layer_id >> x_pos >> y_pos >> slope_dEdX >> intercept_dEdX;
+
+        gm_dEdX_coeff = std::make_pair(slope_dEdX, intercept_dEdX);
+
+        xy = std::make_pair(x_pos, y_pos);
+        layer_xy = std::make_pair(layer_id, xy);
+
+        gain_matching_dEdX_coeffs.insert(std::make_pair(layer_xy, gm_dEdX_coeff));
+
+        //std::cout << " MWD GM -> lxy : "<< layer_id << x_pos << y_pos << " slope " << slope_MWD << " intercept " << intercept_MWD << "\n";
+    }
+    
+    gain_matching_dEdX_loaded = 1;
+    gain_matching_coeff_file_dEdX.close();
+
+    c4LOG(info, "Lisa Gain Matching dEdX File: " + gain_matching_file_dEdX);
     return;
 
 }
