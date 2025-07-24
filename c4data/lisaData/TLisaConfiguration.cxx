@@ -66,6 +66,10 @@ int TLisaConfiguration::min_energy_MWD_GM = 0;
 int TLisaConfiguration::max_energy_MWD_GM = 10000;
 int TLisaConfiguration::bin_energy_MWD_GM = 500;
 
+double TLisaConfiguration::min_dedx = 0.;
+double TLisaConfiguration::max_dedx = 10000000.;
+int TLisaConfiguration::bin_dedx = 900;
+
 // ::: WR
 long TLisaConfiguration::min_wr_diff = 0;
 long TLisaConfiguration::max_wr_diff = 200;
@@ -384,7 +388,7 @@ void TLisaConfiguration::ReadGMFiledEdX()
 
         gain_matching_dEdX_coeffs.insert(std::make_pair(layer_xy, gm_dEdX_coeff));
 
-        //std::cout << " MWD GM -> lxy : "<< layer_id << x_pos << y_pos << " slope " << slope_MWD << " intercept " << intercept_MWD << "\n";
+        //std::cout << " dEdX GM -> lxy : "<< layer_id << x_pos << y_pos << " slope " << slope_dEdX << " intercept " << intercept_dEdX << "\n";
     }
     
     gain_matching_dEdX_loaded = 1;

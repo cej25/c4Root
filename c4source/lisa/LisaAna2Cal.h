@@ -37,6 +37,7 @@ class LisaAna2Cal : public FairTask
 
         void PrintDetectorGainM();
         void PrintDetectorGainM_MWD();
+        void PrintDetectorGainM_dEdX();
 
     private:
         TLisaConfiguration const* lisa_config;
@@ -63,6 +64,8 @@ class LisaAna2Cal : public FairTask
 
         std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> detector_gain_matching;
         std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> detector_gain_matching_MWD;
+        std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> detector_gain_matching_dEdX;
+
 
         //std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> detector_calibration;
 
@@ -77,8 +80,10 @@ class LisaAna2Cal : public FairTask
         double slope;
         double intercept;
         float energy_GM;
-        float de_dx_raw;
         float de_dx;
+        double slope_dEdX;
+        double intercept_dEdX;
+        float de_dx_GM;
         double slope_MWD;
         double intercept_MWD;
         float energy_MWD_GM;

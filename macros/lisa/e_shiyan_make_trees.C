@@ -41,15 +41,6 @@ typedef struct EXT_STR_h101_t
 
 } EXT_STR_h101;
 
-std::string readFileToString(const std::string& path)
-{
-    std::ifstream file(path);
-    if (!file.is_open()) return "[Could not open file]";
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    return buffer.str();
-}
-
 void e_shiyan_make_trees()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;

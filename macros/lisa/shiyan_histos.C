@@ -1,30 +1,33 @@
 #include <TROOT.h>
+#include <TNamed.h>
+#include <TObjString.h>
+#include <fstream>
+#include <sstream>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define LISA_ON 0
-        //LISA_ANA displays only energy and traces; LISA_CAL displays stats,energy,traces. Choose one.
-        //Note that if FRS 1, LISA_CAL is needed. 
+#define LISA_ON 1
 #define LISA_ANA 0
 #define LISA_CAL 1
-
-// Test or experiment settings
-#define TEST 1
-#define EXP 0
 
 // If you want to have trace histos
 #define TRACE_ON 1
 
 #define FRS_ON 1
-#define FRS_LISA_CORRELATIONS 1
+#define FRS_LISA_CORRELATIONS 0
 
 #define WR_ENABLED 1
-#define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
+//........................................
 
-// :::  Define FRS setup.C file - FRS should provide; place in /config/shiyan/frs/setup/
+// Definition of histo ranges for lisa and frs
+#define HISTO_FILE "../../config/shiyan/lisa/general/histo_config_v0.C"
+
 extern "C"
 {
-    #include "../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
+    #include HISTO_FILE
 }
+
+extern std::vector<FrsGate*> fgs;
+extern std::vector<LisaGate*> lgs;
 
 typedef struct EXT_STR_h101_t
 {   
@@ -62,14 +65,13 @@ void shiyan_histos()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // ::: P A T H   O F   F I L E  to read
-    TString inputpath = "/u/lisa/data/lustre/gamma/lisa_s092/trees/";
+    TString inputpath = "/u/lisa/data/test_c4/";
+    TString filename = inputpath + "run_0111_tree.root";
+    
 
-    TString filename = inputpath + "run_0003_tree.root";
-    
     // ::: O U T P U T
-    TString outputpath = "/u/lisa/data/lustre/gamma/lisa_s092/histos/";   //testing
-    
-    TString outputFilename = outputpath + "run_0003_histo.root";
+    TString outputpath = "/u/lisa/data/test_c4/";   //testing
+    TString outputFilename = outputpath + "run_0111_histo.root";
 
 
     FairRunAna* run = new FairRunAna();
@@ -100,120 +102,12 @@ void shiyan_histos()
     TRangeParameter* range = new TRangeParameter();
     setup(frs,mw,tpc,music,labr,sci,id,si,mrtof,range); // Function defined in frs setup.C macro
     TFrsConfiguration::SetParameters(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
+    histo_config(config_path);
 
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    // ::: G A T E S - Initialise 
-
-    // FRS
-    FrsGate* test = new FrsGate("Tester",config_path + "/frs/Gates/frs_real_gate_lisa.root");
-    std::vector<FrsGate*> fgs = {};
-    fgs.emplace_back(test);
-
-    // LISA
-    std::vector<LisaGate*> lgs = {};
-    // continue in if condition
-
-    // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    // ::: FRS config
-    TFrsConfiguration::SetConfigPath(config_path +  "/frs/");
-    TFrsConfiguration::SetCrateMapFile(config_path +  "/frs/crate_map.txt");
-    TFrsConfiguration::SetTravMusDriftFile(config_path +  "/frs/TM_Drift_fragments.txt");
-    TFrsConfiguration::SetZ1DriftFile(config_path +  "/frs/Z1_Drift_fragments.txt");
-    TFrsConfiguration::SetAoQDriftFile(config_path +  "/frs/AoQ_Drift_fragments.txt");
-
-    // ...........................................
-
-    
-    // ::: Lisa config
-    if ( TEST )
-    {
-        
-        // testing with shiyan/frs data
-        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_4x4_shiyan.txt");
-        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_shiyan.txt");
-        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_shiyan.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_shiyan_v0.txt");
-        
-        // TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_All_Boards.txt");
-        // TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_cards.txt");
-        // TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
-        // TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
-        
-
-        // LisaGate* FebGate1 = new LisaGate("Febex_Gate1", "energy", config_path + "/lisa/Gates/Febex_Gate1.txt");
-        // LisaGate* FebGate2 = new LisaGate("Febex_Gate2", "energy", config_path + "/lisa/Gates/Febex_Gate2.txt");
-        // LisaGate* MWD_Gate1 = new LisaGate("MWD_Gate1", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate1.txt");
-        // LisaGate* MWD_Gate2 = new LisaGate("MWD_Gate2", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate2.txt");
-        // LisaGate* MWD_Gate3 = new LisaGate("MWD_Gate3", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate3.txt");
-
-        // lgs.emplace_back(FebGate1);
-        // lgs.emplace_back(FebGate2);
-        // lgs.emplace_back(MWD_Gate1);
-        // lgs.emplace_back(MWD_Gate2);
-        //lgs.emplace_back(MWD_Gate3);
-
-        // TLisaConfiguration::SetExcludedChannels({
-        // std::make_tuple(1,0,0),
-        // std::make_tuple(2,0,0)
-        // });
-        
-
-    }
-    if ( EXP )
-    {
-        
-        TLisaConfiguration::SetMappingFile(config_path + "/Lisa_5x5_shiyan.txt");
-        TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching_shiyan.txt");
-        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_shiyan.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path +  "/lisa/Lisa_MWD_Parameters_shiyan.txt");
-        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Lisa_Febex_Gates_shiyan.txt");
-        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/Lisa_MWD_Gates_shiyan.txt");
-
-    }
-  
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
-    // ::: Nearline Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    TLisaConfiguration::SetXYDetectorGate(1,1);  //XY position of the detector you want to see the gate on
-
     // ::: Get run number :::
     //TFrsConfiguration::SetRunNumber(fileNumber);
     //std::cout << "Run number: " << fileNumber << std::endl;
-
-    //::::::::: Set experiment configurations
-    TExperimentConfiguration::SetExperimentStart(1746597600000000000); // Start for Shiyan data: May 7th, 8a.m. //including testing
-    //TExperimentConfiguration::SetExperimentStart(1746599400000000000); ////1746599400000000000 is May 7th, at 8h30 a.m., start of run0001
-
-    // ::: FRS
-    TFrsConfiguration::Set_Z_range(10,60);
-    TFrsConfiguration::Set_AoQ_range(1.8,3.5);
-    TFrsConfiguration::Set_dE_music41_range(0,4000);
-    TFrsConfiguration::Set_dE_music21_range(0,4000);
-    
-    //::::::::: Set ranges for histos :::::::::::::::
-    // ::: LISA
-    //  Channel Energy ::::: (h1_energy_)
-    TLisaConfiguration::SetEnergyRange(0,50000);
-    TLisaConfiguration::SetEnergyBin(3000);
-
-    //  MWD histos
-    TLisaConfiguration::SetEnergyRangeMWD(0,1000);
-    TLisaConfiguration::SetEnergyBinMWD(2000);
-
-    //  Traces Time and Amplitude Ranges 
-    TLisaConfiguration::SetTracesRange(0,10);
-    TLisaConfiguration::SetTracesBin(1000);
-    TLisaConfiguration::SetAmplitudeMin(7900);
-    TLisaConfiguration::SetAmplitudeMax(8700);
-
-    // White Rabbit
-    TLisaConfiguration::SetWrDiffRange(0,100000000);
-    TLisaConfiguration::SetWrDiffBin(50000);
-
-    TLisaConfiguration::SetWrRateRange(0,3600);
-    TLisaConfiguration::SetWrRateBin(3600);
-
-    // Drift
-    TLisaConfiguration::SetDriftRange(0,1000);
 
     // :::: ENABLE SYSTEMS  ::::::::::::::::::::::::::::::::::::::::
     if(TRACE_ON)
@@ -244,6 +138,8 @@ void shiyan_histos()
     {
         FrsNearlineSpectra* nearlinefrs = new FrsNearlineSpectra(fgs);
         run->AddTask(nearlinefrs);
+        //FrsRawNearlineSpectra* rawnearlinefrs = new FrsRawNearlineSpectra();
+        //run->AddTask(rawnearlinefrs);
     }
     
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -257,8 +153,14 @@ void shiyan_histos()
         }
     }
 
+    TString histoConfigFile = HISTO_FILE;
+
+    TTree* metaTree = new TTree("info", "Histo info file");
+    metaTree->Branch("histo_config", &histoConfigFile);
+    metaTree->Fill();
     // Initialise
     run->Init();
+    metaTree->Write(); 
 
     // Run
     run->Run(0, totEvt); 

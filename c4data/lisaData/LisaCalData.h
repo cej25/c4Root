@@ -49,6 +49,7 @@ class LisaCalItem : public TObject
                     float e_GM,
                     float e_MWD_GM,
                     float dedx,
+                    float dedx_GM,
                     uint64_t evt_t,
                     uint64_t ch_t,
                     uint64_t evtno,
@@ -74,6 +75,7 @@ class LisaCalItem : public TObject
         float Get_energy_GM() const;
         float Get_energy_MWD_GM() const;
         float Get_de_dx() const;
+        float Get_de_dx_GM() const;
         uint64_t Get_board_event_time() const;
         uint64_t Get_channel_event_time() const;
         uint64_t Get_evtno();
@@ -104,6 +106,7 @@ class LisaCalItem : public TObject
         float energy_GM;
         float energy_MWD_GM;
         float de_dx;
+        float de_dx_GM;
         uint64_t board_event_time;
         uint64_t ch_event_time;
         uint64_t event_no;
@@ -188,6 +191,11 @@ inline float LisaCalItem::Get_energy_MWD_GM() const
 inline float LisaCalItem::Get_de_dx() const
 {
     return de_dx;
+}
+
+inline float LisaCalItem::Get_de_dx_GM() const
+{
+    return de_dx_GM;
 }
 
 inline uint64_t LisaCalItem::Get_board_event_time() const

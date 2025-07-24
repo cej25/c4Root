@@ -118,8 +118,11 @@ class LisaNearlineSpectra : public FairTask
         TDirectory* dir_febex;
         TDirectory* dir_febex_exclude;
         TDirectory* dir_energy_MWD;
+        TDirectory* dir_dedx;
         TDirectory* dir_febex_channel;
         TDirectory* dir_MWD_channel;
+        TDirectory* dir_dedx_channel;
+
         //  Traces
         TDirectory* dir_traces;
         //  Drift
@@ -178,6 +181,14 @@ class LisaNearlineSpectra : public FairTask
         std::vector<std::vector<TH1*>> h1_energy_MWD_xy_gated;
         //std::vector<TH1F*> h1_energy_MWD_layer_gated;
         //std::vector<TH1F*> h1_energy_MWD_xy_gated;
+
+        //      dEdX
+        std::vector<std::vector<std::vector<TH1F*>>> h1_dedx_ch;
+        std::vector<TH1*> h1_dedx_layer;
+        std::vector<TH2F*> h2_dedx_vs_ID;
+        TH2F* h2_dedx_vs_layer;
+        std::vector<TH2F*> h2_dedx_layer_vs_layer;
+        TH2F* h2_dedx_first_vs_last;
 
         // ::: Traces
         std::vector<std::vector<std::vector<TH2F*>>> h2_traces_ch;

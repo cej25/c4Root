@@ -33,6 +33,7 @@ Trapez_moving_window_length[ns]    400
 # ::: Decay Time of the signal tau 
 # ::: Conditions: It has to fit the decay time of the trace. This flattens the trapezoid top
 Decaytime_ch0[ns]                  2250
+Decaytime_ch1[ns]                  2250
 
 # ::: Start and stop of the MWD trace (k0,kend)
 # ::: Conditions:  k0 >= 0 && k0 < kend && k0 < trace_febex.size(); kend > k0

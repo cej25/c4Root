@@ -388,10 +388,14 @@ void LisaRaw2Ana::Exec(Option_t* option)
             // 5. ::: Calculate MWD |energy value|
             energy_MWD = energy_avg - baseline_avg;
 
-            if (energy_MWD < 0) 
-            {
-                energy_MWD = - energy_MWD;
-            }            
+            // !!!!!The following should be always done but for shiyan we have positive signal we don't understand
+            // these signals are covering part of the spectra at low energies so we avoid to flip the sign to move them
+            //if (energy_MWD < 0) 
+            //{
+            energy_MWD = - energy_MWD;
+            //}
+
+            //........        
         
             //std::cout<<" energy MWD : " << energy_MWD << "\n";
 
