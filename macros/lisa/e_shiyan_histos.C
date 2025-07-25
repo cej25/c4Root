@@ -65,13 +65,14 @@ void e_shiyan_histos()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // ::: P A T H   O F   F I L E  to read
-    //TString inputpath = "/u/gandolfo/data/lustre/gamma/lisa_s092/trees/";
-    TString inputpath = "/u/gandolfo/data/shiyan_dedx/";
-    TString filename = inputpath + "test_0111.root";  
+    TString inputpath = "/u/gandolfo/data/lustre/gamma/lisa_s092/trees/";
+    //TString inputpath = "/u/gandolfo/data/shiyan_dedx/";
+    TString filename = inputpath + "run_0018_0001.root";  
     
     // ::: O U T P U T
-    TString outputpath = "/u/gandolfo/data/shiyan_dedx/";   //energy resolution output
-    TString outputFilename = outputpath + "test_0111_histo.root";
+    TString inputpath = "/u/gandolfo/data/lustre/gamma/lisa_s092/histos/";
+    //TString outputpath = "/u/gandolfo/data/shiyan_dedx/";   //energy resolution output
+    TString outputFilename = outputpath + "run_0018_histo.root";
 
 
     FairRunAna* run = new FairRunAna();

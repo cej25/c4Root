@@ -1167,8 +1167,9 @@ InitStatus LisaFrsCorrelations::Init()
     dEdeg_z41_passed.resize(FrsGates.size());
     // now it should be a sized vector of vectors?
 
-    //c4LOG(info, "::::::::::::::::::end of init");
+    c4LOG(info, "::::::::::::::::::end of init");
     return kSUCCESS;
+    c4LOG(info, "::::::::::::::::::0");
     
 
 }
@@ -1177,11 +1178,28 @@ InitStatus LisaFrsCorrelations::Init()
 
 void LisaFrsCorrelations::Exec(Option_t* option)
 {   
+    c4LOG(info, "::::::::::::::::::");
+    c4LOG(info, "size of frs hit array: " << frsHitArray->size() );
+    c4LOG(info, "size of frs multihit array: " << multihitArray->size() );
+    c4LOG(info, "size of lisa cal array: " << lisaCalArray->size() );
     // -> Reject events without both subsystems <-
-    if (frsHitArray->size() <= 0 || lisaCalArray->size() <= 0) return;  // frs, lisa and travmus subevent exists
     
+    //if (frsHitArray->size() <= 0 || lisaCalArray->size() <= 0 || multihitArray->size() <= 0) return;  // frs, lisa and travmus subevent exists
     
+    if (!frsHitArray ||
+        !lisaCalArray ||
+        !multihitArray ) {
+        
+        c4LOG(info, "Skipping event due to null or empty arrays");
+        return;
+    }
+    c4LOG(info, "::::::::::::::::::");
+    c4LOG(info, "size of frs hit array: " << frsHitArray->size() );
+    c4LOG(info, "size of frs multihit array: " << multihitArray->size() );
+    c4LOG(info, "size of lisa cal array: " << lisaCalArray->size() );
 
+
+    c4LOG(info, "::::::::::::::::::1");
     const auto & frsHitItem = frsHitArray->at(0);                       // *should* only be 1 FRS subevent per event
     const auto & multihitItem = multihitArray->at(0);                 // *should* only be 1 FRS subevent per event
 
@@ -1194,7 +1212,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     int lisa_total_multiplicity = 0;
 
     //................
-
+    c4LOG(info, "::::::::::::::::::2");
     // ::: MUSIC energies
     energy_MUSIC_21 = frsHitItem.Get_music21_dE();
     energy_MUSIC_41 = frsHitItem.Get_music41_dE(); 
@@ -1211,9 +1229,11 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     Float_t x4_position = frsHitItem.Get_ID_x4();
     Float_t sci42e = frsHitItem.Get_sci_e_42();
 
+    c4LOG(info, "::::::::::::::::::3");
     if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 ) return;   // this is a quick fix to avoid getting any event with multihits (just pick 1)
     ncorr++;
     
+    c4LOG(info, "::::::::::::::::::getting data");
     // CEJ :: Process FRS Gate info here first.
     for (int gate = 0; gate < FrsGates.size(); gate++)
     {
@@ -1241,7 +1261,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         }
     }
 
-
+    c4LOG(info, "::::::::::::::::::def of frs gate");
     layer1seen = false;
     layer2seen = false;
 
@@ -1301,6 +1321,8 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         energy_layer[layer-1].emplace_back(energy_LISA_febex);
         energy_MWD_layer[layer-1].emplace_back(energy_LISA_MWD);
 
+        c4LOG(info, ":::::::::::::::::: getting lisa data");
+
         // Loop over gates for LISA FEBEX
         for (int g = 0; g < febex_gates.size(); g++)
         {
@@ -1326,7 +1348,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
             g++;
         }
         //...........................
-
+        c4LOG(info, "::::::::::::::::::lisa gate");
 
         // ::: FRS applied on LISA (FRS_ON_LISA Directory)
         //int mh_counter_passed_s1s2[FrsGates.size()] = {0};
@@ -1386,7 +1408,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         
     }
     
-    //c4LOG(info, " Total multiplicity of lisa: " << lisa_total_multiplicity);
+    c4LOG(info, " Total multiplicity of lisa: " << lisa_total_multiplicity);
     // ::: T I M E - WR differences
     wr_LISA_FRS = wr_LISA - wr_FRS;
     wr_LISA_travMUSIC = wr_LISA - wr_travMUSIC;
