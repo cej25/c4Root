@@ -1178,33 +1178,11 @@ InitStatus LisaFrsCorrelations::Init()
 
 void LisaFrsCorrelations::Exec(Option_t* option)
 {   
-    c4LOG(info, "before corr. condition ::::::::::::::::::");
-    c4LOG(info, "size of frs hit array: " << frsHitArray->size() );
-    c4LOG(info, "size of frs multihit array: " << multihitArray->size() );
-    c4LOG(info, "size of lisa cal array: " << lisaCalArray->size() );
+
     // -> Reject events without both subsystems <-
+    if (frsHitArray->size() <= 0 || lisaCalArray->size() <= 0 || multihitArray->size() <= 0) return;  // frs, lisa and travmus subevent exists
     
-    //if (frsHitArray->size() <= 0 || lisaCalArray->size() <= 0 || multihitArray->size() <= 0) return;  // frs, lisa and travmus subevent exists
-    
-    // if (!frsHitArray || frsHitArray->size() == 0 ||
-    //     !lisaCalArray || lisaCalArray->size() == 0 ||
-    //     !multihitArray || multihitArray->size() == 0) {
-        
-    //     c4LOG(info, "Skipping event due to null or empty arrays");
-    //     return;
-    // }
-
-    if (lisaCalArray && lisaCalArray->size() == 0) {
-    c4LOG(error, "!! Trying to access lisaCalArray[0] but it's EMPTY");
-    // try printing a backtrace or aborting here to catch it
-    }
-    c4LOG(info, "after corr. condition ::::::::::::::::::");
-    c4LOG(info, "size of frs hit array: " << frsHitArray->size() );
-    c4LOG(info, "size of frs multihit array: " << multihitArray->size() );
-    c4LOG(info, "size of lisa cal array: " << lisaCalArray->size() );
-
-
-    c4LOG(info, "::::::::::::::::::1");
+    //c4LOG(info, "::::::::::::::::::1");
     const auto & frsHitItem = frsHitArray->at(0);                       // *should* only be 1 FRS subevent per event
     const auto & multihitItem = multihitArray->at(0);                 // *should* only be 1 FRS subevent per event
 
@@ -1217,7 +1195,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     int lisa_total_multiplicity = 0;
 
     //................
-    c4LOG(info, "::::::::::::::::::2");
+    //c4LOG(info, "::::::::::::::::::2");
     // ::: MUSIC energies
     energy_MUSIC_21 = frsHitItem.Get_music21_dE();
     energy_MUSIC_41 = frsHitItem.Get_music41_dE(); 
@@ -1234,11 +1212,12 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     Float_t x4_position = frsHitItem.Get_ID_x4();
     Float_t sci42e = frsHitItem.Get_sci_e_42();
 
-    c4LOG(info, "::::::::::::::::::3");
+    //c4LOG(info, "::::::::::::::::::3");
+
     if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 ) return;   // this is a quick fix to avoid getting any event with multihits (just pick 1)
     ncorr++;
     
-    c4LOG(info, "::::::::::::::::::getting data");
+    //c4LOG(info, "::::::::::::::::::getting data");
     // CEJ :: Process FRS Gate info here first.
     for (int gate = 0; gate < FrsGates.size(); gate++)
     {
@@ -1266,7 +1245,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         }
     }
 
-    c4LOG(info, "::::::::::::::::::def of frs gate");
+    //c4LOG(info, "::::::::::::::::::def of frs gate");
     layer1seen = false;
     layer2seen = false;
 
@@ -1326,7 +1305,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         energy_layer[layer-1].emplace_back(energy_LISA_febex);
         energy_MWD_layer[layer-1].emplace_back(energy_LISA_MWD);
 
-        c4LOG(info, ":::::::::::::::::: getting lisa data");
+        //c4LOG(info, ":::::::::::::::::: getting lisa data");
 
         // Loop over gates for LISA FEBEX
         for (int g = 0; g < febex_gates.size(); g++)
@@ -1353,7 +1332,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
             g++;
         }
         //...........................
-        c4LOG(info, "::::::::::::::::::lisa gate");
+        //c4LOG(info, "::::::::::::::::::lisa gate");
 
         // ::: FRS applied on LISA (FRS_ON_LISA Directory)
         //int mh_counter_passed_s1s2[FrsGates.size()] = {0};
@@ -1413,7 +1392,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         
     }
     
-    c4LOG(info, " Total multiplicity of lisa: " << lisa_total_multiplicity);
+    //c4LOG(info, " Total multiplicity of lisa: " << lisa_total_multiplicity);
     // ::: T I M E - WR differences
     wr_LISA_FRS = wr_LISA - wr_FRS;
     wr_LISA_travMUSIC = wr_LISA - wr_travMUSIC;
@@ -1711,6 +1690,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
 
 void LisaFrsCorrelations::FinishEvent()
 {
+    //std::cout << "::::: FE 1 " << std::endl;
     for (int pair = 0; pair < pair_count; pair++)
     {
         for (int i = 0; i < layer_number; i++)
@@ -1719,6 +1699,7 @@ void LisaFrsCorrelations::FinishEvent()
             mh_counter_passed_s2s4_seq[pair][i] = 0;
         }
     }
+    //std::cout << "::::: FE 2 " << std::endl;
     for (int pair = 0; pair < pair_count_MWD; pair++)
     {
         for (int i = 0; i < layer_number; i++)
@@ -1727,30 +1708,52 @@ void LisaFrsCorrelations::FinishEvent()
             mh_counter_passed_s2s4_seq_mwd[pair][i] = 0;
         }
     }
-
+    //std::cout << "::::: FE 3 " << std::endl;
     for (int l = 0; l < layer_number; l++)
     {
         energy_layer[l].clear();
         energy_MWD_layer[l].clear();
     }
-
-    for (int g = 0; g < gate_number; g++)
+    //std::cout << "::::: FE 4 " << std::endl;
+    for (int g = 0; g < energy_layer_gated.size(); g++)
     {
-        for (int l = 0; l < layer_number; l++)
+        //std::cout << "::::: FE 5 " << std::endl;
+        for (int l = 0; l < energy_layer_gated[g].size(); l++)
         {
+            //std::cout << "::::: FE 6 " << std::endl;
             energy_layer_gated[g][l].clear();
-            energy_MWD_layer_gated[g][l].clear();
-            for (int x = 0; x < xmax; x++)
+            //energy_MWD_layer_gated[g][l].clear();
+            for (int x = 0; x < energy_xy_gated[g][l].size(); x++)
             {
-                for (int y = 0; y < ymax; y++)
+                //std::cout << "::::: FE 7 " << std::endl;
+                for (int y = 0; y < energy_xy_gated[g][l][x].size(); y++)
                 {
                     energy_xy_gated[g][l][x][y].clear();
-                    energy_MWD_xy_gated[g][l][x][y].clear();
+                    //energy_MWD_xy_gated[g][l][x][y].clear();
                 }
             }
         }
     }
 
+    //std::cout << "::::: FE 8 " << std::endl;
+    for (int g = 0; g < energy_MWD_layer_gated.size(); g++)
+    {
+        //std::cout << "::::: FE 9 " << std::endl;
+        for (int l = 0; l < energy_MWD_layer_gated[g].size(); l++)
+        {
+            //std::cout << "::::: FE 10 " << std::endl;
+            energy_MWD_layer_gated[g][l].clear();
+            for (int x = 0; x < energy_MWD_xy_gated[g][l].size(); x++)
+            {
+                //std::cout << "::::: FE 11 " << std::endl;
+                for (int y = 0; y < energy_MWD_xy_gated[g][l][x].size(); y++)
+                {
+                    energy_xy_gated[g][l][x][y].clear();
+                }
+            }
+        }
+    }
+    //std::cout << "::::: before vectors " << std::endl;
     for (int gate = 0; gate < FrsGates.size(); gate++)
     {
         z21_passed[gate].clear();
