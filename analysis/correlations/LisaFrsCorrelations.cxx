@@ -1178,7 +1178,7 @@ InitStatus LisaFrsCorrelations::Init()
 
 void LisaFrsCorrelations::Exec(Option_t* option)
 {   
-    c4LOG(info, "::::::::::::::::::");
+    c4LOG(info, "before corr. condition ::::::::::::::::::");
     c4LOG(info, "size of frs hit array: " << frsHitArray->size() );
     c4LOG(info, "size of frs multihit array: " << multihitArray->size() );
     c4LOG(info, "size of lisa cal array: " << lisaCalArray->size() );
@@ -1186,14 +1186,19 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     
     //if (frsHitArray->size() <= 0 || lisaCalArray->size() <= 0 || multihitArray->size() <= 0) return;  // frs, lisa and travmus subevent exists
     
-    if (!frsHitArray ||
-        !lisaCalArray ||
-        !multihitArray ) {
+    // if (!frsHitArray || frsHitArray->size() == 0 ||
+    //     !lisaCalArray || lisaCalArray->size() == 0 ||
+    //     !multihitArray || multihitArray->size() == 0) {
         
-        c4LOG(info, "Skipping event due to null or empty arrays");
-        return;
+    //     c4LOG(info, "Skipping event due to null or empty arrays");
+    //     return;
+    // }
+
+    if (lisaCalArray && lisaCalArray->size() == 0) {
+    c4LOG(error, "!! Trying to access lisaCalArray[0] but it's EMPTY");
+    // try printing a backtrace or aborting here to catch it
     }
-    c4LOG(info, "::::::::::::::::::");
+    c4LOG(info, "after corr. condition ::::::::::::::::::");
     c4LOG(info, "size of frs hit array: " << frsHitArray->size() );
     c4LOG(info, "size of frs multihit array: " << multihitArray->size() );
     c4LOG(info, "size of lisa cal array: " << lisaCalArray->size() );
