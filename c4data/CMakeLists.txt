@@ -12,6 +12,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/bgoData
 ${C4ROOT_SOURCE_DIR}/c4data/germaniumData
 ${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
 ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
+${C4ROOT_SOURCE_DIR}/c4data/gsiscannerData
 ${C4ROOT_SOURCE_DIR}/c4data/baseData
 ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 ${C4ROOT_SOURCE_DIR}/c4data/fimpData
@@ -83,6 +84,11 @@ baseData/TCorrelationsConfiguration.cxx
 baseData/TExperimentConfiguration.cxx
 lisaData/TLisaConfiguration.cxx
 lisaData/LisaGate.cxx
+gsiscannerData/QDCData.cxx
+gsiscannerData/LYSOCalData.cxx
+gsiscannerData/TLYSOConfiguration.cxx
+gsiscannerData/TAgataConfiguration.cxx
+gsiscannerData/AgataSuperTraceData.cxx
 )
 
 # fill list of header files from list of source files by exchanging the file extension

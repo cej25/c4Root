@@ -18,6 +18,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/wrData
 ${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
 ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
 ${C4ROOT_SOURCE_DIR}/c4data/baseData
+${C4ROOT_SOURCE_DIR}/c4data/gsiscannerData
 ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 ${C4ROOT_SOURCE_DIR}/c4data/fimpData
 ${C4ROOT_SOURCE_DIR}/c4data/mcpData
@@ -70,6 +71,8 @@ set(SRCS
 ./online/fimp/FimpOnlineSpectra.cxx
 ./online/mcp/H10MCPOnlineSpectra.cxx
 ./online/stefan/StefanOnlineSpectra.cxx
+./online/gsiscanner/TraceVisualizer.cxx
+./online/gsiscanner/LYSOOnline.cxx
 
 # nearline/offline
 ./nearline/bplast/bPlastNearlineSpectra.cxx

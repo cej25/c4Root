@@ -36,7 +36,8 @@ EXPS=template \
 	shiyan \
 	hispec10 \
 	onlyBGO \
-	febex
+	febex  \
+	gsiscanner
 ALL_EXPS = $(EXPS)
 
 #########################################################

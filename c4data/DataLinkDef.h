@@ -85,6 +85,11 @@
 #pragma link C++ class GermaniumCalData+;
 #pragma link C++ class GermaniumFebexTraceData+;
 
+// scanner:
+#pragma link C++ class QDCData+;
+#pragma link C++ class LYSOCalData+;
+#pragma link C++ class AgataSuperTraceData+;
+
 // HISPEC10 MCP
 #pragma link C++ class H10MCPTwinpeaksData+;
 #pragma link C++ class H10MCPTwinpeaksCalData+;
@@ -121,6 +126,8 @@
 #pragma link C++ class TFimpConfiguration+;
 #pragma link C++ class TH10MCPConfiguration+;
 #pragma link C++ class TStefanConfiguration+;
+#pragma link C++ class TLYSOConfiguration+;
+#pragma link C++ class TAgataConfiguration+;
 
 
 #endif

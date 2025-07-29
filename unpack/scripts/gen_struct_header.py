@@ -4,9 +4,9 @@ import subprocess as sb
 #should create the correct struct files, add systems to systems list and run. 
 
 #add the systems you want here: bplast,fatima,etc
-systems = ["bgo"]
+systems = ["agata_trace_data"]
 
-ucesb_exec = "s100"
+ucesb_exec = "gsiscanner"
 
 
 for system in systems:
@@ -24,7 +24,7 @@ for system in systems:
         file.write(modified_content)
     """
     
-    sb.run(["mv",f"ext_h101_{system}.h",f"../../c4source/{system}/"])
+    #sb.run(["mv",f"ext_h101_{system}.h",f"../../c4source/{system}/"])
     
     
 

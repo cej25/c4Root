@@ -18,6 +18,7 @@ ${C4ROOT_SOURCE_DIR}/c4source/fatima
 ${C4ROOT_SOURCE_DIR}/c4source/germanium
 ${C4ROOT_SOURCE_DIR}/c4source/bgo
 ${C4ROOT_SOURCE_DIR}/c4source/beammonitor
+${C4ROOT_SOURCE_DIR}/c4source/gsiscanner
 ${C4ROOT_SOURCE_DIR}/c4source/bb7
 ${C4ROOT_SOURCE_DIR}/c4source/fimp
 ${C4ROOT_SOURCE_DIR}/c4source/mcp
@@ -28,6 +29,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/lisaData
 ${C4ROOT_SOURCE_DIR}/c4data/bgoData
 ${C4ROOT_SOURCE_DIR}/c4data/wrData
 ${C4ROOT_SOURCE_DIR}/c4data/aidaData
+${C4ROOT_SOURCE_DIR}/c4data/gsiscannerData
 ${C4ROOT_SOURCE_DIR}/c4data/bplastData
 ${C4ROOT_SOURCE_DIR}/c4data/fatimaData
 ${C4ROOT_SOURCE_DIR}/c4data/germaniumData
@@ -91,7 +93,10 @@ set(SRCS
 ./stefan/StefanReader.cxx
 ./stefan/StefanRaw2Cal.cxx
 ./stefan/StefanCal2Hit.cxx
-
+./gsiscanner/QDCReader.cxx
+./gsiscanner/LYSORaw2Cal.cxx
+./gsiscanner/AgataTraceReader.cxx
+./gsiscanner/AgataTraceRaw2Cal.cxx
 ./test/TestReader.cxx
 )
 
@@ -112,7 +117,8 @@ Set(STRUCT_HEADERS
 ./fimp/ext_h101_fimp.h
 ./mcp/ext_h101_mcp.h
 ./stefan/ext_h101_stefan.h
-
+./gsiscanner/ext_h101_agata.h
+./gsiscanner/ext_h101_qdc.h
 ./test/ext_h101_test.h
 )
 

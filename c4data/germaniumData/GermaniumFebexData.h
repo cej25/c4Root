@@ -130,7 +130,7 @@ class GermaniumFebexTraceData : public TObject
         inline const uint64_t Get_wr_t() const { return fwr_t; }
 
 
-        inline const int32_t Get_trace_value(int index) {return ftrace[index];}
+        inline const int16_t Get_trace_value(int index) {return ftrace[index];}
 
 
 
@@ -150,7 +150,7 @@ class GermaniumFebexTraceData : public TObject
         void Set_wr_subsystem_id(uint32_t v) { fwr_subsystem_id = v; }
         void Set_wr_t(uint64_t v) { fwr_t = v; }
         
-        void Set_trace_value(int32_t v, int index) {ftrace[index] = v;}
+        void Set_trace_value(int16_t v, int index) {ftrace[index] = v;}
 
     protected:
         // Data items
@@ -165,7 +165,7 @@ class GermaniumFebexTraceData : public TObject
         double fchannel_trigger_time;
         int32_t fchannel_energy;
 
-        int32_t ftrace[MAX_TRACE_LENGTH];
+        int16_t ftrace[MAX_TRACE_LENGTH];
         
         
 

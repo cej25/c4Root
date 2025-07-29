@@ -48,6 +48,10 @@
 #pragma link C++ class StefanReader+;
 #pragma link C++ class StefanRaw2Cal+;
 #pragma link C++ class StefanCal2Hit+;
+#pragma link C++ class AgataTraceReader+;
+#pragma link C++ class AgataTraceRaw2Cal+;
+#pragma link C++ class QDCReader+;
+#pragma link C++ class LYSORaw2Cal+;
 
 #pragma link C++ class EXT_STR_h101_unpack_t;
 #pragma link C++ class EXT_STR_h101_frs_onion_t;
@@ -55,6 +59,8 @@
 #pragma link C++ class EXT_STR_h101_germanium_traces_onion_t;
 #pragma link C++ class EXT_STR_h101_fatima_onion_t;
 #pragma link C++ class EXT_STR_h101_fatimavme_onion_t;
+#pragma link C++ class EXT_STR_h101_agata_onion_t;
+#pragma link C++ class EXT_STR_h101_qdc_onion_t;
 #pragma link C++ class EXT_STR_h101_bgo_onion_t;
 #pragma link C++ class EXT_STR_h101_lisa_onion_t;
 #pragma link C++ class EXT_STR_h101_aida_onion_t;

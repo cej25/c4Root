@@ -17,6 +17,7 @@
 #pragma link C++ class GermaniumLabTest+;
 #pragma link C++ class GermaniumResolution+;
 #pragma link C++ class BGOOnlineSpectra+;
+#pragma link C++ class TraceVisualizer+;
 #pragma link C++ class bPlastOnlineSpectra+;
 #pragma link C++ class BeamMonitorOnlineSpectra+;
 #pragma link C++ class LisaOnlineSpectra+;
@@ -71,6 +72,7 @@
 #pragma link C++ class FatimaTimingAnalysisSummedGeGated+;
 #pragma link C++ class FatimaSinglesAnalysis+;
 #pragma link C++ class AidaGermaniumCorrelations+;
+#pragma link C++ class LYSOOnline+;
 //#pragma link C++ class FatimaAidaSpectra+;
 
 #pragma link C++ class BetaIonCorrelations+;
