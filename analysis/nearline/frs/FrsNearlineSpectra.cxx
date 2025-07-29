@@ -108,7 +108,6 @@ InitStatus FrsNearlineSpectra::Init()
 
     num_frs_gates = FrsGates.size();
 
-
     // :::: ID ::::
     dir_id = dir_frs->mkdir("ID");
     dir_id_s1s2 = dir_id->mkdir("S1S2");
@@ -271,6 +270,15 @@ InitStatus FrsNearlineSpectra::Init()
         dir_mhtdc_s2s4 = dir_mhtdc->mkdir("S2S4");
         dir_mhtdc_s2s4_1d = dir_mhtdc_s2s4->mkdir("1D");
         dir_mhtdc_s2s4_2d = dir_mhtdc_s2s4->mkdir("2D");
+
+        // ::: FRS MultiHit Map
+        dir_mhtdc->cd();
+        h2_multihit_map = new TH2I("h2_multihit_map", "MHit_s2s4 vs MHit_s1s2 ",
+                                10, 0, 10,   
+                                10, 0, 10);  
+        h2_multihit_map->GetXaxis()->SetTitle("# s1s2_mhtdc");
+        h2_multihit_map->GetYaxis()->SetTitle("# s2s4_mhtdc");
+        h2_multihit_map->SetOption("COLZ");
 
         // ------ 2D ------ 
         // S1S2
@@ -806,6 +814,9 @@ void FrsNearlineSpectra::Process_MHTDC()
     std::vector<Float_t> z43_mhtdc = multiHitItem.Get_ID_z43_mhtdc();
     std::vector<Float_t> dEdegoQ_mhtdc = multiHitItem.Get_ID_dEdegoQ_mhtdc();
     std::vector<Float_t> dEdeg_z41_mhtdc = multiHitItem.Get_ID_dEdeg_z41_mhtdc();
+
+    // ::: Hit Map Full for FRS
+    h2_multihit_map->Fill(AoQ_s1s2_mhtdc.size(), AoQ_s2s4_mhtdc.size());
     
     if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 ) return;
 

@@ -159,6 +159,8 @@ InitStatus LisaFrsCorrelations::Init()
     excluded = lisa_config->GetExcludedChannels();
 
     dir_corr = gDirectory->mkdir("Correlations");
+
+    dir_hits = dir_corr->mkdir("HitMap");
     dir_time = dir_corr->mkdir("Time");
 
     dir_position = dir_corr->mkdir("Position");
@@ -258,6 +260,7 @@ InitStatus LisaFrsCorrelations::Init()
             lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy,
             Form("E MWD(LISA %i) Corr sci41 [a.u.]", i+1), kViolet+10, kBlue+1);
     }
+
     //...........................................
     //c4LOG(info, "::::::::::::::::::end of sci histo");
     // :::   E N E R G Y  LISA vs MUSIC  C O R R E L A T I O N S   :::
@@ -1096,6 +1099,23 @@ InitStatus LisaFrsCorrelations::Init()
     //..........................
     //c4LOG(info, "::::::::::::::::::end of position ");
 
+    // :::: Hit map for FRS for event in correlations with LISA and for event not in correlations
+    dir_hits->cd();
+    h2_multihit_map_correlated = new TH2I("h2_multihit_map_correlated", "MHit_s2s4 vs MHit_s1s2 corr. with LISA",
+                               10, 0, 10,   
+                               10, 0, 10);  
+    h2_multihit_map_correlated->GetXaxis()->SetTitle("# s1s2_mhtdc");
+    h2_multihit_map_correlated->GetYaxis()->SetTitle("# s2s4_mhtdc");
+    h2_multihit_map_correlated->SetOption("COLZ");
+
+    h2_multihit_map_ref = new TH2I("h2_multihit_map_ref", "MHit_s2s4 vs MHit_s1s2 ==1",
+                               10, 0, 10,   
+                               10, 0, 10);  
+    h2_multihit_map_ref->GetXaxis()->SetTitle("# s1s2_mhtdc");
+    h2_multihit_map_ref->GetYaxis()->SetTitle("# s2s4_mhtdc");
+    h2_multihit_map_ref->SetOption("COLZ");
+
+
     mh_counter_passed_s1s2_seq = new int*[pair_count];
     mh_counter_passed_s2s4_seq = new int*[pair_count];
     for (int pair = 0; pair < pair_count; pair++)
@@ -1167,13 +1187,12 @@ InitStatus LisaFrsCorrelations::Init()
     dEdeg_z41_passed.resize(FrsGates.size());
     // now it should be a sized vector of vectors?
 
-    c4LOG(info, "::::::::::::::::::end of init");
+    //c4LOG(info, "::::::::::::::::::end of init");
     return kSUCCESS;
-    c4LOG(info, "::::::::::::::::::0");
+    //c4LOG(info, "::::::::::::::::::0");
     
 
 }
-
 
 
 void LisaFrsCorrelations::Exec(Option_t* option)
@@ -1214,7 +1233,10 @@ void LisaFrsCorrelations::Exec(Option_t* option)
 
     //c4LOG(info, "::::::::::::::::::3");
 
-    if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 ) return;   // this is a quick fix to avoid getting any event with multihits (just pick 1)
+    // ::: MultiHit Map correlated
+    h2_multihit_map_correlated->Fill(AoQ_s1s2_mhtdc.size(), AoQ_s2s4_mhtdc.size());
+
+    if (AoQ_s1s2_mhtdc.size() != 1 || AoQ_s2s4_mhtdc.size() != 1) return;   // this is a quick fix to avoid getting any event with multihits (just pick 1)
     ncorr++;
     
     //c4LOG(info, "::::::::::::::::::getting data");
@@ -1682,6 +1704,10 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         }
     } 
     //............................
+
+    // ::: Hit map
+    h2_multihit_map_ref->Fill(AoQ_s1s2_mhtdc.size(), AoQ_s2s4_mhtdc.size());
+
 
 
     fNEvents++;
