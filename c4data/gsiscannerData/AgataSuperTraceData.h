@@ -3,6 +3,9 @@
 
 #include "TObject.h"
 
+
+#define TRACE_LENGTH 500
+
 class AgataSuperTraceData : public TObject
 {
     public:
@@ -26,10 +29,11 @@ class AgataSuperTraceData : public TObject
         inline const double Get_segment_trigger_time(char segment_sector, int segment_layer) const { return fsegment_trigger_time[Get_segment_id(segment_sector,segment_layer)]; }
         
         inline const double* Get_supertrace() const { return supertrace; }
+        inline const double Get_supertrace_index(int idx) const { return supertrace[idx]; }
 
         inline const double* Get_supertrace_range_ptr(char segment_sector, int segment_layer) const {
             
-            size_t start = (Get_segment_id(segment_sector,segment_layer)+1)*500;
+            size_t start = (Get_segment_id(segment_sector,segment_layer)+1)*TRACE_LENGTH;
 
             return supertrace + start;
         }
@@ -75,7 +79,7 @@ class AgataSuperTraceData : public TObject
         }
 
         void Set_supertrace(const double* trace) {
-            for (size_t i = 0; i < 18500; ++i)
+            for (size_t i = 0; i < 37*TRACE_LENGTH; ++i)
                 supertrace[i] = trace[i];
         }
 
@@ -94,7 +98,7 @@ class AgataSuperTraceData : public TObject
         double fsegment_trigger_time[36];
         double fsegment_energy[36];
 
-        double supertrace[18500]; //core first
+        double supertrace[37*TRACE_LENGTH]; //core first
         
         //whiterabbit
         uint32_t fwr_subsystem_id;

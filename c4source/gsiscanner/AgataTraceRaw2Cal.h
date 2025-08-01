@@ -3,6 +3,7 @@
 
 #include "FairTask.h"
 #include "TAgataConfiguration.h"
+#include "AgataSuperTraceData.h"
 
 class TClonesArray;
 class EventHeader;
@@ -28,6 +29,8 @@ class AgataTraceRaw2Cal : public FairTask
 
         virtual InitStatus Init();
 
+        void SetEnergyGate(double energy, double tol){energy_gate = energy; energy_gate_width = tol;}
+
     private:
         Bool_t fOnline;
 
@@ -38,6 +41,13 @@ class AgataTraceRaw2Cal : public FairTask
 
         GermaniumFebexTraceData* funcal_hit;
         AgataSuperTraceData* fcal_hit;
+
+        int trace_length = TRACE_LENGTH;
+        int supertrace_length = trace_length*37;
+
+        double energy_gate = 0;
+        double energy_gate_width = 0;
+
 
 
         EventHeader * header;

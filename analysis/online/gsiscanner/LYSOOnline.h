@@ -55,7 +55,7 @@ class LYSOOnline : public FairTask
         
         int funcal_nbins = 2000;
         int funcal_bin_low = 0;
-        int funcal_bin_high = 2000;
+        int funcal_bin_high = 20000;
 
         EventHeader* header;
         Int_t fNEvents;

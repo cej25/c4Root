@@ -4,8 +4,7 @@
 #include "../../common/gsi_febex4.spec"
 #include "../../common/general.spec"
 #include "../../common/vme_caen_v7x5.spec"
-
-#define TRACE_LENGTH 3000
+#include "../../common/vme_caen_v1751_traces.spec"
 
 
 
@@ -21,17 +20,8 @@ TRAIL()
 
 
 SUBEVENT(vme_subev_qdc){
-
-    select several
-    {
-    data[0] = VME_CAEN_V792(geom=6);
-    data[1] = VME_CAEN_V792(geom=8);
-    }
-    select optional{
-        trail = TRAIL();
-
-    }
-
+    qdc = VME_CAEN_V792(geom=6);
+    v1751 = VME_CAEN_V1751_TRACES(geom=6);
 }
 
 SUBEVENT(febex_subev_traces)
@@ -64,7 +54,7 @@ SUBEVENT(febex_subev_traces)
 
 EVENT
 {
-  qdc = vme_subev_qdc(procid=20);
-  agata = febex_subev_traces(procid = 60);
-  ignore_unknown_subevent;
+  vme = vme_subev_qdc(procid=70);
+  //agata = febex_subev_traces(procid = 60);
+  //ignore_unknown_subevent;
 }

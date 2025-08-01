@@ -88,6 +88,7 @@
 // scanner:
 #pragma link C++ class QDCData+;
 #pragma link C++ class LYSOCalData+;
+#pragma link C++ class v1751TraceData+;
 #pragma link C++ class AgataSuperTraceData+;
 
 // HISPEC10 MCP

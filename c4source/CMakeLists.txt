@@ -97,6 +97,7 @@ set(SRCS
 ./gsiscanner/LYSORaw2Cal.cxx
 ./gsiscanner/AgataTraceReader.cxx
 ./gsiscanner/AgataTraceRaw2Cal.cxx
+./gsiscanner/v1751TraceReader.cxx
 ./test/TestReader.cxx
 )
 
@@ -119,6 +120,7 @@ Set(STRUCT_HEADERS
 ./stefan/ext_h101_stefan.h
 ./gsiscanner/ext_h101_agata.h
 ./gsiscanner/ext_h101_qdc.h
+./gsiscanner/ext_h101_vme.h
 ./test/ext_h101_test.h
 )
 

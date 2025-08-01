@@ -89,6 +89,7 @@ gsiscannerData/LYSOCalData.cxx
 gsiscannerData/TLYSOConfiguration.cxx
 gsiscannerData/TAgataConfiguration.cxx
 gsiscannerData/AgataSuperTraceData.cxx
+gsiscannerData/v1751TraceData.cxx
 )
 
 # fill list of header files from list of source files by exchanging the file extension

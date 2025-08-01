@@ -37,7 +37,8 @@ EXPS=template \
 	hispec10 \
 	onlyBGO \
 	febex  \
-	gsiscanner
+	gsiscanner \
+	gsiscannerv1751
 ALL_EXPS = $(EXPS)
 
 #########################################################

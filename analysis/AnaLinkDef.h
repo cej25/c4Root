@@ -18,6 +18,7 @@
 #pragma link C++ class GermaniumResolution+;
 #pragma link C++ class BGOOnlineSpectra+;
 #pragma link C++ class TraceVisualizer+;
+#pragma link C++ class TraceVisualizerv1751+;
 #pragma link C++ class bPlastOnlineSpectra+;
 #pragma link C++ class BeamMonitorOnlineSpectra+;
 #pragma link C++ class LisaOnlineSpectra+;

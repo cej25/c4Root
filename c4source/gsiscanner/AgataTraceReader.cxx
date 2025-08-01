@@ -21,6 +21,7 @@
 // c4
 #include "GermaniumFebexData.h"
 #include "AgataTraceReader.h"
+#include "AgataSuperTraceData.h"
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
@@ -186,6 +187,7 @@ Bool_t AgataTraceReader::Read()
 
             for (int l = 0 ; l < fData->agata_data[it_board_number].trace_traces[channel_id_trace]._ ; l++)
             {
+                if (l>=TRACE_LENGTH) break;
                 entry->Set_trace_value(fData->agata_data[it_board_number].trace_traces[channel_id_trace].v[l],l);
             }
             //c4LOG(info,Form("board = %i, ch = %i", it_board_number, channel_id_trace));

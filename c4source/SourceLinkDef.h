@@ -52,6 +52,7 @@
 #pragma link C++ class AgataTraceRaw2Cal+;
 #pragma link C++ class QDCReader+;
 #pragma link C++ class LYSORaw2Cal+;
+#pragma link C++ class v1751TraceReader+;
 
 #pragma link C++ class EXT_STR_h101_unpack_t;
 #pragma link C++ class EXT_STR_h101_frs_onion_t;
@@ -71,6 +72,7 @@
 #pragma link C++ class EXT_STR_h101_fimp_onion_t;
 #pragma link C++ class EXT_STR_h101_mcp_onion_t;
 #pragma link C++ class EXT_STR_h101_stefan_onion_t;
+#pragma link C++ class EXT_STR_h101_vme_onion_t;
 
 
 #pragma link C++ class TestReader+;

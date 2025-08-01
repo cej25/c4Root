@@ -154,16 +154,19 @@ void LYSORaw2Cal::Exec(Option_t* option)
             
             for (int i = 1; i<=16; i++){
                 sum_energy_x += event->Get_energy_x(i);
-                weighted_energy_x += ((double)i/16)*event->Get_energy_x(i);
+                weighted_energy_x += ((double)i-1)*event->Get_energy_x(i);
                 sum_energy_y += event->Get_energy_y(i);
-                weighted_energy_y += ((double)i/16)*event->Get_energy_y(i);
+                weighted_energy_y += ((double)i-1)*event->Get_energy_y(i);
             }
 
             double posx = weighted_energy_x/sum_energy_x;
             double posy = weighted_energy_y/sum_energy_y;
+                       
+            // 0,15 -> - 28.125 mm, + 28.125
+            
 
-            event->Set_posx(posx);
-            event->Set_posy(posy);
+            event->Set_posx(posx*2*28.125/15 - 28.125); //mm
+            event->Set_posy(posy*2*28.125/15 - 28.125); //mm
 
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) LYSOCalData(*event);  
         }

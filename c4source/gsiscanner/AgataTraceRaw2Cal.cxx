@@ -103,7 +103,7 @@ void AgataTraceRaw2Cal::Exec(Option_t* option)
         double seg_times[36];
         int segid = -1;
 
-        double supertrace[18500];
+        double supertrace[supertrace_length];
 
         int normsamples = 50;
         double normalization[36];
@@ -111,7 +111,7 @@ void AgataTraceRaw2Cal::Exec(Option_t* option)
 
         for (int i=0; i<36; i++) seg_energies[i] = 0;
         for (int i=0; i<36; i++) seg_times[i] = 0;
-        for (int i=0; i<18500; i++) supertrace[i] = 0;
+        for (int i=0; i<supertrace_length; i++) supertrace[i] = 0;
 
 
         Int_t event_multiplicity = funcal_data->GetEntriesFast();
@@ -153,7 +153,7 @@ void AgataTraceRaw2Cal::Exec(Option_t* option)
                 for (int i = 0; i<nsamples; i++) baseline_corr += funcal_hit->Get_trace_value(i);
                 baseline_corr/=nsamples;
 
-                for (int i = 0; i<500; i++) supertrace[i] = funcal_hit->Get_trace_value(i) - baseline_corr;
+                for (int i = 0; i<trace_length; i++) supertrace[i] = funcal_hit->Get_trace_value(i) - baseline_corr;
 
             }else{
                 segid = ((int)sector-65)*6 + layer - 1;
@@ -171,13 +171,14 @@ void AgataTraceRaw2Cal::Exec(Option_t* option)
                 baseline_corr/=nsamples;
 
                 int max_amp_i = 0;
-                for (int i = 0; i<500; i++) {
-                    supertrace[i + 500*(segid+1)] = funcal_hit->Get_trace_value(i) - baseline_corr; 
+                for (int i = 0; i<trace_length; i++) {
+                    supertrace[i + trace_length*(segid+1)] = funcal_hit->Get_trace_value(i) - baseline_corr; 
 
-                    if (supertrace[i + 500*(segid+1)] > supertrace[max_amp_i + 500*(segid+1)]) max_amp_i = i;
+                    if (supertrace[i + trace_length*(segid+1)] > supertrace[max_amp_i + trace_length*(segid+1)]) max_amp_i = i;
                 }
 
-                for (int i = max_amp_i; i<max_amp_i+normsamples; i++) normalization[segid] += supertrace[i + 500*(segid+1)];
+                int end_i = std::min(trace_length, max_amp_i + normsamples);
+                for (int i = max_amp_i; i<end_i; i++) normalization[segid] += supertrace[i + trace_length*(segid+1)];
                 normalization[segid]/=normsamples;
             }
         }
@@ -188,20 +189,36 @@ void AgataTraceRaw2Cal::Exec(Option_t* option)
 
         //normalization:
         double max_segment = 0;
+        int id_max_segment = 0;
         for (int i = 0;i<36;i++){
-            if (normalization[i] > max_segment) max_segment = normalization[i];
+            if (normalization[i] > max_segment) {
+                max_segment = normalization[i];
+                id_max_segment = i;
+            }
         }
-
-        for (int i = 0; i<18500;i++) supertrace[i] = supertrace[i]*1000/max_segment;
+        
+        for (int i = 0; i<supertrace_length;i++) supertrace[i] = supertrace[i]*1000/max_segment;
 
 
         event->Set_supertrace(supertrace);
         //time alignment:
+
+        bool set_write = true;
+        if (energy_gate != 0){
+            double energy1 = event->Get_core_energy();
+            double energy2 = seg_energies[id_max_segment];
+
+            double energysum = 0;
+            for (int i=0;i<36;i++) energysum += seg_energies[i];
+
+            if (TMath::Abs(energy1 - energy_gate) < energy_gate_width && TMath::Abs(energy2 - energy_gate) < energy_gate_width) set_write = true;
+            else set_write = false;
+        }
         
-        
-        new ((*fcal_data)[fcal_data->GetEntriesFast()]) AgataSuperTraceData(*event);  
+        if (set_write) new ((*fcal_data)[fcal_data->GetEntriesFast()]) AgataSuperTraceData(*event);  
     }
 }
+
 
 /*
 Very important function - all TClonesArray must be cleared after each event.

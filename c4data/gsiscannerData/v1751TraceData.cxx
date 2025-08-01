@@ -13,25 +13,40 @@
  *                             J.E.L. Larsson                                 *
  *                                06.05.25                                    *
  ******************************************************************************/
-#include "AgataSuperTraceData.h"
 
-AgataSuperTraceData::AgataSuperTraceData()
-    : nfired_segments(0),
-      fevent_trigger_time(0),
-      fhit_pattern(0),
-      fcore_trigger_time(0),
-      fcore_energy(0),
+#include "v1751TraceData.h"
+
+v1751TraceData::v1751TraceData()
+    : 
+      fnum_channels_fired(0),
+      fboard_id(0),
+      fchannel_id(0),
       fwr_subsystem_id(0),
       fwr_t(0)
 {
-    for (int i = 0; i < 36; ++i) {
-        fsegment_energy[i] = 0;
-        fsegment_trigger_time[i] = 0;
-    }
-
-    for (int i = 0; i < TRACE_LENGTH*37; ++i) {
-        supertrace[i] = 0;
+    flength = 0;
+    for (int i = 0; i<VMEV1751_TRACE_SIZE; i++){
+        trace[i] = 0;
     }
 }
 
-ClassImp(AgataSuperTraceData)
+v1751TraceData::v1751TraceData(
+        uint32_t num_channels_fired,
+        uint8_t board_id,
+        uint8_t channel_id,
+        uint16_t wr_subsystem_id,
+        uint64_t wr_t)
+    : 
+    fnum_channels_fired(num_channels_fired),
+    fboard_id(board_id),
+    fchannel_id(channel_id),
+    fwr_subsystem_id(wr_subsystem_id),
+    fwr_t(wr_t)
+{
+    flength = 0;
+    for (int i = 0; i<VMEV1751_TRACE_SIZE; i++){
+        trace[i] = 0;
+    }
+}
+
+ClassImp(v1751TraceData)

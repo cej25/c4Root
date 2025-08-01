@@ -72,6 +72,7 @@ set(SRCS
 ./online/mcp/H10MCPOnlineSpectra.cxx
 ./online/stefan/StefanOnlineSpectra.cxx
 ./online/gsiscanner/TraceVisualizer.cxx
+./online/gsiscanner/TraceVisualizerv1751.cxx
 ./online/gsiscanner/LYSOOnline.cxx
 
 # nearline/offline

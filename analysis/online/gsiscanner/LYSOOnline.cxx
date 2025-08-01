@@ -126,7 +126,7 @@ InitStatus LYSOOnline::Init()
     dir_lyso->cd();
     c_pos = new TCanvas("c_pos","LYSO position");
     c_pos->cd();
-    h2_pos = new TH2F("h2_pos","LYSO position",500,-2,2,500,-2,2);
+    h2_pos = new TH2F("h2_pos","LYSO position",500,-30,30,500,-30,30);
     h2_pos->Draw("COLZ");
     dir_lyso->Append(c_pos);
     dir_lyso->Append(h2_pos);
