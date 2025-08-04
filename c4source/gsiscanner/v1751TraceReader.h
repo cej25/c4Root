@@ -48,6 +48,7 @@ class v1751TraceReader : public c4Reader
         Bool_t fOnline;
 
         TClonesArray* fArray;
+        TClonesArray* fArrayqdc;
 
 
         const int NBoards = 4; //change

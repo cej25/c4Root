@@ -21,6 +21,7 @@
 // c4
 #include "v1751TraceReader.h"
 #include "v1751TraceData.h"
+#include "QDCData.h"
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
@@ -39,11 +40,13 @@ v1751TraceReader::v1751TraceReader(EXT_STR_h101_vme_onion* data, size_t offset)
     , fOffset(offset)
     , fOnline(kFALSE)
     , fArray(new TClonesArray("v1751TraceData"))
+    , fArrayqdc(new TClonesArray("QDCData"))
 {
 }
 
 v1751TraceReader::~v1751TraceReader() { 
     delete fArray;
+    delete fArrayqdc;
 
 }
 
@@ -63,6 +66,11 @@ Bool_t v1751TraceReader::Init(ext_data_struct_info* a_struct_info)
     FairRootManager::Instance()->Register("v1751TraceData", "Germanium Febex Data", fArray, !fOnline);
     fArray->Clear();
 
+
+    // Register output array in a tree
+    FairRootManager::Instance()->Register("QDCData", "QDC V792 Data", fArrayqdc, !fOnline);
+    fArrayqdc->Clear();
+
     memset(fData, 0, sizeof *fData);
 
     return kTRUE;
@@ -74,6 +82,20 @@ Bool_t v1751TraceReader::Read()
     c4LOG(debug1, "Event Data");
 
     if(!fData) return kTRUE;
+
+    uint32_t num_channels_fired = fData->vme_qdc_n;
+    for (int ihit = 0; ihit < num_channels_fired; ihit++){
+        int channel = (int)fData->vme_qdc_nI[ihit];
+        int16_t charge = (int16_t)fData->vme_qdc_data[ihit];
+
+        new ((*fArrayqdc)[fArrayqdc->GetEntriesFast()]) QDCData(
+        0,
+        channel,
+        charge,
+        0, //wr here if added in the future
+        0
+        );
+    }
 
     uint32_t board_id = fData->vme_v1751_board_id;
     
@@ -114,7 +136,6 @@ Bool_t v1751TraceReader::Read()
 
     for (int ich = 0; ich<8; ich++){
         if (*vme_v1751_channels[ich] == 0) continue; // not fired, skip.
-        //c4LOG(info,ich);
         v1751TraceData * event = new v1751TraceData(nfired_ch,board_id,ich,0,0);
         event->Set_length(*vme_v1751_sample_trace[ich]);
         for (int it = 0; it<*vme_v1751_sample_trace[ich];it++){
@@ -134,6 +155,7 @@ void v1751TraceReader::Reset()
 {
     // reset output array
     fArray->Clear();
+    fArrayqdc->Clear();
 }
 
 

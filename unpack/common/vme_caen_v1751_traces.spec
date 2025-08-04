@@ -73,14 +73,14 @@ VME_CAEN_V1751_TRACES(geom)
         UINT32 channel_size NOENCODE
         {
             0_21: channel_agg_size;
-            28_31: format;
+            28_31: format = MATCH(0x4);
         };
 
         UINT32 num_samples NOENCODE
         {
             0_15: num_samples;
             16_31: garbage;
-            ENCODE(nsamples_trace[board_details.channels_0], (value=num_samples));
+            ENCODE(nsamples_trace[0], (value=num_samples));
         };
         
         UINT32 format NOENCODE
@@ -90,7 +90,7 @@ VME_CAEN_V1751_TRACES(geom)
         UINT32 trigger_tag_agg NOENCODE
         {
             0_31: triggertime;
-            ENCODE(trigger_time[board_details.channels_0], (value=triggertime));
+            ENCODE(trigger_time[0], (value=triggertime));
         };
 
         list (0 <= index < num_samples.num_samples*4)
@@ -102,9 +102,9 @@ VME_CAEN_V1751_TRACES(geom)
                 20_29: sample_three;
                 30_31: nwords;
 
-                ENCODE(sample_trace[board_details.channels_0][index*3], (value=sample_one));
-                ENCODE(sample_trace[board_details.channels_0][index*3+1], (value=sample_two));
-                ENCODE(sample_trace[board_details.channels_0][index*3+2], (value=sample_three));
+                ENCODE(sample_trace[0][index*3], (value=sample_one));
+                ENCODE(sample_trace[0][index*3+1], (value=sample_two));
+                ENCODE(sample_trace[0][index*3+2], (value=sample_three));
             };
         }
         
@@ -122,14 +122,14 @@ VME_CAEN_V1751_TRACES(geom)
         UINT32 channel_size NOENCODE
         {
             0_21: channel_agg_size;
-            28_31: format;
+            28_31: format = MATCH(0x4);
         };
 
         UINT32 num_samples NOENCODE
         {
             0_15: num_samples;
             16_31: garbage;
-            ENCODE(nsamples_trace[board_details.channels_1], (value=num_samples));
+            ENCODE(nsamples_trace[1], (value=num_samples));
         };
         
         UINT32 format NOENCODE
@@ -139,7 +139,7 @@ VME_CAEN_V1751_TRACES(geom)
         UINT32 trigger_tag_agg NOENCODE
         {
             0_31: triggertime;
-            ENCODE(trigger_time[board_details.channels_1], (value=triggertime));
+            ENCODE(trigger_time[1], (value=triggertime));
         };
 
         list (0 <= index < num_samples.num_samples*4)
@@ -151,9 +151,9 @@ VME_CAEN_V1751_TRACES(geom)
                 20_29: sample_three;
                 30_31: nwords;
 
-                ENCODE(sample_trace[board_details.channels_1][index*3], (value=sample_one));
-                ENCODE(sample_trace[board_details.channels_1][index*3+1], (value=sample_two));
-                ENCODE(sample_trace[board_details.channels_1][index*3+2], (value=sample_three));
+                ENCODE(sample_trace[1][index*3], (value=sample_one));
+                ENCODE(sample_trace[1][index*3+1], (value=sample_two));
+                ENCODE(sample_trace[1][index*3+2], (value=sample_three));
             };
         }
         
@@ -171,14 +171,14 @@ VME_CAEN_V1751_TRACES(geom)
         UINT32 channel_size NOENCODE
         {
             0_21: channel_agg_size;
-            28_31: format;
+            28_31: format = MATCH(0x4);
         };
 
         UINT32 num_samples NOENCODE
         {
             0_15: num_samples;
             16_31: garbage;
-            ENCODE(nsamples_trace[board_details.channels_2], (value=num_samples));
+            ENCODE(nsamples_trace[2], (value=num_samples));
         };
         
         UINT32 format NOENCODE
@@ -188,7 +188,7 @@ VME_CAEN_V1751_TRACES(geom)
         UINT32 trigger_tag_agg NOENCODE
         {
             0_31: triggertime;
-            ENCODE(trigger_time[board_details.channels_2], (value=triggertime));
+            ENCODE(trigger_time[2], (value=triggertime));
         };
 
         list (0 <= index < num_samples.num_samples*4)
@@ -200,9 +200,9 @@ VME_CAEN_V1751_TRACES(geom)
                 20_29: sample_three;
                 30_31: nwords;
 
-                ENCODE(sample_trace[board_details.channels_2][index*3], (value=sample_one));
-                ENCODE(sample_trace[board_details.channels_2][index*3+1], (value=sample_two));
-                ENCODE(sample_trace[board_details.channels_2][index*3+2], (value=sample_three));
+                ENCODE(sample_trace[2][index*3], (value=sample_one));
+                ENCODE(sample_trace[2][index*3+1], (value=sample_two));
+                ENCODE(sample_trace[2][index*3+2], (value=sample_three));
             };
         }
         
@@ -220,14 +220,14 @@ VME_CAEN_V1751_TRACES(geom)
         UINT32 channel_size NOENCODE
         {
             0_21: channel_agg_size;
-            28_31: format;
+            28_31: format = MATCH(0x4);
         };
 
         UINT32 num_samples NOENCODE
         {
             0_15: num_samples;
             16_31: garbage;
-            ENCODE(nsamples_trace[board_details.channels_3], (value=num_samples));
+            ENCODE(nsamples_trace[3], (value=num_samples));
         };
         
         UINT32 format NOENCODE
@@ -237,7 +237,7 @@ VME_CAEN_V1751_TRACES(geom)
         UINT32 trigger_tag_agg NOENCODE
         {
             0_31: triggertime;
-            ENCODE(trigger_time[board_details.channels_3], (value=triggertime));
+            ENCODE(trigger_time[3], (value=triggertime));
         };
 
         list (0 <= index < num_samples.num_samples*4)
@@ -249,9 +249,9 @@ VME_CAEN_V1751_TRACES(geom)
                 20_29: sample_three;
                 30_31: nwords;
 
-                ENCODE(sample_trace[board_details.channels_3][index*3], (value=sample_one));
-                ENCODE(sample_trace[board_details.channels_3][index*3+1], (value=sample_two));
-                ENCODE(sample_trace[board_details.channels_3][index*3+2], (value=sample_three));
+                ENCODE(sample_trace[3][index*3], (value=sample_one));
+                ENCODE(sample_trace[3][index*3+1], (value=sample_two));
+                ENCODE(sample_trace[3][index*3+2], (value=sample_three));
             };
         }
         
@@ -269,14 +269,14 @@ VME_CAEN_V1751_TRACES(geom)
         UINT32 channel_size NOENCODE
         {
             0_21: channel_agg_size;
-            28_31: format;
+            28_31: format = MATCH(0x4);
         };
 
         UINT32 num_samples NOENCODE
         {
             0_15: num_samples;
             16_31: garbage;
-            ENCODE(nsamples_trace[board_details.channels_4], (value=num_samples));
+            ENCODE(nsamples_trace[4], (value=num_samples));
         };
         
         UINT32 format NOENCODE
@@ -286,7 +286,7 @@ VME_CAEN_V1751_TRACES(geom)
         UINT32 trigger_tag_agg NOENCODE
         {
             0_31: triggertime;
-            ENCODE(trigger_time[board_details.channels_4], (value=triggertime));
+            ENCODE(trigger_time[4], (value=triggertime));
         };
 
         list (0 <= index < num_samples.num_samples*4)
@@ -298,9 +298,9 @@ VME_CAEN_V1751_TRACES(geom)
                 20_29: sample_three;
                 30_31: nwords;
 
-                ENCODE(sample_trace[board_details.channels_4][index*3], (value=sample_one));
-                ENCODE(sample_trace[board_details.channels_4][index*3+1], (value=sample_two));
-                ENCODE(sample_trace[board_details.channels_4][index*3+2], (value=sample_three));
+                ENCODE(sample_trace[4][index*3], (value=sample_one));
+                ENCODE(sample_trace[4][index*3+1], (value=sample_two));
+                ENCODE(sample_trace[4][index*3+2], (value=sample_three));
             };
         }
         
@@ -318,14 +318,14 @@ VME_CAEN_V1751_TRACES(geom)
         UINT32 channel_size NOENCODE
         {
             0_21: channel_agg_size;
-            28_31: format;
+            28_31: format = MATCH(0x4);
         };
 
         UINT32 num_samples NOENCODE
         {
             0_15: num_samples;
             16_31: garbage;
-            ENCODE(nsamples_trace[board_details.channels_5], (value=num_samples));
+            ENCODE(nsamples_trace[5], (value=num_samples));
         };
         
         UINT32 format NOENCODE
@@ -335,7 +335,7 @@ VME_CAEN_V1751_TRACES(geom)
         UINT32 trigger_tag_agg NOENCODE
         {
             0_31: triggertime;
-            ENCODE(trigger_time[board_details.channels_5], (value=triggertime));
+            ENCODE(trigger_time[5], (value=triggertime));
         };
 
         list (0 <= index < num_samples.num_samples*4)
@@ -347,9 +347,9 @@ VME_CAEN_V1751_TRACES(geom)
                 20_29: sample_three;
                 30_31: nwords;
 
-                ENCODE(sample_trace[board_details.channels_5][index*3], (value=sample_one));
-                ENCODE(sample_trace[board_details.channels_5][index*3+1], (value=sample_two));
-                ENCODE(sample_trace[board_details.channels_5][index*3+2], (value=sample_three));
+                ENCODE(sample_trace[5][index*3], (value=sample_one));
+                ENCODE(sample_trace[5][index*3+1], (value=sample_two));
+                ENCODE(sample_trace[5][index*3+2], (value=sample_three));
             };
         }
         
@@ -367,14 +367,14 @@ VME_CAEN_V1751_TRACES(geom)
         UINT32 channel_size NOENCODE
         {
             0_21: channel_agg_size;
-            28_31: format;
+            28_31: format = MATCH(0x4);
         };
 
         UINT32 num_samples NOENCODE
         {
             0_15: num_samples;
             16_31: garbage;
-            ENCODE(nsamples_trace[board_details.channels_6], (value=num_samples));
+            ENCODE(nsamples_trace[6], (value=num_samples));
         };
         
         UINT32 format NOENCODE
@@ -384,7 +384,7 @@ VME_CAEN_V1751_TRACES(geom)
         UINT32 trigger_tag_agg NOENCODE
         {
             0_31: triggertime;
-            ENCODE(trigger_time[board_details.channels_6], (value=triggertime));
+            ENCODE(trigger_time[6], (value=triggertime));
         };
 
         list (0 <= index < num_samples.num_samples*4)
@@ -396,9 +396,9 @@ VME_CAEN_V1751_TRACES(geom)
                 20_29: sample_three;
                 30_31: nwords;
 
-                ENCODE(sample_trace[board_details.channels_6][index*3], (value=sample_one));
-                ENCODE(sample_trace[board_details.channels_6][index*3+1], (value=sample_two));
-                ENCODE(sample_trace[board_details.channels_6][index*3+2], (value=sample_three));
+                ENCODE(sample_trace[6][index*3], (value=sample_one));
+                ENCODE(sample_trace[6][index*3+1], (value=sample_two));
+                ENCODE(sample_trace[6][index*3+2], (value=sample_three));
             };
         }
         
@@ -416,14 +416,14 @@ VME_CAEN_V1751_TRACES(geom)
         UINT32 channel_size NOENCODE
         {
             0_21: channel_agg_size;
-            28_31: format;
+            28_31: format = MATCH(0x4);
         };
 
         UINT32 num_samples NOENCODE
         {
             0_15: num_samples;
             16_31: garbage;
-            ENCODE(nsamples_trace[board_details.channels_7], (value=num_samples));
+            ENCODE(nsamples_trace[7], (value=num_samples));
         };
         
         UINT32 format NOENCODE
@@ -433,7 +433,7 @@ VME_CAEN_V1751_TRACES(geom)
         UINT32 trigger_tag_agg NOENCODE
         {
             0_31: triggertime;
-            ENCODE(trigger_time[board_details.channels_7], (value=triggertime));
+            ENCODE(trigger_time[7], (value=triggertime));
         };
 
         list (0 <= index < num_samples.num_samples*4)
@@ -445,9 +445,9 @@ VME_CAEN_V1751_TRACES(geom)
                 20_29: sample_three;
                 30_31: nwords;
 
-                ENCODE(sample_trace[board_details.channels_7][index*3], (value=sample_one));
-                ENCODE(sample_trace[board_details.channels_7][index*3+1], (value=sample_two));
-                ENCODE(sample_trace[board_details.channels_7][index*3+2], (value=sample_three));
+                ENCODE(sample_trace[7][index*3], (value=sample_one));
+                ENCODE(sample_trace[7][index*3+1], (value=sample_two));
+                ENCODE(sample_trace[7][index*3+2], (value=sample_three));
             };
         }
         
