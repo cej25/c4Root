@@ -86,12 +86,12 @@ InitStatus AgataTraceRaw2Cal::Init()
 double AgataTraceRaw2Cal::LinearInterp(double frac, double val1, double val2){
     // linear polynomial between (0, val1) and (1,val2) -> y = val2/val1 * x 
     // returns the value at x = frac
-    return val2/val1*frac;
+    return (val2-val1)*frac;
 }
 double AgataTraceRaw2Cal::GetFrac(double val1, double val2, double threshold){
     // linear polynomial between (0, val1) and (1,val2) -> y = val2/val1 * x 
     // returns the value x when y(x) = threshold
-    return val1/val2*threshold;
+    return threshold/(val2-val1);
 }
 
 /*
@@ -203,8 +203,8 @@ void AgataTraceRaw2Cal::Exec(Option_t* option)
         double max_segment = 0;
         int id_max_segment = 0;
         for (int i = 0;i<36;i++){
-            if (normalization[i] > max_segment) {
-                max_segment = normalization[i];
+            if (seg_energies[i] > max_segment) {
+                max_segment = seg_energies[i];
                 id_max_segment = i;
             }
         }
@@ -214,24 +214,26 @@ void AgataTraceRaw2Cal::Exec(Option_t* option)
 
         int index_time_cross = 0;
         double time_shift_frac = 0;
-        double threshold = 200;
+        double threshold = 300;
 
         for (int i = supertrace_length/37*(id_max_segment+1); i<(supertrace_length/37)*(id_max_segment+2); i++){
             if (supertrace[i] > threshold){
                 time_shift_frac = GetFrac(supertrace[i-1],supertrace[i],threshold);
-                index_time_cross = i-1;
+                index_time_cross = i-1 - supertrace_length/37*(id_max_segment+1);
+                break;
             }
         }
 
         //index_time_cross should be at t = 60?
-        int centerat = 60;
+        c4LOG(info,time_shift_frac);
+        int centerat = 80;
         for (int iseg = 1; iseg <= 36; iseg++){
 
         for (int itrace = supertrace_length/37*iseg; itrace<supertrace_length/37*(iseg+1);itrace++) {
-            if ( itrace + (index_time_cross - centerat) - 1 < supertrace_length/37*iseg ) supertrace_shifted[itrace] = -1000;
-            if ( itrace + (index_time_cross - centerat) - 1 > supertrace_length/37*(iseg+1) ) supertrace_shifted[itrace] = -1000;
+            if ( itrace + (index_time_cross - centerat) < supertrace_length/37*iseg ) {supertrace_shifted[itrace] = -1000; continue;}
+            if ( itrace + (index_time_cross - centerat) >= supertrace_length/37*(iseg+1) ) {supertrace_shifted[itrace] = -1000; continue;}
 
-            supertrace_shifted[itrace] = supertrace[itrace + (index_time_cross - centerat)] + 0*LinearInterp(time_shift_frac,supertrace[itrace - (index_time_cross - centerat) - 1], supertrace[itrace - (index_time_cross - centerat)]);
+            supertrace_shifted[itrace] = supertrace[itrace + (index_time_cross - centerat)] + LinearInterp(time_shift_frac, supertrace[itrace + (index_time_cross - centerat)], supertrace[itrace + (index_time_cross - centerat)]+1);
         }
         }
 
@@ -247,7 +249,7 @@ void AgataTraceRaw2Cal::Exec(Option_t* option)
             double energysum = 0;
             for (int i=0;i<36;i++) energysum += seg_energies[i];
 
-            if (TMath::Abs(energy2 - energy_gate) < energy_gate_width) set_write = true;
+            if (TMath::Abs(energy2 - energy_gate) < energy_gate_width && TMath::Abs(energysum-energy_gate) < energy_gate_width) set_write = true;
             else set_write = false;
         }
         
