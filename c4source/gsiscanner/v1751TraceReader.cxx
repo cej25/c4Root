@@ -136,7 +136,7 @@ Bool_t v1751TraceReader::Read()
 
     for (int ich = 0; ich<8; ich++){
         if (*vme_v1751_channels[ich] == 0) continue; // not fired, skip.
-        v1751TraceData * event = new v1751TraceData(nfired_ch,board_id,ich,0,0);
+        v1751TraceData * event = new v1751TraceData(nfired_ch,board_id,ich,*vme_v1751_trigger_time[ich],0,0);
         event->Set_length(*vme_v1751_sample_trace[ich]);
         for (int it = 0; it<*vme_v1751_sample_trace[ich];it++){
             event->Set_trace_val((uint16_t)((*vme_v1751_sample_traceV[ich])[it]), it);

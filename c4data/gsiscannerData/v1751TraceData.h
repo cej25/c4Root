@@ -15,6 +15,7 @@ class v1751TraceData : public TObject
                         uint32_t num_channels_fired,
                         uint8_t board_id,
                         uint8_t channel_id,
+                        uint32_t channel_time_tag,
                         uint16_t wr_subsystem_id,
                         uint64_t wr_t
                         );
@@ -25,6 +26,7 @@ class v1751TraceData : public TObject
         // Getters
         inline const uint32_t Get_num_channels_fired() const { return fnum_channels_fired; }
         inline const uint8_t Get_board_id() const { return fboard_id; }
+        inline const uint32_t Get_channel_time_tag() const { return fchannel_time_tag; }
         inline const uint8_t Get_channel_id() const { return fchannel_id; }
 
         inline const uint16_t Get_trace(const int idx) {
@@ -43,6 +45,7 @@ class v1751TraceData : public TObject
         void Set_num_channels_fired(uint32_t v) { fnum_channels_fired = v; }
         void Set_board_id(uint8_t v) { fboard_id = v; }
         void Set_channel_id(uint8_t v) { fchannel_id = v; }
+        void Set_channel_time_tag(uint32_t v) { fchannel_time_tag = v; }
 
 
         void Set_trace_val(uint16_t vtrace, int idx) {
@@ -57,6 +60,7 @@ class v1751TraceData : public TObject
         // Data items
         uint32_t fnum_channels_fired;
         uint8_t fboard_id;
+        uint32_t fchannel_time_tag;
         uint8_t fchannel_id;
         uint16_t trace[VMEV1751_TRACE_SIZE];
         uint16_t flength;

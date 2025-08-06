@@ -21,6 +21,7 @@ v1751TraceData::v1751TraceData()
       fnum_channels_fired(0),
       fboard_id(0),
       fchannel_id(0),
+      fchannel_time_tag(0),
       fwr_subsystem_id(0),
       fwr_t(0)
 {
@@ -34,12 +35,14 @@ v1751TraceData::v1751TraceData(
         uint32_t num_channels_fired,
         uint8_t board_id,
         uint8_t channel_id,
+        uint32_t channel_time_tag,
         uint16_t wr_subsystem_id,
         uint64_t wr_t)
     : 
     fnum_channels_fired(num_channels_fired),
     fboard_id(board_id),
     fchannel_id(channel_id),
+    fchannel_time_tag(channel_time_tag),
     fwr_subsystem_id(wr_subsystem_id),
     fwr_t(wr_t)
 {

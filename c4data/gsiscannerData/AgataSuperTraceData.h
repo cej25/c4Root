@@ -4,7 +4,7 @@
 #include "TObject.h"
 
 
-#define TRACE_LENGTH 500
+#define TRACE_LENGTH 200
 
 class AgataSuperTraceData : public TObject
 {

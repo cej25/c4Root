@@ -55,6 +55,6 @@ SUBEVENT(febex_subev_traces)
 EVENT
 {
   vme = vme_subev_qdc(procid=70);
-  //agata = febex_subev_traces(procid = 60);
+  agata = febex_subev_traces(procid = 60);
   //ignore_unknown_subevent;
 }

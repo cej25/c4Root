@@ -83,6 +83,16 @@ InitStatus AgataTraceRaw2Cal::Init()
     return kSUCCESS;
 }
 
+double AgataTraceRaw2Cal::LinearInterp(double frac, double val1, double val2){
+    // linear polynomial between (0, val1) and (1,val2) -> y = val2/val1 * x 
+    // returns the value at x = frac
+    return val2/val1*frac;
+}
+double AgataTraceRaw2Cal::GetFrac(double val1, double val2, double threshold){
+    // linear polynomial between (0, val1) and (1,val2) -> y = val2/val1 * x 
+    // returns the value x when y(x) = threshold
+    return val1/val2*threshold;
+}
 
 /*
 Analysis event loop. 
@@ -94,7 +104,7 @@ void AgataTraceRaw2Cal::Exec(Option_t* option)
 {
     if (funcal_data && funcal_data->GetEntriesFast() > 0)
     {
-        AgataSuperTraceData * event = new AgataSuperTraceData();
+        AgataSuperTraceData event;
         
         int nfired_segments = 0;
         int64_t fevent_trigger_time = 0;
@@ -104,6 +114,7 @@ void AgataTraceRaw2Cal::Exec(Option_t* option)
         int segid = -1;
 
         double supertrace[supertrace_length];
+        double supertrace_shifted[supertrace_length];
 
         int normsamples = 50;
         double normalization[36];
@@ -112,6 +123,7 @@ void AgataTraceRaw2Cal::Exec(Option_t* option)
         for (int i=0; i<36; i++) seg_energies[i] = 0;
         for (int i=0; i<36; i++) seg_times[i] = 0;
         for (int i=0; i<supertrace_length; i++) supertrace[i] = 0;
+        for (int i=0; i<supertrace_length; i++) supertrace_shifted[i] = 0;
 
 
         Int_t event_multiplicity = funcal_data->GetEntriesFast();
@@ -143,9 +155,9 @@ void AgataTraceRaw2Cal::Exec(Option_t* option)
             if (layer == 1 && sector == 'S'){
                 fhit_pattern |= (int64_t(1) << 0);  
                 
-                event->Set_event_trigger_time(event_trigger_time);
-                event->Set_core_trigger_time(channel_trigger_time);
-                event->Set_core_energy((double)(uncal_energy)*a1 + a0);
+                event.Set_event_trigger_time(event_trigger_time);
+                event.Set_core_trigger_time(channel_trigger_time);
+                event.Set_core_energy((double)(uncal_energy)*a1 + a0);
 
                 double baseline_corr = 0;
                 int nsamples = 30;
@@ -183,8 +195,8 @@ void AgataTraceRaw2Cal::Exec(Option_t* option)
             }
         }
 
-        event->Set_all_segment_energy(seg_energies);
-        event->Set_all_segment_trigger_time(seg_times);
+        event.Set_all_segment_energy(seg_energies);
+        event.Set_all_segment_trigger_time(seg_times);
 
 
         //normalization:
@@ -200,22 +212,46 @@ void AgataTraceRaw2Cal::Exec(Option_t* option)
         for (int i = 0; i<supertrace_length;i++) supertrace[i] = supertrace[i]*1000/max_segment;
 
 
-        event->Set_supertrace(supertrace);
-        //time alignment:
+        int index_time_cross = 0;
+        double time_shift_frac = 0;
+        double threshold = 200;
+
+        for (int i = supertrace_length/37*(id_max_segment+1); i<(supertrace_length/37)*(id_max_segment+2); i++){
+            if (supertrace[i] > threshold){
+                time_shift_frac = GetFrac(supertrace[i-1],supertrace[i],threshold);
+                index_time_cross = i-1;
+            }
+        }
+
+        //index_time_cross should be at t = 60?
+        int centerat = 60;
+        for (int iseg = 1; iseg <= 36; iseg++){
+
+        for (int itrace = supertrace_length/37*iseg; itrace<supertrace_length/37*(iseg+1);itrace++) {
+            if ( itrace + (index_time_cross - centerat) - 1 < supertrace_length/37*iseg ) supertrace_shifted[itrace] = -1000;
+            if ( itrace + (index_time_cross - centerat) - 1 > supertrace_length/37*(iseg+1) ) supertrace_shifted[itrace] = -1000;
+
+            supertrace_shifted[itrace] = supertrace[itrace + (index_time_cross - centerat)] + 0*LinearInterp(time_shift_frac,supertrace[itrace - (index_time_cross - centerat) - 1], supertrace[itrace - (index_time_cross - centerat)]);
+        }
+        }
+
+
+
+        event.Set_supertrace(supertrace_shifted);
 
         bool set_write = true;
         if (energy_gate != 0){
-            double energy1 = event->Get_core_energy();
+            double energy1 = event.Get_core_energy();
             double energy2 = seg_energies[id_max_segment];
 
             double energysum = 0;
             for (int i=0;i<36;i++) energysum += seg_energies[i];
 
-            if (TMath::Abs(energy1 - energy_gate) < energy_gate_width && TMath::Abs(energy2 - energy_gate) < energy_gate_width) set_write = true;
+            if (TMath::Abs(energy2 - energy_gate) < energy_gate_width) set_write = true;
             else set_write = false;
         }
         
-        if (set_write) new ((*fcal_data)[fcal_data->GetEntriesFast()]) AgataSuperTraceData(*event);  
+        if (set_write) new ((*fcal_data)[fcal_data->GetEntriesFast()]) AgataSuperTraceData(event);  
     }
 }
 

@@ -29,6 +29,9 @@ class AgataTraceRaw2Cal : public FairTask
 
         virtual InitStatus Init();
 
+        double LinearInterp(double,double,double);
+        double GetFrac(double,double,double);
+
         void SetEnergyGate(double energy, double tol){energy_gate = energy; energy_gate_width = tol;}
 
     private:
