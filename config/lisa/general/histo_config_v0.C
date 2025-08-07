@@ -21,6 +21,11 @@ void histo_config(const std::string& config_path)
     TLisaConfiguration::SetWrDiffRange(0,100000000);
     TLisaConfiguration::SetWrDiffBin(20000);
 
+    // ::: Trace range
+    TLisaConfiguration::SetTracesRange(0,20);
+    TLisaConfiguration::SetAmplitudeMax(10000);
+    TLisaConfiguration::SetAmplitudeMin(7000);
+    
     // ::: Drifts
     TLisaConfiguration::SetEventNO(50000,1600000);
     

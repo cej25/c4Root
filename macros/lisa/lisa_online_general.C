@@ -86,18 +86,15 @@ void lisa_online_general()
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
 
     TLisaConfiguration::SetMappingFile(config_path + "/Lisa_All_Boards.txt");
-    //TLisaConfiguration::SetMappingFile(config_path + "/Lisa_3x3_test_board.txt");
     TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
+    TLisaConfiguration::SetGMFileMWD(config_path + "/Lisa_GainMatchingMWD.txt");
     TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters.txt");
 
     // ::::::: READ Subsystem  ::::::::
-
     UnpackReader* unpackheader = new UnpackReader((EXT_STR_h101_unpack*)&ucesb_struct.eventheaders, offsetof(EXT_STR_h101, eventheaders));
     source->AddReader(unpackheader);
 
-
     LisaReader* unpacklisa = new LisaReader((EXT_STR_h101_lisa_onion*)&ucesb_struct.lisa, offsetof(EXT_STR_h101, lisa));
-    
     LisaRaw2Ana* lisaraw2ana = new LisaRaw2Ana();
 
     unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
@@ -108,17 +105,12 @@ void lisa_online_general()
 
 
     // ::::::: CALIBRATE Subsystem  ::::::::
-
-
     LisaAna2Cal* lisaana2cal = new LisaAna2Cal();
 
     lisaana2cal->SetOnline(true);
     run->AddTask(lisaana2cal);
-
-
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
     // ::: Online Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
     LisaOnlineSpectraDaq* onlinelisadaq = new LisaOnlineSpectraDaq();
     run->AddTask(onlinelisadaq);
 
@@ -127,11 +119,11 @@ void lisa_online_general()
     // Set Ranges for online histos
 
     //::::  Channel Energy ::::: (h1_energy_layer_ch)
-    TLisaConfiguration::SetEnergyRange(0,10000000);
-    TLisaConfiguration::SetEnergyBin(10000);
+    TLisaConfiguration::SetEnergyRange(0,1000);
+    TLisaConfiguration::SetEnergyBin(1000);
 
     TLisaConfiguration::SetEnergyRangeMWD(0,1000);
-    TLisaConfiguration::SetEnergyBinMWD(2000);
+    TLisaConfiguration::SetEnergyBinMWD(1000);
 
     //:::: LISA WR Time Difference :::::: (h1_wr_diff)
     TLisaConfiguration::SetWrDiffRange(0,100000000);

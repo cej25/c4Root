@@ -1,3 +1,19 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                             E.M.Gandolfo                                   *
+ *                               07.08.25                                     *
+ ******************************************************************************/
+
 #include <sstream>
 #include <iomanip>
 #include <filesystem>
@@ -368,7 +384,7 @@ InitStatus LisaNearlineSpectraDaq::Init()
                         int x = detector.second.first.first;
                         int y = detector.second.second.second;
                         int l_id = detector.second.first.first;
-                        if (l_id == i && x == j && y == k)
+                        if (l_id == i+1 && x == j && y == k)
                         {
                             city = detector.second.first.second;
                             break;

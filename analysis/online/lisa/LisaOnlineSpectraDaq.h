@@ -88,6 +88,7 @@ class LisaOnlineSpectraDaq : public FairTask
         TFolder* histograms;
         TDirectory* dir_lisa;
         TDirectory* dir_energy;
+        TDirectory* dir_energy_febex;
         TDirectory* dir_energy_MWD;
         TDirectory* dir_traces;
         TDirectory* dir_traces_MWD;
@@ -126,12 +127,12 @@ class LisaOnlineSpectraDaq : public FairTask
         TH1I* h1_layer_multiplicity;
         //TH2F* h2_hitpattern_grid;
         //TH1F* h1_energy_layer0;
-        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch;
-        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_MWD_layer_ch;
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_ch;
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_MWD_ch;
         TH2F* h2_energy_layer1_vs_layer2;
-        std::vector<std::vector<std::vector<TH1F*>>> h1_traces_layer_ch;
+        std::vector<std::vector<std::vector<TH1F*>>> h1_traces_ch;
         std::vector<std::vector<std::vector<TH1F*>>> h1_traces_MWD_layer_ch;
-        std::vector<std::vector<std::vector<TH2F*>>> h2_traces_layer_ch_stat;
+        std::vector<std::vector<std::vector<TH2F*>>> h2_traces_ch_stat;
 
 
         //TGraph
