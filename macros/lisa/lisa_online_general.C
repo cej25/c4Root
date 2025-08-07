@@ -1,9 +1,5 @@
 #include <TROOT.h>
 //............
-// Switch all tasks related to LISA :::  on (1)/off (0) :::
-#define LISA_ON 1       //always on
-#define LISA_DAQ 1      //diplay all the channels from the boards (mapped up to 3 boards)
-#define LISA_2x2 0      //display with pareesksha 2x2 mapping system
 // WR syncronization
 #define WR_ENABLED 0
 
@@ -59,13 +55,11 @@ void lisa_online_general()
     //TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
 
     //___O F F L I N E
-    //TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/x7_241Am/multiple_cards_test/cards_A_B_C_D_E_F_G_0306.lmd"; 
-    //TString filename = "/u/gandolfo/data/lustre/despec/s092_s143/run_0072_0001.lmd";  //data with only lisa
-    TString filename = "/u/gandolfo/data/lustre/despec/lisa/LISAmp_10layers_0002_*.lmd";  //data with only lisa
+    TString filename = "/u/gandolfo/data/lustre/despec/lisa/Pikachu_room/pikachu_0072_0003.lmd";  //data with only lisa
 
     //___O U T P U T - only used if switched on 
-    TString outputpath = "/u/gandolfo/data/lustre/despec/lisa/";
-    TString outputFilename = outputpath + "lisa_test.root";
+    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/SummerStudentProject2025/trees/";
+    TString outputFilename = outputpath + "pikachu_0072_test.root";
 
     //:::::::Create online run
     Int_t refresh = 10; // Refresh rate for online histograms
@@ -90,75 +84,44 @@ void lisa_online_general()
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::::: C O N F I G    F O R   D E T E C T O R - Load
-    if (LISA_2x2)
-    {
-        TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Detector_Map_names.txt");
-        TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters.txt");
 
+    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_All_Boards.txt");
+    //TLisaConfiguration::SetMappingFile(config_path + "/Lisa_3x3_test_board.txt");
+    TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
+    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters.txt");
 
-    }
-
-    if (LISA_DAQ)
-    {
-        TLisaConfiguration::SetMappingFile(config_path + "/Lisa_All_Boards.txt");
-        //TLisaConfiguration::SetMappingFile(config_path + "/Lisa_3x3_test_board.txt");
-        TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters.txt");
-
-    }
-
-
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    // S U B S Y S T E M S
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-   
     // ::::::: READ Subsystem  ::::::::
 
     UnpackReader* unpackheader = new UnpackReader((EXT_STR_h101_unpack*)&ucesb_struct.eventheaders, offsetof(EXT_STR_h101, eventheaders));
     source->AddReader(unpackheader);
 
-    if (LISA_ON)
-    {
-        LisaReader* unpacklisa = new LisaReader((EXT_STR_h101_lisa_onion*)&ucesb_struct.lisa, offsetof(EXT_STR_h101, lisa));
-        
-        LisaRaw2Ana* lisaraw2ana = new LisaRaw2Ana();
 
-        unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
-        source->AddReader(unpacklisa);
+    LisaReader* unpacklisa = new LisaReader((EXT_STR_h101_lisa_onion*)&ucesb_struct.lisa, offsetof(EXT_STR_h101, lisa));
+    
+    LisaRaw2Ana* lisaraw2ana = new LisaRaw2Ana();
 
-        lisaraw2ana->SetOnline(true);
-        run->AddTask(lisaraw2ana);
-    }
+    unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
+    source->AddReader(unpacklisa);
+
+    lisaraw2ana->SetOnline(true);
+    run->AddTask(lisaraw2ana);
+
 
     // ::::::: CALIBRATE Subsystem  ::::::::
 
-    if (LISA_ON)
-    {
-        LisaAna2Cal* lisaana2cal = new LisaAna2Cal();
 
-        lisaana2cal->SetOnline(true);
-        run->AddTask(lisaana2cal);
-    }
+    LisaAna2Cal* lisaana2cal = new LisaAna2Cal();
+
+    lisaana2cal->SetOnline(true);
+    run->AddTask(lisaana2cal);
+
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
     // ::: Online Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-    if (LISA_2x2)
-    {
+    LisaOnlineSpectraDaq* onlinelisadaq = new LisaOnlineSpectraDaq();
+    run->AddTask(onlinelisadaq);
 
-        LisaOnlineSpectra* onlinelisa = new LisaOnlineSpectra();
-        run->AddTask(onlinelisa);
-
-    }
-
-    if (LISA_DAQ)
-    {
-
-        LisaOnlineSpectraDaq* onlinelisadaq = new LisaOnlineSpectraDaq();
-        run->AddTask(onlinelisadaq);
-
-    }
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     
     // Set Ranges for online histos

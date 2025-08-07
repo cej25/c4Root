@@ -81,30 +81,20 @@ class LisaNearlineSpectraDaq : public FairTask
 
         TDirectory* dir_lisa;
         TDirectory* dir_energy;
+        TDirectory* dir_febex;
+        TDirectory* dir_febex_channel;
+        TDirectory* dir_energy_MWD;
+        TDirectory* dir_MWD_channel;
         TDirectory* dir_traces;
         TDirectory* dir_stats;
         TDirectory* dir_music;
         TDirectory* dir_correlations;
         TDirectory* dir_drift;
+        
 
         int64_t prev_wr = 0;
         int64_t wr_diff;
 
-        // Canvas
-        TCanvas* c_hitpattern_layer;
-        TCanvas* c_multiplicity_layer;
-        TCanvas* c_hitpattern_grid;
-        TCanvas* c_pileup_grid;
-        TCanvas* c_overflow_grid;
-        TCanvas* c_energy_layer1_vs_layer2;
-        TCanvas* c_energy_layer1_vs_layer2_GM;
-        TCanvas* c_energy_layer_vs_time;
-        TCanvas* c_energy_layer_vs_evtno;
-        std::vector<TCanvas*> c_energy_layer_ch;
-        std::vector<TCanvas*> c_energy_MWD_layer_ch;
-        std::vector<TCanvas*> c_energy_layer_ch_vs_time;
-        std::vector<TCanvas*> c_traces_layer_ch;
-        std::vector<TCanvas*> c_traces_layer_ch_stat;
     
         // Histograms
         TH1I* h1_hitpattern_total;
@@ -116,14 +106,14 @@ class LisaNearlineSpectraDaq : public FairTask
         TH1I* h1_multiplicity;
         std::vector<TH1I*> h1_multiplicity_layer; ;
         TH1I* h1_layer_multiplicity;
-        //TH2F* h2_hitpattern_grid;
-        //TH1F* h1_energy_layer0;
-        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_layer_ch;
-        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_MWD_layer_ch;
-        std::vector<std::vector<std::vector<TH1F*>>> h1_traces_layer_ch;
-        std::vector<std::vector<std::vector<TH2F*>>> h2_traces_layer_ch_stat;
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_ch;
+        std::vector<TH1*> h1_energy_layer;
+        std::vector<std::vector<std::vector<TH1F*>>> h1_energy_MWD_ch;
+        std::vector<TH1*> h1_energy_MWD_layer;
+        //std::vector<std::vector<std::vector<TH1F*>>> h1_traces_layer_ch;
+        std::vector<std::vector<std::vector<TH2F*>>> h2_traces_layer_ch;
+        
         std::vector<std::vector<std::vector<TH2*>>> h2_energy_ch_vs_evtno;
-
         std::vector<std::vector<std::vector<TH2*>>> h2_energy_MWD_ch_vs_evtno;
         std::vector<TH2F*> h2_energy_layer_vs_evtno;
         

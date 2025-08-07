@@ -87,6 +87,9 @@ int TLisaConfiguration:: event_ana = 0;     // event to analyze for MWD trace
 int TLisaConfiguration:: start_evtno = 0;
 int TLisaConfiguration:: stop_evtno = 0;
 
+// ::: Enable trace writing in histos
+int TLisaConfiguration::trace_on = 1;
+
 
 TLisaConfiguration::TLisaConfiguration()
     :   num_layers(0)
@@ -274,7 +277,7 @@ void TLisaConfiguration::ReadGMFile()
 
         gain_matching_coeffs.insert(std::make_pair(layer_xy, gm_coeff));
 
-        std::cout << " Febex GM -> lxy : "<< layer_id << x_pos << y_pos << " slope " << slope << " intercept " << intercept << "\n";
+        //std::cout << " Febex GM -> lxy : "<< layer_id << x_pos << y_pos << " slope " << slope << " intercept " << intercept << "\n";
     }
     
     gain_matching_loaded = 1;
@@ -317,7 +320,7 @@ void TLisaConfiguration::ReadGMFileMWD()
 
         gain_matching_MWD_coeffs.insert(std::make_pair(layer_xy, gm_MWD_coeff));
 
-        std::cout << " MWD GM -> lxy : "<< layer_id << x_pos << y_pos << " slope " << slope_MWD << " intercept " << intercept_MWD << "\n";
+        //std::cout << " MWD GM -> lxy : "<< layer_id << x_pos << y_pos << " slope " << slope_MWD << " intercept " << intercept_MWD << "\n";
     }
     
     gain_matching_MWD_loaded = 1;

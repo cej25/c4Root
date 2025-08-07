@@ -1,12 +1,23 @@
 #include <TROOT.h>
-
-// Switch all tasks related to {subsystem} on (1)/off (0)
-#define LISA_ON 1
+#include <TNamed.h>
+#include <TObjString.h>
+#include <fstream>
+#include <sstream>
 
 //Select the data level you want to visualize
 #define LISA_RAW 0
 #define LISA_ANA 0
 #define LISA_CAL 1
+
+// Definition of setup and configuration files
+// LISA
+#define LISA_CONFIG_FILE "../../config/lisa/general/lisa_config_v0.C"
+
+extern "C"
+{    
+    // LISA setup
+    #include LISA_CONFIG_FILE
+}
 
 typedef struct EXT_STR_h101_t
 {   
@@ -14,6 +25,15 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_lisa_onion_t lisa;
 
 } EXT_STR_h101;
+
+std::string readFileToString(const std::string& path)
+{
+    std::ifstream file(path);
+    if (!file.is_open()) return "[Could not open file]";
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    return buffer.str();
+}
 
 void lisa_make_trees()
 {   
@@ -42,29 +62,22 @@ void lisa_make_trees()
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
 
+
     //::::::::::P A T H   O F   F I L E  to read
-    //___O F F L I N E
-    //TString filename = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/run_0075_0001.lmd";
-    //TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/x7_241Am/multiple_cards_test/cards_A_B_C_D_E_F_G_0306.lmd"; 
-    TString filename = "/u/gandolfo/data/lustre/despec/lisa/daq_10boards_0007_0001.lmd"; 
-    
-    //___O U T P U T
-    //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/pareeksha_trees/elisa/";
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/x7_241Am/3x3_5_trees/";    
+    TString filename = "/u/gandolfo/data/lustre/despec/lisa/Pikachu_room/pikachu_0072_0003.lmd"; 
+
+    //___O U T P U T - only used if switched on 
+    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/SummerStudentProject2025/trees/";
+    TString outputFilename = outputpath + "pikachu_0072_test.root";   
         
-
-    TString outputFilename = outputpath + "run_0007_0001_trees.root";
-
     //:::::::Create online run
     Int_t refresh = 10; // not needed
-    Int_t port = 5000; // not needed
      
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
     run->SetSink(new FairRootFileSink(outputFilename)); // don't write after termintion
-    run->ActivateHttpServer(refresh, port);
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
     run->AddObject(histograms);
@@ -77,58 +90,40 @@ void lisa_make_trees()
     run->SetSource(source);
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    //:::: G A T E S - Initialise 
-
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    //:::::: C O N F I G    F O R   D E T E C T O R - Load
-    //TLisaConfiguration::SetMappingFile(config_path + "/Lisa_All_Boards.txt");
-    TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
-    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_3x3.txt");
-
-    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_3x3_5.txt");
-
-
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    // S U B S Y S T E M Si
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    // ::: L I S A parameter - Initialise
+    lisa_config(config_path);
+    
    
-    // ::::::: READ Subsystem  ::::::::
 
+    // ::::::: READ Subsystem  ::::::::
     UnpackReader* unpackheader = new UnpackReader((EXT_STR_h101_unpack*)&ucesb_struct.eventheaders, offsetof(EXT_STR_h101, eventheaders));
     source->AddReader(unpackheader);
 
-    if (LISA_ON)
+
+    LisaReader* unpacklisa = new LisaReader((EXT_STR_h101_lisa_onion*)&ucesb_struct.lisa, offsetof(EXT_STR_h101, lisa));
+    LisaRaw2Ana* lisaraw2ana = new LisaRaw2Ana();
+
+    if (LISA_RAW)
     {
-        LisaReader* unpacklisa = new LisaReader((EXT_STR_h101_lisa_onion*)&ucesb_struct.lisa, offsetof(EXT_STR_h101, lisa));
-        //unpacklisa->DoFineTimeCalOnline("....root", 100000);
-        //unpacklisa->SetInputFileFineTimeHistos(config_path + "....root");
-        LisaRaw2Ana* lisaraw2ana = new LisaRaw2Ana();
-
-        if (LISA_RAW)
-        {
-            unpacklisa->SetOnline(false); //false= write to a tree; true=doesn't write to tree
-        } else 
-        {
-            unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
-        }
-        //unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
-        
-        if (LISA_ANA)
-        {
-            lisaraw2ana->SetOnline(false); //false= write to a tree; true=doesn't write to tree
-        } else 
-        {
-            lisaraw2ana->SetOnline(true); //false= write to a tree; true=doesn't write to tree
-        }
-        //unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
-        
-        source->AddReader(unpacklisa);
-        lisaraw2ana->SetOnline(true);
-        run->AddTask(lisaraw2ana);
-    
+        unpacklisa->SetOnline(false); //false= write to a tree; true=doesn't write to tree
+    } else 
+    {
+        unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
     }
-
-
+    
+    if (LISA_ANA)
+    {
+        lisaraw2ana->SetOnline(false); //false= write to a tree; true=doesn't write to tree
+    } else 
+    {
+        lisaraw2ana->SetOnline(true); //false= write to a tree; true=doesn't write to tree
+    }
+    
+    source->AddReader(unpacklisa);
+    lisaraw2ana->SetOnline(true);
+    run->AddTask(lisaraw2ana);
+    
+    
     // ::::::: CALIBRATE Subsystem  ::::::::
 
     if (LISA_CAL)
@@ -136,17 +131,25 @@ void lisa_make_trees()
         LisaAna2Cal* lisaana2cal = new LisaAna2Cal();
 
         lisaana2cal->SetOnline(false);
-        run->AddTask(lisaana2cal);  
+        run->AddTask(lisaana2cal); 
+        
     }
+    
+    // Write information on setup and config in a "info" tree
+    TString lisaConfigFile = LISA_CONFIG_FILE;
+
+    TTree* metaTree = new TTree("info", "Setup file and config info");
+    metaTree->Branch("LISA_config", &lisaConfigFile);
+    metaTree->Fill(); 
 
 
     // Initialise
     run->Init();
+    metaTree->Write();
 
     // Information about portnumber and main data stream
     cout << "\n\n" << endl;
     cout << "Data stream is: " << filename << endl;
-    cout << "LISA online port server: " << port << endl;
     cout << "\n\n" << endl;
 
     // Run

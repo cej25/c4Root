@@ -1,10 +1,20 @@
 #include <TROOT.h>
+#include <TNamed.h>
+#include <TObjString.h>
+#include <fstream>
+#include <sstream>
 
-#define LISA_ON 1
+// If you want to have trace histos
+#define TRACE_ON 1
+#define WR_ENABLED 0
 
-#define LISA_DAQ 1
-#define LISA_2x2 0
+// Definition of histo ranges for lisa and frs
+#define HISTO_FILE "../../config/lisa/general/histo_config_v0.C"
 
+extern "C"
+{
+    #include HISTO_FILE
+}
 
 typedef struct EXT_STR_h101_t
 {   
@@ -12,6 +22,7 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_lisa_onion_t lisa;
 
 } EXT_STR_h101;
+
 
 void lisa_histos()
 {   
@@ -42,13 +53,11 @@ void lisa_histos()
 
     //::::::::::P A T H   O F   F I L E  to read
     //___O F F L I N E
-    //TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/daq_test_c4tree/test_F_B_13nov.root";
-    //TString filename = "/u/gandolfo/data/test_c4/run_0072_0001.root";
-    TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/x7_241Am/3x3_4_trees/run_0006_0003_trees.root";
+    TString filename = "/u/gandolfo/data/lustre/gamma/LISA/data/SummerStudentProject2025/trees/pikachu_0072_test.root";
        
     //___O U T P U T
-    //TString outputfile = "/u/gandolfo/data/test_c4/run_0072_0001_histos.root";
-    TString outputfile = "/u/gandolfo/data/lustre/gamma/LISA/data/x7_241Am/3x3_4_histos/run_0006_0003_histo.root";
+    TString outputfile = "/u/gandolfo/data/lustre/gamma/LISA/data/SummerStudentProject2025/histos/pikachu_0072_histos_test.root";
+
 
     FairRunAna* run = new FairRunAna();
     EventHeader* EvtHead = new EventHeader();
@@ -62,61 +71,29 @@ void lisa_histos()
     TFile* file = TFile::Open(filename);
     TTree* eventTree = (TTree*)file->Get("evt"); 
     Int_t totEvt = eventTree->GetEntries();
+    histo_config(config_path);
      
-
-
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    //:::::: C O N F I G    F O R   D E T E C T O R - Load
-    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_3x3_4.txt");
-    TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching.txt");
-    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_3x3.txt");
-
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::   
-    // =========== **** SPECTRA ***** ========================================================= //
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
-
-    
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
-    // ::: Nearline Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-    //::::::::: Set ranges for histos :::::::::::::::
-    //::::  Channel Energy ::::: (h1_energy_layer_ch)
-    TLisaConfiguration::SetEnergyRange(0,200000);
-    TLisaConfiguration::SetEnergyBin(1000);
-
-    TLisaConfiguration::SetEnergyRangeMWD(0,50);
-    TLisaConfiguration::SetEnergyBinMWD(1000);
-
-    //::::  Channel Energy GM ::::: (h1_energy_layer_ch)
-    TLisaConfiguration::SetEnergyRangeGM(0,1000);
-    TLisaConfiguration::SetEnergyBinGM(500);
-
-    //:::: LISA WR Time Difference :::::: (h1_wr_diff)
-    TLisaConfiguration::SetWrDiffRange(0,100000000);
-    TLisaConfiguration::SetWrDiffBin(20000);
-
-    //:::: Drifts
-    TLisaConfiguration::SetEventNO(50000,1600000);
-    
-
-    if (LISA_ON)
+    if(TRACE_ON)
     {
-        if (LISA_DAQ)
-        {
-            LisaNearlineSpectraDaq* nearlinelisadaq = new LisaNearlineSpectraDaq();
-            run->AddTask(nearlinelisadaq);
-        }
-
-        if (LISA_2x2)
-        {
-
-        }
-        
+        TLisaConfiguration::SetTrace(1);
+    }else
+    {
+        TLisaConfiguration::SetTrace(0);
     }
+    
+    LisaNearlineSpectraDaq* nearlinelisadaq = new LisaNearlineSpectraDaq();
+    run->AddTask(nearlinelisadaq);
 
+
+    TString histoConfigFile = HISTO_FILE;
+
+    TTree* metaTree = new TTree("info", "Histo info file");
+    metaTree->Branch("histo_config", &histoConfigFile);
+    metaTree->Fill();  
 
     // Initialise
     run->Init();
+    metaTree->Write(); 
 
     // Run
     run->Run(0, totEvt); 

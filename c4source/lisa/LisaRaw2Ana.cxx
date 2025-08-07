@@ -154,18 +154,9 @@ void LisaRaw2Ana::Exec(Option_t* option)
             tau[1] = decay_time[1] / sampling;                                   // Decay constant in samples
             int k0 = static_cast<int>(MWD_trace_start / sampling);               // Start of MWD in samples
             int kend = static_cast<int>(MWD_trace_stop / sampling);              // Stop of MWD in samples
-
-            //c4LOG(info, "Febex length  : " << trace_febex.size());
-
-            //c4LOG(info, "MWD lenght  : " << MWD_length);
-            //c4LOG(info, "MM  : " << MM);
-
-            //c4LOG(info, "Trapez_sample_window_1 : " << MWD_trace_stop << " Trapez_sample_window_0 : " << MWD_trace_start); 
-            //c4LOG(info, "kend  : " << kend << " k0 : " << k0 );
+         
             
             
-            
-
             //Check Trace size - this solves problems with events with empty trace
             if (trace_febex.size() == 0) 
             {
@@ -176,7 +167,7 @@ void LisaRaw2Ana::Exec(Option_t* option)
             //Ensure that the trace limit is not greater then febex trace, and if so replace it with febex trace limit
             if (kend > trace_febex.size()) 
             {
-                //kend = trace_febex.size();            // If kend out of bound, replace it with trace_febex limit
+                kend = trace_febex.size();            // If kend out of bound, replace it with trace_febex limit
                 c4LOG(info, "[MWD info] Trapez_sample_window_1 " << MWD_trace_stop << " is greater than febex trace size " << trace_febex.size() << ". It has been replaced with febex trace limit");
             }
 
@@ -226,7 +217,7 @@ void LisaRaw2Ana::Exec(Option_t* option)
             //        This corresponds to anaTraces function calcCorrectTrace
             // ::: Evaluate average from points 20 to ---
             //c4LOG(info, "average baseline" );
-            for( int i = 20; i < 50; i++) //100 v1
+            for( int i = 20; i < 100; i++) //100 v1
             {
                 sum += trace_febex.at(i);
                 count++;
@@ -345,14 +336,14 @@ void LisaRaw2Ana::Exec(Option_t* option)
             
             // Trapez_amp_calc_window_0 and Trapez_amp_calc_window_1
             // Check if amp_start and amp_stop fall inside the flat-top region
-            if (!(flat_top_start <= amp_start_idx && amp_start_idx < amp_stop_idx && amp_stop_idx <= flat_top_stop)) 
-            {
-                c4LOG(fatal, "[MWD ERROR] Trapez_amp_calc_window_0 (" << amp_start_idx * sampling 
-                        << ") and/or Trapez_amp_calc_window_1 (" << amp_stop_idx * sampling 
-                        << ") are outside the valid flat-top range ("
-                        << flat_top_start * sampling << " - " 
-                        << flat_top_stop * sampling << ").\n" );
-            }
+            //if (!(flat_top_start <= amp_start_idx && amp_start_idx < amp_stop_idx && amp_stop_idx <= flat_top_stop)) 
+            //{
+            //    c4LOG(fatal, "[MWD ERROR] Trapez_amp_calc_window_0 (" << amp_start_idx * sampling 
+            //            << ") and/or Trapez_amp_calc_window_1 (" << amp_stop_idx * sampling 
+            //            << ") are outside the valid flat-top range ("
+            //            << flat_top_start * sampling << " - " 
+            //            << flat_top_stop * sampling << ").\n" );
+            //}
 
 
             if (baseline_start_idx < k0 || baseline_start_idx >= baseline_stop_idx || baseline_start_idx >= (k0 + MM - LL)) 
