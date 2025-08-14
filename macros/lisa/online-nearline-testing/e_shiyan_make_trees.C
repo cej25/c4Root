@@ -11,15 +11,16 @@
 // !!! Select the data level you want to visualize
 #define LISA_RAW 0
 #define LISA_ANA 0
-#define LISA_CAL 1
+#define LISA_CAL 0
+#define LISA_HIT 1
 //...................................................
 
 // Definition of setup and configuration files
 // FRS
-#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_016_2025_conv.C"
+#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_002_2025_setting10_conv.C"
 #define FRS_CONFIG_FILE "../../../config/shiyan/frs/general/frs_config_v0.C"
 // LISA
-#define LISA_CONFIG_FILE "../../../config/shiyan/lisa/general/lisa_config_v1.C"
+#define LISA_CONFIG_FILE "../../../config/shiyan/lisa/general/lisa_config_v2.C"
 
 
 // :::  Define FRS and LISA setup.C file; place in /config/shiyan/frs/setup/
@@ -80,11 +81,11 @@ void e_shiyan_make_trees()
     
     // ::: FILE  PATH
     TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s103_files/ts/";                       // Data from LISA
-    TString filename = inputpath + "run_0111_0001.lmd";
+    TString filename = inputpath + "run_0018_0001.lmd";
 
     // ::: OUTPUT 
-    TString outputpath = "/u/gandolfo/data/shiyan_dedx/";   //testing
-    TString outputFilename = outputpath + "test_0111.root";
+    TString outputpath = "/u/gandolfo/data/shiyan_debug/";   //testing
+    TString outputFilename = outputpath + "test_0018.root";
     
     // ::: Create online run
     Int_t refresh = 10; // not needed
@@ -206,6 +207,33 @@ void e_shiyan_make_trees()
         hitfrs->SetOnline(false); 
         run->AddTask(hitfrs);
     } 
+
+    if (LISA_HIT)
+    {
+        LisaRaw2Ana* lisaraw2ana = new LisaRaw2Ana();
+        if(LISA_ANA)
+        {
+            lisaraw2ana->SetOnline(false);
+        }else
+        {
+            lisaraw2ana->SetOnline(true);
+        }
+        run->AddTask(lisaraw2ana); 
+
+        LisaAna2Cal* lisaana2cal = new LisaAna2Cal();
+        if(LISA_CAL)
+        {
+            lisaana2cal->SetOnline(false);
+        }else
+        {
+            lisaana2cal->SetOnline(true);
+        }
+        run->AddTask(lisaana2cal);   
+
+        LisaCal2Hit* lisacal2hit = new LisaCal2Hit();
+        lisacal2hit->SetOnline(false);
+        run->AddTask(lisacal2hit);
+    }
 
     // Write information on setup and config in a "info" tree
     TString frsSetupFile = FRS_SETUP_FILE;

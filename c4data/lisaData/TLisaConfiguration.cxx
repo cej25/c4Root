@@ -34,6 +34,7 @@ std::string TLisaConfiguration::mapping_file = "blank";
 std::string TLisaConfiguration::gain_matching_file = "blank";
 std::string TLisaConfiguration::gain_matching_file_MWD = "blank";
 std::string TLisaConfiguration::gain_matching_file_dEdX = "blank";
+std::string TLisaConfiguration::z_calibration_file = "blank";
 std::string TLisaConfiguration::calibration_file = "blank";
 std::vector<std::string> TLisaConfiguration::gate_ranges_files = {"blank"};
 std::vector<std::string> TLisaConfiguration::gate_ranges_MWD_files = {"blank"};
@@ -123,6 +124,7 @@ TLisaConfiguration::TLisaConfiguration()
     ReadLISAGateFebexFile();
     ReadLISAGateMWDFile();
     ReadGMFiledEdX();
+    ReadZCalibrationFile();
     //ReadCalibrationCoefficients();
 
 }
@@ -395,6 +397,45 @@ void TLisaConfiguration::ReadGMFiledEdX()
     gain_matching_coeff_file_dEdX.close();
 
     c4LOG(info, "Lisa Gain Matching dEdX File: " + gain_matching_file_dEdX);
+    return;
+
+}
+
+void TLisaConfiguration::ReadZCalibrationFile()
+{   
+    
+    std::ifstream z_calibration_coeff_file (z_calibration_file);
+    std::string line;
+
+    if (z_calibration_coeff_file.fail()) c4LOG(warn, "Could not open LISA Z calibration file.");
+
+    while (std::getline(z_calibration_coeff_file, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+
+        std::istringstream iss(line);
+        int layer_id, x_pos, y_pos;
+        double slope_z, intercept_z;
+        std::pair<int, int> xy;
+        std::pair<int, std::pair<int, int>> layer_xy;
+        std::pair<double, double> z_coeff;
+
+        iss >> layer_id >> x_pos >> y_pos >> slope_z >> intercept_z;
+
+        z_coeff = std::make_pair(slope_z, intercept_z);
+
+        xy = std::make_pair(x_pos, y_pos);
+        layer_xy = std::make_pair(layer_id, xy);
+
+        z_calibration_coeffs.insert(std::make_pair(layer_xy, z_coeff));
+
+        //std::cout << " Z calibration -> lxy : "<< layer_id << x_pos << y_pos << " slope " << slope_z << " intercept " << intercept_z << "\n";
+    }
+    
+    z_calibration_loaded = 1;
+    z_calibration_coeff_file.close();
+
+    c4LOG(info, "Loaded Lisa Z Calibration File: " + z_calibration_file);
     return;
 
 }

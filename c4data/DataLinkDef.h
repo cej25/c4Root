@@ -94,6 +94,7 @@
 #pragma link C++ class LisaItem+;
 #pragma link C++ class LisaCalItem+;
 #pragma link C++ class LisaAnaItem+;
+#pragma link C++ class LisaHitItem+;
 #pragma link C++ class LisaTraceData+;
 #pragma link C++ class LisaGate+;
 

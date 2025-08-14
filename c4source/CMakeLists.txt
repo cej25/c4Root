@@ -65,8 +65,9 @@ set(SRCS
 ./germanium/GermaniumReader.cxx
 ./germanium/GermaniumTraceReader.cxx
 ./lisa/LisaReader.cxx
-./lisa/LisaAna2Cal.cxx
 ./lisa/LisaRaw2Ana.cxx
+./lisa/LisaAna2Cal.cxx
+./lisa/LisaCal2Hit.cxx
 ./bplast/bPlastReader.cxx
 ./bplast/bPlastRaw2Cal.cxx
 ./beammonitor/BeamMonitorReader.cxx

@@ -4,10 +4,15 @@
 #include "TClonesArray.h"
 #include "EventHeader.h"
 #include "TLisaConfiguration.h"
+#include "TFrsConfiguration.h"
+#include "TExperimentConfiguration.h"
 #include "LisaData.h"
 #include "LisaCalData.h"
 #include "LisaAnaData.h"
 #include "LisaHitData.h"
+#include "FrsData.h"
+#include "FrsCalData.h"
+#include "FrsHitData.h"
 #include <map>
 #include <vector>
 #include "TVector.h"
@@ -17,6 +22,8 @@ class LisaItem;
 class LisaCalItem;
 class LisaAnaItem;
 class LisaHitItem;
+class FrsHitItem;
+class FrsMultiHitItem;
 
 class LisaCal2Hit : public FairTask
 {
@@ -36,10 +43,17 @@ class LisaCal2Hit : public FairTask
 
     private:
         TLisaConfiguration const* lisa_config;
+        TFrsConfiguration const* frs_config;
+        TExperimentConfiguration const* exp_config;
+        TFRSParameter* frs;
+        TIDParameter* id;
     
         std::vector<LisaItem> const* lisaArray;
+        std::vector<LisaAnaItem> const* lisaAnaArray;
         std::vector<LisaCalItem> const* lisaCalArray;
         std::vector<LisaHitItem>* lisaHitArray;
+        std::vector<FrsHitItem> const* frsHitArray;
+        std::vector<FrsMultiHitItem> const* multihitArray;
       
 
         EventHeader* header;
@@ -47,6 +61,15 @@ class LisaCal2Hit : public FairTask
         Int_t fNEvents;
 
         uint64_t wr_t;
+
+        std::map<std::pair<int,int>, std::pair<std::pair<int, std::pair<int, int>>,std::pair<float,std::pair<std::string,std::string>>>> detector_mapping; //Debugging.Raplace std:string-> TString ?
+        std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> detector_z_calibration;
+
+        std::vector<float> beta1;
+        double slope_z;
+        double intercept_z;
+        float de_dx_corr;
+        std::vector<float> z_lisa;
 
 
     public:

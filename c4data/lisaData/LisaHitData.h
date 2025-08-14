@@ -42,7 +42,9 @@ class LisaHitItem : public TObject
                     std::vector<int16_t> tr_x,
                     float e_GM,
                     float e_MWD_GM,
-                    float z,
+                    float dedx,
+                    float dedx_GM,
+                    std::vector<float> z,
                     uint64_t evt_t,
                     uint64_t ch_t,
                     uint64_t evtno,
@@ -67,7 +69,9 @@ class LisaHitItem : public TObject
         std::vector<int16_t> Get_trace_x() const;
         float Get_energy_GM() const;
         float Get_energy_MWD_GM() const;
-        float Get_Z_lisa() const;
+        float Get_de_dx() const;
+        float Get_de_dx_GM() const;
+        std::vector<float> Get_Z_lisa() const;
         uint64_t Get_board_event_time() const;
         uint64_t Get_channel_event_time() const;
         uint64_t Get_evtno();
@@ -97,7 +101,9 @@ class LisaHitItem : public TObject
         std::vector<int16_t> trace_x;
         float energy_GM;
         float energy_MWD_GM;
-        float z_lisa;
+        float de_dx;
+        float de_dx_GM;
+        std::vector<float> z_lisa;
         uint64_t board_event_time;
         uint64_t ch_event_time;
         uint64_t event_no;
@@ -179,7 +185,17 @@ inline float LisaHitItem::Get_energy_MWD_GM() const
     return energy_MWD_GM;
 }
 
-inline float LisaHitItem::Get_Z_lisa() const
+inline float LisaHitItem::Get_de_dx() const
+{
+    return de_dx;
+}
+
+inline float LisaHitItem::Get_de_dx_GM() const
+{
+    return de_dx_GM;
+}
+
+inline std::vector<float> LisaHitItem::Get_Z_lisa() const
 {
     return z_lisa;
 }

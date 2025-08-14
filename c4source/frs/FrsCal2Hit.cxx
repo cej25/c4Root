@@ -1175,7 +1175,6 @@ void FrsCal2Hit::ProcessSci_MHTDC()
         }
     }
 
-
     // TOF:
     // 11 -> 21
     // std::cout << "event " << std::endl;

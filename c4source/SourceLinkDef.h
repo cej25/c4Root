@@ -26,6 +26,7 @@
 #pragma link C++ class bPlastRaw2Cal+;
 #pragma link C++ class LisaReader+;
 #pragma link C++ class LisaAna2Cal+;
+#pragma link C++ class LisaCal2Hit+;
 #pragma link C++ class LisaRaw2Ana+;
 #pragma link C++ class UnpackReader+;
 #pragma link C++ class BeamMonitorReader+;
