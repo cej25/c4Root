@@ -1009,6 +1009,24 @@ void FrsCal2Hit::ProcessSci_TAC()
 
 }
 
+int count_valid_pairs(const std::vector<int>& left_hits,
+                      const std::vector<int>& right_hits,
+                      double factor, double threshold) 
+{
+    int count = 0;
+    for (size_t i = 0; i < left_hits.size(); i++) 
+    {
+        for (size_t j = 0; j < right_hits.size(); j++) 
+        {
+            if (factor * TMath::Abs(left_hits[i] - right_hits[j]) < threshold) 
+            {
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
 void FrsCal2Hit::ProcessSci_MHTDC()
 {
     auto const & calSciItem = calSciArray->at(0);
@@ -1030,35 +1048,61 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     else if (sci->sci11_select == 3) sci11r_hits = calSciItem.Get_mhtdc_sci11rd_hits();
     int hits_in_11r = sci11r_hits.size();
 
-    hits_in_11lr = hits_in_11l * hits_in_11r;
-    mhtdc_sc11lr_dt = new Float_t[hits_in_11lr];
-    mhtdc_sc11lr_x = new Float_t[hits_in_11lr];
+    if (sci->sci11_select == 0) mhtdc_sci11lr_dt = calSciItem.Get_mhtdc_dT_11la_11ra();
+    else if (sci->sci11_select == 1) mhtdc_sci11lr_dt = calSciItem.Get_mhtdc_dT_11lb_11rb();
+    else if (sci->sci11_select == 2) mhtdc_sci11lr_dt = calSciItem.Get_mhtdc_dT_11lc_11rc();
+    else if (sci->sci11_select == 3) mhtdc_sci11lr_dt = calSciItem.Get_mhtdc_dT_11ld_11rd();
+    
+    if (sci->sci11_select == 0) mhtdc_sci11lr_x = calSciItem.Get_mhtdc_x_sci11lra();
+    else if (sci->sci11_select == 1) mhtdc_sci11lr_x = calSciItem.Get_mhtdc_x_sci11lrb();
+    else if (sci->sci11_select == 2) mhtdc_sci11lr_x = calSciItem.Get_mhtdc_x_sci11lrc();
+    else if (sci->sci11_select == 3) mhtdc_sci11lr_x = calSciItem.Get_mhtdc_x_sci11lrd();
 
+    mhtdc_sci11lr_dt_selected.clear();
+    mhtdc_sci11lr_x_selected.clear();
+    sci11l_hits_selected.clear();
+    sci11r_hits_selected.clear();
     for (int i = 0; i < hits_in_11l; i++)
     {
         for (int j = 0; j < hits_in_11r; j++)
         {
-            mhtdc_sc11lr_dt[i * hits_in_11r + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci11l_hits[i] - sci11r_hits[j]);
-            mhtdc_sc11lr_x[i * hits_in_11r + j] = mhtdc_sc11lr_dt[i * hits_in_11r + j] * sci->mhtdc_factor_11l_11r + sci->mhtdc_offset_11l_11r;
+            double dt = mhtdc_sci11lr_dt[i * hits_in_11r + j];
+            if (dt < frs_config->frun_num)
+            {
+                sci11l_hits_selected.emplace_back(sci11l_hits[i]);
+                sci11r_hits_selected.emplace_back(sci11r_hits[j]);
+                mhtdc_sci11lr_dt_selected.emplace_back(dt);
+                mhtdc_sci11lr_x_selected.emplace_back(mhtdc_sci11lr_x[i * hits_in_11r + j]);
+                hits_in_11lr++;
+            }
         }
     }
-
-
+    
     // SCI 21 L and R
     sci21l_hits = calSciItem.Get_mhtdc_sci21l_hits();
     int hits_in_21l = sci21l_hits.size();
     sci21r_hits = calSciItem.Get_mhtdc_sci21r_hits();
     int hits_in_21r = sci21r_hits.size();
-    hits_in_21lr = hits_in_21l * hits_in_21r;
+    mhtdc_sci21lr_dt = calSciItem.Get_mhtdc_dT_21l_21r();
+    mhtdc_sci21lr_x = calSciItem.Get_mhtdc_x_sci21lr();
 
-    mhtdc_sc21lr_dt = new Float_t[hits_in_21lr];
-    mhtdc_sc21lr_x = new Float_t[hits_in_21lr];
+    mhtdc_sci21lr_dt_selected.clear();
+    mhtdc_sci21lr_x_selected.clear();
+    sci21l_hits_selected.clear();
+    sci21r_hits_selected.clear();
     for (int i = 0; i < hits_in_21l; i++)
     {
         for (int j = 0; j < hits_in_21r; j++)
         {
-            mhtdc_sc21lr_dt[i * hits_in_21r + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci21l_hits[i] - sci21r_hits[j]);
-            mhtdc_sc21lr_x[i * hits_in_21r + j] = mhtdc_sc21lr_dt[i * hits_in_21r + j] * sci->mhtdc_factor_21l_21r + sci->mhtdc_offset_21l_21r;
+            double dt = mhtdc_sci21lr_dt[i * hits_in_21r + j];
+            if (dt < frs_config->frun_num) 
+            {
+                sci21l_hits_selected.emplace_back(sci21l_hits[i]);
+                sci21r_hits_selected.emplace_back(sci21r_hits[j]);
+                mhtdc_sci21lr_dt_selected.emplace_back(dt);
+                mhtdc_sci21lr_x_selected.emplace_back(mhtdc_sci21lr_x[i * hits_in_21r + j]);
+                hits_in_21lr++;
+            }
         }
     }
 
@@ -1077,18 +1121,28 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     int hits_in_22l = sci22l_hits.size();
     sci22r_hits = calSciItem.Get_mhtdc_sci22r_hits();
     int hits_in_22r = sci22r_hits.size();
-    hits_in_22lr = hits_in_22l * hits_in_22r;
+    mhtdc_sci22lr_dt = calSciItem.Get_mhtdc_dT_22l_22r();
+    mhtdc_sci22lr_x = calSciItem.Get_mhtdc_x_sci22lr();
 
-    mhtdc_sc22lr_dt = new Float_t[hits_in_22lr];
-    mhtdc_sc22lr_x = new Float_t[hits_in_22lr];
+    mhtdc_sci22lr_dt_selected.clear();
+    mhtdc_sci22lr_x_selected.clear();
+    sci22l_hits_selected.clear();
+    sci22r_hits_selected.clear();
     for (int i = 0; i < hits_in_22l; i++)
     {
-        for (int j = 0; j < hits_in_22r; j ++)
+        for (int j = 0; j < hits_in_22r; j++)
         {
-            mhtdc_sc22lr_dt[i * hits_in_22r + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci22l_hits[i] - sci22r_hits[j]);
-            mhtdc_sc22lr_x[i * hits_in_22r + j] = mhtdc_sc22lr_dt[i * hits_in_22r + j] * sci->mhtdc_factor_22l_22r + sci->mhtdc_offset_22l_22r;
+            double dt = mhtdc_sci22lr_dt[i * hits_in_22r + j];
+            if (dt < frs_config->frun_num) 
+            {
+                sci22l_hits_selected.emplace_back(sci22l_hits[i]);
+                sci22r_hits_selected.emplace_back(sci22r_hits[j]);
+                mhtdc_sci22lr_dt_selected.emplace_back(dt);
+                mhtdc_sci22lr_x_selected.emplace_back(mhtdc_sci22lr_x[i * hits_in_22r + j]);
+                hits_in_22lr++;
+            }
         }
-        if (i == 0)
+        if (i == 0) //EG: ??
         {
             // only do this if there is a case for 22l and 22r != 0. we don't need to do it 10x though
             float sc22pos_from_tpc = -999.9;
@@ -1103,21 +1157,59 @@ void FrsCal2Hit::ProcessSci_MHTDC()
         }
     }
 
+    // SCI 31 L and R
+    sci31l_hits = calSciItem.Get_mhtdc_sci31l_hits();
+    int hits_in_31l = sci31l_hits.size();
+    sci31r_hits = calSciItem.Get_mhtdc_sci31r_hits();
+    int hits_in_31r = sci31r_hits.size();
+    mhtdc_sci31lr_dt = calSciItem.Get_mhtdc_dT_31l_31r();
+    mhtdc_sci31lr_x = calSciItem.Get_mhtdc_x_sci31lr();
+
+    mhtdc_sci31lr_dt_selected.clear();
+    mhtdc_sci31lr_x_selected.clear();
+    sci31l_hits_selected.clear();
+    sci31r_hits_selected.clear();
+    for (int i = 0; i < hits_in_31l; i++)
+    {
+        for (int j = 0; j < hits_in_31r; j++)
+        {
+            double dt = mhtdc_sci31lr_dt[i * hits_in_31r + j];
+            if (dt < frs_config->frun_num) 
+            {
+                sci31l_hits_selected.emplace_back(sci31l_hits[i]);
+                sci31r_hits_selected.emplace_back(sci31r_hits[j]);
+                mhtdc_sci31lr_dt_selected.emplace_back(dt);
+                mhtdc_sci31lr_x_selected.emplace_back(mhtdc_sci31lr_x[i * hits_in_31r + j]);
+                hits_in_31lr++;
+            }
+        }
+    }
+
     // SCI 41 L and R
     sci41l_hits = calSciItem.Get_mhtdc_sci41l_hits();
     int hits_in_41l = sci41l_hits.size();
     sci41r_hits = calSciItem.Get_mhtdc_sci41r_hits();
     int hits_in_41r = sci41r_hits.size();
-    hits_in_41lr = hits_in_41l * hits_in_41r;
+    mhtdc_sci41lr_dt = calSciItem.Get_mhtdc_dT_41l_41r();
+    mhtdc_sci41lr_x = calSciItem.Get_mhtdc_x_sci41lr();
 
-    mhtdc_sc41lr_dt = new Float_t[hits_in_41lr];
-    mhtdc_sc41lr_x = new Float_t[hits_in_41lr];
+    mhtdc_sci41lr_dt_selected.clear();
+    mhtdc_sci41lr_x_selected.clear();
+    sci41l_hits_selected.clear();
+    sci41r_hits_selected.clear();
     for (int i = 0; i < hits_in_41l; i++)
     {
-        for (int j = 0; j < hits_in_41r; j ++)
+        for (int j = 0; j < hits_in_41r; j++)
         {
-            mhtdc_sc41lr_dt[i * hits_in_41r + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci41l_hits[i] - sci41r_hits[j]);
-            mhtdc_sc41lr_x[i * hits_in_41r + j] = mhtdc_sc41lr_dt[i * hits_in_41r + j] * sci->mhtdc_factor_41l_41r + sci->mhtdc_offset_41l_41r;
+            double dt = mhtdc_sci41lr_dt[i * hits_in_41r + j];
+            if (dt < frs_config->frun_num) 
+            {
+                sci41l_hits_selected.emplace_back(sci41l_hits[i]);
+                sci41r_hits_selected.emplace_back(sci41r_hits[j]);
+                mhtdc_sci41lr_dt_selected.emplace_back(dt);
+                mhtdc_sci41lr_x_selected.emplace_back(mhtdc_sci41lr_x[i * hits_in_41r + j]);
+                hits_in_41lr++;
+            }
         }
     }
 
@@ -1126,60 +1218,61 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     int hits_in_42l = sci42l_hits.size();
     sci42r_hits = calSciItem.Get_mhtdc_sci42r_hits();
     int hits_in_42r = sci42r_hits.size();
-    hits_in_42lr = hits_in_42l * hits_in_42r;
+    mhtdc_sci42lr_dt = calSciItem.Get_mhtdc_dT_42l_42r();
+    mhtdc_sci42lr_x = calSciItem.Get_mhtdc_x_sci42lr();
 
-    mhtdc_sc42lr_dt = new Float_t[hits_in_42lr];
-    mhtdc_sc42lr_x = new Float_t[hits_in_42lr];
+    mhtdc_sci42lr_dt_selected.clear();
+    mhtdc_sci42lr_x_selected.clear();
+    sci42l_hits_selected.clear();
+    sci42r_hits_selected.clear();
     for (int i = 0; i < hits_in_42l; i++)
     {
-        for (int j = 0; j < hits_in_42r; j ++)
+        for (int j = 0; j < hits_in_42r; j++)
         {
-            mhtdc_sc42lr_dt[i * hits_in_42r + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci42l_hits[i] - sci42r_hits[j]);
-            mhtdc_sc42lr_x[i * hits_in_42r + j] = mhtdc_sc42lr_dt[i*hits_in_42r + j] * sci->mhtdc_factor_42l_42r + sci->mhtdc_offset_42l_42r;
+            double dt = mhtdc_sci42lr_dt[i * hits_in_42r + j];
+            if (dt < frs_config->frun_num) 
+            {
+                sci42l_hits_selected.emplace_back(sci42l_hits[i]);
+                sci42r_hits_selected.emplace_back(sci42r_hits[j]);
+                mhtdc_sci42lr_dt_selected.emplace_back(dt);
+                mhtdc_sci42lr_x_selected.emplace_back(mhtdc_sci42lr_x[i * hits_in_42r + j]);
+                hits_in_42lr++;
+            }
         }
-    }    
+    }  
     
     // SCI 43 L and R
     sci43l_hits = calSciItem.Get_mhtdc_sci43l_hits();
     int hits_in_43l = sci43l_hits.size();
     sci43r_hits = calSciItem.Get_mhtdc_sci43r_hits();
     int hits_in_43r = sci43r_hits.size();
-    int hits_in_43lr = hits_in_43l * hits_in_43r;
+    mhtdc_sci43lr_dt = calSciItem.Get_mhtdc_dT_43l_43r();
+    mhtdc_sci43lr_x = calSciItem.Get_mhtdc_x_sci43lr();
 
-    mhtdc_sc43lr_dt = new Float_t[hits_in_43lr];
-    mhtdc_sc43lr_x = new Float_t[hits_in_43lr];
+    mhtdc_sci43lr_dt_selected.clear();
+    mhtdc_sci43lr_x_selected.clear();
+    sci43l_hits_selected.clear();
+    sci43r_hits_selected.clear();
     for (int i = 0; i < hits_in_43l; i++)
     {
-        for (int j = 0; j < hits_in_43r; j ++)
+        for (int j = 0; j < hits_in_43r; j++)
         {
-            mhtdc_sc43lr_dt[i * hits_in_43r + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci43l_hits[i] - sci43r_hits[j]);
-            mhtdc_sc43lr_x[i * hits_in_43r + j] = mhtdc_sc43lr_dt[i * hits_in_43r + j] * sci->mhtdc_factor_43l_43r + sci->mhtdc_offset_43l_43r;
+            double dt = mhtdc_sci43lr_dt[i * hits_in_43r + j];
+            if (dt < frs_config->frun_num) 
+            {
+                sci43l_hits_selected.emplace_back(sci43l_hits[i]);
+                sci43r_hits_selected.emplace_back(sci43r_hits[j]);
+                mhtdc_sci43lr_dt_selected.emplace_back(dt);
+                mhtdc_sci43lr_x_selected.emplace_back(mhtdc_sci43lr_x[i * hits_in_43r + j]);
+                hits_in_43lr++;
+            }
         }
-    }
-
-    // SCI 31 L and R
-    sci31l_hits = calSciItem.Get_mhtdc_sci31l_hits();
-    int hits_in_31l = sci31l_hits.size();
-    sci31r_hits = calSciItem.Get_mhtdc_sci31r_hits();
-    int hits_in_31r = sci31r_hits.size();
-    int hits_in_31lr = hits_in_31l * hits_in_31r;
-
-    mhtdc_sc31lr_dt = new Float_t[hits_in_31lr];
-    mhtdc_sc31lr_x = new Float_t[hits_in_31lr];
-    for (int i = 0; i < hits_in_31l; i++)
-    {
-        for (int j = 0; j < hits_in_31r; j ++)
-        {
-            mhtdc_sc31lr_dt[i * hits_in_31r + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci31l_hits[i] - sci31r_hits[j]);
-            mhtdc_sc31lr_x[i * hits_in_31r + j] = mhtdc_sc31lr_dt[i * hits_in_31r + j] * sci->mhtdc_factor_31l_31r + sci->mhtdc_offset_31l_31r;
-        }
-    }
-
+    } 
+    // EG
     // TOF:
     // 11 -> 21
     // std::cout << "event " << std::endl;
     hits_in_tof2111 = hits_in_21lr * hits_in_11lr;
-    mhtdc_tof2111 = new Float_t[hits_in_tof2111];
     int count = 0;
     for (int i = 0; i < hits_in_21l; i++)
     {
@@ -1208,7 +1301,6 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     //TOF:
     // 21 -> 41
     hits_in_tof4121 = hits_in_41lr * hits_in_21lr;
-    mhtdc_tof4121 = new Float_t[hits_in_tof4121];
     count = 0;
     for (int i = 0; i < hits_in_41l; i++)
     {
@@ -1236,7 +1328,6 @@ void FrsCal2Hit::ProcessSci_MHTDC()
 
     // 22 -> 41
     hits_in_tof4122 = hits_in_41lr * hits_in_22lr;
-    mhtdc_tof4122 = new Float_t[hits_in_tof4122];
     count = 0;
     for (int i = 0; i < hits_in_41l; i++) 
     {
@@ -1264,7 +1355,6 @@ void FrsCal2Hit::ProcessSci_MHTDC()
 
     // 21 -> 42
     hits_in_tof4221 = hits_in_42lr * hits_in_21lr;
-    mhtdc_tof4221 = new Float_t[hits_in_tof4221];
     count = 0;
     for (int i = 0; i < hits_in_42l; i++) 
     {
@@ -1293,7 +1383,6 @@ void FrsCal2Hit::ProcessSci_MHTDC()
 
     // 21 -> 43
     int hits_in_tof4321 = hits_in_43lr * hits_in_21lr;
-    mhtdc_tof4321 = new Float_t[hits_in_tof4321];
     count = 0;
     for (int i = 0; i < hits_in_43l; i++) 
     {
@@ -1314,7 +1403,6 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     
     // 21 -> 31
     int hits_in_tof3121 = hits_in_31lr * hits_in_21lr;
-    mhtdc_tof3121 = new Float_t[hits_in_tof3121];
     count = 0;
     for (int i = 0; i < hits_in_31l; i++) 
     {
@@ -2068,7 +2156,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
     if (id->use_sc11x == 1)
     {
         temp_s1x_mhtdc = new Float_t[hits_in_11lr];
-        for (int i = 0; i < hits_in_11lr; i++) temp_s1x_mhtdc[i] = mhtdc_sc11lr_x[i];
+        for (int i = 0; i < hits_in_11lr; i++) temp_s1x_mhtdc[i] = mhtdc_sci11lr_x[i];
         hits_in_s1x = hits_in_11lr;
         temp_a1 = 0;
         
@@ -2118,7 +2206,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
     else if (id->x_s2_select == 2) // Sci21
     {
         temp_s2x_mhtdc = new Float_t[hits_in_21lr];
-        for (int i = 0; i < hits_in_21lr; i++) temp_s2x_mhtdc[i] = mhtdc_sc21lr_x[i];
+        for (int i = 0; i < hits_in_21lr; i++) temp_s2x_mhtdc[i] = mhtdc_sci21lr_x[i];
         temp_a2 = 0;
         hits_in_s2x = hits_in_21lr;
 
@@ -2127,7 +2215,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
     else if (id->x_s2_select == 3) // Sci22
     {
         temp_s2x_mhtdc = new Float_t[hits_in_22lr];
-        for (int i = 0; i < hits_in_22lr; i++) temp_s2x_mhtdc[i] = mhtdc_sc22lr_x[i];
+        for (int i = 0; i < hits_in_22lr; i++) temp_s2x_mhtdc[i] = mhtdc_sci22lr_x[i];
         temp_a2 = 0;
         hits_in_s2x = hits_in_22lr;
 
@@ -2587,27 +2675,27 @@ void FrsCal2Hit::FinishEvent()
     sci_e_81 = 0.;
 
     // ::: SCI MHTDC :::: //
-    if (mhtdc_sc21lr_dt != nullptr) { delete[] mhtdc_sc21lr_dt; mhtdc_sc21lr_dt = nullptr; }
-    if (mhtdc_sc22lr_dt != nullptr) { delete[] mhtdc_sc22lr_dt; mhtdc_sc22lr_dt = nullptr; }
-    if (mhtdc_sc31lr_dt != nullptr) { delete[] mhtdc_sc31lr_dt; mhtdc_sc31lr_dt = nullptr; }
-    if (mhtdc_sc41lr_dt != nullptr) { delete[] mhtdc_sc41lr_dt; mhtdc_sc41lr_dt = nullptr; }
-    if (mhtdc_sc42lr_dt != nullptr) { delete[] mhtdc_sc42lr_dt; mhtdc_sc42lr_dt = nullptr; }
-    if (mhtdc_sc43lr_dt != nullptr) { delete[] mhtdc_sc43lr_dt; mhtdc_sc43lr_dt = nullptr; }
-    if (mhtdc_sc81lr_dt != nullptr) { delete[] mhtdc_sc81lr_dt; mhtdc_sc81lr_dt = nullptr; }
-    if (mhtdc_sc21lr_x != nullptr) { delete[] mhtdc_sc21lr_x; mhtdc_sc21lr_x = nullptr; }
-    if (mhtdc_sc22lr_x != nullptr) { delete[] mhtdc_sc22lr_x; mhtdc_sc22lr_x = nullptr; }
-    if (mhtdc_sc31lr_x != nullptr) { delete[] mhtdc_sc31lr_x; mhtdc_sc31lr_x = nullptr; }
-    if (mhtdc_sc41lr_x != nullptr) { delete[] mhtdc_sc41lr_x; mhtdc_sc41lr_x = nullptr; }
-    if (mhtdc_sc42lr_x != nullptr) { delete[] mhtdc_sc42lr_x; mhtdc_sc42lr_x = nullptr; }
-    if (mhtdc_sc43lr_x != nullptr) { delete[] mhtdc_sc43lr_x; mhtdc_sc43lr_x = nullptr; }
-    if (mhtdc_sc81lr_x != nullptr) { delete[] mhtdc_sc81lr_x; mhtdc_sc81lr_x = nullptr; }
-    if (mhtdc_tof4121 != nullptr) { delete[] mhtdc_tof4121; mhtdc_tof4121 = nullptr; }
-    if (mhtdc_tof4122 != nullptr) { delete[] mhtdc_tof4122; mhtdc_tof4122 = nullptr; }
-    if (mhtdc_tof4221 != nullptr) { delete[] mhtdc_tof4221; mhtdc_tof4221 = nullptr; }
-    if (mhtdc_tof4321 != nullptr) { delete[] mhtdc_tof4321; mhtdc_tof4321 = nullptr; }
-    if (mhtdc_tof8121 != nullptr) { delete[] mhtdc_tof8121; mhtdc_tof8121 = nullptr; }
-    if (mhtdc_tof3121 != nullptr) { delete[] mhtdc_tof3121; mhtdc_tof3121 = nullptr; }
-    if (mhtdc_tof2111 != nullptr) { delete[] mhtdc_tof2111; mhtdc_tof2111 = nullptr; }
+    // if (mhtdc_sci21lr_dt != nullptr) { delete[] mhtdc_sci21lr_dt; mhtdc_sci21lr_dt = nullptr; }
+    // if (mhtdc_sci22lr_dt != nullptr) { delete[] mhtdc_sci22lr_dt; mhtdc_sci22lr_dt = nullptr; }
+    // if (mhtdc_sci31lr_dt != nullptr) { delete[] mhtdc_sci31lr_dt; mhtdc_sci31lr_dt = nullptr; }
+    // if (mhtdc_sci41lr_dt != nullptr) { delete[] mhtdc_sci41lr_dt; mhtdc_sci41lr_dt = nullptr; }
+    // if (mhtdc_sci42lr_dt != nullptr) { delete[] mhtdc_sci42lr_dt; mhtdc_sci42lr_dt = nullptr; }
+    // if (mhtdc_sci43lr_dt != nullptr) { delete[] mhtdc_sci43lr_dt; mhtdc_sci43lr_dt = nullptr; }
+    // if (mhtdc_sci81lr_dt != nullptr) { delete[] mhtdc_sci81lr_dt; mhtdc_sci81lr_dt = nullptr; }
+    // if (mhtdc_sci21lr_x != nullptr) { delete[] mhtdc_sci21lr_x; mhtdc_sci21lr_x = nullptr; }
+    // if (mhtdc_sci22lr_x != nullptr) { delete[] mhtdc_sci22lr_x; mhtdc_sci22lr_x = nullptr; }
+    // if (mhtdc_sci31lr_x != nullptr) { delete[] mhtdc_sci31lr_x; mhtdc_sci31lr_x = nullptr; }
+    // if (mhtdc_sci41lr_x != nullptr) { delete[] mhtdc_sci41lr_x; mhtdc_sci41lr_x = nullptr; }
+    // if (mhtdc_sci42lr_x != nullptr) { delete[] mhtdc_sci42lr_x; mhtdc_sci42lr_x = nullptr; }
+    // if (mhtdc_sci43lr_x != nullptr) { delete[] mhtdc_sci43lr_x; mhtdc_sci43lr_x = nullptr; }
+    // if (mhtdc_sci81lr_x != nullptr) { delete[] mhtdc_sci81lr_x; mhtdc_sci81lr_x = nullptr; }
+    // if (mhtdc_tof4121 != nullptr) { delete[] mhtdc_tof4121; mhtdc_tof4121 = nullptr; }
+    // if (mhtdc_tof4122 != nullptr) { delete[] mhtdc_tof4122; mhtdc_tof4122 = nullptr; }
+    // if (mhtdc_tof4221 != nullptr) { delete[] mhtdc_tof4221; mhtdc_tof4221 = nullptr; }
+    // if (mhtdc_tof4321 != nullptr) { delete[] mhtdc_tof4321; mhtdc_tof4321 = nullptr; }
+    // if (mhtdc_tof8121 != nullptr) { delete[] mhtdc_tof8121; mhtdc_tof8121 = nullptr; }
+    // if (mhtdc_tof3121 != nullptr) { delete[] mhtdc_tof3121; mhtdc_tof3121 = nullptr; }
+    // if (mhtdc_tof2111 != nullptr) { delete[] mhtdc_tof2111; mhtdc_tof2111 = nullptr; }
 
     if (temp_id_mhtdc_tof_s1s2 != nullptr) { delete[] temp_id_mhtdc_tof_s1s2; temp_id_mhtdc_tof_s1s2 = nullptr; }
     if (temp_id_mhtdc_beta_s1s2 != nullptr) { delete[] temp_id_mhtdc_beta_s1s2; temp_id_mhtdc_beta_s1s2 = nullptr; }

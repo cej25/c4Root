@@ -74,6 +74,7 @@ class TFrsConfiguration
         static Double_t fMin_dE_music41, fMax_dE_music41;
         static Double_t fMin_dE_music42, fMax_dE_music42;
         static Double_t fMin_dE_travMus_gate, fMax_dE_travMus_gate;
+        static Int_t fscilr_mhtdc_limit;
         static Double_t tof_gate_low, tof_gate_high;
         static int frun_num;
 
@@ -101,6 +102,8 @@ class TFrsConfiguration
         static void Set_TOF_gate(Double_t min, Double_t max);
 
         static void Set_dE_travMusic_gate(Double_t, Double_t);
+
+        static void Set_scilr_mhtdc_limit(Int_t);
 
         void Plot_TAC_1D(bool option) { plot_tac_1d = option; }
         void Plot_TAC_2D(bool option) { plot_tac_2d = option; }
@@ -192,7 +195,6 @@ class TFrsConfiguration
         Int_t Get_mhtdc_43R_chan() const;
         Int_t Get_mhtdc_81L_chan() const;
         Int_t Get_mhtdc_81R_chan() const;
-
 
     private:
 

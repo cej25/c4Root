@@ -43,6 +43,8 @@ Double_t TFrsConfiguration::fMin_dE_music42 = 0., TFrsConfiguration::fMax_dE_mus
 Double_t TFrsConfiguration::tof_gate_low = 0., TFrsConfiguration::tof_gate_high = 40000000.; // no gate by default
 Double_t TFrsConfiguration::fMin_dE_travMus_gate = 0., TFrsConfiguration::fMax_dE_travMus_gate = 30000.;
 
+Int_t TFrsConfiguration::fscilr_mhtdc_limit = 40;
+
 int TFrsConfiguration::frun_num = 0;
 
 TFrsConfiguration::TFrsConfiguration()
@@ -411,6 +413,11 @@ void TFrsConfiguration::Set_dE_travMusic_gate(Double_t min, Double_t max)
 {
     fMin_dE_travMus_gate = min;
     fMax_dE_travMus_gate = max;
+}
+
+void TFrsConfiguration::Set_scilr_mhtdc_limit(Int_t lim)
+{
+    fscilr_mhtdc_limit = lim;
 }
 
 
