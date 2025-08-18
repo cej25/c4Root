@@ -102,6 +102,7 @@ void LisaCal2Hit::Exec(Option_t* option)
 {
     
     lisaHitArray->clear();
+    z_lisa.clear();
     if (frsHitArray->size() <= 0 || lisaCalArray->size() <= 0 || multihitArray->size() <= 0) return;  
 
     
@@ -125,6 +126,7 @@ void LisaCal2Hit::Exec(Option_t* option)
             int ypos = lisaCalItem.Get_yposition();
             float z_val = 0;
 
+            std::pair< int, std::pair<int,int> > detector_lxy = std::make_pair( layer_id, std::make_pair(xpos, ypos) );
             //c4LOG(info, " size of beta s1s2 : " << beta1.size());
             //c4LOG(info, " layer : " << layer_id << " xpos : " << xpos << " ypos: "<< ypos);
 
@@ -132,7 +134,6 @@ void LisaCal2Hit::Exec(Option_t* option)
             {
                 
                 std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> z_calibration_coeffs = lisa_config->ZCalibrationCoefficients();
-                std::pair< int, std::pair<int,int> > detector_lxy = std::make_pair( layer_id, std::make_pair(xpos, ypos) );
 
                 if (auto result_find_Zcal = z_calibration_coeffs.find(detector_lxy); result_find_Zcal != z_calibration_coeffs.end()) 
                 {
@@ -159,11 +160,13 @@ void LisaCal2Hit::Exec(Option_t* option)
                                 //c4LOG(info, " beta : " << beta << " de_dx : " << de_dx << " de_dx_corr : " << de_dx_corr << " z val : " << z_val );
                                 //c4LOG(info, " slope : " << slope_z << " layer : " << layer_id << " intercept : " << intercept_z );
                             }
+                            else
+                            {
+                                z_lisa.emplace_back(-999.); 
+                            }
                         } 
                     }
-
-                    //c4LOG(info, " end mhit"); 
-                                                     
+                    //c4LOG(info, " end mhit");                                   
                 }
                 else
                 {
