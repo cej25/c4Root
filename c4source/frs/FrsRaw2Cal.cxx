@@ -190,12 +190,13 @@ InitStatus FrsRaw2Cal::Init()
 
 void FrsRaw2Cal::Exec(Option_t* option)
 {
+    //c4LOG(info, "::: start event");
     if (tpatArray->size() == 0) return;
     
     /*if (frs_config->AnlSci)*/ ProcessScintillators();
     /*if (frs_config->AnlTpc)*/ ProcessTpcs();
     ProcessMusic();
-
+    //c4LOG(info, "::: end event");
     fNEvents++;
 
 }
@@ -212,7 +213,7 @@ void FrsRaw2Cal::ProcessScintillators()
     // TAC DE
     sciDE = sciItem.Get_de_array();
 
-
+    //c4LOG(info, "   Process SCI");
     de_11l = sciDE[frs_config->Get_dE_11l_chan()];
     de_11r = sciDE[frs_config->Get_dE_11r_chan()];
     de_21l = sciDE[frs_config->Get_dE_21l_chan()];
@@ -253,6 +254,7 @@ void FrsRaw2Cal::ProcessScintillators()
     dt_22r_81r = sciDT[frs_config->Get_dT_22r_81r_chan()];
 
     // MHTDC T
+    //c4LOG(info, "   MHTDC sci");
     sciMHTDC = sciItem.Get_mhtdc_array();
     for (int val : sciMHTDC[frs_config->Get_mhtdc_11LA_chan()]) sci11la_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
     for (int val : sciMHTDC[frs_config->Get_mhtdc_11LB_chan()]) sci11lb_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
@@ -299,9 +301,10 @@ void FrsRaw2Cal::ProcessScintillators()
     // sci43r_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_43R_chan()];
     // sci81l_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_81L_chan()];
     // sci81r_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_81R_chan()];
-    
+    //c4LOG(info, "   mhtdc sci dt and x");
     //  ::: MHTDC SCI dT and x
     //  1x
+    //c4LOG(info, "   1x");
     int hits_in_11la = sci11la_hits.size();
     int hits_in_11lb = sci11lb_hits.size();
     int hits_in_11lc = sci11lc_hits.size();
@@ -310,44 +313,46 @@ void FrsRaw2Cal::ProcessScintillators()
     int hits_in_11rb = sci11rb_hits.size();
     int hits_in_11rc = sci11rc_hits.size();
     int hits_in_11rd = sci11rd_hits.size();
-
+    
+    //c4LOG(info, "   11la");
     for (int i = 0; i < hits_in_11la; i++)
     {
         for (int j = 0; j < hits_in_11ra; j++)
         {
-            dt11la_11ra_hits[i * hits_in_11ra + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci11la_hits[i] - sci11ra_hits[j]);
-            x_11lra_hits[i * hits_in_11ra + j] = dt11la_11ra_hits[i * hits_in_11ra + j] * sci->mhtdc_factor_11l_11r + sci->mhtdc_offset_11l_11r;
-        }
+            dt11la_11ra_hits.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + sci11la_hits[i] - sci11ra_hits[j]));
+            x_11lra_hits.emplace_back(dt11la_11ra_hits[i * hits_in_11ra + j] * sci->mhtdc_factor_11l_11r + sci->mhtdc_offset_11l_11r);
+        }  
     }
-
+    //c4LOG(info, "   11lb");
     for (int i = 0; i < hits_in_11lb; i++)
     {
         for (int j = 0; j < hits_in_11rb; j++)
         {
-            dt11lb_11rb_hits[i * hits_in_11rb + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci11lb_hits[i] - sci11rb_hits[j]);
-            x_11lrb_hits[i * hits_in_11rb + j] = dt11lb_11rb_hits[i * hits_in_11rb + j] * sci->mhtdc_factor_11l_11r + sci->mhtdc_offset_11l_11r;
+            dt11lb_11rb_hits.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + sci11lb_hits[i] - sci11rb_hits[j])); 
+            x_11lrb_hits.emplace_back(dt11lb_11rb_hits[i * hits_in_11rb + j] * sci->mhtdc_factor_11l_11r + sci->mhtdc_offset_11l_11r); 
         }
     }
-
+    //c4LOG(info, "   11lc");
     for (int i = 0; i < hits_in_11lc; i++)
     {
         for (int j = 0; j < hits_in_11rc; j++)
         {
-            dt11lc_11rc_hits[i * hits_in_11rc + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci11lc_hits[i] - sci11rc_hits[j]);
-            x_11lrc_hits[i * hits_in_11rc + j] = dt11lc_11rc_hits[i * hits_in_11rc + j] * sci->mhtdc_factor_11l_11r + sci->mhtdc_offset_11l_11r;
+            dt11lc_11rc_hits.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + sci11lc_hits[i] - sci11rc_hits[j])); 
+            x_11lrc_hits.emplace_back(dt11lc_11rc_hits[i * hits_in_11rc + j] * sci->mhtdc_factor_11l_11r + sci->mhtdc_offset_11l_11r); 
         }
     }
-
+    //c4LOG(info, "   11ld");
     for (int i = 0; i < hits_in_11ld; i++)
     {
         for (int j = 0; j < hits_in_11rd; j++)
         {
-            dt11ld_11rd_hits[i * hits_in_11rd + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci11ld_hits[i] - sci11rd_hits[j]);
-            x_11lrd_hits[i * hits_in_11rd + j] = dt11ld_11rd_hits[i * hits_in_11rd + j] * sci->mhtdc_factor_11l_11r + sci->mhtdc_offset_11l_11r;
+            dt11ld_11rd_hits.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + sci11ld_hits[i] - sci11rd_hits[j])); 
+            x_11lrd_hits.emplace_back(dt11ld_11rd_hits[i * hits_in_11rd + j] * sci->mhtdc_factor_11l_11r + sci->mhtdc_offset_11l_11r); 
         }
     }
 
     //  2x
+    //c4LOG(info, "   2x");
     int hits_in_21l = sci21l_hits.size();
     int hits_in_22l = sci22l_hits.size();
     int hits_in_21r = sci21r_hits.size();
@@ -357,8 +362,8 @@ void FrsRaw2Cal::ProcessScintillators()
     {
         for (int j = 0; j < hits_in_21r; j++)
         {
-            dt21l_21r_hits[i * hits_in_21r + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci21l_hits[i] - sci21r_hits[j]);
-            x_21lr_hits[i * hits_in_21r + j] = dt21l_21r_hits[i * hits_in_21r + j] * sci->mhtdc_factor_21l_21r + sci->mhtdc_offset_21l_21r;
+            dt21l_21r_hits.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + sci21l_hits[i] - sci21r_hits[j]));
+            x_21lr_hits.emplace_back(dt21l_21r_hits[i * hits_in_21r + j] * sci->mhtdc_factor_21l_21r + sci->mhtdc_offset_21l_21r);
         }
     }
 
@@ -366,12 +371,13 @@ void FrsRaw2Cal::ProcessScintillators()
     {
         for (int j = 0; j < hits_in_22r; j++)
         {
-            dt22l_22r_hits[i * hits_in_22r + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci22l_hits[i] - sci22r_hits[j]);
-            x_22lr_hits[i * hits_in_22r + j] = dt22l_22r_hits[i * hits_in_22r + j] * sci->mhtdc_factor_22l_22r + sci->mhtdc_offset_22l_22r;
+            dt22l_22r_hits.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + sci22l_hits[i] - sci22r_hits[j]));
+            x_22lr_hits.emplace_back(dt22l_22r_hits[i * hits_in_22r + j] * sci->mhtdc_factor_22l_22r + sci->mhtdc_offset_22l_22r);
         }
     }
 
     //  3x
+    //c4LOG(info, "   3x");
     int hits_in_31l = sci31l_hits.size();
     int hits_in_31r = sci31r_hits.size();
     
@@ -379,12 +385,13 @@ void FrsRaw2Cal::ProcessScintillators()
     {
         for (int j = 0; j < hits_in_31r; j++)
         {
-            dt31l_31r_hits[i * hits_in_31r + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci31l_hits[i] - sci31r_hits[j]);
-            x_31lr_hits[i * hits_in_31r + j] = dt31l_31r_hits[i * hits_in_31r + j] * sci->mhtdc_factor_31l_31r + sci->mhtdc_offset_31l_31r;
+            dt31l_31r_hits.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + sci31l_hits[i] - sci31r_hits[j]));
+            x_31lr_hits.emplace_back(dt31l_31r_hits[i * hits_in_31r + j] * sci->mhtdc_factor_31l_31r + sci->mhtdc_offset_31l_31r); 
         }
     }  
 
     //  4x
+    //c4LOG(info, "   4x");
     int hits_in_41l = sci41l_hits.size();
     int hits_in_41r = sci41r_hits.size();
     int hits_in_42l = sci42l_hits.size();
@@ -396,8 +403,8 @@ void FrsRaw2Cal::ProcessScintillators()
     {
         for (int j = 0; j < hits_in_41r; j++)
         {
-            dt41l_41r_hits[i * hits_in_41r + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci41l_hits[i] - sci41r_hits[j]);
-            x_41lr_hits[i * hits_in_41r + j] = dt41l_41r_hits[i * hits_in_41r + j] * sci->mhtdc_factor_41l_41r + sci->mhtdc_offset_41l_41r;
+            dt41l_41r_hits.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + sci41l_hits[i] - sci41r_hits[j]));
+            x_41lr_hits.emplace_back(dt41l_41r_hits[i * hits_in_41r + j] * sci->mhtdc_factor_41l_41r + sci->mhtdc_offset_41l_41r);
         }
     }
 
@@ -405,8 +412,8 @@ void FrsRaw2Cal::ProcessScintillators()
     {
         for (int j = 0; j < hits_in_42r; j++)
         {
-            dt42l_42r_hits[i * hits_in_42r + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci42l_hits[i] - sci42r_hits[j]);
-            x_42lr_hits[i * hits_in_42r + j] = dt42l_42r_hits[i * hits_in_42r + j] * sci->mhtdc_factor_42l_42r + sci->mhtdc_offset_42l_42r;
+            dt42l_42r_hits.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + sci42l_hits[i] - sci42r_hits[j]));
+            x_42lr_hits.emplace_back(dt42l_42r_hits[i * hits_in_42r + j] * sci->mhtdc_factor_42l_42r + sci->mhtdc_offset_42l_42r);
         }
     }
 
@@ -414,12 +421,13 @@ void FrsRaw2Cal::ProcessScintillators()
     {
         for (int j = 0; j < hits_in_43r; j++)
         {
-            dt43l_43r_hits[i * hits_in_43r + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci43l_hits[i] - sci43r_hits[j]);
-            x_43lr_hits[i * hits_in_43r + j] = dt43l_43r_hits[i * hits_in_43r + j] * sci->mhtdc_factor_43l_43r + sci->mhtdc_offset_43l_43r;
+            dt43l_43r_hits.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + sci43l_hits[i] - sci43r_hits[j]));
+            x_43lr_hits.emplace_back(dt43l_43r_hits[i * hits_in_43r + j] * sci->mhtdc_factor_43l_43r + sci->mhtdc_offset_43l_43r);
         }
     }
 
     //  8x
+    //c4LOG(info, "   8x");
     int hits_in_81l = sci81l_hits.size();
     int hits_in_81r = sci81r_hits.size();
 
@@ -427,11 +435,11 @@ void FrsRaw2Cal::ProcessScintillators()
     {
         for (int j = 0; j < hits_in_81r; j++)
         {
-            dt81l_81r_hits[i * hits_in_81r + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci81l_hits[i] - sci81r_hits[j]);
-            x_81lr_hits[i * hits_in_81r + j] = dt81l_81r_hits[i * hits_in_81r + j] * sci->mhtdc_factor_81l_81r + sci->mhtdc_offset_81l_81r;
+            dt81l_81r_hits.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + sci81l_hits[i] - sci81r_hits[j]));
+            x_81lr_hits.emplace_back(dt81l_81r_hits[i * hits_in_81r + j] * sci->mhtdc_factor_81l_81r + sci->mhtdc_offset_81l_81r);
         }
     }
-
+    //c4LOG(info, "   set");
     auto & entry = calSciArray->emplace_back();
     entry.SetAll(de_11l,
                 de_11r,
@@ -1192,6 +1200,58 @@ void FrsRaw2Cal::FinishEvent()
     memset(tpc_xraw, 0, sizeof(tpc_xraw));
     memset(tpc_yraw, 0, sizeof(tpc_yraw));
     memset(tpc_dx12, 0, sizeof(tpc_dx12));
+
+    sci11la_hits.clear();
+    sci11lb_hits.clear();
+    sci11lc_hits.clear();
+    sci11ld_hits.clear();
+    sci11ra_hits.clear();
+    sci11rb_hits.clear();
+    sci11rc_hits.clear();
+    sci11rd_hits.clear();
+
+    sci21l_hits.clear();
+    sci21r_hits.clear();
+    sci22l_hits.clear();
+    sci22r_hits.clear();
+    sci31l_hits.clear();
+    sci31r_hits.clear();
+    sci41l_hits.clear();
+    sci41r_hits.clear();
+    sci42l_hits.clear();
+    sci42r_hits.clear();
+    sci43l_hits.clear();
+    sci43r_hits.clear();
+    sci81l_hits.clear();
+    sci81r_hits.clear();
+
+    dt11la_11ra_hits.clear();
+    x_11lra_hits.clear();
+    dt11lb_11rb_hits.clear();
+    x_11lrb_hits.clear();
+    dt11lc_11rc_hits.clear();
+    x_11lrc_hits.clear();
+    dt11ld_11rd_hits.clear();
+    x_11lrd_hits.clear();
+
+    dt21l_21r_hits.clear();
+    x_21lr_hits.clear();
+    dt22l_22r_hits.clear();
+    x_22lr_hits.clear();
+
+    dt31l_31r_hits.clear();
+    x_31lr_hits.clear();
+
+    dt41l_41r_hits.clear();
+    x_41lr_hits.clear();
+    dt42l_42r_hits.clear();
+    x_42lr_hits.clear();
+    dt43l_43r_hits.clear();
+    x_43lr_hits.clear();
+
+    dt81l_81r_hits.clear();
+    x_81lr_hits.clear();
+
 
     // ::: SCI MHTDC :::
 }

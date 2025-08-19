@@ -1275,6 +1275,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     // 11 -> 21
     // std::cout << "event " << std::endl;
     c4LOG(info,"TOF 2111");
+    c4LOG(info, " size of mhtdc_sci11lr_x_selected : " << mhtdc_sci11lr_x_selected.size());
     hits_in_tof2111_selected = hits_in_21lr_selected * hits_in_11lr_selected;
     int count = 0;
     for (int i = 0; i < hits_in_21l_selected; i++)
@@ -1292,27 +1293,37 @@ void FrsCal2Hit::ProcessSci_MHTDC()
                     {
                         float tof = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci21l_hits_selected[i] + sci21r_hits_selected[j]) - 0.5 * (sci11l_hits_selected[k] + sci11r_hits_selected[l])) + sci->mhtdc_offset_21_11[sci->sci11_select];
                         mhtdc_tof2111.emplace_back(tof);
+                        c4LOG(info,"before tof selection");
 
                         if (tof > frs_config->ftof_2111_min && tof < frs_config->ftof_2111_max) 
                         {
+                            c4LOG(info,"after tof selection");
                             mhtdc_tof2111_selected.emplace_back(tof);
-                            mhtdc_sci11lr_x_tofs1s2_selected.emplace_back(mhtdc_sci11lr_x_selected[count]);
-                            mhtdc_sci21lr_x_tofs1s2_selected.emplace_back(mhtdc_sci21lr_x_selected[count]);
-                            sci11l_hits_tofs1s2_selected.emplace_back(sci11l_hits_selected[count]);
-                            sci11r_hits_tofs1s2_selected.emplace_back(sci11r_hits_selected[count]);
-                            sci21l_hits_tofs1s2_selected.emplace_back(sci21l_hits_selected[count]);
-                            sci21r_hits_tofs1s2_selected.emplace_back(sci21r_hits_selected[count]);
+                            c4LOG(info," index for mhtdc : " << k * hits_in_11r_selected + l);
+                            mhtdc_sci11lr_x_tofs1s2_selected.emplace_back(mhtdc_sci11lr_x_selected[k * hits_in_11r_selected + l ]);
+                            c4LOG(info,"2");
+                            mhtdc_sci21lr_x_tofs1s2_selected.emplace_back(mhtdc_sci21lr_x_selected[i * hits_in_21r_selected + j ]);
+                            c4LOG(info,"3");
+                            sci11l_hits_tofs1s2_selected.emplace_back(sci11l_hits_selected[k]);
+                            c4LOG(info,"4");
+                            sci11r_hits_tofs1s2_selected.emplace_back(sci11r_hits_selected[l]);
+                            c4LOG(info,"5");
+                            sci21l_hits_tofs1s2_selected.emplace_back(sci21l_hits_selected[i]);
+                            sci21r_hits_tofs1s2_selected.emplace_back(sci21r_hits_selected[j]);
+                            c4LOG(info,"end of tof loop");
                         }
                     }
                 }
             }
         }
     }
+    c4LOG(info,"hits size");
     hits_in_11l_tofs1s2_selected = sci11l_hits_tofs1s2_selected.size();
     hits_in_11r_tofs1s2_selected = sci11r_hits_tofs1s2_selected.size();  
     hits_in_21l_tofs1s2_selected = sci11l_hits_tofs1s2_selected.size();
     hits_in_21r_tofs1s2_selected = sci11r_hits_tofs1s2_selected.size(); 
 
+    c4LOG(info,"hits calc");
     hits_in_11lr_tofs1s2_selected = hits_in_11l_tofs1s2_selected*hits_in_11l_tofs1s2_selected;
     hits_in_21lr_tofs1s2_selected = hits_in_21l_tofs1s2_selected*hits_in_21l_tofs1s2_selected;
 
@@ -1337,12 +1348,12 @@ void FrsCal2Hit::ProcessSci_MHTDC()
                         if (tof > frs_config->ftof_4121_min && tof < frs_config->ftof_4121_max)
                         {
                             mhtdc_tof4121_selected.emplace_back(tof);
-                            mhtdc_sci21lr_x_tofs2s4_selected.emplace_back(mhtdc_sci21lr_x_selected[count]);
-                            mhtdc_sci41lr_x_tofs2s4_selected.emplace_back(mhtdc_sci41lr_x_selected[count]);
-                            sci21l_hits_tofs2s4_selected.emplace_back(sci21l_hits_selected[count]);
-                            sci21r_hits_tofs2s4_selected.emplace_back(sci21r_hits_selected[count]);
-                            sci41l_hits_tofs2s4_selected.emplace_back(sci41l_hits_selected[count]);
-                            sci41r_hits_tofs2s4_selected.emplace_back(sci41r_hits_selected[count]);
+                            mhtdc_sci21lr_x_tofs2s4_selected.emplace_back(mhtdc_sci21lr_x_selected[k * hits_in_21r_selected + l]);
+                            mhtdc_sci41lr_x_tofs2s4_selected.emplace_back(mhtdc_sci41lr_x_selected[i * hits_in_41r_selected + j]);
+                            sci21l_hits_tofs2s4_selected.emplace_back(sci21l_hits_selected[k]);
+                            sci21r_hits_tofs2s4_selected.emplace_back(sci21r_hits_selected[l]);
+                            sci41l_hits_tofs2s4_selected.emplace_back(sci41l_hits_selected[i]);
+                            sci41r_hits_tofs2s4_selected.emplace_back(sci41r_hits_selected[j]);
                         }     
                     }
                 }
@@ -2433,7 +2444,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
 
     // ::::::::::::::::::::::::::::::::::::
     //   S2S4 MultihitTDC ID analysis
-    c4LOG(info,"S2S4 mhtdc");
+    //c4LOG(info,"S2S4 mhtdc");
     float mean_brho_s2s4 = 0.5 * (frs->bfield[2] + frs->bfield[3]);
 
     // matches hits_in_tof4121 if 21 -> 41, etc.
@@ -2823,7 +2834,7 @@ void FrsCal2Hit::FinishEvent()
     id_b_z42 = false;
     id_b_z43 = false;
 
-    c4LOG(info, " tof clearing ");
+    //c4LOG(info, " tof clearing ");
     mhtdc_tof2111_selected.clear();
     mhtdc_tof2111.clear();
     mhtdc_tof4121_selected.clear();
@@ -2837,7 +2848,7 @@ void FrsCal2Hit::FinishEvent()
     mhtdc_tof3121_selected.clear();
     mhtdc_tof3121.clear();
 
-    c4LOG(info, " sci stuff clearing");
+    //c4LOG(info, " sci stuff clearing");
     mhtdc_sci11lr_dt_selected.clear();
     mhtdc_sci11lr_x_selected.clear();
     sci11l_hits_selected.clear();
@@ -2862,7 +2873,7 @@ void FrsCal2Hit::FinishEvent()
     sci41l_hits_tofs2s4_selected.clear();
     sci41r_hits_tofs2s4_selected.clear();
 
-    c4LOG(info, " stuff already there ");
+    //c4LOG(info, " stuff already there ");
     s1x_mhtdc.clear();
     s1a_mhtdc.clear();
     s2x_s1s2_mhtdc.clear();
