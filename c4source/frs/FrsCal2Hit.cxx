@@ -2703,6 +2703,7 @@ Float_t FrsCal2Hit::rand3()
 // IDs are set to unobtrusive values, bools are set to false
 void FrsCal2Hit::FinishEvent()
 {
+    c4LOG(info, " Start of Finish Event");
     hitArray->clear();
     multihitArray->clear();
 
@@ -2822,6 +2823,7 @@ void FrsCal2Hit::FinishEvent()
     id_b_z42 = false;
     id_b_z43 = false;
 
+    c4LOG(info, " tof clearing ");
     mhtdc_tof2111_selected.clear();
     mhtdc_tof2111.clear();
     mhtdc_tof4121_selected.clear();
@@ -2835,6 +2837,7 @@ void FrsCal2Hit::FinishEvent()
     mhtdc_tof3121_selected.clear();
     mhtdc_tof3121.clear();
 
+    c4LOG(info, " sci stuff clearing");
     mhtdc_sci11lr_dt_selected.clear();
     mhtdc_sci11lr_x_selected.clear();
     sci11l_hits_selected.clear();
@@ -2859,6 +2862,7 @@ void FrsCal2Hit::FinishEvent()
     sci41l_hits_tofs2s4_selected.clear();
     sci41r_hits_tofs2s4_selected.clear();
 
+    c4LOG(info, " stuff already there ");
     s1x_mhtdc.clear();
     s1a_mhtdc.clear();
     s2x_s1s2_mhtdc.clear();
@@ -2917,7 +2921,7 @@ void FrsCal2Hit::FinishEvent()
     id_mhtdc_dEdegoQ_s2s4.clear();
     id_mhtdc_dEdeg_z41.clear();
 
-    
+    c4LOG(info, " End of Finish Event");
 }
 
 void FrsCal2Hit::FinishTask()
