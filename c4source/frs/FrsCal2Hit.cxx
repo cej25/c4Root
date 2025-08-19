@@ -322,6 +322,8 @@ void FrsCal2Hit::Exec(Option_t* option)
                         id_mhtdc_z_music21,
                         id_mhtdc_z_music22); // CEJ  FIX
 
+    multihitEntry.SetTOFs1s2Full(mhtdc_tof2111);
+
     // auto & multihitEntry = multihitArray->emplace_back();
     // multihitEntry.SetS1S2(s1x_mhtdc,
     //                     s1a_mhtdc,
@@ -355,7 +357,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     //     }
     // }
 
-    if (hits_in_s4x * hits_in_s2x > 0) aoqfrscal++;
+    //if (hits_in_s4x_tofs2s4_selected * hits_in_s2x_tofs2s4_selected > 0) aoqfrscal++;
 
     multihitEntry.SetS2S4(s2x_s2s4_mhtdc,
                         s2a_s2s4_mhtdc,
@@ -370,6 +372,8 @@ void FrsCal2Hit::Exec(Option_t* option)
                         id_mhtdc_z_music43,
                         id_mhtdc_dEdegoQ_s2s4,
                         id_mhtdc_dEdeg_z41);
+
+    multihitEntry.SetTOFs2s4Full(mhtdc_tof4121);
 
     // multihitEntry.SetS2S4(s2x_s2s4_mhtdc,
     //                     s2a_s2s4_mhtdc,
@@ -1040,10 +1044,6 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     else if (sci->sci11_select == 2) mhtdc_sci11lr_x = calSciItem.Get_mhtdc_x_sci11lrc();
     else if (sci->sci11_select == 3) mhtdc_sci11lr_x = calSciItem.Get_mhtdc_x_sci11lrd();
 
-    mhtdc_sci11lr_dt_selected.clear();
-    mhtdc_sci11lr_x_selected.clear();
-    sci11l_hits_selected.clear();
-    sci11r_hits_selected.clear();
     for (int i = 0; i < hits_in_11l; i++)
     {
         for (int j = 0; j < hits_in_11r; j++)
@@ -1183,10 +1183,6 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     mhtdc_sci41lr_dt = calSciItem.Get_mhtdc_dT_41l_41r();
     mhtdc_sci41lr_x = calSciItem.Get_mhtdc_x_sci41lr();
 
-    mhtdc_sci41lr_dt_selected.clear();
-    mhtdc_sci41lr_x_selected.clear();
-    sci41l_hits_selected.clear();
-    sci41r_hits_selected.clear();
     for (int i = 0; i < hits_in_41l; i++)
     {
         for (int j = 0; j < hits_in_41r; j++)
@@ -1268,6 +1264,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     // TOF: loop over selected hits left-right, define tof, apply cuts, define tof_selected
     // 11 -> 21
     // std::cout << "event " << std::endl;
+
     hits_in_tof2111_selected = hits_in_21lr_selected * hits_in_11lr_selected;
     int count = 0;
     for (int i = 0; i < hits_in_21l_selected; i++)
@@ -1279,24 +1276,36 @@ void FrsCal2Hit::ProcessSci_MHTDC()
                 for (int l = 0; l < hits_in_11r_selected; l++)
                 {
                     count = i * hits_in_21r_selected * hits_in_11l_selected * hits_in_11r_selected + j * hits_in_11l_selected * hits_in_11r_selected + k * hits_in_11r_selected + l;
-                    //this is just an extra check but this condition should already be valid since we are using the selected hits
+                    
+                    // EG: this is just an extra check but this condition should already be valid since we are using the selected hits
                     if ((sci->mhtdc_factor_ch_to_ns * TMath::Abs(sci21l_hits_selected[i] - sci21r_hits_selected[j]) < frs_config->fscilr_mhtdc_limit) && (sci->mhtdc_factor_ch_to_ns * TMath::Abs(sci11l_hits_selected[k] - sci11r_hits_selected[l]) < frs_config->fscilr_mhtdc_limit))
                     {
                         float tof = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci21l_hits_selected[i] + sci21r_hits_selected[j]) - 0.5 * (sci11l_hits_selected[k] + sci11r_hits_selected[l])) + sci->mhtdc_offset_21_11[sci->sci11_select];
-                        mhtdc_tof2111[count] = tof;
-                        if (tof > frs_config->ftof_2111_min && tof < frs_config->ftof_2111_max) mhtdc_tof2111_selected[count] = tof; 
-                        else mhtdc_tof2111_selected[count] = -999;
-                    }
-                    else
-                    {
-                        mhtdc_tof2111[count] = -999;
-                        mhtdc_tof2111_selected[count] = -999;
+                        mhtdc_tof2111.emplace_back(tof);
+
+                        if (tof > frs_config->ftof_2111_min && tof < frs_config->ftof_2111_max) 
+                        {
+                            mhtdc_tof2111_selected.emplace_back(tof);
+                            mhtdc_sci11lr_x_tofs1s2_selected.emplace_back(mhtdc_sci11lr_x_selected[count]);
+                            mhtdc_sci21lr_x_tofs1s2_selected.emplace_back(mhtdc_sci21lr_x_selected[count]);
+                            sci11l_hits_tofs1s2_selected.emplace_back(sci11l_hits_selected[count]);
+                            sci11r_hits_tofs1s2_selected.emplace_back(sci11r_hits_selected[count]);
+                            sci21l_hits_tofs1s2_selected.emplace_back(sci21l_hits_selected[count]);
+                            sci21r_hits_tofs1s2_selected.emplace_back(sci21r_hits_selected[count]);
+                        }
                     }
                 }
             }
         }
     }
-      
+    hits_in_11l_tofs1s2_selected = sci11l_hits_tofs1s2_selected.size();
+    hits_in_11r_tofs1s2_selected = sci11r_hits_tofs1s2_selected.size();  
+    hits_in_21l_tofs1s2_selected = sci11l_hits_tofs1s2_selected.size();
+    hits_in_21r_tofs1s2_selected = sci11r_hits_tofs1s2_selected.size(); 
+
+    hits_in_11lr_tofs1s2_selected = hits_in_11l_tofs1s2_selected*hits_in_11l_tofs1s2_selected;
+    hits_in_21lr_tofs1s2_selected = hits_in_21l_tofs1s2_selected*hits_in_21l_tofs1s2_selected;
+
     //TOF:
     // 21 -> 41
     hits_in_tof4121_selected = hits_in_41lr_selected * hits_in_21lr_selected;
@@ -1305,27 +1314,37 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     {
         for (int j = 0; j < hits_in_41r_selected; j++)
         {
-            for (int k = 0; k < hits_in_21l_selected; k++) 
+            for (int k = 0; k < hits_in_21l_tofs1s2_selected; k++) 
             {
-                for (int l = 0; l < hits_in_21r_selected; l++)
+                for (int l = 0; l < hits_in_21r_tofs1s2_selected; l++)
                 {
                     count = i * hits_in_41r_selected * hits_in_21l_selected * hits_in_21r_selected + j * hits_in_21l_selected * hits_in_21r_selected + k * hits_in_21r_selected + l;
-                    if ((sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci41l_hits_selected[i] - sci41r_hits_selected[j]) < frs_config->fscilr_mhtdc_limit) && (sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci21l_hits_selected[k] - sci21r_hits_selected[l]) < frs_config->fscilr_mhtdc_limit))
+                    if ((sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci41l_hits_selected[i] - sci41r_hits_selected[j]) < frs_config->fscilr_mhtdc_limit) && (sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci21l_hits_tofs1s2_selected[k] - sci21r_hits_tofs1s2_selected[l]) < frs_config->fscilr_mhtdc_limit))
                     {
-                        float tof = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci41l_hits_selected[i] + sci41r_hits_selected[j]) - 0.5 * (sci21l_hits_selected[k] + sci21r_hits_selected[l])) + sci->mhtdc_offset_41_21;
-                        mhtdc_tof4121[count] = tof;
-                        if (tof > frs_config->ftof_4121_min && tof < frs_config->ftof_4121_max) mhtdc_tof4121_selected[count] = tof;
-                        else mhtdc_tof4121_selected[count] = -999;
-                    }
-                    else
-                    {
-                        mhtdc_tof4121[count] = -999;
-                        mhtdc_tof4121_selected[count] = -999;
+                        float tof = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci41l_hits_selected[i] + sci41r_hits_selected[j]) - 0.5 * (sci21l_hits_tofs1s2_selected[k] + sci21r_hits_tofs1s2_selected[l])) + sci->mhtdc_offset_41_21;
+                        mhtdc_tof4121.emplace_back(tof);
+                        if (tof > frs_config->ftof_4121_min && tof < frs_config->ftof_4121_max)
+                        {
+                            mhtdc_tof4121_selected.emplace_back(tof);
+                            mhtdc_sci21lr_x_tofs2s4_selected.emplace_back(mhtdc_sci21lr_x_selected[count]);
+                            mhtdc_sci41lr_x_tofs2s4_selected.emplace_back(mhtdc_sci41lr_x_selected[count]);
+                            sci21l_hits_tofs2s4_selected.emplace_back(sci21l_hits_selected[count]);
+                            sci21r_hits_tofs2s4_selected.emplace_back(sci21r_hits_selected[count]);
+                            sci41l_hits_tofs2s4_selected.emplace_back(sci41l_hits_selected[count]);
+                            sci41r_hits_tofs2s4_selected.emplace_back(sci41r_hits_selected[count]);
+                        }     
                     }
                 }
             }
         }
     }
+    hits_in_21l_tofs2s4_selected = sci21l_hits_tofs2s4_selected.size();
+    hits_in_21r_tofs2s4_selected = sci21r_hits_tofs2s4_selected.size();  
+    hits_in_41l_tofs2s4_selected = sci41l_hits_tofs2s4_selected.size();
+    hits_in_41r_tofs2s4_selected = sci41r_hits_tofs2s4_selected.size();  
+
+    hits_in_21lr_tofs2s4_selected = hits_in_21l_tofs2s4_selected*hits_in_21l_tofs2s4_selected;
+    hits_in_41lr_tofs2s4_selected = hits_in_41l_tofs2s4_selected*hits_in_41l_tofs2s4_selected;
 
     // 22 -> 41
     hits_in_tof4122_selected = hits_in_41lr_selected * hits_in_22lr_selected;
@@ -1342,14 +1361,8 @@ void FrsCal2Hit::ProcessSci_MHTDC()
                     if ((sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci41l_hits_selected[i] - sci41r_hits_selected[j]) < frs_config->fscilr_mhtdc_limit) && (sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci22l_hits_selected[k] - sci22r_hits_selected[l]) < frs_config->fscilr_mhtdc_limit))
                     {
                         float tof = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci41l_hits_selected[i] + sci41r_hits_selected[j]) - 0.5 * (sci22l_hits_selected[k] + sci22r_hits_selected[l])) + sci->mhtdc_offset_41_22;
-                        mhtdc_tof4122[count] = tof;
-                        if (tof > frs_config->ftof_4122_min && tof < frs_config->ftof_4122_max) mhtdc_tof4122_selected[count] = tof; 
-                        else mhtdc_tof4122_selected[count] = -999;
-                    }
-                    else
-                    {
-                        mhtdc_tof4122[count] = -999;
-                        mhtdc_tof4122_selected[count] = -999;
+                        mhtdc_tof4122.emplace_back(tof);
+                        if (tof > frs_config->ftof_4122_min && tof < frs_config->ftof_4122_max) mhtdc_tof4122_selected.emplace_back(tof); 
                     }
                 }
             }
@@ -1371,20 +1384,13 @@ void FrsCal2Hit::ProcessSci_MHTDC()
                     if ((sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci42l_hits_selected[i] - sci42r_hits_selected[j]) < frs_config->fscilr_mhtdc_limit) && (sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci21l_hits_selected[k] - sci21r_hits_selected[l]) < frs_config->fscilr_mhtdc_limit))
                     {
                         float tof = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci42l_hits_selected[i] + sci42r_hits_selected[j]) - 0.5 * (sci21l_hits_selected[k] + sci21r_hits_selected[l])) + sci->mhtdc_offset_42_21;
-                        mhtdc_tof4221[count] = tof;
-                        if (tof > frs_config->ftof_4221_min && tof < frs_config->ftof_4221_max) mhtdc_tof4221[count] = tof;
-                        else mhtdc_tof4221_selected[count] = -999;
-                    }
-                    else
-                    {
-                        mhtdc_tof4221[count] = -999;
-                        mhtdc_tof4221_selected[count] = -999;
+                        mhtdc_tof4221.emplace_back(tof);
+                        if (tof > frs_config->ftof_4221_min && tof < frs_config->ftof_4221_max) mhtdc_tof4221.emplace_back(tof);
                     }
                 }
             }
         }
     }
-
 
     // 21 -> 43
     int hits_in_tof4321_selected = hits_in_43lr_selected * hits_in_21lr_selected;
@@ -1401,15 +1407,10 @@ void FrsCal2Hit::ProcessSci_MHTDC()
                     if ((sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci43l_hits_selected[i] - sci43r_hits_selected[j]) < frs_config->fscilr_mhtdc_limit) && (sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci21l_hits_selected[k] - sci21r_hits_selected[l]) < frs_config->fscilr_mhtdc_limit))
                     {
                         float tof = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci43l_hits_selected[i] + sci43r_hits_selected[j]) - 0.5 * (sci21l_hits_selected[k] + sci21r_hits_selected[l])) + sci->mhtdc_offset_43_21;
-                        mhtdc_tof4221[count] = tof;
-                        if (tof > frs_config->ftof_4321_min && tof < frs_config->ftof_4321_max) mhtdc_tof4321[count] = tof;
-                        else mhtdc_tof4321_selected[count] = -999;
+                        mhtdc_tof4221.emplace_back(tof);
+                        if (tof > frs_config->ftof_4321_min && tof < frs_config->ftof_4321_max) mhtdc_tof4321.emplace_back(tof);
                     }
-                    else
-                    {
-                        mhtdc_tof4321[count] = -999;
-                        mhtdc_tof4321_selected[count] = -999;
-                    }
+
                 }
             }
         }
@@ -1431,14 +1432,8 @@ void FrsCal2Hit::ProcessSci_MHTDC()
                     if ((sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci31l_hits_selected[i] - sci31r_hits_selected[j]) < frs_config->fscilr_mhtdc_limit) && (sci->mhtdc_factor_ch_to_ns*TMath::Abs(sci21l_hits_selected[k] - sci21r_hits_selected[l]) < frs_config->fscilr_mhtdc_limit))
                     {
                         float tof = sci->mhtdc_factor_ch_to_ns * (0.5 * (sci31l_hits_selected[i] + sci31r_hits_selected[j]) - 0.5 * (sci21l_hits_selected[k] + sci21r_hits_selected[l])) + sci->mhtdc_offset_31_21;
-                        mhtdc_tof3121[count] = tof;
-                        if (tof > frs_config->ftof_3121_min && tof < frs_config->ftof_3121_max) mhtdc_tof3121[count] = tof;
-                        else mhtdc_tof3121_selected[count] = -999;
-                    }
-                    else
-                    {
-                        mhtdc_tof3121[count] = -999;
-                        mhtdc_tof3121_selected[count] = -999;
+                        mhtdc_tof3121.emplace_back(tof);
+                        if (tof > frs_config->ftof_3121_min && tof < frs_config->ftof_3121_max) mhtdc_tof3121.emplace_back(tof);
                     }
                 }
             }
@@ -2179,18 +2174,18 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
     // S1
     if (id->use_sc11x == 1)
     {
-        temp_s1x_mhtdc = new Float_t[hits_in_11lr_selected];
-        for (int i = 0; i < hits_in_11lr_selected; i++) temp_s1x_mhtdc[i] = mhtdc_sci11lr_x_selected[i];
-        hits_in_s1x = hits_in_11lr_selected;
+        temp_s1x_mhtdc = new Float_t[hits_in_11lr_tofs1s2_selected];
+        for (int i = 0; i < hits_in_11lr_tofs1s2_selected; i++) temp_s1x_mhtdc[i] = mhtdc_sci11lr_x_tofs1s2_selected[i];
+        hits_in_s1x_tofs1s2_selected = hits_in_11lr_tofs1s2_selected;
         temp_a1 = 0;
         
         
     }
     else
     {
-        temp_s1x_mhtdc = new Float_t[hits_in_11lr_selected];
-        for (int i = 0; i < hits_in_11lr_selected; i++) temp_s1x_mhtdc[i] = 0;
-        hits_in_s1x = hits_in_11lr_selected;
+        temp_s1x_mhtdc = new Float_t[hits_in_11lr_tofs1s2_selected];
+        for (int i = 0; i < hits_in_11lr_tofs1s2_selected; i++) temp_s1x_mhtdc[i] = 0;
+        hits_in_s1x_tofs1s2_selected = hits_in_11lr_tofs1s2_selected;
         temp_a1 = 0;
     }
 
@@ -2199,8 +2194,8 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
     {
         if (id->tof_s2_select == 1)
         {
-            temp_s2x_mhtdc = new Float_t[hits_in_21lr_selected];
-            hits_in_s2x = hits_in_21lr_selected;
+            temp_s2x_mhtdc = new Float_t[hits_in_21lr_tofs1s2_selected];
+            hits_in_s2x_tofs1s2_selected = hits_in_21lr_tofs1s2_selected;
         }
         else if (id->tof_s2_select == 2) 
         {
@@ -2209,30 +2204,30 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
         }
         else c4LOG(fatal, "Invalid S2 TOF selection. Check FRS setup!");
 
-        for (int i = 0; i < hits_in_s2x; i++) temp_s2x_mhtdc[i] = -999; 
+        for (int i = 0; i < hits_in_s2x_tofs1s2_selected; i++) temp_s2x_mhtdc[i] = -999; 
         temp_a2 = -999;
         if (b_tpc_xy[0] && b_tpc_xy[1])
         {
-            for (int i = 0; i < hits_in_s2x; i++) temp_s2x_mhtdc[i] = calTpcItem.Get_tpc_x_s2_foc_21_22();
+            for (int i = 0; i < hits_in_s2x_tofs1s2_selected; i++) temp_s2x_mhtdc[i] = calTpcItem.Get_tpc_x_s2_foc_21_22();
             temp_a2 = calTpcItem.Get_tpc_angle_x_s2_foc_21_22();
         }
         else if (b_tpc_xy[2] && b_tpc_xy[3])
         {
-            for (int i = 0; i < hits_in_s2x; i++) temp_s2x_mhtdc[i] = calTpcItem.Get_tpc_x_s2_foc_23_24();
+            for (int i = 0; i < hits_in_s2x_tofs1s2_selected; i++) temp_s2x_mhtdc[i] = calTpcItem.Get_tpc_x_s2_foc_23_24();
             temp_a2 = calTpcItem.Get_tpc_angle_x_s2_foc_23_24();
         }
         else if (b_tpc_xy[1] && b_tpc_xy[3])
         {
-            for (int i = 0; i < hits_in_s2x; i++) temp_s2x_mhtdc[i] = calTpcItem.Get_tpc_x_s2_foc_22_24();
+            for (int i = 0; i < hits_in_s2x_tofs1s2_selected; i++) temp_s2x_mhtdc[i] = calTpcItem.Get_tpc_x_s2_foc_22_24();
             temp_a2 = calTpcItem.Get_tpc_angle_x_s2_foc_22_24();
         }
     }
     else if (id->x_s2_select == 2) // Sci21
     {
-        temp_s2x_mhtdc = new Float_t[hits_in_21lr_selected];
-        for (int i = 0; i < hits_in_21lr_selected; i++) temp_s2x_mhtdc[i] = mhtdc_sci21lr_x[i];
+        temp_s2x_mhtdc = new Float_t[hits_in_21lr_tofs1s2_selected];
+        for (int i = 0; i < hits_in_21lr_tofs1s2_selected; i++) temp_s2x_mhtdc[i] = mhtdc_sci21lr_x_tofs1s2_selected[i];
         temp_a2 = 0;
-        hits_in_s2x = hits_in_21lr_selected;
+        hits_in_s2x_tofs1s2_selected = hits_in_21lr_tofs1s2_selected;
 
         if (id->tof_s2_select == 2) c4LOG(fatal, "Incompatible S2 X / TOF selection. Check FRS Setup file!");
     }
@@ -2249,8 +2244,9 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
     // S4 -- no switch for position, always TPC
     if (id->tof_s4_select == 1) // 21 -> 41
     {
-        temp_s4x_mhtdc = new Float_t[hits_in_41lr_selected];
-        hits_in_s4x = hits_in_41lr_selected;
+        temp_s4x_mhtdc = new Float_t[hits_in_41lr_tofs2s4_selected];
+        hits_in_s4x_tofs2s4_selected = hits_in_41lr_tofs2s4_selected;
+        hits_in_s2x_tofs2s4_selected = hits_in_21lr_tofs2s4_selected;
     }
     else if (id->tof_s4_select == 2) // 21 -> 42
     {
@@ -2265,12 +2261,12 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
 
     if (b_tpc_xy[4] && b_tpc_xy[5])
     {
-        for (int i = 0; i < hits_in_s4x; i++) temp_s4x_mhtdc[i] = calTpcItem.Get_tpc_x_s4();
+        for (int i = 0; i < hits_in_s4x_tofs2s4_selected; i++) temp_s4x_mhtdc[i] = calTpcItem.Get_tpc_x_s4();
         temp_a4 = calTpcItem.Get_tpc_angle_x_s4();
     }
     else
     {
-        for (int i = 0; i < hits_in_s4x; i++) temp_s4x_mhtdc[i] = -999;
+        for (int i = 0; i < hits_in_s4x_tofs2s4_selected; i++) temp_s4x_mhtdc[i] = -999;
         temp_a4 = -999;
     }
 
@@ -2284,14 +2280,15 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
     float mean_brho_s1s2 = frs->bfield[1]; // "actual mean doesn't work with s1s2 tof"
 
     // matches hits_in_tof2111 if 11 -> 21 selected, or hits_in_tof2211 if 11 -> 22 selected
-    hits_in_s1s2 = hits_in_s2x * hits_in_s1x;
+    hits_in_s1s2_selected = hits_in_s2x_tofs1s2_selected * hits_in_s1x_tofs1s2_selected;
+    //hits_in_s1s2 = hits_in_s2x_selected * hits_in_s1x_selected;
 
     // id_mhtdc_beta_s1s2 = new Float_t[hits_in_s1s2];
-    temp_id_mhtdc_beta_s1s2 = new Float_t[hits_in_s1s2];
-    temp_id_mhtdc_tof_s1s2 = new Float_t[hits_in_s1s2];
+    temp_id_mhtdc_beta_s1s2 = new Float_t[hits_in_s1s2_selected];
+    temp_id_mhtdc_tof_s1s2 = new Float_t[hits_in_s1s2_selected];
     // id_mhtdc_tof_s1s2 = new Float_t[hits_in_s1s2];
-    id_mhtdc_gamma_s1s2 = new Float_t[hits_in_s1s2];
-    id_mhtdc_delta_s1s2 = new Float_t[hits_in_s1s2];
+    id_mhtdc_gamma_s1s2 = new Float_t[hits_in_s1s2_selected];
+    id_mhtdc_delta_s1s2 = new Float_t[hits_in_s1s2_selected];
     // id_mhtdc_aoq_s1s2 = new Float_t[hits_in_s1s2];
     // id_mhtdc_aoq_corr_s1s2 = new Float_t[hits_in_s1s2];
     // id_mhtdc_v_cor_music21 = new Float_t[hits_in_s1s2];
@@ -2304,7 +2301,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
     // Calculate TOF, Beta
     if (id->tof_s2_select == 1) 
     {
-        for (int i = 0; i < hits_in_s1s2; i++) 
+        for (int i = 0; i < hits_in_s1s2_selected; i++) 
         {
             temp_id_mhtdc_tof_s1s2[i] = mhtdc_tof2111_selected[i];
             temp_id_mhtdc_beta_s1s2[i] = (id->mhtdc_length_sc1121 / temp_id_mhtdc_tof_s1s2[i]) / speed_light; // can never be outside 0 and 1
@@ -2313,7 +2310,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
     // CEJ :: removed for testing
     else if (id->tof_s2_select == 2) 
     {
-        for (int i = 0; i < hits_in_s1s2; i++) 
+        for (int i = 0; i < hits_in_s1s2_selected; i++) 
         {
             temp_id_mhtdc_tof_s1s2[i] = mhtdc_tof2211[i];
             temp_id_mhtdc_beta_s1s2[i] = (id->mhtdc_length_sc1122 / temp_id_mhtdc_tof_s1s2[i]) / speed_light;
@@ -2322,14 +2319,14 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
     else c4LOG(fatal, "Bad S2 TOF selection. Check FRS setup file!");
     
     // Calculate Gamma
-    for (int i = 0; i < hits_in_s1s2; i++) id_mhtdc_gamma_s1s2[i] = (1. / sqrt(1. - TMath::Power(temp_id_mhtdc_beta_s1s2[i], 2)));
+    for (int i = 0; i < hits_in_s1s2_selected; i++) id_mhtdc_gamma_s1s2[i] = (1. / sqrt(1. - TMath::Power(temp_id_mhtdc_beta_s1s2[i], 2)));
 
     // Calculate Delta, AoQ
-    for (int i = 0; i < hits_in_s2x; i++)
+    for (int i = 0; i < hits_in_s2x_tofs1s2_selected; i++)
     {
-        for (int j = 0; j < hits_in_s1x; j++)
+        for (int j = 0; j < hits_in_s1x_tofs1s2_selected; j++)
         {
-            int count = i * hits_in_s1x + j;
+            int count = i * hits_in_s1x_tofs1s2_selected + j;
 
             if (temp_s2x_mhtdc[i] > -200 && temp_s2x_mhtdc[i] < 200 && temp_s1x_mhtdc[j] > -120 && temp_s1x_mhtdc[j] < 120)
             {
@@ -2417,7 +2414,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
     float mean_brho_s2s4 = 0.5 * (frs->bfield[2] + frs->bfield[3]);
 
     // matches hits_in_tof4121 if 21 -> 41, etc.
-    hits_in_s2s4 = hits_in_s4x * hits_in_s2x;
+    hits_in_s2s4 = hits_in_s4x_tofs2s4_selected * hits_in_s2x_tofs2s4_selected;
 
     temp_id_mhtdc_beta_s2s4 = new Float_t[hits_in_s2s4];
     temp_id_mhtdc_tof_s2s4 = new Float_t[hits_in_s2s4];
@@ -2468,11 +2465,11 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
     for (int i = 0; i < hits_in_s2s4; i++) temp_id_mhtdc_gamma_s2s4[i] = (1. / sqrt(1. - TMath::Power(temp_id_mhtdc_beta_s2s4[i], 2)));
 
     // Calculate Delta (momentum deviation), AoQ
-    for (int i = 0; i < hits_in_s4x; i++)
+    for (int i = 0; i < hits_in_s4x_tofs2s4_selected; i++)
     {
-        for (int j = 0; j < hits_in_s2x; j++)
+        for (int j = 0; j < hits_in_s2x_tofs2s4_selected; j++)
         {
-            int count = i * hits_in_s2x + j;
+            int count = i * hits_in_s2x_tofs2s4_selected + j;
 
             if (temp_s4x_mhtdc[i] > -200 && temp_s4x_mhtdc[i] < 200 && temp_s2x_mhtdc[j] > -120 && temp_s2x_mhtdc[j] < 120)
             {
@@ -2811,6 +2808,30 @@ void FrsCal2Hit::FinishEvent()
     mhtdc_tof4321.clear();
     mhtdc_tof3121_selected.clear();
     mhtdc_tof3121.clear();
+
+    mhtdc_sci11lr_dt_selected.clear();
+    mhtdc_sci11lr_x_selected.clear();
+    sci11l_hits_selected.clear();
+    sci11r_hits_selected.clear();
+
+    mhtdc_sci41lr_dt_selected.clear();
+    mhtdc_sci41lr_x_selected.clear();
+    sci41l_hits_selected.clear();
+    sci41r_hits_selected.clear();
+
+    mhtdc_sci11lr_x_tofs1s2_selected.clear();
+    mhtdc_sci21lr_x_tofs1s2_selected.clear();
+    mhtdc_sci21lr_x_tofs2s4_selected.clear();
+    mhtdc_sci41lr_x_tofs2s4_selected.clear();
+
+    sci11l_hits_tofs1s2_selected.clear();
+    sci11r_hits_tofs1s2_selected.clear();
+    sci21l_hits_tofs1s2_selected.clear();
+    sci21r_hits_tofs1s2_selected.clear();
+    sci21l_hits_tofs2s4_selected.clear();
+    sci21r_hits_tofs2s4_selected.clear();
+    sci41l_hits_tofs2s4_selected.clear();
+    sci41r_hits_tofs2s4_selected.clear();
 
     s1x_mhtdc.clear();
     s1a_mhtdc.clear();

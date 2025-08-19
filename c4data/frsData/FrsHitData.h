@@ -463,7 +463,8 @@ class FrsMultiHitItem : public TObject
                     std::vector<Float_t> AoQ_corr_s1s2,
                     std::vector<Float_t> z21,
                     std::vector<Float_t> z22); // is there dEdeg ? 
-
+        
+        void SetTOFs1s2Full(std::vector<Float_t> tof_s1s2_full);
 
         // vectors?
         void SetS2S4(std::vector<Float_t> s2x_s2s4,
@@ -479,6 +480,8 @@ class FrsMultiHitItem : public TObject
                     std::vector<Float_t> z43,
                     std::vector<Float_t> dEdegoQ,
                     std::vector<Float_t> dEdeg_z41);
+        
+        void SetTOFs2s4Full(std::vector<Float_t> tof_s2s4_full);
 
         std::vector<Float_t> Get_ID_s1x_mhtdc() const { return fID_s1x_mhtdc; }
         std::vector<Float_t> Get_ID_s1a_mhtdc() const { return fID_s1a_mhtdc; }
@@ -490,6 +493,8 @@ class FrsMultiHitItem : public TObject
         std::vector<Float_t> Get_ID_AoQ_corr_s1s2_mhtdc() const { return fID_AoQ_corr_s1s2_mhtdc; }
         std::vector<Float_t> Get_ID_z21_mhtdc() const { return fID_z21_mhtdc; }
         std::vector<Float_t> Get_ID_z22_mhtdc() const { return fID_z22_mhtdc; }
+
+        std::vector<Float_t> Get_ID_tof_s1s2_mhtdc_full() const { return fID_tof_s1s2_mhtdc_full; }
 
         // S2S4
         std::vector<Float_t> Get_ID_s2x_s2s4_mhtdc() const { return fID_s2x_s2s4_mhtdc; }
@@ -505,6 +510,9 @@ class FrsMultiHitItem : public TObject
         std::vector<Float_t> Get_ID_z43_mhtdc() const { return fID_z43_mhtdc; }
         std::vector<Float_t> Get_ID_dEdegoQ_mhtdc() const { return fID_dEdegoQ_mhtdc; }
         std::vector<Float_t> Get_ID_dEdeg_z41_mhtdc() const { return fID_dEdeg_z41_mhtdc; }
+
+        std::vector<Float_t> Get_ID_tof_s2s4_mhtdc_full() const { return fID_tof_s2s4_mhtdc_full; }
+
       
         ClassDef(FrsMultiHitItem, 1);
 
@@ -522,6 +530,8 @@ class FrsMultiHitItem : public TObject
         std::vector<Float_t> fID_z21_mhtdc;
         std::vector<Float_t> fID_z22_mhtdc;
 
+        std::vector<Float_t> fID_tof_s1s2_mhtdc_full;
+
         // S2S4
         std::vector<Float_t> fID_s2x_s2s4_mhtdc;
         std::vector<Float_t> fID_s2a_s2s4_mhtdc;
@@ -536,6 +546,8 @@ class FrsMultiHitItem : public TObject
         std::vector<Float_t> fID_z43_mhtdc;
         std::vector<Float_t> fID_dEdegoQ_mhtdc;
         std::vector<Float_t> fID_dEdeg_z41_mhtdc;
+
+        std::vector<Float_t> fID_tof_s2s4_mhtdc_full;
 
 };
 

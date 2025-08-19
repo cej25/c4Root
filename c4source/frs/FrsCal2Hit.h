@@ -259,6 +259,20 @@ class FrsCal2Hit : public FairTask
         Int_t hits_in_81l_selected = 0;
         Int_t hits_in_81r_selected = 0;
 
+        Int_t hits_in_11l_tofs1s2_selected = 0;
+        Int_t hits_in_11r_tofs1s2_selected = 0;
+        Int_t hits_in_21l_tofs1s2_selected = 0;
+        Int_t hits_in_21r_tofs1s2_selected = 0;
+        Int_t hits_in_21l_tofs2s4_selected = 0;
+        Int_t hits_in_21r_tofs2s4_selected = 0;
+        Int_t hits_in_41l_tofs2s4_selected = 0;
+        Int_t hits_in_41r_tofs2s4_selected = 0;
+
+        Int_t hits_in_11lr_tofs1s2_selected = 0;
+        Int_t hits_in_21lr_tofs1s2_selected = 0;
+        Int_t hits_in_21lr_tofs2s4_selected = 0;
+        Int_t hits_in_41lr_tofs2s4_selected = 0;
+
         Int_t hits_in_11lr_selected = 0;
         Int_t hits_in_21lr_selected = 0;
         Int_t hits_in_22lr_selected = 0;
@@ -267,6 +281,7 @@ class FrsCal2Hit : public FairTask
         Int_t hits_in_42lr_selected = 0;
         Int_t hits_in_43lr_selected = 0;
         Int_t hits_in_tof2111_selected = 0;
+        Int_t hits_in_tof2211_selected = 0;
         Int_t hits_in_tof4121_selected = 0;
         Int_t hits_in_tof4122_selected = 0;
         Int_t hits_in_tof4221_selected = 0;
@@ -275,7 +290,14 @@ class FrsCal2Hit : public FairTask
         Int_t hits_in_s2x = 0;
         Int_t hits_in_s4x = 0;
         Int_t hits_in_s1s2 = 0;
+        Int_t hits_in_s1s2_selected = 0;
         Int_t hits_in_s2s4 = 0;
+        Int_t hits_in_s2s4_selected = 0;
+
+        Int_t hits_in_s1x_tofs1s2_selected = 0;
+        Int_t hits_in_s2x_tofs1s2_selected = 0;
+        Int_t hits_in_s2x_tofs2s4_selected = 0;
+        Int_t hits_in_s4x_tofs2s4_selected = 0;
 
         Float_t temp_a1;
         Float_t temp_a2;
@@ -316,6 +338,15 @@ class FrsCal2Hit : public FairTask
         std::vector<Int_t> sci81l_hits_selected;
         std::vector<Int_t> sci81r_hits_selected;
 
+        std::vector<Int_t> sci11l_hits_tofs1s2_selected;
+        std::vector<Int_t> sci11r_hits_tofs1s2_selected;
+        std::vector<Int_t> sci21l_hits_tofs1s2_selected;
+        std::vector<Int_t> sci21r_hits_tofs1s2_selected;
+        std::vector<Int_t> sci21l_hits_tofs2s4_selected;
+        std::vector<Int_t> sci21r_hits_tofs2s4_selected;
+        std::vector<Int_t> sci41l_hits_tofs2s4_selected;
+        std::vector<Int_t> sci41r_hits_tofs2s4_selected;
+
         std::vector<Int_t> mhtdc_sci11lr_dt;
         std::vector<Int_t> mhtdc_sci21lr_dt;
         std::vector<Int_t> mhtdc_sci22lr_dt;
@@ -349,6 +380,11 @@ class FrsCal2Hit : public FairTask
         std::vector<Int_t> mhtdc_sci81lr_x_selected;
         std::vector<Int_t> mhtdc_sci42lr_x_selected;
         std::vector<Int_t> mhtdc_sci43lr_x_selected;
+
+        std::vector<Int_t> mhtdc_sci11lr_x_tofs1s2_selected;
+        std::vector<Int_t> mhtdc_sci21lr_x_tofs1s2_selected;
+        std::vector<Int_t> mhtdc_sci21lr_x_tofs2s4_selected;
+        std::vector<Int_t> mhtdc_sci41lr_x_tofs2s4_selected;
         
         std::vector<Float_t> mhtdc_tof2111;
         std::vector<Float_t> mhtdc_tof2211;

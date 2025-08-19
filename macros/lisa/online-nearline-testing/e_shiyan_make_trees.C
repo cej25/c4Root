@@ -18,7 +18,7 @@
 // Definition of setup and configuration files
 // FRS
 #define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_002_2025_setting10_conv.C"
-#define FRS_CONFIG_FILE "../../../config/shiyan/frs/general/frs_config_v0.C"
+#define FRS_CONFIG_FILE "../../../config/shiyan/frs/general/frs_config_v1.C"
 // LISA
 #define LISA_CONFIG_FILE "../../../config/shiyan/lisa/general/lisa_config_v2.C"
 
@@ -85,7 +85,7 @@ void e_shiyan_make_trees()
 
     // ::: OUTPUT 
     TString outputpath = "/u/gandolfo/data/shiyan_debug/";   //testing
-    TString outputFilename = outputpath + "test_0018.root";
+    TString outputFilename = outputpath + "run_0018_mhtdc_updates.root";
     
     // ::: Create online run
     Int_t refresh = 10; // not needed

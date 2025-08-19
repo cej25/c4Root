@@ -325,7 +325,10 @@ void FrsMultiHitItem::SetS1S2(std::vector<Float_t> s1x,
     fID_z22_mhtdc = z22;
 }
 
-
+void FrsMultiHitItem::SetTOFs1s2Full(std::vector<Float_t> tof_s1s2_full)
+{
+    fID_tof_s1s2_mhtdc_full = tof_s1s2_full;
+}
 
 void FrsMultiHitItem::SetS2S4(std::vector<Float_t> s2x_s2s4,
             std::vector<Float_t> s2a_s2s4,
@@ -356,7 +359,10 @@ void FrsMultiHitItem::SetS2S4(std::vector<Float_t> s2x_s2s4,
     fID_dEdeg_z41_mhtdc = dEdeg_z41;
 }
 
-
+void FrsMultiHitItem::SetTOFs2s4Full(std::vector<Float_t> tof_s2s4_full)
+{
+    fID_tof_s2s4_mhtdc_full = tof_s2s4_full;
+}
 
 // void FrsMultiHitItem::SetAll(Float_t s2x,
 //                             Float_t s2a,
