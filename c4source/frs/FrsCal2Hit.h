@@ -242,17 +242,34 @@ class FrsCal2Hit : public FairTask
         Float_t sci_tof_22_81_calib = 0.;
 
         // ::: SCI MHTDC ::: //
-        Int_t hits_in_11lr = 0;
-        Int_t hits_in_21lr = 0;
-        Int_t hits_in_22lr = 0;
-        Int_t hits_in_31lr = 0;
-        Int_t hits_in_41lr = 0;
-        Int_t hits_in_42lr = 0;
-        Int_t hits_in_43lr = 0;
-        Int_t hits_in_tof2111 = 0;
-        Int_t hits_in_tof4121 = 0;
-        Int_t hits_in_tof4122 = 0;
-        Int_t hits_in_tof4221 = 0;
+        Int_t hits_in_11l_selected = 0;
+        Int_t hits_in_11r_selected = 0;
+        Int_t hits_in_21l_selected = 0;
+        Int_t hits_in_21r_selected = 0;
+        Int_t hits_in_22l_selected = 0;
+        Int_t hits_in_22r_selected = 0;
+        Int_t hits_in_31l_selected = 0;
+        Int_t hits_in_31r_selected = 0;
+        Int_t hits_in_41l_selected = 0;
+        Int_t hits_in_41r_selected = 0;
+        Int_t hits_in_42l_selected = 0;
+        Int_t hits_in_42r_selected = 0;
+        Int_t hits_in_43l_selected = 0;
+        Int_t hits_in_43r_selected = 0;
+        Int_t hits_in_81l_selected = 0;
+        Int_t hits_in_81r_selected = 0;
+
+        Int_t hits_in_11lr_selected = 0;
+        Int_t hits_in_21lr_selected = 0;
+        Int_t hits_in_22lr_selected = 0;
+        Int_t hits_in_31lr_selected = 0;
+        Int_t hits_in_41lr_selected = 0;
+        Int_t hits_in_42lr_selected = 0;
+        Int_t hits_in_43lr_selected = 0;
+        Int_t hits_in_tof2111_selected = 0;
+        Int_t hits_in_tof4121_selected = 0;
+        Int_t hits_in_tof4122_selected = 0;
+        Int_t hits_in_tof4221_selected = 0;
 
         Int_t hits_in_s1x = 0;
         Int_t hits_in_s2x = 0;

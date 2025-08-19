@@ -45,6 +45,14 @@ Double_t TFrsConfiguration::fMin_dE_travMus_gate = 0., TFrsConfiguration::fMax_d
 
 Int_t TFrsConfiguration::fscilr_mhtdc_limit = 40;
 
+Int_t TFrsConfiguration::ftof_2111_min = 0., TFrsConfiguration::ftof_2111_max = 400.;
+Int_t TFrsConfiguration::ftof_4121_min = 0., TFrsConfiguration::ftof_4121_max = 400.;
+Int_t TFrsConfiguration::ftof_4122_min = 0., TFrsConfiguration::ftof_4122_max = 400.;
+Int_t TFrsConfiguration::ftof_4221_min = 0., TFrsConfiguration::ftof_4221_max = 400.;
+Int_t TFrsConfiguration::ftof_4321_min = 0., TFrsConfiguration::ftof_4321_max = 400.;
+Int_t TFrsConfiguration::ftof_3121_min = 0., TFrsConfiguration::ftof_3121_max = 400.;
+
+
 int TFrsConfiguration::frun_num = 0;
 
 TFrsConfiguration::TFrsConfiguration()
@@ -420,6 +428,39 @@ void TFrsConfiguration::Set_scilr_mhtdc_limit(Int_t lim)
     fscilr_mhtdc_limit = lim;
 }
 
+void TFrsConfiguration::Set_tof_limit_2111(Int_t min, Int_t max)
+{
+    ftof_2111_min = min;
+    ftof_2111_max = max;
+}
 
+void TFrsConfiguration::Set_tof_limit_4121(Int_t min, Int_t max)
+{
+    ftof_4121_min = min;
+    ftof_4121_max = max;
+}
 
+void TFrsConfiguration::Set_tof_limit_4122(Int_t min, Int_t max)
+{
+    ftof_4122_min = min;
+    ftof_4122_max = max;
+}
+
+void TFrsConfiguration::Set_tof_limit_4221(Int_t min, Int_t max)
+{
+    ftof_4221_min = min;
+    ftof_4221_max = max;
+}
+
+void TFrsConfiguration::Set_tof_limit_4321(Int_t min, Int_t max)
+{
+    ftof_4321_min = min;
+    ftof_4321_max = max;
+}
+
+void TFrsConfiguration::Set_tof_limit_3121(Int_t min, Int_t max)
+{
+    ftof_3121_min = min;
+    ftof_3121_max = max;
+}
 // read files and stuff

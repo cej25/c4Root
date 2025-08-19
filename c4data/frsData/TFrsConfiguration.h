@@ -75,6 +75,12 @@ class TFrsConfiguration
         static Double_t fMin_dE_music42, fMax_dE_music42;
         static Double_t fMin_dE_travMus_gate, fMax_dE_travMus_gate;
         static Int_t fscilr_mhtdc_limit;
+        static Int_t ftof_2111_min, ftof_2111_max;
+        static Int_t ftof_4121_min, ftof_4121_max;
+        static Int_t ftof_4122_min, ftof_4122_max;
+        static Int_t ftof_4221_min, ftof_4221_max;
+        static Int_t ftof_4321_min, ftof_4321_max;
+        static Int_t ftof_3121_min, ftof_3121_max;
         static Double_t tof_gate_low, tof_gate_high;
         static int frun_num;
 
@@ -104,6 +110,12 @@ class TFrsConfiguration
         static void Set_dE_travMusic_gate(Double_t, Double_t);
 
         static void Set_scilr_mhtdc_limit(Int_t);
+        static void Set_tof_limit_2111(Int_t, Int_t);
+        static void Set_tof_limit_4121(Int_t, Int_t);
+        static void Set_tof_limit_4122(Int_t, Int_t);
+        static void Set_tof_limit_4221(Int_t, Int_t);
+        static void Set_tof_limit_4321(Int_t, Int_t);
+        static void Set_tof_limit_3121(Int_t, Int_t);
 
         void Plot_TAC_1D(bool option) { plot_tac_1d = option; }
         void Plot_TAC_2D(bool option) { plot_tac_2d = option; }
