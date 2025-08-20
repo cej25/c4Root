@@ -230,9 +230,9 @@ void e_shiyan_make_trees()
         }
         run->AddTask(lisaana2cal);   
 
-        // LisaCal2Hit* lisacal2hit = new LisaCal2Hit();
-        // lisacal2hit->SetOnline(false);
-        // run->AddTask(lisacal2hit);
+        LisaCal2Hit* lisacal2hit = new LisaCal2Hit();
+        lisacal2hit->SetOnline(false);
+        run->AddTask(lisacal2hit);
     }
 
     // Write information on setup and config in a "info" tree
