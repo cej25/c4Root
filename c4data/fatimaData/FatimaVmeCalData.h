@@ -140,7 +140,7 @@ class FatimaVmeQDCCalItem : public TObject
         uint64_t wr_t;
         double coarse_time;
         double fine_time;
-        uint32_t qlong; // calibrate e
+        double qlong; // calibrate e
         uint32_t qlong_raw;
         uint32_t qshort_raw;
         int detector;

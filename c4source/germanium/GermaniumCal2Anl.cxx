@@ -123,17 +123,27 @@ void GermaniumCal2Anl::Exec(Option_t* option){
                 
 
             bool BGO_veto_this_event = false;
-            
+
             if (BGO_veto == true && event_multiplicity_bgo > 0){
+                
+                int64_t fast_lead_epoch_trigger = 0;
+                double fast_lead_time_trigger = 0;
+                for (int ihit_bgo = 0; ihit_bgo < event_multiplicity_bgo; ihit_bgo++){
+                    fcal_bgo_hit = (BGOTwinpeaksCalData*)fcal_bgo_data->At(ihit_bgo);
+                    if (fcal_bgo_hit->Get_detector_id() <= 12){
+                        fast_lead_epoch_trigger =  fcal_bgo_hit->Get_fast_lead_epoch();
+                        fast_lead_time_trigger = fcal_bgo_hit->Get_fast_lead_time();
+                        break;
+                    }
+                }
                 
                 for (int ihit_bgo = 0; ihit_bgo < event_multiplicity_bgo; ihit_bgo++){
                     fcal_bgo_hit = (BGOTwinpeaksCalData*)fcal_bgo_data->At(ihit_bgo);
 
                     if (fcal_bgo_hit->Get_detector_id() == detector_id1){
-
-                        int64_t bgo_wr_time = fcal_bgo_hit->Get_wr_t();
+                        int64_t bgo_wr_abs_time = fcal_bgo_hit->Get_wr_t();
                         
-                        if (TMath::Abs(bgo_wr_time - time_wr1) < 3e3){
+                        if (time_wr1 - bgo_wr_abs_time < 500 &&  time_wr1 - bgo_wr_abs_time > 0){
                             // veto this event
                             BGO_veto_this_event = true;
                         }
@@ -151,7 +161,7 @@ void GermaniumCal2Anl::Exec(Option_t* option){
             //Add-back:
 
             if (AddBack_veto == true){
-                double time_gate = 100; //ns
+                double time_gate = 200; //ns
                 
                 //intra-detector addback: detector_id = detector_id'
                 if (event_multiplicity > 1){

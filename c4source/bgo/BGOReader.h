@@ -80,7 +80,10 @@ class BGOReader : public c4Reader
 
 
     private:
-        unsigned int fNEvent;
+        Int_t fNEvent;
+        int total_time_microsecs = 0;
+        
+
 
         EXT_STR_h101_bgo_onion* fData;
 
@@ -133,8 +136,10 @@ class BGOReader : public c4Reader
         bool fine_time_calibration_save = false;
         bool fine_time_calibration_read_from_file = false;
 
-        uint64_t accepted_trigger_time = 0;
-
+        double accepted_trigger_time = 0;
+        uint32_t accepted_lead_epoch_counter = 0;
+        uint32_t accepted_lead_coarse_T = 0;
+        double accepted_lead_fine_T = 0;
 
     public:
         ClassDefOverride(BGOReader, 0);

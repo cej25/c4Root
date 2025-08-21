@@ -26,7 +26,7 @@ void FatimaVmeQDCCalItem::Reset()
     wr_t = 0;
     coarse_time = 0;
     fine_time = 0;
-    qlong = 0;
+    qlong = 0.0;
     qlong_raw = 0;
     qshort_raw = 0;
     detector = 0;
