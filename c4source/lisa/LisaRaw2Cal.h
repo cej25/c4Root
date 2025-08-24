@@ -68,6 +68,9 @@ class LisaRaw2Cal : public FairTask
         double intercept;
         double energy_GM;
 
+        // FRS 
+        std::vector<float> beta0;
+
 
     public:
         ClassDef(LisaRaw2Cal, 1)

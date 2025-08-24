@@ -113,7 +113,9 @@ void LisaAna2Cal::PrintDetectorGainM_dEdX()
 
 void LisaAna2Cal::Exec(Option_t* option)
 {
+
     lisaCalArray->clear();
+
 
     for (auto const & lisaAnaItem : *lisaAnaArray)
     {          
@@ -125,13 +127,6 @@ void LisaAna2Cal::Exec(Option_t* option)
         {
             if (detector_mapping.count(unmapped_channel) > 0)
             {
-                /*
-                int layer_id = detector_mapping.at(unmapped_channel).first.first;
-                TString city = detector_mapping.at(unmapped_channel).first.second; //Debugging. std::string to Tstring 
-                int xpos = detector_mapping.at(unmapped_channel).second.first;
-                int ypos = detector_mapping.at(unmapped_channel).second.second;
-                */
-
                 int layer_id = detector_mapping.at(unmapped_channel).first.first;                        
                 int xpos     = detector_mapping.at(unmapped_channel).first.second.first;                 
                 int ypos     = detector_mapping.at(unmapped_channel).first.second.second;                
@@ -218,7 +213,7 @@ void LisaAna2Cal::Exec(Option_t* option)
                         //std::cout<< " Energy dedx - in loop " << "\n";
                     }
                     //std::cout << " de_dx : " << de_dx << " de_dx_gm : " << de_dx_GM << "\n";
-
+                
                 }
 
                 auto & entry = lisaCalArray->emplace_back();

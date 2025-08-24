@@ -103,36 +103,6 @@ void LisaRaw2Cal::Exec(Option_t* option)
                     std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> GM_coeffs = lisa_config->GainMatchingCoefficients();
                     std::pair< int, std::pair<int,int> > detector_lxy = std::make_pair( layer_id, std::make_pair(xpos, ypos) );
                     //std::cout<< " Hello 2 " << "\n";
-
-                    /*
-                    std::cout << "Contents of GM_coeffs:" << std::endl;
-                    for (const auto& entry : GM_coeffs) 
-                    {
-                        std::cout << "Key: (" << entry.first.first << ", (" << entry.first.second.first << ", " << entry.first.second.second << "))";
-                        std::cout << " Value: (" << entry.second.first << ", " << entry.second.second << ")" << std::endl;
-                    }
-                    */
-
-                    /*
-                    //loop through key and read coeff
-                    bool found = false; 
-                    for (const auto& entry : GM_coeffs )
-                    {
-                        if (entry.first == detector_lxy)
-                        {
-                            std::pair<double,double> coeffs = entry.second;
-                            slope = coeffs.first;
-                            intercept = coeffs.second;
-
-                            energy_GM = intercept + slope*lisaItem.Get_channel_energy();
-                            found = true;
-                            std::cout << " Energy GM - in loop " << "\n";
-                            std::cout << " slope in loop " << slope << " intercepts in loop " << intercept << "\n";
-                            break;
-
-                        }
-                    }
-                    */
                     
                     if (auto result_find_GM = GM_coeffs.find(detector_lxy); result_find_GM != GM_coeffs.end()) 
                     {

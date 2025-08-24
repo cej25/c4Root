@@ -62,6 +62,9 @@ class LisaCal2Hit : public FairTask
 
         uint64_t wr_t;
 
+        int m_layer1;
+        int layer_number;
+
         std::map<std::pair<int,int>, std::pair<std::pair<int, std::pair<int, int>>,std::pair<float,std::pair<std::string,std::string>>>> detector_mapping; //Debugging.Raplace std:string-> TString ?
         std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> detector_z_calibration;
 

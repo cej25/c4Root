@@ -11,7 +11,7 @@
  * or submit itself to any jurisdiction.                                      *
  ******************************************************************************
  *                       E.M. Gandolfo, C.E. Jones                            *
- *                               25.11.24                                     *
+ *                               08.25                                        *
  ******************************************************************************/
 
 #ifndef LisaCalData_H
@@ -84,7 +84,6 @@ class LisaCalItem : public TObject
         int Get_overflow() const;
         //int Get_overflow_MWD() const;
 
-
         // Getters
         ClassDef(LisaCalItem, 1);
     private:
@@ -114,8 +113,6 @@ class LisaCalItem : public TObject
         //int pileup_MWD;
         int overflow;
         //int overflow_MWD;
-        // timing info for correlations
-
 };
 
 inline uint64_t LisaCalItem::Get_wr_t() const

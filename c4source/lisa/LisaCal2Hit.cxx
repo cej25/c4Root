@@ -94,6 +94,8 @@ InitStatus LisaCal2Hit::Init()
     
     mgr->RegisterAny("LisaHitData", lisaHitArray, !fOnline);
 
+    layer_number = lisa_config->NLayers();
+
     return kSUCCESS;
 }
 
@@ -101,6 +103,7 @@ InitStatus LisaCal2Hit::Init()
 void LisaCal2Hit::Exec(Option_t* option)
 {
     
+    //c4LOG(info, " ::: start of event");
     lisaHitArray->clear();
     z_lisa.clear();
     if (frsHitArray->size() <= 0 || lisaCalArray->size() <= 0 || multihitArray->size() <= 0) return;  
@@ -112,6 +115,12 @@ void LisaCal2Hit::Exec(Option_t* option)
     beta1 = multihitItem.Get_ID_beta_s1s2_mhtdc();
     //if (beta1.size()==0) return;
     //c4LOG(info, " beta : " << beta1);
+
+    int tot_multiplicity = lisaCalArray->size();
+    //int layer = lisaCalItem.Get_layer_id();
+    int multiplicity[layer_number] = {0};
+
+    //c4LOG(info, " TOT multiplicity = " << tot_multiplicity);
 
     for (auto const & lisaCalItem : *lisaCalArray)
     {          
@@ -126,6 +135,13 @@ void LisaCal2Hit::Exec(Option_t* option)
             int ypos = lisaCalItem.Get_yposition();
             float z_val = 0;
 
+            if (layer_id == 1)
+            {
+                m_layer1 ++;
+            }
+            //c4LOG(info, " multiplicity layer 1 : " << m_layer1);
+            multiplicity[layer_id-1]++;
+            
             std::pair< int, std::pair<int,int> > detector_lxy = std::make_pair( layer_id, std::make_pair(xpos, ypos) );
             //c4LOG(info, " size of beta s1s2 : " << beta1.size());
             //c4LOG(info, " layer : " << layer_id << " xpos : " << xpos << " ypos: "<< ypos);
@@ -172,8 +188,29 @@ void LisaCal2Hit::Exec(Option_t* option)
                 {
                     z_lisa.emplace_back(-999.);
                 }
+
+
+                                // Calculate beta after each layer
+                // - Define hits of layers and xy position of each hit
+                // - Get the dedx for that hit
+                // - Get beta before that hit
+
+                // Take beta0, if layer 1 hit then:
+                //      Translate beta in energy
+                //      Decrease beta(energy) by de/dx*diamond thickness
+                //      Calculate back again beta from new energy
             }
 
+            int layers_fired = 0;
+            for (int i = 0; i < layer_number; i++)
+            {
+                if(multiplicity[i] != 0) layers_fired++;
+            }
+            //c4LOG(info, " multiplicity L1 : " << multiplicity[0]);
+            // c4LOG(info, " multiplicity L2 : " << multiplicity[1]);
+            // c4LOG(info, " multiplicity L3 : " << multiplicity[2]);
+            // c4LOG(info, " multiplicity L4 : " << multiplicity[3]);
+            // c4LOG(info, " multiplicity L5 : " << multiplicity[4]);
 
             auto & entry = lisaHitArray->emplace_back();
             entry.SetAll(
@@ -205,8 +242,9 @@ void LisaCal2Hit::Exec(Option_t* option)
             
 
         }
-
     }
+
+    //c4LOG(info, " end of event");
 }
 
 void LisaCal2Hit::FinishEvent()

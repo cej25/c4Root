@@ -11,7 +11,7 @@
  * or submit itself to any jurisdiction.                                      *
  ******************************************************************************
  *                       E.M. Gandolfo, C.E. Jones                            *
- *                               25.11.24                                     *
+ *                                 08.25                                      *
  ******************************************************************************/
 
 #include "LisaCalData.h"
@@ -24,8 +24,6 @@
 //using StdVector = std::vector<T>;
 
 //Debugging. Replaced std::string with TString nov24
-
-
 
 
 LisaCalItem::LisaCalItem()
@@ -110,7 +108,6 @@ void LisaCalItem::Reset()
     //pileup_MWD = 0; //-1
     overflow = 0;
     //overflow_MWD = 0; //-1
-
 }
 
 ClassImp(LisaCalItem)

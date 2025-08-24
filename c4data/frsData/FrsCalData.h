@@ -52,50 +52,50 @@ class FrsCalSciItem : public TObject
                     UInt_t dt22r_41r,
                     UInt_t dt22l_81l,
                     UInt_t dt22r_81r,
-                    std::vector<Int_t> sci11la_hits,
-                    std::vector<Int_t> sci11lb_hits,
-                    std::vector<Int_t> sci11lc_hits,
-                    std::vector<Int_t> sci11ld_hits,
-                    std::vector<Int_t> sci11ra_hits,
-                    std::vector<Int_t> sci11rb_hits,
-                    std::vector<Int_t> sci11rc_hits,
-                    std::vector<Int_t> sci11rd_hits,
-                    std::vector<Int_t> sci21l_hits,
-                    std::vector<Int_t> sci21r_hits,
-                    std::vector<Int_t> sci22l_hits,
-                    std::vector<Int_t> sci22r_hits,
-                    std::vector<Int_t> sci31l_hits,
-                    std::vector<Int_t> sci31r_hits,
-                    std::vector<Int_t> sci41l_hits,
-                    std::vector<Int_t> sci41r_hits,
-                    std::vector<Int_t> sci42l_hits,
-                    std::vector<Int_t> sci42r_hits,
-                    std::vector<Int_t> sci43l_hits,
-                    std::vector<Int_t> sci43r_hits,
-                    std::vector<Int_t> sci81l_hits,
-                    std::vector<Int_t> sci81r_hits,
-                    std::vector<Int_t> dt11la_11ra_hits,
-                    std::vector<Int_t> dt11lb_11rb_hits,
-                    std::vector<Int_t> dt11lc_11rc_hits,
-                    std::vector<Int_t> dt11ld_11rd_hits,
-                    std::vector<Int_t> dt21l_21r_hits,
-                    std::vector<Int_t> dt22l_22r_hits,
-                    std::vector<Int_t> dt31l_31r_hits,
-                    std::vector<Int_t> dt41l_41r_hits,
-                    std::vector<Int_t> dt42l_42r_hits,
-                    std::vector<Int_t> dt43l_43r_hits,
-                    std::vector<Int_t> dt81l_81r_hits,
-                    std::vector<Int_t> mhtdc_x_11lra,
-                    std::vector<Int_t> mhtdc_x_11lrb,
-                    std::vector<Int_t> mhtdc_x_11lrc,
-                    std::vector<Int_t> mhtdc_x_11lrd,
-                    std::vector<Int_t> mhtdc_x_21lr,
-                    std::vector<Int_t> mhtdc_x_22lr,
-                    std::vector<Int_t> mhtdc_x_31lr,
-                    std::vector<Int_t> mhtdc_x_41lr,
-                    std::vector<Int_t> mhtdc_x_42lr,
-                    std::vector<Int_t> mhtdc_x_43lr,
-                    std::vector<Int_t> mhtdc_x_81lr);
+                    std::vector<Float_t> sci11la_hits,
+                    std::vector<Float_t> sci11lb_hits,
+                    std::vector<Float_t> sci11lc_hits,
+                    std::vector<Float_t> sci11ld_hits,
+                    std::vector<Float_t> sci11ra_hits,
+                    std::vector<Float_t> sci11rb_hits,
+                    std::vector<Float_t> sci11rc_hits,
+                    std::vector<Float_t> sci11rd_hits,
+                    std::vector<Float_t> sci21l_hits,
+                    std::vector<Float_t> sci21r_hits,
+                    std::vector<Float_t> sci22l_hits,
+                    std::vector<Float_t> sci22r_hits,
+                    std::vector<Float_t> sci31l_hits,
+                    std::vector<Float_t> sci31r_hits,
+                    std::vector<Float_t> sci41l_hits,
+                    std::vector<Float_t> sci41r_hits,
+                    std::vector<Float_t> sci42l_hits,
+                    std::vector<Float_t> sci42r_hits,
+                    std::vector<Float_t> sci43l_hits,
+                    std::vector<Float_t> sci43r_hits,
+                    std::vector<Float_t> sci81l_hits,
+                    std::vector<Float_t> sci81r_hits,
+                    std::vector<Float_t> dt11la_11ra_hits,
+                    std::vector<Float_t> dt11lb_11rb_hits,
+                    std::vector<Float_t> dt11lc_11rc_hits,
+                    std::vector<Float_t> dt11ld_11rd_hits,
+                    std::vector<Float_t> dt21l_21r_hits,
+                    std::vector<Float_t> dt22l_22r_hits,
+                    std::vector<Float_t> dt31l_31r_hits,
+                    std::vector<Float_t> dt41l_41r_hits,
+                    std::vector<Float_t> dt42l_42r_hits,
+                    std::vector<Float_t> dt43l_43r_hits,
+                    std::vector<Float_t> dt81l_81r_hits,
+                    std::vector<Float_t> mhtdc_x_11lra,
+                    std::vector<Float_t> mhtdc_x_11lrb,
+                    std::vector<Float_t> mhtdc_x_11lrc,
+                    std::vector<Float_t> mhtdc_x_11lrd,
+                    std::vector<Float_t> mhtdc_x_21lr,
+                    std::vector<Float_t> mhtdc_x_22lr,
+                    std::vector<Float_t> mhtdc_x_31lr,
+                    std::vector<Float_t> mhtdc_x_41lr,
+                    std::vector<Float_t> mhtdc_x_42lr,
+                    std::vector<Float_t> mhtdc_x_43lr,
+                    std::vector<Float_t> mhtdc_x_81lr);
 
         // Getters
         int64_t Get_wr_t() const { return fwr_t; }
@@ -138,52 +138,52 @@ class FrsCalSciItem : public TObject
         UInt_t Get_dT_22l_81l() const { return dt_22l_81l; }
         UInt_t Get_dT_22r_81r() const { return dt_22r_81r; }
 
-        std::vector<Int_t> Get_mhtdc_sci11la_hits() const { return mhtdc_sci11la_hits; }
-        std::vector<Int_t> Get_mhtdc_sci11lb_hits() const { return mhtdc_sci11lb_hits; }
-        std::vector<Int_t> Get_mhtdc_sci11lc_hits() const { return mhtdc_sci11lc_hits; }
-        std::vector<Int_t> Get_mhtdc_sci11ld_hits() const { return mhtdc_sci11ld_hits; }
-        std::vector<Int_t> Get_mhtdc_sci11ra_hits() const { return mhtdc_sci11ra_hits; }
-        std::vector<Int_t> Get_mhtdc_sci11rb_hits() const { return mhtdc_sci11rb_hits; }
-        std::vector<Int_t> Get_mhtdc_sci11rc_hits() const { return mhtdc_sci11rc_hits; }
-        std::vector<Int_t> Get_mhtdc_sci11rd_hits() const { return mhtdc_sci11rd_hits; }
-        std::vector<Int_t> Get_mhtdc_sci21l_hits() const { return mhtdc_sci21l_hits; }
-        std::vector<Int_t> Get_mhtdc_sci21r_hits() const { return mhtdc_sci21r_hits; }
-        std::vector<Int_t> Get_mhtdc_sci22l_hits() const { return mhtdc_sci22l_hits; }
-        std::vector<Int_t> Get_mhtdc_sci22r_hits() const { return mhtdc_sci22r_hits; }
-        std::vector<Int_t> Get_mhtdc_sci31l_hits() const { return mhtdc_sci31l_hits; }
-        std::vector<Int_t> Get_mhtdc_sci31r_hits() const { return mhtdc_sci31r_hits; }
-        std::vector<Int_t> Get_mhtdc_sci41l_hits() const { return mhtdc_sci41l_hits; }
-        std::vector<Int_t> Get_mhtdc_sci41r_hits() const { return mhtdc_sci41r_hits; }
-        std::vector<Int_t> Get_mhtdc_sci42l_hits() const { return mhtdc_sci42l_hits; }
-        std::vector<Int_t> Get_mhtdc_sci42r_hits() const { return mhtdc_sci42r_hits; }
-        std::vector<Int_t> Get_mhtdc_sci43l_hits() const { return mhtdc_sci43l_hits; }
-        std::vector<Int_t> Get_mhtdc_sci43r_hits() const { return mhtdc_sci43r_hits; }
-        std::vector<Int_t> Get_mhtdc_sci81l_hits() const { return mhtdc_sci81l_hits; }
-        std::vector<Int_t> Get_mhtdc_sci81r_hits() const { return mhtdc_sci81r_hits; }
+        std::vector<Float_t> Get_mhtdc_sci11la_hits() const { return mhtdc_sci11la_hits; }
+        std::vector<Float_t> Get_mhtdc_sci11lb_hits() const { return mhtdc_sci11lb_hits; }
+        std::vector<Float_t> Get_mhtdc_sci11lc_hits() const { return mhtdc_sci11lc_hits; }
+        std::vector<Float_t> Get_mhtdc_sci11ld_hits() const { return mhtdc_sci11ld_hits; }
+        std::vector<Float_t> Get_mhtdc_sci11ra_hits() const { return mhtdc_sci11ra_hits; }
+        std::vector<Float_t> Get_mhtdc_sci11rb_hits() const { return mhtdc_sci11rb_hits; }
+        std::vector<Float_t> Get_mhtdc_sci11rc_hits() const { return mhtdc_sci11rc_hits; }
+        std::vector<Float_t> Get_mhtdc_sci11rd_hits() const { return mhtdc_sci11rd_hits; }
+        std::vector<Float_t> Get_mhtdc_sci21l_hits() const { return mhtdc_sci21l_hits; }
+        std::vector<Float_t> Get_mhtdc_sci21r_hits() const { return mhtdc_sci21r_hits; }
+        std::vector<Float_t> Get_mhtdc_sci22l_hits() const { return mhtdc_sci22l_hits; }
+        std::vector<Float_t> Get_mhtdc_sci22r_hits() const { return mhtdc_sci22r_hits; }
+        std::vector<Float_t> Get_mhtdc_sci31l_hits() const { return mhtdc_sci31l_hits; }
+        std::vector<Float_t> Get_mhtdc_sci31r_hits() const { return mhtdc_sci31r_hits; }
+        std::vector<Float_t> Get_mhtdc_sci41l_hits() const { return mhtdc_sci41l_hits; }
+        std::vector<Float_t> Get_mhtdc_sci41r_hits() const { return mhtdc_sci41r_hits; }
+        std::vector<Float_t> Get_mhtdc_sci42l_hits() const { return mhtdc_sci42l_hits; }
+        std::vector<Float_t> Get_mhtdc_sci42r_hits() const { return mhtdc_sci42r_hits; }
+        std::vector<Float_t> Get_mhtdc_sci43l_hits() const { return mhtdc_sci43l_hits; }
+        std::vector<Float_t> Get_mhtdc_sci43r_hits() const { return mhtdc_sci43r_hits; }
+        std::vector<Float_t> Get_mhtdc_sci81l_hits() const { return mhtdc_sci81l_hits; }
+        std::vector<Float_t> Get_mhtdc_sci81r_hits() const { return mhtdc_sci81r_hits; }
 
-        std::vector<Int_t> Get_mhtdc_dT_11la_11ra() const { return mhtdc_dt11la_11ra; }
-        std::vector<Int_t> Get_mhtdc_dT_11lb_11rb() const { return mhtdc_dt11lb_11rb; }
-        std::vector<Int_t> Get_mhtdc_dT_11lc_11rc() const { return mhtdc_dt11lc_11rc; }
-        std::vector<Int_t> Get_mhtdc_dT_11ld_11rd() const { return mhtdc_dt11ld_11rd; }
-        std::vector<Int_t> Get_mhtdc_dT_21l_21r() const { return mhtdc_dt21l_21r; }
-        std::vector<Int_t> Get_mhtdc_dT_22l_22r() const { return mhtdc_dt22l_22r; }
-        std::vector<Int_t> Get_mhtdc_dT_31l_31r() const { return mhtdc_dt31l_31r; }
-        std::vector<Int_t> Get_mhtdc_dT_41l_41r() const { return mhtdc_dt41l_41r; }
-        std::vector<Int_t> Get_mhtdc_dT_42l_42r() const { return mhtdc_dt42l_42r; }
-        std::vector<Int_t> Get_mhtdc_dT_43l_43r() const { return mhtdc_dt43l_43r; }
-        std::vector<Int_t> Get_mhtdc_dT_81l_81r() const { return mhtdc_dt81l_81r; }
+        std::vector<Float_t> Get_mhtdc_dT_11la_11ra() const { return mhtdc_dt11la_11ra; }
+        std::vector<Float_t> Get_mhtdc_dT_11lb_11rb() const { return mhtdc_dt11lb_11rb; }
+        std::vector<Float_t> Get_mhtdc_dT_11lc_11rc() const { return mhtdc_dt11lc_11rc; }
+        std::vector<Float_t> Get_mhtdc_dT_11ld_11rd() const { return mhtdc_dt11ld_11rd; }
+        std::vector<Float_t> Get_mhtdc_dT_21l_21r() const { return mhtdc_dt21l_21r; }
+        std::vector<Float_t> Get_mhtdc_dT_22l_22r() const { return mhtdc_dt22l_22r; }
+        std::vector<Float_t> Get_mhtdc_dT_31l_31r() const { return mhtdc_dt31l_31r; }
+        std::vector<Float_t> Get_mhtdc_dT_41l_41r() const { return mhtdc_dt41l_41r; }
+        std::vector<Float_t> Get_mhtdc_dT_42l_42r() const { return mhtdc_dt42l_42r; }
+        std::vector<Float_t> Get_mhtdc_dT_43l_43r() const { return mhtdc_dt43l_43r; }
+        std::vector<Float_t> Get_mhtdc_dT_81l_81r() const { return mhtdc_dt81l_81r; }
 
-        std::vector<Int_t> Get_mhtdc_x_sci11lra() const { return mhtdc_x_11lra; }
-        std::vector<Int_t> Get_mhtdc_x_sci11lrb() const { return mhtdc_x_11lrb; }
-        std::vector<Int_t> Get_mhtdc_x_sci11lrc() const { return mhtdc_x_11lrc; }
-        std::vector<Int_t> Get_mhtdc_x_sci11lrd() const { return mhtdc_x_11lrd; }
-        std::vector<Int_t> Get_mhtdc_x_sci21lr() const { return mhtdc_x_21lr; }
-        std::vector<Int_t> Get_mhtdc_x_sci22lr() const { return mhtdc_x_22lr; }
-        std::vector<Int_t> Get_mhtdc_x_sci31lr() const { return mhtdc_x_31lr; }
-        std::vector<Int_t> Get_mhtdc_x_sci41lr() const { return mhtdc_x_41lr; }
-        std::vector<Int_t> Get_mhtdc_x_sci42lr() const { return mhtdc_x_42lr; }
-        std::vector<Int_t> Get_mhtdc_x_sci43lr() const { return mhtdc_x_43lr; }
-        std::vector<Int_t> Get_mhtdc_x_sci81lr() const { return mhtdc_x_81lr; }
+        std::vector<Float_t> Get_mhtdc_x_sci11lra() const { return mhtdc_x_11lra; }
+        std::vector<Float_t> Get_mhtdc_x_sci11lrb() const { return mhtdc_x_11lrb; }
+        std::vector<Float_t> Get_mhtdc_x_sci11lrc() const { return mhtdc_x_11lrc; }
+        std::vector<Float_t> Get_mhtdc_x_sci11lrd() const { return mhtdc_x_11lrd; }
+        std::vector<Float_t> Get_mhtdc_x_sci21lr() const { return mhtdc_x_21lr; }
+        std::vector<Float_t> Get_mhtdc_x_sci22lr() const { return mhtdc_x_22lr; }
+        std::vector<Float_t> Get_mhtdc_x_sci31lr() const { return mhtdc_x_31lr; }
+        std::vector<Float_t> Get_mhtdc_x_sci41lr() const { return mhtdc_x_41lr; }
+        std::vector<Float_t> Get_mhtdc_x_sci42lr() const { return mhtdc_x_42lr; }
+        std::vector<Float_t> Get_mhtdc_x_sci43lr() const { return mhtdc_x_43lr; }
+        std::vector<Float_t> Get_mhtdc_x_sci81lr() const { return mhtdc_x_81lr; }
 
         ClassDef(FrsCalSciItem, 1);
 
@@ -233,50 +233,50 @@ class FrsCalSciItem : public TObject
         UInt_t dt_22r_81r;
 
         // MHTDC
-        std::vector<Int_t> mhtdc_sci11la_hits;
-        std::vector<Int_t> mhtdc_sci11lb_hits;
-        std::vector<Int_t> mhtdc_sci11lc_hits;
-        std::vector<Int_t> mhtdc_sci11ld_hits;
-        std::vector<Int_t> mhtdc_sci11ra_hits;
-        std::vector<Int_t> mhtdc_sci11rb_hits;
-        std::vector<Int_t> mhtdc_sci11rc_hits;
-        std::vector<Int_t> mhtdc_sci11rd_hits;
-        std::vector<Int_t> mhtdc_sci21l_hits;
-        std::vector<Int_t> mhtdc_sci21r_hits;
-        std::vector<Int_t> mhtdc_sci22l_hits;
-        std::vector<Int_t> mhtdc_sci22r_hits;
-        std::vector<Int_t> mhtdc_sci31l_hits;
-        std::vector<Int_t> mhtdc_sci31r_hits;
-        std::vector<Int_t> mhtdc_sci41l_hits;
-        std::vector<Int_t> mhtdc_sci41r_hits;
-        std::vector<Int_t> mhtdc_sci42l_hits;
-        std::vector<Int_t> mhtdc_sci42r_hits;
-        std::vector<Int_t> mhtdc_sci43l_hits;
-        std::vector<Int_t> mhtdc_sci43r_hits;
-        std::vector<Int_t> mhtdc_sci81l_hits;
-        std::vector<Int_t> mhtdc_sci81r_hits;
-        std::vector<Int_t> mhtdc_dt11la_11ra;
-        std::vector<Int_t> mhtdc_dt11lb_11rb;
-        std::vector<Int_t> mhtdc_dt11lc_11rc;
-        std::vector<Int_t> mhtdc_dt11ld_11rd;
-        std::vector<Int_t> mhtdc_dt21l_21r;
-        std::vector<Int_t> mhtdc_dt22l_22r;
-        std::vector<Int_t> mhtdc_dt31l_31r;
-        std::vector<Int_t> mhtdc_dt41l_41r;
-        std::vector<Int_t> mhtdc_dt42l_42r;
-        std::vector<Int_t> mhtdc_dt43l_43r;
-        std::vector<Int_t> mhtdc_dt81l_81r;
-        std::vector<Int_t> mhtdc_x_11lra;
-        std::vector<Int_t> mhtdc_x_11lrb;
-        std::vector<Int_t> mhtdc_x_11lrc;
-        std::vector<Int_t> mhtdc_x_11lrd;
-        std::vector<Int_t> mhtdc_x_21lr; 
-        std::vector<Int_t> mhtdc_x_22lr;
-        std::vector<Int_t> mhtdc_x_31lr; 
-        std::vector<Int_t> mhtdc_x_41lr; 
-        std::vector<Int_t> mhtdc_x_42lr; 
-        std::vector<Int_t> mhtdc_x_43lr; 
-        std::vector<Int_t> mhtdc_x_81lr; 
+        std::vector<Float_t> mhtdc_sci11la_hits;
+        std::vector<Float_t> mhtdc_sci11lb_hits;
+        std::vector<Float_t> mhtdc_sci11lc_hits;
+        std::vector<Float_t> mhtdc_sci11ld_hits;
+        std::vector<Float_t> mhtdc_sci11ra_hits;
+        std::vector<Float_t> mhtdc_sci11rb_hits;
+        std::vector<Float_t> mhtdc_sci11rc_hits;
+        std::vector<Float_t> mhtdc_sci11rd_hits;
+        std::vector<Float_t> mhtdc_sci21l_hits;
+        std::vector<Float_t> mhtdc_sci21r_hits;
+        std::vector<Float_t> mhtdc_sci22l_hits;
+        std::vector<Float_t> mhtdc_sci22r_hits;
+        std::vector<Float_t> mhtdc_sci31l_hits;
+        std::vector<Float_t> mhtdc_sci31r_hits;
+        std::vector<Float_t> mhtdc_sci41l_hits;
+        std::vector<Float_t> mhtdc_sci41r_hits;
+        std::vector<Float_t> mhtdc_sci42l_hits;
+        std::vector<Float_t> mhtdc_sci42r_hits;
+        std::vector<Float_t> mhtdc_sci43l_hits;
+        std::vector<Float_t> mhtdc_sci43r_hits;
+        std::vector<Float_t> mhtdc_sci81l_hits;
+        std::vector<Float_t> mhtdc_sci81r_hits;
+        std::vector<Float_t> mhtdc_dt11la_11ra;
+        std::vector<Float_t> mhtdc_dt11lb_11rb;
+        std::vector<Float_t> mhtdc_dt11lc_11rc;
+        std::vector<Float_t> mhtdc_dt11ld_11rd;
+        std::vector<Float_t> mhtdc_dt21l_21r;
+        std::vector<Float_t> mhtdc_dt22l_22r;
+        std::vector<Float_t> mhtdc_dt31l_31r;
+        std::vector<Float_t> mhtdc_dt41l_41r;
+        std::vector<Float_t> mhtdc_dt42l_42r;
+        std::vector<Float_t> mhtdc_dt43l_43r;
+        std::vector<Float_t> mhtdc_dt81l_81r;
+        std::vector<Float_t> mhtdc_x_11lra;
+        std::vector<Float_t> mhtdc_x_11lrb;
+        std::vector<Float_t> mhtdc_x_11lrc;
+        std::vector<Float_t> mhtdc_x_11lrd;
+        std::vector<Float_t> mhtdc_x_21lr; 
+        std::vector<Float_t> mhtdc_x_22lr;
+        std::vector<Float_t> mhtdc_x_31lr; 
+        std::vector<Float_t> mhtdc_x_41lr; 
+        std::vector<Float_t> mhtdc_x_42lr; 
+        std::vector<Float_t> mhtdc_x_43lr; 
+        std::vector<Float_t> mhtdc_x_81lr; 
 };
 
 class FrsCalMusicItem : public TObject

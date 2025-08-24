@@ -190,7 +190,7 @@ InitStatus FrsRaw2Cal::Init()
 
 void FrsRaw2Cal::Exec(Option_t* option)
 {
-    //c4LOG(info, "::: start event");
+    //c4LOG(info, "::: EVENT START RAW2CAL :::");
     if (tpatArray->size() == 0) return;
     
     /*if (frs_config->AnlSci)*/ ProcessScintillators();
@@ -256,52 +256,29 @@ void FrsRaw2Cal::ProcessScintillators()
     // MHTDC T
     //c4LOG(info, "   MHTDC sci");
     sciMHTDC = sciItem.Get_mhtdc_array();
-    for (int val : sciMHTDC[frs_config->Get_mhtdc_11LA_chan()]) sci11la_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
-    for (int val : sciMHTDC[frs_config->Get_mhtdc_11LB_chan()]) sci11lb_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
-    for (int val : sciMHTDC[frs_config->Get_mhtdc_11LC_chan()]) sci11lc_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
-    for (int val : sciMHTDC[frs_config->Get_mhtdc_11LD_chan()]) sci11ld_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
-    for (int val : sciMHTDC[frs_config->Get_mhtdc_11RA_chan()]) sci11ra_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
-    for (int val : sciMHTDC[frs_config->Get_mhtdc_11RB_chan()]) sci11rb_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
-    for (int val : sciMHTDC[frs_config->Get_mhtdc_11RC_chan()]) sci11rc_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
-    for (int val : sciMHTDC[frs_config->Get_mhtdc_11RD_chan()]) sci11rd_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
-    for (int val : sciMHTDC[frs_config->Get_mhtdc_21L_chan()]) sci21l_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
-    for (int val : sciMHTDC[frs_config->Get_mhtdc_21R_chan()]) sci21r_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
-    for (int val : sciMHTDC[frs_config->Get_mhtdc_22L_chan()]) sci22l_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
-    for (int val : sciMHTDC[frs_config->Get_mhtdc_22R_chan()]) sci22r_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
-    for (int val : sciMHTDC[frs_config->Get_mhtdc_31L_chan()]) sci31l_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
-    for (int val : sciMHTDC[frs_config->Get_mhtdc_31R_chan()]) sci31r_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
-    for (int val : sciMHTDC[frs_config->Get_mhtdc_41L_chan()]) sci41l_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
-    for (int val : sciMHTDC[frs_config->Get_mhtdc_41R_chan()]) sci41r_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
-    for (int val : sciMHTDC[frs_config->Get_mhtdc_42L_chan()]) sci42l_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
-    for (int val : sciMHTDC[frs_config->Get_mhtdc_42R_chan()]) sci42r_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
-    for (int val : sciMHTDC[frs_config->Get_mhtdc_43L_chan()]) sci43l_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
-    for (int val : sciMHTDC[frs_config->Get_mhtdc_43R_chan()]) sci43r_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
-    for (int val : sciMHTDC[frs_config->Get_mhtdc_81L_chan()]) sci81l_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
-    for (int val : sciMHTDC[frs_config->Get_mhtdc_81R_chan()]) sci81r_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
-
-    // sci11la_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_11LA_chan()];
-    // sci11lb_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_11LB_chan()];
-    // sci11lc_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_11LC_chan()];
-    // sci11ld_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_11LD_chan()];
-    // sci11ra_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_11RA_chan()];
-    // sci11rb_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_11RB_chan()];
-    // sci11rc_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_11RC_chan()];
-    // sci11rd_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_11RD_chan()];
-    // sci21l_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_21L_chan()];
-    // sci21r_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_21R_chan()];
-    // sci22l_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_22L_chan()];
-    // sci22r_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_22R_chan()];
-    // sci31l_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_31L_chan()];
-    // sci31r_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_31R_chan()];
-    // sci41l_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_41L_chan()];
-    // sci41r_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_41R_chan()];
-    // sci42l_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_42L_chan()];
-    // sci42r_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_42R_chan()];
-    // sci43l_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_43L_chan()];
-    // sci43r_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_43R_chan()];
-    // sci81l_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_81L_chan()];
-    // sci81r_hits = sci->mhtdc_factor_ch_to_ns*sciMHTDC[frs_config->Get_mhtdc_81R_chan()];
-    //c4LOG(info, "   mhtdc sci dt and x");
+    for (auto val : sciMHTDC[frs_config->Get_mhtdc_11LA_chan()]) sci11la_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
+    for (auto val : sciMHTDC[frs_config->Get_mhtdc_11LB_chan()]) sci11lb_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
+    for (auto val : sciMHTDC[frs_config->Get_mhtdc_11LC_chan()]) sci11lc_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
+    for (auto val : sciMHTDC[frs_config->Get_mhtdc_11LD_chan()]) sci11ld_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
+    for (auto val : sciMHTDC[frs_config->Get_mhtdc_11RA_chan()]) sci11ra_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
+    for (auto val : sciMHTDC[frs_config->Get_mhtdc_11RB_chan()]) sci11rb_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
+    for (auto val : sciMHTDC[frs_config->Get_mhtdc_11RC_chan()]) sci11rc_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
+    for (auto val : sciMHTDC[frs_config->Get_mhtdc_11RD_chan()]) sci11rd_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
+    for (auto val : sciMHTDC[frs_config->Get_mhtdc_21L_chan()]) sci21l_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
+    for (auto val : sciMHTDC[frs_config->Get_mhtdc_21R_chan()]) sci21r_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
+    for (auto val : sciMHTDC[frs_config->Get_mhtdc_22L_chan()]) sci22l_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
+    for (auto val : sciMHTDC[frs_config->Get_mhtdc_22R_chan()]) sci22r_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
+    for (auto val : sciMHTDC[frs_config->Get_mhtdc_31L_chan()]) sci31l_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
+    for (auto val : sciMHTDC[frs_config->Get_mhtdc_31R_chan()]) sci31r_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
+    for (auto val : sciMHTDC[frs_config->Get_mhtdc_41L_chan()]) sci41l_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
+    for (auto val : sciMHTDC[frs_config->Get_mhtdc_41R_chan()]) sci41r_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
+    for (auto val : sciMHTDC[frs_config->Get_mhtdc_42L_chan()]) sci42l_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
+    for (auto val : sciMHTDC[frs_config->Get_mhtdc_42R_chan()]) sci42r_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
+    for (auto val : sciMHTDC[frs_config->Get_mhtdc_43L_chan()]) sci43l_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
+    for (auto val : sciMHTDC[frs_config->Get_mhtdc_43R_chan()]) sci43r_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
+    for (auto val : sciMHTDC[frs_config->Get_mhtdc_81L_chan()]) sci81l_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
+    for (auto val : sciMHTDC[frs_config->Get_mhtdc_81R_chan()]) sci81r_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
+    //c4LOG(info, "   ns factor : " << sci->mhtdc_factor_ch_to_ns);
     //  ::: MHTDC SCI dT and x
     //  1x
     //c4LOG(info, "   1x");
@@ -317,10 +294,13 @@ void FrsRaw2Cal::ProcessScintillators()
     //c4LOG(info, "   11la");
     for (int i = 0; i < hits_in_11la; i++)
     {
+        //c4LOG(info, "SCI 11 L : " << sci11la_hits[i]);
         for (int j = 0; j < hits_in_11ra; j++)
         {
-            dt11la_11ra_hits.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + sci11la_hits[i] - sci11ra_hits[j]));
+            //c4LOG(info, "SCI 11 R : " << sci11ra_hits[j]);
+            dt11la_11ra_hits.emplace_back(((sci->mhtdc_factor_ch_to_ns*rand3()) + sci11la_hits[i] - sci11ra_hits[j]));
             x_11lra_hits.emplace_back(dt11la_11ra_hits[i * hits_in_11ra + j] * sci->mhtdc_factor_11l_11r + sci->mhtdc_offset_11l_11r);
+            //c4LOG(info, " 11DT : " << dt11la_11ra_hits[j] );
         }  
     }
     //c4LOG(info, "   11lb");
@@ -328,7 +308,7 @@ void FrsRaw2Cal::ProcessScintillators()
     {
         for (int j = 0; j < hits_in_11rb; j++)
         {
-            dt11lb_11rb_hits.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + sci11lb_hits[i] - sci11rb_hits[j])); 
+            dt11lb_11rb_hits.emplace_back(((sci->mhtdc_factor_ch_to_ns*rand3()) + sci11lb_hits[i] - sci11rb_hits[j])); 
             x_11lrb_hits.emplace_back(dt11lb_11rb_hits[i * hits_in_11rb + j] * sci->mhtdc_factor_11l_11r + sci->mhtdc_offset_11l_11r); 
         }
     }
@@ -337,7 +317,7 @@ void FrsRaw2Cal::ProcessScintillators()
     {
         for (int j = 0; j < hits_in_11rc; j++)
         {
-            dt11lc_11rc_hits.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + sci11lc_hits[i] - sci11rc_hits[j])); 
+            dt11lc_11rc_hits.emplace_back( ((sci->mhtdc_factor_ch_to_ns*rand3()) + sci11lc_hits[i] - sci11rc_hits[j])); 
             x_11lrc_hits.emplace_back(dt11lc_11rc_hits[i * hits_in_11rc + j] * sci->mhtdc_factor_11l_11r + sci->mhtdc_offset_11l_11r); 
         }
     }
@@ -346,7 +326,7 @@ void FrsRaw2Cal::ProcessScintillators()
     {
         for (int j = 0; j < hits_in_11rd; j++)
         {
-            dt11ld_11rd_hits.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + sci11ld_hits[i] - sci11rd_hits[j])); 
+            dt11ld_11rd_hits.emplace_back(((sci->mhtdc_factor_ch_to_ns*rand3()) + sci11ld_hits[i] - sci11rd_hits[j])); 
             x_11lrd_hits.emplace_back(dt11ld_11rd_hits[i * hits_in_11rd + j] * sci->mhtdc_factor_11l_11r + sci->mhtdc_offset_11l_11r); 
         }
     }
@@ -362,8 +342,9 @@ void FrsRaw2Cal::ProcessScintillators()
     {
         for (int j = 0; j < hits_in_21r; j++)
         {
-            dt21l_21r_hits.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + sci21l_hits[i] - sci21r_hits[j]));
+            dt21l_21r_hits.emplace_back(((sci->mhtdc_factor_ch_to_ns*rand3()) + sci21l_hits[i] - sci21r_hits[j]));
             x_21lr_hits.emplace_back(dt21l_21r_hits[i * hits_in_21r + j] * sci->mhtdc_factor_21l_21r + sci->mhtdc_offset_21l_21r);
+            //c4LOG(info, " 21DT : " << dt21l_21r_hits[j] );
         }
     }
 
@@ -371,7 +352,7 @@ void FrsRaw2Cal::ProcessScintillators()
     {
         for (int j = 0; j < hits_in_22r; j++)
         {
-            dt22l_22r_hits.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + sci22l_hits[i] - sci22r_hits[j]));
+            dt22l_22r_hits.emplace_back(((sci->mhtdc_factor_ch_to_ns*rand3()) + sci22l_hits[i] - sci22r_hits[j]));
             x_22lr_hits.emplace_back(dt22l_22r_hits[i * hits_in_22r + j] * sci->mhtdc_factor_22l_22r + sci->mhtdc_offset_22l_22r);
         }
     }
@@ -385,7 +366,7 @@ void FrsRaw2Cal::ProcessScintillators()
     {
         for (int j = 0; j < hits_in_31r; j++)
         {
-            dt31l_31r_hits.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + sci31l_hits[i] - sci31r_hits[j]));
+            dt31l_31r_hits.emplace_back(((sci->mhtdc_factor_ch_to_ns*rand3()) + sci31l_hits[i] - sci31r_hits[j]));
             x_31lr_hits.emplace_back(dt31l_31r_hits[i * hits_in_31r + j] * sci->mhtdc_factor_31l_31r + sci->mhtdc_offset_31l_31r); 
         }
     }  
@@ -403,7 +384,7 @@ void FrsRaw2Cal::ProcessScintillators()
     {
         for (int j = 0; j < hits_in_41r; j++)
         {
-            dt41l_41r_hits.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + sci41l_hits[i] - sci41r_hits[j]));
+            dt41l_41r_hits.emplace_back(((sci->mhtdc_factor_ch_to_ns*rand3()) + sci41l_hits[i] - sci41r_hits[j]));
             x_41lr_hits.emplace_back(dt41l_41r_hits[i * hits_in_41r + j] * sci->mhtdc_factor_41l_41r + sci->mhtdc_offset_41l_41r);
         }
     }
@@ -412,7 +393,7 @@ void FrsRaw2Cal::ProcessScintillators()
     {
         for (int j = 0; j < hits_in_42r; j++)
         {
-            dt42l_42r_hits.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + sci42l_hits[i] - sci42r_hits[j]));
+            dt42l_42r_hits.emplace_back( ((sci->mhtdc_factor_ch_to_ns*rand3()) + sci42l_hits[i] - sci42r_hits[j]));
             x_42lr_hits.emplace_back(dt42l_42r_hits[i * hits_in_42r + j] * sci->mhtdc_factor_42l_42r + sci->mhtdc_offset_42l_42r);
         }
     }
@@ -421,7 +402,7 @@ void FrsRaw2Cal::ProcessScintillators()
     {
         for (int j = 0; j < hits_in_43r; j++)
         {
-            dt43l_43r_hits.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + sci43l_hits[i] - sci43r_hits[j]));
+            dt43l_43r_hits.emplace_back(((sci->mhtdc_factor_ch_to_ns*rand3()) + sci43l_hits[i] - sci43r_hits[j]));
             x_43lr_hits.emplace_back(dt43l_43r_hits[i * hits_in_43r + j] * sci->mhtdc_factor_43l_43r + sci->mhtdc_offset_43l_43r);
         }
     }
@@ -435,7 +416,7 @@ void FrsRaw2Cal::ProcessScintillators()
     {
         for (int j = 0; j < hits_in_81r; j++)
         {
-            dt81l_81r_hits.emplace_back(sci->mhtdc_factor_ch_to_ns * (rand3() + sci81l_hits[i] - sci81r_hits[j]));
+            dt81l_81r_hits.emplace_back(((sci->mhtdc_factor_ch_to_ns*rand3()) + sci81l_hits[i] - sci81r_hits[j]));
             x_81lr_hits.emplace_back(dt81l_81r_hits[i * hits_in_81r + j] * sci->mhtdc_factor_81l_81r + sci->mhtdc_offset_81l_81r);
         }
     }
