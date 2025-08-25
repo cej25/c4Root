@@ -10,13 +10,15 @@ class FatimaVmeQDCItem : public TObject
         FatimaVmeQDCItem();
 
         void Reset();
-        void SetAll(uint64_t wr, int det, uint32_t ct, uint64_t ft, uint32_t qlr, uint32_t qsr);
+        void SetAll(uint64_t wr, int det, uint32_t ct, double ft, int fb, uint32_t qlr, uint32_t qsr, std::vector<UInt_t> w1);
         uint64_t Get_wr_t() const;
         uint32_t Get_coarse_time() const;
-        uint64_t Get_fine_time() const;
+        double Get_fine_time() const;
+        int Get_fine_bin() const;
         uint32_t Get_qlong_raw() const;
         uint32_t Get_qshort_raw() const;
         int Get_detector() const;
+        std::vector<UInt_t> Get_waveform_one() const;
 
         ClassDefNV(FatimaVmeQDCItem, 2)
     
@@ -24,10 +26,12 @@ class FatimaVmeQDCItem : public TObject
 
         uint64_t wr_t;
         uint32_t coarse_time;
-        uint64_t fine_time;
+        double fine_time;
+        int fine_bin;
         uint32_t qlong_raw;
         uint32_t qshort_raw;
         int detector;
+        std::vector<UInt_t> waveform_one;
 
 };
 
@@ -72,10 +76,16 @@ inline uint32_t FatimaVmeQDCItem::Get_coarse_time() const
     return coarse_time;
 }
 
-inline uint64_t FatimaVmeQDCItem::Get_fine_time() const
+inline double FatimaVmeQDCItem::Get_fine_time() const
 {
     return fine_time;
 }
+
+inline int FatimaVmeQDCItem::Get_fine_bin() const
+{
+    return fine_bin;
+}
+
 
 inline uint32_t FatimaVmeQDCItem::Get_qlong_raw() const
 {
@@ -86,6 +96,12 @@ inline uint32_t FatimaVmeQDCItem::Get_qshort_raw() const
 {
     return qshort_raw;
 }
+
+inline std::vector<UInt_t> FatimaVmeQDCItem::Get_waveform_one() const
+{
+    return waveform_one;
+}
+
 
 inline uint64_t FatimaVmeTDCItem::Get_wr_t() const
 {

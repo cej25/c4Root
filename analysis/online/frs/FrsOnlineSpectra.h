@@ -317,7 +317,8 @@ class FrsOnlineSpectra : public FairTask
         TH1* h1_Z43_mhtdc;
         TH1* h1_dEdegoQ_mhtdc;
         TH1* h1_dEdegZ41_mhtdc;
-        TH1* h1_sci_tof_21_41_mhtdc;// ?
+        TH1* h1_sci_tof_11_21_mhtdc;// ?
+        TH1* h1_sci_tof_21_41_mhtdc;
 
         // :::: MHTDC Gated :::: 
         // ---------2D ---------
@@ -387,6 +388,8 @@ class FrsOnlineSpectra : public FairTask
         std::vector<TH1*> h1_ratio_S2_S4_Gates_mhtdc;
         std::vector<TH1*> h1_integral_S2_Gates_mhtdc;
         std::vector<TH1*> h1_integral_S4_Gates_mhtdc;
+
+        TH2* h2_mhtdc_mult_s1s2s4;
 
 
         TGraph* hG_spill_tracker;

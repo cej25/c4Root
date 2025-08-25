@@ -100,6 +100,7 @@
 // STEFAN
 #pragma link C++ class StefanFebexItem+;
 #pragma link C++ class StefanCalItem+;
+#pragma link C++ class StefanHitItem+;
 
 // TimeMachine
 #pragma link C++ class TimeMachineData+;

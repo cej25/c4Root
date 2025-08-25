@@ -15,13 +15,13 @@ class StefanCalItem : public TObject
                     Int_t si,
                     Int_t st,
                     Int_t e,
-                    std::vector<UShort_t> tr,
                     Double_t e_cal,
                     ULong64_t evt_t,
                     ULong64_t ch_t,
                     Long64_t ab_t,
                     Bool_t pu,
                     Bool_t ov); 
+                    // deal with Traces separate if necessary
         void Reset();
 
         Long64_t wr_t;

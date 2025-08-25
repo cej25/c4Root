@@ -1030,16 +1030,40 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     else if (sci->sci11_select == 3) sci11r_hits = calSciItem.Get_mhtdc_sci11rd_hits();
     int hits_in_11r = sci11r_hits.size();
 
+    if (hits_in_11l != hits_in_11r)
+    {
+        // std::cout << "uneven lr in 11 :: left :: " << hits_in_11l << " :: right :: " << hits_in_11r << std::endl;
+        uneven++;
+    }
+    else even++;
+
     hits_in_11lr = hits_in_11l * hits_in_11r;
     mhtdc_sc11lr_dt = new Float_t[hits_in_11lr];
     mhtdc_sc11lr_x = new Float_t[hits_in_11lr];
 
-    for (int i = 0; i < hits_in_11l; i++)
+    std::cout << "::: SC11 :::" << std::endl;
+    if (hits_in_11l == hits_in_11r)
     {
-        for (int j = 0; j < hits_in_11r; j++)
+        for (int i = 0; i < hits_in_11l; i++)
         {
-            mhtdc_sc11lr_dt[i * hits_in_11r + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci11l_hits[i] - sci11r_hits[j]);
-            mhtdc_sc11lr_x[i * hits_in_11r + j] = mhtdc_sc11lr_dt[i * hits_in_11r + j] * sci->mhtdc_factor_11l_11r + sci->mhtdc_offset_11l_11r;
+            for (int j = 0; j < hits_in_11r; j++)
+            {
+                std::cout << "i :: " << i << " :: j :: " << j << " :: dt :: " <<  sci->mhtdc_factor_ch_to_ns * (rand3() + sci11l_hits[i] - sci11r_hits[j]) << std::endl;
+
+                mhtdc_sc11lr_dt[i * hits_in_11r + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci11l_hits[i] - sci11r_hits[j]);
+                mhtdc_sc11lr_x[i * hits_in_11r + j] = mhtdc_sc11lr_dt[i * hits_in_11r + j] * sci->mhtdc_factor_11l_11r + sci->mhtdc_offset_11l_11r;
+            }
+        }
+    }
+    else
+    {
+        for (int i = 0; i < hits_in_11l; i++)
+        {
+            for (int j = 0; j < hits_in_11r; j++)
+            {
+                mhtdc_sc11lr_dt[i * hits_in_11r + j] = -999;
+                mhtdc_sc11lr_x[i * hits_in_11r + j] = -999;
+            }
         }
     }
 
@@ -1053,14 +1077,20 @@ void FrsCal2Hit::ProcessSci_MHTDC()
 
     mhtdc_sc21lr_dt = new Float_t[hits_in_21lr];
     mhtdc_sc21lr_x = new Float_t[hits_in_21lr];
-    for (int i = 0; i < hits_in_21l; i++)
+    std::cout << ":: SC21 :: " << std::endl;
+    if (hits_in_21lr == hits_in_11lr)
     {
-        for (int j = 0; j < hits_in_21r; j++)
+        for (int i = 0; i < hits_in_21l; i++)
         {
-            mhtdc_sc21lr_dt[i * hits_in_21r + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci21l_hits[i] - sci21r_hits[j]);
-            mhtdc_sc21lr_x[i * hits_in_21r + j] = mhtdc_sc21lr_dt[i * hits_in_21r + j] * sci->mhtdc_factor_21l_21r + sci->mhtdc_offset_21l_21r;
+            for (int j = 0; j < hits_in_21r; j++)
+            {
+                std::cout << "i :: " << i << " :: j :: " << j << " :: dt :: " << sci->mhtdc_factor_ch_to_ns * (rand3() + sci21l_hits[i] - sci21r_hits[j]) << std::endl;
+                mhtdc_sc21lr_dt[i * hits_in_21r + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci21l_hits[i] - sci21r_hits[j]);
+                mhtdc_sc21lr_x[i * hits_in_21r + j] = mhtdc_sc21lr_dt[i * hits_in_21r + j] * sci->mhtdc_factor_21l_21r + sci->mhtdc_offset_21l_21r;
+            }
         }
     }
+    
 
     float sc21pos_from_tpc = -999.;
     if (b_tpc_xy[0] && b_tpc_xy[1])
@@ -2071,9 +2101,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
         temp_s1x_mhtdc = new Float_t[hits_in_11lr];
         for (int i = 0; i < hits_in_11lr; i++) temp_s1x_mhtdc[i] = mhtdc_sc11lr_x[i];
         hits_in_s1x = hits_in_11lr;
-        temp_a1 = 0;
-        
-        
+        temp_a1 = 0;        
     }
     else
     {
@@ -2775,6 +2803,9 @@ void FrsCal2Hit::FinishTask()
     c4LOG(info, Form("Wrote %i events. ", fNEvents));
     c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvents);
     c4LOG(info, "aoqfrscal:: " << aoqfrscal);
+
+    c4LOG(info, "Uneven:: " << uneven);
+    c4LOG(info, "Even:: " << even);
 }
 
 ClassImp(FrsCal2Hit)
