@@ -526,6 +526,9 @@ class FrsCal2Hit : public FairTask
         Float_t temp_tm_to_MeV = 299.792458;
         Float_t temp_mu = 931.4940954; //MeV
 
+        int uneven = 0;
+        int even = 0;
+
        
     public:
         ClassDef(FrsCal2Hit, 1);

@@ -1,13 +1,13 @@
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define FATIMA_ON 1
-#define FATIMA_VME_ON 0
+#define FATIMA_ON 0
+#define FATIMA_VME_ON 1
 #define AIDA_ON 0
 #define BPLAST_ON 0
-#define GERMANIUM_ON 1
+#define GERMANIUM_ON 0
 #define BGO_ON 0
-#define FRS_ON 1
+#define FRS_ON 0
 #define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 0
@@ -76,20 +76,21 @@ void s100_tests()
     //TString filename = "trans://x86l-144"; // 
     //TString filename = "stream://x86l-182"; // bgo
     //TString filename = "trans://lxg1257"; // timesorter.
-    //TString filename = "trans://R4L-21"; // beammonitor
+    // TString filename = "trans://R4L-21"; // fatima vme now, was beammonitor in principle? 
     //TString filename = "stream://R4L-36"; // fatima vme
     //TString filename = "stream://x86l-117"; // fatima tamex
     //TString filename = "stream://x86l-87"; //bplast
     //TString filename = "~/lustre/gamma/dryrunmarch24/ts/Au_beam_0010_0001.lmd";
     //TString filename = "~/Au_beam_0010_0001.lmd";
-    TString filename =  "~/lustre/gamma/s100_files/ts/168Dy_new_0006_0104.lmd";
+    // TString filename =  "~/lustre/gamma/s100_files/ts/168Dy_new_0006_0104.lmd";
     //TString filename = "~/lustre/gamma/nhubbard/162Eu_0052_TEST_0001.lmd";
+    TString filename = "/u/cjones/data/lustre/despec/fatima_test_2025/run_0009_0001.lmd";
     TString outputpath = "output";
     TString outputFileName = outputpath + ".root";
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 7070; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    Int_t port = 6969; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -151,7 +152,7 @@ void s100_tests()
     // *** Load Detector Configurations *************************************************** //
     TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/fatima/fatima_alloc_new.txt");
     TFatimaVmeConfiguration::SetDetectorMapFile(config_path + "/fatima/Fatima_VME_allocation.txt");
-    TFatimaVmeConfiguration::Set_QDC_E_CalFile(config_path + "/fatima/Fatima_QDC_Energy_Calibration.txt");
+    TFatimaVmeConfiguration::Set_QDC_E_CalFile(config_path + "/fatima/Rough_Cal_2005.txt");
     TFatimaVmeConfiguration::Set_QDC_T_CalFile(config_path + "/fatima/Fatima_QDC_Time_Calibration.txt");
     TFatimaVmeConfiguration::Set_TDC_T_CalFile(config_path + "/fatima/Fatima_TDC_Time_Calibration.txt");
     TAidaConfiguration::SetBasePath(config_path + "/AIDA");

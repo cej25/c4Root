@@ -325,7 +325,7 @@ EVENT
     revisit aida = aida_subev(type = 10, subtype = 1, procid = 90, control = 37);
     germanium = febex_subev(type = 10, subtype = 1, procid = 60, control = 20);
     fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = 75, control = 20);
-    fatimavme = fatima_vme_subev(type = 10, subtype = 1, procid = 70, control = 20);
+    fatimavme = fatima_vme_subev(procid = 70); // control 20, type 10, subtype 1
     bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20);
     bgo = bgo_tamex_subevent(procid = 100);
 
