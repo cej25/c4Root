@@ -64,24 +64,24 @@ void histo_config(const std::string& config_path)
 
     // F R S
     FrsGate* Cr_1p = new FrsGate("Cr_1p",config_path + "/frs/Gates/Cr_1p_Z42.root");
-    //FrsGate* Cr_1p1n = new FrsGate("Cr_1p1n",config_path + "/frs/Gates/Cr_1p1n_Z42.root");
+    FrsGate* Cr_1p1n = new FrsGate("Cr_1p1n",config_path + "/frs/Gates/Cr_1p1n_Z42.root");
 
     fgs.emplace_back(Cr_1p);
-    //fgs.emplace_back(Cr_1p1n);
+    fgs.emplace_back(Cr_1p1n);
 
     // L I S A 
     LisaGate* Wide_F1 = new LisaGate("wide_feb_1", "energy", config_path + "/lisa/Gates/Febex_Gate1shiyan.txt");
-    //LisaGate* Wide_M1 = new LisaGate("wide_mwd_1", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate1shiyan.txt");
+    LisaGate* Wide_M1 = new LisaGate("wide_mwd_1", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate1shiyan.txt");
 
     lgs.emplace_back(Wide_F1);
-    //lgs.emplace_back(Wide_M1);
+    lgs.emplace_back(Wide_M1);
     
 
     LisaGate* Wide_F2 = new LisaGate("wide_feb_2", "energy", config_path + "/lisa/Gates/Febex_Gate1shiyan.txt");
-    //LisaGate* Wide_M2 = new LisaGate("wide_mwd_2", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate1shiyan.txt");
+    LisaGate* Wide_M2 = new LisaGate("wide_mwd_2", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate1shiyan.txt");
     
     lgs.emplace_back(Wide_F2);
-    //lgs.emplace_back(Wide_M2);
+    lgs.emplace_back(Wide_M2);
     
     
 

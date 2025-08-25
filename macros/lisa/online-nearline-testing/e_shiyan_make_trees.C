@@ -11,8 +11,8 @@
 // !!! Select the data level you want to visualize
 #define LISA_RAW 0
 #define LISA_ANA 0
-#define LISA_CAL 0
-#define LISA_HIT 1
+#define LISA_CAL 1
+#define LISA_HIT 0
 //...................................................
 
 // Definition of setup and configuration files
