@@ -81,24 +81,33 @@ class LisaCal2Hit : public FairTask
         float beta_after1 = -999.;
 
         
-        std::vector<Float_t> aoq0;
-        std::vector<Float_t> z0;
+        std::vector<Float_t> aoq_i;
+        std::vector<Float_t> aoq_f;
+        std::vector<Float_t> z_i;
+        std::vector<Float_t> z_f;
+        std::vector<Float_t> beta_i;
+        std::vector<Float_t> beta_f;
+        std::vector<Float_t> gamma_i;
+        std::vector<Float_t> gamma_f;
+        std::vector<Float_t> beta_en_i;
 
-        std::vector<Float_t> beta0;
+        std::vector<Float_t> sci21l_s1s2_selected;
+        std::vector<Float_t> sci21r_s1s2_selected;
+        std::vector<Float_t> sci21l_s2s4_selected;
+        std::vector<Float_t> sci21r_s2s4_selected;
+
         std::vector<Float_t> beta1;
         std::vector<Float_t> beta2;
         std::vector<Float_t> beta3;
         std::vector<Float_t> beta4;
         std::vector<Float_t> beta5;
-
-        std::vector<Float_t> gamma0;
+        
         std::vector<Float_t> gamma1;
         std::vector<Float_t> gamma2;
         std::vector<Float_t> gamma3;
         std::vector<Float_t> gamma4;
         std::vector<Float_t> gamma5;
 
-        std::vector<Float_t> beta_en0;
         std::vector<Float_t> beta_en1;
         std::vector<Float_t> beta_en2;
         std::vector<Float_t> beta_en3;
