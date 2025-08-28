@@ -321,7 +321,7 @@ class FrsCal2Hit : public FairTask
         std::vector<Float_t> sci81l_hits;
         std::vector<Float_t> sci81r_hits;
 
-        std::vector<Int_t> sci11l_hits_selected;
+        std::vector<Int_t> sci11l_hits_selected; //EG this should be Float_t right?
         std::vector<Int_t> sci11r_hits_selected;
         std::vector<Int_t> sci21l_hits_selected;
         std::vector<Int_t> sci21r_hits_selected;

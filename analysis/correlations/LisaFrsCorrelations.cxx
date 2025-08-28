@@ -1236,14 +1236,14 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     // ::: MultiHit Map correlated
     h2_multihit_map_correlated->Fill(AoQ_s1s2_mhtdc.size(), AoQ_s2s4_mhtdc.size());
 
-    if (AoQ_s1s2_mhtdc.size() != 1 || AoQ_s2s4_mhtdc.size() != 1) return;   // this is a quick fix to avoid getting any event with multihits (just pick 1)
+    //if (AoQ_s1s2_mhtdc.size() != 1 || AoQ_s2s4_mhtdc.size() != 1) return;   // this is a quick fix to avoid getting any event with multihits (just pick 1)
     ncorr++;
     
     //c4LOG(info, "::::::::::::::::::getting data");
     // CEJ :: Process FRS Gate info here first.
     for (int gate = 0; gate < FrsGates.size(); gate++)
     {
-        if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 )break; // this is a quick fix to reject all the events with multihits - redundant
+        //if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 )break; // this is a quick fix to reject all the events with multihits - redundant
         for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
         {
             

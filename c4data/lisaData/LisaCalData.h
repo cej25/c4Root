@@ -41,6 +41,7 @@ class LisaCalItem : public TObject
                     TString c,
                     int xpos,
                     int ypos,
+                    float thick,
                     float e, 
                     float e_MWD,
                     std::vector<float> tr,
@@ -67,6 +68,7 @@ class LisaCalItem : public TObject
         TString Get_city() const;
         int Get_xposition() const;
         int Get_yposition() const;
+        float Get_thickness() const;
         float Get_energy() const;
         float Get_energy_MWD() const;
         std::vector<float> Get_trace_febex() const;
@@ -94,9 +96,7 @@ class LisaCalItem : public TObject
         TString city; // name
         int xposition;
         int yposition;
-        double xposition_mm;
-        double yposition_mm;
-        double zposition_mm;
+        float thickness;
         float energy; // double? int?
         float energy_MWD; // double? int?
         std::vector<float> trace_febex;
@@ -148,6 +148,11 @@ inline int LisaCalItem::Get_xposition() const
 inline int LisaCalItem::Get_yposition() const
 {
     return yposition;
+}
+
+inline float LisaCalItem::Get_thickness() const
+{
+    return thickness;
 }
 
 inline float LisaCalItem::Get_energy() const

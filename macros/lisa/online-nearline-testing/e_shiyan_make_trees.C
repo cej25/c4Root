@@ -12,7 +12,7 @@
 #define LISA_RAW 0
 #define LISA_ANA 0
 #define LISA_CAL 1
-#define LISA_HIT 0
+#define LISA_HIT 1
 //...................................................
 
 // Definition of setup and configuration files
@@ -81,11 +81,11 @@ void e_shiyan_make_trees()
     
     // ::: FILE  PATH
     TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s103_files/ts/";                       // Data from LISA
-    TString filename = inputpath + "run_0022_0001.lmd";
+    TString filename = inputpath + "run_0111_0001.lmd";
 
     // ::: OUTPUT 
     TString outputpath = "/u/gandolfo/data/shiyan_debug/";   //testing
-    TString outputFilename = outputpath + "run_0022_mhtdc_updates.root";
+    TString outputFilename = outputpath + "run_0111_mhit_config3.root";
     
     // ::: Create online run
     Int_t refresh = 10; // not needed
@@ -210,26 +210,6 @@ void e_shiyan_make_trees()
 
     if (LISA_HIT)
     {
-        LisaRaw2Ana* lisaraw2ana = new LisaRaw2Ana();
-        if(LISA_ANA)
-        {
-            lisaraw2ana->SetOnline(false);
-        }else
-        {
-            lisaraw2ana->SetOnline(true);
-        }
-        run->AddTask(lisaraw2ana); 
-
-        LisaAna2Cal* lisaana2cal = new LisaAna2Cal();
-        if(LISA_CAL)
-        {
-            lisaana2cal->SetOnline(false);
-        }else
-        {
-            lisaana2cal->SetOnline(true);
-        }
-        run->AddTask(lisaana2cal);   
-
         LisaCal2Hit* lisacal2hit = new LisaCal2Hit();
         lisacal2hit->SetOnline(false);
         run->AddTask(lisacal2hit);

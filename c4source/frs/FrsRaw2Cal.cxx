@@ -292,6 +292,9 @@ void FrsRaw2Cal::ProcessScintillators()
     int hits_in_11rd = sci11rd_hits.size();
     
     //c4LOG(info, "   11la");
+    //if(hits_in_11la==16 ) c4LOG(info, " ::: ALL ::: ");
+    //if(hits_in_11la==16 ) c4LOG(info, " 11 L - R Size : " << sci11la_hits.size() << " , " << sci11ra_hits.size());
+
     for (int i = 0; i < hits_in_11la; i++)
     {
         //c4LOG(info, "SCI 11 L : " << sci11la_hits[i]);
@@ -300,6 +303,8 @@ void FrsRaw2Cal::ProcessScintillators()
             //c4LOG(info, "SCI 11 R : " << sci11ra_hits[j]);
             dt11la_11ra_hits.emplace_back(((sci->mhtdc_factor_ch_to_ns*rand3()) + sci11la_hits[i] - sci11ra_hits[j]));
             x_11lra_hits.emplace_back(dt11la_11ra_hits[i * hits_in_11ra + j] * sci->mhtdc_factor_11l_11r + sci->mhtdc_offset_11l_11r);
+            //if(hits_in_11la==16 )c4LOG(info, "RAW2CAL SCI11 L , R : " << sci11la_hits[i] << " , " << sci11ra_hits[j] << " DT : " << dt11la_11ra_hits[i * hits_in_11ra + j] );
+
             //c4LOG(info, " 11DT : " << dt11la_11ra_hits[j] );
         }  
     }
@@ -337,17 +342,17 @@ void FrsRaw2Cal::ProcessScintillators()
     int hits_in_22l = sci22l_hits.size();
     int hits_in_21r = sci21r_hits.size();
     int hits_in_22r = sci22r_hits.size();
-
+    //if(hits_in_11la==16 ) c4LOG(info, " 21 L - R Size : " << sci21l_hits.size() << " , " << sci21r_hits.size());
     for (int i = 0; i < hits_in_21l; i++)
     {
         for (int j = 0; j < hits_in_21r; j++)
         {
             dt21l_21r_hits.emplace_back(((sci->mhtdc_factor_ch_to_ns*rand3()) + sci21l_hits[i] - sci21r_hits[j]));
             x_21lr_hits.emplace_back(dt21l_21r_hits[i * hits_in_21r + j] * sci->mhtdc_factor_21l_21r + sci->mhtdc_offset_21l_21r);
-            //c4LOG(info, " 21DT : " << dt21l_21r_hits[j] );
+            //if(hits_in_11la==16 )c4LOG(info, "RAW2CAL SCI21 L , R : " << sci21l_hits[i] << " , " << sci21r_hits[j] << " DT : " << dt21l_21r_hits[i * hits_in_21r + j] );
         }
     }
-
+    
     for (int i = 0; i < hits_in_22l; i++)
     {
         for (int j = 0; j < hits_in_22r; j++)
@@ -380,12 +385,14 @@ void FrsRaw2Cal::ProcessScintillators()
     int hits_in_43l = sci43l_hits.size();
     int hits_in_43r = sci43r_hits.size();
 
+    //if(hits_in_11la==16 ) c4LOG(info, " 41 L - R Size : " << sci41l_hits.size() << " , " << sci41r_hits.size());
     for (int i = 0; i < hits_in_41l; i++)
     {
         for (int j = 0; j < hits_in_41r; j++)
         {
             dt41l_41r_hits.emplace_back(((sci->mhtdc_factor_ch_to_ns*rand3()) + sci41l_hits[i] - sci41r_hits[j]));
             x_41lr_hits.emplace_back(dt41l_41r_hits[i * hits_in_41r + j] * sci->mhtdc_factor_41l_41r + sci->mhtdc_offset_41l_41r);
+            //if(hits_in_11la==16 )c4LOG(info, "RAW2CAL SCI41 L , R : " << sci41l_hits[i] << " , " << sci41r_hits[j] << " DT : " << dt41l_41r_hits[i * hits_in_41r + j] );
         }
     }
 

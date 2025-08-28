@@ -818,7 +818,7 @@ void FrsNearlineSpectra::Process_MHTDC()
     // ::: Hit Map Full for FRS
     h2_multihit_map->Fill(AoQ_s1s2_mhtdc.size(), AoQ_s2s4_mhtdc.size());
     
-    if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 ) return;
+    //if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 ) return;
 
 
     // CEJ :: Process FRS Gate info here first.

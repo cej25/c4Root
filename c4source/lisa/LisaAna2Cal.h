@@ -88,15 +88,6 @@ class LisaAna2Cal : public FairTask
         double intercept_MWD;
         float energy_MWD_GM;
 
-        // FRS
-        std::vector<float> beta0;
-        std::vector<float> beta1;
-        std::vector<float> beta2;
-        std::vector<float> beta3;
-        std::vector<float> beta4;
-        std::vector<float> beta5;
-
-
     public:
         ClassDef(LisaAna2Cal, 1)
 

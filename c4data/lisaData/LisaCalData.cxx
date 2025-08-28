@@ -38,6 +38,7 @@ void LisaCalItem::SetAll(uint64_t wr,
                         TString c,
                         int xpos,
                         int ypos,
+                        float thick,
                         float e,
                         float e_MWD,
                         std::vector<float> tr,
@@ -63,6 +64,7 @@ void LisaCalItem::SetAll(uint64_t wr,
     city = c;
     xposition = xpos;
     yposition = ypos;
+    thickness = thick;
     energy = e;
     energy_MWD = e_MWD;
     trace_febex = tr;
@@ -92,6 +94,7 @@ void LisaCalItem::Reset()
     city = "";
     xposition = 0;
     yposition = 0;
+    thickness = 0;
     energy = 0;
     energy_MWD = 0;
     trace_febex = {};

@@ -226,6 +226,7 @@ void LisaAna2Cal::Exec(Option_t* option)
                     city,
                     xpos,
                     ypos,
+                    thickness,
                     lisaAnaItem.Get_channel_energy(),
                     lisaAnaItem.Get_channel_energy_MWD(),
                     lisaAnaItem.Get_trace_febex(),

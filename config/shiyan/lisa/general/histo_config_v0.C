@@ -17,10 +17,10 @@ void histo_config(const std::string& config_path)
     //..................................................
 
     // ::: Exclude channels from layer 
-    TLisaConfiguration::SetExcludedChannels({
-    std::make_tuple(1,0,0),
-    std::make_tuple(2,0,0)
-    });
+    // TLisaConfiguration::SetExcludedChannels({
+    // std::make_tuple(1,0,0),
+    // std::make_tuple(2,0,0)
+    // });
     //..................................................
 
     // ::: FRS ranges

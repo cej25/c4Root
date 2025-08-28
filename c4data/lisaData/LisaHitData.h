@@ -35,6 +35,7 @@ class LisaHitItem : public TObject
                     TString c,
                     int xpos,
                     int ypos,
+                    float thick,
                     float e, 
                     float e_MWD,
                     std::vector<float> tr,
@@ -45,6 +46,7 @@ class LisaHitItem : public TObject
                     float dedx,
                     float dedx_GM,
                     std::vector<float> z,
+                    std::vector<float> b1,
                     uint64_t evt_t,
                     uint64_t ch_t,
                     uint64_t evtno,
@@ -62,6 +64,7 @@ class LisaHitItem : public TObject
         TString Get_city() const;
         int Get_xposition() const;
         int Get_yposition() const;
+        float Get_thickness() const;
         float Get_energy() const;
         float Get_energy_MWD() const;
         std::vector<float> Get_trace_febex() const;
@@ -72,6 +75,7 @@ class LisaHitItem : public TObject
         float Get_de_dx() const;
         float Get_de_dx_GM() const;
         std::vector<float> Get_Z_lisa() const;
+        std::vector<float> Get_beta_after_L1() const;
         uint64_t Get_board_event_time() const;
         uint64_t Get_channel_event_time() const;
         uint64_t Get_evtno();
@@ -91,9 +95,7 @@ class LisaHitItem : public TObject
         TString city; // name
         int xposition;
         int yposition;
-        double xposition_mm;
-        double yposition_mm;
-        double zposition_mm;
+        float thickness;
         float energy; // double? int?
         float energy_MWD; // double? int?
         std::vector<float> trace_febex;
@@ -104,6 +106,7 @@ class LisaHitItem : public TObject
         float de_dx;
         float de_dx_GM;
         std::vector<float> z_lisa;
+        std::vector<float> beta1;
         uint64_t board_event_time;
         uint64_t ch_event_time;
         uint64_t event_no;
@@ -148,6 +151,11 @@ inline int LisaHitItem::Get_xposition() const
 inline int LisaHitItem::Get_yposition() const
 {
     return yposition;
+}
+
+inline float LisaHitItem::Get_thickness() const
+{
+    return thickness;
 }
 
 inline float LisaHitItem::Get_energy() const
@@ -198,6 +206,11 @@ inline float LisaHitItem::Get_de_dx_GM() const
 inline std::vector<float> LisaHitItem::Get_Z_lisa() const
 {
     return z_lisa;
+}
+
+inline std::vector<float> LisaHitItem::Get_beta_after_L1() const
+{
+    return beta1;
 }
 
 inline uint64_t LisaHitItem::Get_board_event_time() const

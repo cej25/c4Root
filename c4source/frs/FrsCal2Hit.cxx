@@ -1066,6 +1066,13 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     }
     hits_in_11l_selected = sci11l_hits_selected.size();
     hits_in_11r_selected = sci11r_hits_selected.size();
+    //if(hits_in_11l == 16 ) c4LOG(info, " --DT selection 11");
+    //if(hits_in_11l == 16) c4LOG(info, " 11 L-R Size : " << sci11l_hits_selected.size() << " , " << sci11r_hits_selected.size() ); 
+    // for (int i = 0; i < hits_in_11l_selected; i++)
+    // {
+    //     if(hits_in_11l == 16  ) c4LOG(info, " CAL2HIT SCI11l : " << sci11l_hits_selected[i]);
+    //     if(hits_in_11l == 16  ) c4LOG(info, " CAL2HIT 11DT : " << mhtdc_sci11lr_dt_selected[i]);
+    // }
     
     // SCI 21 L and R
     //c4LOG(info,"SCI21 L R");
@@ -1096,7 +1103,15 @@ void FrsCal2Hit::ProcessSci_MHTDC()
         }
     }
     hits_in_21l_selected = sci21l_hits_selected.size();
-    hits_in_21r_selected = sci21r_hits_selected.size();   
+    hits_in_21r_selected = sci21r_hits_selected.size(); 
+    //if(hits_in_11l == 16 ) c4LOG(info, " --DT selection 21");
+    //if(hits_in_11l == 16  ) c4LOG(info, " 21 L-R Size : " << sci21l_hits_selected.size() << " , " << sci21r_hits_selected.size() ); 
+    // for (int i = 0; i < hits_in_21l_selected; i++)
+    // {
+    //     if(hits_in_11l == 16 ) c4LOG(info, " CAL2HIT SCI21l : " << sci21l_hits_selected[i]);
+    //     if(hits_in_11l == 16 ) c4LOG(info, " CAL2HIT 21DT : " << mhtdc_sci21lr_dt_selected[i]);
+    // }
+
 
     float sc21pos_from_tpc = -999.;
     if (b_tpc_xy[0] && b_tpc_xy[1])
@@ -1210,6 +1225,14 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     hits_in_41l_selected = sci41l_hits_selected.size();
     hits_in_41r_selected = sci41r_hits_selected.size(); 
 
+    // if(hits_in_11l == 16  )c4LOG(info, " --DT selection 41");
+    // if(hits_in_11l == 16  )c4LOG(info, " 41 L-R Size : " << sci41l_hits_selected.size() << " , " << sci41r_hits_selected.size() ); 
+    // for (int i = 0; i < hits_in_41l_selected; i++)
+    // {
+    //     if(hits_in_11l == 16 ) c4LOG(info, " CAL2HIT SCI41l : " << sci41l_hits_selected[i]);
+    //     if(hits_in_11l == 16 ) c4LOG(info, " CAL2HIT 41DT : " << mhtdc_sci41lr_dt_selected[i]);
+    // }
+
     // SCI 42 L and R
     //c4LOG(info,"SCI42 L R");
     sci42l_hits = calSciItem.Get_mhtdc_sci42l_hits();
@@ -1285,9 +1308,10 @@ void FrsCal2Hit::ProcessSci_MHTDC()
         {
             //count = i * hits_in_21r_selected * hits_in_11l_selected * hits_in_11r_selected + i * hits_in_11l_selected * hits_in_11r_selected + k * hits_in_11r_selected + k;
             // EG: this is just an extra check but this condition should already be valid since we are using the selected hits
-            if ( (TMath::Abs(mhtdc_sci21lr_dt[i]) < frs_config->fscilr_mhtdc_limit) && ( TMath::Abs(mhtdc_sci11lr_dt[k]) < frs_config->fscilr_mhtdc_limit))
+            if ( (TMath::Abs(mhtdc_sci21lr_dt_selected[i]) < frs_config->fscilr_mhtdc_limit) && ( TMath::Abs(mhtdc_sci11lr_dt_selected[k]) < frs_config->fscilr_mhtdc_limit)) //EG this was mhtdc_sc1xxlr_dt instead of _selected
             {
                 float tof = (0.5 * (sci21l_hits_selected[i] + sci21r_hits_selected[i]) - 0.5 * (sci11l_hits_selected[k] + sci11r_hits_selected[k])) + sci->mhtdc_offset_21_11[sci->sci11_select];
+                //if(hits_in_11l == 16 )c4LOG(info, " TOF 2111 FULL: " << tof);
                 mhtdc_tof2111.emplace_back(tof);
                 //c4LOG(info,"before tof selection");
 
@@ -1315,8 +1339,17 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     //c4LOG(info,"hits size");
     hits_in_11l_tofs1s2_selected = sci11l_hits_tofs1s2_selected.size();
     hits_in_11r_tofs1s2_selected = sci11r_hits_tofs1s2_selected.size();  
-    hits_in_21l_tofs1s2_selected = sci11l_hits_tofs1s2_selected.size();
-    hits_in_21r_tofs1s2_selected = sci11r_hits_tofs1s2_selected.size(); 
+    hits_in_21l_tofs1s2_selected = sci21l_hits_tofs1s2_selected.size();  //EG this was 11 by mistake, instead of 21
+    hits_in_21r_tofs1s2_selected = sci21r_hits_tofs1s2_selected.size();  //EG this was 11 by mistake
+
+    // if(hits_in_11l == 16  ) c4LOG(info, " - TOF2111 selection ::");
+    // if(hits_in_11l == 16  ) c4LOG(info, " 11 L-R size : " << sci11l_hits_tofs1s2_selected.size() << " , " << sci11r_hits_tofs1s2_selected.size() ); 
+    // if(hits_in_11l == 16  ) c4LOG(info, " 21 L-R size : " << sci21l_hits_tofs1s2_selected.size() << " , " << sci21r_hits_tofs1s2_selected.size() ); 
+
+    // for (int i = 0; i < hits_in_21l_tofs1s2_selected; i++)
+    // {
+    //     if(hits_in_11l == 16 ) c4LOG(info, " CAL2HIT 21 SCI21 L , R : " << sci21l_hits_tofs1s2_selected[i] << " , " << sci21r_hits_tofs1s2_selected[i] << " TOF : " << mhtdc_tof2111_selected[i] );
+    // }
 
     //c4LOG(info,"hits calc");
     //c4LOG(info, " hits_in_21l_tofs1s2_selected :" << hits_in_21l_tofs1s2_selected);
@@ -1330,17 +1363,20 @@ void FrsCal2Hit::ProcessSci_MHTDC()
 
     //TOF:
     // 21 -> 41
-    //c4LOG(info,"TOF 4121");
-    hits_in_tof4121_selected = hits_in_41lr_selected * hits_in_21lr_selected;
+    // if(hits_in_11l == 16  ) c4LOG(info,"------TOF 4121");
+    // if(hits_in_11l == 16  ) c4LOG(info, " size of 41lr : " << hits_in_41l_selected);
+
+    hits_in_tof4121_selected = hits_in_41lr_selected * hits_in_21lr_tofs1s2_selected; 
     count = 0;
     for (int i = 0; i < hits_in_41l_selected; i++)
     {
         for (int k = 0; k < hits_in_21l_tofs1s2_selected; k++) 
         {
             //count = i * hits_in_41r_selected * hits_in_21l_selected * hits_in_21r_selected + j * hits_in_21l_selected * hits_in_21r_selected + k * hits_in_21r_selected + l;
-            if ((TMath::Abs(mhtdc_sci41lr_dt[i]) < frs_config->fscilr_mhtdc_limit) && ((TMath::Abs(mhtdc_sci21lr_dt[k])) < frs_config->fscilr_mhtdc_limit))
+            if ((TMath::Abs(mhtdc_sci41lr_dt_selected[i]) < frs_config->fscilr_mhtdc_limit) && ((TMath::Abs(mhtdc_sci21lr_dt_selected[k])) < frs_config->fscilr_mhtdc_limit))
             {
                 float tof = (0.5 * (sci41l_hits_selected[i] + sci41r_hits_selected[i]) - 0.5 * (sci21l_hits_tofs1s2_selected[k] + sci21r_hits_tofs1s2_selected[k])) + sci->mhtdc_offset_41_21;
+                //if(hits_in_11l == 16 )c4LOG(info, " TOF 4121 FULL: " << tof);
                 mhtdc_tof4121.emplace_back(tof);
                 if (tof > frs_config->ftof_4121_min && tof < frs_config->ftof_4121_max)
                 {
@@ -1367,6 +1403,18 @@ void FrsCal2Hit::ProcessSci_MHTDC()
 
     hits_in_21lr_tofs2s4_selected = hits_in_21l_tofs2s4_selected;
     hits_in_41lr_tofs2s4_selected = hits_in_41l_tofs2s4_selected;
+
+    // if(hits_in_11l == 16  )c4LOG(info, " - TOF4121 selection ::");
+    // if(hits_in_11l == 16  )c4LOG(info, " 21 L-R size : " << sci21l_hits_tofs2s4_selected.size() << " , " << sci21r_hits_tofs2s4_selected.size() ); 
+    // if(hits_in_11l == 16  )c4LOG(info, " 41 L-R size : " << sci41l_hits_tofs2s4_selected.size() << " , " << sci41r_hits_tofs2s4_selected.size() ); 
+
+    // for (int i = 0; i < hits_in_21lr_tofs2s4_selected; i++)
+    // {
+    //     if(hits_in_11l == 16  ) c4LOG(info, " CAL2HIT 41 SCI41 L , R : " << sci41l_hits_tofs2s4_selected[i] << " , " << sci41r_hits_tofs2s4_selected[i] << " TOF : " << mhtdc_tof4121_selected[i] );
+    //     if(hits_in_11l == 16  ) c4LOG(info, " CAL2HIT 21 SCI41 L , R : " << sci21l_hits_tofs2s4_selected[i] << " , " << sci21r_hits_tofs2s4_selected[i] << " TOF : " << mhtdc_tof4121_selected[i] );
+
+    // }
+
 
     // c4LOG(info, " S2S4 ");
     // c4LOG( info," limit for scilr : " << frs_config->fscilr_mhtdc_limit);
@@ -1855,8 +1903,7 @@ void FrsCal2Hit::ProcessMusic()
 void FrsCal2Hit::ProcessIDs()
 {
     // Calculation of dE and Z from MUSIC41
-    // Calibration for MUSIC is done with 1/b2 - last update sept2024
-    
+    // Calibration for MUSIC is done with 1/b2 - last update sept2024    
     auto const & calTpcItem = calTpcArray->at(0);
     b_tpc_xy = calTpcItem.Get_b_tpc_xy();
 
@@ -2291,6 +2338,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
 
     // matches hits_in_tof2111 if 11 -> 21 selected, or hits_in_tof2211 if 11 -> 22 selected
     hits_in_s1s2 = hits_in_s2x_tofs1s2_selected;
+    //if (hits_in_21lr_tofs1s2_selected == 4 )c4LOG(info, " hits in s1s2 : " << hits_in_s1s2);
     //hits_in_s1s2 = hits_in_s2x_selected * hits_in_s1x_selected;
 
     // id_mhtdc_beta_s1s2 = new Float_t[hits_in_s1s2];
@@ -2338,7 +2386,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
 
     // Calculate Delta, AoQ
     //c4LOG(info,"AoQs1s2");
-    for (int i = 0; i < hits_in_s2x_tofs1s2_selected; i++)
+    for (int i = 0; i < hits_in_s1s2; i++)
     {
         //int count = i * hits_in_s1x_tofs1s2_selected + j;
 
@@ -2362,6 +2410,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
             }
         }  
     }
+    //if(hits_in_21lr_tofs1s2_selected == 4 )c4LOG(info, " Size of s1s2 vector: " << id_mhtdc_beta_s1s2.size());
 
     // Calculate Z (MUSIC 21 / 22)
     //c4LOG(info,"Zs2");
@@ -2433,6 +2482,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
 
     // matches hits_in_tof4121 if 21 -> 41, etc.
     hits_in_s2s4 = hits_in_s4x_tofs2s4_selected;
+    //if(hits_in_11l == 16)c4LOG(info, " hits in s2s4 : " << hits_in_s2s4);
 
     temp_id_mhtdc_beta_s2s4 = new Float_t[hits_in_s2s4];
     temp_id_mhtdc_tof_s2s4 = new Float_t[hits_in_s2s4];
@@ -2507,6 +2557,8 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
             }
         }  
     }
+
+    //if(hits_in_21lr_tofs1s2_selected == 4)c4LOG(info, " Size of s2s4 vector :" << id_mhtdc_beta_s2s4.size());
 
     // Calculate Z (MUSIC 41 / 42 / 43)
     //c4LOG(info,"Z s4");
