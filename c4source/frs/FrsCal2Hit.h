@@ -347,6 +347,11 @@ class FrsCal2Hit : public FairTask
         std::vector<Float_t> sci41l_hits_tofs2s4_selected;
         std::vector<Float_t> sci41r_hits_tofs2s4_selected;
 
+        std::vector<Float_t> sci21l_hits_tofs1s2_pos_selected;
+        std::vector<Float_t> sci21r_hits_tofs1s2_pos_selected;
+        std::vector<Float_t> sci21l_hits_tofs2s4_pos_selected;
+        std::vector<Float_t> sci21r_hits_tofs2s4_pos_selected;
+
         std::vector<Float_t> mhtdc_sci11lr_dt;
         std::vector<Float_t> mhtdc_sci21lr_dt;
         std::vector<Float_t> mhtdc_sci22lr_dt;

@@ -112,7 +112,7 @@ void LisaCal2Hit::Exec(Option_t* option)
     const auto & multihitItem = multihitArray->at(0);
 
     beta_i = multihitItem.Get_ID_beta_s1s2_mhtdc();
-    beta_f = multihitItem.Get_ID_beta_s1s2_mhtdc();
+    beta_f = multihitItem.Get_ID_beta_s2s4_mhtdc();
     aoq_i = multihitItem.Get_ID_AoQ_s1s2_mhtdc();
     aoq_f = multihitItem.Get_ID_AoQ_s2s4_mhtdc();
     z_i = multihitItem.Get_ID_z21_mhtdc();
@@ -121,11 +121,6 @@ void LisaCal2Hit::Exec(Option_t* option)
     sci21r_s1s2_selected = multihitItem.Get_ID_sci21r_s1s2_selected_mhtdc();
     sci21l_s2s4_selected = multihitItem.Get_ID_sci21l_s2s4_selected_mhtdc();
     sci21r_s2s4_selected = multihitItem.Get_ID_sci21r_s2s4_selected_mhtdc();
-
-    // if( (sci21l_s1s2_selected == sci21l_s2s4_selected) && (sci21r_s1s2_selected == sci21r_s2s4_selected))
-    // {
-    //     c4LOG(info, " size of s1s2 : " << beta_i.size() << " size of s2s4 :" << beta_f.size());
-    // }
 
     if (beta_i.size()==0) return;
 
@@ -152,12 +147,11 @@ void LisaCal2Hit::Exec(Option_t* option)
             
             std::pair< int, std::pair<int,int> > detector_lxy = std::make_pair( layer_id, std::make_pair(xpos, ypos) );
 
-            //if (lisa_config->ZCalibrationLoaded() && (sci21l_s1s2_selected == sci21l_s2s4_selected) && (sci21r_s1s2_selected == sci21r_s2s4_selected))
-            if (lisa_config->ZCalibrationLoaded() && (sci21l_s1s2_selected.size() == sci21l_s2s4_selected.size()))
+            if (lisa_config->ZCalibrationLoaded() && (sci21l_s1s2_selected == sci21l_s2s4_selected) && (sci21r_s1s2_selected == sci21r_s2s4_selected))
             {
                 
-                c4LOG(info, " size of sci21L s1s2: " << sci21l_s1s2_selected.size() << " size of sci21L s2s4 :" <<  sci21l_s2s4_selected.size());
-                c4LOG(info, " size of sci21R s1s2: " << sci21r_s1s2_selected.size() << " size of sci21R s2s4 :" <<  sci21r_s2s4_selected.size()); 
+                //c4LOG(info, " size of sci21L s1s2: " << sci21l_s1s2_selected.size() << " size of sci21L s2s4 :" <<  sci21l_s2s4_selected.size());
+                //c4LOG(info, " size of sci21R s1s2: " << sci21r_s1s2_selected.size() << " size of sci21R s2s4 :" <<  sci21r_s2s4_selected.size()); 
  
                 std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> z_calibration_coeffs = lisa_config->ZCalibrationCoefficients();
                 if (auto result_find_Zcal = z_calibration_coeffs.find(detector_lxy); result_find_Zcal != z_calibration_coeffs.end()) 
@@ -174,32 +168,24 @@ void LisaCal2Hit::Exec(Option_t* option)
 
                         for (size_t i = 0; i < sci21l_s2s4_selected.size(); i++)
                         {
-                            c4LOG(info, " 1");
                             float beta = beta_i.at(i);
                             if (beta <= 0. || beta >= 1.) return;
 
-                            c4LOG(info, " 2");
                             // Calculate Gamma initial
                             float gamma = 1.f / sqrt(1.f - TMath::Power(beta_i.at(i), 2));
                             gamma_i.emplace_back(gamma);
                             
-                            c4LOG(info, " 3");
                             // Calculate beta in MeV
                             beta_trans = (gamma -1.f)*aoq_i[i]*std::round(z_i[i])*conv_coeff;
                             beta_en_i.emplace_back(beta_trans);
 
-                            c4LOG(info, " 4");
                             //  Calibrate LISA in Z
                             de_dx_corr = slope_z * (1.f / (beta * beta)) + intercept_z;
-                            c4LOG(info, " 5");
                             if (de_dx_corr > 0.f)
                             {
-                                c4LOG(info, " 6");
                                 z_val = frs->primary_z * std::sqrt(de_dx / de_dx_corr);
                                 z_lisa.emplace_back(z_val + id->offset_z21); 
                             }
-
-                            c4LOG(info, " 7");
                             // Calculate beta in MeV after passing layer 1
                             beta_trans_after1 = beta_trans - de_dx*thickness;
 
@@ -212,10 +198,7 @@ void LisaCal2Hit::Exec(Option_t* option)
                             //      Now we can calculate the new beta
 
                             // NB: ATM the calibration of zeta is a bit wrong, we can't really compare z lisa (accurate) and z music. 
-                            c4LOG(info, " size Z 21 : " << z_i.size() << " size Z 41 :" << z_f.size());
-
-                            c4LOG(info, " Z 21 : " << z_i[i] << " Z 41 :" << z_f[i]);
-
+        
                             // ATTENTION: the rest has to be tested properly - DO NOT CARE ABOUT IT NOW
                             float z_diff = std::round(z_lisa[i]) - std::round(z_i[i]);
 

@@ -316,8 +316,8 @@ void FrsCal2Hit::Exec(Option_t* option)
                         s1a_mhtdc,
                         s2x_s1s2_mhtdc,
                         s2a_s1s2_mhtdc,
-                        sci21l_hits_tofs1s2_selected,
-                        sci21r_hits_tofs1s2_selected,
+                        sci21l_hits_tofs1s2_pos_selected,
+                        sci21r_hits_tofs1s2_pos_selected,
                         id_mhtdc_tof_s1s2,
                         id_mhtdc_beta_s1s2,
                         id_mhtdc_aoq_s1s2,
@@ -366,8 +366,8 @@ void FrsCal2Hit::Exec(Option_t* option)
                         s2a_s2s4_mhtdc,
                         s4x_mhtdc,
                         s4a_mhtdc,
-                        sci21l_hits_tofs2s4_selected,
-                        sci21r_hits_tofs2s4_selected,
+                        sci21l_hits_tofs2s4_pos_selected,
+                        sci21r_hits_tofs2s4_pos_selected,
                         id_mhtdc_tof_s2s4,
                         id_mhtdc_beta_s2s4,
                         id_mhtdc_aoq_s2s4,
@@ -2410,6 +2410,8 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
                 id_mhtdc_beta_s1s2.emplace_back(temp_id_mhtdc_beta_s1s2[i]);
                 id_mhtdc_aoq_s1s2.emplace_back(mean_brho_s1s2 * (1. + id_mhtdc_delta_s1s2[i]) * temp_tm_to_MeV / (temp_mu * temp_id_mhtdc_beta_s1s2[i] * id_mhtdc_gamma_s1s2[i]));
                 id_mhtdc_aoq_corr_s1s2.emplace_back(id_mhtdc_aoq_s1s2.back() - id->a1AoQCorr * id_a2);
+                sci21l_hits_tofs1s2_pos_selected.emplace_back(sci21l_hits_tofs1s2_selected[i]);
+                sci21r_hits_tofs1s2_pos_selected.emplace_back(sci21r_hits_tofs1s2_selected[i]);
                 
             }
         }  
@@ -2536,13 +2538,15 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
 
     // Calculate Gamma
     for (int i = 0; i < hits_in_s2s4; i++) temp_id_mhtdc_gamma_s2s4[i] = (1. / sqrt(1. - TMath::Power(temp_id_mhtdc_beta_s2s4[i], 2)));
-
+    
+    //c4LOG(info, " hits in s2s4 : " << hits_in_s2s4 << " , " << hits_in_s4x_tofs2s4_selected);
     // Calculate Delta (momentum deviation), AoQ
     //c4LOG(info,"AoQs2s4");
     for (int i = 0; i < hits_in_s4x_tofs2s4_selected; i++)
     {
         //int count = i * hits_in_s2x_tofs2s4_selected + j;
 
+        //c4LOG(info, " position in s4 : " << temp_s4x_mhtdc[i] << " and s2 " << temp_s2x_mhtdc[i]);
         if (temp_s4x_mhtdc[i] > -200 && temp_s4x_mhtdc[i] < 200 && temp_s2x_mhtdc[i] > -120 && temp_s2x_mhtdc[i] < 120)
         {
             id_mhtdc_delta_s2s4[i] = (temp_s4x_mhtdc[i]  - (temp_s2x_mhtdc[i] * frs->magnification[1])) / (-1.0 * frs->dispersion[1] * 1000.0); //1000 is dispertsion from meter to mm. -1.0 is sign definition. 
@@ -2558,6 +2562,8 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
                 id_mhtdc_gamma_s2s4.emplace_back(temp_id_mhtdc_gamma_s2s4[i]);
                 id_mhtdc_aoq_s2s4.emplace_back(mean_brho_s2s4 * (1. + id_mhtdc_delta_s2s4[i]) * temp_tm_to_MeV / (temp_mu * temp_id_mhtdc_beta_s2s4[i] * temp_id_mhtdc_gamma_s2s4[i]));
                 id_mhtdc_aoq_corr_s2s4.emplace_back(id_mhtdc_aoq_s2s4.back() - id->a2AoQCorr * id_a2);
+                sci21l_hits_tofs2s4_pos_selected.emplace_back(sci21l_hits_tofs2s4_selected[i]);
+                sci21r_hits_tofs2s4_pos_selected.emplace_back(sci21r_hits_tofs2s4_selected[i]);
             }
         }  
     }
@@ -2566,6 +2572,8 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
 
     // Calculate Z (MUSIC 41 / 42 / 43)
     //c4LOG(info,"Z s4");
+    //c4LOG(info, " size of SCI 21L tof and pos selected: " << sci21l_hits_tofs2s4_pos_selected.size());
+    //c4LOG(info, " size of beta s2s4 in frs: " << id_mhtdc_beta_s2s4.size());
     for (int i = 0; i < id_mhtdc_beta_s2s4.size(); i++)
     {
         if (music41_de_cor > 0.0)
@@ -2596,7 +2604,7 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
             id_mhtdc_z_shifted_music41.emplace_back(-999.);
         }
         
-
+        //c4LOG(info, " size of z41 in frs: " << id_mhtdc_z_music41.size());
         if (music42_de_cor > 0.0)
         {
             Double_t power = 1., sum = 0.;
@@ -2909,6 +2917,11 @@ void FrsCal2Hit::FinishEvent()
     sci21r_hits_tofs2s4_selected.clear();
     sci41l_hits_tofs2s4_selected.clear();
     sci41r_hits_tofs2s4_selected.clear();
+
+    sci21l_hits_tofs1s2_pos_selected.clear();
+    sci21r_hits_tofs1s2_pos_selected.clear();
+    sci21l_hits_tofs2s4_pos_selected.clear();
+    sci21r_hits_tofs2s4_pos_selected.clear();
 
     //c4LOG(info, " stuff already there ");
     s1x_mhtdc.clear();
