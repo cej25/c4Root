@@ -417,6 +417,9 @@ void LisaRaw2Ana::Exec(Option_t* option)
 
             // }
 
+            //c4LOG(info, " LISA energy : " << energy_MWD);
+            //c4LOG(info, " End event lisa");
+
             auto & entry = lisaAnaArray->emplace_back();    
             
             uint64_t EVTno = header->GetEventno();

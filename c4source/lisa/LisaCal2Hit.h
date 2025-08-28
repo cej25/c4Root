@@ -74,7 +74,11 @@ class LisaCal2Hit : public FairTask
         int m_layer4 = 0;
         int m_layer5 = 0;
 
-        float gamma_after1 = 0;
+        float gamma_after1 = 0.;
+        float z_val = 0;
+        float beta_trans = 0;
+        float beta_trans_after1 = 0;
+        float beta_after1 = -999.;
 
         
         std::vector<Float_t> aoq0;

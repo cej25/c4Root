@@ -321,31 +321,31 @@ class FrsCal2Hit : public FairTask
         std::vector<Float_t> sci81l_hits;
         std::vector<Float_t> sci81r_hits;
 
-        std::vector<Int_t> sci11l_hits_selected; //EG this should be Float_t right?
-        std::vector<Int_t> sci11r_hits_selected;
-        std::vector<Int_t> sci21l_hits_selected;
-        std::vector<Int_t> sci21r_hits_selected;
-        std::vector<Int_t> sci22l_hits_selected;
-        std::vector<Int_t> sci22r_hits_selected;
-        std::vector<Int_t> sci31l_hits_selected;
-        std::vector<Int_t> sci31r_hits_selected;
-        std::vector<Int_t> sci41l_hits_selected;
-        std::vector<Int_t> sci41r_hits_selected;
-        std::vector<Int_t> sci42l_hits_selected;
-        std::vector<Int_t> sci42r_hits_selected;
-        std::vector<Int_t> sci43l_hits_selected;
-        std::vector<Int_t> sci43r_hits_selected;
-        std::vector<Int_t> sci81l_hits_selected;
-        std::vector<Int_t> sci81r_hits_selected;
+        std::vector<Float_t> sci11l_hits_selected; //EG this should be Float_t right?
+        std::vector<Float_t> sci11r_hits_selected;
+        std::vector<Float_t> sci21l_hits_selected;
+        std::vector<Float_t> sci21r_hits_selected;
+        std::vector<Float_t> sci22l_hits_selected;
+        std::vector<Float_t> sci22r_hits_selected;
+        std::vector<Float_t> sci31l_hits_selected;
+        std::vector<Float_t> sci31r_hits_selected;
+        std::vector<Float_t> sci41l_hits_selected;
+        std::vector<Float_t> sci41r_hits_selected;
+        std::vector<Float_t> sci42l_hits_selected;
+        std::vector<Float_t> sci42r_hits_selected;
+        std::vector<Float_t> sci43l_hits_selected;
+        std::vector<Float_t> sci43r_hits_selected;
+        std::vector<Float_t> sci81l_hits_selected;
+        std::vector<Float_t> sci81r_hits_selected;
 
-        std::vector<Int_t> sci11l_hits_tofs1s2_selected;
-        std::vector<Int_t> sci11r_hits_tofs1s2_selected;
-        std::vector<Int_t> sci21l_hits_tofs1s2_selected;
-        std::vector<Int_t> sci21r_hits_tofs1s2_selected;
-        std::vector<Int_t> sci21l_hits_tofs2s4_selected;
-        std::vector<Int_t> sci21r_hits_tofs2s4_selected;
-        std::vector<Int_t> sci41l_hits_tofs2s4_selected;
-        std::vector<Int_t> sci41r_hits_tofs2s4_selected;
+        std::vector<Float_t> sci11l_hits_tofs1s2_selected;
+        std::vector<Float_t> sci11r_hits_tofs1s2_selected;
+        std::vector<Float_t> sci21l_hits_tofs1s2_selected;
+        std::vector<Float_t> sci21r_hits_tofs1s2_selected;
+        std::vector<Float_t> sci21l_hits_tofs2s4_selected;
+        std::vector<Float_t> sci21r_hits_tofs2s4_selected;
+        std::vector<Float_t> sci41l_hits_tofs2s4_selected;
+        std::vector<Float_t> sci41r_hits_tofs2s4_selected;
 
         std::vector<Float_t> mhtdc_sci11lr_dt;
         std::vector<Float_t> mhtdc_sci21lr_dt;

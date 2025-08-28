@@ -137,15 +137,10 @@ void LisaCal2Hit::Exec(Option_t* option)
             int ypos = lisaCalItem.Get_yposition();
             float thickness = lisaCalItem.Get_thickness();
 
-            float z_val = 0;
-            float beta_trans = 0;
-            float beta_trans_after1 = 0;
-            float beta_after1 = -999.;
 
             multiplicity[layer_id-1]++;
             
             std::pair< int, std::pair<int,int> > detector_lxy = std::make_pair( layer_id, std::make_pair(xpos, ypos) );
-            //if (beta0.size() != 1) {c4LOG(info, " size of beta s1s2 : " << beta0.size());}
 
             if (lisa_config->ZCalibrationLoaded())
             {
@@ -166,7 +161,7 @@ void LisaCal2Hit::Exec(Option_t* option)
                         for (size_t i = 0; i < beta0.size(); i++)
                         {
                             float beta = beta0.at(i);
-                            if (beta <= 0. || beta > 1.)
+                            if (beta <= 0. || beta >= 1.)
                             {
                                 z_lisa.emplace_back(-999.);
                                 beta1.emplace_back(-999.);
@@ -174,7 +169,6 @@ void LisaCal2Hit::Exec(Option_t* option)
                                 gamma1.emplace_back(-999);
                                 continue;
                             }
-
                             float gamma = 1.f / sqrt(1.f - TMath::Power(beta0.at(i), 2));
                             gamma0.emplace_back(gamma);
 
@@ -187,21 +181,20 @@ void LisaCal2Hit::Exec(Option_t* option)
                                 z_lisa.emplace_back(z_val + id->offset_z21); 
                             }
 
-                            beta_trans = (gamma -1.f)*aoq0[i]*z0[i]*conv_coeff;
+                            beta_trans = (gamma -1.f)*aoq0[i]*std::round(z0[i])*conv_coeff;
                             beta_en0.emplace_back(beta_trans);
 
                             beta_trans_after1 = beta_trans - de_dx*thickness;
-                            //c4LOG(info, " z music : " << static_cast<int>(std::round(z0[i])) << " z lisa: " << static_cast<int>(std::round(z_lisa[i])));
-                            //c4LOG(info, " z music : " << z0[i] << " z lisa: " << z_lisa[i]);
 
-                            float z_diff = z_lisa[i] - z0[i];
-                            //c4LOG(info, " z lisa: " << z_lisa[i] << " z music: " << z0[i] << " z diff : " << z_diff);
+                            float z_diff = std::round(z_lisa[i]) - std::round(z0[i]);
+                            //c4LOG(info, " z music : " << static_cast<int>(std::round(z0[i])) << " z lisa: " << static_cast<int>(std::round(z_lisa[i])) << " z diff : " << z_diff);
+
                             float A_MeV = -999.;
                             bool sameZ = false;
 
-                            if(std::abs(z_diff) <= 1.5)
+                            if(std::abs(z_diff) <= 2)
                             {
-                                A_MeV = ((aoq0[i] * z_lisa[i]) - z0[i] + z_lisa[i]) * conv_coeff;
+                                A_MeV = ((aoq0[i] * std::round(z_lisa[i])) - std::round(z0[i]) + std::round(z_lisa[i])) * conv_coeff;
                                 //c4LOG(info, " A for z same : " << A_MeV/conv_coeff );
                                 sameZ = true;
                             } 
@@ -211,20 +204,24 @@ void LisaCal2Hit::Exec(Option_t* option)
                             //     c4LOG(info, " A for Z different : " << (aoq0[i] * z0[i]) - z0[i] + zL);
                             // }
                             //c4LOG(info, "5");
-                            if(A_MeV != 0 && A_MeV > 0)
+                            if(A_MeV == 0) {c4LOG(info, " A = 0 ???");}
+                            if(A_MeV >= 0 && std::abs(z_diff) <=3)
                             {
                                 gamma_after1 = 1.f + beta_trans_after1 / A_MeV;
+                                //c4LOG(info, " gamma before : " << gamma << " gamma after : " << gamma_after1);
                                 //c4LOG(info, " gamma before : " << gamma0[i] << " gamma after : " << gamma_after1);
                                 float inv_g2 = 1.f / (gamma_after1 * gamma_after1);
                                 float arg = 1.f - inv_g2;
                                 if (arg >= 0.f) beta_after1 = std::sqrt(arg);
                                 //c4LOG(info, " beta before : " << beta0[i] << " beta after : " << beta_after1);
+                                if(beta_after1 >= 0.9) c4LOG(info, " ::: Beta is 1 ::: ");
+                                if(beta_after1 >= 0.9) c4LOG(info, " gamma before : " << gamma << " gamma after: " << gamma_after1 << " AoQ :" << aoq0[0] << " A : " << A_MeV/conv_coeff);
+                                if(beta_after1 >= 0.9) c4LOG(info, " z music : " << static_cast<int>(std::round(z0[i])) << " z lisa: " << static_cast<int>(std::round(z_lisa[i])) << " z diff : " << z_diff);
+
                                 //c4LOG(info, " ::: ");
 
-                            } else
-                            {
-                                gamma_after1 = -999.;
-                            }
+                            } 
+
                             if(!sameZ)
                             {
                                 //c4LOG(info, " :::::::: Different Z  in layer " << layer_id);

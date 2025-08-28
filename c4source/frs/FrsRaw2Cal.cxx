@@ -292,7 +292,7 @@ void FrsRaw2Cal::ProcessScintillators()
     int hits_in_11rd = sci11rd_hits.size();
     
     //c4LOG(info, "   11la");
-    //if(hits_in_11la==16 ) c4LOG(info, " ::: ALL ::: ");
+    //if(hits_in_11la==0 ) c4LOG(info, " FRS hit 0 (11L) ");
     //if(hits_in_11la==16 ) c4LOG(info, " 11 L - R Size : " << sci11la_hits.size() << " , " << sci11ra_hits.size());
 
     for (int i = 0; i < hits_in_11la; i++)
@@ -342,7 +342,7 @@ void FrsRaw2Cal::ProcessScintillators()
     int hits_in_22l = sci22l_hits.size();
     int hits_in_21r = sci21r_hits.size();
     int hits_in_22r = sci22r_hits.size();
-    //if(hits_in_11la==16 ) c4LOG(info, " 21 L - R Size : " << sci21l_hits.size() << " , " << sci21r_hits.size());
+    //if(hits_in_21l==0 ) c4LOG(info, " FRS HIT 0 (21L)");
     for (int i = 0; i < hits_in_21l; i++)
     {
         for (int j = 0; j < hits_in_21r; j++)
