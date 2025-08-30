@@ -46,6 +46,7 @@ class LisaHitItem : public TObject
                     float dedx,
                     float dedx_GM,
                     std::vector<float> z,
+                    std::vector<float> b0,
                     std::vector<float> b1,
                     uint64_t evt_t,
                     uint64_t ch_t,
@@ -75,6 +76,7 @@ class LisaHitItem : public TObject
         float Get_de_dx() const;
         float Get_de_dx_GM() const;
         std::vector<float> Get_Z_lisa() const;
+        std::vector<float> Get_beta_before_L1() const;
         std::vector<float> Get_beta_after_L1() const;
         uint64_t Get_board_event_time() const;
         uint64_t Get_channel_event_time() const;
@@ -106,6 +108,7 @@ class LisaHitItem : public TObject
         float de_dx;
         float de_dx_GM;
         std::vector<float> z_lisa;
+        std::vector<float> beta0;
         std::vector<float> beta1;
         uint64_t board_event_time;
         uint64_t ch_event_time;
@@ -206,6 +209,11 @@ inline float LisaHitItem::Get_de_dx_GM() const
 inline std::vector<float> LisaHitItem::Get_Z_lisa() const
 {
     return z_lisa;
+}
+
+inline std::vector<float> LisaHitItem::Get_beta_before_L1() const
+{
+    return beta0;
 }
 
 inline std::vector<float> LisaHitItem::Get_beta_after_L1() const

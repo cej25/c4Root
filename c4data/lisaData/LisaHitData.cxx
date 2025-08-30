@@ -43,6 +43,7 @@ void LisaHitItem::SetAll(uint64_t wr,
                         float dedx,
                         float dedx_GM,
                         std::vector<float> z,
+                        std::vector<float> b0,
                         std::vector<float> b1,
                         uint64_t evt_t,
                         uint64_t ch_t,
@@ -71,6 +72,7 @@ void LisaHitItem::SetAll(uint64_t wr,
     de_dx = dedx;
     de_dx_GM = dedx_GM;
     z_lisa = z;
+    beta0 = b0;
     beta1 = b1;
     board_event_time = evt_t;
     ch_event_time = ch_t;
@@ -104,6 +106,7 @@ void LisaHitItem::Reset()
     de_dx = 0;
     de_dx_GM = 0;
     z_lisa = {};
+    beta0 = {};
     beta1 = {};
     board_event_time = 0;
     ch_event_time = 0;

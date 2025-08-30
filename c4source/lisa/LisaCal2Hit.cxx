@@ -147,12 +147,10 @@ void LisaCal2Hit::Exec(Option_t* option)
             
             std::pair< int, std::pair<int,int> > detector_lxy = std::make_pair( layer_id, std::make_pair(xpos, ypos) );
 
+            // !TODO the calculation only if the extrapoleted position of the beam matches LISA!!!
             if (lisa_config->ZCalibrationLoaded() && (sci21l_s1s2_selected == sci21l_s2s4_selected) && (sci21r_s1s2_selected == sci21r_s2s4_selected))
             {
-                
-                //c4LOG(info, " size of sci21L s1s2: " << sci21l_s1s2_selected.size() << " size of sci21L s2s4 :" <<  sci21l_s2s4_selected.size());
-                //c4LOG(info, " size of sci21R s1s2: " << sci21r_s1s2_selected.size() << " size of sci21R s2s4 :" <<  sci21r_s2s4_selected.size()); 
- 
+                 
                 std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> z_calibration_coeffs = lisa_config->ZCalibrationCoefficients();
                 if (auto result_find_Zcal = z_calibration_coeffs.find(detector_lxy); result_find_Zcal != z_calibration_coeffs.end()) 
                 {
@@ -160,34 +158,75 @@ void LisaCal2Hit::Exec(Option_t* option)
                     slope_z = z_coeffs.first;
                     intercept_z = z_coeffs.second;
 
-                    if (layer_id == 1)
+                    for (size_t i = 0; i < sci21l_s2s4_selected.size(); i++)
                     {
-                        xpos_1.emplace_back(xpos);
-                        ypos_1.emplace_back(ypos);
-                        thickness_1.emplace_back(thickness);
 
-                        for (size_t i = 0; i < sci21l_s2s4_selected.size(); i++)
+                        if (beta_i[i] <= 0. || beta_i[i] >= 1.) return;
+                        float beta = beta_i.at(i);
+                        beta0.emplace_back(beta);
+
+                        // Calculate Gamma initial
+                        float gamma = 1.f / sqrt(1.f - TMath::Power(beta0.at(i), 2));
+                        gamma_i.emplace_back(gamma);
+                        
+                        // Calculate beta in MeV
+                        beta_trans = (gamma -1.f)*aoq_i[i]*std::round(z_i[i])*conv_coeff;
+                        beta_en_i.emplace_back(beta_trans);
+
+                        // Get N and A before and after LISA
+                        float N_i = aoq_i[i]*std::round(z_i[i]) - (z_i[i]);
+                        float A_i = aoq_i[i]*std::round(z_i[i]);
+
+                        float N_f = aoq_f[i]*std::round(z_f[i]) - (z_f[i]);
+                        float A_f = aoq_f[i]*std::round(z_f[i]);
+
+                        float z_diff_21_41 = z_i[i] - z_f[i];
+                        bool noReaction = true;
+
+                        // Remove junk : Zf > Zi or Nf > Ni 
+                        //               Zi > Zf + 5 regardless from N which might be screwed up by the AoQ*Z(wrong) calculation
+                        if( std::round(z_diff_21_41) > 5 || std::round(N_f) > std::round(N_i)) return; //this is 5 because of the current fucked up calibration of musics. Should be 0.
+                        if( std::round(z_diff_21_41) > 5) return; //this is 5 because of the current fucked up calibration of musics. Should be 0.
+
+                        // Set Flag for global reactions
+                        // If zi = zf and ni = nf -> NoReaction Flag true
+                        // If zf < zi or nf < ni -> NoReaction Flag false
+                        if ( std::round(z_diff_21_41) == 4 && (std::round(N_i) == std::round(N_f))) noReaction = true; //this is 4 becuase of calibration. Should be 0-1
+                        if ( std::round(z_diff_21_41) < 3 && (std::round(N_i) < std::round(N_f))) noReaction = false;
+
+                        if(layer_id ==1)
                         {
-                            float beta = beta_i.at(i);
-                            if (beta <= 0. || beta >= 1.) return;
 
-                            // Calculate Gamma initial
-                            float gamma = 1.f / sqrt(1.f - TMath::Power(beta_i.at(i), 2));
-                            gamma_i.emplace_back(gamma);
-                            
-                            // Calculate beta in MeV
-                            beta_trans = (gamma -1.f)*aoq_i[i]*std::round(z_i[i])*conv_coeff;
-                            beta_en_i.emplace_back(beta_trans);
+                            xpos_1.emplace_back(xpos);
+                            ypos_1.emplace_back(ypos);
+                            thickness_1.emplace_back(thickness);
+                            float A_MeV_1 = 0;
 
                             //  Calibrate LISA in Z
                             de_dx_corr = slope_z * (1.f / (beta * beta)) + intercept_z;
                             if (de_dx_corr > 0.f)
                             {
                                 z_val = frs->primary_z * std::sqrt(de_dx / de_dx_corr);
-                                z_lisa.emplace_back(z_val + id->offset_z21); 
+                                z_lisa_1_temp.emplace_back(z_val + id->offset_z21); 
                             }
                             // Calculate beta in MeV after passing layer 1
                             beta_trans_after1 = beta_trans - de_dx*thickness;
+
+                            // NB: ATM the calibration of zeta is a bit wrong, we can't really compare z lisa (accurate) and z music. 
+                            float z_diff_lisa_21 = z_i[i] - z_lisa_1_temp[i];
+                            float z_diff_41_lisa1 = z_f[i] - z_lisa_1_temp[i];
+
+                            //  TODO Throw away junk events in Z21
+                            // If Zlisa > Z21 Junk
+                            // If Z lisa - Z 21 > 6 Junk (probable coming from low positive signals we have or noise in music)
+                            // If Z lisa > Z f --> Junk (not possible that Z in lisa is less than Z in 41)
+                            // Fill a new Zlisa1 vector cleaned of all of this junk
+
+                            if( std::abs(z_diff_lisa_21) >= (1+6) || std::abs(z_diff_21_41) >= (4+4)) 
+                            {
+                                //c4LOG(info, " Junk.  Z21 : " << z_i[i] << " ZLISA : " << z_lisa_1_temp[i] << " Z41 : " << z_f[i]);
+                                return;
+                            }
 
                             // Calculate beta after layer 1
 
@@ -197,93 +236,101 @@ void LisaCal2Hit::Exec(Option_t* option)
                             //      If z and/or A are different, we calculate the new A
                             //      Now we can calculate the new beta
 
-                            // NB: ATM the calibration of zeta is a bit wrong, we can't really compare z lisa (accurate) and z music. 
-        
-                            // ATTENTION: the rest has to be tested properly - DO NOT CARE ABOUT IT NOW
-                            float z_diff = std::round(z_lisa[i]) - std::round(z_i[i]);
-
-                            float A_MeV = -999.;
-                            bool sameZ = false;
-
-                            if(std::abs(z_diff) <= 2)
+                            // Is there a reaction between S1S2 and S2S4?
+                            if(std::abs(z_diff_21_41) < 4 + 2) //atm Z is not well calibrate and the av difference for no reaction is 4
                             {
-                                A_MeV = ((aoq_i[i] * std::round(z_lisa[i])) - std::round(z_i[i]) + std::round(z_lisa[i])) * conv_coeff;
-                                //c4LOG(info, " A for z same : " << A_MeV/conv_coeff );
-                                sameZ = true;
+                                // If no reaction, use A and Z from FRS before LISA
+                                A_MeV_1 = A_i * conv_coeff;
+                                noReaction = true;
                             } 
-                            // else if (std::abs(z_diff) > 1.5)
-                            // {
-                            //     A_MeV = ((aoq_i[i] * z_i[i]) - z_i[i] + z_lisa[i])* conv_coeff;
-                            //     c4LOG(info, " A for Z different : " << (aoq_i[i] * z_i[i]) - z_i[i] + zL);
-                            // }
-                            //c4LOG(info, "5");
-                            if(A_MeV == 0) {c4LOG(info, " A = 0 ???");}
-                            if(A_MeV >= 0 && std::abs(z_diff) <=5)
+                            else if (std::abs(z_diff_21_41) >= 4 + 2)
                             {
-                                gamma_after1 = 1.f + beta_trans_after1 / A_MeV;
+                                // If there is a reaction between s1s2 and s2s4:
+                                // Has this reaction happened in this layer?
+                                if( std::abs(z_diff_lisa_21) < 1 + 1.5) //atm z21 is not well calibrate and the av difference for no reaction is 1.5
+                                {
+                                    // If no reaction happens, use A and Z from FRS before LISA
+                                    A_MeV_1 = A_i * conv_coeff;
+                                    noReaction = true;
+
+                                }else if (std::abs(z_diff_lisa_21) >= 1 + 1.5)
+                                {
+                                    // If the reaction happened in this layer, calculate new A
+                                    // A_after1 = Z (calculated in LISA 1) + N (calculated from s2s4 (AoQ*Z41)-Z41)
+                                    int N_after1 = std::round(aoq_f[i]*std::round(z_f[i])) - std::round(z_f[i]);
+                                    int A_after1 = z_lisa_1[i] + N_after1;
+                                    A_MeV_1 = A_after1 * conv_coeff;
+                                    c4LOG(info, " Reaction happened in Layer :" << layer_id << " Z, N, A before :" << std::round(z_i[i]) << "," << N_i << "," << A_i << " Z,N,A after :" << std::round(z_f[i]) << "," << N_after1 << "," << A_after1 );
+                                    c4LOG(info, " Z lisa: " << z_lisa_1[i]);
+                                    c4LOG(info, " AoQ before: " << aoq_i[i] << " AoQ after : " << aoq_f[i]);
+                                    c4LOG(info, " --- ");
+                                    noReaction = false;
+                                    // !!!Flag for reaction identification in layer
+                                
+                                }
+                            }
+
+                            // Calculate gamma and beta after layer 1 with the A calculate for that event
+                            if(A_MeV_1 == 0) {c4LOG(info, " A = 0 ???");}
+                            if(A_MeV_1 > 0 && std::abs(z_diff_lisa_21) <=5)
+                            {
+                                gamma_after1 = 1.f + beta_trans_after1 / A_MeV_1;
                                 float inv_g2 = 1.f / (gamma_after1 * gamma_after1);
                                 float arg = 1.f - inv_g2;
                                 if (arg >= 0.f) beta_after1 = std::sqrt(arg);
                                 
-                                if(beta_after1 >= 0.9) c4LOG(info, " ::: Beta is 1 ::: ");
-                                if(beta_after1 >= 0.9) c4LOG(info, " gamma before : " << gamma << " gamma after: " << gamma_after1 << " AoQ :" << aoq_i[0] << " A : " << A_MeV/conv_coeff);
-                                if(beta_after1 >= 0.9) c4LOG(info, " z music : " << static_cast<int>(std::round(z_i[i])) << " z lisa: " << static_cast<int>(std::round(z_lisa[i])) << " z diff : " << z_diff);
+                                //if(beta_after1 >= 0.9) c4LOG(info, " ::: Beta is 1 ::: ");
+                                //if(beta_after1 >= 0.9) c4LOG(info, " gamma before : " << gamma << " gamma after: " << gamma_after1 << " AoQ :" << aoq_i[0] << " A : " << A_MeV/conv_coeff);
+                                //if(beta_after1 >= 0.9) c4LOG(info, " z music : " << static_cast<int>(std::round(z_i[i])) << " z lisa: " << static_cast<int>(std::round(z_lisa_1[i])) << " z diff : " << z_diff);
 
                             } 
-
-                            if(!sameZ)
-                            {
-                                //c4LOG(info, " :::::::: Different Z  in layer " << layer_id);
-                                //c4LOG(info, " A : " << std::round((aoq_i[i] * z_i[i]) + (zL - z_i[i])));
-                            }
 
                             beta1.emplace_back(beta_after1);
                             gamma1.emplace_back(gamma_after1);
                         
-                            // if (z_lisa[i] - z_i[i] <= 1.5) // if z lisa and z music are the same
+                            // if (z_lisa_1[i] - z_i[i] <= 1.5) // if z lisa and z music are the same
                             // {
                             //     gamma_after1 = 1.f + beta_trans_after1/((aoq_i[i] *z_i[i]) * conv_coeff); 
                             //     beta_after1 = sqrt(1.f - 1.f/TMath::Power(gamma_after1, 2));
                             //     beta1.emplace_back(beta_after1);
-                            //     //c4LOG(info, " A : " << (aoq_i[i]*z_lisa[i])-z_i[i] + z_lisa[i]);
+                            //     //c4LOG(info, " A : " << (aoq_i[i]*z_lisa_1[i])-z_i[i] + z_lisa_1[i]);
                             //     //c4LOG(info, " gamma before : " << gamma_i[i] << " gamma after : " << gamma_after1);
                             // }
 
                             // if(std::abs(z_diff) >= 1.5) // if z lisa and z musics are different
                             // {
-                            //     gamma_after1 = 1. + beta_trans_after1/(((aoq_i[i] * z_lisa[i]) - z_i[i] + z_lisa[i])*conv_coeff);
+                            //     gamma_after1 = 1. + beta_trans_after1/(((aoq_i[i] * z_lisa_1[i]) - z_i[i] + z_lisa_1[i])*conv_coeff);
                             //     beta_after1 = sqrt(1. - 1./TMath::Power(gamma_after1, 2));
                             //     beta1.emplace_back(beta_after1);
                             //     c4LOG(info, " DIFFERENT Z in " << layer_id);
-                            //     c4LOG(info, " A : " << std::round((aoq_i[i]*z_lisa[i]) + (z_lisa[i] - z_i[i])));
+                            //     c4LOG(info, " A : " << std::round((aoq_i[i]*z_lisa_1[i]) + (z_lisa_1[i] - z_i[i])));
                             // }
                 
                             // gamma1.emplace_back(gamma_after1);
 
                             //c4LOG(info, " gamma after: " << gamma_after1);
                             //c4LOG( info, " beta before : " << beta << " beta after : " << beta_after1);
-                        
-                        } 
-                        m_layer1 = 1;
-                        
-                    }else if(layer_id == 2 && m_layer1 == 1 )
-                    {
-                        //c4LOG(info, " In layer 2 ");
-                        m_layer2 = 1;
+                            m_layer1 = 1;
 
-                    }else if(layer_id == 3 && m_layer2 == 1 )
-                    {
-                        //c4LOG(info, " In layer 3 ");
-                        m_layer3 = 1;
+                        }else if(layer_id == 2 && m_layer1 == 1 )
+                        {
+                            //c4LOG(info, " In layer 2 ");
+                            m_layer2 = 1;
 
-                    }else if(layer_id == 4 && m_layer3 == 1 )
-                    {
-                        //c4LOG(info, " In layer 4 ");
-                        m_layer4 = 1;
-                    }else if(layer_id == 5 && m_layer4 == 1 )
-                    {
-                        //c4LOG(info, " In layer 5 ");
-                        m_layer5 = 1;
+                        }else if(layer_id == 3 && m_layer2 == 1 )
+                        {
+                            //c4LOG(info, " In layer 3 ");
+                            m_layer3 = 1;
+
+                        }else if(layer_id == 4 && m_layer3 == 1 )
+                        {
+                            //c4LOG(info, " In layer 4 ");
+                            m_layer4 = 1;
+                        }else if(layer_id == 5 && m_layer4 == 1 )
+                        {
+                            //c4LOG(info, " In layer 5 ");
+                            m_layer5 = 1;
+                        }
                     }
 
                 }
@@ -308,7 +355,8 @@ void LisaCal2Hit::Exec(Option_t* option)
                 lisaCalItem.Get_energy_MWD_GM(),
                 lisaCalItem.Get_de_dx(),
                 lisaCalItem.Get_de_dx_GM(),
-                z_lisa,
+                z_lisa_1,
+                beta0,
                 beta1,
                 lisaCalItem.Get_board_event_time(),
                 lisaCalItem.Get_channel_event_time(),
@@ -330,7 +378,18 @@ void LisaCal2Hit::Exec(Option_t* option)
 void LisaCal2Hit::FinishEvent()
 {
 
-    z_lisa.clear();
+    z_lisa_1_temp.clear();
+    z_lisa_2_temp.clear();
+    z_lisa_3_temp.clear();
+    z_lisa_4_temp.clear();
+    z_lisa_5_temp.clear();
+
+    z_lisa_1.clear();
+    z_lisa_2.clear();
+    z_lisa_3.clear();
+    z_lisa_4.clear();
+    z_lisa_5.clear();
+
     xpos_1.clear();
     ypos_1.clear();
     thickness_1.clear();
@@ -344,6 +403,7 @@ void LisaCal2Hit::FinishEvent()
     gamma4.clear();
     gamma5.clear();
 
+    beta0.clear();
     beta1.clear();
     beta2.clear();
     beta3.clear();
