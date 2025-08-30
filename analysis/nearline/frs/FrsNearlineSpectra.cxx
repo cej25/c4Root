@@ -309,7 +309,7 @@ InitStatus FrsNearlineSpectra::Init()
         h2_Z41_vs_Sc21E_mhtdc = MakeTH2(dir_mhtdc_s2s4_2d, "D", "h2_Z41_vs_Sc21E_mhtdc", "Z41 vs. SQRT(Sc21_L * Sc21_R) (MHTDC)", 300, frs_config->fMin_Z, frs_config->fMax_Z, 400, 0., 4000., "Z41)", "Sc21 E");
 
         // ----- 1D ------ 
-        h1_beta_s1s2_mhtdc = MakeTH1(dir_mhtdc_s1s2_1d, "D", "h1_beta_s1s2_mhtdc", "Beta (S1-S2) (MHTDC)", 500, 0.0, 1.0, "Beta (S1-S2)", kPink-3, kBlue+2);
+        h1_beta_s1s2_mhtdc = MakeTH1(dir_mhtdc_s1s2_1d, "D", "h1_beta_s1s2_mhtdc", "Beta (S1-S2) (MHTDC)", 200, 0.72, 0.75, "Beta (S1-S2)", kPink-3, kBlue+2);
         h1_AoQs1s2_mhtdc = MakeTH1(dir_mhtdc_s1s2_1d, "D", "h1_AoQs1s2_mhtdc", "A/Q (S1-S2) (MHTDC)", 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2);
         h1_AoQs1s2_corr_mhtdc = MakeTH1(dir_mhtdc_s1s2_1d, "D", "h1_AoQs1s2_corr_mhtdc", "A/Q corr (S1-S2) (MHTDC)", 500, 1.0, 4.0, "A/Q (S1-S2)", kPink-3, kBlue+2);
         h1_Z21_mhtdc = MakeTH1(dir_mhtdc_s1s2_1d, "D", "h1_Z21_mhtdc", "Z21 (MHTDC)", 1000, 0, 100, "Z21", kPink-3, kBlue+2);
@@ -810,7 +810,7 @@ void FrsNearlineSpectra::Process_MHTDC()
     // CEJ:: testing
     // if (AoQ_s1s2_mhtdc.size() == 1 && AoQ_s2s4_mhtdc.size() == 1) mult1++;
     // if (AoQ_s1s2_mhtdc.size() == 2 && AoQ_s2s4_mhtdc.size() == 2) mult2++;
-    if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 ) return;
+    // if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 ) return;
 
 
     // CEJ :: Process FRS Gate info here first.

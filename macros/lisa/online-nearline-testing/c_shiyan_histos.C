@@ -5,11 +5,11 @@
         //LISA_ANA displays only energy and traces; LISA_CAL displays stats,energy,traces. Choose one.
         //Note that if FRS 1, LISA_CAL is needed. 
 #define LISA_ANA 0
-#define LISA_CAL 0
+#define LISA_CAL 1
 
 // Test or experiment settings
-#define TEST 1
-#define EXP 0
+#define TEST 0
+#define EXP 1
 
 // If you want to have trace histos
 #define TRACE_ON 1
@@ -23,7 +23,7 @@
 // :::  Define FRS setup.C file - FRS should provide; place in /config/shiyan/frs/setup/
 extern "C"
 {
-    #include "../../../config/shiyan/frs/setup/setup_160_49_2025_conv.C"
+    #include "/u/cjones/c4Root/config/shiyan/frs/setup/setup_103_002_2025_setting10_conv.C"
 }
 
 typedef struct EXT_STR_h101_t
@@ -41,7 +41,7 @@ void c_shiyan_histos()
     TString fExpName = "shiyan";
 
     // ::: Here you define commonly used path
-    TString c4Root_path = "/u/gandolfo/c4/c4Root";
+    TString c4Root_path = "/u/cjones/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -62,19 +62,15 @@ void c_shiyan_histos()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // ::: P A T H   O F   F I L E  to read
-    TString inputpath = "./";
-    //TString filename = inputpath + "test_0003_tree.root";  
-    // TString filename = inputpath + "c_test_Ag_with_whatever.root";  
-    TString filename = "tpc_X_testing.root";
+    TString inputpath = "/u/cjones/c4Root/macros/lisa/online-nearline-testing/";
+    //TString inputpath = "/u/gandolfo/data/shiyan_debug/";
 
-    // TString inputpath = "/u/gandolfo/data/test_c4/shiyan_test/";
-    // TString filename = inputpath + "test_0003_tree.root"; 
+    TString filename = inputpath + "run_0018_mhtdc_updates.root";  
     
     // ::: O U T P U T
-    TString outputpath = "./"; //test output
-    //TString outputFilename = outputpath + "test_0003_histo_shiyan.root";
-    // TString outputFilename = outputpath + "c_test_Ag_histos_whatever.root";
-    TString outputFilename = "x_testing_histogrammical.root";
+    TString outputpath = "./";   //testing
+    
+    TString outputFilename = outputpath + "run_0018_mhtdc_updates_histos.root";
 
 
     FairRunAna* run = new FairRunAna();
@@ -109,26 +105,15 @@ void c_shiyan_histos()
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: G A T E S - Initialise 
 
-    std::vector<FrsGate*> fg;
-    FrsGate* cut_0 = new FrsGate("cut", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/all_z_1.root"); 
-    FrsGate* cut_1 = new FrsGate("0", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/1p1n.root"); 
-    FrsGate* cut_2 = new FrsGate("1", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/1p2n.root"); 
-    // FrsGate* cut_3 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/all_z_2.root"); 
-    // FrsGate* cut_4 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/2p3n.root"); 
-    // FrsGate* cut_5 = new FrsGate("2", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/2p4n.root"); 
+    FrsGate* Cr_1p = new FrsGate("Cr_1p",config_path + "/frs/Gates/Cr_1p_Z42.root");
+    FrsGate* Cr_1p1n = new FrsGate("Cr_1p1n",config_path + "/frs/Gates/Cr_1p1n_Z42.root");
 
-    
-    fg.emplace_back(cut_0);
-    fg.emplace_back(cut_1);
-    fg.emplace_back(cut_2);
-    // fg.emplace_back(cut_3);
-    // fg.emplace_back(cut_4);
-    // fg.emplace_back(cut_5);
+    std::vector<FrsGate*> fgs = {};
+    fgs.emplace_back(Cr_1p);
+    fgs.emplace_back(Cr_1p1n);
 
     // ::: GATES config for histos ::::::::
-    TFrsConfiguration::Set_dE_travMusic_gate(1940,2000);
-    //TLisaConfiguration::SetLISAGate(1070,1110); //Gate on LISA 1 for histo of LISA 2 energy (mean +- 3sigma)
-    TLisaConfiguration::SetXYDetectorGate(2,2);  //XY position of the detector you want to see the gate on
+    //TFrsConfiguration::Set_dE_travMusic_gate(1940,2000);
 
     // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: FRS config
@@ -138,68 +123,93 @@ void c_shiyan_histos()
     TFrsConfiguration::SetZ1DriftFile(config_path +  "/frs/Z1_Drift_fragments.txt");
     TFrsConfiguration::SetAoQDriftFile(config_path +  "/frs/AoQ_Drift_fragments.txt");
 
-    std::vector<LisaGate*> lgs = {};
+    // ...........................................
 
+    std::vector<LisaGate*> lgs = {};
+    // ::: Lisa config
     if ( TEST )
     {
-        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_All_Boards.txt");
-        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_cards.txt");
-        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_LISAmp_lowgain.txt");
+        
+        /*
+        // testing with shiyan/frs data
+        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_4x4_shiyan.txt");
+        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_shiyan.txt");
+        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_shiyan.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_shiyan_v0.txt");
+        */
+        
+        //for testing with pareeksha data 
+        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_Detector_Map_names.txt");
+        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching.txt");
+        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
+                
 
-        LisaGate* FebGate1 = new LisaGate("Febex_Gate1", "energy", config_path + "/lisa/Gates/Febex_Gate1.txt");
-        LisaGate* MWD_Gate1 = new LisaGate("MWD_Gate1", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate1.txt");
-        LisaGate* MWD_Gate2 = new LisaGate("MWD_Gate2", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate2.txt");
-
-        lgs.emplace_back(FebGate1);
-        lgs.emplace_back(MWD_Gate1);
-        lgs.emplace_back(MWD_Gate2);
-
-        TLisaConfiguration::SetExcludedChannels({
-            std::make_tuple(1,2,2),
-            std::make_tuple(2,1,1)
-        });
-    
     }
     if ( EXP )
     {
-        TLisaConfiguration::SetMappingFile(config_path + "/Lisa_5x5_shiyan.txt");
-        TLisaConfiguration::SetGMFile(config_path + "/lisa/Lisa_GainMatching_shiyan.txt");
-        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_shiyan.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path +  "/lisa/Lisa_MWD_Parameters_shiyan.txt");
-        TLisaConfiguration::SetLISAGateFebex(config_path + "/lisa/Gates/Lisa_Febex_Gates_shiyan.txt");
-        TLisaConfiguration::SetLISAGateMWD(config_path + "/lisa/Gates/Lisa_MWD_Gates_shiyan.txt");
+        
+        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_4x4_shiyan.txt");
+        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_threepoint_clust_Febex.txt");
+        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_threepoint_clust_MWD.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_shiyan_v0.txt");
+
+        LisaGate* Wide_F1 = new LisaGate("wide_feb_1", "energy", config_path + "/lisa/Gates/Febex_Gate1shiyan.txt");
+        LisaGate* Wide_M1 = new LisaGate("wide_mwd_1", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate1shiyan.txt");
+
+        LisaGate* Wide_F2 = new LisaGate("wide_feb_2", "energy", config_path + "/lisa/Gates/Febex_Gate1shiyan.txt");
+        LisaGate* Wide_M2 = new LisaGate("wide_mwd_2", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate1shiyan.txt");
+        lgs.emplace_back(Wide_F1);
+        lgs.emplace_back(Wide_F2);
+
+        lgs.emplace_back(Wide_M1);
+        lgs.emplace_back(Wide_M2);
+
+
+        /*
+        // for testing with pareeksha data
+        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_Detector_Map_names.txt");
+        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching.txt");
+        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD.txt");
+        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
+        */
     }
   
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
     // ::: Nearline Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    
+    TLisaConfiguration::SetXYDetectorGate(2,1);  //XY position of the detector you want to see the gate on
+
     // ::: Get run number :::
     //TFrsConfiguration::SetRunNumber(fileNumber);
     //std::cout << "Run number: " << fileNumber << std::endl;
 
     //::::::::: Set experiment configurations
-    TExperimentConfiguration::SetExperimentStart(1745599200000000000);
+    TExperimentConfiguration::SetExperimentStart(1746684000000000000);
+    //TExperimentConfiguration::SetExperimentStart(1746597600000000000); // Start for Shiyan data: May 7th, 8a.m. //including testing
+    //TExperimentConfiguration::SetExperimentStart(1715727045000000000); //Start of pareeksha with primary beam: 15 May 00:50
+    //TExperimentConfiguration::SetExperimentStart(1746172830000000000);
+
     // ::: FRS
-    TFrsConfiguration::Set_Z_range(10,60);
-    TFrsConfiguration::Set_AoQ_range(1.8,3.5);
-    TFrsConfiguration::Set_dE_music41_range(0,64000);
+    TFrsConfiguration::Set_Z_range(10,45);
+    TFrsConfiguration::Set_AoQ_range(1.8,2.4);
+    TFrsConfiguration::Set_dE_music41_range(0,5000); 
+    TFrsConfiguration::Set_dE_music21_range(0,40000);
     
     //::::::::: Set ranges for histos :::::::::::::::
     // ::: LISA
     //  Channel Energy ::::: (h1_energy_)
-    TLisaConfiguration::SetEnergyRange(30000,50000);
-    TLisaConfiguration::SetEnergyBin(1000);
+    TLisaConfiguration::SetEnergyRange(0,500); //(0,50000) shiyan
+    TLisaConfiguration::SetEnergyBin(500);
 
     //  MWD histos
-    TLisaConfiguration::SetEnergyRangeMWD(0,100);
-    TLisaConfiguration::SetEnergyBinMWD(1000);
+    TLisaConfiguration::SetEnergyRangeMWD(0,500); //0,100 shiyan
+    TLisaConfiguration::SetEnergyBinMWD(500);
 
     //  Traces Time and Amplitude Ranges 
-    TLisaConfiguration::SetTracesRange(0,5);
-    TLisaConfiguration::SetTracesBin(500);
-    TLisaConfiguration::SetAmplitudeMin(7900);
-    TLisaConfiguration::SetAmplitudeMax(8700);
+    TLisaConfiguration::SetTracesRange(0,4);
+    TLisaConfiguration::SetTracesBin(400);
+    TLisaConfiguration::SetAmplitudeMin(7000);
+    TLisaConfiguration::SetAmplitudeMax(8200);
 
     // White Rabbit
     TLisaConfiguration::SetWrDiffRange(0,100000000);
@@ -209,7 +219,7 @@ void c_shiyan_histos()
     TLisaConfiguration::SetWrRateBin(3600);
 
     // Drift
-    TLisaConfiguration::SetDriftRange(0,100);
+    TLisaConfiguration::SetDriftRange(0,10100);
 
     // :::: ENABLE SYSTEMS  ::::::::::::::::::::::::::::::::::::::::
     if(TRACE_ON)
@@ -235,20 +245,13 @@ void c_shiyan_histos()
         }
 
     }
-    
-    // TFrsConfiguration::Plot_TAC_1D(false);
-    // TFrsConfiguration::Plot_TAC_2D(false);
-
-    FrsGate* test = new FrsGate("Tester","/u/cjones/c4Root/config/shiyan/frs/Gates/frs_real_gate_lisa.root");
-    // FrsGate* cut_0 = new FrsGate("full", "/u/gandolfo/c4/c4Root/config/pareeksha/frs/Gates/pareeksha_test.root"); 
-    std::vector<FrsGate*> fgs = {};
-    fgs.emplace_back(test);
-    fgs.emplace_back(cut_0);
 
     if (FRS_ON)
     {
         FrsNearlineSpectra* nearlinefrs = new FrsNearlineSpectra(fgs);
         run->AddTask(nearlinefrs);
+        //FrsRawNearlineSpectra* rawnearlinefrs = new FrsRawNearlineSpectra();
+        //run->AddTask(rawnearlinefrs);
     }
     
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -257,7 +260,7 @@ void c_shiyan_histos()
     {
         if(FRS_LISA_CORRELATIONS)
         {
-            LisaFrsCorrelations* LISA_FRS_corr = new LisaFrsCorrelations(fg);
+            LisaFrsCorrelations* LISA_FRS_corr = new LisaFrsCorrelations(fgs,lgs);
             run->AddTask(LISA_FRS_corr);
         }
     }

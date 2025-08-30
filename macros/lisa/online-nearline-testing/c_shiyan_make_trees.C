@@ -17,7 +17,7 @@
 
 // Definition of setup and configuration files
 // FRS
-#define FRS_SETUP_FILE "/u/gandolfo/c4/c4Root/config/shiyan/frs/setup/setup_103_002_2025_setting10_conv.C"
+#define FRS_SETUP_FILE "/u/cjones/c4Root/config/shiyan/frs/setup/setup_103_002_2025_setting10_conv.C"
 #define FRS_CONFIG_FILE "/u/cjones/c4Root/config/shiyan/frs/frs_config_v1.C"
 // LISA
 // #define LISA_CONFIG_FILE "/u/gandolfo/c4/c4Root/config/shiyan/lisa/general/lisa_config_v2.C"
