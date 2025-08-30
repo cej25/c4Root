@@ -79,7 +79,16 @@ class LisaCal2Hit : public FairTask
         float beta_trans = 0;
         float beta_trans_after1 = 0;
         float beta_after1 = -999.;
+        float beta;
+        float gamma;
 
+        float N_i;
+        float A_i;
+        float N_f;
+        float A_f;
+
+        int N_after1;
+        int A_after1;
         
         std::vector<Float_t> aoq_i;
         std::vector<Float_t> aoq_f;

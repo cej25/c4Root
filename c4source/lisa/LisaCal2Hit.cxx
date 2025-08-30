@@ -128,6 +128,32 @@ void LisaCal2Hit::Exec(Option_t* option)
     //int layer = lisaCalItem.Get_layer_id();
     int multiplicity[layer_number] = {0};
 
+    for(size_t i = 0; i < sci21l_s2s4_selected.size(); i++)
+    {
+
+        //c4LOG(info, " 1");
+        if (beta_i[i] <= 0. || beta_i[i] >= 1.) return;
+        beta = beta_i.at(i);
+        beta0.emplace_back(beta);
+        //c4LOG(info, " 2");
+
+        // Calculate Gamma initial
+        gamma = 1.f / sqrt(1.f - TMath::Power(beta0.at(i), 2));
+        gamma_i.emplace_back(gamma);
+        
+        // Calculate beta in MeV
+        beta_trans = (gamma -1.f)*aoq_i[i]*std::round(z_i[i])*conv_coeff;
+        beta_en_i.emplace_back(beta_trans);
+
+        // Get N and A before and after LISA
+        N_i = aoq_i[i]*std::round(z_i[i]) - (z_i[i]);
+        A_i = aoq_i[i]*std::round(z_i[i]);
+
+        N_f = aoq_f[i]*std::round(z_f[i]) - (z_f[i]);
+        A_f = aoq_f[i]*std::round(z_f[i]);
+        //c4LOG(info, " 3");
+    }
+
 
     for (auto const & lisaCalItem : *lisaCalArray)
     {          
@@ -161,25 +187,7 @@ void LisaCal2Hit::Exec(Option_t* option)
                     for (size_t i = 0; i < sci21l_s2s4_selected.size(); i++)
                     {
 
-                        if (beta_i[i] <= 0. || beta_i[i] >= 1.) return;
-                        float beta = beta_i.at(i);
-                        beta0.emplace_back(beta);
-
-                        // Calculate Gamma initial
-                        float gamma = 1.f / sqrt(1.f - TMath::Power(beta0.at(i), 2));
-                        gamma_i.emplace_back(gamma);
-                        
-                        // Calculate beta in MeV
-                        beta_trans = (gamma -1.f)*aoq_i[i]*std::round(z_i[i])*conv_coeff;
-                        beta_en_i.emplace_back(beta_trans);
-
-                        // Get N and A before and after LISA
-                        float N_i = aoq_i[i]*std::round(z_i[i]) - (z_i[i]);
-                        float A_i = aoq_i[i]*std::round(z_i[i]);
-
-                        float N_f = aoq_f[i]*std::round(z_f[i]) - (z_f[i]);
-                        float A_f = aoq_f[i]*std::round(z_f[i]);
-
+                        //c4LOG(info, "4");
                         float z_diff_21_41 = z_i[i] - z_f[i];
                         bool noReaction = true;
 
@@ -193,29 +201,31 @@ void LisaCal2Hit::Exec(Option_t* option)
                         // If zf < zi or nf < ni -> NoReaction Flag false
                         if ( std::round(z_diff_21_41) == 4 && (std::round(N_i) == std::round(N_f))) noReaction = true; //this is 4 becuase of calibration. Should be 0-1
                         if ( std::round(z_diff_21_41) < 3 && (std::round(N_i) < std::round(N_f))) noReaction = false;
-
+                        //c4LOG(info, " 5");
                         if(layer_id ==1)
                         {
 
+                            //c4LOG(info, " 6");
                             xpos_1.emplace_back(xpos);
                             ypos_1.emplace_back(ypos);
                             thickness_1.emplace_back(thickness);
                             float A_MeV_1 = 0;
 
+                            //c4LOG(info, " 7");
                             //  Calibrate LISA in Z
-                            de_dx_corr = slope_z * (1.f / (beta * beta)) + intercept_z;
+                            de_dx_corr = slope_z * (1.f / (beta0[i] * beta0[i])) + intercept_z;
                             if (de_dx_corr > 0.f)
                             {
                                 z_val = frs->primary_z * std::sqrt(de_dx / de_dx_corr);
                                 z_lisa_1_temp.emplace_back(z_val + id->offset_z21); 
                             }
                             // Calculate beta in MeV after passing layer 1
-                            beta_trans_after1 = beta_trans - de_dx*thickness;
+                            //c4LOG(info, " 8");
+                            beta_trans_after1 = beta_en_i[i] - de_dx*thickness;
 
                             // NB: ATM the calibration of zeta is a bit wrong, we can't really compare z lisa (accurate) and z music. 
                             float z_diff_lisa_21 = z_i[i] - z_lisa_1_temp[i];
                             float z_diff_41_lisa1 = z_f[i] - z_lisa_1_temp[i];
-
                             //  TODO Throw away junk events in Z21
                             // If Zlisa > Z21 Junk
                             // If Z lisa - Z 21 > 6 Junk (probable coming from low positive signals we have or noise in music)
@@ -237,6 +247,7 @@ void LisaCal2Hit::Exec(Option_t* option)
                             //      Now we can calculate the new beta
 
                             // Is there a reaction between S1S2 and S2S4?
+                            //c4LOG(info, " 9");
                             if(std::abs(z_diff_21_41) < 4 + 2) //atm Z is not well calibrate and the av difference for no reaction is 4
                             {
                                 // If no reaction, use A and Z from FRS before LISA
@@ -257,8 +268,8 @@ void LisaCal2Hit::Exec(Option_t* option)
                                 {
                                     // If the reaction happened in this layer, calculate new A
                                     // A_after1 = Z (calculated in LISA 1) + N (calculated from s2s4 (AoQ*Z41)-Z41)
-                                    int N_after1 = std::round(aoq_f[i]*std::round(z_f[i])) - std::round(z_f[i]);
-                                    int A_after1 = z_lisa_1[i] + N_after1;
+                                    N_after1 = std::round(aoq_f[i]*std::round(z_f[i])) - std::round(z_f[i]);
+                                    A_after1 = z_lisa_1[i] + N_after1;
                                     A_MeV_1 = A_after1 * conv_coeff;
                                     c4LOG(info, " Reaction happened in Layer :" << layer_id << " Z, N, A before :" << std::round(z_i[i]) << "," << N_i << "," << A_i << " Z,N,A after :" << std::round(z_f[i]) << "," << N_after1 << "," << A_after1 );
                                     c4LOG(info, " Z lisa: " << z_lisa_1[i]);
@@ -269,7 +280,7 @@ void LisaCal2Hit::Exec(Option_t* option)
                                 
                                 }
                             }
-
+                            //c4LOG(info, " 10");
                             // Calculate gamma and beta after layer 1 with the A calculate for that event
                             if(A_MeV_1 == 0) {c4LOG(info, " A = 0 ???");}
                             if(A_MeV_1 > 0 && std::abs(z_diff_lisa_21) <=5)
@@ -336,7 +347,7 @@ void LisaCal2Hit::Exec(Option_t* option)
                 }
  
             }
-
+            //c4LOG(info, " 11");
             auto & entry = lisaHitArray->emplace_back();
             entry.SetAll(
                 lisaCalItem.Get_wr_t(),
@@ -377,7 +388,7 @@ void LisaCal2Hit::Exec(Option_t* option)
 
 void LisaCal2Hit::FinishEvent()
 {
-
+    c4LOG(info, " 12");
     z_lisa_1_temp.clear();
     z_lisa_2_temp.clear();
     z_lisa_3_temp.clear();
@@ -416,6 +427,8 @@ void LisaCal2Hit::FinishEvent()
     beta_en3.clear();
     beta_en4.clear();
     beta_en5.clear();
+
+    c4LOG(info, " 13");
 }
 
 void LisaCal2Hit::FinishTask()
