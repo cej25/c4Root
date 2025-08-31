@@ -142,7 +142,7 @@ void LisaCal2Hit::Exec(Option_t* option)
     //int layer = lisaCalItem.Get_layer_id();
     int multiplicity[layer_number] = {0};
 
-    // Calculate A and N initial and final for global and layer reaction flags
+    // Calculate FRS parameters
     if ((sci21l_s1s2_selected == sci21l_s2s4_selected) && (sci21r_s1s2_selected == sci21r_s2s4_selected))
     {
         for(size_t i = 0; i < sci21l_s2s4_selected.size(); i++)
@@ -216,8 +216,18 @@ void LisaCal2Hit::Exec(Option_t* option)
             Float_t x_lisa_tpc22_23 = (a_focs2 / 1000. * dist_LISA_focS2) + x_focs2;
             Float_t y_lisa_tpc22_23 = (b_focs2 / 1000. * dist_LISA_focS2) + y_focs2;
 
+            // int xpos_beam = -1;
+            // int ypos_beam = -1;
 
-            // !TODO the calculation only if the extrapoleted position of the beam matches LISA!!!
+            int x_origin = -14; // TODO move to lisa config
+            int y_origin = -6.7;
+            int x_step = 6;
+            int y_step = 7;
+
+            int xpos_beam = (std::floor((x_lisa_tpc22_23 - x_origin) / x_step));
+            int ypos_beam = (std::floor((y_lisa_tpc22_23 - y_origin) / y_step));
+
+
             if (lisa_config->ZCalibrationLoaded() && (sci21l_s1s2_selected == sci21l_s2s4_selected) && (sci21r_s1s2_selected == sci21r_s2s4_selected))
             {
                  
@@ -231,6 +241,10 @@ void LisaCal2Hit::Exec(Option_t* option)
                     for (size_t i = 0; i < sci21l_s2s4_selected.size(); i++)
                     {
          
+                        //c4LOG(info, " x,ylisa : " << xpos << " , " << ypos << " x,y beam :" << xpos_beam << " ," << ypos_beam);
+                        // Gate on lisa position
+                        //if (std::abs(xpos_beam - xpos) > 1 || std::abs(ypos_beam - ypos) > 1) c4LOG(info, " x,ylisa : " << xpos << " , " << ypos << " x,y beam :" << xpos_beam << " ," << ypos_beam);
+                        if (std::abs(xpos_beam - xpos) > 1 || std::abs(ypos_beam - ypos) > 1) return;
                         if(layer_id ==1)
                         {
 
@@ -338,6 +352,7 @@ void LisaCal2Hit::Exec(Option_t* option)
                             //c4LOG(info, " In layer 5 ");
                             m_layer5 = 1;
                         }
+
                     }
 
                 }
@@ -376,6 +391,43 @@ void LisaCal2Hit::Exec(Option_t* option)
                 globalReactions,
                 lisaReaction
             );
+
+            lisaReaction = 0;
+            globalReactions = 0;
+
+            z_lisa_1_temp.clear();
+            z_lisa_2_temp.clear();
+            z_lisa_3_temp.clear();
+            z_lisa_4_temp.clear();
+            z_lisa_5_temp.clear();
+
+            z_lisa_1.clear();
+            z_lisa_2.clear();
+            z_lisa_3.clear();
+            z_lisa_4.clear();
+            z_lisa_5.clear();
+
+            gamma1.clear();
+            gamma2.clear();
+            gamma3.clear();
+            gamma4.clear();
+            gamma5.clear();
+
+            beta1.clear();
+            beta2.clear();
+            beta3.clear();
+            beta4.clear();
+            beta5.clear();
+
+            beta_en1.clear();
+            beta_en2.clear();
+            beta_en3.clear();
+            beta_en4.clear();
+            beta_en5.clear();
+
+            xpos_1.clear();
+            ypos_1.clear();
+            thickness_1.clear();
             //c4LOG(info, " END of subevent");
 
         }
@@ -386,45 +438,11 @@ void LisaCal2Hit::Exec(Option_t* option)
 
 void LisaCal2Hit::FinishEvent()
 {
-    z_lisa_1_temp.clear();
-    z_lisa_2_temp.clear();
-    z_lisa_3_temp.clear();
-    z_lisa_4_temp.clear();
-    z_lisa_5_temp.clear();
-
-    z_lisa_1.clear();
-    z_lisa_2.clear();
-    z_lisa_3.clear();
-    z_lisa_4.clear();
-    z_lisa_5.clear();
-
-    xpos_1.clear();
-    ypos_1.clear();
-    thickness_1.clear();
 
     gamma_i.clear();
     gamma_f.clear();
-
-    gamma1.clear();
-    gamma2.clear();
-    gamma3.clear();
-    gamma4.clear();
-    gamma5.clear();
-
     beta0.clear();
-    beta1.clear();
-    beta2.clear();
-    beta3.clear();
-    beta4.clear();
-    beta5.clear();
-
     beta_en_i.clear();
-    beta_en1.clear();
-    beta_en2.clear();
-    beta_en3.clear();
-    beta_en4.clear();
-    beta_en5.clear();
-
 }
 
 void LisaCal2Hit::FinishTask()
