@@ -1189,8 +1189,7 @@ InitStatus LisaFrsCorrelations::Init()
 
     //c4LOG(info, "::::::::::::::::::end of init");
     return kSUCCESS;
-    //c4LOG(info, "::::::::::::::::::0");
-    
+    //c4LOG(info, "::::::::::::::::::0");  
 
 }
 

@@ -79,6 +79,7 @@ class LisaCal2Hit : public FairTask
         float beta_trans = 0;
         float beta_trans_after1 = 0;
         float beta_after1 = -999.;
+        int noReaction = -5;
         float beta;
         float gamma;
 
@@ -89,7 +90,14 @@ class LisaCal2Hit : public FairTask
 
         int N_after1;
         int A_after1;
-        
+
+        float z_diff_21_lisa1;
+        float z_diff_lisa1_41;
+        float A_MeV_1;
+
+        std::vector<int> globalReactions;
+        std::vector<int> lisaReactions = {0,0,0,0,0,0};
+
         std::vector<Float_t> aoq_i;
         std::vector<Float_t> aoq_f;
         std::vector<Float_t> z_i;
