@@ -52,8 +52,8 @@ void LisaHitItem::SetAll(uint64_t wr,
                         //int pu_MWD,
                         int ov,
                         //int ov_MWD
-                        std::vector<int> greact,
-                        std::vector<int> lreact
+                        int greact,
+                        int lreact
                         )
 {   
     wr_t = wr;
@@ -84,7 +84,7 @@ void LisaHitItem::SetAll(uint64_t wr,
     overflow = ov;
     //overflow_MWD = ov_MWD;
     global_reactions = greact;
-    lisa_reactions = lreact;
+    lisa_reaction = lreact;
 }
 
 
@@ -118,8 +118,8 @@ void LisaHitItem::Reset()
     //pileup_MWD = 0; //-1
     overflow = 0;
     //overflow_MWD = 0; //-1
-    global_reactions = {};
-    lisa_reactions = {};
+    global_reactions = -5;
+    lisa_reaction = -5;
 
 }
 

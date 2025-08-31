@@ -130,6 +130,7 @@ void LisaCal2Hit::Exec(Option_t* option)
     Float_t b_focs2 = frsHitItem.Get_tpc_angle_y_s2_foc_22_23();
     Float_t x_focs2 = frsHitItem.Get_tpc_x_s2_foc_22_23();
     Float_t y_focs2 = frsHitItem.Get_tpc_y_s2_foc_22_23();
+    Float_t dist_focS2_TPC22 = frs->dist_focS2 - frs->dist_TPC22;
 
     if (beta_i.size()==0) return;
     for (int i = 0; i < beta_i.size(); i++)
@@ -166,6 +167,31 @@ void LisaCal2Hit::Exec(Option_t* option)
             A_f = aoq_f[i]*std::round(z_f[i]);
 
             //c4LOG(info, " Ni : " << N_i << " N_f : " << N_f );
+            float z_diff_21_41 = z_i[i] - z_f[i];
+
+            // Remove junk : Zf > Zi or Nf > Ni 
+            //               Zi > Zf + 5 regardless from N which might be screwed up by the AoQ*Z(wrong) calculation
+            double zDiff = std::round(z_diff_21_41);
+            double nDiff = std::round(N_i - N_f);
+            if (zDiff < 4 || nDiff < 7) return;
+            if (std::abs(zDiff) > 9) return;   // 5 + 4
+            if (std::abs(nDiff) > 12) return;  // 5 + 7
+
+            // Global reaction flag
+            if ( (zDiff >= 4 && zDiff <= 5) && (nDiff >= 7 && nDiff <= 8) )
+            {
+                // No Reactions
+                globalReactions = 0;
+            }
+            else if (zDiff > 5 || nDiff > 8)
+            {
+                // Reactions
+                globalReactions = 1;
+            }
+            else
+            {
+                globalReactions = -5;
+            }
         }
         
     }            
@@ -182,16 +208,19 @@ void LisaCal2Hit::Exec(Option_t* option)
             int xpos = lisaCalItem.Get_xposition();
             int ypos = lisaCalItem.Get_yposition();
             float thickness = lisaCalItem.Get_thickness();
-
             multiplicity[layer_id-1]++;
-            
             std::pair< int, std::pair<int,int> > detector_lxy = std::make_pair( layer_id, std::make_pair(xpos, ypos) );
+
+            // Extrapolate TPC position on LISA
+            Float_t dist_LISA_focS2 = 1930 + 153 + (layer_id-1) * 4.8 + dist_focS2_TPC22;
+            Float_t x_lisa_tpc22_23 = (a_focs2 / 1000. * dist_LISA_focS2) + x_focs2;
+            Float_t y_lisa_tpc22_23 = (b_focs2 / 1000. * dist_LISA_focS2) + y_focs2;
+
 
             // !TODO the calculation only if the extrapoleted position of the beam matches LISA!!!
             if (lisa_config->ZCalibrationLoaded() && (sci21l_s1s2_selected == sci21l_s2s4_selected) && (sci21r_s1s2_selected == sci21r_s2s4_selected))
             {
                  
-                lisaReactions.assign(5, 0);
                 std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> z_calibration_coeffs = lisa_config->ZCalibrationCoefficients();
                 if (auto result_find_Zcal = z_calibration_coeffs.find(detector_lxy); result_find_Zcal != z_calibration_coeffs.end()) 
                 {
@@ -201,32 +230,6 @@ void LisaCal2Hit::Exec(Option_t* option)
 
                     for (size_t i = 0; i < sci21l_s2s4_selected.size(); i++)
                     {
-
-                        float z_diff_21_41 = z_i[i] - z_f[i];
-
-                        // Remove junk : Zf > Zi or Nf > Ni 
-                        //               Zi > Zf + 5 regardless from N which might be screwed up by the AoQ*Z(wrong) calculation
-                        double zDiff = std::round(z_diff_21_41);
-                        double nDiff = std::round(N_i - N_f);
-                        if (zDiff < 4 || nDiff < 7) return;
-                        if (std::abs(zDiff) > 9) return;   // 5 + 4
-                        if (std::abs(nDiff) > 12) return;  // 5 + 7
-
-                        // Global reaction flag
-                        if ( (zDiff >= 4 && zDiff <= 5) && (nDiff >= 7 && nDiff <= 8) )
-                        {
-                            // No Reactions
-                            globalReactions.emplace_back(0);
-                        }
-                        else if (zDiff > 5 || nDiff > 8)
-                        {
-                            // Reactions
-                            globalReactions.emplace_back(1);
-                        }
-                        else
-                        {
-                            globalReactions.emplace_back(-5);
-                        }
          
                         if(layer_id ==1)
                         {
@@ -264,12 +267,12 @@ void LisaCal2Hit::Exec(Option_t* option)
                             //      If z and/or A are different, we calculate the new A
                             //      Now we can calculate the new beta
 
-                            if(globalReactions[i] == 0) 
+                            if(globalReactions == 0) 
                             {
                                 // If no reaction, use A and Z from FRS before LISA
                                 A_MeV_1 = A_i * conv_coeff;
                             } 
-                            else if (globalReactions[i] == 1)
+                            else if (globalReactions == 1)
                             {
                                 // If there is a reaction between s1s2 and s2s4:
                                 // Has this reaction happened in this layer?
@@ -277,6 +280,7 @@ void LisaCal2Hit::Exec(Option_t* option)
                                 {
                                     // If no reaction happens, use A and Z from FRS before LISA
                                     A_MeV_1 = A_i * conv_coeff;
+                                    lisaReaction = 0;
 
                                 }else if ( z_diff_21_lisa1 >= 1 + 1.5)
                                 {
@@ -289,10 +293,7 @@ void LisaCal2Hit::Exec(Option_t* option)
                                     c4LOG(info, " AoQ before: " << aoq_i[i] << " AoQ after : " << aoq_f[i]);
                                     c4LOG(info, " --- ");
                                     
-                                    lisaReactions[layer_id]++;
-                                    // TODO this has to become something like
-                                    // int multiplicity[layer_number] = {0};
-                                    // layer_number = lisa_config->NLayers();
+                                    lisaReaction = 1;
                                 }
                             }
 
@@ -373,8 +374,9 @@ void LisaCal2Hit::Exec(Option_t* option)
                 lisaCalItem.Get_overflow(),
                 //lisaCalItem.Get_overflow_MWD(),
                 globalReactions,
-                lisaReactions
+                lisaReaction
             );
+            //c4LOG(info, " END of subevent");
 
         }
     }
@@ -422,9 +424,6 @@ void LisaCal2Hit::FinishEvent()
     beta_en3.clear();
     beta_en4.clear();
     beta_en5.clear();
-
-    globalReactions.clear();
-    lisaReactions.clear();
 
 }
 

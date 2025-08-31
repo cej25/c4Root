@@ -95,8 +95,8 @@ class LisaCal2Hit : public FairTask
         float z_diff_lisa1_41;
         float A_MeV_1;
 
-        std::vector<int> globalReactions;
-        std::vector<int> lisaReactions = {0,0,0,0,0,0};
+        int globalReactions;
+        int lisaReaction = -5;
 
         std::vector<Float_t> aoq_i;
         std::vector<Float_t> aoq_f;

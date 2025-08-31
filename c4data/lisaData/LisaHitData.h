@@ -54,8 +54,8 @@ class LisaHitItem : public TObject
                     int pu,
                     //int pu_MWD,
                     int ov,
-                    std::vector<int> greact,
-                    std::vector<int> lreact);
+                    int greact,
+                    int lreact);
                     //int ov_MWD);
 
         void Reset();
@@ -87,8 +87,8 @@ class LisaHitItem : public TObject
         //int Get_pileup_MWD() const;
         int Get_overflow() const;
         //int Get_overflow_MWD() const;
-        std::vector<int> Get_Global_Reactions() const;
-        std::vector<int> Get_Lisa_Reactions() const;
+        int Get_Global_Reactions() const;
+        int Get_Lisa_Reactions() const;
 
 
         // Getters
@@ -121,8 +121,8 @@ class LisaHitItem : public TObject
         //int pileup_MWD;
         int overflow;
         //int overflow_MWD;
-        std::vector<int> global_reactions;
-        std::vector<int> lisa_reactions;
+        int global_reactions;
+        int lisa_reaction;
         // timing info for correlations
 
 };
@@ -257,14 +257,14 @@ inline int LisaHitItem::Get_overflow() const
 //     return overflow_MWD;
 // }
 
-inline std::vector<int> LisaHitItem::Get_Global_Reactions() const
+inline int LisaHitItem::Get_Global_Reactions() const
 {
     return global_reactions;
 }
 
-inline std::vector<int> LisaHitItem::Get_Lisa_Reactions() const
+inline int LisaHitItem::Get_Lisa_Reactions() const
 {
-    return lisa_reactions;
+    return lisa_reaction;
 }
 
 
