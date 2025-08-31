@@ -148,11 +148,11 @@ void LisaCal2Hit::Exec(Option_t* option)
         for(size_t i = 0; i < sci21l_s2s4_selected.size(); i++)
         {
 
-            beta = beta_i.at(i);
-            beta0.emplace_back(beta); //maybe do this in FRS to avoid problem with entries number ??
+            //beta = beta_i.at(i);
+            //beta0.emplace_back(beta); //maybe do this in FRS to avoid problem with entries number ??
 
             // Calculate Gamma initial
-            gamma = 1.f / sqrt(1.f - TMath::Power(beta0.at(i), 2));
+            gamma = 1.f / sqrt(1.f - TMath::Power(beta_i[i], 2));
             gamma_i.emplace_back(gamma);
             
             // Calculate beta in MeV
@@ -241,6 +241,8 @@ void LisaCal2Hit::Exec(Option_t* option)
                     for (size_t i = 0; i < sci21l_s2s4_selected.size(); i++)
                     {
          
+                        //beta = beta_i.at(i);
+                        beta0.emplace_back(beta_i[i]); 
                         //c4LOG(info, " x,ylisa : " << xpos << " , " << ypos << " x,y beam :" << xpos_beam << " ," << ypos_beam);
                         // Gate on lisa position
                         //if (std::abs(xpos_beam - xpos) > 1 || std::abs(ypos_beam - ypos) > 1) c4LOG(info, " x,ylisa : " << xpos << " , " << ypos << " x,y beam :" << xpos_beam << " ," << ypos_beam);
@@ -413,6 +415,7 @@ void LisaCal2Hit::Exec(Option_t* option)
             gamma4.clear();
             gamma5.clear();
 
+            beta0.clear();
             beta1.clear();
             beta2.clear();
             beta3.clear();
