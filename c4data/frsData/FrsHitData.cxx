@@ -310,6 +310,7 @@ void FrsMultiHitItem::SetS1S2(std::vector<Float_t> s1x,
                     std::vector<Float_t> sci21r_s1s2_selected,
                     std::vector<Float_t> tof_s1s2,
                     std::vector<Float_t> beta_s1s2,
+                    std::vector<Float_t> beta_s1s2_selected,
                     std::vector<Float_t> AoQ_s1s2,
                     std::vector<Float_t> AoQ_corr_s1s2,
                     std::vector<Float_t> z21,
@@ -323,6 +324,7 @@ void FrsMultiHitItem::SetS1S2(std::vector<Float_t> s1x,
     fID_sc21r_tofs1s2_pos_selected_mhtdc = sci21r_s1s2_selected;
     fID_tof_s1s2_mhtdc = tof_s1s2;
     fID_beta_s1s2_mhtdc = beta_s1s2;
+    fID_beta_s1s2_selected_mhtdc = beta_s1s2_selected;
     fID_AoQ_s1s2_mhtdc = AoQ_s1s2;
     fID_AoQ_corr_s1s2_mhtdc = AoQ_corr_s1s2;
     fID_z21_mhtdc = z21;

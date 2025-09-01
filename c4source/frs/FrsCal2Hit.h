@@ -579,6 +579,7 @@ class FrsCal2Hit : public FairTask
         // std::vector<Float_t> temp_id_mhtdc_beta_s1s2;
         // std::vector<Float_t> temp_id_mhtdc_tof_s1s2;
         std::vector<Float_t> id_mhtdc_beta_s1s2;
+        std::vector<Float_t> id_mhtdc_beta_s1s2_selected;
         std::vector<Float_t> id_mhtdc_tof_s1s2;
         // std::vector<Float_t> id_mhtdc_gamma_s1s2;
         // std::vector<Float_t> id_mhtdc_delta_s1s2;

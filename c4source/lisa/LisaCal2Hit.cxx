@@ -118,6 +118,7 @@ void LisaCal2Hit::Exec(Option_t* option)
     aoq_f = multihitItem.Get_ID_AoQ_s2s4_mhtdc();
     z_i = multihitItem.Get_ID_z21_mhtdc();
     z_f = multihitItem.Get_ID_z41_mhtdc();
+    beta0 = multihitItem.Get_ID_beta_s1s2_selected_mhtdc();
 
     // For gate on same S2 events in s2 and s4
     sci21l_s1s2_selected = multihitItem.Get_ID_sci21l_s1s2_selected_mhtdc();
@@ -147,9 +148,6 @@ void LisaCal2Hit::Exec(Option_t* option)
     {
         for(size_t i = 0; i < sci21l_s2s4_selected.size(); i++)
         {
-
-            //beta = beta_i.at(i);
-            //beta0.emplace_back(beta); //maybe do this in FRS to avoid problem with entries number ??
 
             // Calculate Gamma initial
             gamma = 1.f / sqrt(1.f - TMath::Power(beta_i[i], 2));
@@ -227,6 +225,7 @@ void LisaCal2Hit::Exec(Option_t* option)
             int xpos_beam = (std::floor((x_lisa_tpc22_23 - x_origin) / x_step));
             int ypos_beam = (std::floor((y_lisa_tpc22_23 - y_origin) / y_step));
 
+            //c4LOG(info, " size of beta: " << beta_i.size() << " size of beta s: " << beta0.size());
 
             if (lisa_config->ZCalibrationLoaded() && (sci21l_s1s2_selected == sci21l_s2s4_selected) && (sci21r_s1s2_selected == sci21r_s2s4_selected))
             {
@@ -241,9 +240,6 @@ void LisaCal2Hit::Exec(Option_t* option)
                     for (size_t i = 0; i < sci21l_s2s4_selected.size(); i++)
                     {
          
-                        //beta = beta_i.at(i);
-                        beta0.emplace_back(beta_i[i]); 
-                        //c4LOG(info, " x,ylisa : " << xpos << " , " << ypos << " x,y beam :" << xpos_beam << " ," << ypos_beam);
                         // Gate on lisa position
                         //if (std::abs(xpos_beam - xpos) > 1 || std::abs(ypos_beam - ypos) > 1) c4LOG(info, " x,ylisa : " << xpos << " , " << ypos << " x,y beam :" << xpos_beam << " ," << ypos_beam);
                         if (std::abs(xpos_beam - xpos) > 1 || std::abs(ypos_beam - ypos) > 1) return;
@@ -415,7 +411,6 @@ void LisaCal2Hit::Exec(Option_t* option)
             gamma4.clear();
             gamma5.clear();
 
-            beta0.clear();
             beta1.clear();
             beta2.clear();
             beta3.clear();
@@ -444,7 +439,6 @@ void LisaCal2Hit::FinishEvent()
 
     gamma_i.clear();
     gamma_f.clear();
-    beta0.clear();
     beta_en_i.clear();
 }
 

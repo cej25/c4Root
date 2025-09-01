@@ -461,6 +461,7 @@ class FrsMultiHitItem : public TObject
                     std::vector<Float_t> sci21r_s1s2_selected,
                     std::vector<Float_t> tof_s1s2,
                     std::vector<Float_t> beta_s1s2,
+                    std::vector<Float_t> beta_s1s2_selected, //this is beta with a selection on hits so s2 hits is the same in s1s2 ans s2s4
                     std::vector<Float_t> AoQ_s1s2,
                     std::vector<Float_t> AoQ_corr_s1s2,
                     std::vector<Float_t> z21,
@@ -495,6 +496,7 @@ class FrsMultiHitItem : public TObject
         std::vector<Float_t> Get_ID_sci21r_s1s2_selected_mhtdc() const { return fID_sc21r_tofs1s2_pos_selected_mhtdc; }
         std::vector<Float_t> Get_ID_tof_s1s2_mhtdc() const { return fID_tof_s1s2_mhtdc; }
         std::vector<Float_t> Get_ID_beta_s1s2_mhtdc() const { return fID_beta_s1s2_mhtdc; }
+        std::vector<Float_t> Get_ID_beta_s1s2_selected_mhtdc() const { return fID_beta_s1s2_selected_mhtdc; }
         std::vector<Float_t> Get_ID_AoQ_s1s2_mhtdc() const { return fID_AoQ_s1s2_mhtdc; }
         std::vector<Float_t> Get_ID_AoQ_corr_s1s2_mhtdc() const { return fID_AoQ_corr_s1s2_mhtdc; }
         std::vector<Float_t> Get_ID_z21_mhtdc() const { return fID_z21_mhtdc; }
@@ -535,6 +537,7 @@ class FrsMultiHitItem : public TObject
         std::vector<Float_t> fID_sc21r_tofs1s2_pos_selected_mhtdc;
         std::vector<Float_t> fID_tof_s1s2_mhtdc;
         std::vector<Float_t> fID_beta_s1s2_mhtdc;
+        std::vector<Float_t> fID_beta_s1s2_selected_mhtdc;
         std::vector<Float_t> fID_AoQ_s1s2_mhtdc;
         std::vector<Float_t> fID_AoQ_corr_s1s2_mhtdc;
         std::vector<Float_t> fID_z21_mhtdc;

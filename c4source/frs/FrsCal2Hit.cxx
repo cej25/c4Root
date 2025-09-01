@@ -320,6 +320,7 @@ void FrsCal2Hit::Exec(Option_t* option)
                         sci21r_hits_tofs1s2_pos_selected,
                         id_mhtdc_tof_s1s2,
                         id_mhtdc_beta_s1s2,
+                        id_mhtdc_beta_s1s2_selected,
                         id_mhtdc_aoq_s1s2,
                         id_mhtdc_aoq_corr_s1s2,
                         id_mhtdc_z_music21,
@@ -2568,6 +2569,18 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
         }  
     }
 
+    // EG. Beta s1s2 selected = for same s2 hits in s1s2 and s2s4 with position selection as for s1s2 and s2s4
+    for (int i = 0; i < hits_in_s1s2; i++)
+    {
+        if((sci21l_hits_tofs1s2_pos_selected == sci21l_hits_tofs2s4_pos_selected) && (sci21r_hits_tofs1s2_pos_selected == sci21r_hits_tofs2s4_pos_selected))
+        {
+            for(size_t j = 0; j < sci21l_hits_tofs2s4_pos_selected.size();j++)
+            {
+                id_mhtdc_beta_s1s2_selected.emplace_back(temp_id_mhtdc_beta_s1s2[i]);
+            }
+        }
+    }
+
     //if(hits_in_21lr_tofs1s2_selected == 4)c4LOG(info, " Size of s2s4 vector :" << id_mhtdc_beta_s2s4.size());
 
     // Calculate Z (MUSIC 41 / 42 / 43)
@@ -2958,6 +2971,7 @@ void FrsCal2Hit::FinishEvent()
     id_z43_driftcorr = 0.;
 
     id_mhtdc_beta_s1s2.clear();
+    id_mhtdc_beta_s1s2_selected.clear();
     id_mhtdc_tof_s1s2.clear();
     id_mhtdc_aoq_s1s2.clear();
     id_mhtdc_aoq_corr_s1s2.clear();
