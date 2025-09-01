@@ -76,9 +76,15 @@ class LisaCal2Hit : public FairTask
 
         float gamma_after1 = 0.;
         float z_val = 0;
+
         float beta_trans = 0;
         float beta_trans_after1 = 0;
+        float beta_trans_after2 = 0;
+        float beta_trans_after3 = 0;
+        float beta_trans_after4 = 0;
+        float beta_trans_after5 = 0;
         float beta_after1 = -999.;
+
         int noReaction = -5;
         float beta;
         float gamma;
@@ -94,9 +100,13 @@ class LisaCal2Hit : public FairTask
         float z_diff_21_lisa1;
         float z_diff_lisa1_41;
         float A_MeV_1;
+        float z_diff_lisa1_lisa2;
+        float z_diff_lisa2_41;
+        float A_MeV_2;
 
         int globalReactions;
         int lisaReaction = -5;
+        int layer1_reaction = -5;
 
         std::vector<Float_t> aoq_i;
         std::vector<Float_t> aoq_f;
@@ -113,6 +123,7 @@ class LisaCal2Hit : public FairTask
         std::vector<Float_t> sci21l_s2s4_selected;
         std::vector<Float_t> sci21r_s2s4_selected;
 
+        std::vector<Float_t> copy_beta0;
         std::vector<Float_t> beta0;
         std::vector<Float_t> beta1;
         std::vector<Float_t> beta2;
@@ -133,7 +144,9 @@ class LisaCal2Hit : public FairTask
         std::vector<Float_t> beta_en5;
 
         std::vector<Int_t> xpos_1;
+        std::vector<Int_t> xpos_2;
         std::vector<Int_t> ypos_1;
+        std::vector<Int_t> ypos_2;
         std::vector<Int_t> thickness_1;
         std::vector<Int_t> thickness_2;
 
