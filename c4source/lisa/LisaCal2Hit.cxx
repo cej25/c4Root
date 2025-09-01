@@ -193,7 +193,9 @@ void LisaCal2Hit::Exec(Option_t* option)
             }
         }
         
-    }            
+    }
+
+    c4LOG(info, "EVENT");
 
     for (auto const & lisaCalItem : *lisaCalArray)
     {          
@@ -457,13 +459,13 @@ void LisaCal2Hit::Exec(Option_t* option)
             lisaReaction = 0;
             globalReactions = 0;
 
-            z_lisa_1_temp.clear();
+            // z_lisa_1_temp.clear();
             z_lisa_2_temp.clear();
             z_lisa_3_temp.clear();
             z_lisa_4_temp.clear();
             z_lisa_5_temp.clear();
 
-            z_lisa_1.clear();
+            // z_lisa_1.clear();
             z_lisa_2.clear();
             z_lisa_3.clear();
             z_lisa_4.clear();
@@ -504,11 +506,13 @@ void LisaCal2Hit::Exec(Option_t* option)
 
 void LisaCal2Hit::FinishEvent()
 {
-
+    m_layer1 = 0;
     layer1_reaction = 0;
     gamma_i.clear();
     gamma_f.clear();
     beta_en_i.clear();
+    z_lisa_1_temp.clear();
+    z_lisa_1.clear();
 }
 
 void LisaCal2Hit::FinishTask()
