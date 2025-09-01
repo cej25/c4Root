@@ -253,6 +253,7 @@ void LisaCal2Hit::Exec(Option_t* option)
 
                             //  Calibrate LISA in Z
                             de_dx_corr = slope_z * (1.f / (beta0[i] * beta0[i])) + intercept_z;
+                            //if (de_dx_corr < 0) c4LOG(info, " cut ");
                             if (de_dx_corr > 0.f)
                             {
                                 z_val = frs->primary_z * std::sqrt(de_dx / de_dx_corr);
@@ -350,9 +351,9 @@ void LisaCal2Hit::Exec(Option_t* option)
 
                             // Remove impossible values of z lisa or impossible z21 - zlisa - z41 event
                             // Add some tolerance
-                            c4LOG(info, "a");
+                            c4LOG(info, " Z1 : " << z_lisa_1.size() << " Z1temp : " << z_lisa_1_temp.size() << " Z2 temp : " << z_lisa_2_temp.size() );
                             if ( std::abs(z_i[i] - z_lisa_2_temp[i]) > 6) return; //cleans the positive signals
-                            if ( z_lisa_2_temp[i] > z_lisa_1[i] ) return;
+                            if ( z_lisa_2_temp[i] > z_i[i] ) return;
                             c4LOG(info, "b");
                             z_lisa_2.emplace_back(z_lisa_2_temp[i]);
 
