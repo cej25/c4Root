@@ -45,6 +45,10 @@ void LisaHitItem::SetAll(uint64_t wr,
                         std::vector<float> z,
                         std::vector<float> b0,
                         std::vector<float> b1,
+                        std::vector<float> b2,
+                        std::vector<float> b3,
+                        std::vector<float> b4,
+                        std::vector<float> b5,
                         uint64_t evt_t,
                         uint64_t ch_t,
                         uint64_t evtno,
@@ -76,6 +80,10 @@ void LisaHitItem::SetAll(uint64_t wr,
     z_lisa = z;
     beta0 = b0;
     beta1 = b1;
+    beta2 = b2;
+    beta3 = b3;
+    beta4 = b4;
+    beta5 = b5;
     board_event_time = evt_t;
     ch_event_time = ch_t;
     event_no = evtno;
@@ -112,6 +120,10 @@ void LisaHitItem::Reset()
     z_lisa = {};
     beta0 = {};
     beta1 = {};
+    beta2 = {};
+    beta3 = {};
+    beta4 = {};
+    beta5 = {};
     board_event_time = 0;
     ch_event_time = 0;
     pileup = 0;

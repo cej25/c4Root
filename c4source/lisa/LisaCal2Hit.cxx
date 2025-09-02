@@ -195,8 +195,6 @@ void LisaCal2Hit::Exec(Option_t* option)
         
     }
 
-    c4LOG(info, "EVENT");
-
     for (auto const & lisaCalItem : *lisaCalArray)
     {          
 
@@ -217,9 +215,6 @@ void LisaCal2Hit::Exec(Option_t* option)
             Float_t x_lisa_tpc22_23 = (a_focs2 / 1000. * dist_LISA_focS2) + x_focs2;
             Float_t y_lisa_tpc22_23 = (b_focs2 / 1000. * dist_LISA_focS2) + y_focs2;
 
-            // int xpos_beam = -1;
-            // int ypos_beam = -1;
-
             int x_origin = -14; // TODO move to lisa config
             int y_origin = -6.7;
             int x_step = 6;
@@ -227,8 +222,6 @@ void LisaCal2Hit::Exec(Option_t* option)
 
             int xpos_beam = (std::floor((x_lisa_tpc22_23 - x_origin) / x_step));
             int ypos_beam = (std::floor((y_lisa_tpc22_23 - y_origin) / y_step));
-
-            //c4LOG(info, " size of beta: " << beta_i.size() << " size of beta s: " << beta0.size());
 
             if (lisa_config->ZCalibrationLoaded() && (sci21l_s1s2_selected == sci21l_s2s4_selected) && (sci21r_s1s2_selected == sci21r_s2s4_selected))
             {
@@ -270,11 +263,12 @@ void LisaCal2Hit::Exec(Option_t* option)
                             // Add some tolerance
                             if ( std::abs(z_i[i] - z_lisa_1_temp[i]) > 6) return; //cleans the positive signals
                             if ( z_lisa_1_temp[i] > z_i[i]+ 2 ) return;
-                            
-                            z_lisa_1.emplace_back(z_lisa_1_temp[i]);
-                            z_diff_21_lisa1 = z_i[i] - z_lisa_1[i];
-                            z_diff_lisa1_41 = z_lisa_1[i] - z_f[i];
+                            //if ( z_lisa_1_temp[i] > z_f[i] + 4 ) return; //!!this exclude reactions between5 lisa and s4
 
+                            z_lisa_1.emplace_back(z_lisa_1_temp[i]);
+                            z_lisa.emplace_back(z_lisa_1_temp[i]);
+                            z_diff_21_lisa1 = z_i[i] - z_lisa[i];
+                
                             // Calculate beta after layer 1
                             //      To calculate beta after layer 1, we need A after layer 1. The question now is: did we have a reaction in layer 1?
                             //      To know this, we compare z_i (21) with z (lisa) and z (41), and Aoq(s1s2)*z(21) with Aoq(s2s4)*z(41)
@@ -290,8 +284,8 @@ void LisaCal2Hit::Exec(Option_t* option)
                             else if (globalReactions == 1)
                             {
                                 // If there is a reaction between s1s2 and s2s4:
-                                // Has this reaction happened in this layer?
-                                if( z_diff_21_lisa1 < 1 + 1.5) 
+                                // Has this reaction happened in this layer? 
+                                if( z_diff_21_lisa1 < 1 + 1.5) // z21 - zlisa1 < 1.5 (for some tolerance) + current shift of 1
                                 {
                                     // If no reaction happens, use A and Z from FRS before LISA
                                     A_MeV_1 = A_i * conv_coeff;
@@ -301,7 +295,6 @@ void LisaCal2Hit::Exec(Option_t* option)
                                 }else if ( z_diff_21_lisa1 >= 1 + 1.5)
                                 {
                                     // If the reaction happened in this layer, calculate new A
-                                    // TODO? : flag for what kind of reaction #p,#n
                                     N_after1 = std::round(aoq_f[i]*std::round(z_f[i])) - std::round(z_f[i]);
                                     A_after1 = z_lisa_1[i] + N_after1;
                                     A_MeV_1 = A_after1 * conv_coeff;
@@ -314,7 +307,7 @@ void LisaCal2Hit::Exec(Option_t* option)
                                 }
                             }
 
-                            // Calculate gamma and beta after layer 1 with the A calculate for that event
+                            // Calculate gamma and beta after layer 1 with the A calculated for that event
                             if(A_MeV_1 == 0) {c4LOG(info, " A = 0 ???" << " noReaction : " << noReaction);}
                             if(A_MeV_1 > 0 )
                             {
@@ -353,52 +346,70 @@ void LisaCal2Hit::Exec(Option_t* option)
 
                             // Remove impossible values of z lisa or impossible z21 - zlisa - z41 event
                             // Add some tolerance
-                            c4LOG(info, " Z1 : " << z_lisa_1.size() << " Z1temp : " << z_lisa_1_temp.size() << " Z2 temp : " << z_lisa_2_temp.size() );
                             if ( std::abs(z_i[i] - z_lisa_2_temp[i]) > 6) return; //cleans the positive signals
                             if ( z_lisa_2_temp[i] > z_i[i] ) return;
-                            c4LOG(info, "b");
+                            //if ( z_lisa_1_temp[i] > z_f[i] + 4 ) return; //!!this exclude reactions between lisa5 and s4
+                            //if ( z_lisa_2[i] > z_lisa_1[i] + 0.5) return;
                             z_lisa_2.emplace_back(z_lisa_2_temp[i]);
+                            z_lisa.emplace_back(z_lisa_2[i]);
 
-                            c4LOG(info, "c");
                             z_diff_lisa1_lisa2 = z_lisa_1[i] - z_lisa_2[i];
-                            c4LOG(info, "d");
                             z_diff_lisa2_41 = z_lisa_2[i] - z_f[i];
                             
                             // Check if there is reaction
                             if(globalReactions == 0) 
                             {
                                 // If no reaction, use A and Z from FRS before LISA
-                                A_MeV_1 = A_i * conv_coeff;
+                                A_MeV_2 = A_i * conv_coeff;
                             } 
-                            else if (globalReactions == 1)
+                            else if (globalReactions == 1 && layer1_reaction == 1)
                             {
-                                // If there is a reaction between s1s2 and s2s4:
+                                // If there is a reaction between s1s2 and s2s4
                                 // Did this happened in previous layer?
-                                // IF NOT, has the reaction happened in this layer?
-                                if( layer1_reaction == 1 && z_diff_lisa1_lisa2 >= 1.5 ) c4LOG(info, " 2 reactions??");
-                                // if( z_diff_lisa1_lisa2 < 1.5 ) 
-                                // {
-                                //     // If no reaction happens, use A and Z from FRS before LISA
-                                //     A_MeV_1 = A_i * conv_coeff;
-                                //     lisaReaction = 0;
+                                // IF YES, there should be no reactions here
 
-                                // }else if ( z_diff_21_lisa1 >= 1.5)
-                                // {
-                                //     // If the reaction happened in this layer, calculate new A
-                                //     // TODO? : flag for what kind of reaction #p,#n
-                                //     N_after1 = std::round(aoq_f[i]*std::round(z_f[i])) - std::round(z_f[i]);
-                                //     A_after1 = z_lisa_1[i] + N_after1;
-                                //     A_MeV_1 = A_after1 * conv_coeff;
-                                //     c4LOG(info, " Reaction happened in Layer :" << layer_id << " Z, N, A before :" << std::round(z_i[i]) << "," << N_i << "," << A_i << " Z,N,A after :" << std::round(z_f[i]) << "," << N_after1 << "," << A_after1 );
-                                //     c4LOG(info, " AoQ before: " << aoq_i[i] << " AoQ after : " << aoq_f[i]);
-                                //     c4LOG(info, " --- ");
-                                    
-                                //     lisaReaction = 1;
-                                // }
+                                // Use A_MeV calculated in the layer1 step
+                                A_MeV_2 = A_MeV_1;
+
+                                //if z2 == z1 add some flag or do something to see if any problem
+
                             }
+                            else if (globalReactions == 1 && layer1_reaction == 0)
+                            {
+                                // If the reaction did not happened in tha previous layer
+                                // Check if it happened in this layer
 
+                                if( z_diff_lisa1_lisa2 < 1.5 ) // zlisa1 - zlisa2 < 1.5 (for some tolerance)
+                                {
+                                    // If no reaction happens, use A and Z from FRS before LISA
+                                    A_MeV_2 = A_i * conv_coeff;
+                                    lisaReaction = 0;
+
+                                }else if ( z_diff_lisa1_lisa2 >= 1.5)
+                                {
+                                    // If the reaction happened in this layer, calculate new A
+                                    N_after2 = std::round(aoq_f[i]*std::round(z_f[i])) - std::round(z_f[i]);
+                                    A_after2 = z_lisa_2[i] + N_after2;
+                                    A_MeV_2 = A_after2 * conv_coeff;
+                                    c4LOG(info, " Reaction happened in Layer :" << layer_id << " Z, N, A before :" << std::round(z_i[i]) << "," << N_i << "," << A_i << " Z,N,A after :" << std::round(z_f[i]) << "," << N_after1 << "," << A_after1 );
+                                    c4LOG(info, " AoQ before: " << aoq_i[i] << " AoQ after : " << aoq_f[i]);
+                                    c4LOG(info, " --- ");
+                                    
+                                    lisaReaction = 1;
+                                }
+                            }
                             // Calculate beta after layer2
+                            if(A_MeV_2 == 0) {c4LOG(info, " A = 0 ???" << " noReaction : " << noReaction);}
+                            if(A_MeV_2 > 0 )
+                            {
+                                gamma_after2 = 1.f + beta_trans_after2 / A_MeV_2;
+                                float inv_g2 = 1.f / (gamma_after2 * gamma_after2);
+                                float arg = 1.f - inv_g2;
+                                if (arg >= 0.f) beta_after2 = std::sqrt(arg);
+                            } 
 
+                            beta2.emplace_back(beta_after2);
+                            gamma2.emplace_back(gamma_after2);
 
                             m_layer2 = 1;
 
@@ -442,9 +453,13 @@ void LisaCal2Hit::Exec(Option_t* option)
                 lisaCalItem.Get_energy_MWD_GM(),
                 lisaCalItem.Get_de_dx(),
                 lisaCalItem.Get_de_dx_GM(),
-                z_lisa_1,
+                z_lisa,
                 copy_beta0,
                 beta1,
+                beta2,
+                beta3,
+                beta4,
+                beta5,
                 lisaCalItem.Get_board_event_time(),
                 lisaCalItem.Get_channel_event_time(),
                 EVTno,
@@ -459,24 +474,13 @@ void LisaCal2Hit::Exec(Option_t* option)
             lisaReaction = 0;
             globalReactions = 0;
 
-            // z_lisa_1_temp.clear();
-            z_lisa_2_temp.clear();
-            z_lisa_3_temp.clear();
-            z_lisa_4_temp.clear();
-            z_lisa_5_temp.clear();
-
-            // z_lisa_1.clear();
-            z_lisa_2.clear();
-            z_lisa_3.clear();
-            z_lisa_4.clear();
-            z_lisa_5.clear();
-
             gamma1.clear();
             gamma2.clear();
             gamma3.clear();
             gamma4.clear();
             gamma5.clear();
 
+            z_lisa.clear();
             copy_beta0.clear();
             beta1.clear();
             beta2.clear();
@@ -507,12 +511,30 @@ void LisaCal2Hit::Exec(Option_t* option)
 void LisaCal2Hit::FinishEvent()
 {
     m_layer1 = 0;
+    m_layer2 = 0;
+    m_layer3 = 0;
+    m_layer4 = 0;
+    m_layer5 = 0;
     layer1_reaction = 0;
+    layer2_reaction = 0;
+    layer3_reaction = 0;
+    layer4_reaction = 0;
+    layer5_reaction = 0;
     gamma_i.clear();
     gamma_f.clear();
     beta_en_i.clear();
+
     z_lisa_1_temp.clear();
+    z_lisa_2_temp.clear();
+    z_lisa_3_temp.clear();
+    z_lisa_4_temp.clear();
+    z_lisa_5_temp.clear();
+
     z_lisa_1.clear();
+    z_lisa_2.clear();
+    z_lisa_3.clear();
+    z_lisa_4.clear();
+    z_lisa_5.clear();
 }
 
 void LisaCal2Hit::FinishTask()
