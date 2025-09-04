@@ -136,7 +136,7 @@ void setup(TFRSParameter* frs,
   //id->mhtdc_length_sc2142 =	127.2291434	*0.299792458 ;// updated 	2025/02/21
   //id->mhtdc_length_sc2241 =	122.4657914	*0.299792458 ;// updated 	2025/02/21
 
-  sci->mhtdc_offset_41_21  =  183.4148170 - 0.010343; //183.4148170 + 0.010343; //Updated 09/05/2025 ns update //G-22-103 56Fe
+  sci->mhtdc_offset_41_21  =  183.4148170 + 0.010343; //183.4148170 + 0.010343; //Updated 09/05/2025 ns update //G-22-103 56Fe
   sci->mhtdc_offset_42_21  =  183.16 -2.625508775	-0.3117607688 + 2.758419; // updated 	2025/05/09
   sci->mhtdc_offset_41_22  =  240.33 -0.5586602465 +0.06468333655	; // updated 	2025/02/21
 

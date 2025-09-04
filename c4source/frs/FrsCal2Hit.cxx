@@ -1308,6 +1308,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     // 11 -> 21
     // std::cout << "event " << std::endl;
     c4LOG(info,"TOF 2111");
+    c4LOG(info, " hits in 21l :" << hits_in_21l_selected);
     //c4LOG(info, " size of mhtdc_sci11lr_x_selected : " << mhtdc_sci11lr_x_selected.size());
     hits_in_tof2111_selected = hits_in_21lr_selected * hits_in_11lr_selected;
     int count = 0;
@@ -1345,11 +1346,11 @@ void FrsCal2Hit::ProcessSci_MHTDC()
             }
         }
     }
-    //c4LOG(info,"hits size");
     hits_in_11l_tofs1s2_selected = sci11l_hits_tofs1s2_selected.size();
     hits_in_11r_tofs1s2_selected = sci11r_hits_tofs1s2_selected.size();  
     hits_in_21l_tofs1s2_selected = sci21l_hits_tofs1s2_selected.size();  //EG this was 11 by mistake, instead of 21
     hits_in_21r_tofs1s2_selected = sci21r_hits_tofs1s2_selected.size();  //EG this was 11 by mistake
+    c4LOG(info," hits in tof2111 size: " << hits_in_11l_tofs1s2_selected);
 
     // if(hits_in_11l == 16  ) c4LOG(info, " - TOF2111 selection ::");
     // if(hits_in_11l == 16  ) c4LOG(info, " 11 L-R size : " << sci11l_hits_tofs1s2_selected.size() << " , " << sci11r_hits_tofs1s2_selected.size() ); 
@@ -1361,7 +1362,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     // }
 
     //c4LOG(info,"hits calc");
-    //c4LOG(info, " hits_in_21l_tofs1s2_selected :" << hits_in_21l_tofs1s2_selected);
+    c4LOG(info, " hits_in_21l_tofs1s2_selected :" << hits_in_21l_tofs1s2_selected);
     hits_in_11lr_tofs1s2_selected = hits_in_11l_tofs1s2_selected;
     hits_in_21lr_tofs1s2_selected = hits_in_21l_tofs1s2_selected;
 
@@ -1380,6 +1381,8 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     count = 0;
     for (int i = 0; i < hits_in_41l_selected; i++)
     {
+        c4LOG(info, " hits in 21l : " << hits_in_21l_tofs1s2_selected);
+        c4LOG(info, " hits in 21lr selected : " << mhtdc_sci21lr_dt_selected.size());
         for (int k = 0; k < hits_in_21l_tofs1s2_selected; k++) 
         {
             //count = i * hits_in_41r_selected * hits_in_21l_selected * hits_in_21r_selected + j * hits_in_21l_selected * hits_in_21r_selected + k * hits_in_21r_selected + l;
