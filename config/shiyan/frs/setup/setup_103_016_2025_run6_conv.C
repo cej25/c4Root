@@ -136,7 +136,7 @@ void setup(TFRSParameter* frs,
   //id->mhtdc_length_sc2142 =	127.2291434	*0.299792458 ;// updated 	2025/02/21
   //id->mhtdc_length_sc2241 =	122.4657914	*0.299792458 ;// updated 	2025/02/21
 
-  sci->mhtdc_offset_41_21  =  183.4148170 + 0.010343; //183.4148170 + 0.010343; //Updated 09/05/2025 ns update //G-22-103 56Fe
+  sci->mhtdc_offset_41_21  =  183.4148170 - 4.010343; //183.4148170 - 4.010343; //183.4148170 + 0.010343; //Updated 09/05/2025 ns update //G-22-103 56Fe
   sci->mhtdc_offset_42_21  =  183.16 -2.625508775	-0.3117607688 + 2.758419; // updated 	2025/05/09
   sci->mhtdc_offset_41_22  =  240.33 -0.5586602465 +0.06468333655	; // updated 	2025/02/21
 
@@ -950,7 +950,7 @@ void setup(TFRSParameter* frs,
    * SCI11 [0,1,2,3] = [a,b,c,d]
    */
 //  sci->mhtdc_offset_21_11[0] = 142.5-16.35;//estimated from pulser data //roughly calibrated 08.02.25
-  sci->mhtdc_offset_21_11[0] = 142.5 - 16.35 + 1.093576878 - 2.5343; //142.5-16.35+1.093576878 - 2.2343; //correction added online, 2025/May/09
+  sci->mhtdc_offset_21_11[0] = 142.5 - 16.35 + 1.093576878 - 5.2343; //142.5 - 16.35 + 1.093576878 - 5.2343; //142.5-16.35+1.093576878 - 2.2343; //correction added online, 2025/May/09
   sci->mhtdc_offset_21_11[1] = 142.5-28;//estimated from pulser data and delays seen on scope
   sci->mhtdc_offset_21_11[2] = 142.5-28;
   sci->mhtdc_offset_21_11[3] = 142.5+31;
