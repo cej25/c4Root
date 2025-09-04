@@ -313,6 +313,7 @@ void FrsMultiHitItem::SetS1S2(std::vector<Float_t> s1x,
                     std::vector<Float_t> beta_s1s2_selected,
                     std::vector<Float_t> AoQ_s1s2,
                     std::vector<Float_t> AoQ_corr_s1s2,
+                    std::vector<Float_t> AoQ_corr_s1s2_selected,
                     std::vector<Float_t> z21,
                     std::vector<Float_t> z22)
 {
@@ -327,6 +328,7 @@ void FrsMultiHitItem::SetS1S2(std::vector<Float_t> s1x,
     fID_beta_s1s2_selected_mhtdc = beta_s1s2_selected;
     fID_AoQ_s1s2_mhtdc = AoQ_s1s2;
     fID_AoQ_corr_s1s2_mhtdc = AoQ_corr_s1s2;
+    fID_AoQ_corr_s1s2_selected_mhtdc = AoQ_corr_s1s2_selected;
     fID_z21_mhtdc = z21;
     fID_z22_mhtdc = z22;
 }
@@ -344,8 +346,10 @@ void FrsMultiHitItem::SetS2S4(std::vector<Float_t> s2x_s2s4,
             std::vector<Float_t> sci21r_s2s4_selected,
             std::vector<Float_t> tof_s2s4,
             std::vector<Float_t> beta_s2s4,
+            std::vector<Float_t> beta_s2s4_selected,
             std::vector<Float_t> AoQ_s2s4,
             std::vector<Float_t> AoQ_corr_s2s4,
+            std::vector<Float_t> AoQ_corr_s2s4_selected,
             std::vector<Float_t> z41,
             std::vector<Float_t> z42,
             std::vector<Float_t> z43,
@@ -360,8 +364,10 @@ void FrsMultiHitItem::SetS2S4(std::vector<Float_t> s2x_s2s4,
     fID_sc21r_tofs2s4_pos_selected_mhtdc = sci21r_s2s4_selected;
     fID_tof_s2s4_mhtdc = tof_s2s4;
     fID_beta_s2s4_mhtdc = beta_s2s4;
+    fID_beta_s2s4_selected_mhtdc = beta_s2s4_selected;
     fID_AoQ_s2s4_mhtdc = AoQ_s2s4;
     fID_AoQ_corr_s2s4_mhtdc = AoQ_corr_s2s4;
+    fID_AoQ_corr_s2s4_selected_mhtdc = AoQ_corr_s2s4_selected;
     fID_z41_mhtdc = z41;
     fID_z42_mhtdc = z42;
     fID_z43_mhtdc = z43;

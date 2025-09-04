@@ -18,8 +18,8 @@ void frs_config(const std::string& config_path)
     TFrsConfiguration::Set_scilr_mhtdc_limit(20);
 
     // Ranges for the tof 
-    TFrsConfiguration::Set_tof_limit_2111(60,100); 
-    TFrsConfiguration::Set_tof_limit_4121(150,250); 
+    TFrsConfiguration::Set_tof_limit_2111(60,400); //60,100
+    TFrsConfiguration::Set_tof_limit_4121(150,450); //150,250
     TFrsConfiguration::Set_tof_limit_4122(0,400);
     TFrsConfiguration::Set_tof_limit_4221(0,400);
     TFrsConfiguration::Set_tof_limit_4321(0,400);

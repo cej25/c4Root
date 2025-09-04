@@ -103,7 +103,7 @@ InitStatus LisaCal2Hit::Init()
 void LisaCal2Hit::Exec(Option_t* option)
 {
     
-    //c4LOG(info, " ::: start of event");
+    c4LOG(info, " ::: LISA start of event");
     lisaHitArray->clear();
     if (frsHitArray->size() <= 0 || lisaCalArray->size() <= 0 || multihitArray->size() <= 0) return;  
 
@@ -116,6 +116,8 @@ void LisaCal2Hit::Exec(Option_t* option)
     beta_f = multihitItem.Get_ID_beta_s2s4_mhtdc();
     aoq_i = multihitItem.Get_ID_AoQ_s1s2_mhtdc();
     aoq_f = multihitItem.Get_ID_AoQ_s2s4_mhtdc();
+    aoq_i_s = multihitItem.Get_ID_AoQ_corr_s1s2_selected_mhtdc();
+    aoq_f_s = multihitItem.Get_ID_AoQ_corr_s2s4_selected_mhtdc();
     z_i = multihitItem.Get_ID_z21_mhtdc();
     z_f = multihitItem.Get_ID_z41_mhtdc();
     beta0 = multihitItem.Get_ID_beta_s1s2_selected_mhtdc();
@@ -150,8 +152,15 @@ void LisaCal2Hit::Exec(Option_t* option)
         for(size_t i = 0; i < sci21l_s2s4_selected.size(); i++)
         {
 
+            beta_before_lisa_temp = beta0[i]*1.10803131 - 0.08726895; // For primary - run6
+            //beta_before_lisa_temp = beta0[i]*1.06624748 - 0.05737375; // For primary - run18
+            //beta_before_lisa_temp = beta0[i]*1.09924082 - 0.0812071; // For primary - run19
+
+            beta_before_lisa.emplace_back(beta_before_lisa_temp);
+            copy_beta_before_lisa.emplace_back(beta_before_lisa_temp);
+            
             // Calculate Gamma initial
-            gamma = 1.f / sqrt(1.f - TMath::Power(beta_i[i], 2));
+            gamma = 1.f / sqrt(1.f - TMath::Power(beta_before_lisa[i], 2));
             gamma_i.emplace_back(gamma);
             
             // Calculate beta in MeV
@@ -170,19 +179,20 @@ void LisaCal2Hit::Exec(Option_t* option)
 
             // Remove junk : Zf > Zi or Nf > Ni 
             //               Zi > Zf + 5 regardless from N which might be screwed up by the AoQ*Z(wrong) calculation
-            double zDiff = std::round(z_diff_21_41);
-            double nDiff = std::round(N_i - N_f);
-            if (zDiff < 4 || nDiff < 7) return;
-            if (std::abs(zDiff) > 9) return;   // 5 + 4
-            if (std::abs(nDiff) > 12) return;  // 5 + 7
+            //               Zi > z_primary
+            double nDiff = N_i - N_f;
+            if (z_diff_21_41 < -0.5 || nDiff < -0.5) return;
+            if (std::abs(z_diff_21_41) > 7.5) return;   
+            if (std::abs(nDiff) > (7 + 0.5)) return; 
+            if (z_i[i] > frs->primary_z + 1) return;
 
             // Global reaction flag
-            if ( (zDiff >= 4 && zDiff <= 5) && (nDiff >= 7 && nDiff <= 8) )
+            if ( (z_diff_21_41 >= -0.5 && z_diff_21_41 < 0.5) && (nDiff >= (-0.5+0.5) && nDiff < (0.5+0.5)) )
             {
                 // No Reactions
                 globalReactions = 0;
             }
-            else if (zDiff > 5 || nDiff > 8)
+            else if (z_diff_21_41 >= 0.5 || nDiff >= (0.5+0.5))
             {
                 // Reactions
                 globalReactions = 1;
@@ -235,9 +245,7 @@ void LisaCal2Hit::Exec(Option_t* option)
 
                     for (size_t i = 0; i < sci21l_s2s4_selected.size(); i++)
                     {
-         
                         // Gate on lisa position
-                        //if (std::abs(xpos_beam - xpos) > 1 || std::abs(ypos_beam - ypos) > 1) c4LOG(info, " x,ylisa : " << xpos << " , " << ypos << " x,y beam :" << xpos_beam << " ," << ypos_beam);
                         if (std::abs(xpos_beam - xpos) > 1 || std::abs(ypos_beam - ypos) > 1) return;
                         if(layer_id ==1)
                         {
@@ -247,8 +255,7 @@ void LisaCal2Hit::Exec(Option_t* option)
                             thickness_1.emplace_back(thickness);
 
                             //  Calibrate LISA in Z
-                            de_dx_corr = slope_z * (1.f / (beta0[i] * beta0[i])) + intercept_z;
-                            //if (de_dx_corr < 0) c4LOG(info, " cut ");
+                            de_dx_corr = slope_z * (1.f / (beta_before_lisa[i] * beta_before_lisa[i])) + intercept_z;
                             if (de_dx_corr > 0.f)
                             {
                                 z_val = frs->primary_z * std::sqrt(de_dx / de_dx_corr);
@@ -261,10 +268,9 @@ void LisaCal2Hit::Exec(Option_t* option)
 
                             // Remove impossible values of z lisa or impossible z21 - zlisa - z41 event
                             // Add some tolerance
-                            if ( std::abs(z_i[i] - z_lisa_1_temp[i]) > 6) return; //cleans the positive signals
-                            if ( z_lisa_1_temp[i] > z_i[i]+ 2 ) return;
-                            //if ( z_lisa_1_temp[i] > z_f[i] + 4 ) return; //!!this exclude reactions between5 lisa and s4
-
+                            if ( std::abs(z_i[i] - z_lisa_1_temp[i]) > 6) return;   // cleans the positive signals
+                            if ( z_lisa_1_temp[i] > z_i[i]+ 0.5 ) return;           // z lisa can't be greater than z21
+                            // flag for reactions before lisa
                             z_lisa_1.emplace_back(z_lisa_1_temp[i]);
                             z_lisa.emplace_back(z_lisa_1_temp[i]);
                             z_diff_21_lisa1 = z_i[i] - z_lisa[i];
@@ -284,25 +290,26 @@ void LisaCal2Hit::Exec(Option_t* option)
                             else if (globalReactions == 1)
                             {
                                 // If there is a reaction between s1s2 and s2s4:
-                                // Has this reaction happened in this layer? 
-                                if( z_diff_21_lisa1 < 1 + 1.5) // z21 - zlisa1 < 1.5 (for some tolerance) + current shift of 1
+                                // Has this reaction happened BEFORE this layer? 
+                                if( z_diff_21_lisa1 < 0.7) // z21 - zlisa1 < 1.2 (for some tolerance) - 0.5 shift
                                 {
-                                    // If no reaction happens, use A and Z from FRS before LISA
+                                    // If no reaction happened, use A and Z from FRS before LISA
                                     A_MeV_1 = A_i * conv_coeff;
                                     lisaReaction = 0;
                                     layer1_reaction = 0;
 
-                                }else if ( z_diff_21_lisa1 >= 1 + 1.5)
+                                }else if ( z_diff_21_lisa1 >= 0.7 )
                                 {
-                                    // If the reaction happened in this layer, calculate new A
-                                    N_after1 = std::round(aoq_f[i]*std::round(z_f[i])) - std::round(z_f[i]);
-                                    A_after1 = z_lisa_1[i] + N_after1;
-                                    A_MeV_1 = A_after1 * conv_coeff;
-                                    c4LOG(info, " Reaction happened in Layer :" << layer_id << " Z, N, A before :" << std::round(z_i[i]) << "," << N_i << "," << A_i << " Z,N,A after :" << std::round(z_f[i]) << "," << N_after1 << "," << A_after1 );
-                                    c4LOG(info, " AoQ before: " << aoq_i[i] << " AoQ after : " << aoq_f[i]);
-                                    c4LOG(info, " --- ");
+                                    // If a reaction happened before this layer, calculate new A
+                                    N_1 = std::round(aoq_f[i]*std::round(z_f[i])) - std::round(z_f[i]);
+                                    A_1 = z_lisa_1[i] + N_1;
+                                    A_MeV_1 = A_1 * conv_coeff;
+                                    // c4LOG(info, " Reaction happened before Layer :" << layer_id << " Z, N, A s1s2 :" << std::round(z_i[i]) << "," << std::round(N_i) << "," << std::round(A_i) << " Z,N,A s2s4 :" << std::round(z_f[i]) << "," << std::round(N_1) << "," << std::round(A_1) );
+                                    // c4LOG(info, " Z 21: " << z_i[i] << " ZL1 : " << z_lisa_1[i] << " Z 41 :" << z_f[i]);
+                                    // c4LOG(info, " AoQ before: " << aoq_i[i] << " AoQ after : " << aoq_f[i]);
+                                    // c4LOG(info, " --- ");
                                     
-                                    lisaReaction = 1;
+                                    lisaReaction = 1; // this is enabled is a reaction happened BEFORE current layer
                                     layer1_reaction = 1;
                                 }
                             }
@@ -315,11 +322,6 @@ void LisaCal2Hit::Exec(Option_t* option)
                                 float inv_g2 = 1.f / (gamma_after1 * gamma_after1);
                                 float arg = 1.f - inv_g2;
                                 if (arg >= 0.f) beta_after1 = std::sqrt(arg);
-                                
-                                //if(beta_after1 >= 0.9) c4LOG(info, " ::: Beta is 1 ::: ");
-                                //if(beta_after1 >= 0.9) c4LOG(info, " gamma before : " << gamma << " gamma after: " << gamma_after1 << " AoQ :" << aoq_i[0] << " A : " << A_MeV/conv_coeff);
-                                //if(beta_after1 >= 0.9) c4LOG(info, " z music : " << static_cast<int>(std::round(z_i[i])) << " z lisa: " << static_cast<int>(std::round(z_lisa_1[i])) << " z diff : " << z_diff);
-
                             } 
 
                             beta1.emplace_back(beta_after1);
@@ -343,18 +345,20 @@ void LisaCal2Hit::Exec(Option_t* option)
                             // Calculate beta in MeV after passing layer 2
                             beta_trans_after2 = beta_trans_after1 - de_dx*thickness;
 
-
                             // Remove impossible values of z lisa or impossible z21 - zlisa - z41 event
                             // Add some tolerance
                             if ( std::abs(z_i[i] - z_lisa_2_temp[i]) > 6) return; //cleans the positive signals
-                            if ( z_lisa_2_temp[i] > z_i[i] ) return;
-                            //if ( z_lisa_1_temp[i] > z_f[i] + 4 ) return; //!!this exclude reactions between lisa5 and s4
-                            //if ( z_lisa_2[i] > z_lisa_1[i] + 0.5) return;
+                            if ( z_lisa_2_temp[i] > z_i[i] + 1 ) return;
+                            if(layer1_reaction == 1) // if there is a reaction in the prev layer, the z in the following layer should not be greater than z41
+                            {
+                                if (z_lisa_2_temp[i] > z_f[i] ) return; //!!this exclude reactions between lisa5 and s4
+                            }
+                            if ( z_lisa_2_temp[i] > z_lisa_1[i] + 0.5) return;
                             z_lisa_2.emplace_back(z_lisa_2_temp[i]);
                             z_lisa.emplace_back(z_lisa_2[i]);
-
                             z_diff_lisa1_lisa2 = z_lisa_1[i] - z_lisa_2[i];
                             z_diff_lisa2_41 = z_lisa_2[i] - z_f[i];
+                            
                             
                             // Check if there is reaction
                             if(globalReactions == 0) 
@@ -362,40 +366,28 @@ void LisaCal2Hit::Exec(Option_t* option)
                                 // If no reaction, use A and Z from FRS before LISA
                                 A_MeV_2 = A_i * conv_coeff;
                             } 
-                            else if (globalReactions == 1 && layer1_reaction == 1)
+                            else if (globalReactions == 1)
                             {
-                                // If there is a reaction between s1s2 and s2s4
-                                // Did this happened in previous layer?
-                                // IF YES, there should be no reactions here
-
-                                // Use A_MeV calculated in the layer1 step
-                                A_MeV_2 = A_MeV_1;
-
-                                //if z2 == z1 add some flag or do something to see if any problem
-
-                            }
-                            else if (globalReactions == 1 && layer1_reaction == 0)
-                            {
-                                // If the reaction did not happened in tha previous layer
-                                // Check if it happened in this layer
-
-                                if( z_diff_lisa1_lisa2 < 1.5 ) // zlisa1 - zlisa2 < 1.5 (for some tolerance)
+                                // Check if it happened before this layer
+                                if( z_diff_lisa1_lisa2 < 1 ) // zlisa1 - zlisa2 < 1.5 (for some tolerance)
                                 {
                                     // If no reaction happens, use A and Z from FRS before LISA
                                     A_MeV_2 = A_i * conv_coeff;
                                     lisaReaction = 0;
+                                    layer2_reaction = 0;
 
-                                }else if ( z_diff_lisa1_lisa2 >= 1.5)
+                                }else if ( z_diff_lisa1_lisa2 >= 1)
                                 {
-                                    // If the reaction happened in this layer, calculate new A
-                                    N_after2 = std::round(aoq_f[i]*std::round(z_f[i])) - std::round(z_f[i]);
-                                    A_after2 = z_lisa_2[i] + N_after2;
-                                    A_MeV_2 = A_after2 * conv_coeff;
-                                    c4LOG(info, " Reaction happened in Layer :" << layer_id << " Z, N, A before :" << std::round(z_i[i]) << "," << N_i << "," << A_i << " Z,N,A after :" << std::round(z_f[i]) << "," << N_after1 << "," << A_after1 );
+                                    // If the reaction happened before this layer, calculate new A
+                                    N_2 = std::round(aoq_f[i]*std::round(z_f[i])) - std::round(z_f[i]);
+                                    A_2 = z_lisa_2[i] + N_2;
+                                    A_MeV_2 = A_2 * conv_coeff;
+                                    c4LOG(info, " Reaction happened before Layer :" << layer_id << " Z, N, A before :" << std::round(z_i[i]) << "," << N_i << "," << A_i << " Z,N,A after :" << std::round(z_f[i]) << "," << N_1 << "," << A_1 );
                                     c4LOG(info, " AoQ before: " << aoq_i[i] << " AoQ after : " << aoq_f[i]);
                                     c4LOG(info, " --- ");
                                     
                                     lisaReaction = 1;
+                                    layer2_reaction = 1;
                                 }
                             }
                             // Calculate beta after layer2
@@ -407,7 +399,6 @@ void LisaCal2Hit::Exec(Option_t* option)
                                 float arg = 1.f - inv_g2;
                                 if (arg >= 0.f) beta_after2 = std::sqrt(arg);
                             } 
-
                             beta2.emplace_back(beta_after2);
                             gamma2.emplace_back(gamma_after2);
 
@@ -415,16 +406,127 @@ void LisaCal2Hit::Exec(Option_t* option)
 
                         }else if(layer_id == 3 && m_layer2 == 1 )
                         {
-                            //c4LOG(info, " In layer 3 ");
+                            // Calibrate for Z
+                            xpos_3.emplace_back(xpos);
+                            ypos_3.emplace_back(ypos);
+                            thickness_3.emplace_back(thickness);
+                            //  Calibrate LISA in Z
+                            de_dx_corr = slope_z * (1.f / (beta_after2 * beta_after2)) + intercept_z;
+                            if (de_dx_corr > 0.f)
+                            {
+                                z_val = frs->primary_z * std::sqrt(de_dx / de_dx_corr);
+                                z_lisa_3_temp.emplace_back(z_val + id->offset_z21); 
+                            }
+
+                            // Calculate beta in MeV after passing layer 2
+                            beta_trans_after3 = beta_trans_after2 - de_dx*thickness;
+
+                            // Remove impossible values of z lisa or impossible z21 - zlisa - z41 event
+                            // Add some tolerance
+                            if ( std::abs(z_i[i] - z_lisa_3_temp[i]) > 6) return; //cleans the positive signals
+                            if ( z_lisa_3_temp[i] > z_i[i] + 1 ) return;
+                            if(layer1_reaction == 1 || layer2_reaction == 1) // if there is a reaction in the prev layer, the z in the following layer should not be greater than z41
+                            {
+                                if (z_lisa_3_temp[i] > z_f[i] ) return; //!!this exclude reactions between lisa5 and s4
+                            }
+                            if ( z_lisa_3_temp[i] > z_lisa_2[i] + 0.5) return;
+
+                            z_lisa_3.emplace_back(z_lisa_3_temp[i]);
+                            z_lisa.emplace_back(z_lisa_3[i]);
+                            z_diff_lisa2_lisa3 = z_lisa_2[i] - z_lisa_3[i];
+                            z_diff_lisa3_41 = z_lisa_3[i] - z_f[i];
+
+                            // Check if there is reaction
+                            if(globalReactions == 0) 
+                            {
+                                // If no reaction, use A and Z from FRS before LISA
+                                A_MeV_3 = A_i * conv_coeff;
+                            } 
+                            else if (globalReactions == 1 && ( layer2_reaction == 1 ))
+                            {
+                                // If there is a reaction between s1s2 and s2s4
+                                // Did this happened in previous layer?
+                                // IF YES, there should be no reactions here
+
+                                // Use A_MeV calculated in the layer1 step
+                                A_MeV_3 = A_MeV_2;
+
+                                // TODO if z2 != z1 add some flag or do something to see if any problem
+
+                            }
+                            else if (globalReactions == 1 && ( layer2_reaction == 0 ))
+                            {
+                                // If the reaction did not happened earlier
+                                // Check if it happened before this layer
+
+                                if( z_diff_lisa2_lisa3 < 1 ) // zlisa2 - zlisa3 < 1.5 (for some tolerance)
+                                {
+                                    // If no reaction happens, use A and Z from FRS before LISA
+                                    A_MeV_3 = A_i * conv_coeff;
+                                    lisaReaction = 0;
+                                    layer3_reaction = 0;
+
+                                }else if ( z_diff_lisa2_lisa3 >= 1)
+                                {
+                                    // If the reaction happened in this layer, calculate new A
+                                    N_3 = std::round(aoq_f[i]*std::round(z_f[i])) - std::round(z_f[i]);
+                                    A_3 = z_lisa_3[i] + N_3;
+                                    A_MeV_3 = A_3 * conv_coeff;
+                                    c4LOG(info, " Reaction happened before Layer :" << layer_id << " Z, N, A before :" << std::round(z_i[i]) << "," << N_i << "," << A_i << " Z,N,A after :" << std::round(z_f[i]) << "," << N_1 << "," << A_1 );
+                                    c4LOG(info, " AoQ before: " << aoq_i[i] << " AoQ after : " << aoq_f[i]);
+                                    c4LOG(info, " --- ");
+                                    
+                                    lisaReaction = 1;
+                                }
+                            }
+                            // Calculate beta after layer3
+                            if(A_MeV_3 == 0) {c4LOG(info, " A = 0 ???" << " noReaction : " << noReaction);}
+                            if(A_MeV_3 > 0 )
+                            {
+                                gamma_after3 = 1.f + beta_trans_after3 / A_MeV_3;
+                                float inv_g2 = 1.f / (gamma_after3 * gamma_after3);
+                                float arg = 1.f - inv_g2;
+                                if (arg >= 0.f) beta_after3 = std::sqrt(arg);
+                            } 
+                            beta3.emplace_back(beta_after3);
+                            gamma3.emplace_back(gamma_after3);
+                            
+                            
                             m_layer3 = 1;
 
                         }else if(layer_id == 4 && m_layer3 == 1 )
                         {
-                            //c4LOG(info, " In layer 4 ");
+                            // // Calibrate for Z
+                            // xpos_4.emplace_back(xpos);
+                            // ypos_4.emplace_back(ypos);
+                            // thickness_4.emplace_back(thickness);
+                            // //  Calibrate LISA in Z
+                            // de_dx_corr = slope_z * (1.f / (beta_after3 * beta_after3)) + intercept_z;
+                            // if (de_dx_corr > 0.f)
+                            // {
+                            //     z_val = frs->primary_z * std::sqrt(de_dx / de_dx_corr);
+                            //     z_lisa_4_temp.emplace_back(z_val + id->offset_z21); 
+                            // }
+                            // // Calculate beta in MeV after passing layer 2
+                            // beta_trans_after4 = beta_trans_after3 - de_dx*thickness;
+
                             m_layer4 = 1;
                         }else if(layer_id == 5 && m_layer4 == 1 )
                         {
-                            //c4LOG(info, " In layer 5 ");
+                            // // Calibrate for Z
+                            // xpos_5.emplace_back(xpos);
+                            // ypos_5.emplace_back(ypos);
+                            // thickness_5.emplace_back(thickness);
+                            // //  Calibrate LISA in Z
+                            // de_dx_corr = slope_z * (1.f / (beta_after4 * beta_after4)) + intercept_z;
+                            // if (de_dx_corr > 0.f)
+                            // {
+                            //     z_val = frs->primary_z * std::sqrt(de_dx / de_dx_corr);
+                            //     z_lisa_5_temp.emplace_back(z_val + id->offset_z21); 
+                            // }
+                            // // Calculate beta in MeV after passing layer 2
+                            // beta_trans_after5 = beta_trans_after4 - de_dx*thickness;
+                            
                             m_layer5 = 1;
                         }
 
@@ -455,6 +557,7 @@ void LisaCal2Hit::Exec(Option_t* option)
                 lisaCalItem.Get_de_dx_GM(),
                 z_lisa,
                 copy_beta0,
+                copy_beta_before_lisa,
                 beta1,
                 beta2,
                 beta3,
@@ -482,6 +585,7 @@ void LisaCal2Hit::Exec(Option_t* option)
 
             z_lisa.clear();
             copy_beta0.clear();
+            copy_beta_before_lisa.clear();
             beta1.clear();
             beta2.clear();
             beta3.clear();
@@ -500,12 +604,22 @@ void LisaCal2Hit::Exec(Option_t* option)
             xpos_2.clear();
             ypos_2.clear();
             thickness_2.clear();
+            xpos_3.clear();
+            ypos_3.clear();
+            thickness_3.clear();
+            xpos_4.clear();
+            ypos_4.clear();
+            thickness_4.clear();
+            xpos_5.clear();
+            ypos_5.clear();
+            thickness_5.clear();
+
             //c4LOG(info, " END of subevent");
 
         }
     }
 
-    //c4LOG(info, " end of event");
+    c4LOG(info, " LISA end of event");
 }
 
 void LisaCal2Hit::FinishEvent()
@@ -520,6 +634,8 @@ void LisaCal2Hit::FinishEvent()
     layer3_reaction = 0;
     layer4_reaction = 0;
     layer5_reaction = 0;
+    copy_beta_before_lisa.clear();
+    beta_before_lisa.clear();
     gamma_i.clear();
     gamma_f.clear();
     beta_en_i.clear();

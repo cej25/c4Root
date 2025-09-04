@@ -44,6 +44,7 @@ void LisaHitItem::SetAll(uint64_t wr,
                         float dedx_GM,
                         std::vector<float> z,
                         std::vector<float> b0,
+                        std::vector<float> b_l,
                         std::vector<float> b1,
                         std::vector<float> b2,
                         std::vector<float> b3,
@@ -79,6 +80,7 @@ void LisaHitItem::SetAll(uint64_t wr,
     de_dx_GM = dedx_GM;
     z_lisa = z;
     beta0 = b0;
+    beta_before_lisa = b_l;
     beta1 = b1;
     beta2 = b2;
     beta3 = b3;
@@ -119,6 +121,7 @@ void LisaHitItem::Reset()
     de_dx_GM = 0;
     z_lisa = {};
     beta0 = {};
+    beta_before_lisa = {};
     beta1 = {};
     beta2 = {};
     beta3 = {};

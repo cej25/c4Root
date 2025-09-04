@@ -47,6 +47,7 @@ class LisaHitItem : public TObject
                     float dedx_GM,
                     std::vector<float> z,
                     std::vector<float> b0,
+                    std::vector<float> b_l,
                     std::vector<float> b1,
                     std::vector<float> b2,
                     std::vector<float> b3,
@@ -82,6 +83,7 @@ class LisaHitItem : public TObject
         float Get_de_dx() const;
         float Get_de_dx_GM() const;
         std::vector<float> Get_Z_lisa() const;
+        std::vector<float> Get_beta_s1s2_correlated() const;
         std::vector<float> Get_beta_before_L1() const;
         std::vector<float> Get_beta_after_L1() const;
         std::vector<float> Get_beta_after_L2() const;
@@ -121,6 +123,7 @@ class LisaHitItem : public TObject
         float de_dx_GM;
         std::vector<float> z_lisa;
         std::vector<float> beta0;
+        std::vector<float> beta_before_lisa;
         std::vector<float> beta1;
         std::vector<float> beta2;
         std::vector<float> beta3;
@@ -229,9 +232,14 @@ inline std::vector<float> LisaHitItem::Get_Z_lisa() const
     return z_lisa;
 }
 
-inline std::vector<float> LisaHitItem::Get_beta_before_L1() const
+inline std::vector<float> LisaHitItem::Get_beta_s1s2_correlated() const
 {
     return beta0;
+}
+
+inline std::vector<float> LisaHitItem::Get_beta_before_L1() const
+{
+    return beta_before_lisa;
 }
 
 inline std::vector<float> LisaHitItem::Get_beta_after_L1() const

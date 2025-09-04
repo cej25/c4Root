@@ -81,6 +81,7 @@ class LisaCal2Hit : public FairTask
         float gamma_after5 = 0.;
         float z_val = 0;
 
+        float beta_before_lisa_temp = 0;
         float beta_trans = 0;
         float beta_trans_after1 = 0;
         float beta_trans_after2 = 0;
@@ -102,10 +103,16 @@ class LisaCal2Hit : public FairTask
         float N_f;
         float A_f;
 
-        int N_after1;
-        int A_after1;
-        int N_after2;
-        int A_after2;
+        int N_1;
+        int N_2;
+        int N_3;
+        int N_4;
+        int N_5;
+        int A_1;
+        int A_2;
+        int A_3;
+        int A_4;
+        int A_5;
 
         float z_diff_21_lisa1;
         float z_diff_lisa1_41;
@@ -113,6 +120,15 @@ class LisaCal2Hit : public FairTask
         float z_diff_lisa1_lisa2;
         float z_diff_lisa2_41;
         float A_MeV_2;
+        float z_diff_lisa2_lisa3;
+        float z_diff_lisa3_41;
+        float A_MeV_3;
+        float z_diff_lisa3_lisa4;
+        float z_diff_lisa4_41;
+        float A_MeV_4;
+        float z_diff_lisa4_lisa5;
+        float z_diff_lisa5_41;
+        float A_MeV_5;
 
         int globalReactions;
         int lisaReaction = -5;
@@ -124,6 +140,8 @@ class LisaCal2Hit : public FairTask
 
         std::vector<Float_t> aoq_i;
         std::vector<Float_t> aoq_f;
+        std::vector<Float_t> aoq_i_s;
+        std::vector<Float_t> aoq_f_s;
         std::vector<Float_t> z_i;
         std::vector<Float_t> z_f;
         std::vector<Float_t> beta_i;
@@ -137,8 +155,10 @@ class LisaCal2Hit : public FairTask
         std::vector<Float_t> sci21l_s2s4_selected;
         std::vector<Float_t> sci21r_s2s4_selected;
 
-        std::vector<Float_t> copy_beta0;
+        std::vector<Float_t> copy_beta0; //beta0 is beta s1s2 selected in correlation with lisa
         std::vector<Float_t> beta0;
+        std::vector<Float_t> copy_beta_before_lisa;
+        std::vector<Float_t> beta_before_lisa;
         std::vector<Float_t> beta1;
         std::vector<Float_t> beta2;
         std::vector<Float_t> beta3;
@@ -159,10 +179,19 @@ class LisaCal2Hit : public FairTask
 
         std::vector<Int_t> xpos_1;
         std::vector<Int_t> xpos_2;
+        std::vector<Int_t> xpos_3;
+        std::vector<Int_t> xpos_4;
+        std::vector<Int_t> xpos_5;
         std::vector<Int_t> ypos_1;
         std::vector<Int_t> ypos_2;
+        std::vector<Int_t> ypos_3;
+        std::vector<Int_t> ypos_4;
+        std::vector<Int_t> ypos_5;
         std::vector<Int_t> thickness_1;
         std::vector<Int_t> thickness_2;
+        std::vector<Int_t> thickness_3;
+        std::vector<Int_t> thickness_4;
+        std::vector<Int_t> thickness_5;
 
         double slope_z;
         double intercept_z;

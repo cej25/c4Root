@@ -17,8 +17,8 @@
 
 // Definition of setup and configuration files
 // FRS
-#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_002_2025_setting10_conv.C"
-#define FRS_CONFIG_FILE "../../../config/shiyan/frs/general/frs_config_v4.C"
+#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_016_2025_run6_conv.C"
+#define FRS_CONFIG_FILE "../../../config/shiyan/frs/general/frs_config_v5.C"
 // LISA
 #define LISA_CONFIG_FILE "../../../config/shiyan/lisa/general/lisa_config_v2.C"
 
@@ -81,11 +81,11 @@ void e_shiyan_make_trees()
     
     // ::: FILE  PATH
     TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s103_files/ts/";                       // Data from LISA
-    TString filename = inputpath + "run_0018_0001.lmd";
+    TString filename = inputpath + "run_0006_0001.lmd";
 
     // ::: OUTPUT 
     TString outputpath = "/u/gandolfo/data/shiyan_debug/";   //testing
-    TString outputFilename = outputpath + "run_0018_mhit_ztesting.root";
+    TString outputFilename = outputpath + "run_0006_beta_test_2.root";
     
     // ::: Create online run
     Int_t refresh = 10; // not needed
