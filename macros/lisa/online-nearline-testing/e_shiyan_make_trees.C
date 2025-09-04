@@ -16,7 +16,7 @@
 // :::  Define FRS setup.C file - FRS should provide; place in /config/shiyan/frs/setup/
 extern "C"
 {
-    #include "../../../config/pareeksha/frs/setup_500MeV_Be_conv.C" //pareeksha data
+    #include "../../../config/pareeksha/frs/setup_300MeV_Cu_conv.C" //pareeksha data
     //#include "../../../config/shiyan/frs/setup/setup_103_016_2025_conv.C" //shiyan
 }
 
@@ -64,7 +64,7 @@ void e_shiyan_make_trees()
     TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";
 
  
-    TString filename = inputpath + "run_0033_0001.lmd";
+    TString filename = inputpath + "run_0047_0001.lmd";
     //TString filename = inputpath + "test_0003_0001.lmd";
     //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
 
@@ -73,7 +73,7 @@ void e_shiyan_make_trees()
     TString outputpath = "/u/gandolfo/data/pareeksha_debug/";   //energy resolution data
     
     //TString outputFilename = outputpath + "test_run_0075.root";
-    TString outputFilename = outputpath + "run_0033_0001_tree.root"; 
+    TString outputFilename = outputpath + "run_0047_0001_tree.root"; 
     //TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  // Data from FRS with S2 PID
 
 
