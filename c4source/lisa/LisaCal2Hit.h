@@ -103,11 +103,6 @@ class LisaCal2Hit : public FairTask
         float N_f;
         float A_f;
 
-        float N_1;
-        float N_2;
-        float N_3;
-        float N_4;
-        float N_5;
         float A_1;
         float A_2;
         float A_3;
@@ -137,6 +132,7 @@ class LisaCal2Hit : public FairTask
         int layer3_reaction = -5;
         int layer4_reaction = -5;
         int layer5_reaction = -5;
+        int after_lisa_reactions_z;
 
         std::vector<Float_t> aoq_i;
         std::vector<Float_t> aoq_f;
