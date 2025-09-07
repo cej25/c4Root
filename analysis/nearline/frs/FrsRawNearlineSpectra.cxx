@@ -57,6 +57,7 @@ FrsRawNearlineSpectra::~FrsRawNearlineSpectra()
 
 InitStatus FrsRawNearlineSpectra::Init()
 {
+    c4LOG(info,"1");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
@@ -87,7 +88,7 @@ InitStatus FrsRawNearlineSpectra::Init()
     dir_sci = dir_frs_raw->mkdir("Scintillators");
     dir_music = dir_frs_raw->mkdir("MUSICs");
     dir_tpc = dir_frs_raw->mkdir("TPCs");
-
+    c4LOG(info,"2");
     // ::: SCI ::::: 
     dir_sci_de = dir_sci->mkdir("dE");
     dir_sci_dt = dir_sci->mkdir("dT");
@@ -116,7 +117,7 @@ InitStatus FrsRawNearlineSpectra::Init()
     }
     // c_sci_dt->cd(0);
     // dir_sci_dt->Append(c_sci_dt);
-
+    c4LOG(info,"3");
     // MHTDC T
     // c_sci_mhtdc = new TCanvas("c_sci_mhtdc", "Scintillator MHTDC T spectra", 650, 350);
     // c_sci_mhtdc->Divide(4, 8);
@@ -163,7 +164,7 @@ InitStatus FrsRawNearlineSpectra::Init()
         // dir_music_n_t[j]->Append(c_music_n_t[j]);
     }
 
-    
+    c4LOG(info,"4");
     // ::: TPCs :::::
     dir_tpc_adc = dir_tpc->mkdir("ADC");
     dir_tpc_tdc = dir_tpc->mkdir("TPC");
@@ -207,7 +208,7 @@ void FrsRawNearlineSpectra::Exec(Option_t* option)
 {
     if (sciArray->size() == 0) return;
 
-
+    c4LOG(info,"a");
     auto const & sciItem = sciArray->at(0);
     sciDE = sciItem.Get_de_array();
     sciDT = sciItem.Get_dt_array();
@@ -219,7 +220,7 @@ void FrsRawNearlineSpectra::Exec(Option_t* option)
         h1_sci_dt[i]->Fill(sciDT[i]);
         for (int j = 0; j < sciMHTDC[i].size(); j++) h1_sci_mhtdc[i]->Fill(sciMHTDC[i][j]);
     }
-    
+    c4LOG(info,"b");
     auto const & musicItem = musicArray->at(0);
     musicE = musicItem.Get_music_e();
     musicT = musicItem.Get_music_t();
@@ -234,7 +235,7 @@ void FrsRawNearlineSpectra::Exec(Option_t* option)
     }
 
 
-
+    c4LOG(info,"c");
     auto const & tpcItem = tpcArray->at(0);
     adcData = tpcItem.Get_adc_data();
     tdcData = tpcItem.Get_tdc_data();

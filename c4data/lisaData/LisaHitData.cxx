@@ -32,6 +32,8 @@ void LisaHitItem::SetAll(uint64_t wr,
                         TString c,
                         int xpos,
                         int ypos,
+                        float tpc_x,
+                        float tpc_y,
                         float thick,
                         float e,
                         float e_MWD,
@@ -58,7 +60,7 @@ void LisaHitItem::SetAll(uint64_t wr,
                         int ov,
                         //int ov_MWD
                         int greact,
-                        int lreact
+                        int lreact_z
                         )
 {   
     wr_t = wr;
@@ -68,6 +70,8 @@ void LisaHitItem::SetAll(uint64_t wr,
     city = c;
     xposition = xpos;
     yposition = ypos;
+    tpc_x_on_lisa = tpc_x;
+    tpc_y_on_lisa = tpc_y;
     thickness = thick;
     energy = e;
     energy_MWD = e_MWD;
@@ -94,7 +98,7 @@ void LisaHitItem::SetAll(uint64_t wr,
     overflow = ov;
     //overflow_MWD = ov_MWD;
     global_reactions = greact;
-    lisa_reaction = lreact;
+    lisa_reactions_z = lreact_z;
 }
 
 
@@ -108,6 +112,8 @@ void LisaHitItem::Reset()
     city = "";
     xposition = 0;
     yposition = 0;
+    tpc_x_on_lisa = 0;
+    tpc_y_on_lisa = 0;
     thickness = 0;
     energy = 0;
     energy_MWD = 0;
@@ -134,7 +140,7 @@ void LisaHitItem::Reset()
     overflow = 0;
     //overflow_MWD = 0; //-1
     global_reactions = -5;
-    lisa_reaction = -5;
+    lisa_reactions_z = -5;
 
 }
 

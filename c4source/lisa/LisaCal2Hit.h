@@ -103,16 +103,16 @@ class LisaCal2Hit : public FairTask
         float N_f;
         float A_f;
 
-        int N_1;
-        int N_2;
-        int N_3;
-        int N_4;
-        int N_5;
-        int A_1;
-        int A_2;
-        int A_3;
-        int A_4;
-        int A_5;
+        float N_1;
+        float N_2;
+        float N_3;
+        float N_4;
+        float N_5;
+        float A_1;
+        float A_2;
+        float A_3;
+        float A_4;
+        float A_5;
 
         float z_diff_21_lisa1;
         float z_diff_lisa1_41;
@@ -131,7 +131,7 @@ class LisaCal2Hit : public FairTask
         float A_MeV_5;
 
         int globalReactions;
-        int lisaReaction = -5;
+        int lisaReactions_z = -5;
         int layer1_reaction = -5;
         int layer2_reaction = -5;
         int layer3_reaction = -5;

@@ -35,6 +35,8 @@ class LisaHitItem : public TObject
                     TString c,
                     int xpos,
                     int ypos,
+                    float tpc_x_on_lisa,
+                    float tpc_y_on_lisa,
                     float thick,
                     float e, 
                     float e_MWD,
@@ -60,7 +62,7 @@ class LisaHitItem : public TObject
                     //int pu_MWD,
                     int ov,
                     int greact,
-                    int lreact);
+                    int lreact_z);
                     //int ov_MWD);
 
         void Reset();
@@ -72,6 +74,8 @@ class LisaHitItem : public TObject
         TString Get_city() const;
         int Get_xposition() const;
         int Get_yposition() const;
+        float Get_tpc_x_on_lisa() const;
+        float Get_tpc_y_on_lisa() const;
         float Get_thickness() const;
         float Get_energy() const;
         float Get_energy_MWD() const;
@@ -98,7 +102,7 @@ class LisaHitItem : public TObject
         int Get_overflow() const;
         //int Get_overflow_MWD() const;
         int Get_Global_Reactions() const;
-        int Get_Lisa_Reactions() const;
+        int Get_Lisa_Reactions_z() const;
 
 
         // Getters
@@ -111,6 +115,8 @@ class LisaHitItem : public TObject
         TString city; // name
         int xposition;
         int yposition;
+        float tpc_x_on_lisa;
+        float tpc_y_on_lisa;
         float thickness;
         float energy; // double? int?
         float energy_MWD; // double? int?
@@ -137,7 +143,7 @@ class LisaHitItem : public TObject
         int overflow;
         //int overflow_MWD;
         int global_reactions;
-        int lisa_reaction;
+        int lisa_reactions_z;
         // timing info for correlations
 
 };
@@ -175,6 +181,16 @@ inline int LisaHitItem::Get_xposition() const
 inline int LisaHitItem::Get_yposition() const
 {
     return yposition;
+}
+
+inline float LisaHitItem::Get_tpc_x_on_lisa() const
+{
+    return tpc_x_on_lisa;
+}
+
+inline float LisaHitItem::Get_tpc_y_on_lisa() const
+{
+    return tpc_y_on_lisa;
 }
 
 inline float LisaHitItem::Get_thickness() const
@@ -302,9 +318,9 @@ inline int LisaHitItem::Get_Global_Reactions() const
     return global_reactions;
 }
 
-inline int LisaHitItem::Get_Lisa_Reactions() const
+inline int LisaHitItem::Get_Lisa_Reactions_z() const
 {
-    return lisa_reaction;
+    return lisa_reactions_z;
 }
 
 

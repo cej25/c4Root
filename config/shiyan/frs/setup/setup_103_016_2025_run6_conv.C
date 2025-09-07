@@ -136,7 +136,7 @@ void setup(TFRSParameter* frs,
   //id->mhtdc_length_sc2142 =	127.2291434	*0.299792458 ;// updated 	2025/02/21
   //id->mhtdc_length_sc2241 =	122.4657914	*0.299792458 ;// updated 	2025/02/21
 
-  sci->mhtdc_offset_41_21  =  183.4148170 - 4.010343; //183.4148170 - 4.010343; //183.4148170 + 0.010343; //Updated 09/05/2025 ns update //G-22-103 56Fe
+  sci->mhtdc_offset_41_21  =  183.84416; // EG shiyan 05/09/25 (+ 0.419) (579 for frag?) //183.4148170 + 0.010343; //Updated 09/05/2025 ns update //G-22-103 56Fe
   sci->mhtdc_offset_42_21  =  183.16 -2.625508775	-0.3117607688 + 2.758419; // updated 	2025/05/09
   sci->mhtdc_offset_41_22  =  240.33 -0.5586602465 +0.06468333655	; // updated 	2025/02/21
 
@@ -145,8 +145,8 @@ void setup(TFRSParameter* frs,
   id->mhtdc_length_sc22HTM = 161.384 - 34.937 - 1.; // meter SCI 22-M01 update 07.05.21
 
   //not related for S8
-  id->a1AoQCorr = 0; //s1-s2 - actually correction for angle at s2 as there is no angle measurement at s1
-  id->a2AoQCorr = -0.0012; //correction for s2s4 -- 0.0012; //2020April12 JP
+  id->a1AoQCorr = -0.0008; // EG adjusted correction for primary S092 - sept2025 // 0.0 s1-s2 - actually correction for angle at s2 as there is no angle measurement at s1
+  id->a2AoQCorr = +0.001; // EG adjusted correction for primary S092 - sept2025  //-0.0012 correction for s2s4 -- 0.0012; //2020April12 JP
   id->a4AoQCorr = 0.0;
 
   //=========
@@ -380,8 +380,8 @@ void setup(TFRSParameter* frs,
   //id->mhtdc_vel_a_music21_s1s2[1] = 11333.88;
   //id->mhtdc_vel_a_music21_s1s2[2] = 119.49;
   //id->mhtdc_vel_a_music21_s1s2[3] = 0.;
-  id->mhtdc_vel_a_music21_s1s2[0] = 957.52+770;//1610.668662; // online, 2025/Feb/27 (YT) 2025/05/09
-  id->mhtdc_vel_a_music21_s1s2[1] = 8927.7;//7632.695383; // online, 2025/Feb/27 (YT) 2025/05/09
+  id->mhtdc_vel_a_music21_s1s2[0] = 2314.450 + 350.0; // EG offline calibration adjusted on primary cal//957.52+770;//1610.668662; // online, 2025/Feb/27 (YT) 2025/05/09
+  id->mhtdc_vel_a_music21_s1s2[1] = 7963.935;// EG offline calibration adjusted on primary cal//8927.7;//7632.695383; // online, 2025/Feb/27 (YT) 2025/05/09
   id->mhtdc_vel_a_music21_s1s2[2] = 0.;
   id->mhtdc_vel_a_music21_s1s2[3] = 0.;
 
@@ -950,7 +950,7 @@ void setup(TFRSParameter* frs,
    * SCI11 [0,1,2,3] = [a,b,c,d]
    */
 //  sci->mhtdc_offset_21_11[0] = 142.5-16.35;//estimated from pulser data //roughly calibrated 08.02.25
-  sci->mhtdc_offset_21_11[0] = 142.5 - 16.35 + 1.093576878 - 5.2343; //142.5 - 16.35 + 1.093576878 - 5.2343; //142.5-16.35+1.093576878 - 2.2343; //correction added online, 2025/May/09
+  sci->mhtdc_offset_21_11[0] = 125.064276878;// EG 5/09/25 - shiyan primary //142.5 - 16.35 + 1.093576878 - 5.3343; //OFFLINE adjusted EG 04/09/2025 - frag? //142.5-16.35+1.093576878 - 2.2343; //correction added online, 2025/May/09
   sci->mhtdc_offset_21_11[1] = 142.5-28;//estimated from pulser data and delays seen on scope
   sci->mhtdc_offset_21_11[2] = 142.5-28;
   sci->mhtdc_offset_21_11[3] = 142.5+31;
