@@ -14,6 +14,7 @@ std::string TFatimaTwinpeaksConfiguration::calibration_file = "blank";
 std::string TFatimaTwinpeaksConfiguration::timeshift_calibration_file = "blank";
 std::string TFatimaTwinpeaksConfiguration::promptflash_cut_file = "blank";
 std::string TFatimaTwinpeaksConfiguration::gain_shifts_file = "blank";
+std::string TFatimaTwinpeaksConfiguration::gain_shifts_offset_file = "blank";
 
 
 TFatimaTwinpeaksConfiguration::TFatimaTwinpeaksConfiguration()
@@ -26,6 +27,7 @@ TFatimaTwinpeaksConfiguration::TFatimaTwinpeaksConfiguration()
     if (timeshift_calibration_file != "blank") ReadTimeshiftCoefficients();
     if (promptflash_cut_file != "blank") ReadPromptFlashCut();
     if (gain_shifts_file != "blank") ReadGainShifts();
+    if (gain_shifts_offset_file != "blank") ReadGainShiftsOffset();
 }
 
 void TFatimaTwinpeaksConfiguration::ReadConfiguration()
@@ -191,5 +193,20 @@ void TFatimaTwinpeaksConfiguration::ReadGainShifts()
         gain_shifts.push_back(g);
     }
     gain_shifts_loaded = 1;
+}
+
+
+void TFatimaTwinpeaksConfiguration::ReadGainShiftsOffset()
+{
+    // must be a root file (not always the case from saving TCuts)
+    // must be named "fatima_prompt_flash_cut"!
+
+    for (int i = 1; i<=NDetectors(); i++){
+        if (IsDetectorAuxilliary(i)) continue;
+        c4LOG(info, TString("Creating GainShifts for ") + TString(Form("fatima_gain_shift_offset_det_%i",i)) + TString(" at ") + TString(gain_shifts_offset_file));
+        GainShift * g = new GainShift(TString(Form("fatima_gain_shift_offset_det_%i",i)),TString(gain_shifts_offset_file));
+        gain_shifts_offset.push_back(g);
+    }
+    gain_shifts_offset_loaded = 1;
 }
 

@@ -7,6 +7,8 @@
 #include <vector>
 #include <set>
 #include "TCutG.h"
+#include "GainShift.h"
+
 
 //structs
 
@@ -22,17 +24,22 @@ class TGermaniumConfiguration
         static void SetDetectorTimeshiftsFile(std::string fp) { timeshift_calibration_file = fp; }
         static void SetPromptFlashCut(std::string fp) {promptflash_cut_file = fp; }
         static void SetPromptFlashCutMulti(std::string fp) {promptflash_cut_file_multi = fp; }
+        static void SetGainShiftFile(std::string fp) {gain_shifts_file = fp; }
+
 
 
 
         std::map<std::pair<int,int>,std::pair<int,int>> Mapping() const;
         bool MappingLoaded() const;
         bool CalibrationCoefficientsLoaded() const;
+
         std::map<std::pair<int,int>,std::vector<double>> CalibrationCoefficients() const;
         bool TimeshiftCalibrationCoefficientsLoaded() const;
         std::map<std::pair<int,int>,double> TimeshiftCalibrationCoefficients() const;
         inline double GetTimeshiftCoefficient(int detector_id, int crystal_id) const;
 
+        bool GainShiftsLoaded() const;
+        inline double GetGainShift(int detector_id1, int crystal_id1, uint64_t wr_t) const;
 
         inline bool IsInsidePromptFlashCut(double timediff, double energy) const{
             if (prompt_flash_cut != nullptr){
@@ -81,6 +88,8 @@ class TGermaniumConfiguration
         static std::string timeshift_calibration_file;
         static std::string promptflash_cut_file;
         static std::string promptflash_cut_file_multi;
+        static std::string gain_shifts_file;
+
 
 
         TGermaniumConfiguration();
@@ -89,6 +98,7 @@ class TGermaniumConfiguration
         void ReadTimeshiftCoefficients();
         void ReadPromptFlashCut();
         void ReadPromptFlashCutMulti();
+        void ReadGainShifts();
 
         static TGermaniumConfiguration* instance;
         
@@ -98,6 +108,9 @@ class TGermaniumConfiguration
         std::set<int> extra_signals;
 
         TCutG* prompt_flash_cut = nullptr;
+
+        std::vector<GainShift*> gain_shifts;
+
 
         std::vector<TCutG *> prompt_flash_cut_multi = {};
 
@@ -120,6 +133,7 @@ class TGermaniumConfiguration
         bool detector_mapping_loaded = 0;
         bool detector_calibrations_loaded = 0;
         bool timeshift_calibration_coeffs_loaded = 0;
+        bool gain_shifts_loaded = 0;
 };
 
 
@@ -130,6 +144,17 @@ inline bool TGermaniumConfiguration::IsDetectorAuxilliary(int detector_id) const
         return false;
     }
 };
+
+inline bool TGermaniumConfiguration::GainShiftsLoaded() const {
+    return gain_shifts_loaded;
+}
+
+inline double TGermaniumConfiguration::GetGainShift(int detector_id1, int crystal_id1, uint64_t wr_t) const
+{
+    if (IsDetectorAuxilliary(detector_id1)) return 0;
+    return gain_shifts.at((detector_id1-1)*NDetectors() + crystal_id1)->GetGain(wr_t);
+}
+
 
 
 inline TGermaniumConfiguration const* TGermaniumConfiguration::GetInstance()

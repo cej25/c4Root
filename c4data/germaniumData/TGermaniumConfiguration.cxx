@@ -16,6 +16,8 @@ std::string TGermaniumConfiguration::calibration_file = "blank";
 std::string TGermaniumConfiguration::timeshift_calibration_file = "blank";
 std::string TGermaniumConfiguration::promptflash_cut_file = "blank";
 std::string TGermaniumConfiguration::promptflash_cut_file_multi = "blank";
+std::string TGermaniumConfiguration::gain_shifts_file = "blank";
+
 
 
 TGermaniumConfiguration::TGermaniumConfiguration()
@@ -30,6 +32,8 @@ TGermaniumConfiguration::TGermaniumConfiguration()
     if (timeshift_calibration_file != "blank") ReadTimeshiftCoefficients();
     if (promptflash_cut_file != "blank") ReadPromptFlashCut();
     if (promptflash_cut_file_multi != "blank") ReadPromptFlashCutMulti();
+    if (gain_shifts_file != "blank") ReadGainShifts();
+
  }
 
 
@@ -218,7 +222,7 @@ void TGermaniumConfiguration::ReadPromptFlashCutMulti()
 
     }
 
-    c4LOG(info,Form("read %i prompt flash cuts",prompt_flash_cut_multi.size()));
+    c4LOG(info,Form("read %li prompt flash cuts",prompt_flash_cut_multi.size()));
 
     if (prompt_flash_cut_multi.size() == 0) // Log warning if no cut found at all
     {
@@ -226,6 +230,20 @@ void TGermaniumConfiguration::ReadPromptFlashCutMulti()
     }
 
     cutFile->Close();
+}
+
+
+void TGermaniumConfiguration::ReadGainShifts()
+{
+    // must be a root file (not always the case from saving TCuts)
+
+    for (int i = 1; i<=NDetectors(); i++){
+        if (IsDetectorAuxilliary(i)) continue;
+        c4LOG(info, TString("Creating GainShifts for ") + TString(Form("ge_gain_shift_det_%i",i)) + TString(" at ") + TString(gain_shifts_file));
+        GainShift * g = new GainShift(TString(Form("ge_gain_shift_det_%i",i)),TString(gain_shifts_file));
+        gain_shifts.push_back(g);
+    }
+    gain_shifts_loaded = 1;
 }
 
 

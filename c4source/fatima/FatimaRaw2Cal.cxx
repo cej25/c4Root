@@ -269,7 +269,10 @@ void FatimaRaw2Cal::Exec(Option_t* option)
                 }
             }
 
-            if (fatima_configuration->GainShiftsLoaded() && !(fatima_configuration->IsDetectorAuxilliary(detector_id))){
+            if (fatima_configuration->GainShiftsOffsetLoaded() && !(fatima_configuration->IsDetectorAuxilliary(detector_id))){
+                //std::cout << "Applying shift for det " << detector_id << " " <<  energy << " - " << fatima_configuration->GetGainShiftOffset(detector_id,funcal_hit->Get_wr_t()) + fatima_configuration->GetGainShift(detector_id,funcal_hit->Get_wr_t())*energy << std::endl;
+                energy = energy - (fatima_configuration->GetGainShiftOffset(detector_id,funcal_hit->Get_wr_t()) + fatima_configuration->GetGainShift(detector_id,funcal_hit->Get_wr_t())*energy);
+            }else if (fatima_configuration->GainShiftsLoaded() && !(fatima_configuration->IsDetectorAuxilliary(detector_id))){
                 energy = energy*fatima_configuration->GetGainShift(detector_id,funcal_hit->Get_wr_t());
             }
             

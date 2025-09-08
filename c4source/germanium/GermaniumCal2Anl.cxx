@@ -89,7 +89,6 @@ InitStatus GermaniumCal2Anl::Init()
 Analysis event loop. 
 Fatal error if detector map is not set. If calibration coeffs are not written, simply the uncalibrated energies are written.
 
-Picks out the TimeMachine.
 */
 void GermaniumCal2Anl::Exec(Option_t* option){
 
@@ -126,14 +125,26 @@ void GermaniumCal2Anl::Exec(Option_t* option){
             
             if (BGO_veto == true && event_multiplicity_bgo > 0){
                 
+                int64_t fast_lead_epoch_trigger = 0;
+                double fast_lead_time_trigger = 0;
+                for (int ihit_bgo = 0; ihit_bgo < event_multiplicity_bgo; ihit_bgo++){
+                    fcal_bgo_hit = (BGOTwinpeaksCalData*)fcal_bgo_data->At(ihit_bgo);
+                    if (fcal_bgo_hit->Get_detector_id() <= 12){
+                        fast_lead_epoch_trigger =  fcal_bgo_hit->Get_fast_lead_epoch();
+                        fast_lead_time_trigger = fcal_bgo_hit->Get_fast_lead_time();
+                        break;
+                    }
+                }
+
+
+                
                 for (int ihit_bgo = 0; ihit_bgo < event_multiplicity_bgo; ihit_bgo++){
                     fcal_bgo_hit = (BGOTwinpeaksCalData*)fcal_bgo_data->At(ihit_bgo);
 
                     if (fcal_bgo_hit->Get_detector_id() == detector_id1){
-
-                        int64_t bgo_wr_time = fcal_bgo_hit->Get_wr_t();
+                        int64_t bgo_wr_abs_time = fcal_bgo_hit->Get_wr_t();
                         
-                        if (TMath::Abs(bgo_wr_time - time_wr1) < 3e3){
+                        if (time_wr1 - bgo_wr_abs_time < 500 &&  time_wr1 - bgo_wr_abs_time > 0){
                             // veto this event
                             BGO_veto_this_event = true;
                         }
@@ -151,7 +162,7 @@ void GermaniumCal2Anl::Exec(Option_t* option){
             //Add-back:
 
             if (AddBack_veto == true){
-                double time_gate = 100; //ns
+                double time_gate = 200; //ns
                 
                 //intra-detector addback: detector_id = detector_id'
                 if (event_multiplicity > 1){
@@ -166,10 +177,9 @@ void GermaniumCal2Anl::Exec(Option_t* option){
 
                         if (detector_id2 > 12) continue;
 
-
                         //c4LOG(info,Form("detector_id1 = %i, detector_id2 = %i, dt = %f, energy1 = %f, energy2 = %f",detector_id1, detector_id2, TMath::Abs(time2 - time1), energy1, energy2));
-
-                        if (detector_id1 == detector_id2 && TMath::Abs(time2 - time1) < time_gate && energy1 > addback_energy_threshold && energy2 > addback_energy_threshold){
+                    
+                        if (detector_id1 == detector_id2 && TMath::Abs(time2 - time1 - germanium_configuration->GetTimeshiftCoefficient(detector_id1, crystal_id1) + germanium_configuration->GetTimeshiftCoefficient(detector_id2,crystal_id2)) < time_gate && energy1 > addback_energy_threshold && energy2 > addback_energy_threshold){
                             //Do addback!
                             if (energy1 > energy2){
                                 energy1 = energy1 + energy2;
@@ -178,7 +188,6 @@ void GermaniumCal2Anl::Exec(Option_t* option){
                                 energy1 = energy1 + energy2;
                                 time1 = time2;
                                 crystal_id1 = crystal_id2;
-
                             }
 
                             skip_events.push_back(ihit2);

@@ -67,7 +67,9 @@
 #pragma link C++ class FrsCalSciItem+;
 #pragma link C++ class FrsCalTpcItem+;
 #pragma link C++ class FrsHitItem+;
+#pragma link C++ class std::vector<FrsHitItem>+;
 #pragma link C++ class FrsMultiHitItem+;
+#pragma link C++ class std::vector<FrsMultiHitItem>+;
 #pragma link C++ class TravMusAdcItem+;
 #pragma link C++ class TravMusTdcItem+;
 #pragma link C++ class TravMusCalItem+;
