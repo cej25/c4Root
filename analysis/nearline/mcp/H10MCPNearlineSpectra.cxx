@@ -101,11 +101,11 @@ InitStatus H10MCPNearlineSpectra::Init()
 
 	
     // CEJ - Dennis, this is stuff from the nearline I didn't want to delete
-    	  MCP1Heatmapgatedright = MakeTH2(dir_mcp,"b", "MCP1Heatmap1gated", "MCP1 Heatmap 1" , 100, -250, 250, 100, -250, 250); 
-  MCP2Heatmapgatedright = MakeTH2(dir_mcp,"b", "MCP2Heatmap1gated", "MCP1 Heatmap 1" , 100, -250, 250, 100, -250, 250); 
+    	  MCP1Heatmapgatedright = MakeTH2(dir_mcp,"b", "MCP1Heatmapright1gated", "MCP1 Heatmap 1" , 100, -250, 250, 100, -250, 250); 
+  MCP2Heatmapgatedright = MakeTH2(dir_mcp,"b", "MCP2Heatmap1rightgated", "MCP1 Heatmap 1" , 100, -250, 250, 100, -250, 250); 
     
-      MCP2Heatmapgatedcenter = MakeTH2(dir_mcp,"b", "MCP2Heatmap1gatedcenter", "MCP1 Heatmap 1" , 100, -250, 250, 100, -250, 250);
-      MCP2Heatmapgatedcenter = MakeTH2(dir_mcp,"b", "MCP2Heatmap1gatedcenter", "MCP1 Heatmap 1" , 100, -250, 250, 100, -250, 250); 
+      MCP1Heatmapgatedcenter = MakeTH2(dir_mcp,"b", "MCP1Heatmap1gatedmcp1center", "MCP1 Heatmap 1" , 100, -250, 250, 100, -250, 250);
+      MCP2Heatmapgatedcenter = MakeTH2(dir_mcp,"b", "MCP2Heatmap1gatedmcp1center", "MCP1 Heatmap 1" , 100, -250, 250, 100, -250, 250); 
  
     
     // MCP1X1ddiff = MakeTH1(dir_mcp, "F", "MCP1X1ddiff", "MCP1X1ddiff", 4000, -7000, 2000);  
