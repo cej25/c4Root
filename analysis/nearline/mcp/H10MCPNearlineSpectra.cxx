@@ -79,7 +79,7 @@ InitStatus H10MCPNearlineSpectra::Init()
     dir_mcp = gDirectory->mkdir("MCPs");
     gDirectory->cd("MCPs");
 
-    h1_dT = MakeTH1(dir_mcp, "F", "h1_dT", "Time Difference T2-T1", 10000, -100, 100,"dt [ns]", kPink, kBlack);  
+    h1_dT = MakeTH1(dir_mcp, "F", "h1_dT", "Time Difference T2-T1", 10000, -10, 10,"dt [ns]", kPink, kBlack);  
     h2_dX1_dT = MakeTH2(dir_mcp, "F", "h2_dX1_dT", "X12-X11 position vs Time Difference T2-T1", 100, -250, 250, 100, -100, 100);
     h2_dY1_dT = MakeTH2(dir_mcp, "F", "h2_dY1_dT", "Y12-Y11 position vs Time Difference T2-T1", 100, -250, 250, 100, -100, 100); 
     h2_dX2_dT = MakeTH2(dir_mcp, "F", "h2_dX2_dT", "X22-X21 position vs Time Difference T2-T1", 100, -250, 250, 100, -100, 100); 
@@ -89,15 +89,15 @@ InitStatus H10MCPNearlineSpectra::Init()
 	  MCP1Heatmap1 = MakeTH2(dir_mcp,"b", "MCP1Heatmap1", "MCP1 Heatmap 1" , 100, -250, 250, 100, -250, 250); 
 	  MCP2Heatmap1 = MakeTH2(dir_mcp,"b", "MCP2Heatmap1", "MCP2 Heatmap 1" , 100, -250, 250, 100, -250, 250); 
 
-    h1_sc41_mcp1 = MakeTH1(dir_mcp, "I", "h1_sc41_mcp1", "SC41-MCP1 Time", 4000, 0, 1000,"dt [ns]", kSpring, kBlack);
-    h1_sc41_mcp2 = MakeTH1(dir_mcp, "I", "h1_sc41_mcp2", "SC41-MCP2 Time", 4000, 0, 1000,"dt [ns]", kSpring, kBlack);
-    h1_sc42_mcp1 = MakeTH1(dir_mcp, "I", "h1_sc42_mcp1", "SC42-MCP1 Time", 4000, 0, 1000,"dt [ns]", kSpring, kBlack);
-    h1_sc42_mcp2 = MakeTH1(dir_mcp, "I", "h1_sc42_mcp2", "SC42-MCP2 Time", 4000, 0, 1000,"dt [ns]", kSpring, kBlack);
+    h1_sc41_mcp1 = MakeTH1(dir_mcp, "I", "h1_sc41_mcp1", "SC41-MCP1 Time", 4000, 300, 700,"dt [ns]", kSpring, kBlack);
+    h1_sc41_mcp2 = MakeTH1(dir_mcp, "I", "h1_sc41_mcp2", "SC41-MCP2 Time", 4000, 300, 700,"dt [ns]", kSpring, kBlack);
+    h1_sc42_mcp1 = MakeTH1(dir_mcp, "I", "h1_sc42_mcp1", "SC42-MCP1 Time", 4000, 300, 700,"dt [ns]", kSpring, kBlack);
+    h1_sc42_mcp2 = MakeTH1(dir_mcp, "I", "h1_sc42_mcp2", "SC42-MCP2 Time", 4000, 300, 700,"dt [ns]", kSpring, kBlack);
     h1_sc41_sc42 = MakeTH1(dir_mcp, "I", "h1_sc41_sc42", "SC41-SC42 Time", 1000, -10, 10,"dt [ns]", kCyan, kBlack);
-    h1_stefan_mcp1 = MakeTH1(dir_mcp, "I", "h1_stefan_mcp1", "STEFAN-MCP1 Time", 4000,0, 1000,"dt [ns]", kOrange, kBlack);
-    h1_stefan_mcp2 = MakeTH1(dir_mcp, "I", "h1_stefan_mcp2", "STEFAN-MCP2 Time", 4000, 0, 1000,"dt [ns]", kOrange, kBlack);
-    h1_stefan_sc41 = MakeTH1(dir_mcp, "I", "h1_stefan_sc41", "STEFAN-SC41 Time", 4000,0, 1000,"dt [ns]", kOrange, kBlack);
-    h1_stefan_sc42 = MakeTH1(dir_mcp, "I", "h1_stefan_sc42", "STEFAN-SC42 Time", 4000, 0, 1000,"dt [ns]", kOrange, kBlack);
+    h1_stefan_mcp1 = MakeTH1(dir_mcp, "I", "h1_stefan_mcp1", "STEFAN-MCP1 Time", 4000,300, 1000,"dt [ns]", kOrange, kBlack);
+    h1_stefan_mcp2 = MakeTH1(dir_mcp, "I", "h1_stefan_mcp2", "STEFAN-MCP2 Time", 4000, 300, 1000,"dt [ns]", kOrange, kBlack);
+    h1_stefan_sc41 = MakeTH1(dir_mcp, "I", "h1_stefan_sc41", "STEFAN-SC41 Time", 4000,300, 1000,"dt [ns]", kOrange, kBlack);
+    h1_stefan_sc42 = MakeTH1(dir_mcp, "I", "h1_stefan_sc42", "STEFAN-SC42 Time", 4000, 300, 1000,"dt [ns]", kOrange, kBlack);
 
 	
     // CEJ - Dennis, this is stuff from the nearline I didn't want to delete
