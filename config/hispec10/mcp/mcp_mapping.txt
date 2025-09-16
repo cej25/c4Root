@@ -1,21 +1,24 @@
 # MCP
-# TYPE 0 = T, 1 = X, 2 = Y
+# TYPE 0 = T, 1 = X, 2 = Y 3=Sc41 4=SC4
+#Number gleich left or right
 # TAMEXID     TAMEXCHAN       MCP     TYPE        NUMBER
-    0	      1		  0	3	  0
-    0	      3		  0	3	  1
-    0	      5		  0       4	  0
-    0           7		  0	4	  1	
-    0           16		  0	5	  0	
-    0           9               0       0           0
-    0           11              1       0           0
-    1           1               0       1           0
-    1           2               1       1           0
-    1           3               0       1           1
-    1           4               1       1           1
-    1           5               0       2           0
-    1           6               1       2           0
-    1           7               0       2           1
-    1           8               1       2           1
+    0	    	  1				  0		3	 	    	 0
+    0	    	  3		 		  0		  3			  1
+    0	    	  5				  0       4			  0
+    0       	  7		 		  0		  4	  		  1	
+    0             16			  0		  5			  0	
+    0             9               0       0           0
+    0             11              1       0           0
+    1             1               0       1           0
+    1             2               1       1           0
+    1             3               0       1           1
+    1             4               1       1           1
+    1             5               0       2           0
+    1             6               1       2           0
+    1             7               0       2           1
+    1             8               1       2           1
+    
+    # ältere runs sollten mcp time bei TAMEXID 1 9 und 11 haben
 #Time machines:
 #SCI41L
 #SCI41R
