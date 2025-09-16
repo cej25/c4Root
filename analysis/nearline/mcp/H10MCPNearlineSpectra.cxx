@@ -101,6 +101,13 @@ InitStatus H10MCPNearlineSpectra::Init()
 
 	
     // CEJ - Dennis, this is stuff from the nearline I didn't want to delete
+    	  MCP1Heatmapgatedright = MakeTH2(dir_mcp,"b", "MCP1Heatmap1gated", "MCP1 Heatmap 1" , 100, -250, 250, 100, -250, 250); 
+  MCP2Heatmapgatedright = MakeTH2(dir_mcp,"b", "MCP2Heatmap1gated", "MCP1 Heatmap 1" , 100, -250, 250, 100, -250, 250); 
+    
+      MCP2Heatmapgatedcenter = MakeTH2(dir_mcp,"b", "MCP2Heatmap1gatedcenter", "MCP1 Heatmap 1" , 100, -250, 250, 100, -250, 250);
+      MCP2Heatmapgatedcenter = MakeTH2(dir_mcp,"b", "MCP2Heatmap1gatedcenter", "MCP1 Heatmap 1" , 100, -250, 250, 100, -250, 250); 
+ 
+    
     // MCP1X1ddiff = MakeTH1(dir_mcp, "F", "MCP1X1ddiff", "MCP1X1ddiff", 4000, -7000, 2000);  
     // MCP1Y1ddiff = MakeTH1(dir_mcp, "F", "MCP1Y1ddiff", "MCP1Y1ddiff", 4000, -7000, 2000);  
 
@@ -191,6 +198,13 @@ void H10MCPNearlineSpectra::Exec(Option_t* option)
             
             if(X12!=0 && X11!=0 && Y12!=0 && Y11!=0) MCP1Heatmap1->Fill(X12-X11, Y12-Y11);
             if(X22!=0 && X21!=0 && Y22!=0 && Y21!=0) MCP2Heatmap1->Fill(X22-X21, Y22-Y21);
+            
+            
+            if(X22!=0 && X21!=0 && Y22!=0 && Y21!=0 &&X12!=0 && X11!=0 && Y12!=0 && Y11!=0 && gateBoxright->IsInside(X22 - X21, Y22 - Y21))) MCP1Heatmapgatedright->Fill(X12-X11, Y12-Y11);
+			if(X22!=0 && X21!=0 && Y22!=0 && Y21!=0 &&X12!=0 && X11!=0 && Y12!=0 && Y11!=0 && gateBoxright->IsInside(X22 - X21, Y22 - Y21))) MCP2Heatmapgatedright->Fill(X22-X21, Y22-Y21);
+            if(X22!=0 && X21!=0 && Y22!=0 && Y21!=0 &&X12!=0 && X11!=0 && Y12!=0 && Y11!=0 && gateBoxcenter->IsInside(X22 - X21, Y22 - Y21))) MCP1Heatmapgatedcenter->Fill(X12-X11, Y12-Y11);
+            if(X22!=0 && X21!=0 && Y22!=0 && Y21!=0 &&X12!=0 && X11!=0 && Y12!=0 && Y11!=0 && gateBoxcenter->IsInside(X22 - X21, Y22 - Y21))) MCP2Heatmapgatedcenter->Fill(X22-X21, Y22-Y21);
+
         }
     }
 
