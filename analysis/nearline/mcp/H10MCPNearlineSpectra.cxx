@@ -200,10 +200,10 @@ void H10MCPNearlineSpectra::Exec(Option_t* option)
             if(X22!=0 && X21!=0 && Y22!=0 && Y21!=0) MCP2Heatmap1->Fill(X22-X21, Y22-Y21);
             
             
-            if(X22!=0 && X21!=0 && Y22!=0 && Y21!=0 &&X12!=0 && X11!=0 && Y12!=0 && Y11!=0 && gateBoxright->IsInside(X22 - X21, Y22 - Y21))) MCP1Heatmapgatedright->Fill(X12-X11, Y12-Y11);
-			if(X22!=0 && X21!=0 && Y22!=0 && Y21!=0 &&X12!=0 && X11!=0 && Y12!=0 && Y11!=0 && gateBoxright->IsInside(X22 - X21, Y22 - Y21))) MCP2Heatmapgatedright->Fill(X22-X21, Y22-Y21);
-            if(X22!=0 && X21!=0 && Y22!=0 && Y21!=0 &&X12!=0 && X11!=0 && Y12!=0 && Y11!=0 && gateBoxcenter->IsInside(X22 - X21, Y22 - Y21))) MCP1Heatmapgatedcenter->Fill(X12-X11, Y12-Y11);
-            if(X22!=0 && X21!=0 && Y22!=0 && Y21!=0 &&X12!=0 && X11!=0 && Y12!=0 && Y11!=0 && gateBoxcenter->IsInside(X22 - X21, Y22 - Y21))) MCP2Heatmapgatedcenter->Fill(X22-X21, Y22-Y21);
+            if(X22!=0 && X21!=0 && Y22!=0 && Y21!=0 &&X12!=0 && X11!=0 && Y12!=0 && Y11!=0 && gateBoxright->IsInside(X22 - X21, Y22 - Y21)) MCP1Heatmapgatedright->Fill(X12-X11, Y12-Y11);
+			if(X22!=0 && X21!=0 && Y22!=0 && Y21!=0 &&X12!=0 && X11!=0 && Y12!=0 && Y11!=0 && gateBoxright->IsInside(X22 - X21, Y22 - Y21)) MCP2Heatmapgatedright->Fill(X22-X21, Y22-Y21);
+            if(X22!=0 && X21!=0 && Y22!=0 && Y21!=0 &&X12!=0 && X11!=0 && Y12!=0 && Y11!=0 && gateBoxcenter->IsInside(X22 - X21, Y22 - Y21)) MCP1Heatmapgatedcenter->Fill(X12-X11, Y12-Y11);
+            if(X22!=0 && X21!=0 && Y22!=0 && Y21!=0 &&X12!=0 && X11!=0 && Y12!=0 && Y11!=0 && gateBoxcenter->IsInside(X22 - X21, Y22 - Y21)) MCP2Heatmapgatedcenter->Fill(X22-X21, Y22-Y21);
 
         }
     }

@@ -230,7 +230,7 @@ TBox *gateBoxT = new TBox(gatesmcp1T[0], gatesmcp1T[1],
  TBox *gateBoxcenter = new TBox(gatesmcp1center[0], gatesmcp1center[1],
                          gatesmcp1center[2], gatesmcp1center[3]);                        
                
-   TBox *gateBoxright = new TBox(gatesmcprigh1[0], gatesmcpright[1],
+   TBox *gateBoxright = new TBox(gatesmcpright[0], gatesmcpright[1],
                          gatesmcpright[2], gatesmcpright[3]);         
 
 
