@@ -125,14 +125,17 @@ class LisaCal2Hit : public FairTask
         float z_diff_lisa5_41;
         float A_MeV_5;
 
-        int globalReactions;
-        int lisaReactions_z = -5;
-        int layer1_reaction = -5;
-        int layer2_reaction = -5;
-        int layer3_reaction = -5;
-        int layer4_reaction = -5;
-        int layer5_reaction = -5;
-        int after_lisa_reactions_z;
+        int globalReactions = 0;
+        int c_globalReactions = 0;
+        int globalReactions_on_lisa_z = 0;
+        int c_globalReactions_on_lisa_z = 0;
+        int lisaReactions_z = 0;
+        int layer1_reaction = 0;
+        int layer2_reaction = 0;
+        int layer3_reaction = 0;
+        int layer4_reaction = 0;
+        int layer5_reaction = 0;
+        int after_lisa_reactions_z = 0;
 
         std::vector<Float_t> aoq_i;
         std::vector<Float_t> aoq_f;

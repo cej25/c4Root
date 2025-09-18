@@ -62,6 +62,7 @@ class LisaHitItem : public TObject
                     //int pu_MWD,
                     int ov,
                     int greact,
+                    int greact_on_lisa_z,
                     int lreact_z,
                     int afterl_react_z);
                     //int ov_MWD);
@@ -103,6 +104,7 @@ class LisaHitItem : public TObject
         int Get_overflow() const;
         //int Get_overflow_MWD() const;
         int Get_Global_Reactions() const;
+        int Get_Global_Reactions_on_lisa_z() const;
         int Get_Lisa_Reactions_z() const;
         int Get_After_Lisa_Reactions_z() const;
 
@@ -145,6 +147,7 @@ class LisaHitItem : public TObject
         int overflow;
         //int overflow_MWD;
         int global_reactions;
+        int global_reactions_on_lisa_z;
         int lisa_reactions_z;
         int after_lisa_reactions_z;
         // timing info for correlations
@@ -319,6 +322,11 @@ inline int LisaHitItem::Get_overflow() const
 inline int LisaHitItem::Get_Global_Reactions() const
 {
     return global_reactions;
+}
+
+inline int LisaHitItem::Get_Global_Reactions_on_lisa_z() const
+{
+    return global_reactions_on_lisa_z;
 }
 
 inline int LisaHitItem::Get_Lisa_Reactions_z() const

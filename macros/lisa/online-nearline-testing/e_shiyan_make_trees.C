@@ -81,11 +81,11 @@ void e_shiyan_make_trees()
     
     // ::: FILE  PATH
     TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s103_files/ts/";                       // Data from LISA
-    TString filename = inputpath + "run_0018_0001.lmd";
+    TString filename = inputpath + "run_0018_0002.lmd";
 
     // ::: OUTPUT 
     TString outputpath = "/u/gandolfo/data/shiyan_debug/";   //testing
-    TString outputFilename = outputpath + "run_0018_frs_cal_test.root";
+    TString outputFilename = outputpath + "run_0018_frs_cal_test_0002.root";
     
     // ::: Create online run
     Int_t refresh = 10; // not needed

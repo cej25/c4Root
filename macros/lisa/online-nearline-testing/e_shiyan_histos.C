@@ -67,12 +67,12 @@ void e_shiyan_histos()
     // ::: P A T H   O F   F I L E  to read
     //TString inputpath = "/u/gandolfo/data/lustre/gamma/lisa_s092/trees/";
     TString inputpath = "/u/gandolfo/data/shiyan_debug/";
-    TString filename = inputpath + "run_0006_frs_cal.root";  
+    TString filename = inputpath + "run_0018_frs_cal_test_0002.root";  
     
     // ::: O U T P U T
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/lisa_s092/histos/";
     TString outputpath = "/u/gandolfo/data/shiyan_debug/";   //energy resolution output
-    TString outputFilename = outputpath + "run_0006_frs_cal_histos.root";
+    TString outputFilename = outputpath + "run_0018_frs_cal_test_histos_0002.root";
 
 
     FairRunAna* run = new FairRunAna();
