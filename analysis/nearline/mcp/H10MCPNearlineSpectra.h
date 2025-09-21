@@ -186,6 +186,8 @@ class H10MCPNearlineSpectra : public FairTask
         TH2* MCP2HeatmapgatedMCP1centermiddle;
         TH2* MCP2HeatmapgatedMCP1centerup;
         TH2* MCP2HeatmapgatedMCP1centerdown;
+        TH1* MCPcentergatedtime;
+        TH2* MCP2Heatmapgatedtop;
        
        
        
@@ -218,9 +220,10 @@ class H10MCPNearlineSpectra : public FairTask
 		
 
 int gatesmcp1T[4]={35,45,35,57};
- int gatesmcp1center[4]={-5,-5,5,5};
-    int gatesmcpright[4]={5,5,15,15};
- 
+int gatesmcp1center[4]={-5,-5,5,5};
+int gatesmcpright[4]={60,5,80,15};
+ int gatesmcptop[4]={-10,60,10,80};
+
     
 //int gatesmcp1T [] = {35,	45,	47,	57};
 //int gatesmcp1X [] = {-26000,	-22000,	-45000,	-41000};
@@ -232,6 +235,9 @@ TBox *gateBoxT = new TBox(gatesmcp1T[0], gatesmcp1T[1],
                
    TBox *gateBoxright = new TBox(gatesmcpright[0], gatesmcpright[1],
                          gatesmcpright[2], gatesmcpright[3]);         
+
+   TBox *gateBoxtop = new TBox(gatesmcptop[0], gatesmcptop[1],
+                         gatesmcptop[2], gatesmcptop[3]); 
 
 
         std::vector<TH1*> h1_fatima_slowToT;

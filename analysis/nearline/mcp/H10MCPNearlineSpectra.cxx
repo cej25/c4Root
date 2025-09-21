@@ -79,7 +79,7 @@ InitStatus H10MCPNearlineSpectra::Init()
     dir_mcp = gDirectory->mkdir("MCPs");
     gDirectory->cd("MCPs");
 
-    h1_dT = MakeTH1(dir_mcp, "F", "h1_dT", "Time Difference T2-T1", 10000, -10, 10,"dt [ns]", kPink, kBlack);  
+    h1_dT = MakeTH1(dir_mcp, "F", "MCPtime", "Time Difference T2-T1", 10000, -100, 100,"dt [ns]", kPink, kBlack);  
     h2_dX1_dT = MakeTH2(dir_mcp, "F", "h2_dX1_dT", "X12-X11 position vs Time Difference T2-T1", 100, -250, 250, 100, -100, 100);
     h2_dY1_dT = MakeTH2(dir_mcp, "F", "h2_dY1_dT", "Y12-Y11 position vs Time Difference T2-T1", 100, -250, 250, 100, -100, 100); 
     h2_dX2_dT = MakeTH2(dir_mcp, "F", "h2_dX2_dT", "X22-X21 position vs Time Difference T2-T1", 100, -250, 250, 100, -100, 100); 
@@ -101,12 +101,15 @@ InitStatus H10MCPNearlineSpectra::Init()
 
 	
     // CEJ - Dennis, this is stuff from the nearline I didn't want to delete
-    	  MCP1Heatmapgatedright = MakeTH2(dir_mcp,"b", "MCP1Heatmapright1gated", "MCP1 Heatmap 1" , 100, -250, 250, 100, -250, 250); 
-  MCP2Heatmapgatedright = MakeTH2(dir_mcp,"b", "MCP2Heatmap1rightgated", "MCP1 Heatmap 1" , 100, -250, 250, 100, -250, 250); 
+    	  MCP1Heatmapgatedright = MakeTH2(dir_mcp,"b", "projectionngateright", "projectionngateright" , 100, -250, 250, 100, -250, 250); 
+  MCP2Heatmapgatedright = MakeTH2(dir_mcp,"b", "MCP2Heatmap1rightgated", "MCP2Heatmap1rightgated" , 100, -250, 250, 100, -250, 250); 
     
-      MCP1Heatmapgatedcenter = MakeTH2(dir_mcp,"b", "MCP1Heatmap1gatedmcp1center", "MCP1 Heatmap 1" , 100, -250, 250, 100, -250, 250);
-      MCP2Heatmapgatedcenter = MakeTH2(dir_mcp,"b", "MCP2Heatmap1gatedmcp1center", "MCP1 Heatmap 1" , 100, -250, 250, 100, -250, 250); 
- 
+      MCP1Heatmapgatedcenter = MakeTH2(dir_mcp,"b", "MCP1Heatmap1gatedmcp1centerprojection", "MCP1Heatmap1gatedmcp1center" , 100, -250, 250, 100, -250, 250);
+      MCP2Heatmapgatedcenter = MakeTH2(dir_mcp,"b", "MCP2Heatmap1gatedmcp1center", "MCP2Heatmap1gatedmcp1center" , 100, -250, 250, 100, -250, 250); 
+       MCP2Heatmapgatedcenter = MakeTH2(dir_mcp,"b", "MCP2Heatmap1gatedmcp1center2", "MCP2Heatmap1gatedmcp1center2" , 100, -250, 250, 100, -250, 250); 
+       MCP2Heatmapgatedtop = MakeTH2(dir_mcp,"b", "MCP2Heatmap1gatedmcp1top", "MCP2Heatmap1gatedmcp1top" , 100, -250, 250, 100, -250, 250); 
+    MCPcentergatedtime = MakeTH1(dir_mcp, "F", "MCPcentergatedtimegated", "Time Difference MCP T2-T1gated", 10000, -100, 100,"dt [ns]", kPink, kBlack);  
+
     
     // MCP1X1ddiff = MakeTH1(dir_mcp, "F", "MCP1X1ddiff", "MCP1X1ddiff", 4000, -7000, 2000);  
     // MCP1Y1ddiff = MakeTH1(dir_mcp, "F", "MCP1Y1ddiff", "MCP1Y1ddiff", 4000, -7000, 2000);  
@@ -183,7 +186,7 @@ void H10MCPNearlineSpectra::Exec(Option_t* option)
             if(SC42!=0 && T2!=0) h1_sc42_mcp2->Fill(SC42-T2);  
         // }
             if(SC42!=0 && SC41!=0) h1_sc41_sc42->Fill(SC41-SC42);
-            h1_dT->Fill(T2 - T1);
+            if(T2!=0 && T1!=0) h1_dT->Fill(T2 - T1);
         
             if(X12!=0 && X11!=0) h2_dX1_dT->Fill(X12-X11, T2-T1);
             if(Y12!=0 && Y11!=0) h2_dY1_dT->Fill(Y12-Y11, T2-T1);
@@ -204,6 +207,8 @@ void H10MCPNearlineSpectra::Exec(Option_t* option)
 			if(X22!=0 && X21!=0 && Y22!=0 && Y21!=0 &&X12!=0 && X11!=0 && Y12!=0 && Y11!=0 && gateBoxright->IsInside(X22 - X21, Y22 - Y21)) MCP2Heatmapgatedright->Fill(X22-X21, Y22-Y21);
             if(X22!=0 && X21!=0 && Y22!=0 && Y21!=0 &&X12!=0 && X11!=0 && Y12!=0 && Y11!=0 && gateBoxcenter->IsInside(X22 - X21, Y22 - Y21)) MCP1Heatmapgatedcenter->Fill(X12-X11, Y12-Y11);
             if(X22!=0 && X21!=0 && Y22!=0 && Y21!=0 &&X12!=0 && X11!=0 && Y12!=0 && Y11!=0 && gateBoxcenter->IsInside(X22 - X21, Y22 - Y21)) MCP2Heatmapgatedcenter->Fill(X22-X21, Y22-Y21);
+			if(X22!=0 && X21!=0 && Y22!=0 && Y21!=0 &&X12!=0 && X11!=0 && Y12!=0 && Y11!=0 && gateBoxtop->IsInside(X22 - X21, Y22 - Y21)) MCP2Heatmapgatedtop->Fill(X22-X21, Y22-Y21);
+            if( T1!=0 && T2!=0  && X22!=0 && X21!=0 && Y22!=0 && Y21!=0 &&X12!=0 && X11!=0 && Y12!=0 && Y11!=0 && gateBoxcenter->IsInside(X22 - X21, Y22 - Y21) && gateBoxcenter->IsInside(X12 - X11, Y12 - Y11)) MCPcentergatedtime->Fill(T2-T1);
 
         }
     }
