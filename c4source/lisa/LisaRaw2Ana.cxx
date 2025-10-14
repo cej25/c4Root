@@ -38,6 +38,7 @@
 // c4
 #include "LisaRaw2Ana.h"
 #include "c4Logger.h"
+#include "Atima.h"
 
 // ROOT
 
@@ -102,6 +103,22 @@ void LisaRaw2Ana::Exec(Option_t* option)
     double baseline_sum;
     int baseline_count;
     double baseline_avg;
+
+    
+    // catima::Material water({ // material with 2 atoms
+    //     {1,1,2}, // 1H - two atoms
+    //     {16,8,1} // 16O - 1 atom
+    // });
+    // water.density(1.0).thickness(2.0);
+    // catima::Projectile carbon(12,6); // define projectile, ie 12C
+
+    Atima at;
+    // at.DefineTarget(water);
+    // at.DefineProjectile(carbon);
+
+    at.Calculate(carbon, catima::get_compound(catima::material::Air).density(1.0).thickness(1.0), 400);
+    
+    
 
     for (auto const & lisaItem : *lisaArray)
     {

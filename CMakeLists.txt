@@ -68,6 +68,7 @@ else()
   find_package(FairRoot)
 endif()
 
+
 # FairRoot_VERSION is eventually set by find_package, for now let's set it explicitly
 execute_process(
   COMMAND ${FAIRROOTPATH}/bin/fairroot-config --version
@@ -251,6 +252,8 @@ find_package2(PUBLIC Git)
 set (Git_VERSION ${GIT_VERSION_STRING})
 string(REPLACE "git" " " Git_ROOT ${GIT_EXECUTABLE} )
 
+
+
 # Check the compiler and set the compile and link flags
 check_compiler()
 
@@ -342,9 +345,9 @@ endif()
 SetBasicVariables()
 
 # Set the library version in the main CMakeLists.txt
-set(C4ROOT_MAJOR_VERSION 0)
+set(C4ROOT_MAJOR_VERSION 1)
 set(C4ROOT_MINOR_VERSION 0)
-set(C4ROOT_PATCH_VERSION 0)
+set(C4ROOT_PATCH_VERSION 1)
 set(C4ROOT_VERSION "${FairRoot_VERSION}")
 
 if(NOT DEFINED ROOT_FOUND_VERSION)
@@ -384,6 +387,10 @@ configure_file(${CMAKE_SOURCE_DIR}/cmake/scripts/c4RootConfigVersion.cmake.in "$
 
 c4_generate_version_info()
 
+
+option(WITH_ATIMA "Build ATIMA system (requires Catima library)" OFF)
+
+
 # Recurse into the given subdirectories.  This does not actually cause another cmake executable to
 # run.  The same process will walk through the project's entire directory structure.
 
@@ -404,6 +411,11 @@ if(NOT MODULE)
     add_subdirectory(c4data)
     add_subdirectory(compilehelper)
     add_subdirectory(analysis)
+    if(WITH_ATIMA)
+        add_subdirectory(atima)
+    else()
+        message(STATUS "Skipping ATIMA (Catima) because WITH_ATIMA=OFF")
+    endif()
     add_subdirectory(macros)
 endif(NOT MODULE)
 
