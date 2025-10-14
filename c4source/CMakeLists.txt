@@ -6,6 +6,7 @@ ${ucesb_INCLUDE_DIR}
 
 set(INCLUDE_DIRECTORIES
 #put here all directories where header files are located
+${C4ROOT_SOURCE_DIR}/atima
 ${C4ROOT_SOURCE_DIR}/c4base
 ${C4ROOT_SOURCE_DIR}/c4source
 ${C4ROOT_SOURCE_DIR}/c4source/base
@@ -125,7 +126,7 @@ set(LINKDEF SourceLinkDef.h)
 set(DEPENDENCIES
     GeoBase ParBase Base FairTools
     c4Base c4Data Core Geom GenVector
-    Physics Matrix MathCore
+    Physics Matrix MathCore c4Atima
     ${ucesb_LIBRARY_SHARED})
 #MbsAPI
 set(LIBRARY_NAME c4source)
