@@ -5,7 +5,7 @@
 #include <sstream>
 
 // !!! Switch all tasks related to {subsystem} on (1)/off (0)
-#define LISA_ON 0
+#define LISA_ON 1
 #define FRS_ON 1
 
 // !!! Select the data level you want to visualize
@@ -17,7 +17,9 @@
 
 // Definition of setup and configuration files
 // FRS
-#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_020_2025_conv.C"
+#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_016_2025_setting10_conv.C" //run18
+//#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_020_2025_conv.C" //setting 20
+
 #define FRS_CONFIG_FILE "../../../config/shiyan/frs/general/frs_config_v5.C"
 // LISA
 #define LISA_CONFIG_FILE "../../../config/shiyan/lisa/general/lisa_config_v2.C"
@@ -81,11 +83,11 @@ void e_shiyan_make_trees()
     
     // ::: FILE  PATH
     TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s103_files/ts/";                       // Data from LISA
-    TString filename = inputpath + "run_0143_0001.lmd";
+    TString filename = inputpath + "run_0018_0001.lmd";
 
     // ::: OUTPUT 
-    TString outputpath = "/u/gandolfo/data/shiyan_debug/";   //testing
-    TString outputFilename = outputpath + "run_0143_0001_cal_v13.root";
+    TString outputpath = "/u/gandolfo/data/shiyan_debug/catima/";   //testing
+    TString outputFilename = outputpath + "run_0018_0001_ref.root";
     
     // ::: Create online run
     Int_t refresh = 10; // not needed

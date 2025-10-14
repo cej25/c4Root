@@ -153,9 +153,9 @@ void LisaCal2Hit::Exec(Option_t* option)
         {
 
             // Temporary parameters waiting to include **ATIMA**
-            //beta_before_lisa_temp = beta0[i]*1.10803131 - 0.08726895; // For primary - run6
-            beta_before_lisa_temp = beta0[i]*1.06624748 - 0.05737375; // For primary - run18
-            //beta_before_lisa_temp = beta0[i]*1.09924082 - 0.0812071; // For primary - run19
+            //beta_before_lisa_temp = beta0[i]*1.09105309 - 0.07362279; // For primary - run6
+            beta_before_lisa_temp = beta0[i]*1.05614604 - 0.04864503; // For primary - run18
+            //beta_before_lisa_temp = beta0[i]*1.08374666 - 0.06858425; // For primary - run19
 
             beta_before_lisa.emplace_back(beta_before_lisa_temp);
             copy_beta_before_lisa.emplace_back(beta_before_lisa_temp);

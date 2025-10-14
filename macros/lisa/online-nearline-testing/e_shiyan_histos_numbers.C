@@ -5,15 +5,15 @@
 #include <sstream>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define LISA_ON 1
+#define LISA_ON 0
 #define LISA_ANA 0
-#define LISA_CAL 1
+#define LISA_CAL 0
 
 // If you want to have trace histos
-#define TRACE_ON 1
+#define TRACE_ON 0
 
 #define FRS_ON 1
-#define FRS_LISA_CORRELATIONS 1
+#define FRS_LISA_CORRELATIONS 0
 
 #define WR_ENABLED 1
 //................................................
@@ -66,12 +66,12 @@ void e_shiyan_histos_numbers(int fileNumber)
 
     // ::: P A T H   O F   F I L E  to read
     //TString inputpath = "/u/gandolfo/data/lustre/gamma/lisa_s092/trees/";
-    TString inputpath = "/u/gandolfo/data/shiyan_debug/";
+    TString inputpath = "/u/gandolfo/data/lustre/gamma/gandolfo_LISA_c4/trees_shiyan_setting20/";
     TString filename = Form(inputpath + "run_%04d_tree.root",fileNumber);  
     
     // ::: O U T P U T
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/lisa_s092/histos/";
-    TString outputpath = "/u/gandolfo/data/shiyan_debug/";   //energy resolution output
+    TString outputpath = "/u/gandolfo/data/lustre/gamma/gandolfo_LISA_c4/histos_shiyan_setting20/";   //energy resolution output
     TString outputFilename = Form(outputpath + "run_%04d_histo.root",fileNumber);
 
 
