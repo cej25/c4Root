@@ -116,7 +116,7 @@ void LisaRaw2Ana::Exec(Option_t* option)
     // at.DefineTarget(water);
     // at.DefineProjectile(carbon);
 
-    at.Calculate(carbon, water, 400);
+    at.Calculate(carbon, catima::get_compound(catima::material::Air).density(1.0).thickness(1.0), 400);
     
     
 
