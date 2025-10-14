@@ -116,7 +116,7 @@ void LisaRaw2Ana::Exec(Option_t* option)
     // at.DefineTarget(water);
     // at.DefineProjectile(carbon);
 
-    at.Calculate(carbon, water, 400);//hello
+    at.Calculate(carbon, water, 400);
     
     
 
