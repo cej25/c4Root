@@ -26,7 +26,7 @@ class Atima
 class Material : public catima::Material
 {
     public:
-        Material(std::initializer_list<std::array<Double_t, 3>>list) : catima::Material(list) {}; // A, Z, not sure what 3rd is
+        Material(std::initializer_list<std::array<Double_t, 3>>list) : catima::Material(list) {}; // A, Z, Stoich#
         Material(std::initializer_list<std::array<Double_t, 3>>list, Double_t d) : catima::Material(list) { this->density(d); } // input optional density
         Material(std::initializer_list<std::array<Double_t, 3>>list, Double_t d, Double_t t) : catima::Material(list) { this->density(d).thickness(t); } // input optional density, thickness
 };
