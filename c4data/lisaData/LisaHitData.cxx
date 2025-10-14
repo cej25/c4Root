@@ -60,6 +60,7 @@ void LisaHitItem::SetAll(uint64_t wr,
                         int ov,
                         //int ov_MWD
                         int greact,
+                        int greact_z,
                         int lreact_z,
                         int afterl_react_z
                         )
@@ -99,6 +100,7 @@ void LisaHitItem::SetAll(uint64_t wr,
     overflow = ov;
     //overflow_MWD = ov_MWD;
     global_reactions = greact;
+    global_reactions_on_lisa_z = greact_z;
     lisa_reactions_z = lreact_z;
     after_lisa_reactions_z = afterl_react_z;
 }
@@ -142,6 +144,7 @@ void LisaHitItem::Reset()
     overflow = 0;
     //overflow_MWD = 0; //-1
     global_reactions = -5;
+    global_reactions_on_lisa_z = -5;
     lisa_reactions_z = -5;
     after_lisa_reactions_z = -5;
 

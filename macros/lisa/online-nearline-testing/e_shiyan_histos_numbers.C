@@ -37,7 +37,7 @@ typedef struct EXT_STR_h101_t
 
 } EXT_STR_h101;
 
-void e_shiyan_histos()
+void e_shiyan_histos_numbers(int fileNumber)
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     // ::: Experiment name
@@ -67,12 +67,12 @@ void e_shiyan_histos()
     // ::: P A T H   O F   F I L E  to read
     //TString inputpath = "/u/gandolfo/data/lustre/gamma/lisa_s092/trees/";
     TString inputpath = "/u/gandolfo/data/shiyan_debug/";
-    TString filename = inputpath + "run_0018_frs_cal_test_0002.root";  
+    TString filename = Form(inputpath + "run_%04d_tree.root",fileNumber);  
     
     // ::: O U T P U T
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/lisa_s092/histos/";
     TString outputpath = "/u/gandolfo/data/shiyan_debug/";   //energy resolution output
-    TString outputFilename = outputpath + "run_0018_frs_cal_test_histos_0002.root";
+    TString outputFilename = Form(outputpath + "run_%04d_histo.root",fileNumber);
 
 
     FairRunAna* run = new FairRunAna();

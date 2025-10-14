@@ -51,7 +51,7 @@ std::string readFileToString(const std::string& path)
     return buffer.str();
 }
 
-void e_shiyan_make_trees()
+void e_shiyan_make_trees_numbers(int fileNumber)
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     // ::: Experiment name
@@ -81,11 +81,11 @@ void e_shiyan_make_trees()
     
     // ::: FILE  PATH
     TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s103_files/ts/";                       // Data from LISA
-    TString filename = inputpath + "run_0143_0001.lmd";
+    TString filename = Form(inputpath + "run_%04d_*.lmd",fileNumber);
 
     // ::: OUTPUT 
-    TString outputpath = "/u/gandolfo/data/shiyan_debug/";   //testing
-    TString outputFilename = outputpath + "run_0143_0001_cal_v13.root";
+    TString outputpath = "/u/gandolfo/data/lustre/gamma/gandolfo_LISA_c4/trees_shiyan_setting20/";   //testing
+    TString outputFilename = Form(outputpath + "run_%04d_tree.root",fileNumber);
     
     // ::: Create online run
     Int_t refresh = 10; // not needed
