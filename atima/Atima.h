@@ -9,45 +9,33 @@
 
 class TFrsConfiguration;
 
-struct Layer
-{
-    catima::Material material;
-    Double_t thickness; //g/cm2
-};
-
 class Atima
 {
     public:
         Atima();
         ~Atima() {};
 
-        void AddLayerShiyan(catima::Material m, Double_t thickness)  { shiyan_s1s2.push_back({m, thickness}); }
-        void ClearShiyan() { shiyan_s1s2.clear(); }
-
-        void AddLayerPareeksha(catima::Material m, Double_t thickness)  { pareeksha_s1s2.push_back({m, thickness}); }
-        void ClearPareeksha() { pareeksha_s1s2.clear(); }
+        void AddLayer(catima::Material m);
+        void ClearStack() { shiyan_s1s2.clear(); }
 
         void Calculate(); // use default or pre-set projectile/target
-        void Calculate(catima::Projectile p, catima::Material t, Double_t e); // input newly created materials from external Task
-        
+        void Calculate(catima::Projectile p, catima::Material t, Double_t e);
+
         void DefineProjectile(catima::Projectile p) { projectile = p; }
         void DefineTarget(catima::Material t) { target = t; }
 
-        void BuildShiyanMaterial();
-        void BuildPareekshaMaterial();
+        void BuildMaterial();
 
-        Double_t CalculateEnergyLossShiyan(const catima::Projectile& proj, Double_t E_initial);
-
-
+        Double_t CalculateEnergyLoss(const catima::Projectile& proj, Double_t E_initial);
 
         catima::Projectile projectile;
         catima::Material target;
 
         Double_t E; // MeV per nucleon
-        std::vector<Layer> shiyan_s1s2;
-        std::vector<Layer> pareeksha_s1s2;
+        std::vector<catima::Material> shiyan_s1s2;
+        std::vector<catima::Material> pareeksha_s1s2;
 
-        TFrsConfiguration const* frs_config; //private?)
+        TFrsConfiguration const* frs_config; //private?
 
     
 };
@@ -73,22 +61,6 @@ Material water({
     {16, 8, 1}},
     1.0,
     2.0);
-
-Material EJ230({
-    {1,1,10},
-    {6,6,9}});
-
-Material Ti({
-    {48, 22, 1}},
-    4.519);  
-
-Material Al({
-    {27,13,1}},
-    2.702);
-
-Material Fe({
-    {56,26,1}},
-    7.866);
 
 
 Projectile carbon(12, 6);

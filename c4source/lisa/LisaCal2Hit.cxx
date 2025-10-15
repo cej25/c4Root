@@ -158,9 +158,9 @@ void LisaCal2Hit::Exec(Option_t* option)
             //beta_before_lisa_temp = beta0[i]*1.08374666 - 0.06858425; // For primary - run19
 
             catima::Projectile carbon(12, 6);
-            Double_t Ein = 0.5;
+            Double_t Ein = 300;
 
-            Double_t dE = atima.CalculateEnergyLossShiyan(carbon,Ein);
+            Double_t dE = atima.CalculateEnergyLoss(carbon,Ein);
             std::cout << "Total ΔE = " << dE << " MeV/u" << std::endl;
 
             beta_before_lisa.emplace_back(beta_before_lisa_temp);

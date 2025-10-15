@@ -6,10 +6,15 @@
 
 Atima::Atima()
 {
-    BuildShiyanMaterial();
+    BuildMaterial();
     frs_config = TFrsConfiguration::GetInstance();
 };
 
+void Atima::AddLayer(catima::Material m)
+{
+    shiyan_s1s2.push_back(m); 
+    //pareeksha_s1s2.push_back(m);
+}
 
 void Atima::Calculate(catima::Projectile p, catima::Material t, Double_t e)
 {
@@ -20,38 +25,37 @@ void Atima::Calculate(catima::Projectile p, catima::Material t, Double_t e)
 	
 };
 
-// Build Material from SCI21 until just before LISA layer 1
-void Atima::BuildShiyanMaterial()
+// Build Material from SCI21 until just before LISA layer 1 -- Shiyan
+void Atima::BuildMaterial()
 {
-    ClearShiyan();
+    ClearStack();
 
-    Layer sci21{EJ230.density(1.032), 0.1416936};
-    Layer tpc22_pocket{Ti, 0.09038};
-    Layer tpc22_gas{catima::get_compound(catima::material::P10), 0.0141};
-    Layer degrader{Al, 0.735};
-    Layer window{Fe, 0.07866};
-    Layer air_1{catima::get_compound(catima::material::Air), 0.02169};
-    Layer tpc23_windows{catima::get_compound(catima::material::Mylar), 0.00709676};
-    Layer tpc23_gas{catima::get_compound(catima::material::P10), 0.0141};
-    Layer air_2{catima::get_compound(catima::material::Air), 0.0150625};
-    Layer music21_windows{catima::get_compound(catima::material::Kapton), 0.000639};
-    Layer music21_gas{catima::get_compound(catima::material::P10), 0.06042};
-    Layer air_3{catima::get_compound(catima::material::Air), 0.008676};
-    Layer lisa_window{Ti, 0.009038};
-    
-    AddLayerShiyan(sci21.material, sci21.thickness);
-    AddLayerShiyan(tpc22_pocket.material, tpc22_pocket.thickness);
-    AddLayerShiyan(tpc22_gas.material, tpc22_gas.thickness);
-    /*if(frs_config->s2_degrader_in == true)*/AddLayerShiyan(degrader.material, degrader.thickness); //not in for most of the primary runs
-    AddLayerShiyan(window.material,window.thickness);
-    AddLayerShiyan(air_1.material, air_1.thickness);
-    AddLayerShiyan(tpc23_windows.material, tpc23_windows.thickness);
-    AddLayerShiyan(tpc23_gas.material, tpc23_gas.thickness);
-    AddLayerShiyan(air_2.material, air_2.thickness);
-    AddLayerShiyan(music21_windows.material, music21_windows.thickness);
-    AddLayerShiyan(music21_gas.material, music21_gas.thickness);
-    AddLayerShiyan(air_3.material, air_3.thickness);
-    AddLayerShiyan(lisa_window.material, lisa_window.thickness);
+    // SCI21 - EJ230
+    AddLayer(Material({{1,1,10}, {6,6,9}}, 1.032, 0.1416936));
+    // TPC22 pocket Ti
+    AddLayer(Material({{48,22,1}}, 4.519, 0.09038));
+    // TPC22 gas 
+    AddLayer(catima::get_compound(catima::material::P10).density(0.00159).thickness(0.0141));
+    // Degrader Al
+    /*if(frs_config->degrader_in == true)*/AddLayer(Material({{27,13,1}}, 2.702, 0.735));
+    // Vacuum Window Fe
+    AddLayer(Material({{56,26,1}}, 7.866, 0.07866));
+    // Air
+    AddLayer(catima::get_compound(catima::material::Air).density(0.001205).thickness(0.02169));
+    // TPC23 windows
+    AddLayer(catima::get_compound(catima::material::Mylar).density(1.39).thickness(0.00709676));
+    // TPC23 gas
+    AddLayer(catima::get_compound(catima::material::P10).density(0.00159).thickness(0.0141));
+    // Air
+    AddLayer(catima::get_compound(catima::material::Air).density(0.001205).thickness(0.0150625));
+    // Music21 windows 
+    AddLayer(catima::get_compound(catima::material::Kapton).density(1.42).thickness(0.000639));
+    // Music21 gas
+    AddLayer(catima::get_compound(catima::material::P10).density(0.00159).thickness(0.06042));
+    // Air
+    AddLayer(catima::get_compound(catima::material::Air).density(0.001205).thickness(0.008676));
+    // LISA window Ti
+    AddLayer(Material({{48,22,1}}, 4.519, 0.009038)); 
 
     // === Print summary only once ===
     static bool printed = false;
@@ -73,138 +77,87 @@ void Atima::BuildShiyanMaterial()
                 << std::endl;
         std::cout << "------------------------------------------------------------" << std::endl;
 
-        for (size_t i = 0; i < shiyan_s1s2.size(); ++i) {
-            const auto& layer = shiyan_s1s2[i];
+        for(size_t i = 0; i < shiyan_s1s2.size(); ++i)
+        {
+            const auto& m = shiyan_s1s2[i];
             std::cout << std::left
-                    << std::setw(20) << names[i]
-                    << std::setw(15) << layer.thickness
-                    << std::setw(15) << layer.material.density()
-                    << std::endl;
+                      << std::setw(20) << names[i]
+                      << std::setw(15) << m.thickness()
+                      << std::setw(15) << m.density()
+                      << std::endl;
         }
-        std::cout << "------------------------------------------------------------" << std::endl;
+        std::cout << "------------------------------------------------------------\n";
     }
 
 }
 
 // Calculate Energy Loss in ShiyanMaterial
-Double_t Atima::CalculateEnergyLossShiyan(const catima::Projectile& proj, Double_t E_initial)
+Double_t Atima::CalculateEnergyLoss(const catima::Projectile& proj, Double_t E_initial)
 {
     Double_t E_in = E_initial;
     Double_t total_loss = 0.0;
 
-    std::cout << "\n=== Energy loss calculation for Shiyan Material in S2 ===" << std::endl;
+    std::vector<std::string> names = {
+        "SCI21","TPC22 pocket","TPC22 gas","Degrader","Vacuum window",
+        "Air #1","TPC23 windows","TPC23 gas","Air #2",
+        "MUSIC21 windows","MUSIC21 gas","Air #3","LISA window"
+    };
+
+    std::cout << "\n=== Energy loss through Shiyan stack ===\n";
     std::cout << std::left
               << std::setw(20) << "Layer"
               << std::setw(15) << "E_in [MeV/u]"
               << std::setw(15) << "E_out [MeV/u]"
-              << std::setw(15) << "ΔE [MeV/u]"
-              << std::endl;
-    std::cout << "---------------------------------------------------------------" << std::endl;
-    std::vector<std::string> names = 
-    {
-        "SCI21", "TPC22 pocket", "TPC22 gas", "Degrader", "Vacuum window",
-        "Air #1", "TPC23 windows", "TPC23 gas", "Air #2",
-        "MUSIC21 windows", "MUSIC21 gas", "Air #3", "LISA window"
-    };
+              << std::setw(15) << "ΔE [MeV/u]" << std::endl;
+    std::cout << "---------------------------------------------------------------\n";
 
-    for (size_t i = 0; i < shiyan_s1s2.size(); ++i)
+    for(size_t i = 0; i < shiyan_s1s2.size(); ++i)
     {
-        const auto& layer = shiyan_s1s2[i];
-        // Calculate energy after current layer of matter in S2
-        auto result = catima::calculate(proj, layer.material, E_in);
-        Double_t E_out = result.Eout;  // energy after the layer (MeV/u)
+        catima::Material m = shiyan_s1s2[i]; // copy material with thickness
+        auto result = catima::calculate(proj, m, E_in);
+        Double_t E_out = result.Eout;
         Double_t dE = E_in - E_out;
 
         std::cout << std::left
                   << std::setw(20) << names[i]
                   << std::setw(15) << E_in
                   << std::setw(15) << E_out
-                  << std::setw(15) << dE
-                  << std::endl;
+                  << std::setw(15) << dE << std::endl;
 
         total_loss += dE;
-        E_in = E_out; // energy entering next layer
+        E_in = E_out;
     }
 
-    std::cout << "---------------------------------------------------------------" << std::endl;
-    std::cout << "Total energy loss = " << total_loss << " MeV/u" << std::endl;
-    std::cout << "Final energy = " << E_in << " MeV/u" << std::endl;
-    std::cout << "===============================================================" << std::endl;
+    std::cout << "---------------------------------------------------------------\n";
+    std::cout << "Total ΔE = " << total_loss << " MeV/u, Final E = " << E_in << " MeV/u\n";
+    std::cout << "===============================================================\n";
 
     return total_loss;
 }
 
-// Build Material from SCI21 until just before LISA layer 1
-void Atima::BuildPareekshaMaterial()
-{
-    ClearPareeksha();
+// // Build Material from SCI21 until just before LISA layer 1 -- Pareeksha
+// void Atima::BuildMaterial()
+// {
+//     ClearStack();
 
-    Layer sci21{EJ230.density(1.032), 0.1032};
-    Layer tpc22_pocket{Ti, 0.09038};
-    Layer tpc22_gas{catima::get_compound(catima::material::P10), 0.0141};
-    Layer degrader{Al, 0.7302};
-    Layer window{Fe, 0.07866};
-    Layer air_1{catima::get_compound(catima::material::Air), 0.01205};
-    Layer sci22{EJ230.density(1.105), 0.1055275};
-    Layer sci22_backfoil{catima::get_compound(catima::material::Mylar), 0.015367};
-    Layer air_2{catima::get_compound(catima::material::Air), 0.01205};
-    Layer tpc23_windows{catima::get_compound(catima::material::Mylar), 0.00709676};
-    Layer tpc23_gas{catima::get_compound(catima::material::P10), 0.0141};
-    Layer air_3{catima::get_compound(catima::material::Air), 0.017111};
-    Layer music21_windows{catima::get_compound(catima::material::Kapton), 0.000639};
-    Layer music21_gas{catima::get_compound(catima::material::P10), 0.06042};
-    Layer air_4{catima::get_compound(catima::material::Air), 0.00723};
-    Layer lisa_window{Ti, 0.0094732249};
+//     AddLayer(EJ230.density(1.032).thickness(0.1032));
+//     AddLayer(Ti);
+//     AddLayer(catima::get_compound(catima::material::P10).density(1.0).thickness(0.0141));
+//     /*if(frs_config->degrader_in == true)*/AddLayer(Al.density(2.702).thickness(0.7302));
+//     AddLayer(Fe);
+//     AddLayer(catima::get_compound(catima::material::Air).density(1.0).thickness(0.01205));
+//     AddLayer(EJ230.density(1.105).thickness(0.1055275));
+//     AddLayer(catima::get_compound(catima::material::Mylar).density(1.0).thickness(0.015367));
+//     AddLayer(catima::get_compound(catima::material::Air).density(1.0).thickness(0.01205));
+//     AddLayer(catima::get_compound(catima::material::Mylar).density(1.0).thickness(0.00709676));
+//     AddLayer(catima::get_compound(catima::material::P10).density(1.0).thickness(0.0141));
+//     AddLayer(catima::get_compound(catima::material::Air).density(1.0).thickness(0.017111));
+//     AddLayer(catima::get_compound(catima::material::Kapton).density(1.42).thickness(0.000639));
+//     AddLayer(catima::get_compound(catima::material::P10).density(1.0).thickness(0.06042));
+//     AddLayer(catima::get_compound(catima::material::Air).density(1.0).thickness(0.00723));
+//     AddLayer(Ti.density(4.519).thickness(0.0094732249));
 
-    AddLayerPareeksha(sci21.material, sci21.thickness);
-    AddLayerPareeksha(tpc22_pocket.material, tpc22_pocket.thickness);
-    AddLayerPareeksha(tpc22_gas.material, tpc22_gas.thickness);
-    /*if(frs_config->degrader_in == true)*/ AddLayerPareeksha(degrader.material, degrader.thickness);
-    AddLayerPareeksha(window.material, window.thickness);
-    AddLayerPareeksha(air_1.material, air_1.thickness);
-    AddLayerPareeksha(sci22.material, sci22.thickness);
-    AddLayerPareeksha(sci22_backfoil.material, sci22_backfoil.thickness);
-    AddLayerPareeksha(air_2.material, air_2.thickness);
-    AddLayerPareeksha(tpc23_windows.material, tpc23_windows.thickness);
-    AddLayerPareeksha(tpc23_gas.material, tpc23_gas.thickness);
-    AddLayerPareeksha(air_3.material, air_3.thickness);
-    AddLayerPareeksha(music21_windows.material, music21_windows.thickness);
-    AddLayerPareeksha(music21_gas.material, music21_gas.thickness);
-    AddLayerPareeksha(air_4.material, air_4.thickness);
-    AddLayerPareeksha(lisa_window.material, lisa_window.thickness);
-
-    // === Print summary only once ===
-    static bool printed = false;
-    if (!printed) 
-    {
-        printed = true;
-
-        std::vector<std::string> names = {
-            "SCI21", "TPC22 pocket", "TPC22 gas", "Degrader", "Vacuum window",
-            "Air #1", "SCI22", "SCI22 backfoil", "Air #2",
-            "TPC23 windows", "TPC23 gas", "Air #3",
-            "MUSIC21 windows", "MUSIC21 gas", "Air #4", "LISA window"
-        };
-
-        std::cout << "\n===== Pareeksha S1-S2 Material Stack =====" << std::endl;
-        std::cout << std::left
-                  << std::setw(20) << "Material"
-                  << std::setw(15) << "Thickness [g/cm²]"
-                  << std::setw(15) << "Density [g/cm³]"
-                  << std::endl;
-        std::cout << "------------------------------------------------------------" << std::endl;
-
-        for (size_t i = 0; i < pareeksha_s1s2.size(); ++i) {
-            const auto& layer = pareeksha_s1s2[i];
-            std::cout << std::left
-                      << std::setw(20) << names[i]
-                      << std::setw(15) << layer.thickness
-                      << std::setw(15) << layer.material.density()
-                      << std::endl;
-        }
-        std::cout << "------------------------------------------------------------" << std::endl;
-    }
-}
+// }
 
 
 
