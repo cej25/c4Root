@@ -87,7 +87,7 @@ void e_shiyan_make_trees()
 
     // ::: OUTPUT 
     TString outputpath = "/u/gandolfo/data/shiyan_debug/catima/";   //testing
-    TString outputFilename = outputpath + "run_0018_0001_ref.root";
+    TString outputFilename = outputpath + "run_0018_0001_atima.root";
     
     // ::: Create online run
     Int_t refresh = 10; // not needed

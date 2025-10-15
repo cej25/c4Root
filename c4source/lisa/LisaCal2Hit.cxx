@@ -26,6 +26,7 @@
 #include "LisaCal2Hit.h"
 #include "FrsHitData.h"
 #include "c4Logger.h"
+#include "Atima.h"
 
 // ROOT
 #include "TClonesArray.h"
@@ -102,12 +103,11 @@ InitStatus LisaCal2Hit::Init()
 
 void LisaCal2Hit::Exec(Option_t* option)
 {
-    
+    Atima atima;
     //c4LOG(info, " ::: LISA start of event");
     lisaHitArray->clear();
     if (frsHitArray->size() <= 0 || lisaCalArray->size() <= 0 || multihitArray->size() <= 0) return;  
 
-    
     const auto & frsHitItem = frsHitArray->at(0);
     const auto & multihitItem = multihitArray->at(0);
 
@@ -156,6 +156,12 @@ void LisaCal2Hit::Exec(Option_t* option)
             //beta_before_lisa_temp = beta0[i]*1.09105309 - 0.07362279; // For primary - run6
             beta_before_lisa_temp = beta0[i]*1.05614604 - 0.04864503; // For primary - run18
             //beta_before_lisa_temp = beta0[i]*1.08374666 - 0.06858425; // For primary - run19
+
+            catima::Projectile carbon(12, 6);
+            Double_t Ein = 0.5;
+
+            Double_t dE = atima.CalculateEnergyLossShiyan(carbon,Ein);
+            std::cout << "Total ΔE = " << dE << " MeV/u" << std::endl;
 
             beta_before_lisa.emplace_back(beta_before_lisa_temp);
             copy_beta_before_lisa.emplace_back(beta_before_lisa_temp);

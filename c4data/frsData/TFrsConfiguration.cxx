@@ -52,8 +52,9 @@ Int_t TFrsConfiguration::ftof_4221_min = 0., TFrsConfiguration::ftof_4221_max = 
 Int_t TFrsConfiguration::ftof_4321_min = 0., TFrsConfiguration::ftof_4321_max = 400.;
 Int_t TFrsConfiguration::ftof_3121_min = 0., TFrsConfiguration::ftof_3121_max = 400.;
 
-
 int TFrsConfiguration::frun_num = 0;
+
+bool TFrsConfiguration::s2_degrader_in = 1;
 
 TFrsConfiguration::TFrsConfiguration()
 {

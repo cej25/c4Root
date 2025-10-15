@@ -143,6 +143,10 @@ class TFrsConfiguration
         std::map<int, std::pair<double,double>> Z1DriftCoefficients() const;
         bool Z1DriftLoaded() const;
 
+        //Degrader in s2 area 
+        static void SetS2DegraderIn(bool s2_deg_in) { s2_degrader_in = s2_deg_in; }
+        static bool s2_degrader_in;
+
         Int_t Get_music_e_geo() const;
 
         // tac
