@@ -8,6 +8,7 @@
 #include "FimpCalData.h"
 #include <map>
 #include <vector>
+#include "FairTask.h"
 
 class EventHeader;
 class FimpItem;

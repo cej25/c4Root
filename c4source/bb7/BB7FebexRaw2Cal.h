@@ -8,6 +8,7 @@
 #include "BB7FebexCalData.h"
 #include <map>
 #include <vector>
+#include "FairTask.h"
 
 class EventHeader;
 class BB7FebexItem;

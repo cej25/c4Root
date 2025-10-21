@@ -6,6 +6,7 @@
 #include "TFRSParameter.h"
 #include "FrsData.h"
 #include "FrsCalData.h"
+#include "FairTask.h"
 
 #include <vector>
 #include <TRandom3.h>

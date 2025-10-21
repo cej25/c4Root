@@ -16,6 +16,7 @@
 #include <map>
 #include <vector>
 #include "TVector.h"
+#include "FairTask.h"
 
 class EventHeader;
 class LisaItem;

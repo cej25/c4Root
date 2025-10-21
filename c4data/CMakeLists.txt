@@ -19,7 +19,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/mcpData
 ${C4ROOT_SOURCE_DIR}/c4data/stefanData
 ${C4ROOT_SOURCE_DIR}/c4source
 ${C4ROOT_SOURCE_DIR}/c4source/base
-${C4ROOT_SOURCE_DIR}/c4source/frs
+# ${C4ROOT_SOURCE_DIR}/c4source/frs
 )
 
 include_directories(${INCLUDE_DIRECTORIES})
@@ -28,6 +28,21 @@ include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 set(LINK_DIRECTORIES ${ROOT_LIBRARY_DIR} ${FAIRROOT_LIBRARY_DIR})
 
 link_directories(${LINK_DIRECTORIES})
+
+add_subdirectory(baseData)
+add_subdirectory(aidaData)
+add_subdirectory(bb7Data)
+add_subdirectory(beammonitorData)
+add_subdirectory(bgoData)
+add_subdirectory(bplastData)
+#fatima
+#fimp
+#frs
+#germanium
+#lisa
+#mcp
+#stefan
+#timemachine
 
 set(SRCS
 frsData/FrsData.cxx
@@ -90,8 +105,7 @@ change_file_extension(*.cxx *.h HEADERS "${SRCS}")
 
 set(LINKDEF DataLinkDef.h)
 set(LIBRARY_NAME c4Data)
-#set(DEPENDENCIES Base FairTools ${VMCLIB} FairLogger::FairLogger)
-set(DEPENDENCIES Base FairTools FairLogger::FairLogger)
 
+set(DEPENDENCIES Base FairTools FairLogger::FairLogger)
 
 generate_library()

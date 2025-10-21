@@ -51,6 +51,21 @@ include_directories( ${INCLUDE_DIRECTORIES})
 include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 link_directories( ${LINK_DIRECTORIES})
 
+add_subdirectory(base) #always
+add_subdirectory(aida)
+add_subdirectory(bb7)
+add_subdirectory(beammonitor)
+add_subdirectory(bgo)
+add_subdirectory(bplast)
+add_subdirectory(fatima)
+add_subdirectory(fimp)
+add_subdirectory(frs)
+add_subdirectory(germanium)
+add_subdirectory(mcp)
+add_subdirectory(stefan)
+
+add_subdirectory(lisa)
+
 set(SRCS
 ./base/UcesbSource.cxx
 ./base/UnpackReader.cxx
@@ -126,9 +141,13 @@ set(LINKDEF SourceLinkDef.h)
 set(DEPENDENCIES
     GeoBase ParBase Base FairTools
     c4Base c4Data Core Geom GenVector
-    Physics Matrix MathCore c4Atima
+    Physics Matrix MathCore
     ${ucesb_LIBRARY_SHARED})
-#MbsAPI
+
+if (WITH_ATIMA)
+    list(APPEND DEPENDENCIES c4Atima)
+endif()
+
 set(LIBRARY_NAME c4source)
 
 GENERATE_LIBRARY()
