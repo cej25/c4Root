@@ -106,20 +106,11 @@ void LisaRaw2Ana::Exec(Option_t* option)
     int baseline_count;
     double baseline_avg;
 
-    
-   
-    // CEJ: 
-    // I think this can probably be set up to be similar to TLisaConfiguration
-    // Only defined/initialised once somewhere and then just used... will figure out
-    #ifdef WITH_ATIMA
-    Atima at;
 
-    // Just performs catima::calculate and prints dEdxi result for now. But allows us to be customisable.
-    at.Calculate(carbon, catima::get_compound(catima::material::Air).density(1.0).thickness(1.0), 100);
+    // Test
+    //Atima at;
+    //at.Calculate(carbon, catima::get_compound(catima::material::Air).density(1.0).thickness(1.0), 400);
     
-    #endif
-    
-
     for (auto const & lisaItem : *lisaArray)
     {
                

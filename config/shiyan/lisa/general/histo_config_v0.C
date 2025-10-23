@@ -63,11 +63,11 @@ void histo_config(const std::string& config_path)
     TLisaConfiguration::SetXYDetectorGate(2,1); 
 
     // F R S
-    FrsGate* Cr_1p = new FrsGate("Cr_1p",config_path + "/frs/Gates/Cr_1p_Z42.root");
-    FrsGate* Cr_1p1n = new FrsGate("Cr_1p1n",config_path + "/frs/Gates/Cr_1p1n_Z42.root");
+    FrsGate* Mn_1p = new FrsGate("Mn_1p",config_path + "/frs/Gates/Mn_1p_Z42.root");
+    FrsGate* Mn_1p1n = new FrsGate("Mn_1p1n",config_path + "/frs/Gates/Mn_1p1n_Z42.root");
 
-    fgs.emplace_back(Cr_1p);
-    fgs.emplace_back(Cr_1p1n);
+    fgs.emplace_back(Mn_1p);
+    fgs.emplace_back(Mn_1p1n);
 
     // L I S A 
     LisaGate* Wide_F1 = new LisaGate("wide_feb_1", "energy", config_path + "/lisa/Gates/Febex_Gate1shiyan.txt");

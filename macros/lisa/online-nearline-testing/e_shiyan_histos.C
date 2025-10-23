@@ -10,7 +10,7 @@
 #define LISA_CAL 1
 
 // If you want to have trace histos
-#define TRACE_ON 1
+#define TRACE_ON 0
 
 #define FRS_ON 1
 #define FRS_LISA_CORRELATIONS 1
@@ -66,13 +66,13 @@ void e_shiyan_histos()
 
     // ::: P A T H   O F   F I L E  to read
     //TString inputpath = "/u/gandolfo/data/lustre/gamma/lisa_s092/trees/";
-    TString inputpath = "/u/gandolfo/data/shiyan_debug/";
-    TString filename = inputpath + "run_0018_frs_cal_test_0002.root";  
+    TString inputpath = "/u/gandolfo/data/shiyan_debug/catima/";
+    TString filename = inputpath + "run_0018_0001_ref.root";  
     
     // ::: O U T P U T
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/lisa_s092/histos/";
-    TString outputpath = "/u/gandolfo/data/shiyan_debug/";   //energy resolution output
-    TString outputFilename = outputpath + "run_0018_frs_cal_test_histos_0002.root";
+    TString outputpath = "/u/gandolfo/data/shiyan_debug/catima/";   //energy resolution output
+    TString outputFilename = outputpath + "run_0018_0001_ref_histos.root";
 
 
     FairRunAna* run = new FairRunAna();
