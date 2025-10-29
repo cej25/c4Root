@@ -83,7 +83,9 @@ class LisaCal2Hit : public FairTask
         float z_val = 0;
 
         float beta_before_lisa_temp = 0;
+        float gamma_before_lisa = 0;
         float beta_trans = 0;
+        float beta_trans_s = 0;
         float beta_trans_after1 = 0;
         float beta_trans_after2 = 0;
         float beta_trans_after3 = 0;
@@ -98,6 +100,7 @@ class LisaCal2Hit : public FairTask
         int noReaction = -5;
         float beta;
         float gamma;
+        float gamma_s;
 
         float N_i;
         float A_i;
@@ -141,14 +144,20 @@ class LisaCal2Hit : public FairTask
         std::vector<Float_t> aoq_i;
         std::vector<Float_t> aoq_f;
         std::vector<Float_t> aoq_i_s;
+        std::vector<Float_t> A_i_s;
         std::vector<Float_t> aoq_f_s;
         std::vector<Float_t> z_i;
         std::vector<Float_t> z_f;
+        std::vector<Float_t> z_i_s;
+        std::vector<Float_t> z_f_s;
         std::vector<Float_t> beta_i;
+        std::vector<Float_t> beta_i_s;
         std::vector<Float_t> beta_f;
         std::vector<Float_t> gamma_i;
+        std::vector<Float_t> gamma_i_s;
         std::vector<Float_t> gamma_f;
         std::vector<Float_t> beta_en_i;
+        std::vector<Float_t> beta_en_i_s;
 
         std::vector<Float_t> sci21l_s1s2_selected;
         std::vector<Float_t> sci21r_s1s2_selected;

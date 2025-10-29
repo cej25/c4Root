@@ -38,9 +38,7 @@
 // c4
 #include "LisaRaw2Ana.h"
 #include "c4Logger.h"
-#ifdef WITH_ATIMA
-    #include "Atima.h"
-#endif
+
 
 // ROOT
 

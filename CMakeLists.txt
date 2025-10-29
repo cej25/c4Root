@@ -390,6 +390,19 @@ c4_generate_version_info()
 
 option(WITH_ATIMA "Build ATIMA system (requires Catima library)" OFF)
 
+#EG
+if(WITH_ATIMA)
+    add_definitions(-DWITH_ATIMA=1)
+else()
+    add_definitions(-DWITH_ATIMA=0)
+endif()
+
+#if(WITH_ATIMA)
+#    add_definitions(WITH_ATIMA=1)
+#    find_package(Catima REQUIRED)
+#    include_directories(${Catima_INCLUDE_DIRS})
+#    link_libraries(${Catima_LIBRARIES})
+#endif()
 
 # Recurse into the given subdirectories.  This does not actually cause another cmake executable to
 # run.  The same process will walk through the project's entire directory structure.

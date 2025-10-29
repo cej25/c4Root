@@ -590,6 +590,8 @@ class FrsCal2Hit : public FairTask
         std::vector<Float_t> id_mhtdc_aoq_corr_s1s2_selected;
         // std::vector<Float_t> id_mhtdc_v_cor_music21;
         std::vector<Float_t> id_mhtdc_z_music21;
+        std::vector<Float_t> id_mhtdc_z_music21_selected;
+
         std::vector<Float_t> id_mhtdc_z_shifted_music21;
         // std::vector<Float_t> id_mhtdc_v_cor_music22;
         std::vector<Float_t> id_mhtdc_z_music22;
@@ -606,8 +608,10 @@ class FrsCal2Hit : public FairTask
         std::vector<Float_t> id_mhtdc_aoq_corr_s2s4;
         std::vector<Float_t> id_mhtdc_aoq_corr_s2s4_selected;
         std::vector<Float_t> id_mhtdc_z_music41;
+        std::vector<Float_t> id_mhtdc_z_music41_selected;
         std::vector<Float_t> id_mhtdc_z_shifted_music41;
         std::vector<Float_t> id_mhtdc_z_music42;
+        std::vector<Float_t> id_mhtdc_z_music42_selected;
         std::vector<Float_t> id_mhtdc_z_shifted_music42;
         std::vector<Float_t> id_mhtdc_z_music43;
         std::vector<Float_t> id_mhtdc_z_shifted_music43;
