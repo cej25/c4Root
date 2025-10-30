@@ -39,6 +39,11 @@
 #include "LisaRaw2Ana.h"
 #include "c4Logger.h"
 
+// atima
+// #ifdef WITH_ATIMA
+//     #include "Atima.h"
+// #endif
+
 
 // ROOT
 
@@ -106,8 +111,9 @@ void LisaRaw2Ana::Exec(Option_t* option)
 
 
     // Test
-    //Atima at;
-    //at.Calculate(carbon, catima::get_compound(catima::material::Air).density(1.0).thickness(1.0), 400);
+    // #ifdef WITH_ATIMA
+    //     Atima at;
+    // #endif
     
     for (auto const & lisaItem : *lisaArray)
     {

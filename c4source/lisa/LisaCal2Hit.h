@@ -141,6 +141,11 @@ class LisaCal2Hit : public FairTask
         int layer5_reaction = 0;
         int after_lisa_reactions_z = 0;
 
+        // #ifdef WITH_ATIMA
+        //     std::vector<catima::Projectile> beams;
+        //     std::vector<Double_t> Ein_s;
+        //     std::vector<Double_t> Eout_s;
+        // #endif
         std::vector<Float_t> aoq_i;
         std::vector<Float_t> aoq_f;
         std::vector<Float_t> aoq_i_s;

@@ -27,6 +27,7 @@
 #include "FrsHitData.h"
 #include "c4Logger.h"
 
+// atima
 #ifdef WITH_ATIMA
     #include "Atima.h"
 #endif
@@ -162,29 +163,31 @@ void LisaCal2Hit::Exec(Option_t* option)
     {
         for(size_t i = 0; i < sci21l_s2s4_selected.size(); i++)
         {
-
+            
             // Temporary parameters waiting to include **ATIMA**
             //beta_before_lisa_temp = beta0[i]*1.09105309 - 0.07362279; // For primary - run6
             //beta_before_lisa_temp = beta0[i]*1.05614604 - 0.04864503; // For primary - run18
             //beta_before_lisa_temp = beta0[i]*1.08374666 - 0.06858425; // For primary - run19
 
+            A_i_s.emplace_back(aoq_i_s[i] * std::round(z_i_s[i]));
             gamma_s = 1.f / sqrt(1.f - TMath::Power(beta_i_s[i], 2));
             gamma_i_s.emplace_back(gamma_s);
-            beta_trans_s = (gamma_s -1.f)*(aoq_i_s[i]*std::round(z_i[i]))*conv_coeff;
+            beta_trans_s = (gamma_s -1.f)*(A_i_s[i])*conv_coeff;
             beta_en_i_s.emplace_back(beta_trans_s);
 
-
             #if WITH_ATIMA
-                A_i_s.emplace_back(aoq_i_s[i] * z_i_s[i]);
+                // defining the projectile with A[i] and z[i] makes everything so slow.
                 catima::Projectile beam(A_i_s[i], z_i_s[i]);
+                //catima::Projectile beam(50, 20); -- fast, even with Ein = beta/A
                 Double_t Ein = beta_en_i_s[i]/(A_i_s[i]);
                 Double_t dE = atima.CalculateEnergyLoss(beam, Ein);
+
                 Double_t Eout = (Ein - dE)*A_i_s[i];
                 //std::cout << "Total ΔE = " << dE << " MeV/u" << std::endl;
                 gamma_before_lisa = 1.0 + Eout / conv_coeff;
                 beta_before_lisa_temp = sqrt(1.0 - 1.0 / (gamma_before_lisa * gamma_before_lisa));
             #else
-                Double_t beta_before_lisa_temp = 0;
+                beta_before_lisa_temp = 0;
             #endif
 
             beta_before_lisa.emplace_back(beta_before_lisa_temp);
