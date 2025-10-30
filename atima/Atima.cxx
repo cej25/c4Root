@@ -136,17 +136,17 @@ Double_t Atima::CalculateEnergyLoss(const catima::Projectile& proj, Double_t E_i
 }
 
 // maybe do something like this for vector
-std::vector<Double_t> Atima::BatchCalculateLoss(const std::vector<catima::Projectile>& projs, const catima::Material& mat, const std::vector<Double_t>& Eins)
-{
-    std::vector<Double_t> losses;
-    losses.reserve(Eins.size());
-    for(size_t i=0; i<Eins.size(); ++i) {
-        auto res = catima::calculate(projs[i], mat, Eins[i]);
-        Double_t dE = Eins[i] - res.Eout; //but take energy out instead of dE
-        losses.push_back(dE);
-    }
-    return losses;
-}
+// std::vector<Double_t> Atima::BatchCalculateLoss(const std::vector<catima::Projectile>& projs, const catima::Material& mat, const std::vector<Double_t>& Eins)
+// {
+//     std::vector<Double_t> losses;
+//     losses.reserve(Eins.size());
+//     for(size_t i=0; i<Eins.size(); ++i) {
+//         auto res = catima::calculate(projs[i], mat, Eins[i]);
+//         Double_t dE = Eins[i] - res.Eout; //but take energy out instead of dE
+//         losses.push_back(dE);
+//     }
+//     return losses;
+// }
 
 // // Build Material from SCI21 until just before LISA layer 1 -- Pareeksha
 // void Atima::BuildMaterial()
