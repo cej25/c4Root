@@ -315,6 +315,7 @@ void FrsMultiHitItem::SetS1S2(std::vector<Float_t> s1x,
                     std::vector<Float_t> AoQ_corr_s1s2,
                     std::vector<Float_t> AoQ_corr_s1s2_selected,
                     std::vector<Float_t> z21,
+                    std::vector<Float_t> z21_selected,
                     std::vector<Float_t> z22)
 {
     fID_s1x_mhtdc = s1x;
@@ -330,6 +331,7 @@ void FrsMultiHitItem::SetS1S2(std::vector<Float_t> s1x,
     fID_AoQ_corr_s1s2_mhtdc = AoQ_corr_s1s2;
     fID_AoQ_corr_s1s2_selected_mhtdc = AoQ_corr_s1s2_selected;
     fID_z21_mhtdc = z21;
+    fID_z21_selected_mhtdc = z21_selected;
     fID_z22_mhtdc = z22;
 }
 
@@ -351,7 +353,9 @@ void FrsMultiHitItem::SetS2S4(std::vector<Float_t> s2x_s2s4,
             std::vector<Float_t> AoQ_corr_s2s4,
             std::vector<Float_t> AoQ_corr_s2s4_selected,
             std::vector<Float_t> z41,
+            std::vector<Float_t> z41_selected,
             std::vector<Float_t> z42,
+            std::vector<Float_t> z42_selected,
             std::vector<Float_t> z43,
             std::vector<Float_t> dEdegoQ,
             std::vector<Float_t> dEdeg_z41)
@@ -369,7 +373,9 @@ void FrsMultiHitItem::SetS2S4(std::vector<Float_t> s2x_s2s4,
     fID_AoQ_corr_s2s4_mhtdc = AoQ_corr_s2s4;
     fID_AoQ_corr_s2s4_selected_mhtdc = AoQ_corr_s2s4_selected;
     fID_z41_mhtdc = z41;
+    fID_z41_selected_mhtdc = z41_selected;
     fID_z42_mhtdc = z42;
+    fID_z42_selected_mhtdc = z42_selected;
     fID_z43_mhtdc = z43;
     fID_dEdegoQ_mhtdc = dEdegoQ;
     fID_dEdeg_z41_mhtdc = dEdeg_z41;

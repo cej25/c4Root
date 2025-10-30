@@ -26,7 +26,11 @@
 #include "LisaCal2Hit.h"
 #include "FrsHitData.h"
 #include "c4Logger.h"
-#include "Atima.h"
+
+// atima
+#ifdef WITH_ATIMA
+    #include "Atima.h"
+#endif
 
 // ROOT
 #include "TClonesArray.h"
@@ -103,8 +107,13 @@ InitStatus LisaCal2Hit::Init()
 
 void LisaCal2Hit::Exec(Option_t* option)
 {
-    Atima atima;
+    
     //c4LOG(info, " ::: LISA start of event");
+    
+    #ifdef WITH_ATIMA
+        Atima atima;
+    #endif
+
     lisaHitArray->clear();
     if (frsHitArray->size() <= 0 || lisaCalArray->size() <= 0 || multihitArray->size() <= 0) return;  
 
@@ -113,6 +122,7 @@ void LisaCal2Hit::Exec(Option_t* option)
 
     // For global reaction flag definition
     beta_i = multihitItem.Get_ID_beta_s1s2_mhtdc();
+    beta_i_s = multihitItem.Get_ID_beta_s1s2_selected_mhtdc();
     beta_f = multihitItem.Get_ID_beta_s2s4_mhtdc();
     aoq_i = multihitItem.Get_ID_AoQ_s1s2_mhtdc();
     aoq_f = multihitItem.Get_ID_AoQ_s2s4_mhtdc();
@@ -120,6 +130,8 @@ void LisaCal2Hit::Exec(Option_t* option)
     aoq_f_s = multihitItem.Get_ID_AoQ_corr_s2s4_selected_mhtdc();
     z_i = multihitItem.Get_ID_z21_mhtdc();
     z_f = multihitItem.Get_ID_z41_mhtdc();
+    z_i_s = multihitItem.Get_ID_z21_selected_mhtdc();
+    z_f_s = multihitItem.Get_ID_z41_selected_mhtdc();
     beta0 = multihitItem.Get_ID_beta_s1s2_selected_mhtdc();
     copy_beta0 = multihitItem.Get_ID_beta_s1s2_selected_mhtdc();
 
@@ -151,17 +163,32 @@ void LisaCal2Hit::Exec(Option_t* option)
     {
         for(size_t i = 0; i < sci21l_s2s4_selected.size(); i++)
         {
-
+            
             // Temporary parameters waiting to include **ATIMA**
             //beta_before_lisa_temp = beta0[i]*1.09105309 - 0.07362279; // For primary - run6
-            beta_before_lisa_temp = beta0[i]*1.05614604 - 0.04864503; // For primary - run18
+            //beta_before_lisa_temp = beta0[i]*1.05614604 - 0.04864503; // For primary - run18
             //beta_before_lisa_temp = beta0[i]*1.08374666 - 0.06858425; // For primary - run19
 
-            catima::Projectile carbon(12, 6);
-            Double_t Ein = 300;
+            A_i_s.emplace_back(aoq_i_s[i] * std::round(z_i_s[i]));
+            gamma_s = 1.f / sqrt(1.f - TMath::Power(beta_i_s[i], 2));
+            gamma_i_s.emplace_back(gamma_s);
+            beta_trans_s = (gamma_s -1.f)*(A_i_s[i])*conv_coeff;
+            beta_en_i_s.emplace_back(beta_trans_s);
 
-            Double_t dE = atima.CalculateEnergyLoss(carbon,Ein);
-            std::cout << "Total ΔE = " << dE << " MeV/u" << std::endl;
+            #if WITH_ATIMA
+                // defining the projectile with A[i] and z[i] makes everything so slow.
+                catima::Projectile beam(A_i_s[i], z_i_s[i]);
+                //catima::Projectile beam(50, 20); -- fast, even with Ein = beta/A
+                Double_t Ein = beta_en_i_s[i]/(A_i_s[i]);
+                Double_t dE = atima.CalculateEnergyLoss(beam, Ein);
+
+                Double_t Eout = (Ein - dE)*A_i_s[i];
+                std::cout << "Total ΔE = " << dE << " MeV/u" << std::endl;
+                gamma_before_lisa = 1.0 + Eout / conv_coeff;
+                beta_before_lisa_temp = sqrt(1.0 - 1.0 / (gamma_before_lisa * gamma_before_lisa));
+            #else
+                beta_before_lisa_temp = 0;
+            #endif
 
             beta_before_lisa.emplace_back(beta_before_lisa_temp);
             copy_beta_before_lisa.emplace_back(beta_before_lisa_temp);
@@ -240,6 +267,7 @@ void LisaCal2Hit::Exec(Option_t* option)
 
             int xpos_beam = (std::floor((x_lisa_tpc22_23 - x_origin) / x_step));
             int ypos_beam = (std::floor((y_lisa_tpc22_23 - y_origin) / y_step));
+
             // Gate on lisa position
             if (std::abs(xpos_beam - xpos) > 1 || std::abs(ypos_beam - ypos) > 1) return;
 
@@ -800,6 +828,8 @@ void LisaCal2Hit::FinishEvent()
     gamma_i.clear();
     gamma_f.clear();
     beta_en_i.clear();
+
+    A_i_s.clear();
 
     z_lisa_1_temp.clear();
     z_lisa_2_temp.clear();

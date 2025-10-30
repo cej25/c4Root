@@ -390,6 +390,19 @@ c4_generate_version_info()
 
 option(WITH_ATIMA "Build ATIMA system (requires Catima library)" OFF)
 
+#### EG 
+# this makes atima visible in the tasks
+# this works only if atima is defined in only one task -- no multiple tasks
+if(WITH_ATIMA)
+    #find_package(Catima REQUIRED) -- this should make it available for all tasks? does not work
+    message(STATUS "ATIMA is ON — enabling Catima support.")
+    add_definitions(-DWITH_ATIMA)
+    include_directories(${Catima_INCLUDE_DIRS})
+    link_libraries(${Catima_LIBRARIES})
+else()
+    message(STATUS "ATIMA is OFF — compiling without Catima support.")
+endif()
+####
 
 # Recurse into the given subdirectories.  This does not actually cause another cmake executable to
 # run.  The same process will walk through the project's entire directory structure.
