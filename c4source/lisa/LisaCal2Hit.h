@@ -82,10 +82,10 @@ class LisaCal2Hit : public FairTask
         float gamma_after5 = 0.;
         float z_val = 0;
 
-        float beta_before_lisa_temp = 0;
-        float gamma_before_lisa = 0;
-        float beta_trans = 0;
-        float beta_trans_s = 0;
+        float beta_before_lisa_temp = 0.;
+        float gamma_before_lisa = 0.;
+        float beta_trans = 0.;
+        float beta_trans_s = 0.;
         float beta_trans_after1 = 0;
         float beta_trans_after2 = 0;
         float beta_trans_after3 = 0;
@@ -98,9 +98,9 @@ class LisaCal2Hit : public FairTask
         float beta_after5 = -999.;
 
         int noReaction = -5;
-        float beta;
-        float gamma;
-        float gamma_s;
+        float beta = 0.;
+        float gamma = 0.;
+        float gamma_s = 0.;
 
         float N_i;
         float A_i;

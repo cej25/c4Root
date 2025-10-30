@@ -19,14 +19,14 @@ class Atima
         void ClearStack() { shiyan_s1s2.clear(); }
 
         void Calculate(); // use default or pre-set projectile/target
-        void Calculate(catima::Projectile p, catima::Material t, Double_t e);
+        void Calculate(catima::Projectile p, catima::Material t, Float_t e);
 
         void DefineProjectile(catima::Projectile p) { projectile = p; }
         void DefineTarget(catima::Material t) { target = t; }
 
         void BuildMaterial();
 
-        Double_t CalculateEnergyLoss(const catima::Projectile& proj, Double_t E_initial);
+        std::pair<Float_t, Float_t> CalculateEnergyLoss(const catima::Projectile& proj, Float_t E_initial);
 
         catima::Projectile projectile;
         catima::Material target;
@@ -53,17 +53,6 @@ class Projectile : public catima::Projectile
     public:
         Projectile(Double_t a, Double_t z) : catima::Projectile(a, z) {}; // A, Z
 };
-
-
-// Materials library
-Material water({
-    {1, 1, 2},
-    {16, 8, 1}},
-    1.0,
-    2.0);
-
-
-Projectile carbon(12, 6);
 
 
 #endif

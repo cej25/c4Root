@@ -40,9 +40,9 @@
 #include "c4Logger.h"
 
 // atima
-// #ifdef WITH_ATIMA
-//     #include "Atima.h"
-// #endif
+#ifdef WITH_ATIMA
+    #include "Atima.h"
+#endif
 
 
 // ROOT
@@ -111,9 +111,9 @@ void LisaRaw2Ana::Exec(Option_t* option)
 
 
     // Test
-    // #ifdef WITH_ATIMA
-    //     Atima at;
-    // #endif
+    #ifdef WITH_ATIMA
+        Atima at;
+    #endif
     
     for (auto const & lisaItem : *lisaArray)
     {
