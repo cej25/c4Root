@@ -42,7 +42,7 @@ Set(HEADERS ${STRUCT_HEADERS} ${HEADERS})
 set(LINKDEF FimpSourceLinkDef.h)
 set(DEPENDENCIES
     GeoBase ParBase Base FairTools
-    c4Base c4Data Core Geom GenVector
+    c4Base FimpData BaseData Core Geom GenVector
     Physics Matrix MathCore
     ${ucesb_LIBRARY_SHARED})
 

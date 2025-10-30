@@ -44,7 +44,7 @@ Set(HEADERS ${STRUCT_HEADERS} ${HEADERS})
 set(LINKDEF MCPSourceLinkDef.h)
 set(DEPENDENCIES
     GeoBase ParBase Base FairTools
-    c4Base c4Data Core Geom GenVector
+    c4Base MCPData BaseData Core Geom GenVector
     Physics Matrix MathCore
     ${ucesb_LIBRARY_SHARED})
 

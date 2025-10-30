@@ -19,7 +19,6 @@ ${C4ROOT_SOURCE_DIR}/c4data/mcpData
 ${C4ROOT_SOURCE_DIR}/c4data/stefanData
 ${C4ROOT_SOURCE_DIR}/c4source
 ${C4ROOT_SOURCE_DIR}/c4source/base
-# ${C4ROOT_SOURCE_DIR}/c4source/frs
 )
 
 include_directories(${INCLUDE_DIRECTORIES})
@@ -35,14 +34,14 @@ add_subdirectory(bb7Data)
 add_subdirectory(beammonitorData)
 add_subdirectory(bgoData)
 add_subdirectory(bplastData)
-#fatima
-#fimp
-#frs
-#germanium
-#lisa
-#mcp
-#stefan
-#timemachine
+add_subdirectory(fatimaData)
+add_subdirectory(fimpData)
+add_subdirectory(frsData)
+add_subdirectory(germaniumData)
+add_subdirectory(lisaData)
+add_subdirectory(mcpData)
+add_subdirectory(stefanData)
+add_subdirectory(timemachineData)
 
 set(SRCS
 frsData/FrsData.cxx

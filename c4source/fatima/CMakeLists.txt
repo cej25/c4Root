@@ -46,7 +46,7 @@ Set(HEADERS ${STRUCT_HEADERS} ${HEADERS})
 set(LINKDEF FatimaSourceLinkDef.h)
 set(DEPENDENCIES
     GeoBase ParBase Base FairTools
-    c4Base c4Data Core Geom GenVector
+    c4Base FatimaData BaseData Core Geom GenVector
     Physics Matrix MathCore
     ${ucesb_LIBRARY_SHARED})
 

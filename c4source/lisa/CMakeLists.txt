@@ -6,7 +6,6 @@ ${ucesb_INCLUDE_DIR}
 
 set(INCLUDE_DIRECTORIES
 #put here all directories where header files are located
-#${C4ROOT_SOURCE_DIR}/atima
 ${C4ROOT_SOURCE_DIR}/c4base
 ${C4ROOT_SOURCE_DIR}/c4source
 ${C4ROOT_SOURCE_DIR}/c4source/base
@@ -48,7 +47,7 @@ Set(HEADERS ${STRUCT_HEADERS} ${HEADERS})
 set(LINKDEF LisaSourceLinkDef.h)
 set(DEPENDENCIES
     GeoBase ParBase Base FairTools
-    c4Base c4Data Core Geom GenVector
+    c4Base LisaData BaseData Core Geom GenVector
     Physics Matrix MathCore
     ${ucesb_LIBRARY_SHARED})
 if (WITH_ATIMA)

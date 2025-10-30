@@ -4,7 +4,6 @@ ${BASE_INCLUDE_DIRECTORIES}
 )
 
 set(INCLUDE_DIRECTORIES
-#put here all directories where header files are located
 ${C4ROOT_SOURCE_DIR}/c4base
 ${C4ROOT_SOURCE_DIR}/c4data
 ${C4ROOT_SOURCE_DIR}/c4data/frsData
@@ -45,6 +44,14 @@ include_directories( ${INCLUDE_DIRECTORIES})
 include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 
 link_directories(${FAIRROOT_LIBRARY_DIR} ${ROOT_LIBRARY_DIR})
+
+add_subdirectory(online/aida)
+add_subdirectory(nearline/aida)
+add_subdirectory(online/bb7)
+add_subdirectory(nearline/bb7)
+add_subdirectory(online/beammonitor)
+add_subdirectory(online/bgo)
+#add_subdirectory(nearline/bgo)
 
 set(SRCS
 #online
@@ -120,18 +127,9 @@ set(SRCS
 )
 
 
-#file(GLOB SRCS ./online/*.cxx ./offline/*.cxx ./pars/*.cxx)
-
-# fill list of header files from list of source files
-# by exchanging the file extension
 CHANGE_FILE_EXTENSION(*.cxx *.h HEADERS "${SRCS}")
 
 Set(LINKDEF AnaLinkDef.h)
-
-# Set(DEPENDENCIES
-# GeoBase ParBase MbsAPI Base FairTools c4Base c4Data Core Geom GenVector Physics Matrix MathCore
-
-# )
 
 Set(DEPENDENCIES
 GeoBase ParBase Base FairTools c4Base c4Data Core Geom GenVector Physics Matrix MathCore

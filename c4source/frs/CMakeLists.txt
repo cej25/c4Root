@@ -42,7 +42,7 @@ Set(HEADERS ${STRUCT_HEADERS} ${HEADERS})
 
 set(LINKDEF FrsSourceLinkDef.h)
 set(DEPENDENCIES
-    FairTools c4Base c4Data
+    FairTools c4Base FrsData BaseData
     ${ucesb_LIBRARY_SHARED})
 
 set(LIBRARY_NAME FrsSource)
