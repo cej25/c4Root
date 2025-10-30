@@ -97,19 +97,19 @@ Double_t Atima::CalculateEnergyLoss(const catima::Projectile& proj, Double_t E_i
     Double_t E_in = E_initial;
     Double_t total_loss = 0.0;
 
-    // std::vector<std::string> names = {
-    //     "SCI21","TPC22 pocket","TPC22 gas","Degrader","Vacuum window",
-    //     "Air #1","TPC23 windows","TPC23 gas","Air #2",
-    //     "MUSIC21 windows","MUSIC21 gas","Air #3","LISA window"
-    // };
+    std::vector<std::string> names = {
+        "SCI21","TPC22 pocket","TPC22 gas","Degrader","Vacuum window",
+        "Air #1","TPC23 windows","TPC23 gas","Air #2",
+        "MUSIC21 windows","MUSIC21 gas","Air #3","LISA window"
+    };
 
-    // std::cout << "\n=== Energy loss through Shiyan stack ===\n";
-    // std::cout << std::left
-    //           << std::setw(20) << "Layer"
-    //           << std::setw(15) << "E_in [MeV/u]"
-    //           << std::setw(15) << "E_out [MeV/u]"
-    //           << std::setw(15) << "ΔE [MeV/u]" << std::endl;
-    // std::cout << "---------------------------------------------------------------\n";
+    std::cout << "\n=== Energy loss through Shiyan stack ===\n";
+    std::cout << std::left
+              << std::setw(20) << "Layer"
+              << std::setw(15) << "E_in [MeV/u]"
+              << std::setw(15) << "E_out [MeV/u]"
+              << std::setw(15) << "ΔE [MeV/u]" << std::endl;
+    std::cout << "---------------------------------------------------------------\n";
 
     for(size_t i = 0; i < shiyan_s1s2.size(); ++i)
     {
@@ -118,21 +118,34 @@ Double_t Atima::CalculateEnergyLoss(const catima::Projectile& proj, Double_t E_i
         Double_t E_out = result.Eout;
         Double_t dE = E_in - E_out;
 
-        // std::cout << std::left
-        //           << std::setw(20) << names[i]
-        //           << std::setw(15) << E_in
-        //           << std::setw(15) << E_out
-        //           << std::setw(15) << dE << std::endl;
+        std::cout << std::left
+                  << std::setw(20) << names[i]
+                  << std::setw(15) << E_in
+                  << std::setw(15) << E_out
+                  << std::setw(15) << dE << std::endl;
 
         total_loss += dE;
         E_in = E_out;
     }
 
-    // std::cout << "---------------------------------------------------------------\n";
-    // std::cout << "Total ΔE = " << total_loss << " MeV/u, Final E = " << E_in << " MeV/u\n";
-    // std::cout << "===============================================================\n";
+    std::cout << "---------------------------------------------------------------\n";
+    std::cout << "Total ΔE = " << total_loss << " MeV/u, Final E = " << E_in << " MeV/u\n";
+    std::cout << "===============================================================\n";
 
     return total_loss;
+}
+
+// maybe do something like this for vector
+std::vector<Double_t> Atima::BatchCalculateLoss(const std::vector<catima::Projectile>& projs, const catima::Material& mat, const std::vector<Double_t>& Eins)
+{
+    std::vector<Double_t> losses;
+    losses.reserve(Eins.size());
+    for(size_t i=0; i<Eins.size(); ++i) {
+        auto res = catima::calculate(projs[i], mat, Eins[i]);
+        Double_t dE = Eins[i] - res.Eout; //but take energy out instead of dE
+        losses.push_back(dE);
+    }
+    return losses;
 }
 
 // // Build Material from SCI21 until just before LISA layer 1 -- Pareeksha

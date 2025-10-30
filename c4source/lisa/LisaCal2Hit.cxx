@@ -183,7 +183,7 @@ void LisaCal2Hit::Exec(Option_t* option)
                 Double_t dE = atima.CalculateEnergyLoss(beam, Ein);
 
                 Double_t Eout = (Ein - dE)*A_i_s[i];
-                //std::cout << "Total ΔE = " << dE << " MeV/u" << std::endl;
+                std::cout << "Total ΔE = " << dE << " MeV/u" << std::endl;
                 gamma_before_lisa = 1.0 + Eout / conv_coeff;
                 beta_before_lisa_temp = sqrt(1.0 - 1.0 / (gamma_before_lisa * gamma_before_lisa));
             #else
