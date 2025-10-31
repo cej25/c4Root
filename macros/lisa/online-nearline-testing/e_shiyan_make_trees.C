@@ -86,11 +86,11 @@ void e_shiyan_make_trees()
     
     // ::: FILE  PATH
     TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s103_files/ts/";                       // Data from LISA
-    TString filename = inputpath + "run_0018_0002.lmd";
+    TString filename = inputpath + "run_0018_0001.lmd";
 
     // ::: OUTPUT 
-    TString outputpath = "/u/gandolfo/data/shiyan_debug/catima/";   //testing
-    TString outputFilename = outputpath + "run_0018_0002_tree.root";
+    TString outputpath = "/u/gandolfo/data/shiyan_debug/frs_mhit/";   //testing
+    TString outputFilename = outputpath + "run_0018_0001_tree_test.root";
     
     // ::: Create online run
     Int_t refresh = 10; // not needed

@@ -13,7 +13,7 @@
 #define TRACE_ON 0
 
 #define FRS_ON 1
-#define FRS_LISA_CORRELATIONS 1
+#define FRS_LISA_CORRELATIONS 0
 
 #define WR_ENABLED 1
 //................................................
@@ -66,13 +66,13 @@ void e_shiyan_histos()
 
     // ::: P A T H   O F   F I L E  to read
     //TString inputpath = "/u/gandolfo/data/lustre/gamma/lisa_s092/trees/";
-    TString inputpath = "/u/gandolfo/data/shiyan_debug/catima/";
-    TString filename = inputpath + "run_0018_0001_ref.root";  
+    TString inputpath = "/u/gandolfo/data/shiyan_debug/frs_mhit/";
+    TString filename = inputpath + "run_0018_0001_tree_test.root";  
     
     // ::: O U T P U T
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/lisa_s092/histos/";
-    TString outputpath = "/u/gandolfo/data/shiyan_debug/catima/";   //energy resolution output
-    TString outputFilename = outputpath + "run_0018_0001_ref_histos.root";
+    TString outputpath = "/u/gandolfo/data/shiyan_debug/frs_mhit/";   //energy resolution output
+    TString outputFilename = outputpath + "run_0018_histos_sci_test.root";
 
 
     FairRunAna* run = new FairRunAna();
@@ -141,8 +141,8 @@ void e_shiyan_histos()
         FrsNearlineSpectra* nearlinefrs = new FrsNearlineSpectra(fgs);
         run->AddTask(nearlinefrs);
 
-        // FrsRawNearlineSpectra* rawnearlinefrs = new FrsRawNearlineSpectra();
-        // run->AddTask(rawnearlinefrs);
+        FrsRawNearlineSpectra* rawnearlinefrs = new FrsRawNearlineSpectra();
+        run->AddTask(rawnearlinefrs);
     }
     
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

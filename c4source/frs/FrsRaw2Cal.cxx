@@ -255,8 +255,17 @@ void FrsRaw2Cal::ProcessScintillators()
 
     // MHTDC T
     //c4LOG(info, "   MHTDC sci");
+    // TODO continue for all sci and add ranges
     sciMHTDC = sciItem.Get_mhtdc_array();
-    for (auto val : sciMHTDC[frs_config->Get_mhtdc_11LA_chan()]) sci11la_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
+    Double_t conv_ns = sci->mhtdc_factor_ch_to_ns;
+
+    for (auto val : sciMHTDC[frs_config->Get_mhtdc_11LA_chan()])
+    {
+        double t = conv_ns * val;
+        if (t >= 0*conv_ns && t <= 100000*conv_ns)sci11la_hits.push_back(t);
+    }
+    
+    //for (auto val : sciMHTDC[frs_config->Get_mhtdc_11LA_chan()]) sci11la_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
     for (auto val : sciMHTDC[frs_config->Get_mhtdc_11LB_chan()]) sci11lb_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
     for (auto val : sciMHTDC[frs_config->Get_mhtdc_11LC_chan()]) sci11lc_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);
     for (auto val : sciMHTDC[frs_config->Get_mhtdc_11LD_chan()]) sci11ld_hits.push_back(sci->mhtdc_factor_ch_to_ns * val);

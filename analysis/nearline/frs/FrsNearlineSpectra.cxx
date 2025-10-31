@@ -22,6 +22,7 @@
 // c4
 #include "FrsNearlineSpectra.h"
 #include "FrsHitData.h"
+#include "FrsCalData.h"
 #include "c4Logger.h"
 #include "AnalysisTools.h"
 
@@ -262,7 +263,7 @@ InitStatus FrsNearlineSpectra::Init()
     
     // :::: ID_MHTDC ::::
     if (frs_config->plot_mhtdc)
-    {
+    {        
         dir_mhtdc = dir_frs->mkdir("ID_MHTDC");
         dir_mhtdc_s1s2 = dir_mhtdc->mkdir("S1S2");
         dir_mhtdc_s1s2_1d = dir_mhtdc_s1s2->mkdir("1D");
@@ -270,6 +271,65 @@ InitStatus FrsNearlineSpectra::Init()
         dir_mhtdc_s2s4 = dir_mhtdc->mkdir("S2S4");
         dir_mhtdc_s2s4_1d = dir_mhtdc_s2s4->mkdir("1D");
         dir_mhtdc_s2s4_2d = dir_mhtdc_s2s4->mkdir("2D");
+        
+        // :::: SCI :::::: 
+        dir_sci_mhtdc = dir_mhtdc->mkdir("SCI_MHTDC");
+        dir_sci_mhtdc_x = dir_sci_mhtdc->mkdir("X_mhtdc");
+        dir_sci_mhtdc_dt = dir_sci_mhtdc->mkdir("T_mhtdc");
+        dir_sci_mhtdc_tof = dir_sci_mhtdc->mkdir("TOF_mhtdc");
+
+        h1_mhtdc_sci_11la = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_11la", "SCI mhtdc 11la", 4000, 0.0, 4000.0, "SCI 11la Time", kPink-3, kBlue+2);
+        h1_mhtdc_sci_11lb = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_11lb", "SCI mhtdc 11lb", 4000, 0.0, 4000.0, "SCI 11lb Time", kPink-3, kBlue+2);
+        h1_mhtdc_sci_11lc = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_11lc", "SCI mhtdc 11lc", 4000, 0.0, 4000.0, "SCI 11lc Time", kPink-3, kBlue+2);
+        h1_mhtdc_sci_11ld = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_11ld", "SCI mhtdc 11ld", 4000, 0.0, 4000.0, "SCI 11ld Time", kPink-3, kBlue+2);
+        h1_mhtdc_sci_11ra = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_11ra", "SCI mhtdc 11ra", 4000, 0.0, 4000.0, "SCI 11ra Time", kPink-3, kBlue+2);
+        h1_mhtdc_sci_11rb = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_11rb", "SCI mhtdc 11rb", 4000, 0.0, 4000.0, "SCI 11rb Time", kPink-3, kBlue+2);
+        h1_mhtdc_sci_11rc = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_11rc", "SCI mhtdc 11rc", 4000, 0.0, 4000.0, "SCI 11rc Time", kPink-3, kBlue+2);
+        h1_mhtdc_sci_11rd = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_11rd", "SCI mhtdc 11rd", 4000, 0.0, 4000.0, "SCI 11rd Time", kPink-3, kBlue+2);
+        h1_mhtdc_sci_21l = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_21l", "SCI mhtdc 21l", 4000, 0.0, 4000.0, "SCI 21l Time", kPink-3, kBlue+2);
+        h1_mhtdc_sci_21r = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_21r", "SCI mhtdc 21r", 4000, 0.0, 4000.0, "SCI 21r Time", kPink-3, kBlue+2);
+        h1_mhtdc_sci_22l = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_22l", "SCI mhtdc 22l", 4000, 0.0, 4000.0, "SCI 22l Time", kPink-3, kBlue+2);
+        h1_mhtdc_sci_22r = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_22r", "SCI mhtdc 22r", 4000, 0.0, 4000.0, "SCI 22r Time", kPink-3, kBlue+2);
+        h1_mhtdc_sci_31l = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_31l", "SCI mhtdc 31l", 4000, 0.0, 4000.0, "SCI 31l Time", kPink-3, kBlue+2);
+        h1_mhtdc_sci_31r = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_31r", "SCI mhtdc 31r", 4000, 0.0, 4000.0, "SCI 31r Time", kPink-3, kBlue+2);
+        h1_mhtdc_sci_41l = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_41l", "SCI mhtdc 41l", 4000, 0.0, 4000.0, "SCI 41l Time", kPink-3, kBlue+2);
+        h1_mhtdc_sci_41r = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_41r", "SCI mhtdc 41r", 4000, 0.0, 4000.0, "SCI 41r Time", kPink-3, kBlue+2);
+        h1_mhtdc_sci_42l = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_42l", "SCI mhtdc 42l", 4000, 0.0, 4000.0, "SCI 42l Time", kPink-3, kBlue+2);
+        h1_mhtdc_sci_42r = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_42r", "SCI mhtdc 42r", 4000, 0.0, 4000.0, "SCI 42r Time", kPink-3, kBlue+2);
+        h1_mhtdc_sci_43l = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_43l", "SCI mhtdc 43l", 4000, 0.0, 4000.0, "SCI 43l Time", kPink-3, kBlue+2);
+        h1_mhtdc_sci_43r = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_43r", "SCI mhtdc 43r", 4000, 0.0, 4000.0, "SCI 43r Time", kPink-3, kBlue+2);
+        h1_mhtdc_sci_81l = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_81l", "SCI mhtdc 81l", 4000, 0.0, 4000.0, "SCI 81l Time", kPink-3, kBlue+2);
+        h1_mhtdc_sci_81r = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_81r", "SCI mhtdc 81r", 4000, 0.0, 4000.0, "SCI 81r Time", kPink-3, kBlue+2);
+
+        h1_mhtdc_sci_dt_11lr = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_dt_11", "SCI mhtdc 11 dt L-R", 4000, 0.0, 4000.0, "SCI 11 dT", kPink-3, kBlue+2);
+        h1_mhtdc_sci_dt_21lr = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_dt_21", "SCI mhtdc 21 dt L-R", 4000, 0.0, 4000.0, "SCI 21 dT", kPink-3, kBlue+2);
+        h1_mhtdc_sci_dt_22lr = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_dt_22", "SCI mhtdc 22 dt L-R", 4000, 0.0, 4000.0, "SCI 22 dT", kPink-3, kBlue+2);
+        h1_mhtdc_sci_dt_31lr = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_dt_31", "SCI mhtdc 31 dt L-R", 4000, 0.0, 4000.0, "SCI 31 dT", kPink-3, kBlue+2);
+        h1_mhtdc_sci_dt_41lr = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_dt_41", "SCI mhtdc 41 dt L-R", 4000, 0.0, 4000.0, "SCI 41 dT", kPink-3, kBlue+2);
+        h1_mhtdc_sci_dt_42lr = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_dt_42", "SCI mhtdc 42 dt L-R", 4000, 0.0, 4000.0, "SCI 42 dT", kPink-3, kBlue+2);
+        h1_mhtdc_sci_dt_43lr = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_dt_43", "SCI mhtdc 43 dt L-R", 4000, 0.0, 4000.0, "SCI 43 dT", kPink-3, kBlue+2);
+        h1_mhtdc_sci_dt_81lr = MakeTH1(dir_sci_mhtdc_dt, "F", "h1_mhtdc_sci_dt_81", "SCI mhtdc 81 dt L-R", 4000, 0.0, 4000.0, "SCI 81 dT", kPink-3, kBlue+2);
+        h1_mhtdc_sci_x_11 = MakeTH1(dir_sci_mhtdc_x, "F", "h1_mhtdc_sci_x_11", "SCI mhtdc 11 PosX", 4000, 0.0, 4000.0, "SCI 11 X", kYellow-7, kBlack);
+        h1_mhtdc_sci_x_21 = MakeTH1(dir_sci_mhtdc_x, "F", "h1_mhtdc_sci_x_21", "SCI mhtdc 21 PosX", 4000, 0.0, 4000.0, "SCI 21 X", kYellow-7, kBlack);
+        h1_mhtdc_sci_x_22 = MakeTH1(dir_sci_mhtdc_x, "F", "h1_mhtdc_sci_x_22", "SCI mhtdc 22 PosX", 4000, 0.0, 4000.0, "SCI 22 X", kYellow-7, kBlack);
+        h1_mhtdc_sci_x_31 = MakeTH1(dir_sci_mhtdc_x, "F", "h1_mhtdc_sci_x_31", "SCI mhtdc 31 PosX", 4000, 0.0, 4000.0, "SCI 31 X", kYellow-7, kBlack);
+        h1_mhtdc_sci_x_41 = MakeTH1(dir_sci_mhtdc_x, "F", "h1_mhtdc_sci_x_41", "SCI mhtdc 41 PosX", 4000, 0.0, 4000.0, "SCI 41 X", kYellow-7, kBlack);
+        h1_mhtdc_sci_x_42 = MakeTH1(dir_sci_mhtdc_x, "F", "h1_mhtdc_sci_x_42", "SCI mhtdc 42 PosX", 4000, 0.0, 4000.0, "SCI 42 X", kYellow-7, kBlack);
+        h1_mhtdc_sci_x_43 = MakeTH1(dir_sci_mhtdc_x, "F", "h1_mhtdc_sci_x_43", "SCI mhtdc 43 PosX", 4000, 0.0, 4000.0, "SCI 43 X", kYellow-7, kBlack);
+        h1_mhtdc_sci_x_81 = MakeTH1(dir_sci_mhtdc_x, "F", "h1_mhtdc_sci_x_81", "SCI mhtdc 81 PosX", 4000, 0.0, 4000.0, "SCI 81 X", kYellow-7, kBlack);
+
+        h1_mhtdc_sci_tof_11_21 = MakeTH1(dir_sci_mhtdc_tof, "F", "h1_mhtdc_sci_tof_11_21", "SCI MHTDC TOF 11 - 21", 4000, 0.0, 200000.0, "SCI TOF 11 - 21", kPink-3, kBlue+2);
+        h1_mhtdc_sci_tof_21_41 = MakeTH1(dir_sci_mhtdc_tof, "F", "h1_mhtdc_sci_tof_21_41", "SCI MHTDC TOF 21 - 41", 4000, 0.0, 200000.0, "SCI TOF 21 - 41", kPink-3, kBlue+2);
+        h1_mhtdc_sci_tof_21_42 = MakeTH1(dir_sci_mhtdc_tof, "F", "h1_mhtdc_sci_tof_21_42", "SCI MHTDC TOF 21 - 42", 4000, 0.0, 200000.0, "SCI TOF 21 - 42", kPink-3, kBlue+2);
+        h1_mhtdc_sci_tof_21_81 = MakeTH1(dir_sci_mhtdc_tof, "F", "h1_mhtdc_sci_tof_21_81", "SCI MHTDC TOF 21 - 81", 4000, 0.0, 200000.0, "SCI TOF 21 - 81", kPink-3, kBlue+2);
+        h1_mhtdc_sci_tof_22_41 = MakeTH1(dir_sci_mhtdc_tof, "F", "h1_mhtdc_sci_tof_22_41", "SCI MHTDC TOF 22 - 41", 4000, 0.0, 200000.0, "SCI TOF 22 - 41", kPink-3, kBlue+2);
+        h1_mhtdc_sci_tof_22_81 = MakeTH1(dir_sci_mhtdc_tof, "F", "h1_mhtdc_sci_tof_22_81", "SCI MHTDC TOF 22 - 81", 4000, 0.0, 200000.0, "SCI TOF 22 - 81", kPink-3, kBlue+2);
+        h1_mhtdc_sci_tof_11_21_selected = MakeTH1(dir_sci_mhtdc_tof, "F", "h1_mhtdc_sci_tof_11_21_selected", "SCI MHTDC TOF 11 - 21 selected", 4000, 0.0, 200000.0, "SCI TOF 11 - 21 selected", kPink-3, kBlue+2);
+        h1_mhtdc_sci_tof_21_41_selected = MakeTH1(dir_sci_mhtdc_tof, "F", "h1_mhtdc_sci_tof_21_41_selected", "SCI MHTDC TOF 21 - 41 selected", 4000, 0.0, 200000.0, "SCI TOF 21 - 41 selected", kPink-3, kBlue+2);
+        h1_mhtdc_sci_tof_21_42_selected = MakeTH1(dir_sci_mhtdc_tof, "F", "h1_mhtdc_sci_tof_21_42_selected", "SCI MHTDC TOF 21 - 42 selected", 4000, 0.0, 200000.0, "SCI TOF 21 - 42 selected", kPink-3, kBlue+2);
+        h1_mhtdc_sci_tof_21_81_selected = MakeTH1(dir_sci_mhtdc_tof, "F", "h1_mhtdc_sci_tof_21_81_selected", "SCI MHTDC TOF 21 - 81 selected", 4000, 0.0, 200000.0, "SCI TOF 21 - 81 selected", kPink-3, kBlue+2);
+        h1_mhtdc_sci_tof_22_41_selected = MakeTH1(dir_sci_mhtdc_tof, "F", "h1_mhtdc_sci_tof_22_41_selected", "SCI MHTDC TOF 22 - 41 selected", 4000, 0.0, 200000.0, "SCI TOF 22 - 41 selected", kPink-3, kBlue+2);
+        h1_mhtdc_sci_tof_22_81_selected = MakeTH1(dir_sci_mhtdc_tof, "F", "h1_mhtdc_sci_tof_22_81_selected", "SCI MHTDC TOF 22 - 81 selected", 4000, 0.0, 200000.0, "SCI TOF 22 - 81 selected", kPink-3, kBlue+2);
 
         // ::: FRS MultiHit Map
         dir_mhtdc->cd();
@@ -491,7 +551,7 @@ InitStatus FrsNearlineSpectra::Init()
     }
 
     // :::: SCI :::::: 
-    dir_sci = dir_frs->mkdir("SCI");
+    dir_sci = dir_frs->mkdir("SCI_TAC");
     dir_sci_e = dir_sci->mkdir("E");
     dir_sci_x = dir_sci->mkdir("X");
     dir_sci_tof = dir_sci->mkdir("TOF");
@@ -606,13 +666,21 @@ InitStatus FrsNearlineSpectra::Init()
 
 void FrsNearlineSpectra::Exec(Option_t* option)
 {   
+    c4LOG(info,"xxxx");
+
     wr_frs = 0; trav_mus_wr = 0;
     if (hitArray->size() <= 0) return;
+    c4LOG(info,"xxx");
 
     fNEvents++;
     
     FRS_time_mins = 0;
     hitItem = hitArray->at(0); // should only be size=1! check
+    c4LOG(info,"xx");
+
+    calItem = calsciArray->at(0); 
+    c4LOG(info,"x");
+
     wr_frs = hitItem.Get_wr_t();
     if(wr_frs > 0) FRS_time_mins = (wr_frs - exp_config->exp_start_time)/ 60E9;
 
@@ -683,6 +751,53 @@ void FrsNearlineSpectra::Exec(Option_t* option)
     if (hitItem.Get_music42_dE() > 0) h1_music42_dE->Fill(hitItem.Get_music42_dE());
     if (hitItem.Get_music41_dE_cor() > 0) h1_music41_dE_cor->Fill(hitItem.Get_music41_dE_cor());
     if (hitItem.Get_music42_dE_cor() > 0) h1_music42_dE_cor->Fill(hitItem.Get_music42_dE_cor());
+
+    // Scintillators MHTDC
+    std::vector<Float_t> sci11la = calItem.Get_mhtdc_sci11la_hits();
+    std::vector<Float_t> sci11lb = calItem.Get_mhtdc_sci11lb_hits();
+    std::vector<Float_t> sci11lc = calItem.Get_mhtdc_sci11lc_hits();
+    std::vector<Float_t> sci11ld = calItem.Get_mhtdc_sci11ld_hits();
+    std::vector<Float_t> sci11ra = calItem.Get_mhtdc_sci11ra_hits();
+    std::vector<Float_t> sci11rb = calItem.Get_mhtdc_sci11rb_hits();
+    std::vector<Float_t> sci11rc = calItem.Get_mhtdc_sci11rc_hits();
+    std::vector<Float_t> sci11rd = calItem.Get_mhtdc_sci11rd_hits();
+    std::vector<Float_t> sci21l = calItem.Get_mhtdc_sci21l_hits();
+    std::vector<Float_t> sci21r = calItem.Get_mhtdc_sci21r_hits();
+    std::vector<Float_t> sci22l = calItem.Get_mhtdc_sci22l_hits();
+    std::vector<Float_t> sci22r = calItem.Get_mhtdc_sci22r_hits();
+    std::vector<Float_t> sci31l = calItem.Get_mhtdc_sci31l_hits();
+    std::vector<Float_t> sci31r = calItem.Get_mhtdc_sci31r_hits();
+    std::vector<Float_t> sci41l = calItem.Get_mhtdc_sci41l_hits();
+    std::vector<Float_t> sci41r = calItem.Get_mhtdc_sci41r_hits();
+    std::vector<Float_t> sci42l = calItem.Get_mhtdc_sci42l_hits();
+    std::vector<Float_t> sci42r = calItem.Get_mhtdc_sci42r_hits();
+    std::vector<Float_t> sci43l = calItem.Get_mhtdc_sci43l_hits();
+    std::vector<Float_t> sci43r = calItem.Get_mhtdc_sci43r_hits();
+    std::vector<Float_t> sci81l = calItem.Get_mhtdc_sci81l_hits();
+    std::vector<Float_t> sci81r = calItem.Get_mhtdc_sci81r_hits();
+
+    for (int i = 0; i < sci11la.size(); i++ ){ if (sci11la[i] > 0)h1_mhtdc_sci_11la->Fill(sci11la[i]);}
+    for (int i = 0; i < sci11lb.size(); i++ ){ if (sci11lb[i] > 0)h1_mhtdc_sci_11lb->Fill(sci11lb[i]);}
+    for (int i = 0; i < sci11lc.size(); i++ ){ if (sci11lc[i] > 0)h1_mhtdc_sci_11lc->Fill(sci11lc[i]);}
+    for (int i = 0; i < sci11ld.size(); i++ ){ if (sci11ld[i] > 0)h1_mhtdc_sci_11ld->Fill(sci11ld[i]);}
+    for (int i = 0; i < sci11ra.size(); i++ ){ if (sci11ra[i] > 0)h1_mhtdc_sci_11ra->Fill(sci11ra[i]);}
+    for (int i = 0; i < sci11rb.size(); i++ ){ if (sci11rb[i] > 0)h1_mhtdc_sci_11rb->Fill(sci11rb[i]);}
+    for (int i = 0; i < sci11rc.size(); i++ ){ if (sci11rc[i] > 0)h1_mhtdc_sci_11rc->Fill(sci11rc[i]);}
+    for (int i = 0; i < sci11rd.size(); i++ ){ if (sci11rd[i] > 0)h1_mhtdc_sci_11rd->Fill(sci11rd[i]);}
+    for (int i = 0; i < sci21l.size() ; i++) { if (sci21l[i]  > 0)h1_mhtdc_sci_21l->Fill(sci21l[i]); }
+    for (int i = 0; i < sci21r.size() ; i++) { if (sci21r[i]  > 0)h1_mhtdc_sci_21r->Fill(sci21r[i]); }
+    for (int i = 0; i < sci22l.size() ; i++) { if (sci22l[i]  > 0)h1_mhtdc_sci_22l->Fill(sci22l[i]); }
+    for (int i = 0; i < sci22r.size() ; i++) { if (sci22r[i]  > 0)h1_mhtdc_sci_22r->Fill(sci22r[i]); }
+    for (int i = 0; i < sci31l.size() ; i++) { if (sci31l[i]  > 0)h1_mhtdc_sci_31l->Fill(sci31l[i]); }
+    for (int i = 0; i < sci31r.size() ; i++) { if (sci31r[i]  > 0)h1_mhtdc_sci_31r->Fill(sci31r[i]); }
+    for (int i = 0; i < sci41l.size() ; i++) { if (sci41l[i]  > 0)h1_mhtdc_sci_41l->Fill(sci41l[i]); }
+    for (int i = 0; i < sci41r.size() ; i++) { if (sci41r[i]  > 0)h1_mhtdc_sci_41r->Fill(sci41r[i]); }
+    for (int i = 0; i < sci42l.size() ; i++) { if (sci42l[i]  > 0)h1_mhtdc_sci_42l->Fill(sci42l[i]); }
+    for (int i = 0; i < sci42r.size() ; i++) { if (sci42r[i]  > 0)h1_mhtdc_sci_42r->Fill(sci42r[i]); }
+    for (int i = 0; i < sci43l.size() ; i++) { if (sci43l[i]  > 0)h1_mhtdc_sci_43l->Fill(sci43l[i]); }
+    for (int i = 0; i < sci43r.size() ; i++) { if (sci43r[i]  > 0)h1_mhtdc_sci_43r->Fill(sci43r[i]); }
+    for (int i = 0; i < sci81l.size() ; i++) { if (sci81l[i]  > 0)h1_mhtdc_sci_81l->Fill(sci81l[i]); }
+    for (int i = 0; i < sci81r.size() ; i++) { if (sci81r[i]  > 0)h1_mhtdc_sci_81r->Fill(sci81r[i]); }
     
     // Extrapolated position at LISA from TPC, possibly move to LISA Task
     Float_t a_focs2 = hitItem.Get_tpc_angle_x_s2_foc_22_23();
@@ -817,14 +932,11 @@ void FrsNearlineSpectra::Process_MHTDC()
 
     // ::: Hit Map Full for FRS
     h2_multihit_map->Fill(AoQ_s1s2_mhtdc.size(), AoQ_s2s4_mhtdc.size());
-    
-    //if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 ) return;
-
 
     // CEJ :: Process FRS Gate info here first.
     for (int gate = 0; gate < FrsGates.size(); gate++)
     {
-        // if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 )break;
+        // if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 )break; - this is now done through hit selections 
 
         for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
         {
