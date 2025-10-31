@@ -392,15 +392,13 @@ option(WITH_ATIMA "Build ATIMA system (requires Catima library)" OFF)
 
 #### EG 
 # this makes atima visible in the tasks
-# this works only if atima is defined in only one task -- no multiple tasks
 if(WITH_ATIMA)
-    #find_package(Catima REQUIRED) -- this should make it available for all tasks? does not work
-    message(STATUS "ATIMA is ON — enabling Catima support.")
+    message(STATUS "${BGreen}ATIMA is ON — enabling Catima.${CR}")
     add_definitions(-DWITH_ATIMA)
     include_directories(${Catima_INCLUDE_DIRS})
     link_libraries(${Catima_LIBRARIES})
 else()
-    message(STATUS "ATIMA is OFF — compiling without Catima support.")
+    message(STATUS "${BMagenta}ATIMA is OFF — compiling without Catima.${CR}")
 endif()
 ####
 

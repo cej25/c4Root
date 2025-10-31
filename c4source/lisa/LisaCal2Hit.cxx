@@ -120,26 +120,26 @@ void LisaCal2Hit::Exec(Option_t* option)
     const auto & frsHitItem = frsHitArray->at(0);
     const auto & multihitItem = multihitArray->at(0);
 
-    // For global reaction flag definition
+    // FRS quantities
     beta_i = multihitItem.Get_ID_beta_s1s2_mhtdc();
-    beta_i_s = multihitItem.Get_ID_beta_s1s2_selected_mhtdc();
     beta_f = multihitItem.Get_ID_beta_s2s4_mhtdc();
     aoq_i = multihitItem.Get_ID_AoQ_s1s2_mhtdc();
     aoq_f = multihitItem.Get_ID_AoQ_s2s4_mhtdc();
-    aoq_i_s = multihitItem.Get_ID_AoQ_corr_s1s2_selected_mhtdc();
-    aoq_f_s = multihitItem.Get_ID_AoQ_corr_s2s4_selected_mhtdc();
     z_i = multihitItem.Get_ID_z21_mhtdc();
     z_f = multihitItem.Get_ID_z41_mhtdc();
-    z_i_s = multihitItem.Get_ID_z21_selected_mhtdc();
-    z_f_s = multihitItem.Get_ID_z41_selected_mhtdc();
-    beta0 = multihitItem.Get_ID_beta_s1s2_selected_mhtdc();
-    copy_beta0 = multihitItem.Get_ID_beta_s1s2_selected_mhtdc();
 
-    // For gate on same S2 events in s2 and s4
+    // Quantities with gate on the same events in S2 and S4 (two ways discrimination)
     sci21l_s1s2_selected = multihitItem.Get_ID_sci21l_s1s2_selected_mhtdc();
     sci21r_s1s2_selected = multihitItem.Get_ID_sci21r_s1s2_selected_mhtdc();
     sci21l_s2s4_selected = multihitItem.Get_ID_sci21l_s2s4_selected_mhtdc();
     sci21r_s2s4_selected = multihitItem.Get_ID_sci21r_s2s4_selected_mhtdc();
+    z_i_s = multihitItem.Get_ID_z21_selected_mhtdc();
+    z_f_s = multihitItem.Get_ID_z41_selected_mhtdc();
+    beta0 = multihitItem.Get_ID_beta_s1s2_selected_mhtdc();
+    copy_beta0 = multihitItem.Get_ID_beta_s1s2_selected_mhtdc();
+    aoq_i_s = multihitItem.Get_ID_AoQ_corr_s1s2_selected_mhtdc();
+    aoq_f_s = multihitItem.Get_ID_AoQ_corr_s2s4_selected_mhtdc();
+    beta_i_s = multihitItem.Get_ID_beta_s1s2_selected_mhtdc();
 
     // For position calculation
     Float_t a_focs2 = frsHitItem.Get_tpc_angle_x_s2_foc_22_23();
@@ -158,7 +158,12 @@ void LisaCal2Hit::Exec(Option_t* option)
     //int layer = lisaCalItem.Get_layer_id();
     int multiplicity[layer_number] = {0};
 
-    // Calculate FRS parameters
+    // :::: REACTION IDENTIFICATION ANALYSIS ::::
+    //      This includes the analysis of the reactions between S2 and S4 looking only at MUSICS 21 and 42.
+    //      It includes the following constrains:
+    //      - Same hits at S2 and S4. This is a 2-ways conditions: S4 hits are analysed only when S2 hits happen. S2 hits are discarded if they don't make it to S4.
+    //      This is what "selected" refers to.
+
     if ((sci21l_s1s2_selected == sci21l_s2s4_selected) && (sci21r_s1s2_selected == sci21r_s2s4_selected))
     {
         for(size_t i = 0; i < sci21l_s2s4_selected.size(); i++)
@@ -168,24 +173,26 @@ void LisaCal2Hit::Exec(Option_t* option)
             //beta_before_lisa_temp = beta0[i]*1.09105309 - 0.07362279; // For primary - run6
             //beta_before_lisa_temp = beta0[i]*1.05614604 - 0.04864503; // For primary - run18
             //beta_before_lisa_temp = beta0[i]*1.08374666 - 0.06858425; // For primary - run19
+            // ---------------------------------------------------------------------------------
 
             A_i_s.emplace_back(aoq_i_s[i] * std::round(z_i_s[i]));
             gamma_s = 1.f / sqrt(1.f - TMath::Power(beta_i_s[i], 2));
             gamma_i_s.emplace_back(gamma_s);
-            beta_trans_s = (gamma_s -1.f)*(A_i_s[i])*conv_coeff;
+            beta_trans_s = (gamma_s -1.f)*(std::round(A_i_s[i]))*conv_coeff;
             beta_en_i_s.emplace_back(beta_trans_s);
 
             #if WITH_ATIMA
-                // defining the projectile with A[i] and z[i] makes everything so slow.
-                catima::Projectile beam(A_i_s[i], z_i_s[i]);
-                //catima::Projectile beam(50, 20); -- fast, even with Ein = beta/A
-                Double_t Ein = beta_en_i_s[i]/(A_i_s[i]);
-                Double_t dE = atima.CalculateEnergyLoss(beam, Ein);
 
-                Double_t Eout = (Ein - dE)*A_i_s[i];
-                std::cout << "Total ΔE = " << dE << " MeV/u" << std::endl;
-                gamma_before_lisa = 1.0 + Eout / conv_coeff;
-                beta_before_lisa_temp = sqrt(1.0 - 1.0 / (gamma_before_lisa * gamma_before_lisa));
+                // Projectile has to have A and Z int
+                catima::Projectile beam(std::round(A_i_s[i]), std::round(z_i_s[i]));
+                Float_t Ein = beta_en_i_s[i]/A_i_s[i];
+
+                auto res = atima.CalculateEnergyLoss(beam, Ein);
+                Float_t Eout = (res.first);
+
+                gamma_before_lisa = 1.0 + (Eout / (conv_coeff));
+                beta_before_lisa_temp  = std::sqrt(1.0 - 1.0 / (gamma_before_lisa * gamma_before_lisa));
+
             #else
                 beta_before_lisa_temp = 0;
             #endif
@@ -193,6 +200,7 @@ void LisaCal2Hit::Exec(Option_t* option)
             beta_before_lisa.emplace_back(beta_before_lisa_temp);
             copy_beta_before_lisa.emplace_back(beta_before_lisa_temp);
             
+            // !!!! EG This needs to be re-done after recent changes
             // Calculate Gamma initial
             gamma = 1.f / sqrt(1.f - TMath::Power(beta_before_lisa[i], 2));
             gamma_i.emplace_back(gamma);
@@ -269,8 +277,24 @@ void LisaCal2Hit::Exec(Option_t* option)
             int ypos_beam = (std::floor((y_lisa_tpc22_23 - y_origin) / y_step));
 
             // Gate on lisa position
+            // Maybe create a flag for this
             if (std::abs(xpos_beam - xpos) > 1 || std::abs(ypos_beam - ypos) > 1) return;
 
+            // :::: Reaction identification with dedx analysis ::::
+            //      This refer to the identification of reactions happening from one layer to the following. 
+            //      It uses fake MUSIC calibration in de to allign to LISA 1 and 5.
+            //      To see if a reaction happens in a specific layer we look at the previous and the following.
+            //      If the E(Lx)<E(Lx-1) then the reactionm happened before the x layer
+            //      If E(Lx)=E(Lx+1) there is no reaction between layer x-1 and x+1
+            //      If E(Lx-1)>E(Lx+1) and E(Lx)>E(Lx+1) then the reaction happened between layer x and x+1
+            //      If E(Lx-1)<E(Lx)<E(Lx+1) a reaction happened in the Layer 1.
+
+            //      This analysis uses the following constrains:
+            //      - MHIT selection as written above from FRS
+            //      - Position condition: if the TPC extrapolated position on LISA is different from the one of LISA hit, then it returns.
+            //      - A possible reaction event is analysed in LISA, only if that reaction is identified in FRS S2-S4 conditions above.
+
+            // To be implemented
             // Add reaction definition with dedx here
 
             if (lisa_config->ZCalibrationLoaded() && (sci21l_s1s2_selected == sci21l_s2s4_selected) && (sci21r_s1s2_selected == sci21r_s2s4_selected))

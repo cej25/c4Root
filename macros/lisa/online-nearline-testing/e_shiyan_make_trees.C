@@ -17,7 +17,10 @@
 
 // Definition of setup and configuration files
 // FRS
+//#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_016_2025_run6_conv.C" //run6
 #define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_016_2025_setting10_conv.C" //run18
+//#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_016_2025_setting13_conv.C" //run19
+
 //#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_020_2025_conv.C" //setting 20
 
 #define FRS_CONFIG_FILE "../../../config/shiyan/frs/general/frs_config_v5.C"
@@ -83,11 +86,11 @@ void e_shiyan_make_trees()
     
     // ::: FILE  PATH
     TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s103_files/ts/";                       // Data from LISA
-    TString filename = inputpath + "run_0018_0001.lmd";
+    TString filename = inputpath + "run_0018_0002.lmd";
 
     // ::: OUTPUT 
     TString outputpath = "/u/gandolfo/data/shiyan_debug/catima/";   //testing
-    TString outputFilename = outputpath + "run_0018_0001_atima.root";
+    TString outputFilename = outputpath + "run_0018_0002_tree.root";
     
     // ::: Create online run
     Int_t refresh = 10; // not needed
