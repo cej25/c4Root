@@ -316,8 +316,8 @@ void FrsCal2Hit::Exec(Option_t* option)
                         s1a_mhtdc,
                         s2x_s1s2_mhtdc,
                         s2a_s1s2_mhtdc,
-                        sci21l_hits_tofs1s2_pos_selected,
-                        sci21r_hits_tofs1s2_pos_selected,
+                        sci21l_hits_tofs1s2_pos_selected, //hits in sci21l selected for what passes tof s1s2 gates
+                        sci21r_hits_tofs1s2_pos_selected, //hits in sci21r selected for what passes tof s1s2 gates
                         id_mhtdc_tof_s1s2,
                         id_mhtdc_beta_s1s2,
                         id_mhtdc_beta_s1s2_selected,
