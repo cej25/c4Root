@@ -7,6 +7,7 @@
 #include "TH10MCPConfiguration.h"
 #include "TimeMachineData.h"
 #include "TClonesArray.h"
+#include "EventHeader.h"
 
 class TClonesArray;
 class EventHeader;

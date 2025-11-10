@@ -51,12 +51,12 @@ void chap_make_trees()
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     //TString filename = "/LynxOS/mbsusr/mbsdaq/78puliser.lmd";
-   // TString filename = "/LynxOS/mbsusr/mbsdaq/mcpfirstrun.lmd";
-   TString filename = "/mnt/data/mbsboot/LynxOS/mbsusr/mbsdaq/mbsrun/x86_timesorter/onlyLIPC1_20250409-1505.lmd";
-//    TString filename = "/LynxOS/mbsusr/mbsdaq/mbsrun/HISPEC10_test/testrun.lmd"; // pulser file for finetime
-  // TString filename ="/LynxOS/mbsusr/mbsdaq/mbsrun/HISPEC10_test/mcpfirstrun.lmd";
-    TString outputpath = "onlyLIPC1_20250409-1505";
-//	TString outputpath = "calum_test";
+    TString filename = "/LynxOS/mbsusr/mbsdaq/mcpfirstrun.lmd";
+  // TString filename = "onlymcponlyleadingedgetrigger2tresholdadjusted.lmd";
+ //  TString filename = "/LynxOS/mbsusr/mbsdaq/mbsrun/HISPEC10_test/noiserunmcpsundaybeforeexp.lmd"; // pulser file for finetime
+ // TString filename ="/LynxOS/mbsusr/mbsdaq/mbsrun/x86_timesorter/20250410-1505_0001.lmd";
+    TString outputpath = "noiserungsibeforeexp.lmd";
+	//TString outputpath = "calum_test";
     
 TString outputFileName = outputpath + "sorted.root";
 

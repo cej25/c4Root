@@ -6,11 +6,13 @@
 #define FRS_ON 0
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
+
+
+///////////////////DENNIS CHANGES there was something i need to turn of to make it from GSI DAQ to COLOGNE DAQ MAYBE THE NEXT 4 Lines
 extern "C"
 {
     #include "../../config/s115/frs/setup_115_022_2025_s1calib_conv.C"
 }
-
 // Struct should containt all subsystem h101 structures
 typedef struct EXT_STR_h101_t
 {   
@@ -50,8 +52,9 @@ void chap_histograms()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    TString filename = "onlyLIPC1_20250409-1505sorted.root";
-    TString outputpath = "onlyLIPC1_20250409-1505_";
+    TString filename = "onlymcponlyleadingedgetrigger2.lmdsorted.root";
+      //TString filename = "/LynxOS/mbsusr/mbsdaq/mbsrun/HISPEC10_test/onlymcps20250409-1730sorted.lmd";
+    TString outputpath = "onlymcponlyleadingedgetrigger2november2025test.lmdsorted.root";
     TString outputFileName =  outputpath + "histograms.root";
 
     FairRunAna* run = new FairRunAna();

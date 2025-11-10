@@ -51,7 +51,7 @@ void hispec10()
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     //TString filename = "/u/cjones/onlymcp09041755.lmd";
-    TString filename = "/u/cjones/onlymcponlyleadingedgetrigger2.lmd";
+    TString filename = "trans://lipc-3";
     //TString filename = "/u/cjones/finalfinalpulserrunfin.lmd";
     TString outputpath = "htest";
     TString outputFileName = outputpath + ".root";
